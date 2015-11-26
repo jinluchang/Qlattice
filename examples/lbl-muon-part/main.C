@@ -12,7 +12,7 @@ void lblMuonPart()
 
 int main(int argc, char* argv[])
 {
-  int lsizeNode[4] = { 2, 2, 2, 2 };
+  int lsizeNode[4] = { 1, 1, 1, 2 };
   lqps::start(&argc, &argv, lsizeNode);
   lblMuonPart();
   Timer::display();

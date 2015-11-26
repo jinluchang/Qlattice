@@ -28,9 +28,13 @@ inline MPI_Comm& getComm()
 }
 
 inline void start(int* argc, char** argv[], const int dims[DIM])
+  // can also initialize by set getPtrComm() to point to some externally constructed COMM object
+  // eg. getPtrComm() = &QMP_COMM_WORLD;
 {
   MPI_Init(argc, argv);
   getPtrComm() = &getLqpsComm();
+  const int periods[DIM] = { 1, 1, 1, 1 };
+  MPI_Cart_create(MPI_COMM_WORLD, DIM, (int*)dims, (int*)periods, 1, &getLqpsComm());
 }
 
 inline void end()
@@ -151,89 +155,8 @@ inline const GeometryNodeNeighbor& getGeometryNodeNeighbor()
   return geonb;
 }
 
-inline int getDataDirMu(void* recv, void* send, const long size, const int dir, const int mu)
-  // dir = 0, 1 for Plus dir or Minus dir
-  // 0 <= mu < 4 for different directions
-  // Old implementation is
-  // getData((char*)recv, (char*)send, size, mu, 0 == dir ? 1 : -1);
-{
-  TIMER_FLOPS("getDataDirMu");
-  timer.flops += size;
-#ifdef USE_MULTI_NODE
-  const GeometryNodeNeighbor& geonb = getGeometryNodeNeighbor();
-  const int idf = geonb.dest[dir][mu];
-  const int idt = geonb.dest[1-dir][mu];
-  MPI_Request req;
-  MPI_Isend(send, size, MPI_BYTE, idt, 0, getComm(), &req);
-  const int ret = MPI_Recv(recv, size, MPI_BYTE, idf, 0, getComm(), MPI_STATUS_IGNORE);
-  MPI_Wait(&req, MPI_STATUS_IGNORE);
-  return ret;
-#else
-  memcpy(recv, send, size);
-  return 0;
-#endif
-}
-
-inline int getDataPlusMu(void* recv, void* send, const long size, const int mu)
-{
-  return getDataDirMu(recv, send, size, 0, mu);
-}
-
-inline int getDataMinusMu(void* recv, void* send, const long size, const int mu)
-{
-  return getDataDirMu(recv, send, size, 1, mu);
-}
-
-inline int sumArray(long* recv, const long* send, const long n_elem)
-{
-#ifdef USE_MULTI_NODE
-  return MPI_Allreduce((long*)send, recv, n_elem, MPI_LONG, MPI_SUM, getComm());
-#else
-  memmove(recv, send, n_elem * sizeof(long));
-  return 0;
-#endif
-}
-
-inline int sumArray(double* recv, const double* send, const long n_elem)
-{
-#ifdef USE_MULTI_NODE
-  return MPI_Allreduce((double*)send, recv, n_elem, MPI_DOUBLE, MPI_SUM, getComm());
-#else
-  memmove(recv, send, n_elem * sizeof(double));
-  return 0;
-#endif
-}
-
 template <class M>
-int sumArray(M* vs, const long n_elem)
-  // M can be double or long
-{
-  int status = 0;
-#ifdef USE_MULTI_NODE
-  M tmp[n_elem];
-  status = sumArray(tmp, vs, n_elem);
-  memcpy(vs, tmp, n_elem * sizeof(M));
-#endif
-  return status;
-}
-
-inline void allGather(void* recv, const void* send, const long sendsize)
-{
-#ifdef USE_MULTI_NODE
-  MPI_Allgather((void*)send, sendsize, MPI_BYTE, recv, sendsize, MPI_BYTE, getComm());
-#else
-  memmove(recv, send, sendsize);
-#endif
-}
-
-inline void syncNode()
-{
-  long v;
-  sumArray(&v, 1);
-}
-
-template <class M>
-int getDataDirMu(Vector<M>& recv, Vector<M>& send, const int dir, const int mu)
+int getDataDirMu(Vector<M> recv, Vector<M> send, const int dir, const int mu)
   // dir = 0, 1 for Plus dir or Minus dir
   // 0 <= mu < 4 for different directions
 {
@@ -257,18 +180,18 @@ int getDataDirMu(Vector<M>& recv, Vector<M>& send, const int dir, const int mu)
 }
 
 template <class M>
-int getDataPlusMu(Vector<M>& recv, Vector<M>& send, const int mu)
+int getDataPlusMu(Vector<M> recv, Vector<M> send, const int mu)
 {
   return getDataDirMu(recv, send, 0, mu);
 }
 
 template <class M>
-int getDataMinusMu(Vector<M>& recv, Vector<M>& send, const int mu)
+int getDataMinusMu(Vector<M> recv, Vector<M> send, const int mu)
 {
   return getDataDirMu(recv, send, 1, mu);
 }
 
-inline int sumArray(Vector<long>& recv, const Vector<long>& send)
+inline int sumArray(Vector<long> recv, const Vector<long> send)
 {
   assert(recv.size() == send.size());
 #ifdef USE_MULTI_NODE
@@ -279,7 +202,7 @@ inline int sumArray(Vector<long>& recv, const Vector<long>& send)
 #endif
 }
 
-inline int sumArray(Vector<double>& recv, const Vector<double>& send)
+inline int sumArray(Vector<double> recv, const Vector<double> send)
 {
   assert(recv.size() == send.size());
 #ifdef USE_MULTI_NODE
@@ -291,7 +214,7 @@ inline int sumArray(Vector<double>& recv, const Vector<double>& send)
 }
 
 template <class M>
-int sumArray(Vector<M>& vec)
+int sumArray(Vector<M> vec)
 {
   std::vector<M> tmp(vec.size());
   assign(tmp, vec);
@@ -299,7 +222,7 @@ int sumArray(Vector<M>& vec)
 }
 
 template <class M>
-void allGather(Vector<M>& recv, const Vector<M>& send)
+void allGather(Vector<M> recv, const Vector<M> send)
 {
   assert(recv.size() == send.size() * getNumNode());
   const long sendsize = send.size() * sizeof(M);
@@ -309,6 +232,12 @@ void allGather(Vector<M>& recv, const Vector<M>& send)
   memmove(recv, send, sendsize);
 #endif
   allGather(recv.data(), send.data(), send.size() * sizeof(M));
+}
+
+inline void syncNode()
+{
+  long v;
+  sumArray(Vector<long>(&v,1));
 }
 
 LQPS_END_NAMESPACE

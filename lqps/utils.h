@@ -15,6 +15,8 @@ T sqr(T x) {
   return x * x;
 }
 
+template <class M> struct Vector;
+
 template <class M, int N>
 struct Array
 {
@@ -24,11 +26,20 @@ struct Array
   {
     p = NULL;
   }
+  Array<M,N>(const Array<M,N>& arr)
+  {
+    p = arr.p;
+  }
+  Array<M,N>(const Vector<M>& vec)
+  {
+    assert(N == vec.size());
+    p = vec.p;
+  }
   Array<M,N>(std::array<M,N>& arr)
   {
     p = arr.data();
   }
-  Array<M,N>(const M* p_)
+  Array<M,N>(M* p_)
   {
     p = p_;
   }
@@ -58,8 +69,14 @@ struct Array
     return N;
   }
   //
-  const Array<M,N>& operator=(const Array<M,N>& v)
+  const Array<M,N>& operator=(const Array<M,N> v)
   {
+    memcpy(this, v.data(), N * sizeof(M));
+    return *this;
+  }
+  const Array<M,N>& operator=(const Vector<M> v)
+  {
+    assert(N == v.size());
     memcpy(this, v.data(), N * sizeof(M));
     return *this;
   }
@@ -76,22 +93,27 @@ struct Vector
     p = NULL;
     n = 0;
   }
+  Vector<M>(const Vector<M>& vec)
+  {
+    p = vec.p;
+    n = vec.n;
+  }
+  template <int N>
+  Vector<M>(const Array<M,N>& arr)
+  {
+    p = arr.p;
+    n = N;
+  }
   template <int N>
   Vector<M>(std::array<M,N>& arr)
   {
     p = arr.data();
-    n = arr.szie();
+    n = arr.size();
   }
   Vector<M>(std::vector<M>& vec)
   {
     p = vec.data();
     n = vec.size();
-  }
-  template <int N>
-  Vector<M>(Array<M,N>& arr)
-  {
-    p = arr.data;
-    n = N;
   }
   Vector<M>(M* p_, const long n_)
   {
@@ -110,7 +132,6 @@ struct Vector
     return p[i];
   }
   //
-  //
   M* data()
   {
     return p;
@@ -125,43 +146,43 @@ struct Vector
     return n;
   }
   //
-  const Vector<M>& operator=(const Vector<M>& v)
+  const Vector<M>& operator=(const Vector<M> v)
   {
     assert(v.size() == n);
-    memcpy(this, v.data(), n * sizeof(M));
+    memcpy(this, v.data(), v.size() * sizeof(M));
     return *this;
   }
   template <int N>
-  const Vector<M>& operator=(const Array<M,N>& v)
+  const Vector<M>& operator=(const Array<M,N> v)
   {
     assert(v.size() == n);
-    memcpy(this, v.data(), n * sizeof(M));
+    memcpy(this, v.data(), v.size() * sizeof(M));
     return *this;
   }
 };
 
 template <class M, int N>
-void assign(std::array<M,N>& vec, const Array<M,N>& src)
+void assign(std::array<M,N>& vec, const Array<M,N> src)
 {
   memcpy(vec.data(), src.data(), src.size() * sizeof(M));
 }
 
 template <class M, int N>
-void assign(std::array<M,N>& vec, const Vector<M>& src)
+void assign(std::array<M,N>& vec, const Vector<M> src)
 {
   assert(N == src.size());
   memcpy(vec.data(), src.data(), src.size() * sizeof(M));
 }
 
 template <class M, int N>
-void assign(std::vector<M>& vec, const Array<M,N>& src)
+void assign(std::vector<M>& vec, const Array<M,N> src)
 {
   vec.resize(src.size());
   memcpy(vec.data(), src.data(), src.size() * sizeof(M));
 }
 
 template <class M>
-void assign(std::vector<M>& vec, const Vector<M>& src)
+void assign(std::vector<M>& vec, const Vector<M> src)
 {
   vec.resize(src.size());
   memcpy(vec.data(), src.data(), src.size() * sizeof(M));
