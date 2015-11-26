@@ -114,6 +114,16 @@ inline int getIdNode()
   return getGeometryNode().idNode;
 }
 
+inline const Coordinate& getSizeNode()
+{
+  return getGeometryNode().sizeNode;
+}
+
+inline const Coordinate& getCoorNode()
+{
+  return getGeometryNode().coorNode;
+}
+
 struct GeometryNodeNeighbor
 {
   int dest[2][DIM];

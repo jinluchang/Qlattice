@@ -10,10 +10,10 @@
 
 LQPS_START_NAMESPACE
 
-using Complex = std::complex<double>;
-
 const int DIM = 4;
 
 using Coordinate = std::array<int,DIM>;
+
+using Complex = std::complex<double>;
 
 LQPS_END_NAMESPACE
