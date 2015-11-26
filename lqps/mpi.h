@@ -201,7 +201,7 @@ int getDataMinusMu(Vector<M> recv, Vector<M> send, const int mu)
   return getDataDirMu(recv, send, 1, mu);
 }
 
-inline int sumArray(Vector<long> recv, const Vector<long> send)
+inline int sumVector(Vector<long> recv, const Vector<long> send)
 {
   assert(recv.size() == send.size());
 #ifdef USE_MULTI_NODE
@@ -212,7 +212,7 @@ inline int sumArray(Vector<long> recv, const Vector<long> send)
 #endif
 }
 
-inline int sumArray(Vector<double> recv, const Vector<double> send)
+inline int sumVector(Vector<double> recv, const Vector<double> send)
 {
   assert(recv.size() == send.size());
 #ifdef USE_MULTI_NODE
@@ -224,11 +224,11 @@ inline int sumArray(Vector<double> recv, const Vector<double> send)
 }
 
 template <class M>
-int sumArray(Vector<M> vec)
+int sumVector(Vector<M> vec)
 {
   std::vector<M> tmp(vec.size());
   assign(tmp, vec);
-  return sumArray(vec, tmp);
+  return sumVector(vec, tmp);
 }
 
 template <class M>
@@ -247,7 +247,7 @@ void allGather(Vector<M> recv, const Vector<M> send)
 inline void syncNode()
 {
   long v;
-  sumArray(Vector<long>(&v,1));
+  sumVector(Vector<long>(&v,1));
 }
 
 LQPS_END_NAMESPACE
