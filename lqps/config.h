@@ -16,4 +16,6 @@ using Coordinate = std::array<int,DIM>;
 
 using Complex = std::complex<double>;
 
+const char* cname = "LQPS";
+
 LQPS_END_NAMESPACE

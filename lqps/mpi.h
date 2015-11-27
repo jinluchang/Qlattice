@@ -32,13 +32,18 @@ inline void start(int* argc, char** argv[], const int dims[DIM])
   // eg. getPtrComm() = &QMP_COMM_WORLD;
 {
   MPI_Init(argc, argv);
+  int numNode;
+  MPI_Comm_size(MPI_COMM_WORLD, &numNode);
+  DisplayInfo(cname, "start", "MPI Initialized.  NumNode=%d\n", numNode);
   getPtrComm() = &getLqpsComm();
   const int periods[DIM] = { 1, 1, 1, 1 };
   MPI_Cart_create(MPI_COMM_WORLD, DIM, (int*)dims, (int*)periods, 1, &getLqpsComm());
+  DisplayInfo(cname, "start", "MPI Cart created. Topology=%dx%dx%dx%d\n", dims[0], dims[1], dims[2], dims[3]);
 }
 
 inline void end()
 {
+  DisplayInfo(cname, "end", "MPI Finalizing.\n");
   MPI_Finalize();
 }
 
