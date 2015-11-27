@@ -9,9 +9,6 @@ const char* cname = "Main";
 void lblMuonPart()
 {
   TIMER("lblMuonPart");
-  std::cout << "hello world!" << std::endl;
-  std::cout << lqps::ssprintf("hello world!") << std::endl;
-  std::cout << lqps::show(lqps::Coordinate({1,2,3,4})) << std::endl;
   lqps::Coordinate totalSite({ 2, 2, 2, 4 });
   lqps::Geometry geo; geo.init(totalSite, 1);
   DisplayInfo(cname, fname, "geo=\n%s\n", lqps::show(geo).c_str());

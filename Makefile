@@ -19,14 +19,13 @@ LDFLAGS+= -lfftw3_omp -lfftw3
 LDFLAGS+= -llapacke -llapack -lblas -lgfortran
 LDFLAGS+= -lgsl -lgslcblas -lm
 
-all:
-	. $(lqps)/local/setenv.sh ; make build
+all: lqps.x
 
 run: lqps.x
 	. $(lqps)/local/setenv.sh ; time mpirun -x OMP_NUM_THREADS=2 -np 2 ./lqps.x
 
 lqps.x: *.C
-	. $(lqps)/local/setenv.sh ; make build
+	. $(lqps)/local/setenv.sh ; time make build
 
 build:
 	$(CXX) -o lqps.x $(CXXFLAGS) $(LDFLAGS) *.C

@@ -117,6 +117,11 @@ std::string show(const GeometryNode& geon) {
   return s;
 }
 
+inline bool operator==(const GeometryNode& geon1, const GeometryNode& geon2)
+{
+  return 0 == memcmp(&geon1, &geon2, sizeof(GeometryNode));
+}
+
 inline int getNumNode()
 {
   return getGeometryNode().numNode;
@@ -275,7 +280,7 @@ inline void start(int* argc, char** argv[], const Coordinate dims)
   getPtrComm() = &getLqpsComm();
   const Coordinate periods({ 1, 1, 1, 1 });
   MPI_Cart_create(MPI_COMM_WORLD, DIM, (int*)dims.data(), (int*)periods.data(), 1, &getLqpsComm());
-  DisplayInfo(cname, "start", "MPI Cart created. GeometryNode=\n%s", show(getGeometryNode()).c_str());
+  DisplayInfo(cname, "start", "MPI Cart created. GeometryNode=\n%s\n", show(getGeometryNode()).c_str());
 }
 
 inline void end()
