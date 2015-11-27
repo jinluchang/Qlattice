@@ -4,7 +4,10 @@
 
 #include <array>
 #include <vector>
+#include <iostream>
 #include <cassert>
+#include <cstdio>
+#include <cstdlib>
 
 LQPS_START_NAMESPACE
 
@@ -69,12 +72,12 @@ struct Array
     return N;
   }
   //
-  const Array<M,N>& operator=(const Array<M,N> v)
+  const Array<M,N>& operator=(const Array<M,N>& v)
   {
     memcpy(this, v.data(), N * sizeof(M));
     return *this;
   }
-  const Array<M,N>& operator=(const Vector<M> v)
+  const Array<M,N>& operator=(const Vector<M>& v)
   {
     assert(N == v.size());
     memcpy(this, v.data(), N * sizeof(M));
@@ -146,14 +149,14 @@ struct Vector
     return n;
   }
   //
-  const Vector<M>& operator=(const Vector<M> v)
+  const Vector<M>& operator=(const Vector<M>& v)
   {
     assert(v.size() == n);
     memcpy(this, v.data(), v.size() * sizeof(M));
     return *this;
   }
   template <int N>
-  const Vector<M>& operator=(const Array<M,N> v)
+  const Vector<M>& operator=(const Array<M,N>& v)
   {
     assert(v.size() == n);
     memcpy(this, v.data(), v.size() * sizeof(M));
@@ -162,27 +165,27 @@ struct Vector
 };
 
 template <class M, int N>
-void assign(std::array<M,N>& vec, const Array<M,N> src)
+void assign(std::array<M,N>& vec, const Array<M,N>& src)
 {
   memcpy(vec.data(), src.data(), src.size() * sizeof(M));
 }
 
 template <class M, int N>
-void assign(std::array<M,N>& vec, const Vector<M> src)
+void assign(std::array<M,N>& vec, const Vector<M>& src)
 {
   assert(N == src.size());
   memcpy(vec.data(), src.data(), src.size() * sizeof(M));
 }
 
 template <class M, int N>
-void assign(std::vector<M>& vec, const Array<M,N> src)
+void assign(std::vector<M>& vec, const Array<M,N>& src)
 {
   vec.resize(src.size());
   memcpy(vec.data(), src.data(), src.size() * sizeof(M));
 }
 
 template <class M>
-void assign(std::vector<M>& vec, const Vector<M> src)
+void assign(std::vector<M>& vec, const Vector<M>& src)
 {
   vec.resize(src.size());
   memcpy(vec.data(), src.data(), src.size() * sizeof(M));
@@ -248,6 +251,82 @@ inline void coordinateFromIndex(Coordinate& x, long index, const Coordinate& siz
 
 inline long indexFromCoordinate(const Coordinate& x, const Coordinate& size) {
   return (((x[3] * size[2]) + x[2]) * size[1] + x[1]) * size[0] + x[0];
+}
+
+inline void shiftCoordinateAdd(Coordinate& x, const Coordinate& shift)
+{
+  x[0] += shift[0];
+  x[1] += shift[1];
+  x[2] += shift[2];
+  x[3] += shift[3];
+}
+
+inline void shiftCoordinateSub(Coordinate& x, const Coordinate& shift)
+{
+  x[0] -= shift[0];
+  x[1] -= shift[1];
+  x[2] -= shift[2];
+  x[3] -= shift[3];
+}
+
+inline int vssprintf(std::string& str, const char* fmt, va_list args)
+{
+  char* cstr;
+  int ret = vasprintf(&cstr, fmt, args);
+  str += std::string(cstr);
+  std::free(cstr);
+  return ret;
+}
+
+inline int ssprintf(std::string& str, const char* fmt, ...)
+{
+  va_list args;
+  va_start(args, fmt);
+  return vssprintf(str, fmt, args);
+}
+
+inline std::string vssprintf(const char* fmt, va_list args)
+{
+  std::string str;
+  vssprintf(str, fmt, args);
+  return str;
+}
+
+inline std::string ssprintf(const char* fmt, ...)
+{
+  va_list args;
+  va_start(args, fmt);
+  return vssprintf(fmt, args);
+}
+
+inline std::string show() {
+  return "";
+}
+
+inline std::string show(const long& x) {
+  return ssprintf("%ld", x);
+}
+
+inline std::string show(const double& x) {
+  std::ostringstream out;
+  out.precision(16);
+  out << std::scientific;
+  out << x;
+  return out.str();
+}
+
+inline std::string show(const bool& x) {
+  return x ? "true" : "false";
+}
+
+inline std::string show(const std::string& x) {
+  std::ostringstream out;
+  out << x;
+  return out.str();
+}
+
+inline std::string show(const Coordinate& x) {
+  return ssprintf("%dx%dx%dx%d", x[0], x[1], x[2], x[3]);
 }
 
 LQPS_END_NAMESPACE

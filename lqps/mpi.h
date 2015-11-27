@@ -27,28 +27,9 @@ inline MPI_Comm& getComm()
   return *getPtrComm();
 }
 
-inline void start(int* argc, char** argv[], const int dims[DIM])
-  // can also initialize by set getPtrComm() to point to some externally constructed COMM object
-  // eg. getPtrComm() = &QMP_COMM_WORLD;
-{
-  MPI_Init(argc, argv);
-  int numNode;
-  MPI_Comm_size(MPI_COMM_WORLD, &numNode);
-  DisplayInfo(cname, "start", "MPI Initialized.  NumNode=%d\n", numNode);
-  getPtrComm() = &getLqpsComm();
-  const int periods[DIM] = { 1, 1, 1, 1 };
-  MPI_Cart_create(MPI_COMM_WORLD, DIM, (int*)dims, (int*)periods, 1, &getLqpsComm());
-  DisplayInfo(cname, "start", "MPI Cart created. Topology=%dx%dx%dx%d\n", dims[0], dims[1], dims[2], dims[3]);
-}
-
-inline void end()
-{
-  DisplayInfo(cname, "end", "MPI Finalizing.\n");
-  MPI_Finalize();
-}
-
 struct GeometryNode
 {
+  bool initialized;
   // About node geometry.
   int numNode;
   // numNode = sizeNode[0] * sizeNode[1] * sizeNode[2] * sizeNode[3]
@@ -59,33 +40,11 @@ struct GeometryNode
   Coordinate coorNode;
   // 0 <= coorNode[i] < sizeNode[i]
   //
-  void init()
-  {
-#ifdef USE_MULTI_NODE
-    MPI_Comm_size(getComm(), &numNode);
-    MPI_Comm_rank(getComm(), &idNode);
-    int ndims;
-    MPI_Cartdim_get(getComm(), &ndims);
-    assert(DIM == ndims);
-    Coordinate periods;
-    MPI_Cart_get(getComm(), DIM, sizeNode.data(), periods.data(), coorNode.data());
-    for (int i = 0; i < DIM; ++i) {
-      assert(0 != periods[i]);
-    }
-    assert(indexFromCoordinate(coorNode, sizeNode) == idNode);
-    assert(sizeNode[0] * sizeNode[1] * sizeNode[2] * sizeNode[3] == numNode);
-#else
-    numNode = 1;
-    idNode = 0;
-    for (int i = 0; i < DIM; ++i) {
-      sizeNode[i] = 1;
-      coorNode[i] = 1;
-    }
-#endif
-  }
+  void init();
   //
   GeometryNode()
   {
+    initialized = false;
     memset(this, 0, sizeof(GeometryNode));
   }
   GeometryNode(const bool initialize)
@@ -103,10 +62,59 @@ struct GeometryNode
   }
 };
 
+void GeometryNode::init()
+{
+  if (initialized) {
+    return;
+  }
+#ifdef USE_MULTI_NODE
+  MPI_Comm_size(getComm(), &numNode);
+  MPI_Comm_rank(getComm(), &idNode);
+  int ndims;
+  MPI_Cartdim_get(getComm(), &ndims);
+  assert(DIM == ndims);
+  Coordinate periods;
+  MPI_Cart_get(getComm(), DIM, sizeNode.data(), periods.data(), coorNode.data());
+  for (int i = 0; i < DIM; ++i) {
+    assert(0 != periods[i]);
+  }
+  assert(indexFromCoordinate(coorNode, sizeNode) == idNode);
+  assert(sizeNode[0] * sizeNode[1] * sizeNode[2] * sizeNode[3] == numNode);
+#else
+  numNode = 1;
+  idNode = 0;
+  for (int i = 0; i < DIM; ++i) {
+    sizeNode[i] = 1;
+    coorNode[i] = 1;
+  }
+#endif
+  initialized = true;
+}
+
+inline bool isInitialized(const GeometryNode& geon)
+{
+  return geon.initialized;
+}
+
+inline void init(GeometryNode& geon)
+{
+  geon.init();
+}
+
 inline const GeometryNode& getGeometryNode()
 {
   static GeometryNode geon(true);
   return geon;
+}
+
+std::string show(const GeometryNode& geon) {
+  std::string s;
+  ssprintf(s, "{ initialized = %s\n", show(geon.initialized).c_str());
+  ssprintf(s, ", numNode     = %d\n", geon.numNode);
+  ssprintf(s, ", idNode      = %d\n", geon.idNode);
+  ssprintf(s, ", sizeNode    = %s\n", show(geon.sizeNode).c_str());
+  ssprintf(s, ", coorNode    = %s }", show(geon.coorNode).c_str());
+  return s;
 }
 
 inline int getNumNode()
@@ -171,7 +179,7 @@ inline const GeometryNodeNeighbor& getGeometryNodeNeighbor()
 }
 
 template <class M>
-int getDataDirMu(Vector<M> recv, Vector<M> send, const int dir, const int mu)
+int getDataDirMu(Vector<M>& recv, Vector<M>& send, const int dir, const int mu)
   // dir = 0, 1 for Plus dir or Minus dir
   // 0 <= mu < 4 for different directions
 {
@@ -195,18 +203,18 @@ int getDataDirMu(Vector<M> recv, Vector<M> send, const int dir, const int mu)
 }
 
 template <class M>
-int getDataPlusMu(Vector<M> recv, Vector<M> send, const int mu)
+int getDataPlusMu(Vector<M>& recv, Vector<M>& send, const int mu)
 {
   return getDataDirMu(recv, send, 0, mu);
 }
 
 template <class M>
-int getDataMinusMu(Vector<M> recv, Vector<M> send, const int mu)
+int getDataMinusMu(Vector<M>& recv, Vector<M>& send, const int mu)
 {
   return getDataDirMu(recv, send, 1, mu);
 }
 
-inline int sumVector(Vector<long> recv, const Vector<long> send)
+inline int sumVector(Vector<long>& recv, const Vector<long>& send)
 {
   assert(recv.size() == send.size());
 #ifdef USE_MULTI_NODE
@@ -217,7 +225,7 @@ inline int sumVector(Vector<long> recv, const Vector<long> send)
 #endif
 }
 
-inline int sumVector(Vector<double> recv, const Vector<double> send)
+inline int sumVector(Vector<double>& recv, const Vector<double>& send)
 {
   assert(recv.size() == send.size());
 #ifdef USE_MULTI_NODE
@@ -229,7 +237,7 @@ inline int sumVector(Vector<double> recv, const Vector<double> send)
 }
 
 template <class M>
-int sumVector(Vector<M> vec)
+int sumVector(Vector<M>& vec)
 {
   std::vector<M> tmp(vec.size());
   assign(tmp, vec);
@@ -237,7 +245,7 @@ int sumVector(Vector<M> vec)
 }
 
 template <class M>
-void allGather(Vector<M> recv, const Vector<M> send)
+void allGather(Vector<M>& recv, const Vector<M>& send)
 {
   assert(recv.size() == send.size() * getNumNode());
   const long sendsize = send.size() * sizeof(M);
@@ -252,7 +260,28 @@ void allGather(Vector<M> recv, const Vector<M> send)
 inline void syncNode()
 {
   long v;
-  sumVector(Vector<long>(&v,1));
+  Vector<long> vec(&v,1);
+  sumVector(vec);
+}
+
+inline void start(int* argc, char** argv[], const Coordinate dims)
+  // can also initialize by set getPtrComm() to point to some externally constructed COMM object
+  // eg. getPtrComm() = &QMP_COMM_WORLD;
+{
+  MPI_Init(argc, argv);
+  int numNode;
+  MPI_Comm_size(MPI_COMM_WORLD, &numNode);
+  DisplayInfo(cname, "start", "MPI Initialized. NumNode=%d\n", numNode);
+  getPtrComm() = &getLqpsComm();
+  const Coordinate periods({ 1, 1, 1, 1 });
+  MPI_Cart_create(MPI_COMM_WORLD, DIM, (int*)dims.data(), (int*)periods.data(), 1, &getLqpsComm());
+  DisplayInfo(cname, "start", "MPI Cart created. GeometryNode=\n%s", show(getGeometryNode()).c_str());
+}
+
+inline void end()
+{
+  DisplayInfo(cname, "end", "MPI Finalizing.\n");
+  MPI_Finalize();
 }
 
 LQPS_END_NAMESPACE
