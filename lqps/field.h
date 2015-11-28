@@ -5,7 +5,10 @@
 #include <lqps/mpi.h>
 #include <lqps/geometry.h>
 
+#include <omp.h>
+
 #include <vector>
+#include <cassert>
 
 LQPS_START_NAMESPACE
 
@@ -16,13 +19,13 @@ struct Field
   Geometry geo;
   std::vector<M> field;
   //
-  void init()
+  virtual void init()
   {
     initialized = false;
     geo.init();
     field.clear();
   }
-  void init(const Geometry& geo_)
+  virtual void init(const Geometry& geo_)
   {
     init();
     geo = geo_;
@@ -30,7 +33,7 @@ struct Field
     setZero(*this);
     initialized = true;
   }
-  void init(const Geometry& geo_, const int multiplicity_)
+  virtual void init(const Geometry& geo_, const int multiplicity_)
   {
     init();
     geo.init(geo_, multiplicity_);
@@ -38,7 +41,7 @@ struct Field
     setZero(*this);
     initialized = true;
   }
-  void init(const Field& f)
+  virtual void init(const Field& f)
   {
     init();
     geo.init(f.geo);
@@ -50,10 +53,6 @@ struct Field
   {
     init();
   }
-  Field(const Geometry& geo_)
-  {
-    init(geo_);
-  }
   Field(const Field& f)
   {
     assert(false);
@@ -61,6 +60,7 @@ struct Field
   //
   const Field& operator=(const Field& f)
   {
+    assert(isMatchingGeo(geo, f.geo));
 #pragma omp parallel for
     for (long index = 0; index < geo.localVolume(); ++index) {
       Coordinate xl; geo.coordinateFromIndex(xl, index);
@@ -81,6 +81,7 @@ struct Field
     assert(0 <= offset && offset < field.size());
     return field[offset];
   }
+  //
   M& getElem(const Coordinate& x, const int m)
   {
     assert(geo.isOnNode(x));
@@ -94,6 +95,13 @@ struct Field
     assert(0 <= m && m < geo.multiplicity);
     long offset = geo.offsetFromCoordinate(x) + m;
     return field[offset];
+  }
+  //
+  Vector<M> getElems(const Coordinate& x) const
+  {
+    assert(geo.isOnNode(x));
+    long offset = geo.offsetFromCoordinate(x);
+    return Vector<M>((M*)&field[offset], geo.multiplicity);
   }
 };
 
@@ -123,5 +131,123 @@ void swap(Field<M>& f1, Field<M>& f2)
   assert(f1.geo == f2.geo);
   swap(f1.field, f2.field);
 }
+
+template<class M>
+const Field<M>& operator+=(Field<M>& f, const Field<M>& f1)
+{
+  TIMER("fieldOperator");
+  assert(isMatchingGeo(f.geo, f1.geo));
+  const Geometry& geo = f.geo;
+#pragma omp parallel for
+  for (long index = 0; index < geo.localVolume(); ++index) {
+    Coordinate x; geo.coordinateFromIndex(x, index);
+    for (int m = 0; m < geo.multiplicity; ++m) {
+      f.getElem(x,m) += f1.getElem(x,m);
+    }
+  }
+  return f;
+}
+
+template<class M>
+const Field<M>& operator-=(Field<M>& f, const Field<M>& f1)
+{
+  TIMER("fieldOperator");
+  assert(isMatchingGeo(f.geo, f1.geo));
+  const Geometry& geo = f.geo;
+#pragma omp parallel for
+  for (long index = 0; index < geo.localVolume(); index++) {
+    Coordinate x; geo.coordinateFromIndex(x, index);
+    for (int m = 0; m < geo.multiplicity; m++) {
+      f.getElem(x,m) -= f1.getElem(x,m);
+    }
+  }
+  return f;
+}
+
+template<class M>
+const Field<M>& operator*=(Field<M>& f, const double factor)
+{
+  TIMER("fieldOperator");
+  const Geometry& geo = f.geo;
+#pragma omp parallel for
+  for (long index = 0; index < geo.localVolume(); index++) {
+    Coordinate x; geo.coordinateFromIndex(x, index);
+    for (int m = 0; m < geo.multiplicity; m++) {
+      f.getElem(x,m) *= factor;
+    }
+  }
+  return f;
+}
+
+template<class M>
+const Field<M>& operator*=(Field<M>& f, const Complex factor)
+{
+  TIMER("fieldOperator");
+  const Geometry& geo = f.geo;
+#pragma omp parallel for
+  for (long index = 0; index < geo.localVolume(); index++) {
+    Coordinate x; geo.coordinateFromIndex(x, index);
+    for (int m = 0; m < geo.multiplicity; m++) {
+      f.getElem(x,m) *= factor;
+    }
+  }
+  return f;
+}
+
+template<class M>
+double norm(const Field<M>& f)
+{
+  const Geometry& geo = f.geo;
+  double sum = 0.0;
+#pragma omp parallel
+  {
+    double psum = 0.0;
+#pragma omp for nowait
+    for (long index = 0; index < geo.localVolume(); ++index) {
+      Coordinate x; geo.coordinateFromIndex(x, index);
+      Vector<M> fx = f.getElems(x);
+      for (int m = 0; m < geo.multiplicity; ++m) {
+        psum += norm(fx[m]);
+      }
+    }
+    for (int i = 0; i < omp_get_num_threads(); ++i) {
+#pragma omp barrier
+      if (omp_get_thread_num() == i) {
+          sum += psum;
+      }
+    }
+  }
+  sumVector(Vector<double>(&sum, 1));
+  return sum;
+}
+
+template <class M, int multiplicity>
+struct FieldM : Field<M>
+{
+    using Field<M>::init;
+    virtual void init(const Geometry& geo_)
+    {
+      Field<M>::init(geo_, multiplicity);
+    }
+    virtual void init(const Geometry& geo_, const int multiplicity_)
+    {
+      assert(multiplicity == multiplicity_);
+      Field<M>::init(geo_, multiplicity);
+    }
+    virtual void init(const Field<M>& f)
+    {
+      assert(multiplicity == f.geo.multiplicity);
+      Field<M>::init(f);
+    }
+    //
+    FieldM()
+    {
+      init();
+    }
+    FieldM(const FieldM<M,multiplicity>& f)
+    {
+      assert(false);
+    }
+};
 
 LQPS_END_NAMESPACE

@@ -13,8 +13,11 @@ LQPS_START_NAMESPACE
 
 const double PI = 3.141592653589793;
 
+const Complex ii(0, 1);
+
 template <class T>
-T sqr(T x) {
+T sqr(const T& x)
+{
   return x * x;
 }
 
@@ -31,6 +34,16 @@ void swap(std::vector<M>& v1, std::vector<M>& v2)
   std::vector<M> tmp(v2);
   v2 = v1;
   v1 = tmp;
+}
+
+inline double norm(const double& x)
+{
+  return x*x;
+}
+
+inline double norm(const Complex& x)
+{
+  return std::norm(x);
 }
 
 template <class M> struct Vector;
