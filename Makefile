@@ -8,16 +8,16 @@ CXX=mpic++ -std=c++11
 INCLUDE=$(lqps)/local/include
 LIB=$(lqps)/local/lib
 
-CFLAGS=-O2 -fno-strict-aliasing -Wall
+CFLAGS=-fopenmp -O2 -fno-strict-aliasing -Wall
 CFLAGS+= -I$(INCLUDE)
 CFLAGS+= -I$(INCLUDE)/eigen3
 
 CXXFLAGS=$(CFLAGS)
 
 LDFLAGS=-L$(LIB)
-LDFLAGS+= -lfftw3_omp -lfftw3
 LDFLAGS+= -llapacke -llapack -lblas -lgfortran
 LDFLAGS+= -lgsl -lgslcblas -lm
+LDFLAGS+= -lfftw3_omp -lfftw3
 
 all: lqps.x
 
@@ -28,7 +28,7 @@ lqps.x: *.C
 	. $(lqps)/local/setenv.sh ; time make build
 
 build:
-	$(CXX) -o lqps.x $(CXXFLAGS) $(LDFLAGS) *.C
+	$(CXX) -o lqps.x $(CXXFLAGS) *.C $(LDFLAGS)
 
 clean:
 	rm lqps.x || :

@@ -18,6 +18,21 @@ T sqr(T x) {
   return x * x;
 }
 
+template <class M>
+void setZero(std::vector<M>& vec)
+{
+  long size = vec.size() * sizeof(M);
+  memset(vec.data(), 0, size);
+}
+
+template <class M>
+void swap(std::vector<M>& v1, std::vector<M>& v2)
+{
+  std::vector<M> tmp(v2);
+  v2 = v1;
+  v1 = tmp;
+}
+
 template <class M> struct Vector;
 
 template <class M, int N>
@@ -144,9 +159,14 @@ struct Vector
     return p;
   }
   //
-  int size() const
+  long size() const
   {
     return n;
+  }
+  //
+  long dataSize() const
+  {
+    return n * sizeof(M);
   }
   //
   const Vector<M>& operator=(const Vector<M>& v)
@@ -163,6 +183,18 @@ struct Vector
     return *this;
   }
 };
+
+template <class M>
+Vector<M> getData(const std::vector<M>& vec)
+{
+  return Vector<M>((M*)vec.data(), vec.size());
+}
+
+template <class T>
+long getDataSize(const T& x)
+{
+  return getData(x).dataSize();
+}
 
 template <class M, int N>
 void assign(std::array<M,N>& vec, const Array<M,N>& src)

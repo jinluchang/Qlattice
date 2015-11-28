@@ -68,7 +68,8 @@ inline double getTotalTime() {
 }
 
 inline void DisplayInfo(const char *cname, const char *fname, const char *format, ...) {
-  if (0 != getRank()) {
+  static int rank = getRank();
+  if (0 != rank) {
     return;
   }
   const int max_len = 2048;

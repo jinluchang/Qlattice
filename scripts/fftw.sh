@@ -13,15 +13,9 @@ tar xzf $distfiles/$name-*.tar.gz
 
 cd $name-*
 
-if [ $arch = bgq ] ; then
-    ./configure \
-        --prefix=$prefix \
-        --enable-openmp
-else
-    ./configure \
-        --prefix=$prefix \
-        --enable-openmp
-fi
+./configure \
+    --prefix=$prefix \
+    --enable-openmp
 
 make -j$num_proc
 make install

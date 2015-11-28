@@ -1,0 +1,221 @@
+#pragma once
+
+#include <lqps/config.h>
+#include <lqps/utils.h>
+#include <lqps/mpi.h>
+#include <lqps/geometry.h>
+#include <lqps/field.h>
+
+#include <fftw3.h>
+#include <omp.h>
+
+#include <vector>
+
+LQPS_START_NAMESPACE
+
+struct fieldComplexDirFFT_Plan
+{
+  Geometry geo; // geo.isOnlyLocal == true
+  int mc;       // geo.multiplicity * sizeof(M) / sizeof(Complex)
+  int dirs[4];  // 0 is no transform, 1 is forward transform, -1 is backward transform
+  //
+  bool isMatch(const Geometry& geo_, const int mc_, const int dirs_[4]) {
+    return geo_ == geo && mc_ == mc && 0 == memcmp(dirs_, dirs, 4*sizeof(int));
+  }
+  //
+  static bool check(const Geometry& geo_, const int mc_, const int dirs_[4]) {
+    assert(0 < geo_.multiplicity);
+    bool b = true;
+    b = b && geo_.isOnlyLocal();
+    b = b && mc_ % geo_.multiplicity == 0;
+    for (int mu = 0; mu < 4; mu++) {
+      b = b && (dirs_[mu] == -1 || dirs_[mu] == 0 || dirs_[mu] == 1);
+    }
+    return b;
+  }
+  //
+  static fieldComplexDirFFT_Plan& getPlan(const Geometry& geo_, const int mc_, const int dirs_[4]) {
+    assert(check(geo_, mc_, dirs_));
+    static std::vector<fieldComplexDirFFT_Plan> planV(100);
+    static int next_plan_index = 0;
+    for (int i = 0; i < planV.size(); i++) {
+      if (planV[i].isMatch(geo_, mc_, dirs_)) {
+        return planV[i];
+      }
+    }
+    DisplayInfo("fieldComplexDirFFT_Plan", "getPlan", "start to make a new fft plan with id = %d\n", next_plan_index);
+    fieldComplexDirFFT_Plan& plan = planV[next_plan_index];
+    next_plan_index++;
+    next_plan_index %= planV.size();
+    plan.end();
+    plan.init(geo_, mc_, dirs_);
+    return plan;
+  }
+  //
+  fieldComplexDirFFT_Plan() {
+  }
+  //
+  ~fieldComplexDirFFT_Plan() {
+    end();
+  }
+  //
+  void end() {
+    if (geo.initialized) {
+      DisplayInfo("fieldComplexDirFFT_Plan", "end", "free a plan\n");
+      fftw_destroy_plan(fftplan);
+      geo.initialized = false;
+    }
+  }
+  //
+  void init(const Geometry& geo_, const int mc_, const int dirs_[4]) {
+    assert(check(geo_, mc_, dirs_));
+    geo = geo_;
+    mc = mc_;
+    memcpy(dirs, dirs_, 4*sizeof(int));
+    // FIXME currently can only transform in one direction
+    int dir = 0;
+    bool isForward = true;
+    for (int mu = 0; mu < 4; mu++) {
+      if (0 != dirs[mu]) {
+        dir = mu;
+        isForward = dirs[mu] == 1;
+        break;
+      }
+    }
+    const int sizec = geo.totalSite(dir);
+    const int nc = geo.localVolume() / geo.nodeSite[dir] * mc;
+    const int chunk = (nc-1) / geo.geon.sizeNode[dir]+1;
+    const int nc_start = std::min(nc, geo.geon.coorNode[dir] * chunk);
+    const int nc_stop = std::min(nc, nc_start + chunk);
+    const int nc_size = nc_stop - nc_start;
+    fftw_init_threads();
+    fftw_plan_with_nthreads(omp_get_max_threads());
+    DisplayInfo("fieldComplexDirFFT_Plan", "init", "malloc %d\n", nc_size * sizec * sizeof(Complex));
+    Complex* fftdatac = (Complex*)fftw_malloc(nc_size * sizec * sizeof(Complex));
+    const int rank = 1;
+    const int n[1] = { sizec };
+    const int howmany = nc_size;
+    const int dist = 1;
+    const int stride = nc_size;
+    fftplan = fftw_plan_many_dft(rank, n, howmany,
+        (fftw_complex*)fftdatac, n, stride, dist,
+        (fftw_complex*)fftdatac, n, stride, dist,
+        isForward ? FFTW_FORWARD : FFTW_BACKWARD, FFTW_ESTIMATE);
+    fftw_free(fftdatac);
+    DisplayInfo("fieldComplexDirFFT_Plan", "init", "free %d\n", nc_size * sizec * sizeof(Complex));
+  }
+  //
+  fftw_plan fftplan;
+};
+
+template<class M>
+void fieldComplexDirFFT(Field<M>& field, const int dirs[4]) {
+  TIMER("fieldComplexDirFFT");
+  Geometry geo = field.geo; geo.resize(0);
+  const int mc = geo.multiplicity * sizeof(M) / sizeof(Complex);
+  fieldComplexDirFFT_Plan& plan = fieldComplexDirFFT_Plan::getPlan(geo, mc, dirs);
+  fftw_plan& fftplan = plan.fftplan;
+  // FIXME currently can only transform in one direction
+  int dir = 0;
+  bool isForward = true;
+  for (int mu = 0; mu < 4; mu++) {
+    if (0 != dirs[mu]) {
+      dir = mu;
+      isForward = dirs[mu] == 1;
+      break;
+    }
+  }
+  const int sizec = geo.totalSite(dir);
+  const int nc = geo.localVolume() / geo.nodeSite[dir] * mc;
+  const int chunk = (nc-1)/geo.geon.sizeNode[dir]+1;
+  const int nc_start = std::min(nc, geo.geon.coorNode[dir] * chunk);
+  const int nc_stop = std::min(nc, nc_start + chunk);
+  const int nc_size = nc_stop - nc_start;
+  Complex* fftdatac = (Complex*)fftw_malloc(nc_size * sizec * sizeof(Complex));
+  Field<M> fields; fields.init(geo);
+  Field<M> fieldr; fieldr.init(geo);
+  Geometry geos; geos.init(geo);
+  const int fieldsize = getDataSize(fields) / sizeof(double);
+  fields = field;
+  for (int i = 0; i < geos.geon.sizeNode[dir]; i++) {
+#pragma omp parallel for
+    for (int index = 0; index < geos.localVolume(); index++) {
+      Coordinate xl; geos.coordinateFromIndex(xl, index);
+      Coordinate xg; geos.coordinateGfL(xg, xl);
+      int nc_index = 0;
+      int nc_offset = mc;
+      for (int mu = 0; mu < 4; mu++) {
+        if (dir != mu) {
+          nc_index += xl[mu] * nc_offset;
+          nc_offset *= geos.nodeSite[mu];
+        }
+      }
+      Complex* pc = (Complex*)&fields.getElem(xl, 0);
+      for (int nci = std::max(0, nc_start-nc_index); nci < std::min(mc, nc_stop-nc_index); nci++) {
+        fftdatac[nci+nc_index-nc_start + nc_size*xg[dir]] = pc[nci];
+      }
+    }
+    if (i == geos.geon.sizeNode[dir] - 1) {
+      break;
+    }
+    {
+      TIMER_FLOPS("fieldComplexDirFFT_getData");
+      timer.flops += getDataSize(fields);
+      getDataPlusMu(getData(fieldr), getData(fields), dir);
+    }
+    swap(fields, fieldr);
+    geos.geon.coorNode[dir] = mod(geos.geon.coorNode[dir] + 1, geos.geon.sizeNode[dir]);
+  }
+  {
+    TIMER("fieldComplexDirFFT_fftw");
+    fftw_execute_dft(fftplan, (fftw_complex*)fftdatac, (fftw_complex*)fftdatac);
+  }
+  geos.geon.coorNode[dir] = mod(geo.geon.coorNode[dir] + 1, geos.geon.sizeNode[dir]);
+  for (int i = 0; i < geos.geon.sizeNode[dir]; i++) {
+#pragma omp parallel for
+    for (int index = 0; index < geos.localVolume(); index++) {
+      Coordinate xl; geos.coordinateFromIndex(xl, index);
+      Coordinate xg; geos.coordinateGfL(xg, xl);
+      int nc_index = 0;
+      int nc_offset = mc;
+      for (int mu = 0; mu < 4; mu++) {
+        if (dir != mu) {
+          nc_index += xl[mu] * nc_offset;
+          nc_offset *= geos.nodeSite[mu];
+        }
+      }
+      Complex* pc = (Complex*)&fields.getElem(xl, 0);
+      for (int nci = std::max(0, nc_start-nc_index); nci < std::min(mc, nc_stop-nc_index); nci++) {
+        pc[nci] = fftdatac[nci+nc_index-nc_start + nc_size*xg[dir]];
+      }
+    }
+    if (i == geos.geon.sizeNode[dir] - 1) {
+      break;
+    }
+    {
+      TIMER_FLOPS("fieldComplexDirFFT_getData");
+      timer.flops += getDataSize(fields);
+      getDataPlusMu(getData(fieldr), getData(fields), dir);
+    }
+    swap(fields, fieldr);
+    geos.geon.coorNode[dir] = mod(geos.geon.coorNode[dir] + 1, geos.geon.sizeNode[dir]);
+  }
+  field = fields;
+  fftw_free(fftdatac);
+}
+
+template<class M>
+void fieldComplexFFT(Field<M>& field, const bool isForward = true) {
+  // forward compute
+  // field(k) <- \sum_{x} exp( - ii * 2 pi * k * x ) field(x)
+  // backwards compute
+  // field(x) <- \sum_{k} exp( + ii * 2 pi * k * x ) field(k)
+  int dirs[4];
+  for (int dir = 0; dir < 4; dir++) {
+    memset(dirs, 0, 4*sizeof(int));
+    dirs[dir] = isForward ? 1 : -1;
+    fieldComplexDirFFT(field, dirs);
+  }
+}
+
+LQPS_END_NAMESPACE

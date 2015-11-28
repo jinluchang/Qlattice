@@ -184,7 +184,7 @@ inline const GeometryNodeNeighbor& getGeometryNodeNeighbor()
 }
 
 template <class M>
-int getDataDirMu(Vector<M>& recv, Vector<M>& send, const int dir, const int mu)
+int getDataDirMu(Vector<M> recv, const Vector<M>& send, const int dir, const int mu)
   // dir = 0, 1 for Plus dir or Minus dir
   // 0 <= mu < 4 for different directions
 {
@@ -197,7 +197,7 @@ int getDataDirMu(Vector<M>& recv, Vector<M>& send, const int dir, const int mu)
   const int idf = geonb.dest[dir][mu];
   const int idt = geonb.dest[1-dir][mu];
   MPI_Request req;
-  MPI_Isend(send.data(), size, MPI_BYTE, idt, 0, getComm(), &req);
+  MPI_Isend((void*)send.data(), size, MPI_BYTE, idt, 0, getComm(), &req);
   const int ret = MPI_Recv(recv.data(), size, MPI_BYTE, idf, 0, getComm(), MPI_STATUS_IGNORE);
   MPI_Wait(&req, MPI_STATUS_IGNORE);
   return ret;
@@ -208,18 +208,18 @@ int getDataDirMu(Vector<M>& recv, Vector<M>& send, const int dir, const int mu)
 }
 
 template <class M>
-int getDataPlusMu(Vector<M>& recv, Vector<M>& send, const int mu)
+int getDataPlusMu(Vector<M> recv, const Vector<M>& send, const int mu)
 {
   return getDataDirMu(recv, send, 0, mu);
 }
 
 template <class M>
-int getDataMinusMu(Vector<M>& recv, Vector<M>& send, const int mu)
+int getDataMinusMu(Vector<M> recv, const Vector<M>& send, const int mu)
 {
   return getDataDirMu(recv, send, 1, mu);
 }
 
-inline int sumVector(Vector<long>& recv, const Vector<long>& send)
+inline int sumVector(Vector<long> recv, const Vector<long>& send)
 {
   assert(recv.size() == send.size());
 #ifdef USE_MULTI_NODE
@@ -230,7 +230,7 @@ inline int sumVector(Vector<long>& recv, const Vector<long>& send)
 #endif
 }
 
-inline int sumVector(Vector<double>& recv, const Vector<double>& send)
+inline int sumVector(Vector<double> recv, const Vector<double>& send)
 {
   assert(recv.size() == send.size());
 #ifdef USE_MULTI_NODE
@@ -242,7 +242,7 @@ inline int sumVector(Vector<double>& recv, const Vector<double>& send)
 }
 
 template <class M>
-int sumVector(Vector<M>& vec)
+int sumVector(Vector<M> vec)
 {
   std::vector<M> tmp(vec.size());
   assign(tmp, vec);
@@ -250,7 +250,7 @@ int sumVector(Vector<M>& vec)
 }
 
 template <class M>
-void allGather(Vector<M>& recv, const Vector<M>& send)
+void allGather(Vector<M> recv, const Vector<M>& send)
 {
   assert(recv.size() == send.size() * getNumNode());
   const long sendsize = send.size() * sizeof(M);
@@ -265,28 +265,27 @@ void allGather(Vector<M>& recv, const Vector<M>& send)
 inline void syncNode()
 {
   long v;
-  Vector<long> vec(&v,1);
-  sumVector(vec);
+  sumVector(Vector<long>(&v,1));
 }
 
-inline void start(int* argc, char** argv[], const Coordinate dims)
+inline void begin(int* argc, char** argv[], const Coordinate dims)
   // can also initialize by set getPtrComm() to point to some externally constructed COMM object
   // eg. getPtrComm() = &QMP_COMM_WORLD;
 {
   MPI_Init(argc, argv);
   int numNode;
   MPI_Comm_size(MPI_COMM_WORLD, &numNode);
-  DisplayInfo(cname, "start", "MPI Initialized. NumNode=%d\n", numNode);
+  DisplayInfo(cname, "begin", "MPI Initialized. NumNode=%d\n", numNode);
   getPtrComm() = &getLqpsComm();
   const Coordinate periods({ 1, 1, 1, 1 });
   MPI_Cart_create(MPI_COMM_WORLD, DIM, (int*)dims.data(), (int*)periods.data(), 1, &getLqpsComm());
-  DisplayInfo(cname, "start", "MPI Cart created. GeometryNode=\n%s\n", show(getGeometryNode()).c_str());
+  DisplayInfo(cname, "begin", "MPI Cart created. GeometryNode=\n%s\n", show(getGeometryNode()).c_str());
 }
 
 inline void end()
 {
-  DisplayInfo(cname, "end", "MPI Finalizing.\n");
   MPI_Finalize();
+  DisplayInfo(cname, "end", "MPI Finalized.\n");
 }
 
 LQPS_END_NAMESPACE

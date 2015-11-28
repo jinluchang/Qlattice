@@ -6,7 +6,8 @@
 
 LQPS_START_NAMESPACE
 
-struct Geometry {
+struct Geometry
+{
   bool initialized;
   //
   GeometryNode geon;
@@ -153,6 +154,14 @@ struct Geometry {
   // 0 <= index < localVolume()
   //
   bool isOnNode(const Coordinate& x) const
+  {
+    return -expansionLeft[0] <= x[0] && x[0] < nodeSite[0] + expansionRight[0]
+    && -expansionLeft[1] <= x[1] && x[1] < nodeSite[1] + expansionRight[1]
+    && -expansionLeft[2] <= x[2] && x[2] < nodeSite[2] + expansionRight[2]
+    && -expansionLeft[3] <= x[3] && x[3] < nodeSite[3] + expansionRight[3];
+  }
+  //
+  bool isLocal(const Coordinate& x) const
   {
     return 0 <= x[0] && x[0] < nodeSite[0]
     && 0 <= x[1] && x[1] < nodeSite[1]
