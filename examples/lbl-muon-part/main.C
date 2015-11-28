@@ -35,13 +35,13 @@ void lblMuonPart()
   setField(f1);
   f2 = f1;
   DisplayInfo(cname, fname, "norm(f1) = %.16E\n", norm(f1));
-  lqps::fieldComplexFFT(f1, true);
+  lqps::fftComplexField(f1, true);
   f1 *= 1.0 / sqrt((double)(geo.localVolume() * geo.geon.numNode));
   DisplayInfo(cname, fname, "norm(f1) = %.16E\n", norm(f1));
   f3 = f2;
   f3 -= f1;
   DisplayInfo(cname, fname, "norm(f3) = %.16E\n", norm(f3));
-  lqps::fieldComplexFFT(f1, false);
+  lqps::fftComplexField(f1, false);
   f1 *= 1.0 / sqrt((double)(geo.localVolume() * geo.geon.numNode));
   DisplayInfo(cname, fname, "norm(f1) = %.16E\n", norm(f1));
   f3 = f2;

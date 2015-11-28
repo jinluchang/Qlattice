@@ -13,17 +13,24 @@
 
 LQPS_START_NAMESPACE
 
-struct fieldComplexDirFFT_Plan
+struct fftComplexFieldPlan
 {
   Geometry geo; // geo.isOnlyLocal == true
   int mc;       // geo.multiplicity * sizeof(M) / sizeof(Complex)
   int dirs[4];  // 0 is no transform, 1 is forward transform, -1 is backward transform
   //
-  bool isMatch(const Geometry& geo_, const int mc_, const int dirs_[4]) {
+  static const char* cname()
+  {
+    return "fftComplexFieldPlan";
+  }
+  //
+  bool isMatch(const Geometry& geo_, const int mc_, const int dirs_[4])
+  {
     return geo_ == geo && mc_ == mc && 0 == memcmp(dirs_, dirs, 4*sizeof(int));
   }
   //
-  static bool check(const Geometry& geo_, const int mc_, const int dirs_[4]) {
+  static bool check(const Geometry& geo_, const int mc_, const int dirs_[4])
+  {
     assert(0 < geo_.multiplicity);
     bool b = true;
     b = b && geo_.isOnlyLocal();
@@ -34,17 +41,18 @@ struct fieldComplexDirFFT_Plan
     return b;
   }
   //
-  static fieldComplexDirFFT_Plan& getPlan(const Geometry& geo_, const int mc_, const int dirs_[4]) {
+  static fftComplexFieldPlan& getPlan(const Geometry& geo_, const int mc_, const int dirs_[4])
+  {
     assert(check(geo_, mc_, dirs_));
-    static std::vector<fieldComplexDirFFT_Plan> planV(100);
+    static std::vector<fftComplexFieldPlan> planV(100);
     static int next_plan_index = 0;
     for (int i = 0; i < planV.size(); i++) {
       if (planV[i].isMatch(geo_, mc_, dirs_)) {
         return planV[i];
       }
     }
-    DisplayInfo("fieldComplexDirFFT_Plan", "getPlan", "start to make a new fft plan with id = %d\n", next_plan_index);
-    fieldComplexDirFFT_Plan& plan = planV[next_plan_index];
+    DisplayInfo(cname(), "getPlan", "start to make a new fft plan with id = %d\n", next_plan_index);
+    fftComplexFieldPlan& plan = planV[next_plan_index];
     next_plan_index++;
     next_plan_index %= planV.size();
     plan.end();
@@ -52,22 +60,26 @@ struct fieldComplexDirFFT_Plan
     return plan;
   }
   //
-  fieldComplexDirFFT_Plan() {
+  fftComplexFieldPlan()
+  {
   }
   //
-  ~fieldComplexDirFFT_Plan() {
+  ~fftComplexFieldPlan()
+  {
     end();
   }
   //
-  void end() {
+  void end()
+  {
     if (geo.initialized) {
-      DisplayInfo("fieldComplexDirFFT_Plan", "end", "free a plan\n");
+      DisplayInfo(cname(), "end", "free a plan\n");
       fftw_destroy_plan(fftplan);
       geo.initialized = false;
     }
   }
   //
-  void init(const Geometry& geo_, const int mc_, const int dirs_[4]) {
+  void init(const Geometry& geo_, const int mc_, const int dirs_[4])
+  {
     assert(check(geo_, mc_, dirs_));
     geo = geo_;
     mc = mc_;
@@ -90,7 +102,7 @@ struct fieldComplexDirFFT_Plan
     const int nc_size = nc_stop - nc_start;
     fftw_init_threads();
     fftw_plan_with_nthreads(omp_get_max_threads());
-    DisplayInfo("fieldComplexDirFFT_Plan", "init", "malloc %d\n", nc_size * sizec * sizeof(Complex));
+    DisplayInfo("fftComplexFieldPlan", "init", "malloc %d\n", nc_size * sizec * sizeof(Complex));
     Complex* fftdatac = (Complex*)fftw_malloc(nc_size * sizec * sizeof(Complex));
     const int rank = 1;
     const int n[1] = { sizec };
@@ -102,18 +114,19 @@ struct fieldComplexDirFFT_Plan
         (fftw_complex*)fftdatac, n, stride, dist,
         isForward ? FFTW_FORWARD : FFTW_BACKWARD, FFTW_ESTIMATE);
     fftw_free(fftdatac);
-    DisplayInfo("fieldComplexDirFFT_Plan", "init", "free %d\n", nc_size * sizec * sizeof(Complex));
+    DisplayInfo("fftComplexFieldPlan", "init", "free %d\n", nc_size * sizec * sizeof(Complex));
   }
   //
   fftw_plan fftplan;
 };
 
 template<class M>
-void fieldComplexDirFFT(Field<M>& field, const int dirs[4]) {
-  TIMER("fieldComplexDirFFT");
+void fftComplexFieldDirs(Field<M>& field, const int dirs[4])
+{
+  TIMER("fftComplexFieldDirs");
   Geometry geo = field.geo; geo.resize(0);
   const int mc = geo.multiplicity * sizeof(M) / sizeof(Complex);
-  fieldComplexDirFFT_Plan& plan = fieldComplexDirFFT_Plan::getPlan(geo, mc, dirs);
+  fftComplexFieldPlan& plan = fftComplexFieldPlan::getPlan(geo, mc, dirs);
   fftw_plan& fftplan = plan.fftplan;
   // FIXME currently can only transform in one direction
   int dir = 0;
@@ -159,7 +172,7 @@ void fieldComplexDirFFT(Field<M>& field, const int dirs[4]) {
       break;
     }
     {
-      TIMER_FLOPS("fieldComplexDirFFT_getData");
+      TIMER_FLOPS("fftComplexFieldDirs_getData");
       timer.flops += getDataSize(fields);
       getDataPlusMu(getData(fieldr), getData(fields), dir);
     }
@@ -167,7 +180,7 @@ void fieldComplexDirFFT(Field<M>& field, const int dirs[4]) {
     geos.geon.coorNode[dir] = mod(geos.geon.coorNode[dir] + 1, geos.geon.sizeNode[dir]);
   }
   {
-    TIMER("fieldComplexDirFFT_fftw");
+    TIMER("fftComplexFieldDirs_fftw");
     fftw_execute_dft(fftplan, (fftw_complex*)fftdatac, (fftw_complex*)fftdatac);
   }
   geos.geon.coorNode[dir] = mod(geo.geon.coorNode[dir] + 1, geos.geon.sizeNode[dir]);
@@ -193,7 +206,7 @@ void fieldComplexDirFFT(Field<M>& field, const int dirs[4]) {
       break;
     }
     {
-      TIMER_FLOPS("fieldComplexDirFFT_getData");
+      TIMER_FLOPS("fftComplexFieldDirs_getData");
       timer.flops += getDataSize(fields);
       getDataPlusMu(getData(fieldr), getData(fields), dir);
     }
@@ -205,7 +218,8 @@ void fieldComplexDirFFT(Field<M>& field, const int dirs[4]) {
 }
 
 template<class M>
-void fieldComplexFFT(Field<M>& field, const bool isForward = true) {
+void fftComplexField(Field<M>& field, const bool isForward = true)
+{
   // forward compute
   // field(k) <- \sum_{x} exp( - ii * 2 pi * k * x ) field(x)
   // backwards compute
@@ -214,7 +228,7 @@ void fieldComplexFFT(Field<M>& field, const bool isForward = true) {
   for (int dir = 0; dir < 4; dir++) {
     memset(dirs, 0, 4*sizeof(int));
     dirs[dir] = isForward ? 1 : -1;
-    fieldComplexDirFFT(field, dirs);
+    fftComplexFieldDirs(field, dirs);
   }
 }
 
