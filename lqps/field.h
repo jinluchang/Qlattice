@@ -19,6 +19,11 @@ struct Field
   Geometry geo;
   std::vector<M> field;
   //
+  virtual const char* cname()
+  {
+    return "Field";
+  }
+  //
   virtual void init()
   {
     initialized = false;

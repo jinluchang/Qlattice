@@ -1,8 +1,8 @@
-#include <iostream>
+#include <lqps/lqps.h>
 
 #include <mpi.h>
 
-#include <lqps/lqps.h>
+#include <iostream>
 
 const char* cname = "Main";
 
@@ -26,9 +26,9 @@ void lblMuonPart()
   lqps::Coordinate totalSite({ 2, 2, 2, 4 });
   lqps::Geometry geo; geo.init(totalSite, 1);
   DisplayInfo(cname, fname, "geo=\n%s\n", lqps::show(geo).c_str());
-  lqps::FieldM<lqps::Complex, 4> f1; f1.init(geo);
-  lqps::FieldM<lqps::Complex, 4> f2; f2.init(geo);
-  lqps::FieldM<lqps::Complex, 4> f3; f3.init(geo);
+  lqps::QedGaugeField f1; f1.init(geo);
+  lqps::QedGaugeField f2; f2.init(geo);
+  lqps::QedGaugeField f3; f3.init(geo);
   lqps::setZero(f1);
   lqps::setZero(f2);
   lqps::setZero(f3);

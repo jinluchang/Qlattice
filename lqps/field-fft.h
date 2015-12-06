@@ -15,21 +15,21 @@ LQPS_START_NAMESPACE
 
 struct fftComplexFieldPlan
 {
-  Geometry geo; // geo.isOnlyLocal == true
-  int mc;       // geo.multiplicity * sizeof(M) / sizeof(Complex)
-  int dirs[4];  // 0 is no transform, 1 is forward transform, -1 is backward transform
+  Geometry geo;    // geo.isOnlyLocal == true
+  int mc;          // geo.multiplicity * sizeof(M) / sizeof(Complex)
+  Coordinate dirs; // 0 is no transform, 1 is forward transform, -1 is backward transform
   //
   static const char* cname()
   {
     return "fftComplexFieldPlan";
   }
   //
-  bool isMatch(const Geometry& geo_, const int mc_, const int dirs_[4])
+  bool isMatch(const Geometry& geo_, const int mc_, const Coordinate& dirs_)
   {
-    return geo_ == geo && mc_ == mc && 0 == memcmp(dirs_, dirs, 4*sizeof(int));
+    return geo_ == geo && mc_ == mc && dirs_ == dirs;
   }
   //
-  static bool check(const Geometry& geo_, const int mc_, const int dirs_[4])
+  static bool check(const Geometry& geo_, const int mc_, const Coordinate& dirs_)
   {
     assert(0 < geo_.multiplicity);
     bool b = true;
@@ -41,7 +41,7 @@ struct fftComplexFieldPlan
     return b;
   }
   //
-  static fftComplexFieldPlan& getPlan(const Geometry& geo_, const int mc_, const int dirs_[4])
+  static fftComplexFieldPlan& getPlan(const Geometry& geo_, const int mc_, const Coordinate dirs_)
   {
     assert(check(geo_, mc_, dirs_));
     static std::vector<fftComplexFieldPlan> planV(100);
@@ -78,12 +78,12 @@ struct fftComplexFieldPlan
     }
   }
   //
-  void init(const Geometry& geo_, const int mc_, const int dirs_[4])
+  void init(const Geometry& geo_, const int mc_, const Coordinate dirs_)
   {
     assert(check(geo_, mc_, dirs_));
     geo = geo_;
     mc = mc_;
-    memcpy(dirs, dirs_, 4*sizeof(int));
+    dirs = dirs_;
     // FIXME currently can only transform in one direction
     int dir = 0;
     bool isForward = true;
@@ -121,7 +121,7 @@ struct fftComplexFieldPlan
 };
 
 template<class M>
-void fftComplexFieldDirs(Field<M>& field, const int dirs[4])
+void fftComplexFieldDirs(Field<M>& field, const Coordinate& dirs)
 {
   TIMER("fftComplexFieldDirs");
   Geometry geo = field.geo; geo.resize(0);
@@ -224,9 +224,9 @@ void fftComplexField(Field<M>& field, const bool isForward = true)
   // field(k) <- \sum_{x} exp( - ii * 2 pi * k * x ) field(x)
   // backwards compute
   // field(x) <- \sum_{k} exp( + ii * 2 pi * k * x ) field(k)
-  int dirs[4];
-  for (int dir = 0; dir < 4; dir++) {
-    memset(dirs, 0, 4*sizeof(int));
+  Coordinate dirs;
+  for (int dir = 0; dir < 4; ++dir) {
+    setZero(dirs);
     dirs[dir] = isForward ? 1 : -1;
     fftComplexFieldDirs(field, dirs);
   }

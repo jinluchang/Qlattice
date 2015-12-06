@@ -8,6 +8,8 @@
 #include <cassert>
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
+#include <cstdarg>
 
 LQPS_START_NAMESPACE
 
@@ -21,11 +23,18 @@ T sqr(const T& x)
   return x * x;
 }
 
+template <class M, unsigned long N>
+void setZero(std::array<M,N>& arr)
+{
+  long size = N * sizeof(M);
+  std::memset(arr.data(), 0, size);
+}
+
 template <class M>
 void setZero(std::vector<M>& vec)
 {
   long size = vec.size() * sizeof(M);
-  memset(vec.data(), 0, size);
+  std::memset(vec.data(), 0, size);
 }
 
 template <class M>
@@ -44,6 +53,18 @@ inline double norm(const double& x)
 inline double norm(const Complex& x)
 {
   return std::norm(x);
+}
+
+template <class M, int N>
+bool operator==(const std::array<M,N>& x, const std::array<M,N>& y)
+{
+  return 0 == memcmp(x.data(), y.data(), N * sizeof(M));
+}
+
+template <class M>
+bool operator==(const std::vector<M>& x, const std::vector<M>& y)
+{
+  return x.size() == y.size() && 0 == memcmp(x.data(), y.data(), x.size() * sizeof(M));
 }
 
 template <class M> struct Vector;
@@ -66,13 +87,13 @@ struct Array
     assert(N == vec.size());
     p = vec.p;
   }
-  Array<M,N>(std::array<M,N>& arr)
+  Array<M,N>(const std::array<M,N>& arr)
   {
-    p = arr.data();
+    p = (M*)arr.data();
   }
-  Array<M,N>(M* p_)
+  Array<M,N>(const M* p_)
   {
-    p = p_;
+    p = (M*)p_;
   }
   //
   const M& operator[](int i) const
@@ -136,19 +157,19 @@ struct Vector
     n = N;
   }
   template <int N>
-  Vector<M>(std::array<M,N>& arr)
+  Vector<M>(const std::array<M,N>& arr)
   {
-    p = arr.data();
+    p = (M*)arr.data();
     n = arr.size();
   }
-  Vector<M>(std::vector<M>& vec)
+  Vector<M>(const std::vector<M>& vec)
   {
-    p = vec.data();
+    p = (M*)vec.data();
     n = vec.size();
   }
-  Vector<M>(M* p_, const long n_)
+  Vector<M>(const M* p_, const long n_)
   {
-    p = p_;
+    p = (M*)p_;
     n = n_;
   }
   //

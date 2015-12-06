@@ -5,6 +5,7 @@
 #include <lqps/mpi.h>
 #include <lqps/field.h>
 #include <lqps/field-fft.h>
+#include <lqps/qed.h>
 
 LQPS_START_NAMESPACE
 
