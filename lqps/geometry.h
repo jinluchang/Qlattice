@@ -193,6 +193,11 @@ struct Geometry
     return nodeSite[mu] * geon.sizeNode[mu];
   }
   //
+  long totalVolume() const
+  {
+    return localVolume() * geon.numNode;
+  }
+  //
   void coordinateGfL(Coordinate& xg, const Coordinate& xl) const
   {
     for (int mu = 0; mu < 4; mu++) {

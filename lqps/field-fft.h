@@ -19,7 +19,7 @@ struct fftComplexFieldPlan
   int mc;          // geo.multiplicity * sizeof(M) / sizeof(Complex)
   Coordinate dirs; // 0 is no transform, 1 is forward transform, -1 is backward transform
   //
-  static const char* cname()
+  virtual const char* cname()
   {
     return "fftComplexFieldPlan";
   }
@@ -43,6 +43,7 @@ struct fftComplexFieldPlan
   //
   static fftComplexFieldPlan& getPlan(const Geometry& geo_, const int mc_, const Coordinate dirs_)
   {
+    TIMER("fftComplexFieldPlan::getPlan");
     assert(check(geo_, mc_, dirs_));
     static std::vector<fftComplexFieldPlan> planV(100);
     static int next_plan_index = 0;
@@ -51,7 +52,7 @@ struct fftComplexFieldPlan
         return planV[i];
       }
     }
-    DisplayInfo(cname(), "getPlan", "start to make a new fft plan with id = %d\n", next_plan_index);
+    DisplayInfo("fftComplexFieldPlan", "getPlan", "start to make a new fft plan with id = %d\n", next_plan_index);
     fftComplexFieldPlan& plan = planV[next_plan_index];
     next_plan_index++;
     next_plan_index %= planV.size();
@@ -80,6 +81,7 @@ struct fftComplexFieldPlan
   //
   void init(const Geometry& geo_, const int mc_, const Coordinate dirs_)
   {
+    TIMER_VERBOSE("fftComplexFieldPlan::init");
     assert(check(geo_, mc_, dirs_));
     geo = geo_;
     mc = mc_;

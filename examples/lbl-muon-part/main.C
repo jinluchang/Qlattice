@@ -1,7 +1,5 @@
 #include <lqps/lqps.h>
 
-#include <mpi.h>
-
 #include <iostream>
 
 const char* cname = "Main";
@@ -34,19 +32,22 @@ void lblMuonPart()
   lqps::setZero(f3);
   setField(f1);
   f2 = f1;
-  DisplayInfo(cname, fname, "norm(f1) = %.16E\n", norm(f1));
+  DisplayInfo(cname, fname, "norm(f1) = %.16E\n", lqps::norm(f1));
   lqps::fftComplexField(f1, true);
-  f1 *= 1.0 / sqrt((double)(geo.localVolume() * geo.geon.numNode));
-  DisplayInfo(cname, fname, "norm(f1) = %.16E\n", norm(f1));
+  f1 *= 1.0 / sqrt((double)geo.totalVolume());
+  DisplayInfo(cname, fname, "norm(f1) = %.16E\n", lqps::norm(f1));
   f3 = f2;
   f3 -= f1;
-  DisplayInfo(cname, fname, "norm(f3) = %.16E\n", norm(f3));
+  DisplayInfo(cname, fname, "norm(f3) = %.16E\n", lqps::norm(f3));
   lqps::fftComplexField(f1, false);
-  f1 *= 1.0 / sqrt((double)(geo.localVolume() * geo.geon.numNode));
-  DisplayInfo(cname, fname, "norm(f1) = %.16E\n", norm(f1));
+  f1 *= 1.0 / sqrt((double)geo.totalVolume());
+  DisplayInfo(cname, fname, "norm(f1) = %.16E\n", lqps::norm(f1));
   f3 = f2;
   f3 -= f1;
-  DisplayInfo(cname, fname, "norm(f3) = %.16E\n", norm(f3));
+  DisplayInfo(cname, fname, "norm(f3) = %.16E\n", lqps::norm(f3));
+  f3 = f2;
+  lqps::propPhotonInvert(f3, { 0.0, 0.0, 0.0, 0.0 });
+  DisplayInfo(cname, fname, "norm(f3) = %.16E\n", lqps::norm(f3));
 }
 
 int main(int argc, char* argv[])

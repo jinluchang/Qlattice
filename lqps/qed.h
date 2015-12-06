@@ -16,6 +16,7 @@ struct QedGaugeField : FieldM<Complex,DIM>
 void propMomPhotonInvert(QedGaugeField& qgf, const std::array<double,4>& momtwist)
   // Feynman Gauge
   // All spatial zero mode removed.
+  // qgf in momentum space.
 {
   TIMER("propMomPhotonInvert");
   const Geometry& geo = qgf.geo;
@@ -41,6 +42,19 @@ void propMomPhotonInvert(QedGaugeField& qgf, const std::array<double,4>& momtwis
       }
     }
   }
+}
+
+void propPhotonInvert(QedGaugeField& qgf, const std::array<double,4>& momtwist)
+  // Feynman Gauge
+  // All spatial zero mode removed.
+  // qgf in coordinate space.
+{
+  TIMER("propPhotonInvert");
+  const Geometry& geo = qgf.geo;
+  fftComplexField(qgf, true);
+  propMomPhotonInvert(qgf, momtwist);
+  fftComplexField(qgf, false);
+  qgf *= 1.0 / geo.totalVolume();
 }
 
 LQPS_END_NAMESPACE
