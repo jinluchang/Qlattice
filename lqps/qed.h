@@ -25,9 +25,7 @@ struct ComplexScalerField : FieldM<Complex,1>
   }
 };
 
-struct SpinMatrix : Eigen::Matrix<Complex,4,4>
-{
-};
+using SpinMatrix = Eigen::Matrix<Complex,4,4>;
 
 inline void setZero(SpinMatrix& sm)
 {
@@ -36,15 +34,32 @@ inline void setZero(SpinMatrix& sm)
 
 inline void setUnit(SpinMatrix& sm, const Complex& coef = 1.0)
 {
-  sm.setConstant(coef);
+  setZero(sm);
+  for (int i = 0; i < sm.rows() && i < sm.cols(); ++i) {
+    sm(i,i) = coef;
+  }
+}
+
+inline double norm(const SpinMatrix& sm)
+{
+  return sm.squaredNorm();
+}
+
+inline std::string show(const SpinMatrix& sm)
+{
+  std::ostringstream out;
+  out << sm;
+  return out.str();
 }
 
 struct SpinMatrixConstants
 {
+  SpinMatrix unit;
   std::array<SpinMatrix,4> gammas;
   // Not using CPS's convention, but a more standard one.
   SpinMatrix gamma5;
   // Same as CPS's gamma5
+  std::array<SpinMatrix,3> capSigmas;
   //
   SpinMatrixConstants()
   {
@@ -53,6 +68,11 @@ struct SpinMatrixConstants
   //
   void init()
   {
+    unit <<
+        1,   0,   0,   0,
+        0,   1,   0,   0,
+        0,   0,   1,   0,
+        0,   0,   0,   1;
     // gamma_x
     gammas[0] <<
         0,   0,   0,   1,
@@ -69,8 +89,8 @@ struct SpinMatrixConstants
     gammas[2] <<
         0,   0,   1,   0,
         0,   0,   0,  -1,
-        1,   0,   0,   0,
-        0,  -1,   0,   0;
+       -1,   0,   0,   0,
+        0,   1,   0,   0;
     gammas[0] *= -ii;
     gammas[1] *= -ii;
     gammas[2] *= -ii;
@@ -86,6 +106,24 @@ struct SpinMatrixConstants
         0,   1,   0,   0,
         0,   0,  -1,   0,
         0,   0,   0,  -1;
+    // Sigma_x
+    capSigmas[0] <<
+        0,   1,   0,   0,
+        1,   0,   0,   0,
+        0,   0,   0,   1,
+        0,   0,   1,   0;
+    // Sigma_y
+    capSigmas[1] <<
+        0, -ii,   0,   0,
+       ii,   0,   0,   0,
+        0,   0,   0, -ii,
+        0,   0,  ii,   0;
+    // Sigma_z
+    capSigmas[2] <<
+        1,   0,   0,   0,
+        0,  -1,   0,   0,
+        0,   0,   1,   0,
+        0,   0,   0,  -1;
   }
   //
   static const SpinMatrixConstants& getInstance()
@@ -94,6 +132,10 @@ struct SpinMatrixConstants
     return smcs;
   }
   //
+  static const SpinMatrix& getUnit()
+  {
+    return getInstance().unit;
+  }
   static const SpinMatrix& getGamma(int mu)
   {
     assert(0 <= mu && mu < 4);
@@ -102,6 +144,10 @@ struct SpinMatrixConstants
   static const SpinMatrix& getGamma5()
   {
     return getInstance().gamma5;
+  }
+  static const SpinMatrix& getCapSigma(int i)
+  {
+    return getInstance().capSigmas[i];
   }
 };
 
@@ -132,12 +178,12 @@ inline void propMomPhotonInvert(QedGaugeField& egf, const std::array<double,4>& 
       s2 += 4.0 * sqr(std::sin(kk[i] / 2.0));
     }
     if (0.0 == kk[0] && 0.0 == kk[1] && 0.0 == kk[2]) {
-      for (int mu = 0; mu < DIM; ++mu) {
+      for (int mu = 0; mu < geo.multiplicity; ++mu) {
         egf.getElem(kl, mu) *= 0.0;
       }
     } else {
       double s2inv = 1.0 / s2;
-      for (int mu = 0; mu < geo.multiplicity; mu++) {
+      for (int mu = 0; mu < geo.multiplicity; ++mu) {
         egf.getElem(kl, mu) *= s2inv;
       }
     }
@@ -173,7 +219,7 @@ inline void propMomComplexScalerInvert(ComplexScalerField& csf, const double mas
       s2 += 4.0 * sqr(std::sin(kk[i] / 2.0));
     }
     double s2inv = 1.0 / s2;
-    for (int mu = 0; mu < geo.multiplicity; mu++) {
+    for (int mu = 0; mu < geo.multiplicity; ++mu) {
       csf.getElem(kl, mu) *= s2inv;
     }
   }
@@ -220,13 +266,13 @@ inline void propMomSpinPropagator4d(SpinPropagator4d& sp4d, const double mass, c
     ipgm *= -ii;
     ipgm += m;
     ipgm *= lwa / (p2 + sqr(mass * lwa));
-    sp4d.getElem(kl, 0) *= ipgm;
+    sp4d.getElem(kl) = ipgm * sp4d.getElem(kl);
   }
 }
 
 inline void propSpinPropagator4d(SpinPropagator4d& sp4d, const double mass, const std::array<double,4>& momtwist)
 {
-  TIMER("propComplexScalerInvert");
+  TIMER("propSpinPropagator4d");
   const Geometry& geo = sp4d.geo;
   fftComplexField(sp4d, true);
   propMomSpinPropagator4d(sp4d, mass, momtwist);
@@ -254,7 +300,8 @@ inline void setBoxSourcePlusM(SpinPropagator4d& f, const Complex& coef, const Co
 #pragma omp parallel for
   for (int index = 0; index < geo.localVolume(); ++index) {
     Coordinate xl; geo.coordinateFromIndex(xl, index);
-    if (xg1 <= xl && xl < xg2) {
+    Coordinate xg; geo.coordinateGfL(xg, xl);
+    if (xg1 <= xg && xg < xg2) {
       f.getElem(xl) += sm;
     }
   }
@@ -279,13 +326,11 @@ inline void sequentialPhotonSpinPropagatorPlusM(
 #pragma omp parallel for
   for (int index = 0; index < geo.localVolume(); ++index) {
     Coordinate xl; geo.coordinateFromIndex(xl, index);
-    SpinMatrix tmp;
-    for (int mu = 0; mu < 4; mu++) {
+    for (int mu = 0; mu < DIM; mu++) {
       // a = A_\mu(x)
       Complex a = egf.getElem(xl, mu);
       // tmp = \gamma_\mu \psi(x)
-      setZero(tmp);
-      tmp += SpinMatrixConstants::getGamma(mu) * sol.getElem(xl);
+      SpinMatrix tmp = SpinMatrixConstants::getGamma(mu) * sol.getElem(xl);
       // tmp = coef * \gamma_\mu A_\mu(x) \psi(x)
       tmp *= a * coef;
       src.getElem(xl) += tmp;
@@ -293,7 +338,7 @@ inline void sequentialPhotonSpinPropagatorPlusM(
   }
 }
 
-inline SpinMatrix contractSpinPropagator(const SpinPropagator4d& snk, const SpinPropagator4d& src)
+inline SpinMatrix contractSpinPropagator4d(const SpinPropagator4d& snk, const SpinPropagator4d& src)
 {
   TIMER("contractSpinPropagator");
   const Geometry& geo = src.geo;

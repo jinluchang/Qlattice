@@ -164,6 +164,13 @@ struct Array
   }
 };
 
+template <class M, int N>
+void setZero(Array<M,N> arr)
+{
+  long size = N * sizeof(M);
+  std::memset(arr.data(), 0, size);
+}
+
 template <class M>
 struct Vector
 {
@@ -247,6 +254,25 @@ struct Vector
     return *this;
   }
 };
+
+template <class M>
+void setZero(Vector<M> vec)
+{
+  long size = vec.size() * sizeof(M);
+  std::memset(vec.data(), 0, size);
+}
+
+template <class M, int N>
+Vector<M> getData(Array<M,N> arr)
+{
+  return Vector<M>(arr);
+}
+
+template <class M>
+Vector<M> getData(Vector<M> vec)
+{
+  return vec;
+}
 
 template <class M>
 Vector<M> getData(const std::vector<M>& vec)
@@ -404,11 +430,11 @@ inline std::string show(const long& x) {
 }
 
 inline std::string show(const double& x) {
-  std::ostringstream out;
-  out.precision(16);
-  out << std::scientific;
-  out << x;
-  return out.str();
+  return ssprintf("%24.16E", x);
+}
+
+inline std::string show(const Complex& x) {
+  return ssprintf("(%24.16E + %24.16E j)", x.real(), x.imag());
 }
 
 inline std::string show(const bool& x) {
