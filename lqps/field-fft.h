@@ -165,7 +165,7 @@ void fftComplexFieldDirs(Field<M>& field, const Coordinate& dirs)
           nc_offset *= geos.nodeSite[mu];
         }
       }
-      Complex* pc = (Complex*)&fields.getElem(xl, 0);
+      Complex* pc = (Complex*)fields.getElems(xl).data();
       for (int nci = std::max(0, nc_start-nc_index); nci < std::min(mc, nc_stop-nc_index); nci++) {
         fftdatac[nci+nc_index-nc_start + nc_size*xg[dir]] = pc[nci];
       }
@@ -199,7 +199,7 @@ void fftComplexFieldDirs(Field<M>& field, const Coordinate& dirs)
           nc_offset *= geos.nodeSite[mu];
         }
       }
-      Complex* pc = (Complex*)&fields.getElem(xl, 0);
+      Complex* pc = (Complex*)fields.getElems(xl).data();
       for (int nci = std::max(0, nc_start-nc_index); nci < std::min(mc, nc_stop-nc_index); nci++) {
         pc[nci] = fftdatac[nci+nc_index-nc_start + nc_size*xg[dir]];
       }

@@ -21,9 +21,22 @@ void setField(lqps::Field<lqps::Complex>& f)
 void lblMuonPart()
 {
   TIMER("lblMuonPart");
-  lqps::Coordinate totalSite({ 2, 2, 2, 4 });
+  lqps::Coordinate totalSite({ 2, 2, 2, 16 });
   lqps::Geometry geo; geo.init(totalSite, 1);
   DisplayInfo(cname, fname, "geo=\n%s\n", lqps::show(geo).c_str());
+  std::array<double,4> momtwist({ 0.0, 0.0, 0.0, 0.0 });
+  lqps::Coordinate xg1({ 0, 0, 0, 0 });
+  lqps::Coordinate xg2({ 0, 0, 0, 0 });
+  lqps::Coordinate xg3({ 0, 0, 0, 0 });
+  lqps::QedGaugeField egf1; egf1.init(geo);
+  lqps::QedGaugeField egf2; egf2.init(geo);
+  lqps::QedGaugeField egf3; egf3.init(geo);
+  lqps::setPointSourcePlusM(egf1, 1.0, xg1, 0);
+  lqps::setPointSourcePlusM(egf2, 1.0, xg2, 0);
+  lqps::setPointSourcePlusM(egf3, 1.0, xg3, 0);
+  //
+  //
+  //
   lqps::QedGaugeField f1; f1.init(geo);
   lqps::QedGaugeField f2; f2.init(geo);
   lqps::QedGaugeField f3; f3.init(geo);

@@ -163,10 +163,8 @@ struct Geometry
   //
   bool isLocal(const Coordinate& x) const
   {
-    return 0 <= x[0] && x[0] < nodeSite[0]
-    && 0 <= x[1] && x[1] < nodeSite[1]
-    && 0 <= x[2] && x[2] < nodeSite[2]
-    && 0 <= x[3] && x[3] < nodeSite[3];
+    static const Coordinate origin({ 0, 0, 0, 0 });
+    return origin <= x && x < nodeSite;
   }
   //
   bool isOnlyLocal() const

@@ -30,6 +30,16 @@ void setZero(std::array<M,N>& arr)
   std::memset(arr.data(), 0, size);
 }
 
+void setUnit(double& x, const double& coef = 1.0)
+{
+  x = coef;
+}
+
+void setUnit(Complex& x, const Complex& coef = 1.0)
+{
+  x = coef;
+}
+
 template <class M>
 void setZero(std::vector<M>& vec)
 {
@@ -65,6 +75,26 @@ template <class M>
 bool operator==(const std::vector<M>& x, const std::vector<M>& y)
 {
   return x.size() == y.size() && 0 == memcmp(x.data(), y.data(), x.size() * sizeof(M));
+}
+
+inline bool operator<(const Coordinate& x, const Coordinate& y)
+{
+  return x[0] < y[0] && x[1] < y[1] && x[2] < y[2] && x[3] < y[3];
+}
+
+inline bool operator<=(const Coordinate& x, const Coordinate& y)
+{
+  return x[0] <= y[0] && x[1] <= y[1] && x[2] <= y[2] && x[3] <= y[3];
+}
+
+inline bool operator>(const Coordinate& x, const Coordinate& y)
+{
+  return x[0] > y[0] && x[1] > y[1] && x[2] > y[2] && x[3] > y[3];
+}
+
+inline bool operator>=(const Coordinate& x, const Coordinate& y)
+{
+  return x[0] >= y[0] && x[1] >= y[1] && x[2] >= y[2] && x[3] >= y[3];
 }
 
 template <class M> struct Vector;

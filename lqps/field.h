@@ -102,6 +102,17 @@ struct Field
     return field[offset];
   }
   //
+  M& getElem(const Coordinate& x)
+  {
+    assert(1 == geo.multiplicity);
+    return getElem(x,0);
+  }
+  const M& getElem(const Coordinate& x) const
+  {
+    assert(1 == geo.multiplicity);
+    return getElem(x,0);
+  }
+  //
   Vector<M> getElems(const Coordinate& x) const
   {
     assert(geo.isOnNode(x));
