@@ -149,7 +149,7 @@ void lblShowMuonPartPointSrc(const lqps::Geometry& geo, const int tsnk, const in
 void lblMuonPart()
 {
   TIMER("lblMuonPart");
-  lqps::Coordinate totalSite({ 6, 6, 6, 128 });
+  lqps::Coordinate totalSite({ 16, 16, 16, 64 });
   lqps::Geometry geo; geo.init(totalSite, 1);
   DisplayInfo(cname, fname, "geo =\n%s\n", lqps::show(geo).c_str());
   std::array<double,4> momtwist({ 0.0, 0.0, 0.0, 0.0 });
