@@ -159,7 +159,7 @@ struct SpinPropagator4d : FieldM<SpinMatrix,1>
   }
 };
 
-inline void propMomPhotonInvert(QedGaugeField& egf, const std::array<double,4>& momtwist)
+inline void propMomPhotonInvert(QedGaugeField& egf, const std::array<double,DIM>& momtwist)
   // Feynman Gauge
   // All spatial zero mode removed.
   // egf in momentum space.
@@ -190,12 +190,12 @@ inline void propMomPhotonInvert(QedGaugeField& egf, const std::array<double,4>& 
   }
 }
 
-inline void propPhotonInvert(QedGaugeField& egf, const std::array<double,4>& momtwist)
+inline void propPhotonInvert(QedGaugeField& egf, const std::array<double,DIM>& momtwist)
   // Feynman Gauge
   // All spatial zero mode removed.
   // egf in coordinate space.
 {
-  TIMER("propPhotonInvert");
+  TIMER_VERBOSE("propPhotonInvert");
   const Geometry& geo = egf.geo;
   fftComplexField(egf, true);
   propMomPhotonInvert(egf, momtwist);
@@ -203,7 +203,7 @@ inline void propPhotonInvert(QedGaugeField& egf, const std::array<double,4>& mom
   egf *= 1.0 / geo.totalVolume();
 }
 
-inline void propMomComplexScalerInvert(ComplexScalerField& csf, const double mass, const std::array<double,4>& momtwist)
+inline void propMomComplexScalerInvert(ComplexScalerField& csf, const double mass, const std::array<double,DIM>& momtwist)
 {
   TIMER("propMomComplexScalerInvert");
   const Geometry& geo = csf.geo;
@@ -225,9 +225,9 @@ inline void propMomComplexScalerInvert(ComplexScalerField& csf, const double mas
   }
 }
 
-inline void propComplexScalerInvert(ComplexScalerField& csf, const double mass, const std::array<double,4>& momtwist)
+inline void propComplexScalerInvert(ComplexScalerField& csf, const double mass, const std::array<double,DIM>& momtwist)
 {
-  TIMER("propComplexScalerInvert");
+  TIMER_VERBOSE("propComplexScalerInvert");
   const Geometry& geo = csf.geo;
   fftComplexField(csf, true);
   propMomComplexScalerInvert(csf, mass, momtwist);
@@ -235,7 +235,7 @@ inline void propComplexScalerInvert(ComplexScalerField& csf, const double mass, 
   csf *= 1.0 / geo.totalVolume();
 }
 
-inline void propMomSpinPropagator4d(SpinPropagator4d& sp4d, const double mass, const std::array<double,4>& momtwist)
+inline void propMomSpinPropagator4d(SpinPropagator4d& sp4d, const double mass, const std::array<double,DIM>& momtwist)
   // DWF infinite L_s
   // M_5 = 1.0
 {
@@ -243,7 +243,7 @@ inline void propMomSpinPropagator4d(SpinPropagator4d& sp4d, const double mass, c
   const Geometry& geo = sp4d.geo;
   const double m5 = 1.0;
 #pragma omp parallel for
-  for (int index = 0; index < geo.localVolume(); ++index) {
+  for (long index = 0; index < geo.localVolume(); ++index) {
     Coordinate kl; geo.coordinateFromIndex(kl, index);
     Coordinate kg; geo.coordinateGfL(kg, kl);
     std::array<double,DIM> kk, ks;
@@ -266,13 +266,26 @@ inline void propMomSpinPropagator4d(SpinPropagator4d& sp4d, const double mass, c
     ipgm *= -ii;
     ipgm += m;
     ipgm *= lwa / (p2 + sqr(mass * lwa));
-    sp4d.getElem(kl) = ipgm * sp4d.getElem(kl);
+    if (1.0e-10 > p2 && 1.0e-10 > lwa) {
+      // if (0.0 != norm(ipgm)) {
+      //   Display(cname, fname, "kg = %s\n", show(kg).c_str());
+      //   Display(cname, fname, "p2         = %13.5E\n", p2);
+      //   Display(cname, fname, "wp         = %13.5E\n", wp);
+      //   Display(cname, fname, "alpha      = %13.5E\n", alpha);
+      //   Display(cname, fname, "lwa        = %13.5E\n", lwa);
+      //   Display(cname, fname, "norm(ipgm) = %13.5E\n", norm(ipgm));
+      // }
+      setZero(sp4d.getElem(kl));
+      continue;
+    }
+    ipgm *= sp4d.getElem(kl);
+    sp4d.getElem(kl) = ipgm;
   }
 }
 
-inline void propSpinPropagator4d(SpinPropagator4d& sp4d, const double mass, const std::array<double,4>& momtwist)
+inline void propSpinPropagator4d(SpinPropagator4d& sp4d, const double mass, const std::array<double,DIM>& momtwist)
 {
-  TIMER("propSpinPropagator4d");
+  TIMER_VERBOSE("propSpinPropagator4d");
   const Geometry& geo = sp4d.geo;
   fftComplexField(sp4d, true);
   propMomSpinPropagator4d(sp4d, mass, momtwist);
@@ -298,7 +311,7 @@ inline void setBoxSourcePlusM(SpinPropagator4d& f, const Complex& coef, const Co
   const Geometry& geo = f.geo;
   SpinMatrix sm; setUnit(sm, coef);
 #pragma omp parallel for
-  for (int index = 0; index < geo.localVolume(); ++index) {
+  for (long index = 0; index < geo.localVolume(); ++index) {
     Coordinate xl; geo.coordinateFromIndex(xl, index);
     Coordinate xg; geo.coordinateGfL(xg, xl);
     if (xg1 <= xg && xg < xg2) {
@@ -324,7 +337,7 @@ inline void sequentialPhotonSpinPropagatorPlusM(
   TIMER("sequentialPhotonSpinPropagatorPlusM");
   const Geometry& geo = sol.geo;
 #pragma omp parallel for
-  for (int index = 0; index < geo.localVolume(); ++index) {
+  for (long index = 0; index < geo.localVolume(); ++index) {
     Coordinate xl; geo.coordinateFromIndex(xl, index);
     for (int mu = 0; mu < DIM; mu++) {
       // a = A_\mu(x)

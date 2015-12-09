@@ -71,7 +71,17 @@ inline double getTotalTime()
   return getTime() - getStartTime();
 }
 
-inline void DisplayInfo(const char *cname, const char *fname, const char *format, ...)
+inline void Display(const char* cname, const char* fname, const char* format, ...)
+{
+  va_list args;
+  va_start(args, format);
+  char* str;
+  vasprintf(&str, format, args);
+  std::printf("%s::%s : %s", cname, fname, str);
+  std::free(str);
+}
+
+inline void DisplayInfo(const char* cname, const char* fname, const char* format, ...)
 {
   static int rank = getRank();
   if (0 != rank) {
@@ -139,7 +149,7 @@ struct TimerInfo
     call_times = 0;
   }
   //
-  void showLast(const char *info = NULL) const
+  void showLast(const char* info = NULL) const
   {
     double total_time = getTotalTime();
     std::string fnameCut;
@@ -153,7 +163,7 @@ struct TimerInfo
         (double)dflops);
   }
   //
-  void showAvg(const char *info = NULL) const
+  void showAvg(const char* info = NULL) const
   {
     double total_time = getTotalTime();
     std::string fnameCut;
@@ -169,7 +179,7 @@ struct TimerInfo
         accumulated_flops / accumulated_time / 1.0E9);
   }
   //
-  void show(const char *info = NULL) const
+  void show(const char* info = NULL) const
   {
     showAvg(info);
   }
@@ -181,7 +191,7 @@ inline bool compareTimeInfoP(const TimerInfo* p1, const TimerInfo* p2)
 }
 
 struct Timer {
-  const char *cname;
+  const char* cname;
   int info_index;
   bool isUsingTotalFlops;
   bool isRunning;

@@ -154,7 +154,7 @@ void fftComplexFieldDirs(Field<M>& field, const Coordinate& dirs)
   fields = field;
   for (int i = 0; i < geos.geon.sizeNode[dir]; i++) {
 #pragma omp parallel for
-    for (int index = 0; index < geos.localVolume(); index++) {
+    for (long index = 0; index < geos.localVolume(); index++) {
       Coordinate xl; geos.coordinateFromIndex(xl, index);
       Coordinate xg; geos.coordinateGfL(xg, xl);
       int nc_index = 0;
@@ -188,7 +188,7 @@ void fftComplexFieldDirs(Field<M>& field, const Coordinate& dirs)
   geos.geon.coorNode[dir] = mod(geo.geon.coorNode[dir] + 1, geos.geon.sizeNode[dir]);
   for (int i = 0; i < geos.geon.sizeNode[dir]; i++) {
 #pragma omp parallel for
-    for (int index = 0; index < geos.localVolume(); index++) {
+    for (long index = 0; index < geos.localVolume(); index++) {
       Coordinate xl; geos.coordinateFromIndex(xl, index);
       Coordinate xg; geos.coordinateGfL(xg, xl);
       int nc_index = 0;
@@ -222,6 +222,7 @@ void fftComplexFieldDirs(Field<M>& field, const Coordinate& dirs)
 template<class M>
 void fftComplexField(Field<M>& field, const bool isForward = true)
 {
+  TIMER("fftComplexField");
   // forward compute
   // field(k) <- \sum_{x} exp( - ii * 2 pi * k * x ) field(x)
   // backwards compute
