@@ -89,12 +89,12 @@ lqps::SpinMatrix lblMuonPartPointSrc(const lqps::Geometry& geo, const int tsnk, 
   lqps::setPointSourcePlusM(egf2, 1.0, xg2, mu2);
   lqps::setPointSourcePlusM(egf3, 1.0, xg3, mu3);
   // ADJUST ME
-  // lqps::propPhotonInvert(egf1, momtwist);
-  // lqps::propPhotonInvert(egf2, momtwist);
-  // lqps::propPhotonInvert(egf3, momtwist);
+  lqps::propPhotonInvert(egf1, momtwist);
+  lqps::propPhotonInvert(egf2, momtwist);
+  lqps::propPhotonInvert(egf3, momtwist);
   // ADJUST ME
-  return lblMuonLine(tsnk, tsrc, egf1, egf2, egf3, mass, momtwist);
-  // return lblMuonLineC(tsnk, tsrc, egf1, egf2, egf3, mass, momtwist);
+  // return lblMuonLine(tsnk, tsrc, egf1, egf2, egf3, mass, momtwist);
+  return lblMuonLineC(tsnk, tsrc, egf1, egf2, egf3, mass, momtwist);
 }
 
 void lblMagneticMomentSpinMatrix(lqps::Array<lqps::SpinMatrix,3> bs, const lqps::Geometry& geo, const int tsnk, const int tsrc,
@@ -147,18 +147,25 @@ void lblShowMuonPartPointSrc(const lqps::Geometry& geo, const int tsnk, const in
   lqps::SpinMatrix muonline = lblMuonPartPointSrc(geo, tsnk, tsrc, xg1, mu1, xg2, mu2, xg3, mu3, mass, momtwist);
   muonline = projPositiveState(muonline);
   DisplayInfo(cname, fname, "norm(muonline) = %.16e\n", lqps::norm(muonline));
+  if (lqps::norm(muonline) < 1.0e-30) {
+    return;
+  }
   DisplayInfo(cname, fname, "muonline =\n%s\n", lqps::show(muonline).c_str());
   DisplayInfo(cname, fname, "linearFit[0] = %s\n", lqps::show(linearFit(muonline,bs[0])).c_str());
   DisplayInfo(cname, fname, "linearFit[1] = %s\n", lqps::show(linearFit(muonline,bs[1])).c_str());
   DisplayInfo(cname, fname, "linearFit[2] = %s\n", lqps::show(linearFit(muonline,bs[2])).c_str());
   DisplayInfo(cname, fname, "linearFitUni = %s\n",
       lqps::show(linearFit(muonline,projPositiveState(lqps::SpinMatrixConstants::getUnit()))).c_str());
+  DisplayInfo(cname, fname, "linearFit[0] * 1e9 = %10.2f\n", 1e9*linearFit(muonline,bs[0]).real());
+  DisplayInfo(cname, fname, "linearFit[1] * 1e9 = %10.2f\n", 1e9*linearFit(muonline,bs[1]).real());
+  DisplayInfo(cname, fname, "linearFit[2] * 1e9 = %10.2f\n", 1e9*linearFit(muonline,bs[2]).real());
 }
 
 void lblMuonPart()
 {
   TIMER("lblMuonPart");
-  lqps::Coordinate totalSite({ 16, 16, 16, 32 });
+  // ADJUST ME
+  lqps::Coordinate totalSite({ 16, 16, 16, 64 });
   lqps::Geometry geo; geo.init(totalSite, 1);
   DisplayInfo(cname, fname, "geo =\n%s\n", lqps::show(geo).c_str());
   std::array<double,lqps::DIM> momtwist({ 0.0, 0.0, 0.0, 0.0 });
@@ -170,24 +177,23 @@ void lblMuonPart()
   DisplayInfo(cname, fname, "bs[0] =\n%s\n", lqps::show(bs[0]).c_str());
   DisplayInfo(cname, fname, "bs[1] =\n%s\n", lqps::show(bs[1]).c_str());
   DisplayInfo(cname, fname, "bs[2] =\n%s\n", lqps::show(bs[2]).c_str());
-  lqps::Coordinate xg1({ 0, 0, 0, geo.totalSite(3)/2 - 4 });
+  // ADJUST ME
+  // lqps::Coordinate xg1({ 0, 0, 0, geo.totalSite(3)/2 + 0 });
+  // lqps::Coordinate xg2({ 0, 0, 0, geo.totalSite(3)/2 + 0 });
+  // lqps::Coordinate xg3({ 0, 0, 0, geo.totalSite(3)/2 + 0 });
+  //
+  lqps::Coordinate xg1({ 1, 1, 1, geo.totalSite(3)/2 + 1 });
   lqps::Coordinate xg2({ 0, 0, 0, geo.totalSite(3)/2 + 0 });
-  lqps::Coordinate xg3({ 0, 0, 0, geo.totalSite(3)/2 + 4 });
-  lqps::Coordinate boundary;
-  for (int i = 0; i < 3; ++i) {
-    boundary[i] = totalSite[i] - 1;
-  }
-  boundary[3] = totalSite[3];
-  lqps::Coordinate xg1m = boundary; lqps::shiftCoordinateSub(xg1m, xg1);
-  lqps::Coordinate xg2m = boundary; lqps::shiftCoordinateSub(xg2m, xg2);
-  lqps::Coordinate xg3m = boundary; lqps::shiftCoordinateSub(xg3m, xg3);
+  lqps::Coordinate xg3({ 0, 0, 0, geo.totalSite(3)/2 + 0 });
+  //
+  // lqps::Coordinate xg1({ 2, 1, 5, geo.totalSite(3)/2 - 4 });
+  // lqps::Coordinate xg2({ 3, 4, 0, geo.totalSite(3)/2 + 0 });
+  // lqps::Coordinate xg3({ 1, 5, 2, geo.totalSite(3)/2 + 4 });
+  //
   for (int mu1 = 0; mu1 < 4; ++mu1) {
     for (int mu2 = 0; mu2 < 4; ++mu2) {
       for (int mu3 = 0; mu3 < 4; ++mu3) {
-        DisplayInfo(cname, fname, "Regular\n");
         lblShowMuonPartPointSrc(geo, tsnk, tsrc, bs, xg1, mu1, xg2, mu2, xg3, mu3, mass, momtwist);
-        DisplayInfo(cname, fname, "Inverse\n");
-        lblShowMuonPartPointSrc(geo, tsnk, tsrc, bs, xg3m, mu3, xg2m, mu2, xg1m, mu1, mass, momtwist);
         Timer::display();
       }
     }
@@ -198,6 +204,13 @@ void displayGammas()
 {
   TIMER("displayGammas");
   DisplayInfo(cname, fname, "gamma5 =\n%s\n", lqps::show(lqps::SpinMatrixConstants::getGamma5()).c_str());
+  DisplayInfo(cname, fname, "gamma0 * gamma1 * gamma2 * gamma3 =\n%s\n",
+      lqps::show(
+        lqps::SpinMatrixConstants::getGamma(0) *
+        lqps::SpinMatrixConstants::getGamma(1) *
+        lqps::SpinMatrixConstants::getGamma(2) *
+        lqps::SpinMatrixConstants::getGamma(3)
+        ).c_str());
   DisplayInfo(cname, fname, "gamma3 =\n%s\n", lqps::show(lqps::SpinMatrixConstants::getGamma(3)).c_str());
   DisplayInfo(cname, fname, "ii * gamma0 =\n%s\n", lqps::show(lqps::ii * lqps::SpinMatrixConstants::getGamma(0)).c_str());
   DisplayInfo(cname, fname, "ii * gamma1 =\n%s\n", lqps::show(lqps::ii * lqps::SpinMatrixConstants::getGamma(1)).c_str());
@@ -207,7 +220,7 @@ void displayGammas()
 void displaySpinPropagator4d()
 {
   TIMER("displaySpinPropagator4d");
-  lqps::Coordinate totalSite({ 32, 32, 32, 64 });
+  lqps::Coordinate totalSite({ 16, 16, 16, 32 });
   lqps::Geometry geo; geo.init(totalSite, 1);
   DisplayInfo(cname, fname, "geo =\n%s\n", lqps::show(geo).c_str());
   std::array<double,lqps::DIM> momtwist({ 0.0, 0.0, 0.0, 0.0 });

@@ -40,7 +40,7 @@ struct GeometryNode
   Coordinate coorNode;
   // 0 <= coorNode[i] < sizeNode[i]
   //
-  void init();
+  inline void init();
   //
   GeometryNode()
   {
@@ -62,7 +62,14 @@ struct GeometryNode
   }
 };
 
-void GeometryNode::init()
+inline int idNodeFromCoorNode(const Coordinate& coor)
+{
+  int rank;
+  MPI_Cart_rank(getComm(), (int*)coor.data(), &rank);
+  return rank;
+}
+
+inline void GeometryNode::init()
 {
   if (initialized) {
     return;
@@ -78,8 +85,9 @@ void GeometryNode::init()
   for (int i = 0; i < DIM; ++i) {
     assert(0 != periods[i]);
   }
-  assert(indexFromCoordinate(coorNode, sizeNode) == idNode);
   assert(sizeNode[0] * sizeNode[1] * sizeNode[2] * sizeNode[3] == numNode);
+  Display(cname, "GeometryNode::init()", "idNode = %d ; coorNode = %s\n", idNode, show(coorNode).c_str());
+  assert(idNodeFromCoorNode(coorNode) == idNode);
 #else
   numNode = 1;
   idNode = 0;
@@ -158,11 +166,11 @@ struct GeometryNodeNeighbor
       coor = coorNode;
       ++coor[mu];
       regularizeCoordinate(coor, sizeNode);
-      dest[0][mu] = indexFromCoordinate(coor, sizeNode);
+      dest[0][mu] = idNodeFromCoorNode(coor);
       coor = coorNode;
       --coor[mu];
       regularizeCoordinate(coor, sizeNode);
-      dest[1][mu] = indexFromCoordinate(coor, sizeNode);
+      dest[1][mu] = idNodeFromCoorNode(coor);
     }
   }
   //
@@ -275,11 +283,12 @@ inline void begin(int* argc, char** argv[], const Coordinate dims)
   MPI_Init(argc, argv);
   int numNode;
   MPI_Comm_size(MPI_COMM_WORLD, &numNode);
-  DisplayInfo(cname, "begin", "MPI Initialized. NumNode=%d\n", numNode);
+  DisplayInfo(cname, "begin", "MPI Initialized. NumNode = %d\n", numNode);
   getPtrComm() = &getLqpsComm();
   const Coordinate periods({ 1, 1, 1, 1 });
   MPI_Cart_create(MPI_COMM_WORLD, DIM, (int*)dims.data(), (int*)periods.data(), 1, &getLqpsComm());
-  DisplayInfo(cname, "begin", "MPI Cart created. GeometryNode=\n%s\n", show(getGeometryNode()).c_str());
+  syncNode();
+  DisplayInfo(cname, "begin", "MPI Cart created. GeometryNode =\n%s\n", show(getGeometryNode()).c_str());
 }
 
 inline void end()
