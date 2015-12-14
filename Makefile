@@ -15,7 +15,6 @@ CFLAGS+= -I$(INCLUDE)/eigen3
 CXXFLAGS=$(CFLAGS)
 
 LDFLAGS=-L$(LIB)
-LDFLAGS+= -llapacke -llapack -lblas -lgfortran
 LDFLAGS+= -lgsl -lgslcblas -lm
 LDFLAGS+= -lfftw3_omp -lfftw3
 

@@ -42,7 +42,6 @@ if $build_libs ; then
         ./scripts/gsl.sh
         ./scripts/fftw.sh
         ./scripts/cmake.sh
-        ./scripts/lapack.sh
         ./scripts/eigen.sh
         ./scripts/hwloc.sh
         ./scripts/jansson.sh

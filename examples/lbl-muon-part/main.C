@@ -166,7 +166,8 @@ void lblMuonPart()
 {
   TIMER("lblMuonPart");
   // ADJUST ME
-  lqps::Coordinate totalSite({ 32, 32, 32, 128 });
+  lqps::Coordinate totalSite({ 16, 16, 16, 32 });
+  // lqps::Coordinate totalSite({ 32, 32, 32, 128 });
   lqps::Geometry geo; geo.init(totalSite, 1);
   DisplayInfo(cname, fname, "geo =\n%s\n", lqps::show(geo).c_str());
   std::array<double,lqps::DIM> momtwist({ 0.0, 0.0, 0.0, 0.0 });
