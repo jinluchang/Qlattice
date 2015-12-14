@@ -1,5 +1,3 @@
-#!/bin/bash
-
 . setenv.sh
 
 set -e

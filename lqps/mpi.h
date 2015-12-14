@@ -86,7 +86,7 @@ inline void GeometryNode::init()
     assert(0 != periods[i]);
   }
   assert(sizeNode[0] * sizeNode[1] * sizeNode[2] * sizeNode[3] == numNode);
-  Display(cname, "GeometryNode::init()", "idNode = %d ; coorNode = %s\n", idNode, show(coorNode).c_str());
+  Display(cname, "GeometryNode::init()", "idNode = %5d ; coorNode = %s\n", idNode, show(coorNode).c_str());
   assert(idNodeFromCoorNode(coorNode) == idNode);
 #else
   numNode = 1;

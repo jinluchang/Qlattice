@@ -93,8 +93,8 @@ lqps::SpinMatrix lblMuonPartPointSrc(const lqps::Geometry& geo, const int tsnk, 
   lqps::propPhotonInvert(egf2, momtwist);
   lqps::propPhotonInvert(egf3, momtwist);
   // ADJUST ME
-  // return lblMuonLine(tsnk, tsrc, egf1, egf2, egf3, mass, momtwist);
-  return lblMuonLineC(tsnk, tsrc, egf1, egf2, egf3, mass, momtwist);
+  return lblMuonLine(tsnk, tsrc, egf1, egf2, egf3, mass, momtwist);
+  // return lblMuonLineC(tsnk, tsrc, egf1, egf2, egf3, mass, momtwist);
 }
 
 void lblMagneticMomentSpinMatrix(lqps::Array<lqps::SpinMatrix,3> bs, const lqps::Geometry& geo, const int tsnk, const int tsrc,
@@ -141,6 +141,7 @@ void lblShowMuonPartPointSrc(const lqps::Geometry& geo, const int tsnk, const in
     const double mass, const std::array<double,lqps::DIM>& momtwist)
 {
   TIMER("lblShowMuonPartPointSrc");
+  DisplayInfo(cname, fname, "mass = %.2f\n", mass);
   DisplayInfo(cname, fname, "xg1 = %s ; xg2 = %s ; xg3 = %s .\n",
       lqps::show(xg1).c_str(), lqps::show(xg2).c_str(), lqps::show(xg3).c_str());
   DisplayInfo(cname, fname, "mu1 = %d ; mu2 = %d ; mu3 = %d .\n", mu1, mu2, mu3);
@@ -165,11 +166,11 @@ void lblMuonPart()
 {
   TIMER("lblMuonPart");
   // ADJUST ME
-  lqps::Coordinate totalSite({ 16, 16, 16, 64 });
+  lqps::Coordinate totalSite({ 32, 32, 32, 128 });
   lqps::Geometry geo; geo.init(totalSite, 1);
   DisplayInfo(cname, fname, "geo =\n%s\n", lqps::show(geo).c_str());
   std::array<double,lqps::DIM> momtwist({ 0.0, 0.0, 0.0, 0.0 });
-  const double mass = 0.1;
+  const double mass = 0.05;
   const int tsnk = geo.totalSite(3)/4*3;
   const int tsrc = geo.totalSite(3)/4;
   std::array<lqps::SpinMatrix,3> bs;
@@ -182,7 +183,7 @@ void lblMuonPart()
   // lqps::Coordinate xg2({ 0, 0, 0, geo.totalSite(3)/2 + 0 });
   // lqps::Coordinate xg3({ 0, 0, 0, geo.totalSite(3)/2 + 0 });
   //
-  lqps::Coordinate xg1({ 1, 1, 1, geo.totalSite(3)/2 + 1 });
+  lqps::Coordinate xg1({ 2, 2, 2, geo.totalSite(3)/2 + 2 });
   lqps::Coordinate xg2({ 0, 0, 0, geo.totalSite(3)/2 + 0 });
   lqps::Coordinate xg3({ 0, 0, 0, geo.totalSite(3)/2 + 0 });
   //
@@ -195,6 +196,7 @@ void lblMuonPart()
       for (int mu3 = 0; mu3 < 4; ++mu3) {
         lblShowMuonPartPointSrc(geo, tsnk, tsrc, bs, xg1, mu1, xg2, mu2, xg3, mu3, mass, momtwist);
         Timer::display();
+        return;
       }
     }
   }
@@ -243,7 +245,7 @@ void displaySpinPropagator4d()
 
 int main(int argc, char* argv[])
 {
-  lqps::Coordinate lsizeNode({ 1, 1, 1, 2 });
+  lqps::Coordinate lsizeNode({ 1, 2, 2, 4 });
   lqps::begin(&argc, &argv, lsizeNode);
   displayGammas();
   displaySpinPropagator4d();

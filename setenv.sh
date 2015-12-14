@@ -1,5 +1,3 @@
-#!/bin/bash
-
 if [ -z "$lqps" ] ; then
     lqps=$HOME/lqps-builds/0.1
 fi
