@@ -93,7 +93,7 @@ inline void GeometryNode::init()
   idNode = 0;
   for (int i = 0; i < DIM; ++i) {
     sizeNode[i] = 1;
-    coorNode[i] = 1;
+    coorNode[i] = 0;
   }
 #endif
   initialized = true;
