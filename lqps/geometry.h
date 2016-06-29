@@ -19,13 +19,13 @@ struct Geometry
   Coordinate expansionLeft;
   Coordinate expansionRight;
   //
-  Coordinate nodeSiteExpended;
-  // nodeSiteExpended[i] = expansionLeft[i] + nodeSite[i] + expansionRight[i]
+  Coordinate nodeSiteExpanded;
+  // nodeSiteExpanded[i] = expansionLeft[i] + nodeSite[i] + expansionRight[i]
   //
   void resetDirOffset()
   {
     for (int i = 0; i < DIM; ++i) {
-      nodeSiteExpended[i] = expansionLeft[i] + nodeSite[i] + expansionRight[i];
+      nodeSiteExpanded[i] = expansionLeft[i] + nodeSite[i] + expansionRight[i];
     }
   }
   //
@@ -130,12 +130,12 @@ struct Geometry
   {
     Coordinate xe = x;
     shiftCoordinateAdd(xe, expansionLeft);
-    return lqps::indexFromCoordinate(x, nodeSiteExpended) * multiplicity;
+    return lqps::indexFromCoordinate(x, nodeSiteExpanded) * multiplicity;
   }
   //
   void coordinateFromOffset(Coordinate& x, long offset) const
   {
-    lqps::coordinateFromIndex(x, offset/multiplicity, nodeSiteExpended);
+    lqps::coordinateFromIndex(x, offset/multiplicity, nodeSiteExpanded);
     shiftCoordinateSub(x, expansionLeft);
   }
   // 0 <= offset < localVolumeExpanded() * multiplicity
@@ -183,7 +183,7 @@ struct Geometry
   //
   long localVolumeExpanded() const
   {
-    return nodeSiteExpended[0] * nodeSiteExpended[1] * nodeSiteExpended[2] * nodeSiteExpended[3];
+    return nodeSiteExpanded[0] * nodeSiteExpanded[1] * nodeSiteExpanded[2] * nodeSiteExpanded[3];
   }
   //
   int totalSite(int mu) const
@@ -219,7 +219,7 @@ std::string show(const Geometry& geo)
   ssprintf(s, ", nodeSite    = %s\n", show(geo.nodeSite).c_str());
   ssprintf(s, ", expanLeft   = %s\n", show(geo.expansionLeft).c_str());
   ssprintf(s, ", expanRight  = %s\n", show(geo.expansionRight).c_str());
-  ssprintf(s, ", nodeSiteExp = %s }", show(geo.nodeSiteExpended).c_str());
+  ssprintf(s, ", nodeSiteExp = %s }", show(geo.nodeSiteExpanded).c_str());
   return s;
 }
 
