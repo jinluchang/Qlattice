@@ -130,28 +130,28 @@ struct Geometry
   {
     Coordinate xe = x;
     shiftCoordinateAdd(xe, expansionLeft);
-    return lqps::indexFromCoordinate(x, nodeSiteExpanded) * multiplicity;
+    return lqps::indexFromCoordinate(xe, nodeSiteExpanded) * multiplicity;
   }
   //
   void coordinateFromOffset(Coordinate& x, long offset) const
+    // 0 <= offset < localVolumeExpanded() * multiplicity
   {
     lqps::coordinateFromIndex(x, offset/multiplicity, nodeSiteExpanded);
     shiftCoordinateSub(x, expansionLeft);
   }
-  // 0 <= offset < localVolumeExpanded() * multiplicity
   //
   long indexFromCoordinate(const Coordinate& x) const
+    // 0 <= index < localVolume()
   {
     return lqps::indexFromCoordinate(x, nodeSite);
   }
-  // 0 <= index < localVolume()
   //
   void coordinateFromIndex(Coordinate& x, const long index) const
+    // get local coordinate from index
+    // 0 <= index < localVolume()
   {
     lqps::coordinateFromIndex(x, index, nodeSite);
   }
-  // get local coordinate from index
-  // 0 <= index < localVolume()
   //
   bool isOnNode(const Coordinate& x) const
   {
