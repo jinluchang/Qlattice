@@ -21,7 +21,7 @@ LDFLAGS+= -lfftw3_omp -lfftw3
 all: lqps.x
 
 run: lqps.x
-	. $(lqps)/local/setenv.sh ; time mpirun -x OMP_NUM_THREADS=2 -np 16 ./lqps.x
+	. $(lqps)/local/setenv.sh ; time mpirun -x OMP_NUM_THREADS=2 --np 16 ./lqps.x
 
 lqps.x: *.C
 	. $(lqps)/local/setenv.sh ; time make build

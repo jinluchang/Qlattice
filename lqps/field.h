@@ -114,10 +114,11 @@ struct Field
   }
   //
   Vector<M> getElems(const Coordinate& x) const
+    // Gai bu gai kao zi jue.
   {
     assert(geo.isOnNode(x));
     long offset = geo.offsetFromCoordinate(x);
-    return Vector<M>((M*)&field[offset], geo.multiplicity);
+    return Vector<M>(&field[offset], geo.multiplicity);
   }
 };
 
