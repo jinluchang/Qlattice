@@ -2,11 +2,11 @@
 
 . conf.sh
 
-name=lqps
+name=qlat
 echo "!!!! build $name !!!!"
 
 mkdir -p $prefix/include
-cp -v -r lqps $prefix/include
+cp -v -r qlat $prefix/include
 
 echo "!!!! $name build !!!!"
 
