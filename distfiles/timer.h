@@ -258,7 +258,8 @@ struct Timer {
   void init(const std::string& fname_str)
   {
     std::vector<TimerInfo>& tdb = getTimerDatabase();
-    for (int i = 0; i < tdb.size(); i++) {
+    const int size = tdb.size();
+    for (int i = 0; i < size; i++) {
       if (fname_str == tdb[i].fname) {
         info_index = i;
         return;
@@ -342,12 +343,14 @@ struct Timer {
     double total_time = getTotalTime();
     const std::vector<TimerInfo>& tdb = getTimerDatabase();
     std::vector<const TimerInfo*> db;
-    for (int i = 0; i < tdb.size(); i++) {
+    const int tdbsize = tdb.size();
+    for (int i = 0; i < tdbsize; i++) {
       db.push_back(&tdb[i]);
     }
     std::sort(db.begin(), db.end(), compareTimeInfoP);
     DisplayInfo("Timer", "display-start", "%s fname : time%% number of calls; Avg,Tot secs; Avg,Tot flops; Gflops\n", str.c_str(), total_time);
-    for (int i = 0; i < db.size(); i++) {
+    const int dbsize = db.size();
+    for (int i = 0; i < dbsize; i++) {
       db[i]->showAvg("display");
     }
     DisplayInfo("Timer", "display-end  ", "%s --------------------- total %.4E secs ----------------------\n", str.c_str(), total_time);

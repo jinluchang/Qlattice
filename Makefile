@@ -2,8 +2,8 @@ SHELL=/bin/bash
 
 lqps=$$HOME/lqps-builds/0.1
 
-CC=mpicc
-CXX=mpic++ -std=c++11
+CC=mpicc -Wall
+CXX=mpic++ -Wall -std=c++11
 
 INCLUDE=$(lqps)/local/include
 LIB=$(lqps)/local/lib
