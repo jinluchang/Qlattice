@@ -1,12 +1,12 @@
 SHELL=/bin/bash
 
-lqps=$$HOME/lqps-builds/0.1
+qlat=$$HOME/qlat-builds/0.1
 
 CC=mpicc -Wall
 CXX=mpic++ -Wall -std=c++11
 
-INCLUDE=$(lqps)/local/include
-LIB=$(lqps)/local/lib
+INCLUDE=$(qlat)/local/include
+LIB=$(qlat)/local/lib
 
 CFLAGS=-fopenmp -O2 -fno-strict-aliasing -Wall
 CFLAGS+= -I$(INCLUDE)
@@ -18,19 +18,19 @@ LDFLAGS=-L$(LIB)
 LDFLAGS+= -lgsl -lgslcblas -lm
 LDFLAGS+= -lfftw3_omp -lfftw3
 
-all: lqps.x
+all: qlat.x
 
-run: lqps.x
-	. $(lqps)/local/setenv.sh ; time mpirun -x OMP_NUM_THREADS=2 --np 16 ./lqps.x
+run: qlat.x
+	. $(qlat)/local/setenv.sh ; time mpirun -x OMP_NUM_THREADS=2 --np 16 ./qlat.x
 
-lqps.x: *.C
-	. $(lqps)/local/setenv.sh ; time make build
+qlat.x: *.C
+	. $(qlat)/local/setenv.sh ; time make build
 
 build:
-	$(CXX) -o lqps.x $(CXXFLAGS) *.C $(LDFLAGS)
+	$(CXX) -o qlat.x $(CXXFLAGS) *.C $(LDFLAGS)
 
 clean:
-	rm lqps.x || :
+	rm qlat.x || :
 
 show-info:
 	@echo CXX: $(CXX)

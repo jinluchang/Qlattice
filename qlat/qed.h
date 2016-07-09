@@ -1,7 +1,7 @@
 #pragma once
 
-#include <lqps/field.h>
-#include <lqps/field-fft.h>
+#include <qlat/field.h>
+#include <qlat/field-fft.h>
 
 #include <Eigen/Dense>
 

@@ -1,11 +1,11 @@
 #pragma once
 
-#include <lqps/config.h>
-#include <lqps/utils.h>
-#include <lqps/mpi.h>
-#include <lqps/field.h>
-#include <lqps/field-fft.h>
-#include <lqps/qed.h>
+#include <qlat/config.h>
+#include <qlat/utils.h>
+#include <qlat/mpi.h>
+#include <qlat/field.h>
+#include <qlat/field-fft.h>
+#include <qlat/qed.h>
 
 LQPS_START_NAMESPACE
 

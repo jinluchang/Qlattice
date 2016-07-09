@@ -1,10 +1,10 @@
 #pragma once
 
-#include <lqps/config.h>
-#include <lqps/utils.h>
-#include <lqps/mpi.h>
-#include <lqps/geometry.h>
-#include <lqps/field.h>
+#include <qlat/config.h>
+#include <qlat/utils.h>
+#include <qlat/mpi.h>
+#include <qlat/geometry.h>
+#include <qlat/field.h>
 
 #include <fftw3.h>
 #include <omp.h>

@@ -1,8 +1,8 @@
-if [ -z "$lqps" ] ; then
-    lqps=$HOME/lqps-builds/0.1
+if [ -z "$qlat" ] ; then
+    qlat=$HOME/qlat-builds/0.1
 fi
 
-prefix=$lqps/local
+prefix=$qlat/local
 
 if [ "$(uname -m)" = ppc64 ] ; then
     arch=bgq

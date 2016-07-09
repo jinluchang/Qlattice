@@ -3,7 +3,7 @@
 #include <complex>
 #include <array>
 
-#define LQPS_START_NAMESPACE namespace lqps {
+#define LQPS_START_NAMESPACE namespace qlat {
 #define LQPS_END_NAMESPACE }
 
 #define USE_MULTI_NODE

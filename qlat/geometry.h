@@ -1,8 +1,8 @@
 #pragma once
 
-#include <lqps/config.h>
-#include <lqps/utils.h>
-#include <lqps/mpi.h>
+#include <qlat/config.h>
+#include <qlat/utils.h>
+#include <qlat/mpi.h>
 
 LQPS_START_NAMESPACE
 
@@ -130,27 +130,27 @@ struct Geometry
   {
     Coordinate xe = x;
     shiftCoordinateAdd(xe, expansionLeft);
-    return lqps::indexFromCoordinate(xe, nodeSiteExpanded) * multiplicity;
+    return qlat::indexFromCoordinate(xe, nodeSiteExpanded) * multiplicity;
   }
   //
   void coordinateFromOffset(Coordinate& x, long offset) const
     // 0 <= offset < localVolumeExpanded() * multiplicity
   {
-    lqps::coordinateFromIndex(x, offset/multiplicity, nodeSiteExpanded);
+    qlat::coordinateFromIndex(x, offset/multiplicity, nodeSiteExpanded);
     shiftCoordinateSub(x, expansionLeft);
   }
   //
   long indexFromCoordinate(const Coordinate& x) const
     // 0 <= index < localVolume()
   {
-    return lqps::indexFromCoordinate(x, nodeSite);
+    return qlat::indexFromCoordinate(x, nodeSite);
   }
   //
   void coordinateFromIndex(Coordinate& x, const long index) const
     // get local coordinate from index
     // 0 <= index < localVolume()
   {
-    lqps::coordinateFromIndex(x, index, nodeSite);
+    qlat::coordinateFromIndex(x, index, nodeSite);
   }
   //
   bool isOnNode(const Coordinate& x) const

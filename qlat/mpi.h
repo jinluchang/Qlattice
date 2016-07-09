@@ -1,7 +1,7 @@
 #pragma once
 
-#include <lqps/config.h>
-#include <lqps/utils.h>
+#include <qlat/config.h>
+#include <qlat/utils.h>
 
 #include <mpi.h>
 #include <timer.h>

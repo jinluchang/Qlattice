@@ -8,7 +8,7 @@ fi
 
 wd=$(pwd)
 distfiles=$wd/distfiles
-temp_dir=/dev/shm/$(whoami)/temp/lqps-build
+temp_dir=/dev/shm/$(whoami)/temp/qlat-build
 src_dir=$temp_dir/src
 build_dir=$temp_dir/build
 

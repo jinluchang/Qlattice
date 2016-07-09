@@ -1,6 +1,6 @@
 #pragma once
 
-#include <lqps/config.h>
+#include <qlat/config.h>
 
 #include <array>
 #include <vector>
