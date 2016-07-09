@@ -12,7 +12,7 @@ QLAT_START_NAMESPACE
 
 const int DIM = 4;
 
-using Coordinate = std::array<int,DIM>;
+typedef std::complex<double> Complex;
 
 const char* const cname = "QLAT";
 
