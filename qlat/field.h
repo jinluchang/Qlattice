@@ -10,7 +10,7 @@
 #include <vector>
 #include <cassert>
 
-LQPS_START_NAMESPACE
+QLAT_START_NAMESPACE
 
 template <class M>
 struct Field
@@ -275,4 +275,4 @@ struct FieldM : Field<M>
     }
 };
 
-LQPS_END_NAMESPACE
+QLAT_END_NAMESPACE

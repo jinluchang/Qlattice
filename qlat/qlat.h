@@ -7,6 +7,6 @@
 #include <qlat/field-fft.h>
 #include <qlat/qed.h>
 
-LQPS_START_NAMESPACE
+QLAT_START_NAMESPACE
 
-LQPS_END_NAMESPACE
+QLAT_END_NAMESPACE

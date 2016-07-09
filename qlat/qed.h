@@ -7,7 +7,7 @@
 
 #include <cmath>
 
-LQPS_START_NAMESPACE
+QLAT_START_NAMESPACE
 
 struct QedGaugeField : FieldM<Complex,DIM>
 {
@@ -375,4 +375,4 @@ inline SpinMatrix contractSpinPropagator4d(const SpinPropagator4d& snk, const Sp
   return sum;
 }
 
-LQPS_END_NAMESPACE
+QLAT_END_NAMESPACE

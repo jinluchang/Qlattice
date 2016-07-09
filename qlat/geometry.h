@@ -4,7 +4,7 @@
 #include <qlat/utils.h>
 #include <qlat/mpi.h>
 
-LQPS_START_NAMESPACE
+QLAT_START_NAMESPACE
 
 struct Geometry
 {
@@ -250,4 +250,4 @@ inline bool isInitialized(const Geometry& geo)
   return geo.initialized;
 }
 
-LQPS_END_NAMESPACE
+QLAT_END_NAMESPACE

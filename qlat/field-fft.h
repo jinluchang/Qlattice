@@ -11,7 +11,7 @@
 
 #include <vector>
 
-LQPS_START_NAMESPACE
+QLAT_START_NAMESPACE
 
 struct fftComplexFieldPlan
 {
@@ -235,4 +235,4 @@ void fftComplexField(Field<M>& field, const bool isForward = true)
   }
 }
 
-LQPS_END_NAMESPACE
+QLAT_END_NAMESPACE

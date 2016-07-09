@@ -11,7 +11,7 @@
 #include <cstring>
 #include <cstdarg>
 
-LQPS_START_NAMESPACE
+QLAT_START_NAMESPACE
 
 const double PI = 3.141592653589793;
 
@@ -451,4 +451,4 @@ inline std::string show(const Coordinate& x) {
   return ssprintf("%dx%dx%dx%d", x[0], x[1], x[2], x[3]);
 }
 
-LQPS_END_NAMESPACE
+QLAT_END_NAMESPACE

@@ -3,12 +3,12 @@
 #include <complex>
 #include <array>
 
-#define LQPS_START_NAMESPACE namespace qlat {
-#define LQPS_END_NAMESPACE }
+#define QLAT_START_NAMESPACE namespace qlat {
+#define QLAT_END_NAMESPACE }
 
 #define USE_MULTI_NODE
 
-LQPS_START_NAMESPACE
+QLAT_START_NAMESPACE
 
 const int DIM = 4;
 
@@ -16,6 +16,6 @@ using Coordinate = std::array<int,DIM>;
 
 using Complex = std::complex<double>;
 
-const char* const cname = "LQPS";
+const char* const cname = "QLAT";
 
-LQPS_END_NAMESPACE
+QLAT_END_NAMESPACE

@@ -8,7 +8,7 @@
 
 #include <array>
 
-LQPS_START_NAMESPACE
+QLAT_START_NAMESPACE
 
 inline MPI_Comm& getLqpsComm()
 {
@@ -297,4 +297,4 @@ inline void end()
   DisplayInfo(cname, "end", "MPI Finalized.\n");
 }
 
-LQPS_END_NAMESPACE
+QLAT_END_NAMESPACE
