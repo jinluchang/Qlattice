@@ -17,3 +17,5 @@ typedef std::complex<double> Complex;
 const char* const cname = "QLAT";
 
 QLAT_END_NAMESPACE
+
+#include <qlat/coordinate.h>
