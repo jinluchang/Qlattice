@@ -112,7 +112,7 @@ void lblMagneticMomentSpinMatrix(qlat::Array<qlat::SpinMatrix,3> bs, const qlat:
   qlat::propSpinPropagator4d(snk, mass, momtwist);
   qlat::propSpinPropagator4d(src, mass, momtwist);
   const int top = qlat::mod(tsrc + qlat::mod(tsnk - tsrc, geo.totalSite(3)) / 2, geo.totalSite(3));
-  qlat::Coordinate xgop({ 0, 0, 0, top });
+  qlat::Coordinate xgop(0, 0, 0, top);
   qlat::Coordinate xlop; geo.coordinateLfG(xlop, xgop);
   qlat::setZero(bs);
   if (geo.isLocal(xlop)) {
@@ -166,8 +166,8 @@ void lblMuonPart()
 {
   TIMER("lblMuonPart");
   // ADJUST ME
-  qlat::Coordinate totalSite({ 16, 16, 16, 32 });
-  // qlat::Coordinate totalSite({ 32, 32, 32, 128 });
+  qlat::Coordinate totalSite(16, 16, 16, 32);
+  // qlat::Coordinate totalSite(32, 32, 32, 128);
   qlat::Geometry geo; geo.init(totalSite, 1);
   DisplayInfo(cname, fname, "geo =\n%s\n", qlat::show(geo).c_str());
   std::array<double,qlat::DIM> momtwist({ 0.0, 0.0, 0.0, 0.0 });
@@ -180,17 +180,17 @@ void lblMuonPart()
   DisplayInfo(cname, fname, "bs[1] =\n%s\n", qlat::show(bs[1]).c_str());
   DisplayInfo(cname, fname, "bs[2] =\n%s\n", qlat::show(bs[2]).c_str());
   // ADJUST ME
-  // qlat::Coordinate xg1({ 0, 0, 0, geo.totalSite(3)/2 + 0 });
-  // qlat::Coordinate xg2({ 0, 0, 0, geo.totalSite(3)/2 + 0 });
-  // qlat::Coordinate xg3({ 0, 0, 0, geo.totalSite(3)/2 + 0 });
+  // qlat::Coordinate xg1(0, 0, 0, geo.totalSite(3)/2 + 0);
+  // qlat::Coordinate xg2(0, 0, 0, geo.totalSite(3)/2 + 0);
+  // qlat::Coordinate xg3(0, 0, 0, geo.totalSite(3)/2 + 0);
   //
-  qlat::Coordinate xg1({ 2, 2, 2, geo.totalSite(3)/2 + 2 });
-  qlat::Coordinate xg2({ 0, 0, 0, geo.totalSite(3)/2 + 0 });
-  qlat::Coordinate xg3({ 0, 0, 0, geo.totalSite(3)/2 + 0 });
+  qlat::Coordinate xg1(2, 2, 2, geo.totalSite(3)/2 + 2);
+  qlat::Coordinate xg2(0, 0, 0, geo.totalSite(3)/2 + 0);
+  qlat::Coordinate xg3(0, 0, 0, geo.totalSite(3)/2 + 0);
   //
-  // qlat::Coordinate xg1({ 2, 1, 5, geo.totalSite(3)/2 - 4 });
-  // qlat::Coordinate xg2({ 3, 4, 0, geo.totalSite(3)/2 + 0 });
-  // qlat::Coordinate xg3({ 1, 5, 2, geo.totalSite(3)/2 + 4 });
+  // qlat::Coordinate xg1(2, 1, 5, geo.totalSite(3)/2 - 4);
+  // qlat::Coordinate xg2(3, 4, 0, geo.totalSite(3)/2 + 0);
+  // qlat::Coordinate xg3(1, 5, 2, geo.totalSite(3)/2 + 4);
   //
   for (int mu1 = 0; mu1 < 4; ++mu1) {
     for (int mu2 = 0; mu2 < 4; ++mu2) {
@@ -223,20 +223,20 @@ void displayGammas()
 void displaySpinPropagator4d()
 {
   TIMER("displaySpinPropagator4d");
-  qlat::Coordinate totalSite({ 16, 16, 16, 32 });
+  qlat::Coordinate totalSite(16, 16, 16, 32);
   qlat::Geometry geo; geo.init(totalSite, 1);
   DisplayInfo(cname, fname, "geo =\n%s\n", qlat::show(geo).c_str());
   std::array<double,qlat::DIM> momtwist({ 0.0, 0.0, 0.0, 0.0 });
   const double mass = 0.1;
   qlat::SpinPropagator4d prop; prop.init(geo);
   setZero(prop);
-  qlat::Coordinate xgsrc({ 0, 0, 0, 0 });
+  qlat::Coordinate xgsrc(0, 0, 0, 0);
   qlat::Coordinate xlsrc; geo.coordinateLfG(xlsrc, xgsrc);
   if (geo.isLocal(xlsrc)) {
     qlat::setUnit(prop.getElem(xlsrc));
   }
   qlat::propSpinPropagator4d(prop, mass, momtwist);
-  qlat::Coordinate xgsnk({ 0, 0, 0, 0 });
+  qlat::Coordinate xgsnk(0, 0, 0, 0);
   qlat::Coordinate xlsnk; geo.coordinateLfG(xlsnk, xgsnk);
   DisplayInfo(cname, fname, "xgsnk = %s .\n", qlat::show(xgsnk).c_str());
   if (geo.isLocal(xlsnk)) {
@@ -246,7 +246,7 @@ void displaySpinPropagator4d()
 
 int main(int argc, char* argv[])
 {
-  qlat::Coordinate lsizeNode({ 1, 2, 2, 4 });
+  qlat::Coordinate lsizeNode(1, 2, 2, 4);
   qlat::begin(&argc, &argv, lsizeNode);
   displayGammas();
   displaySpinPropagator4d();

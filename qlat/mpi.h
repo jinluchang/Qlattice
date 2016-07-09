@@ -285,7 +285,7 @@ inline void begin(int* argc, char** argv[], const Coordinate dims)
   MPI_Comm_size(MPI_COMM_WORLD, &numNode);
   DisplayInfo(cname, "begin", "MPI Initialized. NumNode = %d\n", numNode);
   getPtrComm() = &getLqpsComm();
-  const Coordinate periods({ 1, 1, 1, 1 });
+  const Coordinate periods(1, 1, 1, 1);
   MPI_Cart_create(MPI_COMM_WORLD, DIM, (int*)dims.data(), (int*)periods.data(), 1, &getLqpsComm());
   syncNode();
   DisplayInfo(cname, "begin", "MPI Cart created. GeometryNode =\n%s\n", show(getGeometryNode()).c_str());

@@ -325,8 +325,8 @@ inline void setWallSourcePlusM(SpinPropagator4d& f, const Complex& coef, const i
   TIMER("setWallSourcePlusM");
   const Geometry& geo = f.geo;
   assert(0 <= t && t < geo.totalSite(3));
-  const Coordinate xg1({ 0, 0, 0, t });
-  const Coordinate xg2({ geo.totalSite(0), geo.totalSite(1), geo.totalSite(2), t+1 });
+  const Coordinate xg1(0, 0, 0, t);
+  const Coordinate xg2(geo.totalSite(0), geo.totalSite(1), geo.totalSite(2), t+1);
   setBoxSourcePlusM(f, coef, xg1, xg2);
 }
 
