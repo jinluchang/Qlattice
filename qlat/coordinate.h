@@ -4,24 +4,24 @@
 
 QLAT_START_NAMESPACE
 
-class Coordinate: public std::array<int, DIM>
+struct Coordinate: public std::array<int, DIM>
 {
-public:
-        inline Coordinate(){
-                std::array<int, DIM>::array();
+        Coordinate(){
                 std::array<int, DIM>::fill(0);
         }
 
-        inline Coordinate(int first, int second, int third, int fourth){
-                std::array<int, DIM>::array();
-                int *p = std::array<int, DIM>::data();
-                *p = first; *(p + 1) = second; *(p + 2) = third; *(p + 3) = fourth;
+        Coordinate(int first, int second, int third, int fourth){
+                int *p = data();
+                p[0] = first;
+                p[1] = second;
+                p[2] = third;
+                p[3] = fourth;
         }
 
-        inline int product() const {
+        int product() const {
                 int ret = 1;
-                for(int i = 0; i < this->size(); i++){
-                        ret *= std::array<int, DIM>::operator[](i);
+                for(int i = 0; i < size(); i++){
+                        ret *= operator[](i);
                 }
                 return ret;
         }
