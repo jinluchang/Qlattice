@@ -2,6 +2,7 @@
 
 #include <qlat/config.h>
 #include <qlat/utils.h>
+#include <qlat/rng-state.h>
 #include <qlat/mpi.h>
 #include <qlat/field.h>
 #include <qlat/field-fft.h>
