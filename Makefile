@@ -17,7 +17,7 @@ CXXFLAGS=$(CFLAGS)
 LDFLAGS=-L$(LIB)
 LDFLAGS+= -lgsl -lgslcblas -lm
 LDFLAGS+= -lfftw3_omp -lfftw3
-LDFLAGS+= -lcpp-hash
+LDFLAGS+= -lhash-cpp
 
 all: qlat.x
 
