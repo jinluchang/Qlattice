@@ -2,7 +2,7 @@
 
 . conf.sh
 
-name=cpp-hash
+name=hash-cpp
 echo "!!!! build $name !!!!"
 
 rm -rf $src_dir

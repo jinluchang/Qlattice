@@ -17,6 +17,7 @@ CXXFLAGS=$(CFLAGS)
 LDFLAGS=-L$(LIB)
 LDFLAGS+= -lgsl -lgslcblas -lm
 LDFLAGS+= -lfftw3_omp -lfftw3
+LDFLAGS+= -lcpp-hash
 
 all: qlat.x
 
@@ -27,7 +28,7 @@ qlat.x: *.C
 	. $(qlat)/local/setenv.sh ; time make build
 
 build:
-	$(CXX) -o qlat.x $(CXXFLAGS) *.C $(LDFLAGS)
+	$(CXX) -o qlat.x $(CXXFLAGS) *.C $(LDFLAGS) 2>&1 | grep --color 'error:\|'
 
 clean:
 	rm qlat.x || :

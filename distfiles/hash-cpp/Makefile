@@ -18,17 +18,17 @@ objects = crc32.o \
 all: header lib
 
 header:
-	-mkdir -p "$(prefix)/include/cpp-hash"
-	cp *.h "$(prefix)/include/cpp-hash"
+	-mkdir -p "$(prefix)/include/hash-cpp"
+	cp *.h "$(prefix)/include/hash-cpp"
 
 %.o: %.cpp *.h
 	$(CC) -c -o $@ $<
 
 lib: $(objects)
-	ar rcs cpp-hash.a *.o
+	ar rcs libhash-cpp.a *.o
 	-mkdir -p "$(prefix)/lib"
-	cp cpp-hash.a "$(prefix)/lib"
+	cp libhash-cpp.a "$(prefix)/lib"
 
 clean:
-	-rm *.o cpp-hash.a
+	-rm *.o libhash-cpp.a
 	-rm -rf local

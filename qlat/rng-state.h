@@ -1,7 +1,8 @@
 #pragma once
 
-#include <cpp-hash/sha256.h>
+#include <qlat/config.h>
 
+#include <hash-cpp/sha256.h>
 #include <timer.h>
 
 #include <cstring>
