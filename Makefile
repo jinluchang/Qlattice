@@ -26,9 +26,10 @@ run: qlat.x
 
 qlat.x: *.C
 	. $(qlat)/local/setenv.sh ; time make build
+	[ -f $@ ]
 
 build:
-	$(CXX) -o qlat.x $(CXXFLAGS) *.C $(LDFLAGS) 2>&1 | grep --color 'error:\|'
+	$(CXX) -o qlat.x $(CXXFLAGS) *.C $(LDFLAGS) 2>&1 | grep --color 'error:\|' || true
 
 clean:
 	rm qlat.x || :

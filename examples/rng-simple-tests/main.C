@@ -1,14 +1,10 @@
-#include <qlat/rng-state.h>
+#include <qlat/qlat.h>
 
 #include <iostream>
 #include <complex>
 
 using namespace std;
 using namespace qlat;
-
-const double PI = 3.141592653589793;
-
-typedef std::complex<double> Complex;
 
 void test1()
 {
@@ -136,16 +132,20 @@ void profileOmp()
   timer.flops += num_threads * size;
 }
 
-int main()
+int main(int argc, char* argv[])
 {
-  cout << "hello world" << endl;
-  cout << "sizeof RngState = " << sizeof(RngState) << endl;
-  test1();
-  test2();
-  test2a();
-  test3();
-  profileOmp();
-  profile();
+  begin(&argc, &argv, Coordinate(2,2,2,2));
+  if (getIdNode() == 0) {
+    cout << "hello world" << endl;
+    cout << "sizeof RngState = " << sizeof(RngState) << endl;
+    test1();
+    test2();
+    test2a();
+    test3();
+    profileOmp();
+    profile();
+  }
   Timer::display();
+  end();
   return 0;
 }
