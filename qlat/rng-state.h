@@ -40,17 +40,18 @@ struct RngState
   //
   void init(const uint64_t seed, const uint64_t shift = 0)
   {
-    init(seed, 0, 0, shift);
+    init(seed, 0, 0, 0, shift);
   }
   //
-  void init(const uint64_t type, const uint64_t traj, const uint64_t index, const uint64_t shift = 0)
+  void init(const uint64_t seed, const uint64_t type, const uint64_t traj, const uint64_t index = 0, const uint64_t shift = 0)
   {
     init();
     uint64_t ss[RngStateSize/8];
     std::memset(ss, 0, sizeof(ss));
-    ss[RngStateSize/8-1] = type;
-    ss[RngStateSize/8-2] = traj;
-    ss[RngStateSize/8-3] = index;
+    ss[RngStateSize/8-1] = seed
+    ss[RngStateSize/8-2] = type;
+    ss[RngStateSize/8-3] = traj;
+    ss[RngStateSize/8-4] = index;
     ss[0] = shift;
     // std::memcpy(state, ss, sizeof(ss));
     for (int i = 0; i < RngStateSize/8; ++i) {
