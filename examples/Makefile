@@ -1,5 +1,6 @@
 tests = lbl-muon-part \
-		rng-state-tests
+		rng-state-tests \
+		field-rng-tests
 
 all:
 	for i in $(tests) ; do make -C "$$i" all; done
