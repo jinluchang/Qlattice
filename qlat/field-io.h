@@ -8,7 +8,7 @@
 QLAT_START_NAMESPACE       
 
 template<class M>
-void naive_serial_export(const Field<M> &origin, const std::string &export_addr){
+void naive_serial_export(const qlat::Field<M> &origin, const std::string &export_addr){
 
 	int MPI_rank_id;
 	MPI_Comm_rank(getComm(), &MPI_rank_id);
@@ -16,15 +16,15 @@ void naive_serial_export(const Field<M> &origin, const std::string &export_addr)
 
 	std::ofstream output;
 	
-	geometry geo_only_local;
-	geo_only_local.init(origin.geon, origin.geo.multiplicity, origin.geo.nodeSite);
+	Geometry geo_only_local;
+	geo_only_local.init(origin.geo.geon, origin.geo.multiplicity, origin.geo.nodeSite);
 
 	Field<M> field_only_local;
 	field_only_local.init(geo_only_local);
 
 	field_only_local = origin;
 
-	for(int i = 0; i < geo.geon.numNode; i++){
+	for(int i = 0; i < geo_only_local.geon.numNode; i++){
 		
 		MPI_Comm_rank(getComm(), &MPI_rank_id);
 		
