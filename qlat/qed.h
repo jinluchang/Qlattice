@@ -25,7 +25,7 @@ struct ComplexScalerField : FieldM<Complex,1>
   }
 };
 
-using SpinMatrix = Eigen::Matrix<Complex,4,4>;
+typedef Eigen::Matrix<Complex,4,4> SpinMatrix;
 
 inline void setZero(SpinMatrix& sm)
 {

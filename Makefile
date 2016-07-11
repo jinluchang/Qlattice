@@ -3,7 +3,7 @@ SHELL=/bin/bash
 qlat=$$HOME/qlat-builds/0.1
 
 CC=mpicc -O2 -Wall
-CXX=mpic++ -O2 -Wall -std=c++11
+CXX=mpic++ -O2 -Wall -std=c++0x
 
 INCLUDE=$(qlat)/local/include
 LIB=$(qlat)/local/lib
