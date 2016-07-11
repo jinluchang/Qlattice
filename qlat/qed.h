@@ -371,7 +371,7 @@ inline SpinMatrix contractSpinPropagator4d(const SpinPropagator4d& snk, const Sp
       }
     }
   }
-  glbSum(Vector<double>((double*)&sum, sizeof(SpinMatrix)/sizeof(double)));
+  glbSumDouble(sum);
   return sum;
 }
 

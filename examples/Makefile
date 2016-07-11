@@ -3,11 +3,11 @@ tests = lbl-muon-part \
 		field-rng-tests
 
 all:
-	for i in $(tests) ; do make -C "$$i" all; done
+	time for i in $(tests) ; do make -C "$$i" all; done
 
 run:
-	for i in $(tests) ; do make -C "$$i" run ; done 2>&1 | tee log
+	time for i in $(tests) ; do make -C "$$i" run ; done 2>&1 | tee log
 
 clean:
-	for i in $(tests) ; do make -C "$$i" clean ; done
+	time for i in $(tests) ; do make -C "$$i" clean ; done
 
