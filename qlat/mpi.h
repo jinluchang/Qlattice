@@ -276,19 +276,56 @@ inline void syncNode()
   sumVector(Vector<long>(&v,1));
 }
 
-inline void begin(int* argc, char** argv[], const Coordinate dims)
-  // can also initialize by set getPtrComm() to point to some externally constructed COMM object
-  // eg. getPtrComm() = &QMP_COMM_WORLD;
+inline Coordinate planSizeNode(const int numNode)
+{
+  if (numNode == 1) {
+    return Coordinate(1, 1, 1, 1);
+  } else if (numNode == 16) {
+    return Coordinate(1, 2, 2, 4);
+  } else {
+    return Coordinate(0, 0, 0, 0);
+  }
+}
+
+inline int beginMpi(int* argc, char** argv[])
 {
   MPI_Init(argc, argv);
   int numNode;
   MPI_Comm_size(MPI_COMM_WORLD, &numNode);
   DisplayInfo(cname, "begin", "MPI Initialized. NumNode = %d\n", numNode);
   getPtrComm() = &getLqpsComm();
+  return numNode;
+}
+
+inline void beginCart(const Coordinate& sizeNode)
+{
   const Coordinate periods(1, 1, 1, 1);
-  MPI_Cart_create(MPI_COMM_WORLD, DIM, (int*)dims.data(), (int*)periods.data(), 1, &getLqpsComm());
+  MPI_Cart_create(MPI_COMM_WORLD, DIM, (int*)sizeNode.data(), (int*)periods.data(), 1, &getComm());
+  const GeometryNode& geon = getGeometryNode();
   syncNode();
-  DisplayInfo(cname, "begin", "MPI Cart created. GeometryNode =\n%s\n", show(getGeometryNode()).c_str());
+  DisplayInfo(cname, "begin", "MPI Cart created. GeometryNode =\n%s\n", show(geon).c_str());
+  syncNode();
+}
+
+inline void begin(MPI_Comm& QMP_COMM_WORLD)
+{
+  getPtrComm() = &QMP_COMM_WORLD;
+  const GeometryNode& geon = getGeometryNode();
+  syncNode();
+  DisplayInfo(cname, "begin", "MPI_Comm set. GeometryNode =\n%s\n", show(geon).c_str());
+  syncNode();
+}
+
+inline void begin(int* argc, char** argv[], const Coordinate& sizeNode)
+{
+  beginMpi(argc, argv);
+  beginCart(sizeNode);
+}
+
+inline void begin(int* argc, char** argv[])
+{
+  int numNode = beginMpi(argc, argv);
+  beginCart(planSizeNode(numNode));
 }
 
 inline void end()

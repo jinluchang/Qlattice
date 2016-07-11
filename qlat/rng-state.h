@@ -106,11 +106,11 @@ inline double uRandGen(RngState& rs, const double upper = 1.0, const double lowe
   return u * fac * (upper - lower) + lower;
 }
 
-inline double gRandGen(RngState& rs, const double sigma2 = 1.0, const double center = 0.0)
+inline double gRandGen(RngState& rs, const double sigma = 1.0, const double center = 0.0)
 {
   if (rs.gaussionAvail) {
     rs.gaussionAvail = false;
-    return rs.gaussion;
+    return rs.gaussion * sigma + center;
   } else {
     const char* cname = "";
     const char* fname = "gRandGen()";
@@ -133,10 +133,10 @@ inline double gRandGen(RngState& rs, const double sigma2 = 1.0, const double cen
     // -1 to 1 in each direction, see if they are in the
     // unit circle, and try again if they are not.
     //
-    double fac = std::sqrt(-2.0 * sigma2 * std::log(rsq)/rsq);
+    double fac = std::sqrt(-2.0 * std::log(rsq)/rsq);
     rs.gaussion = v1 * fac;
     rs.gaussionAvail = true;
-    return v2 * fac;
+    return v2 * fac * sigma + center;
   }
 }
 

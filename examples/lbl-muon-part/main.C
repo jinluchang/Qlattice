@@ -254,8 +254,7 @@ void displaySpinPropagator4d()
 
 int main(int argc, char* argv[])
 {
-  qlat::Coordinate lsizeNode(1, 2, 2, 4);
-  qlat::begin(&argc, &argv, lsizeNode);
+  qlat::begin(&argc, &argv);
   displayGammas();
   displaySpinPropagator4d();
   Timer::display();

@@ -23,6 +23,7 @@ all: qlat.x
 
 run: qlat.x
 	. $(qlat)/local/setenv.sh ; time mpirun -x OMP_NUM_THREADS=2 --np 16 ./qlat.x
+	make clean
 
 qlat.x: *.C
 	. $(qlat)/local/setenv.sh ; time make build

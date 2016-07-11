@@ -10,15 +10,14 @@ void test1()
 {
   TIMER("test1");
   RngState rs(0);
-  // Integrate[Sin[Pi/x],{x,0,1}] = -Pi Ci(Pi) = -0.231435
   const int limit = 1024 * 1024;
   double sum = 0.0;
   for (int i = 0; i < limit; ++i) {
     double x = uRandGen(rs);
     double y = std::sin(PI / x);
-    // double y = x;
     sum += y;
   }
+  // Integrate[Sin[Pi/x],{x,0,1}] = -Pi Ci(Pi) = -0.231435
   cout << "expected: " << -0.231435 << endl;
   cout << sum / limit << endl;
 }
@@ -27,7 +26,6 @@ void test2()
 {
   TIMER("test2");
   RngState rs(0);
-  // 0.682689492137
   const int limit = 1024 * 1024;
   int count = 0;
   for (int i = 0; i < limit; ++i) {
@@ -44,11 +42,10 @@ void test2a()
 {
   TIMER("test2a");
   RngState rs(0);
-  // 0.682689492137
   const int limit = 1024 * 1024;
   int count = 0;
   for (int i = 0; i < limit; ++i) {
-    double x = gRandGen(rs, 4.0, 1.0);
+    double x = gRandGen(rs, 2.0, 1.0);
     if (std::abs(x - 1.0) <= 2.0) {
       count += 1;
     }
@@ -134,9 +131,8 @@ void profileOmp()
 
 int main(int argc, char* argv[])
 {
-  begin(&argc, &argv, Coordinate(2,2,2,2));
+  begin(&argc, &argv);
   if (getIdNode() == 0) {
-    cout << "hello world" << endl;
     cout << "sizeof RngState = " << sizeof(RngState) << endl;
     test1();
     test2();
