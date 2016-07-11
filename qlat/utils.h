@@ -125,6 +125,11 @@ struct Array
   {
     p = (M*)p_;
   }
+  Array<M,N>(const M& x)
+  {
+    assert(N == 1);
+    p = (M*)&x;
+  }
   //
   const M& operator[](int i) const
   {
@@ -208,6 +213,11 @@ struct Vector
   {
     p = (M*)p_;
     n = n_;
+  }
+  Vector<M>(const M& x)
+  {
+    p = (M*)&x;
+    n = 1;
   }
   //
   const M& operator[](long i) const

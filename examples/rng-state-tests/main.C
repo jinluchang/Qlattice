@@ -87,7 +87,7 @@ void test3()
   }
   cout << "Expected : " << Ni * Ntake << endl;
   cout << "Mean     : " << sum / Nb << endl;
-  cout << "Var      : " << sqrt(sigma2 / Nb - sqr(sum / Nb)) / sqrt (Nb) << endl;
+  cout << "Var      : " << sqrt(sigma2 / Nb - sqr(sum / Nb)) / sqrt(Nb-1) << endl;
 }
 
 void profile()

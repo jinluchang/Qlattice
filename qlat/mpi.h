@@ -265,12 +265,12 @@ inline int glbSum(Vector<long> vec)
 
 inline int glbSum(double& x)
 {
-  glbSum(Vector<double>(&x, 1));
+  glbSum(Vector<double>(x));
 }
 
 inline int glbSum(long& x)
 {
-  glbSum(Vector<long>(&x, 1));
+  glbSum(Vector<long>(x));
 }
 
 template <class M>
@@ -286,13 +286,13 @@ inline int glbSumLong(M& x)
 }
 
 template <class M>
-inline int glbSumDoubleVector(Vector<M>& x)
+inline int glbSumDouble(Vector<M>& x)
 {
   glbSum(Vector<double>(x.data(), x.size()*sizeof(M)/sizeof(double)));
 }
 
 template <class M>
-inline int glbSumLongVector(Vector<M>& x)
+inline int glbSumLong(Vector<M>& x)
 {
   glbSum(Vector<long>(x.data(), x.size()*sizeof(M)/sizeof(long)));
 }
