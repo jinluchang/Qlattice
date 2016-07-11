@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# This script would install QLAT in $qlat and all the dependencies in $prefix.
+# This script would install Qlat in $qlat and all the dependencies in
+# $prefix=$qlat/local .
 # Change $qlat if you need to install in other directories.
 #
 # CAUTION! This script could remove files in $qlat silently. Do not put anything
@@ -20,7 +21,7 @@ fi
 if $build_libs ; then
     if [ -e $prefix ] ; then
         echo "$prefix already exist, continue to build will erase all its contents."
-        echo "Use ./scripts/qlat.sh to build QLAT only."
+        echo "Use ./scripts/qlat.sh to build Qlat only."
         echo "Ctrl-C to stop."
         for i in {10..0} ; do
             echo -n "$i "
