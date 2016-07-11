@@ -130,39 +130,6 @@ struct Field
     long offset = geo.offsetFromCoordinate(x);
     return Vector<M>(&field[offset], geo.multiplicity);
   }
-
-	// --------------- jtu --------------
-	
-        void naive_serial_export(const std::string &export_addr){
-
-		int MPI_rank_id;
-		MPI_Comm_rank(getComm(), &MPI_rank_id);
-		if(MPI_rank_id == 0){ qlat::truncate(export_addr); }
-
-                std::ofstream output(export_addr.c_str(), std::ios::app);
-
-                for(int i = 0; i < geo.geon.numNode; i++){
-                        MPI_Comm_rank(getComm(), &MPI_rank_id);
-                        if(MPI_rank_id == i){
-				std::cout << "Node ID: " << MPI_rank_id << std::endl;
-                       		if(i == 0){
-                                	time_t now = std::time(NULL);
-                                	output << std::ctime(&now) << std::endl;
-                                	output << "END HEADER" << std::endl;
-                        	}
-
-                        	for(int j = 0; j < geo.localVolume(); j++){
-                                	M *ptr = field.data() + geo.offsetFromIndex(j);
-                                	output.write((char*)ptr, sizeof(M));
-                        	}
-                        }
-
-                        syncNode();
-                }
-        }
-
-	// --------------- jtu --------------
-
 };
 
 template <class M>
