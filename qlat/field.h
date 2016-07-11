@@ -242,7 +242,7 @@ double norm(const Field<M>& f)
       }
     }
   }
-  sumVector(Vector<double>(&sum, 1));
+  glbSum(Vector<double>(&sum, 1));
   return sum;
 }
 

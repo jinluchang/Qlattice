@@ -227,18 +227,7 @@ int getDataMinusMu(Vector<M> recv, const Vector<M>& send, const int mu)
   return getDataDirMu(recv, send, 1, mu);
 }
 
-inline int sumVector(Vector<long> recv, const Vector<long>& send)
-{
-  assert(recv.size() == send.size());
-#ifdef USE_MULTI_NODE
-  return MPI_Allreduce((long*)send.data(), recv.data(), recv.size(), MPI_LONG, MPI_SUM, getComm());
-#else
-  memmove(recv.data(), send.data(), recv.size()* sizeof(long));
-  return 0;
-#endif
-}
-
-inline int sumVector(Vector<double> recv, const Vector<double>& send)
+inline int glbSum(Vector<double> recv, const Vector<double>& send)
 {
   assert(recv.size() == send.size());
 #ifdef USE_MULTI_NODE
@@ -249,12 +238,63 @@ inline int sumVector(Vector<double> recv, const Vector<double>& send)
 #endif
 }
 
-template <class M>
-int sumVector(Vector<M> vec)
+inline int glbSum(Vector<long> recv, const Vector<long>& send)
 {
-  std::vector<M> tmp(vec.size());
+  assert(recv.size() == send.size());
+#ifdef USE_MULTI_NODE
+  return MPI_Allreduce((long*)send.data(), recv.data(), recv.size(), MPI_LONG, MPI_SUM, getComm());
+#else
+  memmove(recv.data(), send.data(), recv.size()* sizeof(long));
+  return 0;
+#endif
+}
+
+inline int glbSum(Vector<double> vec)
+{
+  std::vector<double> tmp(vec.size());
   assign(tmp, vec);
-  return sumVector(vec, tmp);
+  return glbSum(vec, tmp);
+}
+
+inline int glbSum(Vector<long> vec)
+{
+  std::vector<long> tmp(vec.size());
+  assign(tmp, vec);
+  return glbSum(vec, tmp);
+}
+
+inline int glbSum(double& x)
+{
+  glbSum(Vector<double>(&x, 1));
+}
+
+inline int glbSum(long& x)
+{
+  glbSum(Vector<long>(&x, 1));
+}
+
+template <class M>
+inline int glbSumDouble(M& x)
+{
+  glbSum(Vector<double>(&x, sizeof(M)/sizeof(double)));
+}
+
+template <class M>
+inline int glbSumLong(M& x)
+{
+  glbSum(Vector<long>(&x, sizeof(M)/sizeof(long)));
+}
+
+template <class M>
+inline int glbSumDoubleVector(Vector<M>& x)
+{
+  glbSum(Vector<double>(x.data(), x.size()*sizeof(M)/sizeof(double)));
+}
+
+template <class M>
+inline int glbSumLongVector(Vector<M>& x)
+{
+  glbSum(Vector<long>(x.data(), x.size()*sizeof(M)/sizeof(long)));
 }
 
 template <class M>
@@ -273,7 +313,7 @@ void allGather(Vector<M> recv, const Vector<M>& send)
 inline void syncNode()
 {
   long v;
-  sumVector(Vector<long>(&v,1));
+  glbSum(Vector<long>(&v,1));
 }
 
 inline Coordinate planSizeNode(const int numNode)

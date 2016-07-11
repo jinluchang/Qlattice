@@ -68,7 +68,7 @@ void test3()
   const int Ndrop = 1024;
   const int Ntake = 8;
   double sum = 0;
-  double sigma = 0;
+  double sigma2 = 0;
   for (int block = 0; block < Nb; block++) {
     Complex a = 0;
     for (int id = 0; id < Ni; id++) {
@@ -83,11 +83,11 @@ void test3()
       }
     }
     sum += norm(a);
-    sigma += sqr(norm(a));
+    sigma2 += sqr(norm(a));
   }
   cout << "Expected : " << Ni * Ntake << endl;
   cout << "Mean     : " << sum / Nb << endl;
-  cout << "Var      : " << sqrt(sigma / Nb - sqr(sum / Nb)) / sqrt (Nb) << endl;
+  cout << "Var      : " << sqrt(sigma2 / Nb - sqr(sum / Nb)) / sqrt (Nb) << endl;
 }
 
 void profile()
@@ -103,7 +103,6 @@ void profile()
   cout << "avg: " << sum / size << endl;
   timer.flops += size;
 }
-
 
 void profileOmp()
 {

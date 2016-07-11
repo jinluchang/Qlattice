@@ -125,7 +125,7 @@ void lblMagneticMomentSpinMatrix(qlat::Array<qlat::SpinMatrix,3> bs, const qlat:
       bs[i] = projPositiveState(bs[i]);
     }
   }
-  qlat::sumVector(qlat::Vector<double>((double*)bs.data(), getDataSize(bs)/sizeof(double)));
+  qlat::glbSum(qlat::Vector<double>((double*)bs.data(), getDataSize(bs)/sizeof(double)));
 }
 
 qlat::Complex linearFit(const qlat::SpinMatrix& x, const qlat::SpinMatrix& base)
