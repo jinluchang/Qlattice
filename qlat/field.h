@@ -249,30 +249,30 @@ double norm(const Field<M>& f)
 template <class M, int multiplicity>
 struct FieldM : Field<M>
 {
-    using Field<M>::init;
-    virtual void init(const Geometry& geo_)
-    {
-      Field<M>::init(geo_, multiplicity);
-    }
-    virtual void init(const Geometry& geo_, const int multiplicity_)
-    {
-      assert(multiplicity == multiplicity_);
-      Field<M>::init(geo_, multiplicity);
-    }
-    virtual void init(const Field<M>& f)
-    {
-      assert(multiplicity == f.geo.multiplicity);
-      Field<M>::init(f);
-    }
-    //
-    FieldM()
-    {
-      init();
-    }
-    FieldM(const FieldM<M,multiplicity>& f)
-    {
-      assert(false);
-    }
+  using Field<M>::init;
+  virtual void init(const Geometry& geo_)
+  {
+    Field<M>::init(geo_, multiplicity);
+  }
+  virtual void init(const Geometry& geo_, const int multiplicity_)
+  {
+    assert(multiplicity == multiplicity_);
+    Field<M>::init(geo_, multiplicity);
+  }
+  virtual void init(const Field<M>& f)
+  {
+    assert(multiplicity == f.geo.multiplicity);
+    Field<M>::init(f);
+  }
+  //
+  FieldM()
+  {
+    init();
+  }
+  FieldM(const FieldM<M,multiplicity>& f)
+  {
+    assert(false);
+  }
 };
 
 QLAT_END_NAMESPACE
