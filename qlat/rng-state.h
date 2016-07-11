@@ -48,7 +48,7 @@ struct RngState
     init();
     uint64_t ss[RngStateSize/8];
     std::memset(ss, 0, sizeof(ss));
-    ss[RngStateSize/8-1] = seed
+    ss[RngStateSize/8-1] = seed;
     ss[RngStateSize/8-2] = type;
     ss[RngStateSize/8-3] = traj;
     ss[RngStateSize/8-4] = index;
