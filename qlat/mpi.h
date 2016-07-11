@@ -10,7 +10,7 @@
 
 QLAT_START_NAMESPACE
 
-inline MPI_Comm& getLqpsComm()
+inline MPI_Comm& getQlatComm()
 {
   static MPI_Comm comm;
   return comm;
@@ -18,7 +18,7 @@ inline MPI_Comm& getLqpsComm()
 
 inline MPI_Comm*& getPtrComm()
 {
-  static MPI_Comm* p_comm = NULL;
+  static MPI_Comm* p_comm = &getQlatComm();
   return p_comm;
 }
 
@@ -293,39 +293,29 @@ inline int beginMpi(int* argc, char** argv[])
   int numNode;
   MPI_Comm_size(MPI_COMM_WORLD, &numNode);
   DisplayInfo(cname, "begin", "MPI Initialized. NumNode = %d\n", numNode);
-  getPtrComm() = &getLqpsComm();
   return numNode;
 }
 
-inline void beginCart(const Coordinate& sizeNode)
+inline void beginCart(const MPI_Comm& mpiComm, const Coordinate& sizeNode)
 {
   const Coordinate periods(1, 1, 1, 1);
-  MPI_Cart_create(MPI_COMM_WORLD, DIM, (int*)sizeNode.data(), (int*)periods.data(), 1, &getComm());
+  MPI_Cart_create(mpiComm, DIM, (int*)sizeNode.data(), (int*)periods.data(), 1, &getComm());
   const GeometryNode& geon = getGeometryNode();
   syncNode();
   DisplayInfo(cname, "begin", "MPI Cart created. GeometryNode =\n%s\n", show(geon).c_str());
   syncNode();
 }
 
-inline void begin(MPI_Comm& QMP_COMM_WORLD)
-{
-  getPtrComm() = &QMP_COMM_WORLD;
-  const GeometryNode& geon = getGeometryNode();
-  syncNode();
-  DisplayInfo(cname, "begin", "MPI_Comm set. GeometryNode =\n%s\n", show(geon).c_str());
-  syncNode();
-}
-
 inline void begin(int* argc, char** argv[], const Coordinate& sizeNode)
 {
   beginMpi(argc, argv);
-  beginCart(sizeNode);
+  beginCart(MPI_COMM_WORLD, sizeNode);
 }
 
 inline void begin(int* argc, char** argv[])
 {
   int numNode = beginMpi(argc, argv);
-  beginCart(planSizeNode(numNode));
+  beginCart(MPI_COMM_WORLD, planSizeNode(numNode));
 }
 
 inline void end()
