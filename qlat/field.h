@@ -249,6 +249,11 @@ double norm(const Field<M>& f)
 template <class M, int multiplicity>
 struct FieldM : Field<M>
 {
+  virtual const char* cname()
+  {
+    return "FieldM";
+  }
+  //
   using Field<M>::init;
   virtual void init(const Geometry& geo_)
   {
