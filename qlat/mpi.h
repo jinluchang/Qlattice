@@ -276,11 +276,17 @@ inline void syncNode()
   sumVector(Vector<long>(&v,1));
 }
 
+inline bool is_MPI_Initialized(){
+        int isMPIInitialized;
+        MPI_Initialized(&isMPIInitialized);
+        return isMPIInitialized;
+}
+
 inline void begin(int* argc, char** argv[], const Coordinate dims)
   // can also initialize by set getPtrComm() to point to some externally constructed COMM object
   // eg. getPtrComm() = &QMP_COMM_WORLD;
 {
-  MPI_Init(argc, argv);
+  if(!is_MPI_Initialized()) MPI_Init(argc, argv);
   int numNode;
   MPI_Comm_size(MPI_COMM_WORLD, &numNode);
   DisplayInfo(cname, "begin", "MPI Initialized. NumNode = %d\n", numNode);

@@ -152,6 +152,14 @@ struct Geometry
   {
     qlat::coordinateFromIndex(x, index, nodeSite);
   }
+	// jtu
+	long offsetFromIndex(const long index) const
+        {
+                Coordinate coor;
+                coordinateFromIndex(coor, index);
+                return offsetFromCoordinate(coor);
+        }
+
   //
   bool isOnNode(const Coordinate& x) const
   {
