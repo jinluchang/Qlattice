@@ -25,7 +25,7 @@ struct ComplexScalerField : FieldM<Complex,1>
   }
 };
 
-using SpinMatrix = Eigen::Matrix<Complex,4,4>;
+typedef Eigen::Matrix<Complex,4,4> SpinMatrix;
 
 inline void setZero(SpinMatrix& sm)
 {
@@ -371,7 +371,7 @@ inline SpinMatrix contractSpinPropagator4d(const SpinPropagator4d& snk, const Sp
       }
     }
   }
-  sumVector(Vector<double>((double*)&sum, sizeof(SpinMatrix)/sizeof(double)));
+  glbSumDouble(sum);
   return sum;
 }
 

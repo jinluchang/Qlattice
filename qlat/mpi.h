@@ -10,7 +10,7 @@
 
 QLAT_START_NAMESPACE
 
-inline MPI_Comm& getLqpsComm()
+inline MPI_Comm& getQlatComm()
 {
   static MPI_Comm comm;
   return comm;
@@ -18,7 +18,7 @@ inline MPI_Comm& getLqpsComm()
 
 inline MPI_Comm*& getPtrComm()
 {
-  static MPI_Comm* p_comm = NULL;
+  static MPI_Comm* p_comm = &getQlatComm();
   return p_comm;
 }
 
@@ -227,18 +227,7 @@ int getDataMinusMu(Vector<M> recv, const Vector<M>& send, const int mu)
   return getDataDirMu(recv, send, 1, mu);
 }
 
-inline int sumVector(Vector<long> recv, const Vector<long>& send)
-{
-  assert(recv.size() == send.size());
-#ifdef USE_MULTI_NODE
-  return MPI_Allreduce((long*)send.data(), recv.data(), recv.size(), MPI_LONG, MPI_SUM, getComm());
-#else
-  memmove(recv.data(), send.data(), recv.size()* sizeof(long));
-  return 0;
-#endif
-}
-
-inline int sumVector(Vector<double> recv, const Vector<double>& send)
+inline int glbSum(Vector<double> recv, const Vector<double>& send)
 {
   assert(recv.size() == send.size());
 #ifdef USE_MULTI_NODE
@@ -249,12 +238,63 @@ inline int sumVector(Vector<double> recv, const Vector<double>& send)
 #endif
 }
 
-template <class M>
-int sumVector(Vector<M> vec)
+inline int glbSum(Vector<long> recv, const Vector<long>& send)
 {
-  std::vector<M> tmp(vec.size());
+  assert(recv.size() == send.size());
+#ifdef USE_MULTI_NODE
+  return MPI_Allreduce((long*)send.data(), recv.data(), recv.size(), MPI_LONG, MPI_SUM, getComm());
+#else
+  memmove(recv.data(), send.data(), recv.size()* sizeof(long));
+  return 0;
+#endif
+}
+
+inline int glbSum(Vector<double> vec)
+{
+  std::vector<double> tmp(vec.size());
   assign(tmp, vec);
-  return sumVector(vec, tmp);
+  return glbSum(vec, tmp);
+}
+
+inline int glbSum(Vector<long> vec)
+{
+  std::vector<long> tmp(vec.size());
+  assign(tmp, vec);
+  return glbSum(vec, tmp);
+}
+
+inline int glbSum(double& x)
+{
+  return glbSum(Vector<double>(x));
+}
+
+inline int glbSum(long& x)
+{
+  return glbSum(Vector<long>(x));
+}
+
+template <class M>
+inline int glbSumDouble(M& x)
+{
+  return glbSum(Vector<double>((double*)&x, sizeof(M)/sizeof(double)));
+}
+
+template <class M>
+inline int glbSumLong(M& x)
+{
+  return glbSum(Vector<long>((long*)&x, sizeof(M)/sizeof(long)));
+}
+
+template <class M>
+inline int glbSumDouble(Vector<M>& x)
+{
+  return glbSum(Vector<double>((double*)x.data(), x.size()*sizeof(M)/sizeof(double)));
+}
+
+template <class M>
+inline int glbSumLong(Vector<M>& x)
+{
+  return glbSum(Vector<long>((long*)x.data(), x.size()*sizeof(M)/sizeof(long)));
 }
 
 template <class M>
@@ -273,7 +313,18 @@ void allGather(Vector<M> recv, const Vector<M>& send)
 inline void syncNode()
 {
   long v;
-  sumVector(Vector<long>(&v,1));
+  glbSum(Vector<long>(&v,1));
+}
+
+inline Coordinate planSizeNode(const int numNode)
+{
+  if (numNode == 1) {
+    return Coordinate(1, 1, 1, 1);
+  } else if (numNode == 16) {
+    return Coordinate(1, 2, 2, 4);
+  } else {
+    return Coordinate(0, 0, 0, 0);
+  }
 }
 
 inline bool is_MPI_Initialized(){
@@ -282,24 +333,40 @@ inline bool is_MPI_Initialized(){
         return isMPIInitialized;
 }
 
-inline void begin(int* argc, char** argv[], const Coordinate dims)
-  // can also initialize by set getPtrComm() to point to some externally constructed COMM object
-  // eg. getPtrComm() = &QMP_COMM_WORLD;
+inline int beginMpi(int* argc, char** argv[])
 {
   if(!is_MPI_Initialized()) MPI_Init(argc, argv);
   int numNode;
   MPI_Comm_size(MPI_COMM_WORLD, &numNode);
   DisplayInfo(cname, "begin", "MPI Initialized. NumNode = %d\n", numNode);
-  getPtrComm() = &getLqpsComm();
+  return numNode;
+}
+
+inline void beginCart(const MPI_Comm& mpiComm, const Coordinate& sizeNode)
+{
   const Coordinate periods(1, 1, 1, 1);
-  MPI_Cart_create(MPI_COMM_WORLD, DIM, (int*)dims.data(), (int*)periods.data(), 1, &getLqpsComm());
+  MPI_Cart_create(mpiComm, DIM, (int*)sizeNode.data(), (int*)periods.data(), 1, &getComm());
+  const GeometryNode& geon = getGeometryNode();
   syncNode();
-  DisplayInfo(cname, "begin", "MPI Cart created. GeometryNode =\n%s\n", show(getGeometryNode()).c_str());
+  DisplayInfo(cname, "begin", "MPI Cart created. GeometryNode =\n%s\n", show(geon).c_str());
+  syncNode();
+}
+
+inline void begin(int* argc, char** argv[], const Coordinate& sizeNode)
+{
+  beginMpi(argc, argv);
+  beginCart(MPI_COMM_WORLD, sizeNode);
+}
+
+inline void begin(int* argc, char** argv[])
+{
+  int numNode = beginMpi(argc, argv);
+  beginCart(MPI_COMM_WORLD, planSizeNode(numNode));
 }
 
 inline void end()
 {
-  MPI_Finalize();
+  if(is_MPI_Initialized()) MPI_Finalize();
   DisplayInfo(cname, "end", "MPI Finalized.\n");
 }
 

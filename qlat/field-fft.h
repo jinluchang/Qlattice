@@ -174,7 +174,7 @@ void fftComplexFieldDirs(Field<M>& field, const Coordinate& dirs)
       break;
     }
     {
-      TIMER_FLOPS("fftComplexFieldDirs_getData");
+      TIMER_FLOPS("fftComplexFieldDirs-getData");
       timer.flops += getDataSize(fields);
       getDataPlusMu(getData(fieldr), getData(fields), dir);
     }
@@ -182,7 +182,7 @@ void fftComplexFieldDirs(Field<M>& field, const Coordinate& dirs)
     geos.geon.coorNode[dir] = mod(geos.geon.coorNode[dir] + 1, geos.geon.sizeNode[dir]);
   }
   {
-    TIMER("fftComplexFieldDirs_fftw");
+    TIMER("fftComplexFieldDirs-fftw");
     fftw_execute_dft(fftplan, (fftw_complex*)fftdatac, (fftw_complex*)fftdatac);
   }
   geos.geon.coorNode[dir] = mod(geo.geon.coorNode[dir] + 1, geos.geon.sizeNode[dir]);
@@ -208,7 +208,7 @@ void fftComplexFieldDirs(Field<M>& field, const Coordinate& dirs)
       break;
     }
     {
-      TIMER_FLOPS("fftComplexFieldDirs_getData");
+      TIMER_FLOPS("fftComplexFieldDirs-getData");
       timer.flops += getDataSize(fields);
       getDataPlusMu(getData(fieldr), getData(fields), dir);
     }

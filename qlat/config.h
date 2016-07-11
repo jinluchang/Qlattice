@@ -14,7 +14,7 @@ const int DIM = 4;
 
 typedef std::complex<double> Complex;
 
-const char* const cname = "QLAT";
+const char* const cname = "Qlat";
 
 QLAT_END_NAMESPACE
 

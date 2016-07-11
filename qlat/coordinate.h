@@ -1,5 +1,7 @@
 #pragma once
 
+#include <qlat/config.h>
+
 #include <array>
 
 QLAT_START_NAMESPACE
@@ -20,7 +22,8 @@ struct Coordinate: public std::array<int, DIM>
 
         int product() const {
                 int ret = 1;
-                for(int i = 0; i < size(); i++){
+		int size_ = size();
+                for(int i = 0; i < size_; i++){
                         ret *= operator[](i);
                 }
                 return ret;

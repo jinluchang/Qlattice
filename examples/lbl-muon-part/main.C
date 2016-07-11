@@ -125,7 +125,7 @@ void lblMagneticMomentSpinMatrix(qlat::Array<qlat::SpinMatrix,3> bs, const qlat:
       bs[i] = projPositiveState(bs[i]);
     }
   }
-  qlat::sumVector(qlat::Vector<double>((double*)bs.data(), getDataSize(bs)/sizeof(double)));
+  qlat::glbSum(qlat::Vector<double>((double*)bs.data(), getDataSize(bs)/sizeof(double)));
 }
 
 qlat::Complex linearFit(const qlat::SpinMatrix& x, const qlat::SpinMatrix& base)
@@ -170,7 +170,11 @@ void lblMuonPart()
   // qlat::Coordinate totalSite(32, 32, 32, 128);
   qlat::Geometry geo; geo.init(totalSite, 1);
   DisplayInfo(cname, fname, "geo =\n%s\n", qlat::show(geo).c_str());
-  std::array<double,qlat::DIM> momtwist({ 0.0, 0.0, 0.0, 0.0 });
+  std::array<double,qlat::DIM> momtwist;
+  momtwist[0] = 0.0;
+  momtwist[1] = 0.0;
+  momtwist[2] = 0.0;
+  momtwist[3] = 0.0;
   const double mass = 0.05;
   const int tsnk = geo.totalSite(3)/4*3;
   const int tsrc = geo.totalSite(3)/4;
@@ -226,7 +230,11 @@ void displaySpinPropagator4d()
   qlat::Coordinate totalSite(16, 16, 16, 32);
   qlat::Geometry geo; geo.init(totalSite, 1);
   DisplayInfo(cname, fname, "geo =\n%s\n", qlat::show(geo).c_str());
-  std::array<double,qlat::DIM> momtwist({ 0.0, 0.0, 0.0, 0.0 });
+  std::array<double,qlat::DIM> momtwist;
+  momtwist[0] = 0.0;
+  momtwist[1] = 0.0;
+  momtwist[2] = 0.0;
+  momtwist[3] = 0.0;
   const double mass = 0.1;
   qlat::SpinPropagator4d prop; prop.init(geo);
   setZero(prop);
@@ -246,8 +254,7 @@ void displaySpinPropagator4d()
 
 int main(int argc, char* argv[])
 {
-  qlat::Coordinate lsizeNode(1, 2, 2, 4);
-  qlat::begin(&argc, &argv, lsizeNode);
+  qlat::begin(&argc, &argv);
   displayGammas();
   displaySpinPropagator4d();
   Timer::display();

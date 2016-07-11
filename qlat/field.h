@@ -144,20 +144,17 @@ struct Field
                 for(int i = 0; i < geo.geon.numNode; i++){
                         MPI_Comm_rank(getComm(), &MPI_rank_id);
                         if(MPI_rank_id == i){
-
-                        if(i == 0){
-                                time_t now = std::time(NULL);
-                                output << std::ctime(&now) << std::endl;
-                                output << "END HEADER" << std::endl;
-                        }
-
-                        for(int j = 0; j < geo.localVolume(); j++){
-
 				std::cout << "Node ID: " << MPI_rank_id << std::endl;
+                       		if(i == 0){
+                                	time_t now = std::time(NULL);
+                                	output << std::ctime(&now) << std::endl;
+                                	output << "END HEADER" << std::endl;
+                        	}
 
-                                M *ptr = field.data() + geo.offsetFromIndex(j);
-                                output.write((char*)ptr, sizeof(M));
-                        }
+                        	for(int j = 0; j < geo.localVolume(); j++){
+                                	M *ptr = field.data() + geo.offsetFromIndex(j);
+                                	output.write((char*)ptr, sizeof(M));
+                        	}
                         }
 
                         syncNode();
@@ -280,37 +277,42 @@ double norm(const Field<M>& f)
       }
     }
   }
-  sumVector(Vector<double>(&sum, 1));
+  glbSum(sum);
   return sum;
 }
 
 template <class M, int multiplicity>
 struct FieldM : Field<M>
 {
-    using Field<M>::init;
-    virtual void init(const Geometry& geo_)
-    {
-      Field<M>::init(geo_, multiplicity);
-    }
-    virtual void init(const Geometry& geo_, const int multiplicity_)
-    {
-      assert(multiplicity == multiplicity_);
-      Field<M>::init(geo_, multiplicity);
-    }
-    virtual void init(const Field<M>& f)
-    {
-      assert(multiplicity == f.geo.multiplicity);
-      Field<M>::init(f);
-    }
-    //
-    FieldM()
-    {
-      init();
-    }
-    FieldM(const FieldM<M,multiplicity>& f)
-    {
-      assert(false);
-    }
+  virtual const char* cname()
+  {
+    return "FieldM";
+  }
+  //
+  using Field<M>::init;
+  virtual void init(const Geometry& geo_)
+  {
+    Field<M>::init(geo_, multiplicity);
+  }
+  virtual void init(const Geometry& geo_, const int multiplicity_)
+  {
+    assert(multiplicity == multiplicity_);
+    Field<M>::init(geo_, multiplicity);
+  }
+  virtual void init(const Field<M>& f)
+  {
+    assert(multiplicity == f.geo.multiplicity);
+    Field<M>::init(f);
+  }
+  //
+  FieldM()
+  {
+    init();
+  }
+  FieldM(const FieldM<M,multiplicity>& f)
+  {
+    assert(false);
+  }
 };
 
 QLAT_END_NAMESPACE

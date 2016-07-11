@@ -89,7 +89,7 @@ struct Geometry
     init(geo_);
     multiplicity = multiplicity_;
 #ifdef USE_MULTI_NODE
-    const Coordinate expansion({ thick, thick, thick, thick });
+    const Coordinate expansion(thick, thick, thick, thick);
     expansionLeft = expansion;
     expansionRight = expansion;
 #endif
@@ -106,7 +106,7 @@ struct Geometry
   }
   void resize(const int thick)
   {
-    const Coordinate expansion({ thick, thick, thick, thick });
+    const Coordinate expansion(thick, thick, thick, thick);
     resize(expansion, expansion);
   }
   //
@@ -164,14 +164,14 @@ struct Geometry
   bool isOnNode(const Coordinate& x) const
   {
     return -expansionLeft[0] <= x[0] && x[0] < nodeSite[0] + expansionRight[0]
-    && -expansionLeft[1] <= x[1] && x[1] < nodeSite[1] + expansionRight[1]
-    && -expansionLeft[2] <= x[2] && x[2] < nodeSite[2] + expansionRight[2]
-    && -expansionLeft[3] <= x[3] && x[3] < nodeSite[3] + expansionRight[3];
+      && -expansionLeft[1] <= x[1] && x[1] < nodeSite[1] + expansionRight[1]
+      && -expansionLeft[2] <= x[2] && x[2] < nodeSite[2] + expansionRight[2]
+      && -expansionLeft[3] <= x[3] && x[3] < nodeSite[3] + expansionRight[3];
   }
   //
   bool isLocal(const Coordinate& x) const
   {
-    static const Coordinate origin({ 0, 0, 0, 0 });
+    static const Coordinate origin(0, 0, 0, 0);
     return origin <= x && x < nodeSite;
   }
   //
