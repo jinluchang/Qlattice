@@ -324,6 +324,13 @@ void assign(std::vector<M>& vec, const Vector<M>& src)
   memcpy(vec.data(), src.data(), src.size() * sizeof(M));
 }
 
+template <class M>
+void assign(Vector<M> vec, const Vector<M>& src)
+{
+  assert(vec.size() == src.size());
+  memcpy(vec.data(), src.data(), src.size() * sizeof(M));
+}
+
 inline int mod(const int x, const int len) {
   assert(0 < len);
   const int m = x % len;

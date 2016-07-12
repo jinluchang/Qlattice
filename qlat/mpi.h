@@ -216,6 +216,29 @@ int getDataDirMu(Vector<M> recv, const Vector<M>& send, const int dir, const int
 }
 
 template <class M>
+int getDataDir(Vector<M> recv, const Vector<M>& send, const int dir)
+  // dir = 0, 1 for Plus dir or Minus dir
+{
+  TIMER_FLOPS("getDataDir");
+  assert(recv.size() == send.size());
+  const long size = recv.size()*sizeof(M);
+  timer.flops += size;
+#ifdef USE_MULTI_NODE
+  const int self_ID = getIdNode(); 
+  const int idf = (self_ID + 1 - 2 * dir) % getNumNode();
+  const int idt = (self_ID - 1 + 2 * dir) % getNumNode();;
+  MPI_Request req;
+  MPI_Isend((void*)send.data(), size, MPI_BYTE, idt, 0, getComm(), &req);
+  const int ret = MPI_Recv(recv.data(), size, MPI_BYTE, idf, 0, getComm(), MPI_STATUS_IGNORE);
+  MPI_Wait(&req, MPI_STATUS_IGNORE);
+  return ret;
+#else
+  memcpy(recv.data(), send.data(), size);
+  return 0;
+#endif
+}
+
+template <class M>
 int getDataPlusMu(Vector<M> recv, const Vector<M>& send, const int mu)
 {
   return getDataDirMu(recv, send, 0, mu);
