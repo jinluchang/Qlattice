@@ -82,7 +82,7 @@ void naive_multiple_export(const qlat::Field<M> &origin, const std::string &expo
 }
 
 template<class M>
-void sophisticated_serial_write(const qlat::Field<M> &origin, const std::string &write_addr){
+void sophisticated_serial_write(const qlat::Field<M> &origin, const std::string &write_addr, const bool is_append = false){
 	
 	Geometry geo_only_local;
         geo_only_local.init(origin.geo.geon, origin.geo.multiplicity, origin.geo.nodeSite);
@@ -132,7 +132,10 @@ void sophisticated_serial_write(const qlat::Field<M> &origin, const std::string 
 
 	std::ofstream output;
 
-	if(getIdNode() == 0) output.open(write_addr.c_str()); 
+	if(getIdNode() == 0){
+		if(is_append) output.open(write_addr.c_str(), std::ios::app);
+        	else output.open(write_addr.c_str());
+	} 
 
 	for(int i = 0; i < getNumNode(); i++){
 		
