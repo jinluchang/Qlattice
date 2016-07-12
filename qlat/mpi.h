@@ -225,8 +225,8 @@ int getDataDir(Vector<M> recv, const Vector<M>& send, const int dir)
   timer.flops += size;
 #ifdef USE_MULTI_NODE
   const int self_ID = getIdNode(); 
-  const int idf = (self_ID + 1 - 2 * dir) % getNumNode();
-  const int idt = (self_ID - 1 + 2 * dir) % getNumNode();;
+  const int idf = (self_ID + 1 - 2 * dir + getNumNode()) % getNumNode();
+  const int idt = (self_ID - 1 + 2 * dir + getNumNode()) % getNumNode();;
   MPI_Request req;
   MPI_Isend((void*)send.data(), size, MPI_BYTE, idt, 0, getComm(), &req);
   const int ret = MPI_Recv(recv.data(), size, MPI_BYTE, idf, 0, getComm(), MPI_STATUS_IGNORE);
