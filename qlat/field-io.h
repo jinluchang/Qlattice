@@ -108,7 +108,7 @@ void sophisticated_serial_write(const qlat::Field<M> &origin, const std::string 
 		
 		Coordinate coor_send_node; 
 		qlat::coordinateFromIndex(coor_send_node, id_send_node, geo_only_local.geon.sizeNode);
-
+#pragma omp parallel for
 		for(int index = 0; index < geo_only_local.localVolume(); index++){
 			Coordinate local_coor; geo_only_local.coordinateFromIndex(local_coor, index);
 			Coordinate global_coor;
@@ -140,7 +140,7 @@ void sophisticated_serial_write(const qlat::Field<M> &origin, const std::string 
 	for(int i = 0; i < getNumNode(); i++){
 		
 		if(getIdNode() == 0){
-			M *ptr = getData(field_rslt).data();
+			M *ptr = getData(field_send).data();
                         long size = sizeof(M) * geo_only_local.localVolume() * geo_only_local.multiplicity;
                         output.write((char*)ptr, size);
 		}
@@ -150,6 +150,78 @@ void sophisticated_serial_write(const qlat::Field<M> &origin, const std::string 
 	}
 
 	if(getIdNode() == 0) output.close();
+
+	syncNode();
+}
+
+template<class M>
+void sophisticated_serial_read(qlat::Field<M> &destination, const std::string &read_addr){
+	
+	Geometry geo_only_local;
+        geo_only_local.init(destination.geo.geon, destination.geo.multiplicity, destination.geo.nodeSite);
+
+        Field<M> field_recv;
+        field_recv.init(geo_only_local);
+
+        Field<M> field_send;
+        field_send.init(geo_only_local);
+
+	Field<M> field_rslt;
+        field_rslt.init(geo_only_local);
+
+	Coordinate totalSite(geo_only_local.totalSite(0), geo_only_local.totalSite(1), geo_only_local.totalSite(2), geo_only_local.totalSite(3));
+
+	long range_low = geo_only_local.localVolume() * getIdNode();
+	long range_high = range_low + geo_only_local.localVolume();
+
+	std::ifstream input;
+	if(getIdNode() == 0){
+        	input.open(read_addr.c_str());
+	} 
+
+	for(int i = 0; i < getNumNode(); i++){
+		
+		if(getIdNode() == 0){
+			M *ptr = getData(field_send).data();
+                        long size = sizeof(M) * geo_only_local.localVolume() * geo_only_local.multiplicity;
+                        input.read((char*)ptr, size);
+		}
+	
+		getDataDir(getData(field_recv), getData(field_send), 0);
+                swap(field_recv, field_send);
+	}
+
+	if(getIdNode() == 0) input.close();
+
+	field_rslt = field_send;
+
+	for(int i = 0; i < getNumNode(); i++){
+		
+		int id_send_node = (getIdNode() + i) % getNumNode();
+		
+		Coordinate coor_send_node; 
+		qlat::coordinateFromIndex(coor_send_node, id_send_node, geo_only_local.geon.sizeNode);
+#pragma omp parallel for
+		for(int index = 0; index < geo_only_local.localVolume(); index++){
+			Coordinate local_coor; geo_only_local.coordinateFromIndex(local_coor, index);
+			Coordinate global_coor;
+			for (int mu = 0; mu < 4; mu++) {
+				global_coor[mu] = local_coor[mu] + coor_send_node[mu] * geo_only_local.nodeSite[mu];
+			}
+			long global_index = indexFromCoordinate(global_coor, totalSite);
+			if(global_index >= range_low && global_index < range_high)
+			{
+				Coordinate local_coor_read; 
+				geo_only_local.coordinateFromIndex(local_coor_read, global_index - range_low);
+				assign(field_send.getElems(local_coor), field_rslt.getElemsConst(local_coor_read));
+			}
+		}
+
+		getDataDir(getData(field_recv), getData(field_send), 0);
+		swap(field_recv, field_send);	
+	}
+	
+	destination = field_send;
 
 	syncNode();
 }
