@@ -5,6 +5,8 @@
 #include <qlat/mpi.h>
 #include <qlat/geometry.h>
 
+#include <omp.h>
+
 QLAT_START_NAMESPACE       
 
 template<class M>
