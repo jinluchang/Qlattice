@@ -69,7 +69,7 @@ integers: `seed`, `type`, `traj`, `index`.
 For a lattice application, one can easily initialize a generator for each
 lattice site by giving them different `index`. For each configuration,
 one can use its `traj` to initialize a set of generators. One can even
-initialize independent sets of generators for different purpose with the
+initialize independent sets of generators for different purposes with the
 `type` integer.
 
 Relavent source files: `qlat/rng-state.h`, `qlat/field-rng.h`.
