@@ -138,7 +138,7 @@ void sophisticated_serial_write(const qlat::Field<M> &origin, const std::string 
 	
 	field_send = field_rslt;
 
-	FILE *outputFile;
+	FILE *outputFile = NULL;
 
 	if(getIdNode() == 0){
 		std::cout << "Node #0 open file!" << std::endl;
