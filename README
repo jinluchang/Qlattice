@@ -1,13 +1,12 @@
-Qlattice
+# Qlattice
 
 A simple lattice QCD library.
 
 1. Fast Fourier transformation is implemented based on FFTW3.
 
-2. A random number generator system is implemented based on the SHA-256
-hash.
+2. A random number generator is implemented based on the SHA-256 hash.
 
-Installation:
+## Installation:
 
 The library itself is only composed of header files located in the
 ``qlat'' directory.
@@ -32,7 +31,7 @@ $ prefix=DEST_DIRECTORY ./build.sh
 If ``$prefix'' is not set, the default value in ``setenv.sh'' is used,
 which is ``$HOME/qlat-builds/VERSION_NUMBER''.
 
-Usage:
+## Usage:
 
 A sample ``Makefile'' is provided which can compile and run a simple
 program using the library. The ``Makefile'' assumes that the library
@@ -43,3 +42,9 @@ the library is completed installed, one can run the following command
 to compile all the examples:
 
 $ make -C examples run
+
+## Random number generator description:
+
+The state of the generator is a 512bit unsigned integer stored in little endian format.
+
+The integer is increased by ``1'' every time a new random number is needed.
