@@ -7,6 +7,8 @@
 
 #include <omp.h>
 
+#include <stdio.h>
+
 QLAT_START_NAMESPACE       
 
 template<class M>
@@ -86,6 +88,8 @@ void naive_multiple_export(const qlat::Field<M> &origin, const std::string &expo
 template<class M>
 void sophisticated_serial_write(const qlat::Field<M> &origin, const std::string &write_addr, const bool is_append = false){
 	
+	TIMER_FLOPS("sophisticated_serial_write");
+
 	Geometry geo_only_local;
         geo_only_local.init(origin.geo.geon, origin.geo.multiplicity, origin.geo.nodeSite);
 
@@ -105,6 +109,8 @@ void sophisticated_serial_write(const qlat::Field<M> &origin, const std::string 
 	long range_high = range_low + geo_only_local.localVolume();
 
 	for(int i = 0; i < getNumNode(); i++){
+	
+		// std::cout << "Shuffle loop: " << i << std::endl;
 		
 		int id_send_node = (getIdNode() + i) % getNumNode();
 		
@@ -132,26 +138,33 @@ void sophisticated_serial_write(const qlat::Field<M> &origin, const std::string 
 	
 	field_send = field_rslt;
 
-	std::ofstream output;
+	FILE *outputFile;
 
 	if(getIdNode() == 0){
-		if(is_append) output.open(write_addr.c_str(), std::ios::app);
-        	else output.open(write_addr.c_str());
+		std::cout << "Node #0 open file!" << std::endl;
+		if(is_append) outputFile = fopen(write_addr.c_str(), "a");
+        	else outputFile = fopen(write_addr.c_str(), "w");
+		assert(outputFile != NULL);
 	} 
 
 	for(int i = 0; i < getNumNode(); i++){
 		
 		if(getIdNode() == 0){
-			M *ptr = getData(field_send).data();
+			M *ptr = getData(field_send).data(); assert(ptr != NULL);
                         long size = sizeof(M) * geo_only_local.localVolume() * geo_only_local.multiplicity;
-                        output.write((char*)ptr, size);
+                        std::cout << "Write cycle: " << i << ", size = " << size << std::endl;
+			// std::cout << ((char*)ptr)[1] << std::endl;
+			// output << "HAHHAHAHAHAHHA" << std::endl;
+			// output.write((char*)ptr, 16);
+			fwrite((char*)ptr, size, 1, outputFile); 
+			fflush(outputFile);
 		}
 	
 		getDataDir(getData(field_recv), getData(field_send), 0);
                 swap(field_recv, field_send);
 	}
 
-	if(getIdNode() == 0) output.close();
+	if(getIdNode() == 0) fclose(outputFile);
 
 	syncNode();
 }
