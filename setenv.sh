@@ -1,8 +1,6 @@
-if [ -z "$qlat" ] ; then
-    qlat=$HOME/qlat-builds/0.1
+if [ -z "$prefix" ] ; then
+    prefix=$HOME/qlat-builds/0.1
 fi
-
-prefix=$qlat/local
 
 if [ "$(uname -m)" = ppc64 ] ; then
     arch=bgq
