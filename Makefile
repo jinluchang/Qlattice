@@ -1,12 +1,12 @@
 SHELL=/bin/bash
 
-qlat=$$HOME/qlat-builds/0.1
+prefix=$$HOME/qlat-builds/0.1
 
 CC=mpicc -O2 -Wall
 CXX=mpic++ -O2 -Wall -std=c++0x
 
-INCLUDE=$(qlat)/local/include
-LIB=$(qlat)/local/lib
+INCLUDE=$(prefix)/include
+LIB=$(prefix)/lib
 
 CFLAGS=-fopenmp -O2 -fno-strict-aliasing -Wall
 CFLAGS+= -I$(INCLUDE)
@@ -22,7 +22,7 @@ LDFLAGS+= -lhash-cpp
 all: qlat.x
 
 run: qlat.x
-	. $(qlat)/local/setenv.sh ; time mpirun -x OMP_NUM_THREADS=2 --np 16 ./qlat.x
+	. $(prefix)/setenv.sh ; time mpirun -x OMP_NUM_THREADS=2 --np 16 ./qlat.x
 	make clean
 
 qlat.x: *.C

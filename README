@@ -3,3 +3,8 @@ A simple lattice QCD library.
 1. Fast Fourier transformation is implemented based on FFTW3.
 
 2. A random number generator system is implemented based on SHA-256 hash.
+
+Installation:
+
+The library it self is composed of header files only.
+The major dependencies are included in the ``distfiles'' directory
