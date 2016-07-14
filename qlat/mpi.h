@@ -395,6 +395,12 @@ inline void begin(int* argc, char** argv[])
   beginCart(MPI_COMM_WORLD, planSizeNode(numNode));
 }
 
+inline void begin(int* argc, char** argv[], const Coordinate& sizeNode, const MPI_Comm &mpiComm)
+{
+  beginMpi(argc, argv);
+  beginCart(mpiComm, sizeNode);
+}
+
 inline void end()
 {
   if(is_MPI_Initialized()) MPI_Finalize();

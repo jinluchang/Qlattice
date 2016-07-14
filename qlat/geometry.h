@@ -15,7 +15,7 @@ struct Geometry
   int multiplicity;
   // number of elements on each lattice site
   //
-  Coordinate nodeSite;
+  Coordinate nodeSite; // coordinate on local node.
   Coordinate expansionLeft;
   Coordinate expansionRight;
   //
