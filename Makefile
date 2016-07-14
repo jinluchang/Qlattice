@@ -22,7 +22,7 @@ LDFLAGS+= -lhash-cpp
 all: qlat.x
 
 run: qlat.x
-	. $(prefix)/setenv.sh ; time mpirun -x OMP_NUM_THREADS=2 --np 16 ./qlat.x
+	. $(prefix)/setenv.sh ; time mpirun -x OMP_NUM_THREADS=8 --np 16 ./qlat.x
 	make clean
 
 qlat.x: *.C
