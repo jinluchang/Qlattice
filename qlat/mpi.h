@@ -62,11 +62,13 @@ struct GeometryNode
   }
 };
 
-inline int idNodeFromCoorNode(const Coordinate& coor)
+inline int idNodeFromCoorNode(const Coordinate& coorNode)
 {
-  int rank;
-  MPI_Cart_rank(getComm(), (int*)coor.data(), &rank);
-  return rank;
+  Coordinate sizeNode;
+  Coordinate periods;
+  Coordinate coorNodeCheck;
+  MPI_Cart_get(getComm(), DIM, sizeNode.data(), periods.data(), coorNodeCheck.data());
+  return indexFromCoordinate(coorNode, sizeNode);
 }
 
 inline void GeometryNode::init()
@@ -81,9 +83,15 @@ inline void GeometryNode::init()
   MPI_Cartdim_get(getComm(), &ndims);
   assert(DIM == ndims);
   Coordinate periods;
-  MPI_Cart_get(getComm(), DIM, sizeNode.data(), periods.data(), coorNode.data());
+  Coordinate coorNodeCheck;
+  MPI_Cart_get(getComm(), DIM, sizeNode.data(), periods.data(), coorNodeCheck.data());
   for (int i = 0; i < DIM; ++i) {
     assert(0 != periods[i]);
+  }
+  coordinateFromIndex(coorNode, idNode, sizeNode);
+  for (int i = 0; i < DIM; ++i) {
+    assert(0 != periods[i]);
+    // assert(coorNodeCheck[i] == coorNode[i]);
   }
   assert(sizeNode[0] * sizeNode[1] * sizeNode[2] * sizeNode[3] == numNode);
   Display(cname, "GeometryNode::init()", "idNode = %5d ; coorNode = %s\n", idNode, show(coorNode).c_str());
@@ -368,7 +376,7 @@ inline int beginMpi(int* argc, char** argv[])
 inline void beginCart(const MPI_Comm& mpiComm, const Coordinate& sizeNode)
 {
   const Coordinate periods(1, 1, 1, 1);
-  MPI_Cart_create(mpiComm, DIM, (int*)sizeNode.data(), (int*)periods.data(), 1, &getComm());
+  MPI_Cart_create(mpiComm, DIM, (int*)sizeNode.data(), (int*)periods.data(), 0, &getComm());
   const GeometryNode& geon = getGeometryNode();
   syncNode();
   DisplayInfo(cname, "begin", "MPI Cart created. GeometryNode =\n%s\n", show(geon).c_str());

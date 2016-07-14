@@ -30,7 +30,7 @@ qlat.x: *.C
 	[ -f $@ ]
 
 build:
-	$(CXX) -o qlat.x $(CXXFLAGS) *.C $(LDFLAGS) 2>&1 | grep --color 'error:\|' || true
+	$(CXX) -o qlat.x $(CXXFLAGS) *.C $(LDFLAGS) 2>&1 | grep --color=always 'error:\|' || true
 
 clean:
 	rm qlat.x || :
