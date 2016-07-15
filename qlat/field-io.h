@@ -8,6 +8,7 @@
 #include <omp.h>
 
 #include <stdio.h>
+#include <ctime>
 
 QLAT_START_NAMESPACE       
 
@@ -106,7 +107,10 @@ void sophisticated_serial_write(const qlat::Field<M> &origin,
 	Field<M> field_rslt;
         field_rslt.init(geo_only_local);
 
-	Coordinate totalSite(geo_only_local.totalSite(0), geo_only_local.totalSite(1), geo_only_local.totalSite(2), geo_only_local.totalSite(3));
+	Coordinate totalSite(geo_only_local.totalSite(0),\
+			geo_only_local.totalSite(1),\ 
+			geo_only_local.totalSite(2),\
+			geo_only_local.totalSite(3));
 
 	long range_low = geo_only_local.localVolume() * getIdNode();
 	long range_high = range_low + geo_only_local.localVolume();
@@ -159,16 +163,17 @@ void sophisticated_serial_write(const qlat::Field<M> &origin,
                 header_stream << "DIMENSION_2 = " << totalSite[1] << std::endl;
                 header_stream << "DIMENSION_3 = " << totalSite[2] << std::endl;
                 header_stream << "DIMENSION_4 = " << totalSite[3] << std::endl;
-                header_stream << "CHECKSUM = f1bdcf61" << std::endl;
-                header_stream << "LINK_TRACE =   2.606798585E-05" << std::endl;
-                header_stream << "PLAQUETTE =   5.880740538E-01" << std::endl;
+                header_stream << "CHECKSUM = NOT yet implemented" << std::endl;
+                header_stream << "LINK_TRACE =   NOT yet implemented" << std::endl;
+                header_stream << "PLAQUETTE =   NOT yet implemented" << std::endl;
                 header_stream << "CREATOR = RBC" << std::endl;
-                header_stream << "ARCHIVE_DATE = Thu Jul 14 15:44:49 2016" << std::endl;
-                header_stream << "ENSEMBLE_LABEL = IWASAKI_Nf2p1_24c64s16_b2.13M1.80mu0.005ms0.04_rhm" << std::endl;
+			time_t now = std::time(NULL);	
+                header_stream << "ARCHIVE_DATE = " << std::ctime(&now);
+                header_stream << "ENSEMBLE_LABEL = NOT yet implemented" << std::endl;
                 header_stream << "FLOATING_POINT = IEEE64BIG" << std::endl;
-                header_stream << "ENSEMBLE_ID = 147" << std::endl;
-                header_stream << "SEQUENCE_NUMBER = 5000" << std::endl;
-                header_stream << "BETA = 2.13" << std::endl; 
+                header_stream << "ENSEMBLE_ID = NOT yet implemented" << std::endl;
+                header_stream << "SEQUENCE_NUMBER = NOT yet implemented" << std::endl;
+                header_stream << "BETA = NOT yet implemented" << std::endl; 
                 header_stream << "END_HEADER" << std::endl;
                 
                 fputs(header_stream.str().c_str(), outputFile);
@@ -182,7 +187,7 @@ void sophisticated_serial_write(const qlat::Field<M> &origin,
 				char *cur = ptr;
 				long size = geo_only_local.localVolume() * geo_only_local.multiplicity;
 				int unit_size = sizeof(M) * 2 / 3;
-				std::cout << "Write cycle: " << i << ", size = " << size << std::endl;
+				std::cout << "Writing Cycle: " << i << ", size = " << size << std::endl;
 				for(long j = 0; j < size; j++){
 					fwrite(cur, unit_size, 1, outputFile);
 					cur += sizeof(M);
@@ -209,8 +214,20 @@ void sophisticated_serial_write(const qlat::Field<M> &origin,
 	syncNode();
 }
 
+// std::string cps_Matrix_header_generator(const qlat::Field<cps::Matrix> &origin,
+//                			const bool does_skip_third = false){
+// 	NOT yet implemented :(
+//	assert(false);	
+//	return "NOT IMPLEMENTED.";
+// }
+
 template<class M>
 void sophisticated_serial_read(qlat::Field<M> &destination, const std::string &read_addr){
+
+	// Tested to be working with 3x3 case.
+	// Not yet able to read 3x2 file.
+	// Not yet able to check checksum, plaquette, trace.
+	// Just not able to do that. :(
 	
 	Geometry geo_only_local;
         geo_only_local.init(destination.geo.geon, destination.geo.multiplicity, destination.geo.nodeSite);
@@ -232,11 +249,22 @@ void sophisticated_serial_read(qlat::Field<M> &destination, const std::string &r
 	std::ifstream input;
 	if(getIdNode() == 0){
         	input.open(read_addr.c_str());
+		std::string line;
+		std::string block_delimit = "END_HEADER";
+
+		int pos = -1;
+		input.seekg(0, input.beg);
+		while(getline(input, line))
+		{if(line.find(block_delimit) != std::string::npos){
+			pos = input.tellg(); break;
+		}}
+		assert(pos > -1); assert(!input.eof());
 	} 
 
 	for(int i = 0; i < getNumNode(); i++){
 		
 		if(getIdNode() == 0){
+			std::cout << "Reading Cycle: " << i << std::endl;
 			M *ptr = getData(field_send).data();
                         long size = sizeof(M) * geo_only_local.localVolume() * geo_only_local.multiplicity;
                         input.read((char*)ptr, size);
