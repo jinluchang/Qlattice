@@ -71,6 +71,15 @@ inline int idNodeFromCoorNode(const Coordinate& coorNode)
   return indexFromCoordinate(coorNode, sizeNode);
 }
 
+inline void coorNodeFromIdNode(Coordinate &coorNode, int idNode)
+{
+  Coordinate sizeNode;
+  Coordinate periods;
+  Coordinate coorNodeCheck;
+  MPI_Cart_get(getComm(), DIM, sizeNode.data(), periods.data(), coorNodeCheck.data());
+  return coordinateFromIndex(coorNode, idNode, sizeNode);
+}
+
 inline void GeometryNode::init()
 {
   if (initialized) {
