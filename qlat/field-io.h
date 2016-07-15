@@ -107,9 +107,9 @@ void sophisticated_serial_write(const qlat::Field<M> &origin,
 	Field<M> field_rslt;
         field_rslt.init(geo_only_local);
 
-	Coordinate totalSite(geo_only_local.totalSite(0),\
-			geo_only_local.totalSite(1),\ 
-			geo_only_local.totalSite(2),\
+	Coordinate totalSite(geo_only_local.totalSite(0),
+			geo_only_local.totalSite(1), 
+			geo_only_local.totalSite(2),
 			geo_only_local.totalSite(3));
 
 	long range_low = geo_only_local.localVolume() * getIdNode();

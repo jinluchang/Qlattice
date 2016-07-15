@@ -30,6 +30,12 @@ struct Coordinate: public std::array<int, DIM>
         }
 };
 
+Coordinate operator*(int integer, const Coordinate &coor)
+{
+	return Coordinate(integer * coor[0], integer * coor[1],
+				integer * coor[2], integer * coor[3]);
+}
+
 QLAT_END_NAMESPACE
 
 
