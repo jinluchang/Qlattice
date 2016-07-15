@@ -373,7 +373,7 @@ inline bool is_MPI_Initialized(){
         return isMPIInitialized;
 }
 
-inline int beginMpi(int* argc, char** argv[])
+inline int initMpi(int* argc, char** argv[])
 {
   if(!is_MPI_Initialized()) MPI_Init(argc, argv);
   int numNode;
@@ -382,7 +382,8 @@ inline int beginMpi(int* argc, char** argv[])
   return numNode;
 }
 
-inline void beginCart(const MPI_Comm& mpiComm, const Coordinate& sizeNode)
+inline void begin(const MPI_Comm& mpiComm, const Coordinate& sizeNode)
+  // begin Qlat with existing mpiComm
 {
   const Coordinate periods(1, 1, 1, 1);
   MPI_Cart_create(mpiComm, DIM, (int*)sizeNode.data(), (int*)periods.data(), 0, &getComm());
@@ -393,21 +394,17 @@ inline void beginCart(const MPI_Comm& mpiComm, const Coordinate& sizeNode)
 }
 
 inline void begin(int* argc, char** argv[], const Coordinate& sizeNode)
+  // begin Qlat and initialize a new mpiComm
 {
-  beginMpi(argc, argv);
-  beginCart(MPI_COMM_WORLD, sizeNode);
+  initMpi(argc, argv);
+  begin(MPI_COMM_WORLD, sizeNode);
 }
 
 inline void begin(int* argc, char** argv[])
+  // begin Qlat and initialize a new mpiComm with default topology
 {
-  int numNode = beginMpi(argc, argv);
-  beginCart(MPI_COMM_WORLD, planSizeNode(numNode));
-}
-
-inline void begin(int* argc, char** argv[], const Coordinate& sizeNode, const MPI_Comm &mpiComm)
-{
-  beginMpi(argc, argv);
-  beginCart(mpiComm, sizeNode);
+  int numNode = initMpi(argc, argv);
+  begin(MPI_COMM_WORLD, planSizeNode(numNode));
 }
 
 inline void end()
