@@ -236,10 +236,10 @@ template <class M>
 int getDataDir(Vector<M> recv, const Vector<M>& send, const int dir)
   // dir = 0, 1 for Plus dir or Minus dir
 {
-  TIMER_FLOPS("getDataDir");
+  // TIMER_FLOPS("getDataDir");
   assert(recv.size() == send.size());
   const long size = recv.size()*sizeof(M);
-  timer.flops += size;
+  // timer.flops += size;
 #ifdef USE_MULTI_NODE
   const int self_ID = getIdNode(); 
   const int idf = (self_ID + 1 - 2 * dir + getNumNode()) % getNumNode();

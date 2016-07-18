@@ -55,10 +55,7 @@ void naive_serial_export(const qlat::Field<M> &origin, const std::string &export
 }
 
 template<class M>
-void naive_multiple_export(const qlat::Field<M> &origin, const std::string &export_addr){
-
-	int MPI_rank_id;
-	MPI_Comm_rank(getComm(), &MPI_rank_id);
+void naive_multiple_write(const qlat::Field<M> &origin, const std::string &export_addr){
 
 	std::ofstream output;
 
@@ -70,7 +67,7 @@ void naive_multiple_export(const qlat::Field<M> &origin, const std::string &expo
 
 	field_only_local = origin;
 
-	std::string real_export_addr = export_addr + "_node" + show((long)MPI_rank_id);
+	std::string real_export_addr = export_addr + "_node" + show((long)getIdNode());
 	truncate(real_export_addr);
 
 	output.open(real_export_addr.c_str());
@@ -85,6 +82,38 @@ void naive_multiple_export(const qlat::Field<M> &origin, const std::string &expo
 	output.close();
 
 }
+
+// template<class M>
+// void naive_multiple_read(const qlat::Field<M> &origin, const std::string &export_addr){
+// 
+// 	int MPI_rank_id;
+// 	MPI_Comm_rank(getComm(), &MPI_rank_id);
+// 
+// 	std::ofstream output;
+// 
+// 	Geometry geo_only_local;
+// 	geo_only_local.init(origin.geo.geon, origin.geo.multiplicity, origin.geo.nodeSite);
+// 
+// 	Field<M> field_only_local;
+// 	field_only_local.init(geo_only_local);
+// 
+// 	field_only_local = origin;
+// 
+// 	std::string real_export_addr = export_addr + "_node" + show((long)getIdNode());
+// 	truncate(real_export_addr);
+// 
+// 	output.open(real_export_addr.c_str());
+// 
+// 	time_t now = std::time(NULL);
+// 	output << std::ctime(&now) << std::endl;
+// 	output << "END HEADER" << std::endl;
+// 
+// 	M *ptr = getData(field_only_local).data();
+// 	long size = sizeof(M) * geo_only_local.localVolume() * geo_only_local.multiplicity;
+// 	output.write((char*)ptr, size);
+// 	output.close();
+// 
+// }
 
 template<class M>
 void sophisticated_serial_write(const qlat::Field<M> &origin, 
@@ -202,7 +231,7 @@ void sophisticated_serial_write(const qlat::Field<M> &origin,
 				fwrite((char*)ptr, size, 1, outputFile); 
 				fflush(outputFile);
 			}
-
+			// syncNode();
 		}
 
 		getDataDir(getData(field_recv), getData(field_send), 0);
@@ -220,6 +249,11 @@ void sophisticated_serial_write(const qlat::Field<M> &origin,
 //	assert(false);	
 //	return "NOT IMPLEMENTED.";
 // }
+
+void timer_fread(char* ptr, long size, FILE *inputFile){
+	TIMER_VERBOSE("timer_free");
+	fread(ptr, size, 1, inputFile);
+}
 
 template<class M>
 void sophisticated_serial_read(qlat::Field<M> &destination, const std::string &read_addr){
@@ -246,35 +280,67 @@ void sophisticated_serial_read(qlat::Field<M> &destination, const std::string &r
 	long range_low = geo_only_local.localVolume() * getIdNode();
 	long range_high = range_low + geo_only_local.localVolume();
 
-	std::ifstream input;
-	if(getIdNode() == 0){
-        	input.open(read_addr.c_str());
-		std::string line;
-		std::string block_delimit = "END_HEADER";
-
-		int pos = -1;
-		input.seekg(0, input.beg);
-		while(getline(input, line))
-		{if(line.find(block_delimit) != std::string::npos){
-			pos = input.tellg(); break;
-		}}
-		assert(pos > -1); assert(!input.eof());
-	} 
-
-	for(int i = 0; i < getNumNode(); i++){
-		
-		if(getIdNode() == 0){
-			std::cout << "Reading Cycle: " << i << std::endl;
-			M *ptr = getData(field_send).data();
-                        long size = sizeof(M) * geo_only_local.localVolume() * geo_only_local.multiplicity;
-                        input.read((char*)ptr, size);
-		}
 	
-		getDataDir(getData(field_recv), getData(field_send), 0);
-                swap(field_recv, field_send);
-	}
+	// for every node:
+	//
+	FILE *inputFile = NULL;
 
-	if(getIdNode() == 0) input.close();
+// Well as you can see this is not really serial reading anymore. The sertial reading speed is unbearable slow.
+// Anyway it is tested. And it seems to be right.
+	inputFile = fopen(read_addr.c_str(), "rb"); assert(!ferror(inputFile));
+	char line[1000];
+	char indicator[] = "END_HEADER";
+
+	int pos_ = -1;
+	rewind(inputFile);
+	while(fgets(line, 1000, inputFile) != NULL)
+	{if(strstr(line, indicator) != NULL){
+		pos_ = ftell(inputFile); break;
+	}}
+	assert(pos_ > -1); assert(!feof(inputFile));
+		
+	syncNode();
+
+	std::cout << "Reading Started:\tNode Number: " << getIdNode() << std::endl;
+	M *ptr = getData(field_send).data();
+        long size = sizeof(M) * geo_only_local.localVolume() * geo_only_local.multiplicity;
+// 	std::cout << pos_ << "\t" << size * getIdNode() << std::endl;
+	assert(!fseek(inputFile, size * getIdNode(), SEEK_CUR));
+        fread((char*)ptr, size, 1, inputFile);
+	std::cout << "Reading Finished:\tNode Number: " << getIdNode() << std::endl;
+	fclose(inputFile);
+	syncNode();
+	
+// 	if(getIdNode() == 0){
+//         	// input.open(read_addr.c_str());
+// 		inputFile = fopen(read_addr.c_str(), "r");
+// 		char line[1000];
+// 		char indicator[] = "END_HEADER";
+// 
+// 		int pos_ = -1; fpos_t pos;
+// 		rewind(inputFile);
+// 		while(fgets(line, 1000, inputFile) != NULL)
+// 		{if(strstr(line, indicator) != NULL){
+// 			fgetpos(inputFile, &pos); pos_ = 1;  break;
+// 		}}
+// 		assert(pos_ > -1); assert(!feof(inputFile));
+// 	} 
+// 
+// 	for(int i = 0; i < getNumNode(); i++){
+// 		
+// 		if(getIdNode() == 0){
+// 			std::cout << "Reading Cycle: " << i << std::endl;
+// 			M *ptr = getData(field_send).data();
+//                         long size = sizeof(M) * geo_only_local.localVolume() * geo_only_local.multiplicity;
+//                         timer_fread((char*)ptr, size, inputFile);
+// 		// 	fflush(inputFile);
+// 		}
+// 		syncNode();	
+// 		getDataDir(getData(field_recv), getData(field_send), 0);
+//                 swap(field_recv, field_send);
+// 	}
+// 
+// 	if(getIdNode() == 0) fclose(inputFile);
 
 	field_rslt = field_send;
 
@@ -301,7 +367,8 @@ void sophisticated_serial_read(qlat::Field<M> &destination, const std::string &r
 		}
 
 		getDataDir(getData(field_recv), getData(field_send), 0);
-		swap(field_recv, field_send);	
+		swap(field_recv, field_send);
+		if(getIdNode() == 0) std::cout << "Shuffling Cycle:\t" << i << std::endl;
 	}
 	
 	destination = field_send;
