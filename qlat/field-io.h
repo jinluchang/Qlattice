@@ -224,7 +224,7 @@ void sophisticated_serial_write(const qlat::Field<M> &origin,
 			}else{
 				M *ptr = getData(field_send).data(); assert(ptr != NULL);
 				long size = sizeof(M) * geo_only_local.localVolume() * geo_only_local.multiplicity;
-				std::cout << "Write cycle: " << i << ", size = " << size << std::endl;
+				std::cout << "Writing Cycle: " << i << ", size = " << size << std::endl;
 				// std::cout << ((char*)ptr)[1] << std::endl;
 				// output << "HAHHAHAHAHAHHA" << std::endl;
 				// output.write((char*)ptr, 16);
@@ -256,13 +256,17 @@ void timer_fread(char* ptr, long size, FILE *inputFile){
 }
 
 template<class M>
-void sophisticated_serial_read(qlat::Field<M> &destination, const std::string &read_addr){
+void sophisticated_serial_read(qlat::Field<M> &destination, 
+				const std::string &read_addr, 
+				const int num_of_reading_threads = 0){
 
 	// Tested to be working with 3x3 case.
 	// Not yet able to read 3x2 file.
 	// Not yet able to check checksum, plaquette, trace.
 	// Just not able to do that. :(
-	
+
+	TIMER_VERBOSE("sophisticated_serial_read");
+
 	Geometry geo_only_local;
         geo_only_local.init(destination.geo.geon, destination.geo.multiplicity, destination.geo.nodeSite);
 
@@ -300,16 +304,23 @@ void sophisticated_serial_read(qlat::Field<M> &destination, const std::string &r
 	assert(pos_ > -1); assert(!feof(inputFile));
 		
 	syncNode();
-
-	std::cout << "Reading Started:\tNode Number: " << getIdNode() << std::endl;
-	M *ptr = getData(field_send).data();
-        long size = sizeof(M) * geo_only_local.localVolume() * geo_only_local.multiplicity;
-// 	std::cout << pos_ << "\t" << size * getIdNode() << std::endl;
-	assert(!fseek(inputFile, size * getIdNode(), SEEK_CUR));
-        fread((char*)ptr, size, 1, inputFile);
-	std::cout << "Reading Finished:\tNode Number: " << getIdNode() << std::endl;
-	fclose(inputFile);
-	syncNode();
+	int cycle_limit = 0;
+	if(num_of_reading_threads > 0) 
+		cycle_limit = (int)ceil((double)getNumNode() / num_of_reading_threads);
+	else
+		cycle_limit = 1;
+	for(int cycle = 0; cycle < cycle_limit; cycle++){
+		if(getIdNode() % cycle_limit == cycle){
+			std::cout << "Reading Started: Node Number =\t" << getIdNode() << std::endl;
+			M *ptr = getData(field_send).data();
+			long size = sizeof(M) * geo_only_local.localVolume() * geo_only_local.multiplicity;
+			assert(!fseek(inputFile, size * getIdNode(), SEEK_CUR));
+			fread((char*)ptr, size, 1, inputFile);
+			std::cout << "Reading Finished: Node Number =\t" << getIdNode() << std::endl;
+			fclose(inputFile);
+		}
+		syncNode();
+	}
 	
 // 	if(getIdNode() == 0){
 //         	// input.open(read_addr.c_str());
