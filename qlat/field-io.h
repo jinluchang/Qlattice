@@ -115,13 +115,18 @@ void naive_multiple_write(const qlat::Field<M> &origin, const std::string &expor
 // 
 // }
 
+void timer_fwrite(char* ptr, long size, FILE *outputFile){
+	TIMER_VERBOSE("timer_fwrite");
+	fwrite(ptr, size, 1, outputFile);
+}
+
 template<class M>
 void sophisticated_serial_write(const qlat::Field<M> &origin, 
 		const std::string &write_addr, 
 		const bool is_append = false,
 		const bool does_skip_third = false){
 	
-	TIMER_FLOPS("sophisticated_serial_write");
+	TIMER_VERBOSE("sophisticated_serial_write");
 
 	Geometry geo_only_local;
         geo_only_local.init(origin.geo.geon, origin.geo.multiplicity, origin.geo.nodeSite);
@@ -228,7 +233,7 @@ void sophisticated_serial_write(const qlat::Field<M> &origin,
 				// std::cout << ((char*)ptr)[1] << std::endl;
 				// output << "HAHHAHAHAHAHHA" << std::endl;
 				// output.write((char*)ptr, 16);
-				fwrite((char*)ptr, size, 1, outputFile); 
+				timer_fwrite((char*)ptr, size, outputFile); 
 				fflush(outputFile);
 			}
 			// syncNode();
@@ -251,7 +256,7 @@ void sophisticated_serial_write(const qlat::Field<M> &origin,
 // }
 
 void timer_fread(char* ptr, long size, FILE *inputFile){
-	TIMER_VERBOSE("timer_free");
+	TIMER_VERBOSE("timer_fread");
 	fread(ptr, size, 1, inputFile);
 }
 
@@ -315,7 +320,7 @@ void sophisticated_serial_read(qlat::Field<M> &destination,
 			M *ptr = getData(field_send).data();
 			long size = sizeof(M) * geo_only_local.localVolume() * geo_only_local.multiplicity;
 			assert(!fseek(inputFile, size * getIdNode(), SEEK_CUR));
-			fread((char*)ptr, size, 1, inputFile);
+			timer_fread((char*)ptr, size, inputFile);
 			std::cout << "Reading Finished: Node Number =\t" << getIdNode() << std::endl;
 			fclose(inputFile);
 		}
