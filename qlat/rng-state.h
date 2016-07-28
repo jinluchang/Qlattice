@@ -11,7 +11,7 @@
 
 QLAT_START_NAMESPACE
 
-const int RngStateSize = 7 * 8;
+const int RngStateSize = 6 * 8;
 
 struct RngState
 {
