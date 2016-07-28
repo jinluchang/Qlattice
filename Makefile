@@ -26,7 +26,7 @@ run: qlat.x
 	make clean
 
 qlat.x: *.C
-	. $(qlat)/local/setenv.sh ; time make build
+	. $(prefix)/setenv.sh ; time make build
 	[ -f $@ ]
 
 build:
