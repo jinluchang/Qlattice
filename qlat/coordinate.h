@@ -48,6 +48,13 @@ Coordinate operator+(const Coordinate &coor1, const Coordinate &coor2)
 				coor1[2] - coor2[2], coor1[3] - coor2[3]);
 }
 
+void regularize(Coordinate &coor, const Coordinate &regularizer)
+{
+	for(int mu = 0; mu < DIM; mu++){
+	coor[mu] = (coor[mu] % regularizer[mu] + regularizer[mu]) % regularizer[mu];
+	}
+}
+
 QLAT_END_NAMESPACE
 
 

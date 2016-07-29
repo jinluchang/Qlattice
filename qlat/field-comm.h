@@ -66,14 +66,16 @@ void fetch_expanded(Field<M> &field_comm){
 		int id_this;
 		int idt;
 		int idf;
-
+		// assuming periodic boundary condition. maybe need some fixing?
 		id_this = getIdNode();
 		qlat::coordinateFromIndex(coor_this, id_this, \
 			field_comm.geo.geon.sizeNode);
 		
-		coort = coor_this - node_pos;
+		coort = coor_this - node_pos; 
+		regularize(coort, field_comm.geo.geon.sizeNode);
 		coorf = coor_this + node_pos;
-
+		regularize(coorf, field_comm.geo.geon.sizeNode);
+		
 		idt = qlat::indexFromCoordinate(coort, field_comm.geo.geon.sizeNode);
 		idf = qlat::indexFromCoordinate(coorf, field_comm.geo.geon.sizeNode);
 
