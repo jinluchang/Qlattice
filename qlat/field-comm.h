@@ -17,7 +17,7 @@ void fetch_expanded(Field<M> &field_comm){
 	
 	// not tested.
 	
-	TIMER("fetch_extended");
+	TIMER("fetch_expanded");
 
 	std::map<Coordinate, std::vector<M> > send_map;
 	std::map<Coordinate, int> send_map_consume;
@@ -88,7 +88,8 @@ void fetch_expanded(Field<M> &field_comm){
 
 		send_map_consume[node_pos] = 0;
 	}
-
+	// Now send_map[node_pos] is the vector of data recieved from the node
+	// pointed to by key.
 	for(long record = 0; record < record_size; record++){
 		field_comm.geo.coordinateFromRecord(pos, record);
 		if(field_comm.geo.isLocal(pos)) continue;
@@ -100,7 +101,9 @@ void fetch_expanded(Field<M> &field_comm){
 				node_pos[mu]--;
 			}
 		}
-
+		// send_map_consume[key] keeps track of our progress in consuming the
+		// received data in sendmap[key], so that we know which offset of
+		// send_map[node_pos] corresponds to which site.
 		int consume = send_map_consume[node_pos];
 		std::vector<M> &vec = send_map[node_pos];
 		for(int mu = 0; mu < field_comm.geo.multiplicity; mu++){
