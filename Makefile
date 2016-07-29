@@ -17,6 +17,7 @@ CXXFLAGS=$(CFLAGS)
 LDFLAGS=-L$(LIB)
 LDFLAGS+= -lgsl -lgslcblas -lm
 LDFLAGS+= -lfftw3_omp -lfftw3
+LDFLAGS+= -lcrypto
 LDFLAGS+= -lhash-cpp
 
 all: qlat.x
@@ -26,7 +27,7 @@ run: qlat.x
 	make clean
 
 qlat.x: *.C
-	. $(qlat)/local/setenv.sh ; time make build
+	. $(prefix)/setenv.sh ; time make build
 	[ -f $@ ]
 
 build:

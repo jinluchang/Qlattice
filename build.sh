@@ -29,6 +29,7 @@ if [ $arch = amd64 ] ; then
     ./scripts/openmpi.sh
 fi
 
+./scripts/openssl.sh
 ./scripts/gsl.sh
 ./scripts/fftw.sh
 ./scripts/cmake.sh

@@ -2,15 +2,16 @@
 
 #include <qlat/config.h>
 
-#include <hash-cpp/sha256.h>
 #include <timer.h>
+// #include <hash-cpp/sha256.h>
 
+#include <openssl/sha.h>
 #include <cstring>
 #include <cmath>
 
 QLAT_START_NAMESPACE
 
-const int RngStateSize = 8 * 8;
+const int RngStateSize = 6 * 8;
 
 struct RngState
 {
@@ -75,16 +76,22 @@ inline void shiftRngState(RngState& rs, const uint64_t shift = 1)
   } while (pre > 0 && i < RngStateSize);
 }
 
+inline void computeHash(uint8_t hash[4*8], const uint8_t* data, const long size)
+{
+    // SHA256 sha;
+    // sha.add(data, size);
+    // sha.getHash(hash);
+    SHA256(data, size, hash);
+}
+
 inline uint64_t randGen(RngState& rs)
 {
   if (rs.cacheAvail > 0) {
     rs.cacheAvail -= 1;
     return rs.cache[rs.cacheAvail];
   } else {
-    SHA256 sha;
-    sha.add(rs.state, RngStateSize * sizeof(uint8_t));
     uint8_t hash[4 * 8];
-    sha.getHash(hash);
+    computeHash(hash, rs.state, RngStateSize);
     for (int i = 0; i < 4; ++i) {
       rs.cache[i] = 0;
       uint64_t unit = 1;
