@@ -64,6 +64,7 @@ std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>&
 	os_.flags(os.flags());
 	os_.imbue(os.getloc());
 	os_.precision(os.precision());
+	os_.setf(std::ios::showpos);
 	os_ << "(" << coor[0] << ", "
 		<< coor[1] << ", "
 		<< coor[2] << ", "

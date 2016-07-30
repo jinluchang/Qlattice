@@ -60,12 +60,8 @@ void fetch_expanded(Field<M> &field_comm){
 		M *send = send_vec.data();
 		M *recv = recv_vec.data();
 
-		Coordinate coor_this;
-		Coordinate coort;
-		Coordinate coorf;
-		int id_this;
-		int idt;
-		int idf;
+		Coordinate coor_this, coort, coorf;
+		int id_this, idt, idf;
 		// assuming periodic boundary condition. maybe need some fixing?
 		id_this = getIdNode();
 		qlat::coordinateFromIndex(coor_this, id_this, \
@@ -114,6 +110,5 @@ void fetch_expanded(Field<M> &field_comm){
 		send_map_consume[node_pos] = consume;
 	}
 }
-
 
 QLAT_END_NAMESPACE
