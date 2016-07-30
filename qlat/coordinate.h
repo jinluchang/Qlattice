@@ -3,6 +3,8 @@
 #include <qlat/config.h>
 
 #include <array>
+#include <sstream>
+#include <iostream>
 
 QLAT_START_NAMESPACE
 
@@ -44,8 +46,8 @@ Coordinate operator-(const Coordinate &coor1, const Coordinate &coor2)
 
 Coordinate operator+(const Coordinate &coor1, const Coordinate &coor2)
 {
-	return Coordinate(coor1[0] - coor2[0], coor1[1] - coor2[1], \
-				coor1[2] - coor2[2], coor1[3] - coor2[3]);
+	return Coordinate(coor1[0] + coor2[0], coor1[1] + coor2[1], \
+				coor1[2] + coor2[2], coor1[3] + coor2[3]);
 }
 
 void regularize(Coordinate &coor, const Coordinate &regularizer)
@@ -54,6 +56,27 @@ void regularize(Coordinate &coor, const Coordinate &regularizer)
 	coor[mu] = (coor[mu] % regularizer[mu] + regularizer[mu]) % regularizer[mu];
 	}
 }
+
+template<class CharT, class Traits>
+std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& os, 
+                   const Coordinate coor){
+	std::basic_ostringstream<CharT, Traits> os_;
+	os_.flags(os.flags());
+	os_.imbue(os.getloc());
+	os_.precision(os.precision());
+	os_ << "(" << coor[0] << ", "
+		<< coor[1] << ", "
+		<< coor[2] << ", "
+		<< coor[3] << ")";
+	return os << os_.str();
+}
+
+struct CoordinateLess
+{
+	bool operator()(const Coordinate &coor1, const Coordinate &coor2) const {
+		return operator<(coor1, coor2);
+	}
+};
 
 QLAT_END_NAMESPACE
 

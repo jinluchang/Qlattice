@@ -15,12 +15,12 @@ QLAT_START_NAMESPACE
 template <class M>
 void fetch_expanded(Field<M> &field_comm){
 	
-	// not tested.
-	
+	// tested for expansion = 2 case.
+
 	TIMER("fetch_expanded");
 
-	std::map<Coordinate, std::vector<M> > send_map;
-	std::map<Coordinate, int> send_map_consume;
+	std::map<Coordinate, std::vector<M>, CoordinateLess> send_map;
+	std::map<Coordinate, int, CoordinateLess> send_map_consume;
 
 	Coordinate pos; // coordinate position of a site relative to this node
 	Coordinate local_pos; // coordinate position of a site relative to its home node
@@ -42,7 +42,7 @@ void fetch_expanded(Field<M> &field_comm){
 		std::vector<M> &vec = send_map[node_pos];
 		for(int mu = 0; mu < field_comm.geo.multiplicity; mu++)
 			vec.push_back(field_comm.getElemsConst(local_pos)[mu]);
-	}	
+	}
 
 	std::vector<M> recv_vec;
 	// will store data received from other nodes
@@ -70,7 +70,6 @@ void fetch_expanded(Field<M> &field_comm){
 		id_this = getIdNode();
 		qlat::coordinateFromIndex(coor_this, id_this, \
 			field_comm.geo.geon.sizeNode);
-		
 		coort = coor_this - node_pos; 
 		regularize(coort, field_comm.geo.geon.sizeNode);
 		coorf = coor_this + node_pos;
@@ -78,7 +77,7 @@ void fetch_expanded(Field<M> &field_comm){
 		
 		idt = qlat::indexFromCoordinate(coort, field_comm.geo.geon.sizeNode);
 		idf = qlat::indexFromCoordinate(coorf, field_comm.geo.geon.sizeNode);
-
+			
 		MPI_Request req;
 		MPI_Isend((void*)send, size_bytes, MPI_BYTE, idt, 0, getComm(), &req);
 		const int ret = MPI_Recv((void*)recv, size_bytes, MPI_BYTE, \
@@ -109,8 +108,7 @@ void fetch_expanded(Field<M> &field_comm){
 		int consume = send_map_consume[node_pos];
 		std::vector<M> &vec = send_map[node_pos];
 		for(int mu = 0; mu < field_comm.geo.multiplicity; mu++){
-			field_comm.getElems(record * field_comm.geo.multiplicity)[mu] \
-				= vec[consume];
+			field_comm.getElems(pos)[mu] = vec[consume];
 			consume++;
 		}
 		send_map_consume[node_pos] = consume;

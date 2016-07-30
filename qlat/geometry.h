@@ -140,6 +140,20 @@ struct Geometry
     shiftCoordinateSub(x, expansionLeft);
   }
   //
+  long recordFromCoordinate(const Coordinate& x) const
+  {
+    Coordinate xe = x;
+    shiftCoordinateAdd(xe, expansionLeft);
+    return qlat::indexFromCoordinate(xe, nodeSiteExpanded);
+  }
+  //
+  void coordinateFromRecord(Coordinate& x, long record) const
+    // 0 <= offset < localVolumeExpanded() * multiplicity
+  {
+    qlat::coordinateFromIndex(x, record, nodeSiteExpanded);
+    shiftCoordinateSub(x, expansionLeft);
+  }
+  //
   long indexFromCoordinate(const Coordinate& x) const
     // 0 <= index < localVolume()
   {
@@ -171,8 +185,10 @@ struct Geometry
   //
   bool isLocal(const Coordinate& x) const
   {
-    static const Coordinate origin(0, 0, 0, 0);
-    return origin <= x && x < nodeSite;
+    bool isLocal_ = true;
+    for(int mu = 0; mu < DIM; mu++) 
+      isLocal_ = isLocal_ && 0 <= x[mu] && x[mu] < nodeSite[mu];
+    return isLocal_;
   }
   //
   bool isOnlyLocal() const
