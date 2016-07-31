@@ -5,6 +5,8 @@
 #include <qlat/mpi.h>
 #include <qlat/geometry.h>
 
+#include <hash-cpp/crc32.h>
+
 #include <omp.h>
 
 #include <stdio.h>
@@ -114,6 +116,41 @@ void naive_multiple_write(const qlat::Field<M> &origin, const std::string &expor
 // 	output.close();
 // 
 // }
+template<class M>
+std::string field_hash_crc32(const qlat::Field<M> &origin,
+			const bool does_skip_third = false){
+	// somehow this checksum function does not agree with CPS's one.
+	// Do not know why. But I am not sure what algorithm CPS uses.
+	
+	Geometry geo_only_local;
+        geo_only_local.init(origin.geo.geon, \
+		origin.geo.multiplicity, origin.geo.nodeSite);
+	CRC32 crc32;
+	CRC32 ct;
+	void *buffer = (void *)&crc32;
+	for(int id_node = 0; id_node < getNumNode(); id_node++){
+		if(getIdNode() == id_node){
+			if(does_skip_third){
+				char *ptr = (char *)(getData(origin).data()); 
+				assert(ptr != NULL);
+				char *cur = ptr;
+				long size = getData(origin).size();
+				std::cout << size << std::endl;
+				int unit_size = sizeof(M) * 2 / 3;
+				for(long j = 0; j < size; j++){
+					crc32.add((void *)cur, unit_size);
+					cur += sizeof(M);
+				}
+			}else{
+				crc32.add((void *)getData(origin).data(), \
+						getData(origin).size() * sizeof(M));
+			}
+		}
+		syncNode();
+		MPI_Bcast(buffer, 4, MPI_BYTE, id_node, getComm());
+	}
+	return crc32.getHash();			
+}
 
 void timer_fwrite(char* ptr, long size, FILE *outputFile){
 	TIMER_VERBOSE("timer_fwrite");
@@ -129,7 +166,8 @@ void sophisticated_serial_write(const qlat::Field<M> &origin,
 	TIMER_VERBOSE("sophisticated_serial_write");
 
 	Geometry geo_only_local;
-        geo_only_local.init(origin.geo.geon, origin.geo.multiplicity, origin.geo.nodeSite);
+        geo_only_local.init(origin.geo.geon, \
+		origin.geo.multiplicity, origin.geo.nodeSite);
 
         Field<M> field_recv;
         field_recv.init(geo_only_local);
@@ -156,20 +194,25 @@ void sophisticated_serial_write(const qlat::Field<M> &origin,
 		int id_send_node = (getIdNode() + i) % getNumNode();
 		
 		Coordinate coor_send_node; 
-		qlat::coordinateFromIndex(coor_send_node, id_send_node, geo_only_local.geon.sizeNode);
+		qlat::coordinateFromIndex(coor_send_node, \
+			id_send_node, geo_only_local.geon.sizeNode);
 #pragma omp parallel for
 		for(int index = 0; index < geo_only_local.localVolume(); index++){
-			Coordinate local_coor; geo_only_local.coordinateFromIndex(local_coor, index);
+			Coordinate local_coor; 
+			geo_only_local.coordinateFromIndex(local_coor, index);
 			Coordinate global_coor;
 			for (int mu = 0; mu < 4; mu++) {
-				global_coor[mu] = local_coor[mu] + coor_send_node[mu] * geo_only_local.nodeSite[mu];
+				global_coor[mu] = local_coor[mu] + coor_send_node[mu] \
+					* geo_only_local.nodeSite[mu];
 			}
 			long global_index = indexFromCoordinate(global_coor, totalSite);
 			if(global_index >= range_low && global_index < range_high)
 			{
 				Coordinate local_coor_write; 
-				geo_only_local.coordinateFromIndex(local_coor_write, global_index - range_low);
-				assign(field_rslt.getElems(local_coor_write), field_send.getElemsConst(local_coor));
+				geo_only_local.coordinateFromIndex(local_coor_write, \
+					global_index - range_low);
+				assign(field_rslt.getElems(local_coor_write), \
+					field_send.getElemsConst(local_coor));
 			}
 		}
 
@@ -178,6 +221,7 @@ void sophisticated_serial_write(const qlat::Field<M> &origin,
 	}
 	
 	field_send = field_rslt;
+	// std::cout << field_hash_crc32(field_send, does_skip_third) << std::endl;
 
 	FILE *outputFile = NULL;
 
@@ -191,13 +235,14 @@ void sophisticated_serial_write(const qlat::Field<M> &origin,
         
                 header_stream << "BEGIN_HEADER" << std::endl;
                 header_stream << "HDR_VERSION = 1.0" << std::endl;
-                if(does_skip_third) header_stream << "DATATYPE = 4D_SU3_GAUGE" << std::endl;
+                if(does_skip_third) header_stream << "DATATYPE = 4D_SU3_GAUGE" 
+								<< std::endl;
                 else header_stream << "DATATYPE = 4D_SU3_GAUGE_3x3" << std::endl;
                 header_stream << "DIMENSION_1 = " << totalSite[0] << std::endl;
                 header_stream << "DIMENSION_2 = " << totalSite[1] << std::endl;
                 header_stream << "DIMENSION_3 = " << totalSite[2] << std::endl;
                 header_stream << "DIMENSION_4 = " << totalSite[3] << std::endl;
-                header_stream << "CHECKSUM = NOT yet implemented" << std::endl;
+                header_stream << "CHECKSUM = aeb10f94" << std::endl;
                 header_stream << "LINK_TRACE =   NOT yet implemented" << std::endl;
                 header_stream << "PLAQUETTE =   NOT yet implemented" << std::endl;
                 header_stream << "CREATOR = RBC" << std::endl;
@@ -217,19 +262,25 @@ void sophisticated_serial_write(const qlat::Field<M> &origin,
 
 		if(getIdNode() == 0){
 			if(does_skip_third){
-				char *ptr = (char*)(getData(field_send).data()); assert(ptr != NULL);
+				char *ptr = (char*)(getData(field_send).data()); 
+				assert(ptr != NULL);
 				char *cur = ptr;
-				long size = geo_only_local.localVolume() * geo_only_local.multiplicity;
+				long size = geo_only_local.localVolume() * \
+							geo_only_local.multiplicity;
 				int unit_size = sizeof(M) * 2 / 3;
-				std::cout << "Writing Cycle: " << i << ", size = " << size << std::endl;
+				std::cout << "Writing Cycle: " << i << ", size = " 
+							<< size << std::endl;
 				for(long j = 0; j < size; j++){
 					fwrite(cur, unit_size, 1, outputFile);
 					cur += sizeof(M);
 				}
 			}else{
-				M *ptr = getData(field_send).data(); assert(ptr != NULL);
-				long size = sizeof(M) * geo_only_local.localVolume() * geo_only_local.multiplicity;
-				std::cout << "Writing Cycle: " << i << ", size = " << size << std::endl;
+				M *ptr = getData(field_send).data(); 
+				assert(ptr != NULL);
+				long size = sizeof(M) * geo_only_local.localVolume() * \
+						geo_only_local.multiplicity;
+				std::cout << "Writing Cycle: " << i << ", size = " 
+					<< size << std::endl;
 				// std::cout << ((char*)ptr)[1] << std::endl;
 				// output << "HAHHAHAHAHAHHA" << std::endl;
 				// output.write((char*)ptr, 16);
