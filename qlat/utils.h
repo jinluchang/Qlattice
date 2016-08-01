@@ -78,26 +78,6 @@ bool operator==(const std::vector<M>& x, const std::vector<M>& y)
   return x.size() == y.size() && 0 == memcmp(x.data(), y.data(), x.size() * sizeof(M));
 }
 
-inline bool operator<(const Coordinate& x, const Coordinate& y)
-{
-  return x[0] < y[0] && x[1] < y[1] && x[2] < y[2] && x[3] < y[3];
-}
-
-inline bool operator<=(const Coordinate& x, const Coordinate& y)
-{
-  return x[0] <= y[0] && x[1] <= y[1] && x[2] <= y[2] && x[3] <= y[3];
-}
-
-inline bool operator>(const Coordinate& x, const Coordinate& y)
-{
-  return x[0] > y[0] && x[1] > y[1] && x[2] > y[2] && x[3] > y[3];
-}
-
-inline bool operator>=(const Coordinate& x, const Coordinate& y)
-{
-  return x[0] >= y[0] && x[1] >= y[1] && x[2] >= y[2] && x[3] >= y[3];
-}
-
 template <class M> struct Vector;
 
 template <class M, int N>
