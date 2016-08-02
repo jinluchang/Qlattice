@@ -1,3 +1,5 @@
+SHELL=/bin/bash
+
 tests = lbl-muon-part \
 		rng-state-tests \
 		field-rng-tests
