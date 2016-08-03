@@ -11,140 +11,71 @@
 
 #include <stdio.h>
 #include <ctime>
+#include <array>
 
 QLAT_START_NAMESPACE       
 
-template<class M>
-void naive_serial_export(const qlat::Field<M> &origin, const std::string &export_addr){
+typedef std::array<Complex, 6> MatrixTruncatedSU3;
+typedef std::array<Complex, 9> MatrixSU3;
 
-	int MPI_rank_id;
-	MPI_Comm_rank(getComm(), &MPI_rank_id);
-	if(MPI_rank_id == 0) qlat::truncate(export_addr);
+template<class M, class N>
+void castTruncated(M &x, const N &y)
+{
+	assert(sizeof(M) <= sizeof(N));
+	memcpy(&x, &y, sizeof(M));
+}
 
-	std::ofstream output;
-	
-	Geometry geo_only_local;
-	geo_only_local.init(origin.geo.geon, origin.geo.multiplicity, origin.geo.nodeSite);
-
-	Field<M> field_only_local;
-	field_only_local.init(geo_only_local);
-
-	field_only_local = origin;
-
-	for(int i = 0; i < geo_only_local.geon.numNode; i++){
-		
-		MPI_Comm_rank(getComm(), &MPI_rank_id);
-		
-		if(MPI_rank_id == i){
-			
-			std::cout << "Node ID: " << MPI_rank_id << std::endl;
-		
-			output.open(export_addr.c_str(), std::ios::app);	
-			if(i == 0){
-				time_t now = std::time(NULL);
-				output << std::ctime(&now) << std::endl;
-				output << "END HEADER" << std::endl;
-			}
-			M *ptr = getData(field_only_local).data();
-			long size = sizeof(M) * geo_only_local.localVolume() * geo_only_local.multiplicity;
-			std::cout << size << std::endl;
-			output.write((char*)ptr, size);
-			output.close();
+template<class M, class N>
+void fieldCastTruncated(Field<M> &dest, const Field<N> &src)
+{
+	TIMER("fieldCastTruncated");
+	const Geometry& geo = src.geo;
+	dest.init(geo);
+#pragma omp parallel for
+	for (long index = 0; index < geo.localVolume(); ++index) {
+		Coordinate xl; geo.coordinateFromIndex(xl, index);
+		const Vector<N> s = src.getElemsConst(xl);
+		Vector<M> d = dest.getElems(xl);
+		for (int m = 0; m < geo.multiplicity; ++m) {
+			castTruncated(d[m], s[m]);
 		}
-
-		syncNode();
 	}
 }
 
 template<class M>
-void naive_multiple_write(const qlat::Field<M> &origin, const std::string &export_addr){
-
-	std::ofstream output;
-
-	Geometry geo_only_local;
-	geo_only_local.init(origin.geo.geon, origin.geo.multiplicity, origin.geo.nodeSite);
-
-	Field<M> field_only_local;
-	field_only_local.init(geo_only_local);
-
-	field_only_local = origin;
-
-	std::string real_export_addr = export_addr + "_node" + show((long)getIdNode());
-	truncate(real_export_addr);
-
-	output.open(real_export_addr.c_str());
-
-	time_t now = std::time(NULL);
-	output << std::ctime(&now) << std::endl;
-	output << "END HEADER" << std::endl;
-
-	M *ptr = getData(field_only_local).data();
-	long size = sizeof(M) * geo_only_local.localVolume() * geo_only_local.multiplicity;
-	output.write((char*)ptr, size);
-	output.close();
-
+uint32_t fieldChecksumSum32(const Field<M> &f)
+{
+	TIMER("fieldChecksumSum32");
+	assert(f.geo.isOnlyLocal());
+	assert(sizeof(M) % sizeof(uint32_t) == 0);
+	long sum = 0;
+	const uint32_t *data = (const uint32_t *)f.field.data();
+	const long size = f.field.size() * sizeof(M) / sizeof(uint32_t);
+	for (long i = 0; i < size; ++i) {
+		sum += data[i];
+	}
+	glbSum(sum);
+	uint32_t cs = sum;
+	DisplayInfo(cname, fname, "check sum = %x\n", cs);
+	return cs;
 }
 
-// template<class M>
-// void naive_multiple_read(const qlat::Field<M> &origin, const std::string &export_addr){
-// 
-// 	int MPI_rank_id;
-// 	MPI_Comm_rank(getComm(), &MPI_rank_id);
-// 
-// 	std::ofstream output;
-// 
-// 	Geometry geo_only_local;
-// 	geo_only_local.init(origin.geo.geon, origin.geo.multiplicity, origin.geo.nodeSite);
-// 
-// 	Field<M> field_only_local;
-// 	field_only_local.init(geo_only_local);
-// 
-// 	field_only_local = origin;
-// 
-// 	std::string real_export_addr = export_addr + "_node" + show((long)getIdNode());
-// 	truncate(real_export_addr);
-// 
-// 	output.open(real_export_addr.c_str());
-// 
-// 	time_t now = std::time(NULL);
-// 	output << std::ctime(&now) << std::endl;
-// 	output << "END HEADER" << std::endl;
-// 
-// 	M *ptr = getData(field_only_local).data();
-// 	long size = sizeof(M) * geo_only_local.localVolume() * geo_only_local.multiplicity;
-// 	output.write((char*)ptr, size);
-// 	output.close();
-// 
-// }
 template<class M>
-std::string field_hash_crc32(const qlat::Field<M> &origin,
-			const bool does_skip_third = false){
+std::string field_hash_crc32(const qlat::Field<M> &origin){
 	// somehow this checksum function does not agree with CPS's one.
 	// Do not know why. But I am not sure what algorithm CPS uses.
 	
+	TIMER("field_hash_crc32");
+
 	Geometry geo_only_local;
         geo_only_local.init(origin.geo.geon, \
 		origin.geo.multiplicity, origin.geo.nodeSite);
 	CRC32 crc32;
-	CRC32 ct;
 	void *buffer = (void *)&crc32;
 	for(int id_node = 0; id_node < getNumNode(); id_node++){
 		if(getIdNode() == id_node){
-			if(does_skip_third){
-				char *ptr = (char *)(getData(origin).data()); 
-				assert(ptr != NULL);
-				char *cur = ptr;
-				long size = getData(origin).size();
-				std::cout << size << std::endl;
-				int unit_size = sizeof(M) * 2 / 3;
-				for(long j = 0; j < size; j++){
-					crc32.add((void *)cur, unit_size);
-					cur += sizeof(M);
-				}
-			}else{
-				crc32.add((void *)getData(origin).data(), \
-						getData(origin).size() * sizeof(M));
-			}
+			crc32.add((void *)getData(origin).data(), \
+				getData(origin).size() * sizeof(M));
 		}
 		syncNode();
 		MPI_Bcast(buffer, 4, MPI_BYTE, id_node, getComm());
@@ -153,7 +84,7 @@ std::string field_hash_crc32(const qlat::Field<M> &origin,
 }
 
 void timer_fwrite(char* ptr, long size, FILE *outputFile){
-	TIMER_VERBOSE("timer_fwrite");
+	TIMER("timer_fwrite");
 	fwrite(ptr, size, 1, outputFile);
 }
 
@@ -163,7 +94,7 @@ void sophisticated_serial_write(const qlat::Field<M> &origin,
 		const bool is_append = false,
 		const bool does_skip_third = false){
 	
-	TIMER_VERBOSE("sophisticated_serial_write");
+	TIMER("sophisticated_serial_write");
 
 	Geometry geo_only_local;
         geo_only_local.init(origin.geo.geon, \
@@ -221,7 +152,13 @@ void sophisticated_serial_write(const qlat::Field<M> &origin,
 	}
 	
 	field_send = field_rslt;
-	// std::cout << field_hash_crc32(field_send, does_skip_third) << std::endl;
+	std::string crc32Hash = field_hash_crc32(field_send); 
+	std::cout << crc32Hash << std::endl;
+	
+	std::ostringstream checksumSum; 
+	checksumSum.setf(std::ios::hex, std::ios::basefield);
+	checksumSum << fieldChecksumSum32(field_send);
+	std::cout << checksumSum.str() << std::endl;
 
 	FILE *outputFile = NULL;
 
@@ -242,7 +179,8 @@ void sophisticated_serial_write(const qlat::Field<M> &origin,
                 header_stream << "DIMENSION_2 = " << totalSite[1] << std::endl;
                 header_stream << "DIMENSION_3 = " << totalSite[2] << std::endl;
                 header_stream << "DIMENSION_4 = " << totalSite[3] << std::endl;
-                header_stream << "CHECKSUM = aeb10f94" << std::endl;
+                header_stream << "CRC32HASH = " << crc32Hash << std::endl;
+                header_stream << "CHECKSUM = " << checksumSum.str() << std::endl;
                 header_stream << "LINK_TRACE =   NOT yet implemented" << std::endl;
                 header_stream << "PLAQUETTE =   NOT yet implemented" << std::endl;
                 header_stream << "CREATOR = RBC" << std::endl;
@@ -261,33 +199,17 @@ void sophisticated_serial_write(const qlat::Field<M> &origin,
 	for(int i = 0; i < getNumNode(); i++){
 
 		if(getIdNode() == 0){
-			if(does_skip_third){
-				char *ptr = (char*)(getData(field_send).data()); 
-				assert(ptr != NULL);
-				char *cur = ptr;
-				long size = geo_only_local.localVolume() * \
-							geo_only_local.multiplicity;
-				int unit_size = sizeof(M) * 2 / 3;
-				std::cout << "Writing Cycle: " << i << ", size = " 
-							<< size << std::endl;
-				for(long j = 0; j < size; j++){
-					fwrite(cur, unit_size, 1, outputFile);
-					cur += sizeof(M);
-				}
-			}else{
-				M *ptr = getData(field_send).data(); 
-				assert(ptr != NULL);
-				long size = sizeof(M) * geo_only_local.localVolume() * \
-						geo_only_local.multiplicity;
-				std::cout << "Writing Cycle: " << i << ", size = " 
-					<< size << std::endl;
-				// std::cout << ((char*)ptr)[1] << std::endl;
-				// output << "HAHHAHAHAHAHHA" << std::endl;
-				// output.write((char*)ptr, 16);
-				timer_fwrite((char*)ptr, size, outputFile); 
-				fflush(outputFile);
-			}
-			// syncNode();
+			M *ptr = getData(field_send).data(); 
+			assert(ptr != NULL);
+			long size = sizeof(M) * geo_only_local.localVolume() * \
+				    geo_only_local.multiplicity;
+			std::cout << "Writing Cycle: " << i << ", size = " 
+				<< size << std::endl;
+			// std::cout << ((char*)ptr)[1] << std::endl;
+			// output << "HAHHAHAHAHAHHA" << std::endl;
+			// output.write((char*)ptr, 16);
+			timer_fwrite((char*)ptr, size, outputFile); 
+			fflush(outputFile);
 		}
 
 		getDataDir(getData(field_recv), getData(field_send), 0);
@@ -345,7 +267,7 @@ void sophisticated_serial_read(qlat::Field<M> &destination,
 	//
 	FILE *inputFile = NULL;
 
-// Well as you can see this is not really serial reading anymore. The sertial reading speed is unbearable slow.
+// Well as you can see this is not really serial reading anymore. The sertial reading speed is unbearablly slow.
 // Anyway it is tested. And it seems to be right.
 	inputFile = fopen(read_addr.c_str(), "rb"); assert(!ferror(inputFile));
 	char line[1000];
@@ -367,12 +289,15 @@ void sophisticated_serial_read(qlat::Field<M> &destination,
 		cycle_limit = 1;
 	for(int cycle = 0; cycle < cycle_limit; cycle++){
 		if(getIdNode() % cycle_limit == cycle){
-			std::cout << "Reading Started: Node Number =\t" << getIdNode() << std::endl;
+			std::cout << "Reading Started: Node Number =\t" 
+				<< getIdNode() << std::endl;
 			M *ptr = getData(field_send).data();
-			long size = sizeof(M) * geo_only_local.localVolume() * geo_only_local.multiplicity;
+			long size = sizeof(M) * geo_only_local.localVolume() * \
+				geo_only_local.multiplicity;
 			assert(!fseek(inputFile, size * getIdNode(), SEEK_CUR));
 			timer_fread((char*)ptr, size, inputFile);
-			std::cout << "Reading Finished: Node Number =\t" << getIdNode() << std::endl;
+			std::cout << "Reading Finished: Node Number =\t" 
+				<< getIdNode() << std::endl;
 			fclose(inputFile);
 		}
 		syncNode();

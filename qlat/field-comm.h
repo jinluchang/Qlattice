@@ -15,21 +15,12 @@ QLAT_START_NAMESPACE
 template <class M>
 void fetch_expanded(Field<M> &field_comm){
 
-	Coordinate A(-1, 0, 1, 0), B(1, 0, 1, 0);
-	if(getIdNode() == 0){
-		std::cout << "Test for Coordinate: " << std::endl;
-		std::cout << "A = " << A << std::endl;
-		std::cout << "B = " << B << std::endl;
-		std::cout << "A < B = " << (A < B) << std::endl;
-		std::cout << "B < A = " << (B < A) << std::endl;
-	}
-
 	// tested for expansion = 2 case.
 
 	TIMER("fetch_expanded");
 
-	std::map<Coordinate, std::vector<M>, CoordinateLess> send_map;
-	std::map<Coordinate, int, CoordinateLess> send_map_consume;
+	std::map<Coordinate, std::vector<M> > send_map;
+	std::map<Coordinate, int> send_map_consume;
 
 	Coordinate pos; // coordinate position of a site relative to this node
 	Coordinate local_pos; // coordinate position of a site relative to its home node
