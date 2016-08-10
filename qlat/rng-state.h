@@ -3,9 +3,9 @@
 #include <qlat/config.h>
 
 #include <timer.h>
-// #include <hash-cpp/sha256.h>
+#include <hash-cpp/sha256.h>
 
-#include <openssl/sha.h>
+// #include <openssl/sha.h>
 #include <cstring>
 #include <cmath>
 
@@ -78,10 +78,10 @@ inline void shiftRngState(RngState& rs, const uint64_t shift = 1)
 
 inline void computeHash(uint8_t hash[4*8], const uint8_t* data, const long size)
 {
-    // SHA256 sha;
-    // sha.add(data, size);
-    // sha.getHash(hash);
-    SHA256(data, size, hash);
+    SHA256 sha;
+    sha.add(data, size);
+    sha.getHash(hash);
+    // SHA256(data, size, hash);
 }
 
 inline uint64_t randGen(RngState& rs)
