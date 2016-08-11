@@ -249,20 +249,26 @@ namespace sha256 {
     newHash[7] = h + oldHash[7];
   }
 
-  inline void processBuffer(
+  inline void processInput(
       uint32_t hash[8],
       const uint32_t oldHash[8], const uint64_t numBytes,
-      const uint8_t* input, const size_t bufferSize)
+      const uint8_t* input, const size_t inputSize)
     // process final block, less than 64 bytes
   {
     // the input bytes are considered as bits strings, where the first bit is the most significant bit of the byte
     // - append "1" bit to message
     // - append "0" bits until message length in bit mod 512 is 448
     // - append length as 64 bit integer
+    // process initial parts of input
+    std::memcpy(hash, oldHash, 32);
+    const int nBlocks = inputSize / 64;
+    for (int i = 0; i < nBlocks; ++i) {
+      processBlock(hash, hash, input + i * 64);
+    }
     // initialize buffer from input
-    assert(bufferSize <= BlockSize);
+    const size_t bufferSize = inputSize - nBlocks * 64;
     unsigned char buffer[BlockSize];
-    std::memcpy(buffer, input, bufferSize);
+    std::memcpy(buffer, input + nBlocks * 64, bufferSize);
     // number of bits
     size_t paddedLength = bufferSize * 8;
     // plus one bit set to 1 (always appended)
@@ -285,12 +291,14 @@ namespace sha256 {
       extra[0] = 128;
     }
     size_t i;
-    for (i = bufferSize + 1; i < BlockSize; i++)
+    for (i = bufferSize + 1; i < BlockSize; i++) {
       buffer[i] = 0;
-    for (; i < paddedLength; i++)
+    }
+    for (; i < paddedLength; i++) {
       extra[i - BlockSize] = 0;
+    }
     // add message length in bits as 64 bit number
-    uint64_t msgBits = 8 * (numBytes + bufferSize);
+    uint64_t msgBits = 8 * (numBytes + inputSize);
     // find right position
     unsigned char* addLength;
     if (paddedLength < BlockSize) {
@@ -308,7 +316,7 @@ namespace sha256 {
     *addLength++ = (unsigned char)((msgBits >>  8) & 0xFF);
     *addLength   = (unsigned char)( msgBits        & 0xFF);
     // process blocks
-    processBlock(hash, oldHash, buffer);
+    processBlock(hash, hash, buffer);
     // flowed over into a second block ?
     if (paddedLength > BlockSize) {
       processBlock(hash, hash, extra);
@@ -327,10 +335,13 @@ inline void splitRngState(RngState& rs, const RngState& rs0, const std::string& 
   } else {
     data = ssprintf("%lug S:%s", rs0.index, str.c_str());
   }
-  assert(data.length() <= 64);
-  data.resize(64, ' ');
+  const int nBlocks = (data.length() - 1) / 64 + 1;
+  data.resize(nBlocks * 64, ' ');
   sha256::processBlock(rs.hash, rs0.hash, (const uint8_t*)data.c_str());
-  rs.numBytes = rs0.numBytes + 64;
+  for (int i = 1; i < nBlocks; ++i) {
+    sha256::processBlock(rs.hash, rs.hash, (const uint8_t*)data.c_str() + i * 64);
+  }
+  rs.numBytes = rs0.numBytes + nBlocks * 64;
   rs.index = 0;
   rs.cache[0] = 0;
   rs.cache[1] = 0;
@@ -381,8 +392,8 @@ inline uint64_t randGen(RngState& rs)
   } else {
     uint32_t hash[8];
     std::string buffer = show(rs.index);
-    assert(buffer.length() + 1 <= 64);
-    sha256::processBuffer(hash, rs.hash, rs.numBytes, (const uint8_t*)buffer.c_str(), buffer.length() + 1);
+    const size_t size = buffer.length() + 1;
+    sha256::processInput(hash, rs.hash, rs.numBytes, (const uint8_t*)buffer.c_str(), size);
     rs.cache[0] = patchTwoUint32(hash[0], hash[1]);
     rs.cache[1] = patchTwoUint32(hash[2], hash[3]);
     rs.cache[2] = patchTwoUint32(hash[4], hash[5]);
