@@ -12,7 +12,8 @@ tar xaf $distfiles/$name-*.tar.*
 
 cd $name-*
 ./config \
-    --prefix=$prefix
+    --prefix=$prefix \
+    shared
 make -j$num_proc
 make install
 
