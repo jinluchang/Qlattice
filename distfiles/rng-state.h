@@ -1,3 +1,5 @@
+// vim: set ts=2 sw=2 expandtab:
+
 // Copyright (c) 2016 Luchang Jin
 // All rights reserved.
 
