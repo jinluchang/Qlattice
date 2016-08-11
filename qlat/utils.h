@@ -389,26 +389,13 @@ inline void shiftCoordinateSub(Coordinate& x, const Coordinate& shift)
   x[3] -= shift[3];
 }
 
-inline int vssprintf(std::string& str, const char* fmt, va_list args)
-{
-  char* cstr;
-  int ret = vasprintf(&cstr, fmt, args);
-  str += std::string(cstr);
-  std::free(cstr);
-  return ret;
-}
-
-inline int ssprintf(std::string& str, const char* fmt, ...)
-{
-  va_list args;
-  va_start(args, fmt);
-  return vssprintf(str, fmt, args);
-}
-
 inline std::string vssprintf(const char* fmt, va_list args)
 {
   std::string str;
-  vssprintf(str, fmt, args);
+  char* cstr;
+  vasprintf(&cstr, fmt, args);
+  str += std::string(cstr);
+  std::free(cstr);
   return str;
 }
 

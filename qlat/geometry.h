@@ -238,12 +238,12 @@ struct Geometry
 std::string show(const Geometry& geo)
 {
   std::string s;
-  ssprintf(s, "{ initialized = %s\n", show(geo.initialized).c_str());
-  ssprintf(s, ", geon        =\n%s\n" , show(geo.geon).c_str());
-  ssprintf(s, ", nodeSite    = %s\n", show(geo.nodeSite).c_str());
-  ssprintf(s, ", expanLeft   = %s\n", show(geo.expansionLeft).c_str());
-  ssprintf(s, ", expanRight  = %s\n", show(geo.expansionRight).c_str());
-  ssprintf(s, ", nodeSiteExp = %s }", show(geo.nodeSiteExpanded).c_str());
+  s += ssprintf("{ initialized = %s\n", show(geo.initialized).c_str());
+  s += ssprintf(", geon        =\n%s\n" , show(geo.geon).c_str());
+  s += ssprintf(", nodeSite    = %s\n", show(geo.nodeSite).c_str());
+  s += ssprintf(", expanLeft   = %s\n", show(geo.expansionLeft).c_str());
+  s += ssprintf(", expanRight  = %s\n", show(geo.expansionRight).c_str());
+  s += ssprintf(", nodeSiteExp = %s }", show(geo.nodeSiteExpanded).c_str());
   return s;
 }
 
