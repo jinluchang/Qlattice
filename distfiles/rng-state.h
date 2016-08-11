@@ -16,7 +16,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
 // Code within namespace sha256 are from Stephan Brumme.
 // see http://create.stephan-brumme.com/disclaimer.html
 
@@ -318,26 +317,32 @@ namespace sha256 {
 
 }
 
-inline void splitRngState(RngState& r, const RngState& r0, const std::string& str)
-  // produce a new rng ``r'' uniquely identified by r0 and str
-  // will not affect old rng ``r0''
+inline void splitRngState(RngState& rs, const RngState& rs0, const std::string& str)
+  // produce a new rng ``rs'' uniquely identified by ``rs0'' and ``str''
+  // will not affect old rng ``rs0''
 {
-  r.init();
   std::string data;
-  if (false == r.gaussionAvail) {
-    data = ssprintf("%lu S:%s", r0.index, str.c_str());
+  if (false == rs.gaussionAvail) {
+    data = ssprintf("%lu S:%s", rs0.index, str.c_str());
   } else {
-    data = ssprintf("%lug S:%s", r0.index, str.c_str());
+    data = ssprintf("%lug S:%s", rs0.index, str.c_str());
   }
   assert(data.length() <= 64);
   data.resize(64, ' ');
-  sha256::processBlock(r.hash, r0.hash, (const uint8_t*)data.c_str());
-  r.numBytes = r0.numBytes + 64;
+  sha256::processBlock(rs.hash, rs0.hash, (const uint8_t*)data.c_str());
+  rs.numBytes = rs0.numBytes + 64;
+  rs.index = 0;
+  rs.cache[0] = 0;
+  rs.cache[1] = 0;
+  rs.cache[2] = 0;
+  rs.gaussion = 0.0;
+  rs.cacheAvail = 0;
+  rs.gaussionAvail = false;
 }
 
-inline void splitRngState(RngState& r, const RngState& r0, const long sindex = 0)
+inline void splitRngState(RngState& rs, const RngState& rs0, const long sindex = 0)
 {
-  splitRngState(r, r0, show(sindex));
+  splitRngState(rs, rs0, show(sindex));
 }
 
 inline void reset(RngState& rs)
@@ -424,5 +429,3 @@ inline double gRandGen(RngState& rs, const double sigma = 1.0, const double cent
     return v2 * fac * sigma + center;
   }
 }
-
-
