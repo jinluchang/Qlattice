@@ -44,6 +44,7 @@ struct RngState
   inline void init();
   //
   RngState();
+  RngState(const std::string& seed);
   RngState(const long seed);
 };
 
@@ -361,15 +362,26 @@ inline void reset(RngState& rs)
   rs.init();
 }
 
+inline void reset(RngState& rs, const std::string& seed)
+{
+  rs.init();
+  splitRngState(rs, rs, seed);
+}
+
 inline void reset(RngState& rs, const long seed)
 {
-  RngState r0;
-  splitRngState(rs, r0, seed);
+  rs.init();
+  splitRngState(rs, rs, seed);
 }
 
 inline RngState::RngState()
 {
   init();
+}
+
+inline RngState::RngState(const std::string& seed)
+{
+  reset(*this, seed);
 }
 
 inline RngState::RngState(const long seed)
