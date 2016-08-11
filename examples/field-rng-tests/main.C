@@ -25,8 +25,11 @@ void test1()
   const int seed = 1231;
   const int type = 1;
   const int traj = 1;
+  RngState rs(seed);
+  splitRngState(rs, rs, type);
+  splitRngState(rs, rs, traj);
   RngField rf;
-  rf.init(geo, seed, type, traj);
+  rf.init(geo, rs);
   FieldM<Complex,1> af;
   FieldM<double,1> sumf;
   FieldM<double,1> sigma2f;

@@ -134,7 +134,7 @@ inline const GeometryNode& getGeometryNode()
 
 std::string show(const GeometryNode& geon) {
   std::string s;
-  s += ssprintf("{ initialized = %s\n", show(geon.initialized).c_str());
+  s += ssprintf("{ initialized = %s\n", ::show(geon.initialized).c_str());
   s += ssprintf(", numNode     = %d\n", geon.numNode);
   s += ssprintf(", idNode      = %d\n", geon.idNode);
   s += ssprintf(", sizeNode    = %s\n", show(geon.sizeNode).c_str());

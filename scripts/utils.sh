@@ -2,11 +2,13 @@
 
 . conf.sh
 
-name=timer
+name=utils
 echo "!!!! build $name !!!!"
 
 mkdir -p $prefix/include
 cp -v $distfiles/timer.h $prefix/include/
+cp -v $distfiles/show.h $prefix/include/
+cp -v $distfiles/rng-state.h $prefix/include/
 
 echo "!!!! $name build !!!!"
 

@@ -2,7 +2,8 @@
 
 #include <qlat/config.h>
 #include <qlat/field.h>
-#include <qlat/rng-state.h>
+
+#include <rng-state.h>
 
 #include <cassert>
 
@@ -19,7 +20,7 @@ struct RngField : FieldM<RngState,1>
   {
     FieldM<RngState,1>::init();
   }
-  virtual void init(const Geometry& geo_, const uint64_t seed, const uint64_t type, const uint64_t traj)
+  virtual void init(const Geometry& geo_, const RngState& rs)
   {
     FieldM<RngState,1>::init(geo_);
     Coordinate totalSite;
@@ -31,7 +32,7 @@ struct RngField : FieldM<RngState,1>
       Coordinate x; geo.coordinateFromIndex(x, index);
       Coordinate xg; geo.coordinateGfL(xg, x);
       long gindex = indexFromCoordinate(xg, totalSite);
-      getElem(x).init(seed, type, traj, gindex);
+      splitRngState(getElem(x), gindex);
     }
   }
   //

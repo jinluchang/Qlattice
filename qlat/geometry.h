@@ -238,7 +238,7 @@ struct Geometry
 std::string show(const Geometry& geo)
 {
   std::string s;
-  s += ssprintf("{ initialized = %s\n", show(geo.initialized).c_str());
+  s += ssprintf("{ initialized = %s\n", ::show(geo.initialized).c_str());
   s += ssprintf(", geon        =\n%s\n" , show(geo.geon).c_str());
   s += ssprintf(", nodeSite    = %s\n", show(geo.nodeSite).c_str());
   s += ssprintf(", expanLeft   = %s\n", show(geo.expansionLeft).c_str());

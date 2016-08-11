@@ -62,7 +62,7 @@ void test3()
 {
   TIMER("test3");
   RngState rs(0);
-  rs.init(123123);
+  reset(rs, 123123);
   const int Nb = 128;
   const int Ni = 8;
   const int Ndrop = 1024;
@@ -74,7 +74,7 @@ void test3()
     for (int id = 0; id < Ni; id++) {
       int index = block * Ni + id;
       // Comment out the line below to see the correct result
-      rs.init(0, 0, index);
+      reset(rs, index);
       for (int i = 0; i < Ndrop; i++) {
         uRandGen(rs);
       }

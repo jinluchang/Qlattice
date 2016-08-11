@@ -36,7 +36,7 @@ fi
 ./scripts/lapack.sh
 ./scripts/eigen.sh
 ./scripts/hash-cpp.sh
-./scripts/timer.sh
+./scripts/utils.sh
 ./scripts/qlat.sh
 ./scripts/setenv.sh
 
