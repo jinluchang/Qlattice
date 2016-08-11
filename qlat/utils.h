@@ -415,11 +415,11 @@ inline std::string show(const long& x) {
 }
 
 inline std::string show(const double& x) {
-  return ssprintf("%24.16E", x);
+  return ssprintf("%23.16E", x);
 }
 
 inline std::string show(const Complex& x) {
-  return ssprintf("(%24.16E + %24.16E j)", x.real(), x.imag());
+  return ssprintf("(%23.16E + %23.16E j)", x.real(), x.imag());
 }
 
 inline std::string show(const bool& x) {
