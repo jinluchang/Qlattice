@@ -16,8 +16,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef INCLUDED_TIMER_H
-#define INCLUDED_TIMER_H
+#pragma once
 
 #include <vector>
 #include <string>
@@ -69,6 +68,20 @@ inline double getStartTime()
 inline double getTotalTime()
 {
   return getTime() - getStartTime();
+}
+
+inline void Printf(const char* format, ...)
+{
+  static int rank = getRank();
+  if (0 != rank) {
+    return;
+  }
+  va_list args;
+  va_start(args, format);
+  char* str;
+  vasprintf(&str, format, args);
+  std::printf("%s", str);
+  std::free(str);
 }
 
 inline void Display(const char* cname, const char* fname, const char* format, ...)
@@ -437,5 +450,3 @@ inline void timer_free(void* ptr)
 #define tmalloc(x) timer_malloc(x)
 
 #define tfree(x) timer_free(x)
-
-#endif
