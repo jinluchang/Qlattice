@@ -32,7 +32,7 @@ struct RngField : FieldM<RngState,1>
       Coordinate x; geo.coordinateFromIndex(x, index);
       Coordinate xg; geo.coordinateGfL(xg, x);
       long gindex = indexFromCoordinate(xg, totalSite);
-      splitRngState(getElem(x), gindex);
+      splitRngState(getElem(x), rs, gindex);
     }
   }
   //
