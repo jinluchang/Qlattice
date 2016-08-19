@@ -92,6 +92,19 @@ struct RngState
   {
     splitRngState(*this, rs0, sindex);
   }
+  //
+  RngState split(const std::string& sindex)
+  {
+    RngState rs;
+    splitRngState(rs, *this, sindex);
+    return rs;
+  }
+  RngState split(const long sindex)
+  {
+    RngState rs;
+    splitRngState(rs, *this, sindex);
+    return rs;
+  }
 };
 
 namespace sha256 {
