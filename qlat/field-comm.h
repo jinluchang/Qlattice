@@ -17,7 +17,7 @@ void fetch_expanded(Field<M> &field_comm){
 
 	// tested for expansion = 2 case.
 
-	TIMER("fetch_expanded");
+	TIMER_VERBOSE("fetch_expanded");
 
 	std::map<Coordinate, std::vector<M> > send_map;
 	std::map<Coordinate, int> send_map_consume;
