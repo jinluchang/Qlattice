@@ -95,14 +95,12 @@ struct RngState
   //
   RngState split(const std::string& sindex)
   {
-    RngState rs;
-    splitRngState(rs, *this, sindex);
+    RngState rs(*this, sindex);
     return rs;
   }
   RngState split(const long sindex)
   {
-    RngState rs;
-    splitRngState(rs, *this, sindex);
+    RngState rs(*this, sindex);
     return rs;
   }
 };
