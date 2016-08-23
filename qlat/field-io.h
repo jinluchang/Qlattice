@@ -89,12 +89,8 @@ void timer_fwrite(char* ptr, long size, FILE *outputFile){
 }
 
 template<class M>
-void sophisticated_serial_write(const qlat::Field<M> &origin, 
-		const std::string &write_addr, 
-		const bool is_append = false,
-		const bool does_skip_third = false){
-	
-	TIMER("sophisticated_serial_write");
+void sophisticated_make_to_order(Field<M> &result, const Field<M> &origin){
+	TIMER("sophisticated_make_to_order");
 
 	Geometry geo_only_local;
         geo_only_local.init(origin.geo.geon, \
@@ -150,51 +146,33 @@ void sophisticated_serial_write(const qlat::Field<M> &origin,
 		getDataDir(getData(field_recv), getData(field_send), 0);
 		swap(field_recv, field_send);	
 	}
+	result.init(geo_only_local);
+	result = field_rslt;
+}
+
+template<class M>
+void sophisticated_serial_write(const qlat::Field<M> &origin, 
+		const std::string &write_addr, 
+		const bool is_append = false){
 	
-	field_send = field_rslt;
-	std::string crc32Hash = field_hash_crc32(field_send); 
-	std::cout << crc32Hash << std::endl;
-	
-	std::ostringstream checksumSum; 
-	checksumSum.setf(std::ios::hex, std::ios::basefield);
-	checksumSum << fieldChecksumSum32(field_send);
-	std::cout << checksumSum.str() << std::endl;
+	TIMER("sophisticated_serial_write");
+
+
+	Geometry geo_only_local;
+        geo_only_local.init(origin.geo.geon, \
+		origin.geo.multiplicity, origin.geo.nodeSite);
+
+        Field<M> field_recv;
+        field_recv.init(geo_only_local);
+
+        Field<M> field_send;
+        field_send.init(geo_only_local);
+	field_send = origin;
 
 	FILE *outputFile = NULL;
-
-	if(getIdNode() == 0){
-		std::cout << "Node #0 open file!" << std::endl;
+	if(getIdNode() == 0)
 		if(is_append) outputFile = fopen(write_addr.c_str(), "a");
-        	else outputFile = fopen(write_addr.c_str(), "w");
-		assert(outputFile != NULL);
-
-                std::ostringstream header_stream;
-        
-                header_stream << "BEGIN_HEADER" << std::endl;
-                header_stream << "HDR_VERSION = 1.0" << std::endl;
-                if(does_skip_third) header_stream << "DATATYPE = 4D_SU3_GAUGE" 
-								<< std::endl;
-                else header_stream << "DATATYPE = 4D_SU3_GAUGE_3x3" << std::endl;
-                header_stream << "DIMENSION_1 = " << totalSite[0] << std::endl;
-                header_stream << "DIMENSION_2 = " << totalSite[1] << std::endl;
-                header_stream << "DIMENSION_3 = " << totalSite[2] << std::endl;
-                header_stream << "DIMENSION_4 = " << totalSite[3] << std::endl;
-                header_stream << "CRC32HASH = " << crc32Hash << std::endl;
-                header_stream << "CHECKSUM = " << checksumSum.str() << std::endl;
-                header_stream << "LINK_TRACE =   NOT yet implemented" << std::endl;
-                header_stream << "PLAQUETTE =   NOT yet implemented" << std::endl;
-                header_stream << "CREATOR = RBC" << std::endl;
-			time_t now = std::time(NULL);	
-                header_stream << "ARCHIVE_DATE = " << std::ctime(&now);
-                header_stream << "ENSEMBLE_LABEL = NOT yet implemented" << std::endl;
-                header_stream << "FLOATING_POINT = IEEE64BIG" << std::endl;
-                header_stream << "ENSEMBLE_ID = NOT yet implemented" << std::endl;
-                header_stream << "SEQUENCE_NUMBER = NOT yet implemented" << std::endl;
-                header_stream << "BETA = NOT yet implemented" << std::endl; 
-                header_stream << "END_HEADER" << std::endl;
-                
-                fputs(header_stream.str().c_str(), outputFile);
-	} 
+		else outputFile = fopen(write_addr.c_str(), "w");
 
 	for(int i = 0; i < getNumNode(); i++){
 
@@ -203,12 +181,8 @@ void sophisticated_serial_write(const qlat::Field<M> &origin,
 			assert(ptr != NULL);
 			long size = sizeof(M) * geo_only_local.localVolume() * \
 				    geo_only_local.multiplicity;
-			std::cout << "Writing Cycle: " << i << ", size = " 
-				<< size << std::endl;
-			// std::cout << ((char*)ptr)[1] << std::endl;
-			// output << "HAHHAHAHAHAHHA" << std::endl;
-			// output.write((char*)ptr, 16);
-			timer_fwrite((char*)ptr, size, outputFile); 
+			std::cout << "Writing Cycle: " << i << "\tsize = " << size << std::endl;
+			timer_fwrite((char *)ptr, size, outputFile); 
 			fflush(outputFile);
 		}
 
