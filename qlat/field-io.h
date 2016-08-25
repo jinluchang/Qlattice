@@ -170,9 +170,10 @@ void sophisticated_serial_write(const qlat::Field<M> &origin,
 	field_send = origin;
 
 	FILE *outputFile = NULL;
-	if(getIdNode() == 0)
+	if(getIdNode() == 0){
 		if(is_append) outputFile = fopen(write_addr.c_str(), "a");
 		else outputFile = fopen(write_addr.c_str(), "w");
+	}
 
 	for(int i = 0; i < getNumNode(); i++){
 

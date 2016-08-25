@@ -95,6 +95,13 @@ struct Geometry
 #endif
     resetDirOffset();
   }
+  void copyOnlyLocal(const Geometry& geo_){
+    this->init(geo_.geon, geo_.multiplicity);
+    // only local
+  }
+  void copyButExpand(const Geometry& geo_, int thick){
+    this->init(geo_); resize(thick);
+  }
   //
   void resize(const Coordinate& expansionLeft_, const Coordinate& expansionRight_)
   {
