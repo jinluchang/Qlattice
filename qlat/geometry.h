@@ -96,7 +96,7 @@ struct Geometry
     resetDirOffset();
   }
   void copyOnlyLocal(const Geometry& geo_){
-    this->init(geo_.geon, geo_.multiplicity);
+    this->init(geo_.geon, geo_.multiplicity, geo_.nodeSite);
     // only local
   }
   void copyButExpand(const Geometry& geo_, int thick){
