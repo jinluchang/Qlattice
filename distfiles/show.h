@@ -24,6 +24,11 @@
 #include <cstring>
 #include <cstdlib>
 #include <cstdio>
+#include <sstream>
+
+#ifdef CURRENT_DEFAULT_NAMESPACE_NAME
+namespace CURRENT_DEFAULT_NAMESPACE_NAME {
+#endif
 
 inline std::string vssprintf(const char* fmt, va_list args)
 {
@@ -69,7 +74,7 @@ inline std::string show(const unsigned long& x)
 
 inline std::string show(const double& x)
 {
-  return ssprintf("%23.16E", x);
+  return ssprintf("%24.17E", x);
 }
 
 inline std::string show(const bool& x)
@@ -83,3 +88,23 @@ inline std::string show(const std::string& x)
   out << x;
   return out.str();
 }
+
+template <class T>
+std::string shows(const T& x)
+{
+  std::ostringstream out;
+  out << x;
+  return out.str();
+}
+
+template <class T>
+T& reads(T& x, const std::string& str)
+{
+  std::istringstream in(str);
+  in >> x;
+  return x;
+}
+
+#ifdef CURRENT_DEFAULT_NAMESPACE_NAME
+}
+#endif
