@@ -107,11 +107,11 @@ struct RngState
 
 namespace sha256 {
 
-  const int BlockSize = 512 / 8;
+  const size_t BlockSize = 512 / 8;
 
-  const int HashBytes = 32;
+  const size_t HashBytes = 32;
 
-  const int HashValues = HashBytes / 4;
+  const size_t HashValues = HashBytes / 4;
 
   inline uint32_t rotate(uint32_t a, uint32_t c)
   {
@@ -396,8 +396,7 @@ inline void splitRngState(RngState& rs, const RngState& rs0, const std::string& 
   // will not affect old rng ``rs0''
   // the function should behave correctly even if ``rs'' is actually ``rs0''
 {
-  std::string data;
-  data = ssprintf("[%lu] {%s}", rs0.index, sindex.c_str());
+  std::string data = ssprintf("[%lu] {%s}", rs0.index, sindex.c_str());
   const int nBlocks = (data.length() - 1) / 64 + 1;
   data.resize(nBlocks * 64, ' ');
   sha256::processBlock(rs.hash, rs0.hash, (const uint8_t*)data.c_str());
