@@ -29,6 +29,12 @@
 #include <cmath>
 #include <cassert>
 #include <string>
+#include <ostream>
+#include <istream>
+
+#ifdef CURRENT_DEFAULT_NAMESPACE_NAME
+namespace CURRENT_DEFAULT_NAMESPACE_NAME {
+#endif
 
 struct RngState;
 
@@ -104,6 +110,48 @@ struct RngState
     return rs;
   }
 };
+
+inline std::ostream& operator<<(std::ostream& os, const RngState& rs)
+{
+  os << rs.numBytes << " ";
+  for (int i = 0; i < 8; ++i) {
+    os << rs.hash[i] << " ";
+  }
+  os << rs.index << " ";
+  for (int i = 0; i < 3; ++i) {
+    os << rs.cache[i] << " ";
+  }
+  os << show(rs.gaussion) << " ";
+  os << rs.cacheAvail << " ";
+  os << rs.gaussionAvail;
+  return os;
+}
+
+inline std::istream& operator>>(std::istream& is, RngState& rs)
+{
+  is >> rs.numBytes;
+  for (int i = 0; i < 8; ++i) {
+    is >> rs.hash[i];
+  }
+  is >> rs.index;
+  for (int i = 0; i < 3; ++i) {
+    is >> rs.cache[i];
+  }
+  is >> rs.gaussion;
+  is >> rs.cacheAvail;
+  is >> rs.gaussionAvail;
+  return is;
+}
+
+inline std::string show(const RngState& rs)
+{
+  return shows(rs);
+}
+
+inline bool operator==(const RngState& rs1, const RngState& rs2)
+{
+  return 0 == memcmp(&rs1, &rs2, sizeof(RngState));
+}
 
 namespace sha256 {
 
@@ -429,7 +477,9 @@ inline uint64_t randGen(RngState& rs)
   rs.index += 1;
   if (rs.cacheAvail > 0) {
     rs.cacheAvail -= 1;
-    return rs.cache[rs.cacheAvail];
+    uint64_t r = rs.cache[rs.cacheAvail];
+    rs.cache[rs.cacheAvail] = 0;
+    return r;
   } else {
     uint32_t hash[8];
     computeHashWithInput(hash, rs, ssprintf("[%lu]", rs.index));
@@ -479,3 +529,7 @@ inline double gRandGen(RngState& rs, const double sigma, const double center)
     return v2 * fac * sigma + center;
   }
 }
+
+#ifdef CURRENT_DEFAULT_NAMESPACE_NAME
+}
+#endif
