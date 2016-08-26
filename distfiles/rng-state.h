@@ -21,7 +21,7 @@
 
 #pragma once
 
-#include <show.h>
+#include "show.h"
 
 #include <stdint.h>
 #include <endian.h>
@@ -121,7 +121,8 @@ inline std::ostream& operator<<(std::ostream& os, const RngState& rs)
   for (int i = 0; i < 3; ++i) {
     os << rs.cache[i] << " ";
   }
-  os << show(rs.gaussion) << " ";
+  const uint64_t* p = (const uint64_t*)&rs.gaussion;
+  os << *p << " ";
   os << rs.cacheAvail << " ";
   os << rs.gaussionAvail;
   return os;
@@ -137,7 +138,8 @@ inline std::istream& operator>>(std::istream& is, RngState& rs)
   for (int i = 0; i < 3; ++i) {
     is >> rs.cache[i];
   }
-  is >> rs.gaussion;
+  uint64_t* p = (uint64_t*)&rs.gaussion;
+  is >> *p;
   is >> rs.cacheAvail;
   is >> rs.gaussionAvail;
   return is;
