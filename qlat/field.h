@@ -64,6 +64,10 @@ struct Field
   {
     assert(false);
   }
+  void fillZero()
+  {
+    memset(field.data(), 0, sizeof(M) * field.size());
+  }
   //
   const Field& operator=(const Field& f)
   {
