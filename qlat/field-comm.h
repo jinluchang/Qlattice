@@ -8,6 +8,7 @@
 
 #include <array>
 #include <map>
+#include <set>
 #include <vector>
 
 QLAT_START_NAMESPACE
@@ -113,19 +114,89 @@ void fetch_expanded(Field<M> &field_comm){
 
 class Chart: public std::map<Coordinate, std::vector<Coordinate> > {
 public:
-	Coordinate ExpandLeft, ExpandRight;
+	Coordinate expansionLeft, expansionRight;
 	Geometry geo;
 };
 
-// typedef std::map<Coordinate, std::vector<Coordinate> > Chart;
+enum gActionType {WILSON, IWASAKI};
 
-void produce_chart(Chart &chart, const Geometry geometry, const Coordinate &local){
+class gAction{
+public:
+	gActionType type;
+	double c1;
+};
+
+void produce_chart_envelope(Chart &chart, const Geometry geometry, const gAction &gA){
+	TIMER("produce_chart_envelope()");
+	
+	chart.geo = geometry;
+	std::set<Coordinate> target;
+
+	int muP, nuP;
+	switch(gA.type){
+		case WILSON: 	muP = 1;
+				nuP = 1;
+				chart.expansionLeft = Coordinate(1, 1, 1, 1);
+				chart.expansionRight = Coordinate(1, 1, 1, 1);
+				break;
+		case IWASAKI:	muP = 2;
+				nuP = 1;
+				chart.expansionLeft = Coordinate(2, 2, 2, 2);
+				chart.expansionRight = Coordinate(2, 2, 2, 2);
+				break;
+		default:	assert(false);
+	}
+
+	Coordinate index_pos;
+	Coordinate index_pos_m;
+	for(long index = 0; index < geometry.localVolume(); index++){
+		geometry.coordinateFromIndex(index_pos, index);
+		for(int mu = 0; mu < DIM; mu++){
+		for(int nu = 0; nu < DIM; nu++){
+			if(mu == nu) continue;
+			for(int muI = -muP; muI <= muP; muI++){
+			for(int nuI = -nuP; nuI <= nuP; nuI++){
+				index_pos_m = index_pos;
+				index_pos_m[mu] += muI;
+				index_pos_m[nu] += nuI;
+				if(!chart.geo.isLocal(index_pos_m))
+					target.insert(index_pos_m);
+			}}
+		}}
+	}
+
+	if(getIdNode() == 0) std::cout << "target size = " 
+						<< target.size() << std::endl;
+
+	Coordinate pos; // coordinate position of a site relative to this node
+	Coordinate local_pos; // coordinate position of a site relative to its home node
+	Coordinate node_pos; // home node coordinate of a site in node space
+
+	chart.clear();
+	std::set<Coordinate>::const_iterator it;
+	for(it = target.begin(); it != target.end(); it++){
+		pos = *it;
+		for(int mu = 0; mu < DIM; mu++){
+			local_pos[mu] = pos[mu] % geometry.nodeSite[mu];
+			node_pos[mu] = pos[mu] / geometry.nodeSite[mu];
+			if(local_pos[mu] < 0){
+				local_pos[mu] += geometry.nodeSite[mu];
+				node_pos[mu]--;
+			}
+		}
+		chart[node_pos].push_back(local_pos);
+	}
+}
+
+void produce_chart_geo(Chart &chart, const Geometry geometry){
 	
 	Coordinate pos; // coordinate position of a site relative to this node
 	Coordinate local_pos; // coordinate position of a site relative to its home node
 	Coordinate node_pos; // home node coordinate of a site in node space
 	
 	chart.geo = geometry;
+	chart.expansionLeft = geometry.expansionLeft;
+	chart.expansionRight = geometry.expansionRight;
 
 	chart.clear();
 	long record_size = geometry.localVolumeExpanded();
@@ -146,6 +217,12 @@ void produce_chart(Chart &chart, const Geometry geometry, const Coordinate &loca
 
 template <class M>
 void fetch_expanded_chart(Field<M> &field_comm, const Chart &send_chart){
+	TIMER("fetch_expanded_chart");
+
+	assert(isMatchingGeo(send_chart.geo, field_comm.geo));
+
+	std::map<Coordinate, std::vector<M> > send_map;
+	Coordinate node_pos; // home node coordinate of a site in node space
 
 // std::map<Coordinate, std::vector<Coordinate> >
 //           node_pos          local_pos
@@ -153,13 +230,6 @@ void fetch_expanded_chart(Field<M> &field_comm, const Chart &send_chart){
 //                                 ^
 //                                 |
 //                              it_coor
-
-	TIMER("fetch_expanded_chart");
-
-	assert(isMatchingGeo(send_chart.geo, field_comm.geo));
-
-	std::map<Coordinate, std::vector<M> > send_map;
-	Coordinate node_pos; // home node coordinate of a site in node space
 
 // populate send_map with the data that we need to send to other nodes
 	Chart::const_iterator it_chart;
