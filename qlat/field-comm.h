@@ -51,6 +51,9 @@ void fetch_expanded(Field<M> &field_comm){
 	// We ultimately copy the received data into the corresponding
 	// value of sendmap.
 	typename std::map<Coordinate, std::vector<M> >::iterator it;
+	
+	// pure communication
+	
 	for(it = send_map.begin(); it != send_map.end(); it++){
 		node_pos = it->first;
 		std::vector<M> &send_vec = it->second;
@@ -112,21 +115,24 @@ void fetch_expanded(Field<M> &field_comm){
 	}
 }
 
+template<class M>
 class Chart: public std::map<Coordinate, std::vector<Coordinate> > {
 public:
 	Coordinate expansionLeft, expansionRight;
 	Geometry geo;
+	std::map<Coordinate, std::vector<M> > send_map;
 };
 
 enum gActionType {WILSON, IWASAKI};
-
 class gAction{
 public:
 	gActionType type;
 	double c1;
+	gAction(){c1 = 0.; type = WILSON;}
 };
 
-void produce_chart_envelope(Chart &chart, const Geometry geometry, const gAction &gA){
+template<class M>
+void produce_chart_envelope(Chart<M> &chart, const Geometry geometry, const gAction &gA){
 	TIMER("produce_chart_envelope()");
 	
 	chart.geo = geometry;
@@ -165,9 +171,6 @@ void produce_chart_envelope(Chart &chart, const Geometry geometry, const gAction
 		}}
 	}
 
-	if(getIdNode() == 0) std::cout << "target size = " 
-						<< target.size() << std::endl;
-
 	Coordinate pos; // coordinate position of a site relative to this node
 	Coordinate local_pos; // coordinate position of a site relative to its home node
 	Coordinate node_pos; // home node coordinate of a site in node space
@@ -186,9 +189,17 @@ void produce_chart_envelope(Chart &chart, const Geometry geometry, const gAction
 		}
 		chart[node_pos].push_back(local_pos);
 	}
+
+	typename Chart<M>::iterator it_chart;
+	long size;
+	for(it_chart = chart.begin(); it_chart != chart.end(); it_chart++){
+		size = geometry.multiplicity * it_chart->second.size();
+		chart.send_map[it_chart->first].resize(size);
+	}
 }
 
-void produce_chart_geo(Chart &chart, const Geometry geometry){
+template<class M>
+void produce_chart_geo(Chart<M> &chart, const Geometry geometry){
 	
 	Coordinate pos; // coordinate position of a site relative to this node
 	Coordinate local_pos; // coordinate position of a site relative to its home node
@@ -213,15 +224,21 @@ void produce_chart_geo(Chart &chart, const Geometry geometry){
 		}
 		chart[node_pos].push_back(local_pos);
 	}
+	
+	typename Chart<M>::iterator it_chart;
+	long size;
+	for(it_chart = chart.begin(); it_chart != chart.end(); it_chart++){
+		size = geometry.multiplicity * it_chart->second.size();
+		chart.send_map[it_chart->first].resize(size);
+	}
 }
 
 template <class M>
-void fetch_expanded_chart(Field<M> &field_comm, const Chart &send_chart){
+void fetch_expanded_chart(Field<M> &field_comm, Chart<M> &send_chart){
 	TIMER("fetch_expanded_chart");
 
 	assert(isMatchingGeo(send_chart.geo, field_comm.geo));
 
-	std::map<Coordinate, std::vector<M> > send_map;
 	Coordinate node_pos; // home node coordinate of a site in node space
 
 // std::map<Coordinate, std::vector<Coordinate> >
@@ -232,15 +249,17 @@ void fetch_expanded_chart(Field<M> &field_comm, const Chart &send_chart){
 //                              it_coor
 
 // populate send_map with the data that we need to send to other nodes
-	Chart::const_iterator it_chart;
+	typename Chart<M>::const_iterator it_chart;
 	std::vector<Coordinate>::const_iterator it_coor;
 	for(it_chart = send_chart.begin(); it_chart != send_chart.end(); it_chart++){
 		node_pos = it_chart->first;
-		std::vector<M> &vec = send_map[node_pos];
+		long consume = 0;
+		std::vector<M> &vec = send_chart.send_map[node_pos];
 		for(it_coor = it_chart->second.begin(); 
 					it_coor != it_chart->second.end(); it_coor++){
 			for(int mu = 0; mu < field_comm.geo.multiplicity; mu++){
-				vec.push_back(field_comm.getElemsConst(*it_coor)[mu]);
+				vec[consume] = field_comm.getElemsConst(*it_coor)[mu];
+				consume++;
 			}
 		}
 	}
@@ -251,7 +270,10 @@ void fetch_expanded_chart(Field<M> &field_comm, const Chart &send_chart){
 // We ultimately copy the received data into the corresponding
 // value of sendmap.
 	typename std::map<Coordinate, std::vector<M> >::iterator it;
-	for(it = send_map.begin(); it != send_map.end(); it++){
+	
+	{
+	TIMER("pure_comm.");
+	for(it = send_chart.send_map.begin(); it != send_chart.send_map.end(); it++){
 		node_pos = it->first;
 		std::vector<M> &send_vec = it->second;
 		long size = send_vec.size();
@@ -284,14 +306,15 @@ void fetch_expanded_chart(Field<M> &field_comm, const Chart &send_chart){
 
 		memcpy(send, recv, size_bytes);
 	}
-
+	
+	}
 	Coordinate pos;
 // Now send_map[node_pos] is the vector of data recieved from the node
 // pointed to by key.
 	for(it_chart = send_chart.begin(); it_chart != send_chart.end(); it_chart++){
 		node_pos = it_chart->first;
 		long consume = 0;
-		std::vector<M> &vec = send_map[node_pos];
+		std::vector<M> &vec = send_chart.send_map[node_pos];
 		for(it_coor = it_chart->second.begin(); 
 					it_coor != it_chart->second.end(); it_coor++){
 			for(int mu = 0; mu < field_comm.geo.multiplicity; mu++){
