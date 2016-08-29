@@ -43,7 +43,7 @@ to compile all the examples:
 
 `$ make -C examples run`
 
-## Random number generator description:
+## Random number generator description (outdated):
 
 The state of the generator is a 512-bit unsigned integer stored in little
 endian format.
