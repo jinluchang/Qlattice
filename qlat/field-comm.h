@@ -114,6 +114,7 @@ void fetch_expanded(Field<M> &field_comm){
 class Chart: public std::map<Coordinate, std::vector<Coordinate> > {
 public:
 	Coordinate ExpandLeft, ExpandRight;
+	Geometry geo;
 };
 
 // typedef std::map<Coordinate, std::vector<Coordinate> > Chart;
@@ -123,7 +124,10 @@ void produce_chart(Chart &chart, const Geometry geometry, const Coordinate &loca
 	Coordinate pos; // coordinate position of a site relative to this node
 	Coordinate local_pos; // coordinate position of a site relative to its home node
 	Coordinate node_pos; // home node coordinate of a site in node space
+	
+	chart.geo = geometry;
 
+	chart.clear();
 	long record_size = geometry.localVolumeExpanded();
 	for(long record = 0; record < record_size; record++){
 		geometry.coordinateFromRecord(pos, record);
@@ -152,9 +156,9 @@ void fetch_expanded_chart(Field<M> &field_comm, const Chart &send_chart){
 
 	TIMER("fetch_expanded_chart");
 
-	std::map<Coordinate, std::vector<M> > send_map;
-	std::map<Coordinate, int> send_map_consume;
+	assert(isMatchingGeo(send_chart.geo, field_comm.geo));
 
+	std::map<Coordinate, std::vector<M> > send_map;
 	Coordinate node_pos; // home node coordinate of a site in node space
 
 // populate send_map with the data that we need to send to other nodes
@@ -163,7 +167,6 @@ void fetch_expanded_chart(Field<M> &field_comm, const Chart &send_chart){
 	for(it_chart = send_chart.begin(); it_chart != send_chart.end(); it_chart++){
 		node_pos = it_chart->first;
 		std::vector<M> &vec = send_map[node_pos];
-		vec.clear();
 		for(it_coor = it_chart->second.begin(); 
 					it_coor != it_chart->second.end(); it_coor++){
 			for(int mu = 0; mu < field_comm.geo.multiplicity; mu++){
@@ -210,23 +213,22 @@ void fetch_expanded_chart(Field<M> &field_comm, const Chart &send_chart){
 		assert(!ret);
 
 		memcpy(send, recv, size_bytes);
-
-		send_map_consume[node_pos] = 0;
 	}
 
+	Coordinate pos;
 // Now send_map[node_pos] is the vector of data recieved from the node
 // pointed to by key.
 	for(it_chart = send_chart.begin(); it_chart != send_chart.end(); it_chart++){
 		node_pos = it_chart->first;
-		int consume = send_map_consume[node_pos];
+		long consume = 0;
 		std::vector<M> &vec = send_map[node_pos];
 		for(it_coor = it_chart->second.begin(); 
 					it_coor != it_chart->second.end(); it_coor++){
 			for(int mu = 0; mu < field_comm.geo.multiplicity; mu++){
-				field_comm.getElems(*it_coor)[mu] = vec[consume];
+				pos = node_pos * field_comm.geo.nodeSite + *it_coor;
+				field_comm.getElems(pos)[mu] = vec[consume];
 				consume++;
 			}
-			send_map_consume[node_pos] = consume;
 		}
 	}
 
