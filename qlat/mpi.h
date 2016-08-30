@@ -358,13 +358,17 @@ inline void syncNode()
 
 inline Coordinate planSizeNode(const int numNode)
 {
-  if (numNode == 1) {
-    return Coordinate(1, 1, 1, 1);
-  } else if (numNode == 16) {
-    return Coordinate(1, 2, 2, 4);
-  } else {
-    return Coordinate(0, 0, 0, 0);
-  }
+// assuming MPI is initialized ... 
+  int dims[] = {0, 0, 0, 0};
+  MPI_Dims_create(numNode, DIM, dims);
+  return Coordinate(dims[0], dims[1], dims[2], dims[3]);
+//   if (numNode == 1) {
+//     return Coordinate(1, 1, 1, 1);
+//   } else if (numNode == 16) {
+//     return Coordinate(1, 2, 2, 4);
+//   } else {
+//     return Coordinate(0, 0, 0, 0);
+//   }
 }
 
 inline bool is_MPI_Initialized(){

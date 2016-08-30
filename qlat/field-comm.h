@@ -264,7 +264,7 @@ void fetch_expanded_chart(Field<M> &field_comm, Chart<M> &send_chart){
 		}
 	}
 
-	std::vector<M> recv_vec;
+	static std::vector<M> recv_vec;
 // will store data received from other nodes
 // Iterate over all the nodes to which we need to send data.
 // We ultimately copy the received data into the corresponding
