@@ -18,6 +18,24 @@ QLAT_START_NAMESPACE
 typedef std::array<Complex, 6> MatrixTruncatedSU3;
 typedef std::array<Complex, 9> MatrixSU3;
 
+class rePort{
+public:
+	ostream *os;
+	rePort(){
+		os = &cout;
+	}
+};
+template<class T>
+const rePort& operator<<(const rePort &p, const T &data){
+	if(getIdNode() == 0) *(p.os) << data;
+	return p;
+}
+const rePort& operator<<(const rePort &p, ostream&(*func)(ostream&)){
+	if(getIdNode() == 0) *(p.os) << func;
+	return p;
+}
+static const rePort report;
+
 template<class M, class N>
 void castTruncated(M &x, const N &y)
 {
