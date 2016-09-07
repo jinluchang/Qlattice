@@ -41,6 +41,56 @@
 #include <mpi.h>
 #endif
 
+#ifdef CURRENT_DEFAULT_NAMESPACE_NAME
+
+#define TIMER(FNAME) \
+  static const char* fname = FNAME; \
+  static CURRENT_DEFAULT_NAMESPACE_NAME::Timer timer(fname); \
+  CURRENT_DEFAULT_NAMESPACE_NAME::TimerCtrl timerctrl(timer);
+
+#define TIMER_VERBOSE(FNAME) \
+  static const char* fname = FNAME; \
+  static CURRENT_DEFAULT_NAMESPACE_NAME::Timer timer(fname); \
+  CURRENT_DEFAULT_NAMESPACE_NAME::TimerCtrl timerctrl(timer, true);
+
+#define TIMER_FLOPS(FNAME) \
+  static const char* fname = FNAME; \
+  static CURRENT_DEFAULT_NAMESPACE_NAME::Timer timer(fname, false); \
+  CURRENT_DEFAULT_NAMESPACE_NAME::TimerCtrl timerctrl(timer); \
+
+#define TIMER_VERBOSE_FLOPS(FNAME) \
+  static const char* fname = FNAME; \
+  static CURRENT_DEFAULT_NAMESPACE_NAME::Timer timer(fname, false); \
+  CURRENT_DEFAULT_NAMESPACE_NAME::TimerCtrl timerctrl(timer, true); \
+
+#else
+
+#define TIMER(FNAME) \
+  static const char* fname = FNAME; \
+  static Timer timer(fname); \
+  TimerCtrl timerctrl(timer);
+
+#define TIMER_VERBOSE(FNAME) \
+  static const char* fname = FNAME; \
+  static Timer timer(fname); \
+  TimerCtrl timerctrl(timer, true);
+
+#define TIMER_FLOPS(FNAME) \
+  static const char* fname = FNAME; \
+  static Timer timer(fname, false); \
+  TimerCtrl timerctrl(timer); \
+
+#define TIMER_VERBOSE_FLOPS(FNAME) \
+  static const char* fname = FNAME; \
+  static Timer timer(fname, false); \
+  TimerCtrl timerctrl(timer, true); \
+
+#endif
+
+#ifdef CURRENT_DEFAULT_NAMESPACE_NAME
+namespace CURRENT_DEFAULT_NAMESPACE_NAME {
+#endif
+
 inline double getTime()
 {
   struct timeval tp;
@@ -412,26 +462,6 @@ struct TimerCtrl
   }
 };
 
-#define TIMER(FNAME) \
-  static const char* fname = FNAME; \
-  static Timer timer(fname); \
-  TimerCtrl timerctrl(timer);
-
-#define TIMER_VERBOSE(FNAME) \
-  static const char* fname = FNAME; \
-  static Timer timer(fname); \
-  TimerCtrl timerctrl(timer, true);
-
-#define TIMER_FLOPS(FNAME) \
-  static const char* fname = FNAME; \
-  static Timer timer(fname, false); \
-  TimerCtrl timerctrl(timer); \
-
-#define TIMER_VERBOSE_FLOPS(FNAME) \
-  static const char* fname = FNAME; \
-  static Timer timer(fname, false); \
-  TimerCtrl timerctrl(timer, true); \
-
 inline void* timer_malloc(size_t size)
 {
   TIMER_FLOPS("timer_malloc");
@@ -443,10 +473,21 @@ inline void* timer_malloc(size_t size)
 
 inline void timer_free(void* ptr)
 {
-  TIMER("timer_free");
+  TIMER_FLOPS("timer_free");
   free(ptr);
 }
 
-#define tmalloc(x) timer_malloc(x)
+inline void tmalloc(size_t size)
+{
+  timer_malloc(size);
+}
 
-#define tfree(x) timer_free(x)
+inline void tfree(void* ptr)
+{
+  timer_free(ptr);
+}
+
+#ifdef CURRENT_DEFAULT_NAMESPACE_NAME
+}
+#endif
+
