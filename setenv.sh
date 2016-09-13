@@ -1,5 +1,5 @@
 if [ -z "$prefix" ] ; then
-    prefix=$HOME/qlat-builds/0.1
+    prefix=$HOME/qlat-build/1.0
 fi
 
 if [ "$(uname -m)" = ppc64 ] ; then
