@@ -31,6 +31,7 @@
 #include <string>
 #include <ostream>
 #include <istream>
+#include <vector>
 
 #ifdef CURRENT_DEFAULT_NAMESPACE_NAME
 namespace CURRENT_DEFAULT_NAMESPACE_NAME {
@@ -111,37 +112,74 @@ struct RngState
   }
 };
 
-inline std::ostream& operator<<(std::ostream& os, const RngState& rs)
+const size_t RNG_STATE_SIZE_OF_INT32 = 2 + 8 + 2 + 3 * 2 + 2 + 1 + 1;
+
+inline uint64_t patchTwoUint32(const uint32_t a, const uint32_t b)
 {
-  os << rs.numBytes << " ";
+  return (uint64_t)a << 32 | (uint64_t)b;
+}
+
+inline void splitTwoUint32(uint32_t& a, uint32_t& b, const uint64_t x)
+{
+  b = (uint32_t)x;
+  a = (uint32_t)(x >> 32);
+  assert(x == patchTwoUint32(a, b));
+}
+
+inline void exportRngState(std::vector<uint32_t>& v, const RngState& rs)
+{
+  assert(22 == RNG_STATE_SIZE_OF_INT32);
+  v.resize(RNG_STATE_SIZE_OF_INT32);
+  splitTwoUint32(v[0], v[1], rs.numBytes);
   for (int i = 0; i < 8; ++i) {
-    os << rs.hash[i] << " ";
+    v[2 + i] = rs.hash[i];
   }
-  os << rs.index << " ";
+  splitTwoUint32(v[10], v[11], rs.index);
   for (int i = 0; i < 3; ++i) {
-    os << rs.cache[i] << " ";
+    splitTwoUint32(v[12 + i * 2], v[12 + i * 2 + 1], rs.cache[i]);
   }
   const uint64_t* p = (const uint64_t*)&rs.gaussian;
-  os << *p << " ";
-  os << rs.cacheAvail << " ";
-  os << rs.gaussianAvail;
+  splitTwoUint32(v[18], v[19], *p);
+  v[20] = rs.cacheAvail;
+  v[21] = rs.gaussianAvail;
+}
+
+inline void importRngState(RngState& rs, const std::vector<uint32_t>& v)
+{
+  assert(RNG_STATE_SIZE_OF_INT32 == v.size());
+  assert(22 == RNG_STATE_SIZE_OF_INT32);
+  rs.numBytes = patchTwoUint32(v[0], v[1]);
+  for (int i = 0; i < 8; ++i) {
+    rs.hash[i] = v[2 + i];
+  }
+  rs.index = patchTwoUint32(v[10], v[11]);
+  for (int i = 0; i < 3; ++i) {
+    rs.cache[i] = patchTwoUint32(v[12 + i * 2], v[12 + i * 2 + 1]);
+  }
+  uint64_t* p = (uint64_t*)&rs.gaussian;
+  *p = patchTwoUint32(v[18], v[19]);
+  rs.cacheAvail = v[20];
+  rs.gaussianAvail = v[21];
+}
+
+inline std::ostream& operator<<(std::ostream& os, const RngState& rs)
+{
+  std::vector<uint32_t> v(RNG_STATE_SIZE_OF_INT32);
+  exportRngState(v, rs);
+  for (size_t i = 0; i < v.size() - 1; ++i) {
+    os << v[i] << " ";
+  }
+  os << v.back();
   return os;
 }
 
 inline std::istream& operator>>(std::istream& is, RngState& rs)
 {
-  is >> rs.numBytes;
-  for (int i = 0; i < 8; ++i) {
-    is >> rs.hash[i];
+  std::vector<uint32_t> v(RNG_STATE_SIZE_OF_INT32);
+  for (size_t i = 0; i < v.size(); ++i) {
+    is >> v[i];
   }
-  is >> rs.index;
-  for (int i = 0; i < 3; ++i) {
-    is >> rs.cache[i];
-  }
-  uint64_t* p = (uint64_t*)&rs.gaussian;
-  is >> *p;
-  is >> rs.cacheAvail;
-  is >> rs.gaussianAvail;
+  importRngState(rs, v);
   return is;
 }
 
@@ -461,11 +499,6 @@ inline void splitRngState(RngState& rs, const RngState& rs0, const std::string& 
   rs.gaussian = 0.0;
   rs.cacheAvail = 0;
   rs.gaussianAvail = false;
-}
-
-inline uint64_t patchTwoUint32(const uint32_t a, const uint32_t b)
-{
-  return (uint64_t)a << 32 | (uint64_t)b;
 }
 
 inline void computeHashWithInput(uint32_t hash[8], const RngState& rs, const std::string& input)
