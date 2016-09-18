@@ -69,9 +69,9 @@ struct RngState
   unsigned long index;
   //
   uint64_t cache[3];
-  double gaussion;
+  double gaussian;
   int cacheAvail;
-  bool gaussionAvail;
+  bool gaussianAvail;
   //
   inline void init()
   {
@@ -121,10 +121,10 @@ inline std::ostream& operator<<(std::ostream& os, const RngState& rs)
   for (int i = 0; i < 3; ++i) {
     os << rs.cache[i] << " ";
   }
-  const uint64_t* p = (const uint64_t*)&rs.gaussion;
+  const uint64_t* p = (const uint64_t*)&rs.gaussian;
   os << *p << " ";
   os << rs.cacheAvail << " ";
-  os << rs.gaussionAvail;
+  os << rs.gaussianAvail;
   return os;
 }
 
@@ -138,10 +138,10 @@ inline std::istream& operator>>(std::istream& is, RngState& rs)
   for (int i = 0; i < 3; ++i) {
     is >> rs.cache[i];
   }
-  uint64_t* p = (uint64_t*)&rs.gaussion;
+  uint64_t* p = (uint64_t*)&rs.gaussian;
   is >> *p;
   is >> rs.cacheAvail;
-  is >> rs.gaussionAvail;
+  is >> rs.gaussianAvail;
   return is;
 }
 
@@ -430,9 +430,9 @@ inline void reset(RngState& rs)
   rs.cache[0] = 0;
   rs.cache[1] = 0;
   rs.cache[2] = 0;
-  rs.gaussion = 0.0;
+  rs.gaussian = 0.0;
   rs.cacheAvail = 0;
-  rs.gaussionAvail = false;
+  rs.gaussianAvail = false;
 }
 
 inline void reset(RngState& rs, const std::string& seed)
@@ -458,9 +458,9 @@ inline void splitRngState(RngState& rs, const RngState& rs0, const std::string& 
   rs.cache[0] = 0;
   rs.cache[1] = 0;
   rs.cache[2] = 0;
-  rs.gaussion = 0.0;
+  rs.gaussian = 0.0;
   rs.cacheAvail = 0;
-  rs.gaussionAvail = false;
+  rs.gaussianAvail = false;
 }
 
 inline uint64_t patchTwoUint32(const uint32_t a, const uint32_t b)
@@ -503,9 +503,9 @@ inline double uRandGen(RngState& rs, const double upper, const double lower)
 inline double gRandGen(RngState& rs, const double sigma, const double center)
 {
   rs.index += 1;
-  if (rs.gaussionAvail) {
-    rs.gaussionAvail = false;
-    return rs.gaussion * sigma + center;
+  if (rs.gaussianAvail) {
+    rs.gaussianAvail = false;
+    return rs.gaussian * sigma + center;
   } else {
     // pick 2 uniform numbers in the square extending from
     // -1 to 1 in each direction, see if they are in the
@@ -526,8 +526,8 @@ inline double gRandGen(RngState& rs, const double sigma, const double center)
       return 1e+10;
     }
     double fac = std::sqrt(-2.0 * std::log(rsq)/rsq);
-    rs.gaussion = v1 * fac;
-    rs.gaussionAvail = true;
+    rs.gaussian = v1 * fac;
+    rs.gaussianAvail = true;
     return v2 * fac * sigma + center;
   }
 }
