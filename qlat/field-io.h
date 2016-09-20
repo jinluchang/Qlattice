@@ -1,11 +1,11 @@
 #pragma once
 
+#include <hash-cpp/crc32.h>
+
 #include <qlat/config.h>
 #include <qlat/utils.h>
 #include <qlat/mpi.h>
 #include <qlat/geometry.h>
-
-#include <hash-cpp/crc32.h>
 
 #include <omp.h>
 
@@ -213,6 +213,8 @@ void sophisticated_serial_write(const qlat::Field<M> &origin,
 	}
 
 	if(getIdNode() == 0) fclose(outputFile);
+    
+	report << "Export file closed" << std::endl;
 
 	syncNode();
 }

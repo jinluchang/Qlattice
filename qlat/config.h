@@ -12,6 +12,8 @@ QLAT_START_NAMESPACE
 
 const int DIM = 4;
 
+const int NUM_COLOR = 3;
+
 typedef std::complex<double> Complex;
 
 const char* const cname = "Qlat";
