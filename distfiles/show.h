@@ -105,12 +105,12 @@ T& reads(T& x, const std::string& str)
   return x;
 }
 
-void fdisplay(FILE* fp, const std::string& str)
+inline void fdisplay(FILE* fp, const std::string& str)
 {
   fprintf(fp, "%s", str.c_str());
 }
 
-void fdisplayln(FILE* fp, const std::string& str)
+inline void fdisplayln(FILE* fp, const std::string& str)
 {
   fprintf(fp, "%s\n", str.c_str());
 }
