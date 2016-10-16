@@ -17,7 +17,7 @@ Among the dependencies, two special libraries are provided.
 
 1. `timer.h` https://github.com/waterret/Timer
 
-2. `rng-state.h` https://github.com/waterret/RngState-cc
+2. `rng-state.h` https://github.com/waterret/RngState
 
 There are scripts used to install all the dependencies, which are located
 in the `scripts` directory.
@@ -61,4 +61,4 @@ Relavent examples: `examples/rng-state-tests`, `examples/field-rng-tests`.
 
 Also see the RNG's own repository
 
-https://github.com/waterret/RngState-cc
+https://github.com/waterret/RngState
