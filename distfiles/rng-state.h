@@ -135,8 +135,12 @@ inline void exportRngState(uint32_t* v, const RngState& rs)
   for (int i = 0; i < 3; ++i) {
     splitTwoUint32(v[12 + i * 2], v[12 + i * 2 + 1], rs.cache[i]);
   }
-  const uint64_t* p = (const uint64_t*)&rs.gaussian;
-  splitTwoUint32(v[18], v[19], *p);
+  union {
+    double d;
+    uint64_t l;
+  } g;
+  g.d = rs.gaussian;
+  splitTwoUint32(v[18], v[19], g.l);
   v[20] = rs.cacheAvail;
   v[21] = rs.gaussianAvail;
 }
@@ -152,8 +156,12 @@ inline void importRngState(RngState& rs, const uint32_t* v)
   for (int i = 0; i < 3; ++i) {
     rs.cache[i] = patchTwoUint32(v[12 + i * 2], v[12 + i * 2 + 1]);
   }
-  uint64_t g = patchTwoUint32(v[18], v[19]);
-  rs.gaussian = reinterpret_cast<double&>(g);
+  union {
+    double d;
+    uint64_t l;
+  } g;
+  g.l = patchTwoUint32(v[18], v[19]);
+  rs.gaussian = g.d;
   rs.cacheAvail = v[20];
   rs.gaussianAvail = v[21];
 }
