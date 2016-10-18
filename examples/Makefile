@@ -2,7 +2,8 @@ SHELL=/bin/bash
 
 tests = lbl-muon-part \
 		rng-state-tests \
-		field-rng-tests
+		field-rng-tests \
+		benchmark
 
 all:
 	time for i in $(tests) ; do make -C "$$i" all; done
