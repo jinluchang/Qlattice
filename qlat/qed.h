@@ -3,7 +3,7 @@
 #include <qlat/field.h>
 #include <qlat/field-fft.h>
 
-#include <Eigen/Dense>
+#include <Eigen/Eigen>
 
 #include <cmath>
 
@@ -25,7 +25,7 @@ struct ComplexScalerField : FieldM<Complex,1>
   }
 };
 
-typedef Eigen::Matrix<Complex,4,4> SpinMatrix;
+typedef Eigen::Matrix<Complex,4,4,Eigen::RowMajor> SpinMatrix;
 
 inline void setZero(SpinMatrix& sm)
 {
