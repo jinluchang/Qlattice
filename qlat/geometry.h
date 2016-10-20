@@ -222,6 +222,15 @@ struct Geometry
     return nodeSite[mu] * geon.sizeNode[mu];
   }
   //
+  Coordinate global_size() const
+  {
+    Coordinate ret;
+	for(int i = 0; i < DIM; i++){
+		ret[i] = totalSite(i);
+	}
+	return ret;
+  }
+  //
   long totalVolume() const
   {
     return localVolume() * geon.numNode;

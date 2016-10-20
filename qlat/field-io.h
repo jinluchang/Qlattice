@@ -267,7 +267,9 @@ void sophisticated_serial_read(qlat::Field<M> &destination,
 
 // Well as you can see this is not really serial reading anymore. The sertial reading speed is unbearablly slow.
 // Anyway it is tested. And it seems to be right.
-	inputFile = fopen(read_addr.c_str(), "rb"); assert(!ferror(inputFile));
+	inputFile = fopen(read_addr.c_str(), "rb"); 
+	assert(inputFile != NULL);
+	assert(!ferror(inputFile));
 	char line[1000];
 	char indicator[] = "END_HEADER";
 
