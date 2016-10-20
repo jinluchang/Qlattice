@@ -68,6 +68,16 @@ inline double norm(const Complex& x)
   return std::norm(x);
 }
 
+template <class T, size_t N>
+inline double norm(const std::array<T,N>& mm)
+{
+  double sum = 0.0;
+  for (size_t i = 0; i < N; ++i) {
+    sum += norm(mm[i]);
+  }
+  return sum;
+}
+
 template <class M, int N>
 bool operator==(const std::array<M,N>& x, const std::array<M,N>& y)
 {
