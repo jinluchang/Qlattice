@@ -78,6 +78,7 @@ std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>&
 	return os << os_.str();
 }
 
+// FIXME: shouldn't have this function
 struct CoordinateLess
 {
 	bool operator()(const Coordinate &coor1, const Coordinate &coor2) const {

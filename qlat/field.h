@@ -36,16 +36,16 @@ struct Field
   {
     init();
     geo = geo_;
-    field.resize(geo.localVolumeExpanded() * geo.multiplicity);
-    setZero(*this);
+    field.resize(geo.local_volume_expanded() * geo.multiplicity);
+    set_zero(*this);
     initialized = true;
   }
   virtual void init(const Geometry& geo_, const int multiplicity_)
   {
     init();
     geo.init(geo_, multiplicity_);
-    field.resize(geo.localVolumeExpanded() * geo.multiplicity);
-    setZero(*this);
+    field.resize(geo.local_volume_expanded() * geo.multiplicity);
+    set_zero(*this);
     initialized = true;
   }
   virtual void init(const Field& f)
@@ -64,101 +64,103 @@ struct Field
   {
     assert(false);
   }
+  //
   void fillZero()
+    // FIXME: remove this function, use set_zero instead
   {
     memset(field.data(), 0, sizeof(M) * field.size());
   }
   //
   const Field& operator=(const Field& f)
   {
-    assert(isMatchingGeo(geo, f.geo));
+    assert(is_matching_geo(geo, f.geo));
 #pragma omp parallel for
-    for (long index = 0; index < geo.localVolume(); ++index) {
-      Coordinate xl; geo.coordinateFromIndex(xl, index);
+    for (long index = 0; index < geo.local_volume(); ++index) {
+      Coordinate xl; geo.coordinate_from_index(xl, index);
       for (int m = 0; m < geo.multiplicity; ++m) {
-        this->getElem(xl,m) = f.getElem(xl,m);
+        this->get_elem(xl,m) = f.get_elem(xl,m);
       }
     }
     return *this;
   }
   //
-  M& getElem(const long offset)
+  M& get_elem(const long offset)
   {
     assert(0 <= offset && offset < field.size());
     return field[offset];
   }
-  const M& getElem(const long offset) const
+  const M& get_elem(const long offset) const
   {
     assert(0 <= offset && offset < field.size());
     return field[offset];
   }
   //
-  M& getElem(const Coordinate& x, const int m)
+  M& get_elem(const Coordinate& x, const int m)
   {
-    assert(geo.isOnNode(x));
+    assert(geo.is_on_node(x));
     assert(0 <= m && m < geo.multiplicity);
-    long offset = geo.offsetFromCoordinate(x) + m;
+    long offset = geo.offset_from_coordinate(x) + m;
     return field[offset];
   }
-  const M& getElem(const Coordinate& x, const int m) const
+  const M& get_elem(const Coordinate& x, const int m) const
   {
-    assert(geo.isOnNode(x));
+    assert(geo.is_on_node(x));
     assert(0 <= m && m < geo.multiplicity);
-    long offset = geo.offsetFromCoordinate(x) + m;
+    long offset = geo.offset_from_coordinate(x) + m;
     return field[offset];
   }
   //
-  M& getElem(const Coordinate& x)
+  M& get_elem(const Coordinate& x)
   {
     assert(1 == geo.multiplicity);
-    return getElem(x,0);
+    return get_elem(x,0);
   }
-  const M& getElem(const Coordinate& x) const
+  const M& get_elem(const Coordinate& x) const
   {
     assert(1 == geo.multiplicity);
-    return getElem(x,0);
+    return get_elem(x,0);
   }
   //
-  Vector<M> getElemsConst(const Coordinate& x) const
+  Vector<M> get_elems_const(const Coordinate& x) const
     // Be cautious about the const property
     // 改不改靠自觉
   {
-    assert(geo.isOnNode(x));
-    long offset = geo.offsetFromCoordinate(x);
+    assert(geo.is_on_node(x));
+    long offset = geo.offset_from_coordinate(x);
     return Vector<M>(&field[offset], geo.multiplicity);
   }
   //
-  Vector<M> getElems(const Coordinate& x)
+  Vector<M> get_elems(const Coordinate& x)
   {
-    assert(geo.isOnNode(x));
-    long offset = geo.offsetFromCoordinate(x);
+    assert(geo.is_on_node(x));
+    long offset = geo.offset_from_coordinate(x);
     return Vector<M>(&field[offset], geo.multiplicity);
   }
 };
 
 template <class M>
-bool isInitialized(const Field<M>& f)
+bool is_initialized(const Field<M>& f)
 {
   return f.initialized;
 }
 
 template <class M>
-void setZero(Field<M>& f)
+void set_zero(Field<M>& f)
 {
-  setZero(f.field);
+  set_zero(f.field);
 }
 
 template <class M>
-Vector<M> getData(const Field<M>& f)
+Vector<M> get_data(const Field<M>& f)
 {
-  return getData(f.field);
+  return get_data(f.field);
 }
 
 template <class M>
 void swap(Field<M>& f1, Field<M>& f2)
 {
-  assert(isInitialized(f1));
-  assert(isInitialized(f1));
+  assert(is_initialized(f1));
+  assert(is_initialized(f1));
   assert(f1.geo == f2.geo);
   swap(f1.field, f2.field);
 }
@@ -167,13 +169,13 @@ template<class M>
 const Field<M>& operator+=(Field<M>& f, const Field<M>& f1)
 {
   TIMER("fieldOperator");
-  assert(isMatchingGeo(f.geo, f1.geo));
+  assert(is_matching_geo(f.geo, f1.geo));
   const Geometry& geo = f.geo;
 #pragma omp parallel for
-  for (long index = 0; index < geo.localVolume(); ++index) {
-    Coordinate x; geo.coordinateFromIndex(x, index);
+  for (long index = 0; index < geo.local_volume(); ++index) {
+    Coordinate x; geo.coordinate_from_index(x, index);
     for (int m = 0; m < geo.multiplicity; ++m) {
-      f.getElem(x,m) += f1.getElem(x,m);
+      f.get_elem(x,m) += f1.get_elem(x,m);
     }
   }
   return f;
@@ -183,13 +185,13 @@ template<class M>
 const Field<M>& operator-=(Field<M>& f, const Field<M>& f1)
 {
   TIMER("fieldOperator");
-  assert(isMatchingGeo(f.geo, f1.geo));
+  assert(is_matching_geo(f.geo, f1.geo));
   const Geometry& geo = f.geo;
 #pragma omp parallel for
-  for (long index = 0; index < geo.localVolume(); index++) {
-    Coordinate x; geo.coordinateFromIndex(x, index);
+  for (long index = 0; index < geo.local_volume(); index++) {
+    Coordinate x; geo.coordinate_from_index(x, index);
     for (int m = 0; m < geo.multiplicity; m++) {
-      f.getElem(x,m) -= f1.getElem(x,m);
+      f.get_elem(x,m) -= f1.get_elem(x,m);
     }
   }
   return f;
@@ -201,10 +203,10 @@ const Field<M>& operator*=(Field<M>& f, const double factor)
   TIMER("fieldOperator");
   const Geometry& geo = f.geo;
 #pragma omp parallel for
-  for (long index = 0; index < geo.localVolume(); index++) {
-    Coordinate x; geo.coordinateFromIndex(x, index);
+  for (long index = 0; index < geo.local_volume(); index++) {
+    Coordinate x; geo.coordinate_from_index(x, index);
     for (int m = 0; m < geo.multiplicity; m++) {
-      f.getElem(x,m) *= factor;
+      f.get_elem(x,m) *= factor;
     }
   }
   return f;
@@ -216,10 +218,10 @@ const Field<M>& operator*=(Field<M>& f, const Complex factor)
   TIMER("fieldOperator");
   const Geometry& geo = f.geo;
 #pragma omp parallel for
-  for (long index = 0; index < geo.localVolume(); index++) {
-    Coordinate x; geo.coordinateFromIndex(x, index);
+  for (long index = 0; index < geo.local_volume(); index++) {
+    Coordinate x; geo.coordinate_from_index(x, index);
     for (int m = 0; m < geo.multiplicity; m++) {
-      f.getElem(x,m) *= factor;
+      f.get_elem(x,m) *= factor;
     }
   }
   return f;
@@ -234,9 +236,9 @@ double norm(const Field<M>& f)
   {
     double psum = 0.0;
 #pragma omp for nowait
-    for (long index = 0; index < geo.localVolume(); ++index) {
-      Coordinate x; geo.coordinateFromIndex(x, index);
-      Vector<M> fx = f.getElems(x);
+    for (long index = 0; index < geo.local_volume(); ++index) {
+      Coordinate x; geo.coordinate_from_index(x, index);
+      Vector<M> fx = f.get_elems(x);
       for (int m = 0; m < geo.multiplicity; ++m) {
         psum += norm(fx[m]);
       }
@@ -248,7 +250,7 @@ double norm(const Field<M>& f)
       }
     }
   }
-  glbSum(sum);
+  glb_sum(sum);
   return sum;
 }
 

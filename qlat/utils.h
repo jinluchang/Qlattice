@@ -1,3 +1,5 @@
+// vim: set ts=2 sw=2 expandtab:
+
 #pragma once
 
 #include <qlat/config.h>
@@ -27,24 +29,24 @@ T sqr(const T& x)
 }
 
 template <class M, unsigned long N>
-void setZero(std::array<M,N>& arr)
+void set_zero(std::array<M,N>& arr)
 {
   long size = N * sizeof(M);
   std::memset(arr.data(), 0, size);
 }
 
-void setUnit(double& x, const double& coef = 1.0)
+void set_unit(double& x, const double& coef = 1.0)
 {
   x = coef;
 }
 
-void setUnit(Complex& x, const Complex& coef = 1.0)
+void set_unit(Complex& x, const Complex& coef = 1.0)
 {
   x = coef;
 }
 
 template <class M>
-void setZero(std::vector<M>& vec)
+void set_zero(std::vector<M>& vec)
 {
   long size = vec.size() * sizeof(M);
   std::memset(vec.data(), 0, size);
@@ -163,7 +165,7 @@ struct Array
 };
 
 template <class M, int N>
-void setZero(Array<M,N> arr)
+void set_zero(Array<M,N> arr)
 {
   long size = N * sizeof(M);
   std::memset(arr.data(), 0, size);
@@ -259,34 +261,34 @@ struct Vector
 };
 
 template <class M>
-void setZero(Vector<M> vec)
+void set_zero(Vector<M> vec)
 {
   long size = vec.size() * sizeof(M);
   std::memset(vec.data(), 0, size);
 }
 
 template <class M, int N>
-Vector<M> getData(Array<M,N> arr)
+Vector<M> get_data(Array<M,N> arr)
 {
   return Vector<M>(arr);
 }
 
 template <class M>
-Vector<M> getData(Vector<M> vec)
+Vector<M> get_data(Vector<M> vec)
 {
   return vec;
 }
 
 template <class M>
-Vector<M> getData(const std::vector<M>& vec)
+Vector<M> get_data(const std::vector<M>& vec)
 {
   return Vector<M>((M*)vec.data(), vec.size());
 }
 
 template <class T>
-long getDataSize(const T& x)
+long get_data_size(const T& x)
 {
-  return getData(x).dataSize();
+  return get_data(x).dataSize();
 }
 
 template <class M, int N>
@@ -333,7 +335,7 @@ inline int mod(const int x, const int len) {
   }
 }
 
-inline int signMod(const int x, const int len) {
+inline int smod(const int x, const int len) {
   assert(0 < len);
   const int m = mod(x, len);
   if (m * 2 < len) {
@@ -343,35 +345,35 @@ inline int signMod(const int x, const int len) {
   }
 }
 
-inline int middleMod(const int x, const int y, const int len) {
+inline int middle_mod(const int x, const int y, const int len) {
   assert(0 < len);
   const int xm = mod(x, len);
   const int ym = mod(y, len);
   if (xm <= ym) {
-    const int r = signMod(ym - xm, len);
+    const int r = smod(ym - xm, len);
     return mod(xm + r/2, len);
   } else {
-    const int r = signMod(xm - ym, len);
+    const int r = smod(xm - ym, len);
     return mod(ym + r/2, len);
   }
 }
 
-inline void regularizeCoordinate(Coordinate& x, const Coordinate& size) {
+inline void regularize_coordinate(Coordinate& x, const Coordinate& size) {
   x[0] = mod(x[0], size[0]);
   x[1] = mod(x[1], size[1]);
   x[2] = mod(x[2], size[2]);
   x[3] = mod(x[3], size[3]);
 }
 
-inline long distance2RelativeCoordinateG(const Coordinate& xg) {
+inline long distance_sq_relative_coordinate_g(const Coordinate& xg) {
   return sqr((long)xg[0]) + sqr((long)xg[1]) + sqr((long)xg[2]) + sqr((long)xg[3]);
 }
 
-inline double distanceRelativeCoordinateG(const Coordinate& xg) {
-  return sqrt(distance2RelativeCoordinateG(xg));
+inline double distance_relative_coordinate_g(const Coordinate& xg) {
+  return sqrt(distance_sq_relative_coordinate_g(xg));
 }
 
-inline void coordinateFromIndex(Coordinate& x, long index, const Coordinate& size) {
+inline void coordinate_from_index(Coordinate& x, long index, const Coordinate& size) {
   x[0] = index % size[0];
   index /= size[0];
   x[1] = index % size[1];
@@ -381,64 +383,9 @@ inline void coordinateFromIndex(Coordinate& x, long index, const Coordinate& siz
   x[3] = index % size[3];
 }
 
-inline long indexFromCoordinate(const Coordinate& x, const Coordinate& size) {
+inline long index_from_coordinate(const Coordinate& x, const Coordinate& size) {
   return (((x[3] * size[2]) + x[2]) * size[1] + x[1]) * size[0] + x[0];
 }
-
-inline void shiftCoordinateAdd(Coordinate& x, const Coordinate& shift)
-{
-  x[0] += shift[0];
-  x[1] += shift[1];
-  x[2] += shift[2];
-  x[3] += shift[3];
-}
-
-inline void shiftCoordinateSub(Coordinate& x, const Coordinate& shift)
-{
-  x[0] -= shift[0];
-  x[1] -= shift[1];
-  x[2] -= shift[2];
-  x[3] -= shift[3];
-}
-
-// inline std::string vssprintf(const char* fmt, va_list args)
-// {
-//   std::string str;
-//   char* cstr;
-//   vasprintf(&cstr, fmt, args);
-//   str += std::string(cstr);
-//   std::free(cstr);
-//   return str;
-// }
-// 
-// inline std::string ssprintf(const char* fmt, ...)
-// {
-//   va_list args;
-//   va_start(args, fmt);
-//   return vssprintf(fmt, args);
-// }
-// 
-// inline std::string show() {
-//   return "";
-// }
-// 
-// inline std::string show(const long& x) {
-//   return ssprintf("%ld", x);
-// }
-// 
-// inline std::string show(const double& x) {
-//   return ssprintf("%23.16E", x);
-// }
-// 
-// inline std::string show(const bool& x) {
-//   return x ? "true" : "false";
-// }
-// 
-// inline std::string show(const std::string& x) {
-//   std::ostringstream out;
-//   out << x;
-//   return out.str();
-// }
 
 inline std::string show(const Complex& x) {
   return ssprintf("(%23.16E + %23.16E j)", x.real(), x.imag());
@@ -448,12 +395,12 @@ inline std::string show(const Coordinate& x) {
   return ssprintf("%dx%dx%dx%d", x[0], x[1], x[2], x[3]);
 }
 
-inline bool truncate(const std::string &evilFile){
-        std::ofstream evil;
-	evil.open(evilFile.c_str());
-        bool does_exist = evil.good();
-	if(does_exist) evil.close();
-	return does_exist;
+inline bool truncate(const std::string &evilFile) {
+  std::ofstream evil;
+  evil.open(evilFile.c_str());
+  bool does_exist = evil.good();
+  if(does_exist) evil.close();
+  return does_exist;
 }
 
 QLAT_END_NAMESPACE

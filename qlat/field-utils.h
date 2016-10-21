@@ -6,15 +6,15 @@
 QLAT_START_NAMESPACE
 
 template<class M>
-void fieldSum(Vector<M> vec, const Field<M>& f)
+void field_sum(Vector<M> vec, const Field<M>& f)
 {
   const int multiplicity = f.geo.multiplicity;
   assert(vec.size() == multiplicity);
   const Geometry& geo = f.geo;
-  setZero(vec);
-  for (long index = 0; index < geo.localVolume(); ++index) {
-    Coordinate x; geo.coordinateFromIndex(x, index);
-    const Vector<M> fvec = f.getElemsConst(x);
+  set_zero(vec);
+  for (long index = 0; index < geo.local_volume(); ++index) {
+    Coordinate x; geo.coordinate_from_index(x, index);
+    const Vector<M> fvec = f.get_elems_const(x);
     for (int m = 0; m < multiplicity; ++m) {
       vec[m] += fvec[m];
     }
@@ -22,17 +22,17 @@ void fieldSum(Vector<M> vec, const Field<M>& f)
 }
 
 template<class M>
-inline void fieldGlbSumDouble(Vector<M> vec, const Field<M>& f)
+inline void field_glb_sum_double(Vector<M> vec, const Field<M>& f)
 {
-  fieldSum(vec, f);
-  glbSumDouble(vec);
+  field_sum(vec, f);
+  glb_sum_double(vec);
 }
 
 template<class M>
-inline void fieldGlbSumLong(Vector<M> vec, const Field<M>& f)
+inline void field_glb_sum_long(Vector<M> vec, const Field<M>& f)
 {
-  fieldSum(vec, f);
-  glbSumLong(vec);
+  field_sum(vec, f);
+  glb_sum_long(vec);
 }
 
 QLAT_END_NAMESPACE

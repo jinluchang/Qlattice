@@ -16,12 +16,12 @@ void coordinateHalf(Coordinate& xh, const Coordinate& x)
 void test1()
 {
   TIMER("test1");
-  Coordinate totalSite(16, 16, 16, 32);
+  Coordinate total_site(16, 16, 16, 32);
   Geometry geo;
-  geo.init(totalSite, 1);
-  Coordinate totalSiteHalf; coordinateHalf(totalSiteHalf, totalSite);
+  geo.init(total_site, 1);
+  Coordinate total_siteHalf; coordinateHalf(total_siteHalf, total_site);
   Geometry geoHalf;
-  geoHalf.init(totalSiteHalf, 1);
+  geoHalf.init(total_siteHalf, 1);
   const int seed = 1231;
   const int type = 1;
   const int traj = 1;
@@ -40,38 +40,38 @@ void test1()
   double gsigma2 = 0.0;
   const int Ni = 2*2*2*2;
   const int Ntake = 1;
-  const int Nb = geo.totalVolume() / Ni;
+  const int Nb = geo.total_volume() / Ni;
   const int Ntraj = 16;
   for (long traj = 0; traj < Ntraj; ++traj) {
-    setZero(af);
-    setZero(sumf);
-    setZero(sigma2f);
-    for (long index = 0; index < geo.localVolume(); ++index) {
-      Coordinate x; geo.coordinateFromIndex(x, index);
+    set_zero(af);
+    set_zero(sumf);
+    set_zero(sigma2f);
+    for (long index = 0; index < geo.local_volume(); ++index) {
+      Coordinate x; geo.coordinate_from_index(x, index);
       Coordinate xh; coordinateHalf(xh, x);
-      RngState& rs = rf.getElem(x);
-      af.getElem(xh) += polar(1.0, uRandGen(rs, PI, -PI));
+      RngState& rs = rf.get_elem(x);
+      af.get_elem(xh) += polar(1.0, uRandGen(rs, PI, -PI));
     }
-    for (long index = 0; index < geoHalf.localVolume(); ++index) {
-      Coordinate x; geoHalf.coordinateFromIndex(x, index);
-      Complex& a = af.getElem(x);
-      sumf.getElem(x) += norm(a);
-      sigma2f.getElem(x) += sqr(norm(a));
+    for (long index = 0; index < geoHalf.local_volume(); ++index) {
+      Coordinate x; geoHalf.coordinate_from_index(x, index);
+      Complex& a = af.get_elem(x);
+      sumf.get_elem(x) += norm(a);
+      sigma2f.get_elem(x) += sqr(norm(a));
     }
     double sum;
-    fieldGlbSumDouble(Vector<double>(sum), sumf);
+    field_glb_sum_double(Vector<double>(sum), sumf);
     double sigma2;
-    fieldGlbSumDouble(Vector<double>(sigma2), sigma2f);
+    field_glb_sum_double(Vector<double>(sigma2), sigma2f);
     gsum += sum / Nb;
     gsigma2 += sqr(sum / Nb);
-    if (0 == getIdNode()) {
+    if (0 == get_id_node()) {
       cout << "traj     : " << traj << endl;
       cout << "Expected : " << Ni * Ntake << endl;
       cout << "Mean     : " << sum / Nb << endl;
       cout << "Var      : " << sqrt(sigma2 / Nb - sqr(sum / Nb)) / sqrt(Nb-1) << endl;
     }
   }
-  if (0 == getIdNode()) {
+  if (0 == get_id_node()) {
     cout << "# Final" << endl;
     cout << "Expected : " << Ni * Ntake << endl;
     cout << "Mean     : " << gsum / Ntraj << endl;

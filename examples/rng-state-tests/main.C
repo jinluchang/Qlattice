@@ -131,7 +131,7 @@ void profileOmp()
 int main(int argc, char* argv[])
 {
   begin(&argc, &argv);
-  if (getIdNode() == 0) {
+  if (get_id_node() == 0) {
     cout << "sizeof RngState = " << sizeof(RngState) << endl;
     test1();
     test2();

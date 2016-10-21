@@ -10,35 +10,35 @@
 
 QLAT_START_NAMESPACE
 
-inline MPI_Comm& getQlatComm()
+inline MPI_Comm& get_qlat_comm()
 {
   static MPI_Comm comm;
   return comm;
 }
 
-inline MPI_Comm*& getPtrComm()
+inline MPI_Comm*& get_comm_ptr()
 {
-  static MPI_Comm* p_comm = &getQlatComm();
+  static MPI_Comm* p_comm = &get_qlat_comm();
   return p_comm;
 }
 
-inline MPI_Comm& getComm()
+inline MPI_Comm& get_comm()
 {
-  return *getPtrComm();
+  return *get_comm_ptr();
 }
 
 struct GeometryNode
 {
   bool initialized;
   // About node geometry.
-  int numNode;
-  // numNode = sizeNode[0] * sizeNode[1] * sizeNode[2] * sizeNode[3]
-  int idNode;
-  // idNode = getIdNode()
-  // 0 <= idNode < numNode
-  Coordinate sizeNode;
-  Coordinate coorNode;
-  // 0 <= coorNode[i] < sizeNode[i]
+  int num_node;
+  // num_node = size_node[0] * size_node[1] * size_node[2] * size_node[3]
+  int id_node;
+  // id_node = get_id_node()
+  // 0 <= id_node < num_node
+  Coordinate size_node;
+  Coordinate coor_node;
+  // 0 <= coor_node[i] < size_node[i]
   //
   inline void init();
   //
@@ -62,22 +62,22 @@ struct GeometryNode
   }
 };
 
-inline int idNodeFromCoorNode(const Coordinate& coorNode)
+inline int id_node_from_coor_node(const Coordinate& coor_node)
 {
-  Coordinate sizeNode;
+  Coordinate size_node;
   Coordinate periods;
-  Coordinate coorNodeCheck;
-  MPI_Cart_get(getComm(), DIM, sizeNode.data(), periods.data(), coorNodeCheck.data());
-  return indexFromCoordinate(coorNode, sizeNode);
+  Coordinate coor_node_check;
+  MPI_Cart_get(get_comm(), DIM, size_node.data(), periods.data(), coor_node_check.data());
+  return index_from_coordinate(coor_node, size_node);
 }
 
-inline void coorNodeFromIdNode(Coordinate &coorNode, int idNode)
+inline void coor_node_from_id_node(Coordinate &coor_node, int id_node)
 {
-  Coordinate sizeNode;
+  Coordinate size_node;
   Coordinate periods;
-  Coordinate coorNodeCheck;
-  MPI_Cart_get(getComm(), DIM, sizeNode.data(), periods.data(), coorNodeCheck.data());
-  return coordinateFromIndex(coorNode, idNode, sizeNode);
+  Coordinate coor_node_check;
+  MPI_Cart_get(get_comm(), DIM, size_node.data(), periods.data(), coor_node_check.data());
+  return coordinate_from_index(coor_node, id_node, size_node);
 }
 
 inline void GeometryNode::init()
@@ -86,37 +86,37 @@ inline void GeometryNode::init()
     return;
   }
 #ifdef USE_MULTI_NODE
-  MPI_Comm_size(getComm(), &numNode);
-  MPI_Comm_rank(getComm(), &idNode);
+  MPI_Comm_size(get_comm(), &num_node);
+  MPI_Comm_rank(get_comm(), &id_node);
   int ndims;
-  MPI_Cartdim_get(getComm(), &ndims);
+  MPI_Cartdim_get(get_comm(), &ndims);
   assert(DIM == ndims);
   Coordinate periods;
-  Coordinate coorNodeCheck;
-  MPI_Cart_get(getComm(), DIM, sizeNode.data(), periods.data(), coorNodeCheck.data());
+  Coordinate coor_node_check;
+  MPI_Cart_get(get_comm(), DIM, size_node.data(), periods.data(), coor_node_check.data());
   for (int i = 0; i < DIM; ++i) {
     assert(0 != periods[i]);
   }
-  coordinateFromIndex(coorNode, idNode, sizeNode);
+  coordinate_from_index(coor_node, id_node, size_node);
   for (int i = 0; i < DIM; ++i) {
     assert(0 != periods[i]);
-    // assert(coorNodeCheck[i] == coorNode[i]);
+    // assert(coor_node_check[i] == coor_node[i]);
   }
-  assert(sizeNode[0] * sizeNode[1] * sizeNode[2] * sizeNode[3] == numNode);
-  Display(cname, "GeometryNode::init()", "idNode = %5d ; coorNode = %s\n", idNode, show(coorNode).c_str());
-  assert(idNodeFromCoorNode(coorNode) == idNode);
+  assert(size_node[0] * size_node[1] * size_node[2] * size_node[3] == num_node);
+  Display(cname, "GeometryNode::init()", "id_node = %5d ; coor_node = %s\n", id_node, show(coor_node).c_str());
+  assert(id_node_from_coor_node(coor_node) == id_node);
 #else
-  numNode = 1;
-  idNode = 0;
+  num_node = 1;
+  id_node = 0;
   for (int i = 0; i < DIM; ++i) {
-    sizeNode[i] = 1;
-    coorNode[i] = 0;
+    size_node[i] = 1;
+    coor_node[i] = 0;
   }
 #endif
   initialized = true;
 }
 
-inline bool isInitialized(const GeometryNode& geon)
+inline bool is_initialized(const GeometryNode& geon)
 {
   return geon.initialized;
 }
@@ -126,7 +126,7 @@ inline void init(GeometryNode& geon)
   geon.init();
 }
 
-inline const GeometryNode& getGeometryNode()
+inline const GeometryNode& get_geometry_node()
 {
   static GeometryNode geon(true);
   return geon;
@@ -135,10 +135,10 @@ inline const GeometryNode& getGeometryNode()
 std::string show(const GeometryNode& geon) {
   std::string s;
   s += ssprintf("{ initialized = %s\n", ::show(geon.initialized).c_str());
-  s += ssprintf(", numNode     = %d\n", geon.numNode);
-  s += ssprintf(", idNode      = %d\n", geon.idNode);
-  s += ssprintf(", sizeNode    = %s\n", show(geon.sizeNode).c_str());
-  s += ssprintf(", coorNode    = %s }", show(geon.coorNode).c_str());
+  s += ssprintf(", num_node    = %d\n", geon.num_node);
+  s += ssprintf(", id_node     = %d\n", geon.id_node);
+  s += ssprintf(", size_node   = %s\n", show(geon.size_node).c_str());
+  s += ssprintf(", coor_node   = %s }", show(geon.coor_node).c_str());
   return s;
 }
 
@@ -147,24 +147,24 @@ inline bool operator==(const GeometryNode& geon1, const GeometryNode& geon2)
   return 0 == memcmp(&geon1, &geon2, sizeof(GeometryNode));
 }
 
-inline int getNumNode()
+inline int get_num_node()
 {
-  return getGeometryNode().numNode;
+  return get_geometry_node().num_node;
 }
 
-inline int getIdNode()
+inline int get_id_node()
 {
-  return getGeometryNode().idNode;
+  return get_geometry_node().id_node;
 }
 
-inline const Coordinate& getSizeNode()
+inline const Coordinate& get_size_node()
 {
-  return getGeometryNode().sizeNode;
+  return get_geometry_node().size_node;
 }
 
-inline const Coordinate& getCoorNode()
+inline const Coordinate& get_coor_node()
 {
-  return getGeometryNode().coorNode;
+  return get_geometry_node().coor_node;
 }
 
 struct GeometryNodeNeighbor
@@ -176,18 +176,18 @@ struct GeometryNodeNeighbor
   //
   void init()
   {
-    const Coordinate& coorNode = getGeometryNode().coorNode;
-    const Coordinate& sizeNode = getGeometryNode().sizeNode;
+    const Coordinate& coor_node = get_geometry_node().coor_node;
+    const Coordinate& size_node = get_geometry_node().size_node;
     for (int mu = 0; mu < DIM; ++mu) {
       Coordinate coor;
-      coor = coorNode;
+      coor = coor_node;
       ++coor[mu];
-      regularizeCoordinate(coor, sizeNode);
-      dest[0][mu] = idNodeFromCoorNode(coor);
-      coor = coorNode;
+      regularize_coordinate(coor, size_node);
+      dest[0][mu] = id_node_from_coor_node(coor);
+      coor = coor_node;
       --coor[mu];
-      regularizeCoordinate(coor, sizeNode);
-      dest[1][mu] = idNodeFromCoorNode(coor);
+      regularize_coordinate(coor, size_node);
+      dest[1][mu] = id_node_from_coor_node(coor);
     }
   }
   //
@@ -202,28 +202,28 @@ struct GeometryNodeNeighbor
   }
 };
 
-inline const GeometryNodeNeighbor& getGeometryNodeNeighbor()
+inline const GeometryNodeNeighbor& get_geometry_node_neighbor()
 {
   static GeometryNodeNeighbor geonb(true);
   return geonb;
 }
 
 template <class M>
-int getDataDirMu(Vector<M> recv, const Vector<M>& send, const int dir, const int mu)
+int get_data_dir_mu(Vector<M> recv, const Vector<M>& send, const int dir, const int mu)
   // dir = 0, 1 for Plus dir or Minus dir
   // 0 <= mu < 4 for different directions
 {
-  TIMER_FLOPS("getDataDirMu");
+  TIMER_FLOPS("get_data_dir_mu");
   assert(recv.size() == send.size());
   const long size = recv.size()*sizeof(M);
   timer.flops += size;
 #ifdef USE_MULTI_NODE
-  const GeometryNodeNeighbor& geonb = getGeometryNodeNeighbor();
+  const GeometryNodeNeighbor& geonb = get_geometry_node_neighbor();
   const int idf = geonb.dest[dir][mu];
   const int idt = geonb.dest[1-dir][mu];
   MPI_Request req;
-  MPI_Isend((void*)send.data(), size, MPI_BYTE, idt, 0, getComm(), &req);
-  const int ret = MPI_Recv(recv.data(), size, MPI_BYTE, idf, 0, getComm(), MPI_STATUS_IGNORE);
+  MPI_Isend((void*)send.data(), size, MPI_BYTE, idt, 0, get_comm(), &req);
+  const int ret = MPI_Recv(recv.data(), size, MPI_BYTE, idf, 0, get_comm(), MPI_STATUS_IGNORE);
   MPI_Wait(&req, MPI_STATUS_IGNORE);
   return ret;
 #else
@@ -233,20 +233,20 @@ int getDataDirMu(Vector<M> recv, const Vector<M>& send, const int dir, const int
 }
 
 template <class M>
-int getDataDir(Vector<M> recv, const Vector<M>& send, const int dir)
+int get_data_dir(Vector<M> recv, const Vector<M>& send, const int dir)
   // dir = 0, 1 for Plus dir or Minus dir
 {
-  // TIMER_FLOPS("getDataDir");
+  // TIMER_FLOPS("get_data_dir");
   assert(recv.size() == send.size());
   const long size = recv.size()*sizeof(M);
   // timer.flops += size;
 #ifdef USE_MULTI_NODE
-  const int self_ID = getIdNode(); 
-  const int idf = (self_ID + 1 - 2 * dir + getNumNode()) % getNumNode();
-  const int idt = (self_ID - 1 + 2 * dir + getNumNode()) % getNumNode();;
+  const int self_ID = get_id_node(); 
+  const int idf = (self_ID + 1 - 2 * dir + get_num_node()) % get_num_node();
+  const int idt = (self_ID - 1 + 2 * dir + get_num_node()) % get_num_node();;
   MPI_Request req;
-  MPI_Isend((void*)send.data(), size, MPI_BYTE, idt, 0, getComm(), &req);
-  const int ret = MPI_Recv(recv.data(), size, MPI_BYTE, idf, 0, getComm(), MPI_STATUS_IGNORE);
+  MPI_Isend((void*)send.data(), size, MPI_BYTE, idt, 0, get_comm(), &req);
+  const int ret = MPI_Recv(recv.data(), size, MPI_BYTE, idf, 0, get_comm(), MPI_STATUS_IGNORE);
   MPI_Wait(&req, MPI_STATUS_IGNORE);
   return ret;
 #else
@@ -256,157 +256,157 @@ int getDataDir(Vector<M> recv, const Vector<M>& send, const int dir)
 }
 
 template <class M>
-int getDataPlusMu(Vector<M> recv, const Vector<M>& send, const int mu)
+int get_data_plus_mu(Vector<M> recv, const Vector<M>& send, const int mu)
 {
-  return getDataDirMu(recv, send, 0, mu);
+  return get_data_dir_mu(recv, send, 0, mu);
 }
 
 template <class M>
-int getDataMinusMu(Vector<M> recv, const Vector<M>& send, const int mu)
+int get_data_minus_mu(Vector<M> recv, const Vector<M>& send, const int mu)
 {
-  return getDataDirMu(recv, send, 1, mu);
+  return get_data_dir_mu(recv, send, 1, mu);
 }
 
-inline int glbSum(Vector<double> recv, const Vector<double>& send)
+inline int glb_sum(Vector<double> recv, const Vector<double>& send)
 {
   assert(recv.size() == send.size());
 #ifdef USE_MULTI_NODE
-  return MPI_Allreduce((double*)send.data(), recv.data(), recv.size(), MPI_DOUBLE, MPI_SUM, getComm());
+  return MPI_Allreduce((double*)send.data(), recv.data(), recv.size(), MPI_DOUBLE, MPI_SUM, get_comm());
 #else
   memmove(recv.data(), send.data(), recv.size()* sizeof(double));
   return 0;
 #endif
 }
 
-inline int glbSum(Vector<long> recv, const Vector<long>& send)
+inline int glb_sum(Vector<long> recv, const Vector<long>& send)
 {
   assert(recv.size() == send.size());
 #ifdef USE_MULTI_NODE
-  return MPI_Allreduce((long*)send.data(), recv.data(), recv.size(), MPI_LONG, MPI_SUM, getComm());
+  return MPI_Allreduce((long*)send.data(), recv.data(), recv.size(), MPI_LONG, MPI_SUM, get_comm());
 #else
   memmove(recv.data(), send.data(), recv.size()* sizeof(long));
   return 0;
 #endif
 }
 
-inline int glbSum(Vector<double> vec)
+inline int glb_sum(Vector<double> vec)
 {
   std::vector<double> tmp(vec.size());
   assign(tmp, vec);
-  return glbSum(vec, tmp);
+  return glb_sum(vec, tmp);
 }
 
-inline int glbSum(Vector<long> vec)
+inline int glb_sum(Vector<long> vec)
 {
   std::vector<long> tmp(vec.size());
   assign(tmp, vec);
-  return glbSum(vec, tmp);
+  return glb_sum(vec, tmp);
 }
 
-inline int glbSum(double& x)
+inline int glb_sum(double& x)
 {
-  return glbSum(Vector<double>(x));
+  return glb_sum(Vector<double>(x));
 }
 
-inline int glbSum(long& x)
+inline int glb_sum(long& x)
 {
-  return glbSum(Vector<long>(x));
-}
-
-template <class M>
-inline int glbSumDouble(M& x)
-{
-  return glbSum(Vector<double>((double*)&x, sizeof(M)/sizeof(double)));
+  return glb_sum(Vector<long>(x));
 }
 
 template <class M>
-inline int glbSumLong(M& x)
+inline int glb_sum_double(M& x)
 {
-  return glbSum(Vector<long>((long*)&x, sizeof(M)/sizeof(long)));
+  return glb_sum(Vector<double>((double*)&x, sizeof(M)/sizeof(double)));
 }
 
 template <class M>
-inline int glbSumDouble(Vector<M>& x)
+inline int glb_sum_long(M& x)
 {
-  return glbSum(Vector<double>((double*)x.data(), x.size()*sizeof(M)/sizeof(double)));
+  return glb_sum(Vector<long>((long*)&x, sizeof(M)/sizeof(long)));
 }
 
 template <class M>
-inline int glbSumLong(Vector<M>& x)
+inline int glb_sum_double(Vector<M>& x)
 {
-  return glbSum(Vector<long>((long*)x.data(), x.size()*sizeof(M)/sizeof(long)));
+  return glb_sum(Vector<double>((double*)x.data(), x.size()*sizeof(M)/sizeof(double)));
 }
 
 template <class M>
-void allGather(Vector<M> recv, const Vector<M>& send)
+inline int glb_sum_long(Vector<M>& x)
 {
-  assert(recv.size() == send.size() * getNumNode());
+  return glb_sum(Vector<long>((long*)x.data(), x.size()*sizeof(M)/sizeof(long)));
+}
+
+template <class M>
+void all_gather(Vector<M> recv, const Vector<M>& send)
+{
+  assert(recv.size() == send.size() * get_num_node());
   const long sendsize = send.size() * sizeof(M);
 #ifdef USE_MULTI_NODE
-  MPI_Allgather((void*)send, sendsize, MPI_BYTE, recv, sendsize, MPI_BYTE, getComm());
+  MPI_Allgather((void*)send, sendsize, MPI_BYTE, recv, sendsize, MPI_BYTE, get_comm());
 #else
   memmove(recv, send, sendsize);
 #endif
-  allGather(recv.data(), send.data(), send.size() * sizeof(M));
+  all_gather(recv.data(), send.data(), send.size() * sizeof(M));
 }
 
-inline void syncNode()
+inline void sync_node()
 {
   long v;
-  glbSum(Vector<long>(&v,1));
+  glb_sum(Vector<long>(&v,1));
 }
 
-inline Coordinate planSizeNode(const int numNode)
+inline Coordinate plan_size_node(const int num_node)
 {
   // assuming MPI is initialized ... 
   int dims[] = {0, 0, 0, 0};
-  MPI_Dims_create(numNode, DIM, dims);
+  MPI_Dims_create(num_node, DIM, dims);
   return Coordinate(dims[0], dims[1], dims[2], dims[3]);
 }
 
-inline bool is_MPI_Initialized(){
-        int isMPIInitialized;
-        MPI_Initialized(&isMPIInitialized);
-        return isMPIInitialized;
+inline bool is_MPI_initialized() {
+  int b;
+  MPI_Initialized(&b);
+  return b;
 }
 
-inline int initMpi(int* argc, char** argv[])
+inline int init_mpi(int* argc, char** argv[])
 {
-  if(!is_MPI_Initialized()) MPI_Init(argc, argv);
-  int numNode;
-  MPI_Comm_size(MPI_COMM_WORLD, &numNode);
-  DisplayInfo(cname, "begin", "MPI Initialized. NumNode = %d\n", numNode);
-  return numNode;
+  if(!is_MPI_initialized()) MPI_Init(argc, argv);
+  int num_node;
+  MPI_Comm_size(MPI_COMM_WORLD, &num_node);
+  DisplayInfo(cname, "begin", "MPI Initialized. NumNode = %d\n", num_node);
+  return num_node;
 }
 
-inline void begin(const MPI_Comm& mpiComm, const Coordinate& sizeNode)
-  // begin Qlat with existing mpiComm
+inline void begin(const MPI_Comm& comm, const Coordinate& size_node)
+  // begin Qlat with existing comm
 {
   const Coordinate periods(1, 1, 1, 1);
-  MPI_Cart_create(mpiComm, DIM, (int*)sizeNode.data(), (int*)periods.data(), 0, &getComm());
-  const GeometryNode& geon = getGeometryNode();
-  syncNode();
+  MPI_Cart_create(comm, DIM, (int*)size_node.data(), (int*)periods.data(), 0, &get_comm());
+  const GeometryNode& geon = get_geometry_node();
+  sync_node();
   DisplayInfo(cname, "begin", "MPI Cart created. GeometryNode =\n%s\n", show(geon).c_str());
-  syncNode();
+  sync_node();
 }
 
-inline void begin(int* argc, char** argv[], const Coordinate& sizeNode)
-  // begin Qlat and initialize a new mpiComm
+inline void begin(int* argc, char** argv[], const Coordinate& size_node)
+  // begin Qlat and initialize a new comm
 {
-  initMpi(argc, argv);
-  begin(MPI_COMM_WORLD, sizeNode);
+  init_mpi(argc, argv);
+  begin(MPI_COMM_WORLD, size_node);
 }
 
 inline void begin(int* argc, char** argv[])
-  // begin Qlat and initialize a new mpiComm with default topology
+  // begin Qlat and initialize a new comm with default topology
 {
-  int numNode = initMpi(argc, argv);
-  begin(MPI_COMM_WORLD, planSizeNode(numNode));
+  int num_node = init_mpi(argc, argv);
+  begin(MPI_COMM_WORLD, plan_size_node(num_node));
 }
 
 inline void end()
 {
-  if(is_MPI_Initialized()) MPI_Finalize();
+  if(is_MPI_initialized()) MPI_Finalize();
   DisplayInfo(cname, "end", "MPI Finalized.\n");
 }
 

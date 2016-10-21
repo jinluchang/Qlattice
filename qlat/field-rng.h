@@ -23,16 +23,16 @@ struct RngField : FieldM<RngState,1>
   virtual void init(const Geometry& geo_, const RngState& rs)
   {
     FieldM<RngState,1>::init(geo_);
-    Coordinate totalSite;
+    Coordinate total_site;
     for (int mu = 0; mu < DIM; ++mu) {
-      totalSite[mu] = geo.totalSite(mu);
+      total_site[mu] = geo.total_site(mu);
     }
 #pragma omp parallel for
-    for (long index = 0; index < geo.localVolume(); ++index) {
-      Coordinate x; geo.coordinateFromIndex(x, index);
-      Coordinate xg; geo.coordinateGfL(xg, x);
-      long gindex = indexFromCoordinate(xg, totalSite);
-      splitRngState(getElem(x), rs, gindex);
+    for (long index = 0; index < geo.local_volume(); ++index) {
+      Coordinate x; geo.coordinate_from_index(x, index);
+      Coordinate xg; geo.coordinate_g_from_l(xg, x);
+      long gindex = index_from_coordinate(xg, total_site);
+      splitRngState(get_elem(x), rs, gindex);
     }
   }
   //
