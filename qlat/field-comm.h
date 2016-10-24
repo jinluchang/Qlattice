@@ -123,24 +123,23 @@ public:
 	std::map<Coordinate, std::vector<M> > send_map;
 };
 
-// FIXME: class name should start with Captital letter
-enum gActionType {WILSON, IWASAKI};
-class gAction{
+enum GAUGE_TYPE {WILSON, IWASAKI};
+class Gauge{
 public:
-	gActionType type;
+	GAUGE_TYPE type;
 	double c1;
-	gAction(){c1 = 0.; type = WILSON;}
+	Gauge(){c1 = 0.; type = WILSON;}
 };
 
 template<class M>
-void produce_chart_envelope(Chart<M> &chart, const Geometry geometry, const gAction &gA){
+void produce_chart_envelope(Chart<M> &chart, const Geometry geometry, const Gauge &gauge){
 	TIMER("produce_chart_envelope()");
 	
 	chart.geo = geometry;
 	std::set<Coordinate> target;
 
 	int muP, nuP;
-	switch(gA.type){
+	switch(gauge.type){
 		case WILSON: 	muP = 1;
 				nuP = 1;
 				chart.expansion_left = Coordinate(1, 1, 1, 1);

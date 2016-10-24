@@ -65,12 +65,6 @@ struct Field
     assert(false);
   }
   //
-  void fillZero()
-    // FIXME: remove this function, use set_zero instead
-  {
-    memset(field.data(), 0, sizeof(M) * field.size());
-  }
-  //
   const Field& operator=(const Field& f)
   {
     assert(is_matching_geo(geo, f.geo));
