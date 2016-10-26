@@ -69,6 +69,7 @@ qlat::SpinMatrix lblMuonLineC(const int tsnk, const int tsrc,
   sm += lblMuonLine(tsnk, tsrc, egf3, egf2, egf1, mass, momtwist);
   sm += lblMuonLine(tsnk, tsrc, egf2, egf1, egf3, mass, momtwist);
   sm += lblMuonLine(tsnk, tsrc, egf1, egf3, egf2, mass, momtwist);
+  sm *= 1.0 / 6.0;
   return sm;
 }
 
@@ -93,8 +94,8 @@ qlat::SpinMatrix lblMuonPartPointSrc(const qlat::Geometry& geo, const int tsnk, 
   qlat::prop_photon_invert(egf2, momtwist);
   qlat::prop_photon_invert(egf3, momtwist);
   // ADJUST ME
-  return lblMuonLine(tsnk, tsrc, egf1, egf2, egf3, mass, momtwist);
-  // return lblMuonLineC(tsnk, tsrc, egf1, egf2, egf3, mass, momtwist);
+  // return lblMuonLine(tsnk, tsrc, egf1, egf2, egf3, mass, momtwist);
+  return lblMuonLineC(tsnk, tsrc, egf1, egf2, egf3, mass, momtwist);
 }
 
 void lblMagneticMomentSpinMatrix(qlat::Array<qlat::SpinMatrix,3> bs, const qlat::Geometry& geo, const int tsnk, const int tsrc,
@@ -175,7 +176,7 @@ void lblMuonPart()
   momtwist[1] = 0.0;
   momtwist[2] = 0.0;
   momtwist[3] = 0.0;
-  const double mass = 0.05;
+  const double mass = 0.10;
   const int tsnk = geo.total_site(3)/4*3;
   const int tsrc = geo.total_site(3)/4;
   std::array<qlat::SpinMatrix,3> bs;
@@ -188,9 +189,9 @@ void lblMuonPart()
   // qlat::Coordinate xg2(0, 0, 0, geo.total_site(3)/2 + 0);
   // qlat::Coordinate xg3(0, 0, 0, geo.total_site(3)/2 + 0);
   //
-  qlat::Coordinate xg1(2, 2, 2, geo.total_site(3)/2 + 2);
-  qlat::Coordinate xg2(0, 0, 0, geo.total_site(3)/2 + 0);
-  qlat::Coordinate xg3(0, 0, 0, geo.total_site(3)/2 + 0);
+  qlat::Coordinate xg1(6, 6, 6, geo.total_site(3)/2 + 2);
+  qlat::Coordinate xg2(8,11, 7, geo.total_site(3)/2 - 1);
+  qlat::Coordinate xg3(8, 8, 8, geo.total_site(3)/2 + 0);
   //
   // qlat::Coordinate xg1(2, 1, 5, geo.total_site(3)/2 - 4);
   // qlat::Coordinate xg2(3, 4, 0, geo.total_site(3)/2 + 0);
