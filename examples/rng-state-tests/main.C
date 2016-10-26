@@ -13,7 +13,7 @@ void test1()
   const int limit = 1024 * 1024;
   double sum = 0.0;
   for (int i = 0; i < limit; ++i) {
-    double x = uRandGen(rs);
+    double x = u_rand_gen(rs);
     double y = std::sin(PI / x);
     sum += y;
   }
@@ -29,7 +29,7 @@ void test2()
   const int limit = 1024 * 1024;
   int count = 0;
   for (int i = 0; i < limit; ++i) {
-    double x = gRandGen(rs);
+    double x = g_rand_gen(rs);
     if (std::abs(x) <= 1.0) {
       count += 1;
     }
@@ -45,7 +45,7 @@ void test2a()
   const int limit = 1024 * 1024;
   int count = 0;
   for (int i = 0; i < limit; ++i) {
-    double x = gRandGen(rs, 2.0, 1.0);
+    double x = g_rand_gen(rs, 2.0, 1.0);
     if (std::abs(x - 1.0) <= 2.0) {
       count += 1;
     }
@@ -76,10 +76,10 @@ void test3()
       // Comment out the line below to see the correct result
       reset(rs, index);
       for (int i = 0; i < Ndrop; i++) {
-        uRandGen(rs);
+        u_rand_gen(rs);
       }
       for (int i = 0; i < Ntake; i++) {
-        a += polar(1.0, uRandGen(rs, PI,-PI));
+        a += polar(1.0, u_rand_gen(rs, PI,-PI));
       }
     }
     sum += norm(a);
@@ -97,7 +97,7 @@ void profile()
   const int size = 1000 * 10000;
   double sum = 0.0;
   for (int i = 0; i < size; ++i) {
-    sum += uRandGen(rs);
+    sum += u_rand_gen(rs);
   }
   cout << "sum: " << sum << endl;
   cout << "avg: " << sum / size << endl;
@@ -115,7 +115,7 @@ void profileOmp()
     RngState rs(i);
     double psum = 0.0;
     for (int k = 0; k < size; ++k) {
-      psum += uRandGen(rs);
+      psum += u_rand_gen(rs);
     }
     sums[i] = psum;
   }

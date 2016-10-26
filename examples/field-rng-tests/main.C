@@ -50,7 +50,7 @@ void test1()
       Coordinate x; geo.coordinate_from_index(x, index);
       Coordinate xh; coordinateHalf(xh, x);
       RngState& rs = rf.get_elem(x);
-      af.get_elem(xh) += polar(1.0, uRandGen(rs, PI, -PI));
+      af.get_elem(xh) += polar(1.0, u_rand_gen(rs, PI, -PI));
     }
     for (long index = 0; index < geoHalf.local_volume(); ++index) {
       Coordinate x; geoHalf.coordinate_from_index(x, index);
