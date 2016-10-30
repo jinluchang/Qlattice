@@ -61,12 +61,6 @@ inline double gRandGen(RngState& rs, const double sigma = 1.0, const double cent
 
 inline void computeHashWithInput(uint32_t hash[8], const RngState& rs, const std::string& input);
 
-inline RngState& getGlobalRngState()
-{
-  static RngState rs;
-  return rs;
-}
-
 struct RngState
 {
   uint64_t numBytes;
@@ -115,6 +109,12 @@ struct RngState
     return rs;
   }
 };
+
+inline RngState& getGlobalRngState()
+{
+  static RngState rs;
+  return rs;
+}
 
 const size_t RNG_STATE_NUM_OF_INT32 = 2 + 8 + 2 + 3 * 2 + 2 + 1 + 1;
 

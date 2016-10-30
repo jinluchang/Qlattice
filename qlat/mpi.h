@@ -343,11 +343,18 @@ void all_gather(Vector<M> recv, const Vector<M>& send)
   assert(recv.size() == send.size() * get_num_node());
   const long sendsize = send.size() * sizeof(M);
 #ifdef USE_MULTI_NODE
-  MPI_Allgather((void*)send, sendsize, MPI_BYTE, recv, sendsize, MPI_BYTE, get_comm());
+  MPI_Allgather((void*)send.data(), send.data_size(), MPI_BYTE, (void*)recv.data(), send.data_size(), MPI_BYTE, get_comm());
 #else
   memmove(recv, send, sendsize);
 #endif
-  all_gather(recv.data(), send.data(), send.size() * sizeof(M));
+}
+
+template <class M>
+inline void bcast(Vector<M> recv, const int root = 0)
+{
+#ifdef USE_MULTI_NODE
+  MPI_Bcast((void*)recv.data(), recv.data_size(), MPI_BYTE, root, get_comm());
+#endif
 }
 
 inline void sync_node()
