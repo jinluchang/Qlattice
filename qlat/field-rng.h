@@ -30,6 +30,11 @@ inline double g_rand_gen(RngState& rs, const double sigma = 1.0, const double ce
   return gRandGen(rs, sigma, center);
 }
 
+inline RngState& get_global_rng_state()
+{
+  return getGlobalRngState();
+}
+
 struct RngField : FieldM<RngState,1>
 {
   virtual const char* cname()

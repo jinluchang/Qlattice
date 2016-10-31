@@ -208,18 +208,17 @@ inline const GeometryNodeNeighbor& get_geometry_node_neighbor()
 }
 
 template <class M>
-int get_data_dir_mu(Vector<M> recv, const Vector<M>& send, const int dir, const int mu)
+int get_data_dir(Vector<M> recv, const Vector<M>& send, const int dir)
   // dir = 0, 1 for Plus dir or Minus dir
-  // 0 <= mu < 4 for different directions
 {
-  TIMER_FLOPS("get_data_dir_mu");
+  TIMER_FLOPS("get_data_dir");
   assert(recv.size() == send.size());
   const long size = recv.size()*sizeof(M);
   timer.flops += size;
 #ifdef USE_MULTI_NODE
-  const GeometryNodeNeighbor& geonb = get_geometry_node_neighbor();
-  const int idf = geonb.dest[dir][mu];
-  const int idt = geonb.dest[1-dir][mu];
+  const int self_ID = get_id_node();
+  const int idf = (self_ID + 1 - 2 * dir + get_num_node()) % get_num_node();
+  const int idt = (self_ID - 1 + 2 * dir + get_num_node()) % get_num_node();;
   MPI_Request req;
   MPI_Isend((void*)send.data(), size, MPI_BYTE, idt, 0, get_comm(), &req);
   const int ret = MPI_Recv(recv.data(), size, MPI_BYTE, idf, 0, get_comm(), MPI_STATUS_IGNORE);
@@ -232,17 +231,18 @@ int get_data_dir_mu(Vector<M> recv, const Vector<M>& send, const int dir, const 
 }
 
 template <class M>
-int get_data_dir(Vector<M> recv, const Vector<M>& send, const int dir)
+int get_data_dir_mu(Vector<M> recv, const Vector<M>& send, const int dir, const int mu)
   // dir = 0, 1 for Plus dir or Minus dir
+  // 0 <= mu < 4 for different directions
 {
-  // TIMER_FLOPS("get_data_dir");
+  TIMER_FLOPS("get_data_dir_mu");
   assert(recv.size() == send.size());
   const long size = recv.size()*sizeof(M);
-  // timer.flops += size;
+  timer.flops += size;
 #ifdef USE_MULTI_NODE
-  const int self_ID = get_id_node(); 
-  const int idf = (self_ID + 1 - 2 * dir + get_num_node()) % get_num_node();
-  const int idt = (self_ID - 1 + 2 * dir + get_num_node()) % get_num_node();;
+  const GeometryNodeNeighbor& geonb = get_geometry_node_neighbor();
+  const int idf = geonb.dest[dir][mu];
+  const int idt = geonb.dest[1-dir][mu];
   MPI_Request req;
   MPI_Isend((void*)send.data(), size, MPI_BYTE, idt, 0, get_comm(), &req);
   const int ret = MPI_Recv(recv.data(), size, MPI_BYTE, idf, 0, get_comm(), MPI_STATUS_IGNORE);
@@ -342,11 +342,18 @@ void all_gather(Vector<M> recv, const Vector<M>& send)
   assert(recv.size() == send.size() * get_num_node());
   const long sendsize = send.size() * sizeof(M);
 #ifdef USE_MULTI_NODE
-  MPI_Allgather((void*)send, sendsize, MPI_BYTE, recv, sendsize, MPI_BYTE, get_comm());
+  MPI_Allgather((void*)send.data(), send.data_size(), MPI_BYTE, (void*)recv.data(), send.data_size(), MPI_BYTE, get_comm());
 #else
   memmove(recv, send, sendsize);
 #endif
-  all_gather(recv.data(), send.data(), send.size() * sizeof(M));
+}
+
+template <class M>
+inline void bcast(Vector<M> recv, const int root = 0)
+{
+#ifdef USE_MULTI_NODE
+  MPI_Bcast((void*)recv.data(), recv.data_size(), MPI_BYTE, root, get_comm());
+#endif
 }
 
 inline void sync_node()

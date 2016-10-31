@@ -240,7 +240,7 @@ struct Vector
     return n;
   }
   //
-  long dataSize() const
+  long data_size() const
   {
     return n * sizeof(M);
   }
@@ -263,8 +263,7 @@ struct Vector
 template <class M>
 void set_zero(Vector<M> vec)
 {
-  long size = vec.size() * sizeof(M);
-  std::memset(vec.data(), 0, size);
+  std::memset(vec.data(), 0, vec.data_size());
 }
 
 template <class M, int N>
@@ -285,44 +284,56 @@ Vector<M> get_data(const std::vector<M>& vec)
   return Vector<M>((M*)vec.data(), vec.size());
 }
 
+template <class M>
+Vector<double> get_data_double(const M& v)
+{
+  return Vector<double>(&v, sizeof(M) / sizeof(double));
+}
+
+template <class M>
+Vector<long> get_data_long(const M& v)
+{
+  return Vector<long>(&v, sizeof(M) / sizeof(long));
+}
+
 template <class T>
 long get_data_size(const T& x)
 {
-  return get_data(x).dataSize();
+  return get_data(x).data_size();
 }
 
 template <class M, int N>
 void assign(std::array<M,N>& vec, const Array<M,N>& src)
 {
-  memcpy(vec.data(), src.data(), src.size() * sizeof(M));
+  memcpy(vec.data(), src.data(), src.data_size());
 }
 
 template <class M, int N>
 void assign(std::array<M,N>& vec, const Vector<M>& src)
 {
   assert(N == src.size());
-  memcpy(vec.data(), src.data(), src.size() * sizeof(M));
+  memcpy(vec.data(), src.data(), src.data_size());
 }
 
 template <class M, int N>
 void assign(std::vector<M>& vec, const Array<M,N>& src)
 {
   vec.resize(src.size());
-  memcpy(vec.data(), src.data(), src.size() * sizeof(M));
+  memcpy(vec.data(), src.data(), src.data_size());
 }
 
 template <class M>
 void assign(std::vector<M>& vec, const Vector<M>& src)
 {
   vec.resize(src.size());
-  memcpy(vec.data(), src.data(), src.size() * sizeof(M));
+  memcpy(vec.data(), src.data(), src.data_size());
 }
 
 template <class M>
 void assign(Vector<M> vec, const Vector<M>& src)
 {
   assert(vec.size() == src.size());
-  memcpy(vec.data(), src.data(), src.size() * sizeof(M));
+  memcpy(vec.data(), src.data(), src.data_size());
 }
 
 inline int mod(const int x, const int len) {
@@ -393,14 +404,6 @@ inline std::string show(const Complex& x) {
 
 inline std::string show(const Coordinate& x) {
   return ssprintf("%dx%dx%dx%d", x[0], x[1], x[2], x[3]);
-}
-
-inline bool truncate(const std::string &evilFile) {
-  std::ofstream evil;
-  evil.open(evilFile.c_str());
-  bool does_exist = evil.good();
-  if(does_exist) evil.close();
-  return does_exist;
 }
 
 QLAT_END_NAMESPACE

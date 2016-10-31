@@ -110,6 +110,12 @@ struct RngState
   }
 };
 
+inline RngState& getGlobalRngState()
+{
+  static RngState rs;
+  return rs;
+}
+
 const size_t RNG_STATE_NUM_OF_INT32 = 2 + 8 + 2 + 3 * 2 + 2 + 1 + 1;
 
 inline uint64_t patchTwoUint32(const uint32_t a, const uint32_t b)
