@@ -406,12 +406,4 @@ inline std::string show(const Coordinate& x) {
   return ssprintf("%dx%dx%dx%d", x[0], x[1], x[2], x[3]);
 }
 
-inline bool truncate(const std::string &evilFile) {
-  std::ofstream evil;
-  evil.open(evilFile.c_str());
-  bool does_exist = evil.good();
-  if(does_exist) evil.close();
-  return does_exist;
-}
-
 QLAT_END_NAMESPACE
