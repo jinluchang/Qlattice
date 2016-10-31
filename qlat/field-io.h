@@ -7,6 +7,8 @@
 #include <qlat/mpi.h>
 #include <qlat/geometry.h>
 
+#include <timer.h>
+
 #include <omp.h>
 
 #include <stdio.h>
@@ -38,6 +40,47 @@ const rePort& operator<<(const rePort &p, std::ostream &(*func)(std::ostream&)){
 	return p;
 }
 static const rePort report;
+
+inline std::string str_printf(const char *format, ...){
+	char cstr[512];
+	va_list args; va_start(args, format);
+	vsnprintf(cstr, sizeof(cstr), format, args);
+	return std::string(cstr);
+}
+
+inline int Printf(const char *format, ...){
+	if(!get_id_node()){
+		va_list args; va_start(args, format);
+		return vprintf(format, args);
+	}else{
+		return 0;
+	}
+}
+
+inline FILE* Fopen(const char* filename, const char* mode){
+	if(!get_id_node()){
+		return fopen(filename, mode);
+	}else{
+		return NULL;
+	}
+}
+
+inline int Fprintf(FILE *pFile, const char *format, ...){
+	if(!get_id_node()){
+		va_list args; va_start(args, format);
+		return vfprintf(pFile, format, args);
+	}else{
+		return 0;
+	}
+}
+
+inline int Fflush(FILE *pFile){
+	if(!get_id_node()){
+		return fflush(pFile);
+	}else{
+		return 0;
+	}
+}
 
 template<class M, class N>
 void castTruncated(M &x, const N &y)

@@ -3,7 +3,6 @@
 #include <qlat/config.h>
 #include <qlat/utils.h>
 
-#include <mpi.h>
 #include <timer.h>
 
 #include <array>
