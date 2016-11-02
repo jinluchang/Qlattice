@@ -25,9 +25,9 @@ inline double u_rand_gen(RngState& rs, const double upper = 1.0, const double lo
   return uRandGen(rs, upper, lower);
 }
 
-inline double g_rand_gen(RngState& rs, const double sigma = 1.0, const double center = 0.0)
+inline double g_rand_gen(RngState& rs, const double center = 0.0, const double sigma = 1.0)
 {
-  return gRandGen(rs, sigma, center);
+  return gRandGen(rs, center, sigma);
 }
 
 inline RngState& get_global_rng_state()

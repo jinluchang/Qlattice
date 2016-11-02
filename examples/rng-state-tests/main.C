@@ -45,7 +45,7 @@ void test2a()
   const int limit = 1024 * 1024;
   int count = 0;
   for (int i = 0; i < limit; ++i) {
-    double x = g_rand_gen(rs, 2.0, 1.0);
+    double x = g_rand_gen(rs, 1.0, 2.0);
     if (std::abs(x - 1.0) <= 2.0) {
       count += 1;
     }

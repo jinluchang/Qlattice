@@ -153,6 +153,11 @@ struct Array
     return N;
   }
   //
+  long data_size() const
+  {
+    return N * sizeof(M);
+  }
+  //
   const Array<M,N>& operator=(const Array<M,N>& v)
   {
     p = v.p;
@@ -298,8 +303,14 @@ Vector<long> get_data_long(const M& v)
   return Vector<long>(&v, sizeof(M) / sizeof(long));
 }
 
+template <class T, int N>
+long get_data_size(const Array<T,N>& x)
+{
+  return get_data(x).data_size();
+}
+
 template <class T>
-long get_data_size(const T& x)
+long get_data_size(const Vector<T>& x)
 {
   return get_data(x).data_size();
 }

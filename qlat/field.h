@@ -283,4 +283,12 @@ struct FieldM : Field<M>
   }
 };
 
+template <class M>
+long get_data_size(const Field<M>& f)
+  // NOT including the expended parts, only local volume data size
+  // only size on one node
+{
+  return f.geo.local_volume() * f.geo.multiplicity * sizeof(M);
+}
+
 QLAT_END_NAMESPACE
