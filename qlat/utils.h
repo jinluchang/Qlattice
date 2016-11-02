@@ -6,6 +6,8 @@
 
 #include <show.h>
 
+#include <endian.h>
+
 #include <array>
 #include <vector>
 #include <iostream>
@@ -435,6 +437,54 @@ inline std::string show(const Complex& x) {
 
 inline std::string show(const Coordinate& x) {
   return ssprintf("%dx%dx%dx%d", x[0], x[1], x[2], x[3]);
+}
+
+inline uint32_t flip_endian_32(uint32_t x)
+{
+  return
+    ((x >> 24)) |
+    ((x >>  8) & 0x0000FF00) |
+    ((x <<  8) & 0x00FF0000) |
+    ((x << 24));
+}
+
+inline uint64_t flip_endian_64(uint64_t x)
+{
+  return
+    ((x >> 56)) |
+    ((x >> 40) & 0xFF00) |
+    ((x >> 24) & 0xFF0000) |
+    ((x >>  8) & 0xFF000000) |
+    ((x <<  8) & 0xFF00000000) |
+    ((x << 24) & 0xFF0000000000) |
+    ((x << 40) & 0xFF000000000000) |
+    ((x << 56));
+}
+
+inline void from_big_endian_32(char* str, const size_t len)
+{
+  assert(0 == len % 4);
+#if defined(__BYTE_ORDER) && (__BYTE_ORDER != 0) && (__BYTE_ORDER == __BIG_ENDIAN)
+  // doing nothing
+#else
+  uint32_t* p = (uint32_t*)str;
+  for (size_t i = 0; i < len / 4; ++i) {
+    p[i] = flip_endian_32(p[i]);
+  }
+#endif
+}
+
+inline void from_big_endian_64(char* str, const size_t len)
+{
+  assert(0 == len % 8);
+#if defined(__BYTE_ORDER) && (__BYTE_ORDER != 0) && (__BYTE_ORDER == __BIG_ENDIAN)
+  // doing nothing
+#else
+  uint64_t* p = (uint64_t*)str;
+  for (size_t i = 0; i < len / 8; ++i) {
+    p[i] = flip_endian_64(p[i]);
+  }
+#endif
 }
 
 QLAT_END_NAMESPACE
