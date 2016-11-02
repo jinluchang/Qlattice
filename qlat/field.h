@@ -71,8 +71,10 @@ struct Field
 #pragma omp parallel for
     for (long index = 0; index < geo.local_volume(); ++index) {
       Coordinate xl; geo.coordinate_from_index(xl, index);
+      Vector<M> v = this->get_elems(xl);
+      const Vector<M> v_ = f.get_elems_const(xl);
       for (int m = 0; m < geo.multiplicity; ++m) {
-        this->get_elem(xl,m) = f.get_elem(xl,m);
+        v[m] = v_[m];
       }
     }
     return *this;
@@ -115,16 +117,15 @@ struct Field
     return get_elem(x,0);
   }
   //
-  Vector<M> get_elems_const(const Coordinate& x) const
-    // Be cautious about the const property
-    // 改不改靠自觉
+  Vector<M> get_elems(const Coordinate& x)
   {
     assert(geo.is_on_node(x));
     long offset = geo.offset_from_coordinate(x);
     return Vector<M>(&field[offset], geo.multiplicity);
   }
-  //
-  Vector<M> get_elems(const Coordinate& x)
+  Vector<M> get_elems_const(const Coordinate& x) const
+    // Be cautious about the const property
+    // 改不改靠自觉
   {
     assert(geo.is_on_node(x));
     long offset = geo.offset_from_coordinate(x);
@@ -155,7 +156,7 @@ void swap(Field<M>& f1, Field<M>& f2)
 {
   assert(is_initialized(f1));
   assert(is_initialized(f1));
-  assert(f1.geo == f2.geo);
+  swap(f1.geo, f2.geo);
   swap(f1.field, f2.field);
 }
 

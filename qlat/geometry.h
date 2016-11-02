@@ -286,6 +286,13 @@ std::string show(const Geometry& geo)
   return s;
 }
 
+void swap(Geometry& geo1, Geometry& geo2)
+{
+  Geometry geo = geo1;
+  geo1 = geo2;
+  geo2 = geo;
+}
+
 inline bool operator==(const Geometry& geo1, const Geometry& geo2)
 {
   return 0 == memcmp(&geo1, &geo2, sizeof(Geometry));

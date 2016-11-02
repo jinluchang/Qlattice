@@ -336,6 +336,17 @@ void assign(Vector<M> vec, const Vector<M>& src)
   memcpy(vec.data(), src.data(), src.data_size());
 }
 
+template <class M, class N>
+void assign_truncate(M& x, const N& y)
+{
+  if (sizeof(M) <= sizeof(N)) {
+    memcpy(&x, &y, sizeof(M));
+  } else {
+    // if M has a larger size, than leave the extra space untouched
+    memcpy(&x, &y, sizeof(N));
+  }
+}
+
 inline int mod(const int x, const int len) {
   assert(0 < len);
   const int m = x % len;
