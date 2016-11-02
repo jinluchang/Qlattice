@@ -43,7 +43,7 @@ inline void unitarize(GaugeField& gf)
   TIMER_VERBOSE("unitarize");
   const Geometry& geo = gf.geo;
 #pragma omp parallel for
-  for (size_t index = 0; index < geo.local_volume(); ++index) {
+  for (long index = 0; index < geo.local_volume(); ++index) {
     Coordinate xl; geo.coordinate_from_index(xl, index);
     Vector<ColorMatrix> v = gf.get_elems(xl);
     for (int m = 0; m < geo.multiplicity; ++m) {
@@ -62,7 +62,7 @@ inline void load_gauge_field(GaugeField& gf, const std::string& path)
   gft.init(geo);
   sophisticated_serial_read(gft, path, 1);
 #pragma omp parallel for
-  for (size_t index = 0; index < geo.local_volume(); ++index) {
+  for (long index = 0; index < geo.local_volume(); ++index) {
     Coordinate xl; geo.coordinate_from_index(xl, index);
     Vector<ColorMatrix> v = gf.get_elems(xl);
     const Vector<std::array<Complex, 6> > vt = gft.get_elems_const(xl);

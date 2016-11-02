@@ -153,13 +153,13 @@ struct Array
   //
   const Array<M,N>& operator=(const Array<M,N>& v)
   {
-    memcpy(this, v.data(), N * sizeof(M));
+    p = v.p;
     return *this;
   }
   const Array<M,N>& operator=(const Vector<M>& v)
   {
     assert(N == v.size());
-    memcpy(this, v.data(), N * sizeof(M));
+    p = v.p;
     return *this;
   }
 };
@@ -247,15 +247,15 @@ struct Vector
   //
   const Vector<M>& operator=(const Vector<M>& v)
   {
-    assert(v.size() == n);
-    memcpy(this, v.data(), v.size() * sizeof(M));
+    n = v.n;
+    p = v.p;
     return *this;
   }
   template <int N>
   const Vector<M>& operator=(const Array<M,N>& v)
   {
-    assert(v.size() == n);
-    memcpy(this, v.data(), v.size() * sizeof(M));
+    n = N;
+    p = v.p;
     return *this;
   }
 };
@@ -333,6 +333,26 @@ template <class M>
 void assign(Vector<M> vec, const Vector<M>& src)
 {
   assert(vec.size() == src.size());
+  memcpy(vec.data(), src.data(), src.data_size());
+}
+
+template <class M, int N>
+void assign(Vector<M> vec, const Array<M,N>& src)
+{
+  assert(vec.size() == N);
+  memcpy(vec.data(), src.data(), src.data_size());
+}
+
+template <class M, int N>
+void assign(Array<M,N> vec, const Array<M,N>& src)
+{
+  memcpy(vec.data(), src.data(), src.data_size());
+}
+
+template <class M, int N>
+void assign(Array<M,N> vec, const Vector<M>& src)
+{
+  assert(src.size() == N);
   memcpy(vec.data(), src.data(), src.data_size());
 }
 
