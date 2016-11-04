@@ -115,7 +115,7 @@ inline double get_total_time()
   return get_time() - get_start_time();
 }
 
-inline int get_rank()
+inline int compute_rank()
 {
 #ifdef USE_MULTI_NODE
   int myid;
@@ -124,6 +124,12 @@ inline int get_rank()
 #else
   return 0;
 #endif
+}
+
+inline int get_rank()
+{
+  static int myid = compute_rank();
+  return myid;
 }
 
 inline int get_thread_num()

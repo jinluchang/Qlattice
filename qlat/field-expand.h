@@ -30,7 +30,7 @@ void refresh_expanded(Field<M>& field_comm)
   // populate send_map with the data that we need to send to other nodes
   long record_size = field_comm.geo.local_volume_expanded();
   for(long record = 0; record < record_size; record++){
-    field_comm.geo.coordinateFromRecord(pos, record);
+    pos = field_comm.geo.coordinateFromRecord(record);
     if(field_comm.geo.is_local(pos)) continue;
     for(int mu = 0; mu < DIM; mu++){
       local_pos[mu] = pos[mu] % field_comm.geo.node_site[mu];
@@ -68,7 +68,7 @@ void refresh_expanded(Field<M>& field_comm)
     int id_this, idt, idf;
     // assuming periodic boundary condition. maybe need some fixing?
     id_this = get_id_node();
-    qlat::coordinate_from_index(coor_this, id_this, \
+    coor_this = qlat::coordinate_from_index(id_this, \
         field_comm.geo.geon.size_node);
     coort = coor_this - node_pos; 
     regularize(coort, field_comm.geo.geon.size_node);
@@ -92,7 +92,7 @@ void refresh_expanded(Field<M>& field_comm)
   // Now send_map[node_pos] is the vector of data recieved from the node
   // pointed to by key.
   for(long record = 0; record < record_size; record++){
-    field_comm.geo.coordinateFromRecord(pos, record);
+    pos = field_comm.geo.coordinateFromRecord(record);
     if(field_comm.geo.is_local(pos)) continue;
     for(int mu = 0; mu < DIM; mu++){
       local_pos[mu] = pos[mu] % field_comm.geo.node_site[mu];
