@@ -3,8 +3,9 @@
 #include <qlat/field.h>
 #include <qlat/field-fft.h>
 #include <qlat/qed.h>
+#include <qlat/field-expand.h>
 
-#include <Eigen/Eigen>
+#include <eigen3/Eigen/Eigen>
 
 #include <cmath>
 

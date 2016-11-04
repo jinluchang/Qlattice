@@ -47,7 +47,7 @@ struct fft_complex_field_plan
     assert(check(geo_, mc_, dirs_));
     static std::vector<fft_complex_field_plan> planV(100);
     static int next_plan_index = 0;
-    for (int i = 0; i < planV.size(); i++) {
+    for (int i = 0; i < (int)planV.size(); i++) {
       if (planV[i].is_match(geo_, mc_, dirs_)) {
         return planV[i];
       }
@@ -150,7 +150,8 @@ void fft_complex_field_dirs(Field<M>& field, const Coordinate& dirs)
   Field<M> fields; fields.init(geo);
   Field<M> fieldr; fieldr.init(geo);
   Geometry geos = geo;
-  const int fieldsize = get_data_size(fields) / sizeof(double);
+  // FIXME my compiler says unused variable 'fieldsize'
+  // const int fieldsize = get_data_size(fields) / sizeof(double);
   fields = field;
   for (int i = 0; i < geos.geon.size_node[dir]; i++) {
 #pragma omp parallel for

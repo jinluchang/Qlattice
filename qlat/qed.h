@@ -174,7 +174,8 @@ inline void prop_mom_photon_invert(QedGaugeField& egf, const std::array<double,D
     Coordinate kl = geo.coordinate_from_index(index);
     Coordinate kg = geo.coordinate_g_from_l(kl);
     std::array<double,DIM> kk;
-    std::array<double,DIM> ks;
+    // FIXME unused 'ks'
+	// std::array<double,DIM> ks;
     double s2 = 0.0;
     for (int i = 0; i < DIM; i++) {
       kg[i] = smod(kg[i], geo.total_site(i));
@@ -215,7 +216,8 @@ inline void prop_mom_complex_scaler_invert(ComplexScalerField& csf, const double
     Coordinate kl = geo.coordinate_from_index(index);
     Coordinate kg = geo.coordinate_g_from_l(kl);
     std::array<double,DIM> kk;
-    std::array<double,DIM> ks;
+    // FIXME my compiler says unused variable 'ks'
+	// std::array<double,DIM> ks;
     double s2 = 0.0;
     for (int i = 0; i < DIM; i++) {
       kg[i] = smod(kg[i], geo.total_site(i));
