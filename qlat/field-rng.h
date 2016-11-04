@@ -25,9 +25,9 @@ inline double u_rand_gen(RngState& rs, const double upper = 1.0, const double lo
   return uRandGen(rs, upper, lower);
 }
 
-inline double g_rand_gen(RngState& rs, const double sigma = 1.0, const double center = 0.0)
+inline double g_rand_gen(RngState& rs, const double center = 0.0, const double sigma = 1.0)
 {
-  return gRandGen(rs, sigma, center);
+  return gRandGen(rs, center, sigma);
 }
 
 inline RngState& get_global_rng_state()
@@ -55,8 +55,8 @@ struct RngField : FieldM<RngState,1>
     }
 #pragma omp parallel for
     for (long index = 0; index < geo.local_volume(); ++index) {
-      Coordinate x; geo.coordinate_from_index(x, index);
-      Coordinate xg; geo.coordinate_g_from_l(xg, x);
+      Coordinate x = geo.coordinate_from_index(index);
+      Coordinate xg = geo.coordinate_g_from_l(x);
       long gindex = index_from_coordinate(xg, total_site);
       split_rng_state(get_elem(x), rs, gindex);
     }

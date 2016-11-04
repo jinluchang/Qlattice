@@ -43,7 +43,7 @@ struct Field
   virtual void init(const Geometry& geo_, const int multiplicity_)
   {
     init();
-    geo.init(geo_, multiplicity_);
+    geo = geo_remult(geo_, multiplicity_);
     field.resize(geo.local_volume_expanded() * geo.multiplicity);
     set_zero(*this);
     initialized = true;
@@ -51,7 +51,7 @@ struct Field
   virtual void init(const Field& f)
   {
     init();
-    geo.init(f.geo);
+    geo = f.geo;
     field = f.field;
     initialized = true;
   }
@@ -70,9 +70,11 @@ struct Field
     assert(is_matching_geo(geo, f.geo));
 #pragma omp parallel for
     for (long index = 0; index < geo.local_volume(); ++index) {
-      Coordinate xl; geo.coordinate_from_index(xl, index);
+      Coordinate xl = geo.coordinate_from_index(index);
+      Vector<M> v = this->get_elems(xl);
+      const Vector<M> v_ = f.get_elems_const(xl);
       for (int m = 0; m < geo.multiplicity; ++m) {
-        this->get_elem(xl,m) = f.get_elem(xl,m);
+        v[m] = v_[m];
       }
     }
     return *this;
@@ -115,16 +117,15 @@ struct Field
     return get_elem(x,0);
   }
   //
-  Vector<M> get_elems_const(const Coordinate& x) const
-    // Be cautious about the const property
-    // 改不改靠自觉
+  Vector<M> get_elems(const Coordinate& x)
   {
     assert(geo.is_on_node(x));
     long offset = geo.offset_from_coordinate(x);
     return Vector<M>(&field[offset], geo.multiplicity);
   }
-  //
-  Vector<M> get_elems(const Coordinate& x)
+  Vector<M> get_elems_const(const Coordinate& x) const
+    // Be cautious about the const property
+    // 改不改靠自觉
   {
     assert(geo.is_on_node(x));
     long offset = geo.offset_from_coordinate(x);
@@ -155,7 +156,7 @@ void swap(Field<M>& f1, Field<M>& f2)
 {
   assert(is_initialized(f1));
   assert(is_initialized(f1));
-  assert(f1.geo == f2.geo);
+  swap(f1.geo, f2.geo);
   swap(f1.field, f2.field);
 }
 
@@ -167,7 +168,7 @@ const Field<M>& operator+=(Field<M>& f, const Field<M>& f1)
   const Geometry& geo = f.geo;
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
-    Coordinate x; geo.coordinate_from_index(x, index);
+    Coordinate x = geo.coordinate_from_index(index);
     for (int m = 0; m < geo.multiplicity; ++m) {
       f.get_elem(x,m) += f1.get_elem(x,m);
     }
@@ -183,7 +184,7 @@ const Field<M>& operator-=(Field<M>& f, const Field<M>& f1)
   const Geometry& geo = f.geo;
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); index++) {
-    Coordinate x; geo.coordinate_from_index(x, index);
+    Coordinate x = geo.coordinate_from_index(index);
     for (int m = 0; m < geo.multiplicity; m++) {
       f.get_elem(x,m) -= f1.get_elem(x,m);
     }
@@ -198,7 +199,7 @@ const Field<M>& operator*=(Field<M>& f, const double factor)
   const Geometry& geo = f.geo;
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); index++) {
-    Coordinate x; geo.coordinate_from_index(x, index);
+    Coordinate x = geo.coordinate_from_index(index);
     for (int m = 0; m < geo.multiplicity; m++) {
       f.get_elem(x,m) *= factor;
     }
@@ -213,7 +214,7 @@ const Field<M>& operator*=(Field<M>& f, const Complex factor)
   const Geometry& geo = f.geo;
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); index++) {
-    Coordinate x; geo.coordinate_from_index(x, index);
+    Coordinate x = geo.coordinate_from_index(index);
     for (int m = 0; m < geo.multiplicity; m++) {
       f.get_elem(x,m) *= factor;
     }
@@ -231,7 +232,7 @@ double norm(const Field<M>& f)
     double psum = 0.0;
 #pragma omp for nowait
     for (long index = 0; index < geo.local_volume(); ++index) {
-      Coordinate x; geo.coordinate_from_index(x, index);
+      Coordinate x = geo.coordinate_from_index(index);
       Vector<M> fx = f.get_elems(x);
       for (int m = 0; m < geo.multiplicity; ++m) {
         psum += norm(fx[m]);
@@ -281,5 +282,13 @@ struct FieldM : Field<M>
     assert(false);
   }
 };
+
+template <class M>
+long get_data_size(const Field<M>& f)
+  // NOT including the expended parts, only local volume data size
+  // only size on one node
+{
+  return f.geo.local_volume() * f.geo.multiplicity * sizeof(M);
+}
 
 QLAT_END_NAMESPACE

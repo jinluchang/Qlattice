@@ -149,14 +149,14 @@ void fft_complex_field_dirs(Field<M>& field, const Coordinate& dirs)
   Complex* fftdatac = (Complex*)fftw_malloc(nc_size * sizec * sizeof(Complex));
   Field<M> fields; fields.init(geo);
   Field<M> fieldr; fieldr.init(geo);
-  Geometry geos; geos.init(geo);
+  Geometry geos = geo;
   const int fieldsize = get_data_size(fields) / sizeof(double);
   fields = field;
   for (int i = 0; i < geos.geon.size_node[dir]; i++) {
 #pragma omp parallel for
     for (long index = 0; index < geos.local_volume(); index++) {
-      Coordinate xl; geos.coordinate_from_index(xl, index);
-      Coordinate xg; geos.coordinate_g_from_l(xg, xl);
+      Coordinate xl = geos.coordinate_from_index(index);
+      Coordinate xg = geos.coordinate_g_from_l(xl);
       int nc_index = 0;
       int nc_offset = mc;
       for (int mu = 0; mu < 4; mu++) {
@@ -189,8 +189,8 @@ void fft_complex_field_dirs(Field<M>& field, const Coordinate& dirs)
   for (int i = 0; i < geos.geon.size_node[dir]; i++) {
 #pragma omp parallel for
     for (long index = 0; index < geos.local_volume(); index++) {
-      Coordinate xl; geos.coordinate_from_index(xl, index);
-      Coordinate xg; geos.coordinate_g_from_l(xg, xl);
+      Coordinate xl = geos.coordinate_from_index(index);
+      Coordinate xg = geos.coordinate_g_from_l(xl);
       int nc_index = 0;
       int nc_offset = mc;
       for (int mu = 0; mu < 4; mu++) {

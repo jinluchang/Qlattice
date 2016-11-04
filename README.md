@@ -29,7 +29,7 @@ the following command will install everything into `DEST_DIRECTORY`.
 `$ prefix=DEST_DIRECTORY ./build.sh`
 
 If `$prefix` is not set, the default value in `setenv.sh` is used,
-which is `$HOME/qlat-builds/VERSION_NUMBER`.
+which is `$HOME/qlat-build/VERSION_NUMBER`.
 
 ## Usage:
 

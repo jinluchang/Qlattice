@@ -105,6 +105,30 @@ T& reads(T& x, const std::string& str)
   return x;
 }
 
+inline FILE*& get_output_file()
+{
+  static FILE* out = stdout;
+  return out;
+}
+
+inline void display(const std::string& str, FILE* fp = NULL)
+{
+  if (NULL == fp) {
+    fp = get_output_file();
+  }
+  fprintf(fp, "%s", str.c_str());
+}
+
+inline void displayln(const std::string& str, FILE* fp = NULL)
+{
+  if (NULL == fp) {
+    fp = get_output_file();
+  }
+  fprintf(fp, "%s\n", str.c_str());
+}
+
+//////////////////////////////////////////////////////////////////
+
 inline void fdisplay(FILE* fp, const std::string& str)
 {
   fprintf(fp, "%s", str.c_str());

@@ -106,4 +106,9 @@ inline int rmdir_sync_node(const std::string& path)
   return ret;
 }
 
+inline std::string get_env(const std::string& var_name) {
+  const char* value = getenv(var_name.c_str());
+  return std::string(value);
+}
+
 QLAT_END_NAMESPACE

@@ -47,13 +47,13 @@ void test1()
     set_zero(sumf);
     set_zero(sigma2f);
     for (long index = 0; index < geo.local_volume(); ++index) {
-      Coordinate x; geo.coordinate_from_index(x, index);
+      Coordinate x = geo.coordinate_from_index(index);
       Coordinate xh; coordinateHalf(xh, x);
       RngState& rs = rf.get_elem(x);
       af.get_elem(xh) += polar(1.0, u_rand_gen(rs, PI, -PI));
     }
     for (long index = 0; index < geoHalf.local_volume(); ++index) {
-      Coordinate x; geoHalf.coordinate_from_index(x, index);
+      Coordinate x = geoHalf.coordinate_from_index(index);
       Complex& a = af.get_elem(x);
       sumf.get_elem(x) += norm(a);
       sigma2f.get_elem(x) += sqr(norm(a));

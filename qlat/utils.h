@@ -6,6 +6,8 @@
 
 #include <show.h>
 
+#include <endian.h>
+
 #include <array>
 #include <vector>
 #include <iostream>
@@ -151,15 +153,20 @@ struct Array
     return N;
   }
   //
+  long data_size() const
+  {
+    return N * sizeof(M);
+  }
+  //
   const Array<M,N>& operator=(const Array<M,N>& v)
   {
-    memcpy(this, v.data(), N * sizeof(M));
+    p = v.p;
     return *this;
   }
   const Array<M,N>& operator=(const Vector<M>& v)
   {
     assert(N == v.size());
-    memcpy(this, v.data(), N * sizeof(M));
+    p = v.p;
     return *this;
   }
 };
@@ -247,15 +254,15 @@ struct Vector
   //
   const Vector<M>& operator=(const Vector<M>& v)
   {
-    assert(v.size() == n);
-    memcpy(this, v.data(), v.size() * sizeof(M));
+    n = v.n;
+    p = v.p;
     return *this;
   }
   template <int N>
   const Vector<M>& operator=(const Array<M,N>& v)
   {
-    assert(v.size() == n);
-    memcpy(this, v.data(), v.size() * sizeof(M));
+    n = N;
+    p = v.p;
     return *this;
   }
 };
@@ -296,8 +303,14 @@ Vector<long> get_data_long(const M& v)
   return Vector<long>(&v, sizeof(M) / sizeof(long));
 }
 
+template <class T, int N>
+long get_data_size(const Array<T,N>& x)
+{
+  return get_data(x).data_size();
+}
+
 template <class T>
-long get_data_size(const T& x)
+long get_data_size(const Vector<T>& x)
 {
   return get_data(x).data_size();
 }
@@ -334,6 +347,37 @@ void assign(Vector<M> vec, const Vector<M>& src)
 {
   assert(vec.size() == src.size());
   memcpy(vec.data(), src.data(), src.data_size());
+}
+
+template <class M, int N>
+void assign(Vector<M> vec, const Array<M,N>& src)
+{
+  assert(vec.size() == N);
+  memcpy(vec.data(), src.data(), src.data_size());
+}
+
+template <class M, int N>
+void assign(Array<M,N> vec, const Array<M,N>& src)
+{
+  memcpy(vec.data(), src.data(), src.data_size());
+}
+
+template <class M, int N>
+void assign(Array<M,N> vec, const Vector<M>& src)
+{
+  assert(src.size() == N);
+  memcpy(vec.data(), src.data(), src.data_size());
+}
+
+template <class M, class N>
+void assign_truncate(M& x, const N& y)
+{
+  if (sizeof(M) <= sizeof(N)) {
+    memcpy(&x, &y, sizeof(M));
+  } else {
+    // if M has a larger size, than leave the extra space untouched
+    memcpy(&x, &y, sizeof(N));
+  }
 }
 
 inline int mod(const int x, const int len) {
@@ -384,7 +428,8 @@ inline double distance_relative_coordinate_g(const Coordinate& xg) {
   return sqrt(distance_sq_relative_coordinate_g(xg));
 }
 
-inline void coordinate_from_index(Coordinate& x, long index, const Coordinate& size) {
+inline Coordinate coordinate_from_index(long index, const Coordinate& size) {
+  Coordinate x;
   x[0] = index % size[0];
   index /= size[0];
   x[1] = index % size[1];
@@ -392,6 +437,7 @@ inline void coordinate_from_index(Coordinate& x, long index, const Coordinate& s
   x[2] = index % size[2];
   index /= size[2];
   x[3] = index % size[3];
+  return x;
 }
 
 inline long index_from_coordinate(const Coordinate& x, const Coordinate& size) {
@@ -404,6 +450,54 @@ inline std::string show(const Complex& x) {
 
 inline std::string show(const Coordinate& x) {
   return ssprintf("%dx%dx%dx%d", x[0], x[1], x[2], x[3]);
+}
+
+inline uint32_t flip_endian_32(uint32_t x)
+{
+  return
+    ((x >> 24)) |
+    ((x >>  8) & 0x0000FF00) |
+    ((x <<  8) & 0x00FF0000) |
+    ((x << 24));
+}
+
+inline uint64_t flip_endian_64(uint64_t x)
+{
+  return
+    ((x >> 56)) |
+    ((x >> 40) & 0xFF00) |
+    ((x >> 24) & 0xFF0000) |
+    ((x >>  8) & 0xFF000000) |
+    ((x <<  8) & 0xFF00000000) |
+    ((x << 24) & 0xFF0000000000) |
+    ((x << 40) & 0xFF000000000000) |
+    ((x << 56));
+}
+
+inline void from_big_endian_32(char* str, const size_t len)
+{
+  assert(0 == len % 4);
+#if defined(__BYTE_ORDER) && (__BYTE_ORDER != 0) && (__BYTE_ORDER == __BIG_ENDIAN)
+  // doing nothing
+#else
+  uint32_t* p = (uint32_t*)str;
+  for (size_t i = 0; i < len / 4; ++i) {
+    p[i] = flip_endian_32(p[i]);
+  }
+#endif
+}
+
+inline void from_big_endian_64(char* str, const size_t len)
+{
+  assert(0 == len % 8);
+#if defined(__BYTE_ORDER) && (__BYTE_ORDER != 0) && (__BYTE_ORDER == __BIG_ENDIAN)
+  // doing nothing
+#else
+  uint64_t* p = (uint64_t*)str;
+  for (size_t i = 0; i < len / 8; ++i) {
+    p[i] = flip_endian_64(p[i]);
+  }
+#endif
 }
 
 QLAT_END_NAMESPACE

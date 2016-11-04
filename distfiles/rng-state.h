@@ -57,7 +57,7 @@ inline uint64_t randGen(RngState& rs);
 
 inline double uRandGen(RngState& rs, const double upper = 1.0, const double lower = 0.0);
 
-inline double gRandGen(RngState& rs, const double sigma = 1.0, const double center = 0.0);
+inline double gRandGen(RngState& rs, const double center = 0.0, const double sigma = 1.0);
 
 inline void computeHashWithInput(uint32_t hash[8], const RngState& rs, const std::string& input);
 
@@ -289,7 +289,7 @@ inline double uRandGen(RngState& rs, const double upper, const double lower)
   return u * fac * (upper - lower) + lower;
 }
 
-inline double gRandGen(RngState& rs, const double sigma, const double center)
+inline double gRandGen(RngState& rs, const double center, const double sigma)
 {
   rs.index += 1;
   if (rs.gaussianAvail) {

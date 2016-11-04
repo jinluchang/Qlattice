@@ -27,12 +27,14 @@ struct ComplexScalerField : FieldM<Complex,1>
 
 typedef Eigen::Matrix<Complex,4,4,Eigen::RowMajor> SpinMatrix;
 
-inline void set_zero(SpinMatrix& sm)
+template <int N>
+void set_zero(Eigen::Matrix<Complex,N,N,Eigen::RowMajor>& sm)
 {
   sm.setZero();
 }
 
-inline void set_unit(SpinMatrix& sm, const Complex& coef = 1.0)
+template <int N>
+void set_unit(Eigen::Matrix<Complex,N,N,Eigen::RowMajor>& sm, const Complex& coef = 1.0)
 {
   set_zero(sm);
   for (int i = 0; i < sm.rows() && i < sm.cols(); ++i) {
@@ -40,12 +42,14 @@ inline void set_unit(SpinMatrix& sm, const Complex& coef = 1.0)
   }
 }
 
-inline double norm(const SpinMatrix& sm)
+template <int N>
+double norm(const Eigen::Matrix<Complex,N,N,Eigen::RowMajor>& sm)
 {
   return sm.squaredNorm();
 }
 
-inline std::string show(const SpinMatrix& sm)
+template <int N>
+std::string show(const Eigen::Matrix<Complex,N,N,Eigen::RowMajor>& sm)
 {
   std::ostringstream out;
   out << sm;
@@ -167,8 +171,8 @@ inline void prop_mom_photon_invert(QedGaugeField& egf, const std::array<double,D
   TIMER("prop_mom_photon_invert");
   const Geometry& geo = egf.geo;
   for (long index = 0; index < geo.local_volume(); ++index) {
-    Coordinate kl; geo.coordinate_from_index(kl, index);
-    Coordinate kg; geo.coordinate_g_from_l(kg, kl);
+    Coordinate kl = geo.coordinate_from_index(index);
+    Coordinate kg = geo.coordinate_g_from_l(kl);
     std::array<double,DIM> kk;
     std::array<double,DIM> ks;
     double s2 = 0.0;
@@ -208,8 +212,8 @@ inline void prop_mom_complex_scaler_invert(ComplexScalerField& csf, const double
   TIMER("prop_mom_complex_scaler_invert");
   const Geometry& geo = csf.geo;
   for (long index = 0; index < geo.local_volume(); ++index) {
-    Coordinate kl; geo.coordinate_from_index(kl, index);
-    Coordinate kg; geo.coordinate_g_from_l(kg, kl);
+    Coordinate kl = geo.coordinate_from_index(index);
+    Coordinate kg = geo.coordinate_g_from_l(kl);
     std::array<double,DIM> kk;
     std::array<double,DIM> ks;
     double s2 = 0.0;
@@ -244,8 +248,8 @@ inline void prop_mom_spin_propagator4d(SpinPropagator4d& sp4d, const double mass
   const double m5 = 1.0;
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
-    Coordinate kl; geo.coordinate_from_index(kl, index);
-    Coordinate kg; geo.coordinate_g_from_l(kg, kl);
+    Coordinate kl = geo.coordinate_from_index(index);
+    Coordinate kg = geo.coordinate_g_from_l(kl);
     std::array<double,DIM> kk, ks;
     double p2 = 0.0;
     double wp = 1.0 - m5;
@@ -297,7 +301,7 @@ inline void set_point_source_plusm(QedGaugeField& f, const Complex& coef, const 
 {
   TIMER("set_point_source_plusm");
   const Geometry& geo = f.geo;
-  Coordinate xl; geo.coordinate_l_from_g(xl, xg);
+  Coordinate xl = geo.coordinate_l_from_g(xg);
   if (geo.is_local(xl)) {
     f.get_elem(xl,mu) += coef;
   }
@@ -312,8 +316,8 @@ inline void set_box_source_plusm(SpinPropagator4d& f, const Complex& coef, const
   SpinMatrix sm; set_unit(sm, coef);
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
-    Coordinate xl; geo.coordinate_from_index(xl, index);
-    Coordinate xg; geo.coordinate_g_from_l(xg, xl);
+    Coordinate xl = geo.coordinate_from_index(index);
+    Coordinate xg = geo.coordinate_g_from_l(xl);
     if (xg1 <= xg && xg < xg2) {
       f.get_elem(xl) += sm;
     }
@@ -338,7 +342,7 @@ inline void sequential_photon_spin_propagator_plusm(
   const Geometry& geo = sol.geo;
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
-    Coordinate xl; geo.coordinate_from_index(xl, index);
+    Coordinate xl = geo.coordinate_from_index(index);
     for (int mu = 0; mu < DIM; mu++) {
       // a = A_\mu(x)
       Complex a = egf.get_elem(xl, mu);
@@ -361,7 +365,7 @@ inline SpinMatrix contract_spin_propagator4d(const SpinPropagator4d& snk, const 
     SpinMatrix psum; set_zero(psum);
 #pragma omp for nowait
     for (long index = 0; index < geo.local_volume(); ++index) {
-      Coordinate xl; geo.coordinate_from_index(xl, index);
+      Coordinate xl = geo.coordinate_from_index(index);
       psum += snk.get_elem(xl).adjoint() * src.get_elem(xl);
     }
     for (int i = 0; i < omp_get_num_threads(); ++i) {
