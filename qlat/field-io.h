@@ -97,7 +97,7 @@ void fieldCastTruncated(Field<M> &dest, const Field<N> &src)
 	dest.init(geo);
 #pragma omp parallel for
 	for (long index = 0; index < geo.local_volume(); ++index) {
-		Coordinate xl; geo.coordinate_from_index(xl, index);
+		Coordinate xl = geo.coordinate_from_index(index);
 		const Vector<N> s = src.get_elems_const(xl);
 		Vector<M> d = dest.get_elems(xl);
 		for (int m = 0; m < geo.multiplicity; ++m) {
@@ -184,13 +184,11 @@ void sophisticated_make_to_order(Field<M> &result, const Field<M> &origin){
 		
 		int id_send_node = (get_id_node() + i) % get_num_node();
 		
-		Coordinate coor_send_node; 
-		qlat::coordinate_from_index(coor_send_node, 
+		Coordinate coor_send_node = qlat::coordinate_from_index(
 									id_send_node, geo_only_local.geon.size_node);
 #pragma omp parallel for
 		for(int index = 0; index < geo_only_local.local_volume(); index++){
-			Coordinate local_coor; 
-			geo_only_local.coordinate_from_index(local_coor, index);
+			Coordinate local_coor = geo_only_local.coordinate_from_index(index);
 			Coordinate global_coor;
 			for (int mu = 0; mu < 4; mu++) {
 				global_coor[mu] = local_coor[mu] + coor_send_node[mu] 
@@ -199,8 +197,7 @@ void sophisticated_make_to_order(Field<M> &result, const Field<M> &origin){
 			long global_index = index_from_coordinate(global_coor, total_site);
 			if(global_index >= range_low && global_index < range_high)
 			{
-				Coordinate local_coor_write; 
-				geo_only_local.coordinate_from_index(local_coor_write, 
+				Coordinate local_coor_write = geo_only_local.coordinate_from_index(
 													global_index - range_low);
 				assign(field_rslt.get_elems(local_coor_write), 
 											field_send.get_elems_const(local_coor));
@@ -383,11 +380,10 @@ void sophisticated_serial_read(qlat::Field<M> &destination,
 		
 		int id_send_node = (get_id_node() + i) % get_num_node();
 		
-		Coordinate coor_send_node; 
-		qlat::coordinate_from_index(coor_send_node, id_send_node, geo_only_local.geon.size_node);
+		Coordinate coor_send_node = qlat::coordinate_from_index(id_send_node, geo_only_local.geon.size_node);
 #pragma omp parallel for
 		for(int index = 0; index < geo_only_local.local_volume(); index++){
-			Coordinate local_coor; geo_only_local.coordinate_from_index(local_coor, index);
+			Coordinate local_coor = geo_only_local.coordinate_from_index(index);
 			Coordinate global_coor;
 			for (int mu = 0; mu < 4; mu++) {
 				global_coor[mu] = local_coor[mu] + coor_send_node[mu] * geo_only_local.node_site[mu];
@@ -395,8 +391,7 @@ void sophisticated_serial_read(qlat::Field<M> &destination,
 			long global_index = index_from_coordinate(global_coor, total_site);
 			if(global_index >= range_low && global_index < range_high)
 			{
-				Coordinate local_coor_read; 
-				geo_only_local.coordinate_from_index(local_coor_read, global_index - range_low);
+				Coordinate local_coor_read = geo_only_local.coordinate_from_index(global_index - range_low);
 				assign(field_send.get_elems(local_coor), field_rslt.get_elems_const(local_coor_read));
 			}
 		}

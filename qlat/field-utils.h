@@ -13,7 +13,7 @@ void field_sum(Vector<M> vec, const Field<M>& f)
   const Geometry& geo = f.geo;
   set_zero(vec);
   for (long index = 0; index < geo.local_volume(); ++index) {
-    Coordinate x; geo.coordinate_from_index(x, index);
+    Coordinate x = geo.coordinate_from_index(index);
     const Vector<M> fvec = f.get_elems_const(x);
     for (int m = 0; m < multiplicity; ++m) {
       vec[m] += fvec[m];

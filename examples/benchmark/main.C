@@ -35,7 +35,7 @@ void test_fft()
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     RngState rsi(rs, get_id_node() * geo.local_volume() + index);
-    Coordinate xl; geo.coordinate_from_index(xl, index);
+    Coordinate xl = geo.coordinate_from_index(index);
     Vector<ColorMatrix> v = gf.get_elems(xl);
     for (int m = 0; m < v.size(); ++m) {
       ColorMatrix& cm = v[m];

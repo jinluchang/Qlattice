@@ -55,8 +55,8 @@ struct RngField : FieldM<RngState,1>
     }
 #pragma omp parallel for
     for (long index = 0; index < geo.local_volume(); ++index) {
-      Coordinate x; geo.coordinate_from_index(x, index);
-      Coordinate xg; geo.coordinate_g_from_l(xg, x);
+      Coordinate x = geo.coordinate_from_index(index);
+      Coordinate xg = geo.coordinate_g_from_l(x);
       long gindex = index_from_coordinate(xg, total_site);
       split_rng_state(get_elem(x), rs, gindex);
     }

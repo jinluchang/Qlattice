@@ -428,7 +428,8 @@ inline double distance_relative_coordinate_g(const Coordinate& xg) {
   return sqrt(distance_sq_relative_coordinate_g(xg));
 }
 
-inline void coordinate_from_index(Coordinate& x, long index, const Coordinate& size) {
+inline Coordinate coordinate_from_index(long index, const Coordinate& size) {
+  Coordinate x;
   x[0] = index % size[0];
   index /= size[0];
   x[1] = index % size[1];
@@ -436,6 +437,7 @@ inline void coordinate_from_index(Coordinate& x, long index, const Coordinate& s
   x[2] = index % size[2];
   index /= size[2];
   x[3] = index % size[3];
+  return x;
 }
 
 inline long index_from_coordinate(const Coordinate& x, const Coordinate& size) {

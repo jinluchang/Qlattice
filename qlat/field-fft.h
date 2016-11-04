@@ -155,8 +155,8 @@ void fft_complex_field_dirs(Field<M>& field, const Coordinate& dirs)
   for (int i = 0; i < geos.geon.size_node[dir]; i++) {
 #pragma omp parallel for
     for (long index = 0; index < geos.local_volume(); index++) {
-      Coordinate xl; geos.coordinate_from_index(xl, index);
-      Coordinate xg; geos.coordinate_g_from_l(xg, xl);
+      Coordinate xl = geos.coordinate_from_index(index);
+      Coordinate xg = geos.coordinate_g_from_l(xl);
       int nc_index = 0;
       int nc_offset = mc;
       for (int mu = 0; mu < 4; mu++) {
@@ -189,8 +189,8 @@ void fft_complex_field_dirs(Field<M>& field, const Coordinate& dirs)
   for (int i = 0; i < geos.geon.size_node[dir]; i++) {
 #pragma omp parallel for
     for (long index = 0; index < geos.local_volume(); index++) {
-      Coordinate xl; geos.coordinate_from_index(xl, index);
-      Coordinate xg; geos.coordinate_g_from_l(xg, xl);
+      Coordinate xl = geos.coordinate_from_index(index);
+      Coordinate xg = geos.coordinate_g_from_l(xl);
       int nc_index = 0;
       int nc_offset = mc;
       for (int mu = 0; mu < 4; mu++) {

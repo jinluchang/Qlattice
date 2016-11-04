@@ -70,7 +70,7 @@ struct Field
     assert(is_matching_geo(geo, f.geo));
 #pragma omp parallel for
     for (long index = 0; index < geo.local_volume(); ++index) {
-      Coordinate xl; geo.coordinate_from_index(xl, index);
+      Coordinate xl = geo.coordinate_from_index(index);
       Vector<M> v = this->get_elems(xl);
       const Vector<M> v_ = f.get_elems_const(xl);
       for (int m = 0; m < geo.multiplicity; ++m) {
@@ -168,7 +168,7 @@ const Field<M>& operator+=(Field<M>& f, const Field<M>& f1)
   const Geometry& geo = f.geo;
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
-    Coordinate x; geo.coordinate_from_index(x, index);
+    Coordinate x = geo.coordinate_from_index(index);
     for (int m = 0; m < geo.multiplicity; ++m) {
       f.get_elem(x,m) += f1.get_elem(x,m);
     }
@@ -184,7 +184,7 @@ const Field<M>& operator-=(Field<M>& f, const Field<M>& f1)
   const Geometry& geo = f.geo;
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); index++) {
-    Coordinate x; geo.coordinate_from_index(x, index);
+    Coordinate x = geo.coordinate_from_index(index);
     for (int m = 0; m < geo.multiplicity; m++) {
       f.get_elem(x,m) -= f1.get_elem(x,m);
     }
@@ -199,7 +199,7 @@ const Field<M>& operator*=(Field<M>& f, const double factor)
   const Geometry& geo = f.geo;
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); index++) {
-    Coordinate x; geo.coordinate_from_index(x, index);
+    Coordinate x = geo.coordinate_from_index(index);
     for (int m = 0; m < geo.multiplicity; m++) {
       f.get_elem(x,m) *= factor;
     }
@@ -214,7 +214,7 @@ const Field<M>& operator*=(Field<M>& f, const Complex factor)
   const Geometry& geo = f.geo;
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); index++) {
-    Coordinate x; geo.coordinate_from_index(x, index);
+    Coordinate x = geo.coordinate_from_index(index);
     for (int m = 0; m < geo.multiplicity; m++) {
       f.get_elem(x,m) *= factor;
     }
@@ -232,7 +232,7 @@ double norm(const Field<M>& f)
     double psum = 0.0;
 #pragma omp for nowait
     for (long index = 0; index < geo.local_volume(); ++index) {
-      Coordinate x; geo.coordinate_from_index(x, index);
+      Coordinate x = geo.coordinate_from_index(index);
       Vector<M> fx = f.get_elems(x);
       for (int m = 0; m < geo.multiplicity; ++m) {
         psum += norm(fx[m]);

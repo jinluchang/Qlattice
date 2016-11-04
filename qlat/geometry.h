@@ -32,35 +32,6 @@ struct Geometry
   void init()
   {
     memset(this, 0, sizeof(Geometry));
-    initialized = false;
-  }
-  void init(const GeometryNode& geon_,
-      const int multiplicity_,
-      const Coordinate& node_site_,
-      const Coordinate& expansion_left_,
-      const Coordinate& expansion_right_)
-  {
-    init();
-    geon = geon_;
-    multiplicity = multiplicity_;
-    node_site = node_site_;
-#ifdef USE_MULTI_NODE
-    expansion_left = expansion_left_;
-    expansion_right = expansion_right_;
-#endif
-    reset_node_site_expanded();
-    initialized = true;
-  }
-  void init(const GeometryNode& geon_,
-      const int multiplicity_,
-      const Coordinate& node_site_)
-  {
-    init();
-    geon = geon_;
-    multiplicity = multiplicity_;
-    node_site = node_site_;
-    reset_node_site_expanded();
-    initialized = true;
   }
   void init(const Coordinate total_site, const int multiplicity_)
   {
@@ -74,50 +45,16 @@ struct Geometry
     reset_node_site_expanded();
     initialized = true;
   }
-  void init(const Geometry& geo_)
+  void init(const GeometryNode& geon_,
+      const int multiplicity_,
+      const Coordinate& node_site_)
   {
-    std::memcpy(this, &geo_, sizeof(Geometry));
-  }
-  void init_remult(const Geometry& geo_, const int multiplicity_ = 1)
-  {
-    init(geo_);
-    remult(multiplicity_);
-  }
-  void init_resize(const Geometry& geo_, const int thick = 0)
-  {
-    init(geo_);
-    resize(thick);
-  }
-  void init_reform(const Geometry& geo_, const int multiplicity_ = 1, const int thick = 0)
-  {
-    init(geo_);
-    remult(multiplicity_);
-    resize(thick);
-  }
-  void init(const Geometry& geo_, const int multiplicity_)
-  {
-    init(geo_);
+    init();
+    geon = geon_;
     multiplicity = multiplicity_;
+    node_site = node_site_;
     reset_node_site_expanded();
-  }
-  void init(const Geometry& geo_, const int multiplicity_, const int thick)
-  {
-    init(geo_);
-    multiplicity = multiplicity_;
-#ifdef USE_MULTI_NODE
-    const Coordinate expansion(thick, thick, thick, thick);
-    expansion_left = expansion;
-    expansion_right = expansion;
-#endif
-    reset_node_site_expanded();
-  }
-  //
-  void copyOnlyLocal(const Geometry& geo_){
-    this->init(geo_.geon, geo_.multiplicity, geo_.node_site);
-    // only local
-  }
-  void copyButExpand(const Geometry& geo_, int thick){
-    this->init(geo_); resize(thick);
+    initialized = true;
   }
   //
   void remult(const int multiplicity_) {
@@ -143,17 +80,6 @@ struct Geometry
   {
     init();
   }
-  Geometry(const Geometry& geo_)
-  {
-    init(geo_);
-  }
-  //
-  const Geometry& operator=(const Geometry& geo_)
-  {
-    init(geo_);
-    assert(0 == memcmp(this, &geo_, sizeof(Geometry)));
-    return *this;
-  }
   //
   long offset_from_coordinate(const Coordinate& x) const
   {
@@ -162,12 +88,13 @@ struct Geometry
     return qlat::index_from_coordinate(xe, node_site_expanded) * multiplicity;
   }
   //
-  void coordinate_from_offset(Coordinate& x, int& m, const long offset) const
+  Coordinate coordinate_from_offset(int& m, const long offset) const
     // 0 <= offset < local_volume_expanded() * multiplicity
   {
-    qlat::coordinate_from_index(x, offset/multiplicity, node_site_expanded);
+    Coordinate x = qlat::coordinate_from_index(offset/multiplicity, node_site_expanded);
     x = x - expansion_left;
     m = offset % multiplicity;
+    return x;
   }
   //
   long recordFromCoordinate(const Coordinate& x) const
@@ -177,11 +104,12 @@ struct Geometry
     return qlat::index_from_coordinate(xe, node_site_expanded);
   }
   //
-  void coordinateFromRecord(Coordinate& x, long record) const
+  Coordinate coordinateFromRecord(long record) const
     // 0 <= offset < local_volume_expanded() * multiplicity
   {
-    qlat::coordinate_from_index(x, record, node_site_expanded);
+    Coordinate x = qlat::coordinate_from_index(record, node_site_expanded);
     x = x - expansion_left;
+    return x;
   }
   //
   long index_from_coordinate(const Coordinate& x) const
@@ -190,19 +118,16 @@ struct Geometry
     return qlat::index_from_coordinate(x, node_site);
   }
   //
-  void coordinate_from_index(Coordinate& x, const long index) const
+  Coordinate coordinate_from_index(const long index) const
     // get local coordinate from index
     // 0 <= index < local_volume()
   {
-    qlat::coordinate_from_index(x, index, node_site);
+    return qlat::coordinate_from_index(index, node_site);
   }
 	//
   long offset_from_index(const long index) const
-    // jtu
   {
-    Coordinate coor;
-    coordinate_from_index(coor, index);
-    return offset_from_coordinate(coor);
+    return offset_from_coordinate(coordinate_from_index(index));
   }
   //
   bool is_on_node(const Coordinate& x) const
@@ -215,10 +140,11 @@ struct Geometry
   //
   bool is_local(const Coordinate& x) const
   {
-    bool is_local_ = true;
-    for(int mu = 0; mu < DIM; mu++) 
-      is_local_ = is_local_ && 0 <= x[mu] && x[mu] < node_site[mu];
-    return is_local_;
+    bool b = true;
+    for (int mu = 0; mu < DIM; mu++) {
+      b = b && 0 <= x[mu] && x[mu] < node_site[mu];
+    }
+    return b;
   }
   //
   bool is_only_local() const
@@ -247,6 +173,7 @@ struct Geometry
   //
   Coordinate global_size() const
   {
+    warn("use total_volume()");
     Coordinate ret;
     for(int i = 0; i < DIM; i++){
       ret[i] = total_site(i);
@@ -259,20 +186,117 @@ struct Geometry
     return local_volume() * geon.num_node;
   }
   //
-  void coordinate_g_from_l(Coordinate& xg, const Coordinate& xl) const
+  Coordinate coordinate_g_from_l(const Coordinate& xl) const
   {
+    Coordinate xg;
     for (int mu = 0; mu < 4; mu++) {
       xg[mu] = xl[mu] + geon.coor_node[mu] * node_site[mu];
     }
+    return xg;
   }
   //
-  void coordinate_l_from_g(Coordinate& xl, const Coordinate& xg) const
+  Coordinate coordinate_l_from_g(const Coordinate& xg) const
   {
+    Coordinate xl;
     for (int mu = 0; mu < 4; mu++) {
       xl[mu] = xg[mu] - geon.coor_node[mu] * node_site[mu];
     }
+    return xl;
+  }
+  //
+  //////////////////////////////////////////////////////////////////
+  //
+  void init(const Geometry& geo_)
+  {
+    *this = geo_;
+  }
+  void init_remult(const Geometry& geo_, const int multiplicity_ = 1)
+  {
+    warn("use geo_remult");
+    *this = geo_;
+    init(geo_);
+    remult(multiplicity_);
+  }
+  void init_resize(const Geometry& geo_, const int thick = 0)
+  {
+    warn("use geo_resize");
+    init(geo_);
+    resize(thick);
+  }
+  void init_reform(const Geometry& geo_, const int multiplicity_ = 1, const int thick = 0)
+  {
+    warn("use geo_reform");
+    init(geo_);
+    remult(multiplicity_);
+    resize(thick);
+  }
+  void init(const Geometry& geo_, const int multiplicity_)
+  {
+    warn("use geo_remult");
+    init(geo_);
+    multiplicity = multiplicity_;
+    reset_node_site_expanded();
+  }
+  void init(const Geometry& geo_, const int multiplicity_, const int thick)
+  {
+    warn("use geo_reform");
+    init(geo_);
+    multiplicity = multiplicity_;
+#ifdef USE_MULTI_NODE
+    const Coordinate expansion(thick, thick, thick, thick);
+    expansion_left = expansion;
+    expansion_right = expansion;
+#endif
+    reset_node_site_expanded();
+  }
+  void copyOnlyLocal(const Geometry& geo_){
+    warn("use geo_resize");
+    this->init(geo_.geon, geo_.multiplicity, geo_.node_site);
+    // only local
+  }
+  void copyButExpand(const Geometry& geo_, int thick){
+    warn("use geo_resize");
+    this->init(geo_); resize(thick);
   }
 };
+
+inline bool operator==(const Geometry& geo1, const Geometry& geo2)
+{
+  return geo1.initialized == geo2.initialized
+    && geo1.geon == geo2.geon
+    && geo1.multiplicity == geo2.multiplicity
+    && geo1.node_site == geo2.node_site
+    && geo1.expansion_left == geo2.expansion_left
+    && geo1.expansion_right == geo2.expansion_right
+    && geo1.node_site_expanded == geo2.node_site_expanded;
+}
+
+inline bool operator!=(const Geometry& geo1, const Geometry& geo2)
+{
+  return !(geo1 == geo2);
+}
+
+inline Geometry geo_resize(const Geometry& geo_, const int thick = 0)
+{
+  Geometry geo = geo_;
+  geo.resize(thick);
+  return geo;
+}
+
+inline Geometry geo_remult(const Geometry& geo_, const int multiplicity_ = 1)
+{
+  Geometry geo = geo_;
+  geo.remult(multiplicity_);
+  return geo;
+}
+
+inline Geometry geo_reform(const Geometry& geo_, const int multiplicity_ = 1, const int thick = 0)
+{
+  Geometry geo = geo_;
+  geo.remult(multiplicity_);
+  geo.resize(thick);
+  return geo;
+}
 
 std::string show(const Geometry& geo)
 {
@@ -293,26 +317,12 @@ void swap(Geometry& geo1, Geometry& geo2)
   geo2 = geo;
 }
 
-inline bool operator==(const Geometry& geo1, const Geometry& geo2)
-{
-  return 0 == memcmp(&geo1, &geo2, sizeof(Geometry));
-}
-
-inline bool operator!=(const Geometry& geo1, const Geometry& geo2)
-{
-  return !(geo1 == geo2);
-}
-
 inline bool is_matching_geo(const Geometry& geo1, const Geometry& geo2)
 {
-  bool b = true;
-  b = b && geo1.initialized == geo2.initialized;
-  b = b && geo1.geon == geo2.geon;
-  b = b && geo1.multiplicity == geo2.multiplicity;
-  for (int mu = 0; mu < 4; ++mu) {
-    b = b && geo1.node_site[mu] == geo2.node_site[mu];
-  }
-  return b;
+  return geo1.initialized == geo2.initialized
+    && geo1.geon == geo2.geon
+    && geo1.multiplicity == geo2.multiplicity
+    && geo1.node_site == geo2.node_site;
 }
 
 inline bool is_initialized(const Geometry& geo)

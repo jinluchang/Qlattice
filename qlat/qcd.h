@@ -46,7 +46,7 @@ inline void unitarize(GaugeField& gf)
   const Geometry& geo = gf.geo;
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
-    Coordinate xl; geo.coordinate_from_index(xl, index);
+    Coordinate xl = geo.coordinate_from_index(index);
     Vector<ColorMatrix> v = gf.get_elems(xl);
     for (int m = 0; m < geo.multiplicity; ++m) {
       unitarize(v[m]);
@@ -65,7 +65,7 @@ inline double gf_avg_plaq(const GaugeField& gf)
     double sum_avg_plaq = 0.0;
 #pragma omp for
     for (long index = 0; index < geo.local_volume(); ++index) {
-      Coordinate xl; geo.coordinate_from_index(xl, index);
+      Coordinate xl = geo.coordinate_from_index(index);
       const Vector<ColorMatrix> v = gf.get_elems_const(xl);
       std::vector<Vector<ColorMatrix> > vms(DIM);
       for (int m = 0; m < DIM; ++m) {
@@ -114,7 +114,7 @@ inline double gf_avg_link_trace(const GaugeField& gf)
     double sum_avg_link_trace = 0.0;
 #pragma omp for
     for (long index = 0; index < geo.local_volume(); ++index) {
-      Coordinate xl; geo.coordinate_from_index(xl, index);
+      Coordinate xl = geo.coordinate_from_index(index);
       const Vector<ColorMatrix> v = gf.get_elems_const(xl);
       double avg_link_trace = 0.0;
       for (int m = 0; m < DIM; ++m) {
@@ -145,7 +145,7 @@ inline void load_gauge_field(GaugeField& gf, const std::string& path)
   sophisticated_serial_read(gft, path, 1);
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
-    Coordinate xl; geo.coordinate_from_index(xl, index);
+    Coordinate xl = geo.coordinate_from_index(index);
     Vector<std::array<Complex, 6> > vt = gft.get_elems(xl);
     from_big_endian_64((char*)vt.data(), vt.data_size());
     Vector<ColorMatrix> v = gf.get_elems(xl);

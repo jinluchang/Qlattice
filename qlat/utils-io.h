@@ -111,9 +111,4 @@ inline std::string get_env(const std::string& var_name) {
   return std::string(value);
 }
 
-inline void warn(const std::string& str)
-{
-  displayln_info(ssprintf("WARNING: %s", str.c_str()), stderr);
-}
-
 QLAT_END_NAMESPACE

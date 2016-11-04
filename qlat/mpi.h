@@ -41,25 +41,28 @@ struct GeometryNode
   //
   inline void init();
   //
-  GeometryNode()
-  {
-    initialized = false;
-    memset(this, 0, sizeof(GeometryNode));
-  }
-  GeometryNode(const bool initialize)
+  GeometryNode(const bool initialize = false)
   {
     memset(this, 0, sizeof(GeometryNode));
     if (initialize) {
       init();
     }
   }
-  //
-  const GeometryNode& operator=(const GeometryNode& geon)
-  {
-    memcpy(this, &geon, sizeof(GeometryNode));
-    return *this;
-  }
 };
+
+inline bool operator==(const GeometryNode& geon1, const GeometryNode& geon2)
+{
+  return geon1.initialized == geon2.initialized
+    && geon1.num_node == geon2.num_node
+    && geon1.id_node == geon2.id_node
+    && geon1.size_node == geon2.size_node
+    && geon1.coor_node == geon2.coor_node;
+}
+
+inline bool operator!=(const GeometryNode& geon1, const GeometryNode& geon2)
+{
+  return !(geon1 == geon2);
+}
 
 inline int id_node_from_coor_node(const Coordinate& coor_node)
 {
@@ -70,13 +73,13 @@ inline int id_node_from_coor_node(const Coordinate& coor_node)
   return index_from_coordinate(coor_node, size_node);
 }
 
-inline void coor_node_from_id_node(Coordinate &coor_node, int id_node)
+inline Coordinate coor_node_from_id_node(int id_node)
 {
   Coordinate size_node;
   Coordinate periods;
   Coordinate coor_node_check;
   MPI_Cart_get(get_comm(), DIM, size_node.data(), periods.data(), coor_node_check.data());
-  return coordinate_from_index(coor_node, id_node, size_node);
+  return coordinate_from_index(id_node, size_node);
 }
 
 inline void GeometryNode::init()
@@ -96,7 +99,7 @@ inline void GeometryNode::init()
   for (int i = 0; i < DIM; ++i) {
     assert(0 != periods[i]);
   }
-  coordinate_from_index(coor_node, id_node, size_node);
+  coor_node = coordinate_from_index(id_node, size_node);
   for (int i = 0; i < DIM; ++i) {
     assert(0 != periods[i]);
     // assert(coor_node_check[i] == coor_node[i]);
@@ -139,11 +142,6 @@ std::string show(const GeometryNode& geon) {
   s += ssprintf(", size_node   = %s\n", show(geon.size_node).c_str());
   s += ssprintf(", coor_node   = %s }", show(geon.coor_node).c_str());
   return s;
-}
-
-inline bool operator==(const GeometryNode& geon1, const GeometryNode& geon2)
-{
-  return 0 == memcmp(&geon1, &geon2, sizeof(GeometryNode));
 }
 
 inline int get_num_node()

@@ -10,7 +10,7 @@ void setField(qlat::Field<qlat::Complex>& f)
   const qlat::Geometry& geo = f.geo;
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
-    qlat::Coordinate x; geo.coordinate_from_index(x, index);
+    qlat::Coordinate x = geo.coordinate_from_index(index);
     qlat::Vector<qlat::Complex> fx = f.get_elems(x);
     for (int m = 0; m < geo.multiplicity; ++m) {
       fx[m] = geo.geon.id_node * sqrt(2) + index * sqrt(3) * qlat::ii + m * sqrt(5);
@@ -114,7 +114,7 @@ void lblMagneticMomentSpinMatrix(qlat::Array<qlat::SpinMatrix,3> bs, const qlat:
   qlat::prop_spin_propagator4d(src, mass, momtwist);
   const int top = qlat::mod(tsrc + qlat::mod(tsnk - tsrc, geo.total_site(3)) / 2, geo.total_site(3));
   qlat::Coordinate xgop(0, 0, 0, top);
-  qlat::Coordinate xlop; geo.coordinate_l_from_g(xlop, xgop);
+  qlat::Coordinate xlop = geo.coordinate_l_from_g(xgop);
   qlat::set_zero(bs);
   if (geo.is_local(xlop)) {
     Display(cname, fname, "src =\n%s\n", qlat::show(src.get_elem(xlop)).c_str());
@@ -240,13 +240,13 @@ void displaySpinPropagator4d()
   qlat::SpinPropagator4d prop; prop.init(geo);
   set_zero(prop);
   qlat::Coordinate xgsrc(0, 0, 0, 0);
-  qlat::Coordinate xlsrc; geo.coordinate_l_from_g(xlsrc, xgsrc);
+  qlat::Coordinate xlsrc = geo.coordinate_l_from_g(xgsrc);
   if (geo.is_local(xlsrc)) {
     qlat::set_unit(prop.get_elem(xlsrc));
   }
   qlat::prop_spin_propagator4d(prop, mass, momtwist);
   qlat::Coordinate xgsnk(0, 0, 0, 0);
-  qlat::Coordinate xlsnk; geo.coordinate_l_from_g(xlsnk, xgsnk);
+  qlat::Coordinate xlsnk = geo.coordinate_l_from_g(xgsnk);
   DisplayInfo(cname, fname, "xgsnk = %s .\n", qlat::show(xgsnk).c_str());
   if (geo.is_local(xlsnk)) {
     Display(cname, fname, "prop[xgsnk] =\n%s\n", qlat::show(prop.get_elem(xlsnk)).c_str());
