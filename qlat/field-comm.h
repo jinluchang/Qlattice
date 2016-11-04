@@ -198,6 +198,76 @@ void produce_chart_envelope(Chart<M> &chart, const Geometry geometry, const Gaug
 	}
 }
 
+
+// TODO: FIXME!!!
+//template<class M>
+//void produce_chart_envelope(Chart<M> &chart, const Geometry geometry, 
+//								array<int, DIM - 1> &R, int &T){
+//	TIMER("produce_chart_envelope()");
+//	
+//	chart.geo = geometry;
+//	std::set<Coordinate> target;
+//
+//	int muP, nuP;
+//	switch(gauge.type){
+//		case WILSON: 	muP = 1;
+//				nuP = 1;
+//				chart.expansion_left = Coordinate(1, 1, 1, 1);
+//				chart.expansion_right = Coordinate(1, 1, 1, 1);
+//				break;
+//		case IWASAKI:	muP = 2;
+//				nuP = 1;
+//				chart.expansion_left = Coordinate(2, 2, 2, 2);
+//				chart.expansion_right = Coordinate(2, 2, 2, 2);
+//				break;
+//		default:	assert(false);
+//	}
+//
+//	Coordinate index_pos;
+//	Coordinate index_pos_m;
+//	for(long index = 0; index < geometry.local_volume(); index++){
+//		geometry.coordinate_from_index(index_pos, index);
+//		for(int mu = 0; mu < DIM; mu++){
+//		for(int nu = 0; nu < DIM; nu++){
+//			if(mu == nu) continue;
+//			for(int muI = -muP; muI <= muP; muI++){
+//			for(int nuI = -nuP; nuI <= nuP; nuI++){
+//				index_pos_m = index_pos;
+//				index_pos_m[mu] += muI;
+//				index_pos_m[nu] += nuI;
+//				if(!chart.geo.is_local(index_pos_m))
+//					target.insert(index_pos_m);
+//			}}
+//		}}
+//	}
+//
+//	Coordinate pos; // coordinate position of a site relative to this node
+//	Coordinate local_pos; // coordinate position of a site relative to its home node
+//	Coordinate node_pos; // home node coordinate of a site in node space
+//
+//	chart.clear();
+//	std::set<Coordinate>::const_iterator it;
+//	for(it = target.begin(); it != target.end(); it++){
+//		pos = *it;
+//		for(int mu = 0; mu < DIM; mu++){
+//			local_pos[mu] = pos[mu] % geometry.node_site[mu];
+//			node_pos[mu] = pos[mu] / geometry.node_site[mu];
+//			if(local_pos[mu] < 0){
+//				local_pos[mu] += geometry.node_site[mu];
+//				node_pos[mu]--;
+//			}
+//		}
+//		chart[node_pos].push_back(local_pos);
+//	}
+//
+//	typename Chart<M>::iterator it_chart;
+//	long size;
+//	for(it_chart = chart.begin(); it_chart != chart.end(); it_chart++){
+//		size = geometry.multiplicity * it_chart->second.size();
+//		chart.send_map[it_chart->first].resize(size);
+//	}
+//}
+
 template<class M>
 void produce_chart_geo(Chart<M> &chart, const Geometry geometry){
 	
