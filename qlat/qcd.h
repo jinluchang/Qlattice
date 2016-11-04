@@ -54,6 +54,86 @@ inline void unitarize(GaugeField& gf)
   }
 }
 
+inline double gf_avg_plaq(const GaugeField& gf)
+  // assume proper communication is done
+{
+  TIMER("gf_avg_plaq");
+  const Geometry& geo = gf.geo;
+  std::vector<double> sums(omp_get_max_threads(), 0.0);
+#pragma omp parallel
+  {
+    double sum_avg_plaq = 0.0;
+#pragma omp for
+    for (long index = 0; index < geo.local_volume(); ++index) {
+      Coordinate xl; geo.coordinate_from_index(xl, index);
+      const Vector<ColorMatrix> v = gf.get_elems_const(xl);
+      std::vector<Vector<ColorMatrix> > vms(DIM);
+      for (int m = 0; m < DIM; ++m) {
+        xl[m] += 1;
+        vms[m] = gf.get_elems_const(xl);
+        xl[m] -= 1;
+      }
+      double avg_plaq = 0.0;
+      for (int m1 = 1; m1 < DIM; ++m1) {
+        for (int m2 = 0; m2 < m1; ++m2) {
+          ColorMatrix cm = v[m1] * vms[m1][m2] * (v[m2] * vms[m2][m1]).adjoint();
+          avg_plaq += cm.trace().real() / NUM_COLOR;
+          if (isnan(avg_plaq)) {
+            fdisplayln(stdout, ssprintf("WARNING: isnan in gf_avg_plaq"));
+            assert(false);
+          }
+        }
+      }
+      avg_plaq /= DIM * (DIM-1) / 2;
+      sum_avg_plaq += avg_plaq;
+    }
+    sums[omp_get_thread_num()] = sum_avg_plaq;
+  }
+  double sum = 0.0;
+  for (size_t i = 0; i < sums.size(); ++i) {
+    sum += sums[i];
+  }
+  glb_sum(sum);
+  sum /= geo.total_volume();
+  return sum;
+}
+
+inline double gf_avg_plaq_with_comm(const GaugeField& gf)
+{
+  TIMER("gf_avg_plaq_with_comm");
+  const Geometry& geo = gf.geo;
+}
+
+inline double gf_avg_link_trace(const GaugeField& gf)
+{
+  TIMER("gf_avg_link_trace");
+  const Geometry& geo = gf.geo;
+  std::vector<double> sums(omp_get_max_threads(), 0.0);
+#pragma omp parallel
+  {
+    double sum_avg_link_trace = 0.0;
+#pragma omp for
+    for (long index = 0; index < geo.local_volume(); ++index) {
+      Coordinate xl; geo.coordinate_from_index(xl, index);
+      const Vector<ColorMatrix> v = gf.get_elems_const(xl);
+      double avg_link_trace = 0.0;
+      for (int m = 0; m < DIM; ++m) {
+        avg_link_trace += v[m].trace().real() / NUM_COLOR;
+      }
+      avg_link_trace /= DIM;
+      sum_avg_link_trace += avg_link_trace;
+    }
+    sums[omp_get_thread_num()] = sum_avg_link_trace;
+  }
+  double sum = 0.0;
+  for (size_t i = 0; i < sums.size(); ++i) {
+    sum += sums[i];
+  }
+  glb_sum(sum);
+  sum /= geo.total_volume();
+  return sum;
+}
+
 inline void load_gauge_field(GaugeField& gf, const std::string& path)
   // assuming gf already initialized and have correct size;
 {
