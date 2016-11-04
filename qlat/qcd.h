@@ -101,7 +101,11 @@ inline double gf_avg_plaq(const GaugeField& gf)
 inline double gf_avg_plaq_with_comm(const GaugeField& gf)
 {
   TIMER("gf_avg_plaq_with_comm");
-  const Geometry& geo = gf.geo;
+  GaugeField gf1;
+  gf1.init(geo_resize(gf.geo, 1));
+  gf1 = gf;
+  refresh_expanded(gf1);
+  return gf_avg_plaq(gf1);
 }
 
 inline double gf_avg_link_trace(const GaugeField& gf)
