@@ -203,61 +203,6 @@ struct Geometry
     }
     return xl;
   }
-  //
-  //////////////////////////////////////////////////////////////////
-  //
-  void init(const Geometry& geo_)
-  {
-    *this = geo_;
-  }
-  void init_remult(const Geometry& geo_, const int multiplicity_ = 1)
-  {
-    warn("use geo_remult");
-    *this = geo_;
-    init(geo_);
-    remult(multiplicity_);
-  }
-  void init_resize(const Geometry& geo_, const int thick = 0)
-  {
-    warn("use geo_resize");
-    init(geo_);
-    resize(thick);
-  }
-  void init_reform(const Geometry& geo_, const int multiplicity_ = 1, const int thick = 0)
-  {
-    warn("use geo_reform");
-    init(geo_);
-    remult(multiplicity_);
-    resize(thick);
-  }
-  void init(const Geometry& geo_, const int multiplicity_)
-  {
-    warn("use geo_remult");
-    init(geo_);
-    multiplicity = multiplicity_;
-    reset_node_site_expanded();
-  }
-  void init(const Geometry& geo_, const int multiplicity_, const int thick)
-  {
-    warn("use geo_reform");
-    init(geo_);
-    multiplicity = multiplicity_;
-#ifdef USE_MULTI_NODE
-    const Coordinate expansion(thick, thick, thick, thick);
-    expansion_left = expansion;
-    expansion_right = expansion;
-#endif
-    reset_node_site_expanded();
-  }
-  void copyOnlyLocal(const Geometry& geo_){
-    warn("use geo_resize");
-    this->init(geo_.geon, geo_.multiplicity, geo_.node_site);
-    // only local
-  }
-  void copyButExpand(const Geometry& geo_, int thick){
-    warn("use geo_resize");
-    this->init(geo_); resize(thick);
-  }
 };
 
 inline bool operator==(const Geometry& geo1, const Geometry& geo2)

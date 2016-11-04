@@ -149,7 +149,7 @@ void fft_complex_field_dirs(Field<M>& field, const Coordinate& dirs)
   Complex* fftdatac = (Complex*)fftw_malloc(nc_size * sizec * sizeof(Complex));
   Field<M> fields; fields.init(geo);
   Field<M> fieldr; fieldr.init(geo);
-  Geometry geos; geos.init(geo);
+  Geometry geos = geo;
   const int fieldsize = get_data_size(fields) / sizeof(double);
   fields = field;
   for (int i = 0; i < geos.geon.size_node[dir]; i++) {

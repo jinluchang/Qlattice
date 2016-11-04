@@ -43,7 +43,7 @@ struct Field
   virtual void init(const Geometry& geo_, const int multiplicity_)
   {
     init();
-    geo.init(geo_, multiplicity_);
+    geo = geo_remult(geo_, multiplicity_);
     field.resize(geo.local_volume_expanded() * geo.multiplicity);
     set_zero(*this);
     initialized = true;
@@ -51,7 +51,7 @@ struct Field
   virtual void init(const Field& f)
   {
     init();
-    geo.init(f.geo);
+    geo = f.geo;
     field = f.field;
     initialized = true;
   }
