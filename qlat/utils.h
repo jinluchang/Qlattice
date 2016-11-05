@@ -36,12 +36,12 @@ void set_zero(std::array<M,N>& arr)
   std::memset(arr.data(), 0, size);
 }
 
-void set_unit(double& x, const double& coef = 1.0)
+inline void set_unit(double& x, const double& coef = 1.0)
 {
   x = coef;
 }
 
-void set_unit(Complex& x, const Complex& coef = 1.0)
+inline void set_unit(Complex& x, const Complex& coef = 1.0)
 {
   x = coef;
 }

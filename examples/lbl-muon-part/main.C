@@ -213,16 +213,19 @@ void displayGammas()
   TIMER("displayGammas");
   DisplayInfo(cname, fname, "gamma5 =\n%s\n", qlat::show(qlat::SpinMatrixConstants::get_gamma5()).c_str());
   DisplayInfo(cname, fname, "gamma0 * gamma1 * gamma2 * gamma3 =\n%s\n",
-      qlat::show<4>(
+      qlat::show((qlat::SpinMatrix)(
         qlat::SpinMatrixConstants::get_gamma(0) *
         qlat::SpinMatrixConstants::get_gamma(1) *
         qlat::SpinMatrixConstants::get_gamma(2) *
         qlat::SpinMatrixConstants::get_gamma(3)
-        ).c_str());
-  DisplayInfo(cname, fname, "gamma3 =\n%s\n", qlat::show<4>(qlat::SpinMatrixConstants::get_gamma(3)).c_str());
-  DisplayInfo(cname, fname, "ii * gamma0 =\n%s\n", qlat::show<4>(qlat::ii * qlat::SpinMatrixConstants::get_gamma(0)).c_str());
-  DisplayInfo(cname, fname, "ii * gamma1 =\n%s\n", qlat::show<4>(qlat::ii * qlat::SpinMatrixConstants::get_gamma(1)).c_str());
-  DisplayInfo(cname, fname, "ii * gamma2 =\n%s\n", qlat::show<4>(qlat::ii * qlat::SpinMatrixConstants::get_gamma(2)).c_str());
+        )).c_str());
+  DisplayInfo(cname, fname, "gamma3 =\n%s\n", qlat::show(qlat::SpinMatrixConstants::get_gamma(3)).c_str());
+  DisplayInfo(cname, fname, "ii * gamma0 =\n%s\n",
+      qlat::show((qlat::SpinMatrix)(qlat::ii * qlat::SpinMatrixConstants::get_gamma(0))).c_str());
+  DisplayInfo(cname, fname, "ii * gamma1 =\n%s\n",
+      qlat::show((qlat::SpinMatrix)(qlat::ii * qlat::SpinMatrixConstants::get_gamma(1))).c_str());
+  DisplayInfo(cname, fname, "ii * gamma2 =\n%s\n",
+      qlat::show((qlat::SpinMatrix)(qlat::ii * qlat::SpinMatrixConstants::get_gamma(2))).c_str());
 }
 
 void displaySpinPropagator4d()

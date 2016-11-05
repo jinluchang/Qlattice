@@ -27,32 +27,28 @@ struct ComplexScalerField : FieldM<Complex,1>
 
 typedef Eigen::Matrix<Complex,4,4,Eigen::RowMajor> SpinMatrix;
 
-template <int N>
-void set_zero(Eigen::Matrix<Complex,N,N,Eigen::RowMajor>& sm)
+inline set_zero(SpinMatrix& m)
 {
-  sm.setZero();
+  m.setZero();
 }
 
-template <int N>
-void set_unit(Eigen::Matrix<Complex,N,N,Eigen::RowMajor>& sm, const Complex& coef = 1.0)
+inline void set_unit(SpinMatrix& m, const Complex& coef = 1.0)
 {
-  set_zero(sm);
-  for (int i = 0; i < sm.rows() && i < sm.cols(); ++i) {
-    sm(i,i) = coef;
+  set_zero(m);
+  for (int i = 0; i < m.rows() && i < m.cols(); ++i) {
+    m(i,i) = coef;
   }
 }
 
-template <int N>
-double norm(const Eigen::Matrix<Complex,N,N,Eigen::RowMajor>& sm)
+inline double norm(const SpinMatrix& m)
 {
-  return sm.squaredNorm();
+  return m.squaredNorm();
 }
 
-template <int N>
-std::string show(const Eigen::Matrix<Complex,N,N,Eigen::RowMajor>& sm)
+inline std::string show(const SpinMatrix& m)
 {
   std::ostringstream out;
-  out << sm;
+  out << m;
   return out.str();
 }
 

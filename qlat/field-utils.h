@@ -5,6 +5,20 @@
 
 QLAT_START_NAMESPACE
 
+template <class M>
+void set_zero(Field<M>& f)
+{
+  set_zero(f.field);
+}
+
+template <class M>
+void set_unit(Field<M>& f)
+{
+  for (size_t offset = 0; offset < f.field.size(); ++offset) {
+    set_unit(f.get_elem(offset));
+  }
+}
+
 template<class M>
 void field_sum(Vector<M> vec, const Field<M>& f)
 {
