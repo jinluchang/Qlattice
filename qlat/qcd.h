@@ -1,8 +1,8 @@
 #pragma once
 
+#include <qlat/matrix.h>
 #include <qlat/field.h>
 #include <qlat/field-fft.h>
-#include <qlat/qed.h>
 #include <qlat/field-expand.h>
 
 #include <eigen3/Eigen/Eigen>
@@ -10,8 +10,6 @@
 #include <cmath>
 
 QLAT_START_NAMESPACE
-
-typedef Eigen::Matrix<Complex,NUM_COLOR,NUM_COLOR,Eigen::RowMajor> ColorMatrix;
 
 struct GaugeField : FieldM<ColorMatrix,4>
 {
@@ -21,33 +19,6 @@ struct GaugeField : FieldM<ColorMatrix,4>
   }
 };
 
-inline set_zero(ColorMatrix& m)
-{
-  m.setZero();
-}
-
-inline void set_unit(ColorMatrix& m, const Complex& coef = 1.0)
-{
-  set_zero(m);
-  for (int i = 0; i < m.rows() && i < m.cols(); ++i) {
-    m(i,i) = coef;
-  }
-}
-
-inline double norm(const ColorMatrix& m)
-{
-  return m.squaredNorm();
-}
-
-inline std::string show(const ColorMatrix& m)
-{
-  std::ostringstream out;
-  out << m;
-  return out.str();
-}
-
-typedef Eigen::Matrix<Complex,4*NUM_COLOR,4*NUM_COLOR,Eigen::RowMajor> WilsonMatrix;
-
 struct Propagator4d : FieldM<WilsonMatrix,1>
 {
   virtual const char* cname()
@@ -55,39 +26,6 @@ struct Propagator4d : FieldM<WilsonMatrix,1>
     return "Propagator4d";
   }
 };
-
-inline set_zero(WilsonMatrix& m)
-{
-  m.setZero();
-}
-
-inline void set_unit(WilsonMatrix& m, const Complex& coef = 1.0)
-{
-  set_zero(m);
-  for (int i = 0; i < m.rows() && i < m.cols(); ++i) {
-    m(i,i) = coef;
-  }
-}
-
-inline double norm(const WilsonMatrix& m)
-{
-  return m.squaredNorm();
-}
-
-inline std::string show(const WilsonMatrix& m)
-{
-  std::ostringstream out;
-  out << m;
-  return out.str();
-}
-
-inline void unitarize(ColorMatrix& cm)
-{
-  cm.row(0).normalize();
-  cm.row(2) = cm.row(1) - cm.row(0).dot(cm.row(1)) * cm.row(0);
-  cm.row(1) = cm.row(2).normalized();
-  cm.row(2) = cm.row(0).cross(cm.row(1));
-}
 
 inline void unitarize(Field<ColorMatrix>& gf)
 {
