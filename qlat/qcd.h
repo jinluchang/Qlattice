@@ -41,10 +41,10 @@ inline void unitarize(Field<ColorMatrix>& gf)
   }
 }
 
-inline double gf_avg_plaq(const GaugeField& gf)
+inline double gf_avg_plaq_no_comm(const GaugeField& gf)
   // assume proper communication is done
 {
-  TIMER("gf_avg_plaq");
+  TIMER("gf_avg_plaq_no_comm");
   const Geometry& geo = gf.geo;
   std::vector<double> sums(omp_get_max_threads(), 0.0);
 #pragma omp parallel
@@ -85,14 +85,14 @@ inline double gf_avg_plaq(const GaugeField& gf)
   return sum;
 }
 
-inline double gf_avg_plaq_with_comm(const GaugeField& gf)
+inline double gf_avg_plaq(const GaugeField& gf)
 {
-  TIMER("gf_avg_plaq_with_comm");
+  TIMER("gf_avg_plaq");
   GaugeField gf1;
   gf1.init(geo_resize(gf.geo, 1));
   gf1 = gf;
   refresh_expanded(gf1);
-  return gf_avg_plaq(gf1);
+  return gf_avg_plaq_no_comm(gf1);
 }
 
 inline double gf_avg_link_trace(const GaugeField& gf)

@@ -3,6 +3,7 @@
 #include <qlat/field.h>
 #include <qlat/field-fft.h>
 
+#include <qlat/rng-state.h>
 #include <eigen3/Eigen/Eigen>
 
 #include <cmath>
@@ -36,6 +37,66 @@ inline std::string show(const ColorMatrix& m)
   return out.str();
 }
 
+inline void unitarize(ColorMatrix& cm)
+{
+  cm.row(0).normalize();
+  cm.row(2) = cm.row(1) - cm.row(0).dot(cm.row(1)) * cm.row(0);
+  cm.row(1) = cm.row(2).normalized();
+  cm.row(2) = cm.row(0).cross(cm.row(1));
+}
+
+inline ColorMatrix make_anti_hermitian_matrix(const Array<double, 8> a)
+{
+  qassert(3 == NUM_COLOR);
+  ColorMatrix m;
+  Array<double,18> p((double*)&m);
+  const double s3 = 0.5773502691896258 * a[7];       // 1/sqrt(3) = 0.5773502691896258;
+  p[0 ] =  0.0;
+  p[8 ] =  0.0;
+  p[16] =  0.0;
+  p[1 ] =  a[2 ] + s3;
+  p[9 ] = -a[2 ] + s3;
+  p[17] = -2.0   * s3;
+  p[2 ] =  a[1 ];
+  p[3 ] =  a[0 ];
+  p[4 ] =  a[4 ];
+  p[5 ] =  a[3 ];
+  p[6 ] = -a[1 ];
+  p[7 ] =  a[0 ];
+  p[10] =  a[6 ];
+  p[11] =  a[5 ];
+  p[12] = -a[4 ];
+  p[13] =  a[3 ];
+  p[14] = -a[6 ];
+  p[15] =  a[5 ];
+  return m;
+}
+
+inline ColorMatrix make_g_rand_anti_hermitian_matrix(RngState& rs, const double sigma)
+{
+  const double s = sigma / std::sqrt(2);
+  std::array<double, 8> a;
+  for (int i = 0; i < 8; ++i) {
+    a[i] = g_rand_gen(rs, 0.0, s);
+  }
+  return make_anti_hermitian_matrix(a);
+}
+
+inline ColorMatrix make_color_matrix_exp(const ColorMatrix& a)
+{
+  ColorMatrix t2 = a;
+  ColorMatrix t3 = a;
+  ColorMatrix unit;
+  set_unit(unit);
+  for(int j = 9; j > 1; --j) {
+    t3 = unit + (1.0/j) * t2;
+    t2 = a * t3;
+  }
+  t3 = unit + t2;
+  unitarize(t3);
+  return t3;
+}
+
 typedef Eigen::Matrix<Complex,4*NUM_COLOR,4*NUM_COLOR,Eigen::RowMajor> WilsonMatrix;
 
 inline set_zero(WilsonMatrix& m)
@@ -61,14 +122,6 @@ inline std::string show(const WilsonMatrix& m)
   std::ostringstream out;
   out << m;
   return out.str();
-}
-
-inline void unitarize(ColorMatrix& cm)
-{
-  cm.row(0).normalize();
-  cm.row(2) = cm.row(1) - cm.row(0).dot(cm.row(1)) * cm.row(0);
-  cm.row(1) = cm.row(2).normalized();
-  cm.row(2) = cm.row(0).cross(cm.row(1));
 }
 
 typedef Eigen::Matrix<Complex,4,4,Eigen::RowMajor> SpinMatrix;
