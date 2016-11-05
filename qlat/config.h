@@ -4,6 +4,7 @@
 
 #include <complex>
 #include <array>
+#include <cassert>
 
 #define QLAT_START_NAMESPACE namespace qlat {
 #define QLAT_END_NAMESPACE }
@@ -12,6 +13,13 @@
 
 #include <timer.h>
 
+// #define SKIP_ASSERT
+
+#ifdef SKIP_ASSERT
+#define qassert(x) assert(true)
+#else
+#define qassert(x) assert(x)
+#endif
 
 QLAT_START_NAMESPACE
 

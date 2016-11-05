@@ -83,7 +83,7 @@ void refresh_expanded(Field<M>& field_comm)
     const int ret = MPI_Recv((void*)recv, size_bytes, MPI_BYTE, \
         idf, 0, get_comm(), MPI_STATUS_IGNORE);
     MPI_Wait(&req, MPI_STATUS_IGNORE);
-    assert(!ret);
+    qassert(!ret);
 
     memcpy(send, recv, size_bytes);
 

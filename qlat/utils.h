@@ -11,7 +11,6 @@
 #include <array>
 #include <vector>
 #include <iostream>
-#include <cassert>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -111,7 +110,7 @@ struct Array
   }
   Array<M,N>(const Vector<M>& vec)
   {
-    assert(N == vec.size());
+    qassert(N == vec.size());
     p = vec.p;
   }
   Array<M,N>(const std::array<M,N>& arr)
@@ -124,18 +123,18 @@ struct Array
   }
   Array<M,N>(const M& x)
   {
-    assert(N == 1);
+    qassert(N == 1);
     p = (M*)&x;
   }
   //
   const M& operator[](int i) const
   {
-    assert(0 <= i && i < N);
+    qassert(0 <= i && i < N);
     return p[i];
   }
   M& operator[](int i)
   {
-    assert(0 <= i && i < N);
+    qassert(0 <= i && i < N);
     return p[i];
   }
   //
@@ -165,7 +164,7 @@ struct Array
   }
   const Array<M,N>& operator=(const Vector<M>& v)
   {
-    assert(N == v.size());
+    qassert(N == v.size());
     p = v.p;
     return *this;
   }
@@ -224,12 +223,12 @@ struct Vector
   //
   const M& operator[](long i) const
   {
-    assert(0 <= i && i < n);
+    qassert(0 <= i && i < n);
     return p[i];
   }
   M& operator[](long i)
   {
-    assert(0 <= i && i < n);
+    qassert(0 <= i && i < n);
     return p[i];
   }
   //
@@ -324,7 +323,7 @@ void assign(std::array<M,N>& vec, const Array<M,N>& src)
 template <class M, int N>
 void assign(std::array<M,N>& vec, const Vector<M>& src)
 {
-  assert(N == src.size());
+  qassert(N == src.size());
   memcpy(vec.data(), src.data(), src.data_size());
 }
 
@@ -345,14 +344,14 @@ void assign(std::vector<M>& vec, const Vector<M>& src)
 template <class M>
 void assign(Vector<M> vec, const Vector<M>& src)
 {
-  assert(vec.size() == src.size());
+  qassert(vec.size() == src.size());
   memcpy(vec.data(), src.data(), src.data_size());
 }
 
 template <class M, int N>
 void assign(Vector<M> vec, const Array<M,N>& src)
 {
-  assert(vec.size() == N);
+  qassert(vec.size() == N);
   memcpy(vec.data(), src.data(), src.data_size());
 }
 
@@ -365,7 +364,7 @@ void assign(Array<M,N> vec, const Array<M,N>& src)
 template <class M, int N>
 void assign(Array<M,N> vec, const Vector<M>& src)
 {
-  assert(src.size() == N);
+  qassert(src.size() == N);
   memcpy(vec.data(), src.data(), src.data_size());
 }
 
@@ -381,7 +380,7 @@ void assign_truncate(M& x, const N& y)
 }
 
 inline int mod(const int x, const int len) {
-  assert(0 < len);
+  qassert(0 < len);
   const int m = x % len;
   if (0 <= m) {
     return m;
@@ -391,7 +390,7 @@ inline int mod(const int x, const int len) {
 }
 
 inline int smod(const int x, const int len) {
-  assert(0 < len);
+  qassert(0 < len);
   const int m = mod(x, len);
   if (m * 2 < len) {
     return m;
@@ -401,7 +400,7 @@ inline int smod(const int x, const int len) {
 }
 
 inline int middle_mod(const int x, const int y, const int len) {
-  assert(0 < len);
+  qassert(0 < len);
   const int xm = mod(x, len);
   const int ym = mod(y, len);
   if (xm <= ym) {
@@ -476,7 +475,7 @@ inline uint64_t flip_endian_64(uint64_t x)
 
 inline void from_big_endian_32(char* str, const size_t len)
 {
-  assert(0 == len % 4);
+  qassert(0 == len % 4);
 #if defined(__BYTE_ORDER) && (__BYTE_ORDER != 0) && (__BYTE_ORDER == __BIG_ENDIAN)
   // doing nothing
 #else
@@ -489,7 +488,7 @@ inline void from_big_endian_32(char* str, const size_t len)
 
 inline void from_big_endian_64(char* str, const size_t len)
 {
-  assert(0 == len % 8);
+  qassert(0 == len % 8);
 #if defined(__BYTE_ORDER) && (__BYTE_ORDER != 0) && (__BYTE_ORDER == __BIG_ENDIAN)
   // doing nothing
 #else

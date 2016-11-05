@@ -33,15 +33,13 @@ struct Propagator4d : FieldM<WilsonMatrix,1>
 
 inline void unitarize(ColorMatrix& cm)
 {
-  // fdisplayln(stdout, shows("unitarize before\n") + show(cm));
   cm.row(0).normalize();
   cm.row(1) = cm.row(1) - cm.row(1).dot(cm.row(0)) * cm.row(0);
   cm.row(1).normalize();
   cm.row(2) = cm.row(0).cross(cm.row(1));
-  // fdisplayln(stdout, shows("unitarize after\n") + show(cm));
 }
 
-inline void unitarize(GaugeField& gf)
+inline void unitarize(Field<ColorMatrix>& gf)
 {
   TIMER_VERBOSE("unitarize(gf)");
   const Geometry& geo = gf.geo;
@@ -81,7 +79,7 @@ inline double gf_avg_plaq(const GaugeField& gf)
           avg_plaq += cm.trace().real() / NUM_COLOR;
           if (isnan(avg_plaq)) {
             fdisplayln(stdout, ssprintf("WARNING: isnan in gf_avg_plaq"));
-            assert(false);
+            qassert(false);
           }
         }
       }
@@ -143,7 +141,7 @@ inline void load_gauge_field(GaugeField& gf, const std::string& path)
   // assuming gf already initialized and have correct size;
 {
   TIMER_VERBOSE("load_gauge_field");
-  assert(is_initialized(gf));
+  qassert(is_initialized(gf));
   const Geometry& geo = gf.geo;
   FieldM<std::array<Complex, 6>, 4> gft;
   gft.init(geo);

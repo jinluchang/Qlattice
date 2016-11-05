@@ -9,7 +9,7 @@ template<class M>
 void field_sum(Vector<M> vec, const Field<M>& f)
 {
   const int multiplicity = f.geo.multiplicity;
-  assert(vec.size() == multiplicity);
+  qassert(vec.size() == multiplicity);
   const Geometry& geo = f.geo;
   set_zero(vec);
   for (long index = 0; index < geo.local_volume(); ++index) {

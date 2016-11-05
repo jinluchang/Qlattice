@@ -142,7 +142,7 @@ struct SpinMatrixConstants
   }
   static const SpinMatrix& get_gamma(int mu)
   {
-    assert(0 <= mu && mu < 4);
+    qassert(0 <= mu && mu < 4);
     return get_instance().gammas[mu];
   }
   static const SpinMatrix& get_gamma5()
@@ -178,8 +178,9 @@ inline void prop_mom_photon_invert(QedGaugeField& egf, const std::array<double,D
 	// std::array<double,DIM> ks;
     double s2 = 0.0;
     for (int i = 0; i < DIM; i++) {
-      kg[i] = smod(kg[i], geo.total_site(i));
-      kk[i] = 2.0 * PI * (kg[i] + momtwist[i]) / (double)geo.total_site(i);
+      const Coordinate total_site = geo.total_site();
+      kg[i] = smod(kg[i], total_site[i]);
+      kk[i] = 2.0 * PI * (kg[i] + momtwist[i]) / (double)total_site[i];
       s2 += 4.0 * sqr(std::sin(kk[i] / 2.0));
     }
     if (0.0 == kk[0] && 0.0 == kk[1] && 0.0 == kk[2]) {
@@ -220,8 +221,9 @@ inline void prop_mom_complex_scaler_invert(ComplexScalerField& csf, const double
 	// std::array<double,DIM> ks;
     double s2 = 0.0;
     for (int i = 0; i < DIM; i++) {
-      kg[i] = smod(kg[i], geo.total_site(i));
-      kk[i] = 2.0 * PI * (kg[i] + momtwist[i]) / (double)geo.total_site(i);
+      Coordinate total_site = geo.total_site();
+      kg[i] = smod(kg[i], total_site[i]);
+      kk[i] = 2.0 * PI * (kg[i] + momtwist[i]) / (double)total_site[i];
       s2 += 4.0 * sqr(std::sin(kk[i] / 2.0));
     }
     double s2inv = 1.0 / s2;
@@ -257,8 +259,9 @@ inline void prop_mom_spin_propagator4d(SpinPropagator4d& sp4d, const double mass
     double wp = 1.0 - m5;
     SpinMatrix pg; set_zero(pg);
     for (int i = 0; i < DIM; ++i) {
-      kg[i] = smod(kg[i], geo.total_site(i));
-      kk[i] = 2.0 * PI * (kg[i] + momtwist[i]) / (double)geo.total_site(i);
+      Coordinate total_site = geo.total_site();
+      kg[i] = smod(kg[i], total_site[i]);
+      kk[i] = 2.0 * PI * (kg[i] + momtwist[i]) / (double)total_site[i];
       ks[i] = sin(kk[i]);
       pg += SpinMatrixConstants::get_gamma(i) * (Complex)ks[i];
       p2 += sqr(ks[i]);
@@ -330,9 +333,10 @@ inline void set_wall_source_plusm(SpinPropagator4d& f, const Complex& coef, cons
 {
   TIMER("set_wall_source_plusm");
   const Geometry& geo = f.geo;
-  assert(0 <= t && t < geo.total_site(3));
+  Coordinate total_site = geo.total_site();
+  qassert(0 <= t && t < total_site[3]);
   const Coordinate xg1(0, 0, 0, t);
-  const Coordinate xg2(geo.total_site(0), geo.total_site(1), geo.total_site(2), t+1);
+  const Coordinate xg2(total_site[0], total_site[1], total_site[2], t+1);
   set_box_source_plusm(f, coef, xg1, xg2);
 }
 

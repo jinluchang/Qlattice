@@ -5,8 +5,6 @@
 
 #include <rng-state.h>
 
-#include <cassert>
-
 QLAT_START_NAMESPACE
 
 template <class T>
@@ -49,10 +47,7 @@ struct RngField : FieldM<RngState,1>
   virtual void init(const Geometry& geo_, const RngState& rs)
   {
     FieldM<RngState,1>::init(geo_);
-    Coordinate total_site;
-    for (int mu = 0; mu < DIM; ++mu) {
-      total_site[mu] = geo.total_site(mu);
-    }
+    Coordinate total_site = geo.total_site();
 #pragma omp parallel for
     for (long index = 0; index < geo.local_volume(); ++index) {
       Coordinate x = geo.coordinate_from_index(index);
@@ -68,7 +63,7 @@ struct RngField : FieldM<RngState,1>
   }
   RngField(const RngField& rf)
   {
-    assert(false);
+    qassert(false);
   }
 };
 

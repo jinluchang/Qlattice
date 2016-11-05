@@ -112,7 +112,7 @@ void lblMagneticMomentSpinMatrix(qlat::Array<qlat::SpinMatrix,3> bs, const qlat:
   qlat::set_wall_source_plusm(src, 1.0, tsrc);
   qlat::prop_spin_propagator4d(snk, mass, momtwist);
   qlat::prop_spin_propagator4d(src, mass, momtwist);
-  const int top = qlat::mod(tsrc + qlat::mod(tsnk - tsrc, geo.total_site(3)) / 2, geo.total_site(3));
+  const int top = qlat::mod(tsrc + qlat::mod(tsnk - tsrc, geo.total_site()[3]) / 2, geo.total_site()[3]);
   qlat::Coordinate xgop(0, 0, 0, top);
   qlat::Coordinate xlop = geo.coordinate_l_from_g(xgop);
   qlat::set_zero(bs);
@@ -177,25 +177,25 @@ void lblMuonPart()
   momtwist[2] = 0.0;
   momtwist[3] = 0.0;
   const double mass = 0.10;
-  const int tsnk = geo.total_site(3)/4*3;
-  const int tsrc = geo.total_site(3)/4;
+  const int tsnk = total_site[3]/4*3;
+  const int tsrc = total_site[3]/4;
   std::array<qlat::SpinMatrix,3> bs;
   lblMagneticMomentSpinMatrix(bs, geo, tsnk, tsrc, mass, momtwist);
   DisplayInfo(cname, fname, "bs[0] =\n%s\n", qlat::show(bs[0]).c_str());
   DisplayInfo(cname, fname, "bs[1] =\n%s\n", qlat::show(bs[1]).c_str());
   DisplayInfo(cname, fname, "bs[2] =\n%s\n", qlat::show(bs[2]).c_str());
   // ADJUST ME
-  // qlat::Coordinate xg1(0, 0, 0, geo.total_site(3)/2 + 0);
-  // qlat::Coordinate xg2(0, 0, 0, geo.total_site(3)/2 + 0);
-  // qlat::Coordinate xg3(0, 0, 0, geo.total_site(3)/2 + 0);
+  // qlat::Coordinate xg1(0, 0, 0, total_site[3]/2 + 0);
+  // qlat::Coordinate xg2(0, 0, 0, total_site[3]/2 + 0);
+  // qlat::Coordinate xg3(0, 0, 0, total_site[3]/2 + 0);
   //
-  qlat::Coordinate xg1(6, 6, 6, geo.total_site(3)/2 + 2);
-  qlat::Coordinate xg2(8,11, 7, geo.total_site(3)/2 - 1);
-  qlat::Coordinate xg3(8, 8, 8, geo.total_site(3)/2 + 0);
+  qlat::Coordinate xg1(6, 6, 6, total_site[3]/2 + 2);
+  qlat::Coordinate xg2(8,11, 7, total_site[3]/2 - 1);
+  qlat::Coordinate xg3(8, 8, 8, total_site[3]/2 + 0);
   //
-  // qlat::Coordinate xg1(2, 1, 5, geo.total_site(3)/2 - 4);
-  // qlat::Coordinate xg2(3, 4, 0, geo.total_site(3)/2 + 0);
-  // qlat::Coordinate xg3(1, 5, 2, geo.total_site(3)/2 + 4);
+  // qlat::Coordinate xg1(2, 1, 5, total_site[3]/2 - 4);
+  // qlat::Coordinate xg2(3, 4, 0, total_site[3]/2 + 0);
+  // qlat::Coordinate xg3(1, 5, 2, total_site[3]/2 + 4);
   //
   for (int mu1 = 0; mu1 < 4; ++mu1) {
     for (int mu2 = 0; mu2 < 4; ++mu2) {

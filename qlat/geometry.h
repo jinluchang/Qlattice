@@ -39,7 +39,7 @@ struct Geometry
     geon = get_geometry_node();
     multiplicity = multiplicity_;
     for (int i = 0; i < DIM; ++i) {
-      assert(0 == total_site[i] % geon.size_node[i]);
+      qassert(0 == total_site[i] % geon.size_node[i]);
       node_site[i] = total_site[i] / geon.size_node[i];
     }
     reset_node_site_expanded();
@@ -88,12 +88,11 @@ struct Geometry
     return qlat::index_from_coordinate(xe, node_site_expanded) * multiplicity;
   }
   //
-  Coordinate coordinate_from_offset(int& m, const long offset) const
+  Coordinate coordinate_from_offset(const long offset) const
     // 0 <= offset < local_volume_expanded() * multiplicity
   {
     Coordinate x = qlat::coordinate_from_index(offset/multiplicity, node_site_expanded);
     x = x - expansion_left;
-    m = offset % multiplicity;
     return x;
   }
   //
@@ -128,6 +127,11 @@ struct Geometry
   long offset_from_index(const long index) const
   {
     return offset_from_coordinate(coordinate_from_index(index));
+  }
+  //
+  long g_index_from_g_coordinate(const Coordinate& xg) const
+  {
+    return qlat::index_from_coordinate(xg, total_site());
   }
   //
   bool is_on_node(const Coordinate& x) const
@@ -166,19 +170,15 @@ struct Geometry
     return node_site_expanded[0] * node_site_expanded[1] * node_site_expanded[2] * node_site_expanded[3];
   }
   //
-  int total_site(int mu) const
+  Coordinate total_site() const
   {
-    return node_site[mu] * geon.size_node[mu];
+    return node_site * geon.size_node;
   }
   //
   Coordinate global_size() const
   {
-    warn("use total_volume()");
-    Coordinate ret;
-    for(int i = 0; i < DIM; i++){
-      ret[i] = total_site(i);
-    }
-    return ret;
+    warn("use total_site()");
+    return total_site();
   }
   //
   long total_volume() const
@@ -266,8 +266,12 @@ inline bool is_matching_geo(const Geometry& geo1, const Geometry& geo2)
 {
   return geo1.initialized == geo2.initialized
     && geo1.geon == geo2.geon
-    && geo1.multiplicity == geo2.multiplicity
     && geo1.node_site == geo2.node_site;
+}
+
+inline bool is_matching_geo_mult(const Geometry& geo1, const Geometry& geo2)
+{
+  return is_matching_geo(geo1, geo2) && geo1.multiplicity == geo2.multiplicity;
 }
 
 inline bool is_initialized(const Geometry& geo)

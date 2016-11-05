@@ -8,7 +8,6 @@
 #include <omp.h>
 
 #include <vector>
-#include <cassert>
 #include <ctime>
 #include <fstream>
 
@@ -62,12 +61,12 @@ struct Field
   }
   Field(const Field& f)
   {
-    assert(false);
+    qassert(false);
   }
   //
   const Field& operator=(const Field& f)
   {
-    assert(is_matching_geo(geo, f.geo));
+    qassert(is_matching_geo_mult(geo, f.geo));
 #pragma omp parallel for
     for (long index = 0; index < geo.local_volume(); ++index) {
       Coordinate xl = geo.coordinate_from_index(index);
@@ -82,44 +81,44 @@ struct Field
   //
   M& get_elem(const long offset)
   {
-    assert(0 <= offset && offset < field.size());
+    qassert(0 <= offset && offset < field.size());
     return field[offset];
   }
   const M& get_elem(const long offset) const
   {
-    assert(0 <= offset && offset < field.size());
+    qassert(0 <= offset && offset < field.size());
     return field[offset];
   }
   //
   M& get_elem(const Coordinate& x, const int m)
   {
-    assert(geo.is_on_node(x));
-    assert(0 <= m && m < geo.multiplicity);
+    qassert(geo.is_on_node(x));
+    qassert(0 <= m && m < geo.multiplicity);
     long offset = geo.offset_from_coordinate(x) + m;
     return field[offset];
   }
   const M& get_elem(const Coordinate& x, const int m) const
   {
-    assert(geo.is_on_node(x));
-    assert(0 <= m && m < geo.multiplicity);
+    qassert(geo.is_on_node(x));
+    qassert(0 <= m && m < geo.multiplicity);
     long offset = geo.offset_from_coordinate(x) + m;
     return field[offset];
   }
   //
   M& get_elem(const Coordinate& x)
   {
-    assert(1 == geo.multiplicity);
+    qassert(1 == geo.multiplicity);
     return get_elem(x,0);
   }
   const M& get_elem(const Coordinate& x) const
   {
-    assert(1 == geo.multiplicity);
+    qassert(1 == geo.multiplicity);
     return get_elem(x,0);
   }
   //
   Vector<M> get_elems(const Coordinate& x)
   {
-    assert(geo.is_on_node(x));
+    qassert(geo.is_on_node(x));
     long offset = geo.offset_from_coordinate(x);
     return Vector<M>(&field[offset], geo.multiplicity);
   }
@@ -127,7 +126,7 @@ struct Field
     // Be cautious about the const property
     // 改不改靠自觉
   {
-    assert(geo.is_on_node(x));
+    qassert(geo.is_on_node(x));
     long offset = geo.offset_from_coordinate(x);
     return Vector<M>(&field[offset], geo.multiplicity);
   }
@@ -154,8 +153,8 @@ Vector<M> get_data(const Field<M>& f)
 template <class M>
 void swap(Field<M>& f1, Field<M>& f2)
 {
-  assert(is_initialized(f1));
-  assert(is_initialized(f1));
+  qassert(is_initialized(f1));
+  qassert(is_initialized(f1));
   swap(f1.geo, f2.geo);
   swap(f1.field, f2.field);
 }
@@ -164,7 +163,7 @@ template<class M>
 const Field<M>& operator+=(Field<M>& f, const Field<M>& f1)
 {
   TIMER("fieldOperator");
-  assert(is_matching_geo(f.geo, f1.geo));
+  qassert(is_matching_geo_mult(f.geo, f1.geo));
   const Geometry& geo = f.geo;
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
@@ -180,7 +179,7 @@ template<class M>
 const Field<M>& operator-=(Field<M>& f, const Field<M>& f1)
 {
   TIMER("fieldOperator");
-  assert(is_matching_geo(f.geo, f1.geo));
+  qassert(is_matching_geo_mult(f.geo, f1.geo));
   const Geometry& geo = f.geo;
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); index++) {
@@ -264,12 +263,12 @@ struct FieldM : Field<M>
   }
   virtual void init(const Geometry& geo_, const int multiplicity_)
   {
-    assert(multiplicity == multiplicity_);
+    qassert(multiplicity == multiplicity_);
     Field<M>::init(geo_, multiplicity);
   }
   virtual void init(const Field<M>& f)
   {
-    assert(multiplicity == f.geo.multiplicity);
+    qassert(multiplicity == f.geo.multiplicity);
     Field<M>::init(f);
   }
   //
@@ -279,7 +278,7 @@ struct FieldM : Field<M>
   }
   FieldM(const FieldM<M,multiplicity>& f)
   {
-    assert(false);
+    qassert(false);
   }
 };
 

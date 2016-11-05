@@ -31,7 +31,7 @@ struct fft_complex_field_plan
   //
   static bool check(const Geometry& geo_, const int mc_, const Coordinate& dirs_)
   {
-    assert(0 < geo_.multiplicity);
+    qassert(0 < geo_.multiplicity);
     bool b = true;
     b = b && geo_.is_only_local();
     b = b && mc_ % geo_.multiplicity == 0;
@@ -44,7 +44,7 @@ struct fft_complex_field_plan
   static fft_complex_field_plan& get_plan(const Geometry& geo_, const int mc_, const Coordinate dirs_)
   {
     TIMER("fft_complex_field_plan::get_plan");
-    assert(check(geo_, mc_, dirs_));
+    qassert(check(geo_, mc_, dirs_));
     static std::vector<fft_complex_field_plan> planV(100);
     static int next_plan_index = 0;
     for (int i = 0; i < (int)planV.size(); i++) {
@@ -82,7 +82,7 @@ struct fft_complex_field_plan
   void init(const Geometry& geo_, const int mc_, const Coordinate dirs_)
   {
     TIMER_VERBOSE("fft_complex_field_plan::init");
-    assert(check(geo_, mc_, dirs_));
+    qassert(check(geo_, mc_, dirs_));
     geo = geo_;
     mc = mc_;
     dirs = dirs_;
@@ -96,7 +96,7 @@ struct fft_complex_field_plan
         break;
       }
     }
-    const int sizec = geo.total_site(dir);
+    const int sizec = geo.total_site()[dir];
     const int nc = geo.local_volume() / geo.node_site[dir] * mc;
     const int chunk = (nc-1) / geo.geon.size_node[dir]+1;
     const int nc_start = std::min(nc, geo.geon.coor_node[dir] * chunk);
@@ -140,7 +140,7 @@ void fft_complex_field_dirs(Field<M>& field, const Coordinate& dirs)
       break;
     }
   }
-  const int sizec = geo.total_site(dir);
+  const int sizec = geo.total_site()[dir];
   const int nc = geo.local_volume() / geo.node_site[dir] * mc;
   const int chunk = (nc-1)/geo.geon.size_node[dir]+1;
   const int nc_start = std::min(nc, geo.geon.coor_node[dir] * chunk);

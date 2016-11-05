@@ -92,21 +92,21 @@ inline void GeometryNode::init()
   MPI_Comm_rank(get_comm(), &id_node);
   int ndims;
   MPI_Cartdim_get(get_comm(), &ndims);
-  assert(DIM == ndims);
+  qassert(DIM == ndims);
   Coordinate periods;
   Coordinate coor_node_check;
   MPI_Cart_get(get_comm(), DIM, size_node.data(), periods.data(), coor_node_check.data());
   for (int i = 0; i < DIM; ++i) {
-    assert(0 != periods[i]);
+    qassert(0 != periods[i]);
   }
   coor_node = coordinate_from_index(id_node, size_node);
   for (int i = 0; i < DIM; ++i) {
-    assert(0 != periods[i]);
-    // assert(coor_node_check[i] == coor_node[i]);
+    qassert(0 != periods[i]);
+    // qassert(coor_node_check[i] == coor_node[i]);
   }
-  assert(size_node[0] * size_node[1] * size_node[2] * size_node[3] == num_node);
+  qassert(size_node[0] * size_node[1] * size_node[2] * size_node[3] == num_node);
   Display(cname, "GeometryNode::init()", "id_node = %5d ; coor_node = %s\n", id_node, show(coor_node).c_str());
-  assert(id_node_from_coor_node(coor_node) == id_node);
+  qassert(id_node_from_coor_node(coor_node) == id_node);
 #else
   num_node = 1;
   id_node = 0;
@@ -210,7 +210,7 @@ int get_data_dir(Vector<M> recv, const Vector<M>& send, const int dir)
   // dir = 0, 1 for Plus dir or Minus dir
 {
   TIMER_FLOPS("get_data_dir");
-  assert(recv.size() == send.size());
+  qassert(recv.size() == send.size());
   const long size = recv.size()*sizeof(M);
   timer.flops += size;
 #ifdef USE_MULTI_NODE
@@ -234,7 +234,7 @@ int get_data_dir_mu(Vector<M> recv, const Vector<M>& send, const int dir, const 
   // 0 <= mu < 4 for different directions
 {
   TIMER_FLOPS("get_data_dir_mu");
-  assert(recv.size() == send.size());
+  qassert(recv.size() == send.size());
   const long size = recv.size()*sizeof(M);
   timer.flops += size;
 #ifdef USE_MULTI_NODE
@@ -266,7 +266,7 @@ int get_data_minus_mu(Vector<M> recv, const Vector<M>& send, const int mu)
 
 inline int glb_sum(Vector<double> recv, const Vector<double>& send)
 {
-  assert(recv.size() == send.size());
+  qassert(recv.size() == send.size());
 #ifdef USE_MULTI_NODE
   return MPI_Allreduce((double*)send.data(), recv.data(), recv.size(), MPI_DOUBLE, MPI_SUM, get_comm());
 #else
@@ -277,7 +277,7 @@ inline int glb_sum(Vector<double> recv, const Vector<double>& send)
 
 inline int glb_sum(Vector<long> recv, const Vector<long>& send)
 {
-  assert(recv.size() == send.size());
+  qassert(recv.size() == send.size());
 #ifdef USE_MULTI_NODE
   return MPI_Allreduce((long*)send.data(), recv.data(), recv.size(), MPI_LONG, MPI_SUM, get_comm());
 #else
@@ -337,7 +337,7 @@ inline int glb_sum_long(Vector<M>& x)
 template <class M>
 void all_gather(Vector<M> recv, const Vector<M>& send)
 {
-  assert(recv.size() == send.size() * get_num_node());
+  qassert(recv.size() == send.size() * get_num_node());
   const long sendsize = send.size() * sizeof(M);
 #ifdef USE_MULTI_NODE
   MPI_Allgather((void*)send.data(), send.data_size(), MPI_BYTE, (void*)recv.data(), send.data_size(), MPI_BYTE, get_comm());

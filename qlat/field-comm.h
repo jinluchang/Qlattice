@@ -82,7 +82,7 @@ void fetch_expanded(Field<M> &field_comm){
 		const int ret = MPI_Recv((void*)recv, size_bytes, MPI_BYTE, \
 			idf, 0, get_comm(), MPI_STATUS_IGNORE);
 		MPI_Wait(&req, MPI_STATUS_IGNORE);
-		assert(!ret);
+		qassert(!ret);
 
 		memcpy(send, recv, size_bytes);
 
@@ -149,7 +149,7 @@ void produce_chart_envelope(Chart<M> &chart, const Geometry geometry, const Gaug
 				chart.expansion_left = Coordinate(2, 2, 2, 2);
 				chart.expansion_right = Coordinate(2, 2, 2, 2);
 				break;
-		default:	assert(false);
+		default:	qassert(false);
 	}
 
 	Coordinate index_pos;
@@ -219,7 +219,7 @@ void produce_chart_envelope(Chart<M> &chart, const Geometry geometry, const Gaug
 //				chart.expansion_left = Coordinate(2, 2, 2, 2);
 //				chart.expansion_right = Coordinate(2, 2, 2, 2);
 //				break;
-//		default:	assert(false);
+//		default:	qassert(false);
 //	}
 //
 //	Coordinate index_pos;
@@ -306,7 +306,7 @@ template <class M>
 void fetch_expanded_chart(Field<M> &field_comm, Chart<M> &send_chart){
 	TIMER("fetch_expanded_chart");
 
-	assert(is_matching_geo(send_chart.geo, field_comm.geo));
+	qassert(is_matching_geo_mult(send_chart.geo, field_comm.geo));
 
 	Coordinate node_pos; // home node coordinate of a site in node space
 
@@ -370,7 +370,7 @@ void fetch_expanded_chart(Field<M> &field_comm, Chart<M> &send_chart){
 		const int ret = MPI_Recv((void*)recv, size_bytes, MPI_BYTE, \
 			idf, 0, get_comm(), MPI_STATUS_IGNORE);
 		MPI_Wait(&req, MPI_STATUS_IGNORE);
-		assert(!ret);
+		qassert(!ret);
 
 		memcpy(send, recv, size_bytes);
 	}

@@ -85,7 +85,7 @@ inline int Fflush(FILE *pFile){
 template<class M, class N>
 void castTruncated(M &x, const N &y)
 {
-	assert(sizeof(M) <= sizeof(N));
+	qassert(sizeof(M) <= sizeof(N));
 	memcpy(&x, &y, sizeof(M));
 }
 
@@ -110,8 +110,8 @@ template<class M>
 uint32_t fieldChecksumSum32(const Field<M> &f)
 {
 	TIMER("fieldChecksumSum32");
-	assert(f.geo.is_only_local());
-	assert(sizeof(M) % sizeof(uint32_t) == 0);
+	qassert(f.geo.is_only_local());
+	qassert(sizeof(M) % sizeof(uint32_t) == 0);
 	long sum = 0;
 	const uint32_t *data = (const uint32_t *)f.field.data();
 	const long size = f.field.size() * sizeof(M) / sizeof(uint32_t);
@@ -166,10 +166,7 @@ void sophisticated_make_to_order(Field<M> &result, const Field<M> &origin){
 	Field<M> field_rslt;
         field_rslt.init(geo_only_local);
 
-	Coordinate total_site(geo_only_local.total_site(0),
-			geo_only_local.total_site(1), 
-			geo_only_local.total_site(2),
-			geo_only_local.total_site(3));
+	Coordinate total_site = geo_only_local.total_site();
 
 	long range_low = geo_only_local.local_volume() * get_id_node();
 	long range_high = range_low + geo_only_local.local_volume();
@@ -234,7 +231,7 @@ void sophisticated_serial_write(const qlat::Field<M> &origin,
 
 		if(get_id_node() == 0){
 			M *ptr = get_data(field_send).data(); 
-			assert(ptr != NULL);
+			qassert(ptr != NULL);
 			long size = sizeof(M) * geo_only_local.local_volume() 
 											* geo_only_local.multiplicity;
 			std::cout << "Writing CYCLE: " << i << "\tSIZE = " << size << std::endl;
@@ -256,7 +253,7 @@ void sophisticated_serial_write(const qlat::Field<M> &origin,
 // std::string cps_Matrix_header_generator(const qlat::Field<cps::Matrix> &origin,
 //                			const bool does_skip_third = false){
 // 	NOT yet implemented :(
-//	assert(false);	
+//	qassert(false);	
 //	return "NOT IMPLEMENTED.";
 // }
 
@@ -288,7 +285,7 @@ void sophisticated_serial_read(qlat::Field<M> &destination,
 	Field<M> field_rslt;
         field_rslt.init(geo_only_local);
 
-	Coordinate total_site(geo_only_local.total_site(0), geo_only_local.total_site(1), geo_only_local.total_site(2), geo_only_local.total_site(3));
+	Coordinate total_site = geo_only_local.total_site();
 
 	long range_low = geo_only_local.local_volume() * get_id_node();
 	long range_high = range_low + geo_only_local.local_volume();
@@ -301,8 +298,8 @@ void sophisticated_serial_read(qlat::Field<M> &destination,
 // Well as you can see this is not really serial reading anymore. The sertial reading speed is unbearablly slow.
 // Anyway it is tested. And it seems to be right.
 	inputFile = fopen(read_addr.c_str(), "rb"); 
-	assert(inputFile != NULL);
-	assert(!ferror(inputFile));
+	qassert(inputFile != NULL);
+	qassert(!ferror(inputFile));
 	char line[1000];
 	char indicator[] = "END_HEADER";
 
@@ -312,7 +309,7 @@ void sophisticated_serial_read(qlat::Field<M> &destination,
 	{if(strstr(line, indicator) != NULL){
 		pos_ = ftell(inputFile); break;
 	}}
-	assert(pos_ > -1); assert(!feof(inputFile));
+	qassert(pos_ > -1); qassert(!feof(inputFile));
 		
 	sync_node();
 	int cycle_limit = 0;
@@ -327,7 +324,7 @@ void sophisticated_serial_read(qlat::Field<M> &destination,
 			M *ptr = get_data(field_send).data();
 			long size = sizeof(M) * geo_only_local.local_volume() 
 													* geo_only_local.multiplicity;
-			assert(!fseek(inputFile, size * get_id_node(), SEEK_CUR));
+			qassert(!fseek(inputFile, size * get_id_node(), SEEK_CUR));
 			timer_fread((char*)ptr, size, inputFile);
 			std::cout << "Reading FINISHED: Node Number =\t" 
 				<< get_id_node() << std::endl;
@@ -348,7 +345,7 @@ void sophisticated_serial_read(qlat::Field<M> &destination,
 // 		{if(strstr(line, indicator) != NULL){
 // 			fgetpos(inputFile, &pos); pos_ = 1;  break;
 // 		}}
-// 		assert(pos_ > -1); assert(!feof(inputFile));
+// 		qassert(pos_ > -1); qassert(!feof(inputFile));
 // 	} 
 // 
 // 	for(int i = 0; i < get_num_node(); i++){
