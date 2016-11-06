@@ -13,6 +13,8 @@
 #include <qlat/field-expand.h>
 #include <qlat/qed.h>
 #include <qlat/qcd.h>
+#include <qlat/qcd-utils.h>
+#include <qlat/qcd-gauge-transformation.h>
 
 QLAT_START_NAMESPACE
 

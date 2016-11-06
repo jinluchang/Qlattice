@@ -1,6 +1,7 @@
 SHELL=/bin/bash
 
-tests = lbl-muon-part \
+tests = qcd-utils-tests \
+		lbl-muon-part \
 		rng-state-tests \
 		field-rng-tests \
 		benchmark
