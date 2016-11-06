@@ -83,38 +83,37 @@ struct Geometry
   //
   long offset_from_coordinate(const Coordinate& x) const
   {
+#ifdef USE_MULTI_NODE
     Coordinate xe = x;
     xe = xe + expansion_left;
     return qlat::index_from_coordinate(xe, node_site_expanded) * multiplicity;
+#else
+    return index_from_coordinate(x);
+#endif
   }
   //
   Coordinate coordinate_from_offset(const long offset) const
     // 0 <= offset < local_volume_expanded() * multiplicity
   {
+#ifdef USE_MULTI_NODE
     Coordinate x = qlat::coordinate_from_index(offset/multiplicity, node_site_expanded);
     x = x - expansion_left;
     return x;
-  }
-  //
-  long recordFromCoordinate(const Coordinate& x) const
-  {
-    Coordinate xe = x;
-    xe = xe + expansion_left;
-    return qlat::index_from_coordinate(xe, node_site_expanded);
-  }
-  //
-  Coordinate coordinateFromRecord(long record) const
-    // 0 <= offset < local_volume_expanded() * multiplicity
-  {
-    Coordinate x = qlat::coordinate_from_index(record, node_site_expanded);
-    x = x - expansion_left;
-    return x;
+#else
+    return coordinate_from_index(x);
+#endif
   }
   //
   long index_from_coordinate(const Coordinate& x) const
     // 0 <= index < local_volume()
   {
+#ifdef USE_MULTI_NODE
     return qlat::index_from_coordinate(x, node_site);
+#else
+    Coordinate y = x;
+    regularize_coordinate(y, node_site);
+    return qlat::index_from_coordinate(y, node_site);
+#endif
   }
   //
   Coordinate coordinate_from_index(const long index) const
@@ -202,6 +201,23 @@ struct Geometry
       xl[mu] = xg[mu] - geon.coor_node[mu] * node_site[mu];
     }
     return xl;
+  }
+  //
+  ///////////////////////////////////////////////////////////////////
+  //
+  long recordFromCoordinate(const Coordinate& x) const
+  {
+    Coordinate xe = x;
+    xe = xe + expansion_left;
+    return qlat::index_from_coordinate(xe, node_site_expanded);
+  }
+  //
+  Coordinate coordinateFromRecord(long record) const
+    // 0 <= offset < local_volume_expanded() * multiplicity
+  {
+    Coordinate x = qlat::coordinate_from_index(record, node_site_expanded);
+    x = x - expansion_left;
+    return x;
   }
 };
 

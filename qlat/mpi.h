@@ -311,6 +311,18 @@ inline int glb_sum(long& x)
 }
 
 template <class M>
+inline int glb_sum_double_vec(Vector<M> x)
+{
+  return glb_sum(Vector<double>((double*)x.data(), x.data_size()/sizeof(double)));
+}
+
+template <class M>
+inline int glb_sum_long_vec(Vector<M> x)
+{
+  return glb_sum(Vector<long>((long*)x.data(), x.data_size()/sizeof(long)));
+}
+
+template <class M>
 inline int glb_sum_double(M& x)
 {
   return glb_sum(Vector<double>((double*)&x, sizeof(M)/sizeof(double)));
@@ -320,18 +332,6 @@ template <class M>
 inline int glb_sum_long(M& x)
 {
   return glb_sum(Vector<long>((long*)&x, sizeof(M)/sizeof(long)));
-}
-
-template <class M>
-inline int glb_sum_double(Vector<M>& x)
-{
-  return glb_sum(Vector<double>((double*)x.data(), x.size()*sizeof(M)/sizeof(double)));
-}
-
-template <class M>
-inline int glb_sum_long(Vector<M>& x)
-{
-  return glb_sum(Vector<long>((long*)x.data(), x.size()*sizeof(M)/sizeof(long)));
 }
 
 template <class M>

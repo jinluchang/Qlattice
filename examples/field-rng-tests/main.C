@@ -58,10 +58,8 @@ void test1()
       sumf.get_elem(x) += norm(a);
       sigma2f.get_elem(x) += sqr(norm(a));
     }
-    double sum;
-    field_glb_sum_double(Vector<double>(sum), sumf);
-    double sigma2;
-    field_glb_sum_double(Vector<double>(sigma2), sigma2f);
+    const double sum = field_glb_sum_double(sumf)[0];
+    const double sigma2 = field_glb_sum_double(sigma2f)[0];
     gsum += sum / Nb;
     gsigma2 += sqr(sum / Nb);
     if (0 == get_id_node()) {

@@ -9,7 +9,9 @@
 #define QLAT_START_NAMESPACE namespace qlat {
 #define QLAT_END_NAMESPACE }
 
+#ifndef USE_SINLGE_NODE
 #define USE_MULTI_NODE
+#endif
 
 #include <timer.h>
 
