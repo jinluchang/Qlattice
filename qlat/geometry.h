@@ -228,6 +228,13 @@ inline Geometry geo_resize(const Geometry& geo_, const int thick = 0)
   return geo;
 }
 
+inline Geometry geo_resize(const Geometry& geo_, const Coordinate& expansion_left_, const Coordinate& expansion_right_)
+{
+  Geometry geo = geo_;
+  geo.resize(expansion_left_, expansion_right_);
+  return geo;
+}
+
 inline Geometry geo_remult(const Geometry& geo_, const int multiplicity_ = 1)
 {
   Geometry geo = geo_;
