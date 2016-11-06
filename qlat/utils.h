@@ -81,7 +81,7 @@ inline double norm(const std::array<T,N>& mm)
   return sum;
 }
 
-template <class M, int N>
+template <class M, unsigned long N>
 bool operator==(const std::array<M,N>& x, const std::array<M,N>& y)
 {
   return 0 == memcmp(x.data(), y.data(), N * sizeof(M));

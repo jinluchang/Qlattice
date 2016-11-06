@@ -70,9 +70,9 @@ void fetch_expanded(Field<M> &field_comm){
 		id_this = get_id_node();
 		coor_this = qlat::coordinate_from_index(id_this, field_comm.geo.geon.size_node);
 		coort = coor_this - node_pos; 
-		regularize(coort, field_comm.geo.geon.size_node);
+		regularize_coordinate(coort, field_comm.geo.geon.size_node);
 		coorf = coor_this + node_pos;
-		regularize(coorf, field_comm.geo.geon.size_node);
+		regularize_coordinate(coorf, field_comm.geo.geon.size_node);
 		
 		idt = qlat::index_from_coordinate(coort, field_comm.geo.geon.size_node);
 		idf = qlat::index_from_coordinate(coorf, field_comm.geo.geon.size_node);
@@ -358,9 +358,9 @@ void fetch_expanded_chart(Field<M> &field_comm, Chart<M> &send_chart){
 		id_this = get_id_node();
 		coor_this = qlat::coordinate_from_index(id_this, field_comm.geo.geon.size_node);
 		coort = coor_this - node_pos; 
-		regularize(coort, field_comm.geo.geon.size_node);
+		regularize_coordinate(coort, field_comm.geo.geon.size_node);
 		coorf = coor_this + node_pos;
-		regularize(coorf, field_comm.geo.geon.size_node);
+		regularize_coordinate(coorf, field_comm.geo.geon.size_node);
 		
 		idt = qlat::index_from_coordinate(coort, field_comm.geo.geon.size_node);
 		idf = qlat::index_from_coordinate(coorf, field_comm.geo.geon.size_node);

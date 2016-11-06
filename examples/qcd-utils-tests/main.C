@@ -27,13 +27,17 @@ void simple_tests()
   GaugeTransform gt;
   gt.init(geo);
   set_g_rand_color_matrix_field(gt, RngState(rs, "gt-1.0"), 1.0);
-  gf_apply_gauge_transform(gf, gf, gt);
+  make_apply_gauge_transformation(gf, gf, gt);
   displayln_info(shows("plaq : ") + show(gf_avg_plaq(gf)));
   displayln_info(shows("trace: ") + show(gf_avg_link_trace(gf)));
-  gf_apply_gauge_transform(gf, gf, gt);
+  make_apply_gauge_transformation(gf, gf, gt);
   displayln_info(shows("plaq : ") + show(gf_avg_plaq(gf)));
   displayln_info(shows("trace: ") + show(gf_avg_link_trace(gf)));
   unitarize(gf);
+  displayln_info(shows("plaq : ") + show(gf_avg_plaq(gf)));
+  displayln_info(shows("trace: ") + show(gf_avg_link_trace(gf)));
+  make_tree_gauge_transformation(gt, gf);
+  make_apply_gauge_transformation(gf, gf, gt);
   displayln_info(shows("plaq : ") + show(gf_avg_plaq(gf)));
   displayln_info(shows("trace: ") + show(gf_avg_link_trace(gf)));
 }
