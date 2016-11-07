@@ -2,6 +2,7 @@
 
 #include <qlat/field.h>
 #include <qlat/field-fft.h>
+#include <qlat/field-utils.h>
 
 #include <qlat/rng-state.h>
 #include <eigen3/Eigen/Eigen>
@@ -12,7 +13,7 @@ QLAT_START_NAMESPACE
 
 typedef Eigen::Matrix<Complex,NUM_COLOR,NUM_COLOR,Eigen::RowMajor> ColorMatrix;
 
-inline set_zero(ColorMatrix& m)
+inline void set_zero(ColorMatrix& m)
 {
   m.setZero();
 }
@@ -99,7 +100,7 @@ inline ColorMatrix make_color_matrix_exp(const ColorMatrix& a)
 
 typedef Eigen::Matrix<Complex,4*NUM_COLOR,4*NUM_COLOR,Eigen::RowMajor> WilsonMatrix;
 
-inline set_zero(WilsonMatrix& m)
+inline void set_zero(WilsonMatrix& m)
 {
   m.setZero();
 }
@@ -126,7 +127,7 @@ inline std::string show(const WilsonMatrix& m)
 
 typedef Eigen::Matrix<Complex,4,4,Eigen::RowMajor> SpinMatrix;
 
-inline set_zero(SpinMatrix& m)
+inline void set_zero(SpinMatrix& m)
 {
   m.setZero();
 }
