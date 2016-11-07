@@ -126,11 +126,25 @@ inline FILE* qopen(const std::string& path, const std::string& mode)
   return fopen(path.c_str(), mode.c_str());
 }
 
+inline void qset_line_buf(FILE* f)
+{
+  TIMER("qset_line_buf");
+  std::setvbuf(f, NULL, _IOLBF, BUFSIZ);
+}
+
+inline void qset_fully_buf(FILE* f)
+{
+  TIMER("qset_fully_buf");
+  std::setvbuf(f, NULL, _IOFBF, BUFSIZ);
+}
+
 inline FILE* qopen_info(const std::string& path, const std::string& mode)
 {
   TIMER("qopen_info");
   if (0 == get_id_node()) {
-    return qopen(path, mode);
+    FILE* f = qopen(path, mode);
+    qset_line_buf(f);
+    return f;
   } else {
     return NULL;
   }
