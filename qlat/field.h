@@ -83,7 +83,7 @@ struct Field
   //
   M& get_elem(const long offset)
   {
-    qassert(0 <= offset && offset < field.size());
+    qassert(0 <= offset && offset < (long)field.size());
     return field[offset];
   }
   const M& get_elem(const long offset) const
