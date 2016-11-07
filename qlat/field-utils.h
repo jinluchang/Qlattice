@@ -2,12 +2,13 @@
 
 #include <qlat/config.h>
 #include <qlat/field.h>
+#include <qlat/matrix.h>
 
 QLAT_START_NAMESPACE
 
 // field.h and field-utils.h are including each other. Need this forward declaration.
-template <class M>
-struct Field;
+// template <class M>
+// struct Field;
 // End of forward declaration.
 
 template <class M>
