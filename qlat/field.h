@@ -66,6 +66,7 @@ struct Field
   //
   const Field& operator=(const Field& f)
   {
+    TIMER("Field::operator=");
     qassert(is_matching_geo_mult(geo, f.geo));
 #pragma omp parallel for
     for (long index = 0; index < geo.local_volume(); ++index) {
