@@ -4,6 +4,7 @@
 #include <qlat/utils.h>
 #include <qlat/mpi.h>
 #include <qlat/geometry.h>
+#include <qlat/field-utils.h>
 
 #include <omp.h>
 

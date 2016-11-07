@@ -5,6 +5,11 @@
 
 QLAT_START_NAMESPACE
 
+// field.h and field-utils.h are including each other. Need this forward declaration.
+template <class M>
+struct Field;
+// End of forward declaration.
+
 template <class M>
 void set_zero(Field<M>& f)
 {
