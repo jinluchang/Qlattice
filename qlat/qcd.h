@@ -89,7 +89,7 @@ inline double gf_avg_plaq(const GaugeField& gf)
 {
   TIMER("gf_avg_plaq");
   GaugeField gf1;
-  gf1.init(geo_resize(gf.geo, 1));
+  gf1.init(geo_resize(gf.geo, Coordinate(0,0,0,0), Coordinate(1,1,1,1)));
   gf1 = gf;
   refresh_expanded(gf1);
   return gf_avg_plaq_no_comm(gf1);

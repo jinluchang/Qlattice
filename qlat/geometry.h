@@ -266,7 +266,7 @@ inline Geometry geo_reform(const Geometry& geo_, const int multiplicity_ = 1, co
   return geo;
 }
 
-std::string show(const Geometry& geo)
+inline std::string show(const Geometry& geo)
 {
   std::string s;
   s += ssprintf("{ initialized  = %s\n", ::show(geo.initialized).c_str());
@@ -278,7 +278,7 @@ std::string show(const Geometry& geo)
   return s;
 }
 
-void swap(Geometry& geo1, Geometry& geo2)
+inline void swap(Geometry& geo1, Geometry& geo2)
 {
   Geometry geo = geo1;
   geo1 = geo2;
