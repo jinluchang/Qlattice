@@ -155,7 +155,7 @@ void swap(Field<M>& f1, Field<M>& f2)
   swap(f1.field, f2.field);
 }
 
-template<class M>
+template <class M>
 const Field<M>& operator+=(Field<M>& f, const Field<M>& f1)
 {
   TIMER("fieldOperator");
@@ -171,7 +171,7 @@ const Field<M>& operator+=(Field<M>& f, const Field<M>& f1)
   return f;
 }
 
-template<class M>
+template <class M>
 const Field<M>& operator-=(Field<M>& f, const Field<M>& f1)
 {
   TIMER("fieldOperator");
@@ -187,7 +187,7 @@ const Field<M>& operator-=(Field<M>& f, const Field<M>& f1)
   return f;
 }
 
-template<class M>
+template <class M>
 const Field<M>& operator*=(Field<M>& f, const double factor)
 {
   TIMER("fieldOperator");
@@ -202,7 +202,7 @@ const Field<M>& operator*=(Field<M>& f, const double factor)
   return f;
 }
 
-template<class M>
+template <class M>
 const Field<M>& operator*=(Field<M>& f, const Complex factor)
 {
   TIMER("fieldOperator");
@@ -217,7 +217,7 @@ const Field<M>& operator*=(Field<M>& f, const Complex factor)
   return f;
 }
 
-template<class M>
+template <class M>
 double norm(const Field<M>& f)
 {
   const Geometry& geo = f.geo;
