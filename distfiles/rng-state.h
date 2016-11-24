@@ -24,6 +24,7 @@
 #include <stdint.h>
 #include <endian.h>
 #include <cstring>
+#include <climits>
 #include <cmath>
 #include <cassert>
 #include <string>
@@ -65,6 +66,7 @@ struct RngState
 {
   uint64_t numBytes;
   uint32_t hash[8];
+  unsigned long type;
   unsigned long index;
   //
   uint64_t cache[3];
@@ -100,13 +102,11 @@ struct RngState
   //
   RngState split(const std::string& sindex)
   {
-    RngState rs(*this, sindex);
-    return rs;
+    return RngState(*this, sindex);
   }
   RngState split(const long sindex)
   {
-    RngState rs(*this, sindex);
-    return rs;
+    return RngState(*this, sindex);
   }
 };
 
@@ -116,7 +116,12 @@ inline RngState& getGlobalRngState()
   return rs;
 }
 
-const size_t RNG_STATE_NUM_OF_INT32 = 2 + 8 + 2 + 3 * 2 + 2 + 1 + 1;
+inline void setType(RngState& rs, long type = ULONG_MAX)
+{
+  rs.type = type;
+}
+
+const size_t RNG_STATE_NUM_OF_INT32 = 2 + 8 + 2 + 2 + 3 * 2 + 2 + 1 + 1;
 
 inline uint64_t patchTwoUint32(const uint32_t a, const uint32_t b)
 {
@@ -132,44 +137,46 @@ inline void splitTwoUint32(uint32_t& a, uint32_t& b, const uint64_t x)
 
 inline void exportRngState(uint32_t* v, const RngState& rs)
 {
-  assert(22 == RNG_STATE_NUM_OF_INT32);
+  assert(24 == RNG_STATE_NUM_OF_INT32);
   splitTwoUint32(v[0], v[1], rs.numBytes);
   for (int i = 0; i < 8; ++i) {
     v[2 + i] = rs.hash[i];
   }
-  splitTwoUint32(v[10], v[11], rs.index);
+  splitTwoUint32(v[10], v[11], rs.type);
+  splitTwoUint32(v[12], v[13], rs.index);
   for (int i = 0; i < 3; ++i) {
-    splitTwoUint32(v[12 + i * 2], v[12 + i * 2 + 1], rs.cache[i]);
+    splitTwoUint32(v[14 + i * 2], v[14 + i * 2 + 1], rs.cache[i]);
   }
   union {
     double d;
     uint64_t l;
   } g;
   g.d = rs.gaussian;
-  splitTwoUint32(v[18], v[19], g.l);
-  v[20] = rs.cacheAvail;
-  v[21] = rs.gaussianAvail;
+  splitTwoUint32(v[20], v[21], g.l);
+  v[22] = rs.cacheAvail;
+  v[23] = rs.gaussianAvail;
 }
 
 inline void importRngState(RngState& rs, const uint32_t* v)
 {
-  assert(22 == RNG_STATE_NUM_OF_INT32);
+  assert(24 == RNG_STATE_NUM_OF_INT32);
   rs.numBytes = patchTwoUint32(v[0], v[1]);
   for (int i = 0; i < 8; ++i) {
     rs.hash[i] = v[2 + i];
   }
-  rs.index = patchTwoUint32(v[10], v[11]);
+  rs.type = patchTwoUint32(v[10], v[11]);
+  rs.index = patchTwoUint32(v[12], v[13]);
   for (int i = 0; i < 3; ++i) {
-    rs.cache[i] = patchTwoUint32(v[12 + i * 2], v[12 + i * 2 + 1]);
+    rs.cache[i] = patchTwoUint32(v[14 + i * 2], v[14 + i * 2 + 1]);
   }
   union {
     double d;
     uint64_t l;
   } g;
-  g.l = patchTwoUint32(v[18], v[19]);
+  g.l = patchTwoUint32(v[20], v[21]);
   rs.gaussian = g.d;
-  rs.cacheAvail = v[20];
-  rs.gaussianAvail = v[21];
+  rs.cacheAvail = v[22];
+  rs.gaussianAvail = v[23];
 }
 
 inline void exportRngState(std::vector<uint32_t>& v, const RngState& rs)
@@ -220,6 +227,7 @@ inline void reset(RngState& rs)
   std::memset(&rs, 0, sizeof(RngState));
   rs.numBytes = 0;
   sha256::setInitialHash(rs.hash);
+  rs.type = ULONG_MAX;
   rs.index = 0;
   rs.cache[0] = 0;
   rs.cache[1] = 0;
@@ -240,7 +248,12 @@ inline void splitRngState(RngState& rs, const RngState& rs0, const std::string& 
   // will not affect old rng ``rs0''
   // the function should behave correctly even if ``rs'' is actually ``rs0''
 {
-  std::string data = ssprintf("[%lu] {%s}", rs0.index, sindex.c_str());
+  std::string data;
+  if (ULONG_MAX == rs0.type) {
+    data = ssprintf("[%lu] {%s}", rs0.index, sindex.c_str());
+  } else {
+    data = ssprintf("[%ld,%lu] {%s}", rs0.type, rs0.index, sindex.c_str());
+  }
   const int nBlocks = (data.length() - 1) / 64 + 1;
   data.resize(nBlocks * 64, ' ');
   sha256::processBlock(rs.hash, rs0.hash, (const uint8_t*)data.c_str());
@@ -248,6 +261,7 @@ inline void splitRngState(RngState& rs, const RngState& rs0, const std::string& 
     sha256::processBlock(rs.hash, rs.hash, (const uint8_t*)data.c_str() + i * 64);
   }
   rs.numBytes = rs0.numBytes + nBlocks * 64;
+  rs.type = ULONG_MAX;
   rs.index = 0;
   rs.cache[0] = 0;
   rs.cache[1] = 0;
@@ -273,7 +287,11 @@ inline uint64_t randGen(RngState& rs)
     return r;
   } else {
     uint32_t hash[8];
-    computeHashWithInput(hash, rs, ssprintf("[%lu]", rs.index));
+    if (ULONG_MAX == rs.type) {
+      computeHashWithInput(hash, rs, ssprintf("[%lu]", rs.index));
+    } else {
+      computeHashWithInput(hash, rs, ssprintf("[%ld,%lu]", rs.type, rs.index));
+    }
     rs.cache[0] = patchTwoUint32(hash[0], hash[1]);
     rs.cache[1] = patchTwoUint32(hash[2], hash[3]);
     rs.cache[2] = patchTwoUint32(hash[4], hash[5]);

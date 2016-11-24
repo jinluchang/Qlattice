@@ -12,6 +12,11 @@ void split_rng_state(RngState& rs, const RngState& rs0, const T& s)
   splitRngState(rs, rs0, s);
 }
 
+inline void set_type(RngState& rs, const long type = ULONG_MAX)
+{
+  setType(rs, type);
+}
+
 inline uint64_t rand_gen(RngState& rs)
 {
   return randGen(rs);
