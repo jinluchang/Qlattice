@@ -104,16 +104,16 @@ struct RngState
     splitRngState(*this, rs0, sindex);
   }
   //
-  RngState split(const std::string& sindex)
+  RngState split(const std::string& sindex) const
   {
     return RngState(*this, sindex);
   }
-  RngState split(const long sindex)
+  RngState split(const long sindex) const
   {
     return RngState(*this, sindex);
   }
   //
-  RngState newtype(const unsigned long type)
+  RngState newtype(const unsigned long type) const
   {
     RngState rs(*this);
     setType(rs, type);
