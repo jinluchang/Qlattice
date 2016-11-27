@@ -16,6 +16,7 @@
 #include <qlat/qcd.h>
 #include <qlat/qcd-utils.h>
 #include <qlat/qcd-gauge-transformation.h>
+#include <qlat/qcd-smear.h>
 
 QLAT_START_NAMESPACE
 
