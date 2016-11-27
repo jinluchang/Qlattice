@@ -7,46 +7,169 @@
 
 QLAT_START_NAMESPACE
 
-typedef Eigen::Matrix<Complex,NUM_COLOR,NUM_COLOR,Eigen::RowMajor> ColorMatrix;
+template <int DIM>
+struct Matrix
+{
+  static const int dim = DIM;
+  Complex p[DIM * DIM];
+  //
+  // convert to double array
+  double* d()
+  {
+    return (double*)p;
+  }
+  const double* d() const
+  {
+    return (const double*)p;
+  }
+  //
+  // convert to Eigen Matrix
+  Eigen::Matrix<Complex,DIM,DIM,Eigen::RowMajor>& em()
+  {
+    return *((Eigen::Matrix<Complex,DIM,DIM,Eigen::RowMajor>*)this);
+  }
+  const Eigen::Matrix<Complex,DIM,DIM,Eigen::RowMajor>& em() const
+  {
+    return *((Eigen::Matrix<Complex,DIM,DIM,Eigen::RowMajor>*)this);
+  }
+  //
+  Complex& operator()(int i, int j)
+  {
+    qassert(0 <= i && i < DIM);
+    qassert(0 <= j && j < DIM);
+    return p[i * DIM + j];
+  }
+  const Complex& operator()(int i, int j) const
+  {
+    qassert(0 <= i && i < DIM);
+    qassert(0 <= j && j < DIM);
+    return p[i * DIM + j];
+  }
+  //
+  const Matrix& operator+=(const Matrix& x)
+  {
+    *this = *this + x;
+    return *this;
+  }
+};
+
+template <int DIM>
+Matrix<DIM> operator+(const Matrix<DIM>& x, const Matrix<DIM>& y)
+{
+  Matrix<DIM> ret;
+  ret.em() = x.em() + y.em();
+  return ret;
+}
+
+template <int DIM>
+Matrix<DIM> operator-(const Matrix<DIM>& x, const Matrix<DIM>& y)
+{
+  Matrix<DIM> ret;
+  ret.em() = x.em() - y.em();
+  return ret;
+}
+
+template <int DIM>
+Matrix<DIM> operator*(const Matrix<DIM>& x, const Matrix<DIM>& y)
+{
+  Matrix<DIM> ret;
+  ret.em() = x.em() * y.em();
+  return ret;
+}
+
+template <int DIM>
+Matrix<DIM> operator*(const Complex& x, const Matrix<DIM>& y)
+{
+  Matrix<DIM> ret;
+  ret.em() = x * y.em();
+  return ret;
+}
+
+template <int DIM>
+Matrix<DIM> operator*(const Matrix<DIM>& x, const Complex& y)
+{
+  Matrix<DIM> ret;
+  ret.em() = x.em() * y;
+  return ret;
+}
+
+template <int DIM>
+Matrix<DIM> operator/(const Matrix<DIM>& x, const Complex& y)
+{
+  Matrix<DIM> ret;
+  ret.em() = x.em() / y;
+  return ret;
+}
+
+template <int DIM>
+Matrix<DIM> matrix_adjoint(const Matrix<DIM>& x)
+{
+  Matrix<DIM> ret;
+  ret.em() = x.em().adjoint();
+  return ret;
+}
+
+template <int DIM>
+Complex matrix_trace(const Matrix<DIM>& x)
+{
+  return x.em().trace();
+}
+
+struct ColorMatrix : Matrix<NUM_COLOR>
+{
+  ColorMatrix()
+  {
+  }
+  ColorMatrix(const Matrix<NUM_COLOR>& m)
+  {
+    *this = m;
+  }
+  //
+  const ColorMatrix& operator=(const Matrix<NUM_COLOR>& m)
+  {
+    *this = (const ColorMatrix&)m;
+    return *this;
+  }
+};
 
 inline void set_zero(ColorMatrix& m)
 {
-  m.setZero();
+  memset(&m, 0, sizeof(ColorMatrix));
 }
 
 inline void set_unit(ColorMatrix& m, const Complex& coef = 1.0)
 {
   set_zero(m);
-  for (int i = 0; i < m.rows() && i < m.cols(); ++i) {
+  for (int i = 0; i < m.dim; ++i) {
     m(i,i) = coef;
   }
 }
 
 inline double norm(const ColorMatrix& m)
 {
-  return m.squaredNorm();
+  return m.em().squaredNorm();
 }
 
 inline std::string show(const ColorMatrix& m)
 {
   std::ostringstream out;
-  out << m;
+  out << m.em();
   return out.str();
 }
 
 inline void unitarize(ColorMatrix& cm)
 {
-  cm.row(0).normalize();
-  cm.row(2) = cm.row(1) - cm.row(0).dot(cm.row(1)) * cm.row(0);
-  cm.row(1) = cm.row(2).normalized();
-  cm.row(2) = cm.row(0).cross(cm.row(1));
+  cm.em().row(0).normalize();
+  cm.em().row(2) = cm.em().row(1) - cm.em().row(0).dot(cm.em().row(1)) * cm.em().row(0);
+  cm.em().row(1) = cm.em().row(2).normalized();
+  cm.em().row(2) = cm.em().row(0).cross(cm.em().row(1));
 }
 
 inline ColorMatrix make_anti_hermitian_matrix(const Array<double, 8> a)
 {
   qassert(3 == NUM_COLOR);
   ColorMatrix m;
-  Array<double,18> p((double*)&m);
+  Array<double,18> p(m.d());
   const double s3 = 0.5773502691896258 * a[7];       // 1/sqrt(3) = 0.5773502691896258;
   p[0 ] =  0.0;
   p[8 ] =  0.0;

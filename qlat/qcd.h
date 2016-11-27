@@ -63,8 +63,8 @@ inline double gf_avg_plaq_no_comm(const GaugeField& gf)
       double avg_plaq = 0.0;
       for (int m1 = 1; m1 < DIM; ++m1) {
         for (int m2 = 0; m2 < m1; ++m2) {
-          ColorMatrix cm = v[m1] * vms[m1][m2] * (v[m2] * vms[m2][m1]).adjoint();
-          avg_plaq += cm.trace().real() / NUM_COLOR;
+          ColorMatrix cm = v[m1] * vms[m1][m2] * matrix_adjoint(v[m2] * vms[m2][m1]);
+          avg_plaq += matrix_trace(cm).real() / NUM_COLOR;
           if (isnan(avg_plaq)) {
             fdisplayln(stdout, ssprintf("WARNING: isnan in gf_avg_plaq"));
             qassert(false);
@@ -109,7 +109,7 @@ inline double gf_avg_link_trace(const GaugeField& gf)
       const Vector<ColorMatrix> v = gf.get_elems_const(xl);
       double avg_link_trace = 0.0;
       for (int m = 0; m < DIM; ++m) {
-        avg_link_trace += v[m].trace().real() / NUM_COLOR;
+        avg_link_trace += matrix_trace(v[m]).real() / NUM_COLOR;
       }
       avg_link_trace /= DIM;
       sum_avg_link_trace += avg_link_trace;

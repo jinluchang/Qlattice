@@ -49,7 +49,7 @@ inline void make_apply_gauge_transformation_no_comm(GaugeField& gf, const GaugeF
     for (int m = 0; m < DIM; ++m) {
       xl[m] += 1;
       const ColorMatrix& t1 = gt.get_elem(xl);
-      v[m] = t0 * v0[m] * t1.adjoint();
+      v[m] = t0 * v0[m] * matrix_adjoint(t1);
       xl[m] -= 1;
     }
   }

@@ -71,7 +71,7 @@ inline ColorMatrix gf_avg_wilson_line(const GaugeField& gf, const std::vector<in
         const ColorMatrix& link = gf1.get_elem(xl, -dir-1);
         xl[-dir-1] += 1;
         const ColorMatrix& l0 = wlf0.get_elem(xl);
-        l1 = l0 * link.adjoint();
+        l1 = l0 * matrix_adjoint(link);
       }
     }
     wlf0 = wlf1;
