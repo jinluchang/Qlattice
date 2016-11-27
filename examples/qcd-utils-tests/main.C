@@ -40,6 +40,9 @@ void simple_tests()
   make_apply_gauge_transformation(gf, gf, gt);
   displayln_info(shows("plaq : ") + show(gf_avg_plaq(gf)));
   displayln_info(shows("trace: ") + show(gf_avg_link_trace(gf)));
+  gf_ape_smear(gf, gf, 0.1);
+  displayln_info(shows("plaq : ") + show(gf_avg_plaq(gf)));
+  displayln_info(shows("trace: ") + show(gf_avg_link_trace(gf)));
 }
 
 int main(int argc, char* argv[])

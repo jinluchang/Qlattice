@@ -34,26 +34,32 @@ struct Field
   }
   virtual void init(const Geometry& geo_)
   {
-    init();
-    geo = geo_;
-    field.resize(geo.local_volume_expanded() * geo.multiplicity);
-    set_zero(*this);
-    initialized = true;
+    if (!initialized) {
+      init();
+      geo = geo_;
+      field.resize(geo.local_volume_expanded() * geo.multiplicity);
+      set_zero(*this);
+      initialized = true;
+    }
   }
   virtual void init(const Geometry& geo_, const int multiplicity_)
   {
-    init();
-    geo = geo_remult(geo_, multiplicity_);
-    field.resize(geo.local_volume_expanded() * geo.multiplicity);
-    set_zero(*this);
-    initialized = true;
+    if (!initialized) {
+      init();
+      geo = geo_remult(geo_, multiplicity_);
+      field.resize(geo.local_volume_expanded() * geo.multiplicity);
+      set_zero(*this);
+      initialized = true;
+    }
   }
   virtual void init(const Field& f)
   {
-    init();
-    geo = f.geo;
-    field = f.field;
-    initialized = true;
+    if (!initialized) {
+      init();
+      geo = f.geo;
+      field = f.field;
+      initialized = true;
+    }
   }
   //
   Field()

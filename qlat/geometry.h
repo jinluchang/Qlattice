@@ -35,26 +35,30 @@ struct Geometry
   }
   void init(const Coordinate total_site, const int multiplicity_)
   {
-    init();
-    geon = get_geometry_node();
-    multiplicity = multiplicity_;
-    for (int i = 0; i < DIM; ++i) {
-      qassert(0 == total_site[i] % geon.size_node[i]);
-      node_site[i] = total_site[i] / geon.size_node[i];
+    if (!initialized) {
+      init();
+      geon = get_geometry_node();
+      multiplicity = multiplicity_;
+      for (int i = 0; i < DIM; ++i) {
+        qassert(0 == total_site[i] % geon.size_node[i]);
+        node_site[i] = total_site[i] / geon.size_node[i];
+      }
+      reset_node_site_expanded();
+      initialized = true;
     }
-    reset_node_site_expanded();
-    initialized = true;
   }
   void init(const GeometryNode& geon_,
       const int multiplicity_,
       const Coordinate& node_site_)
   {
-    init();
-    geon = geon_;
-    multiplicity = multiplicity_;
-    node_site = node_site_;
-    reset_node_site_expanded();
-    initialized = true;
+    if (!initialized) {
+      init();
+      geon = geon_;
+      multiplicity = multiplicity_;
+      node_site = node_site_;
+      reset_node_site_expanded();
+      initialized = true;
+    }
   }
   //
   void remult(const int multiplicity_) {

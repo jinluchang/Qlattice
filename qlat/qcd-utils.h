@@ -39,6 +39,71 @@ inline void set_g_rand_color_matrix_field(Field<ColorMatrix>& fc, const RngState
   }
 }
 
+inline ColorMatrix gf_wilson_line_no_comm(const GaugeField& gf, const Coordinate& xl, const std::vector<int>& path)
+{
+  ColorMatrix ret;
+  set_unit(ret);
+  Coordinate xl1 = xl;
+  for (int i = 0; i < path.size(); ++i) {
+    const int dir = path[i];
+    qassert(-DIM <= dir && dir < DIM);
+    if (0 <= dir) {
+      ret *= gf.get_elem(xl1,dir);
+      xl1[dir] += 1;
+    } else {
+      xl1[-dir-1] -= 1;
+      ret *= matrix_adjoint(gf.get_elem(xl1, -dir-1));
+    }
+  }
+  return ret;
+}
+
+inline ColorMatrix gf_staple_no_comm(const GaugeField& gf, const Coordinate& xl, const int mu)
+{
+  ColorMatrix ret;
+  set_zero(ret);
+  std::vector<int> path(3);
+  path[1] = mu;
+  for (int m = 0; m < DIM; ++m) {
+    if (mu != m) {
+      path[0] = m;
+      path[2] = -m-1;
+      ret += gf_wilson_line_no_comm(gf, xl, path);
+    }
+  }
+  for (int m = 0; m < DIM; ++m) {
+    if (mu != m) {
+      path[0] = -m-1;
+      path[2] = m;
+      ret += gf_wilson_line_no_comm(gf, xl, path);
+    }
+  }
+  return ret;
+}
+
+inline ColorMatrix gf_staple_no_comm_v1(const GaugeField& gf, const Coordinate& xl, const int mu)
+{
+  ColorMatrix ret;
+  set_zero(ret);
+  Coordinate xlmu = xlmu;
+  xlmu[mu] += 1;
+  Coordinate xlm = xl;
+  Coordinate xlmum = xl;
+  xlmum[mu] += 1;
+  for (int m = 0; m < DIM; ++m) {
+    if (mu != m) {
+      xlm[m] += 1;
+      ret += gf.get_elem(xl, m) * gf.get_elem(xlm, mu) * matrix_adjoint(gf.get_elem(xlmu, m));
+      xlm[m] -= 2;
+      xlmum[m] -= 1;
+      ret += matrix_adjoint(gf.get_elem(xlm, m)) * gf.get_elem(xlm, mu) * gf.get_elem(xlmum, m);
+      xlmum[m] += 1;
+      xlm[m] += 1;
+    }
+  }
+  return ret;
+}
+
 inline ColorMatrix gf_avg_wilson_line(const GaugeField& gf, const std::vector<int>& path)
 {
   TIMER("gf_avg_wilson_line");

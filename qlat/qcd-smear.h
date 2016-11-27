@@ -1,6 +1,8 @@
 #pragma once
 
 #include <qlat/matrix.h>
+#include <qlat/qcd.h>
+#include <qlat/qcd-utils.h>
 
 QLAT_START_NAMESPACE
 
@@ -77,6 +79,35 @@ ColorMatrix color_matrix_su_projection(const ColorMatrix& x, const double tolera
     qassert(i < max_iter - 1);
   }
   return y;
+}
+
+inline void gf_ape_smear_no_comm(GaugeField& gf, const GaugeField& gf0, const double alpha)
+{
+  TIMER_VERBOSE("gf_ape_smear_no_comm");
+  qassert(&gf != &gf0);
+  const Geometry& geo = gf0.geo;
+  gf.init(geo_resize(geo));
+  qassert(is_matching_geo_mult(geo, gf.geo));
+#pragma omp parallel for
+  for (long index = 0; index < geo.local_volume(); ++index) {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    Vector<ColorMatrix> v = gf.get_elems(xl);
+    const Vector<ColorMatrix> v0 = gf0.get_elems_const(xl);
+    for (int mu = 0; mu < DIM; ++mu) {
+      v[mu] = (1.0-alpha) * v0[mu] + alpha/6.0 * gf_staple_no_comm(gf0, xl, mu);
+      v[mu] = color_matrix_su_projection(v[mu]);
+    }
+  }
+}
+
+inline void gf_ape_smear(GaugeField& gf, const GaugeField& gf0, const double alpha)
+{
+  TIMER_VERBOSE("gf_ape_smear");
+  GaugeField gf1;
+  gf1.init(geo_resize(gf0.geo, 1));
+  gf1 = gf0;
+  refresh_expanded(gf1);
+  gf_ape_smear_no_comm(gf, gf1, alpha);
 }
 
 QLAT_END_NAMESPACE
