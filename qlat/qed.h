@@ -243,7 +243,7 @@ inline SpinMatrix contract_spin_propagator4d(const SpinPropagator4d& snk, const 
 #pragma omp for nowait
     for (long index = 0; index < geo.local_volume(); ++index) {
       Coordinate xl = geo.coordinate_from_index(index);
-      psum += snk.get_elem(xl).adjoint() * src.get_elem(xl);
+      psum += matrix_adjoint(snk.get_elem(xl)) * src.get_elem(xl);
     }
     for (int i = 0; i < omp_get_num_threads(); ++i) {
 #pragma omp barrier

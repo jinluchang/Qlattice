@@ -51,6 +51,30 @@ struct Matrix
     *this = *this + x;
     return *this;
   }
+  //
+  const Matrix& operator-=(const Matrix& x)
+  {
+    *this = *this - x;
+    return *this;
+  }
+  //
+  const Matrix& operator*=(const Matrix& x)
+  {
+    *this = *this * x;
+    return *this;
+  }
+  //
+  const Matrix& operator*=(const Complex& x)
+  {
+    *this = *this * x;
+    return *this;
+  }
+  //
+  const Matrix& operator/=(const Complex& x)
+  {
+    *this = *this / x;
+    return *this;
+  }
 };
 
 template <int DIM>
@@ -102,17 +126,46 @@ Matrix<DIM> operator/(const Matrix<DIM>& x, const Complex& y)
 }
 
 template <int DIM>
-Matrix<DIM> matrix_adjoint(const Matrix<DIM>& x)
+void set_zero(Matrix<DIM>& m)
 {
-  Matrix<DIM> ret;
-  ret.em() = x.em().adjoint();
-  return ret;
+  memset(&m, 0, sizeof(Matrix<DIM>));
+}
+
+template <int DIM>
+void set_unit(Matrix<DIM>& m, const Complex& coef = 1.0)
+{
+  set_zero(m);
+  for (int i = 0; i < m.dim; ++i) {
+    m(i,i) = coef;
+  }
+}
+
+template <int DIM>
+double norm(const Matrix<DIM>& m)
+{
+  return m.em().squaredNorm();
 }
 
 template <int DIM>
 Complex matrix_trace(const Matrix<DIM>& x)
 {
   return x.em().trace();
+}
+
+template <int DIM>
+std::string show(const Matrix<DIM>& m)
+{
+  std::ostringstream out;
+  out << m.em();
+  return out.str();
+}
+
+template <int DIM>
+Matrix<DIM> matrix_adjoint(const Matrix<DIM>& x)
+{
+  Matrix<DIM> ret;
+  ret.em() = x.em().adjoint();
+  return ret;
 }
 
 struct ColorMatrix : Matrix<NUM_COLOR>
@@ -131,31 +184,6 @@ struct ColorMatrix : Matrix<NUM_COLOR>
     return *this;
   }
 };
-
-inline void set_zero(ColorMatrix& m)
-{
-  memset(&m, 0, sizeof(ColorMatrix));
-}
-
-inline void set_unit(ColorMatrix& m, const Complex& coef = 1.0)
-{
-  set_zero(m);
-  for (int i = 0; i < m.dim; ++i) {
-    m(i,i) = coef;
-  }
-}
-
-inline double norm(const ColorMatrix& m)
-{
-  return m.em().squaredNorm();
-}
-
-inline std::string show(const ColorMatrix& m)
-{
-  std::ostringstream out;
-  out << m.em();
-  return out.str();
-}
 
 inline void unitarize(ColorMatrix& cm)
 {
@@ -217,59 +245,39 @@ inline ColorMatrix make_color_matrix_exp(const ColorMatrix& a)
   return t3;
 }
 
-typedef Eigen::Matrix<Complex,4*NUM_COLOR,4*NUM_COLOR,Eigen::RowMajor> WilsonMatrix;
-
-inline void set_zero(WilsonMatrix& m)
+struct WilsonMatrix : Matrix<4*NUM_COLOR>
 {
-  m.setZero();
-}
-
-inline void set_unit(WilsonMatrix& m, const Complex& coef = 1.0)
-{
-  set_zero(m);
-  for (int i = 0; i < m.rows() && i < m.cols(); ++i) {
-    m(i,i) = coef;
+  WilsonMatrix()
+  {
   }
-}
-
-inline double norm(const WilsonMatrix& m)
-{
-  return m.squaredNorm();
-}
-
-inline std::string show(const WilsonMatrix& m)
-{
-  std::ostringstream out;
-  out << m;
-  return out.str();
-}
-
-typedef Eigen::Matrix<Complex,4,4,Eigen::RowMajor> SpinMatrix;
-
-inline void set_zero(SpinMatrix& m)
-{
-  m.setZero();
-}
-
-inline void set_unit(SpinMatrix& m, const Complex& coef = 1.0)
-{
-  set_zero(m);
-  for (int i = 0; i < m.rows() && i < m.cols(); ++i) {
-    m(i,i) = coef;
+  WilsonMatrix(const Matrix<4*NUM_COLOR>& m)
+  {
+    *this = m;
   }
-}
+  //
+  const WilsonMatrix& operator=(const Matrix<4*NUM_COLOR>& m)
+  {
+    *this = (const WilsonMatrix&)m;
+    return *this;
+  }
+};
 
-inline double norm(const SpinMatrix& m)
+struct SpinMatrix : Matrix<4>
 {
-  return m.squaredNorm();
-}
-
-inline std::string show(const SpinMatrix& m)
-{
-  std::ostringstream out;
-  out << m;
-  return out.str();
-}
+  SpinMatrix()
+  {
+  }
+  SpinMatrix(const Matrix<4>& m)
+  {
+    *this = m;
+  }
+  //
+  const SpinMatrix& operator=(const Matrix<4>& m)
+  {
+    *this = (const SpinMatrix&)m;
+    return *this;
+  }
+};
 
 struct SpinMatrixConstants
 {
@@ -287,25 +295,25 @@ struct SpinMatrixConstants
   //
   void init()
   {
-    unit <<
+    unit.em() <<
         1,   0,   0,   0,
         0,   1,   0,   0,
         0,   0,   1,   0,
         0,   0,   0,   1;
     // gamma_x
-    gammas[0] <<
+    gammas[0].em() <<
         0,   0,   0,   1,
         0,   0,   1,   0,
         0,  -1,   0,   0,
        -1,   0,   0,   0;
     // gamma_y
-    gammas[1] <<
+    gammas[1].em() <<
         0,   0,   0, -ii,
         0,   0,  ii,   0,
         0,  ii,   0,   0,
       -ii,   0,   0,   0;
     // gamma_z
-    gammas[2] <<
+    gammas[2].em() <<
         0,   0,   1,   0,
         0,   0,   0,  -1,
        -1,   0,   0,   0,
@@ -314,31 +322,31 @@ struct SpinMatrixConstants
     gammas[1] *= -ii;
     gammas[2] *= -ii;
     // gamma_t
-    gammas[3] <<
+    gammas[3].em() <<
         0,   0,   1,   0,
         0,   0,   0,   1,
         1,   0,   0,   0,
         0,   1,   0,   0;
     // gamma_5
-    gamma5 <<
+    gamma5.em() <<
         1,   0,   0,   0,
         0,   1,   0,   0,
         0,   0,  -1,   0,
         0,   0,   0,  -1;
     // Sigma_x
-    cap_sigmas[0] <<
+    cap_sigmas[0].em() <<
         0,   1,   0,   0,
         1,   0,   0,   0,
         0,   0,   0,   1,
         0,   0,   1,   0;
     // Sigma_y
-    cap_sigmas[1] <<
+    cap_sigmas[1].em() <<
         0, -ii,   0,   0,
        ii,   0,   0,   0,
         0,   0,   0, -ii,
         0,   0,  ii,   0;
     // Sigma_z
-    cap_sigmas[2] <<
+    cap_sigmas[2].em() <<
         1,   0,   0,   0,
         0,  -1,   0,   0,
         0,   0,   1,   0,
