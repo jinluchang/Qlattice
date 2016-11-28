@@ -209,22 +209,22 @@ struct TimerInfo
     call_times = 0;
   }
   //
-  void show_last(const char* info = NULL) const
+  void show_last(const char* info = NULL, const int fname_len = 30) const
   {
     double total_time = get_total_time();
     std::string fnameCut;
     fnameCut.assign(fname, 0, 30);
     displayln_info(
-        ssprintf("Timer::%s %30s :%5.1f%% %8d calls %.3E sec %8.3f Gflops (%.3E flops)",
+        ssprintf("Timer::%s %s :%5.1f%% %8d calls %.3E sec %8.3f Gflops (%.3E flops)",
           NULL == info ? "" : info,
-          fnameCut.c_str(),
+          ssprintf(ssprintf("%%%ds", fname_len).c_str(), fnameCut.c_str()).c_str(),
           accumulated_time / total_time * 100, call_times,
           dtime,
           dflops / dtime / 1.0E9,
           (double)dflops));
   }
   //
-  void show_avg(const char* info = NULL) const
+  void show_avg(const char* info = NULL, const int fname_len = 30) const
   {
     double total_time = get_total_time();
     std::string fnameCut;
@@ -232,7 +232,7 @@ struct TimerInfo
     displayln_info(
         ssprintf("Timer::%s %30s :%7.3f%% %8d calls; %.2E,%.2E sec; %.2E,%.2E flops; %5.2f Gflops",
           NULL == info ? "" : info,
-          fnameCut.c_str(),
+          ssprintf(ssprintf("%%%ds", fname_len).c_str(), fnameCut.c_str()).c_str(),
           accumulated_time / total_time * 100, call_times,
           accumulated_time / call_times,
           accumulated_time,
@@ -287,6 +287,12 @@ struct Timer
   {
     static int max_call_times = 10;
     return max_call_times;
+  }
+  //
+  static int& max_function_name_length_shown()
+  {
+    static int max_len = 30;
+    return max_len;
   }
   //
   Timer()
@@ -354,7 +360,7 @@ struct Timer
     TimerInfo& info = get_timer_database()[info_index];
     info.call_times++;
     if (verbose || info.call_times <= max_call_times_for_always_show_info() || info.dtime >= minimum_duration_for_show_start_info()) {
-      info.show_last("start");
+      info.show_last("start", max_function_name_length_shown());
     }
     start_flops = is_using_total_flops ? get_total_flops() : 0 ;
     flops = 0;
@@ -377,7 +383,7 @@ struct Timer
     info.accumulated_time += info.dtime;
     info.accumulated_flops += info.dflops;
     if (verbose || info.call_times <= max_call_times_for_always_show_info() || info.dtime >= minimum_duration_for_show_stop_info()) {
-      info.show_last("stop ");
+      info.show_last("stop ", max_function_name_length_shown());
     }
     autodisplay(stop_time);
   }
@@ -417,7 +423,7 @@ struct Timer
           str.c_str()));
     const int dbsize = db.size();
     for (int i = 0; i < dbsize; i++) {
-      db[i]->show_avg("display");
+      db[i]->show_avg("display", max_function_name_length_shown());
     }
     displayln_info(ssprintf(
           "Timer::display-end:   %s --------------------- total %.4E sec ----------------------",
