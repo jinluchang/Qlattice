@@ -283,6 +283,12 @@ struct Timer
     return time;
   }
   //
+  static int& max_call_times_for_always_show_info()
+  {
+    static int max_call_times = 10;
+    return max_call_times;
+  }
+  //
   Timer()
   {
     init();
@@ -347,7 +353,7 @@ struct Timer
     }
     TimerInfo& info = get_timer_database()[info_index];
     info.call_times++;
-    if (verbose || info.call_times == 1 || info.dtime >= minimum_duration_for_show_start_info()) {
+    if (verbose || info.call_times <= max_call_times_for_always_show_info() || info.dtime >= minimum_duration_for_show_start_info()) {
       info.show_last("start");
     }
     start_flops = is_using_total_flops ? get_total_flops() : 0 ;
@@ -370,7 +376,7 @@ struct Timer
     info.dflops = stop_flops - start_flops;
     info.accumulated_time += info.dtime;
     info.accumulated_flops += info.dflops;
-    if (verbose || info.call_times == 1 || info.dtime >= minimum_duration_for_show_stop_info()) {
+    if (verbose || info.call_times <= max_call_times_for_always_show_info() || info.dtime >= minimum_duration_for_show_stop_info()) {
       info.show_last("stop ");
     }
     autodisplay(stop_time);
