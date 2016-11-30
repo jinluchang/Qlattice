@@ -150,18 +150,35 @@ inline FILE* qopen_info(const std::string& path, const std::string& mode)
   }
 }
 
-inline void qclose(FILE* file)
+inline int qclose(FILE* file)
 {
   TIMER("qclose");
   if (NULL != file) {
-    fclose(file);
+    return fclose(file);
   }
+  return 0;
 }
 
-inline void qclose_info(FILE* file)
+inline int qclose_info(FILE* file)
 {
   TIMER("qclose_info");
-  qclose(file);
+  return qclose(file);
+}
+
+inline int qrename(const std::string& old_path, const std::string& new_path)
+{
+  TIMER("qrename");
+  return rename(old_path.c_str(), new_path.c_str());
+}
+
+inline int qrename_info(const std::string& old_path, const std::string& new_path)
+{
+  TIMER("qrename_info");
+  if (0 == get_id_node()) {
+    return qrename(old_path, new_path);
+  } else {
+    return 0;
+  }
 }
 
 QLAT_END_NAMESPACE
