@@ -166,7 +166,6 @@ inline std::vector<int> make_wilson_line_path(const int l1, const int l2, const 
 inline ColorMatrix gf_avg_wilson_loop(const GaugeField& gf, const int l, const int t)
 {
   TIMER("gf_avg_wilson_loop");
-  displayln_info(ssprintf("%s: l=%3d; t=%3d.", fname, l, t));
   ColorMatrix m =
     gf_avg_wilson_line(gf, make_wilson_line_path(l, t, 0, 3)) +
     gf_avg_wilson_line(gf, make_wilson_line_path(l, t, 1, 3)) +
