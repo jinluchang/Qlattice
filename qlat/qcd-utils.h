@@ -52,13 +52,31 @@ inline ColorMatrix gf_wilson_line_no_comm(const GaugeField& gf, const Coordinate
       xl1[dir] += 1;
     } else {
       xl1[-dir-1] -= 1;
-      ret *= matrix_adjoint(gf.get_elem(xl1, -dir-1));
+      ret *= matrix_adjoint(gf.get_elem(xl1,-dir-1));
     }
   }
   return ret;
 }
 
-inline ColorMatrix gf_staple_no_comm(const GaugeField& gf, const Coordinate& xl, const int mu)
+inline ColorMatrix gf_staple_no_comm_v1(const GaugeField& gf, const Coordinate& xl, const int mu)
+{
+  ColorMatrix ret;
+  set_zero(ret);
+  const Coordinate xl_mu = coordinate_shifts(xl,mu);
+  for (int m = 0; m < DIM; ++m) {
+    if (mu != m) {
+      ret += gf.get_elem(xl, m) *
+        gf.get_elem(coordinate_shifts(xl,m), mu) *
+        matrix_adjoint(gf.get_elem(xl_mu, m));
+      ret += matrix_adjoint(gf.get_elem(coordinate_shifts(xl,-m-1), m)) *
+        gf.get_elem(coordinate_shifts(xl,-m-1), mu) *
+        gf.get_elem(coordinate_shifts(xl_mu,-m-1), m);
+    }
+  }
+  return ret;
+}
+
+inline ColorMatrix gf_staple_no_comm_v2(const GaugeField& gf, const Coordinate& xl, const int mu)
 {
   ColorMatrix ret;
   set_zero(ret);
@@ -81,27 +99,10 @@ inline ColorMatrix gf_staple_no_comm(const GaugeField& gf, const Coordinate& xl,
   return ret;
 }
 
-inline ColorMatrix gf_staple_no_comm_v1(const GaugeField& gf, const Coordinate& xl, const int mu)
+inline ColorMatrix gf_staple_no_comm(const GaugeField& gf, const Coordinate& xl, const int mu)
 {
-  ColorMatrix ret;
-  set_zero(ret);
-  Coordinate xlmu = xlmu;
-  xlmu[mu] += 1;
-  Coordinate xlm = xl;
-  Coordinate xlmum = xl;
-  xlmum[mu] += 1;
-  for (int m = 0; m < DIM; ++m) {
-    if (mu != m) {
-      xlm[m] += 1;
-      ret += gf.get_elem(xl, m) * gf.get_elem(xlm, mu) * matrix_adjoint(gf.get_elem(xlmu, m));
-      xlm[m] -= 2;
-      xlmum[m] -= 1;
-      ret += matrix_adjoint(gf.get_elem(xlm, m)) * gf.get_elem(xlm, mu) * gf.get_elem(xlmum, m);
-      xlmum[m] += 1;
-      xlm[m] += 1;
-    }
-  }
-  return ret;
+  return gf_staple_no_comm_v1(gf, xl, mu);
+  // return gf_staple_no_comm_v2(gf, xl, mu);
 }
 
 inline ColorMatrix gf_avg_wilson_line(const GaugeField& gf, const std::vector<int>& path)
