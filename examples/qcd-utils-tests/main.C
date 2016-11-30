@@ -10,7 +10,8 @@ void simple_tests()
 {
   TIMER_VERBOSE("simple_tests");
   RngState rs(get_global_rng_state(), fname);
-  const Coordinate total_site(16, 16, 16, 32);
+  // const Coordinate total_site(16, 16, 16, 32);
+  const Coordinate total_site(8, 8, 8, 8);
   Geometry geo;
   geo.init(total_site, 1);
   GaugeField gf;
@@ -41,6 +42,9 @@ void simple_tests()
   displayln_info(shows("plaq : ") + show(gf_avg_plaq(gf)));
   displayln_info(shows("trace: ") + show(gf_avg_link_trace(gf)));
   gf_ape_smear(gf, gf, 0.1);
+  displayln_info(shows("plaq : ") + show(gf_avg_plaq(gf)));
+  displayln_info(shows("trace: ") + show(gf_avg_link_trace(gf)));
+  gf_hyp_smear(gf, gf, 0.75, 0.6, 0.3);
   displayln_info(shows("plaq : ") + show(gf_avg_plaq(gf)));
   displayln_info(shows("trace: ") + show(gf_avg_link_trace(gf)));
 }
