@@ -324,7 +324,7 @@ void sophisticated_serial_read(qlat::Field<M> &destination,
 			M *ptr = get_data(field_send).data();
 			long size = sizeof(M) * geo_only_local.local_volume() 
 													* geo_only_local.multiplicity;
-			qassert(!fseek(inputFile, size * get_id_node(), SEEK_CUR));
+			assert(!fseek(inputFile, size * get_id_node(), SEEK_CUR));
 			timer_fread((char*)ptr, size, inputFile);
 			std::cout << "Reading FINISHED: Node Number =\t" 
 				<< get_id_node() << std::endl;
