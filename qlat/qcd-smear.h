@@ -78,6 +78,7 @@ ColorMatrix color_matrix_su_projection(const ColorMatrix& x, const double tolera
     }
     qassert(i < max_iter - 1);
   }
+  unitarize(y);
   return y;
 }
 
@@ -164,7 +165,7 @@ inline ColorMatrix gf_link_hyp_smear_1_no_comm(const GaugeField& gf, const Coord
   for (int m = 0; m < DIM; ++m) {
     if (mu != m) {
       ret += gf_link_hyp_smear_2_no_comm(gf, xl, m, mu, alpha2, alpha3) *
-        gf_link_hyp_smear_2_no_comm(gf,coordinate_shifts(xl, m), mu, m, alpha2, alpha3) *
+        gf_link_hyp_smear_2_no_comm(gf, coordinate_shifts(xl, m), mu, m, alpha2, alpha3) *
         matrix_adjoint(gf_link_hyp_smear_2_no_comm(gf, xl_mu, m, mu, alpha2, alpha3));
       ret += matrix_adjoint(gf_link_hyp_smear_2_no_comm(gf, coordinate_shifts(xl,-m-1), m, mu, alpha2, alpha3)) *
         gf_link_hyp_smear_2_no_comm(gf, coordinate_shifts(xl,-m-1), mu, m, alpha2, alpha3) *
