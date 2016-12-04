@@ -52,7 +52,7 @@ struct Field
       initialized = true;
     }
   }
-  virtual void init(const Field& f)
+  virtual void init(const Field<M>& f)
   {
     if (!initialized) {
       init();
@@ -62,16 +62,17 @@ struct Field
     }
   }
   //
-  Field()
+  Field<M>()
   {
     init();
   }
-  Field(const Field& f)
+  Field<M>(const Field<M>& f)
   {
-    qassert(false);
+    qassert(false == f.initialized);
+    init();
   }
   //
-  const Field& operator=(const Field& f)
+  const Field<M>& operator=(const Field<M>& f)
   {
     TIMER("Field::operator=");
     qassert(is_matching_geo_mult(geo, f.geo));
@@ -274,13 +275,19 @@ struct FieldM : Field<M>
     Field<M>::init(f);
   }
   //
-  FieldM()
+  FieldM<M,multiplicity>()
   {
     init();
   }
-  FieldM(const FieldM<M,multiplicity>& f)
+  FieldM<M,multiplicity>(const Field<M>& f)
   {
-    qassert(false);
+    qassert(false == f.initialized);
+    init();
+  }
+  FieldM<M,multiplicity>(const FieldM<M,multiplicity>& f)
+  {
+    qassert(false == f.initialized);
+    init();
   }
 };
 

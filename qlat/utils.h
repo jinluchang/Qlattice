@@ -93,6 +93,68 @@ bool operator==(const std::vector<M>& x, const std::vector<M>& y)
   return x.size() == y.size() && 0 == memcmp(x.data(), y.data(), x.size() * sizeof(M));
 }
 
+template <class M>
+struct Handle
+{
+  M* p;
+  //
+  Handle<M>()
+  {
+    p = NULL;
+  }
+  Handle<M>(M& obj)
+  {
+    init(obj);
+  }
+  //
+  void init(M& obj)
+  {
+    p = (M*)&obj;
+  }
+  //
+  bool null() const
+  {
+    return p == NULL;
+  }
+  //
+  M& operator()() const
+  {
+    qassert(NULL != p);
+    return *p;
+  }
+};
+
+template <class M>
+struct ConstHandle
+{
+  const M* p;
+  //
+  ConstHandle<M>()
+  {
+    p = NULL;
+  }
+  ConstHandle<M>(const M& obj)
+  {
+    init(obj);
+  }
+  //
+  void init(const M& obj)
+  {
+    p = (M*)&obj;
+  }
+  //
+  bool null() const
+  {
+    return p == NULL;
+  }
+  //
+  const M& operator()() const
+  {
+    qassert(NULL != p);
+    return *p;
+  }
+};
+
 template <class M> struct Vector;
 
 template <class M, int N>

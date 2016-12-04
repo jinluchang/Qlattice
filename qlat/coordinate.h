@@ -163,6 +163,17 @@ inline Coordinate coordinate_shifts(const Coordinate& x, const int dir1, const i
   return xsh;
 }
 
+inline Coordinate coordinate_shifts(const Coordinate& x, const std::vector<int> path)
+{
+  Coordinate ret = x;
+  for (int i = 0; i < path.size(); ++i) {
+    const int dir = path[i];
+    qassert(-DIM <= dir && dir < DIM);
+    ret = coordinate_shifts(ret, dir);
+  }
+  return ret;
+}
+
 template<class CharT, class Traits>
 std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& os, 
                    const Coordinate coor){
