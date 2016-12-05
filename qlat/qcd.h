@@ -133,7 +133,7 @@ inline void load_gauge_field(GaugeField& gf, const std::string& path)
   const Geometry& geo = gf.geo;
   FieldM<std::array<Complex, 6>, 4> gft;
   gft.init(geo);
-  sophisticated_serial_read(gft, path, 1);
+  field_import_serial(gft, path, -get_data_size(gft) * get_num_node(), SEEK_END);
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     Coordinate xl = geo.coordinate_from_index(index);

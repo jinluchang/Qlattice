@@ -397,4 +397,3 @@ void sophisticated_serial_read(qlat::Field<M> &destination,
 }
 
 QLAT_END_NAMESPACE
-

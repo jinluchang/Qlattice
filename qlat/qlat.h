@@ -10,7 +10,7 @@
 #include <qlat/field-fft.h>
 #include <qlat/field-rng.h>
 #include <qlat/field-comm.h>
-#include <qlat/field-io.h>
+#include <qlat/field-serial-io.h>
 #include <qlat/field-expand.h>
 #include <qlat/qed.h>
 #include <qlat/qcd.h>
