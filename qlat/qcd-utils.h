@@ -381,7 +381,7 @@ inline WilsonLinePath make_wilson_loop_path(const Coordinate& target_l, const in
 
 inline ColorMatrix gf_avg_wilson_loop(const GaugeField& gf, const int l, const int t)
 {
-  TIMER("gf_avg_wilson_loop");
+  TIMER_VERBOSE("gf_avg_wilson_loop");
   ColorMatrix m =
     gf_avg_wilson_line(gf, make_wilson_loop_path(Coordinate(l, 0, 0, 0), t)) +
     gf_avg_wilson_line(gf, make_wilson_loop_path(Coordinate(0, l, 0, 0), t)) +
