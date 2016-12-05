@@ -209,11 +209,11 @@ struct TimerInfo
     call_times = 0;
   }
   //
-  void show_last(const char* info = NULL, const int fname_len = 30) const
+  void show_last(const char* info, const int fname_len) const
   {
     double total_time = get_total_time();
     std::string fnameCut;
-    fnameCut.assign(fname, 0, 30);
+    fnameCut.assign(fname, 0, fname_len);
     displayln_info(
         ssprintf("Timer::%s %s :%5.1f%% %8d calls %.3E sec %8.3f Gflops (%.3E flops)",
           NULL == info ? "" : info,
@@ -224,13 +224,13 @@ struct TimerInfo
           (double)dflops));
   }
   //
-  void show_avg(const char* info = NULL, const int fname_len = 30) const
+  void show_avg(const char* info, const int fname_len) const
   {
     double total_time = get_total_time();
     std::string fnameCut;
-    fnameCut.assign(fname, 0, 30);
+    fnameCut.assign(fname, 0, fname_len);
     displayln_info(
-        ssprintf("Timer::%s %30s :%7.3f%% %8d calls; %.2E,%.2E sec; %.2E,%.2E flops; %5.2f Gflops",
+        ssprintf("Timer::%s %s :%7.3f%% %8d calls; %.2E,%.2E sec; %.2E,%.2E flops; %5.2f Gflops",
           NULL == info ? "" : info,
           ssprintf(ssprintf("%%%ds", fname_len).c_str(), fnameCut.c_str()).c_str(),
           accumulated_time / total_time * 100, call_times,

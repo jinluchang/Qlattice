@@ -54,16 +54,21 @@ inline Coordinate operator*(const Coordinate &coor1, const Coordinate &coor2)
 				coor1[2] * coor2[2], coor1[3] * coor2[3]);
 }
 
+inline Coordinate operator+(const Coordinate &coor1, const Coordinate &coor2)
+{
+	return Coordinate(coor1[0] + coor2[0], coor1[1] + coor2[1],
+				coor1[2] + coor2[2], coor1[3] + coor2[3]);
+}
+
 inline Coordinate operator-(const Coordinate &coor1, const Coordinate &coor2)
 {
 	return Coordinate(coor1[0] - coor2[0], coor1[1] - coor2[1],
 				coor1[2] - coor2[2], coor1[3] - coor2[3]);
 }
 
-inline Coordinate operator+(const Coordinate &coor1, const Coordinate &coor2)
+inline Coordinate operator-(const Coordinate &coor)
 {
-	return Coordinate(coor1[0] + coor2[0], coor1[1] + coor2[1],
-				coor1[2] + coor2[2], coor1[3] + coor2[3]);
+	return Coordinate(-coor[0], -coor[1], -coor[2], -coor[3]);
 }
 
 inline void regularize(Coordinate &coor, const Coordinate &regularizer)

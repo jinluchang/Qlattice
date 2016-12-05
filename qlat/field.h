@@ -165,7 +165,7 @@ void swap(Field<M>& f1, Field<M>& f2)
 template <class M>
 const Field<M>& operator+=(Field<M>& f, const Field<M>& f1)
 {
-  TIMER("fieldOperator");
+  TIMER("field_operator");
   qassert(is_matching_geo_mult(f.geo, f1.geo));
   const Geometry& geo = f.geo;
 #pragma omp parallel for
@@ -181,7 +181,7 @@ const Field<M>& operator+=(Field<M>& f, const Field<M>& f1)
 template <class M>
 const Field<M>& operator-=(Field<M>& f, const Field<M>& f1)
 {
-  TIMER("fieldOperator");
+  TIMER("field_operator");
   qassert(is_matching_geo_mult(f.geo, f1.geo));
   const Geometry& geo = f.geo;
 #pragma omp parallel for
@@ -197,7 +197,7 @@ const Field<M>& operator-=(Field<M>& f, const Field<M>& f1)
 template <class M>
 const Field<M>& operator*=(Field<M>& f, const double factor)
 {
-  TIMER("fieldOperator");
+  TIMER("field_operator");
   const Geometry& geo = f.geo;
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); index++) {
@@ -212,7 +212,7 @@ const Field<M>& operator*=(Field<M>& f, const double factor)
 template <class M>
 const Field<M>& operator*=(Field<M>& f, const Complex factor)
 {
-  TIMER("fieldOperator");
+  TIMER("field_operator");
   const Geometry& geo = f.geo;
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); index++) {

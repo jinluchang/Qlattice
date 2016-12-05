@@ -12,6 +12,7 @@ void simple_tests()
   RngState rs(get_global_rng_state(), fname);
   // const Coordinate total_site(16, 16, 16, 32);
   const Coordinate total_site(8, 8, 8, 8);
+  // const Coordinate total_site(4, 4, 4, 4);
   Geometry geo;
   geo.init(total_site, 1);
   GaugeField gf;
@@ -45,7 +46,7 @@ void simple_tests()
 
 int main(int argc, char* argv[])
 {
-  Timer::max_call_times_for_always_show_info() = 0;
+  Timer::max_function_name_length_shown() = 50;
   begin(&argc, &argv);
   get_global_rng_state() = RngState(get_global_rng_state(), "qcd-utils-tests");
   simple_tests();
