@@ -435,7 +435,7 @@ inline std::vector<Coordinate> spatial_permute_direction(const Coordinate& l)
 
 inline ColorMatrix gf_avg_wilson_loop(const GaugeField& gf, const Coordinate& l, const int t)
 {
-  TIMER("gf_avg_wilson_loop");
+  TIMER_VERBOSE("gf_avg_wilson_loop(Coordinate& l)");
   ColorMatrix m;
   set_zero(m);
   std::vector<Coordinate> cs = spatial_permute_direction(l);
