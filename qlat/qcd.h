@@ -65,7 +65,7 @@ inline double gf_avg_plaq_no_comm(const GaugeField& gf)
         for (int m2 = 0; m2 < m1; ++m2) {
           ColorMatrix cm = v[m1] * vms[m1][m2] * matrix_adjoint(v[m2] * vms[m2][m1]);
           avg_plaq += matrix_trace(cm).real() / NUM_COLOR;
-          if (isnan(avg_plaq)) {
+          if (std::isnan(avg_plaq)) {
             fdisplayln(stdout, ssprintf("WARNING: isnan in gf_avg_plaq"));
             qassert(false);
           }
