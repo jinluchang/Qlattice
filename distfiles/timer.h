@@ -496,9 +496,9 @@ inline void timer_free(void* ptr)
   free(ptr);
 }
 
-inline void tmalloc(size_t size)
+inline void* tmalloc(size_t size)
 {
-  timer_malloc(size);
+  return timer_malloc(size);
 }
 
 inline void tfree(void* ptr)
