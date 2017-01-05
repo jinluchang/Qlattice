@@ -105,7 +105,7 @@ inline void GeometryNode::init()
     // qassert(coor_node_check[i] == coor_node[i]);
   }
   qassert(size_node[0] * size_node[1] * size_node[2] * size_node[3] == num_node);
-  Display(cname, "GeometryNode::init()", "id_node = %5d ; coor_node = %s\n", id_node, show(coor_node).c_str());
+  displayln(ssprintf("qlat::GeometryNode::init() : id_node = %5d ; coor_node = %s\n", id_node, show(coor_node).c_str()));
   qassert(id_node_from_coor_node(coor_node) == id_node);
 #else
   num_node = 1;
@@ -356,8 +356,21 @@ inline void bcast(Vector<M> recv, const int root = 0)
 
 inline void sync_node()
 {
-  long v;
+  long v = 1;
   glb_sum(Vector<long>(&v,1));
+}
+
+inline void display_geo_node()
+{
+  TIMER("display_geo_node");
+  const GeometryNode& geon = get_geometry_node();
+  for (int i = 0; i < geon.num_node; ++i) {
+    if (i == geon.id_node) {
+      displayln(std::string(fname) + " : "
+          + ssprintf("id_node = %5d ; coor_node = %s", geon.id_node, show(geon.coor_node).c_str()));
+    }
+    sync_node();
+  }
 }
 
 inline Coordinate plan_size_node(const int num_node)
@@ -392,6 +405,7 @@ inline void begin(const MPI_Comm& comm, const Coordinate& size_node)
   sync_node();
   DisplayInfo(cname, "begin", "MPI Cart created. GeometryNode =\n%s\n", show(geon).c_str());
   sync_node();
+  display_geo_node();
 }
 
 inline void begin(int* argc, char** argv[], const Coordinate& size_node)
@@ -399,6 +413,7 @@ inline void begin(int* argc, char** argv[], const Coordinate& size_node)
 {
   init_mpi(argc, argv);
   begin(MPI_COMM_WORLD, size_node);
+  display_geo_node();
 }
 
 inline void begin(int* argc, char** argv[])
@@ -406,6 +421,7 @@ inline void begin(int* argc, char** argv[])
 {
   int num_node = init_mpi(argc, argv);
   begin(MPI_COMM_WORLD, plan_size_node(num_node));
+  display_geo_node();
 }
 
 inline void end()
