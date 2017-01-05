@@ -181,4 +181,18 @@ inline int qrename_info(const std::string& old_path, const std::string& new_path
   }
 }
 
+inline void display_info(const std::string& str, FILE* fp = NULL)
+{
+  if (0 == get_id_node()) {
+    display(str, fp);
+  }
+}
+
+inline void displayln_info(const std::string& str, FILE* fp = NULL)
+{
+  if (0 == get_id_node()) {
+    displayln(str, fp);
+  }
+}
+
 QLAT_END_NAMESPACE

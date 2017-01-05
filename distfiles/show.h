@@ -111,20 +111,38 @@ inline FILE*& get_output_file()
   return out;
 }
 
+inline FILE*& get_monitor_file()
+{
+  static FILE* out = NULL;
+  return out;
+}
+
 inline void display(const std::string& str, FILE* fp = NULL)
 {
   if (NULL == fp) {
+    fp = get_monitor_file();
+    if (NULL != fp) {
+      fprintf(fp, "%s", str.c_str());
+    }
     fp = get_output_file();
   }
-  fprintf(fp, "%s", str.c_str());
+  if (NULL != fp) {
+    fprintf(fp, "%s", str.c_str());
+  }
 }
 
 inline void displayln(const std::string& str, FILE* fp = NULL)
 {
   if (NULL == fp) {
+    fp = get_monitor_file();
+    if (NULL != fp) {
+      fprintf(fp, "%s\n", str.c_str());
+    }
     fp = get_output_file();
   }
-  fprintf(fp, "%s\n", str.c_str());
+  if (NULL != fp) {
+    fprintf(fp, "%s\n", str.c_str());
+  }
 }
 
 //////////////////////////////////////////////////////////////////
