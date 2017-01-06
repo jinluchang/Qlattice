@@ -415,7 +415,6 @@ inline void begin(int* argc, char** argv[], const Coordinate& size_node)
 {
   init_mpi(argc, argv);
   begin(MPI_COMM_WORLD, size_node);
-  display_geometry_node();
 }
 
 inline void begin(int* argc, char** argv[])
@@ -423,7 +422,6 @@ inline void begin(int* argc, char** argv[])
 {
   int num_node = init_mpi(argc, argv);
   begin(MPI_COMM_WORLD, plan_size_node(num_node));
-  display_geometry_node();
 }
 
 inline void end()
