@@ -295,6 +295,10 @@ inline void set_multiply_simple_wilson_line_field_partial_comm(FieldM<ColorMatri
 }
 
 inline void set_multiply_wilson_line_field_partial_comm(FieldM<ColorMatrix,1>& wlf, FieldM<ColorMatrix,1>& wlf1, const GaugeField& gf1, const WilsonLinePathSegment& path)
+  // gf1 need to be refresh_expanded.
+  // wlf1 need to have correct size
+  // wlf1 will be modified
+  // wlf will be initialized
 {
   TIMER("set_multiply_wilson_line_field_partial_comm");
   WilsonLinePathSegment pacc = path;
@@ -322,22 +326,22 @@ inline void set_multiply_wilson_line_field_partial_comm(FieldM<ColorMatrix,1>& w
           wlf = fs[i];
           return;
         }
-        wlf1 = fs[i];
         for (int k = 0; k < ps.paths.size(); ++k) {
+          wlf1 = fs[i];
           const Coordinate nc = coordinate_shifts(c, ps.paths[k]);
-          set_multiply_simple_wilson_line_field_partial_comm(wlf, wlf1, gf1, ps.paths[k]);
+          pacc.stops[nc].num_origins -= 1;
           Handle<FieldM<ColorMatrix,1> > hf;
           if (dict.find(nc) == dict.end()) {
             cs.push_back(nc);
-            fs[cs.size()-1].init(geo);
-            set_zero(fs[cs.size()-1]);
             dict[nc] = cs.size()-1;
-            hf.init(fs[cs.size()-1]);
-          } else {
             hf.init(fs[dict[nc]]);
+            set_multiply_simple_wilson_line_field_partial_comm(hf(), wlf1, gf1, ps.paths[k]);
+          } else {
+            set_multiply_simple_wilson_line_field_partial_comm(wlf, wlf1, gf1, ps.paths[k]);
+            hf.init(fs[dict[nc]]);
+            hf() += wlf;
           }
-          hf() += wlf;
-          pacc.stops[nc].num_origins -= 1;
+          qassert(cs[dict[nc]] == nc);
         }
         fs[i].init();
       }
@@ -435,7 +439,7 @@ inline std::vector<Coordinate> spatial_permute_direction(const Coordinate& l)
 
 inline ColorMatrix gf_avg_wilson_loop(const GaugeField& gf, const Coordinate& l, const int t)
 {
-  TIMER_VERBOSE("gf_avg_wilson_loop(Coordinate& l)");
+  TIMER_VERBOSE("gf_avg_wilson_loop(Coordinate&)");
   ColorMatrix m;
   set_zero(m);
   std::vector<Coordinate> cs = spatial_permute_direction(l);
