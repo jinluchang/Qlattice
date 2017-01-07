@@ -150,16 +150,18 @@ inline FILE* qopen_info(const std::string& path, const std::string& mode)
   }
 }
 
-inline int qclose(FILE* file)
+inline int qclose(FILE*& file)
 {
   TIMER("qclose");
   if (NULL != file) {
-    return fclose(file);
+    FILE* tmp_file = file;
+    file = NULL;
+    return fclose(tmp_file);
   }
   return 0;
 }
 
-inline int qclose_info(FILE* file)
+inline int qclose_info(FILE*& file)
 {
   TIMER("qclose_info");
   return qclose(file);
