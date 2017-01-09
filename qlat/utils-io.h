@@ -183,4 +183,22 @@ inline int qrename_info(const std::string& old_path, const std::string& new_path
   }
 }
 
+inline int qtouch(const std::string& path, const std::string& content = "")
+{
+  TIMER("qtouch");
+  FILE* file = qopen(path, "w");
+  display(content, file);
+  return qclose(file);
+}
+
+inline int qtouch_info(const std::string& path, const std::string& content = "")
+{
+  TIMER("qtouch_info");
+  if (0 == get_id_node()) {
+    return qtouch(path, content);
+  } else {
+    return 0;
+  }
+}
+
 QLAT_END_NAMESPACE
