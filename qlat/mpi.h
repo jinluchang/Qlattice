@@ -3,8 +3,6 @@
 #include <qlat/config.h>
 #include <qlat/utils.h>
 
-#include <timer.h>
-
 #include <array>
 
 QLAT_START_NAMESPACE
@@ -135,7 +133,7 @@ inline const GeometryNode& get_geometry_node()
 
 std::string show(const GeometryNode& geon) {
   std::string s;
-  s += ssprintf("{ initialized = %s\n", ::show(geon.initialized).c_str());
+  s += ssprintf("{ initialized = %s\n", show(geon.initialized).c_str());
   s += ssprintf(", num_node    = %d\n", geon.num_node);
   s += ssprintf(", id_node     = %d\n", geon.id_node);
   s += ssprintf(", size_node   = %s\n", show(geon.size_node).c_str());

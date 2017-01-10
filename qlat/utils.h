@@ -4,8 +4,6 @@
 
 #include <qlat/config.h>
 
-#include <show.h>
-
 #include <endian.h>
 
 #include <array>

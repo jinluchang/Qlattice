@@ -452,20 +452,20 @@ inline ColorMatrix gf_avg_wilson_loop(const GaugeField& gf, const Coordinate& l,
 void gf_show_info(const GaugeField& gf, const int level = 0)
 {
   TIMER_VERBOSE("gf_show_info");
-  displayln_info(shows("plaq : ") + ::show(gf_avg_plaq(gf)));
-  displayln_info(shows("trace: ") + ::show(gf_avg_link_trace(gf)));
+  displayln_info(shows("plaq : ") + show(gf_avg_plaq(gf)));
+  displayln_info(shows("trace: ") + show(gf_avg_link_trace(gf)));
   if (0 < level) {
-    displayln_info(shows("plaq 1x1 : ") + ::show(matrix_trace(gf_avg_wilson_loop(gf, 1, 1)).real() / 3.0));
-    displayln_info(shows("plaq 1x2 : ") + ::show(matrix_trace(gf_avg_wilson_loop(gf, 1, 2)).real() / 3.0));
-    displayln_info(shows("plaq 2x1 : ") + ::show(matrix_trace(gf_avg_wilson_loop(gf, 2, 1)).real() / 3.0));
-    displayln_info(shows("plaq 2x2 : ") + ::show(matrix_trace(gf_avg_wilson_loop(gf, 2, 2)).real() / 3.0));
-    displayln_info(shows("plaq 1x3 : ") + ::show(matrix_trace(gf_avg_wilson_loop(gf, 1, 3)).real() / 3.0));
-    displayln_info(shows("plaq 3x1 : ") + ::show(matrix_trace(gf_avg_wilson_loop(gf, 3, 1)).real() / 3.0));
-    displayln_info(shows("plaq 2x3 : ") + ::show(matrix_trace(gf_avg_wilson_loop(gf, 2, 3)).real() / 3.0));
-    displayln_info(shows("plaq 3x2 : ") + ::show(matrix_trace(gf_avg_wilson_loop(gf, 3, 2)).real() / 3.0));
-    displayln_info(shows("plaq 3x3 : ") + ::show(matrix_trace(gf_avg_wilson_loop(gf, 3, 3)).real() / 3.0));
-    displayln_info(shows("plaq (1,1,0,0)x2 : ") + ::show(matrix_trace(gf_avg_wilson_loop(gf, Coordinate(1,1,0,0), 2)).real() / 3.0));
-    displayln_info(shows("plaq (2,1,0,0)x1 : ") + ::show(matrix_trace(gf_avg_wilson_loop(gf, Coordinate(1,1,0,0), 1)).real() / 3.0));
+    displayln_info(shows("plaq 1x1 : ") + show(matrix_trace(gf_avg_wilson_loop(gf, 1, 1)).real() / 3.0));
+    displayln_info(shows("plaq 1x2 : ") + show(matrix_trace(gf_avg_wilson_loop(gf, 1, 2)).real() / 3.0));
+    displayln_info(shows("plaq 2x1 : ") + show(matrix_trace(gf_avg_wilson_loop(gf, 2, 1)).real() / 3.0));
+    displayln_info(shows("plaq 2x2 : ") + show(matrix_trace(gf_avg_wilson_loop(gf, 2, 2)).real() / 3.0));
+    displayln_info(shows("plaq 1x3 : ") + show(matrix_trace(gf_avg_wilson_loop(gf, 1, 3)).real() / 3.0));
+    displayln_info(shows("plaq 3x1 : ") + show(matrix_trace(gf_avg_wilson_loop(gf, 3, 1)).real() / 3.0));
+    displayln_info(shows("plaq 2x3 : ") + show(matrix_trace(gf_avg_wilson_loop(gf, 2, 3)).real() / 3.0));
+    displayln_info(shows("plaq 3x2 : ") + show(matrix_trace(gf_avg_wilson_loop(gf, 3, 2)).real() / 3.0));
+    displayln_info(shows("plaq 3x3 : ") + show(matrix_trace(gf_avg_wilson_loop(gf, 3, 3)).real() / 3.0));
+    displayln_info(shows("plaq (1,1,0,0)x2 : ") + show(matrix_trace(gf_avg_wilson_loop(gf, Coordinate(1,1,0,0), 2)).real() / 3.0));
+    displayln_info(shows("plaq (2,1,0,0)x1 : ") + show(matrix_trace(gf_avg_wilson_loop(gf, Coordinate(1,1,0,0), 1)).real() / 3.0));
   }
 }
 

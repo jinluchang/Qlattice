@@ -7,8 +7,6 @@
 #include <qlat/mpi.h>
 #include <qlat/geometry.h>
 
-#include <timer.h>
-
 #include <omp.h>
 
 #include <stdio.h>

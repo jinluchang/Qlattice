@@ -4,18 +4,22 @@
 
 #include <cmath>
 
-QLAT_START_NAMESPACE
+namespace std {
 
-template <class M, long unsigned int N>
-inline bool isnan(const std::array<M,N>& arr)
-{
-  for (int i = 0; i < (int)N; ++i) {
-    if (std::isnan(arr[i])) {
-      return true;
+  template <class M, unsigned long N>
+  inline bool isnan(const array<M,N>& arr)
+  {
+    for (int i = 0; i < (int)N; ++i) {
+      if (isnan(arr[i])) {
+        return true;
+      }
     }
+    return false;
   }
-  return false;
+
 }
+
+QLAT_START_NAMESPACE
 
 struct CoordinateD : public std::array<double,DIM>
 {
