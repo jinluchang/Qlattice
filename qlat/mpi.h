@@ -131,16 +131,6 @@ inline const GeometryNode& get_geometry_node()
   return geon;
 }
 
-std::string show(const GeometryNode& geon) {
-  std::string s;
-  s += ssprintf("{ initialized = %s\n", show(geon.initialized).c_str());
-  s += ssprintf(", num_node    = %d\n", geon.num_node);
-  s += ssprintf(", id_node     = %d\n", geon.id_node);
-  s += ssprintf(", size_node   = %s\n", show(geon.size_node).c_str());
-  s += ssprintf(", coor_node   = %s }", show(geon.coor_node).c_str());
-  return s;
-}
-
 inline int get_num_node()
 {
   return get_geometry_node().num_node;
@@ -373,6 +363,26 @@ inline void display_geometry_node()
   sync_node();
 }
 
+QLAT_END_NAMESPACE
+
+namespace qshow {
+
+inline std::string show(const qlat::GeometryNode& geon) {
+  std::string s;
+  s += ssprintf("{ initialized = %s\n", show(geon.initialized).c_str());
+  s += ssprintf(", num_node    = %d\n", geon.num_node);
+  s += ssprintf(", id_node     = %d\n", geon.id_node);
+  s += ssprintf(", size_node   = %s\n", show(geon.size_node).c_str());
+  s += ssprintf(", coor_node   = %s }", show(geon.coor_node).c_str());
+  return s;
+}
+
+}
+
+QLAT_START_NAMESPACE
+
+using namespace qshow;
+
 inline Coordinate plan_size_node(const int num_node)
 {
   // assuming MPI is initialized ... 
@@ -429,3 +439,4 @@ inline void end()
 }
 
 QLAT_END_NAMESPACE
+

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <qlat/rng-state.h>
 #include <eigen3/Eigen/Eigen>
 
 #include <cmath>
@@ -150,14 +149,6 @@ template <int DIM>
 Complex matrix_trace(const Matrix<DIM>& x)
 {
   return x.em().trace();
-}
-
-template <int DIM>
-std::string show(const Matrix<DIM>& m)
-{
-  std::ostringstream out;
-  out << m.em();
-  return out.str();
 }
 
 template <int DIM>
@@ -379,3 +370,19 @@ struct SpinMatrixConstants
 };
 
 QLAT_END_NAMESPACE
+
+namespace qshow {
+
+template <int DIM>
+std::string show(const qlat::Matrix<DIM>& m)
+{
+  std::ostringstream out;
+  out << m.em();
+  return out.str();
+}
+
+}
+
+#ifndef USE_NAMESPACE
+using namespace qshow;
+#endif

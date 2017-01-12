@@ -52,11 +52,6 @@ struct CoordinateD : public std::array<double,DIM>
   }
 };
 
-inline std::string show(const CoordinateD& c)
-{
-  return ssprintf("(%23.16e,%23.16e,%23.16e,%23.16e)", c[0], c[1], c[2], c[3]);
-}
-
 inline double coordinate_len(const CoordinateD& c)
 {
   const double ans = std::sqrt(sqr(c[0]) + sqr(c[1]) + sqr(c[2]) + sqr(c[3]));
@@ -109,3 +104,16 @@ inline double dot_product(const CoordinateD& c1, const CoordinateD& c2)
 }
 
 QLAT_END_NAMESPACE
+
+namespace qshow {
+
+inline std::string show(const qlat::CoordinateD& c)
+{
+  return ssprintf("(%23.16e,%23.16e,%23.16e,%23.16e)", c[0], c[1], c[2], c[3]);
+}
+
+}
+
+#ifndef USE_NAMESPACE qshow;
+using namespace qshow;
+#endif

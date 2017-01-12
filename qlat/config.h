@@ -13,10 +13,9 @@
 #define USE_MULTI_NODE
 #endif
 
-#define CURRENT_DEFAULT_NAMESPACE_NAME qlat
-#include <qlat/show.h>
-#include <qlat/timer.h>
-#include <qlat/rng-state.h>
+#include <show.h>
+#include <timer.h>
+#include <rng-state.h>
 
 // #define SKIP_ASSERT
 

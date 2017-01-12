@@ -3,8 +3,6 @@
 #include <qlat/config.h>
 #include <qlat/field.h>
 
-#include <qlat/rng-state.h>
-
 QLAT_START_NAMESPACE
 
 struct RngField : FieldM<RngState,1>

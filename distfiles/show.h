@@ -26,9 +26,7 @@
 #include <cstdio>
 #include <sstream>
 
-#ifdef CURRENT_DEFAULT_NAMESPACE_NAME
-namespace CURRENT_DEFAULT_NAMESPACE_NAME {
-#endif
+namespace qshow {
 
 inline std::string vssprintf(const char* fmt, va_list args)
 {
@@ -157,6 +155,8 @@ inline void fdisplayln(FILE* fp, const std::string& str)
   fprintf(fp, "%s\n", str.c_str());
 }
 
-#ifdef CURRENT_DEFAULT_NAMESPACE_NAME
 }
+
+#ifndef USE_NAMESPACE
+using namespace qshow;
 #endif

@@ -11,6 +11,7 @@ QLAT_LIB=$(qlat_prefix)/lib
 QLAT_CFLAGS=-fno-strict-aliasing
 QLAT_CFLAGS+= -I$(QLAT_INCLUDE)
 QLAT_CFLAGS+= -I$(QLAT_INCLUDE)/eigen3
+QLAT_CFLAGS+= -I$(QLAT_INCLUDE)/utils
 
 QLAT_CXXFLAGS=$(QLAT_CFLAGS)
 

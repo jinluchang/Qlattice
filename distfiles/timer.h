@@ -47,55 +47,29 @@
 #include <mpi.h>
 #endif
 
-#ifdef CURRENT_DEFAULT_NAMESPACE_NAME
-
 #define TIMER(FNAME) \
   static const char* fname = FNAME; \
-  static CURRENT_DEFAULT_NAMESPACE_NAME::Timer timer(fname); \
-  CURRENT_DEFAULT_NAMESPACE_NAME::TimerCtrl timerctrl(timer);
+  static qtimer::Timer timer(fname); \
+  qtimer::TimerCtrl timerctrl(timer);
 
 #define TIMER_VERBOSE(FNAME) \
   static const char* fname = FNAME; \
-  static CURRENT_DEFAULT_NAMESPACE_NAME::Timer timer(fname); \
-  CURRENT_DEFAULT_NAMESPACE_NAME::TimerCtrl timerctrl(timer, true);
+  static qtimer::Timer timer(fname); \
+  qtimer::TimerCtrl timerctrl(timer, true);
 
 #define TIMER_FLOPS(FNAME) \
   static const char* fname = FNAME; \
-  static CURRENT_DEFAULT_NAMESPACE_NAME::Timer timer(fname, false); \
-  CURRENT_DEFAULT_NAMESPACE_NAME::TimerCtrl timerctrl(timer); \
+  static qtimer::Timer timer(fname, false); \
+  qtimer::TimerCtrl timerctrl(timer);
 
 #define TIMER_VERBOSE_FLOPS(FNAME) \
   static const char* fname = FNAME; \
-  static CURRENT_DEFAULT_NAMESPACE_NAME::Timer timer(fname, false); \
-  CURRENT_DEFAULT_NAMESPACE_NAME::TimerCtrl timerctrl(timer, true); \
+  static qtimer::Timer timer(fname, false); \
+  qtimer::TimerCtrl timerctrl(timer, true);
 
-#else
+namespace qtimer {
 
-#define TIMER(FNAME) \
-  static const char* fname = FNAME; \
-  static Timer timer(fname); \
-  TimerCtrl timerctrl(timer);
-
-#define TIMER_VERBOSE(FNAME) \
-  static const char* fname = FNAME; \
-  static Timer timer(fname); \
-  TimerCtrl timerctrl(timer, true);
-
-#define TIMER_FLOPS(FNAME) \
-  static const char* fname = FNAME; \
-  static Timer timer(fname, false); \
-  TimerCtrl timerctrl(timer); \
-
-#define TIMER_VERBOSE_FLOPS(FNAME) \
-  static const char* fname = FNAME; \
-  static Timer timer(fname, false); \
-  TimerCtrl timerctrl(timer, true); \
-
-#endif
-
-#ifdef CURRENT_DEFAULT_NAMESPACE_NAME
-namespace CURRENT_DEFAULT_NAMESPACE_NAME {
-#endif
+using namespace qshow;
 
 inline double get_time()
 {
@@ -532,7 +506,8 @@ inline void DisplayInfo(const char* cname, const char* fname, const char* format
   std::free(str);
 }
 
-#ifdef CURRENT_DEFAULT_NAMESPACE_NAME
 }
-#endif
 
+#ifndef USE_NAMESPACE
+using namespace qtimer;
+#endif
