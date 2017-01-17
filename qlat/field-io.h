@@ -28,16 +28,19 @@ public:
 		os = &std::cout;
 	}
 };
+
 template<class T>
 const rePort& operator<<(const rePort &p, const T &data){
 	if(get_id_node() == 0) *(p.os) << data;
 	return p;
 }
-const rePort& operator<<(const rePort &p, std::ostream &(*func)(std::ostream&)){
+
+inline const rePort& operator<<(const rePort &p, std::ostream &(*func)(std::ostream&)){
 	if(get_id_node() == 0) *(p.os) << func;
 	return p;
 }
-static const rePort report;
+
+// static const rePort report;
 
 inline std::string str_printf(const char *format, ...){
 	char cstr[512];
@@ -243,7 +246,7 @@ void sophisticated_serial_write(const qlat::Field<M> &origin,
 
 	if(get_id_node() == 0) fclose(outputFile);
     
-	report << "Export file CLOSED" << std::endl;
+	displayln("Export file CLOSED");
 
 	sync_node();
 }
