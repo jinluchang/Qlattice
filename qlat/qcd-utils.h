@@ -449,7 +449,7 @@ inline ColorMatrix gf_avg_wilson_loop(const GaugeField& gf, const Coordinate& l,
   return m;
 }
 
-void gf_show_info(const GaugeField& gf, const int level = 0)
+inline void gf_show_info(const GaugeField& gf, const int level = 0)
 {
   TIMER_VERBOSE("gf_show_info");
   displayln_info(shows("plaq : ") + show(gf_avg_plaq(gf)));

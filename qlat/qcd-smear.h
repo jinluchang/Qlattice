@@ -6,7 +6,7 @@
 
 QLAT_START_NAMESPACE
 
-ColorMatrix color_matrix_sub_inverse(const ColorMatrix& x, const int ind)
+inline ColorMatrix color_matrix_sub_inverse(const ColorMatrix& x, const int ind)
   // get su2 submatrix of x and return the su3 matrix that
   // has the inverse of this matrix in the relevant row and column
 {
@@ -44,7 +44,7 @@ ColorMatrix color_matrix_sub_inverse(const ColorMatrix& x, const int ind)
   return y;
 }
 
-ColorMatrix color_matrix_su_projection(const ColorMatrix& x, const double tolerance = 1.0e-8)
+inline ColorMatrix color_matrix_su_projection(const ColorMatrix& x, const double tolerance = 1.0e-8)
 {
   // usually takes ~5 hits, so just exit
   // if hits the max, as something is

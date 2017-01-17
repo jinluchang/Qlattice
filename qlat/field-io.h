@@ -146,7 +146,7 @@ std::string field_hash_crc32(const qlat::Field<M> &origin){
 	return crc32.getHash();			
 }
 
-void timer_fwrite(char* ptr, long size, FILE *outputFile){
+inline void timer_fwrite(char* ptr, long size, FILE *outputFile){
 	TIMER("timer_fwrite");
 	fwrite(ptr, size, 1, outputFile);
 }
@@ -258,7 +258,7 @@ void sophisticated_serial_write(const qlat::Field<M> &origin,
 //	return "NOT IMPLEMENTED.";
 // }
 
-void timer_fread(char* ptr, long size, FILE *inputFile){
+inline void timer_fread(char* ptr, long size, FILE *inputFile){
 	TIMER_VERBOSE("timer_fread");
 	fread(ptr, size, 1, inputFile);
 }
