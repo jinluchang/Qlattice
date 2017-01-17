@@ -488,7 +488,7 @@ inline void Display(const char* cname, const char* fname, const char* format, ..
   va_start(args, format);
   char* str;
   vasprintf(&str, format, args);
-  std::fprintf(get_output_file(), "%s::%s : %s", cname, fname, str);
+  display(ssprintf("%s::%s : %s", cname, fname, str));
   std::free(str);
 }
 
@@ -502,7 +502,7 @@ inline void DisplayInfo(const char* cname, const char* fname, const char* format
   va_start(args, format);
   char* str;
   vasprintf(&str, format, args);
-  std::fprintf(get_output_file(), "%s::%s : %s", cname, fname, str);
+  display_info(ssprintf("%s::%s : %s", cname, fname, str));
   std::free(str);
 }
 
