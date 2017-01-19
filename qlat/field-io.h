@@ -82,6 +82,14 @@ inline int Fflush(FILE *pFile){
 	}
 }
 
+inline bool Is_not_null(FILE *pFile){
+    if(!get_id_node()){
+        return pFile != NULL;
+    }else{
+        return false;
+    }
+}
+
 template<class M, class N>
 void castTruncated(M &x, const N &y)
 {
