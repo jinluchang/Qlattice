@@ -61,8 +61,7 @@ inline double sqr(double x) {
 void test3()
 {
   TIMER("test3");
-  RngState rs(0);
-  reset(rs, 123123);
+  RngState rs(123123);
   const int Nb = 128;
   const int Ni = 8;
   const int Ndrop = 1024;
@@ -73,13 +72,42 @@ void test3()
     Complex a = 0;
     for (int id = 0; id < Ni; id++) {
       int index = block * Ni + id;
-      // Comment out the line below to see the correct result
       reset(rs, index);
       for (int i = 0; i < Ndrop; i++) {
         u_rand_gen(rs);
       }
       for (int i = 0; i < Ntake; i++) {
         a += polar(1.0, u_rand_gen(rs, PI,-PI));
+      }
+    }
+    sum += norm(a);
+    sigma2 += sqr(norm(a));
+  }
+  cout << "Expected : " << Ni * Ntake << endl;
+  cout << "Mean     : " << sum / Nb << endl;
+  cout << "Var      : " << sqrt(sigma2 / Nb - sqr(sum / Nb)) / sqrt(Nb-1) << endl;
+}
+
+void test4()
+{
+  TIMER("test4");
+  RngState rs(get_global_rng_state(), "test4");
+  const int Nb = 128;
+  const int Ni = 8;
+  const int Ndrop = 1024;
+  const int Ntake = 8;
+  double sum = 0;
+  double sigma2 = 0;
+  for (int block = 0; block < Nb; block++) {
+    Complex a = 0;
+    for (int id = 0; id < Ni; id++) {
+      int index = block * Ni + id;
+      RngState rsi = rs.newtype(index);
+      for (int i = 0; i < Ndrop; i++) {
+        u_rand_gen(rsi);
+      }
+      for (int i = 0; i < Ntake; i++) {
+        a += polar(1.0, u_rand_gen(rsi, PI,-PI));
       }
     }
     sum += norm(a);
@@ -131,12 +159,14 @@ void profileOmp()
 int main(int argc, char* argv[])
 {
   begin(&argc, &argv);
+  reset(get_global_rng_state(), "rng-state-tests");
   if (get_id_node() == 0) {
     cout << "sizeof RngState = " << sizeof(RngState) << endl;
     test1();
     test2();
     test2a();
     test3();
+    test4();
     profileOmp();
     profile();
   }

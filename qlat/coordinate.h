@@ -54,16 +54,21 @@ inline Coordinate operator*(const Coordinate &coor1, const Coordinate &coor2)
 				coor1[2] * coor2[2], coor1[3] * coor2[3]);
 }
 
+inline Coordinate operator+(const Coordinate &coor1, const Coordinate &coor2)
+{
+	return Coordinate(coor1[0] + coor2[0], coor1[1] + coor2[1],
+				coor1[2] + coor2[2], coor1[3] + coor2[3]);
+}
+
 inline Coordinate operator-(const Coordinate &coor1, const Coordinate &coor2)
 {
 	return Coordinate(coor1[0] - coor2[0], coor1[1] - coor2[1],
 				coor1[2] - coor2[2], coor1[3] - coor2[3]);
 }
 
-inline Coordinate operator+(const Coordinate &coor1, const Coordinate &coor2)
+inline Coordinate operator-(const Coordinate &coor)
 {
-	return Coordinate(coor1[0] + coor2[0], coor1[1] + coor2[1],
-				coor1[2] + coor2[2], coor1[3] + coor2[3]);
+	return Coordinate(-coor[0], -coor[1], -coor[2], -coor[3]);
 }
 
 inline void regularize(Coordinate &coor, const Coordinate &regularizer)
@@ -72,6 +77,106 @@ inline void regularize(Coordinate &coor, const Coordinate &regularizer)
 	for(int mu = 0; mu < DIM; mu++){
 	coor[mu] = (coor[mu] % regularizer[mu] + regularizer[mu]) % regularizer[mu];
 	}
+}
+
+inline Coordinate coordinate_shifts(const Coordinate& x)
+{
+  return x;
+}
+
+inline Coordinate coordinate_shifts(const Coordinate& x, const int dir)
+{
+  Coordinate xsh = x;
+  qassert(-DIM <= dir && dir < DIM);
+  if (0 <= dir) {
+    xsh[dir] += 1;
+  } else {
+    xsh[-dir-1] -= 1;
+  }
+  return xsh;
+}
+
+inline Coordinate coordinate_shifts(const Coordinate& x, const int dir1, const int dir2)
+{
+  Coordinate xsh = x;
+  qassert(-DIM <= dir1 && dir1 < DIM);
+  qassert(-DIM <= dir2 && dir2 < DIM);
+  if (0 <= dir1) {
+    xsh[dir1] += 1;
+  } else {
+    xsh[-dir1-1] -= 1;
+  }
+  if (0 <= dir2) {
+    xsh[dir2] += 1;
+  } else {
+    xsh[-dir2-1] -= 1;
+  }
+  return xsh;
+}
+
+inline Coordinate coordinate_shifts(const Coordinate& x, const int dir1, const int dir2, const int dir3)
+{
+  Coordinate xsh = x;
+  qassert(-DIM <= dir1 && dir1 < DIM);
+  qassert(-DIM <= dir2 && dir2 < DIM);
+  qassert(-DIM <= dir3 && dir3 < DIM);
+  if (0 <= dir1) {
+    xsh[dir1] += 1;
+  } else {
+    xsh[-dir1-1] -= 1;
+  }
+  if (0 <= dir2) {
+    xsh[dir2] += 1;
+  } else {
+    xsh[-dir2-1] -= 1;
+  }
+  if (0 <= dir3) {
+    xsh[dir3] += 1;
+  } else {
+    xsh[-dir3-1] -= 1;
+  }
+  return xsh;
+}
+
+inline Coordinate coordinate_shifts(const Coordinate& x, const int dir1, const int dir2, const int dir3, const int dir4)
+{
+  Coordinate xsh = x;
+  qassert(-DIM <= dir1 && dir1 < DIM);
+  qassert(-DIM <= dir2 && dir2 < DIM);
+  qassert(-DIM <= dir3 && dir3 < DIM);
+  qassert(-DIM <= dir4 && dir4 < DIM);
+  if (0 <= dir1) {
+    xsh[dir1] += 1;
+  } else {
+    xsh[-dir1-1] -= 1;
+  }
+  if (0 <= dir2) {
+    xsh[dir2] += 1;
+  } else {
+    xsh[-dir2-1] -= 1;
+  }
+  if (0 <= dir3) {
+    xsh[dir3] += 1;
+  } else {
+    xsh[-dir3-1] -= 1;
+  }
+  if (0 <= dir4) {
+    xsh[dir4] += 1;
+  } else {
+    xsh[-dir4-1] -= 1;
+  }
+  return xsh;
+}
+
+inline Coordinate coordinate_shifts(const Coordinate& x, const std::vector<int> path)
+{
+  Coordinate ret = x;
+  for (int i = 0; i < path.size(); ++i) {
+    const int dir = path[i];
+    qassert(-DIM <= dir && dir < DIM);
+    ret = coordinate_shifts(ret, dir);
+  }
+  return ret;
 }
 
 template<class CharT, class Traits>

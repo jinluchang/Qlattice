@@ -26,9 +26,7 @@
 #include <cstdio>
 #include <sstream>
 
-#ifdef CURRENT_DEFAULT_NAMESPACE_NAME
-namespace CURRENT_DEFAULT_NAMESPACE_NAME {
-#endif
+namespace qshow {
 
 inline std::string vssprintf(const char* fmt, va_list args)
 {
@@ -111,20 +109,38 @@ inline FILE*& get_output_file()
   return out;
 }
 
+inline FILE*& get_monitor_file()
+{
+  static FILE* out = NULL;
+  return out;
+}
+
 inline void display(const std::string& str, FILE* fp = NULL)
 {
   if (NULL == fp) {
+    fp = get_monitor_file();
+    if (NULL != fp) {
+      fprintf(fp, "%s", str.c_str());
+    }
     fp = get_output_file();
   }
-  fprintf(fp, "%s", str.c_str());
+  if (NULL != fp) {
+    fprintf(fp, "%s", str.c_str());
+  }
 }
 
 inline void displayln(const std::string& str, FILE* fp = NULL)
 {
   if (NULL == fp) {
+    fp = get_monitor_file();
+    if (NULL != fp) {
+      fprintf(fp, "%s\n", str.c_str());
+    }
     fp = get_output_file();
   }
-  fprintf(fp, "%s\n", str.c_str());
+  if (NULL != fp) {
+    fprintf(fp, "%s\n", str.c_str());
+  }
 }
 
 //////////////////////////////////////////////////////////////////
@@ -139,6 +155,8 @@ inline void fdisplayln(FILE* fp, const std::string& str)
   fprintf(fp, "%s\n", str.c_str());
 }
 
-#ifdef CURRENT_DEFAULT_NAMESPACE_NAME
 }
+
+#ifndef USE_NAMESPACE
+using namespace qshow;
 #endif

@@ -35,26 +35,30 @@ struct Geometry
   }
   void init(const Coordinate total_site, const int multiplicity_)
   {
-    init();
-    geon = get_geometry_node();
-    multiplicity = multiplicity_;
-    for (int i = 0; i < DIM; ++i) {
-      qassert(0 == total_site[i] % geon.size_node[i]);
-      node_site[i] = total_site[i] / geon.size_node[i];
+    if (!initialized) {
+      init();
+      geon = get_geometry_node();
+      multiplicity = multiplicity_;
+      for (int i = 0; i < DIM; ++i) {
+        qassert(0 == total_site[i] % geon.size_node[i]);
+        node_site[i] = total_site[i] / geon.size_node[i];
+      }
+      reset_node_site_expanded();
+      initialized = true;
     }
-    reset_node_site_expanded();
-    initialized = true;
   }
   void init(const GeometryNode& geon_,
       const int multiplicity_,
       const Coordinate& node_site_)
   {
-    init();
-    geon = geon_;
-    multiplicity = multiplicity_;
-    node_site = node_site_;
-    reset_node_site_expanded();
-    initialized = true;
+    if (!initialized) {
+      init();
+      geon = geon_;
+      multiplicity = multiplicity_;
+      node_site = node_site_;
+      reset_node_site_expanded();
+      initialized = true;
+    }
   }
   //
   void remult(const int multiplicity_) {
@@ -266,18 +270,6 @@ inline Geometry geo_reform(const Geometry& geo_, const int multiplicity_ = 1, co
   return geo;
 }
 
-inline std::string show(const Geometry& geo)
-{
-  std::string s;
-  s += ssprintf("{ initialized  = %s\n", ::show(geo.initialized).c_str());
-  s += ssprintf(", geon         =\n%s\n", show(geo.geon).c_str());
-  s += ssprintf(", node_site    = %s\n", show(geo.node_site).c_str());
-  s += ssprintf(", expanLeft    = %s\n", show(geo.expansion_left).c_str());
-  s += ssprintf(", expanRight   = %s\n", show(geo.expansion_right).c_str());
-  s += ssprintf(", node_siteExp = %s }", show(geo.node_site_expanded).c_str());
-  return s;
-}
-
 inline void swap(Geometry& geo1, Geometry& geo2)
 {
   Geometry geo = geo1;
@@ -303,3 +295,23 @@ inline bool is_initialized(const Geometry& geo)
 }
 
 QLAT_END_NAMESPACE
+
+namespace qshow {
+
+inline std::string show(const qlat::Geometry& geo)
+{
+  std::string s;
+  s += ssprintf("{ initialized  = %s\n", show(geo.initialized).c_str());
+  s += ssprintf(", geon         =\n%s\n", show(geo.geon).c_str());
+  s += ssprintf(", node_site    = %s\n", show(geo.node_site).c_str());
+  s += ssprintf(", expanLeft    = %s\n", show(geo.expansion_left).c_str());
+  s += ssprintf(", expanRight   = %s\n", show(geo.expansion_right).c_str());
+  s += ssprintf(", node_siteExp = %s }", show(geo.node_site_expanded).c_str());
+  return s;
+}
+
+}
+
+#ifndef USE_NAMESPACE qshow;
+using namespace qshow;
+#endif

@@ -13,7 +13,9 @@
 #define USE_MULTI_NODE
 #endif
 
+#include <show.h>
 #include <timer.h>
+#include <rng-state.h>
 
 // #define SKIP_ASSERT
 

@@ -1,42 +1,43 @@
 SHELL=/bin/bash
 
-CC=mpicc -O2 -Wall
-CXX=mpic++ -O2 -Wall -std=c++0x
+CC=mpicc -fopenmp -O2 -Wall
+CXX=mpic++ -std=c++0x -fopenmp -O2 -Wall
 
-prefix=$$HOME/qlat-build/1.0
+qlat_prefix=$$HOME/qlat-build/1.0
 
-INCLUDE=$(prefix)/include
-LIB=$(prefix)/lib
+QLAT_INCLUDE=$(qlat_prefix)/include
+QLAT_LIB=$(qlat_prefix)/lib
 
-CFLAGS=-fopenmp -O2 -fno-strict-aliasing -Wall
-CFLAGS+= -I$(INCLUDE)
-CFLAGS+= -I$(INCLUDE)/eigen3
+QLAT_CFLAGS=-fno-strict-aliasing
+QLAT_CFLAGS+= -I$(QLAT_INCLUDE)
+QLAT_CFLAGS+= -I$(QLAT_INCLUDE)/eigen3
+QLAT_CFLAGS+= -I$(QLAT_INCLUDE)/utils
 
-CXXFLAGS=$(CFLAGS)
+QLAT_CXXFLAGS=$(QLAT_CFLAGS)
 
-LDFLAGS=-L$(LIB)
-LDFLAGS+= -lgsl -lgslcblas -lm
-LDFLAGS+= -lfftw3_omp -lfftw3
-LDFLAGS+= -lcrypto
-LDFLAGS+= -lhash-cpp
+QLAT_LDFLAGS=-L$(QLAT_LIB)
+QLAT_LDFLAGS+= -lgsl -lgslcblas -lm
+QLAT_LDFLAGS+= -lfftw3_omp -lfftw3
+QLAT_LDFLAGS+= -lcrypto
+QLAT_LDFLAGS+= -lhash-cpp
 
 all: qlat.x
 
 run: qlat.x
-	. $(prefix)/setenv.sh ; time mpirun -x OMP_NUM_THREADS=8 --np 16 ./qlat.x
+	. $(qlat_prefix)/setenv.sh ; time mpirun -x OMP_NUM_THREADS=2 --np 16 ./qlat.x
 	make clean
 
 qlat.x: *.C
-	. $(prefix)/setenv.sh ; time make build
+	. $(qlat_prefix)/setenv.sh ; time make build
 	[ -f $@ ]
 
 build:
-	$(CXX) -o qlat.x $(CXXFLAGS) *.C $(LDFLAGS) 2>&1 | grep --color=always 'error:\|' || true
+	$(CXX) -o qlat.x $(QLAT_CXXFLAGS) *.C $(QLAT_LDFLAGS) 2>&1 | grep --color=always 'error:\|' || true
 
 clean:
 	rm qlat.x || :
 
 show-info:
 	@echo CXX: $(CXX)
-	@echo CXXFLAGS: $(CXXFLAGS)
-	@echo LDFLAGS: $(LDFLAGS)
+	@echo CXXFLAGS: $(QLAT_CXXFLAGS)
+	@echo LDFLAGS: $(QLAT_LDFLAGS)

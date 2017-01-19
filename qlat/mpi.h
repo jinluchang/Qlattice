@@ -3,8 +3,6 @@
 #include <qlat/config.h>
 #include <qlat/utils.h>
 
-#include <timer.h>
-
 #include <array>
 
 QLAT_START_NAMESPACE
@@ -105,7 +103,6 @@ inline void GeometryNode::init()
     // qassert(coor_node_check[i] == coor_node[i]);
   }
   qassert(size_node[0] * size_node[1] * size_node[2] * size_node[3] == num_node);
-  Display(cname, "GeometryNode::init()", "id_node = %5d ; coor_node = %s\n", id_node, show(coor_node).c_str());
   qassert(id_node_from_coor_node(coor_node) == id_node);
 #else
   num_node = 1;
@@ -132,16 +129,6 @@ inline const GeometryNode& get_geometry_node()
 {
   static GeometryNode geon(true);
   return geon;
-}
-
-std::string show(const GeometryNode& geon) {
-  std::string s;
-  s += ssprintf("{ initialized = %s\n", ::show(geon.initialized).c_str());
-  s += ssprintf(", num_node    = %d\n", geon.num_node);
-  s += ssprintf(", id_node     = %d\n", geon.id_node);
-  s += ssprintf(", size_node   = %s\n", show(geon.size_node).c_str());
-  s += ssprintf(", coor_node   = %s }", show(geon.coor_node).c_str());
-  return s;
 }
 
 inline int get_num_node()
@@ -310,6 +297,17 @@ inline int glb_sum(long& x)
   return glb_sum(Vector<long>(x));
 }
 
+inline int glb_sum(Complex& c)
+{
+  std::vector<double> vec(2);
+  vec[0] = c.real();
+  vec[1] = c.imag();
+  const int ret = glb_sum(Vector<double>(vec));
+  c.real(vec[0]);
+  c.imag(vec[1]);
+  return ret;
+}
+
 template <class M>
 inline int glb_sum_double_vec(Vector<M> x)
 {
@@ -356,9 +354,45 @@ inline void bcast(Vector<M> recv, const int root = 0)
 
 inline void sync_node()
 {
-  long v;
+  long v = 1;
   glb_sum(Vector<long>(&v,1));
 }
+
+inline void display_geometry_node()
+{
+  TIMER("display_geo_node");
+  const GeometryNode& geon = get_geometry_node();
+  for (int i = 0; i < geon.num_node; ++i) {
+    if (i == geon.id_node) {
+      displayln(std::string(fname) + " : "
+          + ssprintf("id_node = %5d ; coor_node = %s", geon.id_node, show(geon.coor_node).c_str()));
+      fflush(get_output_file());
+    }
+    sync_node();
+  }
+  fflush(get_output_file());
+  sync_node();
+}
+
+QLAT_END_NAMESPACE
+
+namespace qshow {
+
+inline std::string show(const qlat::GeometryNode& geon) {
+  std::string s;
+  s += ssprintf("{ initialized = %s\n", show(geon.initialized).c_str());
+  s += ssprintf(", num_node    = %d\n", geon.num_node);
+  s += ssprintf(", id_node     = %d\n", geon.id_node);
+  s += ssprintf(", size_node   = %s\n", show(geon.size_node).c_str());
+  s += ssprintf(", coor_node   = %s }", show(geon.coor_node).c_str());
+  return s;
+}
+
+}
+
+QLAT_START_NAMESPACE
+
+using namespace qshow;
 
 inline Coordinate plan_size_node(const int num_node)
 {
@@ -392,6 +426,7 @@ inline void begin(const MPI_Comm& comm, const Coordinate& size_node)
   sync_node();
   DisplayInfo(cname, "begin", "MPI Cart created. GeometryNode =\n%s\n", show(geon).c_str());
   sync_node();
+  display_geometry_node();
 }
 
 inline void begin(int* argc, char** argv[], const Coordinate& size_node)
@@ -415,3 +450,4 @@ inline void end()
 }
 
 QLAT_END_NAMESPACE
+

@@ -47,55 +47,29 @@
 #include <mpi.h>
 #endif
 
-#ifdef CURRENT_DEFAULT_NAMESPACE_NAME
-
 #define TIMER(FNAME) \
   static const char* fname = FNAME; \
-  static CURRENT_DEFAULT_NAMESPACE_NAME::Timer timer(fname); \
-  CURRENT_DEFAULT_NAMESPACE_NAME::TimerCtrl timerctrl(timer);
+  static qtimer::Timer timer(fname); \
+  qtimer::TimerCtrl timerctrl(timer);
 
 #define TIMER_VERBOSE(FNAME) \
   static const char* fname = FNAME; \
-  static CURRENT_DEFAULT_NAMESPACE_NAME::Timer timer(fname); \
-  CURRENT_DEFAULT_NAMESPACE_NAME::TimerCtrl timerctrl(timer, true);
+  static qtimer::Timer timer(fname); \
+  qtimer::TimerCtrl timerctrl(timer, true);
 
 #define TIMER_FLOPS(FNAME) \
   static const char* fname = FNAME; \
-  static CURRENT_DEFAULT_NAMESPACE_NAME::Timer timer(fname, false); \
-  CURRENT_DEFAULT_NAMESPACE_NAME::TimerCtrl timerctrl(timer); \
+  static qtimer::Timer timer(fname, false); \
+  qtimer::TimerCtrl timerctrl(timer);
 
 #define TIMER_VERBOSE_FLOPS(FNAME) \
   static const char* fname = FNAME; \
-  static CURRENT_DEFAULT_NAMESPACE_NAME::Timer timer(fname, false); \
-  CURRENT_DEFAULT_NAMESPACE_NAME::TimerCtrl timerctrl(timer, true); \
+  static qtimer::Timer timer(fname, false); \
+  qtimer::TimerCtrl timerctrl(timer, true);
 
-#else
+namespace qtimer {
 
-#define TIMER(FNAME) \
-  static const char* fname = FNAME; \
-  static Timer timer(fname); \
-  TimerCtrl timerctrl(timer);
-
-#define TIMER_VERBOSE(FNAME) \
-  static const char* fname = FNAME; \
-  static Timer timer(fname); \
-  TimerCtrl timerctrl(timer, true);
-
-#define TIMER_FLOPS(FNAME) \
-  static const char* fname = FNAME; \
-  static Timer timer(fname, false); \
-  TimerCtrl timerctrl(timer); \
-
-#define TIMER_VERBOSE_FLOPS(FNAME) \
-  static const char* fname = FNAME; \
-  static Timer timer(fname, false); \
-  TimerCtrl timerctrl(timer, true); \
-
-#endif
-
-#ifdef CURRENT_DEFAULT_NAMESPACE_NAME
-namespace CURRENT_DEFAULT_NAMESPACE_NAME {
-#endif
+using namespace qshow;
 
 inline double get_time()
 {
@@ -209,30 +183,30 @@ struct TimerInfo
     call_times = 0;
   }
   //
-  void show_last(const char* info = NULL) const
+  void show_last(const char* info, const int fname_len) const
   {
     double total_time = get_total_time();
     std::string fnameCut;
-    fnameCut.assign(fname, 0, 30);
+    fnameCut.assign(fname, 0, fname_len);
     displayln_info(
-        ssprintf("Timer::%s %30s :%5.1f%% %8d calls %.3E sec %8.3f Gflops (%.3E flops)",
+        ssprintf("Timer::%s %s :%5.1f%% %8d calls %.3E sec %8.3f Gflops (%.3E flops)",
           NULL == info ? "" : info,
-          fnameCut.c_str(),
+          ssprintf(ssprintf("%%%ds", fname_len).c_str(), fnameCut.c_str()).c_str(),
           accumulated_time / total_time * 100, call_times,
           dtime,
           dflops / dtime / 1.0E9,
           (double)dflops));
   }
   //
-  void show_avg(const char* info = NULL) const
+  void show_avg(const char* info, const int fname_len) const
   {
     double total_time = get_total_time();
     std::string fnameCut;
-    fnameCut.assign(fname, 0, 30);
+    fnameCut.assign(fname, 0, fname_len);
     displayln_info(
-        ssprintf("Timer::%s %30s :%7.3f%% %8d calls; %.2E,%.2E sec; %.2E,%.2E flops; %5.2f Gflops",
+        ssprintf("Timer::%s %s :%7.3f%% %8d calls; %.2E,%.2E sec; %.2E,%.2E flops; %5.2f Gflops",
           NULL == info ? "" : info,
-          fnameCut.c_str(),
+          ssprintf(ssprintf("%%%ds", fname_len).c_str(), fnameCut.c_str()).c_str(),
           accumulated_time / total_time * 100, call_times,
           accumulated_time / call_times,
           accumulated_time,
@@ -281,6 +255,18 @@ struct Timer
   {
     static double time = 60.0;
     return time;
+  }
+  //
+  static int& max_call_times_for_always_show_info()
+  {
+    static int max_call_times = 10;
+    return max_call_times;
+  }
+  //
+  static int& max_function_name_length_shown()
+  {
+    static int max_len = 30;
+    return max_len;
   }
   //
   Timer()
@@ -347,8 +333,8 @@ struct Timer
     }
     TimerInfo& info = get_timer_database()[info_index];
     info.call_times++;
-    if (verbose || info.call_times == 1 || info.dtime >= minimum_duration_for_show_start_info()) {
-      info.show_last("start");
+    if (verbose || info.call_times <= max_call_times_for_always_show_info() || info.dtime >= minimum_duration_for_show_start_info()) {
+      info.show_last("start", max_function_name_length_shown());
     }
     start_flops = is_using_total_flops ? get_total_flops() : 0 ;
     flops = 0;
@@ -370,8 +356,8 @@ struct Timer
     info.dflops = stop_flops - start_flops;
     info.accumulated_time += info.dtime;
     info.accumulated_flops += info.dflops;
-    if (verbose || info.call_times == 1 || info.dtime >= minimum_duration_for_show_stop_info()) {
-      info.show_last("stop ");
+    if (verbose || info.call_times <= max_call_times_for_always_show_info() || info.dtime >= minimum_duration_for_show_stop_info()) {
+      info.show_last("stop ", max_function_name_length_shown());
     }
     autodisplay(stop_time);
   }
@@ -411,7 +397,7 @@ struct Timer
           str.c_str()));
     const int dbsize = db.size();
     for (int i = 0; i < dbsize; i++) {
-      db[i]->show_avg("display");
+      db[i]->show_avg("display", max_function_name_length_shown());
     }
     displayln_info(ssprintf(
           "Timer::display-end:   %s --------------------- total %.4E sec ----------------------",
@@ -484,9 +470,9 @@ inline void timer_free(void* ptr)
   free(ptr);
 }
 
-inline void tmalloc(size_t size)
+inline void* tmalloc(size_t size)
 {
-  timer_malloc(size);
+  return timer_malloc(size);
 }
 
 inline void tfree(void* ptr)
@@ -502,7 +488,7 @@ inline void Display(const char* cname, const char* fname, const char* format, ..
   va_start(args, format);
   char* str;
   vasprintf(&str, format, args);
-  std::fprintf(get_output_file(), "%s::%s : %s", cname, fname, str);
+  display(ssprintf("%s::%s : %s", cname, fname, str));
   std::free(str);
 }
 
@@ -516,11 +502,12 @@ inline void DisplayInfo(const char* cname, const char* fname, const char* format
   va_start(args, format);
   char* str;
   vasprintf(&str, format, args);
-  std::fprintf(get_output_file(), "%s::%s : %s", cname, fname, str);
+  display_info(ssprintf("%s::%s : %s", cname, fname, str));
   std::free(str);
 }
 
-#ifdef CURRENT_DEFAULT_NAMESPACE_NAME
 }
-#endif
 
+#ifndef USE_NAMESPACE
+using namespace qtimer;
+#endif

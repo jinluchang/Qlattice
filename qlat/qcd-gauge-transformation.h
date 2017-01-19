@@ -36,9 +36,7 @@ inline void make_apply_gauge_transformation_no_comm(GaugeField& gf, const GaugeF
   TIMER("make_apply_gauge_transformation_no_comm");
   assert(is_matching_geo(gf0.geo, gt.geo));
   const Geometry& geo = gf0.geo;
-  if (false == is_initialized(gf)) {
-    gf.init(geo_resize(geo, 0));
-  }
+  gf.init(geo_resize(geo, 0));
   assert(is_matching_geo(gf.geo, gf0.geo));
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
@@ -49,7 +47,7 @@ inline void make_apply_gauge_transformation_no_comm(GaugeField& gf, const GaugeF
     for (int m = 0; m < DIM; ++m) {
       xl[m] += 1;
       const ColorMatrix& t1 = gt.get_elem(xl);
-      v[m] = t0 * v0[m] * t1.adjoint();
+      v[m] = t0 * v0[m] * matrix_adjoint(t1);
       xl[m] -= 1;
     }
   }
@@ -74,9 +72,7 @@ inline void make_temporal_gauge_transformation(GaugeTransform& gt, const GaugeFi
 {
   TIMER("make_temporal_gauge_transformation");
   const Geometry geo = geo_reform(gf.geo, 0);
-  if (false == is_initialized(gt)) {
-    gt.init(geo);
-  }
+  gt.init(geo);
   assert(is_matching_geo(gt.geo, gf.geo));
   Coordinate expension_left, expension_right;
   set_zero(expension_left);

@@ -120,7 +120,7 @@ void lblMagneticMomentSpinMatrix(qlat::Array<qlat::SpinMatrix,3> bs, const qlat:
     Display(cname, fname, "src =\n%s\n", qlat::show(src.get_elem(xlop)).c_str());
     Display(cname, fname, "snk =\n%s\n", qlat::show(snk.get_elem(xlop)).c_str());
     for (int i = 0; i < 3; ++i) {
-      bs[i] = qlat::SpinMatrixConstants::get_gamma5() * snk.get_elem(xlop).adjoint() * qlat::SpinMatrixConstants::get_gamma5();
+      bs[i] = qlat::SpinMatrixConstants::get_gamma5() * matrix_adjoint(snk.get_elem(xlop)) * qlat::SpinMatrixConstants::get_gamma5();
       bs[i] *= qlat::SpinMatrixConstants::get_cap_sigma(i) * mass / 2.0;
       bs[i] *= src.get_elem(xlop);
       bs[i] = projPositiveState(bs[i]);
@@ -131,7 +131,7 @@ void lblMagneticMomentSpinMatrix(qlat::Array<qlat::SpinMatrix,3> bs, const qlat:
 
 qlat::Complex linearFit(const qlat::SpinMatrix& x, const qlat::SpinMatrix& base)
 {
-  return (Eigen::conj(base.array()) * x.array()).sum() / (Eigen::conj(base.array()) * base.array()).sum();
+  return (Eigen::conj(base.em().array()) * x.em().array()).sum() / (Eigen::conj(base.em().array()) * base.em().array()).sum();
 }
 
 void lblShowMuonPartPointSrc(const qlat::Geometry& geo, const int tsnk, const int tsrc,

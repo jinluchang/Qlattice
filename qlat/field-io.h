@@ -7,8 +7,6 @@
 #include <qlat/mpi.h>
 #include <qlat/geometry.h>
 
-#include <timer.h>
-
 #include <omp.h>
 
 #include <stdio.h>
@@ -30,16 +28,19 @@ public:
 		os = &std::cout;
 	}
 };
+
 template<class T>
 const rePort& operator<<(const rePort &p, const T &data){
 	if(get_id_node() == 0) *(p.os) << data;
 	return p;
 }
-const rePort& operator<<(const rePort &p, std::ostream &(*func)(std::ostream&)){
+
+inline const rePort& operator<<(const rePort &p, std::ostream &(*func)(std::ostream&)){
 	if(get_id_node() == 0) *(p.os) << func;
 	return p;
 }
-static const rePort report;
+
+// static const rePort report;
 
 inline std::string str_printf(const char *format, ...){
 	char cstr[512];
@@ -153,7 +154,7 @@ std::string field_hash_crc32(const qlat::Field<M> &origin){
 	return crc32.getHash();			
 }
 
-void timer_fwrite(char* ptr, long size, FILE *outputFile){
+inline void timer_fwrite(char* ptr, long size, FILE *outputFile){
 	TIMER("timer_fwrite");
 	fwrite(ptr, size, 1, outputFile);
 }
@@ -253,7 +254,7 @@ void sophisticated_serial_write(const qlat::Field<M> &origin,
 
 	if(get_id_node() == 0) fclose(outputFile);
     
-	report << "Export file CLOSED" << std::endl;
+	displayln("Export file CLOSED");
 
 	sync_node();
 }
@@ -265,7 +266,7 @@ void sophisticated_serial_write(const qlat::Field<M> &origin,
 //	return "NOT IMPLEMENTED.";
 // }
 
-void timer_fread(char* ptr, long size, FILE *inputFile){
+inline void timer_fread(char* ptr, long size, FILE *inputFile){
 	TIMER_VERBOSE("timer_fread");
 	fread(ptr, size, 1, inputFile);
 }
@@ -332,7 +333,7 @@ void sophisticated_serial_read(qlat::Field<M> &destination,
 			M *ptr = get_data(field_send).data();
 			long size = sizeof(M) * geo_only_local.local_volume() 
 													* geo_only_local.multiplicity;
-			qassert(!fseek(inputFile, size * get_id_node(), SEEK_CUR));
+			assert(!fseek(inputFile, size * get_id_node(), SEEK_CUR));
 			timer_fread((char*)ptr, size, inputFile);
 			std::cout << "Reading FINISHED: Node Number =\t" 
 				<< get_id_node() << std::endl;
@@ -405,4 +406,3 @@ void sophisticated_serial_read(qlat::Field<M> &destination,
 }
 
 QLAT_END_NAMESPACE
-

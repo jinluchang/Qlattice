@@ -4,8 +4,6 @@
 
 #include <qlat/config.h>
 
-#include <show.h>
-
 #include <endian.h>
 
 #include <array>
@@ -92,6 +90,68 @@ bool operator==(const std::vector<M>& x, const std::vector<M>& y)
 {
   return x.size() == y.size() && 0 == memcmp(x.data(), y.data(), x.size() * sizeof(M));
 }
+
+template <class M>
+struct Handle
+{
+  M* p;
+  //
+  Handle<M>()
+  {
+    p = NULL;
+  }
+  Handle<M>(M& obj)
+  {
+    init(obj);
+  }
+  //
+  void init(M& obj)
+  {
+    p = (M*)&obj;
+  }
+  //
+  bool null() const
+  {
+    return p == NULL;
+  }
+  //
+  M& operator()() const
+  {
+    qassert(NULL != p);
+    return *p;
+  }
+};
+
+template <class M>
+struct ConstHandle
+{
+  const M* p;
+  //
+  ConstHandle<M>()
+  {
+    p = NULL;
+  }
+  ConstHandle<M>(const M& obj)
+  {
+    init(obj);
+  }
+  //
+  void init(const M& obj)
+  {
+    p = (M*)&obj;
+  }
+  //
+  bool null() const
+  {
+    return p == NULL;
+  }
+  //
+  const M& operator()() const
+  {
+    qassert(NULL != p);
+    return *p;
+  }
+};
 
 template <class M> struct Vector;
 
@@ -443,14 +503,6 @@ inline long index_from_coordinate(const Coordinate& x, const Coordinate& size) {
   return (((x[3] * size[2]) + x[2]) * size[1] + x[1]) * size[0] + x[0];
 }
 
-inline std::string show(const Complex& x) {
-  return ssprintf("(%23.16E + %23.16E j)", x.real(), x.imag());
-}
-
-inline std::string show(const Coordinate& x) {
-  return ssprintf("%dx%dx%dx%d", x[0], x[1], x[2], x[3]);
-}
-
 inline uint32_t flip_endian_32(uint32_t x)
 {
   return
@@ -500,3 +552,19 @@ inline void from_big_endian_64(char* str, const size_t len)
 }
 
 QLAT_END_NAMESPACE
+
+namespace qshow {
+
+inline std::string show(const qlat::Complex& x) {
+  return ssprintf("(%23.16E + %23.16E j)", x.real(), x.imag());
+}
+
+inline std::string show(const qlat::Coordinate& x) {
+  return ssprintf("%dx%dx%dx%d", x[0], x[1], x[2], x[3]);
+}
+
+}
+
+#ifndef USE_NAMESPACE;
+using namespace qshow;
+#endif

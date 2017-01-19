@@ -34,40 +34,50 @@ struct Field
   }
   virtual void init(const Geometry& geo_)
   {
-    init();
-    geo = geo_;
-    field.resize(geo.local_volume_expanded() * geo.multiplicity);
-    set_zero(*this);
-    initialized = true;
+    if (!initialized) {
+      init();
+      geo = geo_;
+      field.resize(geo.local_volume_expanded() * geo.multiplicity);
+      set_zero(*this);
+      initialized = true;
+    }
   }
   virtual void init(const Geometry& geo_, const int multiplicity_)
   {
-    init();
-    geo = geo_remult(geo_, multiplicity_);
-    field.resize(geo.local_volume_expanded() * geo.multiplicity);
-    set_zero(*this);
-    initialized = true;
+    if (!initialized) {
+      init();
+      geo = geo_remult(geo_, multiplicity_);
+      field.resize(geo.local_volume_expanded() * geo.multiplicity);
+      set_zero(*this);
+      initialized = true;
+    }
   }
-  virtual void init(const Field& f)
+  virtual void init(const Field<M>& f)
   {
-    init();
-    geo = f.geo;
-    field = f.field;
-    initialized = true;
+    if (!initialized) {
+      init();
+      geo = f.geo;
+      field = f.field;
+      initialized = true;
+    }
   }
   //
-  Field()
+  Field<M>()
   {
     init();
   }
-  Field(const Field& f)
+  Field<M>(const Field<M>& f)
   {
-    qassert(false);
+    qassert(false == f.initialized);
+    init();
   }
   //
-  const Field& operator=(const Field& f)
+  const Field<M>& operator=(const Field<M>& f)
   {
     TIMER("Field::operator=");
+    if (!initialized) {
+      init(geo_resize(f.geo));
+    }
     qassert(is_matching_geo_mult(geo, f.geo));
 #pragma omp parallel for
     for (long index = 0; index < geo.local_volume(); ++index) {
@@ -155,10 +165,10 @@ void swap(Field<M>& f1, Field<M>& f2)
   swap(f1.field, f2.field);
 }
 
-template<class M>
+template <class M>
 const Field<M>& operator+=(Field<M>& f, const Field<M>& f1)
 {
-  TIMER("fieldOperator");
+  TIMER("field_operator");
   qassert(is_matching_geo_mult(f.geo, f1.geo));
   const Geometry& geo = f.geo;
 #pragma omp parallel for
@@ -171,10 +181,10 @@ const Field<M>& operator+=(Field<M>& f, const Field<M>& f1)
   return f;
 }
 
-template<class M>
+template <class M>
 const Field<M>& operator-=(Field<M>& f, const Field<M>& f1)
 {
-  TIMER("fieldOperator");
+  TIMER("field_operator");
   qassert(is_matching_geo_mult(f.geo, f1.geo));
   const Geometry& geo = f.geo;
 #pragma omp parallel for
@@ -187,10 +197,10 @@ const Field<M>& operator-=(Field<M>& f, const Field<M>& f1)
   return f;
 }
 
-template<class M>
+template <class M>
 const Field<M>& operator*=(Field<M>& f, const double factor)
 {
-  TIMER("fieldOperator");
+  TIMER("field_operator");
   const Geometry& geo = f.geo;
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); index++) {
@@ -202,10 +212,10 @@ const Field<M>& operator*=(Field<M>& f, const double factor)
   return f;
 }
 
-template<class M>
+template <class M>
 const Field<M>& operator*=(Field<M>& f, const Complex factor)
 {
-  TIMER("fieldOperator");
+  TIMER("field_operator");
   const Geometry& geo = f.geo;
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); index++) {
@@ -217,7 +227,7 @@ const Field<M>& operator*=(Field<M>& f, const Complex factor)
   return f;
 }
 
-template<class M>
+template <class M>
 double norm(const Field<M>& f)
 {
   const Geometry& geo = f.geo;
@@ -268,13 +278,19 @@ struct FieldM : Field<M>
     Field<M>::init(f);
   }
   //
-  FieldM()
+  FieldM<M,multiplicity>()
   {
     init();
   }
-  FieldM(const FieldM<M,multiplicity>& f)
+  FieldM<M,multiplicity>(const Field<M>& f)
   {
-    qassert(false);
+    qassert(false == f.initialized);
+    init();
+  }
+  FieldM<M,multiplicity>(const FieldM<M,multiplicity>& f)
+  {
+    qassert(false == f.initialized);
+    init();
   }
 };
 

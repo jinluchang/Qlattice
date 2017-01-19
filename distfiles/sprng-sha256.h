@@ -25,9 +25,7 @@
 #include <ostream>
 #include <istream>
 
-#ifdef CURRENT_DEFAULT_NAMESPACE_NAME
-namespace CURRENT_DEFAULT_NAMESPACE_NAME {
-#endif
+namespace qrngstate {
 
 struct SprngSha256
 {
@@ -105,6 +103,8 @@ inline bool operator==(const SprngSha256& ss1, const SprngSha256& ss2)
   return ss1.rs == ss2.rs;
 }
 
-#ifdef CURRENT_DEFAULT_NAMESPACE_NAME
 }
+
+#ifndef USE_NAMESPACE
+using namespace qrngstate;
 #endif
