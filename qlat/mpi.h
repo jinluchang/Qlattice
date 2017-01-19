@@ -297,6 +297,17 @@ inline int glb_sum(long& x)
   return glb_sum(Vector<long>(x));
 }
 
+inline int glb_sum(Complex& c)
+{
+  std::vector<double> vec(2);
+  vec[0] = c.real();
+  vec[1] = c.imag();
+  const int ret = glb_sum(Vector<double>(vec));
+  c.real(vec[0]);
+  c.imag(vec[1]);
+  return ret;
+}
+
 template <class M>
 inline int glb_sum_double_vec(Vector<M> x)
 {
