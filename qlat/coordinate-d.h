@@ -17,6 +17,17 @@ namespace std {
     return false;
   }
 
+  template <class M>
+  inline bool isnan(const vector<M>& arr)
+  {
+    for (size_t i = 0; i < arr.size(); ++i) {
+      if (isnan(arr[i])) {
+        return true;
+      }
+    }
+    return false;
+  }
+
 }
 
 QLAT_START_NAMESPACE
