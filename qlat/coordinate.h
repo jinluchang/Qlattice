@@ -73,7 +73,7 @@ inline Coordinate operator-(const Coordinate &coor)
 
 inline void regularize(Coordinate &coor, const Coordinate &regularizer)
 {
-  warn("use regularize_coordinate");
+  warn("use regular_coordinate");
 	for(int mu = 0; mu < DIM; mu++){
 	coor[mu] = (coor[mu] % regularizer[mu] + regularizer[mu]) % regularizer[mu];
 	}

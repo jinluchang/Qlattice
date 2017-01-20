@@ -472,11 +472,35 @@ inline int middle_mod(const int x, const int y, const int len) {
   }
 }
 
+inline Coordinate regular_coordinate(const Coordinate& x, const Coordinate& size) {
+  Coordinate ret;
+  ret[0] = mod(x[0], size[0]);
+  ret[1] = mod(x[1], size[1]);
+  ret[2] = mod(x[2], size[2]);
+  ret[3] = mod(x[3], size[3]);
+  return ret;
+}
+
 inline void regularize_coordinate(Coordinate& x, const Coordinate& size) {
-  x[0] = mod(x[0], size[0]);
-  x[1] = mod(x[1], size[1]);
-  x[2] = mod(x[2], size[2]);
-  x[3] = mod(x[3], size[3]);
+  x = regular_coordinate(x, size);
+}
+
+inline Coordinate relative_coordinate(const Coordinate& x, const Coordinate& size) {
+  Coordinate ret;
+  ret[0] = smod(x[0], size[0]);
+  ret[1] = smod(x[1], size[1]);
+  ret[2] = smod(x[2], size[2]);
+  ret[3] = smod(x[3], size[3]);
+  return ret;
+}
+
+inline Coordinate middle_coordinate(const Coordinate& x, const Coordinate& y, const Coordinate& size) {
+  Coordinate ret;
+  ret[0] = middle_mod(x[0], y[0], size[0]);
+  ret[1] = middle_mod(x[1], y[1], size[1]);
+  ret[2] = middle_mod(x[2], y[2], size[2]);
+  ret[3] = middle_mod(x[3], y[3], size[3]);
+  return ret;
 }
 
 inline long distance_sq_relative_coordinate_g(const Coordinate& xg) {
