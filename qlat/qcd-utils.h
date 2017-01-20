@@ -196,12 +196,12 @@ inline void acc_wilson_line_path_segment(WilsonLinePathSegment& path)
   for (int i = 0; i < (int)cs.size(); ++i) {
     const Coordinate c = cs[i];
     cset.insert(c);
-    const WilsonLinePathStop& ps = path.stops[c];
+    const WilsonLinePathStop& ps = stops[c];
     qassert(c == ps.x);
     for (int k = 0; k < (int)ps.paths.size(); ++k) {
       const Coordinate nc = coordinate_shifts(c, ps.paths[k]);
       cs.push_back(nc);
-      path.stops[nc].num_origins = 0;
+      stops[nc].num_origins = 0;
     }
   }
   cs.clear();
@@ -210,11 +210,11 @@ inline void acc_wilson_line_path_segment(WilsonLinePathSegment& path)
   }
   for (int i = 0; i < (int)cs.size(); ++i) {
     const Coordinate& c = cs[i];
-    const WilsonLinePathStop& ps = path.stops[c];
+    const WilsonLinePathStop& ps = stops[c];
     qassert(c == ps.x);
     for (int k = 0; k < (int)ps.paths.size(); ++k) {
       const Coordinate nc = coordinate_shifts(c, ps.paths[k]);
-      path.stops[nc].num_origins += 1;
+      stops[nc].num_origins += 1;
     }
   }
 }
@@ -226,7 +226,7 @@ inline WilsonLinePathSegment make_wilson_line_path_segment(const Coordinate& tar
   ret.target = target;
   std::vector<Coordinate> cs;
   cs.push_back(Coordinate());
-  for (int i = 0; i < cs.size(); ++i) {
+  for (int i = 0; i < (int)cs.size(); ++i) {
     const Coordinate c = cs[i];
     std::vector<int> dirs = find_next_dirs(c, target);
     WilsonLinePathStop& ps = ret.stops[c];
@@ -365,7 +365,7 @@ inline ColorMatrix gf_avg_wilson_line(const GaugeField& gf, const WilsonLinePath
   set_unit(wlf1);
   for (int i = 0; i < (int)path.ps.size(); ++i) {
     set_multiply_wilson_line_field_partial_comm(wlf, wlf1, gf1, path.ps[i]);
-    if (i != path.ps.size() - 1) {
+    if (i != (int)path.ps.size() - 1) {
       wlf1 = wlf;
     }
   }
