@@ -193,7 +193,7 @@ inline void acc_wilson_line_path_segment(WilsonLinePathSegment& path)
   std::set<Coordinate> cset;
   std::vector<Coordinate> cs;
   cs.push_back(Coordinate());
-  for (int i = 0; i < cs.size(); ++i) {
+  for (int i = 0; i < (int)cs.size(); ++i) {
     const Coordinate c = cs[i];
     cset.insert(c);
     const WilsonLinePathStop& ps = path.stops[c];
@@ -208,7 +208,7 @@ inline void acc_wilson_line_path_segment(WilsonLinePathSegment& path)
   for (std::set<Coordinate>::iterator it = cset.begin(); it != cset.end(); ++it) {
     cs.push_back(*it);
   }
-  for (int i = 0; i < cs.size(); ++i) {
+  for (int i = 0; i < (int)cs.size(); ++i) {
     const Coordinate& c = cs[i];
     const WilsonLinePathStop& ps = path.stops[c];
     qassert(c == ps.x);
@@ -326,7 +326,7 @@ inline void set_multiply_wilson_line_field_partial_comm(FieldM<ColorMatrix,1>& w
           wlf = fs[i];
           return;
         }
-        for (int k = 0; k < ps.paths.size(); ++k) {
+        for (int k = 0; k < (int)ps.paths.size(); ++k) {
           wlf1 = fs[i];
           const Coordinate nc = coordinate_shifts(c, ps.paths[k]);
           pacc.stops[nc].num_origins -= 1;

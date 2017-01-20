@@ -17,7 +17,7 @@ inline ColorMatrix color_matrix_sub_inverse(const ColorMatrix& x, const int ind)
   };
   const int i1 = su2_index[ind][0];
   const int i2 = su2_index[ind][1];
-  const int zero_rc = su2_index[ind][2];
+  // const int zero_rc = su2_index[ind][2];
   // project onto SU(2)
   double p0 = x(i1,i1).real() + x(i2,i2).real();
   double p1 = x(i1,i2).imag() + x(i2,i1).imag();
