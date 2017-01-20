@@ -93,6 +93,7 @@ inline CoordinateD operator-(const CoordinateD& c)
 inline CoordinateD operator*(const double a, const CoordinateD& c)
 {
   qassert(false == isnan(c));
+  qassert(false == isnan(a));
   return CoordinateD(c[0]*a, c[1]*a, c[2]*a, c[3]*a);
 }
 
@@ -104,6 +105,7 @@ inline CoordinateD operator*(const CoordinateD& c, const double a)
 inline CoordinateD operator/(const CoordinateD& c, const double a)
 {
   qassert(false == isnan(c));
+  qassert(false == isnan(a));
   return (1.0 / a) * c;
 }
 
