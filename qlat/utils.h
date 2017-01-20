@@ -565,6 +565,6 @@ inline std::string show(const qlat::Coordinate& x) {
 
 }
 
-#ifndef USE_NAMESPACE;
+#ifndef USE_NAMESPACE
 using namespace qshow;
 #endif

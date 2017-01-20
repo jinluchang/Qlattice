@@ -312,6 +312,6 @@ inline std::string show(const qlat::Geometry& geo)
 
 }
 
-#ifndef USE_NAMESPACE qshow;
+#ifndef USE_NAMESPACE
 using namespace qshow;
 #endif
