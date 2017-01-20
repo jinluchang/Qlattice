@@ -171,7 +171,7 @@ inline Coordinate coordinate_shifts(const Coordinate& x, const int dir1, const i
 inline Coordinate coordinate_shifts(const Coordinate& x, const std::vector<int> path)
 {
   Coordinate ret = x;
-  for (int i = 0; i < path.size(); ++i) {
+  for (int i = 0; i < (int)path.size(); ++i) {
     const int dir = path[i];
     qassert(-DIM <= dir && dir < DIM);
     ret = coordinate_shifts(ret, dir);
