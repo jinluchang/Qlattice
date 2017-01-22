@@ -135,6 +135,10 @@ struct ConstHandle
   {
     init(obj);
   }
+  ConstHandle<M>(const Handle<M>& h)
+  {
+    init(h());
+  }
   //
   void init(const M& obj)
   {
@@ -344,10 +348,48 @@ Vector<M> get_data(Vector<M> vec)
   return vec;
 }
 
+template <class M, unsigned long N>
+Vector<M> get_data(const std::array<M, N>& vec)
+{
+  return Vector<M>((M*)vec.data(), vec.size());
+}
+
 template <class M>
 Vector<M> get_data(const std::vector<M>& vec)
 {
   return Vector<M>((M*)vec.data(), vec.size());
+}
+
+template <class M>
+Vector<M> get_data(const Handle<M>& h)
+{
+  return Vector<M>(h.p, 1);
+}
+
+template <class M>
+Vector<M> get_data(const ConstHandle<M>& h)
+{
+  return Vector<M>(h.p, 1);
+}
+
+inline Vector<long> get_data(const long& x)
+{
+  return Vector<long>(&x, 1);
+}
+
+inline Vector<double> get_data(const double& x)
+{
+  return Vector<double>(&x, 1);
+}
+
+inline Vector<int> get_data(const int& x)
+{
+  return Vector<int>(&x, 1);
+}
+
+inline Vector<float> get_data(const float& x)
+{
+  return Vector<float>(&x, 1);
 }
 
 template <class M>
@@ -362,14 +404,8 @@ Vector<long> get_data_long(const M& v)
   return Vector<long>(&v, sizeof(M) / sizeof(long));
 }
 
-template <class T, int N>
-long get_data_size(const Array<T,N>& x)
-{
-  return get_data(x).data_size();
-}
-
-template <class T>
-long get_data_size(const Vector<T>& x)
+template <class M>
+long get_data_size(const M& x)
 {
   return get_data(x).data_size();
 }
