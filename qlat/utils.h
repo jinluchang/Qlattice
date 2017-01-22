@@ -527,6 +527,34 @@ inline long index_from_coordinate(const Coordinate& x, const Coordinate& size) {
   return (((x[3] * size[2]) + x[2]) * size[1] + x[1]) * size[0] + x[0];
 }
 
+inline bool is_integer(const double& x)
+{
+  const double diff = x - (long)x;
+  return 1e-6 > diff || diff > 1-1e-6;
+}
+
+template <class M>
+inline bool is_integer(const std::vector<M>& v)
+{
+  for (int i = 0; i < (int)v.size(); ++i) {
+    if (!is_integer(v[i])) {
+      return false;
+    }
+  }
+  return true;
+}
+
+template <class M, unsigned long N>
+inline bool is_integer(const std::array<M,N>& v)
+{
+  for (int i = 0; i < N; ++i) {
+    if (!is_integer(v[i])) {
+      return false;
+    }
+  }
+  return true;
+}
+
 inline uint32_t flip_endian_32(uint32_t x)
 {
   return
