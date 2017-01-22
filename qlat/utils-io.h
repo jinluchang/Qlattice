@@ -204,10 +204,14 @@ inline std::string qgetline(FILE* fp)
 {
   char* lineptr = NULL;
   size_t n = 0;
-  getline(&lineptr, &n, fp);
-  std::string ret(lineptr);
-  std::free(lineptr);
-  return ret;
+  if (getline(&lineptr, &n, fp) > 0) {
+    std::string ret(lineptr);
+    std::free(lineptr);
+    return ret;
+  } else {
+    std::free(lineptr);
+    return std::string();
+  }
 }
 
 inline bool is_space(const char c)
