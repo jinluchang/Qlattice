@@ -16,6 +16,7 @@
 
 #include <sys/stat.h>
 #include <unistd.h>
+#include <stdio.h>
 
 QLAT_START_NAMESPACE
 
@@ -197,6 +198,84 @@ inline int qtouch_info(const std::string& path, const std::string& content = "")
   } else {
     return 0;
   }
+}
+
+inline std::string qgetline(FILE* fp)
+{
+  char* lineptr = NULL;
+  size_t n = 0;
+  getline(&lineptr, &n, fp);
+  std::string ret(lineptr);
+  std::free(lineptr);
+  return ret;
+}
+
+inline bool is_space(const char c)
+{
+  return c == ' ' || c == '\n' || c == '\r' || c == '\t';
+}
+
+inline std::vector<std::string> split_line_with_spaces(const std::string& str)
+{
+  const size_t len = str.length();
+  std::vector<std::string> words;
+  size_t start = 0;
+  size_t stop = 0;
+  while (stop < len) {
+    while (start < len && is_space(str[start])) {
+      start += 1;
+    }
+    stop = start;
+    while (stop < len && !is_space(str[stop])) {
+      stop += 1;
+    }
+    if (stop > start) {
+      words.push_back(std::string(str, start, stop - start));
+    }
+    start = stop;
+  }
+  return words;
+}
+
+inline double read_double(const std::string& str)
+{
+  double x;
+  return reads(x, str);
+}
+
+inline std::vector<double> read_doubles(const std::string& str)
+{
+  const std::vector<std::string> strs = split_line_with_spaces(str);
+  std::vector<double> ret(strs.size());
+  for (size_t i = 0; i < strs.size(); ++i) {
+    ret[i] = read_double(strs[i]);
+  }
+  return ret;
+}
+
+inline std::vector<std::vector<double> > qload_datatable(FILE* fp)
+{
+  TIMER("qload_datatable(fp)");
+  std::vector<std::vector<double> > ret;
+  while (!feof(fp)) {
+    const std::string line = qgetline(fp);
+    if (line.length() > 0 && line[0] != '#') {
+      const std::vector<double> xs = read_doubles(line);
+      if (xs.size() > 0) {
+        ret.push_back(xs);
+      }
+    }
+  }
+  return ret;
+}
+
+inline std::vector<std::vector<double> > qload_datatable(const std::string& path)
+{
+  TIMER("qload_datatable(path)");
+  FILE* fp = qopen(path, "r");
+  std::vector<std::vector<double> > ret = qload_datatable(fp);
+  qclose(fp);
+  return ret;
 }
 
 QLAT_END_NAMESPACE
