@@ -24,24 +24,23 @@ inline ColorMatrix color_matrix_sub_inverse(const ColorMatrix& x, const int ind)
   double p2 = x(i1,i2).real() - x(i2,i1).real();
   double p3 = x(i1,i1).imag() - x(i2,i2).imag();
   const double psqr = sqrt(p0*p0 + p1*p1 + p2*p2 + p3*p3);
-  double ipsqr;
-  if (psqr == 0.0) {
-    ipsqr = 1.0;
-  } else {
-    ipsqr = 1.0/psqr;
-  }
-  p0 *= ipsqr;
-  p1 *= ipsqr;
-  p2 *= ipsqr;
-  p3 *= ipsqr;
   ColorMatrix y;
   set_unit(y);
-  // fill with inverse
-  y(i1,i1) = Complex( p0,-p3);
-  y(i2,i2) = Complex( p0, p3);
-  y(i1,i2) = Complex(-p2,-p1);
-  y(i2,i1) = Complex( p2,-p1);
-  return y;
+  if (psqr == 0.0) {
+    return y;
+  } else {
+    double ipsqr = 1.0/psqr;
+    p0 *= ipsqr;
+    p1 *= ipsqr;
+    p2 *= ipsqr;
+    p3 *= ipsqr;
+    // fill with inverse
+    y(i1,i1) = Complex( p0,-p3);
+    y(i2,i2) = Complex( p0, p3);
+    y(i1,i2) = Complex(-p2,-p1);
+    y(i2,i1) = Complex( p2,-p1);
+    return y;
+  }
 }
 
 inline ColorMatrix color_matrix_su_projection(const ColorMatrix& x, const double tolerance = 1.0e-8)
