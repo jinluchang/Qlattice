@@ -13,6 +13,8 @@
 #include <ctime>
 #include <array>
 
+#include <cstdint>
+
 #include <fstream>
 #include <iostream>
 
@@ -119,15 +121,23 @@ template<class M>
 uint32_t fieldChecksumSum32(const Field<M> &f)
 {
 	TIMER("fieldChecksumSum32");
-	qassert(f.geo.is_only_local());
+
+	Geometry geo = geo_resize(f.geo, 0);
+	qassert(geo.is_only_local());
+	
+	Field<M> f_local; f_local.init(geo);
+	f_local = f;
+
 	qassert(sizeof(M) % sizeof(uint32_t) == 0);
 	long sum = 0;
-	const uint32_t *data = (const uint32_t *)f.field.data();
-	const long size = f.field.size() * sizeof(M) / sizeof(uint32_t);
+	const uint32_t *data = (const uint32_t *)f_local.field.data();
+	const long size = f_local.field.size() * sizeof(M) / sizeof(uint32_t);
 	for (long i = 0; i < size; ++i) {
 		sum += data[i];
 	}
+#ifdef USE_MULTI_NODE
 	glb_sum(sum);
+#endif
 	uint32_t cs = sum;
 	DisplayInfo(cname, fname, "check sum = %x\n", cs);
 	return cs;
@@ -260,8 +270,8 @@ void sophisticated_serial_write(const qlat::Field<M> &origin,
 }
 
 // std::string cps_Matrix_header_generator(const qlat::Field<cps::Matrix> &origin,
-//                			const bool does_skip_third = false){
-// 	NOT yet implemented :(
+//							const bool does_skip_third = false){
+//	NOT yet implemented :(
 //	qassert(false);	
 //	return "NOT IMPLEMENTED.";
 // }
@@ -273,53 +283,43 @@ inline void timer_fread(char* ptr, long size, FILE *inputFile){
 
 template<class M>
 void sophisticated_serial_read(qlat::Field<M> &destination, 
-				const std::string &read_addr, 
-				const int num_of_reading_threads = 0){
+								const std::string &import, int pos, 
+								const int num_of_reading_threads = 0){
 
-	// Tested to be working with 3x3 case.
-	// Not yet able to read 3x2 file.
-	// Not yet able to check checksum, plaquette, trace.
-	// Just not able to do that. :(
+	// Blindly read binary data into field. All checking should be handled by wrapper functions.
 
 	TIMER_VERBOSE("sophisticated_serial_read");
 
 	Geometry geo_only_local = geo_resize(destination.geo, 0);;
 
-        Field<M> field_recv;
-        field_recv.init(geo_only_local);
-
-        Field<M> field_send;
-        field_send.init(geo_only_local);
+	Field<M> field_recv;
+	field_recv.init(geo_only_local);
+	
+	Field<M> field_send;
+	field_send.init(geo_only_local);
 
 	Field<M> field_rslt;
-        field_rslt.init(geo_only_local);
+	field_rslt.init(geo_only_local);
 
 	Coordinate total_site = geo_only_local.total_site();
+	
+	// for every node:
+	//
+	FILE *input = NULL;
+
+// Well as you can see this is not really serial reading anymore. The sertial reading speed is unbearablly slow.
+// Anyway it is tested. And it seems to be right.
+	input = fopen(import.c_str(), "rb"); 
+	qassert(input != NULL);
+	qassert(!ferror(input));
+
+	fseek(input, pos, SEEK_SET);
+
+#ifndef USE_SINGLE_NODE
 
 	long range_low = geo_only_local.local_volume() * get_id_node();
 	long range_high = range_low + geo_only_local.local_volume();
 
-	
-	// for every node:
-	//
-	FILE *inputFile = NULL;
-
-// Well as you can see this is not really serial reading anymore. The sertial reading speed is unbearablly slow.
-// Anyway it is tested. And it seems to be right.
-	inputFile = fopen(read_addr.c_str(), "rb"); 
-	qassert(inputFile != NULL);
-	qassert(!ferror(inputFile));
-	char line[1000];
-	char indicator[] = "END_HEADER";
-
-	int pos_ = -1;
-	rewind(inputFile);
-	while(fgets(line, 1000, inputFile) != NULL)
-	{if(strstr(line, indicator) != NULL){
-		pos_ = ftell(inputFile); break;
-	}}
-	qassert(pos_ > -1); qassert(!feof(inputFile));
-		
 	sync_node();
 	int cycle_limit = 0;
 	if(num_of_reading_threads > 0) 
@@ -330,48 +330,48 @@ void sophisticated_serial_read(qlat::Field<M> &destination,
 		if(get_id_node() % cycle_limit == cycle){
 			std::cout << "Reading STARTED:  Node Number =\t" 
 				<< get_id_node() << std::endl;
-			M *ptr = get_data(field_send).data();
+			M *ptr = field_send.field.data();
 			long size = sizeof(M) * geo_only_local.local_volume() 
 													* geo_only_local.multiplicity;
-			assert(!fseek(inputFile, size * get_id_node(), SEEK_CUR));
-			timer_fread((char*)ptr, size, inputFile);
+			assert(!fseek(input, size * get_id_node(), SEEK_CUR));
+			timer_fread((char*)ptr, size, input);
 			std::cout << "Reading FINISHED: Node Number =\t" 
 				<< get_id_node() << std::endl;
-			fclose(inputFile);
+			fclose(input);
 		}
 		sync_node();
 	}
 	
-// 	if(get_id_node() == 0){
-//         	// input.open(read_addr.c_str());
-// 		inputFile = fopen(read_addr.c_str(), "r");
-// 		char line[1000];
-// 		char indicator[] = "END_HEADER";
+//	if(get_id_node() == 0){
+//			// input.open(read_addr.c_str());
+//		inputFile = fopen(read_addr.c_str(), "r");
+//		char line[1000];
+//		char indicator[] = "END_HEADER";
 // 
-// 		int pos_ = -1; fpos_t pos;
-// 		rewind(inputFile);
-// 		while(fgets(line, 1000, inputFile) != NULL)
-// 		{if(strstr(line, indicator) != NULL){
-// 			fgetpos(inputFile, &pos); pos_ = 1;  break;
-// 		}}
-// 		qassert(pos_ > -1); qassert(!feof(inputFile));
-// 	} 
+//		int pos_ = -1; fpos_t pos;
+//		rewind(inputFile);
+//		while(fgets(line, 1000, inputFile) != NULL)
+//		{if(strstr(line, indicator) != NULL){
+//			fgetpos(inputFile, &pos); pos_ = 1;  break;
+//		}}
+//		qassert(pos_ > -1); qassert(!feof(inputFile));
+//	} 
 // 
-// 	for(int i = 0; i < get_num_node(); i++){
-// 		
-// 		if(get_id_node() == 0){
-// 			std::cout << "Reading Cycle: " << i << std::endl;
-// 			M *ptr = get_data(field_send).data();
+//	for(int i = 0; i < get_num_node(); i++){
+//		
+//		if(get_id_node() == 0){
+//			std::cout << "Reading Cycle: " << i << std::endl;
+//			M *ptr = get_data(field_send).data();
 //                         long size = sizeof(M) * geo_only_local.local_volume() * geo_only_local.multiplicity;
 //                         timer_fread((char*)ptr, size, inputFile);
-// 		// 	fflush(inputFile);
-// 		}
-// 		sync_node();	
-// 		get_data_dir(get_data(field_recv), get_data(field_send), 0);
+//		//	fflush(inputFile);
+//		}
+//		sync_node();	
+//		get_data_dir(get_data(field_recv), get_data(field_send), 0);
 //                 swap(field_recv, field_send);
-// 	}
+//	}
 // 
-// 	if(get_id_node() == 0) fclose(inputFile);
+//	if(get_id_node() == 0) fclose(inputFile);
 
 	field_rslt = field_send;
 
@@ -403,6 +403,18 @@ void sophisticated_serial_read(qlat::Field<M> &destination,
 	destination = field_send;
 
 	sync_node();
+
+#else
+
+	M *ptr = field_rslt.field.data();
+    long size = geo_only_local.local_volume() * geo_only_local.multiplicity;
+//	printf("read = %d\n", fread((char*)ptr, sizeof(M), size, input));
+	fread((char*)ptr, sizeof(M), size, input);
+   
+	destination = field_rslt;
+
+#endif
+
 }
 
 QLAT_END_NAMESPACE
