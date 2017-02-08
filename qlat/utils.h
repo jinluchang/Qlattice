@@ -549,9 +549,9 @@ inline Coordinate middle_coordinate(const Coordinate& x, const Coordinate& y, co
 inline bool is_reaching_edge_coordinate(const Coordinate& x, const Coordinate& size)
 {
   return std::abs(x[0]) * 2 == size[0]
-    && std::abs(x[1]) * 2 == size[1]
-    && std::abs(x[2]) * 2 == size[2]
-    && std::abs(x[3]) * 2 == size[3];
+    || std::abs(x[1]) * 2 == size[1]
+    || std::abs(x[2]) * 2 == size[2]
+    || std::abs(x[3]) * 2 == size[3];
 }
 
 inline long distance_sq_relative_coordinate_g(const Coordinate& xg)
