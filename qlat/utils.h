@@ -475,7 +475,8 @@ void assign_truncate(M& x, const N& y)
   }
 }
 
-inline int mod(const int x, const int len) {
+inline int mod(const int x, const int len)
+{
   qassert(0 < len);
   const int m = x % len;
   if (0 <= m) {
@@ -485,7 +486,8 @@ inline int mod(const int x, const int len) {
   }
 }
 
-inline int smod(const int x, const int len) {
+inline int smod(const int x, const int len)
+{
   qassert(0 < len);
   const int m = mod(x, len);
   if (m * 2 < len) {
@@ -495,7 +497,8 @@ inline int smod(const int x, const int len) {
   }
 }
 
-inline int middle_mod(const int x, const int y, const int len) {
+inline int middle_mod(const int x, const int y, const int len)
+{
   qassert(0 < len);
   const int xm = mod(x, len);
   const int ym = mod(y, len);
@@ -508,7 +511,8 @@ inline int middle_mod(const int x, const int y, const int len) {
   }
 }
 
-inline Coordinate regular_coordinate(const Coordinate& x, const Coordinate& size) {
+inline Coordinate regular_coordinate(const Coordinate& x, const Coordinate& size)
+{
   Coordinate ret;
   ret[0] = mod(x[0], size[0]);
   ret[1] = mod(x[1], size[1]);
@@ -517,11 +521,13 @@ inline Coordinate regular_coordinate(const Coordinate& x, const Coordinate& size
   return ret;
 }
 
-inline void regularize_coordinate(Coordinate& x, const Coordinate& size) {
+inline void regularize_coordinate(Coordinate& x, const Coordinate& size)
+{
   x = regular_coordinate(x, size);
 }
 
-inline Coordinate relative_coordinate(const Coordinate& x, const Coordinate& size) {
+inline Coordinate relative_coordinate(const Coordinate& x, const Coordinate& size)
+{
   Coordinate ret;
   ret[0] = smod(x[0], size[0]);
   ret[1] = smod(x[1], size[1]);
@@ -530,7 +536,8 @@ inline Coordinate relative_coordinate(const Coordinate& x, const Coordinate& siz
   return ret;
 }
 
-inline Coordinate middle_coordinate(const Coordinate& x, const Coordinate& y, const Coordinate& size) {
+inline Coordinate middle_coordinate(const Coordinate& x, const Coordinate& y, const Coordinate& size)
+{
   Coordinate ret;
   ret[0] = middle_mod(x[0], y[0], size[0]);
   ret[1] = middle_mod(x[1], y[1], size[1]);
@@ -539,15 +546,26 @@ inline Coordinate middle_coordinate(const Coordinate& x, const Coordinate& y, co
   return ret;
 }
 
-inline long distance_sq_relative_coordinate_g(const Coordinate& xg) {
+inline bool is_reaching_edge_coordinate(const Coordinate& x, const Coordinate& size)
+{
+  return std::abs(x[0]) * 2 == size[0]
+    && std::abs(x[1]) * 2 == size[1]
+    && std::abs(x[2]) * 2 == size[2]
+    && std::abs(x[3]) * 2 == size[3];
+}
+
+inline long distance_sq_relative_coordinate_g(const Coordinate& xg)
+{
   return sqr((long)xg[0]) + sqr((long)xg[1]) + sqr((long)xg[2]) + sqr((long)xg[3]);
 }
 
-inline double distance_relative_coordinate_g(const Coordinate& xg) {
+inline double distance_relative_coordinate_g(const Coordinate& xg)
+{
   return sqrt(distance_sq_relative_coordinate_g(xg));
 }
 
-inline Coordinate coordinate_from_index(long index, const Coordinate& size) {
+inline Coordinate coordinate_from_index(long index, const Coordinate& size)
+{
   Coordinate x;
   x[0] = index % size[0];
   index /= size[0];
@@ -559,7 +577,8 @@ inline Coordinate coordinate_from_index(long index, const Coordinate& size) {
   return x;
 }
 
-inline long index_from_coordinate(const Coordinate& x, const Coordinate& size) {
+inline long index_from_coordinate(const Coordinate& x, const Coordinate& size)
+{
   return (((x[3] * size[2]) + x[2]) * size[1] + x[1]) * size[0] + x[0];
 }
 
