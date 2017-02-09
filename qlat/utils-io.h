@@ -260,13 +260,31 @@ inline std::vector<double> read_doubles(const std::string& str)
 inline std::vector<std::vector<double> > qload_datatable(FILE* fp)
 {
   TIMER("qload_datatable(fp)");
+  const size_t line_buf_size = 128;
   std::vector<std::vector<double> > ret;
+  std::vector<std::string> lines;
+  std::vector<std::vector<double> > xss;
   while (!feof(fp)) {
-    const std::string line = qgetline(fp);
-    if (line.length() > 0 && line[0] != '#') {
-      const std::vector<double> xs = read_doubles(line);
-      if (xs.size() > 0) {
-        ret.push_back(xs);
+    lines.clear();
+    for (size_t i = 0; i < line_buf_size; ++i) {
+      lines.push_back(qgetline(fp));
+      if (feof(fp)) {
+        break;
+      }
+    }
+    xss.resize(lines.size());
+#pragma omp parallel for
+    for (size_t i = 0; i < lines.size(); ++i) {
+      const std::string& line = lines[i];
+      if (line.length() > 0 && line[0] != '#') {
+        xss[i] = read_doubles(line);
+      } else {
+        xss[i].clear();
+      }
+    }
+    for (size_t i = 0; i < xss.size(); ++i) {
+      if (xss[i].size() > 0) {
+        ret.push_back(xss[i]);
       }
     }
   }
