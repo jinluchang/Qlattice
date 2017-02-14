@@ -262,6 +262,11 @@ inline int glb_sum(Vector<double> recv, const Vector<double>& send)
 #endif
 }
 
+inline int glb_sum(Vector<Complex> recv, const Vector<Complex>& send)
+{
+  return glb_sum(Vector<double>((double*)recv.data(), recv.size() * 2), Vector<double>((double*)send.data(), send.size() * 2));
+}
+
 inline int glb_sum(Vector<long> recv, const Vector<long>& send)
 {
   qassert(recv.size() == send.size());
@@ -276,6 +281,13 @@ inline int glb_sum(Vector<long> recv, const Vector<long>& send)
 inline int glb_sum(Vector<double> vec)
 {
   std::vector<double> tmp(vec.size());
+  assign(tmp, vec);
+  return glb_sum(vec, tmp);
+}
+
+inline int glb_sum(Vector<Complex> vec)
+{
+  std::vector<Complex> tmp(vec.size());
   assign(tmp, vec);
   return glb_sum(vec, tmp);
 }
