@@ -50,7 +50,7 @@ inline Coordinate operator*(const int integer, const Coordinate &coor)
 
 inline Coordinate operator*(const Coordinate &coor, const int integer)
 {
-  return integer * coor;
+	return integer * coor;
 }
 
 inline Coordinate operator*(const Coordinate &coor1, const Coordinate &coor2)
