@@ -42,10 +42,15 @@ inline bool operator!=(const Coordinate& c1, const Coordinate& c2)
   return !(c1 == c2);
 }
 
-inline Coordinate operator*(int integer, const Coordinate &coor)
+inline Coordinate operator*(const int integer, const Coordinate &coor)
 {
 	return Coordinate(integer * coor[0], integer * coor[1],
 				integer * coor[2], integer * coor[3]);
+}
+
+inline Coordinate operator*(const Coordinate &coor, const int integer)
+{
+  return integer * coor;
 }
 
 inline Coordinate operator*(const Coordinate &coor1, const Coordinate &coor2)
