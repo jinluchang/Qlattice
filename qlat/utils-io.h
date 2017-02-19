@@ -312,6 +312,9 @@ inline DataTable qload_datatable_par(FILE* fp)
 inline DataTable qload_datatable(const std::string& path)
 {
   TIMER("qload_datatable(path)");
+  if (!does_file_exist(path)) {
+    return DataTable();
+  }
   FILE* fp = qopen(path, "r");
   DataTable ret = qload_datatable(fp);
   qclose(fp);
@@ -321,6 +324,9 @@ inline DataTable qload_datatable(const std::string& path)
 inline DataTable qload_datatable_par(const std::string& path)
 {
   TIMER("qload_datatable(path)");
+  if (!does_file_exist(path)) {
+    return DataTable();
+  }
   FILE* fp = qopen(path, "r");
   DataTable ret = qload_datatable_par(fp);
   qclose(fp);
