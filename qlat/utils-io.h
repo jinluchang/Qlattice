@@ -257,10 +257,12 @@ inline std::vector<double> read_doubles(const std::string& str)
   return ret;
 }
 
-inline std::vector<std::vector<double> > qload_datatable(FILE* fp)
+typedef std::vector<std::vector<double> > DataTable;
+
+inline DataTable qload_datatable(FILE* fp)
 {
   TIMER("qload_datatable(fp)");
-  std::vector<std::vector<double> > ret;
+  DataTable ret;
   while (!feof(fp)) {
     const std::string line = qgetline(fp);
     if (line.length() > 0 && line[0] != '#') {
@@ -273,13 +275,13 @@ inline std::vector<std::vector<double> > qload_datatable(FILE* fp)
   return ret;
 }
 
-inline std::vector<std::vector<double> > qload_datatable_par(FILE* fp)
+inline DataTable qload_datatable_par(FILE* fp)
 {
   TIMER("qload_datatable(fp)");
   const size_t line_buf_size = 128;
-  std::vector<std::vector<double> > ret;
+  DataTable ret;
   std::vector<std::string> lines;
-  std::vector<std::vector<double> > xss;
+  DataTable xss;
   while (!feof(fp)) {
     lines.clear();
     for (size_t i = 0; i < line_buf_size; ++i) {
@@ -307,20 +309,20 @@ inline std::vector<std::vector<double> > qload_datatable_par(FILE* fp)
   return ret;
 }
 
-inline std::vector<std::vector<double> > qload_datatable(const std::string& path)
+inline DataTable qload_datatable(const std::string& path)
 {
   TIMER("qload_datatable(path)");
   FILE* fp = qopen(path, "r");
-  std::vector<std::vector<double> > ret = qload_datatable(fp);
+  DataTable ret = qload_datatable(fp);
   qclose(fp);
   return ret;
 }
 
-inline std::vector<std::vector<double> > qload_datatable_par(const std::string& path)
+inline DataTable qload_datatable_par(const std::string& path)
 {
   TIMER("qload_datatable(path)");
   FILE* fp = qopen(path, "r");
-  std::vector<std::vector<double> > ret = qload_datatable_par(fp);
+  DataTable ret = qload_datatable_par(fp);
   qclose(fp);
   return ret;
 }
