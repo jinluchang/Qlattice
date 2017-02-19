@@ -279,7 +279,7 @@ inline DataTable qload_datatable(FILE* fp)
 inline DataTable qload_datatable_par(FILE* fp)
 {
   TIMER("qload_datatable(fp)");
-  const size_t line_buf_size = 128;
+  const size_t line_buf_size = 1024;
   DataTable ret;
   std::vector<std::string> lines;
   DataTable xss;
