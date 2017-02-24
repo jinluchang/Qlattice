@@ -128,7 +128,7 @@ inline FILE* qopen(const std::string& path, const std::string& mode)
 inline void qset_line_buf(FILE* f)
 {
   TIMER("qset_line_buf");
-  std::setvbuf(f, NULL, _IOLBF, BUFSIZ);
+  std::setvbuf(f, NULL, _IOLBF, 0);
 }
 
 inline void qset_fully_buf(FILE* f)
