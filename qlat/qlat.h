@@ -2,7 +2,7 @@
 
 #include <qlat/config.h>
 #include <qlat/utils.h>
-#include <qlat/vector.h>
+#include <qlat/mvector.h>
 #include <qlat/matrix.h>
 #include <qlat/mpi.h>
 #include <qlat/utils-io.h>

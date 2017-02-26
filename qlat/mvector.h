@@ -38,11 +38,10 @@ struct Mvector
     qassert(0 <= i && i < DIM);
     return p[i];
   }
-  const Complex& operator()(int i, int j) const
+  const Complex& operator()(int i) const
   {
     qassert(0 <= i && i < DIM);
-    qassert(0 <= j && j < DIM);
-    return p[i * DIM + j];
+    return p[i];
   }
   //
   const Mvector& operator+=(const Mvector& x)
@@ -54,12 +53,6 @@ struct Mvector
   const Mvector& operator-=(const Mvector& x)
   {
     *this = *this - x;
-    return *this;
-  }
-  //
-  const Mvector& operator*=(const Mvector& x)
-  {
-    *this = *this * x;
     return *this;
   }
   //
@@ -89,14 +82,6 @@ Mvector<DIM> operator-(const Mvector<DIM>& x, const Mvector<DIM>& y)
 {
   Mvector<DIM> ret;
   ret.em() = x.em() - y.em();
-  return ret;
-}
-
-template <int DIM>
-Mvector<DIM> operator*(const Mvector<DIM>& x, const Mvector<DIM>& y)
-{
-  Mvector<DIM> ret;
-  ret.em() = x.em() * y.em();
   return ret;
 }
 
