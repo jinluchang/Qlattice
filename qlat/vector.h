@@ -1,5 +1,6 @@
 #pragma once
 
+#include <qlat/config.h>
 #include <eigen3/Eigen/Eigen>
 
 #include <cmath>
