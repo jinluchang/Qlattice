@@ -7,7 +7,7 @@
 QLAT_START_NAMESPACE
 
 template <int DIM>
-struct Vector 
+struct Mvector 
 {
   static const int dim = DIM;
   Complex p[DIM];
@@ -22,7 +22,7 @@ struct Vector
     return (const double*)p;
   }
   //
-  // convert to Eigen Vector 
+  // convert to Eigen Matrix 
   Eigen::Matrix<Complex,DIM,1>& em()
   {
     return *((Eigen::Matrix<Complex,DIM,1>*)this);
@@ -44,31 +44,31 @@ struct Vector
     return p[i * DIM + j];
   }
   //
-  const Vector& operator+=(const Vector& x)
+  const Mvector& operator+=(const Mvector& x)
   {
     *this = *this + x;
     return *this;
   }
   //
-  const Vector& operator-=(const Vector& x)
+  const Mvector& operator-=(const Mvector& x)
   {
     *this = *this - x;
     return *this;
   }
   //
-  const Vector& operator*=(const Vector& x)
+  const Mvector& operator*=(const Mvector& x)
   {
     *this = *this * x;
     return *this;
   }
   //
-  const Vector& operator*=(const Complex& x)
+  const Mvector& operator*=(const Complex& x)
   {
     *this = *this * x;
     return *this;
   }
   //
-  const Vector& operator/=(const Complex& x)
+  const Mvector& operator/=(const Complex& x)
   {
     *this = *this / x;
     return *this;
@@ -76,84 +76,84 @@ struct Vector
 };
 
 template <int DIM>
-Vector<DIM> operator+(const Vector<DIM>& x, const Vector<DIM>& y)
+Mvector<DIM> operator+(const Mvector<DIM>& x, const Mvector<DIM>& y)
 {
-  Vector<DIM> ret;
+  Mvector<DIM> ret;
   ret.em() = x.em() + y.em();
   return ret;
 }
 
 template <int DIM>
-Vector<DIM> operator-(const Vector<DIM>& x, const Vector<DIM>& y)
+Mvector<DIM> operator-(const Mvector<DIM>& x, const Mvector<DIM>& y)
 {
-  Vector<DIM> ret;
+  Mvector<DIM> ret;
   ret.em() = x.em() - y.em();
   return ret;
 }
 
 template <int DIM>
-Vector<DIM> operator*(const Vector<DIM>& x, const Vector<DIM>& y)
+Mvector<DIM> operator*(const Mvector<DIM>& x, const Mvector<DIM>& y)
 {
-  Vector<DIM> ret;
+  Mvector<DIM> ret;
   ret.em() = x.em() * y.em();
   return ret;
 }
 
 template <int DIM>
-Vector<DIM> operator*(const Complex& x, const Vector<DIM>& y)
+Mvector<DIM> operator*(const Complex& x, const Mvector<DIM>& y)
 {
-  Vector<DIM> ret;
+  Mvector<DIM> ret;
   ret.em() = x * y.em();
   return ret;
 }
 
 template <int DIM>
-Vector<DIM> operator*(const Vector<DIM>& x, const Complex& y)
+Mvector<DIM> operator*(const Mvector<DIM>& x, const Complex& y)
 {
-  Vector<DIM> ret;
+  Mvector<DIM> ret;
   ret.em() = x.em() * y;
   return ret;
 }
 
 template <int DIM>
-Vector<DIM> operator/(const Vector<DIM>& x, const Complex& y)
+Mvector<DIM> operator/(const Mvector<DIM>& x, const Complex& y)
 {
-  Vector<DIM> ret;
+  Mvector<DIM> ret;
   ret.em() = x.em() / y;
   return ret;
 }
 
 template <int DIM>
-void set_zero(Vector<DIM>& m)
+void set_zero(Mvector<DIM>& m)
 {
-  memset(&m, 0, sizeof(Vector<DIM>));
+  memset(&m, 0, sizeof(Mvector<DIM>));
 }
 
 template <int DIM>
-double norm(const Vector<DIM>& m)
+double norm(const Mvector<DIM>& m)
 {
   return m.em().squaredNorm();
 }
 
 template <int DIM>
-Vector<DIM> vector_conjugate(const Vector<DIM>& x)
+Mvector<DIM> vector_conjugate(const Mvector<DIM>& x)
 {
-  Vector<DIM> ret;
+  Mvector<DIM> ret;
   ret.em() = x.em().conjugate();
   return ret;
 }
 
-struct WilsonVector: Vector<4*NUM_COLOR>
+struct WilsonVector: Mvector<4*NUM_COLOR>
 {
   WilsonVector()
   {
   }
-  WilsonVector(const Vector<4*NUM_COLOR>& m)
+  WilsonVector(const Mvector<4*NUM_COLOR>& m)
   {
     *this = m;
   }
   //
-  const WilsonVector& operator=(const Vector<NUM_COLOR>& m)
+  const WilsonVector& operator=(const Mvector<NUM_COLOR>& m)
   {
     *this = (const WilsonVector&)m;
     return *this;
@@ -165,7 +165,7 @@ QLAT_END_NAMESPACE
 namespace qshow {
 
 template <int DIM>
-std::string show(const qlat::Vector<DIM>& m)
+std::string show(const qlat::Mvector<DIM>& m)
 {
   std::ostringstream out;
   out << m.em();
