@@ -160,7 +160,7 @@ inline void load_gauge_field(GaugeField& gf, const std::string& path)
 
 inline WilsonMatrix make_wilson_matrix_from_vectors(const std::array<ConstHandle<WilsonVector>,4*NUM_COLOR>& cols)
 {
-  WilsonVector ret;
+  WilsonMatrix ret;
   for (int i = 0; i < 4*NUM_COLOR; ++i) {
     for (int j = 0; j < 4*NUM_COLOR; ++j) {
       ret(j, i) = cols[i]()(j);
@@ -169,8 +169,9 @@ inline WilsonMatrix make_wilson_matrix_from_vectors(const std::array<ConstHandle
   return ret;
 }
 
-inline void set_propagator4d_from_fermion_fields(Propagator4d& prop, const Array<FermionField4d,4*NUM_COLOR> ffs)
+inline void set_propagator_from_fermion_fields(Propagator4d& prop, const Array<FermionField4d,4*NUM_COLOR> ffs)
 {
+  TIMER_VERBOSE("set_propagator_from_fermion_fields");
   const Geometry geo = ffs[0].geo;
   for (int i = 0; i < 4*NUM_COLOR; ++i) {
     qassert(geo == ffs[i].geo);
@@ -182,7 +183,7 @@ inline void set_propagator4d_from_fermion_fields(Propagator4d& prop, const Array
     const Coordinate xl = geo.coordinate_from_index(index);
     std::array<ConstHandle<WilsonVector>, 4*NUM_COLOR> cols;
     for (int k = 0; k < 4*NUM_COLOR; ++k) {
-      cols[k].init(ffs.get_elem(xl));
+      cols[k].init(ffs[k].get_elem(xl));
     }
     prop.get_elem(xl) = make_wilson_matrix_from_vectors(cols);
   }
