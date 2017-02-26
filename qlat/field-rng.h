@@ -7,9 +7,10 @@ QLAT_START_NAMESPACE
 
 struct RngField : FieldM<RngState,1>
 {
-  virtual const char* cname()
+  virtual const std::string& cname()
   {
-    return "RngField";
+    static const std::string s = "RngField";
+    return s;
   }
   //
   virtual void init()

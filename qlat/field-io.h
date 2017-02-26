@@ -139,7 +139,7 @@ uint32_t fieldChecksumSum32(const Field<M> &f)
 	glb_sum(sum);
 #endif
 	uint32_t cs = sum;
-	DisplayInfo(cname, fname, "check sum = %x\n", cs);
+  displayln_info(cname() + "::" + fname + "(): " + ssprintf("check sum = %x", cs));
 	return cs;
 }
 

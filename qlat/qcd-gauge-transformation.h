@@ -6,9 +6,10 @@ QLAT_START_NAMESPACE
 
 struct GaugeTransform : FieldM<ColorMatrix,1>
 {
-  virtual const char* cname()
+  virtual const std::string& cname()
   {
-    return "GaugeTransform";
+    static const std::string s = "GaugeTransform";
+    return s;
   }
 };
 

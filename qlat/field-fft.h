@@ -19,9 +19,10 @@ struct fft_complex_field_plan
   int mc;          // geo.multiplicity * sizeof(M) / sizeof(Complex)
   Coordinate dirs; // 0 is no transform, 1 is forward transform, -1 is backward transform
   //
-  virtual const char* cname()
+  virtual const std::string& cname()
   {
-    return "fft_complex_field_plan";
+    static const std::string s = "fft_complex_field_plan";
+    return s;
   }
   //
   bool is_match(const Geometry& geo_, const int mc_, const Coordinate& dirs_)
@@ -73,7 +74,7 @@ struct fft_complex_field_plan
   void end()
   {
     if (geo.initialized) {
-      DisplayInfo(cname(), "end", "free a plan\n");
+      displayln_info(cname() + "::end(): free a plan.");
       fftw_destroy_plan(fftplan);
       geo.initialized = false;
     }

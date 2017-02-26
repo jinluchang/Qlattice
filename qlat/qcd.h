@@ -13,17 +13,28 @@ QLAT_START_NAMESPACE
 
 struct GaugeField : FieldM<ColorMatrix,4>
 {
-  virtual const char* cname()
+  virtual const std::string& cname()
   {
-    return "GaugeField";
+    static const std::string s = "GaugeField";
+    return s;
   }
 };
 
 struct Propagator4d : FieldM<WilsonMatrix,1>
 {
-  virtual const char* cname()
+  virtual const std::string&  cname()
   {
-    return "Propagator4d";
+    static const std::string s = "Propagator4d";
+    return s;
+  }
+};
+
+struct FermionField4d : FieldM<WilsonVector,1>
+{
+  virtual const std::string& cname()
+  {
+    static const std::string s = "FermionField4d";
+    return s;
   }
 };
 

@@ -21,9 +21,10 @@ struct Field
   Geometry geo;
   std::vector<M> field;
   //
-  virtual const char* cname()
+  virtual const std::string& cname()
   {
-    return "Field";
+    static const std::string s = "Field";
+    return s;
   }
   //
   virtual void init()
@@ -257,9 +258,10 @@ double norm(const Field<M>& f)
 template <class M, int multiplicity>
 struct FieldM : Field<M>
 {
-  virtual const char* cname()
+  virtual const std::string& cname()
   {
-    return "FieldM";
+    static const std::string s = "FieldM";
+    return s;
   }
   //
   using Field<M>::init;

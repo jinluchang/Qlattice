@@ -547,7 +547,7 @@ inline int init_mpi(int* argc, char** argv[])
   if(!is_MPI_initialized()) MPI_Init(argc, argv);
   int num_node;
   MPI_Comm_size(MPI_COMM_WORLD, &num_node);
-  DisplayInfo(cname, "begin", "MPI Initialized. NumNode = %d\n", num_node);
+  displayln_info(cname() + "::begin(): " + ssprintf("MPI Initialized. NumNode = %d", num_node));
   return num_node;
 }
 
@@ -558,7 +558,7 @@ inline void begin(const MPI_Comm& comm, const Coordinate& size_node)
   MPI_Cart_create(comm, DIM, (int*)size_node.data(), (int*)periods.data(), 0, &get_comm());
   const GeometryNode& geon = get_geometry_node();
   sync_node();
-  DisplayInfo(cname, "begin", "MPI Cart created. GeometryNode =\n%s\n", show(geon).c_str());
+  displayln_info(cname() + "::begin(): " + "MPI Cart created. GeometryNode =\n" + show(geon));
   sync_node();
   display_geometry_node();
 }
@@ -580,7 +580,7 @@ inline void begin(int* argc, char** argv[])
 inline void end()
 {
   if(is_MPI_initialized()) MPI_Finalize();
-  DisplayInfo(cname, "end", "MPI Finalized.\n");
+  displayln_info(cname() + "::end(): MPI Finalized.");
 }
 
 QLAT_END_NAMESPACE

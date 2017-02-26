@@ -12,25 +12,28 @@ QLAT_START_NAMESPACE
 
 struct QedGaugeField : FieldM<Complex,DIM>
 {
-  virtual const char* cname()
+  virtual const std::string& cname()
   {
-    return "QedGaugeField";
+    static const std::string s = "QedGaugeField";
+    return s;
   }
 };
 
 struct ComplexScalerField : FieldM<Complex,1>
 {
-  virtual const char* cname()
+  virtual const std::string& cname()
   {
-    return "ComplexScalerField";
+    static const std::string s = "ComplexScalerField";
+    return s;
   }
 };
 
 struct SpinPropagator4d : FieldM<SpinMatrix,1>
 {
-  virtual const char* cname()
+  virtual const std::string& cname()
   {
-    return "SpinPropagator4d";
+    static const std::string s = "SpinPropagator4d";
+    return s;
   }
 };
 

@@ -33,12 +33,19 @@ const int NUM_COLOR = 3;
 
 typedef std::complex<double> Complex;
 
-const char* const cname = "Qlat";
+const std::string& cname()
+{
+  static const std::string s = "Qlat";
+  return s;
+}
 
 inline void warn(const std::string& str = "")
 {
   if (str != "") {
     displayln_info(ssprintf("WARNING: %s", str.c_str()), stderr);
+    if (NULL != get_monitor_file()) {
+      displayln_info(ssprintf("WARNING: %s", str.c_str()), get_monitor_file());
+    }
   }
 }
 
