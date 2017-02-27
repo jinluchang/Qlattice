@@ -42,10 +42,7 @@ const std::string& cname()
 inline void warn(const std::string& str = "")
 {
   if (str != "") {
-    displayln_info(ssprintf("WARNING: %s", str.c_str()), stderr);
-    if (NULL != get_monitor_file()) {
-      displayln_info(ssprintf("WARNING: %s", str.c_str()), get_monitor_file());
-    }
+    displayln_info(ssprintf("WARNING: %s", str.c_str()));
   }
 }
 
