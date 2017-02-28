@@ -94,6 +94,14 @@ Matrix<DIM> operator-(const Matrix<DIM>& x, const Matrix<DIM>& y)
 }
 
 template <int DIM>
+Matrix<DIM> operator-(const Matrix<DIM>& x)
+{
+  Matrix<DIM> ret;
+  ret.em() = -x.em();
+  return ret;
+}
+
+template <int DIM>
 Matrix<DIM> operator*(const Matrix<DIM>& x, const Matrix<DIM>& y)
 {
   Matrix<DIM> ret;
@@ -276,6 +284,8 @@ struct SpinMatrixConstants
   SpinMatrix unit;
   std::array<SpinMatrix,4> gammas;
   // Not using CPS's convention, but a more standard one.
+  std::array<SpinMatrix,4> cps_gammas;
+  // CPS's convention gamma matrices
   SpinMatrix gamma5;
   // Same as CPS's gamma5
   std::array<SpinMatrix,3> cap_sigmas;
@@ -319,6 +329,11 @@ struct SpinMatrixConstants
         0,   0,   0,   1,
         1,   0,   0,   0,
         0,   1,   0,   0;
+    //
+    cps_gammas[0] = -gammas[0];
+    cps_gammas[1] = gammas[1];
+    cps_gammas[2] = -gammas[2];
+    cps_gammas[3] = gammas[3];
     // gamma_5
     gamma5.em() <<
         1,   0,   0,   0,
@@ -360,6 +375,14 @@ struct SpinMatrixConstants
     qassert(0 <= mu && mu < 4);
     return get_instance().gammas[mu];
   }
+  static const std::array<SpinMatrix,4>& get_gammas()
+  {
+    return get_instance().gammas;
+  }
+  static const std::array<SpinMatrix,4>& get_cps_gammas()
+  {
+    return get_instance().cps_gammas;
+  }
   static const SpinMatrix& get_gamma5()
   {
     return get_instance().gamma5;
@@ -367,6 +390,10 @@ struct SpinMatrixConstants
   static const SpinMatrix& get_cap_sigma(int i)
   {
     return get_instance().cap_sigmas[i];
+  }
+  static const std::array<SpinMatrix,3>& get_cap_sigmas()
+  {
+    return get_instance().cap_sigmas;
   }
 };
 
@@ -388,6 +415,11 @@ inline WilsonMatrix operator*(const ColorMatrix& cm, const WilsonMatrix& m)
   return ret;
 }
 
+inline WilsonMatrix operator*(const WilsonMatrix& m, const ColorMatrix& cm)
+{
+  return matrix_adjoint(matrix_adjoint(cm) * matrix_adjoint(m));
+}
+
 inline WilsonMatrix operator*(const SpinMatrix& sm, const WilsonMatrix& m)
 {
   WilsonMatrix ret;
@@ -404,6 +436,11 @@ inline WilsonMatrix operator*(const SpinMatrix& sm, const WilsonMatrix& m)
     }
   }
   return ret;
+}
+
+inline WilsonMatrix operator*(const WilsonMatrix& m, const SpinMatrix& sm)
+{
+  return matrix_adjoint(matrix_adjoint(sm) * matrix_adjoint(m));
 }
 
 QLAT_END_NAMESPACE

@@ -200,6 +200,7 @@ inline void gf_hyp_smear_no_comm(GaugeField& gf, const GaugeField& gf0,
 }
 
 inline void gf_hyp_smear(GaugeField& gf, const GaugeField& gf0, const double alpha1, const double alpha2, const double alpha3)
+  // values in paper is 0.75 0.6 0.3
 {
   TIMER_VERBOSE("gf_hyp_smear");
   GaugeField gf1;
