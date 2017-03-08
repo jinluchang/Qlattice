@@ -63,13 +63,6 @@ struct CoordinateD : public std::array<double,DIM>
   }
 };
 
-inline double coordinate_len(const CoordinateD& c)
-{
-  const double ans = std::sqrt(sqr(c[0]) + sqr(c[1]) + sqr(c[2]) + sqr(c[3]));
-  qassert(false == std::isnan(ans));
-  return ans;
-}
-
 inline CoordinateD operator+(const CoordinateD& c1, const CoordinateD& c2)
 {
   qassert(false == std::isnan(c1));
@@ -107,6 +100,29 @@ inline CoordinateD operator/(const CoordinateD& c, const double a)
   qassert(false == std::isnan(c));
   qassert(false == std::isnan(a));
   return (1.0 / a) * c;
+}
+
+inline double coordinate_len(const CoordinateD& c)
+{
+  const double ans = std::sqrt(sqr(c[0]) + sqr(c[1]) + sqr(c[2]) + sqr(c[3]));
+  qassert(false == std::isnan(ans));
+  if (0.0 == ans) {
+    double cmax = 0.0;
+    for (int i = 0; i < DIM; ++i) {
+      if (std::abs(c[i]) > cmax) {
+        cmax = std::abs(c[i]);
+      }
+    }
+    if (0.0 == cmax) {
+      return 0.0;
+    } else {
+      const double ans = cmax * coordinate_len(c / cmax);
+      qassert(ans >= cmax);
+      return ans;
+    }
+  } else {
+    return ans;
+  }
 }
 
 inline double dot_product(const CoordinateD& c1, const CoordinateD& c2)
