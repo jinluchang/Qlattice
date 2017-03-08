@@ -99,29 +99,28 @@ inline CoordinateD operator/(const CoordinateD& c, const double a)
 {
   qassert(false == std::isnan(c));
   qassert(false == std::isnan(a));
-  return (1.0 / a) * c;
+  return CoordinateD(c[0]/a, c[1]/a, c[2]/a, c[3]/a);
 }
 
 inline double coordinate_len(const CoordinateD& c)
 {
   const double ans = std::sqrt(sqr(c[0]) + sqr(c[1]) + sqr(c[2]) + sqr(c[3]));
+  double cmax = 0.0;
+  for (int i = 0; i < DIM; ++i) {
+    if (std::abs(c[i]) > cmax) {
+      cmax = std::abs(c[i]);
+    }
+  }
   qassert(false == std::isnan(ans));
   if (0.0 == ans) {
-    double cmax = 0.0;
-    for (int i = 0; i < DIM; ++i) {
-      if (std::abs(c[i]) > cmax) {
-        cmax = std::abs(c[i]);
-      }
-    }
     if (0.0 == cmax) {
       return 0.0;
     } else {
       const double ans = cmax * coordinate_len(c / cmax);
-      qassert(ans >= cmax);
-      return ans;
+      return std::max(ans, cmax);
     }
   } else {
-    return ans;
+    return std::max(ans, cmax);
   }
 }
 
