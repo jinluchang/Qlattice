@@ -319,7 +319,13 @@ inline double& get_time_limit()
   return limit;
 }
 
-inline void check_time_limit(const double budget)
+inline double& get_default_budget()
+{
+  static double budget = 600;
+  return budget;
+}
+
+inline void check_time_limit(const double budget = get_default_budget())
 {
   if (budget + get_total_time() > get_time_limit()) {
     release_lock();
