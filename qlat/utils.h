@@ -360,6 +360,11 @@ Vector<M> get_data(const std::vector<M>& vec)
   return Vector<M>((M*)vec.data(), vec.size());
 }
 
+inline Vector<char> get_data(const std::string& str)
+{
+  return Vector<char>(&str[0], str.length());
+}
+
 template <class M>
 Vector<M> get_data(const Handle<M>& h)
 {

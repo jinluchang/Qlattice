@@ -16,7 +16,6 @@
 
 #include <sys/stat.h>
 #include <unistd.h>
-#include <stdio.h>
 
 QLAT_START_NAMESPACE
 
@@ -114,6 +113,22 @@ inline int rmdir_lock(const std::string& path)
   return ret;
 }
 
+inline int qremove(const std::string& path)
+{
+  TIMER("qremove");
+  return std::remove(path.c_str());
+}
+
+inline int qremove_info(const std::string& path)
+{
+  TIMER("qremove_info");
+  if (0 == get_id_node()) {
+    return qremove(path);
+  } else {
+    return 0;
+  }
+}
+
 inline std::string get_env(const std::string& var_name) {
   const char* value = getenv(var_name.c_str());
   return std::string(value);
@@ -122,7 +137,7 @@ inline std::string get_env(const std::string& var_name) {
 inline FILE* qopen(const std::string& path, const std::string& mode)
 {
   TIMER("qopen");
-  return fopen(path.c_str(), mode.c_str());
+  return std::fopen(path.c_str(), mode.c_str());
 }
 
 inline void qset_line_buf(FILE* f)
@@ -155,7 +170,7 @@ inline int qclose(FILE*& file)
   if (NULL != file) {
     FILE* tmp_file = file;
     file = NULL;
-    return fclose(tmp_file);
+    return std::fclose(tmp_file);
   }
   return 0;
 }
@@ -197,6 +212,119 @@ inline int qtouch_info(const std::string& path, const std::string& content = "")
     return qtouch(path, content);
   } else {
     return 0;
+  }
+}
+
+inline std::string qcat(const std::string& path)
+{
+  TIMER("qcat");
+  FILE* fp = qopen(path, "r");
+  fseek(fp, 0, SEEK_END);
+  const long length = ftell(fp);
+  fseek(fp, 0, SEEK_SET);
+  std::string ret(length, 0);
+  fread(&ret[0], 1, length, fp);
+  qclose(fp);
+  return ret;
+}
+
+inline std::string qcat_info(const std::string& path)
+{
+  TIMER("qcat_info");
+  if (0 == get_id_node()) {
+    return qcat(path);
+  } else {
+    return std::string();
+  }
+}
+
+inline std::string& qcat_sync_node(const std::string& path)
+{
+  TIMER("qcat_sync_node");
+  std::string ret;
+  long length = 0;
+  if (0 == get_id_node()) {
+    ret = qcat(path);
+    length = ret.length();
+  }
+  glb_sum(length);
+  ret.resize(length, 0);
+  bcast(get_data(ret));
+  return ret;
+}
+
+inline std::string& get_lock_location()
+{
+  static std::string path;
+  return path;
+}
+
+inline double& get_lock_expiration_time_limit()
+{
+  static double limit = 7.0 * 24 * 3600;
+  return limit;
+}
+
+inline bool obtain_lock(const std::string& path)
+{
+  TIMER_VERBOSE("obtain_lock");
+  const std::string path_time = path + "/time.txt";
+  displayln_info(ssprintf("%s: Trying to obtain lock '%s'.", fname, path.c_str()));
+  qassert(get_lock_location() == "");
+  if (0 == mkdir_lock(path)) {
+    qtouch_info(path_time, show(get_time()) + "\n");
+    get_lock_location() = path;
+    displayln_info(ssprintf("%s: Lock obtained '%s'.", fname, path.c_str()));
+    return true;
+  } else if (does_file_exist_sync_node(path_time)) {
+    long ret = 0;
+    if (0 == get_id_node()) {
+      double time;
+      reads(time, qcat_info(path_time));
+      if (get_time() - time > get_lock_expiration_time_limit()) {
+        ret = 1;
+        qtouch(path_time, show(get_time()) + "\n");
+      }
+    }
+    glb_sum(ret);
+    if (ret > 0) {
+      displayln_info(ssprintf("%s: Lock obtained '%s' (old lock expired).", fname, path.c_str()));
+      return true;
+    } else {
+      displayln_info(ssprintf("%s: Failed to obtained '%s'.", fname, path.c_str()));
+      return false;
+    }
+  } else {
+    displayln_info(ssprintf("%s: Failed to obtained '%s' (no creation time info).", fname, path.c_str()));
+    return false;
+  }
+}
+
+inline void release_lock()
+{
+  TIMER_VERBOSE("release_lock");
+  std::string& path = get_lock_location();
+  const std::string path_time = path + "/time.txt";
+  displayln_info(ssprintf("%s: Release lock '%s'", fname, path.c_str()));
+  if (path != "") {
+    qremove_info(path_time);
+    rmdir_lock(path);
+    path = "";
+  }
+}
+
+inline double& get_time_limit()
+{
+  static double limit = 7.0 * 24 * 3600;
+  return limit;
+}
+
+inline void check_time_limit(const double budget)
+{
+  if (budget + get_total_time() > get_time_limit()) {
+    release_lock();
+    const bool time_out = false;
+    assert(time_out);
   }
 }
 
