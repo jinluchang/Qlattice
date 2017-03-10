@@ -269,10 +269,11 @@ inline bool obtain_lock(const std::string& path)
 {
   TIMER_VERBOSE("obtain_lock");
   const std::string path_time = path + "/time.txt";
+  const double expiration_time = get_start_time() + get_lock_expiration_time_limit();
   displayln_info(ssprintf("%s: Trying to obtain lock '%s'.", fname, path.c_str()));
   qassert(get_lock_location() == "");
   if (0 == mkdir_lock(path)) {
-    qtouch_info(path_time, show(get_time()) + "\n");
+    qtouch_info(path_time, show(expiration_time) + "\n");
     get_lock_location() = path;
     displayln_info(ssprintf("%s: Lock obtained '%s'.", fname, path.c_str()));
     return true;
@@ -281,9 +282,9 @@ inline bool obtain_lock(const std::string& path)
     if (0 == get_id_node()) {
       double time;
       reads(time, qcat_info(path_time));
-      if (get_time() - time > get_lock_expiration_time_limit() && 0 == qremove(path_time)) {
+      if (get_time() - time > 0.0 && 0 == qremove(path_time)) {
         ret = 1;
-        qtouch(path_time, show(get_time()) + "\n");
+        qtouch(path_time, show(expiration_time) + "\n");
       }
     }
     glb_sum(ret);
