@@ -289,6 +289,7 @@ inline bool obtain_lock(const std::string& path)
     }
     glb_sum(ret);
     if (ret > 0) {
+      get_lock_location() = path;
       displayln_info(ssprintf("%s: Lock obtained '%s' (old lock expired).", fname, path.c_str()));
       return true;
     } else {
