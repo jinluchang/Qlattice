@@ -281,7 +281,7 @@ inline bool obtain_lock(const std::string& path)
     if (0 == get_id_node()) {
       double time;
       reads(time, qcat_info(path_time));
-      if (get_time() - time > get_lock_expiration_time_limit()) {
+      if (get_time() - time > get_lock_expiration_time_limit() && 0 == qremove(path_time)) {
         ret = 1;
         qtouch(path_time, show(get_time()) + "\n");
       }
