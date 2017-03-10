@@ -327,6 +327,7 @@ inline double& get_default_budget()
 
 inline void check_time_limit(const double budget = get_default_budget())
 {
+  Timer::display("check_time_limit");
   if (budget + get_total_time() > get_time_limit()) {
     release_lock();
     const bool time_out = false;
