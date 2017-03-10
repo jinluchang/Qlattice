@@ -189,11 +189,12 @@ struct TimerInfo
     std::string fnameCut;
     fnameCut.assign(fname, 0, fname_len);
     displayln_info(
-        ssprintf("Timer::%s %s :%5.1f%% %8d calls %.3E sec %8.3f Gflops (%.3E flops)",
+        ssprintf("Timer::%s %s :%5.1f%% %8d calls %.3E,%.3E sec %8.3f Gflops (%.3E flops)",
           NULL == info ? "" : info,
           ssprintf(ssprintf("%%%ds", fname_len).c_str(), fnameCut.c_str()).c_str(),
           accumulated_time / total_time * 100, call_times,
           dtime,
+          accumulated_time / call_times,
           dflops / dtime / 1.0E9,
           (double)dflops));
   }
