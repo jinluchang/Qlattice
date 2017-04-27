@@ -25,6 +25,7 @@
 #include <cstdlib>
 #include <cstdio>
 #include <sstream>
+#include <cassert>
 
 namespace qshow {
 
@@ -32,7 +33,8 @@ inline std::string vssprintf(const char* fmt, va_list args)
 {
   std::string str;
   char* cstr;
-  vasprintf(&cstr, fmt, args);
+  int ret = vasprintf(&cstr, fmt, args);
+  assert(ret >= 0);
   str += std::string(cstr);
   std::free(cstr);
   return str;
