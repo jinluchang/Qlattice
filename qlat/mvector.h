@@ -7,6 +7,7 @@
 
 QLAT_START_NAMESPACE
 
+#undef DIM
 template <int DIM>
 struct Mvector 
 {
@@ -159,6 +160,8 @@ std::string show(const qlat::Mvector<DIM>& m)
 }
 
 }
+
+#define DIM 4
 
 #ifndef USE_NAMESPACE
 using namespace qshow;

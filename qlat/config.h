@@ -27,7 +27,11 @@
 
 QLAT_START_NAMESPACE
 
+#undef DIM
+
 const int DIM = 4;
+
+#define DIM 4
 
 const int NUM_COLOR = 3;
 

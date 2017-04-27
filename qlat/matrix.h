@@ -7,6 +7,8 @@
 
 QLAT_START_NAMESPACE
 
+#undef DIM
+
 template <int DIM>
 struct Matrix
 {
@@ -456,6 +458,8 @@ std::string show(const qlat::Matrix<DIM>& m)
 }
 
 }
+
+#define DIM 4
 
 #ifndef USE_NAMESPACE
 using namespace qshow;
