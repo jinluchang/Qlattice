@@ -31,7 +31,7 @@ void refresh_expanded(Field<M>& field_comm)
   for(long record = 0; record < record_size; record++){
     pos = field_comm.geo.coordinateFromRecord(record);
     if(field_comm.geo.is_local(pos)) continue;
-    for(int mu = 0; mu < DIM; mu++){
+    for(int mu = 0; mu < DIMN; mu++){
       local_pos[mu] = pos[mu] % field_comm.geo.node_site[mu];
       node_pos[mu] = pos[mu] / field_comm.geo.node_site[mu];
       if(local_pos[mu] < 0){
@@ -93,7 +93,7 @@ void refresh_expanded(Field<M>& field_comm)
   for(long record = 0; record < record_size; record++){
     pos = field_comm.geo.coordinateFromRecord(record);
     if(field_comm.geo.is_local(pos)) continue;
-    for(int mu = 0; mu < DIM; mu++){
+    for(int mu = 0; mu < DIMN; mu++){
       local_pos[mu] = pos[mu] % field_comm.geo.node_site[mu];
       node_pos[mu] = pos[mu] / field_comm.geo.node_site[mu];
       if(local_pos[mu] < 0){

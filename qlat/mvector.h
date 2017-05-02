@@ -7,12 +7,11 @@
 
 QLAT_START_NAMESPACE
 
-#undef DIM
-template <int DIM>
+template <int DIMN>
 struct Mvector 
 {
-  static const int dim = DIM;
-  Complex p[DIM];
+  static const int dim = DIMN;
+  Complex p[DIMN];
   //
   // convert to double array
   double* d()
@@ -25,23 +24,23 @@ struct Mvector
   }
   //
   // convert to Eigen Matrix 
-  Eigen::Matrix<Complex,DIM,1>& em()
+  Eigen::Matrix<Complex,DIMN,1>& em()
   {
-    return *((Eigen::Matrix<Complex,DIM,1>*)this);
+    return *((Eigen::Matrix<Complex,DIMN,1>*)this);
   }
-  const Eigen::Matrix<Complex,DIM,1>& em() const
+  const Eigen::Matrix<Complex,DIMN,1>& em() const
   {
-    return *((Eigen::Matrix<Complex,DIM,1>*)this);
+    return *((Eigen::Matrix<Complex,DIMN,1>*)this);
   }
   //
   Complex& operator()(int i)
   {
-    qassert(0 <= i && i < DIM);
+    qassert(0 <= i && i < DIMN);
     return p[i];
   }
   const Complex& operator()(int i) const
   {
-    qassert(0 <= i && i < DIM);
+    qassert(0 <= i && i < DIMN);
     return p[i];
   }
   //
@@ -70,62 +69,62 @@ struct Mvector
   }
 };
 
-template <int DIM>
-Mvector<DIM> operator+(const Mvector<DIM>& x, const Mvector<DIM>& y)
+template <int DIMN>
+Mvector<DIMN> operator+(const Mvector<DIMN>& x, const Mvector<DIMN>& y)
 {
-  Mvector<DIM> ret;
+  Mvector<DIMN> ret;
   ret.em() = x.em() + y.em();
   return ret;
 }
 
-template <int DIM>
-Mvector<DIM> operator-(const Mvector<DIM>& x, const Mvector<DIM>& y)
+template <int DIMN>
+Mvector<DIMN> operator-(const Mvector<DIMN>& x, const Mvector<DIMN>& y)
 {
-  Mvector<DIM> ret;
+  Mvector<DIMN> ret;
   ret.em() = x.em() - y.em();
   return ret;
 }
 
-template <int DIM>
-Mvector<DIM> operator*(const Complex& x, const Mvector<DIM>& y)
+template <int DIMN>
+Mvector<DIMN> operator*(const Complex& x, const Mvector<DIMN>& y)
 {
-  Mvector<DIM> ret;
+  Mvector<DIMN> ret;
   ret.em() = x * y.em();
   return ret;
 }
 
-template <int DIM>
-Mvector<DIM> operator*(const Mvector<DIM>& x, const Complex& y)
+template <int DIMN>
+Mvector<DIMN> operator*(const Mvector<DIMN>& x, const Complex& y)
 {
-  Mvector<DIM> ret;
+  Mvector<DIMN> ret;
   ret.em() = x.em() * y;
   return ret;
 }
 
-template <int DIM>
-Mvector<DIM> operator/(const Mvector<DIM>& x, const Complex& y)
+template <int DIMN>
+Mvector<DIMN> operator/(const Mvector<DIMN>& x, const Complex& y)
 {
-  Mvector<DIM> ret;
+  Mvector<DIMN> ret;
   ret.em() = x.em() / y;
   return ret;
 }
 
-template <int DIM>
-void set_zero(Mvector<DIM>& m)
+template <int DIMN>
+void set_zero(Mvector<DIMN>& m)
 {
-  memset(&m, 0, sizeof(Mvector<DIM>));
+  memset(&m, 0, sizeof(Mvector<DIMN>));
 }
 
-template <int DIM>
-double norm(const Mvector<DIM>& m)
+template <int DIMN>
+double norm(const Mvector<DIMN>& m)
 {
   return m.em().squaredNorm();
 }
 
-template <int DIM>
-Mvector<DIM> vector_conjugate(const Mvector<DIM>& x)
+template <int DIMN>
+Mvector<DIMN> vector_conjugate(const Mvector<DIMN>& x)
 {
-  Mvector<DIM> ret;
+  Mvector<DIMN> ret;
   ret.em() = x.em().conjugate();
   return ret;
 }
@@ -151,8 +150,8 @@ QLAT_END_NAMESPACE
 
 namespace qshow {
 
-template <int DIM>
-std::string show(const qlat::Mvector<DIM>& m)
+template <int DIMN>
+std::string show(const qlat::Mvector<DIMN>& m)
 {
   std::ostringstream out;
   out << m.em();
@@ -160,8 +159,6 @@ std::string show(const qlat::Mvector<DIM>& m)
 }
 
 }
-
-#define DIM 4
 
 #ifndef USE_NAMESPACE
 using namespace qshow;

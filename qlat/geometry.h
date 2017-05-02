@@ -24,7 +24,7 @@ struct Geometry
   //
   void reset_node_site_expanded()
   {
-    for (int i = 0; i < DIM; ++i) {
+    for (int i = 0; i < DIMN; ++i) {
       node_site_expanded[i] = expansion_left[i] + node_site[i] + expansion_right[i];
     }
   }
@@ -39,7 +39,7 @@ struct Geometry
       init();
       geon = get_geometry_node();
       multiplicity = multiplicity_;
-      for (int i = 0; i < DIM; ++i) {
+      for (int i = 0; i < DIMN; ++i) {
         qassert(0 == total_site[i] % geon.size_node[i]);
         node_site[i] = total_site[i] / geon.size_node[i];
       }
@@ -148,7 +148,7 @@ struct Geometry
   bool is_local(const Coordinate& x) const
   {
     bool b = true;
-    for (int mu = 0; mu < DIM; mu++) {
+    for (int mu = 0; mu < DIMN; mu++) {
       b = b && 0 <= x[mu] && x[mu] < node_site[mu];
     }
     return b;

@@ -99,7 +99,7 @@ inline void gf_ape_smear_no_comm(GaugeField& gf, const GaugeField& gf0, const do
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<ColorMatrix> v = gf.get_elems(xl);
-    for (int mu = 0; mu < DIM; ++mu) {
+    for (int mu = 0; mu < DIMN; ++mu) {
       v[mu] = gf_link_ape_smear_no_comm(gf0, xl, mu, alpha);
     }
   }
@@ -121,7 +121,7 @@ inline ColorMatrix gf_link_hyp_smear_3_no_comm(const GaugeField& gf, const Coord
   ColorMatrix ret;
   set_zero(ret);
   const Coordinate xl_mu = coordinate_shifts(xl,mu);
-  for (int m = 0; m < DIM; ++m) {
+  for (int m = 0; m < DIMN; ++m) {
     if (mu != m && nu != m && rho != m) {
       ret += gf.get_elem(xl, m) *
         gf.get_elem(coordinate_shifts(xl,m), mu) *
@@ -141,7 +141,7 @@ inline ColorMatrix gf_link_hyp_smear_2_no_comm(const GaugeField& gf, const Coord
   ColorMatrix ret;
   set_zero(ret);
   const Coordinate xl_mu = coordinate_shifts(xl,mu);
-  for (int m = 0; m < DIM; ++m) {
+  for (int m = 0; m < DIMN; ++m) {
     if (mu != m && nu != m) {
       ret += gf_link_hyp_smear_3_no_comm(gf, xl, m, mu, nu, alpha3) *
         gf_link_hyp_smear_3_no_comm(gf,coordinate_shifts(xl, m), mu, m, nu, alpha3) *
@@ -161,7 +161,7 @@ inline ColorMatrix gf_link_hyp_smear_1_no_comm(const GaugeField& gf, const Coord
   ColorMatrix ret;
   set_zero(ret);
   const Coordinate xl_mu = coordinate_shifts(xl,mu);
-  for (int m = 0; m < DIM; ++m) {
+  for (int m = 0; m < DIMN; ++m) {
     if (mu != m) {
       ret += gf_link_hyp_smear_2_no_comm(gf, xl, m, mu, alpha2, alpha3) *
         gf_link_hyp_smear_2_no_comm(gf, coordinate_shifts(xl, m), mu, m, alpha2, alpha3) *
@@ -193,7 +193,7 @@ inline void gf_hyp_smear_no_comm(GaugeField& gf, const GaugeField& gf0,
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<ColorMatrix> v = gf.get_elems(xl);
-    for (int mu = 0; mu < DIM; ++mu) {
+    for (int mu = 0; mu < DIMN; ++mu) {
       v[mu] = gf_link_hyp_smear_no_comm(gf0, xl, mu, alpha1, alpha2, alpha3);
     }
   }

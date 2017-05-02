@@ -31,7 +31,7 @@ void fetch_expanded(Field<M> &field_comm){
 	for(long record = 0; record < record_size; record++){
 		pos = field_comm.geo.coordinateFromRecord(record);
 		if(field_comm.geo.is_local(pos)) continue;
-		for(int mu = 0; mu < DIM; mu++){
+		for(int mu = 0; mu < DIMN; mu++){
 			local_pos[mu] = pos[mu] % field_comm.geo.node_site[mu];
 			node_pos[mu] = pos[mu] / field_comm.geo.node_site[mu];
 			if(local_pos[mu] < 0){
@@ -92,7 +92,7 @@ void fetch_expanded(Field<M> &field_comm){
 	for(long record = 0; record < record_size; record++){
 		pos = field_comm.geo.coordinateFromRecord(record);
 		if(field_comm.geo.is_local(pos)) continue;
-		for(int mu = 0; mu < DIM; mu++){
+		for(int mu = 0; mu < DIMN; mu++){
 			local_pos[mu] = pos[mu] % field_comm.geo.node_site[mu];
 			node_pos[mu] = pos[mu] / field_comm.geo.node_site[mu];
 			if(local_pos[mu] < 0){
@@ -155,8 +155,8 @@ void produce_chart_envelope(Chart<M> &chart, const Geometry geometry, const Gaug
 	Coordinate index_pos_m;
 	for(long index = 0; index < geometry.local_volume(); index++){
 		index_pos = geometry.coordinate_from_index(index);
-		for(int mu = 0; mu < DIM; mu++){
-		for(int nu = 0; nu < DIM; nu++){
+		for(int mu = 0; mu < DIMN; mu++){
+		for(int nu = 0; nu < DIMN; nu++){
 			if(mu == nu) continue;
 			for(int muI = -muP; muI <= muP; muI++){
 			for(int nuI = -nuP; nuI <= nuP; nuI++){
@@ -177,7 +177,7 @@ void produce_chart_envelope(Chart<M> &chart, const Geometry geometry, const Gaug
 	std::set<Coordinate>::const_iterator it;
 	for(it = target.begin(); it != target.end(); it++){
 		pos = *it;
-		for(int mu = 0; mu < DIM; mu++){
+		for(int mu = 0; mu < DIMN; mu++){
 			local_pos[mu] = pos[mu] % geometry.node_site[mu];
 			node_pos[mu] = pos[mu] / geometry.node_site[mu];
 			if(local_pos[mu] < 0){
@@ -200,7 +200,7 @@ void produce_chart_envelope(Chart<M> &chart, const Geometry geometry, const Gaug
 // TODO: FIXME!!!
 //template<class M>
 //void produce_chart_envelope(Chart<M> &chart, const Geometry geometry, 
-//								array<int, DIM - 1> &R, int &T){
+//								array<int, DIMN - 1> &R, int &T){
 //	TIMER("produce_chart_envelope()");
 //	
 //	chart.geo = geometry;
@@ -225,8 +225,8 @@ void produce_chart_envelope(Chart<M> &chart, const Geometry geometry, const Gaug
 //	Coordinate index_pos_m;
 //	for(long index = 0; index < geometry.local_volume(); index++){
 //		geometry.coordinate_from_index(index_pos, index);
-//		for(int mu = 0; mu < DIM; mu++){
-//		for(int nu = 0; nu < DIM; nu++){
+//		for(int mu = 0; mu < DIMN; mu++){
+//		for(int nu = 0; nu < DIMN; nu++){
 //			if(mu == nu) continue;
 //			for(int muI = -muP; muI <= muP; muI++){
 //			for(int nuI = -nuP; nuI <= nuP; nuI++){
@@ -247,7 +247,7 @@ void produce_chart_envelope(Chart<M> &chart, const Geometry geometry, const Gaug
 //	std::set<Coordinate>::const_iterator it;
 //	for(it = target.begin(); it != target.end(); it++){
 //		pos = *it;
-//		for(int mu = 0; mu < DIM; mu++){
+//		for(int mu = 0; mu < DIMN; mu++){
 //			local_pos[mu] = pos[mu] % geometry.node_site[mu];
 //			node_pos[mu] = pos[mu] / geometry.node_site[mu];
 //			if(local_pos[mu] < 0){
@@ -282,7 +282,7 @@ void produce_chart_geo(Chart<M> &chart, const Geometry geometry){
 	for(long record = 0; record < record_size; record++){
 		pos = geometry.coordinateFromRecord(record);
 		if(geometry.is_local(pos)) continue;
-		for(int mu = 0; mu < DIM; mu++){
+		for(int mu = 0; mu < DIMN; mu++){
 			local_pos[mu] = pos[mu] % geometry.node_site[mu];
 			node_pos[mu] = pos[mu] / geometry.node_site[mu];
 			if(local_pos[mu] < 0){

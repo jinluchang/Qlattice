@@ -8,10 +8,10 @@
 
 QLAT_START_NAMESPACE
 
-struct Coordinate: public std::array<int, DIM>
+struct Coordinate: public std::array<int, DIMN>
 {
         Coordinate(){
-                std::array<int, DIM>::fill(0);
+                std::array<int, DIMN>::fill(0);
         }
 
         Coordinate(int first, int second, int third, int fourth){
@@ -81,7 +81,7 @@ inline void regularize(Coordinate &coor, const Coordinate &regularizer)
 #ifndef USE_SINGLE_NODE
 	warn("use regular_coordinate");
 #endif
-	for(int mu = 0; mu < DIM; mu++){
+	for(int mu = 0; mu < DIMN; mu++){
 	coor[mu] = (coor[mu] % regularizer[mu] + regularizer[mu]) % regularizer[mu];
 	}
 }
@@ -94,7 +94,7 @@ inline Coordinate coordinate_shifts(const Coordinate& x)
 inline Coordinate coordinate_shifts(const Coordinate& x, const int dir)
 {
   Coordinate xsh = x;
-  qassert(-DIM <= dir && dir < DIM);
+  qassert(-DIMN <= dir && dir < DIMN);
   if (0 <= dir) {
     xsh[dir] += 1;
   } else {
@@ -106,8 +106,8 @@ inline Coordinate coordinate_shifts(const Coordinate& x, const int dir)
 inline Coordinate coordinate_shifts(const Coordinate& x, const int dir1, const int dir2)
 {
   Coordinate xsh = x;
-  qassert(-DIM <= dir1 && dir1 < DIM);
-  qassert(-DIM <= dir2 && dir2 < DIM);
+  qassert(-DIMN <= dir1 && dir1 < DIMN);
+  qassert(-DIMN <= dir2 && dir2 < DIMN);
   if (0 <= dir1) {
     xsh[dir1] += 1;
   } else {
@@ -124,9 +124,9 @@ inline Coordinate coordinate_shifts(const Coordinate& x, const int dir1, const i
 inline Coordinate coordinate_shifts(const Coordinate& x, const int dir1, const int dir2, const int dir3)
 {
   Coordinate xsh = x;
-  qassert(-DIM <= dir1 && dir1 < DIM);
-  qassert(-DIM <= dir2 && dir2 < DIM);
-  qassert(-DIM <= dir3 && dir3 < DIM);
+  qassert(-DIMN <= dir1 && dir1 < DIMN);
+  qassert(-DIMN <= dir2 && dir2 < DIMN);
+  qassert(-DIMN <= dir3 && dir3 < DIMN);
   if (0 <= dir1) {
     xsh[dir1] += 1;
   } else {
@@ -148,10 +148,10 @@ inline Coordinate coordinate_shifts(const Coordinate& x, const int dir1, const i
 inline Coordinate coordinate_shifts(const Coordinate& x, const int dir1, const int dir2, const int dir3, const int dir4)
 {
   Coordinate xsh = x;
-  qassert(-DIM <= dir1 && dir1 < DIM);
-  qassert(-DIM <= dir2 && dir2 < DIM);
-  qassert(-DIM <= dir3 && dir3 < DIM);
-  qassert(-DIM <= dir4 && dir4 < DIM);
+  qassert(-DIMN <= dir1 && dir1 < DIMN);
+  qassert(-DIMN <= dir2 && dir2 < DIMN);
+  qassert(-DIMN <= dir3 && dir3 < DIMN);
+  qassert(-DIMN <= dir4 && dir4 < DIMN);
   if (0 <= dir1) {
     xsh[dir1] += 1;
   } else {
@@ -180,7 +180,7 @@ inline Coordinate coordinate_shifts(const Coordinate& x, const std::vector<int> 
   Coordinate ret = x;
   for (int i = 0; i < (int)path.size(); ++i) {
     const int dir = path[i];
-    qassert(-DIM <= dir && dir < DIM);
+    qassert(-DIMN <= dir && dir < DIMN);
     ret = coordinate_shifts(ret, dir);
   }
   return ret;

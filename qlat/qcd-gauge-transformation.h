@@ -45,7 +45,7 @@ inline void make_apply_gauge_transformation_no_comm(GaugeField& gf, const GaugeF
     Vector<ColorMatrix> v = gf.get_elems(xl);
     const Vector<ColorMatrix> v0 = gf0.get_elems_const(xl);
     const ColorMatrix& t0 = gt.get_elem(xl);
-    for (int m = 0; m < DIM; ++m) {
+    for (int m = 0; m < DIMN; ++m) {
       xl[m] += 1;
       const ColorMatrix& t1 = gt.get_elem(xl);
       v[m] = t0 * v0[m] * matrix_adjoint(t1);
@@ -122,7 +122,7 @@ inline void make_tree_gauge_transformation(GaugeTransform& gt, const GaugeField&
   GaugeField gft;
   gft.init(geo);
   gft = gf;
-  for (int m = 0; m < DIM; ++m) {
+  for (int m = 0; m < DIMN; ++m) {
     make_temporal_gauge_transformation(gt_dir, gft, xgref[dirs[m]], dirs[m]);
     make_apply_gauge_transformation(gft, gft, gt_dir);
     gt_apply_gauge_transformation(gt, gt_dir);

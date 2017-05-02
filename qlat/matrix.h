@@ -7,13 +7,11 @@
 
 QLAT_START_NAMESPACE
 
-#undef DIM
-
-template <int DIM>
+template <int DIMN>
 struct Matrix
 {
-  static const int dim = DIM;
-  Complex p[DIM * DIM];
+  static const int dim = DIMN;
+  Complex p[DIMN * DIMN];
   //
   // convert to double array
   double* d()
@@ -26,26 +24,26 @@ struct Matrix
   }
   //
   // convert to Eigen Matrix
-  Eigen::Matrix<Complex,DIM,DIM,Eigen::RowMajor>& em()
+  Eigen::Matrix<Complex,DIMN,DIMN,Eigen::RowMajor>& em()
   {
-    return *((Eigen::Matrix<Complex,DIM,DIM,Eigen::RowMajor>*)this);
+    return *((Eigen::Matrix<Complex,DIMN,DIMN,Eigen::RowMajor>*)this);
   }
-  const Eigen::Matrix<Complex,DIM,DIM,Eigen::RowMajor>& em() const
+  const Eigen::Matrix<Complex,DIMN,DIMN,Eigen::RowMajor>& em() const
   {
-    return *((Eigen::Matrix<Complex,DIM,DIM,Eigen::RowMajor>*)this);
+    return *((Eigen::Matrix<Complex,DIMN,DIMN,Eigen::RowMajor>*)this);
   }
   //
   Complex& operator()(int i, int j)
   {
-    qassert(0 <= i && i < DIM);
-    qassert(0 <= j && j < DIM);
-    return p[i * DIM + j];
+    qassert(0 <= i && i < DIMN);
+    qassert(0 <= j && j < DIMN);
+    return p[i * DIMN + j];
   }
   const Complex& operator()(int i, int j) const
   {
-    qassert(0 <= i && i < DIM);
-    qassert(0 <= j && j < DIM);
-    return p[i * DIM + j];
+    qassert(0 <= i && i < DIMN);
+    qassert(0 <= j && j < DIMN);
+    return p[i * DIMN + j];
   }
   //
   const Matrix& operator+=(const Matrix& x)
@@ -79,70 +77,70 @@ struct Matrix
   }
 };
 
-template <int DIM>
-Matrix<DIM> operator+(const Matrix<DIM>& x, const Matrix<DIM>& y)
+template <int DIMN>
+Matrix<DIMN> operator+(const Matrix<DIMN>& x, const Matrix<DIMN>& y)
 {
-  Matrix<DIM> ret;
+  Matrix<DIMN> ret;
   ret.em() = x.em() + y.em();
   return ret;
 }
 
-template <int DIM>
-Matrix<DIM> operator-(const Matrix<DIM>& x, const Matrix<DIM>& y)
+template <int DIMN>
+Matrix<DIMN> operator-(const Matrix<DIMN>& x, const Matrix<DIMN>& y)
 {
-  Matrix<DIM> ret;
+  Matrix<DIMN> ret;
   ret.em() = x.em() - y.em();
   return ret;
 }
 
-template <int DIM>
-Matrix<DIM> operator-(const Matrix<DIM>& x)
+template <int DIMN>
+Matrix<DIMN> operator-(const Matrix<DIMN>& x)
 {
-  Matrix<DIM> ret;
+  Matrix<DIMN> ret;
   ret.em() = -x.em();
   return ret;
 }
 
-template <int DIM>
-Matrix<DIM> operator*(const Matrix<DIM>& x, const Matrix<DIM>& y)
+template <int DIMN>
+Matrix<DIMN> operator*(const Matrix<DIMN>& x, const Matrix<DIMN>& y)
 {
-  Matrix<DIM> ret;
+  Matrix<DIMN> ret;
   ret.em() = x.em() * y.em();
   return ret;
 }
 
-template <int DIM>
-Matrix<DIM> operator*(const Complex& x, const Matrix<DIM>& y)
+template <int DIMN>
+Matrix<DIMN> operator*(const Complex& x, const Matrix<DIMN>& y)
 {
-  Matrix<DIM> ret;
+  Matrix<DIMN> ret;
   ret.em() = x * y.em();
   return ret;
 }
 
-template <int DIM>
-Matrix<DIM> operator*(const Matrix<DIM>& x, const Complex& y)
+template <int DIMN>
+Matrix<DIMN> operator*(const Matrix<DIMN>& x, const Complex& y)
 {
-  Matrix<DIM> ret;
+  Matrix<DIMN> ret;
   ret.em() = x.em() * y;
   return ret;
 }
 
-template <int DIM>
-Matrix<DIM> operator/(const Matrix<DIM>& x, const Complex& y)
+template <int DIMN>
+Matrix<DIMN> operator/(const Matrix<DIMN>& x, const Complex& y)
 {
-  Matrix<DIM> ret;
+  Matrix<DIMN> ret;
   ret.em() = x.em() / y;
   return ret;
 }
 
-template <int DIM>
-void set_zero(Matrix<DIM>& m)
+template <int DIMN>
+void set_zero(Matrix<DIMN>& m)
 {
-  memset(&m, 0, sizeof(Matrix<DIM>));
+  memset(&m, 0, sizeof(Matrix<DIMN>));
 }
 
-template <int DIM>
-void set_unit(Matrix<DIM>& m, const Complex& coef = 1.0)
+template <int DIMN>
+void set_unit(Matrix<DIMN>& m, const Complex& coef = 1.0)
 {
   set_zero(m);
   for (int i = 0; i < m.dim; ++i) {
@@ -150,22 +148,22 @@ void set_unit(Matrix<DIM>& m, const Complex& coef = 1.0)
   }
 }
 
-template <int DIM>
-double norm(const Matrix<DIM>& m)
+template <int DIMN>
+double norm(const Matrix<DIMN>& m)
 {
   return m.em().squaredNorm();
 }
 
-template <int DIM>
-Complex matrix_trace(const Matrix<DIM>& x)
+template <int DIMN>
+Complex matrix_trace(const Matrix<DIMN>& x)
 {
   return x.em().trace();
 }
 
-template <int DIM>
-Matrix<DIM> matrix_adjoint(const Matrix<DIM>& x)
+template <int DIMN>
+Matrix<DIMN> matrix_adjoint(const Matrix<DIMN>& x)
 {
-  Matrix<DIM> ret;
+  Matrix<DIMN> ret;
   ret.em() = x.em().adjoint();
   return ret;
 }
@@ -449,8 +447,8 @@ QLAT_END_NAMESPACE
 
 namespace qshow {
 
-template <int DIM>
-std::string show(const qlat::Matrix<DIM>& m)
+template <int DIMN>
+std::string show(const qlat::Matrix<DIMN>& m)
 {
   std::ostringstream out;
   out << m.em();
@@ -458,8 +456,6 @@ std::string show(const qlat::Matrix<DIM>& m)
 }
 
 }
-
-#define DIM 4
 
 #ifndef USE_NAMESPACE
 using namespace qshow;

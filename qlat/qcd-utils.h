@@ -50,7 +50,7 @@ inline ColorMatrix gf_wilson_line_no_comm(const GaugeField& gf, const Coordinate
   Coordinate xl1 = xl;
   for (int i = 0; i < (int)path.size(); ++i) {
     const int dir = path[i];
-    qassert(-DIM <= dir && dir < DIM);
+    qassert(-DIMN <= dir && dir < DIMN);
     if (0 <= dir) {
       ret *= gf.get_elem(xl1,dir);
       xl1[dir] += 1;
@@ -67,7 +67,7 @@ inline ColorMatrix gf_staple_no_comm_v1(const GaugeField& gf, const Coordinate& 
   ColorMatrix ret;
   set_zero(ret);
   const Coordinate xl_mu = coordinate_shifts(xl,mu);
-  for (int m = 0; m < DIM; ++m) {
+  for (int m = 0; m < DIMN; ++m) {
     if (mu != m) {
       ret += gf.get_elem(xl, m) *
         gf.get_elem(coordinate_shifts(xl,m), mu) *
@@ -86,14 +86,14 @@ inline ColorMatrix gf_staple_no_comm_v2(const GaugeField& gf, const Coordinate& 
   set_zero(ret);
   std::vector<int> path(3);
   path[1] = mu;
-  for (int m = 0; m < DIM; ++m) {
+  for (int m = 0; m < DIMN; ++m) {
     if (mu != m) {
       path[0] = m;
       path[2] = -m-1;
       ret += gf_wilson_line_no_comm(gf, xl, path);
     }
   }
-  for (int m = 0; m < DIM; ++m) {
+  for (int m = 0; m < DIMN; ++m) {
     if (mu != m) {
       path[0] = -m-1;
       path[2] = m;
@@ -149,7 +149,7 @@ inline std::vector<int> find_next_dirs(const Coordinate& loc, const Coordinate& 
     return std::vector<int>();
   }
   std::vector<int> dirs;
-  for (int i = 0; i < DIM; ++i) {
+  for (int i = 0; i < DIMN; ++i) {
     const int x = target_wilson_line[i];
     if (0 < x) {
       dirs.push_back(i);
@@ -270,7 +270,7 @@ inline void set_multiply_simple_wilson_line_field_partial_comm(FieldM<ColorMatri
   wlf.init(geo);
   for (size_t i = 0; i < path.size(); ++i) {
     const int dir = path[i];
-    qassert(-DIM <= dir && dir < DIM);
+    qassert(-DIMN <= dir && dir < DIMN);
     refresh_expanded(wlf1);
 #pragma omp parallel for
     for (long index = 0; index < geo.local_volume(); ++index) {

@@ -10,7 +10,7 @@
 
 QLAT_START_NAMESPACE
 
-struct QedGaugeField : FieldM<Complex,DIM>
+struct QedGaugeField : FieldM<Complex,DIMN>
 {
   virtual const std::string& cname()
   {
@@ -37,7 +37,7 @@ struct SpinPropagator4d : FieldM<SpinMatrix,1>
   }
 };
 
-inline void prop_mom_photon_invert(QedGaugeField& egf, const std::array<double,DIM>& momtwist)
+inline void prop_mom_photon_invert(QedGaugeField& egf, const std::array<double,DIMN>& momtwist)
   // Feynman Gauge
   // All spatial zero mode removed.
   // egf in momentum space.
@@ -47,11 +47,11 @@ inline void prop_mom_photon_invert(QedGaugeField& egf, const std::array<double,D
   for (long index = 0; index < geo.local_volume(); ++index) {
     Coordinate kl = geo.coordinate_from_index(index);
     Coordinate kg = geo.coordinate_g_from_l(kl);
-    std::array<double,DIM> kk;
+    std::array<double,DIMN> kk;
     // FIXME unused 'ks'
-	// std::array<double,DIM> ks;
+	// std::array<double,DIMN> ks;
     double s2 = 0.0;
-    for (int i = 0; i < DIM; i++) {
+    for (int i = 0; i < DIMN; i++) {
       const Coordinate total_site = geo.total_site();
       kg[i] = smod(kg[i], total_site[i]);
       kk[i] = 2.0 * PI * (kg[i] + momtwist[i]) / (double)total_site[i];
@@ -70,7 +70,7 @@ inline void prop_mom_photon_invert(QedGaugeField& egf, const std::array<double,D
   }
 }
 
-inline void prop_photon_invert(QedGaugeField& egf, const std::array<double,DIM>& momtwist)
+inline void prop_photon_invert(QedGaugeField& egf, const std::array<double,DIMN>& momtwist)
   // Feynman Gauge
   // All spatial zero mode removed.
   // egf in coordinate space.
@@ -83,18 +83,18 @@ inline void prop_photon_invert(QedGaugeField& egf, const std::array<double,DIM>&
   egf *= 1.0 / geo.total_volume();
 }
 
-inline void prop_mom_complex_scaler_invert(ComplexScalerField& csf, const double mass, const std::array<double,DIM>& momtwist)
+inline void prop_mom_complex_scaler_invert(ComplexScalerField& csf, const double mass, const std::array<double,DIMN>& momtwist)
 {
   TIMER("prop_mom_complex_scaler_invert");
   const Geometry& geo = csf.geo;
   for (long index = 0; index < geo.local_volume(); ++index) {
     Coordinate kl = geo.coordinate_from_index(index);
     Coordinate kg = geo.coordinate_g_from_l(kl);
-    std::array<double,DIM> kk;
+    std::array<double,DIMN> kk;
     // FIXME my compiler says unused variable 'ks'
-	// std::array<double,DIM> ks;
+	// std::array<double,DIMN> ks;
     double s2 = 0.0;
-    for (int i = 0; i < DIM; i++) {
+    for (int i = 0; i < DIMN; i++) {
       Coordinate total_site = geo.total_site();
       kg[i] = smod(kg[i], total_site[i]);
       kk[i] = 2.0 * PI * (kg[i] + momtwist[i]) / (double)total_site[i];
@@ -107,7 +107,7 @@ inline void prop_mom_complex_scaler_invert(ComplexScalerField& csf, const double
   }
 }
 
-inline void prop_complex_scaler_invert(ComplexScalerField& csf, const double mass, const std::array<double,DIM>& momtwist)
+inline void prop_complex_scaler_invert(ComplexScalerField& csf, const double mass, const std::array<double,DIMN>& momtwist)
 {
   TIMER_VERBOSE("prop_complex_scaler_invert");
   const Geometry& geo = csf.geo;
@@ -117,7 +117,7 @@ inline void prop_complex_scaler_invert(ComplexScalerField& csf, const double mas
   csf *= 1.0 / geo.total_volume();
 }
 
-inline void prop_mom_spin_propagator4d(SpinPropagator4d& sp4d, const double mass, const std::array<double,DIM>& momtwist)
+inline void prop_mom_spin_propagator4d(SpinPropagator4d& sp4d, const double mass, const std::array<double,DIMN>& momtwist)
   // DWF infinite L_s
   // M_5 = 1.0
 {
@@ -128,11 +128,11 @@ inline void prop_mom_spin_propagator4d(SpinPropagator4d& sp4d, const double mass
   for (long index = 0; index < geo.local_volume(); ++index) {
     Coordinate kl = geo.coordinate_from_index(index);
     Coordinate kg = geo.coordinate_g_from_l(kl);
-    std::array<double,DIM> kk, ks;
+    std::array<double,DIMN> kk, ks;
     double p2 = 0.0;
     double wp = 1.0 - m5;
     SpinMatrix pg; set_zero(pg);
-    for (int i = 0; i < DIM; ++i) {
+    for (int i = 0; i < DIMN; ++i) {
       Coordinate total_site = geo.total_site();
       kg[i] = smod(kg[i], total_site[i]);
       kk[i] = 2.0 * PI * (kg[i] + momtwist[i]) / (double)total_site[i];
@@ -166,7 +166,7 @@ inline void prop_mom_spin_propagator4d(SpinPropagator4d& sp4d, const double mass
   }
 }
 
-inline void prop_spin_propagator4d(SpinPropagator4d& sp4d, const double mass, const std::array<double,DIM>& momtwist)
+inline void prop_spin_propagator4d(SpinPropagator4d& sp4d, const double mass, const std::array<double,DIMN>& momtwist)
 {
   TIMER_VERBOSE("prop_spin_propagator4d");
   const Geometry& geo = sp4d.geo;
@@ -223,7 +223,7 @@ inline void sequential_photon_spin_propagator_plusm(
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     Coordinate xl = geo.coordinate_from_index(index);
-    for (int mu = 0; mu < DIM; mu++) {
+    for (int mu = 0; mu < DIMN; mu++) {
       // a = A_\mu(x)
       Complex a = egf.get_elem(xl, mu);
       // tmp = \gamma_\mu \psi(x)

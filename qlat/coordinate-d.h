@@ -32,13 +32,13 @@ namespace std {
 
 QLAT_START_NAMESPACE
 
-struct CoordinateD : public std::array<double,DIM>
+struct CoordinateD : public std::array<double,DIMN>
 {
   CoordinateD()
   {
     memset(this, 0, sizeof(CoordinateD));
   }
-  CoordinateD(const std::array<double,DIM>& arr)
+  CoordinateD(const std::array<double,DIMN>& arr)
   {
     CoordinateD& c = *this;
     c = arr;
@@ -46,7 +46,7 @@ struct CoordinateD : public std::array<double,DIM>
   }
   CoordinateD(const double x0, const double x1, const double x2, const double x3)
   {
-    qassert(DIM == 4);
+    qassert(DIMN == 4);
     CoordinateD& c = *this;
     c[0] = x0;
     c[1] = x1;
@@ -57,7 +57,7 @@ struct CoordinateD : public std::array<double,DIM>
   CoordinateD(const Coordinate& x)
   {
     CoordinateD& c = *this;
-    for (int i = 0; i < DIM; ++i) {
+    for (int i = 0; i < DIMN; ++i) {
       c[i] = x[i];
     }
   }
@@ -106,7 +106,7 @@ inline double coordinate_len(const CoordinateD& c)
 {
   const double ans = std::sqrt(sqr(c[0]) + sqr(c[1]) + sqr(c[2]) + sqr(c[3]));
   double cmax = 0.0;
-  for (int i = 0; i < DIM; ++i) {
+  for (int i = 0; i < DIMN; ++i) {
     if (std::abs(c[i]) > cmax) {
       cmax = std::abs(c[i]);
     }

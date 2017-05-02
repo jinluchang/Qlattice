@@ -65,14 +65,14 @@ inline double gf_avg_plaq_no_comm(const GaugeField& gf)
     for (long index = 0; index < geo.local_volume(); ++index) {
       Coordinate xl = geo.coordinate_from_index(index);
       const Vector<ColorMatrix> v = gf.get_elems_const(xl);
-      std::vector<Vector<ColorMatrix> > vms(DIM);
-      for (int m = 0; m < DIM; ++m) {
+      std::vector<Vector<ColorMatrix> > vms(DIMN);
+      for (int m = 0; m < DIMN; ++m) {
         xl[m] += 1;
         vms[m] = gf.get_elems_const(xl);
         xl[m] -= 1;
       }
       double avg_plaq = 0.0;
-      for (int m1 = 1; m1 < DIM; ++m1) {
+      for (int m1 = 1; m1 < DIMN; ++m1) {
         for (int m2 = 0; m2 < m1; ++m2) {
           ColorMatrix cm = v[m1] * vms[m1][m2] * matrix_adjoint(v[m2] * vms[m2][m1]);
           avg_plaq += matrix_trace(cm).real() / NUM_COLOR;
@@ -82,7 +82,7 @@ inline double gf_avg_plaq_no_comm(const GaugeField& gf)
           }
         }
       }
-      avg_plaq /= DIM * (DIM-1) / 2;
+      avg_plaq /= DIMN * (DIMN-1) / 2;
       sum_avg_plaq += avg_plaq;
     }
     sums[omp_get_thread_num()] = sum_avg_plaq;
@@ -119,10 +119,10 @@ inline double gf_avg_link_trace(const GaugeField& gf)
       Coordinate xl = geo.coordinate_from_index(index);
       const Vector<ColorMatrix> v = gf.get_elems_const(xl);
       double avg_link_trace = 0.0;
-      for (int m = 0; m < DIM; ++m) {
+      for (int m = 0; m < DIMN; ++m) {
         avg_link_trace += matrix_trace(v[m]).real() / NUM_COLOR;
       }
-      avg_link_trace /= DIM;
+      avg_link_trace /= DIMN;
       sum_avg_link_trace += avg_link_trace;
     }
     sums[omp_get_thread_num()] = sum_avg_link_trace;

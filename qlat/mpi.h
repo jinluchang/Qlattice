@@ -67,7 +67,7 @@ inline int id_node_from_coor_node(const Coordinate& coor_node)
   Coordinate size_node;
   Coordinate periods;
   Coordinate coor_node_check;
-  MPI_Cart_get(get_comm(), DIM, size_node.data(), periods.data(), coor_node_check.data());
+  MPI_Cart_get(get_comm(), DIMN, size_node.data(), periods.data(), coor_node_check.data());
   return index_from_coordinate(coor_node, size_node);
 }
 
@@ -76,7 +76,7 @@ inline Coordinate coor_node_from_id_node(int id_node)
   Coordinate size_node;
   Coordinate periods;
   Coordinate coor_node_check;
-  MPI_Cart_get(get_comm(), DIM, size_node.data(), periods.data(), coor_node_check.data());
+  MPI_Cart_get(get_comm(), DIMN, size_node.data(), periods.data(), coor_node_check.data());
   return coordinate_from_index(id_node, size_node);
 }
 
@@ -90,15 +90,15 @@ inline void GeometryNode::init()
   MPI_Comm_rank(get_comm(), &id_node);
   int ndims;
   MPI_Cartdim_get(get_comm(), &ndims);
-  qassert(DIM == ndims);
+  qassert(DIMN == ndims);
   Coordinate periods;
   Coordinate coor_node_check;
-  MPI_Cart_get(get_comm(), DIM, size_node.data(), periods.data(), coor_node_check.data());
-  for (int i = 0; i < DIM; ++i) {
+  MPI_Cart_get(get_comm(), DIMN, size_node.data(), periods.data(), coor_node_check.data());
+  for (int i = 0; i < DIMN; ++i) {
     qassert(0 != periods[i]);
   }
   coor_node = coordinate_from_index(id_node, size_node);
-  for (int i = 0; i < DIM; ++i) {
+  for (int i = 0; i < DIMN; ++i) {
     qassert(0 != periods[i]);
     // qassert(coor_node_check[i] == coor_node[i]);
   }
@@ -107,7 +107,7 @@ inline void GeometryNode::init()
 #else
   num_node = 1;
   id_node = 0;
-  for (int i = 0; i < DIM; ++i) {
+  for (int i = 0; i < DIMN; ++i) {
     size_node[i] = 1;
     coor_node[i] = 0;
   }
@@ -153,7 +153,7 @@ inline const Coordinate& get_coor_node()
 
 struct GeometryNodeNeighbor
 {
-  int dest[2][DIM];
+  int dest[2][DIMN];
   // dest[dir][mu]
   // dir = 0, 1 for Plus dir or Minus dir
   // 0 <= mu < 4 for different directions
@@ -162,7 +162,7 @@ struct GeometryNodeNeighbor
   {
     const Coordinate& coor_node = get_geometry_node().coor_node;
     const Coordinate& size_node = get_geometry_node().size_node;
-    for (int mu = 0; mu < DIM; ++mu) {
+    for (int mu = 0; mu < DIMN; ++mu) {
       Coordinate coor;
       coor = coor_node;
       ++coor[mu];
@@ -532,7 +532,7 @@ inline Coordinate plan_size_node(const int num_node)
 {
   // assuming MPI is initialized ... 
   int dims[] = {0, 0, 0, 0};
-  MPI_Dims_create(num_node, DIM, dims);
+  MPI_Dims_create(num_node, DIMN, dims);
   return Coordinate(dims[0], dims[1], dims[2], dims[3]);
 }
 
@@ -555,7 +555,7 @@ inline void begin(const MPI_Comm& comm, const Coordinate& size_node)
   // begin Qlat with existing comm
 {
   const Coordinate periods(1, 1, 1, 1);
-  MPI_Cart_create(comm, DIM, (int*)size_node.data(), (int*)periods.data(), 0, &get_comm());
+  MPI_Cart_create(comm, DIMN, (int*)size_node.data(), (int*)periods.data(), 0, &get_comm());
   const GeometryNode& geon = get_geometry_node();
   sync_node();
   displayln_info(cname() + "::begin(): " + "MPI Cart created. GeometryNode =\n" + show(geon));
