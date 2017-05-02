@@ -238,7 +238,7 @@ inline std::string qcat_info(const std::string& path)
   }
 }
 
-inline std::string& qcat_sync_node(const std::string& path)
+inline std::string qcat_sync_node(const std::string& path)
 {
   TIMER("qcat_sync_node");
   std::string ret;
