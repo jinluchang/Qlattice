@@ -26,7 +26,7 @@ qlat::SpinMatrix projPositiveState(const qlat::SpinMatrix& x)
 
 qlat::SpinMatrix lblMuonLine(const int tsnk, const int tsrc,
     const qlat::QedGaugeField& egf1, const qlat::QedGaugeField& egf2, const qlat::QedGaugeField& egf3,
-    const double mass, const std::array<double,qlat::DIM>& momtwist)
+    const double mass, const std::array<double,qlat::DIMN>& momtwist)
 {
   TIMER("lblMuonLine");
   const qlat::Geometry& geo = egf1.geo;
@@ -59,7 +59,7 @@ qlat::SpinMatrix lblMuonLine(const int tsnk, const int tsrc,
 
 qlat::SpinMatrix lblMuonLineC(const int tsnk, const int tsrc,
     const qlat::QedGaugeField& egf1, const qlat::QedGaugeField& egf2, const qlat::QedGaugeField& egf3,
-    const double mass, const std::array<double,qlat::DIM>& momtwist)
+    const double mass, const std::array<double,qlat::DIMN>& momtwist)
 {
   TIMER("lblMuonLineC");
   qlat::SpinMatrix sm; qlat::set_zero(sm);
@@ -77,7 +77,7 @@ qlat::SpinMatrix lblMuonPartPointSrc(const qlat::Geometry& geo, const int tsnk, 
     const qlat::Coordinate& xg1, const int mu1,
     const qlat::Coordinate& xg2, const int mu2,
     const qlat::Coordinate& xg3, const int mu3,
-    const double mass, const std::array<double,qlat::DIM>& momtwist)
+    const double mass, const std::array<double,qlat::DIMN>& momtwist)
 {
   TIMER("lblMuonPartPointSrc");
   qlat::QedGaugeField egf1; egf1.init(geo);
@@ -99,7 +99,7 @@ qlat::SpinMatrix lblMuonPartPointSrc(const qlat::Geometry& geo, const int tsnk, 
 }
 
 void lblMagneticMomentSpinMatrix(qlat::Array<qlat::SpinMatrix,3> bs, const qlat::Geometry& geo, const int tsnk, const int tsrc,
-    const double mass, const std::array<double,qlat::DIM>& momtwist)
+    const double mass, const std::array<double,qlat::DIMN>& momtwist)
   // pretend to the operator to be
   // \Sigma_i * mass / 2
 {
@@ -139,7 +139,7 @@ void lblShowMuonPartPointSrc(const qlat::Geometry& geo, const int tsnk, const in
     const qlat::Coordinate& xg1, const int mu1,
     const qlat::Coordinate& xg2, const int mu2,
     const qlat::Coordinate& xg3, const int mu3,
-    const double mass, const std::array<double,qlat::DIM>& momtwist)
+    const double mass, const std::array<double,qlat::DIMN>& momtwist)
 {
   TIMER("lblShowMuonPartPointSrc");
   DisplayInfo(cname, fname, "mass = %.2f\n", mass);
@@ -171,7 +171,7 @@ void lblMuonPart()
   // qlat::Coordinate total_site(32, 32, 32, 128);
   qlat::Geometry geo; geo.init(total_site, 1);
   DisplayInfo(cname, fname, "geo =\n%s\n", qlat::show(geo).c_str());
-  std::array<double,qlat::DIM> momtwist;
+  std::array<double,qlat::DIMN> momtwist;
   momtwist[0] = 0.0;
   momtwist[1] = 0.0;
   momtwist[2] = 0.0;
@@ -234,7 +234,7 @@ void displaySpinPropagator4d()
   qlat::Coordinate total_site(16, 16, 16, 32);
   qlat::Geometry geo; geo.init(total_site, 1);
   DisplayInfo(cname, fname, "geo =\n%s\n", qlat::show(geo).c_str());
-  std::array<double,qlat::DIM> momtwist;
+  std::array<double,qlat::DIMN> momtwist;
   momtwist[0] = 0.0;
   momtwist[1] = 0.0;
   momtwist[2] = 0.0;

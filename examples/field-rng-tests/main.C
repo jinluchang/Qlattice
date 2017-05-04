@@ -8,7 +8,7 @@ using namespace std;
 
 void coordinateHalf(Coordinate& xh, const Coordinate& x)
 {
-  for (int mu = 0; mu < DIM; ++mu) {
+  for (int mu = 0; mu < DIMN; ++mu) {
     xh[mu] = x[mu] / 2;
   }
 }

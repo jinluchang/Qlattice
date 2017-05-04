@@ -2,6 +2,7 @@
 
 #include <qlat/config.h>
 #include <qlat/utils.h>
+#include <qlat/crc32.h>
 #include <qlat/mvector.h>
 #include <qlat/matrix.h>
 #include <qlat/mpi.h>

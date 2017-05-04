@@ -4,7 +4,8 @@ tests = qcd-utils-tests \
 		lbl-muon-part \
 		rng-state-tests \
 		field-rng-tests \
-		benchmark
+		benchmark \
+		dist-io
 
 all:
 	time for i in $(tests) ; do make -C "$$i" all; done
