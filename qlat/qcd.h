@@ -149,7 +149,7 @@ inline void load_gauge_field(GaugeField& gf, const std::string& path)
   for (long index = 0; index < geo.local_volume(); ++index) {
     Coordinate xl = geo.coordinate_from_index(index);
     Vector<std::array<Complex, 6> > vt = gft.get_elems(xl);
-    from_big_endian_64((char*)vt.data(), vt.data_size());
+    to_from_big_endian_64(get_data(vt));
     Vector<ColorMatrix> v = gf.get_elems(xl);
     for (int m = 0; m < geo.multiplicity; ++m) {
       assign_truncate(v[m], vt[m]);

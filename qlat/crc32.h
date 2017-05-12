@@ -13,7 +13,8 @@ QLAT_START_NAMESPACE
 
 typedef uint32_t crc32_t;
 
-inline crc32_t crc32(const crc32_t initial, const void* smessage, long nBytes) {
+inline crc32_t crc32(const crc32_t initial, const void* smessage, long nBytes)
+{
   qassert(sizeof(CRC32) == sizeof(crc32_t));
   CRC32 c;
   std::memcpy((void*)&c, (void*)&initial, sizeof(crc32_t));
@@ -23,11 +24,25 @@ inline crc32_t crc32(const crc32_t initial, const void* smessage, long nBytes) {
   return ret;
 }
 
-inline crc32_t crc32(const void* smessage, int nBytes) {
+inline crc32_t crc32(const void* smessage, int nBytes)
+{
   return crc32(0, smessage, nBytes);
 }
 
-inline void crc32_check() {
+template <class M>
+inline crc32_t crc32(const crc32_t initial, const Vector<M> v)
+{
+  return crc32(initial, v.data(), v.data_size());
+}
+
+template <class M>
+inline crc32_t crc32(const Vector<M> v)
+{
+  return crc32(0, v.data(), v.data_size());
+}
+
+inline void crc32_check()
+{
   const char* test = "123456789";
   const crc32_t CHECK_VALUE = 0xCBF43926;
   displayln_info(ssprintf("The check value for the %s standard is 0x%X", "CRC32", 0xCBF43926));
@@ -37,9 +52,11 @@ inline void crc32_check() {
 
 QLAT_END_NAMESPACE
 
-namespace qshow {
+namespace qshow
+{
 
-inline std::string show(const qlat::crc32_t x) {
+inline std::string show(const qlat::crc32_t x)
+{
   return ssprintf("%08X", x);
 }
 

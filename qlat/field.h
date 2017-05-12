@@ -143,6 +143,19 @@ struct Field
     long offset = geo.offset_from_coordinate(x);
     return Vector<M>(&field[offset], geo.multiplicity);
   }
+  //
+  Vector<M> get_elems(const long index)
+    // qassert(geo.is_only_local())
+  {
+    return Vector<M>(&field[index * geo.multiplicity], geo.multiplicity);
+  }
+  Vector<M> get_elems_const(const long index) const
+    // Be cautious about the const property
+    // 改不改靠自觉
+    // qassert(geo.is_only_local())
+  {
+    return Vector<M>(&field[index * geo.multiplicity], geo.multiplicity);
+  }
 };
 
 template <class M>

@@ -645,7 +645,7 @@ inline uint64_t flip_endian_64(uint64_t x)
     ((x << 56));
 }
 
-inline void from_big_endian_32(char* str, const size_t len)
+inline void to_from_big_endian_32(char* str, const size_t len)
 {
   qassert(0 == len % 4);
 #if defined(__BYTE_ORDER) && (__BYTE_ORDER != 0) && (__BYTE_ORDER == __BIG_ENDIAN)
@@ -658,7 +658,7 @@ inline void from_big_endian_32(char* str, const size_t len)
 #endif
 }
 
-inline void from_big_endian_64(char* str, const size_t len)
+inline void to_from_big_endian_64(char* str, const size_t len)
 {
   qassert(0 == len % 8);
 #if defined(__BYTE_ORDER) && (__BYTE_ORDER != 0) && (__BYTE_ORDER == __BIG_ENDIAN)
@@ -669,6 +669,30 @@ inline void from_big_endian_64(char* str, const size_t len)
     p[i] = flip_endian_64(p[i]);
   }
 #endif
+}
+
+template <class M>
+void to_from_big_endian_32(Vector<M> v)
+{
+  to_from_big_endian_32((char*)v.data(), v.data_size());
+}
+
+template <class M>
+void to_from_big_endian_64(Vector<M> v)
+{
+  to_from_big_endian_64((char*)v.data(), v.data_size());
+}
+
+inline void from_big_endian_32(char* str, const size_t len)
+  // obsolete
+{
+  to_from_big_endian_32(str, len);
+}
+
+inline void from_big_endian_64(char* str, const size_t len)
+  // obsolete
+{
+  to_from_big_endian_64(str, len);
 }
 
 QLAT_END_NAMESPACE

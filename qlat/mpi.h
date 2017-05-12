@@ -323,7 +323,9 @@ inline int glb_sum(Vector<double> recv, const Vector<double>& send)
 
 inline int glb_sum(Vector<Complex> recv, const Vector<Complex>& send)
 {
-  return glb_sum(Vector<double>((double*)recv.data(), recv.size() * 2), Vector<double>((double*)send.data(), send.size() * 2));
+  return glb_sum(
+      Vector<double>((double*)recv.data(), recv.size() * 2),
+      Vector<double>((double*)send.data(), send.size() * 2));
 }
 
 inline int glb_sum(Vector<long> recv, const Vector<long>& send)
@@ -333,6 +335,17 @@ inline int glb_sum(Vector<long> recv, const Vector<long>& send)
   return MPI_Allreduce((long*)send.data(), recv.data(), recv.size(), MPI_LONG, MPI_SUM, get_comm());
 #else
   memmove(recv.data(), send.data(), recv.size()* sizeof(long));
+  return 0;
+#endif
+}
+
+inline int glb_sum(Vector<char> recv, const Vector<char>& send)
+{
+  qassert(recv.size() == send.size());
+#ifdef USE_MULTI_NODE
+  return MPI_Allreduce((char*)send.data(), (char*)recv.data(), recv.data_size(), MPI_BYTE, MPI_SUM, get_comm());
+#else
+  memmove(recv.data(), send.data(), recv.data_size());
   return 0;
 #endif
 }
@@ -354,6 +367,13 @@ inline int glb_sum(Vector<Complex> vec)
 inline int glb_sum(Vector<long> vec)
 {
   std::vector<long> tmp(vec.size());
+  assign(tmp, vec);
+  return glb_sum(vec, tmp);
+}
+
+inline int glb_sum(Vector<char> vec)
+{
+  std::vector<char> tmp(vec.size());
   assign(tmp, vec);
   return glb_sum(vec, tmp);
 }
@@ -392,6 +412,12 @@ inline int glb_sum_long_vec(Vector<M> x)
 }
 
 template <class M>
+inline int glb_sum_byte_vec(Vector<M> x)
+{
+  return glb_sum(Vector<char>((char*)x.data(), x.data_size()));
+}
+
+template <class M>
 inline int glb_sum_double(M& x)
 {
   return glb_sum(Vector<double>((double*)&x, sizeof(M)/sizeof(double)));
@@ -401,6 +427,12 @@ template <class M>
 inline int glb_sum_long(M& x)
 {
   return glb_sum(Vector<long>((long*)&x, sizeof(M)/sizeof(long)));
+}
+
+template <class M>
+inline int glb_sum_byte(M& x)
+{
+  return glb_sum(Vector<char>((char*)&x, sizeof(M)));
 }
 
 template <class M>

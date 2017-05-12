@@ -301,12 +301,13 @@ namespace qshow {
 inline std::string show(const qlat::Geometry& geo)
 {
   std::string s;
-  s += ssprintf("{ initialized  = %s\n", show(geo.initialized).c_str());
-  s += ssprintf(", geon         =\n%s\n", show(geo.geon).c_str());
-  s += ssprintf(", node_site    = %s\n", show(geo.node_site).c_str());
-  s += ssprintf(", expanLeft    = %s\n", show(geo.expansion_left).c_str());
-  s += ssprintf(", expanRight   = %s\n", show(geo.expansion_right).c_str());
-  s += ssprintf(", node_siteExp = %s }", show(geo.node_site_expanded).c_str());
+  s += ssprintf("{ initialized   = %s\n", show(geo.initialized).c_str());
+  s += ssprintf(", geon          =\n%s\n", show(geo.geon).c_str());
+  s += ssprintf(", multiplicity  = %s\n", show(geo.multiplicity).c_str());
+  s += ssprintf(", node_site     = %s\n", show(geo.node_site).c_str());
+  s += ssprintf(", expan_left    = %s\n", show(geo.expansion_left).c_str());
+  s += ssprintf(", expan_right   = %s\n", show(geo.expansion_right).c_str());
+  s += ssprintf(", node_site_exp = %s }", show(geo.node_site_expanded).c_str());
   return s;
 }
 
