@@ -544,6 +544,7 @@ inline ShufflePlan make_shuffle_plan(const ShufflePlanKey& spk)
   const Coordinate& total_site = spk.total_site;
   const Coordinate& new_size_node = spk.new_size_node;
   const Coordinate new_node_site = total_site / new_size_node;
+  qassert(new_size_node * new_node_site == total_site);
   const int new_num_node = product(new_size_node);
   Geometry geo;
   geo.init(total_site, 1);
@@ -553,7 +554,9 @@ inline ShufflePlan make_shuffle_plan(const ShufflePlanKey& spk)
   // total_send_size
   ret.total_send_size = geo.local_volume();
   // send_id_node_size
+  // send_new_id_node_size
   std::map<int,long> send_id_node_size;
+  std::map<int,long> send_new_id_node_size;
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
@@ -561,6 +564,7 @@ inline ShufflePlan make_shuffle_plan(const ShufflePlanKey& spk)
     const int new_id_node = index_from_coordinate(new_coor_node, new_size_node);
     const int id_node = get_id_node_from_new_id_node(new_id_node, new_num_node, num_node);
     send_id_node_size[id_node] += 1;
+    send_new_id_node_size[new_id_node] += 1;
   }
   // send_id_node_idx
   std::map<int,long> send_id_node_idx;
@@ -580,27 +584,42 @@ inline ShufflePlan make_shuffle_plan(const ShufflePlanKey& spk)
     qassert(count == geo.local_volume());
     qassert(count == ret.total_send_size);
   }
+  // send_new_id_node_idx
+  std::map<int,long> send_new_id_node_idx;
+  {
+    long count = 0;
+    for (std::map<int,long>::const_iterator it = send_new_id_node_size.cbegin(); it != send_new_id_node_size.cend(); ++it) {
+      const int new_id_node = it->first;
+      const int node_size = it->second;
+      send_new_id_node_idx[new_id_node] = count;
+      count += node_size;
+    }
+    qassert(count == geo.local_volume());
+    qassert(count == ret.total_send_size);
+  }
   // send_pack_infos
   {
-    long last_id_node = -1;
+    long last_buffer_idx = -1;
     for (long index = 0; index < geo.local_volume(); ++index) {
       const Coordinate xl = geo.coordinate_from_index(index);
       const Coordinate xg = geo.coordinate_g_from_l(xl);
       const Coordinate new_coor_node = xg / new_node_site;
       const int new_id_node = index_from_coordinate(new_coor_node, new_size_node);
-      const int id_node = get_id_node_from_new_id_node(new_id_node, new_num_node, num_node);
-      if (id_node != last_id_node) {
-        last_id_node = id_node;
+      const long buffer_idx = send_new_id_node_idx[new_id_node];
+      // const int id_node = get_id_node_from_new_id_node(new_id_node, new_num_node, num_node);
+      if (buffer_idx != last_buffer_idx) {
+        last_buffer_idx = buffer_idx;
         ShufflePlanSendPackInfo pi;
         pi.field_idx = index;
-        pi.buffer_idx = send_id_node_idx[id_node];
+        pi.buffer_idx = buffer_idx;
         pi.size = 1;
         ret.send_pack_infos.push_back(pi);
       } else {
         ShufflePlanSendPackInfo& pi = ret.send_pack_infos.back();
         pi.size += 1;
       }
-      send_id_node_idx[id_node] += 1;
+      send_new_id_node_idx[new_id_node] += 1;
+      last_buffer_idx += 1;
     }
   }
   // total_recv_size
@@ -642,18 +661,19 @@ inline ShufflePlan make_shuffle_plan(const ShufflePlanKey& spk)
   {
     for (size_t i = 0; i < new_geos.size(); ++i) {
       const Geometry& new_geo = new_geos[i];
-      long last_id_node = -1;
+      long last_buffer_idx = -1;
       for (long index = 0; index < new_geo.local_volume(); ++index) {
         const Coordinate xl = new_geo.coordinate_from_index(index);
         const Coordinate xg = new_geo.coordinate_g_from_l(xl);
         const Coordinate coor_node = xg / geo.node_site;
-        const long id_node = index_from_coordinate(coor_node, geo.geon.size_node);
-        if (id_node != last_id_node) {
-          last_id_node = id_node;
+        const int id_node = index_from_coordinate(coor_node, geo.geon.size_node);
+        const long buffer_idx = recv_id_node_idx[id_node];
+        if (buffer_idx != last_buffer_idx) {
+          last_buffer_idx = buffer_idx;
           ShufflePlanRecvPackInfo pi;
           pi.local_geos_idx = i;
           pi.field_idx = index;
-          pi.buffer_idx = recv_id_node_idx[id_node];
+          pi.buffer_idx = buffer_idx;
           pi.size = 1;
           ret.recv_pack_infos.push_back(pi);
         } else {
@@ -661,11 +681,14 @@ inline ShufflePlan make_shuffle_plan(const ShufflePlanKey& spk)
           pi.size += 1;
         }
         recv_id_node_idx[id_node] += 1;
+        last_buffer_idx += 1;
       }
     }
   }
-  displayln_info(ssprintf("%s: send_msg_infos.size() = %10ld", fname, ret.send_msg_infos.size()));
-  displayln_info(ssprintf("%s: recv_msg_infos.size() = %10ld", fname, ret.recv_msg_infos.size()));
+  displayln_info(ssprintf("%s: send_pack_infos.size() = %10ld", fname, ret.send_pack_infos.size()));
+  displayln_info(ssprintf("%s: recv_pack_infos.size() = %10ld", fname, ret.send_pack_infos.size()));
+  displayln_info(ssprintf("%s: send_msg_infos.size()  = %10ld", fname, ret.send_msg_infos.size()));
+  displayln_info(ssprintf("%s: recv_msg_infos.size()  = %10ld", fname, ret.recv_msg_infos.size()));
   return ret;
 }
 
@@ -694,11 +717,14 @@ inline const ShufflePlan& get_shuffle_plan(const Coordinate& total_site, const C
 template <class M>
 void shuffle_field(std::vector<Field<M> >& fs, const Field<M>& f, const Coordinate& new_size_node)
 {
-  TIMER_VERBOSE("shuffle_field");
+  TIMER_VERBOSE_FLOPS("shuffle_field");
   fs.clear();
   const Geometry& geo = f.geo;
   const ShufflePlan& sp = get_shuffle_plan(geo.total_site(), new_size_node);
+  const long total_bytes = sp.total_send_size * geo.multiplicity * sizeof(M) * get_num_node();
+  timer.flops += total_bytes;
   std::vector<M> send_buffer(sp.total_send_size * geo.multiplicity);
+#pragma omp parallel
   for (size_t i = 0; i < sp.send_pack_infos.size(); ++i) {
     const ShufflePlanSendPackInfo& pi = sp.send_pack_infos[i];
     memcpy(
@@ -708,7 +734,8 @@ void shuffle_field(std::vector<Field<M> >& fs, const Field<M>& f, const Coordina
   }
   std::vector<M> recv_buffer(sp.total_recv_size * geo.multiplicity);
   {
-    TIMER_VERBOSE("shuffle_field-comm");
+    TIMER_VERBOSE_FLOPS("shuffle_field-comm");
+    timer.flops += total_bytes;
     std::vector<MPI_Request> send_reqs(sp.send_msg_infos.size());
     std::vector<MPI_Request> recv_reqs(sp.recv_msg_infos.size());
     {
@@ -738,6 +765,7 @@ void shuffle_field(std::vector<Field<M> >& fs, const Field<M>& f, const Coordina
   for (size_t i = 0; i < fs.size(); ++i) {
     fs[i].init(new_geos[i]);
   }
+#pragma omp parallel
   for (size_t i = 0; i < sp.recv_pack_infos.size(); ++i) {
     const ShufflePlanRecvPackInfo& pi = sp.recv_pack_infos[i];
     qassert(0 <= pi.local_geos_idx && pi.local_geos_idx < fs.size());
@@ -765,9 +793,11 @@ long dist_write_field(const Field<M>& f,
 template <class M>
 void shuffle_field_back(Field<M>& f, const std::vector<Field<M> >& fs, const Coordinate& new_size_node)
 {
-  TIMER_VERBOSE("shuffle_field_back");
+  TIMER_VERBOSE_FLOPS("shuffle_field_back");
   const Geometry& geo = f.geo;
   const ShufflePlan& sp = get_shuffle_plan(geo.total_site(), new_size_node);
+  const long total_bytes = sp.total_send_size * geo.multiplicity * sizeof(M) * get_num_node();
+  timer.flops += total_bytes;
   std::vector<M> recv_buffer(sp.total_recv_size * geo.multiplicity);
   for (size_t i = 0; i < sp.recv_pack_infos.size(); ++i) {
     const ShufflePlanRecvPackInfo& pi = sp.recv_pack_infos[i];
@@ -778,11 +808,12 @@ void shuffle_field_back(Field<M>& f, const std::vector<Field<M> >& fs, const Coo
   }
   std::vector<M> send_buffer(sp.total_send_size * geo.multiplicity);
   {
-    TIMER_VERBOSE("shuffle_field-comm");
+    TIMER_VERBOSE_FLOPS("shuffle_field-comm");
+    timer.flops += total_bytes;
     std::vector<MPI_Request> send_reqs(sp.send_msg_infos.size());
     std::vector<MPI_Request> recv_reqs(sp.recv_msg_infos.size());
     {
-      TIMER_VERBOSE("shuffle_field-comm-init");
+      TIMER("shuffle_field-comm-init");
       const int mpi_tag = 5;
       for (size_t i = 0; i < sp.recv_msg_infos.size(); ++i) {
         const ShufflePlanMsgInfo& mi = sp.recv_msg_infos[i];
