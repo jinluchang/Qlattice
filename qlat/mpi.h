@@ -212,10 +212,10 @@ inline void extract_flag_data(int64_t& flag, M& data, const std::vector<char>& f
 template <class N>
 inline int receive_job(int64_t& flag, N& data, const int root = 0)
 {
-  const int tag = 3;
+  const int mpi_tag = 3;
   const int count = sizeof(int64_t) + sizeof(N);
   std::vector<char> fdata(count, (char)0);
-  int ret = MPI_Recv(fdata.data(), count, MPI_BYTE, root, tag, get_comm(), MPI_STATUS_IGNORE);
+  int ret = MPI_Recv(fdata.data(), count, MPI_BYTE, root, mpi_tag, get_comm(), MPI_STATUS_IGNORE);
   extract_flag_data(flag, data, fdata);
   return ret;
 }
@@ -223,27 +223,27 @@ inline int receive_job(int64_t& flag, N& data, const int root = 0)
 template <class M>
 inline int send_result(const int64_t flag, const M& data, const int root = 0)
 {
-  const int tag = 2;
+  const int mpi_tag = 2;
   std::vector<char> fdata = pad_flag_data(flag, data);
-  return MPI_Send(fdata.data(), fdata.size(), MPI_BYTE, root, tag, get_comm());
+  return MPI_Send(fdata.data(), fdata.size(), MPI_BYTE, root, mpi_tag, get_comm());
 }
 
 template <class N>
 inline int send_job(const int64_t flag, const N& data, const int dest)
 {
-  const int tag = 3;
+  const int mpi_tag = 3;
   std::vector<char> fdata = pad_flag_data(flag, data);
-  return MPI_Send(fdata.data(), fdata.size(), MPI_BYTE, dest, tag, get_comm());
+  return MPI_Send(fdata.data(), fdata.size(), MPI_BYTE, dest, mpi_tag, get_comm());
 }
 
 template <class M>
 inline int receive_result(int& source, int64_t& flag, M& result)
 {
-  const int tag = 2;
+  const int mpi_tag = 2;
   const int count = sizeof(int64_t) + sizeof(M);
   std::vector<char> fdata(count, (char)0);
   MPI_Status status;
-  const int ret = MPI_Recv(fdata.data(), fdata.size(), MPI_BYTE, MPI_ANY_SOURCE, tag, get_comm(), &status);
+  const int ret = MPI_Recv(fdata.data(), fdata.size(), MPI_BYTE, MPI_ANY_SOURCE, mpi_tag, get_comm(), &status);
   source = status.MPI_SOURCE;
   extract_flag_data(flag, result, fdata);
   return ret;
@@ -254,7 +254,7 @@ int get_data_dir(Vector<M> recv, const Vector<M>& send, const int dir)
   // dir = 0, 1 for Plus dir or Minus dir
 {
   TIMER_FLOPS("get_data_dir");
-  const int tag = 0;
+  const int mpi_tag = 0;
   qassert(recv.size() == send.size());
   const long size = recv.size()*sizeof(M);
   timer.flops += size;
@@ -263,8 +263,8 @@ int get_data_dir(Vector<M> recv, const Vector<M>& send, const int dir)
   const int idf = (self_ID + 1 - 2 * dir + get_num_node()) % get_num_node();
   const int idt = (self_ID - 1 + 2 * dir + get_num_node()) % get_num_node();;
   MPI_Request req;
-  MPI_Isend((void*)send.data(), size, MPI_BYTE, idt, tag, get_comm(), &req);
-  const int ret = MPI_Recv(recv.data(), size, MPI_BYTE, idf, tag, get_comm(), MPI_STATUS_IGNORE);
+  MPI_Isend((void*)send.data(), size, MPI_BYTE, idt, mpi_tag, get_comm(), &req);
+  const int ret = MPI_Recv(recv.data(), size, MPI_BYTE, idf, mpi_tag, get_comm(), MPI_STATUS_IGNORE);
   MPI_Wait(&req, MPI_STATUS_IGNORE);
   return ret;
 #else
@@ -279,7 +279,7 @@ int get_data_dir_mu(Vector<M> recv, const Vector<M>& send, const int dir, const 
   // 0 <= mu < 4 for different directions
 {
   TIMER_FLOPS("get_data_dir_mu");
-  const int tag = 1;
+  const int mpi_tag = 1;
   qassert(recv.size() == send.size());
   const long size = recv.size()*sizeof(M);
   timer.flops += size;
@@ -288,8 +288,8 @@ int get_data_dir_mu(Vector<M> recv, const Vector<M>& send, const int dir, const 
   const int idf = geonb.dest[dir][mu];
   const int idt = geonb.dest[1-dir][mu];
   MPI_Request req;
-  MPI_Isend((void*)send.data(), size, MPI_BYTE, idt, tag, get_comm(), &req);
-  const int ret = MPI_Recv(recv.data(), size, MPI_BYTE, idf, tag, get_comm(), MPI_STATUS_IGNORE);
+  MPI_Isend((void*)send.data(), size, MPI_BYTE, idt, mpi_tag, get_comm(), &req);
+  const int ret = MPI_Recv(recv.data(), size, MPI_BYTE, idf, mpi_tag, get_comm(), MPI_STATUS_IGNORE);
   MPI_Wait(&req, MPI_STATUS_IGNORE);
   return ret;
 #else

@@ -175,24 +175,26 @@ long dist_write_dist_data(const std::vector<DistData<M> >& dds, const int num_no
     for (size_t k = 0; k < dds.size(); ++k) {
       const int id_node = dds[k].id_node;
       qassert(0 <= id_node && id_node < num_node);
-      if (id_counts[id_node] == 0) {
-        FILE* fp = dist_open(path, id_node, num_node, "w", mode);
-        for (size_t l = k; l < dds.size(); ++l) {
-          const DistData<M>& dd = dds[l];
-          if (id_node == dd.id_node) {
-            bytes += qwrite_data(get_data(dd), fp);
-            ops += 1;
-            id_counts[id_node] += 1;
+      if (id_node % n_cycle == i) {
+        if (id_counts[id_node] == 0) {
+          FILE* fp = dist_open(path, id_node, num_node, "w", mode);
+          for (size_t l = k; l < dds.size(); ++l) {
+            const DistData<M>& dd = dds[l];
+            if (id_node == dd.id_node) {
+              bytes += qwrite_data(get_data(dd), fp);
+              ops += 1;
+              id_counts[id_node] += 1;
+            }
           }
+          dist_close(fp);
         }
-        dist_close(fp);
       }
     }
     glb_sum(bytes);
     glb_sum(ops);
     total_bytes += bytes;
     total_ops += ops;
-    displayln_info(ssprintf("%s: cycle / n_cycle = %d / %d ; total_ops = %ld ; total_bytes = %ld",
+    displayln_info(ssprintf("%s: cycle / n_cycle = %3d / %3d ; total_ops = %10ld ; total_bytes = %15ld",
           fname, i + 1, n_cycle, total_ops, total_bytes));
   }
   std::vector<long> id_exists(num_node, 0);
@@ -260,7 +262,7 @@ long dist_write_field(const std::vector<Field<M> >& fs,
 template <class M>
 long dist_write_field(const Field<M>& f,
     const std::string& path, const mode_t mode = default_dir_mode())
-  // interface function
+  // interface_function
 {
   TIMER_VERBOSE("dist_write_field");
   qassert(f.geo.is_only_local());
@@ -287,24 +289,26 @@ long dist_read_dist_data(const std::vector<DistData<M> >& dds, const int num_nod
     for (size_t k = 0; k < dds.size(); ++k) {
       const int id_node = dds[k].id_node;
       qassert(0 <= id_node && id_node < num_node);
-      if (id_counts[id_node] == 0) {
-        FILE* fp = dist_open(path, id_node, num_node, "r", mode);
-        for (size_t l = k; l < dds.size(); ++l) {
-          const DistData<M>& dd = dds[l];
-          if (id_node == dd.id_node) {
-            bytes += qread_data(get_data(dd), fp);
-            ops += 1;
-            id_counts[id_node] += 1;
+      if (id_node % n_cycle == i) {
+        if (id_counts[id_node] == 0) {
+          FILE* fp = dist_open(path, id_node, num_node, "r", mode);
+          for (size_t l = k; l < dds.size(); ++l) {
+            const DistData<M>& dd = dds[l];
+            if (id_node == dd.id_node) {
+              bytes += qread_data(get_data(dd), fp);
+              ops += 1;
+              id_counts[id_node] += 1;
+            }
           }
+          dist_close(fp);
         }
-        dist_close(fp);
       }
     }
     glb_sum(bytes);
     glb_sum(ops);
     total_bytes += bytes;
     total_ops += ops;
-    displayln_info(ssprintf("%s: cycle / n_cycle = %d / %d ; total_ops = %ld ; total_bytes = %ld",
+    displayln_info(ssprintf("%s: cycle / n_cycle = %3d / %3d ; total_ops = %10ld ; total_bytes = %15ld",
           fname, i + 1, n_cycle, total_ops, total_bytes));
   }
   std::vector<long> id_exists(num_node, 0);
@@ -351,9 +355,21 @@ long dist_read_field(const std::vector<Handle<Field<M> > >& fs,
 }
 
 template <class M>
+long dist_read_field(std::vector<Field<M> >& fs,
+    const int num_node,
+    const std::string& path, const mode_t mode = default_dir_mode())
+{
+  std::vector<Handle<Field<M> > > fhs(fs.size());
+  for (size_t i = 0; i < fs.size(); ++i) {
+    fhs[i].init(fs[i]);
+  }
+  return dist_read_field(fhs, num_node, path, mode);
+}
+
+template <class M>
 long dist_read_field(Field<M>& f,
     const std::string& path, const mode_t mode = default_dir_mode())
-  // interface function
+  // interface_function
 {
   TIMER_VERBOSE("dist_read_field");
   qassert(f.geo.is_only_local());
@@ -624,9 +640,9 @@ inline ShufflePlan make_shuffle_plan(const ShufflePlanKey& spk)
   }
   // recv_pack_infos
   {
-    long last_id_node = -1;
     for (size_t i = 0; i < new_geos.size(); ++i) {
       const Geometry& new_geo = new_geos[i];
+      long last_id_node = -1;
       for (long index = 0; index < new_geo.local_volume(); ++index) {
         const Coordinate xl = new_geo.coordinate_from_index(index);
         const Coordinate xg = new_geo.coordinate_g_from_l(xl);
@@ -648,6 +664,8 @@ inline ShufflePlan make_shuffle_plan(const ShufflePlanKey& spk)
       }
     }
   }
+  displayln_info(ssprintf("%s: send_msg_infos.size() = %10ld", fname, ret.send_msg_infos.size()));
+  displayln_info(ssprintf("%s: recv_msg_infos.size() = %10ld", fname, ret.recv_msg_infos.size()));
   return ret;
 }
 
@@ -683,24 +701,29 @@ void shuffle_field(std::vector<Field<M> >& fs, const Field<M>& f, const Coordina
   std::vector<M> send_buffer(sp.total_send_size * geo.multiplicity);
   for (size_t i = 0; i < sp.send_pack_infos.size(); ++i) {
     const ShufflePlanSendPackInfo& pi = sp.send_pack_infos[i];
-    memcpy(&send_buffer[pi.buffer_idx * geo.multiplicity], f.get_elems_const(pi.field_idx).data(),
+    memcpy(
+        &send_buffer[pi.buffer_idx * geo.multiplicity],
+        f.get_elems_const(pi.field_idx).data(),
         pi.size * geo.multiplicity * sizeof(M));
   }
   std::vector<M> recv_buffer(sp.total_recv_size * geo.multiplicity);
   {
     TIMER_VERBOSE("shuffle_field-comm");
-    const int mpi_tag = 3;
     std::vector<MPI_Request> send_reqs(sp.send_msg_infos.size());
     std::vector<MPI_Request> recv_reqs(sp.recv_msg_infos.size());
-    for (size_t i = 0; i < sp.send_msg_infos.size(); ++i) {
-      const ShufflePlanMsgInfo& mi = sp.send_msg_infos[i];
-      MPI_Isend(&send_buffer[mi.idx * geo.multiplicity], mi.size * geo.multiplicity * sizeof(M), MPI_BYTE, mi.id_node,
-          mpi_tag, get_comm(), &send_reqs[i]);
-    }
-    for (size_t i = 0; i < sp.recv_msg_infos.size(); ++i) {
-      const ShufflePlanMsgInfo& mi = sp.recv_msg_infos[i];
-      MPI_Irecv(&recv_buffer[mi.idx * geo.multiplicity], mi.size * geo.multiplicity * sizeof(M), MPI_BYTE, mi.id_node,
-          mpi_tag, get_comm(), &recv_reqs[i]);
+    {
+      TIMER_VERBOSE("shuffle_field-comm-init");
+      const int mpi_tag = 4;
+      for (size_t i = 0; i < sp.send_msg_infos.size(); ++i) {
+        const ShufflePlanMsgInfo& mi = sp.send_msg_infos[i];
+        MPI_Isend(&send_buffer[mi.idx * geo.multiplicity], mi.size * geo.multiplicity * sizeof(M), MPI_BYTE, mi.id_node,
+            mpi_tag, get_comm(), &send_reqs[i]);
+      }
+      for (size_t i = 0; i < sp.recv_msg_infos.size(); ++i) {
+        const ShufflePlanMsgInfo& mi = sp.recv_msg_infos[i];
+        MPI_Irecv(&recv_buffer[mi.idx * geo.multiplicity], mi.size * geo.multiplicity * sizeof(M), MPI_BYTE, mi.id_node,
+            mpi_tag, get_comm(), &recv_reqs[i]);
+      }
     }
     for (size_t i = 0; i < recv_reqs.size(); ++i) {
       MPI_Wait(&recv_reqs[i], MPI_STATUS_IGNORE);
@@ -717,7 +740,10 @@ void shuffle_field(std::vector<Field<M> >& fs, const Field<M>& f, const Coordina
   }
   for (size_t i = 0; i < sp.recv_pack_infos.size(); ++i) {
     const ShufflePlanRecvPackInfo& pi = sp.recv_pack_infos[i];
-    memcpy(fs[pi.local_geos_idx].get_elems(pi.field_idx).data(), &recv_buffer[pi.buffer_idx * geo.multiplicity],
+    qassert(0 <= pi.local_geos_idx && pi.local_geos_idx < fs.size());
+    memcpy(
+        fs[pi.local_geos_idx].get_elems(pi.field_idx).data(),
+        &recv_buffer[pi.buffer_idx * geo.multiplicity],
         pi.size * geo.multiplicity * sizeof(M));
   }
 }
@@ -726,12 +752,84 @@ template <class M>
 long dist_write_field(const Field<M>& f,
     const Coordinate new_size_node,
     const std::string& path, const mode_t mode = default_dir_mode())
-  // interface function
+  // interface_function
 {
-  TIMER_VERBOSE("dist_write_field");
+  TIMER_VERBOSE_FLOPS("dist_write_field");
   std::vector<Field<M> > fs;
   shuffle_field(fs, f, new_size_node);
-  return dist_write_field(fs, product(new_size_node), path, mode);
+  long total_bytes = dist_write_field(fs, product(new_size_node), path, mode);
+  timer.flops += total_bytes;
+  return total_bytes;
+}
+
+template <class M>
+void shuffle_field_back(Field<M>& f, const std::vector<Field<M> >& fs, const Coordinate& new_size_node)
+{
+  TIMER_VERBOSE("shuffle_field_back");
+  const Geometry& geo = f.geo;
+  const ShufflePlan& sp = get_shuffle_plan(geo.total_site(), new_size_node);
+  std::vector<M> recv_buffer(sp.total_recv_size * geo.multiplicity);
+  for (size_t i = 0; i < sp.recv_pack_infos.size(); ++i) {
+    const ShufflePlanRecvPackInfo& pi = sp.recv_pack_infos[i];
+    memcpy(
+        &recv_buffer[pi.buffer_idx * geo.multiplicity],
+        fs[pi.local_geos_idx].get_elems_const(pi.field_idx).data(),
+        pi.size * geo.multiplicity * sizeof(M));
+  }
+  std::vector<M> send_buffer(sp.total_send_size * geo.multiplicity);
+  {
+    TIMER_VERBOSE("shuffle_field-comm");
+    std::vector<MPI_Request> send_reqs(sp.send_msg_infos.size());
+    std::vector<MPI_Request> recv_reqs(sp.recv_msg_infos.size());
+    {
+      TIMER_VERBOSE("shuffle_field-comm-init");
+      const int mpi_tag = 5;
+      for (size_t i = 0; i < sp.recv_msg_infos.size(); ++i) {
+        const ShufflePlanMsgInfo& mi = sp.recv_msg_infos[i];
+        MPI_Isend(&recv_buffer[mi.idx * geo.multiplicity], mi.size * geo.multiplicity * sizeof(M), MPI_BYTE, mi.id_node,
+            mpi_tag, get_comm(), &recv_reqs[i]);
+      }
+      for (size_t i = 0; i < sp.send_msg_infos.size(); ++i) {
+        const ShufflePlanMsgInfo& mi = sp.send_msg_infos[i];
+        MPI_Irecv(&send_buffer[mi.idx * geo.multiplicity], mi.size * geo.multiplicity * sizeof(M), MPI_BYTE, mi.id_node,
+            mpi_tag, get_comm(), &send_reqs[i]);
+      }
+    }
+    for (size_t i = 0; i < recv_reqs.size(); ++i) {
+      MPI_Wait(&recv_reqs[i], MPI_STATUS_IGNORE);
+    }
+    for (size_t i = 0; i < send_reqs.size(); ++i) {
+      MPI_Wait(&send_reqs[i], MPI_STATUS_IGNORE);
+    }
+  }
+  recv_buffer.clear();
+  for (size_t i = 0; i < sp.send_pack_infos.size(); ++i) {
+    const ShufflePlanSendPackInfo& pi = sp.send_pack_infos[i];
+    memcpy(
+        f.get_elems(pi.field_idx).data(),
+        &send_buffer[pi.buffer_idx * geo.multiplicity],
+        pi.size * geo.multiplicity * sizeof(M));
+  }
+}
+
+template <class M>
+long dist_read_field(Field<M>& f,
+    const Coordinate new_size_node,
+    const std::string& path, const mode_t mode = default_dir_mode())
+  // interface_function
+{
+  TIMER_VERBOSE_FLOPS("dist_read_field");
+  // TODO: read geos
+  const std::vector<Geometry> new_geos = make_dist_io_geos(f.geo, new_size_node);
+  std::vector<Field<M> > fs;
+  fs.resize(new_geos.size());
+  for (size_t i = 0; i < fs.size(); ++i) {
+    fs[i].init(new_geos[i]);
+  }
+  const long total_bytes = dist_read_field(fs, product(new_size_node), path, mode);
+  shuffle_field_back(f, fs, new_size_node);
+  timer.flops += total_bytes;
+  return total_bytes;
 }
 
 QLAT_END_NAMESPACE
