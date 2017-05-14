@@ -380,6 +380,7 @@ long dist_read_field(Field<M>& f,
 
 template <class M, class N>
 void convert_field_float_from_double(Field<N>& ff, const Field<M>&f)
+  // interface_function
 {
   TIMER("convert_field_float_from_double");
   qassert(f.geo.is_only_local());
@@ -401,6 +402,7 @@ void convert_field_float_from_double(Field<N>& ff, const Field<M>&f)
 
 template <class M, class N>
 void convert_field_double_from_float(Field<N>& ff, const Field<M>&f)
+  // interface_function
 {
   TIMER("convert_field_double_from_float");
   qassert(f.geo.is_only_local());
@@ -423,7 +425,7 @@ void convert_field_double_from_float(Field<N>& ff, const Field<M>&f)
 template <class M>
 long dist_write_field_float_from_double(const Field<M>& f,
     const std::string& path, const mode_t mode = default_dir_mode())
-  // interface function
+  // interface_function
 {
   TIMER_VERBOSE_FLOPS("dist_write_field_float_from_double");
   Field<float> ff;
@@ -437,7 +439,7 @@ long dist_write_field_float_from_double(const Field<M>& f,
 template <class M>
 long dist_read_field_double_from_float(Field<M>& f,
     const std::string& path, const mode_t mode = default_dir_mode())
-  // interface function
+  // interface_function
 {
   TIMER_VERBOSE_FLOPS("dist_read_field_double_from_float");
   Field<float> ff;
@@ -724,7 +726,7 @@ void shuffle_field(std::vector<Field<M> >& fs, const Field<M>& f, const Coordina
   const long total_bytes = sp.total_send_size * geo.multiplicity * sizeof(M) * get_num_node();
   timer.flops += total_bytes;
   std::vector<M> send_buffer(sp.total_send_size * geo.multiplicity);
-#pragma omp parallel
+#pragma omp parallel for
   for (size_t i = 0; i < sp.send_pack_infos.size(); ++i) {
     const ShufflePlanSendPackInfo& pi = sp.send_pack_infos[i];
     memcpy(
@@ -765,7 +767,7 @@ void shuffle_field(std::vector<Field<M> >& fs, const Field<M>& f, const Coordina
   for (size_t i = 0; i < fs.size(); ++i) {
     fs[i].init(new_geos[i]);
   }
-#pragma omp parallel
+#pragma omp parallel for
   for (size_t i = 0; i < sp.recv_pack_infos.size(); ++i) {
     const ShufflePlanRecvPackInfo& pi = sp.recv_pack_infos[i];
     qassert(0 <= pi.local_geos_idx && pi.local_geos_idx < fs.size());
@@ -799,6 +801,7 @@ void shuffle_field_back(Field<M>& f, const std::vector<Field<M> >& fs, const Coo
   const long total_bytes = sp.total_send_size * geo.multiplicity * sizeof(M) * get_num_node();
   timer.flops += total_bytes;
   std::vector<M> recv_buffer(sp.total_recv_size * geo.multiplicity);
+#pragma omp parallel for
   for (size_t i = 0; i < sp.recv_pack_infos.size(); ++i) {
     const ShufflePlanRecvPackInfo& pi = sp.recv_pack_infos[i];
     memcpy(
@@ -834,6 +837,7 @@ void shuffle_field_back(Field<M>& f, const std::vector<Field<M> >& fs, const Coo
     }
   }
   recv_buffer.clear();
+#pragma omp parallel for
   for (size_t i = 0; i < sp.send_pack_infos.size(); ++i) {
     const ShufflePlanSendPackInfo& pi = sp.send_pack_infos[i];
     memcpy(
