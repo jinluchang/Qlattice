@@ -353,6 +353,15 @@ inline std::string qgetline(FILE* fp)
   }
 }
 
+inline std::vector<std::string> qgetlines(FILE* fp)
+{
+  std::vector<std::string> ret;
+  while (!feof(fp)) {
+    ret.push_back(qgetline(fp));
+  }
+  return ret;
+}
+
 inline bool is_space(const char c)
 {
   return c == ' ' || c == '\n' || c == '\r' || c == '\t';

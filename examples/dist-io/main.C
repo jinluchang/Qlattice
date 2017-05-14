@@ -13,8 +13,8 @@ void test_io()
   qmkdir_sync_node("huge-data");
   RngState rs(get_global_rng_state(), fname);
   crc32_check();
-  dist_write_par_limit() = 10;
-  dist_read_par_limit() = 10;
+  dist_write_par_limit() = 16;
+  dist_read_par_limit() = 16;
   // Coordinate total_site(16, 16, 16, 32);
   Coordinate total_site(32, 32, 32, 64);
   // Coordinate total_site(48, 48, 48, 96);
@@ -38,7 +38,7 @@ void test_io()
   gf_show_info(gf);
   set_g_rand_color_matrix_field(gf, RngState(rs, "rgf-0.1"), 0.1);
   gf_show_info(gf);
-  get_shuffle_plan_cache().limit = 128;
+  get_shuffle_plan_cache().limit = 16;
   displayln_info(ssprintf("crc32 = %08X", field_crc32(gf)));
   crc32_t crc = field_crc32(gf);
   std::vector<Coordinate> new_size_nodes;
@@ -73,7 +73,7 @@ void test_io()
     displayln_info(ssprintf("crc32 = %08X", field_crc32(gf)));
     dist_write_field(gf, new_size_node, ssprintf("huge-data/gauge_field ; ") + show(new_size_node));
     set_unit(gf);
-    dist_read_field(gf, new_size_node, ssprintf("huge-data/gauge_field ; ") + show(new_size_node));
+    dist_read_field(gf, ssprintf("huge-data/gauge_field ; ") + show(new_size_node));
     displayln_info(ssprintf("crc32 = %08X", field_crc32(gf)));
     qassert(crc == field_crc32(gf));
   }
@@ -82,7 +82,7 @@ void test_io()
     displayln_info(ssprintf("crc32 = %08X", field_crc32(gf)));
     dist_write_field(gf, new_size_node, ssprintf("huge-data/gauge_field ; ") + show(new_size_node) + "_2");
     set_unit(gf);
-    dist_read_field(gf, new_size_node, ssprintf("huge-data/gauge_field ; ") + show(new_size_node) + "_2");
+    dist_read_field(gf, ssprintf("huge-data/gauge_field ; ") + show(new_size_node) + "_2");
     displayln_info(ssprintf("crc32 = %08X", field_crc32(gf)));
     qassert(crc == field_crc32(gf));
   }
