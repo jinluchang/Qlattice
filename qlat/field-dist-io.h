@@ -845,11 +845,15 @@ long dist_read_field(Field<M>& f, const std::string& path)
   std::vector<Field<M> > fs;
   Coordinate new_size_node;
   const long total_bytes = dist_read_fields(fs, geo, new_size_node, path);
-  f.init(geo);
-  qassert(f.geo == geo);
-  shuffle_field_back(f, fs, new_size_node);
-  timer.flops += total_bytes;
-  return total_bytes;
+  if (total_bytes == 0) {
+    return 0;
+  } else {
+    f.init(geo);
+    qassert(f.geo == geo);
+    shuffle_field_back(f, fs, new_size_node);
+    timer.flops += total_bytes;
+    return total_bytes;
+  }
 }
 
 template <class M, class N>
@@ -932,10 +936,14 @@ long dist_read_field_double_from_float(Field<M>& f, const std::string& path)
   TIMER_VERBOSE_FLOPS("dist_read_field_double_from_float");
   Field<float> ff;
   const long total_bytes = dist_read_field(ff, path);
-  to_from_big_endian_32(get_data(ff));
-  convert_field_double_from_float(f, ff);
-  timer.flops += total_bytes;
-  return total_bytes;
+  if (total_bytes == 0) {
+    return 0;
+  } else {
+    to_from_big_endian_32(get_data(ff));
+    convert_field_double_from_float(f, ff);
+    timer.flops += total_bytes;
+    return total_bytes;
+  }
 }
 
 QLAT_END_NAMESPACE
