@@ -15,8 +15,8 @@ void test_io()
   crc32_check();
   dist_write_par_limit() = 16;
   dist_read_par_limit() = 16;
-  // Coordinate total_site(16, 16, 16, 32);
-  Coordinate total_site(32, 32, 32, 64);
+  Coordinate total_site(16, 16, 16, 32);
+  // Coordinate total_site(32, 32, 32, 64);
   // Coordinate total_site(48, 48, 48, 96);
   Geometry geo;
   geo.init(total_site, 1);

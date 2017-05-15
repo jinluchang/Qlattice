@@ -931,10 +931,6 @@ long dist_read_field_double_from_float(Field<M>& f, const std::string& path)
 {
   TIMER_VERBOSE_FLOPS("dist_read_field_double_from_float");
   Field<float> ff;
-  if (is_initialized(f)) {
-    qassert(f.geo.is_only_local());
-    ff.init(geo_remult(f.geo, f.geo.multiplicity * sizeof(M) / sizeof(double)));
-  }
   const long total_bytes = dist_read_field(ff, path);
   to_from_big_endian_32(get_data(ff));
   convert_field_double_from_float(f, ff);
