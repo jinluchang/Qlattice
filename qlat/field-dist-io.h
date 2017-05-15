@@ -118,13 +118,19 @@ Vector<M> get_data(const DistData<M>& dd)
 template <class M>
 std::vector<crc32_t> dist_crc32s(const std::vector<DistData<M> >& dds, const int num_node)
 {
+  sync_node();
+  TIMER_VERBOSE_FLOPS("dist_crc32s");
+  long total_bytes = 0;
   std::vector<crc32_t> ret(num_node, 0);
   for (int k = 0; k < dds.size(); ++k) {
     const DistData<M>& dd = dds[k];
     const int id_node = dd.id_node;
     ret[id_node] = crc32(ret[id_node], dd.data);
+    total_bytes += dd.data.data_size();
   }
   glb_sum_byte_vec(get_data(ret));
+  glb_sum(total_bytes);
+  timer.flops += total_bytes;
   return ret;
 }
 
@@ -249,6 +255,7 @@ inline void dist_read_geo_info(Geometry& geo, size_t& sizeof_M, Coordinate& new_
 template <class M>
 long dist_write_dist_data(const std::vector<DistData<M> >& dds, const int num_node,
     const std::string& path, const mode_t mode = default_dir_mode())
+  // interface_function
 {
   sync_node();
   TIMER_VERBOSE_FLOPS("dist_write_dist_data");
@@ -360,6 +367,7 @@ long dist_write_field(const Field<M>& f,
 
 template <class M>
 long dist_read_dist_data(const std::vector<DistData<M> >& dds, const int num_node, const std::string& path)
+  // interface_function
 {
   sync_node();
   TIMER_VERBOSE_FLOPS("dist_read_dist_data");
@@ -466,7 +474,7 @@ struct ShufflePlanKey
   Coordinate new_size_node;
 };
 
-inline operator<(const ShufflePlanKey& x, const ShufflePlanKey& y)
+inline bool operator<(const ShufflePlanKey& x, const ShufflePlanKey& y)
 {
   if (x.new_size_node < y.new_size_node) {
     return true;

@@ -40,7 +40,7 @@ void test_io()
   gf_show_info(gf);
   get_shuffle_plan_cache().limit = 16;
   displayln_info(ssprintf("crc32 = %08X", field_crc32(gf)));
-  crc32_t crc = field_crc32(gf);
+  const crc32_t crc = field_crc32(gf);
   std::vector<Coordinate> new_size_nodes;
   new_size_nodes.push_back(Coordinate(2,2,2,2));
   new_size_nodes.push_back(Coordinate(1,2,1,32));
@@ -50,11 +50,11 @@ void test_io()
   new_size_nodes.push_back(Coordinate(16,1,1,1));
   new_size_nodes.push_back(Coordinate(4,8,1,1));
   new_size_nodes.push_back(Coordinate(4,4,4,4));
-  new_size_nodes.push_back(Coordinate(4,2,16,32));
-  new_size_nodes.push_back(Coordinate(4,16,16,32));
-  new_size_nodes.push_back(Coordinate(16,2,1,32));
-  new_size_nodes.push_back(Coordinate(16,16,8,32));
   new_size_nodes.push_back(Coordinate(16,16,1,1));
+  // new_size_nodes.push_back(Coordinate(4,2,16,32));
+  // new_size_nodes.push_back(Coordinate(4,16,16,32));
+  // new_size_nodes.push_back(Coordinate(16,2,1,32));
+  // new_size_nodes.push_back(Coordinate(16,16,8,32));
   for (size_t i = 0; i < new_size_nodes.size(); ++i) {
     const Coordinate& new_size_node = new_size_nodes[i];
     std::vector<Field<ColorMatrix> > gfs;
@@ -85,6 +85,21 @@ void test_io()
     dist_read_field(gf, ssprintf("huge-data/gauge_field ; ") + show(new_size_node) + "_2");
     displayln_info(ssprintf("crc32 = %08X", field_crc32(gf)));
     qassert(crc == field_crc32(gf));
+  }
+  qassert(crc == field_crc32(gf));
+  Field<float> fgf;
+  convert_field_float_from_double(fgf, gf);
+  GaugeField dfgf;
+  convert_field_double_from_float(dfgf, fgf);
+  const crc32_t fcrc = field_crc32(dfgf);
+  for (size_t i = 0; i < new_size_nodes.size(); ++i) {
+    const Coordinate& new_size_node = new_size_nodes[i];
+    displayln_info(ssprintf("crc32 = %08X", field_crc32(gf)));
+    dist_write_field_float_from_double(gf, new_size_node, ssprintf("huge-data/gauge_field ; ") + show(new_size_node) + "_f");
+    set_unit(gf);
+    dist_read_field_double_from_float(gf, ssprintf("huge-data/gauge_field ; ") + show(new_size_node) + "_f");
+    displayln_info(ssprintf("crc32 = %08X", field_crc32(gf)));
+    qassert(fcrc == field_crc32(gf));
   }
 }
 
