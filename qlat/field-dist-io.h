@@ -148,7 +148,7 @@ crc32_t dist_crc32(const std::vector<DistData<M> >& dds, const int num_node)
 }
 
 template <class M>
-crc32_t field_crc32(const Field<M>& f)
+crc32_t field_dist_crc32(const Field<M>& f)
 {
   std::vector<DistData<M> > dds(1);
   dds[0].id_node = f.geo.geon.id_node;
