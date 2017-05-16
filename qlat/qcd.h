@@ -166,7 +166,7 @@ struct GaugeFieldInfo
   }
 };
 
-std::string make_gauge_field_header(const GaugeFieldInfo& gfi = GaugeFieldInfo())
+inline std::string make_gauge_field_header(const GaugeFieldInfo& gfi = GaugeFieldInfo())
 {
   std::ostringstream out;
   const std::string todo = "NOT yet implemented";

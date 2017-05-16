@@ -14,7 +14,7 @@
 
 QLAT_START_NAMESPACE       
 
-Coordinate get_default_serial_new_size_node(const Geometry& geo)
+inline Coordinate get_default_serial_new_size_node(const Geometry& geo)
 {
   const int num_node = geo.geon.num_node;
   const Coordinate total_site = geo.total_site();
