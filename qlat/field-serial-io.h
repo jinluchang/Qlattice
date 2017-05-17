@@ -58,7 +58,7 @@ void serial_write_field(const Field<M>& f, const std::string& path, const Coordi
   } else {
     for (size_t i = 0; i < fs.size(); ++i) {
       const Vector<M> v = get_data(fs[i]);
-      MPI_Send(v.data(), v.data_size(), MPI_BYTE, 0, mpi_tag, get_comm());
+      MPI_Send((void*)v.data(), v.data_size(), MPI_BYTE, 0, mpi_tag, get_comm());
     }
   }
   timer.flops += get_data(f).data_size() * f.geo.geon.num_node;
@@ -96,7 +96,7 @@ void serial_read_field(Field<M>& f, const std::string& path, const Coordinate& n
       if (0 == id_node) {
         assign(get_data(fs[new_id_node]), v);
       } else {
-        MPI_Send(v.data(), v.data_size(), MPI_BYTE, id_node, mpi_tag, get_comm());
+        MPI_Send((void*)v.data(), v.data_size(), MPI_BYTE, id_node, mpi_tag, get_comm());
       }
     }
     qclose(fp);
