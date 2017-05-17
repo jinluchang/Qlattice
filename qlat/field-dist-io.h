@@ -288,8 +288,8 @@ long dist_write_dist_data(const std::vector<DistData<M> >& dds, const int num_no
     glb_sum(ops);
     total_bytes += bytes;
     total_ops += ops;
-    displayln_info(ssprintf("%s: cycle / n_cycle = %4d / %4d ; total_ops = %10ld ; total_bytes = %15ld",
-          fname, i + 1, n_cycle, total_ops, total_bytes));
+    displayln_info(ssprintf("%s::%s: cycle / n_cycle = %4d / %4d ; total_ops = %10ld ; total_bytes = %15ld",
+          cname().c_str(), fname, i + 1, n_cycle, total_ops, total_bytes));
   }
   std::vector<long> id_exists(num_node, 0);
   for (size_t id = 0; id < id_exists.size(); ++id) {
@@ -403,8 +403,8 @@ long dist_read_dist_data(const std::vector<DistData<M> >& dds, const int num_nod
     glb_sum(ops);
     total_bytes += bytes;
     total_ops += ops;
-    displayln_info(ssprintf("%s: cycle / n_cycle = %4d / %4d ; total_ops = %10ld ; total_bytes = %15ld",
-          fname, i + 1, n_cycle, total_ops, total_bytes));
+    displayln_info(ssprintf("%s::%s: cycle / n_cycle = %4d / %4d ; total_ops = %10ld ; total_bytes = %15ld",
+          cname().c_str(), fname, i + 1, n_cycle, total_ops, total_bytes));
   }
   std::vector<long> id_exists(num_node, 0);
   for (size_t id = 0; id < id_exists.size(); ++id) {
@@ -664,16 +664,16 @@ inline ShufflePlan make_shuffle_plan(const ShufflePlanKey& spk)
       }
     }
   }
-  displayln_info(ssprintf("%s: send_pack_infos.size() = %10ld", fname, ret.send_pack_infos.size()));
-  displayln_info(ssprintf("%s: recv_pack_infos.size() = %10ld", fname, ret.send_pack_infos.size()));
-  displayln_info(ssprintf("%s: send_msg_infos.size()  = %10ld", fname, ret.send_msg_infos.size()));
-  displayln_info(ssprintf("%s: recv_msg_infos.size()  = %10ld", fname, ret.recv_msg_infos.size()));
+  displayln_info(ssprintf("%s::%s: send_pack_infos.size() = %10ld", cname().c_str(), fname, ret.send_pack_infos.size()));
+  displayln_info(ssprintf("%s::%s: recv_pack_infos.size() = %10ld", cname().c_str(), fname, ret.send_pack_infos.size()));
+  displayln_info(ssprintf("%s::%s: send_msg_infos.size()  = %10ld", cname().c_str(), fname, ret.send_msg_infos.size()));
+  displayln_info(ssprintf("%s::%s: recv_msg_infos.size()  = %10ld", cname().c_str(), fname, ret.recv_msg_infos.size()));
   return ret;
 }
 
 inline Cache<ShufflePlanKey,ShufflePlan>& get_shuffle_plan_cache()
 {
-  static Cache<ShufflePlanKey,ShufflePlan> cache(16);
+  static Cache<ShufflePlanKey,ShufflePlan> cache("ShufflePlanCache", 16);
   return cache;
 }
 
@@ -701,7 +701,9 @@ void shuffle_field(std::vector<Field<M> >& fs, const Field<M>& f, const Coordina
   if (geo.geon.size_node == new_size_node) {
     fs.resize(1);
     fs[0] = f;
+    return;
   }
+  sync_node();
   TIMER_VERBOSE_FLOPS("shuffle_field");
   const ShufflePlan& sp = get_shuffle_plan(geo.total_site(), new_size_node);
   const long total_bytes = sp.total_send_size * geo.multiplicity * sizeof(M) * get_num_node();
@@ -782,7 +784,9 @@ void shuffle_field_back(Field<M>& f, const std::vector<Field<M> >& fs, const Coo
   if (geo.geon.size_node == new_size_node) {
     qassert(fs.size() == 1);
     f = fs[0];
+    return;
   }
+  sync_node();
   TIMER_VERBOSE_FLOPS("shuffle_field_back");
   const ShufflePlan& sp = get_shuffle_plan(geo.total_site(), new_size_node);
   const long total_bytes = sp.total_send_size * geo.multiplicity * sizeof(M) * get_num_node();

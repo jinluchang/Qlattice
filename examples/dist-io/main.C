@@ -102,6 +102,10 @@ void test_io()
     qassert(fcrc == field_dist_crc32(gf));
   }
   set_g_rand_color_matrix_field(gf, RngState(rs, "rgf-0.1"), 0.1);
+  GaugeField ugf;
+  ugf = gf;
+  unitarize(ugf);
+  const crc32_t ucrc = field_dist_crc32(ugf);
   serial_write_field(gf, ssprintf("huge-data/rgf-0.1.field.conf.%010d", 0));
   set_unit(gf);
   serial_read_field(gf, ssprintf("huge-data/rgf-0.1.field.conf.%010d", 0));
@@ -110,15 +114,15 @@ void test_io()
   set_unit(gf);
   serial_read_field_par(gf, ssprintf("huge-data/rgf-0.1.field.conf.%010d", 0));
   displayln_info(ssprintf("crc32 = %08X", field_dist_crc32(gf)));
+  qassert(crc == field_dist_crc32(gf));
   save_gauge_field(gf, ssprintf("huge-data/rgf-0.1.gf.conf.%010d", 0));
   set_unit(gf);
   load_gauge_field(gf, ssprintf("huge-data/rgf-0.1.gf.conf.%010d", 0));
   displayln_info(ssprintf("crc32 = %08X", field_dist_crc32(gf)));
-  GaugeField ugf;
-  ugf.init(geo);
-  set_g_rand_color_matrix_field(ugf, RngState(rs, "rgf-0.1"), 0.1);
-  unitarize(ugf);
-  const crc32_t ucrc = field_dist_crc32(gf);
+  qassert(ucrc == field_dist_crc32(gf));
+  set_unit(gf);
+  load_gauge_field_par(gf, ssprintf("huge-data/rgf-0.1.gf.conf.%010d", 0));
+  displayln_info(ssprintf("crc32 = %08X", field_dist_crc32(gf)));
   qassert(ucrc == field_dist_crc32(gf));
 }
 

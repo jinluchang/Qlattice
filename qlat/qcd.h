@@ -194,7 +194,7 @@ inline std::string make_gauge_field_header(const GaugeFieldInfo& gfi = GaugeFiel
 
 inline void save_gauge_field(const GaugeField& gf, const std::string& path, const GaugeFieldInfo& gfi_ = GaugeFieldInfo())
 {
-  TIMER_VERBOSE("save_gauge_field");
+  TIMER_VERBOSE_FLOPS("save_gauge_field");
   qassert(is_initialized(gf));
   const Geometry& geo = gf.geo;
   FieldM<std::array<Complex, 6>, 4> gft;
@@ -217,21 +217,18 @@ inline void save_gauge_field(const GaugeField& gf, const std::string& path, cons
   gfi.total_site = gf.geo.total_site();
   qtouch_info(path, make_gauge_field_header(gfi));
   serial_write_field(gft, path);
+  timer.flops += get_data(gft).data_size() * gft.geo.geon.num_node;
 }
 
-inline void load_gauge_field(GaugeField& gf, const std::string& path, const bool par_read = false)
+inline void load_gauge_field(GaugeField& gf, const std::string& path)
   // assuming gf already initialized and have correct size;
 {
-  TIMER_VERBOSE("load_gauge_field");
+  TIMER_VERBOSE_FLOPS("load_gauge_field");
   qassert(is_initialized(gf));
   const Geometry& geo = gf.geo;
   FieldM<std::array<Complex, 6>, 4> gft;
   gft.init(geo);
-  if (par_read) {
-    serial_read_field_par(gft, path, -get_data_size(gft) * get_num_node(), SEEK_END);
-  } else {
-    serial_read_field(gft, path, -get_data_size(gft) * get_num_node(), SEEK_END);
-  }
+  serial_read_field(gft, path, -get_data_size(gft) * get_num_node(), SEEK_END);
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -243,12 +240,36 @@ inline void load_gauge_field(GaugeField& gf, const std::string& path, const bool
       unitarize(v[m]);
     }
   }
+  timer.flops += get_data(gft).data_size() * gft.geo.geon.num_node;
+}
+
+inline void load_gauge_field_par(GaugeField& gf, const std::string& path)
+  // assuming gf already initialized and have correct size;
+{
+  TIMER_VERBOSE_FLOPS("load_gauge_field_par");
+  qassert(is_initialized(gf));
+  const Geometry& geo = gf.geo;
+  FieldM<std::array<Complex, 6>, 4> gft;
+  gft.init(geo);
+  serial_read_field_par(gft, path, -get_data_size(gft) * get_num_node(), SEEK_END);
+#pragma omp parallel for
+  for (long index = 0; index < geo.local_volume(); ++index) {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    Vector<std::array<Complex, 6> > vt = gft.get_elems(xl);
+    to_from_big_endian_64(get_data(vt));
+    Vector<ColorMatrix> v = gf.get_elems(xl);
+    for (int m = 0; m < geo.multiplicity; ++m) {
+      assign_truncate(v[m], vt[m]);
+      unitarize(v[m]);
+    }
+  }
+  timer.flops += get_data(gft).data_size() * gft.geo.geon.num_node;
 }
 
 inline void load_gauge_field_milc(GaugeField& gf, const std::string& path, const bool par_read = false)
   // assuming gf already initialized and have correct size;
 {
-  TIMER_VERBOSE("load_gauge_field_milc");
+  TIMER_VERBOSE_FLOPS("load_gauge_field_milc");
   qassert(is_initialized(gf));
   const Geometry& geo = gf.geo;
   FieldM<std::array<std::complex<float>, 9>, 4> gft;
@@ -279,6 +300,7 @@ inline void load_gauge_field_milc(GaugeField& gf, const std::string& path, const
       unitarize(v[m]);
     }
   }
+  timer.flops += get_data(gft).data_size() * gft.geo.geon.num_node;
 }
 
 inline WilsonMatrix make_wilson_matrix_from_vectors(const std::array<ConstHandle<WilsonVector>,4*NUM_COLOR>& cols)

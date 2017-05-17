@@ -12,17 +12,20 @@ QLAT_START_NAMESPACE
 template <class K, class M>
 struct Cache
 {
+  std::string name;
   std::map<K,std::pair<int,M> > m;
   long idx;
   long limit;
   //
-  Cache()
+  Cache(const std::string& name_ = "Cache")
   {
+    name = name_;
     idx = 0;
     limit = 16;
   }
-  Cache(const long limit_)
+  Cache(const std::string& name_, const long limit_)
   {
+    name = name_;
     idx = 0;
     limit = limit_;
   }
@@ -40,7 +43,7 @@ struct Cache
       return (it->second).second;
     } else {
       gc();
-      displayln_info(ssprintf("Qlat::Cache: to add %d / %d.", m.size() + 1, limit));
+      displayln_info(ssprintf("%s::%s: to add %d / %d.", cname().c_str(), name.c_str(), m.size() + 1, limit));
       std::pair<int,M>& v = m[key];
       v.first = idx;
       idx += 1;
@@ -51,7 +54,7 @@ struct Cache
   void gc()
   {
     if (m.size() >= limit) {
-      displayln_info(ssprintf("%s::Cache: before gc: %d / %d.", cname().c_str(), m.size(), limit));
+      displayln_info(ssprintf("%s::%s: before gc: %d / %d.", cname().c_str(), name.c_str(), m.size(), limit));
       std::vector<K> to_free;
       for (typename std::map<K,std::pair<int,M> >::iterator it = m.begin(); it != m.end(); ++it) {
         const K& k = it->first;
@@ -63,7 +66,7 @@ struct Cache
       for (size_t i = 0; i < to_free.size(); ++i) {
         m.erase(to_free[i]);
       }
-      displayln_info(ssprintf("%s::Cache:  after gc: %d / %d.", cname().c_str(), m.size(), limit));
+      displayln_info(ssprintf("%s::%s:  after gc: %d / %d.", cname().c_str(), name.c_str(), m.size(), limit));
     }
   }
   //
