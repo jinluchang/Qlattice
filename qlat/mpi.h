@@ -343,7 +343,7 @@ inline int glb_sum(Vector<char> recv, const Vector<char>& send)
 {
   qassert(recv.size() == send.size());
 #ifdef USE_MULTI_NODE
-  return MPI_Allreduce((char*)send.data(), (char*)recv.data(), recv.data_size(), MPI_BYTE, MPI_SUM, get_comm());
+  return MPI_Allreduce((char*)send.data(), (char*)recv.data(), recv.size(), MPI_BYTE, MPI_BOR, get_comm());
 #else
   memmove(recv.data(), send.data(), recv.data_size());
   return 0;
