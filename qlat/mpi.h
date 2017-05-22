@@ -5,6 +5,8 @@
 
 #include <array>
 
+#include <mpi.h> // have to add here other wise we would rely on timer.h to include <mpi.h> which is NOT glorious?
+
 QLAT_START_NAMESPACE
 
 inline MPI_Comm& get_qlat_comm()
