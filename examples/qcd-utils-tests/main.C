@@ -26,14 +26,14 @@ void simple_tests()
   GaugeTransform gt;
   gt.init(geo);
   set_g_rand_color_matrix_field(gt, RngState(rs, "gt-1.0"), 1.0);
-  make_apply_gauge_transformation(gf, gf, gt);
+  gf_apply_gauge_transformation(gf, gf, gt);
   gf_show_info(gf, 1);
-  make_apply_gauge_transformation(gf, gf, gt);
+  gf_apply_gauge_transformation(gf, gf, gt);
   gf_show_info(gf);
   unitarize(gf);
   gf_show_info(gf, 1);
   make_tree_gauge_transformation(gt, gf);
-  make_apply_gauge_transformation(gf, gf, gt);
+  gf_apply_gauge_transformation(gf, gf, gt);
   gf_show_info(gf);
   GaugeField gfs;
   gf_ape_smear(gfs, gf, 0.1);

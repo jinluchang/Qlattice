@@ -29,12 +29,12 @@ inline void gt_apply_gauge_transformation(GaugeTransform& gt0, const GaugeTransf
   }
 }
 
-inline void make_apply_gauge_transformation_no_comm(GaugeField& gf, const GaugeField& gf0, const GaugeTransform& gt)
+inline void gf_apply_gauge_transformation_no_comm(GaugeField& gf, const GaugeField& gf0, const GaugeTransform& gt)
   // gf can be the same as gf0
   // assuming comm for gt is done
   // gf <- gt * gf0
 {
-  TIMER("make_apply_gauge_transformation_no_comm");
+  TIMER("gf_apply_gauge_transformation_no_comm");
   assert(is_matching_geo(gf0.geo, gt.geo));
   const Geometry& geo = gf0.geo;
   gf.init(geo_resize(geo, 0));
@@ -54,15 +54,15 @@ inline void make_apply_gauge_transformation_no_comm(GaugeField& gf, const GaugeF
   }
 }
 
-inline void make_apply_gauge_transformation(GaugeField& gf, const GaugeField& gf0, const GaugeTransform& gt)
+inline void gf_apply_gauge_transformation(GaugeField& gf, const GaugeField& gf0, const GaugeTransform& gt)
 {
-  TIMER("make_apply_gauge_transformation");
+  TIMER("gf_apply_gauge_transformation");
   assert(is_matching_geo(gf0.geo, gt.geo));
   GaugeTransform gt1;
   gt1.init(geo_resize(gt.geo, 1));
   gt1 = gt;
   refresh_expanded(gt1);
-  make_apply_gauge_transformation_no_comm(gf, gf0, gt1);
+  gf_apply_gauge_transformation_no_comm(gf, gf0, gt1);
 }
 
 inline void make_temporal_gauge_transformation(GaugeTransform& gt, const GaugeField& gf,
@@ -124,7 +124,7 @@ inline void make_tree_gauge_transformation(GaugeTransform& gt, const GaugeField&
   gft = gf;
   for (int m = 0; m < DIMN; ++m) {
     make_temporal_gauge_transformation(gt_dir, gft, xgref[dirs[m]], dirs[m]);
-    make_apply_gauge_transformation(gft, gft, gt_dir);
+    gf_apply_gauge_transformation(gft, gft, gt_dir);
     gt_apply_gauge_transformation(gt, gt_dir);
   }
 }
