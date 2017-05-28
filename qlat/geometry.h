@@ -270,13 +270,6 @@ inline Geometry geo_reform(const Geometry& geo_, const int multiplicity_ = 1, co
   return geo;
 }
 
-inline void swap(Geometry& geo1, Geometry& geo2)
-{
-  Geometry geo = geo1;
-  geo1 = geo2;
-  geo2 = geo;
-}
-
 inline bool is_matching_geo(const Geometry& geo1, const Geometry& geo2)
 {
   return geo1.initialized == geo2.initialized

@@ -180,7 +180,7 @@ void fft_complex_field_dirs(Field<M>& field, const Coordinate& dirs)
       timer.flops += get_data_size(fields);
       get_data_plus_mu(get_data(fieldr), get_data(fields), dir);
     }
-    swap(fields, fieldr);
+    std::swap(fields, fieldr);
     geos.geon.coor_node[dir] = mod(geos.geon.coor_node[dir] + 1, geos.geon.size_node[dir]);
   }
   {
@@ -214,7 +214,7 @@ void fft_complex_field_dirs(Field<M>& field, const Coordinate& dirs)
       timer.flops += get_data_size(fields);
       get_data_plus_mu(get_data(fieldr), get_data(fields), dir);
     }
-    swap(fields, fieldr);
+    std::swap(fields, fieldr);
     geos.geon.coor_node[dir] = mod(geos.geon.coor_node[dir] + 1, geos.geon.size_node[dir]);
   }
   field = fields;

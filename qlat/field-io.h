@@ -18,7 +18,7 @@
 #include <fstream>
 #include <iostream>
 
-QLAT_START_NAMESPACE       
+QLAT_START_NAMESPACE
 
 typedef std::array<Complex, 6> MatrixTruncatedSU3;
 typedef std::array<Complex, 9> MatrixSU3;
@@ -155,7 +155,7 @@ std::string field_hash_crc32(const qlat::Field<M> &origin){
 	void *buffer = (void *)&crc32;
 	for(int id_node = 0; id_node < get_num_node(); id_node++){
 		if(get_id_node() == id_node){
-			crc32.add((void *)get_data(origin).data(), 
+			crc32.add((void *)get_data(origin).data(),
 							get_data(origin).size() * sizeof(M));
 		}
 		sync_node();
@@ -203,7 +203,7 @@ void sophisticated_make_to_order(Field<M> &result, const Field<M> &origin){
 			Coordinate local_coor = geo_only_local.coordinate_from_index(index);
 			Coordinate global_coor;
 			for (int mu = 0; mu < 4; mu++) {
-				global_coor[mu] = local_coor[mu] + coor_send_node[mu] 
+				global_coor[mu] = local_coor[mu] + coor_send_node[mu]
 													* geo_only_local.node_site[mu];
 			}
 			long global_index = index_from_coordinate(global_coor, total_site);
@@ -211,21 +211,21 @@ void sophisticated_make_to_order(Field<M> &result, const Field<M> &origin){
 			{
 				Coordinate local_coor_write = geo_only_local.coordinate_from_index(
 													global_index - range_low);
-				assign(field_rslt.get_elems(local_coor_write), 
+				assign(field_rslt.get_elems(local_coor_write),
 											field_send.get_elems_const(local_coor));
 			}
 		}
 
 		get_data_dir(get_data(field_recv), get_data(field_send), 0);
-		swap(field_recv, field_send);	
+    std::swap(field_recv, field_send);	
 	}
 	result.init(geo_only_local);
 	result = field_rslt;
 }
 
 template<class M>
-void sophisticated_serial_write(const qlat::Field<M> &origin, 
-		const std::string &write_addr, 
+void sophisticated_serial_write(const qlat::Field<M> &origin,
+		const std::string &write_addr,
 		const bool is_append = false){
 	
 	TIMER("sophisticated_serial_write");
@@ -249,21 +249,21 @@ void sophisticated_serial_write(const qlat::Field<M> &origin,
 	for(int i = 0; i < get_num_node(); i++){
 
 		if(get_id_node() == 0){
-			M *ptr = get_data(field_send).data(); 
+			M *ptr = get_data(field_send).data();
 			qassert(ptr != NULL);
-			long size = sizeof(M) * geo_only_local.local_volume() 
+			long size = sizeof(M) * geo_only_local.local_volume()
 											* geo_only_local.multiplicity;
 			std::cout << "Writing CYCLE: " << i << "\tSIZE = " << size << std::endl;
-			timer_fwrite((char *)ptr, size, outputFile); 
+			timer_fwrite((char *)ptr, size, outputFile);
 			fflush(outputFile);
 		}
 
 		get_data_dir(get_data(field_recv), get_data(field_send), 0);
-		swap(field_recv, field_send);
+    std::swap(field_recv, field_send);
 	}
 
 	if(get_id_node() == 0) fclose(outputFile);
-    
+
 	displayln("Export file CLOSED");
 
 	sync_node();
@@ -282,8 +282,8 @@ inline void timer_fread(char* ptr, long size, FILE *inputFile){
 }
 
 template<class M>
-void sophisticated_serial_read(qlat::Field<M> &destination, 
-								const std::string &import, int pos, 
+void sophisticated_serial_read(qlat::Field<M> &destination,
+								const std::string &import, int pos,
 								const int num_of_reading_threads = 0){
 
 	// Blindly read binary data into field. All checking should be handled by wrapper functions.
@@ -309,7 +309,7 @@ void sophisticated_serial_read(qlat::Field<M> &destination,
 
 // Well as you can see this is not really serial reading anymore. The sertial reading speed is unbearablly slow.
 // Anyway it is tested. And it seems to be right.
-	input = fopen(import.c_str(), "rb"); 
+	input = fopen(import.c_str(), "rb");
 	qassert(input != NULL);
 	qassert(!ferror(input));
 
@@ -322,20 +322,20 @@ void sophisticated_serial_read(qlat::Field<M> &destination,
 
 	sync_node();
 	int cycle_limit = 0;
-	if(num_of_reading_threads > 0) 
+	if(num_of_reading_threads > 0)
 		cycle_limit = (int)ceil((double)get_num_node() / num_of_reading_threads);
 	else
 		cycle_limit = 1;
 	for(int cycle = 0; cycle < cycle_limit; cycle++){
 		if(get_id_node() % cycle_limit == cycle){
-			std::cout << "Reading STARTED:  Node Number =\t" 
+			std::cout << "Reading STARTED:  Node Number =\t"
 				<< get_id_node() << std::endl;
 			M *ptr = field_send.field.data();
-			long size = sizeof(M) * geo_only_local.local_volume() 
+			long size = sizeof(M) * geo_only_local.local_volume()
 													* geo_only_local.multiplicity;
 			assert(!fseek(input, size * get_id_node(), SEEK_CUR));
 			timer_fread((char*)ptr, size, input);
-			std::cout << "Reading FINISHED: Node Number =\t" 
+			std::cout << "Reading FINISHED: Node Number =\t"
 				<< get_id_node() << std::endl;
 			fclose(input);
 		}
@@ -347,7 +347,7 @@ void sophisticated_serial_read(qlat::Field<M> &destination,
 //		inputFile = fopen(read_addr.c_str(), "r");
 //		char line[1000];
 //		char indicator[] = "END_HEADER";
-// 
+//
 //		int pos_ = -1; fpos_t pos;
 //		rewind(inputFile);
 //		while(fgets(line, 1000, inputFile) != NULL)
@@ -355,8 +355,8 @@ void sophisticated_serial_read(qlat::Field<M> &destination,
 //			fgetpos(inputFile, &pos); pos_ = 1;  break;
 //		}}
 //		qassert(pos_ > -1); qassert(!feof(inputFile));
-//	} 
-// 
+//	}
+//
 //	for(int i = 0; i < get_num_node(); i++){
 //		
 //		if(get_id_node() == 0){
@@ -368,9 +368,9 @@ void sophisticated_serial_read(qlat::Field<M> &destination,
 //		}
 //		sync_node();	
 //		get_data_dir(get_data(field_recv), get_data(field_send), 0);
-//                 swap(field_recv, field_send);
+//                 std::swap(field_recv, field_send);
 //	}
-// 
+//
 //	if(get_id_node() == 0) fclose(inputFile);
 
 	field_rslt = field_send;
@@ -396,7 +396,7 @@ void sophisticated_serial_read(qlat::Field<M> &destination,
 		}
 
 		get_data_dir(get_data(field_recv), get_data(field_send), 0);
-		swap(field_recv, field_send);
+    std::swap(field_recv, field_send);
 		if(get_id_node() == 0) std::cout << "Shuffling CYCLE:\t" << i << std::endl;
 	}
 	
@@ -410,7 +410,7 @@ void sophisticated_serial_read(qlat::Field<M> &destination,
     long size = geo_only_local.local_volume() * geo_only_local.multiplicity;
 //	printf("read = %d\n", fread((char*)ptr, sizeof(M), size, input));
 	fread((char*)ptr, sizeof(M), size, input);
-   
+
 	destination = field_rslt;
 
 #endif
