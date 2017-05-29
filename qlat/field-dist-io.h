@@ -369,11 +369,11 @@ template <class M>
 long dist_read_dist_data(const std::vector<DistData<M> >& dds, const int num_node, const std::string& path)
   // interface_function
 {
-  sync_node();
-  TIMER_VERBOSE_FLOPS("dist_read_dist_data");
   if (!does_file_exist_sync_node(path + "/checkpoint")) {
     return 0;
   }
+  sync_node();
+  TIMER_VERBOSE_FLOPS("dist_read_dist_data");
   long total_bytes = 0;
   long total_ops = 0;
   const int n_cycle = std::max(1, num_node / dist_read_par_limit());
@@ -725,7 +725,7 @@ void shuffle_field(std::vector<Field<M> >& fs, const Field<M>& f, const Coordina
     std::vector<MPI_Request> send_reqs(sp.send_msg_infos.size());
     std::vector<MPI_Request> recv_reqs(sp.recv_msg_infos.size());
     {
-      TIMER_VERBOSE("shuffle_field-comm-init");
+      TIMER("shuffle_field-comm-init");
       const int mpi_tag = 4;
       for (size_t i = 0; i < sp.send_msg_infos.size(); ++i) {
         const ShufflePlanMsgInfo& mi = sp.send_msg_infos[i];
