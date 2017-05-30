@@ -157,6 +157,7 @@ inline FILE* qopen_info(const std::string& path, const std::string& mode)
   TIMER("qopen_info");
   if (0 == get_id_node()) {
     FILE* f = qopen(path, mode);
+    qassert(f != NULL);
     qset_line_buf(f);
     return f;
   } else {
@@ -197,15 +198,35 @@ inline int qrename_info(const std::string& old_path, const std::string& new_path
   }
 }
 
-inline int qtouch(const std::string& path, const std::string& content = "")
+inline int qtouch(const std::string& path)
 {
   TIMER("qtouch");
   FILE* file = qopen(path, "w");
-  display(content, file);
+  qassert(file != NULL);
   return qclose(file);
 }
 
-inline int qtouch_info(const std::string& path, const std::string& content = "")
+inline int qtouch_info(const std::string& path)
+{
+  TIMER("qtouch_info");
+  if (0 == get_id_node()) {
+    return qtouch(path);
+  } else {
+    return 0;
+  }
+}
+
+inline int qtouch(const std::string& path, const std::string& content)
+{
+  TIMER("qtouch");
+  FILE* file = qopen(path + ".partial", "w");
+  qassert(file != NULL);
+  display(content, file);
+  qclose(file);
+  return qrename(path + ".partial", path);
+}
+
+inline int qtouch_info(const std::string& path, const std::string& content)
 {
   TIMER("qtouch_info");
   if (0 == get_id_node()) {
@@ -219,6 +240,7 @@ inline std::string qcat(const std::string& path)
 {
   TIMER("qcat");
   FILE* fp = qopen(path, "r");
+  qassert(fp != NULL);
   fseek(fp, 0, SEEK_END);
   const long length = ftell(fp);
   fseek(fp, 0, SEEK_SET);
@@ -465,6 +487,7 @@ inline DataTable qload_datatable(const std::string& path)
     return DataTable();
   }
   FILE* fp = qopen(path, "r");
+  qassert(fp != NULL);
   DataTable ret = qload_datatable(fp);
   qclose(fp);
   return ret;
@@ -477,6 +500,7 @@ inline DataTable qload_datatable_par(const std::string& path)
     return DataTable();
   }
   FILE* fp = qopen(path, "r");
+  qassert(fp != NULL);
   DataTable ret = qload_datatable_par(fp);
   qclose(fp);
   return ret;

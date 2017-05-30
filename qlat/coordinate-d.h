@@ -95,11 +95,32 @@ inline CoordinateD operator*(const CoordinateD& c, const double a)
   return a * c;
 }
 
+inline CoordinateD operator/(const double a, const CoordinateD& c)
+{
+  qassert(false == std::isnan(c));
+  qassert(false == std::isnan(a));
+  return CoordinateD(a/c[0], a/c[1], a/c[2], a/c[3]);
+}
+
 inline CoordinateD operator/(const CoordinateD& c, const double a)
 {
   qassert(false == std::isnan(c));
   qassert(false == std::isnan(a));
   return CoordinateD(c[0]/a, c[1]/a, c[2]/a, c[3]/a);
+}
+
+inline CoordinateD operator*(const CoordinateD& c1, const CoordinateD& c2)
+{
+  qassert(false == std::isnan(c1));
+  qassert(false == std::isnan(c2));
+  return CoordinateD(c1[0] * c2[0], c1[1] * c2[1], c1[2] * c2[2], c1[3] * c2[3]);
+}
+
+inline CoordinateD operator/(const CoordinateD& c1, const CoordinateD& c2)
+{
+  qassert(false == std::isnan(c1));
+  qassert(false == std::isnan(c2));
+  return CoordinateD(c1[0] / c2[0], c1[1] / c2[1], c1[2] / c2[2], c1[3] / c2[3]);
 }
 
 inline double coordinate_len(const CoordinateD& c)

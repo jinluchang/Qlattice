@@ -51,14 +51,6 @@ void set_zero(std::vector<M>& vec)
   std::memset(vec.data(), 0, size);
 }
 
-template <class M>
-void swap(std::vector<M>& v1, std::vector<M>& v2)
-{
-  std::vector<M> tmp(v2);
-  v2 = v1;
-  v1 = tmp;
-}
-
 inline double norm(const double& x)
 {
   return x*x;

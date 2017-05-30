@@ -171,15 +171,6 @@ Vector<M> get_data(const Field<M>& f)
 }
 
 template <class M>
-void swap(Field<M>& f1, Field<M>& f2)
-{
-  qassert(is_initialized(f1));
-  qassert(is_initialized(f1));
-  swap(f1.geo, f2.geo);
-  swap(f1.field, f2.field);
-}
-
-template <class M>
 const Field<M>& operator+=(Field<M>& f, const Field<M>& f1)
 {
   TIMER("field_operator");
@@ -318,3 +309,15 @@ long get_data_size(const Field<M>& f)
 }
 
 QLAT_END_NAMESPACE
+
+namespace std {
+
+  template <class M>
+  void swap(qlat::Field<M>& f1, qlat::Field<M>& f2)
+  {
+    swap(f1.initialized, f2.initialized);
+    swap(f1.geo, f2.geo);
+    swap(f1.field, f2.field);
+  }
+
+}
