@@ -317,11 +317,11 @@ inline WilsonMatrix make_wilson_matrix_from_vectors(const std::array<ConstHandle
 inline void set_propagator_from_fermion_fields(Propagator4d& prop, const Array<FermionField4d,4*NUM_COLOR> ffs)
 {
   TIMER_VERBOSE("set_propagator_from_fermion_fields");
-  const Geometry geo = ffs[0].geo;
+  const Geometry& geo = ffs[0].geo;
   for (int i = 0; i < 4*NUM_COLOR; ++i) {
     qassert(geo == ffs[i].geo);
   }
-  prop.init(geo);
+  prop.init(geo_reform(geo));
   qassert(prop.geo == geo);
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
@@ -333,5 +333,45 @@ inline void set_propagator_from_fermion_fields(Propagator4d& prop, const Array<F
     prop.get_elem(xl) = make_wilson_matrix_from_vectors(cols);
   }
 }
+
+inline void set_wilson_matrix_col_from_vector(WilsonMatrix& wm, const int idx, const WilsonVector& col)
+{
+  for (int j = 0; j < 4*NUM_COLOR; ++j) {
+    wm(j, idx) = col(j);
+  }
+}
+
+inline void set_propagator_col_from_fermion_field(Propagator4d& prop, const int idx, const FermionField4d& ff)
+{
+  TIMER("set_propagator_col_from_fermion_field");
+  const Geometry& geo = ff.geo;
+  qassert(geo == prop.geo);
+#pragma omp parallel for
+  for (long index = 0; index < geo.local_volume(); ++index) {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    set_wilson_matrix_col_from_vector(prop.get_elem(xl), idx, ff.get_elem(xl));
+  }
+}
+
+inline void set_wilson_vector_from_matrix_col(WilsonVector& col, const WilsonMatrix& wm, const int idx)
+{
+  for (int j = 0; j < 4*NUM_COLOR; ++j) {
+    col(j) = wm(j, idx);
+  }
+}
+
+inline void set_fermion_field_from_propagator_col(FermionField4d& ff, const Propagator4d& prop, const int idx)
+{
+  TIMER("set_fermion_field_from_propagator_col");
+  const Geometry& geo = prop.geo;
+  ff.init(geo_reform(geo));
+  qassert(geo == ff.geo);
+#pragma omp parallel for
+  for (long index = 0; index < geo.local_volume(); ++index) {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    set_wilson_vector_from_matrix_col(ff.get_elem(xl), prop.get_elem(xl), idx);
+  }
+}
+
 
 QLAT_END_NAMESPACE
