@@ -692,7 +692,7 @@ QLAT_END_NAMESPACE
 namespace qshow {
 
 inline std::string show(const qlat::Complex& x) {
-  return ssprintf("(%23.16E + %23.16E j)", x.real(), x.imag());
+  return ssprintf("(%24.17E + %24.17E j)", x.real(), x.imag());
 }
 
 inline std::string show(const qlat::Coordinate& x) {
