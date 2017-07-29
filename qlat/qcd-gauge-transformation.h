@@ -1,6 +1,7 @@
 #pragma once
 
 #include <qlat/qcd.h>
+#include <qlat/qcd-utils.h>
 
 QLAT_START_NAMESPACE
 
@@ -63,6 +64,15 @@ inline void gf_apply_gauge_transformation(GaugeField& gf, const GaugeField& gf0,
   gt1 = gt;
   refresh_expanded(gt1);
   gf_apply_gauge_transformation_no_comm(gf, gf0, gt1);
+}
+
+inline void gf_apply_rand_gauge_transformation(GaugeField& gf, const GaugeField& gf0, const RngState& rs)
+{
+  const Geometry geo = geo_reform(gf0.geo);
+  GaugeTransform gt;
+  gt.init(geo);
+  set_g_rand_color_matrix_field(gt, rs, 1.0);
+  gf_apply_gauge_transformation(gf, gf0, gt);
 }
 
 inline void make_temporal_gauge_transformation(GaugeTransform& gt, const GaugeField& gf,

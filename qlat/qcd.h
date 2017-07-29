@@ -373,5 +373,4 @@ inline void set_fermion_field_from_propagator_col(FermionField4d& ff, const Prop
   }
 }
 
-
 QLAT_END_NAMESPACE

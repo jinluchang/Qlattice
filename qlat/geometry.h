@@ -85,6 +85,12 @@ struct Geometry
     init();
   }
   //
+  Geometry(const Coordinate& total_site, const int multiplicity_)
+  {
+    init();
+    init(total_site, multiplicity_);
+  }
+  //
   long offset_from_coordinate(const Coordinate& x) const
   {
 #ifdef USE_MULTI_NODE
