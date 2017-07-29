@@ -397,10 +397,9 @@ struct SpinMatrixConstants
   }
   static const SpinMatrix& get_cps_sigmas(int i, int j)
   {
-  	SpinMatrixConstants smc = get_instance();
-	return (smc.cps_gammas[i]*smc.cps_gammas[j]-smc.cps_gammas[j]*smc.cps_gammas[i])/2.;
+    SpinMatrixConstants smc = get_instance();
+    return (smc.cps_gammas[i]*smc.cps_gammas[j]-smc.cps_gammas[j]*smc.cps_gammas[i])/2.;
   }
-
 };
 
 inline WilsonMatrix operator*(const ColorMatrix& cm, const WilsonMatrix& m)
