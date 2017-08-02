@@ -105,9 +105,10 @@ inline int product(const Coordinate& coor)
 
 inline void regularize(Coordinate &coor, const Coordinate &regularizer)
 {
+#ifndef SUPPRESS_REG_COOR
 // #ifndef USE_SINGLE_NODE // SINGLE_NODE mode (or !USE_MULTI_NODE) does NOT work (yet?) so this is meaningless. Thus it is commented out.
 	warn("use regular_coordinate");
-// #endif
+#endif
 	for(int mu = 0; mu < DIMN; mu++){
 	coor[mu] = (coor[mu] % regularizer[mu] + regularizer[mu]) % regularizer[mu];
 	}
