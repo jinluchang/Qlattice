@@ -109,6 +109,24 @@ inline ColorMatrix gf_staple_no_comm(const GaugeField& gf, const Coordinate& xl,
   // return gf_staple_no_comm_v2(gf, xl, mu);
 }
 
+inline ColorMatrix gf_spatial_staple_no_comm(const GaugeField& gf, const Coordinate& xl, const int mu)
+{
+  ColorMatrix ret;
+  set_zero(ret);
+  const Coordinate xl_mu = coordinate_shifts(xl,mu);
+  for (int m = 0; m < 3; ++m) {
+    if (mu != m) {
+      ret += gf.get_elem(xl, m) *
+        gf.get_elem(coordinate_shifts(xl,m), mu) *
+        matrix_adjoint(gf.get_elem(xl_mu, m));
+      ret += matrix_adjoint(gf.get_elem(coordinate_shifts(xl,-m-1), m)) *
+        gf.get_elem(coordinate_shifts(xl,-m-1), mu) *
+        gf.get_elem(coordinate_shifts(xl_mu,-m-1), m);
+    }
+  }
+  return ret;
+}
+
 struct WilsonLinePathStop
 {
   Coordinate x;

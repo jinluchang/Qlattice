@@ -84,6 +84,17 @@ inline double clf_plaq_action_density(const CloverLeafField& clf, const Coordina
   return sum;
 }
 
+inline double clf_spatial_plaq_action_density(const CloverLeafField& clf, const Coordinate& xl)
+  // \sum_P(spatial only) (1 - 1/3 * Re Tr U_P)
+{
+  const Vector<ColorMatrix> v = clf.get_elems_const(xl);
+  double sum = 0.0;
+  sum += 1.0 - 1.0/3.0 * matrix_trace(v[0]).real();
+  sum += 1.0 - 1.0/3.0 * matrix_trace(v[1]).real();
+  sum += 1.0 - 1.0/3.0 * matrix_trace(v[3]).real();
+  return sum;
+}
+
 inline double clf_topology_density(const CloverLeafField& clf, const Coordinate& xl)
   // sum of the density of the topological charge Q
 {
@@ -110,6 +121,19 @@ inline void clf_plaq_action_field(FieldM<double,1>& paf, const CloverLeafField& 
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate& xl = geo.coordinate_from_index(index);
     paf.get_elem(xl) = clf_plaq_action_density(clf, xl);
+  }
+}
+
+inline void clf_spatial_plaq_action_field(FieldM<double,1>& spaf, const CloverLeafField& clf)
+{
+  TIMER("clf_spatial_plaq_action_field");
+  const Geometry& geo = clf.geo;
+  spaf.init(geo);
+  qassert(is_matching_geo(spaf.geo, geo));
+#pragma omp parallel for
+  for (long index = 0; index < geo.local_volume(); ++index) {
+    const Coordinate& xl = geo.coordinate_from_index(index);
+    spaf.get_elem(xl) = clf_spatial_plaq_action_density(clf, xl);
   }
 }
 
