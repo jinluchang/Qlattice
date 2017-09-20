@@ -22,6 +22,7 @@
 #include <qlat/qcd-gauge-transformation.h>
 #include <qlat/qcd-smear.h>
 #include <qlat/qcd-topology.h>
+#include <qlat/fermion-action.h>
 
 QLAT_START_NAMESPACE
 
