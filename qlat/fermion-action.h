@@ -26,13 +26,15 @@ struct FermionAction
     init();
   }
   FermionAction(const double mass_, const int ls_, const double m5_,
-      const double mobius_scale = 1.0, bool is_multiplying_dminus = true)
+      const double mobius_scale_ = 1.0, bool is_multiplying_dminus_ = true)
   {
     init();
     initialized = true;
     mass = mass_;
     ls = ls_;
     m5 = m5_;
+    mobius_scale = mobius_scale_;
+    is_multiplying_dminus = is_multiplying_dminus_;
   }
 };
 
