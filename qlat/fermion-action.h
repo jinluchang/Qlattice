@@ -4,6 +4,7 @@ QLAT_START_NAMESPACE
 
 struct FermionAction
 {
+  bool initialized;
   double mass;
   int ls;
   double m5;
@@ -12,6 +13,7 @@ struct FermionAction
   //
   void init()
   {
+    initialized = false;
     mass = 0.01;
     ls = 16;
     m5 = 1.8;
@@ -27,6 +29,7 @@ struct FermionAction
       const double mobius_scale = 1.0, bool is_multiplying_dminus = true)
   {
     init();
+    initialized = true;
     mass = mass_;
     ls = ls_;
     m5 = m5_;
