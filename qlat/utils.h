@@ -90,13 +90,17 @@ struct Handle
   //
   Handle<M>()
   {
-    p = NULL;
+    init();
   }
   Handle<M>(M& obj)
   {
     init(obj);
   }
   //
+  void init()
+  {
+    p = NULL;
+  }
   void init(M& obj)
   {
     p = (M*)&obj;
@@ -121,7 +125,7 @@ struct ConstHandle
   //
   ConstHandle<M>()
   {
-    p = NULL;
+    init();
   }
   ConstHandle<M>(const M& obj)
   {
@@ -132,6 +136,10 @@ struct ConstHandle
     init(h());
   }
   //
+  void init()
+  {
+    p = NULL;
+  }
   void init(const M& obj)
   {
     p = (M*)&obj;

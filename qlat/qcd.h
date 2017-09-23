@@ -40,6 +40,15 @@ struct FermionField4d : FieldM<WilsonVector,1>
   }
 };
 
+struct FermionField5d : Field<WilsonVector>
+{
+  virtual const std::string& cname()
+  {
+    static const std::string s = "FermionField5d";
+    return s;
+  }
+};
+
 inline void unitarize(Field<ColorMatrix>& gf)
 {
   TIMER_VERBOSE("unitarize(gf)");
@@ -370,6 +379,97 @@ inline void set_fermion_field_from_propagator_col(FermionField4d& ff, const Prop
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     set_wilson_vector_from_matrix_col(ff.get_elem(xl), prop.get_elem(xl), idx);
+  }
+}
+
+inline void fermion_field_5d_from_4d(FermionField5d& ff5d, const FermionField4d& ff4d, const int upper, const int lower)
+  // ff5d need to be initialized
+  // upper componets are right handed
+  // lower componets are left handed
+{
+  TIMER("fermion_field_5d_from_4d");
+  const Geometry& geo = ff5d.geo;
+  set_zero(ff5d);
+  const int sizewvh = sizeof(WilsonVector) / 2;
+#pragma omp parallel for
+  for (long index = 0; index < geo.local_volume(); ++index) {
+    Coordinate x = geo.coordinate_from_index(index);
+    memcpy((char*)&(ff5d.get_elem(x, upper)),
+        (const char*)&(ff4d.get_elem(x)),
+        sizewvh);
+    memcpy((char*)&(ff5d.get_elem(x, lower)) + sizewvh,
+        (const char*)&(ff4d.get_elem(x)) + sizewvh,
+        sizewvh);
+  }
+}
+
+inline void fermion_field_4d_from_5d(FermionField4d& ff4d, const FermionField5d& ff5d, const int upper, const int lower)
+  // upper componets are right handed
+  // lower componets are left handed
+{
+  TIMER("fermion_field_4d_from_5d");
+  const Geometry& geo = ff5d.geo;
+  ff4d.init(geo_reform(geo));
+  set_zero(ff4d);
+  const int sizewvh = sizeof(WilsonVector) / 2;
+#pragma omp parallel for
+  for (long index = 0; index < geo.local_volume(); ++index) {
+    Coordinate x = geo.coordinate_from_index(index);
+    memcpy((char*)&(ff4d.get_elem(x)),
+        (const char*)&(ff5d.get_elem(x, upper)),
+        sizewvh);
+    memcpy((char*)&(ff4d.get_elem(x)) + sizewvh,
+        (const char*)&(ff5d.get_elem(x, lower)) + sizewvh,
+        sizewvh);
+  }
+}
+
+template <class Inverter>
+inline void inverse(FermionField4d& sol, const FermionField4d& src, const Inverter& inv)
+  // sol do not need to be initialized
+  // inv.geo must be the geometry of the fermion field
+  // inverse(sol5d, src5d, inv) perform the inversion
+{
+  TIMER_VERBOSE("inverse(4d,4d,inv)");
+  const Geometry& geo = src.geo;
+  sol.init(geo);
+  const Geometry geo_ls = inv.geo;
+  const int ls = geo_ls.multiplicity;
+  FermionField5d sol5d, src5d;
+  sol5d.init(geo_ls);
+  src5d.init(geo_ls);
+  fermion_field_5d_from_4d(src5d, src, 0, ls-1);
+  fermion_field_5d_from_4d(sol5d, sol, ls-1, 0);
+  inverse(sol5d, src5d, inv);
+  fermion_field_4d_from_5d(sol, sol5d, ls-1, 0);
+}
+
+inline void set_fermion_field_point_src(FermionField4d& ff, const Coordinate& xg, const int cs, const Complex& value = 1.0)
+  // ff need to be initialized
+{
+  TIMER("set_fermion_field_point_src");
+  const Geometry& geo = ff.geo;
+  set_zero(ff);
+  const Coordinate xl = geo.coordinate_l_from_g(xg);
+  if (geo.is_local(xl)) {
+    ff.get_elem(xl)(cs) = value;
+  }
+}
+
+template <class Inverter>
+inline void set_point_src_propagator(Propagator4d& prop, const Inverter& inv, const Coordinate& xg, const Complex& value = 1.0)
+{
+  TIMER_VERBOSE("set_point_src_propagator");
+  const Geometry geo = geo_reform(inv.geo);
+  prop.init(geo);
+  FermionField4d sol, src;
+  sol.init(geo);
+  src.init(geo);
+  for (int cs = 0; cs < 4 * NUM_COLOR; ++cs) {
+    set_fermion_field_point_src(src, xg, cs, value);
+    set_zero(sol);
+    inverse(sol, src, inv);
+    set_propagator_col_from_fermion_field(prop, cs, sol);
   }
 }
 
