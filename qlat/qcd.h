@@ -24,7 +24,7 @@ struct GaugeField : FieldM<ColorMatrix,4>
 
 struct Propagator4d : FieldM<WilsonMatrix,1>
 {
-  virtual const std::string&  cname()
+  virtual const std::string& cname()
   {
     static const std::string s = "Propagator4d";
     return s;
@@ -270,6 +270,28 @@ inline void load_gauge_field_par(GaugeField& gf, const std::string& path)
     for (int m = 0; m < geo.multiplicity; ++m) {
       assign_truncate(v[m], vt[m]);
       unitarize(v[m]);
+    }
+  }
+  timer.flops += get_data(gft).data_size() * gft.geo.geon.num_node;
+}
+
+inline void load_gauge_field_cps3x3(GaugeField& gf, const std::string& path)
+  // assuming gf already initialized and have correct size;
+{
+  TIMER_VERBOSE_FLOPS("load_gauge_field");
+  qassert(is_initialized(gf));
+  const Geometry& geo = gf.geo;
+  FieldM<std::array<Complex, 9>, 4> gft;
+  gft.init(geo);
+  serial_read_field(gft, path, -get_data_size(gft) * get_num_node(), SEEK_END);
+#pragma omp parallel for
+  for (long index = 0; index < geo.local_volume(); ++index) {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    Vector<std::array<Complex, 9> > vt = gft.get_elems(xl);
+    to_from_big_endian_64(get_data(vt));
+    Vector<ColorMatrix> v = gf.get_elems(xl);
+    for (int m = 0; m < geo.multiplicity; ++m) {
+      assign_truncate(v[m], vt[m]);
     }
   }
   timer.flops += get_data(gft).data_size() * gft.geo.geon.num_node;
