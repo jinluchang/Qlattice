@@ -491,10 +491,32 @@ inline int mod(const int x, const int len)
   }
 }
 
+inline double mod(const double x, const double len)
+{
+  qassert(0 < len);
+  const double m = x - trunc(x / len) * len;
+  if (0 <= m) {
+    return m;
+  } else {
+    return m + len;
+  }
+}
+
 inline int smod(const int x, const int len)
 {
   qassert(0 < len);
   const int m = mod(x, len);
+  if (m * 2 < len) {
+    return m;
+  } else {
+    return m - len;
+  }
+}
+
+inline double smod(const double x, const double len)
+{
+  qassert(0 < len);
+  const double m = mod(x, len);
   if (m * 2 < len) {
     return m;
   } else {
@@ -512,6 +534,20 @@ inline int middle_mod(const int x, const int y, const int len)
     return mod(xm + r/2, len);
   } else {
     const int r = smod(xm - ym, len);
+    return mod(ym + r/2, len);
+  }
+}
+
+inline double middle_mod(const double x, const double y, const double len)
+{
+  qassert(0 < len);
+  const double xm = mod(x, len);
+  const double ym = mod(y, len);
+  if (xm <= ym) {
+    const double r = smod(ym - xm, len);
+    return mod(xm + r/2, len);
+  } else {
+    const double r = smod(xm - ym, len);
     return mod(ym + r/2, len);
   }
 }
@@ -541,9 +577,29 @@ inline Coordinate relative_coordinate(const Coordinate& x, const Coordinate& siz
   return ret;
 }
 
+inline CoordinateD relative_coordinate(const CoordinateD& x, const CoordinateD& size)
+{
+  CoordinateD ret;
+  ret[0] = smod(x[0], size[0]);
+  ret[1] = smod(x[1], size[1]);
+  ret[2] = smod(x[2], size[2]);
+  ret[3] = smod(x[3], size[3]);
+  return ret;
+}
+
 inline Coordinate middle_coordinate(const Coordinate& x, const Coordinate& y, const Coordinate& size)
 {
   Coordinate ret;
+  ret[0] = middle_mod(x[0], y[0], size[0]);
+  ret[1] = middle_mod(x[1], y[1], size[1]);
+  ret[2] = middle_mod(x[2], y[2], size[2]);
+  ret[3] = middle_mod(x[3], y[3], size[3]);
+  return ret;
+}
+
+inline CoordinateD middle_coordinate(const CoordinateD& x, const CoordinateD& y, const CoordinateD& size)
+{
+  CoordinateD ret;
   ret[0] = middle_mod(x[0], y[0], size[0]);
   ret[1] = middle_mod(x[1], y[1], size[1]);
   ret[2] = middle_mod(x[2], y[2], size[2]);
