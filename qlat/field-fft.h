@@ -2,6 +2,7 @@
 
 #include <qlat/config.h>
 #include <qlat/utils.h>
+#include <qlat/utils-coordinate.h>
 #include <qlat/mpi.h>
 #include <qlat/geometry.h>
 #include <qlat/field.h>

@@ -2,6 +2,7 @@
 
 #include <qlat/config.h>
 #include <qlat/utils.h>
+#include <qlat/utils-coordinate.h>
 
 #include <array>
 
