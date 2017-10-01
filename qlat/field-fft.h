@@ -225,7 +225,8 @@ void fft_complex_field_dirs(Field<M>& field, const Coordinate& dirs)
 template<class M>
 void fft_complex_field(Field<M>& field, const bool isForward = true)
 {
-  TIMER("fft_complex_field");
+  TIMER_FLOPS("fft_complex_field");
+  timer.flops += get_data(field).data_size() * get_num_node();
   // forward compute
   // field(k) <- \sum_{x} exp( - ii * 2 pi * k * x ) field(x)
   // backwards compute
