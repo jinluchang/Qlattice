@@ -38,6 +38,7 @@ fi
 ./scripts/lapack.sh
 ./scripts/eigen.sh
 ./scripts/hash-cpp.sh
+./scripts/zlib.sh
 ./scripts/utils.sh
 ./scripts/qlat.sh
 ./scripts/setenv.sh
