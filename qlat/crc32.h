@@ -6,22 +6,32 @@
 
 #include <endian.h>
 
-#include <hash-cpp/crc32.h>
+#include <zlib.h>
 #include <show.h>
 
 QLAT_START_NAMESPACE
 
 typedef uint32_t crc32_t;
 
-inline crc32_t crc32(const crc32_t initial, const void* smessage, long nBytes)
+// inline crc32_t crc32(const crc32_t initial, const void* data, const long len)
+// {
+//   // crc32 of zlib was incorrect for very large sizes, so do it block-wise
+//   const size_t step = 1024*1024*1024;
+//   const unsigned char* blk = (const unsigned char*)data;
+//   long remain_len = len;
+//   crc32_t crc = initial;
+//   while (remain_len > step) {
+//     crc = crc32_z(crc, blk, step);
+//     blk += step;
+//     remain_len -= step;
+//   }
+//   crc = crc32_z(crc, blk, remain_len);
+//   return crc;
+// }
+
+inline crc32_t crc32(const crc32_t initial, const void* data, const long len)
 {
-  qassert(sizeof(CRC32) == sizeof(crc32_t));
-  CRC32 c;
-  std::memcpy((void*)&c, (void*)&initial, sizeof(crc32_t));
-  c.add(smessage, nBytes);
-  crc32_t ret;
-  std::memcpy((void*)&ret, (void*)&c, sizeof(crc32_t));
-  return ret;
+  return crc32_z(initial, (const unsigned char*)data, len);
 }
 
 inline crc32_t crc32(const void* smessage, int nBytes)
@@ -51,16 +61,6 @@ inline void crc32_check()
 }
 
 QLAT_END_NAMESPACE
-
-namespace qshow
-{
-
-inline std::string show(const qlat::crc32_t x)
-{
-  return ssprintf("%08X", x);
-}
-
-}
 
 #ifndef USE_NAMESPACE
 using namespace qshow;

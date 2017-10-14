@@ -1,11 +1,10 @@
 #pragma once
 
-#include <hash-cpp/crc32.h>
-
 #include <qlat/config.h>
 #include <qlat/utils.h>
 #include <qlat/mpi.h>
 #include <qlat/geometry.h>
+#include <qlat/crc32.h>
 
 #include <omp.h>
 
@@ -145,23 +144,23 @@ uint32_t fieldChecksumSum32(const Field<M> &f)
 
 template<class M>
 std::string field_hash_crc32(const qlat::Field<M> &origin){
-	// somehow this checksum function does not agree with CPS's one.
-	// Do not know why. But I am not sure what algorithm CPS uses.
-	
-	TIMER("field_hash_crc32");
+  // somehow this checksum function does not agree with CPS's one.
+  // Do not know why. But I am not sure what algorithm CPS uses.
 
-	Geometry geo_only_local = geo_resize(origin.geo, 0);
-	CRC32 crc32;
-	void *buffer = (void *)&crc32;
-	for(int id_node = 0; id_node < get_num_node(); id_node++){
-		if(get_id_node() == id_node){
-			crc32.add((void *)get_data(origin).data(),
-							get_data(origin).size() * sizeof(M));
-		}
-		sync_node();
-		MPI_Bcast(buffer, 4, MPI_BYTE, id_node, get_comm());
-	}
-	return crc32.getHash();			
+  TIMER("field_hash_crc32");
+
+  Geometry geo_only_local = geo_resize(origin.geo, 0);
+  crc32_t hash;
+  void *buffer = (void *)&crc32;
+  for(int id_node = 0; id_node < get_num_node(); id_node++){
+    if(get_id_node() == id_node){
+      crc32(hash, (void *)get_data(origin).data(),
+          get_data(origin).size() * sizeof(M));
+    }
+    sync_node();
+    MPI_Bcast(buffer, 4, MPI_BYTE, id_node, get_comm());
+  }
+  return ssprintf("%08X", hash);
 }
 
 inline void timer_fwrite(char* ptr, long size, FILE *outputFile){

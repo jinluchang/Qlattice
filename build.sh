@@ -31,13 +31,11 @@ else
     ./scripts/openmpi.sh
 fi
 
-./scripts/openssl.sh
 ./scripts/gsl.sh
 ./scripts/fftw.sh
 ./scripts/cmake.sh
 ./scripts/lapack.sh
 ./scripts/eigen.sh
-./scripts/hash-cpp.sh
 ./scripts/zlib.sh
 ./scripts/utils.sh
 ./scripts/qlat.sh

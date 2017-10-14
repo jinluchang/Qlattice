@@ -18,8 +18,7 @@ QLAT_CXXFLAGS=$(QLAT_CFLAGS)
 QLAT_LDFLAGS=-L$(QLAT_LIB)
 QLAT_LDFLAGS+= -lgsl -lgslcblas -lm
 QLAT_LDFLAGS+= -lfftw3_omp -lfftw3
-QLAT_LDFLAGS+= -lcrypto
-QLAT_LDFLAGS+= -lhash-cpp
+QLAT_LDFLAGS+= -lz
 
 all: qlat.x
 
@@ -32,10 +31,11 @@ qlat.x: *.C
 	[ -f $@ ]
 
 build:
-	$(CXX) -o qlat.x $(QLAT_CXXFLAGS) *.C $(QLAT_LDFLAGS) 2>&1 | grep --color=always 'error:\|' || true
+	-$(CXX) -o qlat.x $(QLAT_CXXFLAGS) *.C $(QLAT_LDFLAGS) 2>&1 | grep --color=always 'error:\|'
 
 clean:
-	rm qlat.x || :
+	-rm qlat.x
+	-rm -rf huge-data
 
 show-info:
 	@echo CXX: $(CXX)
