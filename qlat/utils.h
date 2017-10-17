@@ -508,6 +508,13 @@ inline bool is_integer(const std::array<M,N>& v)
   return true;
 }
 
+inline uint16_t flip_endian_16(uint16_t x)
+{
+  return
+    ((x >> 8)) |
+    ((x << 8));
+}
+
 inline uint32_t flip_endian_32(uint32_t x)
 {
   return
@@ -530,42 +537,129 @@ inline uint64_t flip_endian_64(uint64_t x)
     ((x << 56));
 }
 
-inline void to_from_big_endian_32(char* str, const size_t len)
+inline void flip_endian_16(void* str, const size_t len)
+{
+  qassert(0 == len % 2);
+  uint16_t* p = (uint16_t*)str;
+  for (size_t i = 0; i < len / 2; ++i) {
+    p[i] = flip_endian_16(p[i]);
+  }
+}
+
+inline void flip_endian_32(void* str, const size_t len)
 {
   qassert(0 == len % 4);
-#if defined(__BYTE_ORDER) && (__BYTE_ORDER != 0) && (__BYTE_ORDER == __BIG_ENDIAN)
-  // doing nothing
-#else
-  uint32_t* p = (uint32_t*)str;
+  uint64_t* p = (uint64_t*)str;
   for (size_t i = 0; i < len / 4; ++i) {
     p[i] = flip_endian_32(p[i]);
   }
-#endif
 }
 
-inline void to_from_big_endian_64(char* str, const size_t len)
+inline void flip_endian_64(void* str, const size_t len)
 {
   qassert(0 == len % 8);
-#if defined(__BYTE_ORDER) && (__BYTE_ORDER != 0) && (__BYTE_ORDER == __BIG_ENDIAN)
-  // doing nothing
-#else
   uint64_t* p = (uint64_t*)str;
   for (size_t i = 0; i < len / 8; ++i) {
     p[i] = flip_endian_64(p[i]);
   }
+}
+
+inline bool is_big_endian()
+{
+#if defined(__BYTE_ORDER) && (__BYTE_ORDER != 0) && (__BYTE_ORDER == __BIG_ENDIAN)
+  return true;
+#else
+  return false;
 #endif
+}
+
+inline bool is_little_endian()
+{
+  return not is_big_endian();
+}
+
+inline void to_from_little_endian_16(void* str, const size_t len)
+{
+  qassert(0 == len % 2);
+  if (is_big_endian()) {
+    flip_endian_16(str, len);
+  }
+}
+
+inline void to_from_little_endian_32(void* str, const size_t len)
+{
+  qassert(0 == len % 4);
+  if (is_big_endian()) {
+    flip_endian_32(str, len);
+  }
+}
+
+inline void to_from_little_endian_64(void* str, const size_t len)
+{
+  qassert(0 == len % 8);
+  if (is_big_endian()) {
+    flip_endian_64(str, len);
+  }
+}
+
+inline void to_from_big_endian_16(void* str, const size_t len)
+{
+  qassert(0 == len % 2);
+  if (is_little_endian()) {
+    flip_endian_16(str, len);
+  }
+}
+
+inline void to_from_big_endian_32(void* str, const size_t len)
+{
+  qassert(0 == len % 4);
+  if (is_little_endian()) {
+    flip_endian_32(str, len);
+  }
+}
+
+inline void to_from_big_endian_64(void* str, const size_t len)
+{
+  qassert(0 == len % 8);
+  if (is_little_endian()) {
+    flip_endian_64(str, len);
+  }
+}
+
+template <class M>
+void to_from_little_endian_16(Vector<M> v)
+{
+  to_from_little_endian_16((void*)v.data(), v.data_size());
+}
+
+template <class M>
+void to_from_little_endian_32(Vector<M> v)
+{
+  to_from_little_endian_32((void*)v.data(), v.data_size());
+}
+
+template <class M>
+void to_from_little_endian_64(Vector<M> v)
+{
+  to_from_little_endian_64((void*)v.data(), v.data_size());
+}
+
+template <class M>
+void to_from_big_endian_16(Vector<M> v)
+{
+  to_from_big_endian_16((void*)v.data(), v.data_size());
 }
 
 template <class M>
 void to_from_big_endian_32(Vector<M> v)
 {
-  to_from_big_endian_32((char*)v.data(), v.data_size());
+  to_from_big_endian_32((void*)v.data(), v.data_size());
 }
 
 template <class M>
 void to_from_big_endian_64(Vector<M> v)
 {
-  to_from_big_endian_64((char*)v.data(), v.data_size());
+  to_from_big_endian_64((void*)v.data(), v.data_size());
 }
 
 inline void from_big_endian_32(char* str, const size_t len)
