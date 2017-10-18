@@ -384,6 +384,15 @@ inline std::vector<std::string> qgetlines(FILE* fp)
   return ret;
 }
 
+inline std::vector<std::string> qgetlines(const std::string& fn)
+{
+  FILE* fp = qopen(fn, "r");
+  qassert(fp != NULL);
+  std::vector<std::string> lines = qgetlines(fp);
+  qclose(fp);
+  return lines;
+}
+
 inline bool is_space(const char c)
 {
   return c == ' ' || c == '\n' || c == '\r' || c == '\t';

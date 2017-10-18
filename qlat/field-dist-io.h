@@ -192,7 +192,7 @@ inline void dist_write_geo_info(const Geometry& geo, const size_t sizeof_M,
   }
 }
 
-inline std::string geo_info_get_prop(const std::vector<std::string>& lines, const std::string& prop)
+inline std::string info_get_prop(const std::vector<std::string>& lines, const std::string& prop)
 {
   for (size_t i = 0; i < lines.size(); ++i) {
     if (lines[i].compare(0, prop.size(), prop) == 0) {
@@ -202,13 +202,13 @@ inline std::string geo_info_get_prop(const std::vector<std::string>& lines, cons
   return std::string("");
 }
 
-inline std::string geo_info_get_prop(const std::vector<std::string>& lines, const std::string& prop, const std::string& prop1)
+inline std::string info_get_prop(const std::vector<std::string>& lines, const std::string& prop, const std::string& prop1)
 {
-  const std::string ret = geo_info_get_prop(lines, prop);
+  const std::string ret = info_get_prop(lines, prop);
   if (ret != std::string("")) {
     return ret;
   } else {
-    return geo_info_get_prop(lines, prop1);
+    return info_get_prop(lines, prop1);
   }
 }
 
@@ -221,24 +221,21 @@ inline void dist_read_geo_info(Geometry& geo, size_t& sizeof_M, Coordinate& new_
   Coordinate node_site;
   if (get_id_node() == 0) {
     const std::string fn = path + "/geo-info.txt";
-    FILE* fp = qopen(fn, "r");
-    qassert(fp != NULL);
-    const std::vector<std::string> lines = qgetlines(fp);
-    qclose(fp);
-    reads(multiplicity, geo_info_get_prop(lines, "geo.multiplicity = "));
-    reads(sizeof_M, geo_info_get_prop(lines, "sizeof(M) = "));
+    const std::vector<std::string> lines = qgetlines(fn);
+    reads(multiplicity, info_get_prop(lines, "geo.multiplicity = "));
+    reads(sizeof_M, info_get_prop(lines, "sizeof(M) = "));
     for (int i = 0; i < 4; ++i) {
-      reads(size_node[i], geo_info_get_prop(lines,
+      reads(size_node[i], info_get_prop(lines,
             ssprintf("geo.geon.size_node[%d] = ", i), ssprintf("geo.sizeNode[%d] = ", i)));
-      reads(node_site[i], geo_info_get_prop(lines,
+      reads(node_site[i], info_get_prop(lines,
             ssprintf("geo.node_site[%d] = ", i), ssprintf("geo.nodeSite[%d] = ", i)));
     }
     long node_file_size;
     int num_node;
     long local_volume;
-    reads(node_file_size, geo_info_get_prop(lines, "node_file_size = ", "nodeFileSize = "));
-    reads(num_node, geo_info_get_prop(lines, "geo.geon.num_node = ", "geo.numNode = "));
-    reads(local_volume, geo_info_get_prop(lines, "geo.local_volume() = ", "geo.localVolume() = "));
+    reads(node_file_size, info_get_prop(lines, "node_file_size = ", "nodeFileSize = "));
+    reads(num_node, info_get_prop(lines, "geo.geon.num_node = ", "geo.numNode = "));
+    reads(local_volume, info_get_prop(lines, "geo.local_volume() = ", "geo.localVolume() = "));
     qassert(num_node == product(size_node));
     qassert(local_volume == product(node_site));
     qassert(node_file_size == local_volume * multiplicity * sizeof_M);
