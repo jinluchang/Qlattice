@@ -102,6 +102,12 @@ inline int mkdir_lock(const std::string& path, const mode_t mode = default_dir_m
   return ret;
 }
 
+inline int mkdir_lock_all_node(const std::string& path, const mode_t mode = default_dir_mode())
+{
+  TIMER("mkdir_lock_all_node");
+  return mkdir(path.c_str(), mode);
+}
+
 inline int rmdir_lock(const std::string& path)
 {
   TIMER("rmdir_lock");
@@ -111,6 +117,12 @@ inline int rmdir_lock(const std::string& path)
   }
   glb_sum(ret);
   return ret;
+}
+
+inline int rmdir_lock_all_node(const std::string& path)
+{
+  TIMER("rmdir_lock_all_node");
+  return rmdir(path.c_str());
 }
 
 inline int qremove(const std::string& path)
@@ -131,7 +143,11 @@ inline int qremove_info(const std::string& path)
 
 inline std::string get_env(const std::string& var_name) {
   const char* value = getenv(var_name.c_str());
-  return std::string(value);
+  if (value == NULL) {
+    return std::string();
+  } else {
+    return std::string(value);
+  }
 }
 
 inline FILE* qopen(const std::string& path, const std::string& mode)
@@ -303,13 +319,47 @@ inline bool obtain_lock(const std::string& path)
     long ret = 0;
     if (0 == get_id_node()) {
       double time;
-      reads(time, qcat_info(path_time));
+      reads(time, qcat(path_time));
       if (get_time() - time > 0.0 && 0 == qremove(path_time)) {
         ret = 1;
         qtouch(path_time, show(expiration_time) + "\n");
       }
     }
     glb_sum(ret);
+    if (ret > 0) {
+      get_lock_location() = path;
+      displayln_info(ssprintf("%s: Lock obtained '%s' (old lock expired).", fname, path.c_str()));
+      return true;
+    } else {
+      displayln_info(ssprintf("%s: Failed to obtained '%s'.", fname, path.c_str()));
+      return false;
+    }
+  } else {
+    displayln_info(ssprintf("%s: Failed to obtained '%s' (no creation time info).", fname, path.c_str()));
+    return false;
+  }
+}
+
+inline bool obtain_lock_all_node(const std::string& path)
+{
+  TIMER_VERBOSE("obtain_lock_all_node");
+  const std::string path_time = path + "/time.txt";
+  const double expiration_time = get_start_time() + get_lock_expiration_time_limit();
+  displayln_info(ssprintf("%s: Trying to obtain lock '%s'.", fname, path.c_str()));
+  qassert(get_lock_location() == "");
+  if (0 == mkdir_lock_all_node(path)) {
+    qtouch(path_time, show(expiration_time) + "\n");
+    get_lock_location() = path;
+    displayln_info(ssprintf("%s: Lock obtained '%s'.", fname, path.c_str()));
+    return true;
+  } else if (does_file_exist(path_time)) {
+    long ret = 0;
+    double time;
+    reads(time, qcat(path_time));
+    if (get_time() - time > 0.0 && 0 == qremove(path_time)) {
+      ret = 1;
+      qtouch(path_time, show(expiration_time) + "\n");
+    }
     if (ret > 0) {
       get_lock_location() = path;
       displayln_info(ssprintf("%s: Lock obtained '%s' (old lock expired).", fname, path.c_str()));
@@ -333,6 +383,19 @@ inline void release_lock()
   if (path != "") {
     qremove_info(path_time);
     rmdir_lock(path);
+    path = "";
+  }
+}
+
+inline void release_lock_all_node()
+{
+  TIMER_VERBOSE("release_lock_all_node");
+  std::string& path = get_lock_location();
+  const std::string path_time = path + "/time.txt";
+  displayln_info(ssprintf("%s: Release lock '%s'", fname, path.c_str()));
+  if (path != "") {
+    qremove(path_time);
+    rmdir_lock_all_node(path);
     path = "";
   }
 }
