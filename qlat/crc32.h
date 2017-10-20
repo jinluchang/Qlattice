@@ -34,7 +34,7 @@ inline crc32_t crc32(const crc32_t initial, const void* data, const long len)
   return crc32_z(initial, (const unsigned char*)data, len);
 }
 
-inline crc32_t crc32(const void* smessage, int nBytes)
+inline crc32_t crc32(const void* smessage, long nBytes)
 {
   return crc32(0, smessage, nBytes);
 }
