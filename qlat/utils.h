@@ -549,7 +549,7 @@ inline void flip_endian_16(void* str, const size_t len)
 inline void flip_endian_32(void* str, const size_t len)
 {
   qassert(0 == len % 4);
-  uint64_t* p = (uint64_t*)str;
+  uint32_t* p = (uint32_t*)str;
   for (size_t i = 0; i < len / 4; ++i) {
     p[i] = flip_endian_32(p[i]);
   }
