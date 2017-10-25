@@ -417,16 +417,14 @@ long dist_read_dist_data(const std::vector<DistData<M> >& dds, const int num_nod
   crc32_t crc = dist_crc32(crcs);
   if (get_id_node() == 0) {
     const std::string fn = path + "/checksums.txt";
-    FILE* fp = qopen(fn, "r");
-    crc32_t crc_read;
-    std::fscanf(fp, "%X\n", &crc_read);
-    qassert(crc == crc_read);
-    std::fscanf(fp, "\n");
+    const std::vector<std::string> lines = qgetlines(fn);
     for (size_t i = 0; i < crcs.size(); ++i) {
-      std::fscanf(fp, "%X\n", &crc_read);
-      qassert(crcs[i] == crc_read);
+      if (read_crc32(lines[i + 2]) != crcs[i]) {
+        displayln_info(ssprintf("checksums filed i=%d checksum.txt=%08X computed=%08X", i, read_crc32(lines[i+2]), crcs[i]));
+        qassert(false);
+      }
     }
-    qclose(fp);
+    qassert(read_crc32(lines[0]) == crc);
   }
   timer.flops += total_bytes;
   return total_bytes;
