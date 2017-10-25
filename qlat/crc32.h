@@ -60,6 +60,13 @@ inline void crc32_check()
   qassert(CHECK_VALUE == crc32(test, std::strlen(test)));
 }
 
+inline crc32_t read_crc32(const std::string& s)
+{
+  crc32_t crc32;
+  std::sscanf(s.c_str(), "%X", &crc32);
+  return crc32;
+}
+
 QLAT_END_NAMESPACE
 
 #ifndef USE_NAMESPACE
