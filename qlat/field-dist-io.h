@@ -93,12 +93,16 @@ inline int dist_close(FILE*& fp)
 template <class M>
 long qwrite_data(const Vector<M>& v, FILE* fp)
 {
+  TIMER_FLOPS("qwrite_data");
+  timer.flops += v.data_size();
   return sizeof(M) * std::fwrite((void*)v.p, sizeof(M), v.n, fp);
 }
 
 template <class M>
 long qread_data(const Vector<M>& v, FILE* fp)
 {
+  TIMER_FLOPS("qread_data");
+  timer.flops += v.data_size();
   return sizeof(M) * std::fread((void*)v.p, sizeof(M), v.n, fp);
 }
 
