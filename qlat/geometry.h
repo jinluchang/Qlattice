@@ -12,6 +12,8 @@ struct Geometry
   //
   GeometryNode geon;
   //
+  int eo; // 0:full; 1:odd ; 2:even
+  //
   int multiplicity;
   // number of elements on each lattice site
   //
@@ -96,9 +98,24 @@ struct Geometry
 #ifdef USE_MULTI_NODE
     Coordinate xe = x;
     xe = xe + expansion_left;
-    return qlat::index_from_coordinate(xe, node_site_expanded) * multiplicity;
+    if (eo == 0) {
+      return qlat::index_from_coordinate(xe, node_site_expanded) * multiplicity;
+    } else {
+      qassert(eo == 1 or eo == 2);
+      qassert(xe[0] % 2 == eo);
+      qassert(node_site[0] % 2 == 0);
+      qassert(node_site_expanded[0] % 2 == 0);
+      return qlat::index_from_coordinate(xe, node_site_expanded)/2 * multiplicity;
+    }
 #else
-    return index_from_coordinate(x);
+    if (eo == 0) {
+      return index_from_coordinate(x) * multiplicity;
+    } else {
+      qassert(eo == 1 or eo == 2);
+      qassert(x[0] % 2 == eo);
+      qassert(node_site[0] % 2 == 0);
+      return index_from_coordinate(x)/2 * multiplicity;
+    }
 #endif
   }
   //
@@ -106,11 +123,25 @@ struct Geometry
     // 0 <= offset < local_volume_expanded() * multiplicity
   {
 #ifdef USE_MULTI_NODE
-    Coordinate x = qlat::coordinate_from_index(offset/multiplicity, node_site_expanded);
+    Coordinate x;
+    if (eo == 0) {
+      x = qlat::coordinate_from_index(offset/multiplicity, node_site_expanded);
+    } else {
+      qassert(eo == 1 or eo == 2);
+      qassert(node_site[0] % 2 == 0);
+      qassert(node_site_expanded[0] % 2 == 0);
+      x = qlat::coordinate_from_index(offset/multiplicity * 2 + (eo + expansion_left[0]) % 2, node_site_expanded);
+    }
     x = x - expansion_left;
     return x;
 #else
-    return coordinate_from_index(x);
+    if (eo == 0) {
+      return coordinate_from_index(offset/multiplicity);
+    } else {
+      qassert(eo == 1 or eo == 2);
+      qassert(node_site[0] % 2 == 0);
+      x = coordinate_from_index(offset/multiplicity * 2 + (eo + expansion_left[0]) % 2);
+    }
 #endif
   }
   //
@@ -118,11 +149,26 @@ struct Geometry
     // 0 <= index < local_volume()
   {
 #ifdef USE_MULTI_NODE
-    return qlat::index_from_coordinate(x, node_site);
+    if (eo == 0) {
+      return qlat::index_from_coordinate(x, node_site);
+    } else {
+      qassert(eo == 1 or eo == 2);
+      qassert(x[0] % 2 == eo);
+      qassert(node_site[0] % 2 == 0);
+      qassert(node_site_expanded[0] % 2 == 0);
+      return qlat::index_from_coordinate(x, node_site) / 2;
+    }
 #else
     Coordinate y = x;
     regularize_coordinate(y, node_site);
-    return qlat::index_from_coordinate(y, node_site);
+    if (eo == 0) {
+      return qlat::index_from_coordinate(y, node_site);
+    } else {
+      qassert(eo == 1 or eo == 2);
+      qassert(x[0] % 2 == eo);
+      qassert(node_site[0] % 2 == 0);
+      return qlat::index_from_coordinate(y, node_site) / 2;
+    }
 #endif
   }
   //
@@ -130,7 +176,13 @@ struct Geometry
     // get local coordinate from index
     // 0 <= index < local_volume()
   {
-    return qlat::coordinate_from_index(index, node_site);
+    if (eo == 0) {
+      return qlat::coordinate_from_index(index, node_site);
+    } else {
+      qassert(eo == 1 or eo == 2);
+      qassert(node_site[0] % 2 == 0);
+      return qlat::coordinate_from_index(index * 2 + eo % 2, node_site);
+    }
   }
 	//
   long offset_from_index(const long index) const
@@ -171,12 +223,25 @@ struct Geometry
   //
   long local_volume() const
   {
-    return node_site[0] * node_site[1] * node_site[2] * node_site[3];
+    if (eo == 0) {
+      return node_site[0] * node_site[1] * node_site[2] * node_site[3];
+    } else {
+      qassert(eo == 1 or eo == 2);
+      qassert(node_site[0] % 2 == 0);
+      return node_site[0] * node_site[1] * node_site[2] * node_site[3] / 2;
+    }
   }
   //
   long local_volume_expanded() const
   {
-    return node_site_expanded[0] * node_site_expanded[1] * node_site_expanded[2] * node_site_expanded[3];
+    if (eo == 0) {
+      return node_site_expanded[0] * node_site_expanded[1] * node_site_expanded[2] * node_site_expanded[3];
+    } else {
+      qassert(eo == 1 or eo == 2);
+      qassert(node_site[0] % 2 == 0);
+      qassert(node_site_expanded[0] % 2 == 0);
+      return node_site_expanded[0] * node_site_expanded[1] * node_site_expanded[2] * node_site_expanded[3] / 2;
+    }
   }
   //
   Coordinate total_site() const
@@ -234,6 +299,7 @@ struct Geometry
 inline bool operator==(const Geometry& geo1, const Geometry& geo2)
 {
   return geo1.initialized == geo2.initialized
+    && geo1.eo == geo2.eo
     && geo1.geon == geo2.geon
     && geo1.multiplicity == geo2.multiplicity
     && geo1.node_site == geo2.node_site
@@ -276,6 +342,13 @@ inline Geometry geo_reform(const Geometry& geo_, const int multiplicity_ = 1, co
   return geo;
 }
 
+inline Geometry geo_eo(const Geometry& geo_, const int eo = 0)
+{
+  Geometry geo = geo_;
+  geo.eo = eo;
+  return geo;
+}
+
 inline bool is_matching_geo(const Geometry& geo1, const Geometry& geo2)
 {
   return geo1.initialized == geo2.initialized
@@ -285,7 +358,9 @@ inline bool is_matching_geo(const Geometry& geo1, const Geometry& geo2)
 
 inline bool is_matching_geo_mult(const Geometry& geo1, const Geometry& geo2)
 {
-  return is_matching_geo(geo1, geo2) && geo1.multiplicity == geo2.multiplicity;
+  return is_matching_geo(geo1, geo2)
+    && geo1.eo == geo2.eo
+    && geo1.multiplicity == geo2.multiplicity;
 }
 
 inline bool is_initialized(const Geometry& geo)
@@ -301,6 +376,7 @@ inline std::string show(const qlat::Geometry& geo)
 {
   std::string s;
   s += ssprintf("{ initialized   = %s\n", show(geo.initialized).c_str());
+  s += ssprintf(", eo            = %s\n", show(geo.eo).c_str());
   s += ssprintf(", geon          =\n%s\n", show(geo.geon).c_str());
   s += ssprintf(", multiplicity  = %s\n", show(geo.multiplicity).c_str());
   s += ssprintf(", node_site     = %s\n", show(geo.node_site).c_str());
