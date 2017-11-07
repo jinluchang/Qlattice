@@ -23,10 +23,10 @@ struct CommMarks : Field<int8_t>
   }
 };
 
-typedef void (*SetMarksField)(CommMarks& marks, const Geometry& geo, const void* data);
+typedef void (*SetMarksField)(CommMarks& marks, const Geometry& geo, const std::string& tag);
 
-inline void set_marks_field_all(CommMarks& marks, const Geometry& geo, const void* data)
-  // data is not used
+inline void set_marks_field_all(CommMarks& marks, const Geometry& geo, const std::string& tag)
+  // tag is not used
 {
   TIMER_VERBOSE("set_marks_field_all");
   marks.init();
@@ -40,8 +40,8 @@ inline void set_marks_field_all(CommMarks& marks, const Geometry& geo, const voi
   }
 }
 
-inline void set_marks_field_1(CommMarks& marks, const Geometry& geo, const void* data)
-  // data is not used
+inline void set_marks_field_1(CommMarks& marks, const Geometry& geo, const std::string& tag)
+  // tag is not used
 {
   TIMER_VERBOSE("set_marks_field_1");
   marks.init();
@@ -88,7 +88,7 @@ struct CommPlan
 struct CommPlanKey
 {
   SetMarksField set_marks_field;
-  const void* data;
+  std::string tag;
   Geometry geo;
 };
 
@@ -98,9 +98,9 @@ inline bool operator<(const CommPlanKey& x, const CommPlanKey& y)
     return true;
   } else if (y.set_marks_field < x.set_marks_field) {
     return false;
-  } else if (x.data < y.data) {
+  } else if (x.tag < y.tag) {
     return true;
-  } else if (y.data < x.data) {
+  } else if (y.tag < x.tag) {
     return false;
   } else {
     const std::string xgeo = show(x.geo);
@@ -296,7 +296,7 @@ inline CommPlan make_comm_plan(const CommMarks& marks)
 inline CommPlan make_comm_plan(const CommPlanKey& cpk)
 {
   CommMarks marks;
-  cpk.set_marks_field(marks, cpk.geo, cpk.data);
+  cpk.set_marks_field(marks, cpk.geo, cpk.tag);
   return make_comm_plan(marks);
 }
 
@@ -314,11 +314,11 @@ inline const CommPlan& get_comm_plan(const CommPlanKey& cpk)
   return get_comm_plan_cache()[cpk];
 }
 
-inline const CommPlan& get_comm_plan(const SetMarksField& set_marks_field, const void* data, const Geometry& geo)
+inline const CommPlan& get_comm_plan(const SetMarksField& set_marks_field, const std::string& tag, const Geometry& geo)
 {
   CommPlanKey cpk;
   cpk.set_marks_field = set_marks_field;
-  cpk.data = data;
+  cpk.tag = tag;
   cpk.geo = geo;
   return get_comm_plan(cpk);
 }
@@ -367,9 +367,9 @@ inline refresh_expanded(Field<M>& f, const CommPlan& plan)
 }
 
 template <class M>
-inline refresh_expanded(Field<M>& f, const SetMarksField& set_marks_field = set_marks_field_all, const void* data = NULL)
+inline refresh_expanded(Field<M>& f, const SetMarksField& set_marks_field = set_marks_field_all, const std::string& tag = "")
 {
-  const CommPlan& plan = get_comm_plan(set_marks_field, data, f.geo);
+  const CommPlan& plan = get_comm_plan(set_marks_field, tag, f.geo);
   refresh_expanded(f, plan);
 }
 
