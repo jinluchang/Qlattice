@@ -23,6 +23,8 @@ struct CommMarks : Field<int8_t>
   }
 };
 
+typedef void (*SetMarksField)(CommMarks& marks, const Geometry& geo);
+
 inline void set_marks_field_all(CommMarks& marks, const Geometry& geo)
 {
   TIMER_VERBOSE("set_marks_field_all");
@@ -81,22 +83,23 @@ struct CommPlan
   std::vector<CommPackInfo> recv_pack_infos;
 };
 
+
 struct CommPlanKey
 {
+  SetMarksField set_marks_field;
   Geometry geo;
-  std::string tag;
 };
 
 inline bool operator<(const CommPlanKey& x, const CommPlanKey& y)
 {
-  const std::string xgeo = show(x.geo);
-  const std::string ygeo = show(y.geo);
-  if (xgeo < ygeo) {
+  if (x.set_marks_field < y.set_marks_field) {
     return true;
-  } else if (ygeo < xgeo) {
+  } else if (y.set_marks_field < x.set_marks_field) {
     return false;
   } else {
-    return x.tag < y.tag;
+    const std::string xgeo = show(x.geo);
+    const std::string ygeo = show(y.geo);
+    return xgeo < ygeo;
   }
 }
 
@@ -287,11 +290,7 @@ inline CommPlan make_comm_plan(const CommMarks& marks)
 inline CommPlan make_comm_plan(const CommPlanKey& cpk)
 {
   CommMarks marks;
-  if (cpk.tag == "set_marks_field_all") {
-    set_marks_field_all(marks, cpk.geo);
-  } else {
-    qassert(false);
-  }
+  cpk.set_marks_field(marks, cpk.geo);
   return make_comm_plan(marks);
 }
 
@@ -309,11 +308,11 @@ inline const CommPlan& get_comm_plan(const CommPlanKey& cpk)
   return get_comm_plan_cache()[cpk];
 }
 
-inline const CommPlan& get_comm_plan(const Geometry& geo, const std::string& tag)
+inline const CommPlan& get_comm_plan(const Geometry& geo, const SetMarksField& set_marks_field)
 {
   CommPlanKey cpk;
+  cpk.set_marks_field = set_marks_field;
   cpk.geo = geo;
-  cpk.tag = tag;
   return get_comm_plan(cpk);
 }
 
@@ -361,9 +360,9 @@ inline refresh_expanded(Field<M>& f, const CommPlan& plan)
 }
 
 template <class M>
-inline refresh_expanded(Field<M>& f)
+inline refresh_expanded(Field<M>& f, const SetMarksField& set_marks_field = set_marks_field_all)
 {
-  const CommPlan& plan = get_comm_plan(f.geo, "set_marks_field_all");
+  const CommPlan& plan = get_comm_plan(f.geo, set_marks_field);
   refresh_expanded(f, plan);
 }
 
