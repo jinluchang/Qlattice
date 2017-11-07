@@ -737,12 +737,8 @@ void shuffle_field(std::vector<Field<M> >& fs, const Field<M>& f, const Coordina
             mpi_tag, get_comm(), &recv_reqs[i]);
       }
     }
-    for (size_t i = 0; i < recv_reqs.size(); ++i) {
-      MPI_Wait(&recv_reqs[i], MPI_STATUS_IGNORE);
-    }
-    for (size_t i = 0; i < send_reqs.size(); ++i) {
-      MPI_Wait(&send_reqs[i], MPI_STATUS_IGNORE);
-    }
+    MPI_Waitall(recv_reqs.size(), recv_reqs.data(), MPI_STATUS_IGNORE);
+    MPI_Waitall(send_reqs.size(), send_reqs.data(), MPI_STATUS_IGNORE);
     sync_node();
   }
   send_buffer.clear();

@@ -343,6 +343,7 @@ inline Geometry geo_reform(const Geometry& geo_, const int multiplicity_ = 1, co
 }
 
 inline Geometry geo_eo(const Geometry& geo_, const int eo = 0)
+  // 0:regular; 1:odd; 2:even
 {
   Geometry geo = geo_;
   geo.eo = eo;
