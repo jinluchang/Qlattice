@@ -151,9 +151,10 @@ inline CommPlan make_comm_plan(const CommMarks& marks)
       int id_node;
       long g_offset;
       g_offset_id_node_from_offset(g_offset, id_node, offset, geo);
-      qassert(id_node != get_id_node());
-      qassert(0 <= id_node and id_node < get_num_node());
-      src_id_node_g_offsets[id_node].push_back(g_offset);
+      if (id_node != get_id_node()) {
+        qassert(0 <= id_node and id_node < get_num_node());
+        src_id_node_g_offsets[id_node].push_back(g_offset);
+      }
     }
   }
   //
