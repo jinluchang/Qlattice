@@ -23,7 +23,7 @@ QLAT_LDFLAGS+= -lz
 all: qlat.x
 
 run: qlat.x
-	. $(qlat_prefix)/setenv.sh ; time mpirun -x OMP_NUM_THREADS=2 --np 16 ./qlat.x
+	. $(qlat_prefix)/setenv.sh ; time mpirun -x OMP_NUM_THREADS=4 --np 8 ./qlat.x
 	make clean
 
 qlat.x: *.C

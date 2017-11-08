@@ -80,7 +80,7 @@ inline double middle_mod(const double x, const double y, const double len)
   }
 }
 
-inline Coordinate regular_coordinate(const Coordinate& x, const Coordinate& size)
+inline Coordinate mod(const Coordinate& x, const Coordinate& size)
 {
   Coordinate ret;
   ret[0] = mod(x[0], size[0]);
@@ -90,12 +90,7 @@ inline Coordinate regular_coordinate(const Coordinate& x, const Coordinate& size
   return ret;
 }
 
-inline void regularize_coordinate(Coordinate& x, const Coordinate& size)
-{
-  x = regular_coordinate(x, size);
-}
-
-inline Coordinate relative_coordinate(const Coordinate& x, const Coordinate& size)
+inline Coordinate smod(const Coordinate& x, const Coordinate& size)
 {
   Coordinate ret;
   ret[0] = smod(x[0], size[0]);
@@ -105,7 +100,7 @@ inline Coordinate relative_coordinate(const Coordinate& x, const Coordinate& siz
   return ret;
 }
 
-inline CoordinateD relative_coordinate(const CoordinateD& x, const CoordinateD& size)
+inline CoordinateD smod(const CoordinateD& x, const CoordinateD& size)
 {
   CoordinateD ret;
   ret[0] = smod(x[0], size[0]);
@@ -115,7 +110,7 @@ inline CoordinateD relative_coordinate(const CoordinateD& x, const CoordinateD& 
   return ret;
 }
 
-inline Coordinate middle_coordinate(const Coordinate& x, const Coordinate& y, const Coordinate& size)
+inline Coordinate middle_mod(const Coordinate& x, const Coordinate& y, const Coordinate& size)
 {
   Coordinate ret;
   ret[0] = middle_mod(x[0], y[0], size[0]);
@@ -125,7 +120,7 @@ inline Coordinate middle_coordinate(const Coordinate& x, const Coordinate& y, co
   return ret;
 }
 
-inline CoordinateD middle_coordinate(const CoordinateD& x, const CoordinateD& y, const CoordinateD& size)
+inline CoordinateD middle_mod(const CoordinateD& x, const CoordinateD& y, const CoordinateD& size)
 {
   CoordinateD ret;
   ret[0] = middle_mod(x[0], y[0], size[0]);
@@ -177,6 +172,36 @@ inline Coordinate coordinate_from_index(long index, const Coordinate& size)
 inline long index_from_coordinate(const Coordinate& x, const Coordinate& size)
 {
   return (((x[3] * size[2]) + x[2]) * size[1] + x[1]) * size[0] + x[0];
+}
+
+inline Coordinate regular_coordinate(const Coordinate& x, const Coordinate& size)
+{
+  return mod(x, size);
+}
+
+inline Coordinate relative_coordinate(const Coordinate& x, const Coordinate& size)
+{
+  return smod(x, size);
+}
+
+inline void regularize_coordinate(Coordinate& x, const Coordinate& size)
+{
+  x = regular_coordinate(x, size);
+}
+
+inline CoordinateD relative_coordinate(const CoordinateD& x, const CoordinateD& size)
+{
+  return smod(x, size);
+}
+
+inline Coordinate middle_coordinate(const Coordinate& x, const Coordinate& y, const Coordinate& size)
+{
+  return middle_mod(x, y, size);
+}
+
+inline CoordinateD middle_coordinate(const CoordinateD& x, const CoordinateD& y, const CoordinateD& size)
+{
+  return middle_mod(x, y, size);
 }
 
 QLAT_END_NAMESPACE
