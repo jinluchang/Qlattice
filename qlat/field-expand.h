@@ -206,7 +206,7 @@ inline CommPlan make_comm_plan(const CommMarks& marks)
       const int mpi_tag = 9;
       int k = 0;
       for (std::map<int,std::vector<long> >::const_iterator it = src_id_node_g_offsets.cbegin(); it != src_id_node_g_offsets.cend(); ++it) {
-        MPI_Isend(it->second.data(), it->second.size(), MPI_LONG, it->first,
+        MPI_Isend((void*)it->second.data(), it->second.size(), MPI_LONG, it->first,
             mpi_tag, get_comm(), &send_reqs[k]);
         k += 1;
       }
