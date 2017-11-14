@@ -183,14 +183,28 @@ struct TimerInfo
     call_times = 0;
   }
   //
-  void show_last(const char* info, const int fname_len) const
+  void show_start(const int fname_len) const
   {
     double total_time = get_total_time();
     std::string fnameCut;
     fnameCut.assign(fname, 0, fname_len);
     displayln_info(
-        ssprintf("Timer::%s %s :%5.1f%% %8d calls %.3E,%.3E sec %8.3f Gflops (%.3E flops)",
-          NULL == info ? "" : info,
+        ssprintf("Timer::start %s :%5.1f%% %8d calls %.3E,%.3E sec %8.3f Gflops (%.3E flops)",
+          ssprintf(ssprintf("%%%ds", fname_len).c_str(), fnameCut.c_str()).c_str(),
+          accumulated_time / total_time * 100, call_times,
+          dtime,
+          accumulated_time / (call_times-1),
+          dflops / dtime / 1.0E9,
+          (double)dflops));
+  }
+  //
+  void show_stop(const int fname_len) const
+  {
+    double total_time = get_total_time();
+    std::string fnameCut;
+    fnameCut.assign(fname, 0, fname_len);
+    displayln_info(
+        ssprintf("Timer::stop  %s :%5.1f%% %8d calls %.3E,%.3E sec %8.3f Gflops (%.3E flops)",
           ssprintf(ssprintf("%%%ds", fname_len).c_str(), fnameCut.c_str()).c_str(),
           accumulated_time / total_time * 100, call_times,
           dtime,
@@ -335,7 +349,7 @@ struct Timer
     TimerInfo& info = get_timer_database()[info_index];
     info.call_times++;
     if (verbose || info.call_times <= max_call_times_for_always_show_info() || info.dtime >= minimum_duration_for_show_start_info()) {
-      info.show_last("start", max_function_name_length_shown());
+      info.show_start(max_function_name_length_shown());
     }
     start_flops = is_using_total_flops ? get_total_flops() : 0 ;
     flops = 0;
@@ -358,7 +372,7 @@ struct Timer
     info.accumulated_time += info.dtime;
     info.accumulated_flops += info.dflops;
     if (verbose || info.call_times <= max_call_times_for_always_show_info() || info.dtime >= minimum_duration_for_show_stop_info()) {
-      info.show_last("stop ", max_function_name_length_shown());
+      info.show_stop(max_function_name_length_shown());
     }
     autodisplay(stop_time);
   }
