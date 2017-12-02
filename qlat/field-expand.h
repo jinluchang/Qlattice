@@ -325,7 +325,7 @@ inline const CommPlan& get_comm_plan(const SetMarksField& set_marks_field, const
 }
 
 template <class M>
-inline refresh_expanded(Field<M>& f, const CommPlan& plan)
+void refresh_expanded(Field<M>& f, const CommPlan& plan)
 {
   TIMER_FLOPS("refresh_expanded");
   timer.flops += (plan.total_recv_size + plan.total_send_size) * sizeof(M) / 2;
@@ -368,13 +368,11 @@ inline refresh_expanded(Field<M>& f, const CommPlan& plan)
 }
 
 template <class M>
-inline refresh_expanded(Field<M>& f, const SetMarksField& set_marks_field = set_marks_field_all, const std::string& tag = "")
+void refresh_expanded(Field<M>& f, const SetMarksField& set_marks_field = set_marks_field_all, const std::string& tag = "")
 {
   const CommPlan& plan = get_comm_plan(set_marks_field, tag, f.geo);
   refresh_expanded(f, plan);
 }
-
-
 
 template <class M>
 void refresh_expanded_(Field<M>& field_comm)
