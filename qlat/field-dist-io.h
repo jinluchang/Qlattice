@@ -307,6 +307,7 @@ long dist_write_dist_data(const std::vector<DistData<M> >& dds, const int num_no
   if (get_id_node() == 0) {
     const std::string fn = path + "/checksums.txt";
     FILE* fp = qopen(fn, "w");
+    qassert(fp != NULL);
     displayln(ssprintf("%08X", crc), fp);
     displayln("", fp);
     for (size_t i = 0; i < crcs.size(); ++i) {
