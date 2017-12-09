@@ -847,14 +847,14 @@ inline void save_half_vectors(const std::vector<HalfVector>& hvs, const std::str
   qrename(fn + ".partial", fn);
 }
 
-inline long decompress_eigen_vectors_block(
+inline long decompress_eigen_vectors_node(
     const std::string& old_path, const CompressedEigenSystemInfo& cesi,
     const std::string& new_path, const int idx, const Coordinate& new_size_node = Coordinate())
   // interface
   // new_size_node can be Coordinate()
   // single node code
 {
-  TIMER_VERBOSE("decompress_eigen_vectors_block");
+  TIMER_VERBOSE("decompress_eigen_vectors_node");
   Coordinate size_node = new_size_node;
   if (size_node == Coordinate()) {
     size_node = cesi.total_node;
@@ -883,7 +883,7 @@ inline long decompress_eigen_vectors_block(
   return 0;
 }
 
-inline long decompress_eigen_vectors_block(
+inline long decompress_eigen_vectors_node(
     const std::string& old_path,
     const std::string& new_path, const int idx, const Coordinate& new_size_node = Coordinate())
   // interface
@@ -891,7 +891,7 @@ inline long decompress_eigen_vectors_block(
   // single node code
 {
   const CompressedEigenSystemInfo cesi = read_compressed_eigen_system_info(old_path);
-  return decompress_eigen_vectors_block(old_path, cesi, new_path, idx, new_size_node);
+  return decompress_eigen_vectors_node(old_path, cesi, new_path, idx, new_size_node);
 }
 
 inline void set_lock_expiration_time_limit()
@@ -1071,7 +1071,7 @@ inline void decompress_eigen_vectors(const std::string& old_path, const std::str
     const std::string path_data = new_path + ssprintf("/%02d/%010d", dir_idx, idx);
     const std::string path_lock = new_path + ssprintf("/%02d-%010d-lock", dir_idx, idx);
     if (!does_file_exist(path_data) and obtain_lock_all_node(path_lock)) {
-      decompress_eigen_vectors_block(old_path, cesi, new_path, idx, new_size_node);
+      decompress_eigen_vectors_node(old_path, cesi, new_path, idx, new_size_node);
       release_lock_all_node();
       num_done += 1;
       displayln(fname + ssprintf(": %5d/%d order[%03d/%05d/%d]=%010d finished", get_id_node(), get_num_node(), num_done, i, order.size(), order[i]));
