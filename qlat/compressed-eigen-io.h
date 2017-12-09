@@ -823,49 +823,64 @@ inline void convert_half_vector(HalfVector& hv, const BlockedHalfVector& bhv)
   }
 }
 
-inline crc32_t convert_half_vectors(std::vector<HalfVector>& hvs, std::vector<BlockedHalfVector>& bhvs, const bool is_bfm_format = false)
+inline void convert_half_vector_bfm_format(Vector<ComplexF> bfm_data, const HalfVector& hv)
+  // interface
+  // bfm will have t_dir simd layout
+{
+  TIMER("convert_half_vector_bfm_format");
+  const long size = bfm_data.size();
+  qassert(hv.geo.is_only_local());
+  qassert(hv.field.size() == size);
+#pragma omp parallel for
+  for (long m = 0; m < size/2; ++m) {
+    bfm_data[m*2] = hv.field[m];
+    bfm_data[m*2+1] = hv.field[size/2+m];
+  }
+}
+
+inline void convert_half_vectors(std::vector<HalfVector>& hvs, std::vector<BlockedHalfVector>& bhvs)
+  // interface
   // will clear bhvs to save space
-  // if is_bfm_format then will apply t_dir simd and big endianness
 {
   TIMER_VERBOSE("convert_half_vectors");
   hvs.clear();
   hvs.resize(bhvs.size());
-  std::vector<ComplexF> buffer;
-  crc32_t crc = 0;
   for (int i = 0; i < (int)hvs.size(); ++i) {
     convert_half_vector(hvs[i], bhvs[i]);
     qassert(hvs[i].geo.is_only_local());
     bhvs[i].init();
-    if (is_bfm_format) {
-      const long size = hvs[i].field.size();
-      buffer.resize(size);
-#pragma omp parallel for
-      for (long m = 0; m < size/2; ++m) {
-        buffer[m*2] = hvs[i].field[m];
-        buffer[m*2+1] = hvs[i].field[size/2+m];
-      }
-      to_from_big_endian_32(get_data(buffer));
-      hvs[i].field = buffer;
-    }
-    crc = crc32_par(crc, get_data(hvs[i]));
   }
   bhvs.clear();
-  return crc;
 }
 
-inline void save_half_vectors(const std::vector<HalfVector>& hvs, const std::string& fn)
+inline crc32_t save_half_vectors(const std::vector<HalfVector>& hvs, const std::string& fn, const bool is_saving_crc = false, const bool is_bfm_format = false)
+  // if is_bfm_format then will apply t_dir simd
+  // always big endianness
 {
   TIMER_VERBOSE_FLOPS("save_half_vectors");
   qassert(hvs.size() > 0);
+  crc32_t crc = 0;
   FILE* fp = qopen(fn + ".partial", "w");
   qassert(fp != NULL);
+  std::vector<ComplexF> buffer;
   for (int i = 0; i < (int)hvs.size(); ++i) {
     TIMER_FLOPS("save_half_vectors-iter");
-    timer.flops += get_data(hvs[i]).data_size();
-    qwrite_data(get_data(hvs[i]), fp);
+    const long size = hvs[i].field.size();
+    buffer.resize(size);
+    timer.flops += get_data(buffer).data_size();
+    if (is_bfm_format) {
+      convert_half_vector_bfm_format(get_data(buffer), hvs[i]);
+    }
+    to_from_big_endian_32(get_data(buffer)); // always save data in big endianness
+    crc = crc32_par(crc, get_data(buffer));
+    qwrite_data(get_data(buffer), fp);
   }
   qclose(fp);
+  if (is_saving_crc) {
+    qtouch(fn + ".crc32", ssprintf("%08X\n", crc));
+  }
   qrename(fn + ".partial", fn);
+  return crc;
 }
 
 inline long decompress_eigen_vectors_node(
@@ -882,7 +897,6 @@ inline long decompress_eigen_vectors_node(
   }
   const int idx_size = product(size_node);
   const int dir_idx = compute_dist_file_dir_id(idx, idx_size);
-  const std::string data_path = old_path + ssprintf("/%02d/%010d", dir_idx, idx);
   qmkdir(new_path);
   qmkdir(new_path + ssprintf("/%02d", dir_idx));
   const std::string new_fn = new_path + ssprintf("/%02d/%010d", dir_idx, idx);
@@ -899,9 +913,8 @@ inline long decompress_eigen_vectors_node(
   std::vector<BlockedHalfVector> bhvs;
   decompress_eigen_system(bhvs, cesb, cesc);
   std::vector<HalfVector> hvs;
-  const crc32_t crc = convert_half_vectors(hvs, bhvs, true);
-  qtouch(new_fn + ".crc32", ssprintf("%08X\n", crc));
-  save_half_vectors(hvs, new_fn);
+  convert_half_vectors(hvs, bhvs);
+  save_half_vectors(hvs, new_fn, true, true);
   return 0;
 }
 
@@ -996,11 +1009,12 @@ inline void combine_crc32(const std::string& path, const int idx_size, const Com
         const std::string path_data = path + ssprintf("/%02d/%010d", dir_idx, idx);
         if (does_file_exist(path_data + ".crc32")) {
           crcs[idx] = read_crc32(qcat(path_data + ".crc32"));
+          displayln(ssprintf("reading crc %7d/%d %08X", idx, idx_size, crcs[idx]));
         } else {
           crcs[idx] = compute_crc32(path_data);
           qtouch(path_data + ".crc32", ssprintf("%08X\n", crcs[idx]));
+          displayln(ssprintf("computing crc %7d/%d %08X", idx, idx_size, crcs[idx]));
         }
-        displayln(ssprintf("reading crc %7d/%d %08X", idx, idx_size, crcs[idx]));
       }
       crc32_t crc = dist_crc32(crcs);
       FILE* fp = qopen(fn + ".partial", "w");
