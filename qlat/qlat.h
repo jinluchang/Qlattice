@@ -24,6 +24,7 @@
 #include <qlat/qcd-smear.h>
 #include <qlat/qcd-topology.h>
 #include <qlat/fermion-action.h>
+#include <qlat/compressed-eigen-io.h>
 
 QLAT_START_NAMESPACE
 
