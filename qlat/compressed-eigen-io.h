@@ -120,6 +120,7 @@ inline void read_floats_fp16(Vector<float> out, const Vector<uint8_t> fp_data, c
 
 struct CompressedEigenSystemInfo
 {
+  bool initialized;
   // int s[5]; // local vol size
   // int b[5]; // block size
   // // derived
@@ -143,6 +144,11 @@ struct CompressedEigenSystemInfo
   int FP16_COEF_EXP_SHARE_FLOATS;
   //
   std::vector<crc32_t> crcs;
+  //
+  CompressedEigenSystemInfo()
+  {
+    initialized = false;
+  }
 };
 
 struct CompressedEigenSystemDenseInfo
@@ -398,6 +404,9 @@ inline void init_compressed_eigen_system_bases(
     const Coordinate& block_site,
     const int ls)
 {
+  if (cesb.initialized) {
+    return;
+  }
   TIMER("init_compressed_eigen_system_bases");
   cesb.n_basis = n_basis;
   cesb.block_vol_eo = product(block_site) / 2;
@@ -426,6 +435,9 @@ inline void init_compressed_eigen_system_coefs(
     const Coordinate& block_site,
     const int ls)
 {
+  if (cesc.initialized) {
+    return;
+  }
   TIMER("init_compressed_eigen_system_coefs");
   cesc.n_vec = n_vec;
   cesc.n_basis = n_basis;
@@ -556,11 +568,11 @@ inline void load_block_data(
   }
 }
 
-inline crc32_t load_block_data_crc(
+inline crc32_t block_data_crc(
     const CompressedEigenSystemData& cesd, const Coordinate& xl,
     const CompressedEigenSystemInfo& cesi, const Coordinate& xl_file)
 {
-  TIMER("load_block_data_crc");
+  TIMER("block_data_crc");
   crc32_t crc = 0;
   const Vector<uint8_t> data = cesd.get_elems_const(xl);
   const int block_idx = index_from_coordinate(xl_file, cesi.node_block);
@@ -644,8 +656,16 @@ inline std::vector<crc32_t> load_node(
     CompressedEigenSystemBases& cesb, CompressedEigenSystemCoefs& cesc,
     const CompressedEigenSystemInfo& cesi,
     const std::string& path)
+  // interface
+  // cesb and cesc need to be initialized beforehand
 {
   TIMER_VERBOSE("load_node");
+  qassert(cesb.initialized == cesc.initialized);
+  if (not cesb.initialized) {
+    displayln_info("initialize compressed eigen system bases and coefs with current machine layout");
+    init_compressed_eigen_system_bases(cesb, cesi, get_id_node(), get_size_node());
+    init_compressed_eigen_system_coefs(cesc, cesi, get_id_node(), get_size_node());
+  }
   qassert(geo_remult(cesb.geo) == geo_remult(cesc.geo));
   std::vector<crc32_t> crcs(product(cesi.total_node), 0);
   const Geometry& geo = cesb.geo;
@@ -676,7 +696,7 @@ inline std::vector<crc32_t> load_node(
     const Coordinate xl_file = xg % cesi.node_block;
     const int idx = index_from_coordinate(xg / cesi.node_block, cesi.total_node);
     qassert(0 <= idx && idx < idx_size);
-    crc32_t crc = load_block_data_crc(cesd, xl, cesi, xl_file);
+    crc32_t crc = block_data_crc(cesd, xl, cesi, xl_file);
 #pragma omp critical
     crcs[idx] ^= crc;
   }
@@ -803,47 +823,48 @@ inline void convert_half_vector(HalfVector& hv, const BlockedHalfVector& bhv)
   }
 }
 
-inline void convert_half_vectors(std::vector<HalfVector>& hvs, std::vector<BlockedHalfVector>& bhvs)
+inline crc32_t convert_half_vectors(std::vector<HalfVector>& hvs, std::vector<BlockedHalfVector>& bhvs, const bool is_bfm_format = false)
   // will clear bhvs to save space
+  // if is_bfm_format then will apply t_dir simd and big endianness
 {
   TIMER_VERBOSE("convert_half_vectors");
   hvs.clear();
   hvs.resize(bhvs.size());
+  std::vector<ComplexF> buffer;
+  crc32_t crc = 0;
   for (int i = 0; i < (int)hvs.size(); ++i) {
     convert_half_vector(hvs[i], bhvs[i]);
+    qassert(hvs[i].geo.is_only_local());
     bhvs[i].init();
+    if (is_bfm_format) {
+      const long size = hvs[i].field.size();
+      buffer.resize(size);
+#pragma omp parallel for
+      for (long m = 0; m < size/2; ++m) {
+        buffer[m*2] = hvs[i].field[m];
+        buffer[m*2+1] = hvs[i].field[size/2+m];
+      }
+      to_from_big_endian_32(get_data(buffer));
+      hvs[i].field = buffer;
+    }
+    crc = crc32_par(crc, get_data(hvs[i]));
   }
   bhvs.clear();
+  return crc;
 }
 
-inline void save_half_vectors(const std::vector<HalfVector>& hvs, const std::string& fn, const bool is_bfm_format = false)
+inline void save_half_vectors(const std::vector<HalfVector>& hvs, const std::string& fn)
 {
   TIMER_VERBOSE_FLOPS("save_half_vectors");
   qassert(hvs.size() > 0);
-  timer.flops += get_data(hvs[0]).data_size() * hvs.size();
-  const long size = hvs[0].field.size();
-  std::vector<ComplexF> buffer(size);
-  crc32_t crc = 0;
   FILE* fp = qopen(fn + ".partial", "w");
   qassert(fp != NULL);
   for (int i = 0; i < (int)hvs.size(); ++i) {
     TIMER_FLOPS("save_half_vectors-iter");
     timer.flops += get_data(hvs[i]).data_size();
-    qassert(hvs[i].geo.is_only_local());
-    if (is_bfm_format) {
-      for (long m = 0; m < size/2; ++m) {
-        buffer[m*2] = hvs[i].field[m];
-        buffer[m*2+1] = hvs[i].field[size/2+m];
-      }
-    } else {
-      buffer = hvs[i].field;
-    }
-    to_from_big_endian_32(get_data(buffer));
-    crc = crc32_par(crc, get_data(buffer));
-    qwrite_data(get_data(buffer), fp);
+    qwrite_data(get_data(hvs[i]), fp);
   }
   qclose(fp);
-  qtouch(fn + ".crc32", ssprintf("%08X\n", crc));
   qrename(fn + ".partial", fn);
 }
 
@@ -878,8 +899,9 @@ inline long decompress_eigen_vectors_node(
   std::vector<BlockedHalfVector> bhvs;
   decompress_eigen_system(bhvs, cesb, cesc);
   std::vector<HalfVector> hvs;
-  convert_half_vectors(hvs, bhvs);
-  save_half_vectors(hvs, new_fn, true);
+  const crc32_t crc = convert_half_vectors(hvs, bhvs, true);
+  qtouch(new_fn + ".crc32", ssprintf("%08X\n", crc));
+  save_half_vectors(hvs, new_fn);
   return 0;
 }
 
@@ -1084,7 +1106,7 @@ inline void decompress_eigen_vectors(const std::string& old_path, const std::str
 inline void decompressed_eigen_vectors_check_crc32(const std::string& path)
   // interface
 {
-  if (does_file_exist_sync_node(path + "/checksums-check.txt") and does_file_exist_sync_node(path + "/checkpoint")) {
+  if (does_file_exist_sync_node(path + "/checksums-check.txt") or not does_file_exist_sync_node(path + "/checkpoint")) {
     return;
   }
   TIMER_VERBOSE("decompressed_eigen_vectors_check_crc32");
@@ -1119,6 +1141,7 @@ inline void decompressed_eigen_vectors_check_crc32(const std::string& path)
   bcast(get_data(crcs_load));
   std::vector<crc32_t> crcs(idx_size, 0);
 // #pragma omp parallel for
+  long num_failure = 0;
   for (int idx = get_id_node(); idx < idx_size; idx += get_num_node()) {
     const int dir_idx = compute_dist_file_dir_id(idx, idx_size);
     const std::string path_data = path + ssprintf("/%02d/%010d", dir_idx, idx);
@@ -1129,10 +1152,12 @@ inline void decompressed_eigen_vectors_check_crc32(const std::string& path)
       qremove(path_data);
       qremove(path_data + ".crc32");
       qremove(path + "/checkpoint");
+      num_failure += 1;
     }
   }
   glb_sum_byte_vec(get_data(crcs));
-  if (0 == get_id_node()) {
+  glb_sum(num_failure);
+  if (0 == get_id_node() and num_failure == 0) {
     crc32_t crc = dist_crc32(crcs);
     const std::string fn = path + "/checksums-check.txt";
     FILE* fp = qopen(fn + ".partial", "w");
