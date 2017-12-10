@@ -540,7 +540,7 @@ inline DataTable qload_datatable_par(FILE* fp)
       if (line.length() > 0 && line[0] != '#') {
         xss[i] = read_doubles(line);
       } else {
-        xss[i].clear();
+        clear(xss[i]);
       }
     }
     for (size_t i = 0; i < xss.size(); ++i) {

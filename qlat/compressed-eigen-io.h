@@ -166,6 +166,7 @@ struct CompressedEigenSystemDenseInfo
 inline CompressedEigenSystemInfo populate_eigen_system_info(const CompressedEigenSystemDenseInfo& cesdi, const std::vector<crc32_t>& crcs)
 {
   CompressedEigenSystemInfo cesi;
+  cesi.initialized = true;
   cesi.crcs = crcs;
   //
   cesi.total_site = cesdi.total_site;
@@ -657,7 +658,7 @@ inline std::vector<crc32_t> load_node(
     const CompressedEigenSystemInfo& cesi,
     const std::string& path)
   // interface
-  // cesb and cesc need to be initialized beforehand
+  // cesb and cesc need to be initialized beforehand (or the machine layout will be used)
 {
   TIMER_VERBOSE("load_node");
   qassert(cesb.initialized == cesc.initialized);
@@ -719,6 +720,16 @@ inline std::vector<crc32_t> load_node(
   return crcs;
 }
 
+inline std::vector<crc32_t> load_node(
+    CompressedEigenSystemBases& cesb, CompressedEigenSystemCoefs& cesc,
+    const std::string& path)
+  // interface
+  // cesb and cesc need to be initialized beforehand (or the machine layout will be used)
+{
+  const CompressedEigenSystemInfo cesi = read_compressed_eigen_system_info(path);
+  return load_node(cesb, cesc, cesi, path);
+}
+
 struct BlockedHalfVector : Field<ComplexF>
 {
   long block_vol_eo; // even odd precondition (block_vol is half of the number of site within the block)
@@ -754,6 +765,7 @@ inline void decompress_eigen_system(
     std::vector<BlockedHalfVector>& bhvs,
     const CompressedEigenSystemBases& cesb,
     const CompressedEigenSystemCoefs& cesc)
+  // interface
 {
   TIMER_VERBOSE("decompress_eigen_system");
   const Geometry geo_full = geo_reform(cesb.geo_full);
@@ -823,6 +835,21 @@ inline void convert_half_vector(HalfVector& hv, const BlockedHalfVector& bhv)
   }
 }
 
+inline void convert_half_vectors(std::vector<HalfVector>& hvs, std::vector<BlockedHalfVector>& bhvs)
+  // interface
+  // will clear bhvs to save space
+{
+  TIMER_VERBOSE("convert_half_vectors");
+  clear(hvs);
+  hvs.resize(bhvs.size());
+  for (int i = 0; i < (int)hvs.size(); ++i) {
+    convert_half_vector(hvs[i], bhvs[i]);
+    qassert(hvs[i].geo.is_only_local());
+    bhvs[i].init();
+  }
+  clear(bhvs);
+}
+
 inline void convert_half_vector_bfm_format(Vector<ComplexF> bfm_data, const HalfVector& hv)
   // interface
   // bfm will have t_dir simd layout
@@ -836,21 +863,6 @@ inline void convert_half_vector_bfm_format(Vector<ComplexF> bfm_data, const Half
     bfm_data[m*2] = hv.field[m];
     bfm_data[m*2+1] = hv.field[size/2+m];
   }
-}
-
-inline void convert_half_vectors(std::vector<HalfVector>& hvs, std::vector<BlockedHalfVector>& bhvs)
-  // interface
-  // will clear bhvs to save space
-{
-  TIMER_VERBOSE("convert_half_vectors");
-  hvs.clear();
-  hvs.resize(bhvs.size());
-  for (int i = 0; i < (int)hvs.size(); ++i) {
-    convert_half_vector(hvs[i], bhvs[i]);
-    qassert(hvs[i].geo.is_only_local());
-    bhvs[i].init();
-  }
-  bhvs.clear();
 }
 
 inline crc32_t save_half_vectors(const std::vector<HalfVector>& hvs, const std::string& fn, const bool is_saving_crc = false, const bool is_bfm_format = false)

@@ -222,7 +222,7 @@ inline void acc_wilson_line_path_segment(WilsonLinePathSegment& path)
       stops[nc].num_origins = 0;
     }
   }
-  cs.clear();
+  clear(cs);
   for (std::set<Coordinate>::iterator it = cset.begin(); it != cset.end(); ++it) {
     cs.push_back(*it);
   }
@@ -448,7 +448,7 @@ inline std::vector<Coordinate> spatial_permute_direction(const Coordinate& l)
   for (int i = 0; i < (int)cs.size(); ++i) {
     cset.insert(cs[i]);
   }
-  cs.clear();
+  clear(cs);
   for (std::set<Coordinate>::iterator it = cset.begin(); it != cset.end(); ++it) {
     cs.push_back(*it);
   }

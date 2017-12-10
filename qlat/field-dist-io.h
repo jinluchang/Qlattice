@@ -442,7 +442,7 @@ long dist_read_fields(std::vector<Field<M> >& fs, Geometry& geo, Coordinate& new
   if (!does_file_exist_sync_node(path + "/checkpoint")) {
     return 0;
   }
-  fs.clear();
+  clear(fs);
   size_t sizeof_M;
   dist_read_geo_info(geo, sizeof_M, new_size_node, path);
   std::vector<Geometry> new_geos = make_dist_io_geos(geo.total_site(), geo.multiplicity, new_size_node);
@@ -696,7 +696,7 @@ inline const ShufflePlan& get_shuffle_plan(const Coordinate& total_site, const C
 template <class M>
 void shuffle_field(std::vector<Field<M> >& fs, const Field<M>& f, const Coordinate& new_size_node)
 {
-  fs.clear();
+  clear(fs);
   const Geometry& geo = f.geo;
   if (geo.geon.size_node == new_size_node) {
     fs.resize(1);
@@ -742,7 +742,7 @@ void shuffle_field(std::vector<Field<M> >& fs, const Field<M>& f, const Coordina
     MPI_Waitall(send_reqs.size(), send_reqs.data(), MPI_STATUS_IGNORE);
     sync_node();
   }
-  send_buffer.clear();
+  clear(send_buffer);
   const std::vector<Geometry> new_geos = make_dist_io_geos(geo.total_site(), geo.multiplicity, new_size_node);
   fs.resize(new_geos.size());
   for (size_t i = 0; i < fs.size(); ++i) {
@@ -825,7 +825,7 @@ void shuffle_field_back(Field<M>& f, const std::vector<Field<M> >& fs, const Coo
     }
     sync_node();
   }
-  recv_buffer.clear();
+  clear(recv_buffer);
 #pragma omp parallel for
   for (size_t i = 0; i < sp.send_pack_infos.size(); ++i) {
     const ShufflePlanSendPackInfo& pi = sp.send_pack_infos[i];

@@ -482,7 +482,7 @@ inline void concat_vector(std::vector<long>& idx, std::vector<M>& data, const st
 template <class M>
 inline void split_vector(std::vector<std::vector<M> >& datatable, const std::vector<long>& idx, const std::vector<M>& data)
 {
-  datatable.clear();
+  clear(datatable);
   datatable.resize(idx.size());
   size_t count = 0;
   for (size_t i = 0; i < datatable.size(); ++i) {

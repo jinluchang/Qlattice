@@ -31,9 +31,7 @@ struct Field
   {
     initialized = false;
     geo.init();
-    // field.clear();
-    std::vector<M> empty;
-    swap(field, empty);
+    clear(field);
   }
   virtual void init(const Geometry& geo_)
   {
