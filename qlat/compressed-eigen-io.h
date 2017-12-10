@@ -720,14 +720,30 @@ inline std::vector<crc32_t> load_node(
   return crcs;
 }
 
-inline std::vector<crc32_t> load_node(
-    CompressedEigenSystemBases& cesb, CompressedEigenSystemCoefs& cesc,
-    const std::string& path)
-  // interface
-  // cesb and cesc need to be initialized beforehand (or the machine layout will be used)
+inline std::vector<double> read_eigen_values(const std::string& path)
 {
-  const CompressedEigenSystemInfo cesi = read_compressed_eigen_system_info(path);
-  return load_node(cesb, cesc, cesi, path);
+  TIMER_VERBOSE("read_eigen_values");
+  long n_eigen_values = 0;
+  std::vector<double> vals;
+  if (0 == get_id_node()) {
+    const std::string filename = path + "/eigen-values.txt";
+    FILE* file = qopen(filename, "r");
+    qassert(file != NULL);
+    fscanf(file, "%ld\n", &n_eigen_values);
+    glb_sum(n_eigen_values);
+    vals.resize(n_eigen_values, 0.0);
+    displayln(fname + ssprintf("Reading %d eigen-values.\n", n_eigen_values));
+    for (int k = 0; k < n_eigen_values; k++) {
+      fscanf(file, "%lE\n", &vals[k]);
+      displayln(ssprintf("%d %24.17E", k, sqrt(vals[k])));
+    }
+    qclose(file);
+  } else {
+    glb_sum(n_eigen_values);
+    vals.resize(n_eigen_values, 0.0);
+  }
+  bcast(get_data(vals));
+  return vals;
 }
 
 struct BlockedHalfVector : Field<ComplexF>
@@ -863,6 +879,63 @@ inline void convert_half_vector_bfm_format(Vector<ComplexF> bfm_data, const Half
     bfm_data[m*2] = hv.field[m];
     bfm_data[m*2+1] = hv.field[size/2+m];
   }
+}
+
+inline long load_compressed_eigen_vectors(
+    std::vector<double>& eigen_values,
+    CompressedEigenSystemInfo& cesi,
+    CompressedEigenSystemBases& cesb,
+    CompressedEigenSystemCoefs& cesc,
+    const std::string& path)
+  // interface
+  // cesb and cesc will be reinitialized
+  // geometry will be same as machine geometry
+{
+  if (!does_file_exist_sync_node(path + "/metadata.txt")) {
+    displayln_info(ssprintf("load_compressed_eigen_vectors: '%s' do not exist.", path.c_str()));
+    return 0;
+  }
+  TIMER_VERBOSE_FLOPS("load_compressed_eigen_vectors");
+  long total_bytes = 0;
+  eigen_values = read_eigen_values(path);
+  cesi = read_compressed_eigen_system_info(path);
+  cesb.init();
+  cesc.init();
+  std::vector<crc32_t> crcs;
+  const int n_cycle = std::max(1, get_num_node() / dist_read_par_limit());
+  {
+    long bytes = 0;
+    for (int i = 0; i < n_cycle; ++i) {
+      TIMER_VERBOSE_FLOPS("load_compressed_eigen_vectors-load-cycle");
+      if (get_id_node() % n_cycle == i) {
+        crcs = load_node(cesb, cesc, cesi, path);
+        bytes = get_data(cesb).data_size() + get_data(cesc).data_size();
+      } else {
+        bytes = 0;
+      }
+      glb_sum(bytes);
+      displayln_info(fname + ssprintf(": cycle / n_cycle = %4d / %4d", i + 1, n_cycle));
+      timer.flops += bytes;
+      total_bytes += bytes;
+    }
+    timer.flops += total_bytes;
+  }
+  std::vector<crc32_t> all_crcs(get_num_node() * crcs.size());
+  all_gather(get_data(all_crcs), get_data(crcs));
+  set_zero(crcs);
+  for (int i = 0; i < get_num_node(); ++i) {
+    const long n = crcs.size();
+    for (int j = 0; j < n; ++j) {
+      crcs[j] ^= all_crcs[i * n + j];
+    }
+  }
+  for (int j = 0; j < crcs.size(); ++j) {
+    if (crcs[j] != cesi.crcs[j]) {
+      displayln_info(ssprintf("file-idx=%d loaded=%08X metadata=%08X", j, crcs[j], cesi.crcs[j]));
+      qassert(false);
+    }
+  }
+  return total_bytes;
 }
 
 inline crc32_t save_half_vectors(const std::vector<HalfVector>& hvs, const std::string& fn, const bool is_saving_crc = false, const bool is_bfm_format = false)
