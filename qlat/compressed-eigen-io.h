@@ -481,15 +481,27 @@ inline VFile vopen(const std::string& fn, const std::string& mode)
 
 inline void vclose(VFile& fp)
 {
+  long n_seek = 0;
   if (not fp.read_entries.empty()) {
     TIMER_VERBOSE_FLOPS("vclose");
     FILE* fpr = qopen(fp.fn, fp.mode);
+    long pos = 0;
     for (std::multimap<long, Vector<uint8_t> >::const_iterator it = fp.read_entries.cbegin(); it != fp.read_entries.cend(); ++it) {
-      fseek(fpr, it->first, SEEK_SET);
-      qread_data(it->second, fpr);
-      timer.flops += it->second.size();
+      const long new_pos = it->first;
+      if (new_pos != pos) {
+        TIMER_FLOPS("vclose-fseek");
+        timer.flops = std::abs(new_pos - pos);
+        pos = new_pos;
+        fseek(fpr, pos, SEEK_SET);
+        n_seek += 1;
+      }
+      Vector<uint8_t> data = it->second;
+      qread_data(data, fpr);
+      pos += data.size();
+      timer.flops += data.size();
     }
     qclose(fpr);
+    displayln(fname + ssprintf(": n_seek = %d.", n_seek));
   }
   fp.pos = 0;
   fp.read_entries.clear();
