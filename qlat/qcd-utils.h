@@ -26,7 +26,7 @@ inline void set_g_rand_anti_hermitian_matrix_field(Field<ColorMatrix>& fc, const
   }
 }
 
-inline void set_g_rand_color_matrix_field(Field<ColorMatrix>& fc, const RngState& rs, const double sigma)
+inline void set_g_rand_color_matrix_field(Field<ColorMatrix>& fc, const RngState& rs, const double sigma, const int n_step = 1)
 {
   TIMER("set_g_rand_color_matrix_field");
   const Geometry& geo = fc.geo;
@@ -39,6 +39,9 @@ inline void set_g_rand_color_matrix_field(Field<ColorMatrix>& fc, const RngState
     Vector<ColorMatrix> v = fc.get_elems(xl);
     for (int m = 0; m < (int)v.size(); ++m) {
       v[m] = make_color_matrix_exp(make_g_rand_anti_hermitian_matrix(rsi, sigma));
+      for (int k = 1; k < n_step; ++k) {
+        v[m] *= make_color_matrix_exp(make_g_rand_anti_hermitian_matrix(rsi, sigma));
+      }
     }
   }
 }
