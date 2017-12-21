@@ -1432,10 +1432,10 @@ inline void resize_compressed_eigen_vectors(const std::string& old_path, const s
   displayln_info(fname + ssprintf(": checking saved data checksum"));
   for (int idx = 0; idx < product(size_node); ++idx) {
     if (idx % get_num_node() == get_id_node()) {
-      const crc32_t crc = compute_crc32(new_path + ssprintf("/%02d/%010d.compressed",compute_dist_file_dir_id(idx, product(size_node)), idx));
-      displayln(fname + ssprintf(": computed=%08X previos=%08X", crc, cesi_new.crcs[idx]));
+      const crc32_t crc = compute_crc32(new_path + ssprintf("/%02d/%010d.compressed", compute_dist_file_dir_id(idx, product(size_node)), idx));
+      displayln(fname + ssprintf(": idx=%d computed=%08X previous=%08X", idx, crc, cesi_new.crcs[idx]));
       if (cesi_new.crcs[idx] != crc) {
-        displayln(fname + ssprintf(": WARNING mismatch computed=%08X previos=%08X", crc, cesi_new.crcs[idx]));
+        displayln(fname + ssprintf(": WARNING mismatch idx=%d computed=%08X previous=%08X", idx, crc, cesi_new.crcs[idx]));
         qremove(new_path + "/metadata.txt");
       }
     }
