@@ -276,13 +276,13 @@ inline void write_compressed_eigen_system_info(const CompressedEigenSystemInfo& 
       displayln(ssprintf("nb[%d] = %d", i, cesi.node_block[i]), fp);
     }
     displayln(ssprintf("nb[4] = 1"), fp);
-    displayln(ssprintf("neig = ", cesi.neig), fp);
-    displayln(ssprintf("nkeep = ", cesi.nkeep), fp);
-    displayln(ssprintf("nkeep_single = ", cesi.nkeep_single), fp);
-    displayln(ssprintf("blocks = ", product(cesi.node_block)), fp);
-    displayln(ssprintf("FP16_COEF_EXP_SHARE_FLOATS = ", cesi.FP16_COEF_EXP_SHARE_FLOATS), fp);
+    displayln(ssprintf("neig = %d", cesi.neig), fp);
+    displayln(ssprintf("nkeep = %d", cesi.nkeep), fp);
+    displayln(ssprintf("nkeep_single = %d", cesi.nkeep_single), fp);
+    displayln(ssprintf("blocks = %d", product(cesi.node_block)), fp);
+    displayln(ssprintf("FP16_COEF_EXP_SHARE_FLOATS = %d", cesi.FP16_COEF_EXP_SHARE_FLOATS), fp);
     for (int i = 0; i < (int)cesi.crcs.size(); ++i) {
-      displayln(ssprintf("crc32[%d] = %08X", i, cesi.crcs[i]));
+      displayln(ssprintf("crc32[%d] = %08X", i, cesi.crcs[i]), fp);
     }
     for (int i = 0; i < 4; ++i) {
       displayln(ssprintf("gs[%d] = %d", i, cesi.total_site[i]), fp);
@@ -1415,6 +1415,7 @@ inline void resize_compressed_eigen_vectors(const std::string& old_path, const s
     if (idx % get_num_node() == get_id_node()) {
       cesi_new.crcs[idx] = resize_compressed_eigen_vectors_node(crcs_acc, old_path, cesi_old, new_path, idx, size_node);
       displayln(fname + ssprintf(": resized %d/%d", idx, product(size_node)));
+      Timer::display();
     }
   }
   glb_sum_byte_vec(get_data(cesi_new.crcs));
