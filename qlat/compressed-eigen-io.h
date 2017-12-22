@@ -293,7 +293,7 @@ inline void write_compressed_eigen_system_info(const CompressedEigenSystemInfo& 
   }
 }
 
-CompressedEigenSystemInfo resize_compressed_eigen_system_info(const CompressedEigenSystemInfo& cesi, const Coordinate& new_size_node)
+inline CompressedEigenSystemInfo resize_compressed_eigen_system_info(const CompressedEigenSystemInfo& cesi, const Coordinate& new_size_node)
 {
   CompressedEigenSystemDenseInfo cesdi;
   cesdi.total_site = cesi.total_site;
