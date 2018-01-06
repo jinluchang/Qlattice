@@ -593,6 +593,7 @@ inline void begin(const MPI_Comm& comm, const Coordinate& size_node)
   MPI_Cart_create(comm, DIMN, (int*)size_node.data(), (int*)periods.data(), 0, &get_comm());
   const GeometryNode& geon = get_geometry_node();
   sync_node();
+  displayln_info(cname() + "::begin(): OMP_NUM_THREADS = " + show(omp_get_max_threads()));
   displayln_info(cname() + "::begin(): " + "MPI Cart created. GeometryNode =\n" + show(geon));
   sync_node();
   display_geometry_node();
