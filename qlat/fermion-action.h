@@ -38,6 +38,32 @@ struct FermionAction
   }
 };
 
+struct FermionActionCloverWilson
+{
+  bool initialized;
+  double mass;
+  double clover_coef;
+  //
+  void init()
+  {
+    initialized = false;
+    mass = 0.1;
+    clover_coef = 0.1;
+  }
+  //
+  FermionActionCloverWilson()
+  {
+    init();
+  }
+  FermionActionCloverWilson(const double mass_, const double clover_coef_)
+  {
+    init();
+    initialized = true;
+    mass = mass_;
+    clover_coef = clover_coef_;
+  }
+};
+
 struct LancArg
 {
   bool initialized;
