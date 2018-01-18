@@ -107,15 +107,15 @@ struct Field
   {
     qassert(geo.is_on_node(x));
     qassert(0 <= m && m < geo.multiplicity);
-    long offset = geo.offset_from_coordinate(x) + m;
-    return field[offset];
+    const long offset = geo.offset_from_coordinate(x) + m;
+    return get_elem(offset);
   }
   const M& get_elem(const Coordinate& x, const int m) const
   {
     qassert(geo.is_on_node(x));
     qassert(0 <= m && m < geo.multiplicity);
-    long offset = geo.offset_from_coordinate(x) + m;
-    return field[offset];
+    const long offset = geo.offset_from_coordinate(x) + m;
+    return get_elem(offset);
   }
   //
   M& get_elem(const Coordinate& x)
@@ -132,7 +132,7 @@ struct Field
   Vector<M> get_elems(const Coordinate& x)
   {
     qassert(geo.is_on_node(x));
-    long offset = geo.offset_from_coordinate(x);
+    const long offset = geo.offset_from_coordinate(x);
     return Vector<M>(&field[offset], geo.multiplicity);
   }
   Vector<M> get_elems_const(const Coordinate& x) const
@@ -140,7 +140,7 @@ struct Field
     // 改不改靠自觉
   {
     qassert(geo.is_on_node(x));
-    long offset = geo.offset_from_coordinate(x);
+    const long offset = geo.offset_from_coordinate(x);
     return Vector<M>(&field[offset], geo.multiplicity);
   }
   //
@@ -173,7 +173,7 @@ Vector<M> get_data(const Field<M>& f)
 template <class M>
 const Field<M>& operator+=(Field<M>& f, const Field<M>& f1)
 {
-  TIMER("field_operator");
+  TIMER("field_operator+=");
   qassert(is_matching_geo_mult(f.geo, f1.geo));
   const Geometry& geo = f.geo;
 #pragma omp parallel for
@@ -189,7 +189,7 @@ const Field<M>& operator+=(Field<M>& f, const Field<M>& f1)
 template <class M>
 const Field<M>& operator-=(Field<M>& f, const Field<M>& f1)
 {
-  TIMER("field_operator");
+  TIMER("field_operator-=");
   qassert(is_matching_geo_mult(f.geo, f1.geo));
   const Geometry& geo = f.geo;
 #pragma omp parallel for
@@ -205,13 +205,22 @@ const Field<M>& operator-=(Field<M>& f, const Field<M>& f1)
 template <class M>
 const Field<M>& operator*=(Field<M>& f, const double factor)
 {
-  TIMER("field_operator");
+  TIMER("field_operator*=(F,D)");
   const Geometry& geo = f.geo;
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); index++) {
-    Coordinate x = geo.coordinate_from_index(index);
+    const Coordinate x = geo.coordinate_from_index(index);
     for (int m = 0; m < geo.multiplicity; m++) {
       f.get_elem(x,m) *= factor;
+      // M v = f.get_elem(x,m);
+      // set_zero(f.get_elem(x,m));
+      // f.get_elem(x,m) = v * factor;
+      // {
+      //   Vector<double> v((double*)&f.get_elem(x,m), sizeof(M) / sizeof(double));
+      //   for (int i = 0; i < v.size(); ++i) {
+      //     v[i] *= factor;
+      //   }
+      // }
     }
   }
   return f;
@@ -220,7 +229,7 @@ const Field<M>& operator*=(Field<M>& f, const double factor)
 template <class M>
 const Field<M>& operator*=(Field<M>& f, const Complex factor)
 {
-  TIMER("field_operator");
+  TIMER("field_operator*=(F,C)");
   const Geometry& geo = f.geo;
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); index++) {

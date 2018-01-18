@@ -27,6 +27,16 @@ T sqr(const T& x)
   return x * x;
 }
 
+inline void set_zero(double& x)
+{
+  x = 0;
+}
+
+inline void set_zero(Complex& x)
+{
+  x = 0;
+}
+
 template <class M, unsigned long N>
 void set_zero(std::array<M,N>& arr)
 {

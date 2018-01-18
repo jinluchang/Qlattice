@@ -67,6 +67,8 @@ struct Mvector
     *this = *this / x;
     return *this;
   }
+  //
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 template <int DIMN>
