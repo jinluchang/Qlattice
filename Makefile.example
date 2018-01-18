@@ -8,7 +8,7 @@ qlat_prefix=$$HOME/qlat-build/1.0
 QLAT_INCLUDE=$(qlat_prefix)/include
 QLAT_LIB=$(qlat_prefix)/lib
 
-QLAT_CFLAGS=-fno-strict-aliasing
+QLAT_CFLAGS=-fno-strict-aliasing -DEIGEN_DONT_ALIGN_STATICALLY
 QLAT_CFLAGS+= -I$(QLAT_INCLUDE)
 QLAT_CFLAGS+= -I$(QLAT_INCLUDE)/eigen3
 QLAT_CFLAGS+= -I$(QLAT_INCLUDE)/utils
