@@ -212,15 +212,6 @@ const Field<M>& operator*=(Field<M>& f, const double factor)
     const Coordinate x = geo.coordinate_from_index(index);
     for (int m = 0; m < geo.multiplicity; m++) {
       f.get_elem(x,m) *= factor;
-      // M v = f.get_elem(x,m);
-      // set_zero(f.get_elem(x,m));
-      // f.get_elem(x,m) = v * factor;
-      // {
-      //   Vector<double> v((double*)&f.get_elem(x,m), sizeof(M) / sizeof(double));
-      //   for (int i = 0; i < v.size(); ++i) {
-      //     v[i] *= factor;
-      //   }
-      // }
     }
   }
   return f;
