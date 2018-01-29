@@ -450,7 +450,7 @@ template <class Inverter>
 inline void inverse_dwf(FermionField4d& sol, const FermionField4d& src, const Inverter& inv)
   // sol do not need to be initialized
   // inv.geo must be the geometry of the fermion field
-  // inverse_dwf(sol5d, src5d, inv) perform the inversion
+  // inverse(sol5d, src5d, inv) perform the inversion
 {
   TIMER_VERBOSE("inverse_dwf(4d,4d,inv)");
   const Geometry& geo = src.geo;
