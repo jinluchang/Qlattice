@@ -116,7 +116,7 @@ struct Geometry
       return qlat::index_from_coordinate(xe, node_site_expanded) * multiplicity;
     } else {
       qassert(eo == 1 or eo == 2);
-      qassert(xe[0] % 2 == eo);
+      qassert(xe[0] % 2 == 2 - eo);
       qassert(node_site[0] % 2 == 0);
       qassert(node_site_expanded[0] % 2 == 0);
       return qlat::index_from_coordinate(xe, node_site_expanded)/2 * multiplicity;
@@ -147,7 +147,7 @@ struct Geometry
       return qlat::index_from_coordinate(xm, node_site);
     } else {
       qassert(eo == 1 or eo == 2);
-      qassert(x[0] % 2 == eo);
+      qassert(x[0] % 2 == 2 - eo);
       qassert(node_site[0] % 2 == 0);
       qassert(node_site_expanded[0] % 2 == 0);
       return qlat::index_from_coordinate(xm, node_site) / 2;

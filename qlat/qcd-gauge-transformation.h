@@ -14,6 +14,15 @@ struct GaugeTransform : FieldM<ColorMatrix,1>
   }
 };
 
+struct U1GaugeTransform: FieldM<double, 1>
+{
+	virtual const std::string& cname()
+	{
+  		static const std::string s = "U1GaugeTransform";
+  		return s;
+	}
+};
+
 inline void gt_apply_gauge_transformation(GaugeTransform& gt0, const GaugeTransform& gt1)
   // gt0 can be the same as gt1
   // gt0 <- gt1 * gt0
@@ -137,6 +146,70 @@ inline void make_tree_gauge_transformation(GaugeTransform& gt, const GaugeField&
     gf_apply_gauge_transformation(gft, gft, gt_dir);
     gt_apply_gauge_transformation(gt, gt_dir);
   }
+}
+
+struct FourInterval: std::array<std::pair<int, int>, 4>
+{
+	virtual const std::string& cname()
+	{
+  		static const std::string s = "FourInterval";
+  		return s;
+	}
+};
+
+inline void make_local_deflation_plan(std::vector<U1GaugeTransform>& u1gt, 
+										std::vector<FourInterval>& global_partition, 
+										const Geometry& geo, const Coordinate& tw_par)
+	// tw_par indicates the partition number in each of the directions.
+	// Should be large or equal than 1. 1 means boundary condition is not changed in this direction.
+	// u1gt constains the U1 gauge transformation(s) that move the boundaries to approriate places.
+{
+	// total number of partition of the global lattice
+	int Np = tw_par.product();
+	Printf("Number of partitions = %d\n", Np);
+
+	Coordinate global_size = geo.global_size();
+	assert( global_size % tw_par == Coordinate(0,0,0,0) );
+
+	assert( geo.eo == 2 ); // Only work with odd sites, for now
+
+	Coordinate partition_size = global_size / tw_par;
+
+	// initialize the U1 field
+	u1gt.resize(Np);
+	for(int i = 0; i < Np; i++){
+		u1gt[i].init(geo);
+		for(long j = 0; j < u1gt[i].field.size(); j++){
+			u1gt[i].field[j] = 1.;
+		}
+	}
+
+	// initialize the global_partition.
+	global_partition.resize(Np);
+
+	for(int i = 0; i < Np; i++){
+		Coordinate partition_coor = qlat::coordinate_from_index(i, tw_par);
+		for(int mu = 0; mu < 4; mu++){
+			global_partition[i][mu].first = partition_coor[mu]*partition_size[mu];
+			global_partition[i][mu].second = (partition_coor[mu]+1)*partition_size[mu]; // left(first) including, right(second) excluding. [first, second)
+			
+			// Find the border that is fartest from the source(partition)
+			int target_border = ( global_partition[i][mu].second + (global_size[mu]-partition_size[mu])/2 ) % global_size[mu];
+
+			Printf("direction = %d, first = %d, second = %d, target = %d\n", mu, global_partition[i][mu].first, global_partition[i][mu].second, target_border);
+
+			// Flip all gt link in [0, target_border) to -1
+#pragma omp parallel for			
+			for(long index = 0; index < geo.local_volume(); index++){ // We are only working with vectors so it seems we don't need to worry about communication?
+				Coordinate local_coor = geo.coordinate_from_index(index);
+				Coordinate global_coor = geo.coordinate_g_from_l(local_coor);
+				if(global_coor[mu] >= 0 && global_coor[mu] < target_border){
+					u1gt[i].field[geo.offset_from_coordinate(local_coor)] *= -1.;
+				}
+			}
+		}
+		
+	}
 }
 
 QLAT_END_NAMESPACE
