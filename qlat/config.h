@@ -33,6 +33,8 @@ const int NUM_COLOR = 3;
 
 typedef std::complex<double> Complex;
 
+typedef std::complex<float> ComplexF;
+
 inline const std::string& cname()
 {
   static const std::string s = "Qlat";

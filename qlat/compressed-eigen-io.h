@@ -37,8 +37,6 @@
 
 QLAT_START_NAMESPACE
 
-typedef std::complex<float> ComplexF;
-
 template<class T>
 void caxpy_single(std::complex<T>* res, const std::complex<T>& ca, const std::complex<T>* x, const std::complex<T>* y, const int c_size)
 {
