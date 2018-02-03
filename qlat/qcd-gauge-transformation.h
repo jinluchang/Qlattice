@@ -202,7 +202,7 @@ inline void make_local_deflation_plan(std::vector<U1GaugeTransform>& u1gts,
 
 			// Flip all gt link in [0, target_border) to -1
 			long num_flip = 0;
-#pragma omp parallel for			
+// #pragma omp parallel for			
 			for(size_t index = 0; index < geo.local_volume(); index++){
 				Coordinate local_coor = geo.coordinate_from_index(index);
 				Coordinate global_coor = geo.coordinate_g_from_l(local_coor);
@@ -276,6 +276,9 @@ inline void extract_par_vct_from_bfm_vct(void* par_vct, const void* bfm_vct, siz
 	assert( geo.eo == 0 ); // NO checkerboarding for qlat
 	assert( geo.multiplicity == 1 );
 
+	ComplexF* parp = (ComplexF*) par_vct;
+	ComplexF* bfmp = (ComplexF*) bfm_vct;
+
 	size_t bfm_vct_block_size = Ls * 12; // 12 = 3 * 4. bfm_vct_block_size is the number of single precision complex number on one 4d site.
 	size_t site_size_4d = geo.local_volume();
 #pragma omp parallel for
@@ -288,14 +291,12 @@ inline void extract_par_vct_from_bfm_vct(void* par_vct, const void* bfm_vct, siz
 		if( is_inside(global_coor1, par.first, par.second) ){
 			for(size_t s = 0; s < bfm_vct_block_size; s++){
 				b1 = (m/2*bfm_vct_block_size+s)*2;
-				// size_t b2 = (m/2*bfm_vct_block_size+s)*2+1;
-				memcpy(par_vct+b1, bfm_vct+b1, sizeof(ComplexF));
+				parp[b1] = bfmp[b1];
 			}
 		}else{
 			for(size_t s = 0; s < bfm_vct_block_size; s++){
 				b1 = (m/2*bfm_vct_block_size+s)*2;
-				// size_t b2 = (m/2*bfm_vct_block_size+s)*2+1;
-				memset(par_vct+b1, 0, sizeof(ComplexF));
+				parp[b1] = 0.;
 			}
 		}
 		
@@ -305,15 +306,13 @@ inline void extract_par_vct_from_bfm_vct(void* par_vct, const void* bfm_vct, siz
 		Coordinate global_coor2 = geo.coordinate_g_from_l(local_coor2);
 		if( is_inside(global_coor2, par.first, par.second) ){
 			for(size_t s = 0; s < bfm_vct_block_size; s++){
-				b2 = (m/2*bfm_vct_block_size+s)*2;
-				// size_t b2 = (m/2*bfm_vct_block_size+s)*2+1;
-				memcpy(par_vct+b2, bfm_vct+b2, sizeof(ComplexF));
+				b2 = (m/2*bfm_vct_block_size+s)*2+1;
+				parp[b2] = bfmp[b2];
 			}
 		}else{
 			for(size_t s = 0; s < bfm_vct_block_size; s++){
-				b2 = (m/2*bfm_vct_block_size+s)*2;
-				// size_t b2 = (m/2*bfm_vct_block_size+s)*2+1;
-				memset(par_vct+b2, 0, sizeof(ComplexF));
+				b2 = (m/2*bfm_vct_block_size+s)*2+1;
+				parp[b2] = 0.;
 			}
 		}
 	
