@@ -157,12 +157,12 @@ struct FourInterval: std::pair<Coordinate, Coordinate>
 	}
 };
 
-inline void make_local_deflation_plan(std::vector<U1GaugeTransform>& u1gt, 
+inline void make_local_deflation_plan(std::vector<U1GaugeTransform>& u1gts, 
 										std::vector<FourInterval>& global_partition, 
 										const Geometry& geo, const Coordinate& tw_par)
 	// tw_par indicates the partition number in each of the directions.
 	// Should be large or equal than 1. 1 means boundary condition is not changed in this direction.
-	// u1gt constains the U1 gauge transformation(s) that move the boundaries to approriate places.
+	// u1gts constains the U1 gauge transformation(s) that move the boundaries to approriate places.
 {
 	// total number of partition of the global lattice
 	int Np = tw_par.product();
@@ -171,17 +171,17 @@ inline void make_local_deflation_plan(std::vector<U1GaugeTransform>& u1gt,
 	Coordinate global_size = geo.global_size();
 	assert( global_size % tw_par == Coordinate(0,0,0,0) );
 
-	assert( geo.eo == 1 ); // Only work with odd sites, for now
+	assert( geo.eo == 0 ); // Only work with odd sites, for now
 	assert( geo.multiplicity == 1 ); // Only work with odd sites, for now
 
 	Coordinate partition_size = global_size / tw_par;
 
 	// initialize the U1 field
-	u1gt.resize(Np);
+	u1gts.resize(Np);
 	for(int i = 0; i < Np; i++){
-		u1gt[i].init(geo);
-		for(size_t j = 0; j < u1gt[i].field.size(); j++){
-			u1gt[i].field[j] = 1.;
+		u1gts[i].init(geo);
+		for(size_t j = 0; j < u1gts[i].field.size(); j++){
+			u1gts[i].field[j] = +1.;
 		}
 	}
 
@@ -189,6 +189,7 @@ inline void make_local_deflation_plan(std::vector<U1GaugeTransform>& u1gt,
 	global_partition.resize(Np);
 
 	for(int i = 0; i < Np; i++){
+		Printf("partition #%04d:\n", i);
 		Coordinate partition_coor = qlat::coordinate_from_index(i, tw_par);
 		for(int mu = 0; mu < 4; mu++){
 			global_partition[i].first[mu] = partition_coor[mu]*partition_size[mu];
@@ -200,42 +201,68 @@ inline void make_local_deflation_plan(std::vector<U1GaugeTransform>& u1gt,
 			Printf("direction = %03d, first = %03d, second = %03d, target = %03d\n", mu, global_partition[i].first[mu], global_partition[i].second[mu], target_border);
 
 			// Flip all gt link in [0, target_border) to -1
+			long num_flip = 0;
 #pragma omp parallel for			
-			for(size_t index = 0; index < geo.local_volume(); index++){ // We are only working with vectors so it seems we don't need to worry about communication?
+			for(size_t index = 0; index < geo.local_volume(); index++){
 				Coordinate local_coor = geo.coordinate_from_index(index);
 				Coordinate global_coor = geo.coordinate_g_from_l(local_coor);
 				if(global_coor[mu] >= 0 && global_coor[mu] < target_border){
-					u1gt[i].field[geo.offset_from_coordinate(local_coor)] *= -1.;
+					u1gts[i].field[index*1] *= -1.;
+					num_flip++;
+					// printf("(%02d,%02d,%02d,%02d): YES.\n", global_coor[0], global_coor[1], global_coor[2], global_coor[3]);
+				}else{
+					// if(i == 31 and mu == 3) printf("(%02d,%02d,%02d,%02d)[%04d]: NO. \n", global_coor[0], global_coor[1], global_coor[2], global_coor[3], count);
 				}
 			}
+			glb_sum(num_flip);
+			Printf("flipped %08d times\n", num_flip);
 		}
-		
+		double sum_real = 0.;
+		double sum_imag = 0.;
+		// TODO: Test!!!
+		for(size_t index = 0; index < geo.local_volume(); index++){ // We are only working with vectors so it seems we don't need to worry about communication?
+				sum_real += u1gts[i].field[index].real();
+				sum_imag += u1gts[i].field[index].imag();
+		}
+		glb_sum(sum_real);
+		glb_sum(sum_imag);
+		Printf("sum_real = %.8E\n", sum_real);
+		Printf("sum_imag = %.8E\n", sum_imag);
 	}
+
 }
 
 inline void apply_u1_gauge_tranform_on_bfm_vct(void* bfm_vct, size_t Ls, const U1GaugeTransform& u1gt){
+	
 	// Assuming single precision.
 	// Since this is only a U1 tranformation we treat spin and color equally.
-	// Also need to take into account special indice order of bfm.
-	// Assuming bfm_vct is using even-odd preconditioning.
+	// Assuming bfm_vct is using even-odd preconditioning(checkerboarding).
+	
+	assert( u1gt.geo.eo == 0 ); // NO checkerboarding for qlat
+	assert( u1gt.geo.multiplicity == 1 );
+
 	size_t bfm_vct_block_size = Ls * 12; // 12 = 3 * 4. bfm_vct_block_size is the number single precision complex number on one 4d site.
 	ComplexF* bfm_vct_ComplexF = (ComplexF*)bfm_vct;
 	size_t site_size_4d = u1gt.geo.local_volume();
+	Printf("[Apply U1 bfm]: Ls = %d, bfm_vct_block_size = %d, site_size_4d = %d\n", Ls, bfm_vct_block_size, site_size_4d);
 #pragma omp parallel for
-	for(size_t m = 0; m < site_size_4d/2; m++){
-		size_t b1 = m*2;
-		size_t b2 = m*2+1;
+	for(size_t m = 0; m < site_size_4d/2; m+=2){ // increment is 2 because of checkerboarding of bfm_vct 
 		size_t m1 = m;
 		size_t m2 = m+site_size_4d/2;
+		size_t b1, b2;
 		for(size_t s = 0; s < bfm_vct_block_size; s++){
-			bfm_vct_ComplexF[b1*bfm_vct_block_size+s] *= u1gt.field[m1];
-			bfm_vct_ComplexF[b2*bfm_vct_block_size+s] *= u1gt.field[m2];
+			b1 = (m/2*bfm_vct_block_size+s)*2;
+			b2 = (m/2*bfm_vct_block_size+s)*2+1;
+			bfm_vct_ComplexF[b1] *= u1gt.field[m1];
+			bfm_vct_ComplexF[b2] *= u1gt.field[m2];
+			// Printf("(bfm_idx, cps_idx) = (%06d, %06d)\n", b1*bfm_vct_block_size+s, m1);
+			// Printf("(bfm_idx, cps_idx) = (%06d, %06d)\n", b2*bfm_vct_block_size+s, m2);
 		}
 	}
 }
 
 inline bool is_inside(const Coordinate& coor, const Coordinate& lower, const Coordinate& upper){
-	return (lower[0] <= coor[0] and coor[0] < upper[0]) and
+	return  (lower[0] <= coor[0] and coor[0] < upper[0]) and
 			(lower[1] <= coor[1] and coor[1] < upper[1]) and
 			(lower[2] <= coor[2] and coor[2] < upper[2]) and
 			(lower[3] <= coor[3] and coor[3] < upper[3]);
@@ -244,34 +271,52 @@ inline bool is_inside(const Coordinate& coor, const Coordinate& lower, const Coo
 inline void extract_par_vct_from_bfm_vct(void* par_vct, const void* bfm_vct, size_t Ls, 
 											const FourInterval& par, const Geometry& geo){
 	// Assuming single precision.
-	// Also need to take into account special indice order of bfm.
-	// Assuming bfm_vct is using even-odd preconditioning.
+	// Assuming bfm_vct is using even-odd preconditioning(checkerboarding).
+	
+	assert( geo.eo == 0 ); // NO checkerboarding for qlat
+	assert( geo.multiplicity == 1 );
+
 	size_t bfm_vct_block_size = Ls * 12; // 12 = 3 * 4. bfm_vct_block_size is the number of single precision complex number on one 4d site.
-	size_t bfm_vct_block_byte_size = Ls * 12 * sizeof(ComplexF);
 	size_t site_size_4d = geo.local_volume();
 #pragma omp parallel for
-	for(size_t m = 0; m < site_size_4d/2; m++){
-		size_t b1 = m*2;
-		size_t b2 = m*2+1;
+	for(size_t m = 0; m < site_size_4d/2; m+=2){
+		
 		size_t m1 = m;
-		size_t m2 = m+site_size_4d/2;
-
+		size_t b1;
 		Coordinate local_coor1 = geo.coordinate_from_index(m1);
 		Coordinate global_coor1 = geo.coordinate_g_from_l(local_coor1);
+		if( is_inside(global_coor1, par.first, par.second) ){
+			for(size_t s = 0; s < bfm_vct_block_size; s++){
+				b1 = (m/2*bfm_vct_block_size+s)*2;
+				// size_t b2 = (m/2*bfm_vct_block_size+s)*2+1;
+				memcpy(par_vct+b1, bfm_vct+b1, sizeof(ComplexF));
+			}
+		}else{
+			for(size_t s = 0; s < bfm_vct_block_size; s++){
+				b1 = (m/2*bfm_vct_block_size+s)*2;
+				// size_t b2 = (m/2*bfm_vct_block_size+s)*2+1;
+				memset(par_vct+b1, 0, sizeof(ComplexF));
+			}
+		}
+		
+		size_t m2 = m+site_size_4d/2;
+		size_t b2;
 		Coordinate local_coor2 = geo.coordinate_from_index(m2);
 		Coordinate global_coor2 = geo.coordinate_g_from_l(local_coor2);
-
-		if( is_inside(global_coor1, par.first, par.second) ){
-			memcpy(par_vct+b1*bfm_vct_block_byte_size, bfm_vct+b1*bfm_vct_block_byte_size, bfm_vct_block_byte_size);
-		}else{
-			memset(par_vct+b1*bfm_vct_block_byte_size, 0, bfm_vct_block_byte_size);
-		}
-
 		if( is_inside(global_coor2, par.first, par.second) ){
-			memcpy(par_vct+b2*bfm_vct_block_byte_size, bfm_vct+b2*bfm_vct_block_byte_size, bfm_vct_block_byte_size);
+			for(size_t s = 0; s < bfm_vct_block_size; s++){
+				b2 = (m/2*bfm_vct_block_size+s)*2;
+				// size_t b2 = (m/2*bfm_vct_block_size+s)*2+1;
+				memcpy(par_vct+b2, bfm_vct+b2, sizeof(ComplexF));
+			}
 		}else{
-			memset(par_vct+b2*bfm_vct_block_byte_size, 0, bfm_vct_block_byte_size);
+			for(size_t s = 0; s < bfm_vct_block_size; s++){
+				b2 = (m/2*bfm_vct_block_size+s)*2;
+				// size_t b2 = (m/2*bfm_vct_block_size+s)*2+1;
+				memset(par_vct+b2, 0, sizeof(ComplexF));
+			}
 		}
+	
 	}
 }
 

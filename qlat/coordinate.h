@@ -103,6 +103,20 @@ inline int product(const Coordinate& coor)
   return ret;
 }
 
+inline int sum(const Coordinate& coor)
+{
+  int ret = 0;
+  for(int i = 0; i < coor.size(); i++){
+    ret += coor[i];
+  }
+  return ret;
+}
+
+inline int parity(const Coordinate& coor)
+{
+  return 2-sum(coor)%2; // 2 for even, 1 for odd
+}
+
 inline void regularize(Coordinate &coor, const Coordinate &regularizer)
 {
 #ifndef SUPPRESS_REG_COOR
