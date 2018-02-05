@@ -147,7 +147,7 @@ struct Geometry
       return qlat::index_from_coordinate(xm, node_site);
     } else {
       qassert(eo == 1 or eo == 2);
-      qassert(x[0] % 2 == 2 - eo);
+      qassert(x[0] % 2 == 2 - eo); // FIXME: the sum of all site being even or odd, not the x component
       qassert(node_site[0] % 2 == 0);
       qassert(node_site_expanded[0] % 2 == 0);
       return qlat::index_from_coordinate(xm, node_site) / 2;
