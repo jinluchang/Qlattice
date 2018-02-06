@@ -111,14 +111,14 @@ struct Geometry
   long offset_from_coordinate(const Coordinate& x) const
   {
     Coordinate xe = mirror(x);
-    xe = xe + expansion_left;
     if (eo == 0) {
+      xe = xe + expansion_left;
       return qlat::index_from_coordinate(xe, node_site_expanded) * multiplicity;
     } else {
       qassert(eo == 1 or eo == 2);
-      qassert(xe[0] % 2 == 2 - eo);
-      qassert(node_site[0] % 2 == 0);
-      qassert(node_site_expanded[0] % 2 == 0);
+      qassert(node_site % 2 == Coordinate());
+      qassert((xe[0] + xe[1] + x[2] + x[3]) % 2 == 2 - eo);
+      xe = xe + expansion_left;
       return qlat::index_from_coordinate(xe, node_site_expanded)/2 * multiplicity;
     }
   }
@@ -129,13 +129,16 @@ struct Geometry
     Coordinate x;
     if (eo == 0) {
       x = qlat::coordinate_from_index(offset/multiplicity, node_site_expanded);
+      x = x - expansion_left;
     } else {
       qassert(eo == 1 or eo == 2);
-      qassert(node_site[0] % 2 == 0);
-      qassert(node_site_expanded[0] % 2 == 0);
-      x = qlat::coordinate_from_index(offset/multiplicity * 2 + (eo + expansion_left[0]) % 2, node_site_expanded);
+      qassert(node_site % 2 == Coordinate());
+      x = qlat::coordinate_from_index(offset/multiplicity * 2, node_site_expanded);
+      x = x - expansion_left;
+      if ((x[0] + x[1] + x[2] + x[3]) % 2 != 2 - eo) {
+        x[0] += 1;
+      }
     }
-    x = x - expansion_left;
     return x;
   }
   //
@@ -147,9 +150,8 @@ struct Geometry
       return qlat::index_from_coordinate(xm, node_site);
     } else {
       qassert(eo == 1 or eo == 2);
-      qassert(x[0] % 2 == 2 - eo); // FIXME: the sum of all site being even or odd, not the x component
-      qassert(node_site[0] % 2 == 0);
-      qassert(node_site_expanded[0] % 2 == 0);
+      qassert(node_site % 2 == Coordinate());
+      qassert((x[0] + x[1] + x[2] + x[3]) % 2 == 2 - eo);
       return qlat::index_from_coordinate(xm, node_site) / 2;
     }
   }
@@ -162,8 +164,12 @@ struct Geometry
       return qlat::coordinate_from_index(index, node_site);
     } else {
       qassert(eo == 1 or eo == 2);
-      qassert(node_site[0] % 2 == 0);
-      return qlat::coordinate_from_index(index * 2 + eo % 2, node_site);
+      qassert(node_site % 2 == Coordinate());
+      Coordinate x = qlat::coordinate_from_index(index * 2, node_site);
+      if ((x[0] + x[1] + x[2] + x[3]) % 2 != 2 - eo) {
+        x[0] += 1;
+      }
+      return x;
     }
   }
 	//
