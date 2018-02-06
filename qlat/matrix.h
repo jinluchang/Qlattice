@@ -395,7 +395,7 @@ struct SpinMatrixConstants
   {
     return get_instance().cap_sigmas;
   }
-  static const SpinMatrix& get_cps_sigmas(int i, int j)
+  static const SpinMatrix get_cps_sigmas(int i, int j)
   {
     return (get_instance().cps_gammas[i]*get_instance().cps_gammas[j]-get_instance().cps_gammas[j]*get_instance().cps_gammas[i])/2.;
   }
