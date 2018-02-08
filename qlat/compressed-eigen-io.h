@@ -1020,7 +1020,7 @@ inline void convert_half_vector(HalfVector& hv, const BlockedHalfVector& bhv)
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
-    qassert(xl[0] % 2 == 1);
+    qassert((xl[0] + xl[1] + xl[2] + xl[3]) % 2 == 2 - geo.eo);
     const Coordinate bxl = xl / block_site;
     const long bindex = index_from_coordinate(bxl, node_block);
     Vector<ComplexF> site = hv.get_elems(index);
@@ -1197,19 +1197,6 @@ inline crc32_t resize_compressed_eigen_vectors_node(
     crcs_acc[i] ^= crcs[i];
   }
   return save_node_data(cesd, resize_compressed_eigen_system_info(cesi, size_node), new_path);
-}
-
-inline void set_lock_expiration_time_limit()
-{
-  const std::string ss = get_env("COBALT_STARTTIME");
-  const std::string se = get_env("COBALT_ENDTIME");
-  if (ss != "" and se != "") {
-    TIMER_VERBOSE("set_lock_expiration_time_limit");
-    double start_time, end_time;
-    reads(start_time, ss);
-    reads(end_time, se);
-    get_lock_expiration_time_limit() = end_time - start_time;
-  }
 }
 
 inline crc32_t compute_crc32(const std::string& path)
