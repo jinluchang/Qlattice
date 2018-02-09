@@ -334,6 +334,22 @@ inline void load_gauge_field_milc(GaugeField& gf, const std::string& path, const
   timer.flops += get_data(gft).data_size() * gft.geo.geon.num_node;
 }
 
+inline void twist_boundary_at_boundary(GaugeField& gf, double mom, int mu)
+{
+  TIMER_VERBOSE_FLOPS("twist_boundary_at_boundary");
+  const Geometry& geo = gf.geo;
+  const double amp = 2.0 * PI * mom;
+  const int len = geo.total_site()[mu];
+  for (int index = 0; index < geo.local_volume(); index++) {
+    Coordinate xl = geo.coordinate_from_index(index);
+    Coordinate xg = geo.coordinate_g_from_l(xl);
+    if (xg[mu] == len - 1) {
+      ColorMatrix& mat = gf.get_elem(xl, mu);
+      mat *= std::polar(1.0, amp);
+    }
+  }
+}
+
 inline WilsonMatrix make_wilson_matrix_from_vectors(const std::array<ConstHandle<WilsonVector>,4*NUM_COLOR>& cols)
 {
   WilsonMatrix ret;

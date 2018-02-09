@@ -303,6 +303,19 @@ inline double& get_lock_expiration_time_limit()
   return limit;
 }
 
+inline void set_lock_expiration_time_limit()
+{
+  const std::string ss = get_env("COBALT_STARTTIME");
+  const std::string se = get_env("COBALT_ENDTIME");
+  if (ss != "" and se != "") {
+    TIMER_VERBOSE("set_lock_expiration_time_limit");
+    double start_time, end_time;
+    reads(start_time, ss);
+    reads(end_time, se);
+    get_lock_expiration_time_limit() = end_time - start_time;
+  }
+}
+
 inline bool obtain_lock(const std::string& path)
 {
   TIMER_VERBOSE("obtain_lock");
