@@ -206,7 +206,8 @@ inline void make_local_deflation_plan(std::vector<U1GaugeTransform>& u1gts,
 			for(size_t index = 0; index < geo.local_volume(); index++){
 				Coordinate local_coor = geo.coordinate_from_index(index);
 				Coordinate global_coor = geo.coordinate_g_from_l(local_coor);
-				if(global_coor[mu] >= 0 && global_coor[mu] < target_border){
+				if( (target_border < global_size[mu]/2 && global_coor[mu] >= 0 && global_coor[mu] < target_border) || 
+					(target_border >= global_size[mu]/2 && global_coor[mu] >= 0 && global_coor[mu] >= target_border) ){
 					u1gts[i].field[index*1] *= -1.;
 					num_flip++;
 					// printf("(%02d,%02d,%02d,%02d): YES.\n", global_coor[0], global_coor[1], global_coor[2], global_coor[3]);
@@ -244,8 +245,8 @@ inline void apply_u1_gauge_tranform_on_bfm_vct(void* bfm_vct, size_t Ls, const U
 	size_t bfm_vct_block_size = Ls * 12; // 12 = 3 * 4. bfm_vct_block_size is the number single precision complex number on one 4d site.
 	ComplexF* bfm_vct_ComplexF = (ComplexF*)bfm_vct;
 	size_t site_size_4d = u1gt.geo.local_volume();
-	Printf("[Apply U1 bfm]: Ls = %d, bfm_vct_block_size = %d, site_size_4d = %d\n", Ls, bfm_vct_block_size, site_size_4d);
-#pragma omp parallel for
+	// Printf("[Apply U1 bfm]: Ls = %d, bfm_vct_block_size = %d, site_size_4d = %d\n", Ls, bfm_vct_block_size, site_size_4d);
+#pragma omp for
 	for(size_t m = 0; m < site_size_4d/2; m+=2){ // increment is 2 because of checkerboarding of bfm_vct 
 		size_t m1 = m;
 		size_t m2 = m+site_size_4d/2;
@@ -281,7 +282,8 @@ inline void extract_par_vct_from_bfm_vct(void* par_vct, const void* bfm_vct, siz
 
 	size_t bfm_vct_block_size = Ls * 12; // 12 = 3 * 4. bfm_vct_block_size is the number of single precision complex number on one 4d site.
 	size_t site_size_4d = geo.local_volume();
-#pragma omp parallel for
+// #pragma omp parallel for
+#pragma omp for
 	for(size_t m = 0; m < site_size_4d/2; m+=2){
 		
 		size_t m1 = m;
