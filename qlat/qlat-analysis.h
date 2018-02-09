@@ -436,7 +436,7 @@ inline std::string find_conf_24c64_dsdr_mu0p0017_ms0p0850(const int traj)
   return "";
 }
 
-inline ConfigurationsInfo make_configurations_info_24c64_dsdr_mu0p0017_ms0p0850(const bool make_cis = true)
+inline ConfigurationsInfo make_configurations_info_24c64_dsdr_mu0p00107_ms0p0850(const bool make_cis = true)
 {
   ConfigurationsInfo csi;
   csi.total_site = Coordinate(24, 24, 24, 64);
@@ -482,11 +482,11 @@ inline ConfigurationsInfo make_configurations_info_24c64_dsdr_mu0p0017_ms0p0850(
   return csi;
 }
 
-inline ConfigurationsInfo make_configurations_info_24c64_dsdr_mu0p0017_ms0p0850_unitary(const bool make_cis = true)
+inline ConfigurationsInfo make_configurations_info_24c64_dsdr_mu0p00107_ms0p0850_unitary(const bool make_cis = true)
 {
   ConfigurationsInfo csi;
   csi.total_site = Coordinate(24, 24, 24, 64);
-  csi.fas.push_back(FermionAction(0.0017, 24, 1.8, 4.0));
+  csi.fas.push_back(FermionAction(0.00107, 24, 1.8, 4.0));
   csi.fas.push_back(FermionAction(0.0850, 24, 1.8, 4.0));
   if (make_cis) {
     for (int traj = 2280; traj >= 1000 ; traj -= 40) {
