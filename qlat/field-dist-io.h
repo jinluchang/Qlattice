@@ -425,7 +425,7 @@ long dist_read_dist_data(const std::vector<DistData<M> >& dds, const int num_nod
     const std::vector<std::string> lines = qgetlines(fn);
     for (size_t i = 0; i < crcs.size(); ++i) {
       if (read_crc32(lines[i + 2]) != crcs[i]) {
-        displayln_info(ssprintf("checksums filed i=%d checksum.txt=%08X computed=%08X", i, read_crc32(lines[i+2]), crcs[i]));
+        displayln_info(fname + ssprintf(": checksums of file ; i=%d ; checksum.txt=%08X ; computed=%08X ; path=%s", i, read_crc32(lines[i+2]), crcs[i], path.c_str()));
         qassert(false);
       }
     }
