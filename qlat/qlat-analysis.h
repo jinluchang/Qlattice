@@ -442,6 +442,7 @@ inline ConfigurationsInfo make_configurations_info_24c64_dsdr_mu0p00107_ms0p0850
   csi.total_site = Coordinate(24, 24, 24, 64);
   csi.fas.push_back(FermionAction(0.00107, 12, 1.8, 4.0));
   csi.fas.push_back(FermionAction(0.0850, 12, 1.8, 4.0));
+  csi.la = LancArg(5.5, 0.02, 200, 200, 150, 50);
   for (int i = 0; i < csi.fas.size(); ++i) {
     FermionAction& fa = csi.fas[i];
     fa.is_using_zmobius = true;

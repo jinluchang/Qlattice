@@ -131,11 +131,13 @@ inline void dataReadInfo(const std::vector<DataSizeNmemb>& dsns, const std::stri
     const std::string filename = path + "/checksums.txt";
     FILE* file = fopen(filename.c_str(), "r");
     fscanf(file, "%X\n", &chksum_read);
-    assert(chksum == chksum_read);
     fscanf(file, "\n");
     for (int i = 0; i < getNumNode(); i++) {
       fscanf(file, "%X\n", &chksum_read);
       assert(chksums[i] == chksum_read);
+    }
+    if (chksum != chksum_read) {
+      displayln(fname + ssprintf(": WARNING mismatch total chksum=%08X chksum_read=%08X", chksum, chksum_read));
     }
     fclose(file);
   }
