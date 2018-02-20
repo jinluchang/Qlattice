@@ -171,7 +171,7 @@ inline Coordinate coordinate_from_index(long index, const Coordinate& size)
 
 inline long index_from_coordinate(const Coordinate& x, const Coordinate& size)
 {
-  return (((x[3] * size[2]) + x[2]) * size[1] + x[1]) * size[0] + x[0];
+  return ((((long)x[3] * (long)size[2]) + (long)x[2]) * (long)size[1] + (long)x[1]) * (long)size[0] + (long)x[0];
 }
 
 inline Coordinate regular_coordinate(const Coordinate& x, const Coordinate& size)
