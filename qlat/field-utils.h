@@ -85,4 +85,33 @@ std::vector<M> field_project_mom(const Field<M>& f, const CoordinateD& mom)
   return ret;
 }
 
+template <class M>
+std::vector<M> field_get_elems(const Field<M>& f, const Coordinate& xg)
+{
+  const Geometry& geo = f.geo;
+  const Coordinate xl = geo.coordinate_l_from_g(xg);
+  std::vector<M> ret(geo.multiplicity);
+  if (geo.is_local(xl)) {
+    assign(ret, f.get_elems_const(xl));
+  } else {
+    set_zero(ret);
+  }
+  glb_sum_byte_vec(get_data(ret));
+  return ret;
+}
+
+template <class M>
+M field_get_elem(const Field<M>& f, const Coordinate& xg, const int m)
+{
+  return field_get_elems(f, xg)[m];
+}
+
+template <class M>
+M field_get_elem(const Field<M>& f, const Coordinate& xg)
+{
+  const Geometry& geo = f.geo;
+  qassert(geo.multiplicity == 1);
+  return field_get_elem(f, xg, 0);
+}
+
 QLAT_END_NAMESPACE

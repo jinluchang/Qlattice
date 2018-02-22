@@ -22,8 +22,8 @@ struct Coordinate: public std::array<int, DIMN>
                 p[3] = fourth;
         }
 
-        int product() const {
-                int ret = 1;
+        long product() const {
+                long ret = 1;
                 int size_ = size();
                 for(int i = 0; i < size_; i++){
                         ret *= operator[](i);
@@ -100,9 +100,9 @@ inline Coordinate operator-(const Coordinate &coor)
 	return Coordinate(-coor[0], -coor[1], -coor[2], -coor[3]);
 }
 
-inline int product(const Coordinate& coor)
+inline long product(const Coordinate& coor)
 {
-  int ret = 1;
+  long ret = 1;
   for(int i = 0; i < coor.size(); i++){
     ret *= coor[i];
   }

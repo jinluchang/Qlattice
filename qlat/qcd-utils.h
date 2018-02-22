@@ -130,6 +130,28 @@ inline ColorMatrix gf_spatial_staple_no_comm(const GaugeField& gf, const Coordin
   return ret;
 }
 
+inline void set_local_current_from_props(FieldM<WilsonMatrix,4>& cf, const Propagator4d& prop1, const Propagator4d& prop2)
+  // ->- prop1 ->- gamma_mu ->- gamma5 prop2^+ gamma5 ->-
+{
+  TIMER_VERBOSE("set_local_current_from_props");
+  const Geometry geo = geo_reform(prop1.geo);
+  qassert(geo == geo_reform(prop2.geo));
+  const std::array<SpinMatrix,4>& gammas = SpinMatrixConstants::get_cps_gammas();
+  const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
+  cf.init(geo);
+#pragma omp parallel for
+  for (long index = 0; index < geo.local_volume(); ++index) {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const WilsonMatrix& m1 = prop1.get_elem(xl);
+    const WilsonMatrix& m2 = prop2.get_elem(xl);
+    Vector<WilsonMatrix> v = cf.get_elems(xl);
+    const WilsonMatrix m2rev = gamma5 * matrix_adjoint(m2) * gamma5;
+    for (int m = 0; m < 4; ++m) {
+      v[m] = m2rev * gammas[m] * m1;
+    }
+  }
+}
+
 struct WilsonLinePathStop
 {
   Coordinate x;
