@@ -112,6 +112,7 @@ struct ConfigurationInfo
 
 struct ConfigurationsInfo
 {
+  std::string tag;
   Coordinate total_site;
   std::vector<FermionAction> fas;
   LancArg la;
@@ -179,6 +180,7 @@ inline ConfigurationsInfo make_configurations_info_test(const Coordinate& total_
 inline ConfigurationsInfo make_configurations_info_free(const Coordinate& total_site, const bool make_cis = true)
 {
   ConfigurationsInfo csi;
+  csi.tag = "free";
   csi.total_site = total_site;
   csi.fas.push_back(FermionAction(0.10, 16, 1.0));
   csi.fas.push_back(FermionAction(0.20, 16, 1.0));
@@ -202,6 +204,7 @@ inline ConfigurationsInfo make_configurations_info_free(const Coordinate& total_
 inline ConfigurationsInfo make_configurations_info_16c32_mu0p01_ms0p04(const bool make_cis = true)
 {
   ConfigurationsInfo csi;
+  csi.tag = "16I";
   csi.total_site = Coordinate(16, 16, 16, 32);
   csi.fas.push_back(FermionAction(0.01, 16, 1.8));
   csi.fas.push_back(FermionAction(0.04, 16, 1.8));
@@ -230,6 +233,7 @@ inline ConfigurationsInfo make_configurations_info_16c32_mu0p01_ms0p04(const boo
 inline ConfigurationsInfo make_configurations_info_16c32_mu0p01_ms0p032(const bool make_cis = true)
 {
   ConfigurationsInfo csi;
+  csi.tag = "16I_ms0p032";
   csi.total_site = Coordinate(16, 16, 16, 32);
   csi.fas.push_back(FermionAction(0.01, 16, 1.8));
   csi.fas.push_back(FermionAction(0.032, 16, 1.8));
@@ -289,6 +293,7 @@ inline std::string find_conf_24c64_mu0p01_ms0p04(const int traj)
 inline ConfigurationsInfo make_configurations_info_24c64_mu0p01_ms0p04(const bool make_cis = true)
 {
   ConfigurationsInfo csi;
+  csi.tag = "24I";
   csi.total_site = Coordinate(24, 24, 24, 64);
   csi.fas.push_back(FermionAction(0.01, 16, 1.8));
   csi.fas.push_back(FermionAction(0.04, 16, 1.8));
@@ -329,6 +334,7 @@ inline std::string find_conf_24c64_mu0p005_ms0p04(const int traj)
 inline ConfigurationsInfo make_configurations_info_24c64_mu0p005_ms0p04(const bool make_cis = true)
 {
   ConfigurationsInfo csi;
+  csi.tag = "24IL";
   csi.total_site = Coordinate(24, 24, 24, 64);
   csi.fas.push_back(FermionAction(0.005, 16, 1.8));
   csi.fas.push_back(FermionAction(0.04, 16, 1.8));
@@ -355,6 +361,7 @@ inline ConfigurationsInfo make_configurations_info_24c64_mu0p005_ms0p04(const bo
 inline ConfigurationsInfo make_configurations_info_32c64_dsdr_mu0p001_ms0p045(const bool make_cis = true)
 {
   ConfigurationsInfo csi;
+  csi.tag = "32ID";
   csi.total_site = Coordinate(32, 32, 32, 64);
   csi.fas.push_back(FermionAction(0.001, 12, 1.8, 32.0/12.0));
   csi.fas.push_back(FermionAction(0.045, 12, 1.8, 32.0/12.0));
@@ -383,6 +390,7 @@ inline ConfigurationsInfo make_configurations_info_32c64_dsdr_mu0p001_ms0p045(co
 inline ConfigurationsInfo make_configurations_info_32c64_dsdr_mu0p001_ms0p045_unitary(const bool make_cis = true)
 {
   ConfigurationsInfo csi;
+  csi.tag = "32ID_unitary";
   csi.total_site = Coordinate(32, 32, 32, 64);
   csi.fas.push_back(FermionAction(0.001, 32, 1.8));
   csi.fas.push_back(FermionAction(0.045, 32, 1.8));
@@ -439,6 +447,7 @@ inline std::string find_conf_24c64_dsdr_mu0p0017_ms0p0850(const int traj)
 inline ConfigurationsInfo make_configurations_info_24c64_dsdr_mu0p00107_ms0p0850(const bool make_cis = true)
 {
   ConfigurationsInfo csi;
+  csi.tag = "24D";
   csi.total_site = Coordinate(24, 24, 24, 64);
   csi.fas.push_back(FermionAction(0.00107, 12, 1.8, 4.0));
   csi.fas.push_back(FermionAction(0.0850, 12, 1.8, 4.0));
@@ -486,6 +495,7 @@ inline ConfigurationsInfo make_configurations_info_24c64_dsdr_mu0p00107_ms0p0850
 inline ConfigurationsInfo make_configurations_info_24c64_dsdr_mu0p00107_ms0p0850_unitary(const bool make_cis = true)
 {
   ConfigurationsInfo csi;
+  csi.tag = "24D_unitary";
   csi.total_site = Coordinate(24, 24, 24, 64);
   csi.fas.push_back(FermionAction(0.00107, 24, 1.8, 4.0));
   csi.fas.push_back(FermionAction(0.0850, 24, 1.8, 4.0));
