@@ -507,6 +507,108 @@ inline void init_compressed_eigen_system_coefs(
   init_compressed_eigen_system_coefs(cesc, cesi.neig, cesi.nkeep, geo_full, cesi.block_site, cesi.ls);
 }
 
+struct VBFile
+{
+  std::string fn;
+  std::string mode;
+  FILE* fp;
+  long buffer_limit;
+  std::vector<uint8_t> buffer;
+  long entry_total_size;
+  std::vector<Vector<uint8_t> > entries;
+  //
+  VBFile()
+  {
+    fp = NULL;
+    buffer_limit = 16 * 1024 * 1024;
+    entry_total_size = 0;
+  }
+  //
+  ~VBFile()
+  {
+    qassert(fp == NULL);
+  }
+};
+
+inline VBFile vbopen(const std::string& fn, const std::string& mode)
+{
+  VBFile fp;
+  fp.fn = fn;
+  fp.mode = mode;
+  fp.fp = qopen(fp.fn, fp.mode);
+  return fp;
+}
+
+inline void vbflush(VBFile& fp)
+{
+  if (fp.entry_total_size == 0) {
+    return;
+  }
+  fp.buffer.resize(fp.entry_total_size);
+  if (fp.mode == "r") {
+    qread_data(get_data(fp.buffer), fp.fp);
+    long pos = 0;
+    for (long i = 0; i < fp.entries.size(); ++i) {
+      Vector<uint8_t> d = fp.entries[i];
+      memcpy(d.data(), &fp.buffer[pos], d.size());
+      pos += d.size();
+    }
+  } else if (fp.mode == "w") {
+    long pos = 0;
+    for (long i = 0; i < fp.entries.size(); ++i) {
+      const Vector<uint8_t> d = fp.entries[i];
+      memcpy(&fp.buffer[pos], d.data(), d.size());
+      pos += d.size();
+    }
+    qwrite_data(get_data(fp.buffer), fp.fp);
+  } else {
+    qassert(false);
+  }
+  fp.buffer.clear();
+  fp.entry_total_size = 0;
+  fp.entries.clear();
+}
+
+inline void vbclose(VBFile& fp)
+{
+  vbflush(fp);
+  qclose(fp.fp);
+}
+
+inline void vbread_data(const Vector<uint8_t>& v, VBFile& fp)
+{
+  qassert(fp.mode == "r");
+  if (fp.entry_total_size + v.size() > fp.buffer_limit) {
+    vbflush(fp);
+  }
+  if (v.size() >= fp.buffer_limit) {
+    qread_data(v, fp.fp);
+  } else {
+    fp.entry_total_size += v.size();
+    fp.entries.push_back(v);
+  }
+}
+
+inline void vbwrite_data(const Vector<uint8_t>& v, VBFile& fp)
+{
+  qassert(fp.mode == "w");
+  if (fp.entry_total_size + v.size() > fp.buffer_limit) {
+    vbflush(fp);
+  }
+  if (v.size() >= fp.buffer_limit) {
+    qwrite_data(v, fp.fp);
+  } else {
+    fp.entry_total_size += v.size();
+    fp.entries.push_back(v);
+  }
+}
+
+inline int vbseek(VBFile& fp, const long offset, const int whence)
+{
+  vbflush(fp);
+  fseek(fp.fp, offset, whence);
+}
+
 struct VFile
 {
   std::string fn;
@@ -552,45 +654,45 @@ inline void vclose(VFile& fp)
     TIMER_VERBOSE_FLOPS("vclose-read");
     qassert(fp.mode == "r");
     set_vfile_size(fp);
-    FILE* fpr = qopen(fp.fn, "r");
+    VBFile fpr = vbopen(fp.fn, "r");
     long pos = 0;
     for (std::multimap<long, Vector<uint8_t> >::const_iterator it = fp.read_entries.cbegin(); it != fp.read_entries.cend(); ++it) {
       const long new_pos = it->first;
+      Vector<uint8_t> data = it->second;
       if (new_pos != pos) {
         TIMER_FLOPS("vclose-fseek");
         timer.flops = std::abs(new_pos - pos);
         pos = new_pos;
-        fseek(fpr, pos, SEEK_SET);
+        vbseek(fpr, pos, SEEK_SET);
         n_seek += 1;
       }
-      Vector<uint8_t> data = it->second;
-      qread_data(data, fpr);
+      vbread_data(data, fpr);
       pos += data.size();
       qassert(0 <= pos and pos <= fp.size);
       timer.flops += data.size();
     }
-    qclose(fpr);
+    vbclose(fpr);
     displayln(fname + ssprintf(": n_seek = %d.", n_seek));
   } else if (not fp.write_entries.empty()) {
     TIMER_VERBOSE_FLOPS("vclose-write");
     qassert(fp.mode == "w");
-    FILE* fpr = qopen(fp.fn + ".partial", "w");
+    VBFile fpr = vbopen(fp.fn + ".partial", "w");
     long pos = 0;
     for (std::multimap<long, Vector<uint8_t> >::const_iterator it = fp.write_entries.cbegin(); it != fp.write_entries.cend(); ++it) {
       const long new_pos = it->first;
+      Vector<uint8_t> data = it->second;
       if (new_pos != pos) {
         TIMER_FLOPS("vclose-fseek");
         timer.flops = std::abs(new_pos - pos);
         pos = new_pos;
-        fseek(fpr, pos, SEEK_SET);
+        vbseek(fpr, pos, SEEK_SET);
         n_seek += 1;
       }
-      Vector<uint8_t> data = it->second;
-      qwrite_data(data, fpr);
+      vbwrite_data(data, fpr);
       pos += data.size();
       timer.flops += data.size();
     }
-    qclose(fpr);
+    vbclose(fpr);
     qrename(fp.fn + ".partial", fp.fn);
     displayln(fname + ssprintf(": n_seek = %d.", n_seek));
   }
@@ -601,6 +703,7 @@ inline void vclose(VFile& fp)
 template <class M>
 long vread_data(const Vector<M>& v, VFile& fp)
 {
+  qassert(fp.mode == "r");
   Vector<uint8_t> dv((uint8_t*)v.data(), v.data_size());
   fp.read_entries.insert(std::pair<long, Vector<uint8_t> >(fp.pos, dv));
   fp.pos += dv.size();
@@ -611,6 +714,7 @@ long vread_data(const Vector<M>& v, VFile& fp)
 template <class M>
 long vwrite_data(const Vector<M>& v, VFile& fp)
 {
+  qassert(fp.mode == "w");
   Vector<uint8_t> dv((uint8_t*)v.data(), v.data_size());
   fp.write_entries.insert(std::pair<long, Vector<uint8_t> >(fp.pos, dv));
   fp.pos += dv.size();
