@@ -520,7 +520,7 @@ struct VBFile
   VBFile()
   {
     fp = NULL;
-    buffer_limit = 16 * 1024 * 1024;
+    buffer_limit = 128 * 1024 * 1024;
     entry_total_size = 0;
   }
   //
