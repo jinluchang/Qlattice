@@ -105,6 +105,20 @@ T& reads(T& x, const std::string& str)
   return x;
 }
 
+long read_long(const std::string& str)
+{
+  long ret = 0;
+  reads(ret, str);
+  return ret;
+}
+
+double read_double(const std::string& str)
+{
+  double ret = 0.0;
+  reads(ret, str);
+  return ret;
+}
+
 inline FILE*& get_output_file()
 {
   static FILE* out = stdout;
