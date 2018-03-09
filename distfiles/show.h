@@ -105,14 +105,14 @@ T& reads(T& x, const std::string& str)
   return x;
 }
 
-long read_long(const std::string& str)
+inline long read_long(const std::string& str)
 {
   long ret = 0;
   reads(ret, str);
   return ret;
 }
 
-double read_double(const std::string& str)
+inline double read_double(const std::string& str)
 {
   double ret = 0.0;
   reads(ret, str);
