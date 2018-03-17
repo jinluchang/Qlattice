@@ -21,12 +21,15 @@ inline void setup_params()
   Timer::max_call_times_for_always_show_info() = 3;
   Timer::minimum_duration_for_show_stop_info() = 60;
   Timer::minimum_autodisplay_interval() = 365 * 24 * 3600;
-  get_lock_expiration_time_limit() = 1.0 * 60.0 * 60.0;
+  get_lock_expiration_time_limit() = 24.0 * 60.0 * 60.0;
   set_lock_expiration_time_limit();
   get_time_limit() = get_lock_expiration_time_limit();
   get_default_budget() = 0;
   dist_write_par_limit() = 128;
   dist_read_par_limit() = 128;
+  displayln_info(ssprintf("get_start_time()=%lf", get_start_time()));
+  displayln_info(ssprintf("get_lock_expiration_time_limit()=%lf", get_lock_expiration_time_limit()));
+  displayln_info(ssprintf("expiration_time=%lf", get_start_time() + get_lock_expiration_time_limit()));
 }
 
 inline long& get_log_idx()

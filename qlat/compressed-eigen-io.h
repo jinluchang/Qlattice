@@ -605,6 +605,7 @@ inline void vbwrite_data(const Vector<uint8_t>& v, VBFile& fp)
 
 inline int vbseek(VBFile& fp, const long offset, const int whence)
 {
+  TIMER("vbseek");
   vbflush(fp);
   fseek(fp.fp, offset, whence);
 }
@@ -621,6 +622,7 @@ struct VFile
 
 inline void set_vfile_size(VFile& fp)
 {
+  TIMER("set_vfile_size");
   if (fp.size < 0) {
     FILE* fpr = qopen(fp.fn, fp.mode);
     fseek(fpr, 0, SEEK_END);
