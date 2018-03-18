@@ -19,8 +19,16 @@ inline Coordinate get_default_serial_new_size_node(const Geometry& geo)
   const int num_node = geo.geon.num_node;
   const Coordinate total_site = geo.total_site();
   Coordinate new_size_node = Coordinate(1,1,1,total_site[3]);
-  if (num_node < total_site[3]) {
-    new_size_node[3] = total_site[3] / (total_site[3] / num_node);
+  while (num_node < new_size_node[3]) {
+    if (new_size_node[3] % 5 == 0) {
+      new_size_node[3] /= 5;
+    } else if (new_size_node[3] % 3 == 0) {
+      new_size_node[3] /= 3;
+    } else if (new_size_node[3] % 2 == 0) {
+      new_size_node[3] /= 2;
+    } else {
+      break;
+    }
   }
   qassert(total_site % new_size_node == Coordinate());
   return new_size_node;
