@@ -507,6 +507,12 @@ inline void init_compressed_eigen_system_coefs(
   init_compressed_eigen_system_coefs(cesc, cesi.neig, cesi.nkeep, geo_full, cesi.block_site, cesi.ls);
 }
 
+inline long& get_vbfile_buffer_limit()
+{
+  static long buffer_limit = 2L * 1024L * 1024L * 1024L;
+  return buffer_limit;
+}
+
 struct VBFile
 {
   std::string fn;
@@ -520,7 +526,7 @@ struct VBFile
   VBFile()
   {
     fp = NULL;
-    buffer_limit = 128 * 1024 * 1024;
+    buffer_limit = get_vbfile_buffer_limit();
     entry_total_size = 0;
   }
   //
