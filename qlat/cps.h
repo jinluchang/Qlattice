@@ -58,7 +58,7 @@ void cps_begin(int* argc, char** argv[], const Coordinate& total_site)
   cps::GJP.Initialize(do_arg);
   cps::LRG.Initialize();
   Coordinate size_node(cps::SizeX(), cps::SizeY(), cps::SizeZ(), cps::SizeT());
-  begin(QMP_COMM_WORLD, size_node);
+  begin(cps::UniqueID(), size_node);
   sync_node();
   cps::dataWriteParNumber() = 256;
   cps::dataReadParNumber() = 256;

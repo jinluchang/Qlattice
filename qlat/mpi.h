@@ -586,8 +586,8 @@ inline int init_mpi(int* argc, char** argv[])
   return num_node;
 }
 
-inline void begin(const MPI_Comm& comm, const Coordinate& size_node)
-  // begin Qlat with existing comm
+inline void begin_comm(const MPI_Comm& comm, const Coordinate& size_node)
+  // begin Qlat with existing comm (assuming MPI already initialized)
 {
   const Coordinate periods(1, 1, 1, 1);
   MPI_Cart_create(comm, DIMN, (int*)size_node.data(), (int*)periods.data(), 0, &get_comm());
@@ -599,18 +599,26 @@ inline void begin(const MPI_Comm& comm, const Coordinate& size_node)
   display_geometry_node();
 }
 
+inline void begin(const int id_node, const Coordinate& size_node)
+  // begin Qlat with existing id_node maping (assuming MPI already initialized)
+{
+  MPI_Comm comm;
+  MPI_Comm_split(MPI_COMM_WORLD, 0, id_node, &comm);
+  begin_comm(comm, size_node);
+}
+
 inline void begin(int* argc, char** argv[], const Coordinate& size_node)
   // begin Qlat and initialize a new comm
 {
   init_mpi(argc, argv);
-  begin(MPI_COMM_WORLD, size_node);
+  begin_comm(MPI_COMM_WORLD, size_node);
 }
 
 inline void begin(int* argc, char** argv[])
   // begin Qlat and initialize a new comm with default topology
 {
   int num_node = init_mpi(argc, argv);
-  begin(MPI_COMM_WORLD, plan_size_node(num_node));
+  begin_comm(MPI_COMM_WORLD, plan_size_node(num_node));
 }
 
 inline void end()
