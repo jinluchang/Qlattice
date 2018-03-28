@@ -509,7 +509,7 @@ inline void init_compressed_eigen_system_coefs(
 
 inline long& get_vbfile_buffer_limit()
 {
-  static long buffer_limit = 2L * 1024L * 1024L * 1024L;
+  static long buffer_limit = 4L * 1024L * 1024L * 1024L;
   return buffer_limit;
 }
 
