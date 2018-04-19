@@ -9,10 +9,12 @@ tests = qcd-utils-tests \
 
 
 all:
-	time for i in $(tests) ; do make -C "$$i" all & done ; wait
+	for i in $(tests) ; do make -C "$$i" all & done ; time wait
 
 run: all
-	time for i in $(tests) ; do make -C "$$i" run ; done 2>&1 | tee log
+	-time for i in $(tests) ; do make -C "$$i" run ; done 2>&1 | tee log
+	-git diff | egrep -v Timer | egrep '^\+|^\-'
 
 clean:
-	time for i in $(tests) ; do make -C "$$i" clean ; done
+	-time for i in $(tests) ; do make -C "$$i" clean ; done
+	-git checkout log
