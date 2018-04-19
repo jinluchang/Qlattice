@@ -22,7 +22,7 @@ fi
 rm -rf $prefix || true
 mkdir -p $prefix
 
-if which mpic++ >/dev/null 2>&1 ; then
+if which mpic++ >/dev/null 2>&1 || which mpicxx >/dev/null 2>&1 ; then
     echo "mpi already exist, won't build it"
 else
     ./scripts/hwloc.sh

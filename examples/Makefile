@@ -7,12 +7,12 @@ tests = qcd-utils-tests \
 		benchmark \
 		dist-io
 
-all:
-	time for i in $(tests) ; do make -C "$$i" all; done
 
-run:
+all:
+	time for i in $(tests) ; do make -C "$$i" all & done ; wait
+
+run: all
 	time for i in $(tests) ; do make -C "$$i" run ; done 2>&1 | tee log
 
 clean:
 	time for i in $(tests) ; do make -C "$$i" clean ; done
-

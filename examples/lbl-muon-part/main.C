@@ -167,7 +167,8 @@ void lblMuonPart()
 {
   TIMER("lblMuonPart");
   // ADJUST ME
-  qlat::Coordinate total_site(16, 16, 16, 32);
+  // qlat::Coordinate total_site(16, 16, 16, 32);
+  qlat::Coordinate total_site(4, 4, 4, 8);
   // qlat::Coordinate total_site(32, 32, 32, 128);
   qlat::Geometry geo; geo.init(total_site, 1);
   DisplayInfo(cname, fname, "geo =\n%s\n", qlat::show(geo).c_str());
@@ -189,9 +190,9 @@ void lblMuonPart()
   // qlat::Coordinate xg2(0, 0, 0, total_site[3]/2 + 0);
   // qlat::Coordinate xg3(0, 0, 0, total_site[3]/2 + 0);
   //
-  qlat::Coordinate xg1(6, 6, 6, total_site[3]/2 + 2);
-  qlat::Coordinate xg2(8,11, 7, total_site[3]/2 - 1);
-  qlat::Coordinate xg3(8, 8, 8, total_site[3]/2 + 0);
+  qlat::Coordinate xg1(1, 1, 1, total_site[3]/2 + 2);
+  qlat::Coordinate xg2(2, 3, 1, total_site[3]/2 - 1);
+  qlat::Coordinate xg3(2, 2, 2, total_site[3]/2 + 0);
   //
   // qlat::Coordinate xg1(2, 1, 5, total_site[3]/2 - 4);
   // qlat::Coordinate xg2(3, 4, 0, total_site[3]/2 + 0);
@@ -231,7 +232,8 @@ void displayGammas()
 void displaySpinPropagator4d()
 {
   TIMER("displaySpinPropagator4d");
-  qlat::Coordinate total_site(16, 16, 16, 32);
+  // qlat::Coordinate total_site(16, 16, 16, 32);
+  qlat::Coordinate total_site(4, 4, 4, 8);
   qlat::Geometry geo; geo.init(total_site, 1);
   DisplayInfo(cname, fname, "geo =\n%s\n", qlat::show(geo).c_str());
   std::array<double,qlat::DIMN> momtwist;

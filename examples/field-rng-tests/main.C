@@ -16,7 +16,8 @@ void coordinateHalf(Coordinate& xh, const Coordinate& x)
 void test1()
 {
   TIMER("test1");
-  Coordinate total_site(16, 16, 16, 32);
+  // Coordinate total_site(16, 16, 16, 32);
+  Coordinate total_site(4, 4, 4, 8);
   Geometry geo;
   geo.init(total_site, 1);
   Coordinate total_siteHalf; coordinateHalf(total_siteHalf, total_site);

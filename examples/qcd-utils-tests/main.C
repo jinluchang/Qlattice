@@ -11,8 +11,8 @@ void simple_tests()
   TIMER_VERBOSE("simple_tests");
   RngState rs(get_global_rng_state(), fname);
   // const Coordinate total_site(16, 16, 16, 32);
-  const Coordinate total_site(8, 8, 8, 8);
-  // const Coordinate total_site(4, 4, 4, 4);
+  // const Coordinate total_site(8, 8, 8, 8);
+  const Coordinate total_site(4, 4, 4, 8);
   Geometry geo;
   geo.init(total_site, 1);
   GaugeField gf;

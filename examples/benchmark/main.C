@@ -10,7 +10,8 @@ using namespace std;
 void test_get_data()
 {
   TIMER("test_get_data");
-  const size_t size = 2 * 1024 * 1024;
+  // const size_t size = 2 * 1024 * 1024;
+  const size_t size = 2 * 1024;
   std::vector<double> data_send(size), data_recv(size);
   for (int i = 0; i < 16; ++i) {
     TIMER_VERBOSE_FLOPS("get_data"); // transferred bi-direction added in unit of Bytes
@@ -26,7 +27,8 @@ void test_fft()
 {
   TIMER("test_fft");
   // Coordinate total_site(48, 48, 48, 96);
-  Coordinate total_site(16, 16, 16, 32);
+  // Coordinate total_site(16, 16, 16, 32);
+  Coordinate total_site(4, 4, 4, 8);
   RngState rs(getGlobalRngState(), "test_fft");
   Geometry geo;
   geo.init(total_site, 1);

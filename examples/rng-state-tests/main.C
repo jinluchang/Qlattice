@@ -122,7 +122,7 @@ void profile()
 {
   TIMER_FLOPS("profile");
   RngState rs(0);
-  const int size = 1000 * 10000;
+  const int size = 1000 * 1000;
   double sum = 0.0;
   for (int i = 0; i < size; ++i) {
     sum += u_rand_gen(rs);
@@ -136,7 +136,7 @@ void profileOmp()
 {
   TIMER_FLOPS("profileOmp");
   const int num_threads = 64;
-  const int size = 1024 * 1024;
+  const int size = 16 * 1024;
   double sums[num_threads];
 #pragma omp parallel for
   for (int i = 0; i < num_threads; ++i) {
