@@ -4,7 +4,9 @@
 //
 // initialize()
 //
-// Setup setup(path)
+// get_project_root_rng_state() = RngState();
+//
+// Setup setup(path);
 //
 // csi = make_configurations_info_test(total_site);
 //
@@ -67,7 +69,7 @@ inline std::string& get_result_path() {
 
 inline RngState& get_project_root_rng_state()
 {
-  static RngState rs("c9fe20290da1e43f38b3e48ce200968015f7707059485e66720c91c77bc8721d");
+  static RngState rs;
   return rs;
 }
 
