@@ -233,6 +233,7 @@ inline void load_gauge_field(GaugeField& gf, const std::string& path)
   // assuming gf already initialized and have correct size;
 {
   TIMER_VERBOSE_FLOPS("load_gauge_field");
+  displayln_info(fname + ssprintf(": '%s'.", path.c_str()));
   qassert(is_initialized(gf));
   const Geometry& geo = gf.geo;
   FieldM<std::array<Complex, 6>, 4> gft;
@@ -256,6 +257,7 @@ inline void load_gauge_field_par(GaugeField& gf, const std::string& path)
   // assuming gf already initialized and have correct size;
 {
   TIMER_VERBOSE_FLOPS("load_gauge_field_par");
+  displayln_info(fname + ssprintf(": '%s'.", path.c_str()));
   qassert(is_initialized(gf));
   const Geometry& geo = gf.geo;
   FieldM<std::array<Complex, 6>, 4> gft;
@@ -279,6 +281,7 @@ inline void load_gauge_field_cps3x3(GaugeField& gf, const std::string& path)
   // assuming gf already initialized and have correct size;
 {
   TIMER_VERBOSE_FLOPS("load_gauge_field");
+  displayln_info(fname + ssprintf(": '%s'.", path.c_str()));
   qassert(is_initialized(gf));
   const Geometry& geo = gf.geo;
   FieldM<std::array<Complex, 9>, 4> gft;
@@ -301,6 +304,7 @@ inline void load_gauge_field_milc(GaugeField& gf, const std::string& path, const
   // assuming gf already initialized and have correct size;
 {
   TIMER_VERBOSE_FLOPS("load_gauge_field_milc");
+  displayln_info(fname + ssprintf(": '%s'.", path.c_str()));
   qassert(is_initialized(gf));
   const Geometry& geo = gf.geo;
   FieldM<std::array<std::complex<float>, 9>, 4> gft;

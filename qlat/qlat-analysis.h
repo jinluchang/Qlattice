@@ -519,6 +519,81 @@ inline ConfigurationsInfo make_configurations_info_24c64_dsdr_mu0p00107_ms0p0850
   return csi;
 }
 
+inline ConfigurationsInfo make_configurations_info_32c64_dsdr_mu0p00107_ms0p0850(const bool make_cis = true)
+{
+  ConfigurationsInfo csi;
+  csi.tag = "32D";
+  csi.total_site = Coordinate(32, 32, 32, 64);
+  csi.fas.push_back(FermionAction(0.00107, 12, 1.8, 4.0));
+  csi.fas.push_back(FermionAction(0.0850, 12, 1.8, 4.0));
+  csi.la = LancArg(5.5, 0.02, 200, 200, 150, 50);
+  for (int i = 0; i < csi.fas.size(); ++i) {
+    FermionAction& fa = csi.fas[i];
+    fa.is_using_zmobius = true;
+    std::vector<Complex> omega(12, 0);
+    omega[0] = 1.0903256131299373;
+    omega[1] = 0.9570283702230611;
+    omega[2] = 0.7048886040934104;
+    omega[3] = 0.48979921782791747;
+    omega[4] = 0.328608311201356;
+    omega[5] = 0.21664245377015995;
+    omega[6] = 0.14121112711957107;
+    omega[7] = 0.0907785101745156;
+    omega[8] = Complex(0.05608303440064219, -0.007537158177840385);
+    omega[9] = Complex(0.05608303440064219, 0.007537158177840385);
+    omega[10] = Complex(0.0365221637144842, -0.03343945161367745);
+    omega[11] = Complex(0.0365221637144842, 0.03343945161367745);
+    qassert(fa.bs.size() == fa.ls);
+    qassert(fa.cs.size() == fa.ls);
+    qassert(omega.size() == fa.ls);
+    for (int i = 0; i < omega.size(); i++) {
+      fa.bs[i] = 0.5 * (1.0 / omega[i] + 1.0);
+      fa.cs[i] = fa.bs[i] - 1.0;
+    }
+  }
+  if (make_cis) {
+    for (int traj = 1080 ; traj >= 680 ; traj -= 20) {
+      ConfigurationInfo ci;
+      ci.csi.init(csi);
+      ci.traj = traj;
+      ci.path = ssprintf("/projects/LatticeQCD_3/chulwoo"
+          "/qcddata/DWF/2+1f/32nt64/IWASAKI+DSDR/b1.633/ls24/M1.8/ms0.0850/ml0.00107/evol0"
+          "/configurations/ckpoint_lat.%d", traj);
+      ci.conf_format = "cps";
+      ci.low_modes_path = get_env("HOME") + ssprintf("/application/Public/Muon-GM2-cc/jobs/32D/lancs/qcdtraj=%d/huge-data-clanc", traj);
+      if (ci.path != "") {
+        csi.infos.push_back(ci);
+      }
+    }
+  }
+  return csi;
+}
+
+inline ConfigurationsInfo make_configurations_info_32c64_dsdr_mu0p0001_ms0p045(const bool make_cis = true)
+{
+  ConfigurationsInfo csi;
+  csi.tag = "32Dfine";
+  csi.total_site = Coordinate(32, 32, 32, 64);
+  csi.fas.push_back(FermionAction(0.0001, 12, 1.8, 32.0/12.0));
+  csi.fas.push_back(FermionAction(0.045, 12, 1.8, 32.0/12.0));
+  // csi.la = LancArg(5.5, 0.02, 200, 200, 150, 50);
+  csi.la = LancArg(15.0, 0.22, 200, 2600, 2100, 2000);
+  if (make_cis) {
+    for (int traj = 1080 ; traj >= 680 ; traj -= 20) {
+      ConfigurationInfo ci;
+      ci.csi.init(csi);
+      ci.traj = traj;
+      ci.path = ssprintf("", traj);
+      ci.conf_format = "cps";
+      ci.low_modes_path = get_env("HOME") + ssprintf("/application/Public/Muon-GM2-cc/jobs/32D/lancs/qcdtraj=%d/huge-data-clanc", traj);
+      if (ci.path != "") {
+        csi.infos.push_back(ci);
+      }
+    }
+  }
+  return csi;
+}
+
 inline ConfigurationsInfo make_configurations_info_milc(const bool make_cis = true)
 {
   ConfigurationsInfo csi;
