@@ -517,6 +517,12 @@ struct ShufflePlan
   std::vector<ShufflePlanRecvPackInfo> recv_pack_infos; // corresponds to how to copy recv buffer to new local fields
 };
 
+inline long& get_shuffle_max_msg_size()
+{
+  static long size = 16 * 1024;
+  return size;
+}
+
 inline ShufflePlan make_shuffle_plan(const ShufflePlanKey& spk)
 {
   TIMER_VERBOSE("make_shuffle_plan");
@@ -545,20 +551,21 @@ inline ShufflePlan make_shuffle_plan(const ShufflePlanKey& spk)
     send_id_node_size[id_node] += 1;
     send_new_id_node_size[new_id_node] += 1;
   }
-  // send_id_node_idx
-  std::map<int,long> send_id_node_idx;
   {
     long count = 0;
     for (std::map<int,long>::const_iterator it = send_id_node_size.cbegin(); it != send_id_node_size.cend(); ++it) {
       const int id_node = it->first;
-      const int node_size = it->second;
-      ShufflePlanMsgInfo mi;
-      mi.id_node = id_node;
-      mi.idx = count;
-      mi.size = node_size;
-      ret.send_msg_infos.push_back(mi);
-      send_id_node_idx[id_node] = count;
-      count += node_size;
+      const long node_size = it->second;
+      long node_size_remain = node_size;
+      while (node_size_remain > 0) {
+        ShufflePlanMsgInfo mi;
+        mi.id_node = id_node;
+        mi.idx = count;
+        mi.size = std::min(node_size_remain, get_shuffle_max_msg_size());
+        ret.send_msg_infos.push_back(mi);
+        node_size_remain -= mi.size;
+        count += mi.size;
+      }
     }
     qassert(count == geo.local_volume());
     qassert(count == ret.total_send_size);
@@ -569,7 +576,7 @@ inline ShufflePlan make_shuffle_plan(const ShufflePlanKey& spk)
     long count = 0;
     for (std::map<int,long>::const_iterator it = send_new_id_node_size.cbegin(); it != send_new_id_node_size.cend(); ++it) {
       const int new_id_node = it->first;
-      const int node_size = it->second;
+      const long node_size = it->second;
       send_new_id_node_idx[new_id_node] = count;
       count += node_size;
     }
@@ -619,18 +626,31 @@ inline ShufflePlan make_shuffle_plan(const ShufflePlanKey& spk)
       recv_id_node_size[id_node] += 1;
     }
   }
+  {
+    long count = 0;
+    for (std::map<int,long>::const_iterator it = recv_id_node_size.cbegin(); it != recv_id_node_size.cend(); ++it) {
+      const int id_node = it->first;
+      const long node_size = it->second;
+      long node_size_remain = node_size;
+      while (node_size_remain > 0) {
+        ShufflePlanMsgInfo mi;
+        mi.id_node = id_node;
+        mi.idx = count;
+        mi.size = std::min(node_size_remain, get_shuffle_max_msg_size());
+        ret.recv_msg_infos.push_back(mi);
+        node_size_remain -= mi.size;
+        count += mi.size;
+      }
+    }
+    qassert(count == ret.total_recv_size);
+  }
   // recv_id_node_idx
   std::map<int,long> recv_id_node_idx;
   {
     long count = 0;
     for (std::map<int,long>::const_iterator it = recv_id_node_size.cbegin(); it != recv_id_node_size.cend(); ++it) {
       const int id_node = it->first;
-      const int node_size = it->second;
-      ShufflePlanMsgInfo mi;
-      mi.id_node = id_node;
-      mi.idx = count;
-      mi.size = node_size;
-      ret.recv_msg_infos.push_back(mi);
+      const long node_size = it->second;
       recv_id_node_idx[id_node] = count;
       count += node_size;
     }
