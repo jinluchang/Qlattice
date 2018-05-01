@@ -40,8 +40,10 @@ inline crc32_t crc32(const void* smessage, const long nBytes)
 }
 
 inline crc32_t crc32_shift(const crc32_t initial, const long offset)
-  // shift initial by offset length
+  // shift initial left by offset length
   // if offset == 0 then return initial
+  // offset should be the length of the part after the initial part (which evaluate to crc initial)
+  // xor all the results gives the final crc32
 {
   return crc32_combine(initial, 0, offset);
 }

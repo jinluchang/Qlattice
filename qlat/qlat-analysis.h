@@ -8,7 +8,7 @@
 //
 // Setup setup(path);
 //
-// csi = make_configurations_info_test(total_site);
+// const ConfigurationsInfo csi = make_configurations_info_test(total_site);
 //
 // load_configuration(gf, csi.infos[k])
 
