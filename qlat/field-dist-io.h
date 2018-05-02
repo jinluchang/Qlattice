@@ -518,8 +518,16 @@ struct ShufflePlan
 };
 
 inline long& get_shuffle_max_msg_size()
+  // qlat parameter
 {
   static long size = 16 * 1024;
+  return size;
+}
+
+inline long& get_shuffle_max_pack_size()
+  // qlat parameter
+{
+  static long size = 1024;
   return size;
 }
 
@@ -593,16 +601,15 @@ inline ShufflePlan make_shuffle_plan(const ShufflePlanKey& spk)
       const int new_id_node = index_from_coordinate(new_coor_node, new_size_node);
       const long buffer_idx = send_new_id_node_idx[new_id_node];
       // const int id_node = get_id_node_from_new_id_node(new_id_node, new_num_node, num_node);
-      if (buffer_idx != last_buffer_idx) {
+      if (buffer_idx == last_buffer_idx and ret.send_pack_infos.back().size < get_shuffle_max_pack_size()) {
+        ret.send_pack_infos.back().size += 1;
+      } else {
         last_buffer_idx = buffer_idx;
         ShufflePlanSendPackInfo pi;
         pi.field_idx = index;
         pi.buffer_idx = buffer_idx;
         pi.size = 1;
         ret.send_pack_infos.push_back(pi);
-      } else {
-        ShufflePlanSendPackInfo& pi = ret.send_pack_infos.back();
-        pi.size += 1;
       }
       send_new_id_node_idx[new_id_node] += 1;
       last_buffer_idx += 1;
@@ -667,7 +674,9 @@ inline ShufflePlan make_shuffle_plan(const ShufflePlanKey& spk)
         const Coordinate coor_node = xg / geo.node_site;
         const int id_node = index_from_coordinate(coor_node, geo.geon.size_node);
         const long buffer_idx = recv_id_node_idx[id_node];
-        if (buffer_idx != last_buffer_idx) {
+        if (buffer_idx == last_buffer_idx and ret.recv_pack_infos.back().size < get_shuffle_max_pack_size()) {
+          ret.recv_pack_infos.back().size += 1;
+        } else {
           last_buffer_idx = buffer_idx;
           ShufflePlanRecvPackInfo pi;
           pi.local_geos_idx = i;
@@ -675,9 +684,6 @@ inline ShufflePlan make_shuffle_plan(const ShufflePlanKey& spk)
           pi.buffer_idx = buffer_idx;
           pi.size = 1;
           ret.recv_pack_infos.push_back(pi);
-        } else {
-          ShufflePlanRecvPackInfo& pi = ret.recv_pack_infos.back();
-          pi.size += 1;
         }
         recv_id_node_idx[id_node] += 1;
         last_buffer_idx += 1;
