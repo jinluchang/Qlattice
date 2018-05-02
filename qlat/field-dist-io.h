@@ -129,7 +129,7 @@ std::vector<crc32_t> dist_crc32s(const std::vector<DistData<M> >& dds, const int
   for (int k = 0; k < dds.size(); ++k) {
     const DistData<M>& dd = dds[k];
     const int id_node = dd.id_node;
-    ret[id_node] = crc32(ret[id_node], dd.data);
+    ret[id_node] = crc32_par(ret[id_node], dd.data);
     total_bytes += dd.data.data_size();
   }
   glb_sum_byte_vec(get_data(ret));
@@ -743,6 +743,12 @@ void shuffle_field(std::vector<Field<M> >& fs, const Field<M>& f, const Coordina
   }
   sync_node();
   TIMER_VERBOSE_FLOPS("shuffle_field");
+  displayln_info(fname + ssprintf(": %s -> %s (total_site: %s ; site_size: %d ; total_size: %.3lf GB)",
+        show(geo.geon.size_node).c_str(),
+        show(new_size_node).c_str(),
+        show(geo.total_site()).c_str(),
+        geo.multiplicity * (int)sizeof(M),
+        (double)(product(geo.total_site()) * geo.multiplicity * sizeof(M) * std::pow(0.5, 30))));
   const ShufflePlan& sp = get_shuffle_plan(geo.total_site(), new_size_node);
   const long total_bytes = sp.total_send_size * geo.multiplicity * sizeof(M) * get_num_node();
   timer.flops += total_bytes;
@@ -822,6 +828,12 @@ void shuffle_field_back(Field<M>& f, const std::vector<Field<M> >& fs, const Coo
   }
   sync_node();
   TIMER_VERBOSE_FLOPS("shuffle_field_back");
+  displayln_info(fname + ssprintf(": %s -> %s (total_site: %s ; site_size: %d ; total_size: %.3lf GB)",
+        show(new_size_node).c_str(),
+        show(geo.geon.size_node).c_str(),
+        show(geo.total_site()).c_str(),
+        geo.multiplicity * (int)sizeof(M),
+        (double)(product(geo.total_site()) * geo.multiplicity * sizeof(M) * std::pow(0.5, 30))));
   const ShufflePlan& sp = get_shuffle_plan(geo.total_site(), new_size_node);
   const long total_bytes = sp.total_send_size * geo.multiplicity * sizeof(M) * get_num_node();
   timer.flops += total_bytes;

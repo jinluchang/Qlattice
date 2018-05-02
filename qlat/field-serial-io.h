@@ -198,7 +198,7 @@ crc32_t field_crc32(const Field<M>& f)
   for (int i = 0; i < std::min(num_node, new_num_node); ++i) {
     if (i == id_node) {
       for (int k = 0; k < fs.size(); ++k) {
-        ret = crc32(ret, get_data(fs[k]));
+        ret = crc32_par(ret, get_data(fs[k]));
       }
     }
     glb_sum_byte(ret);

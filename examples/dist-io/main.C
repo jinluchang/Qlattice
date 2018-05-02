@@ -15,10 +15,12 @@ void test_io()
   crc32_check();
   dist_write_par_limit() = 16;
   dist_read_par_limit() = 16;
-  Coordinate total_site(4, 4, 4, 8);
+  // Coordinate total_site(4, 4, 4, 8);
+  Coordinate total_site(8, 8, 8, 8);
   // Coordinate total_site(16, 16, 16, 32);
   // Coordinate total_site(32, 32, 32, 64);
   // Coordinate total_site(48, 48, 48, 96);
+  // Coordinate total_site(64, 64, 64, 64);
   Geometry geo;
   geo.init(total_site, 1);
   GaugeField gf;
@@ -43,6 +45,7 @@ void test_io()
   displayln_info(ssprintf("crc32 = %08X", field_dist_crc32(gf)));
   const crc32_t crc = field_dist_crc32(gf);
   std::vector<Coordinate> new_size_nodes;
+  new_size_nodes.push_back(Coordinate(1,1,1,1));
   new_size_nodes.push_back(Coordinate(2,2,2,2));
   // new_size_nodes.push_back(Coordinate(1,2,1,32));
   new_size_nodes.push_back(Coordinate(1,1,1,8));
