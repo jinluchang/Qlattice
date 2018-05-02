@@ -242,8 +242,8 @@ double norm(const Field<M>& f)
     double psum = 0.0;
 #pragma omp for nowait
     for (long index = 0; index < geo.local_volume(); ++index) {
-      Coordinate x = geo.coordinate_from_index(index);
-      Vector<M> fx = f.get_elems(x);
+      const Coordinate x = geo.coordinate_from_index(index);
+      const Vector<M> fx = f.get_elems_const(x);
       for (int m = 0; m < geo.multiplicity; ++m) {
         psum += norm(fx[m]);
       }
