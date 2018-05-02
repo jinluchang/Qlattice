@@ -684,10 +684,22 @@ inline ShufflePlan make_shuffle_plan(const ShufflePlanKey& spk)
       }
     }
   }
-  displayln_info(ssprintf("%s::%s: send_pack_infos.size() = %10ld", cname().c_str(), fname, ret.send_pack_infos.size()));
-  displayln_info(ssprintf("%s::%s: recv_pack_infos.size() = %10ld", cname().c_str(), fname, ret.send_pack_infos.size()));
-  displayln_info(ssprintf("%s::%s: send_msg_infos.size()  = %10ld", cname().c_str(), fname, ret.send_msg_infos.size()));
-  displayln_info(ssprintf("%s::%s: recv_msg_infos.size()  = %10ld", cname().c_str(), fname, ret.recv_msg_infos.size()));
+  long num_send_packs = ret.send_pack_infos.size();
+  long num_recv_packs = ret.recv_pack_infos.size();
+  long num_send_msgs = ret.send_msg_infos.size();
+  long num_recv_msgs = ret.recv_msg_infos.size();
+  displayln_info(ssprintf("%s::%s: num_send_packs = %10ld", cname().c_str(), fname, num_send_packs));
+  displayln_info(ssprintf("%s::%s: num_recv_packs = %10ld", cname().c_str(), fname, num_recv_packs));
+  displayln_info(ssprintf("%s::%s: num_send_msgs  = %10ld", cname().c_str(), fname, num_send_msgs));
+  displayln_info(ssprintf("%s::%s: num_recv_msgs  = %10ld", cname().c_str(), fname, num_recv_msgs));
+  glb_sum(num_send_packs);
+  glb_sum(num_recv_packs);
+  glb_sum(num_send_msgs);
+  glb_sum(num_recv_msgs);
+  displayln_info(ssprintf("%s::%s: total num_send_packs = %10ld", cname().c_str(), fname, num_send_packs));
+  displayln_info(ssprintf("%s::%s: total num_recv_packs = %10ld", cname().c_str(), fname, num_recv_packs));
+  displayln_info(ssprintf("%s::%s: total num_send_msgs  = %10ld", cname().c_str(), fname, num_send_msgs));
+  displayln_info(ssprintf("%s::%s: total num_recv_msgs  = %10ld", cname().c_str(), fname, num_recv_msgs));
   return ret;
 }
 
