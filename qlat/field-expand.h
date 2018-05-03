@@ -61,6 +61,27 @@ inline void set_marks_field_1(CommMarks& marks, const Geometry& geo, const std::
   }
 }
 
+inline void set_marks_field_m2(CommMarks& marks, const Geometry& geo, const std::string& tag)
+  // tag is not used
+{
+  TIMER_VERBOSE("set_marks_field_m2");
+  marks.init();
+  marks.init(geo);
+#pragma omp parallel for
+  for (long record = 0; record < geo.local_volume_expanded(); ++record) {
+    const Coordinate xl = geo.coordinateFromRecord(record);
+    if( xl[0] < 2-geo.expansion_left[0] or xl[0] >= geo.expansion_right[0]-2 
+	 or xl[1] < 2-geo.expansion_left[1] or xl[1] >= geo.expansion_right[1]-2
+	 or xl[2] < 2-geo.expansion_left[2] or xl[2] >= geo.expansion_right[2]-2
+	 or xl[3] < 2-geo.expansion_left[3] or xl[3] >= geo.expansion_right[3]-2 ){
+		Vector<int8_t> v = marks.get_elems(xl);
+        for (int m = 0; m < geo.multiplicity; ++m) {
+          v[m] = 1;
+        }
+	}
+  }
+}
+
 struct CommPackInfo
 {
   long offset;
@@ -378,6 +399,13 @@ template <class M>
 void refresh_expanded_1(Field<M>& f)
 {
   const CommPlan& plan = get_comm_plan(set_marks_field_1, "", f.geo);
+  refresh_expanded(f, plan);
+}
+
+template <class M>
+void refresh_expanded_m2(Field<M>& f)
+{
+  const CommPlan& plan = get_comm_plan(set_marks_field_m2, "", f.geo);
   refresh_expanded(f, plan);
 }
 
