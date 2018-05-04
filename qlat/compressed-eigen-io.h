@@ -542,6 +542,7 @@ inline VBFile vbopen(const std::string& fn, const std::string& mode)
   fp.fn = fn;
   fp.mode = mode;
   fp.fp = qopen(fp.fn, fp.mode);
+  qassert(fp.fp != NULL);
   return fp;
 }
 
@@ -631,6 +632,7 @@ inline void set_vfile_size(VFile& fp)
   TIMER("set_vfile_size");
   if (fp.size < 0) {
     FILE* fpr = qopen(fp.fn, fp.mode);
+    qassert(fpr != NULL);
     fseek(fpr, 0, SEEK_END);
     fp.size = ftell(fpr);
     qclose(fpr);

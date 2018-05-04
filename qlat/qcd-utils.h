@@ -302,7 +302,7 @@ inline WilsonLinePathSegment make_wilson_line_path_segment(const Coordinate& tar
 
 inline void set_multiply_simple_wilson_line_field_partial_comm(FieldM<ColorMatrix,1>& wlf, FieldM<ColorMatrix,1>& wlf1, const GaugeField& gf1, const std::vector<int>& path)
   // gf1 need to be refresh_expanded.
-  // wlf1 need to have correct size
+  // wlf1 need to have correct size: wlf1.init(geo_resize(geo, 1));
   // wlf1 will be modified
   // wlf will be initialized
 {
@@ -339,7 +339,7 @@ inline void set_multiply_simple_wilson_line_field_partial_comm(FieldM<ColorMatri
 
 inline void set_multiply_wilson_line_field_partial_comm(FieldM<ColorMatrix,1>& wlf, FieldM<ColorMatrix,1>& wlf1, const GaugeField& gf1, const WilsonLinePathSegment& path)
   // gf1 need to be refresh_expanded.
-  // wlf1 need to have correct size
+  // wlf1 need to have correct size: wlf1.init(geo_resize(geo, 1));
   // wlf1 will be modified
   // wlf will be initialized
 {
@@ -392,6 +392,18 @@ inline void set_multiply_wilson_line_field_partial_comm(FieldM<ColorMatrix,1>& w
   }
 }
 
+inline void set_left_expanded_gauge_field(GaugeField& gf1, const GaugeField& gf)
+{
+  TIMER_VERBOSE("set_left_expanded_gauge_field");
+  const Coordinate expansion_left(1, 1, 1, 1);
+  const Coordinate expansion_right(0, 0, 0, 0);
+  const Geometry geo1 = geo_resize(gf.geo, expansion_left, expansion_right);
+  gf1.init(geo1);
+  qassert(gf1.geo == geo1);
+  gf1 = gf;
+  refresh_expanded_1(gf1);
+}
+
 inline ColorMatrix gf_avg_wilson_line(const GaugeField& gf, const WilsonLinePath& path)
 {
   TIMER("gf_avg_wilson_line");
@@ -399,9 +411,7 @@ inline ColorMatrix gf_avg_wilson_line(const GaugeField& gf, const WilsonLinePath
   const Coordinate expansion_left(1, 1, 1, 1);
   const Coordinate expansion_right(0, 0, 0, 0);
   GaugeField gf1;
-  gf1.init(geo_resize(geo, expansion_left, expansion_right));
-  gf1 = gf;
-  refresh_expanded(gf1);
+  set_left_expanded_gauge_field(gf1, gf);
   FieldM<ColorMatrix,1> wlf, wlf1;
   wlf1.init(geo_resize(geo, 1));
   wlf.init(geo);
