@@ -20,6 +20,11 @@ struct InverterParams
   }
 };
 
+struct LowModes
+{
+  // TODO
+};
+
 struct InverterDomainWall
 {
   Geometry geo;
@@ -49,6 +54,11 @@ struct InverterDomainWall
     fa = fa_;
     setup();
   }
+  void setup(const GaugeField& gf_, const FermionAction& fa_, const LowModes& lm_)
+  {
+    setup(gf_, fa_);
+    // TODO
+  }
   //
   double& stop_rsd()
   {
@@ -66,6 +76,13 @@ struct InverterDomainWall
   }
 };
 
+inline void load_or_compute_low_modes(LowModes& lm, const std::string& path,
+    const GaugeField& gf, const FermionAction& fa, const LancArg& la)
+{
+  TIMER_VERBOSE("load_or_compute_low_modes");
+  // TODO
+}
+
 inline void setup_inverter(InverterDomainWall& inv)
 {
   inv.setup();
@@ -74,6 +91,12 @@ inline void setup_inverter(InverterDomainWall& inv)
 inline void setup_inverter(InverterDomainWall& inv, const GaugeField& gf, const FermionAction& fa)
 {
   inv.setup(gf, fa);
+}
+
+inline void setup_inverter(InverterDomainWall& inv, const GaugeField& gf, const FermionAction& fa, const LowModes& lm)
+{
+  // TODO
+  inv.setup(gf, fa, lm);
 }
 
 inline void multiply_m_no_comm(FermionField5d& out, const FermionField5d& in, const InverterDomainWall& inv)

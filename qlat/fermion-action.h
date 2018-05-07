@@ -112,5 +112,4 @@ struct LancArg
   }
 };
 
-
 QLAT_END_NAMESPACE

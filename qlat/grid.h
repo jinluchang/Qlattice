@@ -1,8 +1,12 @@
 #pragma once
 
+#define QLAT_GRID
+
 #include <qlat/qlat.h>
 
 #include <Grid/Grid.h>
+
+#include <cstdlib>
 
 QLAT_START_NAMESPACE
 
@@ -51,6 +55,7 @@ inline void grid_begin(int* argc, char** argv[], const Coordinate& size_node_ = 
 {
   using namespace Grid;
   using namespace Grid::QCD;
+  system("rm /dev/shm/Grid*");
   Grid_init(argc, argv);
   const int num_node = init_mpi(argc, argv);
   const Coordinate size_node = size_node_ == Coordinate() ? plan_size_node(num_node) : size_node_;
@@ -68,6 +73,7 @@ inline void grid_begin(int* argc, char** argv[], const Coordinate& size_node_ = 
 void grid_end()
 {
   Grid::Grid_finalize();
+  system("rm /dev/shm/Grid*");
 }
 
 void grid_convert(Grid::QCD::LatticeGaugeField& ggf, const GaugeField& gf)
@@ -185,6 +191,11 @@ struct InverterDomainWallGrid
     fa = fa_;
     setup();
   }
+  void setup(const GaugeField& gf_, const FermionAction& fa_, const LowModes& lm_)
+  {
+    setup(gf_, fa_);
+    // TODO
+  }
   //
   void free()
   {
@@ -238,14 +249,19 @@ struct InverterDomainWallGrid
   }
 };
 
-inline void setup_inverter(InverterDomainWallGrid& inverter)
+inline void setup_inverter(InverterDomainWallGrid& inv)
 {
-  inverter.setup();
+  inv.setup();
 }
 
-inline void setup_inverter(InverterDomainWallGrid& inverter, const GaugeField& gf, const FermionAction& fa)
+inline void setup_inverter(InverterDomainWallGrid& inv, const GaugeField& gf, const FermionAction& fa)
 {
-  inverter.setup(gf, fa);
+  inv.setup(gf, fa);
+}
+
+inline void setup_inverter(InverterDomainWallGrid& inv, const GaugeField& gf, const FermionAction& fa, const LowModes& lm)
+{
+  inv.setup(gf, fa, lm);
 }
 
 inline void inverse(FermionField5d& sol, const FermionField5d& src, const InverterDomainWallGrid& inv)

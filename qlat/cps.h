@@ -2,6 +2,8 @@
 
 // can only be used with luchang's version of CPS
 
+#define QLAT_CPS
+
 #include <qlat/qlat.h>
 
 #include <gf/tools.h>
