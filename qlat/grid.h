@@ -199,37 +199,37 @@ struct InverterDomainWallGrid
   //
   void free()
   {
-    if (UGrid != NULL) {
-      delete UGrid;
-      UGrid = NULL;
-    }
-    if (UrbGrid != NULL) {
-      delete UrbGrid;
-      UrbGrid = NULL;
-    }
-    if (FGrid != NULL) {
-      delete FGrid;
-      FGrid = NULL;
-    }
-    if (FrbGrid != NULL) {
-      delete FrbGrid;
-      FrbGrid = NULL;
-    }
-    if (Umu != NULL) {
-      delete Umu;
-      Umu = NULL;
-    }
-    if (Ddwf != NULL) {
-      delete Ddwf;
-      Ddwf = NULL;
+    if (SchurSolver != NULL) {
+      delete SchurSolver;
+      SchurSolver = NULL;
     }
     if (CG != NULL) {
       delete CG;
       CG = NULL;
     }
-    if (SchurSolver != NULL) {
-      delete SchurSolver;
-      SchurSolver = NULL;
+    if (Ddwf != NULL) {
+      delete Ddwf;
+      Ddwf = NULL;
+    }
+    if (Umu != NULL) {
+      delete Umu;
+      Umu = NULL;
+    }
+    if (FrbGrid != NULL) {
+      delete FrbGrid;
+      FrbGrid = NULL;
+    }
+    if (FGrid != NULL) {
+      delete FGrid;
+      FGrid = NULL;
+    }
+    if (UrbGrid != NULL) {
+      delete UrbGrid;
+      UrbGrid = NULL;
+    }
+    if (UGrid != NULL) {
+      delete UGrid;
+      UGrid = NULL;
     }
   }
   //
@@ -285,6 +285,7 @@ inline void inverse(FermionField5d& sol, const FermionField5d& src, const Invert
   }
   (*inv.SchurSolver)(*inv.Ddwf, gsrc, gsol);
   grid_convert(sol, gsol);
+  displayln_info(fname + ssprintf(": sol after norm = %24.17E", norm(sol)));
 }
 
 inline void inverse(FermionField4d& sol, const FermionField4d& src, const InverterDomainWallGrid& inv)
