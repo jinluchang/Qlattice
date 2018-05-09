@@ -199,6 +199,7 @@ struct InverterDomainWallGrid
   //
   void free()
   {
+    TIMER_VERBOSE("InvGrid::free");
     if (SchurSolver != NULL) {
       delete SchurSolver;
       SchurSolver = NULL;
