@@ -275,6 +275,14 @@ inline void inverse(FermionField5d& sol, const FermionField5d& src, const Invert
   LatticeFermion gsrc(FGrid), gsol(FGrid);
   grid_convert(gsrc, src);
   grid_convert(gsol, sol);
+  if (true) {
+    FermionField5d ff;
+    ff.init(geo_resize(src.geo));
+    grid_convert(ff, gsrc);
+    displayln_info(fname + ssprintf(": src norm = %24.17E", norm(ff)));
+    grid_convert(ff, gsol);
+    displayln_info(fname + ssprintf(": sol norm = %24.17E", norm(ff)));
+  }
   (*inv.SchurSolver)(*inv.Ddwf, gsrc, gsol);
   grid_convert(sol, gsol);
 }
