@@ -568,7 +568,7 @@ inline Coordinate plan_size_node(const int num_node)
   // assuming MPI is initialized ... 
   int dims[] = {0, 0, 0, 0};
   MPI_Dims_create(num_node, DIMN, dims);
-  return Coordinate(dims[0], dims[1], dims[2], dims[3]);
+  return Coordinate(dims[3], dims[2], dims[1], dims[0]);
 }
 
 inline bool is_MPI_initialized() {

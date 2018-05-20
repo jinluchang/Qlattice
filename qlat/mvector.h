@@ -10,7 +10,6 @@ QLAT_START_NAMESPACE
 template <int DIMN>
 struct Mvector 
 {
-  static const int dim = DIMN;
   Complex p[DIMN];
   //
   // convert to double array
@@ -145,6 +144,13 @@ struct WilsonVector: Mvector<4*NUM_COLOR>
     return *this;
   }
 };
+
+inline WilsonVector operator*(const Complex& x, const WilsonVector& y)
+{
+  WilsonVector ret;
+  ret.em() = x * y.em();
+  return ret;
+}
 
 QLAT_END_NAMESPACE
 

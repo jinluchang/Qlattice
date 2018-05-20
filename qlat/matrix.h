@@ -10,7 +10,6 @@ QLAT_START_NAMESPACE
 template <int DIMN>
 struct Matrix
 {
-  static const int dim = DIMN;
   Complex p[DIMN * DIMN];
   //
   // convert to double array
@@ -143,7 +142,7 @@ template <int DIMN>
 void set_unit(Matrix<DIMN>& m, const Complex& coef = 1.0)
 {
   set_zero(m);
-  for (int i = 0; i < m.dim; ++i) {
+  for (int i = 0; i < DIMN; ++i) {
     m(i,i) = coef;
   }
 }
@@ -480,6 +479,34 @@ inline WilsonMatrix operator*(const SpinMatrix& sm, const WilsonMatrix& m)
 inline WilsonMatrix operator*(const WilsonMatrix& m, const SpinMatrix& sm)
 {
   return matrix_adjoint(matrix_adjoint(sm) * matrix_adjoint(m));
+}
+
+inline WilsonVector operator*(const ColorMatrix& cm, const WilsonVector& m)
+{
+  WilsonVector ret;
+  set_zero(ret);
+  for (int s1 = 0; s1 < 4; ++s1) {
+    for (int c1 = 0; c1 < NUM_COLOR; ++c1) {
+      for (int c2 = 0; c2 < NUM_COLOR; ++c2) {
+        ret(s1*NUM_COLOR+c1) += cm(c1,c2) * m(s1*NUM_COLOR+c2);
+      }
+    }
+  }
+  return ret;
+}
+
+inline WilsonVector operator*(const SpinMatrix& sm, const WilsonVector& m)
+{
+  WilsonVector ret;
+  set_zero(ret);
+  for (int s1 = 0; s1 < 4; ++s1) {
+    for (int s2 = 0; s2 < 4; ++s2) {
+      for (int c1 = 0; c1 < NUM_COLOR; ++c1) {
+        ret(s1*NUM_COLOR+c1) += sm(s1,s2) * m(s2*NUM_COLOR+c1);
+      }
+    }
+  }
+  return ret;
 }
 
 QLAT_END_NAMESPACE
