@@ -62,24 +62,31 @@ inline void set_marks_field_1(CommMarks& marks, const Geometry& geo, const std::
 }
 
 inline void set_marks_field_m2(CommMarks& marks, const Geometry& geo, const std::string& tag)
-  // tag is not used
+	// tag is not used
 {
-  TIMER_VERBOSE("set_marks_field_m2");
-  marks.init();
-  marks.init(geo);
+	TIMER_VERBOSE("set_marks_field_m2");
+	marks.init();
+	marks.init(geo);
 #pragma omp parallel for
-  for (long record = 0; record < geo.local_volume_expanded(); ++record) {
-    const Coordinate xl = geo.coordinateFromRecord(record);
-    if( xl[0] < 2-geo.expansion_left[0] or xl[0] >= geo.expansion_right[0]-2 
-	 or xl[1] < 2-geo.expansion_left[1] or xl[1] >= geo.expansion_right[1]-2
-	 or xl[2] < 2-geo.expansion_left[2] or xl[2] >= geo.expansion_right[2]-2
-	 or xl[3] < 2-geo.expansion_left[3] or xl[3] >= geo.expansion_right[3]-2 ){
-		Vector<int8_t> v = marks.get_elems(xl);
-        for (int m = 0; m < geo.multiplicity; ++m) {
-          v[m] = 1;
-        }
+	for (long record = 0; record < geo.local_volume_expanded(); ++record) {
+		const Coordinate xl = geo.coordinateFromRecord(record);
+		if( xl[0] < 1-geo.expansion_left[0] or xl[0] >= geo.node_site[0]+geo.expansion_right[0]-1 
+				or xl[1] < 2-geo.expansion_left[1] or xl[1] >= geo.node_site[1]+geo.expansion_right[1]-2
+				or xl[2] < 2-geo.expansion_left[2] or xl[2] >= geo.node_site[2]+geo.expansion_right[2]-2
+				or xl[3] < 2-geo.expansion_left[3] or xl[3] >= geo.node_site[3]+geo.expansion_right[3]-2 ){
+			Vector<int8_t> v = marks.get_elems(xl);
+			for (int m = 0; m < geo.multiplicity; ++m) {
+				v[m] = 0;
+			}
+		}else{
+			if (geo.is_on_node(xl) and !geo.is_local(xl)) {
+				Vector<int8_t> v = marks.get_elems(xl);
+				for (int m = 0; m < geo.multiplicity; ++m) {
+					v[m] = 1;
+				}
+			}
+		}
 	}
-  }
 }
 
 struct CommPackInfo
