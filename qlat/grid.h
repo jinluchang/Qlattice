@@ -265,35 +265,6 @@ inline void setup_inverter(InverterDomainWallGrid& inv, const GaugeField& gf, co
   inv.setup(gf, fa, lm);
 }
 
-inline void inverse(FermionField5d& sol, const FermionField5d& src, const InverterDomainWallGrid& inv)
-  // sol do not need to be initialized
-{
-  TIMER_VERBOSE("inverse(5d,5d,InvGrid)");
-  sol.init(geo_resize(src.geo));
-  using namespace Grid;
-  using namespace Grid::QCD;
-  GridCartesian* FGrid = inv.FGrid;
-  LatticeFermion gsrc(FGrid), gsol(FGrid);
-  grid_convert(gsrc, src);
-  grid_convert(gsol, sol);
-  if (true) {
-    FermionField5d ff;
-    ff.init(geo_resize(src.geo));
-    grid_convert(ff, gsrc);
-    displayln_info(fname + ssprintf(": src norm = %24.17E", norm(ff)));
-    grid_convert(ff, gsol);
-    displayln_info(fname + ssprintf(": sol norm = %24.17E", norm(ff)));
-  }
-  (*inv.SchurSolver)(*inv.Ddwf, gsrc, gsol);
-  grid_convert(sol, gsol);
-  displayln_info(fname + ssprintf(": sol after norm = %24.17E", norm(sol)));
-}
-
-inline void inverse(FermionField4d& sol, const FermionField4d& src, const InverterDomainWallGrid& inv)
-{
-  inverse_dwf(sol, src, inv);
-}
-
 inline void multiply_m(FermionField5d& out, const FermionField5d& in, const InverterDomainWallGrid& inv)
 {
   TIMER("multiply_m(5d,5d,InvGrid)");
@@ -305,6 +276,42 @@ inline void multiply_m(FermionField5d& out, const FermionField5d& in, const Inve
   grid_convert(gin, in);
   (*inv.Ddwf).M(gin, gout);
   grid_convert(out, gout);
+}
+
+inline void inverse(FermionField5d& sol, const FermionField5d& src, const InverterDomainWallGrid& inv)
+  // sol do not need to be initialized
+{
+  TIMER_VERBOSE("inverse(5d,5d,InvGrid)");
+  sol.init(geo_resize(src.geo));
+  using namespace Grid;
+  using namespace Grid::QCD;
+  GridCartesian* FGrid = inv.FGrid;
+  LatticeFermion gsrc(FGrid), gsol(FGrid);
+  grid_convert(gsrc, src);
+  grid_convert(gsol, sol);
+  if (is_checking_inverse()) {
+    FermionField5d ff;
+    ff.init(geo_resize(src.geo));
+    grid_convert(ff, gsrc);
+    displayln_info(fname + ssprintf(": src norm = %24.17E", norm(ff)));
+    grid_convert(ff, gsol);
+    displayln_info(fname + ssprintf(": sol norm = %24.17E", norm(ff)));
+  }
+  (*inv.SchurSolver)(*inv.Ddwf, gsrc, gsol);
+  grid_convert(sol, gsol);
+  if (is_checking_inverse()) {
+    FermionField5d src1;
+    src1.init(geo_resize(src.geo));
+    multiply_m(src1, sol, inv);
+    src1 -= src;
+    displayln_info(fname + ssprintf(": diff norm = %24.17E", norm(src1)));
+    displayln_info(fname + ssprintf(": sol after norm = %24.17E", norm(sol)));
+  }
+}
+
+inline void inverse(FermionField4d& sol, const FermionField4d& src, const InverterDomainWallGrid& inv)
+{
+  inverse_dwf(sol, src, inv);
 }
 
 QLAT_END_NAMESPACE

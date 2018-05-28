@@ -158,4 +158,11 @@ inline void multiply_m(FermionField5d& out, const FermionField5d& in, const Inve
   multiply_m_no_comm(out, in1, inv);
 }
 
+inline bool& is_checking_inverse()
+  // qlat parameter
+{
+  static bool b = false;
+  return b;
+}
+
 QLAT_END_NAMESPACE

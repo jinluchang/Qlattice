@@ -475,7 +475,7 @@ inline void inverse_dwf(FermionField4d& sol, const FermionField4d& src, const In
   TIMER_VERBOSE("inverse_dwf(4d,4d,inv)");
   const Geometry& geo = src.geo;
   sol.init(geo);
-  const Geometry geo_ls = inv.geo;
+  const Geometry geo_ls = geo_reform(inv.geo, inv.fa.ls, 0);
   const int ls = geo_ls.multiplicity;
   FermionField5d sol5d, src5d;
   sol5d.init(geo_ls);

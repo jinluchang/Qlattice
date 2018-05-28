@@ -514,6 +514,7 @@ inline long& get_vbfile_buffer_limit()
 }
 
 struct VBFile
+// virtual bufferred IO (real IO performed during vbflush)
 {
   std::string fn;
   std::string mode;
@@ -618,6 +619,7 @@ inline int vbseek(VBFile& fp, const long offset, const int whence)
 }
 
 struct VFile
+// virtual IO (real IO performed during vbclose)
 {
   std::string fn;
   std::string mode;
