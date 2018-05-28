@@ -11,9 +11,12 @@ tests = qcd-utils-tests \
 all:
 	for i in $(tests) ; do make -C "$$i" all & done ; time wait
 
+diff:
+	-git diff | egrep -v Timer | egrep '^\+|^\-'
+
 run: all
 	-time for i in $(tests) ; do make -C "$$i" run ; done 2>&1 | tee log
-	-git diff | egrep -v Timer | egrep '^\+|^\-'
+	make diff
 
 clean:
 	-time for i in $(tests) ; do make -C "$$i" clean ; done
