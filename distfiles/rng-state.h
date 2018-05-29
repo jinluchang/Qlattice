@@ -272,7 +272,7 @@ inline void splitRngState(RngState& rs, const RngState& rs0, const std::string& 
   if (ULONG_MAX == rs0.type) {
     data = ssprintf("[%lu] {%s}", rs0.index, sindex.c_str());
   } else {
-    data = ssprintf("[%ld,%lu] {%s}", rs0.type, rs0.index, sindex.c_str());
+    data = ssprintf("[%lu,%lu] {%s}", rs0.type, rs0.index, sindex.c_str());
   }
   const int nBlocks = (data.length() - 1) / 64 + 1;
   data.resize(nBlocks * 64, ' ');
@@ -310,7 +310,7 @@ inline uint64_t randGen(RngState& rs)
     if (ULONG_MAX == rs.type) {
       computeHashWithInput(hash, rs, ssprintf("[%lu]", rs.index));
     } else {
-      computeHashWithInput(hash, rs, ssprintf("[%ld,%lu]", rs.type, rs.index));
+      computeHashWithInput(hash, rs, ssprintf("[%lu,%lu]", rs.type, rs.index));
     }
     rs.cache[0] = patchTwoUint32(hash[0], hash[1]);
     rs.cache[1] = patchTwoUint32(hash[2], hash[3]);
@@ -365,7 +365,7 @@ void split_rng_state(RngState& rs, const RngState& rs0, const T& s)
   splitRngState(rs, rs0, s);
 }
 
-inline void set_type(RngState& rs, const long type = ULONG_MAX)
+inline void set_type(RngState& rs, const long type)
 {
   setType(rs, type);
 }
