@@ -8,15 +8,20 @@ QLAT_START_NAMESPACE
 
 struct InverterParams
 {
-  double stop_rsd = 1.0e-8;
-  long max_num_iter = 50000;
-  long max_mixed_precision_cycle = 100;
+  double stop_rsd;
+  long max_num_iter;
+  long max_mixed_precision_cycle;
   //
   void init()
   {
     stop_rsd = 1.0e-8;
     max_num_iter = 50000;
     max_mixed_precision_cycle = 100;
+  }
+  //
+  InverterParams()
+  {
+    init();
   }
 };
 
