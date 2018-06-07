@@ -1,6 +1,7 @@
 SHELL=/bin/bash
 
 tests = qcd-utils-tests \
+		dslash-tests \
 		lbl-muon-part \
 		rng-state-tests \
 		field-rng-tests \

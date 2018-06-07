@@ -41,6 +41,8 @@ struct Field
       field.resize(geo.local_volume_expanded() * geo.multiplicity);
       set_zero(*this);
       initialized = true;
+    } else {
+      qassert(is_matching_geo_mult(geo_, geo));
     }
   }
   virtual void init(const Geometry& geo_, const int multiplicity_)
@@ -51,6 +53,8 @@ struct Field
       field.resize(geo.local_volume_expanded() * geo.multiplicity);
       set_zero(*this);
       initialized = true;
+    } else {
+      qassert(is_matching_geo_mult(geo_remult(geo_, multiplicity_), geo));
     }
   }
   virtual void init(const Field<M>& f)
@@ -60,6 +64,8 @@ struct Field
       geo = f.geo;
       field = f.field;
       initialized = true;
+    } else {
+      (*this) = f;
     }
   }
   //

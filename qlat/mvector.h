@@ -152,6 +152,13 @@ inline WilsonVector operator*(const Complex& x, const WilsonVector& y)
   return ret;
 }
 
+inline WilsonVector operator+(const WilsonVector& x, const WilsonVector& y)
+{
+  WilsonVector ret;
+  ret.em() = x.em() + y.em();
+  return ret;
+}
+
 QLAT_END_NAMESPACE
 
 namespace qshow {
