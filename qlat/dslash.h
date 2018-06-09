@@ -295,6 +295,39 @@ inline void multiply_m(FermionField5d& out, const FermionField5d& in, const Inve
   out += fftmp;
 }
 
+inline void get_half_fermion(FermionField5d& half, const FermionField5d& ff, const int eo)
+{
+  TIMER("get_half_fermion");
+  Geometry geoh = geo_resize(ff.geo);
+  geoh.eo = eo;
+  half.init(geoh);
+  qassert(half.geo.eo == eo);
+  qassert(ff.geo.eo == 0);
+  qassert(is_matching_geo(ff.geo, half.geo));
+#pragma omp parallel for
+  for (long index = 0; index < geoh.local_volume(); ++index) {
+    const Coordinate xl = geoh.coordinate_from_index(index);
+    assign(half.get_elems(xl), ff.get_elems_const(xl));
+  }
+}
+
+inline void set_half_fermion(FermionField5d& ff, const FermionField5d& half, const int eo)
+{
+  TIMER("set_half_fermion");
+  const Geometry geoh = half.geo;
+  Geometry geo = geo_resize(geoh);
+  geo.eo = 0;
+  ff.init(geo);
+  qassert(half.geo.eo == eo);
+  qassert(ff.geo.eo == 0);
+  qassert(is_matching_geo(ff.geo, half.geo));
+#pragma omp parallel for
+  for (long index = 0; index < geoh.local_volume(); ++index) {
+    const Coordinate xl = geoh.coordinate_from_index(index);
+    assign(ff.get_elems(xl), half.get_elems_const(xl));
+  }
+}
+
 inline void multiply_m_eo_eo_no_comm(FermionField5d& out, const FermionField5d& in, const InverterDomainWall& inv,
     const int eo_out, const int eo_in)
   // out need to be initialized with correct geo and eo

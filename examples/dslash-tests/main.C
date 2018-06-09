@@ -28,6 +28,7 @@ void simple_tests()
   ff4din.init(geo);
   FermionField5d ff5din, ff5dout;
   FermionField5d ff5din1, ff5dout1;
+  FermionField5d ff5d;
   ff5din.init(geo_remult(geo, fa.ls));
   ff5dout.init(geo_remult(geo, fa.ls));
   ff5din1.init(geo_remult(geo, fa.ls));
@@ -45,11 +46,17 @@ void simple_tests()
     multiply_m(ff5dout, ff5din, inv);
     ff5dout *= 1.0 / norm(ff5dout);
     ff5dout1 *= 1.0 / norm(ff5dout1);
-    FermionField5d ff5d;
     ff5d = ff5dout;
     ff5d -= ff5dout1;
     displayln_info(ssprintf("norm(diff) = %E", norm(ff5d)));
   }
+  FermionField5d ffeven, ffodd;
+  get_half_fermion(ffeven, ff5dout, 2);
+  get_half_fermion(ffodd, ff5dout, 1);
+  set_half_fermion(ff5d, ffeven, 2);
+  set_half_fermion(ff5d, ffodd, 1);
+  ff5d -= ff5dout;
+  displayln_info(ssprintf("norm(diff) = %E", norm(ff5d)));
 }
 
 int main(int argc, char* argv[])
