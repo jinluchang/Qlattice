@@ -349,19 +349,90 @@ inline void multiply_m_e_e(FermionField5d& out, const FermionField5d& in, const 
     hin.init(in_copy);
   }
   const Geometry& geo = out.geo;
+  std::vector<Complex> bee(fa.ls), cee(fa.ls);
+  for (int m = 0; m < fa.ls; ++m) {
+    bee[m] = 1.0 + fa.bs[m] * (4.0 - fa.m5);
+    cee[m] = 1.0 - fa.cs[m] * (4.0 - fa.m5);
+  }
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Vector<WilsonVector> iv = hin().get_elems_const(xl);
     Vector<WilsonVector> v = out.get_elems(xl);
     for (int m = 0; m < fa.ls; ++m) {
-      const Complex& b = 1.0 + fa.bs[m] * (4.0 - fa.m5);
-      const Complex& c = 1.0 - fa.cs[m] * (4.0 - fa.m5);
-      v[m] = b * iv[m];
+      v[m] = bee[m] * iv[m];
       const WilsonVector tmp =
         (p_m * (m < fa.ls-1 ? iv[m+1] : (WilsonVector)(-fa.mass * iv[0]))) +
         (p_p * (m > 0 ? iv[m-1] : (WilsonVector)(-fa.mass * iv[fa.ls-1])));
-      v[m] -= c * tmp;
+      v[m] -= cee[m] * tmp;
+    }
+  }
+}
+
+inline void multiply_m_e_e_inv(FermionField5d& out, const FermionField5d& in, const FermionAction& fa)
+  // works for _o_o as well
+{
+  TIMER("multiply_m_e_e_inv");
+  out.init(geo_resize(in.geo));
+  qassert(is_matching_geo(out.geo, in.geo));
+  qassert(out.geo.eo == in.geo.eo);
+  qassert(in.geo.eo == 1 or in.geo.eo == 2);
+  const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
+  const SpinMatrix& unit = SpinMatrixConstants::get_unit();
+  const SpinMatrix p_p = 0.5 * (unit + gamma5);
+  const SpinMatrix p_m = 0.5 * (unit - gamma5);
+  const Geometry& geo = out.geo;
+  std::vector<Complex> bee(fa.ls), cee(fa.ls);
+  for (int m = 0; m < fa.ls; ++m) {
+    bee[m] = 1.0 + fa.bs[m] * (4.0 - fa.m5);
+    cee[m] = 1.0 - fa.cs[m] * (4.0 - fa.m5);
+  }
+  std::vector<Complex> lee(fa.ls-1), leem(fa.ls-1);
+  for (int m = 0; m < fa.ls-1; ++m) {
+    lee[m] = -cee[m+1] / bee[m];
+    leem[m] = m == 0 ? fa.mass * cee[fa.ls-1] / bee[0] : leem[m-1] * cee[m-1] / bee[m];
+  }
+  std::vector<Complex> dee(fa.ls, 0.0);
+  dee[fa.ls-1] = fa.mass * cee[fa.ls-1];
+  for (int m = 0; m < fa.ls-1; ++m) {
+    dee[fa.ls-1] *= cee[m] / bee[m];
+  }
+  for (int m = 0; m < fa.ls; ++m) {
+    dee[m] += bee[m];
+  }
+  std::vector<Complex> uee(fa.ls-1), ueem(fa.ls-1);
+  for (int m = 0; m < fa.ls-1; ++m) {
+    uee[m] = -cee[m] / bee[m];
+    ueem[m] = m == 0 ? fa.mass * cee[0] / bee[0] : leem[m-1] * cee[m] / bee[m];
+  }
+#pragma omp parallel for
+  for (long index = 0; index < geo.local_volume(); ++index) {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Vector<WilsonVector> iv = in.get_elems_const(xl);
+    Vector<WilsonVector> v = out.get_elems(xl);
+    std::memcpy(v.data(), iv.data(), iv.data_size());
+    WilsonVector tmp;
+    set_zero(tmp);
+    // {L^m_{ee}}^{-1}
+    for (int m = 0; m < fa.ls-1; ++m) {
+      tmp += (-leem[m]) * v[m];
+    }
+    v[fa.ls-1] += p_m * tmp;
+    // {L'_{ee}}^{-1}
+    for (int m = 1; m < fa.ls; ++m) {
+      v[m] += (-lee[m-1]) * p_p * v[m-1];
+    }
+    // {D_{ee}}^{-1}
+    for (int m = 0; m < fa.ls; ++m) {
+      v[m] *= 1.0 / dee[m];
+    }
+    // {U^'_{ee}}^{-1}
+    for (int m = fa.ls-2; m >= 0; --m) {
+      v[m] += (-uee[m]) * p_m * v[m+1];
+    }
+    // {U^m_{ee}}^{-1}
+    for (int m = 0; m < fa.ls-1; ++m) {
+      v[m] += (-leem[m]) * p_p * v[fa.ls-1];
     }
   }
 }
@@ -421,19 +492,22 @@ inline void multiply_m_e_o(FermionField5d& out, const FermionField5d& in, const 
   FermionField5d in1;
   in1.init(geo_resize(in.geo, 1));
   const Geometry& geo = in.geo;
+  std::vector<Complex> beo(fa.ls), ceo(fa.ls);
+  for (int m = 0; m < fa.ls; ++m) {
+    beo[m] = fa.bs[m];
+    ceo[m] = -fa.cs[m];
+  }
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Vector<WilsonVector> iv = in.get_elems_const(xl);
     Vector<WilsonVector> v = in1.get_elems(xl);
     for (int m = 0; m < fa.ls; ++m) {
-      const Complex& b = fa.bs[m];
-      const Complex& c = -fa.cs[m];
-      v[m] = b * iv[m];
+      v[m] = beo[m] * iv[m];
       const WilsonVector tmp =
         (p_m * (m < fa.ls-1 ? iv[m+1] : (WilsonVector)(-fa.mass * iv[0]))) +
         (p_p * (m > 0 ? iv[m-1] : (WilsonVector)(-fa.mass * iv[fa.ls-1])));
-      v[m] -= c * tmp;
+      v[m] -= ceo[m] * tmp;
     }
   }
   refresh_expanded_1(in1);

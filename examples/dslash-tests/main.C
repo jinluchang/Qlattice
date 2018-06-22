@@ -60,6 +60,10 @@ void simple_tests()
   FermionField5d ffeven, ffodd;
   get_half_fermion(ffeven, ff5dout, 2);
   get_half_fermion(ffodd, ff5dout, 1);
+  multiply_m_e_e(ffeven, ffeven, fa);
+  multiply_m_e_e_inv(ffeven, ffeven, fa);
+  multiply_m_e_e(ffodd, ffodd, fa);
+  multiply_m_e_e_inv(ffodd, ffodd, fa);
   set_half_fermion(ff5d, ffeven, 2);
   set_half_fermion(ff5d, ffodd, 1);
   ff5d -= ff5dout;
