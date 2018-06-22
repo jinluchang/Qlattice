@@ -13,7 +13,7 @@ void simple_tests()
   // const Coordinate total_site(16, 16, 16, 32);
   // const Coordinate total_site(8, 8, 8, 8);
   const Coordinate total_site(4, 4, 4, 8);
-  const FermionAction fa(0.1, 8, 1.8);
+  const FermionAction fa(0.1, 8, 1.8, 2.0);
   Geometry geo;
   geo.init(total_site, 1);
   GaugeField gf;
@@ -38,17 +38,24 @@ void simple_tests()
   set_fermion_field_point_src(ff4din, xg, cs);
   fermion_field_5d_from_4d(ff5din, ff4din, 0, fa.ls-1);
   ff5din1 = ff5din;
-  ff5dout = ff5din;
-  ff5dout1 = ff5din1;
   for (int i = 0; i < 20; ++i) {
-    multiply_m_dwf(ff5dout1, ff5dout1, inv);
-    ff5din = ff5dout;
+    // project_eo(ff5din, 1);
+    // project_eo(ff5din1, 1);
     multiply_m(ff5dout, ff5din, inv);
-    ff5dout *= 1.0 / norm(ff5dout);
-    ff5dout1 *= 1.0 / norm(ff5dout1);
+    // multiply_m_dwf(ff5dout1, ff5din1, inv);
+    multiply_m_from_eo(ff5dout1, ff5din1, inv);
+    // project_eo(ff5dout, 1);
+    // project_eo(ff5dout1, 1);
     ff5d = ff5dout;
     ff5d -= ff5dout1;
-    displayln_info(ssprintf("norm(diff) = %E", norm(ff5d)));
+    displayln_info(ssprintf("%E, %E norm(diff) = %E", norm(ff5dout), norm(ff5dout1), norm(ff5d)));
+    ff5dout *= 1.0 / sqrt(norm(ff5dout));
+    ff5dout1 *= 1.0 / sqrt(norm(ff5dout1));
+    ff5d = ff5dout;
+    ff5d -= ff5dout1;
+    displayln_info(ssprintf("norm(diff after normalization) = %E", norm(ff5d)));
+    ff5din = ff5dout;
+    ff5din1 = ff5dout1;
   }
   FermionField5d ffeven, ffodd;
   get_half_fermion(ffeven, ff5dout, 2);

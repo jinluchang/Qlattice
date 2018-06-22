@@ -117,7 +117,7 @@ struct Geometry
     } else {
       qassert(eo == 1 or eo == 2);
       qassert(node_site % 2 == Coordinate());
-      qassert((xe[0] + xe[1] + x[2] + x[3]) % 2 == 2 - eo);
+      qassert((x[0] + x[1] + x[2] + x[3] + 16*1024*1024) % 2 == 2 - eo);
       xe = xe + expansion_left;
       return qlat::index_from_coordinate(xe, node_site_expanded)/2 * multiplicity;
     }
@@ -135,8 +135,9 @@ struct Geometry
       qassert(node_site % 2 == Coordinate());
       x = qlat::coordinate_from_index(offset/multiplicity * 2, node_site_expanded);
       x = x - expansion_left;
-      if ((x[0] + x[1] + x[2] + x[3]) % 2 != 2 - eo) {
-        x[0] += 1;
+      if ((x[0] + x[1] + x[2] + x[3] + 16*1024*1024) % 2 != 2 - eo) {
+        x = qlat::coordinate_from_index(offset/multiplicity * 2 + 1, node_site_expanded);
+        x = x - expansion_left;
       }
     }
     return x;
@@ -151,7 +152,7 @@ struct Geometry
     } else {
       qassert(eo == 1 or eo == 2);
       qassert(node_site % 2 == Coordinate());
-      qassert((x[0] + x[1] + x[2] + x[3]) % 2 == 2 - eo);
+      qassert((x[0] + x[1] + x[2] + x[3] + 16*1024*1024) % 2 == 2 - eo);
       return qlat::index_from_coordinate(xm, node_site) / 2;
     }
   }
@@ -166,8 +167,8 @@ struct Geometry
       qassert(eo == 1 or eo == 2);
       qassert(node_site % 2 == Coordinate());
       Coordinate x = qlat::coordinate_from_index(index * 2, node_site);
-      if ((x[0] + x[1] + x[2] + x[3]) % 2 != 2 - eo) {
-        x[0] += 1;
+      if ((x[0] + x[1] + x[2] + x[3] + 16*1024*1024) % 2 != 2 - eo) {
+        x = qlat::coordinate_from_index(index * 2 + 1, node_site);
       }
       return x;
     }
@@ -191,7 +192,7 @@ struct Geometry
         return false;
       }
     }
-    return true;
+    return eo == 0 or (x[0] + x[1] + x[2] + x[3] + 16*1024*1024) % 2 == 2 - eo;
   }
   //
   bool is_local(const Coordinate& x) const
@@ -201,7 +202,7 @@ struct Geometry
         return false;
       }
     }
-    return true;
+    return eo == 0 or (x[0] + x[1] + x[2] + x[3] + 16*1024*1024) % 2 == 2 - eo;
   }
   //
   bool is_only_local() const

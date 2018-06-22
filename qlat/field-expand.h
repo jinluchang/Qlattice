@@ -46,9 +46,11 @@ inline void set_marks_field_1(CommMarks& marks, const Geometry& geo, const std::
   TIMER_VERBOSE("set_marks_field_1");
   marks.init();
   marks.init(geo);
+  Geometry geo_full = geo;
+  geo_full.eo = 0;
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
-    const Coordinate xl = geo.coordinate_from_index(index);
+  for (long index = 0; index < geo_full.local_volume(); ++index) {
+    const Coordinate xl = geo_full.coordinate_from_index(index);
     for (int dir = -4; dir < 4; ++dir) {
       const Coordinate xl1 = coordinate_shifts(xl, dir);
       if (geo.is_on_node(xl1) and !geo.is_local(xl1)) {

@@ -145,7 +145,10 @@ struct Field
     // Be cautious about the const property
     // 改不改靠自觉
   {
-    qassert(geo.is_on_node(x));
+    if (not geo.is_on_node(x)) {
+      displayln("Field::get_elems_const: x=" + show(x) + "\ngeo=" + show(geo));
+      qassert(geo.is_on_node(x));
+    }
     const long offset = geo.offset_from_coordinate(x);
     return Vector<M>(&field[offset], geo.multiplicity);
   }
