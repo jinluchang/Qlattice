@@ -369,6 +369,48 @@ inline void multiply_m_e_e(FermionField5d& out, const FermionField5d& in, const 
   }
 }
 
+inline void multiply_mdag_e_e(FermionField5d& out, const FermionField5d& in, const FermionAction& fa)
+  // works for _o_o as well
+{
+  TIMER("multiply_mdag_e_e");
+  out.init(geo_resize(in.geo));
+  qassert(is_matching_geo(out.geo, in.geo));
+  qassert(out.geo.eo == in.geo.eo);
+  qassert(in.geo.eo == 1 or in.geo.eo == 2);
+  const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
+  const SpinMatrix& unit = SpinMatrixConstants::get_unit();
+  const SpinMatrix p_p = 0.5 * (unit + gamma5);
+  const SpinMatrix p_m = 0.5 * (unit - gamma5);
+  FermionField5d in_copy;
+  ConstHandle<FermionField5d> hin;
+  if (&out != &in) {
+    hin.init(in);
+  } else {
+    in_copy.init(geo_resize(in.geo));
+    in_copy = in;
+    hin.init(in_copy);
+  }
+  const Geometry& geo = out.geo;
+  std::vector<Complex> bee(fa.ls), cee(fa.ls);
+  for (int m = 0; m < fa.ls; ++m) {
+    bee[m] = std::conj(1.0 + fa.bs[m] * (4.0 - fa.m5));
+    cee[m] = std::conj(1.0 - fa.cs[m] * (4.0 - fa.m5));
+  }
+#pragma omp parallel for
+  for (long index = 0; index < geo.local_volume(); ++index) {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Vector<WilsonVector> iv = hin().get_elems_const(xl);
+    Vector<WilsonVector> v = out.get_elems(xl);
+    for (int m = 0; m < fa.ls; ++m) {
+      v[m] = bee[m] * iv[m];
+      const WilsonVector tmp =
+        (p_p * (m < fa.ls-1 ? (WilsonVector)(cee[m+1] * iv[m+1]) : (WilsonVector)(-fa.mass * cee[0] * iv[0]))) +
+        (p_m * (m > 0 ? (WilsonVector)(cee[m-1] * iv[m-1]) : (WilsonVector)(-fa.mass * cee[fa.ls-1] * iv[fa.ls-1])));
+      v[m] -= tmp;
+    }
+  }
+}
+
 inline void multiply_m_e_e_inv(FermionField5d& out, const FermionField5d& in, const FermionAction& fa)
   // works for _o_o as well
 {
@@ -563,6 +605,29 @@ inline void multiply_m_from_eo(FermionField5d& out, const FermionField5d& in, co
   out_o += out1_o;
   set_half_fermion(out, out_e, 2);
   set_half_fermion(out, out_o, 1);
+}
+
+inline Complex dot_product(const FermionField5d& ff1, const FermionField5d& ff2)
+  // return ff1^dag * ff2
+{
+  TIMER("dot_product");
+  qassert(is_matching_geo(ff1.geo, ff2.geo));
+  qassert(ff1.geo.eo == ff2.geo.eo);
+  const Geometry& geo = ff1.geo;
+  Complex sum = 0.0;
+  for (long index = 0; index < geo.local_volume(); ++index) {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Vector<WilsonVector> v1 = ff1.get_elems_const(xl);
+    const Vector<WilsonVector> v2 = ff2.get_elems_const(xl);
+    const Vector<Complex> cv1((const Complex*)v1.data(), v1.data_size() / sizeof(Complex));
+    const Vector<Complex> cv2((const Complex*)v2.data(), v2.data_size() / sizeof(Complex));
+    qassert(cv1.size() == cv2.size());
+    for (int k = 0; k < cv1.size(); ++k) {
+      sum += std::conj(cv1[k]) * cv2[k];
+    }
+  }
+  glb_sum(sum);
+  return sum;
 }
 
 inline bool& is_checking_inverse()

@@ -68,6 +68,12 @@ void simple_tests()
   set_half_fermion(ff5d, ffodd, 1);
   ff5d -= ff5dout;
   displayln_info(ssprintf("norm(diff) = %E", norm(ff5d)));
+  displayln_info(ssprintf("norm = %E, dot = %E", norm(ffeven), dot_product(ffeven, ffeven).real()));
+  FermionField5d tmp;
+  multiply_m_e_e(tmp, ffeven, fa);
+  displayln_info(ssprintf("dot = %s", show(dot_product(ffeven, tmp)).c_str()));
+  multiply_mdag_e_e(tmp, ffeven, fa);
+  displayln_info(ssprintf("dot = %s", show(dot_product(tmp, ffeven)).c_str()));
 }
 
 int main(int argc, char* argv[])
