@@ -35,7 +35,7 @@ inline Coordinate get_default_serial_new_size_node(const Geometry& geo)
 }
 
 template <class M>
-void serial_write_field(const Field<M>& f, const std::string& path, const Coordinate& new_size_node)
+long serial_write_field(const Field<M>& f, const std::string& path, const Coordinate& new_size_node)
   // will append to the file
   // assume new_size_node is properly choosen so that concatenate the new fields would be correct.
   // eg. new_size_node = Coordinate(1,1,1,2)
@@ -69,17 +69,23 @@ void serial_write_field(const Field<M>& f, const std::string& path, const Coordi
       MPI_Send((void*)v.data(), v.data_size(), MPI_BYTE, 0, mpi_tag, get_comm());
     }
   }
-  timer.flops += get_data(f).data_size() * f.geo.geon.num_node;
+  const long file_size = get_data(f).data_size() * f.geo.geon.num_node;
+  timer.flops += file_size;
+  return file_size;
 }
 
 template <class M>
-void serial_read_field(Field<M>& f, const std::string& path, const Coordinate& new_size_node,
+long serial_read_field(Field<M>& f, const std::string& path, const Coordinate& new_size_node,
     const long offset = 0, const int whence = SEEK_SET)
   // will read from offset relative to whence
   // assume new_size_node is properly choosen so that concatenate the new fields would be correct.
   // eg. new_size_node = Coordinate(1,1,1,2)
 {
   TIMER_VERBOSE_FLOPS("serial_read_field");
+  if (not does_file_exist_sync_node(path)) {
+    displayln_info(fname + ssprintf(": file does not exist: '%s'", path.c_str()));
+    return 0;
+  }
   const Geometry& geo = f.geo;
   std::vector<Field<M> > fs;
   const std::vector<Geometry> new_geos = make_dist_io_geos(geo.total_site(), geo.multiplicity, new_size_node);
@@ -115,17 +121,23 @@ void serial_read_field(Field<M>& f, const std::string& path, const Coordinate& n
     }
   }
   shuffle_field_back(f, fs, new_size_node);
-  timer.flops += get_data(f).data_size() * f.geo.geon.num_node;
+  const long file_size = get_data(f).data_size() * f.geo.geon.num_node;
+  timer.flops += file_size;
+  return file_size;
 }
 
 template <class M>
-void serial_read_field_par(Field<M>& f, const std::string& path, const Coordinate& new_size_node,
+long serial_read_field_par(Field<M>& f, const std::string& path, const Coordinate& new_size_node,
     const long offset = 0, const int whence = SEEK_SET)
   // will read from offset relative to whence
   // assume new_size_node is properly choosen so that concatenate the new fields would be correct.
   // eg. new_size_node = Coordinate(1,1,1,2)
 {
   TIMER_VERBOSE_FLOPS("serial_read_field_par");
+  if (not does_file_exist_sync_node(path)) {
+    displayln_info(fname + ssprintf(": file does not exist: '%s'", path.c_str()));
+    return 0;
+  }
   const Geometry& geo = f.geo;
   std::vector<Field<M> > fs;
   const std::vector<Geometry> new_geos = make_dist_io_geos(geo.total_site(), geo.multiplicity, new_size_node);
@@ -144,28 +156,30 @@ void serial_read_field_par(Field<M>& f, const std::string& path, const Coordinat
     qclose(fp);
   }
   shuffle_field_back(f, fs, new_size_node);
-  timer.flops += get_data(f).data_size() * f.geo.geon.num_node;
+  const long file_size = get_data(f).data_size() * f.geo.geon.num_node;
+  timer.flops += file_size;
+  return file_size;
 }
 
 template <class M>
-void serial_write_field(const Field<M>& f, const std::string& path)
+long serial_write_field(const Field<M>& f, const std::string& path)
   // interface_function
 {
-  serial_write_field(f, path, get_default_serial_new_size_node(f.geo));
+  return serial_write_field(f, path, get_default_serial_new_size_node(f.geo));
 }
 
 template <class M>
-void serial_read_field(Field<M>& f, const std::string& path, const long offset = 0, const int whence = SEEK_SET)
+long serial_read_field(Field<M>& f, const std::string& path, const long offset = 0, const int whence = SEEK_SET)
   // interface_function
 {
-  serial_read_field(f, path, get_default_serial_new_size_node(f.geo), offset, whence);
+  return serial_read_field(f, path, get_default_serial_new_size_node(f.geo), offset, whence);
 }
 
 template <class M>
-void serial_read_field_par(Field<M>& f, const std::string& path, const long offset = 0, const int whence = SEEK_SET)
+long serial_read_field_par(Field<M>& f, const std::string& path, const long offset = 0, const int whence = SEEK_SET)
   // interface_function
 {
-  serial_read_field_par(f, path, get_default_serial_new_size_node(f.geo), offset, whence);
+  return serial_read_field_par(f, path, get_default_serial_new_size_node(f.geo), offset, whence);
 }
 
 template <class M>

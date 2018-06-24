@@ -229,7 +229,7 @@ inline void save_gauge_field(const GaugeField& gf, const std::string& path, cons
   timer.flops += get_data(gft).data_size() * gft.geo.geon.num_node;
 }
 
-inline void load_gauge_field(GaugeField& gf, const std::string& path)
+inline long load_gauge_field(GaugeField& gf, const std::string& path)
   // assuming gf already initialized and have correct size;
 {
   TIMER_VERBOSE_FLOPS("load_gauge_field");
@@ -238,7 +238,10 @@ inline void load_gauge_field(GaugeField& gf, const std::string& path)
   const Geometry& geo = gf.geo;
   FieldM<std::array<Complex, 6>, 4> gft;
   gft.init(geo);
-  serial_read_field(gft, path, -get_data_size(gft) * get_num_node(), SEEK_END);
+  const long file_size = serial_read_field(gft, path, -get_data_size(gft) * get_num_node(), SEEK_END);
+  if (0 == file_size) {
+    return 0;
+  }
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -250,10 +253,11 @@ inline void load_gauge_field(GaugeField& gf, const std::string& path)
       unitarize(v[m]);
     }
   }
-  timer.flops += get_data(gft).data_size() * gft.geo.geon.num_node;
+  timer.flops += file_size;
+  return file_size;
 }
 
-inline void load_gauge_field_par(GaugeField& gf, const std::string& path)
+inline long load_gauge_field_par(GaugeField& gf, const std::string& path)
   // assuming gf already initialized and have correct size;
 {
   TIMER_VERBOSE_FLOPS("load_gauge_field_par");
@@ -262,7 +266,10 @@ inline void load_gauge_field_par(GaugeField& gf, const std::string& path)
   const Geometry& geo = gf.geo;
   FieldM<std::array<Complex, 6>, 4> gft;
   gft.init(geo);
-  serial_read_field_par(gft, path, -get_data_size(gft) * get_num_node(), SEEK_END);
+  const long file_size = serial_read_field_par(gft, path, -get_data_size(gft) * get_num_node(), SEEK_END);
+  if (file_size == 0) {
+    return 0;
+  }
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -274,10 +281,11 @@ inline void load_gauge_field_par(GaugeField& gf, const std::string& path)
       unitarize(v[m]);
     }
   }
-  timer.flops += get_data(gft).data_size() * gft.geo.geon.num_node;
+  timer.flops += file_size;
+  return file_size;
 }
 
-inline void load_gauge_field_cps3x3(GaugeField& gf, const std::string& path)
+inline long load_gauge_field_cps3x3(GaugeField& gf, const std::string& path)
   // assuming gf already initialized and have correct size;
 {
   TIMER_VERBOSE_FLOPS("load_gauge_field");
@@ -286,7 +294,10 @@ inline void load_gauge_field_cps3x3(GaugeField& gf, const std::string& path)
   const Geometry& geo = gf.geo;
   FieldM<std::array<Complex, 9>, 4> gft;
   gft.init(geo);
-  serial_read_field(gft, path, -get_data_size(gft) * get_num_node(), SEEK_END);
+  const long file_size = serial_read_field(gft, path, -get_data_size(gft) * get_num_node(), SEEK_END);
+  if (file_size == 0) {
+    return 0;
+  }
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -297,10 +308,11 @@ inline void load_gauge_field_cps3x3(GaugeField& gf, const std::string& path)
       assign_truncate(v[m], vt[m]);
     }
   }
-  timer.flops += get_data(gft).data_size() * gft.geo.geon.num_node;
+  timer.flops += file_size;
+  return file_size;
 }
 
-inline void load_gauge_field_milc(GaugeField& gf, const std::string& path, const bool par_read = false)
+inline long load_gauge_field_milc(GaugeField& gf, const std::string& path, const bool par_read = false)
   // assuming gf already initialized and have correct size;
 {
   TIMER_VERBOSE_FLOPS("load_gauge_field_milc");
@@ -310,10 +322,14 @@ inline void load_gauge_field_milc(GaugeField& gf, const std::string& path, const
   FieldM<std::array<std::complex<float>, 9>, 4> gft;
   gft.init(geo);
   // ADJUST ME
+  long file_size = 0;
   if (par_read) {
-    serial_read_field_par(gft, path, 0x730, SEEK_SET);
+    file_size = serial_read_field_par(gft, path, 0x730, SEEK_SET);
   } else {
-    serial_read_field(gft, path, 0x730, SEEK_SET);
+    file_size = serial_read_field(gft, path, 0x730, SEEK_SET);
+  }
+  if (0 == file_size) {
+    return 0;
   }
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
@@ -335,7 +351,8 @@ inline void load_gauge_field_milc(GaugeField& gf, const std::string& path, const
       unitarize(v[m]);
     }
   }
-  timer.flops += get_data(gft).data_size() * gft.geo.geon.num_node;
+  timer.flops += file_size;
+  return file_size;
 }
 
 inline void twist_boundary_at_boundary(GaugeField& gf, double mom, int mu)
