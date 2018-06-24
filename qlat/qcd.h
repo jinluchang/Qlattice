@@ -288,7 +288,7 @@ inline long load_gauge_field_par(GaugeField& gf, const std::string& path)
 inline long load_gauge_field_cps3x3(GaugeField& gf, const std::string& path)
   // assuming gf already initialized and have correct size;
 {
-  TIMER_VERBOSE_FLOPS("load_gauge_field");
+  TIMER_VERBOSE_FLOPS("load_gauge_field_cps3x3");
   displayln_info(fname + ssprintf(": '%s'.", path.c_str()));
   qassert(is_initialized(gf));
   const Geometry& geo = gf.geo;
