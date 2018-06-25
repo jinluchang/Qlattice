@@ -61,9 +61,10 @@ void simple_tests()
   for (int i = 0; i < 20; ++i) {
     // project_eo(ff5din, 1);
     // project_eo(ff5din1, 1);
-    multiply_m(ff5dout, ff5din, inv);
     // multiply_m_dwf(ff5dout1, ff5din1, inv);
-    multiply_m_from_eo(ff5dout1, ff5din1, inv);
+    multiply_m_full(ff5dout, ff5din, inv);
+    multiply_m(ff5dout1, ff5din1, inv);
+    // multiply_m_with_prec_sym2(ff5dout1, ff5din1, inv);
     // project_eo(ff5dout, 1);
     // project_eo(ff5dout1, 1);
     ff5d = ff5dout;
@@ -109,9 +110,9 @@ void simple_tests()
   multiply_mdag_e_e_inv(tmp, ffeven, fa);
   displayln_info(ssprintf("dot = %s", show(dot_product(tmp, ffeven)).c_str()));
   tmp.init();
-  multiply_m_from_eo(tmp, ff5dout, inv);
+  multiply_m(tmp, ff5dout, inv);
   displayln_info(ssprintf("dot = %s", show(dot_product(tmp, ff5dout)).c_str()));
-  multiply_mdag_from_eo(tmp, ff5dout, inv);
+  multiply_mdag(tmp, ff5dout, inv);
   displayln_info(ssprintf("dot = %s", show(dot_product(ff5dout, tmp)).c_str()));
 }
 

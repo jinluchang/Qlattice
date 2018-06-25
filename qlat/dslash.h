@@ -247,10 +247,10 @@ inline void multiply_d_minus(FermionField5d& out, const FermionField5d& in, cons
   out += out1;
 }
 
-inline void multiply_m(FermionField5d& out, const FermionField5d& in, const InverterDomainWall& inv)
+inline void multiply_m_full(FermionField5d& out, const FermionField5d& in, const InverterDomainWall& inv)
   // out can be the same object as in
 {
-  TIMER("multiply_m(5d,5d,Inv)");
+  TIMER("multiply_m_full(5d,5d,Inv)");
   const Geometry geo = geo_resize(in.geo);
   out.init(geo);
   set_zero(out);
@@ -295,6 +295,7 @@ inline void multiply_m(FermionField5d& out, const FermionField5d& in, const Inve
 }
 
 inline void get_half_fermion(FermionField5d& half, const FermionField5d& ff, const int eo)
+  // 2:even 1:odd
 {
   TIMER("get_half_fermion");
   Geometry geoh = geo_resize(ff.geo);
@@ -311,6 +312,7 @@ inline void get_half_fermion(FermionField5d& half, const FermionField5d& ff, con
 }
 
 inline void set_half_fermion(FermionField5d& ff, const FermionField5d& half, const int eo)
+  // 2:even 1:odd
 {
   TIMER("set_half_fermion");
   const Geometry geoh = half.geo;
@@ -568,6 +570,7 @@ inline void multiply_wilson_d_e_o_no_comm(FermionField5d& out, const FermionFiel
   qassert(in.geo.eo == 1 or in.geo.eo == 2);
   Geometry geo = geo_resize(in.geo);
   geo.eo = 3 - in.geo.eo;
+  out.geo.eo = geo.eo;
   out.init(geo);
   set_zero(out);
   const int ls = in.geo.multiplicity;
@@ -612,6 +615,7 @@ inline void multiply_wilson_ddag_e_o_no_comm(FermionField5d& out, const FermionF
   qassert(in.geo.eo == 1 or in.geo.eo == 2);
   Geometry geo = geo_resize(in.geo);
   geo.eo = 3 - in.geo.eo;
+  out.geo.eo = geo.eo;
   out.init(geo);
   set_zero(out);
   const int ls = in.geo.multiplicity;
@@ -654,6 +658,7 @@ inline void multiply_m_e_o(FermionField5d& out, const FermionField5d& in, const 
   const SpinMatrix& unit = SpinMatrixConstants::get_unit();
   const SpinMatrix p_p = 0.5 * (unit + gamma5);
   const SpinMatrix p_m = 0.5 * (unit - gamma5);
+  const int in_geo_eo = in.geo.eo;
   FermionField5d in1;
   in1.init(geo_resize(in.geo, 1));
   const Geometry& geo = in.geo;
@@ -678,7 +683,7 @@ inline void multiply_m_e_o(FermionField5d& out, const FermionField5d& in, const 
   refresh_expanded_1(in1);
   multiply_wilson_d_e_o_no_comm(out, in1, gf);
   qassert(is_matching_geo(out.geo, in.geo));
-  qassert(out.geo.eo != in.geo.eo);
+  qassert(out.geo.eo != in_geo_eo);
   qassert(in.geo.eo == 1 or in.geo.eo == 2);
   qassert(out.geo.eo == 1 or out.geo.eo == 2);
 }
@@ -691,7 +696,11 @@ inline void multiply_mdag_e_o(FermionField5d& out, const FermionField5d& in, con
   const SpinMatrix& unit = SpinMatrixConstants::get_unit();
   const SpinMatrix p_p = 0.5 * (unit + gamma5);
   const SpinMatrix p_m = 0.5 * (unit - gamma5);
-  const Geometry& geo = out.geo;
+  const int in_geo_eo = in.geo.eo;
+  qassert(is_matching_geo(gf.geo, in.geo));
+  qassert(in.geo.eo == 1 or in.geo.eo == 2);
+  Geometry geo = geo_resize(in.geo);
+  geo.eo = 3 - in.geo.eo;
   std::vector<Complex> beo(fa.ls), ceo(fa.ls);
   for (int m = 0; m < fa.ls; ++m) {
     beo[m] = std::conj(fa.bs[m]);
@@ -704,6 +713,8 @@ inline void multiply_mdag_e_o(FermionField5d& out, const FermionField5d& in, con
   FermionField5d out1;
   multiply_wilson_ddag_e_o_no_comm(out1, in1, gf);
   in1.init();
+  out.geo.eo = geo.eo;
+  out.init(geo);
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -718,9 +729,39 @@ inline void multiply_mdag_e_o(FermionField5d& out, const FermionField5d& in, con
     }
   }
   qassert(is_matching_geo(out.geo, in.geo));
-  qassert(out.geo.eo != in.geo.eo);
+  qassert(out.geo.eo != in_geo_eo);
   qassert(in.geo.eo == 1 or in.geo.eo == 2);
   qassert(out.geo.eo == 1 or out.geo.eo == 2);
+}
+
+inline void multiply_m_e_e(FermionField5d& out, const FermionField5d& in, const InverterDomainWall& inv)
+{
+  multiply_m_e_e(out, in, inv.fa);
+}
+
+inline void multiply_mdag_e_e(FermionField5d& out, const FermionField5d& in, const InverterDomainWall& inv)
+{
+  multiply_mdag_e_e(out, in, inv.fa);
+}
+
+inline void multiply_m_e_e_inv(FermionField5d& out, const FermionField5d& in, const InverterDomainWall& inv)
+{
+  multiply_m_e_e_inv(out, in, inv.fa);
+}
+
+inline void multiply_mdag_e_e_inv(FermionField5d& out, const FermionField5d& in, const InverterDomainWall& inv)
+{
+  multiply_mdag_e_e_inv(out, in, inv.fa);
+}
+
+inline void multiply_m_e_o(FermionField5d& out, const FermionField5d& in, const InverterDomainWall& inv)
+{
+  multiply_m_e_o(out, in, inv.gf, inv.fa);
+}
+
+inline void multiply_mdag_e_o(FermionField5d& out, const FermionField5d& in, const InverterDomainWall& inv)
+{
+  multiply_mdag_e_o(out, in, inv.gf, inv.fa);
 }
 
 inline void multiply_m_eo_eo(FermionField5d& out, const FermionField5d& in, const InverterDomainWall& inv,
@@ -771,38 +812,76 @@ inline void project_eo(FermionField5d& ff, const int eo)
   set_half_fermion(ff, half, eo);
 }
 
-inline void multiply_m_from_eo(FermionField5d& out, const FermionField5d& in, const InverterDomainWall& inv)
+inline void multiply_m(FermionField5d& out, const FermionField5d& in, const InverterDomainWall& inv)
 {
-  TIMER_VERBOSE("multiply_m_from_eo");
+  TIMER_VERBOSE("multiply_m");
   FermionField5d in_e, in_o;
   get_half_fermion(in_e, in, 2);
   get_half_fermion(in_o, in, 1);
-  FermionField5d out1_e, out1_o;
+  FermionField5d tmp_e, tmp_o;
   FermionField5d out_e, out_o;
-  multiply_m_eo_eo(out1_e, in_e, inv, 2, 2);
-  multiply_m_eo_eo(out1_o, in_e, inv, 1, 2);
-  multiply_m_eo_eo(out_e, in_o, inv, 2, 1);
-  multiply_m_eo_eo(out_o, in_o, inv, 1, 1);
-  out_e += out1_e;
-  out_o += out1_o;
+  multiply_m_e_o(tmp_e, in_o, inv);
+  multiply_m_e_e(out_e, in_e, inv);
+  multiply_m_e_e(tmp_o, in_o, inv);
+  multiply_m_e_o(out_o, in_e, inv);
+  out_e += tmp_e;
+  out_o += tmp_o;
   set_half_fermion(out, out_e, 2);
   set_half_fermion(out, out_o, 1);
 }
 
-inline void multiply_mdag_from_eo(FermionField5d& out, const FermionField5d& in, const InverterDomainWall& inv)
+inline void multiply_mdag(FermionField5d& out, const FermionField5d& in, const InverterDomainWall& inv)
 {
-  TIMER_VERBOSE("multiply_mdag_from_eo");
+  TIMER_VERBOSE("multiply_mdag");
   FermionField5d in_e, in_o;
   get_half_fermion(in_e, in, 2);
   get_half_fermion(in_o, in, 1);
-  FermionField5d out1_e, out1_o;
+  FermionField5d tmp_e, tmp_o;
   FermionField5d out_e, out_o;
-  multiply_mdag_eo_eo(out1_e, in_e, inv, 2, 2);
-  multiply_mdag_eo_eo(out1_o, in_e, inv, 1, 2);
-  multiply_mdag_eo_eo(out_e, in_o, inv, 2, 1);
-  multiply_mdag_eo_eo(out_o, in_o, inv, 1, 1);
-  out_e += out1_e;
-  out_o += out1_o;
+  multiply_mdag_e_o(tmp_e, in_o, inv);
+  multiply_mdag_e_e(out_e, in_e, inv);
+  multiply_mdag_e_e(tmp_o, in_o, inv);
+  multiply_mdag_e_o(out_o, in_e, inv);
+  out_e += tmp_e;
+  out_o += tmp_o;
+  set_half_fermion(out, out_e, 2);
+  set_half_fermion(out, out_o, 1);
+}
+
+inline void multiply_mpc_sym2(FermionField5d& out, const FermionField5d& in, const InverterDomainWall& inv)
+{
+  TIMER_VERBOSE("multiply_mpc_sym2");
+  FermionField5d tmp;
+  multiply_m_e_e_inv(tmp, in, inv);
+  multiply_m_e_o(tmp, tmp, inv);
+  multiply_m_e_e_inv(tmp, tmp, inv);
+  multiply_m_e_o(tmp, tmp, inv);
+  out.init(geo_resize(in.geo));
+  out = in;
+  out -= tmp;
+}
+
+inline void multiply_m_with_prec_sym2(FermionField5d& out, const FermionField5d& in, const InverterDomainWall& inv)
+{
+  TIMER_VERBOSE("multiply_m_with_prec_sym2");
+  FermionField5d in_e, in_o;
+  FermionField5d out_e, out_o;
+  get_half_fermion(in_e, in, 2);
+  get_half_fermion(in_o, in, 1);
+  //
+  multiply_mdag_e_o(out_e, in_o, inv);
+  multiply_mdag_e_e_inv(out_e, out_e, inv);
+  out_e += in_e;
+  multiply_mdag_e_e(out_o, in_o, inv);
+  //
+  multiply_m_e_e(out_e, out_e, inv);
+  multiply_mpc_sym2(out_o, out_o, inv);
+  //
+  FermionField5d tmp;
+  multiply_m_e_e_inv(tmp, out_e, inv);
+  multiply_m_e_o(tmp, tmp, inv);
+  out_o += tmp;
+  //
   set_half_fermion(out, out_e, 2);
   set_half_fermion(out, out_o, 1);
 }
