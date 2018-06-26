@@ -56,15 +56,39 @@ void simple_tests()
   const Coordinate xg = mod(Coordinate(rand_gen(rs), rand_gen(rs), rand_gen(rs), rand_gen(rs)), geo.total_site());
   const int cs = mod(rand_gen(rs), 12);
   set_fermion_field_point_src(ff4din, xg, cs);
+  displayln_info("testing multiply_m_full and multiply_m");
   fermion_field_5d_from_4d(ff5din, ff4din, 0, fa.ls-1);
   ff5din1 = ff5din;
   for (int i = 0; i < 20; ++i) {
     // project_eo(ff5din, 1);
     // project_eo(ff5din1, 1);
-    // multiply_m_dwf(ff5dout1, ff5din1, inv);
     multiply_m_full(ff5dout, ff5din, inv);
     multiply_m(ff5dout1, ff5din1, inv);
     // multiply_m_with_prec_sym2(ff5dout1, ff5din1, inv);
+    // multiply_m_dwf(ff5dout1, ff5din1, inv);
+    // project_eo(ff5dout, 1);
+    // project_eo(ff5dout1, 1);
+    ff5d = ff5dout;
+    ff5d -= ff5dout1;
+    displayln_info(ssprintf("%E, %E norm(diff) = %E", norm(ff5dout), norm(ff5dout1), norm(ff5d)));
+    ff5dout *= 1.0 / sqrt(norm(ff5dout));
+    ff5dout1 *= 1.0 / sqrt(norm(ff5dout1));
+    ff5d = ff5dout;
+    ff5d -= ff5dout1;
+    displayln_info(ssprintf("norm(diff after normalization) = %E", norm(ff5d)));
+    ff5din = ff5dout;
+    ff5din1 = ff5dout1;
+  }
+  displayln_info("testing multiply_m_full and multiply_m_with_prec_sym2");
+  fermion_field_5d_from_4d(ff5din, ff4din, 0, fa.ls-1);
+  ff5din1 = ff5din;
+  for (int i = 0; i < 20; ++i) {
+    // project_eo(ff5din, 1);
+    // project_eo(ff5din1, 1);
+    multiply_m_full(ff5dout, ff5din, inv);
+    // multiply_m(ff5dout1, ff5din1, inv);
+    multiply_m_with_prec_sym2(ff5dout1, ff5din1, inv);
+    // multiply_m_dwf(ff5dout1, ff5din1, inv);
     // project_eo(ff5dout, 1);
     // project_eo(ff5dout1, 1);
     ff5d = ff5dout;
@@ -116,13 +140,23 @@ void simple_tests()
   displayln_info(ssprintf("dot = %s", show(dot_product(ff5dout, tmp)).c_str()));
   //
   displayln_info(ssprintf("norm = %E, dot = %E", norm(ffodd), dot_product(ffodd, ffodd).real()));
+  tmp.init();
   multiply_hermop_sym2(tmp, ffodd, inv);
   FermionField5d ffodd2;
   displayln_info(ssprintf("multiply norm = %E", norm(tmp)));
-  cg_with_f(ffodd2, tmp, inv, multiply_hermop_sym2, 1e-8);
+  cg_with_f(ffodd2, tmp, inv, multiply_hermop_sym2);
   displayln_info(ssprintf("norm = %E", norm(ffodd2)));
   ffodd2 -= ffodd;
   displayln_info(ssprintf("diff norm = %E", norm(ffodd2)));
+  //
+  tmp.init();
+  displayln_info(ssprintf("orig norm = %E", norm(ff5dout)));
+  multiply_m(tmp, ff5dout, inv);
+  displayln_info(ssprintf("tmp norm = %E", norm(tmp)));
+  FermionField5d sol;
+  inverse(sol, tmp, inv);
+  sol -= ff5dout;
+  displayln_info(ssprintf("inverse diff norm = %E", norm(sol)));
 }
 
 int main(int argc, char* argv[])
