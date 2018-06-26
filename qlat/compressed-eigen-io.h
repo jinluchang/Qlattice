@@ -1124,7 +1124,33 @@ inline void decompress_eigen_system(
   }
 }
 
+inline void convert_half_vector(BlockedHalfVector& bhv, const HalfVector& hv, const Coordinate& block_site)
+  // interface
+{
+  TIMER("convert_half_vector");
+  const int ls = hv.ls;
+  init_blocked_half_vector(bhv, geo_reform(hv.geo), block_site, ls);
+  const Geometry& geo = hv.geo;
+  const Coordinate node_block = geo.node_site / block_site;
+  qassert(geo.is_only_local());
+#pragma omp parallel for
+  for (long index = 0; index < geo.local_volume(); ++index) {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    qassert((xl[0] + xl[1] + xl[2] + xl[3]) % 2 == 2 - geo.eo);
+    const Coordinate bxl = xl / block_site;
+    const long bindex = index_from_coordinate(bxl, node_block);
+    const Vector<ComplexF> site = hv.get_elems_const(index);
+    qassert(site.size() == ls * HalfVector::c_size);
+    const long bidx = index_from_coordinate(xl % block_site, block_site)/2;
+    memcpy(
+        &bhv.get_elems(bindex)[bidx * site.size()],
+        site.data(),
+        site.data_size());
+  }
+}
+
 inline void convert_half_vector(HalfVector& hv, const BlockedHalfVector& bhv)
+  // interface
 {
   TIMER("convert_half_vector");
   const Coordinate& block_site = bhv.block_site;

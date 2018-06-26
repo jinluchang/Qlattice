@@ -13,6 +13,153 @@ inline bool& is_checking_inverse()
   return b;
 }
 
+struct LowModes
+{
+  std::vector<double> eigen_values;
+  CompressedEigenSystemInfo cesi;
+  CompressedEigenSystemBases cesb;
+  CompressedEigenSystemCoefs cesc;
+};
+
+inline void load_low_modes(LowModes& lm, const std::string& path)
+{
+  TIMER_VERBOSE("load_low_modes");
+  load_compressed_eigen_vectors(lm.eigen_values, lm.cesi, lm.cesb, lm.cesc, path);
+}
+
+inline void load_or_compute_low_modes(LowModes& lm, const std::string& path,
+    const GaugeField& gf, const FermionAction& fa, const LancArg& la)
+  // TODO: currently only load low modes
+{
+  TIMER_VERBOSE("load_or_compute_low_modes");
+  load_low_modes(lm, path);
+}
+
+inline void deflate(HalfVector& hv_out, const HalfVector& hv_in, const LowModes& lm)
+{
+  TIMER("deflate(hv,hv,lm)");
+  const int ls = lm.cesi.ls;
+  const long block_size = lm.cesb.block_vol_eo * ls * HalfVector::c_size;
+  const long n_basis = lm.cesb.n_basis;
+  const long n_vec = lm.cesc.n_vec;
+  qassert(n_vec == lm.eigen_values.size());
+  BlockedHalfVector bhv;
+  convert_half_vector(bhv, hv_in, lm.cesi.block_site);
+  const Geometry geo = geo_reform(bhv.geo, n_basis);
+  Field<Complex> chv, phv;
+  chv.init(geo);
+  set_zero(chv);
+  phv.init(geo_remult(geo, n_vec));
+  for (long index = 0; index < geo.local_volume(); ++index) {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Vector<ComplexF> vb = bhv.get_elems_const(xl);
+    const Vector<ComplexF> vbs = lm.cesb.get_elems_const(xl);
+    const Vector<ComplexF> vcs = lm.cesc.get_elems_const(xl);
+    // project to coarse grid
+    Vector<Complex> vc = chv.get_elems(xl);
+#pragma omp parallel for
+    for (int j = 0; j < n_basis; ++j) {
+      Complex s = 0.0;
+      for (long k = 0; k < block_size; ++k) {
+        s += std::conj(vbs[j * block_size + k]) * vb[k];
+      }
+      vc[j] = s;
+    }
+    // compute inner products
+    Vector<Complex> vp = phv.get_elems(xl);
+#pragma omp parallel for
+    for (int i = 0; i < n_vec; ++i) {
+      Complex s = 0.0;
+      for (int j = 0; j < n_basis; ++j) {
+        s += (Complex)std::conj(vcs[i * n_basis + j]) * vc[j];
+      }
+      vp[i] = s;
+    }
+  }
+  // glb sum inner products
+  std::vector<Complex> phv_sum(n_vec, 0.0);
+  for (long index = 0; index < geo.local_volume(); ++index) {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    Vector<Complex> vp = phv.get_elems(xl);
+#pragma omp parallel for
+    for (int i = 0; i < n_vec; ++i) {
+      phv_sum[i] += vp[i];
+    }
+  }
+  phv.init();
+  glb_sum_double_vec(get_data(phv_sum));
+  // scale by eigen values
+#pragma omp parallel for
+  for (int i = 0; i < n_vec; ++i) {
+    phv_sum[i] /= lm.eigen_values[i];
+  }
+  // producing coarse space vector
+  set_zero(chv);
+  for (long index = 0; index < geo.local_volume(); ++index) {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Vector<ComplexF> vbs = lm.cesb.get_elems_const(xl);
+    const Vector<ComplexF> vcs = lm.cesc.get_elems_const(xl);
+    // compute inner products
+    Vector<Complex> vc = chv.get_elems(xl);
+    for (int i = 0; i < n_vec; ++i) {
+#pragma omp parallel for
+      for (int j = 0; j < n_basis; ++j) {
+        vc[j] += (Complex)(vcs[i * n_basis + j]) * phv_sum[i];
+      }
+    }
+    // project to fine grid
+    Vector<ComplexF> vb = bhv.get_elems(xl);
+    for (int j = 0; j < n_basis; ++j) {
+#pragma omp parallel for
+      for (long k = 0; k < block_size; ++k) {
+        vb[k] += vbs[j * block_size + k] * (ComplexF)vc[j];
+      }
+    }
+  }
+  convert_half_vector(hv_out, bhv);
+}
+
+inline deflate(FermionField5d& out, const FermionField5d& in, const LowModes& lm)
+{
+  TIMER_VERBOSE("deflate(5d,5d,lm)");
+  const Geometry& geo = geo_resize(in.geo);
+  qassert(geo.eo == 1 or geo.eo == 2);
+  const int ls = geo.multiplicity;
+  qassert(ls == lm.cesi.ls);
+  HalfVector hv;
+  init_half_vector(hv, geo, ls);
+#pragma omp parallel for
+  for (long index = 0; index < geo.local_volume(); ++index) {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    qassert((xl[0] + xl[1] + xl[2] + xl[3]) % 2 == 2 - geo.eo);
+    Vector<ComplexF> vhv = hv.get_elems(index);
+    const Vector<WilsonVector> vin = in.get_elems_const(index);
+    qassert(vhv.size() == vin.size() * sizeof(WilsonVector) / sizeof(Complex));
+    const Vector<Complex> vff((const Complex*)vin.data(), vhv.size());
+    for (int m = 0; m < vhv.size(); ++m) {
+      vhv[m] = vff[m];
+    }
+  }
+  deflate(hv, hv, lm);
+  if (is_initialized(out) and out.geo.eo == 3 - geo.eo) {
+    out.geo.eo = geo.eo;
+  }
+  out.init(geo);
+  qassert(out.geo.eo == geo.eo);
+#pragma omp parallel for
+  for (long index = 0; index < geo.local_volume(); ++index) {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    qassert((xl[0] + xl[1] + xl[2] + xl[3]) % 2 == 2 - geo.eo);
+    const Vector<ComplexF> vhv = hv.get_elems(index);
+    Vector<WilsonVector> vout = out.get_elems(index);
+    qassert(vhv.size() == vout.size() * sizeof(WilsonVector) / sizeof(Complex));
+    Vector<Complex> vff((Complex*)vout.data(), vhv.size());
+    for (int m = 0; m < vhv.size(); ++m) {
+      vff[m] = vhv[m];
+    }
+  }
+}
+
 struct InverterParams
 {
   double stop_rsd;
@@ -32,17 +179,13 @@ struct InverterParams
   }
 };
 
-struct LowModes
-{
-  // TODO
-};
-
 struct InverterDomainWall
 {
   Geometry geo;
   FermionAction fa;
   GaugeField gf;
   InverterParams ip;
+  ConstHandle<LowModes> lm;
   //
   InverterDomainWall()
   {
@@ -57,6 +200,7 @@ struct InverterDomainWall
   void setup()
   {
     TIMER_VERBOSE("Inv::setup");
+    lm.init();
   }
   void setup(const GaugeField& gf_, const FermionAction& fa_)
   {
@@ -69,7 +213,7 @@ struct InverterDomainWall
   void setup(const GaugeField& gf_, const FermionAction& fa_, const LowModes& lm_)
   {
     setup(gf_, fa_);
-    // TODO
+    lm.init(lm_);
   }
   //
   double& stop_rsd()
@@ -99,13 +243,6 @@ struct InverterDomainWall
     return ip.max_mixed_precision_cycle;
   }
 };
-
-inline void load_or_compute_low_modes(LowModes& lm, const std::string& path,
-    const GaugeField& gf, const FermionAction& fa, const LancArg& la)
-{
-  TIMER_VERBOSE("load_or_compute_low_modes");
-  // TODO
-}
 
 inline void setup_inverter(InverterDomainWall& inv)
 {
@@ -1052,6 +1189,9 @@ inline void inverse(FermionField5d& out, const FermionField5d& in, const Inverte
     in_o -= tmp;
     multiply_mpcdag_sym2(in_o, in_o, inv);
     //
+    if (not inv.lm.null()) {
+      deflate(out_o, in_o, inv.lm());
+    }
     cg_with_f(out_o, in_o, inv, multiply_hermop_sym2);
     //
     multiply_m_e_e_inv(out_o, out_o, inv);
