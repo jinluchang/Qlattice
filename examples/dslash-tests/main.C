@@ -114,6 +114,15 @@ void simple_tests()
   displayln_info(ssprintf("dot = %s", show(dot_product(tmp, ff5dout)).c_str()));
   multiply_mdag(tmp, ff5dout, inv);
   displayln_info(ssprintf("dot = %s", show(dot_product(ff5dout, tmp)).c_str()));
+  //
+  displayln_info(ssprintf("norm = %E, dot = %E", norm(ffodd), dot_product(ffodd, ffodd).real()));
+  multiply_hermop_sym2(tmp, ffodd, inv);
+  FermionField5d ffodd2;
+  displayln_info(ssprintf("multiply norm = %E", norm(tmp)));
+  cg_with_f(ffodd2, tmp, inv, multiply_hermop_sym2, 1e-12);
+  displayln_info(ssprintf("norm = %E", norm(ffodd2)));
+  ffodd2 -= ffodd;
+  displayln_info(ssprintf("diff norm = %E", norm(ffodd2)));
 }
 
 int main(int argc, char* argv[])
