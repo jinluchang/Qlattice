@@ -1,7 +1,7 @@
 SHELL=/bin/bash
 
 CC=mpicc -fopenmp -O2 -Wall
-CXX=mpic++ -std=c++0x -fopenmp -O2 -Wall
+CXX=mpic++ -std=c++0x -fopenmp -march=native -Ofast -Wall
 
 qlat_prefix=$$HOME/qlat-build/1.0
 

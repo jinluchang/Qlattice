@@ -119,7 +119,7 @@ void simple_tests()
   multiply_hermop_sym2(tmp, ffodd, inv);
   FermionField5d ffodd2;
   displayln_info(ssprintf("multiply norm = %E", norm(tmp)));
-  cg_with_f(ffodd2, tmp, inv, multiply_hermop_sym2, 1e-12);
+  cg_with_f(ffodd2, tmp, inv, multiply_hermop_sym2, 1e-8);
   displayln_info(ssprintf("norm = %E", norm(ffodd2)));
   ffodd2 -= ffodd;
   displayln_info(ssprintf("diff norm = %E", norm(ffodd2)));
