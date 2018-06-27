@@ -13,6 +13,13 @@ inline bool& is_checking_inverse()
   return b;
 }
 
+inline bool& is_cg_verbose()
+  // qlat parameter
+{
+  static bool b = false;
+  return b;
+}
+
 struct LowModes
 {
   std::vector<double> eigen_values;
@@ -50,6 +57,7 @@ inline void deflate(HalfVector& hv_out, const HalfVector& hv_in, const LowModes&
   chv.init(geo);
   set_zero(chv);
   phv.init(geo_remult(geo, n_vec));
+#pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Vector<ComplexF> vb = bhv.get_elems_const(xl);
@@ -57,7 +65,6 @@ inline void deflate(HalfVector& hv_out, const HalfVector& hv_in, const LowModes&
     const Vector<ComplexF> vcs = lm.cesc.get_elems_const(xl);
     // project to coarse grid
     Vector<Complex> vc = chv.get_elems(xl);
-#pragma omp parallel for
     for (int j = 0; j < n_basis; ++j) {
       Complex s = 0.0;
       for (long k = 0; k < block_size; ++k) {
@@ -67,7 +74,6 @@ inline void deflate(HalfVector& hv_out, const HalfVector& hv_in, const LowModes&
     }
     // compute inner products
     Vector<Complex> vp = phv.get_elems(xl);
-#pragma omp parallel for
     for (int i = 0; i < n_vec; ++i) {
       Complex s = 0.0;
       for (int j = 0; j < n_basis; ++j) {
@@ -95,6 +101,7 @@ inline void deflate(HalfVector& hv_out, const HalfVector& hv_in, const LowModes&
   }
   // producing coarse space vector
   set_zero(chv);
+#pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Vector<ComplexF> vbs = lm.cesb.get_elems_const(xl);
@@ -102,7 +109,6 @@ inline void deflate(HalfVector& hv_out, const HalfVector& hv_in, const LowModes&
     // compute inner products
     Vector<Complex> vc = chv.get_elems(xl);
     for (int i = 0; i < n_vec; ++i) {
-#pragma omp parallel for
       for (int j = 0; j < n_basis; ++j) {
         vc[j] += (Complex)(vcs[i * n_basis + j]) * phv_sum[i];
       }
@@ -110,7 +116,6 @@ inline void deflate(HalfVector& hv_out, const HalfVector& hv_in, const LowModes&
     // project to fine grid
     Vector<ComplexF> vb = bhv.get_elems(xl);
     for (int j = 0; j < n_basis; ++j) {
-#pragma omp parallel for
       for (long k = 0; k < block_size; ++k) {
         vb[k] += vbs[j * block_size + k] * (ComplexF)vc[j];
       }
@@ -169,8 +174,8 @@ struct InverterParams
   void init()
   {
     stop_rsd = 1.0e-8;
-    max_num_iter = 50000;
-    max_mixed_precision_cycle = 100;
+    max_num_iter = 200;
+    max_mixed_precision_cycle = 300;
   }
   //
   InverterParams()
@@ -1131,13 +1136,13 @@ inline Complex dot_product(const FermionField5d& ff1, const FermionField5d& ff2)
 }
 
 template <class Inv>
-inline long cg_with_f(FermionField5d& out, const FermionField5d& in, const Inv& inv, void f(FermionField5d&, const FermionField5d&, const Inv&))
+inline long cg_with_f(FermionField5d& out, const FermionField5d& in, const Inv& inv, void f(FermionField5d&, const FermionField5d&, const Inv&), const double stop_rsd = 1e-8, const long max_num_iter = 50000)
   // f(out, in, inv);
 {
   TIMER_VERBOSE("cg_with_f");
   const Geometry geo = geo_resize(in.geo);
   out.init(geo);
-  if (inv.max_num_iter() == 0) {
+  if (max_num_iter == 0) {
     return 0;
   }
   FermionField5d r, p, tmp, ap;
@@ -1149,8 +1154,9 @@ inline long cg_with_f(FermionField5d& out, const FermionField5d& in, const Inv& 
   r -= tmp;
   p = r;
   const double norm_in = norm(in);
+  displayln_info(fname + ssprintf(": start max_num_iter=%4ld        sqrt(norm_in)=%.3E stop_rsd=%.3E ", max_num_iter, sqrt(norm_in), stop_rsd));
   double norm_r = norm(r);
-  for (long iter = 0; iter < inv.max_num_iter(); ++iter) {
+  for (long iter = 0; iter < max_num_iter; ++iter) {
     f(ap, p, inv);
     const double alpha = norm_r / dot_product(p, ap).real();
     tmp = p;
@@ -1160,9 +1166,11 @@ inline long cg_with_f(FermionField5d& out, const FermionField5d& in, const Inv& 
     tmp *= alpha;
     r -= tmp;
     const double new_norm_r = norm(r);
-    // displayln_info(fname + ssprintf(": iter=%ld %E", iter, sqrt(new_norm_r / norm_in)));
-    if (new_norm_r <= norm_in * sqr(inv.stop_rsd())) {
-      displayln_info(fname + ssprintf(": iter=%ld %E", iter, sqrt(new_norm_r / norm_in)));
+    if (is_cg_verbose()) {
+      displayln_info(fname + ssprintf(": iter=%4ld sqrt(norm_r/norm_in)=%.3E stop_rsd=%.3E", iter, sqrt(new_norm_r / norm_in), stop_rsd));
+    }
+    if (new_norm_r <= norm_in * sqr(stop_rsd)) {
+      displayln_info(fname + ssprintf(": final iter=%4ld sqrt(norm_r/norm_in)=%.3E stop_rsd=%.3E", iter, sqrt(new_norm_r / norm_in), stop_rsd));
       return iter;
     }
     const double beta = new_norm_r / norm_r;
@@ -1170,7 +1178,8 @@ inline long cg_with_f(FermionField5d& out, const FermionField5d& in, const Inv& 
     p += r;
     norm_r = new_norm_r;
   }
-  displayln_info(fname + ssprintf(": max_num_iter=%ld %E", inv.max_num_iter(), sqrt(norm_r / norm_in)));
+  displayln_info(fname + ssprintf(": final max_num_iter=%4ld sqrt(norm_r/norm_in)=%.3E stop_rsd=%.3E", max_num_iter, sqrt(norm_r / norm_in), stop_rsd));
+  return -max_num_iter;
 }
 
 inline void inverse(FermionField5d& out, const FermionField5d& in, const InverterDomainWall& inv)
@@ -1189,10 +1198,29 @@ inline void inverse(FermionField5d& out, const FermionField5d& in, const Inverte
     in_o -= tmp;
     multiply_mpcdag_sym2(in_o, in_o, inv);
     //
-    if (not inv.lm.null()) {
-      deflate(out_o, in_o, inv.lm());
+    out_o.init(in_o.geo);
+    set_zero(out_o);
+    const double norm_in_o = norm(in_o);
+    FermionField5d itmp;
+    itmp = in_o;
+    double norm_itmp = norm_in_o;
+    for (int k = 0; k < inv.max_mixed_precision_cycle(); ++k) {
+      if (not inv.lm.null()) {
+        deflate(tmp, itmp, inv.lm());
+      } else {
+        set_zero(tmp);
+      }
+      const long iter = cg_with_f(tmp, itmp, inv, multiply_hermop_sym2, inv.stop_rsd() * sqrt(norm_in_o / norm_itmp), inv.max_num_iter());
+      out_o += tmp;
+      if (iter >= 0) {
+        itmp.init();
+        break;
+      }
+      multiply_hermop_sym2(itmp, out_o, inv);
+      itmp *= -1.0;
+      itmp += in_o;
+      norm_itmp = norm(itmp);
     }
-    cg_with_f(out_o, in_o, inv, multiply_hermop_sym2);
     //
     multiply_m_e_e_inv(out_o, out_o, inv);
     multiply_m_e_o(tmp, out_o, inv);
@@ -1210,6 +1238,11 @@ inline void inverse(FermionField5d& out, const FermionField5d& in, const Inverte
     tmp -= in;
     displayln_info(fname + ssprintf(": %E from %E", norm(tmp), norm(in)));
   }
+}
+
+inline void inverse(FermionField4d& out, const FermionField4d& in, const InverterDomainWall& inv)
+{
+  inverse_dwf(out, in, inv);
 }
 
 QLAT_END_NAMESPACE

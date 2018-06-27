@@ -43,6 +43,7 @@ void simple_tests()
   set_g_rand_color_matrix_field(gf, RngState(rs, "gf-0.1"), 0.1);
   gf_show_info(gf, 1);
   InverterDomainWall inv;
+  inv.stop_rsd() = 1e-12;
   setup_inverter(inv, gf, fa);
   FermionField4d ff4din;
   ff4din.init(geo);
