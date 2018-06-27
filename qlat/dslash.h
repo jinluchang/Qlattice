@@ -1213,6 +1213,7 @@ inline void inverse(FermionField5d& out, const FermionField5d& in, const Inverte
       const long iter = cg_with_f(tmp, itmp, inv, multiply_hermop_sym2, inv.stop_rsd() * sqrt(norm_in_o / norm_itmp), inv.max_num_iter());
       out_o += tmp;
       if (iter >= 0) {
+        displayln_info(fname + ssprintf(": total_iter=%ld cycle=%d stop_rsd=%.3E", k*inv.max_num_iter() + iter, k, inv.stop_rsd()));
         itmp.init();
         break;
       }
