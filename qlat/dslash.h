@@ -9,7 +9,7 @@ QLAT_START_NAMESPACE
 inline bool& is_checking_inverse()
   // qlat parameter
 {
-  static bool b = false;
+  static bool b = true;
   return b;
 }
 
@@ -377,23 +377,20 @@ inline void multiply_d_minus(FermionField5d& out, const FermionField5d& in, cons
 {
   TIMER("multiply_d_minus(5d,5d,Inv)");
   const Geometry geo = geo_resize(in.geo);
-  out.init(geo);
-  set_zero(out);
   const FermionAction& fa = inv.fa;
   qassert(is_matching_geo(inv.geo, in.geo));
-  qassert(is_matching_geo(inv.geo, out.geo));
   qassert(in.geo.multiplicity == fa.ls);
-  qassert(out.geo.multiplicity == fa.ls);
   qassert(fa.bs.size() == fa.ls);
   qassert(fa.cs.size() == fa.ls);
   const GaugeField& gf = inv.gf;
   const Geometry geo1 = geo_resize(in.geo, 1);
-  FermionField5d in1;
+  FermionField5d in1, out1;
   in1.init(geo1);
+  out1.init(geo);
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
-    Vector<WilsonVector> v = out.get_elems(xl);
+    Vector<WilsonVector> v = out1.get_elems(xl);
     Vector<WilsonVector> v1 = in1.get_elems(xl);
     const Vector<WilsonVector> iv = in.get_elems_const(xl);
     for (int m = 0; m < fa.ls; ++m) {
@@ -403,8 +400,10 @@ inline void multiply_d_minus(FermionField5d& out, const FermionField5d& in, cons
     }
   }
   refresh_expanded_1(in1);
-  FermionField5d out1;
-  multiply_wilson_d_no_comm(out1, in1, gf, -fa.m5);
+  out.init(geo);
+  qassert(out.geo.multiplicity == fa.ls);
+  qassert(is_matching_geo(inv.geo, out.geo));
+  multiply_wilson_d_no_comm(out, in1, gf, -fa.m5);
   out += out1;
 }
 
@@ -1186,11 +1185,17 @@ inline void inverse(FermionField5d& out, const FermionField5d& in, const Inverte
 {
   TIMER_VERBOSE("inverse(5d,5d,inv)");
   out.init(geo_resize(in.geo));
+  FermionField5d dm_in;
+  if (inv.fa.is_multiplying_dminus) {
+    multiply_d_minus(dm_in, in, inv);
+  } else {
+    dm_in = in;
+  }
   if (inv.fa.is_using_zmobius == true and inv.fa.cg_diagonal_mee == 2) {
     FermionField5d in_e, in_o;
     FermionField5d out_e, out_o;
-    get_half_fermion(in_e, in, 2);
-    get_half_fermion(in_o, in, 1);
+    get_half_fermion(in_e, dm_in, 2);
+    get_half_fermion(in_o, dm_in, 1);
     //
     FermionField5d tmp;
     multiply_m_e_e_inv(out_e, in_e, inv);
@@ -1213,7 +1218,7 @@ inline void inverse(FermionField5d& out, const FermionField5d& in, const Inverte
       const long iter = cg_with_f(tmp, itmp, inv, multiply_hermop_sym2, inv.stop_rsd() * sqrt(norm_in_o / norm_itmp), inv.max_num_iter());
       out_o += tmp;
       if (iter >= 0) {
-        displayln_info(fname + ssprintf(": total_iter=%ld cycle=%d stop_rsd=%.3E", k*inv.max_num_iter() + iter, k, inv.stop_rsd()));
+        displayln_info(fname + ssprintf(": total_iter=%ld cycle=%d stop_rsd=%.3E", k*inv.max_num_iter() + iter, k + 1, inv.stop_rsd()));
         itmp.init();
         break;
       }
@@ -1236,8 +1241,8 @@ inline void inverse(FermionField5d& out, const FermionField5d& in, const Inverte
   if (is_checking_inverse()) {
     FermionField5d tmp;
     multiply_m(tmp, out, inv);
-    tmp -= in;
-    displayln_info(fname + ssprintf(": %E from %E", norm(tmp), norm(in)));
+    tmp -= dm_in;
+    displayln_info(fname + ssprintf(": checking %E from %E", sqrt(norm(tmp)), sqrt(norm(dm_in))));
   }
 }
 

@@ -156,7 +156,9 @@ void simple_tests()
   displayln_info(ssprintf("tmp norm = %E", norm(tmp)));
   FermionField5d sol;
   inverse(sol, tmp, inv);
-  sol -= ff5dout;
+  multiply_d_minus(tmp, tmp, inv);
+  multiply_m(sol, sol, inv);
+  sol -= tmp;
   displayln_info(ssprintf("inverse diff norm = %E", norm(sol)));
 }
 
