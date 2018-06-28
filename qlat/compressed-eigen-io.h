@@ -145,6 +145,11 @@ struct CompressedEigenSystemInfo
   //
   CompressedEigenSystemInfo()
   {
+    init();
+  }
+  //
+  void init()
+  {
     initialized = false;
   }
 };

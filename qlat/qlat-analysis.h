@@ -425,7 +425,7 @@ inline ConfigurationsInfo make_configurations_info_32c64_dsdr_mu0p001_ms0p045_un
 
 inline std::string find_conf_24c64_dsdr_mu0p0017_ms0p0850(const int traj)
 {
-  const std::string parent_path = get_env("HOME") + "/qcdarchive-jtu/24nt64/IWASAKI+DSDR/b1.633/ls24/M1.8/ms0.0850/ml0.00107";
+  const std::string parent_path = get_env("HOME") + "/hlbl/ljin/chulwoo/qcddata/DWF/2+1f/24nt64/IWASAKI+DSDR/b1.633/ls24/M1.8/ms0.0850/ml0.00107";
   const std::string fname = "/ckpoint_lat.";
   std::string path;
   path = parent_path +
@@ -488,7 +488,8 @@ inline ConfigurationsInfo make_configurations_info_24c64_dsdr_mu0p00107_ms0p0850
       ci.traj = traj;
       ci.path = find_conf_24c64_dsdr_mu0p0017_ms0p0850(traj);
       ci.conf_format = "cps";
-      ci.low_modes_path = get_env("HOME") + ssprintf("/application/Public/Muon-GM2-cc/jobs/24D/lancs/qcdtraj=%d/huge-data-clanc", traj);
+      // ci.low_modes_path = get_env("HOME") + ssprintf("/application/Public/Muon-GM2-cc/jobs/24D/lancs/qcdtraj=%d/huge-data-clanc", traj);
+      ci.low_modes_path = get_env("HOME") + ssprintf("/hlbl/clehner/evec-cache/24D/job-%05d/lanczos.output", traj);
       if (ci.path != "") {
         csi.infos.push_back(ci);
       }

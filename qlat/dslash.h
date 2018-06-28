@@ -22,24 +22,43 @@ inline bool& is_cg_verbose()
 
 struct LowModes
 {
+  bool initialized;
   std::vector<double> eigen_values;
   CompressedEigenSystemInfo cesi;
   CompressedEigenSystemBases cesb;
   CompressedEigenSystemCoefs cesc;
+  //
+  LowModes()
+  {
+    init();
+  }
+  //
+  void init()
+  {
+    initialized = false;
+    clear(eigen_values);
+    cesi.init();
+    cesb.init();
+    cesc.init();
+  }
 };
 
-inline void load_low_modes(LowModes& lm, const std::string& path)
+inline long load_low_modes(LowModes& lm, const std::string& path)
 {
   TIMER_VERBOSE("load_low_modes");
-  load_compressed_eigen_vectors(lm.eigen_values, lm.cesi, lm.cesb, lm.cesc, path);
+  const long total_bytes = load_compressed_eigen_vectors(lm.eigen_values, lm.cesi, lm.cesb, lm.cesc, path);
+  if (0 != total_bytes) {
+    lm.initialized = true;
+  }
+  return total_bytes;
 }
 
-inline void load_or_compute_low_modes(LowModes& lm, const std::string& path,
+inline long load_or_compute_low_modes(LowModes& lm, const std::string& path,
     const GaugeField& gf, const FermionAction& fa, const LancArg& la)
   // TODO: currently only load low modes
 {
   TIMER_VERBOSE("load_or_compute_low_modes");
-  load_low_modes(lm, path);
+  return load_low_modes(lm, path);
 }
 
 inline void deflate(HalfVector& hv_out, const HalfVector& hv_in, const LowModes& lm)
