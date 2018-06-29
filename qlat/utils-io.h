@@ -256,7 +256,9 @@ inline std::string qcat(const std::string& path)
 {
   TIMER("qcat");
   FILE* fp = qopen(path, "r");
-  qassert(fp != NULL);
+  if (fp == NULL) {
+    return "";
+  }
   fseek(fp, 0, SEEK_END);
   const long length = ftell(fp);
   fseek(fp, 0, SEEK_SET);
