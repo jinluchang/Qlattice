@@ -1202,7 +1202,7 @@ inline long cg_with_f(FermionField5d& out, const FermionField5d& in, const Inv& 
 
 inline void inverse(FermionField5d& out, const FermionField5d& in, const InverterDomainWall& inv)
 {
-  TIMER_VERBOSE("inverse(5d,5d,inv)");
+  TIMER_VERBOSE_FLOPS("inverse(5d,5d,inv)");
   out.init(geo_resize(in.geo));
   FermionField5d dm_in;
   if (inv.fa.is_multiplying_dminus) {
@@ -1237,7 +1237,9 @@ inline void inverse(FermionField5d& out, const FermionField5d& in, const Inverte
       const long iter = cg_with_f(tmp, itmp, inv, multiply_hermop_sym2, inv.stop_rsd() * sqrt(norm_in_o / norm_itmp), inv.max_num_iter());
       out_o += tmp;
       if (iter >= 0) {
-        displayln_info(fname + ssprintf(": total_iter=%ld cycle=%d stop_rsd=%.3E", k*inv.max_num_iter() + iter, k + 1, inv.stop_rsd()));
+        const long total_iter = k*inv.max_num_iter() + iter;
+        timer.flops += 5500 * total_iter * inv.fa.ls * inv.geo.local_volume();
+        displayln_info(fname + ssprintf(": total_iter=%ld cycle=%d stop_rsd=%.3E", total_iter, k + 1, inv.stop_rsd()));
         itmp.init();
         break;
       }

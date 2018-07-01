@@ -44,11 +44,20 @@ void simple_tests()
   gf_show_info(gfs, 1);
 }
 
+void show_matrix()
+{
+  const std::array<SpinMatrix,16>& cps_gms = SpinMatrixConstants::get_cps_gms();
+  for (int i = 0; i < 16; ++i) {
+    displayln_info(ssprintf("cps_gms[%d] =\n", i) + show(cps_gms[i]));
+  }
+}
+
 int main(int argc, char* argv[])
 {
   Timer::max_function_name_length_shown() = 50;
   begin(&argc, &argv);
   get_global_rng_state() = RngState(get_global_rng_state(), "qcd-utils-tests");
+  show_matrix();
   simple_tests();
   end();
   Timer::display();

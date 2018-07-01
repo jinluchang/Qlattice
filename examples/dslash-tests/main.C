@@ -11,7 +11,7 @@ void simple_tests()
   TIMER_VERBOSE("simple_tests");
   RngState rs(get_global_rng_state(), fname);
   // const Coordinate total_site(16, 16, 16, 32);
-  // const Coordinate total_site(8, 8, 8, 8);
+  // const Coordinate total_site(8, 8, 8, 16);
   const Coordinate total_site(4, 4, 4, 8);
   FermionAction fa(0.1, 12, 1.8, 2.5 + 1.5);
   fa.is_using_zmobius = true;

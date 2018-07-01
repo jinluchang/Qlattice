@@ -356,13 +356,13 @@ struct SpinMatrixConstants
         0,  -1,   0,   0,
         0,   0,   1,   0,
         0,   0,   0,  -1;
-    for (int a = 0; a < 1; ++a) {
+    for (int a = 0; a < 2; ++a) {
       const SpinMatrix ma = a == 0 ? unit : gammas[0];
-      for (int b = 0; b < 1; ++b) {
+      for (int b = 0; b < 2; ++b) {
         const SpinMatrix mb = b == 0 ? ma : (SpinMatrix)(ma * gammas[1]);
-        for (int c = 0; c < 1; ++c) {
+        for (int c = 0; c < 2; ++c) {
           const SpinMatrix mc = c == 0 ? mb : (SpinMatrix)(mb * gammas[2]);
-          for (int d = 0; d < 1; ++d) {
+          for (int d = 0; d < 2; ++d) {
             const SpinMatrix md = d == 0 ? mc : (SpinMatrix)(mc * gammas[3]);
             const int idx = a + 2 * b + 4 * c + 8 * d;
             gms[idx] = md;
@@ -370,13 +370,13 @@ struct SpinMatrixConstants
         }
       }
     }
-    for (int a = 0; a < 1; ++a) {
+    for (int a = 0; a < 2; ++a) {
       const SpinMatrix ma = a == 0 ? unit : cps_gammas[0];
-      for (int b = 0; b < 1; ++b) {
+      for (int b = 0; b < 2; ++b) {
         const SpinMatrix mb = b == 0 ? ma : (SpinMatrix)(ma * cps_gammas[1]);
-        for (int c = 0; c < 1; ++c) {
+        for (int c = 0; c < 2; ++c) {
           const SpinMatrix mc = c == 0 ? mb : (SpinMatrix)(mb * cps_gammas[2]);
-          for (int d = 0; d < 1; ++d) {
+          for (int d = 0; d < 2; ++d) {
             const SpinMatrix md = d == 0 ? mc : (SpinMatrix)(mc * cps_gammas[3]);
             const int idx = a + 2 * b + 4 * c + 8 * d;
             cps_gms[idx] = md;
