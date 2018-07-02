@@ -1246,7 +1246,8 @@ inline void inverse_with_cg(
     itmp = in_o;
     double norm_itmp = norm_in_o;
     long total_iter = 0;
-    for (int k = 1; k <= inv.max_mixed_precision_cycle(); ++k) {
+    int cycle;
+    for (cycle = 1; cycle <= inv.max_mixed_precision_cycle(); ++cycle) {
       if (not inv.lm.null()) {
         deflate(tmp, itmp, inv.lm());
       } else {
@@ -1256,8 +1257,6 @@ inline void inverse_with_cg(
       total_iter += iter;
       out_o += tmp;
       if (iter <= inv.max_num_iter()) {
-        timer.flops += 5500 * total_iter * inv.fa.ls * inv.geo.local_volume();
-        displayln_info(fname + ssprintf(": total_iter=%ld cycle=%d stop_rsd=%.3E", total_iter, k, inv.stop_rsd()));
         itmp.init();
         break;
       }
@@ -1266,6 +1265,9 @@ inline void inverse_with_cg(
       itmp += in_o;
       norm_itmp = norm(itmp);
     }
+    timer.flops += 5500 * total_iter * inv.fa.ls * inv.geo.local_volume();
+    displayln_info(fname + ssprintf(": total_iter=%ld cycle=%d stop_rsd=%.3E",
+          total_iter, cycle, inv.stop_rsd()));
     //
     multiply_m_e_e_inv(out_o, out_o, inv);
     multiply_m_e_o(tmp, out_o, inv);
