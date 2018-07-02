@@ -76,7 +76,7 @@ void grid_end()
   system("rm /dev/shm/Grid*");
 }
 
-void grid_convert(Grid::QCD::LatticeGaugeField& ggf, const GaugeField& gf)
+void grid_convert(Grid::QCD::LatticeGaugeFieldF& ggf, const GaugeField& gf)
 {
   TIMER_VERBOSE("grid_convert(ggf,gf)");
   using namespace Grid;
@@ -87,14 +87,22 @@ void grid_convert(Grid::QCD::LatticeGaugeField& ggf, const GaugeField& gf)
     const Coordinate xl = geo.coordinate_from_index(index);
     std::vector<int> coor = grid_convert(xl);
     const Vector<ColorMatrix> ms = gf.get_elems_const(xl);
-    LorentzColourMatrix gms;
-    qassert(sizeof(LorentzColourMatrix) == ms.data_size());
-    memcpy(&gms, ms.data(), ms.data_size());
+    LorentzColourMatrixF gms;
+    std::array<float,sizeof(LorentzColourMatrixF)/sizeof(float)>& fs =
+      (std::array<float,sizeof(LorentzColourMatrixF)/sizeof(float)>&) gms;
+    std::array<double,sizeof(LorentzColourMatrixF)/sizeof(float)>& ds =
+      *((std::array<double,sizeof(LorentzColourMatrixF)/sizeof(float)>*)ms.data());
+    qassert(sizeof(LorentzColourMatrixF) * 2 == ms.data_size());
+    qassert(fs.size() * sizeof(double) == ms.data_size());
+    qassert(fs.size() == ds.size());
+    for (int i = 0; i < fs.size(); ++i) {
+      fs[i] = ds[i];
+    }
     pokeLocalSite(gms, ggf, coor);
   }
 }
 
-void grid_convert(FermionField5d& ff, const Grid::QCD::LatticeFermion& gff)
+void grid_convert(FermionField5d& ff, const Grid::QCD::LatticeFermionF& gff)
   // ff need to be initialized with correct geo
 {
   TIMER_VERBOSE("grid_convert(ff,gff)");
@@ -106,14 +114,20 @@ void grid_convert(FermionField5d& ff, const Grid::QCD::LatticeFermion& gff)
     const Coordinate xl = geo.coordinate_from_index(index);
     std::vector<int> coor = grid_convert(xl, 0);
     Vector<WilsonVector> wvs = ff.get_elems(xl);
+    std::array<float, sizeof(WilsonVector)/sizeof(double)> fs;
     for (int m = 0; m < geo.multiplicity; ++m) {
       coor[0] = m;
-      peekLocalSite(wvs[m], gff, coor);
+      peekLocalSite(fs, gff, coor);
+      std::array<double, sizeof(WilsonVector)/sizeof(double)>& ds =
+        (std::array<double, sizeof(WilsonVector)/sizeof(double)>&)wvs[m];
+      for (int k = 0; k < sizeof(WilsonVector)/sizeof(double); ++k) {
+        ds[k] = fs[k];
+      }
     }
   }
 }
 
-void grid_convert(Grid::QCD::LatticeFermion& gff, const FermionField5d& ff)
+void grid_convert(Grid::QCD::LatticeFermionF& gff, const FermionField5d& ff)
 {
   TIMER_VERBOSE("grid_convert(gff,ff)");
   using namespace Grid;
@@ -124,28 +138,28 @@ void grid_convert(Grid::QCD::LatticeFermion& gff, const FermionField5d& ff)
     const Coordinate xl = geo.coordinate_from_index(index);
     std::vector<int> coor = grid_convert(xl, 0);
     const Vector<WilsonVector> wvs = ff.get_elems_const(xl);
+    std::array<float, sizeof(WilsonVector)/sizeof(double)> fs;
     for (int m = 0; m < geo.multiplicity; ++m) {
       coor[0] = m;
-      pokeLocalSite(wvs[m], gff, coor);
+      const std::array<double, sizeof(WilsonVector)/sizeof(double)>& ds =
+        (const std::array<double, sizeof(WilsonVector)/sizeof(double)>&)wvs[m];
+      for (int k = 0; k < sizeof(WilsonVector)/sizeof(double); ++k) {
+        fs[k] = ds[k];
+      }
+      pokeLocalSite(fs, gff, coor);
     }
   }
 }
 
-struct InverterDomainWallGrid
+struct InverterDomainWallGrid : InverterDomainWall
 {
-  Geometry geo;
-  FermionAction fa;
-  GaugeField gf;
-  InverterParams ip;
-  //
   Grid::GridCartesian* UGrid = NULL;
   Grid::GridRedBlackCartesian* UrbGrid = NULL;
   Grid::GridCartesian* FGrid = NULL;
   Grid::GridRedBlackCartesian* FrbGrid = NULL;
-  Grid::QCD::LatticeGaugeField* Umu = NULL;
-  Grid::QCD::DomainWallFermionR* Ddwf = NULL;
-  Grid::ConjugateGradient<Grid::QCD::LatticeFermion>* CG = NULL;
-  Grid::QCD::SchurRedBlackDiagMooeeSolve<Grid::QCD::LatticeFermion>* SchurSolver = NULL;
+  Grid::QCD::LatticeGaugeFieldF* Umu = NULL;
+  Grid::QCD::ZMobiusFermionF* Ddwf = NULL;
+  Grid::QCD::SchurDiagTwoOperator<Grid::QCD::ZMobiusFermionF, Grid::QCD::LatticeFermionF>* HermOp = NULL;
   //
   InverterDomainWallGrid()
   {
@@ -158,8 +172,8 @@ struct InverterDomainWallGrid
   //
   void init()
   {
-    ip.init();
     free();
+    InverterDomainWall::init();
   }
   //
   void setup()
@@ -171,42 +185,37 @@ struct InverterDomainWallGrid
     const Coordinate total_site = geo.total_site();
     const Coordinate size_node = geo.geon.size_node;
     UGrid = SpaceTimeGrid::makeFourDimGrid(grid_convert(total_site),
-        GridDefaultSimd(Nd,vComplex::Nsimd()), grid_convert(size_node));
+        GridDefaultSimd(Nd,vComplexF::Nsimd()), grid_convert(size_node));
     UrbGrid = SpaceTimeGrid::makeFourDimRedBlackGrid(UGrid);
     FGrid = SpaceTimeGrid::makeFiveDimGrid(fa.ls, UGrid);
     FrbGrid = SpaceTimeGrid::makeFiveDimRedBlackGrid(fa.ls, UGrid);
     qassert(geo.geon.id_node == id_node_from_grid(UGrid));
-    Umu = new LatticeGaugeField(UGrid);
+    Umu = new LatticeGaugeFieldF(UGrid);
     grid_convert(*Umu, gf);
-    Ddwf = new DomainWallFermionR(*Umu, *FGrid, *FrbGrid, *UGrid, *UrbGrid, fa.mass, fa.m5);
-    CG = new ConjugateGradient<LatticeFermion>(ip.stop_rsd, ip.max_num_iter);
-    SchurSolver = new SchurRedBlackDiagMooeeSolve<LatticeFermion>(*CG);
+    std::vector<Complex> omega(fa.ls, 0.0);
+    for (int i = 0; i < fa.ls; ++i) {
+      omega[i] = 1.0 / (fa.bs[i] + fa.cs[i]);
+    }
+    Ddwf = new ZMobiusFermionF(*Umu, *FGrid, *FrbGrid, *UGrid, *UrbGrid, fa.mass, fa.m5, omega, 1.0, 0.0);
+    HermOp = new Grid::QCD::SchurDiagTwoOperator<ZMobiusFermionF, LatticeFermionF>(*Ddwf);
   }
   void setup(const GaugeField& gf_, const FermionAction& fa_)
   {
-    geo = geo_reform(gf_.geo);
-    gf.init();
-    gf.init(geo);
-    gf = gf_;
-    fa = fa_;
+    InverterDomainWall::setup(gf_, fa_);
     setup();
   }
   void setup(const GaugeField& gf_, const FermionAction& fa_, const LowModes& lm_)
   {
-    setup(gf_, fa_);
-    // TODO
+    InverterDomainWall::setup(gf_, fa_, lm_);
+    setup();
   }
   //
   void free()
   {
     TIMER_VERBOSE("InvGrid::free");
-    if (SchurSolver != NULL) {
-      delete SchurSolver;
-      SchurSolver = NULL;
-    }
-    if (CG != NULL) {
-      delete CG;
-      CG = NULL;
+    if (HermOp != NULL) {
+      delete HermOp;
+      HermOp = NULL;
     }
     if (Ddwf != NULL) {
       delete Ddwf;
@@ -233,21 +242,6 @@ struct InverterDomainWallGrid
       UGrid = NULL;
     }
   }
-  //
-  double& stop_rsd()
-  {
-    return ip.stop_rsd;
-  }
-  //
-  long& max_num_iter()
-  {
-    return ip.max_num_iter;
-  }
-  //
-  long& max_mixed_precision_cycle()
-  {
-    return ip.max_mixed_precision_cycle;
-  }
 };
 
 inline void setup_inverter(InverterDomainWallGrid& inv)
@@ -265,28 +259,28 @@ inline void setup_inverter(InverterDomainWallGrid& inv, const GaugeField& gf, co
   inv.setup(gf, fa, lm);
 }
 
-inline void multiply_m(FermionField5d& out, const FermionField5d& in, const InverterDomainWallGrid& inv)
+inline void multiply_m_grid(FermionField5d& out, const FermionField5d& in, const InverterDomainWallGrid& inv)
 {
-  TIMER("multiply_m(5d,5d,InvGrid)");
+  TIMER("multiply_m_grid(5d,5d,InvGrid)");
   out.init(geo_resize(in.geo));
   using namespace Grid;
   using namespace Grid::QCD;
   GridCartesian* FGrid = inv.FGrid;
-  LatticeFermion gin(FGrid), gout(FGrid);
+  LatticeFermionF gin(FGrid), gout(FGrid);
   grid_convert(gin, in);
   (*inv.Ddwf).M(gin, gout);
   grid_convert(out, gout);
 }
 
-inline void inverse(FermionField5d& sol, const FermionField5d& src, const InverterDomainWallGrid& inv)
+inline void inverse_grid_no_dminus(FermionField5d& sol, const FermionField5d& src, const InverterDomainWallGrid& inv)
   // sol do not need to be initialized
 {
-  TIMER_VERBOSE("inverse(5d,5d,InvGrid)");
+  TIMER_VERBOSE("inverse_grid_no_dminus(5d,5d,InvGrid)");
   sol.init(geo_resize(src.geo));
   using namespace Grid;
   using namespace Grid::QCD;
   GridCartesian* FGrid = inv.FGrid;
-  LatticeFermion gsrc(FGrid), gsol(FGrid);
+  LatticeFermionF gsrc(FGrid), gsol(FGrid);
   grid_convert(gsrc, src);
   grid_convert(gsol, sol);
   if (is_checking_inverse()) {
@@ -297,7 +291,9 @@ inline void inverse(FermionField5d& sol, const FermionField5d& src, const Invert
     grid_convert(ff, gsol);
     displayln_info(fname + ssprintf(": sol norm = %24.17E", norm(ff)));
   }
-  (*inv.SchurSolver)(*inv.Ddwf, gsrc, gsol);
+  ConjugateGradient<LatticeFermionF> CG(inv.ip.stop_rsd, inv.ip.max_num_iter, false);
+  SchurRedBlackDiagMooeeSolve<LatticeFermionF> SchurSolver(CG);
+  SchurSolver(*inv.Ddwf, gsrc, gsol);
   grid_convert(sol, gsol);
   if (is_checking_inverse()) {
     FermionField5d src1;
@@ -307,6 +303,34 @@ inline void inverse(FermionField5d& sol, const FermionField5d& src, const Invert
     displayln_info(fname + ssprintf(": diff norm = %24.17E", norm(src1)));
     displayln_info(fname + ssprintf(": sol after norm = %24.17E", norm(sol)));
   }
+}
+
+inline long cg_with_herm_sym_2(FermionField5d& sol, const FermionField5d& src, const InverterDomainWallGrid& inv,
+    const double stop_rsd = 1e-8, const long max_num_iter = 50000)
+{
+  TIMER_VERBOSE_FLOPS("cg_with_herm_sym_2(5d,5d,InvGrid)");
+  sol.init(geo_resize(src.geo));
+  qassert(sol.geo.eo == 1);
+  qassert(src.geo.eo == 1);
+  using namespace Grid;
+  using namespace Grid::QCD;
+  GridRedBlackCartesian* FrbGrid = inv.FrbGrid;
+  LatticeFermionF gsrc(FrbGrid), gsol(FrbGrid);
+  gsrc.checkerboard = Odd;
+  gsol.checkerboard = Odd;
+  grid_convert(gsrc, src);
+  grid_convert(gsol, sol);
+  ConjugateGradient<LatticeFermionF> CG(stop_rsd, max_num_iter, false);
+  CG(*inv.HermOp, gsrc, gsol);
+  grid_convert(sol, gsol);
+  const long iter = CG.IterationsToComplete;
+  timer.flops += 5500 * iter * inv.fa.ls * inv.geo.local_volume();
+  return iter;
+}
+
+inline void inverse(FermionField5d& sol, const FermionField5d& src, const InverterDomainWallGrid& inv)
+{
+  inverse_with_cg(sol, src, inv, cg_with_herm_sym_2);
 }
 
 inline void inverse(FermionField4d& sol, const FermionField4d& src, const InverterDomainWallGrid& inv)

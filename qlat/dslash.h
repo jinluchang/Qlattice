@@ -218,25 +218,32 @@ struct InverterDomainWall
   //
   void init()
   {
+    geo.init();
+    fa.init();
+    gf.init();
     ip.init();
+    lm.init();
   }
   //
   void setup()
   {
-    TIMER_VERBOSE("Inv::setup");
-    lm.init();
   }
   void setup(const GaugeField& gf_, const FermionAction& fa_)
   {
+    TIMER_VERBOSE("Inv::setup(gf,fa)");
     geo = geo_reform(gf_.geo);
     gf.init();
     set_left_expanded_gauge_field(gf, gf_);
     fa = fa_;
-    setup();
+    lm.init();
   }
   void setup(const GaugeField& gf_, const FermionAction& fa_, const LowModes& lm_)
   {
-    setup(gf_, fa_);
+    TIMER_VERBOSE("Inv::setup(gf,fa,lm)");
+    geo = geo_reform(gf_.geo);
+    gf.init();
+    set_left_expanded_gauge_field(gf, gf_);
+    fa = fa_;
     lm.init(lm_);
   }
   //
@@ -268,17 +275,20 @@ struct InverterDomainWall
   }
 };
 
-inline void setup_inverter(InverterDomainWall& inv)
+template <class Inv>
+void setup_inverter(Inv& inv)
 {
   inv.setup();
 }
 
-inline void setup_inverter(InverterDomainWall& inv, const GaugeField& gf, const FermionAction& fa)
+template <class Inv>
+void setup_inverter(Inv& inv, const GaugeField& gf, const FermionAction& fa)
 {
   inv.setup(gf, fa);
 }
 
-inline void setup_inverter(InverterDomainWall& inv, const GaugeField& gf, const FermionAction& fa, const LowModes& lm)
+template <class Inv>
+void setup_inverter(Inv& inv, const GaugeField& gf, const FermionAction& fa, const LowModes& lm)
 {
   inv.setup(gf, fa, lm);
 }
@@ -1154,10 +1164,13 @@ inline Complex dot_product(const FermionField5d& ff1, const FermionField5d& ff2)
 }
 
 template <class Inv>
-inline long cg_with_f(FermionField5d& out, const FermionField5d& in, const Inv& inv, void f(FermionField5d&, const FermionField5d&, const Inv&), const double stop_rsd = 1e-8, const long max_num_iter = 50000)
+inline long cg_with_f(
+    FermionField5d& out, const FermionField5d& in, const Inv& inv,
+    void f(FermionField5d&, const FermionField5d&, const Inv&),
+    const double stop_rsd = 1e-8, const long max_num_iter = 50000)
   // f(out, in, inv);
 {
-  TIMER_VERBOSE("cg_with_f");
+  TIMER("cg_with_f");
   const Geometry geo = geo_resize(in.geo);
   out.init(geo);
   if (max_num_iter == 0) {
@@ -1174,7 +1187,7 @@ inline long cg_with_f(FermionField5d& out, const FermionField5d& in, const Inv& 
   const double norm_in = norm(in);
   displayln_info(fname + ssprintf(": start max_num_iter=%4ld        sqrt(norm_in)=%.3E stop_rsd=%.3E ", max_num_iter, sqrt(norm_in), stop_rsd));
   double norm_r = norm(r);
-  for (long iter = 0; iter < max_num_iter; ++iter) {
+  for (long iter = 1; iter <= max_num_iter; ++iter) {
     f(ap, p, inv);
     const double alpha = norm_r / dot_product(p, ap).real();
     tmp = p;
@@ -1197,10 +1210,13 @@ inline long cg_with_f(FermionField5d& out, const FermionField5d& in, const Inv& 
     norm_r = new_norm_r;
   }
   displayln_info(fname + ssprintf(": final max_num_iter=%4ld sqrt(norm_r/norm_in)=%.3E stop_rsd=%.3E", max_num_iter, sqrt(norm_r / norm_in), stop_rsd));
-  return -max_num_iter;
+  return max_num_iter + 1;
 }
 
-inline void inverse(FermionField5d& out, const FermionField5d& in, const InverterDomainWall& inv)
+template <class Inv>
+inline void inverse_with_cg(
+    FermionField5d& out, const FermionField5d& in, const Inv& inv,
+    long cg(FermionField5d&, const FermionField5d&, const Inv&, const double, const long))
 {
   TIMER_VERBOSE_FLOPS("inverse(5d,5d,inv)");
   out.init(geo_resize(in.geo));
@@ -1210,6 +1226,7 @@ inline void inverse(FermionField5d& out, const FermionField5d& in, const Inverte
   } else {
     dm_in = in;
   }
+  displayln_info(fname + ssprintf(": dm_in norm %E", sqrt(norm(dm_in))));
   if (inv.fa.is_using_zmobius == true and inv.fa.cg_diagonal_mee == 2) {
     FermionField5d in_e, in_o;
     FermionField5d out_e, out_o;
@@ -1228,18 +1245,19 @@ inline void inverse(FermionField5d& out, const FermionField5d& in, const Inverte
     FermionField5d itmp;
     itmp = in_o;
     double norm_itmp = norm_in_o;
-    for (int k = 0; k < inv.max_mixed_precision_cycle(); ++k) {
+    long total_iter = 0;
+    for (int k = 1; k <= inv.max_mixed_precision_cycle(); ++k) {
       if (not inv.lm.null()) {
         deflate(tmp, itmp, inv.lm());
       } else {
         set_zero(tmp);
       }
-      const long iter = cg_with_f(tmp, itmp, inv, multiply_hermop_sym2, inv.stop_rsd() * sqrt(norm_in_o / norm_itmp), inv.max_num_iter());
+      const long iter = cg(tmp, itmp, inv, inv.stop_rsd() * sqrt(norm_in_o / norm_itmp), inv.max_num_iter());
+      total_iter += iter;
       out_o += tmp;
-      if (iter >= 0) {
-        const long total_iter = k*inv.max_num_iter() + iter;
+      if (iter <= inv.max_num_iter()) {
         timer.flops += 5500 * total_iter * inv.fa.ls * inv.geo.local_volume();
-        displayln_info(fname + ssprintf(": total_iter=%ld cycle=%d stop_rsd=%.3E", total_iter, k + 1, inv.stop_rsd()));
+        displayln_info(fname + ssprintf(": total_iter=%ld cycle=%d stop_rsd=%.3E", total_iter, k, inv.stop_rsd()));
         itmp.init();
         break;
       }
@@ -1265,6 +1283,20 @@ inline void inverse(FermionField5d& out, const FermionField5d& in, const Inverte
     tmp -= dm_in;
     displayln_info(fname + ssprintf(": checking %E from %E", sqrt(norm(tmp)), sqrt(norm(dm_in))));
   }
+}
+
+inline long cg_with_herm_sym_2(FermionField5d& sol, const FermionField5d& src, const InverterDomainWall& inv,
+    const double stop_rsd = 1e-8, const long max_num_iter = 50000)
+{
+  TIMER_VERBOSE_FLOPS("cg_with_herm_sym_2(5d,5d,inv)");
+  const long iter = cg_with_f(sol, src, inv, multiply_hermop_sym2, stop_rsd, max_num_iter);
+  timer.flops += 5500 * iter * inv.fa.ls * inv.geo.local_volume();
+  return iter;
+}
+
+inline void inverse(FermionField5d& out, const FermionField5d& in, const InverterDomainWall& inv)
+{
+  inverse_with_cg(out, in, inv, cg_with_herm_sym_2);
 }
 
 inline void inverse(FermionField4d& out, const FermionField4d& in, const InverterDomainWall& inv)
