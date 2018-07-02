@@ -1218,7 +1218,7 @@ inline void inverse_with_cg(
     FermionField5d& out, const FermionField5d& in, const Inv& inv,
     long cg(FermionField5d&, const FermionField5d&, const Inv&, const double, const long))
 {
-  TIMER_VERBOSE_FLOPS("inverse(5d,5d,inv)");
+  TIMER_VERBOSE_FLOPS("inverse_with_cg(5d,5d,inv,cg)");
   out.init(geo_resize(in.geo));
   FermionField5d dm_in;
   if (inv.fa.is_multiplying_dminus) {
