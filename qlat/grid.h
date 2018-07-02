@@ -61,7 +61,7 @@ inline void grid_begin(int* argc, char** argv[], const Coordinate& size_node_ = 
   const Coordinate size_node = size_node_ == Coordinate() ? plan_size_node(num_node) : size_node_;
   GridCartesian* UGrid = SpaceTimeGrid::makeFourDimGrid(
       grid_convert(size_node * 4),
-      GridDefaultSimd(Nd, vComplex::Nsimd()),
+      GridDefaultSimd(Nd, vComplexF::Nsimd()),
       grid_convert(size_node));
   UGrid->show_decomposition();
   displayln_info(ssprintf("GridThreads::GridThreads() = %d", GridThread::GetThreads()));
