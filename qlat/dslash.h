@@ -143,7 +143,7 @@ inline void deflate(HalfVector& hv_out, const HalfVector& hv_in, const LowModes&
   convert_half_vector(hv_out, bhv);
 }
 
-inline deflate(FermionField5d& out, const FermionField5d& in, const LowModes& lm)
+inline void deflate(FermionField5d& out, const FermionField5d& in, const LowModes& lm)
 {
   TIMER_VERBOSE("deflate(5d,5d,lm)");
   const Geometry& geo = geo_resize(in.geo);
