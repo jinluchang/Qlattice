@@ -422,14 +422,18 @@ long dist_read_dist_data(const std::vector<DistData<M> >& dds, const int num_nod
   crc32_t crc = dist_crc32(crcs);
   if (get_id_node() == 0) {
     const std::string fn = path + "/checksums.txt";
-    const std::vector<std::string> lines = qgetlines(fn);
-    for (size_t i = 0; i < crcs.size(); ++i) {
-      if (read_crc32(lines[i + 2]) != crcs[i]) {
-        displayln_info(fname + ssprintf(": checksums of file ; i=%d ; checksum.txt=%08X ; computed=%08X ; path=%s", i, read_crc32(lines[i+2]), crcs[i], path.c_str()));
-        qassert(false);
+    if (not does_file_exist(fn)) {
+      displayln(fname + ssprintf(": WARNING '%s' do not exist.", fn.c_str()));
+    } else {
+      const std::vector<std::string> lines = qgetlines(fn);
+      for (size_t i = 0; i < crcs.size(); ++i) {
+        if (read_crc32(lines[i + 2]) != crcs[i]) {
+          displayln(fname + ssprintf(": checksums of file ; i=%d ; checksum.txt=%08X ; computed=%08X ; path=%s", i, read_crc32(lines[i+2]), crcs[i], path.c_str()));
+          qassert(false);
+        }
       }
+      qassert(read_crc32(lines[0]) == crc);
     }
-    qassert(read_crc32(lines[0]) == crc);
   }
   timer.flops += total_bytes;
   return total_bytes;
