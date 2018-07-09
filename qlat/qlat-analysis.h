@@ -595,6 +595,61 @@ inline ConfigurationsInfo make_configurations_info_32c64_dsdr_mu0p0001_ms0p045(c
   return csi;
 }
 
+inline std::string find_conf_48c96_mu0p00078_ms0p0362(const int traj)
+{
+  const std::string parent_path = get_env("HOME") + "/qcdarchive-ljin/48nt96-ainv1.73gev-mpi139mev-ls24";
+  const std::string fname = "/ckpoint_lat.";
+  std::string path;
+  path = parent_path + fname + show(traj);
+  if (does_file_exist_sync_node(path)) {
+    return path;
+  }
+  return "";
+}
+
+inline ConfigurationsInfo make_configurations_info_48c96_mu0p00078_ms0p0362(const bool make_cis = true)
+{
+  ConfigurationsInfo csi;
+  csi.tag = "48I";
+  csi.total_site = Coordinate(48, 48, 48, 96);
+  csi.fas.push_back(FermionAction(0.00078, 10, 1.8, 4.8));
+  csi.fas.push_back(FermionAction(0.0362, 10, 1.8, 4.8));
+  csi.la = LancArg(5.5, 0.02, 200, 200, 150, 50);
+  for (int i = 0; i < csi.fas.size(); ++i) {
+    FermionAction& fa = csi.fas[i];
+    qassert(fa.bs.size() == fa.ls);
+    qassert(fa.cs.size() == fa.ls);
+    fa.is_using_zmobius = true;
+    fa.bs[0] = 8.4292038368159705e-01;
+    fa.bs[1] = 9.2289979238280184e-01;
+    fa.bs[2] = 1.1017200769981794e+00;
+    fa.bs[3] = 1.4219097980542994e+00;
+    fa.bs[4] = 1.9620523417564424e+00;
+    fa.bs[5] = 2.8654191667525488e+00;
+    fa.bs[6] = 4.4659153528626341e+00;
+    fa.bs[7] = 5.5498080139636414e+00;
+    fa.bs[8] = std::complex<double>(4.9320961582039766e+00, -3.5559998543638791e+00);
+    fa.bs[9] = std::complex<double>(4.9320961582039766e+00, 3.5559998543638791e+00);
+    for (int i = 0; i < fa.ls; i++) {
+      fa.cs[i] = fa.bs[i] - 1.0;
+    }
+  }
+  if (make_cis) {
+    for (int traj = 2000; traj >= 1000 ; traj -= 10) {
+      ConfigurationInfo ci;
+      ci.csi.init(csi);
+      ci.traj = traj;
+      ci.path = find_conf_48c96_mu0p00078_ms0p0362(traj);
+      ci.conf_format = "cps";
+      ci.low_modes_path = get_env("HOME") + ssprintf("/hlbl/clehner/evec-cache/48I/ckpoint_lat.%d.evecs", traj);
+      if (ci.path != "") {
+        csi.infos.push_back(ci);
+      }
+    }
+  }
+  return csi;
+}
+
 inline ConfigurationsInfo make_configurations_info_milc(const bool make_cis = true)
 {
   ConfigurationsInfo csi;
