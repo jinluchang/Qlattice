@@ -317,6 +317,19 @@ inline long read_low_modes(LowModesCPS& lm, const std::string& path)
   return size;
 }
 
+inline long load_low_modes(LowModesCPS& lm, const std::string& path)
+{
+  TIMER_VERBOSE("load_low_modes");
+  if (not lm.initialized) {
+    return 0;
+  }
+  const long total_bytes = read_low_modes(lm, path);
+  if (0 != total_bytes) {
+    lm.initialized = true;
+  }
+  return total_bytes;
+}
+
 inline long write_low_modes(const LowModesCPS& lm, const std::string& path)
 {
   TIMER_VERBOSE("write_low_modes");

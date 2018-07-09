@@ -64,6 +64,11 @@ inline long load_or_compute_low_modes(LowModes& lm, const std::string& path,
 inline void deflate(HalfVector& hv_out, const HalfVector& hv_in, const LowModes& lm)
 {
   TIMER("deflate(hv,hv,lm)");
+  if (not lm.initialized) {
+    hv_out.init(geo_resize(hv_in.geo));
+    set_zero(hv_out);
+    return;
+  }
   const int ls = lm.cesi.ls;
   const long block_size = lm.cesb.block_vol_eo * ls * HalfVector::c_size;
   const long n_basis = lm.cesb.n_basis;
@@ -146,6 +151,11 @@ inline void deflate(HalfVector& hv_out, const HalfVector& hv_in, const LowModes&
 inline void deflate(FermionField5d& out, const FermionField5d& in, const LowModes& lm)
 {
   TIMER_VERBOSE("deflate(5d,5d,lm)");
+  if (not lm.initialized) {
+    out.init(geo_resize(in.geo));
+    set_zero(out);
+    return;
+  }
   const Geometry& geo = geo_resize(in.geo);
   qassert(geo.eo == 1 or geo.eo == 2);
   const int ls = geo.multiplicity;
@@ -424,8 +434,8 @@ inline void multiply_d_minus(FermionField5d& out, const FermionField5d& in, cons
     const Vector<WilsonVector> iv = in.get_elems_const(xl);
     for (int m = 0; m < fa.ls; ++m) {
       const Complex& c = fa.cs[m];
-      v1[m] = c * iv[m];
-      v[m] -= iv[m];
+      v1[m] = -c * iv[m];
+      v[m] = iv[m];
     }
   }
   refresh_expanded_1(in1);
