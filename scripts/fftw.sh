@@ -15,7 +15,7 @@ cd $name-*
 
 ./configure \
     --prefix=$prefix \
-    --enable-openmp
+#     --enable-openmp
 
 make -j$num_proc
 make install

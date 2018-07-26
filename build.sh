@@ -31,10 +31,10 @@ else
     ./scripts/openmpi.sh
 fi
 
-./scripts/gsl.sh
+# ./scripts/gsl.sh
 ./scripts/fftw.sh
-./scripts/cmake.sh
-./scripts/lapack.sh
+# ./scripts/cmake.sh
+# ./scripts/lapack.sh
 ./scripts/eigen.sh
 ./scripts/zlib.sh
 ./scripts/utils.sh

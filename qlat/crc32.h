@@ -5,6 +5,7 @@
 #include <cstring>
 
 #include <endian.h>
+#include <omp.h>
 
 #include <zlib.h>
 #include <show.h>

@@ -104,8 +104,8 @@ struct fft_complex_field_plan
     const int nc_start = std::min(nc, geo.geon.coor_node[dir] * chunk);
     const int nc_stop = std::min(nc, nc_start + chunk);
     const int nc_size = nc_stop - nc_start;
-    fftw_init_threads();
-    fftw_plan_with_nthreads(omp_get_max_threads());
+    // fftw_init_threads();
+    // fftw_plan_with_nthreads(omp_get_max_threads());
     DisplayInfo("fft_complex_field_plan", "init", "malloc %d\n", nc_size * sizec * sizeof(Complex));
     Complex* fftdatac = (Complex*)fftw_malloc(nc_size * sizec * sizeof(Complex));
     const int rank = 1;

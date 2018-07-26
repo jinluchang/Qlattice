@@ -1,6 +1,5 @@
 SHELL=/bin/bash
 
-CC=mpicc -fopenmp -O2 -Wall
 CXX=mpic++ -std=c++0x -fopenmp -march=native -Ofast -Wall # -DSKIP_ASSERT
 
 qlat_prefix=$$HOME/qlat-build/1.0
@@ -17,7 +16,7 @@ QLAT_CXXFLAGS=$(QLAT_CFLAGS)
 
 QLAT_LDFLAGS=-L$(QLAT_LIB)
 QLAT_LDFLAGS+= -lgsl -lgslcblas -lm
-QLAT_LDFLAGS+= -lfftw3_omp -lfftw3
+QLAT_LDFLAGS+= -lfftw3
 QLAT_LDFLAGS+= -lz
 
 all: qlat.x
