@@ -5,8 +5,11 @@
 #include <complex>
 #include <cassert>
 
-// #include <array-compatible.h>
+#ifdef ARCH_TAIHU
+#include <array-compatible.h>
+#else
 #include <array>
+#endif
 
 #define QLAT_START_NAMESPACE namespace qlat {
 #define QLAT_END_NAMESPACE }

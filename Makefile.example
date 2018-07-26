@@ -1,6 +1,7 @@
 SHELL=/bin/bash
 
 CXX=mpic++ -std=c++0x -fopenmp -march=native -Ofast -Wall # -DSKIP_ASSERT
+# CXX=mpiCC -DARCH_TAIHU -Ofast -Wall # -DSKIP_ASSERT
 
 qlat_prefix=$$HOME/qlat-build/1.0
 

@@ -41,7 +41,10 @@ fi
 ./scripts/qlat.sh
 ./scripts/setenv.sh
 
-# ./scripts/omp.h
-./scripts/array.h
+if [ $arch = taihu ] ; then
+    ./scripts/omp.h
+    ./scripts/array.h
+fi
+
 
 rm -rf $temp_dir

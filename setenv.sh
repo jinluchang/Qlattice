@@ -6,6 +6,8 @@ if [ "$(uname -m)" = ppc64 ] ; then
     arch=bgq
 elif [ "$(uname -m)" = x86_64 ] ; then
     arch=amd64
+elif [ "$(uname -m)" = alpha ] ; then
+    arch=taihu
 else
     arch=unknown
 fi
