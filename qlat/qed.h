@@ -49,7 +49,7 @@ inline void prop_mom_photon_invert(QedGaugeField& egf, const std::array<double,D
     Coordinate kg = geo.coordinate_g_from_l(kl);
     std::array<double,DIMN> kk;
     // FIXME unused 'ks'
-	// std::array<double,DIMN> ks;
+    // std::array<double,DIMN> ks;
     double s2 = 0.0;
     for (int i = 0; i < DIMN; i++) {
       const Coordinate total_site = geo.total_site();

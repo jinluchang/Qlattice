@@ -423,7 +423,7 @@ long dist_read_dist_data(const std::vector<DistData<M> >& dds, const int num_nod
   if (get_id_node() == 0) {
     const std::string fn = path + "/checksums.txt";
     if (not does_file_exist(fn)) {
-      displayln(fname + ssprintf(": WARNING '%s' do not exist.", fn.c_str()));
+      displayln(fname + ssprintf(": WARNING '%s' does not exist.", fn.c_str()));
     } else {
       const std::vector<std::string> lines = qgetlines(fn);
       for (size_t i = 0; i < crcs.size(); ++i) {
@@ -911,7 +911,7 @@ long dist_read_field(Field<M>& f, const std::string& path)
 }
 
 template <class M, class N>
-void convert_field_float_from_double(Field<N>& ff, const Field<M>&f)
+void convert_field_float_from_double(Field<N>& ff, const Field<M>& f)
   // interface_function
 {
   TIMER("convert_field_float_from_double");
@@ -933,7 +933,7 @@ void convert_field_float_from_double(Field<N>& ff, const Field<M>&f)
 }
 
 template <class M, class N>
-void convert_field_double_from_float(Field<N>& ff, const Field<M>&f)
+void convert_field_double_from_float(Field<N>& ff, const Field<M>& f)
   // interface_function
 {
   TIMER("convert_field_double_from_float");
