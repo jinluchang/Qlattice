@@ -3,8 +3,10 @@
 #pragma once
 
 #include <complex>
-#include <array>
 #include <cassert>
+
+// #include <array-compatible.h>
+#include <array>
 
 #define QLAT_START_NAMESPACE namespace qlat {
 #define QLAT_END_NAMESPACE }

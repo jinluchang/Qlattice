@@ -2,7 +2,6 @@
 
 #include <qlat/config.h>
 
-#include <array>
 #include <sstream>
 #include <iostream>
 

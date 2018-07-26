@@ -7,7 +7,6 @@
 
 #include <stdio.h>
 #include <ctime>
-#include <array>
 
 #include <fstream>
 #include <iostream>

@@ -565,7 +565,7 @@ inline ShufflePlan make_shuffle_plan(const ShufflePlanKey& spk)
   }
   {
     long count = 0;
-    for (std::map<int,long>::const_iterator it = send_id_node_size.cbegin(); it != send_id_node_size.cend(); ++it) {
+    for (std::map<int,long>::const_iterator it = send_id_node_size.begin(); it != send_id_node_size.end(); ++it) {
       const int id_node = it->first;
       const long node_size = it->second;
       long node_size_remain = node_size;
@@ -586,7 +586,7 @@ inline ShufflePlan make_shuffle_plan(const ShufflePlanKey& spk)
   std::map<int,long> send_new_id_node_idx;
   {
     long count = 0;
-    for (std::map<int,long>::const_iterator it = send_new_id_node_size.cbegin(); it != send_new_id_node_size.cend(); ++it) {
+    for (std::map<int,long>::const_iterator it = send_new_id_node_size.begin(); it != send_new_id_node_size.end(); ++it) {
       const int new_id_node = it->first;
       const long node_size = it->second;
       send_new_id_node_idx[new_id_node] = count;
@@ -639,7 +639,7 @@ inline ShufflePlan make_shuffle_plan(const ShufflePlanKey& spk)
   }
   {
     long count = 0;
-    for (std::map<int,long>::const_iterator it = recv_id_node_size.cbegin(); it != recv_id_node_size.cend(); ++it) {
+    for (std::map<int,long>::const_iterator it = recv_id_node_size.begin(); it != recv_id_node_size.end(); ++it) {
       const int id_node = it->first;
       const long node_size = it->second;
       long node_size_remain = node_size;
@@ -659,7 +659,7 @@ inline ShufflePlan make_shuffle_plan(const ShufflePlanKey& spk)
   std::map<int,long> recv_id_node_idx;
   {
     long count = 0;
-    for (std::map<int,long>::const_iterator it = recv_id_node_size.cbegin(); it != recv_id_node_size.cend(); ++it) {
+    for (std::map<int,long>::const_iterator it = recv_id_node_size.begin(); it != recv_id_node_size.end(); ++it) {
       const int id_node = it->first;
       const long node_size = it->second;
       recv_id_node_idx[id_node] = count;

@@ -33,7 +33,7 @@ struct Cache
   bool has(const K& key) const
   {
     typename std::map<K,std::pair<long,M> >::const_iterator it = m.find(key);
-    return it != m.cend();
+    return it != m.end();
   }
   //
   M& operator[](const K& key)

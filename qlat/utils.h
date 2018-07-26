@@ -6,7 +6,6 @@
 
 #include <endian.h>
 
-#include <array>
 #include <vector>
 #include <iostream>
 #include <cstdio>

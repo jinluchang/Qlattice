@@ -10,9 +10,6 @@
 
 #include <stdio.h>
 #include <ctime>
-#include <array>
-
-#include <cstdint>
 
 #include <fstream>
 #include <iostream>

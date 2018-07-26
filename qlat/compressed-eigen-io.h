@@ -673,7 +673,7 @@ inline void vclose(VFile& fp)
     set_vfile_size(fp);
     VBFile fpr = vbopen(fp.fn, "r");
     long pos = 0;
-    for (std::multimap<long, Vector<uint8_t> >::const_iterator it = fp.read_entries.cbegin(); it != fp.read_entries.cend(); ++it) {
+    for (std::multimap<long, Vector<uint8_t> >::const_iterator it = fp.read_entries.begin(); it != fp.read_entries.end(); ++it) {
       const long new_pos = it->first;
       Vector<uint8_t> data = it->second;
       if (new_pos != pos) {
@@ -695,7 +695,7 @@ inline void vclose(VFile& fp)
     qassert(fp.mode == "w");
     VBFile fpr = vbopen(fp.fn + ".partial", "w");
     long pos = 0;
-    for (std::multimap<long, Vector<uint8_t> >::const_iterator it = fp.write_entries.cbegin(); it != fp.write_entries.cend(); ++it) {
+    for (std::multimap<long, Vector<uint8_t> >::const_iterator it = fp.write_entries.begin(); it != fp.write_entries.end(); ++it) {
       const long new_pos = it->first;
       Vector<uint8_t> data = it->second;
       if (new_pos != pos) {

@@ -41,4 +41,7 @@ fi
 ./scripts/qlat.sh
 ./scripts/setenv.sh
 
+# ./scripts/omp.h
+./scripts/array.h
+
 rm -rf $temp_dir

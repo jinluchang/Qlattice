@@ -117,6 +117,11 @@ inline void prop_complex_scaler_invert(ComplexScalerField& csf, const double mas
   csf *= 1.0 / geo.total_volume();
 }
 
+inline double acosh(const double x)
+{
+  return std::log(x + std::sqrt(x+1.0) * std::sqrt(x-1.0));
+}
+
 inline void prop_mom_spin_propagator4d(SpinPropagator4d& sp4d, const double mass, const std::array<double,DIMN>& momtwist)
   // DWF infinite L_s
   // M_5 = 1.0
@@ -142,7 +147,7 @@ inline void prop_mom_spin_propagator4d(SpinPropagator4d& sp4d, const double mass
       wp += 2.0 * sqr(sin(kk[i]/2.0));
     }
     const double calpha = (1.0 + sqr(wp) + p2) / 2.0 / wp;
-    const double alpha = std::acosh(calpha);
+    const double alpha = acosh(calpha);
     const double lwa = 1.0 - wp * exp(-alpha);
     SpinMatrix m; set_unit(m, mass * lwa);
     SpinMatrix ipgm = pg;

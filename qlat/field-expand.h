@@ -7,7 +7,6 @@
 
 #include <mpi.h>
 
-#include <array>
 #include <map>
 #include <set>
 #include <vector>
@@ -184,7 +183,7 @@ inline CommPlan make_comm_plan(const CommMarks& marks)
   std::vector<long> src_id_node_count(get_num_node(), 0); // number of total send pkgs for each node
   {
     long count = 0;
-    for (std::map<int,std::vector<long> >::const_iterator it = src_id_node_g_offsets.cbegin(); it != src_id_node_g_offsets.cend(); ++it) {
+    for (std::map<int,std::vector<long> >::const_iterator it = src_id_node_g_offsets.begin(); it != src_id_node_g_offsets.end(); ++it) {
       src_id_node_count[it->first] += 1;
       CommMsgInfo cmi;
       cmi.id_node = it->first;
@@ -208,7 +207,7 @@ inline CommPlan make_comm_plan(const CommMarks& marks)
       const int mpi_tag = 8;
       std::vector<CommMsgInfo> send_send_msg_infos(src_id_node_g_offsets.size());
       int k = 0;
-      for (std::map<int,std::vector<long> >::const_iterator it = src_id_node_g_offsets.cbegin(); it != src_id_node_g_offsets.cend(); ++it) {
+      for (std::map<int,std::vector<long> >::const_iterator it = src_id_node_g_offsets.begin(); it != src_id_node_g_offsets.end(); ++it) {
         CommMsgInfo& cmi = send_send_msg_infos[k];
         cmi.id_node = get_id_node();
         cmi.buffer_idx = 0;
@@ -228,7 +227,7 @@ inline CommPlan make_comm_plan(const CommMarks& marks)
     {
       const int mpi_tag = 9;
       int k = 0;
-      for (std::map<int,std::vector<long> >::const_iterator it = src_id_node_g_offsets.cbegin(); it != src_id_node_g_offsets.cend(); ++it) {
+      for (std::map<int,std::vector<long> >::const_iterator it = src_id_node_g_offsets.begin(); it != src_id_node_g_offsets.end(); ++it) {
         MPI_Isend((void*)it->second.data(), it->second.size(), MPI_LONG, it->first,
             mpi_tag, get_comm(), &send_reqs[k]);
         k += 1;
@@ -255,7 +254,7 @@ inline CommPlan make_comm_plan(const CommMarks& marks)
   {
     long current_buffer_idx = 0;
     int k = 0;
-    for (std::map<int,std::vector<long> >::const_iterator it = src_id_node_g_offsets.cbegin(); it != src_id_node_g_offsets.cend(); ++it) {
+    for (std::map<int,std::vector<long> >::const_iterator it = src_id_node_g_offsets.begin(); it != src_id_node_g_offsets.end(); ++it) {
       const int src_id_node = it->first;
       const std::vector<long>& g_offsets = it->second;
       qassert(src_id_node == ret.recv_msg_infos[k].id_node);
@@ -286,7 +285,7 @@ inline CommPlan make_comm_plan(const CommMarks& marks)
   {
     long current_buffer_idx = 0;
     int k = 0;
-    for (std::map<int,std::vector<long> >::const_iterator it = dst_id_node_g_offsets.cbegin(); it != dst_id_node_g_offsets.cend(); ++it) {
+    for (std::map<int,std::vector<long> >::const_iterator it = dst_id_node_g_offsets.begin(); it != dst_id_node_g_offsets.end(); ++it) {
       const int dst_id_node = it->first;
       const std::vector<long>& g_offsets = it->second;
       qassert(dst_id_node == ret.send_msg_infos[k].id_node);

@@ -619,8 +619,8 @@ inline void multiply_mdag_e_e(FermionField5d& out, const FermionField5d& in, con
     for (int m = 0; m < fa.ls; ++m) {
       v[m] = bee[m] * iv[m];
       const WilsonVector tmp =
-        (p_p * (m < fa.ls-1 ? (WilsonVector)(cee[m+1] * iv[m+1]) : (WilsonVector)(-std::conj(fa.mass) * cee[0] * iv[0]))) +
-        (p_m * (m > 0 ? (WilsonVector)(cee[m-1] * iv[m-1]) : (WilsonVector)(-std::conj(fa.mass) * cee[fa.ls-1] * iv[fa.ls-1])));
+        (p_p * (m < fa.ls-1 ? (WilsonVector)(cee[m+1] * iv[m+1]) : (WilsonVector)(-std::conj((Complex)fa.mass) * cee[0] * iv[0]))) +
+        (p_m * (m > 0 ? (WilsonVector)(cee[m-1] * iv[m-1]) : (WilsonVector)(-std::conj((Complex)fa.mass) * cee[fa.ls-1] * iv[fa.ls-1])));
       v[m] -= tmp;
     }
   }
@@ -948,8 +948,8 @@ inline void multiply_mdag_e_o(FermionField5d& out, const FermionField5d& in, con
     for (int m = 0; m < fa.ls; ++m) {
       v[m] = beo[m] * iv[m];
       const WilsonVector tmp =
-        (p_p * (m < fa.ls-1 ? (WilsonVector)(ceo[m+1] * iv[m+1]) : (WilsonVector)(-std::conj(fa.mass) * ceo[0] * iv[0]))) +
-        (p_m * (m > 0 ? (WilsonVector)(ceo[m-1] * iv[m-1]) : (WilsonVector)(-std::conj(fa.mass) * ceo[fa.ls-1] * iv[fa.ls-1])));
+        (p_p * (m < fa.ls-1 ? (WilsonVector)(ceo[m+1] * iv[m+1]) : (WilsonVector)(-std::conj((Complex)fa.mass) * ceo[0] * iv[0]))) +
+        (p_m * (m > 0 ? (WilsonVector)(ceo[m-1] * iv[m-1]) : (WilsonVector)(-std::conj((Complex)fa.mass) * ceo[fa.ls-1] * iv[fa.ls-1])));
       v[m] -= tmp;
     }
   }

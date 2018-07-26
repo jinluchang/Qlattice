@@ -5,7 +5,6 @@
 #include <qlat/config.h>
 #include <qlat/mpi.h>
 
-#include <array>
 #include <vector>
 #include <iostream>
 #include <cstdio>

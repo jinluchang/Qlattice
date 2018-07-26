@@ -4,8 +4,6 @@
 #include <qlat/utils.h>
 #include <qlat/utils-coordinate.h>
 
-#include <array>
-
 #include <mpi.h> // have to add here other wise we would rely on timer.h to include <mpi.h> which is NOT glorious?
 
 QLAT_START_NAMESPACE
