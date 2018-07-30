@@ -42,8 +42,8 @@ fi
 ./scripts/setenv.sh
 
 if [ $arch = taihu ] ; then
-    ./scripts/omp.h
-    ./scripts/array.h
+    ./scripts/omp.sh
+    ./scripts/array.sh
 fi
 
 
