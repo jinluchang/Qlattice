@@ -497,13 +497,6 @@ inline std::vector<std::string> split_line_with_spaces(const std::string& str)
   return words;
 }
 
-inline double read_double(const std::string& str)
-{
-  double x;
-  sscanf(str.c_str(), "%lf", &x);
-  return x;
-}
-
 inline std::vector<double> read_doubles(const std::string& str)
 {
   const std::vector<std::string> strs = split_line_with_spaces(str);
