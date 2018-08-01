@@ -306,14 +306,19 @@ inline double& get_lock_expiration_time_limit()
 
 inline void set_lock_expiration_time_limit()
 {
+  TIMER_VERBOSE("set_lock_expiration_time_limit");
   const std::string ss = get_env("COBALT_STARTTIME");
   const std::string se = get_env("COBALT_ENDTIME");
   if (ss != "" and se != "") {
-    TIMER_VERBOSE("set_lock_expiration_time_limit");
     double start_time, end_time;
     reads(start_time, ss);
     reads(end_time, se);
     get_lock_expiration_time_limit() = end_time - start_time;
+    displayln_info(fname + ssprintf(": get_lock_expiration_time_limit() = %.2lf hours.",
+          get_lock_expiration_time_limit() / 3600.0));
+  } else {
+    displayln_info(fname + ssprintf(": get_lock_expiration_time_limit() = %.2lf hours. (NOT CHANGED)",
+          get_lock_expiration_time_limit() / 3600.0));
   }
 }
 

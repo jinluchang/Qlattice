@@ -73,13 +73,18 @@ inline RngState& get_project_root_rng_state()
   return rs;
 }
 
-inline void update_log_rng()
+inline void switch_monitor_file(const std::string& path)
 {
   qclose(get_monitor_file());
+  get_monitor_file() = qopen(path, "a");
+  qset_line_buf(get_monitor_file());
+}
+
+inline void update_log_rng()
+{
   if (get_result_path() != "") {
     qassert(get_log_idx() >= 0);
-    get_monitor_file() = qopen(get_result_path() + ssprintf("/logs/%010d.txt", get_log_idx()), "a");
-    qset_line_buf(get_monitor_file());
+    switch_monitor_file(get_result_path() + ssprintf("/logs/%010d.txt", get_log_idx()));
   }
   get_global_rng_state() = get_project_root_rng_state().split(get_result_path());
 }
