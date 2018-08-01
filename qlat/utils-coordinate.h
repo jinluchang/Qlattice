@@ -52,6 +52,16 @@ inline double smod(const double x, const double len)
   }
 }
 
+inline double smod_sym(const double x, const double len, const double eps = 1.0e-8)
+{
+  const double m = smod(x, len);
+  if (std::abs(std::abs(m * 2) - len) < eps) {
+    return 0;
+  } else {
+    return m;
+  }
+}
+
 inline int middle_mod(const int x, const int y, const int len)
 {
   qassert(0 < len);
@@ -202,6 +212,48 @@ inline Coordinate middle_coordinate(const Coordinate& x, const Coordinate& y, co
 inline CoordinateD middle_coordinate(const CoordinateD& x, const CoordinateD& y, const CoordinateD& size)
 {
   return middle_mod(x, y, size);
+}
+
+struct EpsilonTensorTable
+{
+  int tensor[4][4][4][4];
+  //
+  EpsilonTensorTable()
+  {
+    init();
+  }
+  //
+  void init()
+  {
+    std::memset(this, 0, sizeof(tensor));
+    setv(0,1,2,3);
+    setv(0,2,3,1);
+    setv(0,3,1,2);
+  }
+  //
+  void setv(const int a, const int b, const int c, const int d)
+  {
+    set(a,b,c,d,1);
+    set(a,b,d,c,-1);
+  }
+  void set(const int a, const int b, const int c, const int d, const int val)
+  {
+    tensor[a][b][c][d] = val;
+    tensor[b][c][d][a] = -val;
+    tensor[c][d][a][b] = val;
+    tensor[d][a][b][c] = -val;
+  }
+};
+
+inline int epsilon_tensor(const int a, const int b, const int c, const int d)
+{
+  static EpsilonTensorTable table;
+  return table.tensor[a][b][c][d];
+}
+
+inline int epsilon_tensor(const int i, const int j, const int k)
+{
+  return epsilon_tensor(i, j, k, 3);
 }
 
 QLAT_END_NAMESPACE
