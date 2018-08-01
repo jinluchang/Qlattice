@@ -264,4 +264,25 @@ inline SpinMatrix contract_spin_propagator4d(const SpinPropagator4d& snk, const 
   return sum;
 }
 
+inline void set_local_current_from_props(FieldM<WilsonMatrix,4>& current, const Propagator4d& prop1, const Propagator4d& prop2)
+  // --<-- gamma5 prop1^+ gamma5 --<-- gamma[nu] --<-- prop2 --<--
+{
+  TIMER_VERBOSE("set_current_from_props");
+  const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
+  const std::array<SpinMatrix,4>& gammas = SpinMatrixConstants::get_cps_gammas();
+  const Geometry geo = geo_reform(prop1.geo, 4, 0);
+  current.init(geo);
+#pragma omp parallel for
+  for (long index = 0; index < geo.local_volume(); ++index) {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const WilsonMatrix& wm1 = prop1.get_elem(xl);
+    const WilsonMatrix wm1r = gamma5 * matrix_adjoint(wm1) * gamma5;
+    const WilsonMatrix& wm2 = prop2.get_elem(xl);
+    Vector<WilsonMatrix> v = current.get_elems(xl);
+    for (int nu = 0; nu < 4; ++nu) {
+      v[nu] = wm1r * gammas[nu] * wm2;
+    }
+  }
+}
+
 QLAT_END_NAMESPACE
