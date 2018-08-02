@@ -156,9 +156,14 @@ inline bool is_outside_coordinate(const Coordinate& x, const Coordinate& size)
     || std::abs(x[3]) * 2 > size[3];
 }
 
-inline long distance_sq_relative_coordinate_g(const Coordinate& xg)
+inline long sqr(const Coordinate& xg)
 {
   return sqr((long)xg[0]) + sqr((long)xg[1]) + sqr((long)xg[2]) + sqr((long)xg[3]);
+}
+
+inline long distance_sq_relative_coordinate_g(const Coordinate& xg)
+{
+  return sqr(xg);
 }
 
 inline double distance_relative_coordinate_g(const Coordinate& xg)
