@@ -524,6 +524,19 @@ inline bool is_integer(const std::array<M,N>& v)
   return true;
 }
 
+template <class M>
+inline void random_permute(std::vector<M>& vec, RngState& rs)
+{
+  const long size = (long)vec.size();
+  M tmp;
+  for (long k = 0; k < size; ++k) {
+    const long kk = rand_gen(rs) % (size - k);
+    tmp = vec[k];
+    vec[k] = vec[k + kk];
+    vec[k + kk] = tmp;
+  }
+}
+
 inline uint16_t flip_endian_16(uint16_t x)
 {
   return
