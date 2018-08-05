@@ -100,6 +100,16 @@ inline Coordinate mod(const Coordinate& x, const Coordinate& size)
   return ret;
 }
 
+inline CoordinateD mod(const CoordinateD& x, const CoordinateD& size)
+{
+  CoordinateD ret;
+  ret[0] = mod(x[0], size[0]);
+  ret[1] = mod(x[1], size[1]);
+  ret[2] = mod(x[2], size[2]);
+  ret[3] = mod(x[3], size[3]);
+  return ret;
+}
+
 inline Coordinate smod(const Coordinate& x, const Coordinate& size)
 {
   Coordinate ret;
