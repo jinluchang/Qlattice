@@ -114,4 +114,49 @@ M field_get_elem(const Field<M>& f, const Coordinate& xg)
   return field_get_elem(f, xg, 0);
 }
 
+template <class M>
+void field_shift_dir(Field<M>& f, const Field<M>& f1, const int dir, const int shift)
+  // shift f1 in 'dir' direction for 'shift' steps
+{
+  TIMER("field_shift_dir");
+  qassert(0 <= dir and dir < 4);
+  const Geometry geo = geo_resize(f1.geo);
+  const Coordinate total_site = geo.total_site();
+  f.init(geo);
+  qassert(is_matching_geo_mult(f.geo, f1.geo));
+  Coordinate nvec;
+  nvec[dir] = 1;
+  Field<M> tmp, tmp1;
+  tmp.init(geo);
+  tmp1.init(geo);
+  tmp1 = f1;
+  for (int i = 0; i < geo.geon.size_node[dir]; ++i) {
+#pragma omp parallel for
+    for (long index = 0; index < geo.local_volume(); ++index) {
+      const Coordinate xl = geo.coordinate_from_index(index);
+      const Coordinate xg = geo.coordinate_g_from_l(xl);
+      const Coordinate xg1 = mod(xg - (shift + i * geo.node_site[dir]) * nvec, total_site);
+      const Coordinate xl1 = geo.coordinate_l_from_g(xg1);
+      if (geo.is_local(xl1)) {
+        assign(f.get_elems(xl), tmp1.get_elems_const(xl1));
+      }
+    }
+    if (i < geo.geon.size_node[dir] - 1) {
+      get_data_plus_mu(get_data(tmp), get_data(tmp1), dir);
+      std::swap(tmp1, tmp);
+    }
+  }
+}
+
+template <class M>
+void field_shift(Field<M>& f, const Field<M>& f1, const Coordinate& shift)
+{
+  TIMER("field_shift");
+  Field<M> tmp, tmp1;
+  field_shift_dir(tmp, f1, 0, shift[0]);
+  field_shift_dir(tmp1, tmp, 1, shift[1]);
+  field_shift_dir(tmp, tmp1, 2, shift[2]);
+  field_shift_dir(f, tmp, 3, shift[3]);
+}
+
 QLAT_END_NAMESPACE

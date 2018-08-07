@@ -42,6 +42,15 @@ void simple_tests()
   gf_show_info(gfs);
   gf_hyp_smear(gfs, gf, 0.75, 0.6, 0.3);
   gf_show_info(gfs, 1);
+  //
+  GaugeField gf1, gf2;
+  const Coordinate c1(1, 2, 3, 4);
+  const Coordinate c2(7, 3, 1, 8);
+  field_shift(gf1, gf, c1);
+  field_shift(gf2, gf1, c2);
+  field_shift(gf1, gf, c1 + c2);
+  gf2 -= gf1;
+  displayln_info(ssprintf("orig norm: %E ; shift norm %E ; diff norm: %E", norm(gf), norm(gf1), norm(gf2)));
 }
 
 void show_matrix()
