@@ -120,7 +120,7 @@ inline void gf_ape_smear(GaugeField& gf, const GaugeField& gf0, const double alp
 inline ColorMatrix gf_link_spatial_ape_smear_no_comm(const GaugeField& gf, const Coordinate& xl, const int mu,
     const double alpha)
 {
-  const double multi = mu == 3 ? 6.0 : 3.0;
+  const double multi = mu == 3 ? 6.0 : 4.0;
   return color_matrix_su_projection(
       (1.0 - alpha) * gf.get_elem(xl, mu) + (alpha / multi) * gf_spatial_staple_no_comm(gf, xl, mu));
 }
