@@ -11,12 +11,12 @@ QLAT_START_NAMESPACE
 const int DATA_READ_WRITE_NUMBER_OF_DIRECTORIES = 32;
 
 inline int& dist_write_par_limit() {
-  static int npar = 3;
+  static int npar = 128;
   return npar;
 }
 
 inline int& dist_read_par_limit() {
-  static int npar = 3;
+  static int npar = 128;
   return npar;
 }
 
