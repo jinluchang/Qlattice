@@ -1032,6 +1032,7 @@ inline bool dist_repartition(const Coordinate& new_size_node, const std::string&
     Field<float> f;
     dist_read_field(f, npath);
     if (new_npath == npath or new_npath == "") {
+      qassert(not does_file_exist_sync_node(npath + "-repartition-new.tmp"));
       dist_write_field(f, new_size_node, npath + "-repartition-new.tmp");
       qrename(npath, npath + "-repartition-old.tmp");
       qrename(npath + "-repartition-new.tmp", npath);
