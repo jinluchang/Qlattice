@@ -15,10 +15,7 @@ QLAT_CFLAGS+= -I$(QLAT_INCLUDE)/utils
 
 QLAT_CXXFLAGS=$(QLAT_CFLAGS)
 
-QLAT_LDFLAGS=-L$(QLAT_LIB)
-QLAT_LDFLAGS+= -lgsl -lgslcblas -lm
-QLAT_LDFLAGS+= -lfftw3
-QLAT_LDFLAGS+= -lz
+QLAT_LDFLAGS=$(QLAT_LIB)/libfftw3.a $(QLAT_LIB)/libz.a -lm
 
 all: qlat.x
 

@@ -21,6 +21,7 @@
 #include <show.h>
 #include <timer.h>
 #include <rng-state.h>
+#include <lat-io.h>
 
 // #define SKIP_ASSERT
 

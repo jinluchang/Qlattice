@@ -271,11 +271,30 @@ inline int epsilon_tensor(const int i, const int j, const int k)
   return epsilon_tensor(i, j, k, 3);
 }
 
+inline Coordinate read_coordinate(const std::string& str)
+{
+  long x = 0;
+  long y = 0;
+  long z = 0;
+  long t = 0;
+  long cur = 0;
+  char c;
+  assert(parse_long(x, cur, str));
+  assert(parse_char(c, cur, str) and (c == 'x' or c == ','));
+  assert(parse_long(y, cur, str));
+  assert(parse_char(c, cur, str) and (c == 'x' or c == ','));
+  assert(parse_long(z, cur, str));
+  assert(parse_char(c, cur, str) and (c == 'x' or c == ','));
+  assert(parse_long(t, cur, str));
+  return Coordinate(x,y,z,t);
+}
+
 QLAT_END_NAMESPACE
 
 namespace qshow {
 
-inline std::string show(const qlat::Coordinate& x) {
+inline std::string show(const qlat::Coordinate& x)
+{
   return ssprintf("%dx%dx%dx%d", x[0], x[1], x[2], x[3]);
 }
 

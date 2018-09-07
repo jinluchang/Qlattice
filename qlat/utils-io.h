@@ -14,6 +14,8 @@
 #include <fstream>
 
 #include <sys/stat.h>
+#include <sys/types.h>
+#include <dirent.h>
 #include <unistd.h>
 
 QLAT_START_NAMESPACE
@@ -40,6 +42,15 @@ inline bool does_file_exist_sync_node(const std::string& fn) {
   }
   glb_sum(nfile);
   return 0 != nfile;
+}
+
+inline bool is_directory(const std::string& fn)
+{
+  struct stat sb;
+  if (0 != stat(fn.c_str(), &sb)) {
+    return false;
+  }
+  return S_ISDIR(sb.st_mode);
 }
 
 inline mode_t& default_dir_mode()
@@ -124,10 +135,60 @@ inline int rmdir_lock_all_node(const std::string& path)
   return rmdir(path.c_str());
 }
 
+inline std::string remove_trailing_slashes(const std::string& fn)
+{
+  long cur = fn.size() - 1;
+  while (cur > 0 and fn[cur] == '/') {
+    cur -= 1;
+  }
+  return std::string(fn, 0, cur + 1);
+}
+
+inline std::vector<std::string> qls_aux(const std::string& path)
+{
+  std::vector<std::string> contents;
+  DIR* dir = opendir(path.c_str());
+  if (dir == NULL) {
+    return contents;
+  }
+  struct dirent* d;
+  while ((d = readdir(dir)) != NULL) {
+    if (!strcmp(d->d_name, ".") || !strcmp(d->d_name, "..")) {
+      continue;
+    }
+    contents.push_back(path + "/" + d->d_name);
+  }
+  closedir(dir);
+}
+
+inline std::vector<std::string> qls(const std::string& path)
+{
+  return qls_aux(remove_trailing_slashes(path));
+}
+
 inline int qremove(const std::string& path)
 {
-  TIMER("qremove");
+  displayln(ssprintf("qremove: '%s'", path.c_str()));
   return std::remove(path.c_str());
+}
+
+inline int qremove_all_aux(const std::string& path)
+{
+  if (not is_directory(path)) {
+    return qremove(path);
+  } else {
+    int ret = 0;
+    const std::vector<std::string> paths = qls_aux(path);
+    for (long i = 0; i < (long)paths.size(); ++i) {
+      ret += qremove_all_aux(paths[i]);
+    }
+    return ret + qremove(path);
+  }
+}
+
+inline int qremove_all(const std::string& path)
+{
+  return qremove_all_aux(remove_trailing_slashes(path));
 }
 
 inline int qremove_info(const std::string& path)
@@ -135,6 +196,16 @@ inline int qremove_info(const std::string& path)
   TIMER("qremove_info");
   if (0 == get_id_node()) {
     return qremove(path);
+  } else {
+    return 0;
+  }
+}
+
+inline int qremove_all_info(const std::string& path)
+{
+  TIMER("qremove_all_info");
+  if (0 == get_id_node()) {
+    return qremove_all(path);
   } else {
     return 0;
   }

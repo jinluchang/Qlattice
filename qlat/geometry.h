@@ -65,7 +65,6 @@ struct Geometry
   //
   void remult(const int multiplicity_) {
     multiplicity = multiplicity_;
-    reset_node_site_expanded();
   }
   //
   void resize(const Coordinate& expansion_left_, const Coordinate& expansion_right_)

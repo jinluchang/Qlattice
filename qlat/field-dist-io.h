@@ -160,7 +160,7 @@ crc32_t field_dist_crc32(const Field<M>& f)
   return dist_crc32(dds, get_num_node());
 }
 
-inline void dist_write_geo_info(const Geometry& geo, const size_t sizeof_M,
+inline void dist_write_geo_info(const Geometry& geo, const int sizeof_M,
     const std::string& path, const mode_t mode = default_dir_mode())
 {
   TIMER("dist_write_geo_info");
@@ -216,7 +216,7 @@ inline std::string info_get_prop(const std::vector<std::string>& lines, const st
   }
 }
 
-inline void dist_read_geo_info(Geometry& geo, size_t& sizeof_M, Coordinate& new_size_node,
+inline void dist_read_geo_info(Geometry& geo, int& sizeof_M, Coordinate& new_size_node,
     const std::string& path)
 {
   TIMER("dist_read_geo_info");
@@ -245,7 +245,7 @@ inline void dist_read_geo_info(Geometry& geo, size_t& sizeof_M, Coordinate& new_
     qassert(node_file_size == local_volume * multiplicity * sizeof_M);
   }
   bcast(get_data(multiplicity));
-  bcast(get_data((long)sizeof_M));
+  bcast(get_data(sizeof_M));
   bcast(get_data(size_node));
   bcast(get_data(node_site));
   geo.init();
@@ -447,8 +447,17 @@ long dist_read_fields(std::vector<Field<M> >& fs, Geometry& geo, Coordinate& new
     return 0;
   }
   clear(fs);
-  size_t sizeof_M;
+  int sizeof_M;
   dist_read_geo_info(geo, sizeof_M, new_size_node, path);
+  if ((int)sizeof(M) != sizeof_M) {
+    displayln_info("dist_read_fields: WARNING: sizeof(M) do not match with data on disk.");
+    if (geo.multiplicity * sizeof_M % sizeof(M) != 0) {
+      displayln_info(ssprintf("dist_read_fields: ERROR: geo.multiplicity = %d ; sizeof_M = %d ; sizeof(M) = %d",
+            geo.multiplicity, sizeof_M, sizeof(M)));
+      qassert(false);
+    }
+    geo.remult(geo.multiplicity * sizeof_M / sizeof(M));
+  }
   std::vector<Geometry> new_geos = make_dist_io_geos(geo.total_site(), geo.multiplicity, new_size_node);
   fs.resize(new_geos.size());
   std::vector<DistData<M> > dds(fs.size());
@@ -997,6 +1006,40 @@ long dist_read_field_double_from_float(Field<M>& f, const std::string& path)
     convert_field_double_from_float(f, ff);
     timer.flops += total_bytes;
     return total_bytes;
+  }
+}
+
+inline bool dist_repartition(const Coordinate& new_size_node, const std::string& path, const std::string& new_path = "")
+  // interface_function
+{
+  TIMER_VERBOSE("repartition");
+  bool is_failed = false;
+  const std::string npath = remove_trailing_slashes(path);
+  const std::string new_npath = remove_trailing_slashes(new_path);
+  if (not (does_file_exist_sync_node(npath + "/geo-info.txt") and does_file_exist_sync_node(npath + "/checkpoint"))) {
+    displayln_info(ssprintf("repartition: WARNING: not a folder to partition: '%s'.", npath.c_str()));
+    return true;
+  }
+  Geometry geo;
+  int sizeof_M;
+  Coordinate size_node;
+  dist_read_geo_info(geo, sizeof_M, size_node, npath);
+  if (size_node == new_size_node) {
+    displayln_info(ssprintf("repartition: size_node=%s ; no need to repartition '%s'.",
+          show(size_node).c_str(), npath.c_str()));
+    return true;
+  } else {
+    Field<float> f;
+    dist_read_field(f, npath);
+    if (new_npath == npath or new_npath == "") {
+      dist_write_field(f, new_size_node, npath + "-repartition-new.tmp");
+      qrename(npath, npath + "-repartition-old.tmp");
+      qrename(npath + "-repartition-new.tmp", npath);
+      qremove_all(npath + "-repartition-old.tmp");
+    } else {
+      dist_write_field(f, new_size_node, new_npath);
+    }
+    return is_failed;
   }
 }
 
