@@ -1015,6 +1015,9 @@ inline bool dist_repartition(const Coordinate& new_size_node, const std::string&
   TIMER_VERBOSE("repartition");
   bool is_failed = false;
   const std::string npath = remove_trailing_slashes(path);
+  if (std::string(npath, npath.length() - 4, 4) == ".tmp") {
+    return true;
+  }
   const std::string new_npath = remove_trailing_slashes(new_path);
   if (not (does_file_exist_sync_node(npath + "/geo-info.txt") and does_file_exist_sync_node(npath + "/checkpoint"))) {
     displayln_info(ssprintf("repartition: WARNING: not a folder to partition: '%s'.", npath.c_str()));
@@ -1033,6 +1036,7 @@ inline bool dist_repartition(const Coordinate& new_size_node, const std::string&
     dist_read_field(f, npath);
     if (new_npath == npath or new_npath == "") {
       qassert(not does_file_exist_sync_node(npath + "-repartition-new.tmp"));
+      qassert(not does_file_exist_sync_node(npath + "-repartition-old.tmp"));
       dist_write_field(f, new_size_node, npath + "-repartition-new.tmp");
       qrename(npath, npath + "-repartition-old.tmp");
       qrename(npath + "-repartition-new.tmp", npath);
