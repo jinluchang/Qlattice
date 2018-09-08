@@ -384,8 +384,7 @@ struct InverterDomainWallCPS
   //
   void setup()
   {
-    inverter.geo.initialized = false;
-    inverter.init(inverter.gf, inverter.fa);
+    inverter.reinit();
   }
   void setup(const GaugeField& gf, const FermionAction& fa_)
   {
