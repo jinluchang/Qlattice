@@ -494,7 +494,7 @@ inline ConfigurationsInfo make_configurations_info_24c64_dsdr_mu0p00107_ms0p0850
       ci.traj = traj;
       ci.path = find_conf_24c64_dsdr_mu0p0017_ms0p0850(traj);
       ci.conf_format = "cps";
-      // ci.low_modes_path = get_env("HOME") + ssprintf("/application/Public/Muon-GM2-cc/jobs/24D/lancs/qcdtraj=%d/huge-data-clanc", traj);
+      // ci.low_modes_path = get_env("HOME") + ssprintf("/application/Public/Muon-GM2-cc/jobs/24D/lancs/qcdtraj=%d/huge-data-lanc", traj);
       ci.low_modes_path = get_env("HOME") + ssprintf("/hlbl/clehner/evec-cache/24D/job-%05d/lanczos.output", traj);
       if (ci.path != "") {
         csi.infos.push_back(ci);

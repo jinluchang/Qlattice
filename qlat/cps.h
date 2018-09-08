@@ -154,9 +154,10 @@ inline void gf_fix_gauge_landau(GaugeField& gf, const double stop_cond = 1.0e-12
   field_convert(gf, cgf);
 }
 
-inline void gf_fix_gauge_coulomb(GaugeField& gf, const double stop_cond = 1.0e-12, const double max_iter_num = 500000)
+inline void gt_gf_fix_gauge_coulomb(GaugeTransform& gt,
+    const GaugeField& gf, const double stop_cond = 1.0e-12, const double max_iter_num = 500000)
 {
-  TIMER_VERBOSE("gf_fix_gauge_coulomb")
+  TIMER_VERBOSE("gt_gf_fix_gauge_coulomb")
   cps::GaugeField cgf;
   field_convert(cgf, gf);
   cgf.exportLattice();
@@ -171,7 +172,6 @@ inline void gf_fix_gauge_coulomb(GaugeField& gf, const double stop_cond = 1.0e-1
   cps::Lattice& lat = cps::LatticeFactory::Create(cps::F_CLASS_NONE, cps::G_CLASS_NONE);
   cps::AlgFixGauge fg(lat, &common_arg, &fix_gauge_arg);
   fg.run();
-  GaugeTransform gt;
   gt.init(gf.geo);
 #pragma omp parallel for
   for (long index = 0; index < gt.geo.local_volume(); ++index) {
@@ -181,6 +181,13 @@ inline void gf_fix_gauge_coulomb(GaugeField& gf, const double stop_cond = 1.0e-1
   }
   fg.free();
   cps::LatticeFactory::Destroy();
+}
+
+inline void gf_fix_gauge_coulomb(GaugeField& gf, const double stop_cond = 1.0e-12, const double max_iter_num = 500000)
+{
+  TIMER_VERBOSE("gf_fix_gauge_coulomb")
+  GaugeTransform gt;
+  gt_gf_fix_gauge_coulomb(gt, gf, stop_cond, max_iter_num);
   gf_apply_gauge_transformation(gf, gf, gt);
 }
 

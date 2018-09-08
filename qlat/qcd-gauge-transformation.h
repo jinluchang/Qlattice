@@ -30,7 +30,7 @@ inline void gt_apply_gauge_transformation(GaugeTransform& gt0, const GaugeTransf
   // gt0 <- gt1 * gt0
 {
   TIMER("gt_apply_gauge_transformation");
-  assert(is_matching_geo_mult(gt0.geo, gt1.geo));
+  qassert(is_matching_geo_mult(gt0.geo, gt1.geo));
   const Geometry& geo = gt0.geo;
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
@@ -47,10 +47,10 @@ inline void gf_apply_gauge_transformation_no_comm(GaugeField& gf, const GaugeFie
   // gf <- gt * gf0
 {
   TIMER("gf_apply_gauge_transformation_no_comm");
-  assert(is_matching_geo(gf0.geo, gt.geo));
+  qassert(is_matching_geo(gf0.geo, gt.geo));
   const Geometry& geo = gf0.geo;
   gf.init(geo_resize(geo, 0));
-  assert(is_matching_geo(gf.geo, gf0.geo));
+  qassert(is_matching_geo(gf.geo, gf0.geo));
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     Coordinate xl = geo.coordinate_from_index(index);
@@ -69,12 +69,46 @@ inline void gf_apply_gauge_transformation_no_comm(GaugeField& gf, const GaugeFie
 inline void gf_apply_gauge_transformation(GaugeField& gf, const GaugeField& gf0, const GaugeTransform& gt)
 {
   TIMER("gf_apply_gauge_transformation");
-  assert(is_matching_geo(gf0.geo, gt.geo));
+  qassert(is_matching_geo(gf0.geo, gt.geo));
   GaugeTransform gt1;
   gt1.init(geo_resize(gt.geo, 1));
   gt1 = gt;
   refresh_expanded(gt1);
   gf_apply_gauge_transformation_no_comm(gf, gf0, gt1);
+}
+
+inline void gt_inverse(GaugeTransform& gt, const GaugeTransform& gt0)
+{
+  TIMER("gt_inverse");
+  gt.init(geo_resize(gt0.geo));
+  const Geometry& geo = gt.geo;
+  qassert(is_matching_geo_mult(gt.geo, gt0.geo));
+#pragma omp parallel for
+  for (long index = 0; index < geo.local_volume(); ++index) {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const ColorMatrix& t = gt.get_elem(xl);
+    gt.get_elem(xl) = matrix_adjoint(gt0.get_elem(xl));
+  }
+}
+
+inline void ff_apply_gauge_transformation(FermionField4d& ff,
+    const FermionField4d& ff0, const GaugeTransform& gt)
+{
+  TIMER("ff_apply_gauge_transformation");
+  qassert(is_matching_geo(ff0.geo, gt.geo));
+  const Geometry& geo = ff0.geo;
+  ff.init(geo_resize(geo));
+  qassert(is_matching_geo_mult(ff.geo, ff0.geo));
+#pragma omp parallel for
+  for (long index = 0; index < geo.local_volume(); ++index) {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    Vector<WilsonVector> v = ff.get_elems(xl);
+    const Vector<WilsonVector> v0 = ff0.get_elems_const(xl);
+    const ColorMatrix& t = gt.get_elem(xl);
+    for (int m = 0; m < v0.size(); ++m) {
+      v[m] = t * v0[m];
+    }
+  }
 }
 
 inline void gf_apply_rand_gauge_transformation(GaugeField& gf, const GaugeField& gf0, const RngState& rs)
@@ -147,6 +181,27 @@ inline void make_tree_gauge_transformation(GaugeTransform& gt, const GaugeField&
     make_temporal_gauge_transformation(gt_dir, gft, xgref[dirs[m]], dirs[m]);
     gf_apply_gauge_transformation(gft, gft, gt_dir);
     gt_apply_gauge_transformation(gt, gt_dir);
+  }
+}
+
+template <class Inverter>
+void set_wall_src_propagator(Propagator4d& prop, const int tslice, const CoordinateD& lmom,
+    const Inverter& inv, const GaugeTransform& gt, const GaugeTransform& gt_inv)
+{
+  TIMER_VERBOSE("set_wall_src_propagator");
+  const Geometry& geo = geo_reform(inv.geo);
+  prop.init(geo);
+  qassert(prop.geo == geo);
+  FermionField4d src, sol;
+  src.init(geo);
+  sol.init(geo);
+  for (int cs = 0; cs < 4*NUM_COLOR; ++cs) {
+    set_tslice_mom_src_fermion_field(src, tslice, lmom, cs);
+    ff_apply_gauge_transformation(src, src, gt_inv);
+    set_zero(sol);
+    inverse(sol, src, inv);
+    ff_apply_gauge_transformation(sol, sol, gt);
+    set_propagator_col_from_fermion_field(prop, cs, sol);
   }
 }
 
