@@ -43,6 +43,7 @@ inline long& get_log_idx()
 inline void setup_log_idx(const std::string& path = ".")
 {
   TIMER_VERBOSE("setup_log_idx");
+  qmkdir_info(path);
   qmkdir_info(path + "/logs-lock");
   for (long i = 0; true; ++i) {
     const std::string fn = path + ssprintf("/logs-lock/%010d", i);
