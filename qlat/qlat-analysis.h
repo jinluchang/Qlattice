@@ -488,7 +488,7 @@ inline ConfigurationsInfo make_configurations_info_24c64_dsdr_mu0p00107_ms0p0850
     }
   }
   if (make_cis) {
-    for (int traj = 2280; traj >= 1000 ; traj -= 40) {
+    for (int traj = 2280; traj >= 1000 ; traj -= 10) {
       ConfigurationInfo ci;
       ci.csi.init(csi);
       ci.traj = traj;
