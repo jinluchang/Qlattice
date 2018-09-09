@@ -39,11 +39,11 @@ fi
 ./scripts/zlib.sh
 ./scripts/utils.sh
 ./scripts/qlat.sh
+./scripts/array.sh
 ./scripts/setenv.sh
 
 if [ $arch = taihu ] ; then
     ./scripts/omp.sh
-    ./scripts/array.sh
 fi
 
 
