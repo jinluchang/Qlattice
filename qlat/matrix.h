@@ -133,6 +133,14 @@ Matrix<DIMN> operator/(const Matrix<DIMN>& x, const Complex& y)
 }
 
 template <int DIMN>
+Mvector<DIMN> operator*(const Matrix<DIMN>& x, const Mvector<DIMN>& y)
+{
+  Mvector<DIMN> ret;
+  ret.em() = x.em() * y.em();
+  return ret;
+}
+
+template <int DIMN>
 void set_zero(Matrix<DIMN>& m)
 {
   memset(&m, 0, sizeof(Matrix<DIMN>));
@@ -285,6 +293,7 @@ struct SpinMatrixConstants
   std::array<SpinMatrix,4> cps_gammas; // CPS's convention gamma matrices
   SpinMatrix gamma5; // Same as CPS's gamma5
   std::array<SpinMatrix,3> cap_sigmas;
+  std::array<SpinMatrix,3> cps_cap_sigmas; // CPS's convention sigmas
   std::array<SpinMatrix,16> gms;
   std::array<SpinMatrix,16> cps_gms;
   //
@@ -356,6 +365,11 @@ struct SpinMatrixConstants
         0,  -1,   0,   0,
         0,   0,   1,   0,
         0,   0,   0,  -1;
+    //
+    cps_cap_sigmas[0] = -cap_sigmas[0];
+    cps_cap_sigmas[1] = cap_sigmas[1];
+    cps_cap_sigmas[2] = -cap_sigmas[2];
+    //
     for (int a = 0; a < 2; ++a) {
       const SpinMatrix ma = a == 0 ? unit : gammas[0];
       for (int b = 0; b < 2; ++b) {
@@ -428,6 +442,10 @@ struct SpinMatrixConstants
   static const std::array<SpinMatrix,3>& get_cap_sigmas()
   {
     return get_instance().cap_sigmas;
+  }
+  static const std::array<SpinMatrix,3>& get_cps_cap_sigmas()
+  {
+    return get_instance().cps_cap_sigmas;
   }
   static const SpinMatrix get_cps_sigmas(int i, int j)
   {

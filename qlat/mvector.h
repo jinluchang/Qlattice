@@ -85,6 +85,14 @@ Mvector<DIMN> operator-(const Mvector<DIMN>& x, const Mvector<DIMN>& y)
 }
 
 template <int DIMN>
+Mvector<DIMN> operator-(const Mvector<DIMN>& x)
+{
+  Mvector<DIMN> ret;
+  ret.em() = -x.em();
+  return ret;
+}
+
+template <int DIMN>
 Mvector<DIMN> operator*(const Complex& x, const Mvector<DIMN>& y)
 {
   Mvector<DIMN> ret;
@@ -105,6 +113,13 @@ Mvector<DIMN> operator/(const Mvector<DIMN>& x, const Complex& y)
 {
   Mvector<DIMN> ret;
   ret.em() = x.em() / y;
+  return ret;
+}
+
+template <int DIMN>
+Complex dot_product(const Mvector<DIMN>& x, const Mvector<DIMN>& y)
+{
+  const Complex ret = x.em().adjoint() * y.em();
   return ret;
 }
 
@@ -138,40 +153,85 @@ struct WilsonVector: Mvector<4*NUM_COLOR>
     *this = m;
   }
   //
-  const WilsonVector& operator=(const Mvector<NUM_COLOR>& m)
+  const WilsonVector& operator=(const Mvector<4*NUM_COLOR>& m)
   {
     *this = (const WilsonVector&)m;
     return *this;
   }
 };
 
-inline WilsonVector operator*(const Complex& x, const WilsonVector& y)
-{
-  WilsonVector ret;
-  ret.em() = x * y.em();
-  return ret;
-}
+// inline WilsonVector operator*(const Complex& x, const WilsonVector& y)
+// {
+//   WilsonVector ret;
+//   ret.em() = x * y.em();
+//   return ret;
+// }
+// 
+// inline WilsonVector operator+(const WilsonVector& x, const WilsonVector& y)
+// {
+//   WilsonVector ret;
+//   ret.em() = x.em() + y.em();
+//   return ret;
+// }
+// 
+// inline WilsonVector operator-(const WilsonVector& x, const WilsonVector& y)
+// {
+//   WilsonVector ret;
+//   ret.em() = x.em() - y.em();
+//   return ret;
+// }
+// 
+// inline WilsonVector operator-(const WilsonVector& x)
+// {
+//   WilsonVector ret;
+//   ret.em() = -x.em();
+//   return ret;
+// }
 
-inline WilsonVector operator+(const WilsonVector& x, const WilsonVector& y)
+struct SpinVector: Mvector<4>
 {
-  WilsonVector ret;
-  ret.em() = x.em() + y.em();
-  return ret;
-}
+  SpinVector()
+  {
+  }
+  SpinVector(const Mvector<4>& m)
+  {
+    *this = m;
+  }
+  //
+  const SpinVector& operator=(const Mvector<4>& m)
+  {
+    *this = (const SpinVector&)m;
+    return *this;
+  }
+};
 
-inline WilsonVector operator-(const WilsonVector& x, const WilsonVector& y)
-{
-  WilsonVector ret;
-  ret.em() = x.em() - y.em();
-  return ret;
-}
-
-inline WilsonVector operator-(const WilsonVector& x)
-{
-  WilsonVector ret;
-  ret.em() = -x.em();
-  return ret;
-}
+// inline SpinVector operator*(const Complex& x, const SpinVector& y)
+// {
+//   SpinVector ret;
+//   ret.em() = x * y.em();
+//   return ret;
+// }
+// 
+// inline SpinVector operator+(const SpinVector& x, const SpinVector& y)
+// {
+//   SpinVector ret;
+//   ret.em() = x.em() + y.em();
+//   return ret;
+// }
+// 
+// inline SpinVector operator-(const SpinVector& x, const SpinVector& y)
+// {
+//   SpinVector ret;
+//   ret.em() = x.em() - y.em();
+//   return ret;
+// }
+// 
+// inline SpinVector operator-(const SpinVector& x)
+// {
+//   SpinVector ret;
+//   ret.em() = -x.em();
+//   return ret;
+// }
 
 QLAT_END_NAMESPACE
 
