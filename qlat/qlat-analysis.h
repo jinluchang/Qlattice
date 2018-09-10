@@ -193,8 +193,8 @@ inline ConfigurationsInfo make_configurations_info_free(const Coordinate& total_
   ConfigurationsInfo csi;
   csi.tag = "free";
   csi.total_site = total_site;
-  csi.fas.push_back(FermionAction(0.10, 16, 1.0));
   csi.fas.push_back(FermionAction(0.20, 16, 1.0));
+  csi.fas.push_back(FermionAction(0.40, 16, 1.0));
   if (make_cis) {
     for (int traj = 0; traj < 3; ++traj) {
       ConfigurationInfo ci;
