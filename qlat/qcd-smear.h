@@ -108,10 +108,11 @@ inline void gf_ape_smear_no_comm(GaugeField& gf, const GaugeField& gf0, const do
 inline void gf_ape_smear(GaugeField& gf, const GaugeField& gf0, const double alpha, const long steps = 1)
 {
   TIMER_VERBOSE("gf_ape_smear");
+  gf = gf0;
   GaugeField gf1;
   gf1.init(geo_resize(gf0.geo, 1));
   for (long i = 0; i < steps; ++i) {
-    gf1 = gf0;
+    gf1 = gf;
     refresh_expanded(gf1);
     gf_ape_smear_no_comm(gf, gf1, alpha);
   }
@@ -146,12 +147,13 @@ inline void gf_spatial_ape_smear_no_comm(GaugeField& gf, const GaugeField& gf0, 
 inline void gf_spatial_ape_smear(GaugeField& gf, const GaugeField& gf0, const double alpha, const long steps = 1)
 {
   TIMER_VERBOSE("gf_spatial_ape_smear");
+  gf = gf0;
   const Coordinate expan_left(1,1,1,0);
   const Coordinate expan_right(1,1,1,0);
   GaugeField gf1;
   gf1.init(geo_resize(gf0.geo, expan_left, expan_right));
   for (long i = 0; i < steps; ++i) {
-    gf1 = gf0;
+    gf1 = gf;
     refresh_expanded(gf1);
     gf_spatial_ape_smear_no_comm(gf, gf1, alpha);
   }

@@ -506,6 +506,7 @@ inline void gf_show_info(const GaugeField& gf, const int level = 0)
 {
   TIMER_VERBOSE("gf_show_info");
   displayln_info(shows("plaq : ") + show(gf_avg_plaq(gf)));
+  displayln_info(shows("spatial plaq : ") + show(gf_avg_spatial_plaq(gf)));
   displayln_info(shows("trace: ") + show(gf_avg_link_trace(gf)));
   if (0 < level) {
     displayln_info(shows("plaq 1x1 : ") + show(matrix_trace(gf_avg_wilson_loop(gf, 1, 1)).real() / 3.0));
