@@ -996,6 +996,7 @@ inline void multiply_mdag(FermionField5d& out, const FermionField5d& in, const G
 }
 
 inline void multiply_mpc_sym2(FermionField5d& out, const FermionField5d& in, const GaugeField& gf, const FermionAction& fa)
+  // odd <- odd (works for even <- even as well)
 {
   TIMER("multiply_mpc_sym2");
   FermionField5d tmp;
@@ -1012,6 +1013,7 @@ inline void multiply_mpc_sym2(FermionField5d& out, const FermionField5d& in, con
 }
 
 inline void multiply_mpcdag_sym2(FermionField5d& out, const FermionField5d& in, const GaugeField& gf, const FermionAction& fa)
+  // odd <- odd (works for even <- even as well)
 {
   TIMER("multiply_mpcdag_sym2");
   FermionField5d tmp;
@@ -1028,6 +1030,7 @@ inline void multiply_mpcdag_sym2(FermionField5d& out, const FermionField5d& in, 
 }
 
 inline void multiply_hermop_sym2(FermionField5d& out, const FermionField5d& in, const GaugeField& gf, const FermionAction& fa)
+  // odd <- odd (works for even <- even as well)
 {
   TIMER("multiply_hermop_sym2");
   multiply_mpc_sym2(out, in, gf, fa);
@@ -1111,16 +1114,19 @@ inline void multiply_mdag(FermionField5d& out, const FermionField5d& in, const I
 }
 
 inline void multiply_mpc_sym2(FermionField5d& out, const FermionField5d& in, const InverterDomainWall& inv)
+  // odd <- odd (works for even <- even as well)
 {
   multiply_mpc_sym2(out, in, inv.gf, inv.fa);
 }
 
 inline void multiply_mpcdag_sym2(FermionField5d& out, const FermionField5d& in, const InverterDomainWall& inv)
+  // odd <- odd (works for even <- even as well)
 {
   multiply_mpcdag_sym2(out, in, inv.gf, inv.fa);
 }
 
 inline void multiply_hermop_sym2(FermionField5d& out, const FermionField5d& in, const InverterDomainWall& inv)
+  // odd <- odd (works for even <- even as well)
 {
   multiply_hermop_sym2(out, in, inv.gf, inv.fa);
 }
@@ -1314,6 +1320,25 @@ inline void inverse(FermionField5d& out, const FermionField5d& in, const Inverte
 inline void inverse(FermionField4d& out, const FermionField4d& in, const InverterDomainWall& inv)
 {
   inverse_dwf(out, in, inv);
+}
+
+inline double find_max_eigen_value_hermop_sym2(const InverterDomainWall& inv, const RngState& rs, const long max_iter = 100)
+{
+  TIMER_VERBOSE("find_max_eigen_value_hermop_sym2");
+  Geometry geo = geo_reform(inv.geo, inv.fa.ls);
+  geo.eo = 1;
+  FermionField5d ff;
+  ff.init(geo);
+  set_field_u_rand_double(ff, rs);
+  ff *= 1.0 / sqrt(norm(ff));
+  double sqrt_norm_ratio = 1.0;
+  for (long i = 0; i < max_iter; ++i) {
+    multiply_hermop_sym2(ff, ff, inv);
+    sqrt_norm_ratio = sqrt(norm(ff));
+    displayln_info(fname + ssprintf(": %5d: sqrt_norm_ratio =%24.17E.", i+1, sqrt_norm_ratio));
+    ff *= 1.0 / sqrt_norm_ratio;
+  }
+  return sqrt_norm_ratio;
 }
 
 QLAT_END_NAMESPACE

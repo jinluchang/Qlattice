@@ -159,4 +159,22 @@ void field_shift(Field<M>& f, const Field<M>& f1, const Coordinate& shift)
   field_shift_dir(f, tmp, 3, shift[3]);
 }
 
+template <class M>
+void set_field_u_rand_double(Field<M>& f, const RngState& rs, const double upper = 1.0, const double lower = -1.0)
+{
+  TIMER("set_field_u_rand_double");
+  const Geometry& geo = f.geo;
+#pragma omp parallel for
+  for (long index = 0; index < geo.local_volume(); ++index) {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Coordinate xg = geo.coordinate_g_from_l(xl);
+    RngState rsi(rs, show(xg));
+    Vector<WilsonVector> v = f.get_elems(xl);
+    Vector<double> dv((double*)v.data(), v.data_size()/sizeof(double));
+    for (int m = 0; m < dv.size(); ++m) {
+      dv[m] = u_rand_gen(rsi, 1.0, -1.0);
+    }
+  }
+}
+
 QLAT_END_NAMESPACE

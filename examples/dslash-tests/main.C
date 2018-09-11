@@ -101,6 +101,7 @@ void simple_tests()
   InverterDomainWall inv;
   inv.stop_rsd() = 1e-12;
   setup_inverter(inv, gf, fa);
+  find_max_eigen_value_hermop_sym2(inv, RngState(rs, "find_max_eigen_value_hermop_sym2"));
   FermionField4d ff4din;
   ff4din.init(geo);
   FermionField5d ff5din, ff5dout;
