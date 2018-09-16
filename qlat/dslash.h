@@ -1242,7 +1242,14 @@ inline void inverse_with_cg(
   } else {
     dm_in = in;
   }
-  displayln_info(fname + ssprintf(": dm_in norm %E", sqrt(norm(dm_in))));
+  const double dm_in_norm = norm(dm_in);
+  displayln_info(fname + ssprintf(": dm_in sqrt(norm) = %E", sqrt(dm_in_norm)));
+  if (dm_in_norm == 0.0) {
+    displayln_info(fname + ssprintf(": WARNING: dm_in norm is zero."));
+    out.init(geo_resize(in.geo));
+    set_zero(out);
+    return;
+  }
   if (inv.fa.is_using_zmobius == true and inv.fa.cg_diagonal_mee == 2) {
     FermionField5d in_e, in_o;
     FermionField5d out_e, out_o;

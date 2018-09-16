@@ -150,6 +150,7 @@ void field_shift_dir(Field<M>& f, const Field<M>& f1, const int dir, const int s
 
 template <class M>
 void field_shift(Field<M>& f, const Field<M>& f1, const Coordinate& shift)
+  // shift f1 with 'shift'
 {
   TIMER("field_shift");
   Field<M> tmp, tmp1;
