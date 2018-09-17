@@ -175,6 +175,22 @@ Matrix<DIMN> matrix_adjoint(const Matrix<DIMN>& x)
   return ret;
 }
 
+template <int DIMN>
+Matrix<DIMN> matrix_transpose(const Matrix<DIMN>& x)
+{
+  Matrix<DIMN> ret;
+  ret.em() = x.em().transpose();
+  return ret;
+}
+
+template <int DIMN>
+Matrix<DIMN> matrix_conjugate(const Matrix<DIMN>& x)
+{
+  Matrix<DIMN> ret;
+  ret.em() = x.em().conjugate();
+  return ret;
+}
+
 struct ColorMatrix : Matrix<NUM_COLOR>
 {
   ColorMatrix()
