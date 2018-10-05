@@ -363,6 +363,20 @@ inline std::string qcat_sync_node(const std::string& path)
   return ret;
 }
 
+inline void switch_monitor_file(const std::string& path)
+{
+  qclose(get_monitor_file());
+  get_monitor_file() = qopen(path, "a");
+  qset_line_buf(get_monitor_file());
+}
+
+inline void switch_monitor_file_info(const std::string& path)
+{
+  if (0 == get_id_node()) {
+    switch_monitor_file(path);
+  }
+}
+
 inline std::string& get_lock_location()
 {
   static std::string path;

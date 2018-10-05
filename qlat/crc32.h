@@ -8,7 +8,6 @@
 #include <omp.h>
 
 #include <zlib.h>
-#include <show.h>
 
 QLAT_START_NAMESPACE
 

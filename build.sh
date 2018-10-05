@@ -46,5 +46,4 @@ if [ $arch = taihu ] ; then
     ./scripts/omp.sh
 fi
 
-
 rm -rf $temp_dir

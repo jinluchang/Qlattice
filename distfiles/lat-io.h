@@ -10,7 +10,9 @@
 
 #include <zlib.h>
 
-#include <show.h>
+#include "show.h"
+
+namespace latio {
 
 const std::string lat_data_header = "#!/usr/bin/env lat-io-glimpse\n";
 
@@ -18,8 +20,12 @@ struct LatDim
 {
   std::string name;
   long size; // size of this dimension
-  std::vector<std::string> indices;
-  //  
+  std::vector<std::string> indices; // indices names
+                                    // (default: "-1", "-2", "-3", ...)
+                                    // If indices.size() < size then example will be
+                                    // indices[0], indices[1], "-3", "-4", ...
+                                    // Won't check duplication (when assess, search from left to right)
+  //
   LatDim()
   {
      size = 0;
@@ -52,6 +58,8 @@ inline long lat_data_size(const LatInfo& info)
 inline void lat_data_alloc(LatData& ld)
 {
   ld.res.resize(lat_data_size(ld.info));
+}
+
 }
 
 namespace qutils {
@@ -181,7 +189,7 @@ inline crc32_t read_crc32(const std::string& s)
 
 namespace qshow {
 
-inline std::string show(const LatDim& dim)
+inline std::string show(const latio::LatDim& dim)
 {
   std::ostringstream out;
   out << ssprintf("\"%s\"[%ld]:", dim.name.c_str(), dim.size);
@@ -191,7 +199,7 @@ inline std::string show(const LatDim& dim)
   return out.str();
 }
 
-inline std::string show(const LatInfo& info)
+inline std::string show(const latio::LatInfo& info)
 {
   std::ostringstream out;
   out << ssprintf("ndim: %ld\n", info.size());
@@ -268,9 +276,9 @@ inline bool parse_long(long& num, long& cur, const std::string& data)
   }
 }
 
-inline LatDim read_lat_dim(const std::string& str)
+inline latio::LatDim read_lat_dim(const std::string& str)
 {
-  LatDim dim;
+  latio::LatDim dim;
   long cur = 0;
   char c;
   if (!parse_string(dim.name, cur, str)) {
@@ -296,9 +304,9 @@ inline LatDim read_lat_dim(const std::string& str)
   return dim;
 }
 
-inline LatInfo read_lat_info(const std::string& str)
+inline latio::LatInfo read_lat_info(const std::string& str)
 {
-  LatInfo info;
+  latio::LatInfo info;
   const std::vector<std::string> infos = split_into_lines(str);
   assert(infos.size() >= 1);
   const std::string ndim_prop = "ndim: ";
@@ -312,6 +320,8 @@ inline LatInfo read_lat_info(const std::string& str)
 }
 
 }
+
+namespace latio {
 
 inline void LatData::load(const std::string& fn)
 {
@@ -376,3 +386,8 @@ inline void LatData::save(const std::string& fn) const
   fclose(fp);
 }
 
+}
+
+#ifndef USE_NAMESPACE
+using namespace latio;
+#endif

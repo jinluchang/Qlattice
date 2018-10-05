@@ -74,13 +74,6 @@ inline RngState& get_project_root_rng_state()
   return rs;
 }
 
-inline void switch_monitor_file(const std::string& path)
-{
-  qclose(get_monitor_file());
-  get_monitor_file() = qopen(path, "a");
-  qset_line_buf(get_monitor_file());
-}
-
 inline void update_log_rng()
 {
   if (get_result_path() != "") {

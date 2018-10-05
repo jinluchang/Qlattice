@@ -5,7 +5,7 @@
 #include <complex>
 #include <cassert>
 
-#ifdef ARCH_TAIHU
+#ifdef OLD_CPP
 #include <array-compatible.h>
 #else
 #include <array>
@@ -17,6 +17,8 @@
 #ifndef USE_SINGLE_NODE
 #define USE_MULTI_NODE
 #endif
+
+#define USE_NAMESPACE
 
 #include <show.h>
 #include <timer.h>
@@ -32,6 +34,11 @@
 #endif
 
 QLAT_START_NAMESPACE
+
+using namespace qshow;
+using namespace qtimer;
+using namespace qrngstate;
+using namespace latio;
 
 const int DIMN = 4;
 

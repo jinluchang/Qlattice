@@ -8,7 +8,6 @@ tests = qcd-utils-tests \
 		benchmark \
 		dist-io
 
-
 all:
 	for i in $(tests) ; do make -C "$$i" all & done ; time wait
 

@@ -4,6 +4,8 @@
 
 const char* cname = "Main";
 
+using namespace qtimer;
+
 void setField(qlat::Field<qlat::Complex>& f)
 {
   TIMER("setField");
