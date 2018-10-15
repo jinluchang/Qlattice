@@ -20,10 +20,11 @@
 
 #define USE_NAMESPACE
 
+#include <qutils.h>
 #include <show.h>
 #include <timer.h>
 #include <rng-state.h>
-#include <lat-io.h>
+#include <latio.h>
 
 // #define SKIP_ASSERT
 
@@ -35,6 +36,7 @@
 
 QLAT_START_NAMESPACE
 
+using namespace qutils;
 using namespace qshow;
 using namespace qtimer;
 using namespace qrngstate;

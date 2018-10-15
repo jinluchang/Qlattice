@@ -60,13 +60,6 @@ void set_zero(std::vector<M>& vec)
   std::memset(vec.data(), 0, size);
 }
 
-template <class M>
-void clear(std::vector<M>& vec)
-{
-  std::vector<M> empty;
-  swap(empty, vec);
-}
-
 inline double norm(const double& x)
 {
   return x*x;

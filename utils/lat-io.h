@@ -43,13 +43,13 @@ struct LatData
   void save(const std::string& fn) const;
 };
 
-inline long lat_data_size(const LatInfo& info)
+inline long lat_data_size(const LatInfo& info, const int level = 0)
 {
   if (info.size() == 0) {
     return 0;
   }
   long total = 1;
-  for (int i = 0; i < info.size(); ++i) {
+  for (int i = level; i < info.size(); ++i) {
     total *= info[i].size;
   }
   return total;
