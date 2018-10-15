@@ -363,7 +363,7 @@ inline void LatData::save(const std::string& fn) const
 {
   using namespace qshow;
   using namespace qutils;
-  FILE* fp = fopen(fn.c_str(), "w");
+  FILE* fp = fopen((fn + ".partial").c_str(), "w");
   assert(fp != NULL);
   std::vector<double> res_copy;
   if (!is_little_endian()) {
@@ -384,6 +384,7 @@ inline void LatData::save(const std::string& fn) const
   fwrite(end_header.data(), end_header.size(), 1, fp);
   fwrite(is_little_endian() ? res.data() : res_copy.data(), sizeof(double), res.size(), fp);
   fclose(fp);
+  rename((fn + ".partial").c_str(), fn.c_str());
 }
 
 }

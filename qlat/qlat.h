@@ -9,6 +9,7 @@
 #include <qlat/matrix.h>
 #include <qlat/mpi.h>
 #include <qlat/utils-io.h>
+#include <qlat/latio.h>
 #include <qlat/field.h>
 #include <qlat/field-utils.h>
 #include <qlat/field-fft.h>

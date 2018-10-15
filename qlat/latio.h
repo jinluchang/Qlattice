@@ -9,7 +9,7 @@
 
 namespace qutils {
 
-inline void clear(latio::LatDim& ld)
+inline void clear(latio::LatData& ld)
 {
   clear(ld.info);
   clear(ld.res);
@@ -21,13 +21,13 @@ QLAT_START_NAMESPACE
 
 inline LatDim lat_dim_re_im()
 {
-  LatDim reim;
-  reim.name = "re-im";
-  reim.size = 2;
-  reim.indices.resize(2);
-  reim.indices[0] = "re";
-  reim.indices[0] = "im";
-  return reim;
+  LatDim dim;
+  dim.name = "re-im";
+  dim.size = 2;
+  dim.indices.resize(2);
+  dim.indices[0] = "re";
+  dim.indices[1] = "im";
+  return dim;
 }
 
 inline LatDim lat_dim_number(const std::string& name, const long start, const long end, const long inc = 1)
@@ -98,27 +98,31 @@ inline long lat_data_offset(const LatInfo& info, const VecS& idx)
   qassert(idx.size() <= info.size());
   long ret = 0;
   for (int i = 0; i < idx.size(); ++i) {
-    const long k = lat_dim_idx(info[i], idx[i])
-      ret = ret * info[i].size + k;
+    const long k = lat_dim_idx(info[i], idx[i]);
+    ret = ret * info[i].size + k;
   }
   return ret;
 }
 
+template <class VecS>
 inline Vector<double> lat_data_get(LatData& ld, const VecS& idx)
 {
-  const long idx = lat_data_offset(ld.info, idx);
+  const long offset = lat_data_offset(ld.info, idx);
   const long size = lat_data_size(ld.info, idx.size());
-  Vector<double> ret(&ld.res[idx * size], size);
+  qassert(offset * size + size <= ld.res.size());
+  Vector<double> ret(&ld.res[offset * size], size);
   return ret;
 }
 
+template <class VecS>
 inline Vector<double> lat_data_get_const(const LatData& ld, const VecS& idx)
   // Be cautious about the const property
   // 改不改靠自觉
 {
-  const long idx = lat_data_offset(ld.info, idx);
+  const long offset = lat_data_offset(ld.info, idx);
   const long size = lat_data_size(ld.info, idx.size());
-  Vector<double> ret(&ld.res[idx * size], size);
+  qassert(offset * size + size <= ld.res.size());
+  Vector<double> ret(&ld.res[offset * size], size);
   return ret;
 }
 
@@ -127,37 +131,41 @@ inline bool is_lat_info_complex(const LatInfo& info)
   qassert(info.size() >= 1);
   const LatDim& dim = info.back();
   if (dim.name != "re-im" or dim.size != 2) {
-    return false
+    return false;
   } else if (dim.indices.size() !=2 ) {
-    return false
+    return false;
   } else if (dim.indices[0] != "re" or dim.indices[1] != "im") {
-    return false
+    return false;
   } else {
     return true;
   }
 }
 
+template <class VecS>
 inline Vector<Complex> lat_data_complex_get(LatData& ld, const VecS& idx)
 {
-  qassert(is_lat_info_complex(id.info));
+  qassert(is_lat_info_complex(ld.info));
   qassert(idx.size() < ld.info.size());
-  const long idx = lat_data_offset(ld.info, idx);
+  const long offset = lat_data_offset(ld.info, idx);
   const long size = lat_data_size(ld.info, idx.size());
   qassert(size % 2 == 0);
-  Vector<Complex> ret((Complex*)&ld.res[idx * size], size/2);
+  qassert(offset * size + size <= ld.res.size());
+  Vector<Complex> ret((Complex*)&ld.res[offset * size], size/2);
   return ret;
 }
 
+template <class VecS>
 inline Vector<Complex> lat_data_complex_get_const(const LatData& ld, const VecS& idx)
   // Be cautious about the const property
   // 改不改靠自觉
 {
-  qassert(is_lat_info_complex(id.info));
+  qassert(is_lat_info_complex(ld.info));
   qassert(idx.size() < ld.info.size());
-  const long idx = lat_data_offset(ld.info, idx);
+  const long offset = lat_data_offset(ld.info, idx);
   const long size = lat_data_size(ld.info, idx.size());
   qassert(size % 2 == 0);
-  Vector<Complex> ret((Complex*)&ld.res[idx * size], size/2);
+  qassert(offset * size + size <= ld.res.size());
+  Vector<Complex> ret((Complex*)&ld.res[offset * size], size/2);
   return ret;
 }
 
