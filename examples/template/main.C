@@ -142,4 +142,5 @@ int main(int argc, char* argv[])
   }
   Timer::display();
   end();
+  return 0;
 }
