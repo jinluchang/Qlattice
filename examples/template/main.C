@@ -2,6 +2,8 @@
 
 QLAT_START_NAMESPACE
 
+// -----------------------------------------------------------------------------------
+
 inline long& get_log_idx()
 {
   static long idx = -1;
@@ -57,12 +59,18 @@ inline void setup(const std::string& job_tag)
   displayln_info(ssprintf("dist_write_par_limit()=%d", dist_write_par_limit()));
 }
 
+// -----------------------------------------------------------------------------------
+
 inline std::vector<int> get_trajs(const std::string& job_tag)
 {
   TIMER_VERBOSE("get_trajs");
   std::vector<int> ret;
   if (job_tag == "free-4nt8") {
     for (int traj = 1000; traj < 1020; traj += 10) {
+      ret.push_back(traj);
+    }
+  } else if (job_tag == "24I-0.01") {
+    for (int traj = 1000; traj < 9000; traj += 100) {
       ret.push_back(traj);
     }
   } else {
@@ -77,24 +85,83 @@ inline Geometry get_geo(const std::string& job_tag)
   Geometry geo;
   if (job_tag == "free-4nt8") {
     geo.init(Coordinate(4,4,4,8), 1);
+  } else if (job_tag == "24I-0.01") {
+    geo.init(Coordinate(24,24,24,64), 1);
   } else {
     qassert(false);
   }
   return geo;
 }
 
-inline void load_configuration(GaugeField& gf, const std::string& job_tag, const int traj)
+inline long load_configuration(GaugeField& gf, const std::string& job_tag, const int traj)
 {
   TIMER_VERBOSE("load_configuration");
+  long file_size = 0;
   if (job_tag == "free-4nt8") {
     const Geometry geo = get_geo(job_tag);
     gf.init(geo);
     qassert(is_matching_geo(geo, gf.geo));
     set_unit(gf);
+    file_size += geo.geon.num_node * get_data_size(gf);
+  } else if (job_tag == "24I-0.01") {
+    const Geometry geo = get_geo(job_tag);
+    gf.init(geo);
+    qassert(is_matching_geo(geo, gf.geo));
+    file_size += load_gauge_field(gf, get_env("HOME") + ssprintf("/qcdarchive/DWF_iwa_nf2p1/24c64/2plus1_24nt64_IWASAKI_b2p13_ls16_M1p8_ms0p04_mu0p005_rhmc_H_R_G/ckpoint_lat.IEEE64BIG.%d", traj));
+    file_size += load_gauge_field(gf, get_env("HOME") + ssprintf("/qcdarchive/DWF_iwa_nf2p1/24c64/2plus1_24nt64_IWASAKI_b2p13_ls16_M1p8_ms0p04_mu0p01_quo_hasenbusch_rhmc/ckpoint_lat.IEEE64BIG.%d", traj));
+    file_size += load_gauge_field(gf, get_env("HOME") + ssprintf("/qcdarchive/DWF_iwa_nf2p1/24c64/2plus1_24nt64_IWASAKI_b2p13_ls16_M1p8_ms0p04_mu0p01_quo_hasenbusch_rhmc_ukqcd/ckpoint_lat.IEEE64BIG.%d", traj));
+    file_size += load_gauge_field(gf, get_env("HOME") + ssprintf("/qcdarchive/DWF_iwa_nf2p1/24c64/2plus1_24nt64_IWASAKI_b2p13_ls16_M1p8_ms0p04_mu0p01_rhmc_H_R_G/ckpoint_lat.IEEE64BIG.%d", traj));
   } else {
     qassert(false);
   }
+  return file_size;
 }
+
+inline std::vector<FermionAction> get_fermion_actions(const std::string& job_tag)
+{
+  std::vector<FermionAction> fas;
+  if (job_tag == "free-4nt8") {
+    fas.push_back(FermionAction(0.1, 8, 1.0));
+    fas.push_back(FermionAction(0.3, 8, 1.0));
+  } else if (job_tag == "24I-0.01") {
+    fas.push_back(FermionAction(0.01, 16, 1.8));
+    fas.push_back(FermionAction(0.04, 16, 1.8));
+  } else {
+    qassert(false);
+  }
+  return fas;
+}
+
+inline LancArg get_lanc_arg(const std::string& job_tag)
+{
+  LancArg la;
+  if (job_tag == "free-4nt8") {
+    qassert(false);
+  } else if (job_tag == "24I-0.01") {
+    la = LancArg(5.5, 0.18, 200, 1100, 700, 600);
+  } else {
+    qassert(false);
+  }
+  return la;
+}
+
+inline std::string get_low_modes_path(const std::string& job_tag, const int traj)
+{
+  if (job_tag == "free-4nt8") {
+    qassert(false);
+    return "";
+  } else if (job_tag == "24I-0.01") {
+    qmkdir_info("lancs");
+    qmkdir_info(ssprintf("lancs/%s", job_tag.c_str()));
+    qmkdir_sync_node(ssprintf("lancs/%s/qcdtraj=%d", job_tag.c_str(), traj));
+    return ssprintf("lancs/%s/qcdtraj=%d", job_tag.c_str(), traj);
+  } else {
+    qassert(false);
+    return "";
+  }
+}
+
+// -----------------------------------------------------------------------------------
 
 inline bool compute_traj(const std::string& job_tag, const int traj)
 {
@@ -130,14 +197,17 @@ inline bool compute(const std::string& job_tag)
   return false;
 }
 
+// -----------------------------------------------------------------------------------
+
 QLAT_END_NAMESPACE
 
 int main(int argc, char* argv[])
 {
   using namespace qlat;
+  const std::string job_tag = "free-4nt8";
   begin(&argc, &argv);
   setup_log_idx();
-  if (not compute("free-4nt8")) {
+  if (not compute(job_tag)) {
     displayln_info("program finished successfully.");
   }
   Timer::display();
