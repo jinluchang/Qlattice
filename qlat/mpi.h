@@ -38,16 +38,49 @@ struct GeometryNode
   Coordinate coor_node;
   // 0 <= coor_node[i] < size_node[i]
   //
-  inline void init();
+  inline void init()
+  {
+    memset(this, 0, sizeof(GeometryNode));
+  }
+  inline void init(const int id_node_, const Coordinate& size_node_)
+  {
+    initialized = true;
+    num_node = product(size_node_);
+    id_node = id_node_;
+    size_node = size_node_;
+    coor_node = coordinate_from_index(id_node_, size_node_);
+  }
   //
   GeometryNode(const bool initialize = false)
   {
-    memset(this, 0, sizeof(GeometryNode));
-    if (initialize) {
-      init();
-    }
+    init();
+  }
+  GeometryNode(const int id_node_, const Coordinate& size_node_)
+  {
+    init(id_node_, size_node_);
   }
 };
+
+inline bool is_initialized(const GeometryNode& geon)
+{
+  return geon.initialized;
+}
+
+inline void init(GeometryNode& geon)
+{
+  geon.init();
+}
+
+inline GeometryNode& get_geometry_node_internal()
+{
+  static GeometryNode geon;
+  return geon;
+}
+
+inline const GeometryNode& get_geometry_node()
+{
+  return get_geometry_node_internal();
+}
 
 inline bool operator==(const GeometryNode& geon1, const GeometryNode& geon2)
 {
@@ -65,71 +98,12 @@ inline bool operator!=(const GeometryNode& geon1, const GeometryNode& geon2)
 
 inline int id_node_from_coor_node(const Coordinate& coor_node)
 {
-  Coordinate size_node;
-  Coordinate periods;
-  Coordinate coor_node_check;
-  MPI_Cart_get(get_comm(), DIMN, size_node.data(), periods.data(), coor_node_check.data());
-  return index_from_coordinate(coor_node, size_node);
+  return index_from_coordinate(coor_node, get_geometry_node().size_node);
 }
 
 inline Coordinate coor_node_from_id_node(int id_node)
 {
-  Coordinate size_node;
-  Coordinate periods;
-  Coordinate coor_node_check;
-  MPI_Cart_get(get_comm(), DIMN, size_node.data(), periods.data(), coor_node_check.data());
-  return coordinate_from_index(id_node, size_node);
-}
-
-inline void GeometryNode::init()
-{
-  if (initialized) {
-    return;
-  }
-#ifdef USE_MULTI_NODE
-  MPI_Comm_size(get_comm(), &num_node);
-  MPI_Comm_rank(get_comm(), &id_node);
-  int ndims;
-  MPI_Cartdim_get(get_comm(), &ndims);
-  qassert(DIMN == ndims);
-  Coordinate periods;
-  Coordinate coor_node_check;
-  MPI_Cart_get(get_comm(), DIMN, size_node.data(), periods.data(), coor_node_check.data());
-  for (int i = 0; i < DIMN; ++i) {
-    qassert(0 != periods[i]);
-  }
-  coor_node = coordinate_from_index(id_node, size_node);
-  for (int i = 0; i < DIMN; ++i) {
-    qassert(0 != periods[i]);
-    // qassert(coor_node_check[i] == coor_node[i]);
-  }
-  qassert(size_node[0] * size_node[1] * size_node[2] * size_node[3] == num_node);
-  qassert(id_node_from_coor_node(coor_node) == id_node);
-#else
-  num_node = 1;
-  id_node = 0;
-  for (int i = 0; i < DIMN; ++i) {
-    size_node[i] = 1;
-    coor_node[i] = 0;
-  }
-#endif
-  initialized = true;
-}
-
-inline bool is_initialized(const GeometryNode& geon)
-{
-  return geon.initialized;
-}
-
-inline void init(GeometryNode& geon)
-{
-  geon.init();
-}
-
-inline const GeometryNode& get_geometry_node()
-{
-  static GeometryNode geon(true);
-  return geon;
+  return coordinate_from_index(id_node, get_geometry_node().size_node);
 }
 
 inline int get_num_node()
@@ -580,19 +554,21 @@ inline int init_mpi(int* argc, char** argv[])
   if(!is_MPI_initialized()) MPI_Init(argc, argv);
   int num_node;
   MPI_Comm_size(MPI_COMM_WORLD, &num_node);
-  displayln_info(cname() + "::begin(): " + ssprintf("MPI Initialized. NumNode = %d", num_node));
+  displayln_info("qlat::begin(): " + ssprintf("MPI Initialized. NumNode = %d", num_node));
   return num_node;
 }
 
 inline void begin_comm(const MPI_Comm& comm, const Coordinate& size_node)
   // begin Qlat with existing comm (assuming MPI already initialized)
 {
-  const Coordinate periods(1, 1, 1, 1);
-  MPI_Cart_create(comm, DIMN, (int*)size_node.data(), (int*)periods.data(), 0, &get_comm());
-  const GeometryNode& geon = get_geometry_node();
+  get_comm_ptr() = (MPI_Comm*)&comm;
+  int id_node;
+  MPI_Comm_rank(get_comm(), &id_node);
+  GeometryNode& geon = get_geometry_node_internal();
+  geon.init(id_node, size_node);
   sync_node();
-  displayln_info(cname() + "::begin(): OMP_NUM_THREADS = " + show(omp_get_max_threads()));
-  displayln_info(cname() + "::begin(): " + "MPI Cart created. GeometryNode =\n" + show(geon));
+  displayln_info("qlat::begin(): OMP_NUM_THREADS = " + show(omp_get_max_threads()));
+  displayln_info("qlat::begin(): GeometryNode =\n" + show(geon));
   sync_node();
   display_geometry_node();
 }
@@ -600,7 +576,7 @@ inline void begin_comm(const MPI_Comm& comm, const Coordinate& size_node)
 inline void begin(const int id_node, const Coordinate& size_node)
   // begin Qlat with existing id_node maping (assuming MPI already initialized)
 {
-  MPI_Comm comm;
+  static MPI_Comm comm;
   MPI_Comm_split(MPI_COMM_WORLD, 0, id_node, &comm);
   begin_comm(comm, size_node);
 }
@@ -622,7 +598,7 @@ inline void begin(int* argc, char** argv[])
 inline void end()
 {
   if(is_MPI_initialized()) MPI_Finalize();
-  displayln_info(cname() + "::end(): MPI Finalized.");
+  displayln_info("qlat::end(): MPI Finalized.");
 }
 
 QLAT_END_NAMESPACE

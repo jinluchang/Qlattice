@@ -44,7 +44,7 @@ struct FermionAction
     m5 = m5_;
     mobius_scale = mobius_scale_;
     is_multiplying_dminus = is_multiplying_dminus_;
-    is_using_zmobius = true;
+    is_using_zmobius = false;
     cg_diagonal_mee = 2;
     bs = std::vector<Complex>(ls, 0.5 * mobius_scale + 0.5);
     cs = std::vector<Complex>(ls, 0.5 * mobius_scale - 0.5);

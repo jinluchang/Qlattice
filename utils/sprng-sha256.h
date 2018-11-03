@@ -20,7 +20,6 @@
 
 #include "rng-state.h"
 
-#include <array>
 #include <cstring>
 #include <ostream>
 #include <istream>

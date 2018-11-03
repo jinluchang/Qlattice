@@ -4,9 +4,6 @@
 #include <qutils.h>
 #include <qlat/utils.h>
 
-#include <vector>
-#include <array>
-
 namespace qutils {
 
 inline void clear(latio::LatData& ld)

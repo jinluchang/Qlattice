@@ -79,14 +79,25 @@ inline std::vector<int> get_trajs(const std::string& job_tag)
   return ret;
 }
 
+inline Coordinate get_total_site(const std::string& job_tag)
+{
+  if (job_tag == "free-4nt8") {
+    return Coordinate(4,4,4,8);
+  } else if (job_tag == "24I-0.01") {
+    return Coordinate(24,24,24,64);
+  } else {
+    qassert(false);
+    return Coordinate();
+  }
+}
+
 inline Geometry get_geo(const std::string& job_tag)
 {
-  TIMER("get_geo");
   Geometry geo;
   if (job_tag == "free-4nt8") {
-    geo.init(Coordinate(4,4,4,8), 1);
+    geo.init(get_total_site(job_tag), 1);
   } else if (job_tag == "24I-0.01") {
-    geo.init(Coordinate(24,24,24,64), 1);
+    geo.init(get_total_site(job_tag), 1);
   } else {
     qassert(false);
   }
@@ -154,7 +165,7 @@ inline std::string get_low_modes_path(const std::string& job_tag, const int traj
     qmkdir_info("lancs");
     qmkdir_info(ssprintf("lancs/%s", job_tag.c_str()));
     qmkdir_sync_node(ssprintf("lancs/%s/qcdtraj=%d", job_tag.c_str(), traj));
-    return ssprintf("lancs/%s/qcdtraj=%d", job_tag.c_str(), traj);
+    return ssprintf("lancs/%s/qcdtraj=%d/huge-data-lanc", job_tag.c_str(), traj);
   } else {
     qassert(false);
     return "";
@@ -191,7 +202,13 @@ inline bool compute(const std::string& job_tag)
     if (does_file_exist_sync_node(get_job_path(job_tag, traj) + "/checkpoint.txt")) {
       continue;
     }
-    compute_traj(job_tag, traj);
+    // if (does_file_exist_sync_node(get_low_modes_path(job_tag, traj) + "/checkpoint")) {
+    //   continue;
+    // }
+    if (obtain_lock(get_job_path(job_tag, traj) + "-lock")) {
+      compute_traj(job_tag, traj);
+      release_lock();
+    }
     Timer::display();
   }
   return false;
