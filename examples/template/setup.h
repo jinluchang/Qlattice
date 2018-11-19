@@ -102,6 +102,41 @@ inline Geometry get_geo(const std::string& job_tag)
   return geo;
 }
 
+inline std::string get_config_fn(const std::string& job_tag, const int traj)
+{
+  std::string fn("");
+  if (job_tag == "free-4nt8") {
+    qassert(false);
+  } else if (job_tag == "16I-0.01") {
+    fn = get_env("HOME") + ssprintf("/qcdarchive/DWF_iwa_nf2p1/16c32/2plus1_16nt32_IWASAKI_b2p13_ls16_M1p8_ms0p04_mu0p01_rhmc_multi_timescale_ukqcd/ckpoint_lat.IEEE64BIG.%d", traj);
+    if (does_file_exist_sync_node(fn)) {
+      return fn;
+    }
+    return "";
+  } else if (job_tag == "24I-0.01") {
+    fn = get_env("HOME") + ssprintf("/qcdarchive/DWF_iwa_nf2p1/24c64/2plus1_24nt64_IWASAKI_b2p13_ls16_M1p8_ms0p04_mu0p005_rhmc_H_R_G/ckpoint_lat.IEEE64BIG.%d", traj);
+    if (does_file_exist_sync_node(fn)) {
+      return fn;
+    }
+    fn = get_env("HOME") + ssprintf("/qcdarchive/DWF_iwa_nf2p1/24c64/2plus1_24nt64_IWASAKI_b2p13_ls16_M1p8_ms0p04_mu0p01_quo_hasenbusch_rhmc/ckpoint_lat.IEEE64BIG.%d", traj);
+    if (does_file_exist_sync_node(fn)) {
+      return fn;
+    }
+    fn = get_env("HOME") + ssprintf("/qcdarchive/DWF_iwa_nf2p1/24c64/2plus1_24nt64_IWASAKI_b2p13_ls16_M1p8_ms0p04_mu0p01_quo_hasenbusch_rhmc_ukqcd/ckpoint_lat.IEEE64BIG.%d", traj);
+    if (does_file_exist_sync_node(fn)) {
+      return fn;
+    }
+    fn = get_env("HOME") + ssprintf("/qcdarchive/DWF_iwa_nf2p1/24c64/2plus1_24nt64_IWASAKI_b2p13_ls16_M1p8_ms0p04_mu0p01_rhmc_H_R_G/ckpoint_lat.IEEE64BIG.%d", traj);
+    if (does_file_exist_sync_node(fn)) {
+      return fn;
+    }
+    return "";
+  } else {
+    qassert(false);
+  }
+  return "";
+}
+
 inline long load_configuration(GaugeField& gf, const std::string& job_tag, const int traj)
 {
   TIMER_VERBOSE("load_configuration");
@@ -112,15 +147,8 @@ inline long load_configuration(GaugeField& gf, const std::string& job_tag, const
   if (job_tag == "free-4nt8") {
     set_unit(gf);
     file_size += geo.geon.num_node * get_data_size(gf);
-  } else if (job_tag == "16I-0.01") {
-    file_size += load_gauge_field(gf, get_env("HOME") + ssprintf("/qcdarchive/DWF_iwa_nf2p1/16c32/2plus1_16nt32_IWASAKI_b2p13_ls16_M1p8_ms0p04_mu0p01_rhmc_multi_timescale_ukqcd/ckpoint_lat.IEEE64BIG.%d", traj));
-  } else if (job_tag == "24I-0.01") {
-    file_size += load_gauge_field(gf, get_env("HOME") + ssprintf("/qcdarchive/DWF_iwa_nf2p1/24c64/2plus1_24nt64_IWASAKI_b2p13_ls16_M1p8_ms0p04_mu0p005_rhmc_H_R_G/ckpoint_lat.IEEE64BIG.%d", traj));
-    file_size += load_gauge_field(gf, get_env("HOME") + ssprintf("/qcdarchive/DWF_iwa_nf2p1/24c64/2plus1_24nt64_IWASAKI_b2p13_ls16_M1p8_ms0p04_mu0p01_quo_hasenbusch_rhmc/ckpoint_lat.IEEE64BIG.%d", traj));
-    file_size += load_gauge_field(gf, get_env("HOME") + ssprintf("/qcdarchive/DWF_iwa_nf2p1/24c64/2plus1_24nt64_IWASAKI_b2p13_ls16_M1p8_ms0p04_mu0p01_quo_hasenbusch_rhmc_ukqcd/ckpoint_lat.IEEE64BIG.%d", traj));
-    file_size += load_gauge_field(gf, get_env("HOME") + ssprintf("/qcdarchive/DWF_iwa_nf2p1/24c64/2plus1_24nt64_IWASAKI_b2p13_ls16_M1p8_ms0p04_mu0p01_rhmc_H_R_G/ckpoint_lat.IEEE64BIG.%d", traj));
   } else {
-    qassert(false);
+    file_size += load_gauge_field(gf, get_config_fn(job_tag, traj));
   }
   return file_size;
 }
@@ -170,4 +198,3 @@ inline std::string get_low_modes_path(const std::string& job_tag, const int traj
 }
 
 QLAT_END_NAMESPACE
-
