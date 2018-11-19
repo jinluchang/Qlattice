@@ -6,7 +6,8 @@ tests = qcd-utils-tests \
 		rng-state-tests \
 		field-rng-tests \
 		benchmark \
-		dist-io
+		dist-io \
+		template
 
 all:
 	for i in $(tests) ; do make -C "$$i" all & done ; time wait

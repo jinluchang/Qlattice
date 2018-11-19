@@ -82,10 +82,7 @@ struct Field
   const Field<M>& operator=(const Field<M>& f)
   {
     TIMER("Field::operator=");
-    if (!initialized) {
-      init(geo_resize(f.geo));
-    }
-    qassert(is_matching_geo_mult(geo, f.geo));
+    init(geo_resize(f.geo));
 #pragma omp parallel for
     for (long index = 0; index < geo.local_volume(); ++index) {
       Coordinate xl = geo.coordinate_from_index(index);

@@ -20,8 +20,10 @@
 #include <qlat/field-expand.h>
 #include <qlat/qed.h>
 #include <qlat/qcd.h>
+#include <qlat/qcd-prop.h>
 #include <qlat/qcd-utils.h>
 #include <qlat/qcd-gauge-transformation.h>
+#include <qlat/qcd-gauge-transformation-boundary.h>
 #include <qlat/qcd-smear.h>
 #include <qlat/qcd-topology.h>
 #include <qlat/fermion-action.h>

@@ -36,7 +36,7 @@ void simple_dwf_tests()
   ff5dout1.init(geo_remult(geo, fa.ls));
   const Coordinate xg = mod(Coordinate(rand_gen(rs), rand_gen(rs), rand_gen(rs), rand_gen(rs)), geo.total_site());
   const int cs = mod(rand_gen(rs), 12);
-  set_fermion_field_point_src(ff4din, xg, cs);
+  set_point_src_fermion_field(ff4din, xg, cs);
   displayln_info("testing multiply_m_full and multiply_m");
   fermion_field_5d_from_4d(ff5din, ff4din, 0, fa.ls-1);
   ff5din1 = ff5din;
@@ -113,7 +113,7 @@ void simple_tests()
   ff5dout1.init(geo_remult(geo, fa.ls));
   const Coordinate xg = mod(Coordinate(rand_gen(rs), rand_gen(rs), rand_gen(rs), rand_gen(rs)), geo.total_site());
   const int cs = mod(rand_gen(rs), 12);
-  set_fermion_field_point_src(ff4din, xg, cs);
+  set_point_src_fermion_field(ff4din, xg, cs);
   displayln_info("testing multiply_m_full and multiply_m");
   fermion_field_5d_from_4d(ff5din, ff4din, 0, fa.ls-1);
   ff5din1 = ff5din;

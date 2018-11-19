@@ -143,13 +143,13 @@ inline long load_configuration(GaugeField& gf, const std::string& job_tag, const
   long file_size = 0;
   const Geometry geo = get_geo(job_tag);
   gf.init(geo);
-  qassert(is_matching_geo(geo, gf.geo));
   if (job_tag == "free-4nt8") {
     set_unit(gf);
     file_size += geo.geon.num_node * get_data_size(gf);
   } else {
     file_size += load_gauge_field(gf, get_config_fn(job_tag, traj));
   }
+  qassert(is_matching_geo(geo, gf.geo));
   return file_size;
 }
 
@@ -157,8 +157,8 @@ inline std::vector<FermionAction> get_fermion_actions(const std::string& job_tag
 {
   std::vector<FermionAction> fas;
   if (job_tag == "free-4nt8") {
-    fas.push_back(FermionAction(0.1, 8, 1.0));
-    fas.push_back(FermionAction(0.3, 8, 1.0));
+    fas.push_back(FermionAction(0.1, 8, 1.0, 1.0, true, true));
+    fas.push_back(FermionAction(0.3, 8, 1.0, 1.0, true, true));
   } else if (job_tag == "24I-0.01" or job_tag == "16I-0.01") {
     fas.push_back(FermionAction(0.01, 16, 1.8));
     fas.push_back(FermionAction(0.04, 16, 1.8));

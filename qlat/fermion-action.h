@@ -35,7 +35,7 @@ struct FermionAction
     init();
   }
   FermionAction(const double mass_, const int ls_, const double m5_,
-      const double mobius_scale_ = 1.0, bool is_multiplying_dminus_ = true)
+      const double mobius_scale_ = 1.0, const bool is_multiplying_dminus_ = true, bool is_using_zmobius_ = false)
   {
     init();
     initialized = true;
@@ -44,7 +44,7 @@ struct FermionAction
     m5 = m5_;
     mobius_scale = mobius_scale_;
     is_multiplying_dminus = is_multiplying_dminus_;
-    is_using_zmobius = false;
+    is_using_zmobius = is_using_zmobius_;
     cg_diagonal_mee = 2;
     bs = std::vector<Complex>(ls, 0.5 * mobius_scale + 0.5);
     cs = std::vector<Complex>(ls, 0.5 * mobius_scale - 0.5);
