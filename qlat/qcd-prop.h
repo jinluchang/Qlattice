@@ -143,12 +143,11 @@ inline void inverse(Propagator4d& sol, const Propagator4d& src, const Inverter& 
   // inverse(4d, 4d, inv) perform the inversion
 {
   TIMER_VERBOSE("inverse(p4d,p4d,inv)");
-  const Geometry& geo = geo_reform(src.geo);
+  const Geometry geo = geo_reform(src.geo);
   sol.init(geo);
   FermionField4d ff_sol, ff_src;
   for (int j = 0; j < 4*NUM_COLOR; ++j) {
     set_fermion_field_from_propagator_col(ff_src, src, j);
-    set_zero(ff_sol);
     inverse(ff_sol, ff_src, inv);
     set_propagator_col_from_fermion_field(sol, j, ff_sol);
   }
