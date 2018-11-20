@@ -112,12 +112,12 @@ inline std::string get_config_fn(const std::string& job_tag, const int traj)
     if (does_file_exist_sync_node(fn)) {
       return fn;
     }
-    return "";
-  } else if (job_tag == "24I-0.01") {
+  } else if (job_tag == "24I-0.005") {
     fn = get_env("HOME") + ssprintf("/qcdarchive/DWF_iwa_nf2p1/24c64/2plus1_24nt64_IWASAKI_b2p13_ls16_M1p8_ms0p04_mu0p005_rhmc_H_R_G/ckpoint_lat.IEEE64BIG.%d", traj);
     if (does_file_exist_sync_node(fn)) {
       return fn;
     }
+  } else if (job_tag == "24I-0.01") {
     fn = get_env("HOME") + ssprintf("/qcdarchive/DWF_iwa_nf2p1/24c64/2plus1_24nt64_IWASAKI_b2p13_ls16_M1p8_ms0p04_mu0p01_quo_hasenbusch_rhmc/ckpoint_lat.IEEE64BIG.%d", traj);
     if (does_file_exist_sync_node(fn)) {
       return fn;
@@ -130,7 +130,6 @@ inline std::string get_config_fn(const std::string& job_tag, const int traj)
     if (does_file_exist_sync_node(fn)) {
       return fn;
     }
-    return "";
   } else {
     qassert(false);
   }
