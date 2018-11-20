@@ -4,6 +4,7 @@
 
 #include <complex>
 #include <cassert>
+#include <unistd.h>
 
 #ifdef OLD_CPP
 #include <array-compatible.h>
@@ -31,7 +32,13 @@
 #ifdef SKIP_ASSERT
 #define qassert(x) assert(true)
 #else
-#define qassert(x) assert(x)
+#define qassert(x) { \
+  if (not (x)) { \
+    displayln("qassert failed: " #x); \
+    usleep((useconds_t)(10.0 * 1.0e6)); \
+    assert(false); \
+  } \
+}
 #endif
 
 QLAT_START_NAMESPACE

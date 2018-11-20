@@ -101,7 +101,7 @@ inline void field_convert(cps::GridComm<M>& gc, const Field<N>& f)
   const Geometry& geo = f.geo;
   cps::Geometry cgeo = geo_convert(geo);
   gc.init(cgeo);
-  qassert(f.geo == geo_convert(gc.getGeometry()));
+  qassert(check_matching_geo_mult(f.geo, geo_convert(gc.getGeometry())));
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -120,7 +120,7 @@ inline void field_convert(Field<N>& f, const cps::GridComm<M>& gc)
   const cps::Geometry cgeo = gc.getGeometry();
   Geometry geo = geo_convert(cgeo);
   f.init(geo);
-  qassert(f.geo == geo);
+  qassert(check_matching_geo_mult(f.geo, geo));
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -390,7 +390,7 @@ struct InverterDomainWallCPS
   }
   void setup(const GaugeField& gf_, const FermionAction& fa_)
   {
-    geo = geo_reform(gf.geo, fa_.ls);
+    geo = geo_reform(gf_.geo, fa_.ls);
     fa = fa_;
     gf = gf_;
     cps::FermionActionDomainWall cfa = fa_convert(fa);

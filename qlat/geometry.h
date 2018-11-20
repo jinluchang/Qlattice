@@ -343,20 +343,6 @@ inline Geometry geo_eo(const Geometry& geo_, const int eo = 0)
   return geo;
 }
 
-inline bool is_matching_geo(const Geometry& geo1, const Geometry& geo2)
-{
-  return geo1.initialized == geo2.initialized
-    && geo1.geon == geo2.geon
-    && geo1.node_site == geo2.node_site;
-}
-
-inline bool is_matching_geo_mult(const Geometry& geo1, const Geometry& geo2)
-{
-  return is_matching_geo(geo1, geo2)
-    && geo1.eo == geo2.eo
-    && geo1.multiplicity == geo2.multiplicity;
-}
-
 inline bool is_initialized(const Geometry& geo)
 {
   return geo.initialized;
@@ -382,6 +368,42 @@ inline std::string show(const qlat::Geometry& geo)
 
 }
 
-#ifndef USE_NAMESPACE
-using namespace qshow;
-#endif
+QLAT_START_NAMESPACE
+
+inline bool is_matching_geo(const Geometry& geo1, const Geometry& geo2)
+{
+  return geo1.initialized == geo2.initialized
+    && geo1.geon == geo2.geon
+    && geo1.node_site == geo2.node_site;
+}
+
+inline bool is_matching_geo_mult(const Geometry& geo1, const Geometry& geo2)
+{
+  return is_matching_geo(geo1, geo2)
+    && geo1.eo == geo2.eo
+    && geo1.multiplicity == geo2.multiplicity;
+}
+
+inline bool check_matching_geo(const Geometry& geo1, const Geometry& geo2)
+{
+  if (is_matching_geo(geo1, geo2)) {
+    return true;
+  } else {
+    displayln("geo1 =\n" + show(geo1));
+    displayln("geo2 =\n" + show(geo2));
+    return false;
+  }
+}
+
+inline bool check_matching_geo_mult(const Geometry& geo1, const Geometry& geo2)
+{
+  if (is_matching_geo_mult(geo1, geo2)) {
+    return true;
+  } else {
+    displayln("geo1 =\n" + show(geo1));
+    displayln("geo2 =\n" + show(geo2));
+    return false;
+  }
+}
+
+QLAT_END_NAMESPACE
