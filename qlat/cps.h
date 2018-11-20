@@ -367,6 +367,8 @@ struct InverterDomainWallCPS
 {
   Geometry geo;
   FermionAction fa;
+  GaugeField gf;
+  //
   cps::InverterDomainWallDefault inverter;
   ConstHandle<LowModesCPS> lm;
   //
@@ -386,10 +388,11 @@ struct InverterDomainWallCPS
   {
     inverter.reinit();
   }
-  void setup(const GaugeField& gf, const FermionAction& fa_)
+  void setup(const GaugeField& gf_, const FermionAction& fa_)
   {
     geo = geo_reform(gf.geo, fa_.ls);
     fa = fa_;
+    gf = gf_;
     cps::FermionActionDomainWall cfa = fa_convert(fa);
     cps::GaugeField cgf;
     field_convert(cgf, gf);

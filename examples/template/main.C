@@ -33,11 +33,12 @@ inline bool compute_traj(const std::string& job_tag, const int traj)
     setup_inverter(inv, gf, fa);
   }
   //
-  const int tslice = 0;
   GaugeTransform gt;
   gt.init(geo);
   set_g_rand_color_matrix_field(gt, rs.split("gt-rs"), 1.0);
+  //
   Propagator4d prop;
+  const int tslice = 0;
   set_wall_src_propagator(prop, GaugeTransformInverter<InverterDomainWall>(inv, gt), tslice, CoordinateD());
   displayln_info(ssprintf("prop norm = %24.17E", norm(prop)));
   //
