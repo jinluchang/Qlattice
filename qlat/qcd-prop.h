@@ -124,7 +124,7 @@ inline void inverse_dwf(FermionField4d& sol, const FermionField4d& src, const In
 {
   TIMER_VERBOSE("inverse_dwf(4d,4d,inv)");
   const Geometry& geo = src.geo;
-  qassert(check_matching_geo_mult(geo, inv.geo));
+  qassert(check_matching_geo(geo, inv.geo));
   sol.init(geo);
   const Geometry geo_ls = geo_reform(inv.geo, inv.fa.ls, 0);
   const int ls = geo_ls.multiplicity;
