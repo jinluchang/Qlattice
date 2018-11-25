@@ -634,7 +634,7 @@ inline ConfigurationsInfo make_configurations_info_48c96_mu0p00078_ms0p0362(cons
     }
   }
   if (make_cis) {
-    for (int traj = 2000; traj >= 1000 ; traj -= 10) {
+    for (int traj = 2300; traj >= 1000 ; traj -= 10) {
       ConfigurationInfo ci;
       ci.csi.init(csi);
       ci.traj = traj;
