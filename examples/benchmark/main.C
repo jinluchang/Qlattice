@@ -23,9 +23,9 @@ void test_get_data()
   }
 }
 
-void test_fft()
+void test_gf_fft()
 {
-  TIMER("test_fft");
+  TIMER("test_gf_fft");
   // Coordinate total_site(48, 48, 48, 96);
   // Coordinate total_site(16, 16, 16, 32);
   Coordinate total_site(4, 4, 4, 8);
@@ -50,10 +50,39 @@ void test_fft()
   }
   const long flops = get_data_size(gf) * get_num_node();
   for (int i = 0; i < 16; ++i) {
-    TIMER_VERBOSE_FLOPS("fft");
+    TIMER_VERBOSE_FLOPS("fft-gf");
     timer.flops += flops * 2;
     fft_complex_field(gf, true);
     fft_complex_field(gf, false);
+  }
+}
+
+void test_fft()
+{
+  TIMER("test_fft");
+  // Coordinate total_site(48, 48, 48, 96);
+  // Coordinate total_site(16, 16, 16, 32);
+  Coordinate total_site(4, 4, 4, 8);
+  RngState rs(getGlobalRngState(), "test_fft");
+  Geometry geo;
+  geo.init(total_site, 1);
+  FieldM<Complex,12> f;
+  f.init(geo);
+#pragma omp parallel for
+  for (long index = 0; index < geo.local_volume(); ++index) {
+    RngState rsi(rs, get_id_node() * geo.local_volume() + index);
+    Coordinate xl = geo.coordinate_from_index(index);
+    Vector<Complex> v = f.get_elems(xl);
+    for (int m = 0; m < v.size(); ++m) {
+      v[m] = Complex(gRandGen(rsi), gRandGen(rsi));
+    }
+  }
+  const long flops = get_data_size(f) * get_num_node();
+  for (int i = 0; i < 16; ++i) {
+    TIMER_VERBOSE_FLOPS("fft");
+    timer.flops += flops * 2;
+    fft_complex_field(f, true);
+    fft_complex_field(f, false);
   }
 }
 
@@ -61,6 +90,7 @@ int main(int argc, char* argv[])
 {
   begin(&argc, &argv);
   test_get_data();
+  test_gf_fft();
   test_fft();
   Timer::display();
   end();
