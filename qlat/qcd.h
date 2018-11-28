@@ -2,7 +2,11 @@
 
 #include <qlat/matrix.h>
 #include <qlat/field.h>
+
+#ifndef QLAT_FFTW_OFF
 #include <qlat/field-fft.h>
+#endif
+
 #include <qlat/field-expand.h>
 
 #include <eigen3/Eigen/Eigen>
