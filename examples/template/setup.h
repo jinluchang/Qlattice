@@ -75,6 +75,10 @@ inline std::vector<int> get_trajs(const std::string& job_tag)
     for (int traj = 2700; traj <= 8500; traj += 100) {
       ret.push_back(traj);
     }
+  } else if (job_tag == "32D-0.00107") {
+    for (int traj = 680; traj <= 1340; traj += 10) {
+      ret.push_back(traj);
+    }
   } else {
     qassert(false);
   }
@@ -89,6 +93,8 @@ inline Coordinate get_total_site(const std::string& job_tag)
     return Coordinate(16,16,16,32);
   } else if (job_tag == "24I-0.01") {
     return Coordinate(24,24,24,64);
+  } else if (job_tag == "32D-0.00107") {
+    return Coordinate(32,32,32,64);
   } else {
     qassert(false);
     return Coordinate();
@@ -130,6 +136,11 @@ inline std::string get_config_fn(const std::string& job_tag, const int traj)
     if (does_file_exist_sync_node(fn)) {
       return fn;
     }
+  } else if (job_tag == "32D") {
+    fn = get_env("HOME") + ssprintf("/qcddata-chulwoo/DWF/2+1f/32nt64/IWASAKI+DSDR/b1.633/ls24/M1.8/ms0.0850/ml0.00107/evol0/configurations/ckpoint_lat.%d", traj);
+    if (does_file_exist_sync_node(fn)) {
+      return fn;
+    }
   } else {
     qassert(false);
   }
@@ -161,6 +172,28 @@ inline std::vector<FermionAction> get_fermion_actions(const std::string& job_tag
   } else if (job_tag == "24I-0.01" or job_tag == "16I-0.01") {
     fas.push_back(FermionAction(0.01, 16, 1.8));
     fas.push_back(FermionAction(0.04, 16, 1.8));
+  } else if (job_tag == "24D-0.00107" or job_tag == "32D-0.00107" or job_tag == "48D-0.00107") {
+    fas.push_back(FermionAction(0.00107, 12, 1.8, (2.5+1.5)*2, true, true));
+    {
+      std::vector<Complex> omega(12, 0);
+      omega[0] = 1.0903256131299373;
+      omega[1] = 0.9570283702230611;
+      omega[2] = 0.7048886040934104;
+      omega[3] = 0.48979921782791747;
+      omega[4] = 0.328608311201356;
+      omega[5] = 0.21664245377015995;
+      omega[6] = 0.14121112711957107;
+      omega[7] = 0.0907785101745156;
+      omega[8] = Complex(0.05608303440064219, -0.007537158177840385);
+      omega[9] = Complex(0.05608303440064219, 0.007537158177840385);
+      omega[10] = Complex(0.0365221637144842, -0.03343945161367745);
+      omega[11] = Complex(0.0365221637144842, 0.03343945161367745);
+      for (int i = 0; i < (int)omega.size(); i++) {
+        fas[0].bs[i] = 0.5 * (1.0 / omega[i] + 1.0);
+        fas[0].cs[i] = fas[0].bs[i] - 1.0;
+      }
+    }
+    fas.push_back(FermionAction(0.0850, 24, 1.8, 2.5+1.5, true, false));
   } else {
     qassert(false);
   }
@@ -177,6 +210,8 @@ inline LancArg get_lanc_arg(const std::string& job_tag)
     // la = LancArg(5.5, 0.50, 200, 600, 510, 500);
   } else if (job_tag == "24I-0.01") {
     la = LancArg(5.5, 0.18, 200, 1100, 700, 600);
+  } else if (job_tag == "32D-0.00107") {
+    la = LancArg(sqrt(5.5), sqrt(5.860158125869930E-04), 300, 4500, 4200, 4000);
   } else {
     qassert(false);
   }

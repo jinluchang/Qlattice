@@ -2,7 +2,6 @@
 
 QLAT_START_NAMESPACE
 
-
 // -----------------------------------------------------------------------------------
 
 inline bool compute_traj(const std::string& job_tag, const int traj)
