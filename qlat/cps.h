@@ -6,6 +6,8 @@
 
 #include <qlat/qlat.h>
 
+using namespace qtimer;
+
 #include <gf/tools.h>
 #include <gf/gauge_field.h>
 #include <gf/fermion_field.h>

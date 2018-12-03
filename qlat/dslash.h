@@ -61,6 +61,53 @@ inline long load_or_compute_low_modes(LowModes& lm, const std::string& path,
   return load_low_modes(lm, path);
 }
 
+inline long save_low_modes(const LowModes& lm, const std::string& path)
+{
+  TIMER_VERBOSE("save_low_modes");
+  qassert(lm.initialized);
+  std::vector<BlockedHalfVector> bhvs;
+  decompress_eigen_system(bhvs, lm.cesb, lm.cesc);
+  std::vector<HalfVector> hvs;
+  convert_half_vectors(hvs, bhvs);
+  const int id_node = get_id_node();
+  const int num_node = get_num_node();
+  const int idx = id_node;
+  const int idx_size = num_node;
+  const int dir_idx = compute_dist_file_dir_id(idx, idx_size);
+  qmkdir(path);
+  qmkdir(path + ssprintf("/%02d", dir_idx));
+  const std::string fn = path + ssprintf("/%02d/%010d", dir_idx, idx);
+  long total_bytes = 0;
+  const int n_cycle = std::max(1, num_node / dist_write_par_limit());
+  std::vector<crc32_t> crcs(num_node, 0);
+  for (int i = 0; i < n_cycle; i++) {
+    long bytes = 0;
+    if (id_node % n_cycle == i) {
+      qassert(hvs.size() >= 1);
+      bytes = hvs.size() * get_data(hvs[0]).data_size();
+      crcs[id_node] = save_half_vectors(hvs, fn, false, true);
+    }
+    glb_sum(bytes);
+    total_bytes += bytes;
+  }
+  glb_sum_byte_vec(get_data(crcs));
+  const crc32_t crc = dist_crc32(crcs);
+  if (get_id_node() == 0) {
+    const std::string fn = path + "/checksums.txt";
+    FILE* fp = qopen(fn, "w");
+    qassert(fp != NULL);
+    displayln(ssprintf("%08X", crc), fp);
+    displayln("", fp);
+    for (size_t i = 0; i < crcs.size(); ++i) {
+      displayln(ssprintf("%08X", crcs[i]), fp);
+    }
+    qclose(fp);
+  }
+  qtouch_info(path + "/checkpoint");
+  timer.flops += total_bytes;
+  return total_bytes;
+}
+
 inline void deflate(HalfVector& hv_out, const HalfVector& hv_in, const LowModes& lm)
 {
   TIMER("deflate(hv,hv,lm)");

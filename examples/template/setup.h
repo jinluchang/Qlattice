@@ -136,7 +136,7 @@ inline std::string get_config_fn(const std::string& job_tag, const int traj)
     if (does_file_exist_sync_node(fn)) {
       return fn;
     }
-  } else if (job_tag == "32D") {
+  } else if (job_tag == "32D-0.00107") {
     fn = get_env("HOME") + ssprintf("/qcddata-chulwoo/DWF/2+1f/32nt64/IWASAKI+DSDR/b1.633/ls24/M1.8/ms0.0850/ml0.00107/evol0/configurations/ckpoint_lat.%d", traj);
     if (does_file_exist_sync_node(fn)) {
       return fn;
@@ -158,6 +158,9 @@ inline long load_configuration(GaugeField& gf, const std::string& job_tag, const
     file_size += geo.geon.num_node * get_data_size(gf);
   } else {
     file_size += load_gauge_field(gf, get_config_fn(job_tag, traj));
+    if (job_tag == "24D-0.00107" or job_tag == "32D-0.00107") {
+      twist_boundary_at_boundary(gf, -0.5, 3);
+    }
   }
   qassert(is_matching_geo(geo, gf.geo));
   return file_size;
