@@ -61,9 +61,9 @@ inline long load_or_compute_low_modes(LowModes& lm, const std::string& path,
   return load_low_modes(lm, path);
 }
 
-inline long save_low_modes(const LowModes& lm, const std::string& path)
+inline long save_low_modes_decompress(const LowModes& lm, const std::string& path)
 {
-  TIMER_VERBOSE("save_low_modes");
+  TIMER_VERBOSE("save_low_modes_decompress");
   qassert(lm.initialized);
   std::vector<BlockedHalfVector> bhvs;
   decompress_eigen_system(bhvs, lm.cesb, lm.cesc);
@@ -89,6 +89,8 @@ inline long save_low_modes(const LowModes& lm, const std::string& path)
     }
     glb_sum(bytes);
     total_bytes += bytes;
+    displayln_info(ssprintf("%s::%s: cycle / n_cycle = %4d / %4d ; total_bytes = %15ld",
+          cname().c_str(), fname, i + 1, n_cycle, total_bytes));
   }
   glb_sum_byte_vec(get_data(crcs));
   const crc32_t crc = dist_crc32(crcs);
