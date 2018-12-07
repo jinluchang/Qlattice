@@ -105,6 +105,16 @@ inline long save_low_modes_decompress(const LowModes& lm, const std::string& pat
     }
     qclose(fp);
   }
+  if (get_id_node() == 0) {
+    const std::string fn = path + "/eigen-values.txt";
+    FILE* fp = qopen(fn, "w");
+    qassert(fp != NULL);
+    displayln(ssprintf("%ld", lm.eigen_values.size()), fp);
+    for (size_t i = 0; i < lm.eigen_values.size(); ++i) {
+      displayln(ssprintf(".20lE", lm.eigen_values[i]), fp);
+    }
+    qclose(fp);
+  }
   qtouch_info(path + "/checkpoint");
   timer.flops += total_bytes;
   return total_bytes;
