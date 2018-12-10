@@ -112,6 +112,25 @@ inline void ff_apply_gauge_transformation(FermionField4d& ff,
   }
 }
 
+inline void prop_apply_gauge_transformation(Propagator4d& prop,
+    const Propagator4d& prop0, const GaugeTransform& gt)
+{
+  TIMER("prop_apply_gauge_transformation");
+  qassert(is_matching_geo(prop0.geo, gt.geo));
+  const Geometry& geo = prop0.geo;
+  prop.init(geo_resize(geo));
+#pragma omp parallel for
+  for (long index = 0; index < geo.local_volume(); ++index) {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    Vector<WilsonMatrix> v = prop.get_elems(xl);
+    const Vector<WilsonMatrix> v0 = prop0.get_elems_const(xl);
+    const ColorMatrix& t = gt.get_elem(xl);
+    for (int m = 0; m < v0.size(); ++m) {
+      v[m] = t * v0[m];
+    }
+  }
+}
+
 inline void gf_apply_rand_gauge_transformation(GaugeField& gf, const GaugeField& gf0, const RngState& rs)
 {
   const Geometry geo = geo_reform(gf0.geo);
