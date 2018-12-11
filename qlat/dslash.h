@@ -111,7 +111,7 @@ inline long save_low_modes_decompress(const LowModes& lm, const std::string& pat
     qassert(fp != NULL);
     displayln(ssprintf("%ld", lm.eigen_values.size()), fp);
     for (size_t i = 0; i < lm.eigen_values.size(); ++i) {
-      displayln(ssprintf(".20lE", lm.eigen_values[i]), fp);
+      displayln(ssprintf("%.20lE", lm.eigen_values[i]), fp);
     }
     qclose(fp);
   }
