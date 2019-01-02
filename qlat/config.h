@@ -21,11 +21,11 @@
 
 #define USE_NAMESPACE
 
-#include <qutils.h>
-#include <show.h>
-#include <timer.h>
-#include <rng-state.h>
-#include <lat-io.h>
+#include <qutils/qutils.h>
+#include <qutils/show.h>
+#include <qutils/timer.h>
+#include <qutils/rng-state.h>
+#include <qutils/lat-io.h>
 
 // #define SKIP_ASSERT
 

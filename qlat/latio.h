@@ -1,7 +1,7 @@
 #pragma once
 
-#include <lat-io.h>
-#include <qutils.h>
+#include <qutils/lat-io.h>
+#include <qutils/qutils.h>
 #include <qlat/utils.h>
 
 namespace qutils {

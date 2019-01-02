@@ -2,12 +2,12 @@
 
 . conf.sh
 
-name=utils
+name=qutils
 echo "!!!! build $name !!!!"
 
-mkdir -p $prefix/include/utils
-cp -v utils/* $prefix/include/utils
+mkdir -p $prefix/include/$name
+cp -v utils/* $prefix/include/$name
 
-echo "!!!! $name build !!!!"
+echo "!!!! $name built !!!!"
 
 rm -rf $temp_dir
