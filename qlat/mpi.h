@@ -8,21 +8,10 @@
 
 QLAT_START_NAMESPACE
 
-inline MPI_Comm& get_qlat_comm()
+inline MPI_Comm& get_comm()
 {
   static MPI_Comm comm;
   return comm;
-}
-
-inline MPI_Comm*& get_comm_ptr()
-{
-  static MPI_Comm* p_comm = &get_qlat_comm();
-  return p_comm;
-}
-
-inline MPI_Comm& get_comm()
-{
-  return *get_comm_ptr();
 }
 
 struct GeometryNode
@@ -558,10 +547,10 @@ inline int init_mpi(int* argc, char** argv[])
   return num_node;
 }
 
-inline void begin_comm(const MPI_Comm& comm, const Coordinate& size_node)
+inline void begin_comm(const MPI_Comm comm, const Coordinate& size_node)
   // begin Qlat with existing comm (assuming MPI already initialized)
 {
-  get_comm_ptr() = (MPI_Comm*)&comm;
+  get_comm() = comm;
   int id_node;
   MPI_Comm_rank(get_comm(), &id_node);
   GeometryNode& geon = get_geometry_node_internal();
@@ -577,7 +566,7 @@ inline void begin_comm(const MPI_Comm& comm, const Coordinate& size_node)
 inline void begin(const int id_node, const Coordinate& size_node)
   // begin Qlat with existing id_node maping (assuming MPI already initialized)
 {
-  static MPI_Comm comm;
+  MPI_Comm comm;
   MPI_Comm_split(MPI_COMM_WORLD, 0, id_node, &comm);
   begin_comm(comm, size_node);
 }
