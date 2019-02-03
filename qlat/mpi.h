@@ -51,7 +51,7 @@ struct GeometryNode
     coor_node = coordinate_from_index(id_node_, size_node_);
   }
   //
-  GeometryNode(const bool initialize = false)
+  GeometryNode()
   {
     init();
   }
@@ -554,7 +554,7 @@ inline int init_mpi(int* argc, char** argv[])
   if(!is_MPI_initialized()) MPI_Init(argc, argv);
   int num_node;
   MPI_Comm_size(MPI_COMM_WORLD, &num_node);
-  displayln_info("qlat::begin(): " + ssprintf("MPI Initialized. NumNode = %d", num_node));
+  displayln_info("qlat::begin(): " + ssprintf("MPI Initialized. num_node = %d", num_node));
   return num_node;
 }
 
@@ -569,6 +569,7 @@ inline void begin_comm(const MPI_Comm& comm, const Coordinate& size_node)
   sync_node();
   displayln_info("qlat::begin(): OMP_NUM_THREADS = " + show(omp_get_max_threads()));
   displayln_info("qlat::begin(): GeometryNode =\n" + show(geon));
+  fflush(get_output_file());
   sync_node();
   display_geometry_node();
 }
