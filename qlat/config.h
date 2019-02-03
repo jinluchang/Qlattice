@@ -12,6 +12,12 @@
 #include <array>
 #endif
 
+#ifdef NO_OMP
+#include <omp-compatible.h>
+#else
+#include <omp.h>
+#endif
+
 #define QLAT_START_NAMESPACE namespace qlat {
 #define QLAT_END_NAMESPACE }
 

@@ -6,8 +6,6 @@
 #include <qlat/geometry.h>
 #include <qlat/crc32.h>
 
-#include <omp.h>
-
 #include <stdio.h>
 #include <ctime>
 

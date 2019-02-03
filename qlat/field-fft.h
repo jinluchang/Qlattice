@@ -8,7 +8,6 @@
 #include <qlat/field.h>
 
 #include <fftw3.h>
-#include <omp.h>
 
 #include <vector>
 

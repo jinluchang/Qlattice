@@ -6,8 +6,6 @@
 #include <qlat/geometry.h>
 // #include <qlat/field-utils.h>
 
-#include <omp.h>
-
 #include <vector>
 #include <ctime>
 #include <fstream>

@@ -3,8 +3,6 @@
 #include <qlat/field-io.h>
 #include <qlat/field-dist-io.h>
 
-#include <omp.h>
-
 #include <stdio.h>
 #include <ctime>
 

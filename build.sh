@@ -37,13 +37,8 @@ fi
 # ./scripts/lapack.sh
 ./scripts/eigen.sh
 ./scripts/zlib.sh
-./scripts/utils.sh
+./scripts/qutils.sh
 ./scripts/qlat.sh
-./scripts/array.sh
 ./scripts/setenv.sh
-
-if [ $arch = taihu ] ; then
-    ./scripts/omp.sh
-fi
 
 rm -rf $temp_dir
