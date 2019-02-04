@@ -1330,7 +1330,7 @@ inline void inverse_with_cg(
     long total_iter = 0;
     int cycle;
     for (cycle = 1; cycle <= inv.max_mixed_precision_cycle(); ++cycle) {
-      if (not inv.lm.null()) {
+      if (not inv.lm.null() and inv.lm().initialized) {
         deflate(tmp, itmp, inv.lm());
       } else {
         set_zero(tmp);

@@ -2,6 +2,8 @@
 
 QLAT_START_NAMESPACE
 
+typedef InverterDomainWall Inverter;
+
 // -----------------------------------------------------------------------------------
 
 inline bool compute_traj(const std::string& job_tag, const int traj)
@@ -12,9 +14,8 @@ inline bool compute_traj(const std::string& job_tag, const int traj)
   qmkdir_sync_node(job_path + "/logs");
   switch_monitor_file_info(job_path + ssprintf("/logs/%010ld.txt", get_log_idx()));
   displayln_info(fname + ssprintf(": job_tag='%s' ; traj=%d", job_tag.c_str(), traj));
-  //
   const RngState rs = RngState("seed").split(job_tag).split(traj);
-  //
+  const Coordinate total_site = get_total_site(job_tag);
   const Geometry geo = get_geo(job_tag);
   //
   GaugeField gf;
@@ -22,23 +23,19 @@ inline bool compute_traj(const std::string& job_tag, const int traj)
   gf_show_info(gf);
   qassert(is_matching_geo(gf.geo, geo));
   //
-  const FermionAction fa = get_fermion_actions(job_tag)[0];
-  LowModes lm;
-  // load_or_compute_low_modes(lm, get_low_modes_path(job_tag, traj), gf, fa, get_lanc_arg(job_tag));
-  InverterDomainWall inv;
-  if (lm.initialized) {
-    setup_inverter(inv, gf, fa, lm);
-  } else {
-    setup_inverter(inv, gf, fa);
-  }
-  //
   GaugeTransform gt;
   gt.init(geo);
   set_g_rand_color_matrix_field(gt, rs.split("gt-rs"), 1.0);
   //
+  const FermionAction fa = get_fermion_actions(job_tag)[0];
+  LowModes lm;
+  // load_or_compute_low_modes(lm, get_low_modes_path(job_tag, traj), gf, fa, get_lanc_arg(job_tag));
+  Inverter inv;
+  setup_inverter(inv, gf, fa, lm);
+  //
   Propagator4d prop;
-  const int tslice = 0;
-  set_wall_src_propagator(prop, GaugeTransformInverter<InverterDomainWall>(inv, gt), tslice, CoordinateD());
+  const int tslice = 0 % total_site[3];
+  set_wall_src_propagator(prop, GaugeTransformInverter<Inverter>(inv, gt), tslice, CoordinateD());
   displayln_info(ssprintf("prop norm = %24.17E", norm(prop)));
   //
   qtouch_info(job_path + "/checkpoint.txt");
