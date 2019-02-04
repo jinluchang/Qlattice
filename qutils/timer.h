@@ -20,19 +20,19 @@
 
 #include "show.h"
 
-#include <vector>
-#include <string>
-#include <algorithm>
-#include <cstring>
-#include <cassert>
 #include <sys/time.h>
+#include <algorithm>
+#include <cassert>
+#include <cstdarg>
 #include <cstdio>
 #include <cstdlib>
-#include <cstdarg>
+#include <cstring>
+#include <string>
+#include <vector>
 
 #ifdef USE_PAPI
-#include <papi.h>
 #include <omp.h>
+#include <papi.h>
 #endif
 
 #ifdef _OPENMP
@@ -47,35 +47,35 @@
 #include <mpi.h>
 #endif
 
-#define TIMER(FNAME) \
-  static const char* fname = FNAME; \
+#define TIMER(FNAME)                 \
+  static const char* fname = FNAME;  \
   static qtimer::Timer timer(fname); \
   qtimer::TimerCtrl timerctrl(timer);
 
-#define TIMER_VERBOSE(FNAME) \
-  static const char* fname = FNAME; \
+#define TIMER_VERBOSE(FNAME)         \
+  static const char* fname = FNAME;  \
   static qtimer::Timer timer(fname); \
   qtimer::TimerCtrl timerctrl(timer, true);
 
-#define TIMER_FLOPS(FNAME) \
-  static const char* fname = FNAME; \
+#define TIMER_FLOPS(FNAME)                  \
+  static const char* fname = FNAME;         \
   static qtimer::Timer timer(fname, false); \
   qtimer::TimerCtrl timerctrl(timer);
 
-#define TIMER_VERBOSE_FLOPS(FNAME) \
-  static const char* fname = FNAME; \
+#define TIMER_VERBOSE_FLOPS(FNAME)          \
+  static const char* fname = FNAME;         \
   static qtimer::Timer timer(fname, false); \
   qtimer::TimerCtrl timerctrl(timer, true);
 
-namespace qtimer {
-
+namespace qtimer
+{
 using namespace qshow;
 
 inline double get_time()
 {
   struct timeval tp;
   gettimeofday(&tp, NULL);
-  return((double)tp.tv_sec + (double)tp.tv_usec * 1e-6);
+  return ((double)tp.tv_sec + (double)tp.tv_usec * 1e-6);
 }
 
 inline double get_start_time()
@@ -84,10 +84,7 @@ inline double get_start_time()
   return time;
 }
 
-inline double get_total_time()
-{
-  return get_time() - get_start_time();
-}
+inline double get_total_time() { return get_time() - get_start_time(); }
 
 inline int compute_rank()
 {
@@ -158,14 +155,13 @@ inline void initialize_papi()
   }
   displayln_info("PAPI::initialize_papi Start.");
   PAPI_library_init(PAPI_VER_CURRENT);
-  PAPI_thread_init((unsigned long (*)(void)) (omp_get_thread_num));
+  PAPI_thread_init((unsigned long (*)(void))(omp_get_thread_num));
   initialized = true;
   displayln_info("PAPI::initialize_papi Finish.");
 #endif
 }
 
-struct TimerInfo
-{
+struct TimerInfo {
   std::string fname;
   double dtime;
   double accumulated_time;
@@ -188,14 +184,14 @@ struct TimerInfo
     double total_time = get_total_time();
     std::string fnameCut;
     fnameCut.assign(fname, 0, fname_len);
-    displayln_info(
-        ssprintf("Timer::start %s :%5.1f%% %8d calls %.3E,%.3E sec %8.3f Gflops (%.3E flops)",
-          ssprintf(ssprintf("%%%ds", fname_len).c_str(), fnameCut.c_str()).c_str(),
-          accumulated_time / total_time * 100, call_times,
-          dtime,
-          accumulated_time / (call_times-1),
-          dflops / dtime / 1.0E9,
-          (double)dflops));
+    displayln_info(ssprintf(
+        "Timer::start %s :%5.1f%% %8d calls %.3E,%.3E sec %8.3f Gflops (%.3E "
+        "flops)",
+        ssprintf(ssprintf("%%%ds", fname_len).c_str(), fnameCut.c_str())
+            .c_str(),
+        accumulated_time / total_time * 100, call_times, dtime,
+        accumulated_time / (call_times - 1), dflops / dtime / 1.0E9,
+        (double)dflops));
   }
   //
   void show_stop(const int fname_len) const
@@ -203,14 +199,13 @@ struct TimerInfo
     double total_time = get_total_time();
     std::string fnameCut;
     fnameCut.assign(fname, 0, fname_len);
-    displayln_info(
-        ssprintf("Timer::stop  %s :%5.1f%% %8d calls %.3E,%.3E sec %8.3f Gflops (%.3E flops)",
-          ssprintf(ssprintf("%%%ds", fname_len).c_str(), fnameCut.c_str()).c_str(),
-          accumulated_time / total_time * 100, call_times,
-          dtime,
-          accumulated_time / call_times,
-          dflops / dtime / 1.0E9,
-          (double)dflops));
+    displayln_info(ssprintf(
+        "Timer::stop  %s :%5.1f%% %8d calls %.3E,%.3E sec %8.3f Gflops (%.3E "
+        "flops)",
+        ssprintf(ssprintf("%%%ds", fname_len).c_str(), fnameCut.c_str())
+            .c_str(),
+        accumulated_time / total_time * 100, call_times, dtime,
+        accumulated_time / call_times, dflops / dtime / 1.0E9, (double)dflops));
   }
   //
   void show_avg(const char* info, const int fname_len) const
@@ -218,16 +213,17 @@ struct TimerInfo
     double total_time = get_total_time();
     std::string fnameCut;
     fnameCut.assign(fname, 0, fname_len);
-    displayln_info(
-        ssprintf("Timer::%s %s :%7.3f%% %8d calls; %.2E,%.2E sec; %.2E,%.2E flops; %5.2f Gflops",
-          NULL == info ? "" : info,
-          ssprintf(ssprintf("%%%ds", fname_len).c_str(), fnameCut.c_str()).c_str(),
-          accumulated_time / total_time * 100, call_times,
-          accumulated_time / call_times,
-          accumulated_time,
-          (double)accumulated_flops / (double)call_times,
-          (double)accumulated_flops,
-          accumulated_flops / accumulated_time / 1.0E9));
+    displayln_info(ssprintf(
+        "Timer::%s %s :%7.3f%% %8d calls; %.2E,%.2E sec; %.2E,%.2E flops; "
+        "%5.2f Gflops",
+        NULL == info ? "" : info,
+        ssprintf(ssprintf("%%%ds", fname_len).c_str(), fnameCut.c_str())
+            .c_str(),
+        accumulated_time / total_time * 100, call_times,
+        accumulated_time / call_times, accumulated_time,
+        (double)accumulated_flops / (double)call_times,
+        (double)accumulated_flops,
+        accumulated_flops / accumulated_time / 1.0E9));
   }
 };
 
@@ -236,8 +232,7 @@ inline bool compare_time_info_p(const TimerInfo* p1, const TimerInfo* p2)
   return p1->accumulated_time < p2->accumulated_time;
 }
 
-struct Timer
-{
+struct Timer {
   const char* cname;
   int info_index;
   bool is_using_total_flops;
@@ -284,10 +279,7 @@ struct Timer
     return max_len;
   }
   //
-  Timer()
-  {
-    init();
-  }
+  Timer() { init(); }
   Timer(const std::string& fname_str)
   {
     init();
@@ -348,10 +340,11 @@ struct Timer
     }
     TimerInfo& info = get_timer_database()[info_index];
     info.call_times++;
-    if (verbose || info.call_times <= max_call_times_for_always_show_info() || info.dtime >= minimum_duration_for_show_start_info()) {
+    if (verbose || info.call_times <= max_call_times_for_always_show_info() ||
+        info.dtime >= minimum_duration_for_show_start_info()) {
       info.show_start(max_function_name_length_shown());
     }
-    start_flops = is_using_total_flops ? get_total_flops() : 0 ;
+    start_flops = is_using_total_flops ? get_total_flops() : 0;
     flops = 0;
     start_time = get_time();
   }
@@ -371,7 +364,8 @@ struct Timer
     info.dflops = stop_flops - start_flops;
     info.accumulated_time += info.dtime;
     info.accumulated_flops += info.dflops;
-    if (verbose || info.call_times <= max_call_times_for_always_show_info() || info.dtime >= minimum_duration_for_show_stop_info()) {
+    if (verbose || info.call_times <= max_call_times_for_always_show_info() ||
+        info.dtime >= minimum_duration_for_show_stop_info()) {
       info.show_stop(max_function_name_length_shown());
     }
     autodisplay(stop_time);
@@ -407,16 +401,18 @@ struct Timer
       db.push_back(&tdb[i]);
     }
     std::sort(db.begin(), db.end(), compare_time_info_p);
-    displayln_info(ssprintf(
-          "Timer::display-start: %s fname : time%% number of calls; Avg,Tot sec; Avg,Tot flops; Gflops",
-          str.c_str()));
+    displayln_info(
+        ssprintf("Timer::display-start: %s fname : time%% number of calls; "
+                 "Avg,Tot sec; Avg,Tot flops; Gflops",
+                 str.c_str()));
     const int dbsize = db.size();
     for (int i = 0; i < dbsize; i++) {
       db[i]->show_avg("display", max_function_name_length_shown());
     }
-    displayln_info(ssprintf(
-          "Timer::display-end:   %s --------------------- total %.4E sec ----------------------",
-          str.c_str(), total_time));
+    displayln_info(
+        ssprintf("Timer::display-end:   %s --------------------- total %.4E "
+                 "sec ----------------------",
+                 str.c_str(), total_time));
   }
   //
   static void autodisplay(const double time)
@@ -434,15 +430,11 @@ struct Timer
   }
 };
 
-struct TimerCtrl
-{
+struct TimerCtrl {
   Timer* ptimer;
   bool verbose;
   //
-  TimerCtrl()
-  {
-    init();
-  }
+  TimerCtrl() { init(); }
   TimerCtrl(Timer& timer, bool verbose_ = false)
   {
     init();
@@ -485,19 +477,14 @@ inline void timer_free(void* ptr)
   free(ptr);
 }
 
-inline void* tmalloc(size_t size)
-{
-  return timer_malloc(size);
-}
+inline void* tmalloc(size_t size) { return timer_malloc(size); }
 
-inline void tfree(void* ptr)
-{
-  timer_free(ptr);
-}
+inline void tfree(void* ptr) { timer_free(ptr); }
 
 ///////////////////////////////////////////////////////////////////////
 
-inline void Display(const char* cname, const char* fname, const char* format, ...)
+inline void Display(const char* cname, const char* fname, const char* format,
+                    ...)
 {
   va_list args;
   va_start(args, format);
@@ -507,7 +494,8 @@ inline void Display(const char* cname, const char* fname, const char* format, ..
   std::free(str);
 }
 
-inline void DisplayInfo(const char* cname, const char* fname, const char* format, ...)
+inline void DisplayInfo(const char* cname, const char* fname,
+                        const char* format, ...)
 {
   static int rank = get_rank();
   if (0 != rank) {
@@ -521,7 +509,7 @@ inline void DisplayInfo(const char* cname, const char* fname, const char* format
   std::free(str);
 }
 
-}
+}  // namespace qtimer
 
 #ifndef USE_NAMESPACE
 using namespace qtimer;

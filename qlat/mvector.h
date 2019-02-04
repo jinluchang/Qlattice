@@ -8,28 +8,21 @@
 QLAT_START_NAMESPACE
 
 template <int DIMN>
-struct Mvector 
-{
+struct Mvector {
   Complex p[DIMN];
   //
   // convert to double array
-  double* d()
-  {
-    return (double*)p;
-  }
-  const double* d() const
-  {
-    return (const double*)p;
-  }
+  double* d() { return (double*)p; }
+  const double* d() const { return (const double*)p; }
   //
-  // convert to Eigen Matrix 
-  Eigen::Matrix<Complex,DIMN,1>& em()
+  // convert to Eigen Matrix
+  Eigen::Matrix<Complex, DIMN, 1>& em()
   {
-    return *((Eigen::Matrix<Complex,DIMN,1>*)this);
+    return *((Eigen::Matrix<Complex, DIMN, 1>*)this);
   }
-  const Eigen::Matrix<Complex,DIMN,1>& em() const
+  const Eigen::Matrix<Complex, DIMN, 1>& em() const
   {
-    return *((Eigen::Matrix<Complex,DIMN,1>*)this);
+    return *((Eigen::Matrix<Complex, DIMN, 1>*)this);
   }
   //
   Complex& operator()(int i)
@@ -143,17 +136,11 @@ Mvector<DIMN> vector_conjugate(const Mvector<DIMN>& x)
   return ret;
 }
 
-struct WilsonVector: Mvector<4*NUM_COLOR>
-{
-  WilsonVector()
-  {
-  }
-  WilsonVector(const Mvector<4*NUM_COLOR>& m)
-  {
-    *this = m;
-  }
+struct WilsonVector : Mvector<4 * NUM_COLOR> {
+  WilsonVector() {}
+  WilsonVector(const Mvector<4 * NUM_COLOR>& m) { *this = m; }
   //
-  const WilsonVector& operator=(const Mvector<4*NUM_COLOR>& m)
+  const WilsonVector& operator=(const Mvector<4 * NUM_COLOR>& m)
   {
     *this = (const WilsonVector&)m;
     return *this;
@@ -166,21 +153,21 @@ struct WilsonVector: Mvector<4*NUM_COLOR>
 //   ret.em() = x * y.em();
 //   return ret;
 // }
-// 
+//
 // inline WilsonVector operator+(const WilsonVector& x, const WilsonVector& y)
 // {
 //   WilsonVector ret;
 //   ret.em() = x.em() + y.em();
 //   return ret;
 // }
-// 
+//
 // inline WilsonVector operator-(const WilsonVector& x, const WilsonVector& y)
 // {
 //   WilsonVector ret;
 //   ret.em() = x.em() - y.em();
 //   return ret;
 // }
-// 
+//
 // inline WilsonVector operator-(const WilsonVector& x)
 // {
 //   WilsonVector ret;
@@ -188,15 +175,9 @@ struct WilsonVector: Mvector<4*NUM_COLOR>
 //   return ret;
 // }
 
-struct SpinVector: Mvector<4>
-{
-  SpinVector()
-  {
-  }
-  SpinVector(const Mvector<4>& m)
-  {
-    *this = m;
-  }
+struct SpinVector : Mvector<4> {
+  SpinVector() {}
+  SpinVector(const Mvector<4>& m) { *this = m; }
   //
   const SpinVector& operator=(const Mvector<4>& m)
   {
@@ -211,21 +192,21 @@ struct SpinVector: Mvector<4>
 //   ret.em() = x * y.em();
 //   return ret;
 // }
-// 
+//
 // inline SpinVector operator+(const SpinVector& x, const SpinVector& y)
 // {
 //   SpinVector ret;
 //   ret.em() = x.em() + y.em();
 //   return ret;
 // }
-// 
+//
 // inline SpinVector operator-(const SpinVector& x, const SpinVector& y)
 // {
 //   SpinVector ret;
 //   ret.em() = x.em() - y.em();
 //   return ret;
 // }
-// 
+//
 // inline SpinVector operator-(const SpinVector& x)
 // {
 //   SpinVector ret;
@@ -235,8 +216,8 @@ struct SpinVector: Mvector<4>
 
 QLAT_END_NAMESPACE
 
-namespace qshow {
-
+namespace qshow
+{
 template <int DIMN>
 std::string show(const qlat::Mvector<DIMN>& m)
 {
@@ -245,7 +226,7 @@ std::string show(const qlat::Mvector<DIMN>& m)
   return out.str();
 }
 
-}
+}  // namespace qshow
 
 #ifndef USE_NAMESPACE
 using namespace qshow;

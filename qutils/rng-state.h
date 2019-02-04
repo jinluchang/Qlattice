@@ -21,19 +21,19 @@
 #include "sha256.h"
 #include "show.h"
 
-#include <stdint.h>
 #include <endian.h>
-#include <cstring>
+#include <stdint.h>
+#include <cassert>
 #include <climits>
 #include <cmath>
-#include <cassert>
-#include <string>
-#include <ostream>
+#include <cstring>
 #include <istream>
+#include <ostream>
+#include <string>
 #include <vector>
 
-namespace qrngstate {
-
+namespace qrngstate
+{
 using namespace qshow;
 
 struct RngState;
@@ -42,14 +42,13 @@ inline void reset(RngState& rs);
 
 inline void reset(RngState& rs, const std::string& seed);
 
-inline void reset(RngState& rs, const long seed)
-{
-  reset(rs, show(seed));
-}
+inline void reset(RngState& rs, const long seed) { reset(rs, show(seed)); }
 
-inline void splitRngState(RngState& rs, const RngState& rs0, const std::string& sindex);
+inline void splitRngState(RngState& rs, const RngState& rs0,
+                          const std::string& sindex);
 
-inline void splitRngState(RngState& rs, const RngState& rs0, const long sindex = 0)
+inline void splitRngState(RngState& rs, const RngState& rs0,
+                          const long sindex = 0)
 {
   splitRngState(rs, rs0, show(sindex));
 }
@@ -58,14 +57,16 @@ inline void setType(RngState& rs, const unsigned long type);
 
 inline uint64_t randGen(RngState& rs);
 
-inline double uRandGen(RngState& rs, const double upper = 1.0, const double lower = 0.0);
+inline double uRandGen(RngState& rs, const double upper = 1.0,
+                       const double lower = 0.0);
 
-inline double gRandGen(RngState& rs, const double center = 0.0, const double sigma = 1.0);
+inline double gRandGen(RngState& rs, const double center = 0.0,
+                       const double sigma = 1.0);
 
-inline void computeHashWithInput(uint32_t hash[8], const RngState& rs, const std::string& input);
+inline void computeHashWithInput(uint32_t hash[8], const RngState& rs,
+                                 const std::string& input);
 
-struct RngState
-{
+struct RngState {
   uint64_t numBytes;
   uint32_t hash[8];
   unsigned long type;
@@ -76,23 +77,11 @@ struct RngState
   int cacheAvail;
   bool gaussianAvail;
   //
-  inline void init()
-  {
-    reset(*this);
-  }
+  inline void init() { reset(*this); }
   //
-  RngState()
-  {
-    init();
-  }
-  RngState(const std::string& seed)
-  {
-    reset(*this, seed);
-  }
-  RngState(const long seed)
-  {
-    reset(*this, seed);
-  }
+  RngState() { init(); }
+  RngState(const std::string& seed) { reset(*this, seed); }
+  RngState(const long seed) { reset(*this, seed); }
   RngState(const RngState& rs0, const std::string& sindex)
   {
     std::memset(this, 0, sizeof(RngState));
@@ -108,10 +97,7 @@ struct RngState
   {
     return RngState(*this, sindex);
   }
-  RngState split(const long sindex) const
-  {
-    return RngState(*this, sindex);
-  }
+  RngState split(const long sindex) const { return RngState(*this, sindex); }
   //
   RngState newtype(const unsigned long type) const
   {
@@ -227,10 +213,7 @@ inline std::istream& operator>>(std::istream& is, RngState& rs)
   return is;
 }
 
-inline std::string show(const RngState& rs)
-{
-  return shows(rs);
-}
+inline std::string show(const RngState& rs) { return shows(rs); }
 
 inline bool operator==(const RngState& rs1, const RngState& rs2)
 {
@@ -263,10 +246,11 @@ inline void reset(RngState& rs, const std::string& seed)
   splitRngState(rs, rs, seed);
 }
 
-inline void splitRngState(RngState& rs, const RngState& rs0, const std::string& sindex)
-  // produce a new rng ``rs'' uniquely identified by ``rs0'' and ``sindex''
-  // will not affect old rng ``rs0''
-  // the function should behave correctly even if ``rs'' is actually ``rs0''
+inline void splitRngState(RngState& rs, const RngState& rs0,
+                          const std::string& sindex)
+// produce a new rng ``rs'' uniquely identified by ``rs0'' and ``sindex''
+// will not affect old rng ``rs0''
+// the function should behave correctly even if ``rs'' is actually ``rs0''
 {
   std::string data;
   if (ULONG_MAX == rs0.type) {
@@ -278,7 +262,8 @@ inline void splitRngState(RngState& rs, const RngState& rs0, const std::string& 
   data.resize(nBlocks * 64, ' ');
   sha256::processBlock(rs.hash, rs0.hash, (const uint8_t*)data.c_str());
   for (int i = 1; i < nBlocks; ++i) {
-    sha256::processBlock(rs.hash, rs.hash, (const uint8_t*)data.c_str() + i * 64);
+    sha256::processBlock(rs.hash, rs.hash,
+                         (const uint8_t*)data.c_str() + i * 64);
   }
   rs.numBytes = rs0.numBytes + nBlocks * 64;
   rs.type = ULONG_MAX;
@@ -291,9 +276,11 @@ inline void splitRngState(RngState& rs, const RngState& rs0, const std::string& 
   rs.gaussianAvail = false;
 }
 
-inline void computeHashWithInput(uint32_t hash[8], const RngState& rs, const std::string& input)
+inline void computeHashWithInput(uint32_t hash[8], const RngState& rs,
+                                 const std::string& input)
 {
-  sha256::processInput(hash, rs.hash, rs.numBytes, (const uint8_t*)input.c_str(), input.length());
+  sha256::processInput(hash, rs.hash, rs.numBytes,
+                       (const uint8_t*)input.c_str(), input.length());
 }
 
 inline uint64_t randGen(RngState& rs)
@@ -323,7 +310,8 @@ inline uint64_t randGen(RngState& rs)
 inline double uRandGen(RngState& rs, const double upper, const double lower)
 {
   uint64_t u = randGen(rs);
-  const double fac = 1.0 / (256.0 * 256.0 * 256.0 * 256.0) / (256.0 * 256.0 * 256.0 * 256.0);
+  const double fac =
+      1.0 / (256.0 * 256.0 * 256.0 * 256.0) / (256.0 * 256.0 * 256.0 * 256.0);
   return u * fac * (upper - lower) + lower;
 }
 
@@ -342,17 +330,19 @@ inline double gRandGen(RngState& rs, const double center, const double sigma)
     do {
       v1 = uRandGen(rs, 1.0, -1.0);
       v2 = uRandGen(rs, 1.0, -1.0);
-      if ((num_try % 1000)==0) {
-        printf("gRandGen : WARNING num_try=%d v1=%e v2=%e\n",num_try,v1,v2);
+      if ((num_try % 1000) == 0) {
+        printf("gRandGen : WARNING num_try=%d v1=%e v2=%e\n", num_try, v1, v2);
       }
-      rsq = v1*v1 + v2*v2;
+      rsq = v1 * v1 + v2 * v2;
       num_try++;
     } while ((num_try < 10000) && (rsq >= 1.0 || rsq == 0));
     if (num_try > 9999) {
-      printf("gRandGen : WARNING failed after 10000 tries (corrupted RNG?), returning ridiculous numbers (1e+10)\n");
+      printf(
+          "gRandGen : WARNING failed after 10000 tries (corrupted RNG?), "
+          "returning ridiculous numbers (1e+10)\n");
       return 1e+10;
     }
-    double fac = std::sqrt(-2.0 * std::log(rsq)/rsq);
+    double fac = std::sqrt(-2.0 * std::log(rsq) / rsq);
     rs.gaussian = v1 * fac;
     rs.gaussianAvail = true;
     return v2 * fac * sigma + center;
@@ -365,32 +355,25 @@ void split_rng_state(RngState& rs, const RngState& rs0, const T& s)
   splitRngState(rs, rs0, s);
 }
 
-inline void set_type(RngState& rs, const long type)
-{
-  setType(rs, type);
-}
+inline void set_type(RngState& rs, const long type) { setType(rs, type); }
 
-inline uint64_t rand_gen(RngState& rs)
-{
-  return randGen(rs);
-}
+inline uint64_t rand_gen(RngState& rs) { return randGen(rs); }
 
-inline double u_rand_gen(RngState& rs, const double upper = 1.0, const double lower = 0.0)
+inline double u_rand_gen(RngState& rs, const double upper = 1.0,
+                         const double lower = 0.0)
 {
   return uRandGen(rs, upper, lower);
 }
 
-inline double g_rand_gen(RngState& rs, const double center = 0.0, const double sigma = 1.0)
+inline double g_rand_gen(RngState& rs, const double center = 0.0,
+                         const double sigma = 1.0)
 {
   return gRandGen(rs, center, sigma);
 }
 
-inline RngState& get_global_rng_state()
-{
-  return getGlobalRngState();
-}
+inline RngState& get_global_rng_state() { return getGlobalRngState(); }
 
-}
+}  // namespace qrngstate
 
 #ifndef USE_NAMESPACE
 using namespace qrngstate;

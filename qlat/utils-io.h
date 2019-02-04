@@ -5,35 +5,38 @@
 #include <qlat/config.h>
 #include <qlat/mpi.h>
 
-#include <vector>
-#include <iostream>
+#include <cstdarg>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <cstdarg>
 #include <fstream>
+#include <iostream>
+#include <vector>
 
+#include <dirent.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <dirent.h>
 #include <unistd.h>
 
 QLAT_START_NAMESPACE
 
-inline bool truncate(const std::string &evilFile) {
+inline bool truncate(const std::string& evilFile)
+{
   std::ofstream evil;
   evil.open(evilFile.c_str());
   bool does_exist = evil.good();
-  if(does_exist) evil.close();
+  if (does_exist) evil.close();
   return does_exist;
 }
 
-inline bool does_file_exist(const std::string& fn) {
+inline bool does_file_exist(const std::string& fn)
+{
   struct stat sb;
   return 0 == stat(fn.c_str(), &sb);
 }
 
-inline bool does_file_exist_sync_node(const std::string& fn) {
+inline bool does_file_exist_sync_node(const std::string& fn)
+{
   long nfile = 0;
   if (0 == get_id_node()) {
     if (does_file_exist(fn)) {
@@ -59,11 +62,13 @@ inline mode_t& default_dir_mode()
   return mode;
 }
 
-inline int ssleep(const double seconds) {
+inline int ssleep(const double seconds)
+{
   return usleep((useconds_t)(seconds * 1.0e6));
 }
 
-inline int check_dir(const std::string& path, const mode_t mode = default_dir_mode())
+inline int check_dir(const std::string& path,
+                     const mode_t mode = default_dir_mode())
 {
   TIMER("check_dir");
   int ret = 0;
@@ -74,14 +79,16 @@ inline int check_dir(const std::string& path, const mode_t mode = default_dir_mo
   return ret;
 }
 
-inline int qmkdir(const std::string& path, const mode_t mode = default_dir_mode())
+inline int qmkdir(const std::string& path,
+                  const mode_t mode = default_dir_mode())
 {
   TIMER("qmkdir");
   mkdir(path.c_str(), mode);
   return check_dir(path, mode);
 }
 
-inline int qmkdir_info(const std::string& path, const mode_t mode = default_dir_mode())
+inline int qmkdir_info(const std::string& path,
+                       const mode_t mode = default_dir_mode())
 {
   TIMER("qmkdir_info");
   if (0 == get_id_node()) {
@@ -91,7 +98,8 @@ inline int qmkdir_info(const std::string& path, const mode_t mode = default_dir_
   }
 }
 
-inline int qmkdir_sync_node(const std::string& path, const mode_t mode = default_dir_mode())
+inline int qmkdir_sync_node(const std::string& path,
+                            const mode_t mode = default_dir_mode())
 {
   TIMER("qmkdir_sync_node");
   if (0 == get_id_node()) {
@@ -101,7 +109,8 @@ inline int qmkdir_sync_node(const std::string& path, const mode_t mode = default
   return check_dir(path, mode);
 }
 
-inline int mkdir_lock(const std::string& path, const mode_t mode = default_dir_mode())
+inline int mkdir_lock(const std::string& path,
+                      const mode_t mode = default_dir_mode())
 {
   TIMER("mkdir_lock");
   long ret = 0;
@@ -112,7 +121,8 @@ inline int mkdir_lock(const std::string& path, const mode_t mode = default_dir_m
   return ret;
 }
 
-inline int mkdir_lock_all_node(const std::string& path, const mode_t mode = default_dir_mode())
+inline int mkdir_lock_all_node(const std::string& path,
+                               const mode_t mode = default_dir_mode())
 {
   TIMER("mkdir_lock_all_node");
   return mkdir(path.c_str(), mode);
@@ -211,7 +221,8 @@ inline int qremove_all_info(const std::string& path)
   }
 }
 
-inline std::string get_env(const std::string& var_name) {
+inline std::string get_env(const std::string& var_name)
+{
   const char* value = getenv(var_name.c_str());
   if (value == NULL) {
     return std::string();
@@ -274,7 +285,8 @@ inline int qrename(const std::string& old_path, const std::string& new_path)
   return rename(old_path.c_str(), new_path.c_str());
 }
 
-inline int qrename_info(const std::string& old_path, const std::string& new_path)
+inline int qrename_info(const std::string& old_path,
+                        const std::string& new_path)
 {
   TIMER("qrename_info");
   if (0 == get_id_node()) {
@@ -399,11 +411,15 @@ inline void set_lock_expiration_time_limit()
     reads(start_time, ss);
     reads(end_time, se);
     get_lock_expiration_time_limit() = end_time - start_time;
-    displayln_info(fname + ssprintf(": get_lock_expiration_time_limit() = %.2lf hours.",
-          get_lock_expiration_time_limit() / 3600.0));
+    displayln_info(fname +
+                   ssprintf(": get_lock_expiration_time_limit() = %.2lf hours.",
+                            get_lock_expiration_time_limit() / 3600.0));
   } else {
-    displayln_info(fname + ssprintf(": get_lock_expiration_time_limit() = %.2lf hours. (NOT CHANGED)",
-          get_lock_expiration_time_limit() / 3600.0));
+    displayln_info(
+        fname +
+        ssprintf(
+            ": get_lock_expiration_time_limit() = %.2lf hours. (NOT CHANGED)",
+            get_lock_expiration_time_limit() / 3600.0));
   }
 }
 
@@ -411,8 +427,10 @@ inline bool obtain_lock(const std::string& path)
 {
   TIMER_VERBOSE("obtain_lock");
   const std::string path_time = path + "/time.txt";
-  const double expiration_time = get_start_time() + get_lock_expiration_time_limit();
-  displayln_info(ssprintf("%s: Trying to obtain lock '%s'.", fname, path.c_str()));
+  const double expiration_time =
+      get_start_time() + get_lock_expiration_time_limit();
+  displayln_info(
+      ssprintf("%s: Trying to obtain lock '%s'.", fname, path.c_str()));
   qassert(get_lock_location() == "");
   if (0 == mkdir_lock(path)) {
     qtouch_info(path_time, show(expiration_time) + "\n");
@@ -432,14 +450,18 @@ inline bool obtain_lock(const std::string& path)
     glb_sum(ret);
     if (ret > 0) {
       get_lock_location() = path;
-      displayln_info(ssprintf("%s: Lock obtained '%s' (old lock expired).", fname, path.c_str()));
+      displayln_info(ssprintf("%s: Lock obtained '%s' (old lock expired).",
+                              fname, path.c_str()));
       return true;
     } else {
-      displayln_info(ssprintf("%s: Failed to obtained '%s'.", fname, path.c_str()));
+      displayln_info(
+          ssprintf("%s: Failed to obtained '%s'.", fname, path.c_str()));
       return false;
     }
   } else {
-    displayln_info(ssprintf("%s: Failed to obtained '%s' (no creation time info).", fname, path.c_str()));
+    displayln_info(
+        ssprintf("%s: Failed to obtained '%s' (no creation time info).", fname,
+                 path.c_str()));
     return false;
   }
 }
@@ -448,8 +470,10 @@ inline bool obtain_lock_all_node(const std::string& path)
 {
   TIMER_VERBOSE("obtain_lock_all_node");
   const std::string path_time = path + "/time.txt";
-  const double expiration_time = get_start_time() + get_lock_expiration_time_limit();
-  displayln_info(ssprintf("%s: Trying to obtain lock '%s'.", fname, path.c_str()));
+  const double expiration_time =
+      get_start_time() + get_lock_expiration_time_limit();
+  displayln_info(
+      ssprintf("%s: Trying to obtain lock '%s'.", fname, path.c_str()));
   qassert(get_lock_location() == "");
   if (0 == mkdir_lock_all_node(path)) {
     qtouch(path_time, show(expiration_time) + "\n");
@@ -466,14 +490,18 @@ inline bool obtain_lock_all_node(const std::string& path)
     }
     if (ret > 0) {
       get_lock_location() = path;
-      displayln_info(ssprintf("%s: Lock obtained '%s' (old lock expired).", fname, path.c_str()));
+      displayln_info(ssprintf("%s: Lock obtained '%s' (old lock expired).",
+                              fname, path.c_str()));
       return true;
     } else {
-      displayln_info(ssprintf("%s: Failed to obtained '%s'.", fname, path.c_str()));
+      displayln_info(
+          ssprintf("%s: Failed to obtained '%s'.", fname, path.c_str()));
       return false;
     }
   } else {
-    displayln_info(ssprintf("%s: Failed to obtained '%s' (no creation time info).", fname, path.c_str()));
+    displayln_info(
+        ssprintf("%s: Failed to obtained '%s' (no creation time info).", fname,
+                 path.c_str()));
     return false;
   }
 }
@@ -516,7 +544,8 @@ inline double& get_default_budget()
   return budget;
 }
 
-inline void check_time_limit(bool timer_display = true, const double budget = get_default_budget())
+inline void check_time_limit(bool timer_display = true,
+                             const double budget = get_default_budget())
 {
   if (timer_display) {
     Timer::display("check_time_limit");

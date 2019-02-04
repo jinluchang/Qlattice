@@ -1,16 +1,15 @@
 #pragma once
 
-#include <qlat/qcd.h>
-#include <qlat/qcd-utils.h>
-#include <qlat/qcd-prop.h>
 #include <qlat/fermion-action.h>
+#include <qlat/qcd-prop.h>
+#include <qlat/qcd-utils.h>
+#include <qlat/qcd.h>
 
 #include <fftw3.h>
 
 QLAT_START_NAMESPACE
 
-struct GaugeTransform : FieldM<ColorMatrix,1>
-{
+struct GaugeTransform : FieldM<ColorMatrix, 1> {
   virtual const std::string& cname()
   {
     static const std::string s = "GaugeTransform";
@@ -18,18 +17,18 @@ struct GaugeTransform : FieldM<ColorMatrix,1>
   }
 };
 
-struct U1GaugeTransform: FieldM<ComplexF, 1>
-{
-	virtual const std::string& cname()
-	{
-  		static const std::string s = "U1GaugeTransform";
-  		return s;
-	}
+struct U1GaugeTransform : FieldM<ComplexF, 1> {
+  virtual const std::string& cname()
+  {
+    static const std::string s = "U1GaugeTransform";
+    return s;
+  }
 };
 
-inline void gt_apply_gauge_transformation(GaugeTransform& gt0, const GaugeTransform& gt1)
-  // gt0 can be the same as gt1
-  // gt0 <- gt1 * gt0
+inline void gt_apply_gauge_transformation(GaugeTransform& gt0,
+                                          const GaugeTransform& gt1)
+// gt0 can be the same as gt1
+// gt0 <- gt1 * gt0
 {
   TIMER("gt_apply_gauge_transformation");
   qassert(is_matching_geo_mult(gt0.geo, gt1.geo));
@@ -43,10 +42,12 @@ inline void gt_apply_gauge_transformation(GaugeTransform& gt0, const GaugeTransf
   }
 }
 
-inline void gf_apply_gauge_transformation_no_comm(GaugeField& gf, const GaugeField& gf0, const GaugeTransform& gt)
-  // gf can be the same as gf0
-  // assuming comm for gt is done
-  // gf <- gt * gf0
+inline void gf_apply_gauge_transformation_no_comm(GaugeField& gf,
+                                                  const GaugeField& gf0,
+                                                  const GaugeTransform& gt)
+// gf can be the same as gf0
+// assuming comm for gt is done
+// gf <- gt * gf0
 {
   TIMER("gf_apply_gauge_transformation_no_comm");
   qassert(is_matching_geo(gf0.geo, gt.geo));
@@ -68,7 +69,8 @@ inline void gf_apply_gauge_transformation_no_comm(GaugeField& gf, const GaugeFie
   }
 }
 
-inline void gf_apply_gauge_transformation(GaugeField& gf, const GaugeField& gf0, const GaugeTransform& gt)
+inline void gf_apply_gauge_transformation(GaugeField& gf, const GaugeField& gf0,
+                                          const GaugeTransform& gt)
 {
   TIMER("gf_apply_gauge_transformation");
   qassert(is_matching_geo(gf0.geo, gt.geo));
@@ -94,7 +96,8 @@ inline void gt_inverse(GaugeTransform& gt, const GaugeTransform& gt0)
 }
 
 inline void ff_apply_gauge_transformation(FermionField4d& ff,
-    const FermionField4d& ff0, const GaugeTransform& gt)
+                                          const FermionField4d& ff0,
+                                          const GaugeTransform& gt)
 {
   TIMER("ff_apply_gauge_transformation");
   qassert(is_matching_geo(ff0.geo, gt.geo));
@@ -113,7 +116,8 @@ inline void ff_apply_gauge_transformation(FermionField4d& ff,
 }
 
 inline void prop_apply_gauge_transformation(Propagator4d& prop,
-    const Propagator4d& prop0, const GaugeTransform& gt)
+                                            const Propagator4d& prop0,
+                                            const GaugeTransform& gt)
 {
   TIMER("prop_apply_gauge_transformation");
   qassert(is_matching_geo(prop0.geo, gt.geo));
@@ -131,7 +135,9 @@ inline void prop_apply_gauge_transformation(Propagator4d& prop,
   }
 }
 
-inline void gf_apply_rand_gauge_transformation(GaugeField& gf, const GaugeField& gf0, const RngState& rs)
+inline void gf_apply_rand_gauge_transformation(GaugeField& gf,
+                                               const GaugeField& gf0,
+                                               const RngState& rs)
 {
   const Geometry geo = geo_reform(gf0.geo);
   GaugeTransform gt;
@@ -140,11 +146,13 @@ inline void gf_apply_rand_gauge_transformation(GaugeField& gf, const GaugeField&
   gf_apply_gauge_transformation(gf, gf0, gt);
 }
 
-inline void make_temporal_gauge_transformation(GaugeTransform& gt, const GaugeField& gf,
-    const int tgref = 0, const int dir = 3)
-  // after tranform: ``gf.get_elem(xl, dir) = unit'' is true from ``xg[dir] = tgref''
-  // until as far as possible
-  // ``gt.get_elem(xl) = unit'' if ``xg[dir] = tgref''
+inline void make_temporal_gauge_transformation(GaugeTransform& gt,
+                                               const GaugeField& gf,
+                                               const int tgref = 0,
+                                               const int dir = 3)
+// after tranform: ``gf.get_elem(xl, dir) = unit'' is true from ``xg[dir] =
+// tgref'' until as far as possible
+// ``gt.get_elem(xl) = unit'' if ``xg[dir] = tgref''
 {
   TIMER("make_temporal_gauge_transformation");
   const Geometry geo = geo_reform(gf.geo, 0);
@@ -182,8 +190,10 @@ inline void make_temporal_gauge_transformation(GaugeTransform& gt, const GaugeFi
   gt = gt1;
 }
 
-inline void make_tree_gauge_transformation(GaugeTransform& gt, const GaugeField& gf,
-    const Coordinate& xgref = Coordinate(0, 0, 0, 0), const Coordinate& dirs = Coordinate(0, 1, 2, 3))
+inline void make_tree_gauge_transformation(
+    GaugeTransform& gt, const GaugeField& gf,
+    const Coordinate& xgref = Coordinate(0, 0, 0, 0),
+    const Coordinate& dirs = Coordinate(0, 1, 2, 3))
 {
   TIMER("make_tree_gauge_transformation");
   const Geometry& geo = geo_reform(gf.geo);
@@ -206,9 +216,9 @@ inline void make_tree_gauge_transformation(GaugeTransform& gt, const GaugeField&
 
 template <class Inverter>
 struct GaugeTransformInverter
-  // gt_inv should be: gt_inverse(gt_inv, gt);
-  // the result should be the same as inverse with gf_fix where
-  // gf_fix is: gf_apply_gauge_transformation(gf_fix, gf, gt);
+// gt_inv should be: gt_inverse(gt_inv, gt);
+// the result should be the same as inverse with gf_fix where
+// gf_fix is: gf_apply_gauge_transformation(gf_fix, gf, gt);
 {
   Geometry geo;
   FermionAction fa;
@@ -217,10 +227,7 @@ struct GaugeTransformInverter
   ConstHandle<Inverter> inv;
   GaugeTransform gt, gt_inv;
   //
-  GaugeTransformInverter()
-  {
-    init();
-  }
+  GaugeTransformInverter() { init(); }
   GaugeTransformInverter(const Inverter& inv_, const GaugeTransform& gt_)
   {
     init(inv_, gt_);
@@ -248,7 +255,8 @@ struct GaugeTransformInverter
 };
 
 template <class Inverter>
-inline void inverse(FermionField4d& out, const FermionField4d& in, const GaugeTransformInverter<Inverter>& gtinv)
+inline void inverse(FermionField4d& out, const FermionField4d& in,
+                    const GaugeTransformInverter<Inverter>& gtinv)
 {
   TIMER_VERBOSE("inverse(out,in,gt_inv)");
   const Inverter& inv = gtinv.inv();
@@ -262,11 +270,13 @@ inline void inverse(FermionField4d& out, const FermionField4d& in, const GaugeTr
 // -------------------------------------------------------------------------
 
 template <class Inverter>
-void set_wall_src_propagator(Propagator4d& prop, const int tslice, const CoordinateD& lmom,
-    const Inverter& inv, const GaugeTransform& gt, const GaugeTransform& gt_inv)
-  // gt_inv should be: gt_inverse(gt_inv, gt);
-  // the result should be the same as inverse with gf_fix where
-  // gf_fix is: gf_apply_gauge_transformation(gf_fix, gf, gt);
+void set_wall_src_propagator(Propagator4d& prop, const int tslice,
+                             const CoordinateD& lmom, const Inverter& inv,
+                             const GaugeTransform& gt,
+                             const GaugeTransform& gt_inv)
+// gt_inv should be: gt_inverse(gt_inv, gt);
+// the result should be the same as inverse with gf_fix where
+// gf_fix is: gf_apply_gauge_transformation(gf_fix, gf, gt);
 {
   TIMER_VERBOSE("set_wall_src_propagator");
   warn("obsolete");
@@ -276,7 +286,7 @@ void set_wall_src_propagator(Propagator4d& prop, const int tslice, const Coordin
   FermionField4d src, sol;
   src.init(geo);
   sol.init(geo);
-  for (int cs = 0; cs < 4*NUM_COLOR; ++cs) {
+  for (int cs = 0; cs < 4 * NUM_COLOR; ++cs) {
     set_tslice_mom_src_fermion_field(src, tslice, lmom, cs);
     ff_apply_gauge_transformation(src, src, gt_inv);
     set_zero(sol);

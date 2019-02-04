@@ -2,7 +2,8 @@
 
 CPS_START_NAMESPACE
 
-long lanczosWriteParNode(const Lanczos& lanc, const std::string& path) {
+long lanczosWriteParNode(const Lanczos& lanc, const std::string& path)
+{
   TIMER_VERBOSE_FLOPS("lanczosWriteParNode");
   timer.flops += lanc.size * lanc.vec_size * getNumNode();
   Makedir(path);
@@ -29,9 +30,11 @@ long lanczosWriteParNode(const Lanczos& lanc, const std::string& path) {
   return total_bytes;
 }
 
-long lanczosReadParNode(Lanczos& lanc, const std::string& path) {
+long lanczosReadParNode(Lanczos& lanc, const std::string& path)
+{
   if (!DoesFileExist(path + "/checkpoint")) {
-    DisplayInfo(cname, "lanczosReadParNode", "'%s' do not exist.\n", path.c_str());
+    DisplayInfo(cname, "lanczosReadParNode", "'%s' do not exist.\n",
+                path.c_str());
     return 0;
   }
   TIMER_VERBOSE_FLOPS("lanczosReadParNode");
@@ -82,7 +85,8 @@ long lanczosReadParNode(Lanczos& lanc, const std::string& path) {
   return total_bytes;
 }
 
-void lanczosFill(Lanczos& lanc, const int size) {
+void lanczosFill(Lanczos& lanc, const int size)
+{
   TIMER_VERBOSE_FLOPS("lanczosFill");
   timer.flops += size * lanc.vec_size;
   lanc.resize(size);
@@ -97,4 +101,3 @@ void lanczosFill(Lanczos& lanc, const int size) {
 }
 
 CPS_END_NAMESPACE
-

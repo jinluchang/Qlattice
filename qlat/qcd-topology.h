@@ -1,13 +1,12 @@
 #pragma once
 
 #include <qlat/matrix.h>
-#include <qlat/qcd.h>
 #include <qlat/qcd-utils.h>
+#include <qlat/qcd.h>
 
 QLAT_START_NAMESPACE
 
-struct CloverLeafField : FieldM<ColorMatrix,6>
-{
+struct CloverLeafField : FieldM<ColorMatrix, 6> {
   virtual const std::string& cname()
   {
     static const std::string s = "CloverLeafField";
@@ -15,36 +14,39 @@ struct CloverLeafField : FieldM<ColorMatrix,6>
   }
 };
 
-inline ColorMatrix gf_clover_leaf_no_comm(const GaugeField& gf1, const Coordinate& xl, const int mu, const int nu)
+inline ColorMatrix gf_clover_leaf_no_comm(const GaugeField& gf1,
+                                          const Coordinate& xl, const int mu,
+                                          const int nu)
 {
   ColorMatrix m;
   set_zero(m);
   std::vector<int> path(4);
   path[0] = mu;
   path[1] = nu;
-  path[2] = -mu-1;
-  path[3] = -nu-1;
+  path[2] = -mu - 1;
+  path[3] = -nu - 1;
   m += gf_wilson_line_no_comm(gf1, xl, path);
-  path[0] = -nu-1;
-  path[1] = -mu-1;
+  path[0] = -nu - 1;
+  path[1] = -mu - 1;
   path[2] = nu;
   path[3] = mu;
   m += matrix_adjoint(gf_wilson_line_no_comm(gf1, xl, path));
   path[0] = nu;
-  path[1] = -mu-1;
-  path[2] = -nu-1;
+  path[1] = -mu - 1;
+  path[2] = -nu - 1;
   path[3] = mu;
   m += gf_wilson_line_no_comm(gf1, xl, path);
   path[0] = mu;
-  path[1] = -nu-1;
-  path[2] = -mu-1;
+  path[1] = -nu - 1;
+  path[2] = -mu - 1;
   path[3] = nu;
   m += matrix_adjoint(gf_wilson_line_no_comm(gf1, xl, path));
   return 0.25 * m;
 }
 
-inline void gf_clover_leaf_field_no_comm(CloverLeafField& clf, const GaugeField& gf1)
-  // F_01, F_02, F_03, F_12, F_13, F_23
+inline void gf_clover_leaf_field_no_comm(CloverLeafField& clf,
+                                         const GaugeField& gf1)
+// F_01, F_02, F_03, F_12, F_13, F_23
 {
   TIMER("gf_clover_leaf_field_no_comm");
   const Geometry geo = geo_reform(gf1.geo, 6, 0);
@@ -73,33 +75,36 @@ inline void gf_clover_leaf_field(CloverLeafField& clf, const GaugeField& gf)
   gf_clover_leaf_field_no_comm(clf, gf1);
 }
 
-inline double clf_plaq_action_density(const CloverLeafField& clf, const Coordinate& xl)
-  // \sum_P (1 - 1/3 * Re Tr U_P)
+inline double clf_plaq_action_density(const CloverLeafField& clf,
+                                      const Coordinate& xl)
+// \sum_P (1 - 1/3 * Re Tr U_P)
 {
   const Vector<ColorMatrix> v = clf.get_elems_const(xl);
   double sum = 0.0;
   for (int i = 0; i < 6; ++i) {
-    sum += 1.0 - 1.0/3.0 * matrix_trace(v[i]).real();
+    sum += 1.0 - 1.0 / 3.0 * matrix_trace(v[i]).real();
   }
   return sum;
 }
 
-inline double clf_spatial_plaq_action_density(const CloverLeafField& clf, const Coordinate& xl)
-  // \sum_P(spatial only) (1 - 1/3 * Re Tr U_P)
+inline double clf_spatial_plaq_action_density(const CloverLeafField& clf,
+                                              const Coordinate& xl)
+// \sum_P(spatial only) (1 - 1/3 * Re Tr U_P)
 {
   const Vector<ColorMatrix> v = clf.get_elems_const(xl);
   double sum = 0.0;
-  sum += 1.0 - 1.0/3.0 * matrix_trace(v[0]).real();
-  sum += 1.0 - 1.0/3.0 * matrix_trace(v[1]).real();
-  sum += 1.0 - 1.0/3.0 * matrix_trace(v[3]).real();
+  sum += 1.0 - 1.0 / 3.0 * matrix_trace(v[0]).real();
+  sum += 1.0 - 1.0 / 3.0 * matrix_trace(v[1]).real();
+  sum += 1.0 - 1.0 / 3.0 * matrix_trace(v[3]).real();
   return sum;
 }
 
-inline double clf_topology_density(const CloverLeafField& clf, const Coordinate& xl)
-  // sum of the density of the topological charge Q
+inline double clf_topology_density(const CloverLeafField& clf,
+                                   const Coordinate& xl)
+// sum of the density of the topological charge Q
 {
   const Vector<ColorMatrix> v = clf.get_elems_const(xl);
-  std::array<ColorMatrix,6> arr;
+  std::array<ColorMatrix, 6> arr;
   for (int i = 0; i < 6; ++i) {
     arr[i] = 0.5 * (v[i] - matrix_adjoint(v[i]));
   }
@@ -111,7 +116,8 @@ inline double clf_topology_density(const CloverLeafField& clf, const Coordinate&
   return fac * sum;
 }
 
-inline void clf_plaq_action_field(FieldM<double,1>& paf, const CloverLeafField& clf)
+inline void clf_plaq_action_field(FieldM<double, 1>& paf,
+                                  const CloverLeafField& clf)
 {
   TIMER("clf_plaq_action_field");
   const Geometry& geo = clf.geo;
@@ -124,7 +130,8 @@ inline void clf_plaq_action_field(FieldM<double,1>& paf, const CloverLeafField& 
   }
 }
 
-inline void clf_spatial_plaq_action_field(FieldM<double,1>& spaf, const CloverLeafField& clf)
+inline void clf_spatial_plaq_action_field(FieldM<double, 1>& spaf,
+                                          const CloverLeafField& clf)
 {
   TIMER("clf_spatial_plaq_action_field");
   const Geometry& geo = clf.geo;
@@ -137,7 +144,8 @@ inline void clf_spatial_plaq_action_field(FieldM<double,1>& spaf, const CloverLe
   }
 }
 
-inline void clf_topology_field(FieldM<double,1>& topf, const CloverLeafField& clf)
+inline void clf_topology_field(FieldM<double, 1>& topf,
+                               const CloverLeafField& clf)
 {
   TIMER("clf_topology_field");
   const Geometry& geo = clf.geo;

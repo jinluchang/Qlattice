@@ -13,8 +13,7 @@
 
 QLAT_START_NAMESPACE
 
-struct CommMarks : Field<int8_t>
-{
+struct CommMarks : Field<int8_t> {
   virtual const std::string& cname()
   {
     static const std::string s = "CommMarks";
@@ -22,16 +21,19 @@ struct CommMarks : Field<int8_t>
   }
 };
 
-typedef void (*SetMarksField)(CommMarks& marks, const Geometry& geo, const std::string& tag);
+typedef void (*SetMarksField)(CommMarks& marks, const Geometry& geo,
+                              const std::string& tag);
 
-inline void set_marks_field_all(CommMarks& marks, const Geometry& geo, const std::string& tag)
-  // tag is not used
+inline void set_marks_field_all(CommMarks& marks, const Geometry& geo,
+                                const std::string& tag)
+// tag is not used
 {
   TIMER_VERBOSE("set_marks_field_all");
   marks.init();
   marks.init(geo);
 #pragma omp parallel for
-  for (long offset = 0; offset < geo.local_volume_expanded() * geo.multiplicity; ++offset) {
+  for (long offset = 0; offset < geo.local_volume_expanded() * geo.multiplicity;
+       ++offset) {
     const Coordinate xl = geo.coordinate_from_offset(offset);
     if (not geo.is_local(xl)) {
       marks.get_elem(offset) = 1;
@@ -39,8 +41,9 @@ inline void set_marks_field_all(CommMarks& marks, const Geometry& geo, const std
   }
 }
 
-inline void set_marks_field_1(CommMarks& marks, const Geometry& geo, const std::string& tag)
-  // tag is not used
+inline void set_marks_field_1(CommMarks& marks, const Geometry& geo,
+                              const std::string& tag)
+// tag is not used
 {
   TIMER_VERBOSE("set_marks_field_1");
   marks.init();
@@ -62,19 +65,26 @@ inline void set_marks_field_1(CommMarks& marks, const Geometry& geo, const std::
   }
 }
 
-inline void set_marks_field_m2(CommMarks& marks, const Geometry& geo, const std::string& tag)
-	// tag is not used
+inline void set_marks_field_m2(CommMarks& marks, const Geometry& geo,
+                               const std::string& tag)
+// tag is not used
 {
-	TIMER_VERBOSE("set_marks_field_m2");
-	marks.init();
-	marks.init(geo);
+  TIMER_VERBOSE("set_marks_field_m2");
+  marks.init();
+  marks.init(geo);
 #pragma omp parallel for
   for (long record = 0; record < geo.local_volume_expanded(); ++record) {
     const Coordinate xl = geo.coordinateFromRecord(record);
-    if (   xl[0] < 1-geo.expansion_left[0] or xl[0] >= geo.node_site[0]+geo.expansion_right[0]-1 // 1 for checkerboarding. This function is now useless anyway.
-        or xl[1] < 2-geo.expansion_left[1] or xl[1] >= geo.node_site[1]+geo.expansion_right[1]-2
-        or xl[2] < 2-geo.expansion_left[2] or xl[2] >= geo.node_site[2]+geo.expansion_right[2]-2
-        or xl[3] < 2-geo.expansion_left[3] or xl[3] >= geo.node_site[3]+geo.expansion_right[3]-2) {
+    if (xl[0] < 1 - geo.expansion_left[0] or
+        xl[0] >= geo.node_site[0] + geo.expansion_right[0] -
+                     1  // 1 for checkerboarding. This function is now useless
+                        // anyway.
+        or xl[1] < 2 - geo.expansion_left[1] or
+        xl[1] >= geo.node_site[1] + geo.expansion_right[1] - 2 or
+        xl[2] < 2 - geo.expansion_left[2] or
+        xl[2] >= geo.node_site[2] + geo.expansion_right[2] - 2 or
+        xl[3] < 2 - geo.expansion_left[3] or
+        xl[3] >= geo.node_site[3] + geo.expansion_right[3] - 2) {
       Vector<int8_t> v = marks.get_elems(xl);
       for (int m = 0; m < geo.multiplicity; ++m) {
         v[m] = 1;
@@ -83,32 +93,28 @@ inline void set_marks_field_m2(CommMarks& marks, const Geometry& geo, const std:
   }
 }
 
-struct CommPackInfo
-{
+struct CommPackInfo {
   long offset;
   long buffer_idx;
   long size;
 };
 
-struct CommMsgInfo
-{
+struct CommMsgInfo {
   int id_node;
   long buffer_idx;
   long size;
 };
 
-struct CommPlan
-{
-  long total_send_size; // send buffer size
+struct CommPlan {
+  long total_send_size;  // send buffer size
   std::vector<CommMsgInfo> send_msg_infos;
   std::vector<CommPackInfo> send_pack_infos;
-  long total_recv_size; // recv buffer size
+  long total_recv_size;  // recv buffer size
   std::vector<CommMsgInfo> recv_msg_infos;
   std::vector<CommPackInfo> recv_pack_infos;
 };
 
-struct CommPlanKey
-{
+struct CommPlanKey {
   SetMarksField set_marks_field;
   std::string tag;
   Geometry geo;
@@ -131,20 +137,24 @@ inline bool operator<(const CommPlanKey& x, const CommPlanKey& y)
   }
 }
 
-inline void g_offset_id_node_from_offset(long& g_offset, int& id_node, const long offset, const Geometry& geo)
+inline void g_offset_id_node_from_offset(long& g_offset, int& id_node,
+                                         const long offset, const Geometry& geo)
 {
   const Coordinate total_site = geo.total_site();
   const Coordinate xl = geo.coordinate_from_offset(offset);
-  const Coordinate xg = regular_coordinate(geo.coordinate_g_from_l(xl), total_site);
+  const Coordinate xg =
+      regular_coordinate(geo.coordinate_g_from_l(xl), total_site);
   const Coordinate coor_node = xg / geo.node_site;
   id_node = index_from_coordinate(coor_node, geo.geon.size_node);
-  g_offset = index_from_coordinate(xg, total_site) * geo.multiplicity + offset % geo.multiplicity;
+  g_offset = index_from_coordinate(xg, total_site) * geo.multiplicity +
+             offset % geo.multiplicity;
 }
 
 inline long offset_from_g_offset(const long g_offset, const Geometry& geo)
 {
   const Coordinate total_site = geo.total_site();
-  const Coordinate xg = coordinate_from_index(g_offset/geo.multiplicity, total_site);
+  const Coordinate xg =
+      coordinate_from_index(g_offset / geo.multiplicity, total_site);
   Coordinate xl = regular_coordinate(geo.coordinate_l_from_g(xg), total_site);
   for (int mu = 0; mu < DIMN; ++mu) {
     while (xl[mu] >= geo.node_site[mu] + geo.expansion_right[mu]) {
@@ -166,8 +176,10 @@ inline CommPlan make_comm_plan(const CommMarks& marks)
   ret.total_send_size = 0;
   ret.total_recv_size = 0;
   //
-  std::map<int,std::vector<long> > src_id_node_g_offsets; // src node id ; vector of g_offset
-  for (long offset = 0; offset < geo.local_volume_expanded() * geo.multiplicity; ++offset) {
+  std::map<int, std::vector<long> >
+      src_id_node_g_offsets;  // src node id ; vector of g_offset
+  for (long offset = 0; offset < geo.local_volume_expanded() * geo.multiplicity;
+       ++offset) {
     const int8_t r = marks.get_elem(offset);
     if (r != 0) {
       int id_node;
@@ -180,10 +192,13 @@ inline CommPlan make_comm_plan(const CommMarks& marks)
     }
   }
   //
-  std::vector<long> src_id_node_count(get_num_node(), 0); // number of total send pkgs for each node
+  std::vector<long> src_id_node_count(
+      get_num_node(), 0);  // number of total send pkgs for each node
   {
     long count = 0;
-    for (std::map<int,std::vector<long> >::const_iterator it = src_id_node_g_offsets.begin(); it != src_id_node_g_offsets.end(); ++it) {
+    for (std::map<int, std::vector<long> >::const_iterator it =
+             src_id_node_g_offsets.begin();
+         it != src_id_node_g_offsets.end(); ++it) {
       src_id_node_count[it->first] += 1;
       CommMsgInfo cmi;
       cmi.id_node = it->first;
@@ -199,27 +214,31 @@ inline CommPlan make_comm_plan(const CommMarks& marks)
   glb_sum(get_data(src_id_node_count));
   ret.send_msg_infos.resize(src_id_node_count[get_id_node()]);
   //
-  std::map<int,std::vector<long> > dst_id_node_g_offsets; // dst node id ; vector of g_offset
+  std::map<int, std::vector<long> >
+      dst_id_node_g_offsets;  // dst node id ; vector of g_offset
   {
     std::vector<MPI_Request> send_reqs(src_id_node_g_offsets.size());
     std::vector<MPI_Request> recv_reqs(ret.send_msg_infos.size());
     {
       const int mpi_tag = 8;
-      std::vector<CommMsgInfo> send_send_msg_infos(src_id_node_g_offsets.size());
+      std::vector<CommMsgInfo> send_send_msg_infos(
+          src_id_node_g_offsets.size());
       int k = 0;
-      for (std::map<int,std::vector<long> >::const_iterator it = src_id_node_g_offsets.begin(); it != src_id_node_g_offsets.end(); ++it) {
+      for (std::map<int, std::vector<long> >::const_iterator it =
+               src_id_node_g_offsets.begin();
+           it != src_id_node_g_offsets.end(); ++it) {
         CommMsgInfo& cmi = send_send_msg_infos[k];
         cmi.id_node = get_id_node();
         cmi.buffer_idx = 0;
         cmi.size = it->second.size();
-        MPI_Isend(&cmi, sizeof(CommMsgInfo), MPI_BYTE, it->first,
-            mpi_tag, get_comm(), &send_reqs[k]);
+        MPI_Isend(&cmi, sizeof(CommMsgInfo), MPI_BYTE, it->first, mpi_tag,
+                  get_comm(), &send_reqs[k]);
         k += 1;
       }
       for (int i = 0; i < ret.send_msg_infos.size(); ++i) {
         CommMsgInfo& cmi = ret.send_msg_infos[i];
-        MPI_Recv(&cmi, sizeof(CommMsgInfo), MPI_BYTE, MPI_ANY_SOURCE,
-            mpi_tag, get_comm(), MPI_STATUS_IGNORE);
+        MPI_Recv(&cmi, sizeof(CommMsgInfo), MPI_BYTE, MPI_ANY_SOURCE, mpi_tag,
+                 get_comm(), MPI_STATUS_IGNORE);
         dst_id_node_g_offsets[cmi.id_node].resize(cmi.size);
       }
       MPI_Waitall(send_reqs.size(), send_reqs.data(), MPI_STATUS_IGNORE);
@@ -227,21 +246,25 @@ inline CommPlan make_comm_plan(const CommMarks& marks)
     {
       const int mpi_tag = 9;
       int k = 0;
-      for (std::map<int,std::vector<long> >::const_iterator it = src_id_node_g_offsets.begin(); it != src_id_node_g_offsets.end(); ++it) {
-        MPI_Isend((void*)it->second.data(), it->second.size(), MPI_LONG, it->first,
-            mpi_tag, get_comm(), &send_reqs[k]);
+      for (std::map<int, std::vector<long> >::const_iterator it =
+               src_id_node_g_offsets.begin();
+           it != src_id_node_g_offsets.end(); ++it) {
+        MPI_Isend((void*)it->second.data(), it->second.size(), MPI_LONG,
+                  it->first, mpi_tag, get_comm(), &send_reqs[k]);
         k += 1;
       }
       k = 0;
       long count = 0;
-      for (std::map<int,std::vector<long> >::iterator it = dst_id_node_g_offsets.begin(); it != dst_id_node_g_offsets.end(); ++it) {
+      for (std::map<int, std::vector<long> >::iterator it =
+               dst_id_node_g_offsets.begin();
+           it != dst_id_node_g_offsets.end(); ++it) {
         CommMsgInfo& cmi = ret.send_msg_infos[k];
         cmi.id_node = it->first;
         cmi.buffer_idx = count;
         cmi.size = it->second.size();
         count += cmi.size;
         MPI_Irecv(it->second.data(), it->second.size(), MPI_LONG, it->first,
-            mpi_tag, get_comm(), &recv_reqs[k]);
+                  mpi_tag, get_comm(), &recv_reqs[k]);
         k += 1;
       }
       ret.total_send_size = count;
@@ -254,7 +277,9 @@ inline CommPlan make_comm_plan(const CommMarks& marks)
   {
     long current_buffer_idx = 0;
     int k = 0;
-    for (std::map<int,std::vector<long> >::const_iterator it = src_id_node_g_offsets.begin(); it != src_id_node_g_offsets.end(); ++it) {
+    for (std::map<int, std::vector<long> >::const_iterator it =
+             src_id_node_g_offsets.begin();
+         it != src_id_node_g_offsets.end(); ++it) {
       const int src_id_node = it->first;
       const std::vector<long>& g_offsets = it->second;
       qassert(src_id_node == ret.recv_msg_infos[k].id_node);
@@ -285,7 +310,9 @@ inline CommPlan make_comm_plan(const CommMarks& marks)
   {
     long current_buffer_idx = 0;
     int k = 0;
-    for (std::map<int,std::vector<long> >::const_iterator it = dst_id_node_g_offsets.begin(); it != dst_id_node_g_offsets.end(); ++it) {
+    for (std::map<int, std::vector<long> >::const_iterator it =
+             dst_id_node_g_offsets.begin();
+         it != dst_id_node_g_offsets.end(); ++it) {
       const int dst_id_node = it->first;
       const std::vector<long>& g_offsets = it->second;
       qassert(dst_id_node == ret.send_msg_infos[k].id_node);
@@ -323,9 +350,9 @@ inline CommPlan make_comm_plan(const CommPlanKey& cpk)
   return make_comm_plan(marks);
 }
 
-inline Cache<CommPlanKey,CommPlan>& get_comm_plan_cache()
+inline Cache<CommPlanKey, CommPlan>& get_comm_plan_cache()
 {
-  static Cache<CommPlanKey,CommPlan> cache("CommPlanCache", 32);
+  static Cache<CommPlanKey, CommPlan> cache("CommPlanCache", 32);
   return cache;
 }
 
@@ -337,7 +364,9 @@ inline const CommPlan& get_comm_plan(const CommPlanKey& cpk)
   return get_comm_plan_cache()[cpk];
 }
 
-inline const CommPlan& get_comm_plan(const SetMarksField& set_marks_field, const std::string& tag, const Geometry& geo)
+inline const CommPlan& get_comm_plan(const SetMarksField& set_marks_field,
+                                     const std::string& tag,
+                                     const Geometry& geo)
 {
   CommPlanKey cpk;
   cpk.set_marks_field = set_marks_field;
@@ -356,12 +385,14 @@ void refresh_expanded(Field<M>& f, const CommPlan& plan)
 #pragma omp parallel for
   for (long i = 0; i < plan.send_pack_infos.size(); ++i) {
     const CommPackInfo& cpi = plan.send_pack_infos[i];
-    memcpy(&send_buffer[cpi.buffer_idx], &f.get_elem(cpi.offset), cpi.size * sizeof(M));
+    memcpy(&send_buffer[cpi.buffer_idx], &f.get_elem(cpi.offset),
+           cpi.size * sizeof(M));
   }
   {
     sync_node();
     TIMER_FLOPS("refresh_expanded-comm");
-    timer.flops += (plan.total_recv_size + plan.total_send_size) * sizeof(M) / 2;
+    timer.flops +=
+        (plan.total_recv_size + plan.total_send_size) * sizeof(M) / 2;
     std::vector<MPI_Request> send_reqs(plan.send_msg_infos.size());
     std::vector<MPI_Request> recv_reqs(plan.recv_msg_infos.size());
     {
@@ -369,13 +400,13 @@ void refresh_expanded(Field<M>& f, const CommPlan& plan)
       const int mpi_tag = 10;
       for (size_t i = 0; i < plan.send_msg_infos.size(); ++i) {
         const CommMsgInfo& cmi = plan.send_msg_infos[i];
-        MPI_Isend(&send_buffer[cmi.buffer_idx], cmi.size * sizeof(M), MPI_BYTE, cmi.id_node,
-            mpi_tag, get_comm(), &send_reqs[i]);
+        MPI_Isend(&send_buffer[cmi.buffer_idx], cmi.size * sizeof(M), MPI_BYTE,
+                  cmi.id_node, mpi_tag, get_comm(), &send_reqs[i]);
       }
       for (size_t i = 0; i < plan.recv_msg_infos.size(); ++i) {
         const CommMsgInfo& cmi = plan.recv_msg_infos[i];
-        MPI_Irecv(&recv_buffer[cmi.buffer_idx], cmi.size * sizeof(M), MPI_BYTE, cmi.id_node,
-            mpi_tag, get_comm(), &recv_reqs[i]);
+        MPI_Irecv(&recv_buffer[cmi.buffer_idx], cmi.size * sizeof(M), MPI_BYTE,
+                  cmi.id_node, mpi_tag, get_comm(), &recv_reqs[i]);
       }
     }
     MPI_Waitall(recv_reqs.size(), recv_reqs.data(), MPI_STATUS_IGNORE);
@@ -385,12 +416,15 @@ void refresh_expanded(Field<M>& f, const CommPlan& plan)
 #pragma omp parallel for
   for (long i = 0; i < plan.recv_pack_infos.size(); ++i) {
     const CommPackInfo& cpi = plan.recv_pack_infos[i];
-    memcpy(&f.get_elem(cpi.offset), &recv_buffer[cpi.buffer_idx], cpi.size * sizeof(M));
+    memcpy(&f.get_elem(cpi.offset), &recv_buffer[cpi.buffer_idx],
+           cpi.size * sizeof(M));
   }
 }
 
 template <class M>
-void refresh_expanded(Field<M>& f, const SetMarksField& set_marks_field = set_marks_field_all, const std::string& tag = "")
+void refresh_expanded(
+    Field<M>& f, const SetMarksField& set_marks_field = set_marks_field_all,
+    const std::string& tag = "")
 {
   const CommPlan& plan = get_comm_plan(set_marks_field, tag, f.geo);
   refresh_expanded(f, plan);
@@ -419,8 +453,8 @@ void refresh_expanded_m2(Field<M>& f)
 //   std::map<Coordinate, int> send_map_consume;
 //
 //   Coordinate pos; // coordinate position of a site relative to this node
-//   Coordinate local_pos; // coordinate position of a site relative to its home node
-//   Coordinate node_pos; // home node coordinate of a site in node space
+//   Coordinate local_pos; // coordinate position of a site relative to its home
+//   node Coordinate node_pos; // home node coordinate of a site in node space
 //
 //   // populate send_map with the data that we need to send to other nodes
 //   long record_size = field_comm.geo.local_volume_expanded();

@@ -18,17 +18,16 @@
 
 #pragma once
 
+#include <cassert>
+#include <cstdarg>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <sstream>
 #include <string>
-#include <cstdarg>
-#include <cstring>
-#include <cstdlib>
-#include <cstdio>
-#include <sstream>
-#include <cassert>
 
-namespace qshow {
-
+namespace qshow
+{
 inline std::string vssprintf(const char* fmt, va_list args)
 {
   std::string str;
@@ -47,40 +46,19 @@ inline std::string ssprintf(const char* fmt, ...)
   return vssprintf(fmt, args);
 }
 
-inline std::string show()
-{
-  return "";
-}
+inline std::string show() { return ""; }
 
-inline std::string show(const int& x)
-{
-  return ssprintf("%d", x);
-}
+inline std::string show(const int& x) { return ssprintf("%d", x); }
 
-inline std::string show(const unsigned int& x)
-{
-  return ssprintf("%u", x);
-}
+inline std::string show(const unsigned int& x) { return ssprintf("%u", x); }
 
-inline std::string show(const long& x)
-{
-  return ssprintf("%ld", x);
-}
+inline std::string show(const long& x) { return ssprintf("%ld", x); }
 
-inline std::string show(const unsigned long& x)
-{
-  return ssprintf("%lu", x);
-}
+inline std::string show(const unsigned long& x) { return ssprintf("%lu", x); }
 
-inline std::string show(const double& x)
-{
-  return ssprintf("%24.17E", x);
-}
+inline std::string show(const double& x) { return ssprintf("%24.17E", x); }
 
-inline std::string show(const bool& x)
-{
-  return x ? "true" : "false";
-}
+inline std::string show(const bool& x) { return x ? "true" : "false"; }
 
 inline std::string show(const std::string& x)
 {
@@ -171,7 +149,7 @@ inline void fdisplayln(FILE* fp, const std::string& str)
   fprintf(fp, "%s\n", str.c_str());
 }
 
-}
+}  // namespace qshow
 
 #ifndef USE_NAMESPACE
 using namespace qshow;

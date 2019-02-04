@@ -2,9 +2,9 @@
 
 #pragma once
 
-#include <qlat/utils.h>
-#include <qlat/coordinate.h>
 #include <qlat/coordinate-d.h>
+#include <qlat/coordinate.h>
+#include <qlat/utils.h>
 
 QLAT_START_NAMESPACE
 
@@ -52,7 +52,8 @@ inline double smod(const double x, const double len)
   }
 }
 
-inline double smod_sym(const double x, const double len, const double eps = 1.0e-8)
+inline double smod_sym(const double x, const double len,
+                       const double eps = 1.0e-8)
 {
   const double m = smod(x, len);
   if (std::abs(std::abs(m * 2) - len) < eps) {
@@ -69,10 +70,10 @@ inline int middle_mod(const int x, const int y, const int len)
   const int ym = mod(y, len);
   if (xm <= ym) {
     const int r = smod(ym - xm, len);
-    return mod(xm + r/2, len);
+    return mod(xm + r / 2, len);
   } else {
     const int r = smod(xm - ym, len);
-    return mod(ym + r/2, len);
+    return mod(ym + r / 2, len);
   }
 }
 
@@ -83,10 +84,10 @@ inline double middle_mod(const double x, const double y, const double len)
   const double ym = mod(y, len);
   if (xm <= ym) {
     const double r = smod(ym - xm, len);
-    return mod(xm + r/2, len);
+    return mod(xm + r / 2, len);
   } else {
     const double r = smod(xm - ym, len);
-    return mod(ym + r/2, len);
+    return mod(ym + r / 2, len);
   }
 }
 
@@ -130,7 +131,8 @@ inline CoordinateD smod(const CoordinateD& x, const CoordinateD& size)
   return ret;
 }
 
-inline Coordinate middle_mod(const Coordinate& x, const Coordinate& y, const Coordinate& size)
+inline Coordinate middle_mod(const Coordinate& x, const Coordinate& y,
+                             const Coordinate& size)
 {
   Coordinate ret;
   ret[0] = middle_mod(x[0], y[0], size[0]);
@@ -140,7 +142,8 @@ inline Coordinate middle_mod(const Coordinate& x, const Coordinate& y, const Coo
   return ret;
 }
 
-inline CoordinateD middle_mod(const CoordinateD& x, const CoordinateD& y, const CoordinateD& size)
+inline CoordinateD middle_mod(const CoordinateD& x, const CoordinateD& y,
+                              const CoordinateD& size)
 {
   CoordinateD ret;
   ret[0] = middle_mod(x[0], y[0], size[0]);
@@ -150,25 +153,23 @@ inline CoordinateD middle_mod(const CoordinateD& x, const CoordinateD& y, const 
   return ret;
 }
 
-inline bool is_reaching_edge_coordinate(const Coordinate& x, const Coordinate& size)
+inline bool is_reaching_edge_coordinate(const Coordinate& x,
+                                        const Coordinate& size)
 {
-  return std::abs(x[0]) * 2 == size[0]
-    || std::abs(x[1]) * 2 == size[1]
-    || std::abs(x[2]) * 2 == size[2]
-    || std::abs(x[3]) * 2 == size[3];
+  return std::abs(x[0]) * 2 == size[0] || std::abs(x[1]) * 2 == size[1] ||
+         std::abs(x[2]) * 2 == size[2] || std::abs(x[3]) * 2 == size[3];
 }
 
 inline bool is_outside_coordinate(const Coordinate& x, const Coordinate& size)
 {
-  return std::abs(x[0]) * 2 > size[0]
-    || std::abs(x[1]) * 2 > size[1]
-    || std::abs(x[2]) * 2 > size[2]
-    || std::abs(x[3]) * 2 > size[3];
+  return std::abs(x[0]) * 2 > size[0] || std::abs(x[1]) * 2 > size[1] ||
+         std::abs(x[2]) * 2 > size[2] || std::abs(x[3]) * 2 > size[3];
 }
 
 inline long sqr(const Coordinate& xg)
 {
-  return sqr((long)xg[0]) + sqr((long)xg[1]) + sqr((long)xg[2]) + sqr((long)xg[3]);
+  return sqr((long)xg[0]) + sqr((long)xg[1]) + sqr((long)xg[2]) +
+         sqr((long)xg[3]);
 }
 
 inline long distance_sq_relative_coordinate_g(const Coordinate& xg)
@@ -196,15 +197,20 @@ inline Coordinate coordinate_from_index(long index, const Coordinate& size)
 
 inline long index_from_coordinate(const Coordinate& x, const Coordinate& size)
 {
-  return ((((long)x[3] * (long)size[2]) + (long)x[2]) * (long)size[1] + (long)x[1]) * (long)size[0] + (long)x[0];
+  return ((((long)x[3] * (long)size[2]) + (long)x[2]) * (long)size[1] +
+          (long)x[1]) *
+             (long)size[0] +
+         (long)x[0];
 }
 
-inline Coordinate regular_coordinate(const Coordinate& x, const Coordinate& size)
+inline Coordinate regular_coordinate(const Coordinate& x,
+                                     const Coordinate& size)
 {
   return mod(x, size);
 }
 
-inline Coordinate relative_coordinate(const Coordinate& x, const Coordinate& size)
+inline Coordinate relative_coordinate(const Coordinate& x,
+                                      const Coordinate& size)
 {
   return smod(x, size);
 }
@@ -214,42 +220,41 @@ inline void regularize_coordinate(Coordinate& x, const Coordinate& size)
   x = regular_coordinate(x, size);
 }
 
-inline CoordinateD relative_coordinate(const CoordinateD& x, const CoordinateD& size)
+inline CoordinateD relative_coordinate(const CoordinateD& x,
+                                       const CoordinateD& size)
 {
   return smod(x, size);
 }
 
-inline Coordinate middle_coordinate(const Coordinate& x, const Coordinate& y, const Coordinate& size)
+inline Coordinate middle_coordinate(const Coordinate& x, const Coordinate& y,
+                                    const Coordinate& size)
 {
   return middle_mod(x, y, size);
 }
 
-inline CoordinateD middle_coordinate(const CoordinateD& x, const CoordinateD& y, const CoordinateD& size)
+inline CoordinateD middle_coordinate(const CoordinateD& x, const CoordinateD& y,
+                                     const CoordinateD& size)
 {
   return middle_mod(x, y, size);
 }
 
-struct EpsilonTensorTable
-{
+struct EpsilonTensorTable {
   int tensor[4][4][4][4];
   //
-  EpsilonTensorTable()
-  {
-    init();
-  }
+  EpsilonTensorTable() { init(); }
   //
   void init()
   {
     std::memset(this, 0, sizeof(tensor));
-    setv(0,1,2,3);
-    setv(0,2,3,1);
-    setv(0,3,1,2);
+    setv(0, 1, 2, 3);
+    setv(0, 2, 3, 1);
+    setv(0, 3, 1, 2);
   }
   //
   void setv(const int a, const int b, const int c, const int d)
   {
-    set(a,b,c,d,1);
-    set(a,b,d,c,-1);
+    set(a, b, c, d, 1);
+    set(a, b, d, c, -1);
   }
   void set(const int a, const int b, const int c, const int d, const int val)
   {
@@ -286,19 +291,19 @@ inline Coordinate read_coordinate(const std::string& str)
   assert(parse_long(z, cur, str));
   assert(parse_char(c, cur, str) and (c == 'x' or c == ','));
   assert(parse_long(t, cur, str));
-  return Coordinate(x,y,z,t);
+  return Coordinate(x, y, z, t);
 }
 
 QLAT_END_NAMESPACE
 
-namespace qshow {
-
+namespace qshow
+{
 inline std::string show(const qlat::Coordinate& x)
 {
   return ssprintf("%dx%dx%dx%d", x[0], x[1], x[2], x[3]);
 }
 
-}
+}  // namespace qshow
 
 #ifndef USE_NAMESPACE
 using namespace qshow;

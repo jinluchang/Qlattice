@@ -21,48 +21,33 @@
 #include "rng-state.h"
 
 #include <cstring>
-#include <ostream>
 #include <istream>
+#include <ostream>
 
-namespace qrngstate {
-
-struct SprngSha256
+namespace qrngstate
 {
+struct SprngSha256 {
   RngState rs;
   //
   using result_type = uint64_t;
   //
   static constexpr result_type default_seed = 0;
   //
-  explicit SprngSha256(result_type val = default_seed)
-  {
-    seed(val);
-  }
-  template<typename Sseq, typename = typename
-    std::enable_if<!std::is_same<Sseq, SprngSha256>::value>
-    ::type>
+  explicit SprngSha256(result_type val = default_seed) { seed(val); }
+  template <typename Sseq, typename = typename std::enable_if<
+                               !std::is_same<Sseq, SprngSha256>::value>::type>
   explicit SprngSha256(Sseq& q)
   {
     seed(q);
   }
   //
-  static constexpr result_type min()
-  {
-    return 0;
-  }
+  static constexpr result_type min() { return 0; }
   //
-  static constexpr result_type max()
-  {
-    return UINT64_MAX;
-  }
+  static constexpr result_type max() { return UINT64_MAX; }
   //
-  void seed(result_type val = default_seed)
-  {
-    reset(rs, (long)val);
-  }
+  void seed(result_type val = default_seed) { reset(rs, (long)val); }
   template <class Sseq>
-  typename std::enable_if<std::is_class<Sseq>::value>::type
-  seed(Sseq& q)
+  typename std::enable_if<std::is_class<Sseq>::value>::type seed(Sseq& q)
   {
     std::array<uint32_t, 8> seq;
     q.generate(seq.begin(), seq.end());
@@ -72,10 +57,7 @@ struct SprngSha256
     }
   }
   //
-  result_type operator()()
-  {
-    return randGen(rs);
-  }
+  result_type operator()() { return randGen(rs); }
   //
   void discard(unsigned long long z)
   {
@@ -102,7 +84,7 @@ inline bool operator==(const SprngSha256& ss1, const SprngSha256& ss2)
   return ss1.rs == ss2.rs;
 }
 
-}
+}  // namespace qrngstate
 
 #ifndef USE_NAMESPACE
 using namespace qrngstate;

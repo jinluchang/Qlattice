@@ -1,7 +1,7 @@
 #include <qlat/qlat.h>
 
-#include <iostream>
 #include <complex>
+#include <iostream>
 #include <vector>
 
 using namespace qlat;
@@ -45,15 +45,15 @@ void test_io()
   displayln_info(ssprintf("crc32 = %08X", field_dist_crc32(gf)));
   const crc32_t crc = field_dist_crc32(gf);
   std::vector<Coordinate> new_size_nodes;
-  new_size_nodes.push_back(Coordinate(1,1,1,1));
-  new_size_nodes.push_back(Coordinate(2,2,2,2));
+  new_size_nodes.push_back(Coordinate(1, 1, 1, 1));
+  new_size_nodes.push_back(Coordinate(2, 2, 2, 2));
   // new_size_nodes.push_back(Coordinate(1,2,1,32));
-  new_size_nodes.push_back(Coordinate(1,1,1,8));
-  new_size_nodes.push_back(Coordinate(1,2,4,2));
-  new_size_nodes.push_back(Coordinate(2,2,1,1));
+  new_size_nodes.push_back(Coordinate(1, 1, 1, 8));
+  new_size_nodes.push_back(Coordinate(1, 2, 4, 2));
+  new_size_nodes.push_back(Coordinate(2, 2, 1, 1));
   // new_size_nodes.push_back(Coordinate(16,1,1,1));
   // new_size_nodes.push_back(Coordinate(4,8,1,1));
-  new_size_nodes.push_back(Coordinate(4,4,4,4));
+  new_size_nodes.push_back(Coordinate(4, 4, 4, 4));
   // new_size_nodes.push_back(Coordinate(16,16,1,1));
   // new_size_nodes.push_back(Coordinate(4,2,16,32));
   // new_size_nodes.push_back(Coordinate(4,16,16,32));
@@ -75,18 +75,24 @@ void test_io()
   for (size_t i = 0; i < new_size_nodes.size(); ++i) {
     const Coordinate& new_size_node = new_size_nodes[i];
     displayln_info(ssprintf("crc32 = %08X", field_dist_crc32(gf)));
-    dist_write_field(gf, new_size_node, ssprintf("huge-data/gauge_field ; ") + show(new_size_node));
+    dist_write_field(
+        gf, new_size_node,
+        ssprintf("huge-data/gauge_field ; ") + show(new_size_node));
     set_unit(gf);
-    dist_read_field(gf, ssprintf("huge-data/gauge_field ; ") + show(new_size_node));
+    dist_read_field(gf,
+                    ssprintf("huge-data/gauge_field ; ") + show(new_size_node));
     displayln_info(ssprintf("crc32 = %08X", field_dist_crc32(gf)));
     qassert(crc == field_dist_crc32(gf));
   }
   for (size_t i = 0; i < new_size_nodes.size(); ++i) {
     const Coordinate& new_size_node = new_size_nodes[i];
     displayln_info(ssprintf("crc32 = %08X", field_dist_crc32(gf)));
-    dist_write_field(gf, new_size_node, ssprintf("huge-data/gauge_field ; ") + show(new_size_node) + "_2");
+    dist_write_field(
+        gf, new_size_node,
+        ssprintf("huge-data/gauge_field ; ") + show(new_size_node) + "_2");
     set_unit(gf);
-    dist_read_field(gf, ssprintf("huge-data/gauge_field ; ") + show(new_size_node) + "_2");
+    dist_read_field(
+        gf, ssprintf("huge-data/gauge_field ; ") + show(new_size_node) + "_2");
     displayln_info(ssprintf("crc32 = %08X", field_dist_crc32(gf)));
     qassert(crc == field_dist_crc32(gf));
   }
@@ -99,9 +105,12 @@ void test_io()
   for (size_t i = 0; i < new_size_nodes.size(); ++i) {
     const Coordinate& new_size_node = new_size_nodes[i];
     displayln_info(ssprintf("crc32 = %08X", field_dist_crc32(gf)));
-    dist_write_field_float_from_double(gf, new_size_node, ssprintf("huge-data/gauge_field ; ") + show(new_size_node) + "_f");
+    dist_write_field_float_from_double(
+        gf, new_size_node,
+        ssprintf("huge-data/gauge_field ; ") + show(new_size_node) + "_f");
     set_unit(gf);
-    dist_read_field_double_from_float(gf, ssprintf("huge-data/gauge_field ; ") + show(new_size_node) + "_f");
+    dist_read_field_double_from_float(
+        gf, ssprintf("huge-data/gauge_field ; ") + show(new_size_node) + "_f");
     displayln_info(ssprintf("crc32 = %08X", field_dist_crc32(gf)));
     qassert(fcrc == field_dist_crc32(gf));
   }

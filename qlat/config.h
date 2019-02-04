@@ -2,9 +2,9 @@
 
 #pragma once
 
-#include <complex>
-#include <cassert>
 #include <unistd.h>
+#include <cassert>
+#include <complex>
 
 #ifdef OLD_CPP
 #include <array-compatible.h>
@@ -18,7 +18,9 @@
 #include <omp.h>
 #endif
 
-#define QLAT_START_NAMESPACE namespace qlat {
+#define QLAT_START_NAMESPACE \
+  namespace qlat             \
+  {
 #define QLAT_END_NAMESPACE }
 
 #ifndef USE_SINGLE_NODE
@@ -27,24 +29,25 @@
 
 #define USE_NAMESPACE
 
+#include <qutils/lat-io.h>
 #include <qutils/qutils.h>
+#include <qutils/rng-state.h>
 #include <qutils/show.h>
 #include <qutils/timer.h>
-#include <qutils/rng-state.h>
-#include <qutils/lat-io.h>
 
 // #define SKIP_ASSERT
 
 #ifdef SKIP_ASSERT
 #define qassert(x) assert(true)
 #else
-#define qassert(x) { \
-  if (not (x)) { \
-    displayln("qassert failed: " #x); \
-    usleep((useconds_t)(10.0 * 1.0e6)); \
-    assert(false); \
-  } \
-}
+#define qassert(x)                        \
+  {                                       \
+    if (not(x)) {                         \
+      displayln("qassert failed: " #x);   \
+      usleep((useconds_t)(10.0 * 1.0e6)); \
+      assert(false);                      \
+    }                                     \
+  }
 #endif
 
 QLAT_START_NAMESPACE

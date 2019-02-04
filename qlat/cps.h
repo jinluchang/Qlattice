@@ -9,18 +9,27 @@
 using namespace qtimer;
 
 #include <gf/tools.h>
+
 #include <gf/gauge_field.h>
+
 #include <gf/fermion_field.h>
+
 #include <gf/qed.h>
+
 #include <gf/inverter.h>
+
 #include <gf/rng_state.h>
+
 #include <alg/alg_fix_gauge.h>
+
 #include <alg/alg_rnd_gauge.h>
 
 extern MPI_Comm QMP_COMM_WORLD;
 
 #include "cps-utils.h"
+
 #include "cps-pio.h"
+
 #include "cps-lanc.h"
 
 QLAT_START_NAMESPACE
@@ -68,10 +77,7 @@ void cps_begin(int* argc, char** argv[], const Coordinate& total_site)
   cps::dataReadParNumber() = 256;
 }
 
-void cps_end()
-{
-  cps::End();
-}
+void cps_end() { cps::End(); }
 
 inline cps::Geometry geo_convert(const Geometry& geo)
 {
@@ -83,7 +89,8 @@ inline cps::Geometry geo_convert(const Geometry& geo)
 
 inline Geometry geo_convert(const cps::Geometry& cgeo)
 {
-  qlat::Coordinate total_site(cgeo.totalSite(0), cgeo.totalSite(1), cgeo.totalSite(2), cgeo.totalSite(3));
+  qlat::Coordinate total_site(cgeo.totalSite(0), cgeo.totalSite(1),
+                              cgeo.totalSite(2), cgeo.totalSite(3));
   qlat::Geometry geo;
   geo.init(total_site, cgeo.multiplicity);
   return geo;
@@ -134,7 +141,9 @@ inline void field_convert(Field<N>& f, const cps::GridComm<M>& gc)
   }
 }
 
-inline void gf_fix_gauge_landau(GaugeField& gf, const double stop_cond = 1.0e-12, const double max_iter_num = 500000)
+inline void gf_fix_gauge_landau(GaugeField& gf,
+                                const double stop_cond = 1.0e-12,
+                                const double max_iter_num = 500000)
 {
   TIMER_VERBOSE("gf_fix_gauge_landau")
   cps::GaugeField cgf;
@@ -145,7 +154,8 @@ inline void gf_fix_gauge_landau(GaugeField& gf, const double stop_cond = 1.0e-12
   fix_gauge_arg.stop_cond = stop_cond;
   fix_gauge_arg.max_iter_num = max_iter_num;
   cps::CommonArg common_arg;
-  cps::Lattice& lat = cps::LatticeFactory::Create(cps::F_CLASS_NONE, cps::G_CLASS_NONE);
+  cps::Lattice& lat =
+      cps::LatticeFactory::Create(cps::F_CLASS_NONE, cps::G_CLASS_NONE);
   cps::AlgFixGauge fg(lat, &common_arg, &fix_gauge_arg);
   fg.run();
   cps::AlgRotateGauge rg(lat, &common_arg);
@@ -156,8 +166,9 @@ inline void gf_fix_gauge_landau(GaugeField& gf, const double stop_cond = 1.0e-12
   field_convert(gf, cgf);
 }
 
-inline void gt_gf_fix_gauge_coulomb(GaugeTransform& gt,
-    const GaugeField& gf, const double stop_cond = 1.0e-12, const double max_iter_num = 500000)
+inline void gt_gf_fix_gauge_coulomb(GaugeTransform& gt, const GaugeField& gf,
+                                    const double stop_cond = 1.0e-12,
+                                    const double max_iter_num = 500000)
 {
   TIMER_VERBOSE("gt_gf_fix_gauge_coulomb")
   cps::GaugeField cgf;
@@ -171,21 +182,25 @@ inline void gt_gf_fix_gauge_coulomb(GaugeTransform& gt,
   fix_gauge_arg.hyperplane_step = 1;
   fix_gauge_arg.hyperplane_num = gf.geo.total_site()[3];
   cps::CommonArg common_arg;
-  cps::Lattice& lat = cps::LatticeFactory::Create(cps::F_CLASS_NONE, cps::G_CLASS_NONE);
+  cps::Lattice& lat =
+      cps::LatticeFactory::Create(cps::F_CLASS_NONE, cps::G_CLASS_NONE);
   cps::AlgFixGauge fg(lat, &common_arg, &fix_gauge_arg);
   fg.run();
   gt.init(gf.geo);
 #pragma omp parallel for
   for (long index = 0; index < gt.geo.local_volume(); ++index) {
     const Coordinate& xl = gt.geo.coordinate_from_index(index);
-    const int k = ((xl[2] * gt.geo.node_site[1]) + xl[1]) * gt.geo.node_site[0] + xl[0];
+    const int k =
+        ((xl[2] * gt.geo.node_site[1]) + xl[1]) * gt.geo.node_site[0] + xl[0];
     value_convert(gt.get_elem(xl), lat.fix_gauge_ptr[xl[3]][k]);
   }
   fg.free();
   cps::LatticeFactory::Destroy();
 }
 
-inline void gf_fix_gauge_coulomb(GaugeField& gf, const double stop_cond = 1.0e-12, const double max_iter_num = 500000)
+inline void gf_fix_gauge_coulomb(GaugeField& gf,
+                                 const double stop_cond = 1.0e-12,
+                                 const double max_iter_num = 500000)
 {
   TIMER_VERBOSE("gf_fix_gauge_coulomb")
   GaugeTransform gt;
@@ -195,7 +210,8 @@ inline void gf_fix_gauge_coulomb(GaugeField& gf, const double stop_cond = 1.0e-1
 
 inline cps::FermionActionDomainWall fa_convert(const FermionAction& fa)
 {
-  cps::FermionActionDomainWall cfa(fa.mass, fa.ls, fa.m5, true, fa.mobius_scale, fa.is_multiplying_dminus);
+  cps::FermionActionDomainWall cfa(fa.mass, fa.ls, fa.m5, true, fa.mobius_scale,
+                                   fa.is_multiplying_dminus);
   if (fa.is_using_zmobius) {
     cfa.is_using_zmobius_action = true;
     cfa.CGdiagonalMee = fa.cg_diagonal_mee;
@@ -228,8 +244,7 @@ inline cps::LancArg lanc_arg_convert(const LancArg& la, const FermionAction& fa)
   return cla;
 }
 
-struct LowModesCPS
-{
+struct LowModesCPS {
   bool initialized;
   Geometry geo;
   cps::LanczosDefault lanc;
@@ -249,17 +264,16 @@ struct LowModesCPS
     lanc.init(geo_convert(geo), fa_convert(fa));
   }
   //
-  LowModesCPS()
-  {
-    init();
-  }
+  LowModesCPS() { init(); }
 };
 
-inline void run_lanc(LowModesCPS& lm, const GaugeField& gf, const FermionAction& fa, const LancArg& la)
+inline void run_lanc(LowModesCPS& lm, const GaugeField& gf,
+                     const FermionAction& fa, const LancArg& la)
 {
   TIMER_VERBOSE("run_lanc");
   if (!la.initialized) {
-    displayln_info("WARNING: " + std::string(fname) + ": la is not initialized.");
+    displayln_info("WARNING: " + std::string(fname) +
+                   ": la is not initialized.");
     return;
   }
   qassert(!lm.initialized);
@@ -273,7 +287,9 @@ inline void run_lanc(LowModesCPS& lm, const GaugeField& gf, const FermionAction&
 inline long read_low_modes_compressed(LowModesCPS& lm, const std::string& path)
 {
   if (!does_file_exist_sync_node(path + "/metadata.txt")) {
-    displayln_info(ssprintf("load_from_compressed_eigen_vectors: '%s' do not exist.", path.c_str()));
+    displayln_info(
+        ssprintf("load_from_compressed_eigen_vectors: '%s' do not exist.",
+                 path.c_str()));
     return 0;
   }
   TIMER_VERBOSE_FLOPS("read_low_modes_compressed");
@@ -306,7 +322,10 @@ inline long read_low_modes_compressed(LowModesCPS& lm, const std::string& path)
     timer.flops += nvec * vec_size;
     for (int k = 0; k < nvec; k++) {
       lanc.alloc(k);
-      convert_half_vector_bfm_format(Vector<ComplexF>((ComplexF*)lanc.getVec(k), vec_size / sizeof(ComplexF)), hvs[k]);
+      convert_half_vector_bfm_format(
+          Vector<ComplexF>((ComplexF*)lanc.getVec(k),
+                           vec_size / sizeof(ComplexF)),
+          hvs[k]);
       hvs[k].init();
     }
   }
@@ -315,7 +334,7 @@ inline long read_low_modes_compressed(LowModesCPS& lm, const std::string& path)
 }
 
 inline long read_low_modes(LowModesCPS& lm, const std::string& path)
-  // lm must be initialized
+// lm must be initialized
 {
   TIMER_VERBOSE("read_low_modes");
   qassert(lm.initialized);
@@ -347,7 +366,9 @@ inline long write_low_modes(const LowModesCPS& lm, const std::string& path)
 }
 
 inline void load_or_compute_low_modes(LowModesCPS& lm, const std::string& path,
-    const GaugeField& gf, const FermionAction& fa, const LancArg& la)
+                                      const GaugeField& gf,
+                                      const FermionAction& fa,
+                                      const LancArg& la)
 {
   TIMER_VERBOSE("load_or_compute_low_modes");
   qassert(!lm.initialized);
@@ -365,8 +386,7 @@ inline void load_or_compute_low_modes(LowModesCPS& lm, const std::string& path,
   }
 }
 
-struct InverterDomainWallCPS
-{
+struct InverterDomainWallCPS {
   Geometry geo;
   FermionAction fa;
   GaugeField gf;
@@ -374,10 +394,7 @@ struct InverterDomainWallCPS
   cps::InverterDomainWallDefault inverter;
   ConstHandle<LowModesCPS> lm;
   //
-  InverterDomainWallCPS()
-  {
-    init();
-  }
+  InverterDomainWallCPS() { init(); }
   //
   void init()
   {
@@ -386,10 +403,7 @@ struct InverterDomainWallCPS
     max_mixed_precision_cycle() = 100;
   }
   //
-  void setup()
-  {
-    inverter.reinit();
-  }
+  void setup() { inverter.reinit(); }
   void setup(const GaugeField& gf_, const FermionAction& fa_)
   {
     geo = geo_reform(gf_.geo, fa_.ls);
@@ -402,15 +416,9 @@ struct InverterDomainWallCPS
     inverter.init(cgf, cfa);
   }
   //
-  double& stop_rsd()
-  {
-    return inverter.stop_rsd;
-  }
+  double& stop_rsd() { return inverter.stop_rsd; }
   //
-  int& max_num_iter()
-  {
-    return inverter.max_num_iter;
-  }
+  int& max_num_iter() { return inverter.max_num_iter; }
   //
   int& max_mixed_precision_cycle()
   {
@@ -423,12 +431,15 @@ inline void setup_inverter(InverterDomainWallCPS& inverter)
   inverter.setup();
 }
 
-inline void setup_inverter(InverterDomainWallCPS& inverter, const GaugeField& gf, const FermionAction& fa)
+inline void setup_inverter(InverterDomainWallCPS& inverter,
+                           const GaugeField& gf, const FermionAction& fa)
 {
   inverter.setup(gf, fa);
 }
 
-inline void setup_inverter(InverterDomainWallCPS& inverter, const GaugeField& gf, const FermionAction& fa, const LowModesCPS& lm)
+inline void setup_inverter(InverterDomainWallCPS& inverter,
+                           const GaugeField& gf, const FermionAction& fa,
+                           const LowModesCPS& lm)
 {
   setup_inverter(inverter, gf, fa);
   if (lm.initialized) {
@@ -436,8 +447,9 @@ inline void setup_inverter(InverterDomainWallCPS& inverter, const GaugeField& gf
   }
 }
 
-inline void inverse(FermionField5d& sol, const FermionField5d& src, const InverterDomainWallCPS& inverter)
-  // sol do not need to be initialized
+inline void inverse(FermionField5d& sol, const FermionField5d& src,
+                    const InverterDomainWallCPS& inverter)
+// sol do not need to be initialized
 {
   TIMER_VERBOSE("inverse(5d,5d,IDWCPS)");
   const Geometry& geo = src.geo;
@@ -454,7 +466,8 @@ inline void inverse(FermionField5d& sol, const FermionField5d& src, const Invert
   field_convert(sol, csol);
 }
 
-inline void inverse(FermionField4d& sol, const FermionField4d& src, const InverterDomainWallCPS& inverter)
+inline void inverse(FermionField4d& sol, const FermionField4d& src,
+                    const InverterDomainWallCPS& inverter)
 {
   inverse_dwf(sol, src, inverter);
 }

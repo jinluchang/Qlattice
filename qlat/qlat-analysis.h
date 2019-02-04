@@ -30,8 +30,10 @@ inline void setup_params()
   dist_write_par_limit() = 128;
   dist_read_par_limit() = 128;
   displayln_info(ssprintf("get_start_time()=%lf", get_start_time()));
-  displayln_info(ssprintf("get_lock_expiration_time_limit()=%lf", get_lock_expiration_time_limit()));
-  displayln_info(ssprintf("expiration_time=%lf", get_start_time() + get_lock_expiration_time_limit()));
+  displayln_info(ssprintf("get_lock_expiration_time_limit()=%lf",
+                          get_lock_expiration_time_limit()));
+  displayln_info(ssprintf("expiration_time=%lf",
+                          get_start_time() + get_lock_expiration_time_limit()));
 }
 
 inline long& get_log_idx()
@@ -63,7 +65,8 @@ inline void initialize(const std::string& path = ".")
   setup_log_idx(path);
 }
 
-inline std::string& get_result_path() {
+inline std::string& get_result_path()
+{
   static std::string path = "";
   return path;
 }
@@ -78,13 +81,14 @@ inline void update_log_rng()
 {
   if (get_result_path() != "") {
     qassert(get_log_idx() >= 0);
-    switch_monitor_file(get_result_path() + ssprintf("/logs/%010d.txt", get_log_idx()));
+    switch_monitor_file(get_result_path() +
+                        ssprintf("/logs/%010d.txt", get_log_idx()));
   }
-  get_global_rng_state() = get_project_root_rng_state().split(get_result_path());
+  get_global_rng_state() =
+      get_project_root_rng_state().split(get_result_path());
 }
 
-struct Setup
-{
+struct Setup {
   std::string pre_name;
   //
   Setup(const std::string& name)
@@ -105,8 +109,7 @@ struct Setup
 
 struct ConfigurationsInfo;
 
-struct ConfigurationInfo
-{
+struct ConfigurationInfo {
   ConstHandle<ConfigurationsInfo> csi;
   int traj;
   std::string path;
@@ -114,8 +117,7 @@ struct ConfigurationInfo
   std::string low_modes_path;
 };
 
-struct ConfigurationsInfo
-{
+struct ConfigurationsInfo {
   std::string tag;
   Coordinate total_site;
   std::vector<FermionAction> fas;
@@ -124,10 +126,11 @@ struct ConfigurationsInfo
 };
 
 inline void load_gauge_field_artificial(GaugeField& gf, const std::string& path)
-  // assuming gf already initialized and have correct size;
+// assuming gf already initialized and have correct size;
 {
   TIMER_VERBOSE("load_gauge_field_artificial");
-  set_g_rand_color_matrix_field(gf, RngState(RngState("load_gauge_field_artificial"), path), 1.0);
+  set_g_rand_color_matrix_field(
+      gf, RngState(RngState("load_gauge_field_artificial"), path), 1.0);
   for (int i = 0; i < 10000; ++i) {
     gf_ape_smear(gf, gf, 0.1);
     displayln_info(ssprintf("ape-smear 0.1 %d times", i + 1));
@@ -158,7 +161,8 @@ inline void load_configuration(GaugeField& gf, const ConfigurationInfo& ci)
   }
 }
 
-inline ConfigurationsInfo make_configurations_info_test(const Coordinate& total_site, const bool make_cis = true)
+inline ConfigurationsInfo make_configurations_info_test(
+    const Coordinate& total_site, const bool make_cis = true)
 {
   ConfigurationsInfo csi;
   csi.total_site = total_site;
@@ -181,7 +185,8 @@ inline ConfigurationsInfo make_configurations_info_test(const Coordinate& total_
   return csi;
 }
 
-inline ConfigurationsInfo make_configurations_info_free(const Coordinate& total_site, const bool make_cis = true)
+inline ConfigurationsInfo make_configurations_info_free(
+    const Coordinate& total_site, const bool make_cis = true)
 {
   ConfigurationsInfo csi;
   csi.tag = "free";
@@ -205,7 +210,8 @@ inline ConfigurationsInfo make_configurations_info_free(const Coordinate& total_
   return csi;
 }
 
-inline ConfigurationsInfo make_configurations_info_16c32_mu0p01_ms0p04(const bool make_cis = true)
+inline ConfigurationsInfo make_configurations_info_16c32_mu0p01_ms0p04(
+    const bool make_cis = true)
 {
   ConfigurationsInfo csi;
   csi.tag = "16I";
@@ -220,12 +226,17 @@ inline ConfigurationsInfo make_configurations_info_16c32_mu0p01_ms0p04(const boo
       ci.csi.init(csi);
       ci.traj = traj;
       ci.path = get_env("HOME") +
-        "/qcdarchive/DWF_iwa_nf2p1/16c32"
-        "/2plus1_16nt32_IWASAKI_b2p13_ls16_M1p8_ms0p04_mu0p01_rhmc_multi_timescale_ukqcd"
-        "/ckpoint_lat.IEEE64BIG." + show(traj);
+                "/qcdarchive/DWF_iwa_nf2p1/16c32"
+                "/2plus1_16nt32_IWASAKI_b2p13_ls16_M1p8_ms0p04_mu0p01_rhmc_"
+                "multi_timescale_ukqcd"
+                "/ckpoint_lat.IEEE64BIG." +
+                show(traj);
       ci.conf_format = "cps";
-      ci.low_modes_path = get_env("HOME") +
-        ssprintf("/application/Public/Muon-GM2-cc/jobs/16I/lancs/qcdtraj=%d/huge-data-lanc", traj);
+      ci.low_modes_path =
+          get_env("HOME") + ssprintf(
+                                "/application/Public/Muon-GM2-cc/jobs/16I/"
+                                "lancs/qcdtraj=%d/huge-data-lanc",
+                                traj);
       if (does_file_exist_sync_node(ci.path)) {
         csi.infos.push_back(ci);
       }
@@ -234,7 +245,8 @@ inline ConfigurationsInfo make_configurations_info_16c32_mu0p01_ms0p04(const boo
   return csi;
 }
 
-inline ConfigurationsInfo make_configurations_info_16c32_mu0p01_ms0p032(const bool make_cis = true)
+inline ConfigurationsInfo make_configurations_info_16c32_mu0p01_ms0p032(
+    const bool make_cis = true)
 {
   ConfigurationsInfo csi;
   csi.tag = "16I_ms0p032";
@@ -247,13 +259,17 @@ inline ConfigurationsInfo make_configurations_info_16c32_mu0p01_ms0p032(const bo
       ConfigurationInfo ci;
       ci.csi.init(csi);
       ci.traj = traj;
-      ci.path = get_env("HOME") +
-        "/qcdarchive/DWF_iwa_nf2p1/16c32"
-        "/2plus1_16nt32_IWASAKI_b2p13_ls16_M1p8_ms0p032_mu0p01_rhmc_H_R_G"
-        "/ckpoint_lat.IEEE64BIG." + show(traj);
+      ci.path =
+          get_env("HOME") +
+          "/qcdarchive/DWF_iwa_nf2p1/16c32"
+          "/2plus1_16nt32_IWASAKI_b2p13_ls16_M1p8_ms0p032_mu0p01_rhmc_H_R_G"
+          "/ckpoint_lat.IEEE64BIG." +
+          show(traj);
       ci.conf_format = "cps";
-      ci.low_modes_path = "./results-lancs"
-        "/qcdtraj=" + show(traj) + "/huge-data-lanc";
+      ci.low_modes_path =
+          "./results-lancs"
+          "/qcdtraj=" +
+          show(traj) + "/huge-data-lanc";
       if (does_file_exist_sync_node(ci.path)) {
         csi.infos.push_back(ci);
       }
@@ -264,37 +280,42 @@ inline ConfigurationsInfo make_configurations_info_16c32_mu0p01_ms0p032(const bo
 
 inline std::string find_conf_24c64_mu0p01_ms0p04(const int traj)
 {
-  const std::string parent_path = get_env("HOME") + "/qcdarchive/DWF_iwa_nf2p1/24c64";
+  const std::string parent_path =
+      get_env("HOME") + "/qcdarchive/DWF_iwa_nf2p1/24c64";
   const std::string fname = "/ckpoint_lat.IEEE64BIG.";
   std::string path;
   path = parent_path +
-    "/2plus1_24nt64_IWASAKI_b2p13_ls16_M1p8_ms0p04_mu0p01_quo_hasenbusch_rhmc"
-    + fname + show(traj);
+         "/2plus1_24nt64_IWASAKI_b2p13_ls16_M1p8_ms0p04_mu0p01_quo_hasenbusch_"
+         "rhmc" +
+         fname + show(traj);
   if (does_file_exist_sync_node(path)) {
     return path;
   }
   path = parent_path +
-    "/2plus1_24nt64_IWASAKI_b2p13_ls16_M1p8_ms0p04_mu0p01_quo_hasenbusch_rhmc_ukqcd"
-    + fname + show(traj);
+         "/2plus1_24nt64_IWASAKI_b2p13_ls16_M1p8_ms0p04_mu0p01_quo_hasenbusch_"
+         "rhmc_ukqcd" +
+         fname + show(traj);
   if (does_file_exist_sync_node(path)) {
     return path;
   }
   path = parent_path +
-    "/2plus1_24nt64_IWASAKI_b2p13_ls16_M1p8_ms0p04_mu0p01_rhmc_H_R_G"
-    + fname + show(traj);
+         "/2plus1_24nt64_IWASAKI_b2p13_ls16_M1p8_ms0p04_mu0p01_rhmc_H_R_G" +
+         fname + show(traj);
   if (does_file_exist_sync_node(path)) {
     return path;
   }
   path = parent_path +
-    "/2plus1_24nt64_IWASAKI_b2p13_ls16_M1p8_ms0p04_mu0p01_rhmc_multi_timescale_ukqcd"
-    + fname + show(traj);
+         "/2plus1_24nt64_IWASAKI_b2p13_ls16_M1p8_ms0p04_mu0p01_rhmc_multi_"
+         "timescale_ukqcd" +
+         fname + show(traj);
   if (does_file_exist_sync_node(path)) {
     return path;
   }
   return "";
 }
 
-inline ConfigurationsInfo make_configurations_info_24c64_mu0p01_ms0p04(const bool make_cis = true)
+inline ConfigurationsInfo make_configurations_info_24c64_mu0p01_ms0p04(
+    const bool make_cis = true)
 {
   ConfigurationsInfo csi;
   csi.tag = "24I";
@@ -311,8 +332,10 @@ inline ConfigurationsInfo make_configurations_info_24c64_mu0p01_ms0p04(const boo
       ci.conf_format = "cps";
       qmkdir_info("./results-lancs");
       qmkdir_info("./results-lancs/qcdtraj=" + show(traj));
-      ci.low_modes_path = "./results-lancs"
-        "/qcdtraj=" + show(traj) + "/huge-data-lanc";
+      ci.low_modes_path =
+          "./results-lancs"
+          "/qcdtraj=" +
+          show(traj) + "/huge-data-lanc";
       if (ci.path != "") {
         csi.infos.push_back(ci);
       }
@@ -323,19 +346,21 @@ inline ConfigurationsInfo make_configurations_info_24c64_mu0p01_ms0p04(const boo
 
 inline std::string find_conf_24c64_mu0p005_ms0p04(const int traj)
 {
-  const std::string parent_path = get_env("HOME") + "/qcdarchive/DWF_iwa_nf2p1/24c64";
+  const std::string parent_path =
+      get_env("HOME") + "/qcdarchive/DWF_iwa_nf2p1/24c64";
   const std::string fname = "/ckpoint_lat.IEEE64BIG.";
   std::string path;
   path = parent_path +
-    "/2plus1_24nt64_IWASAKI_b2p13_ls16_M1p8_ms0p04_mu0p005_rhmc_H_R_G"
-    + fname + show(traj);
+         "/2plus1_24nt64_IWASAKI_b2p13_ls16_M1p8_ms0p04_mu0p005_rhmc_H_R_G" +
+         fname + show(traj);
   if (does_file_exist_sync_node(path)) {
     return path;
   }
   return "";
 }
 
-inline ConfigurationsInfo make_configurations_info_24c64_mu0p005_ms0p04(const bool make_cis = true)
+inline ConfigurationsInfo make_configurations_info_24c64_mu0p005_ms0p04(
+    const bool make_cis = true)
 {
   ConfigurationsInfo csi;
   csi.tag = "24IL";
@@ -344,7 +369,7 @@ inline ConfigurationsInfo make_configurations_info_24c64_mu0p005_ms0p04(const bo
   csi.fas.push_back(FermionAction(0.04, 16, 1.8));
   csi.la = LancArg(5.5, 0.16, 100, 600, 555, 550);
   if (make_cis) {
-    for (int traj = 8545; traj >= 2000 ; traj -= 40) {
+    for (int traj = 8545; traj >= 2000; traj -= 40) {
       ConfigurationInfo ci;
       ci.csi.init(csi);
       ci.traj = traj;
@@ -352,8 +377,10 @@ inline ConfigurationsInfo make_configurations_info_24c64_mu0p005_ms0p04(const bo
       ci.conf_format = "cps";
       qmkdir_info("./results-lancs");
       qmkdir_info("./results-lancs/qcdtraj=" + show(traj));
-      ci.low_modes_path = "./results-lancs"
-        "/qcdtraj=" + show(traj) + "/huge-data-lanc";
+      ci.low_modes_path =
+          "./results-lancs"
+          "/qcdtraj=" +
+          show(traj) + "/huge-data-lanc";
       if (ci.path != "") {
         csi.infos.push_back(ci);
       }
@@ -362,13 +389,14 @@ inline ConfigurationsInfo make_configurations_info_24c64_mu0p005_ms0p04(const bo
   return csi;
 }
 
-inline ConfigurationsInfo make_configurations_info_32c64_dsdr_mu0p001_ms0p045(const bool make_cis = true)
+inline ConfigurationsInfo make_configurations_info_32c64_dsdr_mu0p001_ms0p045(
+    const bool make_cis = true)
 {
   ConfigurationsInfo csi;
   csi.tag = "32ID";
   csi.total_site = Coordinate(32, 32, 32, 64);
-  csi.fas.push_back(FermionAction(0.001, 12, 1.8, 32.0/12.0));
-  csi.fas.push_back(FermionAction(0.045, 12, 1.8, 32.0/12.0));
+  csi.fas.push_back(FermionAction(0.001, 12, 1.8, 32.0 / 12.0));
+  csi.fas.push_back(FermionAction(0.045, 12, 1.8, 32.0 / 12.0));
   // csi.la = LancArg(15.0, 0.08, 200, 600, 555, 550);
   csi.la = LancArg(15.0, 0.22, 200, 2600, 2100, 2000);
   if (make_cis) {
@@ -377,12 +405,15 @@ inline ConfigurationsInfo make_configurations_info_32c64_dsdr_mu0p001_ms0p045(co
       ci.csi.init(csi);
       ci.traj = traj;
       ci.path = get_env("HOME") +
-        "/qcdarchive-zbai/32nt64-ainv-1.37gev-mpi171mev-ls32"
-        "/ckpoint_lat.IEEE64BIG." + show(traj);
+                "/qcdarchive-zbai/32nt64-ainv-1.37gev-mpi171mev-ls32"
+                "/ckpoint_lat.IEEE64BIG." +
+                show(traj);
       ci.conf_format = "cps3x3";
-        "/qcdtraj=" + show(traj) + "/huge-data-lanc";
-      ci.low_modes_path = "/home/ljin/application/Public/Muon-GM2-cc/jobs/32ID/lancs"
-        "/qcdtraj=" + show(traj) + "/huge-data-lanc";
+      "/qcdtraj=" + show(traj) + "/huge-data-lanc";
+      ci.low_modes_path =
+          "/home/ljin/application/Public/Muon-GM2-cc/jobs/32ID/lancs"
+          "/qcdtraj=" +
+          show(traj) + "/huge-data-lanc";
       if (ci.path != "") {
         csi.infos.push_back(ci);
       }
@@ -391,7 +422,9 @@ inline ConfigurationsInfo make_configurations_info_32c64_dsdr_mu0p001_ms0p045(co
   return csi;
 }
 
-inline ConfigurationsInfo make_configurations_info_32c64_dsdr_mu0p001_ms0p045_unitary(const bool make_cis = true)
+inline ConfigurationsInfo
+make_configurations_info_32c64_dsdr_mu0p001_ms0p045_unitary(
+    const bool make_cis = true)
 {
   ConfigurationsInfo csi;
   csi.tag = "32ID_unitary";
@@ -406,14 +439,17 @@ inline ConfigurationsInfo make_configurations_info_32c64_dsdr_mu0p001_ms0p045_un
       ci.csi.init(csi);
       ci.traj = traj;
       ci.path = get_env("HOME") +
-        "/qcdarchive-zbai/32nt64-ainv-1.37gev-mpi171mev-ls32"
-        "/ckpoint_lat.IEEE64BIG." + show(traj);
+                "/qcdarchive-zbai/32nt64-ainv-1.37gev-mpi171mev-ls32"
+                "/ckpoint_lat.IEEE64BIG." +
+                show(traj);
       ci.conf_format = "cps3x3";
-        "/qcdtraj=" + show(traj) + "/huge-data-lanc";
+      "/qcdtraj=" + show(traj) + "/huge-data-lanc";
       qmkdir_info("./results-lancs");
       qmkdir_info("./results-lancs/qcdtraj=" + show(traj));
-      ci.low_modes_path = "./results-lancs"
-        "/qcdtraj=" + show(traj) + "/huge-data-lanc";
+      ci.low_modes_path =
+          "./results-lancs"
+          "/qcdtraj=" +
+          show(traj) + "/huge-data-lanc";
       if (ci.path != "") {
         csi.infos.push_back(ci);
       }
@@ -424,31 +460,30 @@ inline ConfigurationsInfo make_configurations_info_32c64_dsdr_mu0p001_ms0p045_un
 
 inline std::string find_conf_24c64_dsdr_mu0p0017_ms0p0850(const int traj)
 {
-  const std::string parent_path = get_env("HOME") + "/hlbl/ljin/chulwoo/qcddata/DWF/2+1f/24nt64/IWASAKI+DSDR/b1.633/ls24/M1.8/ms0.0850/ml0.00107";
+  const std::string parent_path =
+      get_env("HOME") +
+      "/hlbl/ljin/chulwoo/qcddata/DWF/2+1f/24nt64/IWASAKI+DSDR/b1.633/ls24/"
+      "M1.8/ms0.0850/ml0.00107";
   const std::string fname = "/ckpoint_lat.";
   std::string path;
-  path = parent_path +
-    "/evol0/configurations"
-    + fname + show(traj);
+  path = parent_path + "/evol0/configurations" + fname + show(traj);
   if (does_file_exist_sync_node(path)) {
     return path;
   }
-  path = parent_path +
-    "/evol1/configurations"
-    + fname + show(traj);
+  path = parent_path + "/evol1/configurations" + fname + show(traj);
   if (does_file_exist_sync_node(path)) {
     return path;
   }
-  path = parent_path +
-    "/evol2/configurations"
-    + fname + show(traj);
+  path = parent_path + "/evol2/configurations" + fname + show(traj);
   if (does_file_exist_sync_node(path)) {
     return path;
   }
   return "";
 }
 
-inline ConfigurationsInfo make_configurations_info_24c64_dsdr_mu0p00107_ms0p0850(const bool make_cis = true)
+inline ConfigurationsInfo
+make_configurations_info_24c64_dsdr_mu0p00107_ms0p0850(
+    const bool make_cis = true)
 {
   ConfigurationsInfo csi;
   csi.tag = "24D";
@@ -481,14 +516,19 @@ inline ConfigurationsInfo make_configurations_info_24c64_dsdr_mu0p00107_ms0p0850
     }
   }
   if (make_cis) {
-    for (int traj = 2280; traj >= 1000 ; traj -= 10) {
+    for (int traj = 2280; traj >= 1000; traj -= 10) {
       ConfigurationInfo ci;
       ci.csi.init(csi);
       ci.traj = traj;
       ci.path = find_conf_24c64_dsdr_mu0p0017_ms0p0850(traj);
       ci.conf_format = "cps";
-      // ci.low_modes_path = get_env("HOME") + ssprintf("/application/Public/Muon-GM2-cc/jobs/24D/lancs/qcdtraj=%d/huge-data-lanc", traj);
-      ci.low_modes_path = get_env("HOME") + ssprintf("/hlbl/clehner/evec-cache/24D/job-%05d/lanczos.output", traj);
+      // ci.low_modes_path = get_env("HOME") +
+      // ssprintf("/application/Public/Muon-GM2-cc/jobs/24D/lancs/qcdtraj=%d/huge-data-lanc",
+      // traj);
+      ci.low_modes_path =
+          get_env("HOME") +
+          ssprintf("/hlbl/clehner/evec-cache/24D/job-%05d/lanczos.output",
+                   traj);
       if (ci.path != "") {
         csi.infos.push_back(ci);
       }
@@ -497,7 +537,9 @@ inline ConfigurationsInfo make_configurations_info_24c64_dsdr_mu0p00107_ms0p0850
   return csi;
 }
 
-inline ConfigurationsInfo make_configurations_info_24c64_dsdr_mu0p00107_ms0p0850_unitary(const bool make_cis = true)
+inline ConfigurationsInfo
+make_configurations_info_24c64_dsdr_mu0p00107_ms0p0850_unitary(
+    const bool make_cis = true)
 {
   ConfigurationsInfo csi;
   csi.tag = "24D_unitary";
@@ -505,7 +547,7 @@ inline ConfigurationsInfo make_configurations_info_24c64_dsdr_mu0p00107_ms0p0850
   csi.fas.push_back(FermionAction(0.00107, 24, 1.8, 4.0));
   csi.fas.push_back(FermionAction(0.0850, 24, 1.8, 4.0));
   if (make_cis) {
-    for (int traj = 2280; traj >= 1000 ; traj -= 40) {
+    for (int traj = 2280; traj >= 1000; traj -= 40) {
       ConfigurationInfo ci;
       ci.csi.init(csi);
       ci.traj = traj;
@@ -519,7 +561,9 @@ inline ConfigurationsInfo make_configurations_info_24c64_dsdr_mu0p00107_ms0p0850
   return csi;
 }
 
-inline ConfigurationsInfo make_configurations_info_32c64_dsdr_mu0p00107_ms0p0850(const bool make_cis = true)
+inline ConfigurationsInfo
+make_configurations_info_32c64_dsdr_mu0p00107_ms0p0850(
+    const bool make_cis = true)
 {
   ConfigurationsInfo csi;
   csi.tag = "32D";
@@ -552,15 +596,22 @@ inline ConfigurationsInfo make_configurations_info_32c64_dsdr_mu0p00107_ms0p0850
     }
   }
   if (make_cis) {
-    for (int traj = 1080 ; traj >= 680 ; traj -= 20) {
+    for (int traj = 1080; traj >= 680; traj -= 20) {
       ConfigurationInfo ci;
       ci.csi.init(csi);
       ci.traj = traj;
-      ci.path = ssprintf("/projects/LatticeQCD_3/chulwoo"
-          "/qcddata/DWF/2+1f/32nt64/IWASAKI+DSDR/b1.633/ls24/M1.8/ms0.0850/ml0.00107/evol0"
-          "/configurations/ckpoint_lat.%d", traj);
+      ci.path = ssprintf(
+          "/projects/LatticeQCD_3/chulwoo"
+          "/qcddata/DWF/2+1f/32nt64/IWASAKI+DSDR/b1.633/ls24/M1.8/ms0.0850/"
+          "ml0.00107/evol0"
+          "/configurations/ckpoint_lat.%d",
+          traj);
       ci.conf_format = "cps";
-      ci.low_modes_path = get_env("HOME") + ssprintf("/application/Public/Muon-GM2-cc/jobs/32D/lancs/qcdtraj=%d/huge-data-clanc", traj);
+      ci.low_modes_path =
+          get_env("HOME") + ssprintf(
+                                "/application/Public/Muon-GM2-cc/jobs/32D/"
+                                "lancs/qcdtraj=%d/huge-data-clanc",
+                                traj);
       if (ci.path != "") {
         csi.infos.push_back(ci);
       }
@@ -569,23 +620,28 @@ inline ConfigurationsInfo make_configurations_info_32c64_dsdr_mu0p00107_ms0p0850
   return csi;
 }
 
-inline ConfigurationsInfo make_configurations_info_32c64_dsdr_mu0p0001_ms0p045(const bool make_cis = true)
+inline ConfigurationsInfo make_configurations_info_32c64_dsdr_mu0p0001_ms0p045(
+    const bool make_cis = true)
 {
   ConfigurationsInfo csi;
   csi.tag = "32Dfine";
   csi.total_site = Coordinate(32, 32, 32, 64);
-  csi.fas.push_back(FermionAction(0.0001, 12, 1.8, 32.0/12.0));
-  csi.fas.push_back(FermionAction(0.045, 12, 1.8, 32.0/12.0));
+  csi.fas.push_back(FermionAction(0.0001, 12, 1.8, 32.0 / 12.0));
+  csi.fas.push_back(FermionAction(0.045, 12, 1.8, 32.0 / 12.0));
   // csi.la = LancArg(5.5, 0.02, 200, 200, 150, 50);
   csi.la = LancArg(15.0, 0.22, 200, 2600, 2100, 2000);
   if (make_cis) {
-    for (int traj = 1080 ; traj >= 680 ; traj -= 20) {
+    for (int traj = 1080; traj >= 680; traj -= 20) {
       ConfigurationInfo ci;
       ci.csi.init(csi);
       ci.traj = traj;
       ci.path = ssprintf("", traj);
       ci.conf_format = "cps";
-      ci.low_modes_path = get_env("HOME") + ssprintf("/application/Public/Muon-GM2-cc/jobs/32D/lancs/qcdtraj=%d/huge-data-clanc", traj);
+      ci.low_modes_path =
+          get_env("HOME") + ssprintf(
+                                "/application/Public/Muon-GM2-cc/jobs/32D/"
+                                "lancs/qcdtraj=%d/huge-data-clanc",
+                                traj);
       if (ci.path != "") {
         csi.infos.push_back(ci);
       }
@@ -596,7 +652,8 @@ inline ConfigurationsInfo make_configurations_info_32c64_dsdr_mu0p0001_ms0p045(c
 
 inline std::string find_conf_48c96_mu0p00078_ms0p0362(const int traj)
 {
-  const std::string parent_path = get_env("HOME") + "/qcdarchive-ljin/48nt96-ainv1.73gev-mpi139mev-ls24";
+  const std::string parent_path =
+      get_env("HOME") + "/qcdarchive-ljin/48nt96-ainv1.73gev-mpi139mev-ls24";
   const std::string fname = "/ckpoint_lat.";
   std::string path;
   path = parent_path + fname + show(traj);
@@ -606,7 +663,8 @@ inline std::string find_conf_48c96_mu0p00078_ms0p0362(const int traj)
   return "";
 }
 
-inline ConfigurationsInfo make_configurations_info_48c96_mu0p00078_ms0p0362(const bool make_cis = true)
+inline ConfigurationsInfo make_configurations_info_48c96_mu0p00078_ms0p0362(
+    const bool make_cis = true)
 {
   ConfigurationsInfo csi;
   csi.tag = "48I";
@@ -627,20 +685,24 @@ inline ConfigurationsInfo make_configurations_info_48c96_mu0p00078_ms0p0362(cons
     fa.bs[5] = 2.8654191667525488e+00;
     fa.bs[6] = 4.4659153528626341e+00;
     fa.bs[7] = 5.5498080139636414e+00;
-    fa.bs[8] = std::complex<double>(4.9320961582039766e+00, -3.5559998543638791e+00);
-    fa.bs[9] = std::complex<double>(4.9320961582039766e+00, 3.5559998543638791e+00);
+    fa.bs[8] =
+        std::complex<double>(4.9320961582039766e+00, -3.5559998543638791e+00);
+    fa.bs[9] =
+        std::complex<double>(4.9320961582039766e+00, 3.5559998543638791e+00);
     for (int i = 0; i < fa.ls; i++) {
       fa.cs[i] = fa.bs[i] - 1.0;
     }
   }
   if (make_cis) {
-    for (int traj = 2300; traj >= 1000 ; traj -= 10) {
+    for (int traj = 2300; traj >= 1000; traj -= 10) {
       ConfigurationInfo ci;
       ci.csi.init(csi);
       ci.traj = traj;
       ci.path = find_conf_48c96_mu0p00078_ms0p0362(traj);
       ci.conf_format = "cps";
-      ci.low_modes_path = get_env("HOME") + ssprintf("/hlbl/clehner/evec-cache/48I/ckpoint_lat.%d.evecs", traj);
+      ci.low_modes_path =
+          get_env("HOME") +
+          ssprintf("/hlbl/clehner/evec-cache/48I/ckpoint_lat.%d.evecs", traj);
       if (ci.path != "") {
         csi.infos.push_back(ci);
       }
@@ -649,7 +711,8 @@ inline ConfigurationsInfo make_configurations_info_48c96_mu0p00078_ms0p0362(cons
   return csi;
 }
 
-inline ConfigurationsInfo make_configurations_info_milc(const bool make_cis = true)
+inline ConfigurationsInfo make_configurations_info_milc(
+    const bool make_cis = true)
 {
   ConfigurationsInfo csi;
   csi.total_site = Coordinate(24, 24, 24, 64);
@@ -661,9 +724,10 @@ inline ConfigurationsInfo make_configurations_info_milc(const bool make_cis = tr
       ci.csi.init(csi);
       ci.traj = traj;
       ci.path = get_env("HOME") +
-        "/qcdarchive-milc/24c64"
-        "/2plus1plus1"
-        "/l2464f211b600m0102m0509m635a.hyp." + show(traj);
+                "/qcdarchive-milc/24c64"
+                "/2plus1plus1"
+                "/l2464f211b600m0102m0509m635a.hyp." +
+                show(traj);
       ci.conf_format = "milc";
       if (does_file_exist_sync_node(ci.path)) {
         csi.infos.push_back(ci);

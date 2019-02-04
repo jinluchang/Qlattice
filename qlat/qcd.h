@@ -1,7 +1,7 @@
 #pragma once
 
-#include <qlat/matrix.h>
 #include <qlat/field.h>
+#include <qlat/matrix.h>
 
 #ifndef QLAT_FFTW_OFF
 #include <qlat/field-fft.h>
@@ -12,13 +12,12 @@
 #include <eigen3/Eigen/Eigen>
 
 #include <cmath>
-#include <string>
 #include <sstream>
+#include <string>
 
 QLAT_START_NAMESPACE
 
-struct GaugeField : FieldM<ColorMatrix,4>
-{
+struct GaugeField : FieldM<ColorMatrix, 4> {
   virtual const std::string& cname()
   {
     static const std::string s = "GaugeField";
@@ -26,8 +25,7 @@ struct GaugeField : FieldM<ColorMatrix,4>
   }
 };
 
-struct Propagator4d : FieldM<WilsonMatrix,1>
-{
+struct Propagator4d : FieldM<WilsonMatrix, 1> {
   virtual const std::string& cname()
   {
     static const std::string s = "Propagator4d";
@@ -35,8 +33,7 @@ struct Propagator4d : FieldM<WilsonMatrix,1>
   }
 };
 
-struct FermionField4d : FieldM<WilsonVector,1>
-{
+struct FermionField4d : FieldM<WilsonVector, 1> {
   virtual const std::string& cname()
   {
     static const std::string s = "FermionField4d";
@@ -44,8 +41,7 @@ struct FermionField4d : FieldM<WilsonVector,1>
   }
 };
 
-struct FermionField5d : Field<WilsonVector>
-{
+struct FermionField5d : Field<WilsonVector> {
   virtual const std::string& cname()
   {
     static const std::string s = "FermionField5d";
@@ -68,7 +64,7 @@ inline void unitarize(Field<ColorMatrix>& gf)
 }
 
 inline double gf_avg_plaq_no_comm(const GaugeField& gf)
-  // assume proper communication is done
+// assume proper communication is done
 {
   TIMER("gf_avg_plaq_no_comm");
   const Geometry& geo = gf.geo;
@@ -89,7 +85,8 @@ inline double gf_avg_plaq_no_comm(const GaugeField& gf)
       double avg_plaq = 0.0;
       for (int m1 = 1; m1 < DIMN; ++m1) {
         for (int m2 = 0; m2 < m1; ++m2) {
-          ColorMatrix cm = v[m1] * vms[m1][m2] * matrix_adjoint(v[m2] * vms[m2][m1]);
+          ColorMatrix cm =
+              v[m1] * vms[m1][m2] * matrix_adjoint(v[m2] * vms[m2][m1]);
           avg_plaq += matrix_trace(cm).real() / NUM_COLOR;
           if (std::isnan(avg_plaq)) {
             fdisplayln(stdout, ssprintf("WARNING: isnan in gf_avg_plaq"));
@@ -97,7 +94,7 @@ inline double gf_avg_plaq_no_comm(const GaugeField& gf)
           }
         }
       }
-      avg_plaq /= DIMN * (DIMN-1) / 2;
+      avg_plaq /= DIMN * (DIMN - 1) / 2;
       sum_avg_plaq += avg_plaq;
     }
     sums[omp_get_thread_num()] = sum_avg_plaq;
@@ -115,14 +112,14 @@ inline double gf_avg_plaq(const GaugeField& gf)
 {
   TIMER("gf_avg_plaq");
   GaugeField gf1;
-  gf1.init(geo_resize(gf.geo, Coordinate(0,0,0,0), Coordinate(1,1,1,1)));
+  gf1.init(geo_resize(gf.geo, Coordinate(0, 0, 0, 0), Coordinate(1, 1, 1, 1)));
   gf1 = gf;
   refresh_expanded(gf1);
   return gf_avg_plaq_no_comm(gf1);
 }
 
 inline double gf_avg_spatial_plaq_no_comm(const GaugeField& gf)
-  // assume proper communication is done
+// assume proper communication is done
 {
   TIMER("gf_avg_spatial_plaq_no_comm");
   const Geometry& geo = gf.geo;
@@ -134,8 +131,8 @@ inline double gf_avg_spatial_plaq_no_comm(const GaugeField& gf)
     for (long index = 0; index < geo.local_volume(); ++index) {
       Coordinate xl = geo.coordinate_from_index(index);
       const Vector<ColorMatrix> v = gf.get_elems_const(xl);
-      std::vector<Vector<ColorMatrix> > vms(DIMN-1);
-      for (int m = 0; m < DIMN-1; ++m) {
+      std::vector<Vector<ColorMatrix> > vms(DIMN - 1);
+      for (int m = 0; m < DIMN - 1; ++m) {
         xl[m] += 1;
         vms[m] = gf.get_elems_const(xl);
         xl[m] -= 1;
@@ -143,7 +140,8 @@ inline double gf_avg_spatial_plaq_no_comm(const GaugeField& gf)
       double avg_plaq = 0.0;
       for (int m1 = 1; m1 < 3; ++m1) {
         for (int m2 = 0; m2 < m1; ++m2) {
-          ColorMatrix cm = v[m1] * vms[m1][m2] * matrix_adjoint(v[m2] * vms[m2][m1]);
+          ColorMatrix cm =
+              v[m1] * vms[m1][m2] * matrix_adjoint(v[m2] * vms[m2][m1]);
           avg_plaq += matrix_trace(cm).real() / NUM_COLOR;
           if (std::isnan(avg_plaq)) {
             fdisplayln(stdout, ssprintf("WARNING: isnan in gf_avg_plaq"));
@@ -151,7 +149,7 @@ inline double gf_avg_spatial_plaq_no_comm(const GaugeField& gf)
           }
         }
       }
-      avg_plaq /= (DIMN-1) * (DIMN-2) / 2;
+      avg_plaq /= (DIMN - 1) * (DIMN - 2) / 2;
       sum_avg_plaq += avg_plaq;
     }
     sums[omp_get_thread_num()] = sum_avg_plaq;
@@ -169,7 +167,7 @@ inline double gf_avg_spatial_plaq(const GaugeField& gf)
 {
   TIMER("gf_avg_spatial_plaq");
   GaugeField gf1;
-  gf1.init(geo_resize(gf.geo, Coordinate(0,0,0,0), Coordinate(1,1,1,0)));
+  gf1.init(geo_resize(gf.geo, Coordinate(0, 0, 0, 0), Coordinate(1, 1, 1, 0)));
   gf1 = gf;
   refresh_expanded(gf1);
   return gf_avg_spatial_plaq_no_comm(gf1);
@@ -205,8 +203,7 @@ inline double gf_avg_link_trace(const GaugeField& gf)
   return sum;
 }
 
-struct GaugeFieldInfo
-{
+struct GaugeFieldInfo {
   std::string ensemble_id;
   std::string ensemble_label;
   std::string creator;
@@ -222,7 +219,7 @@ struct GaugeFieldInfo
     ensemble_id = "42";
     ensemble_label = "default-ensemble";
     creator = "Qlat";
-    time_t now = std::time(NULL);	
+    time_t now = std::time(NULL);
     date = shows(std::ctime(&now));
     sequence_num = 0;
     beta = 0.0;
@@ -233,7 +230,8 @@ struct GaugeFieldInfo
   }
 };
 
-inline std::string make_gauge_field_header(const GaugeFieldInfo& gfi = GaugeFieldInfo())
+inline std::string make_gauge_field_header(
+    const GaugeFieldInfo& gfi = GaugeFieldInfo())
 {
   std::ostringstream out;
   const std::string todo = "NOT yet implemented";
@@ -252,14 +250,15 @@ inline std::string make_gauge_field_header(const GaugeFieldInfo& gfi = GaugeFiel
   out << "ARCHIVE_DATE = " << gfi.date;
   out << "ENSEMBLE_ID = " << gfi.ensemble_id << std::endl;
   out << "ENSEMBLE_LABEL = " << gfi.ensemble_label << std::endl;
-  out << ssprintf("BETA = %.12f", gfi.beta) << std::endl; 
+  out << ssprintf("BETA = %.12f", gfi.beta) << std::endl;
   out << ssprintf("SEQUENCE_NUMBER = %ld", gfi.sequence_num) << std::endl;
   out << "FLOATING_POINT = IEEE64BIG" << std::endl;
   out << "END_HEADER" << std::endl;
   return out.str();
 }
 
-inline void save_gauge_field(const GaugeField& gf, const std::string& path, const GaugeFieldInfo& gfi_ = GaugeFieldInfo())
+inline void save_gauge_field(const GaugeField& gf, const std::string& path,
+                             const GaugeFieldInfo& gfi_ = GaugeFieldInfo())
 {
   TIMER_VERBOSE_FLOPS("save_gauge_field");
   qassert(is_initialized(gf));
@@ -288,7 +287,7 @@ inline void save_gauge_field(const GaugeField& gf, const std::string& path, cons
 }
 
 inline long load_gauge_field(GaugeField& gf, const std::string& path)
-  // assuming gf already initialized and have correct size;
+// assuming gf already initialized and have correct size;
 {
   TIMER_VERBOSE_FLOPS("load_gauge_field");
   displayln_info(fname + ssprintf(": '%s'.", path.c_str()));
@@ -296,7 +295,8 @@ inline long load_gauge_field(GaugeField& gf, const std::string& path)
   const Geometry& geo = gf.geo;
   FieldM<std::array<Complex, 6>, 4> gft;
   gft.init(geo);
-  const long file_size = serial_read_field(gft, path, -get_data_size(gft) * get_num_node(), SEEK_END);
+  const long file_size = serial_read_field(
+      gft, path, -get_data_size(gft) * get_num_node(), SEEK_END);
   if (0 == file_size) {
     return 0;
   }
@@ -316,7 +316,7 @@ inline long load_gauge_field(GaugeField& gf, const std::string& path)
 }
 
 inline long load_gauge_field_par(GaugeField& gf, const std::string& path)
-  // assuming gf already initialized and have correct size;
+// assuming gf already initialized and have correct size;
 {
   TIMER_VERBOSE_FLOPS("load_gauge_field_par");
   displayln_info(fname + ssprintf(": '%s'.", path.c_str()));
@@ -324,7 +324,8 @@ inline long load_gauge_field_par(GaugeField& gf, const std::string& path)
   const Geometry& geo = gf.geo;
   FieldM<std::array<Complex, 6>, 4> gft;
   gft.init(geo);
-  const long file_size = serial_read_field_par(gft, path, -get_data_size(gft) * get_num_node(), SEEK_END);
+  const long file_size = serial_read_field_par(
+      gft, path, -get_data_size(gft) * get_num_node(), SEEK_END);
   if (file_size == 0) {
     return 0;
   }
@@ -344,7 +345,7 @@ inline long load_gauge_field_par(GaugeField& gf, const std::string& path)
 }
 
 inline long load_gauge_field_cps3x3(GaugeField& gf, const std::string& path)
-  // assuming gf already initialized and have correct size;
+// assuming gf already initialized and have correct size;
 {
   TIMER_VERBOSE_FLOPS("load_gauge_field_cps3x3");
   displayln_info(fname + ssprintf(": '%s'.", path.c_str()));
@@ -352,7 +353,8 @@ inline long load_gauge_field_cps3x3(GaugeField& gf, const std::string& path)
   const Geometry& geo = gf.geo;
   FieldM<std::array<Complex, 9>, 4> gft;
   gft.init(geo);
-  const long file_size = serial_read_field(gft, path, -get_data_size(gft) * get_num_node(), SEEK_END);
+  const long file_size = serial_read_field(
+      gft, path, -get_data_size(gft) * get_num_node(), SEEK_END);
   if (file_size == 0) {
     return 0;
   }
@@ -370,8 +372,9 @@ inline long load_gauge_field_cps3x3(GaugeField& gf, const std::string& path)
   return file_size;
 }
 
-inline long load_gauge_field_milc(GaugeField& gf, const std::string& path, const bool par_read = false)
-  // assuming gf already initialized and have correct size;
+inline long load_gauge_field_milc(GaugeField& gf, const std::string& path,
+                                  const bool par_read = false)
+// assuming gf already initialized and have correct size;
 {
   TIMER_VERBOSE_FLOPS("load_gauge_field_milc");
   displayln_info(fname + ssprintf(": '%s'.", path.c_str()));
@@ -397,15 +400,15 @@ inline long load_gauge_field_milc(GaugeField& gf, const std::string& path, const
     Vector<ColorMatrix> v = gf.get_elems(xl);
     for (int m = 0; m < geo.multiplicity; ++m) {
       // assign_truncate(v[m], vt[m]);
-      v[m](0,0) = vt[m][0*3 + 0];
-      v[m](0,1) = vt[m][0*3 + 1];
-      v[m](0,2) = vt[m][0*3 + 2];
-      v[m](1,0) = vt[m][1*3 + 0];
-      v[m](1,1) = vt[m][1*3 + 1];
-      v[m](1,2) = vt[m][1*3 + 2];
-      v[m](2,0) = vt[m][2*3 + 0];
-      v[m](2,1) = vt[m][2*3 + 1];
-      v[m](2,2) = vt[m][2*3 + 2];
+      v[m](0, 0) = vt[m][0 * 3 + 0];
+      v[m](0, 1) = vt[m][0 * 3 + 1];
+      v[m](0, 2) = vt[m][0 * 3 + 2];
+      v[m](1, 0) = vt[m][1 * 3 + 0];
+      v[m](1, 1) = vt[m][1 * 3 + 1];
+      v[m](1, 2) = vt[m][1 * 3 + 2];
+      v[m](2, 0) = vt[m][2 * 3 + 0];
+      v[m](2, 1) = vt[m][2 * 3 + 1];
+      v[m](2, 2) = vt[m][2 * 3 + 2];
       unitarize(v[m]);
     }
   }

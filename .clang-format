@@ -1,0 +1,7 @@
+---
+BasedOnStyle: Google
+BreakBeforeBraces: Linux
+PointerAlignment: Left
+Standard: Cpp03
+
+...

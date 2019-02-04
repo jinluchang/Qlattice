@@ -1,7 +1,7 @@
 #include <qlat/qlat.h>
 
-#include <iostream>
 #include <complex>
+#include <iostream>
 
 using namespace qlat;
 using namespace std;
@@ -20,7 +20,8 @@ void test1()
   Coordinate total_site(4, 4, 4, 8);
   Geometry geo;
   geo.init(total_site, 1);
-  Coordinate total_siteHalf; coordinateHalf(total_siteHalf, total_site);
+  Coordinate total_siteHalf;
+  coordinateHalf(total_siteHalf, total_site);
   Geometry geoHalf;
   geoHalf.init(total_siteHalf, 1);
   const int seed = 1231;
@@ -31,15 +32,15 @@ void test1()
   splitRngState(rs, rs, traj);
   RngField rf;
   rf.init(geo, rs);
-  FieldM<Complex,1> af;
-  FieldM<double,1> sumf;
-  FieldM<double,1> sigma2f;
+  FieldM<Complex, 1> af;
+  FieldM<double, 1> sumf;
+  FieldM<double, 1> sigma2f;
   af.init(geoHalf);
   sumf.init(geoHalf);
   sigma2f.init(geoHalf);
   double gsum = 0.0;
   double gsigma2 = 0.0;
-  const int Ni = 2*2*2*2;
+  const int Ni = 2 * 2 * 2 * 2;
   const int Ntake = 1;
   const int Nb = geo.total_volume() / Ni;
   const int Ntraj = 16;
@@ -49,7 +50,8 @@ void test1()
     set_zero(sigma2f);
     for (long index = 0; index < geo.local_volume(); ++index) {
       Coordinate x = geo.coordinate_from_index(index);
-      Coordinate xh; coordinateHalf(xh, x);
+      Coordinate xh;
+      coordinateHalf(xh, x);
       RngState& rs = rf.get_elem(x);
       af.get_elem(xh) += polar(1.0, u_rand_gen(rs, PI, -PI));
     }
@@ -67,14 +69,16 @@ void test1()
       cout << "traj     : " << traj << endl;
       cout << "Expected : " << Ni * Ntake << endl;
       cout << "Mean     : " << sum / Nb << endl;
-      cout << "Var      : " << sqrt(sigma2 / Nb - sqr(sum / Nb)) / sqrt(Nb-1) << endl;
+      cout << "Var      : " << sqrt(sigma2 / Nb - sqr(sum / Nb)) / sqrt(Nb - 1)
+           << endl;
     }
   }
   if (0 == get_id_node()) {
     cout << "# Final" << endl;
     cout << "Expected : " << Ni * Ntake << endl;
     cout << "Mean     : " << gsum / Ntraj << endl;
-    cout << "Var      : " << sqrt(gsigma2 / Ntraj - sqr(gsum / Ntraj)) / sqrt(Ntraj-1) << endl;
+    cout << "Var      : "
+         << sqrt(gsigma2 / Ntraj - sqr(gsum / Ntraj)) / sqrt(Ntraj - 1) << endl;
   }
 }
 

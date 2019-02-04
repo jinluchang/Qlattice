@@ -1,7 +1,7 @@
 #include <qlat/qlat.h>
 
-#include <iostream>
 #include <complex>
+#include <iostream>
 
 using namespace qlat;
 using namespace std;
@@ -50,12 +50,14 @@ void simple_tests()
   field_shift(gf2, gf1, c2);
   field_shift(gf1, gf, c1 + c2);
   gf2 -= gf1;
-  displayln_info(ssprintf("orig norm: %E ; shift norm %E ; diff norm: %E", norm(gf), norm(gf1), norm(gf2)));
+  displayln_info(ssprintf("orig norm: %E ; shift norm %E ; diff norm: %E",
+                          norm(gf), norm(gf1), norm(gf2)));
 }
 
 void show_matrix()
 {
-  const std::array<SpinMatrix,16>& cps_gms = SpinMatrixConstants::get_cps_gms();
+  const std::array<SpinMatrix, 16>& cps_gms =
+      SpinMatrixConstants::get_cps_gms();
   for (int i = 0; i < 16; ++i) {
     displayln_info(ssprintf("cps_gms[%d] =\n", i) + show(cps_gms[i]));
   }

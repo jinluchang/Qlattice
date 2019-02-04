@@ -39,10 +39,10 @@ inline crc32_t crc32(const void* smessage, const long nBytes)
 }
 
 inline crc32_t crc32_shift(const crc32_t initial, const long offset)
-  // shift initial left by offset length
-  // if offset == 0 then return initial
-  // offset should be the length of the part after the initial part (which evaluate to crc initial)
-  // xor all the results gives the final crc32
+// shift initial left by offset length
+// if offset == 0 then return initial
+// offset should be the length of the part after the initial part (which
+// evaluate to crc initial) xor all the results gives the final crc32
 {
   return crc32_combine(initial, 0, offset);
 }
@@ -78,7 +78,7 @@ inline crc32_t crc32_par(const void* smessage, const long nBytes)
     crcs[id] = crc32_shift(crc, size - end);
 #pragma omp barrier
     if (0 == id) {
-      for (int i = 0 ; i < nthreads; ++i) {
+      for (int i = 0; i < nthreads; ++i) {
         ret ^= crcs[i];
       }
     }
@@ -102,13 +102,15 @@ inline void crc32_check()
 {
   const char* test = "123456789";
   const crc32_t check_value = 0xCBF43926;
-  displayln_info(ssprintf("The check value for the %s standard is 0x%X", "CRC32", check_value));
+  displayln_info(ssprintf("The check value for the %s standard is 0x%X",
+                          "CRC32", check_value));
   const crc32_t v1 = crc32(test, std::strlen(test));
   displayln_info(ssprintf("The crc32() of \"123456789\" is 0x%X", v1));
   const crc32_t v2 = crc32(crc32(test, 3), test + 3, 6);
   displayln_info(ssprintf("The crc32() of \"123456789\" is 0x%X (concat)", v2));
   const crc32_t v3 = crc32_shift(crc32(test, 3), 6) ^ crc32(test + 3, 6);
-  displayln_info(ssprintf("The crc32() of \"123456789\" is 0x%X (crc32_shift)", v3));
+  displayln_info(
+      ssprintf("The crc32() of \"123456789\" is 0x%X (crc32_shift)", v3));
   qassert(check_value == v1);
   qassert(check_value == v2);
   qassert(check_value == v3);

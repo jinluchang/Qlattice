@@ -1,7 +1,7 @@
 #include <qlat/qlat.h>
 
-#include <iostream>
 #include <complex>
+#include <iostream>
 
 using namespace std;
 using namespace qlat;
@@ -54,9 +54,7 @@ void test2a()
   cout << (double)count / limit << endl;
 }
 
-inline double sqr(double x) {
-  return x*x;
-}
+inline double sqr(double x) { return x * x; }
 
 void test3()
 {
@@ -77,7 +75,7 @@ void test3()
         u_rand_gen(rs);
       }
       for (int i = 0; i < Ntake; i++) {
-        a += polar(1.0, u_rand_gen(rs, PI,-PI));
+        a += polar(1.0, u_rand_gen(rs, PI, -PI));
       }
     }
     sum += norm(a);
@@ -85,7 +83,8 @@ void test3()
   }
   cout << "Expected : " << Ni * Ntake << endl;
   cout << "Mean     : " << sum / Nb << endl;
-  cout << "Var      : " << sqrt(sigma2 / Nb - sqr(sum / Nb)) / sqrt(Nb-1) << endl;
+  cout << "Var      : " << sqrt(sigma2 / Nb - sqr(sum / Nb)) / sqrt(Nb - 1)
+       << endl;
 }
 
 void test4()
@@ -107,7 +106,7 @@ void test4()
         u_rand_gen(rsi);
       }
       for (int i = 0; i < Ntake; i++) {
-        a += polar(1.0, u_rand_gen(rsi, PI,-PI));
+        a += polar(1.0, u_rand_gen(rsi, PI, -PI));
       }
     }
     sum += norm(a);
@@ -115,7 +114,8 @@ void test4()
   }
   cout << "Expected : " << Ni * Ntake << endl;
   cout << "Mean     : " << sum / Nb << endl;
-  cout << "Var      : " << sqrt(sigma2 / Nb - sqr(sum / Nb)) / sqrt(Nb-1) << endl;
+  cout << "Var      : " << sqrt(sigma2 / Nb - sqr(sum / Nb)) / sqrt(Nb - 1)
+       << endl;
 }
 
 void profile()

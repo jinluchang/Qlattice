@@ -6,13 +6,13 @@
 
 #include <endian.h>
 
-#include <vector>
-#include <iostream>
+#include <cstdarg>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <cstdarg>
 #include <fstream>
+#include <iostream>
+#include <vector>
 
 QLAT_START_NAMESPACE
 
@@ -26,32 +26,20 @@ T sqr(const T& x)
   return x * x;
 }
 
-inline void set_zero(double& x)
-{
-  x = 0;
-}
+inline void set_zero(double& x) { x = 0; }
 
-inline void set_zero(Complex& x)
-{
-  x = 0;
-}
+inline void set_zero(Complex& x) { x = 0; }
 
 template <class M, unsigned long N>
-void set_zero(std::array<M,N>& arr)
+void set_zero(std::array<M, N>& arr)
 {
   long size = N * sizeof(M);
   std::memset(arr.data(), 0, size);
 }
 
-inline void set_unit(double& x, const double& coef = 1.0)
-{
-  x = coef;
-}
+inline void set_unit(double& x, const double& coef = 1.0) { x = coef; }
 
-inline void set_unit(Complex& x, const Complex& coef = 1.0)
-{
-  x = coef;
-}
+inline void set_unit(Complex& x, const Complex& coef = 1.0) { x = coef; }
 
 template <class M>
 void set_zero(std::vector<M>& vec)
@@ -60,18 +48,12 @@ void set_zero(std::vector<M>& vec)
   std::memset(vec.data(), 0, size);
 }
 
-inline double norm(const double& x)
-{
-  return x*x;
-}
+inline double norm(const double& x) { return x * x; }
 
-inline double norm(const Complex& x)
-{
-  return std::norm(x);
-}
+inline double norm(const Complex& x) { return std::norm(x); }
 
 template <class T, size_t N>
-inline double norm(const std::array<T,N>& mm)
+inline double norm(const std::array<T, N>& mm)
 {
   double sum = 0.0;
   for (size_t i = 0; i < N; ++i) {
@@ -81,7 +63,7 @@ inline double norm(const std::array<T,N>& mm)
 }
 
 template <class M, unsigned long N>
-bool operator==(const std::array<M,N>& x, const std::array<M,N>& y)
+bool operator==(const std::array<M, N>& x, const std::array<M, N>& y)
 {
   return 0 == memcmp(x.data(), y.data(), N * sizeof(M));
 }
@@ -89,36 +71,21 @@ bool operator==(const std::array<M,N>& x, const std::array<M,N>& y)
 template <class M>
 bool operator==(const std::vector<M>& x, const std::vector<M>& y)
 {
-  return x.size() == y.size() && 0 == memcmp(x.data(), y.data(), x.size() * sizeof(M));
+  return x.size() == y.size() &&
+         0 == memcmp(x.data(), y.data(), x.size() * sizeof(M));
 }
 
 template <class M>
-struct Handle
-{
+struct Handle {
   M* p;
   //
-  Handle<M>()
-  {
-    init();
-  }
-  Handle<M>(M& obj)
-  {
-    init(obj);
-  }
+  Handle<M>() { init(); }
+  Handle<M>(M& obj) { init(obj); }
   //
-  void init()
-  {
-    p = NULL;
-  }
-  void init(M& obj)
-  {
-    p = (M*)&obj;
-  }
+  void init() { p = NULL; }
+  void init(M& obj) { p = (M*)&obj; }
   //
-  bool null() const
-  {
-    return p == NULL;
-  }
+  bool null() const { return p == NULL; }
   //
   M& operator()() const
   {
@@ -128,36 +95,17 @@ struct Handle
 };
 
 template <class M>
-struct ConstHandle
-{
+struct ConstHandle {
   const M* p;
   //
-  ConstHandle<M>()
-  {
-    init();
-  }
-  ConstHandle<M>(const M& obj)
-  {
-    init(obj);
-  }
-  ConstHandle<M>(const Handle<M>& h)
-  {
-    init(h());
-  }
+  ConstHandle<M>() { init(); }
+  ConstHandle<M>(const M& obj) { init(obj); }
+  ConstHandle<M>(const Handle<M>& h) { init(h()); }
   //
-  void init()
-  {
-    p = NULL;
-  }
-  void init(const M& obj)
-  {
-    p = (M*)&obj;
-  }
+  void init() { p = NULL; }
+  void init(const M& obj) { p = (M*)&obj; }
   //
-  bool null() const
-  {
-    return p == NULL;
-  }
+  bool null() const { return p == NULL; }
   //
   const M& operator()() const
   {
@@ -166,35 +114,23 @@ struct ConstHandle
   }
 };
 
-template <class M> struct Vector;
+template <class M>
+struct Vector;
 
 template <class M, int N>
-struct Array
-{
+struct Array {
   M* p;
   //
-  Array<M,N>()
-  {
-    p = NULL;
-  }
-  Array<M,N>(const Array<M,N>& arr)
-  {
-    p = arr.p;
-  }
-  Array<M,N>(const Vector<M>& vec)
+  Array<M, N>() { p = NULL; }
+  Array<M, N>(const Array<M, N>& arr) { p = arr.p; }
+  Array<M, N>(const Vector<M>& vec)
   {
     qassert(N == vec.size());
     p = vec.p;
   }
-  Array<M,N>(const std::array<M,N>& arr)
-  {
-    p = (M*)arr.data();
-  }
-  Array<M,N>(const M* p_)
-  {
-    p = (M*)p_;
-  }
-  Array<M,N>(const M& x)
+  Array<M, N>(const std::array<M, N>& arr) { p = (M*)arr.data(); }
+  Array<M, N>(const M* p_) { p = (M*)p_; }
+  Array<M, N>(const M& x)
   {
     qassert(N == 1);
     p = (M*)&x;
@@ -211,31 +147,19 @@ struct Array
     return p[i];
   }
   //
-  M* data()
-  {
-    return p;
-  }
-  const M* data() const
-  {
-    return p;
-  }
+  M* data() { return p; }
+  const M* data() const { return p; }
   //
-  int size() const
-  {
-    return N;
-  }
+  int size() const { return N; }
   //
-  long data_size() const
-  {
-    return N * sizeof(M);
-  }
+  long data_size() const { return N * sizeof(M); }
   //
-  const Array<M,N>& operator=(const Array<M,N>& v)
+  const Array<M, N>& operator=(const Array<M, N>& v)
   {
     p = v.p;
     return *this;
   }
-  const Array<M,N>& operator=(const Vector<M>& v)
+  const Array<M, N>& operator=(const Vector<M>& v)
   {
     qassert(N == v.size());
     p = v.p;
@@ -244,15 +168,14 @@ struct Array
 };
 
 template <class M, int N>
-void set_zero(Array<M,N> arr)
+void set_zero(Array<M, N> arr)
 {
   long size = N * sizeof(M);
   std::memset(arr.data(), 0, size);
 }
 
 template <class M>
-struct Vector
-{
+struct Vector {
   M* p;
   long n;
   //
@@ -267,13 +190,13 @@ struct Vector
     n = vec.n;
   }
   template <int N>
-  Vector<M>(const Array<M,N>& arr)
+  Vector<M>(const Array<M, N>& arr)
   {
     p = arr.p;
     n = N;
   }
   template <int N>
-  Vector<M>(const std::array<M,N>& arr)
+  Vector<M>(const std::array<M, N>& arr)
   {
     p = (M*)arr.data();
     n = arr.size();
@@ -305,24 +228,12 @@ struct Vector
     return p[i];
   }
   //
-  M* data()
-  {
-    return p;
-  }
-  const M* data() const
-  {
-    return p;
-  }
+  M* data() { return p; }
+  const M* data() const { return p; }
   //
-  long size() const
-  {
-    return n;
-  }
+  long size() const { return n; }
   //
-  long data_size() const
-  {
-    return n * sizeof(M);
-  }
+  long data_size() const { return n * sizeof(M); }
   //
   const Vector<M>& operator=(const Vector<M>& v)
   {
@@ -331,7 +242,7 @@ struct Vector
     return *this;
   }
   template <int N>
-  const Vector<M>& operator=(const Array<M,N>& v)
+  const Vector<M>& operator=(const Array<M, N>& v)
   {
     n = N;
     p = v.p;
@@ -346,7 +257,7 @@ void set_zero(Vector<M> vec)
 }
 
 template <class M, int N>
-Vector<M> get_data(Array<M,N> arr)
+Vector<M> get_data(Array<M, N> arr)
 {
   return Vector<M>(arr);
 }
@@ -386,25 +297,16 @@ Vector<M> get_data(const ConstHandle<M>& h)
   return Vector<M>(h.p, 1);
 }
 
-inline Vector<long> get_data(const long& x)
-{
-  return Vector<long>(&x, 1);
-}
+inline Vector<long> get_data(const long& x) { return Vector<long>(&x, 1); }
 
 inline Vector<double> get_data(const double& x)
 {
   return Vector<double>(&x, 1);
 }
 
-inline Vector<int> get_data(const int& x)
-{
-  return Vector<int>(&x, 1);
-}
+inline Vector<int> get_data(const int& x) { return Vector<int>(&x, 1); }
 
-inline Vector<float> get_data(const float& x)
-{
-  return Vector<float>(&x, 1);
-}
+inline Vector<float> get_data(const float& x) { return Vector<float>(&x, 1); }
 
 template <class M>
 Vector<double> get_data_double(const M& v)
@@ -425,20 +327,20 @@ long get_data_size(const M& x)
 }
 
 template <class M, int N>
-void assign(std::array<M,N>& vec, const Array<M,N>& src)
+void assign(std::array<M, N>& vec, const Array<M, N>& src)
 {
   memcpy(vec.data(), src.data(), src.data_size());
 }
 
 template <class M, int N>
-void assign(std::array<M,N>& vec, const Vector<M>& src)
+void assign(std::array<M, N>& vec, const Vector<M>& src)
 {
   qassert(N == src.size());
   memcpy(vec.data(), src.data(), src.data_size());
 }
 
 template <class M, int N>
-void assign(std::vector<M>& vec, const Array<M,N>& src)
+void assign(std::vector<M>& vec, const Array<M, N>& src)
 {
   vec.resize(src.size());
   memcpy(vec.data(), src.data(), src.data_size());
@@ -459,20 +361,20 @@ void assign(Vector<M> vec, const Vector<M>& src)
 }
 
 template <class M, int N>
-void assign(Vector<M> vec, const Array<M,N>& src)
+void assign(Vector<M> vec, const Array<M, N>& src)
 {
   qassert(vec.size() == N);
   memcpy(vec.data(), src.data(), src.data_size());
 }
 
 template <class M, int N>
-void assign(Array<M,N> vec, const Array<M,N>& src)
+void assign(Array<M, N> vec, const Array<M, N>& src)
 {
   memcpy(vec.data(), src.data(), src.data_size());
 }
 
 template <class M, int N>
-void assign(Array<M,N> vec, const Vector<M>& src)
+void assign(Array<M, N> vec, const Vector<M>& src)
 {
   qassert(src.size() == N);
   memcpy(vec.data(), src.data(), src.data_size());
@@ -492,7 +394,7 @@ void assign_truncate(M& x, const N& y)
 inline bool is_integer(const double& x)
 {
   const double diff = x - (long)x;
-  return 1e-6 > diff || diff > 1-1e-6;
+  return 1e-6 > diff || diff > 1 - 1e-6;
 }
 
 template <class M>
@@ -507,7 +409,7 @@ inline bool is_integer(const std::vector<M>& v)
 }
 
 template <class M, unsigned long N>
-inline bool is_integer(const std::array<M,N>& v)
+inline bool is_integer(const std::array<M, N>& v)
 {
   for (int i = 0; i < N; ++i) {
     if (!is_integer(v[i])) {
@@ -530,33 +432,20 @@ inline void random_permute(std::vector<M>& vec, RngState& rs)
   }
 }
 
-inline uint16_t flip_endian_16(uint16_t x)
-{
-  return
-    ((x >> 8)) |
-    ((x << 8));
-}
+inline uint16_t flip_endian_16(uint16_t x) { return ((x >> 8)) | ((x << 8)); }
 
 inline uint32_t flip_endian_32(uint32_t x)
 {
-  return
-    ((x >> 24)) |
-    ((x >>  8) & 0x0000FF00) |
-    ((x <<  8) & 0x00FF0000) |
-    ((x << 24));
+  return ((x >> 24)) | ((x >> 8) & 0x0000FF00) | ((x << 8) & 0x00FF0000) |
+         ((x << 24));
 }
 
 inline uint64_t flip_endian_64(uint64_t x)
 {
-  return
-    ((x >> 56)) |
-    ((x >> 40) & 0xFF00) |
-    ((x >> 24) & 0xFF0000) |
-    ((x >>  8) & 0xFF000000) |
-    ((x <<  8) & 0xFF00000000) |
-    ((x << 24) & 0xFF0000000000) |
-    ((x << 40) & 0xFF000000000000) |
-    ((x << 56));
+  return ((x >> 56)) | ((x >> 40) & 0xFF00) | ((x >> 24) & 0xFF0000) |
+         ((x >> 8) & 0xFF000000) | ((x << 8) & 0xFF00000000) |
+         ((x << 24) & 0xFF0000000000) | ((x << 40) & 0xFF000000000000) |
+         ((x << 56));
 }
 
 inline void flip_endian_16(void* str, const size_t len)
@@ -588,17 +477,15 @@ inline void flip_endian_64(void* str, const size_t len)
 
 inline bool is_big_endian()
 {
-#if defined(__BYTE_ORDER) && (__BYTE_ORDER != 0) && (__BYTE_ORDER == __BIG_ENDIAN)
+#if defined(__BYTE_ORDER) && (__BYTE_ORDER != 0) && \
+    (__BYTE_ORDER == __BIG_ENDIAN)
   return true;
 #else
   return false;
 #endif
 }
 
-inline bool is_little_endian()
-{
-  return not is_big_endian();
-}
+inline bool is_little_endian() { return not is_big_endian(); }
 
 inline void to_from_little_endian_16(void* str, const size_t len)
 {
@@ -685,26 +572,27 @@ void to_from_big_endian_64(Vector<M> v)
 }
 
 inline void from_big_endian_32(char* str, const size_t len)
-  // obsolete
+// obsolete
 {
   to_from_big_endian_32(str, len);
 }
 
 inline void from_big_endian_64(char* str, const size_t len)
-  // obsolete
+// obsolete
 {
   to_from_big_endian_64(str, len);
 }
 
 QLAT_END_NAMESPACE
 
-namespace qshow {
-
-inline std::string show(const qlat::Complex& x) {
+namespace qshow
+{
+inline std::string show(const qlat::Complex& x)
+{
   return ssprintf("(%24.17E + %24.17E j)", x.real(), x.imag());
 }
 
-}
+}  // namespace qshow
 
 #ifndef USE_NAMESPACE
 using namespace qshow;

@@ -1,7 +1,7 @@
 #include <qlat/qlat.h>
 
-#include <iostream>
 #include <complex>
+#include <iostream>
 #include <vector>
 
 using namespace qlat;
@@ -14,8 +14,10 @@ void test_get_data()
   const size_t size = 2 * 1024;
   std::vector<double> data_send(size), data_recv(size);
   for (int i = 0; i < 16; ++i) {
-    TIMER_VERBOSE_FLOPS("get_data"); // transferred bi-direction added in unit of Bytes
-    timer.flops += size * sizeof(double) * 2 * get_num_node() * 4; // 2: two direction, 4: four transfers
+    TIMER_VERBOSE_FLOPS(
+        "get_data");  // transferred bi-direction added in unit of Bytes
+    timer.flops += size * sizeof(double) * 2 * get_num_node() *
+                   4;  // 2: two direction, 4: four transfers
     get_data_dir(Vector<double>(data_recv), Vector<double>(data_send), 0);
     get_data_dir(Vector<double>(data_send), Vector<double>(data_recv), 0);
     get_data_dir(Vector<double>(data_recv), Vector<double>(data_send), 0);
@@ -43,7 +45,7 @@ void test_gf_fft()
       ColorMatrix& cm = v[m];
       for (int i = 0; i < NUM_COLOR; ++i) {
         for (int j = 0; j < NUM_COLOR; ++j) {
-          cm(i,j) = Complex(gRandGen(rsi), gRandGen(rsi));
+          cm(i, j) = Complex(gRandGen(rsi), gRandGen(rsi));
         }
       }
     }
@@ -66,7 +68,7 @@ void test_fft()
   RngState rs(getGlobalRngState(), "test_fft");
   Geometry geo;
   geo.init(total_site, 1);
-  FieldM<Complex,12> f;
+  FieldM<Complex, 12> f;
   f.init(geo);
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {

@@ -1,20 +1,19 @@
 #pragma once
 
 #include <qlat/config.h>
-#include <qlat/utils.h>
-#include <qlat/mpi.h>
 #include <qlat/geometry.h>
+#include <qlat/mpi.h>
+#include <qlat/utils.h>
 // #include <qlat/field-utils.h>
 
-#include <vector>
 #include <ctime>
 #include <fstream>
+#include <vector>
 
 QLAT_START_NAMESPACE
 
 template <class M>
-struct Field
-{
+struct Field {
   bool initialized;
   Geometry geo;
   std::vector<M> field;
@@ -67,10 +66,7 @@ struct Field
     }
   }
   //
-  Field<M>()
-  {
-    init();
-  }
+  Field<M>() { init(); }
   Field<M>(const Field<M>& f)
   {
     qassert(false == f.initialized);
@@ -122,12 +118,12 @@ struct Field
   M& get_elem(const Coordinate& x)
   {
     qassert(1 == geo.multiplicity);
-    return get_elem(x,0);
+    return get_elem(x, 0);
   }
   const M& get_elem(const Coordinate& x) const
   {
     qassert(1 == geo.multiplicity);
-    return get_elem(x,0);
+    return get_elem(x, 0);
   }
   //
   Vector<M> get_elems(const Coordinate& x)
@@ -137,8 +133,8 @@ struct Field
     return Vector<M>(&field[offset], geo.multiplicity);
   }
   Vector<M> get_elems_const(const Coordinate& x) const
-    // Be cautious about the const property
-    // 改不改靠自觉
+  // Be cautious about the const property
+  // 改不改靠自觉
   {
     if (not geo.is_on_node(x)) {
       displayln("Field::get_elems_const: x=" + show(x) + "\ngeo=" + show(geo));
@@ -149,14 +145,14 @@ struct Field
   }
   //
   Vector<M> get_elems(const long index)
-    // qassert(geo.is_only_local())
+  // qassert(geo.is_only_local())
   {
     return Vector<M>(&field[index * geo.multiplicity], geo.multiplicity);
   }
   Vector<M> get_elems_const(const long index) const
-    // Be cautious about the const property
-    // 改不改靠自觉
-    // qassert(geo.is_only_local())
+  // Be cautious about the const property
+  // 改不改靠自觉
+  // qassert(geo.is_only_local())
   {
     return Vector<M>(&field[index * geo.multiplicity], geo.multiplicity);
   }
@@ -184,7 +180,7 @@ const Field<M>& operator+=(Field<M>& f, const Field<M>& f1)
   for (long index = 0; index < geo.local_volume(); ++index) {
     Coordinate x = geo.coordinate_from_index(index);
     for (int m = 0; m < geo.multiplicity; ++m) {
-      f.get_elem(x,m) += f1.get_elem(x,m);
+      f.get_elem(x, m) += f1.get_elem(x, m);
     }
   }
   return f;
@@ -200,7 +196,7 @@ const Field<M>& operator-=(Field<M>& f, const Field<M>& f1)
   for (long index = 0; index < geo.local_volume(); index++) {
     Coordinate x = geo.coordinate_from_index(index);
     for (int m = 0; m < geo.multiplicity; m++) {
-      f.get_elem(x,m) -= f1.get_elem(x,m);
+      f.get_elem(x, m) -= f1.get_elem(x, m);
     }
   }
   return f;
@@ -215,7 +211,7 @@ const Field<M>& operator*=(Field<M>& f, const double factor)
   for (long index = 0; index < geo.local_volume(); index++) {
     const Coordinate x = geo.coordinate_from_index(index);
     for (int m = 0; m < geo.multiplicity; m++) {
-      f.get_elem(x,m) *= factor;
+      f.get_elem(x, m) *= factor;
     }
   }
   return f;
@@ -230,7 +226,7 @@ const Field<M>& operator*=(Field<M>& f, const Complex factor)
   for (long index = 0; index < geo.local_volume(); index++) {
     Coordinate x = geo.coordinate_from_index(index);
     for (int m = 0; m < geo.multiplicity; m++) {
-      f.get_elem(x,m) *= factor;
+      f.get_elem(x, m) *= factor;
     }
   }
   return f;
@@ -255,7 +251,7 @@ double norm(const Field<M>& f)
     for (int i = 0; i < omp_get_num_threads(); ++i) {
 #pragma omp barrier
       if (omp_get_thread_num() == i) {
-          sum += psum;
+        sum += psum;
       }
     }
   }
@@ -264,8 +260,7 @@ double norm(const Field<M>& f)
 }
 
 template <class M, int multiplicity>
-struct FieldM : Field<M>
-{
+struct FieldM : Field<M> {
   virtual const std::string& cname()
   {
     static const std::string s = "FieldM";
@@ -288,16 +283,13 @@ struct FieldM : Field<M>
     Field<M>::init(f);
   }
   //
-  FieldM<M,multiplicity>()
-  {
-    init();
-  }
-  FieldM<M,multiplicity>(const Field<M>& f)
+  FieldM<M, multiplicity>() { init(); }
+  FieldM<M, multiplicity>(const Field<M>& f)
   {
     qassert(false == f.initialized);
     init();
   }
-  FieldM<M,multiplicity>(const FieldM<M,multiplicity>& f)
+  FieldM<M, multiplicity>(const FieldM<M, multiplicity>& f)
   {
     qassert(false == f.initialized);
     init();
@@ -306,22 +298,22 @@ struct FieldM : Field<M>
 
 template <class M>
 long get_data_size(const Field<M>& f)
-  // NOT including the expended parts, only local volume data size
-  // only size on one node
+// NOT including the expended parts, only local volume data size
+// only size on one node
 {
   return f.geo.local_volume() * f.geo.multiplicity * sizeof(M);
 }
 
 QLAT_END_NAMESPACE
 
-namespace std {
-
-  template <class M>
-  void swap(qlat::Field<M>& f1, qlat::Field<M>& f2)
-  {
-    swap(f1.initialized, f2.initialized);
-    swap(f1.geo, f2.geo);
-    swap(f1.field, f2.field);
-  }
-
+namespace std
+{
+template <class M>
+void swap(qlat::Field<M>& f1, qlat::Field<M>& f2)
+{
+  swap(f1.initialized, f2.initialized);
+  swap(f1.geo, f2.geo);
+  swap(f1.field, f2.field);
 }
+
+}  // namespace std

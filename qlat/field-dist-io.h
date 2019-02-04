@@ -3,24 +3,28 @@
 #pragma once
 
 #include <qlat/config.h>
-#include <qlat/utils.h>
 #include <qlat/crc32.h>
+#include <qlat/utils.h>
 
 QLAT_START_NAMESPACE
 
 const int DATA_READ_WRITE_NUMBER_OF_DIRECTORIES = 32;
 
-inline int& dist_write_par_limit() {
+inline int& dist_write_par_limit()
+{
   static int npar = 128;
   return npar;
 }
 
-inline int& dist_read_par_limit() {
+inline int& dist_read_par_limit()
+{
   static int npar = 128;
   return npar;
 }
 
-inline std::vector<Geometry> make_dist_io_geos(const Coordinate& total_site, const int multiplicity, const Coordinate& new_size_node)
+inline std::vector<Geometry> make_dist_io_geos(const Coordinate& total_site,
+                                               const int multiplicity,
+                                               const Coordinate& new_size_node)
 {
   TIMER("make_dist_io_geos");
   const Coordinate new_node_site = total_site / new_size_node;
@@ -28,8 +32,10 @@ inline std::vector<Geometry> make_dist_io_geos(const Coordinate& total_site, con
   std::vector<Geometry> ret;
   const int min_size_chunk = new_num_node / get_num_node();
   const int remain = new_num_node % get_num_node();
-  const int size_chunk = get_id_node() < remain ? min_size_chunk + 1 : min_size_chunk;
-  const int chunk_start = get_id_node() * min_size_chunk + (get_id_node() < remain ? get_id_node() : remain);
+  const int size_chunk =
+      get_id_node() < remain ? min_size_chunk + 1 : min_size_chunk;
+  const int chunk_start = get_id_node() * min_size_chunk +
+                          (get_id_node() < remain ? get_id_node() : remain);
   const int chunk_end = std::min(new_num_node, chunk_start + size_chunk);
   for (int new_id_node = chunk_start; new_id_node < chunk_end; ++new_id_node) {
     GeometryNode geon;
@@ -45,11 +51,13 @@ inline std::vector<Geometry> make_dist_io_geos(const Coordinate& total_site, con
   return ret;
 }
 
-inline int dist_mkdir(const std::string& path, const int num_node, const mode_t mode = default_dir_mode())
+inline int dist_mkdir(const std::string& path, const int num_node,
+                      const mode_t mode = default_dir_mode())
 {
   int ret = 0;
   qmkdir(path, mode);
-  for (int i = 0; i < std::min(num_node, DATA_READ_WRITE_NUMBER_OF_DIRECTORIES); ++i) {
+  for (int i = 0; i < std::min(num_node, DATA_READ_WRITE_NUMBER_OF_DIRECTORIES);
+       ++i) {
     const std::string dir = path + ssprintf("/%02d", i);
     ret += qmkdir(dir, mode);
   }
@@ -65,30 +73,33 @@ inline int compute_dist_file_dir_id(const int id_node, const int num_node)
   return id_dir;
 }
 
-inline std::string dist_file_name(const std::string& path, const int id_node, const int num_node)
+inline std::string dist_file_name(const std::string& path, const int id_node,
+                                  const int num_node)
 {
-  return path + ssprintf("/%02d/%010d", compute_dist_file_dir_id(id_node, num_node), id_node);
+  return path + ssprintf("/%02d/%010d",
+                         compute_dist_file_dir_id(id_node, num_node), id_node);
 }
 
-inline FILE* dist_open(const std::string& path, const int id_node, const int num_node,
-    const std::string& fmode, // "w" for write, "r" for read, and "a" for append
-    const mode_t mode = default_dir_mode())
+inline FILE* dist_open(const std::string& path, const int id_node,
+                       const int num_node,
+                       const std::string& fmode,  // "w" for write, "r" for
+                                                  // read, and "a" for append
+                       const mode_t mode = default_dir_mode())
 {
   const std::string fn = dist_file_name(path, id_node, num_node);
   FILE* ret = qopen(fn, fmode);
   if (ret == NULL && fmode != "r") {
     check_dir(path, mode);
-    check_dir(path + ssprintf("/%02d", compute_dist_file_dir_id(id_node, num_node)), mode);
+    check_dir(
+        path + ssprintf("/%02d", compute_dist_file_dir_id(id_node, num_node)),
+        mode);
     ret = qopen(fn, fmode);
   }
   qassert(ret != NULL);
   return ret;
 }
 
-inline int dist_close(FILE*& fp)
-{
-  return qclose(fp);
-}
+inline int dist_close(FILE*& fp) { return qclose(fp); }
 
 template <class M>
 long qwrite_data(const Vector<M>& v, FILE* fp)
@@ -107,8 +118,7 @@ long qread_data(const Vector<M>& v, FILE* fp)
 }
 
 template <class M>
-struct DistData
-{
+struct DistData {
   int id_node;
   Vector<M> data;
 };
@@ -120,7 +130,8 @@ Vector<M> get_data(const DistData<M>& dd)
 }
 
 template <class M>
-std::vector<crc32_t> dist_crc32s(const std::vector<DistData<M> >& dds, const int num_node)
+std::vector<crc32_t> dist_crc32s(const std::vector<DistData<M> >& dds,
+                                 const int num_node)
 {
   sync_node();
   TIMER_VERBOSE_FLOPS("dist_crc32s");
@@ -161,7 +172,8 @@ crc32_t field_dist_crc32(const Field<M>& f)
 }
 
 inline void dist_write_geo_info(const Geometry& geo, const int sizeof_M,
-    const std::string& path, const mode_t mode = default_dir_mode())
+                                const std::string& path,
+                                const mode_t mode = default_dir_mode())
 {
   TIMER("dist_write_geo_info");
   const int id_node = geo.geon.id_node;
@@ -171,14 +183,20 @@ inline void dist_write_geo_info(const Geometry& geo, const int sizeof_M,
     check_dir(path, mode);
     const std::string fn = path + "/geo-info.txt";
     FILE* fp = qopen(fn, "w");
-    displayln(ssprintf("node_file_size = %ld", sizeof_M * geo.multiplicity * geo.local_volume()), fp);
+    displayln(ssprintf("node_file_size = %ld",
+                       sizeof_M * geo.multiplicity * geo.local_volume()),
+              fp);
     displayln(ssprintf("geo.multiplicity = %d", geo.multiplicity), fp);
     displayln(ssprintf("sizeof(M) = %d", sizeof_M), fp);
     displayln(ssprintf("geo.geon.num_node = %d", geo.geon.num_node), fp);
-    displayln(ssprintf("geo.geon.size_node[0] = %d", geo.geon.size_node[0]), fp);
-    displayln(ssprintf("geo.geon.size_node[1] = %d", geo.geon.size_node[1]), fp);
-    displayln(ssprintf("geo.geon.size_node[2] = %d", geo.geon.size_node[2]), fp);
-    displayln(ssprintf("geo.geon.size_node[3] = %d", geo.geon.size_node[3]), fp);
+    displayln(ssprintf("geo.geon.size_node[0] = %d", geo.geon.size_node[0]),
+              fp);
+    displayln(ssprintf("geo.geon.size_node[1] = %d", geo.geon.size_node[1]),
+              fp);
+    displayln(ssprintf("geo.geon.size_node[2] = %d", geo.geon.size_node[2]),
+              fp);
+    displayln(ssprintf("geo.geon.size_node[3] = %d", geo.geon.size_node[3]),
+              fp);
     displayln(ssprintf("geo.local_volume() = %ld", geo.local_volume()), fp);
     displayln(ssprintf("geo.node_site[0] = %d", geo.node_site[0]), fp);
     displayln(ssprintf("geo.node_site[1] = %d", geo.node_site[1]), fp);
@@ -186,17 +204,21 @@ inline void dist_write_geo_info(const Geometry& geo, const int sizeof_M,
     displayln(ssprintf("geo.node_site[3] = %d", geo.node_site[3]), fp);
     displayln(ssprintf("PI = %.20f", PI), fp);
     const char* pic = (const char*)&PI;
-    displayln(ssprintf("PI_double = %hhx %hhx %hhx %hhx %hhx %hhx %hhx %hhx",
-        pic[0], pic[1], pic[2], pic[3], pic[4], pic[5], pic[6], pic[7]), fp);
+    displayln(
+        ssprintf("PI_double = %hhx %hhx %hhx %hhx %hhx %hhx %hhx %hhx", pic[0],
+                 pic[1], pic[2], pic[3], pic[4], pic[5], pic[6], pic[7]),
+        fp);
     const float PIf = PI;
     const char* pifc = (const char*)&PIf;
-    displayln(ssprintf("PI_float = %hhx %hhx %hhx %hhx",
-        pifc[0], pifc[1], pifc[2], pifc[3]), fp);
+    displayln(ssprintf("PI_float = %hhx %hhx %hhx %hhx", pifc[0], pifc[1],
+                       pifc[2], pifc[3]),
+              fp);
     qclose(fp);
   }
 }
 
-inline std::string info_get_prop(const std::vector<std::string>& lines, const std::string& prop)
+inline std::string info_get_prop(const std::vector<std::string>& lines,
+                                 const std::string& prop)
 {
   for (size_t i = 0; i < lines.size(); ++i) {
     if (lines[i].compare(0, prop.size(), prop) == 0) {
@@ -206,7 +228,9 @@ inline std::string info_get_prop(const std::vector<std::string>& lines, const st
   return std::string("");
 }
 
-inline std::string info_get_prop(const std::vector<std::string>& lines, const std::string& prop, const std::string& prop1)
+inline std::string info_get_prop(const std::vector<std::string>& lines,
+                                 const std::string& prop,
+                                 const std::string& prop1)
 {
   const std::string ret = info_get_prop(lines, prop);
   if (ret != std::string("")) {
@@ -216,8 +240,9 @@ inline std::string info_get_prop(const std::vector<std::string>& lines, const st
   }
 }
 
-inline void dist_read_geo_info(Geometry& geo, int& sizeof_M, Coordinate& new_size_node,
-    const std::string& path)
+inline void dist_read_geo_info(Geometry& geo, int& sizeof_M,
+                               Coordinate& new_size_node,
+                               const std::string& path)
 {
   TIMER("dist_read_geo_info");
   int multiplicity;
@@ -229,17 +254,23 @@ inline void dist_read_geo_info(Geometry& geo, int& sizeof_M, Coordinate& new_siz
     reads(multiplicity, info_get_prop(lines, "geo.multiplicity = "));
     reads(sizeof_M, info_get_prop(lines, "sizeof(M) = "));
     for (int i = 0; i < 4; ++i) {
-      reads(size_node[i], info_get_prop(lines,
-            ssprintf("geo.geon.size_node[%d] = ", i), ssprintf("geo.sizeNode[%d] = ", i)));
-      reads(node_site[i], info_get_prop(lines,
-            ssprintf("geo.node_site[%d] = ", i), ssprintf("geo.nodeSite[%d] = ", i)));
+      reads(size_node[i],
+            info_get_prop(lines, ssprintf("geo.geon.size_node[%d] = ", i),
+                          ssprintf("geo.sizeNode[%d] = ", i)));
+      reads(node_site[i],
+            info_get_prop(lines, ssprintf("geo.node_site[%d] = ", i),
+                          ssprintf("geo.nodeSite[%d] = ", i)));
     }
     long node_file_size;
     int num_node;
     long local_volume;
-    reads(node_file_size, info_get_prop(lines, "node_file_size = ", "nodeFileSize = "));
-    reads(num_node, info_get_prop(lines, "geo.geon.num_node = ", "geo.numNode = "));
-    reads(local_volume, info_get_prop(lines, "geo.local_volume() = ", "geo.localVolume() = "));
+    reads(node_file_size,
+          info_get_prop(lines, "node_file_size = ", "nodeFileSize = "));
+    reads(num_node,
+          info_get_prop(lines, "geo.geon.num_node = ", "geo.numNode = "));
+    reads(
+        local_volume,
+        info_get_prop(lines, "geo.local_volume() = ", "geo.localVolume() = "));
     qassert(num_node == product(size_node));
     qassert(local_volume == product(node_site));
     qassert(node_file_size == local_volume * multiplicity * sizeof_M);
@@ -254,9 +285,10 @@ inline void dist_read_geo_info(Geometry& geo, int& sizeof_M, Coordinate& new_siz
 }
 
 template <class M>
-long dist_write_dist_data(const std::vector<DistData<M> >& dds, const int num_node,
-    const std::string& path, const mode_t mode = default_dir_mode())
-  // interface_function
+long dist_write_dist_data(const std::vector<DistData<M> >& dds,
+                          const int num_node, const std::string& path,
+                          const mode_t mode = default_dir_mode())
+// interface_function
 {
   sync_node();
   TIMER_VERBOSE_FLOPS("dist_write_dist_data");
@@ -289,8 +321,10 @@ long dist_write_dist_data(const std::vector<DistData<M> >& dds, const int num_no
     glb_sum(ops);
     total_bytes += bytes;
     total_ops += ops;
-    displayln_info(ssprintf("%s::%s: cycle / n_cycle = %4d / %4d ; total_ops = %10ld ; total_bytes = %15ld",
-          cname().c_str(), fname, i + 1, n_cycle, total_ops, total_bytes));
+    displayln_info(ssprintf(
+        "%s::%s: cycle / n_cycle = %4d / %4d ; total_ops = %10ld ; total_bytes "
+        "= %15ld",
+        cname().c_str(), fname, i + 1, n_cycle, total_ops, total_bytes));
   }
   std::vector<long> id_exists(num_node, 0);
   for (size_t id = 0; id < id_exists.size(); ++id) {
@@ -299,8 +333,10 @@ long dist_write_dist_data(const std::vector<DistData<M> >& dds, const int num_no
   glb_sum(get_data(id_exists));
   glb_sum(get_data(id_counts));
   for (size_t id = 0; id < id_counts.size(); ++id) {
-    qassert(id_exists[id] == 1); // every id_node exist on one node, and one node only
-    qassert(id_counts[id] == id_counts[0]); // every id_node has the same number of fields
+    qassert(id_exists[id] ==
+            1);  // every id_node exist on one node, and one node only
+    qassert(id_counts[id] ==
+            id_counts[0]);  // every id_node has the same number of fields
   }
   std::vector<crc32_t> crcs = dist_crc32s(dds, num_node);
   crc32_t crc = dist_crc32(crcs);
@@ -322,8 +358,8 @@ long dist_write_dist_data(const std::vector<DistData<M> >& dds, const int num_no
 
 template <class M>
 long dist_write_fields(const std::vector<ConstHandle<Field<M> > >& fs,
-    const int num_node,
-    const std::string& path, const mode_t mode = default_dir_mode())
+                       const int num_node, const std::string& path,
+                       const mode_t mode = default_dir_mode())
 {
   for (int k = 0; k < fs.size(); ++k) {
     const Field<M>& f = fs[k]();
@@ -344,9 +380,9 @@ long dist_write_fields(const std::vector<ConstHandle<Field<M> > >& fs,
 }
 
 template <class M>
-long dist_write_fields(const std::vector<Field<M> >& fs,
-    const int num_node,
-    const std::string& path, const mode_t mode = default_dir_mode())
+long dist_write_fields(const std::vector<Field<M> >& fs, const int num_node,
+                       const std::string& path,
+                       const mode_t mode = default_dir_mode())
 {
   std::vector<ConstHandle<Field<M> > > fhs(fs.size());
   for (size_t i = 0; i < fs.size(); ++i) {
@@ -356,9 +392,9 @@ long dist_write_fields(const std::vector<Field<M> >& fs,
 }
 
 template <class M>
-long dist_write_field(const Field<M>& f,
-    const std::string& path, const mode_t mode = default_dir_mode())
-  // interface_function
+long dist_write_field(const Field<M>& f, const std::string& path,
+                      const mode_t mode = default_dir_mode())
+// interface_function
 {
   TIMER_VERBOSE("dist_write_field");
   qassert(f.geo.is_only_local());
@@ -368,8 +404,9 @@ long dist_write_field(const Field<M>& f,
 }
 
 template <class M>
-long dist_read_dist_data(const std::vector<DistData<M> >& dds, const int num_node, const std::string& path)
-  // interface_function
+long dist_read_dist_data(const std::vector<DistData<M> >& dds,
+                         const int num_node, const std::string& path)
+// interface_function
 {
   if (!does_file_exist_sync_node(path + "/checkpoint")) {
     return 0;
@@ -405,8 +442,10 @@ long dist_read_dist_data(const std::vector<DistData<M> >& dds, const int num_nod
     glb_sum(ops);
     total_bytes += bytes;
     total_ops += ops;
-    displayln_info(ssprintf("%s::%s: cycle / n_cycle = %4d / %4d ; total_ops = %10ld ; total_bytes = %15ld",
-          cname().c_str(), fname, i + 1, n_cycle, total_ops, total_bytes));
+    displayln_info(ssprintf(
+        "%s::%s: cycle / n_cycle = %4d / %4d ; total_ops = %10ld ; total_bytes "
+        "= %15ld",
+        cname().c_str(), fname, i + 1, n_cycle, total_ops, total_bytes));
   }
   std::vector<long> id_exists(num_node, 0);
   for (size_t id = 0; id < id_exists.size(); ++id) {
@@ -415,8 +454,10 @@ long dist_read_dist_data(const std::vector<DistData<M> >& dds, const int num_nod
   glb_sum(get_data(id_exists));
   glb_sum(get_data(id_counts));
   for (size_t id = 0; id < id_counts.size(); ++id) {
-    qassert(id_exists[id] == 1); // every id_node exist on one node, and one node only
-    qassert(id_counts[id] == id_counts[0]); // every id_node has the same number of fields
+    qassert(id_exists[id] ==
+            1);  // every id_node exist on one node, and one node only
+    qassert(id_counts[id] ==
+            id_counts[0]);  // every id_node has the same number of fields
   }
   std::vector<crc32_t> crcs = dist_crc32s(dds, num_node);
   crc32_t crc = dist_crc32(crcs);
@@ -428,7 +469,11 @@ long dist_read_dist_data(const std::vector<DistData<M> >& dds, const int num_nod
       const std::vector<std::string> lines = qgetlines(fn);
       for (size_t i = 0; i < crcs.size(); ++i) {
         if (read_crc32(lines[i + 2]) != crcs[i]) {
-          displayln(fname + ssprintf(": checksums of file ; i=%d ; checksum.txt=%08X ; computed=%08X ; path=%s", i, read_crc32(lines[i+2]), crcs[i], path.c_str()));
+          displayln(fname +
+                    ssprintf(": checksums of file ; i=%d ; checksum.txt=%08X ; "
+                             "computed=%08X ; path=%s",
+                             i, read_crc32(lines[i + 2]), crcs[i],
+                             path.c_str()));
           qassert(false);
         }
       }
@@ -440,8 +485,9 @@ long dist_read_dist_data(const std::vector<DistData<M> >& dds, const int num_nod
 }
 
 template <class M>
-long dist_read_fields(std::vector<Field<M> >& fs, Geometry& geo, Coordinate& new_size_node, const std::string& path)
-  // will clear fs before read
+long dist_read_fields(std::vector<Field<M> >& fs, Geometry& geo,
+                      Coordinate& new_size_node, const std::string& path)
+// will clear fs before read
 {
   if (!does_file_exist_sync_node(path + "/checkpoint")) {
     return 0;
@@ -450,15 +496,19 @@ long dist_read_fields(std::vector<Field<M> >& fs, Geometry& geo, Coordinate& new
   int sizeof_M;
   dist_read_geo_info(geo, sizeof_M, new_size_node, path);
   if ((int)sizeof(M) != sizeof_M) {
-    displayln_info("dist_read_fields: WARNING: sizeof(M) do not match with data on disk.");
+    displayln_info(
+        "dist_read_fields: WARNING: sizeof(M) do not match with data on disk.");
     if (geo.multiplicity * sizeof_M % sizeof(M) != 0) {
-      displayln_info(ssprintf("dist_read_fields: ERROR: geo.multiplicity = %d ; sizeof_M = %d ; sizeof(M) = %d",
-            geo.multiplicity, sizeof_M, sizeof(M)));
+      displayln_info(
+          ssprintf("dist_read_fields: ERROR: geo.multiplicity = %d ; sizeof_M "
+                   "= %d ; sizeof(M) = %d",
+                   geo.multiplicity, sizeof_M, sizeof(M)));
       qassert(false);
     }
     geo.remult(geo.multiplicity * sizeof_M / sizeof(M));
   }
-  std::vector<Geometry> new_geos = make_dist_io_geos(geo.total_site(), geo.multiplicity, new_size_node);
+  std::vector<Geometry> new_geos =
+      make_dist_io_geos(geo.total_site(), geo.multiplicity, new_size_node);
   fs.resize(new_geos.size());
   std::vector<DistData<M> > dds(fs.size());
   for (size_t i = 0; i < fs.size(); ++i) {
@@ -469,7 +519,9 @@ long dist_read_fields(std::vector<Field<M> >& fs, Geometry& geo, Coordinate& new
   return dist_read_dist_data(dds, product(new_size_node), path);
 }
 
-inline int get_id_node_from_new_id_node(const int new_id_node, const int new_num_node, const int num_node)
+inline int get_id_node_from_new_id_node(const int new_id_node,
+                                        const int new_num_node,
+                                        const int num_node)
 {
   const int min_size_chunk = new_num_node / num_node;
   const int remain = new_num_node % num_node;
@@ -481,8 +533,7 @@ inline int get_id_node_from_new_id_node(const int new_id_node, const int new_num
   }
 }
 
-struct ShufflePlanKey
-{
+struct ShufflePlanKey {
   Coordinate total_site;
   Coordinate new_size_node;
 };
@@ -498,47 +549,49 @@ inline bool operator<(const ShufflePlanKey& x, const ShufflePlanKey& y)
   }
 }
 
-struct ShufflePlanRecvPackInfo
-{
+struct ShufflePlanRecvPackInfo {
   int local_geos_idx;
   long field_idx;
   long buffer_idx;
   long size;
 };
 
-struct ShufflePlanSendPackInfo
-{
+struct ShufflePlanSendPackInfo {
   long field_idx;
   long buffer_idx;
   long size;
 };
 
-struct ShufflePlanMsgInfo
-{
+struct ShufflePlanMsgInfo {
   int id_node;
   long idx;
   long size;
 };
 
-struct ShufflePlan
-{
-  long total_send_size; // total send buffer size
-  std::vector<ShufflePlanMsgInfo> send_msg_infos; // corresponds to every sent msg
-  std::vector<ShufflePlanSendPackInfo> send_pack_infos; // corresponds to how to create send buffer from local field
+struct ShufflePlan {
+  long total_send_size;  // total send buffer size
+  std::vector<ShufflePlanMsgInfo>
+      send_msg_infos;  // corresponds to every sent msg
+  std::vector<ShufflePlanSendPackInfo>
+      send_pack_infos;  // corresponds to how to create send buffer from local
+                        // field
   long total_recv_size;
-  std::vector<ShufflePlanMsgInfo> recv_msg_infos; // corresponds to every recv msg
-  std::vector<ShufflePlanRecvPackInfo> recv_pack_infos; // corresponds to how to copy recv buffer to new local fields
+  std::vector<ShufflePlanMsgInfo>
+      recv_msg_infos;  // corresponds to every recv msg
+  std::vector<ShufflePlanRecvPackInfo>
+      recv_pack_infos;  // corresponds to how to copy recv buffer to new local
+                        // fields
 };
 
 inline long& get_shuffle_max_msg_size()
-  // qlat parameter
+// qlat parameter
 {
   static long size = 16 * 1024;
   return size;
 }
 
 inline long& get_shuffle_max_pack_size()
-  // qlat parameter
+// qlat parameter
 {
   static long size = 1024;
   return size;
@@ -555,26 +608,29 @@ inline ShufflePlan make_shuffle_plan(const ShufflePlanKey& spk)
   Geometry geo;
   geo.init(total_site, 1);
   const int num_node = geo.geon.num_node;
-  std::vector<Geometry> new_geos = make_dist_io_geos(geo.total_site(), geo.multiplicity, new_size_node);
+  std::vector<Geometry> new_geos =
+      make_dist_io_geos(geo.total_site(), geo.multiplicity, new_size_node);
   ShufflePlan ret;
   // total_send_size
   ret.total_send_size = geo.local_volume();
   // send_id_node_size
   // send_new_id_node_size
-  std::map<int,long> send_id_node_size;
-  std::map<int,long> send_new_id_node_size;
+  std::map<int, long> send_id_node_size;
+  std::map<int, long> send_new_id_node_size;
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
     const Coordinate new_coor_node = xg / new_node_site;
     const int new_id_node = index_from_coordinate(new_coor_node, new_size_node);
-    const int id_node = get_id_node_from_new_id_node(new_id_node, new_num_node, num_node);
+    const int id_node =
+        get_id_node_from_new_id_node(new_id_node, new_num_node, num_node);
     send_id_node_size[id_node] += 1;
     send_new_id_node_size[new_id_node] += 1;
   }
   {
     long count = 0;
-    for (std::map<int,long>::const_iterator it = send_id_node_size.begin(); it != send_id_node_size.end(); ++it) {
+    for (std::map<int, long>::const_iterator it = send_id_node_size.begin();
+         it != send_id_node_size.end(); ++it) {
       const int id_node = it->first;
       const long node_size = it->second;
       long node_size_remain = node_size;
@@ -592,10 +648,11 @@ inline ShufflePlan make_shuffle_plan(const ShufflePlanKey& spk)
     qassert(count == ret.total_send_size);
   }
   // send_new_id_node_idx
-  std::map<int,long> send_new_id_node_idx;
+  std::map<int, long> send_new_id_node_idx;
   {
     long count = 0;
-    for (std::map<int,long>::const_iterator it = send_new_id_node_size.begin(); it != send_new_id_node_size.end(); ++it) {
+    for (std::map<int, long>::const_iterator it = send_new_id_node_size.begin();
+         it != send_new_id_node_size.end(); ++it) {
       const int new_id_node = it->first;
       const long node_size = it->second;
       send_new_id_node_idx[new_id_node] = count;
@@ -611,10 +668,13 @@ inline ShufflePlan make_shuffle_plan(const ShufflePlanKey& spk)
       const Coordinate xl = geo.coordinate_from_index(index);
       const Coordinate xg = geo.coordinate_g_from_l(xl);
       const Coordinate new_coor_node = xg / new_node_site;
-      const int new_id_node = index_from_coordinate(new_coor_node, new_size_node);
+      const int new_id_node =
+          index_from_coordinate(new_coor_node, new_size_node);
       const long buffer_idx = send_new_id_node_idx[new_id_node];
-      // const int id_node = get_id_node_from_new_id_node(new_id_node, new_num_node, num_node);
-      if (buffer_idx == last_buffer_idx and ret.send_pack_infos.back().size < get_shuffle_max_pack_size()) {
+      // const int id_node = get_id_node_from_new_id_node(new_id_node,
+      // new_num_node, num_node);
+      if (buffer_idx == last_buffer_idx and
+          ret.send_pack_infos.back().size < get_shuffle_max_pack_size()) {
         ret.send_pack_infos.back().size += 1;
       } else {
         last_buffer_idx = buffer_idx;
@@ -635,7 +695,7 @@ inline ShufflePlan make_shuffle_plan(const ShufflePlanKey& spk)
     ret.total_recv_size += new_geo.local_volume();
   }
   // recv_id_node_size
-  std::map<int,long> recv_id_node_size;
+  std::map<int, long> recv_id_node_size;
   for (size_t i = 0; i < new_geos.size(); ++i) {
     const Geometry& new_geo = new_geos[i];
     for (long index = 0; index < new_geo.local_volume(); ++index) {
@@ -648,7 +708,8 @@ inline ShufflePlan make_shuffle_plan(const ShufflePlanKey& spk)
   }
   {
     long count = 0;
-    for (std::map<int,long>::const_iterator it = recv_id_node_size.begin(); it != recv_id_node_size.end(); ++it) {
+    for (std::map<int, long>::const_iterator it = recv_id_node_size.begin();
+         it != recv_id_node_size.end(); ++it) {
       const int id_node = it->first;
       const long node_size = it->second;
       long node_size_remain = node_size;
@@ -665,10 +726,11 @@ inline ShufflePlan make_shuffle_plan(const ShufflePlanKey& spk)
     qassert(count == ret.total_recv_size);
   }
   // recv_id_node_idx
-  std::map<int,long> recv_id_node_idx;
+  std::map<int, long> recv_id_node_idx;
   {
     long count = 0;
-    for (std::map<int,long>::const_iterator it = recv_id_node_size.begin(); it != recv_id_node_size.end(); ++it) {
+    for (std::map<int, long>::const_iterator it = recv_id_node_size.begin();
+         it != recv_id_node_size.end(); ++it) {
       const int id_node = it->first;
       const long node_size = it->second;
       recv_id_node_idx[id_node] = count;
@@ -685,9 +747,11 @@ inline ShufflePlan make_shuffle_plan(const ShufflePlanKey& spk)
         const Coordinate xl = new_geo.coordinate_from_index(index);
         const Coordinate xg = new_geo.coordinate_g_from_l(xl);
         const Coordinate coor_node = xg / geo.node_site;
-        const int id_node = index_from_coordinate(coor_node, geo.geon.size_node);
+        const int id_node =
+            index_from_coordinate(coor_node, geo.geon.size_node);
         const long buffer_idx = recv_id_node_idx[id_node];
-        if (buffer_idx == last_buffer_idx and ret.recv_pack_infos.back().size < get_shuffle_max_pack_size()) {
+        if (buffer_idx == last_buffer_idx and
+            ret.recv_pack_infos.back().size < get_shuffle_max_pack_size()) {
           ret.recv_pack_infos.back().size += 1;
         } else {
           last_buffer_idx = buffer_idx;
@@ -707,24 +771,32 @@ inline ShufflePlan make_shuffle_plan(const ShufflePlanKey& spk)
   long num_recv_packs = ret.recv_pack_infos.size();
   long num_send_msgs = ret.send_msg_infos.size();
   long num_recv_msgs = ret.recv_msg_infos.size();
-  displayln_info(ssprintf("%s::%s: num_send_packs = %10ld", cname().c_str(), fname, num_send_packs));
-  displayln_info(ssprintf("%s::%s: num_recv_packs = %10ld", cname().c_str(), fname, num_recv_packs));
-  displayln_info(ssprintf("%s::%s: num_send_msgs  = %10ld", cname().c_str(), fname, num_send_msgs));
-  displayln_info(ssprintf("%s::%s: num_recv_msgs  = %10ld", cname().c_str(), fname, num_recv_msgs));
+  displayln_info(ssprintf("%s::%s: num_send_packs = %10ld", cname().c_str(),
+                          fname, num_send_packs));
+  displayln_info(ssprintf("%s::%s: num_recv_packs = %10ld", cname().c_str(),
+                          fname, num_recv_packs));
+  displayln_info(ssprintf("%s::%s: num_send_msgs  = %10ld", cname().c_str(),
+                          fname, num_send_msgs));
+  displayln_info(ssprintf("%s::%s: num_recv_msgs  = %10ld", cname().c_str(),
+                          fname, num_recv_msgs));
   glb_sum(num_send_packs);
   glb_sum(num_recv_packs);
   glb_sum(num_send_msgs);
   glb_sum(num_recv_msgs);
-  displayln_info(ssprintf("%s::%s: total num_send_packs = %10ld", cname().c_str(), fname, num_send_packs));
-  displayln_info(ssprintf("%s::%s: total num_recv_packs = %10ld", cname().c_str(), fname, num_recv_packs));
-  displayln_info(ssprintf("%s::%s: total num_send_msgs  = %10ld", cname().c_str(), fname, num_send_msgs));
-  displayln_info(ssprintf("%s::%s: total num_recv_msgs  = %10ld", cname().c_str(), fname, num_recv_msgs));
+  displayln_info(ssprintf("%s::%s: total num_send_packs = %10ld",
+                          cname().c_str(), fname, num_send_packs));
+  displayln_info(ssprintf("%s::%s: total num_recv_packs = %10ld",
+                          cname().c_str(), fname, num_recv_packs));
+  displayln_info(ssprintf("%s::%s: total num_send_msgs  = %10ld",
+                          cname().c_str(), fname, num_send_msgs));
+  displayln_info(ssprintf("%s::%s: total num_recv_msgs  = %10ld",
+                          cname().c_str(), fname, num_recv_msgs));
   return ret;
 }
 
-inline Cache<ShufflePlanKey,ShufflePlan>& get_shuffle_plan_cache()
+inline Cache<ShufflePlanKey, ShufflePlan>& get_shuffle_plan_cache()
 {
-  static Cache<ShufflePlanKey,ShufflePlan> cache("ShufflePlanCache", 16);
+  static Cache<ShufflePlanKey, ShufflePlan> cache("ShufflePlanCache", 16);
   return cache;
 }
 
@@ -736,7 +808,8 @@ inline const ShufflePlan& get_shuffle_plan(const ShufflePlanKey& spk)
   return get_shuffle_plan_cache()[spk];
 }
 
-inline const ShufflePlan& get_shuffle_plan(const Coordinate& total_site, const Coordinate& new_size_node)
+inline const ShufflePlan& get_shuffle_plan(const Coordinate& total_site,
+                                           const Coordinate& new_size_node)
 {
   ShufflePlanKey spk;
   spk.total_site = total_site;
@@ -745,7 +818,8 @@ inline const ShufflePlan& get_shuffle_plan(const Coordinate& total_site, const C
 }
 
 template <class M>
-void shuffle_field(std::vector<Field<M> >& fs, const Field<M>& f, const Coordinate& new_size_node)
+void shuffle_field(std::vector<Field<M> >& fs, const Field<M>& f,
+                   const Coordinate& new_size_node)
 {
   clear(fs);
   const Geometry& geo = f.geo;
@@ -756,23 +830,25 @@ void shuffle_field(std::vector<Field<M> >& fs, const Field<M>& f, const Coordina
   }
   sync_node();
   TIMER_VERBOSE_FLOPS("shuffle_field");
-  displayln_info(fname + ssprintf(": %s -> %s (total_site: %s ; site_size: %d ; total_size: %.3lf GB)",
-        show(geo.geon.size_node).c_str(),
-        show(new_size_node).c_str(),
-        show(geo.total_site()).c_str(),
-        geo.multiplicity * (int)sizeof(M),
-        (double)(product(geo.total_site()) * geo.multiplicity * sizeof(M) * std::pow(0.5, 30))));
+  displayln_info(
+      fname +
+      ssprintf(
+          ": %s -> %s (total_site: %s ; site_size: %d ; total_size: %.3lf GB)",
+          show(geo.geon.size_node).c_str(), show(new_size_node).c_str(),
+          show(geo.total_site()).c_str(), geo.multiplicity * (int)sizeof(M),
+          (double)(product(geo.total_site()) * geo.multiplicity * sizeof(M) *
+                   std::pow(0.5, 30))));
   const ShufflePlan& sp = get_shuffle_plan(geo.total_site(), new_size_node);
-  const long total_bytes = sp.total_send_size * geo.multiplicity * sizeof(M) * get_num_node();
+  const long total_bytes =
+      sp.total_send_size * geo.multiplicity * sizeof(M) * get_num_node();
   timer.flops += total_bytes;
   std::vector<M> send_buffer(sp.total_send_size * geo.multiplicity);
 #pragma omp parallel for
   for (size_t i = 0; i < sp.send_pack_infos.size(); ++i) {
     const ShufflePlanSendPackInfo& pi = sp.send_pack_infos[i];
-    memcpy(
-        &send_buffer[pi.buffer_idx * geo.multiplicity],
-        f.get_elems_const(pi.field_idx).data(),
-        pi.size * geo.multiplicity * sizeof(M));
+    memcpy(&send_buffer[pi.buffer_idx * geo.multiplicity],
+           f.get_elems_const(pi.field_idx).data(),
+           pi.size * geo.multiplicity * sizeof(M));
   }
   std::vector<M> recv_buffer(sp.total_recv_size * geo.multiplicity);
   {
@@ -786,13 +862,15 @@ void shuffle_field(std::vector<Field<M> >& fs, const Field<M>& f, const Coordina
       const int mpi_tag = 4;
       for (size_t i = 0; i < sp.send_msg_infos.size(); ++i) {
         const ShufflePlanMsgInfo& mi = sp.send_msg_infos[i];
-        MPI_Isend(&send_buffer[mi.idx * geo.multiplicity], mi.size * geo.multiplicity * sizeof(M), MPI_BYTE, mi.id_node,
-            mpi_tag, get_comm(), &send_reqs[i]);
+        MPI_Isend(&send_buffer[mi.idx * geo.multiplicity],
+                  mi.size * geo.multiplicity * sizeof(M), MPI_BYTE, mi.id_node,
+                  mpi_tag, get_comm(), &send_reqs[i]);
       }
       for (size_t i = 0; i < sp.recv_msg_infos.size(); ++i) {
         const ShufflePlanMsgInfo& mi = sp.recv_msg_infos[i];
-        MPI_Irecv(&recv_buffer[mi.idx * geo.multiplicity], mi.size * geo.multiplicity * sizeof(M), MPI_BYTE, mi.id_node,
-            mpi_tag, get_comm(), &recv_reqs[i]);
+        MPI_Irecv(&recv_buffer[mi.idx * geo.multiplicity],
+                  mi.size * geo.multiplicity * sizeof(M), MPI_BYTE, mi.id_node,
+                  mpi_tag, get_comm(), &recv_reqs[i]);
       }
     }
     MPI_Waitall(recv_reqs.size(), recv_reqs.data(), MPI_STATUS_IGNORE);
@@ -800,7 +878,8 @@ void shuffle_field(std::vector<Field<M> >& fs, const Field<M>& f, const Coordina
     sync_node();
   }
   clear(send_buffer);
-  const std::vector<Geometry> new_geos = make_dist_io_geos(geo.total_site(), geo.multiplicity, new_size_node);
+  const std::vector<Geometry> new_geos =
+      make_dist_io_geos(geo.total_site(), geo.multiplicity, new_size_node);
   fs.resize(new_geos.size());
   for (size_t i = 0; i < fs.size(); ++i) {
     fs[i].init(new_geos[i]);
@@ -809,18 +888,17 @@ void shuffle_field(std::vector<Field<M> >& fs, const Field<M>& f, const Coordina
   for (size_t i = 0; i < sp.recv_pack_infos.size(); ++i) {
     const ShufflePlanRecvPackInfo& pi = sp.recv_pack_infos[i];
     qassert(0 <= pi.local_geos_idx && pi.local_geos_idx < fs.size());
-    memcpy(
-        fs[pi.local_geos_idx].get_elems(pi.field_idx).data(),
-        &recv_buffer[pi.buffer_idx * geo.multiplicity],
-        pi.size * geo.multiplicity * sizeof(M));
+    memcpy(fs[pi.local_geos_idx].get_elems(pi.field_idx).data(),
+           &recv_buffer[pi.buffer_idx * geo.multiplicity],
+           pi.size * geo.multiplicity * sizeof(M));
   }
 }
 
 template <class M>
-long dist_write_field(const Field<M>& f,
-    const Coordinate new_size_node,
-    const std::string& path, const mode_t mode = default_dir_mode())
-  // interface_function
+long dist_write_field(const Field<M>& f, const Coordinate new_size_node,
+                      const std::string& path,
+                      const mode_t mode = default_dir_mode())
+// interface_function
 {
   TIMER_VERBOSE_FLOPS("dist_write_field");
   std::vector<Field<M> > fs;
@@ -831,7 +909,8 @@ long dist_write_field(const Field<M>& f,
 }
 
 template <class M>
-void shuffle_field_back(Field<M>& f, const std::vector<Field<M> >& fs, const Coordinate& new_size_node)
+void shuffle_field_back(Field<M>& f, const std::vector<Field<M> >& fs,
+                        const Coordinate& new_size_node)
 {
   const Geometry& geo = f.geo;
   if (geo.geon.size_node == new_size_node) {
@@ -841,23 +920,25 @@ void shuffle_field_back(Field<M>& f, const std::vector<Field<M> >& fs, const Coo
   }
   sync_node();
   TIMER_VERBOSE_FLOPS("shuffle_field_back");
-  displayln_info(fname + ssprintf(": %s -> %s (total_site: %s ; site_size: %d ; total_size: %.3lf GB)",
-        show(new_size_node).c_str(),
-        show(geo.geon.size_node).c_str(),
-        show(geo.total_site()).c_str(),
-        geo.multiplicity * (int)sizeof(M),
-        (double)(product(geo.total_site()) * geo.multiplicity * sizeof(M) * std::pow(0.5, 30))));
+  displayln_info(
+      fname +
+      ssprintf(
+          ": %s -> %s (total_site: %s ; site_size: %d ; total_size: %.3lf GB)",
+          show(new_size_node).c_str(), show(geo.geon.size_node).c_str(),
+          show(geo.total_site()).c_str(), geo.multiplicity * (int)sizeof(M),
+          (double)(product(geo.total_site()) * geo.multiplicity * sizeof(M) *
+                   std::pow(0.5, 30))));
   const ShufflePlan& sp = get_shuffle_plan(geo.total_site(), new_size_node);
-  const long total_bytes = sp.total_send_size * geo.multiplicity * sizeof(M) * get_num_node();
+  const long total_bytes =
+      sp.total_send_size * geo.multiplicity * sizeof(M) * get_num_node();
   timer.flops += total_bytes;
   std::vector<M> recv_buffer(sp.total_recv_size * geo.multiplicity);
 #pragma omp parallel for
   for (size_t i = 0; i < sp.recv_pack_infos.size(); ++i) {
     const ShufflePlanRecvPackInfo& pi = sp.recv_pack_infos[i];
-    memcpy(
-        &recv_buffer[pi.buffer_idx * geo.multiplicity],
-        fs[pi.local_geos_idx].get_elems_const(pi.field_idx).data(),
-        pi.size * geo.multiplicity * sizeof(M));
+    memcpy(&recv_buffer[pi.buffer_idx * geo.multiplicity],
+           fs[pi.local_geos_idx].get_elems_const(pi.field_idx).data(),
+           pi.size * geo.multiplicity * sizeof(M));
   }
   std::vector<M> send_buffer(sp.total_send_size * geo.multiplicity);
   {
@@ -871,13 +952,15 @@ void shuffle_field_back(Field<M>& f, const std::vector<Field<M> >& fs, const Coo
       const int mpi_tag = 5;
       for (size_t i = 0; i < sp.recv_msg_infos.size(); ++i) {
         const ShufflePlanMsgInfo& mi = sp.recv_msg_infos[i];
-        MPI_Isend(&recv_buffer[mi.idx * geo.multiplicity], mi.size * geo.multiplicity * sizeof(M), MPI_BYTE, mi.id_node,
-            mpi_tag, get_comm(), &recv_reqs[i]);
+        MPI_Isend(&recv_buffer[mi.idx * geo.multiplicity],
+                  mi.size * geo.multiplicity * sizeof(M), MPI_BYTE, mi.id_node,
+                  mpi_tag, get_comm(), &recv_reqs[i]);
       }
       for (size_t i = 0; i < sp.send_msg_infos.size(); ++i) {
         const ShufflePlanMsgInfo& mi = sp.send_msg_infos[i];
-        MPI_Irecv(&send_buffer[mi.idx * geo.multiplicity], mi.size * geo.multiplicity * sizeof(M), MPI_BYTE, mi.id_node,
-            mpi_tag, get_comm(), &send_reqs[i]);
+        MPI_Irecv(&send_buffer[mi.idx * geo.multiplicity],
+                  mi.size * geo.multiplicity * sizeof(M), MPI_BYTE, mi.id_node,
+                  mpi_tag, get_comm(), &send_reqs[i]);
       }
     }
     for (size_t i = 0; i < recv_reqs.size(); ++i) {
@@ -892,16 +975,15 @@ void shuffle_field_back(Field<M>& f, const std::vector<Field<M> >& fs, const Coo
 #pragma omp parallel for
   for (size_t i = 0; i < sp.send_pack_infos.size(); ++i) {
     const ShufflePlanSendPackInfo& pi = sp.send_pack_infos[i];
-    memcpy(
-        f.get_elems(pi.field_idx).data(),
-        &send_buffer[pi.buffer_idx * geo.multiplicity],
-        pi.size * geo.multiplicity * sizeof(M));
+    memcpy(f.get_elems(pi.field_idx).data(),
+           &send_buffer[pi.buffer_idx * geo.multiplicity],
+           pi.size * geo.multiplicity * sizeof(M));
   }
 }
 
 template <class M>
 long dist_read_field(Field<M>& f, const std::string& path)
-  // interface_function
+// interface_function
 {
   TIMER_VERBOSE_FLOPS("dist_read_field");
   Geometry geo;
@@ -921,7 +1003,7 @@ long dist_read_field(Field<M>& f, const std::string& path)
 
 template <class M, class N>
 void convert_field_float_from_double(Field<N>& ff, const Field<M>& f)
-  // interface_function
+// interface_function
 {
   TIMER("convert_field_float_from_double");
   qassert(f.geo.is_only_local());
@@ -932,7 +1014,8 @@ void convert_field_float_from_double(Field<N>& ff, const Field<M>& f)
   const Geometry geo = geo_remult(f.geo, multiplicity);
   ff.init(geo);
   const Vector<M> fdata = get_data(f);
-  const Vector<double> fd((double*)fdata.data(), fdata.data_size() / sizeof(double));
+  const Vector<double> fd((double*)fdata.data(),
+                          fdata.data_size() / sizeof(double));
   Vector<N> ffdata = get_data(ff);
   Vector<float> ffd((float*)ffdata.data(), ffdata.data_size() / sizeof(float));
   qassert(ffd.size() == fd.size());
@@ -943,7 +1026,7 @@ void convert_field_float_from_double(Field<N>& ff, const Field<M>& f)
 
 template <class M, class N>
 void convert_field_double_from_float(Field<N>& ff, const Field<M>& f)
-  // interface_function
+// interface_function
 {
   TIMER("convert_field_double_from_float");
   qassert(f.geo.is_only_local());
@@ -954,9 +1037,11 @@ void convert_field_double_from_float(Field<N>& ff, const Field<M>& f)
   const Geometry geo = geo_remult(f.geo, multiplicity);
   ff.init(geo);
   const Vector<M> fdata = get_data(f);
-  const Vector<float> fd((float*)fdata.data(), fdata.data_size() / sizeof(float));
+  const Vector<float> fd((float*)fdata.data(),
+                         fdata.data_size() / sizeof(float));
   Vector<N> ffdata = get_data(ff);
-  Vector<double> ffd((double*)ffdata.data(), ffdata.data_size() / sizeof(double));
+  Vector<double> ffd((double*)ffdata.data(),
+                     ffdata.data_size() / sizeof(double));
   qassert(ffd.size() == fd.size());
   for (long i = 0; i < ffd.size(); ++i) {
     ffd[i] = fd[i];
@@ -965,8 +1050,9 @@ void convert_field_double_from_float(Field<N>& ff, const Field<M>& f)
 
 template <class M>
 long dist_write_field_float_from_double(const Field<M>& f,
-    const std::string& path, const mode_t mode = default_dir_mode())
-  // interface_function
+                                        const std::string& path,
+                                        const mode_t mode = default_dir_mode())
+// interface_function
 {
   TIMER_VERBOSE_FLOPS("dist_write_field_float_from_double");
   Field<float> ff;
@@ -979,9 +1065,10 @@ long dist_write_field_float_from_double(const Field<M>& f,
 
 template <class M>
 long dist_write_field_float_from_double(const Field<M>& f,
-    const Coordinate& new_size_node,
-    const std::string& path, const mode_t mode = default_dir_mode())
-  // interface_function
+                                        const Coordinate& new_size_node,
+                                        const std::string& path,
+                                        const mode_t mode = default_dir_mode())
+// interface_function
 {
   TIMER_VERBOSE_FLOPS("dist_write_field_float_from_double");
   Field<float> ff;
@@ -994,7 +1081,7 @@ long dist_write_field_float_from_double(const Field<M>& f,
 
 template <class M>
 long dist_read_field_double_from_float(Field<M>& f, const std::string& path)
-  // interface_function
+// interface_function
 {
   TIMER_VERBOSE_FLOPS("dist_read_field_double_from_float");
   Field<float> ff;
@@ -1009,8 +1096,10 @@ long dist_read_field_double_from_float(Field<M>& f, const std::string& path)
   }
 }
 
-inline bool dist_repartition(const Coordinate& new_size_node, const std::string& path, const std::string& new_path = "")
-  // interface_function
+inline bool dist_repartition(const Coordinate& new_size_node,
+                             const std::string& path,
+                             const std::string& new_path = "")
+// interface_function
 {
   TIMER_VERBOSE("repartition");
   bool is_failed = false;
@@ -1019,8 +1108,11 @@ inline bool dist_repartition(const Coordinate& new_size_node, const std::string&
     return true;
   }
   const std::string new_npath = remove_trailing_slashes(new_path);
-  if (not (does_file_exist_sync_node(npath + "/geo-info.txt") and does_file_exist_sync_node(npath + "/checkpoint"))) {
-    displayln_info(ssprintf("repartition: WARNING: not a folder to partition: '%s'.", npath.c_str()));
+  if (not(does_file_exist_sync_node(npath + "/geo-info.txt") and
+          does_file_exist_sync_node(npath + "/checkpoint"))) {
+    displayln_info(
+        ssprintf("repartition: WARNING: not a folder to partition: '%s'.",
+                 npath.c_str()));
     return true;
   }
   Geometry geo;
@@ -1028,8 +1120,9 @@ inline bool dist_repartition(const Coordinate& new_size_node, const std::string&
   Coordinate size_node;
   dist_read_geo_info(geo, sizeof_M, size_node, npath);
   if (size_node == new_size_node) {
-    displayln_info(ssprintf("repartition: size_node=%s ; no need to repartition '%s'.",
-          show(size_node).c_str(), npath.c_str()));
+    displayln_info(
+        ssprintf("repartition: size_node=%s ; no need to repartition '%s'.",
+                 show(size_node).c_str(), npath.c_str()));
     return true;
   } else {
     Field<float> f;

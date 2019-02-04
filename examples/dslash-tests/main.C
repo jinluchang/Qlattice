@@ -1,7 +1,7 @@
 #include <qlat/qlat.h>
 
-#include <iostream>
 #include <complex>
+#include <iostream>
 
 using namespace qlat;
 using namespace std;
@@ -34,11 +34,13 @@ void simple_dwf_tests()
   ff5dout.init(geo_remult(geo, fa.ls));
   ff5din1.init(geo_remult(geo, fa.ls));
   ff5dout1.init(geo_remult(geo, fa.ls));
-  const Coordinate xg = mod(Coordinate(rand_gen(rs), rand_gen(rs), rand_gen(rs), rand_gen(rs)), geo.total_site());
+  const Coordinate xg =
+      mod(Coordinate(rand_gen(rs), rand_gen(rs), rand_gen(rs), rand_gen(rs)),
+          geo.total_site());
   const int cs = mod(rand_gen(rs), 12);
   set_point_src_fermion_field(ff4din, xg, cs);
   displayln_info("testing multiply_m_full and multiply_m");
-  fermion_field_5d_from_4d(ff5din, ff4din, 0, fa.ls-1);
+  fermion_field_5d_from_4d(ff5din, ff4din, 0, fa.ls - 1);
   ff5din1 = ff5din;
   for (int i = 0; i < 20; ++i) {
     // project_eo(ff5din, 1);
@@ -51,7 +53,8 @@ void simple_dwf_tests()
     // project_eo(ff5dout1, 1);
     ff5d = ff5dout;
     ff5d -= ff5dout1;
-    displayln_info(ssprintf("%E, %E norm(diff) = %E", norm(ff5dout), norm(ff5dout1), norm(ff5d)));
+    displayln_info(ssprintf("%E, %E norm(diff) = %E", norm(ff5dout),
+                            norm(ff5dout1), norm(ff5d)));
     ff5dout *= 1.0 / sqrt(norm(ff5dout));
     ff5dout1 *= 1.0 / sqrt(norm(ff5dout1));
     ff5d = ff5dout;
@@ -101,7 +104,8 @@ void simple_tests()
   InverterDomainWall inv;
   inv.stop_rsd() = 1e-12;
   setup_inverter(inv, gf, fa);
-  find_max_eigen_value_hermop_sym2(inv, RngState(rs, "find_max_eigen_value_hermop_sym2"));
+  find_max_eigen_value_hermop_sym2(
+      inv, RngState(rs, "find_max_eigen_value_hermop_sym2"));
   FermionField4d ff4din;
   ff4din.init(geo);
   FermionField5d ff5din, ff5dout;
@@ -111,11 +115,13 @@ void simple_tests()
   ff5dout.init(geo_remult(geo, fa.ls));
   ff5din1.init(geo_remult(geo, fa.ls));
   ff5dout1.init(geo_remult(geo, fa.ls));
-  const Coordinate xg = mod(Coordinate(rand_gen(rs), rand_gen(rs), rand_gen(rs), rand_gen(rs)), geo.total_site());
+  const Coordinate xg =
+      mod(Coordinate(rand_gen(rs), rand_gen(rs), rand_gen(rs), rand_gen(rs)),
+          geo.total_site());
   const int cs = mod(rand_gen(rs), 12);
   set_point_src_fermion_field(ff4din, xg, cs);
   displayln_info("testing multiply_m_full and multiply_m");
-  fermion_field_5d_from_4d(ff5din, ff4din, 0, fa.ls-1);
+  fermion_field_5d_from_4d(ff5din, ff4din, 0, fa.ls - 1);
   ff5din1 = ff5din;
   for (int i = 0; i < 20; ++i) {
     // project_eo(ff5din, 1);
@@ -128,7 +134,8 @@ void simple_tests()
     // project_eo(ff5dout1, 1);
     ff5d = ff5dout;
     ff5d -= ff5dout1;
-    displayln_info(ssprintf("%E, %E norm(diff) = %E", norm(ff5dout), norm(ff5dout1), norm(ff5d)));
+    displayln_info(ssprintf("%E, %E norm(diff) = %E", norm(ff5dout),
+                            norm(ff5dout1), norm(ff5d)));
     ff5dout *= 1.0 / sqrt(norm(ff5dout));
     ff5dout1 *= 1.0 / sqrt(norm(ff5dout1));
     ff5d = ff5dout;
@@ -138,7 +145,7 @@ void simple_tests()
     ff5din1 = ff5dout1;
   }
   displayln_info("testing multiply_m_full and multiply_m_with_prec_sym2");
-  fermion_field_5d_from_4d(ff5din, ff4din, 0, fa.ls-1);
+  fermion_field_5d_from_4d(ff5din, ff4din, 0, fa.ls - 1);
   ff5din1 = ff5din;
   for (int i = 0; i < 20; ++i) {
     // project_eo(ff5din, 1);
@@ -151,7 +158,8 @@ void simple_tests()
     // project_eo(ff5dout1, 1);
     ff5d = ff5dout;
     ff5d -= ff5dout1;
-    displayln_info(ssprintf("%E, %E norm(diff) = %E", norm(ff5dout), norm(ff5dout1), norm(ff5d)));
+    displayln_info(ssprintf("%E, %E norm(diff) = %E", norm(ff5dout),
+                            norm(ff5dout1), norm(ff5d)));
     ff5dout *= 1.0 / sqrt(norm(ff5dout));
     ff5dout1 *= 1.0 / sqrt(norm(ff5dout1));
     ff5d = ff5dout;
@@ -181,7 +189,8 @@ void simple_tests()
   set_half_fermion(ff5d, ffodd, 1);
   ff5d -= ff5dout;
   displayln_info(ssprintf("mdag_e_e norm(diff) = %E", norm(ff5d)));
-  displayln_info(ssprintf("norm = %E, dot = %E", norm(ffeven), dot_product(ffeven, ffeven).real()));
+  displayln_info(ssprintf("norm = %E, dot = %E", norm(ffeven),
+                          dot_product(ffeven, ffeven).real()));
   FermionField5d tmp;
   multiply_m_e_e(tmp, ffeven, fa);
   displayln_info(ssprintf("dot = %s", show(dot_product(ffeven, tmp)).c_str()));
@@ -197,7 +206,8 @@ void simple_tests()
   multiply_mdag(tmp, ff5dout, inv);
   displayln_info(ssprintf("dot = %s", show(dot_product(ff5dout, tmp)).c_str()));
   //
-  displayln_info(ssprintf("norm = %E, dot = %E", norm(ffodd), dot_product(ffodd, ffodd).real()));
+  displayln_info(ssprintf("norm = %E, dot = %E", norm(ffodd),
+                          dot_product(ffodd, ffodd).real()));
   tmp.init();
   multiply_hermop_sym2(tmp, ffodd, inv);
   FermionField5d ffodd2;

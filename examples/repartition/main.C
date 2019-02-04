@@ -1,7 +1,7 @@
 #include <qlat/qlat.h>
 
-#include <iostream>
 #include <complex>
+#include <iostream>
 #include <vector>
 
 using namespace qlat;
@@ -16,14 +16,16 @@ int main(int argc, char* argv[])
   }
   const Coordinate new_size_node = read_coordinate(argv[1]);
   displayln_info("new_size_node: " + show(new_size_node));
-  std::vector<std::string> fns(argc-2);
+  std::vector<std::string> fns(argc - 2);
   for (long i = 0; i < (long)fns.size(); ++i) {
-    fns[i] = remove_trailing_slashes(argv[2+i]);
-    displayln_info(ssprintf("fns[%5d/%d] = '%s'", i, fns.size(), fns[i].c_str()));
+    fns[i] = remove_trailing_slashes(argv[2 + i]);
+    displayln_info(
+        ssprintf("fns[%5d/%d] = '%s'", i, fns.size(), fns[i].c_str()));
   }
   displayln_info("Start to repartition...");
   for (long i = 0; i < (long)fns.size(); ++i) {
-    displayln_info(ssprintf("fns[%5d/%d] = '%s'", i, fns.size(), fns[i].c_str()));
+    displayln_info(
+        ssprintf("fns[%5d/%d] = '%s'", i, fns.size(), fns[i].c_str()));
     dist_repartition(new_size_node, fns[i]);
   }
   Timer::display();

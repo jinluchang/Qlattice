@@ -1,16 +1,14 @@
 #pragma once
 
 #include <qlat/config.h>
+#include <qlat/coordinate-d.h>
 #include <qlat/field.h>
 #include <qlat/matrix.h>
-#include <qlat/coordinate-d.h>
 
 QLAT_START_NAMESPACE
 
-// field.h and field-utils.h are including each other. Need this forward declaration.
-// template <class M>
-// struct Field;
-// End of forward declaration.
+// field.h and field-utils.h are including each other. Need this forward
+// declaration. template <class M> struct Field; End of forward declaration.
 
 template <class M>
 void set_zero(Field<M>& f)
@@ -26,7 +24,7 @@ void set_unit(Field<M>& f)
   }
 }
 
-template<class M>
+template <class M>
 std::vector<M> field_sum(const Field<M>& f)
 {
   const Geometry& geo = f.geo;
@@ -43,7 +41,7 @@ std::vector<M> field_sum(const Field<M>& f)
   return vec;
 }
 
-template<class M>
+template <class M>
 std::vector<M> field_glb_sum_double(const Field<M>& f)
 {
   std::vector<M> vec = field_sum(f);
@@ -51,7 +49,7 @@ std::vector<M> field_glb_sum_double(const Field<M>& f)
   return vec;
 }
 
-template<class M>
+template <class M>
 std::vector<M> field_glb_sum_long(const Field<M>& f)
 {
   std::vector<M> vec = field_sum(f);
@@ -61,9 +59,9 @@ std::vector<M> field_glb_sum_long(const Field<M>& f)
 
 template <class M>
 std::vector<M> field_project_mom(const Field<M>& f, const CoordinateD& mom)
-  // mom is in lattice unit (1/a)
-  // project to component with momentum 'mom'
-  // use glb_sum_double_vec to perform glb_sum
+// mom is in lattice unit (1/a)
+// project to component with momentum 'mom'
+// use glb_sum_double_vec to perform glb_sum
 {
   TIMER("field_project_mom");
   const Geometry& geo = f.geo;
@@ -115,8 +113,9 @@ M field_get_elem(const Field<M>& f, const Coordinate& xg)
 }
 
 template <class M>
-void field_shift_dir(Field<M>& f, const Field<M>& f1, const int dir, const int shift)
-  // shift f1 in 'dir' direction for 'shift' steps
+void field_shift_dir(Field<M>& f, const Field<M>& f1, const int dir,
+                     const int shift)
+// shift f1 in 'dir' direction for 'shift' steps
 {
   TIMER("field_shift_dir");
   qassert(0 <= dir and dir < 4);
@@ -135,7 +134,8 @@ void field_shift_dir(Field<M>& f, const Field<M>& f1, const int dir, const int s
     for (long index = 0; index < geo.local_volume(); ++index) {
       const Coordinate xl = geo.coordinate_from_index(index);
       const Coordinate xg = geo.coordinate_g_from_l(xl);
-      const Coordinate xg1 = mod(xg - (shift + i * geo.node_site[dir]) * nvec, total_site);
+      const Coordinate xg1 =
+          mod(xg - (shift + i * geo.node_site[dir]) * nvec, total_site);
       const Coordinate xl1 = geo.coordinate_l_from_g(xg1);
       if (geo.is_local(xl1)) {
         assign(f.get_elems(xl), tmp1.get_elems_const(xl1));
@@ -150,7 +150,7 @@ void field_shift_dir(Field<M>& f, const Field<M>& f1, const int dir, const int s
 
 template <class M>
 void field_shift(Field<M>& f, const Field<M>& f1, const Coordinate& shift)
-  // shift f1 with 'shift'
+// shift f1 with 'shift'
 {
   TIMER("field_shift");
   Field<M> tmp, tmp1;
@@ -161,7 +161,9 @@ void field_shift(Field<M>& f, const Field<M>& f1, const Coordinate& shift)
 }
 
 template <class M>
-void set_field_u_rand_double(Field<M>& f, const RngState& rs, const double upper = 1.0, const double lower = -1.0)
+void set_field_u_rand_double(Field<M>& f, const RngState& rs,
+                             const double upper = 1.0,
+                             const double lower = -1.0)
 {
   TIMER("set_field_u_rand_double");
   const Geometry& geo = f.geo;
@@ -171,7 +173,7 @@ void set_field_u_rand_double(Field<M>& f, const RngState& rs, const double upper
     const Coordinate xg = geo.coordinate_g_from_l(xl);
     RngState rsi(rs, show(xg));
     Vector<WilsonVector> v = f.get_elems(xl);
-    Vector<double> dv((double*)v.data(), v.data_size()/sizeof(double));
+    Vector<double> dv((double*)v.data(), v.data_size() / sizeof(double));
     for (int m = 0; m < dv.size(); ++m) {
       dv[m] = u_rand_gen(rsi, 1.0, -1.0);
     }

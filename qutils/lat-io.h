@@ -1,41 +1,37 @@
 #pragma once
 
+#include <cassert>
 #include <string>
 #include <vector>
-#include <cassert>
 
-#include <stdint.h>
 #include <endian.h>
 #include <omp.h>
+#include <stdint.h>
 
 #include <zlib.h>
 
 #include "show.h"
 
-namespace latio {
-
+namespace latio
+{
 const std::string lat_data_header = "#!/usr/bin/env lat-io-glimpse\n";
 
-struct LatDim
-{
+struct LatDim {
   std::string name;
-  long size; // size of this dimension
-  std::vector<std::string> indices; // indices names
-                                    // (default: "-1", "-2", "-3", ...)
-                                    // If indices.size() < size then example will be
-                                    // indices[0], indices[1], "-3", "-4", ...
-                                    // Won't check duplication (when assess, search from left to right)
+  long size;                         // size of this dimension
+  std::vector<std::string> indices;  // indices names
+                                     // (default: "-1", "-2", "-3", ...)
+                                     // If indices.size() < size then example
+                                     // will be indices[0], indices[1], "-3",
+                                     // "-4", ... Won't check duplication (when
+                                     // assess, search from left to right)
   //
-  LatDim()
-  {
-     size = 0;
-  }
+  LatDim() { size = 0; }
 };
 
 typedef std::vector<LatDim> LatInfo;
 
-struct LatData
-{
+struct LatData {
   LatInfo info;
   std::vector<double> res;
   //
@@ -60,21 +56,16 @@ inline void lat_data_alloc(LatData& ld)
   ld.res.resize(lat_data_size(ld.info));
 }
 
-}
+}  // namespace latio
 
-namespace qutils {
-
+namespace qutils
+{
 inline uint64_t flip_endian_64(uint64_t x)
 {
-  return
-    ((x >> 56)) |
-    ((x >> 40) & 0xFF00) |
-    ((x >> 24) & 0xFF0000) |
-    ((x >>  8) & 0xFF000000) |
-    ((x <<  8) & 0xFF00000000) |
-    ((x << 24) & 0xFF0000000000) |
-    ((x << 40) & 0xFF000000000000) |
-    ((x << 56));
+  return ((x >> 56)) | ((x >> 40) & 0xFF00) | ((x >> 24) & 0xFF0000) |
+         ((x >> 8) & 0xFF000000) | ((x << 8) & 0xFF00000000) |
+         ((x << 24) & 0xFF0000000000) | ((x << 40) & 0xFF000000000000) |
+         ((x << 56));
 }
 
 inline void flip_endian_64(void* str, const size_t len)
@@ -88,17 +79,15 @@ inline void flip_endian_64(void* str, const size_t len)
 
 inline bool is_big_endian()
 {
-#if defined(__BYTE_ORDER) && (__BYTE_ORDER != 0) && (__BYTE_ORDER == __BIG_ENDIAN)
+#if defined(__BYTE_ORDER) && (__BYTE_ORDER != 0) && \
+    (__BYTE_ORDER == __BIG_ENDIAN)
   return true;
 #else
   return false;
 #endif
 }
 
-inline bool is_little_endian()
-{
-  return not is_big_endian();
-}
+inline bool is_little_endian() { return not is_big_endian(); }
 
 inline void to_from_little_endian_64(void* str, const size_t len)
 {
@@ -143,10 +132,10 @@ inline crc32_t crc32(const void* smessage, const long nBytes)
 }
 
 inline crc32_t crc32_shift(const crc32_t initial, const long offset)
-  // shift initial left by offset length
-  // if offset == 0 then return initial
-  // offset should be the length of the part after the initial part (which evaluate to crc initial)
-  // xor all the results gives the final crc32
+// shift initial left by offset length
+// if offset == 0 then return initial
+// offset should be the length of the part after the initial part (which
+// evaluate to crc initial) xor all the results gives the final crc32
 {
   return crc32_combine(initial, 0, offset);
 }
@@ -170,7 +159,7 @@ inline crc32_t crc32_par(const void* smessage, const long nBytes)
     crcs[id] = crc32_shift(crc, size - end);
 #pragma omp barrier
     if (0 == id) {
-      for (int i = 0 ; i < nthreads; ++i) {
+      for (int i = 0; i < nthreads; ++i) {
         ret ^= crcs[i];
       }
     }
@@ -185,10 +174,10 @@ inline crc32_t read_crc32(const std::string& s)
   return crc32;
 }
 
-}
+}  // namespace qutils
 
-namespace qshow {
-
+namespace qshow
+{
 inline std::string show(const latio::LatDim& dim)
 {
   std::ostringstream out;
@@ -250,10 +239,10 @@ inline bool parse_string(std::string& str, long& cur, const std::string& data)
   } else {
     const long start = cur;
     char c;
-    while (parse_char(c, cur, data) and c!= '"') {
+    while (parse_char(c, cur, data) and c != '"') {
     }
     str = std::string(data, start, cur - start - 1);
-    return data[cur-1] == '"' && cur > start;
+    return data[cur - 1] == '"' && cur > start;
   }
 }
 
@@ -319,10 +308,10 @@ inline latio::LatInfo read_lat_info(const std::string& str)
   return info;
 }
 
-}
+}  // namespace qshow
 
-namespace latio {
-
+namespace latio
+{
 inline void LatData::load(const std::string& fn)
 {
   using namespace qshow;
@@ -350,9 +339,12 @@ inline void LatData::load(const std::string& fn)
   assert(res.size() == lat_data_size(info));
   assert(res.size() * sizeof(double) == read_long(infos[2]));
   fread(res.data(), sizeof(double), res.size(), fp);
-  const crc32_t crc_computed = crc32_par(res.data(), res.size() * sizeof(double));
+  const crc32_t crc_computed =
+      crc32_par(res.data(), res.size() * sizeof(double));
   if (crc != crc_computed) {
-    displayln(ssprintf("ERROR: crc do not match: file=%08X computed=%08X fn='%s'.", crc, crc_computed, fn.c_str()));
+    displayln(
+        ssprintf("ERROR: crc do not match: file=%08X computed=%08X fn='%s'.",
+                 crc, crc_computed, fn.c_str()));
     assert(false);
   }
   to_from_little_endian_64(res.data(), res.size() * sizeof(double));
@@ -371,23 +363,26 @@ inline void LatData::save(const std::string& fn) const
     assert(res_copy.size() == res.size());
     to_from_little_endian_64(res_copy.data(), res_copy.size() * sizeof(double));
   }
-  const std::string data_size = ssprintf("data_size\n%ld\n", res.size() * sizeof(double));
+  const std::string data_size =
+      ssprintf("data_size\n%ld\n", res.size() * sizeof(double));
   const std::string info_str = show(info);
-  const std::string checksum_str = ssprintf("crc32: %08X\n",
-      crc32_par(is_little_endian() ? res.data() : res_copy.data(),
-        res.size() * sizeof(double)));
+  const std::string checksum_str =
+      ssprintf("crc32: %08X\n",
+               crc32_par(is_little_endian() ? res.data() : res_copy.data(),
+                         res.size() * sizeof(double)));
   const std::string end_header = "END_HEADER\n";
   fwrite(lat_data_header.data(), lat_data_header.size(), 1, fp);
   fwrite(data_size.data(), data_size.size(), 1, fp);
   fwrite(info_str.data(), info_str.size(), 1, fp);
   fwrite(checksum_str.data(), checksum_str.size(), 1, fp);
   fwrite(end_header.data(), end_header.size(), 1, fp);
-  fwrite(is_little_endian() ? res.data() : res_copy.data(), sizeof(double), res.size(), fp);
+  fwrite(is_little_endian() ? res.data() : res_copy.data(), sizeof(double),
+         res.size(), fp);
   fclose(fp);
   rename((fn + ".partial").c_str(), fn.c_str());
 }
 
-}
+}  // namespace latio
 
 #ifndef USE_NAMESPACE
 using namespace latio;

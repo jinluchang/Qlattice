@@ -2,45 +2,30 @@
 
 #include <cassert>
 
-namespace std {
-
-template <class M, unsigned long N>
-struct array
+namespace std
 {
+template <class M, unsigned long N>
+struct array {
   M v[N];
   //
-  unsigned long size() const
-  {
-    return N;
-  }
+  unsigned long size() const { return N; }
   //
-  void fill(const M& x) {
+  void fill(const M& x)
+  {
     for (int i = 0; i < N; ++i) {
       v[i] = x;
     }
   }
   //
-  M* data()
-  {
-    return v;
-  }
-  const M* data() const
-  {
-    return v;
-  }
+  M* data() { return v; }
+  const M* data() const { return v; }
   //
-  M& operator[](int k)
-  {
-    return v[k];
-  };
-  const M& operator[](int k) const
-  {
-    return v[k];
-  };
+  M& operator[](int k) { return v[k]; };
+  const M& operator[](int k) const { return v[k]; };
 };
 
 template <class M, unsigned long N>
-inline bool operator<(const array<M,N>& a1, const array<M,N>& a2)
+inline bool operator<(const array<M, N>& a1, const array<M, N>& a2)
 {
   for (int i = 0; i < N; ++i) {
     if (a1[i] < a2[i]) {
@@ -53,7 +38,7 @@ inline bool operator<(const array<M,N>& a1, const array<M,N>& a2)
 }
 
 template <class M, unsigned long N>
-inline bool operator<=(const array<M,N>& a1, const array<M,N>& a2)
+inline bool operator<=(const array<M, N>& a1, const array<M, N>& a2)
 {
   for (int i = 0; i < N; ++i) {
     if (a1[i] < a2[i]) {
@@ -65,5 +50,4 @@ inline bool operator<=(const array<M,N>& a1, const array<M,N>& a2)
   return true;
 }
 
-
-}
+}  // namespace std

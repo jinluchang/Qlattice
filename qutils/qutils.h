@@ -2,8 +2,8 @@
 
 #include <vector>
 
-namespace qutils {
-  
+namespace qutils
+{
 template <class M>
 void clear(std::vector<M>& vec)
 {
@@ -11,4 +11,4 @@ void clear(std::vector<M>& vec)
   swap(empty, vec);
 }
 
-}
+}  // namespace qutils

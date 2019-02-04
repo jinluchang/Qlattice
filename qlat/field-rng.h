@@ -5,21 +5,17 @@
 
 QLAT_START_NAMESPACE
 
-struct RngField : FieldM<RngState,1>
-{
+struct RngField : FieldM<RngState, 1> {
   virtual const std::string& cname()
   {
     static const std::string s = "RngField";
     return s;
   }
   //
-  virtual void init()
-  {
-    FieldM<RngState,1>::init();
-  }
+  virtual void init() { FieldM<RngState, 1>::init(); }
   virtual void init(const Geometry& geo_, const RngState& rs)
   {
-    FieldM<RngState,1>::init(geo_);
+    FieldM<RngState, 1>::init(geo_);
     Coordinate total_site = geo.total_site();
 #pragma omp parallel for
     for (long index = 0; index < geo.local_volume(); ++index) {
@@ -30,14 +26,8 @@ struct RngField : FieldM<RngState,1>
     }
   }
   //
-  RngField()
-  {
-    FieldM<RngState,1>::init();
-  }
-  RngField(const RngField& rf)
-  {
-    qassert(false);
-  }
+  RngField() { FieldM<RngState, 1>::init(); }
+  RngField(const RngField& rf) { qassert(false); }
 };
 
 QLAT_END_NAMESPACE

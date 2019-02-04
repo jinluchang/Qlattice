@@ -1,6 +1,7 @@
 CPS_START_NAMESPACE
 
-inline std::string showIntWP(const int n, const int w, const char pad) {
+inline std::string showIntWP(const int n, const int w, const char pad)
+{
   std::ostringstream out;
   out << std::setfill(pad) << std::setw(w) << n;
   return out.str();
@@ -11,26 +12,29 @@ struct DataSizeNmemb {
   long size;
   long nmemb;
   //
-  void init() {
+  void init()
+  {
     data = NULL;
     size = 0;
     nmemb = 0;
   }
-  void init(void* data_, const long size_, const long nmemb_) {
+  void init(void* data_, const long size_, const long nmemb_)
+  {
     data = data_;
     size = size_;
     nmemb = nmemb_;
   }
   //
-  DataSizeNmemb() {
-    init();
-  }
-  DataSizeNmemb(void* data_, const long size_, const long nmemb_) {
+  DataSizeNmemb() { init(); }
+  DataSizeNmemb(void* data_, const long size_, const long nmemb_)
+  {
     init(data_, size_, nmemb_);
   }
 };
 
-inline qlat::crc32_t dataCRC32(qlat::crc32_t* chksums, const std::vector<DataSizeNmemb>& dsns) {
+inline qlat::crc32_t dataCRC32(qlat::crc32_t* chksums,
+                               const std::vector<DataSizeNmemb>& dsns)
+{
   // Length of chksums should be getNumNode()
   TIMER_FLOPS("dataCRC32");
   for (int k = 0; k < dsns.size(); k++) {
@@ -49,7 +53,9 @@ inline qlat::crc32_t dataCRC32(qlat::crc32_t* chksums, const std::vector<DataSiz
   return qlat::crc32(chksums, getNumNode() * sizeof(qlat::crc32_t));
 }
 
-inline qlat::crc32_t dataCRC32(qlat::crc32_t* chksums, const void* data, const long size, const long nmemb) {
+inline qlat::crc32_t dataCRC32(qlat::crc32_t* chksums, const void* data,
+                               const long size, const long nmemb)
+{
   // Length of chksums should be getNumNode()
   DataSizeNmemb dsn((void*)data, size, nmemb);
   std::vector<DataSizeNmemb> dsns;
@@ -57,18 +63,21 @@ inline qlat::crc32_t dataCRC32(qlat::crc32_t* chksums, const void* data, const l
   return dataCRC32(chksums, dsns);
 }
 
-template<class M>
-qlat::crc32_t gcCRC32(qlat::crc32_t* chksums, const GridComm<M>& gc) {
+template <class M>
+qlat::crc32_t gcCRC32(qlat::crc32_t* chksums, const GridComm<M>& gc)
+{
   // Length of chksums should be getNumNode()
   TIMER_FLOPS("gcCRC32");
   timer.flops += gc.getAllocSize();
   const Geometry& geo = gc.getGeometry();
   assert(geo.isOnlyLocal());
-  return dataCRC32(chksums, gc.getField(), sizeof(M) * geo.multiplicity, geo.localVolume());
+  return dataCRC32(chksums, gc.getField(), sizeof(M) * geo.multiplicity,
+                   geo.localVolume());
 }
 
-template<class M>
-void gcWriteInfo(const GridComm<M>& gc, const std::string& path) {
+template <class M>
+void gcWriteInfo(const GridComm<M>& gc, const std::string& path)
+{
   TIMER("gcWriteInfo");
   const Geometry& geo = gc.getGeometry();
   assert(geo.isOnlyLocal());
@@ -91,16 +100,18 @@ void gcWriteInfo(const GridComm<M>& gc, const std::string& path) {
     fprintf(file, "PI = %.20f\n", PI);
     const char* pic = (const char*)&PI;
     fprintf(file, "PI_double = %hhx %hhx %hhx %hhx %hhx %hhx %hhx %hhx\n",
-      pic[0], pic[1], pic[2], pic[3], pic[4], pic[5], pic[6], pic[7]);
+            pic[0], pic[1], pic[2], pic[3], pic[4], pic[5], pic[6], pic[7]);
     const float PIf = PI;
     const char* pifc = (const char*)&PIf;
-    fprintf(file, "PI_float = %hhx %hhx %hhx %hhx\n",
-      pifc[0], pifc[1], pifc[2], pifc[3]);
+    fprintf(file, "PI_float = %hhx %hhx %hhx %hhx\n", pifc[0], pifc[1], pifc[2],
+            pifc[3]);
     fclose(file);
   }
 }
 
-inline void dataWriteInfo(const std::vector<DataSizeNmemb>& dsns, const std::string& path) {
+inline void dataWriteInfo(const std::vector<DataSizeNmemb>& dsns,
+                          const std::string& path)
+{
   TIMER_FLOPS("dataWriteInfo");
   for (int k = 0; k < dsns.size(); k++) {
     timer.flops += dsns[k].size * dsns[k].nmemb;
@@ -119,7 +130,9 @@ inline void dataWriteInfo(const std::vector<DataSizeNmemb>& dsns, const std::str
   }
 }
 
-inline void dataReadInfo(const std::vector<DataSizeNmemb>& dsns, const std::string& path) {
+inline void dataReadInfo(const std::vector<DataSizeNmemb>& dsns,
+                         const std::string& path)
+{
   TIMER_FLOPS("dataReadInfo");
   for (int k = 0; k < dsns.size(); k++) {
     timer.flops += dsns[k].size * dsns[k].nmemb;
@@ -137,7 +150,10 @@ inline void dataReadInfo(const std::vector<DataSizeNmemb>& dsns, const std::stri
       assert(chksums[i] == chksum_read);
     }
     if (chksum != chksum_read) {
-      displayln(fname + ssprintf(": WARNING mismatch total chksum=%08X chksum_read=%08X", chksum, chksum_read));
+      displayln(
+          fname +
+          ssprintf(": WARNING mismatch total chksum=%08X chksum_read=%08X",
+                   chksum, chksum_read));
     }
     fclose(file);
   }
@@ -146,23 +162,28 @@ inline void dataReadInfo(const std::vector<DataSizeNmemb>& dsns, const std::stri
 const int DATA_READ_WRITE_FILENAME_WIDTH = 10;
 const int DATA_READ_WRITE_NUMBER_OF_DIRECTORIES = 32;
 
-inline int& dataWriteParNumber() {
+inline int& dataWriteParNumber()
+{
   static int npar = 3;
   return npar;
 }
 
-inline int& dataReadParNumber() {
+inline int& dataReadParNumber()
+{
   static int npar = 3;
   return npar;
 }
 
-inline long dataWriteParNode(const std::vector<DataSizeNmemb>& dsns, const std::string& path, const mode_t mode = defaultDirMode())
+inline long dataWriteParNode(const std::vector<DataSizeNmemb>& dsns,
+                             const std::string& path,
+                             const mode_t mode = defaultDirMode())
 {
   TIMER_VERBOSE_FLOPS("dataWriteParNode");
   for (int k = 0; k < dsns.size(); k++) {
     timer.flops += dsns[k].size * dsns[k].nmemb * getNumNode();
   }
-  const int size_ndir = std::min(DATA_READ_WRITE_NUMBER_OF_DIRECTORIES, getNumNode());
+  const int size_ndir =
+      std::min(DATA_READ_WRITE_NUMBER_OF_DIRECTORIES, getNumNode());
   Makedir(path.c_str(), mode);
   if (getIdNode() < DATA_READ_WRITE_NUMBER_OF_DIRECTORIES) {
     makedir((path + "/" + showIntWP(getIdNode(), 2, '0')).c_str(), mode);
@@ -172,7 +193,9 @@ inline long dataWriteParNode(const std::vector<DataSizeNmemb>& dsns, const std::
   assert(0 <= idDir && idDir < size_ndir);
   const std::string pathId = path + "/" + showIntWP(idDir, 2, '0');
   checkdir(pathId.c_str(), mode);
-  const std::string filename = pathId + "/" + showIntWP(getIdNode(), DATA_READ_WRITE_FILENAME_WIDTH, '0');
+  const std::string filename =
+      pathId + "/" +
+      showIntWP(getIdNode(), DATA_READ_WRITE_FILENAME_WIDTH, '0');
   const int n_cycle = std::max(1, getNumNode() / dataWriteParNumber());
   long total_bytes = 0;
   {
@@ -189,13 +212,16 @@ inline long dataWriteParNode(const std::vector<DataSizeNmemb>& dsns, const std::
           file = fopen(filename.c_str(), "w");
         }
         for (int k = 0; k < dsns.size(); k++) {
-          bytes += dsns[k].size * fwrite(dsns[k].data, dsns[k].size, dsns[k].nmemb, file);
+          bytes += dsns[k].size *
+                   fwrite(dsns[k].data, dsns[k].size, dsns[k].nmemb, file);
         }
         fclose(file);
       }
       sumArray(&bytes, 1);
       total_bytes += bytes;
-      DisplayInfo(cname, fname, "cycle / n_cycle = %d / %d ; total_bytes = %ld\n", i+1, n_cycle, total_bytes);
+      DisplayInfo(cname, fname,
+                  "cycle / n_cycle = %d / %d ; total_bytes = %ld\n", i + 1,
+                  n_cycle, total_bytes);
     }
   }
   dataWriteInfo(dsns, path);
@@ -203,25 +229,34 @@ inline long dataWriteParNode(const std::vector<DataSizeNmemb>& dsns, const std::
   return total_bytes;
 }
 
-inline long dataWriteParNode(const void* data, const long size, const long nmemb, const std::string& path, const mode_t mode = defaultDirMode()) {
+inline long dataWriteParNode(const void* data, const long size,
+                             const long nmemb, const std::string& path,
+                             const mode_t mode = defaultDirMode())
+{
   DataSizeNmemb dsn((void*)data, size, nmemb);
   std::vector<DataSizeNmemb> dsns;
   dsns.push_back(dsn);
   return dataWriteParNode(dsns, path, mode);
 }
 
-template<class M>
-long gcWriteParNode(const GridComm<M>& gc, const std::string& path, const mode_t mode = defaultDirMode()) {
+template <class M>
+long gcWriteParNode(const GridComm<M>& gc, const std::string& path,
+                    const mode_t mode = defaultDirMode())
+{
   TIMER_VERBOSE_FLOPS("gcWriteParNode");
   const Geometry& geo = gc.getGeometry();
   assert(geo.isOnlyLocal());
-  long total_bytes = dataWriteParNode(gc.getField(), sizeof(M) * geo.multiplicity, geo.localVolume(), path, mode);
+  long total_bytes =
+      dataWriteParNode(gc.getField(), sizeof(M) * geo.multiplicity,
+                       geo.localVolume(), path, mode);
   gcWriteInfo(gc, path);
   timer.flops += total_bytes;
   return total_bytes;
 }
 
-inline long dataReadParNode(const std::vector<DataSizeNmemb>& dsns, const std::string& path) {
+inline long dataReadParNode(const std::vector<DataSizeNmemb>& dsns,
+                            const std::string& path)
+{
   if (!DoesFileExist(path + "/checkpoint")) {
     DisplayInfo(cname, "dataReadParNode", "'%s' do not exist.\n", path.c_str());
     return 0;
@@ -230,12 +265,15 @@ inline long dataReadParNode(const std::vector<DataSizeNmemb>& dsns, const std::s
   for (int k = 0; k < dsns.size(); k++) {
     timer.flops += dsns[k].size * dsns[k].nmemb * getNumNode();
   }
-  const int size_ndir = std::min(DATA_READ_WRITE_NUMBER_OF_DIRECTORIES, getNumNode());
+  const int size_ndir =
+      std::min(DATA_READ_WRITE_NUMBER_OF_DIRECTORIES, getNumNode());
   const int dir_size = (getNumNode() - 1) / size_ndir + 1;
   const int idDir = getIdNode() / dir_size;
   assert(0 <= idDir && idDir < size_ndir);
   const std::string pathId = path + "/" + showIntWP(idDir, 2, '0');
-  const std::string filename = pathId + "/" + showIntWP(getIdNode(), DATA_READ_WRITE_FILENAME_WIDTH, '0');
+  const std::string filename =
+      pathId + "/" +
+      showIntWP(getIdNode(), DATA_READ_WRITE_FILENAME_WIDTH, '0');
   const int n_cycle = std::max(1, getNumNode() / dataReadParNumber());
   long total_bytes = 0;
   {
@@ -249,38 +287,46 @@ inline long dataReadParNode(const std::vector<DataSizeNmemb>& dsns, const std::s
         FILE* file = fopen(filename.c_str(), "r");
         assert(NULL != file);
         for (int k = 0; k < dsns.size(); k++) {
-          bytes += dsns[k].size * fread(dsns[k].data, dsns[k].size, dsns[k].nmemb, file);
+          bytes += dsns[k].size *
+                   fread(dsns[k].data, dsns[k].size, dsns[k].nmemb, file);
         }
         fclose(file);
       }
       sumArray(&bytes, 1);
       total_bytes += bytes;
-      DisplayInfo(cname, fname, "cycle / n_cycle = %d / %d ; total_bytes = %ld\n", i+1, n_cycle, total_bytes);
+      DisplayInfo(cname, fname,
+                  "cycle / n_cycle = %d / %d ; total_bytes = %ld\n", i + 1,
+                  n_cycle, total_bytes);
     }
   }
   dataReadInfo(dsns, path);
   return total_bytes;
 }
 
-inline long dataReadParNode(void* data, const long size, const long nmemb, const std::string& path) {
+inline long dataReadParNode(void* data, const long size, const long nmemb,
+                            const std::string& path)
+{
   DataSizeNmemb dsn((void*)data, size, nmemb);
   std::vector<DataSizeNmemb> dsns;
   dsns.push_back(dsn);
   return dataReadParNode(dsns, path);
 }
 
-template<class M>
-long gcReadParNode(GridComm<M>& gc, const std::string& path) {
+template <class M>
+long gcReadParNode(GridComm<M>& gc, const std::string& path)
+{
   TIMER_VERBOSE_FLOPS("gcReadParNode");
   const Geometry& geo = gc.getGeometry();
   assert(geo.isOnlyLocal());
-  long total_bytes = dataReadParNode(gc.getField(), sizeof(M) * geo.multiplicity, geo.localVolume(), path);
+  long total_bytes = dataReadParNode(
+      gc.getField(), sizeof(M) * geo.multiplicity, geo.localVolume(), path);
   timer.flops += total_bytes;
   return total_bytes;
 }
 
-template<class M, class N>
-void gcFloatFromDouble(GridComm<N>& gcf, const GridComm<M>& gcd) {
+template <class M, class N>
+void gcFloatFromDouble(GridComm<N>& gcf, const GridComm<M>& gcd)
+{
   // gcf can be uninitialized
   TIMER_FLOPS("gcFloatFromDouble");
   timer.flops += gcd.getAllocSize() / sizeof(double);
@@ -288,9 +334,12 @@ void gcFloatFromDouble(GridComm<N>& gcf, const GridComm<M>& gcd) {
   assert(geod.isOnlyLocal());
   assert(0 == sizeof(M) % sizeof(double));
   assert(0 == sizeof(N) % sizeof(float));
-  assert(0 == (geod.multiplicity * sizeof(M) / sizeof(double)) % (sizeof(N) / sizeof(float)));
+  assert(0 == (geod.multiplicity * sizeof(M) / sizeof(double)) %
+                  (sizeof(N) / sizeof(float)));
   Geometry geof;
-  geof.init(geod, 0, geod.multiplicity * sizeof(M) / sizeof(double) / (sizeof(N) / sizeof(float)));
+  geof.init(geod, 0,
+            geod.multiplicity * sizeof(M) / sizeof(double) /
+                (sizeof(N) / sizeof(float)));
   gcf.init(geof);
   assert(gcf.getGeometry() == geof);
   const double* gcdf = (const double*)gcd.getField();
@@ -300,17 +349,21 @@ void gcFloatFromDouble(GridComm<N>& gcf, const GridComm<M>& gcd) {
   }
 }
 
-template<class M, class N>
-void gcDoubleFromFloat(GridComm<M>& gcd, const GridComm<N>& gcf) {
+template <class M, class N>
+void gcDoubleFromFloat(GridComm<M>& gcd, const GridComm<N>& gcf)
+{
   // gcd can be uninitialized
   TIMER_FLOPS("gcDoubleFromFloat");
   timer.flops += gcf.getAllocSize() / sizeof(float);
   const Geometry& geof = gcf.getGeometry();
   assert(0 == sizeof(N) % sizeof(float));
   assert(0 == sizeof(M) % sizeof(double));
-  assert(0 == (geof.multiplicity * sizeof(N) / sizeof(float)) % (sizeof(M) / sizeof(double)));
+  assert(0 == (geof.multiplicity * sizeof(N) / sizeof(float)) %
+                  (sizeof(M) / sizeof(double)));
   Geometry geod;
-  geod.init(geof, 0, geof.multiplicity * sizeof(N) / sizeof(float) / (sizeof(M) / sizeof(double)));
+  geod.init(geof, 0,
+            geof.multiplicity * sizeof(N) / sizeof(float) /
+                (sizeof(M) / sizeof(double)));
   gcd.init(geod);
   assert(gcd.getGeometry() == geod);
   const float* gcff = (const float*)gcf.getField();
@@ -320,8 +373,9 @@ void gcDoubleFromFloat(GridComm<M>& gcd, const GridComm<N>& gcf) {
   }
 }
 
-template<class M>
-long gcReadParNodeDoubleFromFloat(GridComm<M>& gc, const std::string& path) {
+template <class M>
+long gcReadParNodeDoubleFromFloat(GridComm<M>& gc, const std::string& path)
+{
   GridComm<float> gcf;
   gcFloatFromDouble(gcf, gc);
   long total_bytes = gcReadParNode(gcf, path);
@@ -331,8 +385,11 @@ long gcReadParNodeDoubleFromFloat(GridComm<M>& gc, const std::string& path) {
   return total_bytes;
 }
 
-template<class M>
-long gcWriteParNodeFloatFromDouble(const GridComm<M>& gc, const std::string& path, const mode_t mode = defaultDirMode()) {
+template <class M>
+long gcWriteParNodeFloatFromDouble(const GridComm<M>& gc,
+                                   const std::string& path,
+                                   const mode_t mode = defaultDirMode())
+{
   GridComm<float> gcf;
   gcFloatFromDouble(gcf, gc);
   long total_bytes = gcWriteParNode(gcf, path, mode);
@@ -340,4 +397,3 @@ long gcWriteParNodeFloatFromDouble(const GridComm<M>& gc, const std::string& pat
 }
 
 CPS_END_NAMESPACE
-
