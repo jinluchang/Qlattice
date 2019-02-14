@@ -10,7 +10,7 @@
 
 QLAT_START_NAMESPACE
 
-template <class T = Complex>
+template <class T = ComplexT>
 struct QedGaugeFieldT : FieldM<T, DIMN> {
   virtual const std::string& cname()
   {
@@ -19,7 +19,7 @@ struct QedGaugeFieldT : FieldM<T, DIMN> {
   }
 };
 
-template <class T = Complex>
+template <class T = ComplexT>
 struct ComplexScalerFieldT : FieldM<T, 1> {
   virtual const std::string& cname()
   {
@@ -28,7 +28,7 @@ struct ComplexScalerFieldT : FieldM<T, 1> {
   }
 };
 
-template <class T = Complex>
+template <class T = ComplexT>
 struct SpinPropagator4dT : FieldM<SpinMatrixT<T>, 1> {
   virtual const std::string& cname()
   {
@@ -39,11 +39,11 @@ struct SpinPropagator4dT : FieldM<SpinMatrixT<T>, 1> {
 
 #ifndef QLAT_NO_DEFAULT_TYPE
 
-typedef QedGaugeFieldT<Complex> QedGaugeField;
+typedef QedGaugeFieldT<> QedGaugeField;
 
-typedef ComplexScalerFieldT<Complex> ComplexScalerField;
+typedef ComplexScalerFieldT<> ComplexScalerField;
 
-typedef SpinPropagator4dT<Complex> SpinPropagator4d;
+typedef SpinPropagator4dT<> SpinPropagator4d;
 
 #endif
 

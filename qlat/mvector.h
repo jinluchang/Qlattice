@@ -6,7 +6,7 @@
 
 QLAT_START_NAMESPACE
 
-template <int DIMN, class T = Complex>
+template <int DIMN, class T = ComplexT>
 struct MvectorT {
   T p[DIMN];
   //
@@ -137,7 +137,7 @@ MvectorT<DIMN, T> vector_conjugate(const MvectorT<DIMN, T>& x)
   return ret;
 }
 
-template <class T = Complex>
+template <class T = ComplexT>
 struct WilsonVectorT : MvectorT<4 * NUM_COLOR, T> {
   WilsonVectorT() {}
   WilsonVectorT(const MvectorT<4 * NUM_COLOR, T>& m) { *this = m; }
@@ -149,7 +149,7 @@ struct WilsonVectorT : MvectorT<4 * NUM_COLOR, T> {
   }
 };
 
-template <class T = Complex>
+template <class T = ComplexT>
 struct SpinVectorT : MvectorT<4, T> {
   SpinVectorT() {}
   SpinVectorT(const MvectorT<4, T>& m) { *this = m; }
@@ -163,9 +163,9 @@ struct SpinVectorT : MvectorT<4, T> {
 
 #ifndef QLAT_NO_DEFAULT_TYPE
 
-typedef WilsonVectorT<Complex> WilsonVector;
+typedef WilsonVectorT<> WilsonVector;
 
-typedef SpinVectorT<Complex> SpinVector;
+typedef SpinVectorT<> SpinVector;
 
 #endif
 

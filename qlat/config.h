@@ -70,6 +70,8 @@ typedef std::complex<double> Complex;
 
 typedef std::complex<float> ComplexF;
 
+typedef Complex ComplexT;  // default Complex type
+
 inline const std::string& cname()
 {
   static const std::string s = "Qlat";

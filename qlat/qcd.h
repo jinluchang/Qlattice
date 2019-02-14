@@ -16,7 +16,7 @@
 
 QLAT_START_NAMESPACE
 
-template <class T = Complex>
+template <class T = ComplexT>
 struct GaugeFieldT : FieldM<ColorMatrixT<T>, 4> {
   virtual const std::string& cname()
   {
@@ -25,7 +25,7 @@ struct GaugeFieldT : FieldM<ColorMatrixT<T>, 4> {
   }
 };
 
-template <class T = Complex>
+template <class T = ComplexT>
 struct Propagator4dT : FieldM<WilsonMatrixT<T>, 1> {
   virtual const std::string& cname()
   {
@@ -34,7 +34,7 @@ struct Propagator4dT : FieldM<WilsonMatrixT<T>, 1> {
   }
 };
 
-template <class T = Complex>
+template <class T = ComplexT>
 struct FermionField4dT : FieldM<WilsonVectorT<T>, 1> {
   virtual const std::string& cname()
   {
@@ -43,7 +43,7 @@ struct FermionField4dT : FieldM<WilsonVectorT<T>, 1> {
   }
 };
 
-template <class T = Complex>
+template <class T = ComplexT>
 struct FermionField5dT : Field<WilsonVectorT<T> > {
   virtual const std::string& cname()
   {
@@ -54,13 +54,13 @@ struct FermionField5dT : Field<WilsonVectorT<T> > {
 
 #ifndef QLAT_NO_DEFAULT_TYPE
 
-typedef GaugeFieldT<Complex> GaugeField;
+typedef GaugeFieldT<> GaugeField;
 
-typedef Propagator4dT<Complex> Propagator4d;
+typedef Propagator4dT<> Propagator4d;
 
-typedef FermionField4dT<Complex> FermionField4d;
+typedef FermionField4dT<> FermionField4d;
 
-typedef FermionField5dT<Complex> FermionField5d;
+typedef FermionField5dT<> FermionField5d;
 
 #endif
 
@@ -278,7 +278,7 @@ inline std::string make_gauge_field_header(
   return out.str();
 }
 
-inline void save_gauge_field(const GaugeFieldT<>& gf, const std::string& path,
+inline void save_gauge_field(const GaugeFieldT<Complex>& gf, const std::string& path,
                              const GaugeFieldInfo& gfi_ = GaugeFieldInfo())
 {
   TIMER_VERBOSE_FLOPS("save_gauge_field");
@@ -307,7 +307,7 @@ inline void save_gauge_field(const GaugeFieldT<>& gf, const std::string& path,
   timer.flops += get_data(gft).data_size() * gft.geo.geon.num_node;
 }
 
-inline long load_gauge_field(GaugeFieldT<>& gf, const std::string& path)
+inline long load_gauge_field(GaugeFieldT<Complex>& gf, const std::string& path)
 // assuming gf already initialized and have correct size;
 {
   TIMER_VERBOSE_FLOPS("load_gauge_field");
@@ -336,7 +336,7 @@ inline long load_gauge_field(GaugeFieldT<>& gf, const std::string& path)
   return file_size;
 }
 
-inline long load_gauge_field_par(GaugeFieldT<>& gf, const std::string& path)
+inline long load_gauge_field_par(GaugeFieldT<Complex>& gf, const std::string& path)
 // assuming gf already initialized and have correct size;
 {
   TIMER_VERBOSE_FLOPS("load_gauge_field_par");
@@ -365,7 +365,7 @@ inline long load_gauge_field_par(GaugeFieldT<>& gf, const std::string& path)
   return file_size;
 }
 
-inline long load_gauge_field_cps3x3(GaugeFieldT<>& gf, const std::string& path)
+inline long load_gauge_field_cps3x3(GaugeFieldT<Complex>& gf, const std::string& path)
 // assuming gf already initialized and have correct size;
 {
   TIMER_VERBOSE_FLOPS("load_gauge_field_cps3x3");
@@ -393,7 +393,7 @@ inline long load_gauge_field_cps3x3(GaugeFieldT<>& gf, const std::string& path)
   return file_size;
 }
 
-inline long load_gauge_field_milc(GaugeFieldT<>& gf, const std::string& path,
+inline long load_gauge_field_milc(GaugeFieldT<Complex>& gf, const std::string& path,
                                   const bool par_read = false)
 // assuming gf already initialized and have correct size;
 {

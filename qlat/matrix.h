@@ -6,7 +6,7 @@
 
 QLAT_START_NAMESPACE
 
-template <int DIMN, class T = Complex>
+template <int DIMN, class T = ComplexT>
 struct MatrixT {
   T p[DIMN * DIMN];
   //
@@ -184,7 +184,7 @@ MatrixT<DIMN, T> matrix_conjugate(const MatrixT<DIMN, T>& x)
   return ret;
 }
 
-template <class T = Complex>
+template <class T = ComplexT>
 struct ColorMatrixT : MatrixT<NUM_COLOR, T> {
   ColorMatrixT() {}
   ColorMatrixT(const MatrixT<NUM_COLOR, T>& m) { *this = m; }
@@ -261,7 +261,7 @@ inline ColorMatrixT<T> make_color_matrix_exp(const ColorMatrixT<T>& a)
   return t3;
 }
 
-template <class T = Complex>
+template <class T = ComplexT>
 struct WilsonMatrixT : MatrixT<4 * NUM_COLOR, T> {
   WilsonMatrixT() {}
   WilsonMatrixT(const MatrixT<4 * NUM_COLOR, T>& m) { *this = m; }
@@ -273,7 +273,7 @@ struct WilsonMatrixT : MatrixT<4 * NUM_COLOR, T> {
   }
 };
 
-template <class T = Complex>
+template <class T = ComplexT>
 struct SpinMatrixT : MatrixT<4, T> {
   SpinMatrixT() {}
   SpinMatrixT(const MatrixT<4, T>& m) { *this = m; }
@@ -285,7 +285,7 @@ struct SpinMatrixT : MatrixT<4, T> {
   }
 };
 
-template <class T = Complex>
+template <class T = ComplexT>
 struct SpinMatrixConstantsT {
   SpinMatrixT<T> unit;
   std::array<SpinMatrixT<T>, 4>
@@ -502,13 +502,13 @@ WilsonVectorT<T> operator*(const SpinMatrixT<T>& sm, const WilsonVectorT<T>& m)
 
 #ifndef QLAT_NO_DEFAULT_TYPE
 
-typedef ColorMatrixT<Complex> ColorMatrix;
+typedef ColorMatrixT<> ColorMatrix;
 
-typedef WilsonMatrixT<Complex> WilsonMatrix;
+typedef WilsonMatrixT<> WilsonMatrix;
 
-typedef SpinMatrixT<Complex> SpinMatrix;
+typedef SpinMatrixT<> SpinMatrix;
 
-typedef SpinMatrixConstantsT<Complex> SpinMatrixConstants;
+typedef SpinMatrixConstantsT<> SpinMatrixConstants;
 
 #endif
 
