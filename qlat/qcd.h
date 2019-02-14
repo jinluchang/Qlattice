@@ -1,5 +1,6 @@
 #pragma once
 
+#include <qlat/config.h>
 #include <qlat/field.h>
 #include <qlat/matrix.h>
 
@@ -9,15 +10,14 @@
 
 #include <qlat/field-expand.h>
 
-#include <eigen3/Eigen/Eigen>
-
 #include <cmath>
 #include <sstream>
 #include <string>
 
 QLAT_START_NAMESPACE
 
-struct GaugeField : FieldM<ColorMatrix, 4> {
+template <class T = Complex>
+struct GaugeFieldT : FieldM<ColorMatrixT<T>, 4> {
   virtual const std::string& cname()
   {
     static const std::string s = "GaugeField";
@@ -25,7 +25,8 @@ struct GaugeField : FieldM<ColorMatrix, 4> {
   }
 };
 
-struct Propagator4d : FieldM<WilsonMatrix, 1> {
+template <class T = Complex>
+struct Propagator4dT : FieldM<WilsonMatrixT<T>, 1> {
   virtual const std::string& cname()
   {
     static const std::string s = "Propagator4d";
@@ -33,7 +34,8 @@ struct Propagator4d : FieldM<WilsonMatrix, 1> {
   }
 };
 
-struct FermionField4d : FieldM<WilsonVector, 1> {
+template <class T = Complex>
+struct FermionField4dT : FieldM<WilsonVectorT<T>, 1> {
   virtual const std::string& cname()
   {
     static const std::string s = "FermionField4d";
@@ -41,7 +43,8 @@ struct FermionField4d : FieldM<WilsonVector, 1> {
   }
 };
 
-struct FermionField5d : Field<WilsonVector> {
+template <class T = Complex>
+struct FermionField5dT : Field<WilsonVectorT<T> > {
   virtual const std::string& cname()
   {
     static const std::string s = "FermionField5d";
@@ -49,21 +52,35 @@ struct FermionField5d : Field<WilsonVector> {
   }
 };
 
-inline void unitarize(Field<ColorMatrix>& gf)
+#ifndef QLAT_NO_DEFAULT_TYPE
+
+typedef GaugeFieldT<Complex> GaugeField;
+
+typedef Propagator4dT<Complex> Propagator4d;
+
+typedef FermionField4dT<Complex> FermionField4d;
+
+typedef FermionField5dT<Complex> FermionField5d;
+
+#endif
+
+template <class T>
+void unitarize(Field<ColorMatrixT<T> >& gf)
 {
   TIMER_VERBOSE("unitarize(gf)");
   const Geometry& geo = gf.geo;
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     Coordinate xl = geo.coordinate_from_index(index);
-    Vector<ColorMatrix> v = gf.get_elems(xl);
+    Vector<ColorMatrixT<T> > v = gf.get_elems(xl);
     for (int m = 0; m < geo.multiplicity; ++m) {
       unitarize(v[m]);
     }
   }
 }
 
-inline double gf_avg_plaq_no_comm(const GaugeField& gf)
+template <class T>
+double gf_avg_plaq_no_comm(const GaugeFieldT<T>& gf)
 // assume proper communication is done
 {
   TIMER("gf_avg_plaq_no_comm");
@@ -75,8 +92,8 @@ inline double gf_avg_plaq_no_comm(const GaugeField& gf)
 #pragma omp for
     for (long index = 0; index < geo.local_volume(); ++index) {
       Coordinate xl = geo.coordinate_from_index(index);
-      const Vector<ColorMatrix> v = gf.get_elems_const(xl);
-      std::vector<Vector<ColorMatrix> > vms(DIMN);
+      const Vector<ColorMatrixT<T> > v = gf.get_elems_const(xl);
+      std::vector<Vector<ColorMatrixT<T> > > vms(DIMN);
       for (int m = 0; m < DIMN; ++m) {
         xl[m] += 1;
         vms[m] = gf.get_elems_const(xl);
@@ -85,7 +102,7 @@ inline double gf_avg_plaq_no_comm(const GaugeField& gf)
       double avg_plaq = 0.0;
       for (int m1 = 1; m1 < DIMN; ++m1) {
         for (int m2 = 0; m2 < m1; ++m2) {
-          ColorMatrix cm =
+          ColorMatrixT<T> cm =
               v[m1] * vms[m1][m2] * matrix_adjoint(v[m2] * vms[m2][m1]);
           avg_plaq += matrix_trace(cm).real() / NUM_COLOR;
           if (std::isnan(avg_plaq)) {
@@ -108,17 +125,19 @@ inline double gf_avg_plaq_no_comm(const GaugeField& gf)
   return sum;
 }
 
-inline double gf_avg_plaq(const GaugeField& gf)
+template <class T>
+double gf_avg_plaq(const GaugeFieldT<T>& gf)
 {
   TIMER("gf_avg_plaq");
-  GaugeField gf1;
+  GaugeFieldT<T> gf1;
   gf1.init(geo_resize(gf.geo, Coordinate(0, 0, 0, 0), Coordinate(1, 1, 1, 1)));
   gf1 = gf;
   refresh_expanded(gf1);
   return gf_avg_plaq_no_comm(gf1);
 }
 
-inline double gf_avg_spatial_plaq_no_comm(const GaugeField& gf)
+template <class T>
+double gf_avg_spatial_plaq_no_comm(const GaugeFieldT<T>& gf)
 // assume proper communication is done
 {
   TIMER("gf_avg_spatial_plaq_no_comm");
@@ -130,8 +149,8 @@ inline double gf_avg_spatial_plaq_no_comm(const GaugeField& gf)
 #pragma omp for
     for (long index = 0; index < geo.local_volume(); ++index) {
       Coordinate xl = geo.coordinate_from_index(index);
-      const Vector<ColorMatrix> v = gf.get_elems_const(xl);
-      std::vector<Vector<ColorMatrix> > vms(DIMN - 1);
+      const Vector<ColorMatrixT<T> > v = gf.get_elems_const(xl);
+      std::vector<Vector<ColorMatrixT<T> > > vms(DIMN - 1);
       for (int m = 0; m < DIMN - 1; ++m) {
         xl[m] += 1;
         vms[m] = gf.get_elems_const(xl);
@@ -140,7 +159,7 @@ inline double gf_avg_spatial_plaq_no_comm(const GaugeField& gf)
       double avg_plaq = 0.0;
       for (int m1 = 1; m1 < 3; ++m1) {
         for (int m2 = 0; m2 < m1; ++m2) {
-          ColorMatrix cm =
+          ColorMatrixT<T> cm =
               v[m1] * vms[m1][m2] * matrix_adjoint(v[m2] * vms[m2][m1]);
           avg_plaq += matrix_trace(cm).real() / NUM_COLOR;
           if (std::isnan(avg_plaq)) {
@@ -163,17 +182,19 @@ inline double gf_avg_spatial_plaq_no_comm(const GaugeField& gf)
   return sum;
 }
 
-inline double gf_avg_spatial_plaq(const GaugeField& gf)
+template <class T>
+double gf_avg_spatial_plaq(const GaugeFieldT<T>& gf)
 {
   TIMER("gf_avg_spatial_plaq");
-  GaugeField gf1;
+  GaugeFieldT<T> gf1;
   gf1.init(geo_resize(gf.geo, Coordinate(0, 0, 0, 0), Coordinate(1, 1, 1, 0)));
   gf1 = gf;
   refresh_expanded(gf1);
   return gf_avg_spatial_plaq_no_comm(gf1);
 }
 
-inline double gf_avg_link_trace(const GaugeField& gf)
+template <class T>
+double gf_avg_link_trace(const GaugeFieldT<T>& gf)
 {
   TIMER("gf_avg_link_trace");
   const Geometry& geo = gf.geo;
@@ -184,7 +205,7 @@ inline double gf_avg_link_trace(const GaugeField& gf)
 #pragma omp for
     for (long index = 0; index < geo.local_volume(); ++index) {
       Coordinate xl = geo.coordinate_from_index(index);
-      const Vector<ColorMatrix> v = gf.get_elems_const(xl);
+      const Vector<ColorMatrixT<T> > v = gf.get_elems_const(xl);
       double avg_link_trace = 0.0;
       for (int m = 0; m < DIMN; ++m) {
         avg_link_trace += matrix_trace(v[m]).real() / NUM_COLOR;
@@ -257,7 +278,7 @@ inline std::string make_gauge_field_header(
   return out.str();
 }
 
-inline void save_gauge_field(const GaugeField& gf, const std::string& path,
+inline void save_gauge_field(const GaugeFieldT<>& gf, const std::string& path,
                              const GaugeFieldInfo& gfi_ = GaugeFieldInfo())
 {
   TIMER_VERBOSE_FLOPS("save_gauge_field");
@@ -268,7 +289,7 @@ inline void save_gauge_field(const GaugeField& gf, const std::string& path,
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
-    const Vector<ColorMatrix> v = gf.get_elems_const(xl);
+    const Vector<ColorMatrixT<> > v = gf.get_elems_const(xl);
     Vector<std::array<Complex, 6> > vt = gft.get_elems(xl);
     for (int m = 0; m < geo.multiplicity; ++m) {
       assign_truncate(vt[m], v[m]);
@@ -286,7 +307,7 @@ inline void save_gauge_field(const GaugeField& gf, const std::string& path,
   timer.flops += get_data(gft).data_size() * gft.geo.geon.num_node;
 }
 
-inline long load_gauge_field(GaugeField& gf, const std::string& path)
+inline long load_gauge_field(GaugeFieldT<>& gf, const std::string& path)
 // assuming gf already initialized and have correct size;
 {
   TIMER_VERBOSE_FLOPS("load_gauge_field");
@@ -305,7 +326,7 @@ inline long load_gauge_field(GaugeField& gf, const std::string& path)
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<std::array<Complex, 6> > vt = gft.get_elems(xl);
     to_from_big_endian_64(get_data(vt));
-    Vector<ColorMatrix> v = gf.get_elems(xl);
+    Vector<ColorMatrixT<> > v = gf.get_elems(xl);
     for (int m = 0; m < geo.multiplicity; ++m) {
       assign_truncate(v[m], vt[m]);
       unitarize(v[m]);
@@ -315,7 +336,7 @@ inline long load_gauge_field(GaugeField& gf, const std::string& path)
   return file_size;
 }
 
-inline long load_gauge_field_par(GaugeField& gf, const std::string& path)
+inline long load_gauge_field_par(GaugeFieldT<>& gf, const std::string& path)
 // assuming gf already initialized and have correct size;
 {
   TIMER_VERBOSE_FLOPS("load_gauge_field_par");
@@ -334,7 +355,7 @@ inline long load_gauge_field_par(GaugeField& gf, const std::string& path)
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<std::array<Complex, 6> > vt = gft.get_elems(xl);
     to_from_big_endian_64(get_data(vt));
-    Vector<ColorMatrix> v = gf.get_elems(xl);
+    Vector<ColorMatrixT<> > v = gf.get_elems(xl);
     for (int m = 0; m < geo.multiplicity; ++m) {
       assign_truncate(v[m], vt[m]);
       unitarize(v[m]);
@@ -344,7 +365,7 @@ inline long load_gauge_field_par(GaugeField& gf, const std::string& path)
   return file_size;
 }
 
-inline long load_gauge_field_cps3x3(GaugeField& gf, const std::string& path)
+inline long load_gauge_field_cps3x3(GaugeFieldT<>& gf, const std::string& path)
 // assuming gf already initialized and have correct size;
 {
   TIMER_VERBOSE_FLOPS("load_gauge_field_cps3x3");
@@ -363,7 +384,7 @@ inline long load_gauge_field_cps3x3(GaugeField& gf, const std::string& path)
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<std::array<Complex, 9> > vt = gft.get_elems(xl);
     to_from_big_endian_64(get_data(vt));
-    Vector<ColorMatrix> v = gf.get_elems(xl);
+    Vector<ColorMatrixT<> > v = gf.get_elems(xl);
     for (int m = 0; m < geo.multiplicity; ++m) {
       assign_truncate(v[m], vt[m]);
     }
@@ -372,7 +393,7 @@ inline long load_gauge_field_cps3x3(GaugeField& gf, const std::string& path)
   return file_size;
 }
 
-inline long load_gauge_field_milc(GaugeField& gf, const std::string& path,
+inline long load_gauge_field_milc(GaugeFieldT<>& gf, const std::string& path,
                                   const bool par_read = false)
 // assuming gf already initialized and have correct size;
 {
@@ -397,7 +418,7 @@ inline long load_gauge_field_milc(GaugeField& gf, const std::string& path,
     Coordinate xl = geo.coordinate_from_index(index);
     Vector<std::array<std::complex<float>, 9> > vt = gft.get_elems(xl);
     to_from_big_endian_32((char*)vt.data(), vt.data_size());
-    Vector<ColorMatrix> v = gf.get_elems(xl);
+    Vector<ColorMatrixT<> > v = gf.get_elems(xl);
     for (int m = 0; m < geo.multiplicity; ++m) {
       // assign_truncate(v[m], vt[m]);
       v[m](0, 0) = vt[m][0 * 3 + 0];
@@ -416,7 +437,8 @@ inline long load_gauge_field_milc(GaugeField& gf, const std::string& path,
   return file_size;
 }
 
-inline void twist_boundary_at_boundary(GaugeField& gf, double mom, int mu)
+template <class T>
+void twist_boundary_at_boundary(GaugeFieldT<T>& gf, double mom, int mu)
 {
   TIMER_VERBOSE_FLOPS("twist_boundary_at_boundary");
   const Geometry& geo = gf.geo;
@@ -426,7 +448,7 @@ inline void twist_boundary_at_boundary(GaugeField& gf, double mom, int mu)
     Coordinate xl = geo.coordinate_from_index(index);
     Coordinate xg = geo.coordinate_g_from_l(xl);
     if (xg[mu] == len - 1) {
-      ColorMatrix& mat = gf.get_elem(xl, mu);
+      ColorMatrixT<T>& mat = gf.get_elem(xl, mu);
       mat *= std::polar(1.0, amp);
     }
   }

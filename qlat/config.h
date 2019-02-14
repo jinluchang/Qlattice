@@ -18,6 +18,10 @@
 #include <omp.h>
 #endif
 
+#define EIGEN_DONT_ALIGN_STATICALLY
+
+#include <eigen3/Eigen/Eigen>
+
 #define QLAT_START_NAMESPACE \
   namespace qlat             \
   {

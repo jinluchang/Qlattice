@@ -213,8 +213,8 @@ void produce_chart_envelope(Chart<M> &chart, const Geometry geometry,
 // TODO: FIXME!!!
 // template<class M>
 // void produce_chart_envelope(Chart<M> &chart, const Geometry geometry,
-//								array<int, DIMN - 1> &R, int
-//&T){ 	TIMER("produce_chart_envelope()");
+//								array<int, DIMN - 1> &R,
+//int &T){ 	TIMER("produce_chart_envelope()");
 //
 //	chart.geo = geometry;
 //	std::set<Coordinate> target;
@@ -254,7 +254,8 @@ void produce_chart_envelope(Chart<M> &chart, const Geometry geometry,
 //
 //	Coordinate pos; // coordinate position of a site relative to this node
 //	Coordinate local_pos; // coordinate position of a site relative to its
-//home node 	Coordinate node_pos; // home node coordinate of a site in node space
+// home node 	Coordinate node_pos; // home node coordinate of a site in node
+// space
 //
 //	chart.clear();
 //	std::set<Coordinate>::const_iterator it;

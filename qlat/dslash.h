@@ -745,7 +745,7 @@ inline void multiply_m_e_e_inv(FermionField5d& out, const FermionField5d& in,
     v[fa.ls - 1] += p_m * tmp;
     // {L'_{ee}}^{-1}
     for (int m = 1; m < fa.ls; ++m) {
-      v[m] += (-lee[m - 1]) * p_p * v[m - 1];
+      v[m] += (-lee[m - 1]) * (p_p * v[m - 1]);
     }
     // {D_{ee}}^{-1}
     for (int m = 0; m < fa.ls; ++m) {
@@ -753,11 +753,11 @@ inline void multiply_m_e_e_inv(FermionField5d& out, const FermionField5d& in,
     }
     // {U^'_{ee}}^{-1}
     for (int m = fa.ls - 2; m >= 0; --m) {
-      v[m] += (-uee[m]) * p_m * v[m + 1];
+      v[m] += (-uee[m]) * (p_m * v[m + 1]);
     }
     // {U^m_{ee}}^{-1}
     for (int m = 0; m < fa.ls - 1; ++m) {
-      v[m] += (-ueem[m]) * p_p * v[fa.ls - 1];
+      v[m] += (-ueem[m]) * (p_p * v[fa.ls - 1]);
     }
   }
 }
@@ -830,7 +830,7 @@ inline void multiply_mdag_e_e_inv(FermionField5d& out, const FermionField5d& in,
     v[fa.ls - 1] += p_p * tmp;
     // {U^'_{ee}}^\dagger^{-1}
     for (int m = 1; m < fa.ls; ++m) {
-      v[m] += (-uee[m - 1]) * p_m * v[m - 1];
+      v[m] += (-uee[m - 1]) * (p_m * v[m - 1]);
     }
     // {D_{ee}}^\dagger^{-1}
     for (int m = 0; m < fa.ls; ++m) {
@@ -838,11 +838,11 @@ inline void multiply_mdag_e_e_inv(FermionField5d& out, const FermionField5d& in,
     }
     // {L'_{ee}}^\dagger^{-1}
     for (int m = fa.ls - 2; m >= 0; --m) {
-      v[m] += (-lee[m]) * p_p * v[m + 1];
+      v[m] += (-lee[m]) * (p_p * v[m + 1]);
     }
     // {L^m_{ee}}^\dagger^{-1}
     for (int m = 0; m < fa.ls - 1; ++m) {
-      v[m] += (-leem[m]) * p_m * v[fa.ls - 1];
+      v[m] += (-leem[m]) * (p_m * v[fa.ls - 1]);
     }
   }
 }

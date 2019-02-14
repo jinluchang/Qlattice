@@ -159,7 +159,8 @@ inline void set_local_current_from_props(FieldM<WilsonMatrix, 4>& cf,
     const WilsonMatrix& m1 = prop1.get_elem(xl);
     const WilsonMatrix& m2 = prop2.get_elem(xl);
     Vector<WilsonMatrix> v = cf.get_elems(xl);
-    const WilsonMatrix m2rev = gamma5 * matrix_adjoint(m2) * gamma5;
+    const WilsonMatrix m2rev =
+        gamma5 * (WilsonMatrix)matrix_adjoint(m2) * gamma5;
     for (int m = 0; m < 4; ++m) {
       v[m] = m2rev * gammas[m] * m1;
     }

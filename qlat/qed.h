@@ -10,7 +10,8 @@
 
 QLAT_START_NAMESPACE
 
-struct QedGaugeField : FieldM<Complex, DIMN> {
+template <class T = Complex>
+struct QedGaugeFieldT : FieldM<T, DIMN> {
   virtual const std::string& cname()
   {
     static const std::string s = "QedGaugeField";
@@ -18,7 +19,8 @@ struct QedGaugeField : FieldM<Complex, DIMN> {
   }
 };
 
-struct ComplexScalerField : FieldM<Complex, 1> {
+template <class T = Complex>
+struct ComplexScalerFieldT : FieldM<T, 1> {
   virtual const std::string& cname()
   {
     static const std::string s = "ComplexScalerField";
@@ -26,13 +28,24 @@ struct ComplexScalerField : FieldM<Complex, 1> {
   }
 };
 
-struct SpinPropagator4d : FieldM<SpinMatrix, 1> {
+template <class T = Complex>
+struct SpinPropagator4dT : FieldM<SpinMatrixT<T>, 1> {
   virtual const std::string& cname()
   {
     static const std::string s = "SpinPropagator4d";
     return s;
   }
 };
+
+#ifndef QLAT_NO_DEFAULT_TYPE
+
+typedef QedGaugeFieldT<Complex> QedGaugeField;
+
+typedef ComplexScalerFieldT<Complex> ComplexScalerField;
+
+typedef SpinPropagator4dT<Complex> SpinPropagator4d;
+
+#endif
 
 inline void prop_mom_photon_invert(QedGaugeField& egf,
                                    const std::array<double, DIMN>& momtwist)
@@ -125,9 +138,9 @@ inline double acosh(const double x)
   return std::log(x + std::sqrt(x + 1.0) * std::sqrt(x - 1.0));
 }
 
-inline void prop_mom_spin_propagator4d(SpinPropagator4d& sp4d,
-                                       const double mass,
-                                       const std::array<double, DIMN>& momtwist)
+template <class T>
+void prop_mom_spin_propagator4d(SpinPropagator4dT<T>& sp4d, const double mass,
+                                const std::array<double, DIMN>& momtwist)
 // DWF infinite L_s
 // M_5 = 1.0
 {
@@ -141,23 +154,23 @@ inline void prop_mom_spin_propagator4d(SpinPropagator4d& sp4d,
     std::array<double, DIMN> kk, ks;
     double p2 = 0.0;
     double wp = 1.0 - m5;
-    SpinMatrix pg;
+    SpinMatrixT<T> pg;
     set_zero(pg);
     for (int i = 0; i < DIMN; ++i) {
       Coordinate total_site = geo.total_site();
       kg[i] = smod(kg[i], total_site[i]);
       kk[i] = 2.0 * PI * (kg[i] + momtwist[i]) / (double)total_site[i];
       ks[i] = sin(kk[i]);
-      pg += SpinMatrixConstants::get_gamma(i) * (Complex)ks[i];
+      pg += SpinMatrixConstantsT<T>::get_gamma(i) * (Complex)ks[i];
       p2 += sqr(ks[i]);
       wp += 2.0 * sqr(sin(kk[i] / 2.0));
     }
     const double calpha = (1.0 + sqr(wp) + p2) / 2.0 / wp;
     const double alpha = acosh(calpha);
     const double lwa = 1.0 - wp * exp(-alpha);
-    SpinMatrix m;
+    SpinMatrixT<T> m;
     set_unit(m, mass * lwa);
-    SpinMatrix ipgm = pg;
+    SpinMatrixT<T> ipgm = pg;
     ipgm *= -ii;
     ipgm += m;
     ipgm *= lwa / (p2 + sqr(mass * lwa));
@@ -178,8 +191,9 @@ inline void prop_mom_spin_propagator4d(SpinPropagator4d& sp4d,
   }
 }
 
-inline void prop_spin_propagator4d(SpinPropagator4d& sp4d, const double mass,
-                                   const std::array<double, DIMN>& momtwist)
+template <class T>
+void prop_spin_propagator4d(SpinPropagator4dT<T>& sp4d, const double mass,
+                            const std::array<double, DIMN>& momtwist)
 {
   TIMER_VERBOSE("prop_spin_propagator4d");
   const Geometry& geo = sp4d.geo;
@@ -200,14 +214,15 @@ inline void set_point_source_plusm(QedGaugeField& f, const Complex& coef,
   }
 }
 
-inline void set_box_source_plusm(SpinPropagator4d& f, const Complex& coef,
-                                 const Coordinate& xg1, const Coordinate& xg2)
+template <class T>
+void set_box_source_plusm(SpinPropagator4dT<T>& f, const Complex& coef,
+                          const Coordinate& xg1, const Coordinate& xg2)
 // 0 <= xg1 <= xg2 <= total_site
 // FIXME: Do not handle the cross boundary case very well.
 {
   TIMER("set_box_source_plusm");
   const Geometry& geo = f.geo;
-  SpinMatrix sm;
+  SpinMatrixT<T> sm;
   set_unit(sm, coef);
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
@@ -219,8 +234,9 @@ inline void set_box_source_plusm(SpinPropagator4d& f, const Complex& coef,
   }
 }
 
-inline void set_wall_source_plusm(SpinPropagator4d& f, const Complex& coef,
-                                  const int t)
+template <class T>
+void set_wall_source_plusm(SpinPropagator4dT<T>& f, const Complex& coef,
+                           const int t)
 {
   TIMER("set_wall_source_plusm");
   const Geometry& geo = f.geo;
@@ -231,10 +247,11 @@ inline void set_wall_source_plusm(SpinPropagator4d& f, const Complex& coef,
   set_box_source_plusm(f, coef, xg1, xg2);
 }
 
-inline void sequential_photon_spin_propagator_plusm(SpinPropagator4d& src,
-                                                    const Complex coef,
-                                                    const QedGaugeField& egf,
-                                                    const SpinPropagator4d& sol)
+template <class T>
+void sequential_photon_spin_propagator_plusm(SpinPropagator4dT<T>& src,
+                                             const Complex coef,
+                                             const QedGaugeField& egf,
+                                             const SpinPropagator4dT<T>& sol)
 {
   TIMER("sequential_photon_spin_propagator_plusm");
   const Geometry& geo = sol.geo;
@@ -245,7 +262,8 @@ inline void sequential_photon_spin_propagator_plusm(SpinPropagator4d& src,
       // a = A_\mu(x)
       Complex a = egf.get_elem(xl, mu);
       // tmp = \gamma_\mu \psi(x)
-      SpinMatrix tmp = SpinMatrixConstants::get_gamma(mu) * sol.get_elem(xl);
+      SpinMatrixT<T> tmp =
+          SpinMatrixConstantsT<T>::get_gamma(mu) * sol.get_elem(xl);
       // tmp = coef * \gamma_\mu A_\mu(x) \psi(x)
       tmp *= a * coef;
       src.get_elem(xl) += tmp;
@@ -253,16 +271,17 @@ inline void sequential_photon_spin_propagator_plusm(SpinPropagator4d& src,
   }
 }
 
-inline SpinMatrix contract_spin_propagator4d(const SpinPropagator4d& snk,
-                                             const SpinPropagator4d& src)
+template <class T>
+SpinMatrixT<T> contract_spin_propagator4d(const SpinPropagator4dT<T>& snk,
+                                          const SpinPropagator4dT<T>& src)
 {
   TIMER("contractSpinPropagator");
   const Geometry& geo = src.geo;
-  SpinMatrix sum;
+  SpinMatrixT<T> sum;
   set_zero(sum);
 #pragma omp parallel
   {
-    SpinMatrix psum;
+    SpinMatrixT<T> psum;
     set_zero(psum);
 #pragma omp for nowait
     for (long index = 0; index < geo.local_volume(); ++index) {

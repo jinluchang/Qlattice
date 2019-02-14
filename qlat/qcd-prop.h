@@ -4,10 +4,11 @@
 
 QLAT_START_NAMESPACE
 
-inline WilsonMatrix make_wilson_matrix_from_vectors(
-    const std::array<ConstHandle<WilsonVector>, 4 * NUM_COLOR>& cols)
+template <class T>
+WilsonMatrixT<T> make_wilson_matrix_from_vectors(
+    const std::array<ConstHandle<WilsonVectorT<T> >, 4 * NUM_COLOR>& cols)
 {
-  WilsonMatrix ret;
+  WilsonMatrixT<T> ret;
   for (int i = 0; i < 4 * NUM_COLOR; ++i) {
     for (int j = 0; j < 4 * NUM_COLOR; ++j) {
       ret(j, i) = cols[i]()(j);
@@ -16,8 +17,9 @@ inline WilsonMatrix make_wilson_matrix_from_vectors(
   return ret;
 }
 
-inline void set_propagator_from_fermion_fields(
-    Propagator4d& prop, const Array<FermionField4d, 4 * NUM_COLOR> ffs)
+template <class T>
+void set_propagator_from_fermion_fields(
+    Propagator4dT<T>& prop, const Array<FermionField4dT<T>, 4 * NUM_COLOR> ffs)
 {
   TIMER_VERBOSE("set_propagator_from_fermion_fields");
   const Geometry& geo = ffs[0].geo;
@@ -29,7 +31,7 @@ inline void set_propagator_from_fermion_fields(
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
-    std::array<ConstHandle<WilsonVector>, 4 * NUM_COLOR> cols;
+    std::array<ConstHandle<WilsonVectorT<T> >, 4 * NUM_COLOR> cols;
     for (int k = 0; k < 4 * NUM_COLOR; ++k) {
       cols[k].init(ffs[k].get_elem(xl));
     }
@@ -37,17 +39,20 @@ inline void set_propagator_from_fermion_fields(
   }
 }
 
-inline void set_wilson_matrix_col_from_vector(WilsonMatrix& wm, const int idx,
-                                              const WilsonVector& col)
+template <class T>
+inline void set_wilson_matrix_col_from_vector(WilsonMatrixT<T>& wm,
+                                              const int idx,
+                                              const WilsonVectorT<T>& col)
 {
   for (int j = 0; j < 4 * NUM_COLOR; ++j) {
     wm(j, idx) = col(j);
   }
 }
 
-inline void set_propagator_col_from_fermion_field(Propagator4d& prop,
+template <class T>
+inline void set_propagator_col_from_fermion_field(Propagator4dT<T>& prop,
                                                   const int idx,
-                                                  const FermionField4d& ff)
+                                                  const FermionField4dT<T>& ff)
 {
   TIMER("set_propagator_col_from_fermion_field");
   const Geometry& geo = ff.geo;
@@ -59,8 +64,9 @@ inline void set_propagator_col_from_fermion_field(Propagator4d& prop,
   }
 }
 
-inline void set_wilson_vector_from_matrix_col(WilsonVector& col,
-                                              const WilsonMatrix& wm,
+template <class T>
+inline void set_wilson_vector_from_matrix_col(WilsonVectorT<T>& col,
+                                              const WilsonMatrixT<T>& wm,
                                               const int idx)
 {
   for (int j = 0; j < 4 * NUM_COLOR; ++j) {
@@ -68,8 +74,9 @@ inline void set_wilson_vector_from_matrix_col(WilsonVector& col,
   }
 }
 
-inline void set_fermion_field_from_propagator_col(FermionField4d& ff,
-                                                  const Propagator4d& prop,
+template <class T>
+inline void set_fermion_field_from_propagator_col(FermionField4dT<T>& ff,
+                                                  const Propagator4dT<T>& prop,
                                                   const int idx)
 {
   TIMER("set_fermion_field_from_propagator_col");
@@ -83,8 +90,9 @@ inline void set_fermion_field_from_propagator_col(FermionField4d& ff,
   }
 }
 
-inline void fermion_field_5d_from_4d(FermionField5d& ff5d,
-                                     const FermionField4d& ff4d,
+template <class T>
+inline void fermion_field_5d_from_4d(FermionField5dT<T>& ff5d,
+                                     const FermionField4dT<T>& ff4d,
                                      const int upper, const int lower)
 // ff5d need to be initialized
 // upper componets are right handed
@@ -93,7 +101,7 @@ inline void fermion_field_5d_from_4d(FermionField5d& ff5d,
   TIMER("fermion_field_5d_from_4d");
   const Geometry& geo = ff5d.geo;
   set_zero(ff5d);
-  const int sizewvh = sizeof(WilsonVector) / 2;
+  const int sizewvh = sizeof(WilsonVectorT<T>) / 2;
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     Coordinate x = geo.coordinate_from_index(index);
@@ -104,9 +112,10 @@ inline void fermion_field_5d_from_4d(FermionField5d& ff5d,
   }
 }
 
-inline void fermion_field_4d_from_5d(FermionField4d& ff4d,
-                                     const FermionField5d& ff5d,
-                                     const int upper, const int lower)
+template <class T>
+void fermion_field_4d_from_5d(FermionField4dT<T>& ff4d,
+                              const FermionField5dT<T>& ff5d, const int upper,
+                              const int lower)
 // upper componets are right handed
 // lower componets are left handed
 {
@@ -114,7 +123,7 @@ inline void fermion_field_4d_from_5d(FermionField4d& ff4d,
   const Geometry& geo = ff5d.geo;
   ff4d.init(geo_reform(geo));
   set_zero(ff4d);
-  const int sizewvh = sizeof(WilsonVector) / 2;
+  const int sizewvh = sizeof(WilsonVectorT<T>) / 2;
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     Coordinate x = geo.coordinate_from_index(index);
@@ -125,8 +134,8 @@ inline void fermion_field_4d_from_5d(FermionField4d& ff4d,
   }
 }
 
-template <class Inverter>
-inline void inverse_dwf(FermionField4d& sol, const FermionField4d& src,
+template <class Inverter, class T>
+inline void inverse_dwf(FermionField4dT<T>& sol, const FermionField4dT<T>& src,
                         const Inverter& inv)
 // sol do not need to be initialized
 // inv.geo must be the geometry of the fermion field
@@ -138,7 +147,7 @@ inline void inverse_dwf(FermionField4d& sol, const FermionField4d& src,
   sol.init(geo);
   const Geometry geo_ls = geo_reform(inv.geo, inv.fa.ls, 0);
   const int ls = geo_ls.multiplicity;
-  FermionField5d sol5d, src5d;
+  FermionField5dT<T> sol5d, src5d;
   sol5d.init(geo_ls);
   src5d.init(geo_ls);
   fermion_field_5d_from_4d(src5d, src, 0, ls - 1);
@@ -147,9 +156,9 @@ inline void inverse_dwf(FermionField4d& sol, const FermionField4d& src,
   fermion_field_4d_from_5d(sol, sol5d, ls - 1, 0);
 }
 
-template <class Inverter>
-inline void inverse(Propagator4d& sol, const Propagator4d& src,
-                    const Inverter& inv)
+template <class Inverter, class T>
+void inverse(Propagator4dT<T>& sol, const Propagator4dT<T>& src,
+             const Inverter& inv)
 // sol do not need to be initialized
 // inv.geo must be the geometry of the fermion field
 // inverse(4d, 4d, inv) perform the inversion
@@ -157,7 +166,7 @@ inline void inverse(Propagator4d& sol, const Propagator4d& src,
   TIMER_VERBOSE("inverse(p4d,p4d,inv)");
   const Geometry geo = geo_reform(src.geo);
   sol.init(geo);
-  FermionField4d ff_sol, ff_src;
+  FermionField4dT<T> ff_sol, ff_src;
   for (int j = 0; j < 4 * NUM_COLOR; ++j) {
     set_fermion_field_from_propagator_col(ff_src, src, j);
     inverse(ff_sol, ff_src, inv);
@@ -165,10 +174,11 @@ inline void inverse(Propagator4d& sol, const Propagator4d& src,
   }
 }
 
-inline void smear_propagator(Propagator4d& prop, const GaugeField& gf1,
-                             const double coef, const int step,
-                             const CoordinateD& mom = CoordinateD(),
-                             const bool smear_in_time_dir = false)
+template <class T>
+void smear_propagator(Propagator4dT<T>& prop, const GaugeFieldT<T>& gf1,
+                      const double coef, const int step,
+                      const CoordinateD& mom = CoordinateD(),
+                      const bool smear_in_time_dir = false)
 // gf1 is left_expanded and refreshed
 // prop is of normal size
 {
@@ -189,7 +199,7 @@ inline void smear_propagator(Propagator4d& prop, const GaugeField& gf1,
     const double phase = dir >= 0 ? mom[dir] : -mom[-dir - 1];
     mom_factors[i] = std::polar(coef / n_avg, -phase);
   }
-  Propagator4d prop1;
+  Propagator4dT<T> prop1;
   prop1.init(geo1);
   for (int i = 0; i < step; ++i) {
     prop1 = prop;
@@ -197,13 +207,13 @@ inline void smear_propagator(Propagator4d& prop, const GaugeField& gf1,
 #pragma omp parallel for
     for (long index = 0; index < geo.local_volume(); ++index) {
       const Coordinate xl = geo.coordinate_from_index(index);
-      WilsonMatrix& wm = prop.get_elem(xl);
+      WilsonMatrixT<T>& wm = prop.get_elem(xl);
       wm *= 1 - coef;
       for (int dir = -dir_limit; dir < dir_limit; ++dir) {
         const Coordinate xl1 = coordinate_shifts(xl, dir);
-        const ColorMatrix link =
+        const ColorMatrixT<T> link =
             dir >= 0 ? gf1.get_elem(xl, dir)
-                     : (ColorMatrix)matrix_adjoint(
+                     : (ColorMatrixT<T>)matrix_adjoint(
                            gf1.get_elem(coordinate_shifts(xl, dir), -dir - 1));
         wm += mom_factors[dir + 4] * link * prop1.get_elem(xl1);
       }
@@ -211,9 +221,9 @@ inline void smear_propagator(Propagator4d& prop, const GaugeField& gf1,
   }
 }
 
-inline void set_point_src_fermion_field(FermionField4d& ff,
-                                        const Coordinate& xg, const int cs,
-                                        const Complex& value = 1.0)
+template <class T>
+void set_point_src_fermion_field(FermionField4dT<T>& ff, const Coordinate& xg,
+                                 const int cs, const Complex& value = 1.0)
 // ff need to be initialized
 {
   TIMER("set_point_src_fermion_field");
@@ -225,13 +235,14 @@ inline void set_point_src_fermion_field(FermionField4d& ff,
   }
 }
 
-inline void set_point_src(Propagator4d& prop, const Geometry& geo_input,
-                          const Coordinate& xg, const Complex& value = 1.0)
+template <class T>
+void set_point_src(Propagator4dT<T>& prop, const Geometry& geo_input,
+                   const Coordinate& xg, const Complex& value = 1.0)
 {
   TIMER_VERBOSE("set_point_src");
   const Geometry geo = geo_reform(geo_input);
   prop.init(geo);
-  FermionField4d src;
+  FermionField4dT<T> src;
   src.init(geo);
   for (int cs = 0; cs < 4 * NUM_COLOR; ++cs) {
     set_point_src_fermion_field(src, xg, cs, value);
@@ -239,15 +250,14 @@ inline void set_point_src(Propagator4d& prop, const Geometry& geo_input,
   }
 }
 
-template <class Inverter>
-inline void set_point_src_propagator(Propagator4d& prop, const Inverter& inv,
-                                     const Coordinate& xg,
-                                     const Complex& value = 1.0)
+template <class Inverter, class T>
+void set_point_src_propagator(Propagator4dT<T>& prop, const Inverter& inv,
+                              const Coordinate& xg, const Complex& value = 1.0)
 {
   TIMER_VERBOSE("set_point_src_propagator");
   const Geometry geo = geo_reform(inv.geo);
   prop.init(geo);
-  FermionField4d sol, src;
+  FermionField4dT<T> sol, src;
   sol.init(geo);
   src.init(geo);
   for (int cs = 0; cs < 4 * NUM_COLOR; ++cs) {

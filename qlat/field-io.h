@@ -280,8 +280,9 @@ void sophisticated_serial_write(const qlat::Field<M> &origin,
 
 // std::string cps_Matrix_header_generator(const qlat::Field<cps::Matrix>
 // &origin,
-//							const bool does_skip_third =
-//false){ 	NOT yet implemented :( 	qassert(false); 	return "NOT IMPLEMENTED.";
+//							const bool does_skip_third
+//= false){ 	NOT yet implemented :( 	qassert(false); 	return "NOT
+// IMPLEMENTED.";
 // }
 
 inline void timer_fread(char *ptr, long size, FILE *inputFile)

@@ -1,146 +1,146 @@
 #pragma once
 
 #include <qlat/config.h>
-#include <eigen3/Eigen/Eigen>
 
 #include <cmath>
 
 QLAT_START_NAMESPACE
 
-template <int DIMN>
-struct Matrix {
-  Complex p[DIMN * DIMN];
+template <int DIMN, class T = Complex>
+struct MatrixT {
+  T p[DIMN * DIMN];
   //
   // convert to double array
   double* d() { return (double*)p; }
   const double* d() const { return (const double*)p; }
   //
-  // convert to Eigen Matrix
-  Eigen::Matrix<Complex, DIMN, DIMN, Eigen::RowMajor>& em()
+  // convert to Eigen MatrixT
+  Eigen::Matrix<T, DIMN, DIMN, Eigen::RowMajor>& em()
   {
-    return *((Eigen::Matrix<Complex, DIMN, DIMN, Eigen::RowMajor>*)this);
+    return *((Eigen::Matrix<T, DIMN, DIMN, Eigen::RowMajor>*)this);
   }
-  const Eigen::Matrix<Complex, DIMN, DIMN, Eigen::RowMajor>& em() const
+  const Eigen::Matrix<T, DIMN, DIMN, Eigen::RowMajor>& em() const
   {
-    return *((Eigen::Matrix<Complex, DIMN, DIMN, Eigen::RowMajor>*)this);
+    return *((Eigen::Matrix<T, DIMN, DIMN, Eigen::RowMajor>*)this);
   }
   //
-  Complex& operator()(int i, int j)
+  T& operator()(int i, int j)
   {
     qassert(0 <= i && i < DIMN);
     qassert(0 <= j && j < DIMN);
     return p[i * DIMN + j];
   }
-  const Complex& operator()(int i, int j) const
+  const T& operator()(int i, int j) const
   {
     qassert(0 <= i && i < DIMN);
     qassert(0 <= j && j < DIMN);
     return p[i * DIMN + j];
   }
   //
-  const Matrix& operator+=(const Matrix& x)
+  const MatrixT& operator+=(const MatrixT& x)
   {
     *this = *this + x;
     return *this;
   }
   //
-  const Matrix& operator-=(const Matrix& x)
+  const MatrixT& operator-=(const MatrixT& x)
   {
     *this = *this - x;
     return *this;
   }
   //
-  const Matrix& operator*=(const Matrix& x)
+  const MatrixT& operator*=(const MatrixT& x)
   {
     *this = *this * x;
     return *this;
   }
   //
-  const Matrix& operator*=(const Complex& x)
+  const MatrixT& operator*=(const T& x)
   {
     *this = *this * x;
     return *this;
   }
   //
-  const Matrix& operator/=(const Complex& x)
+  const MatrixT& operator/=(const T& x)
   {
     *this = *this / x;
     return *this;
   }
 };
 
-template <int DIMN>
-Matrix<DIMN> operator+(const Matrix<DIMN>& x, const Matrix<DIMN>& y)
+template <int DIMN, class T>
+MatrixT<DIMN, T> operator+(const MatrixT<DIMN, T>& x, const MatrixT<DIMN, T>& y)
 {
-  Matrix<DIMN> ret;
+  MatrixT<DIMN, T> ret;
   ret.em() = x.em() + y.em();
   return ret;
 }
 
-template <int DIMN>
-Matrix<DIMN> operator-(const Matrix<DIMN>& x, const Matrix<DIMN>& y)
+template <int DIMN, class T>
+MatrixT<DIMN, T> operator-(const MatrixT<DIMN, T>& x, const MatrixT<DIMN, T>& y)
 {
-  Matrix<DIMN> ret;
+  MatrixT<DIMN, T> ret;
   ret.em() = x.em() - y.em();
   return ret;
 }
 
-template <int DIMN>
-Matrix<DIMN> operator-(const Matrix<DIMN>& x)
+template <int DIMN, class T>
+MatrixT<DIMN, T> operator-(const MatrixT<DIMN, T>& x)
 {
-  Matrix<DIMN> ret;
+  MatrixT<DIMN, T> ret;
   ret.em() = -x.em();
   return ret;
 }
 
-template <int DIMN>
-Matrix<DIMN> operator*(const Matrix<DIMN>& x, const Matrix<DIMN>& y)
+template <int DIMN, class T>
+MatrixT<DIMN, T> operator*(const MatrixT<DIMN, T>& x, const MatrixT<DIMN, T>& y)
 {
-  Matrix<DIMN> ret;
+  MatrixT<DIMN, T> ret;
   ret.em() = x.em() * y.em();
   return ret;
 }
 
-template <int DIMN>
-Matrix<DIMN> operator*(const Complex& x, const Matrix<DIMN>& y)
+template <int DIMN, class T>
+MatrixT<DIMN, T> operator*(const Complex& x, const MatrixT<DIMN, T>& y)
 {
-  Matrix<DIMN> ret;
+  MatrixT<DIMN, T> ret;
   ret.em() = x * y.em();
   return ret;
 }
 
-template <int DIMN>
-Matrix<DIMN> operator*(const Matrix<DIMN>& x, const Complex& y)
+template <int DIMN, class T>
+MatrixT<DIMN, T> operator*(const MatrixT<DIMN, T>& x, const Complex& y)
 {
-  Matrix<DIMN> ret;
+  MatrixT<DIMN, T> ret;
   ret.em() = x.em() * y;
   return ret;
 }
 
-template <int DIMN>
-Matrix<DIMN> operator/(const Matrix<DIMN>& x, const Complex& y)
+template <int DIMN, class T>
+MatrixT<DIMN, T> operator/(const MatrixT<DIMN, T>& x, const Complex& y)
 {
-  Matrix<DIMN> ret;
+  MatrixT<DIMN, T> ret;
   ret.em() = x.em() / y;
   return ret;
 }
 
-template <int DIMN>
-Mvector<DIMN> operator*(const Matrix<DIMN>& x, const Mvector<DIMN>& y)
+template <int DIMN, class T>
+MvectorT<DIMN, T> operator*(const MatrixT<DIMN, T>& x,
+                            const MvectorT<DIMN, T>& y)
 {
-  Mvector<DIMN> ret;
+  MvectorT<DIMN, T> ret;
   ret.em() = x.em() * y.em();
   return ret;
 }
 
-template <int DIMN>
-void set_zero(Matrix<DIMN>& m)
+template <int DIMN, class T>
+void set_zero(MatrixT<DIMN, T>& m)
 {
-  memset(&m, 0, sizeof(Matrix<DIMN>));
+  memset(&m, 0, sizeof(MatrixT<DIMN, T>));
 }
 
-template <int DIMN>
-void set_unit(Matrix<DIMN>& m, const Complex& coef = 1.0)
+template <int DIMN, class T>
+void set_unit(MatrixT<DIMN, T>& m, const Complex& coef = 1.0)
 {
   set_zero(m);
   for (int i = 0; i < DIMN; ++i) {
@@ -148,54 +148,56 @@ void set_unit(Matrix<DIMN>& m, const Complex& coef = 1.0)
   }
 }
 
-template <int DIMN>
-double norm(const Matrix<DIMN>& m)
+template <int DIMN, class T>
+double norm(const MatrixT<DIMN, T>& m)
 {
   return m.em().squaredNorm();
 }
 
-template <int DIMN>
-Complex matrix_trace(const Matrix<DIMN>& x)
+template <int DIMN, class T>
+Complex matrix_trace(const MatrixT<DIMN, T>& x)
 {
   return x.em().trace();
 }
 
-template <int DIMN>
-Matrix<DIMN> matrix_adjoint(const Matrix<DIMN>& x)
+template <int DIMN, class T>
+MatrixT<DIMN, T> matrix_adjoint(const MatrixT<DIMN, T>& x)
 {
-  Matrix<DIMN> ret;
+  MatrixT<DIMN, T> ret;
   ret.em() = x.em().adjoint();
   return ret;
 }
 
-template <int DIMN>
-Matrix<DIMN> matrix_transpose(const Matrix<DIMN>& x)
+template <int DIMN, class T>
+MatrixT<DIMN, T> matrix_transpose(const MatrixT<DIMN, T>& x)
 {
-  Matrix<DIMN> ret;
+  MatrixT<DIMN, T> ret;
   ret.em() = x.em().transpose();
   return ret;
 }
 
-template <int DIMN>
-Matrix<DIMN> matrix_conjugate(const Matrix<DIMN>& x)
+template <int DIMN, class T>
+MatrixT<DIMN, T> matrix_conjugate(const MatrixT<DIMN, T>& x)
 {
-  Matrix<DIMN> ret;
+  MatrixT<DIMN, T> ret;
   ret.em() = x.em().conjugate();
   return ret;
 }
 
-struct ColorMatrix : Matrix<NUM_COLOR> {
-  ColorMatrix() {}
-  ColorMatrix(const Matrix<NUM_COLOR>& m) { *this = m; }
+template <class T = Complex>
+struct ColorMatrixT : MatrixT<NUM_COLOR, T> {
+  ColorMatrixT() {}
+  ColorMatrixT(const MatrixT<NUM_COLOR, T>& m) { *this = m; }
   //
-  const ColorMatrix& operator=(const Matrix<NUM_COLOR>& m)
+  const ColorMatrixT& operator=(const MatrixT<NUM_COLOR, T>& m)
   {
-    *this = (const ColorMatrix&)m;
+    *this = (const ColorMatrixT&)m;
     return *this;
   }
 };
 
-inline void unitarize(ColorMatrix& cm)
+template <class T>
+inline void unitarize(ColorMatrixT<T>& cm)
 {
   cm.em().row(0).normalize();
   cm.em().row(2) =
@@ -204,10 +206,10 @@ inline void unitarize(ColorMatrix& cm)
   cm.em().row(2) = cm.em().row(0).cross(cm.em().row(1));
 }
 
-inline ColorMatrix make_anti_hermitian_matrix(const Array<double, 8> a)
+inline ColorMatrixT<> make_anti_hermitian_matrix(const Array<double, 8> a)
 {
   qassert(3 == NUM_COLOR);
-  ColorMatrix m;
+  ColorMatrixT<> m;
   Array<double, 18> p(m.d());
   const double s3 =
       0.5773502691896258 * a[7];  // 1/sqrt(3) = 0.5773502691896258;
@@ -232,8 +234,8 @@ inline ColorMatrix make_anti_hermitian_matrix(const Array<double, 8> a)
   return m;
 }
 
-inline ColorMatrix make_g_rand_anti_hermitian_matrix(RngState& rs,
-                                                     const double sigma)
+inline ColorMatrixT<> make_g_rand_anti_hermitian_matrix(RngState& rs,
+                                                        const double sigma)
 {
   const double s = sigma / std::sqrt(2);
   std::array<double, 8> a;
@@ -243,11 +245,12 @@ inline ColorMatrix make_g_rand_anti_hermitian_matrix(RngState& rs,
   return make_anti_hermitian_matrix(a);
 }
 
-inline ColorMatrix make_color_matrix_exp(const ColorMatrix& a)
+template <class T>
+inline ColorMatrixT<T> make_color_matrix_exp(const ColorMatrixT<T>& a)
 {
-  ColorMatrix t2 = a;
-  ColorMatrix t3 = a;
-  ColorMatrix unit;
+  ColorMatrixT<T> t2 = a;
+  ColorMatrixT<T> t3 = a;
+  ColorMatrixT<T> unit;
   set_unit(unit);
   for (int j = 9; j > 1; --j) {
     t3 = unit + (1.0 / j) * t2;
@@ -258,40 +261,43 @@ inline ColorMatrix make_color_matrix_exp(const ColorMatrix& a)
   return t3;
 }
 
-struct WilsonMatrix : Matrix<4 * NUM_COLOR> {
-  WilsonMatrix() {}
-  WilsonMatrix(const Matrix<4 * NUM_COLOR>& m) { *this = m; }
+template <class T = Complex>
+struct WilsonMatrixT : MatrixT<4 * NUM_COLOR, T> {
+  WilsonMatrixT() {}
+  WilsonMatrixT(const MatrixT<4 * NUM_COLOR, T>& m) { *this = m; }
   //
-  const WilsonMatrix& operator=(const Matrix<4 * NUM_COLOR>& m)
+  const WilsonMatrixT& operator=(const MatrixT<4 * NUM_COLOR, T>& m)
   {
-    *this = (const WilsonMatrix&)m;
+    *this = (const WilsonMatrixT&)m;
     return *this;
   }
 };
 
-struct SpinMatrix : Matrix<4> {
-  SpinMatrix() {}
-  SpinMatrix(const Matrix<4>& m) { *this = m; }
+template <class T = Complex>
+struct SpinMatrixT : MatrixT<4, T> {
+  SpinMatrixT() {}
+  SpinMatrixT(const MatrixT<4, T>& m) { *this = m; }
   //
-  const SpinMatrix& operator=(const Matrix<4>& m)
+  const SpinMatrixT& operator=(const MatrixT<4, T>& m)
   {
-    *this = (const SpinMatrix&)m;
+    *this = (const SpinMatrixT&)m;
     return *this;
   }
 };
 
-struct SpinMatrixConstants {
-  SpinMatrix unit;
-  std::array<SpinMatrix, 4>
+template <class T = Complex>
+struct SpinMatrixConstantsT {
+  SpinMatrixT<T> unit;
+  std::array<SpinMatrixT<T>, 4>
       gammas;  // Not using CPS's convention, but a more standard one.
-  std::array<SpinMatrix, 4> cps_gammas;  // CPS's convention gamma matrices
-  SpinMatrix gamma5;                     // Same as CPS's gamma5
-  std::array<SpinMatrix, 3> cap_sigmas;
-  std::array<SpinMatrix, 3> cps_cap_sigmas;  // CPS's convention sigmas
-  std::array<SpinMatrix, 16> gms;
-  std::array<SpinMatrix, 16> cps_gms;
+  std::array<SpinMatrixT<T>, 4> cps_gammas;  // CPS's convention gamma matrices
+  SpinMatrixT<T> gamma5;                     // Same as CPS's gamma5
+  std::array<SpinMatrixT<T>, 3> cap_sigmas;
+  std::array<SpinMatrixT<T>, 3> cps_cap_sigmas;  // CPS's convention sigmas
+  std::array<SpinMatrixT<T>, 16> gms;
+  std::array<SpinMatrixT<T>, 16> cps_gms;
   //
-  SpinMatrixConstants() { init(); }
+  SpinMatrixConstantsT() { init(); }
   //
   void init()
   {
@@ -326,13 +332,16 @@ struct SpinMatrixConstants {
     cps_cap_sigmas[2] = -cap_sigmas[2];
     //
     for (int a = 0; a < 2; ++a) {
-      const SpinMatrix ma = a == 0 ? unit : gammas[0];
+      const SpinMatrixT<T> ma = a == 0 ? unit : gammas[0];
       for (int b = 0; b < 2; ++b) {
-        const SpinMatrix mb = b == 0 ? ma : (SpinMatrix)(ma * gammas[1]);
+        const SpinMatrixT<T> mb =
+            b == 0 ? ma : (SpinMatrixT<T>)(ma * gammas[1]);
         for (int c = 0; c < 2; ++c) {
-          const SpinMatrix mc = c == 0 ? mb : (SpinMatrix)(mb * gammas[2]);
+          const SpinMatrixT<T> mc =
+              c == 0 ? mb : (SpinMatrixT<T>)(mb * gammas[2]);
           for (int d = 0; d < 2; ++d) {
-            const SpinMatrix md = d == 0 ? mc : (SpinMatrix)(mc * gammas[3]);
+            const SpinMatrixT<T> md =
+                d == 0 ? mc : (SpinMatrixT<T>)(mc * gammas[3]);
             const int idx = a + 2 * b + 4 * c + 8 * d;
             gms[idx] = md;
           }
@@ -340,14 +349,16 @@ struct SpinMatrixConstants {
       }
     }
     for (int a = 0; a < 2; ++a) {
-      const SpinMatrix ma = a == 0 ? unit : cps_gammas[0];
+      const SpinMatrixT<T> ma = a == 0 ? unit : cps_gammas[0];
       for (int b = 0; b < 2; ++b) {
-        const SpinMatrix mb = b == 0 ? ma : (SpinMatrix)(ma * cps_gammas[1]);
+        const SpinMatrixT<T> mb =
+            b == 0 ? ma : (SpinMatrixT<T>)(ma * cps_gammas[1]);
         for (int c = 0; c < 2; ++c) {
-          const SpinMatrix mc = c == 0 ? mb : (SpinMatrix)(mb * cps_gammas[2]);
+          const SpinMatrixT<T> mc =
+              c == 0 ? mb : (SpinMatrixT<T>)(mb * cps_gammas[2]);
           for (int d = 0; d < 2; ++d) {
-            const SpinMatrix md =
-                d == 0 ? mc : (SpinMatrix)(mc * cps_gammas[3]);
+            const SpinMatrixT<T> md =
+                d == 0 ? mc : (SpinMatrixT<T>)(mc * cps_gammas[3]);
             const int idx = a + 2 * b + 4 * c + 8 * d;
             cps_gms[idx] = md;
           }
@@ -356,48 +367,48 @@ struct SpinMatrixConstants {
     }
   }
   //
-  static const SpinMatrixConstants& get_instance()
+  static const SpinMatrixConstantsT& get_instance()
   {
-    static SpinMatrixConstants smcs;
+    static SpinMatrixConstantsT smcs;
     return smcs;
   }
   //
-  static const SpinMatrix& get_unit() { return get_instance().unit; }
-  static const SpinMatrix& get_gamma(int mu)
+  static const SpinMatrixT<T>& get_unit() { return get_instance().unit; }
+  static const SpinMatrixT<T>& get_gamma(int mu)
   {
     qassert(0 <= mu && mu < 4);
     return get_instance().gammas[mu];
   }
-  static const std::array<SpinMatrix, 4>& get_gammas()
+  static const std::array<SpinMatrixT<T>, 4>& get_gammas()
   {
     return get_instance().gammas;
   }
-  static const std::array<SpinMatrix, 4>& get_cps_gammas()
+  static const std::array<SpinMatrixT<T>, 4>& get_cps_gammas()
   {
     return get_instance().cps_gammas;
   }
-  static const std::array<SpinMatrix, 16>& get_gms()
+  static const std::array<SpinMatrixT<T>, 16>& get_gms()
   {
     return get_instance().gms;
   }
-  static const std::array<SpinMatrix, 16>& get_cps_gms()
+  static const std::array<SpinMatrixT<T>, 16>& get_cps_gms()
   {
     return get_instance().cps_gms;
   }
-  static const SpinMatrix& get_gamma5() { return get_instance().gamma5; }
-  static const SpinMatrix& get_cap_sigma(int i)
+  static const SpinMatrixT<T>& get_gamma5() { return get_instance().gamma5; }
+  static const SpinMatrixT<T>& get_cap_sigma(int i)
   {
     return get_instance().cap_sigmas[i];
   }
-  static const std::array<SpinMatrix, 3>& get_cap_sigmas()
+  static const std::array<SpinMatrixT<T>, 3>& get_cap_sigmas()
   {
     return get_instance().cap_sigmas;
   }
-  static const std::array<SpinMatrix, 3>& get_cps_cap_sigmas()
+  static const std::array<SpinMatrixT<T>, 3>& get_cps_cap_sigmas()
   {
     return get_instance().cps_cap_sigmas;
   }
-  static const SpinMatrix get_cps_sigmas(int i, int j)
+  static const SpinMatrixT<T> get_cps_sigmas(int i, int j)
   {
     return (get_instance().cps_gammas[i] * get_instance().cps_gammas[j] -
             get_instance().cps_gammas[j] * get_instance().cps_gammas[i]) /
@@ -405,9 +416,10 @@ struct SpinMatrixConstants {
   }
 };
 
-inline WilsonMatrix operator*(const ColorMatrix& cm, const WilsonMatrix& m)
+template <class T>
+WilsonMatrixT<T> operator*(const ColorMatrixT<T>& cm, const WilsonMatrixT<T>& m)
 {
-  WilsonMatrix ret;
+  WilsonMatrixT<T> ret;
   set_zero(ret);
   for (int s1 = 0; s1 < 4; ++s1) {
     for (int s2 = 0; s2 < 4; ++s2) {
@@ -424,14 +436,17 @@ inline WilsonMatrix operator*(const ColorMatrix& cm, const WilsonMatrix& m)
   return ret;
 }
 
-inline WilsonMatrix operator*(const WilsonMatrix& m, const ColorMatrix& cm)
+template <class T>
+WilsonMatrixT<T> operator*(const WilsonMatrixT<T>& m, const ColorMatrixT<T>& cm)
 {
-  return matrix_adjoint(matrix_adjoint(cm) * matrix_adjoint(m));
+  return matrix_adjoint((const ColorMatrixT<T>&)matrix_adjoint(cm) *
+                        (const WilsonMatrixT<T>&)matrix_adjoint(m));
 }
 
-inline WilsonMatrix operator*(const SpinMatrix& sm, const WilsonMatrix& m)
+template <class T>
+WilsonMatrixT<T> operator*(const SpinMatrixT<T>& sm, const WilsonMatrixT<T>& m)
 {
-  WilsonMatrix ret;
+  WilsonMatrixT<T> ret;
   set_zero(ret);
   for (int s1 = 0; s1 < 4; ++s1) {
     for (int s2 = 0; s2 < 4; ++s2) {
@@ -448,14 +463,17 @@ inline WilsonMatrix operator*(const SpinMatrix& sm, const WilsonMatrix& m)
   return ret;
 }
 
-inline WilsonMatrix operator*(const WilsonMatrix& m, const SpinMatrix& sm)
+template <class T>
+WilsonMatrixT<T> operator*(const WilsonMatrixT<T>& m, const SpinMatrixT<T>& sm)
 {
-  return matrix_adjoint(matrix_adjoint(sm) * matrix_adjoint(m));
+  return matrix_adjoint((const SpinMatrixT<T>&)matrix_adjoint(sm) *
+                        (const WilsonMatrixT<T>&)matrix_adjoint(m));
 }
 
-inline WilsonVector operator*(const ColorMatrix& cm, const WilsonVector& m)
+template <class T>
+WilsonVectorT<T> operator*(const ColorMatrixT<T>& cm, const WilsonVectorT<T>& m)
 {
-  WilsonVector ret;
+  WilsonVectorT<T> ret;
   set_zero(ret);
   for (int s1 = 0; s1 < 4; ++s1) {
     for (int c1 = 0; c1 < NUM_COLOR; ++c1) {
@@ -467,9 +485,10 @@ inline WilsonVector operator*(const ColorMatrix& cm, const WilsonVector& m)
   return ret;
 }
 
-inline WilsonVector operator*(const SpinMatrix& sm, const WilsonVector& m)
+template <class T>
+WilsonVectorT<T> operator*(const SpinMatrixT<T>& sm, const WilsonVectorT<T>& m)
 {
-  WilsonVector ret;
+  WilsonVectorT<T> ret;
   set_zero(ret);
   for (int s1 = 0; s1 < 4; ++s1) {
     for (int s2 = 0; s2 < 4; ++s2) {
@@ -481,12 +500,24 @@ inline WilsonVector operator*(const SpinMatrix& sm, const WilsonVector& m)
   return ret;
 }
 
+#ifndef QLAT_NO_DEFAULT_TYPE
+
+typedef ColorMatrixT<Complex> ColorMatrix;
+
+typedef WilsonMatrixT<Complex> WilsonMatrix;
+
+typedef SpinMatrixT<Complex> SpinMatrix;
+
+typedef SpinMatrixConstantsT<Complex> SpinMatrixConstants;
+
+#endif
+
 QLAT_END_NAMESPACE
 
 namespace qshow
 {
-template <int DIMN>
-std::string show(const qlat::Matrix<DIMN>& m)
+template <int DIMN, class T>
+std::string show(const qlat::MatrixT<DIMN, T>& m)
 {
   std::ostringstream out;
   out << m.em();

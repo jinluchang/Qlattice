@@ -434,8 +434,8 @@ struct CompressedEigenSystemBases : Field<ComplexF> {
                       // (block_vol_eo is half of the number of site within the
                       // block n_t * n_z * n_y * n_x/2) n_t slowest varying and
                       // n_x fastest varying
-  int ls;          // ls varying faster than n_x
-  int c_size_vec;  // c_size_vec = block_vol_eo * ls * HalfVector::c_size;
+  int ls;             // ls varying faster than n_x
+  int c_size_vec;     // c_size_vec = block_vol_eo * ls * HalfVector::c_size;
   // geo.multiplicity = n_basis * c_size_vec;
   Geometry geo_full;
   Coordinate block_site;

@@ -1,225 +1,180 @@
 #pragma once
 
 #include <qlat/config.h>
-#include <eigen3/Eigen/Eigen>
 
 #include <cmath>
 
 QLAT_START_NAMESPACE
 
-template <int DIMN>
-struct Mvector {
-  Complex p[DIMN];
+template <int DIMN, class T = Complex>
+struct MvectorT {
+  T p[DIMN];
   //
   // convert to double array
   double* d() { return (double*)p; }
   const double* d() const { return (const double*)p; }
   //
   // convert to Eigen Matrix
-  Eigen::Matrix<Complex, DIMN, 1>& em()
+  Eigen::Matrix<T, DIMN, 1>& em()
   {
-    return *((Eigen::Matrix<Complex, DIMN, 1>*)this);
+    return *((Eigen::Matrix<T, DIMN, 1>*)this);
   }
-  const Eigen::Matrix<Complex, DIMN, 1>& em() const
+  const Eigen::Matrix<T, DIMN, 1>& em() const
   {
-    return *((Eigen::Matrix<Complex, DIMN, 1>*)this);
+    return *((Eigen::Matrix<T, DIMN, 1>*)this);
   }
   //
-  Complex& operator()(int i)
+  T& operator()(int i)
   {
     qassert(0 <= i && i < DIMN);
     return p[i];
   }
-  const Complex& operator()(int i) const
+  const T& operator()(int i) const
   {
     qassert(0 <= i && i < DIMN);
     return p[i];
   }
   //
-  const Mvector& operator+=(const Mvector& x)
+  const MvectorT& operator+=(const MvectorT& x)
   {
     *this = *this + x;
     return *this;
   }
   //
-  const Mvector& operator-=(const Mvector& x)
+  const MvectorT& operator-=(const MvectorT& x)
   {
     *this = *this - x;
     return *this;
   }
   //
-  const Mvector& operator*=(const Complex& x)
+  const MvectorT& operator*=(const T& x)
   {
     *this = *this * x;
     return *this;
   }
   //
-  const Mvector& operator/=(const Complex& x)
+  const MvectorT& operator/=(const T& x)
   {
     *this = *this / x;
     return *this;
   }
 };
 
-template <int DIMN>
-Mvector<DIMN> operator+(const Mvector<DIMN>& x, const Mvector<DIMN>& y)
+template <int DIMN, class T>
+MvectorT<DIMN, T> operator+(const MvectorT<DIMN, T>& x,
+                            const MvectorT<DIMN, T>& y)
 {
-  Mvector<DIMN> ret;
+  MvectorT<DIMN, T> ret;
   ret.em() = x.em() + y.em();
   return ret;
 }
 
-template <int DIMN>
-Mvector<DIMN> operator-(const Mvector<DIMN>& x, const Mvector<DIMN>& y)
+template <int DIMN, class T>
+MvectorT<DIMN, T> operator-(const MvectorT<DIMN, T>& x,
+                            const MvectorT<DIMN, T>& y)
 {
-  Mvector<DIMN> ret;
+  MvectorT<DIMN, T> ret;
   ret.em() = x.em() - y.em();
   return ret;
 }
 
-template <int DIMN>
-Mvector<DIMN> operator-(const Mvector<DIMN>& x)
+template <int DIMN, class T>
+MvectorT<DIMN, T> operator-(const MvectorT<DIMN, T>& x)
 {
-  Mvector<DIMN> ret;
+  MvectorT<DIMN, T> ret;
   ret.em() = -x.em();
   return ret;
 }
 
-template <int DIMN>
-Mvector<DIMN> operator*(const Complex& x, const Mvector<DIMN>& y)
+template <int DIMN, class T>
+MvectorT<DIMN, T> operator*(const Complex& x, const MvectorT<DIMN, T>& y)
 {
-  Mvector<DIMN> ret;
+  MvectorT<DIMN, T> ret;
   ret.em() = x * y.em();
   return ret;
 }
 
-template <int DIMN>
-Mvector<DIMN> operator*(const Mvector<DIMN>& x, const Complex& y)
+template <int DIMN, class T>
+MvectorT<DIMN, T> operator*(const MvectorT<DIMN, T>& x, const Complex& y)
 {
-  Mvector<DIMN> ret;
+  MvectorT<DIMN, T> ret;
   ret.em() = x.em() * y;
   return ret;
 }
 
-template <int DIMN>
-Mvector<DIMN> operator/(const Mvector<DIMN>& x, const Complex& y)
+template <int DIMN, class T>
+MvectorT<DIMN, T> operator/(const MvectorT<DIMN, T>& x, const Complex& y)
 {
-  Mvector<DIMN> ret;
+  MvectorT<DIMN, T> ret;
   ret.em() = x.em() / y;
   return ret;
 }
 
-template <int DIMN>
-Complex dot_product(const Mvector<DIMN>& x, const Mvector<DIMN>& y)
+template <int DIMN, class T>
+Complex dot_product(const MvectorT<DIMN, T>& x, const MvectorT<DIMN, T>& y)
 {
   const Complex ret = x.em().adjoint() * y.em();
   return ret;
 }
 
-template <int DIMN>
-void set_zero(Mvector<DIMN>& m)
+template <int DIMN, class T>
+void set_zero(MvectorT<DIMN, T>& m)
 {
-  memset(&m, 0, sizeof(Mvector<DIMN>));
+  memset(&m, 0, sizeof(MvectorT<DIMN, T>));
 }
 
-template <int DIMN>
-double norm(const Mvector<DIMN>& m)
+template <int DIMN, class T>
+double norm(const MvectorT<DIMN, T>& m)
 {
   return m.em().squaredNorm();
 }
 
-template <int DIMN>
-Mvector<DIMN> vector_conjugate(const Mvector<DIMN>& x)
+template <int DIMN, class T>
+MvectorT<DIMN, T> vector_conjugate(const MvectorT<DIMN, T>& x)
 {
-  Mvector<DIMN> ret;
+  MvectorT<DIMN, T> ret;
   ret.em() = x.em().conjugate();
   return ret;
 }
 
-struct WilsonVector : Mvector<4 * NUM_COLOR> {
-  WilsonVector() {}
-  WilsonVector(const Mvector<4 * NUM_COLOR>& m) { *this = m; }
+template <class T = Complex>
+struct WilsonVectorT : MvectorT<4 * NUM_COLOR, T> {
+  WilsonVectorT() {}
+  WilsonVectorT(const MvectorT<4 * NUM_COLOR, T>& m) { *this = m; }
   //
-  const WilsonVector& operator=(const Mvector<4 * NUM_COLOR>& m)
+  const WilsonVectorT& operator=(const MvectorT<4 * NUM_COLOR, T>& m)
   {
-    *this = (const WilsonVector&)m;
+    *this = (const WilsonVectorT&)m;
     return *this;
   }
 };
 
-// inline WilsonVector operator*(const Complex& x, const WilsonVector& y)
-// {
-//   WilsonVector ret;
-//   ret.em() = x * y.em();
-//   return ret;
-// }
-//
-// inline WilsonVector operator+(const WilsonVector& x, const WilsonVector& y)
-// {
-//   WilsonVector ret;
-//   ret.em() = x.em() + y.em();
-//   return ret;
-// }
-//
-// inline WilsonVector operator-(const WilsonVector& x, const WilsonVector& y)
-// {
-//   WilsonVector ret;
-//   ret.em() = x.em() - y.em();
-//   return ret;
-// }
-//
-// inline WilsonVector operator-(const WilsonVector& x)
-// {
-//   WilsonVector ret;
-//   ret.em() = -x.em();
-//   return ret;
-// }
-
-struct SpinVector : Mvector<4> {
-  SpinVector() {}
-  SpinVector(const Mvector<4>& m) { *this = m; }
+template <class T = Complex>
+struct SpinVectorT : MvectorT<4, T> {
+  SpinVectorT() {}
+  SpinVectorT(const MvectorT<4, T>& m) { *this = m; }
   //
-  const SpinVector& operator=(const Mvector<4>& m)
+  const SpinVectorT& operator=(const MvectorT<4, T>& m)
   {
-    *this = (const SpinVector&)m;
+    *this = (const SpinVectorT&)m;
     return *this;
   }
 };
 
-// inline SpinVector operator*(const Complex& x, const SpinVector& y)
-// {
-//   SpinVector ret;
-//   ret.em() = x * y.em();
-//   return ret;
-// }
-//
-// inline SpinVector operator+(const SpinVector& x, const SpinVector& y)
-// {
-//   SpinVector ret;
-//   ret.em() = x.em() + y.em();
-//   return ret;
-// }
-//
-// inline SpinVector operator-(const SpinVector& x, const SpinVector& y)
-// {
-//   SpinVector ret;
-//   ret.em() = x.em() - y.em();
-//   return ret;
-// }
-//
-// inline SpinVector operator-(const SpinVector& x)
-// {
-//   SpinVector ret;
-//   ret.em() = -x.em();
-//   return ret;
-// }
+#ifndef QLAT_NO_DEFAULT_TYPE
+
+typedef WilsonVectorT<Complex> WilsonVector;
+
+typedef SpinVectorT<Complex> SpinVector;
+
+#endif
 
 QLAT_END_NAMESPACE
 
 namespace qshow
 {
-template <int DIMN>
-std::string show(const qlat::Mvector<DIMN>& m)
+template <int DIMN, class T>
+std::string show(const qlat::MvectorT<DIMN, T>& m)
 {
   std::ostringstream out;
   out << m.em();

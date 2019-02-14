@@ -5,8 +5,9 @@
 name=qlat
 echo "!!!! build $name !!!!"
 
-mkdir -p $prefix/include
-cp -v -r qlat $prefix/include
+rm -rf $prefix/include/$name
+mkdir -p $prefix/include/$name
+cp -pv qlat/*.h $prefix/include/$name
 
 echo "!!!! $name build !!!!"
 
