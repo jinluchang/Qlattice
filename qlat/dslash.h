@@ -230,7 +230,7 @@ inline void deflate(FermionField5d& out, const FermionField5d& in,
     qassert((xl[0] + xl[1] + xl[2] + xl[3]) % 2 == 2 - geo.eo);
     Vector<ComplexF> vhv = hv.get_elems(index);
     const Vector<WilsonVector> vin = in.get_elems_const(index);
-    qassert(vhv.size() == vin.size() * sizeof(WilsonVector) / sizeof(Complex));
+    qassert(vhv.size() == vin.size() * sizeof(WilsonVector) / sizeof(ComplexT));
     const Vector<Complex> vff((const Complex*)vin.data(), vhv.size());
     for (int m = 0; m < vhv.size(); ++m) {
       vhv[m] = vff[m];
@@ -248,7 +248,7 @@ inline void deflate(FermionField5d& out, const FermionField5d& in,
     qassert((xl[0] + xl[1] + xl[2] + xl[3]) % 2 == 2 - geo.eo);
     const Vector<ComplexF> vhv = hv.get_elems(index);
     Vector<WilsonVector> vout = out.get_elems(index);
-    qassert(vhv.size() == vout.size() * sizeof(WilsonVector) / sizeof(Complex));
+    qassert(vhv.size() == vout.size() * sizeof(WilsonVector) / sizeof(ComplexT));
     Vector<Complex> vff((Complex*)vout.data(), vhv.size());
     for (int m = 0; m < vhv.size(); ++m) {
       vff[m] = vhv[m];
@@ -483,7 +483,7 @@ inline void multiply_d_minus(FermionField5d& out, const FermionField5d& in,
     const Vector<WilsonVector> iv = in.get_elems_const(xl);
     for (int m = 0; m < fa.ls; ++m) {
       const Complex& c = fa.cs[m];
-      v1[m] = -c * iv[m];
+      v1[m] = (ComplexT)(-c) * iv[m];
       v[m] = iv[m];
     }
   }
@@ -529,14 +529,14 @@ inline void multiply_m_full(FermionField5d& out, const FermionField5d& in,
     for (int m = 0; m < fa.ls; ++m) {
       const Complex& b = fa.bs[m];
       const Complex& c = fa.cs[m];
-      v1[m] = b * iv[m];
+      v1[m] = (ComplexT)b * iv[m];
       v[m] = iv[m];
       const WilsonVector tmp =
           (p_m *
            (m < fa.ls - 1 ? iv[m + 1] : (WilsonVector)((ComplexT)(-fa.mass) * iv[0]))) +
           (p_p *
            (m > 0 ? iv[m - 1] : (WilsonVector)((ComplexT)(-fa.mass) * iv[fa.ls - 1])));
-      v1[m] += c * tmp;
+      v1[m] += (ComplexT)c * tmp;
       v[m] -= tmp;
     }
   }
@@ -628,13 +628,13 @@ inline void multiply_m_e_e(FermionField5d& out, const FermionField5d& in,
     const Vector<WilsonVector> iv = hin().get_elems_const(xl);
     Vector<WilsonVector> v = out.get_elems(xl);
     for (int m = 0; m < fa.ls; ++m) {
-      v[m] = bee[m] * iv[m];
+      v[m] = (ComplexT)bee[m] * iv[m];
       const WilsonVector tmp =
           (p_m *
            (m < fa.ls - 1 ? iv[m + 1] : (WilsonVector)((ComplexT)(-fa.mass) * iv[0]))) +
           (p_p *
            (m > 0 ? iv[m - 1] : (WilsonVector)((ComplexT)(-fa.mass) * iv[fa.ls - 1])));
-      v[m] -= cee[m] * tmp;
+      v[m] -= (ComplexT)cee[m] * tmp;
     }
   }
 }
@@ -675,14 +675,18 @@ inline void multiply_mdag_e_e(FermionField5d& out, const FermionField5d& in,
     const Vector<WilsonVector> iv = hin().get_elems_const(xl);
     Vector<WilsonVector> v = out.get_elems(xl);
     for (int m = 0; m < fa.ls; ++m) {
-      v[m] = bee[m] * iv[m];
+      v[m] = (ComplexT)bee[m] * iv[m];
       const WilsonVector tmp =
-          (p_p * (m < fa.ls - 1 ? (WilsonVector)(cee[m + 1] * iv[m + 1])
-                                : (WilsonVector)(-std::conj((Complex)fa.mass) *
-                                                 cee[0] * iv[0]))) +
-          (p_m * (m > 0 ? (WilsonVector)(cee[m - 1] * iv[m - 1])
-                        : (WilsonVector)(-std::conj((Complex)fa.mass) *
-                                         cee[fa.ls - 1] * iv[fa.ls - 1])));
+          (p_p * (m < fa.ls - 1
+                      ? (WilsonVector)((ComplexT)cee[m + 1] * iv[m + 1])
+                      : (WilsonVector)(
+                            (ComplexT)(-std::conj((Complex)fa.mass) * cee[0]) *
+                            iv[0]))) +
+          (p_m * (m > 0
+                      ? (WilsonVector)((ComplexT)cee[m - 1] * iv[m - 1])
+                      : (WilsonVector)((ComplexT)(-std::conj((Complex)fa.mass) *
+                                                  cee[fa.ls - 1]) *
+                                       iv[fa.ls - 1])));
       v[m] -= tmp;
     }
   }
@@ -740,24 +744,24 @@ inline void multiply_m_e_e_inv(FermionField5d& out, const FermionField5d& in,
     // {L^m_{ee}}^{-1}
     set_zero(tmp);
     for (int m = 0; m < fa.ls - 1; ++m) {
-      tmp += (-leem[m]) * v[m];
+      tmp += (ComplexT)(-leem[m]) * v[m];
     }
     v[fa.ls - 1] += p_m * tmp;
     // {L'_{ee}}^{-1}
     for (int m = 1; m < fa.ls; ++m) {
-      v[m] += (-lee[m - 1]) * (p_p * v[m - 1]);
+      v[m] += (ComplexT)(-lee[m - 1]) * (p_p * v[m - 1]);
     }
     // {D_{ee}}^{-1}
     for (int m = 0; m < fa.ls; ++m) {
-      v[m] *= 1.0 / dee[m];
+      v[m] *= (ComplexT)(1.0 / dee[m]);
     }
     // {U^'_{ee}}^{-1}
     for (int m = fa.ls - 2; m >= 0; --m) {
-      v[m] += (-uee[m]) * (p_m * v[m + 1]);
+      v[m] += (ComplexT)(-uee[m]) * (p_m * v[m + 1]);
     }
     // {U^m_{ee}}^{-1}
     for (int m = 0; m < fa.ls - 1; ++m) {
-      v[m] += (-ueem[m]) * (p_p * v[fa.ls - 1]);
+      v[m] += (ComplexT)(-ueem[m]) * (p_p * v[fa.ls - 1]);
     }
   }
 }
@@ -825,24 +829,24 @@ inline void multiply_mdag_e_e_inv(FermionField5d& out, const FermionField5d& in,
     // {U^m_{ee}}^\dagger^{-1}
     set_zero(tmp);
     for (int m = 0; m < fa.ls - 1; ++m) {
-      tmp += (-ueem[m]) * v[m];
+      tmp += (ComplexT)(-ueem[m]) * v[m];
     }
     v[fa.ls - 1] += p_p * tmp;
     // {U^'_{ee}}^\dagger^{-1}
     for (int m = 1; m < fa.ls; ++m) {
-      v[m] += (-uee[m - 1]) * (p_m * v[m - 1]);
+      v[m] += (ComplexT)(-uee[m - 1]) * (p_m * v[m - 1]);
     }
     // {D_{ee}}^\dagger^{-1}
     for (int m = 0; m < fa.ls; ++m) {
-      v[m] *= 1.0 / dee[m];
+      v[m] *= (ComplexT)(1.0 / dee[m]);
     }
     // {L'_{ee}}^\dagger^{-1}
     for (int m = fa.ls - 2; m >= 0; --m) {
-      v[m] += (-lee[m]) * (p_p * v[m + 1]);
+      v[m] += (ComplexT)(-lee[m]) * (p_p * v[m + 1]);
     }
     // {L^m_{ee}}^\dagger^{-1}
     for (int m = 0; m < fa.ls - 1; ++m) {
-      v[m] += (-leem[m]) * (p_m * v[fa.ls - 1]);
+      v[m] += (ComplexT)(-leem[m]) * (p_m * v[fa.ls - 1]);
     }
   }
 }
@@ -971,13 +975,13 @@ inline void multiply_m_e_o(FermionField5d& out, const FermionField5d& in,
     const Vector<WilsonVector> iv = in.get_elems_const(xl);
     Vector<WilsonVector> v = in1.get_elems(xl);
     for (int m = 0; m < fa.ls; ++m) {
-      v[m] = beo[m] * iv[m];
+      v[m] = (ComplexT)beo[m] * iv[m];
       const WilsonVector tmp =
           (p_m *
            (m < fa.ls - 1 ? iv[m + 1] : (WilsonVector)((ComplexT)(-fa.mass) * iv[0]))) +
           (p_p *
            (m > 0 ? iv[m - 1] : (WilsonVector)((ComplexT)(-fa.mass) * iv[fa.ls - 1])));
-      v[m] -= ceo[m] * tmp;
+      v[m] -= (ComplexT)ceo[m] * tmp;
     }
   }
   refresh_expanded_1(in1);
@@ -1024,14 +1028,18 @@ inline void multiply_mdag_e_o(FermionField5d& out, const FermionField5d& in,
     const Vector<WilsonVector> iv = out1.get_elems_const(xl);
     Vector<WilsonVector> v = out.get_elems(xl);
     for (int m = 0; m < fa.ls; ++m) {
-      v[m] = beo[m] * iv[m];
+      v[m] = (ComplexT)beo[m] * iv[m];
       const WilsonVector tmp =
-          (p_p * (m < fa.ls - 1 ? (WilsonVector)(ceo[m + 1] * iv[m + 1])
-                                : (WilsonVector)(-std::conj((Complex)fa.mass) *
-                                                 ceo[0] * iv[0]))) +
-          (p_m * (m > 0 ? (WilsonVector)(ceo[m - 1] * iv[m - 1])
-                        : (WilsonVector)(-std::conj((Complex)fa.mass) *
-                                         ceo[fa.ls - 1] * iv[fa.ls - 1])));
+          (p_p * (m < fa.ls - 1
+                      ? (WilsonVector)((ComplexT)ceo[m + 1] * iv[m + 1])
+                      : (WilsonVector)(
+                            (ComplexT)(-std::conj((Complex)fa.mass) * ceo[0]) *
+                            iv[0]))) +
+          (p_m * (m > 0
+                      ? (WilsonVector)((ComplexT)ceo[m - 1] * iv[m - 1])
+                      : (WilsonVector)((ComplexT)(-std::conj((Complex)fa.mass) *
+                                                  ceo[fa.ls - 1]) *
+                                       iv[fa.ls - 1])));
       v[m] -= tmp;
     }
   }
@@ -1270,10 +1278,10 @@ inline Complex dot_product(const FermionField5d& ff1, const FermionField5d& ff2)
     const Coordinate xl = geo.coordinate_from_index(index);
     const Vector<WilsonVector> v1 = ff1.get_elems_const(xl);
     const Vector<WilsonVector> v2 = ff2.get_elems_const(xl);
-    const Vector<Complex> cv1((const Complex*)v1.data(),
-                              v1.data_size() / sizeof(Complex));
-    const Vector<Complex> cv2((const Complex*)v2.data(),
-                              v2.data_size() / sizeof(Complex));
+    const Vector<ComplexT> cv1((const ComplexT*)v1.data(),
+                              v1.data_size() / sizeof(ComplexT));
+    const Vector<ComplexT> cv2((const ComplexT*)v2.data(),
+                              v2.data_size() / sizeof(ComplexT));
     qassert(cv1.size() == cv2.size());
     for (int k = 0; k < cv1.size(); ++k) {
       sum += std::conj(cv1[k]) * cv2[k];

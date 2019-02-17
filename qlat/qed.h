@@ -161,7 +161,7 @@ void prop_mom_spin_propagator4d(SpinPropagator4dT<T>& sp4d, const double mass,
       kg[i] = smod(kg[i], total_site[i]);
       kk[i] = 2.0 * PI * (kg[i] + momtwist[i]) / (double)total_site[i];
       ks[i] = sin(kk[i]);
-      pg += SpinMatrixConstantsT<T>::get_gamma(i) * (Complex)ks[i];
+      pg += SpinMatrixConstantsT<T>::get_gamma(i) * (T)ks[i];
       p2 += sqr(ks[i]);
       wp += 2.0 * sqr(sin(kk[i] / 2.0));
     }
@@ -171,7 +171,7 @@ void prop_mom_spin_propagator4d(SpinPropagator4dT<T>& sp4d, const double mass,
     SpinMatrixT<T> m;
     set_unit(m, mass * lwa);
     SpinMatrixT<T> ipgm = pg;
-    ipgm *= -ii;
+    ipgm *= (T)(-ii);
     ipgm += m;
     ipgm *= lwa / (p2 + sqr(mass * lwa));
     if (1.0e-10 > p2 && 1.0e-10 > lwa) {
@@ -265,7 +265,7 @@ void sequential_photon_spin_propagator_plusm(SpinPropagator4dT<T>& src,
       SpinMatrixT<T> tmp =
           SpinMatrixConstantsT<T>::get_gamma(mu) * sol.get_elem(xl);
       // tmp = coef * \gamma_\mu A_\mu(x) \psi(x)
-      tmp *= a * coef;
+      tmp *= (ComplexT)(a * coef);
       src.get_elem(xl) += tmp;
     }
   }

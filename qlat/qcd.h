@@ -278,8 +278,9 @@ inline std::string make_gauge_field_header(
   return out.str();
 }
 
-inline void save_gauge_field(const GaugeFieldT<Complex>& gf, const std::string& path,
-                             const GaugeFieldInfo& gfi_ = GaugeFieldInfo())
+template <class T>
+void save_gauge_field(const GaugeFieldT<T>& gf, const std::string& path,
+                      const GaugeFieldInfo& gfi_ = GaugeFieldInfo())
 {
   TIMER_VERBOSE_FLOPS("save_gauge_field");
   qassert(is_initialized(gf));
@@ -289,10 +290,15 @@ inline void save_gauge_field(const GaugeFieldT<Complex>& gf, const std::string& 
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
-    const Vector<ColorMatrixT<Complex> > v = gf.get_elems_const(xl);
+    const Vector<ColorMatrixT<T> > v = gf.get_elems_const(xl);
     Vector<std::array<Complex, 6> > vt = gft.get_elems(xl);
     for (int m = 0; m < geo.multiplicity; ++m) {
-      assign_truncate(vt[m], v[m]);
+      vt[m][0] = v[m](0,0);
+      vt[m][1] = v[m](0,1);
+      vt[m][2] = v[m](0,2);
+      vt[m][3] = v[m](1,0);
+      vt[m][4] = v[m](1,1);
+      vt[m][5] = v[m](1,2);
     }
     to_from_big_endian_64(get_data(vt));
   }
@@ -461,7 +467,7 @@ void twist_boundary_at_boundary(GaugeFieldT<T>& gf, double mom, int mu)
     Coordinate xg = geo.coordinate_g_from_l(xl);
     if (xg[mu] == len - 1) {
       ColorMatrixT<T>& mat = gf.get_elem(xl, mu);
-      mat *= std::polar(1.0, amp);
+      mat *= ComplexT(std::polar(1.0, amp));
     }
   }
 }

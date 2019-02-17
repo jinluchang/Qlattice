@@ -90,13 +90,14 @@ void grid_convert(Grid::QCD::LatticeGaugeFieldF& ggf, const GaugeField& gf)
     std::vector<int> coor = grid_convert(xl);
     const Vector<ColorMatrix> ms = gf.get_elems_const(xl);
     LorentzColourMatrixF gms;
-    std::array<float, sizeof(LorentzColourMatrixF) / sizeof(float)>& fs =
-        (std::array<float, sizeof(LorentzColourMatrixF) / sizeof(float)>&)gms;
-    std::array<double, sizeof(LorentzColourMatrixF) / sizeof(float)>& ds =
-        *((std::array<double, sizeof(LorentzColourMatrixF) / sizeof(float)>*)
-              ms.data());
-    qassert(sizeof(LorentzColourMatrixF) * 2 == ms.data_size());
-    qassert(fs.size() * sizeof(double) == ms.data_size());
+    std::array<ComplexF, sizeof(LorentzColourMatrixF) / sizeof(ComplexF)>& fs =
+        (std::array<ComplexF, sizeof(LorentzColourMatrixF) / sizeof(ComplexF)>&)
+            gms;
+    std::array<ComplexT, sizeof(LorentzColourMatrixF) / sizeof(ComplexF)>& ds =
+        *((std::array<ComplexT, sizeof(LorentzColourMatrixF) /
+                                    sizeof(ComplexF)>*)ms.data());
+    qassert(sizeof(LorentzColourMatrixF) == ms.data_size() / sizeof(ComplexT) * sizeof(ComplexF));
+    qassert(fs.size() * sizeof(ComplexT) == ms.data_size());
     qassert(fs.size() == ds.size());
     for (int i = 0; i < fs.size(); ++i) {
       fs[i] = ds[i];
@@ -117,13 +118,14 @@ void grid_convert(FermionField5d& ff, const Grid::QCD::LatticeFermionF& gff)
     const Coordinate xl = geo.coordinate_from_index(index);
     std::vector<int> coor = grid_convert(xl, 0);
     Vector<WilsonVector> wvs = ff.get_elems(xl);
-    std::array<float, sizeof(WilsonVector) / sizeof(double)> fs;
+    std::array<ComplexF, sizeof(WilsonVector) / sizeof(ComplexT)> fs;
     for (int m = 0; m < geo.multiplicity; ++m) {
       coor[0] = m;
       peekLocalSite(fs, gff, coor);
-      std::array<double, sizeof(WilsonVector) / sizeof(double)>& ds =
-          (std::array<double, sizeof(WilsonVector) / sizeof(double)>&)wvs[m];
-      for (int k = 0; k < sizeof(WilsonVector) / sizeof(double); ++k) {
+      std::array<ComplexT, sizeof(WilsonVector) / sizeof(ComplexT)>& ds =
+          (std::array<ComplexT, sizeof(WilsonVector) / sizeof(ComplexT)>&)
+              wvs[m];
+      for (int k = 0; k < sizeof(WilsonVector) / sizeof(ComplexT); ++k) {
         ds[k] = fs[k];
       }
     }
@@ -141,13 +143,13 @@ void grid_convert(Grid::QCD::LatticeFermionF& gff, const FermionField5d& ff)
     const Coordinate xl = geo.coordinate_from_index(index);
     std::vector<int> coor = grid_convert(xl, 0);
     const Vector<WilsonVector> wvs = ff.get_elems_const(xl);
-    std::array<float, sizeof(WilsonVector) / sizeof(double)> fs;
+    std::array<ComplexF, sizeof(WilsonVector) / sizeof(ComplexT)> fs;
     for (int m = 0; m < geo.multiplicity; ++m) {
       coor[0] = m;
-      const std::array<double, sizeof(WilsonVector) / sizeof(double)>& ds =
-          (const std::array<double, sizeof(WilsonVector) / sizeof(double)>&)
+      const std::array<ComplexT, sizeof(WilsonVector) / sizeof(ComplexT)>& ds =
+          (const std::array<ComplexT, sizeof(WilsonVector) / sizeof(ComplexT)>&)
               wvs[m];
-      for (int k = 0; k < sizeof(WilsonVector) / sizeof(double); ++k) {
+      for (int k = 0; k < sizeof(WilsonVector) / sizeof(ComplexT); ++k) {
         fs[k] = ds[k];
       }
       pokeLocalSite(fs, gff, coor);

@@ -301,16 +301,17 @@ struct SpinMatrixConstantsT {
   //
   void init()
   {
+    TIMER_VERBOSE("SpinMatrixConstants::init()");
     unit.em() << 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1;
     // gamma_x
     gammas[0].em() << 0, 0, 0, 1, 0, 0, 1, 0, 0, -1, 0, 0, -1, 0, 0, 0;
     // gamma_y
-    gammas[1].em() << 0, 0, 0, -ii, 0, 0, ii, 0, 0, ii, 0, 0, -ii, 0, 0, 0;
+    gammas[1].em() << 0, 0, 0, (T)-ii, 0, 0, (T)ii, 0, 0, (T)ii, 0, 0, (T)-ii, 0, 0, 0;
     // gamma_z
     gammas[2].em() << 0, 0, 1, 0, 0, 0, 0, -1, -1, 0, 0, 0, 0, 1, 0, 0;
-    gammas[0] *= -ii;
-    gammas[1] *= -ii;
-    gammas[2] *= -ii;
+    gammas[0] *= (T)(-ii);
+    gammas[1] *= (T)(-ii);
+    gammas[2] *= (T)(-ii);
     // gamma_t
     gammas[3].em() << 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0;
     //
@@ -323,7 +324,7 @@ struct SpinMatrixConstantsT {
     // Sigma_x
     cap_sigmas[0].em() << 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0;
     // Sigma_y
-    cap_sigmas[1].em() << 0, -ii, 0, 0, ii, 0, 0, 0, 0, 0, 0, -ii, 0, 0, ii, 0;
+    cap_sigmas[1].em() << 0, (T)-ii, 0, 0, (T)ii, 0, 0, 0, 0, 0, 0, (T)-ii, 0, 0, (T)ii, 0;
     // Sigma_z
     cap_sigmas[2].em() << 1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, -1;
     //

@@ -19,6 +19,7 @@ if [ -e $prefix ] ; then
         sleep 1;
     done
 fi
+
 rm -rf $prefix || true
 mkdir -p $prefix
 

@@ -270,17 +270,17 @@ void displayGammas()
               qlat::show(qlat::SpinMatrixConstants::get_gamma(3)).c_str());
   DisplayInfo(
       cname, fname, "ii * gamma0 =\n%s\n",
-      qlat::show((qlat::SpinMatrix)(qlat::ii *
+      qlat::show((qlat::SpinMatrix)((qlat::ComplexT)qlat::ii *
                                     qlat::SpinMatrixConstants::get_gamma(0)))
           .c_str());
   DisplayInfo(
       cname, fname, "ii * gamma1 =\n%s\n",
-      qlat::show((qlat::SpinMatrix)(qlat::ii *
+      qlat::show((qlat::SpinMatrix)((qlat::ComplexT)qlat::ii *
                                     qlat::SpinMatrixConstants::get_gamma(1)))
           .c_str());
   DisplayInfo(
       cname, fname, "ii * gamma2 =\n%s\n",
-      qlat::show((qlat::SpinMatrix)(qlat::ii *
+      qlat::show((qlat::SpinMatrix)((qlat::ComplexT)qlat::ii *
                                     qlat::SpinMatrixConstants::get_gamma(2)))
           .c_str());
 }
