@@ -25,7 +25,7 @@ qlat::SpinMatrix projPositiveState(const qlat::SpinMatrix& x)
 {
   const qlat::SpinMatrix psm = (qlat::SpinMatrixConstants::get_unit() +
                                 qlat::SpinMatrixConstants::get_gamma(3)) /
-                               2.0;
+                               (qlat::ComplexT)2.0;
   return psm * x * psm;
 }
 
@@ -148,7 +148,7 @@ void lblMagneticMomentSpinMatrix(qlat::Array<qlat::SpinMatrix, 3> bs,
       bs[i] = qlat::SpinMatrixConstants::get_gamma5() *
               matrix_adjoint(snk.get_elem(xlop)) *
               qlat::SpinMatrixConstants::get_gamma5();
-      bs[i] *= qlat::SpinMatrixConstants::get_cap_sigma(i) * mass / 2.0;
+      bs[i] *= qlat::SpinMatrixConstants::get_cap_sigma(i) * (qlat::ComplexT)(mass / 2.0);
       bs[i] *= src.get_elem(xlop);
       bs[i] = projPositiveState(bs[i]);
     }

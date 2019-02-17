@@ -20,7 +20,7 @@
 
 #define EIGEN_DONT_ALIGN_STATICALLY
 
-#include <eigen3/Eigen/Eigen>
+#include <Eigen/Eigen>
 
 #define QLAT_START_NAMESPACE \
   namespace qlat             \

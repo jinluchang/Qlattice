@@ -289,7 +289,7 @@ inline void save_gauge_field(const GaugeFieldT<Complex>& gf, const std::string& 
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
-    const Vector<ColorMatrixT<> > v = gf.get_elems_const(xl);
+    const Vector<ColorMatrixT<Complex> > v = gf.get_elems_const(xl);
     Vector<std::array<Complex, 6> > vt = gft.get_elems(xl);
     for (int m = 0; m < geo.multiplicity; ++m) {
       assign_truncate(vt[m], v[m]);
@@ -307,7 +307,8 @@ inline void save_gauge_field(const GaugeFieldT<Complex>& gf, const std::string& 
   timer.flops += get_data(gft).data_size() * gft.geo.geon.num_node;
 }
 
-inline long load_gauge_field(GaugeFieldT<Complex>& gf, const std::string& path)
+template <class T = ComplexT>
+inline long load_gauge_field(GaugeFieldT<T>& gf, const std::string& path)
 // assuming gf already initialized and have correct size;
 {
   TIMER_VERBOSE_FLOPS("load_gauge_field");
@@ -326,9 +327,14 @@ inline long load_gauge_field(GaugeFieldT<Complex>& gf, const std::string& path)
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<std::array<Complex, 6> > vt = gft.get_elems(xl);
     to_from_big_endian_64(get_data(vt));
-    Vector<ColorMatrixT<> > v = gf.get_elems(xl);
+    Vector<ColorMatrixT<T> > v = gf.get_elems(xl);
     for (int m = 0; m < geo.multiplicity; ++m) {
-      assign_truncate(v[m], vt[m]);
+      v[m](0,0) = vt[m][0];
+      v[m](0,1) = vt[m][1];
+      v[m](0,2) = vt[m][2];
+      v[m](1,0) = vt[m][3];
+      v[m](1,1) = vt[m][4];
+      v[m](1,2) = vt[m][5];
       unitarize(v[m]);
     }
   }
@@ -336,7 +342,8 @@ inline long load_gauge_field(GaugeFieldT<Complex>& gf, const std::string& path)
   return file_size;
 }
 
-inline long load_gauge_field_par(GaugeFieldT<Complex>& gf, const std::string& path)
+template <class T = ComplexT>
+long load_gauge_field_par(GaugeFieldT<T>& gf, const std::string& path)
 // assuming gf already initialized and have correct size;
 {
   TIMER_VERBOSE_FLOPS("load_gauge_field_par");
@@ -355,9 +362,14 @@ inline long load_gauge_field_par(GaugeFieldT<Complex>& gf, const std::string& pa
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<std::array<Complex, 6> > vt = gft.get_elems(xl);
     to_from_big_endian_64(get_data(vt));
-    Vector<ColorMatrixT<> > v = gf.get_elems(xl);
+    Vector<ColorMatrixT<T> > v = gf.get_elems(xl);
     for (int m = 0; m < geo.multiplicity; ++m) {
-      assign_truncate(v[m], vt[m]);
+      v[m](0,0) = vt[m][0];
+      v[m](0,1) = vt[m][1];
+      v[m](0,2) = vt[m][2];
+      v[m](1,0) = vt[m][3];
+      v[m](1,1) = vt[m][4];
+      v[m](1,2) = vt[m][5];
       unitarize(v[m]);
     }
   }
@@ -384,7 +396,7 @@ inline long load_gauge_field_cps3x3(GaugeFieldT<Complex>& gf, const std::string&
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<std::array<Complex, 9> > vt = gft.get_elems(xl);
     to_from_big_endian_64(get_data(vt));
-    Vector<ColorMatrixT<> > v = gf.get_elems(xl);
+    Vector<ColorMatrixT<Complex> > v = gf.get_elems(xl);
     for (int m = 0; m < geo.multiplicity; ++m) {
       assign_truncate(v[m], vt[m]);
     }
@@ -418,7 +430,7 @@ inline long load_gauge_field_milc(GaugeFieldT<Complex>& gf, const std::string& p
     Coordinate xl = geo.coordinate_from_index(index);
     Vector<std::array<std::complex<float>, 9> > vt = gft.get_elems(xl);
     to_from_big_endian_32((char*)vt.data(), vt.data_size());
-    Vector<ColorMatrixT<> > v = gf.get_elems(xl);
+    Vector<ColorMatrixT<Complex> > v = gf.get_elems(xl);
     for (int m = 0; m < geo.multiplicity; ++m) {
       // assign_truncate(v[m], vt[m]);
       v[m](0, 0) = vt[m][0 * 3 + 0];

@@ -14,11 +14,11 @@ QLAT_LIB=$(qlat_prefix)/lib
 QLAT_CFLAGS=-fno-strict-aliasing
 QLAT_CFLAGS+= -I$(QLAT_INCLUDE)
 QLAT_CFLAGS+= -I$(QLAT_INCLUDE)/eigen3
-QLAT_CFLAGS+= -I$(QLAT_INCLUDE)/utils
+QLAT_CFLAGS+= -I$(QLAT_INCLUDE)/qutils
 
 QLAT_CXXFLAGS=$(QLAT_CFLAGS)
 
-QLAT_LDFLAGS=$(QLAT_LIB)/libfftw3.a $(QLAT_LIB)/libz.a -lm
+QLAT_LDFLAGS=$(QLAT_LIB)/libfftw3.a $(QLAT_LIB)/libcuba.a $(QLAT_LIB)/libz.a -lm
 
 all: qlat.x
 

@@ -87,7 +87,7 @@ MvectorT<DIMN, T> operator-(const MvectorT<DIMN, T>& x)
 }
 
 template <int DIMN, class T>
-MvectorT<DIMN, T> operator*(const Complex& x, const MvectorT<DIMN, T>& y)
+MvectorT<DIMN, T> operator*(const T& x, const MvectorT<DIMN, T>& y)
 {
   MvectorT<DIMN, T> ret;
   ret.em() = x * y.em();
@@ -95,7 +95,7 @@ MvectorT<DIMN, T> operator*(const Complex& x, const MvectorT<DIMN, T>& y)
 }
 
 template <int DIMN, class T>
-MvectorT<DIMN, T> operator*(const MvectorT<DIMN, T>& x, const Complex& y)
+MvectorT<DIMN, T> operator*(const MvectorT<DIMN, T>& x, const T& y)
 {
   MvectorT<DIMN, T> ret;
   ret.em() = x.em() * y;
@@ -103,7 +103,7 @@ MvectorT<DIMN, T> operator*(const MvectorT<DIMN, T>& x, const Complex& y)
 }
 
 template <int DIMN, class T>
-MvectorT<DIMN, T> operator/(const MvectorT<DIMN, T>& x, const Complex& y)
+MvectorT<DIMN, T> operator/(const MvectorT<DIMN, T>& x, const T& y)
 {
   MvectorT<DIMN, T> ret;
   ret.em() = x.em() / y;

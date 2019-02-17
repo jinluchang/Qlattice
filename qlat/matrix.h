@@ -101,7 +101,7 @@ MatrixT<DIMN, T> operator*(const MatrixT<DIMN, T>& x, const MatrixT<DIMN, T>& y)
 }
 
 template <int DIMN, class T>
-MatrixT<DIMN, T> operator*(const Complex& x, const MatrixT<DIMN, T>& y)
+MatrixT<DIMN, T> operator*(const T& x, const MatrixT<DIMN, T>& y)
 {
   MatrixT<DIMN, T> ret;
   ret.em() = x * y.em();
@@ -109,7 +109,7 @@ MatrixT<DIMN, T> operator*(const Complex& x, const MatrixT<DIMN, T>& y)
 }
 
 template <int DIMN, class T>
-MatrixT<DIMN, T> operator*(const MatrixT<DIMN, T>& x, const Complex& y)
+MatrixT<DIMN, T> operator*(const MatrixT<DIMN, T>& x, const T& y)
 {
   MatrixT<DIMN, T> ret;
   ret.em() = x.em() * y;
@@ -117,7 +117,7 @@ MatrixT<DIMN, T> operator*(const MatrixT<DIMN, T>& x, const Complex& y)
 }
 
 template <int DIMN, class T>
-MatrixT<DIMN, T> operator/(const MatrixT<DIMN, T>& x, const Complex& y)
+MatrixT<DIMN, T> operator/(const MatrixT<DIMN, T>& x, const T& y)
 {
   MatrixT<DIMN, T> ret;
   ret.em() = x.em() / y;
@@ -253,7 +253,7 @@ inline ColorMatrixT<T> make_color_matrix_exp(const ColorMatrixT<T>& a)
   ColorMatrixT<T> unit;
   set_unit(unit);
   for (int j = 9; j > 1; --j) {
-    t3 = unit + (1.0 / j) * t2;
+    t3 = unit + (T)(1.0 / j) * t2;
     t2 = a * t3;
   }
   t3 = unit + t2;

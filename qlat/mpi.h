@@ -275,10 +275,28 @@ inline int glb_sum(Vector<double> recv, const Vector<double>& send)
 #endif
 }
 
+inline int glb_sum(Vector<float> recv, const Vector<float>& send)
+{
+  qassert(recv.size() == send.size());
+#ifdef USE_MULTI_NODE
+  return MPI_Allreduce((float*)send.data(), recv.data(), recv.size(), MPI_FLOAT,
+                       MPI_SUM, get_comm());
+#else
+  memmove(recv.data(), send.data(), recv.size() * sizeof(float));
+  return 0;
+#endif
+}
+
 inline int glb_sum(Vector<Complex> recv, const Vector<Complex>& send)
 {
   return glb_sum(Vector<double>((double*)recv.data(), recv.size() * 2),
                  Vector<double>((double*)send.data(), send.size() * 2));
+}
+
+inline int glb_sum(Vector<ComplexF> recv, const Vector<ComplexF>& send)
+{
+  return glb_sum(Vector<float>((float*)recv.data(), recv.size() * 2),
+                 Vector<float>((float*)send.data(), send.size() * 2));
 }
 
 inline int glb_sum(Vector<long> recv, const Vector<long>& send)
@@ -312,9 +330,23 @@ inline int glb_sum(Vector<double> vec)
   return glb_sum(vec, tmp);
 }
 
+inline int glb_sum(Vector<float> vec)
+{
+  std::vector<float> tmp(vec.size());
+  assign(tmp, vec);
+  return glb_sum(vec, tmp);
+}
+
 inline int glb_sum(Vector<Complex> vec)
 {
   std::vector<Complex> tmp(vec.size());
+  assign(tmp, vec);
+  return glb_sum(vec, tmp);
+}
+
+inline int glb_sum(Vector<ComplexF> vec)
+{
+  std::vector<ComplexF> tmp(vec.size());
   assign(tmp, vec);
   return glb_sum(vec, tmp);
 }
@@ -335,24 +367,32 @@ inline int glb_sum(Vector<char> vec)
 
 inline int glb_sum(double& x) { return glb_sum(Vector<double>(x)); }
 
+inline int glb_sum(float& x) { return glb_sum(Vector<float>(x)); }
+
 inline int glb_sum(long& x) { return glb_sum(Vector<long>(x)); }
 
 inline int glb_sum(Complex& c)
 {
-  std::vector<double> vec(2);
-  vec[0] = c.real();
-  vec[1] = c.imag();
-  const int ret = glb_sum(Vector<double>(vec));
-  c.real(vec[0]);
-  c.imag(vec[1]);
-  return ret;
+  return glb_sum(Vector<double>((double*)&c, 2));
+}
+
+inline int glb_sum(ComplexF& c)
+{
+  return glb_sum(Vector<float>((float*)&c, 2));
 }
 
 template <class M>
-inline int glb_sum_double_vec(Vector<M> x)
+int glb_sum_double_vec(Vector<M> x)
 {
   return glb_sum(
       Vector<double>((double*)x.data(), x.data_size() / sizeof(double)));
+}
+
+template <class M>
+int glb_sum_float_vec(Vector<M> x)
+{
+  return glb_sum(
+      Vector<float>((float*)x.data(), x.data_size() / sizeof(float)));
 }
 
 template <class M>
@@ -371,6 +411,12 @@ template <class M>
 inline int glb_sum_double(M& x)
 {
   return glb_sum(Vector<double>((double*)&x, sizeof(M) / sizeof(double)));
+}
+
+template <class M>
+inline int glb_sum_float(M& x)
+{
+  return glb_sum(Vector<float>((float*)&x, sizeof(M) / sizeof(float)));
 }
 
 template <class M>

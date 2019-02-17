@@ -41,7 +41,7 @@ inline ColorMatrix gf_clover_leaf_no_comm(const GaugeField& gf1,
   path[2] = -mu - 1;
   path[3] = nu;
   m += matrix_adjoint(gf_wilson_line_no_comm(gf1, xl, path));
-  return 0.25 * m;
+  return (ComplexT)0.25 * m;
 }
 
 inline void gf_clover_leaf_field_no_comm(CloverLeafField& clf,
@@ -106,7 +106,7 @@ inline double clf_topology_density(const CloverLeafField& clf,
   const Vector<ColorMatrix> v = clf.get_elems_const(xl);
   std::array<ColorMatrix, 6> arr;
   for (int i = 0; i < 6; ++i) {
-    arr[i] = 0.5 * (v[i] - matrix_adjoint(v[i]));
+    arr[i] = (ComplexT)0.5 * (v[i] - matrix_adjoint(v[i]));
   }
   const double fac = -1.0 / (4.0 * PI * PI);
   double sum = 0.0;

@@ -35,8 +35,9 @@ fi
 ./scripts/fftw.sh
 # ./scripts/cmake.sh
 # ./scripts/lapack.sh
-./scripts/eigen.sh
+./scripts/cuba.sh
 ./scripts/zlib.sh
+./scripts/eigen.sh
 ./scripts/qutils.sh
 ./scripts/qlat.sh
 ./scripts/setenv.sh
