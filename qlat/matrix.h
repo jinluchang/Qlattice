@@ -149,7 +149,7 @@ void set_unit(MatrixT<DIMN, T>& m, const Complex& coef = 1.0)
 }
 
 template <int DIMN, class T>
-double norm(const MatrixT<DIMN, T>& m)
+double qnorm(const MatrixT<DIMN, T>& m)
 {
   return m.em().squaredNorm();
 }

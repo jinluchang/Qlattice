@@ -180,7 +180,7 @@ void smear_propagator(Propagator4dT<T>& prop, const GaugeFieldT<T>& gf1,
                       const CoordinateD& mom = CoordinateD(),
                       const bool smear_in_time_dir = false)
 // gf1 is left_expanded and refreshed
-// prop is of normal size
+// prop is of qnormal size
 {
   TIMER_VERBOSE("smear_propagator");
   if (0 == step) {

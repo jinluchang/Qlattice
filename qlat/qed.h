@@ -175,13 +175,13 @@ void prop_mom_spin_propagator4d(SpinPropagator4dT<T>& sp4d, const double mass,
     ipgm += m;
     ipgm *= lwa / (p2 + sqr(mass * lwa));
     if (1.0e-10 > p2 && 1.0e-10 > lwa) {
-      // if (0.0 != norm(ipgm)) {
+      // if (0.0 != qnorm(ipgm)) {
       //   Display(cname, fname, "kg = %s\n", show(kg).c_str());
       //   Display(cname, fname, "p2         = %13.5E\n", p2);
       //   Display(cname, fname, "wp         = %13.5E\n", wp);
       //   Display(cname, fname, "alpha      = %13.5E\n", alpha);
       //   Display(cname, fname, "lwa        = %13.5E\n", lwa);
-      //   Display(cname, fname, "norm(ipgm) = %13.5E\n", norm(ipgm));
+      //   Display(cname, fname, "qnorm(ipgm) = %13.5E\n", qnorm(ipgm));
       // }
       set_zero(sp4d.get_elem(kl));
       continue;

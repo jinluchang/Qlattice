@@ -182,8 +182,8 @@ void lblShowMuonPartPointSrc(const qlat::Geometry& geo, const int tsnk,
   qlat::SpinMatrix muonline = lblMuonPartPointSrc(
       geo, tsnk, tsrc, xg1, mu1, xg2, mu2, xg3, mu3, mass, momtwist);
   muonline = projPositiveState(muonline);
-  DisplayInfo(cname, fname, "norm(muonline) = %.16e\n", qlat::norm(muonline));
-  if (qlat::norm(muonline) < 1.0e-30) {
+  DisplayInfo(cname, fname, "qnorm(muonline) = %.16e\n", qlat::qnorm(muonline));
+  if (qlat::qnorm(muonline) < 1.0e-30) {
     return;
   }
   DisplayInfo(cname, fname, "muonline =\n%s\n", qlat::show(muonline).c_str());

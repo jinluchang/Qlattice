@@ -58,8 +58,8 @@ void test1()
     for (long index = 0; index < geoHalf.local_volume(); ++index) {
       Coordinate x = geoHalf.coordinate_from_index(index);
       Complex& a = af.get_elem(x);
-      sumf.get_elem(x) += norm(a);
-      sigma2f.get_elem(x) += sqr(norm(a));
+      sumf.get_elem(x) += qnorm(a);
+      sigma2f.get_elem(x) += sqr(qnorm(a));
     }
     const double sum = field_glb_sum_double(sumf)[0];
     const double sigma2 = field_glb_sum_double(sigma2f)[0];

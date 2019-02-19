@@ -233,7 +233,7 @@ const Field<M>& operator*=(Field<M>& f, const Complex factor)
 }
 
 template <class M>
-double norm(const Field<M>& f)
+double qnorm(const Field<M>& f)
 {
   const Geometry& geo = f.geo;
   double sum = 0.0;
@@ -245,7 +245,7 @@ double norm(const Field<M>& f)
       const Coordinate x = geo.coordinate_from_index(index);
       const Vector<M> fx = f.get_elems_const(x);
       for (int m = 0; m < geo.multiplicity; ++m) {
-        psum += norm(fx[m]);
+        psum += qnorm(fx[m]);
       }
     }
     for (int i = 0; i < omp_get_num_threads(); ++i) {

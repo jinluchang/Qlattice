@@ -124,7 +124,7 @@ void set_zero(MvectorT<DIMN, T>& m)
 }
 
 template <int DIMN, class T>
-double norm(const MvectorT<DIMN, T>& m)
+double qnorm(const MvectorT<DIMN, T>& m)
 {
   return m.em().squaredNorm();
 }

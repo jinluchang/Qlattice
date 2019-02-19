@@ -294,9 +294,9 @@ inline void inverse_grid_no_dminus(FermionField5d& sol,
     FermionField5d ff;
     ff.init(geo_resize(src.geo));
     grid_convert(ff, gsrc);
-    displayln_info(fname + ssprintf(": src norm = %24.17E", norm(ff)));
+    displayln_info(fname + ssprintf(": src qnorm = %24.17E", qnorm(ff)));
     grid_convert(ff, gsol);
-    displayln_info(fname + ssprintf(": sol norm = %24.17E", norm(ff)));
+    displayln_info(fname + ssprintf(": sol qnorm = %24.17E", qnorm(ff)));
   }
   ConjugateGradient<LatticeFermionF> CG(inv.ip.stop_rsd, inv.ip.max_num_iter,
                                         false);
@@ -308,8 +308,8 @@ inline void inverse_grid_no_dminus(FermionField5d& sol,
     src1.init(geo_resize(src.geo));
     multiply_m(src1, sol, inv);
     src1 -= src;
-    displayln_info(fname + ssprintf(": diff norm = %24.17E", norm(src1)));
-    displayln_info(fname + ssprintf(": sol after norm = %24.17E", norm(sol)));
+    displayln_info(fname + ssprintf(": diff qnorm = %24.17E", qnorm(src1)));
+    displayln_info(fname + ssprintf(": sol after qnorm = %24.17E", qnorm(sol)));
   }
 }
 

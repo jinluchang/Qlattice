@@ -53,13 +53,13 @@ void simple_dwf_tests()
     // project_eo(ff5dout1, 1);
     ff5d = ff5dout;
     ff5d -= ff5dout1;
-    displayln_info(ssprintf("%E, %E norm(diff) = %E", norm(ff5dout),
-                            norm(ff5dout1), norm(ff5d)));
-    ff5dout *= 1.0 / sqrt(norm(ff5dout));
-    ff5dout1 *= 1.0 / sqrt(norm(ff5dout1));
+    displayln_info(ssprintf("%E, %E qnorm(diff) = %E", qnorm(ff5dout),
+                            qnorm(ff5dout1), qnorm(ff5d)));
+    ff5dout *= 1.0 / sqrt(qnorm(ff5dout));
+    ff5dout1 *= 1.0 / sqrt(qnorm(ff5dout1));
     ff5d = ff5dout;
     ff5d -= ff5dout1;
-    displayln_info(ssprintf("norm(diff after normalization) = %E", norm(ff5d)));
+    displayln_info(ssprintf("qnorm(diff after qnormalization) = %E", qnorm(ff5d)));
     ff5din = ff5dout;
     ff5din1 = ff5dout1;
   }
@@ -134,13 +134,13 @@ void simple_tests()
     // project_eo(ff5dout1, 1);
     ff5d = ff5dout;
     ff5d -= ff5dout1;
-    displayln_info(ssprintf("%E, %E norm(diff) = %E", norm(ff5dout),
-                            norm(ff5dout1), norm(ff5d)));
-    ff5dout *= 1.0 / sqrt(norm(ff5dout));
-    ff5dout1 *= 1.0 / sqrt(norm(ff5dout1));
+    displayln_info(ssprintf("%E, %E qnorm(diff) = %E", qnorm(ff5dout),
+                            qnorm(ff5dout1), qnorm(ff5d)));
+    ff5dout *= 1.0 / sqrt(qnorm(ff5dout));
+    ff5dout1 *= 1.0 / sqrt(qnorm(ff5dout1));
     ff5d = ff5dout;
     ff5d -= ff5dout1;
-    displayln_info(ssprintf("norm(diff after normalization) = %E", norm(ff5d)));
+    displayln_info(ssprintf("qnorm(diff after qnormalization) = %E", qnorm(ff5d)));
     ff5din = ff5dout;
     ff5din1 = ff5dout1;
   }
@@ -158,13 +158,13 @@ void simple_tests()
     // project_eo(ff5dout1, 1);
     ff5d = ff5dout;
     ff5d -= ff5dout1;
-    displayln_info(ssprintf("%E, %E norm(diff) = %E", norm(ff5dout),
-                            norm(ff5dout1), norm(ff5d)));
-    ff5dout *= 1.0 / sqrt(norm(ff5dout));
-    ff5dout1 *= 1.0 / sqrt(norm(ff5dout1));
+    displayln_info(ssprintf("%E, %E qnorm(diff) = %E", qnorm(ff5dout),
+                            qnorm(ff5dout1), qnorm(ff5d)));
+    ff5dout *= 1.0 / sqrt(qnorm(ff5dout));
+    ff5dout1 *= 1.0 / sqrt(qnorm(ff5dout1));
     ff5d = ff5dout;
     ff5d -= ff5dout1;
-    displayln_info(ssprintf("norm(diff after normalization) = %E", norm(ff5d)));
+    displayln_info(ssprintf("qnorm(diff after qnormalization) = %E", qnorm(ff5d)));
     ff5din = ff5dout;
     ff5din1 = ff5dout1;
   }
@@ -178,7 +178,7 @@ void simple_tests()
   set_half_fermion(ff5d, ffeven, 2);
   set_half_fermion(ff5d, ffodd, 1);
   ff5d -= ff5dout;
-  displayln_info(ssprintf("m_e_e norm(diff) = %E", norm(ff5d)));
+  displayln_info(ssprintf("m_e_e qnorm(diff) = %E", qnorm(ff5d)));
   get_half_fermion(ffeven, ff5dout, 2);
   get_half_fermion(ffodd, ff5dout, 1);
   multiply_mdag_e_e(ffeven, ffeven, fa);
@@ -188,8 +188,8 @@ void simple_tests()
   set_half_fermion(ff5d, ffeven, 2);
   set_half_fermion(ff5d, ffodd, 1);
   ff5d -= ff5dout;
-  displayln_info(ssprintf("mdag_e_e norm(diff) = %E", norm(ff5d)));
-  displayln_info(ssprintf("norm = %E, dot = %E", norm(ffeven),
+  displayln_info(ssprintf("mdag_e_e qnorm(diff) = %E", qnorm(ff5d)));
+  displayln_info(ssprintf("qnorm = %E, dot = %E", qnorm(ffeven),
                           dot_product(ffeven, ffeven).real()));
   FermionField5d tmp;
   multiply_m_e_e(tmp, ffeven, fa);
@@ -206,27 +206,27 @@ void simple_tests()
   multiply_mdag(tmp, ff5dout, inv);
   displayln_info(ssprintf("dot = %s", show(dot_product(ff5dout, tmp)).c_str()));
   //
-  displayln_info(ssprintf("norm = %E, dot = %E", norm(ffodd),
+  displayln_info(ssprintf("qnorm = %E, dot = %E", qnorm(ffodd),
                           dot_product(ffodd, ffodd).real()));
   tmp.init();
   multiply_hermop_sym2(tmp, ffodd, inv);
   FermionField5d ffodd2;
-  displayln_info(ssprintf("multiply norm = %E", norm(tmp)));
+  displayln_info(ssprintf("multiply qnorm = %E", qnorm(tmp)));
   cg_with_f(ffodd2, tmp, inv, multiply_hermop_sym2);
-  displayln_info(ssprintf("norm = %E", norm(ffodd2)));
+  displayln_info(ssprintf("qnorm = %E", qnorm(ffodd2)));
   ffodd2 -= ffodd;
-  displayln_info(ssprintf("diff norm = %E", norm(ffodd2)));
+  displayln_info(ssprintf("diff qnorm = %E", qnorm(ffodd2)));
   //
   tmp.init();
-  displayln_info(ssprintf("orig norm = %E", norm(ff5dout)));
+  displayln_info(ssprintf("orig qnorm = %E", qnorm(ff5dout)));
   multiply_m(tmp, ff5dout, inv);
-  displayln_info(ssprintf("tmp norm = %E", norm(tmp)));
+  displayln_info(ssprintf("tmp qnorm = %E", qnorm(tmp)));
   FermionField5d sol;
   inverse(sol, tmp, inv);
   multiply_d_minus(tmp, tmp, inv);
   multiply_m(sol, sol, inv);
   sol -= tmp;
-  displayln_info(ssprintf("inverse diff norm = %E", norm(sol)));
+  displayln_info(ssprintf("inverse diff qnorm = %E", qnorm(sol)));
 }
 
 int main(int argc, char* argv[])

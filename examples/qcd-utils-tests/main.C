@@ -50,8 +50,8 @@ void simple_tests()
   field_shift(gf2, gf1, c2);
   field_shift(gf1, gf, c1 + c2);
   gf2 -= gf1;
-  displayln_info(ssprintf("orig norm: %E ; shift norm %E ; diff norm: %E",
-                          norm(gf), norm(gf1), norm(gf2)));
+  displayln_info(ssprintf("orig qnorm: %E ; shift qnorm %E ; diff qnorm: %E",
+                          qnorm(gf), qnorm(gf1), qnorm(gf2)));
 }
 
 void show_matrix()

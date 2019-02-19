@@ -78,8 +78,8 @@ void test3()
         a += polar(1.0, u_rand_gen(rs, PI, -PI));
       }
     }
-    sum += norm(a);
-    sigma2 += sqr(norm(a));
+    sum += qnorm(a);
+    sigma2 += sqr(qnorm(a));
   }
   cout << "Expected : " << Ni * Ntake << endl;
   cout << "Mean     : " << sum / Nb << endl;
@@ -109,8 +109,8 @@ void test4()
         a += polar(1.0, u_rand_gen(rsi, PI, -PI));
       }
     }
-    sum += norm(a);
-    sigma2 += sqr(norm(a));
+    sum += qnorm(a);
+    sigma2 += sqr(qnorm(a));
   }
   cout << "Expected : " << Ni * Ntake << endl;
   cout << "Mean     : " << sum / Nb << endl;

@@ -40,7 +40,7 @@ inline bool compute_traj(const std::string& job_tag, const int traj)
   const int tslice = 0 % total_site[3];
   set_wall_src_propagator(prop, GaugeTransformInverter<Inverter>(inv, gt),
                           tslice, CoordinateD());
-  displayln_info(ssprintf("prop norm = %24.17E", norm(prop)));
+  displayln_info(ssprintf("prop qnorm = %24.17E", qnorm(prop)));
   //
   qtouch_info(job_path + "/checkpoint.txt");
   return false;

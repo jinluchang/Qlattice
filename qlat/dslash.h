@@ -1312,46 +1312,46 @@ inline long cg_with_f(
   f(tmp, out, inv);
   r -= tmp;
   p = r;
-  const double norm_in = norm(in);
+  const double qnorm_in = qnorm(in);
   displayln_info(
       fname +
       ssprintf(
-          ": start max_num_iter=%4ld        sqrt(norm_in)=%.3E stop_rsd=%.3E ",
-          max_num_iter, sqrt(norm_in), stop_rsd));
-  double norm_r = norm(r);
+          ": start max_num_iter=%4ld        sqrt(qnorm_in)=%.3E stop_rsd=%.3E ",
+          max_num_iter, sqrt(qnorm_in), stop_rsd));
+  double qnorm_r = qnorm(r);
   for (long iter = 1; iter <= max_num_iter; ++iter) {
     f(ap, p, inv);
-    const double alpha = norm_r / dot_product(p, ap).real();
+    const double alpha = qnorm_r / dot_product(p, ap).real();
     tmp = p;
     tmp *= alpha;
     out += tmp;
     tmp = ap;
     tmp *= alpha;
     r -= tmp;
-    const double new_norm_r = norm(r);
+    const double new_qnorm_r = qnorm(r);
     if (is_cg_verbose()) {
       displayln_info(
           fname +
-          ssprintf(": iter=%4ld sqrt(norm_r/norm_in)=%.3E stop_rsd=%.3E", iter,
-                   sqrt(new_norm_r / norm_in), stop_rsd));
+          ssprintf(": iter=%4ld sqrt(qnorm_r/qnorm_in)=%.3E stop_rsd=%.3E", iter,
+                   sqrt(new_qnorm_r / qnorm_in), stop_rsd));
     }
-    if (new_norm_r <= norm_in * sqr(stop_rsd)) {
+    if (new_qnorm_r <= qnorm_in * sqr(stop_rsd)) {
       displayln_info(
           fname +
-          ssprintf(": final iter=%4ld sqrt(norm_r/norm_in)=%.3E stop_rsd=%.3E",
-                   iter, sqrt(new_norm_r / norm_in), stop_rsd));
+          ssprintf(": final iter=%4ld sqrt(qnorm_r/qnorm_in)=%.3E stop_rsd=%.3E",
+                   iter, sqrt(new_qnorm_r / qnorm_in), stop_rsd));
       return iter;
     }
-    const double beta = new_norm_r / norm_r;
+    const double beta = new_qnorm_r / qnorm_r;
     p *= beta;
     p += r;
-    norm_r = new_norm_r;
+    qnorm_r = new_qnorm_r;
   }
   displayln_info(
       fname +
       ssprintf(
-          ": final max_num_iter=%4ld sqrt(norm_r/norm_in)=%.3E stop_rsd=%.3E",
-          max_num_iter, sqrt(norm_r / norm_in), stop_rsd));
+          ": final max_num_iter=%4ld sqrt(qnorm_r/qnorm_in)=%.3E stop_rsd=%.3E",
+          max_num_iter, sqrt(qnorm_r / qnorm_in), stop_rsd));
   return max_num_iter + 1;
 }
 
@@ -1369,10 +1369,10 @@ inline void inverse_with_cg(FermionField5d& out, const FermionField5d& in,
   } else {
     dm_in = in;
   }
-  const double dm_in_norm = norm(dm_in);
-  displayln_info(fname + ssprintf(": dm_in sqrt(norm) = %E", sqrt(dm_in_norm)));
-  if (dm_in_norm == 0.0) {
-    displayln_info(fname + ssprintf(": WARNING: dm_in norm is zero."));
+  const double dm_in_qnorm = qnorm(dm_in);
+  displayln_info(fname + ssprintf(": dm_in sqrt(qnorm) = %E", sqrt(dm_in_qnorm)));
+  if (dm_in_qnorm == 0.0) {
+    displayln_info(fname + ssprintf(": WARNING: dm_in qnorm is zero."));
     out.init(geo_resize(in.geo));
     set_zero(out);
     return;
@@ -1391,10 +1391,10 @@ inline void inverse_with_cg(FermionField5d& out, const FermionField5d& in,
     //
     out_o.init(in_o.geo);
     set_zero(out_o);
-    const double norm_in_o = norm(in_o);
+    const double qnorm_in_o = qnorm(in_o);
     FermionField5d itmp;
     itmp = in_o;
-    double norm_itmp = norm_in_o;
+    double qnorm_itmp = qnorm_in_o;
     long total_iter = 0;
     int cycle;
     for (cycle = 1; cycle <= inv.max_mixed_precision_cycle(); ++cycle) {
@@ -1404,7 +1404,7 @@ inline void inverse_with_cg(FermionField5d& out, const FermionField5d& in,
         set_zero(tmp);
       }
       const long iter =
-          cg(tmp, itmp, inv, inv.stop_rsd() * sqrt(norm_in_o / norm_itmp),
+          cg(tmp, itmp, inv, inv.stop_rsd() * sqrt(qnorm_in_o / qnorm_itmp),
              inv.max_num_iter());
       total_iter += iter;
       out_o += tmp;
@@ -1415,7 +1415,7 @@ inline void inverse_with_cg(FermionField5d& out, const FermionField5d& in,
       multiply_hermop_sym2(itmp, out_o, inv);
       itmp *= -1.0;
       itmp += in_o;
-      norm_itmp = norm(itmp);
+      qnorm_itmp = qnorm(itmp);
     }
     timer.flops += 5500 * total_iter * inv.fa.ls * inv.geo.local_volume();
     displayln_info(fname + ssprintf(": total_iter=%ld cycle=%d stop_rsd=%.3E",
@@ -1435,8 +1435,8 @@ inline void inverse_with_cg(FermionField5d& out, const FermionField5d& in,
     FermionField5d tmp;
     multiply_m(tmp, out, inv);
     tmp -= dm_in;
-    displayln_info(fname + ssprintf(": checking %E from %E", sqrt(norm(tmp)),
-                                    sqrt(norm(dm_in))));
+    displayln_info(fname + ssprintf(": checking %E from %E", sqrt(qnorm(tmp)),
+                                    sqrt(qnorm(dm_in))));
   }
 }
 
@@ -1474,16 +1474,16 @@ inline double find_max_eigen_value_hermop_sym2(const InverterDomainWall& inv,
   FermionField5d ff;
   ff.init(geo);
   set_field_u_rand_double(ff, rs);
-  ff *= 1.0 / sqrt(norm(ff));
-  double sqrt_norm_ratio = 1.0;
+  ff *= 1.0 / sqrt(qnorm(ff));
+  double sqrt_qnorm_ratio = 1.0;
   for (long i = 0; i < max_iter; ++i) {
     multiply_hermop_sym2(ff, ff, inv);
-    sqrt_norm_ratio = sqrt(norm(ff));
-    displayln_info(fname + ssprintf(": %5d: sqrt_norm_ratio =%24.17E.", i + 1,
-                                    sqrt_norm_ratio));
-    ff *= 1.0 / sqrt_norm_ratio;
+    sqrt_qnorm_ratio = sqrt(qnorm(ff));
+    displayln_info(fname + ssprintf(": %5d: sqrt_qnorm_ratio =%24.17E.", i + 1,
+                                    sqrt_qnorm_ratio));
+    ff *= 1.0 / sqrt_qnorm_ratio;
   }
-  return sqrt_norm_ratio;
+  return sqrt_qnorm_ratio;
 }
 
 QLAT_END_NAMESPACE
