@@ -304,16 +304,13 @@ long get_data_size(const Field<M>& f)
   return f.geo.local_volume() * f.geo.multiplicity * sizeof(M);
 }
 
-QLAT_END_NAMESPACE
-
-namespace std
-{
 template <class M>
-void swap(qlat::Field<M>& f1, qlat::Field<M>& f2)
+void qswap(qlat::Field<M>& f1, qlat::Field<M>& f2)
 {
   swap(f1.initialized, f2.initialized);
   swap(f1.geo, f2.geo);
   swap(f1.field, f2.field);
 }
 
-}  // namespace std
+
+QLAT_END_NAMESPACE
