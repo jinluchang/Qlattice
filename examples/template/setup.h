@@ -76,7 +76,7 @@ inline std::vector<int> get_trajs(const std::string& job_tag)
       ret.push_back(traj);
     }
   } else if (job_tag == "24D-0.00107") {
-    for (int traj = 1000; traj <= 4000; traj += 20) {
+    for (int traj = 1000; traj <= 4000; traj += 10) {
       ret.push_back(traj);
     }
   } else if (job_tag == "32D-0.00107") {
@@ -99,7 +99,7 @@ inline Coordinate get_total_site(const std::string& job_tag)
     return Coordinate(4,4,4,8);
   } else if (job_tag == "16I-0.01") {
     return Coordinate(16,16,16,32);
-  } else if (job_tag == "24I-0.01") {
+  } else if (job_tag == "24I-0.01" or job_tag == "24D-0.00107") {
     return Coordinate(24,24,24,64);
   } else if (job_tag == "32D-0.00107" or job_tag == "32Dfine-0.0001") {
     return Coordinate(32,32,32,64);
@@ -225,6 +225,7 @@ inline std::vector<FermionAction> get_fermion_actions(const std::string& job_tag
       }
     }
     fas.push_back(FermionAction(0.0850, 24, 1.8, 2.5+1.5, true, false));
+    fas.push_back(FermionAction(0.00107, 24, 1.8, 2.5+1.5, true, false));
   } else if (job_tag == "32Dfine-0.0001") {
     fas.push_back(FermionAction(0.0001, 12, 1.8, 32.0/12.0, true, false));
     fas.push_back(FermionAction(0.045, 12, 1.8, 32.0/12.0, true, false));
