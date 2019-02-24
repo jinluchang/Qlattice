@@ -544,7 +544,7 @@ inline double& get_default_budget()
   return budget;
 }
 
-inline void check_time_limit(bool timer_display = true,
+inline void check_time_limit(bool timer_display = false,
                              const double budget = get_default_budget())
 {
   if (timer_display) {
