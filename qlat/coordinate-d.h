@@ -6,11 +6,27 @@
 
 QLAT_START_NAMESPACE
 
+inline bool qisnan(const float& arg)
+{
+  return std::isnan(arg);
+}
+
+inline bool qisnan(const double& arg)
+{
+  return std::isnan(arg);
+}
+
+template <class T>
+bool qisnan(const std::complex<T>& arg)
+{
+  return qisnan(arg.real()) or qisnan(arg.imag());
+}
+
 template <class M, unsigned long N>
 inline bool qisnan(const std::array<M, N>& arr)
 {
   for (int i = 0; i < (int)N; ++i) {
-    if (std::isnan(arr[i])) {
+    if (qisnan(arr[i])) {
       return true;
     }
   }
@@ -21,7 +37,7 @@ template <class M>
 inline bool qisnan(const std::vector<M>& arr)
 {
   for (size_t i = 0; i < arr.size(); ++i) {
-    if (std::isnan(arr[i])) {
+    if (qisnan(arr[i])) {
       return true;
     }
   }
