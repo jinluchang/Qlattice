@@ -143,7 +143,7 @@ void field_shift_dir(Field<M>& f, const Field<M>& f1, const int dir,
     }
     if (i < geo.geon.size_node[dir] - 1) {
       get_data_plus_mu(get_data(tmp), get_data(tmp1), dir);
-      std::swap(tmp1, tmp);
+      qswap(tmp1, tmp);
     }
   }
 }

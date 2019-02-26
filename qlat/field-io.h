@@ -226,7 +226,7 @@ void sophisticated_make_to_order(Field<M> &result, const Field<M> &origin)
     }
 
     get_data_dir(get_data(field_recv), get_data(field_send), 0);
-    std::swap(field_recv, field_send);
+    qswap(field_recv, field_send);
   }
   result.init(geo_only_local);
   result = field_rslt;
@@ -268,7 +268,7 @@ void sophisticated_serial_write(const qlat::Field<M> &origin,
     }
 
     get_data_dir(get_data(field_recv), get_data(field_send), 0);
-    std::swap(field_recv, field_send);
+    qswap(field_recv, field_send);
   }
 
   if (get_id_node() == 0) fclose(outputFile);
@@ -383,7 +383,7 @@ void sophisticated_serial_read(qlat::Field<M> &destination,
   //		}
   //		sync_node();
   //		get_data_dir(get_data(field_recv), get_data(field_send), 0);
-  //                 std::swap(field_recv, field_send);
+  //                 qswap(field_recv, field_send);
   //	}
   //
   //	if(get_id_node() == 0) fclose(inputFile);
@@ -413,7 +413,7 @@ void sophisticated_serial_read(qlat::Field<M> &destination,
     }
 
     get_data_dir(get_data(field_recv), get_data(field_send), 0);
-    std::swap(field_recv, field_send);
+    qswap(field_recv, field_send);
     if (get_id_node() == 0) std::cout << "Shuffling CYCLE:\t" << i << std::endl;
   }
 

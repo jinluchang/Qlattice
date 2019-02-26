@@ -325,7 +325,7 @@ crc32_t field_crc32(const Field<M>& f)
 //   // 		sync_node();
 //   // 		get_data_dir(get_data(field_recv), get_data(field_send),
 //   0);
-//   //                 std::swap(field_recv, field_send);
+//   //                 qswap(field_recv, field_send);
 //   // 	}
 //   //
 //   // 	if(get_id_node() == 0) fclose(inputFile);
@@ -357,7 +357,7 @@ crc32_t field_crc32(const Field<M>& f)
 //     }
 //
 //     get_data_dir(get_data(field_recv), get_data(field_send), 0);
-//     std::swap(field_recv, field_send);
+//     qswap(field_recv, field_send);
 //     if(get_id_node() == 0) std::cout << "Shuffling CYCLE:\t" << i <<
 //     std::endl;
 //   }
