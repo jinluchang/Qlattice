@@ -13,7 +13,8 @@
 #include "show.h"
 
 namespace latio
-{
+{  //
+
 const std::string lat_data_header = "#!/usr/bin/env lat-io-glimpse\n";
 
 struct LatDim {
@@ -59,7 +60,8 @@ inline void lat_data_alloc(LatData& ld)
 }  // namespace latio
 
 namespace qutils
-{
+{  //
+
 inline uint64_t flip_endian_64(uint64_t x)
 {
   return ((x >> 56)) | ((x >> 40) & 0xFF00) | ((x >> 24) & 0xFF0000) |
@@ -177,7 +179,8 @@ inline crc32_t read_crc32(const std::string& s)
 }  // namespace qutils
 
 namespace qshow
-{
+{  //
+
 inline std::string show(const latio::LatDim& dim)
 {
   std::ostringstream out;
@@ -311,7 +314,8 @@ inline latio::LatInfo read_lat_info(const std::string& str)
 }  // namespace qshow
 
 namespace latio
-{
+{  //
+
 inline void LatData::load(const std::string& fn)
 {
   using namespace qshow;
