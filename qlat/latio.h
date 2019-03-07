@@ -5,7 +5,8 @@
 #include <qutils/qutils.h>
 
 namespace qutils
-{
+{  //
+
 inline void clear(latio::LatData& ld)
 {
   clear(ld.info);
