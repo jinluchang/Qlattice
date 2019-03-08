@@ -29,6 +29,26 @@ inline bool compute_traj(const std::string& job_tag, const int traj)
   gt.init(geo);
   set_g_rand_color_matrix_field(gt, rs.split("gt-rs"), 1.0);
   //
+  LatData ld;
+  ld.info.push_back(lat_dim_number("tsep", 0, total_site[3] - 1));
+  ld.info.push_back(lat_dim_re_im());
+  lat_data_alloc(ld);
+  set_zero(ld);
+  LatData ld1;
+  ld1 = ld;
+  qassert(is_matching(ld, ld1));
+  for (int t = 0; t < total_site[3]; ++t) {
+    lat_data_complex_get(ld, make_array<int>())[t] = t;
+    lat_data_complex_get(ld1, make_array(t))[0] = t;
+  }
+  if (0 == get_id_node()) {
+    print(ld);
+    print(ld1);
+  }
+  qassert(is_matching(ld, ld1));
+  qassert(ld.res == ld1.res);
+  ld.save(job_path + "/data.lat");
+  //
   const FermionAction fa = get_fermion_actions(job_tag)[0];
   LowModes lm;
   // load_or_compute_low_modes(lm, get_low_modes_path(job_tag, traj), gf, fa,
@@ -41,7 +61,6 @@ inline bool compute_traj(const std::string& job_tag, const int traj)
   set_wall_src_propagator(prop, GaugeTransformInverter<Inverter>(inv, gt),
                           tslice, CoordinateD());
   displayln_info(ssprintf("prop qnorm = %24.17E", qnorm(prop)));
-  //
   qtouch_info(job_path + "/checkpoint.txt");
   return false;
 }

@@ -36,6 +36,8 @@ struct LatData {
   LatInfo info;
   std::vector<double> res;
   //
+  LatData(){};
+  //
   void load(const std::string& fn);
   void save(const std::string& fn) const;
 };
