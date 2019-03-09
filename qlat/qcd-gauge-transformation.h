@@ -90,7 +90,6 @@ inline void gt_inverse(GaugeTransform& gt, const GaugeTransform& gt0)
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
-    const ColorMatrix& t = gt.get_elem(xl);
     gt.get_elem(xl) = matrix_adjoint(gt0.get_elem(xl));
   }
 }
@@ -123,6 +122,7 @@ inline void prop_apply_gauge_transformation(Propagator4d& prop,
   qassert(is_matching_geo(prop0.geo, gt.geo));
   const Geometry& geo = prop0.geo;
   prop.init(geo_resize(geo));
+  qassert(is_matching_geo_mult(prop.geo, prop0.geo));
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
