@@ -6,6 +6,27 @@
 #include <qlat/coordinate.h>
 #include <qlat/utils.h>
 
+namespace qshow
+{  //
+
+inline std::string show(const qlat::Coordinate& x)
+{
+  return ssprintf("%dx%dx%dx%d", x[0], x[1], x[2], x[3]);
+}
+
+}  // namespace qshow
+
+namespace qutils
+{  //
+
+inline long sqr(const qlat::Coordinate& xg)
+{
+  return sqr((long)xg[0]) + sqr((long)xg[1]) + sqr((long)xg[2]) +
+         sqr((long)xg[3]);
+}
+
+}  // namespace qutils
+
 QLAT_START_NAMESPACE
 
 inline int mod(const int x, const int len)
@@ -166,12 +187,6 @@ inline bool is_outside_coordinate(const Coordinate& x, const Coordinate& size)
          std::abs(x[2]) * 2 > size[2] || std::abs(x[3]) * 2 > size[3];
 }
 
-inline long sqr(const Coordinate& xg)
-{
-  return sqr((long)xg[0]) + sqr((long)xg[1]) + sqr((long)xg[2]) +
-         sqr((long)xg[3]);
-}
-
 inline long distance_sq_relative_coordinate_g(const Coordinate& xg)
 {
   return sqr(xg);
@@ -295,15 +310,6 @@ inline Coordinate read_coordinate(const std::string& str)
 }
 
 QLAT_END_NAMESPACE
-
-namespace qshow
-{
-inline std::string show(const qlat::Coordinate& x)
-{
-  return ssprintf("%dx%dx%dx%d", x[0], x[1], x[2], x[3]);
-}
-
-}  // namespace qshow
 
 #ifndef USE_NAMESPACE
 using namespace qshow;

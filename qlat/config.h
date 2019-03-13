@@ -66,10 +66,6 @@ const int DIMN = 4;
 
 const int NUM_COLOR = 3;
 
-typedef std::complex<double> Complex;
-
-typedef std::complex<float> ComplexF;
-
 typedef Complex ComplexT;  // default Complex type
 
 inline const std::string& cname()

@@ -324,6 +324,7 @@ inline void LatData::load(const std::string& fn)
   using namespace qshow;
   using namespace qutils;
   FILE* fp = fopen(fn.c_str(), "r");
+  assert(fp != NULL);
   std::vector<char> check_line(lat_data_header.size(), 0);
   fread(check_line.data(), lat_data_header.size(), 1, fp);
   assert(std::string(check_line.data(), check_line.size()) == lat_data_header);
@@ -425,6 +426,19 @@ inline LatDim lat_dim_number(const std::string& name, const long start,
   for (long i = start; i <= end; i += inc) {
     dim.size += 1;
     dim.indices.push_back(show(i));
+  }
+  return dim;
+}
+
+template <int N>
+inline LatDim lat_dim_string(const std::string& name,
+                             const std::array<std::string, N>& is)
+{
+  LatDim dim;
+  dim.name = name;
+  dim.size = N;
+  for (int i = 0; i < N; ++i) {
+    dim.indices.push_back(is[i]);
   }
   return dim;
 }
