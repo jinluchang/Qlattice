@@ -319,7 +319,7 @@ struct SpinMatrixConstantsT {
     cps_gammas[1] = gammas[1];
     cps_gammas[2] = -gammas[2];
     cps_gammas[3] = gammas[3];
-    // gamma_5
+    // gamma_5 = gamma_x * gamma_y * gamma_z * gamma_t;
     gamma5.em() << 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, -1, 0, 0, 0, 0, -1;
     // Sigma_x
     cap_sigmas[0].em() << 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0;

@@ -58,9 +58,14 @@ void show_matrix()
 {
   const std::array<SpinMatrix, 16>& cps_gms =
       SpinMatrixConstants::get_cps_gms();
+  const std::array<SpinMatrix, 4>& gammas =
+      SpinMatrixConstants::get_cps_gammas();
+  const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
   for (int i = 0; i < 16; ++i) {
     displayln_info(ssprintf("cps_gms[%d] =\n", i) + show(cps_gms[i]));
   }
+  displayln_info(ssprintf("gamma_x * gamma_y * gamma_z * gamma_t =\n") + show(gammas[0] * gammas[1] * gammas[2] * gammas[3]));
+  displayln_info(ssprintf("gamma_5 =\n") + show(gamma5));
 }
 
 int main(int argc, char* argv[])
