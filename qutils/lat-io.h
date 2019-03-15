@@ -434,6 +434,7 @@ inline LatDim lat_dim_string(const std::string& name,
 
 inline LatDim lat_dim_re_im()
 {
+  using namespace qutils;
   return lat_dim_string("re-im", make_array<std::string>("re", "im"));
 }
 

@@ -248,4 +248,21 @@ void fft_complex_field(Field<M>& field, const bool isForward = true)
   }
 }
 
+template <class M>
+void fft_complex_field_spatial(Field<M>& field, const bool isForward = true)
+{
+  TIMER_FLOPS("fft_complex_field_spatial");
+  timer.flops += get_data(field).data_size() * get_num_node();
+  // forward compute
+  // field(k) <- \sum_{x} exp( - ii * 2 pi * k * x ) field(x)
+  // backwards compute
+  // field(x) <- \sum_{k} exp( + ii * 2 pi * k * x ) field(k)
+  Coordinate dirs;
+  for (int dir = 0; dir < 3; ++dir) {
+    set_zero(dirs);
+    dirs[dir] = isForward ? 1 : -1;
+    fft_complex_field_dirs(field, dirs);
+  }
+}
+
 QLAT_END_NAMESPACE
