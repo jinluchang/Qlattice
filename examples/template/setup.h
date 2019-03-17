@@ -43,7 +43,7 @@ inline void setup(const std::string& job_tag)
   Timer::max_call_times_for_always_show_info() = 3;
   Timer::minimum_duration_for_show_stop_info() = 60;
   Timer::minimum_autodisplay_interval() = 365 * 24 * 3600;
-  get_lock_expiration_time_limit() = 1.0 * 60.0 * 60.0;
+  get_lock_expiration_time_limit() = 24.0 * 60.0 * 60.0;
   set_lock_expiration_time_limit();
   get_time_limit() = get_lock_expiration_time_limit();
   get_default_budget() = 15.0 * 60.0;
