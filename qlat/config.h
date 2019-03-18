@@ -35,6 +35,8 @@
 
 #include <qutils/crc32.h>
 #include <qutils/lat-io.h>
+#include <qutils/qutils-io.h>
+#include <qutils/qutils-vec.h>
 #include <qutils/qutils.h>
 #include <qutils/rng-state.h>
 #include <qutils/show.h>

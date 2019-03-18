@@ -431,6 +431,11 @@ inline int glb_sum_byte(M& x)
   return glb_sum(Vector<char>((char*)&x, sizeof(M)));
 }
 
+inline int glb_sum_lat_data(LatData& ld)
+{
+  return glb_sum_double_vec(get_data(ld.res));
+}
+
 template <class M>
 void all_gather(Vector<M> recv, const Vector<M>& send)
 {

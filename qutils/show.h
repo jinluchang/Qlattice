@@ -122,7 +122,7 @@ inline std::vector<std::string> split_into_lines(const std::string& str)
 
 inline bool parse_char(char& c, long& cur, const std::string& data)
 {
-  if (data.size() <= cur) {
+  if ((long)data.size() <= cur) {
     return false;
   } else {
     c = data[cur];

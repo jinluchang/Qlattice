@@ -16,8 +16,6 @@
 
 #include <qlat/utils-io.h>
 
-#include <qlat/latio.h>
-
 #include <qlat/field.h>
 
 #include <qlat/field-utils.h>

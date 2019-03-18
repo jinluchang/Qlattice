@@ -10,6 +10,7 @@
 
 #include "show.h"
 #include "qutils.h"
+#include "qutils-vec.h"
 
 QLAT_START_NAMESPACE
 
