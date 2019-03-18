@@ -15,13 +15,13 @@
 #ifdef SKIP_ASSERT
 #define qassert(x) assert(true)
 #else
-#define qassert(x)                        \
-  {                                       \
-    if (not(x)) {                         \
-      displayln("qassert failed: " #x);   \
-      usleep((useconds_t)(10.0 * 1.0e6)); \
-      assert(false);                      \
-    }                                     \
+#define qassert(x)                            \
+  {                                           \
+    if (not(x)) {                             \
+      qlat::displayln("qassert failed: " #x); \
+      usleep((useconds_t)(10.0 * 1.0e6));     \
+      assert(false);                          \
+    }                                         \
   }
 #endif
 
