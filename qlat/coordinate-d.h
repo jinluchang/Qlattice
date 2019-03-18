@@ -165,17 +165,9 @@ inline double dot_product(const CoordinateD& c1, const CoordinateD& c2)
   return c1[0] * c2[0] + c1[1] * c2[1] + c1[2] * c2[2] + c1[3] * c2[3];
 }
 
-QLAT_END_NAMESPACE
-
-namespace qshow
-{
-inline std::string show(const qlat::CoordinateD& c)
+inline std::string show(const CoordinateD& c)
 {
   return ssprintf("(%23.16e,%23.16e,%23.16e,%23.16e)", c[0], c[1], c[2], c[3]);
 }
 
-}  // namespace qshow
-
-#ifndef USE_NAMESPACE
-using namespace qshow;
-#endif
+QLAT_END_NAMESPACE

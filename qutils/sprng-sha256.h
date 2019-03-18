@@ -24,8 +24,9 @@
 #include <istream>
 #include <ostream>
 
-namespace qrngstate
-{
+namespace qlat
+{  //
+
 struct SprngSha256 {
   RngState rs;
   //
@@ -84,8 +85,8 @@ inline bool operator==(const SprngSha256& ss1, const SprngSha256& ss2)
   return ss1.rs == ss2.rs;
 }
 
-}  // namespace qrngstate
+}  // namespace qlat
 
 #ifndef USE_NAMESPACE
-using namespace qrngstate;
+using namespace qlat;
 #endif

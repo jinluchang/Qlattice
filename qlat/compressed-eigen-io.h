@@ -14,7 +14,6 @@
 
 #include <qlat/cache.h>
 #include <qlat/config.h>
-#include <qlat/crc32.h>
 #include <qlat/fermion-action.h>
 #include <qlat/field-comm.h>
 #include <qlat/field-dist-io.h>

@@ -4,8 +4,6 @@
 
 const char* cname = "Main";
 
-using namespace qtimer;
-
 void setField(qlat::Field<qlat::Complex>& f)
 {
   TIMER("setField");
@@ -140,9 +138,9 @@ void lblMagneticMomentSpinMatrix(qlat::Array<qlat::SpinMatrix, 3> bs,
   qlat::Coordinate xlop = geo.coordinate_l_from_g(xgop);
   qlat::set_zero(bs);
   if (geo.is_local(xlop)) {
-    Display(cname, fname, "src =\n%s\n",
+    qlat::Display(cname, fname, "src =\n%s\n",
             qlat::show(src.get_elem(xlop)).c_str());
-    Display(cname, fname, "snk =\n%s\n",
+    qlat::Display(cname, fname, "snk =\n%s\n",
             qlat::show(snk.get_elem(xlop)).c_str());
     for (int i = 0; i < 3; ++i) {
       bs[i] = qlat::SpinMatrixConstants::get_gamma5() *
@@ -173,37 +171,40 @@ void lblShowMuonPartPointSrc(const qlat::Geometry& geo, const int tsnk,
                              const std::array<double, qlat::DIMN>& momtwist)
 {
   TIMER("lblShowMuonPartPointSrc");
-  DisplayInfo(cname, fname, "mass = %.2f\n", mass);
-  DisplayInfo(cname, fname, "xg1 = %s ; xg2 = %s ; xg3 = %s .\n",
-              qlat::show(xg1).c_str(), qlat::show(xg2).c_str(),
-              qlat::show(xg3).c_str());
-  DisplayInfo(cname, fname, "mu1 = %d ; mu2 = %d ; mu3 = %d .\n", mu1, mu2,
-              mu3);
+  qlat::DisplayInfo(cname, fname, "mass = %.2f\n", mass);
+  qlat::DisplayInfo(cname, fname, "xg1 = %s ; xg2 = %s ; xg3 = %s .\n",
+                    qlat::show(xg1).c_str(), qlat::show(xg2).c_str(),
+                    qlat::show(xg3).c_str());
+  qlat::DisplayInfo(cname, fname, "mu1 = %d ; mu2 = %d ; mu3 = %d .\n", mu1,
+                    mu2, mu3);
   qlat::SpinMatrix muonline = lblMuonPartPointSrc(
       geo, tsnk, tsrc, xg1, mu1, xg2, mu2, xg3, mu3, mass, momtwist);
   muonline = projPositiveState(muonline);
-  DisplayInfo(cname, fname, "qnorm(muonline) = %.16e\n", qlat::qnorm(muonline));
+  qlat::DisplayInfo(cname, fname, "qnorm(muonline) = %.16e\n",
+                    qlat::qnorm(muonline));
   if (qlat::qnorm(muonline) < 1.0e-30) {
     return;
   }
-  DisplayInfo(cname, fname, "muonline =\n%s\n", qlat::show(muonline).c_str());
-  DisplayInfo(cname, fname, "linearFit[0] = %s\n",
-              qlat::show(linearFit(muonline, bs[0])).c_str());
-  DisplayInfo(cname, fname, "linearFit[1] = %s\n",
-              qlat::show(linearFit(muonline, bs[1])).c_str());
-  DisplayInfo(cname, fname, "linearFit[2] = %s\n",
-              qlat::show(linearFit(muonline, bs[2])).c_str());
-  DisplayInfo(cname, fname, "linearFitUni = %s\n",
-              qlat::show(linearFit(muonline,
-                                   projPositiveState(
-                                       qlat::SpinMatrixConstants::get_unit())))
-                  .c_str());
-  DisplayInfo(cname, fname, "linearFit[0] * 1e9 = %10.2f\n",
-              1e9 * linearFit(muonline, bs[0]).real());
-  DisplayInfo(cname, fname, "linearFit[1] * 1e9 = %10.2f\n",
-              1e9 * linearFit(muonline, bs[1]).real());
-  DisplayInfo(cname, fname, "linearFit[2] * 1e9 = %10.2f\n",
-              1e9 * linearFit(muonline, bs[2]).real());
+  qlat::DisplayInfo(cname, fname, "muonline =\n%s\n",
+                    qlat::show(muonline).c_str());
+  qlat::DisplayInfo(cname, fname, "linearFit[0] = %s\n",
+                    qlat::show(linearFit(muonline, bs[0])).c_str());
+  qlat::DisplayInfo(cname, fname, "linearFit[1] = %s\n",
+                    qlat::show(linearFit(muonline, bs[1])).c_str());
+  qlat::DisplayInfo(cname, fname, "linearFit[2] = %s\n",
+                    qlat::show(linearFit(muonline, bs[2])).c_str());
+  qlat::DisplayInfo(
+      cname, fname, "linearFitUni = %s\n",
+      qlat::show(
+          linearFit(muonline,
+                    projPositiveState(qlat::SpinMatrixConstants::get_unit())))
+          .c_str());
+  qlat::DisplayInfo(cname, fname, "linearFit[0] * 1e9 = %10.2f\n",
+                    1e9 * linearFit(muonline, bs[0]).real());
+  qlat::DisplayInfo(cname, fname, "linearFit[1] * 1e9 = %10.2f\n",
+                    1e9 * linearFit(muonline, bs[1]).real());
+  qlat::DisplayInfo(cname, fname, "linearFit[2] * 1e9 = %10.2f\n",
+                    1e9 * linearFit(muonline, bs[2]).real());
 }
 
 void lblMuonPart()
@@ -215,7 +216,7 @@ void lblMuonPart()
   // qlat::Coordinate total_site(32, 32, 32, 128);
   qlat::Geometry geo;
   geo.init(total_site, 1);
-  DisplayInfo(cname, fname, "geo =\n%s\n", qlat::show(geo).c_str());
+  qlat::DisplayInfo(cname, fname, "geo =\n%s\n", qlat::show(geo).c_str());
   std::array<double, qlat::DIMN> momtwist;
   momtwist[0] = 0.0;
   momtwist[1] = 0.0;
@@ -226,9 +227,9 @@ void lblMuonPart()
   const int tsrc = total_site[3] / 4;
   std::array<qlat::SpinMatrix, 3> bs;
   lblMagneticMomentSpinMatrix(bs, geo, tsnk, tsrc, mass, momtwist);
-  DisplayInfo(cname, fname, "bs[0] =\n%s\n", qlat::show(bs[0]).c_str());
-  DisplayInfo(cname, fname, "bs[1] =\n%s\n", qlat::show(bs[1]).c_str());
-  DisplayInfo(cname, fname, "bs[2] =\n%s\n", qlat::show(bs[2]).c_str());
+  qlat::DisplayInfo(cname, fname, "bs[0] =\n%s\n", qlat::show(bs[0]).c_str());
+  qlat::DisplayInfo(cname, fname, "bs[1] =\n%s\n", qlat::show(bs[1]).c_str());
+  qlat::DisplayInfo(cname, fname, "bs[2] =\n%s\n", qlat::show(bs[2]).c_str());
   // ADJUST ME
   // qlat::Coordinate xg1(0, 0, 0, total_site[3]/2 + 0);
   // qlat::Coordinate xg2(0, 0, 0, total_site[3]/2 + 0);
@@ -247,7 +248,7 @@ void lblMuonPart()
       for (int mu3 = 0; mu3 < 4; ++mu3) {
         lblShowMuonPartPointSrc(geo, tsnk, tsrc, bs, xg1, mu1, xg2, mu2, xg3,
                                 mu3, mass, momtwist);
-        Timer::display();
+        qlat::Timer::display();
         return;
       }
     }
@@ -257,28 +258,28 @@ void lblMuonPart()
 void displayGammas()
 {
   TIMER("displayGammas");
-  DisplayInfo(cname, fname, "gamma5 =\n%s\n",
+  qlat::DisplayInfo(cname, fname, "gamma5 =\n%s\n",
               qlat::show(qlat::SpinMatrixConstants::get_gamma5()).c_str());
-  DisplayInfo(
+  qlat::DisplayInfo(
       cname, fname, "gamma0 * gamma1 * gamma2 * gamma3 =\n%s\n",
       qlat::show((qlat::SpinMatrix)(qlat::SpinMatrixConstants::get_gamma(0) *
                                     qlat::SpinMatrixConstants::get_gamma(1) *
                                     qlat::SpinMatrixConstants::get_gamma(2) *
                                     qlat::SpinMatrixConstants::get_gamma(3)))
           .c_str());
-  DisplayInfo(cname, fname, "gamma3 =\n%s\n",
+  qlat::DisplayInfo(cname, fname, "gamma3 =\n%s\n",
               qlat::show(qlat::SpinMatrixConstants::get_gamma(3)).c_str());
-  DisplayInfo(
+  qlat::DisplayInfo(
       cname, fname, "ii * gamma0 =\n%s\n",
       qlat::show((qlat::SpinMatrix)((qlat::ComplexT)qlat::ii *
                                     qlat::SpinMatrixConstants::get_gamma(0)))
           .c_str());
-  DisplayInfo(
+  qlat::DisplayInfo(
       cname, fname, "ii * gamma1 =\n%s\n",
       qlat::show((qlat::SpinMatrix)((qlat::ComplexT)qlat::ii *
                                     qlat::SpinMatrixConstants::get_gamma(1)))
           .c_str());
-  DisplayInfo(
+  qlat::DisplayInfo(
       cname, fname, "ii * gamma2 =\n%s\n",
       qlat::show((qlat::SpinMatrix)((qlat::ComplexT)qlat::ii *
                                     qlat::SpinMatrixConstants::get_gamma(2)))
@@ -292,7 +293,7 @@ void displaySpinPropagator4d()
   qlat::Coordinate total_site(4, 4, 4, 8);
   qlat::Geometry geo;
   geo.init(total_site, 1);
-  DisplayInfo(cname, fname, "geo =\n%s\n", qlat::show(geo).c_str());
+  qlat::DisplayInfo(cname, fname, "geo =\n%s\n", qlat::show(geo).c_str());
   std::array<double, qlat::DIMN> momtwist;
   momtwist[0] = 0.0;
   momtwist[1] = 0.0;
@@ -310,10 +311,10 @@ void displaySpinPropagator4d()
   qlat::prop_spin_propagator4d(prop, mass, momtwist);
   qlat::Coordinate xgsnk(0, 0, 0, 0);
   qlat::Coordinate xlsnk = geo.coordinate_l_from_g(xgsnk);
-  DisplayInfo(cname, fname, "xgsnk = %s .\n", qlat::show(xgsnk).c_str());
+  qlat::DisplayInfo(cname, fname, "xgsnk = %s .\n", qlat::show(xgsnk).c_str());
   if (geo.is_local(xlsnk)) {
-    Display(cname, fname, "prop[xgsnk] =\n%s\n",
-            qlat::show(prop.get_elem(xlsnk)).c_str());
+    qlat::Display(cname, fname, "prop[xgsnk] =\n%s\n",
+                  qlat::show(prop.get_elem(xlsnk)).c_str());
   }
 }
 
@@ -322,9 +323,9 @@ int main(int argc, char* argv[])
   qlat::begin(&argc, &argv);
   displayGammas();
   displaySpinPropagator4d();
-  Timer::display();
+  qlat::Timer::display();
   lblMuonPart();
-  Timer::display();
+  qlat::Timer::display();
   qlat::end();
   return 0;
 }

@@ -32,9 +32,8 @@
 #include <string>
 #include <vector>
 
-namespace qrngstate
-{
-using namespace qshow;
+namespace qlat
+{  //
 
 struct RngState;
 
@@ -373,8 +372,8 @@ inline double g_rand_gen(RngState& rs, const double center = 0.0,
 
 inline RngState& get_global_rng_state() { return getGlobalRngState(); }
 
-}  // namespace qrngstate
+}  // namespace qlat
 
 #ifndef USE_NAMESPACE
-using namespace qrngstate;
+using namespace qlat;
 #endif

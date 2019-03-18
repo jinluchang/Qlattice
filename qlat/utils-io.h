@@ -231,18 +231,6 @@ inline std::string get_env(const std::string& var_name)
   }
 }
 
-inline FILE* qopen(const std::string& path, const std::string& mode)
-{
-  TIMER("qopen");
-  return std::fopen(path.c_str(), mode.c_str());
-}
-
-inline void qset_line_buf(FILE* f)
-{
-  TIMER("qset_line_buf");
-  std::setvbuf(f, NULL, _IOLBF, 0);
-}
-
 inline void qset_fully_buf(FILE* f)
 {
   TIMER("qset_fully_buf");
@@ -262,27 +250,10 @@ inline FILE* qopen_info(const std::string& path, const std::string& mode)
   }
 }
 
-inline int qclose(FILE*& file)
-{
-  TIMER("qclose");
-  if (NULL != file) {
-    FILE* tmp_file = file;
-    file = NULL;
-    return std::fclose(tmp_file);
-  }
-  return 0;
-}
-
 inline int qclose_info(FILE*& file)
 {
   TIMER("qclose_info");
   return qclose(file);
-}
-
-inline int qrename(const std::string& old_path, const std::string& new_path)
-{
-  TIMER("qrename");
-  return rename(old_path.c_str(), new_path.c_str());
 }
 
 inline int qrename_info(const std::string& old_path,
@@ -296,14 +267,6 @@ inline int qrename_info(const std::string& old_path,
   }
 }
 
-inline int qtouch(const std::string& path)
-{
-  TIMER("qtouch");
-  FILE* file = qopen(path, "w");
-  qassert(file != NULL);
-  return qclose(file);
-}
-
 inline int qtouch_info(const std::string& path)
 {
   TIMER("qtouch_info");
@@ -314,16 +277,6 @@ inline int qtouch_info(const std::string& path)
   }
 }
 
-inline int qtouch(const std::string& path, const std::string& content)
-{
-  TIMER("qtouch");
-  FILE* file = qopen(path + ".partial", "w");
-  qassert(file != NULL);
-  display(content, file);
-  qclose(file);
-  return qrename(path + ".partial", path);
-}
-
 inline int qtouch_info(const std::string& path, const std::string& content)
 {
   TIMER("qtouch_info");
@@ -332,22 +285,6 @@ inline int qtouch_info(const std::string& path, const std::string& content)
   } else {
     return 0;
   }
-}
-
-inline std::string qcat(const std::string& path)
-{
-  TIMER("qcat");
-  FILE* fp = qopen(path, "r");
-  if (fp == NULL) {
-    return "";
-  }
-  fseek(fp, 0, SEEK_END);
-  const long length = ftell(fp);
-  fseek(fp, 0, SEEK_SET);
-  std::string ret(length, 0);
-  fread(&ret[0], 1, length, fp);
-  qclose(fp);
-  return ret;
 }
 
 inline std::string qcat_info(const std::string& path)
@@ -373,13 +310,6 @@ inline std::string qcat_sync_node(const std::string& path)
   ret.resize(length, 0);
   bcast(get_data(ret));
   return ret;
-}
-
-inline void switch_monitor_file(const std::string& path)
-{
-  qclose(get_monitor_file());
-  get_monitor_file() = qopen(path, "a");
-  qset_line_buf(get_monitor_file());
 }
 
 inline void switch_monitor_file_info(const std::string& path)
@@ -559,75 +489,6 @@ inline void check_time_limit(bool timer_display = false,
     const bool time_out = false;
     assert(time_out);
   }
-}
-
-inline std::string qgetline(FILE* fp)
-{
-  char* lineptr = NULL;
-  size_t n = 0;
-  if (getline(&lineptr, &n, fp) > 0) {
-    std::string ret(lineptr);
-    std::free(lineptr);
-    return ret;
-  } else {
-    std::free(lineptr);
-    return std::string();
-  }
-}
-
-inline std::vector<std::string> qgetlines(FILE* fp)
-{
-  std::vector<std::string> ret;
-  while (!feof(fp)) {
-    ret.push_back(qgetline(fp));
-  }
-  return ret;
-}
-
-inline std::vector<std::string> qgetlines(const std::string& fn)
-{
-  FILE* fp = qopen(fn, "r");
-  qassert(fp != NULL);
-  std::vector<std::string> lines = qgetlines(fp);
-  qclose(fp);
-  return lines;
-}
-
-inline bool is_space(const char c)
-{
-  return c == ' ' || c == '\n' || c == '\r' || c == '\t';
-}
-
-inline std::vector<std::string> split_line_with_spaces(const std::string& str)
-{
-  const size_t len = str.length();
-  std::vector<std::string> words;
-  size_t start = 0;
-  size_t stop = 0;
-  while (stop < len) {
-    while (start < len && is_space(str[start])) {
-      start += 1;
-    }
-    stop = start;
-    while (stop < len && !is_space(str[stop])) {
-      stop += 1;
-    }
-    if (stop > start) {
-      words.push_back(std::string(str, start, stop - start));
-    }
-    start = stop;
-  }
-  return words;
-}
-
-inline std::vector<double> read_doubles(const std::string& str)
-{
-  const std::vector<std::string> strs = split_line_with_spaces(str);
-  std::vector<double> ret(strs.size());
-  for (size_t i = 0; i < strs.size(); ++i) {
-    ret[i] = read_double(strs[i]);
-  }
-  return ret;
 }
 
 typedef std::vector<std::vector<double> > DataTable;

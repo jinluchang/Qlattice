@@ -14,7 +14,8 @@
 #include <iostream>
 #include <vector>
 
-QLAT_START_NAMESPACE
+namespace qlat
+{  //
 
 inline void set_zero(double& x) { x = 0; }
 
@@ -61,7 +62,7 @@ bool is_equal_vec(const Vec& v1, const Vec& v2)
   } else {
     const long s = v1.size();
     for (long i = 0; i < s; ++i) {
-      if (not (v1[i] == v2[i])) {
+      if (not(v1[i] == v2[i])) {
         return false;
       }
     }
@@ -76,112 +77,10 @@ bool operator==(const std::vector<M>& v1, const std::vector<M>& v2)
 }
 
 template <class M, int N>
-bool operator==(const std::array<M,N>& v1, const std::array<M,N>& v2)
+bool operator==(const std::array<M, N>& v1, const std::array<M, N>& v2)
 {
   return is_equal_vec(v1, v2);
 }
-
-template <class M>
-struct Handle {
-  M* p;
-  //
-  Handle<M>() { init(); }
-  Handle<M>(M& obj) { init(obj); }
-  //
-  void init() { p = NULL; }
-  void init(M& obj) { p = (M*)&obj; }
-  //
-  bool null() const { return p == NULL; }
-  //
-  M& operator()() const
-  {
-    qassert(NULL != p);
-    return *p;
-  }
-};
-
-template <class M>
-struct ConstHandle {
-  const M* p;
-  //
-  ConstHandle<M>() { init(); }
-  ConstHandle<M>(const M& obj) { init(obj); }
-  ConstHandle<M>(const Handle<M>& h) { init(h()); }
-  //
-  void init() { p = NULL; }
-  void init(const M& obj) { p = (M*)&obj; }
-  //
-  bool null() const { return p == NULL; }
-  //
-  const M& operator()() const
-  {
-    qassert(NULL != p);
-    return *p;
-  }
-};
-
-template <class M>
-struct Vector {
-  M* p;
-  long n;
-  //
-  Vector<M>()
-  {
-    p = NULL;
-    n = 0;
-  }
-  Vector<M>(const Vector<M>& vec)
-  {
-    p = vec.p;
-    n = vec.n;
-  }
-  template <int N>
-  Vector<M>(const std::array<M, N>& arr)
-  {
-    p = (M*)arr.data();
-    n = arr.size();
-  }
-  Vector<M>(const std::vector<M>& vec)
-  {
-    p = (M*)vec.data();
-    n = vec.size();
-  }
-  Vector<M>(const M* p_, const long n_)
-  {
-    p = (M*)p_;
-    n = n_;
-  }
-  Vector<M>(const M& x)
-  {
-    p = (M*)&x;
-    n = 1;
-  }
-  //
-  const M& operator[](long i) const
-  {
-    qassert(0 <= i && i < n);
-    return p[i];
-  }
-  M& operator[](long i)
-  {
-    qassert(0 <= i && i < n);
-    return p[i];
-  }
-  //
-  M* data() { return p; }
-  const M* data() const { return p; }
-  //
-  long size() const { return n; }
-  //
-  long data_size() const { return n * sizeof(M); }
-  //
-  const Vector<M>& operator=(const Vector<M>& v)
-  {
-    n = v.n;
-    p = v.p;
-    return *this;
-  }
-};
 
 template <class M>
 void set_zero(Vector<M> vec)
@@ -422,169 +321,9 @@ inline void random_permute(std::vector<M>& vec, RngState& rs)
   }
 }
 
-inline uint16_t flip_endian_16(uint16_t x) { return ((x >> 8)) | ((x << 8)); }
-
-inline uint32_t flip_endian_32(uint32_t x)
-{
-  return ((x >> 24)) | ((x >> 8) & 0x0000FF00) | ((x << 8) & 0x00FF0000) |
-         ((x << 24));
-}
-
-inline uint64_t flip_endian_64(uint64_t x)
-{
-  return ((x >> 56)) | ((x >> 40) & 0xFF00) | ((x >> 24) & 0xFF0000) |
-         ((x >> 8) & 0xFF000000) | ((x << 8) & 0xFF00000000) |
-         ((x << 24) & 0xFF0000000000) | ((x << 40) & 0xFF000000000000) |
-         ((x << 56));
-}
-
-inline void flip_endian_16(void* str, const size_t len)
-{
-  qassert(0 == len % 2);
-  uint16_t* p = (uint16_t*)str;
-  for (size_t i = 0; i < len / 2; ++i) {
-    p[i] = flip_endian_16(p[i]);
-  }
-}
-
-inline void flip_endian_32(void* str, const size_t len)
-{
-  qassert(0 == len % 4);
-  uint32_t* p = (uint32_t*)str;
-  for (size_t i = 0; i < len / 4; ++i) {
-    p[i] = flip_endian_32(p[i]);
-  }
-}
-
-inline void flip_endian_64(void* str, const size_t len)
-{
-  qassert(0 == len % 8);
-  uint64_t* p = (uint64_t*)str;
-  for (size_t i = 0; i < len / 8; ++i) {
-    p[i] = flip_endian_64(p[i]);
-  }
-}
-
-inline bool is_big_endian()
-{
-#if defined(__BYTE_ORDER) && (__BYTE_ORDER != 0) && \
-    (__BYTE_ORDER == __BIG_ENDIAN)
-  return true;
-#else
-  return false;
-#endif
-}
-
-inline bool is_little_endian() { return not is_big_endian(); }
-
-inline void to_from_little_endian_16(void* str, const size_t len)
-{
-  qassert(0 == len % 2);
-  if (is_big_endian()) {
-    flip_endian_16(str, len);
-  }
-}
-
-inline void to_from_little_endian_32(void* str, const size_t len)
-{
-  qassert(0 == len % 4);
-  if (is_big_endian()) {
-    flip_endian_32(str, len);
-  }
-}
-
-inline void to_from_little_endian_64(void* str, const size_t len)
-{
-  qassert(0 == len % 8);
-  if (is_big_endian()) {
-    flip_endian_64(str, len);
-  }
-}
-
-inline void to_from_big_endian_16(void* str, const size_t len)
-{
-  qassert(0 == len % 2);
-  if (is_little_endian()) {
-    flip_endian_16(str, len);
-  }
-}
-
-inline void to_from_big_endian_32(void* str, const size_t len)
-{
-  qassert(0 == len % 4);
-  if (is_little_endian()) {
-    flip_endian_32(str, len);
-  }
-}
-
-inline void to_from_big_endian_64(void* str, const size_t len)
-{
-  qassert(0 == len % 8);
-  if (is_little_endian()) {
-    flip_endian_64(str, len);
-  }
-}
-
-template <class M>
-void to_from_little_endian_16(Vector<M> v)
-{
-  to_from_little_endian_16((void*)v.data(), v.data_size());
-}
-
-template <class M>
-void to_from_little_endian_32(Vector<M> v)
-{
-  to_from_little_endian_32((void*)v.data(), v.data_size());
-}
-
-template <class M>
-void to_from_little_endian_64(Vector<M> v)
-{
-  to_from_little_endian_64((void*)v.data(), v.data_size());
-}
-
-template <class M>
-void to_from_big_endian_16(Vector<M> v)
-{
-  to_from_big_endian_16((void*)v.data(), v.data_size());
-}
-
-template <class M>
-void to_from_big_endian_32(Vector<M> v)
-{
-  to_from_big_endian_32((void*)v.data(), v.data_size());
-}
-
-template <class M>
-void to_from_big_endian_64(Vector<M> v)
-{
-  to_from_big_endian_64((void*)v.data(), v.data_size());
-}
-
-inline void from_big_endian_32(char* str, const size_t len)
-// obsolete
-{
-  to_from_big_endian_32(str, len);
-}
-
-inline void from_big_endian_64(char* str, const size_t len)
-// obsolete
-{
-  to_from_big_endian_64(str, len);
-}
-
-QLAT_END_NAMESPACE
-
-namespace qshow
-{  //
-
-inline std::string show(const qlat::Complex& x)
+inline std::string show(const Complex& x)
 {
   return ssprintf("(%24.17E + %24.17E j)", x.real(), x.imag());
 }
 
-}  // namespace qshow
-
-#ifndef USE_NAMESPACE
-using namespace qshow;
-#endif
+}  // namespace qlat

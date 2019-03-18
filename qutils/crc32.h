@@ -8,6 +8,9 @@
 
 #include <zlib.h>
 
+#include "show.h"
+#include "qutils.h"
+
 QLAT_START_NAMESPACE
 
 typedef uint32_t crc32_t;
@@ -102,20 +105,20 @@ inline void crc32_check()
 {
   const char* test = "123456789";
   const crc32_t check_value = 0xCBF43926;
-  displayln_info(ssprintf("The check value for the %s standard is 0x%X",
+  displayln(ssprintf("The check value for the %s standard is 0x%X",
                           "CRC32", check_value));
   const crc32_t v1 = crc32(test, std::strlen(test));
-  displayln_info(ssprintf("The crc32() of \"123456789\" is 0x%X", v1));
+  displayln(ssprintf("The crc32() of \"123456789\" is 0x%X", v1));
   const crc32_t v2 = crc32(crc32(test, 3), test + 3, 6);
-  displayln_info(ssprintf("The crc32() of \"123456789\" is 0x%X (concat)", v2));
+  displayln(ssprintf("The crc32() of \"123456789\" is 0x%X (concat)", v2));
   const crc32_t v3 = crc32_shift(crc32(test, 3), 6) ^ crc32(test + 3, 6);
-  displayln_info(
+  displayln(
       ssprintf("The crc32() of \"123456789\" is 0x%X (crc32_shift)", v3));
   qassert(check_value == v1);
   qassert(check_value == v2);
   qassert(check_value == v3);
   const int nthreads = omp_get_max_threads();
-  displayln_info(ssprintf("nthreads=%d", nthreads));
+  displayln(ssprintf("nthreads=%d", nthreads));
   const long limit = 1024 * 1024;
   std::vector<uint8_t> test_data(limit, 0);
   for (long i = 0; i < limit; ++i) {
@@ -125,7 +128,7 @@ inline void crc32_check()
     const Vector<uint8_t> v(&test_data[0], i);
     qassert(v.data_size() <= limit);
     if (crc32_par(check_value, v) != crc32(check_value, v)) {
-      displayln_info(ssprintf("i=%d, v.data_size()=%ld", i, v.data_size()));
+      displayln(ssprintf("i=%d, v.data_size()=%ld", i, v.data_size()));
       qassert(false);
     }
   }
@@ -133,7 +136,7 @@ inline void crc32_check()
     const Vector<double> v((const double*)&test_data[0], i);
     qassert(v.data_size() <= limit);
     if (crc32_par(check_value, v) != crc32(check_value, v)) {
-      displayln_info(ssprintf("i=%d, v.data_size()=%ld", i, v.data_size()));
+      displayln(ssprintf("i=%d, v.data_size()=%ld", i, v.data_size()));
       qassert(false);
     }
   }
@@ -141,7 +144,7 @@ inline void crc32_check()
     const Vector<uint8_t> v((const uint8_t*)&test_data[0], i * 16 * 1024 + 37);
     qassert(v.data_size() <= limit);
     if (crc32_par(check_value, v) != crc32(check_value, v)) {
-      displayln_info(ssprintf("i=%d, v.data_size()=%ld", i, v.data_size()));
+      displayln(ssprintf("i=%d, v.data_size()=%ld", i, v.data_size()));
       qassert(false);
     }
   }
@@ -155,7 +158,3 @@ inline crc32_t read_crc32(const std::string& s)
 }
 
 QLAT_END_NAMESPACE
-
-#ifndef USE_NAMESPACE
-using namespace qshow;
-#endif

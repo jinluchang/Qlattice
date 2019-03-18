@@ -1,7 +1,6 @@
 #pragma once
 
 #include <qlat/config.h>
-#include <qlat/crc32.h>
 #include <qlat/geometry.h>
 #include <qlat/mpi.h>
 #include <qlat/utils.h>

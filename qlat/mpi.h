@@ -541,10 +541,6 @@ inline void display_geometry_node()
   sync_node();
 }
 
-QLAT_END_NAMESPACE
-
-namespace qshow
-{
 inline std::string show(const qlat::GeometryNode& geon)
 {
   std::string s;
@@ -555,12 +551,6 @@ inline std::string show(const qlat::GeometryNode& geon)
   s += ssprintf(", coor_node   = %s }", show(geon.coor_node).c_str());
   return s;
 }
-
-}  // namespace qshow
-
-QLAT_START_NAMESPACE
-
-using namespace qshow;
 
 inline Coordinate plan_size_node(const int num_node)
 {

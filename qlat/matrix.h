@@ -513,20 +513,12 @@ typedef SpinMatrixConstantsT<> SpinMatrixConstants;
 
 #endif
 
-QLAT_END_NAMESPACE
-
-namespace qshow
-{
 template <int DIMN, class T>
-std::string show(const qlat::MatrixT<DIMN, T>& m)
+std::string show(const MatrixT<DIMN, T>& m)
 {
   std::ostringstream out;
   out << m.em();
   return out.str();
 }
 
-}  // namespace qshow
-
-#ifndef USE_NAMESPACE
-using namespace qshow;
-#endif
+QLAT_END_NAMESPACE

@@ -344,10 +344,6 @@ inline Geometry geo_eo(const Geometry& geo_, const int eo = 0)
 
 inline bool is_initialized(const Geometry& geo) { return geo.initialized; }
 
-QLAT_END_NAMESPACE
-
-namespace qshow
-{
 inline std::string show(const qlat::Geometry& geo)
 {
   std::string s;
@@ -361,10 +357,6 @@ inline std::string show(const qlat::Geometry& geo)
   s += ssprintf(", node_site_exp = %s }", show(geo.node_site_expanded).c_str());
   return s;
 }
-
-}  // namespace qshow
-
-QLAT_START_NAMESPACE
 
 inline bool is_matching_geo(const Geometry& geo1, const Geometry& geo2)
 {

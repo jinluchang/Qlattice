@@ -31,8 +31,12 @@
 #include <string>
 #include <vector>
 
+namespace qlat
+{  //
+
 namespace sha256
-{
+{  //
+
 const size_t BlockSize = 512 / 8;
 
 const size_t HashBytes = 32;
@@ -543,3 +547,5 @@ inline std::string showHash(const uint32_t hash[8])
 }
 
 }  // namespace sha256
+
+}  // namespace qlat

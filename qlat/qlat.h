@@ -8,8 +8,6 @@
 
 #include <qlat/cache.h>
 
-#include <qlat/crc32.h>
-
 #include <qlat/mvector.h>
 
 #include <qlat/matrix.h>

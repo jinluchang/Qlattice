@@ -26,8 +26,9 @@
 #include <sstream>
 #include <string>
 
-namespace qshow
-{
+namespace qlat
+{  //
+
 inline std::string vssprintf(const char* fmt, va_list args)
 {
   std::string str;
@@ -97,6 +98,110 @@ inline double read_double(const std::string& str)
   return ret;
 }
 
+inline std::vector<std::string> split_into_lines(const std::string& str)
+{
+  const size_t len = str.length();
+  std::vector<std::string> lines;
+  size_t start = 0;
+  size_t stop = 0;
+  while (stop < len) {
+    while (start < len && str[start] == '\n') {
+      start += 1;
+    }
+    stop = start;
+    while (stop < len && !(str[stop] == '\n')) {
+      stop += 1;
+    }
+    if (stop > start) {
+      lines.push_back(std::string(str, start, stop - start));
+    }
+    start = stop;
+  }
+  return lines;
+}
+
+inline bool parse_char(char& c, long& cur, const std::string& data)
+{
+  if (data.size() <= cur) {
+    return false;
+  } else {
+    c = data[cur];
+    cur += 1;
+    return true;
+  }
+}
+
+inline bool parse_string(std::string& str, long& cur, const std::string& data)
+{
+  char c;
+  if (!parse_char(c, cur, data) or c != '"') {
+    return false;
+  } else {
+    const long start = cur;
+    char c;
+    while (parse_char(c, cur, data) and c != '"') {
+    }
+    str = std::string(data, start, cur - start - 1);
+    return data[cur - 1] == '"' && cur > start;
+  }
+}
+
+inline bool parse_long(long& num, long& cur, const std::string& data)
+{
+  const long start = cur;
+  char c;
+  while (parse_char(c, cur, data)) {
+    if ('0' > c or c > '9') {
+      cur -= 1;
+      break;
+    }
+  }
+  if (cur <= start) {
+    return false;
+  } else {
+    const std::string str = std::string(data, start, cur - start);
+    num = read_long(str);
+    return true;
+  }
+}
+
+inline bool is_space(const char c)
+{
+  return c == ' ' || c == '\n' || c == '\r' || c == '\t';
+}
+
+inline std::vector<std::string> split_line_with_spaces(const std::string& str)
+{
+  const size_t len = str.length();
+  std::vector<std::string> words;
+  size_t start = 0;
+  size_t stop = 0;
+  while (stop < len) {
+    while (start < len && is_space(str[start])) {
+      start += 1;
+    }
+    stop = start;
+    while (stop < len && !is_space(str[stop])) {
+      stop += 1;
+    }
+    if (stop > start) {
+      words.push_back(std::string(str, start, stop - start));
+    }
+    start = stop;
+  }
+  return words;
+}
+
+inline std::vector<double> read_doubles(const std::string& str)
+{
+  const std::vector<std::string> strs = split_line_with_spaces(str);
+  std::vector<double> ret(strs.size());
+  for (size_t i = 0; i < strs.size(); ++i) {
+    ret[i] = read_double(strs[i]);
+  }
+  return ret;
+}
+
 inline FILE*& get_output_file()
 {
   static FILE* out = stdout;
@@ -149,8 +254,8 @@ inline void fdisplayln(FILE* fp, const std::string& str)
   fprintf(fp, "%s\n", str.c_str());
 }
 
-}  // namespace qshow
+}  // namespace qlat
 
 #ifndef USE_NAMESPACE
-using namespace qshow;
+using namespace qlat;
 #endif

@@ -49,27 +49,26 @@
 
 #define TIMER(FNAME)                 \
   static const char* fname = FNAME;  \
-  static qtimer::Timer timer(fname); \
-  qtimer::TimerCtrl timerctrl(timer);
+  static qlat::Timer timer(fname); \
+  qlat::TimerCtrl timerctrl(timer);
 
 #define TIMER_VERBOSE(FNAME)         \
   static const char* fname = FNAME;  \
-  static qtimer::Timer timer(fname); \
-  qtimer::TimerCtrl timerctrl(timer, true);
+  static qlat::Timer timer(fname); \
+  qlat::TimerCtrl timerctrl(timer, true);
 
 #define TIMER_FLOPS(FNAME)                  \
   static const char* fname = FNAME;         \
-  static qtimer::Timer timer(fname, false); \
-  qtimer::TimerCtrl timerctrl(timer);
+  static qlat::Timer timer(fname, false); \
+  qlat::TimerCtrl timerctrl(timer);
 
 #define TIMER_VERBOSE_FLOPS(FNAME)          \
   static const char* fname = FNAME;         \
-  static qtimer::Timer timer(fname, false); \
-  qtimer::TimerCtrl timerctrl(timer, true);
+  static qlat::Timer timer(fname, false); \
+  qlat::TimerCtrl timerctrl(timer, true);
 
-namespace qtimer
-{
-using namespace qshow;
+namespace qlat
+{  //
 
 inline double get_time()
 {
@@ -509,8 +508,8 @@ inline void DisplayInfo(const char* cname, const char* fname,
   std::free(str);
 }
 
-}  // namespace qtimer
+}  // namespace qlat
 
 #ifndef USE_NAMESPACE
-using namespace qtimer;
+using namespace qlat;
 #endif

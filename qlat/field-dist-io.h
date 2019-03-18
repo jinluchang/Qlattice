@@ -3,7 +3,6 @@
 #pragma once
 
 #include <qlat/config.h>
-#include <qlat/crc32.h>
 #include <qlat/utils.h>
 
 QLAT_START_NAMESPACE
