@@ -121,7 +121,73 @@ struct ConstHandle {
 };
 
 template <class M>
-struct Vector;
+struct Vector {
+  M* p;
+  long n;
+  //
+  Vector<M>()
+  {
+    p = NULL;
+    n = 0;
+  }
+  Vector<M>(const Vector<M>& vec)
+  {
+    p = vec.p;
+    n = vec.n;
+  }
+  template <int N>
+  Vector<M>(const std::array<M, N>& arr)
+  {
+    p = (M*)arr.data();
+    n = arr.size();
+  }
+  Vector<M>(const std::vector<M>& vec)
+  {
+    p = (M*)vec.data();
+    n = vec.size();
+  }
+  Vector<M>(const M* p_, const long n_)
+  {
+    p = (M*)p_;
+    n = n_;
+  }
+  Vector<M>(const M& x)
+  {
+    p = (M*)&x;
+    n = 1;
+  }
+  //
+  const M& operator[](long i) const
+  {
+    qassert(0 <= i && i < n);
+    return p[i];
+  }
+  M& operator[](long i)
+  {
+    qassert(0 <= i && i < n);
+    return p[i];
+  }
+  //
+  M* data() { return p; }
+  const M* data() const { return p; }
+  //
+  long size() const { return n; }
+  //
+  long data_size() const { return n * sizeof(M); }
+  //
+  const Vector<M>& operator=(const Vector<M>& v)
+  {
+    n = v.n;
+    p = v.p;
+    return *this;
+  }
+};
+
+template <class M>
+void set_zero(Vector<M> vec)
+{
+  std::memset(vec.data(), 0, vec.data_size());
+}
 
 template <class M, int N>
 struct Array {
@@ -180,92 +246,10 @@ void set_zero(Array<M, N> arr)
   std::memset(arr.data(), 0, size);
 }
 
-template <class M>
-struct Vector {
-  M* p;
-  long n;
-  //
-  Vector<M>()
-  {
-    p = NULL;
-    n = 0;
-  }
-  Vector<M>(const Vector<M>& vec)
-  {
-    p = vec.p;
-    n = vec.n;
-  }
-  template <int N>
-  Vector<M>(const Array<M, N>& arr)
-  {
-    p = arr.p;
-    n = N;
-  }
-  template <int N>
-  Vector<M>(const std::array<M, N>& arr)
-  {
-    p = (M*)arr.data();
-    n = arr.size();
-  }
-  Vector<M>(const std::vector<M>& vec)
-  {
-    p = (M*)vec.data();
-    n = vec.size();
-  }
-  Vector<M>(const M* p_, const long n_)
-  {
-    p = (M*)p_;
-    n = n_;
-  }
-  Vector<M>(const M& x)
-  {
-    p = (M*)&x;
-    n = 1;
-  }
-  //
-  const M& operator[](long i) const
-  {
-    qassert(0 <= i && i < n);
-    return p[i];
-  }
-  M& operator[](long i)
-  {
-    qassert(0 <= i && i < n);
-    return p[i];
-  }
-  //
-  M* data() { return p; }
-  const M* data() const { return p; }
-  //
-  long size() const { return n; }
-  //
-  long data_size() const { return n * sizeof(M); }
-  //
-  const Vector<M>& operator=(const Vector<M>& v)
-  {
-    n = v.n;
-    p = v.p;
-    return *this;
-  }
-  template <int N>
-  const Vector<M>& operator=(const Array<M, N>& v)
-  {
-    n = N;
-    p = v.p;
-    return *this;
-  }
-};
-
-template <class M>
-void set_zero(Vector<M> vec)
-{
-  std::memset(vec.data(), 0, vec.data_size());
-}
-
 template <class M, int N>
 Vector<M> get_data(Array<M, N> arr)
 {
-  return Vector<M>(arr);
+  return Vector<M>(arr.data(), arr.size());
 }
 
 template <class M>
