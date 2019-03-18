@@ -2,22 +2,12 @@
 
 A simple lattice QCD library.
 
-1. Fast Fourier transformation is implemented based on FFTW3.
-
-2. A random number generator is implemented based on the SHA-256 hash.
-
 ## Installation:
 
 The library itself is only composed of header files located in the
 `qlat` directory.
 
 The major dependencies are included in the `distfiles` directory.
-
-Among the dependencies, two special libraries are provided.
-
-1. `timer.h` https://github.com/waterret/Timer
-
-2. `rng-state.h` https://github.com/waterret/RngState
 
 There are scripts used to install all the dependencies, which are located
 in the `scripts` directory.
@@ -55,10 +45,7 @@ The `8` 32-bit unsigned integers are merged into `4` 64-bit unsigned
 integers. These `4` numbers are treated as the random numbers generated
 by this random number generator.
 
-Relavent source files: `distfiles/rng-state.h`, `qlat/field-rng.h`.
+Relavent source files: `qutils/rng-state.h`.
 
 Relavent examples: `examples/rng-state-tests`, `examples/field-rng-tests`.
 
-Also see the RNG's own repository
-
-https://github.com/waterret/RngState
