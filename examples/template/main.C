@@ -74,17 +74,24 @@ inline bool compute(const std::string& job_tag)
     const int traj = trajs[i];
     if (does_file_exist_sync_node(get_job_path(job_tag, traj) +
                                   "/checkpoint.txt")) {
+      displayln_info(fname + ssprintf(": Finished '%s'.",
+                                      get_job_path(job_tag, traj).c_str()));
       continue;
     }
     // if (does_file_exist_sync_node(get_low_modes_path(job_tag, traj) +
-    // "/checkpoint")) {
+    //                               "/checkpoint")) {
+    //   displayln_info(fname + ssprintf(": No low modes '%s'.",
+    //                                   get_job_path(job_tag, traj).c_str()));
     //   continue;
     // }
     if (obtain_lock(get_job_path(job_tag, traj) + "-lock")) {
       compute_traj(job_tag, traj);
       release_lock();
+      Timer::display();
+    } else {
+      displayln_info(fname + ssprintf(": Cannot obtain lock '%s'.",
+                                      get_job_path(job_tag, traj).c_str()));
     }
-    Timer::display();
   }
   return false;
 }
@@ -95,12 +102,16 @@ QLAT_END_NAMESPACE
 
 int main(int argc, char* argv[])
 {
+
   using namespace qlat;
-  const std::string job_tag = "free-4nt8";
+  const std::array<std::string, 1> job_tags =
+      make_array<std::string>("free-4nt8");
   begin(&argc, &argv);
   setup_log_idx();
-  if (not compute(job_tag)) {
-    displayln_info("program finished successfully.");
+  for (int k = 0; k < (int)job_tags.size(); ++k) {
+    if (not compute(job_tags[k])) {
+      displayln_info("program finished successfully.");
+    }
   }
   Timer::display();
   end();
