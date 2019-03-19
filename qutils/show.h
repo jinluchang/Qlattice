@@ -25,6 +25,7 @@
 #include <cstring>
 #include <sstream>
 #include <string>
+#include <vector>
 
 namespace qlat
 {  //
