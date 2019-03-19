@@ -150,9 +150,9 @@ inline void dataReadInfo(const std::vector<DataSizeNmemb>& dsns,
       assert(chksums[i] == chksum_read);
     }
     if (chksum != chksum_read) {
-      displayln(
+      qlat::displayln(
           fname +
-          ssprintf(": WARNING mismatch total chksum=%08X chksum_read=%08X",
+          qlat::ssprintf(": WARNING mismatch total chksum=%08X chksum_read=%08X",
                    chksum, chksum_read));
     }
     fclose(file);
@@ -219,7 +219,7 @@ inline long dataWriteParNode(const std::vector<DataSizeNmemb>& dsns,
       }
       sumArray(&bytes, 1);
       total_bytes += bytes;
-      DisplayInfo(cname, fname,
+      qlat::DisplayInfo(cname, fname,
                   "cycle / n_cycle = %d / %d ; total_bytes = %ld\n", i + 1,
                   n_cycle, total_bytes);
     }
@@ -258,7 +258,7 @@ inline long dataReadParNode(const std::vector<DataSizeNmemb>& dsns,
                             const std::string& path)
 {
   if (!DoesFileExist(path + "/checkpoint")) {
-    DisplayInfo(cname, "dataReadParNode", "'%s' do not exist.\n", path.c_str());
+    qlat::DisplayInfo(cname, "dataReadParNode", "'%s' do not exist.\n", path.c_str());
     return 0;
   }
   TIMER_VERBOSE_FLOPS("dataReadParNode");
@@ -294,7 +294,7 @@ inline long dataReadParNode(const std::vector<DataSizeNmemb>& dsns,
       }
       sumArray(&bytes, 1);
       total_bytes += bytes;
-      DisplayInfo(cname, fname,
+      qlat::DisplayInfo(cname, fname,
                   "cycle / n_cycle = %d / %d ; total_bytes = %ld\n", i + 1,
                   n_cycle, total_bytes);
     }
