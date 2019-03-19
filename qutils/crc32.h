@@ -12,7 +12,8 @@
 #include "qutils.h"
 #include "qutils-vec.h"
 
-QLAT_START_NAMESPACE
+namespace qlat
+{  //
 
 typedef uint32_t crc32_t;
 
@@ -106,15 +107,14 @@ inline void crc32_check()
 {
   const char* test = "123456789";
   const crc32_t check_value = 0xCBF43926;
-  displayln(ssprintf("The check value for the %s standard is 0x%X",
-                          "CRC32", check_value));
+  displayln(ssprintf("The check value for the %s standard is 0x%X", "CRC32",
+                     check_value));
   const crc32_t v1 = crc32(test, std::strlen(test));
   displayln(ssprintf("The crc32() of \"123456789\" is 0x%X", v1));
   const crc32_t v2 = crc32(crc32(test, 3), test + 3, 6);
   displayln(ssprintf("The crc32() of \"123456789\" is 0x%X (concat)", v2));
   const crc32_t v3 = crc32_shift(crc32(test, 3), 6) ^ crc32(test + 3, 6);
-  displayln(
-      ssprintf("The crc32() of \"123456789\" is 0x%X (crc32_shift)", v3));
+  displayln(ssprintf("The crc32() of \"123456789\" is 0x%X (crc32_shift)", v3));
   qassert(check_value == v1);
   qassert(check_value == v2);
   qassert(check_value == v3);
@@ -158,4 +158,4 @@ inline crc32_t read_crc32(const std::string& s)
   return crc32;
 }
 
-QLAT_END_NAMESPACE
+}  // namespace qlat

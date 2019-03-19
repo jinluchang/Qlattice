@@ -51,7 +51,7 @@ inline long lat_data_size(const LatInfo& info, const int level = 0)
     return 0;
   }
   long total = 1;
-  for (int i = level; i < info.size(); ++i) {
+  for (int i = level; i < (int)info.size(); ++i) {
     total *= info[i].size;
   }
   return total;
@@ -66,7 +66,7 @@ inline std::string show(const LatDim& dim)
 {
   std::ostringstream out;
   out << ssprintf("\"%s\"[%ld]:", dim.name.c_str(), dim.size);
-  for (long i = 0; i < dim.indices.size(); ++i) {
+  for (long i = 0; i < (long)dim.indices.size(); ++i) {
     out << ssprintf(" \"%s\"", dim.indices[i].c_str());
   }
   return out.str();
@@ -76,7 +76,7 @@ inline std::string show(const LatInfo& info)
 {
   std::ostringstream out;
   out << ssprintf("ndim: %ld\n", info.size());
-  for (int i = 0; i < info.size(); ++i) {
+  for (int i = 0; i < (int)info.size(); ++i) {
     out << show(info[i]) << "\n";
   }
   return out.str();
@@ -118,8 +118,8 @@ inline LatInfo read_lat_info(const std::string& str)
   const std::string ndim_prop = "ndim: ";
   assert(infos[0].compare(0, ndim_prop.size(), ndim_prop) == 0);
   const long ndim = read_long(std::string(infos[0], ndim_prop.size()));
-  assert(ndim == infos.size() - 1);
-  for (int i = 1; i < infos.size(); ++i) {
+  assert(ndim == (long)infos.size() - 1);
+  for (int i = 1; i < (int)infos.size(); ++i) {
     info.push_back(read_lat_dim(infos[i]));
   }
   return info;
@@ -138,7 +138,7 @@ inline void LatData::load(const std::string& fn)
     infos.push_back(qgetline(fp));
   }
   std::ostringstream out;
-  for (int i = 3; i < infos.size() - 2; ++i) {
+  for (int i = 3; i < (int)infos.size() - 2; ++i) {
     out << infos[i];
   }
   const std::string info_str = out.str();
@@ -148,8 +148,8 @@ inline void LatData::load(const std::string& fn)
   assert(crc_str.compare(0, crc_prop.size(), crc_prop) == 0);
   const crc32_t crc = read_crc32(std::string(crc_str, crc_prop.size()));
   lat_data_alloc(*this);
-  assert(res.size() == lat_data_size(info));
-  assert(res.size() * sizeof(double) == read_long(infos[2]));
+  assert((long)res.size() == lat_data_size(info));
+  assert((long)res.size() * (long)sizeof(double) == read_long(infos[2]));
   fread(res.data(), sizeof(double), res.size(), fp);
   const crc32_t crc_computed =
       crc32_par(res.data(), res.size() * sizeof(double));
@@ -230,20 +230,20 @@ inline LatDim lat_dim_re_im()
 
 inline long lat_dim_idx(const LatDim& dim, const std::string& idx)
 {
-  assert(dim.indices.size() <= dim.size);
-  for (long i = 0; i < dim.indices.size(); ++i) {
+  assert((long)dim.indices.size() <= dim.size);
+  for (long i = 0; i < (long)dim.indices.size(); ++i) {
     if (idx == dim.indices[i]) {
       return i;
     }
   }
   const long i = -read_long(idx) - 1;
-  assert(dim.indices.size() <= i and i < dim.size);
+  assert((long)dim.indices.size() <= i and i < dim.size);
   return i;
 }
 
 inline long lat_dim_idx(const LatDim& dim, const long& idx)
 {
-  assert(dim.indices.size() <= dim.size);
+  assert((long)dim.indices.size() <= dim.size);
   assert(0 <= idx and idx < dim.size);
   return idx;
 }
@@ -256,7 +256,7 @@ inline long lat_data_offset(const LatInfo& info, const VecS& idx)
 {
   assert(idx.size() <= info.size());
   long ret = 0;
-  for (int i = 0; i < idx.size(); ++i) {
+  for (int i = 0; i < (int)idx.size(); ++i) {
     const long k = lat_dim_idx(info[i], idx[i]);
     ret = ret * info[i].size + k;
   }
@@ -280,7 +280,7 @@ inline bool is_lat_info_complex(const LatInfo& info)
 
 inline std::string idx_name(const LatDim& dim, const long idx)
 {
-  if (idx < dim.indices.size()) {
+  if (idx < (long)dim.indices.size()) {
     return dim.indices[idx];
   } else {
     return show(-idx - 1);
@@ -293,7 +293,7 @@ inline void print(const LatData& ld)
   display(ssprintf("%s", show(info).c_str()));
   std::vector<long> idx(info.size(), 0);
   for (long k = 0; k < lat_data_size(info); ++k) {
-    for (int a = 0; a < info.size(); ++a) {
+    for (int a = 0; a < (int)info.size(); ++a) {
       display(ssprintf("%s[%8s] ", info[a].name.c_str(),
                        idx_name(info[a], idx[a]).c_str()));
     }
@@ -331,7 +331,7 @@ inline bool is_matching(const LatData& ld1, const LatData& ld2)
 inline const LatData& operator+=(LatData& ld, const LatData& ld1)
 {
   assert(is_matching(ld, ld1));
-  for (long i = 0; i < ld.res.size(); ++i) {
+  for (long i = 0; i < (long)ld.res.size(); ++i) {
     ld.res[i] += ld1.res[i];
   }
   return ld;
@@ -340,7 +340,7 @@ inline const LatData& operator+=(LatData& ld, const LatData& ld1)
 inline const LatData& operator-=(LatData& ld, const LatData& ld1)
 {
   assert(is_matching(ld, ld1));
-  for (long i = 0; i < ld.res.size(); ++i) {
+  for (long i = 0; i < (long)ld.res.size(); ++i) {
     ld.res[i] -= ld1.res[i];
   }
   return ld;
@@ -348,7 +348,7 @@ inline const LatData& operator-=(LatData& ld, const LatData& ld1)
 
 inline const LatData& operator*=(LatData& ld, const double factor)
 {
-  for (long i = 0; i < ld.res.size(); ++i) {
+  for (long i = 0; i < (long)ld.res.size(); ++i) {
     ld.res[i] *= factor;
   }
   return ld;
@@ -371,7 +371,7 @@ inline LatData operator-(const LatData& ld, const LatData& ld1)
 inline LatData operator*(const LatData& ld, const double factor)
 {
   LatData ret = ld;
-  for (long i = 0; i < ret.res.size(); ++i) {
+  for (long i = 0; i < (long)ret.res.size(); ++i) {
     ret.res[i] *= factor;
   }
   return ret;
