@@ -254,7 +254,7 @@ inline long lat_data_offset(const LatInfo& info, const VecS& idx)
 // VecS can be std::vector<std::string> or std::vector<long>
 // or can be std::array of certain length
 {
-  assert(idx.size() <= info.size());
+  assert((long)idx.size() <= (long)info.size());
   long ret = 0;
   for (int i = 0; i < (int)idx.size(); ++i) {
     const long k = lat_dim_idx(info[i], idx[i]);
@@ -265,7 +265,7 @@ inline long lat_data_offset(const LatInfo& info, const VecS& idx)
 
 inline bool is_lat_info_complex(const LatInfo& info)
 {
-  assert(info.size() >= 1);
+  assert((long)info.size() >= 1);
   const LatDim& dim = info.back();
   if (dim.name != "re-im" or dim.size != 2) {
     return false;
@@ -387,7 +387,7 @@ inline Vector<double> lat_data_get(LatData& ld, const VecS& idx)
 {
   const long offset = lat_data_offset(ld.info, idx);
   const long size = lat_data_size(ld.info, idx.size());
-  qassert(offset * size + size <= ld.res.size());
+  qassert(offset * size + size <= (long)ld.res.size());
   Vector<double> ret(&ld.res[offset * size], size);
   return ret;
 }
@@ -399,7 +399,7 @@ inline Vector<double> lat_data_get_const(const LatData& ld, const VecS& idx)
 {
   const long offset = lat_data_offset(ld.info, idx);
   const long size = lat_data_size(ld.info, idx.size());
-  qassert(offset * size + size <= ld.res.size());
+  qassert(offset * size + size <= (long)ld.res.size());
   Vector<double> ret(&ld.res[offset * size], size);
   return ret;
 }
@@ -408,11 +408,11 @@ template <class VecS>
 inline Vector<Complex> lat_data_complex_get(LatData& ld, const VecS& idx)
 {
   qassert(is_lat_info_complex(ld.info));
-  qassert(idx.size() < ld.info.size());
+  qassert((long)idx.size() < (long)ld.info.size());
   const long offset = lat_data_offset(ld.info, idx);
   const long size = lat_data_size(ld.info, idx.size());
   qassert(size % 2 == 0);
-  qassert(offset * size + size <= ld.res.size());
+  qassert(offset * size + size <= (long)ld.res.size());
   Vector<Complex> ret((Complex*)&ld.res[offset * size], size / 2);
   return ret;
 }
@@ -424,11 +424,11 @@ inline Vector<Complex> lat_data_complex_get_const(const LatData& ld,
 // 改不改靠自觉
 {
   qassert(is_lat_info_complex(ld.info));
-  qassert(idx.size() < ld.info.size());
+  qassert((long)idx.size() < (long)ld.info.size());
   const long offset = lat_data_offset(ld.info, idx);
   const long size = lat_data_size(ld.info, idx.size());
   qassert(size % 2 == 0);
-  qassert(offset * size + size <= ld.res.size());
+  qassert(offset * size + size <= (long)ld.res.size());
   Vector<Complex> ret((Complex*)&ld.res[offset * size], size / 2);
   return ret;
 }
