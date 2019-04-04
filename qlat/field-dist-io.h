@@ -1100,7 +1100,7 @@ inline bool dist_repartition(const Coordinate& new_size_node,
                              const std::string& new_path = "")
 // interface_function
 {
-  TIMER_VERBOSE("repartition");
+  TIMER_VERBOSE("dist_repartition");
   bool is_failed = false;
   const std::string npath = remove_trailing_slashes(path);
   if (std::string(npath, npath.length() - 4, 4) == ".tmp") {
@@ -1118,7 +1118,7 @@ inline bool dist_repartition(const Coordinate& new_size_node,
   int sizeof_M;
   Coordinate size_node;
   dist_read_geo_info(geo, sizeof_M, size_node, npath);
-  if (size_node == new_size_node) {
+  if (size_node == new_size_node and (new_path == "" or new_npath == npath)) {
     displayln_info(
         ssprintf("repartition: size_node=%s ; no need to repartition '%s'.",
                  show(size_node).c_str(), npath.c_str()));

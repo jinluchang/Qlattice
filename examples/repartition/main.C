@@ -26,7 +26,14 @@ int main(int argc, char* argv[])
   for (long i = 0; i < (long)fns.size(); ++i) {
     displayln_info(
         ssprintf("fns[%5d/%d] = '%s'", i, fns.size(), fns[i].c_str()));
-    dist_repartition(new_size_node, fns[i]);
+    if (does_file_exist_sync_node(fns[i] + "/geo-info.txt") and
+        does_file_exist_sync_node(fns[i] + "/checkpoint")) {
+      dist_repartition(new_size_node, fns[i]);
+    } else if (does_file_exist_sync_node(fns[i] + "/metadata.txt")) {
+      eigen_system_repartition(new_size_node, fns[i]);
+    } else {
+      displayln_info("Cannot repartition this data: '" + fns[i] + "'.");
+    }
   }
   Timer::display();
   end();

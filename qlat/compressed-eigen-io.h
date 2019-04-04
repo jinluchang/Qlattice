@@ -1737,4 +1737,46 @@ inline void decompressed_eigen_vectors_check_crc32(const std::string& path)
   release_lock();
 }
 
+inline bool eigen_system_repartition(const Coordinate& new_size_node,
+                                     const std::string& path,
+                                     const std::string& new_path = "")
+// interface_function
+{
+  TIMER_VERBOSE("eigen_system_repartition");
+  bool is_failed = false;
+  const std::string npath = remove_trailing_slashes(path);
+  if (std::string(npath, npath.length() - 4, 4) == ".tmp") {
+    return true;
+  }
+  const std::string new_npath = remove_trailing_slashes(new_path);
+  if (not does_file_exist_sync_node(npath + "/metadata.txt")) {
+    displayln_info(
+        ssprintf("repartition: WARNING: not a folder to partition: '%s'.",
+                 npath.c_str()));
+    return true;
+  }
+  CompressedEigenSystemInfo cesi;
+  cesi = read_compressed_eigen_system_info(npath);
+  if (cesi.total_node == new_size_node and
+      (new_npath == "" or new_npath == npath)) {
+    displayln_info(fname +
+                   ssprintf(": size_node=%s ; no need to repartition '%s'.",
+                            show(cesi.total_node).c_str(), npath.c_str()));
+    return true;
+  } else if (new_npath == npath or new_npath == "") {
+    qassert(not does_file_exist_sync_node(npath + "-repartition-new.tmp"));
+    qassert(not does_file_exist_sync_node(npath + "-repartition-old.tmp"));
+    resize_compressed_eigen_vectors(npath, npath + "-repartition-new.tmp",
+                                    new_size_node);
+    if (does_file_exist_sync_node(npath +
+                                  "-repartition-new.tmp/metadata.txt")) {
+      qrename(npath, npath + "-repartition-old.tmp");
+      qrename(npath + "-repartition-new.tmp", npath);
+      qremove_all(npath + "-repartition-old.tmp");
+    }
+  } else {
+    resize_compressed_eigen_vectors(npath, new_npath, new_size_node);
+  }
+}
+
 QLAT_END_NAMESPACE
