@@ -1130,9 +1130,9 @@ inline bool dist_repartition(const Coordinate& new_size_node,
       qassert(not does_file_exist_sync_node(npath + "-repartition-new.tmp"));
       qassert(not does_file_exist_sync_node(npath + "-repartition-old.tmp"));
       dist_write_field(f, new_size_node, npath + "-repartition-new.tmp");
-      qrename(npath, npath + "-repartition-old.tmp");
-      qrename(npath + "-repartition-new.tmp", npath);
-      qremove_all(npath + "-repartition-old.tmp");
+      qrename_info(npath, npath + "-repartition-old.tmp");
+      qrename_info(npath + "-repartition-new.tmp", npath);
+      qremove_all_info(npath + "-repartition-old.tmp");
     } else {
       dist_write_field(f, new_size_node, new_npath);
     }

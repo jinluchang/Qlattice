@@ -1768,14 +1768,16 @@ inline bool eigen_system_repartition(const Coordinate& new_size_node,
     qassert(not does_file_exist_sync_node(npath + "-repartition-old.tmp"));
     resize_compressed_eigen_vectors(npath, npath + "-repartition-new.tmp",
                                     new_size_node);
+    sync_node();
     if (does_file_exist_sync_node(npath +
                                   "-repartition-new.tmp/metadata.txt")) {
-      qrename(npath, npath + "-repartition-old.tmp");
-      qrename(npath + "-repartition-new.tmp", npath);
-      qremove_all(npath + "-repartition-old.tmp");
+      qrename_info(npath, npath + "-repartition-old.tmp");
+      qrename_info(npath + "-repartition-new.tmp", npath);
+      qremove_all_info(npath + "-repartition-old.tmp");
     }
   } else {
     resize_compressed_eigen_vectors(npath, new_npath, new_size_node);
+    sync_node();
   }
 }
 
