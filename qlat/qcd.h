@@ -314,7 +314,7 @@ void save_gauge_field(const GaugeFieldT<T>& gf, const std::string& path,
 }
 
 template <class T = ComplexT>
-inline long load_gauge_field(GaugeFieldT<T>& gf, const std::string& path)
+inline long load_gauge_field(GaugeFieldT<T>& gf, const std::string& path, bool big_endianess=true)
 // assuming gf already initialized and have correct size;
 {
   TIMER_VERBOSE_FLOPS("load_gauge_field");
@@ -332,7 +332,11 @@ inline long load_gauge_field(GaugeFieldT<T>& gf, const std::string& path)
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<std::array<Complex, 6> > vt = gft.get_elems(xl);
-    to_from_big_endian_64(get_data(vt));
+    if(big_endianess){
+      to_from_big_endian_64(get_data(vt));
+    }else{
+      to_from_little_endian_64(get_data(vt));
+    }
     Vector<ColorMatrixT<T> > v = gf.get_elems(xl);
     for (int m = 0; m < geo.multiplicity; ++m) {
       v[m](0,0) = vt[m][0];
