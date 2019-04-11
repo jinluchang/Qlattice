@@ -481,6 +481,7 @@ inline double& get_default_budget()
 inline void check_time_limit(bool timer_display = false,
                              const double budget = get_default_budget())
 {
+  TIMER_VERBOSE("check_time_limit");
   if (timer_display) {
     Timer::display("check_time_limit");
   }

@@ -75,6 +75,10 @@ inline std::vector<int> get_trajs(const std::string& job_tag)
     for (int traj = 2700; traj <= 8500; traj += 100) {
       ret.push_back(traj);
     }
+  } else if (job_tag == "48I-0.00078") {
+    for (int traj = 500; traj <= 3000; traj += 10) {
+      ret.push_back(traj);
+    }
   } else if (job_tag == "24D-0.00107") {
     for (int traj = 1000; traj <= 4000; traj += 10) {
       ret.push_back(traj);
@@ -101,6 +105,8 @@ inline Coordinate get_total_site(const std::string& job_tag)
     return Coordinate(16,16,16,32);
   } else if (job_tag == "24I-0.01" or job_tag == "24D-0.00107") {
     return Coordinate(24,24,24,64);
+  } else if (job_tag == "48I-0.00078") {
+    return Coordinate(48,48,48,96);
   } else if (job_tag == "32D-0.00107" or job_tag == "32Dfine-0.0001") {
     return Coordinate(32,32,32,64);
   } else {
@@ -122,48 +128,100 @@ inline std::string get_config_fn(const std::string& job_tag, const int traj)
   if (job_tag == "free-4nt8") {
     qassert(false);
   } else if (job_tag == "16I-0.01") {
-    fn = get_env("HOME") + ssprintf("/qcdarchive/DWF_iwa_nf2p1/16c32/2plus1_16nt32_IWASAKI_b2p13_ls16_M1p8_ms0p04_mu0p01_rhmc_multi_timescale_ukqcd/ckpoint_lat.IEEE64BIG.%d", traj);
+    fn = get_env("HOME") +
+         ssprintf(
+             "/qcdarchive/DWF_iwa_nf2p1/16c32/"
+             "2plus1_16nt32_IWASAKI_b2p13_ls16_M1p8_ms0p04_mu0p01_rhmc_multi_"
+             "timescale_ukqcd/ckpoint_lat.IEEE64BIG.%d",
+             traj);
     if (does_file_exist_sync_node(fn)) {
       return fn;
     }
   } else if (job_tag == "24I-0.005") {
-    fn = get_env("HOME") + ssprintf("/qcdarchive/DWF_iwa_nf2p1/24c64/2plus1_24nt64_IWASAKI_b2p13_ls16_M1p8_ms0p04_mu0p005_rhmc_H_R_G/ckpoint_lat.IEEE64BIG.%d", traj);
+    fn = get_env("HOME") + ssprintf(
+                               "/qcdarchive/DWF_iwa_nf2p1/24c64/"
+                               "2plus1_24nt64_IWASAKI_b2p13_ls16_M1p8_ms0p04_"
+                               "mu0p005_rhmc_H_R_G/ckpoint_lat.IEEE64BIG.%d",
+                               traj);
     if (does_file_exist_sync_node(fn)) {
       return fn;
     }
   } else if (job_tag == "24I-0.01") {
-    fn = get_env("HOME") + ssprintf("/qcdarchive/DWF_iwa_nf2p1/24c64/2plus1_24nt64_IWASAKI_b2p13_ls16_M1p8_ms0p04_mu0p01_quo_hasenbusch_rhmc/ckpoint_lat.IEEE64BIG.%d", traj);
+    fn = get_env("HOME") +
+         ssprintf(
+             "/qcdarchive/DWF_iwa_nf2p1/24c64/"
+             "2plus1_24nt64_IWASAKI_b2p13_ls16_M1p8_ms0p04_mu0p01_quo_"
+             "hasenbusch_rhmc/ckpoint_lat.IEEE64BIG.%d",
+             traj);
     if (does_file_exist_sync_node(fn)) {
       return fn;
     }
-    fn = get_env("HOME") + ssprintf("/qcdarchive/DWF_iwa_nf2p1/24c64/2plus1_24nt64_IWASAKI_b2p13_ls16_M1p8_ms0p04_mu0p01_quo_hasenbusch_rhmc_ukqcd/ckpoint_lat.IEEE64BIG.%d", traj);
+    fn = get_env("HOME") +
+         ssprintf(
+             "/qcdarchive/DWF_iwa_nf2p1/24c64/"
+             "2plus1_24nt64_IWASAKI_b2p13_ls16_M1p8_ms0p04_mu0p01_quo_"
+             "hasenbusch_rhmc_ukqcd/ckpoint_lat.IEEE64BIG.%d",
+             traj);
     if (does_file_exist_sync_node(fn)) {
       return fn;
     }
-    fn = get_env("HOME") + ssprintf("/qcdarchive/DWF_iwa_nf2p1/24c64/2plus1_24nt64_IWASAKI_b2p13_ls16_M1p8_ms0p04_mu0p01_rhmc_H_R_G/ckpoint_lat.IEEE64BIG.%d", traj);
+    fn = get_env("HOME") + ssprintf(
+                               "/qcdarchive/DWF_iwa_nf2p1/24c64/"
+                               "2plus1_24nt64_IWASAKI_b2p13_ls16_M1p8_ms0p04_"
+                               "mu0p01_rhmc_H_R_G/ckpoint_lat.IEEE64BIG.%d",
+                               traj);
+    if (does_file_exist_sync_node(fn)) {
+      return fn;
+    }
+  } else if (job_tag == "48I-0.00078") {
+    fn =
+        get_env("HOME") +
+        ssprintf(
+            "/qcdarchive-ljin/48nt96-ainv1.73gev-mpi139mev-ls24/ckpoint_lat.%d",
+            traj);
     if (does_file_exist_sync_node(fn)) {
       return fn;
     }
   } else if (job_tag == "24D-0.00107") {
-    fn = get_env("HOME") + ssprintf("/qcddata-chulwoo/DWF/2+1f/24nt64/IWASAKI+DSDR/b1.633/ls24/M1.8/ms0.0850/ml0.00107/evol0/configurations/ckpoint_lat.%d", traj);
+    fn = get_env("HOME") +
+         ssprintf(
+             "/qcddata-chulwoo/DWF/2+1f/24nt64/IWASAKI+DSDR/b1.633/ls24/M1.8/"
+             "ms0.0850/ml0.00107/evol0/configurations/ckpoint_lat.%d",
+             traj);
     if (does_file_exist_sync_node(fn)) {
       return fn;
     }
-    fn = get_env("HOME") + ssprintf("/qcddata-chulwoo/DWF/2+1f/24nt64/IWASAKI+DSDR/b1.633/ls24/M1.8/ms0.0850/ml0.00107/evol1/configurations/ckpoint_lat.%d", traj);
+    fn = get_env("HOME") +
+         ssprintf(
+             "/qcddata-chulwoo/DWF/2+1f/24nt64/IWASAKI+DSDR/b1.633/ls24/M1.8/"
+             "ms0.0850/ml0.00107/evol1/configurations/ckpoint_lat.%d",
+             traj);
     if (does_file_exist_sync_node(fn)) {
       return fn;
     }
-    fn = get_env("HOME") + ssprintf("/qcddata-chulwoo/DWF/2+1f/24nt64/IWASAKI+DSDR/b1.633/ls24/M1.8/ms0.0850/ml0.00107/evol2/configurations/ckpoint_lat.%d", traj);
+    fn = get_env("HOME") +
+         ssprintf(
+             "/qcddata-chulwoo/DWF/2+1f/24nt64/IWASAKI+DSDR/b1.633/ls24/M1.8/"
+             "ms0.0850/ml0.00107/evol2/configurations/ckpoint_lat.%d",
+             traj);
     if (does_file_exist_sync_node(fn)) {
       return fn;
     }
   } else if (job_tag == "32D-0.00107") {
-    fn = get_env("HOME") + ssprintf("/qcddata-chulwoo/DWF/2+1f/32nt64/IWASAKI+DSDR/b1.633/ls24/M1.8/ms0.0850/ml0.00107/evol0/configurations/ckpoint_lat.%d", traj);
+    fn = get_env("HOME") +
+         ssprintf(
+             "/qcddata-chulwoo/DWF/2+1f/32nt64/IWASAKI+DSDR/b1.633/ls24/M1.8/"
+             "ms0.0850/ml0.00107/evol0/configurations/ckpoint_lat.%d",
+             traj);
     if (does_file_exist_sync_node(fn)) {
       return fn;
     }
   } else if (job_tag == "32Dfine-0.0001") {
-    fn = get_env("HOME") + ssprintf("/qcddata-chulwoo/DWF/2+1f/32nt64/IWASAKI+DSDR/b1.75/ls32/ms0.045/mu0.0001/evol0/configurations/ckpoint_lat.%d", traj);
+    fn = get_env("HOME") +
+         ssprintf(
+             "/qcddata-chulwoo/DWF/2+1f/32nt64/IWASAKI+DSDR/b1.75/ls32/ms0.045/"
+             "mu0.0001/evol0/configurations/ckpoint_lat.%d",
+             traj);
     if (does_file_exist_sync_node(fn)) {
       return fn;
     }
@@ -203,7 +261,29 @@ inline std::vector<FermionAction> get_fermion_actions(const std::string& job_tag
   } else if (job_tag == "24I-0.01" or job_tag == "16I-0.01") {
     fas.push_back(FermionAction(0.01, 16, 1.8));
     fas.push_back(FermionAction(0.04, 16, 1.8));
-  } else if (job_tag == "24D-0.00107" or job_tag == "32D-0.00107" or job_tag == "48D-0.00107") {
+  } else if (job_tag == "48I-0.00078") {
+    fas.push_back(FermionAction(0.00078, 10, 1.8, (1.5 + 0.5)*2.4, true, true));
+    {
+      std::vector<Complex> bs(10, 0);
+      bs[0] = 8.4292038368159705e-01;
+      bs[1] = 9.2289979238280184e-01;
+      bs[2] = 1.1017200769981794e+00;
+      bs[3] = 1.4219097980542994e+00;
+      bs[4] = 1.9620523417564424e+00;
+      bs[5] = 2.8654191667525488e+00;
+      bs[6] = 4.4659153528626341e+00;
+      bs[7] = 5.5498080139636414e+00;
+      bs[8] = Complex(4.9320961582039766e+00, -3.5559998543638791e+00);
+      bs[9] = Complex(4.9320961582039766e+00, 3.5559998543638791e+00);
+      for (int i = 0; i < (int)bs.size(); i++) {
+        fas[0].bs[i] = bs[i];
+        fas[0].cs[i] = fas[0].bs[i] - 1.0;
+      }
+    }
+    fas.push_back(FermionAction(0.0362, 24, 1.8, 1.5 + 0.5, true, false));
+    fas.push_back(FermionAction(0.00078, 24, 1.8, 1.5 + 0.5, true, false));
+  } else if (job_tag == "24D-0.00107" or job_tag == "32D-0.00107" or
+             job_tag == "48D-0.00107") {
     fas.push_back(FermionAction(0.00107, 12, 1.8, (2.5+1.5)*2, true, true));
     {
       std::vector<Complex> omega(12, 0);
@@ -246,6 +326,8 @@ inline LancArg get_lanc_arg(const std::string& job_tag)
     // la = LancArg(5.5, 0.50, 200, 600, 510, 500);
   } else if (job_tag == "24I-0.01") {
     la = LancArg(5.5, 0.18, 200, 1100, 700, 600);
+  } else if (job_tag == "48I-0.0078") {
+    la = LancArg(2.5, 0.022, 200, 2600, 2100, 2000);
   } else if (job_tag == "24D-0.00107") {
     la = LancArg(sqrt(5.5), sqrt(0.000684), 200, 2600, 2100, 2000);
   } else if (job_tag == "32D-0.00107") {

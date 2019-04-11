@@ -102,7 +102,6 @@ QLAT_END_NAMESPACE
 
 int main(int argc, char* argv[])
 {
-
   using namespace qlat;
   const std::array<std::string, 1> job_tags =
       make_array<std::string>("free-4nt8");
