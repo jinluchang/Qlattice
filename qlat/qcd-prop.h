@@ -136,7 +136,7 @@ void fermion_field_4d_from_5d(FermionField4dT<T>& ff4d,
 
 template <class Inverter, class T>
 inline void inverse_dwf(FermionField4dT<T>& sol, const FermionField4dT<T>& src,
-                        const Inverter& inv)
+                        const Inverter& inv, const int ls_ = 0)
 // sol do not need to be initialized
 // inv.geo must be the geometry of the fermion field
 // inverse(sol5d, src5d, inv) perform the inversion
@@ -145,8 +145,8 @@ inline void inverse_dwf(FermionField4dT<T>& sol, const FermionField4dT<T>& src,
   const Geometry& geo = src.geo;
   qassert(check_matching_geo(geo, inv.geo));
   sol.init(geo);
-  const Geometry geo_ls = geo_reform(inv.geo, inv.fa.ls, 0);
-  const int ls = geo_ls.multiplicity;
+  const int ls = ls_ != 0 ? ls_ : inv.fa.ls;
+  const Geometry geo_ls = geo_reform(inv.geo, ls, 0);
   FermionField5dT<T> sol5d, src5d;
   sol5d.init(geo_ls);
   src5d.init(geo_ls);

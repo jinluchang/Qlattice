@@ -85,6 +85,8 @@ inline bool compute(const std::string& job_tag)
     //   continue;
     // }
     if (obtain_lock(get_job_path(job_tag, traj) + "-lock")) {
+      displayln_info(fname + ssprintf(": Start computing '%s'.",
+                                      get_job_path(job_tag, traj).c_str()));
       compute_traj(job_tag, traj);
       release_lock();
       Timer::display();

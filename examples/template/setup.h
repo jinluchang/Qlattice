@@ -326,7 +326,7 @@ inline LancArg get_lanc_arg(const std::string& job_tag)
     // la = LancArg(5.5, 0.50, 200, 600, 510, 500);
   } else if (job_tag == "24I-0.01") {
     la = LancArg(5.5, 0.18, 200, 1100, 700, 600);
-  } else if (job_tag == "48I-0.0078") {
+  } else if (job_tag == "48I-0.00078") {
     la = LancArg(2.5, 0.022, 200, 2600, 2100, 2000);
   } else if (job_tag == "24D-0.00107") {
     la = LancArg(sqrt(5.5), sqrt(0.000684), 200, 2600, 2100, 2000);
@@ -340,15 +340,21 @@ inline LancArg get_lanc_arg(const std::string& job_tag)
   return la;
 }
 
+inline std::string make_low_modes_path(const std::string& job_tag, const int traj)
+{
+  qmkdir_info("lancs");
+  qmkdir_info(ssprintf("lancs/%s", job_tag.c_str()));
+  qmkdir_info(ssprintf("lancs/%s/qcdtraj=%d", job_tag.c_str(), traj));
+  return ssprintf("lancs/%s/qcdtraj=%d/huge-data-lanc", job_tag.c_str(), traj);
+}
+
 inline std::string get_low_modes_path(const std::string& job_tag, const int traj)
 {
+  TIMER_VERBOSE("get_low_modes_path");
   if (job_tag == "free-4nt8") {
     qassert(false);
     return "";
   } else {
-    qmkdir_info("lancs");
-    qmkdir_info(ssprintf("lancs/%s", job_tag.c_str()));
-    qmkdir_sync_node(ssprintf("lancs/%s/qcdtraj=%d", job_tag.c_str(), traj));
     return ssprintf("lancs/%s/qcdtraj=%d/huge-data-lanc", job_tag.c_str(), traj);
   }
 }
