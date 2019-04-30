@@ -1,6 +1,6 @@
 SHELL=/bin/bash
 
-CXX=mpic++ -std=c++0x -fopenmp -march=native -Ofast -Wall
+CXX=mpic++ -std=c++0x -fopenmp -march=native -O2 -Wall
 # -DQLAT_NO_DEFAULT_TYPE
 # -DSKIP_ASSERT
 # -DOLD_CPP
