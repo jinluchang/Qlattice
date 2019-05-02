@@ -83,12 +83,12 @@ struct RngState {
   RngState(const long seed) { reset(*this, seed); }
   RngState(const RngState& rs0, const std::string& sindex)
   {
-    std::memset(this, 0, sizeof(RngState));
+    std::memset((void*)this, 0, sizeof(RngState));
     splitRngState(*this, rs0, sindex);
   }
   RngState(const RngState& rs0, const long sindex)
   {
-    std::memset(this, 0, sizeof(RngState));
+    std::memset((void*)this, 0, sizeof(RngState));
     splitRngState(*this, rs0, sindex);
   }
   //
@@ -226,7 +226,7 @@ inline bool operator!=(const RngState& rs1, const RngState& rs2)
 
 inline void reset(RngState& rs)
 {
-  std::memset(&rs, 0, sizeof(RngState));
+  std::memset((void*)&rs, 0, sizeof(RngState));
   rs.numBytes = 0;
   sha256::setInitialHash(rs.hash);
   rs.type = ULONG_MAX;
