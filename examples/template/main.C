@@ -9,13 +9,9 @@ typedef InverterDomainWall Inverter;
 inline bool compute_traj_do(const std::string& job_tag, const int traj)
 {
   TIMER_VERBOSE("compute_traj_do");
-  const std::string job_path = get_job_path(job_tag, traj);
-  qmkdir_info(job_path);
-  qmkdir_sync_node(job_path + "/logs");
-  switch_monitor_file_info(job_path +
-                           ssprintf("/logs/%010ld.txt", get_log_idx()));
   displayln_info(fname +
                  ssprintf(": job_tag='%s' ; traj=%d", job_tag.c_str(), traj));
+  const std::string job_path = get_job_path(job_tag, traj);
   const RngState rs = RngState("seed").split(job_tag).split(traj);
   const Coordinate total_site = get_total_site(job_tag);
   const Geometry geo = get_geo(job_tag);
@@ -68,6 +64,8 @@ inline bool compute_traj_do(const std::string& job_tag, const int traj)
 inline bool compute_traj(const std::string& job_tag, const int traj)
 {
   TIMER_VERBOSE("compute_traj");
+  displayln_info(fname + ssprintf(": Checking '%s'.",
+                                  get_job_path(job_tag, traj).c_str()));
   if (does_file_exist_sync_node(get_job_path(job_tag, traj) +
                                 "/checkpoint.txt")) {
     displayln_info(fname + ssprintf(": Finished '%s'.",
@@ -83,7 +81,14 @@ inline bool compute_traj(const std::string& job_tag, const int traj)
   if (obtain_lock(get_job_path(job_tag, traj) + "-lock")) {
     displayln_info(fname + ssprintf(": Start computing '%s'.",
                                     get_job_path(job_tag, traj).c_str()));
+    const std::string job_path = get_job_path(job_tag, traj);
+    qmkdir_info(job_path);
+    qmkdir_sync_node(job_path + "/logs");
+    switch_monitor_file_info(job_path +
+                             ssprintf("/logs/%010ld.txt", get_log_idx()));
     const bool is_failed = compute_traj_do(job_tag, traj);
+    switch_monitor_file_info(get_job_path(job_tag) +
+                             ssprintf("/logs/%010ld.txt", get_log_idx()));
     release_lock();
     Timer::display();
     return is_failed;
@@ -119,11 +124,12 @@ int main(int argc, char* argv[])
   begin(&argc, &argv);
   setup_log_idx();
   for (int k = 0; k < (int)job_tags.size(); ++k) {
-    if (not compute(job_tags[k])) {
-      displayln_info("program finished successfully.");
+    const std::string& job_tag = job_tags[k];
+    if (not compute(job_tag)) {
+      Timer::display();
+      displayln_info(ssprintf("program finished successfully for '%s'.", job_tag.c_str()));
     }
   }
-  Timer::display();
   end();
   return 0;
 }
