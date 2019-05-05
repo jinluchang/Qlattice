@@ -6,9 +6,9 @@ typedef InverterDomainWall Inverter;
 
 // -----------------------------------------------------------------------------------
 
-inline bool compute_traj(const std::string& job_tag, const int traj)
+inline bool compute_traj_do(const std::string& job_tag, const int traj)
 {
-  TIMER_VERBOSE("compute_traj");
+  TIMER_VERBOSE("compute_traj_do");
   const std::string job_path = get_job_path(job_tag, traj);
   qmkdir_info(job_path);
   qmkdir_sync_node(job_path + "/logs");
@@ -65,37 +65,46 @@ inline bool compute_traj(const std::string& job_tag, const int traj)
   return false;
 }
 
+inline bool compute_traj(const std::string& job_tag, const int traj)
+{
+  TIMER_VERBOSE("compute_traj");
+  if (does_file_exist_sync_node(get_job_path(job_tag, traj) +
+                                "/checkpoint.txt")) {
+    displayln_info(fname + ssprintf(": Finished '%s'.",
+                                    get_job_path(job_tag, traj).c_str()));
+    return false;
+  }
+  // if (does_file_exist_sync_node(get_low_modes_path(job_tag, traj) +
+  //                               "/checkpoint")) {
+  //   displayln_info(fname + ssprintf(": No low modes '%s'.",
+  //                                   get_job_path(job_tag, traj).c_str()));
+  //   return false;
+  // }
+  if (obtain_lock(get_job_path(job_tag, traj) + "-lock")) {
+    displayln_info(fname + ssprintf(": Start computing '%s'.",
+                                    get_job_path(job_tag, traj).c_str()));
+    const bool is_failed = compute_traj_do(job_tag, traj);
+    release_lock();
+    Timer::display();
+    return is_failed;
+  } else {
+    displayln_info(fname + ssprintf(": Cannot obtain lock '%s'.",
+                                    get_job_path(job_tag, traj).c_str()));
+    return true;
+  }
+}
+
 inline bool compute(const std::string& job_tag)
 {
   TIMER_VERBOSE("compute");
   setup(job_tag);
+  bool is_failed = false;
   const std::vector<int> trajs = get_trajs(job_tag);
   for (int i = 0; i < (int)trajs.size(); ++i) {
     const int traj = trajs[i];
-    if (does_file_exist_sync_node(get_job_path(job_tag, traj) +
-                                  "/checkpoint.txt")) {
-      displayln_info(fname + ssprintf(": Finished '%s'.",
-                                      get_job_path(job_tag, traj).c_str()));
-      continue;
-    }
-    // if (does_file_exist_sync_node(get_low_modes_path(job_tag, traj) +
-    //                               "/checkpoint")) {
-    //   displayln_info(fname + ssprintf(": No low modes '%s'.",
-    //                                   get_job_path(job_tag, traj).c_str()));
-    //   continue;
-    // }
-    if (obtain_lock(get_job_path(job_tag, traj) + "-lock")) {
-      displayln_info(fname + ssprintf(": Start computing '%s'.",
-                                      get_job_path(job_tag, traj).c_str()));
-      compute_traj(job_tag, traj);
-      release_lock();
-      Timer::display();
-    } else {
-      displayln_info(fname + ssprintf(": Cannot obtain lock '%s'.",
-                                      get_job_path(job_tag, traj).c_str()));
-    }
+    is_failed = is_failed or compute_traj(job_tag, traj);
   }
-  return false;
+  return is_failed;
 }
 
 // -----------------------------------------------------------------------------------
