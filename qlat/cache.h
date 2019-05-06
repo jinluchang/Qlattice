@@ -16,16 +16,15 @@ struct Cache {
   long idx;
   long limit;
   //
-  Cache(const std::string& name_ = "Cache")
+  Cache(const std::string& name_ = "Cache", const long limit_ = 16)
   {
-    name = name_;
-    idx = 0;
-    limit = 16;
+    init(name_, limit_);
   }
-  Cache(const std::string& name_, const long limit_)
+  //
+  void init(const std::string& name_, const long limit_)
   {
+    clear();
     name = name_;
-    idx = 0;
     limit = limit_;
   }
   //
@@ -87,7 +86,11 @@ struct Cache {
     }
   }
   //
-  void clear() { m.clear(); }
+  void clear()
+  {
+    idx = 0;
+    m.clear();
+  }
 };
 
 QLAT_END_NAMESPACE

@@ -36,9 +36,6 @@ inline std::string get_job_path(const std::string& job_tag, const int traj)
 
 inline void setup(const std::string& job_tag)
 {
-  qmkdir_info(get_job_path(job_tag));
-  qmkdir_info(get_job_path(job_tag) + "/logs");
-  switch_monitor_file_info(get_job_path(job_tag) + ssprintf("/logs/%010ld.txt", get_log_idx()));
   Timer::max_function_name_length_shown() = 50;
   Timer::max_call_times_for_always_show_info() = 3;
   Timer::minimum_duration_for_show_stop_info() = 60;

@@ -64,6 +64,11 @@ inline bool compute_traj_do(const std::string& job_tag, const int traj)
 inline bool compute_traj(const std::string& job_tag, const int traj)
 {
   TIMER_VERBOSE("compute_traj");
+  qmkdir_info(get_job_path(job_tag));
+  qmkdir_info(get_job_path(job_tag) + "/logs");
+  switch_monitor_file_info(get_job_path(job_tag) +
+                           ssprintf("/logs/%010ld.txt", get_log_idx()));
+  setup(job_tag);
   displayln_info(fname + ssprintf(": Checking '%s'.",
                                   get_job_path(job_tag, traj).c_str()));
   if (does_file_exist_sync_node(get_job_path(job_tag, traj) +
@@ -87,10 +92,10 @@ inline bool compute_traj(const std::string& job_tag, const int traj)
     switch_monitor_file_info(job_path +
                              ssprintf("/logs/%010ld.txt", get_log_idx()));
     const bool is_failed = compute_traj_do(job_tag, traj);
+    Timer::display();
     switch_monitor_file_info(get_job_path(job_tag) +
                              ssprintf("/logs/%010ld.txt", get_log_idx()));
     release_lock();
-    Timer::display();
     return is_failed;
   } else {
     displayln_info(fname + ssprintf(": Cannot obtain lock '%s'.",
@@ -102,7 +107,6 @@ inline bool compute_traj(const std::string& job_tag, const int traj)
 inline bool compute(const std::string& job_tag)
 {
   TIMER_VERBOSE("compute");
-  setup(job_tag);
   bool is_failed = false;
   const std::vector<int> trajs = get_trajs(job_tag);
   for (int i = 0; i < (int)trajs.size(); ++i) {
