@@ -203,6 +203,16 @@ inline std::vector<double> read_doubles(const std::string& str)
   return ret;
 }
 
+inline std::vector<long> read_longs(const std::string& str)
+{
+  const std::vector<std::string> strs = split_line_with_spaces(str);
+  std::vector<long> ret(strs.size());
+  for (size_t i = 0; i < strs.size(); ++i) {
+    ret[i] = read_long(strs[i]);
+  }
+  return ret;
+}
+
 inline FILE*& get_output_file()
 {
   static FILE* out = stdout;
