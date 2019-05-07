@@ -7,6 +7,7 @@ tests = qcd-utils-tests \
 		field-rng-tests \
 		benchmark \
 		dist-io \
+		heatbath \
 		template
 
 all:
