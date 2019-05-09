@@ -81,9 +81,9 @@ inline void gf_apply_gauge_transformation(GaugeField& gf, const GaugeField& gf0,
   gf_apply_gauge_transformation_no_comm(gf, gf0, gt1);
 }
 
-inline void gt_inverse(GaugeTransform& gt, const GaugeTransform& gt0)
+inline void gt_invert(GaugeTransform& gt, const GaugeTransform& gt0)
 {
-  TIMER("gt_inverse");
+  TIMER("gt_invert");
   gt.init(geo_resize(gt0.geo));
   const Geometry& geo = gt.geo;
   qassert(is_matching_geo_mult(gt.geo, gt0.geo));
@@ -216,8 +216,8 @@ inline void make_tree_gauge_transformation(
 
 template <class Inverter>
 struct GaugeTransformInverter
-// gt_inv should be: gt_inverse(gt_inv, gt);
-// the result should be the same as inverse with gf_fix where
+// gt_inv should be: gt_invert(gt_inv, gt);
+// the result should be the same as invert with gf_fix where
 // gf_fix is: gf_apply_gauge_transformation(gf_fix, gf, gt);
 {
   Geometry geo;
@@ -247,7 +247,7 @@ struct GaugeTransformInverter
   {
     inv.init(inv_);
     gt = gt_;
-    gt_inverse(gt_inv, gt);
+    gt_invert(gt_inv, gt);
     geo = inv().geo;
     fa = inv().fa;
     gf = inv().gf;
@@ -255,15 +255,15 @@ struct GaugeTransformInverter
 };
 
 template <class Inverter>
-inline void inverse(FermionField4d& out, const FermionField4d& in,
+inline void invert(FermionField4d& out, const FermionField4d& in,
                     const GaugeTransformInverter<Inverter>& gtinv)
 {
-  TIMER_VERBOSE("inverse(out,in,gt_inv)");
+  TIMER_VERBOSE("invert(out,in,gt_inv)");
   const Inverter& inv = gtinv.inv();
   const Geometry geo = geo_reform(inv.geo);
   FermionField4d src;
   ff_apply_gauge_transformation(src, in, gtinv.gt_inv);
-  inverse(out, src, inv);
+  invert(out, src, inv);
   ff_apply_gauge_transformation(out, out, gtinv.gt);
 }
 
@@ -274,8 +274,8 @@ void set_wall_src_propagator(Propagator4d& prop, const int tslice,
                              const CoordinateD& lmom, const Inverter& inv,
                              const GaugeTransform& gt,
                              const GaugeTransform& gt_inv)
-// gt_inv should be: gt_inverse(gt_inv, gt);
-// the result should be the same as inverse with gf_fix where
+// gt_inv should be: gt_invert(gt_inv, gt);
+// the result should be the same as invert with gf_fix where
 // gf_fix is: gf_apply_gauge_transformation(gf_fix, gf, gt);
 {
   TIMER_VERBOSE("set_wall_src_propagator");
@@ -290,7 +290,7 @@ void set_wall_src_propagator(Propagator4d& prop, const int tslice,
     set_tslice_mom_src_fermion_field(src, tslice, lmom, cs);
     ff_apply_gauge_transformation(src, src, gt_inv);
     set_zero(sol);
-    inverse(sol, src, inv);
+    invert(sol, src, inv);
     ff_apply_gauge_transformation(sol, sol, gt);
     set_propagator_col_from_fermion_field(prop, cs, sol);
   }

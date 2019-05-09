@@ -6,7 +6,7 @@
 
 QLAT_START_NAMESPACE
 
-inline ColorMatrix color_matrix_sub_inverse(const ColorMatrix& x, const int ind)
+inline ColorMatrix color_matrix_sub_invert(const ColorMatrix& x, const int ind)
 // get su2 submatrix of x and return the su3 matrix that
 // has the inverse of this matrix in the relevant row and column
 {
@@ -55,7 +55,7 @@ inline ColorMatrix color_matrix_su_projection(const ColorMatrix& x,
     // loop over su2 subgroups
     double diff = 0.0;
     for (int j = 0; j < 3; j++) {
-      const ColorMatrix inv = color_matrix_sub_inverse(tmp, j);
+      const ColorMatrix inv = color_matrix_sub_invert(tmp, j);
       // y  .DotMEqual( inv, ycopy );
       y = inv * y;
       // tmp.DotMEqual( y, xdag );
