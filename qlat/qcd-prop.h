@@ -135,13 +135,13 @@ void fermion_field_4d_from_5d(FermionField4dT<T>& ff4d,
 }
 
 template <class Inverter, class T>
-inline void inverse_dwf(FermionField4dT<T>& sol, const FermionField4dT<T>& src,
+inline void invert_dwf(FermionField4dT<T>& sol, const FermionField4dT<T>& src,
                         const Inverter& inv, const int ls_ = 0)
 // sol do not need to be initialized
 // inv.geo must be the geometry of the fermion field
-// inverse(sol5d, src5d, inv) perform the inversion
+// invert(sol5d, src5d, inv) perform the inversion
 {
-  TIMER_VERBOSE("inverse_dwf(4d,4d,inv)");
+  TIMER_VERBOSE("invert_dwf(4d,4d,inv)");
   const Geometry& geo = src.geo;
   qassert(check_matching_geo(geo, inv.geo));
   sol.init(geo);
@@ -152,24 +152,24 @@ inline void inverse_dwf(FermionField4dT<T>& sol, const FermionField4dT<T>& src,
   src5d.init(geo_ls);
   fermion_field_5d_from_4d(src5d, src, 0, ls - 1);
   fermion_field_5d_from_4d(sol5d, sol, ls - 1, 0);
-  inverse(sol5d, src5d, inv);
+  invert(sol5d, src5d, inv);
   fermion_field_4d_from_5d(sol, sol5d, ls - 1, 0);
 }
 
 template <class Inverter, class T>
-void inverse(Propagator4dT<T>& sol, const Propagator4dT<T>& src,
+void invert(Propagator4dT<T>& sol, const Propagator4dT<T>& src,
              const Inverter& inv)
 // sol do not need to be initialized
 // inv.geo must be the geometry of the fermion field
-// inverse(4d, 4d, inv) perform the inversion
+// invert(4d, 4d, inv) perform the inversion
 {
-  TIMER_VERBOSE("inverse(p4d,p4d,inv)");
+  TIMER_VERBOSE("invert(p4d,p4d,inv)");
   const Geometry geo = geo_reform(src.geo);
   sol.init(geo);
   FermionField4dT<T> ff_sol, ff_src;
   for (int j = 0; j < 4 * NUM_COLOR; ++j) {
     set_fermion_field_from_propagator_col(ff_src, src, j);
-    inverse(ff_sol, ff_src, inv);
+    invert(ff_sol, ff_src, inv);
     set_propagator_col_from_fermion_field(sol, j, ff_sol);
   }
 }
@@ -263,7 +263,7 @@ void set_point_src_propagator(Propagator4dT<T>& prop, const Inverter& inv,
   for (int cs = 0; cs < 4 * NUM_COLOR; ++cs) {
     set_point_src_fermion_field(src, xg, cs, value);
     set_zero(sol);
-    inverse(sol, src, inv);
+    invert(sol, src, inv);
     set_propagator_col_from_fermion_field(prop, cs, sol);
   }
 }
@@ -329,7 +329,7 @@ inline void set_wall_src_propagator(Propagator4d& prop, const Inverter& inv,
   for (int cs = 0; cs < 4 * NUM_COLOR; ++cs) {
     set_wall_src_fermion_field(src, tslice, lmom, cs);
     set_zero(sol);
-    inverse(sol, src, inv);
+    invert(sol, src, inv);
     set_propagator_col_from_fermion_field(prop, cs, sol);
   }
 }
@@ -382,7 +382,7 @@ inline void set_mom_src_propagator(Propagator4d& prop, Inverter& inv,
   for (int cs = 0; cs < 4 * NUM_COLOR; ++cs) {
     set_mom_src_fermion_field(src, lmom, cs);
     set_zero(sol);
-    inverse(sol, src, inv);
+    invert(sol, src, inv);
     set_propagator_col_from_fermion_field(prop, cs, sol);
   }
 }
@@ -442,7 +442,7 @@ inline void set_tslice_mom_src_propagator(Propagator4d& prop, const int tslice,
   for (int cs = 0; cs < 4 * NUM_COLOR; ++cs) {
     set_tslice_mom_src_fermion_field(src, tslice, lmom, cs);
     set_zero(sol);
-    inverse(sol, src, inverter);
+    invert(sol, src, inverter);
     set_propagator_col_from_fermion_field(prop, cs, sol);
   }
 }

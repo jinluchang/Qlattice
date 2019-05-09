@@ -271,12 +271,12 @@ inline void multiply_m_grid(FermionField5d& out, const FermionField5d& in,
   grid_convert(out, gout);
 }
 
-inline void inverse_grid_no_dminus(FermionField5d& sol,
+inline void invert_grid_no_dminus(FermionField5d& sol,
                                    const FermionField5d& src,
                                    const InverterDomainWallGrid& inv)
 // sol do not need to be initialized
 {
-  TIMER_VERBOSE("inverse_grid_no_dminus(5d,5d,InvGrid)");
+  TIMER_VERBOSE("invert_grid_no_dminus(5d,5d,InvGrid)");
   sol.init(geo_resize(src.geo));
   using namespace Grid;
   using namespace Grid::QCD;
@@ -284,7 +284,7 @@ inline void inverse_grid_no_dminus(FermionField5d& sol,
   LatticeFermionF gsrc(FGrid), gsol(FGrid);
   grid_convert(gsrc, src);
   grid_convert(gsol, sol);
-  if (is_checking_inverse()) {
+  if (is_checking_invert()) {
     FermionField5d ff;
     ff.init(geo_resize(src.geo));
     grid_convert(ff, gsrc);
@@ -297,7 +297,7 @@ inline void inverse_grid_no_dminus(FermionField5d& sol,
   SchurRedBlackDiagMooeeSolve<LatticeFermionF> SchurSolver(CG);
   SchurSolver(*inv.Ddwf, gsrc, gsol);
   grid_convert(sol, gsol);
-  if (is_checking_inverse()) {
+  if (is_checking_invert()) {
     FermionField5d src1;
     src1.init(geo_resize(src.geo));
     multiply_m(src1, sol, inv);
@@ -332,16 +332,16 @@ inline long cg_with_herm_sym_2(FermionField5d& sol, const FermionField5d& src,
   return iter;
 }
 
-inline void inverse(FermionField5d& sol, const FermionField5d& src,
+inline void invert(FermionField5d& sol, const FermionField5d& src,
                     const InverterDomainWallGrid& inv)
 {
-  inverse_with_cg(sol, src, inv, cg_with_herm_sym_2);
+  invert_with_cg(sol, src, inv, cg_with_herm_sym_2);
 }
 
-inline void inverse(FermionField4d& sol, const FermionField4d& src,
+inline void invert(FermionField4d& sol, const FermionField4d& src,
                     const InverterDomainWallGrid& inv)
 {
-  inverse_dwf(sol, src, inv);
+  invert_dwf(sol, src, inv);
 }
 
 QLAT_END_NAMESPACE

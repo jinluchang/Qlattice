@@ -6,7 +6,7 @@
 
 QLAT_START_NAMESPACE
 
-inline bool& is_checking_inverse()
+inline bool& is_checking_invert()
 // qlat parameter
 {
   static bool b = true;
@@ -1356,12 +1356,12 @@ inline long cg_with_f(
 }
 
 template <class Inv>
-inline void inverse_with_cg(FermionField5d& out, const FermionField5d& in,
+inline void invert_with_cg(FermionField5d& out, const FermionField5d& in,
                             const Inv& inv,
                             long cg(FermionField5d&, const FermionField5d&,
                                     const Inv&, const double, const long))
 {
-  TIMER_VERBOSE_FLOPS("inverse_with_cg(5d,5d,inv,cg)");
+  TIMER_VERBOSE_FLOPS("invert_with_cg(5d,5d,inv,cg)");
   out.init(geo_resize(in.geo));
   FermionField5d dm_in;
   if (inv.fa.is_multiplying_dminus) {
@@ -1431,7 +1431,7 @@ inline void inverse_with_cg(FermionField5d& out, const FermionField5d& in,
   } else {
     qassert(false);
   }
-  if (is_checking_inverse()) {
+  if (is_checking_invert()) {
     FermionField5d tmp;
     multiply_m(tmp, out, inv);
     tmp -= dm_in;
@@ -1452,16 +1452,16 @@ inline long cg_with_herm_sym_2(FermionField5d& sol, const FermionField5d& src,
   return iter;
 }
 
-inline void inverse(FermionField5d& out, const FermionField5d& in,
+inline void invert(FermionField5d& out, const FermionField5d& in,
                     const InverterDomainWall& inv)
 {
-  inverse_with_cg(out, in, inv, cg_with_herm_sym_2);
+  invert_with_cg(out, in, inv, cg_with_herm_sym_2);
 }
 
-inline void inverse(FermionField4d& out, const FermionField4d& in,
+inline void invert(FermionField4d& out, const FermionField4d& in,
                     const InverterDomainWall& inv)
 {
-  inverse_dwf(out, in, inv);
+  invert_dwf(out, in, inv);
 }
 
 inline double find_max_eigen_value_hermop_sym2(const InverterDomainWall& inv,

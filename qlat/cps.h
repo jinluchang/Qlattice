@@ -445,11 +445,11 @@ inline void setup_inverter(InverterDomainWallCPS& inverter,
   }
 }
 
-inline void inverse(FermionField5d& sol, const FermionField5d& src,
+inline void invert(FermionField5d& sol, const FermionField5d& src,
                     const InverterDomainWallCPS& inverter)
 // sol do not need to be initialized
 {
-  TIMER_VERBOSE("inverse(5d,5d,IDWCPS)");
+  TIMER_VERBOSE("invert(5d,5d,IDWCPS)");
   const Geometry& geo = src.geo;
   sol.init(geo);
   cps::FermionField5d csol, csrc;
@@ -464,10 +464,10 @@ inline void inverse(FermionField5d& sol, const FermionField5d& src,
   field_convert(sol, csol);
 }
 
-inline void inverse(FermionField4d& sol, const FermionField4d& src,
+inline void invert(FermionField4d& sol, const FermionField4d& src,
                     const InverterDomainWallCPS& inverter)
 {
-  inverse_dwf(sol, src, inverter);
+  invert_dwf(sol, src, inverter);
 }
 
 QLAT_END_NAMESPACE

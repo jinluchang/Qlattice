@@ -222,11 +222,11 @@ void simple_tests()
   multiply_m(tmp, ff5dout, inv);
   displayln_info(ssprintf("tmp qnorm = %E", qnorm(tmp)));
   FermionField5d sol;
-  inverse(sol, tmp, inv);
+  invert(sol, tmp, inv);
   multiply_d_minus(tmp, tmp, inv);
   multiply_m(sol, sol, inv);
   sol -= tmp;
-  displayln_info(ssprintf("inverse diff qnorm = %E", qnorm(sol)));
+  displayln_info(ssprintf("invert diff qnorm = %E", qnorm(sol)));
 }
 
 int main(int argc, char* argv[])
