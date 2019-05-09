@@ -157,15 +157,9 @@ void grid_convert(Grid::QCD::LatticeFermionF& gff, const FermionField5d& ff)
   }
 }
 
-struct InverterDomainWallGrid : InverterDomainWall {
-  Grid::GridCartesian* UGrid = NULL;
-  Grid::GridRedBlackCartesian* UrbGrid = NULL;
-  Grid::GridCartesian* FGrid = NULL;
-  Grid::GridRedBlackCartesian* FrbGrid = NULL;
-  Grid::QCD::LatticeGaugeFieldF* Umu = NULL;
-  Grid::QCD::ZMobiusFermionF* Ddwf = NULL;
-  Grid::QCD::SchurDiagTwoOperator<Grid::QCD::ZMobiusFermionF,
-                                  Grid::QCD::LatticeFermionF>* HermOp = NULL;
+struct InverterDomainWallQuda : InverterDomainWall {
+  
+  
   //
   InverterDomainWallGrid() { init(); }
   ~InverterDomainWallGrid() { init(); }
