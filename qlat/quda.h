@@ -12,7 +12,7 @@ QLAT_START_NAMESPACE
 
 static int mpi_rank_from_coords(const int* coords, void* fdata)
 {
-  int *dims = static_cast<int *>(fdata);
+  int* dims = reinterpret_cast<int*>(fdata);
 
   int rank = coords[3];
   for (int i = 2; i >= 0; i--) {
@@ -21,9 +21,9 @@ static int mpi_rank_from_coords(const int* coords, void* fdata)
   return rank;
 }
 
-static void comm_set_gridsize(int *grid)
+static void comm_set_gridsize(int* grid)
 {
-  initCommsGridQuda(4, grid, mpi_rank_from_coords, static_cast<void *>(grid));
+  initCommsGridQuda(4, grid, mpi_rank_from_coords, reinterpret_cast<void*>(grid));
 }
 
 namespace qlat_quda {
@@ -44,7 +44,7 @@ namespace qlat_quda {
   }
   
   template<class T>
-  void quda_convert_gauge(std::vector<T> qgf, const GaugeField& gf)
+  void quda_convert_gauge(std::vector<T>& qgf, const GaugeField& gf)
   {
     TIMER_VERBOSE("quda_convert_gauge(qgf,gf)");
     const Geometry& geo = gf.geo;
@@ -111,11 +111,10 @@ namespace qlat_quda {
   }
   
   struct InverterDomainWallQuda : InverterDomainWall {
-    using namespace quda;
     // Now setup all the QUDA parameters
-    QudaGaugeParam gauge_param = nullptr;
+    QudaGaugeParam gauge_param;
     // newQudaGaugeParam();
-    QudaInvertParam inv_param = nullptr; 
+    QudaInvertParam inv_param; 
     // newQudaInvertParam();
    
     std::vector<double> qff_src;
@@ -192,7 +191,7 @@ namespace qlat_quda {
       inv_param.mass          = fa.mass;
       // Note that Quda uses -M5 as M5 ...
       inv_param.m5            = -fa.m5;
-      if(fa.is_using_mobius){
+      if(fa.is_using_zmobius){
         // TODO: Error!
       }else{
         for(int s = 0; s < fa.ls; s++){
@@ -201,7 +200,7 @@ namespace qlat_quda {
         }
       }
       // kappa is irrelevant for Mobius/DWF but you have to set it.
-      inv_param.kappa         = 1./(2.*(1.+3./1.+mass));
+      inv_param.kappa         = 1./(2.*(1.+3./1.+fa.mass));
       inv_param.mass_normalization    
                               = QUDA_KAPPA_NORMALIZATION; 
       inv_param.solver_normalization  
@@ -323,7 +322,7 @@ namespace qlat_quda {
     inv.setup(gf, fa, lm);
   }
   
-  inline void invert(FermionField5d& sol, const Fermioneield5d& src,
+  inline void invert(FermionField5d& sol, const FermionField5d& src,
                       const InverterDomainWallQuda& inv)
   {
     // inverse_with_cg(sol, src, inv, cg_with_herm_sym_2);
