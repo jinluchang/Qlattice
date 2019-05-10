@@ -13,7 +13,7 @@ QLAT_START_NAMESPACE
 static int mpi_rank_from_coords(const int* coords, void* fdata)
 {
   int* dims = reinterpret_cast<int*>(fdata);
-
+  //
   int rank = coords[3];
   for (int i = 2; i >= 0; i--) {
     rank = dims[i] * rank + coords[i];
@@ -73,7 +73,7 @@ void quda_convert_fermion(FermionField5d& ff, const std::vector<T>& qff)
   qassert(Ls > 0);
   long V = geo.local_volume();
   long Vh = V / 2;
-
+  //
 #pragma omp parallel for
   for (long qlat_idx_4d = 0; qlat_idx_4d < V; qlat_idx_4d++) {
     const Coordinate xl = geo.coordinate_from_index(qlat_idx_4d);
@@ -96,7 +96,7 @@ void quda_convert_fermion(std::vector<T>& qff, const FermionField5d& ff)
   qassert(Ls > 0);
   long V = geo.local_volume();
   long Vh = V / 2;
-
+  //
 #pragma omp parallel for
   for (long qlat_idx_4d = 0; qlat_idx_4d < V; qlat_idx_4d++) {
     const Coordinate xl = geo.coordinate_from_index(qlat_idx_4d);
