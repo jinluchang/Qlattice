@@ -51,7 +51,6 @@ void quda_convert_gauge(std::vector<T>& qgf, const GaugeField& gf)
   qassert(geo.multiplicity == 4);
   long V = geo.local_volume();
   long Vh = V / 2;
-
   for (int qlat_idx = 0; qlat_idx < V; qlat_idx++) {
     Coordinate xl = geo.coordinate_from_index(qlat_idx);
     const Vector<ColorMatrix> ms = gf.get_elems_const(xl);
