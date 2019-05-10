@@ -116,9 +116,9 @@ struct InverterDomainWallQuda : InverterDomainWall {
   // newQudaGaugeParam();
   QudaInvertParam inv_param;
   // newQudaInvertParam();
-//
+  //
   std::vector<double> qgf;
-//
+  //
   InverterDomainWallQuda() : qgf(0) { init(); }
   ~InverterDomainWallQuda() { init(); }
   //
@@ -133,23 +133,23 @@ struct InverterDomainWallQuda : InverterDomainWall {
     TIMER_VERBOSE("InvDWQuda::setup");
     using namespace quda;
     free();
-//
+    //
     // Now setup all the QUDA parameters
     gauge_param = newQudaGaugeParam();
     inv_param = newQudaInvertParam();
-//
+    //
     for (int mu = 0; mu < 4; mu++) {
       gauge_param.X[mu] = geo.node_site[mu];
     }
-//
+    //
     // ... OK. I don't know what this means
     gauge_param.type = QUDA_WILSON_LINKS;
-//
+    //
     // Slowest changing to fastest changing: even-odd, mu, x_cb_4d, row, column,
     // complex See the code later in this file to see the conversion between
     // Grid inde and Quda index.
     gauge_param.gauge_order = QUDA_MILC_GAUGE_ORDER;
-//
+    //
     // The precision used here should be the same as those set in the inv_param,
     // i.e. gauge_param.cuda_prec = inv_param.cuda_prec
     // gauge_param.cuda_prec_sloppy = inv_param.cuda_prec_sloppy
@@ -158,12 +158,12 @@ struct InverterDomainWallQuda : InverterDomainWall {
     gauge_param.reconstruct = QUDA_RECONSTRUCT_NO;
     gauge_param.cuda_prec_sloppy = QUDA_HALF_PRECISION;
     gauge_param.reconstruct_sloppy = QUDA_RECONSTRUCT_NO;
-//
+    //
     gauge_param.gauge_fix = QUDA_GAUGE_FIXED_NO;
-//
+    //
     gauge_param.anisotropy = 1.0;
     gauge_param.t_boundary = QUDA_PERIODIC_T;
-//
+    //
     int x_face_size =
         gauge_param.X[1] * gauge_param.X[2] * gauge_param.X[3] / 2;
     int y_face_size =
@@ -176,7 +176,7 @@ struct InverterDomainWallQuda : InverterDomainWall {
     pad_size = std::max(pad_size, z_face_size);
     pad_size = std::max(pad_size, t_face_size);
     gauge_param.ga_pad = pad_size;
-//
+    //
     // initialize the std::vectors that holds the gauge field.
     size_t qgf_size = geo.local_volume() * 4 * 18;
     qgf.resize(qgf_size);
@@ -188,7 +188,7 @@ struct InverterDomainWallQuda : InverterDomainWall {
         "Computed plaquette is %16.12e (spatial = %16.12e, temporal = "
         "%16.12e)\n",
         plaq[0], plaq[1], plaq[2]);
-//
+    //
     inv_param.Ls = fa.ls;
     inv_param.dslash_type = QUDA_MOBIUS_DWF_DSLASH;
     inv_param.mass = fa.mass;
@@ -207,36 +207,36 @@ struct InverterDomainWallQuda : InverterDomainWall {
     inv_param.kappa = 1. / (2. * (1. + 3. / 1. + fa.mass));
     inv_param.mass_normalization = QUDA_KAPPA_NORMALIZATION;
     inv_param.solver_normalization = QUDA_DEFAULT_NORMALIZATION;
-//
+    //
     // Whether or not content of your input void* pointer will be modified
     inv_param.preserve_source = QUDA_PRESERVE_SOURCE_YES;
-//
+    //
     // I don't know what these are but you have to set them.
     inv_param.use_sloppy_partial_accumulator = 0;
     inv_param.solution_accumulator_pipeline = 1;
-//
+    //
     // This is for the reliable update. Just set it to some large number.
     inv_param.max_res_increase = 20000;
-//
+    //
     inv_param.mq1 = fa.mass;
     inv_param.mq2 = fa.mass;
     inv_param.mq3 = 0.01;
     inv_param.eofa_shift = +0.0;
     inv_param.eofa_pm = 1;
-//
+    //
     // The solver tolerance, i.e. |MdagM * x - b| < tol * |b|
     inv_param.tol = ip.stop_rsd;
     inv_param.tol_restart = 1e-3;
-//
+    //
     // The maximum number of iterations.
     inv_param.maxiter = ip.max_num_iter;
-//
+    //
     // This is for Quda's sophisticated reliable update. 0.1 should be good.
     inv_param.reliable_delta = 0.1;
-//
+    //
     // NORMOP_PC means preconditioned normal operator MdagM
     inv_param.solve_type = QUDA_NORMOP_PC_SOLVE;
-//
+    //
     // QUDA_MATPC_EVEN_EVEN means we solve on even sites and use symmetric
     // preconditioning The other options are: QUDA_MATPC_ODD_ODD,
     // QUDA_MATPC_EVEN_EVEN_ASYMMETRIC,
@@ -244,15 +244,15 @@ struct InverterDomainWallQuda : InverterDomainWall {
     //
     // There might be a performance difference.
     inv_param.matpc_type = QUDA_MATPC_EVEN_EVEN;
-//
+    //
     // Eventually we want the unpreconditioned solution.
     inv_param.solution_type = QUDA_MAT_SOLUTION;
-//
+    //
     // MSPCG does NOT support EOFA, yet.
     inv_param.inv_type = QUDA_CG_INVERTER;
-//
+    //
     inv_param.dagger = QUDA_DAG_NO;
-//
+    //
     // The precision used to correct the inner solver.
     inv_param.cpu_prec = QUDA_DOUBLE_PRECISION;
     ;
@@ -260,25 +260,25 @@ struct InverterDomainWallQuda : InverterDomainWall {
     ;
     // The sloppy(inner) solver precision
     inv_param.cuda_prec_sloppy = QUDA_HALF_PRECISION;
-//
+    //
     inv_param.input_location = QUDA_CPU_FIELD_LOCATION;
     inv_param.output_location = QUDA_CPU_FIELD_LOCATION;
-//
+    //
     // I don't know what these are but you have to set them.
     inv_param.sp_pad = 0;
     inv_param.cl_pad = 0;
-//
+    //
     // Both CPS and Grid use this gamma matrix representation
     inv_param.gamma_basis = QUDA_DEGRAND_ROSSI_GAMMA_BASIS;
-//
+    //
     // Slowest changing to fastest changing: even-odd, Ls, x_cb_4d, spin, color,
     // complex See the code later in this file to see the conversion between
     // Grid inde and Quda index.
     inv_param.dirac_order = QUDA_DIRAC_ORDER;
-//
+    //
     // QUDA_DEBUG_VERBOSE is too nasty.
     inv_param.verbosity = QUDA_VERBOSE;
-//
+    //
     // It seems the initial value of this is undefined so it's better to set it
     // here. If set to QUDA_USE_INIT_GUESS_NO Quda will zero the input solution
     // pointer before the solve.
