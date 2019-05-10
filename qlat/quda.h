@@ -116,13 +116,10 @@ namespace qlat_quda {
     // newQudaGaugeParam();
     QudaInvertParam inv_param; 
     // newQudaInvertParam();
-   
-    std::vector<double> qff_src;
-    std::vector<double> qff_sol;
   
     std::vector<double> qgf;
   
-    InverterDomainWallQuda(): qff_src(0), qff_sol(0), qgf(0) { init(); }
+    InverterDomainWallQuda(): qgf(0) { init(); }
     ~InverterDomainWallQuda() { init(); }
     //
     void init()
@@ -187,11 +184,12 @@ namespace qlat_quda {
       printfQuda("Computed plaquette is %16.12e (spatial = %16.12e, temporal = %16.12e)\n", plaq[0], plaq[1], plaq[2]);
   
       inv_param.Ls            = fa.ls;
-      inv_param.dslash_type   = QUDA_MOBIUS_DWF_EOFA_DSLASH;
+      inv_param.dslash_type   = QUDA_MOBIUS_DWF_DSLASH;
       inv_param.mass          = fa.mass;
       // Note that Quda uses -M5 as M5 ...
       inv_param.m5            = -fa.m5;
-      if(fa.is_using_zmobius){
+      // if(fa.is_using_zmobius){
+      if(false){
         // TODO: Error!
       }else{
         for(int s = 0; s < fa.ls; s++){
@@ -223,15 +221,15 @@ namespace qlat_quda {
       inv_param.mq1           = fa.mass;
       inv_param.mq2           = fa.mass;
       inv_param.mq3           = 0.01;
-      inv_param.eofa_shift    = -0.12345678;
+      inv_param.eofa_shift    = +0.0;
       inv_param.eofa_pm       = 1;
    
       // The solver tolerance, i.e. |MdagM * x - b| < tol * |b|
-      inv_param.tol           = 1e-12;
+      inv_param.tol           = ip.stop_rsd;
       inv_param.tol_restart   = 1e-3;
       
       // The maximum number of iterations.
-      inv_param.maxiter       = 50000;
+      inv_param.maxiter       = ip.max_num_iter;
   
       // This is for Quda's sophisticated reliable update. 0.1 should be good.
       inv_param.reliable_delta
@@ -288,10 +286,6 @@ namespace qlat_quda {
       inv_param.use_init_guess 
                               = QUDA_USE_INIT_GUESS_YES;
     
-      // initialize the std::vectors that hold source and solution vectors.
-      size_t qff_size = geo.local_volume() * fa.ls * 24;
-      qff_src.resize(qff_size);
-      qff_sol.resize(qff_size);
     }
     void setup(const GaugeField& gf_, const FermionAction& fa_)
     {
@@ -325,14 +319,32 @@ namespace qlat_quda {
   inline void invert(FermionField5d& sol, const FermionField5d& src,
                       const InverterDomainWallQuda& inv)
   {
+    // initialize the std::vectors that hold source and solution vectors.
+    size_t qff_size = inv.geo.local_volume() * inv.fa.ls * 24;
+    std::vector<double> qff_src(qff_size);
+    std::vector<double> qff_sol(qff_size);
+    QudaInvertParam inv_param_ = inv.inv_param;
+    // Quda does not have D_minus built in.
+    FermionField5d dm_in;
+    if (inv.fa.is_multiplying_dminus) {
+      multiply_d_minus(dm_in, src, inv);
+    } else {
+      dm_in = src;
+    }
     // inverse_with_cg(sol, src, inv, cg_with_herm_sym_2);
-    // TODO
+    Printf("Input  5d vector norm2 = %16.12e.\n", qnorm(src));
+    quda_convert_fermion(qff_src, dm_in);
+    invertQuda(qff_sol.data(), qff_src.data(), &inv_param_);
+    quda_convert_fermion(sol, qff_sol);
+    Printf("Output 5d vector norm2 = %16.12e.\n", qnorm(sol));
   }
   
   inline void invert(FermionField4d& sol, const FermionField4d& src,
                       const InverterDomainWallQuda& inv)
   {
     invert_dwf(sol, src, inv);
+    // The difference between Quda and CPS/Grid
+    sol *= 1./((0.5*inv.fa.mobius_scale+0.5)*(4.-inv.fa.m5)+1.);
   }
 
 } // namespace qlat_quda
