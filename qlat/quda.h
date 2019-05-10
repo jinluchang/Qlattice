@@ -334,6 +334,8 @@ inline void invert(FermionField5d& sol, const FermionField5d& src,
   quda_convert_fermion(qff_src, dm_in);
   invertQuda(qff_sol.data(), qff_src.data(), &inv_param_);
   quda_convert_fermion(sol, qff_sol);
+  // The difference between Quda and CPS/Grid
+  sol *= 1./((0.5*inv.fa.mobius_scale+0.5)*(4.-inv.fa.m5)+1.);
   Printf("Output 5d vector norm2 = %16.12e.\n", qnorm(sol));
 }
 
@@ -341,8 +343,6 @@ inline void invert(FermionField4d& sol, const FermionField4d& src,
                     const InverterDomainWallQuda& inv)
 {
   invert_dwf(sol, src, inv);
-  // The difference between Quda and CPS/Grid
-  sol *= 1./((0.5*inv.fa.mobius_scale+0.5)*(4.-inv.fa.m5)+1.);
 }
 
 QLAT_END_NAMESPACE
