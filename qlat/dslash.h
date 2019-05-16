@@ -260,6 +260,9 @@ struct InverterParams {
   double stop_rsd;
   long max_num_iter;
   long max_mixed_precision_cycle;
+  int solver_type = 0; // 0 -> CG, 1-> EIGCG, 2->MSPCG
+  int higher_precision = 8;
+  int lower_precision = 8;
   //
   void init()
   {
@@ -299,6 +302,18 @@ struct InverterDomainWall {
     fa = fa_;
     lm.init();
   }
+  //
+  void setup(const GaugeField& gf_, const FermionAction& fa_, const InverterParams& ip_)
+  {
+    TIMER_VERBOSE("Inv::setup(gf,fa)");
+    geo = geo_reform(gf_.geo);
+    gf.init();
+    set_left_expanded_gauge_field(gf, gf_);
+    fa = fa_;
+    ip = ip_;
+    lm.init();
+  }
+  //
   void setup(const GaugeField& gf_, const FermionAction& fa_,
              const LowModes& lm_)
   {
@@ -1367,6 +1382,7 @@ inline void invert_with_cg(FermionField5d& out, const FermionField5d& in,
   if (inv.fa.is_multiplying_dminus) {
     multiply_d_minus(dm_in, in, inv);
   } else {
+    dm_in.init(geo_resize(in.geo));
     dm_in = in;
   }
   const double dm_in_qnorm = qnorm(dm_in);

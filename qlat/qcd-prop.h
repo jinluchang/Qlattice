@@ -334,6 +334,58 @@ inline void set_wall_src_propagator(Propagator4d& prop, const Inverter& inv,
   }
 }
 
+inline void set_volume_src_fermion_field(FermionField4d& ff,
+                                       const CoordinateD& lmom, const int cs)
+// ff need to be initialized beforehand
+{
+  qassert(lmom[3] == 0);
+  const Geometry& geo = ff.geo;
+  const CoordinateD mom = lmom * lattice_mom_mult(geo);
+  set_zero(ff);
+#pragma omp parallel for
+  for (long index = 0; index < geo.local_volume(); ++index) {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Coordinate xg = geo.coordinate_g_from_l(xl);
+      double phase = 0.0;
+      for (int i = 0; i < DIMN; ++i) {
+        phase += mom[i] * xg[i];
+      }
+      ff.get_elem(xl)(cs) = std::polar(1.0, phase);
+  }
+}
+
+inline void set_volume_src(Propagator4d& prop, const Geometry& geo_input,
+                         const CoordinateD& lmom = CoordinateD())
+{
+  TIMER_VERBOSE("set_volume_src");
+  const Geometry geo = geo_reform(geo_input);
+  prop.init(geo);
+  FermionField4d src;
+  src.init(geo);
+  for (int cs = 0; cs < 4 * NUM_COLOR; ++cs) {
+    set_volume_src_fermion_field(src, lmom, cs);
+    set_propagator_col_from_fermion_field(prop, cs, src);
+  }
+}
+
+template <class Inverter>
+inline void set_volume_src_propagator(Propagator4d& prop, const Inverter& inv,
+                                    const CoordinateD& lmom = CoordinateD())
+{
+  TIMER_VERBOSE("set_volume_src_propagator");
+  const Geometry geo = geo_reform(inv.geo);
+  prop.init(geo);
+  FermionField4d sol, src;
+  sol.init(geo);
+  src.init(geo);
+  for (int cs = 0; cs < 4 * NUM_COLOR; ++cs) {
+    set_volume_src_fermion_field(src, lmom, cs);
+    set_zero(sol);
+    invert(sol, src, inv);
+    set_propagator_col_from_fermion_field(prop, cs, sol);
+  }
+}
+
 inline void set_mom_src_fermion_field(FermionField4d& ff,
                                       const CoordinateD& lmom, const int cs)
 // ff need to be initialized beforehand
