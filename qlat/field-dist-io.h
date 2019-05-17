@@ -1095,6 +1095,48 @@ long dist_read_field_double_from_float(Field<M>& f, const std::string& path)
   }
 }
 
+template <class M>
+long dist_write_field_double(const Field<M>& f, const std::string& path,
+                             const mode_t mode = default_dir_mode())
+// interface_function
+{
+  TIMER_VERBOSE_FLOPS("dist_write_field_double");
+  Field<M> ff(f);
+  to_from_big_endian_64(get_data(ff));
+  const long total_bytes = dist_write_field(ff, path, mode);
+  timer.flops += total_bytes;
+  return total_bytes;
+}
+
+template <class M>
+long dist_write_field_double(const Field<M>& f, const Coordinate& new_size_node,
+                             const std::string& path,
+                             const mode_t mode = default_dir_mode())
+// interface_function
+{
+  TIMER_VERBOSE_FLOPS("dist_write_field_double");
+  Field<M> ff(f);
+  to_from_big_endian_64(get_data(ff));
+  const long total_bytes = dist_write_field(ff, new_size_node, path, mode);
+  timer.flops += total_bytes;
+  return total_bytes;
+}
+
+template <class M>
+long dist_read_field_double(Field<M>& f, const std::string& path)
+// interface_function
+{
+  TIMER_VERBOSE_FLOPS("dist_read_field_double");
+  const long total_bytes = dist_read_field(f, path);
+  if (total_bytes == 0) {
+    return 0;
+  } else {
+    to_from_big_endian_64(get_data(f));
+    timer.flops += total_bytes;
+    return total_bytes;
+  }
+}
+
 inline bool dist_repartition(const Coordinate& new_size_node,
                              const std::string& path,
                              const std::string& new_path = "")
