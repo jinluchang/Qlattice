@@ -260,15 +260,18 @@ struct InverterParams {
   double stop_rsd;
   long max_num_iter;
   long max_mixed_precision_cycle;
-  int solver_type = 0; // 0 -> CG, 1-> EIGCG, 2->MSPCG
-  int higher_precision = 8;
-  int lower_precision = 8;
+  int solver_type; // 0 -> CG, 1-> EIGCG, 2->MSPCG
+  int higher_precision;
+  int lower_precision;
   //
   void init()
   {
     stop_rsd = 1.0e-8;
     max_num_iter = 200;
     max_mixed_precision_cycle = 300;
+    solver_type = 0;
+    higher_precision = 8;
+    lower_precision = 8;
   }
   //
   InverterParams() { init(); }
