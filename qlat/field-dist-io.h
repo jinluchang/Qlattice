@@ -1101,7 +1101,8 @@ long dist_write_field_double(const Field<M>& f, const std::string& path,
 // interface_function
 {
   TIMER_VERBOSE_FLOPS("dist_write_field_double");
-  Field<M> ff(f);
+  Field<M> ff;
+  ff.init(f);
   to_from_big_endian_64(get_data(ff));
   const long total_bytes = dist_write_field(ff, path, mode);
   timer.flops += total_bytes;
@@ -1115,7 +1116,8 @@ long dist_write_field_double(const Field<M>& f, const Coordinate& new_size_node,
 // interface_function
 {
   TIMER_VERBOSE_FLOPS("dist_write_field_double");
-  Field<M> ff(f);
+  Field<M> ff;
+  ff.init(f);
   to_from_big_endian_64(get_data(ff));
   const long total_bytes = dist_write_field(ff, new_size_node, path, mode);
   timer.flops += total_bytes;
