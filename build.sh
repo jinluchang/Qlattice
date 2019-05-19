@@ -39,7 +39,6 @@ fi
 ./scripts/cuba.sh
 ./scripts/zlib.sh
 ./scripts/eigen.sh
-./scripts/qutils.sh
 ./scripts/qlat.sh
 ./scripts/setenv.sh
 
