@@ -179,7 +179,7 @@ inline double qnorm(const double& x) { return x * x; }
 inline double qnorm(const Complex& x) { return std::norm(x); }
 
 template <class T, size_t N>
-inline double qnorm(const std::array<T, N>& mm)
+double qnorm(const std::array<T, N>& mm)
 {
   double sum = 0.0;
   for (size_t i = 0; i < N; ++i) {

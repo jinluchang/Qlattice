@@ -362,6 +362,17 @@ inline Vector<int> get_data(const int& x) { return Vector<int>(&x, 1); }
 
 inline Vector<float> get_data(const float& x) { return Vector<float>(&x, 1); }
 
+template <class T>
+double qnorm(const Vector<T>& mm)
+{
+  double sum = 0.0;
+  const long size = mm.size();
+  for (long i = 0; i < size; ++i) {
+    sum += qnorm(mm[i]);
+  }
+  return sum;
+}
+
 template <class M>
 Vector<double> get_data_double(const M& v)
 {
