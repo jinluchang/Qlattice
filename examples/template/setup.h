@@ -85,7 +85,7 @@ inline std::vector<int> get_trajs(const std::string& job_tag)
       ret.push_back(traj);
     }
   } else if (job_tag == "32Dfine-0.0001") {
-    for (int traj = 200; traj <= 1000; traj += 10) {
+    for (int traj = 2000; traj >= 200; traj -= 10) {
       ret.push_back(traj);
     }
   } else {
