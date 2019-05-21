@@ -111,7 +111,7 @@ inline bool compute(const std::string& job_tag)
   const std::vector<int> trajs = get_trajs(job_tag);
   for (int i = 0; i < (int)trajs.size(); ++i) {
     const int traj = trajs[i];
-    is_failed = is_failed or compute_traj(job_tag, traj);
+    is_failed = compute_traj(job_tag, traj) or is_failed;
   }
   return is_failed;
 }

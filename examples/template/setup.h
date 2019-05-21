@@ -304,8 +304,17 @@ inline std::vector<FermionAction> get_fermion_actions(const std::string& job_tag
     fas.push_back(FermionAction(0.0850, 24, 1.8, 2.5+1.5, true, false));
     fas.push_back(FermionAction(0.00107, 24, 1.8, 2.5+1.5, true, false));
   } else if (job_tag == "32Dfine-0.0001") {
-    fas.push_back(FermionAction(0.0001, 12, 1.8, 32.0/12.0, true, false));
+    fas.push_back(FermionAction(0.0001, 12, 1.8, 32.0/12.0, true, true));
+    {
+      std::vector<Complex> omega(12, 0.375);
+      for (int i = 0; i < (int)omega.size(); i++) {
+        fas[0].bs[i] = 0.5 * (1.0 / omega[i] + 1.0);
+        fas[0].cs[i] = fas[0].bs[i] - 1.0;
+      }
+    }
     fas.push_back(FermionAction(0.045, 12, 1.8, 32.0/12.0, true, false));
+    fas.push_back(FermionAction(0.0001, 32, 1.8, 1.0, true, false));
+    fas.push_back(FermionAction(0.045, 32, 1.8, 1.0, true, false));
   } else {
     qassert(false);
   }
