@@ -146,45 +146,6 @@ std::array<M, 10> make_array(const M& x, const M& x1, const M& x2, const M& x3,
 }
 
 template <class M>
-struct Handle {
-  M* p;
-  //
-  Handle<M>() { init(); }
-  Handle<M>(M& obj) { init(obj); }
-  //
-  void init() { p = NULL; }
-  void init(M& obj) { p = (M*)&obj; }
-  //
-  bool null() const { return p == NULL; }
-  //
-  M& operator()() const
-  {
-    qassert(NULL != p);
-    return *p;
-  }
-};
-
-template <class M>
-struct ConstHandle {
-  const M* p;
-  //
-  ConstHandle<M>() { init(); }
-  ConstHandle<M>(const M& obj) { init(obj); }
-  ConstHandle<M>(const Handle<M>& h) { init(h()); }
-  //
-  void init() { p = NULL; }
-  void init(const M& obj) { p = (M*)&obj; }
-  //
-  bool null() const { return p == NULL; }
-  //
-  const M& operator()() const
-  {
-    qassert(NULL != p);
-    return *p;
-  }
-};
-
-template <class M>
 struct Vector {
   M* p;
   long n;
@@ -383,6 +344,12 @@ template <class M>
 Vector<long> get_data_long(const M& v)
 {
   return Vector<long>(&v, sizeof(M) / sizeof(long));
+}
+
+template <class M>
+long get_data_size(const M& x)
+{
+  return get_data(x).data_size();
 }
 
 template <class M>

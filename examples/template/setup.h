@@ -80,6 +80,10 @@ inline std::vector<int> get_trajs(const std::string& job_tag)
     for (int traj = 1000; traj <= 4000; traj += 10) {
       ret.push_back(traj);
     }
+  } else if (job_tag == "24D-0.0174") {
+    for (int traj = 1000; traj >= 300; traj -= 20) {
+      ret.push_back(traj);
+    }
   } else if (job_tag == "32D-0.00107") {
     for (int traj = 680; traj <= 2000; traj += 10) {
       ret.push_back(traj);
@@ -100,7 +104,8 @@ inline Coordinate get_total_site(const std::string& job_tag)
     return Coordinate(4,4,4,8);
   } else if (job_tag == "16I-0.01") {
     return Coordinate(16,16,16,32);
-  } else if (job_tag == "24I-0.01" or job_tag == "24D-0.00107") {
+  } else if (job_tag == "24I-0.01" or job_tag == "24D-0.00107" or
+             job_tag == "24D-0.0174") {
     return Coordinate(24,24,24,64);
   } else if (job_tag == "48I-0.00078") {
     return Coordinate(48,48,48,96);
@@ -204,6 +209,15 @@ inline std::string get_config_fn(const std::string& job_tag, const int traj)
     if (does_file_exist_sync_node(fn)) {
       return fn;
     }
+  } else if (job_tag == "24D-0.0174") {
+    fn = get_env("HOME") +
+         ssprintf(
+             "/qcddata-chulwoo/DWF/2+1f/24nt64/IWASAKI+DSDR/b1.633/ls24/M1.8/"
+             "ms0.0985/ml0.0174/configurations/ckpoint_lat.%d",
+             traj);
+    if (does_file_exist_sync_node(fn)) {
+      return fn;
+    }
   } else if (job_tag == "32D-0.00107") {
     fn = get_env("HOME") +
          ssprintf(
@@ -239,7 +253,9 @@ inline long load_configuration(GaugeField& gf, const std::string& job_tag, const
     file_size += geo.geon.num_node * get_data_size(gf);
   } else {
     file_size += load_gauge_field(gf, get_config_fn(job_tag, traj));
-    if (job_tag == "24D-0.00107" or job_tag == "32D-0.00107" or job_tag == "48D-0.00107" or job_tag == "32Dfine-0.0001") {
+    if (job_tag == "24D-0.00107" or job_tag == "32D-0.00107" or
+        job_tag == "48D-0.00107" or job_tag == "32Dfine-0.0001" or
+        job_tag == "24D-0.0174") {
       twist_boundary_at_boundary(gf, -0.5, 3);
     }
   }
@@ -280,7 +296,7 @@ inline std::vector<FermionAction> get_fermion_actions(const std::string& job_tag
     fas.push_back(FermionAction(0.0362, 24, 1.8, 1.5 + 0.5, true, false));
     fas.push_back(FermionAction(0.00078, 24, 1.8, 1.5 + 0.5, true, false));
   } else if (job_tag == "24D-0.00107" or job_tag == "32D-0.00107" or
-             job_tag == "48D-0.00107") {
+             job_tag == "48D-0.00107" or job_tag == "24D-0.0174") {
     fas.push_back(FermionAction(0.00107, 12, 1.8, (2.5+1.5)*2, true, true));
     {
       std::vector<Complex> omega(12, 0);
@@ -303,6 +319,11 @@ inline std::vector<FermionAction> get_fermion_actions(const std::string& job_tag
     }
     fas.push_back(FermionAction(0.0850, 24, 1.8, 2.5+1.5, true, false));
     fas.push_back(FermionAction(0.00107, 24, 1.8, 2.5+1.5, true, false));
+    if (job_tag == "24D-0.0174") {
+      fas[0].mass = 0.0174;
+      fas[1].mass = 0.0985;
+      fas[2].mass = 0.0174;
+    }
   } else if (job_tag == "32Dfine-0.0001") {
     fas.push_back(FermionAction(0.0001, 12, 1.8, 32.0/12.0, true, true));
     {
@@ -336,6 +357,8 @@ inline LancArg get_lanc_arg(const std::string& job_tag)
     la = LancArg(2.5, 0.022, 200, 2600, 2100, 2000);
   } else if (job_tag == "24D-0.00107") {
     la = LancArg(sqrt(5.5), sqrt(0.000684), 200, 2600, 2100, 2000);
+  } else if (job_tag == "24D-0.0174") {
+    la = LancArg(sqrt(5.5), 0.20, 200, 800, 550, 500);
   } else if (job_tag == "32D-0.00107") {
     la = LancArg(sqrt(5.5), sqrt(5.860158125869930E-04), 300, 4500, 4200, 4000);
   } else if (job_tag == "32Dfine-0.0001") {
