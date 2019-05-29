@@ -57,6 +57,10 @@ inline bool compute_traj_do(const std::string& job_tag, const int traj)
   set_wall_src_propagator(prop, GaugeTransformInverter<Inverter>(inv, gt),
                           tslice, CoordinateD());
   displayln_info(ssprintf("prop qnorm = %24.17E", qnorm(prop)));
+  //
+  find_max_eigen_value_hermop_sym2(
+      inv, RngState(rs, "find_max_eigen_value_hermop_sym2"), 5);
+  //
   qtouch_info(job_path + "/checkpoint.txt");
   return false;
 }
@@ -74,6 +78,11 @@ inline bool compute_traj(const std::string& job_tag, const int traj)
   if (does_file_exist_sync_node(get_job_path(job_tag, traj) +
                                 "/checkpoint.txt")) {
     displayln_info(fname + ssprintf(": Finished '%s'.",
+                                    get_job_path(job_tag, traj).c_str()));
+    return false;
+  }
+  if (get_config_fn(job_tag, traj) == "") {
+    displayln_info(fname + ssprintf(": No config '%s'.",
                                     get_job_path(job_tag, traj).c_str()));
     return false;
   }

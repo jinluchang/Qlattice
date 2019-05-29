@@ -128,7 +128,7 @@ inline std::string get_config_fn(const std::string& job_tag, const int traj)
 {
   std::string fn("");
   if (job_tag == "free-4nt8") {
-    qassert(false);
+    return job_tag + ssprintf("/%d", traj);
   } else if (job_tag == "16I-0.01") {
     fn = get_env("HOME") +
          ssprintf(
