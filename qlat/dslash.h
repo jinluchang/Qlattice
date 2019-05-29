@@ -1498,8 +1498,9 @@ inline double find_max_eigen_value_hermop_sym2(const InverterDomainWall& inv,
   for (long i = 0; i < max_iter; ++i) {
     multiply_hermop_sym2(ff, ff, inv);
     sqrt_qnorm_ratio = sqrt(qnorm(ff));
-    displayln_info(fname + ssprintf(": %5d: sqrt_qnorm_ratio =%24.17E.", i + 1,
-                                    sqrt_qnorm_ratio));
+    displayln_info(fname + ssprintf(": %5d: sqrt_qnorm_ratio =%24.17E."
+                                    " (max eigen value of hermop_sym2)",
+                                    i + 1, sqrt_qnorm_ratio));
     ff *= 1.0 / sqrt_qnorm_ratio;
   }
   return sqrt_qnorm_ratio;
