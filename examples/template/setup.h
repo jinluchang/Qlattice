@@ -1,3 +1,5 @@
+#pragma once
+
 #include <qlat/qlat.h>
 
 QLAT_START_NAMESPACE
