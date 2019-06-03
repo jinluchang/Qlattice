@@ -83,7 +83,7 @@ inline std::vector<int> get_trajs(const std::string& job_tag)
       ret.push_back(traj);
     }
   } else if (job_tag == "24D-0.0174") {
-    for (int traj = 1000; traj >= 300; traj -= 20) {
+    for (int traj = 1000; traj >= 200; traj -= 10) {
       ret.push_back(traj);
     }
   } else if (job_tag == "32D-0.00107") {
