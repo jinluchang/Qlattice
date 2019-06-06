@@ -153,19 +153,12 @@ int main(int argc, char* argv[])
   displayln_info(show(l_func(1.0, 1.0, 0.14)));
   displayln_info(show(l_func(2.0, 1.0, 0.14)));
   displayln_info(show(l_func(2.0, 2.0, 0.14)));
-  if (true) {
-    const int ts_limit = 200;
-    const long x_vec_sq_limit = 1 + 3 * sqr(16);
-    compute(24, 0.14, ts_limit, x_vec_sq_limit);
-    compute(32, 0.14, ts_limit, x_vec_sq_limit);
-  } else {
-    const int ts_limit = 200;
-    const long x_vec_sq_limit = 1 + 3 * sqr(48);
-    for (int i = 96; i >= 2; i -= 2) {
-      compute(i, 0.14, ts_limit, x_vec_sq_limit);
-      compute(i, 0.07, ts_limit, x_vec_sq_limit);
-      compute(i, 0.035, ts_limit, x_vec_sq_limit);
-    }
+  const int ts_limit = 200;
+  const long x_vec_sq_limit = 1 + 3 * sqr(48);
+  for (int i = 96; i >= 2; i -= 2) {
+    compute(i, 0.14, ts_limit, x_vec_sq_limit);
+    compute(i, 0.07, ts_limit, x_vec_sq_limit);
+    compute(i, 0.035, ts_limit, x_vec_sq_limit);
   }
   end();
   return 0;
