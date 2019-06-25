@@ -100,8 +100,8 @@
     "0 lc 1 not"
     "'ts-val-24.txt' u 1:3 w l lc 3 dt 1 t '$\\mathcal{I}^{\\phantom{(s)}}$ $L=4.7$ fm'"
     "'ts-val-24.txt' u 1:2 w l lc 3 dt 2 t '$\\mathcal{I}^{(s)}$ $L=4.7$ fm'"
-    "'ts-val-32.txt' u 1:3 w l lc 2 dt 1 t '$\\mathcal{I}^{\\phantom{(s)}}$ $L=6.3$ fm'" 
-    "'ts-val-32.txt' u 1:2 w l lc 2 dt 2 t '$\\mathcal{I}^{(s)}$ $L=6.3$ fm'"                                                                         
+    "'ts-val-32.txt' u 1:3 w l lc 2 dt 1 t '$\\mathcal{I}^{\\phantom{(s)}}$ $L=6.3$ fm'"
+    "'ts-val-32.txt' u 1:2 w l lc 2 dt 2 t '$\\mathcal{I}^{(s)}$ $L=6.3$ fm'"
     )
   )
 
