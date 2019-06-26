@@ -384,7 +384,7 @@ inline Geometry get_geo_from_cesi(
   geon.num_node = product(geon.size_node);
   geon.coor_node = coordinate_from_index(geon.id_node, geon.size_node);
   Geometry geo_full;
-  geo_full.init(geon, 1, node_site);
+  geo_full.init(geon, node_site, 1);
   return geo_full;
 };
 
@@ -395,7 +395,7 @@ inline Geometry block_geometry(const Geometry& geo_full,
   qassert(geo_full.node_site % block_site == Coordinate());
   const Coordinate node_block = geo_full.node_site / block_site;
   Geometry geo;
-  geo.init(geo_full.geon, 1, node_block);
+  geo.init(geo_full.geon, node_block, 1);
   return geo;
 }
 

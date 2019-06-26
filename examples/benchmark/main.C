@@ -81,7 +81,7 @@ void test_fft()
   }
   ff = f;
   const long flops = get_data_size(f) * get_num_node();
-  const double total_volume = product(geo.total_site());
+  const double total_volume = geo.total_volume();
   for (int i = 0; i < 16; ++i) {
     TIMER_VERBOSE_FLOPS("fft");
     timer.flops += flops * 2;
@@ -91,6 +91,9 @@ void test_fft()
   }
   ff -= f;
   displayln_info(fname + ssprintf(": qnorm(f) = %24.17E ; qnorm(diff) = %24.17E", qnorm(f), qnorm(ff)));
+  fft_complex_field(f, true);
+  displayln_info(fname + ssprintf(": crc32 of fft(f) = %06X.", field_dist_crc32(f)));
+  fft_complex_field(f, false);
 }
 
 int main(int argc, char* argv[])

@@ -47,14 +47,14 @@ struct Geometry {
       initialized = true;
     }
   }
-  void init(const GeometryNode& geon_, const int multiplicity_,
-            const Coordinate& node_site_)
+  void init(const GeometryNode& geon_, const Coordinate& node_site_,
+            const int multiplicity_)
   {
     if (!initialized) {
       init();
       geon = geon_;
-      multiplicity = multiplicity_;
       node_site = node_site_;
+      multiplicity = multiplicity_;
       reset_node_site_expanded();
       initialized = true;
     }
