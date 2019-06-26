@@ -63,6 +63,7 @@ void test_fft()
 {
   TIMER("test_fft");
   // Coordinate total_site(48, 48, 48, 96);
+  // Coordinate total_site(32, 32, 32, 64);
   // Coordinate total_site(16, 16, 16, 32);
   Coordinate total_site(4, 4, 4, 8);
   RngState rs(getGlobalRngState(), "test_fft");

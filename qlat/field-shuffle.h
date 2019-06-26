@@ -47,7 +47,7 @@ template <class M>
 void shuffle_field(std::vector<Field<M> >& fs, const Field<M>& f,
                    const ShufflePlan& sp)
 {
-  TIMER_VERBOSE_FLOPS("shuffle_field");
+  TIMER_FLOPS("shuffle_field");
   const Geometry& geo = f.geo;
   qassert(sp.geo_send == geo_reform(geo, 1, 0));
   clear(fs);
@@ -66,7 +66,7 @@ void shuffle_field(std::vector<Field<M> >& fs, const Field<M>& f,
   std::vector<M> recv_buffer(sp.total_recv_size * geo.multiplicity);
   {
     sync_node();
-    TIMER_VERBOSE_FLOPS("shuffle_field-comm");
+    TIMER_FLOPS("shuffle_field-comm");
     timer.flops += total_bytes;
     std::vector<MPI_Request> send_reqs(sp.send_msg_infos.size());
     std::vector<MPI_Request> recv_reqs(sp.recv_msg_infos.size());
@@ -111,7 +111,7 @@ template <class M>
 void shuffle_field_back(Field<M>& f, const std::vector<Field<M> >& fs,
                         const ShufflePlan& sp)
 {
-  TIMER_VERBOSE_FLOPS("shuffle_field_back");
+  TIMER_FLOPS("shuffle_field_back");
   const Geometry& geo = f.geo;
   sync_node();
   const long total_bytes =
@@ -128,7 +128,7 @@ void shuffle_field_back(Field<M>& f, const std::vector<Field<M> >& fs,
   std::vector<M> send_buffer(sp.total_send_size * geo.multiplicity);
   {
     sync_node();
-    TIMER_VERBOSE_FLOPS("shuffle_field-comm");
+    TIMER_FLOPS("shuffle_field-comm");
     timer.flops += total_bytes;
     std::vector<MPI_Request> send_reqs(sp.send_msg_infos.size());
     std::vector<MPI_Request> recv_reqs(sp.recv_msg_infos.size());
@@ -593,7 +593,7 @@ inline ShufflePlan make_shuffle_plan_fft(const Coordinate& total_site, const int
   std::vector<Geometry> geos_recv(total_site[dir]);
   const Coordinate new_size_node(1, 1, total_site[dir], geo.geon.num_node);
   for (int i = 0; i < total_site[dir]; ++i) {
-    const Coordinate new_coor_node(1, 1, i, geo.geon.id_node);
+    const Coordinate new_coor_node(0, 0, i, geo.geon.id_node);
     const GeometryNode geon(index_from_coordinate(new_coor_node, new_size_node), new_size_node);
     geos_recv[i].init(geon, Coordinate(vpd_size, 1, 1, 1), 1);
   }

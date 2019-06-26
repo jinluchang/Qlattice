@@ -6,6 +6,7 @@
 #include <qlat/mpi.h>
 #include <qlat/utils-coordinate.h>
 #include <qlat/utils.h>
+#include <qlat/field-shuffle.h>
 
 #include <fftw3.h>
 
@@ -18,6 +19,9 @@ struct fft_complex_field_plan {
   int mc;           // geo.multiplicity * sizeof(M) / sizeof(Complex)
   int dir;          // direction of the fft
   bool is_forward;  // is forward fft (forward \sum_x f[x] exp(-i k x))
+  //
+  fftw_plan fftplan;
+  ShufflePlan sp;
   //
   virtual const std::string& cname()
   {
@@ -88,7 +92,7 @@ struct fft_complex_field_plan {
     is_forward = is_forward_;
     const int sizec = geo.total_site()[dir];
     const int nc = geo.local_volume() / geo.node_site[dir] * mc;
-    const int chunk = (nc - 1) / geo.geon.size_node[dir] + 1;
+    const int chunk = ((nc / mc - 1) / geo.geon.size_node[dir] + 1) * mc;
     const int nc_start = std::min(nc, geo.geon.coor_node[dir] * chunk);
     const int nc_stop = std::min(nc, nc_start + chunk);
     const int nc_size = nc_stop - nc_start;
@@ -110,9 +114,8 @@ struct fft_complex_field_plan {
     fftw_free(fftdatac);
     DisplayInfo("fft_complex_field_plan", "init", "free %d\n",
                 nc_size * sizec * sizeof(Complex));
+    sp = make_shuffle_plan_fft(geo.total_site(), dir);
   }
-  //
-  fftw_plan fftplan;
 };
 
 template <class M>
@@ -127,88 +130,28 @@ void fft_complex_field_dir(Field<M>& field, const int dir, const bool is_forward
   fftw_plan& fftplan = plan.fftplan;
   const int sizec = geo.total_site()[dir];
   const int nc = geo.local_volume() / geo.node_site[dir] * mc;
-  const int chunk = (nc - 1) / geo.geon.size_node[dir] + 1;
+  const int chunk = ((nc / mc - 1) / geo.geon.size_node[dir] + 1) * mc;
   const int nc_start = std::min(nc, geo.geon.coor_node[dir] * chunk);
   const int nc_stop = std::min(nc, nc_start + chunk);
   const int nc_size = nc_stop - nc_start;
   Complex* fftdatac = (Complex*)fftw_malloc(nc_size * sizec * sizeof(Complex));
-  Field<M> fields;
-  fields.init(geo);
-  Field<M> fieldr;
-  fieldr.init(geo);
-  Geometry geos = geo;
-  // FIXME my compiler says unused variable 'fieldsize'
-  // const int fieldsize = get_data_size(fields) / sizeof(double);
-  fields = field;
-  for (int i = 0; i < geos.geon.size_node[dir]; i++) {
+  const ShufflePlan& sp = plan.sp;
+  std::vector<Field<M> > fft_fields;
+  shuffle_field(fft_fields, field, sp);
 #pragma omp parallel for
-    for (long index = 0; index < geos.local_volume(); index++) {
-      Coordinate xl = geos.coordinate_from_index(index);
-      Coordinate xg = geos.coordinate_g_from_l(xl);
-      int nc_index = 0;
-      int nc_offset = mc;
-      for (int mu = 0; mu < 4; mu++) {
-        if (dir != mu) {
-          nc_index += xl[mu] * nc_offset;
-          nc_offset *= geos.node_site[mu];
-        }
-      }
-      Complex* pc = (Complex*)fields.get_elems(xl).data();
-      for (int nci = std::max(0, nc_start - nc_index);
-           nci < std::min(mc, nc_stop - nc_index); nci++) {
-        fftdatac[nci + nc_index - nc_start + nc_size * xg[dir]] = pc[nci];
-      }
-    }
-    if (i == geos.geon.size_node[dir] - 1) {
-      break;
-    }
-    {
-      TIMER_FLOPS("fft_complex_field_dirs-get_data");
-      timer.flops += get_data_size(fields);
-      get_data_plus_mu(get_data(fieldr), get_data(fields), dir);
-    }
-    qswap(fields, fieldr);
-    geos.geon.coor_node[dir] =
-        mod(geos.geon.coor_node[dir] + 1, geos.geon.size_node[dir]);
+  for (int i = 0; i < (int)fft_fields.size(); ++i) {
+    qassert(get_data_size(fft_fields[i]) == nc_size * sizeof(Complex));
+    memcpy((void*)&fftdatac[nc_size * i], (void*)get_data(fft_fields[i]).data(), get_data_size(fft_fields[i]));
   }
   {
     TIMER("fft_complex_field_dirs-fftw");
     fftw_execute_dft(fftplan, (fftw_complex*)fftdatac, (fftw_complex*)fftdatac);
   }
-  geos.geon.coor_node[dir] =
-      mod(geo.geon.coor_node[dir] + 1, geos.geon.size_node[dir]);
-  for (int i = 0; i < geos.geon.size_node[dir]; i++) {
 #pragma omp parallel for
-    for (long index = 0; index < geos.local_volume(); index++) {
-      Coordinate xl = geos.coordinate_from_index(index);
-      Coordinate xg = geos.coordinate_g_from_l(xl);
-      int nc_index = 0;
-      int nc_offset = mc;
-      for (int mu = 0; mu < 4; mu++) {
-        if (dir != mu) {
-          nc_index += xl[mu] * nc_offset;
-          nc_offset *= geos.node_site[mu];
-        }
-      }
-      Complex* pc = (Complex*)fields.get_elems(xl).data();
-      for (int nci = std::max(0, nc_start - nc_index);
-           nci < std::min(mc, nc_stop - nc_index); nci++) {
-        pc[nci] = fftdatac[nci + nc_index - nc_start + nc_size * xg[dir]];
-      }
-    }
-    if (i == geos.geon.size_node[dir] - 1) {
-      break;
-    }
-    {
-      TIMER_FLOPS("fft_complex_field_dirs-get_data");
-      timer.flops += get_data_size(fields);
-      get_data_plus_mu(get_data(fieldr), get_data(fields), dir);
-    }
-    qswap(fields, fieldr);
-    geos.geon.coor_node[dir] =
-        mod(geos.geon.coor_node[dir] + 1, geos.geon.size_node[dir]);
+  for (int i = 0; i < (int)fft_fields.size(); ++i) {
+    memcpy((void*)get_data(fft_fields[i]).data(), (void*)&fftdatac[nc_size * i], get_data_size(fft_fields[i]));
   }
-  field = fields;
+  shuffle_field_back(field, fft_fields, sp);
   fftw_free(fftdatac);
 }
 
