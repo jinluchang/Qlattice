@@ -179,7 +179,7 @@ void fft_complex_field_spatial(Field<M>& field, const bool is_forward = true)
   // backwards compute
   // field(x) <- \sum_{k} exp( + ii * 2 pi * k * x ) field(k)
   for (int dir = 0; dir < 3; ++dir) {
-    fft_complex_field_dirs(field, dir, is_forward);
+    fft_complex_field_dir(field, dir, is_forward);
   }
 }
 
