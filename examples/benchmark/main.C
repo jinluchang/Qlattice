@@ -68,7 +68,7 @@ void test_fft()
   RngState rs(getGlobalRngState(), "test_fft");
   Geometry geo;
   geo.init(total_site, 1);
-  FieldM<Complex, 12> f;
+  FieldM<Complex, 12> f, ff;
   f.init(geo);
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
@@ -79,13 +79,18 @@ void test_fft()
       v[m] = Complex(gRandGen(rsi), gRandGen(rsi));
     }
   }
+  ff = f;
   const long flops = get_data_size(f) * get_num_node();
+  const double total_volume = product(geo.total_site());
   for (int i = 0; i < 16; ++i) {
     TIMER_VERBOSE_FLOPS("fft");
     timer.flops += flops * 2;
     fft_complex_field(f, true);
     fft_complex_field(f, false);
+    f *= 1.0 / total_volume;
   }
+  ff -= f;
+  displayln_info(fname + ssprintf(": qnorm(f) = %24.17E ; qnorm(diff) = %24.17E", qnorm(f), qnorm(ff)));
 }
 
 int main(int argc, char* argv[])
