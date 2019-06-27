@@ -59,6 +59,7 @@ void test_gf_fft()
   }
 }
 
+template <int N>
 void test_fft()
 {
   TIMER("test_fft");
@@ -69,7 +70,7 @@ void test_fft()
   RngState rs(getGlobalRngState(), "test_fft");
   Geometry geo;
   geo.init(total_site, 1);
-  FieldM<Complex, 12> f, ff;
+  FieldM<Complex, N> f, ff;
   f.init(geo);
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
@@ -83,9 +84,11 @@ void test_fft()
   ff = f;
   const long flops = get_data_size(f) * get_num_node();
   const double total_volume = geo.total_volume();
+  displayln_info(fname + ssprintf(": %d", N));
   for (int i = 0; i < 16; ++i) {
     TIMER_VERBOSE_FLOPS("fft");
     timer.flops += flops * 2;
+    displayln_info(fname + ssprintf(": %d", N));
     fft_complex_field(f, true);
     fft_complex_field(f, false);
     f *= 1.0 / total_volume;
@@ -102,7 +105,14 @@ int main(int argc, char* argv[])
   begin(&argc, &argv);
   test_get_data();
   test_gf_fft();
-  test_fft();
+  test_fft<1>();
+  test_fft<2>();
+  test_fft<4>();
+  test_fft<8>();
+  test_fft<12>();
+  test_fft<16>();
+  test_fft<20>();
+  test_fft<32>();
   Timer::display();
   end();
   return 0;
