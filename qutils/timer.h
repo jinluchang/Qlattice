@@ -77,7 +77,7 @@ inline double get_time()
   return ((double)tp.tv_sec + (double)tp.tv_usec * 1e-6);
 }
 
-inline double get_start_time()
+inline double& get_start_time()
 {
   static double time = get_time();
   return time;
@@ -171,6 +171,11 @@ struct TimerInfo {
   void init()
   {
     fname = "Unknown";
+    reset();
+  }
+  //
+  void reset()
+  {
     dtime = 0.0 / 0.0;
     accumulated_time = 0;
     dflops = 0;
@@ -246,6 +251,16 @@ struct Timer {
   {
     static std::vector<TimerInfo> timer_database;
     return timer_database;
+  }
+  //
+  static void reset()
+  {
+    displayln_info("Timer::reset(): Reset all timers!");
+    std::vector<TimerInfo>& tdb = get_timer_database();
+    for (long i = 0; i < (long)tdb.size(); ++i) {
+      tdb[i].reset();
+    }
+    get_start_time() = get_time();
   }
   //
   static double& minimum_autodisplay_interval()
