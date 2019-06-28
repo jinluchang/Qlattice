@@ -691,8 +691,8 @@ inline ShufflePlan make_shuffle_plan_fft(const Coordinate& total_site, const int
   // total_recv_size
   ret.total_recv_size = 0;
   for (size_t i = 0; i < ret.geos_recv.size(); ++i) {
-    const Geometry& geos_recv = ret.geos_recv[i];
-    ret.total_recv_size += geos_recv.local_volume();
+    const Geometry& geo_recv = ret.geos_recv[i];
+    ret.total_recv_size += geo_recv.local_volume();
   }
   // recv_id_node_size
   std::map<int, long> recv_id_node_size;
