@@ -134,17 +134,24 @@ void fft_complex_field_dir(Field<M>& field, const int dir, const bool is_forward
   const int nc_start = std::min(nc, geo.geon.coor_node[dir] * chunk);
   const int nc_stop = std::min(nc, nc_start + chunk);
   const int nc_size = nc_stop - nc_start;
+  qassert(nc_size >= 0);
   Complex* fftdatac = (Complex*)fftw_malloc(nc_size * sizec * sizeof(Complex));
   const ShufflePlan& sp = plan.sp;
   std::vector<Field<M> > fft_fields;
   shuffle_field(fft_fields, field, sp);
 #pragma omp parallel for
   for (int i = 0; i < (int)fft_fields.size(); ++i) {
-    qassert(get_data_size(fft_fields[i]) == nc_size * sizeof(Complex));
+    if (not (get_data_size(fft_fields[i]) == nc_size * sizeof(Complex))) {
+      displayln(fname +
+                ssprintf(": get_data_size=%d ; nc_size*sizeof(Complex)=%d",
+                         get_data_size(fft_fields[i]),
+                         nc_size * sizeof(Complex)));
+      qassert(get_data_size(fft_fields[i]) == nc_size * sizeof(Complex));
+    }
     memcpy((void*)&fftdatac[nc_size * i], (void*)get_data(fft_fields[i]).data(), get_data_size(fft_fields[i]));
   }
   {
-    TIMER("fft_complex_field_dirs-fftw");
+    TIMER("fft_complex_field_dir-fftw");
     fftw_execute_dft(fftplan, (fftw_complex*)fftdatac, (fftw_complex*)fftdatac);
   }
 #pragma omp parallel for

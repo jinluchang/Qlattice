@@ -726,6 +726,10 @@ inline ShufflePlan make_shuffle_plan_fft(const Coordinate& total_site, const int
         count += mi.size;
       }
     }
+    if (count != ret.total_recv_size) {
+      displayln(fname + ssprintf(": count = %ld", count));
+      displayln(fname + ssprintf(": ret.total_recv_size = %ld", ret.total_recv_size));
+    }
     qassert(count == ret.total_recv_size);
   }
   // recv_id_node_idx

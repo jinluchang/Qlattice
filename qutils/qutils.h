@@ -357,12 +357,9 @@ double adaptive_simpson(const F& f, const double a, const double b,
 inline void split_work(long& start, long& size, const long total, const long num_worker, const long id_worker)
 {
   const long size_max = (total - 1) / num_worker + 1;
-  start = id_worker * size_max;
-  if (id_worker + 1 == num_worker) {
-    size = total - start;
-  } else {
-    size = size_max;
-  }
+  start = std::min(id_worker * size_max, total);
+  const long stop = std::min(start + size_max, total);
+  size = stop - start;
 }
 
 inline long find_worker(const long idx, const long total, const long num_worker)
