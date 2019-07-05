@@ -78,6 +78,13 @@ struct Field {
 };
 ```
 
+### FieldM
+
+```c++
+template <class M, int multiplicity>
+struct FieldM : Field<M> {};
+```
+
 ## Random number generator description:
 
 The state of the generator is effectively composed of the history of the
