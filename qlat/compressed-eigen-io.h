@@ -241,6 +241,8 @@ inline CompressedEigenSystemInfo read_compressed_eigen_system_info(
       cesdi.total_site = Coordinate(24, 24, 24, 64);
     } else if (32 * 32 * 32 * 64 == global_volume) {
       cesdi.total_site = Coordinate(32, 32, 32, 64);
+    } else if (16 * 16 * 16 * 32 == global_volume) {
+      cesdi.total_site = Coordinate(16, 16, 16, 32);
     } else {
       cesdi.total_site = Coordinate();
     }
