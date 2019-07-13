@@ -1598,6 +1598,31 @@ inline void decompress_eigen_vectors(
       old_path + "'");
 }
 
+inline void check_compressed_eigen_vectors(const std::string& path)
+// interface
+{
+  TIMER_VERBOSE("check_compressed_eigen_vectors");
+  const CompressedEigenSystemInfo cesi = read_compressed_eigen_system_info(path);
+  const Coordinate size_node = cesi.total_site / cesi.node_site;
+  for (int idx = 0; idx < product(size_node); ++idx) {
+    if (idx % get_num_node() == get_id_node()) {
+      const crc32_t crc = compute_crc32(
+          path + ssprintf("/%02d/%010d.compressed",
+                          compute_dist_file_dir_id(idx, product(size_node)),
+                          idx));
+      displayln(fname + ssprintf(": idx=%d computed=%08X previous=%08X", idx,
+                                 crc, cesi.crcs[idx]));
+      if (cesi.crcs[idx] != crc) {
+        displayln(
+            fname +
+            ssprintf(": WARNING mismatch idx=%d computed=%08X previous=%08X",
+                     idx, crc, cesi.crcs[idx]));
+        qrename(path + "/metadata.txt", path + "/metadata.txt.wrong_crc");
+      }
+    }
+  }
+}
+
 inline void resize_compressed_eigen_vectors(const std::string& old_path,
                                             const std::string& new_path,
                                             const Coordinate& size_node)
@@ -1645,23 +1670,7 @@ inline void resize_compressed_eigen_vectors(const std::string& old_path,
   displayln_info(fname + ssprintf(": loaded data checksum matched."));
   write_compressed_eigen_system_info(cesi_new, new_path);
   displayln_info(fname + ssprintf(": checking saved data checksum"));
-  for (int idx = 0; idx < product(size_node); ++idx) {
-    if (idx % get_num_node() == get_id_node()) {
-      const crc32_t crc = compute_crc32(
-          new_path + ssprintf("/%02d/%010d.compressed",
-                              compute_dist_file_dir_id(idx, product(size_node)),
-                              idx));
-      displayln(fname + ssprintf(": idx=%d computed=%08X previous=%08X", idx,
-                                 crc, cesi_new.crcs[idx]));
-      if (cesi_new.crcs[idx] != crc) {
-        displayln(
-            fname +
-            ssprintf(": WARNING mismatch idx=%d computed=%08X previous=%08X",
-                     idx, crc, cesi_new.crcs[idx]));
-        qrename(new_path + "/metadata.txt", new_path + "/metadata.txt.wrong_crc");
-      }
-    }
-  }
+  check_compressed_eigen_vectors(new_path);
 }
 
 inline void decompressed_eigen_vectors_check_crc32(const std::string& path)
