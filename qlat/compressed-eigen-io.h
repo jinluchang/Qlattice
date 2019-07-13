@@ -957,7 +957,7 @@ inline crc32_t save_node_data(const CompressedEigenSystemData& cesd,
 {
   TIMER_VERBOSE_FLOPS("save_node_data");
   const Geometry& geo = cesd.geo;
-  crc32_t crc_node;
+  crc32_t crc_node = 0;
   const int idx_size = product(geo.geon.size_node);
   const int idx = geo.geon.id_node;
   const int dir_idx = compute_dist_file_dir_id(idx, idx_size);
@@ -1658,7 +1658,7 @@ inline void resize_compressed_eigen_vectors(const std::string& old_path,
             fname +
             ssprintf(": WARNING mismatch idx=%d computed=%08X previous=%08X",
                      idx, crc, cesi_new.crcs[idx]));
-        qremove(new_path + "/metadata.txt");
+        qrename(new_path + "/metadata.txt", new_path + "/metadata.txt.wrong_crc");
       }
     }
   }
