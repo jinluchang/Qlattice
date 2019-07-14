@@ -1598,12 +1598,13 @@ inline void decompress_eigen_vectors(
       old_path + "'");
 }
 
-inline void check_compressed_eigen_vectors(const std::string& path)
+inline bool check_compressed_eigen_vectors(const std::string& path)
 // interface
 {
   TIMER_VERBOSE("check_compressed_eigen_vectors");
   const CompressedEigenSystemInfo cesi = read_compressed_eigen_system_info(path);
   const Coordinate size_node = cesi.total_site / cesi.node_site;
+  long is_failed = 0;
   for (int idx = 0; idx < product(size_node); ++idx) {
     if (idx % get_num_node() == get_id_node()) {
       const crc32_t crc = compute_crc32(
@@ -1613,6 +1614,7 @@ inline void check_compressed_eigen_vectors(const std::string& path)
       displayln(fname + ssprintf(": idx=%d computed=%08X previous=%08X", idx,
                                  crc, cesi.crcs[idx]));
       if (cesi.crcs[idx] != crc) {
+        is_failed += 1;
         displayln(
             fname +
             ssprintf(": WARNING mismatch idx=%d computed=%08X previous=%08X",
@@ -1621,15 +1623,17 @@ inline void check_compressed_eigen_vectors(const std::string& path)
       }
     }
   }
+  glb_sum(is_failed);
+  return is_failed > 0;
 }
 
-inline void resize_compressed_eigen_vectors(const std::string& old_path,
+inline bool resize_compressed_eigen_vectors(const std::string& old_path,
                                             const std::string& new_path,
                                             const Coordinate& size_node)
 // interface
 {
   if (does_file_exist_sync_node(new_path + "/metadata.txt")) {
-    return;
+    return false;
   }
   TIMER_VERBOSE("resize_compressed_eigen_vectors");
   displayln_info(fname + ssprintf(": old_path: '") + old_path + "'");
@@ -1670,7 +1674,7 @@ inline void resize_compressed_eigen_vectors(const std::string& old_path,
   displayln_info(fname + ssprintf(": loaded data checksum matched."));
   write_compressed_eigen_system_info(cesi_new, new_path);
   displayln_info(fname + ssprintf(": checking saved data checksum"));
-  check_compressed_eigen_vectors(new_path);
+  return check_compressed_eigen_vectors(new_path);
 }
 
 inline void decompressed_eigen_vectors_check_crc32(const std::string& path)
