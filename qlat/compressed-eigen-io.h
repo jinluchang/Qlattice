@@ -35,7 +35,8 @@
 #include <qlat/utils-io.h>
 #include <qlat/utils.h>
 
-QLAT_START_NAMESPACE
+namespace qlat
+{  //
 
 template <class T>
 void caxpy_single(std::complex<T>* res, const std::complex<T>& ca,
@@ -1602,7 +1603,8 @@ inline bool check_compressed_eigen_vectors(const std::string& path)
 // interface
 {
   TIMER_VERBOSE("check_compressed_eigen_vectors");
-  const CompressedEigenSystemInfo cesi = read_compressed_eigen_system_info(path);
+  const CompressedEigenSystemInfo cesi =
+      read_compressed_eigen_system_info(path);
   const Coordinate size_node = cesi.total_site / cesi.node_site;
   long is_failed = 0;
   for (int idx = 0; idx < product(size_node); ++idx) {
@@ -1796,4 +1798,4 @@ inline bool eigen_system_repartition(const Coordinate& new_size_node,
   }
 }
 
-QLAT_END_NAMESPACE
+}  // namespace qlat

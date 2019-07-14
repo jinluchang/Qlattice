@@ -5,7 +5,8 @@
 #include <iostream>
 #include <sstream>
 
-QLAT_START_NAMESPACE
+namespace qlat
+{  //
 
 struct Coordinate : public std::array<int, DIMN> {
   Coordinate() { std::array<int, DIMN>::fill(0); }
@@ -249,4 +250,4 @@ std::basic_ostream<CharT, Traits> &operator<<(
   return os << os_.str();
 }
 
-QLAT_END_NAMESPACE
+}  // namespace qlat

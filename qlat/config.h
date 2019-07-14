@@ -42,7 +42,8 @@
 #include <qutils/show.h>
 #include <qutils/timer.h>
 
-QLAT_START_NAMESPACE
+namespace qlat
+{  //
 
 const int DIMN = 4;
 
@@ -63,6 +64,6 @@ inline void warn(const std::string& str = "")
   }
 }
 
-QLAT_END_NAMESPACE
+}  // namespace qlat
 
 #include <qlat/coordinate.h>

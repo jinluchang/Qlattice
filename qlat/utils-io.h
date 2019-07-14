@@ -169,6 +169,7 @@ inline std::vector<std::string> qls_aux(const std::string& path)
     contents.push_back(path + "/" + d->d_name);
   }
   closedir(dir);
+  return contents;
 }
 
 inline std::vector<std::string> qls(const std::string& path)

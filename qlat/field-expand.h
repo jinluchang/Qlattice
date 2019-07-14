@@ -5,7 +5,7 @@
 #include <qlat/config.h>
 #include <qlat/utils.h>
 
-#include <mpi.h>
+#include <qlat/mpi.h>
 
 #include <map>
 #include <set>

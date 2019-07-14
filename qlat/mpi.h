@@ -4,7 +4,9 @@
 #include <qlat/utils-coordinate.h>
 #include <qlat/utils.h>
 
+#ifdef USE_MULTI_NODE
 #include <mpi.h>
+#endif
 
 QLAT_START_NAMESPACE
 

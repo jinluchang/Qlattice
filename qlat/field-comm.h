@@ -2,8 +2,8 @@
 
 #include <qlat/config.h>
 #include <qlat/utils.h>
+#include <qlat/mpi.h>
 
-#include <mpi.h>
 
 #include <map>
 #include <set>

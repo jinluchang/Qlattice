@@ -4,17 +4,12 @@
 
 #include <cmath>
 
-QLAT_START_NAMESPACE
+namespace qlat
+{  //
 
-inline bool qisnan(const float& arg)
-{
-  return std::isnan(arg);
-}
+inline bool qisnan(const float& arg) { return std::isnan(arg); }
 
-inline bool qisnan(const double& arg)
-{
-  return std::isnan(arg);
-}
+inline bool qisnan(const double& arg) { return std::isnan(arg); }
 
 template <class T>
 bool qisnan(const std::complex<T>& arg)
@@ -170,4 +165,4 @@ inline std::string show(const CoordinateD& c)
   return ssprintf("(%23.16e,%23.16e,%23.16e,%23.16e)", c[0], c[1], c[2], c[3]);
 }
 
-QLAT_END_NAMESPACE
+}  // namespace qlat

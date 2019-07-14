@@ -7,7 +7,8 @@
 #include <map>
 #include <utility>
 
-QLAT_START_NAMESPACE
+namespace qlat
+{  //
 
 template <class K, class M>
 struct Cache {
@@ -93,4 +94,4 @@ struct Cache {
   }
 };
 
-QLAT_END_NAMESPACE
+}  // namespace qlat

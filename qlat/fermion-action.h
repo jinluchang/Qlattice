@@ -1,6 +1,7 @@
 #pragma once
 
-QLAT_START_NAMESPACE
+namespace qlat
+{  //
 
 struct FermionAction {
   bool initialized;
@@ -103,4 +104,4 @@ struct LancArg {
   }
 };
 
-QLAT_END_NAMESPACE
+}  // namespace qlat
