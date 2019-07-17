@@ -34,6 +34,7 @@ fi
 
 # ./scripts/gsl.sh
 ./scripts/fftw.sh
+./scripts/fftwf.sh
 # ./scripts/cmake.sh
 # ./scripts/lapack.sh
 ./scripts/cuba.sh
