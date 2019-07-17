@@ -257,7 +257,8 @@ inline long load_configuration(GaugeField& gf, const std::string& job_tag, const
     file_size += load_gauge_field(gf, get_config_fn(job_tag, traj));
     if (job_tag == "24D-0.00107" or job_tag == "32D-0.00107" or
         job_tag == "48D-0.00107" or job_tag == "32Dfine-0.0001" or
-        job_tag == "24D-0.0174") {
+        job_tag == "24D-0.0174" or job_tag == "16I-0.01" or
+        job_tag == "24I-0.01") {
       twist_boundary_at_boundary(gf, -0.5, 3);
     }
   }
@@ -274,8 +275,8 @@ inline std::vector<FermionAction> get_fermion_actions(const std::string& job_tag
     fas.push_back(FermionAction(0.1, 8, 1.0, 1.0, true, true));
     fas.push_back(FermionAction(0.3, 8, 1.0, 1.0, true, true));
   } else if (job_tag == "24I-0.01" or job_tag == "16I-0.01") {
-    fas.push_back(FermionAction(0.01, 16, 1.8));
-    fas.push_back(FermionAction(0.04, 16, 1.8));
+    fas.push_back(FermionAction(0.01, 16, 1.8, 1.0, true, true));
+    fas.push_back(FermionAction(0.04, 16, 1.8, 1.0, true, true));
   } else if (job_tag == "48I-0.00078") {
     fas.push_back(FermionAction(0.00078, 10, 1.8, (1.5 + 0.5)*2.4, true, true));
     {
@@ -386,7 +387,8 @@ inline std::string get_low_modes_path(const std::string& job_tag, const int traj
     qassert(false);
     return "";
   } else {
-    return ssprintf("lancs/%s/qcdtraj=%d/huge-data-lanc", job_tag.c_str(), traj);
+    return ssprintf("lancs/%s/qcdtraj=%d/huge-data-lanc", job_tag.c_str(),
+                    traj);
   }
 }
 

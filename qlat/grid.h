@@ -51,16 +51,25 @@ inline int id_node_from_grid(const Grid::GridCartesian* UGrid)
   return index_from_coordinate(coor_node, size_node);
 }
 
-inline void grid_begin(int* argc, char** argv[],
-                       const Coordinate& size_node_ = Coordinate())
+inline void grid_begin(
+    int* argc, char** argv[],
+    const std::vector<Coordinate>& size_node_list = std::vector<Coordinate>())
 {
   using namespace Grid;
   using namespace Grid::QCD;
   system("rm /dev/shm/Grid*");
   Grid_init(argc, argv);
   const int num_node = init_mpi(argc, argv);
-  const Coordinate size_node =
-      size_node_ == Coordinate() ? plan_size_node(num_node) : size_node_;
+  Coordinate size_node;
+  for (int i = 0; i < (int)size_node_list.size(); ++i) {
+    size_node = size_node_list[i];
+    if (num_node == product(size_node)) {
+      break;
+    }
+  }
+  if (size_node == Coordinate()) {
+    size_node = plan_size_node(num_node);
+  }
   GridCartesian* UGrid = SpaceTimeGrid::makeFourDimGrid(
       grid_convert(size_node * 4), GridDefaultSimd(Nd, vComplexF::Nsimd()),
       grid_convert(size_node));
@@ -319,6 +328,8 @@ inline long cg_with_herm_sym_2(FermionField5d& sol, const FermionField5d& src,
                                const long max_num_iter = 50000)
 {
   TIMER_VERBOSE_FLOPS("cg_with_herm_sym_2(5d,5d,InvGrid)");
+  displayln_info(fname + ssprintf(": stop_rsd=%8.2E ; max_num_iter=%5ld",
+                                  stop_rsd, max_num_iter));
   sol.init(geo_resize(src.geo));
   qassert(sol.geo.eo == 1);
   qassert(src.geo.eo == 1);

@@ -610,31 +610,30 @@ inline void begin(const int id_node, const Coordinate& size_node)
 }
 
 inline void begin(int* argc, char** argv[], const Coordinate& size_node)
-// begin Qlat and initialize a new comm
+// not recommended
 {
   const int num_node = init_mpi(argc, argv);
   qassert(num_node == product(size_node));
   begin_comm(MPI_COMM_WORLD, size_node);
 }
 
-inline void begin(int* argc, char** argv[], const std::vector<Coordinate>& size_node_list)
+inline void begin(
+    int* argc, char** argv[],
+    const std::vector<Coordinate>& size_node_list = std::vector<Coordinate>())
+// begin Qlat and initialize a new comm
 {
   const int num_node = init_mpi(argc, argv);
+  Coordinate size_node;
   for (int i = 0; i < (int)size_node_list.size(); ++i) {
-    const Coordinate& size_node = size_node_list[i];
+    size_node = size_node_list[i];
     if (num_node == product(size_node)) {
-      begin_comm(MPI_COMM_WORLD, size_node);
-      return;
+      break;
     }
   }
-  qassert(false);
-}
-
-inline void begin(int* argc, char** argv[])
-// begin Qlat and initialize a new comm with default topology
-{
-  const int num_node = init_mpi(argc, argv);
-  begin_comm(MPI_COMM_WORLD, plan_size_node(num_node));
+  if (size_node == Coordinate()) {
+    size_node = plan_size_node(num_node);
+  }
+  begin_comm(MPI_COMM_WORLD, size_node);
 }
 
 inline void end()

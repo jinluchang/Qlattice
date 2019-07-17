@@ -23,11 +23,11 @@ QLAT_LDFLAGS=$(QLAT_LIB)/libfftw3.a $(QLAT_LIB)/libcuba.a $(QLAT_LIB)/libz.a -lm
 all: qlat.x
 
 run: qlat.x
-	. $(qlat_prefix)/setenv.sh ; time mpirun -x OMP_NUM_THREADS=2 --np 4 ./qlat.x
+	time mpirun -x OMP_NUM_THREADS=2 --np 2 ./qlat.x
 	# make clean
 
 qlat.x: *.C
-	. $(qlat_prefix)/setenv.sh ; time make build
+	time make build
 	[ -f $@ ]
 
 build:

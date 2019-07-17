@@ -1,6 +1,7 @@
 #include "setup.h"
 
-QLAT_START_NAMESPACE
+namespace qlat
+{  //
 
 typedef InverterDomainWall Inverter;
 
@@ -127,7 +128,7 @@ inline bool compute(const std::string& job_tag)
 
 // -----------------------------------------------------------------------------------
 
-QLAT_END_NAMESPACE
+}  // namespace qlat
 
 int main(int argc, char* argv[])
 {
