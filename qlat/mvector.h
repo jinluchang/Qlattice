@@ -120,7 +120,7 @@ Complex dot_product(const MvectorT<DIMN, T>& x, const MvectorT<DIMN, T>& y)
 template <int DIMN, class T>
 void set_zero(MvectorT<DIMN, T>& m)
 {
-  memset(&m, 0, sizeof(MvectorT<DIMN, T>));
+  std::memset((void*)&m, 0, sizeof(MvectorT<DIMN, T>));
 }
 
 template <int DIMN, class T>

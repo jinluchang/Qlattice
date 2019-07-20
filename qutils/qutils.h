@@ -171,7 +171,7 @@ template <class M>
 void set_zero(std::vector<M>& vec)
 {
   long size = vec.size() * sizeof(M);
-  std::memset(vec.data(), 0, size);
+  std::memset((void*)vec.data(), 0, size);
 }
 
 inline double qnorm(const double& x) { return x * x; }

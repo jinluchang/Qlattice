@@ -87,10 +87,10 @@ template <class M, class N>
 void assign_truncate(M& x, const N& y)
 {
   if (sizeof(M) <= sizeof(N)) {
-    memcpy(&x, &y, sizeof(M));
+    std::memcpy((void*)&x, (void*)&y, sizeof(M));
   } else {
     // if M has a larger size, than leave the extra space untouched
-    memcpy(&x, &y, sizeof(N));
+    std::memcpy((void*)&x, (void*)&y, sizeof(N));
   }
 }
 

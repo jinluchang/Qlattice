@@ -108,7 +108,7 @@ std::vector<crc32_t> dist_crc32s(const std::vector<DistData<M> >& dds,
   TIMER_VERBOSE_FLOPS("dist_crc32s");
   long total_bytes = 0;
   std::vector<crc32_t> ret(num_node, 0);
-  for (int k = 0; k < dds.size(); ++k) {
+  for (int k = 0; k < (int)dds.size(); ++k) {
     const DistData<M>& dd = dds[k];
     const int id_node = dd.id_node;
     ret[id_node] = crc32_par(ret[id_node], dd.data);
@@ -148,7 +148,6 @@ inline void dist_write_geo_info(const Geometry& geo, const int sizeof_M,
 {
   TIMER("dist_write_geo_info");
   const int id_node = geo.geon.id_node;
-  const int num_node = geo.geon.num_node;
   qassert(geo.is_only_local());
   if (0 == id_node) {
     check_dir(path, mode);
@@ -332,7 +331,7 @@ long dist_write_fields(const std::vector<ConstHandle<Field<M> > >& fs,
                        const int num_node, const std::string& path,
                        const mode_t mode = default_dir_mode())
 {
-  for (int k = 0; k < fs.size(); ++k) {
+  for (int k = 0; k < (int)fs.size(); ++k) {
     const Field<M>& f = fs[k]();
     const int id_node = f.geo.geon.id_node;
     if (id_node == 0) {

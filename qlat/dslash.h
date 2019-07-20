@@ -134,7 +134,7 @@ inline void deflate(HalfVector& hv_out, const HalfVector& hv_in,
   const long block_size = lm.cesb.block_vol_eo * ls * HalfVector::c_size;
   const long n_basis = lm.cesb.n_basis;
   const long n_vec = lm.cesc.n_vec;
-  qassert(n_vec == lm.eigen_values.size());
+  qassert(n_vec == (long)lm.eigen_values.size());
   BlockedHalfVector bhv;
   convert_half_vector(bhv, hv_in, lm.cesi.block_site);
   const Geometry geo = geo_reform(bhv.geo, n_basis);
@@ -230,7 +230,7 @@ inline void deflate(FermionField5d& out, const FermionField5d& in,
     qassert((xl[0] + xl[1] + xl[2] + xl[3]) % 2 == 2 - geo.eo);
     Vector<ComplexF> vhv = hv.get_elems(index);
     const Vector<WilsonVector> vin = in.get_elems_const(index);
-    qassert(vhv.size() == vin.size() * sizeof(WilsonVector) / sizeof(ComplexT));
+    qassert(vhv.size() == vin.size() * (long)sizeof(WilsonVector) / (long)sizeof(ComplexT));
     const Vector<Complex> vff((const Complex*)vin.data(), vhv.size());
     for (int m = 0; m < vhv.size(); ++m) {
       vhv[m] = vff[m];
@@ -248,7 +248,7 @@ inline void deflate(FermionField5d& out, const FermionField5d& in,
     qassert((xl[0] + xl[1] + xl[2] + xl[3]) % 2 == 2 - geo.eo);
     const Vector<ComplexF> vhv = hv.get_elems(index);
     Vector<WilsonVector> vout = out.get_elems(index);
-    qassert(vhv.size() == vout.size() * sizeof(WilsonVector) / sizeof(ComplexT));
+    qassert(vhv.size() == vout.size() * (long)sizeof(WilsonVector) / (long)sizeof(ComplexT));
     Vector<Complex> vff((Complex*)vout.data(), vhv.size());
     for (int m = 0; m < vhv.size(); ++m) {
       vff[m] = vhv[m];
@@ -374,8 +374,8 @@ inline void multiply_m_dwf_no_comm(FermionField5d& out,
   qassert(in.geo.multiplicity == fa.ls);
   qassert(out.geo.multiplicity == fa.ls);
   qassert(fa.mobius_scale == 1.0);
-  qassert(fa.bs.size() == fa.ls);
-  qassert(fa.cs.size() == fa.ls);
+  qassert((int)fa.bs.size() == fa.ls);
+  qassert((int)fa.cs.size() == fa.ls);
   const std::array<SpinMatrix, 4>& gammas =
       SpinMatrixConstants::get_cps_gammas();
   const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
@@ -486,8 +486,8 @@ inline void multiply_d_minus(FermionField5d& out, const FermionField5d& in,
   const FermionAction& fa = inv.fa;
   qassert(is_matching_geo(inv.geo, in.geo));
   qassert(in.geo.multiplicity == fa.ls);
-  qassert(fa.bs.size() == fa.ls);
-  qassert(fa.cs.size() == fa.ls);
+  qassert((int)fa.bs.size() == fa.ls);
+  qassert((int)fa.cs.size() == fa.ls);
   const GaugeField& gf = inv.gf;
   const Geometry geo1 = geo_resize(in.geo, 1);
   FermionField5d in1, out1;
@@ -527,8 +527,8 @@ inline void multiply_m_full(FermionField5d& out, const FermionField5d& in,
   qassert(geo.multiplicity == fa.ls);
   qassert(in.geo.multiplicity == fa.ls);
   qassert(out.geo.multiplicity == fa.ls);
-  qassert(fa.bs.size() == fa.ls);
-  qassert(fa.cs.size() == fa.ls);
+  qassert((int)fa.bs.size() == fa.ls);
+  qassert((int)fa.cs.size() == fa.ls);
   const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
   const SpinMatrix& unit = SpinMatrixConstants::get_unit();
   const SpinMatrix p_p = (ComplexT)0.5 * (unit + gamma5);

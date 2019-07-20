@@ -326,7 +326,6 @@ inline void set_multiply_simple_wilson_line_field_partial_comm(
 {
   TIMER("set_multiply_simple_wilson_line_field_partial_comm");
   const Geometry geo = geo_reform(gf1.geo);
-  const Geometry geo1 = geo_reform(gf1.geo, 1, 1);
   qassert(&wlf != &wlf1);
   wlf.init(geo);
   for (size_t i = 0; i < path.size(); ++i) {

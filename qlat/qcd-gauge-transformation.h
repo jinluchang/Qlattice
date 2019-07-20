@@ -260,7 +260,6 @@ inline void invert(FermionField4d& out, const FermionField4d& in,
 {
   TIMER_VERBOSE("invert(out,in,gt_inv)");
   const Inverter& inv = gtinv.inv();
-  const Geometry geo = geo_reform(inv.geo);
   FermionField4d src;
   ff_apply_gauge_transformation(src, in, gtinv.gt_inv);
   invert(out, src, inv);

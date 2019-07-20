@@ -57,14 +57,13 @@ struct Cache {
   //
   void gc()
   {
-    if (m.size() >= limit) {
+    if ((long)m.size() >= limit) {
       TIMER_VERBOSE("Cache::gc");
       displayln_info(ssprintf("%s::%s: before gc: %d / %d.", cname().c_str(),
                               name.c_str(), m.size(), limit));
       std::vector<int> idxes;
       for (typename std::map<K, std::pair<long, M> >::iterator it = m.begin();
            it != m.end(); ++it) {
-        const K& k = it->first;
         const long i = (it->second).first;
         idxes.push_back(i);
       }

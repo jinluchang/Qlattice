@@ -571,14 +571,14 @@ inline void vbflush(VBFile& fp)
   if (fp.mode == "r") {
     qread_data(get_data(fp.buffer), fp.fp);
     long pos = 0;
-    for (long i = 0; i < fp.entries.size(); ++i) {
+    for (long i = 0; i < (long)fp.entries.size(); ++i) {
       Vector<uint8_t> d = fp.entries[i];
       memcpy(d.data(), &fp.buffer[pos], d.size());
       pos += d.size();
     }
   } else if (fp.mode == "w") {
     long pos = 0;
-    for (long i = 0; i < fp.entries.size(); ++i) {
+    for (long i = 0; i < (long)fp.entries.size(); ++i) {
       const Vector<uint8_t> d = fp.entries[i];
       memcpy(&fp.buffer[pos], d.data(), d.size());
       pos += d.size();
@@ -630,7 +630,7 @@ inline int vbseek(VBFile& fp, const long offset, const int whence)
 {
   TIMER("vbseek");
   vbflush(fp);
-  fseek(fp.fp, offset, whence);
+  return fseek(fp.fp, offset, whence);
 }
 
 struct VFile
@@ -1250,7 +1250,7 @@ inline void convert_half_vector_bfm_format(Vector<ComplexF> bfm_data,
   TIMER("convert_half_vector_bfm_format");
   const long size = bfm_data.size();
   qassert(hv.geo.is_only_local());
-  qassert(hv.field.size() == size);
+  qassert((long)hv.field.size() == size);
 #pragma omp parallel for
   for (long m = 0; m < size / 2; ++m) {
     bfm_data[m * 2] = hv.field[m];
@@ -1299,7 +1299,7 @@ inline long load_compressed_eigen_vectors(std::vector<double>& eigen_values,
     timer.flops += total_bytes;
   }
   glb_sum_byte_vec(get_data(crcs));
-  for (int j = 0; j < crcs.size(); ++j) {
+  for (int j = 0; j < (int)crcs.size(); ++j) {
     if (crcs[j] != cesi.crcs[j]) {
       displayln_info(ssprintf("file-idx=%d loaded=%08X metadata=%08X", j,
                               crcs[j], cesi.crcs[j]));
@@ -1395,7 +1395,7 @@ inline crc32_t resize_compressed_eigen_vectors_node(
   } else if (crcs.size() != crcs_acc.size()) {
     qassert(false);
   }
-  for (int i = 0; i < crcs.size(); ++i) {
+  for (int i = 0; i < (int)crcs.size(); ++i) {
     crcs_acc[i] ^= crcs[i];
   }
   return save_node_data(
@@ -1666,7 +1666,7 @@ inline bool resize_compressed_eigen_vectors(const std::string& old_path,
   glb_sum_byte_vec(get_data(cesi_new.crcs));
   glb_sum_byte_vec(get_data(crcs_acc));
   qassert(crcs_acc.size() == cesi_old.crcs.size());
-  for (int j = 0; j < cesi_old.crcs.size(); ++j) {
+  for (int j = 0; j < (int)cesi_old.crcs.size(); ++j) {
     if (crcs_acc[j] != cesi_old.crcs[j]) {
       displayln_info(ssprintf("file-idx=%d loaded=%08X metadata=%08X", j,
                               crcs_acc[j], cesi.crcs[j]));
@@ -1783,8 +1783,8 @@ inline bool eigen_system_repartition(const Coordinate& new_size_node,
   } else if (new_npath == npath or new_npath == "") {
     qassert(not does_file_exist_sync_node(npath + "-repartition-new.tmp"));
     qassert(not does_file_exist_sync_node(npath + "-repartition-old.tmp"));
-    resize_compressed_eigen_vectors(npath, npath + "-repartition-new.tmp",
-                                    new_size_node);
+    is_failed = resize_compressed_eigen_vectors(
+        npath, npath + "-repartition-new.tmp", new_size_node);
     sync_node();
     if (does_file_exist_sync_node(npath +
                                   "-repartition-new.tmp/metadata.txt")) {
@@ -1793,9 +1793,11 @@ inline bool eigen_system_repartition(const Coordinate& new_size_node,
       qremove_all_info(npath + "-repartition-old.tmp");
     }
   } else {
-    resize_compressed_eigen_vectors(npath, new_npath, new_size_node);
+    is_failed =
+        resize_compressed_eigen_vectors(npath, new_npath, new_size_node);
     sync_node();
   }
+  return is_failed;
 }
 
 }  // namespace qlat

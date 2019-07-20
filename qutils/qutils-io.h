@@ -64,7 +64,8 @@ inline std::string qcat(const std::string& path)
   const long length = ftell(fp);
   fseek(fp, 0, SEEK_SET);
   std::string ret(length, 0);
-  fread(&ret[0], 1, length, fp);
+  const long length_actual = fread(&ret[0], 1, length, fp);
+  qassert(length == length_actual);
   qclose(fp);
   return ret;
 }

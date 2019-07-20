@@ -28,7 +28,7 @@ struct GeometryNode {
   Coordinate coor_node;
   // 0 <= coor_node[i] < size_node[i]
   //
-  inline void init() { memset(this, 0, sizeof(GeometryNode)); }
+  inline void init() { memset((void*)this, 0, sizeof(GeometryNode)); }
   inline void init(const int id_node_, const Coordinate& size_node_)
   {
     initialized = true;

@@ -67,7 +67,7 @@ inline void make_local_deflation_plan(
       // Flip all gt link in [0, target_border) to -1
       long num_flip = 0;
       // #pragma omp parallel for
-      for (size_t index = 0; index < geo.local_volume(); index++) {
+      for (long index = 0; index < geo.local_volume(); index++) {
         Coordinate local_coor = geo.coordinate_from_index(index);
         Coordinate global_coor = geo.coordinate_g_from_l(local_coor);
         if ((target_border < global_size[mu] / 2 && global_coor[mu] >= 0 &&
@@ -90,7 +90,7 @@ inline void make_local_deflation_plan(
     double sum_real = 0.;
     double sum_imag = 0.;
     // TODO: Test!!!
-    for (size_t index = 0; index < geo.local_volume();
+    for (long index = 0; index < geo.local_volume();
          index++) {  // We are only working with vectors so it seems we don't
                      // need to worry about communication?
       sum_real += u1gts[i].field[index].real();
@@ -244,10 +244,10 @@ inline void scalar_multiplication_by_partition(void* out_vct,
       outp[b1] = bfmp[b1] * (ComplexF)b[p];
     }
 
-    size_t m2 = m + site_size_4d / 2;
+    // size_t m2 = m + site_size_4d / 2;
     size_t b2;
-    Coordinate local_coor2 = geo.coordinate_from_index(m2);
-    Coordinate global_coor2 = geo.coordinate_g_from_l(local_coor2);
+    // Coordinate local_coor2 = geo.coordinate_from_index(m2);
+    // Coordinate global_coor2 = geo.coordinate_g_from_l(local_coor2);
     p = qlat::index_from_coordinate(global_coor1 / partition_size, tw_par);
     for (size_t s = 0; s < bfm_vct_block_size; s++) {
       b2 = (m / 2 * bfm_vct_block_size + s) * 2 + 1;
@@ -268,9 +268,9 @@ inline void fft_convolution(std::vector<Complex>& out,
   assert(x.size() == y.size());
   out.resize(x.size());
 
-  static fftw_complex* x_in;
+  // static fftw_complex* x_in;
   static fftw_complex* x_out;
-  static fftw_complex* y_in;
+  // static fftw_complex* y_in;
   static fftw_complex* y_out;
 
   static fftw_complex* z_in;
@@ -288,9 +288,9 @@ inline void fft_convolution(std::vector<Complex>& out,
   if (not initialized) {
     N = x.size();
 
-    x_in = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * N);
+    // x_in = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * N);
     x_out = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * N);
-    y_in = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * N);
+    // y_in = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * N);
     y_out = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * N);
 
     z_in = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * N);
@@ -305,7 +305,7 @@ inline void fft_convolution(std::vector<Complex>& out,
     initialized = true;
   }
 
-  assert(N == x.size());
+  assert(N == (int)x.size());
 
   std::memcpy(f_in, x.data(), sizeof(fftw_complex) * N);
   fftw_execute(p_forward);
@@ -324,7 +324,7 @@ inline void fft_convolution(std::vector<Complex>& out,
 
   fftw_execute(p_backward);
 
-  std::memcpy(out.data(), z_out, sizeof(fftw_complex) * N);
+  std::memcpy((void*)out.data(), (void*)z_out, sizeof(fftw_complex) * N);
 
   for (int i = 0; i < N; i++) {
     out[i] /= (double)N;

@@ -235,7 +235,7 @@ inline CommPlan make_comm_plan(const CommMarks& marks)
                   get_comm(), &send_reqs[k]);
         k += 1;
       }
-      for (int i = 0; i < ret.send_msg_infos.size(); ++i) {
+      for (int i = 0; i < (int)ret.send_msg_infos.size(); ++i) {
         CommMsgInfo& cmi = ret.send_msg_infos[i];
         MPI_Recv(&cmi, sizeof(CommMsgInfo), MPI_BYTE, MPI_ANY_SOURCE, mpi_tag,
                  get_comm(), MPI_STATUS_IGNORE);
@@ -284,9 +284,9 @@ inline CommPlan make_comm_plan(const CommMarks& marks)
       const std::vector<long>& g_offsets = it->second;
       qassert(src_id_node == ret.recv_msg_infos[k].id_node);
       qassert(current_buffer_idx == ret.recv_msg_infos[k].buffer_idx);
-      qassert(g_offsets.size() == ret.recv_msg_infos[k].size);
+      qassert((long)g_offsets.size() == ret.recv_msg_infos[k].size);
       long current_offset = -1;
-      for (long i = 0; i < g_offsets.size(); ++i) {
+      for (long i = 0; i < (long)g_offsets.size(); ++i) {
         const long g_offset = g_offsets[i];
         const long offset = offset_from_g_offset(g_offset, geo);
         if (offset != current_offset) {
@@ -317,9 +317,9 @@ inline CommPlan make_comm_plan(const CommMarks& marks)
       const std::vector<long>& g_offsets = it->second;
       qassert(dst_id_node == ret.send_msg_infos[k].id_node);
       qassert(current_buffer_idx == ret.send_msg_infos[k].buffer_idx);
-      qassert(g_offsets.size() == ret.send_msg_infos[k].size);
+      qassert((long)g_offsets.size() == ret.send_msg_infos[k].size);
       long current_offset = -1;
-      for (long i = 0; i < g_offsets.size(); ++i) {
+      for (long i = 0; i < (long)g_offsets.size(); ++i) {
         const long g_offset = g_offsets[i];
         const long offset = offset_from_g_offset(g_offset, geo);
         if (offset != current_offset) {
@@ -383,7 +383,7 @@ void refresh_expanded(Field<M>& f, const CommPlan& plan)
   std::vector<M> send_buffer(plan.total_send_size);
   std::vector<M> recv_buffer(plan.total_recv_size);
 #pragma omp parallel for
-  for (long i = 0; i < plan.send_pack_infos.size(); ++i) {
+  for (long i = 0; i < (long)plan.send_pack_infos.size(); ++i) {
     const CommPackInfo& cpi = plan.send_pack_infos[i];
     memcpy(&send_buffer[cpi.buffer_idx], &f.get_elem(cpi.offset),
            cpi.size * sizeof(M));
@@ -414,7 +414,7 @@ void refresh_expanded(Field<M>& f, const CommPlan& plan)
     sync_node();
   }
 #pragma omp parallel for
-  for (long i = 0; i < plan.recv_pack_infos.size(); ++i) {
+  for (long i = 0; i < (long)plan.recv_pack_infos.size(); ++i) {
     const CommPackInfo& cpi = plan.recv_pack_infos[i];
     memcpy(&f.get_elem(cpi.offset), &recv_buffer[cpi.buffer_idx],
            cpi.size * sizeof(M));
@@ -497,7 +497,7 @@ void refresh_expanded_m2(Field<M>& f)
 //     int id_this, idt, idf;
 //     // assuming periodic boundary condition. maybe need some fixing?
 //     id_this = get_id_node();
-//     coor_this = qlat::coordinate_from_index(id_this, \
+//     coor_this = qlat::coordinate_from_index(id_this,
 //         field_comm.geo.geon.size_node);
 //     coort = coor_this - node_pos;
 //     regularize_coordinate(coort, field_comm.geo.geon.size_node);
@@ -509,7 +509,7 @@ void refresh_expanded_m2(Field<M>& f)
 //
 //     MPI_Request req;
 //     MPI_Isend((void*)send, size_bytes, MPI_BYTE, idt, 0, get_comm(), &req);
-//     const int ret = MPI_Recv((void*)recv, size_bytes, MPI_BYTE, \
+//     const int ret = MPI_Recv((void*)recv, size_bytes, MPI_BYTE,
 //         idf, 0, get_comm(), MPI_STATUS_IGNORE);
 //     MPI_Wait(&req, MPI_STATUS_IGNORE);
 //     qassert(!ret);

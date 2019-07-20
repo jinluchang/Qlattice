@@ -32,7 +32,7 @@ struct Geometry {
     }
   }
   //
-  void init() { memset(this, 0, sizeof(Geometry)); }
+  void init() { memset((void*)this, 0, sizeof(Geometry)); }
   void init(const Coordinate total_site, const int multiplicity_)
   {
     if (!initialized) {
@@ -184,8 +184,8 @@ struct Geometry {
   bool is_on_node(const Coordinate& x) const
   {
     for (int mu = 0; mu < DIMN; mu++) {
-      if (not(-expansion_left[mu] <= x[mu] and
-                  x[mu] < node_site[mu] + expansion_right[mu] or
+      if (not((-expansion_left[mu] <= x[mu] and
+               x[mu] < node_site[mu] + expansion_right[mu]) or
               geon.size_node[mu] == 1)) {
         return false;
       }
@@ -197,7 +197,7 @@ struct Geometry {
   bool is_local(const Coordinate& x) const
   {
     for (int mu = 0; mu < DIMN; mu++) {
-      if (not(0 <= x[mu] and x[mu] < node_site[mu] or
+      if (not((0 <= x[mu] and x[mu] < node_site[mu]) or
               geon.size_node[mu] == 1)) {
         return false;
       }

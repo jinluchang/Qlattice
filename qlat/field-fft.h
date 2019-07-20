@@ -141,14 +141,14 @@ void fft_complex_field_dir(Field<M>& field, const int dir, const bool is_forward
   shuffle_field(fft_fields, field, sp);
 #pragma omp parallel for
   for (int i = 0; i < (int)fft_fields.size(); ++i) {
-    if (not (get_data_size(fft_fields[i]) == nc_size * sizeof(Complex))) {
+    if (not (get_data_size(fft_fields[i]) == nc_size * (int)sizeof(Complex))) {
       displayln(fname +
                 ssprintf(": get_data_size=%d ; nc_size*sizeof(Complex)=%d",
                          get_data_size(fft_fields[i]),
-                         nc_size * sizeof(Complex)));
-      qassert(get_data_size(fft_fields[i]) == nc_size * sizeof(Complex));
+                         nc_size * (int)sizeof(Complex)));
+      qassert(get_data_size(fft_fields[i]) == nc_size * (int)sizeof(Complex));
     }
-    memcpy((void*)&fftdatac[nc_size * i], (void*)get_data(fft_fields[i]).data(), get_data_size(fft_fields[i]));
+    std::memcpy((void*)&fftdatac[nc_size * i], (void*)get_data(fft_fields[i]).data(), get_data_size(fft_fields[i]));
   }
   {
     TIMER("fft_complex_field_dir-fftw");
@@ -156,7 +156,7 @@ void fft_complex_field_dir(Field<M>& field, const int dir, const bool is_forward
   }
 #pragma omp parallel for
   for (int i = 0; i < (int)fft_fields.size(); ++i) {
-    memcpy((void*)get_data(fft_fields[i]).data(), (void*)&fftdatac[nc_size * i], get_data_size(fft_fields[i]));
+    std::memcpy((void*)get_data(fft_fields[i]).data(), (void*)&fftdatac[nc_size * i], get_data_size(fft_fields[i]));
   }
   shuffle_field_back(field, fft_fields, sp);
   fftw_free(fftdatac);

@@ -100,10 +100,10 @@ void shuffle_field(std::vector<Field<M> >& fs, const Field<M>& f,
 #pragma omp parallel for
   for (size_t i = 0; i < sp.recv_pack_infos.size(); ++i) {
     const ShufflePlanRecvPackInfo& pi = sp.recv_pack_infos[i];
-    qassert(0 <= pi.local_geos_idx && pi.local_geos_idx < fs.size());
-    memcpy(fs[pi.local_geos_idx].get_elems(pi.field_idx).data(),
-           &recv_buffer[pi.buffer_idx * geo.multiplicity],
-           pi.size * geo.multiplicity * sizeof(M));
+    qassert(0 <= pi.local_geos_idx && pi.local_geos_idx < (int)fs.size());
+    std::memcpy(fs[pi.local_geos_idx].get_elems(pi.field_idx).data(),
+                &recv_buffer[pi.buffer_idx * geo.multiplicity],
+                pi.size * geo.multiplicity * sizeof(M));
   }
 }
 

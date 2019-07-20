@@ -102,7 +102,7 @@ inline Coordinate operator-(const Coordinate &coor)
 inline long product(const Coordinate &coor)
 {
   long ret = 1;
-  for (int i = 0; i < coor.size(); i++) {
+  for (int i = 0; i < (int)coor.size(); i++) {
     ret *= coor[i];
   }
   return ret;
@@ -111,7 +111,7 @@ inline long product(const Coordinate &coor)
 inline int sum(const Coordinate &coor)
 {
   int ret = 0;
-  for (int i = 0; i < coor.size(); i++) {
+  for (int i = 0; i < (int)coor.size(); i++) {
     ret += coor[i];
   }
   return ret;

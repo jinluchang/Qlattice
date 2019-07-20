@@ -136,7 +136,7 @@ MvectorT<DIMN, T> operator*(const MatrixT<DIMN, T>& x,
 template <int DIMN, class T>
 void set_zero(MatrixT<DIMN, T>& m)
 {
-  memset(&m, 0, sizeof(MatrixT<DIMN, T>));
+  std::memset((void*)&m, 0, sizeof(MatrixT<DIMN, T>));
 }
 
 template <int DIMN, class T>
