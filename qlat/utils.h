@@ -123,8 +123,9 @@ inline bool is_integer(const std::array<M, N>& v)
 }
 
 template <class M>
-inline void random_permute(std::vector<M>& vec, RngState& rs)
+inline void random_permute(std::vector<M>& vec, const RngState& rs_)
 {
+  RngState rs = rs_;
   const long size = (long)vec.size();
   M tmp;
   for (long k = 0; k < size; ++k) {

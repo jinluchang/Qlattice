@@ -64,8 +64,7 @@ inline void set_mom_stochastic_qed_field_feynman(Field<T>& f, const Geometry& ge
     std::array<double, DIMN> kk;
     for (int i = 0; i < DIMN; i++) {
       const Coordinate total_site = geo.total_site();
-      kg[i] = smod(kg[i], total_site[i]);
-      kk[i] = 2.0 * PI * kg[i] / (double)total_site[i];
+      kk[i] = 2.0 * PI * smod(kg[i], total_site[i]) / (double)total_site[i];
       s2 += 4.0 * sqr(std::sin(kk[i] / 2.0));
     }
     Vector<Complex> fv = f.get_elems(kl);
