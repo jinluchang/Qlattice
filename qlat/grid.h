@@ -1,14 +1,35 @@
 #pragma once
 
-#define QLAT_GRID
-
 #include <qlat/qlat.h>
+
+#ifdef NO_GRID
+
+namespace qlat
+{  //
+
+typedef InverterDomainWall InverterDomainWallGrid;
+
+inline void grid_begin(
+    int* argc, char** argv[],
+    const std::vector<Coordinate>& size_node_list = std::vector<Coordinate>())
+{
+  begin(argc, argv, size_node_list);
+}
+
+void grid_end() { end(); }
+
+}  // namespace qlat
+
+#else
+
+#define QLAT_GRID
 
 #include <Grid/Grid.h>
 
 #include <cstdlib>
 
-QLAT_START_NAMESPACE
+namespace qlat
+{  //
 
 inline std::vector<int> grid_convert(const Coordinate& x)
 {
@@ -67,7 +88,7 @@ inline void grid_begin(
       break;
     }
   }
-  if (size_node == Coordinate()) {
+  if (num_node != product(size_node)) {
     size_node = plan_size_node(num_node);
   }
   GridCartesian* UGrid = SpaceTimeGrid::makeFourDimGrid(
@@ -85,6 +106,7 @@ void grid_end()
 {
   Grid::Grid_finalize();
   system("rm /dev/shm/Grid*");
+  end();
 }
 
 void grid_convert(Grid::QCD::LatticeGaugeFieldF& ggf, const GaugeField& gf)
@@ -105,7 +127,8 @@ void grid_convert(Grid::QCD::LatticeGaugeFieldF& ggf, const GaugeField& gf)
     std::array<ComplexT, sizeof(LorentzColourMatrixF) / sizeof(ComplexF)>& ds =
         *((std::array<ComplexT, sizeof(LorentzColourMatrixF) /
                                     sizeof(ComplexF)>*)ms.data());
-    qassert(sizeof(LorentzColourMatrixF) == ms.data_size() / sizeof(ComplexT) * sizeof(ComplexF));
+    qassert(sizeof(LorentzColourMatrixF) ==
+            ms.data_size() / sizeof(ComplexT) * sizeof(ComplexF));
     qassert(fs.size() * sizeof(ComplexT) == ms.data_size());
     qassert(fs.size() == ds.size());
     for (int i = 0; i < fs.size(); ++i) {
@@ -287,8 +310,8 @@ inline void multiply_m_grid(FermionField5d& out, const FermionField5d& in,
 }
 
 inline void invert_grid_no_dminus(FermionField5d& sol,
-                                   const FermionField5d& src,
-                                   const InverterDomainWallGrid& inv)
+                                  const FermionField5d& src,
+                                  const InverterDomainWallGrid& inv)
 // sol do not need to be initialized
 {
   TIMER_VERBOSE("invert_grid_no_dminus(5d,5d,InvGrid)");
@@ -350,15 +373,17 @@ inline long cg_with_herm_sym_2(FermionField5d& sol, const FermionField5d& src,
 }
 
 inline void invert(FermionField5d& sol, const FermionField5d& src,
-                    const InverterDomainWallGrid& inv)
+                   const InverterDomainWallGrid& inv)
 {
   invert_with_cg(sol, src, inv, cg_with_herm_sym_2);
 }
 
 inline void invert(FermionField4d& sol, const FermionField4d& src,
-                    const InverterDomainWallGrid& inv)
+                   const InverterDomainWallGrid& inv)
 {
   invert_dwf(sol, src, inv);
 }
 
-QLAT_END_NAMESPACE
+}  // namespace qlat
+
+#endif

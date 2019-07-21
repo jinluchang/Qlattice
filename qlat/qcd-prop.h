@@ -215,7 +215,7 @@ void smear_propagator(Propagator4dT<T>& prop, const GaugeFieldT<T>& gf1,
             dir >= 0 ? gf1.get_elem(xl, dir)
                      : (ColorMatrixT<T>)matrix_adjoint(
                            gf1.get_elem(coordinate_shifts(xl, dir), -dir - 1));
-        wm += mom_factors[dir + 4] * link * prop1.get_elem(xl1);
+        wm += mom_factors[dir + 4] * (link * prop1.get_elem(xl1));
       }
     }
   }

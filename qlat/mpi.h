@@ -630,7 +630,7 @@ inline void begin(
       break;
     }
   }
-  if (size_node == Coordinate()) {
+  if (num_node != product(size_node)) {
     size_node = plan_size_node(num_node);
   }
   begin_comm(MPI_COMM_WORLD, size_node);

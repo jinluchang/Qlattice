@@ -42,12 +42,17 @@ struct LowModes {
 inline long load_low_modes(LowModes& lm, const std::string& path)
 {
   TIMER_VERBOSE("load_low_modes");
-  const long total_bytes = load_compressed_eigen_vectors(
-      lm.eigen_values, lm.cesi, lm.cesb, lm.cesc, path);
-  if (0 != total_bytes) {
-    lm.initialized = true;
+  if (path == "/dev/null") {
+    lm.initialized = false;
+    return 0;
+  } else {
+    const long total_bytes = load_compressed_eigen_vectors(
+        lm.eigen_values, lm.cesi, lm.cesb, lm.cesc, path);
+    if (0 != total_bytes) {
+      lm.initialized = true;
+    }
+    return total_bytes;
   }
-  return total_bytes;
 }
 
 inline long load_or_compute_low_modes(LowModes& lm, const std::string& path,
