@@ -84,6 +84,14 @@ inline void set_mom_stochastic_qed_field_feynman(Field<T>& f, const Geometry& ge
   }
 }
 
+template <class T>
+inline void set_stochastic_qed_field_feynman(Field<T>& f, const Geometry& geo, const RngState& rs)
+{
+  TIMER("set_stochastic_qed_field_feynman");
+  set_mom_stochastic_qed_field_feynman(f, geo, rs);
+  fft_complex_field(f, false);
+}
+
 inline void prop_mom_photon_invert(QedGaugeField& egf,
                                    const std::array<double, DIMN>& momtwist)
 // Feynman Gauge
