@@ -662,50 +662,17 @@ long dist_read_field_double(Field<M>& f, const std::string& path)
   }
 }
 
-inline bool dist_repartition(const Coordinate& new_size_node,
-                             const std::string& path,
-                             const std::string& new_path = "")
-// interface_function
+inline bool is_dist_field(const std::string& path)
 {
-  TIMER_VERBOSE("dist_repartition");
-  bool is_failed = false;
-  const std::string npath = remove_trailing_slashes(path);
-  if (std::string(npath, npath.length() - 4, 4) == ".tmp") {
-    return true;
-  }
-  const std::string new_npath = remove_trailing_slashes(new_path);
-  if (not(does_file_exist_sync_node(npath + "/geo-info.txt") and
-          does_file_exist_sync_node(npath + "/checkpoint"))) {
-    displayln_info(
-        ssprintf("repartition: WARNING: not a folder to partition: '%s'.",
-                 npath.c_str()));
-    return true;
-  }
-  Geometry geo;
-  int sizeof_M;
-  Coordinate size_node;
-  dist_read_geo_info(geo, sizeof_M, size_node, npath);
-  if (size_node == new_size_node and (new_path == "" or new_npath == npath)) {
-    displayln_info(
-        ssprintf("repartition: size_node=%s ; no need to repartition '%s'.",
-                 show(size_node).c_str(), npath.c_str()));
-    return true;
-  } else {
-    Field<float> f;
-    dist_read_field(f, npath);
-    if (new_npath == npath or new_npath == "") {
-      qassert(not does_file_exist_sync_node(npath + "-repartition-new.tmp"));
-      qassert(not does_file_exist_sync_node(npath + "-repartition-old.tmp"));
-      dist_write_field(f, new_size_node, npath + "-repartition-new.tmp");
-      // TODO: dist_write_geo_info(...)
-      qrename_info(npath, npath + "-repartition-old.tmp");
-      qrename_info(npath + "-repartition-new.tmp", npath);
-      qremove_all_info(npath + "-repartition-old.tmp");
-    } else {
-      dist_write_field(f, new_size_node, new_npath);
+  TIMER("is_dist_field");
+  long nfile = 0;
+  if (get_id_node() == 0) {
+    if (does_file_exist(path + "/geo-info.txt") and does_file_exist(path + "/checkpoint")) {
+      nfile = 1;
     }
-    return is_failed;
   }
+  bcast(get_data(nfile));
+  return nfile > 0;
 }
 
 QLAT_END_NAMESPACE

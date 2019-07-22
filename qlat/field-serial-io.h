@@ -9,7 +9,8 @@
 #include <fstream>
 #include <iostream>
 
-QLAT_START_NAMESPACE
+namespace qlat
+{  //
 
 inline Coordinate get_default_serial_new_size_node(const Geometry& geo)
 {
@@ -367,4 +368,255 @@ crc32_t field_crc32(const Field<M>& f)
 //   sync_node();
 // }
 
-QLAT_END_NAMESPACE
+inline std::string make_field_header(const Geometry& geo, const int sizeof_M,
+                                     const crc32_t crc32)
+{
+  const Coordinate total_site = geo.total_site();
+  std::ostringstream out;
+  // const std::string todo = "NOT yet implemented";
+  out << "BEGIN_FIELD_HEADER" << std::endl;
+  out << "field_version = 1.0" << std::endl;
+  out << "total_site[0] = " << total_site[0] << std::endl;
+  out << "total_site[1] = " << total_site[1] << std::endl;
+  out << "total_site[2] = " << total_site[2] << std::endl;
+  out << "total_site[3] = " << total_site[3] << std::endl;
+  out << "multiplicity = " << geo.multiplicity << std::endl;
+  out << "sizeof(M) = " << sizeof_M << std::endl;
+  out << ssprintf("field_crc32 = %08X", crc32) << std::endl;
+  out << "END_HEADER" << std::endl;
+  return out.str();
+}
+
+template <class M>
+long write_field(const Field<M>& f, const std::string& path,
+                 const Coordinate& new_size_node_ = Coordinate())
+// assume new_size_node is properly choosen so that concatenate the new fields
+// would be correct. eg. new_size_node = Coordinate(1,1,1,2)
+{
+  TIMER_VERBOSE_FLOPS("write_field");
+  qassert(is_initialized(f));
+  const Geometry& geo = f.geo;
+  const crc32_t crc32 = field_crc32(f);
+  qtouch_info(path + ".partial", make_field_header(geo, sizeof(M), crc32));
+  const Coordinate new_size_node = new_size_node_ == Coordinate()
+                                       ? get_default_serial_new_size_node(geo)
+                                       : new_size_node_;
+  const long file_size =
+      serial_write_field(f, path + ".partial", new_size_node);
+  qrename_info(path + ".partial", path);
+  timer.flops += file_size;
+  return file_size;
+}
+
+template <class M>
+long read_field(Field<M>& f, const std::string& path,
+                const Coordinate& new_size_node_ = Coordinate())
+// assume new_size_node is properly choosen so that concatenate the new fields
+// would be correct. eg. new_size_node = Coordinate(1,1,1,2)
+{
+  if (does_file_exist_sync_node(path + "/geo-info.txt")) {
+    return dist_read_field(f, path);
+  }
+  TIMER_VERBOSE_FLOPS("read_field");
+  Geometry geo;
+  crc32_t crc = 0;
+  if (get_id_node() == 0) {
+    FILE* fp = qopen(path, "r");
+    qassert(fp != NULL);
+    const std::string header = "BEGIN_FIELD_HEADER\n";
+    std::vector<char> check_line(header.size(), 0);
+    qassert(1 == fread(check_line.data(), header.size(), 1, fp));
+    qassert(std::string(check_line.data(), check_line.size()) == header);
+    std::vector<std::string> infos;
+    infos.push_back(header);
+    while (infos.back() != "END_HEADER\n" && infos.back() != "") {
+      infos.push_back(qgetline(fp));
+    }
+    Coordinate total_site;
+    int multiplicity;
+    int sizeof_M;
+    for (int m = 0; m < 4; ++m) {
+      reads(total_site[m],
+            info_get_prop(infos, ssprintf("total_site[%d] = ", m)));
+    }
+    reads(multiplicity, info_get_prop(infos, "multiplicity = "));
+    reads(sizeof_M, info_get_prop(infos, "sizeof(M) = "));
+    crc = read_crc32(info_get_prop(infos, "field_crc32 = "));
+    if (sizeof_M != sizeof(M)) {
+      displayln(
+          fname +
+          ssprintf(
+              ": WARNING: sizeof(M) do not match. Expected %d, Actual file %d",
+              sizeof(M), sizeof_M));
+    }
+    qassert((multiplicity * sizeof_M) % sizeof(M) == 0);
+    multiplicity = (multiplicity * sizeof_M) / sizeof(M);
+    geo.init(total_site, multiplicity);
+    qclose(fp);
+  }
+  bcast(Vector<Geometry>(&geo, 1));
+  bcast(Vector<crc32_t>(&crc, 1));
+  f.init(geo, geo.multiplicity);
+  const long data_size =
+      geo.geon.num_node * geo.local_volume() * geo.multiplicity * sizeof(M);
+  const Coordinate new_size_node = new_size_node_ == Coordinate()
+                                       ? get_default_serial_new_size_node(geo)
+                                       : new_size_node_;
+  const long file_size = serial_read_field_par(
+      f, path, new_size_node, -data_size, SEEK_END);
+  qassert(crc == field_crc32(f));
+  qassert(file_size == data_size);
+  timer.flops += file_size;
+  return file_size;
+}
+
+template <class M>
+long write_field_float_from_double(
+    const Field<M>& f, const std::string& path,
+    const Coordinate& new_size_node = Coordinate())
+// interface_function
+{
+  TIMER_VERBOSE_FLOPS("write_field_float_from_double");
+  Field<float> ff;
+  convert_field_float_from_double(ff, f);
+  to_from_big_endian_32(get_data(ff));
+  const long total_bytes = write_field(ff, path, new_size_node);
+  timer.flops += total_bytes;
+  return total_bytes;
+}
+
+template <class M>
+long read_field_double_from_float(
+    Field<M>& f, const std::string& path,
+    const Coordinate& new_size_node = Coordinate())
+// interface_function
+{
+  TIMER_VERBOSE_FLOPS("read_field_double_from_float");
+  Field<float> ff;
+  const long total_bytes = read_field(ff, path, new_size_node);
+  if (total_bytes == 0) {
+    return 0;
+  } else {
+    to_from_big_endian_32(get_data(ff));
+    convert_field_double_from_float(f, ff);
+    timer.flops += total_bytes;
+    return total_bytes;
+  }
+}
+
+template <class M>
+long write_field_double(const Field<M>& f, const std::string& path,
+                        const Coordinate& new_size_node = Coordinate())
+// interface_function
+{
+  TIMER_VERBOSE_FLOPS("write_field_double");
+  Field<M> ff;
+  ff.init(f);
+  to_from_big_endian_64(get_data(ff));
+  const long total_bytes = write_field(ff, path, new_size_node);
+  timer.flops += total_bytes;
+  return total_bytes;
+}
+
+template <class M>
+long read_field_double(Field<M>& f, const std::string& path,
+                       const Coordinate& new_size_node = Coordinate())
+// interface_function
+{
+  TIMER_VERBOSE_FLOPS("read_field_double");
+  const long total_bytes = read_field(f, path, new_size_node);
+  if (total_bytes == 0) {
+    return 0;
+  } else {
+    to_from_big_endian_64(get_data(f));
+    timer.flops += total_bytes;
+    return total_bytes;
+  }
+}
+
+inline bool is_field(const std::string& path)
+{
+  TIMER("is_field");
+  long nfile = 0;
+  if (get_id_node() == 0) {
+    FILE* fp = qopen(path, "r");
+    if (fp != NULL) {
+      const std::string header = "BEGIN_FIELD_HEADER\n";
+      std::vector<char> check_line(header.size(), 0);
+      if (1 == fread(check_line.data(), header.size(), 1, fp)) {
+        if (std::string(check_line.data(), check_line.size()) == header) {
+          nfile = 1;
+        }
+      }
+    }
+    qclose(fp);
+  }
+  bcast(get_data(nfile));
+  return nfile > 0;
+}
+
+inline bool dist_repartition(const Coordinate& new_size_node,
+                             const std::string& path,
+                             const std::string& new_path = "")
+// interface_function
+{
+  TIMER_VERBOSE("dist_repartition");
+  bool is_failed = false;
+  const std::string npath = remove_trailing_slashes(path);
+  if (std::string(npath, npath.length() - 4, 4) == ".tmp") {
+    return true;
+  }
+  const std::string new_npath = remove_trailing_slashes(new_path);
+  const bool is_dir = is_directory_sync_node(path);
+  if (is_dir and new_size_node != Coordinate(1, 1, 1, 1) and
+      (new_npath == npath or new_npath == "")) {
+    if (is_dist_field(npath)) {
+      Geometry geo;
+      int sizeof_M;
+      Coordinate size_node;
+      dist_read_geo_info(geo, sizeof_M, size_node, npath);
+      if (size_node == new_size_node and
+          (new_path == "" or new_npath == npath)) {
+        displayln_info(
+            ssprintf("repartition: size_node=%s ; no need to repartition '%s'.",
+                     show(size_node).c_str(), npath.c_str()));
+        return true;
+      }
+    } else {
+      displayln_info(
+          ssprintf("repartition: WARNING: not a folder to partition: '%s'.",
+                   npath.c_str()));
+    }
+  }
+  if (not is_dir and new_size_node == Coordinate(1, 1, 1, 1) and
+      (new_npath == npath or new_npath == "")) {
+    displayln_info(
+        ssprintf("repartition: size_node=%s ; no need to repartition '%s'.",
+                 show(new_size_node).c_str(), npath.c_str()));
+    return true;
+  }
+  Field<float> f;
+  read_field(f, npath);
+  if (new_npath == npath or new_npath == "") {
+    qassert(not does_file_exist_sync_node(npath + "-repartition-new.tmp"));
+    qassert(not does_file_exist_sync_node(npath + "-repartition-old.tmp"));
+    if (new_size_node == Coordinate(1, 1, 1, 1)) {
+      write_field(f, npath + "-repartition-new.tmp");
+    } else {
+      dist_write_field(f, new_size_node, npath + "-repartition-new.tmp");
+    }
+    // TODO: dist_write_geo_info(...)
+    qrename_info(npath, npath + "-repartition-old.tmp");
+    qrename_info(npath + "-repartition-new.tmp", npath);
+    qremove_all_info(npath + "-repartition-old.tmp");
+  } else {
+    if (new_size_node == Coordinate(1, 1, 1, 1)) {
+      write_field(f, new_npath);
+    } else {
+      dist_write_field(f, new_size_node, new_npath);
+    }
+  }
+  return is_failed;
+}
+
+}  // namespace qlat

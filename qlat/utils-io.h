@@ -56,6 +56,18 @@ inline bool is_directory(const std::string& fn)
   return S_ISDIR(sb.st_mode);
 }
 
+inline bool is_directory_sync_node(const std::string& fn)
+{
+  long nfile = 0;
+  if (0 == get_id_node()) {
+    if (is_directory(fn)) {
+      nfile = 1;
+    }
+  }
+  glb_sum(nfile);
+  return 0 != nfile;
+}
+
 inline mode_t& default_dir_mode()
 {
   static mode_t mode = 0775;

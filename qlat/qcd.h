@@ -255,7 +255,7 @@ inline std::string make_gauge_field_header(
     const GaugeFieldInfo& gfi = GaugeFieldInfo())
 {
   std::ostringstream out;
-  const std::string todo = "NOT yet implemented";
+  // const std::string todo = "NOT yet implemented";
   out << "BEGIN_HEADER" << std::endl;
   out << "HDR_VERSION = 1.0" << std::endl;
   out << "DATATYPE = 4D_SU3_GAUGE" << std::endl;
