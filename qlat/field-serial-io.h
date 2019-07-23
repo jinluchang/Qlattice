@@ -421,41 +421,45 @@ long read_field(Field<M>& f, const std::string& path,
   }
   TIMER_VERBOSE_FLOPS("read_field");
   Coordinate total_site;
-  int multiplicity;
+  int multiplicity = 0;
   crc32_t crc = 0;
   if (get_id_node() == 0) {
     FILE* fp = qopen(path, "r");
-    qassert(fp != NULL);
-    const std::string header = "BEGIN_FIELD_HEADER\n";
-    std::vector<char> check_line(header.size(), 0);
-    qassert(1 == fread(check_line.data(), header.size(), 1, fp));
-    qassert(std::string(check_line.data(), check_line.size()) == header);
-    std::vector<std::string> infos;
-    infos.push_back(header);
-    while (infos.back() != "END_HEADER\n" && infos.back() != "") {
-      infos.push_back(qgetline(fp));
-    }
-    int sizeof_M;
-    for (int m = 0; m < 4; ++m) {
-      reads(total_site[m],
-            info_get_prop(infos, ssprintf("total_site[%d] = ", m)));
-    }
-    reads(multiplicity, info_get_prop(infos, "multiplicity = "));
-    reads(sizeof_M, info_get_prop(infos, "sizeof(M) = "));
-    crc = read_crc32(info_get_prop(infos, "field_crc32 = "));
-    if (sizeof_M != sizeof(M)) {
-      displayln(
-          fname +
-          ssprintf(
-              ": WARNING: sizeof(M) do not match. Expected %d, Actual file %d",
-              sizeof(M), sizeof_M));
-      qassert((multiplicity * sizeof_M) % sizeof(M) == 0);
-      multiplicity = (multiplicity * sizeof_M) / sizeof(M);
+    if (fp != NULL) {
+      const std::string header = "BEGIN_FIELD_HEADER\n";
+      std::vector<char> check_line(header.size(), 0);
+      if (1 == fread(check_line.data(), header.size(), 1, fp)) {
+        if (std::string(check_line.data(), check_line.size()) == header) {
+          std::vector<std::string> infos;
+          infos.push_back(header);
+          while (infos.back() != "END_HEADER\n" && infos.back() != "") {
+            infos.push_back(qgetline(fp));
+          }
+          int sizeof_M;
+          for (int m = 0; m < 4; ++m) {
+            reads(total_site[m],
+                  info_get_prop(infos, ssprintf("total_site[%d] = ", m)));
+          }
+          reads(multiplicity, info_get_prop(infos, "multiplicity = "));
+          reads(sizeof_M, info_get_prop(infos, "sizeof(M) = "));
+          crc = read_crc32(info_get_prop(infos, "field_crc32 = "));
+          if (sizeof_M != sizeof(M)) {
+            displayln(fname + ssprintf(": WARNING: sizeof(M) do not match. "
+                                       "Expected %d, Actual file %d",
+                                       sizeof(M), sizeof_M));
+            qassert((multiplicity * sizeof_M) % sizeof(M) == 0);
+            multiplicity = (multiplicity * sizeof_M) / sizeof(M);
+          }
+        }
+      }
     }
     qclose(fp);
   }
   bcast(Vector<Coordinate>(&total_site, 1));
   bcast(Vector<int>(&multiplicity, 1));
+  if (total_site == Coordinate() or multiplicity == 0) {
+    return 0;
+  }
   bcast(Vector<crc32_t>(&crc, 1));
   Geometry geo;
   geo.init(total_site, multiplicity);
