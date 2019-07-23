@@ -6,7 +6,8 @@
 #include <qlat/utils.h>
 #include <qlat/field-shuffle.h>
 
-QLAT_START_NAMESPACE
+namespace qlat
+{  //
 
 const int DATA_READ_WRITE_NUMBER_OF_DIRECTORIES = 32;
 
@@ -20,6 +21,18 @@ inline int& dist_read_par_limit()
 {
   static int npar = 128;
   return npar;
+}
+
+inline int& get_force_field_write_sizeof_M()
+{
+  static int sizeof_M = 0;
+  return sizeof_M;
+}
+
+inline int& get_incorrect_field_read_sizeof_M()
+{
+  static int sizeof_M = 0;
+  return sizeof_M;
 }
 
 inline int dist_mkdir(const std::string& path, const int num_node,
@@ -336,7 +349,15 @@ long dist_write_fields(const std::vector<ConstHandle<Field<M> > >& fs,
     const int id_node = f.geo.geon.id_node;
     if (id_node == 0) {
       dist_mkdir(path, id_node, mode);
-      dist_write_geo_info(f.geo, sizeof(M), path, mode);
+      if (get_force_field_write_sizeof_M() == 0) {
+        dist_write_geo_info(f.geo, sizeof(M), path, mode);
+      } else {
+        const int sizeof_M = get_force_field_write_sizeof_M();
+        qassert((f.geo.multiplicity * sizeof(M)) % sizeof_M == 0);
+        const int multiplicity = (f.geo.multiplicity * sizeof(M)) / sizeof_M;
+        dist_write_geo_info(geo_remult(f.geo, multiplicity), sizeof_M, path, mode);
+        get_force_field_write_sizeof_M() = 0;
+      }
       break;
     }
   }
@@ -465,9 +486,11 @@ long dist_read_fields(std::vector<Field<M> >& fs, Geometry& geo,
   clear(fs);
   int sizeof_M;
   dist_read_geo_info(geo, sizeof_M, new_size_node, path);
+  get_incorrect_field_read_sizeof_M() = 0;
   if ((int)sizeof(M) != sizeof_M) {
     displayln_info(
         "dist_read_fields: WARNING: sizeof(M) do not match with data on disk.");
+    get_incorrect_field_read_sizeof_M() = sizeof_M;
     if (geo.multiplicity * sizeof_M % sizeof(M) != 0) {
       displayln_info(
           ssprintf("dist_read_fields: ERROR: geo.multiplicity = %d ; sizeof_M "
@@ -667,7 +690,8 @@ inline bool is_dist_field(const std::string& path)
   TIMER("is_dist_field");
   long nfile = 0;
   if (get_id_node() == 0) {
-    if (does_file_exist(path + "/geo-info.txt") and does_file_exist(path + "/checkpoint")) {
+    if (does_file_exist(path + "/geo-info.txt") and
+        does_file_exist(path + "/checkpoint")) {
       nfile = 1;
     }
   }
@@ -675,4 +699,4 @@ inline bool is_dist_field(const std::string& path)
   return nfile > 0;
 }
 
-QLAT_END_NAMESPACE
+}  // namespace qlat

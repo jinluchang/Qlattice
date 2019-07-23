@@ -399,7 +399,17 @@ long write_field(const Field<M>& f, const std::string& path,
   qassert(is_initialized(f));
   const Geometry& geo = f.geo;
   const crc32_t crc32 = field_crc32(f);
-  qtouch_info(path + ".partial", make_field_header(geo, sizeof(M), crc32));
+  if (get_force_field_write_sizeof_M() == 0) {
+    qtouch_info(path + ".partial", make_field_header(geo, sizeof(M), crc32));
+  } else {
+    const int sizeof_M = get_force_field_write_sizeof_M();
+    qassert((geo.multiplicity * sizeof(M)) % sizeof_M == 0);
+    const int multiplicity = (geo.multiplicity * sizeof(M)) / sizeof_M;
+    qtouch_info(
+        path + ".partial",
+        make_field_header(geo_remult(geo, multiplicity), sizeof_M, crc32));
+    get_force_field_write_sizeof_M() = 0;
+  }
   const Coordinate new_size_node = new_size_node_ == Coordinate()
                                        ? get_default_serial_new_size_node(geo)
                                        : new_size_node_;
@@ -408,6 +418,40 @@ long write_field(const Field<M>& f, const std::string& path,
   qrename_info(path + ".partial", path);
   timer.flops += file_size;
   return file_size;
+}
+
+inline void read_geo_info(Coordinate& total_site, int& multiplicity, int& sizeof_M,
+                          crc32_t& crc, const std::string& path)
+{
+  TIMER("read_geo_info");
+  if (get_id_node() == 0) {
+    FILE* fp = qopen(path, "r");
+    if (fp != NULL) {
+      const std::string header = "BEGIN_FIELD_HEADER\n";
+      std::vector<char> check_line(header.size(), 0);
+      if (1 == fread(check_line.data(), header.size(), 1, fp)) {
+        if (std::string(check_line.data(), check_line.size()) == header) {
+          std::vector<std::string> infos;
+          infos.push_back(header);
+          while (infos.back() != "END_HEADER\n" && infos.back() != "") {
+            infos.push_back(qgetline(fp));
+          }
+          for (int m = 0; m < 4; ++m) {
+            reads(total_site[m],
+                  info_get_prop(infos, ssprintf("total_site[%d] = ", m)));
+          }
+          reads(multiplicity, info_get_prop(infos, "multiplicity = "));
+          reads(sizeof_M, info_get_prop(infos, "sizeof(M) = "));
+          crc = read_crc32(info_get_prop(infos, "field_crc32 = "));
+        }
+      }
+    }
+    qclose(fp);
+  }
+  bcast(Vector<Coordinate>(&total_site, 1));
+  bcast(Vector<int>(&multiplicity, 1));
+  bcast(Vector<int>(&sizeof_M, 1));
+  bcast(Vector<crc32_t>(&crc, 1));
 }
 
 template <class M>
@@ -422,45 +466,21 @@ long read_field(Field<M>& f, const std::string& path,
   TIMER_VERBOSE_FLOPS("read_field");
   Coordinate total_site;
   int multiplicity = 0;
+  int sizeof_M = 0;
   crc32_t crc = 0;
-  if (get_id_node() == 0) {
-    FILE* fp = qopen(path, "r");
-    if (fp != NULL) {
-      const std::string header = "BEGIN_FIELD_HEADER\n";
-      std::vector<char> check_line(header.size(), 0);
-      if (1 == fread(check_line.data(), header.size(), 1, fp)) {
-        if (std::string(check_line.data(), check_line.size()) == header) {
-          std::vector<std::string> infos;
-          infos.push_back(header);
-          while (infos.back() != "END_HEADER\n" && infos.back() != "") {
-            infos.push_back(qgetline(fp));
-          }
-          int sizeof_M;
-          for (int m = 0; m < 4; ++m) {
-            reads(total_site[m],
-                  info_get_prop(infos, ssprintf("total_site[%d] = ", m)));
-          }
-          reads(multiplicity, info_get_prop(infos, "multiplicity = "));
-          reads(sizeof_M, info_get_prop(infos, "sizeof(M) = "));
-          crc = read_crc32(info_get_prop(infos, "field_crc32 = "));
-          if (sizeof_M != sizeof(M)) {
-            displayln(fname + ssprintf(": WARNING: sizeof(M) do not match. "
-                                       "Expected %d, Actual file %d",
-                                       sizeof(M), sizeof_M));
-            qassert((multiplicity * sizeof_M) % sizeof(M) == 0);
-            multiplicity = (multiplicity * sizeof_M) / sizeof(M);
-          }
-        }
-      }
-    }
-    qclose(fp);
+  read_geo_info(total_site, multiplicity, sizeof_M, crc, path);
+  get_incorrect_field_read_sizeof_M() = 0;
+  if (sizeof_M != sizeof(M)) {
+    get_incorrect_field_read_sizeof_M() = sizeof_M;
+    displayln(fname + ssprintf(": WARNING: sizeof(M) do not match. "
+                               "Expected %d, Actual file %d",
+                               sizeof(M), sizeof_M));
+    qassert((multiplicity * sizeof_M) % sizeof(M) == 0);
+    multiplicity = (multiplicity * sizeof_M) / sizeof(M);
   }
-  bcast(Vector<Coordinate>(&total_site, 1));
-  bcast(Vector<int>(&multiplicity, 1));
   if (total_site == Coordinate() or multiplicity == 0) {
     return 0;
   }
-  bcast(Vector<crc32_t>(&crc, 1));
   Geometry geo;
   geo.init(total_site, multiplicity);
   f.init(geo, geo.multiplicity);
@@ -604,6 +624,10 @@ inline bool dist_repartition(const Coordinate& new_size_node,
   }
   Field<float> f;
   read_field(f, npath);
+  if (get_incorrect_field_read_sizeof_M() != 0) {
+    get_force_field_write_sizeof_M() = get_incorrect_field_read_sizeof_M();
+    get_incorrect_field_read_sizeof_M() = 0;
+  }
   if (new_npath == npath or new_npath == "") {
     qassert(not does_file_exist_sync_node(npath + "-repartition-new.tmp"));
     qassert(not does_file_exist_sync_node(npath + "-repartition-old.tmp"));
@@ -612,7 +636,6 @@ inline bool dist_repartition(const Coordinate& new_size_node,
     } else {
       dist_write_field(f, new_size_node, npath + "-repartition-new.tmp");
     }
-    // TODO: dist_write_geo_info(...)
     qrename_info(npath, npath + "-repartition-old.tmp");
     qrename_info(npath + "-repartition-new.tmp", npath);
     qremove_all_info(npath + "-repartition-old.tmp");
