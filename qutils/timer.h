@@ -518,7 +518,7 @@ inline void DisplayInfo(const char* cname, const char* fname,
   va_list args;
   va_start(args, format);
   char* str;
-  vasprintf(&str, format, args);
+  qassert(vasprintf(&str, format, args) >= 0);
   display_info(ssprintf("%s::%s : %s", cname, fname, str));
   std::free(str);
 }

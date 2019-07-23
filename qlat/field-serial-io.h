@@ -418,7 +418,8 @@ long read_field(Field<M>& f, const std::string& path,
     return dist_read_field(f, path);
   }
   TIMER_VERBOSE_FLOPS("read_field");
-  Geometry geo;
+  Coordinate total_site;
+  int multiplicity;
   crc32_t crc = 0;
   if (get_id_node() == 0) {
     FILE* fp = qopen(path, "r");
@@ -432,8 +433,6 @@ long read_field(Field<M>& f, const std::string& path,
     while (infos.back() != "END_HEADER\n" && infos.back() != "") {
       infos.push_back(qgetline(fp));
     }
-    Coordinate total_site;
-    int multiplicity;
     int sizeof_M;
     for (int m = 0; m < 4; ++m) {
       reads(total_site[m],
@@ -448,22 +447,24 @@ long read_field(Field<M>& f, const std::string& path,
           ssprintf(
               ": WARNING: sizeof(M) do not match. Expected %d, Actual file %d",
               sizeof(M), sizeof_M));
+      qassert((multiplicity * sizeof_M) % sizeof(M) == 0);
+      multiplicity = (multiplicity * sizeof_M) / sizeof(M);
     }
-    qassert((multiplicity * sizeof_M) % sizeof(M) == 0);
-    multiplicity = (multiplicity * sizeof_M) / sizeof(M);
-    geo.init(total_site, multiplicity);
     qclose(fp);
   }
-  bcast(Vector<Geometry>(&geo, 1));
+  bcast(Vector<Coordinate>(&total_site, 1));
+  bcast(Vector<int>(&multiplicity, 1));
   bcast(Vector<crc32_t>(&crc, 1));
+  Geometry geo;
+  geo.init(total_site, multiplicity);
   f.init(geo, geo.multiplicity);
   const long data_size =
       geo.geon.num_node * geo.local_volume() * geo.multiplicity * sizeof(M);
   const Coordinate new_size_node = new_size_node_ == Coordinate()
                                        ? get_default_serial_new_size_node(geo)
                                        : new_size_node_;
-  const long file_size = serial_read_field_par(
-      f, path, new_size_node, -data_size, SEEK_END);
+  const long file_size =
+      serial_read_field_par(f, path, new_size_node, -data_size, SEEK_END);
   qassert(crc == field_crc32(f));
   qassert(file_size == data_size);
   timer.flops += file_size;

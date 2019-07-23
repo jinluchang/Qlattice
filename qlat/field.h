@@ -51,7 +51,11 @@ struct Field {
       set_zero(*this);
       initialized = true;
     } else {
-      qassert(is_matching_geo_mult(geo_remult(geo_, multiplicity_), geo));
+      if (not is_matching_geo_mult(geo_remult(geo_, multiplicity_), geo)) {
+        displayln("old geo = " + show(geo));
+        displayln("new geo = " + show(geo_remult(geo_, multiplicity_)));
+        qassert(false);
+      }
     }
   }
   virtual void init(const Field<M>& f)
