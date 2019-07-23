@@ -230,6 +230,8 @@ crc32_t field_crc32(const Field<M>& f)
       for (int k = 0; k < (int)fs.size(); ++k) {
         ret = crc32_par(ret, get_data(fs[k]));
       }
+    } else {
+      ret = 0;
     }
     glb_sum_byte(ret);
   }
