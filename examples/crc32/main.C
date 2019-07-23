@@ -24,10 +24,9 @@ int main(int argc, char* argv[])
   for (long i = 0; i < (long)fns.size(); ++i) {
     displayln_info(
         ssprintf("fns[%5d/%d] = '%s'", i, fns.size(), fns[i].c_str()));
-    if (does_file_exist_sync_node(fns[i] + "/geo-info.txt") and
-        does_file_exist_sync_node(fns[i] + "/checkpoint")) {
+    if (is_dist_field(fns[i]) or is_field(fns[i])) {
       Field<char> f;
-      const long total_bytes = dist_read_field(f, fns[i]);
+      const long total_bytes = read_field(f, fns[i]);
       if (total_bytes == 0) {
         displayln_info(ssprintf("FAILED: fns[%5d/%d] = '%s'", i, fns.size(),
                                 fns[i].c_str()));
