@@ -469,6 +469,9 @@ long read_field(Field<M>& f, const std::string& path,
   int sizeof_M = 0;
   crc32_t crc = 0;
   read_geo_info(total_site, multiplicity, sizeof_M, crc, path);
+  if (total_site == Coordinate() or multiplicity == 0) {
+    return 0;
+  }
   get_incorrect_field_read_sizeof_M() = 0;
   if (sizeof_M != sizeof(M)) {
     get_incorrect_field_read_sizeof_M() = sizeof_M;
@@ -477,9 +480,6 @@ long read_field(Field<M>& f, const std::string& path,
                                sizeof(M), sizeof_M));
     qassert((multiplicity * sizeof_M) % sizeof(M) == 0);
     multiplicity = (multiplicity * sizeof_M) / sizeof(M);
-  }
-  if (total_site == Coordinate() or multiplicity == 0) {
-    return 0;
   }
   Geometry geo;
   geo.init(total_site, multiplicity);
