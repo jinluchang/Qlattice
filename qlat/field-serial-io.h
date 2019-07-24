@@ -587,7 +587,6 @@ inline bool dist_repartition(const Coordinate& new_size_node,
                              const std::string& new_path = "")
 // interface_function
 {
-  TIMER_VERBOSE("dist_repartition");
   bool is_failed = false;
   const std::string npath = remove_trailing_slashes(path);
   if (std::string(npath, npath.length() - 4, 4) == ".tmp") {
@@ -622,6 +621,7 @@ inline bool dist_repartition(const Coordinate& new_size_node,
                  show(new_size_node).c_str(), npath.c_str()));
     return true;
   }
+  TIMER_VERBOSE("dist_repartition");
   Field<float> f;
   read_field(f, npath);
   if (get_incorrect_field_read_sizeof_M() != 0) {
