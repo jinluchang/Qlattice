@@ -84,11 +84,27 @@ inline void set_mom_stochastic_qed_field_feynman(Field<T>& f, const Geometry& ge
 }
 
 template <class T>
+inline void take_real_part_and_multiply_sqrt2(Field<T>& f)
+{
+  TIMER("take_real_part_and_multiply_sqrt2");
+  const Geometry& geo = f.geo;
+#pragma omp parallel for
+  for (long index = 0; index < geo.local_volume(); ++index) {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    Vector<T> fv = f.get_elems(xl);
+    for (int m = 0; m < geo.multiplicity; ++m) {
+      fv[m] = sqrt(2.0) * fv[m].real();
+    }
+  }
+}
+
+template <class T>
 inline void set_stochastic_qed_field_feynman(Field<T>& f, const Geometry& geo, const RngState& rs)
 {
   TIMER("set_stochastic_qed_field_feynman");
   set_mom_stochastic_qed_field_feynman(f, geo, rs);
   fft_complex_field(f, false);
+  take_real_part_and_multiply_sqrt2(f);
 }
 
 inline void prop_mom_photon_invert(QedGaugeField& egf,
