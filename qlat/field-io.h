@@ -159,14 +159,13 @@ std::string field_hash_crc32(const qlat::Field<M> &origin)
 
   Geometry geo_only_local = geo_resize(origin.geo, 0);
   crc32_t hash;
-  void *buffer = (void *)&crc32;
   for (int id_node = 0; id_node < get_num_node(); id_node++) {
     if (get_id_node() == id_node) {
       crc32(hash, (void *)get_data(origin).data(),
             get_data(origin).size() * sizeof(M));
     }
     sync_node();
-    MPI_Bcast(buffer, 4, MPI_BYTE, id_node, get_comm());
+    MPI_Bcast((void*)&hash, 4, MPI_BYTE, id_node, get_comm());
   }
   return ssprintf("%08X", hash);
 }
