@@ -308,6 +308,7 @@ inline void benchmark_deflate(const Geometry& geo, const int ls, const Coordinat
     set_zero(out);
     deflate(out, in, lm);
   }
+  Timer::display();
 }
 
 struct InverterParams {
