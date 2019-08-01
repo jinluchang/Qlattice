@@ -46,6 +46,8 @@ inline bool compute_traj_do(const std::string& job_tag, const int traj)
   qassert(ld.res == ld1.res);
   ld.save(job_path + "/data.lat");
   //
+  benchmark_deflate(geo, 12, Coordinate(2,2,2,2), 500, 250, rs.split("benchmark_deflate"));
+  //
   const FermionAction fa = get_fermion_actions(job_tag)[0];
   LowModes lm;
   // load_or_compute_low_modes(lm, get_low_modes_path(job_tag, traj), gf, fa,

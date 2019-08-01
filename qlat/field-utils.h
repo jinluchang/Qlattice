@@ -161,19 +161,39 @@ void field_shift(Field<M>& f, const Field<M>& f1, const Coordinate& shift)
 }
 
 template <class M>
-void set_field_u_rand_double(Field<M>& f, const RngState& rs,
-                             const double upper = 1.0,
-                             const double lower = -1.0)
+void set_u_rand_double(Field<M>& f, const RngState& rs,
+                       const double upper = 1.0, const double lower = -1.0)
 {
-  TIMER("set_field_u_rand_double");
+  TIMER("set_u_rand_double");
   const Geometry& geo = f.geo;
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
-    RngState rsi(rs, show(xg));
+    const long gindex = geo.g_index_from_g_coordinate(xg);
+    RngState rsi = rs.newtype(gindex);
     Vector<M> v = f.get_elems(xl);
     Vector<double> dv((double*)v.data(), v.data_size() / sizeof(double));
+    for (int m = 0; m < dv.size(); ++m) {
+      dv[m] = u_rand_gen(rsi, 1.0, -1.0);
+    }
+  }
+}
+
+template <class M>
+void set_u_rand_float(Field<M>& f, const RngState& rs,
+                       const double upper = 1.0, const double lower = -1.0)
+{
+  TIMER("set_u_rand_float");
+  const Geometry& geo = f.geo;
+#pragma omp parallel for
+  for (long index = 0; index < geo.local_volume(); ++index) {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Coordinate xg = geo.coordinate_g_from_l(xl);
+    const long gindex = geo.g_index_from_g_coordinate(xg);
+    RngState rsi = rs.newtype(gindex);
+    Vector<M> v = f.get_elems(xl);
+    Vector<float> dv((float*)v.data(), v.data_size() / sizeof(float));
     for (int m = 0; m < dv.size(); ++m) {
       dv[m] = u_rand_gen(rsi, 1.0, -1.0);
     }

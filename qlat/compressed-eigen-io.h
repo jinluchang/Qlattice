@@ -378,6 +378,7 @@ inline Geometry get_geo_from_cesi(
   Coordinate node_site;
   if (new_size_node == Coordinate()) {
     geon.size_node = cesi.total_site / cesi.node_site;
+    node_site = cesi.node_site;
   } else {
     geon.size_node = new_size_node;
     node_site = cesi.total_site / new_size_node;

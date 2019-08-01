@@ -62,7 +62,7 @@ inline std::vector<int> get_trajs(const std::string& job_tag)
 {
   TIMER_VERBOSE("get_trajs");
   std::vector<int> ret;
-  if (job_tag == "free-4nt8") {
+  if (job_tag.substr(0,5) == "free-") {
     for (int traj = 1000; traj < 1020; traj += 10) {
       ret.push_back(traj);
     }
@@ -102,8 +102,17 @@ inline std::vector<int> get_trajs(const std::string& job_tag)
 
 inline Coordinate get_total_site(const std::string& job_tag)
 {
-  if (job_tag == "free-4nt8") {
-    return Coordinate(4,4,4,8);
+  if (job_tag.substr(0,5) == "free-") {
+    // eg: job_tag = "free-4nt8"
+    long size_l_dir = 0;
+    long size_t_dir = 0;
+    long cur = 5;
+    qassert(parse_long(size_l_dir, cur, job_tag));
+    char c = 0;
+    qassert(parse_char(c, cur, job_tag) and c == 'n');
+    qassert(parse_char(c, cur, job_tag) and c == 't');
+    qassert(parse_long(size_t_dir, cur, job_tag));
+    return Coordinate(size_l_dir, size_l_dir, size_l_dir, size_t_dir);
   } else if (job_tag == "16I-0.01") {
     return Coordinate(16,16,16,32);
   } else if (job_tag == "24I-0.01" or job_tag == "24D-0.00107" or
@@ -129,7 +138,7 @@ inline Geometry get_geo(const std::string& job_tag)
 inline std::string get_config_fn(const std::string& job_tag, const int traj)
 {
   std::string fn("");
-  if (job_tag == "free-4nt8") {
+  if (job_tag.substr(0,5) == "free-") {
     return job_tag + ssprintf("/%d", traj);
   } else if (job_tag == "16I-0.01") {
     fn = get_env("HOME") +
@@ -250,7 +259,7 @@ inline long load_configuration(GaugeField& gf, const std::string& job_tag, const
   long file_size = 0;
   const Geometry geo = get_geo(job_tag);
   gf.init(geo);
-  if (job_tag == "free-4nt8") {
+  if (job_tag.substr(0,5) == "free-") {
     set_unit(gf);
     file_size += geo.geon.num_node * get_data_size(gf);
   } else {
@@ -271,7 +280,7 @@ inline std::vector<FermionAction> get_fermion_actions(const std::string& job_tag
   //     const double mobius_scale_ = 1.0, const bool is_multiplying_dminus_ = true, bool is_using_zmobius_ = false)
 {
   std::vector<FermionAction> fas;
-  if (job_tag == "free-4nt8") {
+  if (job_tag.substr(0,5) == "free-") {
     fas.push_back(FermionAction(0.1, 8, 1.0, 1.0, true, true));
     fas.push_back(FermionAction(0.3, 8, 1.0, 1.0, true, true));
   } else if (job_tag == "24I-0.01" or job_tag == "16I-0.01") {
@@ -349,7 +358,7 @@ inline LancArg get_lanc_arg(const std::string& job_tag)
   // LancArg(double ch_alpha_, double ch_beta_, long ch_ord_, long n_use_, long n_get_, long n_true_get_)
 {
   LancArg la;
-  if (job_tag == "free-4nt8") {
+  if (job_tag.substr(0,5) == "free-") {
     qassert(false);
   } else if (job_tag == "16I-0.01") {
     la = LancArg(5.5, 0.20, 200, 200, 110, 100);
@@ -383,8 +392,7 @@ inline std::string make_low_modes_path(const std::string& job_tag, const int tra
 inline std::string get_low_modes_path(const std::string& job_tag, const int traj)
 {
   TIMER_VERBOSE("get_low_modes_path");
-  if (job_tag == "free-4nt8") {
-    qassert(false);
+  if (job_tag.substr(0,5) == "free-") {
     return "";
   } else {
     return ssprintf("lancs/%s/qcdtraj=%d/huge-data-lanc", job_tag.c_str(),

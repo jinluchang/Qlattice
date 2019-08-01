@@ -2,6 +2,8 @@
 
 #include "qutils.h"
 
+#include "rng-state.h"
+
 namespace qlat
 {  //
 
@@ -387,5 +389,28 @@ void to_from_big_endian_64(Vector<M> v)
 {
   to_from_big_endian_64((void*)v.data(), v.data_size());
 }
+
+template <class M>
+void set_u_rand_double(Vector<M> v, const RngState& rs, const double upper = 1.0,
+                      const double lower = -1.0)
+{
+  RngState rsi = rs;
+  Vector<double> dv((double*)v.data(), v.data_size() / sizeof(double));
+  for (int m = 0; m < dv.size(); ++m) {
+    dv[m] = u_rand_gen(rsi, 1.0, -1.0);
+  }
+}
+
+template <class M>
+void set_u_rand_float(Vector<M> v, const RngState& rs, const double upper = 1.0,
+                      const double lower = -1.0)
+{
+  RngState rsi = rs;
+  Vector<float> dv((float*)v.data(), v.data_size() / sizeof(float));
+  for (int m = 0; m < dv.size(); ++m) {
+    dv[m] = u_rand_gen(rsi, 1.0, -1.0);
+  }
+}
+
 
 }  // namespace qlat

@@ -37,7 +37,36 @@ struct LowModes {
     cesb.init();
     cesc.init();
   }
+  void init(const Geometry& geo, const Coordinate& block_site, const long neig,
+            const long nkeep)
+  // geo.multiplicity = ls
+  {
+    initialized = true;
+    eigen_values.resize(neig);
+    CompressedEigenSystemDenseInfo cesdi;
+    cesdi.total_site = geo.total_site();
+    cesdi.block_site = block_site;
+    cesdi.ls = geo.multiplicity;
+    cesdi.neig = neig;
+    cesdi.nkeep = nkeep;
+    cesdi.nkeep_single = nkeep;
+    cesdi.FP16_COEF_EXP_SHARE_FLOATS = 10;
+    qassert(cesdi.total_site % geo.geon.size_node == Coordinate());
+    cesdi.node_site = cesdi.total_site / geo.geon.size_node;
+    cesi = populate_eigen_system_info(
+        cesdi, std::vector<crc32_t>(product(geo.geon.size_node), 0));
+    init_compressed_eigen_system_bases(cesb, cesi, geo.geon.id_node);
+    init_compressed_eigen_system_coefs(cesc, cesi, geo.geon.id_node);
+  }
 };
+
+void set_u_rand(LowModes& lm, const RngState& rs)
+{
+  TIMER_VERBOSE("set_u_rand(lm,rs)");
+  set_u_rand_double(get_data(lm.eigen_values), rs.split("eigen_values"));
+  set_u_rand_float(lm.cesb, rs.split("cesb"));
+  set_u_rand_float(lm.cesc, rs.split("cesc"));
+}
 
 inline long load_low_modes(LowModes& lm, const std::string& path)
 {
@@ -258,6 +287,26 @@ inline void deflate(FermionField5d& out, const FermionField5d& in,
     for (int m = 0; m < vhv.size(); ++m) {
       vff[m] = vhv[m];
     }
+  }
+}
+
+inline void benchmark_deflate(const Geometry& geo, const int ls, const Coordinate& block_site, const long neig, const long nkeep, const RngState& rs)
+{
+  TIMER_VERBOSE("benchmark_deflate");
+  displayln_info(ssprintf("geo = %s", show(geo).c_str()));
+  displayln_info(ssprintf("block_site = %s", show(block_site).c_str()));
+  displayln_info(ssprintf("ls = %d, neig = %d, nkeep = %d", ls, neig, nkeep));
+  LowModes lm;
+  lm.init(geo_remult(geo, ls), block_site, neig, nkeep);
+  set_u_rand(lm, rs.split("lm"));
+  FermionField5d in, out;
+  in.init(geo_eo(geo_remult(geo, ls), 1));
+  out.init(geo_eo(geo_remult(geo, ls), 1));
+  sync_node();
+  for (int i = 0; i < 4; ++i) {
+    set_u_rand_double(in, rs.split(ssprintf("in %d", i)));
+    set_zero(out);
+    deflate(out, in, lm);
   }
 }
 
@@ -1497,7 +1546,7 @@ inline double find_max_eigen_value_hermop_sym2(const InverterDomainWall& inv,
   geo.eo = 1;
   FermionField5d ff;
   ff.init(geo);
-  set_field_u_rand_double(ff, rs);
+  set_u_rand_double(ff, rs);
   ff *= 1.0 / sqrt(qnorm(ff));
   double sqrt_qnorm_ratio = 1.0;
   for (long i = 0; i < max_iter; ++i) {
