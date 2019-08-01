@@ -1,8 +1,6 @@
 SHELL=/bin/bash
 
-CXX=mpiicpc -cxx=clang++ -std=c++11 -fopenmp -march=knl -O3 -Wall
-
-#CXX=mpic++ -std=c++0x -fopenmp -march=native -O2 -Wall
+CXX=mpic++ -std=c++0x -fopenmp -march=native -O2 -Wall
 # -DQLAT_NO_DEFAULT_TYPE
 # -DSKIP_ASSERT
 # -DOLD_CPP
@@ -25,8 +23,7 @@ QLAT_LDFLAGS=$(QLAT_LIB)/libfftw3.a $(QLAT_LIB)/libcuba.a $(QLAT_LIB)/libz.a -lm
 all: qlat.x
 
 run: qlat.x
-	time OMP_NUM_THREADS=16 mpirun --np 2 ./qlat.x
-	# time mpirun -x OMP_NUM_THREADS=2 --np 2 ./qlat.x
+	time mpirun -x OMP_NUM_THREADS=2 --np 2 ./qlat.x
 	# make clean
 
 qlat.x: *.C
