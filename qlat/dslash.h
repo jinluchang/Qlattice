@@ -174,69 +174,87 @@ inline void deflate(HalfVector& hv_out, const HalfVector& hv_in,
   const Geometry geo = geo_reform(bhv.geo, n_basis);
   Field<Complex> chv, phv;
   chv.init(geo);
-  set_zero(chv);
   phv.init(geo_remult(geo, n_vec));
-#pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
-    const Coordinate xl = geo.coordinate_from_index(index);
-    const Vector<ComplexF> vb = bhv.get_elems_const(xl);
-    const Vector<ComplexF> vbs = lm.cesb.get_elems_const(xl);
-    const Vector<ComplexF> vcs = lm.cesc.get_elems_const(xl);
-    // project to coarse grid
-    Vector<Complex> vc = chv.get_elems(xl);
-    for (int j = 0; j < n_basis; ++j) {
-      Complex s = 0.0;
-      for (long k = 0; k < block_size; ++k) {
-        s += std::conj(vbs[j * block_size + k]) * vb[k];
-      }
-      vc[j] = s;
-    }
-    // compute inner products
-    Vector<Complex> vp = phv.get_elems(xl);
-    for (int i = 0; i < n_vec; ++i) {
-      Complex s = 0.0;
-      for (int j = 0; j < n_basis; ++j) {
-        s += (Complex)std::conj(vcs[i * n_basis + j]) * vc[j];
-      }
-      vp[i] = s;
-    }
-  }
-  // glb sum inner products
-  std::vector<Complex> phv_sum(n_vec, 0.0);
-  for (long index = 0; index < geo.local_volume(); ++index) {
-    const Coordinate xl = geo.coordinate_from_index(index);
-    Vector<Complex> vp = phv.get_elems(xl);
-#pragma omp parallel for
-    for (int i = 0; i < n_vec; ++i) {
-      phv_sum[i] += vp[i];
-    }
-  }
-  phv.init();
-  glb_sum_double_vec(get_data(phv_sum));
-  // scale by eigen values
-#pragma omp parallel for
-  for (int i = 0; i < n_vec; ++i) {
-    phv_sum[i] /= lm.eigen_values[i];
-  }
-  // producing coarse space vector
   set_zero(chv);
+  set_zero(phv);
+  {
+    TIMER("deflate-project");
 #pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
-    const Coordinate xl = geo.coordinate_from_index(index);
-    const Vector<ComplexF> vbs = lm.cesb.get_elems_const(xl);
-    const Vector<ComplexF> vcs = lm.cesc.get_elems_const(xl);
-    // compute inner products
-    Vector<Complex> vc = chv.get_elems(xl);
-    for (int i = 0; i < n_vec; ++i) {
+    for (long index = 0; index < geo.local_volume(); ++index) {
+      // const Coordinate xl = geo.coordinate_from_index(index);
+      const Vector<ComplexF> vb = bhv.get_elems_const(index);
+      const Vector<ComplexF> vbs = lm.cesb.get_elems_const(index);
+      const Vector<ComplexF> vcs = lm.cesc.get_elems_const(index);
+      // project to coarse grid
+      Vector<Complex> vc = chv.get_elems(index);
       for (int j = 0; j < n_basis; ++j) {
-        vc[j] += (Complex)(vcs[i * n_basis + j]) * phv_sum[i];
+        Complex& vc_j = vc.p[j];
+        const Vector<ComplexF> vbs_j(vbs.p + j * block_size, block_size);
+        for (long k = 0; k < block_size; ++k) {
+          const ComplexF& vb_k = vb.p[k];
+          vc_j += std::conj(vbs_j.p[k]) * vb_k;
+        }
+      }
+      // compute inner products
+      Vector<Complex> vp = phv.get_elems(index);
+      for (int i = 0; i < n_vec; ++i) {
+        Complex& vp_i = vp.p[i];
+        const Vector<ComplexF> vcs_i(vcs.p + i * n_basis, n_basis);
+        for (int j = 0; j < n_basis; ++j) {
+          const Complex& vc_j = vc.p[j];
+          vp_i += (Complex)std::conj(vcs_i.p[j]) * vc_j;
+        }
       }
     }
-    // project to fine grid
-    Vector<ComplexF> vb = bhv.get_elems(xl);
-    for (int j = 0; j < n_basis; ++j) {
-      for (long k = 0; k < block_size; ++k) {
-        vb[k] += vbs[j * block_size + k] * (ComplexF)vc[j];
+  }
+  std::vector<Complex> phv_sum(n_vec, 0.0);
+  {
+    TIMER("deflate-glbsum");
+    // glb sum inner products
+    for (long index = 0; index < geo.local_volume(); ++index) {
+      // const Coordinate xl = geo.coordinate_from_index(index);
+      Vector<Complex> vp = phv.get_elems(index);
+#pragma omp parallel for
+      for (int i = 0; i < n_vec; ++i) {
+        phv_sum[i] += vp[i];
+      }
+    }
+    phv.init();
+    glb_sum_double_vec(get_data(phv_sum));
+    // scale by eigen values
+#pragma omp parallel for
+    for (int i = 0; i < n_vec; ++i) {
+      phv_sum[i] /= lm.eigen_values[i];
+    }
+  }
+  {
+    TIMER("deflate-produce");
+    // producing coarse space vector
+    set_zero(chv);
+#pragma omp parallel for
+    for (long index = 0; index < geo.local_volume(); ++index) {
+      // const Coordinate xl = geo.coordinate_from_index(index);
+      const Vector<ComplexF> vbs = lm.cesb.get_elems_const(index);
+      const Vector<ComplexF> vcs = lm.cesc.get_elems_const(index);
+      // compute inner products
+      Vector<Complex> vc = chv.get_elems(index);
+      for (int i = 0; i < n_vec; ++i) {
+        const Complex& phv_sum_i = phv_sum[i];
+        const Vector<ComplexF> vcs_i(vcs.p + i * n_basis, n_basis);
+        for (int j = 0; j < n_basis; ++j) {
+          Complex& vc_j = vc.p[j];
+          vc_j += (Complex)(vcs_i.p[j]) * phv_sum_i;
+        }
+      }
+      // project to fine grid
+      Vector<ComplexF> vb = bhv.get_elems(index);
+      for (int j = 0; j < n_basis; ++j) {
+        const ComplexF& vc_j = (ComplexF)vc[j];
+        const Vector<ComplexF> vbs_j(vbs.p + j * block_size, block_size);
+        for (long k = 0; k < block_size; ++k) {
+          ComplexF& vb_k = vb.p[k];
+          vb_k += vbs_j.p[k] * vc_j;
+        }
       }
     }
   }
@@ -302,13 +320,15 @@ inline void benchmark_deflate(const Geometry& geo, const int ls, const Coordinat
   FermionField5d in, out;
   in.init(geo_eo(geo_remult(geo, ls), 1));
   out.init(geo_eo(geo_remult(geo, ls), 1));
+  set_u_rand_double(in, rs.split("in"));
   sync_node();
+  Timer::reset();
   for (int i = 0; i < 4; ++i) {
-    set_u_rand_double(in, rs.split(ssprintf("in %d", i)));
     set_zero(out);
     deflate(out, in, lm);
   }
   Timer::display();
+  sync_node();
 }
 
 struct InverterParams {

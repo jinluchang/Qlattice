@@ -17,6 +17,14 @@ inline bool compute_traj_do(const std::string& job_tag, const int traj)
   const Coordinate total_site = get_total_site(job_tag);
   const Geometry geo = get_geo(job_tag);
   //
+  {
+    Geometry geo;
+    geo.init(Coordinate(24, 12, 12, 16), 1);
+    benchmark_deflate(geo, 16, Coordinate(2, 2, 2, 2), 500, 250,
+                      rs.split("benchmark_deflate"));
+    qassert(false);
+  }
+  //
   GaugeField gf;
   load_configuration(gf, job_tag, traj);
   gf_show_info(gf);
@@ -45,8 +53,6 @@ inline bool compute_traj_do(const std::string& job_tag, const int traj)
   qassert(is_matching(ld, ld1));
   qassert(ld.res == ld1.res);
   ld.save(job_path + "/data.lat");
-  //
-  benchmark_deflate(geo, 12, Coordinate(2,2,2,2), 500, 250, rs.split("benchmark_deflate"));
   //
   const FermionAction fa = get_fermion_actions(job_tag)[0];
   LowModes lm;
