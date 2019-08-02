@@ -45,6 +45,11 @@ struct LatData {
   void save(const std::string& fn) const;
 };
 
+inline bool is_initialized(const LatData& ld)
+{
+  return ld.res.size() > 0;
+}
+
 inline long lat_data_size(const LatInfo& info, const int level = 0)
 {
   if (info.size() == 0) {
@@ -328,28 +333,37 @@ inline bool is_matching(const LatData& ld1, const LatData& ld2)
   return ld1.res.size() == ld2.res.size() and ld1.info == ld2.info;
 }
 
+inline const LatData& operator*=(LatData& ld, const double factor)
+{
+  for (long i = 0; i < (long)ld.res.size(); ++i) {
+    ld.res[i] *= factor;
+  }
+  return ld;
+}
+
 inline const LatData& operator+=(LatData& ld, const LatData& ld1)
 {
-  assert(is_matching(ld, ld1));
-  for (long i = 0; i < (long)ld.res.size(); ++i) {
-    ld.res[i] += ld1.res[i];
+  if (not is_initialized(ld)) {
+    ld = ld1;
+  } else {
+    assert(is_matching(ld, ld1));
+    for (long i = 0; i < (long)ld.res.size(); ++i) {
+      ld.res[i] += ld1.res[i];
+    }
   }
   return ld;
 }
 
 inline const LatData& operator-=(LatData& ld, const LatData& ld1)
 {
-  assert(is_matching(ld, ld1));
-  for (long i = 0; i < (long)ld.res.size(); ++i) {
-    ld.res[i] -= ld1.res[i];
-  }
-  return ld;
-}
-
-inline const LatData& operator*=(LatData& ld, const double factor)
-{
-  for (long i = 0; i < (long)ld.res.size(); ++i) {
-    ld.res[i] *= factor;
+  if (not is_initialized(ld)) {
+    ld = ld1;
+    ld *= -1;
+  } else {
+    assert(is_matching(ld, ld1));
+    for (long i = 0; i < (long)ld.res.size(); ++i) {
+      ld.res[i] -= ld1.res[i];
+    }
   }
   return ld;
 }
