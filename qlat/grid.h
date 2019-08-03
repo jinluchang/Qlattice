@@ -240,8 +240,7 @@ struct InverterDomainWallGrid : InverterDomainWall {
     InverterDomainWall::setup(gf_, fa_);
     setup();
   }
-  void setup(const GaugeField& gf_, const FermionAction& fa_,
-             const LowModes& lm_)
+  void setup(const GaugeField& gf_, const FermionAction& fa_, LowModes& lm_)
   {
     InverterDomainWall::setup(gf_, fa_, lm_);
     setup();
@@ -290,7 +289,7 @@ inline void setup_inverter(InverterDomainWallGrid& inv, const GaugeField& gf,
 }
 
 inline void setup_inverter(InverterDomainWallGrid& inv, const GaugeField& gf,
-                           const FermionAction& fa, const LowModes& lm)
+                           const FermionAction& fa, LowModes& lm)
 {
   inv.setup(gf, fa, lm);
 }
