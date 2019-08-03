@@ -20,8 +20,28 @@ inline bool& is_cg_verbose()
   return b;
 }
 
+struct LowModesInfo {
+  bool initialized;
+  std::string path;
+  GaugeField gf;
+  FermionAction fa;
+  LancArg la;
+  //
+  LowModesInfo() { init(); }
+  //
+  void init()
+  {
+    initialized = false;
+    path = "";
+    gf.init();
+    fa.init();
+    la.init();
+  }
+};
+
 struct LowModes {
   bool initialized;
+  LowModesInfo lmi;
   std::vector<double> eigen_values;
   CompressedEigenSystemInfo cesi;
   CompressedEigenSystemBases cesb;
@@ -32,6 +52,7 @@ struct LowModes {
   void init()
   {
     initialized = false;
+    path = "";
     clear(eigen_values);
     cesi.init();
     cesb.init();
@@ -42,6 +63,7 @@ struct LowModes {
   // geo.multiplicity = ls
   {
     initialized = true;
+    path = "";
     eigen_values.resize(neig);
     CompressedEigenSystemDenseInfo cesdi;
     cesdi.total_site = geo.total_site();
@@ -60,19 +82,11 @@ struct LowModes {
   }
 };
 
-void set_u_rand(LowModes& lm, const RngState& rs)
-{
-  TIMER_VERBOSE("set_u_rand(lm,rs)");
-  set_u_rand_double(get_data(lm.eigen_values), rs.split("eigen_values"));
-  set_u_rand_float(lm.cesb, rs.split("cesb"));
-  set_u_rand_float(lm.cesc, rs.split("cesc"));
-}
-
 inline long load_low_modes(LowModes& lm, const std::string& path)
 {
   TIMER_VERBOSE("load_low_modes");
-  if (path == "/dev/null") {
-    lm.initialized = false;
+  lm.initialized = false;
+  if (path == "/dev/null" or path == "") {
     return 0;
   } else {
     const long total_bytes = load_compressed_eigen_vectors(
@@ -91,7 +105,55 @@ inline long load_or_compute_low_modes(LowModes& lm, const std::string& path,
 // TODO: currently only load low modes
 {
   TIMER_VERBOSE("load_or_compute_low_modes");
-  return load_low_modes(lm, path);
+  long total_bytes = load_low_modes(lm, path);
+  return total_bytes;
+}
+
+inline long load_low_modes_delay(LowModes& lm, const std::string& path)
+{
+  TIMER_VERBOSE("load_low_modes_delay");
+  lm.initialized = true;
+  lm.lmi.init();
+  lm.lmi.initialized = true;
+  lm.lmi.path = path;
+}
+
+inline long load_or_compute_low_modes_delay(LowModes& lm,
+                                            const std::string& path,
+                                            const GaugeField& gf,
+                                            const FermionAction& fa,
+                                            const LancArg& la)
+{
+  TIMER_VERBOSE("load_or_compute_low_modes_delay");
+  lm.initialized = true;
+  lm.lmi.init();
+  lm.lmi.initialized = true;
+  lm.lmi.path = path;
+  lm.lmi.gf = gf;
+  lm.lmi.fa = fa;
+  lm.lmi.la = la;
+}
+
+inline long force_low_modes(LowModes& lm)
+{
+  TIMER("force_low_modes");
+  if (lm.lmi.initialized) {
+    long total_bytes = load_or_compute_low_modes(lm, lm.lmi.path, lm.lmi.gf,
+                                                 lm.lmi.fa, lm.lmi.la);
+    lm.lmi.init();
+    return total_bytes;
+  }
+  return 0;
+}
+
+inline void set_u_rand(LowModes& lm, const RngState& rs)
+{
+  TIMER_VERBOSE("set_u_rand(lm,rs)");
+  qassert(lm.initialized);
+  force_low_modes(lm);
+  set_u_rand_double(get_data(lm.eigen_values), rs.split("eigen_values"));
+  set_u_rand_float(lm.cesb, rs.split("cesb"));
+  set_u_rand_float(lm.cesc, rs.split("cesc"));
 }
 
 inline long save_low_modes_decompress(const LowModes& lm,
@@ -99,6 +161,7 @@ inline long save_low_modes_decompress(const LowModes& lm,
 {
   TIMER_VERBOSE("save_low_modes_decompress");
   qassert(lm.initialized);
+  force_low_modes(lm);
   std::vector<BlockedHalfVector> bhvs;
   decompress_eigen_system(bhvs, lm.cesb, lm.cesc);
   std::vector<HalfVector> hvs;
@@ -158,12 +221,13 @@ inline long save_low_modes_decompress(const LowModes& lm,
 inline void deflate(HalfVector& hv_out, const HalfVector& hv_in,
                     const LowModes& lm)
 {
-  TIMER("deflate(hv,hv,lm)");
+  force_low_modes(lm);
   if (not lm.initialized) {
     hv_out.init(geo_resize(hv_in.geo));
     set_zero(hv_out);
     return;
   }
+  TIMER("deflate(hv,hv,lm)");
   const int ls = lm.cesi.ls;
   const long block_size = lm.cesb.block_vol_eo * ls * HalfVector::c_size;
   const long n_basis = lm.cesb.n_basis;
@@ -264,12 +328,13 @@ inline void deflate(HalfVector& hv_out, const HalfVector& hv_in,
 inline void deflate(FermionField5d& out, const FermionField5d& in,
                     const LowModes& lm)
 {
-  TIMER_VERBOSE("deflate(5d,5d,lm)");
+  force_low_modes(lm);
   if (not lm.initialized) {
     out.init(geo_resize(in.geo));
     set_zero(out);
     return;
   }
+  TIMER_VERBOSE("deflate(5d,5d,lm)");
   const Geometry& geo = geo_resize(in.geo);
   qassert(geo.eo == 1 or geo.eo == 2);
   const int ls = geo.multiplicity;
@@ -308,7 +373,9 @@ inline void deflate(FermionField5d& out, const FermionField5d& in,
   }
 }
 
-inline void benchmark_deflate(const Geometry& geo, const int ls, const Coordinate& block_site, const long neig, const long nkeep, const RngState& rs)
+inline void benchmark_deflate(const Geometry& geo, const int ls,
+                              const Coordinate& block_site, const long neig,
+                              const long nkeep, const RngState& rs)
 {
   TIMER_VERBOSE("benchmark_deflate");
   displayln_info(ssprintf("geo = %s", show(geo).c_str()));
