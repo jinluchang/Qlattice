@@ -450,8 +450,11 @@ WilsonMatrixT<T> operator*(const SpinMatrixT<T>& sm, const WilsonMatrixT<T>& m)
   WilsonMatrixT<T> ret;
   set_zero(ret);
   for (int s1 = 0; s1 < 4; ++s1) {
-    for (int s2 = 0; s2 < 4; ++s2) {
-      for (int s3 = 0; s3 < 4; ++s3) {
+    for (int s3 = 0; s3 < 4; ++s3) {
+      if (sm(s1, s3) == 0.0) {
+        continue;
+      }
+      for (int s2 = 0; s2 < 4; ++s2) {
         for (int c1 = 0; c1 < NUM_COLOR; ++c1) {
           for (int c2 = 0; c2 < NUM_COLOR; ++c2) {
             ret(s1 * NUM_COLOR + c1, s2 * NUM_COLOR + c2) +=
@@ -493,6 +496,9 @@ WilsonVectorT<T> operator*(const SpinMatrixT<T>& sm, const WilsonVectorT<T>& m)
   set_zero(ret);
   for (int s1 = 0; s1 < 4; ++s1) {
     for (int s2 = 0; s2 < 4; ++s2) {
+      if (sm(s1, s2) == 0.0) {
+        continue;
+      }
       for (int c1 = 0; c1 < NUM_COLOR; ++c1) {
         ret(s1 * NUM_COLOR + c1) += sm(s1, s2) * m(s2 * NUM_COLOR + c1);
       }
