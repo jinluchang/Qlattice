@@ -52,7 +52,7 @@ struct LowModes {
   void init()
   {
     initialized = false;
-    path = "";
+    lmi.init();
     clear(eigen_values);
     cesi.init();
     cesb.init();
@@ -63,7 +63,7 @@ struct LowModes {
   // geo.multiplicity = ls
   {
     initialized = true;
-    path = "";
+    lmi.init();
     eigen_values.resize(neig);
     CompressedEigenSystemDenseInfo cesdi;
     cesdi.total_site = geo.total_site();
@@ -109,7 +109,7 @@ inline long load_or_compute_low_modes(LowModes& lm, const std::string& path,
   return total_bytes;
 }
 
-inline long load_low_modes_delay(LowModes& lm, const std::string& path)
+inline void load_low_modes_delay(LowModes& lm, const std::string& path)
 {
   TIMER_VERBOSE("load_low_modes_delay");
   lm.initialized = true;
@@ -118,7 +118,7 @@ inline long load_low_modes_delay(LowModes& lm, const std::string& path)
   lm.lmi.path = path;
 }
 
-inline long load_or_compute_low_modes_delay(LowModes& lm,
+inline void load_or_compute_low_modes_delay(LowModes& lm,
                                             const std::string& path,
                                             const GaugeField& gf,
                                             const FermionAction& fa,
@@ -156,8 +156,7 @@ inline void set_u_rand(LowModes& lm, const RngState& rs)
   set_u_rand_float(lm.cesc, rs.split("cesc"));
 }
 
-inline long save_low_modes_decompress(const LowModes& lm,
-                                      const std::string& path)
+inline long save_low_modes_decompress(LowModes& lm, const std::string& path)
 {
   TIMER_VERBOSE("save_low_modes_decompress");
   qassert(lm.initialized);
@@ -218,8 +217,7 @@ inline long save_low_modes_decompress(const LowModes& lm,
   return total_bytes;
 }
 
-inline void deflate(HalfVector& hv_out, const HalfVector& hv_in,
-                    const LowModes& lm)
+inline void deflate(HalfVector& hv_out, const HalfVector& hv_in, LowModes& lm)
 {
   force_low_modes(lm);
   if (not lm.initialized) {
@@ -325,8 +323,7 @@ inline void deflate(HalfVector& hv_out, const HalfVector& hv_in,
   convert_half_vector(hv_out, bhv);
 }
 
-inline void deflate(FermionField5d& out, const FermionField5d& in,
-                    const LowModes& lm)
+inline void deflate(FermionField5d& out, const FermionField5d& in, LowModes& lm)
 {
   force_low_modes(lm);
   if (not lm.initialized) {
@@ -424,7 +421,7 @@ struct InverterDomainWall {
   FermionAction fa;
   GaugeField gf;
   InverterParams ip;
-  ConstHandle<LowModes> lm;
+  Handle<LowModes> lm;
   //
   InverterDomainWall() { init(); }
   //
@@ -459,8 +456,7 @@ struct InverterDomainWall {
     lm.init();
   }
   //
-  void setup(const GaugeField& gf_, const FermionAction& fa_,
-             const LowModes& lm_)
+  void setup(const GaugeField& gf_, const FermionAction& fa_, LowModes& lm_)
   {
     TIMER_VERBOSE("Inv::setup(gf,fa,lm)");
     geo = geo_reform(gf_.geo);
@@ -497,7 +493,7 @@ void setup_inverter(Inv& inv, const GaugeField& gf, const FermionAction& fa)
 
 template <class Inv>
 void setup_inverter(Inv& inv, const GaugeField& gf, const FermionAction& fa,
-                    const LowModes& lm)
+                    LowModes& lm)
 {
   inv.setup(gf, fa, lm);
 }
