@@ -161,6 +161,12 @@ Complex matrix_trace(const MatrixT<DIMN, T>& x)
 }
 
 template <int DIMN, class T>
+Complex matrix_trace(const MatrixT<DIMN, T>& x, const MatrixT<DIMN, T>& y)
+{
+  return (x.em() * y.em()).trace();
+}
+
+template <int DIMN, class T>
 MatrixT<DIMN, T> matrix_adjoint(const MatrixT<DIMN, T>& x)
 {
   MatrixT<DIMN, T> ret;
@@ -472,6 +478,29 @@ WilsonMatrixT<T> operator*(const WilsonMatrixT<T>& m, const SpinMatrixT<T>& sm)
 {
   return matrix_adjoint((const SpinMatrixT<T>&)matrix_adjoint(sm) *
                         (const WilsonMatrixT<T>&)matrix_adjoint(m));
+}
+
+template <int DIMN, class T>
+Complex matrix_trace(const SpinMatrixT<T>& sm, const WilsonMatrixT<T>& m)
+{
+  Complex ret = 0;
+  for (int s1 = 0; s1 < 4; ++s1) {
+    for (int s3 = 0; s3 < 4; ++s3) {
+      if (sm(s1, s3) == 0.0) {
+        continue;
+      }
+      for (int c1 = 0; c1 < NUM_COLOR; ++c1) {
+        ret += sm(s1, s3) * m(s3 * NUM_COLOR + c1, s1 * NUM_COLOR + c1);
+      }
+    }
+  }
+  return ret;
+}
+
+template <int DIMN, class T>
+Complex matrix_trace(const WilsonMatrixT<T>& m, const SpinMatrixT<T>& sm)
+{
+  return matrix_trace(sm, m);
 }
 
 template <class T>
