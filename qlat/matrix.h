@@ -480,7 +480,7 @@ WilsonMatrixT<T> operator*(const WilsonMatrixT<T>& m, const SpinMatrixT<T>& sm)
                         (const WilsonMatrixT<T>&)matrix_adjoint(m));
 }
 
-template <int DIMN, class T>
+template <class T>
 Complex matrix_trace(const SpinMatrixT<T>& sm, const WilsonMatrixT<T>& m)
 {
   Complex ret = 0;
@@ -497,7 +497,7 @@ Complex matrix_trace(const SpinMatrixT<T>& sm, const WilsonMatrixT<T>& m)
   return ret;
 }
 
-template <int DIMN, class T>
+template <class T>
 Complex matrix_trace(const WilsonMatrixT<T>& m, const SpinMatrixT<T>& sm)
 {
   return matrix_trace(sm, m);
