@@ -67,7 +67,6 @@ crc32_t crc32(const Vector<M> v)
 inline crc32_t crc32_par(const void* smessage, const long nBytes)
 {
   const uint8_t* ptr = (const uint8_t*)smessage;
-  const long size = nBytes;
   const int v_limit = omp_get_max_threads();
   std::vector<crc32_t> crcs(v_limit, 0);
   crc32_t ret = 0;
@@ -75,12 +74,10 @@ inline crc32_t crc32_par(const void* smessage, const long nBytes)
   {
     const int nthreads = omp_get_num_threads();
     const int id = omp_get_thread_num();
-    const long chunk_size = size / nthreads + 1;
-    const long start = std::min(id * chunk_size, size);
-    const long end = std::min(start + chunk_size, size);
-    const long len = end - start;
+    long start = 0, len = 0;
+    split_work(start, len, nBytes, nthreads, id);
     const crc32_t crc = crc32(ptr + start, len);
-    crcs[id] = crc32_shift(crc, size - end);
+    crcs[id] = crc32_shift(crc, nBytes - start - len);
 #pragma omp barrier
     if (0 == id) {
       for (int i = 0; i < nthreads; ++i) {

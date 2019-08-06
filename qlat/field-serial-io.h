@@ -214,9 +214,9 @@ crc32_t field_simple_checksum(const Field<M>& f)
 }
 
 template <class M>
-crc32_t field_crc32(const Field<M>& f)
+crc32_t field_crc32_slow(const Field<M>& f)
 {
-  TIMER_VERBOSE_FLOPS("field_crc32");
+  TIMER_VERBOSE_FLOPS("field_crc32_slow");
   const Geometry& geo = f.geo;
   const Coordinate new_size_node = get_default_serial_new_size_node(geo);
   const int new_num_node = product(geo.total_site() / new_size_node);
@@ -236,6 +236,38 @@ crc32_t field_crc32(const Field<M>& f)
     glb_sum_byte(ret);
   }
   timer.flops += get_data(f).data_size() * geo.geon.num_node;
+  return ret;
+}
+
+template <class M>
+crc32_t field_crc32(const Field<M>& f)
+{
+  TIMER_VERBOSE_FLOPS("field_crc32");
+  const Geometry& geo = f.geo;
+  const long total_volume = geo.total_volume();
+  const long data_size_site = geo.multiplicity * sizeof(M);
+  const int v_limit = omp_get_max_threads();
+  std::vector<crc32_t> crcs(v_limit, 0);
+#pragma omp parallel
+  {
+    crc32_t crc = 0;
+#pragma omp for
+    for (long index = 0; index < geo.local_volume(); ++index) {
+      const Coordinate xl = geo.coordinate_from_index(index);
+      const Coordinate xg = geo.coordinate_g_from_l(xl);
+      const long gindex = geo.g_index_from_g_coordinate(xg);
+      const long offset = data_size_site * (total_volume - gindex - 1);
+      const Vector<M> v = f.get_elems_const(xl);
+      crc ^= crc32_shift(crc32(v), offset);
+    }
+    const int id = omp_get_thread_num();
+    crcs[id] = crc;
+  }
+  crc32_t ret = 0;
+  for (int i = 0; i < v_limit; ++i) {
+    ret ^= crcs[i];
+  }
+  glb_sum_byte(ret);
   return ret;
 }
 
