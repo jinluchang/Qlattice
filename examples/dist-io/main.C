@@ -42,7 +42,8 @@ void test_io()
   set_g_rand_color_matrix_field(gf, RngState(rs, "rgf-0.1"), 0.1);
   gf_show_info(gf);
   get_shuffle_plan_cache().limit = 16;
-  displayln_info(ssprintf("crc32 = %08X", field_dist_crc32(gf)));
+  displayln_info(ssprintf("dist_crc32 = %08X", field_dist_crc32(gf)));
+  displayln_info(ssprintf("crc32 = %08X", field_crc32(gf)));
   const crc32_t crc = field_dist_crc32(gf);
   std::vector<Coordinate> new_size_nodes;
   new_size_nodes.push_back(Coordinate(1, 1, 1, 1));
@@ -69,31 +70,36 @@ void test_io()
     }
     set_unit(gf);
     shuffle_field_back(gf, gfs, new_size_node);
-    displayln_info(ssprintf("crc32 = %08X", field_dist_crc32(gf)));
+    displayln_info(ssprintf("dist_crc32 = %08X", field_dist_crc32(gf)));
+    displayln_info(ssprintf("crc32 = %08X", field_crc32(gf)));
     qassert(crc == field_dist_crc32(gf));
   }
   for (size_t i = 0; i < new_size_nodes.size(); ++i) {
     const Coordinate& new_size_node = new_size_nodes[i];
-    displayln_info(ssprintf("crc32 = %08X", field_dist_crc32(gf)));
+    displayln_info(ssprintf("dist_crc32 = %08X", field_dist_crc32(gf)));
+    displayln_info(ssprintf("crc32 = %08X", field_crc32(gf)));
     dist_write_field(
         gf, new_size_node,
         ssprintf("huge-data/gauge_field ; ") + show(new_size_node));
     set_unit(gf);
     dist_read_field(gf,
                     ssprintf("huge-data/gauge_field ; ") + show(new_size_node));
-    displayln_info(ssprintf("crc32 = %08X", field_dist_crc32(gf)));
+    displayln_info(ssprintf("dist_crc32 = %08X", field_dist_crc32(gf)));
+    displayln_info(ssprintf("crc32 = %08X", field_crc32(gf)));
     qassert(crc == field_dist_crc32(gf));
   }
   for (size_t i = 0; i < new_size_nodes.size(); ++i) {
     const Coordinate& new_size_node = new_size_nodes[i];
-    displayln_info(ssprintf("crc32 = %08X", field_dist_crc32(gf)));
+    displayln_info(ssprintf("dist_crc32 = %08X", field_dist_crc32(gf)));
+    displayln_info(ssprintf("crc32 = %08X", field_crc32(gf)));
     dist_write_field(
         gf, new_size_node,
         ssprintf("huge-data/gauge_field ; ") + show(new_size_node) + "_2");
     set_unit(gf);
     dist_read_field(
         gf, ssprintf("huge-data/gauge_field ; ") + show(new_size_node) + "_2");
-    displayln_info(ssprintf("crc32 = %08X", field_dist_crc32(gf)));
+    displayln_info(ssprintf("dist_crc32 = %08X", field_dist_crc32(gf)));
+    displayln_info(ssprintf("crc32 = %08X", field_crc32(gf)));
     qassert(crc == field_dist_crc32(gf));
   }
   qassert(crc == field_dist_crc32(gf));
@@ -104,14 +110,16 @@ void test_io()
   const crc32_t fcrc = field_dist_crc32(dfgf);
   for (size_t i = 0; i < new_size_nodes.size(); ++i) {
     const Coordinate& new_size_node = new_size_nodes[i];
-    displayln_info(ssprintf("crc32 = %08X", field_dist_crc32(gf)));
+    displayln_info(ssprintf("dist_crc32 = %08X", field_dist_crc32(gf)));
+    displayln_info(ssprintf("crc32 = %08X", field_crc32(gf)));
     dist_write_field_float_from_double(
         gf, new_size_node,
         ssprintf("huge-data/gauge_field ; ") + show(new_size_node) + "_f");
     set_unit(gf);
     dist_read_field_double_from_float(
         gf, ssprintf("huge-data/gauge_field ; ") + show(new_size_node) + "_f");
-    displayln_info(ssprintf("crc32 = %08X", field_dist_crc32(gf)));
+    displayln_info(ssprintf("dist_crc32 = %08X", field_dist_crc32(gf)));
+    displayln_info(ssprintf("crc32 = %08X", field_crc32(gf)));
     qassert(fcrc == field_dist_crc32(gf));
   }
   set_g_rand_color_matrix_field(gf, RngState(rs, "rgf-0.1"), 0.1);
@@ -122,20 +130,24 @@ void test_io()
   write_field(gf, ssprintf("huge-data/rgf-0.1.field.conf.%010d", 0));
   set_unit(gf);
   read_field(gf, ssprintf("huge-data/rgf-0.1.field.conf.%010d", 0));
-  displayln_info(ssprintf("crc32 = %08X", field_dist_crc32(gf)));
+  displayln_info(ssprintf("dist_crc32 = %08X", field_dist_crc32(gf)));
+  displayln_info(ssprintf("crc32 = %08X", field_crc32(gf)));
   qassert(crc == field_dist_crc32(gf));
   set_unit(gf);
   read_field(gf, ssprintf("huge-data/rgf-0.1.field.conf.%010d", 0));
-  displayln_info(ssprintf("crc32 = %08X", field_dist_crc32(gf)));
+  displayln_info(ssprintf("dist_crc32 = %08X", field_dist_crc32(gf)));
+  displayln_info(ssprintf("crc32 = %08X", field_crc32(gf)));
   qassert(crc == field_dist_crc32(gf));
   save_gauge_field(gf, ssprintf("huge-data/rgf-0.1.gf.conf.%010d", 0));
   set_unit(gf);
   load_gauge_field(gf, ssprintf("huge-data/rgf-0.1.gf.conf.%010d", 0));
-  displayln_info(ssprintf("crc32 = %08X", field_dist_crc32(gf)));
+  displayln_info(ssprintf("dist_crc32 = %08X", field_dist_crc32(gf)));
+  displayln_info(ssprintf("crc32 = %08X", field_crc32(gf)));
   qassert(ucrc == field_dist_crc32(gf));
   set_unit(gf);
   load_gauge_field_par(gf, ssprintf("huge-data/rgf-0.1.gf.conf.%010d", 0));
-  displayln_info(ssprintf("crc32 = %08X", field_dist_crc32(gf)));
+  displayln_info(ssprintf("dist_crc32 = %08X", field_dist_crc32(gf)));
+  displayln_info(ssprintf("crc32 = %08X", field_crc32(gf)));
   qassert(ucrc == field_dist_crc32(gf));
 }
 
