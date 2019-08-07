@@ -268,6 +268,7 @@ crc32_t field_crc32(const Field<M>& f)
     ret ^= crcs[i];
   }
   glb_sum_byte(ret);
+  timer.flops += get_data(f).data_size() * geo.geon.num_node;
   return ret;
 }
 
