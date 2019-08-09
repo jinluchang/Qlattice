@@ -168,6 +168,7 @@ long serial_read_field_par(Field<M>& f, const std::string& path,
     qclose(fp);
   }
   shuffle_field_back(f, fs, new_size_node);
+  sync_node();
   const long file_size = get_data(f).data_size() * f.geo.geon.num_node;
   timer.flops += file_size;
   return file_size;
