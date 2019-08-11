@@ -601,6 +601,36 @@ long read_field_double(Field<M>& f, const std::string& path,
   }
 }
 
+template <class M>
+long write_field_64(const Field<M>& f, const std::string& path,
+                    const Coordinate& new_size_node = Coordinate())
+// interface_function
+{
+  TIMER_VERBOSE_FLOPS("write_field_64");
+  Field<M> ff;
+  ff.init(f);
+  to_from_big_endian_64(get_data(ff));
+  const long total_bytes = write_field(ff, path, new_size_node);
+  timer.flops += total_bytes;
+  return total_bytes;
+}
+
+template <class M>
+long read_field_64(Field<M>& f, const std::string& path,
+                   const Coordinate& new_size_node = Coordinate())
+// interface_function
+{
+  TIMER_VERBOSE_FLOPS("read_field_64");
+  const long total_bytes = read_field(f, path, new_size_node);
+  if (total_bytes == 0) {
+    return 0;
+  } else {
+    to_from_big_endian_64(get_data(f));
+    timer.flops += total_bytes;
+    return total_bytes;
+  }
+}
+
 inline bool is_field(const std::string& path)
 {
   TIMER("is_field");
