@@ -314,7 +314,7 @@ long write_selected_field(
     const Field<M>& f, const std::string& path,
     const FieldSelection& fsel, const Coordinate& new_size_node_ = Coordinate())
 {
-  TIMER_VERBOSE("write_selected_field");
+  TIMER_VERBOSE_FLOPS("write_selected_field");
   displayln_info(fname + ssprintf(": fn='%s'.", path.c_str()));
   const Geometry geo = geo_resize(f.geo);
   const Coordinate total_site = geo.total_site();
@@ -442,7 +442,7 @@ long read_selected_field(Field<M>& f, const std::string& path,
                          const FieldSelection& fsel,
                          const Coordinate& new_size_node_ = Coordinate())
 {
-  TIMER_VERBOSE("read_selected_field");
+  TIMER_VERBOSE_FLOPS("read_selected_field");
   displayln_info(fname + ssprintf(": fn='%s'.", path.c_str()));
   Coordinate total_site;
   int multiplicity = 0;
@@ -526,6 +526,68 @@ long read_selected_field(Field<M>& f, const std::string& path,
       fsel.n_per_tslice * total_site[3] * geo.multiplicity * sizeof(M);
   timer.flops += total_bytes;
   return total_bytes;
+}
+
+template <class M>
+long write_selected_field_64(
+    const Field<M>& f, const std::string& path,
+    const FieldSelection& fsel, const Coordinate& new_size_node_ = Coordinate())
+{
+  TIMER_VERBOSE_FLOPS("write_selected_field_64");
+  Field<M> ff;
+  ff.init(f);
+  to_from_big_endian_64(get_data(ff));
+  const long total_bytes = write_selected_field(ff, path, fsel, new_size_node_);
+  timer.flops += total_bytes;
+  return total_bytes;
+}
+
+template <class M>
+long read_selected_field_64(Field<M>& f, const std::string& path,
+                            const FieldSelection& fsel,
+                            const Coordinate& new_size_node_ = Coordinate())
+{
+  TIMER_VERBOSE_FLOPS("read_selected_field_64");
+  const long total_bytes = read_selected_field(f, path, fsel, new_size_node_);
+  if (total_bytes == 0) {
+    return 0;
+  } else {
+    to_from_big_endian_64(get_data(f));
+    timer.flops += total_bytes;
+    return total_bytes;
+  }
+}
+
+template <class M>
+long write_selected_field_float_from_double(
+    const Field<M>& f, const std::string& path, const FieldSelection& fsel,
+    const Coordinate& new_size_node_ = Coordinate())
+{
+  TIMER_VERBOSE_FLOPS("write_selected_field_float_from_double");
+  Field<float> ff;
+  convert_field_float_from_double(ff, f);
+  to_from_big_endian_32(get_data(ff));
+  const long total_bytes = write_selected_field(ff, path, fsel, new_size_node_);
+  timer.flops += total_bytes;
+  return total_bytes;
+}
+
+template <class M>
+long read_selected_field_double_from_float(
+    Field<M>& f, const std::string& path, const FieldSelection& fsel,
+    const Coordinate& new_size_node_ = Coordinate())
+{
+  TIMER_VERBOSE_FLOPS("read_selected_field_double_from_float");
+  Field<float> ff;
+  const long total_bytes = read_selected_field(ff, path, fsel, new_size_node_);
+  if (total_bytes == 0) {
+    return 0;
+  } else {
+    to_from_big_endian_32(get_data(ff));
+    convert_field_double_from_float(f, ff);
+    timer.flops += total_bytes;
+    return total_bytes;
+  }
 }
 
 }  // namespace qlat
