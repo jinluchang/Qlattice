@@ -77,8 +77,14 @@ inline void mk_field_selection(FieldM<int64_t, 1>& f_rank,
           const Coordinate xg =
               mod(Coordinate(rand_gen(rst), rand_gen(rst), rand_gen(rst), t),
                   total_site);
-          const Coordinate xl = geo.coordinate_l_from_g(xg);
-          qassert(ngeo.is_local(xl));
+          const Coordinate xl = ngeo.coordinate_l_from_g(xg);
+          if (not ngeo.is_local(xl)) {
+            displayln(ssprintf("xl=%s", show(xl).c_str()));
+            displayln(ssprintf("xg=%s", show(xg).c_str()));
+            displayln(ssprintf("ngeo=%s", show(ngeo).c_str()));
+            displayln(ssprintf("total_site=%s", show(total_site).c_str()));
+            qassert(false);
+          }
           int64_t& val = nf.get_elem(xl);
           if (val == -1) {
             val = i;
