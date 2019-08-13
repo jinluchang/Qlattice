@@ -213,7 +213,7 @@ struct Vector {
 template <class M>
 void set_zero(Vector<M> vec)
 {
-  std::memset(vec.data(), 0, vec.data_size());
+  std::memset((void*)vec.data(), 0, vec.data_size());
 }
 
 template <class M, int N>
@@ -270,7 +270,7 @@ template <class M, int N>
 void set_zero(Array<M, N> arr)
 {
   long size = N * sizeof(M);
-  std::memset(arr.data(), 0, size);
+  std::memset((void*)arr.data(), 0, size);
 }
 
 template <class M, int N>
