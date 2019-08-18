@@ -436,6 +436,7 @@ long write_field(const Field<M>& f, const std::string& path,
 // would be correct. eg. new_size_node = Coordinate(1,1,1,2)
 {
   TIMER_VERBOSE_FLOPS("write_field");
+  displayln_info(fname + ssprintf(": fn='%s'.", path.c_str()));
   qassert(is_initialized(f));
   const Geometry& geo = f.geo;
   const crc32_t crc32 = field_crc32(f);
@@ -504,6 +505,7 @@ long read_field(Field<M>& f, const std::string& path,
     return dist_read_field(f, path);
   }
   TIMER_VERBOSE_FLOPS("read_field");
+  displayln_info(fname + ssprintf(": fn='%s'.", path.c_str()));
   Coordinate total_site;
   int multiplicity = 0;
   int sizeof_M = 0;

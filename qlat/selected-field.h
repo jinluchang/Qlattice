@@ -177,6 +177,7 @@ inline void write_field_selection(const FieldSelection& fsel,
 inline long read_field_selection(FieldSelection& fsel, const std::string& path,
                                  const long n_per_tslice)
 {
+  TIMER_VERBOSE("read_field_selection");
   fsel.init();
   FieldM<int64_t, 1> f_rank;
   const long total_bytes = read_field_64(f_rank, path);
@@ -495,6 +496,7 @@ long read_selected_field(Field<M>& f, const std::string& path,
     displayln_info(fname + ssprintf(": fn='%s' can not be parsed.", path.c_str()));
     return 0;
   }
+  qassert(fsel.n_per_tslice == n_per_tslice);
   get_incorrect_field_read_sizeof_M() = 0;
   if (sizeof_M != sizeof(M)) {
     get_incorrect_field_read_sizeof_M() = sizeof_M;

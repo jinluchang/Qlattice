@@ -519,6 +519,7 @@ long dist_write_field(const Field<M>& f, const Coordinate new_size_node,
 // interface_function
 {
   TIMER_VERBOSE_FLOPS("dist_write_field");
+  displayln_info(fname + ssprintf(": fn='%s'.", path.c_str()));
   std::vector<Field<M> > fs;
   shuffle_field(fs, f, new_size_node);
   long total_bytes = dist_write_fields(fs, product(new_size_node), path, mode);
@@ -531,6 +532,7 @@ long dist_read_field(Field<M>& f, const std::string& path)
 // interface_function
 {
   TIMER_VERBOSE_FLOPS("dist_read_field");
+  displayln_info(fname + ssprintf(": fn='%s'.", path.c_str()));
   Geometry geo;
   std::vector<Field<M> > fs;
   Coordinate new_size_node;
