@@ -633,4 +633,25 @@ long read_selected_field_double_from_float(
   }
 }
 
+inline bool is_selected_field(const std::string& path)
+{
+  TIMER("is_selected_field");
+  long nfile = 0;
+  if (get_id_node() == 0) {
+    FILE* fp = qopen(path, "r");
+    if (fp != NULL) {
+      const std::string header = "BEGIN_SELECTED_FIELD_HEADER\n";
+      std::vector<char> check_line(header.size(), 0);
+      if (1 == fread(check_line.data(), header.size(), 1, fp)) {
+        if (std::string(check_line.data(), check_line.size()) == header) {
+          nfile = 1;
+        }
+      }
+    }
+    qclose(fp);
+  }
+  bcast(get_data(nfile));
+  return nfile > 0;
+}
+
 }  // namespace qlat
