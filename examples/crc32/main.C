@@ -36,6 +36,8 @@ int main(int argc, char* argv[])
         displayln_info(ssprintf("FAILED: fns[%5d/%d] = '%s'", i, fns.size(),
                                 fns[i].c_str()));
       }
+    } else if (does_file_exist_sync_node(fns[i] + "/checkpoint")) {
+      decompressed_eigen_vectors_check_crc32(fns[i]);
     } else if (does_file_exist_sync_node(fns[i])) {
       if (get_id_node() == 0) {
         const crc32_t crc = compute_crc32(fns[i]);
