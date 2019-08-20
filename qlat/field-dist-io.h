@@ -348,14 +348,14 @@ long dist_write_fields(const std::vector<ConstHandle<Field<M> > >& fs,
     const Field<M>& f = fs[k]();
     const int id_node = f.geo.geon.id_node;
     if (id_node == 0) {
-      dist_mkdir(path, id_node, mode);
+      dist_mkdir(path + ".partial", id_node, mode);
       if (get_force_field_write_sizeof_M() == 0) {
-        dist_write_geo_info(f.geo, sizeof(M), path, mode);
+        dist_write_geo_info(f.geo, sizeof(M), path + ".partial", mode);
       } else {
         const int sizeof_M = get_force_field_write_sizeof_M();
         qassert((f.geo.multiplicity * sizeof(M)) % sizeof_M == 0);
         const int multiplicity = (f.geo.multiplicity * sizeof(M)) / sizeof_M;
-        dist_write_geo_info(geo_remult(f.geo, multiplicity), sizeof_M, path, mode);
+        dist_write_geo_info(geo_remult(f.geo, multiplicity), sizeof_M, path + ".partial", mode);
         get_force_field_write_sizeof_M() = 0;
       }
       break;
@@ -367,7 +367,9 @@ long dist_write_fields(const std::vector<ConstHandle<Field<M> > >& fs,
     dds[i].id_node = fs[i]().geo.geon.id_node;
     dds[i].data = get_data(fs[i]());
   }
-  return dist_write_dist_data(dds, num_node, path, mode);
+  const long total_bytes = dist_write_dist_data(dds, num_node, path + ".partial", mode);
+  qrename_info(path + ".partial", path);
+  return total_bytes;
 }
 
 template <class M>
