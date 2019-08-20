@@ -35,6 +35,11 @@ struct Cache {
     return it != m.end();
   }
   //
+  long erase(const K& key)
+  {
+    return m.erase(key);
+  }
+  //
   M& operator[](const K& key)
   {
     typename std::map<K, std::pair<long, M> >::iterator it = m.find(key);
