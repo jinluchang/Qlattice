@@ -547,7 +547,7 @@ long read_selected_field(Field<M>& f, const std::string& path,
     for (int i = 0; i < (int)sfs.size(); ++i) {
       const int new_id_node = sfs[i].geo.geon.id_node;
       qassert(sfs[i].geo.geon.num_node == new_num_node);
-      Vector<M> v = get_data(sfs[i].field);
+      const Vector<M> v = get_data(sfs[i].field);
       qread_data(v, fp);
       crc ^= crc32_shift(crc32_par(v),
                          (new_num_node - new_id_node - 1) * v.data_size());
