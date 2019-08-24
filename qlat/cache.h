@@ -16,17 +16,20 @@ struct Cache {
   std::map<K, std::pair<long, M> > m;
   long idx;
   long limit;
+  long buffer_size;
   //
-  Cache(const std::string& name_ = "Cache", const long limit_ = 16)
+  Cache(const std::string& name_ = "Cache", const long limit_ = 16, const long buffer_size_ = 8)
   {
-    init(name_, limit_);
+    init(name_, limit_, buffer_size_);
   }
   //
-  void init(const std::string& name_, const long limit_)
+  void init(const std::string& name_, const long limit_, const long buffer_size_)
   {
     clear();
     name = name_;
-    limit = limit_;
+    limit = std::max(limit_, (long)1);
+    buffer_size = std::max(buffer_size_, limit - limit / 2);
+    qassert(buffer_size >= 1);
   }
   //
   bool has(const K& key) const
@@ -73,7 +76,9 @@ struct Cache {
         idxes.push_back(i);
       }
       std::sort(idxes.begin(), idxes.end());
-      const long threshhold = idxes[m.size() / 2];
+      qassert((long)m.size() == limit);
+      qassert((long)m.size() > buffer_size);
+      const long threshhold = idxes[buffer_size];
       std::vector<K> to_free;
       for (typename std::map<K, std::pair<long, M> >::iterator it = m.begin();
            it != m.end(); ++it) {
