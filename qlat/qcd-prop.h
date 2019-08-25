@@ -439,6 +439,75 @@ inline void set_mom_src_propagator(Propagator4d& prop, Inverter& inv,
   }
 }
 
+template <class T>
+void free_mom_invert(Propagator4dT<T>& sol, const Propagator4dT<T>& src,
+                     const double mass,
+                     const CoordinateD momtwist = CoordinateD())
+// DWF infinite L_s
+// M_5 = 1.0
+{
+  TIMER("free_mom_invert");
+  sol.init(src);
+  const Geometry& geo = src.geo;
+  const double m5 = 1.0;
+#pragma omp parallel for
+  for (long index = 0; index < geo.local_volume(); ++index) {
+    Coordinate kl = geo.coordinate_from_index(index);
+    Coordinate kg = geo.coordinate_g_from_l(kl);
+    std::array<double, DIMN> kk, ks;
+    double p2 = 0.0;
+    double wp = 1.0 - m5;
+    SpinMatrixT<T> pg;
+    set_zero(pg);
+    for (int i = 0; i < DIMN; ++i) {
+      Coordinate total_site = geo.total_site();
+      kg[i] = smod(kg[i], total_site[i]);
+      kk[i] = 2.0 * PI * (kg[i] + momtwist[i]) / (double)total_site[i];
+      ks[i] = sin(kk[i]);
+      pg += SpinMatrixConstantsT<T>::get_cps_gammas()[i] * (T)ks[i];
+      p2 += sqr(ks[i]);
+      wp += 2.0 * sqr(sin(kk[i] / 2.0));
+    }
+    const double calpha = (1.0 + sqr(wp) + p2) / 2.0 / wp;
+    const double alpha = acosh(calpha);
+    const double lwa = 1.0 - wp * exp(-alpha);
+    SpinMatrixT<T> m;
+    set_unit(m, mass * lwa);
+    SpinMatrixT<T> ipgm = pg;
+    ipgm *= (T)(-ii);
+    ipgm += m;
+    ipgm *= lwa / (p2 + sqr(mass * lwa));
+    WilsonMatrixT<T>& wm_sol = sol.get_elem(kl);
+    if (1.0e-10 > p2 && 1.0e-10 > lwa) {
+      // if (0.0 != qnorm(ipgm)) {
+      //   Display(cname, fname, "kg = %s\n", show(kg).c_str());
+      //   Display(cname, fname, "p2         = %13.5E\n", p2);
+      //   Display(cname, fname, "wp         = %13.5E\n", wp);
+      //   Display(cname, fname, "alpha      = %13.5E\n", alpha);
+      //   Display(cname, fname, "lwa        = %13.5E\n", lwa);
+      //   Display(cname, fname, "qnorm(ipgm) = %13.5E\n", qnorm(ipgm));
+      // }
+      set_zero(wm_sol);
+    } else {
+      const WilsonMatrixT<T>& wm_src = src.get_elem(kl);
+      wm_sol = ipgm * wm_src;
+    }
+  }
+}
+
+template <class T>
+void free_invert(Propagator4dT<T>& sol, const Propagator4dT<T>& src,
+                 const double mass, const CoordinateD& momtwist = CoordinateD())
+{
+  TIMER_VERBOSE("free_invert");
+  const Geometry& geo = src.geo;
+  sol.init(src);
+  fft_complex_field(sol, true);
+  free_mom_invert(sol, sol, mass, momtwist);
+  fft_complex_field(sol, false);
+  sol *= 1.0 / geo.total_volume();
+}
+
 // -------------------------------------------------------------------------
 
 inline void set_tslice_mom_src_fermion_field(FermionField4d& ff,

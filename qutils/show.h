@@ -152,7 +152,7 @@ inline bool parse_long(long& num, long& cur, const std::string& data)
   const long start = cur;
   char c;
   while (parse_char(c, cur, data)) {
-    if ('0' > c or c > '9') {
+    if (not (('0' <= c and c <= '9') or (c == '-') or (c == '+'))) {
       cur -= 1;
       break;
     }
@@ -162,6 +162,25 @@ inline bool parse_long(long& num, long& cur, const std::string& data)
   } else {
     const std::string str = std::string(data, start, cur - start);
     num = read_long(str);
+    return true;
+  }
+}
+
+inline bool parse_double(double& num, long& cur, const std::string& data)
+{
+  const long start = cur;
+  char c;
+  while (parse_char(c, cur, data)) {
+    if (not (('0' <= c and c <= '9') or (c == '-') or (c == '+') or (c == '.') or (c == 'e')  or (c == 'E'))) {
+      cur -= 1;
+      break;
+    }
+  }
+  if (cur <= start) {
+    return false;
+  } else {
+    const std::string str = std::string(data, start, cur - start);
+    num = read_double(str);
     return true;
   }
 }
