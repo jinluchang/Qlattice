@@ -81,7 +81,7 @@ inline void mk_field_selection(FieldM<int64_t, 1>& f_rank,
 
 inline void mk_grid_field_selection(FieldM<int64_t, 1>& f_rank,
                                     const Coordinate& total_site,
-                                    const long n_per_tslice,
+                                    const long n_per_tslice_,
                                     const RngState& rs)
 // each time slice has "n_per_tslice = spatial_vol / ratio" points been selected.
 // not selected points has value = -1;
@@ -90,9 +90,15 @@ inline void mk_grid_field_selection(FieldM<int64_t, 1>& f_rank,
 {
   TIMER_VERBOSE("mk_grid_field_selection");
   const long spatial_vol = total_site[0] * total_site[1] * total_site[2];
+  const long n_per_tslice = n_per_tslice_ == -1 ? spatial_vol : n_per_tslice_;
+  qassert(n_per_tslice > 0);
   qassert(spatial_vol % n_per_tslice == 0);
   const long ratio = spatial_vol / n_per_tslice;
   qassert(ratio >= 0);
+  RngState rs_shift(rs, "random_shift");
+  const Coordinate random_shift = mod(
+      Coordinate(rand_gen(rs_shift), rand_gen(rs_shift), rand_gen(rs_shift), 0),
+      total_site);
   Geometry geo;
   geo.init(total_site, 1);
   f_rank.init();
@@ -129,7 +135,7 @@ inline void mk_grid_field_selection(FieldM<int64_t, 1>& f_rank,
         if (xg[3] != t) {
           continue;
         }
-        const Coordinate x = xg;
+        const Coordinate x = mod(xg + random_shift, total_site);
         bool check = true;
         switch (ratio) {
           case 1:
@@ -168,7 +174,7 @@ inline void mk_grid_field_selection(FieldM<int64_t, 1>& f_rank,
             check = check and x[2] % 4 == 0;
             break;
           default:
-            displayln_info(fname + ssprintf(": ratio=%d.", ratio));
+            displayln_info(fname + ssprintf(": ERROR: ratio=%d.", ratio));
             qassert(false);
             break;
         }
