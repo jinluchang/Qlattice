@@ -5,36 +5,9 @@
 namespace qlat
 {  //
 
-struct FieldSelection {
-  FieldM<int64_t, 1>
-      f_rank;  // rank when the points being selected (-1 if not selected)
-  long n_per_tslice;  // num points per time slice
-  //
-  FieldM<long, 1>
-      f_local_idx;  // idx of points on this node (-1 if not selected)
-  long n_elems;     // num points of this node
-  //
-  std::vector<int64_t> ranks;   // rank of the selected points
-  std::vector<long> indices;    // local indices of selected points
-  std::vector<Coordinate> xls;  // local coordinates of selected points
-  //
-  void init()
-  {
-    f_rank.init();
-    n_per_tslice = 0;
-    f_local_idx.init();
-    n_elems = 0;
-    clear(ranks);
-    clear(indices);
-    clear(xls);
-  }
-  //
-  FieldSelection() { init(); }
-};
-
 inline void mk_field_selection(FieldM<int64_t, 1>& f_rank,
-                               const long n_per_tslice_,
-                               const Coordinate& total_site, const RngState& rs)
+                               const Coordinate& total_site,
+                               const long n_per_tslice_, const RngState& rs)
 // not selected points has value = -1;
 // if n_per_tslice_ <= spatial_vol / 2 --> random select
 // else if n_per_tslice_ < 0 -->
@@ -106,6 +79,140 @@ inline void mk_field_selection(FieldM<int64_t, 1>& f_rank,
   }
 }
 
+inline void mk_grid_field_selection(FieldM<int64_t, 1>& f_rank,
+                                    const Coordinate& total_site,
+                                    const long n_per_tslice,
+                                    const RngState& rs)
+// each time slice has "n_per_tslice = spatial_vol / ratio" points been selected.
+// not selected points has value = -1;
+// selected points has value from 0 to "n_per_tslice - 1" in random order
+// (different per time slice)
+{
+  TIMER_VERBOSE("mk_grid_field_selection");
+  const long spatial_vol = total_site[0] * total_site[1] * total_site[2];
+  qassert(spatial_vol % n_per_tslice == 0);
+  const long ratio = spatial_vol / n_per_tslice;
+  qassert(ratio >= 0);
+  Geometry geo;
+  geo.init(total_site, 1);
+  f_rank.init();
+  f_rank.init(geo);
+  qassert(f_rank.geo.is_only_local());
+#pragma omp parallel for
+  for (long index = 0; index < geo.local_volume(); ++index) {
+    f_rank.get_elems(index)[0] = -1;
+  }
+  std::vector<Field<int64_t> > fs;
+  const Coordinate new_size_node = get_default_serial_new_size_node(geo);
+  shuffle_field(fs, f_rank, new_size_node);
+  qassert(fs.size() <= 1);
+  if (fs.size() == 1) {
+    // require each tslice is on one node.
+    Field<int64_t>& nf = fs[0];
+    const Geometry& ngeo = nf.geo;
+    qassert(ngeo.multiplicity == 1);
+    qassert(new_size_node == ngeo.geon.size_node);
+    const int t_start = ngeo.node_site[3] * ngeo.geon.coor_node[3];
+    const int t_end = t_start + ngeo.node_site[3];
+#pragma omp parallel for
+    for (int t = t_start; t < t_end; ++t) {
+      RngState rst = rs.split(t);
+      std::vector<long> ranks(n_per_tslice);
+      for (long i = 0; i < n_per_tslice; ++i) {
+        ranks[i] = i;
+      }
+      random_permute(ranks, rst);
+      long idx = 0;
+      for (long index = 0; index < ngeo.local_volume(); ++index) {
+        const Coordinate xl = ngeo.coordinate_from_index(index);
+        const Coordinate xg = ngeo.coordinate_g_from_l(xl);
+        if (xg[3] != t) {
+          continue;
+        }
+        const Coordinate x = xg;
+        bool check = true;
+        switch (ratio) {
+          case 1:
+            check = true;
+            break;
+          case 2:
+            check = check and (x[0] + x[1] + x[2]) % 2 == 0;
+            break;
+          case 4:
+            check = check and (x[0] + x[1]) % 2 == 0;
+            check = check and (x[1] + x[2]) % 2 == 0;
+            check = check and (x[0] + x[2]) % 2 == 0;
+            break;
+          case 8:
+            check = check and x[0] % 2 == 0;
+            check = check and x[1] % 2 == 0;
+            check = check and x[2] % 2 == 0;
+            break;
+          case 16:
+            check = check and x[0] % 2 == 0;
+            check = check and x[1] % 2 == 0;
+            check = check and x[2] % 2 == 0;
+            check = check and (x[0] + x[1] + x[2]) % 4 == 0;
+            break;
+          case 32:
+            check = check and x[0] % 2 == 0;
+            check = check and x[1] % 2 == 0;
+            check = check and x[2] % 2 == 0;
+            check = check and (x[0] + x[1]) % 4 == 0;
+            check = check and (x[1] + x[2]) % 4 == 0;
+            check = check and (x[0] + x[2]) % 4 == 0;
+            break;
+          case 64:
+            check = check and x[0] % 4 == 0;
+            check = check and x[1] % 4 == 0;
+            check = check and x[2] % 4 == 0;
+            break;
+          default:
+            displayln_info(fname + ssprintf(": ratio=%d.", ratio));
+            qassert(false);
+            break;
+        }
+        if (check) {
+          qassert(idx < n_per_tslice);
+          nf.get_elem(index) = ranks[idx];
+          idx += 1;
+        } else {
+          nf.get_elem(index) = -1;
+        }
+      }
+      qassert(idx == n_per_tslice);
+    }
+  }
+  shuffle_field_back(f_rank, fs, new_size_node);
+}
+
+struct FieldSelection {
+  FieldM<int64_t, 1>
+      f_rank;  // rank when the points being selected (-1 if not selected)
+  long n_per_tslice;  // num points per time slice
+  //
+  FieldM<long, 1>
+      f_local_idx;  // idx of points on this node (-1 if not selected)
+  long n_elems;     // num points of this node
+  //
+  std::vector<int64_t> ranks;   // rank of the selected points
+  std::vector<long> indices;    // local indices of selected points
+  std::vector<Coordinate> xls;  // local coordinates of selected points
+  //
+  void init()
+  {
+    f_rank.init();
+    n_per_tslice = 0;
+    f_local_idx.init();
+    n_elems = 0;
+    clear(ranks);
+    clear(indices);
+    clear(xls);
+  }
+  //
+  FieldSelection() { init(); }
+};
+
 inline void set_field_selection(FieldSelection& fsel,
                                 const FieldM<int64_t, 1>& f_rank,
                                 const long n_per_tslice_)
@@ -163,7 +270,17 @@ inline void set_field_selection(FieldSelection& fsel,
                                 const long n_per_tslice, const RngState& rs)
 {
   FieldM<int64_t, 1> f;
-  mk_field_selection(f, n_per_tslice, total_site, rs);
+  mk_field_selection(f, total_site, n_per_tslice, rs);
+  set_field_selection(fsel, f, n_per_tslice);
+}
+
+inline void set_grid_field_selection(FieldSelection& fsel,
+                                     const Coordinate& total_site,
+                                     const long n_per_tslice,
+                                     const RngState& rs)
+{
+  FieldM<int64_t, 1> f;
+  mk_grid_field_selection(f, total_site, n_per_tslice, rs);
   set_field_selection(fsel, f, n_per_tslice);
 }
 
