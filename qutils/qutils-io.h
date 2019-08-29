@@ -3,6 +3,9 @@
 #include "qutils.h"
 #include "timer.h"
 
+#include <signal.h>
+#include <stdlib.h>
+
 namespace qlat
 {  //
 
@@ -107,6 +110,36 @@ inline std::vector<std::string> qgetlines(const std::string& fn)
   std::vector<std::string> lines = qgetlines(fp);
   qclose(fp);
   return lines;
+}
+
+inline int& is_sigint_received()
+{
+  static int n = 0;
+  return n;
+}
+
+inline void qhandler_sigint(const int signum)
+{
+  if (signum == SIGINT) {
+    is_sigint_received() += 1;
+    displayln(ssprintf("qhandler_sigint: triggered, current count is: %d / 10.",
+                       is_sigint_received()));
+    sleep(3.0);
+    if (is_sigint_received() == 10) {
+      qassert(false);
+    }
+  } else {
+    displayln(
+        ssprintf("qhandler_sigint: cannot handle this signal: %d.", signum));
+  }
+}
+
+inline int install_qhandle_sigint()
+{
+  TIMER_VERBOSE("install_qhandle_sigint");
+  struct sigaction act;
+  act.sa_handler = qhandler_sigint;
+  return sigaction(SIGINT, &act, NULL);
 }
 
 }  // namespace qlat

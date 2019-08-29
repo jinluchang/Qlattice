@@ -140,6 +140,7 @@ int main(int argc, char* argv[])
       make_array<std::string>("free-4nt8");
   begin(&argc, &argv);
   setup_log_idx();
+  setup();
   for (int k = 0; k < (int)job_tags.size(); ++k) {
     const std::string& job_tag = job_tags[k];
     if (not compute(job_tag)) {

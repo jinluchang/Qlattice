@@ -19,11 +19,26 @@ int main(int argc, char* argv[])
   std::vector<std::string> fns(argc - 2);
   for (long i = 0; i < (long)fns.size(); ++i) {
     fns[i] = remove_trailing_slashes(argv[2 + i]);
+  }
+  {
+    double time = get_time();
+    glb_sum(time);
+    const RngState rs_permute(show(time));
+    random_permute(fns, rs_permute);
+  }
+  for (long i = 0; i < (long)fns.size(); ++i) {
     displayln_info(
         ssprintf("fns[%5d/%d] = '%s'", i, fns.size(), fns[i].c_str()));
   }
+  install_qhandle_sigint();
   displayln_info("Start to repartition...");
   for (long i = 0; i < (long)fns.size(); ++i) {
+    if (is_sigint_received() > 0) {
+      Timer::display();
+      displayln_info("quit: because sigint received.");
+      end();
+      return 0;
+    }
     Timer::autodisplay();
     TIMER_VERBOSE("repartition-iter");
     displayln_info(

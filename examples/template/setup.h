@@ -36,7 +36,7 @@ inline std::string get_job_path(const std::string& job_tag, const int traj)
   return get_job_path(job_tag) + ssprintf("/results=%d", traj);
 }
 
-inline void setup(const std::string& job_tag)
+inline void setup()
 {
   Timer::max_function_name_length_shown() = 50;
   Timer::max_call_times_for_always_show_info() = 3;
@@ -49,11 +49,20 @@ inline void setup(const std::string& job_tag)
   dist_write_par_limit() = 128;
   dist_read_par_limit() = 128;
   displayln_info(ssprintf("get_start_time()=%lf", get_start_time()));
-  displayln_info(ssprintf("lock_expiration_time=%lf", get_start_time() + get_lock_expiration_time_limit()));
-  displayln_info(ssprintf("get_time_limit()=%lf hours", get_time_limit() / 3600.0));
-  displayln_info(ssprintf("get_default_budget()=%lf hours", get_default_budget() / 3600.0));
+  displayln_info(ssprintf("lock_expiration_time=%lf",
+                          get_start_time() + get_lock_expiration_time_limit()));
+  displayln_info(
+      ssprintf("get_time_limit()=%lf hours", get_time_limit() / 3600.0));
+  displayln_info(ssprintf("get_default_budget()=%lf hours",
+                          get_default_budget() / 3600.0));
   displayln_info(ssprintf("dist_read_par_limit()=%d", dist_read_par_limit()));
   displayln_info(ssprintf("dist_write_par_limit()=%d", dist_write_par_limit()));
+  install_qhandle_sigint();
+}
+
+inline void setup(const std::string& job_tag)
+{
+  setup();
 }
 
 // -----------------------------------------------------------------------------------
