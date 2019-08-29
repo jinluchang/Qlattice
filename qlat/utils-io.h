@@ -216,7 +216,7 @@ inline int qremove_all(const std::string& path)
 
 inline int qremove_info(const std::string& path)
 {
-  TIMER("qremove_info");
+  TIMER_VERBOSE("qremove_info");
   if (0 == get_id_node()) {
     return qremove(path);
   } else {
@@ -226,7 +226,7 @@ inline int qremove_info(const std::string& path)
 
 inline int qremove_all_info(const std::string& path)
 {
-  TIMER("qremove_all_info");
+  TIMER_VERBOSE("qremove_all_info");
   if (0 == get_id_node()) {
     return qremove_all(path);
   } else {
