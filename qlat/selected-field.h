@@ -223,17 +223,17 @@ inline void set_field_selection(FieldSelection& fsel,
                                 const FieldM<int64_t, 1>& f_rank,
                                 const long n_per_tslice_)
 // not selected points has value = -1;
-// if n_per_tslice_ <= spatial_vol / 2 --> random select
-// else if n_per_tslice_ < 0 -->
-// random select spatial_vol / 2 points
+// if 0 < n_per_tslice_ <= spatial_vol --> random select in f_rank
+// else if n_per_tslice_ == -1 -->
+// select all random points in f_rank
 // and select all the rest of the points with rank spatial_vol - 1.
 {
   TIMER_VERBOSE("set_field_selection");
   const Geometry& geo = f_rank.geo;
   const Coordinate total_site = geo.total_site();
   const long spatial_vol = total_site[0] * total_site[1] * total_site[2];
-  qassert(n_per_tslice_ == -1 or n_per_tslice_ == spatial_vol or
-          (0 < n_per_tslice_ and n_per_tslice_ <= spatial_vol / 2));
+  qassert(n_per_tslice_ == -1 or
+          (0 < n_per_tslice_ and n_per_tslice_ <= spatial_vol));
   const long n_per_tslice = n_per_tslice_ == -1 ? spatial_vol : n_per_tslice_;
   qassert(geo.is_only_local());
   fsel.init();

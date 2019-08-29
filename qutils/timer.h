@@ -265,7 +265,7 @@ struct Timer {
   //
   static double& minimum_autodisplay_interval()
   {
-    static double time = 365 * 24 * 3600.0;
+    static double time = 600.0;
     return time;
   }
   //
@@ -382,7 +382,6 @@ struct Timer {
         info.dtime >= minimum_duration_for_show_stop_info()) {
       info.show_stop(max_function_name_length_shown());
     }
-    autodisplay(stop_time);
   }
   //
   static void test_timer_time_usage()

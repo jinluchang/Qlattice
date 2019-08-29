@@ -534,6 +534,9 @@ inline bool dist_repartition(const Coordinate& new_size_node,
   if (std::string(npath, npath.length() - 4, 4) == ".tmp") {
     return true;
   }
+  if (does_file_exist_sync_node(npath + "-lock")) {
+    return true;
+  }
   const std::string new_npath = remove_trailing_slashes(new_path);
   const bool is_dir = is_directory_sync_node(path);
   if (is_dir and new_size_node != Coordinate(1, 1, 1, 1) and
@@ -563,6 +566,9 @@ inline bool dist_repartition(const Coordinate& new_size_node,
                  show(new_size_node).c_str(), npath.c_str()));
     return true;
   }
+  if (not obtain_lock(npath + "-lock")) {
+    return true;
+  }
   TIMER_VERBOSE("dist_repartition");
   Field<float> f;
   read_field(f, npath);
@@ -588,6 +594,7 @@ inline bool dist_repartition(const Coordinate& new_size_node,
       dist_write_field(f, new_size_node, new_npath);
     }
   }
+  release_lock();
   return is_failed;
 }
 

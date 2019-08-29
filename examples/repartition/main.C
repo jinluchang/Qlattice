@@ -24,6 +24,7 @@ int main(int argc, char* argv[])
   }
   displayln_info("Start to repartition...");
   for (long i = 0; i < (long)fns.size(); ++i) {
+    Timer::autodisplay();
     TIMER_VERBOSE("repartition-iter");
     displayln_info(
         ssprintf("fns[%5d/%d] = '%s'", i, fns.size(), fns[i].c_str()));
