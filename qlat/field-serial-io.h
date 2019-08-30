@@ -12,12 +12,13 @@
 namespace qlat
 {  //
 
-inline Coordinate get_default_serial_new_size_node(const Geometry& geo)
+inline Coordinate get_default_serial_new_size_node(const Geometry& geo, const int max_num_ = 0)
 {
   const int num_node = geo.geon.num_node;
+  const int max_num = max_num_ <= 0 or max_num_ > num_node ? num_node : max_num_;
   const Coordinate total_site = geo.total_site();
   Coordinate new_size_node = Coordinate(1, 1, 1, total_site[3]);
-  while (num_node < new_size_node[3]) {
+  while (max_num < new_size_node[3]) {
     if (new_size_node[3] % 2 == 0) {
       new_size_node[3] /= 2;
     } else if (new_size_node[3] % 3 == 0) {
@@ -184,7 +185,8 @@ template <class M>
 long serial_write_field(const Field<M>& f, const std::string& path)
 // interface_function
 {
-  return serial_write_field(f, path, get_default_serial_new_size_node(f.geo));
+  return serial_write_field(
+      f, path, get_default_serial_new_size_node(f.geo, dist_write_par_limit()));
 }
 
 template <class M>
@@ -192,8 +194,9 @@ long serial_read_field(Field<M>& f, const std::string& path,
                        const long offset = 0, const int whence = SEEK_SET)
 // interface_function
 {
-  return serial_read_field(f, path, get_default_serial_new_size_node(f.geo),
-                           offset, whence);
+  return serial_read_field(
+      f, path, get_default_serial_new_size_node(f.geo, dist_read_par_limit()),
+      offset, whence);
 }
 
 template <class M>
@@ -201,8 +204,9 @@ long serial_read_field_par(Field<M>& f, const std::string& path,
                            const long offset = 0, const int whence = SEEK_SET)
 // interface_function
 {
-  return serial_read_field_par(f, path, get_default_serial_new_size_node(f.geo),
-                               offset, whence);
+  return serial_read_field_par(
+      f, path, get_default_serial_new_size_node(f.geo, dist_read_par_limit()),
+      offset, whence);
 }
 
 template <class M>
@@ -321,9 +325,10 @@ long write_field(const Field<M>& f, const std::string& path,
         make_field_header(geo_remult(geo, multiplicity), sizeof_M, crc32));
     get_force_field_write_sizeof_M() = 0;
   }
-  const Coordinate new_size_node = new_size_node_ == Coordinate()
-                                       ? get_default_serial_new_size_node(geo)
-                                       : new_size_node_;
+  const Coordinate new_size_node =
+      new_size_node_ == Coordinate()
+          ? get_default_serial_new_size_node(geo, dist_write_par_limit())
+          : new_size_node_;
   const long file_size =
       serial_write_field(f, path + ".partial", new_size_node);
   qrename_info(path + ".partial", path);
@@ -398,9 +403,10 @@ long read_field(Field<M>& f, const std::string& path,
   f.init(geo, geo.multiplicity);
   const long data_size =
       geo.geon.num_node * geo.local_volume() * geo.multiplicity * sizeof(M);
-  const Coordinate new_size_node = new_size_node_ == Coordinate()
-                                       ? get_default_serial_new_size_node(geo)
-                                       : new_size_node_;
+  const Coordinate new_size_node =
+      new_size_node_ == Coordinate()
+          ? get_default_serial_new_size_node(geo, dist_read_par_limit())
+          : new_size_node_;
   const long file_size =
       serial_read_field_par(f, path, new_size_node, -data_size, SEEK_END);
   qassert(crc == field_crc32(f));

@@ -13,8 +13,8 @@ void test_io()
   qmkdir_sync_node("huge-data");
   RngState rs(get_global_rng_state(), fname);
   crc32_check();
-  dist_write_par_limit() = 16;
-  dist_read_par_limit() = 16;
+  dist_write_par_limit() = 8;
+  dist_read_par_limit() = 8;
   // Coordinate total_site(4, 4, 4, 8);
   Coordinate total_site(8, 8, 8, 8);
   // Coordinate total_site(16, 16, 16, 32);
