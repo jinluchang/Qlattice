@@ -305,10 +305,12 @@ inline std::string make_field_header(const Geometry& geo, const int sizeof_M,
 
 template <class M>
 long write_field(const Field<M>& f, const std::string& path,
-                 const Coordinate& new_size_node_ = Coordinate())
-// assume new_size_node is properly choosen so that concatenate the new fields
-// would be correct. eg. new_size_node = Coordinate(1,1,1,2)
+                 const Coordinate& new_size_node = Coordinate())
+// if new_size_node != Coordinate() then use dist_write_field
 {
+  if (new_size_node != Coordinate()) {
+    return dist_write_field(f, new_size_node, path);
+  }
   TIMER_VERBOSE_FLOPS("write_field");
   displayln_info(fname + ssprintf(": fn='%s'.", path.c_str()));
   qassert(is_initialized(f));
@@ -325,12 +327,9 @@ long write_field(const Field<M>& f, const std::string& path,
         make_field_header(geo_remult(geo, multiplicity), sizeof_M, crc32));
     get_force_field_write_sizeof_M() = 0;
   }
-  const Coordinate new_size_node =
-      new_size_node_ == Coordinate()
-          ? get_default_serial_new_size_node(geo, dist_write_par_limit())
-          : new_size_node_;
-  const long file_size =
-      serial_write_field(f, path + ".partial", new_size_node);
+  const long file_size = serial_write_field(
+      f, path + ".partial",
+      get_default_serial_new_size_node(geo, dist_write_par_limit()));
   qrename_info(path + ".partial", path);
   timer.flops += file_size;
   return file_size;
