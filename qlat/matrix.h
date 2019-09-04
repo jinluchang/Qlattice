@@ -307,7 +307,7 @@ struct SpinMatrixConstantsT {
   //
   void init()
   {
-    TIMER_VERBOSE("SpinMatrixConstants::init()");
+    // TIMER_VERBOSE("SpinMatrixConstants::init()");
     unit.em() << 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1;
     // gamma_x
     gammas[0].em() << 0, 0, 0, 1, 0, 0, 1, 0, 0, -1, 0, 0, -1, 0, 0, 0;
