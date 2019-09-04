@@ -529,6 +529,11 @@ inline bool is_field(const std::string& path)
   return nfile > 0;
 }
 
+inline bool is_d_field(const std::string& path)
+{
+  return is_dist_field(path) or is_field(path);
+}
+
 inline bool dist_repartition(const Coordinate& new_size_node,
                              const std::string& path,
                              const std::string& new_path = "")

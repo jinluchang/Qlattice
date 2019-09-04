@@ -143,11 +143,12 @@ inline void dataReadInfo(const std::vector<DataSizeNmemb>& dsns,
     qlat::crc32_t chksum_read;
     const std::string filename = path + "/checksums.txt";
     FILE* file = fopen(filename.c_str(), "r");
+    qassert(file != NULL);
     fscanf(file, "%X\n", &chksum_read);
     fscanf(file, "\n");
     for (int i = 0; i < getNumNode(); i++) {
       fscanf(file, "%X\n", &chksum_read);
-      assert(chksums[i] == chksum_read);
+      qassert(chksums[i] == chksum_read);
     }
     if (chksum != chksum_read) {
       qlat::displayln(

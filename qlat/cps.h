@@ -427,12 +427,14 @@ struct InverterDomainWallCPS {
 inline void setup_inverter(InverterDomainWallCPS& inverter)
 {
   inverter.setup();
+  inverter.lm.init();
 }
 
 inline void setup_inverter(InverterDomainWallCPS& inverter,
                            const GaugeField& gf, const FermionAction& fa)
 {
   inverter.setup(gf, fa);
+  inverter.lm.init();
 }
 
 inline void setup_inverter(InverterDomainWallCPS& inverter,
