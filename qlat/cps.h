@@ -2,9 +2,27 @@
 
 // can only be used with luchang's version of CPS
 
-#define QLAT_CPS
-
 #include <qlat/qlat.h>
+
+#ifdef NO_CPS
+
+namespace qlat
+{  //
+
+typedef InverterDomainWall InverterDomainWallCPS;
+
+inline void cps_begin(int* argc, char** argv[], const Coordinate& total_site)
+{
+  begin(argc, argv);
+}
+
+void cps_end() { end(); }
+
+}  // namespace qlat
+
+#else
+
+#define QLAT_CPS
 
 #include <gf/tools.h>
 
@@ -30,7 +48,8 @@ extern MPI_Comm QMP_COMM_WORLD;
 
 #include "cps-lanc.h"
 
-QLAT_START_NAMESPACE
+namespace qlat
+{  //
 
 void set_do_arg(cps::DoArg& do_arg, const Coordinate& total_site)
 {
@@ -442,13 +461,11 @@ inline void setup_inverter(InverterDomainWallCPS& inverter,
                            const LowModesCPS& lm)
 {
   setup_inverter(inverter, gf, fa);
-  if (lm.initialized) {
-    inverter.lm.init(lm);
-  }
+  inverter.lm.init(lm);
 }
 
 inline void invert(FermionField5d& sol, const FermionField5d& src,
-                    const InverterDomainWallCPS& inverter)
+                   const InverterDomainWallCPS& inverter)
 // sol do not need to be initialized
 {
   TIMER_VERBOSE("invert(5d,5d,IDWCPS)");
@@ -458,7 +475,7 @@ inline void invert(FermionField5d& sol, const FermionField5d& src,
   field_convert(csrc, src);
   field_convert(csol, sol);
   InverterDomainWallCPS& inv = *((InverterDomainWallCPS*)(&inverter));
-  if (inverter.lm.null()) {
+  if (inverter.lm.null() or inverter.lm().initialized) {
     inv.inverter.inv(csol, csrc);
   } else {
     inv.inverter.inv(csol, csrc, NULL, &(inverter.lm().lanc));
@@ -467,9 +484,11 @@ inline void invert(FermionField5d& sol, const FermionField5d& src,
 }
 
 inline void invert(FermionField4d& sol, const FermionField4d& src,
-                    const InverterDomainWallCPS& inverter)
+                   const InverterDomainWallCPS& inverter)
 {
   invert_dwf(sol, src, inverter);
 }
 
-QLAT_END_NAMESPACE
+}  // namespace qlat
+
+#endif
