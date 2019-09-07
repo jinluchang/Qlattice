@@ -48,7 +48,24 @@ typedef SpinPropagator4dT<> SpinPropagator4d;
 #endif
 
 template <class T>
-inline void set_mom_stochastic_qed_field_feynman(Field<T>& f, const Geometry& geo, const RngState& rs)
+inline void take_real_part_and_multiply_sqrt2(Field<T>& f)
+{
+  TIMER("take_real_part_and_multiply_sqrt2");
+  const Geometry& geo = f.geo;
+#pragma omp parallel for
+  for (long index = 0; index < geo.local_volume(); ++index) {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    Vector<T> fv = f.get_elems(xl);
+    for (int m = 0; m < geo.multiplicity; ++m) {
+      fv[m] = sqrt(2.0) * fv[m].real();
+    }
+  }
+}
+
+template <class T>
+inline void set_mom_stochastic_qed_field_feynman(Field<T>& f,
+                                                 const Geometry& geo,
+                                                 const RngState& rs)
 // use QED_L scheme: all spatial zero mode removed.
 {
   TIMER("set_mom_stochastic_qed_field_feynman");
@@ -84,25 +101,52 @@ inline void set_mom_stochastic_qed_field_feynman(Field<T>& f, const Geometry& ge
 }
 
 template <class T>
-inline void take_real_part_and_multiply_sqrt2(Field<T>& f)
+inline void set_stochastic_qed_field_feynman(Field<T>& f, const Geometry& geo, const RngState& rs)
 {
-  TIMER("take_real_part_and_multiply_sqrt2");
-  const Geometry& geo = f.geo;
+  TIMER("set_stochastic_qed_field_feynman");
+  set_mom_stochastic_qed_field_feynman(f, geo, rs);
+  fft_complex_field(f, false);
+  take_real_part_and_multiply_sqrt2(f);
+}
+
+template <class T>
+inline void set_mom_stochastic_qed_field_mass(Field<T>& f, const Geometry& geo,
+                                              const double mass,
+                                              const RngState& rs)
+// use mass scheme, all zero modes are kept
+{
+  TIMER("set_mom_stochastic_qed_field_mass");
+  f.init(geo);
+  const double total_volume = geo.total_volume();
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
-    const Coordinate xl = geo.coordinate_from_index(index);
-    Vector<T> fv = f.get_elems(xl);
+    const Coordinate kl = geo.coordinate_from_index(index);
+    const Coordinate kg = geo.coordinate_g_from_l(kl);
+    const long gindex = geo.g_index_from_g_coordinate(kg);
+    RngState rst = rs.newtype(gindex);
+    double s2 = sqr(mass);
+    std::array<double, DIMN> kk;
+    for (int i = 0; i < DIMN; i++) {
+      const Coordinate total_site = geo.total_site();
+      kk[i] = 2.0 * PI * smod(kg[i], total_site[i]) / (double)total_site[i];
+      s2 += 4.0 * sqr(std::sin(kk[i] / 2.0));
+    }
+    Vector<Complex> fv = f.get_elems(kl);
+    const double sigma = std::sqrt(1.0 / (2.0 * total_volume * s2));
     for (int m = 0; m < geo.multiplicity; ++m) {
-      fv[m] = sqrt(2.0) * fv[m].real();
+      const double re = g_rand_gen(rst, 0.0, sigma);
+      const double im = g_rand_gen(rst, 0.0, sigma);
+      fv[m] = T(re, im);
     }
   }
 }
 
 template <class T>
-inline void set_stochastic_qed_field_feynman(Field<T>& f, const Geometry& geo, const RngState& rs)
+inline void set_stochastic_qed_field_mass(Field<T>& f, const Geometry& geo,
+                                          const double mass, const RngState& rs)
 {
-  TIMER("set_stochastic_qed_field_feynman");
-  set_mom_stochastic_qed_field_feynman(f, geo, rs);
+  TIMER("set_stochastic_qed_field_mass");
+  set_mom_stochastic_qed_field_mass(f, geo, mass, rs);
   fft_complex_field(f, false);
   take_real_part_and_multiply_sqrt2(f);
 }
