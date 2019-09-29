@@ -79,13 +79,13 @@
 ; (print table-0.14-t=l/2)
 
 (plot-save
-  "plots/size-mass.pdf.eps"
+  "plots/size-mass.pdf.eps.png"
   "set logscale y"
   "set key tm"
   "set size 0.6,0.7"
   "set xlabel '$L$ (fm)'"
   ; "set ylabel 'finite volume error for E\\&M correction to $m_\\pi$ (MeV)'"
-  "set ylabel '$\\Delta m_\\pi$ (MeV)'"
+  "set ylabel 'FV correction to $\\Delta m_\\pi$ (MeV)'"
   (cons "size-dmass-tl2.txt" (table->datatable (mk-dm-table table-0.14-t=l/2 inf-val-0.14)))
   (mk-plot-line
     "plot [1.0:10.0] [:]"
@@ -94,11 +94,11 @@
   )
 
 (plot-save
-  "plots/ts-val.pdf.eps"
+  "plots/ts-val.pdf.eps.png"
   "set key tm"
   "set size 0.6,0.9"
   "set xlabel '$t_s$ (fm)'"
-  "set ylabel '$\\Delta m_\\pi$ (MeV)'"
+  "set ylabel 'FV correction to $\\Delta m_\\pi$ (MeV)'"
   (cons "ts-val-32.txt"
         (table->datatable
           (map

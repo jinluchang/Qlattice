@@ -1,0 +1,19 @@
+make: Entering directory '/home/frank/application/Public/Qlattice-cc/examples/qed-self-energy/plots/size-mass.cslib-plot-dir'
+gnuplot plotfile
+bash ./convert.sh
+rm: cannot remove 'mpost-job.*': No such file or directory
+This is MetaPost, version 2.00 (TeX Live 2019/dev/Debian) (kpathsea version 6.3.1/dev)
+(/usr/share/texlive/texmf-dist/metapost/base/mpost.mp
+(/usr/share/texlive/texmf-dist/metapost/base/plain.mp
+Preloading the plain mem file, version 1.005) ) (./plot.mp [0{psfonts.map}<cmr1
+0.pfb><cmmi10.pfb><cmmi7.pfb>] )
+1 output file written: mpost-job.0
+Transcript written on mpost-job.log.
+mpost-job.0
+epstopdf plot-0.eps
+pdftops -eps plot-0.pdf
+pdftoppm -r 500 -png plot-0.pdf > plot-0.png
+mv plot-0.png ../'size-mass'.png
+mv plot-0.eps ../'size-mass'.eps
+mv plot-0.pdf ../'size-mass'.pdf
+make: Leaving directory '/home/frank/application/Public/Qlattice-cc/examples/qed-self-energy/plots/size-mass.cslib-plot-dir'
