@@ -39,6 +39,7 @@ int main(int argc, char* argv[])
       end();
       return 0;
     }
+    check_time_limit();
     Timer::autodisplay();
     TIMER_VERBOSE("repartition-iter");
     displayln_info(
