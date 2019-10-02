@@ -5,80 +5,6 @@
 namespace qlat
 {  //
 
-inline void mk_field_selection(FieldM<int64_t, 1>& f_rank,
-                               const Coordinate& total_site,
-                               const long n_per_tslice_, const RngState& rs)
-// not selected points has value = -1;
-// if n_per_tslice_ <= spatial_vol / 2 --> random select
-// else if n_per_tslice_ < 0 -->
-// random select spatial_vol / 2 points
-// and select all the rest of the points with rank spatial_vol - 1.
-{
-  TIMER_VERBOSE("mk_field_selection");
-  const long spatial_vol = total_site[0] * total_site[1] * total_site[2];
-  qassert(n_per_tslice_ == -1 or n_per_tslice_ == spatial_vol or
-          (0 < n_per_tslice_ and n_per_tslice_ <= spatial_vol / 2));
-  const long n_per_tslice = n_per_tslice_ == -1 or n_per_tslice_ == spatial_vol
-                                ? spatial_vol / 2
-                                : n_per_tslice_;
-  Geometry geo;
-  geo.init(total_site, 1);
-  f_rank.init();
-  f_rank.init(geo);
-  qassert(f_rank.geo.is_only_local());
-#pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
-    f_rank.get_elems(index)[0] = -1;
-  }
-  std::vector<Field<int64_t> > fs;
-  const Coordinate new_size_node = get_default_serial_new_size_node(geo);
-  shuffle_field(fs, f_rank, new_size_node);
-  qassert(fs.size() <= 1);
-  if (fs.size() == 1) {
-    // require each tslice is on one node.
-    Field<int64_t>& nf = fs[0];
-    const Geometry& ngeo = nf.geo;
-    qassert(ngeo.multiplicity == 1);
-    qassert(new_size_node == ngeo.geon.size_node);
-    const int t_start = ngeo.node_site[3] * ngeo.geon.coor_node[3];
-    const int t_end = t_start + ngeo.node_site[3];
-#pragma omp parallel for
-    for (int t = t_start; t < t_end; ++t) {
-      RngState rst = rs.split(t);
-      for (int i = 0; i < n_per_tslice; ++i) {
-        while (true) {
-          const Coordinate xg =
-              mod(Coordinate(rand_gen(rst), rand_gen(rst), rand_gen(rst), t),
-                  total_site);
-          const Coordinate xl = ngeo.coordinate_l_from_g(xg);
-          if (not ngeo.is_local(xl)) {
-            displayln(ssprintf("xl=%s", show(xl).c_str()));
-            displayln(ssprintf("xg=%s", show(xg).c_str()));
-            displayln(ssprintf("ngeo=%s", show(ngeo).c_str()));
-            displayln(ssprintf("total_site=%s", show(total_site).c_str()));
-            qassert(false);
-          }
-          int64_t& val = nf.get_elem(xl);
-          if (val == -1) {
-            val = i;
-            break;
-          }
-        }
-      }
-    }
-  }
-  shuffle_field_back(f_rank, fs, new_size_node);
-  if (n_per_tslice_ == -1 or n_per_tslice_ == spatial_vol) {
-#pragma omp parallel for
-    for (long index = 0; index < geo.local_volume(); ++index) {
-      int64_t& rank = f_rank.get_elems(index)[0];
-      if (rank < 0) {
-        rank = spatial_vol - 1;
-      }
-    }
-  }
-}
-
 inline void mk_grid_field_selection(FieldM<int64_t, 1>& f_rank,
                                     const Coordinate& total_site,
                                     const long n_per_tslice_,
@@ -192,6 +118,30 @@ inline void mk_grid_field_selection(FieldM<int64_t, 1>& f_rank,
   shuffle_field_back(f_rank, fs, new_size_node);
 }
 
+inline void mk_field_selection(FieldM<int64_t, 1>& f_rank,
+                               const Coordinate& total_site,
+                               const long n_per_tslice, const RngState& rs)
+// not selected points has value = -1;
+// random select n_per_tslice points based on ranks from mk_grid_field_selection
+{
+  TIMER_VERBOSE("mk_field_selection");
+  const long spatial_vol = total_site[0] * total_site[1] * total_site[2];
+  mk_grid_field_selection(f_rank, total_site, spatial_vol, rs);
+  if (n_per_tslice == -1 or n_per_tslice == spatial_vol) {
+    return;
+  }
+  qassert(n_per_tslice >= 0);
+  const Geometry& geo = f_rank.geo;
+#pragma omp parallel for
+  for (long index = 0; index < geo.local_volume(); ++index) {
+    int64_t& rank = f_rank.get_elems(index)[0];
+    qassert(rank >= 0);
+    if (rank >= n_per_tslice) {
+      rank = -1;
+    }
+  }
+}
+
 struct FieldSelection {
   FieldM<int64_t, 1>
       f_rank;  // rank when the points being selected (-1 if not selected)
@@ -222,11 +172,6 @@ struct FieldSelection {
 inline void set_field_selection(FieldSelection& fsel,
                                 const FieldM<int64_t, 1>& f_rank,
                                 const long n_per_tslice_)
-// not selected points has value = -1;
-// if 0 < n_per_tslice_ <= spatial_vol --> random select in f_rank
-// else if n_per_tslice_ == -1 -->
-// select all random points in f_rank
-// and select all the rest of the points with rank spatial_vol - 1.
 {
   TIMER_VERBOSE("set_field_selection");
   const Geometry& geo = f_rank.geo;
@@ -271,15 +216,6 @@ inline void set_field_selection(FieldSelection& fsel,
   }
 }
 
-inline void set_field_selection(FieldSelection& fsel,
-                                const Coordinate& total_site,
-                                const long n_per_tslice, const RngState& rs)
-{
-  FieldM<int64_t, 1> f;
-  mk_field_selection(f, total_site, n_per_tslice, rs);
-  set_field_selection(fsel, f, n_per_tslice);
-}
-
 inline void set_grid_field_selection(FieldSelection& fsel,
                                      const Coordinate& total_site,
                                      const long n_per_tslice,
@@ -287,6 +223,15 @@ inline void set_grid_field_selection(FieldSelection& fsel,
 {
   FieldM<int64_t, 1> f;
   mk_grid_field_selection(f, total_site, n_per_tslice, rs);
+  set_field_selection(fsel, f, n_per_tslice);
+}
+
+inline void set_field_selection(FieldSelection& fsel,
+                                const Coordinate& total_site,
+                                const long n_per_tslice, const RngState& rs)
+{
+  FieldM<int64_t, 1> f;
+  mk_field_selection(f, total_site, n_per_tslice, rs);
   set_field_selection(fsel, f, n_per_tslice);
 }
 
