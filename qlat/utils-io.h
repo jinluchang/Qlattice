@@ -104,6 +104,11 @@ inline void check_time_limit(bool timer_display = false,
   if (timer_display) {
     Timer::display("check_time_limit");
   }
+  displayln_info(fname +
+                 ssprintf(": ( get_total_time() + budget ) / get_time_limit() "
+                          "= ( %.2lf + %.2lf ) / %.2lf hours.",
+                          get_total_time() / 3600.0, budget / 3600.0,
+                          get_time_limit() / 3600.0));
   if (budget + get_total_time() > get_time_limit()) {
     release_lock();
     const bool time_out = false;
