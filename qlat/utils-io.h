@@ -32,6 +32,7 @@ inline double& get_lock_expiration_time_limit()
 {
   static double limit = 0.0;
   if (0.0 == limit) {
+    TIMER_VERBOSE("get_lock_expiration_time_limit");
     limit = 12.0 * 3600;
     set_lock_expiration_time_limit();
   }
@@ -43,7 +44,10 @@ inline double& get_time_limit()
 {
   static double limit = 0.0;
   if (0.0 == limit) {
+    TIMER_VERBOSE("get_time_limit");
     limit = get_lock_expiration_time_limit();
+    displayln_info(fname + ssprintf(": get_time_limit() = %.2lf hours.",
+                                    get_time_limit() / 3600.0));
   }
   return limit;
 }
@@ -53,10 +57,13 @@ inline double& get_default_budget()
 {
   static double budget = 0.0;
   if (0.0 == budget) {
+    TIMER_VERBOSE("get_default_budget");
     budget = 1200.0;
     const std::string stime = get_env("Q_BUDGET");
     if (stime != "") {
       reads(budget, stime);
+      displayln_info(fname + ssprintf(": get_default_budget() = %.2lf hours.",
+                                      get_default_budget() / 3600.0));
     }
   }
   return budget;

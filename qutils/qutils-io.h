@@ -120,7 +120,7 @@ inline int& is_sigint_received()
 
 inline void qhandler_sigint(const int signum)
 {
-  if (signum == SIGINT) {
+  if (signum == SIGINT or signum == SIGTERM) {
     is_sigint_received() += 1;
     displayln(ssprintf("qhandler_sigint: triggered, current count is: %d / 10.",
                        is_sigint_received()));
@@ -139,7 +139,7 @@ inline int install_qhandle_sigint()
   TIMER_VERBOSE("install_qhandle_sigint");
   struct sigaction act;
   act.sa_handler = qhandler_sigint;
-  return sigaction(SIGINT, &act, NULL);
+  return sigaction(SIGINT, &act, NULL) + sigaction(SIGTERM, &act, NULL);
 }
 
 }  // namespace qlat
