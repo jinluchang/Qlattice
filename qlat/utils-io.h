@@ -72,10 +72,16 @@ inline double& get_default_budget()
 inline void set_lock_expiration_time_limit()
 {
   TIMER_VERBOSE("set_lock_expiration_time_limit");
+  const std::string setime = get_env("Q_END_TIME");
   const std::string stime = get_env("Q_TIME_LIMIT");
   const std::string ss = get_env("COBALT_STARTTIME");
   const std::string se = get_env("COBALT_ENDTIME");
-  if (stime != "") {
+  if (setime != "") {
+    double etime = 0.0;
+    reads(etime, setime);
+    get_lock_expiration_time_limit() = etime - get_start_time();
+    displayln_info(fname + ssprintf(": via Q_END_TIME."));
+  } else if (stime != "") {
     double time = 0.0;
     reads(time, stime);
     get_lock_expiration_time_limit() = time;
