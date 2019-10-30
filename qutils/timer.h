@@ -502,7 +502,7 @@ inline void Display(const char* cname, const char* fname, const char* format,
   va_list args;
   va_start(args, format);
   char* str;
-  vasprintf(&str, format, args);
+  assert(vasprintf(&str, format, args) >= 0);
   display(ssprintf("%s::%s : %s", cname, fname, str));
   std::free(str);
 }
