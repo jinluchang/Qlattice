@@ -371,16 +371,16 @@ inline long cg_with_herm_sym_2(FermionField5d& sol, const FermionField5d& src,
   return iter;
 }
 
-inline void invert(FermionField5d& sol, const FermionField5d& src,
+inline long invert(FermionField5d& sol, const FermionField5d& src,
                    const InverterDomainWallGrid& inv)
 {
-  invert_with_cg(sol, src, inv, cg_with_herm_sym_2);
+  return invert_with_cg(sol, src, inv, cg_with_herm_sym_2);
 }
 
-inline void invert(FermionField4d& sol, const FermionField4d& src,
+inline long invert(FermionField4d& sol, const FermionField4d& src,
                    const InverterDomainWallGrid& inv)
 {
-  invert_dwf(sol, src, inv);
+  return invert_dwf(sol, src, inv);
 }
 
 }  // namespace qlat

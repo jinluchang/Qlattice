@@ -464,7 +464,7 @@ inline void setup_inverter(InverterDomainWallCPS& inverter,
   inverter.lm.init(lm);
 }
 
-inline void invert(FermionField5d& sol, const FermionField5d& src,
+inline long invert(FermionField5d& sol, const FermionField5d& src,
                    const InverterDomainWallCPS& inverter)
 // sol do not need to be initialized
 {
@@ -481,12 +481,13 @@ inline void invert(FermionField5d& sol, const FermionField5d& src,
     inv.inverter.inv(csol, csrc, NULL, &(inverter.lm().lanc));
   }
   field_convert(sol, csol);
+  return 0;
 }
 
-inline void invert(FermionField4d& sol, const FermionField4d& src,
+inline long invert(FermionField4d& sol, const FermionField4d& src,
                    const InverterDomainWallCPS& inverter)
 {
-  invert_dwf(sol, src, inverter);
+  return invert_dwf(sol, src, inverter);
 }
 
 }  // namespace qlat

@@ -623,16 +623,14 @@ inline void multiply_wilson_d_no_comm(FermionField5d& out,
 }
 
 inline void multiply_d_minus(FermionField5d& out, const FermionField5d& in,
-                             const InverterDomainWall& inv)
+                             const GaugeField& gf, const FermionAction& fa)
 {
-  TIMER("multiply_d_minus(5d,5d,Inv)");
+  TIMER("multiply_d_minus(5d,5d,gf,fa)");
   const Geometry geo = geo_resize(in.geo);
-  const FermionAction& fa = inv.fa;
-  qassert(is_matching_geo(inv.geo, in.geo));
+  qassert(is_matching_geo(gf.geo, in.geo));
   qassert(in.geo.multiplicity == fa.ls);
   qassert((int)fa.bs.size() == fa.ls);
   qassert((int)fa.cs.size() == fa.ls);
-  const GaugeField& gf = inv.gf;
   const Geometry geo1 = geo_resize(in.geo, 1);
   FermionField5d in1, out1;
   in1.init(geo1);
@@ -652,9 +650,16 @@ inline void multiply_d_minus(FermionField5d& out, const FermionField5d& in,
   refresh_expanded_1(in1);
   out.init(geo);
   qassert(out.geo.multiplicity == fa.ls);
-  qassert(is_matching_geo(inv.geo, out.geo));
+  qassert(is_matching_geo(gf.geo, out.geo));
   multiply_wilson_d_no_comm(out, in1, gf, -fa.m5);
   out += out1;
+}
+
+inline void multiply_d_minus(FermionField5d& out, const FermionField5d& in,
+                             const InverterDomainWall& inv)
+{
+  TIMER("multiply_d_minus(5d,5d,Inv)");
+  multiply_d_minus(out, in, inv.gf, inv.fa);
 }
 
 inline void multiply_m_full(FermionField5d& out, const FermionField5d& in,
@@ -1559,15 +1564,27 @@ void restore_field_from_odd_prec_sym2(FermionField5d& out,
 }
 
 template <class Inv>
-void invert_with_cg(FermionField5d& out, const FermionField5d& in,
+long invert_with_cg(FermionField5d& out, const FermionField5d& in,
                     const Inv& inv,
                     long cg(FermionField5d&, const FermionField5d&, const Inv&,
-                            const double, const long))
+                            const double, const long),
+                    double stop_rsd = -1, long max_num_iter = -1,
+                    long max_mixed_precision_cycle = -1,
+                    bool dminus_multiplied_already = false)
 {
   TIMER_VERBOSE_FLOPS("invert_with_cg(5d,5d,inv,cg)");
+  if (stop_rsd < 0) {
+    stop_rsd = inv.stop_rsd();
+  }
+  if (max_num_iter < 0) {
+    max_num_iter = inv.max_num_iter();
+  }
+  if (max_mixed_precision_cycle < 0) {
+    max_mixed_precision_cycle = inv.max_mixed_precision_cycle();
+  }
   out.init(geo_resize(in.geo));
   FermionField5d dm_in;
-  if (inv.fa.is_multiplying_dminus) {
+  if (not dminus_multiplied_already and inv.fa.is_multiplying_dminus) {
     multiply_d_minus(dm_in, in, inv);
   } else {
     dm_in.init(geo_resize(in.geo));
@@ -1580,20 +1597,12 @@ void invert_with_cg(FermionField5d& out, const FermionField5d& in,
     displayln_info(fname + ssprintf(": WARNING: dm_in qnorm is zero."));
     out.init(geo_resize(in.geo));
     set_zero(out);
-    return;
+    return 0;
   }
+  long total_iter = 0;
   if (inv.fa.is_using_zmobius == true and inv.fa.cg_diagonal_mee == 2) {
     FermionField5d in_o_p, out_e_p, out_o_p;
     set_odd_prec_field_sym2(in_o_p, out_e_p, dm_in, inv);
-    // get_half_fermion(in_e, dm_in, 2);
-    // get_half_fermion(in_o, dm_in, 1);
-    // //
-    // FermionField5d tmp;
-    // multiply_m_e_e_inv(out_e, in_e, inv);
-    // multiply_m_e_o(tmp, out_e, inv);
-    // in_o -= tmp;
-    // multiply_mpcdag_sym2(in_o, in_o, inv);
-    // //
     out_o_p.init(in_o_p.geo);
     set_zero(out_o_p);
     const double qnorm_in_o_p = qnorm(in_o_p);
@@ -1601,20 +1610,19 @@ void invert_with_cg(FermionField5d& out, const FermionField5d& in,
     tmp.init(in_o_p.geo);
     itmp = in_o_p;
     double qnorm_itmp = qnorm_in_o_p;
-    long total_iter = 0;
     int cycle;
-    for (cycle = 1; cycle <= inv.max_mixed_precision_cycle(); ++cycle) {
+    for (cycle = 1; cycle <= max_mixed_precision_cycle; ++cycle) {
       if (not inv.lm.null() and inv.lm().initialized) {
         deflate(tmp, itmp, inv.lm());
       } else {
         set_zero(tmp);
       }
       const long iter =
-          cg(tmp, itmp, inv, inv.stop_rsd() * sqrt(qnorm_in_o_p / qnorm_itmp),
-             inv.max_num_iter());
+          cg(tmp, itmp, inv, stop_rsd * sqrt(qnorm_in_o_p / qnorm_itmp),
+             max_num_iter);
       total_iter += iter;
       out_o_p += tmp;
-      if (iter <= inv.max_num_iter()) {
+      if (iter <= max_num_iter) {
         itmp.init();
         break;
       }
@@ -1625,15 +1633,7 @@ void invert_with_cg(FermionField5d& out, const FermionField5d& in,
     }
     timer.flops += 5500 * total_iter * inv.fa.ls * inv.geo.local_volume();
     displayln_info(fname + ssprintf(": total_iter=%ld cycle=%d stop_rsd=%.3E",
-                                    total_iter, cycle, inv.stop_rsd()));
-    // //
-    // multiply_m_e_e_inv(out_o, out_o, inv);
-    // multiply_m_e_o(tmp, out_o, inv);
-    // multiply_m_e_e_inv(tmp, tmp, inv);
-    // out_e -= tmp;
-    // //
-    // set_half_fermion(out, out_e, 2);
-    // set_half_fermion(out, out_o, 1);
+                                    total_iter, cycle, stop_rsd));
     restore_field_from_odd_prec_sym2(out, out_o_p, out_e_p, inv);
   } else {
     qassert(false);
@@ -1645,6 +1645,48 @@ void invert_with_cg(FermionField5d& out, const FermionField5d& in,
     displayln_info(fname + ssprintf(": checking %E from %E", sqrt(qnorm(tmp)),
                                     sqrt(qnorm(dm_in))));
   }
+  return total_iter;
+}
+
+template <class Inv>
+long invert_with_cg_with_guess(FermionField5d& out, const FermionField5d& in,
+                               const Inv& inv,
+                               long cg(FermionField5d&, const FermionField5d&,
+                                       const Inv&, const double, const long),
+                               double stop_rsd = -1, long max_num_iter = -1,
+                               long max_mixed_precision_cycle = -1,
+                               bool dminus_multiplied_already = false)
+{
+  TIMER_VERBOSE("invert_with_cg_with_guess");
+  if (stop_rsd < 0) {
+    stop_rsd = inv.stop_rsd();
+  }
+  if (max_num_iter < 0) {
+    max_num_iter = inv.max_num_iter();
+  }
+  if (max_mixed_precision_cycle < 0) {
+    max_mixed_precision_cycle = inv.max_mixed_precision_cycle();
+  }
+  FermionField5d dm_in;
+  if (not dminus_multiplied_already and inv.fa.is_multiplying_dminus) {
+    multiply_d_minus(dm_in, in, inv);
+  } else {
+    dm_in.init(geo_resize(in.geo));
+    dm_in = in;
+  }
+  const double qnorm_dm_in = qnorm(dm_in);
+  FermionField5d tmp;
+  multiply_m(tmp, out, inv);
+  dm_in -= tmp;
+  const double qnorm_dm_in_sub = qnorm(dm_in);
+  const double ratio = sqrt(qnorm_dm_in / qnorm_dm_in_sub);
+  stop_rsd *= ratio;
+  displayln_info(fname + ssprintf(": guess ratio = %.3E", ratio));
+  const long total_iter =
+      invert_with_cg(tmp, dm_in, inv, cg, stop_rsd, max_num_iter,
+                     max_mixed_precision_cycle, true);
+  out += tmp;
+  return total_iter;
 }
 
 inline long cg_with_herm_sym_2(FermionField5d& sol, const FermionField5d& src,
@@ -1659,16 +1701,16 @@ inline long cg_with_herm_sym_2(FermionField5d& sol, const FermionField5d& src,
   return iter;
 }
 
-inline void invert(FermionField5d& out, const FermionField5d& in,
+inline long invert(FermionField5d& out, const FermionField5d& in,
                    const InverterDomainWall& inv)
 {
-  invert_with_cg(out, in, inv, cg_with_herm_sym_2);
+  return invert_with_cg(out, in, inv, cg_with_herm_sym_2);
 }
 
-inline void invert(FermionField4d& out, const FermionField4d& in,
+inline long invert(FermionField4d& out, const FermionField4d& in,
                    const InverterDomainWall& inv)
 {
-  invert_dwf(out, in, inv);
+  return invert_dwf(out, in, inv);
 }
 
 inline double find_max_eigen_value_hermop_sym2(const InverterDomainWall& inv,

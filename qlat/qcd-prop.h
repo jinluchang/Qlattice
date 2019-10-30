@@ -135,7 +135,7 @@ void fermion_field_4d_from_5d(FermionField4dT<T>& ff4d,
 }
 
 template <class Inverter, class T>
-inline void invert_dwf(FermionField4dT<T>& sol, const FermionField4dT<T>& src,
+inline long invert_dwf(FermionField4dT<T>& sol, const FermionField4dT<T>& src,
                         const Inverter& inv, const int ls_ = 0)
 // sol do not need to be initialized
 // inv.geo must be the geometry of the fermion field
@@ -152,8 +152,9 @@ inline void invert_dwf(FermionField4dT<T>& sol, const FermionField4dT<T>& src,
   src5d.init(geo_ls);
   fermion_field_5d_from_4d(src5d, src, 0, ls - 1);
   fermion_field_5d_from_4d(sol5d, sol, ls - 1, 0);
-  invert(sol5d, src5d, inv);
+  const long iter = invert(sol5d, src5d, inv);
   fermion_field_4d_from_5d(sol, sol5d, ls - 1, 0);
+  return iter;
 }
 
 template <class Inverter, class T>
