@@ -445,6 +445,9 @@ inline void save_pion_gg(const std::string& path, const Coordinate& total_site,
                          const double m_pi_gev, const double f_pi_gev,
                          const double m_vector_gev)
 {
+  if (does_file_exist_sync_node(path + "/decay.field")) {
+    return;
+  }
   TIMER_VERBOSE("save_pion_gg");
   qmkdir_info(path);
   {
@@ -458,20 +461,21 @@ inline void save_pion_gg(const std::string& path, const Coordinate& total_site,
     qtouch_info(path + "/info.txt", out.str());
   }
   {
-    FieldM<Complex, 4 * 4> decay;
-    set_pion_gg_decay(decay, total_site, t_sep, m_pi_gev / ainv_gev,
-                      f_pi_gev / ainv_gev, m_vector_gev / ainv_gev);
-    write_field_double(decay, path + "/decay.field");
-  }
-  {
     const std::vector<Complex> corr =
         get_pion_corr(total_site, m_pi_gev / ainv_gev);
     std::ostringstream out;
     out << "# t C[t].real() C[t].imag()\n";
     for (int t = 0; t < total_site[3]; ++t) {
-      out << ssprintf("%4d %24.17E %24.17E\n", t, corr[t].real(), corr[t].imag());
+      out << ssprintf("%4d %24.17E %24.17E\n", t, corr[t].real(),
+                      corr[t].imag());
     }
     qtouch_info(path + "/pion-corr.txt", out.str());
+  }
+  {
+    FieldM<Complex, 4 * 4> decay;
+    set_pion_gg_decay(decay, total_site, t_sep, m_pi_gev / ainv_gev,
+                      f_pi_gev / ainv_gev, m_vector_gev / ainv_gev);
+    write_field_double(decay, path + "/decay.field");
   }
 }
 
@@ -484,11 +488,11 @@ inline void compute_all()
   // save_pion_gg("results/physical-32nt128-1.3333", Coordinate(32, 32, 32, 128), 32, 1.3333, 0.1349766, 0.092, 0.77);
   // save_pion_gg("results/physical-48nt192-1.0", Coordinate(48, 48, 48, 192), 48, 1.0, 0.1349766, 0.092, 0.77);
   // save_pion_gg("results/physical-48nt192-2.0", Coordinate(48, 48, 48, 192), 48, 2.0, 0.1349766, 0.092, 0.77);
-  // save_pion_gg("results/physical-24nt96-1.0", Coordinate(24, 24, 24, 96), 24, 1.0, 0.340, 0.105, 0.83);
-  // save_pion_gg("results/physical-32nt128-1.0", Coordinate(32, 32, 32, 128), 32, 1.0, 0.340, 0.105, 0.83);
-  // save_pion_gg("results/physical-32nt128-1.3333", Coordinate(32, 32, 32, 128), 32, 1.3333, 0.340, 0.105, 0.83);
-  // save_pion_gg("results/physical-48nt192-1.0", Coordinate(48, 48, 48, 192), 48, 1.0, 0.340, 0.105, 0.83);
-  // save_pion_gg("results/physical-48nt192-2.0", Coordinate(48, 48, 48, 192), 48, 2.0, 0.340, 0.105, 0.83);
+  // save_pion_gg("results/heavy-24nt96-1.0", Coordinate(24, 24, 24, 96), 24, 1.0, 0.340, 0.105, 0.83);
+  // save_pion_gg("results/heavy-32nt128-1.0", Coordinate(32, 32, 32, 128), 32, 1.0, 0.340, 0.105, 0.83);
+  // save_pion_gg("results/heavy-32nt128-1.3333", Coordinate(32, 32, 32, 128), 32, 1.3333, 0.340, 0.105, 0.83);
+  // save_pion_gg("results/heavy-48nt192-1.0", Coordinate(48, 48, 48, 192), 48, 1.0, 0.340, 0.105, 0.83);
+  // save_pion_gg("results/heavy-48nt192-2.0", Coordinate(48, 48, 48, 192), 48, 2.0, 0.340, 0.105, 0.83);
 }
 
 
