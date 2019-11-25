@@ -1,0 +1,848 @@
+[qcdserver16:21203] mca_base_component_repository_open: unable to open mca_plm_tm: libtorque.so.2: cannot open shared object file: No such file or directory (ignored)
+[qcdserver16:21203] mca_base_component_repository_open: unable to open mca_ras_tm: libtorque.so.2: cannot open shared object file: No such file or directory (ignored)
+qlat::begin(): MPI Initialized. num_node = 2
+qlat::begin(): OMP_NUM_THREADS = 2
+qlat::begin(): GeometryNode =
+{ initialized = true
+, num_node    = 2
+, id_node     = 0
+, size_node   = 1x1x1x2
+, coor_node   = 0x0x0x0 }
+Timer::start               display_geo_node :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
+display_geo_node : id_node =     0 ; coor_node = 0x0x0x0
+display_geo_node : id_node =     1 ; coor_node = 0x0x0x1
+Timer::stop                display_geo_node : 60.1%        1 calls 8.297E-05,8.297E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start                  displayGammas :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
+Main::displayGammas : gamma5 =
+ (1,0)  (0,0)  (0,0)  (0,0)
+ (0,0)  (1,0)  (0,0)  (0,0)
+ (0,0)  (0,0) (-1,0)  (0,0)
+ (0,0)  (0,0)  (0,0) (-1,0)
+Main::displayGammas : gamma0 * gamma1 * gamma2 * gamma3 =
+ (1,0)  (0,0)  (0,0)  (0,0)
+ (0,0)  (1,0)  (0,0)  (0,0)
+ (0,0)  (0,0) (-1,0)  (0,0)
+ (0,0)  (0,0)  (0,0) (-1,0)
+Main::displayGammas : gamma3 =
+(0,0) (0,0) (1,0) (0,0)
+(0,0) (0,0) (0,0) (1,0)
+(1,0) (0,0) (0,0) (0,0)
+(0,0) (1,0) (0,0) (0,0)
+Main::displayGammas : ii * gamma0 =
+ (0,0)  (0,0)  (0,0)  (1,0)
+ (0,0)  (0,0)  (1,0)  (0,0)
+ (0,0) (-1,0)  (0,0)  (0,0)
+(-1,0)  (0,0)  (0,0)  (0,0)
+Main::displayGammas : ii * gamma1 =
+  (0,0)   (0,0)   (0,0) (-0,-1)
+  (0,0)   (0,0)   (0,1)   (0,0)
+  (0,0)   (0,1)   (0,0)   (0,0)
+(-0,-1)   (0,0)   (0,0)   (0,0)
+Main::displayGammas : ii * gamma2 =
+ (0,0)  (0,0)  (1,0)  (0,0)
+ (0,0)  (0,0)  (0,0) (-1,0)
+(-1,0)  (0,0)  (0,0)  (0,0)
+ (0,0)  (1,0)  (0,0)  (0,0)
+Timer::stop                   displayGammas : 82.3%        1 calls 9.010E-04,9.010E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start        displaySpinPropagator4d :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
+Main::displaySpinPropagator4d : geo =
+{ initialized   = true
+, eo            = 0
+, geon          =
+{ initialized = true
+, num_node    = 2
+, id_node     = 0
+, size_node   = 1x1x1x2
+, coor_node   = 0x0x0x0 }
+, multiplicity  = 1
+, node_site     = 4x4x4x4
+, expan_left    = 0x0x0x0
+, expan_right   = 0x0x0x0
+, node_site_exp = 4x4x4x4 }
+Timer::start         prop_spin_propagator4d :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
+Timer::start              fft_complex_field :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
+Timer::start          fft_complex_field_dir :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
+Timer::start fft_complex_field_plan::get_pl :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
+::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 0
+Timer::start   fft_complex_field_plan::init :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
+fft_complex_field_plan::init : malloc 65536
+fft_complex_field_plan::init : free 65536
+Timer::start          make_shuffle_plan_fft :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
+Qlat::make_shuffle_plan_fft: num_send_packs =        256
+Qlat::make_shuffle_plan_fft: num_recv_packs =          4
+Qlat::make_shuffle_plan_fft: num_send_msgs  =          1
+Qlat::make_shuffle_plan_fft: num_recv_msgs  =          1
+Qlat::make_shuffle_plan_fft: total num_send_packs =        512
+Qlat::make_shuffle_plan_fft: total num_recv_packs =          8
+Qlat::make_shuffle_plan_fft: total num_send_msgs  =          2
+Qlat::make_shuffle_plan_fft: total num_recv_msgs  =          2
+Timer::stop           make_shuffle_plan_fft : 15.9%        1 calls 3.660E-04,3.660E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop    fft_complex_field_plan::init : 39.5%        1 calls 9.160E-04,9.160E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop  fft_complex_field_plan::get_pl : 43.2%        1 calls 1.008E-03,1.008E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start                  shuffle_field :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
+Timer::start             shuffle_field-comm :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
+Timer::start        shuffle_field-comm-init :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
+Timer::stop         shuffle_field-comm-init : 22.6%        1 calls 1.613E-03,1.613E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop              shuffle_field-comm : 27.9%        1 calls 2.132E-03,2.132E-03 sec    0.061 Gflops (1.311E+05 flops)
+Timer::stop                   shuffle_field : 69.1%        1 calls 5.330E-03,5.330E-03 sec    0.025 Gflops (1.311E+05 flops)
+Timer::start     fft_complex_field_dir-fftw :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
+Timer::stop      fft_complex_field_dir-fftw :  0.2%        1 calls 1.788E-05,1.788E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start             shuffle_field_back :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
+Timer::start             shuffle_field-comm : 26.7%        2 calls 2.132E-03,2.132E-03 sec    0.061 Gflops (1.311E+05 flops)
+Timer::start        shuffle_field-comm-init : 20.1%        2 calls 1.613E-03,1.613E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop         shuffle_field-comm-init : 20.4%        2 calls 3.099E-05,8.219E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop              shuffle_field-comm : 27.3%        2 calls 7.510E-05,1.104E-03 sec    1.745 Gflops (1.311E+05 flops)
+Timer::stop              shuffle_field_back :  2.8%        1 calls 2.251E-04,2.251E-04 sec    0.582 Gflops (1.311E+05 flops)
+Timer::stop           fft_complex_field_dir : 83.8%        1 calls 6.837E-03,6.837E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start          fft_complex_field_dir : 83.6%        2 calls 6.837E-03,6.837E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start fft_complex_field_plan::get_pl : 12.3%        2 calls 1.008E-03,1.008E-03 sec    0.000 Gflops (0.000E+00 flops)
+::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 1
+Timer::start   fft_complex_field_plan::init : 11.1%        2 calls 9.160E-04,9.160E-04 sec    0.000 Gflops (0.000E+00 flops)
+fft_complex_field_plan::init : malloc 65536
+fft_complex_field_plan::init : free 65536
+Timer::start          make_shuffle_plan_fft :  4.4%        2 calls 3.660E-04,3.660E-04 sec    0.000 Gflops (0.000E+00 flops)
+Qlat::make_shuffle_plan_fft: num_send_packs =         64
+Qlat::make_shuffle_plan_fft: num_recv_packs =          4
+Qlat::make_shuffle_plan_fft: num_send_msgs  =          1
+Qlat::make_shuffle_plan_fft: num_recv_msgs  =          1
+Qlat::make_shuffle_plan_fft: total num_send_packs =        128
+Qlat::make_shuffle_plan_fft: total num_recv_packs =          8
+Qlat::make_shuffle_plan_fft: total num_send_msgs  =          2
+Qlat::make_shuffle_plan_fft: total num_recv_msgs  =          2
+Timer::stop           make_shuffle_plan_fft :  8.3%        2 calls 3.519E-04,3.589E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop    fft_complex_field_plan::init : 15.5%        2 calls 4.239E-04,6.700E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop  fft_complex_field_plan::get_pl : 17.1%        2 calls 4.730E-04,7.405E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start                  shuffle_field : 61.3%        2 calls 5.330E-03,5.330E-03 sec    0.025 Gflops (1.311E+05 flops)
+Timer::start             shuffle_field-comm : 25.1%        3 calls 7.510E-05,1.104E-03 sec    1.745 Gflops (1.311E+05 flops)
+Timer::start        shuffle_field-comm-init : 18.7%        3 calls 3.099E-05,8.219E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop         shuffle_field-comm-init : 19.1%        3 calls 4.792E-05,5.639E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop              shuffle_field-comm : 25.8%        3 calls 8.678E-05,7.647E-04 sec    1.510 Gflops (1.311E+05 flops)
+Timer::stop                   shuffle_field : 62.1%        2 calls 2.160E-04,2.773E-03 sec    0.607 Gflops (1.311E+05 flops)
+Timer::start     fft_complex_field_dir-fftw :  0.2%        2 calls 1.788E-05,1.788E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop      fft_complex_field_dir-fftw :  0.4%        2 calls 1.717E-05,1.752E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start             shuffle_field_back :  2.5%        2 calls 2.251E-04,2.251E-04 sec    0.582 Gflops (1.311E+05 flops)
+Timer::start             shuffle_field-comm : 25.3%        4 calls 8.678E-05,7.647E-04 sec    1.510 Gflops (1.311E+05 flops)
+Timer::start        shuffle_field-comm-init : 18.6%        4 calls 4.792E-05,5.639E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop         shuffle_field-comm-init : 18.8%        4 calls 2.789E-05,4.299E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop              shuffle_field-comm : 25.7%        4 calls 6.509E-05,5.898E-04 sec    2.014 Gflops (1.311E+05 flops)
+Timer::stop              shuffle_field_back :  4.2%        2 calls 1.621E-04,1.936E-04 sec    0.808 Gflops (1.311E+05 flops)
+Timer::stop           fft_complex_field_dir : 85.3%        2 calls 1.019E-03,3.928E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start          fft_complex_field_dir : 85.2%        3 calls 1.019E-03,3.928E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start fft_complex_field_plan::get_pl : 16.0%        3 calls 4.730E-04,7.405E-04 sec    0.000 Gflops (0.000E+00 flops)
+::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 2
+Timer::start   fft_complex_field_plan::init : 14.5%        3 calls 4.239E-04,6.700E-04 sec    0.000 Gflops (0.000E+00 flops)
+fft_complex_field_plan::init : malloc 65536
+fft_complex_field_plan::init : free 65536
+Timer::start          make_shuffle_plan_fft :  7.7%        3 calls 3.519E-04,3.589E-04 sec    0.000 Gflops (0.000E+00 flops)
+Qlat::make_shuffle_plan_fft: num_send_packs =         16
+Qlat::make_shuffle_plan_fft: num_recv_packs =          4
+Qlat::make_shuffle_plan_fft: num_send_msgs  =          1
+Qlat::make_shuffle_plan_fft: num_recv_msgs  =          1
+Qlat::make_shuffle_plan_fft: total num_send_packs =         32
+Qlat::make_shuffle_plan_fft: total num_recv_packs =          8
+Qlat::make_shuffle_plan_fft: total num_send_msgs  =          2
+Qlat::make_shuffle_plan_fft: total num_recv_msgs  =          2
+Timer::stop           make_shuffle_plan_fft : 10.8%        3 calls 3.259E-04,3.479E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop    fft_complex_field_plan::init : 17.9%        3 calls 3.860E-04,5.753E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop  fft_complex_field_plan::get_pl : 19.7%        3 calls 4.280E-04,6.363E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start                  shuffle_field : 57.2%        3 calls 2.160E-04,2.773E-03 sec    0.607 Gflops (1.311E+05 flops)
+Timer::start             shuffle_field-comm : 24.1%        5 calls 6.509E-05,5.898E-04 sec    2.014 Gflops (1.311E+05 flops)
+Timer::start        shuffle_field-comm-init : 17.5%        5 calls 2.789E-05,4.299E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop         shuffle_field-comm-init : 17.7%        5 calls 2.789E-05,3.495E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop              shuffle_field-comm : 24.6%        5 calls 6.700E-05,4.852E-04 sec    1.956 Gflops (1.311E+05 flops)
+Timer::stop                   shuffle_field : 57.9%        3 calls 1.891E-04,1.912E-03 sec    0.693 Gflops (1.311E+05 flops)
+Timer::start     fft_complex_field_dir-fftw :  0.4%        3 calls 1.717E-05,1.752E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop      fft_complex_field_dir-fftw :  0.5%        3 calls 1.597E-05,1.701E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start             shuffle_field_back :  3.9%        3 calls 1.621E-04,1.936E-04 sec    0.808 Gflops (1.311E+05 flops)
+Timer::start             shuffle_field-comm : 24.1%        6 calls 6.700E-05,4.852E-04 sec    1.956 Gflops (1.311E+05 flops)
+Timer::start        shuffle_field-comm-init : 17.4%        6 calls 2.789E-05,3.495E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop         shuffle_field-comm-init : 17.6%        6 calls 2.813E-05,2.960E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop              shuffle_field-comm : 24.6%        6 calls 6.604E-05,4.154E-04 sec    1.985 Gflops (1.311E+05 flops)
+Timer::stop              shuffle_field_back :  5.4%        3 calls 1.581E-04,1.818E-04 sec    0.829 Gflops (1.311E+05 flops)
+Timer::stop           fft_complex_field_dir : 86.4%        3 calls 9.360E-04,2.931E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start          fft_complex_field_dir : 86.3%        4 calls 9.360E-04,2.931E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start fft_complex_field_plan::get_pl : 18.7%        4 calls 4.280E-04,6.363E-04 sec    0.000 Gflops (0.000E+00 flops)
+::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 3
+Timer::start   fft_complex_field_plan::init : 16.9%        4 calls 3.860E-04,5.753E-04 sec    0.000 Gflops (0.000E+00 flops)
+fft_complex_field_plan::init : malloc 65536
+fft_complex_field_plan::init : free 65536
+Timer::start          make_shuffle_plan_fft : 10.1%        4 calls 3.259E-04,3.479E-04 sec    0.000 Gflops (0.000E+00 flops)
+Qlat::make_shuffle_plan_fft: num_send_packs =          8
+Qlat::make_shuffle_plan_fft: num_recv_packs =          8
+Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
+Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
+Qlat::make_shuffle_plan_fft: total num_send_packs =         16
+Qlat::make_shuffle_plan_fft: total num_recv_packs =         16
+Qlat::make_shuffle_plan_fft: total num_send_msgs  =          4
+Qlat::make_shuffle_plan_fft: total num_recv_msgs  =          4
+Timer::stop           make_shuffle_plan_fft : 12.9%        4 calls 3.300E-04,3.434E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop    fft_complex_field_plan::init : 19.9%        4 calls 3.970E-04,5.307E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop  fft_complex_field_plan::get_pl : 22.1%        4 calls 4.430E-04,5.880E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start                  shuffle_field : 53.7%        4 calls 1.891E-04,1.912E-03 sec    0.693 Gflops (1.311E+05 flops)
+Timer::start             shuffle_field-comm : 23.2%        7 calls 6.604E-05,4.154E-04 sec    1.985 Gflops (1.311E+05 flops)
+Timer::start        shuffle_field-comm-init : 16.5%        7 calls 2.813E-05,2.960E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop         shuffle_field-comm-init : 16.7%        7 calls 2.813E-05,2.577E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop              shuffle_field-comm : 24.3%        7 calls 1.640E-04,3.795E-04 sec    0.799 Gflops (1.311E+05 flops)
+Timer::stop                   shuffle_field : 54.9%        4 calls 2.971E-04,1.508E-03 sec    0.441 Gflops (1.311E+05 flops)
+Timer::start     fft_complex_field_dir-fftw :  0.5%        4 calls 1.597E-05,1.701E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop      fft_complex_field_dir-fftw :  0.7%        4 calls 2.503E-05,1.901E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start             shuffle_field_back :  4.9%        4 calls 1.581E-04,1.818E-04 sec    0.829 Gflops (1.311E+05 flops)
+Timer::start             shuffle_field-comm : 23.8%        8 calls 1.640E-04,3.795E-04 sec    0.799 Gflops (1.311E+05 flops)
+Timer::start        shuffle_field-comm-init : 16.1%        8 calls 2.813E-05,2.577E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop         shuffle_field-comm-init : 16.2%        8 calls 1.597E-05,2.275E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop              shuffle_field-comm : 24.2%        8 calls 7.010E-05,3.408E-04 sec    1.870 Gflops (1.311E+05 flops)
+Timer::stop              shuffle_field_back :  6.7%        4 calls 2.100E-04,1.888E-04 sec    0.624 Gflops (1.311E+05 flops)
+Timer::stop           fft_complex_field_dir : 87.5%        4 calls 1.131E-03,2.481E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop               fft_complex_field : 88.5%        1 calls 1.005E-02,1.005E-02 sec    0.013 Gflops (1.311E+05 flops)
+Timer::start     prop_mom_spin_propagator4d :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
+Timer::stop      prop_mom_spin_propagator4d :  5.2%        1 calls 6.189E-04,6.189E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start              fft_complex_field : 83.6%        2 calls 1.005E-02,1.005E-02 sec    0.013 Gflops (1.311E+05 flops)
+Timer::start          fft_complex_field_dir : 82.4%        5 calls 1.131E-03,2.481E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start fft_complex_field_plan::get_pl : 19.5%        5 calls 4.430E-04,5.880E-04 sec    0.000 Gflops (0.000E+00 flops)
+::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 4
+Timer::start   fft_complex_field_plan::init : 17.6%        5 calls 3.970E-04,5.307E-04 sec    0.000 Gflops (0.000E+00 flops)
+fft_complex_field_plan::init : malloc 65536
+fft_complex_field_plan::init : free 65536
+Timer::start          make_shuffle_plan_fft : 11.3%        5 calls 3.300E-04,3.434E-04 sec    0.000 Gflops (0.000E+00 flops)
+Qlat::make_shuffle_plan_fft: num_send_packs =        256
+Qlat::make_shuffle_plan_fft: num_recv_packs =          4
+Qlat::make_shuffle_plan_fft: num_send_msgs  =          1
+Qlat::make_shuffle_plan_fft: num_recv_msgs  =          1
+Qlat::make_shuffle_plan_fft: total num_send_packs =        512
+Qlat::make_shuffle_plan_fft: total num_recv_packs =          8
+Qlat::make_shuffle_plan_fft: total num_send_msgs  =          2
+Qlat::make_shuffle_plan_fft: total num_recv_msgs  =          2
+Timer::stop           make_shuffle_plan_fft : 13.7%        5 calls 3.369E-04,3.421E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop    fft_complex_field_plan::init : 20.2%        5 calls 4.060E-04,5.058E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop  fft_complex_field_plan::get_pl : 22.3%        5 calls 4.451E-04,5.594E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start                  shuffle_field : 48.1%        5 calls 2.971E-04,1.508E-03 sec    0.441 Gflops (1.311E+05 flops)
+Timer::start             shuffle_field-comm : 21.7%        9 calls 7.010E-05,3.408E-04 sec    1.870 Gflops (1.311E+05 flops)
+Timer::start        shuffle_field-comm-init : 14.4%        9 calls 1.597E-05,2.275E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop         shuffle_field-comm-init : 14.6%        9 calls 2.789E-05,2.053E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop              shuffle_field-comm : 22.0%        9 calls 6.604E-05,3.103E-04 sec    1.985 Gflops (1.311E+05 flops)
+Timer::stop                   shuffle_field : 48.7%        5 calls 1.650E-04,1.239E-03 sec    0.794 Gflops (1.311E+05 flops)
+Timer::start     fft_complex_field_dir-fftw :  0.6%        5 calls 2.503E-05,1.901E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop      fft_complex_field_dir-fftw :  0.7%        5 calls 1.693E-05,1.860E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start             shuffle_field_back :  5.9%        5 calls 2.100E-04,1.888E-04 sec    0.624 Gflops (1.311E+05 flops)
+Timer::start             shuffle_field-comm : 21.7%       10 calls 6.604E-05,3.103E-04 sec    1.985 Gflops (1.311E+05 flops)
+Timer::start        shuffle_field-comm-init : 14.3%       10 calls 2.789E-05,2.053E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop         shuffle_field-comm-init : 14.5%       10 calls 2.813E-05,1.876E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop              shuffle_field-comm : 22.0%       10 calls 6.294E-05,2.855E-04 sec    2.082 Gflops (1.311E+05 flops)
+Timer::stop              shuffle_field_back :  7.3%        5 calls 1.991E-04,1.909E-04 sec    0.658 Gflops (1.311E+05 flops)
+Timer::stop           fft_complex_field_dir : 83.6%        5 calls 9.711E-04,2.179E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start          fft_complex_field_dir : 83.5%        6 calls 9.711E-04,2.179E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start fft_complex_field_plan::get_pl : 21.4%        6 calls 4.451E-04,5.594E-04 sec    0.000 Gflops (0.000E+00 flops)
+::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 5
+Timer::start   fft_complex_field_plan::init : 19.3%        6 calls 4.060E-04,5.058E-04 sec    0.000 Gflops (0.000E+00 flops)
+fft_complex_field_plan::init : malloc 65536
+fft_complex_field_plan::init : free 65536
+Timer::start          make_shuffle_plan_fft : 13.0%        6 calls 3.369E-04,3.421E-04 sec    0.000 Gflops (0.000E+00 flops)
+Qlat::make_shuffle_plan_fft: num_send_packs =         64
+Qlat::make_shuffle_plan_fft: num_recv_packs =          4
+Qlat::make_shuffle_plan_fft: num_send_msgs  =          1
+Qlat::make_shuffle_plan_fft: num_recv_msgs  =          1
+Qlat::make_shuffle_plan_fft: total num_send_packs =        128
+Qlat::make_shuffle_plan_fft: total num_recv_packs =          8
+Qlat::make_shuffle_plan_fft: total num_send_msgs  =          2
+Qlat::make_shuffle_plan_fft: total num_recv_msgs  =          2
+Timer::stop           make_shuffle_plan_fft : 15.1%        6 calls 3.221E-04,3.388E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop    fft_complex_field_plan::init : 21.6%        6 calls 3.831E-04,4.853E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop  fft_complex_field_plan::get_pl : 23.9%        6 calls 4.251E-04,5.370E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start                  shuffle_field : 45.8%        6 calls 1.650E-04,1.239E-03 sec    0.794 Gflops (1.311E+05 flops)
+Timer::stop                   shuffle_field : 46.2%        6 calls 9.608E-05,1.049E-03 sec    1.364 Gflops (1.311E+05 flops)
+Timer::start     fft_complex_field_dir-fftw :  0.7%        6 calls 1.693E-05,1.860E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop      fft_complex_field_dir-fftw :  0.8%        6 calls 1.693E-05,1.832E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start             shuffle_field_back :  7.0%        6 calls 1.991E-04,1.909E-04 sec    0.658 Gflops (1.311E+05 flops)
+Timer::stop              shuffle_field_back :  7.5%        6 calls 8.488E-05,1.732E-04 sec    1.544 Gflops (1.311E+05 flops)
+Timer::stop           fft_complex_field_dir : 84.3%        6 calls 7.741E-04,1.945E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start          fft_complex_field_dir : 84.2%        7 calls 7.741E-04,1.945E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start fft_complex_field_plan::get_pl : 23.2%        7 calls 4.251E-04,5.370E-04 sec    0.000 Gflops (0.000E+00 flops)
+::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 6
+Timer::start   fft_complex_field_plan::init : 21.0%        7 calls 3.831E-04,4.853E-04 sec    0.000 Gflops (0.000E+00 flops)
+fft_complex_field_plan::init : malloc 65536
+fft_complex_field_plan::init : free 65536
+Timer::start          make_shuffle_plan_fft : 14.6%        7 calls 3.221E-04,3.388E-04 sec    0.000 Gflops (0.000E+00 flops)
+Qlat::make_shuffle_plan_fft: num_send_packs =         16
+Qlat::make_shuffle_plan_fft: num_recv_packs =          4
+Qlat::make_shuffle_plan_fft: num_send_msgs  =          1
+Qlat::make_shuffle_plan_fft: num_recv_msgs  =          1
+Qlat::make_shuffle_plan_fft: total num_send_packs =         32
+Qlat::make_shuffle_plan_fft: total num_recv_packs =          8
+Qlat::make_shuffle_plan_fft: total num_send_msgs  =          2
+Qlat::make_shuffle_plan_fft: total num_recv_msgs  =          2
+Timer::stop           make_shuffle_plan_fft : 16.4%        7 calls 3.061E-04,3.341E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop    fft_complex_field_plan::init : 22.9%        7 calls 3.619E-04,4.677E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop  fft_complex_field_plan::get_pl : 25.4%        7 calls 4.029E-04,5.179E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start                  shuffle_field : 44.0%        7 calls 9.608E-05,1.049E-03 sec    1.364 Gflops (1.311E+05 flops)
+Timer::stop                   shuffle_field : 44.4%        7 calls 1.070E-04,9.143E-04 sec    1.224 Gflops (1.311E+05 flops)
+Timer::start     fft_complex_field_dir-fftw :  0.8%        7 calls 1.693E-05,1.832E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop      fft_complex_field_dir-fftw :  0.9%        7 calls 1.717E-05,1.815E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start             shuffle_field_back :  7.2%        7 calls 8.488E-05,1.732E-04 sec    1.544 Gflops (1.311E+05 flops)
+Timer::stop              shuffle_field_back :  7.7%        7 calls 8.392E-05,1.605E-04 sec    1.562 Gflops (1.311E+05 flops)
+Timer::stop           fft_complex_field_dir : 85.0%        7 calls 7.682E-04,1.777E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start          fft_complex_field_dir : 84.9%        8 calls 7.682E-04,1.777E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start fft_complex_field_plan::get_pl : 24.7%        8 calls 4.029E-04,5.179E-04 sec    0.000 Gflops (0.000E+00 flops)
+::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 7
+Timer::start   fft_complex_field_plan::init : 22.3%        8 calls 3.619E-04,4.677E-04 sec    0.000 Gflops (0.000E+00 flops)
+fft_complex_field_plan::init : malloc 65536
+fft_complex_field_plan::init : free 65536
+Timer::start          make_shuffle_plan_fft : 15.9%        8 calls 3.061E-04,3.341E-04 sec    0.000 Gflops (0.000E+00 flops)
+Qlat::make_shuffle_plan_fft: num_send_packs =          8
+Qlat::make_shuffle_plan_fft: num_recv_packs =          8
+Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
+Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
+Qlat::make_shuffle_plan_fft: total num_send_packs =         16
+Qlat::make_shuffle_plan_fft: total num_recv_packs =         16
+Qlat::make_shuffle_plan_fft: total num_send_msgs  =          4
+Qlat::make_shuffle_plan_fft: total num_recv_msgs  =          4
+Timer::stop           make_shuffle_plan_fft : 17.6%        8 calls 3.130E-04,3.315E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop    fft_complex_field_plan::init : 24.2%        8 calls 3.750E-04,4.561E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop  fft_complex_field_plan::get_pl : 26.8%        8 calls 4.151E-04,5.050E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start                  shuffle_field : 42.3%        8 calls 1.070E-04,9.143E-04 sec    1.224 Gflops (1.311E+05 flops)
+Timer::stop                   shuffle_field : 42.7%        8 calls 1.018E-04,8.127E-04 sec    1.287 Gflops (1.311E+05 flops)
+Timer::start     fft_complex_field_dir-fftw :  0.8%        8 calls 1.717E-05,1.815E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop      fft_complex_field_dir-fftw :  1.0%        8 calls 2.480E-05,1.898E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start             shuffle_field_back :  7.3%        8 calls 8.392E-05,1.605E-04 sec    1.562 Gflops (1.311E+05 flops)
+Timer::stop              shuffle_field_back :  7.9%        8 calls 8.893E-05,1.515E-04 sec    1.474 Gflops (1.311E+05 flops)
+Timer::stop           fft_complex_field_dir : 85.5%        8 calls 7.770E-04,1.652E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop               fft_complex_field : 87.1%        2 calls 3.421E-03,6.736E-03 sec    0.038 Gflops (1.311E+05 flops)
+Timer::start          field_operator*=(F,D) :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
+Timer::stop           field_operator*=(F,D) :  0.3%        1 calls 4.482E-05,4.482E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop          prop_spin_propagator4d : 91.7%        1 calls 1.426E-02,1.426E-02 sec    0.000 Gflops (0.000E+00 flops)
+Main::displaySpinPropagator4d : xgsnk = 0x0x0x0 .
+Main::displaySpinPropagator4d : prop[xgsnk] =
+              (0.0225345,0)                       (0,0)   (1.36645e-18,6.17135e-19)  (1.36645e-18,-1.36645e-18)
+                      (0,0)               (0.0225345,0)   (1.36645e-18,1.36645e-18)  (-1.36645e-18,6.17135e-19)
+ (-1.36645e-18,6.17135e-19)  (-1.36645e-18,1.36645e-18)               (0.0225345,0)                       (0,0)
+(-1.36645e-18,-1.36645e-18)   (1.36645e-18,6.17135e-19)                       (0,0)               (0.0225345,0)
+Timer::stop         displaySpinPropagator4d : 92.8%        1 calls 1.459E-02,1.459E-02 sec    0.000 Gflops (0.000E+00 flops)
+Timer::display-start:  fname : time% number of calls; Avg,Tot sec; Avg,Tot flops; Gflops
+Timer::display          field_operator*=(F,D) :  0.284%        1 calls; 4.48E-05,4.48E-05 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display               display_geo_node :  0.526%        1 calls; 8.30E-05,8.30E-05 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display     fft_complex_field_dir-fftw :  0.962%        8 calls; 1.90E-05,1.52E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display     prop_mom_spin_propagator4d :  3.915%        1 calls; 6.19E-04,6.19E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display                  displayGammas :  5.694%        1 calls; 9.01E-04,9.01E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display             shuffle_field_back :  7.652%        8 calls; 1.52E-04,1.21E-03 sec; 1.31E+05,1.05E+06 flops;  0.87 Gflops
+Timer::display        shuffle_field-comm-init : 12.756%       16 calls; 1.26E-04,2.02E-03 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display          make_shuffle_plan_fft : 16.710%        8 calls; 3.31E-04,2.65E-03 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display             shuffle_field-comm : 19.222%       16 calls; 1.91E-04,3.05E-03 sec; 1.31E+05,2.10E+06 flops;  0.69 Gflops
+Timer::display   fft_complex_field_plan::init : 22.953%        8 calls; 4.56E-04,3.65E-03 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display fft_complex_field_plan::get_pl : 25.388%        8 calls; 5.05E-04,4.04E-03 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display                  shuffle_field : 40.818%        8 calls; 8.13E-04,6.50E-03 sec; 1.31E+05,1.05E+06 flops;  0.16 Gflops
+Timer::display          fft_complex_field_dir : 82.877%        8 calls; 1.65E-03,1.32E-02 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display              fft_complex_field : 84.422%        2 calls; 6.74E-03,1.35E-02 sec; 1.31E+05,2.62E+05 flops;  0.02 Gflops
+Timer::display         prop_spin_propagator4d : 89.283%        1 calls; 1.43E-02,1.43E-02 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display        displaySpinPropagator4d : 91.251%        1 calls; 1.46E-02,1.46E-02 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display-end:    --------------------- total 1.5748E-02 sec ----------------------
+Timer::start                    lblMuonPart :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
+Main::lblMuonPart : geo =
+{ initialized   = true
+, eo            = 0
+, geon          =
+{ initialized = true
+, num_node    = 2
+, id_node     = 0
+, size_node   = 1x1x1x2
+, coor_node   = 0x0x0x0 }
+, multiplicity  = 1
+, node_site     = 4x4x4x4
+, expan_left    = 0x0x0x0
+, expan_right   = 0x0x0x0
+, node_site_exp = 4x4x4x4 }
+Timer::start    lblMagneticMomentSpinMatrix :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
+Timer::start          set_wall_source_plusm :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
+Timer::start           set_box_source_plusm :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
+Timer::stop            set_box_source_plusm :  0.4%        1 calls 6.413E-05,6.413E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop           set_wall_source_plusm :  0.6%        1 calls 9.418E-05,9.418E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start          set_wall_source_plusm :  0.6%        2 calls 9.418E-05,9.418E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start           set_box_source_plusm :  0.4%        2 calls 6.413E-05,6.413E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop            set_box_source_plusm :  0.7%        2 calls 5.007E-05,5.710E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop           set_wall_source_plusm :  1.0%        2 calls 7.415E-05,8.416E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start         prop_spin_propagator4d : 87.2%        2 calls 1.426E-02,1.426E-02 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start              fft_complex_field : 82.3%        3 calls 3.421E-03,6.736E-03 sec    0.038 Gflops (1.311E+05 flops)
+Timer::start          fft_complex_field_dir : 80.6%        9 calls 7.770E-04,1.652E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start fft_complex_field_plan::get_pl : 24.6%        9 calls 4.151E-04,5.050E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop  fft_complex_field_plan::get_pl : 24.6%        9 calls 1.192E-06,4.490E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start                  shuffle_field : 39.6%        9 calls 1.018E-04,8.127E-04 sec    1.287 Gflops (1.311E+05 flops)
+Timer::stop                   shuffle_field : 39.9%        9 calls 9.513E-05,7.330E-04 sec    1.378 Gflops (1.311E+05 flops)
+Timer::start     fft_complex_field_dir-fftw :  0.9%        9 calls 2.480E-05,1.898E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop      fft_complex_field_dir-fftw :  1.0%        9 calls 1.693E-05,1.876E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start             shuffle_field_back :  7.3%        9 calls 8.893E-05,1.515E-04 sec    1.474 Gflops (1.311E+05 flops)
+Timer::stop              shuffle_field_back :  8.0%        9 calls 1.369E-04,1.499E-04 sec    0.958 Gflops (1.311E+05 flops)
+Timer::stop           fft_complex_field_dir : 81.0%        9 calls 4.072E-04,1.513E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start          fft_complex_field_dir : 80.9%       10 calls 4.072E-04,1.513E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start fft_complex_field_plan::get_pl : 24.0%       10 calls 1.192E-06,4.490E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop  fft_complex_field_plan::get_pl : 24.0%       10 calls 9.537E-07,4.042E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start                  shuffle_field : 39.1%       10 calls 9.513E-05,7.330E-04 sec    1.378 Gflops (1.311E+05 flops)
+Timer::stop                   shuffle_field : 39.4%       10 calls 9.298E-05,6.690E-04 sec    1.410 Gflops (1.311E+05 flops)
+Timer::start     fft_complex_field_dir-fftw :  1.0%       10 calls 1.693E-05,1.876E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop      fft_complex_field_dir-fftw :  1.1%       10 calls 1.693E-05,1.857E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start             shuffle_field_back :  7.9%       10 calls 1.369E-04,1.499E-04 sec    0.958 Gflops (1.311E+05 flops)
+Timer::stop              shuffle_field_back :  8.4%       10 calls 1.020E-04,1.451E-04 sec    1.284 Gflops (1.311E+05 flops)
+Timer::stop           fft_complex_field_dir : 81.3%       10 calls 3.691E-04,1.399E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop               fft_complex_field : 83.5%        3 calls 1.341E-03,4.938E-03 sec    0.098 Gflops (1.311E+05 flops)
+Timer::start     prop_mom_spin_propagator4d :  3.5%        2 calls 6.189E-04,6.189E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop      prop_mom_spin_propagator4d :  6.4%        2 calls 5.500E-04,5.845E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start              fft_complex_field : 80.8%        4 calls 1.341E-03,4.938E-03 sec    0.098 Gflops (1.311E+05 flops)
+Timer::stop               fft_complex_field : 81.6%        4 calls 9.670E-04,3.945E-03 sec    0.136 Gflops (1.311E+05 flops)
+Timer::start          field_operator*=(F,D) :  0.2%        2 calls 4.482E-05,4.482E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop           field_operator*=(F,D) :  0.5%        2 calls 4.387E-05,4.435E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop          prop_spin_propagator4d : 89.1%        2 calls 3.053E-03,8.658E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start         prop_spin_propagator4d : 89.1%        3 calls 3.053E-03,8.658E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start              fft_complex_field : 81.1%        5 calls 9.670E-04,3.945E-03 sec    0.136 Gflops (1.311E+05 flops)
+Timer::stop               fft_complex_field : 81.9%        5 calls 9.379E-04,3.344E-03 sec    0.140 Gflops (1.311E+05 flops)
+Timer::start     prop_mom_spin_propagator4d :  5.7%        3 calls 5.500E-04,5.845E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop      prop_mom_spin_propagator4d :  8.2%        3 calls 5.469E-04,5.720E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start              fft_complex_field : 79.6%        6 calls 9.379E-04,3.344E-03 sec    0.140 Gflops (1.311E+05 flops)
+Timer::stop               fft_complex_field : 80.4%        6 calls 9.398E-04,2.943E-03 sec    0.139 Gflops (1.311E+05 flops)
+Timer::start          field_operator*=(F,D) :  0.4%        3 calls 4.387E-05,4.435E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop           field_operator*=(F,D) :  0.6%        3 calls 4.411E-05,4.427E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop          prop_spin_propagator4d : 90.3%        3 calls 2.587E-03,6.635E-03 sec    0.000 Gflops (0.000E+00 flops)
+Main::lblMagneticMomentSpinMatrix : src =
+                (9.96175,0)                       (0,0)              (-0.0050744,0) (-2.77774e-19,-1.83012e-19)
+                      (0,0)                 (9.96175,0)  (-2.77774e-19,1.83012e-19)              (-0.0050744,0)
+             (-0.0050744,0)   (2.77774e-19,1.83012e-19)                 (9.96175,0)                       (0,0)
+ (2.77774e-19,-1.83012e-19)              (-0.0050744,0)                       (0,0)                 (9.96175,0)
+Main::lblMagneticMomentSpinMatrix : snk =
+                (9.87716,0)                       (0,0)               (-0.020024,0)  (-1.66821e-18,1.60045e-18)
+                      (0,0)                 (9.87716,0) (-1.66821e-18,-1.60045e-18)               (-0.020024,0)
+              (-0.020024,0)  (1.66821e-18,-1.60045e-18)                 (9.87716,0)                       (0,0)
+  (1.66821e-18,1.60045e-18)               (-0.020024,0)                       (0,0)                 (9.87716,0)
+Timer::stop     lblMagneticMomentSpinMatrix : 27.8%        1 calls 6.191E-03,6.191E-03 sec    0.000 Gflops (0.000E+00 flops)
+Main::lblMuonPart : bs[0] =
+                 (0,0)  (2.46358,3.48148e-39)                  (0,0)  (2.46358,3.48148e-39)
+(2.46358,-3.48148e-39)                  (0,0) (2.46358,-3.48148e-39)                  (0,0)
+                 (0,0)  (2.46358,3.48148e-39)                  (0,0)  (2.46358,3.48148e-39)
+(2.46358,-3.48148e-39)                  (0,0) (2.46358,-3.48148e-39)                  (0,0)
+Main::lblMuonPart : bs[1] =
+                  (0,0) (-3.48148e-39,-2.46358)                   (0,0) (-3.48148e-39,-2.46358)
+ (-3.48148e-39,2.46358)                   (0,0)  (-3.48148e-39,2.46358)                   (0,0)
+                  (0,0) (-3.48148e-39,-2.46358)                   (0,0) (-3.48148e-39,-2.46358)
+ (-3.48148e-39,2.46358)                   (0,0)  (-3.48148e-39,2.46358)                   (0,0)
+Main::lblMuonPart : bs[2] =
+ (2.46358,-1.87466e-38)                   (0,0)  (2.46358,-1.87466e-38)                   (0,0)
+                  (0,0) (-2.46358,-1.87466e-38)                   (0,0) (-2.46358,-1.87466e-38)
+ (2.46358,-1.87466e-38)                   (0,0)  (2.46358,-1.87466e-38)                   (0,0)
+                  (0,0) (-2.46358,-1.87466e-38)                   (0,0) (-2.46358,-1.87466e-38)
+Timer::start        lblShowMuonPartPointSrc :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
+Main::lblShowMuonPartPointSrc : mass = 0.10
+Main::lblShowMuonPartPointSrc : xg1 = 1x1x1x6 ; xg2 = 2x3x1x3 ; xg3 = 2x2x2x4 .
+Main::lblShowMuonPartPointSrc : mu1 = 0 ; mu2 = 0 ; mu3 = 0 .
+Timer::start            lblMuonPartPointSrc :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
+Timer::start         set_point_source_plusm :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
+Timer::stop          set_point_source_plusm :  0.0%        1 calls 0.000E+00,0.000E+00 sec     -nan Gflops (0.000E+00 flops)
+Timer::start         set_point_source_plusm :  0.0%        2 calls 0.000E+00,0.000E+00 sec     -nan Gflops (0.000E+00 flops)
+Timer::stop          set_point_source_plusm :  0.0%        2 calls 0.000E+00,0.000E+00 sec     -nan Gflops (0.000E+00 flops)
+Timer::start         set_point_source_plusm :  0.0%        3 calls 0.000E+00,0.000E+00 sec     -nan Gflops (0.000E+00 flops)
+Timer::stop          set_point_source_plusm :  0.0%        3 calls 0.000E+00,0.000E+00 sec     -nan Gflops (0.000E+00 flops)
+Timer::start             prop_photon_invert :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
+Timer::start              fft_complex_field : 77.3%        7 calls 9.398E-04,2.943E-03 sec    0.139 Gflops (1.311E+05 flops)
+::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 8
+Timer::start   fft_complex_field_plan::init : 16.0%        9 calls 3.750E-04,4.561E-04 sec    0.000 Gflops (0.000E+00 flops)
+fft_complex_field_plan::init : malloc 16384
+fft_complex_field_plan::init : free 16384
+Timer::start          make_shuffle_plan_fft : 11.6%        9 calls 3.130E-04,3.315E-04 sec    0.000 Gflops (0.000E+00 flops)
+Qlat::make_shuffle_plan_fft: num_send_packs =        256
+Qlat::make_shuffle_plan_fft: num_recv_packs =          4
+Qlat::make_shuffle_plan_fft: num_send_msgs  =          1
+Qlat::make_shuffle_plan_fft: num_recv_msgs  =          1
+Qlat::make_shuffle_plan_fft: total num_send_packs =        512
+Qlat::make_shuffle_plan_fft: total num_recv_packs =          8
+Qlat::make_shuffle_plan_fft: total num_send_msgs  =          2
+Qlat::make_shuffle_plan_fft: total num_recv_msgs  =          2
+Timer::stop           make_shuffle_plan_fft : 12.8%        9 calls 3.181E-04,3.300E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop    fft_complex_field_plan::init : 17.3%        9 calls 3.841E-04,4.481E-04 sec    0.000 Gflops (0.000E+00 flops)
+::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 9
+Timer::start   fft_complex_field_plan::init : 17.2%       10 calls 3.841E-04,4.481E-04 sec    0.000 Gflops (0.000E+00 flops)
+fft_complex_field_plan::init : malloc 16384
+fft_complex_field_plan::init : free 16384
+Timer::start          make_shuffle_plan_fft : 12.7%       10 calls 3.181E-04,3.300E-04 sec    0.000 Gflops (0.000E+00 flops)
+Qlat::make_shuffle_plan_fft: num_send_packs =         64
+Qlat::make_shuffle_plan_fft: num_recv_packs =          4
+Qlat::make_shuffle_plan_fft: num_send_msgs  =          1
+Qlat::make_shuffle_plan_fft: num_recv_msgs  =          1
+Qlat::make_shuffle_plan_fft: total num_send_packs =        128
+Qlat::make_shuffle_plan_fft: total num_recv_packs =          8
+Qlat::make_shuffle_plan_fft: total num_send_msgs  =          2
+Qlat::make_shuffle_plan_fft: total num_recv_msgs  =          2
+Timer::stop           make_shuffle_plan_fft : 13.7%       10 calls 2.949E-04,3.265E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop    fft_complex_field_plan::init : 18.4%       10 calls 3.479E-04,4.381E-04 sec    0.000 Gflops (0.000E+00 flops)
+::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 10
+Timer::start   fft_complex_field_plan::init : 18.3%       11 calls 3.479E-04,4.381E-04 sec    0.000 Gflops (0.000E+00 flops)
+fft_complex_field_plan::init : malloc 16384
+fft_complex_field_plan::init : free 16384
+Timer::start          make_shuffle_plan_fft : 13.6%       11 calls 2.949E-04,3.265E-04 sec    0.000 Gflops (0.000E+00 flops)
+Qlat::make_shuffle_plan_fft: num_send_packs =         16
+Qlat::make_shuffle_plan_fft: num_recv_packs =          4
+Qlat::make_shuffle_plan_fft: num_send_msgs  =          1
+Qlat::make_shuffle_plan_fft: num_recv_msgs  =          1
+Qlat::make_shuffle_plan_fft: total num_send_packs =         32
+Qlat::make_shuffle_plan_fft: total num_recv_packs =          8
+Qlat::make_shuffle_plan_fft: total num_send_msgs  =          2
+Qlat::make_shuffle_plan_fft: total num_recv_msgs  =          2
+Timer::stop           make_shuffle_plan_fft : 14.7%       11 calls 2.940E-04,3.235E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop    fft_complex_field_plan::init : 19.5%       11 calls 3.510E-04,4.302E-04 sec    0.000 Gflops (0.000E+00 flops)
+::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 11
+Timer::start   fft_complex_field_plan::init : 19.4%       12 calls 3.510E-04,4.302E-04 sec    0.000 Gflops (0.000E+00 flops)
+fft_complex_field_plan::init : malloc 16384
+fft_complex_field_plan::init : free 16384
+Timer::start          make_shuffle_plan_fft : 14.6%       12 calls 2.940E-04,3.235E-04 sec    0.000 Gflops (0.000E+00 flops)
+Qlat::make_shuffle_plan_fft: num_send_packs =          8
+Qlat::make_shuffle_plan_fft: num_recv_packs =          8
+Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
+Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
+Qlat::make_shuffle_plan_fft: total num_send_packs =         16
+Qlat::make_shuffle_plan_fft: total num_recv_packs =         16
+Qlat::make_shuffle_plan_fft: total num_send_msgs  =          4
+Qlat::make_shuffle_plan_fft: total num_recv_msgs  =          4
+Timer::stop           make_shuffle_plan_fft : 15.6%       12 calls 2.971E-04,3.213E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop    fft_complex_field_plan::init : 20.6%       12 calls 3.600E-04,4.243E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop               fft_complex_field : 79.1%        7 calls 2.003E-03,2.809E-03 sec    0.016 Gflops (3.277E+04 flops)
+Timer::start         prop_mom_photon_invert :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
+Timer::stop          prop_mom_photon_invert :  0.6%        1 calls 1.421E-04,1.421E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start              fft_complex_field : 78.5%        8 calls 2.003E-03,2.809E-03 sec    0.016 Gflops (3.277E+04 flops)
+::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 12
+Timer::start   fft_complex_field_plan::init : 20.3%       13 calls 3.600E-04,4.243E-04 sec    0.000 Gflops (0.000E+00 flops)
+fft_complex_field_plan::init : malloc 16384
+fft_complex_field_plan::init : free 16384
+Timer::start          make_shuffle_plan_fft : 15.3%       13 calls 2.971E-04,3.213E-04 sec    0.000 Gflops (0.000E+00 flops)
+Qlat::make_shuffle_plan_fft: num_send_packs =        256
+Qlat::make_shuffle_plan_fft: num_recv_packs =          4
+Qlat::make_shuffle_plan_fft: num_send_msgs  =          1
+Qlat::make_shuffle_plan_fft: num_recv_msgs  =          1
+Qlat::make_shuffle_plan_fft: total num_send_packs =        512
+Qlat::make_shuffle_plan_fft: total num_recv_packs =          8
+Qlat::make_shuffle_plan_fft: total num_send_msgs  =          2
+Qlat::make_shuffle_plan_fft: total num_recv_msgs  =          2
+Timer::stop           make_shuffle_plan_fft : 16.3%       13 calls 2.840E-04,3.185E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop    fft_complex_field_plan::init : 21.4%       13 calls 3.450E-04,4.182E-04 sec    0.000 Gflops (0.000E+00 flops)
+::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 13
+Timer::start   fft_complex_field_plan::init : 21.3%       14 calls 3.450E-04,4.182E-04 sec    0.000 Gflops (0.000E+00 flops)
+fft_complex_field_plan::init : malloc 16384
+fft_complex_field_plan::init : free 16384
+Timer::start          make_shuffle_plan_fft : 16.2%       14 calls 2.840E-04,3.185E-04 sec    0.000 Gflops (0.000E+00 flops)
+Qlat::make_shuffle_plan_fft: num_send_packs =         64
+Qlat::make_shuffle_plan_fft: num_recv_packs =          4
+Qlat::make_shuffle_plan_fft: num_send_msgs  =          1
+Qlat::make_shuffle_plan_fft: num_recv_msgs  =          1
+Qlat::make_shuffle_plan_fft: total num_send_packs =        128
+Qlat::make_shuffle_plan_fft: total num_recv_packs =          8
+Qlat::make_shuffle_plan_fft: total num_send_msgs  =          2
+Qlat::make_shuffle_plan_fft: total num_recv_msgs  =          2
+Timer::stop           make_shuffle_plan_fft : 17.1%       14 calls 2.751E-04,3.154E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop    fft_complex_field_plan::init : 22.3%       14 calls 3.290E-04,4.119E-04 sec    0.000 Gflops (0.000E+00 flops)
+::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 14
+Timer::start   fft_complex_field_plan::init : 22.2%       15 calls 3.290E-04,4.119E-04 sec    0.000 Gflops (0.000E+00 flops)
+fft_complex_field_plan::init : malloc 16384
+fft_complex_field_plan::init : free 16384
+Timer::start          make_shuffle_plan_fft : 17.0%       15 calls 2.751E-04,3.154E-04 sec    0.000 Gflops (0.000E+00 flops)
+Qlat::make_shuffle_plan_fft: num_send_packs =         16
+Qlat::make_shuffle_plan_fft: num_recv_packs =          4
+Qlat::make_shuffle_plan_fft: num_send_msgs  =          1
+Qlat::make_shuffle_plan_fft: num_recv_msgs  =          1
+Qlat::make_shuffle_plan_fft: total num_send_packs =         32
+Qlat::make_shuffle_plan_fft: total num_recv_packs =          8
+Qlat::make_shuffle_plan_fft: total num_send_msgs  =          2
+Qlat::make_shuffle_plan_fft: total num_recv_msgs  =          2
+Timer::stop           make_shuffle_plan_fft : 17.8%       15 calls 2.749E-04,3.127E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop    fft_complex_field_plan::init : 23.1%       15 calls 3.259E-04,4.061E-04 sec    0.000 Gflops (0.000E+00 flops)
+::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 15
+Timer::start   fft_complex_field_plan::init : 23.0%       16 calls 3.259E-04,4.061E-04 sec    0.000 Gflops (0.000E+00 flops)
+fft_complex_field_plan::init : malloc 16384
+fft_complex_field_plan::init : free 16384
+Timer::start          make_shuffle_plan_fft : 17.7%       16 calls 2.749E-04,3.127E-04 sec    0.000 Gflops (0.000E+00 flops)
+Qlat::make_shuffle_plan_fft: num_send_packs =          8
+Qlat::make_shuffle_plan_fft: num_recv_packs =          8
+Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
+Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
+Qlat::make_shuffle_plan_fft: total num_send_packs =         16
+Qlat::make_shuffle_plan_fft: total num_recv_packs =         16
+Qlat::make_shuffle_plan_fft: total num_send_msgs  =          4
+Qlat::make_shuffle_plan_fft: total num_recv_msgs  =          4
+Timer::stop           make_shuffle_plan_fft : 18.6%       16 calls 2.830E-04,3.108E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop    fft_complex_field_plan::init : 24.0%       16 calls 3.450E-04,4.023E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop               fft_complex_field : 79.9%        8 calls 1.837E-03,2.687E-03 sec    0.018 Gflops (3.277E+04 flops)
+Timer::start          field_operator*=(F,D) :  0.5%        4 calls 4.411E-05,4.427E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop           field_operator*=(F,D) :  0.7%        4 calls 5.698E-05,4.745E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop              prop_photon_invert : 15.4%        1 calls 4.170E-03,4.170E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start             prop_photon_invert : 15.4%        2 calls 4.170E-03,4.170E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start              fft_complex_field : 79.5%        9 calls 1.837E-03,2.687E-03 sec    0.018 Gflops (3.277E+04 flops)
+Timer::stop               fft_complex_field : 79.7%        9 calls 3.040E-04,2.422E-03 sec    0.108 Gflops (3.277E+04 flops)
+Timer::start         prop_mom_photon_invert :  0.5%        2 calls 1.421E-04,1.421E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop          prop_mom_photon_invert :  1.0%        2 calls 1.400E-04,1.410E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start              fft_complex_field : 79.1%       10 calls 3.040E-04,2.422E-03 sec    0.108 Gflops (3.277E+04 flops)
+Timer::stop               fft_complex_field : 79.3%       10 calls 2.949E-04,2.210E-03 sec    0.111 Gflops (3.277E+04 flops)
+Timer::start          field_operator*=(F,D) :  0.7%        5 calls 5.698E-05,4.745E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop           field_operator*=(F,D) :  0.9%        5 calls 5.698E-05,4.935E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop              prop_photon_invert : 18.2%        2 calls 9.222E-04,2.546E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start             prop_photon_invert : 18.2%        3 calls 9.222E-04,2.546E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start         prop_mom_photon_invert :  1.0%        3 calls 1.400E-04,1.410E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop          prop_mom_photon_invert :  1.5%        3 calls 1.450E-04,1.423E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start          field_operator*=(F,D) :  0.9%        6 calls 5.698E-05,4.935E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop           field_operator*=(F,D) :  1.1%        6 calls 5.817E-05,5.082E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop              prop_photon_invert : 20.6%        3 calls 8.469E-04,1.980E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start                   lblMuonLineC :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
+Timer::start                    lblMuonLine :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
+Timer::start          set_wall_source_plusm :  0.6%        3 calls 7.415E-05,8.416E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start           set_box_source_plusm :  0.4%        3 calls 5.007E-05,5.710E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop            set_box_source_plusm :  0.6%        3 calls 4.697E-05,5.372E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop           set_wall_source_plusm :  0.8%        3 calls 7.510E-05,8.114E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start         prop_spin_propagator4d : 68.6%        4 calls 2.587E-03,6.635E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start     prop_mom_spin_propagator4d :  5.7%        4 calls 5.469E-04,5.720E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop      prop_mom_spin_propagator4d :  7.3%        4 calls 5.271E-04,5.608E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start          field_operator*=(F,D) :  1.0%        7 calls 5.817E-05,5.082E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop           field_operator*=(F,D) :  1.1%        7 calls 6.008E-05,5.215E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop          prop_spin_propagator4d : 71.4%        4 calls 2.868E-03,5.693E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start               Field::operator= :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
+Timer::stop                Field::operator= :  0.1%        1 calls 4.196E-05,4.196E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start sequential_photon_spin_propaga :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
+Timer::stop  sequential_photon_spin_propaga :  2.6%        1 calls 8.450E-04,8.450E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start         prop_spin_propagator4d : 69.3%        5 calls 2.868E-03,5.693E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start     prop_mom_spin_propagator4d :  6.6%        5 calls 5.271E-04,5.608E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop      prop_mom_spin_propagator4d :  8.0%        5 calls 5.260E-04,5.538E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start          field_operator*=(F,D) :  1.0%        8 calls 6.008E-05,5.215E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop           field_operator*=(F,D) :  1.2%        8 calls 5.889E-05,5.299E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop          prop_spin_propagator4d : 71.7%        5 calls 2.743E-03,5.103E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start               Field::operator= :  0.1%        2 calls 4.196E-05,4.196E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop                Field::operator= :  0.2%        2 calls 4.101E-05,4.148E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start sequential_photon_spin_propaga :  2.4%        2 calls 8.450E-04,8.450E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop  sequential_photon_spin_propaga :  4.6%        2 calls 8.450E-04,8.450E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start         prop_spin_propagator4d : 69.8%        6 calls 2.743E-03,5.103E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start     prop_mom_spin_propagator4d :  7.4%        6 calls 5.260E-04,5.538E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop      prop_mom_spin_propagator4d :  8.6%        6 calls 4.909E-04,5.433E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start          field_operator*=(F,D) :  1.1%        9 calls 5.889E-05,5.299E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop           field_operator*=(F,D) :  1.2%        9 calls 4.101E-05,5.166E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop          prop_spin_propagator4d : 71.8%        6 calls 2.633E-03,4.691E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start               Field::operator= :  0.2%        3 calls 4.101E-05,4.148E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop                Field::operator= :  0.3%        3 calls 4.005E-05,4.101E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start sequential_photon_spin_propaga :  4.3%        3 calls 8.450E-04,8.450E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop  sequential_photon_spin_propaga :  6.2%        3 calls 7.849E-04,8.249E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start         prop_spin_propagator4d : 70.1%        7 calls 2.633E-03,4.691E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start     prop_mom_spin_propagator4d :  7.9%        7 calls 4.909E-04,5.433E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop      prop_mom_spin_propagator4d :  9.0%        7 calls 4.921E-04,5.360E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start          field_operator*=(F,D) :  1.1%       10 calls 4.101E-05,5.166E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop           field_operator*=(F,D) :  1.2%       10 calls 4.005E-05,5.050E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop          prop_spin_propagator4d : 71.9%        7 calls 2.619E-03,4.395E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start          set_wall_source_plusm :  0.6%        4 calls 7.510E-05,8.114E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start           set_box_source_plusm :  0.4%        4 calls 4.697E-05,5.372E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop            set_box_source_plusm :  0.5%        4 calls 4.315E-05,5.108E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop           set_wall_source_plusm :  0.8%        4 calls 7.892E-05,8.059E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start         contractSpinPropagator :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
+Timer::stop          contractSpinPropagator :  0.4%        1 calls 1.841E-04,1.841E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop                     lblMuonLine : 33.0%        1 calls 1.425E-02,1.425E-02 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start                    lblMuonLine : 33.0%        2 calls 1.425E-02,1.425E-02 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start          set_wall_source_plusm :  0.7%        5 calls 7.892E-05,8.059E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start           set_box_source_plusm :  0.5%        5 calls 4.315E-05,5.108E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop            set_box_source_plusm :  0.6%        5 calls 3.910E-05,4.869E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop           set_wall_source_plusm :  0.9%        5 calls 6.700E-05,7.787E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start         prop_spin_propagator4d : 71.1%        8 calls 2.619E-03,4.395E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start     prop_mom_spin_propagator4d :  8.5%        8 calls 4.921E-04,5.360E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop      prop_mom_spin_propagator4d :  9.5%        8 calls 4.921E-04,5.305E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop          prop_spin_propagator4d : 72.7%        8 calls 2.525E-03,4.161E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start               Field::operator= :  0.3%        4 calls 4.005E-05,4.101E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop                Field::operator= :  0.3%        4 calls 2.694E-05,3.749E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start sequential_photon_spin_propaga :  5.4%        4 calls 7.849E-04,8.249E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop  sequential_photon_spin_propaga :  6.2%        4 calls 4.032E-04,7.195E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start         prop_spin_propagator4d : 71.9%        9 calls 2.525E-03,4.161E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start     prop_mom_spin_propagator4d :  8.9%        9 calls 4.921E-04,5.305E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop      prop_mom_spin_propagator4d :  9.5%        9 calls 3.099E-04,5.060E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop          prop_spin_propagator4d : 73.2%        9 calls 2.403E-03,3.966E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start               Field::operator= :  0.3%        5 calls 2.694E-05,3.749E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop                Field::operator= :  0.4%        5 calls 2.599E-05,3.519E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start sequential_photon_spin_propaga :  5.9%        5 calls 4.032E-04,7.195E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop  sequential_photon_spin_propaga :  6.7%        5 calls 4.051E-04,6.566E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start         prop_spin_propagator4d : 72.5%       10 calls 2.403E-03,3.966E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start     prop_mom_spin_propagator4d :  9.1%       10 calls 3.099E-04,5.060E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop      prop_mom_spin_propagator4d :  9.7%       10 calls 3.469E-04,4.901E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop          prop_spin_propagator4d : 73.6%       10 calls 2.132E-03,3.783E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start               Field::operator= :  0.3%        6 calls 2.599E-05,3.519E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop                Field::operator= :  0.4%        6 calls 2.599E-05,3.366E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start sequential_photon_spin_propaga :  6.4%        6 calls 4.051E-04,6.566E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop  sequential_photon_spin_propaga :  7.1%        6 calls 3.810E-04,6.107E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start         prop_spin_propagator4d : 73.0%       11 calls 2.132E-03,3.783E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop          prop_spin_propagator4d : 74.0%       11 calls 2.021E-03,3.623E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start          set_wall_source_plusm :  0.7%        6 calls 6.700E-05,7.787E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start           set_box_source_plusm :  0.5%        6 calls 3.910E-05,4.869E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop            set_box_source_plusm :  0.5%        6 calls 2.503E-05,4.474E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop           set_wall_source_plusm :  0.8%        6 calls 4.506E-05,7.240E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start         contractSpinPropagator :  0.3%        2 calls 1.841E-04,1.841E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop          contractSpinPropagator :  0.5%        2 calls 1.030E-04,1.435E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop                     lblMuonLine : 46.6%        2 calls 1.097E-02,1.261E-02 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start                    lblMuonLine : 46.6%        3 calls 1.097E-02,1.261E-02 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start          set_wall_source_plusm :  0.8%        7 calls 4.506E-05,7.240E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start           set_box_source_plusm :  0.5%        7 calls 2.503E-05,4.474E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop            set_box_source_plusm :  0.5%        7 calls 2.599E-05,4.206E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop           set_wall_source_plusm :  0.9%        7 calls 5.007E-05,6.921E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start         prop_spin_propagator4d : 73.4%       12 calls 2.021E-03,3.623E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop          prop_spin_propagator4d : 74.3%       12 calls 1.985E-03,3.486E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start               Field::operator= :  0.4%        7 calls 2.599E-05,3.366E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop                Field::operator= :  0.4%        7 calls 2.599E-05,3.256E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start sequential_photon_spin_propaga :  6.5%        7 calls 3.810E-04,6.107E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop  sequential_photon_spin_propaga :  7.1%        7 calls 3.819E-04,5.780E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start         prop_spin_propagator4d : 73.7%       13 calls 1.985E-03,3.486E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop          prop_spin_propagator4d : 74.6%       13 calls 1.921E-03,3.366E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start               Field::operator= :  0.4%        8 calls 2.599E-05,3.256E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop                Field::operator= :  0.4%        8 calls 2.503E-05,3.162E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start sequential_photon_spin_propaga :  6.9%        8 calls 3.819E-04,5.780E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop  sequential_photon_spin_propaga :  7.4%        8 calls 3.600E-04,5.507E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start         prop_spin_propagator4d : 73.9%       14 calls 1.921E-03,3.366E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop          prop_spin_propagator4d : 74.8%       14 calls 1.964E-03,3.266E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start               Field::operator= :  0.4%        9 calls 2.503E-05,3.162E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop                Field::operator= :  0.5%        9 calls 2.503E-05,3.089E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start sequential_photon_spin_propaga :  7.2%        9 calls 3.600E-04,5.507E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop  sequential_photon_spin_propaga :  7.7%        9 calls 3.629E-04,5.299E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start         prop_spin_propagator4d : 74.2%       15 calls 1.964E-03,3.266E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop          prop_spin_propagator4d : 75.0%       15 calls 1.902E-03,3.175E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start          set_wall_source_plusm :  0.8%        8 calls 5.007E-05,6.921E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start           set_box_source_plusm :  0.5%        8 calls 2.599E-05,4.206E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop            set_box_source_plusm :  0.5%        8 calls 2.408E-05,3.982E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop           set_wall_source_plusm :  0.8%        8 calls 4.196E-05,6.580E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start         contractSpinPropagator :  0.5%        3 calls 1.030E-04,1.435E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop          contractSpinPropagator :  0.6%        3 calls 9.799E-05,1.283E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop                     lblMuonLine : 54.6%        3 calls 9.595E-03,1.160E-02 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start                    lblMuonLine : 54.6%        4 calls 9.595E-03,1.160E-02 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start          set_wall_source_plusm :  0.8%        9 calls 4.196E-05,6.580E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start           set_box_source_plusm :  0.5%        9 calls 2.408E-05,3.982E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop            set_box_source_plusm :  0.5%        9 calls 2.408E-05,3.807E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop           set_wall_source_plusm :  0.9%        9 calls 4.601E-05,6.360E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start         prop_spin_propagator4d : 74.5%       16 calls 1.902E-03,3.175E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop          prop_spin_propagator4d : 75.3%       16 calls 1.902E-03,3.095E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start               Field::operator= :  0.4%       10 calls 2.503E-05,3.089E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop                Field::operator= :  0.5%       10 calls 2.408E-05,3.021E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start sequential_photon_spin_propaga :  7.2%       10 calls 3.629E-04,5.299E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop  sequential_photon_spin_propaga :  7.7%       10 calls 3.591E-04,5.128E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start         prop_spin_propagator4d : 74.7%       17 calls 1.902E-03,3.095E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop          prop_spin_propagator4d : 75.4%       17 calls 1.842E-03,3.021E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start         prop_spin_propagator4d : 74.9%       18 calls 1.842E-03,3.021E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop          prop_spin_propagator4d : 75.6%       18 calls 1.845E-03,2.956E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start         prop_spin_propagator4d : 75.2%       19 calls 1.845E-03,2.956E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop          prop_spin_propagator4d : 75.8%       19 calls 1.837E-03,2.897E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start          set_wall_source_plusm :  0.8%       10 calls 4.601E-05,6.360E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start           set_box_source_plusm :  0.5%       10 calls 2.408E-05,3.807E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop            set_box_source_plusm :  0.5%       10 calls 2.289E-05,3.655E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop           set_wall_source_plusm :  0.8%       10 calls 4.292E-05,6.154E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start         contractSpinPropagator :  0.5%        4 calls 9.799E-05,1.283E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop          contractSpinPropagator :  0.7%        4 calls 9.203E-05,1.193E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop                     lblMuonLine : 60.2%        4 calls 9.066E-03,1.097E-02 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start                    lblMuonLine : 60.2%        5 calls 9.066E-03,1.097E-02 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start         prop_spin_propagator4d : 75.5%       20 calls 1.837E-03,2.897E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop          prop_spin_propagator4d : 76.1%       20 calls 1.850E-03,2.845E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start         prop_spin_propagator4d : 75.7%       21 calls 1.850E-03,2.845E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop          prop_spin_propagator4d : 76.2%       21 calls 1.780E-03,2.794E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start         prop_spin_propagator4d : 75.9%       22 calls 1.780E-03,2.794E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop          prop_spin_propagator4d : 76.4%       22 calls 1.777E-03,2.748E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start         prop_spin_propagator4d : 76.0%       23 calls 1.777E-03,2.748E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop          prop_spin_propagator4d : 76.6%       23 calls 1.741E-03,2.704E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start         contractSpinPropagator :  0.6%        5 calls 9.203E-05,1.193E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop          contractSpinPropagator :  0.7%        5 calls 9.012E-05,1.134E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop                     lblMuonLine : 64.4%        5 calls 8.553E-03,1.049E-02 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start                    lblMuonLine : 64.4%        6 calls 8.553E-03,1.049E-02 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start         prop_spin_propagator4d : 76.3%       24 calls 1.741E-03,2.704E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop          prop_spin_propagator4d : 76.8%       24 calls 1.748E-03,2.664E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start         prop_spin_propagator4d : 76.5%       25 calls 1.748E-03,2.664E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop          prop_spin_propagator4d : 76.9%       25 calls 1.730E-03,2.627E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start         prop_spin_propagator4d : 76.6%       26 calls 1.730E-03,2.627E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop          prop_spin_propagator4d : 77.0%       26 calls 1.710E-03,2.592E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start         prop_spin_propagator4d : 76.7%       27 calls 1.710E-03,2.592E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop          prop_spin_propagator4d : 77.1%       27 calls 1.692E-03,2.558E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start         contractSpinPropagator :  0.6%        6 calls 9.012E-05,1.134E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop          contractSpinPropagator :  0.7%        6 calls 8.392E-05,1.085E-04 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop                     lblMuonLine : 67.6%        6 calls 8.247E-03,1.011E-02 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop                    lblMuonLineC : 67.8%        1 calls 6.085E-02,6.085E-02 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop             lblMuonPartPointSrc : 74.7%        1 calls 6.698E-02,6.698E-02 sec    0.000 Gflops (0.000E+00 flops)
+Main::lblShowMuonPartPointSrc : qnorm(muonline) = 2.6392220172278629e-11
+Main::lblShowMuonPartPointSrc : muonline =
+(-2.14546e-07,1.79398e-06)  (3.37724e-09,-1.8606e-07) (-2.14546e-07,1.79398e-06)  (3.37724e-09,-1.8606e-07)
+  (3.37724e-09,1.8606e-07)  (2.14546e-07,1.79398e-06)   (3.37724e-09,1.8606e-07)  (2.14546e-07,1.79398e-06)
+(-2.14546e-07,1.79398e-06)  (3.37724e-09,-1.8606e-07) (-2.14546e-07,1.79398e-06)  (3.37724e-09,-1.8606e-07)
+  (3.37724e-09,1.8606e-07)  (2.14546e-07,1.79398e-06)   (3.37724e-09,1.8606e-07)  (2.14546e-07,1.79398e-06)
+Main::lblShowMuonPartPointSrc : linearFit[0] = ( 1.37086836249585948E-09 +  3.40183295023597406E-22 j)
+Main::lblShowMuonPartPointSrc : linearFit[1] = ( 7.55243410429585875E-08 + -3.65260909720849781E-22 j)
+Main::lblShowMuonPartPointSrc : linearFit[2] = (-8.70871880210489652E-08 + -2.79124754891156849E-22 j)
+Main::lblShowMuonPartPointSrc : linearFitUni = ( 2.11758236813575085E-22 +  3.58796201793978640E-06 j)
+Main::lblShowMuonPartPointSrc : linearFit[0] * 1e9 =       1.37
+Main::lblShowMuonPartPointSrc : linearFit[1] * 1e9 =      75.52
+Main::lblShowMuonPartPointSrc : linearFit[2] * 1e9 =     -87.09
+Timer::stop         lblShowMuonPartPointSrc : 74.8%        1 calls 6.725E-02,6.725E-02 sec    0.000 Gflops (0.000E+00 flops)
+Timer::display-start:  fname : time% number of calls; Avg,Tot sec; Avg,Tot flops; Gflops
+Timer::display         set_point_source_plusm :  0.000%        3 calls; 0.00E+00,0.00E+00 sec; 0.00E+00,0.00E+00 flops;  -nan Gflops
+Timer::display                    lblMuonPart :  0.000%        1 calls; 0.00E+00,0.00E+00 sec; 0.00E+00,0.00E+00 flops;  -nan Gflops
+Timer::display               display_geo_node :  0.092%        1 calls; 8.30E-05,8.30E-05 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display         prop_mom_photon_invert :  0.474%        3 calls; 1.42E-04,4.27E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display           set_box_source_plusm :  0.502%       14 calls; 3.23E-05,4.52E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display               Field::operator= :  0.534%       18 calls; 2.67E-05,4.81E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display         contractSpinPropagator :  0.723%        6 calls; 1.09E-04,6.51E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display          set_wall_source_plusm :  0.780%       14 calls; 5.02E-05,7.02E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display                  displayGammas :  1.001%        1 calls; 9.01E-04,9.01E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display          field_operator*=(F,D) :  1.122%       30 calls; 3.37E-05,1.01E-03 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display     fft_complex_field_dir-fftw :  3.672%      240 calls; 1.38E-05,3.31E-03 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display          make_shuffle_plan_fft :  5.521%       16 calls; 3.11E-04,4.97E-03 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display             prop_photon_invert :  6.593%        3 calls; 1.98E-03,5.94E-03 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display    lblMagneticMomentSpinMatrix :  6.872%        1 calls; 6.19E-03,6.19E-03 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display   fft_complex_field_plan::init :  7.143%       16 calls; 4.02E-04,6.44E-03 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display fft_complex_field_plan::get_pl :  8.076%      240 calls; 3.03E-05,7.28E-03 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display sequential_photon_spin_propaga :  8.631%       18 calls; 4.32E-04,7.78E-03 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display     prop_mom_spin_propagator4d : 10.509%       27 calls; 3.51E-04,9.47E-03 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display        shuffle_field-comm-init : 11.410%      480 calls; 2.14E-05,1.03E-02 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display             shuffle_field-comm : 15.072%      480 calls; 2.83E-05,1.36E-02 sec; 1.21E+05,5.82E+07 flops;  4.28 Gflops
+Timer::display        displaySpinPropagator4d : 16.183%        1 calls; 1.46E-02,1.46E-02 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display             shuffle_field_back : 18.415%      240 calls; 6.92E-05,1.66E-02 sec; 1.21E+05,2.91E+07 flops;  1.75 Gflops
+Timer::display                  shuffle_field : 31.242%      240 calls; 1.17E-04,2.82E-02 sec; 1.21E+05,2.91E+07 flops;  1.03 Gflops
+Timer::display                    lblMuonLine : 67.273%        6 calls; 1.01E-02,6.07E-02 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display                   lblMuonLineC : 67.457%        1 calls; 6.08E-02,6.08E-02 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display          fft_complex_field_dir : 69.323%      240 calls; 2.61E-04,6.25E-02 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display              fft_complex_field : 69.748%       60 calls; 1.05E-03,6.29E-02 sec; 1.21E+05,7.27E+06 flops;  0.12 Gflops
+Timer::display            lblMuonPartPointSrc : 74.231%        1 calls; 6.70E-02,6.70E-02 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display        lblShowMuonPartPointSrc : 74.518%        1 calls; 6.72E-02,6.72E-02 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display         prop_spin_propagator4d : 76.535%       27 calls; 2.56E-03,6.91E-02 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display-end:    --------------------- total 8.9954E-02 sec ----------------------
+Timer::stop                     lblMuonPart : 82.2%        1 calls 7.423E-02,7.423E-02 sec    0.000 Gflops (0.000E+00 flops)
+Timer::display-start:  fname : time% number of calls; Avg,Tot sec; Avg,Tot flops; Gflops
+Timer::display         set_point_source_plusm :  0.000%        3 calls; 0.00E+00,0.00E+00 sec; 0.00E+00,0.00E+00 flops;  -nan Gflops
+Timer::display               display_geo_node :  0.092%        1 calls; 8.30E-05,8.30E-05 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display         prop_mom_photon_invert :  0.473%        3 calls; 1.42E-04,4.27E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display           set_box_source_plusm :  0.501%       14 calls; 3.23E-05,4.52E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display               Field::operator= :  0.532%       18 calls; 2.67E-05,4.81E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display         contractSpinPropagator :  0.721%        6 calls; 1.09E-04,6.51E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display          set_wall_source_plusm :  0.777%       14 calls; 5.02E-05,7.02E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display                  displayGammas :  0.997%        1 calls; 9.01E-04,9.01E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display          field_operator*=(F,D) :  1.119%       30 calls; 3.37E-05,1.01E-03 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display     fft_complex_field_dir-fftw :  3.660%      240 calls; 1.38E-05,3.31E-03 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display          make_shuffle_plan_fft :  5.503%       16 calls; 3.11E-04,4.97E-03 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display             prop_photon_invert :  6.571%        3 calls; 1.98E-03,5.94E-03 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display    lblMagneticMomentSpinMatrix :  6.849%        1 calls; 6.19E-03,6.19E-03 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display   fft_complex_field_plan::init :  7.120%       16 calls; 4.02E-04,6.44E-03 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display fft_complex_field_plan::get_pl :  8.050%      240 calls; 3.03E-05,7.28E-03 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display sequential_photon_spin_propaga :  8.603%       18 calls; 4.32E-04,7.78E-03 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display     prop_mom_spin_propagator4d : 10.475%       27 calls; 3.51E-04,9.47E-03 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display        shuffle_field-comm-init : 11.374%      480 calls; 2.14E-05,1.03E-02 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display             shuffle_field-comm : 15.023%      480 calls; 2.83E-05,1.36E-02 sec; 1.21E+05,5.82E+07 flops;  4.28 Gflops
+Timer::display        displaySpinPropagator4d : 16.131%        1 calls; 1.46E-02,1.46E-02 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display             shuffle_field_back : 18.356%      240 calls; 6.92E-05,1.66E-02 sec; 1.21E+05,2.91E+07 flops;  1.75 Gflops
+Timer::display                  shuffle_field : 31.141%      240 calls; 1.17E-04,2.82E-02 sec; 1.21E+05,2.91E+07 flops;  1.03 Gflops
+Timer::display                    lblMuonLine : 67.058%        6 calls; 1.01E-02,6.07E-02 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display                   lblMuonLineC : 67.242%        1 calls; 6.08E-02,6.08E-02 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display          fft_complex_field_dir : 69.103%      240 calls; 2.61E-04,6.25E-02 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display              fft_complex_field : 69.526%       60 calls; 1.05E-03,6.29E-02 sec; 1.21E+05,7.27E+06 flops;  0.12 Gflops
+Timer::display            lblMuonPartPointSrc : 73.995%        1 calls; 6.70E-02,6.70E-02 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display        lblShowMuonPartPointSrc : 74.282%        1 calls; 6.72E-02,6.72E-02 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display         prop_spin_propagator4d : 76.291%       27 calls; 2.56E-03,6.91E-02 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display                    lblMuonPart : 81.979%        1 calls; 7.42E-02,7.42E-02 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display-end:    --------------------- total 9.0274E-02 sec ----------------------
+qlat::end(): MPI Finalized.
+fft_complex_field_plan::end(): free a plan.
+fft_complex_field_plan::end(): free a plan.
+fft_complex_field_plan::end(): free a plan.
+fft_complex_field_plan::end(): free a plan.
+fft_complex_field_plan::end(): free a plan.
+fft_complex_field_plan::end(): free a plan.
+fft_complex_field_plan::end(): free a plan.
+fft_complex_field_plan::end(): free a plan.
+fft_complex_field_plan::end(): free a plan.
+fft_complex_field_plan::end(): free a plan.
+fft_complex_field_plan::end(): free a plan.
+fft_complex_field_plan::end(): free a plan.
+fft_complex_field_plan::end(): free a plan.
+fft_complex_field_plan::end(): free a plan.
+fft_complex_field_plan::end(): free a plan.
+fft_complex_field_plan::end(): free a plan.

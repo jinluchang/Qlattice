@@ -1,0 +1,89 @@
+[qcdserver16:21236] mca_base_component_repository_open: unable to open mca_plm_tm: libtorque.so.2: cannot open shared object file: No such file or directory (ignored)
+[qcdserver16:21236] mca_base_component_repository_open: unable to open mca_ras_tm: libtorque.so.2: cannot open shared object file: No such file or directory (ignored)
+qlat::begin(): MPI Initialized. num_node = 2
+qlat::begin(): OMP_NUM_THREADS = 2
+qlat::begin(): GeometryNode =
+{ initialized = true
+, num_node    = 2
+, id_node     = 0
+, size_node   = 1x1x1x2
+, coor_node   = 0x0x0x0 }
+Timer::start               display_geo_node :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
+display_geo_node : id_node =     0 ; coor_node = 0x0x0x0
+display_geo_node : id_node =     1 ; coor_node = 0x0x0x1
+Timer::stop                display_geo_node : 45.2%        1 calls 5.698E-05,5.698E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::start                          test1 :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
+traj     : 0
+Expected : 16
+Mean     : 16.7861
+Var      : 2.18858
+traj     : 1
+Expected : 16
+Mean     : 19.0777
+Var      : 3.67678
+traj     : 2
+Expected : 16
+Mean     : 18.0334
+Var      : 2.53764
+traj     : 3
+Expected : 16
+Mean     : 17.5191
+Var      : 3.53221
+traj     : 4
+Expected : 16
+Mean     : 18.0028
+Var      : 2.59402
+traj     : 5
+Expected : 16
+Mean     : 14.3712
+Var      : 2.88912
+traj     : 6
+Expected : 16
+Mean     : 17.4468
+Var      : 2.09434
+traj     : 7
+Expected : 16
+Mean     : 16.7961
+Var      : 2.61255
+traj     : 8
+Expected : 16
+Mean     : 14.4723
+Var      : 2.64466
+traj     : 9
+Expected : 16
+Mean     : 19.7226
+Var      : 3.06612
+traj     : 10
+Expected : 16
+Mean     : 16.079
+Var      : 3.00332
+traj     : 11
+Expected : 16
+Mean     : 19.6715
+Var      : 3.38426
+traj     : 12
+Expected : 16
+Mean     : 15.9808
+Var      : 2.29225
+traj     : 13
+Expected : 16
+Mean     : 13.1448
+Var      : 1.97137
+traj     : 14
+Expected : 16
+Mean     : 14.7911
+Var      : 2.56551
+traj     : 15
+Expected : 16
+Mean     : 18.1183
+Var      : 3.63063
+# Final
+Expected : 16
+Mean     : 16.8758
+Var      : 0.489169
+Timer::stop                           test1 : 96.0%        1 calls 4.031E-03,4.031E-03 sec    0.000 Gflops (0.000E+00 flops)
+Timer::display-start:  fname : time% number of calls; Avg,Tot sec; Avg,Tot flops; Gflops
+Timer::display               display_geo_node :  1.345%        1 calls; 5.70E-05,5.70E-05 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display                          test1 : 94.775%        1 calls; 4.03E-03,4.03E-03 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display-end:    --------------------- total 4.2231E-03 sec ----------------------
+qlat::end(): MPI Finalized.
