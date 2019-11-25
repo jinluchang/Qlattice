@@ -314,16 +314,19 @@ Vector<M> get_data(const ConstHandle<M>& h)
   return Vector<M>(h.p, 1);
 }
 
-inline Vector<long> get_data(const long& x) { return Vector<long>(&x, 1); }
-
-inline Vector<double> get_data(const double& x)
+template <class M>
+Vector<M> get_data_one_elem(const M& x)
 {
-  return Vector<double>(&x, 1);
+  return Vector<M>(&x, 1);
 }
 
-inline Vector<int> get_data(const int& x) { return Vector<int>(&x, 1); }
+inline Vector<long> get_data(const long& x) { return get_data_one_elem(x); }
 
-inline Vector<float> get_data(const float& x) { return Vector<float>(&x, 1); }
+inline Vector<double> get_data(const double& x) { return get_data_one_elem(x); }
+
+inline Vector<int> get_data(const int& x) { return get_data_one_elem(x); }
+
+inline Vector<float> get_data(const float& x) { return get_data_one_elem(x); }
 
 template <class T>
 double qnorm(const Vector<T>& mm)

@@ -510,11 +510,12 @@ long write_selected_field(
   return total_bytes;
 }
 
-inline void read_selected_geo_info(Coordinate& total_site, int& multiplicity,
+inline long read_selected_geo_info(Coordinate& total_site, int& multiplicity,
                                    long& n_per_tslice, int& sizeof_M,
                                    crc32_t& crc, const std::string& path)
 {
   TIMER("read_geo_info");
+  long pos = 0;
   if (get_id_node() == 0) {
     FILE* fp = qopen(path, "r");
     if (fp != NULL) {
@@ -538,13 +539,16 @@ inline void read_selected_geo_info(Coordinate& total_site, int& multiplicity,
         }
       }
     }
+    pos = ftell(fp);
     qclose(fp);
   }
-  bcast(Vector<Coordinate>(&total_site, 1));
-  bcast(Vector<int>(&multiplicity, 1));
-  bcast(Vector<long>(&n_per_tslice, 1));
-  bcast(Vector<int>(&sizeof_M, 1));
-  bcast(Vector<crc32_t>(&crc, 1));
+  bcast(get_data_one_elem(pos));
+  bcast(get_data_one_elem(total_site));
+  bcast(get_data_one_elem(multiplicity));
+  bcast(get_data_one_elem(n_per_tslice));
+  bcast(get_data_one_elem(sizeof_M));
+  bcast(get_data_one_elem(crc));
+  return pos;
 }
 
 template <class M>
@@ -559,7 +563,7 @@ long read_selected_field(Field<M>& f, const std::string& path,
   long n_per_tslice = 0;
   int sizeof_M = 0;
   crc32_t crc_info = 0;
-  read_selected_geo_info(total_site, multiplicity, n_per_tslice, sizeof_M, crc_info, path);
+  const long pos = read_selected_geo_info(total_site, multiplicity, n_per_tslice, sizeof_M, crc_info, path);
   if (total_site == Coordinate() or multiplicity == 0) {
     displayln_info(fname + ssprintf(": fn='%s' can not be parsed.", path.c_str()));
     return 0;
@@ -610,8 +614,8 @@ long read_selected_field(Field<M>& f, const std::string& path,
     qassert(fp != NULL);
     fseek(
         fp,
-        (sfs[0].geo.geon.id_node - new_num_node) * get_data(sfs[0].field).data_size(),
-        SEEK_END);
+        pos + sfs[0].geo.geon.id_node * get_data(sfs[0].field).data_size(),
+        SEEK_SET);
     for (int i = 0; i < (int)sfs.size(); ++i) {
       const int new_id_node = sfs[i].geo.geon.id_node;
       qassert(sfs[i].geo.geon.num_node == new_num_node);

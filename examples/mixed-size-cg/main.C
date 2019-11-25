@@ -32,7 +32,7 @@ inline void simple_cg(FermionField4d& ff_sol, const GaugeField& gf,
   InverterDomainWall inv;
   setup_inverter(inv, gf, fa);
   inv.max_mixed_precision_cycle() = 100;
-  inv.max_num_iter() = 10000;
+  inv.max_num_iter() = 300;
   inv.stop_rsd() = 1e-10;
   ff_sol.init();
   ff_sol.init(ff_src.geo);
@@ -176,13 +176,26 @@ inline void extend_half_fermion_field(FermionField5d& ff, const FermionField5d& 
   // TODO
 }
 
-// inline void multiply_hermop_sym2_half(FermionField5d& out,
-//                                       const FermionField5d& in,
-//                                       const InverterDomainWallMixedSize& inv)
-// // odd <- odd (works for even <- even as well)
-// {
-//   multiply_hermop_sym2(out, in, inv.hgf, inv.hfa);
-// }
+inline long cg_with_herm_sym_2_half(FermionField5d& sol,
+                                    const FermionField5d& src,
+                                    const InverterDomainWallMixedSize& inv,
+                                    const double stop_rsd = 1e-8,
+                                    const long max_num_iter = 50000)
+{
+  TIMER_VERBOSE_FLOPS("cg_with_herm_sym_2_half(5d,5d,inv)");
+  FermionField5d hsol, hsrc;
+  reduce_half_fermion_field(hsrc, src);
+  reduce_half_fermion_field(hsol, sol);
+  const long half_iter =
+      cg_with_f(hsol, hsrc, inv.hinv, multiply_hermop_sym2, stop_rsd, max_num_iter * 16);
+  timer.flops += 5500 * half_iter * inv.fa.ls * inv.geo.local_volume() / 16;
+  extend_half_fermion_field(sol, hsol);
+  // set_zero(sol); // ADJUST ME
+  const long iter =
+      cg_with_f(sol, src, inv, multiply_hermop_sym2, stop_rsd, max_num_iter);
+  timer.flops += 5500 * iter * inv.fa.ls * inv.geo.local_volume();
+  return iter;
+}
 
 inline long cg_with_herm_sym_2(FermionField5d& sol, const FermionField5d& src,
                                const InverterDomainWallMixedSize& inv,
@@ -195,19 +208,6 @@ inline long cg_with_herm_sym_2(FermionField5d& sol, const FermionField5d& src,
   timer.flops += 5500 * iter * inv.fa.ls * inv.geo.local_volume();
   return iter;
 }
-
-// inline long cg_with_herm_sym_2_half(FermionField5d& sol,
-//                                     const FermionField5d& src,
-//                                     const InverterDomainWallMixedSize& inv,
-//                                     const double stop_rsd = 1e-8,
-//                                     const long max_num_iter = 50000)
-// {
-//   TIMER_VERBOSE_FLOPS("cg_with_herm_sym_2_half(5d,5d,inv)");
-//   const long iter =
-//       cg_with_f(sol, src, inv, multiply_hermop_sym2_half, stop_rsd, max_num_iter);
-//   timer.flops += 5500 * iter * inv.fa.ls * inv.geo.local_volume() / 16;
-//   return iter;
-// }
 
 long invert_with_cg_with_guess_half(
     FermionField5d& out, const FermionField5d& in,
@@ -253,10 +253,18 @@ long invert_with_cg_with_guess_half(
   return total_iter;
 }
 
-inline long invert(FermionField5d& out, const FermionField5d& in,
-                   const InverterDomainWallMixedSize& inv)
+inline long invert_mix(FermionField5d& out, const FermionField5d& in,
+                       const InverterDomainWallMixedSize& inv)
 {
-  TIMER_VERBOSE("invert(5d,5d,inv-ms)");
+  TIMER_VERBOSE("invert_mix_prec(5d,5d,inv-ms)");
+  const long total_iter = invert_with_cg(out, in, inv, cg_with_herm_sym_2_half);
+  return total_iter;
+}
+
+inline long invert_mix_prec(FermionField5d& out, const FermionField5d& in,
+                            const InverterDomainWallMixedSize& inv)
+{
+  TIMER_VERBOSE("invert_mix_prec(5d,5d,inv-ms)");
   long total_iter = 0;
   FermionField5d dm_in;
   if (inv.fa.is_multiplying_dminus) {
@@ -282,6 +290,14 @@ inline long invert(FermionField5d& out, const FermionField5d& in,
   displayln_info(fname + ssprintf(": total_iter=%ld cycle=%d stop_rsd=%.3E",
                                   total_iter, cycle, inv.stop_rsd()));
   return total_iter;
+}
+
+inline long invert(FermionField5d& out, const FermionField5d& in,
+                   const InverterDomainWallMixedSize& inv)
+{
+  TIMER_VERBOSE("invert(5d,5d,inv-ms)");
+  return invert_mix(out, in, inv);
+  // return invert_mix_prec(out, in, inv);
 }
 
 inline long invert(FermionField4d& out, const FermionField4d& in,
@@ -310,8 +326,8 @@ int main(int argc, char* argv[])
 {
   using namespace qlat;
   begin(&argc, &argv);
-  // const Coordinate total_site(4,4,4,8);
-  const Coordinate total_site(8,8,8,16);
+  const Coordinate total_site(4,4,4,8);
+  // const Coordinate total_site(8,8,8,16);
   // const Coordinate total_site(16,16,16,32);
   const RngState rs("seed-mixed-size-cg");
   const FermionAction fa(0.01, 16, 1.8, 1.0, true, true);
