@@ -18,7 +18,7 @@ diff:
 	-git diff | egrep -v Timer | egrep '^\+|^\-'
 
 run: all
-	-time for i in $(tests) ; do make -C "$$i" run ; done 2>&1 | tee log
+	-time for i in $(tests) ; do make -C "$$i" run ; done
 	make diff
 
 clean:
