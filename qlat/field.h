@@ -80,6 +80,9 @@ struct Field {
   const Field<M>& operator=(const Field<M>& f)
   {
     TIMER("Field::operator=");
+    if (this == &f) {
+      return *this;
+    }
     init(geo_resize(f.geo));
 #pragma omp parallel for
     for (long index = 0; index < geo.local_volume(); ++index) {
