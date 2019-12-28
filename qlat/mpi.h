@@ -460,6 +460,23 @@ inline void bcast(Vector<M> recv, const int root = 0)
 }
 
 template <class M>
+void bcast(std::vector<M>& recv, const int root = 0)
+{
+  long size = recv.size();
+  bcast(get_data(size), root);
+  recv.resize(size);
+  bcast(get_data(recv), root);
+}
+
+void bcast(std::string& recv, const int root = 0)
+{
+  long size = recv.size();
+  bcast(get_data(size), root);
+  recv.resize(size);
+  bcast(get_data(recv), root);
+}
+
+template <class M>
 inline void concat_vector(std::vector<long>& idx, std::vector<M>& data,
                           const std::vector<std::vector<M> >& datatable)
 {

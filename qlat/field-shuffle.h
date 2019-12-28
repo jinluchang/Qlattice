@@ -182,14 +182,12 @@ inline long& get_shuffle_max_pack_size()
   return size;
 }
 
-inline std::vector<Geometry> make_dist_io_geos(const Coordinate& total_site,
-                                               const int multiplicity,
-                                               const Coordinate& new_size_node)
+inline std::vector<GeometryNode> make_dist_io_geons(
+    const Coordinate& new_size_node)
 {
-  TIMER("make_dist_io_geos");
-  const Coordinate new_node_site = total_site / new_size_node;
+  TIMER("make_dist_io_geons");
   const int new_num_node = product(new_size_node);
-  std::vector<Geometry> ret;
+  std::vector<GeometryNode> ret;
   const int min_size_chunk = new_num_node / get_num_node();
   const int remain = new_num_node % get_num_node();
   const int size_chunk =
@@ -204,8 +202,22 @@ inline std::vector<Geometry> make_dist_io_geos(const Coordinate& total_site,
     geon.id_node = new_id_node;
     geon.size_node = new_size_node;
     geon.coor_node = coordinate_from_index(new_id_node, new_size_node);
+    ret.push_back(geon);
+  }
+  return ret;
+}
+
+inline std::vector<Geometry> make_dist_io_geos(const Coordinate& total_site,
+                                               const int multiplicity,
+                                               const Coordinate& new_size_node)
+{
+  TIMER("make_dist_io_geos");
+  const std::vector<GeometryNode> geons = make_dist_io_geons(new_size_node);
+  std::vector<Geometry> ret;
+  const Coordinate new_node_site = total_site / new_size_node;
+  for (int i = 0; i < (int)geons.size(); ++i) {
     Geometry geo_recv;
-    geo_recv.init(geon, new_node_site, multiplicity);
+    geo_recv.init(geons[i], new_node_site, multiplicity);
     ret.push_back(geo_recv);
   }
   return ret;

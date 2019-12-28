@@ -34,6 +34,8 @@
 
 #include <qlat/selected-field.h>
 
+#include <qlat/fields-io.h>
+
 #include <qlat/field-expand.h>
 
 #ifndef QLAT_FFTW_OFF
