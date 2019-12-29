@@ -143,7 +143,7 @@ inline int mpi_send(void* buf, long count, MPI_Datatype datatype, int dest,
 {
   const long int_max = INT_MAX;
   if (count <= int_max) {
-    MPI_Send(buf, count, datatype, dest, tag, comm);
+    return MPI_Send(buf, count, datatype, dest, tag, comm);
   } else {
     int type_size = 0;
     MPI_Type_size(datatype, &type_size);
@@ -153,7 +153,7 @@ inline int mpi_send(void* buf, long count, MPI_Datatype datatype, int dest,
       cbuf += (long)int_max * type_size;
       count -= int_max;
     }
-    MPI_Send(cbuf, count, datatype, dest, tag, comm);
+    return MPI_Send(cbuf, count, datatype, dest, tag, comm);
   }
 }
 
@@ -162,7 +162,7 @@ inline int mpi_recv(void* buf, long count, MPI_Datatype datatype, int source,
 {
   const long int_max = INT_MAX;
   if (count <= int_max) {
-    MPI_Recv(buf, count, datatype, source, tag, comm, status);
+    return MPI_Recv(buf, count, datatype, source, tag, comm, status);
   } else {
     int type_size = 0;
     MPI_Type_size(datatype, &type_size);
@@ -172,7 +172,7 @@ inline int mpi_recv(void* buf, long count, MPI_Datatype datatype, int source,
       cbuf += (long)int_max * type_size;
       count -= int_max;
     }
-    MPI_Recv(cbuf, count, datatype, source, tag, comm, status);
+    return MPI_Recv(cbuf, count, datatype, source, tag, comm, status);
   }
 }
 
@@ -254,7 +254,7 @@ int get_data_dir(Vector<M> recv, const Vector<M>& send, const int dir)
   ;
   MPI_Request req;
   MPI_Isend((void*)send.data(), size, MPI_BYTE, idt, mpi_tag, get_comm(), &req);
-  const int ret = mpi_recv(recv.data(), size, MPI_BYTE, idf, mpi_tag,
+  const int ret = MPI_Recv(recv.data(), size, MPI_BYTE, idf, mpi_tag,
                            get_comm(), MPI_STATUS_IGNORE);
   MPI_Wait(&req, MPI_STATUS_IGNORE);
   return ret;
