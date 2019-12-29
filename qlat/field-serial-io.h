@@ -65,7 +65,7 @@ long serial_write_field(const Field<M>& f, const std::string& path,
       if (0 == id_node) {
         assign(v, get_data(fs[new_id_node]));
       } else {
-        MPI_Recv(v.data(), v.data_size(), MPI_BYTE, id_node, mpi_tag,
+        mpi_recv(v.data(), v.data_size(), MPI_BYTE, id_node, mpi_tag,
                  get_comm(), MPI_STATUS_IGNORE);
       }
       qwrite_data(v, fp);
@@ -74,7 +74,7 @@ long serial_write_field(const Field<M>& f, const std::string& path,
   } else {
     for (size_t i = 0; i < fs.size(); ++i) {
       const Vector<M> v = get_data(fs[i]);
-      MPI_Send((void*)v.data(), v.data_size(), MPI_BYTE, 0, mpi_tag,
+      mpi_send((void*)v.data(), v.data_size(), MPI_BYTE, 0, mpi_tag,
                get_comm());
     }
   }
@@ -123,7 +123,7 @@ long serial_read_field(Field<M>& f, const std::string& path,
       if (0 == id_node) {
         assign(get_data(fs[new_id_node]), v);
       } else {
-        MPI_Send((void*)v.data(), v.data_size(), MPI_BYTE, id_node, mpi_tag,
+        mpi_send((void*)v.data(), v.data_size(), MPI_BYTE, id_node, mpi_tag,
                  get_comm());
       }
     }
@@ -131,7 +131,7 @@ long serial_read_field(Field<M>& f, const std::string& path,
   } else {
     for (size_t i = 0; i < fs.size(); ++i) {
       Vector<M> v = get_data(fs[i]);
-      MPI_Recv(v.data(), v.data_size(), MPI_BYTE, 0, mpi_tag, get_comm(),
+      mpi_recv(v.data(), v.data_size(), MPI_BYTE, 0, mpi_tag, get_comm(),
                MPI_STATUS_IGNORE);
     }
   }

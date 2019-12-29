@@ -138,6 +138,44 @@ inline const GeometryNodeNeighbor& get_geometry_node_neighbor()
   return geonb;
 }
 
+inline int mpi_send(void* buf, long count, MPI_Datatype datatype, int dest,
+                    int tag, MPI_Comm comm)
+{
+  const long int_max = INT_MAX;
+  if (count <= int_max) {
+    MPI_Send(buf, count, datatype, dest, tag, comm);
+  } else {
+    int type_size = 0;
+    MPI_Type_size(datatype, &type_size);
+    uint8_t* cbuf = (uint8_t*)buf;
+    while (count > int_max) {
+      MPI_Send(cbuf, int_max, datatype, dest, tag, comm);
+      cbuf += (long)int_max * type_size;
+      count -= int_max;
+    }
+    MPI_Send(cbuf, count, datatype, dest, tag, comm);
+  }
+}
+
+inline int mpi_recv(void* buf, long count, MPI_Datatype datatype, int source,
+                    int tag, MPI_Comm comm, MPI_Status* status)
+{
+  const long int_max = INT_MAX;
+  if (count <= int_max) {
+    MPI_Recv(buf, count, datatype, source, tag, comm, status);
+  } else {
+    int type_size = 0;
+    MPI_Type_size(datatype, &type_size);
+    uint8_t* cbuf = (uint8_t*)buf;
+    while (count > int_max) {
+      MPI_Recv(cbuf, int_max, datatype, source, tag, comm, status);
+      cbuf += (long)int_max * type_size;
+      count -= int_max;
+    }
+    MPI_Recv(cbuf, count, datatype, source, tag, comm, status);
+  }
+}
+
 template <class M>
 inline std::vector<char> pad_flag_data(const int64_t flag, const M& data)
 {
@@ -162,7 +200,7 @@ inline int receive_job(int64_t& flag, N& data, const int root = 0)
   const int mpi_tag = 3;
   const int count = sizeof(int64_t) + sizeof(N);
   std::vector<char> fdata(count, (char)0);
-  int ret = MPI_Recv(fdata.data(), count, MPI_BYTE, root, mpi_tag, get_comm(),
+  int ret = mpi_recv(fdata.data(), count, MPI_BYTE, root, mpi_tag, get_comm(),
                      MPI_STATUS_IGNORE);
   extract_flag_data(flag, data, fdata);
   return ret;
@@ -173,7 +211,7 @@ inline int send_result(const int64_t flag, const M& data, const int root = 0)
 {
   const int mpi_tag = 2;
   std::vector<char> fdata = pad_flag_data(flag, data);
-  return MPI_Send(fdata.data(), fdata.size(), MPI_BYTE, root, mpi_tag,
+  return mpi_send(fdata.data(), fdata.size(), MPI_BYTE, root, mpi_tag,
                   get_comm());
 }
 
@@ -182,7 +220,7 @@ inline int send_job(const int64_t flag, const N& data, const int dest)
 {
   const int mpi_tag = 3;
   std::vector<char> fdata = pad_flag_data(flag, data);
-  return MPI_Send(fdata.data(), fdata.size(), MPI_BYTE, dest, mpi_tag,
+  return mpi_send(fdata.data(), fdata.size(), MPI_BYTE, dest, mpi_tag,
                   get_comm());
 }
 
@@ -193,7 +231,7 @@ inline int receive_result(int& source, int64_t& flag, M& result)
   const int count = sizeof(int64_t) + sizeof(M);
   std::vector<char> fdata(count, (char)0);
   MPI_Status status;
-  const int ret = MPI_Recv(fdata.data(), fdata.size(), MPI_BYTE, MPI_ANY_SOURCE,
+  const int ret = mpi_recv(fdata.data(), fdata.size(), MPI_BYTE, MPI_ANY_SOURCE,
                            mpi_tag, get_comm(), &status);
   source = status.MPI_SOURCE;
   extract_flag_data(flag, result, fdata);
@@ -216,7 +254,7 @@ int get_data_dir(Vector<M> recv, const Vector<M>& send, const int dir)
   ;
   MPI_Request req;
   MPI_Isend((void*)send.data(), size, MPI_BYTE, idt, mpi_tag, get_comm(), &req);
-  const int ret = MPI_Recv(recv.data(), size, MPI_BYTE, idf, mpi_tag,
+  const int ret = mpi_recv(recv.data(), size, MPI_BYTE, idf, mpi_tag,
                            get_comm(), MPI_STATUS_IGNORE);
   MPI_Wait(&req, MPI_STATUS_IGNORE);
   return ret;
@@ -243,7 +281,7 @@ int get_data_dir_mu(Vector<M> recv, const Vector<M>& send, const int dir,
   const int idt = geonb.dest[1 - dir][mu];
   MPI_Request req;
   MPI_Isend((void*)send.data(), size, MPI_BYTE, idt, mpi_tag, get_comm(), &req);
-  const int ret = MPI_Recv(recv.data(), size, MPI_BYTE, idf, mpi_tag,
+  const int ret = mpi_recv(recv.data(), size, MPI_BYTE, idf, mpi_tag,
                            get_comm(), MPI_STATUS_IGNORE);
   MPI_Wait(&req, MPI_STATUS_IGNORE);
   return ret;

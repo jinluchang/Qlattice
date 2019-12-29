@@ -490,7 +490,7 @@ long write_selected_field(
       if (0 == id_node) {
         assign(v, get_data(sfs[new_id_node].field));
       } else {
-        MPI_Recv(v.data(), v.data_size(), MPI_BYTE, id_node, mpi_tag,
+        mpi_recv(v.data(), v.data_size(), MPI_BYTE, id_node, mpi_tag,
                  get_comm(), MPI_STATUS_IGNORE);
       }
       qwrite_data(v, fp);
@@ -499,7 +499,7 @@ long write_selected_field(
   } else {
     for (size_t i = 0; i < sfs.size(); ++i) {
       const Vector<M> v = get_data(sfs[i].field);
-      MPI_Send((void*)v.data(), v.data_size(), MPI_BYTE, 0, mpi_tag,
+      mpi_send((void*)v.data(), v.data_size(), MPI_BYTE, 0, mpi_tag,
                get_comm());
     }
   }
