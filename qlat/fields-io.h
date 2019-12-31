@@ -116,18 +116,14 @@ inline std::vector<char> bitset_decompress(const std::vector<char>& data,
 {
   TIMER("bitset_decompress");
   const size_t N = local_volume;
-  // displayln(fname + ssprintf(": local_volume=%ld.", local_volume)); // TODO
   const size_t nbytes = 1 + (N - 1) / 8;
   BitSet bs(N);
   bs.set(&data[0], nbytes);
   const size_t sz_compressed = data.size() - nbytes;
-  // displayln(fname + ssprintf(": sz_compressed=%ld.", sz_compressed)); // TODO
   qassert(sz_compressed % bs.cN == 0);
   const size_t sz_block = sz_compressed / bs.cN;
   std::vector<char> ret(sz_block * local_volume, 0);
   bs.decompress(&data[nbytes], &ret[0], sz_block);
-  // std::vector<char> new_c_data = bs.compress(get_data(ret));  // TODO
-  // qassert(new_c_data == data);                     // TODO
   return ret;
 }
 
@@ -314,21 +310,17 @@ inline void fwrite_convert_endian(void* ptr, const size_t size,
                                   const bool is_little_endian)
 {
   if (size == 4) {
-    convert_endian_32(Vector<int32_t>((int32_t*)ptr, nmemb),
-                      is_little_endian);
+    convert_endian_32(Vector<int32_t>((int32_t*)ptr, nmemb), is_little_endian);
   } else if (size == 8) {
-    convert_endian_64(Vector<int64_t>((int64_t*)ptr, nmemb),
-                      is_little_endian);
+    convert_endian_64(Vector<int64_t>((int64_t*)ptr, nmemb), is_little_endian);
   } else {
     qassert(false);
   }
   fwrite(ptr, size, nmemb, fp);
   if (size == 4) {
-    convert_endian_32(Vector<int32_t>((int32_t*)ptr, nmemb),
-                      is_little_endian);
+    convert_endian_32(Vector<int32_t>((int32_t*)ptr, nmemb), is_little_endian);
   } else if (size == 8) {
-    convert_endian_64(Vector<int64_t>((int64_t*)ptr, nmemb),
-                      is_little_endian);
+    convert_endian_64(Vector<int64_t>((int64_t*)ptr, nmemb), is_little_endian);
   } else {
     qassert(false);
   }
@@ -386,11 +378,9 @@ inline long fread_convert_endian(void* ptr, const size_t size,
 {
   const long total_nmemb = fread(ptr, size, nmemb, fp);
   if (size == 4) {
-    convert_endian_32(Vector<int32_t>((int32_t*)ptr, nmemb),
-                      is_little_endian);
+    convert_endian_32(Vector<int32_t>((int32_t*)ptr, nmemb), is_little_endian);
   } else if (size == 8) {
-    convert_endian_64(Vector<int64_t>((int64_t*)ptr, nmemb),
-                      is_little_endian);
+    convert_endian_64(Vector<int64_t>((int64_t*)ptr, nmemb), is_little_endian);
   } else {
     qassert(false);
   }
@@ -435,7 +425,8 @@ inline bool read_tag(FieldsReader& fr, std::string& fn, Coordinate& total_site,
   if (4 != fread_convert_endian(&gd[0], 4, 4, fr.fp, fr.is_little_endian)) {
     qassert(false);
   }
-  if (4 != fread_convert_endian(&num_procs[0], 4, 4, fr.fp, fr.is_little_endian)) {
+  if (4 !=
+      fread_convert_endian(&num_procs[0], 4, 4, fr.fp, fr.is_little_endian)) {
     qassert(false);
   }
   //
@@ -457,7 +448,8 @@ inline bool read_tag(FieldsReader& fr, std::string& fn, Coordinate& total_site,
   return true;
 }
 
-inline void read_data(FieldsReader& fr, std::vector<char>& data, const int64_t data_len, const crc32_t crc)
+inline void read_data(FieldsReader& fr, std::vector<char>& data,
+                      const int64_t data_len, const crc32_t crc)
 {
   TIMER("read_data(fr,fn,geo,data)");
   clear(data);
@@ -548,10 +540,8 @@ void set_field_from_data(Field<M>& field, const GeometryNode& geon,
   if (is_sparse_field) {
     dc_data = bitset_decompress(data, local_volume);
     hdata.init(dc_data);
-    // displayln(fname + ssprintf(": dc_data.size()=%ld.", dc_data.size()));  // TODO
   }
   const long local_data_size = hdata().size();
-  // displayln(fname + ssprintf(": local_data_size=%ld.", local_data_size)); // TODO
   const long site_data_size = local_data_size / local_volume;
   qassert(site_data_size % sizeof(M) == 0);
   const int multiplicity = site_data_size / sizeof(M);
@@ -629,6 +619,7 @@ struct ShuffledFieldsWriter {
   ShuffledFieldsWriter() { init(); }
   ShuffledFieldsWriter(const std::string& path_,
                        const Coordinate& new_size_node_)
+  // interface function
   {
     init(path_, new_size_node_);
   }
@@ -636,12 +627,14 @@ struct ShuffledFieldsWriter {
   ~ShuffledFieldsWriter() { close(); }
   //
   void init()
+  // interface function
   {
     close();
     path = "";
     new_size_node = Coordinate();
   }
   void init(const std::string& path_, const Coordinate& new_size_node_)
+  // interface function
   {
     init();
     path = path_;
@@ -662,6 +655,7 @@ struct ShuffledFieldsWriter {
   }
   //
   void close()
+  // interface function
   {
     std::vector<GeometryNode> geons = make_dist_io_geons(new_size_node);
     for (int i = 0; i < (int)fws.size(); ++i) {
@@ -684,16 +678,26 @@ struct ShuffledFieldsReader {
   Coordinate new_size_node;
   std::vector<FieldsReader> frs;
   //
-  ShuffledFieldsReader() { init(); }
-  ShuffledFieldsReader(const std::string& path_) { init(path_); }
+  ShuffledFieldsReader()
+  // interface function
+  {
+    init();
+  }
+  ShuffledFieldsReader(const std::string& path_)
+  // interface function
+  {
+    init(path_);
+  }
   //
   void init()
+  // interface function
   {
     path = "";
     new_size_node = Coordinate();
     clear(frs);
   }
   void init(const std::string& path_)
+  // interface function
   {
     init();
     path = path_;
@@ -707,10 +711,13 @@ struct ShuffledFieldsReader {
 };
 
 template <class M>
-void write(ShuffledFieldsWriter& sfw, const std::string& fn, const Field<M>& field)
+void write(ShuffledFieldsWriter& sfw, const std::string& fn,
+           const Field<M>& field)
+// interface function
 {
   TIMER_VERBOSE("write(sfw,fn,field)");
-  displayln_info(fname + ssprintf(": writting field with fn='%s'.", fn.c_str()));
+  displayln_info(fname +
+                 ssprintf(": writting field with fn='%s'.", fn.c_str()));
   std::vector<Field<M> > fs;
   shuffle_field(fs, field, sfw.new_size_node);
   qassert(fs.size() == sfw.fws.size());
@@ -720,10 +727,13 @@ void write(ShuffledFieldsWriter& sfw, const std::string& fn, const Field<M>& fie
 }
 
 template <class M>
-void write(ShuffledFieldsWriter& sfw, const std::string& fn, const Field<M>& field, const ShuffledBitSet& sbs)
+void write(ShuffledFieldsWriter& sfw, const std::string& fn,
+           const Field<M>& field, const ShuffledBitSet& sbs)
+// interface function
 {
   TIMER_VERBOSE("write(sfw,fn,field)");
-  displayln_info(fname + ssprintf(": writting sparse field with fn='%s'.", fn.c_str()));
+  displayln_info(fname +
+                 ssprintf(": writting sparse field with fn='%s'.", fn.c_str()));
   std::vector<Field<M> > fs;
   shuffle_field(fs, field, sfw.new_size_node);
   qassert(fs.size() == sfw.fws.size());
@@ -735,6 +745,7 @@ void write(ShuffledFieldsWriter& sfw, const std::string& fn, const Field<M>& fie
 
 template <class M>
 bool read_next(ShuffledFieldsReader& sfr, std::string& fn, Field<M>& field)
+// interface function
 {
   TIMER_VERBOSE("read_next(sfr,fn,field)");
   fn = "";
@@ -757,7 +768,8 @@ bool read_next(ShuffledFieldsReader& sfr, std::string& fn, Field<M>& field)
     fn = "";
     return false;
   }
-  displayln_info(fname + ssprintf(": read the next field with fn='%s'.", fn.c_str()));
+  displayln_info(fname +
+                 ssprintf(": read the next field with fn='%s'.", fn.c_str()));
   bcast(fn);
   bcast(get_data_one_elem(total_site));
   bcast(get_data_one_elem(multiplicity));
@@ -770,6 +782,7 @@ bool read_next(ShuffledFieldsReader& sfr, std::string& fn, Field<M>& field)
 
 template <class M>
 bool read(ShuffledFieldsReader& sfr, const std::string& fn, Field<M>& field)
+// interface function
 {
   TIMER_VERBOSE("read(sfr,fn,field)");
   Coordinate total_site;
