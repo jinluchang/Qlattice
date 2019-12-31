@@ -8,6 +8,7 @@ tests = qcd-utils-tests \
 		benchmark \
 		dist-io \
 		selected-field \
+		fields-io \
 		heatbath \
 		template
 

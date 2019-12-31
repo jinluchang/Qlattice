@@ -475,7 +475,7 @@ inline long invert(FermionField5d& sol, const FermionField5d& src,
   field_convert(csrc, src);
   field_convert(csol, sol);
   InverterDomainWallCPS& inv = *((InverterDomainWallCPS*)(&inverter));
-  if (inverter.lm.null() or inverter.lm().initialized) {
+  if (inverter.lm.null() or (not inverter.lm().initialized)) {
     inv.inverter.inv(csol, csrc);
   } else {
     inv.inverter.inv(csol, csrc, NULL, &(inverter.lm().lanc));
@@ -491,5 +491,7 @@ inline long invert(FermionField4d& sol, const FermionField4d& src,
 }
 
 }  // namespace qlat
+
+#include <gf/eff_overlap.h>
 
 #endif

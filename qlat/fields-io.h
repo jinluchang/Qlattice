@@ -186,6 +186,9 @@ inline Coordinate shuffled_fields_reader_size_node_info(const std::string& path)
 }
 
 struct FieldsWriter {
+  //
+  // should only use ShuffledFieldsWriter
+  //
   std::string path;
   GeometryNode geon;
   FILE* fp;
@@ -214,24 +217,34 @@ struct FieldsWriter {
     geon = geon_;
     qassert(fp == NULL);
     if (geon.id_node == 0) {
-      displayln("FieldsWriter: open '" + path + "'.");
-      fields_writer_dirs_geon_info(geon, path);
+      if (does_file_exist(path + ".partial")) {
+        qremove_all(path + ".partial");
+      }
+      displayln("FieldsWriter: open '" + path + ".partial'.");
+      fields_writer_dirs_geon_info(geon, path + ".partial");
     }
-    fp = dist_open(path, geon.id_node, geon.num_node, "w");
+    fp = dist_open(path + ".partial", geon.id_node, geon.num_node, "w");
     qassert(NULL != fp);
   }
   //
   void close()
   {
-    if (fp != NULL and geon.id_node == 0) {
-      displayln("FieldsWriter: close '" + path + "'.");
+    const bool is_need_close = fp != NULL;
+    if (is_need_close and geon.id_node == 0) {
+      displayln("FieldsWriter: close '" + path + ".partial" + "'.");
     }
     dist_close(fp);
+    if (is_need_close and geon.id_node == 0) {
+      qrename(path + ".partial", path);
+    }
     qassert(fp == NULL);
   }
 };
 
 struct FieldsReader {
+  //
+  // should only use ShuffledFieldsReader
+  //
   std::string path;
   GeometryNode geon;
   FILE* fp;
@@ -620,11 +633,13 @@ struct ShuffledFieldsWriter {
     init(path_, new_size_node_);
   }
   //
+  ~ShuffledFieldsWriter() { close(); }
+  //
   void init()
   {
+    close();
     path = "";
     new_size_node = Coordinate();
-    clear(fws);
   }
   void init(const std::string& path_, const Coordinate& new_size_node_)
   {
@@ -634,8 +649,33 @@ struct ShuffledFieldsWriter {
     std::vector<GeometryNode> geons = make_dist_io_geons(new_size_node);
     fws.resize(geons.size());
     for (int i = 0; i < (int)geons.size(); ++i) {
-      fws[i].init(path, geons[i]);
+      if (geons[i].id_node == 0) {
+        fws[i].init(path, geons[i]);
+      }
     }
+    sync_node();
+    for (int i = 0; i < (int)geons.size(); ++i) {
+      if (geons[i].id_node != 0) {
+        fws[i].init(path, geons[i]);
+      }
+    }
+  }
+  //
+  void close()
+  {
+    std::vector<GeometryNode> geons = make_dist_io_geons(new_size_node);
+    for (int i = 0; i < (int)fws.size(); ++i) {
+      if (geons[i].id_node != 0) {
+        fws[i].close();
+      }
+    }
+    sync_node();
+    for (int i = 0; i < (int)fws.size(); ++i) {
+      if (geons[i].id_node == 0) {
+        fws[i].close();
+      }
+    }
+    clear(fws);
   }
 };
 
