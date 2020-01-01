@@ -240,7 +240,7 @@ struct Timer {
   const char* cname;
   int info_index;
   bool is_using_total_flops;
-  bool isRunning;
+  int isRunning;
   double start_time;
   double stop_time;
   long long start_flops;
@@ -318,7 +318,7 @@ struct Timer {
     get_start_time();
     initialize_papi();
     info_index = -1;
-    isRunning = false;
+    isRunning = 0;
   }
   void init(const std::string& fname_str)
   {
@@ -347,10 +347,11 @@ struct Timer {
   //
   void start(bool verbose = false)
   {
-    if (isRunning) {
+    if (isRunning > 0) {
+      isRunning += 1;
       return;
     } else {
-      isRunning = true;
+      isRunning = 1;
     }
     TimerInfo& info = get_timer_database()[info_index];
     info.call_times++;
@@ -365,9 +366,12 @@ struct Timer {
   //
   void stop(bool verbose = false)
   {
+    assert(isRunning > 0);
+    isRunning -= 1;
+    if (isRunning != 0) {
+      return;
+    }
     stop_time = get_time();
-    assert(isRunning);
-    isRunning = false;
     if (is_using_total_flops) {
       stop_flops = get_total_flops();
     } else {
