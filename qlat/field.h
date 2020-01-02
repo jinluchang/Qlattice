@@ -319,5 +319,4 @@ void qswap(qlat::Field<M>& f1, qlat::Field<M>& f2)
   std::swap(f1.field, f2.field);
 }
 
-
 QLAT_END_NAMESPACE
