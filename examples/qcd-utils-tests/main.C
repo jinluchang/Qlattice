@@ -43,6 +43,12 @@ void simple_tests()
   gf_hyp_smear(gfs, gf, 0.75, 0.6, 0.3);
   gf_show_info(gfs, 1);
   //
+  GaugeField gfs1;
+  set_left_expanded_gauge_field(gfs1, gfs);
+  Propagator4d prop;
+  prop.init(geo);
+  smear_propagator(prop, gfs1, 0.5, 10);
+  //
   GaugeField gf1, gf2;
   const Coordinate c1(1, 2, 3, 4);
   const Coordinate c2(7, 3, 1, 8);
