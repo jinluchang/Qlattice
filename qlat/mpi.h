@@ -506,7 +506,7 @@ void bcast(std::vector<M>& recv, const int root = 0)
   bcast(get_data(recv), root);
 }
 
-void bcast(std::string& recv, const int root = 0)
+inline void bcast(std::string& recv, const int root = 0)
 {
   long size = recv.size();
   bcast(get_data(size), root);
