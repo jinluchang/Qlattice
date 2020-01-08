@@ -103,6 +103,11 @@ inline void set_lock_expiration_time_limit()
                           get_lock_expiration_time_limit() / 3600.0));
 }
 
+inline double get_remaining_time()
+{
+  return get_time_limit() - get_total_time();
+}
+
 inline void check_time_limit(bool timer_display = false,
                              const double budget = get_default_budget())
 {
