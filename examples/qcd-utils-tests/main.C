@@ -43,6 +43,7 @@ void simple_tests()
   gf_hyp_smear(gfs, gf, 0.75, 0.6, 0.3);
   gf_show_info(gfs, 1);
   //
+  gf_spatial_ape_smear(gfs, gf, 0.5);
   GaugeField gfs1;
   set_left_expanded_gauge_field(gfs1, gfs);
   Propagator4d prop;
