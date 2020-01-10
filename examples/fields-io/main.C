@@ -68,25 +68,31 @@ inline void demo()
   //
   {
     ShuffledFieldsReader sfr("huge-data/demo.lfs");
-    //
-    displayln_info(fname + ssprintf(": read from disk 'f.field'"));
-    //
-    rf.init();
-    read(sfr, "f.field", rf);
-    displayln_info(fname + ssprintf(": compute crc32=%08X.", field_crc32(rf)));
-    //
-    rsf.init();
-    read(sfr, "sf.field", rsf);
-    displayln_info(fname + ssprintf(": compute crc32=%08X.", field_crc32(rsf)));
-    //
-    rfs.init();
-    read(sfr, "f.sfield", rfs);
-    displayln_info(fname + ssprintf(": compute crc32=%08X.", field_crc32(rfs)));
-    //
-    rsfs.init();
-    read(sfr, "sf.sfield", rsfs);
-    displayln_info(fname +
-                   ssprintf(": compute crc32=%08X.", field_crc32(rsfs)));
+    for (int i = 0; i < 4; ++i) {
+      displayln_info(fname + ssprintf(": read from disk 'f.field'"));
+      //
+      rf.init();
+      read(sfr, "f.field", rf);
+      displayln_info(fname +
+                     ssprintf(": compute crc32=%08X.", field_crc32(rf)));
+      //
+      displayln_info(fname + ssprintf(": read from disk 'sf.field'"));
+      //
+      rsf.init();
+      read(sfr, "sf.field", rsf);
+      displayln_info(fname +
+                     ssprintf(": compute crc32=%08X.", field_crc32(rsf)));
+      //
+      rfs.init();
+      read(sfr, "f.sfield", rfs);
+      displayln_info(fname +
+                     ssprintf(": compute crc32=%08X.", field_crc32(rfs)));
+      //
+      rsfs.init();
+      read(sfr, "sf.sfield", rsfs);
+      displayln_info(fname +
+                     ssprintf(": compute crc32=%08X.", field_crc32(rsfs)));
+    }
   }
 }
 

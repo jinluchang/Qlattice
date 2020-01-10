@@ -246,6 +246,10 @@ struct FieldsReader {
   FILE* fp;
   bool is_little_endian;  // should be true
   //
+  bool is_read_through;
+  std::map<std::string, long> offsets_map;
+  long max_offset;
+  //
   FieldsReader()
   {
     fp = NULL;
@@ -261,6 +265,9 @@ struct FieldsReader {
     geon.init();
     qassert(fp == NULL);
     is_little_endian = true;
+    is_read_through = false;
+    offsets_map.clear();
+    max_offset = 0;
   }
   void init(const std::string& path_, const GeometryNode& geon_)
   {
@@ -273,6 +280,9 @@ struct FieldsReader {
     }
     fp = dist_open(path, geon.id_node, geon.num_node, "r");
     qassert(NULL != fp);
+    is_read_through = false;
+    offsets_map.clear();
+    max_offset = 0;
   }
   //
   void close()
@@ -399,9 +409,12 @@ inline bool read_tag(FieldsReader& fr, std::string& fn, Coordinate& total_site,
   data_len = 0;
   is_sparse_field = false;
   //
+  const long offset_initial = ftell(fr.fp);
+  //
   // first read tag
   int32_t tag_len = 0;
   if (1 != fread_convert_endian(&tag_len, 4, 1, fr.fp, fr.is_little_endian)) {
+    fr.is_read_through = true;
     return false;
   }
   std::vector<char> fnv(tag_len);
@@ -409,6 +422,8 @@ inline bool read_tag(FieldsReader& fr, std::string& fn, Coordinate& total_site,
     qassert(false);
   }
   fn = std::string(fnv.data(), tag_len - 1);
+  //
+  fr.offsets_map[fn] = offset_initial;
   //
   // then read crc
   if (1 != fread_convert_endian(&crc, 4, 1, fr.fp, fr.is_little_endian)) {
@@ -447,6 +462,11 @@ inline bool read_tag(FieldsReader& fr, std::string& fn, Coordinate& total_site,
   if (1 != fread_convert_endian(&data_len, 8, 1, fr.fp, fr.is_little_endian)) {
     qassert(false);
   }
+  //
+  const long final_offset = ftell(fr.fp) + data_len;
+  if (final_offset > fr.max_offset) {
+    fr.max_offset = final_offset;
+  }
   return true;
 }
 
@@ -482,7 +502,19 @@ inline long read(FieldsReader& fr, const std::string& fn,
                  bool& is_sparse_field)
 {
   TIMER_FLOPS("read(fr,fn,geo,data)");
-  bool has_restart = false;
+  if (fr.offsets_map.count(fn) == 1) {
+    fseek(fr.fp, fr.offsets_map[fn], SEEK_SET);
+    std::string fn_r;
+    const long total_bytes =
+        read_next(fr, fn_r, total_site, data, is_sparse_field);
+    qassert(fn == fn_r);
+    return total_bytes;
+  } else if (fr.is_read_through) {
+    return 0;
+  } else {
+    fseek(fr.fp, fr.max_offset, SEEK_SET);
+  }
+  // bool has_restart = false;
   while (true) {
     std::string fn_read = "";
     crc32_t crc = 0;
@@ -498,12 +530,13 @@ inline long read(FieldsReader& fr, const std::string& fn,
         fseek(fr.fp, data_len, SEEK_CUR);
       }
     } else {
-      if (has_restart) {
-        return 0;
-      } else {
-        rewind(fr.fp);
-        has_restart = true;
-      }
+      return 0;
+      // if (has_restart) {
+      //   return 0;
+      // } else {
+      //   rewind(fr.fp);
+      //   has_restart = true;
+      // }
     }
   }
 }
