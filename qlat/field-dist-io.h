@@ -79,6 +79,9 @@ inline FILE* dist_open(const std::string& path, const int id_node,
         mode);
     ret = qopen(fn, fmode);
   }
+  if (ret == NULL) {
+    displayln(ssprintf("dist_open: failed to open '%s'.", fn.c_str()));
+  }
   qassert(ret != NULL);
   return ret;
 }
