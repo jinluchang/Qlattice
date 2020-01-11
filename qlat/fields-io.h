@@ -128,7 +128,7 @@ inline std::vector<char> bitset_decompress(const std::vector<char>& data,
 }
 
 inline BitSet mk_bitset_from_field_rank(const FieldM<int64_t, 1>& f_rank,
-                                        const int64_t n_per_tslice)
+                                        const int64_t n_per_tslice = -1)
 {
   TIMER("mk_bitset_from_field_rank");
   const Geometry& geo = f_rank.geo;
@@ -136,13 +136,22 @@ inline BitSet mk_bitset_from_field_rank(const FieldM<int64_t, 1>& f_rank,
   qassert(geo.is_only_local());
   for (long index = 0; index < geo.local_volume(); ++index) {
     const int64_t rank = f_rank.get_elem(index);
-    if (0 <= rank and rank < n_per_tslice) {
+    if (0 <= rank and (rank < n_per_tslice or n_per_tslice == -1)) {
       bs.set(index, true);
     } else {
       bs.set(index, false);
     }
   }
   return bs;
+}
+
+inline BitSet mk_bitset_from_coordinates(const Coordinate& total_site,
+                                         const std::vector<Coordinate>& xgs)
+{
+  TIMER("mk_bitset_from_coordinates");
+  FieldM<int64_t, 1> f_rank;
+  mk_field_selection(f_rank, total_site, xgs);
+  mk_bitset_from_field_rank(f_rank);
 }
 
 inline void fields_writer_dirs_geon_info(const GeometryNode& geon,

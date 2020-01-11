@@ -124,7 +124,7 @@ inline void mk_field_selection(FieldM<int64_t, 1>& f_rank,
 // not selected points has value = -1;
 // random select n_per_tslice points based on ranks from mk_grid_field_selection
 {
-  TIMER_VERBOSE("mk_field_selection");
+  TIMER_VERBOSE("mk_field_selection(n_per_tslice,rs)");
   const long spatial_vol = total_site[0] * total_site[1] * total_site[2];
   mk_grid_field_selection(f_rank, total_site, spatial_vol, rs);
   if (n_per_tslice == -1 or n_per_tslice == spatial_vol) {
@@ -138,6 +138,28 @@ inline void mk_field_selection(FieldM<int64_t, 1>& f_rank,
     qassert(rank >= 0);
     if (rank >= n_per_tslice) {
       rank = -1;
+    }
+  }
+}
+
+inline void mk_field_selection(FieldM<int64_t, 1>& f_rank,
+                               const Coordinate& total_site,
+                               const std::vector<Coordinate>& xgs)
+{
+  TIMER_VERBOSE("mk_field_selection(xgs)");
+  Geometry geo;
+  geo.init(total_site, 1);
+  f_rank.init();
+  f_rank.init(geo);
+#pragma omp parallel for
+  for (long index = 0; index < geo.local_volume(); ++index) {
+    f_rank.get_elem(index) = -1;
+  }
+#pragma omp parallel for
+  for (long i = 0; i < (long)xgs.size(); ++i) {
+    const Coordinate xl = geo.coordinate_l_from_g(xgs[i]);
+    if (geo.is_local(xl)) {
+      f_rank.get_elem(xl) = i;
     }
   }
 }
