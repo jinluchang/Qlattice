@@ -145,15 +145,6 @@ inline BitSet mk_bitset_from_field_rank(const FieldM<int64_t, 1>& f_rank,
   return bs;
 }
 
-inline BitSet mk_bitset_from_coordinates(const Coordinate& total_site,
-                                         const std::vector<Coordinate>& xgs)
-{
-  TIMER("mk_bitset_from_coordinates");
-  FieldM<int64_t, 1> f_rank;
-  mk_field_selection(f_rank, total_site, xgs);
-  mk_bitset_from_field_rank(f_rank);
-}
-
 inline void fields_writer_dirs_geon_info(const GeometryNode& geon,
                                          const std::string& path,
                                          const mode_t mode = default_dir_mode())
@@ -641,8 +632,8 @@ long read(FieldsReader& fr, const std::string& fn, Field<M>& field)
 typedef std::vector<BitSet> ShuffledBitSet;
 
 inline ShuffledBitSet mk_shuffled_bitset(const FieldM<int64_t, 1>& f_rank,
-                                         const int64_t n_per_tslice,
-                                         const Coordinate& new_size_node)
+                                         const Coordinate& new_size_node,
+                                         const int64_t n_per_tslice = -1)
 {
   TIMER("mk_shuffled_bitset(f_rank,n_per_tslice,new_size_node)");
   std::vector<Field<int64_t> > fs_rank;
@@ -660,7 +651,17 @@ inline ShuffledBitSet mk_shuffled_bitset(const FieldSelection& fsel,
                                          const Coordinate& new_size_node)
 {
   TIMER_VERBOSE("mk_shuffled_bitset(fsel,new_size_node)");
-  return mk_shuffled_bitset(fsel.f_rank, fsel.n_per_tslice, new_size_node);
+  return mk_shuffled_bitset(fsel.f_rank, new_size_node, fsel.n_per_tslice);
+}
+
+inline ShuffledBitSet mk_shuffled_bitset(
+    const Coordinate& total_site, const std::vector<Coordinate>& xgs,
+    const Coordinate& new_size_node)
+{
+  TIMER("mk_shuffled_bitset");
+  FieldM<int64_t, 1> f_rank;
+  mk_field_selection(f_rank, total_site, xgs);
+  return mk_shuffled_bitset(f_rank, new_size_node);
 }
 
 struct ShuffledFieldsWriter {
