@@ -323,7 +323,7 @@ inline long load_gauge_field(GaugeFieldT<T>& gf, const std::string& path, bool b
   const Geometry& geo = gf.geo;
   FieldM<std::array<Complex, 6>, 4> gft;
   gft.init(geo);
-  const long file_size = serial_read_field(
+  const long file_size = serial_read_field_par(
       gft, path, -get_data_size(gft) * get_num_node(), SEEK_END);
   if (0 == file_size) {
     return 0;
@@ -396,7 +396,7 @@ inline long load_gauge_field_cps3x3(GaugeFieldT<Complex>& gf, const std::string&
   const Geometry& geo = gf.geo;
   FieldM<std::array<Complex, 9>, 4> gft;
   gft.init(geo);
-  const long file_size = serial_read_field(
+  const long file_size = serial_read_field_par(
       gft, path, -get_data_size(gft) * get_num_node(), SEEK_END);
   if (file_size == 0) {
     return 0;
