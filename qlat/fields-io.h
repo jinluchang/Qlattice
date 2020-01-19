@@ -603,7 +603,7 @@ long read_next(FieldsReader& fr, std::string& fn, Field<M>& field)
   Coordinate total_site;
   std::vector<char> data;
   bool is_sparse_field = false;
-  const long total_bytes =read_next(fr, fn, total_site, data, is_sparse_field);
+  const long total_bytes = read_next(fr, fn, total_site, data, is_sparse_field);
   if (0 == total_bytes) {
     return 0;
   }
@@ -654,9 +654,9 @@ inline ShuffledBitSet mk_shuffled_bitset(const FieldSelection& fsel,
   return mk_shuffled_bitset(fsel.f_rank, new_size_node, fsel.n_per_tslice);
 }
 
-inline ShuffledBitSet mk_shuffled_bitset(
-    const Coordinate& total_site, const std::vector<Coordinate>& xgs,
-    const Coordinate& new_size_node)
+inline ShuffledBitSet mk_shuffled_bitset(const Coordinate& total_site,
+                                         const std::vector<Coordinate>& xgs,
+                                         const Coordinate& new_size_node)
 {
   TIMER("mk_shuffled_bitset");
   FieldM<int64_t, 1> f_rank;
@@ -823,7 +823,7 @@ long read_next(ShuffledFieldsReader& sfr, std::string& fn, Field<M>& field)
       total_bytes += bytes;
     }
     if (sfr.frs[i].geon.id_node == 0) {
-      fn == fni;
+      fn = fni;
       total_site = fs[i].geo.total_site();
       multiplicity = fs[i].geo.multiplicity;
       qassert(get_id_node() == 0);
