@@ -599,7 +599,7 @@ template <class M>
 long read_next(FieldsReader& fr, std::string& fn, Field<M>& field)
 // field endianess not converted at all
 {
-  TIMER_FLOPS("read_next(fw,fn,field)");
+  TIMER_FLOPS("read_next(fr,fn,field)");
   Coordinate total_site;
   std::vector<char> data;
   bool is_sparse_field = false;
@@ -616,7 +616,7 @@ template <class M>
 long read(FieldsReader& fr, const std::string& fn, Field<M>& field)
 // field endianess not converted at all
 {
-  TIMER_FLOPS("read(fw,fn,field)");
+  TIMER_FLOPS("read(fr,fn,field)");
   Coordinate total_site;
   std::vector<char> data;
   bool is_sparse_field = false;
