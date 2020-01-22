@@ -47,7 +47,7 @@ template <class M>
 void shuffle_field(std::vector<Field<M> >& fs, const Field<M>& f,
                    const ShufflePlan& sp)
 {
-  TIMER_FLOPS("shuffle_field");
+  TIMER_FLOPS("shuffle_field(fs,f,sp)");
   const Geometry& geo = f.geo;
   qassert(sp.geo_send == geo_reform(geo, 1, 0));
   clear(fs);
@@ -111,7 +111,7 @@ template <class M>
 void shuffle_field_back(Field<M>& f, const std::vector<Field<M> >& fs,
                         const ShufflePlan& sp)
 {
-  TIMER_FLOPS("shuffle_field_back");
+  TIMER_FLOPS("shuffle_field_back(f,fs,sp)");
   const Geometry& geo = f.geo;
   sync_node();
   const long total_bytes =
