@@ -467,6 +467,10 @@ inline bool read_tag(FieldsReader& fr, std::string& fn, Coordinate& total_site,
   if (final_offset > fr.max_offset) {
     fr.max_offset = final_offset;
   }
+  //
+  if (fr.geon.id_node == 0) {
+    displayln(fname + ssprintf(": '%s' from '%s'.", fn.c_str(), fr.path.c_str()));
+  }
   return true;
 }
 
