@@ -28,7 +28,7 @@ struct Cache {
     clear();
     name = name_;
     limit = std::max(limit_, (long)1);
-    buffer_size = std::max(buffer_size_, limit - limit / 2);
+    buffer_size = std::min(buffer_size_, limit - limit / 2);
     qassert(buffer_size >= 1);
   }
   //
@@ -69,7 +69,7 @@ struct Cache {
       TIMER_VERBOSE("Cache::gc");
       displayln_info(ssprintf("%s::%s: before gc: %d / %d.", cname().c_str(),
                               name.c_str(), m.size(), limit));
-      std::vector<int> idxes;
+      std::vector<long> idxes;
       for (typename std::map<K, std::pair<long, M> >::iterator it = m.begin();
            it != m.end(); ++it) {
         const long i = (it->second).first;
