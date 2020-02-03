@@ -285,6 +285,7 @@ inline long dataReadParNode(const std::vector<DataSizeNmemb>& dsns,
       timer.flops += dsns[k].size * dsns[k].nmemb * getNumNode();
     }
     for (int i = 0; i < n_cycle; i++) {
+      TIMER_VERBOSE_FLOPS("dataReadParNode-fread-flops");
       long bytes = 0;
       if (getIdNode() % n_cycle == i) {
         FILE* file = fopen(filename.c_str(), "r");
@@ -300,6 +301,7 @@ inline long dataReadParNode(const std::vector<DataSizeNmemb>& dsns,
       qlat::DisplayInfo(cname, fname,
                   "cycle / n_cycle = %d / %d ; total_bytes = %ld\n", i + 1,
                   n_cycle, total_bytes);
+      timer.flops += bytes;
     }
   }
   dataReadInfo(dsns, path);
