@@ -168,6 +168,7 @@ struct FieldSelection {
   FieldM<int64_t, 1>
       f_rank;  // rank when the points being selected (-1 if not selected)
   long n_per_tslice;  // num points per time slice
+  double prob;        // (double)n_per_tslice / (double)spatial_vol
   //
   FieldM<long, 1>
       f_local_idx;  // idx of points on this node (-1 if not selected)
@@ -181,6 +182,7 @@ struct FieldSelection {
   {
     f_rank.init();
     n_per_tslice = 0;
+    prob = 0.0;
     f_local_idx.init();
     n_elems = 0;
     clear(ranks);
@@ -206,6 +208,7 @@ inline void set_field_selection(FieldSelection& fsel,
   fsel.init();
   fsel.f_rank = f_rank;
   fsel.n_per_tslice = n_per_tslice;
+  fsel.prob = (double)n_per_tslice / (double)spatial_vol;
   fsel.f_local_idx.init(geo);
   long n_elems = 0;
   for (long index = 0; index < geo.local_volume(); ++index) {
@@ -289,6 +292,18 @@ struct SelectedField {
     geo.init();
     clear(field);
   }
+  void init(const FieldSelection& fsel, const int multiplicity)
+  {
+    if (initialized) {
+      qassert(geo == geo_remult(fsel.f_rank.geo, multiplicity));
+      qassert(field.size() == fsel.n_elems * multiplicity);
+    } else {
+      init();
+      initialized = true;
+      geo = geo_remult(fsel.f_rank.geo, multiplicity);
+      field.resize(fsel.n_elems * multiplicity);
+    }
+  }
   //
   SelectedField() { init(); }
   //
@@ -316,6 +331,12 @@ struct SelectedField {
     return Vector<M>(&field[idx * geo.multiplicity], geo.multiplicity);
   }
 };
+
+template <class M>
+bool is_initialized(const SelectedField<M>& sf)
+{
+  return sf.initialized;
+}
 
 template <class M>
 void only_keep_selected_points(Field<M>& f, const FieldSelection& fsel)
@@ -375,18 +396,15 @@ void set_selected_field(SelectedField<M>& sf, const Field<M>& f,
   qassert(fsel.f_local_idx.geo.is_only_local());
   qassert(geo_remult(f.geo) == fsel.f_local_idx.geo);
   const Geometry& geo = f.geo;
-  sf.init();
-  sf.initialized = true;
-  sf.geo = geo;
   const int multiplicity = geo.multiplicity;
-  sf.field.resize(fsel.n_elems * multiplicity);
+  sf.init(fsel, multiplicity);
 #pragma omp parallel for
   for (long idx = 0; idx < fsel.n_elems; ++idx) {
     const long index = fsel.indices[idx];
     const Vector<M> fv = f.get_elems_const(index);
-    const long offset = idx * multiplicity;
+    Vector<M> sfv = sf.get_elems(idx);
     for (int m = 0; m < multiplicity; ++m) {
-      sf.field[offset + m] = fv[m];
+      sfv[m] = fv[m];
     }
   }
 }
@@ -436,9 +454,9 @@ void set_field_selected(Field<M>& f, const SelectedField<M>& sf,
   for (long idx = 0; idx < fsel.n_elems; ++idx) {
     const long index = fsel.indices[idx];
     Vector<M> fv = f.get_elems(index);
-    const long offset = idx * multiplicity;
+    const Vector<M> sfv = sf.get_elems_const(idx);
     for (int m = 0; m < multiplicity; ++m) {
-      fv[m] = sf.field[offset + m];
+      fv[m] = sfv[m];
     }
   }
 }

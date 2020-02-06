@@ -135,6 +135,55 @@ inline void prop_apply_gauge_transformation(Propagator4d& prop,
   }
 }
 
+inline void prop_apply_gauge_transformation(SelectedField<WilsonMatrix>& prop,
+                                            const SelectedField<WilsonMatrix>& prop0,
+                                            const GaugeTransform& gt,
+                                            const FieldSelection& fsel)
+{
+  TIMER("prop_apply_gauge_transformation");
+  qassert(is_matching_geo(prop0.geo, gt.geo));
+  const Geometry& geo = prop0.geo;
+  const int multiplicity = geo.multiplicity;
+  prop.init(fsel, multiplicity);
+  qassert(is_matching_geo_mult(prop.geo, prop0.geo));
+#pragma omp parallel for
+  for (long idx = 0; idx < fsel.indices.size(); ++idx) {
+    const long index = fsel.indices[idx];
+    const Coordinate xl = geo.coordinate_from_index(index);
+    Vector<WilsonMatrix> v = prop.get_elems(idx);
+    const Vector<WilsonMatrix> v0 = prop0.get_elems_const(idx);
+    const ColorMatrix& t = gt.get_elem(xl);
+    for (int m = 0; m < v0.size(); ++m) {
+      v[m] = t * v0[m];
+    }
+  }
+}
+
+inline void prop_apply_gauge_transformation(
+    std::vector<WilsonMatrix>& prop, const std::vector<WilsonMatrix>& prop0,
+    const GaugeTransform& gt, const std::vector<Coordinate>& pcs)
+{
+  TIMER("prop_apply_gauge_transformation");
+  const Geometry& geo = gt.geo;
+  qassert(geo.multiplicity == 1);
+  const long num_points = pcs.size();
+  qassert(prop0.size() == num_points);
+  std::vector<WilsonMatrix> tmp;
+  tmp.resize(num_points);
+  set_zero(tmp);
+#pragma omp parallel for
+  for (long i = 0; i < num_points; ++i) {
+    const Coordinate& xg = pcs[i];
+    const Coordinate xl = geo.coordinate_l_from_g(xg);
+    if (geo.is_local(xl)) {
+      const ColorMatrix& t = gt.get_elem(xl);
+      tmp[i] = t * prop0[i];
+    }
+  }
+  glb_sum_double_vec(get_data(tmp));
+  prop = tmp;
+}
+
 inline void gf_apply_rand_gauge_transformation(GaugeField& gf,
                                                const GaugeField& gf0,
                                                const RngState& rs)
