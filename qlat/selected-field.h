@@ -291,6 +291,30 @@ struct SelectedField {
   }
   //
   SelectedField() { init(); }
+  //
+  M& get_elem(const long& idx)
+  {
+    qassert(1 == geo.multiplicity);
+    return field[idx];
+  }
+  const M& get_elem(const long& idx) const
+  {
+    qassert(1 == geo.multiplicity);
+    return field[idx];
+  }
+  //
+  Vector<M> get_elems(const long idx)
+  // qassert(geo.is_only_local())
+  {
+    return Vector<M>(&field[idx * geo.multiplicity], geo.multiplicity);
+  }
+  Vector<M> get_elems_const(const long idx) const
+  // Be cautious about the const property
+  // 改不改靠自觉
+  // qassert(geo.is_only_local())
+  {
+    return Vector<M>(&field[idx * geo.multiplicity], geo.multiplicity);
+  }
 };
 
 template <class M>
