@@ -490,7 +490,7 @@ void all_gather(Vector<M> recv, const Vector<M>& send)
 }
 
 template <class M>
-inline void bcast(Vector<M> recv, const int root = 0)
+void bcast(Vector<M> recv, const int root = 0)
 {
 #ifdef USE_MULTI_NODE
   MPI_Bcast((void*)recv.data(), recv.data_size(), MPI_BYTE, root, get_comm());
@@ -555,7 +555,7 @@ inline void split_vector(std::vector<std::vector<M> >& datatable,
 }
 
 template <class M>
-inline void bcast(std::vector<std::vector<M> >& datatable, const int root = 0)
+void bcast(std::vector<std::vector<M> >& datatable, const int root = 0)
 {
 #ifdef USE_MULTI_NODE
   long nrow, total_size;

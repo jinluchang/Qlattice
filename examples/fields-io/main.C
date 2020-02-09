@@ -11,7 +11,7 @@ inline void demo()
   qmkdir_info("huge-data");
   //
   displayln_info(fname + ssprintf(": create splittable random number generator 'rs'"));
-  RngState rs = RngState("selected-field");
+  const RngState rs = RngState("selected-field");
   //
   const long n_per_tslice = 16;
   displayln_info(fname + ssprintf(": random select points on each time slice"));
@@ -49,7 +49,7 @@ inline void demo()
   //
   displayln_info(fname + ssprintf(": compute crc32=%08X.", field_crc32(sf)));
   //
-  const Coordinate new_size_node(1, 1, 1, 8);
+  const Coordinate new_size_node(2, 2, 2, 8);
   //
   {
     ShuffledFieldsWriter sfw("huge-data/demo.lfs", new_size_node);

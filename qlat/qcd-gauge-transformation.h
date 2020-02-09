@@ -147,7 +147,7 @@ inline void prop_apply_gauge_transformation(SelectedField<WilsonMatrix>& prop,
   prop.init(fsel, multiplicity);
   qassert(is_matching_geo_mult(prop.geo, prop0.geo));
 #pragma omp parallel for
-  for (long idx = 0; idx < fsel.indices.size(); ++idx) {
+  for (long idx = 0; idx < (long)fsel.indices.size(); ++idx) {
     const long index = fsel.indices[idx];
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<WilsonMatrix> v = prop.get_elems(idx);
@@ -167,7 +167,7 @@ inline void prop_apply_gauge_transformation(
   const Geometry& geo = gt.geo;
   qassert(geo.multiplicity == 1);
   const long num_points = pcs.size();
-  qassert(prop0.size() == num_points);
+  qassert((long)prop0.size() == num_points);
   std::vector<WilsonMatrix> tmp;
   tmp.resize(num_points);
   set_zero(tmp);

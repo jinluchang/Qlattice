@@ -319,7 +319,7 @@ inline WilsonLinePathSegment make_wilson_line_path_segment(
 inline void set_multiply_simple_wilson_line_field_partial_comm(
     FieldM<ColorMatrix, 1>& wlf, FieldM<ColorMatrix, 1>& wlf1,
     const GaugeField& gf1, const std::vector<int>& path)
-// gf1 need to be refresh_expanded.
+// gf1 need to be refresh_expanded_1.
 // wlf1 need to have correct size: wlf1.init(geo_resize(geo, 1));
 // wlf1 will be modified
 // wlf will be initialized
@@ -331,7 +331,7 @@ inline void set_multiply_simple_wilson_line_field_partial_comm(
   for (size_t i = 0; i < path.size(); ++i) {
     const int dir = path[i];
     qassert(-DIMN <= dir && dir < DIMN);
-    refresh_expanded(wlf1);
+    refresh_expanded_1(wlf1);
 #pragma omp parallel for
     for (long index = 0; index < geo.local_volume(); ++index) {
       Coordinate xl = geo.coordinate_from_index(index);
@@ -357,7 +357,7 @@ inline void set_multiply_simple_wilson_line_field_partial_comm(
 inline void set_multiply_wilson_line_field_partial_comm(
     FieldM<ColorMatrix, 1>& wlf, FieldM<ColorMatrix, 1>& wlf1,
     const GaugeField& gf1, const WilsonLinePathSegment& path)
-// gf1 need to be refresh_expanded.
+// gf1 need to be refresh_expanded_1.
 // wlf1 need to have correct size: wlf1.init(geo_resize(geo, 1));
 // wlf1 will be modified
 // wlf will be initialized

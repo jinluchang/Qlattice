@@ -296,7 +296,7 @@ struct SelectedField {
   {
     if (initialized) {
       qassert(geo == geo_remult(fsel.f_rank.geo, multiplicity));
-      qassert(field.size() == fsel.n_elems * multiplicity);
+      qassert((long)field.size() == fsel.n_elems * multiplicity);
     } else {
       init();
       initialized = true;
