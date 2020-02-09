@@ -339,6 +339,68 @@ bool is_initialized(const SelectedField<M>& sf)
 }
 
 template <class M>
+const SelectedField<M>& operator+=(SelectedField<M>& f, const SelectedField<M>& f1)
+{
+  TIMER("sel_field_operator+=");
+  if (not f.initialized) {
+    f = f1;
+  } else {
+    qassert(f1.initialized);
+    qassert(is_matching_geo_mult(f.geo, f1.geo));
+    qassert(f.field.size() == f1.field.size());
+#pragma omp parallel for
+    for (long k = 0; k < f.field.size(); ++k) {
+      f.field[k] += f1.field[k];
+    }
+  }
+  return f;
+}
+
+template <class M>
+const SelectedField<M>& operator-=(SelectedField<M>& f, const SelectedField<M>& f1)
+{
+  TIMER("sel_field_operator-=");
+  if (not f.initialized) {
+    f = f1;
+  } else {
+    qassert(f1.initialized);
+    qassert(is_matching_geo_mult(f.geo, f1.geo));
+    qassert(f.field.size() == f1.field.size());
+#pragma omp parallel for
+    for (long k = 0; k < f.field.size(); ++k) {
+      f.field[k] -= f1.field[k];
+    }
+  }
+  return f;
+}
+
+template <class M>
+const SelectedField<M>& operator*=(SelectedField<M>& f, const double factor)
+{
+  TIMER("sel_field_operator*=(F,D)");
+  qassert(f.initialized);
+  const Geometry& geo = f.geo;
+#pragma omp parallel for
+    for (long k = 0; k < f.field.size(); ++k) {
+      f.field[k] *= factor;
+    }
+  return f;
+}
+
+template <class M>
+const SelectedField<M>& operator*=(SelectedField<M>& f, const Complex factor)
+{
+  TIMER("sel_field_operator*=(F,D)");
+  qassert(f.initialized);
+  const Geometry& geo = f.geo;
+#pragma omp parallel for
+    for (long k = 0; k < f.field.size(); ++k) {
+      f.field[k] *= factor;
+    }
+  return f;
+}
+
+template <class M>
 void only_keep_selected_points(Field<M>& f, const FieldSelection& fsel)
 {
   TIMER("only_keep_selected_points");
