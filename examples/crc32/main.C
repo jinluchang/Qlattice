@@ -24,16 +24,16 @@ int main(int argc, char* argv[])
   for (long i = 0; i < (long)fns.size(); ++i) {
     displayln_info(
         ssprintf("fns[%5d/%d] = '%s'", i, fns.size(), fns[i].c_str()));
-    if (is_dist_field(fns[i]) or is_field(fns[i])) {
+    if (is_d_field(fns[i])) {
       Field<char> f;
       const long total_bytes = read_field(f, fns[i]);
-      if (total_bytes == 0) {
-        displayln_info(ssprintf("FAILED: fns[%5d/%d] = '%s'", i, fns.size(),
+      if (total_bytes == 0 or is_checksum_missmatch()) {
+        displayln_info(ssprintf("FAILED: fns[%5d/%d]\nFAILED FILENAME: %s", i, fns.size(),
                                 fns[i].c_str()));
       }
     } else if (does_file_exist_sync_node(fns[i] + "/metadata.txt")) {
       if (check_compressed_eigen_vectors(fns[i])) {
-        displayln_info(ssprintf("FAILED: fns[%5d/%d] = '%s'", i, fns.size(),
+        displayln_info(ssprintf("FAILED: fns[%5d/%d]\nFAILED FILENAME: %s", i, fns.size(),
                                 fns[i].c_str()));
       }
     } else if (does_file_exist_sync_node(fns[i] + "/checkpoint")) {
