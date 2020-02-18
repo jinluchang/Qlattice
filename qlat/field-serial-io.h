@@ -408,8 +408,21 @@ long read_field(Field<M>& f, const std::string& path,
           : new_size_node_;
   const long file_size =
       serial_read_field_par(f, path, new_size_node, -data_size, SEEK_END);
-  qassert(crc == field_crc32(f));
-  qassert(file_size == data_size);
+  if (file_size != data_size) {
+    displayln_info(
+        fname +
+        ssprintf(": file size do not match read_size=%ld vs data_size=%ld",
+                 file_size, data_size));
+    qassert(false);
+  }
+  const crc32_t f_crc = field_crc32(f);
+  is_checksum_missmatch() = false;
+  if (crc != f_crc) {
+    displayln_info(fname + ssprintf(": WARNING: file crc32 do not match "
+                                    "read_info_crc=%06X vs read_data_crc=%06X",
+                                    crc, f_crc));
+    is_checksum_missmatch() = true;
+  }
   timer.flops += file_size;
   return file_size;
 }
