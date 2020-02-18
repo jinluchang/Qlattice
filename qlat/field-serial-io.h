@@ -391,9 +391,9 @@ long read_field(Field<M>& f, const std::string& path,
   get_incorrect_field_read_sizeof_M() = 0;
   if (sizeof_M != sizeof(M)) {
     get_incorrect_field_read_sizeof_M() = sizeof_M;
-    displayln(fname + ssprintf(": WARNING: sizeof(M) do not match. "
-                               "Expected %d, Actual file %d",
-                               sizeof(M), sizeof_M));
+    displayln_info(fname + ssprintf(": WARNING: sizeof(M) do not match. "
+                                    "Expected %d, Actual file %d",
+                                    sizeof(M), sizeof_M));
     qassert((multiplicity * sizeof_M) % sizeof(M) == 0);
     multiplicity = (multiplicity * sizeof_M) / sizeof(M);
   }

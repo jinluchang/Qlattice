@@ -9,7 +9,12 @@ using namespace std;
 
 int main(int argc, char* argv[])
 {
-  begin(&argc, &argv);
+  std::vector<Coordinate> size_node_list;
+  size_node_list.push_back(Coordinate(1, 1, 1, 2));
+  size_node_list.push_back(Coordinate(1, 1, 1, 4));
+  size_node_list.push_back(Coordinate(1, 1, 1, 8));
+  size_node_list.push_back(Coordinate(1, 1, 1, 16));
+  begin(&argc, &argv, size_node_list);
   if (argc < 2) {
     displayln_info("usage: ./crc32 location1 location2 ...");
     exit(-1);
@@ -28,13 +33,13 @@ int main(int argc, char* argv[])
       Field<char> f;
       const long total_bytes = read_field(f, fns[i]);
       if (total_bytes == 0 or is_checksum_missmatch()) {
-        displayln_info(ssprintf("FAILED: fns[%5d/%d]\nFAILED FILENAME: %s", i, fns.size(),
-                                fns[i].c_str()));
+        displayln_info(ssprintf("FAILED: fns[%5d/%d]\nFAILED FILENAME: %s", i,
+                                fns.size(), fns[i].c_str()));
       }
     } else if (does_file_exist_sync_node(fns[i] + "/metadata.txt")) {
       if (check_compressed_eigen_vectors(fns[i])) {
-        displayln_info(ssprintf("FAILED: fns[%5d/%d]\nFAILED FILENAME: %s", i, fns.size(),
-                                fns[i].c_str()));
+        displayln_info(ssprintf("FAILED: fns[%5d/%d]\nFAILED FILENAME: %s", i,
+                                fns.size(), fns[i].c_str()));
       }
     } else if (does_file_exist_sync_node(fns[i] + "/checkpoint")) {
       decompressed_eigen_vectors_check_crc32(fns[i]);

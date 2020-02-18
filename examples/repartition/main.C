@@ -9,7 +9,12 @@ using namespace std;
 
 int main(int argc, char* argv[])
 {
-  begin(&argc, &argv);
+  std::vector<Coordinate> size_node_list;
+  size_node_list.push_back(Coordinate(1, 1, 1, 2));
+  size_node_list.push_back(Coordinate(1, 1, 1, 4));
+  size_node_list.push_back(Coordinate(1, 1, 1, 8));
+  size_node_list.push_back(Coordinate(1, 1, 1, 16));
+  begin(&argc, &argv, size_node_list);
   if (argc < 2) {
     displayln_info("usage: ./repartition 1x1x1x8 location1 location2 ...");
     exit(-1);
