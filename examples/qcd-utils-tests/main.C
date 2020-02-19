@@ -50,15 +50,22 @@ void simple_tests()
   prop.init(geo);
   smear_propagator(prop, gfs1, 0.5, 10);
   //
-  GaugeField gf1, gf2;
-  const Coordinate c1(1, 2, 3, 4);
-  const Coordinate c2(7, 3, 1, 8);
-  field_shift(gf1, gf, c1);
-  field_shift(gf2, gf1, c2);
-  field_shift(gf1, gf, c1 + c2);
-  gf2 -= gf1;
-  displayln_info(ssprintf("orig qnorm: %E ; shift qnorm %E ; diff qnorm: %E",
-                          qnorm(gf), qnorm(gf1), qnorm(gf2)));
+  {
+    TIMER_VERBOSE("test-field_shift");
+    GaugeField gf1, gf2;
+    const Coordinate c1(1, 2, 3, 4);
+    const Coordinate c2(7, 3, 1, 8);
+    field_shift(gf1, gf, c1);
+    field_shift(gf2, gf1, c2);
+    field_shift(gf1, gf, c1 + c2);
+    gf1 -= gf2;
+    displayln_info(ssprintf("Consistency: orig qnorm: %E ; shift qnorm %E ; diff qnorm: %E",
+                            qnorm(gf), qnorm(gf2), qnorm(gf1)));
+    field_shift_steps(gf1, gf, c1 + c2);
+    gf1 -= gf2;
+    displayln_info(ssprintf("Reference: orig qnorm: %E ; shift qnorm %E ; diff qnorm: %E",
+                            qnorm(gf), qnorm(gf2), qnorm(gf1)));
+  }
 }
 
 void show_matrix()

@@ -171,6 +171,10 @@ template <class M>
 void field_shift_direct(Field<M>& f, const Field<M>& f1, const Coordinate& shift)
 // shift f1 with 'shift'
 // use the fact that the ordering does not change
+// UNLESS in some direction there is only one node,
+// THEN periodic boundary condition shall mess up the order
+// JUST do NOT shift in such direction
+// shift it afterwards (in the final step of this function)
 {
   TIMER("field_shift_direct");
   const Geometry& geo = f1.geo;
@@ -179,6 +183,14 @@ void field_shift_direct(Field<M>& f, const Field<M>& f1, const Coordinate& shift
   const Coordinate& node_site = geo.node_site;
   const Coordinate& size_node = geo.geon.size_node;
   const Coordinate total_site = geo.total_site();
+  Coordinate shift_corrected = shift;
+  for (int mu = 0; mu < 4; ++mu) {
+    qassert(size_node[mu] >= 1);
+    if (size_node[mu] == 1) {
+      shift_corrected[mu] = 0;
+    }
+  }
+  const Coordinate shift_remain = shift - shift_corrected;
   std::vector<long> to_send_size(num_node, 0);
   std::vector<long> to_recv_size(num_node, 0);
   FieldM<long, 2> f_send_idx, f_recv_idx; // id_node, idx_for_that_node
@@ -187,8 +199,8 @@ void field_shift_direct(Field<M>& f, const Field<M>& f1, const Coordinate& shift
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
-    const Coordinate xg_send = mod(xg + shift, total_site);
-    const Coordinate xg_recv = mod(xg - shift, total_site);
+    const Coordinate xg_send = mod(xg + shift_corrected, total_site);
+    const Coordinate xg_recv = mod(xg - shift_corrected, total_site);
     const long id_node_send = index_from_coordinate(xg_send / node_site, size_node);
     const long id_node_recv = index_from_coordinate(xg_recv / node_site, size_node);
     Vector<long> fsv = f_send_idx.get_elems(index);
@@ -281,7 +293,10 @@ void field_shift_direct(Field<M>& f, const Field<M>& f1, const Coordinate& shift
   f.init(geo);
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
-    Vector<M> fv = f.get_elems(index);
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Coordinate xl_s = mod(xl + shift_remain, total_site);
+    const long index_s = geo.index_from_coordinate(xl_s);
+    Vector<M> fv = f.get_elems(index_s);
     const Vector<long> frv = f_recv_idx.get_elems_const(index);
     const int id_node = frv[0];
     const long offset = frv[1] * geo.multiplicity;
