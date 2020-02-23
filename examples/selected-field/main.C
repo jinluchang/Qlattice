@@ -240,6 +240,71 @@ inline void test_grid(const std::string& tag, const long n_per_tslice)
   displayln_info(ssprintf("%06X <- write and read back", field_crc32(f)));
 }
 
+inline void test_selected_points(const std::string& tag, const long n_points)
+{
+  const Coordinate total_site(4, 4, 4, 8);
+  Geometry geo;
+  geo.init(total_site, 1);
+  const RngState rs = RngState("test_selected_points").split(tag);
+  PointSelection psel;
+  {
+    const RngState rs_psel = rs.split("psel");
+    for (int i = 0; i < n_points; ++i) {
+      RngState rsi = rs_psel.split(i);
+      const Coordinate xg = mod(Coordinate(rand_gen(rsi), rand_gen(rsi),
+                                           rand_gen(rsi), rand_gen(rsi)),
+                                total_site);
+      psel.push_back(xg);
+    }
+  }
+  qmkdir_info("results");
+  save_point_selection_info(psel, "results/point-selection.txt");
+  const PointSelection psel_load =
+      load_point_selection_info("results/point-selection.txt");
+  qassert(psel == psel_load);
+  //
+  Field<Complex> f;
+  f.init(geo, 2);
+  set_zero(f);
+  set_u_rand_double(f, rs.split("f-init"));
+  displayln_info(ssprintf(": %06X <- f-init", field_crc32(f)));
+  //
+  Field<Complex> f1;
+  f1 = f;
+  only_keep_selected_points(f1, psel);
+  const crc32_t crc1 = field_crc32(f1);
+  displayln_info(ssprintf(": %06X <- f1 only selected", crc1));
+  //
+  SelectedPoints<Complex> sp;
+  set_selected_points(sp, f, psel);
+  save_selected_points_complex(sp, "results/f.lat");
+  SelectedPoints<Complex> sp2;
+  load_selected_points_complex(sp2, "results/f.lat");
+  Field<Complex> f2;
+  set_field_selected(f2, sp2, f.geo, psel);
+  const crc32_t crc2 = field_crc32(f2);
+  displayln_info(ssprintf(": %06X <- f2 set and set", crc2));
+  //
+  qassert(crc1 == crc2);
+  //
+  const Coordinate new_size_node(1, 1, 2, 4);
+  const ShuffledBitSet sbs = mk_shuffled_bitset(total_site, psel, new_size_node);
+  const std::string path = "results/fields";
+  {
+    ShuffledFieldsWriter sfw(path, new_size_node);
+    write(sfw, "f.psel", f, sbs);
+  }
+  Field<Complex> f3;
+  {
+    ShuffledFieldsReader sfr(path);
+    read(sfr, "f.psel", f3);
+  }
+  const crc32_t crc3 = field_crc32(f3);
+  displayln_info(ssprintf(": %06X <- f3 write and read", crc3));
+  //
+  qassert(crc1 == crc3);
+}
+
 int main(int argc, char* argv[])
 {
   begin(&argc, &argv);
@@ -247,6 +312,7 @@ int main(int argc, char* argv[])
   test("16", 16);
   test("all", -1);
   test_grid("16", 16);
+  test_selected_points("16", 1024);
   Timer::display();
   end();
   return 0;

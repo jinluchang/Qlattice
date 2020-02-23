@@ -439,6 +439,13 @@ void assign(Vector<M> vec, const Vector<M>& src)
   memcpy(vec.data(), src.data(), src.data_size());
 }
 
+template <class M, class N>
+void assign(Vector<M> vec, const Vector<N>& src)
+{
+  qassert(vec.data_size() == src.data_size());
+  memcpy(vec.data(), src.data(), src.data_size());
+}
+
 template <class M, int N>
 void assign(Vector<M> vec, const Array<M, N>& src)
 {

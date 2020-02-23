@@ -349,7 +349,7 @@ const SelectedField<M>& operator+=(SelectedField<M>& f, const SelectedField<M>& 
     qassert(is_matching_geo_mult(f.geo, f1.geo));
     qassert(f.field.size() == f1.field.size());
 #pragma omp parallel for
-    for (long k = 0; k < f.field.size(); ++k) {
+    for (long k = 0; (long)k < f.field.size(); ++k) {
       f.field[k] += f1.field[k];
     }
   }
@@ -367,7 +367,7 @@ const SelectedField<M>& operator-=(SelectedField<M>& f, const SelectedField<M>& 
     qassert(is_matching_geo_mult(f.geo, f1.geo));
     qassert(f.field.size() == f1.field.size());
 #pragma omp parallel for
-    for (long k = 0; k < f.field.size(); ++k) {
+    for (long k = 0; k < (long)f.field.size(); ++k) {
       f.field[k] -= f1.field[k];
     }
   }
@@ -381,7 +381,7 @@ const SelectedField<M>& operator*=(SelectedField<M>& f, const double factor)
   qassert(f.initialized);
   const Geometry& geo = f.geo;
 #pragma omp parallel for
-    for (long k = 0; k < f.field.size(); ++k) {
+    for (long k = 0; k < (long)f.field.size(); ++k) {
       f.field[k] *= factor;
     }
   return f;
@@ -390,11 +390,11 @@ const SelectedField<M>& operator*=(SelectedField<M>& f, const double factor)
 template <class M>
 const SelectedField<M>& operator*=(SelectedField<M>& f, const Complex factor)
 {
-  TIMER("sel_field_operator*=(F,D)");
+  TIMER("sel_field_operator*=(F,C)");
   qassert(f.initialized);
   const Geometry& geo = f.geo;
 #pragma omp parallel for
-    for (long k = 0; k < f.field.size(); ++k) {
+    for (long k = 0; k < (long)f.field.size(); ++k) {
       f.field[k] *= factor;
     }
   return f;
@@ -640,7 +640,7 @@ inline long read_selected_geo_info(Coordinate& total_site, int& multiplicity,
                                    long& n_per_tslice, int& sizeof_M,
                                    crc32_t& crc, const std::string& path)
 {
-  TIMER("read_geo_info");
+  TIMER("read_selected_geo_info");
   long pos = 0;
   if (get_id_node() == 0) {
     FILE* fp = qopen(path, "r");
