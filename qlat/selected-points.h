@@ -36,7 +36,7 @@ inline std::vector<Coordinate> load_point_selection(const std::string& path)
   const std::vector<std::string> lines = qgetlines(path);
   qassert(lines.size() > 0);
   const long len = read_long(lines[0]);
-  qassert(len + 1 <= lines.size());
+  qassert(len + 1 <= (long)lines.size());
   std::vector<Coordinate> psel;
   for (long k = 1; k < len + 1; ++k) {
     const std::vector<std::string> strs = split_line_with_spaces(lines[k]);
