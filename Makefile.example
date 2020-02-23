@@ -37,10 +37,12 @@ build:
 	-$(CXX) -o qlat.x $(QLAT_CXXFLAGS) *.C $(QLAT_LDFLAGS) 2>&1 | grep --color=always 'error:\|'
 
 clean:
-	-git checkout log
 	-rm qlat.x
 	-rm -rf results
 	-rm -rf huge-data
+
+dist-clean: clean
+	-git checkout log
 
 show-info:
 	@echo CXX: $(CXX)

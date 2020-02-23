@@ -1,5 +1,5 @@
-[qcdserver16:21304] mca_base_component_repository_open: unable to open mca_plm_tm: libtorque.so.2: cannot open shared object file: No such file or directory (ignored)
-[qcdserver16:21304] mca_base_component_repository_open: unable to open mca_ras_tm: libtorque.so.2: cannot open shared object file: No such file or directory (ignored)
+[qcdserver16:20219] mca_base_component_repository_open: unable to open mca_plm_tm: libtorque.so.2: cannot open shared object file: No such file or directory (ignored)
+[qcdserver16:20219] mca_base_component_repository_open: unable to open mca_ras_tm: libtorque.so.2: cannot open shared object file: No such file or directory (ignored)
 qlat::begin(): MPI Initialized. num_node = 2
 qlat::begin(): OMP_NUM_THREADS = 2
 qlat::begin(): GeometryNode =
@@ -11,8 +11,8 @@ qlat::begin(): GeometryNode =
 Timer::start               display_geo_node :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
 display_geo_node : id_node =     0 ; coor_node = 0x0x0x0
 display_geo_node : id_node =     1 ; coor_node = 0x0x0x1
-Timer::stop                display_geo_node : 38.5%        1 calls 6.008E-05,6.008E-05 sec    0.000 Gflops (0.000E+00 flops)
+Timer::stop                display_geo_node : 69.6%        1 calls 6.890E-05,6.890E-05 sec    0.000 Gflops (0.000E+00 flops)
 hello world.
-1 / 2
 0 / 2
+1 / 2
 qlat::end(): MPI Finalized.

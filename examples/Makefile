@@ -24,4 +24,6 @@ run: all
 
 clean:
 	-time for i in $(tests) ; do make -C "$$i" clean ; done
-	-git checkout log
+
+dist-clean:
+	-time for i in $(tests) ; do make -C "$$i" dist-clean ; done
