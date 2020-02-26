@@ -700,10 +700,10 @@ struct ShuffledFieldsWriter {
   //
   ShuffledFieldsWriter() { init(); }
   ShuffledFieldsWriter(const std::string& path_,
-                       const Coordinate& new_size_node_)
+                       const Coordinate& new_size_node_, const bool is_append = false)
   // interface function
   {
-    init(path_, new_size_node_);
+    init(path_, new_size_node_, is_append);
   }
   //
   ~ShuffledFieldsWriter() { close(); }
