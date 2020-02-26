@@ -222,7 +222,8 @@ struct FieldsWriter {
     qassert(fp == NULL);
     is_little_endian = true;
   }
-  void init(const std::string& path_, const GeometryNode& geon_)
+  void init(const std::string& path_, const GeometryNode& geon_,
+            const bool is_append = false)
   {
     close();
     path = path_;
@@ -233,9 +234,15 @@ struct FieldsWriter {
         qremove_all(path + ".partial");
       }
       displayln("FieldsWriter: open '" + path + ".partial'.");
-      fields_writer_dirs_geon_info(geon, path + ".partial");
+      if (is_append and does_file_exist(path)) {
+        qassert(does_file_exist(path + "/geon-info.txt"))
+        qrename(path, path + ".partial");
+      } else {
+        fields_writer_dirs_geon_info(geon, path + ".partial");
+      }
     }
-    fp = dist_open(path + ".partial", geon.id_node, geon.num_node, "w");
+    fp = dist_open(path + ".partial", geon.id_node, geon.num_node,
+                   is_append ? "a" : "w");
     qassert(NULL != fp);
   }
   //
@@ -534,7 +541,6 @@ inline long read(FieldsReader& fr, const std::string& fn,
   } else {
     fseek(fr.fp, fr.max_offset, SEEK_SET);
   }
-  // bool has_restart = false;
   while (true) {
     std::string fn_read = "";
     crc32_t crc = 0;
@@ -551,12 +557,6 @@ inline long read(FieldsReader& fr, const std::string& fn,
       }
     } else {
       return 0;
-      // if (has_restart) {
-      //   return 0;
-      // } else {
-      //   rewind(fr.fp);
-      //   has_restart = true;
-      // }
     }
   }
 }
@@ -653,7 +653,10 @@ long read(FieldsReader& fr, const std::string& fn, Field<M>& field)
   return total_bytes;
 }
 
-typedef std::vector<BitSet> ShuffledBitSet;
+struct ShuffledBitSet {
+  FieldSelection fsel;
+  std::vector<BitSet> vbs;
+};
 
 inline ShuffledBitSet mk_shuffled_bitset(const FieldM<int64_t, 1>& f_rank,
                                          const Coordinate& new_size_node,
@@ -662,11 +665,13 @@ inline ShuffledBitSet mk_shuffled_bitset(const FieldM<int64_t, 1>& f_rank,
   TIMER("mk_shuffled_bitset(f_rank,n_per_tslice,new_size_node)");
   std::vector<Field<int64_t> > fs_rank;
   shuffle_field(fs_rank, f_rank, new_size_node);
-  ShuffledBitSet sbs(fs_rank.size());
+  ShuffledBitSet sbs;
+  set_field_selection(sbs.fsel, f_rank, n_per_tslice);
+  sbs.vbs.resize(fs_rank.size());
   for (int i = 0; i < (int)fs_rank.size(); ++i) {
     FieldM<int64_t, 1> fs_rank_i;
     fs_rank_i.init(fs_rank[i]);
-    sbs[i] = mk_bitset_from_field_rank(fs_rank_i, n_per_tslice);
+    sbs.vbs[i] = mk_bitset_from_field_rank(fs_rank_i, n_per_tslice);
   }
   return sbs;
 }
@@ -710,23 +715,36 @@ struct ShuffledFieldsWriter {
     path = "";
     new_size_node = Coordinate();
   }
-  void init(const std::string& path_, const Coordinate& new_size_node_)
+  void init(const std::string& path_, const Coordinate& new_size_node_,
+            const bool is_append = false)
   // interface function
   {
     init();
     path = path_;
-    new_size_node = new_size_node_;
+    if (is_append and does_file_exist_sync_node(path)) {
+      qassert(does_file_exist_sync_node(path + "/geon-info.txt"));
+      new_size_node = shuffled_fields_reader_size_node_info(path);
+      if (new_size_node_ != new_size_node) {
+        displayln_info(ssprintf(
+            "ShuffledFieldsWriter::init(p,sn,app): WARNING: new_size_node do "
+            "not match. file=%s argument=%s . Will use the new_size_node from "
+            "the existing file.",
+            show(new_size_node).c_str(), show(new_size_node_).c_str()));
+      }
+    } else {
+      new_size_node = new_size_node_;
+    }
     std::vector<GeometryNode> geons = make_dist_io_geons(new_size_node);
     fws.resize(geons.size());
     for (int i = 0; i < (int)geons.size(); ++i) {
       if (geons[i].id_node == 0) {
-        fws[i].init(path, geons[i]);
+        fws[i].init(path, geons[i], is_append);
       }
     }
     sync_node();
     for (int i = 0; i < (int)geons.size(); ++i) {
       if (geons[i].id_node != 0) {
-        fws[i].init(path, geons[i]);
+        fws[i].init(path, geons[i], is_append);
       }
     }
   }
@@ -818,10 +836,10 @@ long write(ShuffledFieldsWriter& sfw, const std::string& fn,
   std::vector<Field<M> > fs;
   shuffle_field(fs, field, sfw.new_size_node);
   qassert(fs.size() == sfw.fws.size());
-  qassert(sbs.size() == sfw.fws.size());
+  qassert(sbs.vbs.size() == sfw.fws.size());
   long total_bytes = 0;
   for (int i = 0; i < (int)fs.size(); ++i) {
-    total_bytes += write(sfw.fws[i], fn, fs[i], sbs[i]);
+    total_bytes += write(sfw.fws[i], fn, fs[i], sbs.vbs[i]);
   }
   glb_sum(total_bytes);
   timer.flops += total_bytes;
