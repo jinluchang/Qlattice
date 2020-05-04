@@ -38,7 +38,7 @@ build:
 
 clean:
 	-rm qlat.x
-	-rm -rf results
+	-rm -rf results*
 	-rm -rf huge-data
 
 dist-clean: clean

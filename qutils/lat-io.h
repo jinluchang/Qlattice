@@ -135,7 +135,9 @@ inline void LatData::load(const std::string& fn)
   FILE* fp = fopen(fn.c_str(), "r");
   assert(fp != NULL);
   std::vector<char> check_line(lat_data_header.size(), 0);
-  fread(check_line.data(), lat_data_header.size(), 1, fp);
+  const long fread_check_len =
+      fread(check_line.data(), lat_data_header.size(), 1, fp);
+  qassert(fread_check_len == 1);
   assert(std::string(check_line.data(), check_line.size()) == lat_data_header);
   std::vector<std::string> infos;
   infos.push_back(lat_data_header);
@@ -155,7 +157,8 @@ inline void LatData::load(const std::string& fn)
   lat_data_alloc(*this);
   assert((long)res.size() == lat_data_size(info));
   assert((long)res.size() * (long)sizeof(double) == read_long(infos[2]));
-  fread(res.data(), sizeof(double), res.size(), fp);
+  const long fread_res_len = fread(res.data(), sizeof(double), res.size(), fp);
+  qassert(fread_res_len == (long)res.size());
   const crc32_t crc_computed =
       crc32_par(res.data(), res.size() * sizeof(double));
   if (crc != crc_computed) {
