@@ -408,62 +408,62 @@ inline void from_big_endian_64(char* str, const size_t len)
 template <class M, int N>
 void assign(std::array<M, N>& vec, const Array<M, N>& src)
 {
-  memcpy(vec.data(), src.data(), src.data_size());
+  std::memcpy((void*)vec.data(), (void*)src.data(), src.data_size());
 }
 
 template <class M, int N>
 void assign(std::array<M, N>& vec, const Vector<M>& src)
 {
   qassert(N == src.size());
-  memcpy(vec.data(), src.data(), src.data_size());
+  std::memcpy((void*)vec.data(), (void*)src.data(), src.data_size());
 }
 
 template <class M, int N>
 void assign(std::vector<M>& vec, const Array<M, N>& src)
 {
   vec.resize(src.size());
-  memcpy(vec.data(), src.data(), src.data_size());
+  std::memcpy((void*)vec.data(), (void*)src.data(), src.data_size());
 }
 
 template <class M>
 void assign(std::vector<M>& vec, const Vector<M>& src)
 {
   vec.resize(src.size());
-  memcpy(vec.data(), src.data(), src.data_size());
+  std::memcpy((void*)vec.data(), (void*)src.data(), src.data_size());
 }
 
 template <class M>
 void assign(Vector<M> vec, const Vector<M>& src)
 {
   qassert(vec.size() == src.size());
-  memcpy(vec.data(), src.data(), src.data_size());
+  std::memcpy((void*)vec.data(), (void*)src.data(), src.data_size());
 }
 
 template <class M, class N>
 void assign(Vector<M> vec, const Vector<N>& src)
 {
   qassert(vec.data_size() == src.data_size());
-  memcpy(vec.data(), src.data(), src.data_size());
+  std::memcpy((void*)vec.data(), (void*)src.data(), src.data_size());
 }
 
 template <class M, int N>
 void assign(Vector<M> vec, const Array<M, N>& src)
 {
   qassert(vec.size() == N);
-  memcpy(vec.data(), src.data(), src.data_size());
+  std::memcpy((void*)vec.data(), (void*)src.data(), src.data_size());
 }
 
 template <class M, int N>
 void assign(Array<M, N> vec, const Array<M, N>& src)
 {
-  memcpy(vec.data(), src.data(), src.data_size());
+  std::memcpy((void*)vec.data(), (void*)src.data(), src.data_size());
 }
 
 template <class M, int N>
 void assign(Array<M, N> vec, const Vector<M>& src)
 {
   qassert(src.size() == N);
-  memcpy(vec.data(), src.data(), src.data_size());
+  std::memcpy((void*)vec.data(), (void*)src.data(), src.data_size());
 }
 
 template <class M, class N>

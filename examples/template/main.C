@@ -15,7 +15,8 @@ inline bool compute_traj_do(const std::string& job_tag, const int traj)
   const std::string job_path = get_job_path(job_tag, traj);
   const RngState rs = RngState("seed").split(job_tag).split(traj);
   const Coordinate total_site = get_total_site(job_tag);
-  const Geometry geo = get_geo(job_tag);
+  Geometry geo;
+  geo.init(total_site, 1);
   //
   GaugeField gf;
   load_configuration(gf, job_tag, traj);
@@ -61,6 +62,8 @@ inline bool compute_traj_do(const std::string& job_tag, const int traj)
   set_wall_src_propagator(prop, GaugeTransformInverter<Inverter>(inv, gt),
                           tslice, CoordinateD());
   displayln_info(ssprintf("prop qnorm = %24.17E", qnorm(prop)));
+  //
+  displayln_info(ssprintf("prop qnorm = %24.17E", qnorm(prop.get_elem(Coordinate()))));
   //
   find_max_eigen_value_hermop_sym2(
       inv, RngState(rs, "find_max_eigen_value_hermop_sym2"), 5);
@@ -138,7 +141,10 @@ int main(int argc, char* argv[])
   using namespace qlat;
   const std::array<std::string, 1> job_tags =
       make_array<std::string>("free-4nt8");
-  begin(&argc, &argv);
+  std::vector<Coordinate> size_node_list;
+  size_node_list.push_back(Coordinate(2,2,2,4));
+  size_node_list.push_back(Coordinate(1,1,1,4));
+  begin(&argc, &argv, size_node_list);
   setup_log_idx();
   setup();
   for (int k = 0; k < (int)job_tags.size(); ++k) {
