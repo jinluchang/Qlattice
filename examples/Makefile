@@ -10,6 +10,7 @@ tests = qcd-utils-tests \
 		selected-field \
 		fields-io \
 		heatbath \
+		propagators \
 		template
 
 all:

@@ -75,6 +75,10 @@ inline std::vector<int> get_trajs(const std::string& job_tag)
     for (int traj = 1000; traj < 1020; traj += 10) {
       ret.push_back(traj);
     }
+  } else if (job_tag.substr(0, 5) == "test-") {
+    for (int traj = 1000; traj < 1020; traj += 10) {
+      ret.push_back(traj);
+    }
   } else if (job_tag == "16I-0.01") {
     for (int traj = 1000; traj <= 4000; traj += 100) {
       ret.push_back(traj);
@@ -111,7 +115,7 @@ inline std::vector<int> get_trajs(const std::string& job_tag)
 
 inline Coordinate get_total_site(const std::string& job_tag)
 {
-  if (job_tag.substr(0,5) == "free-") {
+  if (job_tag.substr(0,5) == "free-" or job_tag.substr(0,5) == "test-") {
     // eg: job_tag = "free-4nt8"
     long size_l_dir = 0;
     long size_t_dir = 0;
@@ -147,7 +151,7 @@ inline Geometry get_geo(const std::string& job_tag)
 inline std::string get_config_fn(const std::string& job_tag, const int traj)
 {
   std::string fn("");
-  if (job_tag.substr(0,5) == "free-") {
+  if (job_tag.substr(0,5) == "free-" or job_tag.substr(0,5) == "test-") {
     return job_tag + ssprintf("/%d", traj);
   } else if (job_tag == "16I-0.01") {
     fn = get_env("HOME") +
@@ -271,6 +275,14 @@ inline long load_configuration(GaugeField& gf, const std::string& job_tag, const
   if (job_tag.substr(0,5) == "free-") {
     set_unit(gf);
     file_size += geo.geon.num_node * get_data_size(gf);
+  } else if (job_tag.substr(0, 5) == "test-") {
+    set_unit(gf);
+    const RngState rs = RngState().split(job_tag).split(traj).split("load_configuration");
+    set_g_rand_color_matrix_field(gf, rs, 1.0);
+    for (int i = 0; i < 5; ++i) {
+      gf_ape_smear(gf, gf, 0.5);
+    }
+    file_size += geo.geon.num_node * get_data_size(gf);
   } else {
     file_size += load_gauge_field(gf, get_config_fn(job_tag, traj));
     if (job_tag == "24D-0.00107" or job_tag == "32D-0.00107" or
@@ -290,6 +302,9 @@ inline std::vector<FermionAction> get_fermion_actions(const std::string& job_tag
 {
   std::vector<FermionAction> fas;
   if (job_tag.substr(0,5) == "free-") {
+    fas.push_back(FermionAction(0.1, 8, 1.0, 1.0, true, true));
+    fas.push_back(FermionAction(0.3, 8, 1.0, 1.0, true, true));
+  } else if (job_tag.substr(0,5) == "test-") {
     fas.push_back(FermionAction(0.1, 8, 1.0, 1.0, true, true));
     fas.push_back(FermionAction(0.3, 8, 1.0, 1.0, true, true));
   } else if (job_tag == "24I-0.01" or job_tag == "16I-0.01") {
