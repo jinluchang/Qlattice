@@ -295,6 +295,32 @@ inline std::string idx_name(const LatDim& dim, const long idx)
   }
 }
 
+inline std::string show(const LatData& ld)
+{
+  std::ostringstream out;
+  const LatInfo& info = ld.info;
+  out << "# ";
+  for (int a = 0; a < (int)info.size(); ++a) {
+    out << ssprintf("%s ", info[a].name.c_str());
+  }
+  out << "VALUE\n";
+  std::vector<long> idx(info.size(), 0);
+  for (long k = 0; k < lat_data_size(info); ++k) {
+    for (int a = 0; a < (int)info.size(); ++a) {
+      out << ssprintf("%8s ", idx_name(info[a], idx[a]).c_str());
+    }
+    out << ssprintf("%24.17E\n", ld.res[lat_data_offset(info, idx)]);
+    idx[info.size() - 1] += 1;
+    for (int a = info.size() - 1; a > 0; --a) {
+      if (idx[a] == info[a].size) {
+        idx[a] = 0;
+        idx[a - 1] += 1;
+      }
+    }
+  }
+  return out.str();
+}
+
 inline void print(const LatData& ld)
 {
   const LatInfo& info = ld.info;

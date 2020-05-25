@@ -88,6 +88,8 @@ inline bool compute_traj_do(const std::string& job_tag, const int traj)
   //
   // pion contraction
   const LatData ld = contract_pion(prop, xg_point_src);
+  ld.save(job_path + "/pion-corr.lat");
+  qtouch_info(job_path + "/pion-corr.txt", show(ld));
   if (0 == get_id_node()) {
     print(ld);
   }
