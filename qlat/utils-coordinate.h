@@ -142,6 +142,16 @@ inline CoordinateD smod(const CoordinateD& x, const CoordinateD& size)
   return ret;
 }
 
+inline CoordinateD smod_sym(const CoordinateD& x, const CoordinateD& size)
+{
+  CoordinateD ret;
+  ret[0] = smod_sym(x[0], size[0]);
+  ret[1] = smod_sym(x[1], size[1]);
+  ret[2] = smod_sym(x[2], size[2]);
+  ret[3] = smod_sym(x[3], size[3]);
+  return ret;
+}
+
 inline Coordinate middle_mod(const Coordinate& x, const Coordinate& y,
                              const Coordinate& size)
 {
