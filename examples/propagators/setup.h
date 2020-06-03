@@ -41,13 +41,13 @@ inline void setup()
   Timer::max_function_name_length_shown() = 50;
   Timer::max_call_times_for_always_show_info() = 3;
   Timer::minimum_duration_for_show_stop_info() = 60;
-  Timer::minimum_autodisplay_interval() = 365 * 24 * 3600;
+  Timer::minimum_autodisplay_interval() = 600.0;
   get_lock_expiration_time_limit() = 12.0 * 60.0 * 60.0;
   set_lock_expiration_time_limit();
   get_time_limit() = get_lock_expiration_time_limit();
   get_default_budget() = 15.0 * 60.0;
-  dist_write_par_limit() = 8;
-  dist_read_par_limit() = 8;
+  dist_write_par_limit() = 16;
+  dist_read_par_limit() = 16;
   displayln_info(ssprintf("get_start_time()=%lf", get_start_time()));
   displayln_info(ssprintf("lock_expiration_time=%lf",
                           get_start_time() + get_lock_expiration_time_limit()));
@@ -60,10 +60,7 @@ inline void setup()
   install_qhandle_sigint();
 }
 
-inline void setup(const std::string& job_tag)
-{
-  setup();
-}
+inline void setup(const std::string& job_tag) { setup(); }
 
 // -----------------------------------------------------------------------------------
 
@@ -71,7 +68,7 @@ inline std::vector<int> get_trajs(const std::string& job_tag)
 {
   TIMER_VERBOSE("get_trajs");
   std::vector<int> ret;
-  if (job_tag.substr(0,5) == "free-") {
+  if (job_tag.substr(0, 5) == "free-") {
     for (int traj = 1000; traj < 1020; traj += 10) {
       ret.push_back(traj);
     }
@@ -89,6 +86,10 @@ inline std::vector<int> get_trajs(const std::string& job_tag)
     }
   } else if (job_tag == "48I-0.00078") {
     for (int traj = 500; traj <= 3000; traj += 10) {
+      ret.push_back(traj);
+    }
+  } else if (job_tag == "64I-0.000678") {
+    for (int traj = 1000; traj <= 3000; traj += 10) {
       ret.push_back(traj);
     }
   } else if (job_tag == "24D-0.00107") {
@@ -115,7 +116,7 @@ inline std::vector<int> get_trajs(const std::string& job_tag)
 
 inline Coordinate get_total_site(const std::string& job_tag)
 {
-  if (job_tag.substr(0,5) == "free-" or job_tag.substr(0,5) == "test-") {
+  if (job_tag.substr(0, 5) == "free-" or job_tag.substr(0, 5) == "test-") {
     // eg: job_tag = "free-4nt8"
     long size_l_dir = 0;
     long size_t_dir = 0;
@@ -127,14 +128,16 @@ inline Coordinate get_total_site(const std::string& job_tag)
     qassert(parse_long(size_t_dir, cur, job_tag));
     return Coordinate(size_l_dir, size_l_dir, size_l_dir, size_t_dir);
   } else if (job_tag == "16I-0.01") {
-    return Coordinate(16,16,16,32);
+    return Coordinate(16, 16, 16, 32);
   } else if (job_tag == "24I-0.01" or job_tag == "24D-0.00107" or
              job_tag == "24D-0.0174") {
-    return Coordinate(24,24,24,64);
+    return Coordinate(24, 24, 24, 64);
   } else if (job_tag == "48I-0.00078") {
-    return Coordinate(48,48,48,96);
+    return Coordinate(48, 48, 48, 96);
+  } else if (job_tag == "64I-0.000678") {
+    return Coordinate(64, 64, 64, 128);
   } else if (job_tag == "32D-0.00107" or job_tag == "32Dfine-0.0001") {
-    return Coordinate(32,32,32,64);
+    return Coordinate(32, 32, 32, 64);
   } else {
     qassert(false);
     return Coordinate();
@@ -151,7 +154,7 @@ inline Geometry get_geo(const std::string& job_tag)
 inline std::string get_config_fn(const std::string& job_tag, const int traj)
 {
   std::string fn("");
-  if (job_tag.substr(0,5) == "free-" or job_tag.substr(0,5) == "test-") {
+  if (job_tag.substr(0, 5) == "free-" or job_tag.substr(0, 5) == "test-") {
     return job_tag + ssprintf("/%d", traj);
   } else if (job_tag == "16I-0.01") {
     fn = get_env("HOME") +
@@ -205,6 +208,15 @@ inline std::string get_config_fn(const std::string& job_tag, const int traj)
         ssprintf(
             "/qcdarchive-ljin/48nt96-ainv1.73gev-mpi139mev-ls24/ckpoint_lat.%d",
             traj);
+    if (does_file_exist_sync_node(fn)) {
+      return fn;
+    }
+  } else if (job_tag == "64I-0.000678") {
+    fn = get_env("HOME") +
+         ssprintf(
+             "/qcdarchive-ljin/64nt128-ainv2.359gev-mpi139mev-ls12-gfixed/"
+             "ckpoint_lat.Coulomb.%d",
+             traj);
     if (does_file_exist_sync_node(fn)) {
       return fn;
     }
@@ -266,18 +278,20 @@ inline std::string get_config_fn(const std::string& job_tag, const int traj)
   return "";
 }
 
-inline long load_configuration(GaugeField& gf, const std::string& job_tag, const int traj)
+inline long load_configuration(GaugeField& gf, const std::string& job_tag,
+                               const int traj)
 {
   TIMER_VERBOSE("load_configuration");
   long file_size = 0;
   const Geometry geo = get_geo(job_tag);
   gf.init(geo);
-  if (job_tag.substr(0,5) == "free-") {
+  if (job_tag.substr(0, 5) == "free-") {
     set_unit(gf);
     file_size += geo.geon.num_node * get_data_size(gf);
   } else if (job_tag.substr(0, 5) == "test-") {
     set_unit(gf);
-    const RngState rs = RngState().split(job_tag).split(traj).split("load_configuration");
+    const RngState rs =
+        RngState().split(job_tag).split(traj).split("load_configuration");
     set_g_rand_color_matrix_field(gf, rs, 1.0);
     for (int i = 0; i < 5; ++i) {
       gf_ape_smear(gf, gf, 0.5);
@@ -296,22 +310,44 @@ inline long load_configuration(GaugeField& gf, const std::string& job_tag, const
   return file_size;
 }
 
-inline std::vector<FermionAction> get_fermion_actions(const std::string& job_tag)
-  // FermionAction(const double mass_, const int ls_, const double m5_,
-  //     const double mobius_scale_ = 1.0, const bool is_multiplying_dminus_ = true, bool is_using_zmobius_ = false)
+inline bool& is_partially_quench_for_48I_and_64I()
+{
+  static bool b = true;
+  return b;
+}
+
+inline std::vector<FermionAction> get_fermion_actions(
+    const std::string& job_tag)
+// FermionAction(const double mass_, const int ls_, const double m5_,
+//     const double mobius_scale_ = 1.0, const bool is_multiplying_dminus_ =
+//     true, bool is_using_zmobius_ = false)
 {
   std::vector<FermionAction> fas;
-  if (job_tag.substr(0,5) == "free-") {
+  if (job_tag.substr(0, 5) == "free-") {
     fas.push_back(FermionAction(0.1, 8, 1.0, 1.0, true, true));
     fas.push_back(FermionAction(0.3, 8, 1.0, 1.0, true, true));
-  } else if (job_tag.substr(0,5) == "test-") {
+  } else if (job_tag.substr(0, 5) == "test-") {
     fas.push_back(FermionAction(0.1, 8, 1.0, 1.0, true, true));
     fas.push_back(FermionAction(0.3, 8, 1.0, 1.0, true, true));
   } else if (job_tag == "24I-0.01" or job_tag == "16I-0.01") {
     fas.push_back(FermionAction(0.01, 16, 1.8, 1.0, true, true));
     fas.push_back(FermionAction(0.04, 16, 1.8, 1.0, true, true));
   } else if (job_tag == "48I-0.00078") {
-    fas.push_back(FermionAction(0.00078, 10, 1.8, (1.5 + 0.5)*2.4, true, true));
+    if (is_partially_quench_for_48I_and_64I()) {
+      fas.push_back(
+          FermionAction(0.0006979, 10, 1.8, (1.5 + 0.5) * 2.4, true, true));
+      fas.push_back(
+          FermionAction(0.03580, 10, 1.8, (1.5 + 0.5) * 2.4, true, true));
+      fas.push_back(FermionAction(0.0006979, 24, 1.8, 1.5 + 0.5, true, false));
+      fas.push_back(FermionAction(0.03580, 24, 1.8, 1.5 + 0.5, true, false));
+    } else {
+      fas.push_back(
+          FermionAction(0.00078, 10, 1.8, (1.5 + 0.5) * 2.4, true, true));
+      fas.push_back(
+          FermionAction(0.0362, 10, 1.8, (1.5 + 0.5) * 2.4, true, true));
+      fas.push_back(FermionAction(0.00078, 24, 1.8, 1.5 + 0.5, true, false));
+      fas.push_back(FermionAction(0.0362, 24, 1.8, 1.5 + 0.5, true, false));
+    }
     {
       std::vector<Complex> bs(10, 0);
       bs[0] = 8.4292038368159705e-01;
@@ -327,13 +363,21 @@ inline std::vector<FermionAction> get_fermion_actions(const std::string& job_tag
       for (int i = 0; i < (int)bs.size(); i++) {
         fas[0].bs[i] = bs[i];
         fas[0].cs[i] = fas[0].bs[i] - 1.0;
+        fas[1].bs[i] = bs[i];
+        fas[1].cs[i] = fas[0].bs[i] - 1.0;
       }
     }
-    fas.push_back(FermionAction(0.0362, 24, 1.8, 1.5 + 0.5, true, false));
-    fas.push_back(FermionAction(0.00078, 24, 1.8, 1.5 + 0.5, true, false));
+  } else if (job_tag == "64I-0.000678") {
+    if (is_partially_quench_for_48I_and_64I()) {
+      fas.push_back(FermionAction(0.0006203, 12, 1.8, 1.5 + 0.5, true, true));
+      fas.push_back(FermionAction(0.02539, 12, 1.8, 1.5 + 0.5, true, false));
+    } else {
+      fas.push_back(FermionAction(0.000678, 12, 1.8, 1.5 + 0.5, true, true));
+      fas.push_back(FermionAction(0.02661, 12, 1.8, 1.5 + 0.5, true, false));
+    }
   } else if (job_tag == "24D-0.00107" or job_tag == "32D-0.00107" or
              job_tag == "48D-0.00107" or job_tag == "24D-0.0174") {
-    fas.push_back(FermionAction(0.00107, 12, 1.8, (2.5+1.5)*2, true, true));
+    fas.push_back(FermionAction(0.00107, 12, 1.8, (2.5 + 1.5) * 2, true, true));
     {
       std::vector<Complex> omega(12, 0);
       omega[0] = 1.0903256131299373;
@@ -353,15 +397,15 @@ inline std::vector<FermionAction> get_fermion_actions(const std::string& job_tag
         fas[0].cs[i] = fas[0].bs[i] - 1.0;
       }
     }
-    fas.push_back(FermionAction(0.0850, 24, 1.8, 2.5+1.5, true, false));
-    fas.push_back(FermionAction(0.00107, 24, 1.8, 2.5+1.5, true, false));
+    fas.push_back(FermionAction(0.0850, 24, 1.8, 2.5 + 1.5, true, false));
+    fas.push_back(FermionAction(0.00107, 24, 1.8, 2.5 + 1.5, true, false));
     if (job_tag == "24D-0.0174") {
       fas[0].mass = 0.0174;
       fas[1].mass = 0.0985;
       fas[2].mass = 0.0174;
     }
   } else if (job_tag == "32Dfine-0.0001") {
-    fas.push_back(FermionAction(0.0001, 12, 1.8, 32.0/12.0, true, true));
+    fas.push_back(FermionAction(0.0001, 12, 1.8, 32.0 / 12.0, true, true));
     {
       std::vector<Complex> omega(12, 0.375);
       for (int i = 0; i < (int)omega.size(); i++) {
@@ -369,7 +413,7 @@ inline std::vector<FermionAction> get_fermion_actions(const std::string& job_tag
         fas[0].cs[i] = fas[0].bs[i] - 1.0;
       }
     }
-    fas.push_back(FermionAction(0.045, 12, 1.8, 32.0/12.0, true, false));
+    fas.push_back(FermionAction(0.045, 12, 1.8, 32.0 / 12.0, true, false));
     fas.push_back(FermionAction(0.0001, 32, 1.8, 1.0, true, false));
     fas.push_back(FermionAction(0.045, 32, 1.8, 1.0, true, false));
   } else {
@@ -379,10 +423,11 @@ inline std::vector<FermionAction> get_fermion_actions(const std::string& job_tag
 }
 
 inline LancArg get_lanc_arg(const std::string& job_tag)
-  // LancArg(double ch_alpha_, double ch_beta_, long ch_ord_, long n_use_, long n_get_, long n_true_get_)
+// LancArg(double ch_alpha_, double ch_beta_, long ch_ord_, long n_use_, long
+// n_get_, long n_true_get_)
 {
   LancArg la;
-  if (job_tag.substr(0,5) == "free-") {
+  if (job_tag.substr(0, 5) == "free-") {
     qassert(false);
   } else if (job_tag == "16I-0.01") {
     la = LancArg(5.5, 0.20, 200, 200, 110, 100);
@@ -391,6 +436,8 @@ inline LancArg get_lanc_arg(const std::string& job_tag)
     la = LancArg(5.5, 0.18, 200, 1100, 700, 600);
   } else if (job_tag == "48I-0.00078") {
     la = LancArg(2.5, 0.022, 200, 2600, 2100, 2000);
+  } else if (job_tag == "64I-0.000678") {
+    la = LancArg(2.5, 0.026, 200, 2600, 2100, 2000);
   } else if (job_tag == "24D-0.00107") {
     la = LancArg(sqrt(5.5), sqrt(0.000684), 200, 2600, 2100, 2000);
   } else if (job_tag == "24D-0.0174") {
@@ -405,7 +452,8 @@ inline LancArg get_lanc_arg(const std::string& job_tag)
   return la;
 }
 
-inline std::string make_low_modes_path(const std::string& job_tag, const int traj)
+inline std::string make_low_modes_path(const std::string& job_tag,
+                                       const int traj)
 {
   qmkdir_info("lancs");
   qmkdir_info(ssprintf("lancs/%s", job_tag.c_str()));
@@ -413,10 +461,11 @@ inline std::string make_low_modes_path(const std::string& job_tag, const int tra
   return ssprintf("lancs/%s/qcdtraj=%d/huge-data-lanc", job_tag.c_str(), traj);
 }
 
-inline std::string get_low_modes_path(const std::string& job_tag, const int traj)
+inline std::string get_low_modes_path(const std::string& job_tag,
+                                      const int traj)
 {
   TIMER_VERBOSE("get_low_modes_path");
-  if (job_tag.substr(0,5) == "free-") {
+  if (job_tag.substr(0, 5) == "free-") {
     return "";
   } else {
     return ssprintf("lancs/%s/qcdtraj=%d/huge-data-lanc", job_tag.c_str(),
