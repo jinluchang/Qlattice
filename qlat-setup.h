@@ -50,8 +50,6 @@ inline void setup()
   dist_write_par_limit() = 16;
   dist_read_par_limit() = 16;
   displayln_info(ssprintf("get_start_time()=%lf", get_start_time()));
-  displayln_info(ssprintf("lock_expiration_time=%lf",
-                          get_start_time() + get_lock_expiration_time_limit()));
   displayln_info(
       ssprintf("get_time_limit()=%lf hours", get_time_limit() / 3600.0));
   displayln_info(ssprintf("get_default_budget()=%lf hours",
@@ -61,7 +59,16 @@ inline void setup()
   install_qhandle_sigint();
 }
 
-inline void setup(const std::string& job_tag) { setup(); }
+inline void setup(const std::string& job_tag)
+{
+  qmkdir_info(get_job_path(job_tag));
+  qmkdir_info(get_job_path(job_tag) + "/logs");
+  switch_monitor_file_info(get_job_path(job_tag) +
+                           ssprintf("/logs/%010ld.txt", get_log_idx()));
+  setup();
+  check_sigint();
+  check_time_limit();
+}
 
 // -----------------------------------------------------------------------------------
 

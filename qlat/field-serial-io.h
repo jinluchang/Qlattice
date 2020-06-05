@@ -589,7 +589,6 @@ inline bool dist_repartition(const Coordinate& new_size_node,
                  show(new_size_node).c_str(), npath.c_str()));
     return true;
   }
-  get_lock_expiration_time_limit() = get_total_time() + 3600.0;
   if (not obtain_lock(npath + "-lock")) {
     return true;
   }
