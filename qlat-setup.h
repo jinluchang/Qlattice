@@ -2,7 +2,8 @@
 
 #include <qlat/qlat.h>
 
-QLAT_START_NAMESPACE
+namespace qlat
+{  //
 
 inline long& get_log_idx()
 {
@@ -42,10 +43,10 @@ inline void setup()
   Timer::max_call_times_for_always_show_info() = 3;
   Timer::minimum_duration_for_show_stop_info() = 60;
   Timer::minimum_autodisplay_interval() = 600.0;
-  get_lock_expiration_time_limit() = 12.0 * 60.0 * 60.0;
-  set_lock_expiration_time_limit();
-  get_time_limit() = get_lock_expiration_time_limit();
+  get_time_limit() = 0.5 * 24.0 * 3600.0;
+  set_time_limit_auto();
   get_default_budget() = 15.0 * 60.0;
+  set_default_budget_auto();
   dist_write_par_limit() = 16;
   dist_read_par_limit() = 16;
   displayln_info(ssprintf("get_start_time()=%lf", get_start_time()));
@@ -473,4 +474,4 @@ inline std::string get_low_modes_path(const std::string& job_tag,
   }
 }
 
-QLAT_END_NAMESPACE
+}  // namespace qlat

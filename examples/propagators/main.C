@@ -1,4 +1,4 @@
-#include "setup.h"
+#include "qlat-setup.h"
 
 namespace qlat
 {  //

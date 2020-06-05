@@ -160,7 +160,7 @@ template <class M, unsigned long N>
 void set_zero(std::array<M, N>& arr)
 {
   long size = N * sizeof(M);
-  std::memset(arr.data(), 0, size);
+  std::memset((void*)arr.data(), 0, size);
 }
 
 inline void set_unit(double& x, const double& coef = 1.0) { x = coef; }

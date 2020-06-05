@@ -23,20 +23,15 @@ namespace qlat
 
 inline std::string get_env(const std::string& var_name);
 
-inline void set_lock_expiration_time_limit();
+inline void set_time_limit_auto();
+
+inline void set_default_budget_auto();
 
 inline void release_lock();
 
-inline double& get_lock_expiration_time_limit()
-// qlat parameter
+inline int ssleep(const double seconds)
 {
-  static double limit = 0.0;
-  if (0.0 == limit) {
-    TIMER_VERBOSE("get_lock_expiration_time_limit");
-    limit = 12.0 * 3600;
-    set_lock_expiration_time_limit();
-  }
-  return limit;
+  return usleep((useconds_t)(seconds * 1.0e6));
 }
 
 inline double& get_time_limit()
@@ -45,9 +40,8 @@ inline double& get_time_limit()
   static double limit = 0.0;
   if (0.0 == limit) {
     TIMER_VERBOSE("get_time_limit");
-    limit = get_lock_expiration_time_limit();
-    displayln_info(fname + ssprintf(": get_time_limit() = %.2lf hours.",
-                                    get_time_limit() / 3600.0));
+    limit = 12.0 * 3600.0;
+    set_time_limit_auto();
   }
   return limit;
 }
@@ -58,20 +52,28 @@ inline double& get_default_budget()
   static double budget = 0.0;
   if (0.0 == budget) {
     TIMER_VERBOSE("get_default_budget");
-    budget = 1200.0;
-    const std::string stime = get_env("Q_BUDGET");
-    if (stime != "") {
-      reads(budget, stime);
-      displayln_info(fname + ssprintf(": get_default_budget() = %.2lf hours.",
-                                      get_default_budget() / 3600.0));
-    }
+    budget = 15.0 * 60.0;
+    set_default_budget_auto();
   }
   return budget;
 }
 
-inline void set_lock_expiration_time_limit()
+inline void set_default_budget_auto()
 {
-  TIMER_VERBOSE("set_lock_expiration_time_limit");
+  TIMER_VERBOSE("set_default_budget_auto");
+  const std::string stime = get_env("Q_BUDGET");
+  if (stime != "") {
+    double budget = 0.0;
+    reads(budget, stime);
+    get_default_budget() = budget;
+    displayln_info(fname + ssprintf(": get_default_budget() = %.2lf hours.",
+                                    get_default_budget() / 3600.0));
+  }
+}
+
+inline void set_time_limit_auto()
+{
+  TIMER_VERBOSE("set_time_limit_auto");
   const std::string setime = get_env("Q_END_TIME");
   const std::string stime = get_env("Q_TIME_LIMIT");
   const std::string ss = get_env("COBALT_STARTTIME");
@@ -79,19 +81,19 @@ inline void set_lock_expiration_time_limit()
   if (setime != "") {
     double etime = 0.0;
     reads(etime, setime);
-    get_lock_expiration_time_limit() = etime - get_start_time();
+    get_time_limit() = etime - get_start_time();
     displayln_info(fname + ssprintf(": via Q_END_TIME."));
   } else if (stime != "") {
     double time = 0.0;
     reads(time, stime);
-    get_lock_expiration_time_limit() = time;
+    get_time_limit() = time;
     displayln_info(fname + ssprintf(": via Q_TIME_LIMIT."));
   } else if (ss != "" and se != "") {
     double start_time = 0.0;
     double end_time = 0.0;
     reads(start_time, ss);
     reads(end_time, se);
-    get_lock_expiration_time_limit() = end_time - get_start_time();
+    get_time_limit() = end_time - get_start_time();
     displayln_info(fname + ssprintf(": via COBALT_ENDTIME."));
     displayln_info(fname + ssprintf(": job total time = %.2lf hours.",
                                     (end_time - start_time) / 3600.0));
@@ -99,8 +101,8 @@ inline void set_lock_expiration_time_limit()
                                     (get_start_time() - start_time) / 3600.0));
   }
   displayln_info(fname +
-                 ssprintf(": get_lock_expiration_time_limit() = %.2lf hours.",
-                          get_lock_expiration_time_limit() / 3600.0));
+                 ssprintf(": get_time_limit() = %.2lf hours.",
+                          get_time_limit() / 3600.0));
 }
 
 inline double get_remaining_time()
@@ -108,13 +110,10 @@ inline double get_remaining_time()
   return get_time_limit() - get_total_time();
 }
 
-inline void check_time_limit(bool timer_display = false,
-                             const double budget = get_default_budget())
+inline void check_time_limit(const double budget = get_default_budget(),
+                             bool timer_display = false)
 {
   TIMER_VERBOSE("check_time_limit");
-  if (timer_display) {
-    Timer::display("check_time_limit");
-  }
   displayln_info(fname +
                  ssprintf(": ( get_total_time() + budget ) / get_time_limit() "
                           "= ( %.2lf + %.2lf ) / %.2lf hours.",
@@ -122,8 +121,52 @@ inline void check_time_limit(bool timer_display = false,
                           get_time_limit() / 3600.0));
   if (budget + get_total_time() > get_time_limit()) {
     release_lock();
-    const bool time_out = false;
-    assert(time_out);
+    Timer::display();
+    displayln_info("quit: because too little time left.");
+    ssleep(1.0);
+    end();
+    ssleep(1.0);
+    exit(0);
+  } else if (timer_display) {
+    Timer::display("check_time_limit");
+  }
+}
+
+inline void check_time_limit(bool timer_display,
+                             const double budget = get_default_budget())
+// obsolete
+{
+  displayln_info(
+      "WARNING: do not use this function. "
+      "check_time_limit(timer_display,budget)");
+  check_time_limit(budget, timer_display);
+}
+
+inline double& get_lock_expiration_time_limit()
+// obsolete
+{
+  displayln_info(
+      "WARNING: do not use this function. get_lock_expiration_time_limit");
+  return get_time_limit();
+}
+
+inline void set_lock_expiration_time_limit()
+// obsolete
+{
+  TIMER_VERBOSE("set_lock_expiration_time_limit");
+  displayln_info(
+      "WARNING: do not use this function. set_lock_expiration_time_limit");
+  set_time_limit_auto();
+}
+
+inline void check_sigint()
+{
+  if (is_sigint_received() > 0) {
+    release_lock();
+    Timer::display();
+    displayln_info("quit: because sigint received.");
+    end();
+    exit(0);
   }
 }
 
@@ -190,11 +233,6 @@ inline mode_t& default_dir_mode()
 {
   static mode_t mode = 0775;
   return mode;
-}
-
-inline int ssleep(const double seconds)
-{
-  return usleep((useconds_t)(seconds * 1.0e6));
 }
 
 inline int check_dir(const std::string& path,
@@ -450,8 +488,7 @@ inline bool obtain_lock(const std::string& path)
 {
   TIMER_VERBOSE("obtain_lock");
   const std::string path_time = path + "/time.txt";
-  const double expiration_time =
-      get_start_time() + get_lock_expiration_time_limit();
+  const double expiration_time = get_start_time() + get_time_limit();
   displayln_info(
       ssprintf("%s: Trying to obtain lock '%s'.", fname, path.c_str()));
   qassert(get_lock_location() == "");
@@ -493,8 +530,7 @@ inline bool obtain_lock_all_node(const std::string& path)
 {
   TIMER_VERBOSE("obtain_lock_all_node");
   const std::string path_time = path + "/time.txt";
-  const double expiration_time =
-      get_start_time() + get_lock_expiration_time_limit();
+  const double expiration_time = get_start_time() + get_time_limit();
   displayln_info(
       ssprintf("%s: Trying to obtain lock '%s'.", fname, path.c_str()));
   qassert(get_lock_location() == "");

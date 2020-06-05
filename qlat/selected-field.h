@@ -349,7 +349,7 @@ const SelectedField<M>& operator+=(SelectedField<M>& f, const SelectedField<M>& 
     qassert(is_matching_geo_mult(f.geo, f1.geo));
     qassert(f.field.size() == f1.field.size());
 #pragma omp parallel for
-    for (long k = 0; (long)k < f.field.size(); ++k) {
+    for (long k = 0; k < (long)f.field.size(); ++k) {
       f.field[k] += f1.field[k];
     }
   }
@@ -379,7 +379,6 @@ const SelectedField<M>& operator*=(SelectedField<M>& f, const double factor)
 {
   TIMER("sel_field_operator*=(F,D)");
   qassert(f.initialized);
-  const Geometry& geo = f.geo;
 #pragma omp parallel for
     for (long k = 0; k < (long)f.field.size(); ++k) {
       f.field[k] *= factor;
@@ -392,7 +391,6 @@ const SelectedField<M>& operator*=(SelectedField<M>& f, const Complex factor)
 {
   TIMER("sel_field_operator*=(F,C)");
   qassert(f.initialized);
-  const Geometry& geo = f.geo;
 #pragma omp parallel for
     for (long k = 0; k < (long)f.field.size(); ++k) {
       f.field[k] *= factor;

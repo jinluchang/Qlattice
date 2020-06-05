@@ -1,4 +1,4 @@
-#include "setup.h"
+#include "qlat-setup.h"
 
 namespace qlat
 {  //
@@ -75,6 +75,8 @@ inline bool compute_traj_do(const std::string& job_tag, const int traj)
 inline bool compute_traj(const std::string& job_tag, const int traj)
 {
   TIMER_VERBOSE("compute_traj");
+  check_sigint();
+  check_time_limit();
   qmkdir_info(get_job_path(job_tag));
   qmkdir_info(get_job_path(job_tag) + "/logs");
   switch_monitor_file_info(get_job_path(job_tag) +
