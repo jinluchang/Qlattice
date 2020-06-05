@@ -111,6 +111,7 @@ inline bool compute_traj(const std::string& job_tag, const int traj)
                              ssprintf("/logs/%010ld.txt", get_log_idx()));
     const bool is_failed = compute_traj_do(job_tag, traj);
     Timer::display();
+    Timer::reset();
     switch_monitor_file_info(get_job_path(job_tag) +
                              ssprintf("/logs/%010ld.txt", get_log_idx()));
     release_lock();
