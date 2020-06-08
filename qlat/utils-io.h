@@ -29,6 +29,18 @@ inline void set_default_budget_auto();
 
 inline void release_lock();
 
+inline double& get_actual_start_time()
+// not affected by Timer::reset()
+{
+  static double time = get_start_time();
+  return time;
+}
+
+inline double get_actual_total_time()
+{
+  return get_time() - get_actual_start_time();
+}
+
 inline int ssleep(const double seconds)
 {
   return usleep((useconds_t)(seconds * 1.0e6));
@@ -81,7 +93,7 @@ inline void set_time_limit_auto()
   if (setime != "") {
     double etime = 0.0;
     reads(etime, setime);
-    get_time_limit() = etime - get_start_time();
+    get_time_limit() = etime - get_actual_start_time();
     displayln_info(fname + ssprintf(": via Q_END_TIME."));
   } else if (stime != "") {
     double time = 0.0;
@@ -93,12 +105,13 @@ inline void set_time_limit_auto()
     double end_time = 0.0;
     reads(start_time, ss);
     reads(end_time, se);
-    get_time_limit() = end_time - get_start_time();
+    get_time_limit() = end_time - get_actual_start_time();
     displayln_info(fname + ssprintf(": via COBALT_ENDTIME."));
     displayln_info(fname + ssprintf(": job total time = %.2lf hours.",
                                     (end_time - start_time) / 3600.0));
-    displayln_info(fname + ssprintf(": job init time = %.2lf hours.",
-                                    (get_start_time() - start_time) / 3600.0));
+    displayln_info(fname +
+                   ssprintf(": job init time = %.2lf hours.",
+                            (get_actual_start_time() - start_time) / 3600.0));
   }
   displayln_info(fname +
                  ssprintf(": get_time_limit() = %.2lf hours.",
@@ -107,19 +120,20 @@ inline void set_time_limit_auto()
 
 inline double get_remaining_time()
 {
-  return get_time_limit() - get_total_time();
+  return get_time_limit() - get_actual_total_time();
 }
 
 inline void check_time_limit(const double budget = get_default_budget(),
                              bool timer_display = false)
 {
   TIMER_VERBOSE("check_time_limit");
-  displayln_info(fname +
-                 ssprintf(": ( get_total_time() + budget ) / get_time_limit() "
-                          "= ( %.2lf + %.2lf ) / %.2lf hours.",
-                          get_total_time() / 3600.0, budget / 3600.0,
-                          get_time_limit() / 3600.0));
-  if (budget + get_total_time() > get_time_limit()) {
+  displayln_info(
+      fname +
+      ssprintf(": ( get_actual_total_time() + budget ) / get_time_limit() "
+               "= ( %.2lf + %.2lf ) / %.2lf hours.",
+               get_actual_total_time() / 3600.0, budget / 3600.0,
+               get_time_limit() / 3600.0));
+  if (budget + get_actual_total_time() > get_time_limit()) {
     release_lock();
     Timer::display();
     displayln_info("quit: because too little time left.");
@@ -488,7 +502,7 @@ inline bool obtain_lock(const std::string& path)
 {
   TIMER_VERBOSE("obtain_lock");
   const std::string path_time = path + "/time.txt";
-  const double expiration_time = get_start_time() + get_time_limit();
+  const double expiration_time = get_actual_start_time() + get_time_limit();
   displayln_info(
       ssprintf("%s: Trying to obtain lock '%s'.", fname, path.c_str()));
   qassert(get_lock_location() == "");
@@ -530,7 +544,7 @@ inline bool obtain_lock_all_node(const std::string& path)
 {
   TIMER_VERBOSE("obtain_lock_all_node");
   const std::string path_time = path + "/time.txt";
-  const double expiration_time = get_start_time() + get_time_limit();
+  const double expiration_time = get_actual_start_time() + get_time_limit();
   displayln_info(
       ssprintf("%s: Trying to obtain lock '%s'.", fname, path.c_str()));
   qassert(get_lock_location() == "");
