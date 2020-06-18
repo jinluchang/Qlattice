@@ -225,14 +225,24 @@ inline Observables get_observables(const CorrFuncs& cf, const CorrParams& cp)
   return obs;
 }
 
-inline void show_results(const std::vector<CorrFuncs>& cfs,
-                         const CorrParams& cp)
+inline std::string show_results(const std::vector<CorrFuncs>& cfs,
+                                const Coordinate& total_site,
+                                const CorrParams& cp, const double mass_sqr,
+                                const double lambda)
 {
   TIMER("show_results");
+  std::ostringstream out;
+  out << ssprintf("((total-site (%d %d %d %d))", total_site[0], total_site[1], total_site[2], total_site[3]);
+  out << std::endl;
+  out << ssprintf(" (mass-sqr %.10lf)", mass_sqr);
+  out << std::endl;
+  out << ssprintf(" (lambda   %.10lf)", lambda);
   const long skip_traj = (long)cfs.size() / 3;
   std::vector<CorrFuncs> cfs_d = vector_drop(cfs, skip_traj);
-  displayln_info(fname + ssprintf(": n_traj = %ld", cfs.size()));
-  displayln_info(fname + ssprintf(": n_traj_used = %ld", cfs_d.size()));
+  out << std::endl;
+  out << ssprintf(" (n-traj      %ld)", cfs.size());
+  out << std::endl;
+  out << ssprintf(" (n-traj-used %ld)", cfs_d.size());
   std::vector<long> n_block_list;
   n_block_list.push_back(1024 * 1024);
   n_block_list.push_back(128);
@@ -247,54 +257,93 @@ inline void show_results(const std::vector<CorrFuncs>& cfs,
     for (int i = 0; i < jsize; ++i) {
       jobs[i] = get_observables(jcfs[i], cp);
     }
-    displayln_info(fname + ssprintf(": n_block = %ld", cfs_db.size()));
+    out << std::endl;
+    out << ssprintf(" (n-block-%ld", n_block);
     std::vector<double> vals(jsize);
     for (int i = 0; i < jsize; ++i) {
       vals[i] = jobs[i].phi2;
     }
-    displayln_info(fname + ssprintf(": phi2 = %.15lf +/- %.15lf", vals[0], jackknife_sigma(vals)));
+    out << std::endl;
+    out << ssprintf("  (phi2  %.15lf %.15f)", vals[0], jackknife_sigma(vals));
     for (int i = 0; i < jsize; ++i) {
       vals[i] = jobs[i].m_eff;
     }
-    displayln_info(fname + ssprintf(": m_eff = %.15lf +/- %.15lf", vals[0], jackknife_sigma(vals)));
+    out << std::endl;
+    out << ssprintf("  (m_eff %.15lf %.15f)", vals[0], jackknife_sigma(vals));
     for (int i = 0; i < jsize; ++i) {
       vals[i] = jobs[i].v_eff;
     }
-    displayln_info(fname + ssprintf(": v_eff = %.15lf +/- %.15lf", vals[0], jackknife_sigma(vals)));
+    out << std::endl;
+    out << ssprintf("  (v_eff %.15lf %.15f)", vals[0], jackknife_sigma(vals));
+    out << ssprintf(")");
   }
+  out << ssprintf(")");
+  out << std::endl;
+  return out.str();
 }
 
-inline std::vector<CorrFuncs> evolution(const Coordinate& total_site,
-                                        const double mass_sqr,
-                                        const double lambda,
-                                        const CorrParams& cp)
+inline void evolution(const Coordinate& total_site, const CorrParams& cp,
+                      const double mass_sqr, const double lambda)
 // interface function
 {
-  TIMER_VERBOSE("evolution");
-  std::vector<CorrFuncs> cfs;
-  // ADJUST ME
-  const long max_traj = 100000;
-  const long n_steps = 100;
-  //
-  ScalarField sf;
-  set_scalar_field(sf, total_site);
-  for (long traj = 0; traj < max_traj; ++traj) {
-    {
-      TIMER_VERBOSE("evolution-traj");
-      RngField rf;
-      set_rng_field(rf, total_site, "seed", traj);
-      CorrFuncs cf;
-      for (long i = 0; i < n_steps; ++i) {
-        sweep_scalar_field(sf, rf, mass_sqr, lambda);
-        cf += measure_corr_funcs(sf, cp);
+  {
+    TIMER_VERBOSE("evolution");
+    std::vector<CorrFuncs> cfs;
+    // ADJUST ME
+    const long max_traj = 128 / 2 * 3;
+    const long n_steps = 100;
+    //
+    ScalarField sf;
+    set_scalar_field(sf, total_site);
+    for (long traj = 0; traj < max_traj; ++traj) {
+      {
+        TIMER_VERBOSE("evolution-traj");
+        RngField rf;
+        set_rng_field(rf, total_site, "seed", traj);
+        CorrFuncs cf;
+        for (long i = 0; i < n_steps; ++i) {
+          sweep_scalar_field(sf, rf, mass_sqr, lambda);
+          cf += measure_corr_funcs(sf, cp);
+        }
+        cf *= 1.0 / (double)n_steps;
+        cfs.push_back(cf);
+        display_info(show_results(cfs, total_site, cp, mass_sqr, lambda));
       }
-      cf *= 1.0 / (double)n_steps;
-      cfs.push_back(cf);
-      show_results(cfs, cp);
+      Timer::autodisplay();
     }
-    Timer::autodisplay();
+    qtouch_info(
+        ssprintf("results/total_site=%s/mass_sqr=%.10lf ; lambda=%.10lf.txt",
+                 show(total_site).c_str(), mass_sqr, lambda),
+        show_results(cfs, total_site, cp, mass_sqr, lambda));
   }
-  return cfs;
+  Timer::display();
+}
+
+inline void compute(const Coordinate& total_site,
+                    const CorrParams& cp)
+{
+  qmkdir_info("results");
+  qmkdir_info(ssprintf("results/total_site=%s", show(total_site).c_str()));
+  // ADJUST ME
+  evolution(total_site, cp, +0.16, 0.0);
+  evolution(total_site, cp, +0.04, 0.0);
+  evolution(total_site, cp, +0.01, 0.0);
+  evolution(total_site, cp, +0.15, 0.1);
+  evolution(total_site, cp, +0.03, 0.1);
+  evolution(total_site, cp, +0.00, 0.1);
+  evolution(total_site, cp, +0.14, 0.2);
+  evolution(total_site, cp, +0.02, 0.2);
+  evolution(total_site, cp, -0.01, 0.2);
+  evolution(total_site, cp, +0.12, 0.4);
+  evolution(total_site, cp, +0.00, 0.4);
+  evolution(total_site, cp, -0.03, 0.4);
+  evolution(total_site, cp, +0.00, 1.6);
+  evolution(total_site, cp, -0.12, 1.6);
+  evolution(total_site, cp, -0.15, 1.6);
+  evolution(total_site, cp, +0.00, 2.0);
+  evolution(total_site, cp, -0.12, 2.0);
+  evolution(total_site, cp, -0.15, 2.0);
+  //
 }
 
 }  // namespace qlat
@@ -309,13 +358,24 @@ int main(int argc, char* argv[])
   size_node_list.push_back(Coordinate(1, 1, 1, 8));
   size_node_list.push_back(Coordinate(1, 1, 1, 16));
   begin(&argc, &argv, size_node_list);
-  const Coordinate total_site = Coordinate(4, 4, 4, 256);
-  const double mass_sqr = 0.00;
-  const double lambda = 0.4;
-  const int t1 = 2;
-  const int t2 = 4;
-  const int dt = 1;
-  evolution(total_site, mass_sqr, lambda, CorrParams(t1, t2, dt));
+  // ADJUST ME
+  {
+    const Coordinate total_site = Coordinate(4, 4, 4, 256);
+    const int t1 = 2;
+    const int t2 = 4;
+    const int dt = 1;
+    const CorrParams cp(t1, t2, dt);
+    compute(total_site, cp);
+  }
+  {
+    const Coordinate total_site = Coordinate(8, 8, 8, 512);
+    const int t1 = 4;
+    const int t2 = 8;
+    const int dt = 2;
+    const CorrParams cp(t1, t2, dt);
+    compute(total_site, cp);
+  }
+  //
   Timer::display();
   end();
   return 0;
