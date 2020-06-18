@@ -1,16 +1,322 @@
 #include <qlat/qlat.h>
 
+namespace qlat
+{  //
+
+struct CorrParams {
+  int t1, t2, dt;
+  //
+  CorrParams(const int t1_, const int t2_, const int dt_) {
+    t1 = t1_;
+    t2 = t2_;
+    dt = dt_;
+  }
+};
+
+struct CorrFuncs {
+  double phi2;
+  double c2_0;
+  double c2_t1, c2_t2;
+  double c4_t1, c4_t2;
+  //
+  void init()
+  {
+    phi2 = 0.0;
+    c2_0 = 0.0;
+    c2_t1 = 0.0;
+    c2_t2 = 0.0;
+    c4_t1 = 0.0;
+    c4_t2 = 0.0;
+  }
+  //
+  CorrFuncs() { init(); }
+  //
+  const CorrFuncs& operator+=(const CorrFuncs& cf) {
+    phi2 += cf.phi2;
+    c2_0 += cf.c2_0;
+    c2_t1 += cf.c2_t1;
+    c2_t2 += cf.c2_t2;
+    c4_t1 += cf.c4_t1;
+    c4_t2 += cf.c4_t2;
+    return *this;
+  }
+  //
+  const CorrFuncs& operator*=(const double coef) {
+    phi2 *= coef;
+    c2_0 *= coef;
+    c2_t1 *= coef;
+    c2_t2 *= coef;
+    c4_t1 *= coef;
+    c4_t2 *= coef;
+    return *this;
+  }
+};
+
+struct Observables
+{
+  double phi2, m_eff, v_eff;
+  //
+  void init()
+  {
+    phi2 = 0.0;
+    m_eff = 0.0;
+    v_eff = 0.0;
+  }
+  //
+  Observables() { init(); }
+  //
+  const Observables& operator+=(const Observables& obs) {
+    phi2 += obs.phi2;
+    m_eff += obs.m_eff;
+    v_eff += obs.v_eff;
+    return *this;
+  }
+  //
+  const Observables& operator*=(const double coef) {
+    phi2 *= coef;
+    m_eff *= coef;
+    v_eff *= coef;
+    return *this;
+  }
+};
+
+typedef FieldM<double, 1> ScalarField;
+
+inline void set_rng_field(RngField& rf, const Coordinate& total_site,
+                          const std::string& seed, const long traj)
+{
+  TIMER("set_rng_field");
+  Geometry geo;
+  geo.init(total_site, 1);
+  rf.init();
+  rf.init(geo, RngState(seed).split(traj));
+}
+
+inline void set_scalar_field(ScalarField& sf, const Coordinate& total_site)
+{
+  TIMER("set_scalar_field");
+  Geometry geo;
+  geo.init(total_site, 1);
+  geo.resize(1);
+  sf.init();
+  sf.init(geo);
+}
+
+inline void refresh_scalar_field(ScalarField& sf)
+{
+  TIMER("refresh_scalar_field");
+  refresh_expanded_1(sf);
+}
+
+inline double action_scalar_field_site(const double val,
+                                       const double nearby_sum, const double k1,
+                                       const double k2)
+{
+  const double val2 = sqr(val);
+  return -nearby_sum * val + k1 * val2 + k2 * sqr(val2);
+}
+
+inline void update_scalar_field_site(double& val, const double nearby_sum,
+                                     RngState& rs, const double k1,
+                                     const double k2)
+{
+  // ADJUST ME
+  const int max_iter = 5;
+  const double sigma = 1.0;
+  //
+  double action = action_scalar_field_site(val, nearby_sum, k1, k2);
+  for (int i = 0; i < max_iter; ++i) {
+    const double val_new = g_rand_gen(rs, val, sigma);
+    const double action_new =
+        action_scalar_field_site(val_new, nearby_sum, k1, k2);
+    const double action_diff = action_new - action;
+    if (action_diff <= 0 or std::exp(-action_diff) >= u_rand_gen(rs)) {
+      val = val_new;
+      action = action_new;
+    }
+  }
+}
+
+inline void sweep_scalar_field(ScalarField& sf, RngField& rf,
+                               const int eo, const double mass_sqr,
+                               const double lambda)
+{
+  TIMER("sweep_scalar_field(sf,rf,eo,m2,lam)");
+  const Geometry& geo = sf.geo;
+  const double k1 = 4.0 + 0.5 * mass_sqr;
+  const double k2 = 1.0 / 24.0 * lambda;
+#pragma omp parallel for
+  for (long index = 0; index < geo.local_volume(); ++index) {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Coordinate xg = geo.coordinate_g_from_l(xl);
+    if ((xg[0] + xg[1] + xg[2] + xg[3]) % 2 == 2 - eo) {
+      RngState& rs = rf.get_elem(xl);
+      double nearby_sum = 0.0;
+      for (int dir = -4; dir < 4; ++dir) {
+        const Coordinate xl_shifted = coordinate_shifts(xl, dir);
+        nearby_sum += sf.get_elem(xl_shifted);
+      }
+      update_scalar_field_site(sf.get_elem(xl), nearby_sum, rs, k1, k2);
+    }
+  }
+}
+
+inline void sweep_scalar_field(ScalarField& sf, RngField& rf,
+                               const double mass_sqr, const double lambda)
+// interface function
+{
+  TIMER("sweep_scalar_field");
+  refresh_scalar_field(sf);
+  sweep_scalar_field(sf, rf, 1, mass_sqr, lambda);
+  refresh_scalar_field(sf);
+  sweep_scalar_field(sf, rf, 2, mass_sqr, lambda);
+}
+
+inline CorrFuncs measure_corr_funcs(const ScalarField& sf, const CorrParams& cp)
+{
+  TIMER("measure_corr_funcs");
+  const Geometry& geo = sf.geo;
+  const Coordinate total_site = geo.total_site();
+  std::vector<double> phi_ts(total_site[3], 0.0);
+  std::vector<double> phi_ts2(total_site[3], 0.0);
+  double phi2 = 0.0;
+  for (long index = 0; index < geo.local_volume(); ++index) {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Coordinate xg = geo.coordinate_g_from_l(xl);
+    const double val = sf.get_elem(xl);
+    phi_ts[xg[3]] += val;
+    phi2 += sqr(val);
+  }
+  glb_sum(phi2);
+  glb_sum(get_data(phi_ts));
+  phi_ts2 = phi_ts;
+  for (int dt = 1; dt < cp.dt; ++dt) {
+    for (int t = 0; t < total_site[3]; ++t) {
+      phi_ts[t] += phi_ts2[mod(t + dt, total_site[3])];
+    }
+  }
+  for (int t = 0; t < total_site[3]; ++t) {
+    phi_ts2[t] = sqr(phi_ts[t]);
+  }
+  CorrFuncs cf;
+  for (int t = 0; t < total_site[3]; ++t) {
+    cf.c2_0 += sqr(phi_ts[t]);
+    cf.c2_t1 += phi_ts[t] * phi_ts[mod(t + cp.t1, total_site[3])];
+    cf.c2_t2 += phi_ts[t] * phi_ts[mod(t + cp.t2, total_site[3])];
+    cf.c4_t1 += phi_ts2[t] * phi_ts2[mod(t + cp.t1, total_site[3])];
+    cf.c4_t2 += phi_ts2[t] * phi_ts2[mod(t + cp.t2, total_site[3])];
+  }
+  cf *= 1.0 / (double)total_site[3];
+  cf.phi2 = phi2 / (double)product(total_site);
+  // displayln_info(show(cf.phi2));
+  return cf;
+}
+
+inline Observables get_observables(const CorrFuncs& cf, const CorrParams& cp)
+{
+  TIMER("get_observables");
+  const double r4_t1 = (cf.c4_t1 - sqr(cf.c2_0)) / sqr(cf.c2_t1);
+  const double r4_t2 = (cf.c4_t2 - sqr(cf.c2_0)) / sqr(cf.c2_t2);
+  // displayln_info(fname + ssprintf(": r4_t1=%.8lf ; r4_t2=%.8lf.", r4_t1, r4_t2));
+  Observables obs;
+  obs.phi2 = cf.phi2;
+  obs.m_eff = std::log(cf.c2_t1 / cf.c2_t2) / (double)(cp.t2 - cp.t1);
+  obs.v_eff = std::log(r4_t1 / r4_t2) / (double)(cp.t2 - cp.t1);
+  return obs;
+}
+
+inline void show_results(const std::vector<CorrFuncs>& cfs,
+                         const CorrParams& cp)
+{
+  TIMER_VERBOSE("show_results");
+  const long skip_traj = (long)cfs.size() / 3;
+  std::vector<CorrFuncs> cfs_d = vector_drop(cfs, skip_traj);
+  displayln_info(fname + ssprintf(": n_traj = %ld", cfs.size()));
+  displayln_info(fname + ssprintf(": n_traj_used = %ld", cfs_d.size()));
+  std::vector<long> n_block_list;
+  n_block_list.push_back(1024 * 1024);
+  n_block_list.push_back(128);
+  n_block_list.push_back(64);
+  n_block_list.push_back(32);
+  for (int k = 0; k < (int)n_block_list.size(); ++k) {
+    const long n_block = n_block_list[k];
+    std::vector<CorrFuncs> cfs_db = vector_block(cfs_d, n_block);
+    std::vector<CorrFuncs> jcfs = jackknife(cfs_db);
+    const long jsize = jcfs.size();
+    std::vector<Observables> jobs(jsize);
+    for (int i = 0; i < jsize; ++i) {
+      jobs[i] = get_observables(jcfs[i], cp);
+    }
+    displayln_info(fname + ssprintf(": n_block = %ld", cfs_db.size()));
+    std::vector<double> vals(jsize);
+    for (int i = 0; i < jsize; ++i) {
+      vals[i] = jobs[i].phi2;
+    }
+    displayln_info(fname + ssprintf(": phi2 = %.15lf +/- %.15lf", vals[0], jackknife_sigma(vals)));
+    for (int i = 0; i < jsize; ++i) {
+      vals[i] = jobs[i].m_eff;
+    }
+    displayln_info(fname + ssprintf(": m_eff = %.15lf +/- %.15lf", vals[0], jackknife_sigma(vals)));
+    for (int i = 0; i < jsize; ++i) {
+      vals[i] = jobs[i].v_eff;
+    }
+    displayln_info(fname + ssprintf(": v_eff = %.15lf +/- %.15lf", vals[0], jackknife_sigma(vals)));
+  }
+}
+
+inline std::vector<CorrFuncs> evolution(const Coordinate& total_site,
+                                        const double mass_sqr,
+                                        const double lambda,
+                                        const CorrParams& cp)
+// interface function
+{
+  TIMER_VERBOSE("evolution");
+  std::vector<CorrFuncs> cfs;
+  // ADJUST ME
+  const long max_traj = 100000;
+  const long n_steps = 100;
+  //
+  ScalarField sf;
+  set_scalar_field(sf, total_site);
+  for (long traj = 0; traj < max_traj; ++traj) {
+    {
+      TIMER_VERBOSE("evolution-traj");
+      RngField rf;
+      set_rng_field(rf, total_site, "seed", traj);
+      CorrFuncs cf;
+      for (long i = 0; i < n_steps; ++i) {
+        sweep_scalar_field(sf, rf, mass_sqr, lambda);
+        cf += measure_corr_funcs(sf, cp);
+      }
+      cf *= 1.0 / (double)n_steps;
+      cfs.push_back(cf);
+      show_results(cfs, cp);
+    }
+    Timer::autodisplay();
+  }
+  return cfs;
+}
+
+}  // namespace qlat
+
 int main(int argc, char* argv[])
 {
   using namespace qlat;
-  begin(&argc, &argv);
-  displayln_info("hello world.");
-  displayln(ssprintf("%d / %d", get_id_node(), get_num_node()));
-  Geometry geo;
-  geo.init(Coordinate(8,8,8,8), 1);
-  FieldM<Complex,1> field;
-  field.init(geo);
-  set_zero(field);
+  std::vector<Coordinate> size_node_list;
+  size_node_list.push_back(Coordinate(1, 1, 1, 1));
+  size_node_list.push_back(Coordinate(1, 1, 1, 2));
+  size_node_list.push_back(Coordinate(1, 1, 1, 4));
+  size_node_list.push_back(Coordinate(1, 1, 1, 8));
+  size_node_list.push_back(Coordinate(1, 1, 1, 16));
+  begin(&argc, &argv, size_node_list);
+  const Coordinate total_site = Coordinate(4, 4, 4, 256);
+  const double mass_sqr = 0.00;
+  const double lambda = 0.4;
+  const int t1 = 2;
+  const int t2 = 4;
+  const int dt = 1;
+  evolution(total_site, mass_sqr, lambda, CorrParams(t1, t2, dt));
+  Timer::display();
   end();
   return 0;
 }

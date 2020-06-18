@@ -368,6 +368,111 @@ inline long find_worker(const long idx, const long total, const long num_worker)
   return idx / size_max;
 }
 
+template <typename T>
+std::vector<T> vector_drop(const std::vector<T>& vs, const long n)
+{
+  if (n <= 0) {
+    return vs;
+  }
+  const long len = vs.size() - n;
+  if (len <= 0) {
+    return std::vector<T>();
+  }
+  std::vector<T> ret(len);
+  for (long i = 0; i < len; ++i) {
+    ret[i] = vs[i + n];
+  }
+  return ret;
+}
+
+template <typename T>
+std::vector<T> vector_block(const std::vector<T>& vs, const long n_block)
+// need =, +=, *=
+{
+  qassert(n_block >= 1);
+  const long size = vs.size();
+  if (n_block > size) {
+    return vs;
+  }
+  const long block_size = size / n_block;
+  qassert(block_size >= 1);
+  const long reminder = size - block_size * n_block;
+  std::vector<T> ret(n_block);
+  long cur = 0;
+  for (int i = 0; i < n_block; ++i) {
+    long count = 0;
+    qassert(cur < size);
+    ret[i] = vs[cur];
+    cur += 1;
+    count += 1;
+    for (int j = 1; j < block_size + (i < reminder ? 1 : 0); ++j) {
+      qassert(cur < size);
+      ret[i] += vs[cur];
+      cur += 1;
+      count += 1;
+    }
+    ret[i] *= 1.0 / (double)count;
+  }
+  return ret;
+}
+
+template <typename T>
+T average(const std::vector<T>& vs)
+// need =, +=, *=
+{
+  const long size = vs.size();
+  qassert(size >= 1);
+  T val;
+  val = vs[0];
+  for (long i = 1; i < size; ++i) {
+    val += vs[i];
+  }
+  val *= 1.0 / (double)size;
+  return val;
+}
+
+template <typename T>
+std::vector<T> jackknife(const std::vector<T>& vs)
+// need =, +=, *=
+{
+  const long size = vs.size();
+  qassert(size >= 1);
+  std::vector<T> ret(size + 1);
+  ret[0] = average(vs);
+  if (size == 1) {
+    ret[1] = ret[0];
+    return ret;
+  }
+  for (long i = 0; i < size; ++i) {
+    ret[i + 1] = vs[i];
+    ret[i + 1] *= -1.0 / (double)size;
+    ret[i + 1] += ret[0];
+    ret[i + 1] *= (double)size / (double)(size - 1);
+  }
+  return ret;
+}
+
+template <typename T>
+T jackknife_sigma(const std::vector<T>& vs)
+// need =, *=, -, *, sqrt
+{
+  const long size = vs.size();
+  qassert(size >= 2);
+  T val_sub, val_diff, val_sum, val2_sum;
+  val_sub = vs[0];
+  val_diff = vs[0] - val_sub;
+  val_sum = val_diff;
+  val2_sum = sqr(val_diff);
+  for (long i = 1; i < size; ++i) {
+    val_diff = vs[i] - val_sub;
+    val_sum += val_diff;
+    val2_sum += sqr(val_diff);
+  }
+  val_sum *= 1.0 / (double)size;
+  val2_sum *= 1.0 / (double)size;
+  return std::sqrt((double)size * std::abs(val2_sum - sqr(val_sum)));
+}
+
 }  // namespace qlat
 
 #ifndef USE_NAMESPACE
