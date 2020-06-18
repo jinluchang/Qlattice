@@ -228,7 +228,7 @@ inline Observables get_observables(const CorrFuncs& cf, const CorrParams& cp)
 inline void show_results(const std::vector<CorrFuncs>& cfs,
                          const CorrParams& cp)
 {
-  TIMER_VERBOSE("show_results");
+  TIMER("show_results");
   const long skip_traj = (long)cfs.size() / 3;
   std::vector<CorrFuncs> cfs_d = vector_drop(cfs, skip_traj);
   displayln_info(fname + ssprintf(": n_traj = %ld", cfs.size()));
