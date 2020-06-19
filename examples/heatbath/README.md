@@ -124,7 +124,7 @@ $$
 The kinetic term is
 $$
 \ba
-T(\pi) &=& \sum_p \frac{\pi(p)\pi(-p)}{2 \sqrt{4 \sin (\frac{p}{2})^2 + M^2}}
+T(\pi) &=& \sum_p \frac{\pi(p)\pi(-p)}{2 \Big(4 \sin (\frac{p}{2})^2 + M^2\Big)}
 \\
 \pi(p) &=& \frac{1}{V} \sum_x \pi(x) e^{-i p \cdot x}
 \ea
