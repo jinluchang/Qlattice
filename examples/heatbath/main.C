@@ -286,6 +286,12 @@ inline void evolution(const Coordinate& total_site, const CorrParams& cp,
                       const double mass_sqr, const double lambda)
 // interface function
 {
+  const std::string fn =
+      ssprintf("results/total_site=%s/mass_sqr=%.10lf ; lambda=%.10lf.txt",
+               show(total_site).c_str(), mass_sqr, lambda);
+  if (does_file_exist_sync_node(fn)) {
+    return;
+  }
   {
     TIMER_VERBOSE("evolution");
     std::vector<CorrFuncs> cfs;
@@ -311,10 +317,7 @@ inline void evolution(const Coordinate& total_site, const CorrParams& cp,
       }
       Timer::autodisplay();
     }
-    qtouch_info(
-        ssprintf("results/total_site=%s/mass_sqr=%.10lf ; lambda=%.10lf.txt",
-                 show(total_site).c_str(), mass_sqr, lambda),
-        show_results(cfs, total_site, cp, mass_sqr, lambda));
+    qtouch_info(fn, show_results(cfs, total_site, cp, mass_sqr, lambda));
   }
   Timer::display();
 }
@@ -343,6 +346,13 @@ inline void compute(const Coordinate& total_site,
   evolution(total_site, cp, +0.00, 2.0);
   evolution(total_site, cp, -0.12, 2.0);
   evolution(total_site, cp, -0.15, 2.0);
+  evolution(total_site, cp, +0.00, 4.0);
+  evolution(total_site, cp, -0.15, 4.0);
+  evolution(total_site, cp, -0.50, 4.0);
+  evolution(total_site, cp, +0.00, 8.0);
+  evolution(total_site, cp, -0.50, 8.0);
+  evolution(total_site, cp, +0.00, 16.0);
+  evolution(total_site, cp, -0.50, 16.0);
   //
 }
 
@@ -357,6 +367,9 @@ int main(int argc, char* argv[])
   size_node_list.push_back(Coordinate(1, 1, 1, 4));
   size_node_list.push_back(Coordinate(1, 1, 1, 8));
   size_node_list.push_back(Coordinate(1, 1, 1, 16));
+  size_node_list.push_back(Coordinate(1, 1, 1, 32));
+  size_node_list.push_back(Coordinate(1, 1, 1, 64));
+  size_node_list.push_back(Coordinate(1, 1, 1, 128));
   begin(&argc, &argv, size_node_list);
   // ADJUST ME
   {
