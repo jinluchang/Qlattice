@@ -791,12 +791,17 @@ struct ShuffledFieldsReader {
     new_size_node = Coordinate();
     clear(frs);
   }
-  void init(const std::string& path_)
+  void init(const std::string& path_, const Coordinate& new_size_node_ = Coordinate())
   // interface function
   {
     init();
     path = path_;
-    new_size_node = shuffled_fields_reader_size_node_info(path);
+    if (does_file_exist_sync_node(path + "/geon-info.txt")) {
+      new_size_node = shuffled_fields_reader_size_node_info(path);
+    } else {
+      qassert(new_size_node_ != Coordinate());
+      new_size_node = new_size_node_;
+    }
     std::vector<GeometryNode> geons = make_dist_io_geons(new_size_node);
     frs.resize(geons.size());
     for (int i = 0; i < (int)geons.size(); ++i) {
