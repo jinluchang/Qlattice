@@ -311,8 +311,8 @@ inline void evolution(const Coordinate& total_site, const CorrParams& cp,
 // interface function
 {
   const std::string fn =
-      ssprintf("results/total_site=%s/mass_sqr=%.10lf ; lambda=%.10lf.txt",
-               show(total_site).c_str(), mass_sqr, lambda);
+      ssprintf("results/total_site=%s/lambda=%.10lf/mass_sqr=%.10lf.txt",
+               show(total_site).c_str(), lambda, mass_sqr);
   if (does_file_exist_sync_node(fn)) {
     return;
   }
@@ -323,7 +323,7 @@ inline void evolution(const Coordinate& total_site, const CorrParams& cp,
     TIMER_VERBOSE("evolution");
     std::vector<CorrFuncs> cfs;
     // ADJUST ME
-    const long max_traj = 256 / 2 * 3;
+    const long max_traj = 512 / 2 * 3;
     const long n_steps = 100;
     //
     ScalarField sf;
@@ -350,7 +350,8 @@ inline void evolution(const Coordinate& total_site, const CorrParams& cp,
                    get_actual_total_time() / 3600.0,
                    get_default_budget() / 3600.0, get_time_limit() / 3600.0));
       if (get_default_budget() + get_actual_total_time() > get_time_limit()) {
-        displayln_info(fname + ssprintf(": quit because too little time left."));
+        displayln_info(fname +
+                       ssprintf(": quit because too little time left."));
         break;
       }
     }
@@ -372,6 +373,8 @@ inline void compute_several_mass(const Coordinate& total_site,
                                  const double mass_sqr_step,
                                  const double lambda)
 {
+  qmkdir_info(ssprintf("results/total_site=%s/lambda=%.10lf",
+                       show(total_site).c_str(), lambda));
   for (int i = 0; i < 20; ++i) {
     evolution(total_site, cp, mass_sqr_start + mass_sqr_step * i, lambda);
   }
@@ -383,18 +386,15 @@ inline void compute(const Coordinate& total_site,
   qmkdir_info("results");
   qmkdir_info(ssprintf("results/total_site=%s", show(total_site).c_str()));
   // ADJUST ME
-  compute_several_mass(total_site, cp, -0.00, 0.01, 0.0);
+  compute_several_mass(total_site, cp, +0.01, 0.01, 0.0);
   compute_several_mass(total_site, cp, -0.01, 0.01, 0.1);
-  compute_several_mass(total_site, cp, -0.02, 0.01, 0.2);
   compute_several_mass(total_site, cp, -0.03, 0.01, 0.4);
-  compute_several_mass(total_site, cp, -0.14, 0.01, 1.6);
-  compute_several_mass(total_site, cp, -0.17, 0.01, 2.0);
+  compute_several_mass(total_site, cp, -0.16, 0.01, 1.6);
   compute_several_mass(total_site, cp, -0.37, 0.01, 4.0);
-  compute_several_mass(total_site, cp, -0.80, 0.02, 8.0);
-  compute_several_mass(total_site, cp, -1.20, 0.03, 12.0);
-  compute_several_mass(total_site, cp, -2.00, 0.04, 16.0);
-  compute_several_mass(total_site, cp, -2.80, 0.05, 20.0);
-  compute_several_mass(total_site, cp, -4.00, 0.06, 24.0);
+  compute_several_mass(total_site, cp, -0.70, 0.02, 8.0);
+  compute_several_mass(total_site, cp, -1.20, 0.04, 16.0);
+  compute_several_mass(total_site, cp, -2.50, 0.10, 24.0);
+  compute_several_mass(total_site, cp, -3.80, 0.10, 32.0);
   //
 }
 
