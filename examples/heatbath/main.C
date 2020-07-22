@@ -366,39 +366,35 @@ inline void evolution(const Coordinate& total_site, const CorrParams& cp,
   //
 }
 
+inline void compute_several_mass(const Coordinate& total_site,
+                                 const CorrParams& cp,
+                                 const double mass_sqr_start,
+                                 const double mass_sqr_step,
+                                 const double lambda)
+{
+  for (int i = 0; i < 20; ++i) {
+    evolution(total_site, cp, mass_sqr_start + mass_sqr_step * i, lambda);
+  }
+}
+
 inline void compute(const Coordinate& total_site,
                     const CorrParams& cp)
 {
   qmkdir_info("results");
   qmkdir_info(ssprintf("results/total_site=%s", show(total_site).c_str()));
   // ADJUST ME
-  evolution(total_site, cp, +0.16, 0.0);
-  evolution(total_site, cp, +0.04, 0.0);
-  evolution(total_site, cp, +0.01, 0.0);
-  evolution(total_site, cp, +0.15, 0.1);
-  evolution(total_site, cp, +0.03, 0.1);
-  evolution(total_site, cp, +0.00, 0.1);
-  evolution(total_site, cp, +0.14, 0.2);
-  evolution(total_site, cp, +0.02, 0.2);
-  evolution(total_site, cp, -0.01, 0.2);
-  evolution(total_site, cp, +0.15, 0.4);
-  evolution(total_site, cp, +0.01, 0.4);
-  evolution(total_site, cp, -0.02, 0.4);
-  evolution(total_site, cp, +0.04, 1.6);
-  evolution(total_site, cp, -0.08, 1.6);
-  evolution(total_site, cp, -0.11, 1.6);
-  evolution(total_site, cp, +0.00, 2.0);
-  evolution(total_site, cp, -0.11, 2.0);
-  evolution(total_site, cp, -0.14, 2.0);
-  evolution(total_site, cp, -0.12, 4.0);
-  evolution(total_site, cp, -0.24, 4.0);
-  evolution(total_site, cp, -0.27, 4.0);
-  evolution(total_site, cp, -0.41, 8.0);
-  evolution(total_site, cp, -0.53, 8.0);
-  evolution(total_site, cp, -0.56, 8.0);
-  evolution(total_site, cp, -0.91, 16.0);
-  evolution(total_site, cp, -1.03, 16.0);
-  evolution(total_site, cp, -1.06, 16.0);
+  compute_several_mass(total_site, cp, -0.00, 0.01, 0.0);
+  compute_several_mass(total_site, cp, -0.01, 0.01, 0.1);
+  compute_several_mass(total_site, cp, -0.02, 0.01, 0.2);
+  compute_several_mass(total_site, cp, -0.03, 0.01, 0.4);
+  compute_several_mass(total_site, cp, -0.14, 0.01, 1.6);
+  compute_several_mass(total_site, cp, -0.17, 0.01, 2.0);
+  compute_several_mass(total_site, cp, -0.37, 0.01, 4.0);
+  compute_several_mass(total_site, cp, -0.80, 0.02, 8.0);
+  compute_several_mass(total_site, cp, -1.20, 0.03, 12.0);
+  compute_several_mass(total_site, cp, -2.00, 0.04, 16.0);
+  compute_several_mass(total_site, cp, -2.80, 0.05, 20.0);
+  compute_several_mass(total_site, cp, -4.00, 0.06, 24.0);
   //
 }
 
