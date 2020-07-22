@@ -1,5 +1,7 @@
 #include <qlat/qlat.h>
 
+#include "qlat-setup.h"
+
 namespace qlat
 {  //
 
@@ -225,6 +227,28 @@ inline Observables get_observables(const CorrFuncs& cf, const CorrParams& cp)
   return obs;
 }
 
+inline std::string show_result(const long traj, const CorrFuncs& cf)
+{
+  TIMER("show_result");
+  std::ostringstream out;
+  out << ssprintf("((traj %s)", show(traj).c_str());
+  out << std::endl;
+  out << ssprintf(" (phi2 %s)", show(cf.phi2).c_str());
+  out << std::endl;
+  out << ssprintf(" (c2_0 %s)", show(cf.c2_0).c_str());
+  out << std::endl;
+  out << ssprintf(" (c2_t1 %s)", show(cf.c2_t1).c_str());
+  out << std::endl;
+  out << ssprintf(" (c2_t2 %s)", show(cf.c2_t2).c_str());
+  out << std::endl;
+  out << ssprintf(" (c4_t1 %s)", show(cf.c4_t1).c_str());
+  out << std::endl;
+  out << ssprintf(" (c4_t2 %s)", show(cf.c4_t2).c_str());
+  out << ")";
+  out << std::endl;
+  return out.str();
+}
+
 inline std::string show_results(const std::vector<CorrFuncs>& cfs,
                                 const Coordinate& total_site,
                                 const CorrParams& cp, const double mass_sqr,
@@ -292,11 +316,14 @@ inline void evolution(const Coordinate& total_site, const CorrParams& cp,
   if (does_file_exist_sync_node(fn)) {
     return;
   }
+  if (not obtain_lock(fn + "-lock")) {
+    return;
+  }
   {
     TIMER_VERBOSE("evolution");
     std::vector<CorrFuncs> cfs;
     // ADJUST ME
-    const long max_traj = 128 / 2 * 3;
+    const long max_traj = 256 / 2 * 3;
     const long n_steps = 100;
     //
     ScalarField sf;
@@ -316,10 +343,27 @@ inline void evolution(const Coordinate& total_site, const CorrParams& cp,
         display_info(show_results(cfs, total_site, cp, mass_sqr, lambda));
       }
       Timer::autodisplay();
+      displayln_info(
+          fname +
+          ssprintf(": ( get_actual_total_time() + budget ) / get_time_limit() "
+                   "= ( %.2lf + %.2lf ) / %.2lf hours.",
+                   get_actual_total_time() / 3600.0,
+                   get_default_budget() / 3600.0, get_time_limit() / 3600.0));
+      if (get_default_budget() + get_actual_total_time() > get_time_limit()) {
+        displayln_info(fname + ssprintf(": quit because too little time left."));
+        break;
+      }
     }
     qtouch_info(fn, show_results(cfs, total_site, cp, mass_sqr, lambda));
+    release_lock();
   }
   Timer::display();
+  // ADJUST ME
+  ssleep(1.0);
+  end();
+  ssleep(1.0);
+  exit(0);
+  //
 }
 
 inline void compute(const Coordinate& total_site,
@@ -337,22 +381,24 @@ inline void compute(const Coordinate& total_site,
   evolution(total_site, cp, +0.14, 0.2);
   evolution(total_site, cp, +0.02, 0.2);
   evolution(total_site, cp, -0.01, 0.2);
-  evolution(total_site, cp, +0.12, 0.4);
-  evolution(total_site, cp, +0.00, 0.4);
-  evolution(total_site, cp, -0.03, 0.4);
-  evolution(total_site, cp, +0.00, 1.6);
-  evolution(total_site, cp, -0.12, 1.6);
-  evolution(total_site, cp, -0.15, 1.6);
+  evolution(total_site, cp, +0.15, 0.4);
+  evolution(total_site, cp, +0.01, 0.4);
+  evolution(total_site, cp, -0.02, 0.4);
+  evolution(total_site, cp, +0.04, 1.6);
+  evolution(total_site, cp, -0.08, 1.6);
+  evolution(total_site, cp, -0.11, 1.6);
   evolution(total_site, cp, +0.00, 2.0);
-  evolution(total_site, cp, -0.12, 2.0);
-  evolution(total_site, cp, -0.15, 2.0);
-  evolution(total_site, cp, +0.00, 4.0);
-  evolution(total_site, cp, -0.15, 4.0);
-  evolution(total_site, cp, -0.50, 4.0);
-  evolution(total_site, cp, +0.00, 8.0);
-  evolution(total_site, cp, -0.50, 8.0);
-  evolution(total_site, cp, +0.00, 16.0);
-  evolution(total_site, cp, -0.50, 16.0);
+  evolution(total_site, cp, -0.11, 2.0);
+  evolution(total_site, cp, -0.14, 2.0);
+  evolution(total_site, cp, -0.12, 4.0);
+  evolution(total_site, cp, -0.24, 4.0);
+  evolution(total_site, cp, -0.27, 4.0);
+  evolution(total_site, cp, -0.41, 8.0);
+  evolution(total_site, cp, -0.53, 8.0);
+  evolution(total_site, cp, -0.56, 8.0);
+  evolution(total_site, cp, -0.91, 16.0);
+  evolution(total_site, cp, -1.03, 16.0);
+  evolution(total_site, cp, -1.06, 16.0);
   //
 }
 
@@ -371,6 +417,7 @@ int main(int argc, char* argv[])
   size_node_list.push_back(Coordinate(1, 1, 1, 64));
   size_node_list.push_back(Coordinate(1, 1, 1, 128));
   begin(&argc, &argv, size_node_list);
+  setup();
   // ADJUST ME
   {
     const Coordinate total_site = Coordinate(4, 4, 4, 256);

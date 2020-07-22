@@ -56,6 +56,16 @@ inline int qtouch(const std::string& path, const std::string& content)
   return qrename(path + ".partial", path);
 }
 
+inline int qappend(const std::string& path, const std::string& content)
+{
+  TIMER("qappend");
+  FILE* file = qopen(path, "a");
+  qassert(file != NULL);
+  display(content, file);
+  qclose(file);
+  return qrename(path, path);
+}
+
 inline std::string qcat(const std::string& path)
 {
   TIMER("qcat");
