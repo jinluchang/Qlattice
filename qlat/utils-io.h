@@ -123,6 +123,17 @@ inline double get_remaining_time()
   return get_time_limit() - get_actual_total_time();
 }
 
+inline void qquit(const std::string& msg)
+{
+  release_lock();
+  Timer::display();
+  displayln_info(msg);
+  ssleep(1.0);
+  end();
+  ssleep(1.0);
+  exit(0);
+}
+
 inline void check_time_limit(const double budget = get_default_budget(),
                              bool timer_display = false)
 {
@@ -134,13 +145,7 @@ inline void check_time_limit(const double budget = get_default_budget(),
                get_actual_total_time() / 3600.0, budget / 3600.0,
                get_time_limit() / 3600.0));
   if (budget + get_actual_total_time() > get_time_limit()) {
-    release_lock();
-    Timer::display();
-    displayln_info("quit: because too little time left.");
-    ssleep(1.0);
-    end();
-    ssleep(1.0);
-    exit(0);
+    qquit("quit: because too little time left.");
   } else if (timer_display) {
     Timer::display("check_time_limit");
   }

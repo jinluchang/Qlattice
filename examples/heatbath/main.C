@@ -343,13 +343,14 @@ inline void evolution(const Coordinate& total_site, const CorrParams& cp,
         display_info(show_results(cfs, total_site, cp, mass_sqr, lambda));
       }
       Timer::autodisplay();
+      const double budget = 600.0;
       displayln_info(
           fname +
           ssprintf(": ( get_actual_total_time() + budget ) / get_time_limit() "
                    "= ( %.2lf + %.2lf ) / %.2lf hours.",
-                   get_actual_total_time() / 3600.0,
-                   get_default_budget() / 3600.0, get_time_limit() / 3600.0));
-      if (get_default_budget() + get_actual_total_time() > get_time_limit()) {
+                   get_actual_total_time() / 3600.0, budget / 3600.0,
+                   get_time_limit() / 3600.0));
+      if (budget + get_actual_total_time() > get_time_limit()) {
         displayln_info(fname +
                        ssprintf(": quit because too little time left."));
         break;
@@ -360,10 +361,8 @@ inline void evolution(const Coordinate& total_site, const CorrParams& cp,
   }
   Timer::display();
   // ADJUST ME
-  ssleep(1.0);
-  end();
-  ssleep(1.0);
-  exit(0);
+  check_time_limit();
+  // qquit();
   //
 }
 
@@ -392,9 +391,9 @@ inline void compute(const Coordinate& total_site,
   compute_several_mass(total_site, cp, -0.16, 0.01, 1.6);
   compute_several_mass(total_site, cp, -0.37, 0.01, 4.0);
   compute_several_mass(total_site, cp, -0.70, 0.02, 8.0);
-  compute_several_mass(total_site, cp, -1.20, 0.04, 16.0);
-  compute_several_mass(total_site, cp, -2.50, 0.10, 24.0);
-  compute_several_mass(total_site, cp, -3.80, 0.10, 32.0);
+  compute_several_mass(total_site, cp, -1.28, 0.02, 16.0);
+  compute_several_mass(total_site, cp, -1.86, 0.02, 24.0);
+  compute_several_mass(total_site, cp, -2.36, 0.02, 32.0);
   //
 }
 
@@ -420,6 +419,14 @@ int main(int argc, char* argv[])
     const int t1 = 2;
     const int t2 = 4;
     const int dt = 1;
+    const CorrParams cp(t1, t2, dt);
+    compute(total_site, cp);
+  }
+  {
+    const Coordinate total_site = Coordinate(4, 4, 4, 512);
+    const int t1 = 4;
+    const int t2 = 8;
+    const int dt = 2;
     const CorrParams cp(t1, t2, dt);
     compute(total_site, cp);
   }
