@@ -295,53 +295,6 @@ inline std::string idx_name(const LatDim& dim, const long idx)
   }
 }
 
-inline std::string show(const LatData& ld)
-{
-  std::ostringstream out;
-  const LatInfo& info = ld.info;
-  out << "# ";
-  for (int a = 0; a < (int)info.size(); ++a) {
-    out << ssprintf("%s ", info[a].name.c_str());
-  }
-  out << "VALUE\n";
-  std::vector<long> idx(info.size(), 0);
-  for (long k = 0; k < lat_data_size(info); ++k) {
-    for (int a = 0; a < (int)info.size(); ++a) {
-      out << ssprintf("%8s ", idx_name(info[a], idx[a]).c_str());
-    }
-    out << ssprintf("%24.17E\n", ld.res[lat_data_offset(info, idx)]);
-    idx[info.size() - 1] += 1;
-    for (int a = info.size() - 1; a > 0; --a) {
-      if (idx[a] == info[a].size) {
-        idx[a] = 0;
-        idx[a - 1] += 1;
-      }
-    }
-  }
-  return out.str();
-}
-
-inline void print(const LatData& ld)
-{
-  const LatInfo& info = ld.info;
-  display(ssprintf("%s", show(info).c_str()));
-  std::vector<long> idx(info.size(), 0);
-  for (long k = 0; k < lat_data_size(info); ++k) {
-    for (int a = 0; a < (int)info.size(); ++a) {
-      display(ssprintf("%s[%8s] ", info[a].name.c_str(),
-                       idx_name(info[a], idx[a]).c_str()));
-    }
-    display(ssprintf("%24.17E\n", ld.res[lat_data_offset(info, idx)]));
-    idx[info.size() - 1] += 1;
-    for (int a = info.size() - 1; a > 0; --a) {
-      if (idx[a] == info[a].size) {
-        idx[a] = 0;
-        idx[a - 1] += 1;
-      }
-    }
-  }
-}
-
 inline bool operator==(const LatDim& d1, const LatDim& d2)
 {
   return d1.name == d2.name and d1.size == d2.size and d1.indices == d2.indices;
@@ -474,6 +427,101 @@ inline Vector<Complex> lat_data_complex_get_const(const LatData& ld,
   qassert(offset * size + size <= (long)ld.res.size());
   Vector<Complex> ret((Complex*)&ld.res[offset * size], size / 2);
   return ret;
+}
+
+inline std::string show_double(const LatData& ld)
+{
+  std::ostringstream out;
+  const LatInfo& info = ld.info;
+  out << "# ";
+  for (int a = 0; a < (int)info.size(); ++a) {
+    if (0 == a) {
+      out << ssprintf("%10s ", info[a].name.c_str());
+    } else {
+      out << ssprintf("%12s ", info[a].name.c_str());
+    }
+  }
+  out << ssprintf("%24s\n", "VALUE");
+  std::vector<long> idx(info.size(), 0);
+  for (long k = 0; k < lat_data_size(info); ++k) {
+    for (int a = 0; a < (int)info.size(); ++a) {
+      out << ssprintf("%12s ", idx_name(info[a], idx[a]).c_str());
+    }
+    const Vector<double> ldv = lat_data_get_const(ld, idx);
+    out << ssprintf("%24.17E\n", ldv[0]);
+    idx[info.size() - 1] += 1;
+    for (int a = info.size() - 1; a > 0; --a) {
+      if (idx[a] == info[a].size) {
+        idx[a] = 0;
+        idx[a - 1] += 1;
+      }
+    }
+  }
+  return out.str();
+}
+
+inline std::string show_complex(const LatData& ld)
+{
+  std::ostringstream out;
+  const LatInfo& info = ld.info;
+  out << "# ";
+  for (int a = 0; a < (int)info.size() - 1; ++a) {
+    if (0 == a) {
+      out << ssprintf("%10s ", info[a].name.c_str());
+    } else {
+      out << ssprintf("%12s ", info[a].name.c_str());
+    }
+  }
+  out << ssprintf("%24s %24s\n", "RE-VALUE", "IM-VALUE");
+  std::vector<long> idx(info.size() - 1, 0);
+  for (long k = 0; k < lat_data_size(info) / 2; ++k) {
+    for (int a = 0; a < (int)info.size() - 1; ++a) {
+      out << ssprintf("%12s ", idx_name(info[a], idx[a]).c_str());
+    }
+    const Vector<Complex> ldv = lat_data_complex_get_const(ld, idx);
+    out << ssprintf("%24.17E %24.17E\n", ldv[0].real(), ldv[0].imag());
+    if (info.size() - 2 >= 0) {
+      idx[info.size() - 2] += 1;
+    }
+    for (int a = info.size() - 2; a > 0; --a) {
+      if (idx[a] == info[a].size) {
+        idx[a] = 0;
+        idx[a - 1] += 1;
+      }
+    }
+  }
+  return out.str();
+}
+
+inline std::string show(const LatData& ld)
+{
+  const LatInfo& info = ld.info;
+  if (is_lat_info_complex(info)) {
+    return show_complex(ld);
+  } else {
+    return show_double(ld);
+  }
+}
+
+inline void print(const LatData& ld)
+{
+  const LatInfo& info = ld.info;
+  display(ssprintf("%s", show(info).c_str()));
+  std::vector<long> idx(info.size(), 0);
+  for (long k = 0; k < lat_data_size(info); ++k) {
+    for (int a = 0; a < (int)info.size(); ++a) {
+      display(ssprintf("%s[%8s] ", info[a].name.c_str(),
+                       idx_name(info[a], idx[a]).c_str()));
+    }
+    display(ssprintf("%24.17E\n", ld.res[lat_data_offset(info, idx)]));
+    idx[info.size() - 1] += 1;
+    for (int a = info.size() - 1; a > 0; --a) {
+      if (idx[a] == info[a].size) {
+        idx[a] = 0;
+        idx[a - 1] += 1;
+      }
+    }
+  }
 }
 
 }  // namespace qlat

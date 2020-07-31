@@ -25,6 +25,7 @@ inline void demo()
   ld1.load("results-data.lat");
   ld1.save("results-data1.lat");
   print(ld1);
+  displayln_info(show(ld1));
 }
 
 }  // namespace qlat

@@ -21,6 +21,7 @@
 #include <cassert>
 #include <cstdarg>
 #include <cstdio>
+#include <cstdint>
 #include <cstdlib>
 #include <cstring>
 #include <sstream>
@@ -244,8 +245,17 @@ inline FILE*& get_monitor_file()
   return out;
 }
 
+inline uint64_t& get_output_level()
+{
+  static uint64_t x = UINT64_MAX;
+  return x;
+}
+
 inline void display(const std::string& str, FILE* fp = NULL)
 {
+  if (get_output_level() == 0) {
+    return;
+  }
   if (NULL == fp) {
     fp = get_monitor_file();
     if (NULL != fp) {
@@ -260,6 +270,9 @@ inline void display(const std::string& str, FILE* fp = NULL)
 
 inline void displayln(const std::string& str, FILE* fp = NULL)
 {
+  if (get_output_level() == 0) {
+    return;
+  }
   if (NULL == fp) {
     fp = get_monitor_file();
     if (NULL != fp) {
