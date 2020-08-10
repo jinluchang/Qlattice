@@ -91,6 +91,48 @@
         "0 not"
         (format "'table.txt' u 2:4:3:5 w xyerrorb t '~a'" total-site)))))
 
+(define (mk-plot-potential-dep-cmp-lam total-site lam1 lam2)
+  (let* ([vs1 (rec-lookup (all-data) (list 'total-site total-site) (list 'lam lam1))]
+         [vs2 (rec-lookup (all-data) (list 'total-site total-site) (list 'lam lam2))]
+         [dt1 (get-mass-sqr-and-m-eff-and-v-eff-datatable vs1)]
+         [dt2 (get-mass-sqr-and-m-eff-and-v-eff-datatable vs2)])
+    (plot-save
+      (format "plots/lambda=~a/total-site=~a/potential-dep-cmp-lam.eps.pdf.png" lam1 total-site)
+      (cons "table-1.txt" dt1)
+      (cons "table-2.txt" dt2)
+      "set size 2.0,2.0"
+      "set xtics 0.1"
+      (format "set title '~a'" total-site)
+      "set xlabel '$m_\\text{eff}$'"
+      "set ylabel '$V_\\text{eff}$'"
+      (mk-plot-line
+        "plot [:] [:]"
+        "0 not"
+        (format "'table-1.txt' u 2:4:3:5 w xyerrorb t '$\\lambda=~a$'" lam1)
+        (format "'table-2.txt' u 2:4:3:5 w xyerrorb t '$\\lambda=~a$'" lam2)))))
+
+(define (mk-plot-potential-dep-cmp-4-8 lam)
+  (let* ([total-site-4 "4x4x4x256"]
+         [total-site-8 "8x8x8x512"]
+         [vs-4 (rec-lookup (all-data) (list 'total-site total-site-4) (list 'lam lam))]
+         [vs-8 (rec-lookup (all-data) (list 'total-site total-site-8) (list 'lam lam))]
+         [dt-4 (get-mass-sqr-and-m-eff-and-v-eff-datatable vs-4)]
+         [dt-8 (get-mass-sqr-and-m-eff-and-v-eff-datatable vs-8)])
+    (plot-save
+      (format "plots/lambda=~a/cmp-4-8/potential-dep.eps.pdf.png" lam)
+      (cons "table-4.txt" dt-4)
+      (cons "table-8.txt" dt-8)
+      "set size 2.0,2.0"
+      "set xtics 0.1"
+      (format "set title '$\\lambda=~a$'" lam)
+      "set xlabel '$m_\\text{eff} L$'"
+      "set ylabel '$V_\\text{eff} L$'"
+      (mk-plot-line
+        "plot [:] [:]"
+        "0 not"
+        (format "'table-4.txt' u (4*$2):(4*$4):(4*$3):(4*$5) w xyerrorb t '~a'" total-site-4)
+        (format "'table-8.txt' u (8*$2):(8*$4):(8*$3):(8*$5) w xyerrorb t '~a'" total-site-8)))))
+
 (define (mk-plot-mass-dep-all)
   (for-each
     (lambda (total-site)
@@ -111,6 +153,23 @@
         (lam-list)))
     (total-site-list)))
 
+(define (mk-plot-potential-dep-cmp-lam-all)
+  (for-each
+    (lambda (total-site)
+      (for-each
+        (lambda (lam1 lam2)
+          (fork-exec
+            (mk-plot-potential-dep-cmp-lam total-site lam1 lam2)))
+        (init (lam-list)) (tail (lam-list))))
+    (total-site-list)))
+
+(define (mk-plot-potential-dep-cmp-4-8-all)
+  (for-each
+    (lambda (lam)
+      (fork-exec
+        (mk-plot-potential-dep-cmp-4-8 lam)))
+    (lam-list)))
+
 (print "hello")
 
 (fork-limit 1)
@@ -129,8 +188,12 @@
 
 (print (get-mass-sqr-and-m-eff-and-v-eff-datatable (rec-lookup (all-data) (list 'total-site "4x4x4x256") (list 'lam 32.0)))) 
 
-(mk-plot-mass-dep-all)
+(mk-plot-potential-dep-cmp-lam-all)
+
+(mk-plot-potential-dep-cmp-4-8-all)
 
 (mk-plot-potential-dep-all)
+
+(mk-plot-mass-dep-all)
 
 (wait-all)
