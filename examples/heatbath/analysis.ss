@@ -128,7 +128,7 @@
       "set xlabel '$m_\\text{eff} L$'"
       "set ylabel '$V_\\text{eff} L$'"
       (mk-plot-line
-        "plot [:] [:]"
+        "plot [0.2:1.6] [:]"
         "0 not"
         (format "'table-4.txt' u (4*$2):(4*$4):(4*$3):(4*$5) w xyerrorb t '~a'" total-site-4)
         (format "'table-8.txt' u (8*$2):(8*$4):(8*$3):(8*$5) w xyerrorb t '~a'" total-site-8)))))
@@ -188,9 +188,9 @@
 
 (print (get-mass-sqr-and-m-eff-and-v-eff-datatable (rec-lookup (all-data) (list 'total-site "4x4x4x256") (list 'lam 32.0)))) 
 
-(mk-plot-potential-dep-cmp-lam-all)
-
 (mk-plot-potential-dep-cmp-4-8-all)
+
+(mk-plot-potential-dep-cmp-lam-all)
 
 (mk-plot-potential-dep-all)
 

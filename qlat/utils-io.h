@@ -181,11 +181,7 @@ inline void set_lock_expiration_time_limit()
 inline void check_sigint()
 {
   if (is_sigint_received() > 0) {
-    release_lock();
-    Timer::display();
-    displayln_info("quit: because sigint received.");
-    end();
-    exit(0);
+    qquit("quit: because sigint received.");
   }
 }
 

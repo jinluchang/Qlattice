@@ -139,3 +139,21 @@ F(x)
 \nn
 \ea
 $$
+
+## Running of coupling
+
+$$
+\ba
+\frac{d}{d \log(1/a)} \frac{1}{\lambda(a)} = -\frac{3}{16\pi^2}
+\ea
+$$
+
+After reduce $a$ by a factor of $2$, the change on $1/\lambda$ should be
+$$
+\ba
+\Delta\frac{1}{\lambda} = - \frac{3}{16\pi^2} \log(2) = 0.0132
+\ea
+$$
+
+
+ 

@@ -323,7 +323,7 @@ inline void evolution(const Coordinate& total_site, const CorrParams& cp,
     TIMER_VERBOSE("evolution");
     std::vector<CorrFuncs> cfs;
     // ADJUST ME
-    const long max_traj = 2048 / 2 * 3;
+    const long max_traj = 128 * 2048 / 2 * 3;
     const long n_steps = 100;
     //
     ScalarField sf;
@@ -374,9 +374,11 @@ inline void compute_several_mass(const Coordinate& total_site,
 {
   qmkdir_info(ssprintf("results/total_site=%s/lambda=%.10lf",
                        show(total_site).c_str(), lambda));
-  for (int i = 0; i < 20; ++i) {
+  // ADJUST ME
+  for (int i = 0; i < 10; ++i) {
     evolution(total_site, cp, mass_sqr_start + mass_sqr_step * i, lambda);
   }
+  //
 }
 
 inline void compute(const Coordinate& total_site,
@@ -385,15 +387,22 @@ inline void compute(const Coordinate& total_site,
   qmkdir_info("results");
   qmkdir_info(ssprintf("results/total_site=%s", show(total_site).c_str()));
   // ADJUST ME
-  compute_several_mass(total_site, cp, +0.01, 0.01, 0.0);
-  compute_several_mass(total_site, cp, -0.01, 0.01, 0.1);
-  compute_several_mass(total_site, cp, -0.03, 0.01, 0.4);
-  compute_several_mass(total_site, cp, -0.16, 0.01, 1.6);
-  compute_several_mass(total_site, cp, -0.37, 0.01, 4.0);
-  compute_several_mass(total_site, cp, -0.70, 0.02, 8.0);
-  compute_several_mass(total_site, cp, -1.28, 0.02, 16.0);
-  compute_several_mass(total_site, cp, -1.86, 0.02, 24.0);
-  compute_several_mass(total_site, cp, -2.36, 0.02, 32.0);
+  // compute_several_mass(total_site, cp, +0.01, 0.01, 0.0);
+  // compute_several_mass(total_site, cp, -0.01, 0.01, 0.1);
+  // compute_several_mass(total_site, cp, -0.03, 0.01, 0.4);
+  // compute_several_mass(total_site, cp, -0.16, 0.01, 1.6);
+  // compute_several_mass(total_site, cp, -0.37, 0.01, 4.0);
+  // compute_several_mass(total_site, cp, -0.70, 0.02, 8.0);
+  // compute_several_mass(total_site, cp, -1.28, 0.02, 16.0);
+  // compute_several_mass(total_site, cp, -1.86, 0.02, 24.0);
+  // compute_several_mass(total_site, cp, -2.36, 0.02, 32.0);
+  if (total_site == Coordinate(4,4,4,256)) {
+    compute_several_mass(total_site, cp, -1.86, 0.04, 24.0);
+    compute_several_mass(total_site, cp, -2.36, 0.04, 32.0);
+  } else if (total_site == Coordinate(8,8,8,512)) {
+    compute_several_mass(total_site, cp, -1.69, 0.01, 24.0);
+    compute_several_mass(total_site, cp, -2.18, 0.01, 32.0);
+  }
   //
 }
 
