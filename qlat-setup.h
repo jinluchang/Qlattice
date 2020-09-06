@@ -139,13 +139,14 @@ inline Coordinate get_total_site(const std::string& job_tag)
   } else if (job_tag == "16I-0.01") {
     return Coordinate(16, 16, 16, 32);
   } else if (job_tag == "24I-0.01" or job_tag == "24D-0.00107" or
-             job_tag == "24D-0.0174") {
+             job_tag == "24D-0.0174" or job_tag == "24D" or job_tag == "24DH") {
     return Coordinate(24, 24, 24, 64);
-  } else if (job_tag == "48I-0.00078") {
+  } else if (job_tag == "48I-0.00078" or job_tag == "48I") {
     return Coordinate(48, 48, 48, 96);
-  } else if (job_tag == "64I-0.000678") {
+  } else if (job_tag == "64I-0.000678" or job_tag == "64I") {
     return Coordinate(64, 64, 64, 128);
-  } else if (job_tag == "32D-0.00107" or job_tag == "32Dfine-0.0001") {
+  } else if (job_tag == "32D-0.00107" or job_tag == "32Dfine-0.0001" or
+             job_tag == "32D" or job_tag == "32Dfine") {
     return Coordinate(32, 32, 32, 64);
   } else {
     qassert(false);

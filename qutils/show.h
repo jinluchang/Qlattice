@@ -253,10 +253,10 @@ inline uint64_t& get_output_level()
 
 inline void display(const std::string& str, FILE* fp = NULL)
 {
-  if (get_output_level() == 0) {
-    return;
-  }
   if (NULL == fp) {
+    if (get_output_level() == 0) {
+      return;
+    }
     fp = get_monitor_file();
     if (NULL != fp) {
       fprintf(fp, "%s", str.c_str());
@@ -270,10 +270,10 @@ inline void display(const std::string& str, FILE* fp = NULL)
 
 inline void displayln(const std::string& str, FILE* fp = NULL)
 {
-  if (get_output_level() == 0) {
-    return;
-  }
   if (NULL == fp) {
+    if (get_output_level() == 0) {
+      return;
+    }
     fp = get_monitor_file();
     if (NULL != fp) {
       fprintf(fp, "%s\n", str.c_str());
