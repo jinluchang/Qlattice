@@ -267,6 +267,29 @@ void set_field_selected(Field<M>& f, const SelectedPoints<M>& sp,
 }
 
 template <class M>
+void set_field_selected(Field<M>& f, const SelectedPoints<M>& sp,
+                        const PointSelection& psel)
+{
+  TIMER("set_field_selected");
+  const Geometry& geo = f.geo;
+  qassert(geo.multiplicity == sp.multiplicity);
+  const long n_points = sp.n_points;
+  qassert(n_points == (long)psel.size());
+#pragma omp parallel for
+  for (long idx = 0; idx < n_points; ++idx) {
+    const Coordinate& xg = psel[idx];
+    const Coordinate xl = geo.coordinate_l_from_g(xg);
+    if (geo.is_local(xl)) {
+      const Vector<M> spv = sp.get_elems_const(idx);
+      Vector<M> fv = f.get_elems(xl);
+      for (int m = 0; m < geo.multiplicity; ++m) {
+        fv[m] = spv[m];
+      }
+    }
+  }
+}
+
+template <class M>
 LatData lat_data_from_selected_points_complex(const SelectedPoints<M>& sp)
 {
   TIMER("lat_data_from_selected_points_complex");
