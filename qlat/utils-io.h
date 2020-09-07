@@ -127,15 +127,14 @@ inline void qquit(const std::string& msg)
 {
   release_lock();
   Timer::display();
-  displayln_info(msg);
+  displayln_info("qquit: " + msg);
   ssleep(1.0);
   end();
   ssleep(1.0);
   exit(0);
 }
 
-inline void check_time_limit(const double budget = get_default_budget(),
-                             bool timer_display = false)
+inline void check_time_limit(const double budget = get_default_budget())
 {
   TIMER_VERBOSE("check_time_limit");
   displayln_info(
@@ -145,9 +144,7 @@ inline void check_time_limit(const double budget = get_default_budget(),
                get_actual_total_time() / 3600.0, budget / 3600.0,
                get_time_limit() / 3600.0));
   if (budget + get_actual_total_time() > get_time_limit()) {
-    qquit("quit: because too little time left.");
-  } else if (timer_display) {
-    Timer::display("check_time_limit");
+    qquit("because too little time left.");
   }
 }
 
@@ -181,8 +178,28 @@ inline void set_lock_expiration_time_limit()
 inline void check_sigint()
 {
   if (is_sigint_received() > 0) {
-    qquit("quit: because sigint received.");
+    qquit("because sigint received.");
   }
+}
+
+inline bool check_status()
+{
+  TIMER_VERBOSE("check_status");
+  displayln_info(
+      fname +
+      ssprintf(": ( get_actual_total_time() + get_default_budget() ) / get_time_limit() "
+               "= ( %.2lf + %.2lf ) / %.2lf hours.",
+               get_actual_total_time() / 3600.0, get_default_budget() / 3600.0,
+               get_time_limit() / 3600.0));
+  if (get_default_budget() + get_actual_total_time() > get_time_limit()) {
+    displayln_info(fname + ssprintf(": too little time left."));
+    return true;
+  }
+  if (is_sigint_received() > 0) {
+    displayln_info(fname + ssprintf(": sigint received."));
+    return true;
+  }
+  return false;
 }
 
 inline std::string get_env(const std::string& var_name)
