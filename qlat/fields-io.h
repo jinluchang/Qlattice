@@ -695,6 +695,26 @@ inline ShuffledBitSet mk_shuffled_bitset(const Coordinate& total_site,
   return mk_shuffled_bitset(f_rank, new_size_node);
 }
 
+inline ShuffledBitSet mk_shuffled_bitset(const FieldM<int64_t, 1>& f_rank,
+                                         const std::vector<Coordinate>& xgs,
+                                         const Coordinate& new_size_node)
+{
+  TIMER_VERBOSE("mk_shuffled_bitset");
+  const Geometry& geo = f_rank.geo;
+  FieldM<int64_t, 1> f_rank_combined;
+  f_rank_combined = f_rank;
+  const Coordinate total_site = geo.total_site();
+  const long spatial_vol = total_site[0] * total_site[1] * total_site[2];
+#pragma omp parallel for
+  for (long i = 0; i < (long)xgs.size(); ++i) {
+    const Coordinate xl = geo.coordinate_l_from_g(xgs[i]);
+    if (geo.is_local(xl)) {
+      f_rank_combined.get_elem(xl) = spatial_vol + i;
+    }
+  }
+  return mk_shuffled_bitset(f_rank_combined, new_size_node);
+}
+
 struct ShuffledFieldsWriter {
   std::string path;
   Coordinate new_size_node;
@@ -1035,6 +1055,44 @@ long read_double_from_float(ShuffledFieldsReader& sfr, const std::string& fn,
     timer.flops += total_bytes;
     return total_bytes;
   }
+}
+
+typedef Cache<std::string, ShuffledFieldsReader> ShuffledFieldsReaderCache;
+
+inline ShuffledFieldsReaderCache& get_shuffled_fields_reader_cache()
+{
+  static ShuffledFieldsReaderCache cache("ShuffledFieldsReaderCache", 16, 4);
+  return cache;
+}
+
+inline ShuffledFieldsReader& get_shuffled_fields_reader(
+    const std::string& path, const Coordinate& new_size_node = Coordinate())
+{
+  TIMER("get_shuffled_fields_reader");
+  ShuffledFieldsReader& sfr = get_shuffled_fields_reader_cache()[path];
+  if (sfr.path == "") {
+    sfr.init(path, new_size_node);
+  }
+  return sfr;
+}
+
+template <class M>
+long read_field(Field<M>& field, const std::string& path, const std::string& fn)
+// interface function
+{
+  TIMER_VERBOSE("read_field(field,path,fn)");
+  ShuffledFieldsReader& sfr = get_shuffled_fields_reader(path);
+  return read(sfr, fn, field);
+}
+
+template <class M>
+long read_field_double_from_float(Field<M>& field, const std::string& path,
+                                  const std::string& fn)
+// interface function
+{
+  TIMER_VERBOSE("read_field_double_from_float(field,path,fn)");
+  ShuffledFieldsReader& sfr = get_shuffled_fields_reader(path);
+  return read_double_from_float(sfr, fn, field);
 }
 
 }  // namespace qlat

@@ -21,7 +21,7 @@ inline void save_point_selection(const PointSelection& psel,
   qrename(path + ".partial", path);
 }
 
-inline void save_point_selection_info(const std::vector<Coordinate>& psel,
+inline void save_point_selection_info(const PointSelection& psel,
                                       const std::string& path)
 {
   TIMER_VERBOSE("save_point_selection_info");
@@ -30,14 +30,14 @@ inline void save_point_selection_info(const std::vector<Coordinate>& psel,
   }
 }
 
-inline std::vector<Coordinate> load_point_selection(const std::string& path)
+inline PointSelection load_point_selection(const std::string& path)
 {
   TIMER_VERBOSE("load_point_selection");
   const std::vector<std::string> lines = qgetlines(path);
   qassert(lines.size() > 0);
   const long len = read_long(lines[0]);
   qassert(len + 1 <= (long)lines.size());
-  std::vector<Coordinate> psel;
+  PointSelection psel;
   for (long k = 1; k < len + 1; ++k) {
     const std::vector<std::string> strs = split_line_with_spaces(lines[k]);
     if (strs.size() >= 5) {
@@ -53,11 +53,11 @@ inline std::vector<Coordinate> load_point_selection(const std::string& path)
   return psel;
 }
 
-inline std::vector<Coordinate> load_point_selection_info(
+inline PointSelection load_point_selection_info(
     const std::string& path)
 {
   TIMER_VERBOSE("load_point_selection_info");
-  std::vector<Coordinate> psel;
+  PointSelection psel;
   if (0 == get_id_node()) {
     psel = load_point_selection(path);
   }

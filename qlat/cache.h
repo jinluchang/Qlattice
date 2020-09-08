@@ -16,7 +16,7 @@ struct Cache {
   std::map<K, std::pair<long, M> > m;
   long idx;
   long limit;
-  long buffer_size;
+  long buffer_size; // empty slots created by gc()
   //
   Cache(const std::string& name_ = "Cache", const long limit_ = 16, const long buffer_size_ = 8)
   {
