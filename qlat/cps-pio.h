@@ -1,3 +1,5 @@
+#pragma once
+
 CPS_START_NAMESPACE
 
 inline std::string showIntWP(const int n, const int w, const char pad)

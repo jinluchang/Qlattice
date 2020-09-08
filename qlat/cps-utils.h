@@ -1,3 +1,5 @@
+#pragma once
+
 CPS_START_NAMESPACE
 
 const std::complex<double> ii(0.0, 1.0);
