@@ -29,28 +29,6 @@ inline void set_sparse_parameters(FieldSelection& fsel,
   qassert(qnorm(f_rank) == 0.0);
 }
 
-inline LatData contract_pion(const Propagator4d& prop, const Coordinate& xg_src)
-{
-  const Geometry& geo = prop.geo;
-  const Coordinate total_site = geo.total_site();
-  LatData ld;
-  ld.info.push_back(lat_dim_number("tsep", 0, total_site[3] - 1));
-  ld.info.push_back(lat_dim_re_im());
-  lat_data_alloc(ld);
-  set_zero(ld);
-  Vector<Complex> ldv = lat_data_complex_get(ld, make_array<int>());
-#pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
-    const Coordinate xl = geo.coordinate_from_index(index);
-    const Coordinate xg = geo.coordinate_g_from_l(xl);
-    const Complex val = qnorm(prop.get_elem(xl));
-    const int tsep = mod(xg[3] - xg_src[3], total_site[3]);
-    ldv[tsep] += val;
-  }
-  glb_sum_lat_data(ld);
-  return ld;
-}
-
 inline bool compute_traj_do(const std::string& job_tag, const int traj)
 {
   TIMER_VERBOSE("compute_traj_do");
@@ -87,7 +65,7 @@ inline bool compute_traj_do(const std::string& job_tag, const int traj)
   write_selected_field_float_from_double(prop, job_path + "/psrc-prop-0.sfield", fsel);
   //
   // pion contraction
-  const LatData ld = contract_pion(prop, xg_point_src);
+  const LatData ld = contract_pion(prop, xg_point_src[3]);
   ld.save(job_path + "/pion-corr.lat");
   qtouch_info(job_path + "/pion-corr.txt", show(ld));
   if (0 == get_id_node()) {

@@ -72,6 +72,8 @@
 
 #include <qlat/dslash.h>
 
+#include <qlat/contract-pion.h>
+
 #endif
 
 QLAT_START_NAMESPACE

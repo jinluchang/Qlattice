@@ -323,8 +323,8 @@ inline void evolution(const Coordinate& total_site, const CorrParams& cp,
     TIMER_VERBOSE("evolution");
     std::vector<CorrFuncs> cfs;
     // ADJUST ME
-    const long max_traj = 128 * 2048 / 2 * 3;
-    const long n_steps = 100;
+    const long max_traj = 2 / 2 * 3;
+    const long n_steps = 1;
     //
     ScalarField sf;
     set_scalar_field(sf, total_site);
