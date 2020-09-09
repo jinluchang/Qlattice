@@ -72,6 +72,17 @@ inline void setup(const std::string& job_tag)
   }
 }
 
+inline void setup(const std::string& job_tag, const int traj)
+{
+  const std::string job_path = get_job_path(job_tag, traj);
+  qmkdir_info("results");
+  qmkdir_info(get_job_path(job_tag));
+  qmkdir_info(job_path);
+  qmkdir_sync_node(job_path + "/logs");
+  switch_monitor_file_info(job_path +
+                           ssprintf("/logs/%010ld.txt", get_log_idx()));
+}
+
 // -----------------------------------------------------------------------------------
 
 inline std::vector<int> get_trajs(const std::string& job_tag)

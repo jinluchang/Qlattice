@@ -188,6 +188,16 @@ double qnorm(const std::array<T, N>& mm)
   return sum;
 }
 
+template <class T>
+double qnorm(const std::vector<T>& mm)
+{
+  double sum = 0.0;
+  for (size_t i = 0; i < mm.size(); ++i) {
+    sum += qnorm(mm[i]);
+  }
+  return sum;
+}
+
 template <class Vec>
 bool is_equal_vec(const Vec& v1, const Vec& v2)
 {

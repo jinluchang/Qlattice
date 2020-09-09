@@ -389,12 +389,13 @@ inline void benchmark_deflate(const Geometry& geo, const int ls,
   out.init(geo_eo(geo_remult(geo, ls), 1));
   set_u_rand_double(in, rs.split("in"));
   sync_node();
-  Timer::reset();
-  for (int i = 0; i < 4; ++i) {
-    set_zero(out);
-    deflate(out, in, lm);
+  {
+    TIMER_VERBOSE("benchmark_deflate-deflate");
+    for (int i = 0; i < 4; ++i) {
+      set_zero(out);
+      deflate(out, in, lm);
+    }
   }
-  Timer::display();
   sync_node();
 }
 

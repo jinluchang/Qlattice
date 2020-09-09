@@ -160,7 +160,7 @@ const SelectedPoints<M>& operator-=(SelectedPoints<M>& f, const SelectedPoints<M
     qassert(f.n_points == f1.n_points);
     qassert(f.points.size() == f1.points.size());
 #pragma omp parallel for
-    for (long k = 0; k < f.points.size(); ++k) {
+    for (long k = 0; k < (long)f.points.size(); ++k) {
       f.points[k] -= f1.points[k];
     }
   }
@@ -173,7 +173,7 @@ const SelectedPoints<M>& operator*=(SelectedPoints<M>& f, const double factor)
   TIMER("sel_points_operator*=(F,D)");
   qassert(f.initialized);
 #pragma omp parallel for
-    for (long k = 0; k < f.points.size(); ++k) {
+    for (long k = 0; k < (long)f.points.size(); ++k) {
       f.points[k] *= factor;
     }
   return f;
@@ -185,7 +185,7 @@ const SelectedPoints<M>& operator*=(SelectedPoints<M>& f, const Complex factor)
   TIMER("sel_points_operator*=(F,C)");
   qassert(f.initialized);
 #pragma omp parallel for
-    for (long k = 0; k < f.points.size(); ++k) {
+    for (long k = 0; k < (long)f.points.size(); ++k) {
       f.points[k] *= factor;
     }
   return f;
@@ -213,6 +213,13 @@ void only_keep_selected_points(Field<M>& f, const PointSelection& psel)
     }
   }
   qswap(f, f1);
+}
+
+template <class M>
+double qnorm(const SelectedPoints<M>& sp)
+{
+  TIMER("qnorm");
+  return qnorm(sp.points);
 }
 
 template <class M>

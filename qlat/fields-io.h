@@ -21,6 +21,7 @@
 // File format should be compatible with Christoph Lehner's file format.
 
 #include <qlat/selected-field.h>
+#include <qlat/selected-points.h>
 
 namespace qlat
 {  //
@@ -526,20 +527,15 @@ inline long read_next(FieldsReader& fr, std::string& fn, Coordinate& total_site,
   return total_bytes;
 }
 
-inline long read(FieldsReader& fr, const std::string& fn,
-                 Coordinate& total_site, std::vector<char>& data,
-                 bool& is_sparse_field)
+inline bool does_file_exist(FieldsReader& fr, const std::string& fn)
 {
-  TIMER_FLOPS("read(fr,fn,geo,data)");
+  TIMER("does_file_exist(fr,fn,site)");
+  Coordinate total_site;
+  bool is_sparse_field;
   if (fr.offsets_map.count(fn) == 1) {
-    fseek(fr.fp, fr.offsets_map[fn], SEEK_SET);
-    std::string fn_r;
-    const long total_bytes =
-        read_next(fr, fn_r, total_site, data, is_sparse_field);
-    qassert(fn == fn_r);
-    return total_bytes;
+    return true;
   } else if (fr.is_read_through) {
-    return 0;
+    return false;
   } else {
     fseek(fr.fp, fr.max_offset, SEEK_SET);
   }
@@ -551,16 +547,31 @@ inline long read(FieldsReader& fr, const std::string& fn,
         read_tag(fr, fn_read, total_site, crc, data_len, is_sparse_field);
     if (is_ok) {
       if (fn == fn_read) {
-        const long total_bytes = read_data(fr, data, data_len, crc);
-        timer.flops += total_bytes;
-        return total_bytes;
+        return true;
       } else {
         fseek(fr.fp, data_len, SEEK_CUR);
       }
     } else {
-      return 0;
+      return false;
     }
   }
+}
+
+inline long read(FieldsReader& fr, const std::string& fn,
+                 Coordinate& total_site, std::vector<char>& data,
+                 bool& is_sparse_field)
+{
+  TIMER_FLOPS("read(fr,fn,site,data)");
+  if (not does_file_exist(fr, fn)) {
+    return 0;
+  }
+  qassert(fr.offsets_map.count(fn) == 1);
+  fseek(fr.fp, fr.offsets_map[fn], SEEK_SET);
+  std::string fn_r;
+  const long total_bytes =
+      read_next(fr, fn_r, total_site, data, is_sparse_field);
+  qassert(fn == fn_r);
+  return total_bytes;
 }
 
 template <class M>
@@ -962,6 +973,26 @@ long read_next(ShuffledFieldsReader& sfr, std::string& fn, Field<M>& field)
   return total_bytes;
 }
 
+inline bool does_file_exist_sync_node(ShuffledFieldsReader& sfr, const std::string& fn)
+// interface function
+{
+  TIMER_VERBOSE("does_file_exist_sync_node(sfr,fn)");
+  long total_counts = 0;
+  displayln_info(fname + ssprintf(": reading field with fn='%s'.", fn.c_str()));
+  for (int i = 0; i < (int)sfr.frs.size(); ++i) {
+    if (does_file_exist(sfr.frs[i], fn)) {
+      total_counts += 1;
+    }
+  }
+  glb_sum(total_counts);
+  if (total_counts == 0) {
+    return false;
+  } else {
+    qassert(total_counts == product(sfr.new_size_node));
+    return true;
+  }
+}
+
 template <class M>
 long read(ShuffledFieldsReader& sfr, const std::string& fn, Field<M>& field)
 // interface function
@@ -1093,6 +1124,13 @@ long read_field_double_from_float(Field<M>& field, const std::string& path,
   TIMER_VERBOSE("read_field_double_from_float(field,path,fn)");
   ShuffledFieldsReader& sfr = get_shuffled_fields_reader(path);
   return read_double_from_float(sfr, fn, field);
+}
+
+inline bool does_file_exist_sync_node(const std::string& path, const std::string& fn)
+{
+  TIMER_VERBOSE("does_file_exist_sync_node(path,fn)");
+  ShuffledFieldsReader& sfr = get_shuffled_fields_reader(path);
+  return does_file_exist_sync_node(sfr, fn);
 }
 
 }  // namespace qlat

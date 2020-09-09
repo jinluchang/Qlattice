@@ -339,6 +339,12 @@ bool is_initialized(const SelectedField<M>& sf)
 }
 
 template <class M>
+double qnorm(const SelectedField<M>& sf)
+{
+  return qnorm(sf.field);
+}
+
+template <class M>
 const SelectedField<M>& operator+=(SelectedField<M>& f, const SelectedField<M>& f1)
 {
   TIMER("sel_field_operator+=");
