@@ -510,6 +510,9 @@ void shuffle_field(std::vector<Field<M> >& fs, const Field<M>& f,
                    std::pow(0.5, 30))));
   const ShufflePlan& sp = get_shuffle_plan(geo.total_site(), new_size_node);
   shuffle_field(fs, f, sp);
+  const long total_bytes =
+      geo.local_volume() * geo.multiplicity * sizeof(M) * get_num_node();
+  timer.flops += total_bytes;
 }
 
 template <class M>
@@ -534,6 +537,9 @@ void shuffle_field_back(Field<M>& f, const std::vector<Field<M> >& fs,
                    std::pow(0.5, 30))));
   const ShufflePlan& sp = get_shuffle_plan(geo.total_site(), new_size_node);
   shuffle_field_back(f, fs, sp);
+  const long total_bytes =
+      geo.local_volume() * geo.multiplicity * sizeof(M) * get_num_node();
+  timer.flops += total_bytes;
 }
 
 // fft shuffle
