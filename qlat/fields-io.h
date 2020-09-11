@@ -574,6 +574,8 @@ inline long read(FieldsReader& fr, const std::string& fn,
   return total_bytes;
 }
 
+enum FieldDataType { PLAIN, DOUBLE, FLOAT_FROM_DOUBLE, DOUBLE_FROM_FLOAT };
+
 template <class M>
 long write(FieldsWriter& fw, const std::string& fn, const Field<M>& field)
 // field already have endianess converted correctly
@@ -915,7 +917,7 @@ void set_field_info_from_fields(Coordinate& total_site, int& multiplicity,
     if (id_node == id_node_first_available) {
       total_site = fs[i].geo.total_site();
       multiplicity = fs[i].geo.multiplicity;
-      qassert(get_id_node() == 0);
+      qassert(get_id_node() == id_node_bcast_from);
     }
   }
   bcast(get_data_one_elem(total_site), id_node_bcast_from);

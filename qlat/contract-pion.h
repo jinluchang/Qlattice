@@ -13,6 +13,7 @@ typedef SelectedPoints<WilsonMatrix> PselProp;
 
 inline LatData contract_pion(const Propagator4d& prop, const int tslice_src)
 {
+  TIMER_VERBOSE("contract_pion(prop)");
   const Geometry& geo = prop.geo;
   const Coordinate total_site = geo.total_site();
   LatData ld;
@@ -36,6 +37,7 @@ inline LatData contract_pion(const Propagator4d& prop, const int tslice_src)
 inline LatData contract_pion(const SelProp& prop, const FieldSelection& fsel,
                              const int tslice_src)
 {
+  TIMER_VERBOSE("contract_pion(s_prop,fsel)");
   const Geometry& geo = prop.geo;
   const Coordinate total_site = geo.total_site();
   LatData ld;
@@ -61,6 +63,7 @@ inline LatData contract_pion(const SelProp& prop, const FieldSelection& fsel,
 inline LatData contract_pion(const PselProp& prop, const PointSelection& psel,
                              const Geometry& geo, const int tslice_src)
 {
+  TIMER_VERBOSE("contract_pion(ps_prop,psel)");
   const long n_points = prop.n_points;
   qassert(n_points == (long)psel.size());
   const Coordinate total_site = geo.total_site();
