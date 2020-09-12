@@ -276,9 +276,10 @@ inline SelProp& get_prop_psrc(const std::string& job_tag, const int traj,
       const double qnorm_ps_prop = qnorm(ps_prop_load);
       ps_prop_load -= ps_prop;
       const double qnorm_ps_prop_diff = qnorm(ps_prop_load);
-      displayln_info(fname +
-                     ssprintf(": ps_prop diff qnorm = %lf. ps_prop qnorm = %lf",
-                              qnorm_ps_prop_diff, qnorm_ps_prop));
+      displayln_info(
+          fname +
+          ssprintf(": ps_prop diff qnorm = %24.17E. ps_prop qnorm = %24.17E",
+                   qnorm_ps_prop_diff, qnorm_ps_prop));
       qassert(qnorm_ps_prop_diff == 0.0);
     }
   }
@@ -328,9 +329,10 @@ inline SelProp& get_prop_wsrc(const std::string& job_tag, const int traj,
       const double qnorm_ps_prop = qnorm(ps_prop_load);
       ps_prop_load -= ps_prop;
       const double qnorm_ps_prop_diff = qnorm(ps_prop_load);
-      displayln_info(fname +
-                     ssprintf(": ps_prop diff qnorm = %lf. ps_prop qnorm = %lf",
-                              qnorm_ps_prop_diff, qnorm_ps_prop));
+      displayln_info(
+          fname +
+          ssprintf(": ps_prop diff qnorm = %24.17E. ps_prop qnorm = %24.17E",
+                   qnorm_ps_prop_diff, qnorm_ps_prop));
       qassert(qnorm_ps_prop_diff == 0.0);
     }
   }
@@ -381,9 +383,10 @@ inline SelProp& get_prop_psrc_exact(const std::string& job_tag, const int traj,
       const double qnorm_ps_prop = qnorm(ps_prop_load);
       ps_prop_load -= ps_prop;
       const double qnorm_ps_prop_diff = qnorm(ps_prop_load);
-      displayln_info(fname +
-                     ssprintf(": ps_prop diff qnorm = %lf. ps_prop qnorm = %lf",
-                              qnorm_ps_prop_diff, qnorm_ps_prop));
+      displayln_info(
+          fname +
+          ssprintf(": ps_prop diff qnorm = %24.17E. ps_prop qnorm = %24.17E",
+                   qnorm_ps_prop_diff, qnorm_ps_prop));
       qassert(qnorm_ps_prop_diff == 0.0);
     }
   }
