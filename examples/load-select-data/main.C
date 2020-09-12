@@ -58,16 +58,11 @@ inline void check_all_prop_psrc_exact(const std::string& job_tag,
 inline bool check_all_prop_psrc(const std::string& job_tag, const int traj)
 {
   TIMER_VERBOSE("check_all_prop_psrc");
-  //
-  qassert(check_sparse_parameters(job_tag, traj));
-  qassert(check_point_src_info(job_tag, traj));
-  //
   const std::vector<PointInfo>& pis = get_point_src_info(job_tag, traj);
-  //
-  qassert(not does_file_exist_sync_node(get_prop_psrc_path(job_tag, traj, 0),
-                                        "CHECK-FILE"));
-  qassert(not does_file_exist_sync_node(get_prop_psrc_path(job_tag, traj, 1),
-                                        "CHECK-FILE"));
+  // qassert(not does_file_exist_sync_node(get_prop_psrc_path(job_tag, traj, 0),
+  //                                       "CHECK-FILE"));
+  // qassert(not does_file_exist_sync_node(get_prop_psrc_path(job_tag, traj, 1),
+  //                                       "CHECK-FILE"));
   for (int i = 0; i < (int)pis.size(); ++i) {
     check_sigint();
     const PointInfo& pi = pis[i];
@@ -90,8 +85,8 @@ inline bool check_all_prop_wsrc(const std::string& job_tag, const int traj,
                                 const int type)
 {
   TIMER_VERBOSE("check_all_prop_wsrc");
-  qassert(not does_file_exist_sync_node(get_prop_wsrc_path(job_tag, traj, type),
-                                        "CHECK-FILE"));
+  // qassert(not does_file_exist_sync_node(get_prop_wsrc_path(job_tag, traj, type),
+  //                                       "CHECK-FILE"));
   const Coordinate total_site = get_total_site(job_tag);
   const std::string path = get_prop_wsrc_path(job_tag, traj, type);
   const std::string path_psel = get_psel_prop_wsrc_path(job_tag, traj, type);
@@ -157,7 +152,7 @@ inline void compute_traj(const std::string& job_tag, const int traj)
   setup(job_tag);
   TIMER_VERBOSE("compute_traj");
   // SADJUST ME
-  check_all_prop_psrc_exact(job_tag, traj);
+  // check_all_prop_psrc_exact(job_tag, traj);
   check_prop_data(job_tag, traj);
   //
   clear_all_data_cache();

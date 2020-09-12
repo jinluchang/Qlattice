@@ -22,7 +22,6 @@ inline LatData contract_pion(const Propagator4d& prop, const int tslice_src)
   lat_data_alloc(ld);
   set_zero(ld);
   Vector<Complex> ldv = lat_data_complex_get(ld, make_array<int>());
-#pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
@@ -46,7 +45,6 @@ inline LatData contract_pion(const SelProp& prop, const FieldSelection& fsel,
   lat_data_alloc(ld);
   set_zero(ld);
   Vector<Complex> ldv = lat_data_complex_get(ld, make_array<int>());
-#pragma omp parallel for
   for (long idx = 0; idx < fsel.n_elems; ++idx) {
     const long index = fsel.indices[idx];
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -73,7 +71,6 @@ inline LatData contract_pion(const PselProp& prop, const PointSelection& psel,
   lat_data_alloc(ld);
   set_zero(ld);
   Vector<Complex> ldv = lat_data_complex_get(ld, make_array<int>());
-#pragma omp parallel for
   for (long idx = 0; idx < n_points; ++idx) {
     const Coordinate& xg = psel[idx];
     const Complex val = qnorm(prop.get_elem(idx));
