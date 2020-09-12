@@ -71,6 +71,28 @@ inline void save_wall_src_info(const std::vector<WallInfo>& wis,
   }
 }
 
+inline std::string get_wall_src_info_path(const std::string& job_tag,
+                                          const int traj, const int type)
+{
+  if (type == 0) {
+    return ssprintf("data/wall-src-info-light/%s/traj=%d.txt", job_tag.c_str(),
+                    traj);
+  } else if (type == 1) {
+    return ssprintf("data/wall-src-info-strange/%s/traj=%d.txt",
+                    job_tag.c_str(), traj);
+  } else {
+    qassert(false);
+    return "";
+  }
+}
+
+inline bool check_wall_src_info(const std::string& job_tag, const int traj,
+                                const int type)
+{
+  TIMER_VERBOSE("check_wall_src_info");
+  return get_does_file_exist(get_wall_src_info_path(job_tag, traj, type));
+}
+
 inline void compute_wall_src_info(const std::string& job_tag, const int traj,
                                   const int type)
 {
@@ -80,6 +102,11 @@ inline void compute_wall_src_info(const std::string& job_tag, const int traj,
   if (check_prop_wsrc(job_tag, traj, type)) {
     check_sigint();
     check_time_limit();
+    if (not obtain_lock(ssprintf("lock-wall-src-info-%s-%d-%d", job_tag.c_str(),
+                                 traj, type))) {
+      return;
+    }
+    setup(job_tag, traj);
     TIMER_VERBOSE("compute_wall_src_info");
     std::string path;
     if (type == 0) {
@@ -99,7 +126,30 @@ inline void compute_wall_src_info(const std::string& job_tag, const int traj,
       }
     }
     save_wall_src_info(wis, get_wall_src_info_path(job_tag, traj, type));
+    release_lock();
   }
+}
+
+typedef Cache<std::string, std::vector<WallInfo> > WallSrcInfoCache;
+
+inline WallSrcInfoCache& get_wall_src_info_cache()
+{
+  static WallSrcInfoCache cache("WallSrcInfoCache", 8, 2);
+  return cache;
+}
+
+inline std::vector<WallInfo>& get_wall_src_info(const std::string& job_tag,
+                                                const int traj, const int type)
+{
+  const std::string key = ssprintf("%s,%d,%d,wis", job_tag.c_str(), traj, type);
+  WallSrcInfoCache& cache = get_wall_src_info_cache();
+  if (not cache.has(key)) {
+    TIMER_VERBOSE("get_wall_src_info");
+    const std::string fn = get_wall_src_info_path(job_tag, traj, type);
+    qassert(get_does_file_exist(fn));
+    cache[key] = load_wall_src_info(fn);
+  }
+  return cache[key];
 }
 
 }  // namespace qlat

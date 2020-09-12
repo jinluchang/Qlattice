@@ -101,7 +101,7 @@ inline void clear_all_prop_cache()
 
 inline void clear_all_data_cache()
 {
-  TIMER_VERBOSE("clear_all_cache");
+  TIMER_VERBOSE("clear_all_data_cache");
   get_point_selection_cache().clear();
   get_field_selection_cache().clear();
   get_point_src_info_cache().clear();
@@ -525,13 +525,6 @@ inline bool check_point_src_info(const std::string& job_tag, const int traj)
 {
   TIMER_VERBOSE("check_point_src_info");
   return get_does_file_exist(get_point_src_info_path(job_tag, traj));
-}
-
-inline bool check_wall_src_info(const std::string& job_tag, const int traj,
-                                const int type)
-{
-  TIMER_VERBOSE("check_wall_src_info");
-  return get_does_file_exist(get_wall_src_info_path(job_tag, traj, type));
 }
 
 inline bool check_prop_psrc(const std::string& job_tag, const int traj,
