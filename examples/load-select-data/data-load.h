@@ -2,9 +2,11 @@
 
 #include <qlat/qlat.h>
 
+#include "configs.h"
 #include "data-paths.h"
 #include "psrc-distribution.h"
 #include "psrc-sample.h"
+#include "qlat-setup.h"
 
 namespace qlat
 {  //
@@ -523,6 +525,13 @@ inline bool check_point_src_info(const std::string& job_tag, const int traj)
 {
   TIMER_VERBOSE("check_point_src_info");
   return get_does_file_exist(get_point_src_info_path(job_tag, traj));
+}
+
+inline bool check_wall_src_info(const std::string& job_tag, const int traj,
+                                const int type)
+{
+  TIMER_VERBOSE("check_wall_src_info");
+  return get_does_file_exist(get_wall_src_info_path(job_tag, traj, type));
 }
 
 inline bool check_prop_psrc(const std::string& job_tag, const int traj,

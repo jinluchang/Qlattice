@@ -1,7 +1,6 @@
-#include "configs.h"
 #include "data-load.h"
-#include "psrc-distribution.h"
-#include "qlat-setup.h"
+
+#include "compute-wall-src-info.h"
 
 namespace qlat
 {  //
@@ -153,7 +152,9 @@ inline void compute_traj(const std::string& job_tag, const int traj)
   TIMER_VERBOSE("compute_traj");
   // SADJUST ME
   // check_all_prop_psrc_exact(job_tag, traj);
-  check_prop_data(job_tag, traj);
+  // check_prop_data(job_tag, traj);
+  compute_wall_src_info(job_tag, traj, 0);
+  compute_wall_src_info(job_tag, traj, 1);
   //
   clear_all_data_cache();
 }

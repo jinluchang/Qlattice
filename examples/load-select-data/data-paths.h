@@ -10,6 +10,20 @@ inline std::string get_point_src_info_path(const std::string& job_tag, const int
   return ssprintf("data/point-src-info/%s/traj=%d.txt", job_tag.c_str(), traj);
 }
 
+inline std::string get_wall_src_info_path(const std::string& job_tag, const int traj, const int type)
+{
+  if (type == 0) {
+    return ssprintf("data/wall-src-info-light/%s/traj=%d.txt", job_tag.c_str(),
+                    traj);
+  } else if (type == 1) {
+    return ssprintf("data/wall-src-info-strange/%s/traj=%d.txt",
+                    job_tag.c_str(), traj);
+  } else {
+    qassert(false);
+    return "";
+  }
+}
+
 inline std::string get_point_selection_path(const std::string& job_tag, const int traj)
 {
   return ssprintf("data/point-selection/%s/traj=%d.txt", job_tag.c_str(), traj);

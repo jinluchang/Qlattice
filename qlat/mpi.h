@@ -500,18 +500,22 @@ void bcast(Vector<M> recv, const int root = 0)
 template <class M>
 void bcast(std::vector<M>& recv, const int root = 0)
 {
+#ifdef USE_MULTI_NODE
   long size = recv.size();
   bcast(get_data(size), root);
   recv.resize(size);
   bcast(get_data(recv), root);
+#endif
 }
 
 inline void bcast(std::string& recv, const int root = 0)
 {
+#ifdef USE_MULTI_NODE
   long size = recv.size();
   bcast(get_data(size), root);
   recv.resize(size);
   bcast(get_data(recv), root);
+#endif
 }
 
 template <class M>
