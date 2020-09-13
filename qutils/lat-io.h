@@ -219,7 +219,7 @@ inline LatDim lat_dim_number(const std::string& name, const long start,
 }
 
 template <unsigned long N>
-inline LatDim lat_dim_string(const std::string& name,
+LatDim lat_dim_string(const std::string& name,
                              const std::array<std::string, N>& is)
 {
   LatDim dim;
@@ -257,7 +257,7 @@ inline long lat_dim_idx(const LatDim& dim, const long& idx)
 }
 
 template <class VecS>
-inline long lat_data_offset(const LatInfo& info, const VecS& idx)
+long lat_data_offset(const LatInfo& info, const VecS& idx)
 // will return offset at the level the idx specify
 // VecS can be std::vector<std::string> or std::vector<long>
 // or can be std::array of certain length
@@ -379,7 +379,7 @@ inline LatData operator*(const double factor, const LatData& ld)
 }
 
 template <class VecS>
-inline Vector<double> lat_data_get(LatData& ld, const VecS& idx)
+Vector<double> lat_data_get(LatData& ld, const VecS& idx)
 {
   const long offset = lat_data_offset(ld.info, idx);
   const long size = lat_data_size(ld.info, idx.size());
@@ -389,7 +389,7 @@ inline Vector<double> lat_data_get(LatData& ld, const VecS& idx)
 }
 
 template <class VecS>
-inline Vector<double> lat_data_get_const(const LatData& ld, const VecS& idx)
+Vector<double> lat_data_get_const(const LatData& ld, const VecS& idx)
 // Be cautious about the const property
 // 改不改靠自觉
 {
@@ -401,7 +401,7 @@ inline Vector<double> lat_data_get_const(const LatData& ld, const VecS& idx)
 }
 
 template <class VecS>
-inline Vector<Complex> lat_data_complex_get(LatData& ld, const VecS& idx)
+Vector<Complex> lat_data_complex_get(LatData& ld, const VecS& idx)
 {
   qassert(is_lat_info_complex(ld.info));
   qassert((long)idx.size() < (long)ld.info.size());
@@ -414,8 +414,7 @@ inline Vector<Complex> lat_data_complex_get(LatData& ld, const VecS& idx)
 }
 
 template <class VecS>
-inline Vector<Complex> lat_data_complex_get_const(const LatData& ld,
-                                                  const VecS& idx)
+Vector<Complex> lat_data_complex_get_const(const LatData& ld, const VecS& idx)
 // Be cautious about the const property
 // 改不改靠自觉
 {
@@ -427,6 +426,34 @@ inline Vector<Complex> lat_data_complex_get_const(const LatData& ld,
   qassert(offset * size + size <= (long)ld.res.size());
   Vector<Complex> ret((Complex*)&ld.res[offset * size], size / 2);
   return ret;
+}
+
+template <class VecS>
+Vector<Complex> lat_data_cget(LatData& ld, const VecS& idx)
+{
+  return lat_data_complex_get(ld, idx);
+}
+
+template <class VecS>
+Vector<Complex> lat_data_cget_const(const LatData& ld, const VecS& idx)
+// Be cautious about the const property
+// 改不改靠自觉
+{
+  return lat_data_complex_get_const(ld, idx);
+}
+
+inline Vector<Complex> lat_data_cget(LatData& ld)
+{
+  std::array<int, 0> idx;
+  return lat_data_cget(ld, idx);
+}
+
+inline Vector<Complex> lat_data_cget_const(const LatData& ld)
+// Be cautious about the const property
+// 改不改靠自觉
+{
+  std::array<int, 0> idx;
+  return lat_data_cget_const(ld, idx);
 }
 
 inline std::string show_double(const LatData& ld)

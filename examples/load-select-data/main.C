@@ -34,6 +34,19 @@ inline void compute(const std::string& job_tag)
   }
 }
 
+inline void test()
+{
+  TIMER_VERBOSE("test");
+  const std::string job_tag = "48I";
+  LatData ld_light = get_wall_src_prop_norm_ratio(job_tag, 0);
+  displayln_info("48I light ratio");
+  displayln_info(show(ld_light));
+  LatData ld_strange = get_wall_src_prop_norm_ratio(job_tag, 1);
+  displayln_info("48I strange ratio");
+  displayln_info(show(ld_strange));
+  exit(0);
+}
+
 }  // namespace qlat
 
 int main(int argc, char* argv[])
@@ -52,6 +65,10 @@ int main(int argc, char* argv[])
   setup_log_idx();
   setup();
   qmkdir_info(ssprintf("data"));
+  qmkdir_info(ssprintf("analysis"));
+  //
+  test();
+  //
   std::vector<std::string> job_tags;
   // SADJUST ME
   job_tags.push_back("24D");
