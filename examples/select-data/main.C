@@ -968,10 +968,8 @@ inline void compute_traj(const std::string& job_tag, const int traj)
     collect_gauge_transform(job_tag, traj);
     collect_prop_wsrc_strange(job_tag, traj);
     collect_prop_wsrc_light(job_tag, traj);
-    if (job_tag != "64I") {
-      collect_prop_psrc_strange(job_tag, traj);
-      collect_prop_psrc_light(job_tag, traj);
-    }
+    collect_prop_psrc_strange(job_tag, traj);
+    collect_prop_psrc_light(job_tag, traj);
     collect_prop_psrc_exact(job_tag, traj);
     //
   }

@@ -74,6 +74,8 @@
 
 #include <qlat/contract-pion.h>
 
+#include <qlat/contract-wall-src-prop.h>
+
 #endif
 
 QLAT_START_NAMESPACE

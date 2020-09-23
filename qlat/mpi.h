@@ -518,6 +518,22 @@ inline void bcast(std::string& recv, const int root = 0)
 #endif
 }
 
+inline void bcast(LatData& ld, const int root = 0)
+{
+#ifdef USE_MULTI_NODE
+  std::string info_str;
+  if (get_id_node() == root) {
+    info_str = show(ld.info);
+  }
+  bcast(info_str, root);
+  if (get_id_node() != root) {
+    ld.info = read_lat_info(info_str);
+    lat_data_alloc(ld);
+  }
+  bcast(get_data(ld.res), root);
+#endif
+}
+
 template <class M>
 inline void concat_vector(std::vector<long>& idx, std::vector<M>& data,
                           const std::vector<std::vector<M> >& datatable)

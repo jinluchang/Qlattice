@@ -4,6 +4,7 @@
 #include <qlat/qcd-prop.h>
 #include <qlat/qcd-utils.h>
 #include <qlat/qcd.h>
+#include <qlat/selected-points.h>
 
 #include <fftw3.h>
 
@@ -181,6 +182,36 @@ inline void prop_apply_gauge_transformation(
     }
   }
   glb_sum_double_vec(get_data(tmp));
+  prop = tmp;
+}
+
+inline void prop_apply_gauge_transformation(
+    SelectedPoints<WilsonMatrix>& prop,
+    const SelectedPoints<WilsonMatrix>& prop0, const GaugeTransform& gt,
+    const PointSelection& psel)
+{
+  TIMER("prop_apply_gauge_transformation");
+  const Geometry& geo = gt.geo;
+  qassert(geo.multiplicity == 1);
+  const long num_points = psel.size();
+  qassert(prop0.initialized == true);
+  qassert(prop0.n_points == num_points);
+  qassert(prop0.multiplicity == 1);
+  SelectedPoints<WilsonMatrix> tmp;
+  tmp.init(num_points, 1);
+  set_zero(tmp.points);
+#pragma omp parallel for
+  for (long i = 0; i < num_points; ++i) {
+    const Coordinate& xg = psel[i];
+    const Coordinate xl = geo.coordinate_l_from_g(xg);
+    if (geo.is_local(xl)) {
+      const ColorMatrix& t = gt.get_elem(xl);
+      WilsonMatrix& wm = tmp.get_elem(i);
+      const WilsonMatrix& wm0 = prop0.get_elem(i);
+      wm = t * wm0;
+    }
+  }
+  glb_sum_double_vec(get_data(tmp.points));
   prop = tmp;
 }
 

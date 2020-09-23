@@ -15,8 +15,8 @@ inline void show_pion_corr(const PselProp& ps_prop, const SelProp& s_prop,
   const PointSelection& psel = get_point_selection(job_tag, traj);
   const FieldSelection& fsel = get_field_selection(job_tag, traj);
   const Geometry& geo = fsel.f_rank.geo;
-  const LatData ld_ps = contract_pion(ps_prop, psel, geo, tslice_src);
-  const LatData ld_s = contract_pion(s_prop, fsel, tslice_src);
+  const LatData ld_ps = contract_pion(ps_prop, tslice_src, geo, psel);
+  const LatData ld_s = contract_pion(s_prop, tslice_src, fsel);
   displayln_info(fname + ssprintf(": PselProp pion corr"));
   display_info(show(ld_ps));
   displayln_info(fname + ssprintf(": SelProp pion corr"));

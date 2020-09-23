@@ -15,7 +15,7 @@ inline void compute_traj(const std::string& job_tag, const int traj)
   // check_prop_data(job_tag, traj);
   compute_wall_src_info(job_tag, traj, 0);
   compute_wall_src_info(job_tag, traj, 1);
-  compute_wall_src_prop_norm_ratio(job_tag, traj);
+  // compute_wall_src_prop_norm_ratio(job_tag, traj);
   //
   clear_all_data_cache();
 }
@@ -36,15 +36,6 @@ inline void compute(const std::string& job_tag)
 
 inline void test()
 {
-  TIMER_VERBOSE("test");
-  const std::string job_tag = "48I";
-  LatData ld_light = get_wall_src_prop_norm_ratio(job_tag, 0);
-  displayln_info("48I light ratio");
-  displayln_info(show(ld_light));
-  LatData ld_strange = get_wall_src_prop_norm_ratio(job_tag, 1);
-  displayln_info("48I strange ratio");
-  displayln_info(show(ld_strange));
-  exit(0);
 }
 
 }  // namespace qlat
