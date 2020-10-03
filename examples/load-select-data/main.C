@@ -1,6 +1,6 @@
-#include "compute-wall-src-info.h"
-#include "compute-wall-src-prop-norm-ratio.h"
 #include "compute-check-prop.h"
+#include "compute-wall-src-prop-norm-ratio.h"
+#include "data-load-wsrc-info.h"
 #include "data-load.h"
 
 namespace qlat

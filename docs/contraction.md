@@ -66,7 +66,7 @@ $$
 
 ## ```contraction-pion.h```
 
-### Only Pion or Kaon correlation function
+### Pion or Kaon correlation function
 
 ```cpp
 inline LatData mk_pion_corr_table(const Coordinate& total_site)
@@ -176,6 +176,4 @@ $$
 = \text{Tr}\Big( \big(\sum_\vec x S_1(t_\text{src};t_\text{snk},\vec x) \Gamma_{\text{op}_\text{src}} \gamma_5
 \sum_\vec y S_2(t_\text{src};t_\text{snk},\vec y)^\dagger \gamma_5\big) \Gamma_{\text{op}_\text{snk}} \Big)
 $$
-
-
 
