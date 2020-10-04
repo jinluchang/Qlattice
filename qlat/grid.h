@@ -31,26 +31,26 @@ void grid_end() { end(); }
 namespace qlat
 {  //
 
-inline std::vector<int> grid_convert(const Coordinate& x)
+inline Grid::Coordinate grid_convert(const Coordinate& x)
 {
   std::vector<int> ret(4);
   for (int mu = 0; mu < 4; ++mu) {
     ret[mu] = x[mu];
   }
-  return ret;
+  return Grid::Coordinate(ret);
 }
 
-inline std::vector<int> grid_convert(const Coordinate& x, const int m)
+inline Grid::Coordinate grid_convert(const Coordinate& x, const int m)
 {
   std::vector<int> ret(5);
   for (int mu = 0; mu < 4; ++mu) {
     ret[mu + 1] = x[mu];
   }
   ret[0] = m;
-  return ret;
+  return Grid::Coordinate(ret);
 }
 
-inline Coordinate grid_convert(const std::vector<int>& x)
+inline Coordinate grid_convert(const Grid::Coordinate& x)
 {
   if (x.size() == 4) {
     return Coordinate(x[0], x[1], x[2], x[3]);
@@ -64,9 +64,8 @@ inline Coordinate grid_convert(const std::vector<int>& x)
 inline int id_node_from_grid(const Grid::GridCartesian* UGrid)
 {
   using namespace Grid;
-  using namespace Grid::QCD;
-  const std::vector<int>& mpi_layout = UGrid->_processors;
-  const std::vector<int>& mpi_corr = UGrid->_processor_coor;
+  const Grid::Coordinate& mpi_layout = UGrid->_processors;
+  const Grid::Coordinate& mpi_corr = UGrid->_processor_coor;
   const Coordinate size_node = grid_convert(mpi_layout);
   const Coordinate coor_node = grid_convert(mpi_corr);
   return index_from_coordinate(coor_node, size_node);
@@ -77,7 +76,6 @@ inline void grid_begin(
     const std::vector<Coordinate>& size_node_list = std::vector<Coordinate>())
 {
   using namespace Grid;
-  using namespace Grid::QCD;
   system("rm /dev/shm/Grid*");
   Grid_init(argc, argv);
   const int num_node = init_mpi(argc, argv);
@@ -109,16 +107,15 @@ void grid_end()
   end();
 }
 
-void grid_convert(Grid::QCD::LatticeGaugeFieldF& ggf, const GaugeField& gf)
+void grid_convert(Grid::LatticeGaugeFieldF& ggf, const GaugeField& gf)
 {
   TIMER_VERBOSE("grid_convert(ggf,gf)");
   using namespace Grid;
-  using namespace Grid::QCD;
   const Geometry& geo = gf.geo;
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
-    std::vector<int> coor = grid_convert(xl);
+    Grid::Coordinate coor = grid_convert(xl);
     const Vector<ColorMatrix> ms = gf.get_elems_const(xl);
     LorentzColourMatrixF gms;
     std::array<ComplexF, sizeof(LorentzColourMatrixF) / sizeof(ComplexF)>& fs =
@@ -138,17 +135,16 @@ void grid_convert(Grid::QCD::LatticeGaugeFieldF& ggf, const GaugeField& gf)
   }
 }
 
-void grid_convert(FermionField5d& ff, const Grid::QCD::LatticeFermionF& gff)
+void grid_convert(FermionField5d& ff, const Grid::LatticeFermionF& gff)
 // ff need to be initialized with correct geo
 {
   TIMER_VERBOSE("grid_convert(ff,gff)");
   using namespace Grid;
-  using namespace Grid::QCD;
   const Geometry& geo = ff.geo;
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
-    std::vector<int> coor = grid_convert(xl, 0);
+    Grid::Coordinate coor = grid_convert(xl, 0);
     Vector<WilsonVector> wvs = ff.get_elems(xl);
     std::array<ComplexF, sizeof(WilsonVector) / sizeof(ComplexT)> fs;
     for (int m = 0; m < geo.multiplicity; ++m) {
@@ -164,16 +160,15 @@ void grid_convert(FermionField5d& ff, const Grid::QCD::LatticeFermionF& gff)
   }
 }
 
-void grid_convert(Grid::QCD::LatticeFermionF& gff, const FermionField5d& ff)
+void grid_convert(Grid::LatticeFermionF& gff, const FermionField5d& ff)
 {
   TIMER_VERBOSE("grid_convert(gff,ff)");
   using namespace Grid;
-  using namespace Grid::QCD;
   const Geometry& geo = ff.geo;
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
-    std::vector<int> coor = grid_convert(xl, 0);
+    Grid::Coordinate coor = grid_convert(xl, 0);
     const Vector<WilsonVector> wvs = ff.get_elems_const(xl);
     std::array<ComplexF, sizeof(WilsonVector) / sizeof(ComplexT)> fs;
     for (int m = 0; m < geo.multiplicity; ++m) {
@@ -194,10 +189,10 @@ struct InverterDomainWallGrid : InverterDomainWall {
   Grid::GridRedBlackCartesian* UrbGrid = NULL;
   Grid::GridCartesian* FGrid = NULL;
   Grid::GridRedBlackCartesian* FrbGrid = NULL;
-  Grid::QCD::LatticeGaugeFieldF* Umu = NULL;
-  Grid::QCD::ZMobiusFermionF* Ddwf = NULL;
-  Grid::QCD::SchurDiagTwoOperator<Grid::QCD::ZMobiusFermionF,
-                                  Grid::QCD::LatticeFermionF>* HermOp = NULL;
+  Grid::LatticeGaugeFieldF* Umu = NULL;
+  Grid::ZMobiusFermionF* Ddwf = NULL;
+  Grid::SchurDiagTwoOperator<Grid::ZMobiusFermionF, Grid::LatticeFermionF>*
+      HermOp = NULL;
   //
   InverterDomainWallGrid() { init(); }
   ~InverterDomainWallGrid() { init(); }
@@ -212,7 +207,6 @@ struct InverterDomainWallGrid : InverterDomainWall {
   {
     TIMER_VERBOSE("InvGrid::setup");
     using namespace Grid;
-    using namespace Grid::QCD;
     free();
     const Coordinate total_site = geo.total_site();
     const Coordinate size_node = geo.geon.size_node;
@@ -232,8 +226,7 @@ struct InverterDomainWallGrid : InverterDomainWall {
     Ddwf = new ZMobiusFermionF(*Umu, *FGrid, *FrbGrid, *UGrid, *UrbGrid,
                                fa.mass, fa.m5, omega, 1.0, 0.0);
     HermOp =
-        new Grid::QCD::SchurDiagTwoOperator<ZMobiusFermionF, LatticeFermionF>(
-            *Ddwf);
+        new Grid::SchurDiagTwoOperator<ZMobiusFermionF, LatticeFermionF>(*Ddwf);
   }
   void setup(const GaugeField& gf_, const FermionAction& fa_)
   {
@@ -300,7 +293,6 @@ inline void multiply_m_grid(FermionField5d& out, const FermionField5d& in,
   TIMER("multiply_m_grid(5d,5d,InvGrid)");
   out.init(geo_resize(in.geo));
   using namespace Grid;
-  using namespace Grid::QCD;
   GridCartesian* FGrid = inv.FGrid;
   LatticeFermionF gin(FGrid), gout(FGrid);
   grid_convert(gin, in);
@@ -316,7 +308,6 @@ inline void invert_grid_no_dminus(FermionField5d& sol,
   TIMER_VERBOSE("invert_grid_no_dminus(5d,5d,InvGrid)");
   sol.init(geo_resize(src.geo));
   using namespace Grid;
-  using namespace Grid::QCD;
   GridCartesian* FGrid = inv.FGrid;
   LatticeFermionF gsrc(FGrid), gsol(FGrid);
   grid_convert(gsrc, src);
@@ -356,11 +347,10 @@ inline long cg_with_herm_sym_2(FermionField5d& sol, const FermionField5d& src,
   qassert(sol.geo.eo == 1);
   qassert(src.geo.eo == 1);
   using namespace Grid;
-  using namespace Grid::QCD;
   GridRedBlackCartesian* FrbGrid = inv.FrbGrid;
   LatticeFermionF gsrc(FrbGrid), gsol(FrbGrid);
-  gsrc.checkerboard = Odd;
-  gsol.checkerboard = Odd;
+  gsrc.Checkerboard() = Odd;
+  gsol.Checkerboard() = Odd;
   grid_convert(gsrc, src);
   grid_convert(gsol, sol);
   ConjugateGradient<LatticeFermionF> CG(stop_rsd, max_num_iter, false);
