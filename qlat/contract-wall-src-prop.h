@@ -20,9 +20,9 @@ struct WallSrcProps {
   //
   // below is refreshed by refresh_wall_snk_prop
   std::vector<std::vector<WilsonMatrix> >
-      sloppy_wall_snk;  // need sparse correction
+      sloppy_wall_snk;  // need sparse correction when contracted with itself
   std::vector<std::vector<WilsonMatrix> >
-      exact_wall_snk;  // need sparse correction
+      exact_wall_snk;  // need sparse correction when contracted with itself
   //
   // below is refreshed by refresh_prob
   std::vector<bool> exact_tslice_mask;  // true if has exact prop
@@ -89,6 +89,8 @@ inline void refresh_wall_snk_prop(WallSrcProps& wsp, const FieldSelection& fsel)
 {
   TIMER_VERBOSE("refresh_wall_snk_prop");
   const Coordinate total_site = fsel.f_rank.geo.total_site();
+  wsp.sloppy_wall_snk.resize(total_site[3]);
+  wsp.exact_wall_snk.resize(total_site[3]);
   for (int i = 0; i < total_site[3]; ++i) {
     {
       const SelProp& prop = wsp.sloppy[i];

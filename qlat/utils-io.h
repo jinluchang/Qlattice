@@ -113,9 +113,8 @@ inline void set_time_limit_auto()
                    ssprintf(": job init time = %.2lf hours.",
                             (get_actual_start_time() - start_time) / 3600.0));
   }
-  displayln_info(fname +
-                 ssprintf(": get_time_limit() = %.2lf hours.",
-                          get_time_limit() / 3600.0));
+  displayln_info(fname + ssprintf(": get_time_limit() = %.2lf hours.",
+                                  get_time_limit() / 3600.0));
 }
 
 inline double get_remaining_time()
@@ -185,12 +184,12 @@ inline void check_sigint()
 inline bool check_status()
 {
   TIMER_VERBOSE("check_status");
-  displayln_info(
-      fname +
-      ssprintf(": ( get_actual_total_time() + get_default_budget() ) / get_time_limit() "
-               "= ( %.2lf + %.2lf ) / %.2lf hours.",
-               get_actual_total_time() / 3600.0, get_default_budget() / 3600.0,
-               get_time_limit() / 3600.0));
+  displayln_info(fname + ssprintf(": ( get_actual_total_time() + "
+                                  "get_default_budget() ) / get_time_limit() "
+                                  "= ( %.2lf + %.2lf ) / %.2lf hours.",
+                                  get_actual_total_time() / 3600.0,
+                                  get_default_budget() / 3600.0,
+                                  get_time_limit() / 3600.0));
   if (get_default_budget() + get_actual_total_time() > get_time_limit()) {
     displayln_info(fname + ssprintf(": too little time left."));
     return true;
@@ -261,7 +260,7 @@ inline bool is_directory_sync_node(const std::string& fn)
 }
 
 inline mode_t& default_dir_mode()
-  // qlat parameter
+// qlat parameter
 {
   static mode_t mode = 0775;
   return mode;
@@ -709,6 +708,25 @@ inline DataTable qload_datatable_par(const std::string& path)
   DataTable ret = qload_datatable_par(fp);
   qclose(fp);
   return ret;
+}
+
+inline LatData lat_data_load_info(const std::string& path)
+{
+  TIMER("lat_data_load_info");
+  LatData ld;
+  if (get_id_node() == 0) {
+    ld.load(path);
+  }
+  bcast(ld);
+  return ld;
+}
+
+inline void lat_data_save_info(const std::string& path, const LatData& ld)
+{
+  TIMER("lat_data_save_info");
+  if (get_id_node() == 0) {
+    ld.save(path);
+  }
 }
 
 }  // namespace qlat

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "data-load.h"
+#include "data-load-base.h"
 
 namespace qlat
 {  //

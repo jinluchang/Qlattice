@@ -1,6 +1,6 @@
 #include "compute-check-prop.h"
+#include "compute-two-point-func.h"
 #include "compute-wall-src-prop-norm-ratio.h"
-#include "data-load-wsrc-info.h"
 #include "data-load.h"
 
 namespace qlat
@@ -13,9 +13,10 @@ inline void compute_traj(const std::string& job_tag, const int traj)
   // SADJUST ME
   // check_all_prop_psrc_exact(job_tag, traj);
   // check_prop_data(job_tag, traj);
-  compute_wall_src_info(job_tag, traj, 0);
-  compute_wall_src_info(job_tag, traj, 1);
+  // compute_wall_src_info(job_tag, traj, 0);
+  // compute_wall_src_info(job_tag, traj, 1);
   // compute_wall_src_prop_norm_ratio(job_tag, traj);
+  compute_two_point_func(job_tag, traj);
   //
   clear_all_data_cache();
 }
@@ -55,7 +56,6 @@ int main(int argc, char* argv[])
   begin(&argc, &argv, size_node_list);
   setup_log_idx();
   setup();
-  qmkdir_info(ssprintf("data"));
   qmkdir_info(ssprintf("analysis"));
   //
   test();
@@ -66,7 +66,7 @@ int main(int argc, char* argv[])
   job_tags.push_back("32D");
   job_tags.push_back("24DH");
   job_tags.push_back("32Dfine");
-  job_tags.push_back("48I");
+  // job_tags.push_back("48I");
   job_tags.push_back("64I");
   //
   for (int k = 0; k < (int)job_tags.size(); ++k) {

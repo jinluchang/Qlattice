@@ -1,6 +1,6 @@
 SHELL=/bin/bash
 
-CXX=mpicxx -std=c++0x -fopenmp -march=native -O2 -Wall
+CXX=mpiicpc -std=c++0x -fopenmp -march=native -O2 -Wall
 
 qlat_prefix=$$HOME/qlat-build/1.0
 
@@ -20,7 +20,7 @@ QLAT_LDFLAGS=$(QLAT_LIB)/libfftw3.a $(QLAT_LIB)/libz.a $(QLAT_LIB)/libcuba.a -lg
 all: qlat.x
 
 qlat.x: *.C *.h
-	-$(CXX) -o qlat.x $(QLAT_CXXFLAGS) *.C $(QLAT_LDFLAGS) 2>&1 | grep --color=always 'error:\|'
+	-time $(CXX) -o qlat.x $(QLAT_CXXFLAGS) *.C $(QLAT_LDFLAGS) 2>&1 | grep --color=always 'error:\|'
 
 clean:
 	rm *.o qlat.x

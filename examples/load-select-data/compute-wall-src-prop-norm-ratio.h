@@ -1,6 +1,5 @@
 #pragma once
 
-#include "compute-wall-src-info.h"
 #include "data-load.h"
 
 namespace qlat

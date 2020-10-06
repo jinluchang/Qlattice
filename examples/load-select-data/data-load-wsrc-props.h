@@ -1,6 +1,6 @@
 #pragma once
 
-#include "data-load.h"
+#include "data-load-base.h"
 
 namespace qlat
 {  //
@@ -38,7 +38,7 @@ inline WallSrcProps& get_wall_src_props(const std::string& job_tag,
       } else if (wi.accuracy == 2) {
         wsp.exact[wi.tslice] =
             get_prop_wsrc(job_tag, traj, wi.tslice, wi.type, wi.accuracy);
-        wsp.exact[wi.tslice] =
+        wsp.exact_point_snk[wi.tslice] =
             get_psel_prop_wsrc(job_tag, traj, wi.tslice, wi.type, wi.accuracy);
       } else {
         qassert(false);
@@ -51,6 +51,15 @@ inline WallSrcProps& get_wall_src_props(const std::string& job_tag,
     refresh_wsp(wsp, num_exact, gt, psel, fsel);
   }
   return cache[key];
+}
+
+inline bool check_wall_src_props(const std::string& job_tag, const int traj,
+                                 const int type)
+{
+  TIMER_VERBOSE("check_wall_src_props");
+  return check_prop_wsrc(job_tag, traj, type) and
+         check_gauge_transform(job_tag, traj) and
+         check_sparse_parameters(job_tag, traj);
 }
 
 }  // namespace qlat
