@@ -26,12 +26,12 @@ inline void compute_two_point_func_type(const std::string& job_tag,
       ld_two_point_wall_snk_func_sparse_corrected;
   const std::string path = get_two_point_func_path(job_tag, traj);
   const std::string path_two_point =
-      path + ssprintf("two-point-%d-%d.lat", type1, type2);
+      path + ssprintf("/two-point-%d-%d.lat", type1, type2);
   const std::string path_two_point_wall_snk =
-      path + ssprintf("two-point-wall-snk-%d-%d.lat", type1, type2);
+      path + ssprintf("/two-point-wall-snk-%d-%d.lat", type1, type2);
   const std::string path_two_point_wall_snk_sparse_corrected =
       path +
-      ssprintf("two-point-wall-snk-sparse-corrected-%d-%d.lat", type1, type2);
+      ssprintf("/two-point-wall-snk-sparse-corrected-%d-%d.lat", type1, type2);
   if (does_file_exist_sync_node(path_two_point_wall_snk)) {
     ld_two_point_wall_snk_func = lat_data_load_info(path_two_point_wall_snk);
   } else {
@@ -77,6 +77,7 @@ inline void compute_two_point_func(const std::string& job_tag, const int traj)
           ssprintf("lock-two-point-func-%s-%d", job_tag.c_str(), traj))) {
     return;
   }
+  setup(job_tag, traj);
   qmkdir_info("analysis/lat-two-point");
   qmkdir_info(ssprintf("analysis/lat-two-point/%s", job_tag.c_str()));
   qmkdir_info(path);
