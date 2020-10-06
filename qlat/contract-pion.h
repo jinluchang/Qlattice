@@ -313,7 +313,7 @@ inline LatData contract_two_point_function(const WallSrcProps& wsp1,
     qassert(wsp1.exact_tslice_mask[tslice] == wsp2.exact_tslice_mask[tslice]);
     if (wsp1.exact_tslice_mask[tslice]) {
       const LatData ld_1 = contract_two_point_function(
-          wsp1.exact[tslice], wsp1.exact[tslice], tslice, fsel);
+          wsp1.exact[tslice], wsp2.exact[tslice], tslice, fsel);
       ld += wsp1.sloppy_exact_ratio_1 * (ld_1 - ld_0);
     }
   }
@@ -341,7 +341,7 @@ inline LatData contract_two_point_wall_snk_function(const WallSrcProps& wsp1,
     qassert(wsp1.exact_tslice_mask[tslice] == wsp2.exact_tslice_mask[tslice]);
     if (wsp1.exact_tslice_mask[tslice]) {
       const LatData ld_1 = contract_two_point_wall_snk_function(
-          wsp1.exact_wall_snk[tslice], wsp1.exact_wall_snk[tslice], tslice,
+          wsp1.exact_wall_snk[tslice], wsp2.exact_wall_snk[tslice], tslice,
           total_site);
       ld += wsp1.sloppy_exact_ratio_1 * (ld_1 - ld_0);
     }
