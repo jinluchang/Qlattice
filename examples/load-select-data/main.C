@@ -1,5 +1,6 @@
 #include "compute-check-prop.h"
 #include "compute-two-point-func.h"
+#include "compute-three-point-func.h"
 #include "compute-wall-src-prop-norm-ratio.h"
 #include "data-load.h"
 
@@ -10,6 +11,7 @@ inline void compute_traj(const std::string& job_tag, const int traj)
 {
   setup(job_tag);
   TIMER_VERBOSE("compute_traj");
+  displayln_info(ssprintf("Computing %s %d", job_tag.c_str(), traj));
   // SADJUST ME
   // check_all_prop_psrc_exact(job_tag, traj);
   // check_prop_data(job_tag, traj);
@@ -17,6 +19,7 @@ inline void compute_traj(const std::string& job_tag, const int traj)
   // compute_wall_src_info(job_tag, traj, 1);
   // compute_wall_src_prop_norm_ratio(job_tag, traj);
   compute_two_point_func(job_tag, traj);
+  compute_three_point_func(job_tag, traj);
   //
   clear_all_data_cache();
 }
@@ -53,6 +56,9 @@ int main(int argc, char* argv[])
   size_node_list.push_back(Coordinate(1, 1, 2, 16));
   size_node_list.push_back(Coordinate(1, 2, 2, 16));
   size_node_list.push_back(Coordinate(2, 2, 2, 16));
+  size_node_list.push_back(Coordinate(2, 2, 4, 16));
+  size_node_list.push_back(Coordinate(2, 4, 4, 16));
+  size_node_list.push_back(Coordinate(4, 4, 4, 16));
   begin(&argc, &argv, size_node_list);
   setup_log_idx();
   setup();
@@ -66,7 +72,7 @@ int main(int argc, char* argv[])
   job_tags.push_back("32D");
   job_tags.push_back("24DH");
   job_tags.push_back("32Dfine");
-  // job_tags.push_back("48I");
+  job_tags.push_back("48I");
   job_tags.push_back("64I");
   //
   for (int k = 0; k < (int)job_tags.size(); ++k) {

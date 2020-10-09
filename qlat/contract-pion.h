@@ -422,17 +422,17 @@ inline LatData contract_three_point_function(const SelProp& prop_a,
   return ld;
 }
 
-inline LatData contract_three_point_function(const WallSrcProps& wsp1,
-                                             const WallSrcProps& wsp2,
-                                             const WallSrcProps& wsp3,
-                                             const FieldSelection& fsel,
-                                             const std::string& job_tag,
-                                             const int traj)
-// job_tag and traj only used to initialize RngState
+inline LatData contract_three_point_function(
+    const WallSrcProps& wsp1, const WallSrcProps& wsp2,
+    const WallSrcProps& wsp3, const FieldSelection& fsel,
+    const int yt_measurement_sparsity = 1, const int yt_measurement_start = 0)
 {
   TIMER_VERBOSE("compute_three_point_function");
   const Geometry& geo = fsel.f_rank.geo;
   const Coordinate total_site = geo.total_site();
+  qassert(total_site[3] % yt_measurement_sparsity == 0);
+  qassert(0 <= yt_measurement_start and
+          yt_measurement_start < yt_measurement_sparsity);
   qassert(wsp1.initialized);
   qassert(wsp2.initialized);
   qassert(wsp3.initialized);
@@ -446,15 +446,6 @@ inline LatData contract_three_point_function(const WallSrcProps& wsp1,
     qassert(wsp1.exact_tslice_mask[i] == wsp2.exact_tslice_mask[i]);
     qassert(wsp1.exact_tslice_mask[i] == wsp3.exact_tslice_mask[i]);
   }
-  const int yt_measurement_sparsity = 4;
-  qassert(total_site[3] % yt_measurement_sparsity == 0);
-  RngState rs = RngState("contract_three_point_function")
-                    .split("yt-start-time-slice")
-                    .split(job_tag)
-                    .split(traj);
-  const int yt_measurement_start = rand_gen(rs) % yt_measurement_sparsity;
-  qassert(0 <= yt_measurement_start and
-          yt_measurement_start < yt_measurement_sparsity);
   LatData ld;
   for (int tslice = yt_measurement_start; tslice < total_site[3];
        tslice += yt_measurement_sparsity) {

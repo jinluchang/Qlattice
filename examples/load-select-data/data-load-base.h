@@ -76,19 +76,19 @@ inline GaugeTransformCache& get_gauge_transform_cache()
 
 inline PselPropCache& get_psel_prop_cache()
 {
-  static PselPropCache cache("PselPropCache", 2048, 128);
+  static PselPropCache cache("PselPropCache", 32, 4);
   return cache;
 }
 
 inline SelPropCache& get_prop_psrc_cache()
 {
-  static SelPropCache cache("PropPsrcCache", 128, 8);
+  static SelPropCache cache("PropPsrcCache", 8, 4);
   return cache;
 }
 
 inline SelPropCache& get_prop_wsrc_cache()
 {
-  static SelPropCache cache("PropWsrcCache", 256, 8);
+  static SelPropCache cache("PropWsrcCache", 8, 4);
   return cache;
 }
 
