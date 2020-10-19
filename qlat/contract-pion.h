@@ -373,6 +373,10 @@ inline LatData contract_three_point_function(const SelProp& prop_a,
 // |  ->- prop_a ->- op ->- inv prop_b ->- |
 // a (gamma5)                              b (gamma5)
 // |            -<- wm_ab -<-              |
+//
+// prop_a (type1)
+// prop_b (type2)
+// wm_ab (type3)
 {
   TIMER_VERBOSE("contract_three_point_function");
   const std::array<SpinMatrix, 16>& gms = SpinMatrixConstants::get_cps_gms();

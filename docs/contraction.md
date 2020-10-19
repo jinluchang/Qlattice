@@ -177,3 +177,47 @@ $$
 \sum_\vec y S_2(t_\text{src};t_\text{snk},\vec y)^\dagger \gamma_5\big) \Gamma_{\text{op}_\text{snk}} \Big)
 $$
 
+### Three point function
+
+```cpp
+inline LatData mk_three_point_table(const Coordinate& total_site)
+{
+  LatData ld;
+  ld.info.push_back(lat_dim_number("tsep", 0, total_site[3] - 1));
+  ld.info.push_back(lat_dim_number("top", 0, total_site[3] - 1));
+  ld.info.push_back(lat_dim_number("op", 0, 15));
+  ld.info.push_back(lat_dim_re_im());
+  lat_data_alloc(ld);
+  set_zero(ld);
+  return ld;
+}
+```
+
+$$
+\text{ld}
+[0\le t_\text{sep} < T]
+[0\le t_\text{op} < T]
+[0\le \text{op} < 16]
+$$
+
+```cpp
+inline LatData contract_three_point_function(const SelProp& prop_a,
+                                             const SelProp& prop_b,
+                                             const WilsonMatrix& wm_ab,
+                                             const int ta, const int tb,
+                                             const FieldSelection& fsel);
+// ``wm_ab'' is prop from ``tb'' to ``ta''.
+// |  ->- prop_a ->- op ->- inv prop_b ->- |
+// a (gamma5)                              b (gamma5)
+// |            -<- wm_ab -<-              |
+//
+// prop_a (type1)
+// prop_b (type2)
+// wm_ab (type3)
+
+inline LatData contract_three_point_function(
+    const WallSrcProps& wsp1, const WallSrcProps& wsp2,
+    const WallSrcProps& wsp3, const FieldSelection& fsel,
+    const int yt_measurement_sparsity = 1, const int yt_measurement_start = 0);
+```
+
