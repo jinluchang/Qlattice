@@ -227,15 +227,17 @@ inline LatData contract_three_point_function(
 ```
 
 $$
+\ba
 \text{ld}[t_\text{sep}][t_\text{op}][\text{op}]
-= \text{Tr}\Big(
+= \text{Tr}
 \sum_\vec x
-\big( \gamma_5 S_2(t_\text{snk};t_\text{op},\vec x)^\dagger \gamma_5 \big)
-\Gamma_{\text{op}} S_1(t_\text{op},\vec x;t_\text{src})  \gamma_5 
+\Big(
+S_1(t_\text{op},\vec x;t_\text{src})  \gamma_5 
 S_3(t_\text{src};t_\text{snk})
 \gamma_5
+\big( \gamma_5 S_2(t_\text{snk};t_\text{op},\vec x)^\dagger \gamma_5 \big)
 \Big)
+\Gamma_{\text{op}} 
+\ea
 $$
-
-
 
