@@ -95,7 +95,7 @@ inline LatData contract_kaon(const SelProp& prop1, const SelProp& prop2,
 $$
 \text{ld}[t_\text{sep}] =
 \sum_{\vec x}
-\text{Tr}\big(\text{prop}_1(t_\text{snk},\vec x)\text{prop}_2(t_\text{snk},\vec x)^\dagger\big)
+\text{Tr}\big(\text{prop}_1(\vec x,t_\text{snk})\text{prop}_2(\vec x,t_\text{snk})^\dagger\big)
 $$
 
 ```cpp
@@ -110,7 +110,7 @@ inline LatData contract_kaon_wall_snk(const SelProp& prop1,
 
 $$
 \text{ld}[t_\text{sep}] =
-\text{Tr}\big(\sum_{\vec x}\text{prop}_1(t_\text{snk},\vec x)\sum_{\vec y}\text{prop}_2(t_\text{snk},\vec y)^\dagger\big)
+\text{Tr}\big(\sum_{\vec x}\text{prop}_1(\vec x,t_\text{snk})\sum_{\vec y}\text{prop}_2(\vec y,t_\text{snk})^\dagger\big)
 $$
 
 ### Two point function
@@ -149,8 +149,8 @@ inline LatData contract_two_point_function(const WallSrcProps& wsp1,
 
 $$
 \text{ld}[t_\text{sep}][\text{op}_\text{src}][\text{op}_\text{snk}]
-= \text{Tr}\Big( \big(\sum_\vec x \text{prop}_1(t_\text{snk},\vec x) \Gamma_{\text{op}_\text{src}} \gamma_5
-\text{prop}_2(t_\text{snk},\vec x)^\dagger \gamma_5\big) \Gamma_{\text{op}_\text{snk}} \Big)
+= \text{Tr}\Big( \big(\sum_\vec x S_1(\vec x,t_\text{snk};t_\text{src}) \Gamma_{\text{op}_\text{src}} \gamma_5
+S_2(\vec x,t_\text{snk};t_\text{src})^\dagger \gamma_5\big) \Gamma_{\text{op}_\text{snk}} \Big)
 $$
 
 ```cpp
@@ -172,9 +172,14 @@ inline LatData contract_two_point_wall_snk_function(
 ```
 
 $$
+\ba
 \text{ld}[t_\text{sep}][\text{op}_\text{src}][\text{op}_\text{snk}]
-= \text{Tr}\Big( \big(\sum_\vec x S_1(t_\text{src};t_\text{snk},\vec x) \Gamma_{\text{op}_\text{src}} \gamma_5
-\sum_\vec y S_2(t_\text{src};t_\text{snk},\vec y)^\dagger \gamma_5\big) \Gamma_{\text{op}_\text{snk}} \Big)
+&=& \text{Tr}\Big( \big(\sum_\vec x S_1(\vec x,t_\text{snk};t_\text{src}) \Gamma_{\text{op}_\text{src}}
+\sum_\vec y S_2(t_\text{src};\vec y,t_\text{snk})\big) \Gamma_{\text{op}_\text{snk}} \Big)
+\\
+&=& \text{Tr}\Big( \big(\sum_\vec x S_1(\vec x,t_\text{snk};t_\text{src}) \Gamma_{\text{op}_\text{src}} \gamma_5
+\sum_\vec y S_2(\vec y,t_\text{snk};t_\text{src})^\dagger \gamma_5\big) \Gamma_{\text{op}_\text{snk}} \Big)
+\ea
 $$
 
 ### Three point function
@@ -220,4 +225,17 @@ inline LatData contract_three_point_function(
     const WallSrcProps& wsp3, const FieldSelection& fsel,
     const int yt_measurement_sparsity = 1, const int yt_measurement_start = 0);
 ```
+
+$$
+\text{ld}[t_\text{sep}][t_\text{op}][\text{op}]
+= \text{Tr}\Big(
+\sum_\vec x
+\big( \gamma_5 S_2(t_\text{snk};t_\text{op},\vec x)^\dagger \gamma_5 \big)
+\Gamma_{\text{op}} S_1(t_\text{op},\vec x;t_\text{src})  \gamma_5 
+S_3(t_\text{src};t_\text{snk})
+\gamma_5
+\Big)
+$$
+
+
 
