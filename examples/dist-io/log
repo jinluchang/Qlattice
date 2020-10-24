@@ -42,6 +42,7 @@ Qlat::make_shuffle_plan: total num_send_packs =          8
 Qlat::make_shuffle_plan: total num_recv_packs =        120
 Qlat::make_shuffle_plan: total num_send_msgs  =         32
 Qlat::make_shuffle_plan: total num_recv_msgs  =         32
+Qlat::make_shuffle_plan: global_comm_size =       4096
 Qlat::ShufflePlanCache: to add 1 / 16.
 crc32 = 484747F9
 shuffle_field: 1x2x2x2 -> 1x1x1x1 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
@@ -53,6 +54,7 @@ Qlat::make_shuffle_plan: total num_send_packs =          8
 Qlat::make_shuffle_plan: total num_recv_packs =        127
 Qlat::make_shuffle_plan: total num_send_msgs  =          8
 Qlat::make_shuffle_plan: total num_recv_msgs  =          8
+Qlat::make_shuffle_plan: global_comm_size =       4096
 Qlat::ShufflePlanCache: to add 2 / 16.
 shuffle_field_back: 1x1x1x1 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 dist_crc32 = 2C3EF014
@@ -67,6 +69,7 @@ Qlat::make_shuffle_plan: total num_send_packs =       1024
 Qlat::make_shuffle_plan: total num_recv_packs =         16
 Qlat::make_shuffle_plan: total num_send_msgs  =          8
 Qlat::make_shuffle_plan: total num_recv_msgs  =          8
+Qlat::make_shuffle_plan: global_comm_size =       4096
 Qlat::ShufflePlanCache: to add 3 / 16.
 shuffle_field_back: 2x2x2x2 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 dist_crc32 = 2C3EF014
@@ -86,6 +89,7 @@ Qlat::make_shuffle_plan: total num_send_packs =         64
 Qlat::make_shuffle_plan: total num_recv_packs =         16
 Qlat::make_shuffle_plan: total num_send_msgs  =         16
 Qlat::make_shuffle_plan: total num_recv_msgs  =         16
+Qlat::make_shuffle_plan: global_comm_size =       4096
 Qlat::ShufflePlanCache: to add 4 / 16.
 shuffle_field_back: 1x2x4x2 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 dist_crc32 = 2C3EF014
@@ -100,6 +104,7 @@ Qlat::make_shuffle_plan: total num_send_packs =       1024
 Qlat::make_shuffle_plan: total num_recv_packs =         60
 Qlat::make_shuffle_plan: total num_send_msgs  =         16
 Qlat::make_shuffle_plan: total num_recv_msgs  =         16
+Qlat::make_shuffle_plan: global_comm_size =       4096
 Qlat::ShufflePlanCache: to add 5 / 16.
 shuffle_field_back: 2x2x1x1 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 dist_crc32 = 2C3EF014
@@ -114,6 +119,7 @@ Qlat::make_shuffle_plan: total num_send_packs =       2040
 Qlat::make_shuffle_plan: total num_recv_packs =        256
 Qlat::make_shuffle_plan: total num_send_msgs  =         16
 Qlat::make_shuffle_plan: total num_recv_msgs  =         16
+Qlat::make_shuffle_plan: global_comm_size =       4096
 Qlat::ShufflePlanCache: to add 6 / 16.
 shuffle_field_back: 4x4x4x4 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 dist_crc32 = 2C3EF014

@@ -17,6 +17,7 @@ Qlat::make_shuffle_plan: total num_send_packs =          8
 Qlat::make_shuffle_plan: total num_recv_packs =         56
 Qlat::make_shuffle_plan: total num_send_msgs  =         32
 Qlat::make_shuffle_plan: total num_recv_msgs  =         32
+Qlat::make_shuffle_plan: global_comm_size =        512
 Qlat::ShufflePlanCache: to add 1 / 16.
 demo: compute crc32=AB54D286.
 demo: fill with random numbers
@@ -225,6 +226,7 @@ Qlat::make_shuffle_plan: total num_send_packs =          8
 Qlat::make_shuffle_plan: total num_recv_packs =         64
 Qlat::make_shuffle_plan: total num_send_msgs  =         16
 Qlat::make_shuffle_plan: total num_recv_msgs  =         16
+Qlat::make_shuffle_plan: global_comm_size =        512
 Qlat::ShufflePlanCache: to add 2 / 16.
 FieldsWriter: open 'results/fields.partial'.
 write(sfw,fn,field,sbs): writting sparse field with fn='f.psel'.

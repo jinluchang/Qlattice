@@ -5,7 +5,24 @@
 #include <qlat/config.h>
 #include <qlat/utils.h>
 
-QLAT_START_NAMESPACE
+namespace qlat
+{  //
+
+struct ShufflePlanMsgInfo {
+  int id_node;  // index for the target send/recv node
+  long idx;     // idx of the starting location in send/recv buffer
+  long size;    // number of data site for this msg
+};
+
+struct ShuffleCommPlan {
+  long global_comm_size;  // global comm data size for Timer flops
+  long total_send_size;   // total send buffer size
+  std::vector<ShufflePlanMsgInfo>
+      send_msg_infos;    // corresponds to every sent msg
+  long total_recv_size;  // total recv buffer size
+  std::vector<ShufflePlanMsgInfo>
+      recv_msg_infos;  // corresponds to every recv msg
+};
 
 struct ShufflePlanRecvPackInfo {
   int local_geos_idx;  // idx of the field that the data belong to
@@ -20,28 +37,85 @@ struct ShufflePlanSendPackInfo {
   long size;        // number of data site for this pack of data
 };
 
-struct ShufflePlanMsgInfo {
-  int id_node;  // index for the target send/recv node
-  long idx;     // idx of the starting location in send/recv buffer
-  long size;    // number of data site for this msg
-};
-
 struct ShufflePlan {
   Geometry geo_send;                // geo of the send field
   std::vector<Geometry> geos_recv;  // geos of the recv fields
-  long total_send_size;             // total send buffer size
-  std::vector<ShufflePlanMsgInfo>
-      send_msg_infos;  // corresponds to every sent msg
+  long n_elems_send;  // n_elems for only send field, useful in sparse field
+  std::vector<long>
+      n_elems_recv;  // n_elems for recv fields, only useful in sparse field
   std::vector<ShufflePlanSendPackInfo>
       send_pack_infos;  // corresponds to how to create send buffer from local
                         // field
-  long total_recv_size;
-  std::vector<ShufflePlanMsgInfo>
-      recv_msg_infos;  // corresponds to every recv msg
   std::vector<ShufflePlanRecvPackInfo>
       recv_pack_infos;  // corresponds to how to copy recv buffer to new local
                         // fields
+  ShuffleCommPlan scp;  // plan for comm
 };
+
+template <class M>
+void shuffle_field_comm(Vector<M> recv_buffer, const Vector<M> send_buffer,
+                        const ShuffleCommPlan& scp, const int multiplicity)
+{
+  sync_node();
+  TIMER_FLOPS("shuffle_field_comm(recv,send,scp,multiplicity)");
+  const long total_bytes = scp.global_comm_size * multiplicity * sizeof(M);
+  timer.flops += total_bytes;
+  qassert(send_buffer.size() == scp.total_send_size * multiplicity);
+  qassert(recv_buffer.size() == scp.total_recv_size * multiplicity);
+  std::vector<MPI_Request> send_reqs(scp.send_msg_infos.size());
+  std::vector<MPI_Request> recv_reqs(scp.recv_msg_infos.size());
+  {
+    TIMER("shuffle_field_comm-init");
+    const int mpi_tag = 4;
+    for (size_t i = 0; i < scp.send_msg_infos.size(); ++i) {
+      const ShufflePlanMsgInfo& mi = scp.send_msg_infos[i];
+      MPI_Isend(&send_buffer[mi.idx * multiplicity],
+                mi.size * multiplicity * sizeof(M), MPI_BYTE, mi.id_node,
+                mpi_tag, get_comm(), &send_reqs[i]);
+    }
+    for (size_t i = 0; i < scp.recv_msg_infos.size(); ++i) {
+      const ShufflePlanMsgInfo& mi = scp.recv_msg_infos[i];
+      MPI_Irecv(&recv_buffer[mi.idx * multiplicity],
+                mi.size * multiplicity * sizeof(M), MPI_BYTE, mi.id_node,
+                mpi_tag, get_comm(), &recv_reqs[i]);
+    }
+  }
+  MPI_Waitall(recv_reqs.size(), recv_reqs.data(), MPI_STATUS_IGNORE);
+  MPI_Waitall(send_reqs.size(), send_reqs.data(), MPI_STATUS_IGNORE);
+  sync_node();
+}
+
+template <class M>
+void shuffle_field_comm_back(Vector<M> send_buffer, const Vector<M> recv_buffer,
+                             const ShuffleCommPlan& scp, const int multiplicity)
+// name is reversed
+{
+  sync_node();
+  TIMER_FLOPS("shuffle_field_comm_back(send,recv,scp,multiplicity)");
+  const long total_bytes = scp.global_comm_size * multiplicity * sizeof(M);
+  timer.flops += total_bytes;
+  std::vector<MPI_Request> send_reqs(scp.send_msg_infos.size());
+  std::vector<MPI_Request> recv_reqs(scp.recv_msg_infos.size());
+  {
+    TIMER("shuffle_field_comm_back-init");
+    const int mpi_tag = 5;
+    for (size_t i = 0; i < scp.recv_msg_infos.size(); ++i) {
+      const ShufflePlanMsgInfo& mi = scp.recv_msg_infos[i];
+      MPI_Isend(&recv_buffer[mi.idx * multiplicity],
+                mi.size * multiplicity * sizeof(M), MPI_BYTE, mi.id_node,
+                mpi_tag, get_comm(), &recv_reqs[i]);
+    }
+    for (size_t i = 0; i < scp.send_msg_infos.size(); ++i) {
+      const ShufflePlanMsgInfo& mi = scp.send_msg_infos[i];
+      MPI_Irecv(&send_buffer[mi.idx * multiplicity],
+                mi.size * multiplicity * sizeof(M), MPI_BYTE, mi.id_node,
+                mpi_tag, get_comm(), &send_reqs[i]);
+    }
+  }
+  MPI_Waitall(recv_reqs.size(), recv_reqs.data(), MPI_STATUS_IGNORE);
+  MPI_Waitall(send_reqs.size(), send_reqs.data(), MPI_STATUS_IGNORE);
+  sync_node();
+}
 
 template <class M>
 void shuffle_field(std::vector<Field<M> >& fs, const Field<M>& f,
@@ -53,9 +127,9 @@ void shuffle_field(std::vector<Field<M> >& fs, const Field<M>& f,
   clear(fs);
   sync_node();
   const long total_bytes =
-      sp.total_send_size * geo.multiplicity * sizeof(M) * get_num_node();
+      sp.scp.total_send_size * geo.multiplicity * sizeof(M) * get_num_node();
   timer.flops += total_bytes;
-  std::vector<M> send_buffer(sp.total_send_size * geo.multiplicity);
+  std::vector<M> send_buffer(sp.scp.total_send_size * geo.multiplicity);
 #pragma omp parallel for
   for (size_t i = 0; i < sp.send_pack_infos.size(); ++i) {
     const ShufflePlanSendPackInfo& pi = sp.send_pack_infos[i];
@@ -63,33 +137,9 @@ void shuffle_field(std::vector<Field<M> >& fs, const Field<M>& f,
            f.get_elems_const(pi.field_idx).data(),
            pi.size * geo.multiplicity * sizeof(M));
   }
-  std::vector<M> recv_buffer(sp.total_recv_size * geo.multiplicity);
-  {
-    sync_node();
-    TIMER_FLOPS("shuffle_field-comm");
-    timer.flops += total_bytes;
-    std::vector<MPI_Request> send_reqs(sp.send_msg_infos.size());
-    std::vector<MPI_Request> recv_reqs(sp.recv_msg_infos.size());
-    {
-      TIMER("shuffle_field-comm-init");
-      const int mpi_tag = 4;
-      for (size_t i = 0; i < sp.send_msg_infos.size(); ++i) {
-        const ShufflePlanMsgInfo& mi = sp.send_msg_infos[i];
-        MPI_Isend(&send_buffer[mi.idx * geo.multiplicity],
-                  mi.size * geo.multiplicity * sizeof(M), MPI_BYTE, mi.id_node,
-                  mpi_tag, get_comm(), &send_reqs[i]);
-      }
-      for (size_t i = 0; i < sp.recv_msg_infos.size(); ++i) {
-        const ShufflePlanMsgInfo& mi = sp.recv_msg_infos[i];
-        MPI_Irecv(&recv_buffer[mi.idx * geo.multiplicity],
-                  mi.size * geo.multiplicity * sizeof(M), MPI_BYTE, mi.id_node,
-                  mpi_tag, get_comm(), &recv_reqs[i]);
-      }
-    }
-    MPI_Waitall(recv_reqs.size(), recv_reqs.data(), MPI_STATUS_IGNORE);
-    MPI_Waitall(send_reqs.size(), send_reqs.data(), MPI_STATUS_IGNORE);
-    sync_node();
-  }
+  std::vector<M> recv_buffer(sp.scp.total_recv_size * geo.multiplicity);
+  shuffle_field_comm(get_data(recv_buffer), get_data(send_buffer), sp.scp,
+                     geo.multiplicity);
   clear(send_buffer);
   std::vector<Geometry> geos_recv = sp.geos_recv;
   fs.resize(geos_recv.size());
@@ -115,9 +165,9 @@ void shuffle_field_back(Field<M>& f, const std::vector<Field<M> >& fs,
   const Geometry& geo = f.geo;
   sync_node();
   const long total_bytes =
-      sp.total_send_size * geo.multiplicity * sizeof(M) * get_num_node();
+      sp.scp.total_send_size * geo.multiplicity * sizeof(M) * get_num_node();
   timer.flops += total_bytes;
-  std::vector<M> recv_buffer(sp.total_recv_size * geo.multiplicity);
+  std::vector<M> recv_buffer(sp.scp.total_recv_size * geo.multiplicity);
 #pragma omp parallel for
   for (size_t i = 0; i < sp.recv_pack_infos.size(); ++i) {
     const ShufflePlanRecvPackInfo& pi = sp.recv_pack_infos[i];
@@ -125,37 +175,9 @@ void shuffle_field_back(Field<M>& f, const std::vector<Field<M> >& fs,
            fs[pi.local_geos_idx].get_elems_const(pi.field_idx).data(),
            pi.size * geo.multiplicity * sizeof(M));
   }
-  std::vector<M> send_buffer(sp.total_send_size * geo.multiplicity);
-  {
-    sync_node();
-    TIMER_FLOPS("shuffle_field-comm");
-    timer.flops += total_bytes;
-    std::vector<MPI_Request> send_reqs(sp.send_msg_infos.size());
-    std::vector<MPI_Request> recv_reqs(sp.recv_msg_infos.size());
-    {
-      TIMER("shuffle_field-comm-init");
-      const int mpi_tag = 5;
-      for (size_t i = 0; i < sp.recv_msg_infos.size(); ++i) {
-        const ShufflePlanMsgInfo& mi = sp.recv_msg_infos[i];
-        MPI_Isend(&recv_buffer[mi.idx * geo.multiplicity],
-                  mi.size * geo.multiplicity * sizeof(M), MPI_BYTE, mi.id_node,
-                  mpi_tag, get_comm(), &recv_reqs[i]);
-      }
-      for (size_t i = 0; i < sp.send_msg_infos.size(); ++i) {
-        const ShufflePlanMsgInfo& mi = sp.send_msg_infos[i];
-        MPI_Irecv(&send_buffer[mi.idx * geo.multiplicity],
-                  mi.size * geo.multiplicity * sizeof(M), MPI_BYTE, mi.id_node,
-                  mpi_tag, get_comm(), &send_reqs[i]);
-      }
-    }
-    for (size_t i = 0; i < recv_reqs.size(); ++i) {
-      MPI_Wait(&recv_reqs[i], MPI_STATUS_IGNORE);
-    }
-    for (size_t i = 0; i < send_reqs.size(); ++i) {
-      MPI_Wait(&send_reqs[i], MPI_STATUS_IGNORE);
-    }
-    sync_node();
-  }
+  std::vector<M> send_buffer(sp.scp.total_send_size * geo.multiplicity);
+  shuffle_field_comm_back(get_data(send_buffer), get_data(recv_buffer), sp.scp,
+                          geo.multiplicity);
   clear(recv_buffer);
 #pragma omp parallel for
   for (size_t i = 0; i < sp.send_pack_infos.size(); ++i) {
@@ -292,7 +314,7 @@ inline ShufflePlan make_shuffle_plan(const ShufflePlanKey& spk)
   // geos_recv
   ret.geos_recv = geos_recv;
   // total_send_size
-  ret.total_send_size = geo.local_volume();
+  ret.scp.total_send_size = geo.local_volume();
   // send_id_node_size
   // send_new_id_node_size
   std::map<int, long> send_id_node_size;
@@ -323,13 +345,13 @@ inline ShufflePlan make_shuffle_plan(const ShufflePlanKey& spk)
             id_node_in_shuffle, new_num_node, num_node);
         mi.idx = count;
         mi.size = std::min(node_size_remain, get_shuffle_max_msg_size());
-        ret.send_msg_infos.push_back(mi);
+        ret.scp.send_msg_infos.push_back(mi);
         node_size_remain -= mi.size;
         count += mi.size;
       }
     }
     qassert(count == geo.local_volume());
-    qassert(count == ret.total_send_size);
+    qassert(count == ret.scp.total_send_size);
   }
   // send_new_id_node_idx
   std::map<int, long> send_new_id_node_idx;
@@ -343,7 +365,7 @@ inline ShufflePlan make_shuffle_plan(const ShufflePlanKey& spk)
       count += node_size;
     }
     qassert(count == geo.local_volume());
-    qassert(count == ret.total_send_size);
+    qassert(count == ret.scp.total_send_size);
   }
   // send_pack_infos
   {
@@ -373,10 +395,10 @@ inline ShufflePlan make_shuffle_plan(const ShufflePlanKey& spk)
     }
   }
   // total_recv_size
-  ret.total_recv_size = 0;
+  ret.scp.total_recv_size = 0;
   for (size_t i = 0; i < ret.geos_recv.size(); ++i) {
     const Geometry& geos_recv = ret.geos_recv[i];
-    ret.total_recv_size += geos_recv.local_volume();
+    ret.scp.total_recv_size += geos_recv.local_volume();
   }
   // recv_id_node_size
   std::map<int, long> recv_id_node_size;
@@ -404,12 +426,12 @@ inline ShufflePlan make_shuffle_plan(const ShufflePlanKey& spk)
         mi.id_node = id_node;
         mi.idx = count;
         mi.size = std::min(node_size_remain, get_shuffle_max_msg_size());
-        ret.recv_msg_infos.push_back(mi);
+        ret.scp.recv_msg_infos.push_back(mi);
         node_size_remain -= mi.size;
         count += mi.size;
       }
     }
-    qassert(count == ret.total_recv_size);
+    qassert(count == ret.scp.total_recv_size);
   }
   // recv_id_node_idx
   std::map<int, long> recv_id_node_idx;
@@ -422,7 +444,7 @@ inline ShufflePlan make_shuffle_plan(const ShufflePlanKey& spk)
       recv_id_node_idx[id_node] = count;
       count += node_size;
     }
-    qassert(count == ret.total_recv_size);
+    qassert(count == ret.scp.total_recv_size);
   }
   // recv_pack_infos
   {
@@ -457,8 +479,8 @@ inline ShufflePlan make_shuffle_plan(const ShufflePlanKey& spk)
   }
   long num_send_packs = ret.send_pack_infos.size();
   long num_recv_packs = ret.recv_pack_infos.size();
-  long num_send_msgs = ret.send_msg_infos.size();
-  long num_recv_msgs = ret.recv_msg_infos.size();
+  long num_send_msgs = ret.scp.send_msg_infos.size();
+  long num_recv_msgs = ret.scp.recv_msg_infos.size();
   displayln_info(ssprintf("%s::%s: num_send_packs = %10ld", cname().c_str(),
                           fname, num_send_packs));
   displayln_info(ssprintf("%s::%s: num_recv_packs = %10ld", cname().c_str(),
@@ -479,6 +501,10 @@ inline ShufflePlan make_shuffle_plan(const ShufflePlanKey& spk)
                           cname().c_str(), fname, num_send_msgs));
   displayln_info(ssprintf("%s::%s: total num_recv_msgs  = %10ld",
                           cname().c_str(), fname, num_recv_msgs));
+  ret.scp.global_comm_size = ret.scp.total_send_size;
+  glb_sum(ret.scp.global_comm_size);
+  displayln_info(ssprintf("%s::%s: global_comm_size = %10ld", cname().c_str(),
+                          fname, ret.scp.global_comm_size));
   return ret;
 }
 
@@ -644,7 +670,7 @@ inline ShufflePlan make_shuffle_plan_fft(const Coordinate& total_site,
   // geos_recv
   ret.geos_recv = geos_recv;
   // total_send_size
-  ret.total_send_size = geo.local_volume();
+  ret.scp.total_send_size = geo.local_volume();
   // send_id_node_size
   // send_new_id_node_size
   std::map<int, long> send_id_node_size;
@@ -674,13 +700,13 @@ inline ShufflePlan make_shuffle_plan_fft(const Coordinate& total_site,
         mi.id_node = id_node;
         mi.idx = count;
         mi.size = std::min(node_size_remain, get_shuffle_max_msg_size());
-        ret.send_msg_infos.push_back(mi);
+        ret.scp.send_msg_infos.push_back(mi);
         node_size_remain -= mi.size;
         count += mi.size;
       }
     }
     qassert(count == geo.local_volume());
-    qassert(count == ret.total_send_size);
+    qassert(count == ret.scp.total_send_size);
   }
   // send_new_id_node_idx
   std::map<int, long> send_new_id_node_idx;
@@ -694,7 +720,7 @@ inline ShufflePlan make_shuffle_plan_fft(const Coordinate& total_site,
       count += node_size;
     }
     qassert(count == geo.local_volume());
-    qassert(count == ret.total_send_size);
+    qassert(count == ret.scp.total_send_size);
   }
   // send_pack_infos
   {
@@ -727,10 +753,10 @@ inline ShufflePlan make_shuffle_plan_fft(const Coordinate& total_site,
     }
   }
   // total_recv_size
-  ret.total_recv_size = 0;
+  ret.scp.total_recv_size = 0;
   for (size_t i = 0; i < ret.geos_recv.size(); ++i) {
     const Geometry& geo_recv = ret.geos_recv[i];
-    ret.total_recv_size += geo_recv.local_volume();
+    ret.scp.total_recv_size += geo_recv.local_volume();
   }
   // recv_id_node_size
   std::map<int, long> recv_id_node_size;
@@ -759,17 +785,17 @@ inline ShufflePlan make_shuffle_plan_fft(const Coordinate& total_site,
         mi.id_node = id_node;
         mi.idx = count;
         mi.size = std::min(node_size_remain, get_shuffle_max_msg_size());
-        ret.recv_msg_infos.push_back(mi);
+        ret.scp.recv_msg_infos.push_back(mi);
         node_size_remain -= mi.size;
         count += mi.size;
       }
     }
-    if (count != ret.total_recv_size) {
+    if (count != ret.scp.total_recv_size) {
       displayln(fname + ssprintf(": count = %ld", count));
-      displayln(fname +
-                ssprintf(": ret.total_recv_size = %ld", ret.total_recv_size));
+      displayln(fname + ssprintf(": ret.scp.total_recv_size = %ld",
+                                 ret.scp.total_recv_size));
     }
-    qassert(count == ret.total_recv_size);
+    qassert(count == ret.scp.total_recv_size);
   }
   // recv_id_node_idx
   std::map<int, long> recv_id_node_idx;
@@ -782,7 +808,7 @@ inline ShufflePlan make_shuffle_plan_fft(const Coordinate& total_site,
       recv_id_node_idx[id_node] = count;
       count += node_size;
     }
-    qassert(count == ret.total_recv_size);
+    qassert(count == ret.scp.total_recv_size);
   }
   // recv_pack_infos
   {
@@ -817,8 +843,8 @@ inline ShufflePlan make_shuffle_plan_fft(const Coordinate& total_site,
   }
   long num_send_packs = ret.send_pack_infos.size();
   long num_recv_packs = ret.recv_pack_infos.size();
-  long num_send_msgs = ret.send_msg_infos.size();
-  long num_recv_msgs = ret.recv_msg_infos.size();
+  long num_send_msgs = ret.scp.send_msg_infos.size();
+  long num_recv_msgs = ret.scp.recv_msg_infos.size();
   displayln_info(ssprintf("%s::%s: num_send_packs = %10ld", cname().c_str(),
                           fname, num_send_packs));
   displayln_info(ssprintf("%s::%s: num_recv_packs = %10ld", cname().c_str(),
@@ -839,9 +865,13 @@ inline ShufflePlan make_shuffle_plan_fft(const Coordinate& total_site,
                           cname().c_str(), fname, num_send_msgs));
   displayln_info(ssprintf("%s::%s: total num_recv_msgs  = %10ld",
                           cname().c_str(), fname, num_recv_msgs));
+  ret.scp.global_comm_size = ret.scp.total_send_size;
+  glb_sum(ret.scp.global_comm_size);
+  displayln_info(ssprintf("%s::%s: global_comm_size = %10ld", cname().c_str(),
+                          fname, ret.scp.global_comm_size));
   return ret;
-
-  // reflection shuffle
 }
 
-QLAT_END_NAMESPACE
+// reflection shuffle
+
+}  // namespace qlat

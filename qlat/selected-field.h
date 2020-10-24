@@ -176,7 +176,6 @@ struct FieldSelection {
   //
   std::vector<int64_t> ranks;   // rank of the selected points
   std::vector<long> indices;    // local indices of selected points
-  std::vector<Coordinate> xls;  // local coordinates of selected points
   //
   void init()
   {
@@ -187,7 +186,6 @@ struct FieldSelection {
     n_elems = 0;
     clear(ranks);
     clear(indices);
-    clear(xls);
   }
   //
   FieldSelection() { init(); }
@@ -227,16 +225,13 @@ inline void set_field_selection(FieldSelection& fsel,
   fsel.n_elems = n_elems;
   fsel.ranks.resize(fsel.n_elems);
   fsel.indices.resize(fsel.n_elems);
-  fsel.xls.resize(fsel.n_elems);
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const long idx = fsel.f_local_idx.get_elems_const(index)[0];
     if (idx >= 0) {
       const long rank = fsel.f_rank.get_elems(index)[0];
-      const Coordinate xl = geo.coordinate_from_index(index);
       fsel.ranks[idx] = rank;
       fsel.indices[idx] = index;
-      fsel.xls[idx] = xl;
     }
   }
 }
@@ -291,6 +286,18 @@ struct SelectedField {
     initialized = false;
     geo.init();
     clear(field);
+  }
+  void init(const Geometry& geo_, const long n_elems, const int multiplicity)
+  {
+    if (initialized) {
+      qassert(geo == geo_remult(geo_, multiplicity));
+      qassert((long)field.size() == n_elems * multiplicity);
+    } else {
+      init();
+      initialized = true;
+      geo = geo_remult(geo_, multiplicity);
+      field.resize(n_elems * multiplicity);
+    }
   }
   void init(const FieldSelection& fsel, const int multiplicity)
   {
@@ -402,6 +409,22 @@ const SelectedField<M>& operator*=(SelectedField<M>& f, const Complex factor)
       f.field[k] *= factor;
     }
   return f;
+}
+
+inline void set_selected_gindex(SelectedField<long>& sfgi, const FieldSelection& fsel)
+{
+  TIMER_VERBOSE("set_selected_gindex");
+  const Geometry& geo = fsel.f_rank.geo;
+  const Coordinate total_site = geo.total_site();
+  sfgi.init(fsel, 1);
+#pragma omp parallel for
+  for (long idx = 0; idx < fsel.n_elems; ++idx) {
+    const long index = fsel.indices[idx];
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Coordinate xg = geo.coordinate_g_from_l(xl);
+    const long gindex = index_from_coordinate(xg, total_site);
+    sfgi.get_elem(idx) = gindex;
+  }
 }
 
 template <class M>

@@ -32,6 +32,7 @@ Qlat::make_shuffle_plan: total num_send_packs =          8
 Qlat::make_shuffle_plan: total num_recv_packs =         56
 Qlat::make_shuffle_plan: total num_send_msgs  =         32
 Qlat::make_shuffle_plan: total num_recv_msgs  =         32
+Qlat::make_shuffle_plan: global_comm_size =        512
 Qlat::ShufflePlanCache: to add 1 / 16.
 shuffle_field_back: 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
 write_field: fn='results/test-4nt8/results=1000/f-rank.field'.
@@ -123,6 +124,7 @@ Qlat::make_shuffle_plan: total num_send_packs =        248
 Qlat::make_shuffle_plan: total num_recv_packs =         32
 Qlat::make_shuffle_plan: total num_send_msgs  =         16
 Qlat::make_shuffle_plan: total num_recv_msgs  =         16
+Qlat::make_shuffle_plan: global_comm_size =        512
 Qlat::ShufflePlanCache: to add 2 / 16.
 Qlat::dist_write_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =         16 ; total_bytes =          294912
 Qlat::dist_write_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         32 ; total_bytes =          589824
