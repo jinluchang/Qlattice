@@ -50,8 +50,6 @@ inline void setup()
   dist_write_par_limit() = 16;
   dist_read_par_limit() = 16;
   displayln_info(
-      ssprintf("get_actual_start_time()=%lf", get_actual_start_time()));
-  displayln_info(
       ssprintf("get_time_limit()=%lf hours", get_time_limit() / 3600.0));
   displayln_info(ssprintf("get_default_budget()=%lf hours",
                           get_default_budget() / 3600.0));

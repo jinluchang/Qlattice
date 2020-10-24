@@ -16,42 +16,7 @@ display_geo_node : id_node =     6 ; coor_node = 0x0x1x1 ; id_node_in_shuffle = 
 display_geo_node : id_node =     7 ; coor_node = 0x1x1x1 ; id_node_in_shuffle =     7 ; hostname = qcdserver16
 The check value for the CRC32 standard is 0xCBF43926
 The crc32() of "123456789" is 0xCBF43926
-The check value for the CRC32 standard is 0xCBF43926
-The crc32() of "123456789" is 0xCBF43926
 The crc32() of "123456789" is 0xCBF43926 (concat)
-The check value for the CRC32 standard is 0xCBF43926
-The crc32() of "123456789" is 0xCBF43926
-The crc32() of "123456789" is 0xCBF43926 (concat)
-The check value for the CRC32 standard is 0xCBF43926
-The crc32() of "123456789" is 0xCBF43926
-The crc32() of "123456789" is 0xCBF43926 (concat)
-The crc32() of "123456789" is 0xCBF43926 (crc32_shift)
-nthreads=2
-The check value for the CRC32 standard is 0xCBF43926
-The crc32() of "123456789" is 0xCBF43926
-The crc32() of "123456789" is 0xCBF43926 (concat)
-The crc32() of "123456789" is 0xCBF43926 (crc32_shift)
-nthreads=2
-The check value for the CRC32 standard is 0xCBF43926
-The crc32() of "123456789" is 0xCBF43926
-The crc32() of "123456789" is 0xCBF43926 (concat)
-The check value for the CRC32 standard is 0xCBF43926
-The crc32() of "123456789" is 0xCBF43926
-The crc32() of "123456789" is 0xCBF43926 (concat)
-The crc32() of "123456789" is 0xCBF43926 (crc32_shift)
-nthreads=2
-The check value for the CRC32 standard is 0xCBF43926
-The crc32() of "123456789" is 0xCBF43926
-The crc32() of "123456789" is 0xCBF43926 (concat)
-The crc32() of "123456789" is 0xCBF43926 (crc32_shift)
-nthreads=2
-The crc32() of "123456789" is 0xCBF43926 (crc32_shift)
-nthreads=2
-The crc32() of "123456789" is 0xCBF43926 (concat)
-The crc32() of "123456789" is 0xCBF43926 (crc32_shift)
-nthreads=2
-The crc32() of "123456789" is 0xCBF43926 (crc32_shift)
-nthreads=2
 The crc32() of "123456789" is 0xCBF43926 (crc32_shift)
 nthreads=2
 Qlat::dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         2359296
