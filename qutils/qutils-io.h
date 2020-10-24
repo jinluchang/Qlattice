@@ -152,4 +152,14 @@ inline int install_qhandle_sigint()
   return sigaction(SIGINT, &act, NULL) + sigaction(SIGTERM, &act, NULL);
 }
 
+inline std::string get_env(const std::string& var_name)
+{
+  const char* value = getenv(var_name.c_str());
+  if (value == NULL) {
+    return std::string();
+  } else {
+    return std::string(value);
+  }
+}
+
 }  // namespace qlat

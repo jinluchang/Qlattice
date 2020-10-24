@@ -182,62 +182,6 @@ inline long& get_shuffle_max_pack_size()
   return size;
 }
 
-inline std::vector<int> default_id_node_list_for_shuffle()
-{
-  const int num_node = get_num_node();
-  std::vector<int> list(num_node);
-  for (int i = 0; i < num_node; ++i) {
-    list[i] = i;
-  }
-  // random_permute(list, RngState("id_node_list_for_shuffle"));
-  for (int i = 0; i < num_node; ++i) {
-    if (0 == list[i]) {
-      list[i] = list[0];
-      list[0] = 0;
-      break;
-    }
-  }
-  return list;
-}
-
-inline std::vector<int>& get_id_node_list_for_shuffle()
-{
-  static std::vector<int> list = default_id_node_list_for_shuffle();
-  return list;
-}
-
-inline int get_id_node_in_shuffle(const int id_node, const int new_num_node,
-                                  const int num_node)
-// not called very often
-{
-  if (new_num_node == num_node) {
-    return id_node;
-  } else {
-    const std::vector<int>& list = get_id_node_list_for_shuffle();
-    qassert(list[0] == 0);
-    for (int i = 0; i < (int)list.size(); ++i) {
-      if (list[i] == id_node) {
-        return i;
-      }
-    }
-    qassert(false);
-    return 0;
-  }
-}
-
-inline int get_id_node_from_id_node_in_shuffle(const int id_node_in_shuffle,
-                                               const int new_num_node,
-                                               const int num_node)
-{
-  if (new_num_node == num_node) {
-    return id_node_in_shuffle;
-  } else {
-    const std::vector<int>& list = get_id_node_list_for_shuffle();
-    qassert(list[0] == 0);
-    return list[id_node_in_shuffle];
-  }
-}
-
 inline std::vector<GeometryNode> make_dist_io_geons(
     const Coordinate& new_size_node)
 {

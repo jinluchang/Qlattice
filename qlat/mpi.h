@@ -611,6 +611,76 @@ inline void sync_node()
   glb_sum(Vector<long>(&v, 1));
 }
 
+inline std::vector<int> mk_id_node_list_for_shuffle(const RngState& rs)
+{
+  const int num_node = get_num_node();
+  std::vector<int> list(num_node);
+  for (int i = 0; i < num_node; ++i) {
+    list[i] = i;
+  }
+  random_permute(list, rs);
+  for (int i = 0; i < num_node; ++i) {
+    if (0 == list[i]) {
+      list[i] = list[0];
+      list[0] = 0;
+      break;
+    }
+  }
+  return list;
+}
+
+inline std::vector<int> mk_id_node_list_for_shuffle(const int step_size)
+{
+  const int num_node = get_num_node();
+  std::vector<int> list(num_node);
+  for (int i = 0; i < num_node; ++i) {
+    const int id_node_in_shuffle = i;
+    const int id_node =
+        mod(i * step_size, num_node) + (i * step_size / num_node);
+    list[id_node_in_shuffle] = id_node;
+  }
+  return list;
+}
+
+inline std::vector<int>& get_id_node_list_for_shuffle()
+// qlat parameter
+{
+  static std::vector<int> list = mk_id_node_list_for_shuffle(4);
+  return list;
+}
+
+inline int get_id_node_in_shuffle(const int id_node, const int new_num_node,
+                                  const int num_node)
+// not called very often
+{
+  if (new_num_node == num_node) {
+    return id_node;
+  } else {
+    const std::vector<int>& list = get_id_node_list_for_shuffle();
+    qassert(list[0] == 0);
+    for (int i = 0; i < (int)list.size(); ++i) {
+      if (list[i] == id_node) {
+        return i;
+      }
+    }
+    qassert(false);
+    return 0;
+  }
+}
+
+inline int get_id_node_from_id_node_in_shuffle(const int id_node_in_shuffle,
+                                               const int new_num_node,
+                                               const int num_node)
+{
+  if (new_num_node == num_node) {
+    return id_node_in_shuffle;
+  } else {
+    const std::vector<int>& list = get_id_node_list_for_shuffle();
+    qassert(list[0] == 0);
+    return list[id_node_in_shuffle];
+  }
+}
+
 inline void display_geometry_node()
 {
   TIMER("display_geo_node");
@@ -618,8 +688,11 @@ inline void display_geometry_node()
   for (int i = 0; i < geon.num_node; ++i) {
     if (i == geon.id_node) {
       displayln(std::string(fname) + " : " +
-                ssprintf("id_node = %5d ; coor_node = %s", geon.id_node,
-                         show(geon.coor_node).c_str()));
+                ssprintf("id_node = %5d ; coor_node = %s ; id_node_in_shuffle "
+                         "= %5d ; hostname = %s",
+                         geon.id_node, show(geon.coor_node).c_str(),
+                         get_id_node_in_shuffle(geon.id_node, 0, geon.num_node),
+                         get_env("HOSTNAME").c_str()));
       fflush(get_output_file());
     }
     sync_node();

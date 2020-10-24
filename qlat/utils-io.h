@@ -21,8 +21,6 @@
 namespace qlat
 {  //
 
-inline std::string get_env(const std::string& var_name);
-
 inline void set_time_limit_auto();
 
 inline void set_default_budget_auto();
@@ -199,16 +197,6 @@ inline bool check_status()
     return true;
   }
   return false;
-}
-
-inline std::string get_env(const std::string& var_name)
-{
-  const char* value = getenv(var_name.c_str());
-  if (value == NULL) {
-    return std::string();
-  } else {
-    return std::string(value);
-  }
 }
 
 inline bool truncate(const std::string& evilFile)
