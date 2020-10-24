@@ -566,4 +566,162 @@ shuffle_field_back: 1x1x1x8 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 384 ; t
 dist_crc32 = 2A945EE3
 shuffle_field: 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 crc32 = 566C01E6
+shuffle_field: 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
+crc32 = F9AAC400
+shuffle_field: 1x2x2x2 -> 1x1x1x1 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
+shuffle_field_back: 1x1x1x1 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
+shuffle_field: 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
+crc32 = F9AAC400 with shuffle_field and shuffle_field_back
+shuffle_field: 1x2x2x2 -> 2x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
+shuffle_field_back: 2x2x2x2 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
+shuffle_field: 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
+crc32 = F9AAC400 with shuffle_field and shuffle_field_back
+shuffle_field: 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
+shuffle_field_back: 1x1x1x8 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
+shuffle_field: 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
+crc32 = F9AAC400 with shuffle_field and shuffle_field_back
+shuffle_field: 1x2x2x2 -> 1x2x4x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
+shuffle_field_back: 1x2x4x2 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
+shuffle_field: 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
+crc32 = F9AAC400 with shuffle_field and shuffle_field_back
+shuffle_field: 1x2x2x2 -> 2x2x1x1 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
+shuffle_field_back: 2x2x1x1 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
+shuffle_field: 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
+crc32 = F9AAC400 with shuffle_field and shuffle_field_back
+shuffle_field: 1x2x2x2 -> 4x4x4x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
+shuffle_field_back: 4x4x4x4 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
+shuffle_field: 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
+crc32 = F9AAC400 with shuffle_field and shuffle_field_back
+shuffle_field: 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
+crc32 = 543EB816 after shift 12x34x45x12
+shuffle_field: 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
+crc32 = F9AAC400 after shift -12x-34x-45x-12
+shuffle_field: 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
+crc32 = 822CE9F4 after shift 12x-34x-45x12
+shuffle_field: 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
+crc32 = F9AAC400 after shift -12x34x45x-12
+shuffle_field: 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
+crc32 = F9AAC400 after shift 0x0x0x0
+shuffle_field: 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
+crc32 = F9AAC400 after shift 0x0x0x0
+shuffle_field: 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
+crc32 = 1205CEE9 after shift 1x1x1x1
+shuffle_field: 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
+crc32 = F9AAC400 after shift -1x-1x-1x-1
+::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 0
+fft_complex_field_plan::init : malloc 294912
+fft_complex_field_plan::init : free 294912
+Qlat::make_shuffle_plan_fft: num_send_packs =        512
+Qlat::make_shuffle_plan_fft: num_recv_packs =          8
+Qlat::make_shuffle_plan_fft: num_send_msgs  =          1
+Qlat::make_shuffle_plan_fft: num_recv_msgs  =          1
+Qlat::make_shuffle_plan_fft: total num_send_packs =       4096
+Qlat::make_shuffle_plan_fft: total num_recv_packs =         64
+Qlat::make_shuffle_plan_fft: total num_send_msgs  =          8
+Qlat::make_shuffle_plan_fft: total num_recv_msgs  =          8
+Qlat::make_shuffle_plan_fft: global_comm_size =       4096
+::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 1
+fft_complex_field_plan::init : malloc 294912
+fft_complex_field_plan::init : free 294912
+Qlat::make_shuffle_plan_fft: num_send_packs =         63
+Qlat::make_shuffle_plan_fft: num_recv_packs =          8
+Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
+Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
+Qlat::make_shuffle_plan_fft: total num_send_packs =        504
+Qlat::make_shuffle_plan_fft: total num_recv_packs =         64
+Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
+Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
+Qlat::make_shuffle_plan_fft: global_comm_size =       4096
+::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 2
+fft_complex_field_plan::init : malloc 294912
+fft_complex_field_plan::init : free 294912
+Qlat::make_shuffle_plan_fft: num_send_packs =         15
+Qlat::make_shuffle_plan_fft: num_recv_packs =          8
+Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
+Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
+Qlat::make_shuffle_plan_fft: total num_send_packs =        120
+Qlat::make_shuffle_plan_fft: total num_recv_packs =         64
+Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
+Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
+Qlat::make_shuffle_plan_fft: global_comm_size =       4096
+::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 3
+fft_complex_field_plan::init : malloc 294912
+fft_complex_field_plan::init : free 294912
+Qlat::make_shuffle_plan_fft: num_send_packs =          8
+Qlat::make_shuffle_plan_fft: num_recv_packs =          8
+Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
+Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
+Qlat::make_shuffle_plan_fft: total num_send_packs =         64
+Qlat::make_shuffle_plan_fft: total num_recv_packs =         64
+Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
+Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
+Qlat::make_shuffle_plan_fft: global_comm_size =       4096
+shuffle_field: 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
+crc32 = D42F281B after fft forward
+qnorm =  2.01326591999999642E+08 after fft forward
+::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 4
+fft_complex_field_plan::init : malloc 294912
+fft_complex_field_plan::init : free 294912
+Qlat::make_shuffle_plan_fft: num_send_packs =        512
+Qlat::make_shuffle_plan_fft: num_recv_packs =          8
+Qlat::make_shuffle_plan_fft: num_send_msgs  =          1
+Qlat::make_shuffle_plan_fft: num_recv_msgs  =          1
+Qlat::make_shuffle_plan_fft: total num_send_packs =       4096
+Qlat::make_shuffle_plan_fft: total num_recv_packs =         64
+Qlat::make_shuffle_plan_fft: total num_send_msgs  =          8
+Qlat::make_shuffle_plan_fft: total num_recv_msgs  =          8
+Qlat::make_shuffle_plan_fft: global_comm_size =       4096
+::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 5
+fft_complex_field_plan::init : malloc 294912
+fft_complex_field_plan::init : free 294912
+Qlat::make_shuffle_plan_fft: num_send_packs =         63
+Qlat::make_shuffle_plan_fft: num_recv_packs =          8
+Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
+Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
+Qlat::make_shuffle_plan_fft: total num_send_packs =        504
+Qlat::make_shuffle_plan_fft: total num_recv_packs =         64
+Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
+Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
+Qlat::make_shuffle_plan_fft: global_comm_size =       4096
+::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 6
+fft_complex_field_plan::init : malloc 294912
+fft_complex_field_plan::init : free 294912
+Qlat::make_shuffle_plan_fft: num_send_packs =         15
+Qlat::make_shuffle_plan_fft: num_recv_packs =          8
+Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
+Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
+Qlat::make_shuffle_plan_fft: total num_send_packs =        120
+Qlat::make_shuffle_plan_fft: total num_recv_packs =         64
+Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
+Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
+Qlat::make_shuffle_plan_fft: global_comm_size =       4096
+::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 7
+fft_complex_field_plan::init : malloc 294912
+fft_complex_field_plan::init : free 294912
+Qlat::make_shuffle_plan_fft: num_send_packs =          8
+Qlat::make_shuffle_plan_fft: num_recv_packs =          8
+Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
+Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
+Qlat::make_shuffle_plan_fft: total num_send_packs =         64
+Qlat::make_shuffle_plan_fft: total num_recv_packs =         64
+Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
+Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
+Qlat::make_shuffle_plan_fft: global_comm_size =       4096
+shuffle_field: 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
+crc32 = 1B6D05A6 after fft backward
+qnorm =  8.24633720832000000E+11 after fft backward
+shuffle_field: 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
+crc32 = 1E76C7C3 after rescale
+qnorm =  4.91520000000000000E+04 after rescale
+shuffle_field: 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
+crc32 = 9F1B9AA6 after subtract
+qnorm =  1.92579296835827081E-27 after subtract
 qlat::end(): MPI Finalized.
+fft_complex_field_plan::end(): free a plan.
+fft_complex_field_plan::end(): free a plan.
+fft_complex_field_plan::end(): free a plan.
+fft_complex_field_plan::end(): free a plan.
+fft_complex_field_plan::end(): free a plan.
+fft_complex_field_plan::end(): free a plan.
+fft_complex_field_plan::end(): free a plan.
+fft_complex_field_plan::end(): free a plan.
