@@ -24,11 +24,6 @@ all: qlat.x
 
 run: qlat.x
 	time mpirun -x OMP_NUM_THREADS=2 --np 8 ./qlat.x |& tee log
-	make diff
-	# make clean
-
-diff:
-	-git diff log | egrep -v Timer | egrep '^\+|^\-'
 
 qlat.x: *.C
 	time make build
@@ -37,15 +32,26 @@ qlat.x: *.C
 build:
 	-$(CXX) -o qlat.x $(QLAT_CXXFLAGS) *.C $(QLAT_LDFLAGS) 2>&1 | grep --color=always 'error:\|'
 
-clean:
-	-rm qlat.x
-	-rm -rf results*
-	-rm -rf huge-data
-
-dist-clean: clean
-	-git checkout log
-
 show-info:
 	@echo CXX: $(CXX)
 	@echo CXXFLAGS: $(QLAT_CXXFLAGS)
 	@echo LDFLAGS: $(QLAT_LDFLAGS)
+
+clean:
+	-rm qlat.x
+	-rm log.full
+	-rm -rf results*
+	-rm -rf huge-data
+
+run-test: qlat.x
+	time mpirun -x OMP_NUM_THREADS=2 --np 8 ./qlat.x |& tee log.full
+	cat log.full | egrep -v '^Timer|libtorque.so.2' > log
+	make diff
+	# make clean
+
+diff:
+	-git diff log
+
+dist-clean: clean
+	-git checkout log
+

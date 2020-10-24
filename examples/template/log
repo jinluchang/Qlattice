@@ -1,5 +1,3 @@
-[qcdserver16:22685] mca_base_component_repository_open: unable to open mca_plm_tm: libtorque.so.2: cannot open shared object file: No such file or directory (ignored)
-[qcdserver16:22685] mca_base_component_repository_open: unable to open mca_ras_tm: libtorque.so.2: cannot open shared object file: No such file or directory (ignored)
 qlat::begin(): MPI Initialized. num_node = 8
 qlat::begin(): OMP_NUM_THREADS = 2
 qlat::begin(): GeometryNode =
@@ -8,173 +6,45 @@ qlat::begin(): GeometryNode =
 , id_node     = 0
 , size_node   = 1x2x2x2
 , coor_node   = 0x0x0x0 }
-Timer::start               display_geo_node :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-display_geo_node : id_node =     0 ; coor_node = 0x0x0x0
-display_geo_node : id_node =     1 ; coor_node = 0x1x0x0
-display_geo_node : id_node =     2 ; coor_node = 0x0x1x0
-display_geo_node : id_node =     3 ; coor_node = 0x1x1x0
-display_geo_node : id_node =     4 ; coor_node = 0x0x0x1
-display_geo_node : id_node =     5 ; coor_node = 0x1x0x1
-display_geo_node : id_node =     6 ; coor_node = 0x0x1x1
-display_geo_node : id_node =     7 ; coor_node = 0x1x1x1
-Timer::stop                display_geo_node : 89.9%        1 calls 2.930E-04,2.930E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                  setup_log_idx :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                    qmkdir_info :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                         qmkdir :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                      check_dir :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                       check_dir :  0.8%        1 calls 5.007E-06,5.007E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                          qmkdir : 41.4%        1 calls 2.711E-04,2.711E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                     qmkdir_info : 43.5%        1 calls 2.890E-04,2.890E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                    qmkdir_info : 42.9%        2 calls 2.890E-04,2.890E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                         qmkdir : 39.9%        2 calls 2.711E-04,2.711E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                      check_dir :  0.7%        2 calls 5.007E-06,5.007E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                       check_dir :  0.8%        2 calls 9.537E-07,2.980E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                          qmkdir : 44.0%        2 calls 5.698E-05,1.640E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                     qmkdir_info : 48.3%        2 calls 7.606E-05,1.825E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                     mkdir_lock :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                      mkdir_lock :  4.4%        1 calls 3.600E-05,3.600E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                   setup_log_idx : 56.2%        1 calls 4.690E-04,4.690E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                     get_time_limit :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                                set_time_limit_auto :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
+display_geo_node : id_node =     0 ; coor_node = 0x0x0x0 ; id_node_in_shuffle =     0 ; hostname = qcdserver16
+display_geo_node : id_node =     1 ; coor_node = 0x1x0x0 ; id_node_in_shuffle =     2 ; hostname = qcdserver16
+display_geo_node : id_node =     2 ; coor_node = 0x0x1x0 ; id_node_in_shuffle =     4 ; hostname = qcdserver16
+display_geo_node : id_node =     3 ; coor_node = 0x1x1x0 ; id_node_in_shuffle =     6 ; hostname = qcdserver16
+display_geo_node : id_node =     4 ; coor_node = 0x0x0x1 ; id_node_in_shuffle =     1 ; hostname = qcdserver16
+display_geo_node : id_node =     5 ; coor_node = 0x1x0x1 ; id_node_in_shuffle =     3 ; hostname = qcdserver16
+display_geo_node : id_node =     6 ; coor_node = 0x0x1x1 ; id_node_in_shuffle =     5 ; hostname = qcdserver16
+display_geo_node : id_node =     7 ; coor_node = 0x1x1x1 ; id_node_in_shuffle =     7 ; hostname = qcdserver16
 set_time_limit_auto: get_time_limit() = 12.00 hours.
-Timer::stop                                 set_time_limit_auto :  1.3%        1 calls 1.097E-05,1.097E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                      get_time_limit :  3.4%        1 calls 3.004E-05,3.004E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                set_time_limit_auto :  1.2%        2 calls 1.097E-05,1.097E-05 sec    0.000 Gflops (0.000E+00 flops)
 set_time_limit_auto: get_time_limit() = 12.00 hours.
-Timer::stop                                 set_time_limit_auto :  2.1%        2 calls 7.868E-06,9.418E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                 get_default_budget :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                            set_default_budget_auto :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                             set_default_budget_auto :  0.1%        1 calls 1.192E-06,1.192E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                  get_default_budget :  1.5%        1 calls 1.407E-05,1.407E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                            set_default_budget_auto :  0.1%        2 calls 1.192E-06,1.192E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                             set_default_budget_auto :  0.2%        2 calls 9.537E-07,1.073E-06 sec    0.000 Gflops (0.000E+00 flops)
-get_actual_start_time()=1603512939.317815
+get_actual_start_time()=1603517207.144127
 get_time_limit()=12.000000 hours
 get_default_budget()=0.250000 hours
 dist_read_par_limit()=16
 dist_write_par_limit()=16
-Timer::start                             install_qhandle_sigint :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                              install_qhandle_sigint :  0.3%        1 calls 3.099E-06,3.099E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                          get_trajs :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                                           get_trajs :  0.3%        1 calls 3.099E-06,3.099E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                        qmkdir_info : 35.0%        3 calls 7.606E-05,1.825E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                             qmkdir : 31.2%        3 calls 5.698E-05,1.640E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                          check_dir :  0.4%        3 calls 9.537E-07,2.980E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                           check_dir :  0.5%        3 calls 1.907E-06,2.623E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                              qmkdir : 52.1%        3 calls 4.640E-04,2.640E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                         qmkdir_info : 55.2%        3 calls 4.790E-04,2.813E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                             qclose :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                                              qclose :  0.0%        1 calls 0.000E+00,0.000E+00 sec     -nan Gflops (0.000E+00 flops)
-Timer::start                                              qopen :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                                               qopen :  3.1%        1 calls 5.198E-05,5.198E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                      qset_line_buf :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                                       qset_line_buf :  0.2%        1 calls 2.861E-06,2.861E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                set_time_limit_auto :  1.1%        3 calls 7.868E-06,9.418E-06 sec    0.000 Gflops (0.000E+00 flops)
 set_time_limit_auto: get_time_limit() = 12.00 hours.
-Timer::stop                                 set_time_limit_auto :  1.5%        3 calls 7.868E-06,8.901E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                            set_default_budget_auto :  0.1%        3 calls 9.537E-07,1.073E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                             set_default_budget_auto :  0.1%        3 calls 0.000E+00,7.153E-07 sec     -nan Gflops (0.000E+00 flops)
-get_actual_start_time()=1603512939.317815
+get_actual_start_time()=1603517207.144127
 get_time_limit()=12.000000 hours
 get_default_budget()=0.250000 hours
 dist_read_par_limit()=16
 dist_write_par_limit()=16
-Timer::start                             install_qhandle_sigint :  0.2%        2 calls 3.099E-06,3.099E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                              install_qhandle_sigint :  0.2%        2 calls 9.537E-07,2.027E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                       check_status :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
 check_status: ( get_actual_total_time() + get_default_budget() ) / get_time_limit() = ( 0.00 + 0.25 ) / 12.00 hours.
-Timer::stop                                        check_status :  0.4%        1 calls 7.868E-06,7.868E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                       compute_traj :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
 compute_traj: Checking 'results/free-4nt8/results=1000'.
-Timer::start                                        obtain_lock :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
 obtain_lock: Trying to obtain lock 'results/free-4nt8/results=1000-lock'.
-Timer::start                                         mkdir_lock :  1.9%        2 calls 3.600E-05,3.600E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                          mkdir_lock :  4.4%        2 calls 4.983E-05,4.292E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                        qtouch_info :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                                             qtouch :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                                              qopen :  2.6%        2 calls 5.198E-05,5.198E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                               qopen :  4.4%        2 calls 3.791E-05,4.494E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                             qclose :  0.0%        2 calls 0.000E+00,0.000E+00 sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                                              qclose :  1.9%        2 calls 3.910E-05,1.955E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                            qrename :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                                             qrename :  0.8%        1 calls 1.693E-05,1.693E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                              qtouch :  7.9%        1 calls 1.709E-04,1.709E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                         qtouch_info :  9.0%        1 calls 1.950E-04,1.950E-04 sec    0.000 Gflops (0.000E+00 flops)
 obtain_lock: Lock obtained 'results/free-4nt8/results=1000-lock'.
-Timer::stop                                         obtain_lock : 14.3%        1 calls 3.121E-04,3.121E-04 sec    0.000 Gflops (0.000E+00 flops)
 compute_traj: Start computing 'results/free-4nt8/results=1000'.
-Timer::start                                   qmkdir_sync_node :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                                    qmkdir_sync_node :  2.4%        1 calls 5.507E-05,5.507E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                             qclose :  1.7%        3 calls 3.910E-05,1.955E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                              qclose :  2.2%        3 calls 1.192E-05,1.701E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                              qopen :  3.8%        3 calls 3.791E-05,4.494E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                               qopen :  5.3%        3 calls 3.815E-05,4.268E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                      qset_line_buf :  0.1%        2 calls 2.861E-06,2.861E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                       qset_line_buf :  0.2%        2 calls 9.537E-07,1.907E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                setup(job_tag,traj) :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                                set_time_limit_auto :  1.1%        4 calls 7.868E-06,8.901E-06 sec    0.000 Gflops (0.000E+00 flops)
 set_time_limit_auto: get_time_limit() = 12.00 hours.
-Timer::stop                                 set_time_limit_auto :  1.4%        4 calls 8.106E-06,8.702E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                            set_default_budget_auto :  0.1%        4 calls 0.000E+00,7.153E-07 sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                             set_default_budget_auto :  0.1%        4 calls 9.537E-07,7.749E-07 sec    0.000 Gflops (0.000E+00 flops)
-get_actual_start_time()=1603512939.317815
+get_actual_start_time()=1603517207.144127
 get_time_limit()=12.000000 hours
 get_default_budget()=0.250000 hours
 dist_read_par_limit()=16
 dist_write_par_limit()=16
-Timer::start                             install_qhandle_sigint :  0.2%        3 calls 9.537E-07,2.027E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                              install_qhandle_sigint :  0.2%        3 calls 0.000E+00,1.351E-06 sec     -nan Gflops (0.000E+00 flops)
-Timer::start                                       check_status :  0.3%        2 calls 7.868E-06,7.868E-06 sec    0.000 Gflops (0.000E+00 flops)
 check_status: ( get_actual_total_time() + get_default_budget() ) / get_time_limit() = ( 0.00 + 0.25 ) / 12.00 hours.
-Timer::stop                                        check_status :  0.6%        2 calls 8.106E-06,7.987E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                 setup(job_tag,traj) :  4.4%        1 calls 1.152E-04,1.152E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                    compute_traj_do :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
 compute_traj_do: job_tag='free-4nt8' ; traj=1000
-Timer::start                                 load_configuration :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                                  load_configuration :  1.7%        1 calls 4.601E-05,4.601E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                       gf_show_info :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                                        gf_avg_plaq :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                                   Field::operator= :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                                    Field::operator= :  1.8%        1 calls 5.102E-05,5.102E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                set_marks_field_all :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                                 set_marks_field_all :  1.5%        1 calls 4.315E-05,4.315E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                     make_comm_plan :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                                      make_comm_plan : 14.1%        1 calls 4.880E-04,4.880E-04 sec    0.000 Gflops (0.000E+00 flops)
 Qlat::CommPlanCache: to add 1 / 32.
-Timer::start                                   refresh_expanded :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                              refresh_expanded-comm :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                         refresh_expanded-comm-init :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                          refresh_expanded-comm-init :  1.5%        1 calls 6.104E-05,6.104E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                               refresh_expanded-comm :  7.9%        1 calls 3.462E-04,3.462E-04 sec    0.193 Gflops (6.682E+04 flops)
-Timer::stop                                    refresh_expanded : 19.0%        1 calls 8.421E-04,8.421E-04 sec    0.079 Gflops (6.682E+04 flops)
-Timer::start                                gf_avg_plaq_no_comm :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                                 gf_avg_plaq_no_comm :  8.7%        1 calls 4.282E-04,4.282E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                         gf_avg_plaq : 44.3%        1 calls 2.181E-03,2.181E-03 sec    0.000 Gflops (0.000E+00 flops)
 plaq :  1.00000000000000000E+00
-Timer::start                                gf_avg_spatial_plaq :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                                   Field::operator= :  1.0%        2 calls 5.102E-05,5.102E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                    Field::operator= :  1.2%        2 calls 1.001E-05,3.052E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                set_marks_field_all :  0.8%        2 calls 4.315E-05,4.315E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                 set_marks_field_all :  1.5%        2 calls 3.290E-05,3.803E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                     make_comm_plan :  9.4%        2 calls 4.880E-04,4.880E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                      make_comm_plan : 15.3%        2 calls 3.600E-04,4.240E-04 sec    0.000 Gflops (0.000E+00 flops)
 Qlat::CommPlanCache: to add 2 / 32.
-Timer::start                                   refresh_expanded : 14.5%        2 calls 8.421E-04,8.421E-04 sec    0.079 Gflops (6.682E+04 flops)
-Timer::start                              refresh_expanded-comm :  5.6%        2 calls 3.462E-04,3.462E-04 sec    0.193 Gflops (6.682E+04 flops)
-Timer::start                         refresh_expanded-comm-init :  1.0%        2 calls 6.104E-05,6.104E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                          refresh_expanded-comm-init :  1.1%        2 calls 4.053E-06,3.254E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                               refresh_expanded-comm :  7.0%        2 calls 9.418E-05,2.202E-04 sec    0.489 Gflops (4.608E+04 flops)
-Timer::stop                                    refresh_expanded : 20.9%        2 calls 4.699E-04,6.560E-04 sec    0.098 Gflops (4.608E+04 flops)
-Timer::start                        gf_avg_spatial_plaq_no_comm :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                         gf_avg_spatial_plaq_no_comm :  3.1%        1 calls 2.019E-04,2.019E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                 gf_avg_spatial_plaq : 23.9%        1 calls 1.565E-03,1.565E-03 sec    0.000 Gflops (0.000E+00 flops)
 spatial plaq :  1.00000000000000000E+00
-Timer::start                                  gf_avg_link_trace :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                                   gf_avg_link_trace :  0.2%        1 calls 1.001E-05,1.001E-05 sec    0.000 Gflops (0.000E+00 flops)
 trace:  1.00000000000000000E+00
-Timer::stop                                        gf_show_info : 58.7%        1 calls 3.885E-03,3.885E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                      set_g_rand_color_matrix_field :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                       set_g_rand_color_matrix_field :  4.8%        1 calls 3.378E-04,3.378E-04 sec    0.000 Gflops (0.000E+00 flops)
 ndim: 2
 "tsep"[8]: "0" "1" "2" "3" "4" "5" "6" "7"
 "re-im"[2]: "re" "im"
@@ -213,7 +83,6 @@ tsep[       6] re-im[      re]  6.00000000000000000E+00
 tsep[       6] re-im[      im]  0.00000000000000000E+00
 tsep[       7] re-im[      re]  7.00000000000000000E+00
 tsep[       7] re-im[      im]  0.00000000000000000E+00
-Timer::start                                  benchmark_deflate :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
 geo = { initialized   = true
 , eo            = 0
 , geon          =
@@ -229,709 +98,101 @@ geo = { initialized   = true
 , node_site_exp = 4x2x2x4 }
 block_site = 2x2x2x2
 ls = 8, neig = 100, nkeep = 50
-Timer::start                 init_compressed_eigen_system_bases :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                  init_compressed_eigen_system_bases : 10.3%        1 calls 8.750E-04,8.750E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                 init_compressed_eigen_system_coefs :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                  init_compressed_eigen_system_coefs :  1.4%        1 calls 1.190E-04,1.190E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                  set_u_rand(lm,rs) :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                                    force_low_modes :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                                     force_low_modes :  0.0%        1 calls 0.000E+00,0.000E+00 sec     -nan Gflops (0.000E+00 flops)
-Timer::start                                   set_u_rand_float :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                                    set_u_rand_float : 86.3%        1 calls 5.537E-02,5.537E-02 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                   set_u_rand_float : 86.3%        2 calls 5.537E-02,5.537E-02 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                    set_u_rand_float : 87.6%        2 calls 6.872E-03,3.112E-02 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                   set_u_rand(lm,rs) : 87.8%        1 calls 6.237E-02,6.237E-02 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                  set_u_rand_double :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                                   set_u_rand_double :  1.5%        1 calls 1.083E-03,1.083E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                          benchmark_deflate-deflate :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                                    force_low_modes :  0.0%        2 calls 0.000E+00,0.000E+00 sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                                     force_low_modes :  0.0%        2 calls 0.000E+00,0.000E+00 sec     -nan Gflops (0.000E+00 flops)
-Timer::start                                  deflate(5d,5d,lm) :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                                   init_half_vector :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                                    init_half_vector :  0.0%        1 calls 5.007E-06,5.007E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                    force_low_modes :  0.0%        3 calls 0.000E+00,0.000E+00 sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                                     force_low_modes :  0.0%        3 calls 0.000E+00,0.000E+00 sec     -nan Gflops (0.000E+00 flops)
-Timer::start                                  deflate(hv,hv,lm) :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                                convert_half_vector :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                           init_blocked_half_vector :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                            init_blocked_half_vector :  0.0%        1 calls 5.960E-06,5.960E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                 convert_half_vector :  0.0%        1 calls 4.101E-05,4.101E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                    deflate-project :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                                     deflate-project :  1.7%        1 calls 1.627E-03,1.627E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                     deflate-glbsum :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                                      deflate-glbsum :  0.3%        1 calls 3.130E-04,3.130E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                    deflate-produce :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                                     deflate-produce :  1.4%        1 calls 1.372E-03,1.372E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                convert_half_vector :  0.0%        2 calls 4.101E-05,4.101E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                   init_half_vector :  0.0%        2 calls 5.007E-06,5.007E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                    init_half_vector :  0.0%        2 calls 5.007E-06,5.007E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                 convert_half_vector :  0.1%        2 calls 4.983E-05,4.542E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                   deflate(hv,hv,lm) :  3.7%        1 calls 3.571E-03,3.571E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                   deflate(5d,5d,lm) :  3.8%        1 calls 3.663E-03,3.663E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                  deflate(5d,5d,lm) :  3.8%        2 calls 3.663E-03,3.663E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                   init_half_vector :  0.0%        3 calls 5.007E-06,5.007E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                    init_half_vector :  0.0%        3 calls 5.960E-06,5.325E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                  deflate(hv,hv,lm) :  3.7%        2 calls 3.571E-03,3.571E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                convert_half_vector :  0.1%        3 calls 4.983E-05,4.542E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                           init_blocked_half_vector :  0.0%        2 calls 5.960E-06,5.960E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                            init_blocked_half_vector :  0.0%        2 calls 5.007E-06,5.484E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                 convert_half_vector :  0.1%        3 calls 3.481E-05,4.188E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                    deflate-project :  1.7%        2 calls 1.627E-03,1.627E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                     deflate-project :  3.3%        2 calls 1.636E-03,1.632E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                     deflate-glbsum :  0.3%        2 calls 3.130E-04,3.130E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                      deflate-glbsum :  2.3%        2 calls 1.968E-03,1.140E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                    deflate-produce :  1.4%        2 calls 1.372E-03,1.372E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                     deflate-produce :  2.7%        2 calls 1.373E-03,1.372E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                   deflate(hv,hv,lm) :  8.6%        2 calls 5.161E-03,4.366E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                   deflate(5d,5d,lm) :  8.8%        2 calls 5.243E-03,4.453E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                  deflate(5d,5d,lm) :  8.8%        3 calls 5.243E-03,4.453E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                  deflate(hv,hv,lm) :  8.6%        3 calls 5.161E-03,4.366E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                           init_blocked_half_vector :  0.0%        3 calls 5.007E-06,5.484E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                            init_blocked_half_vector :  0.0%        3 calls 6.199E-06,5.722E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                    deflate-project :  3.2%        3 calls 1.636E-03,1.632E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                     deflate-project :  4.8%        3 calls 1.629E-03,1.631E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                     deflate-glbsum :  2.2%        3 calls 1.968E-03,1.140E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                      deflate-glbsum :  4.0%        3 calls 1.913E-03,1.398E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                    deflate-produce :  2.6%        3 calls 1.373E-03,1.372E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                     deflate-produce :  3.9%        3 calls 1.377E-03,1.374E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                   deflate(hv,hv,lm) : 13.0%        3 calls 5.092E-03,4.608E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                   deflate(5d,5d,lm) : 13.2%        3 calls 5.139E-03,4.682E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                  deflate(5d,5d,lm) : 13.2%        4 calls 5.139E-03,4.682E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                   deflate(5d,5d,lm) : 16.9%        4 calls 4.735E-03,4.695E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                           benchmark_deflate-deflate : 17.1%        1 calls 1.893E-02,1.893E-02 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                   benchmark_deflate : 93.3%        1 calls 1.045E-01,1.045E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                               Inv::setup(gf,fa,lm) :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                      set_left_expanded_gauge_field :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                                   Field::operator= :  0.1%        3 calls 1.001E-05,3.052E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                    Field::operator= :  0.1%        3 calls 1.001E-05,2.368E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                  set_marks_field_1 :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                                   set_marks_field_1 :  0.0%        1 calls 1.287E-05,1.287E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                     make_comm_plan :  0.8%        3 calls 3.600E-04,4.240E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                      make_comm_plan :  0.9%        3 calls 2.041E-04,3.507E-04 sec    0.000 Gflops (0.000E+00 flops)
 Qlat::CommPlanCache: to add 3 / 32.
-Timer::start                                   refresh_expanded :  1.2%        3 calls 4.699E-04,6.560E-04 sec    0.098 Gflops (4.608E+04 flops)
-Timer::start                              refresh_expanded-comm :  0.4%        3 calls 9.418E-05,2.202E-04 sec    0.489 Gflops (4.608E+04 flops)
-Timer::start                         refresh_expanded-comm-init :  0.1%        3 calls 4.053E-06,3.254E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                          refresh_expanded-comm-init :  0.1%        3 calls 3.099E-06,2.273E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                               refresh_expanded-comm :  0.4%        3 calls 6.413E-05,1.682E-04 sec    0.718 Gflops (4.608E+04 flops)
-Timer::stop                                    refresh_expanded :  1.3%        3 calls 1.440E-04,4.853E-04 sec    0.320 Gflops (4.608E+04 flops)
-Timer::stop                       set_left_expanded_gauge_field :  0.5%        1 calls 5.789E-04,5.789E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                Inv::setup(gf,fa,lm) :  0.5%        1 calls 6.042E-04,6.042E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                          gt_invert :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                                           gt_invert :  0.0%        1 calls 1.001E-05,1.001E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                            set_wall_src_propagator :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                              invert(out,in,gt_inv) :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                      ff_apply_gauge_transformation :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                       ff_apply_gauge_transformation :  0.0%        1 calls 3.099E-05,3.099E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                              invert_dwf(4d,4d,inv) :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                           fermion_field_5d_from_4d :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                            fermion_field_5d_from_4d :  0.0%        1 calls 1.693E-05,1.693E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                           fermion_field_5d_from_4d :  0.0%        2 calls 1.693E-05,1.693E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                            fermion_field_5d_from_4d :  0.0%        2 calls 1.383E-05,1.538E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                       invert_with_cg(5d,5d,inv,cg) :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                        multiply_d_minus(5d,5d,Inv) :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                      multiply_d_minus(5d,5d,gf,fa) :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                                  set_marks_field_1 :  0.0%        2 calls 1.287E-05,1.287E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                   set_marks_field_1 :  0.0%        2 calls 1.597E-05,1.442E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                     make_comm_plan :  0.9%        4 calls 2.041E-04,3.507E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                      make_comm_plan :  1.6%        4 calls 7.420E-04,4.485E-04 sec    0.000 Gflops (0.000E+00 flops)
 Qlat::CommPlanCache: to add 4 / 32.
-Timer::start           multiply_wilson_d_no_comm(5d,5d,gf,mass) :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop            multiply_wilson_d_no_comm(5d,5d,gf,mass) :  1.7%        1 calls 2.035E-03,2.035E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                   field_operator+= :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                                    field_operator+= :  0.0%        1 calls 3.815E-05,3.815E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                       multiply_d_minus(5d,5d,gf,fa) :  3.8%        1 calls 4.439E-03,4.439E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                         multiply_d_minus(5d,5d,Inv) :  3.8%        1 calls 4.466E-03,4.466E-03 sec    0.000 Gflops (0.000E+00 flops)
 invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00
-Timer::start                            set_odd_prec_field_sym2 :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                                   get_half_fermion :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                                    get_half_fermion :  0.0%        1 calls 1.717E-05,1.717E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                   get_half_fermion :  0.0%        2 calls 1.717E-05,1.717E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                    get_half_fermion :  0.0%        2 calls 1.597E-05,1.657E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                 multiply_m_e_e_inv :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                                  multiply_m_e_e_inv :  0.1%        1 calls 1.280E-04,1.280E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                        multiply_m_e_o(5d,5d,gf,fa) :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                                  set_marks_field_1 :  0.0%        3 calls 1.597E-05,1.442E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                   set_marks_field_1 :  0.0%        3 calls 1.502E-05,1.462E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                     make_comm_plan :  1.5%        5 calls 7.420E-04,4.485E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                      make_comm_plan :  1.9%        5 calls 4.311E-04,4.450E-04 sec    0.000 Gflops (0.000E+00 flops)
 Qlat::CommPlanCache: to add 5 / 32.
-Timer::start            multiply_wilson_d_e_o_no_comm(5d,5d,gf) :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop             multiply_wilson_d_e_o_no_comm(5d,5d,gf) :  0.8%        1 calls 1.002E-03,1.002E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                         multiply_m_e_o(5d,5d,gf,fa) :  1.9%        1 calls 2.237E-03,2.237E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                   field_operator-= :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                                    field_operator-= :  0.0%        1 calls 2.599E-05,2.599E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                               multiply_mpcdag_sym2 :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                     multiply_mdag_e_o(5d,5d,gf,fa) :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                                  set_marks_field_1 :  0.0%        4 calls 1.502E-05,1.462E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                   set_marks_field_1 :  0.0%        4 calls 1.597E-05,1.496E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                     make_comm_plan :  1.8%        6 calls 4.311E-04,4.450E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                      make_comm_plan :  2.2%        6 calls 4.358E-04,4.435E-04 sec    0.000 Gflops (0.000E+00 flops)
 Qlat::CommPlanCache: to add 6 / 32.
-Timer::start         multiply_wilson_ddag_e_o_no_comm(5d,5d,gf) :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop          multiply_wilson_ddag_e_o_no_comm(5d,5d,gf) :  0.8%        1 calls 1.004E-03,1.004E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                      multiply_mdag_e_o(5d,5d,gf,fa) :  1.9%        1 calls 2.352E-03,2.352E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                              multiply_mdag_e_e_inv :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                               multiply_mdag_e_e_inv :  0.1%        1 calls 1.090E-04,1.090E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                     multiply_mdag_e_o(5d,5d,gf,fa) :  1.9%        2 calls 2.352E-03,2.352E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start         multiply_wilson_ddag_e_o_no_comm(5d,5d,gf) :  0.8%        2 calls 1.004E-03,1.004E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop          multiply_wilson_ddag_e_o_no_comm(5d,5d,gf) :  1.6%        2 calls 9.871E-04,9.955E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                      multiply_mdag_e_o(5d,5d,gf,fa) :  3.2%        2 calls 1.640E-03,1.996E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                              multiply_mdag_e_e_inv :  0.1%        2 calls 1.090E-04,1.090E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                               multiply_mdag_e_e_inv :  0.2%        2 calls 1.080E-04,1.085E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                   field_operator-= :  0.0%        2 calls 2.599E-05,2.599E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                    field_operator-= :  0.0%        2 calls 2.599E-05,2.599E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                multiply_mpcdag_sym2 :  3.5%        1 calls 4.393E-03,4.393E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                             set_odd_prec_field_sym2 :  5.6%        1 calls 7.007E-03,7.007E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                      cg_with_herm_sym_2(5d,5d,inv) :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                                          cg_with_f :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                               multiply_hermop_sym2 :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                                  multiply_mpc_sym2 :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                                 multiply_m_e_e_inv :  0.1%        2 calls 1.280E-04,1.280E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                  multiply_m_e_e_inv :  0.2%        2 calls 1.190E-04,1.235E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                        multiply_m_e_o(5d,5d,gf,fa) :  1.8%        2 calls 2.237E-03,2.237E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start            multiply_wilson_d_e_o_no_comm(5d,5d,gf) :  0.8%        2 calls 1.002E-03,1.002E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop             multiply_wilson_d_e_o_no_comm(5d,5d,gf) :  1.6%        2 calls 9.809E-04,9.915E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                         multiply_m_e_o(5d,5d,gf,fa) :  3.0%        2 calls 1.528E-03,1.882E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                 multiply_m_e_e_inv :  0.2%        3 calls 1.190E-04,1.235E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                  multiply_m_e_e_inv :  0.3%        3 calls 1.121E-04,1.197E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                        multiply_m_e_o(5d,5d,gf,fa) :  3.0%        3 calls 1.528E-03,1.882E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start            multiply_wilson_d_e_o_no_comm(5d,5d,gf) :  1.6%        3 calls 9.809E-04,9.915E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop             multiply_wilson_d_e_o_no_comm(5d,5d,gf) :  2.3%        3 calls 9.809E-04,9.879E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                         multiply_m_e_o(5d,5d,gf,fa) :  4.2%        3 calls 1.568E-03,1.778E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                   field_operator-= :  0.0%        3 calls 2.599E-05,2.599E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                    field_operator-= :  0.1%        3 calls 2.599E-05,2.599E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                   multiply_mpc_sym2 :  2.7%        1 calls 3.512E-03,3.512E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                               multiply_mpcdag_sym2 :  3.4%        2 calls 4.393E-03,4.393E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                     multiply_mdag_e_o(5d,5d,gf,fa) :  3.1%        3 calls 1.640E-03,1.996E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start         multiply_wilson_ddag_e_o_no_comm(5d,5d,gf) :  1.5%        3 calls 9.871E-04,9.955E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop          multiply_wilson_ddag_e_o_no_comm(5d,5d,gf) :  2.3%        3 calls 9.851E-04,9.921E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                      multiply_mdag_e_o(5d,5d,gf,fa) :  4.3%        3 calls 1.576E-03,1.856E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                              multiply_mdag_e_e_inv :  0.2%        3 calls 1.080E-04,1.085E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                               multiply_mdag_e_e_inv :  0.2%        3 calls 1.080E-04,1.083E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                multiply_mpcdag_sym2 :  5.9%        2 calls 3.455E-03,3.924E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                multiply_hermop_sym2 :  5.3%        1 calls 7.033E-03,7.033E-03 sec    0.000 Gflops (0.000E+00 flops)
-cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.598E+00 stop_rsd=1.000E-08 
-Timer::start                               multiply_hermop_sym2 :  5.3%        2 calls 7.033E-03,7.033E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                  multiply_mpc_sym2 :  2.7%        2 calls 3.512E-03,3.512E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                   multiply_mpc_sym2 :  5.1%        2 calls 3.345E-03,3.428E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                               multiply_mpcdag_sym2 :  5.8%        3 calls 3.455E-03,3.924E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                multiply_mpcdag_sym2 :  8.1%        3 calls 3.442E-03,3.763E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                multiply_hermop_sym2 : 10.0%        2 calls 6.859E-03,6.946E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                        dot_product :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                                         dot_product :  0.1%        1 calls 1.190E-04,1.190E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                              field_operator*=(F,D) :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                               field_operator*=(F,D) :  0.0%        1 calls 2.098E-05,2.098E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                   field_operator+= :  0.0%        2 calls 3.815E-05,3.815E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                    field_operator+= :  0.0%        2 calls 2.599E-05,3.207E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                              field_operator*=(F,D) :  0.0%        2 calls 2.098E-05,2.098E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                               field_operator*=(F,D) :  0.0%        2 calls 2.003E-05,2.050E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                              field_operator*=(F,D) :  0.0%        3 calls 2.003E-05,2.050E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                               field_operator*=(F,D) :  0.0%        3 calls 2.003E-05,2.035E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                   field_operator+= :  0.0%        3 calls 2.599E-05,3.207E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                    field_operator+= :  0.1%        3 calls 2.623E-05,3.012E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                               multiply_hermop_sym2 : 10.0%        3 calls 6.859E-03,6.946E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                  multiply_mpc_sym2 :  4.9%        3 calls 3.345E-03,3.428E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                   multiply_mpc_sym2 :  7.1%        3 calls 3.278E-03,3.378E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                multiply_hermop_sym2 : 14.1%        3 calls 6.764E-03,6.885E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                        dot_product :  0.1%        2 calls 1.190E-04,1.190E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                         dot_product :  0.2%        2 calls 1.380E-04,1.285E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                        dot_product :  0.2%        3 calls 1.380E-04,1.285E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                         dot_product :  0.3%        3 calls 1.450E-04,1.340E-04 sec    0.000 Gflops (0.000E+00 flops)
-cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=5.548E-09 stop_rsd=1.000E-08
-Timer::stop                                           cg_with_f : 69.0%        1 calls 2.782E-01,2.782E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                       cg_with_herm_sym_2(5d,5d,inv) : 69.0%        1 calls 2.782E-01,2.782E-01 sec    0.385 Gflops (1.070E+08 flops)
-invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
-Timer::start                   restore_field_from_odd_prec_sym2 :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                                   set_half_fermion :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                                    set_half_fermion :  0.0%        1 calls 9.060E-06,9.060E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                   set_half_fermion :  0.0%        2 calls 9.060E-06,9.060E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                    set_half_fermion :  0.0%        2 calls 9.060E-06,9.060E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                    restore_field_from_odd_prec_sym2 :  0.4%        1 calls 1.817E-03,1.817E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                         multiply_m :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                                   get_half_fermion :  0.0%        3 calls 1.597E-05,1.657E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                    get_half_fermion :  0.0%        3 calls 1.717E-05,1.677E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                     multiply_m_e_e :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                                      multiply_m_e_e :  0.0%        1 calls 8.702E-05,8.702E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                     multiply_m_e_e :  0.0%        2 calls 8.702E-05,8.702E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                      multiply_m_e_e :  0.0%        2 calls 8.488E-05,8.595E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                   set_half_fermion :  0.0%        3 calls 9.060E-06,9.060E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                    set_half_fermion :  0.0%        3 calls 2.408E-05,1.407E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                          multiply_m :  0.9%        1 calls 3.477E-03,3.477E-03 sec    0.000 Gflops (0.000E+00 flops)
-invert_with_cg(5d,5d,inv,cg): checking 4.690693E-08 from 8.000000E+00
-Timer::stop                        invert_with_cg(5d,5d,inv,cg) : 72.3%        1 calls 2.956E-01,2.956E-01 sec    0.362 Gflops (1.070E+08 flops)
-Timer::start                           fermion_field_4d_from_5d :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                            fermion_field_4d_from_5d :  0.0%        1 calls 1.097E-05,1.097E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                               invert_dwf(4d,4d,inv) : 72.4%        1 calls 2.958E-01,2.958E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                      ff_apply_gauge_transformation :  0.0%        2 calls 3.099E-05,3.099E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                       ff_apply_gauge_transformation :  0.0%        2 calls 2.813E-05,2.956E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                               invert(out,in,gt_inv) : 72.4%        1 calls 2.960E-01,2.960E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start              set_propagator_col_from_fermion_field :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop               set_propagator_col_from_fermion_field :  0.0%        1 calls 9.060E-06,9.060E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                              invert(out,in,gt_inv) : 72.4%        2 calls 2.960E-01,2.960E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                      ff_apply_gauge_transformation :  0.0%        3 calls 2.813E-05,2.956E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                       ff_apply_gauge_transformation :  0.0%        3 calls 3.099E-05,3.004E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                              invert_dwf(4d,4d,inv) : 72.3%        2 calls 2.958E-01,2.958E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                           fermion_field_5d_from_4d :  0.0%        3 calls 1.383E-05,1.538E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                            fermion_field_5d_from_4d :  0.0%        3 calls 1.407E-05,1.494E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                       invert_with_cg(5d,5d,inv,cg) : 72.2%        2 calls 2.956E-01,2.956E-01 sec    0.362 Gflops (1.070E+08 flops)
-Timer::start                        multiply_d_minus(5d,5d,Inv) :  1.1%        2 calls 4.466E-03,4.466E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                      multiply_d_minus(5d,5d,gf,fa) :  1.1%        2 calls 4.439E-03,4.439E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start           multiply_wilson_d_no_comm(5d,5d,gf,mass) :  0.5%        2 calls 2.035E-03,2.035E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop            multiply_wilson_d_no_comm(5d,5d,gf,mass) :  1.0%        2 calls 1.970E-03,2.002E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                       multiply_d_minus(5d,5d,gf,fa) :  1.7%        2 calls 2.647E-03,3.543E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                         multiply_d_minus(5d,5d,Inv) :  1.7%        2 calls 2.719E-03,3.593E-03 sec    0.000 Gflops (0.000E+00 flops)
-invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00
-Timer::start                            set_odd_prec_field_sym2 :  1.7%        2 calls 7.007E-03,7.007E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                             set_odd_prec_field_sym2 :  2.9%        2 calls 5.163E-03,6.085E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                      cg_with_herm_sym_2(5d,5d,inv) : 66.7%        2 calls 2.782E-01,2.782E-01 sec    0.385 Gflops (1.070E+08 flops)
-Timer::start                                          cg_with_f : 66.7%        2 calls 2.782E-01,2.782E-01 sec    0.000 Gflops (0.000E+00 flops)
-cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.661E+00 stop_rsd=1.000E-08 
-cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=5.623E-09 stop_rsd=1.000E-08
-Timer::stop                                           cg_with_f : 79.7%        2 calls 2.676E-01,2.729E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                       cg_with_herm_sym_2(5d,5d,inv) : 79.7%        2 calls 2.677E-01,2.730E-01 sec    0.400 Gflops (1.070E+08 flops)
-invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
-Timer::start                   restore_field_from_odd_prec_sym2 :  0.3%        2 calls 1.817E-03,1.817E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                    restore_field_from_odd_prec_sym2 :  0.5%        2 calls 1.743E-03,1.780E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                         multiply_m :  0.5%        2 calls 3.477E-03,3.477E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                     multiply_m_e_e :  0.0%        3 calls 8.488E-05,8.595E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                      multiply_m_e_e :  0.0%        3 calls 8.702E-05,8.631E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                          multiply_m :  1.0%        2 calls 3.245E-03,3.361E-03 sec    0.000 Gflops (0.000E+00 flops)
-invert_with_cg(5d,5d,inv,cg): checking 4.822591E-08 from 8.000000E+00
-Timer::stop                        invert_with_cg(5d,5d,inv,cg) : 83.5%        2 calls 2.811E-01,2.883E-01 sec    0.381 Gflops (1.070E+08 flops)
-Timer::start                           fermion_field_4d_from_5d :  0.0%        2 calls 1.097E-05,1.097E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                            fermion_field_4d_from_5d :  0.0%        2 calls 1.001E-05,1.049E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                               invert_dwf(4d,4d,inv) : 83.6%        2 calls 2.813E-01,2.886E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                               invert(out,in,gt_inv) : 83.6%        2 calls 2.814E-01,2.887E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start              set_propagator_col_from_fermion_field :  0.0%        2 calls 9.060E-06,9.060E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop               set_propagator_col_from_fermion_field :  0.0%        2 calls 9.060E-06,9.060E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                              invert(out,in,gt_inv) : 83.6%        3 calls 2.814E-01,2.887E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                              invert_dwf(4d,4d,inv) : 83.6%        3 calls 2.813E-01,2.886E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                       invert_with_cg(5d,5d,inv,cg) : 83.5%        3 calls 2.811E-01,2.883E-01 sec    0.381 Gflops (1.070E+08 flops)
-Timer::start                        multiply_d_minus(5d,5d,Inv) :  1.0%        3 calls 2.719E-03,3.593E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                      multiply_d_minus(5d,5d,gf,fa) :  1.0%        3 calls 2.647E-03,3.543E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start           multiply_wilson_d_no_comm(5d,5d,gf,mass) :  0.6%        3 calls 1.970E-03,2.002E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop            multiply_wilson_d_no_comm(5d,5d,gf,mass) :  0.9%        3 calls 1.971E-03,1.992E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                       multiply_d_minus(5d,5d,gf,fa) :  1.4%        3 calls 2.610E-03,3.232E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                         multiply_d_minus(5d,5d,Inv) :  1.4%        3 calls 2.660E-03,3.282E-03 sec    0.000 Gflops (0.000E+00 flops)
-invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00
-Timer::start                            set_odd_prec_field_sym2 :  1.8%        3 calls 5.163E-03,6.085E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                             set_odd_prec_field_sym2 :  2.4%        3 calls 4.882E-03,5.684E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                      cg_with_herm_sym_2(5d,5d,inv) : 78.2%        3 calls 2.677E-01,2.730E-01 sec    0.400 Gflops (1.070E+08 flops)
-Timer::start                                          cg_with_f : 78.2%        3 calls 2.676E-01,2.729E-01 sec    0.000 Gflops (0.000E+00 flops)
-cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.617E+00 stop_rsd=1.000E-08 
-cg_with_f: final iter=  37 sqrt(qnorm_r/qnorm_in)=8.799E-09 stop_rsd=1.000E-08
-Timer::stop                                           cg_with_f : 84.0%        3 calls 2.564E-01,2.674E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                       cg_with_herm_sym_2(5d,5d,inv) : 84.0%        3 calls 2.564E-01,2.675E-01 sec    0.406 Gflops (1.042E+08 flops)
-invert_with_cg(5d,5d,inv,cg): total_iter=37 cycle=1 stop_rsd=1.000E-08
-Timer::start                   restore_field_from_odd_prec_sym2 :  0.4%        3 calls 1.743E-03,1.780E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                    restore_field_from_odd_prec_sym2 :  0.6%        3 calls 1.790E-03,1.783E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                         multiply_m :  0.7%        3 calls 3.245E-03,3.361E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                          multiply_m :  1.0%        3 calls 3.219E-03,3.314E-03 sec    0.000 Gflops (0.000E+00 flops)
-invert_with_cg(5d,5d,inv,cg): checking 7.949384E-08 from 8.000000E+00
-Timer::stop                        invert_with_cg(5d,5d,inv,cg) : 88.1%        3 calls 2.694E-01,2.820E-01 sec    0.387 Gflops (1.042E+08 flops)
-Timer::start                           fermion_field_4d_from_5d :  0.0%        3 calls 1.001E-05,1.049E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                            fermion_field_4d_from_5d :  0.0%        3 calls 1.311E-05,1.136E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                               invert_dwf(4d,4d,inv) : 88.2%        3 calls 2.696E-01,2.822E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                               invert(out,in,gt_inv) : 88.2%        3 calls 2.697E-01,2.824E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start              set_propagator_col_from_fermion_field :  0.0%        3 calls 9.060E-06,9.060E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop               set_propagator_col_from_fermion_field :  0.0%        3 calls 2.217E-05,1.343E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                              invert(out,in,gt_inv) : 88.2%        4 calls 2.697E-01,2.824E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                              invert_dwf(4d,4d,inv) : 88.2%        4 calls 2.696E-01,2.822E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                       invert_with_cg(5d,5d,inv,cg) : 88.1%        4 calls 2.694E-01,2.820E-01 sec    0.387 Gflops (1.042E+08 flops)
-invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00
-Timer::start                            set_odd_prec_field_sym2 :  1.8%        4 calls 4.882E-03,5.684E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                             set_odd_prec_field_sym2 :  2.3%        4 calls 4.902E-03,5.489E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                      cg_with_herm_sym_2(5d,5d,inv) : 82.9%        4 calls 2.564E-01,2.675E-01 sec    0.406 Gflops (1.042E+08 flops)
 cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.598E+00 stop_rsd=1.000E-08 
 cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=5.548E-09 stop_rsd=1.000E-08
-Timer::stop                       cg_with_herm_sym_2(5d,5d,inv) : 86.5%        4 calls 2.581E-01,2.651E-01 sec    0.415 Gflops (1.070E+08 flops)
 invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
-Timer::start                   restore_field_from_odd_prec_sym2 :  0.4%        4 calls 1.790E-03,1.783E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                    restore_field_from_odd_prec_sym2 :  0.6%        4 calls 1.748E-03,1.774E-03 sec    0.000 Gflops (0.000E+00 flops)
 invert_with_cg(5d,5d,inv,cg): checking 4.690693E-08 from 8.000000E+00
-Timer::stop                        invert_with_cg(5d,5d,inv,cg) : 90.7%        4 calls 2.709E-01,2.792E-01 sec    0.395 Gflops (1.070E+08 flops)
-Timer::stop                               invert_dwf(4d,4d,inv) : 90.8%        4 calls 2.710E-01,2.794E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                               invert(out,in,gt_inv) : 90.8%        4 calls 2.711E-01,2.795E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                              invert(out,in,gt_inv) : 90.8%        5 calls 2.711E-01,2.795E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                              invert_dwf(4d,4d,inv) : 90.8%        5 calls 2.710E-01,2.794E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                       invert_with_cg(5d,5d,inv,cg) : 90.7%        5 calls 2.709E-01,2.792E-01 sec    0.395 Gflops (1.070E+08 flops)
 invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00
-Timer::start                            set_odd_prec_field_sym2 :  1.8%        5 calls 4.902E-03,5.489E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                             set_odd_prec_field_sym2 :  2.2%        5 calls 4.900E-03,5.371E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                      cg_with_herm_sym_2(5d,5d,inv) : 85.6%        5 calls 2.581E-01,2.651E-01 sec    0.415 Gflops (1.070E+08 flops)
 cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.661E+00 stop_rsd=1.000E-08 
 cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=5.623E-09 stop_rsd=1.000E-08
-Timer::stop                       cg_with_herm_sym_2(5d,5d,inv) : 88.1%        5 calls 2.578E-01,2.636E-01 sec    0.415 Gflops (1.070E+08 flops)
 invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
-Timer::start                   restore_field_from_odd_prec_sym2 :  0.5%        5 calls 1.748E-03,1.774E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                    restore_field_from_odd_prec_sym2 :  0.6%        5 calls 1.750E-03,1.770E-03 sec    0.000 Gflops (0.000E+00 flops)
 invert_with_cg(5d,5d,inv,cg): checking 4.822591E-08 from 8.000000E+00
-Timer::stop                        invert_with_cg(5d,5d,inv,cg) : 92.4%        5 calls 2.706E-01,2.775E-01 sec    0.395 Gflops (1.070E+08 flops)
-Timer::stop                               invert_dwf(4d,4d,inv) : 92.4%        5 calls 2.707E-01,2.777E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                               invert(out,in,gt_inv) : 92.5%        5 calls 2.708E-01,2.778E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                              invert(out,in,gt_inv) : 92.5%        6 calls 2.708E-01,2.778E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                              invert_dwf(4d,4d,inv) : 92.4%        6 calls 2.707E-01,2.777E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                       invert_with_cg(5d,5d,inv,cg) : 92.4%        6 calls 2.706E-01,2.775E-01 sec    0.395 Gflops (1.070E+08 flops)
 invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00
-Timer::start                            set_odd_prec_field_sym2 :  1.8%        6 calls 4.900E-03,5.371E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                             set_odd_prec_field_sym2 :  2.1%        6 calls 4.872E-03,5.288E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                      cg_with_herm_sym_2(5d,5d,inv) : 87.3%        6 calls 2.578E-01,2.636E-01 sec    0.415 Gflops (1.070E+08 flops)
 cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.617E+00 stop_rsd=1.000E-08 
 cg_with_f: final iter=  37 sqrt(qnorm_r/qnorm_in)=8.799E-09 stop_rsd=1.000E-08
-Timer::stop                       cg_with_herm_sym_2(5d,5d,inv) : 89.1%        6 calls 2.513E-01,2.616E-01 sec    0.415 Gflops (1.042E+08 flops)
 invert_with_cg(5d,5d,inv,cg): total_iter=37 cycle=1 stop_rsd=1.000E-08
-Timer::start                   restore_field_from_odd_prec_sym2 :  0.5%        6 calls 1.750E-03,1.770E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                    restore_field_from_odd_prec_sym2 :  0.6%        6 calls 1.751E-03,1.766E-03 sec    0.000 Gflops (0.000E+00 flops)
 invert_with_cg(5d,5d,inv,cg): checking 7.949384E-08 from 8.000000E+00
-Timer::stop                        invert_with_cg(5d,5d,inv,cg) : 93.5%        6 calls 2.640E-01,2.753E-01 sec    0.395 Gflops (1.042E+08 flops)
-Timer::stop                               invert_dwf(4d,4d,inv) : 93.6%        6 calls 2.641E-01,2.754E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                               invert(out,in,gt_inv) : 93.6%        6 calls 2.642E-01,2.755E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                              invert(out,in,gt_inv) : 93.6%        7 calls 2.642E-01,2.755E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                              invert_dwf(4d,4d,inv) : 93.6%        7 calls 2.641E-01,2.754E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                       invert_with_cg(5d,5d,inv,cg) : 93.5%        7 calls 2.640E-01,2.753E-01 sec    0.395 Gflops (1.042E+08 flops)
 invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00
-Timer::start                            set_odd_prec_field_sym2 :  1.8%        7 calls 4.872E-03,5.288E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                             set_odd_prec_field_sym2 :  2.1%        7 calls 4.879E-03,5.229E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                      cg_with_herm_sym_2(5d,5d,inv) : 88.5%        7 calls 2.513E-01,2.616E-01 sec    0.415 Gflops (1.042E+08 flops)
 cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.598E+00 stop_rsd=1.000E-08 
 cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=5.548E-09 stop_rsd=1.000E-08
-Timer::stop                       cg_with_herm_sym_2(5d,5d,inv) : 89.9%        7 calls 2.580E-01,2.611E-01 sec    0.415 Gflops (1.070E+08 flops)
 invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
-Timer::start                   restore_field_from_odd_prec_sym2 :  0.5%        7 calls 1.751E-03,1.766E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                    restore_field_from_odd_prec_sym2 :  0.6%        7 calls 1.752E-03,1.764E-03 sec    0.000 Gflops (0.000E+00 flops)
 invert_with_cg(5d,5d,inv,cg): checking 4.690693E-08 from 8.000000E+00
-Timer::stop                        invert_with_cg(5d,5d,inv,cg) : 94.4%        7 calls 2.707E-01,2.746E-01 sec    0.395 Gflops (1.070E+08 flops)
-Timer::stop                               invert_dwf(4d,4d,inv) : 94.4%        7 calls 2.709E-01,2.748E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                               invert(out,in,gt_inv) : 94.4%        7 calls 2.709E-01,2.749E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                              invert(out,in,gt_inv) : 94.4%        8 calls 2.709E-01,2.749E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                              invert_dwf(4d,4d,inv) : 94.4%        8 calls 2.709E-01,2.748E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                       invert_with_cg(5d,5d,inv,cg) : 94.3%        8 calls 2.707E-01,2.746E-01 sec    0.395 Gflops (1.070E+08 flops)
 invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00
-Timer::start                            set_odd_prec_field_sym2 :  1.8%        8 calls 4.879E-03,5.229E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                             set_odd_prec_field_sym2 :  2.0%        8 calls 4.868E-03,5.184E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                      cg_with_herm_sym_2(5d,5d,inv) : 89.4%        8 calls 2.580E-01,2.611E-01 sec    0.415 Gflops (1.070E+08 flops)
 cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.661E+00 stop_rsd=1.000E-08 
 cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=5.623E-09 stop_rsd=1.000E-08
-Timer::stop                       cg_with_herm_sym_2(5d,5d,inv) : 90.5%        8 calls 2.574E-01,2.606E-01 sec    0.416 Gflops (1.070E+08 flops)
 invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
-Timer::start                   restore_field_from_odd_prec_sym2 :  0.5%        8 calls 1.752E-03,1.764E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                    restore_field_from_odd_prec_sym2 :  0.6%        8 calls 1.753E-03,1.763E-03 sec    0.000 Gflops (0.000E+00 flops)
 invert_with_cg(5d,5d,inv,cg): checking 4.822591E-08 from 8.000000E+00
-Timer::stop                        invert_with_cg(5d,5d,inv,cg) : 95.0%        8 calls 2.701E-01,2.741E-01 sec    0.396 Gflops (1.070E+08 flops)
-Timer::stop                               invert_dwf(4d,4d,inv) : 95.1%        8 calls 2.703E-01,2.742E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                               invert(out,in,gt_inv) : 95.1%        8 calls 2.703E-01,2.743E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                              invert(out,in,gt_inv) : 95.1%        9 calls 2.703E-01,2.743E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                              invert_dwf(4d,4d,inv) : 95.1%        9 calls 2.703E-01,2.742E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                       invert_with_cg(5d,5d,inv,cg) : 95.0%        9 calls 2.701E-01,2.741E-01 sec    0.396 Gflops (1.070E+08 flops)
 invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00
-Timer::start                            set_odd_prec_field_sym2 :  1.8%        9 calls 4.868E-03,5.184E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                             set_odd_prec_field_sym2 :  2.0%        9 calls 4.883E-03,5.151E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                      cg_with_herm_sym_2(5d,5d,inv) : 90.0%        9 calls 2.574E-01,2.606E-01 sec    0.416 Gflops (1.070E+08 flops)
 cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.617E+00 stop_rsd=1.000E-08 
 cg_with_f: final iter=  37 sqrt(qnorm_r/qnorm_in)=8.799E-09 stop_rsd=1.000E-08
-Timer::stop                       cg_with_herm_sym_2(5d,5d,inv) : 91.0%        9 calls 2.513E-01,2.596E-01 sec    0.415 Gflops (1.042E+08 flops)
 invert_with_cg(5d,5d,inv,cg): total_iter=37 cycle=1 stop_rsd=1.000E-08
-Timer::start                   restore_field_from_odd_prec_sym2 :  0.5%        9 calls 1.753E-03,1.763E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                    restore_field_from_odd_prec_sym2 :  0.6%        9 calls 1.752E-03,1.762E-03 sec    0.000 Gflops (0.000E+00 flops)
 invert_with_cg(5d,5d,inv,cg): checking 7.949384E-08 from 8.000000E+00
-Timer::stop                        invert_with_cg(5d,5d,inv,cg) : 95.5%        9 calls 2.641E-01,2.729E-01 sec    0.395 Gflops (1.042E+08 flops)
-Timer::stop                               invert_dwf(4d,4d,inv) : 95.6%        9 calls 2.642E-01,2.731E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                               invert(out,in,gt_inv) : 95.6%        9 calls 2.643E-01,2.732E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                              invert(out,in,gt_inv) : 95.6%       10 calls 2.643E-01,2.732E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                              invert_dwf(4d,4d,inv) : 95.6%       10 calls 2.642E-01,2.731E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                       invert_with_cg(5d,5d,inv,cg) : 95.5%       10 calls 2.641E-01,2.729E-01 sec    0.395 Gflops (1.042E+08 flops)
 invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00
-Timer::start                            set_odd_prec_field_sym2 :  1.8%       10 calls 4.883E-03,5.151E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                             set_odd_prec_field_sym2 :  2.0%       10 calls 4.873E-03,5.123E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                      cg_with_herm_sym_2(5d,5d,inv) : 90.6%       10 calls 2.513E-01,2.596E-01 sec    0.415 Gflops (1.042E+08 flops)
 cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.598E+00 stop_rsd=1.000E-08 
 cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=5.548E-09 stop_rsd=1.000E-08
-Timer::stop                       cg_with_herm_sym_2(5d,5d,inv) : 91.4%       10 calls 2.575E-01,2.594E-01 sec    0.416 Gflops (1.070E+08 flops)
 invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
-Timer::start                   restore_field_from_odd_prec_sym2 :  0.6%       10 calls 1.752E-03,1.762E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                    restore_field_from_odd_prec_sym2 :  0.6%       10 calls 1.757E-03,1.761E-03 sec    0.000 Gflops (0.000E+00 flops)
 invert_with_cg(5d,5d,inv,cg): checking 4.690693E-08 from 8.000000E+00
-Timer::stop                        invert_with_cg(5d,5d,inv,cg) : 95.9%       10 calls 2.703E-01,2.727E-01 sec    0.396 Gflops (1.070E+08 flops)
-Timer::stop                               invert_dwf(4d,4d,inv) : 96.0%       10 calls 2.704E-01,2.728E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                               invert(out,in,gt_inv) : 96.0%       10 calls 2.704E-01,2.729E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                              invert(out,in,gt_inv) : 96.0%       11 calls 2.704E-01,2.729E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                              invert_dwf(4d,4d,inv) : 96.0%       11 calls 2.704E-01,2.728E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                       invert_with_cg(5d,5d,inv,cg) : 95.9%       11 calls 2.703E-01,2.727E-01 sec    0.396 Gflops (1.070E+08 flops)
 invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00
-Timer::start                            set_odd_prec_field_sym2 :  1.8%       11 calls 4.873E-03,5.123E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                             set_odd_prec_field_sym2 :  2.0%       11 calls 4.861E-03,5.099E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                      cg_with_herm_sym_2(5d,5d,inv) : 91.0%       11 calls 2.575E-01,2.594E-01 sec    0.416 Gflops (1.070E+08 flops)
 cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.661E+00 stop_rsd=1.000E-08 
 cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=5.623E-09 stop_rsd=1.000E-08
-Timer::stop                       cg_with_herm_sym_2(5d,5d,inv) : 91.8%       11 calls 2.617E-01,2.596E-01 sec    0.409 Gflops (1.070E+08 flops)
 invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
-Timer::start                   restore_field_from_odd_prec_sym2 :  0.6%       11 calls 1.757E-03,1.761E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                    restore_field_from_odd_prec_sym2 :  0.6%       11 calls 1.767E-03,1.762E-03 sec    0.000 Gflops (0.000E+00 flops)
 invert_with_cg(5d,5d,inv,cg): checking 4.822591E-08 from 8.000000E+00
-Timer::stop                        invert_with_cg(5d,5d,inv,cg) : 96.3%       11 calls 2.745E-01,2.728E-01 sec    0.390 Gflops (1.070E+08 flops)
-Timer::stop                               invert_dwf(4d,4d,inv) : 96.3%       11 calls 2.746E-01,2.730E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                               invert(out,in,gt_inv) : 96.4%       11 calls 2.747E-01,2.731E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                              invert(out,in,gt_inv) : 96.4%       12 calls 2.747E-01,2.731E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                              invert_dwf(4d,4d,inv) : 96.3%       12 calls 2.746E-01,2.730E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                       invert_with_cg(5d,5d,inv,cg) : 96.3%       12 calls 2.745E-01,2.728E-01 sec    0.390 Gflops (1.070E+08 flops)
 invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00
-Timer::start                            set_odd_prec_field_sym2 :  1.8%       12 calls 4.861E-03,5.099E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                             set_odd_prec_field_sym2 :  2.0%       12 calls 4.909E-03,5.083E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                      cg_with_herm_sym_2(5d,5d,inv) : 91.4%       12 calls 2.617E-01,2.596E-01 sec    0.409 Gflops (1.070E+08 flops)
 cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.617E+00 stop_rsd=1.000E-08 
 cg_with_f: final iter=  37 sqrt(qnorm_r/qnorm_in)=8.799E-09 stop_rsd=1.000E-08
-Timer::stop                       cg_with_herm_sym_2(5d,5d,inv) : 92.0%       12 calls 2.507E-01,2.588E-01 sec    0.416 Gflops (1.042E+08 flops)
 invert_with_cg(5d,5d,inv,cg): total_iter=37 cycle=1 stop_rsd=1.000E-08
-Timer::start                   restore_field_from_odd_prec_sym2 :  0.6%       12 calls 1.767E-03,1.762E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                    restore_field_from_odd_prec_sym2 :  0.6%       12 calls 1.754E-03,1.761E-03 sec    0.000 Gflops (0.000E+00 flops)
 invert_with_cg(5d,5d,inv,cg): checking 7.949384E-08 from 8.000000E+00
-Timer::stop                        invert_with_cg(5d,5d,inv,cg) : 96.6%       12 calls 2.635E-01,2.721E-01 sec    0.395 Gflops (1.042E+08 flops)
-Timer::stop                               invert_dwf(4d,4d,inv) : 96.6%       12 calls 2.636E-01,2.722E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                               invert(out,in,gt_inv) : 96.6%       12 calls 2.637E-01,2.723E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                             set_wall_src_propagator : 96.7%        1 calls 3.268E+00,3.268E+00 sec    0.000 Gflops (0.000E+00 flops)
+invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00
+cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.598E+00 stop_rsd=1.000E-08 
+cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=5.548E-09 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): checking 4.690693E-08 from 8.000000E+00
+invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00
+cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.661E+00 stop_rsd=1.000E-08 
+cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=5.623E-09 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): checking 4.822591E-08 from 8.000000E+00
+invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00
+cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.617E+00 stop_rsd=1.000E-08 
+cg_with_f: final iter=  37 sqrt(qnorm_r/qnorm_in)=8.799E-09 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): total_iter=37 cycle=1 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): checking 7.949384E-08 from 8.000000E+00
 prop qnorm =  2.02304498733454295E+02
 prop qnorm =  5.07076866655432834E-01
-Timer::start                   find_max_eigen_value_hermop_sym2 :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                                  set_u_rand_double :  0.0%        2 calls 1.083E-03,1.083E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                   set_u_rand_double :  0.1%        2 calls 1.123E-03,1.103E-03 sec    0.000 Gflops (0.000E+00 flops)
 find_max_eigen_value_hermop_sym2:     1: sqrt_qnorm_ratio = 1.15444278295577396E+00. (max eigen value of hermop_sym2)
 find_max_eigen_value_hermop_sym2:     2: sqrt_qnorm_ratio = 1.28174895744192674E+00. (max eigen value of hermop_sym2)
 find_max_eigen_value_hermop_sym2:     3: sqrt_qnorm_ratio = 1.38696569401745640E+00. (max eigen value of hermop_sym2)
 find_max_eigen_value_hermop_sym2:     4: sqrt_qnorm_ratio = 1.48877146814636507E+00. (max eigen value of hermop_sym2)
 find_max_eigen_value_hermop_sym2:     5: sqrt_qnorm_ratio = 1.58623325176833019E+00. (max eigen value of hermop_sym2)
-Timer::stop                    find_max_eigen_value_hermop_sym2 :  1.0%        1 calls 3.343E-02,3.343E-02 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                        qtouch_info :  0.0%        2 calls 1.950E-04,1.950E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                             qtouch :  0.0%        2 calls 1.709E-04,1.709E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                              qtouch :  0.0%        2 calls 9.608E-05,1.335E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                         qtouch_info :  0.0%        2 calls 1.340E-04,1.645E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                     compute_traj_do : 99.9%        1 calls 3.412E+00,3.412E+00 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                       release_lock :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
 release_lock: Release lock 'results/free-4nt8/results=1000-lock'
-Timer::start                                       qremove_info :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
 qremove: 'results/free-4nt8/results=1000-lock/time.txt'
-Timer::stop                                        qremove_info :  0.0%        1 calls 6.700E-05,6.700E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                         rmdir_lock :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                                          rmdir_lock :  0.0%        1 calls 3.481E-05,3.481E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                        release_lock :  0.0%        1 calls 1.960E-04,1.960E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                        compute_traj : 99.9%        1 calls 3.413E+00,3.413E+00 sec    0.000 Gflops (0.000E+00 flops)
-Timer::display-start:  fname : time% number of calls; Avg,Tot sec; Avg,Tot flops; Gflops
-Timer::display                                    force_low_modes :  0.000%        9 calls; 0.00E+00,0.00E+00 sec; 0.00E+00,0.00E+00 flops;  -nan Gflops
-Timer::display                            set_default_budget_auto :  0.000%        4 calls; 7.75E-07,3.10E-06 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                          get_trajs :  0.000%        1 calls; 3.10E-06,3.10E-06 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                      qset_line_buf :  0.000%        2 calls; 1.91E-06,3.81E-06 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                             install_qhandle_sigint :  0.000%        3 calls; 1.35E-06,4.05E-06 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                          gt_invert :  0.000%        1 calls; 1.00E-05,1.00E-05 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                  gf_avg_link_trace :  0.000%        1 calls; 1.00E-05,1.00E-05 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                 get_default_budget :  0.000%        1 calls; 1.41E-05,1.41E-05 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                          check_dir :  0.000%        9 calls; 1.62E-06,1.45E-05 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                       check_status :  0.000%        2 calls; 7.99E-06,1.60E-05 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                            qrename :  0.000%        1 calls; 1.69E-05,1.69E-05 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                           init_blocked_half_vector :  0.001%        4 calls; 5.54E-06,2.22E-05 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                     get_time_limit :  0.001%        1 calls; 3.00E-05,3.00E-05 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                         rmdir_lock :  0.001%        1 calls; 3.48E-05,3.48E-05 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                set_time_limit_auto :  0.001%        4 calls; 8.70E-06,3.48E-05 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                   init_half_vector :  0.001%        8 calls; 5.48E-06,4.39E-05 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                 load_configuration :  0.001%        1 calls; 4.60E-05,4.60E-05 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                   qmkdir_sync_node :  0.002%        1 calls; 5.51E-05,5.51E-05 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                             qclose :  0.002%        4 calls; 1.40E-05,5.60E-05 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                  set_marks_field_1 :  0.002%        4 calls; 1.50E-05,5.98E-05 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                       qremove_info :  0.002%        1 calls; 6.70E-05,6.70E-05 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                set_marks_field_all :  0.002%        2 calls; 3.80E-05,7.61E-05 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                         mkdir_lock :  0.003%        2 calls; 4.29E-05,8.58E-05 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                setup(job_tag,traj) :  0.003%        1 calls; 1.15E-04,1.15E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                 init_compressed_eigen_system_coefs :  0.003%        1 calls; 1.19E-04,1.19E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display              set_propagator_col_from_fermion_field :  0.004%       12 calls; 1.03E-05,1.23E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                           fermion_field_4d_from_5d :  0.004%       12 calls; 1.10E-05,1.32E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                       release_lock :  0.006%        1 calls; 1.96E-04,1.96E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                        gf_avg_spatial_plaq_no_comm :  0.006%        1 calls; 2.02E-04,2.02E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                convert_half_vector :  0.006%        8 calls; 2.56E-05,2.05E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                              qopen :  0.006%        4 calls; 5.42E-05,2.17E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                             qtouch :  0.008%        2 calls; 1.34E-04,2.67E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                   display_geo_node :  0.009%        1 calls; 2.93E-04,2.93E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                        obtain_lock :  0.009%        1 calls; 3.12E-04,3.12E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                           fermion_field_5d_from_4d :  0.009%       24 calls; 1.32E-05,3.18E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                        qtouch_info :  0.010%        2 calls; 1.65E-04,3.29E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                      set_g_rand_color_matrix_field :  0.010%        1 calls; 3.38E-04,3.38E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                gf_avg_plaq_no_comm :  0.013%        1 calls; 4.28E-04,4.28E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                      setup_log_idx :  0.014%        1 calls; 4.69E-04,4.69E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                   set_half_fermion :  0.016%       48 calls; 1.16E-05,5.59E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                      set_left_expanded_gauge_field :  0.017%        1 calls; 5.79E-04,5.79E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                               Inv::setup(gf,fa,lm) :  0.018%        1 calls; 6.04E-04,6.04E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                      ff_apply_gauge_transformation :  0.020%       24 calls; 2.91E-05,6.99E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                   get_half_fermion :  0.023%       48 calls; 1.66E-05,7.96E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                 init_compressed_eigen_system_bases :  0.026%        1 calls; 8.75E-04,8.75E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                             qmkdir :  0.027%        8 calls; 1.13E-04,9.06E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                        qmkdir_info :  0.027%        7 calls; 1.33E-04,9.29E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                gf_avg_spatial_plaq :  0.046%        1 calls; 1.56E-03,1.56E-03 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                     multiply_m_e_e :  0.060%       24 calls; 8.58E-05,2.06E-03 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                        gf_avg_plaq :  0.064%        1 calls; 2.18E-03,2.18E-03 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                  set_u_rand_double :  0.065%        2 calls; 1.10E-03,2.21E-03 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                     make_comm_plan :  0.078%        6 calls; 4.43E-04,2.66E-03 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                       gf_show_info :  0.114%        1 calls; 3.89E-03,3.89E-03 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                    deflate-produce :  0.161%        4 calls; 1.37E-03,5.50E-03 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                     deflate-glbsum :  0.172%        4 calls; 1.47E-03,5.88E-03 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                         refresh_expanded-comm-init :  0.184%     1963 calls; 3.19E-06,6.27E-03 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                    deflate-project :  0.191%        4 calls; 1.63E-03,6.52E-03 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                  deflate(hv,hv,lm) :  0.543%        4 calls; 4.63E-03,1.85E-02 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                  deflate(5d,5d,lm) :  0.550%        4 calls; 4.69E-03,1.88E-02 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                          benchmark_deflate-deflate :  0.554%        1 calls; 1.89E-02,1.89E-02 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                   restore_field_from_odd_prec_sym2 :  0.619%       12 calls; 1.76E-03,2.11E-02 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                   Field::operator= :  0.634%     2881 calls; 7.51E-06,2.16E-02 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display           multiply_wilson_d_no_comm(5d,5d,gf,mass) :  0.694%       12 calls; 1.98E-03,2.37E-02 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                   field_operator+= :  0.706%      940 calls; 2.57E-05,2.41E-02 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                              field_operator*=(F,D) :  0.799%     1350 calls; 2.02E-05,2.73E-02 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                        dot_product :  0.919%      452 calls; 6.95E-05,3.14E-02 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                      multiply_d_minus(5d,5d,gf,fa) :  0.962%       12 calls; 2.74E-03,3.29E-02 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                        multiply_d_minus(5d,5d,Inv) :  0.967%       12 calls; 2.75E-03,3.30E-02 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                   find_max_eigen_value_hermop_sym2 :  0.979%        1 calls; 3.34E-02,3.34E-02 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                   field_operator-= :  1.105%     1450 calls; 2.60E-05,3.77E-02 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                         multiply_m :  1.136%       12 calls; 3.24E-03,3.88E-02 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                            set_odd_prec_field_sym2 :  1.786%       12 calls; 5.08E-03,6.10E-02 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                   set_u_rand_float :  1.822%        2 calls; 3.11E-02,6.22E-02 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                  set_u_rand(lm,rs) :  1.826%        1 calls; 6.24E-02,6.24E-02 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                              multiply_mdag_e_e_inv :  3.028%      962 calls; 1.08E-04,1.03E-01 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                  benchmark_deflate :  3.059%        1 calls; 1.04E-01,1.04E-01 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                 multiply_m_e_e_inv :  3.219%      974 calls; 1.13E-04,1.10E-01 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                              refresh_expanded-comm :  3.902%     1963 calls; 6.79E-05,1.33E-01 sec; 1.24E+05,2.42E+08 flops;  1.82 Gflops
-Timer::display                                   refresh_expanded :  7.942%     1963 calls; 1.38E-04,2.71E-01 sec; 1.24E+05,2.42E+08 flops;  0.89 Gflops
-Timer::display         multiply_wilson_ddag_e_o_no_comm(5d,5d,gf) : 27.696%      962 calls; 9.83E-04,9.46E-01 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display            multiply_wilson_d_e_o_no_comm(5d,5d,gf) : 28.287%      986 calls; 9.80E-04,9.66E-01 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                        multiply_m_e_o(5d,5d,gf,fa) : 42.409%      986 calls; 1.47E-03,1.45E+00 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                     multiply_mdag_e_o(5d,5d,gf,fa) : 42.461%      962 calls; 1.51E-03,1.45E+00 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                  multiply_mpc_sym2 : 43.925%      469 calls; 3.20E-03,1.50E+00 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                               multiply_mpcdag_sym2 : 45.880%      481 calls; 3.26E-03,1.57E+00 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                               multiply_hermop_sym2 : 88.636%      469 calls; 6.46E-03,3.03E+00 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                          cg_with_f : 90.917%       12 calls; 2.59E-01,3.11E+00 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                      cg_with_herm_sym_2(5d,5d,inv) : 90.920%       12 calls; 2.59E-01,3.11E+00 sec; 1.06E+08,1.27E+09 flops;  0.41 Gflops
-Timer::display                       invert_with_cg(5d,5d,inv,cg) : 95.565%       12 calls; 2.72E-01,3.26E+00 sec; 1.06E+08,1.27E+09 flops;  0.39 Gflops
-Timer::display                              invert_dwf(4d,4d,inv) : 95.613%       12 calls; 2.72E-01,3.27E+00 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                              invert(out,in,gt_inv) : 95.647%       12 calls; 2.72E-01,3.27E+00 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                            set_wall_src_propagator : 95.668%        1 calls; 3.27E+00,3.27E+00 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                    compute_traj_do : 99.880%        1 calls; 3.41E+00,3.41E+00 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                       compute_traj : 99.909%        1 calls; 3.41E+00,3.41E+00 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display-end:    --------------------- total 3.4151E+00 sec ----------------------
-Timer::reset(): Reset all timers!
-Timer::start                                        qmkdir_info :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                                             qmkdir :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                                          check_dir :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                                           check_dir :  4.0%        1 calls 1.907E-06,1.907E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                              qmkdir : 57.4%        1 calls 3.505E-05,3.505E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                         qmkdir_info : 82.8%        1 calls 6.294E-05,6.294E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                        qmkdir_info : 70.6%        2 calls 6.294E-05,6.294E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                             qmkdir : 34.3%        2 calls 3.505E-05,3.505E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                          check_dir :  1.6%        2 calls 1.907E-06,1.907E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                           check_dir :  2.4%        2 calls 1.192E-06,1.550E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                              qmkdir : 46.0%        2 calls 3.219E-05,3.362E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                         qmkdir_info : 75.3%        2 calls 5.603E-05,5.949E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                             qclose :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                                              qclose : 11.1%        1 calls 2.313E-05,2.313E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                              qopen :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                                               qopen :  3.0%        1 calls 7.153E-06,7.153E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                      qset_line_buf :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                                       qset_line_buf :  0.4%        1 calls 9.537E-07,9.537E-07 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                set_time_limit_auto :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
 set_time_limit_auto: get_time_limit() = 12.00 hours.
-Timer::stop                                 set_time_limit_auto :  4.4%        1 calls 1.407E-05,1.407E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                            set_default_budget_auto :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                             set_default_budget_auto :  0.3%        1 calls 9.537E-07,9.537E-07 sec    0.000 Gflops (0.000E+00 flops)
-get_actual_start_time()=1603512939.317815
+get_actual_start_time()=1603517207.144127
 get_time_limit()=12.000000 hours
 get_default_budget()=0.250000 hours
 dist_read_par_limit()=16
 dist_write_par_limit()=16
-Timer::start                             install_qhandle_sigint :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                              install_qhandle_sigint :  0.2%        1 calls 9.537E-07,9.537E-07 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                       check_status :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
 check_status: ( get_actual_total_time() + get_default_budget() ) / get_time_limit() = ( 0.00 + 0.25 ) / 12.00 hours.
-Timer::stop                                        check_status :  3.2%        1 calls 1.407E-05,1.407E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                       compute_traj :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
 compute_traj: Checking 'results/free-4nt8/results=1010'.
-Timer::start                                        obtain_lock :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
 obtain_lock: Trying to obtain lock 'results/free-4nt8/results=1010-lock'.
-Timer::start                                         mkdir_lock :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                                          mkdir_lock : 10.9%        1 calls 6.199E-05,6.199E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                        qtouch_info :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                                             qtouch :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                                              qopen :  1.2%        2 calls 7.153E-06,7.153E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                               qopen :  7.6%        2 calls 4.292E-05,2.503E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                             qclose :  3.4%        2 calls 2.313E-05,2.313E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                              qclose :  5.6%        2 calls 1.693E-05,2.003E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                            qrename :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                                             qrename :  1.6%        1 calls 1.192E-05,1.192E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                              qtouch : 20.2%        1 calls 1.531E-04,1.531E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                         qtouch_info : 22.6%        1 calls 1.750E-04,1.750E-04 sec    0.000 Gflops (0.000E+00 flops)
 obtain_lock: Lock obtained 'results/free-4nt8/results=1010-lock'.
-Timer::stop                                         obtain_lock : 37.5%        1 calls 2.971E-04,2.971E-04 sec    0.000 Gflops (0.000E+00 flops)
 compute_traj: Start computing 'results/free-4nt8/results=1010'.
-Timer::start                                        qmkdir_info : 14.7%        3 calls 5.603E-05,5.949E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                             qmkdir :  8.2%        3 calls 3.219E-05,3.362E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                          check_dir :  0.4%        3 calls 1.192E-06,1.550E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                           check_dir :  0.5%        3 calls 9.537E-07,1.351E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                              qmkdir : 10.5%        3 calls 2.193E-05,2.972E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                         qmkdir_info : 18.3%        3 calls 3.791E-05,5.229E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                   qmkdir_sync_node :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                                    qmkdir_sync_node :  3.8%        1 calls 3.695E-05,3.695E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                             qclose :  4.0%        3 calls 1.693E-05,2.003E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                              qclose :  4.6%        3 calls 6.914E-06,1.566E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                              qopen :  4.9%        3 calls 4.292E-05,2.503E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                               qopen :  8.4%        3 calls 4.005E-05,3.004E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                      qset_line_buf :  0.1%        2 calls 9.537E-07,9.537E-07 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                       qset_line_buf :  0.2%        2 calls 9.537E-07,9.537E-07 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                setup(job_tag,traj) :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                                set_time_limit_auto :  1.3%        2 calls 1.407E-05,1.407E-05 sec    0.000 Gflops (0.000E+00 flops)
 set_time_limit_auto: get_time_limit() = 12.00 hours.
-Timer::stop                                 set_time_limit_auto :  1.9%        2 calls 7.868E-06,1.097E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                            set_default_budget_auto :  0.1%        2 calls 9.537E-07,9.537E-07 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                             set_default_budget_auto :  0.2%        2 calls 9.537E-07,9.537E-07 sec    0.000 Gflops (0.000E+00 flops)
-get_actual_start_time()=1603512939.317815
+get_actual_start_time()=1603517207.144127
 get_time_limit()=12.000000 hours
 get_default_budget()=0.250000 hours
 dist_read_par_limit()=16
 dist_write_par_limit()=16
-Timer::start                             install_qhandle_sigint :  0.1%        2 calls 9.537E-07,9.537E-07 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                              install_qhandle_sigint :  0.2%        2 calls 9.537E-07,9.537E-07 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                       check_status :  1.2%        2 calls 1.407E-05,1.407E-05 sec    0.000 Gflops (0.000E+00 flops)
 check_status: ( get_actual_total_time() + get_default_budget() ) / get_time_limit() = ( 0.00 + 0.25 ) / 12.00 hours.
-Timer::stop                                        check_status :  1.8%        2 calls 8.106E-06,1.109E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                 setup(job_tag,traj) :  9.4%        1 calls 1.161E-04,1.161E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                    compute_traj_do :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
 compute_traj_do: job_tag='free-4nt8' ; traj=1010
-Timer::start                                 load_configuration :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                                  load_configuration :  1.8%        1 calls 2.408E-05,2.408E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                       gf_show_info :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                                        gf_avg_plaq :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                                   Field::operator= :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                                    Field::operator= :  1.1%        1 calls 1.502E-05,1.502E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                   refresh_expanded :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                              refresh_expanded-comm :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                         refresh_expanded-comm-init :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                          refresh_expanded-comm-init :  1.5%        1 calls 2.599E-05,2.599E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                               refresh_expanded-comm :  6.6%        1 calls 1.152E-04,1.152E-04 sec    0.580 Gflops (6.682E+04 flops)
-Timer::stop                                    refresh_expanded : 10.8%        1 calls 1.922E-04,1.922E-04 sec    0.348 Gflops (6.682E+04 flops)
-Timer::start                                gf_avg_plaq_no_comm :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                                 gf_avg_plaq_no_comm : 10.2%        1 calls 2.060E-04,2.060E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                         gf_avg_plaq : 34.5%        1 calls 7.019E-04,7.019E-04 sec    0.000 Gflops (0.000E+00 flops)
 plaq :  1.00000000000000000E+00
-Timer::start                                gf_avg_spatial_plaq :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                                   Field::operator= :  0.7%        2 calls 1.502E-05,1.502E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                    Field::operator= :  1.1%        2 calls 9.060E-06,1.204E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                   refresh_expanded :  8.3%        2 calls 1.922E-04,1.922E-04 sec    0.348 Gflops (6.682E+04 flops)
-Timer::start                              refresh_expanded-comm :  4.9%        2 calls 1.152E-04,1.152E-04 sec    0.580 Gflops (6.682E+04 flops)
-Timer::start                         refresh_expanded-comm-init :  1.1%        2 calls 2.599E-05,2.599E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                          refresh_expanded-comm-init :  1.3%        2 calls 3.815E-06,1.490E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                               refresh_expanded-comm :  7.6%        2 calls 6.986E-05,9.251E-05 sec    0.660 Gflops (4.608E+04 flops)
-Timer::stop                                    refresh_expanded : 13.2%        2 calls 1.311E-04,1.616E-04 sec    0.351 Gflops (4.608E+04 flops)
-Timer::start                        gf_avg_spatial_plaq_no_comm :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                         gf_avg_spatial_plaq_no_comm :  4.3%        1 calls 1.111E-04,1.111E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                 gf_avg_spatial_plaq : 20.4%        1 calls 5.310E-04,5.310E-04 sec    0.000 Gflops (0.000E+00 flops)
 spatial plaq :  1.00000000000000000E+00
-Timer::start                                  gf_avg_link_trace :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                                   gf_avg_link_trace :  0.4%        1 calls 1.001E-05,1.001E-05 sec    0.000 Gflops (0.000E+00 flops)
 trace:  1.00000000000000000E+00
-Timer::stop                                        gf_show_info : 50.7%        1 calls 1.363E-03,1.363E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                      set_g_rand_color_matrix_field :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                       set_g_rand_color_matrix_field : 10.5%        1 calls 3.200E-04,3.200E-04 sec    0.000 Gflops (0.000E+00 flops)
 ndim: 2
 "tsep"[8]: "0" "1" "2" "3" "4" "5" "6" "7"
 "re-im"[2]: "re" "im"
@@ -970,7 +231,6 @@ tsep[       6] re-im[      re]  6.00000000000000000E+00
 tsep[       6] re-im[      im]  0.00000000000000000E+00
 tsep[       7] re-im[      re]  7.00000000000000000E+00
 tsep[       7] re-im[      im]  0.00000000000000000E+00
-Timer::start                                  benchmark_deflate :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
 geo = { initialized   = true
 , eo            = 0
 , geon          =
@@ -986,568 +246,74 @@ geo = { initialized   = true
 , node_site_exp = 4x2x2x4 }
 block_site = 2x2x2x2
 ls = 8, neig = 100, nkeep = 50
-Timer::start                 init_compressed_eigen_system_bases :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                  init_compressed_eigen_system_bases :  6.3%        1 calls 2.441E-04,2.441E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                 init_compressed_eigen_system_coefs :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                  init_compressed_eigen_system_coefs :  0.8%        1 calls 3.099E-05,3.099E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                  set_u_rand(lm,rs) :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                                    force_low_modes :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                                     force_low_modes :  0.0%        1 calls 0.000E+00,0.000E+00 sec     -nan Gflops (0.000E+00 flops)
-Timer::start                                   set_u_rand_float :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                                    set_u_rand_float : 93.1%        1 calls 5.466E-02,5.466E-02 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                   set_u_rand_float : 93.1%        2 calls 5.466E-02,5.466E-02 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                    set_u_rand_float : 93.8%        2 calls 6.868E-03,3.077E-02 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                   set_u_rand(lm,rs) : 93.9%        1 calls 6.166E-02,6.166E-02 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                  set_u_rand_double :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                                   set_u_rand_double :  1.6%        1 calls 1.081E-03,1.081E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                          benchmark_deflate-deflate :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                                    force_low_modes :  0.0%        2 calls 0.000E+00,0.000E+00 sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                                     force_low_modes :  0.0%        2 calls 0.000E+00,0.000E+00 sec     -nan Gflops (0.000E+00 flops)
-Timer::start                                  deflate(5d,5d,lm) :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                                   init_half_vector :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                                    init_half_vector :  0.0%        1 calls 5.960E-06,5.960E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                    force_low_modes :  0.0%        3 calls 0.000E+00,0.000E+00 sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                                     force_low_modes :  0.0%        3 calls 0.000E+00,0.000E+00 sec     -nan Gflops (0.000E+00 flops)
-Timer::start                                  deflate(hv,hv,lm) :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                                convert_half_vector :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                           init_blocked_half_vector :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                            init_blocked_half_vector :  0.0%        1 calls 6.199E-06,6.199E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                 convert_half_vector :  0.1%        1 calls 3.409E-05,3.409E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                    deflate-project :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                                     deflate-project :  2.4%        1 calls 1.639E-03,1.639E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                     deflate-glbsum :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                                      deflate-glbsum :  0.5%        1 calls 3.681E-04,3.681E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                    deflate-produce :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                                     deflate-produce :  1.9%        1 calls 1.377E-03,1.377E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                convert_half_vector :  0.0%        2 calls 3.409E-05,3.409E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                   init_half_vector :  0.0%        2 calls 5.960E-06,5.960E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                    init_half_vector :  0.0%        2 calls 5.960E-06,5.960E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                 convert_half_vector :  0.1%        2 calls 3.600E-05,3.505E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                   deflate(hv,hv,lm) :  5.1%        1 calls 3.598E-03,3.598E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                   deflate(5d,5d,lm) :  5.2%        1 calls 3.697E-03,3.697E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                  deflate(5d,5d,lm) :  5.2%        2 calls 3.697E-03,3.697E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                   init_half_vector :  0.0%        3 calls 5.960E-06,5.960E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                    init_half_vector :  0.0%        3 calls 5.960E-06,5.960E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                  deflate(hv,hv,lm) :  5.1%        2 calls 3.598E-03,3.598E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                convert_half_vector :  0.1%        3 calls 3.600E-05,3.505E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                           init_blocked_half_vector :  0.0%        2 calls 6.199E-06,6.199E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                            init_blocked_half_vector :  0.0%        2 calls 5.007E-06,5.603E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                 convert_half_vector :  0.2%        3 calls 4.697E-05,3.902E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                    deflate-project :  2.3%        2 calls 1.639E-03,1.639E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                     deflate-project :  4.5%        2 calls 1.619E-03,1.629E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                     deflate-glbsum :  0.5%        2 calls 3.681E-04,3.681E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                      deflate-glbsum :  2.7%        2 calls 1.643E-03,1.006E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                    deflate-produce :  1.9%        2 calls 1.377E-03,1.377E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                     deflate-produce :  3.6%        2 calls 1.377E-03,1.377E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                   deflate(hv,hv,lm) : 11.1%        2 calls 4.832E-03,4.215E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                   deflate(5d,5d,lm) : 11.3%        2 calls 4.900E-03,4.298E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                  deflate(5d,5d,lm) : 11.3%        3 calls 4.900E-03,4.298E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                  deflate(hv,hv,lm) : 11.1%        3 calls 4.832E-03,4.215E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                           init_blocked_half_vector :  0.0%        3 calls 5.007E-06,5.603E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                            init_blocked_half_vector :  0.0%        3 calls 5.960E-06,5.722E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                    deflate-project :  4.3%        3 calls 1.619E-03,1.629E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                     deflate-project :  6.3%        3 calls 1.621E-03,1.626E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                     deflate-glbsum :  2.6%        3 calls 1.643E-03,1.006E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                      deflate-glbsum :  4.5%        3 calls 1.567E-03,1.193E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                    deflate-produce :  3.5%        3 calls 1.377E-03,1.377E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                     deflate-produce :  5.1%        3 calls 1.373E-03,1.376E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                   deflate(hv,hv,lm) : 16.3%        3 calls 4.736E-03,4.389E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                   deflate(5d,5d,lm) : 16.6%        3 calls 4.797E-03,4.465E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                  deflate(5d,5d,lm) : 16.6%        4 calls 4.797E-03,4.465E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                   deflate(5d,5d,lm) : 20.7%        4 calls 4.159E-03,4.388E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                           benchmark_deflate-deflate : 20.9%        1 calls 1.772E-02,1.772E-02 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                   benchmark_deflate : 95.8%        1 calls 8.188E-02,8.188E-02 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                               Inv::setup(gf,fa,lm) :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                      set_left_expanded_gauge_field :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                                   Field::operator= :  0.0%        3 calls 9.060E-06,1.204E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                    Field::operator= :  0.0%        3 calls 9.060E-06,1.105E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                   refresh_expanded :  0.4%        3 calls 1.311E-04,1.616E-04 sec    0.351 Gflops (4.608E+04 flops)
-Timer::start                              refresh_expanded-comm :  0.2%        3 calls 6.986E-05,9.251E-05 sec    0.660 Gflops (4.608E+04 flops)
-Timer::start                         refresh_expanded-comm-init :  0.0%        3 calls 3.815E-06,1.490E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                          refresh_expanded-comm-init :  0.0%        3 calls 4.053E-06,1.129E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                               refresh_expanded-comm :  0.3%        3 calls 5.913E-05,8.138E-05 sec    0.779 Gflops (4.608E+04 flops)
-Timer::stop                                    refresh_expanded :  0.5%        3 calls 1.171E-04,1.468E-04 sec    0.394 Gflops (4.608E+04 flops)
-Timer::stop                       set_left_expanded_gauge_field :  0.5%        1 calls 3.922E-04,3.922E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                Inv::setup(gf,fa,lm) :  0.5%        1 calls 4.160E-04,4.160E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                          gt_invert :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                                           gt_invert :  0.0%        1 calls 1.001E-05,1.001E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                            set_wall_src_propagator :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                              invert(out,in,gt_inv) :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                      ff_apply_gauge_transformation :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                       ff_apply_gauge_transformation :  0.0%        1 calls 3.004E-05,3.004E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                              invert_dwf(4d,4d,inv) :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                           fermion_field_5d_from_4d :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                            fermion_field_5d_from_4d :  0.0%        1 calls 1.311E-05,1.311E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                           fermion_field_5d_from_4d :  0.0%        2 calls 1.311E-05,1.311E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                            fermion_field_5d_from_4d :  0.0%        2 calls 1.407E-05,1.359E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                       invert_with_cg(5d,5d,inv,cg) :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                        multiply_d_minus(5d,5d,Inv) :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                      multiply_d_minus(5d,5d,gf,fa) :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start           multiply_wilson_d_no_comm(5d,5d,gf,mass) :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop            multiply_wilson_d_no_comm(5d,5d,gf,mass) :  2.2%        1 calls 1.972E-03,1.972E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                   field_operator+= :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                                    field_operator+= :  0.0%        1 calls 3.791E-05,3.791E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                       multiply_d_minus(5d,5d,gf,fa) :  3.0%        1 calls 2.664E-03,2.664E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                         multiply_d_minus(5d,5d,Inv) :  3.0%        1 calls 2.686E-03,2.686E-03 sec    0.000 Gflops (0.000E+00 flops)
 invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00
-Timer::start                            set_odd_prec_field_sym2 :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                                   get_half_fermion :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                                    get_half_fermion :  0.0%        1 calls 1.693E-05,1.693E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                   get_half_fermion :  0.0%        2 calls 1.693E-05,1.693E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                    get_half_fermion :  0.0%        2 calls 1.597E-05,1.645E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                 multiply_m_e_e_inv :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                                  multiply_m_e_e_inv :  0.1%        1 calls 1.190E-04,1.190E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                        multiply_m_e_o(5d,5d,gf,fa) :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start            multiply_wilson_d_e_o_no_comm(5d,5d,gf) :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop             multiply_wilson_d_e_o_no_comm(5d,5d,gf) :  1.1%        1 calls 9.890E-04,9.890E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                         multiply_m_e_o(5d,5d,gf,fa) :  1.7%        1 calls 1.517E-03,1.517E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                   field_operator-= :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                                    field_operator-= :  0.0%        1 calls 2.599E-05,2.599E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                               multiply_mpcdag_sym2 :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                     multiply_mdag_e_o(5d,5d,gf,fa) :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start         multiply_wilson_ddag_e_o_no_comm(5d,5d,gf) :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop          multiply_wilson_ddag_e_o_no_comm(5d,5d,gf) :  1.1%        1 calls 9.840E-04,9.840E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                      multiply_mdag_e_o(5d,5d,gf,fa) :  1.7%        1 calls 1.528E-03,1.528E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                              multiply_mdag_e_e_inv :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                               multiply_mdag_e_e_inv :  0.1%        1 calls 1.101E-04,1.101E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                     multiply_mdag_e_o(5d,5d,gf,fa) :  1.7%        2 calls 1.528E-03,1.528E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start         multiply_wilson_ddag_e_o_no_comm(5d,5d,gf) :  1.1%        2 calls 9.840E-04,9.840E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop          multiply_wilson_ddag_e_o_no_comm(5d,5d,gf) :  2.1%        2 calls 9.849E-04,9.844E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                      multiply_mdag_e_o(5d,5d,gf,fa) :  3.2%        2 calls 1.522E-03,1.525E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                              multiply_mdag_e_e_inv :  0.1%        2 calls 1.101E-04,1.101E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                               multiply_mdag_e_e_inv :  0.2%        2 calls 1.080E-04,1.091E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                   field_operator-= :  0.0%        2 calls 2.599E-05,2.599E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                    field_operator-= :  0.1%        2 calls 2.599E-05,2.599E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                multiply_mpcdag_sym2 :  3.6%        1 calls 3.431E-03,3.431E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                             set_odd_prec_field_sym2 :  5.6%        1 calls 5.303E-03,5.303E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                      cg_with_herm_sym_2(5d,5d,inv) :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                                          cg_with_f :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                               multiply_hermop_sym2 :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                                  multiply_mpc_sym2 :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                                 multiply_m_e_e_inv :  0.1%        2 calls 1.190E-04,1.190E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                  multiply_m_e_e_inv :  0.3%        2 calls 1.180E-04,1.185E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                        multiply_m_e_o(5d,5d,gf,fa) :  1.6%        2 calls 1.517E-03,1.517E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start            multiply_wilson_d_e_o_no_comm(5d,5d,gf) :  1.0%        2 calls 9.890E-04,9.890E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop             multiply_wilson_d_e_o_no_comm(5d,5d,gf) :  2.0%        2 calls 9.799E-04,9.844E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                         multiply_m_e_o(5d,5d,gf,fa) :  3.2%        2 calls 1.520E-03,1.518E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                 multiply_m_e_e_inv :  0.2%        3 calls 1.180E-04,1.185E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                  multiply_m_e_e_inv :  0.4%        3 calls 1.121E-04,1.163E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                        multiply_m_e_o(5d,5d,gf,fa) :  3.2%        3 calls 1.520E-03,1.518E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start            multiply_wilson_d_e_o_no_comm(5d,5d,gf) :  2.0%        3 calls 9.799E-04,9.844E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop             multiply_wilson_d_e_o_no_comm(5d,5d,gf) :  3.0%        3 calls 9.851E-04,9.847E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                         multiply_m_e_o(5d,5d,gf,fa) :  4.6%        3 calls 1.504E-03,1.514E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                   field_operator-= :  0.1%        3 calls 2.599E-05,2.599E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                    field_operator-= :  0.1%        3 calls 3.195E-05,2.797E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                   multiply_mpc_sym2 :  3.5%        1 calls 3.434E-03,3.434E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                               multiply_mpcdag_sym2 :  3.5%        2 calls 3.431E-03,3.431E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                     multiply_mdag_e_o(5d,5d,gf,fa) :  3.1%        3 calls 1.522E-03,1.525E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start         multiply_wilson_ddag_e_o_no_comm(5d,5d,gf) :  2.0%        3 calls 9.849E-04,9.844E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop          multiply_wilson_ddag_e_o_no_comm(5d,5d,gf) :  3.0%        3 calls 9.840E-04,9.843E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                      multiply_mdag_e_o(5d,5d,gf,fa) :  4.6%        3 calls 1.527E-03,1.526E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                              multiply_mdag_e_e_inv :  0.2%        3 calls 1.080E-04,1.091E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                               multiply_mdag_e_e_inv :  0.3%        3 calls 1.080E-04,1.087E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                multiply_mpcdag_sym2 :  6.7%        2 calls 3.313E-03,3.372E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                multiply_hermop_sym2 :  6.7%        1 calls 6.809E-03,6.809E-03 sec    0.000 Gflops (0.000E+00 flops)
 cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.638E+00 stop_rsd=1.000E-08 
-Timer::start                               multiply_hermop_sym2 :  6.7%        2 calls 6.809E-03,6.809E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                  multiply_mpc_sym2 :  3.4%        2 calls 3.434E-03,3.434E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                   multiply_mpc_sym2 :  6.3%        2 calls 3.184E-03,3.309E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                               multiply_mpcdag_sym2 :  6.4%        3 calls 3.313E-03,3.372E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                multiply_mpcdag_sym2 :  9.3%        3 calls 3.235E-03,3.326E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                multiply_hermop_sym2 : 12.3%        2 calls 6.508E-03,6.658E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                        dot_product :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                                         dot_product :  0.0%        1 calls 4.196E-05,4.196E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                              field_operator*=(F,D) :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                               field_operator*=(F,D) :  0.0%        1 calls 2.098E-05,2.098E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                   field_operator+= :  0.0%        2 calls 3.791E-05,3.791E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                    field_operator+= :  0.1%        2 calls 2.599E-05,3.195E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                              field_operator*=(F,D) :  0.0%        2 calls 2.098E-05,2.098E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                               field_operator*=(F,D) :  0.0%        2 calls 2.003E-05,2.050E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                              field_operator*=(F,D) :  0.0%        3 calls 2.003E-05,2.050E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                               field_operator*=(F,D) :  0.1%        3 calls 2.098E-05,2.066E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                   field_operator+= :  0.1%        3 calls 2.599E-05,3.195E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                    field_operator+= :  0.1%        3 calls 2.599E-05,2.996E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                               multiply_hermop_sym2 : 12.3%        3 calls 6.508E-03,6.658E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                  multiply_mpc_sym2 :  6.1%        3 calls 3.184E-03,3.309E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                   multiply_mpc_sym2 :  8.8%        3 calls 3.221E-03,3.280E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                multiply_hermop_sym2 : 17.3%        3 calls 6.487E-03,6.601E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                        dot_product :  0.0%        2 calls 4.196E-05,4.196E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                         dot_product :  0.1%        2 calls 4.101E-05,4.148E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                        dot_product :  0.1%        3 calls 4.101E-05,4.148E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                         dot_product :  0.1%        3 calls 4.411E-05,4.236E-05 sec    0.000 Gflops (0.000E+00 flops)
 cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=5.421E-09 stop_rsd=1.000E-08
-Timer::stop                                           cg_with_f : 73.2%        1 calls 2.585E-01,2.585E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                       cg_with_herm_sym_2(5d,5d,inv) : 73.3%        1 calls 2.585E-01,2.585E-01 sec    0.414 Gflops (1.070E+08 flops)
 invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
-Timer::start                   restore_field_from_odd_prec_sym2 :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                                   set_half_fermion :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                                    set_half_fermion :  0.0%        1 calls 8.821E-06,8.821E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                   set_half_fermion :  0.0%        2 calls 8.821E-06,8.821E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                    set_half_fermion :  0.0%        2 calls 9.060E-06,8.941E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                    restore_field_from_odd_prec_sym2 :  0.5%        1 calls 1.838E-03,1.838E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                         multiply_m :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                                   get_half_fermion :  0.0%        3 calls 1.597E-05,1.645E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                    get_half_fermion :  0.0%        3 calls 1.717E-05,1.669E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                     multiply_m_e_e :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                                      multiply_m_e_e :  0.0%        1 calls 8.678E-05,8.678E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                     multiply_m_e_e :  0.0%        2 calls 8.678E-05,8.678E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                      multiply_m_e_e :  0.0%        2 calls 8.702E-05,8.690E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                   set_half_fermion :  0.0%        3 calls 9.060E-06,8.941E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                    set_half_fermion :  0.0%        3 calls 2.408E-05,1.399E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                          multiply_m :  0.9%        1 calls 3.345E-03,3.345E-03 sec    0.000 Gflops (0.000E+00 flops)
 invert_with_cg(5d,5d,inv,cg): checking 4.525138E-08 from 8.000000E+00
-Timer::stop                        invert_with_cg(5d,5d,inv,cg) : 75.9%        1 calls 2.720E-01,2.720E-01 sec    0.393 Gflops (1.070E+08 flops)
-Timer::start                           fermion_field_4d_from_5d :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                            fermion_field_4d_from_5d :  0.0%        1 calls 1.097E-05,1.097E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                               invert_dwf(4d,4d,inv) : 76.0%        1 calls 2.722E-01,2.722E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                      ff_apply_gauge_transformation :  0.0%        2 calls 3.004E-05,3.004E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                       ff_apply_gauge_transformation :  0.0%        2 calls 2.789E-05,2.897E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                               invert(out,in,gt_inv) : 76.0%        1 calls 2.724E-01,2.724E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start              set_propagator_col_from_fermion_field :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop               set_propagator_col_from_fermion_field :  0.0%        1 calls 8.106E-06,8.106E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                              invert(out,in,gt_inv) : 76.0%        2 calls 2.724E-01,2.724E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                      ff_apply_gauge_transformation :  0.0%        3 calls 2.789E-05,2.897E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                       ff_apply_gauge_transformation :  0.0%        3 calls 3.099E-05,2.964E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                              invert_dwf(4d,4d,inv) : 75.9%        2 calls 2.722E-01,2.722E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                           fermion_field_5d_from_4d :  0.0%        3 calls 1.407E-05,1.359E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                            fermion_field_5d_from_4d :  0.0%        3 calls 1.311E-05,1.343E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                       invert_with_cg(5d,5d,inv,cg) : 75.8%        2 calls 2.720E-01,2.720E-01 sec    0.393 Gflops (1.070E+08 flops)
-Timer::start                        multiply_d_minus(5d,5d,Inv) :  0.7%        2 calls 2.686E-03,2.686E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                      multiply_d_minus(5d,5d,gf,fa) :  0.7%        2 calls 2.664E-03,2.664E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start           multiply_wilson_d_no_comm(5d,5d,gf,mass) :  0.5%        2 calls 1.972E-03,1.972E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop            multiply_wilson_d_no_comm(5d,5d,gf,mass) :  1.1%        2 calls 1.972E-03,1.972E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                       multiply_d_minus(5d,5d,gf,fa) :  1.5%        2 calls 2.590E-03,2.627E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                         multiply_d_minus(5d,5d,Inv) :  1.5%        2 calls 2.621E-03,2.653E-03 sec    0.000 Gflops (0.000E+00 flops)
 invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00
-Timer::start                            set_odd_prec_field_sym2 :  1.5%        2 calls 5.303E-03,5.303E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                             set_odd_prec_field_sym2 :  2.8%        2 calls 4.873E-03,5.088E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                      cg_with_herm_sym_2(5d,5d,inv) : 70.6%        2 calls 2.585E-01,2.585E-01 sec    0.414 Gflops (1.070E+08 flops)
-Timer::start                                          cg_with_f : 70.6%        2 calls 2.585E-01,2.585E-01 sec    0.000 Gflops (0.000E+00 flops)
 cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.678E+00 stop_rsd=1.000E-08 
 cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=5.602E-09 stop_rsd=1.000E-08
-Timer::stop                                           cg_with_f : 82.7%        2 calls 2.575E-01,2.580E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                       cg_with_herm_sym_2(5d,5d,inv) : 82.7%        2 calls 2.575E-01,2.580E-01 sec    0.416 Gflops (1.070E+08 flops)
 invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
-Timer::start                   restore_field_from_odd_prec_sym2 :  0.3%        2 calls 1.838E-03,1.838E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                    restore_field_from_odd_prec_sym2 :  0.6%        2 calls 1.750E-03,1.794E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                         multiply_m :  0.5%        2 calls 3.345E-03,3.345E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                     multiply_m_e_e :  0.0%        3 calls 8.702E-05,8.690E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                      multiply_m_e_e :  0.0%        3 calls 8.702E-05,8.694E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                          multiply_m :  1.0%        2 calls 3.241E-03,3.293E-03 sec    0.000 Gflops (0.000E+00 flops)
 invert_with_cg(5d,5d,inv,cg): checking 4.805639E-08 from 8.000000E+00
-Timer::stop                        invert_with_cg(5d,5d,inv,cg) : 86.2%        2 calls 2.704E-01,2.712E-01 sec    0.396 Gflops (1.070E+08 flops)
-Timer::start                           fermion_field_4d_from_5d :  0.0%        2 calls 1.097E-05,1.097E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                            fermion_field_4d_from_5d :  0.0%        2 calls 1.097E-05,1.097E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                               invert_dwf(4d,4d,inv) : 86.3%        2 calls 2.706E-01,2.714E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                               invert(out,in,gt_inv) : 86.3%        2 calls 2.707E-01,2.715E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start              set_propagator_col_from_fermion_field :  0.0%        2 calls 8.106E-06,8.106E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop               set_propagator_col_from_fermion_field :  0.0%        2 calls 8.106E-06,8.106E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                              invert(out,in,gt_inv) : 86.3%        3 calls 2.707E-01,2.715E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                              invert_dwf(4d,4d,inv) : 86.3%        3 calls 2.706E-01,2.714E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                       invert_with_cg(5d,5d,inv,cg) : 86.2%        3 calls 2.704E-01,2.712E-01 sec    0.396 Gflops (1.070E+08 flops)
-Timer::start                        multiply_d_minus(5d,5d,Inv) :  0.8%        3 calls 2.621E-03,2.653E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                      multiply_d_minus(5d,5d,gf,fa) :  0.8%        3 calls 2.590E-03,2.627E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start           multiply_wilson_d_no_comm(5d,5d,gf,mass) :  0.6%        3 calls 1.972E-03,1.972E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop            multiply_wilson_d_no_comm(5d,5d,gf,mass) :  0.9%        3 calls 1.972E-03,1.972E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                       multiply_d_minus(5d,5d,gf,fa) :  1.2%        3 calls 2.603E-03,2.619E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                         multiply_d_minus(5d,5d,Inv) :  1.3%        3 calls 2.651E-03,2.653E-03 sec    0.000 Gflops (0.000E+00 flops)
 invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00
-Timer::start                            set_odd_prec_field_sym2 :  1.6%        3 calls 4.873E-03,5.088E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                             set_odd_prec_field_sym2 :  2.4%        3 calls 4.887E-03,5.021E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                      cg_with_herm_sym_2(5d,5d,inv) : 81.0%        3 calls 2.575E-01,2.580E-01 sec    0.416 Gflops (1.070E+08 flops)
-Timer::start                                          cg_with_f : 81.0%        3 calls 2.575E-01,2.580E-01 sec    0.000 Gflops (0.000E+00 flops)
 cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.730E+00 stop_rsd=1.000E-08 
 cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=6.087E-09 stop_rsd=1.000E-08
-Timer::stop                                           cg_with_f : 86.5%        3 calls 2.575E-01,2.578E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                       cg_with_herm_sym_2(5d,5d,inv) : 86.5%        3 calls 2.575E-01,2.579E-01 sec    0.416 Gflops (1.070E+08 flops)
 invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
-Timer::start                   restore_field_from_odd_prec_sym2 :  0.4%        3 calls 1.750E-03,1.794E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                    restore_field_from_odd_prec_sym2 :  0.6%        3 calls 1.746E-03,1.778E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                         multiply_m :  0.7%        3 calls 3.241E-03,3.293E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                          multiply_m :  1.1%        3 calls 3.210E-03,3.265E-03 sec    0.000 Gflops (0.000E+00 flops)
 invert_with_cg(5d,5d,inv,cg): checking 5.129897E-08 from 8.000000E+00
-Timer::stop                        invert_with_cg(5d,5d,inv,cg) : 90.3%        3 calls 2.704E-01,2.709E-01 sec    0.396 Gflops (1.070E+08 flops)
-Timer::start                           fermion_field_4d_from_5d :  0.0%        3 calls 1.097E-05,1.097E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                            fermion_field_4d_from_5d :  0.0%        3 calls 1.097E-05,1.097E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                               invert_dwf(4d,4d,inv) : 90.4%        3 calls 2.706E-01,2.711E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                               invert(out,in,gt_inv) : 90.4%        3 calls 2.707E-01,2.712E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start              set_propagator_col_from_fermion_field :  0.0%        3 calls 8.106E-06,8.106E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop               set_propagator_col_from_fermion_field :  0.0%        3 calls 8.106E-06,8.106E-06 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                              invert(out,in,gt_inv) : 90.4%        4 calls 2.707E-01,2.712E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                              invert_dwf(4d,4d,inv) : 90.4%        4 calls 2.706E-01,2.711E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                       invert_with_cg(5d,5d,inv,cg) : 90.3%        4 calls 2.704E-01,2.709E-01 sec    0.396 Gflops (1.070E+08 flops)
 invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00
-Timer::start                            set_odd_prec_field_sym2 :  1.7%        4 calls 4.887E-03,5.021E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                             set_odd_prec_field_sym2 :  2.2%        4 calls 4.872E-03,4.984E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                      cg_with_herm_sym_2(5d,5d,inv) : 85.2%        4 calls 2.575E-01,2.579E-01 sec    0.416 Gflops (1.070E+08 flops)
 cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.638E+00 stop_rsd=1.000E-08 
 cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=5.421E-09 stop_rsd=1.000E-08
-Timer::stop                       cg_with_herm_sym_2(5d,5d,inv) : 88.5%        4 calls 2.574E-01,2.577E-01 sec    0.416 Gflops (1.070E+08 flops)
 invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
-Timer::start                   restore_field_from_odd_prec_sym2 :  0.5%        4 calls 1.746E-03,1.778E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                    restore_field_from_odd_prec_sym2 :  0.6%        4 calls 1.747E-03,1.770E-03 sec    0.000 Gflops (0.000E+00 flops)
 invert_with_cg(5d,5d,inv,cg): checking 4.525138E-08 from 8.000000E+00
-Timer::stop                        invert_with_cg(5d,5d,inv,cg) : 92.5%        4 calls 2.701E-01,2.707E-01 sec    0.396 Gflops (1.070E+08 flops)
-Timer::stop                               invert_dwf(4d,4d,inv) : 92.6%        4 calls 2.702E-01,2.709E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                               invert(out,in,gt_inv) : 92.6%        4 calls 2.703E-01,2.710E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                              invert(out,in,gt_inv) : 92.6%        5 calls 2.703E-01,2.710E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                              invert_dwf(4d,4d,inv) : 92.6%        5 calls 2.702E-01,2.709E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                       invert_with_cg(5d,5d,inv,cg) : 92.5%        5 calls 2.701E-01,2.707E-01 sec    0.396 Gflops (1.070E+08 flops)
 invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00
-Timer::start                            set_odd_prec_field_sym2 :  1.7%        5 calls 4.872E-03,4.984E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                             set_odd_prec_field_sym2 :  2.1%        5 calls 4.874E-03,4.962E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                      cg_with_herm_sym_2(5d,5d,inv) : 87.5%        5 calls 2.574E-01,2.577E-01 sec    0.416 Gflops (1.070E+08 flops)
 cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.678E+00 stop_rsd=1.000E-08 
 cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=5.602E-09 stop_rsd=1.000E-08
-Timer::stop                       cg_with_herm_sym_2(5d,5d,inv) : 89.8%        5 calls 2.577E-01,2.577E-01 sec    0.415 Gflops (1.070E+08 flops)
 invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
-Timer::start                   restore_field_from_odd_prec_sym2 :  0.5%        5 calls 1.747E-03,1.770E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                    restore_field_from_odd_prec_sym2 :  0.6%        5 calls 1.741E-03,1.764E-03 sec    0.000 Gflops (0.000E+00 flops)
 invert_with_cg(5d,5d,inv,cg): checking 4.805639E-08 from 8.000000E+00
-Timer::stop                        invert_with_cg(5d,5d,inv,cg) : 93.9%        5 calls 2.704E-01,2.707E-01 sec    0.396 Gflops (1.070E+08 flops)
-Timer::stop                               invert_dwf(4d,4d,inv) : 94.0%        5 calls 2.705E-01,2.708E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                               invert(out,in,gt_inv) : 94.0%        5 calls 2.706E-01,2.709E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                              invert(out,in,gt_inv) : 94.0%        6 calls 2.706E-01,2.709E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                              invert_dwf(4d,4d,inv) : 94.0%        6 calls 2.705E-01,2.708E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                       invert_with_cg(5d,5d,inv,cg) : 93.9%        6 calls 2.704E-01,2.707E-01 sec    0.396 Gflops (1.070E+08 flops)
 invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00
-Timer::start                            set_odd_prec_field_sym2 :  1.7%        6 calls 4.874E-03,4.962E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                             set_odd_prec_field_sym2 :  2.0%        6 calls 4.859E-03,4.945E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                      cg_with_herm_sym_2(5d,5d,inv) : 89.0%        6 calls 2.577E-01,2.577E-01 sec    0.415 Gflops (1.070E+08 flops)
 cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.730E+00 stop_rsd=1.000E-08 
 cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=6.087E-09 stop_rsd=1.000E-08
-Timer::stop                       cg_with_herm_sym_2(5d,5d,inv) : 90.6%        6 calls 2.618E-01,2.584E-01 sec    0.409 Gflops (1.070E+08 flops)
 invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
-Timer::start                   restore_field_from_odd_prec_sym2 :  0.5%        6 calls 1.741E-03,1.764E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                    restore_field_from_odd_prec_sym2 :  0.6%        6 calls 1.778E-03,1.767E-03 sec    0.000 Gflops (0.000E+00 flops)
 invert_with_cg(5d,5d,inv,cg): checking 5.129897E-08 from 8.000000E+00
-Timer::stop                        invert_with_cg(5d,5d,inv,cg) : 94.9%        6 calls 2.745E-01,2.713E-01 sec    0.390 Gflops (1.070E+08 flops)
-Timer::stop                               invert_dwf(4d,4d,inv) : 94.9%        6 calls 2.746E-01,2.715E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                               invert(out,in,gt_inv) : 95.0%        6 calls 2.747E-01,2.716E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                              invert(out,in,gt_inv) : 95.0%        7 calls 2.747E-01,2.716E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                              invert_dwf(4d,4d,inv) : 94.9%        7 calls 2.746E-01,2.715E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                       invert_with_cg(5d,5d,inv,cg) : 94.9%        7 calls 2.745E-01,2.713E-01 sec    0.390 Gflops (1.070E+08 flops)
 invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00
-Timer::start                            set_odd_prec_field_sym2 :  1.7%        7 calls 4.859E-03,4.945E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                             set_odd_prec_field_sym2 :  2.0%        7 calls 4.890E-03,4.937E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                      cg_with_herm_sym_2(5d,5d,inv) : 90.0%        7 calls 2.618E-01,2.584E-01 sec    0.409 Gflops (1.070E+08 flops)
 cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.638E+00 stop_rsd=1.000E-08 
 cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=5.421E-09 stop_rsd=1.000E-08
-Timer::stop                       cg_with_herm_sym_2(5d,5d,inv) : 91.3%        7 calls 2.577E-01,2.583E-01 sec    0.415 Gflops (1.070E+08 flops)
 invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
-Timer::start                   restore_field_from_odd_prec_sym2 :  0.5%        7 calls 1.778E-03,1.767E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                    restore_field_from_odd_prec_sym2 :  0.6%        7 calls 1.755E-03,1.765E-03 sec    0.000 Gflops (0.000E+00 flops)
 invert_with_cg(5d,5d,inv,cg): checking 4.525138E-08 from 8.000000E+00
-Timer::stop                        invert_with_cg(5d,5d,inv,cg) : 95.6%        7 calls 2.705E-01,2.712E-01 sec    0.396 Gflops (1.070E+08 flops)
-Timer::stop                               invert_dwf(4d,4d,inv) : 95.6%        7 calls 2.706E-01,2.713E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                               invert(out,in,gt_inv) : 95.6%        7 calls 2.707E-01,2.714E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                              invert(out,in,gt_inv) : 95.6%        8 calls 2.707E-01,2.714E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                              invert_dwf(4d,4d,inv) : 95.6%        8 calls 2.706E-01,2.713E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                       invert_with_cg(5d,5d,inv,cg) : 95.6%        8 calls 2.705E-01,2.712E-01 sec    0.396 Gflops (1.070E+08 flops)
 invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00
-Timer::start                            set_odd_prec_field_sym2 :  1.7%        8 calls 4.890E-03,4.937E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                             set_odd_prec_field_sym2 :  2.0%        8 calls 4.880E-03,4.930E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                      cg_with_herm_sym_2(5d,5d,inv) : 90.7%        8 calls 2.577E-01,2.583E-01 sec    0.415 Gflops (1.070E+08 flops)
 cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.678E+00 stop_rsd=1.000E-08 
 cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=5.602E-09 stop_rsd=1.000E-08
-Timer::stop                       cg_with_herm_sym_2(5d,5d,inv) : 91.7%        8 calls 2.582E-01,2.583E-01 sec    0.414 Gflops (1.070E+08 flops)
 invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
-Timer::start                   restore_field_from_odd_prec_sym2 :  0.5%        8 calls 1.755E-03,1.765E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                    restore_field_from_odd_prec_sym2 :  0.6%        8 calls 1.755E-03,1.764E-03 sec    0.000 Gflops (0.000E+00 flops)
 invert_with_cg(5d,5d,inv,cg): checking 4.805639E-08 from 8.000000E+00
-Timer::stop                        invert_with_cg(5d,5d,inv,cg) : 96.1%        8 calls 2.710E-01,2.712E-01 sec    0.395 Gflops (1.070E+08 flops)
-Timer::stop                               invert_dwf(4d,4d,inv) : 96.1%        8 calls 2.711E-01,2.713E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                               invert(out,in,gt_inv) : 96.2%        8 calls 2.712E-01,2.714E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                              invert(out,in,gt_inv) : 96.2%        9 calls 2.712E-01,2.714E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                              invert_dwf(4d,4d,inv) : 96.1%        9 calls 2.711E-01,2.713E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                       invert_with_cg(5d,5d,inv,cg) : 96.1%        9 calls 2.710E-01,2.712E-01 sec    0.395 Gflops (1.070E+08 flops)
 invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00
-Timer::start                            set_odd_prec_field_sym2 :  1.7%        9 calls 4.880E-03,4.930E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                             set_odd_prec_field_sym2 :  2.0%        9 calls 4.870E-03,4.923E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                      cg_with_herm_sym_2(5d,5d,inv) : 91.2%        9 calls 2.582E-01,2.583E-01 sec    0.414 Gflops (1.070E+08 flops)
 cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.730E+00 stop_rsd=1.000E-08 
 cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=6.087E-09 stop_rsd=1.000E-08
-Timer::stop                       cg_with_herm_sym_2(5d,5d,inv) : 92.1%        9 calls 2.574E-01,2.582E-01 sec    0.416 Gflops (1.070E+08 flops)
 invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
-Timer::start                   restore_field_from_odd_prec_sym2 :  0.6%        9 calls 1.755E-03,1.764E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                    restore_field_from_odd_prec_sym2 :  0.6%        9 calls 1.743E-03,1.761E-03 sec    0.000 Gflops (0.000E+00 flops)
 invert_with_cg(5d,5d,inv,cg): checking 5.129897E-08 from 8.000000E+00
-Timer::stop                        invert_with_cg(5d,5d,inv,cg) : 96.5%        9 calls 2.702E-01,2.711E-01 sec    0.396 Gflops (1.070E+08 flops)
-Timer::stop                               invert_dwf(4d,4d,inv) : 96.5%        9 calls 2.703E-01,2.712E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                               invert(out,in,gt_inv) : 96.6%        9 calls 2.704E-01,2.713E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                              invert(out,in,gt_inv) : 96.6%       10 calls 2.704E-01,2.713E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                              invert_dwf(4d,4d,inv) : 96.5%       10 calls 2.703E-01,2.712E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                       invert_with_cg(5d,5d,inv,cg) : 96.5%       10 calls 2.702E-01,2.711E-01 sec    0.396 Gflops (1.070E+08 flops)
 invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00
-Timer::start                            set_odd_prec_field_sym2 :  1.8%       10 calls 4.870E-03,4.923E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                             set_odd_prec_field_sym2 :  1.9%       10 calls 4.868E-03,4.918E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                      cg_with_herm_sym_2(5d,5d,inv) : 91.6%       10 calls 2.574E-01,2.582E-01 sec    0.416 Gflops (1.070E+08 flops)
 cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.638E+00 stop_rsd=1.000E-08 
 cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=5.421E-09 stop_rsd=1.000E-08
-Timer::stop                       cg_with_herm_sym_2(5d,5d,inv) : 92.4%       10 calls 2.574E-01,2.581E-01 sec    0.416 Gflops (1.070E+08 flops)
 invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
-Timer::start                   restore_field_from_odd_prec_sym2 :  0.6%       10 calls 1.743E-03,1.761E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                    restore_field_from_odd_prec_sym2 :  0.6%       10 calls 1.751E-03,1.760E-03 sec    0.000 Gflops (0.000E+00 flops)
 invert_with_cg(5d,5d,inv,cg): checking 4.525138E-08 from 8.000000E+00
-Timer::stop                        invert_with_cg(5d,5d,inv,cg) : 96.8%       10 calls 2.701E-01,2.710E-01 sec    0.396 Gflops (1.070E+08 flops)
-Timer::stop                               invert_dwf(4d,4d,inv) : 96.9%       10 calls 2.703E-01,2.711E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                               invert(out,in,gt_inv) : 96.9%       10 calls 2.704E-01,2.712E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                              invert(out,in,gt_inv) : 96.9%       11 calls 2.704E-01,2.712E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                              invert_dwf(4d,4d,inv) : 96.9%       11 calls 2.703E-01,2.711E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                       invert_with_cg(5d,5d,inv,cg) : 96.8%       11 calls 2.701E-01,2.710E-01 sec    0.396 Gflops (1.070E+08 flops)
 invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00
-Timer::start                            set_odd_prec_field_sym2 :  1.8%       11 calls 4.868E-03,4.918E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                             set_odd_prec_field_sym2 :  1.9%       11 calls 4.877E-03,4.914E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                      cg_with_herm_sym_2(5d,5d,inv) : 92.0%       11 calls 2.574E-01,2.581E-01 sec    0.416 Gflops (1.070E+08 flops)
 cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.678E+00 stop_rsd=1.000E-08 
 cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=5.602E-09 stop_rsd=1.000E-08
-Timer::stop                       cg_with_herm_sym_2(5d,5d,inv) : 92.7%       11 calls 2.575E-01,2.581E-01 sec    0.416 Gflops (1.070E+08 flops)
 invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
-Timer::start                   restore_field_from_odd_prec_sym2 :  0.6%       11 calls 1.751E-03,1.760E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                    restore_field_from_odd_prec_sym2 :  0.6%       11 calls 1.748E-03,1.759E-03 sec    0.000 Gflops (0.000E+00 flops)
 invert_with_cg(5d,5d,inv,cg): checking 4.805639E-08 from 8.000000E+00
-Timer::stop                        invert_with_cg(5d,5d,inv,cg) : 97.1%       11 calls 2.702E-01,2.709E-01 sec    0.396 Gflops (1.070E+08 flops)
-Timer::stop                               invert_dwf(4d,4d,inv) : 97.1%       11 calls 2.703E-01,2.710E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                               invert(out,in,gt_inv) : 97.2%       11 calls 2.704E-01,2.711E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                              invert(out,in,gt_inv) : 97.2%       12 calls 2.704E-01,2.711E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                              invert_dwf(4d,4d,inv) : 97.1%       12 calls 2.703E-01,2.710E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                       invert_with_cg(5d,5d,inv,cg) : 97.1%       12 calls 2.702E-01,2.709E-01 sec    0.396 Gflops (1.070E+08 flops)
 invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00
-Timer::start                            set_odd_prec_field_sym2 :  1.8%       12 calls 4.877E-03,4.914E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                             set_odd_prec_field_sym2 :  1.9%       12 calls 4.913E-03,4.914E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                      cg_with_herm_sym_2(5d,5d,inv) : 92.3%       12 calls 2.575E-01,2.581E-01 sec    0.416 Gflops (1.070E+08 flops)
 cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.730E+00 stop_rsd=1.000E-08 
 cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=6.087E-09 stop_rsd=1.000E-08
-Timer::stop                       cg_with_herm_sym_2(5d,5d,inv) : 92.9%       12 calls 2.573E-01,2.580E-01 sec    0.416 Gflops (1.070E+08 flops)
 invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
-Timer::start                   restore_field_from_odd_prec_sym2 :  0.6%       12 calls 1.748E-03,1.759E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                    restore_field_from_odd_prec_sym2 :  0.6%       12 calls 1.748E-03,1.758E-03 sec    0.000 Gflops (0.000E+00 flops)
 invert_with_cg(5d,5d,inv,cg): checking 5.129898E-08 from 8.000000E+00
-Timer::stop                        invert_with_cg(5d,5d,inv,cg) : 97.3%       12 calls 2.701E-01,2.708E-01 sec    0.396 Gflops (1.070E+08 flops)
-Timer::stop                               invert_dwf(4d,4d,inv) : 97.4%       12 calls 2.702E-01,2.710E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                               invert(out,in,gt_inv) : 97.4%       12 calls 2.703E-01,2.711E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                             set_wall_src_propagator : 97.4%        1 calls 3.253E+00,3.253E+00 sec    0.000 Gflops (0.000E+00 flops)
 prop qnorm =  2.80969993217557658E+02
 prop qnorm =  7.21126316898650366E-01
-Timer::start                   find_max_eigen_value_hermop_sym2 :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::start                                  set_u_rand_double :  0.0%        2 calls 1.081E-03,1.081E-03 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                   set_u_rand_double :  0.1%        2 calls 1.126E-03,1.104E-03 sec    0.000 Gflops (0.000E+00 flops)
 find_max_eigen_value_hermop_sym2:     1: sqrt_qnorm_ratio = 1.15752294238541942E+00. (max eigen value of hermop_sym2)
 find_max_eigen_value_hermop_sym2:     2: sqrt_qnorm_ratio = 1.28254240720920998E+00. (max eigen value of hermop_sym2)
 find_max_eigen_value_hermop_sym2:     3: sqrt_qnorm_ratio = 1.38719889216406878E+00. (max eigen value of hermop_sym2)
 find_max_eigen_value_hermop_sym2:     4: sqrt_qnorm_ratio = 1.48902999500903177E+00. (max eigen value of hermop_sym2)
 find_max_eigen_value_hermop_sym2:     5: sqrt_qnorm_ratio = 1.58659082254578254E+00. (max eigen value of hermop_sym2)
-Timer::stop                    find_max_eigen_value_hermop_sym2 :  1.0%        1 calls 3.346E-02,3.346E-02 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                        qtouch_info :  0.0%        2 calls 1.750E-04,1.750E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                             qtouch :  0.0%        2 calls 1.531E-04,1.531E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                              qtouch :  0.0%        2 calls 2.279E-04,1.905E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                         qtouch_info :  0.0%        2 calls 2.630E-04,2.190E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                     compute_traj_do :100.0%        1 calls 3.372E+00,3.372E+00 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                       release_lock :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
 release_lock: Release lock 'results/free-4nt8/results=1010-lock'
-Timer::start                                       qremove_info :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
 qremove: 'results/free-4nt8/results=1010-lock/time.txt'
-Timer::stop                                        qremove_info :  0.0%        1 calls 5.198E-05,5.198E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                                         rmdir_lock :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-Timer::stop                                          rmdir_lock :  0.0%        1 calls 2.480E-05,2.480E-05 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                        release_lock :  0.0%        1 calls 1.490E-04,1.490E-04 sec    0.000 Gflops (0.000E+00 flops)
-Timer::stop                                        compute_traj :100.0%        1 calls 3.373E+00,3.373E+00 sec    0.000 Gflops (0.000E+00 flops)
-Timer::display-start:  fname : time% number of calls; Avg,Tot sec; Avg,Tot flops; Gflops
-Timer::display                                      setup_log_idx :  0.000%        0 calls; -NAN,0.00E+00 sec; -NAN,0.00E+00 flops;  -nan Gflops
-Timer::display                                   display_geo_node :  0.000%        0 calls; -NAN,0.00E+00 sec; -NAN,0.00E+00 flops;  -nan Gflops
-Timer::display                                set_marks_field_all :  0.000%        0 calls; -NAN,0.00E+00 sec; -NAN,0.00E+00 flops;  -nan Gflops
-Timer::display                                     make_comm_plan :  0.000%        0 calls; -NAN,0.00E+00 sec; -NAN,0.00E+00 flops;  -nan Gflops
-Timer::display                                  set_marks_field_1 :  0.000%        0 calls; -NAN,0.00E+00 sec; -NAN,0.00E+00 flops;  -nan Gflops
-Timer::display                                     get_time_limit :  0.000%        0 calls; -NAN,0.00E+00 sec; -NAN,0.00E+00 flops;  -nan Gflops
-Timer::display                                 get_default_budget :  0.000%        0 calls; -NAN,0.00E+00 sec; -NAN,0.00E+00 flops;  -nan Gflops
-Timer::display                                    force_low_modes :  0.000%        9 calls; 0.00E+00,0.00E+00 sec; 0.00E+00,0.00E+00 flops;  -nan Gflops
-Timer::display                                          get_trajs :  0.000%        0 calls; -NAN,0.00E+00 sec; -NAN,0.00E+00 flops;  -nan Gflops
-Timer::display                             install_qhandle_sigint :  0.000%        2 calls; 9.54E-07,1.91E-06 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                      qset_line_buf :  0.000%        2 calls; 9.54E-07,1.91E-06 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                            set_default_budget_auto :  0.000%        2 calls; 9.54E-07,1.91E-06 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                          check_dir :  0.000%        7 calls; 1.16E-06,8.11E-06 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                  gf_avg_link_trace :  0.000%        1 calls; 1.00E-05,1.00E-05 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                          gt_invert :  0.000%        1 calls; 1.00E-05,1.00E-05 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                            qrename :  0.000%        1 calls; 1.19E-05,1.19E-05 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                set_time_limit_auto :  0.001%        2 calls; 1.10E-05,2.19E-05 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                           init_blocked_half_vector :  0.001%        4 calls; 5.54E-06,2.22E-05 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                       check_status :  0.001%        2 calls; 1.11E-05,2.22E-05 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                 load_configuration :  0.001%        1 calls; 2.41E-05,2.41E-05 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                         rmdir_lock :  0.001%        1 calls; 2.48E-05,2.48E-05 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                 init_compressed_eigen_system_coefs :  0.001%        1 calls; 3.10E-05,3.10E-05 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                   qmkdir_sync_node :  0.001%        1 calls; 3.70E-05,3.70E-05 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                   init_half_vector :  0.001%        8 calls; 5.51E-06,4.41E-05 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                       qremove_info :  0.002%        1 calls; 5.20E-05,5.20E-05 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                             qclose :  0.002%        4 calls; 1.30E-05,5.20E-05 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                         mkdir_lock :  0.002%        1 calls; 6.20E-05,6.20E-05 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display              set_propagator_col_from_fermion_field :  0.003%       12 calls; 8.98E-06,1.08E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                        gf_avg_spatial_plaq_no_comm :  0.003%        1 calls; 1.11E-04,1.11E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                setup(job_tag,traj) :  0.003%        1 calls; 1.16E-04,1.16E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                           fermion_field_4d_from_5d :  0.004%       12 calls; 1.12E-05,1.34E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                       release_lock :  0.004%        1 calls; 1.49E-04,1.49E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                             qmkdir :  0.005%        6 calls; 3.04E-05,1.82E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                gf_avg_plaq_no_comm :  0.006%        1 calls; 2.06E-04,2.06E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                        qmkdir_info :  0.006%        5 calls; 4.38E-05,2.19E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                convert_half_vector :  0.007%        8 calls; 2.83E-05,2.26E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                 init_compressed_eigen_system_bases :  0.007%        1 calls; 2.44E-04,2.44E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                        obtain_lock :  0.009%        1 calls; 2.97E-04,2.97E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                              qopen :  0.009%        4 calls; 7.78E-05,3.11E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                           fermion_field_5d_from_4d :  0.009%       24 calls; 1.33E-05,3.19E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                      set_g_rand_color_matrix_field :  0.009%        1 calls; 3.20E-04,3.20E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                             qtouch :  0.011%        2 calls; 1.90E-04,3.81E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                      set_left_expanded_gauge_field :  0.012%        1 calls; 3.92E-04,3.92E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                               Inv::setup(gf,fa,lm) :  0.012%        1 calls; 4.16E-04,4.16E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                        qtouch_info :  0.013%        2 calls; 2.19E-04,4.38E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                gf_avg_spatial_plaq :  0.016%        1 calls; 5.31E-04,5.31E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                   set_half_fermion :  0.016%       48 calls; 1.15E-05,5.50E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                        gf_avg_plaq :  0.021%        1 calls; 7.02E-04,7.02E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                      ff_apply_gauge_transformation :  0.021%       24 calls; 2.93E-05,7.03E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                   get_half_fermion :  0.023%       48 calls; 1.60E-05,7.68E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                       gf_show_info :  0.040%        1 calls; 1.36E-03,1.36E-03 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                     multiply_m_e_e :  0.061%       24 calls; 8.59E-05,2.06E-03 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                  set_u_rand_double :  0.065%        2 calls; 1.10E-03,2.21E-03 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                     deflate-glbsum :  0.139%        4 calls; 1.17E-03,4.70E-03 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                    deflate-produce :  0.163%        4 calls; 1.38E-03,5.50E-03 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                         refresh_expanded-comm-init :  0.186%     1979 calls; 3.16E-06,6.26E-03 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                    deflate-project :  0.193%        4 calls; 1.62E-03,6.50E-03 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                  deflate(hv,hv,lm) :  0.513%        4 calls; 4.33E-03,1.73E-02 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                  deflate(5d,5d,lm) :  0.520%        4 calls; 4.39E-03,1.76E-02 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                          benchmark_deflate-deflate :  0.525%        1 calls; 1.77E-02,1.77E-02 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                   restore_field_from_odd_prec_sym2 :  0.625%       12 calls; 1.76E-03,2.11E-02 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                   Field::operator= :  0.654%     2905 calls; 7.59E-06,2.21E-02 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display           multiply_wilson_d_no_comm(5d,5d,gf,mass) :  0.701%       12 calls; 1.97E-03,2.37E-02 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                   field_operator+= :  0.722%      948 calls; 2.57E-05,2.43E-02 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                        dot_product :  0.755%      456 calls; 5.59E-05,2.55E-02 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                              field_operator*=(F,D) :  0.827%     1362 calls; 2.05E-05,2.79E-02 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                      multiply_d_minus(5d,5d,gf,fa) :  0.917%       12 calls; 2.58E-03,3.10E-02 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                        multiply_d_minus(5d,5d,Inv) :  0.921%       12 calls; 2.59E-03,3.11E-02 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                   find_max_eigen_value_hermop_sym2 :  0.992%        1 calls; 3.35E-02,3.35E-02 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                   field_operator-= :  1.119%     1462 calls; 2.58E-05,3.78E-02 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                         multiply_m :  1.144%       12 calls; 3.22E-03,3.86E-02 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                            set_odd_prec_field_sym2 :  1.747%       12 calls; 4.91E-03,5.90E-02 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                   set_u_rand_float :  1.823%        2 calls; 3.08E-02,6.15E-02 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                  set_u_rand(lm,rs) :  1.827%        1 calls; 6.17E-02,6.17E-02 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                  benchmark_deflate :  2.427%        1 calls; 8.19E-02,8.19E-02 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                              multiply_mdag_e_e_inv :  3.092%      970 calls; 1.08E-04,1.04E-01 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                 multiply_m_e_e_inv :  3.289%      982 calls; 1.13E-04,1.11E-01 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                              refresh_expanded-comm :  3.812%     1979 calls; 6.50E-05,1.29E-01 sec; 1.24E+05,2.44E+08 flops;  1.90 Gflops
-Timer::display                                   refresh_expanded :  7.153%     1979 calls; 1.22E-04,2.41E-01 sec; 1.24E+05,2.44E+08 flops;  1.01 Gflops
-Timer::display         multiply_wilson_ddag_e_o_no_comm(5d,5d,gf) : 28.271%      970 calls; 9.84E-04,9.54E-01 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display            multiply_wilson_d_e_o_no_comm(5d,5d,gf) : 28.862%      994 calls; 9.80E-04,9.74E-01 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                        multiply_m_e_o(5d,5d,gf,fa) : 42.820%      994 calls; 1.45E-03,1.45E+00 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                     multiply_mdag_e_o(5d,5d,gf,fa) : 42.836%      970 calls; 1.49E-03,1.45E+00 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                  multiply_mpc_sym2 : 44.420%      473 calls; 3.17E-03,1.50E+00 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                               multiply_mpcdag_sym2 : 46.319%      485 calls; 3.22E-03,1.56E+00 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                               multiply_hermop_sym2 : 89.592%      473 calls; 6.39E-03,3.02E+00 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                          cg_with_f : 91.736%       12 calls; 2.58E-01,3.10E+00 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                      cg_with_herm_sym_2(5d,5d,inv) : 91.739%       12 calls; 2.58E-01,3.10E+00 sec; 1.07E+08,1.28E+09 flops;  0.41 Gflops
-Timer::display                       invert_with_cg(5d,5d,inv,cg) : 96.301%       12 calls; 2.71E-01,3.25E+00 sec; 1.07E+08,1.28E+09 flops;  0.40 Gflops
-Timer::display                              invert_dwf(4d,4d,inv) : 96.348%       12 calls; 2.71E-01,3.25E+00 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                              invert(out,in,gt_inv) : 96.381%       12 calls; 2.71E-01,3.25E+00 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                            set_wall_src_propagator : 96.402%        1 calls; 3.25E+00,3.25E+00 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                    compute_traj_do : 99.918%        1 calls; 3.37E+00,3.37E+00 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                                       compute_traj : 99.946%        1 calls; 3.37E+00,3.37E+00 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display-end:    --------------------- total 3.3735E+00 sec ----------------------
-Timer::reset(): Reset all timers!
 program finished successfully for 'free-4nt8'.
 qlat::end(): MPI Finalized.

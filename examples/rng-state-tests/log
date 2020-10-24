@@ -1,5 +1,3 @@
-[qcdserver16:22236] mca_base_component_repository_open: unable to open mca_plm_tm: libtorque.so.2: cannot open shared object file: No such file or directory (ignored)
-[qcdserver16:22236] mca_base_component_repository_open: unable to open mca_ras_tm: libtorque.so.2: cannot open shared object file: No such file or directory (ignored)
 qlat::begin(): MPI Initialized. num_node = 8
 qlat::begin(): OMP_NUM_THREADS = 2
 qlat::begin(): GeometryNode =
@@ -8,55 +6,29 @@ qlat::begin(): GeometryNode =
 , id_node     = 0
 , size_node   = 1x2x2x2
 , coor_node   = 0x0x0x0 }
-Timer::start               display_geo_node :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
-display_geo_node : id_node =     0 ; coor_node = 0x0x0x0
-display_geo_node : id_node =     1 ; coor_node = 0x1x0x0
-display_geo_node : id_node =     2 ; coor_node = 0x0x1x0
-display_geo_node : id_node =     3 ; coor_node = 0x1x1x0
-display_geo_node : id_node =     4 ; coor_node = 0x0x0x1
-display_geo_node : id_node =     5 ; coor_node = 0x1x0x1
-display_geo_node : id_node =     6 ; coor_node = 0x0x1x1
-display_geo_node : id_node =     7 ; coor_node = 0x1x1x1
-Timer::stop                display_geo_node : 85.2%        1 calls 3.278E-04,3.278E-04 sec    0.000 Gflops (0.000E+00 flops)
+display_geo_node : id_node =     0 ; coor_node = 0x0x0x0 ; id_node_in_shuffle =     0 ; hostname = qcdserver16
+display_geo_node : id_node =     1 ; coor_node = 0x1x0x0 ; id_node_in_shuffle =     2 ; hostname = qcdserver16
+display_geo_node : id_node =     2 ; coor_node = 0x0x1x0 ; id_node_in_shuffle =     4 ; hostname = qcdserver16
+display_geo_node : id_node =     3 ; coor_node = 0x1x1x0 ; id_node_in_shuffle =     6 ; hostname = qcdserver16
+display_geo_node : id_node =     4 ; coor_node = 0x0x0x1 ; id_node_in_shuffle =     1 ; hostname = qcdserver16
+display_geo_node : id_node =     5 ; coor_node = 0x1x0x1 ; id_node_in_shuffle =     3 ; hostname = qcdserver16
+display_geo_node : id_node =     6 ; coor_node = 0x0x1x1 ; id_node_in_shuffle =     5 ; hostname = qcdserver16
+display_geo_node : id_node =     7 ; coor_node = 0x1x1x1 ; id_node_in_shuffle =     7 ; hostname = qcdserver16
 sizeof RngState = 96
-Timer::start                          test1 :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
 expected: -0.231435
 -0.231915
-Timer::stop                           test1 : 99.8%        1 calls 2.608E-01,2.608E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                          test2 :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
 expected: 0.682689
 0.682062
-Timer::stop                           test2 : 49.1%        1 calls 2.518E-01,2.518E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                         test2a :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
 expected: 0.682689
 0.682062
-Timer::stop                          test2a : 41.9%        1 calls 3.697E-01,3.697E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                          test3 :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
 Expected : 64
 Mean     : 57.8898
 Var      : 4.72104
-Timer::stop                           test3 : 18.2%        1 calls 1.970E-01,1.970E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                          test4 :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
 Expected : 64
 Mean     : 67.4007
 Var      : 5.68897
-Timer::stop                           test4 : 13.2%        1 calls 1.642E-01,1.642E-01 sec    0.000 Gflops (0.000E+00 flops)
-Timer::start                     profileOmp :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
 sum: 524173
 avg: 0.499891
-Timer::stop                      profileOmp :  9.8%        1 calls 1.346E-01,1.346E-01 sec    0.008 Gflops (1.049E+06 flops)
-Timer::start                        profile :  0.0%        1 calls -NAN,-NAN sec     -nan Gflops (0.000E+00 flops)
 sum: 499983
 avg: 0.499983
-Timer::stop                         profile : 12.4%        1 calls 1.952E-01,1.952E-01 sec    0.005 Gflops (1.000E+06 flops)
-Timer::display-start:  fname : time% number of calls; Avg,Tot sec; Avg,Tot flops; Gflops
-Timer::display               display_geo_node :  0.021%        1 calls; 3.28E-04,3.28E-04 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                     profileOmp :  8.552%        1 calls; 1.35E-01,1.35E-01 sec; 1.05E+06,1.05E+06 flops;  0.01 Gflops
-Timer::display                          test4 : 10.431%        1 calls; 1.64E-01,1.64E-01 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                        profile : 12.400%        1 calls; 1.95E-01,1.95E-01 sec; 1.00E+06,1.00E+06 flops;  0.01 Gflops
-Timer::display                          test3 : 12.517%        1 calls; 1.97E-01,1.97E-01 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                          test2 : 16.000%        1 calls; 2.52E-01,2.52E-01 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                          test1 : 16.567%        1 calls; 2.61E-01,2.61E-01 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display                         test2a : 23.490%        1 calls; 3.70E-01,3.70E-01 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
-Timer::display-end:    --------------------- total 1.5738E+00 sec ----------------------
 qlat::end(): MPI Finalized.

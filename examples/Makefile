@@ -17,10 +17,10 @@ all:
 	for i in $(tests) ; do make -C "$$i" all & done ; time wait
 
 diff:
-	-git diff | egrep -v Timer | egrep '^\+|^\-'
+	-git diff
 
 run: all
-	-time for i in $(tests) ; do make -C "$$i" run ; done
+	-time for i in $(tests) ; do make -C "$$i" run-test ; done
 	make diff
 
 clean:
