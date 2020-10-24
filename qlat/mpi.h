@@ -751,7 +751,7 @@ inline void begin_comm(const MPI_Comm comm, const Coordinate& size_node)
   displayln_info("qlat::begin(): GeometryNode =\n" + show(geon));
   fflush(get_output_file());
   sync_node();
-  display_geometry_node();
+  // display_geometry_node();
 }
 
 inline void begin(const int id_node, const Coordinate& size_node)

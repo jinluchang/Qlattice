@@ -6,14 +6,6 @@ qlat::begin(): GeometryNode =
 , id_node     = 0
 , size_node   = 1x2x2x2
 , coor_node   = 0x0x0x0 }
-display_geo_node : id_node =     0 ; coor_node = 0x0x0x0 ; id_node_in_shuffle =     0 ; hostname = qcdserver16
-display_geo_node : id_node =     1 ; coor_node = 0x1x0x0 ; id_node_in_shuffle =     2 ; hostname = qcdserver16
-display_geo_node : id_node =     2 ; coor_node = 0x0x1x0 ; id_node_in_shuffle =     4 ; hostname = qcdserver16
-display_geo_node : id_node =     3 ; coor_node = 0x1x1x0 ; id_node_in_shuffle =     6 ; hostname = qcdserver16
-display_geo_node : id_node =     4 ; coor_node = 0x0x0x1 ; id_node_in_shuffle =     1 ; hostname = qcdserver16
-display_geo_node : id_node =     5 ; coor_node = 0x1x0x1 ; id_node_in_shuffle =     3 ; hostname = qcdserver16
-display_geo_node : id_node =     6 ; coor_node = 0x0x1x1 ; id_node_in_shuffle =     5 ; hostname = qcdserver16
-display_geo_node : id_node =     7 ; coor_node = 0x1x1x1 ; id_node_in_shuffle =     7 ; hostname = qcdserver16
 demo: create splittable random number generator 'rs'
 demo: init field 'f'
 shuffle_field: 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
