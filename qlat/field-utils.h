@@ -314,7 +314,6 @@ void field_shift(Field<M>& f, const Field<M>& f1, const Coordinate& shift)
   field_shift_direct(f, f1, shift);
 }
 
-
 template <class M>
 void set_u_rand_double(Field<M>& f, const RngState& rs,
                        const double upper = 1.0, const double lower = -1.0)

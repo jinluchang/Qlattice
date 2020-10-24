@@ -23,11 +23,12 @@ QLAT_LDFLAGS=$(QLAT_LIB)/libfftw3.a $(QLAT_LIB)/libcuba.a $(QLAT_LIB)/libz.a -lm
 all: qlat.x
 
 run: qlat.x
-	time mpirun -x OMP_NUM_THREADS=2 --np 2 ./qlat.x |& tee log
+	time mpirun -x OMP_NUM_THREADS=2 --np 8 ./qlat.x |& tee log
+	make diff
 	# make clean
 
 diff:
-	-git diff | egrep -v Timer | egrep '^\+|^\-'
+	-git diff log | egrep -v Timer | egrep '^\+|^\-'
 
 qlat.x: *.C
 	time make build
