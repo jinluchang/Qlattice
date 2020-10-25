@@ -101,6 +101,15 @@ inline void test_shuffle()
     displayln_info(ssprintf("qnorm = %24.17E after subtract", qnorm(gf_fft)));
     qassert(qnorm(gf_fft) < 1.0e-12);
   }
+  {
+    reflect_field(gf);
+    const crc32_t crc_8 = field_crc32(gf);
+    displayln_info(ssprintf("crc32 = %08X after reflect", crc_8));
+    reflect_field(gf);
+    const crc32_t crc_9 = field_crc32(gf);
+    displayln_info(ssprintf("crc32 = %08X after reflect twice", crc_9));
+    qassert(crc_9 == crc_0);
+  }
 }
 
 inline void test_io()

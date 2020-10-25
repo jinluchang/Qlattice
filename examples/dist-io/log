@@ -716,6 +716,28 @@ qnorm =  4.91520000000000000E+04 after rescale
 shuffle_field: 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 crc32 = 9F1B9AA6 after subtract
 qnorm =  1.92579296835827081E-27 after subtract
+Qlat::make_shuffle_plan_generic: num_send_packs =         30
+Qlat::make_shuffle_plan_generic: num_recv_packs =        512
+Qlat::make_shuffle_plan_generic: num_send_msgs  =          8
+Qlat::make_shuffle_plan_generic: num_recv_msgs  =          8
+Qlat::make_shuffle_plan_generic: total num_send_packs =        251
+Qlat::make_shuffle_plan_generic: total num_recv_packs =       4096
+Qlat::make_shuffle_plan_generic: total num_send_msgs  =         64
+Qlat::make_shuffle_plan_generic: total num_recv_msgs  =         64
+Qlat::make_shuffle_plan_generic: global_comm_size =       4096
+shuffle_field: 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
+crc32 = F452A2B8 after reflect
+Qlat::make_shuffle_plan_generic: num_send_packs =         30
+Qlat::make_shuffle_plan_generic: num_recv_packs =        512
+Qlat::make_shuffle_plan_generic: num_send_msgs  =          8
+Qlat::make_shuffle_plan_generic: num_recv_msgs  =          8
+Qlat::make_shuffle_plan_generic: total num_send_packs =        251
+Qlat::make_shuffle_plan_generic: total num_recv_packs =       4096
+Qlat::make_shuffle_plan_generic: total num_send_msgs  =         64
+Qlat::make_shuffle_plan_generic: total num_recv_msgs  =         64
+Qlat::make_shuffle_plan_generic: global_comm_size =       4096
+shuffle_field: 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
+crc32 = F9AAC400 after reflect twice
 qlat::end(): MPI Finalized.
 fft_complex_field_plan::end(): free a plan.
 fft_complex_field_plan::end(): free a plan.
