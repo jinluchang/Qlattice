@@ -11,15 +11,15 @@ demo: random select points on each time slice
 demo: select 16 points per time slice
 demo: selection is stored in 'fsel' of type 'FieldSelection'
 shuffle_field: 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
-Qlat::make_shuffle_plan: num_send_packs =          1
-Qlat::make_shuffle_plan: num_recv_packs =         11
-Qlat::make_shuffle_plan: num_send_msgs  =          4
-Qlat::make_shuffle_plan: num_recv_msgs  =          4
-Qlat::make_shuffle_plan: total num_send_packs =          8
-Qlat::make_shuffle_plan: total num_recv_packs =         88
-Qlat::make_shuffle_plan: total num_send_msgs  =         32
-Qlat::make_shuffle_plan: total num_recv_msgs  =         32
-Qlat::make_shuffle_plan: global_comm_size =       1728
+Qlat::make_shuffle_plan_generic: num_send_packs =          7
+Qlat::make_shuffle_plan_generic: num_recv_packs =         12
+Qlat::make_shuffle_plan_generic: num_send_msgs  =          4
+Qlat::make_shuffle_plan_generic: num_recv_msgs  =          4
+Qlat::make_shuffle_plan_generic: total num_send_packs =         56
+Qlat::make_shuffle_plan_generic: total num_recv_packs =         96
+Qlat::make_shuffle_plan_generic: total num_send_msgs  =         32
+Qlat::make_shuffle_plan_generic: total num_recv_msgs  =         32
+Qlat::make_shuffle_plan_generic: global_comm_size =       1728
 Qlat::ShufflePlanCache: to add 1 / 16.
 shuffle_field_back: 1x1x1x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
 demo: save selection 'fsel' to disk as a field
@@ -42,15 +42,15 @@ shuffle_field: 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_s
 demo: compute crc32=60386CDD.
 FieldsWriter: open 'huge-data/demo.lfs.partial'.
 shuffle_field: 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
-Qlat::make_shuffle_plan: num_send_packs =         69
-Qlat::make_shuffle_plan: num_recv_packs =          8
-Qlat::make_shuffle_plan: num_send_msgs  =          4
-Qlat::make_shuffle_plan: num_recv_msgs  =          4
-Qlat::make_shuffle_plan: total num_send_packs =        552
-Qlat::make_shuffle_plan: total num_recv_packs =         64
-Qlat::make_shuffle_plan: total num_send_msgs  =         32
-Qlat::make_shuffle_plan: total num_recv_msgs  =         32
-Qlat::make_shuffle_plan: global_comm_size =       1728
+Qlat::make_shuffle_plan_generic: num_send_packs =          8
+Qlat::make_shuffle_plan_generic: num_recv_packs =         72
+Qlat::make_shuffle_plan_generic: num_send_msgs  =          4
+Qlat::make_shuffle_plan_generic: num_recv_msgs  =          4
+Qlat::make_shuffle_plan_generic: total num_send_packs =         64
+Qlat::make_shuffle_plan_generic: total num_recv_packs =        576
+Qlat::make_shuffle_plan_generic: total num_send_msgs  =         32
+Qlat::make_shuffle_plan_generic: total num_recv_msgs  =         32
+Qlat::make_shuffle_plan_generic: global_comm_size =       1728
 Qlat::ShufflePlanCache: to add 2 / 16.
 demo: save to disk
 write(sfw,fn,field): writting field with fn='f.field'.

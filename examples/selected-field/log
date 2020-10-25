@@ -9,15 +9,15 @@ qlat::begin(): GeometryNode =
 demo: create splittable random number generator 'rs'
 demo: init field 'f'
 shuffle_field: 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
-Qlat::make_shuffle_plan: num_send_packs =          1
-Qlat::make_shuffle_plan: num_recv_packs =          7
-Qlat::make_shuffle_plan: num_send_msgs  =          4
-Qlat::make_shuffle_plan: num_recv_msgs  =          4
-Qlat::make_shuffle_plan: total num_send_packs =          8
-Qlat::make_shuffle_plan: total num_recv_packs =         56
-Qlat::make_shuffle_plan: total num_send_msgs  =         32
-Qlat::make_shuffle_plan: total num_recv_msgs  =         32
-Qlat::make_shuffle_plan: global_comm_size =        512
+Qlat::make_shuffle_plan_generic: num_send_packs =          2
+Qlat::make_shuffle_plan_generic: num_recv_packs =          7
+Qlat::make_shuffle_plan_generic: num_send_msgs  =          4
+Qlat::make_shuffle_plan_generic: num_recv_msgs  =          4
+Qlat::make_shuffle_plan_generic: total num_send_packs =         16
+Qlat::make_shuffle_plan_generic: total num_recv_packs =         56
+Qlat::make_shuffle_plan_generic: total num_send_msgs  =         32
+Qlat::make_shuffle_plan_generic: total num_recv_msgs  =         32
+Qlat::make_shuffle_plan_generic: global_comm_size =        512
 Qlat::ShufflePlanCache: to add 1 / 16.
 demo: compute crc32=AB54D286.
 demo: fill with random numbers
@@ -218,15 +218,15 @@ shuffle_field: 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_s
 shuffle_field: 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 : 46CAAB7D <- f2 set and set
 shuffle_field: 1x2x2x2 -> 1x1x2x4 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
-Qlat::make_shuffle_plan: num_send_packs =          1
-Qlat::make_shuffle_plan: num_recv_packs =          8
-Qlat::make_shuffle_plan: num_send_msgs  =          2
-Qlat::make_shuffle_plan: num_recv_msgs  =          2
-Qlat::make_shuffle_plan: total num_send_packs =          8
-Qlat::make_shuffle_plan: total num_recv_packs =         64
-Qlat::make_shuffle_plan: total num_send_msgs  =         16
-Qlat::make_shuffle_plan: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan: global_comm_size =        512
+Qlat::make_shuffle_plan_generic: num_send_packs =          2
+Qlat::make_shuffle_plan_generic: num_recv_packs =          8
+Qlat::make_shuffle_plan_generic: num_send_msgs  =          2
+Qlat::make_shuffle_plan_generic: num_recv_msgs  =          2
+Qlat::make_shuffle_plan_generic: total num_send_packs =         16
+Qlat::make_shuffle_plan_generic: total num_recv_packs =         64
+Qlat::make_shuffle_plan_generic: total num_send_msgs  =         16
+Qlat::make_shuffle_plan_generic: total num_recv_msgs  =         16
+Qlat::make_shuffle_plan_generic: global_comm_size =        512
 Qlat::ShufflePlanCache: to add 2 / 16.
 FieldsWriter: open 'results/fields.partial'.
 write(sfw,fn,field,sbs): writting sparse field with fn='f.psel'.

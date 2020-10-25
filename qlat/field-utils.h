@@ -245,7 +245,7 @@ void field_shift_direct(Field<M>& f, const Field<M>& f1, const Coordinate& shift
         geo.local_volume() * (long)geo.multiplicity * (long)sizeof(M);
     const long max_elem = 1 + get_max_field_shift_direct_msg_size() / sizeof(M);
     std::vector<MPI_Request> send_reqs(n_send), recv_reqs(n_recv);
-    const int mpi_tag = 10;
+    const int mpi_tag = 11;
     int i_send = 0;
     int i_recv = 0;
     for (int i = 0; i < num_node; ++i) {

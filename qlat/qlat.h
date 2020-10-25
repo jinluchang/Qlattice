@@ -28,11 +28,15 @@
 
 #include <qlat/field-comm.h>
 
+#include <qlat/selected-field.h>
+
+#include <qlat/field-shuffle.h>
+
 #include <qlat/field-dist-io.h>
 
 #include <qlat/field-serial-io.h>
 
-#include <qlat/selected-field.h>
+#include <qlat/selected-field-io.h>
 
 #include <qlat/selected-points.h>
 

@@ -483,6 +483,12 @@ T jackknife_sigma(const std::vector<T>& vs)
   return std::sqrt((double)size * std::abs(val2_sum - sqr(val_sum)));
 }
 
+template <typename T>
+T identity(const T& x)
+{
+  return x;
+}
+
 }  // namespace qlat
 
 #ifndef USE_NAMESPACE
