@@ -242,7 +242,7 @@ void shuffle_field_back(Field<M>& f, const std::vector<Field<M> >& fs,
                           sp.send_pack_infos, geo.multiplicity);
 }
 
-// field dist write shuffle
+// making shuffle plan generic
 
 inline long& get_shuffle_max_msg_size()
 // qlat parameter
@@ -329,22 +329,6 @@ inline int get_id_node_from_new_id_node(const int new_id_node,
       get_id_node_in_shuffle_from_new_id_node(new_id_node, new_num_node,
                                               num_node),
       new_num_node, num_node);
-}
-
-struct ShufflePlanKey {
-  Coordinate total_site;
-  Coordinate new_size_node;
-};
-
-inline bool operator<(const ShufflePlanKey& x, const ShufflePlanKey& y)
-{
-  if (x.new_size_node < y.new_size_node) {
-    return true;
-  } else if (y.new_size_node < x.new_size_node) {
-    return false;
-  } else {
-    return x.total_site < y.total_site;
-  }
 }
 
 template <class Func>
@@ -604,6 +588,24 @@ inline ShufflePlan make_shuffle_plan_generic(std::vector<FieldSelection>& fsels,
   displayln_info(ssprintf("%s::%s: global_comm_size = %10ld", cname().c_str(),
                           fname, sp.scp.global_comm_size));
   return sp;
+}
+
+// field dist write shuffle
+
+struct ShufflePlanKey {
+  Coordinate total_site;
+  Coordinate new_size_node;
+};
+
+inline bool operator<(const ShufflePlanKey& x, const ShufflePlanKey& y)
+{
+  if (x.new_size_node < y.new_size_node) {
+    return true;
+  } else if (y.new_size_node < x.new_size_node) {
+    return false;
+  } else {
+    return x.total_site < y.total_site;
+  }
 }
 
 inline ShufflePlan make_shuffle_plan(const ShufflePlanKey& spk)
