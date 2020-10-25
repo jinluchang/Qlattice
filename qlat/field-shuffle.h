@@ -403,6 +403,8 @@ inline ShufflePlan make_shuffle_plan_generic(std::vector<FieldSelection>& fsels,
     sp.scp.total_send_size = count;
     qassert(count == fsel.n_elems);
   }
+  sp.scp.global_comm_size = sp.scp.total_send_size;
+  glb_sum(sp.scp.global_comm_size);
   // send_pack_infos
   {
     long last_buffer_idx = -1;
@@ -583,8 +585,6 @@ inline ShufflePlan make_shuffle_plan_generic(std::vector<FieldSelection>& fsels,
                           cname().c_str(), fname, num_send_msgs));
   displayln_info(ssprintf("%s::%s: total num_recv_msgs  = %10ld",
                           cname().c_str(), fname, num_recv_msgs));
-  sp.scp.global_comm_size = sp.scp.total_send_size;
-  glb_sum(sp.scp.global_comm_size);
   displayln_info(ssprintf("%s::%s: global_comm_size = %10ld", cname().c_str(),
                           fname, sp.scp.global_comm_size));
   return sp;
@@ -982,7 +982,7 @@ inline ShufflePlan make_shuffle_plan_fft(const Coordinate& total_site,
 
 // reflection shuffle
 
-struct ReflectGIndexMap {
+struct ShuffleReflectGIndexMap {
   Coordinate total_site;
   long operator()(const long gindex) const
   {
@@ -993,13 +993,13 @@ struct ReflectGIndexMap {
 };
 
 template <class M>
-inline long reflect_field(Field<M>& f)
+void reflect_field(Field<M>& f)
 {
   TIMER_VERBOSE_FLOPS("reflect_field");
   timer.flops += get_data_size(f) * f.geo.geon.num_node;
   const Geometry& geo = f.geo;
   const Coordinate total_site = geo.total_site();
-  ReflectGIndexMap func;
+  ShuffleReflectGIndexMap func;
   func.total_site = total_site;
   FieldSelection fsel;
   set_field_selection(fsel, total_site);
@@ -1009,6 +1009,41 @@ inline long reflect_field(Field<M>& f)
   qassert(fsels.size() == 1);
   std::vector<Field<M> > fs;
   shuffle_field(fs, f, sp);
+  f = fs[0];
+}
+
+// shift shuffle
+
+struct ShuffleShiftGIndexMap {
+  Coordinate total_site;
+  Coordinate shift;
+  long operator()(const long gindex) const
+  {
+    const Coordinate xg = coordinate_from_index(gindex, total_site);
+    const Coordinate xg_shift = mod(xg + shift, total_site);
+    return index_from_coordinate(xg_shift, total_site);
+  }
+};
+
+template <class M>
+void field_shift_shuffle(Field<M>& f, const Field<M>& f0, const Coordinate& shift)
+{
+  TIMER_VERBOSE_FLOPS("field_shift_shuffle");
+  timer.flops += get_data_size(f0) * f0.geo.geon.num_node;
+  const Geometry& geo = f0.geo;
+  const Coordinate total_site = geo.total_site();
+  ShuffleShiftGIndexMap func;
+  func.total_site = total_site;
+  func.shift = shift;
+  FieldSelection fsel;
+  set_field_selection(fsel, total_site);
+  std::vector<FieldSelection> fsels;
+  ShufflePlan sp =
+      make_shuffle_plan_generic(fsels, fsel, geo.geon.size_node, func);
+  qassert(fsels.size() == 1);
+  std::vector<Field<M> > fs;
+  shuffle_field(fs, f0, sp);
+  f.init();
   f = fs[0];
 }
 

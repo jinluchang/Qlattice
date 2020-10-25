@@ -2,6 +2,7 @@
 
 #include <qlat/config.h>
 #include <qlat/coordinate-d.h>
+#include <qlat/field-shuffle.h>
 #include <qlat/field.h>
 #include <qlat/matrix.h>
 
@@ -311,6 +312,7 @@ template <class M>
 void field_shift(Field<M>& f, const Field<M>& f1, const Coordinate& shift)
 {
   // field_shift_steps(f, f1, shift);
+  // field_shift_shuffle(f, f1, shift);
   field_shift_direct(f, f1, shift);
 }
 
