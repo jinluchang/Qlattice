@@ -178,6 +178,9 @@ void shuffle_field_pack_recv(
   for (size_t i = 0; i < recv_pack_infos.size(); ++i) {
     const ShufflePlanRecvPackInfo& pi = recv_pack_infos[i];
     qassert(0 <= pi.local_geos_idx && pi.local_geos_idx < (int)fsdata.size());
+    qassert(fsdata[pi.local_geos_idx].size() >=
+            (pi.field_idx + pi.size) * multiplicity);
+    qassert(recv_buffer.size() >= (pi.buffer_idx + pi.size) * multiplicity);
     std::memcpy(&recv_buffer[pi.buffer_idx * multiplicity],
                 &fsdata[pi.local_geos_idx][pi.field_idx * multiplicity],
                 pi.size * multiplicity * sizeof(M));
@@ -188,13 +191,13 @@ template <class M>
 void shuffle_field(std::vector<Field<M> >& fs, const Field<M>& f,
                    const ShufflePlan& sp)
 {
+  sync_node();
   TIMER_FLOPS("shuffle_field(fs,f,sp)");
   const Geometry& geo = f.geo;
   qassert(sp.geo_send == geo_reform(geo, 1, 0));
   clear(fs);
-  sync_node();
   const long total_bytes =
-      sp.scp.total_send_size * geo.multiplicity * sizeof(M) * get_num_node();
+      sp.scp.global_comm_size * geo.multiplicity * sizeof(M);
   timer.flops += total_bytes;
   std::vector<M> send_buffer(sp.scp.total_send_size * geo.multiplicity);
   shuffle_field_pack_send(get_data(send_buffer), get_data(f),
@@ -215,17 +218,20 @@ void shuffle_field(std::vector<Field<M> >& fs, const Field<M>& f,
   }
   shuffle_field_unpack_recv(fsdata, get_data(recv_buffer), sp.recv_pack_infos,
                             geo.multiplicity);
+  sync_node();
 }
 
 template <class M>
 void shuffle_field_back(Field<M>& f, const std::vector<Field<M> >& fs,
                         const ShufflePlan& sp)
+// f needs to have correct size
 {
-  TIMER_FLOPS("shuffle_field_back(f,fs,sp)");
-  const Geometry& geo = f.geo;
   sync_node();
+  TIMER_FLOPS("shuffle_field_back(f,fs,sp)");
+  qassert(is_initialized(f));
+  const Geometry& geo = f.geo;
   const long total_bytes =
-      sp.scp.total_send_size * geo.multiplicity * sizeof(M) * get_num_node();
+      sp.scp.global_comm_size * geo.multiplicity * sizeof(M);
   timer.flops += total_bytes;
   std::vector<Vector<M> > fsdata(fs.size());
   for (size_t i = 0; i < fs.size(); ++i) {
@@ -239,7 +245,72 @@ void shuffle_field_back(Field<M>& f, const std::vector<Field<M> >& fs,
                           geo.multiplicity);
   clear(recv_buffer);
   shuffle_field_unpack_send(get_data(f), get_data(send_buffer),
+                            sp.send_pack_infos, geo.multiplicity);
+  sync_node();
+}
+
+template <class M>
+void shuffle_field(std::vector<SelectedField<M> >& fs,
+                   const SelectedField<M>& f, const ShufflePlan& sp)
+{
+  sync_node();
+  TIMER_FLOPS("shuffle_field(sel_fs,sel_f,sp)");
+  const Geometry& geo = f.geo;
+  qassert(sp.geo_send == geo_reform(geo, 1, 0));
+  clear(fs);
+  const long total_bytes =
+      sp.scp.global_comm_size * geo.multiplicity * sizeof(M);
+  timer.flops += total_bytes;
+  qassert(sp.n_elems_send * geo.multiplicity == f.field.size());
+  std::vector<M> send_buffer(sp.scp.total_send_size * geo.multiplicity);
+  shuffle_field_pack_send(get_data(send_buffer), get_data(f),
                           sp.send_pack_infos, geo.multiplicity);
+  std::vector<M> recv_buffer(sp.scp.total_recv_size * geo.multiplicity);
+  shuffle_field_comm(get_data(recv_buffer), get_data(send_buffer), sp.scp,
+                     geo.multiplicity);
+  clear(send_buffer);
+  std::vector<Geometry> geos_recv = sp.geos_recv;
+  fs.resize(geos_recv.size());
+  for (size_t i = 0; i < fs.size(); ++i) {
+    geos_recv[i].remult(geo.multiplicity);
+    fs[i].init(geos_recv[i], sp.n_elems_recv[i], geo.multiplicity);
+  }
+  std::vector<Vector<M> > fsdata(fs.size());
+  for (size_t i = 0; i < fs.size(); ++i) {
+    fsdata[i] = get_data(fs[i]);
+  }
+  shuffle_field_unpack_recv(fsdata, get_data(recv_buffer), sp.recv_pack_infos,
+                            geo.multiplicity);
+  sync_node();
+}
+
+template <class M>
+void shuffle_field_back(SelectedField<M>& f,
+                        const std::vector<SelectedField<M> >& fs,
+                        const ShufflePlan& sp)
+// f needs to have correct size
+{
+  sync_node();
+  TIMER_FLOPS("shuffle_field_back(sel_f,sel_fs,sp)");
+  qassert(is_initialized(f));
+  const Geometry& geo = f.geo;
+  const long total_bytes =
+      sp.scp.global_comm_size * geo.multiplicity * sizeof(M);
+  timer.flops += total_bytes;
+  std::vector<Vector<M> > fsdata(fs.size());
+  for (size_t i = 0; i < fs.size(); ++i) {
+    fsdata[i] = get_data(fs[i]);
+  }
+  std::vector<M> recv_buffer(sp.scp.total_recv_size * geo.multiplicity);
+  shuffle_field_pack_recv(get_data(recv_buffer), fsdata, sp.recv_pack_infos,
+                          geo.multiplicity);
+  std::vector<M> send_buffer(sp.scp.total_send_size * geo.multiplicity);
+  shuffle_field_comm_back(get_data(send_buffer), get_data(recv_buffer), sp.scp,
+                          geo.multiplicity);
+  clear(recv_buffer);
+  shuffle_field_unpack_send(get_data(f), get_data(send_buffer),
+                            sp.send_pack_infos, geo.multiplicity);
+  sync_node();
 }
 
 // making shuffle plan generic
@@ -403,6 +474,7 @@ inline ShufflePlan make_shuffle_plan_generic(std::vector<FieldSelection>& fsels,
     sp.scp.total_send_size = count;
     qassert(count == fsel.n_elems);
   }
+  qassert(sp.scp.total_send_size == sp.n_elems_send);
   sp.scp.global_comm_size = sp.scp.total_send_size;
   glb_sum(sp.scp.global_comm_size);
   // send_pack_infos
@@ -663,7 +735,7 @@ void shuffle_field(std::vector<Field<M> >& fs, const Field<M>& f,
   const ShufflePlan& sp = get_shuffle_plan(geo.total_site(), new_size_node);
   shuffle_field(fs, f, sp);
   const long total_bytes =
-      geo.local_volume() * geo.multiplicity * sizeof(M) * get_num_node();
+      sp.scp.global_comm_size * geo.multiplicity * sizeof(M);
   timer.flops += total_bytes;
 }
 
@@ -690,7 +762,73 @@ void shuffle_field_back(Field<M>& f, const std::vector<Field<M> >& fs,
   const ShufflePlan& sp = get_shuffle_plan(geo.total_site(), new_size_node);
   shuffle_field_back(f, fs, sp);
   const long total_bytes =
-      geo.local_volume() * geo.multiplicity * sizeof(M) * get_num_node();
+      sp.scp.global_comm_size * geo.multiplicity * sizeof(M);
+  timer.flops += total_bytes;
+}
+
+// sparse field dist write shuffle
+
+template <class M>
+void shuffle_field(std::vector<SelectedField<M> >& fs,
+                   std::vector<SelectedField<M> >& fsels,
+                   const SelectedField<M>& f, const Coordinate& new_size_node,
+                   const FieldSelection& fsel)
+{
+  clear(fs);
+  const Geometry& geo = f.geo;
+  if (geo.geon.size_node == new_size_node) {
+    fs.resize(1);
+    fs[0] = f;
+    return;
+  }
+  sync_node();
+  TIMER_VERBOSE_FLOPS("shuffle_field(fs,f,nsn,fsel)");
+  displayln_info(
+      fname + ssprintf(": %s -> %s (total_site: %s ; site_size: %d ; fsel.prob: "
+                       "%.3f ; total_size: %.3lf GB)",
+                       show(geo.geon.size_node).c_str(),
+                       show(new_size_node).c_str(),
+                       show(geo.total_site()).c_str(),
+                       geo.multiplicity * (int)sizeof(M), fsel.prob,
+                       (double)(product(geo.total_site()) * geo.multiplicity *
+                                sizeof(M) * std::pow(0.5, 30) * fsel.prob)));
+  const ShufflePlan sp = make_shuffle_plan_generic(
+      fsels, fsel, new_size_node, identity<long>);
+  shuffle_field(fs, f, sp);
+  const long total_bytes =
+      sp.scp.global_comm_size * geo.multiplicity * sizeof(M);
+  timer.flops += total_bytes;
+}
+
+template <class M>
+void shuffle_field_back(SelectedField<M>& f,
+                        const std::vector<SelectedField<M> >& fs,
+                        const Coordinate& new_size_node,
+                        const FieldSelection& fsel)
+{
+  const Geometry& geo = f.geo;
+  if (geo.geon.size_node == new_size_node) {
+    qassert(fs.size() == 1);
+    f = fs[0];
+    return;
+  }
+  sync_node();
+  TIMER_VERBOSE_FLOPS("shuffle_field_back");
+  displayln_info(
+      fname +
+      ssprintf(": %s -> %s (total_site: %s ; site_size: %d ; fsel.prob: "
+               "%.3f ; total_size: %.3lf GB)",
+               show(new_size_node).c_str(), show(geo.geon.size_node).c_str(),
+               show(geo.total_site()).c_str(),
+               geo.multiplicity * (int)sizeof(M), fsel.prob,
+               (double)(product(geo.total_site()) * geo.multiplicity *
+                        sizeof(M) * std::pow(0.5, 30) * fsel.prob)));
+  std::vector<FieldSelection> fsels;
+  const ShufflePlan sp = make_shuffle_plan_generic(
+      fsels, fsel, new_size_node, identity<long>);
+  shuffle_field_back(f, fs, sp);
+  const long total_bytes =
+      sp.scp.global_comm_size * geo.multiplicity * sizeof(M);
   timer.flops += total_bytes;
 }
 

@@ -191,7 +191,12 @@ struct Vector {
   }
   M& operator[](long i)
   {
-    qassert(0 <= i && i < n);
+    if (not(0 <= i && i < n)) {
+      displayln(
+          ssprintf("ERROR: expect: 0 <= i && i < n but: i=%d n=%d sizeof(M)=%d",
+                   i, n, sizeof(M)));
+      qassert(false);
+    }
     return p[i];
   }
   //
