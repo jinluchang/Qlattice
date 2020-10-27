@@ -386,8 +386,6 @@ struct Timer {
     TimerInfo& info = get_timer_database()[info_index];
     info.dtime = stop_time - start_time;
     info.dflops = stop_flops - start_flops;
-    info.accumulated_time += info.dtime;
-    info.accumulated_flops += info.dflops;
     if (verbose ||
         info.accumulated_time >=
             info.call_times * minimum_duration_for_show_info() ||
@@ -395,6 +393,8 @@ struct Timer {
         info.call_times <= max_call_times_for_always_show_info()) {
       info.show_stop(max_function_name_length_shown());
     }
+    info.accumulated_time += info.dtime;
+    info.accumulated_flops += info.dflops;
   }
   //
   static void test_timer_time_usage()
