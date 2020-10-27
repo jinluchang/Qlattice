@@ -170,6 +170,17 @@ inline void test(const std::string& tag, const long n_per_tslice)
   displayln_info(ssprintf(": %06X <- f-init-3", field_crc32(f)));
   read_selected_field(f, "huge-data/" + tag + "/free-4nt8-init.sfield", fsel, Coordinate(1,1,1,8));
   displayln_info(ssprintf("%06X <- write and read back", field_crc32(f)));
+  // write and read field only selected different format
+  set_zero(f);
+  set_u_rand_double(f, rs.split("f-init"));
+  const crc32_t crc_0 = field_crc32(f);
+  displayln_info(ssprintf("%06X full", crc_0));
+  only_keep_selected_points(f, fsel);
+  const crc32_t crc_1 = field_crc32(f);
+  displayln_info(ssprintf("%06X selected", crc_1));
+  write_field_double(f, "huge-data/" + tag + "/sf.double.field");
+  write_field_float_from_double(f, "huge-data/" + tag + "/sf.single.field");
+  // TODO
 }
 
 inline void test_grid(const std::string& tag, const long n_per_tslice)

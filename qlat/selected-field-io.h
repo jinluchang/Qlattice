@@ -372,8 +372,7 @@ long read_selected_field(SelectedField<M>& sf, const std::string& path,
   qassert(new_size_node[1] == 1);
   qassert(new_size_node[2] == 1);
   std::vector<FieldSelection> fsels;
-  const ShufflePlan sp =
-      make_shuffle_plan_generic(fsels, fsel, new_size_node, identity<long>);
+  const ShufflePlan sp = make_shuffle_plan(fsels, fsel, new_size_node);
   qassert(fsels.size() == sp.geos_recv.size());
   sf.init(sp.geo_send, sp.n_elems_send, geo.multiplicity);
   std::vector<SelectedField<M> > sfs;

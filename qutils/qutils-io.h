@@ -1,6 +1,7 @@
 #pragma once
 
 #include "qutils.h"
+#include "qutils-vec.h"
 #include "timer.h"
 
 #include <signal.h>
@@ -160,6 +161,42 @@ inline std::string get_env(const std::string& var_name)
   } else {
     return std::string(value);
   }
+}
+
+template <class M>
+long qwrite_data(const Vector<M>& v, FILE* fp)
+{
+  TIMER_FLOPS("qwrite_data");
+  timer.flops += v.data_size();
+  return sizeof(M) * std::fwrite((void*)v.p, sizeof(M), v.n, fp);
+}
+
+template <class M>
+long qread_data(const Vector<M>& v, FILE* fp)
+{
+  TIMER_FLOPS("qread_data");
+  timer.flops += v.data_size();
+  return sizeof(M) * std::fread((void*)v.p, sizeof(M), v.n, fp);
+}
+
+inline crc32_t compute_crc32(const std::string& path)
+{
+  TIMER_VERBOSE_FLOPS("compute_crc32");
+  const size_t chunk_size = 16 * 1024 * 1024;
+  std::vector<char> data(chunk_size);
+  crc32_t crc = 0;
+  FILE* fp = qopen(path, "r");
+  qassert(fp != NULL);
+  while (true) {
+    const long size = qread_data(get_data(data), fp);
+    timer.flops += size;
+    if (size == 0) {
+      break;
+    }
+    crc = crc32_par(crc, Vector<char>(data.data(), size));
+  }
+  qclose(fp);
+  return crc;
 }
 
 }  // namespace qlat

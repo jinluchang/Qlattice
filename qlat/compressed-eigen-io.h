@@ -1403,26 +1403,6 @@ inline crc32_t resize_compressed_eigen_vectors_node(
       cesd, resize_compressed_eigen_system_info(cesi, size_node), new_path);
 }
 
-inline crc32_t compute_crc32(const std::string& path)
-{
-  TIMER_VERBOSE_FLOPS("compute_crc32");
-  const size_t chunk_size = 16 * 1024 * 1024;
-  std::vector<char> data(chunk_size);
-  crc32_t crc = 0;
-  FILE* fp = qopen(path, "r");
-  qassert(fp != NULL);
-  while (true) {
-    const long size = qread_data(get_data(data), fp);
-    timer.flops += size;
-    if (size == 0) {
-      break;
-    }
-    crc = crc32_par(crc, Vector<char>(data.data(), size));
-  }
-  qclose(fp);
-  return crc;
-}
-
 inline void combine_crc32(const std::string& path, const int idx_size,
                           const CompressedEigenSystemInfo& cesi)
 {

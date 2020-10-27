@@ -265,19 +265,13 @@ struct Timer {
   //
   static double& minimum_autodisplay_interval()
   {
-    static double time = 600.0;
+    static double time = 5.0 * 60.0;
     return time;
   }
   //
-  static double& minimum_duration_for_show_stop_info()
+  static double& minimum_duration_for_show_info()
   {
-    static double time = 60.0;
-    return time;
-  }
-  //
-  static double& minimum_duration_for_show_start_info()
-  {
-    static double time = 60.0;
+    static double time = 1.0;
     return time;
   }
   //
@@ -289,7 +283,7 @@ struct Timer {
   //
   static int& max_function_name_length_shown()
   {
-    static int max_len = 30;
+    static int max_len = 50;
     return max_len;
   }
   //
@@ -355,8 +349,10 @@ struct Timer {
     }
     TimerInfo& info = get_timer_database()[info_index];
     info.call_times++;
-    if (verbose || info.call_times <= max_call_times_for_always_show_info() ||
-        info.dtime >= minimum_duration_for_show_start_info()) {
+    if (verbose ||
+        info.accumulated_time >=
+            info.call_times * minimum_duration_for_show_info() ||
+        info.call_times <= max_call_times_for_always_show_info()) {
       info.show_start(max_function_name_length_shown());
     }
     start_flops = is_using_total_flops ? get_total_flops() : 0;
@@ -382,8 +378,11 @@ struct Timer {
     info.dflops = stop_flops - start_flops;
     info.accumulated_time += info.dtime;
     info.accumulated_flops += info.dflops;
-    if (verbose || info.call_times <= max_call_times_for_always_show_info() ||
-        info.dtime >= minimum_duration_for_show_stop_info()) {
+    if (verbose ||
+        info.accumulated_time >=
+            info.call_times * minimum_duration_for_show_info() ||
+        info.dtime >= 5.0 * minimum_duration_for_show_info() ||
+        info.call_times <= max_call_times_for_always_show_info()) {
       info.show_stop(max_function_name_length_shown());
     }
   }

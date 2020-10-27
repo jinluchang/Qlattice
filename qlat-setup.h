@@ -39,10 +39,7 @@ inline std::string get_job_path(const std::string& job_tag, const int traj)
 
 inline void setup()
 {
-  Timer::max_function_name_length_shown() = 50;
-  Timer::max_call_times_for_always_show_info() = 3;
-  Timer::minimum_duration_for_show_stop_info() = 60;
-  Timer::minimum_autodisplay_interval() = 5 * 60.0;
+  Timer::minimum_duration_for_show_info() = 1.0;
   get_time_limit() = 0.5 * 24.0 * 3600.0;
   set_time_limit_auto();
   get_default_budget() = 15.0 * 60.0;

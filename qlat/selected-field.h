@@ -127,6 +127,7 @@ template <class M>
 struct SelectedField {
   bool initialized;
   Geometry geo;
+  long n_elems;
   std::vector<M> field;
   //
   void init()
@@ -135,15 +136,17 @@ struct SelectedField {
     geo.init();
     clear(field);
   }
-  void init(const Geometry& geo_, const long n_elems, const int multiplicity)
+  void init(const Geometry& geo_, const long n_elems_, const int multiplicity)
   {
     if (initialized) {
       qassert(geo == geo_remult(geo_, multiplicity));
+      qassert(n_elems == n_elems_);
       qassert((long)field.size() == n_elems * multiplicity);
     } else {
       init();
       initialized = true;
       geo = geo_remult(geo_, multiplicity);
+      n_elems = n_elems_;
       field.resize(n_elems * multiplicity);
     }
   }
@@ -151,12 +154,14 @@ struct SelectedField {
   {
     if (initialized) {
       qassert(geo == geo_remult(fsel.f_rank.geo, multiplicity));
-      qassert((long)field.size() == fsel.n_elems * multiplicity);
+      qassert(n_elems == fsel.n_elems);
+      qassert((long)field.size() == n_elems * multiplicity);
     } else {
       init();
       initialized = true;
       geo = geo_remult(fsel.f_rank.geo, multiplicity);
-      field.resize(fsel.n_elems * multiplicity);
+      n_elems = fsel.n_elems;
+      field.resize(n_elems * multiplicity);
     }
   }
   //
@@ -313,11 +318,8 @@ void set_selected_field_slow(SelectedField<M>& sf, const Field<M>& f,
   qassert(fsel.f_local_idx.geo.is_only_local());
   qassert(geo_remult(f.geo) == fsel.f_local_idx.geo);
   const Geometry& geo = f.geo;
-  sf.init();
-  sf.initialized = true;
-  sf.geo = geo;
   const int multiplicity = geo.multiplicity;
-  sf.field.resize(fsel.n_elems * multiplicity);
+  sf.init(fsel, multiplicity);
   const FieldM<long, 1>& f_local_idx = fsel.f_local_idx;
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
