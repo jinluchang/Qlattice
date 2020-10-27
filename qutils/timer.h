@@ -275,6 +275,16 @@ struct Timer {
     return time;
   }
   //
+  static double& minimum_duration_for_show_stop_info()
+  {
+    return minimum_duration_for_show_info();
+  }
+  //
+  static double& minimum_duration_for_show_start_info()
+  {
+    return minimum_duration_for_show_info();
+  }
+  //
   static int& max_call_times_for_always_show_info()
   {
     static int max_call_times = 10;
