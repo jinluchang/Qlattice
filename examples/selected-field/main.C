@@ -324,6 +324,8 @@ int main(int argc, char* argv[])
   test("all", -1);
   test_grid("16", 16);
   test_selected_points("16", 1024);
+  check_all_files_crc32_info("huge-data");
+  check_all_files_crc32_info("results");
   Timer::display();
   end();
   return 0;

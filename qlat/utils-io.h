@@ -409,6 +409,66 @@ inline int qremove_all_info(const std::string& path)
   }
 }
 
+inline std::string show_file_crc32(
+    const std::pair<std::string, crc32_t>& fcrc)
+{
+  return ssprintf("%08X  fn='%s'", fcrc.second, fcrc.first.c_str());
+}
+
+inline std::string show_files_crc32(
+    const std::vector<std::pair<std::string, crc32_t> >& fcrcs)
+{
+  std::ostringstream out;
+  for (long i = 0; i < (long)fcrcs.size(); ++i) {
+    out << ssprintf("%5ld ", i) << show_file_crc32(fcrcs[i]) << std::endl;
+  }
+  return out.str();
+}
+
+inline std::pair<std::string, crc32_t> check_file_crc32(const std::string& fn)
+{
+  TIMER_VERBOSE("check_file_crc32");
+  std::pair<std::string, crc32_t> p;
+  p.first = fn;
+  p.second = compute_crc32(fn);
+  displayln_info(show_file_crc32(p));
+  return p;
+}
+
+inline void check_all_files_crc32_aux(
+    std::vector<std::pair<std::string, crc32_t> >& acc, const std::string& path)
+{
+  if (not is_directory(path)) {
+    acc.push_back(check_file_crc32(path));
+  } else {
+    const std::vector<std::string> paths = qls_aux(path);
+    for (long i = 0; i < (long)paths.size(); ++i) {
+      check_all_files_crc32_aux(acc, paths[i]);
+    }
+  }
+}
+
+inline std::vector<std::pair<std::string, crc32_t> > check_all_files_crc32(
+    const std::string& path)
+{
+  TIMER_VERBOSE("check_all_files_crc32");
+  std::vector<std::pair<std::string, crc32_t> > ret;
+  check_all_files_crc32_aux(ret, remove_trailing_slashes(path));
+  return ret;
+}
+
+inline void check_all_files_crc32_info(const std::string& path)
+{
+  TIMER_VERBOSE("check_all_files_crc32_info");
+  if (0 == get_id_node()) {
+    displayln(fname + ssprintf(": start checking path='%s'", path.c_str()));
+    std::vector<std::pair<std::string, crc32_t> > fcrcs;
+    fcrcs = check_all_files_crc32(path);
+    displayln(fname + ssprintf(": summary for path='%s'", path.c_str()));
+    display(show_files_crc32(fcrcs));
+  }
+}
+
 inline void qset_fully_buf(FILE* f)
 {
   TIMER("qset_fully_buf");
