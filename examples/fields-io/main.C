@@ -2,6 +2,17 @@
 
 using namespace qlat;
 
+inline void test_read(const std::string& path, const std::string& fn)
+{
+  TIMER_VERBOSE("test_read");
+  Field<Complex> f;
+  read_field_double_from_float(f, path, fn);
+  const crc32_t crc = field_crc32(f);
+  displayln_info(fname +
+                 ssprintf(": compute crc32=%08X for fn='%s' from path '%s'.",
+                          crc, fn.c_str(), path.c_str()));
+}
+
 inline void demo()
 {
   TIMER_VERBOSE("demo");
@@ -62,25 +73,44 @@ inline void demo()
     displayln_info(fname + ssprintf(": save to disk"));
     write(sfw, "f.field", f);
     write(sfw, "f.sfield", f, sbs);
+    write_float_from_double(sfw, "f.float.field", f);
+    write_float_from_double(sfw, "f.float.sfield", f, sbs);
     //
     //
     displayln_info(fname + ssprintf(": save sf to disk"));
     write(sfw, "sf.field", sf);
     write(sfw, "sf.sfield", sf, sbs);
+    write_float_from_double(sfw, "sf.float.field", sf);
+    write_float_from_double(sfw, "sf.float.sfield", sf, sbs);
   }
   {
     ShuffledFieldsWriter sfw("huge-data/demo.lfs", new_size_node, true);
     //
     const ShuffledBitSet sbs = mk_shuffled_bitset(fsel, new_size_node);
     //
-    displayln_info(fname + ssprintf(": save to disk"));
+    displayln_info(fname + ssprintf(": save to disk append"));
     write(sfw, "fa.field", f);
     write(sfw, "fa.sfield", f, sbs);
+    write_float_from_double(sfw, "fa.float.field", f);
+    write_float_from_double(sfw, "fa.float.sfield", f, sbs);
     //
     //
-    displayln_info(fname + ssprintf(": save sf to disk"));
+    displayln_info(fname + ssprintf(": save sf to disk append"));
     write(sfw, "sfa.field", sf);
     write(sfw, "sfa.sfield", sf, sbs);
+    write_float_from_double(sfw, "sfa.float.field", sf);
+    write_float_from_double(sfw, "sfa.float.sfield", sf, sbs);
+  }
+  //
+  {
+    test_read("huge-data/demo.lfs", "f.float.field");
+    test_read("huge-data/demo.lfs", "f.float.sfield");
+    test_read("huge-data/demo.lfs", "sf.float.field");
+    test_read("huge-data/demo.lfs", "sf.float.sfield");
+    test_read("huge-data/demo.lfs", "fa.float.field");
+    test_read("huge-data/demo.lfs", "fa.float.sfield");
+    test_read("huge-data/demo.lfs", "sfa.float.field");
+    test_read("huge-data/demo.lfs", "sfa.float.sfield");
   }
   //
   {

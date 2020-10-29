@@ -129,8 +129,16 @@ shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x4 (total_site: 4x4x4x8 ; site_size: 115
 Qlat::dist_write_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =         16 ; total_bytes =          294912
 Qlat::dist_write_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         32 ; total_bytes =          589824
 write_selected_field: fn='results/test-4nt8/results=1000/psrc-prop-0.sfield'.
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.001 GB)
+Qlat::make_shuffle_plan_generic: num_send_packs =          1
+Qlat::make_shuffle_plan_generic: num_recv_packs =          1
+Qlat::make_shuffle_plan_generic: num_send_msgs  =          1
+Qlat::make_shuffle_plan_generic: num_recv_msgs  =          3
+Qlat::make_shuffle_plan_generic: total num_send_packs =          8
+Qlat::make_shuffle_plan_generic: total num_recv_packs =         15
+Qlat::make_shuffle_plan_generic: total num_send_msgs  =         21
+Qlat::make_shuffle_plan_generic: total num_recv_msgs  =         21
+Qlat::make_shuffle_plan_generic: global_comm_size =         32
+shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.000 GB)
 ndim: 2
 "tsep"[8]: "0" "1" "2" "3" "4" "5" "6" "7"
 "re-im"[2]: "re" "im"
@@ -244,8 +252,16 @@ shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x4 (total_site: 4x4x4x8 ; site_size: 115
 Qlat::dist_write_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =         16 ; total_bytes =          294912
 Qlat::dist_write_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         32 ; total_bytes =          589824
 write_selected_field: fn='results/test-4nt8/results=1010/psrc-prop-0.sfield'.
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.001 GB)
+Qlat::make_shuffle_plan_generic: num_send_packs =          1
+Qlat::make_shuffle_plan_generic: num_recv_packs =          1
+Qlat::make_shuffle_plan_generic: num_send_msgs  =          3
+Qlat::make_shuffle_plan_generic: num_recv_msgs  =          3
+Qlat::make_shuffle_plan_generic: total num_send_packs =          8
+Qlat::make_shuffle_plan_generic: total num_recv_packs =         10
+Qlat::make_shuffle_plan_generic: total num_send_msgs  =         23
+Qlat::make_shuffle_plan_generic: total num_recv_msgs  =         23
+Qlat::make_shuffle_plan_generic: global_comm_size =         32
+shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.000 GB)
 ndim: 2
 "tsep"[8]: "0" "1" "2" "3" "4" "5" "6" "7"
 "re-im"[2]: "re" "im"
@@ -360,8 +376,16 @@ shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x4 (total_site: 4x4x4x8 ; site_size: 115
 Qlat::dist_write_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =         16 ; total_bytes =          294912
 Qlat::dist_write_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         32 ; total_bytes =          589824
 write_selected_field: fn='results/free-4nt8/results=1000/psrc-prop-0.sfield'.
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.001 GB)
+Qlat::make_shuffle_plan_generic: num_send_packs =          1
+Qlat::make_shuffle_plan_generic: num_recv_packs =          1
+Qlat::make_shuffle_plan_generic: num_send_msgs  =          3
+Qlat::make_shuffle_plan_generic: num_recv_msgs  =          3
+Qlat::make_shuffle_plan_generic: total num_send_packs =          8
+Qlat::make_shuffle_plan_generic: total num_recv_packs =         12
+Qlat::make_shuffle_plan_generic: total num_send_msgs  =         24
+Qlat::make_shuffle_plan_generic: total num_recv_msgs  =         24
+Qlat::make_shuffle_plan_generic: global_comm_size =         32
+shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.000 GB)
 ndim: 2
 "tsep"[8]: "0" "1" "2" "3" "4" "5" "6" "7"
 "re-im"[2]: "re" "im"
@@ -475,8 +499,16 @@ shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x4 (total_site: 4x4x4x8 ; site_size: 115
 Qlat::dist_write_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =         16 ; total_bytes =          294912
 Qlat::dist_write_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         32 ; total_bytes =          589824
 write_selected_field: fn='results/free-4nt8/results=1010/psrc-prop-0.sfield'.
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.001 GB)
+Qlat::make_shuffle_plan_generic: num_send_packs =          1
+Qlat::make_shuffle_plan_generic: num_recv_packs =          3
+Qlat::make_shuffle_plan_generic: num_send_msgs  =          4
+Qlat::make_shuffle_plan_generic: num_recv_msgs  =          4
+Qlat::make_shuffle_plan_generic: total num_send_packs =          8
+Qlat::make_shuffle_plan_generic: total num_recv_packs =         15
+Qlat::make_shuffle_plan_generic: total num_send_msgs  =         24
+Qlat::make_shuffle_plan_generic: total num_recv_msgs  =         24
+Qlat::make_shuffle_plan_generic: global_comm_size =         32
+shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.000 GB)
 ndim: 2
 "tsep"[8]: "0" "1" "2" "3" "4" "5" "6" "7"
 "re-im"[2]: "re" "im"

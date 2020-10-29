@@ -72,6 +72,15 @@ inline void set_field_selection(FieldSelection& fsel,
                                 const FieldM<int64_t, 1>& f_rank,
                                 const long n_per_tslice_)
 // will erase the rank information for points not selected.
+//
+// if n_per_tslice_ == -1 then fsel.n_per_tslice = spatial_vol
+//
+// if fsel.n_per_tslice == spatial_vol than all points are selected regardless
+// of rank.
+//
+// n_per_tslice is not enforced but only serve as an limit for f_rank
+//
+// 0 <= rank < n_per_tslice
 {
   TIMER_VERBOSE("set_field_selection");
   const Geometry& geo = f_rank.geo;
