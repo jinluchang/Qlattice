@@ -114,12 +114,6 @@ struct BitSet {
   }
 };
 
-inline size_t& get_bitset_decompress_sz_block()
-{
-  static size_t sz_block = 0;
-  return sz_block;
-}
-
 inline std::vector<char> bitset_decompress(const std::vector<char>& data,
                                            const long local_volume)
 {
@@ -133,10 +127,7 @@ inline std::vector<char> bitset_decompress(const std::vector<char>& data,
   if (bs.cN == 0) {
     qassert(sz_compressed == 0);
     std::vector<char> ret;
-    sz_block = get_bitset_decompress_sz_block();
-    if (0 == sz_block) {
-      return ret;
-    }
+    return ret;
   } else {
     qassert(sz_compressed % bs.cN == 0);
     sz_block = sz_compressed / bs.cN;
@@ -573,8 +564,6 @@ inline long read(FieldsReader& fr, const std::string& fn,
   qassert(fn == fn_r);
   return total_bytes;
 }
-
-enum FieldDataType { PLAIN, DOUBLE, FLOAT_FROM_DOUBLE, DOUBLE_FROM_FLOAT };
 
 template <class M>
 long write(FieldsWriter& fw, const std::string& fn, const Field<M>& field)
