@@ -19,6 +19,17 @@ inline long sqr(const qlat::Coordinate& xg)
          sqr((long)xg[3]);
 }
 
+inline int modl(const long x, const long len)
+{
+  qassert(0 < len);
+  const int m = x % len;
+  if (0 <= m) {
+    return m;
+  } else {
+    return m + len;
+  }
+}
+
 inline int mod(const int x, const int len)
 {
   qassert(0 < len);

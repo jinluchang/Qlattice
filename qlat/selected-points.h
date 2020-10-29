@@ -1,11 +1,55 @@
 #pragma once
 
-#include <qlat/selected-field.h>
+#include <qlat/field.h>
 
 namespace qlat
 {  //
 
 typedef std::vector<Coordinate> PointSelection;
+
+inline PointSelection mk_random_point_selection(const Coordinate& total_site,
+                                                const long num,
+                                                const RngState& rs)
+// same rs for all node for unifrom result
+{
+  TIMER_VERBOSE("mk_random_point_selection");
+  if (num == 0) {
+    PointSelection psel;
+    return psel;
+  }
+  qassert(num > 0);
+  PointSelection psel_pool(2 * num);
+#pragma omp parallel for
+  for (long i = 0; i < (long)psel_pool.size(); ++i) {
+    RngState rsi = rs.split(i);
+    Coordinate xg;
+    for (int m = 0; m < 4; ++m) {
+      xg[m] = modl(rand_gen(rsi), total_site[m]);
+    }
+    psel_pool[i] = xg;
+  }
+  PointSelection psel(num, Coordinate(-1, -1, -1, -1));
+  long idx = 0;
+  for (long i = 0; i < (long)psel.size(); ++i) {
+    while (idx < (long)psel_pool.size()) {
+      const Coordinate xg = psel_pool[idx];
+      idx += 1;
+      bool is_repeat = false;
+      for (long j = 0; j < i; ++j) {
+        if (xg == psel[j]) {
+          is_repeat = true;
+          break;
+        }
+      }
+      if (not is_repeat) {
+        psel[i] = xg;
+        break;
+      }
+    }
+  }
+  qassert(psel.back() != Coordinate(-1, -1, -1, -1));
+  return psel;
+}
 
 inline void save_point_selection(const PointSelection& psel,
                                  const std::string& path)
@@ -53,8 +97,7 @@ inline PointSelection load_point_selection(const std::string& path)
   return psel;
 }
 
-inline PointSelection load_point_selection_info(
-    const std::string& path)
+inline PointSelection load_point_selection_info(const std::string& path)
 {
   TIMER_VERBOSE("load_point_selection_info");
   PointSelection psel;
@@ -70,7 +113,7 @@ struct SelectedPoints {
   bool initialized;
   int multiplicity;
   long n_points;
-  std::vector<M> points; // global quantity, same on each node
+  std::vector<M> points;  // global quantity, same on each node
   //
   void init()
   {
@@ -130,7 +173,8 @@ bool is_initialized(const SelectedPoints<M>& sp)
 }
 
 template <class M>
-const SelectedPoints<M>& operator+=(SelectedPoints<M>& f, const SelectedPoints<M>& f1)
+const SelectedPoints<M>& operator+=(SelectedPoints<M>& f,
+                                    const SelectedPoints<M>& f1)
 {
   TIMER("sel_points_operator+=");
   if (not f.initialized) {
@@ -149,7 +193,8 @@ const SelectedPoints<M>& operator+=(SelectedPoints<M>& f, const SelectedPoints<M
 }
 
 template <class M>
-const SelectedPoints<M>& operator-=(SelectedPoints<M>& f, const SelectedPoints<M>& f1)
+const SelectedPoints<M>& operator-=(SelectedPoints<M>& f,
+                                    const SelectedPoints<M>& f1)
 {
   TIMER("sel_points_operator-=");
   if (not f.initialized) {
@@ -173,9 +218,9 @@ const SelectedPoints<M>& operator*=(SelectedPoints<M>& f, const double factor)
   TIMER("sel_points_operator*=(F,D)");
   qassert(f.initialized);
 #pragma omp parallel for
-    for (long k = 0; k < (long)f.points.size(); ++k) {
-      f.points[k] *= factor;
-    }
+  for (long k = 0; k < (long)f.points.size(); ++k) {
+    f.points[k] *= factor;
+  }
   return f;
 }
 
@@ -185,9 +230,9 @@ const SelectedPoints<M>& operator*=(SelectedPoints<M>& f, const Complex factor)
   TIMER("sel_points_operator*=(F,C)");
   qassert(f.initialized);
 #pragma omp parallel for
-    for (long k = 0; k < (long)f.points.size(); ++k) {
-      f.points[k] *= factor;
-    }
+  for (long k = 0; k < (long)f.points.size(); ++k) {
+    f.points[k] *= factor;
+  }
   return f;
 }
 
@@ -311,7 +356,8 @@ LatData lat_data_from_selected_points_complex(const SelectedPoints<M>& sp)
 }
 
 template <class M>
-void selected_points_from_lat_data_complex(SelectedPoints<M>& sp, const LatData& ld)
+void selected_points_from_lat_data_complex(SelectedPoints<M>& sp,
+                                           const LatData& ld)
 {
   TIMER("selected_points_from_lat_data_complex");
   qassert(ld.info.size() == 4);
@@ -329,7 +375,8 @@ void selected_points_from_lat_data_complex(SelectedPoints<M>& sp, const LatData&
 }
 
 template <class M>
-void save_selected_points_complex(const SelectedPoints<M>& sp, const std::string& path)
+void save_selected_points_complex(const SelectedPoints<M>& sp,
+                                  const std::string& path)
 {
   TIMER_VERBOSE("save_selected_points_complex");
   if (get_id_node() == 0) {
@@ -339,7 +386,8 @@ void save_selected_points_complex(const SelectedPoints<M>& sp, const std::string
 }
 
 template <class M>
-void load_selected_points_complex(SelectedPoints<M>& sp, const std::string& path)
+void load_selected_points_complex(SelectedPoints<M>& sp,
+                                  const std::string& path)
 {
   TIMER_VERBOSE("load_selected_points_complex");
   long n_points = 0;

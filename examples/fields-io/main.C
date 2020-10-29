@@ -13,30 +13,39 @@ inline void test_read(const std::string& path, const std::string& fn)
                           crc, fn.c_str(), path.c_str()));
 }
 
-inline void demo()
+inline void demo(const std::string& tag, const Coordinate& total_site,
+                 const long n_random_points, const long n_per_tslice,
+                 const Coordinate& new_size_node)
 {
   TIMER_VERBOSE("demo");
-  const Coordinate total_site(6,6,6,8);
   Geometry geo;
   geo.init(total_site, 1);
   qmkdir_info("huge-data");
+  qmkdir_info("huge-data/" + tag);
   //
   displayln_info(fname + ssprintf(": create splittable random number generator 'rs'"));
   const RngState rs = RngState("selected-field");
   //
-  const long n_per_tslice = 16;
+  displayln_info(fname + ssprintf(": random select %d points on entire lattice",
+                                  n_random_points));
+  const PointSelection psel =
+      mk_random_point_selection(total_site, n_random_points, rs.split("psel"));
+  //
   displayln_info(fname + ssprintf(": random select points on each time slice"));
   displayln_info(fname + ssprintf(": select %d points per time slice", n_per_tslice));
   displayln_info(fname + ssprintf(": selection is stored in 'fsel' of type 'FieldSelection'"));
   FieldSelection fsel;
-  set_field_selection(fsel, total_site, n_per_tslice, rs.split("demo"));
+  mk_field_selection(fsel.f_rank, total_site, n_per_tslice, rs.split("demo"));
+  add_field_selection(fsel.f_rank, psel);
+  update_field_selection(fsel);
+  update_field_selection(fsel, n_per_tslice);
   //
   displayln_info(fname + ssprintf(": save selection 'fsel' to disk as a field"));
-  write_field_selection(fsel, "huge-data/fsel.field");
+  write_field_selection(fsel, "huge-data/" + tag + "/fsel.field");
   //
   fsel.init();
   displayln_info(fname + ssprintf(": read selection 'fsel' from disk as a field"));
-  read_field_selection(fsel, "huge-data/fsel.field", n_per_tslice);
+  read_field_selection(fsel, "huge-data/" + tag + "/fsel.field", n_per_tslice);
   //
   displayln_info(fname + ssprintf(": init field 'f'"));
   Field<Complex> f, sf, rf;
@@ -63,10 +72,8 @@ inline void demo()
   const crc32_t crc_3 = field_crc32(sf);
   displayln_info(fname + ssprintf(": compute crc32=%08X.", crc_3));
   //
-  const Coordinate new_size_node(2, 2, 2, 8);
-  //
   {
-    ShuffledFieldsWriter sfw("huge-data/demo.lfs", new_size_node);
+    ShuffledFieldsWriter sfw("huge-data/" + tag + "/demo.lfs", new_size_node);
     //
     const ShuffledBitSet sbs = mk_shuffled_bitset(fsel, new_size_node);
     //
@@ -84,7 +91,7 @@ inline void demo()
     write_float_from_double(sfw, "sf.float.sfield", sf, sbs);
   }
   {
-    ShuffledFieldsWriter sfw("huge-data/demo.lfs", new_size_node, true);
+    ShuffledFieldsWriter sfw("huge-data/" + tag + "/demo.lfs", new_size_node, true);
     //
     const ShuffledBitSet sbs = mk_shuffled_bitset(fsel, new_size_node);
     //
@@ -103,18 +110,18 @@ inline void demo()
   }
   //
   {
-    test_read("huge-data/demo.lfs", "f.float.field");
-    test_read("huge-data/demo.lfs", "f.float.sfield");
-    test_read("huge-data/demo.lfs", "sf.float.field");
-    test_read("huge-data/demo.lfs", "sf.float.sfield");
-    test_read("huge-data/demo.lfs", "fa.float.field");
-    test_read("huge-data/demo.lfs", "fa.float.sfield");
-    test_read("huge-data/demo.lfs", "sfa.float.field");
-    test_read("huge-data/demo.lfs", "sfa.float.sfield");
+    test_read("huge-data/" + tag + "/demo.lfs", "f.float.field");
+    test_read("huge-data/" + tag + "/demo.lfs", "f.float.sfield");
+    test_read("huge-data/" + tag + "/demo.lfs", "sf.float.field");
+    test_read("huge-data/" + tag + "/demo.lfs", "sf.float.sfield");
+    test_read("huge-data/" + tag + "/demo.lfs", "fa.float.field");
+    test_read("huge-data/" + tag + "/demo.lfs", "fa.float.sfield");
+    test_read("huge-data/" + tag + "/demo.lfs", "sfa.float.field");
+    test_read("huge-data/" + tag + "/demo.lfs", "sfa.float.sfield");
   }
   //
   {
-    ShuffledFieldsReader sfr("huge-data/demo.lfs");
+    ShuffledFieldsReader sfr("huge-data/" + tag + "/demo.lfs");
     for (int i = 0; i < 4; ++i) {
       displayln_info(fname + ssprintf(": read from disk 'f.field'"));
       //
@@ -177,12 +184,15 @@ inline void demo()
       qassert(crc_11 == crc_3)
     }
   }
+  check_all_files_crc32("huge-data/" + tag);
 }
 
 int main(int argc, char* argv[])
 {
   begin(&argc, &argv);
-  demo();
+  demo("t0", Coordinate(6, 6, 6, 8), 0, 16, Coordinate(2, 2, 2, 8));
+  demo("t1", Coordinate(6, 6, 6, 8), 4, 2, Coordinate(2, 2, 2, 8));
+  demo("t2", Coordinate(6, 6, 6, 8), 8, 0, Coordinate(2, 2, 2, 8));
   Timer::display();
   end();
   return 0;

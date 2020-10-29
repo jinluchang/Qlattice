@@ -1,6 +1,7 @@
 #pragma once
 
 #include <qlat/field.h>
+#include <qlat/selected-points.h>
 
 namespace qlat
 {  //
@@ -74,7 +75,7 @@ inline void set_n_per_tslice(FieldM<int64_t, 1>& f_rank,
   const Coordinate total_site = geo.total_site();
   const long spatial_vol = total_site[0] * total_site[1] * total_site[2];
   qassert(n_per_tslice_ == -1 or
-          (0 < n_per_tslice_ and n_per_tslice_ <= spatial_vol));
+          (0 <= n_per_tslice_ and n_per_tslice_ <= spatial_vol));
   const long n_per_tslice = n_per_tslice_ == -1 ? spatial_vol : n_per_tslice_;
   for (long index = 0; index < geo.local_volume(); ++index) {
     int64_t& rank = f_rank.get_elem(index);
@@ -156,7 +157,7 @@ inline void update_field_selection(FieldSelection& fsel, const long n_per_tslice
   const Coordinate total_site = geo.total_site();
   const long spatial_vol = total_site[0] * total_site[1] * total_site[2];
   qassert(n_per_tslice_ == -1 or
-          (0 < n_per_tslice_ and n_per_tslice_ <= spatial_vol));
+          (0 <= n_per_tslice_ and n_per_tslice_ <= spatial_vol));
   fsel.n_per_tslice = n_per_tslice_ == -1 ? spatial_vol : n_per_tslice_;
   fsel.prob = (double)fsel.n_per_tslice / (double)spatial_vol;
 }
@@ -173,7 +174,7 @@ inline void set_field_selection(FieldSelection& fsel,
 inline void set_field_selection(FieldSelection& fsel,
                                 const FieldM<int64_t, 1>& f_rank,
                                 const long n_per_tslice_,
-                                const bool is_limit_on_rank = true)
+                                const bool is_limit_on_rank = false)
 // call set_n_per_tslice if is_limit_on_rank=true
 {
   TIMER_VERBOSE("set_field_selection");

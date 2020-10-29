@@ -130,16 +130,7 @@ inline void mk_field_selection(FieldM<int64_t, 1>& f_rank,
   if (n_per_tslice == -1 or n_per_tslice == spatial_vol) {
     return;
   }
-  qassert(n_per_tslice >= 0);
-  const Geometry& geo = f_rank.geo;
-#pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
-    int64_t& rank = f_rank.get_elem(index);
-    qassert(rank >= 0);
-    if (rank >= n_per_tslice) {
-      rank = -1;
-    }
-  }
+  set_n_per_tslice(f_rank, n_per_tslice);
 }
 
 inline void set_grid_field_selection(FieldSelection& fsel,
@@ -147,18 +138,18 @@ inline void set_grid_field_selection(FieldSelection& fsel,
                                      const long n_per_tslice,
                                      const RngState& rs)
 {
-  FieldM<int64_t, 1> f;
-  mk_grid_field_selection(f, total_site, n_per_tslice, rs);
-  set_field_selection(fsel, f, n_per_tslice);
+  FieldM<int64_t, 1> f_rank;
+  mk_grid_field_selection(f_rank, total_site, n_per_tslice, rs);
+  set_field_selection(fsel, f_rank, n_per_tslice);
 }
 
 inline void set_field_selection(FieldSelection& fsel,
                                 const Coordinate& total_site,
                                 const long n_per_tslice, const RngState& rs)
 {
-  FieldM<int64_t, 1> f;
-  mk_field_selection(f, total_site, n_per_tslice, rs);
-  set_field_selection(fsel, f, n_per_tslice);
+  FieldM<int64_t, 1> f_rank;
+  mk_field_selection(f_rank, total_site, n_per_tslice, rs);
+  set_field_selection(fsel, f_rank, n_per_tslice);
 }
 
 inline void write_field_selection(const FieldSelection& fsel,

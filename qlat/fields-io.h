@@ -663,8 +663,9 @@ struct ShuffledBitSet {
 };
 
 inline ShuffledBitSet mk_shuffled_bitset(const FieldM<int64_t, 1>& f_rank,
-                                         const Coordinate& new_size_node,
-                                         const int64_t n_per_tslice = -1)
+                                         const int64_t n_per_tslice,
+                                         const Coordinate& new_size_node)
+// do not enforce n_per_tslice
 {
   TIMER("mk_shuffled_bitset(f_rank,n_per_tslice,new_size_node)");
   std::vector<Field<int64_t> > fs_rank;
@@ -675,16 +676,17 @@ inline ShuffledBitSet mk_shuffled_bitset(const FieldM<int64_t, 1>& f_rank,
   for (int i = 0; i < (int)fs_rank.size(); ++i) {
     FieldM<int64_t, 1> fs_rank_i;
     fs_rank_i.init(fs_rank[i]);
-    sbs.vbs[i] = mk_bitset_from_field_rank(fs_rank_i, n_per_tslice);
+    sbs.vbs[i] = mk_bitset_from_field_rank(fs_rank_i);
   }
   return sbs;
 }
 
 inline ShuffledBitSet mk_shuffled_bitset(const FieldSelection& fsel,
                                          const Coordinate& new_size_node)
+// do not enforce fsel.n_per_tslice
 {
   TIMER_VERBOSE("mk_shuffled_bitset(fsel,new_size_node)");
-  return mk_shuffled_bitset(fsel.f_rank, new_size_node, fsel.n_per_tslice);
+  return mk_shuffled_bitset(fsel.f_rank, fsel.n_per_tslice, new_size_node);
 }
 
 inline ShuffledBitSet mk_shuffled_bitset(const Coordinate& total_site,
@@ -694,7 +696,7 @@ inline ShuffledBitSet mk_shuffled_bitset(const Coordinate& total_site,
   TIMER("mk_shuffled_bitset");
   FieldM<int64_t, 1> f_rank;
   mk_field_selection(f_rank, total_site, xgs);
-  return mk_shuffled_bitset(f_rank, new_size_node);
+  return mk_shuffled_bitset(f_rank, 0, new_size_node);
 }
 
 inline ShuffledBitSet mk_shuffled_bitset(const FieldM<int64_t, 1>& f_rank,
@@ -714,7 +716,7 @@ inline ShuffledBitSet mk_shuffled_bitset(const FieldM<int64_t, 1>& f_rank,
       f_rank_combined.get_elem(xl) = spatial_vol + i;
     }
   }
-  return mk_shuffled_bitset(f_rank_combined, new_size_node);
+  return mk_shuffled_bitset(f_rank_combined, 0, new_size_node);
 }
 
 struct ShuffledFieldsWriter {
