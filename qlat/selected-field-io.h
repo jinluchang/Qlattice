@@ -459,6 +459,36 @@ long read_selected_field_64(Field<M>& f, const std::string& path,
 }
 
 template <class M>
+long write_selected_field_double(
+    const Field<M>& f, const std::string& path, const FieldSelection& fsel,
+    const Coordinate& new_size_node_ = Coordinate())
+{
+  TIMER_VERBOSE_FLOPS("write_selected_field_double");
+  Field<M> ff;
+  ff.init(f);
+  to_from_big_endian_64(get_data(ff));
+  const long total_bytes = write_selected_field(ff, path, fsel, new_size_node_);
+  timer.flops += total_bytes;
+  return total_bytes;
+}
+
+template <class M>
+long read_selected_field_double(Field<M>& f, const std::string& path,
+                                const FieldSelection& fsel,
+                                const Coordinate& new_size_node_ = Coordinate())
+{
+  TIMER_VERBOSE_FLOPS("read_selected_field_double");
+  const long total_bytes = read_selected_field(f, path, fsel, new_size_node_);
+  if (total_bytes == 0) {
+    return 0;
+  } else {
+    to_from_big_endian_64(get_data(f));
+    timer.flops += total_bytes;
+    return total_bytes;
+  }
+}
+
+template <class M>
 long write_selected_field_float_from_double(
     const Field<M>& f, const std::string& path, const FieldSelection& fsel,
     const Coordinate& new_size_node_ = Coordinate())

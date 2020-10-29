@@ -175,12 +175,50 @@ inline void test(const std::string& tag, const long n_per_tslice)
   set_u_rand_double(f, rs.split("f-init"));
   const crc32_t crc_0 = field_crc32(f);
   displayln_info(ssprintf("%06X full", crc_0));
+  //
+  set_u_rand_double(f, rs.split("f-init"));
+  write_field_64(f, "huge-data/" + tag + "/f-init.64.field");
+  write_field_double(f, "huge-data/" + tag + "/f-init.double.field");
+  write_field_float_from_double(f, "huge-data/" + tag + "/f-init.float.field");
+  //
   only_keep_selected_points(f, fsel);
   const crc32_t crc_1 = field_crc32(f);
   displayln_info(ssprintf("%06X selected", crc_1));
-  write_field_double(f, "huge-data/" + tag + "/sf.double.field");
-  write_field_float_from_double(f, "huge-data/" + tag + "/sf.single.field");
-  // TODO
+  //
+  set_u_rand_double(f, rs.split("f-init"));
+  write_selected_field_64(f, "huge-data/" + tag + "/sf-init.64.field", fsel);
+  write_selected_field_double(f, "huge-data/" + tag + "/sf-init.double.field", fsel);
+  write_selected_field_float_from_double(f, "huge-data/" + tag + "/sf-init.float.field", fsel);
+  //
+  set_zero(f);
+  read_field_64(f, "huge-data/" + tag + "/f-init.64.field");
+  const crc32_t crc_0_0 = field_crc32(f);
+  displayln_info(ssprintf("%06X full read 64", crc_0_0));
+  qassert(crc_0_0 == crc_0);
+  set_zero(f);
+  read_field_double(f, "huge-data/" + tag + "/f-init.double.field");
+  const crc32_t crc_0_1 = field_crc32(f);
+  displayln_info(ssprintf("%06X full read double", crc_0_1));
+  qassert(crc_0_1 == crc_0);
+  set_zero(f);
+  read_field_double_from_float(f, "huge-data/" + tag + "/f-init.float.field");
+  const crc32_t crc_0_2 = field_crc32(f);
+  displayln_info(ssprintf("%06X full read float", crc_0_2));
+  //
+  set_zero(f);
+  read_selected_field_64(f, "huge-data/" + tag + "/sf-init.64.field", fsel);
+  const crc32_t crc_1_0 = field_crc32(f);
+  displayln_info(ssprintf("%06X selected read 64", crc_1_0));
+  qassert(crc_1_0 == crc_1);
+  set_zero(f);
+  read_selected_field_double(f, "huge-data/" + tag + "/sf-init.double.field", fsel);
+  const crc32_t crc_1_1 = field_crc32(f);
+  displayln_info(ssprintf("%06X selected read double", crc_1_1));
+  qassert(crc_1_1 == crc_1);
+  set_zero(f);
+  read_selected_field_double_from_float(f, "huge-data/" + tag + "/sf-init.float.field", fsel);
+  const crc32_t crc_1_2 = field_crc32(f);
+  displayln_info(ssprintf("%06X selected read float", crc_1_2));
 }
 
 inline void test_grid(const std::string& tag, const long n_per_tslice)

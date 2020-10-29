@@ -310,6 +310,54 @@ void only_keep_selected_points(Field<M>& f, const FieldSelection& fsel)
 }
 
 template <class M>
+void set_selected_field(SelectedField<M>& sf, const Field<M>& f,
+                        const FieldSelection& fsel)
+{
+  TIMER("set_selected_field");
+  qassert(f.geo.is_only_local());
+  qassert(fsel.f_local_idx.geo.is_only_local());
+  qassert(geo_remult(f.geo) == fsel.f_local_idx.geo);
+  const Geometry& geo = f.geo;
+  const int multiplicity = geo.multiplicity;
+  sf.init(fsel, multiplicity);
+#pragma omp parallel for
+  for (long idx = 0; idx < fsel.n_elems; ++idx) {
+    const long index = fsel.indices[idx];
+    const Vector<M> fv = f.get_elems_const(index);
+    Vector<M> sfv = sf.get_elems(idx);
+    for (int m = 0; m < multiplicity; ++m) {
+      sfv[m] = fv[m];
+    }
+  }
+}
+
+template <class M>
+void set_field_selected(Field<M>& f, const SelectedField<M>& sf,
+                        const FieldSelection& fsel)
+{
+  TIMER("set_field_selected");
+  qassert(sf.geo.is_only_local());
+  qassert(fsel.f_local_idx.geo.is_only_local());
+  qassert(geo_remult(sf.geo) == fsel.f_local_idx.geo);
+  const Geometry& geo = sf.geo;
+  f.init();
+  f.init(sf.geo);
+  set_zero(f);
+  const int multiplicity = geo.multiplicity;
+#pragma omp parallel for
+  for (long idx = 0; idx < fsel.n_elems; ++idx) {
+    const long index = fsel.indices[idx];
+    Vector<M> fv = f.get_elems(index);
+    const Vector<M> sfv = sf.get_elems_const(idx);
+    for (int m = 0; m < multiplicity; ++m) {
+      fv[m] = sfv[m];
+    }
+  }
+}
+
+// old code
+
+template <class M>
 void set_selected_field_slow(SelectedField<M>& sf, const Field<M>& f,
                              const FieldSelection& fsel)
 {
@@ -331,28 +379,6 @@ void set_selected_field_slow(SelectedField<M>& sf, const Field<M>& f,
       for (int m = 0; m < multiplicity; ++m) {
         sf.field[offset + m] = fv[m];
       }
-    }
-  }
-}
-
-template <class M>
-void set_selected_field(SelectedField<M>& sf, const Field<M>& f,
-                        const FieldSelection& fsel)
-{
-  TIMER("set_selected_field");
-  qassert(f.geo.is_only_local());
-  qassert(fsel.f_local_idx.geo.is_only_local());
-  qassert(geo_remult(f.geo) == fsel.f_local_idx.geo);
-  const Geometry& geo = f.geo;
-  const int multiplicity = geo.multiplicity;
-  sf.init(fsel, multiplicity);
-#pragma omp parallel for
-  for (long idx = 0; idx < fsel.n_elems; ++idx) {
-    const long index = fsel.indices[idx];
-    const Vector<M> fv = f.get_elems_const(index);
-    Vector<M> sfv = sf.get_elems(idx);
-    for (int m = 0; m < multiplicity; ++m) {
-      sfv[m] = fv[m];
     }
   }
 }
@@ -381,30 +407,6 @@ void set_field_selected_slow(Field<M>& f, const SelectedField<M>& sf,
       for (int m = 0; m < multiplicity; ++m) {
         fv[m] = sf.field[offset + m];
       }
-    }
-  }
-}
-
-template <class M>
-void set_field_selected(Field<M>& f, const SelectedField<M>& sf,
-                        const FieldSelection& fsel)
-{
-  TIMER("set_field_selected");
-  qassert(sf.geo.is_only_local());
-  qassert(fsel.f_local_idx.geo.is_only_local());
-  qassert(geo_remult(sf.geo) == fsel.f_local_idx.geo);
-  const Geometry& geo = sf.geo;
-  f.init();
-  f.init(sf.geo);
-  set_zero(f);
-  const int multiplicity = geo.multiplicity;
-#pragma omp parallel for
-  for (long idx = 0; idx < fsel.n_elems; ++idx) {
-    const long index = fsel.indices[idx];
-    Vector<M> fv = f.get_elems(index);
-    const Vector<M> sfv = sf.get_elems_const(idx);
-    for (int m = 0; m < multiplicity; ++m) {
-      fv[m] = sfv[m];
     }
   }
 }
