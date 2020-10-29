@@ -324,7 +324,7 @@ void shuffle_field(std::vector<SelectedField<M> >& fs,
   const long total_bytes =
       sp.scp.global_comm_size * geo.multiplicity * sizeof(M);
   timer.flops += total_bytes;
-  qassert(sp.n_elems_send * geo.multiplicity == f.field.size());
+  qassert(sp.n_elems_send * geo.multiplicity == (long)f.field.size());
   std::vector<M> send_buffer(sp.scp.total_send_size * geo.multiplicity);
   shuffle_field_pack_send(get_data(send_buffer), get_data(f),
                           sp.send_pack_infos, geo.multiplicity);
