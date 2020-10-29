@@ -41,10 +41,43 @@ inline void mk_field_selection(FieldM<int64_t, 1>& f_rank,
   }
 }
 
+inline void set_n_per_tslice(FieldM<int64_t, 1>& f_rank,
+                             const long n_per_tslice_)
+// will erase the rank information for points not selected
+//
+// if n_per_tslice_ == -1 then n_per_tslice = spatial_vol
+//
+// if n_per_tslice == spatial_vol than all points are selected regardless
+// of rank.
+//
+// n_per_tslice is not enforced but only serve as an limit for f_rank
+//
+// 0 <= rank < n_per_tslice
+{
+  TIMER_VERBOSE("set_n_per_tslice");
+  const Geometry& geo = f_rank.geo;
+  qassert(geo.is_only_local());
+  const Coordinate total_site = geo.total_site();
+  const long spatial_vol = total_site[0] * total_site[1] * total_site[2];
+  qassert(n_per_tslice_ == -1 or
+          (0 < n_per_tslice_ and n_per_tslice_ <= spatial_vol));
+  const long n_per_tslice = n_per_tslice_ == -1 ? spatial_vol : n_per_tslice_;
+  for (long index = 0; index < geo.local_volume(); ++index) {
+    int64_t& rank = f_rank.get_elem(index);
+    if (n_per_tslice == spatial_vol and rank < 0) {
+      rank = spatial_vol - 1;
+    } else if (not(0 <= rank and rank < n_per_tslice)) {
+      rank = -1;
+    }
+  }
+}
+
 struct FieldSelection {
   FieldM<int64_t, 1>
       f_rank;  // rank when the points being selected (-1 if not selected)
-  long n_per_tslice;  // num points per time slice
+  //
+  long n_per_tslice;  // num points per time slice (not enfored and should work
+                      // properly if not true)
   double prob;        // (double)n_per_tslice / (double)spatial_vol
   //
   FieldM<long, 1>
@@ -68,46 +101,23 @@ struct FieldSelection {
   FieldSelection() { init(); }
 };
 
-inline void set_field_selection(FieldSelection& fsel,
-                                const FieldM<int64_t, 1>& f_rank,
-                                const long n_per_tslice_)
-// will erase the rank information for points not selected.
-//
-// if n_per_tslice_ == -1 then fsel.n_per_tslice = spatial_vol
-//
-// if fsel.n_per_tslice == spatial_vol than all points are selected regardless
-// of rank.
-//
-// n_per_tslice is not enforced but only serve as an limit for f_rank
-//
-// 0 <= rank < n_per_tslice
+inline void update_field_selection(FieldSelection& fsel)
+// update fsel based only on f_rank
+// do not touch n_per_tslice and prob at all
 {
-  TIMER_VERBOSE("set_field_selection");
-  const Geometry& geo = f_rank.geo;
-  const Coordinate total_site = geo.total_site();
-  const long spatial_vol = total_site[0] * total_site[1] * total_site[2];
-  qassert(n_per_tslice_ == -1 or
-          (0 < n_per_tslice_ and n_per_tslice_ <= spatial_vol));
-  const long n_per_tslice = n_per_tslice_ == -1 ? spatial_vol : n_per_tslice_;
+  TIMER_VERBOSE("update_field_selection");
+  const Geometry& geo = fsel.f_rank.geo;
   qassert(geo.is_only_local());
-  fsel.init();
-  fsel.f_rank = f_rank;
-  fsel.n_per_tslice = n_per_tslice;
-  fsel.prob = (double)n_per_tslice / (double)spatial_vol;
   fsel.f_local_idx.init(geo);
   long n_elems = 0;
   for (long index = 0; index < geo.local_volume(); ++index) {
-    int64_t& rank = fsel.f_rank.get_elem(index);
+    const int64_t& rank = fsel.f_rank.get_elem(index);
     long& idx = fsel.f_local_idx.get_elem(index);
-    if (n_per_tslice == spatial_vol and rank < 0) {
-      rank = spatial_vol - 1;
-    }
-    if (0 <= rank and rank < n_per_tslice) {
+    if (0 <= rank) {
       idx = n_elems;
       n_elems += 1;
     } else {
       idx = -1;
-      rank = -1;
     }
   }
   fsel.n_elems = n_elems;
@@ -124,12 +134,50 @@ inline void set_field_selection(FieldSelection& fsel,
   }
 }
 
+inline void update_field_selection(FieldSelection& fsel, const long n_per_tslice_)
+// only adjust parameter, do not change contents
+{
+  const Geometry& geo = fsel.f_rank.geo;
+  qassert(geo.is_only_local());
+  const Coordinate total_site = geo.total_site();
+  const long spatial_vol = total_site[0] * total_site[1] * total_site[2];
+  qassert(n_per_tslice_ == -1 or
+          (0 < n_per_tslice_ and n_per_tslice_ <= spatial_vol));
+  fsel.n_per_tslice = n_per_tslice_ == -1 ? spatial_vol : n_per_tslice_;
+  fsel.prob = (double)fsel.n_per_tslice / (double)spatial_vol;
+}
+
+inline void set_field_selection(FieldSelection& fsel,
+                                const FieldM<int64_t, 1>& f_rank)
+{
+  TIMER_VERBOSE("set_field_selection(fsel,f_rank)");
+  fsel.init();
+  fsel.f_rank = f_rank;
+  update_field_selection(fsel);
+}
+
+inline void set_field_selection(FieldSelection& fsel,
+                                const FieldM<int64_t, 1>& f_rank,
+                                const long n_per_tslice_,
+                                const bool is_limit_on_rank = true)
+// call set_n_per_tslice if is_limit_on_rank=true
+{
+  TIMER_VERBOSE("set_field_selection");
+  fsel.init();
+  fsel.f_rank = f_rank;
+  if (is_limit_on_rank) {
+    set_n_per_tslice(fsel.f_rank, n_per_tslice_);
+  }
+  update_field_selection(fsel);
+  update_field_selection(fsel, n_per_tslice_);
+}
+
 inline void set_field_selection(FieldSelection& fsel,
                                 const Coordinate& total_site)
 {
   FieldM<int64_t, 1> f_rank;
   mk_field_selection(f_rank, total_site);
-  set_field_selection(fsel, f_rank, -1);
+  set_field_selection(fsel, f_rank, -1);  // select all points
 }
 
 template <class M>

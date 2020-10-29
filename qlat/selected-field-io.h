@@ -385,9 +385,11 @@ long read_selected_field(SelectedField<M>& sf, const std::string& path,
   long n_per_tslice = 0;
   int sizeof_M = 0;
   crc32_t crc_info = 0;
-  const long pos = read_selected_geo_info(total_site, multiplicity, n_per_tslice, sizeof_M, crc_info, path);
+  const long pos = read_selected_geo_info(
+      total_site, multiplicity, n_per_tslice, sizeof_M, crc_info, path);
   if (total_site == Coordinate() or multiplicity == 0) {
-    displayln_info(fname + ssprintf(": fn='%s' can not be parsed.", path.c_str()));
+    displayln_info(fname +
+                   ssprintf(": fn='%s' can not be parsed.", path.c_str()));
     return 0;
   }
   qassert(fsel.n_per_tslice == n_per_tslice);
@@ -441,10 +443,9 @@ long read_selected_field(SelectedField<M>& sf, const std::string& path,
   if (sfs.size() > 0) {
     FILE* fp = qopen(path, "r");
     qassert(fp != NULL);
-    fseek(
-        fp,
-        pos + sfs[0].geo.geon.id_node * get_data(sfs[0].field).data_size(),
-        SEEK_SET);
+    fseek(fp,
+          pos + sfs[0].geo.geon.id_node * get_data(sfs[0].field).data_size(),
+          SEEK_SET);
     for (int i = 0; i < (int)sfs.size(); ++i) {
       const int new_id_node = sfs[i].geo.geon.id_node;
       qassert(sfs[i].geo.geon.num_node == new_num_node);
@@ -471,9 +472,9 @@ long read_selected_field(SelectedField<M>& sf, const std::string& path,
 }
 
 template <class M>
-long write_selected_field_64(
-    const SelectedField<M>& f, const std::string& path,
-    const FieldSelection& fsel, const Coordinate& new_size_node_ = Coordinate())
+long write_selected_field_64(const SelectedField<M>& f, const std::string& path,
+                             const FieldSelection& fsel,
+                             const Coordinate& new_size_node_ = Coordinate())
 {
   TIMER_VERBOSE_FLOPS("write_selected_field_64");
   SelectedField<M> ff;
@@ -502,8 +503,8 @@ long read_selected_field_64(SelectedField<M>& sf, const std::string& path,
 
 template <class M>
 long write_selected_field_double(
-    const SelectedField<M>& f, const std::string& path, const FieldSelection& fsel,
-    const Coordinate& new_size_node_ = Coordinate())
+    const SelectedField<M>& f, const std::string& path,
+    const FieldSelection& fsel, const Coordinate& new_size_node_ = Coordinate())
 {
   TIMER_VERBOSE_FLOPS("write_selected_field_double");
   SelectedField<M> ff;
@@ -556,7 +557,8 @@ void convert_field_float_from_double(SelectedField<N>& ff,
 }
 
 template <class M, class N>
-void convert_field_double_from_float(SelectedField<N>& ff, const SelectedField<M>& f)
+void convert_field_double_from_float(SelectedField<N>& ff,
+                                     const SelectedField<M>& f)
 // interface_function
 {
   TIMER("convert_field_double_from_float(sf)");
@@ -582,8 +584,8 @@ void convert_field_double_from_float(SelectedField<N>& ff, const SelectedField<M
 
 template <class M>
 long write_selected_field_float_from_double(
-    const SelectedField<M>& f, const std::string& path, const FieldSelection& fsel,
-    const Coordinate& new_size_node_ = Coordinate())
+    const SelectedField<M>& f, const std::string& path,
+    const FieldSelection& fsel, const Coordinate& new_size_node_ = Coordinate())
 {
   TIMER_VERBOSE_FLOPS("write_selected_field_float_from_double");
   SelectedField<float> ff;
@@ -634,9 +636,9 @@ inline bool is_selected_field(const std::string& path)
 }
 
 template <class M>
-long write_selected_field(
-    const Field<M>& f, const std::string& path,
-    const FieldSelection& fsel, const Coordinate& new_size_node_ = Coordinate())
+long write_selected_field(const Field<M>& f, const std::string& path,
+                          const FieldSelection& fsel,
+                          const Coordinate& new_size_node_ = Coordinate())
 {
   TIMER_VERBOSE_FLOPS("write_selected_field(f)");
   SelectedField<M> sf;
@@ -645,9 +647,9 @@ long write_selected_field(
 }
 
 template <class M>
-long write_selected_field_64(
-    const Field<M>& f, const std::string& path,
-    const FieldSelection& fsel, const Coordinate& new_size_node_ = Coordinate())
+long write_selected_field_64(const Field<M>& f, const std::string& path,
+                             const FieldSelection& fsel,
+                             const Coordinate& new_size_node_ = Coordinate())
 {
   TIMER_VERBOSE_FLOPS("write_selected_field_64(f)");
   SelectedField<M> sf;
@@ -657,8 +659,8 @@ long write_selected_field_64(
 
 template <class M>
 long write_selected_field_double(
-    const Field<M>& f, const std::string& path,
-    const FieldSelection& fsel, const Coordinate& new_size_node_ = Coordinate())
+    const Field<M>& f, const std::string& path, const FieldSelection& fsel,
+    const Coordinate& new_size_node_ = Coordinate())
 {
   TIMER_VERBOSE_FLOPS("write_selected_field_64(f)");
   SelectedField<M> sf;
@@ -668,8 +670,8 @@ long write_selected_field_double(
 
 template <class M>
 long write_selected_field_float_from_double(
-    const Field<M>& f, const std::string& path,
-    const FieldSelection& fsel, const Coordinate& new_size_node_ = Coordinate())
+    const Field<M>& f, const std::string& path, const FieldSelection& fsel,
+    const Coordinate& new_size_node_ = Coordinate())
 {
   TIMER_VERBOSE_FLOPS("write_selected_field_64(f)");
   SelectedField<M> sf;
@@ -698,7 +700,8 @@ long read_selected_field_64(Field<M>& f, const std::string& path,
 {
   TIMER_VERBOSE_FLOPS("read_selected_field_64(f)");
   SelectedField<M> sf;
-  const long total_bytes = read_selected_field_64(sf, path, fsel, new_size_node_);
+  const long total_bytes =
+      read_selected_field_64(sf, path, fsel, new_size_node_);
   if (total_bytes > 0) {
     set_field_selected(f, sf, fsel);
   }
@@ -712,7 +715,8 @@ long read_selected_field_double(Field<M>& f, const std::string& path,
 {
   TIMER_VERBOSE_FLOPS("read_selected_field_double(f)");
   SelectedField<M> sf;
-  const long total_bytes = read_selected_field_double(sf, path, fsel, new_size_node_);
+  const long total_bytes =
+      read_selected_field_double(sf, path, fsel, new_size_node_);
   if (total_bytes > 0) {
     set_field_selected(f, sf, fsel);
   }
@@ -726,104 +730,11 @@ long read_selected_field_double_from_float(
 {
   TIMER_VERBOSE_FLOPS("read_selected_field_double_from_float(f)");
   SelectedField<M> sf;
-  const long total_bytes = read_selected_field_double_from_float(sf, path, fsel, new_size_node_);
+  const long total_bytes =
+      read_selected_field_double_from_float(sf, path, fsel, new_size_node_);
   if (total_bytes > 0) {
     set_field_selected(f, sf, fsel);
   }
-  return total_bytes;
-}
-
-// old code
-
-template <class M>
-long read_selected_field_slow(Field<M>& f, const std::string& path,
-                              const FieldSelection& fsel,
-                              const Coordinate& new_size_node_ = Coordinate())
-{
-  TIMER_VERBOSE_FLOPS("read_selected_field_slow");
-  displayln_info(fname + ssprintf(": fn='%s'.", path.c_str()));
-  Coordinate total_site;
-  int multiplicity = 0;
-  long n_per_tslice = 0;
-  int sizeof_M = 0;
-  crc32_t crc_info = 0;
-  const long pos = read_selected_geo_info(total_site, multiplicity, n_per_tslice, sizeof_M, crc_info, path);
-  if (total_site == Coordinate() or multiplicity == 0) {
-    displayln_info(fname + ssprintf(": fn='%s' can not be parsed.", path.c_str()));
-    return 0;
-  }
-  qassert(fsel.n_per_tslice == n_per_tslice);
-  get_incorrect_field_read_sizeof_M() = 0;
-  if (sizeof_M != sizeof(M)) {
-    get_incorrect_field_read_sizeof_M() = sizeof_M;
-    displayln(fname + ssprintf(": WARNING: sizeof(M) do not match. "
-                               "Expected %d, Actual file %d",
-                               sizeof(M), sizeof_M));
-    qassert((multiplicity * sizeof_M) % sizeof(M) == 0);
-    multiplicity = (multiplicity * sizeof_M) / sizeof(M);
-  }
-  Geometry geo;
-  geo.init(total_site, multiplicity);
-  f.init();
-  f.init(geo, geo.multiplicity);
-  qassert(fsel.f_rank.geo == geo_remult(geo));
-  const Coordinate new_size_node = new_size_node_ != Coordinate()
-                                       ? new_size_node_
-                                       : get_default_serial_new_size_node(geo);
-  qassert(new_size_node[0] == 1);
-  qassert(new_size_node[1] == 1);
-  qassert(new_size_node[2] == 1);
-  std::vector<Field<int64_t> > fs_rank;
-  shuffle_field(fs_rank, fsel.f_rank, new_size_node);
-  std::vector<FieldSelection> fsels(fs_rank.size());
-  for (int i = 0; i < (int)fs_rank.size(); ++i) {
-    FieldM<int64_t, 1> fs_rank_i;
-    fs_rank_i.init(fs_rank[i]);
-    set_field_selection(fsels[i], fs_rank_i, fsel.n_per_tslice);
-  }
-  qassert(fsels.size() == fs_rank.size());
-  clear(fs_rank);
-  std::vector<Field<M> > fs;
-  shuffle_field(fs, f, new_size_node);
-  qassert(fs.size() == fsels.size());
-  std::vector<SelectedField<M> > sfs(fsels.size());
-  for (int i = 0; i < (int)fsels.size(); ++i) {
-    set_selected_field(sfs[i], fs[i], fsels[i]);
-  }
-  qassert(sfs.size() == fsels.size());
-  const int new_num_node = product(new_size_node);
-  crc32_t crc = 0;
-  if (sfs.size() > 0) {
-    FILE* fp = qopen(path, "r");
-    qassert(fp != NULL);
-    fseek(
-        fp,
-        pos + sfs[0].geo.geon.id_node * get_data(sfs[0].field).data_size(),
-        SEEK_SET);
-    for (int i = 0; i < (int)sfs.size(); ++i) {
-      const int new_id_node = sfs[i].geo.geon.id_node;
-      qassert(sfs[i].geo.geon.num_node == new_num_node);
-      const Vector<M> v = get_data(sfs[i].field);
-      qread_data(v, fp);
-      crc ^= crc32_shift(crc32_par(v),
-                         (new_num_node - new_id_node - 1) * v.data_size());
-    }
-    qclose(fp);
-  }
-  glb_sum_byte(crc);
-  if (crc != crc_info) {
-    displayln_info(
-        fname +
-        ssprintf(": crc of data = %08X ; crc of header = %08X", crc, crc_info));
-    qassert(false);
-  }
-  for (int i = 0; i < (int)fsels.size(); ++i) {
-    set_field_selected(fs[i], sfs[i], fsels[i]);
-  }
-  shuffle_field_back(f, fs, new_size_node);
-  const long total_bytes =
-      fsel.n_per_tslice * total_site[3] * geo.multiplicity * sizeof(M);
-  timer.flops += total_bytes;
   return total_bytes;
 }
 
