@@ -5,6 +5,25 @@
 namespace qlat
 {  //
 
+inline void add_field_selection(FieldM<int64_t, 1>& f_rank,
+                                const std::vector<Coordinate>& xgs,
+                                const long rank_xgs = 1024L * 1024L * 1024L *
+                                                      1024L * 1024L)
+{
+  TIMER_VERBOSE("add_field_selection(xgs)");
+  const Geometry& geo = f_rank.geo;
+#pragma omp parallel for
+  for (long i = 0; i < (long)xgs.size(); ++i) {
+    const Coordinate xl = geo.coordinate_l_from_g(xgs[i]);
+    if (geo.is_local(xl)) {
+      int64_t& rank = f_rank.get_elem(xl);
+      if (rank < 0) {
+        rank = rank_xgs;
+      }
+    }
+  }
+}
+
 inline void mk_field_selection(FieldM<int64_t, 1>& f_rank,
                                const Coordinate& total_site,
                                const int64_t val = 0)
@@ -27,18 +46,13 @@ inline void mk_field_selection(FieldM<int64_t, 1>& f_rank,
 
 inline void mk_field_selection(FieldM<int64_t, 1>& f_rank,
                                const Coordinate& total_site,
-                               const std::vector<Coordinate>& xgs)
+                               const std::vector<Coordinate>& xgs,
+                               const long rank_xgs = 1024L * 1024L * 1024L *
+                                                     1024L * 1024L)
 {
   TIMER_VERBOSE("mk_field_selection(xgs)");
   mk_field_selection(f_rank, total_site, -1);
-  const Geometry& geo = f_rank.geo;
-#pragma omp parallel for
-  for (long i = 0; i < (long)xgs.size(); ++i) {
-    const Coordinate xl = geo.coordinate_l_from_g(xgs[i]);
-    if (geo.is_local(xl)) {
-      f_rank.get_elem(xl) = i;
-    }
-  }
+  add_field_selection(f_rank, xgs, rank_xgs);
 }
 
 inline void set_n_per_tslice(FieldM<int64_t, 1>& f_rank,
