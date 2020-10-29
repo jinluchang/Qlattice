@@ -523,6 +523,18 @@ inline void bcast(std::string& recv, const int root = 0)
 #endif
 }
 
+inline void bcast(std::vector<std::string>& recv, const int root = 0)
+{
+#ifdef USE_MULTI_NODE
+  long size = recv.size();
+  bcast(get_data(size), root);
+  recv.resize(size);
+  for (long i = 0; i < size; ++i) {
+    bcast(recv[i], root);
+  }
+#endif
+}
+
 inline void bcast(LatData& ld, const int root = 0)
 {
 #ifdef USE_MULTI_NODE

@@ -623,6 +623,7 @@ void set_field_from_data(Field<M>& field, const GeometryNode& geon,
   memcpy(fv.data(), hdata().data(), fv.data_size());
 }
 
+/*
 template <class M>
 long read_next(FieldsReader& fr, std::string& fn, Field<M>& field)
 // field endianess not converted at all
@@ -639,6 +640,7 @@ long read_next(FieldsReader& fr, std::string& fn, Field<M>& field)
   timer.flops += total_bytes;
   return total_bytes;
 }
+*/
 
 template <class M>
 long read(FieldsReader& fr, const std::string& fn, Field<M>& field)
@@ -683,6 +685,7 @@ inline ShuffledBitSet mk_shuffled_bitset(const FieldM<int64_t, 1>& f_rank,
 
 inline ShuffledBitSet mk_shuffled_bitset(const FieldSelection& fsel,
                                          const Coordinate& new_size_node)
+// interface function
 // do not enforce fsel.n_per_tslice
 {
   TIMER_VERBOSE("mk_shuffled_bitset(fsel,new_size_node)");
@@ -925,6 +928,7 @@ void set_field_info_from_fields(Coordinate& total_site, int& multiplicity,
   }
 }
 
+/*
 template <class M>
 long read_next(ShuffledFieldsReader& sfr, std::string& fn, Field<M>& field)
 // interface function
@@ -965,6 +969,7 @@ long read_next(ShuffledFieldsReader& sfr, std::string& fn, Field<M>& field)
   timer.flops += total_bytes;
   return total_bytes;
 }
+*/
 
 inline bool does_file_exist_sync_node(ShuffledFieldsReader& sfr, const std::string& fn)
 // interface function
@@ -984,6 +989,23 @@ inline bool does_file_exist_sync_node(ShuffledFieldsReader& sfr, const std::stri
     qassert(total_counts == product(sfr.new_size_node));
     return true;
   }
+}
+
+inline std::vector<std::string> list_fields(ShuffledFieldsReader& sfr)
+{
+  TIMER_VERBOSE("list_fields");
+  std::vector<std::string> ret;
+  if (0 == get_id_node()) {
+    qassert(sfr.frs.size() > 0);
+    FieldsReader& fr = sfr.frs[0];
+    does_file_exist(fr, "CHECK-FILE");
+    qassert(fr.is_read_through);
+    for (auto it = fr.offsets_map.cbegin(); it != fr.offsets_map.cend(); ++it) {
+      ret.push_back(it->first);
+    }
+  }
+  bcast(ret);
+  return ret;
 }
 
 template <class M>
@@ -1045,6 +1067,7 @@ long write_float_from_double(ShuffledFieldsWriter& sfw, const std::string& fn,
   return total_bytes;
 }
 
+/*
 template <class M>
 long read_next_double_from_float(ShuffledFieldsReader& sfr, std::string& fn,
                                  Field<M>& field)
@@ -1062,6 +1085,7 @@ long read_next_double_from_float(ShuffledFieldsReader& sfr, std::string& fn,
     return total_bytes;
   }
 }
+*/
 
 template <class M>
 long read_double_from_float(ShuffledFieldsReader& sfr, const std::string& fn,
@@ -1117,6 +1141,12 @@ long read_field_double_from_float(Field<M>& field, const std::string& path,
   TIMER_VERBOSE("read_field_double_from_float(field,path,fn)");
   ShuffledFieldsReader& sfr = get_shuffled_fields_reader(path);
   return read_double_from_float(sfr, fn, field);
+}
+
+inline std::vector<std::string> list_fields(const std::string& path)
+{
+  ShuffledFieldsReader& sfr = get_shuffled_fields_reader(path);
+  return list_fields(sfr);
 }
 
 inline bool does_file_exist_sync_node(const std::string& path, const std::string& fn)

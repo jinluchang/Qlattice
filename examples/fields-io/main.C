@@ -110,6 +110,14 @@ inline void demo(const std::string& tag, const Coordinate& total_site,
   }
   //
   {
+    const std::string path = "huge-data/" + tag + "/demo.lfs";
+    const std::vector<std::string> fns = list_fields(path);
+    for (long i = 0; i < (long)fns.size(); ++i) {
+      displayln_info(fname + ssprintf(": %5d : '%s' from '%s'.", i, fns[i].c_str(), path.c_str()));
+    }
+  }
+  //
+  {
     test_read("huge-data/" + tag + "/demo.lfs", "f.float.field");
     test_read("huge-data/" + tag + "/demo.lfs", "f.float.sfield");
     test_read("huge-data/" + tag + "/demo.lfs", "sf.float.field");

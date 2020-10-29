@@ -95,58 +95,74 @@ shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 
 FieldsWriter: close 'huge-data/t0/demo.lfs.partial'.
 Qlat::ShuffledFieldsReaderCache: to add 1 / 16.
 FieldsReader: open 'huge-data/t0/demo.lfs'.
-read(sfr,fn,field): reading field with fn='f.float.field'.
 read_tag(fr,fn,geo): 'f.field' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,geo): 'f.sfield' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,geo): 'f.float.field' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,geo): 'f.float.sfield' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,geo): 'sf.field' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,geo): 'sf.sfield' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,geo): 'sf.float.field' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,geo): 'sf.float.sfield' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,geo): 'fa.field' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,geo): 'fa.sfield' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,geo): 'fa.float.field' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,geo): 'fa.float.sfield' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,geo): 'sfa.field' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,geo): 'sfa.sfield' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,geo): 'sfa.float.field' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,geo): 'sfa.float.sfield' from 'huge-data/t0/demo.lfs'.
+demo:     0 : 'f.field' from 'huge-data/t0/demo.lfs'.
+demo:     1 : 'f.float.field' from 'huge-data/t0/demo.lfs'.
+demo:     2 : 'f.float.sfield' from 'huge-data/t0/demo.lfs'.
+demo:     3 : 'f.sfield' from 'huge-data/t0/demo.lfs'.
+demo:     4 : 'fa.field' from 'huge-data/t0/demo.lfs'.
+demo:     5 : 'fa.float.field' from 'huge-data/t0/demo.lfs'.
+demo:     6 : 'fa.float.sfield' from 'huge-data/t0/demo.lfs'.
+demo:     7 : 'fa.sfield' from 'huge-data/t0/demo.lfs'.
+demo:     8 : 'sf.field' from 'huge-data/t0/demo.lfs'.
+demo:     9 : 'sf.float.field' from 'huge-data/t0/demo.lfs'.
+demo:    10 : 'sf.float.sfield' from 'huge-data/t0/demo.lfs'.
+demo:    11 : 'sf.sfield' from 'huge-data/t0/demo.lfs'.
+demo:    12 : 'sfa.field' from 'huge-data/t0/demo.lfs'.
+demo:    13 : 'sfa.float.field' from 'huge-data/t0/demo.lfs'.
+demo:    14 : 'sfa.float.sfield' from 'huge-data/t0/demo.lfs'.
+demo:    15 : 'sfa.sfield' from 'huge-data/t0/demo.lfs'.
+read(sfr,fn,field): reading field with fn='f.float.field'.
 read_tag(fr,fn,geo): 'f.float.field' from 'huge-data/t0/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read: compute crc32=1E530CB4 for fn='f.float.field' from path 'huge-data/t0/demo.lfs'.
 read(sfr,fn,field): reading field with fn='f.float.sfield'.
 read_tag(fr,fn,geo): 'f.float.sfield' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'f.float.sfield' from 'huge-data/t0/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read: compute crc32=B98B28E0 for fn='f.float.sfield' from path 'huge-data/t0/demo.lfs'.
 read(sfr,fn,field): reading field with fn='sf.float.field'.
-read_tag(fr,fn,geo): 'sf.field' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.sfield' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.float.field' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,geo): 'sf.float.field' from 'huge-data/t0/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read: compute crc32=B98B28E0 for fn='sf.float.field' from path 'huge-data/t0/demo.lfs'.
 read(sfr,fn,field): reading field with fn='sf.float.sfield'.
 read_tag(fr,fn,geo): 'sf.float.sfield' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.float.sfield' from 'huge-data/t0/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read: compute crc32=B98B28E0 for fn='sf.float.sfield' from path 'huge-data/t0/demo.lfs'.
 read(sfr,fn,field): reading field with fn='fa.float.field'.
-read_tag(fr,fn,geo): 'fa.field' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.sfield' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.float.field' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,geo): 'fa.float.field' from 'huge-data/t0/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read: compute crc32=1E530CB4 for fn='fa.float.field' from path 'huge-data/t0/demo.lfs'.
 read(sfr,fn,field): reading field with fn='fa.float.sfield'.
 read_tag(fr,fn,geo): 'fa.float.sfield' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.float.sfield' from 'huge-data/t0/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read: compute crc32=B98B28E0 for fn='fa.float.sfield' from path 'huge-data/t0/demo.lfs'.
 read(sfr,fn,field): reading field with fn='sfa.float.field'.
-read_tag(fr,fn,geo): 'sfa.field' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'sfa.sfield' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'sfa.float.field' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,geo): 'sfa.float.field' from 'huge-data/t0/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read: compute crc32=B98B28E0 for fn='sfa.float.field' from path 'huge-data/t0/demo.lfs'.
 read(sfr,fn,field): reading field with fn='sfa.float.sfield'.
-read_tag(fr,fn,geo): 'sfa.float.sfield' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,geo): 'sfa.float.sfield' from 'huge-data/t0/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
@@ -470,58 +486,74 @@ shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 
 FieldsWriter: close 'huge-data/t1/demo.lfs.partial'.
 Qlat::ShuffledFieldsReaderCache: to add 2 / 16.
 FieldsReader: open 'huge-data/t1/demo.lfs'.
-read(sfr,fn,field): reading field with fn='f.float.field'.
 read_tag(fr,fn,geo): 'f.field' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,geo): 'f.sfield' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,geo): 'f.float.field' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,geo): 'f.float.sfield' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,geo): 'sf.field' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,geo): 'sf.sfield' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,geo): 'sf.float.field' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,geo): 'sf.float.sfield' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,geo): 'fa.field' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,geo): 'fa.sfield' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,geo): 'fa.float.field' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,geo): 'fa.float.sfield' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,geo): 'sfa.field' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,geo): 'sfa.sfield' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,geo): 'sfa.float.field' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,geo): 'sfa.float.sfield' from 'huge-data/t1/demo.lfs'.
+demo:     0 : 'f.field' from 'huge-data/t1/demo.lfs'.
+demo:     1 : 'f.float.field' from 'huge-data/t1/demo.lfs'.
+demo:     2 : 'f.float.sfield' from 'huge-data/t1/demo.lfs'.
+demo:     3 : 'f.sfield' from 'huge-data/t1/demo.lfs'.
+demo:     4 : 'fa.field' from 'huge-data/t1/demo.lfs'.
+demo:     5 : 'fa.float.field' from 'huge-data/t1/demo.lfs'.
+demo:     6 : 'fa.float.sfield' from 'huge-data/t1/demo.lfs'.
+demo:     7 : 'fa.sfield' from 'huge-data/t1/demo.lfs'.
+demo:     8 : 'sf.field' from 'huge-data/t1/demo.lfs'.
+demo:     9 : 'sf.float.field' from 'huge-data/t1/demo.lfs'.
+demo:    10 : 'sf.float.sfield' from 'huge-data/t1/demo.lfs'.
+demo:    11 : 'sf.sfield' from 'huge-data/t1/demo.lfs'.
+demo:    12 : 'sfa.field' from 'huge-data/t1/demo.lfs'.
+demo:    13 : 'sfa.float.field' from 'huge-data/t1/demo.lfs'.
+demo:    14 : 'sfa.float.sfield' from 'huge-data/t1/demo.lfs'.
+demo:    15 : 'sfa.sfield' from 'huge-data/t1/demo.lfs'.
+read(sfr,fn,field): reading field with fn='f.float.field'.
 read_tag(fr,fn,geo): 'f.float.field' from 'huge-data/t1/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read: compute crc32=1E530CB4 for fn='f.float.field' from path 'huge-data/t1/demo.lfs'.
 read(sfr,fn,field): reading field with fn='f.float.sfield'.
 read_tag(fr,fn,geo): 'f.float.sfield' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'f.float.sfield' from 'huge-data/t1/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read: compute crc32=A3049D06 for fn='f.float.sfield' from path 'huge-data/t1/demo.lfs'.
 read(sfr,fn,field): reading field with fn='sf.float.field'.
-read_tag(fr,fn,geo): 'sf.field' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.sfield' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.float.field' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,geo): 'sf.float.field' from 'huge-data/t1/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read: compute crc32=A3049D06 for fn='sf.float.field' from path 'huge-data/t1/demo.lfs'.
 read(sfr,fn,field): reading field with fn='sf.float.sfield'.
 read_tag(fr,fn,geo): 'sf.float.sfield' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.float.sfield' from 'huge-data/t1/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read: compute crc32=A3049D06 for fn='sf.float.sfield' from path 'huge-data/t1/demo.lfs'.
 read(sfr,fn,field): reading field with fn='fa.float.field'.
-read_tag(fr,fn,geo): 'fa.field' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.sfield' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.float.field' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,geo): 'fa.float.field' from 'huge-data/t1/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read: compute crc32=1E530CB4 for fn='fa.float.field' from path 'huge-data/t1/demo.lfs'.
 read(sfr,fn,field): reading field with fn='fa.float.sfield'.
 read_tag(fr,fn,geo): 'fa.float.sfield' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.float.sfield' from 'huge-data/t1/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read: compute crc32=A3049D06 for fn='fa.float.sfield' from path 'huge-data/t1/demo.lfs'.
 read(sfr,fn,field): reading field with fn='sfa.float.field'.
-read_tag(fr,fn,geo): 'sfa.field' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'sfa.sfield' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'sfa.float.field' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,geo): 'sfa.float.field' from 'huge-data/t1/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read: compute crc32=A3049D06 for fn='sfa.float.field' from path 'huge-data/t1/demo.lfs'.
 read(sfr,fn,field): reading field with fn='sfa.float.sfield'.
-read_tag(fr,fn,geo): 'sfa.float.sfield' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,geo): 'sfa.float.sfield' from 'huge-data/t1/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
@@ -845,58 +877,74 @@ shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 
 FieldsWriter: close 'huge-data/t2/demo.lfs.partial'.
 Qlat::ShuffledFieldsReaderCache: to add 3 / 16.
 FieldsReader: open 'huge-data/t2/demo.lfs'.
-read(sfr,fn,field): reading field with fn='f.float.field'.
 read_tag(fr,fn,geo): 'f.field' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,geo): 'f.sfield' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,geo): 'f.float.field' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,geo): 'f.float.sfield' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,geo): 'sf.field' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,geo): 'sf.sfield' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,geo): 'sf.float.field' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,geo): 'sf.float.sfield' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,geo): 'fa.field' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,geo): 'fa.sfield' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,geo): 'fa.float.field' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,geo): 'fa.float.sfield' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,geo): 'sfa.field' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,geo): 'sfa.sfield' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,geo): 'sfa.float.field' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,geo): 'sfa.float.sfield' from 'huge-data/t2/demo.lfs'.
+demo:     0 : 'f.field' from 'huge-data/t2/demo.lfs'.
+demo:     1 : 'f.float.field' from 'huge-data/t2/demo.lfs'.
+demo:     2 : 'f.float.sfield' from 'huge-data/t2/demo.lfs'.
+demo:     3 : 'f.sfield' from 'huge-data/t2/demo.lfs'.
+demo:     4 : 'fa.field' from 'huge-data/t2/demo.lfs'.
+demo:     5 : 'fa.float.field' from 'huge-data/t2/demo.lfs'.
+demo:     6 : 'fa.float.sfield' from 'huge-data/t2/demo.lfs'.
+demo:     7 : 'fa.sfield' from 'huge-data/t2/demo.lfs'.
+demo:     8 : 'sf.field' from 'huge-data/t2/demo.lfs'.
+demo:     9 : 'sf.float.field' from 'huge-data/t2/demo.lfs'.
+demo:    10 : 'sf.float.sfield' from 'huge-data/t2/demo.lfs'.
+demo:    11 : 'sf.sfield' from 'huge-data/t2/demo.lfs'.
+demo:    12 : 'sfa.field' from 'huge-data/t2/demo.lfs'.
+demo:    13 : 'sfa.float.field' from 'huge-data/t2/demo.lfs'.
+demo:    14 : 'sfa.float.sfield' from 'huge-data/t2/demo.lfs'.
+demo:    15 : 'sfa.sfield' from 'huge-data/t2/demo.lfs'.
+read(sfr,fn,field): reading field with fn='f.float.field'.
 read_tag(fr,fn,geo): 'f.float.field' from 'huge-data/t2/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read: compute crc32=1E530CB4 for fn='f.float.field' from path 'huge-data/t2/demo.lfs'.
 read(sfr,fn,field): reading field with fn='f.float.sfield'.
 read_tag(fr,fn,geo): 'f.float.sfield' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'f.float.sfield' from 'huge-data/t2/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read: compute crc32=B9C5079C for fn='f.float.sfield' from path 'huge-data/t2/demo.lfs'.
 read(sfr,fn,field): reading field with fn='sf.float.field'.
-read_tag(fr,fn,geo): 'sf.field' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.sfield' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.float.field' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,geo): 'sf.float.field' from 'huge-data/t2/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read: compute crc32=B9C5079C for fn='sf.float.field' from path 'huge-data/t2/demo.lfs'.
 read(sfr,fn,field): reading field with fn='sf.float.sfield'.
 read_tag(fr,fn,geo): 'sf.float.sfield' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.float.sfield' from 'huge-data/t2/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read: compute crc32=B9C5079C for fn='sf.float.sfield' from path 'huge-data/t2/demo.lfs'.
 read(sfr,fn,field): reading field with fn='fa.float.field'.
-read_tag(fr,fn,geo): 'fa.field' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.sfield' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.float.field' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,geo): 'fa.float.field' from 'huge-data/t2/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read: compute crc32=1E530CB4 for fn='fa.float.field' from path 'huge-data/t2/demo.lfs'.
 read(sfr,fn,field): reading field with fn='fa.float.sfield'.
 read_tag(fr,fn,geo): 'fa.float.sfield' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.float.sfield' from 'huge-data/t2/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read: compute crc32=B9C5079C for fn='fa.float.sfield' from path 'huge-data/t2/demo.lfs'.
 read(sfr,fn,field): reading field with fn='sfa.float.field'.
-read_tag(fr,fn,geo): 'sfa.field' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'sfa.sfield' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'sfa.float.field' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,geo): 'sfa.float.field' from 'huge-data/t2/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read: compute crc32=B9C5079C for fn='sfa.float.field' from path 'huge-data/t2/demo.lfs'.
 read(sfr,fn,field): reading field with fn='sfa.float.sfield'.
-read_tag(fr,fn,geo): 'sfa.float.sfield' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,geo): 'sfa.float.sfield' from 'huge-data/t2/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
