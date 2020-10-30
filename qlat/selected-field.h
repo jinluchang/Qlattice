@@ -427,13 +427,10 @@ void set_selected_field(SelectedField<M>& sf, const SelectedField<M>& sf0,
     const long index = fsel.indices[idx];
     const long idx0 = fsel0.f_local_idx.get_elem(index);
     Vector<M> sfv = sf.get_elems(idx);
-    if (idx0 >= 0) {
-      const Vector<M> fv = sf0.get_elems_const(idx0);
-      for (int m = 0; m < multiplicity; ++m) {
-        sfv[m] = fv[m];
-      }
-    } else {
-      set_zero(sfv);
+    qassert(idx0 >= 0);
+    const Vector<M> fv = sf0.get_elems_const(idx0);
+    for (int m = 0; m < multiplicity; ++m) {
+      sfv[m] = fv[m];
     }
   }
 }
@@ -455,8 +452,9 @@ void set_selected_points(SelectedPoints<M>& sp, const SelectedField<M>& sf,
     const Coordinate& xg = psel[idx];
     const Coordinate xl = geo.coordinate_l_from_g(xg);
     if (geo.is_local(xl)) {
-      const long idx = fsel.f_local_idx.get_elem(xl);
-      const Vector<M> fv = sf.get_elems_const(idx);
+      const long sf_idx = fsel.f_local_idx.get_elem(xl);
+      qassert(sf_idx >= 0);
+      const Vector<M> fv = sf.get_elems_const(sf_idx);
       Vector<M> spv = sp.get_elems(idx);
       for (int m = 0; m < geo.multiplicity; ++m) {
         spv[m] = fv[m];

@@ -386,15 +386,19 @@ struct Timer {
     TimerInfo& info = get_timer_database()[info_index];
     info.dtime = stop_time - start_time;
     info.dflops = stop_flops - start_flops;
+    bool is_show = false;
     if (verbose ||
         info.accumulated_time >=
             info.call_times * minimum_duration_for_show_info() ||
         info.dtime >= 5.0 * minimum_duration_for_show_info() ||
         info.call_times <= max_call_times_for_always_show_info()) {
-      info.show_stop(max_function_name_length_shown());
+      is_show = true;
     }
     info.accumulated_time += info.dtime;
     info.accumulated_flops += info.dflops;
+    if (is_show) {
+      info.show_stop(max_function_name_length_shown());
+    }
   }
   //
   static void test_timer_time_usage()
