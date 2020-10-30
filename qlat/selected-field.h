@@ -277,6 +277,12 @@ Vector<M> get_data(const SelectedField<M>& sf)
 }
 
 template <class M>
+void set_zero(SelectedField<M>& sf)
+{
+  set_zero(get_data(sf));
+}
+
+template <class M>
 double qnorm(const SelectedField<M>& sf)
 {
   return qnorm(sf.field);

@@ -230,7 +230,7 @@ struct FieldsWriter {
       displayln("FieldsWriter: open '" + path + ".partial'.");
       if (is_append and does_file_exist(path)) {
         qassert(does_file_exist(path + "/geon-info.txt"))
-        qrename(path, path + ".partial");
+            qrename(path, path + ".partial");
       } else {
         fields_writer_dirs_geon_info(geon, path + ".partial");
       }
@@ -486,7 +486,8 @@ inline bool read_tag(FieldsReader& fr, std::string& fn, Coordinate& total_site,
   }
   //
   if (fr.geon.id_node == 0) {
-    displayln(fname + ssprintf(": '%s' from '%s'.", fn.c_str(), fr.path.c_str()));
+    displayln(fname +
+              ssprintf(": '%s' from '%s'.", fn.c_str(), fr.path.c_str()));
   }
   return true;
 }
@@ -623,25 +624,6 @@ void set_field_from_data(Field<M>& field, const GeometryNode& geon,
   memcpy(fv.data(), hdata().data(), fv.data_size());
 }
 
-/*
-template <class M>
-long read_next(FieldsReader& fr, std::string& fn, Field<M>& field)
-// field endianess not converted at all
-{
-  TIMER_FLOPS("read_next(fr,fn,field)");
-  Coordinate total_site;
-  std::vector<char> data;
-  bool is_sparse_field = false;
-  const long total_bytes = read_next(fr, fn, total_site, data, is_sparse_field);
-  if (0 == total_bytes) {
-    return 0;
-  }
-  set_field_from_data(field, fr.geon, total_site, data, is_sparse_field);
-  timer.flops += total_bytes;
-  return total_bytes;
-}
-*/
-
 template <class M>
 long read(FieldsReader& fr, const std::string& fn, Field<M>& field)
 // field endianess not converted at all
@@ -659,8 +641,56 @@ long read(FieldsReader& fr, const std::string& fn, Field<M>& field)
   return total_bytes;
 }
 
+template <class M>
+void set_field_from_data_fsel(SelectedField<M>& sf,
+                              const std::vector<char>& data,
+                              const FieldSelection& fsel)
+{
+  TIMER("set_field_from_data_fsel");
+  const Geometry& geo = fsel.f_rank.geo;
+  const long n_elems = fsel.n_elems;
+  if (n_elems == 0) {
+    sf.init();
+    return;
+  }
+  const Coordinate& node_site = geo.node_site;
+  const long local_volume = product(node_site);
+  const size_t N = local_volume;
+  const size_t nbytes = 1 + (N - 1) / 8;
+  const size_t sz_compressed = data.size() - nbytes;
+  qassert(sz_compressed % n_elems == 0);
+  const size_t sz_block = sz_compressed / n_elems;
+  qassert(sz_block % sizeof(M) == 0);
+  const int multiplicity = sz_block / sizeof(M);
+  const Vector<M> fdata((const M*)&data[nbytes], n_elems * multiplicity);
+  sf.init(fsel, multiplicity);
+  assign(get_data(sf), fdata);
+}
+
+template <class M>
+long read(FieldsReader& fr, const std::string& fn, const FieldSelection& fsel,
+          SelectedField<M>& sf)
+// field endianess not converted at all
+{
+  TIMER_FLOPS("read(fr,fn,fsel,sf)");
+  Coordinate total_site;
+  std::vector<char> data;
+  bool is_sparse_field = false;
+  const long total_bytes = read(fr, fn, total_site, data, is_sparse_field);
+  if (0 == total_bytes) {
+    return 0;
+  }
+  qassert(is_sparse_field);
+  qassert(total_site == fsel.f_rank.geo.total_site());
+  set_field_from_data_fsel(sf, data, fsel);
+  timer.flops += total_bytes;
+  return total_bytes;
+}
+
 struct ShuffledBitSet {
   FieldSelection fsel;
+  ShufflePlan sp;
+  std::vector<FieldSelection> fsels;
   std::vector<BitSet> vbs;
 };
 
@@ -674,6 +704,7 @@ inline ShuffledBitSet mk_shuffled_bitset(const FieldM<int64_t, 1>& f_rank,
   shuffle_field(fs_rank, f_rank, new_size_node);
   ShuffledBitSet sbs;
   set_field_selection(sbs.fsel, f_rank, n_per_tslice);
+  sbs.sp = make_shuffle_plan(sbs.fsels, sbs.fsel, new_size_node);
   sbs.vbs.resize(fs_rank.size());
   for (int i = 0; i < (int)fs_rank.size(); ++i) {
     FieldM<int64_t, 1> fs_rank_i;
@@ -729,7 +760,8 @@ struct ShuffledFieldsWriter {
   //
   ShuffledFieldsWriter() { init(); }
   ShuffledFieldsWriter(const std::string& path_,
-                       const Coordinate& new_size_node_, const bool is_append = false)
+                       const Coordinate& new_size_node_,
+                       const bool is_append = false)
   // interface function
   {
     init(path_, new_size_node_, is_append);
@@ -820,7 +852,8 @@ struct ShuffledFieldsReader {
     new_size_node = Coordinate();
     clear(frs);
   }
-  void init(const std::string& path_, const Coordinate& new_size_node_ = Coordinate())
+  void init(const std::string& path_,
+            const Coordinate& new_size_node_ = Coordinate())
   // interface function
   {
     init();
@@ -928,50 +961,8 @@ void set_field_info_from_fields(Coordinate& total_site, int& multiplicity,
   }
 }
 
-/*
-template <class M>
-long read_next(ShuffledFieldsReader& sfr, std::string& fn, Field<M>& field)
-// interface function
-{
-  TIMER_VERBOSE_FLOPS("read_next(sfr,fn,field)");
-  fn = "";
-  long total_bytes = 0;
-  std::vector<Field<M> > fs(sfr.frs.size());
-  for (int i = 0; i < (int)fs.size(); ++i) {
-    std::string fni;
-    const long bytes = read_next(sfr.frs[i], fni, fs[i]);
-    if (0 == bytes) {
-      qassert(0 == total_bytes);
-    } else {
-      total_bytes += bytes;
-    }
-    const int id_node = sfr.frs[i].geon.id_node;
-    if (id_node == 0) {
-      fn = fni;
-      qassert(get_id_node() == 0);
-    }
-  }
-  bcast(fn);
-  glb_sum(total_bytes);
-  if (0 == total_bytes) {
-    fn = "";
-    return 0;
-  }
-  displayln_info(fname +
-                 ssprintf(": read the next field with fn='%s'.", fn.c_str()));
-  Coordinate total_site;
-  int multiplicity = 0;
-  set_field_info_from_fields(total_site, multiplicity, fs, sfr);
-  Geometry geo;
-  geo.init(total_site, multiplicity);
-  field.init(geo);
-  shuffle_field_back(field, fs, sfr.new_size_node);
-  timer.flops += total_bytes;
-  return total_bytes;
-}
-*/
-
-inline bool does_file_exist_sync_node(ShuffledFieldsReader& sfr, const std::string& fn)
+inline bool does_file_exist_sync_node(ShuffledFieldsReader& sfr,
+                                      const std::string& fn)
 // interface function
 {
   TIMER_VERBOSE("does_file_exist_sync_node(sfr,fn)");
@@ -1040,6 +1031,84 @@ long read(ShuffledFieldsReader& sfr, const std::string& fn, Field<M>& field)
 }
 
 template <class M>
+void set_field_info_from_fields(Coordinate& total_site, int& multiplicity,
+                                std::vector<SelectedField<M> >& sfs,
+                                const ShuffledFieldsReader& sfr)
+{
+  TIMER_VERBOSE("set_field_info_from_fields");
+  total_site = Coordinate();
+  multiplicity = 0;
+  std::vector<long> available_nodes(product(sfr.new_size_node), 0);
+  for (int i = 0; i < (int)sfs.size(); ++i) {
+    const int id_node = sfr.frs[i].geon.id_node;
+    qassert(0 <= id_node and id_node < (int)available_nodes.size());
+    if (is_initialized(sfs[i])) {
+      available_nodes[id_node] = get_id_node() + 1;
+    }
+  }
+  glb_sum(available_nodes);
+  int id_node_first_available = 0;
+  int id_node_bcast_from = 0;
+  for (int i = 0; i < (int)available_nodes.size(); ++i) {
+    if (available_nodes[i] > 0) {
+      id_node_first_available = i;
+      id_node_bcast_from = available_nodes[i] - 1;
+      break;
+    }
+  }
+  for (int i = 0; i < (int)sfs.size(); ++i) {
+    const int id_node = sfr.frs[i].geon.id_node;
+    if (id_node == id_node_first_available) {
+      total_site = sfs[i].geo.total_site();
+      multiplicity = sfs[i].geo.multiplicity;
+      qassert(get_id_node() == id_node_bcast_from);
+    }
+  }
+  bcast(get_data_one_elem(total_site), id_node_bcast_from);
+  bcast(get_data_one_elem(multiplicity), id_node_bcast_from);
+  for (int i = 0; i < (int)sfs.size(); ++i) {
+    if (not sfs[i].initialized) {
+      const GeometryNode& geon = sfr.frs[i].geon;
+      const Coordinate node_site = total_site / geon.size_node;
+      Geometry geo;
+      geo.init(geon, node_site, multiplicity);
+      sfs[i].init(geo, 0, multiplicity);
+      set_zero(sfs[i]);
+    }
+  }
+}
+
+template <class M>
+long read(ShuffledFieldsReader& sfr, const std::string& fn, const ShuffledBitSet& sbs, SelectedField<M>& sf)
+// interface function
+{
+  TIMER_VERBOSE_FLOPS("read(sfr,fn,sbs,sf)");
+  sf.init();
+  long total_bytes = 0;
+  displayln_info(fname + ssprintf(": reading sparse field with fn='%s'.", fn.c_str()));
+  std::vector<SelectedField<M> > sfs(sfr.frs.size());
+  for (int i = 0; i < (int)sfs.size(); ++i) {
+    const long bytes = read(sfr.frs[i], fn, sbs.fsels[i], sfs[i]);
+    if (0 == bytes) {
+      qassert(0 == total_bytes);
+    } else {
+      total_bytes += bytes;
+    }
+  }
+  glb_sum(total_bytes);
+  if (0 == total_bytes) {
+    return 0;
+  }
+  Coordinate total_site;
+  int multiplicity = 0;
+  set_field_info_from_fields(total_site, multiplicity, sfs, sfr);
+  sf.init(sbs.fsel, multiplicity);
+  shuffle_field_back(sf, sfs, sbs.sp);
+  timer.flops += total_bytes;
+  return total_bytes;
+}
+
+template <class M>
 long write_float_from_double(ShuffledFieldsWriter& sfw, const std::string& fn,
                              const Field<M>& field)
 // interface function
@@ -1067,26 +1136,6 @@ long write_float_from_double(ShuffledFieldsWriter& sfw, const std::string& fn,
   return total_bytes;
 }
 
-/*
-template <class M>
-long read_next_double_from_float(ShuffledFieldsReader& sfr, std::string& fn,
-                                 Field<M>& field)
-// interface function
-{
-  TIMER_VERBOSE_FLOPS("read_next_double_from_float(sfr,fn,field)");
-  Field<float> ff;
-  const long total_bytes = read_next(sfr, fn, ff);
-  if (total_bytes == 0) {
-    return 0;
-  } else {
-    to_from_little_endian_32(get_data(ff));
-    convert_field_double_from_float(field, ff);
-    timer.flops += total_bytes;
-    return total_bytes;
-  }
-}
-*/
-
 template <class M>
 long read_double_from_float(ShuffledFieldsReader& sfr, const std::string& fn,
                             Field<M>& field)
@@ -1100,6 +1149,25 @@ long read_double_from_float(ShuffledFieldsReader& sfr, const std::string& fn,
   } else {
     to_from_little_endian_32(get_data(ff));
     convert_field_double_from_float(field, ff);
+    timer.flops += total_bytes;
+    return total_bytes;
+  }
+}
+
+template <class M>
+long read_double_from_float(ShuffledFieldsReader& sfr, const std::string& fn,
+                            const ShuffledBitSet& sbs, SelectedField<M>& sf)
+// interface function
+{
+  TIMER_VERBOSE_FLOPS("read_double_from_float(sfr,fn,sbs,sf)");
+  sf.init();
+  SelectedField<float> sff;
+  const long total_bytes = read(sfr, fn, sbs, sff);
+  if (total_bytes == 0) {
+    return 0;
+  } else {
+    to_from_little_endian_32(get_data(sff));
+    convert_field_double_from_float(sf, sff);
     timer.flops += total_bytes;
     return total_bytes;
   }
@@ -1134,6 +1202,15 @@ long read_field(Field<M>& field, const std::string& path, const std::string& fn)
 }
 
 template <class M>
+long read_field(SelectedField<M>& sf, const std::string& path, const std::string& fn, const ShuffledBitSet& sbs)
+// interface function
+{
+  TIMER_VERBOSE("read_field(sf,path,fn,sbs)");
+  ShuffledFieldsReader& sfr = get_shuffled_fields_reader(path);
+  return read(sfr, fn, sbs, sf);
+}
+
+template <class M>
 long read_field_double_from_float(Field<M>& field, const std::string& path,
                                   const std::string& fn)
 // interface function
@@ -1143,17 +1220,114 @@ long read_field_double_from_float(Field<M>& field, const std::string& path,
   return read_double_from_float(sfr, fn, field);
 }
 
+template <class M>
+long read_field_double_from_float(SelectedField<M>& sf,
+                                  const std::string& path,
+                                  const std::string& fn,
+                                  const ShuffledBitSet& sbs)
+// interface function
+{
+  TIMER_VERBOSE("read_field_double_from_float(sf,path,fn,sbs)");
+  ShuffledFieldsReader& sfr = get_shuffled_fields_reader(path);
+  return read_double_from_float(sfr, fn, sbs, sf);
+}
+
 inline std::vector<std::string> list_fields(const std::string& path)
 {
   ShuffledFieldsReader& sfr = get_shuffled_fields_reader(path);
   return list_fields(sfr);
 }
 
-inline bool does_file_exist_sync_node(const std::string& path, const std::string& fn)
+inline bool does_file_exist_sync_node(const std::string& path,
+                                      const std::string& fn)
 {
   TIMER_VERBOSE("does_file_exist_sync_node(path,fn)");
   ShuffledFieldsReader& sfr = get_shuffled_fields_reader(path);
   return does_file_exist_sync_node(sfr, fn);
 }
+
+// old code
+
+/*
+template <class M>
+long read_next(FieldsReader& fr, std::string& fn, Field<M>& field)
+// field endianess not converted at all
+{
+  TIMER_FLOPS("read_next(fr,fn,field)");
+  Coordinate total_site;
+  std::vector<char> data;
+  bool is_sparse_field = false;
+  const long total_bytes = read_next(fr, fn, total_site, data, is_sparse_field);
+  if (0 == total_bytes) {
+    return 0;
+  }
+  set_field_from_data(field, fr.geon, total_site, data, is_sparse_field);
+  timer.flops += total_bytes;
+  return total_bytes;
+}
+*/
+
+/*
+template <class M>
+long read_next(ShuffledFieldsReader& sfr, std::string& fn, Field<M>& field)
+// interface function
+{
+  TIMER_VERBOSE_FLOPS("read_next(sfr,fn,field)");
+  fn = "";
+  long total_bytes = 0;
+  std::vector<Field<M> > fs(sfr.frs.size());
+  for (int i = 0; i < (int)fs.size(); ++i) {
+    std::string fni;
+    const long bytes = read_next(sfr.frs[i], fni, fs[i]);
+    if (0 == bytes) {
+      qassert(0 == total_bytes);
+    } else {
+      total_bytes += bytes;
+    }
+    const int id_node = sfr.frs[i].geon.id_node;
+    if (id_node == 0) {
+      fn = fni;
+      qassert(get_id_node() == 0);
+    }
+  }
+  bcast(fn);
+  glb_sum(total_bytes);
+  if (0 == total_bytes) {
+    fn = "";
+    return 0;
+  }
+  displayln_info(fname +
+                 ssprintf(": read the next field with fn='%s'.", fn.c_str()));
+  Coordinate total_site;
+  int multiplicity = 0;
+  set_field_info_from_fields(total_site, multiplicity, fs, sfr);
+  Geometry geo;
+  geo.init(total_site, multiplicity);
+  field.init(geo);
+  shuffle_field_back(field, fs, sfr.new_size_node);
+  timer.flops += total_bytes;
+  return total_bytes;
+}
+*/
+
+/*
+template <class M>
+long read_next_double_from_float(ShuffledFieldsReader& sfr, std::string& fn,
+                                 Field<M>& field)
+// interface function
+{
+  TIMER_VERBOSE_FLOPS("read_next_double_from_float(sfr,fn,field)");
+  Field<float> ff;
+  const long total_bytes = read_next(sfr, fn, ff);
+  if (total_bytes == 0) {
+    return 0;
+  } else {
+    to_from_little_endian_32(get_data(ff));
+    convert_field_double_from_float(field, ff);
+    timer.flops += total_bytes;
+    return total_bytes;
+  }
+}
+*/
 
 }  // namespace qlat

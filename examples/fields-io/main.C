@@ -13,6 +13,26 @@ inline void test_read(const std::string& path, const std::string& fn)
                           crc, fn.c_str(), path.c_str()));
 }
 
+inline void test_read_sbs(const std::string& path, const std::string& fn, const ShuffledBitSet& sbs)
+{
+  TIMER_VERBOSE("test_read_sbs");
+  Field<Complex> f;
+  read_field_double_from_float(f, path, fn);
+  const crc32_t crc = field_crc32(f);
+  displayln_info(fname +
+                 ssprintf(": compute crc32=%08X for fn='%s' from path '%s'.",
+                          crc, fn.c_str(), path.c_str()));
+  SelectedField<Complex> sf;
+  read_field_double_from_float(sf, path, fn, sbs);
+  f.init();
+  set_field_selected(f, sf, sbs.fsel);
+  const crc32_t crc_1 = field_crc32(f);
+  displayln_info(fname +
+                 ssprintf(": compute crc32=%08X for fn='%s' from path '%s' with sbs.",
+                          crc_1, fn.c_str(), path.c_str()));
+  qassert(crc_1 == crc);
+}
+
 inline void demo(const std::string& tag, const Coordinate& total_site,
                  const long n_random_points, const long n_per_tslice,
                  const Coordinate& new_size_node)
@@ -118,14 +138,15 @@ inline void demo(const std::string& tag, const Coordinate& total_site,
   }
   //
   {
+    const ShuffledBitSet sbs = mk_shuffled_bitset(fsel, new_size_node);
     test_read("huge-data/" + tag + "/demo.lfs", "f.float.field");
-    test_read("huge-data/" + tag + "/demo.lfs", "f.float.sfield");
+    test_read_sbs("huge-data/" + tag + "/demo.lfs", "f.float.sfield", sbs);
     test_read("huge-data/" + tag + "/demo.lfs", "sf.float.field");
-    test_read("huge-data/" + tag + "/demo.lfs", "sf.float.sfield");
+    test_read_sbs("huge-data/" + tag + "/demo.lfs", "sf.float.sfield", sbs);
     test_read("huge-data/" + tag + "/demo.lfs", "fa.float.field");
-    test_read("huge-data/" + tag + "/demo.lfs", "fa.float.sfield");
+    test_read_sbs("huge-data/" + tag + "/demo.lfs", "fa.float.sfield", sbs);
     test_read("huge-data/" + tag + "/demo.lfs", "sfa.float.field");
-    test_read("huge-data/" + tag + "/demo.lfs", "sfa.float.sfield");
+    test_read_sbs("huge-data/" + tag + "/demo.lfs", "sfa.float.sfield", sbs);
   }
   //
   {
