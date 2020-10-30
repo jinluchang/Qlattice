@@ -209,5 +209,6 @@ plaq (2,1,0,0)x1 :  4.55939100544601743E+01
 Qlat::CommPlanCache: to add 15 / 32.
 Qlat::CommPlanCache: to add 16 / 32.
 Consistency: orig qnorm: 6.144000E+03 ; shift qnorm 6.144000E+03 ; diff qnorm: 0.000000E+00
-Reference: orig qnorm: 6.144000E+03 ; shift qnorm 6.144000E+03 ; diff qnorm: 0.000000E+00
+Reference (field_shift_direct): orig qnorm: 6.144000E+03 ; shift qnorm 6.144000E+03 ; diff qnorm: 0.000000E+00
+Reference (field_shift_steps): orig qnorm: 6.144000E+03 ; shift qnorm 6.144000E+03 ; diff qnorm: 0.000000E+00
 qlat::end(): MPI Finalized.

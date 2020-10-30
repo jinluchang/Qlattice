@@ -219,6 +219,7 @@ inline void test(const std::string& tag, const long n_per_tslice)
   read_selected_field_double_from_float(f, "huge-data/" + tag + "/sf-init.float.field", fsel);
   const crc32_t crc_1_2 = field_crc32(f);
   displayln_info(ssprintf("%06X selected read float", crc_1_2));
+  check_all_files_crc32_info("huge-data/" + tag);
 }
 
 inline void test_grid(const std::string& tag, const long n_per_tslice)
@@ -287,6 +288,7 @@ inline void test_grid(const std::string& tag, const long n_per_tslice)
   read_selected_field(f, "huge-data/" + tag + "/free-4nt8-init.sfield", fsel,
                       Coordinate(1, 1, 1, 8));
   displayln_info(ssprintf("%06X <- write and read back", field_crc32(f)));
+  check_all_files_crc32_info("huge-data/" + tag);
 }
 
 inline void test_selected_points(const std::string& tag, const long n_points)
@@ -306,10 +308,11 @@ inline void test_selected_points(const std::string& tag, const long n_points)
       psel.push_back(xg);
     }
   }
-  qmkdir_info("results");
-  save_point_selection_info(psel, "results/point-selection.txt");
+  qmkdir_info("huge-data");
+  qmkdir_info("huge-data/" + tag);
+  save_point_selection_info(psel, "huge-data/" + tag + "/point-selection.txt");
   const PointSelection psel_load =
-      load_point_selection_info("results/point-selection.txt");
+      load_point_selection_info("huge-data/" + tag + "/point-selection.txt");
   qassert(psel == psel_load);
   //
   Field<Complex> f;
@@ -326,9 +329,9 @@ inline void test_selected_points(const std::string& tag, const long n_points)
   //
   SelectedPoints<Complex> sp;
   set_selected_points(sp, f, psel);
-  save_selected_points_complex(sp, "results/f.lat");
+  save_selected_points_complex(sp, "huge-data/" + tag + "/f.lat");
   SelectedPoints<Complex> sp2;
-  load_selected_points_complex(sp2, "results/f.lat");
+  load_selected_points_complex(sp2, "huge-data/" + tag + "/f.lat");
   Field<Complex> f2;
   set_field_selected(f2, sp2, f.geo, psel);
   const crc32_t crc2 = field_crc32(f2);
@@ -338,7 +341,7 @@ inline void test_selected_points(const std::string& tag, const long n_points)
   //
   const Coordinate new_size_node(1, 1, 2, 4);
   const ShuffledBitSet sbs = mk_shuffled_bitset(total_site, psel, new_size_node);
-  const std::string path = "results/fields";
+  const std::string path = "huge-data/" + tag + "/fields";
   {
     ShuffledFieldsWriter sfw(path, new_size_node);
     write(sfw, "f.psel", f, sbs);
@@ -352,6 +355,56 @@ inline void test_selected_points(const std::string& tag, const long n_points)
   displayln_info(ssprintf(": %06X <- f3 write and read", crc3));
   //
   qassert(crc1 == crc3);
+  check_all_files_crc32_info("huge-data/" + tag);
+}
+
+inline void test_shift(const std::string& tag, const long n_per_tslice, const long n_points)
+{
+  TIMER_VERBOSE("test_shift");
+  const Coordinate total_site(4,4,4,8);
+  Geometry geo;
+  geo.init(total_site, 1);
+  RngState rs = RngState("test_shift");
+  Field<Complex> f;
+  f.init(geo, 2);
+  set_zero(f);
+  set_u_rand_double(f, rs.split("f-init"));
+  displayln_info(fname + ssprintf(": f crc32 = %08X", field_crc32(f)));
+  SelectedField<Complex> sf;
+  const PointSelection psel =
+      mk_random_point_selection(total_site, n_points, rs.split("psel"));
+  FieldSelection fsel;
+  set_field_selection(fsel, total_site, n_per_tslice, rs.split("fsel"), psel);
+  set_selected_field(sf, f, fsel);
+  SelectedField<Complex> sf0;
+  sf0 = sf;
+  Field<Complex> f0;
+  set_field_selected(f0, sf, fsel);
+  displayln_info(fname + ssprintf(": f0 (with sparse) crc32 = %08X", field_crc32(f0)));
+  std::vector<Coordinate> shift_list;
+  shift_list.push_back(Coordinate());
+  shift_list.push_back(Coordinate(12, 32, 22, -123));
+  shift_list.push_back(Coordinate(0, 0, 0, -123));
+  shift_list.push_back(Coordinate(0, 2, 2, 0));
+  for (int i = 0; i < (int)shift_list.size(); ++i) {
+    const Coordinate& shift = shift_list[i];
+    f.init();
+    f = f0;
+    field_shift(f, f, shift);
+    const crc32_t crc0 = field_crc32(f);
+    displayln_info(fname +
+                   ssprintf(": f (with sparse and shift) crc32 = %08X ; shift=%s", crc0, show(shift).c_str()));
+    const ShiftShufflePlan ssp = make_shift_shuffle_plan(fsel, shift);
+    f.init();
+    sf.init();
+    sf = sf0;
+    field_shift(sf, sf, ssp);
+    set_field_selected(f, sf, ssp.fsel);
+    const crc32_t crc1 = field_crc32(f);
+    displayln_info(fname +
+                   ssprintf(": f (from shifted sparse field) crc32 = %08X ; shift=%s", crc1, show(shift).c_str()));
+    qassert(crc1 == crc0);
+  }
 }
 
 int main(int argc, char* argv[])
@@ -360,10 +413,11 @@ int main(int argc, char* argv[])
   demo();
   test("16", 16);
   test("all", -1);
-  test_grid("16", 16);
-  test_selected_points("16", 1024);
-  check_all_files_crc32_info("huge-data");
-  check_all_files_crc32_info("results");
+  test_grid("grid-16", 16);
+  test_selected_points("points-1024", 1024);
+  test_shift("shift-16-1024", 2, 8);
+  test_shift("shift-0-1024", 0, 8);
+  test_shift("shift-16-0", 2, 0);
   Timer::display();
   end();
   return 0;

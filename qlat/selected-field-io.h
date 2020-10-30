@@ -138,18 +138,35 @@ inline void set_grid_field_selection(FieldSelection& fsel,
                                      const long n_per_tslice,
                                      const RngState& rs)
 {
-  FieldM<int64_t, 1> f_rank;
-  mk_grid_field_selection(f_rank, total_site, n_per_tslice, rs);
-  set_field_selection(fsel, f_rank, n_per_tslice);
+  TIMER_VERBOSE("set_grid_field_selection(fsel,total_site,n_per_tslice,rs)");
+  fsel.init();
+  mk_grid_field_selection(fsel.f_rank, total_site, n_per_tslice, rs);
+  update_field_selection(fsel);
+  update_field_selection(fsel, n_per_tslice);
 }
 
 inline void set_field_selection(FieldSelection& fsel,
                                 const Coordinate& total_site,
                                 const long n_per_tslice, const RngState& rs)
 {
-  FieldM<int64_t, 1> f_rank;
-  mk_field_selection(f_rank, total_site, n_per_tslice, rs);
-  set_field_selection(fsel, f_rank, n_per_tslice);
+  TIMER_VERBOSE("set_field_selection(fsel,total_site,n_per_tslice,rs)");
+  fsel.init();
+  mk_field_selection(fsel.f_rank, total_site, n_per_tslice, rs);
+  update_field_selection(fsel);
+  update_field_selection(fsel, n_per_tslice);
+}
+
+inline void set_field_selection(FieldSelection& fsel,
+                                const Coordinate& total_site,
+                                const long n_per_tslice, const RngState& rs,
+                                const PointSelection& psel)
+{
+  TIMER_VERBOSE("set_field_selection(fsel,total_site,n_per_tslice,rs,psel)");
+  fsel.init();
+  mk_field_selection(fsel.f_rank, total_site, n_per_tslice, rs);
+  add_field_selection(fsel.f_rank, psel);
+  update_field_selection(fsel);
+  update_field_selection(fsel, n_per_tslice);
 }
 
 inline void write_field_selection(const FieldSelection& fsel,

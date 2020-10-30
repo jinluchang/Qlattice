@@ -7,19 +7,19 @@ namespace qlat
 {  //
 
 inline void add_field_selection(FieldM<int64_t, 1>& f_rank,
-                                const std::vector<Coordinate>& xgs,
-                                const long rank_xgs = 1024L * 1024L * 1024L *
-                                                      1024L * 1024L)
+                                const PointSelection& psel,
+                                const long rank_psel = 1024L * 1024L * 1024L *
+                                                       1024L * 1024L)
 {
-  TIMER_VERBOSE("add_field_selection(xgs)");
+  TIMER_VERBOSE("add_field_selection(psel)");
   const Geometry& geo = f_rank.geo;
 #pragma omp parallel for
-  for (long i = 0; i < (long)xgs.size(); ++i) {
-    const Coordinate xl = geo.coordinate_l_from_g(xgs[i]);
+  for (long i = 0; i < (long)psel.size(); ++i) {
+    const Coordinate xl = geo.coordinate_l_from_g(psel[i]);
     if (geo.is_local(xl)) {
       int64_t& rank = f_rank.get_elem(xl);
       if (rank < 0) {
-        rank = rank_xgs;
+        rank = rank_psel;
       }
     }
   }
@@ -163,21 +163,13 @@ inline void update_field_selection(FieldSelection& fsel, const long n_per_tslice
 }
 
 inline void set_field_selection(FieldSelection& fsel,
-                                const FieldM<int64_t, 1>& f_rank)
-{
-  TIMER_VERBOSE("set_field_selection(fsel,f_rank)");
-  fsel.init();
-  fsel.f_rank = f_rank;
-  update_field_selection(fsel);
-}
-
-inline void set_field_selection(FieldSelection& fsel,
                                 const FieldM<int64_t, 1>& f_rank,
-                                const long n_per_tslice_,
+                                const long n_per_tslice_ = 0,
                                 const bool is_limit_on_rank = false)
 // call set_n_per_tslice if is_limit_on_rank=true
+// otherwise will strictly follow f_rank without constaint of n_per_tslice
 {
-  TIMER_VERBOSE("set_field_selection");
+  TIMER_VERBOSE("set_field_selection(fsel,f_rank,n_per_tslice)");
   fsel.init();
   fsel.f_rank = f_rank;
   if (is_limit_on_rank) {
@@ -190,9 +182,11 @@ inline void set_field_selection(FieldSelection& fsel,
 inline void set_field_selection(FieldSelection& fsel,
                                 const Coordinate& total_site)
 {
-  FieldM<int64_t, 1> f_rank;
-  mk_field_selection(f_rank, total_site);
-  set_field_selection(fsel, f_rank, -1);  // select all points
+  TIMER_VERBOSE("set_field_selection(fsel,total_site)");
+  fsel.init();
+  mk_field_selection(fsel.f_rank, total_site);
+  update_field_selection(fsel);
+  update_field_selection(fsel, -1);  // select all points
 }
 
 template <class M>

@@ -253,6 +253,26 @@ Qlat::make_shuffle_plan_generic: global_comm_size =        128
 shuffle_field_back(sel_f,sel_fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 95D6027F selected read float
+check_all_files_crc32_info: start checking path='huge-data/16'
+E8ACD943  fn='huge-data/16/fsel.field'
+31164131  fn='huge-data/16/free-4nt8-init.field'
+38D195D7  fn='huge-data/16/free-4nt8-init.sfield'
+865C4222  fn='huge-data/16/f-init.64.field'
+865C4222  fn='huge-data/16/f-init.double.field'
+A9D51B7F  fn='huge-data/16/f-init.float.field'
+265DD08B  fn='huge-data/16/sf-init.64.field'
+265DD08B  fn='huge-data/16/sf-init.double.field'
+4964C8BA  fn='huge-data/16/sf-init.float.field'
+check_all_files_crc32_info: summary for path='huge-data/16'
+    0 E8ACD943  fn='huge-data/16/fsel.field'
+    1 31164131  fn='huge-data/16/free-4nt8-init.field'
+    2 38D195D7  fn='huge-data/16/free-4nt8-init.sfield'
+    3 865C4222  fn='huge-data/16/f-init.64.field'
+    4 865C4222  fn='huge-data/16/f-init.double.field'
+    5 A9D51B7F  fn='huge-data/16/f-init.float.field'
+    6 265DD08B  fn='huge-data/16/sf-init.64.field'
+    7 265DD08B  fn='huge-data/16/sf-init.double.field'
+    8 4964C8BA  fn='huge-data/16/sf-init.float.field'
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
 shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
@@ -412,16 +432,36 @@ Qlat::make_shuffle_plan_generic: global_comm_size =        512
 shuffle_field_back(sel_f,sel_fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 E5EBEF7E selected read float
+check_all_files_crc32_info: start checking path='huge-data/all'
+A8DA5C42  fn='huge-data/all/fsel.field'
+31164131  fn='huge-data/all/free-4nt8-init.field'
+A666AC6E  fn='huge-data/all/free-4nt8-init.sfield'
+865C4222  fn='huge-data/all/f-init.64.field'
+865C4222  fn='huge-data/all/f-init.double.field'
+A9D51B7F  fn='huge-data/all/f-init.float.field'
+112CAF7D  fn='huge-data/all/sf-init.64.field'
+112CAF7D  fn='huge-data/all/sf-init.double.field'
+5999B49E  fn='huge-data/all/sf-init.float.field'
+check_all_files_crc32_info: summary for path='huge-data/all'
+    0 A8DA5C42  fn='huge-data/all/fsel.field'
+    1 31164131  fn='huge-data/all/free-4nt8-init.field'
+    2 A666AC6E  fn='huge-data/all/free-4nt8-init.sfield'
+    3 865C4222  fn='huge-data/all/f-init.64.field'
+    4 865C4222  fn='huge-data/all/f-init.double.field'
+    5 A9D51B7F  fn='huge-data/all/f-init.float.field'
+    6 112CAF7D  fn='huge-data/all/sf-init.64.field'
+    7 112CAF7D  fn='huge-data/all/sf-init.double.field'
+    8 5999B49E  fn='huge-data/all/sf-init.float.field'
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
 shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 : 8B5110BA <- f-init
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 C8EB73C4 <- only_keep_selected_points
-write_field: fn='huge-data/16/fsel.field'.
+write_field: fn='huge-data/grid-16/fsel.field'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
-read_field: fn='huge-data/16/fsel.field'.
+read_field: fn='huge-data/grid-16/fsel.field'.
 shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
@@ -440,12 +480,12 @@ shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 
 : A9CE10A1 <- f-init-2
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 C8EB73C4 <- set_field_selected_slow
-write_field: fn='huge-data/16/free-4nt8-init.field'.
+write_field: fn='huge-data/grid-16/free-4nt8-init.field'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 : 8B5110BA <- f-init
-write_selected_field: fn='huge-data/16/free-4nt8-init.sfield'.
+write_selected_field: fn='huge-data/grid-16/free-4nt8-init.sfield'.
 Qlat::make_shuffle_plan_generic: num_send_packs =          1
 Qlat::make_shuffle_plan_generic: num_recv_packs =          7
 Qlat::make_shuffle_plan_generic: num_send_msgs  =          4
@@ -458,7 +498,7 @@ Qlat::make_shuffle_plan_generic: global_comm_size =        128
 shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 : 4CB6850D <- f-init-3
-read_selected_field: fn='huge-data/16/free-4nt8-init.sfield'.
+read_selected_field: fn='huge-data/grid-16/free-4nt8-init.sfield'.
 Qlat::make_shuffle_plan_generic: num_send_packs =          1
 Qlat::make_shuffle_plan_generic: num_recv_packs =          7
 Qlat::make_shuffle_plan_generic: num_send_msgs  =          4
@@ -471,12 +511,20 @@ Qlat::make_shuffle_plan_generic: global_comm_size =        128
 shuffle_field_back(sel_f,sel_fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 C8EB73C4 <- write and read back
+check_all_files_crc32_info: start checking path='huge-data/grid-16'
+67D787A2  fn='huge-data/grid-16/fsel.field'
+31164131  fn='huge-data/grid-16/free-4nt8-init.field'
+6B4448A0  fn='huge-data/grid-16/free-4nt8-init.sfield'
+check_all_files_crc32_info: summary for path='huge-data/grid-16'
+    0 67D787A2  fn='huge-data/grid-16/fsel.field'
+    1 31164131  fn='huge-data/grid-16/free-4nt8-init.field'
+    2 6B4448A0  fn='huge-data/grid-16/free-4nt8-init.sfield'
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
-: BF7C4633 <- f-init
+: 79A1C7E2 <- f-init
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
-: 46CAAB7D <- f1 only selected
+: DD357EBC <- f1 only selected
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
-: 46CAAB7D <- f2 set and set
+: DD357EBC <- f2 set and set
 Qlat::make_shuffle_plan_generic: num_send_packs =          2
 Qlat::make_shuffle_plan_generic: num_recv_packs =          8
 Qlat::make_shuffle_plan_generic: num_send_msgs  =          2
@@ -496,85 +544,227 @@ Qlat::make_shuffle_plan_generic: total num_send_packs =         16
 Qlat::make_shuffle_plan_generic: total num_recv_packs =         64
 Qlat::make_shuffle_plan_generic: total num_send_msgs  =         16
 Qlat::make_shuffle_plan_generic: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_generic: global_comm_size =        440
-FieldsWriter: open 'results/fields.partial'.
+Qlat::make_shuffle_plan_generic: global_comm_size =        447
+FieldsWriter: open 'huge-data/points-1024/fields.partial'.
 write(sfw,fn,sf,sbs): writting sparse field with fn='f.psel'.
 shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x1x2x4 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
-FieldsWriter: close 'results/fields.partial'.
-FieldsReader: open 'results/fields'.
+FieldsWriter: close 'huge-data/points-1024/fields.partial'.
+FieldsReader: open 'huge-data/points-1024/fields'.
 read(sfr,fn,field): reading field with fn='f.psel'.
-read_tag(fr,fn,geo): 'f.psel' from 'results/fields'.
-read_tag(fr,fn,geo): 'f.psel' from 'results/fields'.
+read_tag(fr,fn,geo): 'f.psel' from 'huge-data/points-1024/fields'.
+read_tag(fr,fn,geo): 'f.psel' from 'huge-data/points-1024/fields'.
 shuffle_field_back(f,fs,sp): 1x1x2x4 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
-FieldsReader: close 'results/fields'.
+FieldsReader: close 'huge-data/points-1024/fields'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
-: 46CAAB7D <- f3 write and read
-check_all_files_crc32_info: start checking path='huge-data'
-31164131  fn='huge-data/f.field'
-E8ACD943  fn='huge-data/fsel.field'
-38D195D7  fn='huge-data/f.sfield'
-67D787A2  fn='huge-data/16/fsel.field'
-31164131  fn='huge-data/16/free-4nt8-init.field'
-6B4448A0  fn='huge-data/16/free-4nt8-init.sfield'
-865C4222  fn='huge-data/16/f-init.64.field'
-865C4222  fn='huge-data/16/f-init.double.field'
-A9D51B7F  fn='huge-data/16/f-init.float.field'
-265DD08B  fn='huge-data/16/sf-init.64.field'
-265DD08B  fn='huge-data/16/sf-init.double.field'
-4964C8BA  fn='huge-data/16/sf-init.float.field'
-A8DA5C42  fn='huge-data/all/fsel.field'
-31164131  fn='huge-data/all/free-4nt8-init.field'
-A666AC6E  fn='huge-data/all/free-4nt8-init.sfield'
-865C4222  fn='huge-data/all/f-init.64.field'
-865C4222  fn='huge-data/all/f-init.double.field'
-A9D51B7F  fn='huge-data/all/f-init.float.field'
-112CAF7D  fn='huge-data/all/sf-init.64.field'
-112CAF7D  fn='huge-data/all/sf-init.double.field'
-5999B49E  fn='huge-data/all/sf-init.float.field'
-check_all_files_crc32_info: summary for path='huge-data'
-    0 31164131  fn='huge-data/f.field'
-    1 E8ACD943  fn='huge-data/fsel.field'
-    2 38D195D7  fn='huge-data/f.sfield'
-    3 67D787A2  fn='huge-data/16/fsel.field'
-    4 31164131  fn='huge-data/16/free-4nt8-init.field'
-    5 6B4448A0  fn='huge-data/16/free-4nt8-init.sfield'
-    6 865C4222  fn='huge-data/16/f-init.64.field'
-    7 865C4222  fn='huge-data/16/f-init.double.field'
-    8 A9D51B7F  fn='huge-data/16/f-init.float.field'
-    9 265DD08B  fn='huge-data/16/sf-init.64.field'
-   10 265DD08B  fn='huge-data/16/sf-init.double.field'
-   11 4964C8BA  fn='huge-data/16/sf-init.float.field'
-   12 A8DA5C42  fn='huge-data/all/fsel.field'
-   13 31164131  fn='huge-data/all/free-4nt8-init.field'
-   14 A666AC6E  fn='huge-data/all/free-4nt8-init.sfield'
-   15 865C4222  fn='huge-data/all/f-init.64.field'
-   16 865C4222  fn='huge-data/all/f-init.double.field'
-   17 A9D51B7F  fn='huge-data/all/f-init.float.field'
-   18 112CAF7D  fn='huge-data/all/sf-init.64.field'
-   19 112CAF7D  fn='huge-data/all/sf-init.double.field'
-   20 5999B49E  fn='huge-data/all/sf-init.float.field'
-check_all_files_crc32_info: start checking path='results'
-51C1DFD2  fn='results/point-selection.txt'
-AC0468A1  fn='results/f.lat'
-3554530D  fn='results/fields/00/0000000000'
-89280ED6  fn='results/fields/01/0000000001'
-5D663E9C  fn='results/fields/02/0000000002'
-F4B17C27  fn='results/fields/03/0000000003'
-F47BE99E  fn='results/fields/04/0000000004'
-19FDB0DB  fn='results/fields/05/0000000005'
-70073214  fn='results/fields/06/0000000006'
-BDA6CF28  fn='results/fields/07/0000000007'
-9BFC07C9  fn='results/fields/geon-info.txt'
-check_all_files_crc32_info: summary for path='results'
-    0 51C1DFD2  fn='results/point-selection.txt'
-    1 AC0468A1  fn='results/f.lat'
-    2 3554530D  fn='results/fields/00/0000000000'
-    3 89280ED6  fn='results/fields/01/0000000001'
-    4 5D663E9C  fn='results/fields/02/0000000002'
-    5 F4B17C27  fn='results/fields/03/0000000003'
-    6 F47BE99E  fn='results/fields/04/0000000004'
-    7 19FDB0DB  fn='results/fields/05/0000000005'
-    8 70073214  fn='results/fields/06/0000000006'
-    9 BDA6CF28  fn='results/fields/07/0000000007'
-   10 9BFC07C9  fn='results/fields/geon-info.txt'
+: DD357EBC <- f3 write and read
+check_all_files_crc32_info: start checking path='huge-data/points-1024'
+C0B99607  fn='huge-data/points-1024/point-selection.txt'
+88B7A04F  fn='huge-data/points-1024/f.lat'
+1ADF2F8F  fn='huge-data/points-1024/fields/00/0000000000'
+343C704A  fn='huge-data/points-1024/fields/01/0000000001'
+9B90DBDD  fn='huge-data/points-1024/fields/02/0000000002'
+EB0FBEF8  fn='huge-data/points-1024/fields/03/0000000003'
+7BE948C3  fn='huge-data/points-1024/fields/04/0000000004'
+A52F460E  fn='huge-data/points-1024/fields/05/0000000005'
+B95D6299  fn='huge-data/points-1024/fields/06/0000000006'
+21106785  fn='huge-data/points-1024/fields/07/0000000007'
+9BFC07C9  fn='huge-data/points-1024/fields/geon-info.txt'
+check_all_files_crc32_info: summary for path='huge-data/points-1024'
+    0 C0B99607  fn='huge-data/points-1024/point-selection.txt'
+    1 88B7A04F  fn='huge-data/points-1024/f.lat'
+    2 1ADF2F8F  fn='huge-data/points-1024/fields/00/0000000000'
+    3 343C704A  fn='huge-data/points-1024/fields/01/0000000001'
+    4 9B90DBDD  fn='huge-data/points-1024/fields/02/0000000002'
+    5 EB0FBEF8  fn='huge-data/points-1024/fields/03/0000000003'
+    6 7BE948C3  fn='huge-data/points-1024/fields/04/0000000004'
+    7 A52F460E  fn='huge-data/points-1024/fields/05/0000000005'
+    8 B95D6299  fn='huge-data/points-1024/fields/06/0000000006'
+    9 21106785  fn='huge-data/points-1024/fields/07/0000000007'
+   10 9BFC07C9  fn='huge-data/points-1024/fields/geon-info.txt'
+shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+test_shift: f crc32 = 21C87191
+shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+test_shift: f0 (with sparse) crc32 = C2CBA1B2
+shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+test_shift: f (with sparse and shift) crc32 = C2CBA1B2 ; shift=0x0x0x0
+Qlat::make_shuffle_plan_generic: num_send_packs =          1
+Qlat::make_shuffle_plan_generic: num_recv_packs =          1
+Qlat::make_shuffle_plan_generic: num_send_msgs  =          1
+Qlat::make_shuffle_plan_generic: num_recv_msgs  =          1
+Qlat::make_shuffle_plan_generic: total num_send_packs =          8
+Qlat::make_shuffle_plan_generic: total num_recv_packs =          8
+Qlat::make_shuffle_plan_generic: total num_send_msgs  =          8
+Qlat::make_shuffle_plan_generic: total num_recv_msgs  =          8
+Qlat::make_shuffle_plan_generic: global_comm_size =         24
+shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+test_shift: f (from shifted sparse field) crc32 = C2CBA1B2 ; shift=0x0x0x0
+shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+test_shift: f (with sparse and shift) crc32 = 16A01272 ; shift=12x32x22x-123
+Qlat::make_shuffle_plan_generic: num_send_packs =          2
+Qlat::make_shuffle_plan_generic: num_recv_packs =          1
+Qlat::make_shuffle_plan_generic: num_send_msgs  =          2
+Qlat::make_shuffle_plan_generic: num_recv_msgs  =          1
+Qlat::make_shuffle_plan_generic: total num_send_packs =         10
+Qlat::make_shuffle_plan_generic: total num_recv_packs =         10
+Qlat::make_shuffle_plan_generic: total num_send_msgs  =         12
+Qlat::make_shuffle_plan_generic: total num_recv_msgs  =         12
+Qlat::make_shuffle_plan_generic: global_comm_size =         24
+shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+test_shift: f (from shifted sparse field) crc32 = 16A01272 ; shift=12x32x22x-123
+shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+test_shift: f (with sparse and shift) crc32 = 995988CE ; shift=0x0x0x-123
+Qlat::make_shuffle_plan_generic: num_send_packs =          2
+Qlat::make_shuffle_plan_generic: num_recv_packs =          1
+Qlat::make_shuffle_plan_generic: num_send_msgs  =          2
+Qlat::make_shuffle_plan_generic: num_recv_msgs  =          2
+Qlat::make_shuffle_plan_generic: total num_send_packs =         10
+Qlat::make_shuffle_plan_generic: total num_recv_packs =         10
+Qlat::make_shuffle_plan_generic: total num_send_msgs  =         12
+Qlat::make_shuffle_plan_generic: total num_recv_msgs  =         12
+Qlat::make_shuffle_plan_generic: global_comm_size =         24
+shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+test_shift: f (from shifted sparse field) crc32 = 995988CE ; shift=0x0x0x-123
+shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+test_shift: f (with sparse and shift) crc32 = A46B502F ; shift=0x2x2x0
+Qlat::make_shuffle_plan_generic: num_send_packs =          1
+Qlat::make_shuffle_plan_generic: num_recv_packs =          1
+Qlat::make_shuffle_plan_generic: num_send_msgs  =          1
+Qlat::make_shuffle_plan_generic: num_recv_msgs  =          1
+Qlat::make_shuffle_plan_generic: total num_send_packs =          8
+Qlat::make_shuffle_plan_generic: total num_recv_packs =          8
+Qlat::make_shuffle_plan_generic: total num_send_msgs  =          8
+Qlat::make_shuffle_plan_generic: total num_recv_msgs  =          8
+Qlat::make_shuffle_plan_generic: global_comm_size =         24
+shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+test_shift: f (from shifted sparse field) crc32 = A46B502F ; shift=0x2x2x0
+shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+test_shift: f crc32 = 21C87191
+shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+test_shift: f0 (with sparse) crc32 = 0C8E086C
+shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+test_shift: f (with sparse and shift) crc32 = 0C8E086C ; shift=0x0x0x0
+Qlat::make_shuffle_plan_generic: num_send_packs =          1
+Qlat::make_shuffle_plan_generic: num_recv_packs =          1
+Qlat::make_shuffle_plan_generic: num_send_msgs  =          1
+Qlat::make_shuffle_plan_generic: num_recv_msgs  =          1
+Qlat::make_shuffle_plan_generic: total num_send_packs =          6
+Qlat::make_shuffle_plan_generic: total num_recv_packs =          6
+Qlat::make_shuffle_plan_generic: total num_send_msgs  =          6
+Qlat::make_shuffle_plan_generic: total num_recv_msgs  =          6
+Qlat::make_shuffle_plan_generic: global_comm_size =          8
+shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+test_shift: f (from shifted sparse field) crc32 = 0C8E086C ; shift=0x0x0x0
+shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+test_shift: f (with sparse and shift) crc32 = 8CBE4D53 ; shift=12x32x22x-123
+Qlat::make_shuffle_plan_generic: num_send_packs =          1
+Qlat::make_shuffle_plan_generic: num_recv_packs =          1
+Qlat::make_shuffle_plan_generic: num_send_msgs  =          1
+Qlat::make_shuffle_plan_generic: num_recv_msgs  =          1
+Qlat::make_shuffle_plan_generic: total num_send_packs =          6
+Qlat::make_shuffle_plan_generic: total num_recv_packs =          6
+Qlat::make_shuffle_plan_generic: total num_send_msgs  =          6
+Qlat::make_shuffle_plan_generic: total num_recv_msgs  =          6
+Qlat::make_shuffle_plan_generic: global_comm_size =          8
+shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+test_shift: f (from shifted sparse field) crc32 = 8CBE4D53 ; shift=12x32x22x-123
+shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+test_shift: f (with sparse and shift) crc32 = AB699029 ; shift=0x0x0x-123
+Qlat::make_shuffle_plan_generic: num_send_packs =          1
+Qlat::make_shuffle_plan_generic: num_recv_packs =          1
+Qlat::make_shuffle_plan_generic: num_send_msgs  =          1
+Qlat::make_shuffle_plan_generic: num_recv_msgs  =          1
+Qlat::make_shuffle_plan_generic: total num_send_packs =          6
+Qlat::make_shuffle_plan_generic: total num_recv_packs =          6
+Qlat::make_shuffle_plan_generic: total num_send_msgs  =          6
+Qlat::make_shuffle_plan_generic: total num_recv_msgs  =          6
+Qlat::make_shuffle_plan_generic: global_comm_size =          8
+shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+test_shift: f (from shifted sparse field) crc32 = AB699029 ; shift=0x0x0x-123
+shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+test_shift: f (with sparse and shift) crc32 = 600E246B ; shift=0x2x2x0
+Qlat::make_shuffle_plan_generic: num_send_packs =          1
+Qlat::make_shuffle_plan_generic: num_recv_packs =          1
+Qlat::make_shuffle_plan_generic: num_send_msgs  =          1
+Qlat::make_shuffle_plan_generic: num_recv_msgs  =          1
+Qlat::make_shuffle_plan_generic: total num_send_packs =          6
+Qlat::make_shuffle_plan_generic: total num_recv_packs =          6
+Qlat::make_shuffle_plan_generic: total num_send_msgs  =          6
+Qlat::make_shuffle_plan_generic: total num_recv_msgs  =          6
+Qlat::make_shuffle_plan_generic: global_comm_size =          8
+shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+test_shift: f (from shifted sparse field) crc32 = 600E246B ; shift=0x2x2x0
+shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+test_shift: f crc32 = 21C87191
+shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+test_shift: f0 (with sparse) crc32 = 65117B58
+shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+test_shift: f (with sparse and shift) crc32 = 65117B58 ; shift=0x0x0x0
+Qlat::make_shuffle_plan_generic: num_send_packs =          1
+Qlat::make_shuffle_plan_generic: num_recv_packs =          1
+Qlat::make_shuffle_plan_generic: num_send_msgs  =          1
+Qlat::make_shuffle_plan_generic: num_recv_msgs  =          1
+Qlat::make_shuffle_plan_generic: total num_send_packs =          8
+Qlat::make_shuffle_plan_generic: total num_recv_packs =          8
+Qlat::make_shuffle_plan_generic: total num_send_msgs  =          8
+Qlat::make_shuffle_plan_generic: total num_recv_msgs  =          8
+Qlat::make_shuffle_plan_generic: global_comm_size =         16
+shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+test_shift: f (from shifted sparse field) crc32 = 65117B58 ; shift=0x0x0x0
+shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+test_shift: f (with sparse and shift) crc32 = 314A8DA7 ; shift=12x32x22x-123
+Qlat::make_shuffle_plan_generic: num_send_packs =          1
+Qlat::make_shuffle_plan_generic: num_recv_packs =          1
+Qlat::make_shuffle_plan_generic: num_send_msgs  =          1
+Qlat::make_shuffle_plan_generic: num_recv_msgs  =          1
+Qlat::make_shuffle_plan_generic: total num_send_packs =          9
+Qlat::make_shuffle_plan_generic: total num_recv_packs =          9
+Qlat::make_shuffle_plan_generic: total num_send_msgs  =         11
+Qlat::make_shuffle_plan_generic: total num_recv_msgs  =         11
+Qlat::make_shuffle_plan_generic: global_comm_size =         16
+shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+test_shift: f (from shifted sparse field) crc32 = 314A8DA7 ; shift=12x32x22x-123
+shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+test_shift: f (with sparse and shift) crc32 = 9964CA61 ; shift=0x0x0x-123
+Qlat::make_shuffle_plan_generic: num_send_packs =          1
+Qlat::make_shuffle_plan_generic: num_recv_packs =          1
+Qlat::make_shuffle_plan_generic: num_send_msgs  =          1
+Qlat::make_shuffle_plan_generic: num_recv_msgs  =          2
+Qlat::make_shuffle_plan_generic: total num_send_packs =          9
+Qlat::make_shuffle_plan_generic: total num_recv_packs =          9
+Qlat::make_shuffle_plan_generic: total num_send_msgs  =         11
+Qlat::make_shuffle_plan_generic: total num_recv_msgs  =         11
+Qlat::make_shuffle_plan_generic: global_comm_size =         16
+shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+test_shift: f (from shifted sparse field) crc32 = 9964CA61 ; shift=0x0x0x-123
+shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+test_shift: f (with sparse and shift) crc32 = 6F31A6C2 ; shift=0x2x2x0
+Qlat::make_shuffle_plan_generic: num_send_packs =          1
+Qlat::make_shuffle_plan_generic: num_recv_packs =          1
+Qlat::make_shuffle_plan_generic: num_send_msgs  =          1
+Qlat::make_shuffle_plan_generic: num_recv_msgs  =          1
+Qlat::make_shuffle_plan_generic: total num_send_packs =          8
+Qlat::make_shuffle_plan_generic: total num_recv_packs =          8
+Qlat::make_shuffle_plan_generic: total num_send_msgs  =          8
+Qlat::make_shuffle_plan_generic: total num_recv_msgs  =          8
+Qlat::make_shuffle_plan_generic: global_comm_size =         16
+shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+test_shift: f (from shifted sparse field) crc32 = 6F31A6C2 ; shift=0x2x2x0
 qlat::end(): MPI Finalized.

@@ -1227,6 +1227,45 @@ void field_shift_shuffle(Field<M>& f, const Field<M>& f0,
   f = fs[0];
 }
 
+struct ShiftShufflePlan {
+  Coordinate shift;
+  FieldSelection fsel;  // fsel after the shift
+  ShufflePlan sp;
+};
+
+inline ShiftShufflePlan make_shift_shuffle_plan(const FieldSelection& fsel,
+                                                const Coordinate& shift)
+{
+  TIMER_VERBOSE("make_shift_shuffle_plan");
+  ShiftShufflePlan ssp;
+  ssp.shift = shift;
+  const Geometry& geo = fsel.f_rank.geo;
+  const Coordinate& new_size_node = geo.geon.size_node;
+  ShuffleShiftGIndexMap func;
+  func.total_site = geo.total_site();
+  func.shift = shift;
+  std::vector<FieldSelection> fsels;
+  ssp.sp = make_shuffle_plan_generic(fsels, fsel, new_size_node, func);
+  qassert(fsels.size() == 1);
+  ssp.fsel = fsels[0];
+  return ssp;
+}
+
+template <class M>
+void field_shift(SelectedField<M>& sf, const SelectedField<M>& sf0,
+                 const ShiftShufflePlan& ssp)
+{
+  TIMER_VERBOSE_FLOPS("field_shift(sf,sf0,ssp)");
+  const Geometry& geo = sf0.geo;
+  const ShufflePlan& sp = ssp.sp;
+  timer.flops += sp.scp.global_comm_size * geo.multiplicity * sizeof(M);
+  std::vector<SelectedField<M> > sfs;
+  shuffle_field(sfs, sf0, sp);
+  qassert(sfs.size() == 1);
+  sf.init();
+  sf = sfs[0];
+}
+
 // old code
 
 inline ShufflePlan make_shuffle_plan_nofsel_nofunc(const ShufflePlanKey& spk)
