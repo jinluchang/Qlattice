@@ -410,6 +410,63 @@ void set_selected_field(SelectedField<M>& sf, const Field<M>& f,
 }
 
 template <class M>
+void set_selected_field(SelectedField<M>& sf, const SelectedField<M>& sf0,
+                        const FieldSelection& fsel, const FieldSelection& fsel0)
+{
+  TIMER("set_selected_field");
+  qassert(sf0.geo.is_only_local());
+  qassert(fsel.f_local_idx.geo.is_only_local());
+  qassert(fsel0.f_local_idx.geo.is_only_local());
+  qassert(geo_remult(sf0.geo) == fsel0.f_local_idx.geo);
+  qassert(geo_remult(sf0.geo) == fsel.f_local_idx.geo);
+  const Geometry& geo = sf0.geo;
+  const int multiplicity = geo.multiplicity;
+  sf.init(fsel, multiplicity);
+#pragma omp parallel for
+  for (long idx = 0; idx < fsel.n_elems; ++idx) {
+    const long index = fsel.indices[idx];
+    const long idx0 = fsel0.f_local_idx.get_elem(index);
+    Vector<M> sfv = sf.get_elems(idx);
+    if (idx0 >= 0) {
+      const Vector<M> fv = sf0.get_elems_const(idx0);
+      for (int m = 0; m < multiplicity; ++m) {
+        sfv[m] = fv[m];
+      }
+    } else {
+      set_zero(sfv);
+    }
+  }
+}
+
+template <class M>
+void set_selected_points(SelectedPoints<M>& sp, const SelectedField<M>& sf,
+                         const PointSelection& psel, const FieldSelection& fsel)
+{
+  TIMER("set_selected_points");
+  const Geometry& geo = sf.geo;
+  qassert(geo.is_only_local());
+  qassert(fsel.f_local_idx.geo.is_only_local());
+  qassert(geo_remult(sf.geo) == fsel.f_local_idx.geo);
+  const long n_points = psel.size();
+  sp.init(geo, psel);
+  set_zero(sp.points);
+#pragma omp parallel for
+  for (long idx = 0; idx < n_points; ++idx) {
+    const Coordinate& xg = psel[idx];
+    const Coordinate xl = geo.coordinate_l_from_g(xg);
+    if (geo.is_local(xl)) {
+      const long idx = fsel.f_local_idx.get_elem(xl);
+      const Vector<M> fv = sf.get_elems_const(idx);
+      Vector<M> spv = sp.get_elems(idx);
+      for (int m = 0; m < geo.multiplicity; ++m) {
+        spv[m] = fv[m];
+      }
+    }
+  }
+  glb_sum_byte_vec(get_data(sp.points));
+}
+
+template <class M>
 void set_field_selected(Field<M>& f, const SelectedField<M>& sf,
                         const FieldSelection& fsel)
 {
