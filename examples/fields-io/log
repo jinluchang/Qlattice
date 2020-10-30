@@ -65,21 +65,21 @@ Qlat::make_shuffle_plan_generic: global_comm_size =        128
 demo: save to disk
 write(sfw,fn,field): writting field with fn='f.field'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
-write(sfw,fn,field,sbs): writting sparse field with fn='f.sfield'.
-shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+write(sfw,fn,sf,sbs): writting sparse field with fn='f.sfield'.
+shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 write(sfw,fn,field): writting field with fn='f.float.field'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
-write(sfw,fn,field,sbs): writting sparse field with fn='f.float.sfield'.
-shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+write(sfw,fn,sf,sbs): writting sparse field with fn='f.float.sfield'.
+shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 demo: save sf to disk
 write(sfw,fn,field): writting field with fn='sf.field'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
-write(sfw,fn,field,sbs): writting sparse field with fn='sf.sfield'.
-shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+write(sfw,fn,sf,sbs): writting sparse field with fn='sf.sfield'.
+shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 write(sfw,fn,field): writting field with fn='sf.float.field'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
-write(sfw,fn,field,sbs): writting sparse field with fn='sf.float.sfield'.
-shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+write(sfw,fn,sf,sbs): writting sparse field with fn='sf.float.sfield'.
+shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 FieldsWriter: close 'huge-data/t0/demo.lfs.partial'.
 FieldsWriter: open 'huge-data/t0/demo.lfs.partial'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
@@ -95,21 +95,21 @@ Qlat::make_shuffle_plan_generic: global_comm_size =        128
 demo: save to disk append
 write(sfw,fn,field): writting field with fn='fa.field'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
-write(sfw,fn,field,sbs): writting sparse field with fn='fa.sfield'.
-shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+write(sfw,fn,sf,sbs): writting sparse field with fn='fa.sfield'.
+shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 write(sfw,fn,field): writting field with fn='fa.float.field'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
-write(sfw,fn,field,sbs): writting sparse field with fn='fa.float.sfield'.
-shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+write(sfw,fn,sf,sbs): writting sparse field with fn='fa.float.sfield'.
+shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 demo: save sf to disk append
 write(sfw,fn,field): writting field with fn='sfa.field'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
-write(sfw,fn,field,sbs): writting sparse field with fn='sfa.sfield'.
-shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+write(sfw,fn,sf,sbs): writting sparse field with fn='sfa.sfield'.
+shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 write(sfw,fn,field): writting field with fn='sfa.float.field'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
-write(sfw,fn,field,sbs): writting sparse field with fn='sfa.float.sfield'.
-shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+write(sfw,fn,sf,sbs): writting sparse field with fn='sfa.float.sfield'.
+shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 FieldsWriter: close 'huge-data/t0/demo.lfs.partial'.
 Qlat::ShuffledFieldsReaderCache: to add 1 / 16.
 FieldsReader: open 'huge-data/t0/demo.lfs'.
@@ -504,21 +504,21 @@ Qlat::make_shuffle_plan_generic: global_comm_size =         20
 demo: save to disk
 write(sfw,fn,field): writting field with fn='f.field'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
-write(sfw,fn,field,sbs): writting sparse field with fn='f.sfield'.
-shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+write(sfw,fn,sf,sbs): writting sparse field with fn='f.sfield'.
+shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 write(sfw,fn,field): writting field with fn='f.float.field'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
-write(sfw,fn,field,sbs): writting sparse field with fn='f.float.sfield'.
-shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+write(sfw,fn,sf,sbs): writting sparse field with fn='f.float.sfield'.
+shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 demo: save sf to disk
 write(sfw,fn,field): writting field with fn='sf.field'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
-write(sfw,fn,field,sbs): writting sparse field with fn='sf.sfield'.
-shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+write(sfw,fn,sf,sbs): writting sparse field with fn='sf.sfield'.
+shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 write(sfw,fn,field): writting field with fn='sf.float.field'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
-write(sfw,fn,field,sbs): writting sparse field with fn='sf.float.sfield'.
-shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+write(sfw,fn,sf,sbs): writting sparse field with fn='sf.float.sfield'.
+shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 FieldsWriter: close 'huge-data/t1/demo.lfs.partial'.
 FieldsWriter: open 'huge-data/t1/demo.lfs.partial'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
@@ -534,21 +534,21 @@ Qlat::make_shuffle_plan_generic: global_comm_size =         20
 demo: save to disk append
 write(sfw,fn,field): writting field with fn='fa.field'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
-write(sfw,fn,field,sbs): writting sparse field with fn='fa.sfield'.
-shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+write(sfw,fn,sf,sbs): writting sparse field with fn='fa.sfield'.
+shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 write(sfw,fn,field): writting field with fn='fa.float.field'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
-write(sfw,fn,field,sbs): writting sparse field with fn='fa.float.sfield'.
-shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+write(sfw,fn,sf,sbs): writting sparse field with fn='fa.float.sfield'.
+shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 demo: save sf to disk append
 write(sfw,fn,field): writting field with fn='sfa.field'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
-write(sfw,fn,field,sbs): writting sparse field with fn='sfa.sfield'.
-shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+write(sfw,fn,sf,sbs): writting sparse field with fn='sfa.sfield'.
+shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 write(sfw,fn,field): writting field with fn='sfa.float.field'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
-write(sfw,fn,field,sbs): writting sparse field with fn='sfa.float.sfield'.
-shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+write(sfw,fn,sf,sbs): writting sparse field with fn='sfa.float.sfield'.
+shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 FieldsWriter: close 'huge-data/t1/demo.lfs.partial'.
 Qlat::ShuffledFieldsReaderCache: to add 2 / 16.
 FieldsReader: open 'huge-data/t1/demo.lfs'.
@@ -943,21 +943,21 @@ Qlat::make_shuffle_plan_generic: global_comm_size =          8
 demo: save to disk
 write(sfw,fn,field): writting field with fn='f.field'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
-write(sfw,fn,field,sbs): writting sparse field with fn='f.sfield'.
-shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+write(sfw,fn,sf,sbs): writting sparse field with fn='f.sfield'.
+shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 write(sfw,fn,field): writting field with fn='f.float.field'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
-write(sfw,fn,field,sbs): writting sparse field with fn='f.float.sfield'.
-shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+write(sfw,fn,sf,sbs): writting sparse field with fn='f.float.sfield'.
+shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 demo: save sf to disk
 write(sfw,fn,field): writting field with fn='sf.field'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
-write(sfw,fn,field,sbs): writting sparse field with fn='sf.sfield'.
-shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+write(sfw,fn,sf,sbs): writting sparse field with fn='sf.sfield'.
+shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 write(sfw,fn,field): writting field with fn='sf.float.field'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
-write(sfw,fn,field,sbs): writting sparse field with fn='sf.float.sfield'.
-shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+write(sfw,fn,sf,sbs): writting sparse field with fn='sf.float.sfield'.
+shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 FieldsWriter: close 'huge-data/t2/demo.lfs.partial'.
 FieldsWriter: open 'huge-data/t2/demo.lfs.partial'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
@@ -973,21 +973,21 @@ Qlat::make_shuffle_plan_generic: global_comm_size =          8
 demo: save to disk append
 write(sfw,fn,field): writting field with fn='fa.field'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
-write(sfw,fn,field,sbs): writting sparse field with fn='fa.sfield'.
-shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+write(sfw,fn,sf,sbs): writting sparse field with fn='fa.sfield'.
+shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 write(sfw,fn,field): writting field with fn='fa.float.field'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
-write(sfw,fn,field,sbs): writting sparse field with fn='fa.float.sfield'.
-shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+write(sfw,fn,sf,sbs): writting sparse field with fn='fa.float.sfield'.
+shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 demo: save sf to disk append
 write(sfw,fn,field): writting field with fn='sfa.field'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
-write(sfw,fn,field,sbs): writting sparse field with fn='sfa.sfield'.
-shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
+write(sfw,fn,sf,sbs): writting sparse field with fn='sfa.sfield'.
+shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 write(sfw,fn,field): writting field with fn='sfa.float.field'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
-write(sfw,fn,field,sbs): writting sparse field with fn='sfa.float.sfield'.
-shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
+write(sfw,fn,sf,sbs): writting sparse field with fn='sfa.float.sfield'.
+shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 FieldsWriter: close 'huge-data/t2/demo.lfs.partial'.
 Qlat::ShuffledFieldsReaderCache: to add 3 / 16.
 FieldsReader: open 'huge-data/t2/demo.lfs'.

@@ -488,9 +488,18 @@ Qlat::make_shuffle_plan_generic: total num_recv_msgs  =         16
 Qlat::make_shuffle_plan_generic: global_comm_size =        512
 Qlat::ShufflePlanCache: to add 2 / 16.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x2x4 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
+Qlat::make_shuffle_plan_generic: num_send_packs =          2
+Qlat::make_shuffle_plan_generic: num_recv_packs =          8
+Qlat::make_shuffle_plan_generic: num_send_msgs  =          2
+Qlat::make_shuffle_plan_generic: num_recv_msgs  =          2
+Qlat::make_shuffle_plan_generic: total num_send_packs =         16
+Qlat::make_shuffle_plan_generic: total num_recv_packs =         64
+Qlat::make_shuffle_plan_generic: total num_send_msgs  =         16
+Qlat::make_shuffle_plan_generic: total num_recv_msgs  =         16
+Qlat::make_shuffle_plan_generic: global_comm_size =        440
 FieldsWriter: open 'results/fields.partial'.
-write(sfw,fn,field,sbs): writting sparse field with fn='f.psel'.
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x2x4 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+write(sfw,fn,sf,sbs): writting sparse field with fn='f.psel'.
+shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x1x2x4 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 FieldsWriter: close 'results/fields.partial'.
 FieldsReader: open 'results/fields'.
 read(sfr,fn,field): reading field with fn='f.psel'.

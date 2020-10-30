@@ -112,6 +112,21 @@ struct BitSet {
     compress((void*)src.data(), (void*)&dst[bytes.size()], sz_block);
     return dst;
   }
+  //
+  template <class M>
+  std::vector<char> compress_selected(const Vector<M>& src) const
+  {
+    size_t sz_compressed = src.size() * sizeof(M);
+    std::vector<char> dst(sz_compressed + bytes.size(), 0);
+    memcpy(&dst[0], &bytes[0], bytes.size());
+    if (src.size() == 0) {
+      qassert(cN == 0);
+    } else {
+      qassert(src.size() % cN == 0);
+      memcpy((void*)&dst[bytes.size()], src.data(), sz_compressed);
+    }
+    return dst;
+  }
 };
 
 inline std::vector<char> bitset_decompress(const std::vector<char>& data,
@@ -579,6 +594,7 @@ long write(FieldsWriter& fw, const std::string& fn, const Field<M>& field)
   return total_bytes;
 }
 
+/*
 template <class M>
 long write(FieldsWriter& fw, const std::string& fn, const Field<M>& field,
            const BitSet& bs)
@@ -587,6 +603,20 @@ long write(FieldsWriter& fw, const std::string& fn, const Field<M>& field,
   TIMER_FLOPS("write(fw,fn,field,bs)");
   const Geometry& geo = field.geo;
   const std::vector<char> data = bs.compress(get_data(field));
+  const long total_bytes = write(fw, fn, geo, get_data(data), true);
+  timer.flops += total_bytes;
+  return total_bytes;
+}
+*/
+
+template <class M>
+long write(FieldsWriter& fw, const std::string& fn, const SelectedField<M>& sf,
+           const BitSet& bs)
+// field already have endianess converted correctly
+{
+  TIMER_FLOPS("write(fw,fn,sf,bs)");
+  const Geometry& geo = sf.geo;
+  const std::vector<char> data = bs.compress_selected(get_data(sf));
   const long total_bytes = write(fw, fn, geo, get_data(data), true);
   timer.flops += total_bytes;
   return total_bytes;
@@ -894,23 +924,34 @@ long write(ShuffledFieldsWriter& sfw, const std::string& fn,
 
 template <class M>
 long write(ShuffledFieldsWriter& sfw, const std::string& fn,
-           const Field<M>& field, const ShuffledBitSet& sbs)
+           const SelectedField<M>& sf, const ShuffledBitSet& sbs)
 // interface function
 {
-  TIMER_VERBOSE_FLOPS("write(sfw,fn,field,sbs)");
+  TIMER_VERBOSE_FLOPS("write(sfw,fn,sf,sbs)");
   displayln_info(fname +
                  ssprintf(": writting sparse field with fn='%s'.", fn.c_str()));
-  std::vector<Field<M> > fs;
-  shuffle_field(fs, field, sfw.new_size_node);
-  qassert(fs.size() == sfw.fws.size());
+  std::vector<SelectedField<M> > sfs;
+  shuffle_field(sfs, sf, sbs.sp);
+  qassert(sfs.size() == sfw.fws.size());
   qassert(sbs.vbs.size() == sfw.fws.size());
   long total_bytes = 0;
-  for (int i = 0; i < (int)fs.size(); ++i) {
-    total_bytes += write(sfw.fws[i], fn, fs[i], sbs.vbs[i]);
+  for (int i = 0; i < (int)sfs.size(); ++i) {
+    total_bytes += write(sfw.fws[i], fn, sfs[i], sbs.vbs[i]);
   }
   glb_sum(total_bytes);
   timer.flops += total_bytes;
   return total_bytes;
+}
+
+template <class M>
+long write(ShuffledFieldsWriter& sfw, const std::string& fn,
+           const Field<M>& field, const ShuffledBitSet& sbs)
+// interface function
+{
+  TIMER_VERBOSE_FLOPS("write(sfw,fn,field,sbs)");
+  SelectedField<M> sf;
+  set_selected_field(sf, field, sbs.fsel);
+  return write(sfw, fn, sf, sbs);
 }
 
 template <class M>
@@ -1124,16 +1165,27 @@ long write_float_from_double(ShuffledFieldsWriter& sfw, const std::string& fn,
 
 template <class M>
 long write_float_from_double(ShuffledFieldsWriter& sfw, const std::string& fn,
+                             const SelectedField<M>& sf, const ShuffledBitSet& sbs)
+// interface function
+{
+  TIMER_VERBOSE_FLOPS("write_float_from_double(sfw,fn,sf,sbs)");
+  SelectedField<float> sff;
+  convert_field_float_from_double(sff, sf);
+  to_from_little_endian_32(get_data(sff));
+  const long total_bytes = write(sfw, fn, sff, sbs);
+  timer.flops += total_bytes;
+  return total_bytes;
+}
+
+template <class M>
+long write_float_from_double(ShuffledFieldsWriter& sfw, const std::string& fn,
                              const Field<M>& field, const ShuffledBitSet& sbs)
 // interface function
 {
   TIMER_VERBOSE_FLOPS("write_float_from_double(sfw,fn,field,sbs)");
-  Field<float> ff;
-  convert_field_float_from_double(ff, field);
-  to_from_little_endian_32(get_data(ff));
-  const long total_bytes = write(sfw, fn, ff, sbs);
-  timer.flops += total_bytes;
-  return total_bytes;
+  SelectedField<M> sf;
+  set_selected_field(sf, field, sbs.fsel);
+  return write_float_from_double(sfw, fn, sf, sbs);
 }
 
 template <class M>
