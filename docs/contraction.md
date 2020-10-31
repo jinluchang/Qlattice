@@ -66,7 +66,7 @@ $$
 
 ## ```contraction-pion.h```
 
-### Pion or Kaon correlation function
+### pion or kaon correlation function
 
 ```cpp
 inline LatData mk_pion_corr_table(const Coordinate& total_site)
@@ -113,7 +113,7 @@ $$
 \text{Tr}\big(\sum_{\vec x}\text{prop}_1(\vec x,t_\text{snk})\sum_{\vec y}\text{prop}_2(\vec y,t_\text{snk})^\dagger\big)
 $$
 
-### Two point function
+### two point function
 
 ```cpp
 inline LatData mk_two_point_table(const Coordinate& total_site)
@@ -182,7 +182,7 @@ $$
 \ea
 $$
 
-### Three point function
+### three point function
 
 ```cpp
 inline LatData mk_three_point_table(const Coordinate& total_site)
@@ -238,6 +238,63 @@ S_3(t_\text{src};t_\text{snk})
 \big( \gamma_5 S_2(t_\text{snk};t_\text{op},\vec x)^\dagger \gamma_5 \big)
 \Big)
 \Gamma_{\text{op}} 
+\ea
+$$
+
+## ```contraction-field.h```
+
+$$
+\ba
+t_\text{src} &=& \min(x_t,y_t) - t_\text{sep}
+\\
+t_\text{snk} &=& \max(x_t,y_t) + t_\text{sep}
+\ea
+$$
+
+### meson-vv
+
+Use ``xg_y`` as point source location, contraction for all available ``xg_x``.
+
+Proper factor is compensated so it can treated as if ``xg_x`` is contracted for all lattice sites.
+
+```cpp
+inline void contract_meson_vv_acc(
+    FieldM<Complex, 8 * 8>& meson_vv_decay,
+    FieldM<Complex, 8 * 8>& meson_vv_fission, const WallSrcProps& wsp1,
+    const WallSrcProps& wsp2, const SelProp& prop3_x_y, const Coordinate& xg_y,
+    const long xg_y_psel_idx, const int tsep, const PointSelection& psel,
+    const FieldSelection& fsel, const ShiftShufflePlan& ssp,
+    const ShiftShufflePlan& ssp_reflect);
+// xg_y = psel[xg_y_psel_idx] is the point src location for prop3_x_y
+// ssp = make_shift_shuffle_plan(fsel, -psrc_xg_y)
+// ssp_reflect = make_shift_shuffle_plan(fsel, -psrc_xg_y, true)
+```
+
+$$
+\ba
+H_\text{decay}(x-y)[8\mu+\nu]
+&\texttt{ += }&
+\frac{1}{2}\mathrm{Tr}
+[S_3(x;y)\gamma^{\mathrm{va}}_\nu S_2(y;t_\text{src})\gamma_5 S_1(t_\text{src};x)\gamma^{\mathrm{va}}_\mu]
+\\
+H_\text{decay}(y-x)[8\mu+\nu]
+&\texttt{ += }&
+\frac{1}{2}\mathrm{Tr}
+[S_3(y;x) \gamma^{\mathrm{va}}_\nu S_2(x;t_\text{src})\gamma_5 S_1(t_\text{src};y)\gamma^{\mathrm{va}}_\mu]
+\ea
+$$
+
+$$
+\ba
+H_\text{fission}(x-y)[8\mu+\nu]
+&\texttt{ += }&
+\frac{1}{2}\mathrm{Tr}
+[S_3(x;y)\gamma^{\mathrm{va}}_\nu S_2(y;t_\text{snk})\gamma_5 S_1(t_\text{snk};x)\gamma^{\mathrm{va}}_\mu]
+\\
+H_\text{fission}(y-x)[8\mu+\nu]
+&\texttt{ += }&
+\frac{1}{2}\mathrm{Tr}
+[S_3(y;x) \gamma^{\mathrm{va}}_\nu S_2(x;t_\text{snk})\gamma_5 S_1(t_\text{snk};y)\gamma^{\mathrm{va}}_\mu]
 \ea
 $$
 

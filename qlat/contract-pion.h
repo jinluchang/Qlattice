@@ -378,7 +378,7 @@ inline LatData contract_three_point_function(const SelProp& prop_a,
 // prop_b (type2)
 // wm_ab (type3)
 {
-  TIMER_VERBOSE("contract_three_point_function");
+  TIMER("contract_three_point_function");
   const std::array<SpinMatrix, 16>& gms = SpinMatrixConstants::get_cps_gms();
   const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
   const Geometry& geo = fsel.f_rank.geo;

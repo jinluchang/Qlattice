@@ -20,6 +20,7 @@ inline WallSrcProps& get_wall_src_props(const std::string& job_tag,
   WallSrcPropsCache& cache = get_wall_src_props_cache();
   if (not cache.has(key)) {
     TIMER_VERBOSE("get_wall_src_props");
+    display_fields_wsrc(job_tag, traj, type);
     WallSrcProps& wsp = cache[key];
     const Coordinate total_site = get_total_site(job_tag);
     wsp.initialized = true;

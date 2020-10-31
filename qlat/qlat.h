@@ -76,9 +76,11 @@
 
 #include <qlat/dslash.h>
 
+#include <qlat/contract-wall-src-prop.h>
+
 #include <qlat/contract-pion.h>
 
-#include <qlat/contract-wall-src-prop.h>
+#include <qlat/contract-field.h>
 
 #endif
 

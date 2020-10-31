@@ -1196,17 +1196,19 @@ void reflect_field(Field<M>& f)
 struct ShuffleShiftGIndexMap {
   Coordinate total_site;
   Coordinate shift;
+  bool is_reflect;  // shift and then reflect
   long operator()(const long gindex) const
   {
     const Coordinate xg = coordinate_from_index(gindex, total_site);
-    const Coordinate xg_shift = mod(xg + shift, total_site);
+    const Coordinate xg_shift = is_reflect ? mod(-(xg + shift), total_site)
+                                           : mod(xg + shift, total_site);
     return index_from_coordinate(xg_shift, total_site);
   }
 };
 
 template <class M>
 void field_shift_shuffle(Field<M>& f, const Field<M>& f0,
-                         const Coordinate& shift)
+                         const Coordinate& shift, const bool is_reflect = false)
 {
   TIMER_VERBOSE_FLOPS("field_shift_shuffle");
   timer.flops += get_data_size(f0) * f0.geo.geon.num_node;
@@ -1215,6 +1217,7 @@ void field_shift_shuffle(Field<M>& f, const Field<M>& f0,
   ShuffleShiftGIndexMap func;
   func.total_site = total_site;
   func.shift = shift;
+  func.is_reflect = is_reflect;
   FieldSelection fsel;
   set_field_selection(fsel, total_site);
   std::vector<FieldSelection> fsels;
@@ -1229,21 +1232,25 @@ void field_shift_shuffle(Field<M>& f, const Field<M>& f0,
 
 struct ShiftShufflePlan {
   Coordinate shift;
+  bool is_reflect;      // shift and then reflect
   FieldSelection fsel;  // fsel after the shift
   ShufflePlan sp;
 };
 
 inline ShiftShufflePlan make_shift_shuffle_plan(const FieldSelection& fsel,
-                                                const Coordinate& shift)
+                                                const Coordinate& shift,
+                                                const bool is_reflect = false)
 {
   TIMER_VERBOSE("make_shift_shuffle_plan");
   ShiftShufflePlan ssp;
   ssp.shift = shift;
+  ssp.is_reflect = is_reflect;
   const Geometry& geo = fsel.f_rank.geo;
   const Coordinate& new_size_node = geo.geon.size_node;
   ShuffleShiftGIndexMap func;
   func.total_site = geo.total_site();
   func.shift = shift;
+  func.is_reflect = is_reflect;
   std::vector<FieldSelection> fsels;
   ssp.sp = make_shuffle_plan_generic(fsels, fsel, new_size_node, func);
   qassert(fsels.size() == 1);

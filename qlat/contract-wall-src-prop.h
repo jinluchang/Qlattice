@@ -47,6 +47,8 @@ struct WallSrcProps {
   WallSrcProps() { init(); }
 };
 
+inline bool is_initialized(const WallSrcProps& wsp) { return wsp.initialized; }
+
 inline std::vector<WilsonMatrix> contract_wall_snk_prop(
     const SelProp& prop, const FieldSelection& fsel)
 {
@@ -181,12 +183,31 @@ inline void refresh_prop_with_gt(WallSrcProps& wsp, const GaugeTransform& gt,
 inline void refresh_wsp(WallSrcProps& wsp, const int num_exact,
                         const GaugeTransform& gt, const PointSelection& psel,
                         const FieldSelection& fsel)
+// interface function
 {
   TIMER_VERBOSE("refresh_wsp");
   const Coordinate total_site = fsel.f_rank.geo.total_site();
   refresh_wall_snk_prop(wsp, fsel);
   refresh_prob(wsp, total_site, num_exact);
   refresh_prop_with_gt(wsp, gt, psel, fsel);
+}
+
+inline const SelProp& get_prop(const WallSrcProps& wsp, const int tslice, const bool exact)
+{
+  if (exact) {
+    return wsp.exact[tslice];
+  } else {
+    return wsp.sloppy[tslice];
+  }
+}
+
+inline const PselProp& get_psel_prop(const WallSrcProps& wsp, const int tslice, const bool exact)
+{
+  if (exact) {
+    return wsp.exact_point_snk[tslice];
+  } else {
+    return wsp.sloppy_point_snk[tslice];
+  }
 }
 
 }  // namespace qlat

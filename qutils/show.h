@@ -71,6 +71,16 @@ inline std::string show(const std::string& x)
 }
 
 template <class T>
+std::string show_list(const std::vector<T>& vec)
+{
+  std::ostringstream out;
+  for (long i = 0; i < (long)vec.size(); ++i) {
+    out << ssprintf("%5ld: ", i) << show(vec[i]) << std::endl;
+  }
+  return out.str();
+}
+
+template <class T>
 std::string shows(const T& x)
 {
   std::ostringstream out;

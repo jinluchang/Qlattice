@@ -197,6 +197,26 @@ inline GaugeTransform& get_gauge_transform(const std::string& job_tag,
   return cache[key];
 }
 
+inline void display_fields_psrc(const std::string& job_tag, const int traj,
+                             const int type)
+{
+  TIMER_VERBOSE("display_fields_psrc");
+  const std::string path = get_prop_psrc_path(job_tag, traj, type);
+  const std::vector<std::string> fns = list_fields(path);
+  displayln_info(fname + ssprintf(": path='%s'.", path.c_str()));
+  display_info(show_list(fns));
+}
+
+inline void display_fields_wsrc(const std::string& job_tag, const int traj,
+                             const int type)
+{
+  TIMER_VERBOSE("display_fields_wsrc");
+  const std::string path = get_prop_wsrc_path(job_tag, traj, type);
+  const std::vector<std::string> fns = list_fields(path);
+  displayln_info(fname + ssprintf(": path='%s'.", path.c_str()));
+  display_info(show_list(fns));
+}
+
 inline long load_prop(PselProp& ps_prop, SelProp& s_prop,
                       const std::string& path, const std::string& fn,
                       const PointSelection& psel, const FieldSelection& fsel)
