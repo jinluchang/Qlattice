@@ -298,13 +298,13 @@ inline LatData contract_two_point_function(const WallSrcProps& wsp1,
                                            const WallSrcProps& wsp2,
                                            const FieldSelection& fsel)
 {
+  Timer::autodisplay();
   TIMER_VERBOSE("contract_two_point_function(wsp)");
   qassert(wsp1.sloppy_exact_ratio_1 == wsp2.sloppy_exact_ratio_1);
   const Geometry& geo = fsel.f_rank.geo;
   const Coordinate total_site = geo.total_site();
   LatData ld = mk_two_point_table(total_site);
   for (int tslice = 0; tslice < total_site[3]; ++tslice) {
-    Timer::autodisplay();
     qassert(is_initialized(wsp1.sloppy[tslice]));
     qassert(is_initialized(wsp2.sloppy[tslice]));
     const LatData ld_0 = contract_two_point_function(

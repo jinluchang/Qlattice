@@ -68,6 +68,7 @@ inline void compute_meson_vv_type(const std::string& job_tag, const int traj,
     if (get_point_src_info(job_tag, traj, xg_y, type3).size() == 0) {
       continue;
     }
+    Timer::autodisplay();
     TIMER_VERBOSE("compute_meson_vv_type-iter");
     iter += 1;
     const SelProp& prop3_x_y = get_prop_psrc_ama(job_tag, traj, xg_y, type3);
