@@ -181,6 +181,10 @@ template <class M>
 const Field<M>& operator+=(Field<M>& f, const Field<M>& f1)
 {
   TIMER("field_operator+=");
+  if (not is_initialized(f)) {
+    f = f1;
+    return f;
+  }
   qassert(is_matching_geo_mult(f.geo, f1.geo));
   const Geometry& geo = f.geo;
 #pragma omp parallel for
@@ -197,6 +201,12 @@ template <class M>
 const Field<M>& operator-=(Field<M>& f, const Field<M>& f1)
 {
   TIMER("field_operator-=");
+  if (not is_initialized(f)) {
+    f.init(f1.geo);
+    set_zero(f);
+    f -= f1;
+    return f;
+  }
   qassert(is_matching_geo_mult(f.geo, f1.geo));
   const Geometry& geo = f.geo;
 #pragma omp parallel for

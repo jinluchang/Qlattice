@@ -173,6 +173,18 @@ bool is_initialized(const SelectedPoints<M>& sp)
 }
 
 template <class M>
+Vector<M> get_data(const SelectedPoints<M>& sp)
+{
+  return get_data(sp.points);
+}
+
+template <class M>
+void set_zero(SelectedPoints<M>& sp)
+{
+  set_zero(get_data(sp));
+}
+
+template <class M>
 const SelectedPoints<M>& operator+=(SelectedPoints<M>& f,
                                     const SelectedPoints<M>& f1)
 {
@@ -198,7 +210,9 @@ const SelectedPoints<M>& operator-=(SelectedPoints<M>& f,
 {
   TIMER("sel_points_operator-=");
   if (not f.initialized) {
-    f = f1;
+    f.init(f1.n_points, f1.multiplicity);
+    set_zero(f);
+    f -= f1;
   } else {
     qassert(f1.initialized);
     qassert(f.multiplicity == f1.multiplicity);

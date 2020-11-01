@@ -307,7 +307,9 @@ const SelectedField<M>& operator-=(SelectedField<M>& f,
 {
   TIMER("sel_field_operator-=");
   if (not f.initialized) {
-    f = f1;
+    f.init(f1.geo, f1.n_elems, f1.geo.multiplicity);
+    set_zero(f);
+    f -= f1;
   } else {
     qassert(f1.initialized);
     qassert(is_matching_geo_mult(f.geo, f1.geo));
