@@ -30,6 +30,11 @@ inline void test()
   std::vector<int> trajs;
   trajs.push_back(1900);
   trajs.push_back(2260);
+  trajs.push_back(2270);
+  trajs.push_back(2280);
+  trajs.push_back(2290);
+  trajs.push_back(2300);
+  trajs.push_back(2310);
   for (long i = 0; i < (long)trajs.size(); ++i) {
     const int traj = trajs[i];
     FieldM<Complex, 8 * 8> meson_vv_tmp;

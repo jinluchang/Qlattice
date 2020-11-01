@@ -1,5 +1,6 @@
 #include "compute-check-prop.h"
 #include "compute-meson-vv.h"
+#include "compute-psel-fsel-distribution.h"
 #include "compute-three-point-func.h"
 #include "compute-two-point-func.h"
 #include "compute-wall-src-prop-norm-ratio.h"
@@ -20,6 +21,7 @@ inline void compute_traj(const std::string& job_tag, const int traj)
   // compute_wall_src_prop_norm_ratio(job_tag, traj);
   compute_two_point_func(job_tag, traj);
   compute_three_point_func(job_tag, traj);
+  compute_psel_fsel_distribution(job_tag, traj);
   compute_meson_vv(job_tag, traj);
   //
   clear_all_data_cache();

@@ -134,6 +134,29 @@ S_3(t_\text{src};t_\text{snk})
 \ea
 $$
 
+## ```compute-psel-fsel-distribution.h```
+
+```cpp
+ssprintf("analysis/field-psel-fsel-distribution/%s/results=%d", job_tag.c_str(), traj)
+```
+
+Data format: ``FieldM<Complex, 1>`` with ``write_field_double``.
+$$
+H(x-y) = 1
+$$
+
+```cpp
+ssprintf("/pos.field")
+```
+
+```cpp
+ssprintf("/neg.field")
+```
+
+```cpp
+ssprintf("/avg.field")
+```
+
 ## ```compute-meson-vv.h```
 
 ```cpp

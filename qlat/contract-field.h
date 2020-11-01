@@ -5,6 +5,31 @@
 namespace qlat
 {  //
 
+inline void contract_psel_fsel_distribution(FieldM<Complex, 1>& pos,
+                                            const Coordinate& xg_y,
+                                            const long xg_y_psel_idx,
+                                            const PointSelection& psel,
+                                            const FieldSelection& fsel,
+                                            const ShiftShufflePlan& ssp)
+// xg_y = psel[xg_y_psel_idx] is the point src location for prop3_x_y
+// ssp = make_shift_shuffle_plan(fsel, -xg_y);
+{
+  TIMER_VERBOSE("contract_psel_fsel_distribution");
+  qassert(psel[xg_y_psel_idx] == xg_y);
+  qassert(ssp.shift == -xg_y);
+  qassert(ssp.is_reflect == false);
+  SelectedField<Complex> s_pos;
+  s_pos.init(fsel, 1);
+#pragma omp parallel for
+  for (long idx = 0; idx < fsel.n_elems; ++idx) {
+    s_pos.get_elem(idx) = 1.0;
+  }
+  field_shift(s_pos, s_pos, ssp);
+  qassert(fsel.prob == ssp.fsel.prob);
+  const Complex coef = 1.0 / fsel.prob;
+  acc_field(pos, coef, s_pos, ssp.fsel);
+}
+
 inline std::array<SpinMatrix, 8>& get_va_matrices()
 {
   static bool initialized = false;

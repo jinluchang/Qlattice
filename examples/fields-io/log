@@ -113,6 +113,7 @@ shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_s
 FieldsWriter: close 'huge-data/t0/demo.lfs.partial'.
 Qlat::ShuffledFieldsReaderCache: to add 1 / 16.
 FieldsReader: open 'huge-data/t0/demo.lfs'.
+does_file_exist_sync_node(sfr,fn): reading field with fn='CHECK-FILE'.
 read_tag(fr,fn,geo): 'f.field' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,geo): 'f.sfield' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,geo): 'f.float.field' from 'huge-data/t0/demo.lfs'.
@@ -552,6 +553,7 @@ shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_s
 FieldsWriter: close 'huge-data/t1/demo.lfs.partial'.
 Qlat::ShuffledFieldsReaderCache: to add 2 / 16.
 FieldsReader: open 'huge-data/t1/demo.lfs'.
+does_file_exist_sync_node(sfr,fn): reading field with fn='CHECK-FILE'.
 read_tag(fr,fn,geo): 'f.field' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,geo): 'f.sfield' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,geo): 'f.float.field' from 'huge-data/t1/demo.lfs'.
@@ -991,6 +993,7 @@ shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_s
 FieldsWriter: close 'huge-data/t2/demo.lfs.partial'.
 Qlat::ShuffledFieldsReaderCache: to add 3 / 16.
 FieldsReader: open 'huge-data/t2/demo.lfs'.
+does_file_exist_sync_node(sfr,fn): reading field with fn='CHECK-FILE'.
 read_tag(fr,fn,geo): 'f.field' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,geo): 'f.sfield' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,geo): 'f.float.field' from 'huge-data/t2/demo.lfs'.
