@@ -131,7 +131,7 @@ inline const SelProp& get_prop_psrc_ama(const std::string& job_tag,
       for (long ps_idx = 0; ps_idx < ps_prop.n_points; ++ps_idx) {
         const Coordinate& xg = psel[ps_idx];
         const Coordinate xl = geo.coordinate_l_from_g(xg);
-        if (geo.is_local(xl)) {
+        if (not geo.is_local(xl)) {
           continue;
         }
         const long s_idx = fsel.f_local_idx.get_elem(xl);
