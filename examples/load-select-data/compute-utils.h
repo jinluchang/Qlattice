@@ -38,7 +38,7 @@ inline int tsep_op_wall_src(const std::string& job_tag)
 
 inline SelPropCache& get_prop_psrc_ama_cache()
 {
-  static SelPropCache cache("PropPsrcAmaCache", 8, 2);
+  static SelPropCache cache("PropPsrcAmaCache", 4, 1);
   return cache;
 }
 
@@ -50,13 +50,17 @@ inline const PselProp& get_psel_prop_psrc_ama(const std::string& job_tag,
   TIMER_VERBOSE("get_psel_prop_psrc_ama");
   const std::vector<PointInfo>& pis_xgt =
       get_point_src_info(job_tag, traj, xg, type);
+  if (pis_xgt.size() == 0) {
+    static PselProp ps_prop;
+    return ps_prop;
+  }
   if (pis_xgt.size() == 1) {
     qassert(pis_xgt[0].accuracy == 0);
     return get_psel_prop_psrc(job_tag, traj, xg, type, 0);
   }
+  PselPropCache& cache = get_psel_prop_cache();
   const std::string key = ssprintf("%s,%d,%s,%d,psrc-ama", show(xg).c_str(),
                                    type, job_tag.c_str(), traj);
-  PselPropCache& cache = get_psel_prop_cache();
   if (not cache.has(key)) {
     const TypeAccuracyTable& tat = get_type_accuracy_table(job_tag, traj);
     qassert(get_accuracy_weight(tat, type, 0) == 1.0);
@@ -86,13 +90,17 @@ inline const SelProp& get_prop_psrc_ama(const std::string& job_tag,
   TIMER_VERBOSE("get_prop_psrc_ama");
   const std::vector<PointInfo>& pis_xgt =
       get_point_src_info(job_tag, traj, xg, type);
+  if (pis_xgt.size() == 0) {
+    static SelProp s_prop;
+    return s_prop;
+  }
   if (pis_xgt.size() == 1) {
     qassert(pis_xgt[0].accuracy == 0);
     return get_prop_psrc(job_tag, traj, xg, type, 0);
   }
+  SelPropCache& cache = get_prop_psrc_ama_cache();
   const std::string key = ssprintf("%s,%d,%s,%d,psrc-ama", show(xg).c_str(),
                                    type, job_tag.c_str(), traj);
-  SelPropCache& cache = get_prop_psrc_ama_cache();
   if (not cache.has(key)) {
     const TypeAccuracyTable& tat = get_type_accuracy_table(job_tag, traj);
     qassert(get_accuracy_weight(tat, type, 0) == 1.0);

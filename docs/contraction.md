@@ -266,8 +266,8 @@ inline void contract_meson_vv_acc(
     const FieldSelection& fsel, const ShiftShufflePlan& ssp,
     const ShiftShufflePlan& ssp_reflect);
 // xg_y = psel[xg_y_psel_idx] is the point src location for prop3_x_y
-// ssp = make_shift_shuffle_plan(fsel, -psrc_xg_y)
-// ssp_reflect = make_shift_shuffle_plan(fsel, -psrc_xg_y, true)
+// ssp = make_shift_shuffle_plan(fsel, -xg_y);
+// ssp_reflect = make_shift_shuffle_plan(fsel, -xg_y, true);
 ```
 
 $$

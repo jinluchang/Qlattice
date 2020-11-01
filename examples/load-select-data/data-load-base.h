@@ -254,7 +254,12 @@ inline const std::vector<PointInfo>& get_point_src_info(
 {
   const PointInfoMap& pim = get_point_info_map(job_tag, traj);
   const std::string tag = ssprintf("%s,%d", show(xg).c_str(), type);
-  return pim.at(tag);
+  if (pim.count(tag) > 0) {
+    return pim.at(tag);
+  } else {
+    static std::vector<PointInfo> pis_empty;
+    return pis_empty;
+  }
 }
 
 inline void display_fields_psrc(const std::string& job_tag, const int traj,
