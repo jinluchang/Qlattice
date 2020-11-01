@@ -74,10 +74,18 @@ inline const PselProp& get_psel_prop_psrc_ama(const std::string& job_tag,
       coefs[acc - 1] -= weight;
     }
     PselProp& ps_prop = cache[key];
-    for (int acc = 1; acc < num_acc; ++acc) {
+    for (int acc = 0; acc < num_acc; ++acc) {
       PselProp ps_prop_acc = get_psel_prop_psrc(job_tag, traj, xg, type, acc);
       ps_prop_acc *= coefs[acc];
       ps_prop += ps_prop_acc;
+    }
+    if (is_check_prop_consistency()) {
+      PselProp ps_prop_diff = ps_prop;
+      ps_prop_diff -= get_psel_prop_psrc(job_tag, traj, xg, type, 0);
+      displayln_info(
+          fname +
+          ssprintf(": ps_prop ama diff qnorm = %24.17E. ps_prop qnorm = %24.17E",
+                   qnorm(ps_prop_diff), qnorm(ps_prop)));
     }
   }
   return cache[key];
@@ -114,7 +122,7 @@ inline const SelProp& get_prop_psrc_ama(const std::string& job_tag,
       coefs[acc - 1] -= weight;
     }
     SelProp& s_prop = cache[key];
-    for (int acc = 1; acc < num_acc; ++acc) {
+    for (int acc = 0; acc < num_acc; ++acc) {
       SelProp s_prop_acc = get_prop_psrc(job_tag, traj, xg, type, acc);
       s_prop_acc *= coefs[acc];
       s_prop += s_prop_acc;
