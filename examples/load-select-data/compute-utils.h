@@ -126,25 +126,28 @@ inline const SelProp& get_prop_psrc_ama(const std::string& job_tag,
       const FieldSelection& fsel = get_field_selection(job_tag, traj);
       const Geometry& geo = fsel.f_rank.geo;
       qassert(ps_prop.n_points == (long)psel.size());
+      double qnorm_comm = 0.0;
+      double qnorm_diff = 0.0;
       for (long ps_idx = 0; ps_idx < ps_prop.n_points; ++ps_idx) {
         const Coordinate& xg = psel[ps_idx];
         const Coordinate xl = geo.coordinate_l_from_g(xg);
+        if (geo.is_local(xl)) {
+          continue;
+        }
         const long s_idx = fsel.f_local_idx.get_elem(xl);
-        double qnorm_comm = 0.0;
-        double qnorm_diff = 0.0;
         if (s_idx >= 0) {
           qnorm_comm += qnorm(s_prop.get_elem(s_idx));
           qnorm_diff +=
               qnorm(ps_prop.get_elem(ps_idx) - s_prop.get_elem(s_idx));
         }
-        glb_sum(qnorm_comm);
-        glb_sum(qnorm_diff);
-        displayln_info(
-            fname +
-            ssprintf(": ps_prop diff qnorm = %24.17E. ps_prop qnorm = %24.17E",
-                     qnorm_diff, qnorm_comm));
-        qassert(qnorm_diff == 0.0);
       }
+      glb_sum(qnorm_comm);
+      glb_sum(qnorm_diff);
+      displayln_info(
+          fname +
+          ssprintf(": ps_prop diff qnorm = %24.17E. ps_prop qnorm = %24.17E",
+                   qnorm_diff, qnorm_comm));
+      qassert(qnorm_diff == 0.0);
     }
   }
   return cache[key];
