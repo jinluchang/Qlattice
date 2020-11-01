@@ -167,10 +167,10 @@ inline void contract_meson_vv_acc(
   qassert(is_initialized(wsp2));
   qassert(is_initialized(prop3_x_y));
   qassert(psel[xg_y_psel_idx] == xg_y);
-  qassert(ssp.shift == - xg_y);
-  qassert(ssp_reflect.shift == - xg_y);
+  qassert(ssp.shift == -xg_y);
+  qassert(ssp_reflect.shift == -xg_y);
   qassert(ssp.is_reflect == false);
-  qassert(ssp.is_reflect == true);
+  qassert(ssp_reflect.is_reflect == true);
   std::vector<SelectedField<Complex> > meson_vv;
   contract_meson_vv_unshifted(meson_vv, wsp1, wsp2, prop3_x_y, xg_y,
                               xg_y_psel_idx, tsep, psel, fsel);
