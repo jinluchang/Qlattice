@@ -46,6 +46,14 @@ typedef Cache<std::string, PselProp> PselPropCache;
 
 typedef Cache<std::string, SelProp> SelPropCache;
 
+typedef std::vector<std::vector<int> > TypeAccuracyTable;
+
+typedef Cache<std::string, TypeAccuracyTable> TypeAccuracyTableCache;
+
+typedef std::map<std::string, std::vector<PointInfo> > PointInfoMap;
+
+typedef Cache<std::string, PointInfoMap> PointInfoMapCache;
+
 inline PointSelectionCache& get_point_selection_cache()
 {
   static PointSelectionCache cache("PointSelectionCache", 8, 2);
@@ -84,24 +92,36 @@ inline GaugeTransformCache& get_gauge_transform_cache()
 
 inline PselPropCache& get_psel_prop_cache()
 {
-  static PselPropCache cache("PselPropCache", 32, 4);
+  static PselPropCache cache("PselPropCache", 128, 4);
   return cache;
 }
 
 inline SelPropCache& get_prop_psrc_cache()
 {
-  static SelPropCache cache("PropPsrcCache", 8, 4);
+  static SelPropCache cache("PropPsrcCache", 8, 2);
   return cache;
 }
 
 inline SelPropCache& get_prop_wsrc_cache()
 {
-  static SelPropCache cache("PropWsrcCache", 8, 4);
+  static SelPropCache cache("PropWsrcCache", 4, 1);
   return cache;
 }
 
-inline PointSelection& get_point_selection(const std::string& job_tag,
-                                           const int traj)
+inline TypeAccuracyTableCache& get_type_accuracy_table_cache()
+{
+  static TypeAccuracyTableCache cache("TypeAccuracyTableCache", 4, 2);
+  return cache;
+}
+
+inline PointInfoMapCache& get_point_info_map_cache()
+{
+  static PointInfoMapCache cache("PointInfoMapCache", 4, 2);
+  return cache;
+}
+
+inline const PointSelection& get_point_selection(const std::string& job_tag,
+                                                 const int traj)
 {
   const std::string key = ssprintf("%s,%d,psel", job_tag.c_str(), traj);
   PointSelectionCache& cache = get_point_selection_cache();
@@ -115,8 +135,8 @@ inline PointSelection& get_point_selection(const std::string& job_tag,
   return cache[key];
 }
 
-inline FieldSelection& get_field_selection(const std::string& job_tag,
-                                           const int traj)
+inline const FieldSelection& get_field_selection(const std::string& job_tag,
+                                                 const int traj)
 {
   const std::string key = ssprintf("%s,%d,fsel", job_tag.c_str(), traj);
   FieldSelectionCache& cache = get_field_selection_cache();
@@ -133,9 +153,9 @@ inline FieldSelection& get_field_selection(const std::string& job_tag,
   return cache[key];
 }
 
-inline ShuffledBitSet& get_shuffled_bit_set(const std::string& job_tag,
-                                            const int traj,
-                                            const std::string& path)
+inline const ShuffledBitSet& get_shuffled_bit_set(const std::string& job_tag,
+                                                  const int traj,
+                                                  const std::string& path)
 {
   const std::string key =
       ssprintf("%s,%d,%s,sbs", job_tag.c_str(), traj, path.c_str());
@@ -155,8 +175,8 @@ inline ShuffledBitSet& get_shuffled_bit_set(const std::string& job_tag,
   return cache[key];
 }
 
-inline std::vector<PointInfo>& get_point_src_info(const std::string& job_tag,
-                                                  const int traj)
+inline const std::vector<PointInfo>& get_point_src_info(
+    const std::string& job_tag, const int traj)
 {
   const std::string key = ssprintf("%s,%d,pis", job_tag.c_str(), traj);
   PointSrcInfoCache& cache = get_point_src_info_cache();
@@ -169,7 +189,8 @@ inline std::vector<PointInfo>& get_point_src_info(const std::string& job_tag,
   return cache[key];
 }
 
-inline PointDistribution& get_point_distribution(const std::string& job_tag)
+inline const PointDistribution& get_point_distribution(
+    const std::string& job_tag)
 {
   const std::string key = ssprintf("%s,pd", job_tag.c_str());
   PointDistributionCache& cache = get_point_distribution_cache();
@@ -183,8 +204,8 @@ inline PointDistribution& get_point_distribution(const std::string& job_tag)
   return cache[key];
 }
 
-inline GaugeTransform& get_gauge_transform(const std::string& job_tag,
-                                           const int traj)
+inline const GaugeTransform& get_gauge_transform(const std::string& job_tag,
+                                                 const int traj)
 {
   const std::string key = ssprintf("%s,%d,gt", job_tag.c_str(), traj);
   GaugeTransformCache& cache = get_gauge_transform_cache();
@@ -197,8 +218,47 @@ inline GaugeTransform& get_gauge_transform(const std::string& job_tag,
   return cache[key];
 }
 
+inline const TypeAccuracyTable& get_type_accuracy_table(
+    const std::string& job_tag, const int traj)
+{
+  const std::string key = ssprintf("%s,%d,tat", job_tag.c_str(), traj);
+  TypeAccuracyTableCache& cache = get_type_accuracy_table_cache();
+  if (not cache.has(key)) {
+    TIMER_VERBOSE("get_type_accuracy_table");
+    cache[key] = mk_type_accuracy_table(get_point_src_info(job_tag, traj));
+  }
+  return cache[key];
+}
+
+inline const PointInfoMap& get_point_info_map(const std::string& job_tag,
+                                              const int traj)
+{
+  const std::string key = ssprintf("%s,%d,pim", job_tag.c_str(), traj);
+  PointInfoMapCache& cache = get_point_info_map_cache();
+  if (not cache.has(key)) {
+    TIMER_VERBOSE("get_point_info_map");
+    PointInfoMap& pim = cache[key];
+    const std::vector<PointInfo>& pis = get_point_src_info(job_tag, traj);
+    for (long i = 0; i < (long)pis.size(); ++i) {
+      const PointInfo& pi = pis[i];
+      const std::string tag = ssprintf("%s,%d", show(pi.xg).c_str(), pi.type);
+      pim[tag].push_back(pi);
+    }
+  }
+  return cache[key];
+}
+
+inline const std::vector<PointInfo>& get_point_src_info(
+    const std::string& job_tag, const int traj, const Coordinate& xg,
+    const int type)
+{
+  const PointInfoMap& pim = get_point_info_map(job_tag, traj);
+  const std::string tag = ssprintf("%s,%d", show(xg).c_str(), type);
+  return pim.at(tag);
+}
+
 inline void display_fields_psrc(const std::string& job_tag, const int traj,
-                             const int type)
+                                const int type)
 {
   TIMER_VERBOSE("display_fields_psrc");
   const std::string path = get_prop_psrc_path(job_tag, traj, type);
@@ -208,7 +268,7 @@ inline void display_fields_psrc(const std::string& job_tag, const int traj,
 }
 
 inline void display_fields_wsrc(const std::string& job_tag, const int traj,
-                             const int type)
+                                const int type)
 {
   TIMER_VERBOSE("display_fields_wsrc");
   const std::string path = get_prop_wsrc_path(job_tag, traj, type);
@@ -222,7 +282,9 @@ inline long load_prop(PselProp& ps_prop, SelProp& s_prop,
                       const PointSelection& psel, const FieldSelection& fsel)
 {
   TIMER_VERBOSE("load_prop(ps_prop,s_prop,path,fn,psel,fsel)");
-  displayln_info(fname + ssprintf(": WARNING: obsolete. Try to use the sbs version instead."));
+  displayln_info(
+      fname +
+      ssprintf(": WARNING: obsolete. Try to use the sbs version instead."));
   Propagator4d prop;
   const long total_bytes = read_field_double_from_float(prop, path, fn);
   if (total_bytes > 0) {
@@ -281,9 +343,9 @@ inline bool& is_check_prop_consistency()
   return b;
 }
 
-inline PselProp& get_psel_prop_psrc(const std::string& job_tag, const int traj,
-                                    const Coordinate& xg, const int type,
-                                    const int accuracy)
+inline const PselProp& get_psel_prop_psrc(const std::string& job_tag,
+                                          const int traj, const Coordinate& xg,
+                                          const int type, const int accuracy)
 {
   const std::string key = get_prop_psrc_key(job_tag, traj, xg, type, accuracy);
   PselPropCache& ps_cache = get_psel_prop_cache();
@@ -297,9 +359,9 @@ inline PselProp& get_psel_prop_psrc(const std::string& job_tag, const int traj,
   return ps_cache[key];
 }
 
-inline SelProp& get_prop_psrc(const std::string& job_tag, const int traj,
-                              const Coordinate& xg, const int type,
-                              const int accuracy)
+inline const SelProp& get_prop_psrc(const std::string& job_tag, const int traj,
+                                    const Coordinate& xg, const int type,
+                                    const int accuracy)
 {
   const std::string key = get_prop_psrc_key(job_tag, traj, xg, type, accuracy);
   SelPropCache& s_cache = get_prop_psrc_cache();
@@ -333,9 +395,9 @@ inline SelProp& get_prop_psrc(const std::string& job_tag, const int traj,
   return s_cache[key];
 }
 
-inline PselProp& get_psel_prop_wsrc(const std::string& job_tag, const int traj,
-                                    const int tslice, const int type,
-                                    const int accuracy)
+inline const PselProp& get_psel_prop_wsrc(const std::string& job_tag,
+                                          const int traj, const int tslice,
+                                          const int type, const int accuracy)
 {
   const std::string key =
       get_prop_wsrc_key(job_tag, traj, tslice, type, accuracy);
@@ -350,9 +412,9 @@ inline PselProp& get_psel_prop_wsrc(const std::string& job_tag, const int traj,
   return ps_cache[key];
 }
 
-inline SelProp& get_prop_wsrc(const std::string& job_tag, const int traj,
-                              const int tslice, const int type,
-                              const int accuracy)
+inline const SelProp& get_prop_wsrc(const std::string& job_tag, const int traj,
+                                    const int tslice, const int type,
+                                    const int accuracy)
 {
   const std::string key =
       get_prop_wsrc_key(job_tag, traj, tslice, type, accuracy);
@@ -387,10 +449,11 @@ inline SelProp& get_prop_wsrc(const std::string& job_tag, const int traj,
   return s_cache[key];
 }
 
-inline PselProp& get_psel_prop_psrc_exact(const std::string& job_tag,
-                                          const int traj, const Coordinate& xg,
-                                          const int type,
-                                          const int accuracy = 2)
+inline const PselProp& get_psel_prop_psrc_exact(const std::string& job_tag,
+                                                const int traj,
+                                                const Coordinate& xg,
+                                                const int type,
+                                                const int accuracy = 2)
 {
   const std::string key =
       "exact:" + get_prop_psrc_key(job_tag, traj, xg, type, accuracy);
@@ -405,9 +468,10 @@ inline PselProp& get_psel_prop_psrc_exact(const std::string& job_tag,
   return ps_cache[key];
 }
 
-inline SelProp& get_prop_psrc_exact(const std::string& job_tag, const int traj,
-                                    const Coordinate& xg, const int type,
-                                    const int accuracy = 2)
+inline const SelProp& get_prop_psrc_exact(const std::string& job_tag,
+                                          const int traj, const Coordinate& xg,
+                                          const int type,
+                                          const int accuracy = 2)
 {
   const std::string key =
       "exact:" + get_prop_psrc_key(job_tag, traj, xg, type, accuracy);

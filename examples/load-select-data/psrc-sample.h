@@ -356,4 +356,45 @@ inline std::vector<Coordinate> load_lbl_pcs_info(const std::string& path)
   return pcs;
 }
 
+typedef std::vector<std::vector<int> > TypeAccuracyTable;
+
+inline TypeAccuracyTable mk_type_accuracy_table(
+    const std::vector<PointInfo>& pis)
+// tat[type][acc] = counts of this type and acc
+{
+  TIMER_VERBOSE("mk_type_accuracy_table");
+  TypeAccuracyTable tat;
+  for (int i = 0; i < (int)pis.size(); ++i) {
+    const PointInfo& pi = pis[i];
+    const int type = pi.type;
+    const int acc = pi.accuracy;
+    if (type >= (int)tat.size()) {
+      tat.resize(type + 1);
+    }
+    if (acc >= (int)tat[type].size()) {
+      tat[type].resize(acc + 1, 0);
+    }
+    tat[type][acc] += 1;
+  }
+  qassert(tat.size() == 2);
+  qassert(tat[0].size() == tat[1].size());
+  return tat;
+}
+
+inline double get_type_accuracy_weight(const TypeAccuracyTable& tat,
+                                       const int type, const int accuracy)
+{
+  qassert(type < (int)tat.size());
+  qassert(accuracy < (int)tat[type].size());
+  return (double)tat[0][0] / (double)tat[type][accuracy];
+}
+
+inline double get_accuracy_weight(const TypeAccuracyTable& tat, const int type,
+                                  const int accuracy)
+{
+  qassert(type < (int)tat.size());
+  qassert(accuracy < (int)tat[type].size());
+  return (double)tat[type][0] / (double)tat[type][accuracy];
+}
+
 }  // namespace qlat

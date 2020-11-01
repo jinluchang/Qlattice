@@ -1026,11 +1026,11 @@ inline bool does_file_exist_sync_node(ShuffledFieldsReader& sfr,
 inline std::vector<std::string> list_fields(ShuffledFieldsReader& sfr)
 {
   TIMER_VERBOSE("list_fields");
+  does_file_exist_sync_node(sfr, "CHECK-FILE");
   std::vector<std::string> ret;
   if (0 == get_id_node()) {
     qassert(sfr.frs.size() > 0);
     FieldsReader& fr = sfr.frs[0];
-    does_file_exist(fr, "CHECK-FILE");
     qassert(fr.is_read_through);
     for (auto it = fr.offsets_map.cbegin(); it != fr.offsets_map.cend(); ++it) {
       ret.push_back(it->first);

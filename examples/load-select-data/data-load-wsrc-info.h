@@ -101,8 +101,8 @@ inline WallSrcInfoCache& get_wall_src_info_cache()
   return cache;
 }
 
-inline std::vector<WallInfo>& get_wall_src_info(const std::string& job_tag,
-                                                const int traj, const int type)
+inline const std::vector<WallInfo>& get_wall_src_info(
+    const std::string& job_tag, const int traj, const int type)
 {
   const std::string key = ssprintf("%s,%d,%d,wis", job_tag.c_str(), traj, type);
   WallSrcInfoCache& cache = get_wall_src_info_cache();

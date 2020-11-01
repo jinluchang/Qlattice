@@ -1,6 +1,7 @@
 #pragma once
 
 #include "data-load-base.h"
+#include "data-load-wsrc-info.h"
 
 namespace qlat
 {  //
@@ -13,8 +14,8 @@ inline WallSrcPropsCache& get_wall_src_props_cache()
   return cache;
 }
 
-inline WallSrcProps& get_wall_src_props(const std::string& job_tag,
-                                        const int traj, const int type)
+inline const WallSrcProps& get_wall_src_props(const std::string& job_tag,
+                                              const int traj, const int type)
 {
   const std::string key = ssprintf("%s,%d,%d,wsp", job_tag.c_str(), traj, type);
   WallSrcPropsCache& cache = get_wall_src_props_cache();

@@ -2,7 +2,6 @@
 
 #include "compute-utils.h"
 #include "data-load.h"
-#include "qlat/contract-field.h"
 
 namespace qlat
 {  //
