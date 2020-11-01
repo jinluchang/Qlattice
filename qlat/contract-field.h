@@ -146,6 +146,7 @@ inline void contract_meson_vv_unshifted(
                                       wm3_y_x, xg_x, xg_x_idx, xg_y,
                                       xg_y_psel_idx, t_snk);
   }
+  sync_node();
 }
 
 inline void contract_meson_vv_acc(
