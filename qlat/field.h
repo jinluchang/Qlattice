@@ -276,6 +276,17 @@ double qnorm(const Field<M>& f)
   return sum;
 }
 
+template <class M>
+double qnorm_double(const Field<M>& f1, const Field<M>& f2)
+{
+  const Geometry& geo = f1.geo;
+  qassert(geo.is_only_local());
+  qassert(geo == f2.geo);
+  double sum = qnorm_double(get_data(f1), get_data(f2));
+  glb_sum(sum);
+  return sum;
+}
+
 template <class M, int multiplicity>
 struct FieldM : Field<M> {
   virtual const std::string& cname()

@@ -344,6 +344,18 @@ double qnorm(const Vector<T>& mm)
   return sum;
 }
 
+template <class T>
+double qnorm(const Vector<T>& m1, const Vector<T>& m2)
+{
+  double sum = 0.0;
+  const long size = m1.size();
+  qassert(size == (long)m2.size());
+  for (long i = 0; i < size; ++i) {
+    sum += qnorm(m1[i], m2[i]);
+  }
+  return sum;
+}
+
 template <class M>
 Vector<double> get_data_double(const M& v)
 {
@@ -360,6 +372,14 @@ template <class M>
 long get_data_size(const M& x)
 {
   return get_data(x).data_size();
+}
+
+template <class T>
+double qnorm_double(const Vector<T>& m1, const Vector<T>& m2)
+{
+  const Vector<double> dm1((double*)m1.data(), m1.data_size() / sizeof(double));
+  const Vector<double> dm2((double*)m2.data(), m2.data_size() / sizeof(double));
+  return qnorm(dm1, dm2);
 }
 
 template <class M>

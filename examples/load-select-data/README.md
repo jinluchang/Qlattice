@@ -141,21 +141,28 @@ ssprintf("analysis/field-psel-fsel-distribution/%s/results=%d", job_tag.c_str(),
 ```
 
 Data format: ``FieldM<Complex, 1>`` with ``write_field_double``.
-$$
-H(x-y) = 1
-$$
 
 ```cpp
 ssprintf("/pos.field")
 ```
+The expectation value is:
+$$
+H(x-y) = 1
+$$
+
+The data is created by summing over all selected points for $x$ and all point source locations for $y$, and then properly normalize the data.
 
 ```cpp
 ssprintf("/neg.field")
 ```
 
+Same as the ``pos.field`` but with $x$ and $y$ reversed.
+
 ```cpp
 ssprintf("/avg.field")
 ```
+
+The average of the above two data sets.
 
 ## ```compute-meson-vv.h```
 

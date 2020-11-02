@@ -30,6 +30,30 @@ inline void contract_psel_fsel_distribution(FieldM<Complex, 1>& pos,
   acc_field(pos, coef, s_pos, ssp.fsel);
 }
 
+template <class M>
+void rescale_field_with_psel_fsel_distribution(Field<M>& f, const FieldM<Complex, 1>& pfdist)
+{
+  TIMER_VERBOSE("rescale_field_with_psel_fsel_distribution");
+  const Geometry& geo = f.geo;
+#pragma omp parallel for
+  for (long index = 0; index < geo.local_volume(); ++index) {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Complex factor = pfdist.get_elem(xl);
+    Vector<M> fv = f.get_elems(xl);
+    if (factor != 0.0) {
+      const Complex coef = 1.0 / factor;
+      for (int m = 0; m < geo.multiplicity; ++m) {
+        fv[m] *= coef;
+      }
+    } else {
+      const Coordinate xg = geo.coordinate_g_from_l(xl);
+      displayln(fname +
+                ssprintf(": WARNING: pfdist[%s] = 0.", show(xg).c_str()));
+      qassert(qnorm(fv) == 0.0);
+    }
+  }
+}
+
 inline std::array<SpinMatrix, 8>& get_va_matrices()
 {
   static bool initialized = false;

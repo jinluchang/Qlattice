@@ -176,6 +176,8 @@ void set_zero(std::vector<M>& vec)
 
 inline double qnorm(const double& x) { return x * x; }
 
+inline double qnorm(const double& x, const double& y) { return x * y; }
+
 inline double qnorm(const Complex& x) { return std::norm(x); }
 
 template <class T, size_t N>

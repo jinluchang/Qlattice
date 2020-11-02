@@ -3,7 +3,6 @@
 namespace qlat
 {  //
 
-
 inline void reflect_and_revert_mu_nu(FieldM<Complex, 8 * 8>& f_munu)
 {
   TIMER_VERBOSE("reflect_and_revert_mu_nu");
@@ -23,6 +22,92 @@ inline void reflect_and_revert_mu_nu(FieldM<Complex, 8 * 8>& f_munu)
   }
 }
 
+inline void set_pfdist(FieldM<Complex, 1>& pfdist, const std::vector<int>& trajs)
+{
+  TIMER_VERBOSE("set_pfdist");
+  pfdist.init();
+  for (long i = 0; i < (long)trajs.size(); ++i) {
+    const int traj = trajs[i];
+    FieldM<Complex, 1> pfdist_tmp;
+    const std::string path = ssprintf(
+        "analysis/field-psel-fsel-distribution/24D/results=%d/avg-0.field",
+        traj);
+    read_field_double(pfdist_tmp, path);
+    pfdist_tmp *= 1.0 / (double)trajs.size();
+    pfdist += pfdist_tmp;
+  }
+}
+
+inline void set_meson_vv(FieldM<Complex, 8 * 8>& meson_vv,
+                         const std::vector<int>& trajs)
+{
+  TIMER_VERBOSE("set_meson_vv");
+  meson_vv.init();
+  FieldM<Complex, 1> pfdist;
+  set_pfdist(pfdist, trajs);
+  for (long i = 0; i < (long)trajs.size(); ++i) {
+    const int traj = trajs[i];
+    FieldM<Complex, 8 * 8> meson_vv_tmp;
+    const std::string path = ssprintf(
+        "analysis/field-meson-vv/24D/results=%d/decay-0-0-0.field", traj);
+    read_field_double_from_float(meson_vv_tmp, path);
+    meson_vv_tmp *= 1.0 / (double)trajs.size();
+    meson_vv += meson_vv_tmp;
+  }
+  rescale_field_with_psel_fsel_distribution(meson_vv, pfdist);
+}
+
+inline void set_meson_vv_old(FieldM<Complex, 8 * 8>& meson_vv,
+                             const std::vector<int>& trajs)
+{
+  TIMER_VERBOSE("set_meson_vv_old");
+  meson_vv.init();
+  FieldM<Complex, 1> pfdist;
+  set_pfdist(pfdist, trajs);
+  for (long i = 0; i < (long)trajs.size(); ++i) {
+    const int traj = trajs[i];
+    FieldM<Complex, 8 * 8> meson_vv_tmp;
+    const std::string path = ssprintf(
+        "/sdcc/u/jluchang/qcdqedta/luchang/all-analysis-data/field-pion-gg/"
+        "24D-0.00107/results=%d/decay_type_1.field",
+        traj);
+    read_field_double(meson_vv_tmp, path);
+    meson_vv_tmp *= 0.5 / (double)trajs.size();
+    reflect_and_revert_mu_nu(meson_vv_tmp);
+    meson_vv += meson_vv_tmp;
+  }
+  for (long i = 0; i < (long)trajs.size(); ++i) {
+    const int traj = trajs[i];
+    FieldM<Complex, 8 * 8> meson_vv_tmp;
+    const std::string path = ssprintf(
+        "/sdcc/u/jluchang/qcdqedta/luchang/all-analysis-data/field-pion-gg/"
+        "24D-0.00107/results=%d/decay_type_2.field",
+        traj);
+    read_field_double(meson_vv_tmp, path);
+    meson_vv_tmp *= 0.5 / (double)trajs.size();
+    meson_vv += meson_vv_tmp;
+  }
+  rescale_field_with_psel_fsel_distribution(meson_vv, pfdist);
+}
+
+template <class M>
+void set_field_range(Field<M>& f, const long dis_sq_range)
+{
+  TIMER_VERBOSE("set_field_range");
+  const Geometry& geo = f.geo;
+  const Coordinate total_site = geo.total_site();
+#pragma omp parallel for
+  for (long index = 0; index < geo.local_volume(); ++index) {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Coordinate xg = geo.coordinate_g_from_l(xl);
+    const Coordinate xgrel = smod(xg, total_site);
+    const long dis_sq = sqr(xgrel);
+    if (dis_sq > dis_sq_range) {
+      set_zero(f.get_elems(xl));
+    }
+  }
+}
+
 inline void test()
 {
   TIMER_VERBOSE("test");
@@ -35,47 +120,25 @@ inline void test()
   trajs.push_back(2290);
   trajs.push_back(2300);
   trajs.push_back(2310);
-  for (long i = 0; i < (long)trajs.size(); ++i) {
-    const int traj = trajs[i];
-    FieldM<Complex, 8 * 8> meson_vv_tmp;
-    const std::string path = ssprintf(
-        "analysis/field-meson-vv/24D/results=%d/decay-0-0-0.field", traj);
-    read_field_double_from_float(meson_vv_tmp, path);
-    meson_vv_tmp *= 1.0 / (double)trajs.size();
-    meson_vv += meson_vv_tmp;
-  }
+  set_meson_vv(meson_vv, trajs);
   std::vector<int> trajs_old;
   trajs_old.push_back(1010);
   trajs_old.push_back(1030);
-  for (long i = 0; i < (long)trajs_old.size(); ++i) {
-    const int traj = trajs_old[i];
-    FieldM<Complex, 8 * 8> meson_vv_tmp;
-    const std::string path = ssprintf(
-        "/sdcc/u/jluchang/qcdqedta/luchang/all-analysis-data/field-pion-gg/"
-        "24D-0.00107/results=%d/decay_type_1.field",
-        traj);
-    read_field_double(meson_vv_tmp, path);
-    meson_vv_tmp *= 0.5 / (double)trajs_old.size();
-    reflect_and_revert_mu_nu(meson_vv_tmp);
-    meson_vv_old += meson_vv_tmp;
-  }
-  for (long i = 0; i < (long)trajs_old.size(); ++i) {
-    const int traj = trajs_old[i];
-    FieldM<Complex, 8 * 8> meson_vv_tmp;
-    const std::string path = ssprintf(
-        "/sdcc/u/jluchang/qcdqedta/luchang/all-analysis-data/field-pion-gg/"
-        "24D-0.00107/results=%d/decay_type_2.field",
-        traj);
-    read_field_double(meson_vv_tmp, path);
-    meson_vv_tmp *= 0.5 / (double)trajs_old.size();
-    meson_vv_old += meson_vv_tmp;
-  }
+  set_meson_vv_old(meson_vv_old, trajs_old);
+  const long dis_sq_range = sqr(2);
+  set_field_range(meson_vv, dis_sq_range);
+  set_field_range(meson_vv_old, dis_sq_range);
   const Geometry& geo = meson_vv.geo;
   displayln_info(show(geo));
   const double pion_mass = 0.139;
   meson_vv_old *= std::exp(pion_mass * 2);
   displayln_info(ssprintf("meson_vv qnorm = %24.17E", qnorm(meson_vv)));
+  displayln_info(ssprintf("meson_vv proj to meson_vv = %24.17E",
+                          qnorm_double(meson_vv, meson_vv) / qnorm(meson_vv)));
   displayln_info(ssprintf("meson_vv_old qnorm = %24.17E", qnorm(meson_vv_old)));
+  displayln_info(
+      ssprintf("meson_vv_old proj to meson_vv = %24.17E",
+               qnorm_double(meson_vv, meson_vv_old) / qnorm(meson_vv)));
   meson_vv_diff = meson_vv;
   meson_vv_diff -= meson_vv_old;
   displayln_info(
