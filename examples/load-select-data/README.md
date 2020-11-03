@@ -172,6 +172,8 @@ ssprintf("analysis/field-meson-vv/%s/results=%d", job_tag.c_str(), traj)
 
 Data format: ``FieldM<Complex, 8 * 8>`` with ``write_field_float_from_double``.
 
+Use $y$ as the point source location in calculation.
+
 ```cpp
 ssprintf("/decay-%d-%d-%d.field", type1, type2, type3)
 ```
