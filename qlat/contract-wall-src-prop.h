@@ -192,7 +192,8 @@ inline void refresh_wsp(WallSrcProps& wsp, const int num_exact,
   refresh_prop_with_gt(wsp, gt, psel, fsel);
 }
 
-inline const SelProp& get_prop(const WallSrcProps& wsp, const int tslice, const bool exact)
+inline const SelProp& get_prop(const WallSrcProps& wsp, const int tslice,
+                               const bool exact)
 {
   if (exact) {
     return wsp.exact[tslice];
@@ -201,12 +202,24 @@ inline const SelProp& get_prop(const WallSrcProps& wsp, const int tslice, const 
   }
 }
 
-inline const PselProp& get_psel_prop(const WallSrcProps& wsp, const int tslice, const bool exact)
+inline const PselProp& get_psel_prop(const WallSrcProps& wsp, const int tslice,
+                                     const bool exact)
 {
   if (exact) {
     return wsp.exact_point_snk[tslice];
   } else {
     return wsp.sloppy_point_snk[tslice];
+  }
+}
+
+inline const std::vector<WilsonMatrix>& get_wsnk_prop(const WallSrcProps& wsp,
+                                                      const int tslice,
+                                                      const bool exact)
+{
+  if (exact) {
+    return wsp.exact_wall_snk[tslice];
+  } else {
+    return wsp.sloppy_wall_snk[tslice];
   }
 }
 

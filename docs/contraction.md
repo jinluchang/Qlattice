@@ -298,3 +298,66 @@ H_\text{fission}(y-x)[8\mu+\nu]
 \ea
 $$
 
+### meson-vv-meson
+
+Use ``xg_y`` as point source location, contraction for all available ``xg_x``.
+
+Proper factor is compensated so it can treated as if ``xg_x`` is contracted for all lattice sites.
+
+```cpp
+inline void contract_meson_vv_meson_acc(
+    FieldM<Complex, 8 * 8>& meson_vv_meson_forward,
+    FieldM<Complex, 8 * 8>& meson_vv_meson_backward, const WallSrcProps& wsp1,
+    const WallSrcProps& wsp2, const WallSrcProps& wsp3,
+    const SelProp& prop4_x_y, const Coordinate& xg_y, const long xg_y_psel_idx,
+    const int tsep, const PointSelection& psel, const FieldSelection& fsel,
+    const ShiftShufflePlan& ssp, const ShiftShufflePlan& ssp_reflect);
+// xg_y = psel[xg_y_psel_idx] is the point src location for prop3_x_y
+// ssp = make_shift_shuffle_plan(fsel, -xg_y);
+// ssp_reflect = make_shift_shuffle_plan(fsel, -xg_y, true);
+```
+
+$$
+\ba
+H_\text{forward}(x-y)[8\mu+\nu]
+&\texttt{ += }&
+\frac{1}{2}\mathrm{Tr}[
+S_1(t_\text{snk};x)\gamma^{\mathrm{va}}_\mu
+S_4(x;y)
+\gamma^{\mathrm{va}}_\nu S_2(y;t_\text{src})
+\gamma_5 S_3(t_\text{src};t_\text{snk})\gamma_5
+]
+\\
+H_\text{forward}(y-x)[8\mu+\nu]
+&\texttt{ += }&
+\frac{1}{2}\mathrm{Tr}[
+S_1(t_\text{snk};y)\gamma^{\mathrm{va}}_\mu
+S_4(y;x)
+\gamma^{\mathrm{va}}_\nu S_2(x;t_\text{src})
+\gamma_5 S_3(t_\text{src};t_\text{snk})\gamma_5
+]
+\ea
+$$
+
+$$
+\ba
+H_\text{backward}(x-y)[8\mu+\nu]
+&\texttt{ += }&
+\frac{1}{2}\mathrm{Tr}[
+S_1(t_\text{src};x)\gamma^{\mathrm{va}}_\mu
+S_4(x;y)
+\gamma^{\mathrm{va}}_\nu S_2(y;t_\text{snk})
+\gamma_5 S_3(t_\text{snk};t_\text{src})\gamma_5
+]
+\\
+H_\text{backward}(y-x)[8\mu+\nu]
+&\texttt{ += }&
+\frac{1}{2}\mathrm{Tr}[
+S_1(t_\text{src};y)\gamma^{\mathrm{va}}_\mu
+S_4(y;x)
+\gamma^{\mathrm{va}}_\nu S_2(x;t_\text{snk})
+\gamma_5 S_3(t_\text{snk};t_\text{src})\gamma_5
+]
+\ea
+$$
+
