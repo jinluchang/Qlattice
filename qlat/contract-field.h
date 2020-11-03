@@ -214,6 +214,8 @@ inline void contract_meson_vv_acc(
 {
   TIMER_VERBOSE("contract_meson_vv_acc");
   const Geometry& geo = fsel.f_rank.geo;
+  qassert(is_initialized(meson_vv_decay));
+  qassert(is_initialized(meson_vv_fission));
   qassert(geo == prop3_x_y.geo);
   qassert(fsel.n_elems == prop3_x_y.n_elems);
   qassert(is_initialized(wsp1));
@@ -227,6 +229,7 @@ inline void contract_meson_vv_acc(
   std::vector<SelectedField<Complex> > meson_vv;
   contract_meson_vv_unshifted(meson_vv, wsp1, wsp2, prop3_x_y, xg_y,
                               xg_y_psel_idx, tsep, psel, fsel);
+  qassert(meson_vv.size() == 4);
   SelectedField<Complex>& meson_vv_decay_1 = meson_vv[0];
   SelectedField<Complex>& meson_vv_decay_2 = meson_vv[1];
   SelectedField<Complex>& meson_vv_fission_1 = meson_vv[2];
@@ -443,6 +446,8 @@ inline void contract_meson_vv_meson_acc(
 {
   TIMER_VERBOSE("contract_meson_vv_meson_acc");
   const Geometry& geo = fsel.f_rank.geo;
+  qassert(is_initialized(meson_vv_meson_forward));
+  qassert(is_initialized(meson_vv_meson_backward));
   qassert(geo == prop4_x_y.geo);
   qassert(fsel.n_elems == prop4_x_y.n_elems);
   qassert(is_initialized(wsp1));
@@ -457,6 +462,7 @@ inline void contract_meson_vv_meson_acc(
   std::vector<SelectedField<Complex> > meson_vv_meson;
   contract_meson_vv_meson_unshifted(meson_vv_meson, wsp1, wsp2, wsp3, prop4_x_y,
                                     xg_y, xg_y_psel_idx, tsep, psel, fsel);
+  qassert(meson_vv_meson.size() == 4);
   SelectedField<Complex>& meson_vv_meson_forward_1 = meson_vv_meson[0];
   SelectedField<Complex>& meson_vv_meson_forward_2 = meson_vv_meson[1];
   SelectedField<Complex>& meson_vv_meson_backward_1 = meson_vv_meson[2];
