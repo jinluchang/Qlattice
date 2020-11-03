@@ -138,4 +138,39 @@ inline void compute_meson_vv(const std::string& job_tag, const int traj)
   release_lock();
 }
 
+inline void compute_meson_vv_light(const std::string& job_tag, const int traj)
+{
+  check_sigint();
+  Timer::autodisplay();
+  TIMER_VERBOSE("compute_meson_vv_light");
+  const std::string path = get_meson_vv_path(job_tag, traj);
+  const std::string path_checkpoint = path + "/checkpoint.txt";
+  if (does_file_exist_sync_node(path_checkpoint)) {
+    return;
+  }
+  if (does_file_exist_sync_node(path + "/fission-0-0-0.field") and
+      does_file_exist_sync_node(path + "/decay-0-0-0.field")) {
+    return;
+  }
+  if (not(check_wall_src_props(job_tag, traj, 0) and
+          check_prop_psrc(job_tag, traj, 0))) {
+    return;
+  }
+  check_sigint();
+  check_time_limit();
+  if (not obtain_lock(ssprintf("lock-meson-vv-%s-%d", job_tag.c_str(), traj))) {
+    return;
+  }
+  setup(job_tag, traj);
+  qmkdir_info("analysis/field-meson-vv");
+  qmkdir_info(ssprintf("analysis/field-meson-vv/%s", job_tag.c_str()));
+  qmkdir_info(path);
+  std::vector<int> type1_list, type2_list;
+  type1_list.push_back(0);
+  type2_list.push_back(0);
+  qassert(type1_list.size() == type2_list.size());
+  compute_meson_vv_type(job_tag, traj, type1_list, type2_list, 0);
+  release_lock();
+}
+
 }  // namespace qlat

@@ -89,4 +89,35 @@ inline void compute_two_point_func(const std::string& job_tag, const int traj)
   release_lock();
 }
 
+inline void compute_two_point_func_light(const std::string& job_tag, const int traj)
+{
+  check_sigint();
+  Timer::autodisplay();
+  TIMER_VERBOSE("compute_two_point_func_light");
+  const std::string path = get_two_point_func_path(job_tag, traj);
+  const std::string path_checkpoint = path + "/checkpoint.txt";
+  if (does_file_exist_sync_node(path_checkpoint)) {
+    return;
+  }
+  if (does_file_exist_sync_node(
+          path + "/two-point-wall-snk-sparse-corrected-0-0.lat")) {
+    return;
+  }
+  if (not check_wall_src_props(job_tag, traj, 0)) {
+    return;
+  }
+  check_sigint();
+  check_time_limit();
+  if (not obtain_lock(
+          ssprintf("lock-two-point-func-%s-%d", job_tag.c_str(), traj))) {
+    return;
+  }
+  setup(job_tag, traj);
+  qmkdir_info("analysis/lat-two-point");
+  qmkdir_info(ssprintf("analysis/lat-two-point/%s", job_tag.c_str()));
+  qmkdir_info(path);
+  compute_two_point_func_type(job_tag, traj, 0, 0);
+  release_lock();
+}
+
 }  // namespace qlat

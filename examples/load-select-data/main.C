@@ -20,9 +20,12 @@ inline void compute_traj(const std::string& job_tag, const int traj)
   // compute_wall_src_info(job_tag, traj, 1);
   // compute_wall_src_prop_norm_ratio(job_tag, traj);
   compute_two_point_func(job_tag, traj);
+  compute_two_point_func_light(job_tag, traj);
   compute_three_point_func(job_tag, traj);
+  compute_three_point_func_light(job_tag, traj);
   compute_psel_fsel_distribution(job_tag, traj);
   compute_meson_vv(job_tag, traj);
+  compute_meson_vv_light(job_tag, traj);
   //
   clear_all_data_cache();
 }
