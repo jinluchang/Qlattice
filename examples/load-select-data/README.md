@@ -247,3 +247,102 @@ inline int tsep_op_wall_src(const std::string& job_tag)
 }
 ```
 
+## ```compute-meson-vv-meson.h```
+
+```cpp
+ssprintf("analysis/field-meson-vv-meson/%s/results=%d", job_tag.c_str(), traj)
+```
+
+Data format: ``FieldM<Complex, 8 * 8>`` with ``write_field_float_from_double``.
+
+Use $y$ as the point source location in calculation.
+
+```cpp
+ssprintf("/forward-%d-%d-%d-%d.field", type1, type2, type3, type4)
+```
+
+$$
+\ba
+H_\text{forward}(x-y)[8\mu+\nu]
+&=&\mathrm{Tr}[
+S_1(t_\text{snk};x)\gamma^{\mathrm{va}}_\mu
+S_4(x;y)
+\gamma^{\mathrm{va}}_\nu S_2(y;t_\text{src})
+\gamma_5 S_3(t_\text{src};t_\text{snk})\gamma_5
+]
+\ea
+$$
+
+or
+$$
+\ba
+H_\text{forward}(y-x)[8\mu+\nu]
+&=&
+\mathrm{Tr}[
+S_1(t_\text{snk};y)\gamma^{\mathrm{va}}_\mu
+S_4(y;x)
+\gamma^{\mathrm{va}}_\nu S_2(x;t_\text{src})
+\gamma_5 S_3(t_\text{src};t_\text{snk})\gamma_5
+]
+\ea
+$$
+
+```cpp
+ssprintf("/backward-%d-%d-%d.field", type1, type2, type3)
+```
+
+$$
+\ba
+H_\text{backward}(x-y)[8\mu+\nu]
+&=&
+\mathrm{Tr}[
+S_1(t_\text{src};x)\gamma^{\mathrm{va}}_\mu
+S_4(x;y)
+\gamma^{\mathrm{va}}_\nu S_2(y;t_\text{snk})
+\gamma_5 S_3(t_\text{snk};t_\text{src})\gamma_5
+]
+\ea
+$$
+
+or
+$$
+\ba
+H_\text{backward}(y-x)[8\mu+\nu]
+&=&
+\mathrm{Tr}[
+S_1(t_\text{src};y)\gamma^{\mathrm{va}}_\mu
+S_4(y;x)
+\gamma^{\mathrm{va}}_\nu S_2(x;t_\text{snk})
+\gamma_5 S_3(t_\text{snk};t_\text{src})\gamma_5
+]
+\ea
+$$
+where:
+$$
+\ba
+t_\text{src} &=& \min(x_t,y_t) - t_\text{sep}
+\\
+t_\text{snk} &=& \max(x_t,y_t) + t_\text{sep}
+\ea
+$$
+and for $t_\text{sep}$:
+
+```cpp
+inline int tsep_op_wall_src(const std::string& job_tag)
+// parameter
+{
+  if (job_tag == "24D" or job_tag == "32D" or job_tag == "24DH") {
+    return 8;
+  } else if (job_tag == "32Dfine") {
+    return 10;
+  } else if (job_tag == "48I") {
+    return 12;
+  } else if (job_tag == "64I") {
+    return 18;
+  } else {
+    qassert(false);
+  }
+  return 8;
+}
+```
+
