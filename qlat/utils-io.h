@@ -604,12 +604,12 @@ inline bool obtain_lock(const std::string& path)
       return true;
     } else {
       displayln_info(
-          ssprintf("%s: Failed to obtained '%s'.", fname, path.c_str()));
+          ssprintf("%s: Failed to obtain '%s'.", fname, path.c_str()));
       return false;
     }
   } else {
     displayln_info(
-        ssprintf("%s: Failed to obtained '%s' (no creation time info).", fname,
+        ssprintf("%s: Failed to obtain '%s' (no creation time info).", fname,
                  path.c_str()));
     return false;
   }
@@ -643,12 +643,12 @@ inline bool obtain_lock_all_node(const std::string& path)
       return true;
     } else {
       displayln_info(
-          ssprintf("%s: Failed to obtained '%s'.", fname, path.c_str()));
+          ssprintf("%s: Failed to obtain '%s'.", fname, path.c_str()));
       return false;
     }
   } else {
     displayln_info(
-        ssprintf("%s: Failed to obtained '%s' (no creation time info).", fname,
+        ssprintf("%s: Failed to obtain '%s' (no creation time info).", fname,
                  path.c_str()));
     return false;
   }
