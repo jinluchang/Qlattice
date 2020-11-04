@@ -1229,7 +1229,7 @@ typedef Cache<std::string, ShuffledFieldsReader> ShuffledFieldsReaderCache;
 
 inline ShuffledFieldsReaderCache& get_shuffled_fields_reader_cache()
 {
-  static ShuffledFieldsReaderCache cache("ShuffledFieldsReaderCache", 16, 4);
+  static ShuffledFieldsReaderCache cache("ShuffledFieldsReaderCache", 4, 1);
   return cache;
 }
 
