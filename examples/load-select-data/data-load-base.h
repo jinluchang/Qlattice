@@ -310,6 +310,8 @@ inline long load_prop(PselProp& ps_prop, SelProp& s_prop,
   if (total_bytes > 0) {
     set_selected_points(ps_prop, sprop, psel, sbs.fsel);
     set_selected_field(s_prop, sprop, fsel, sbs.fsel);
+  } else {
+    qassert(false);
   }
   return total_bytes;
 }
@@ -323,6 +325,7 @@ inline void load_prop(PselProp& ps_prop, const std::string& path_psel,
     load_selected_points_complex(ps_prop, path_full);
   } else {
     ps_prop.init();
+    qassert(false);
   }
 }
 
