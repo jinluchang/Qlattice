@@ -55,7 +55,7 @@ inline void compute_psel_fsel_distribution_type(const std::string& job_tag,
     iter += 1;
     const ShiftShufflePlan ssp = make_shift_shuffle_plan(fsel, -xg_y);
     displayln_info(fname + ssprintf(":n=%ld iter=%ld type=%d", n, iter, type));
-    contract_psel_fsel_distribution(pos, xg_y, xg_y_psel_idx, psel, fsel, ssp);
+    contract_psel_fsel_distribution_acc(pos, xg_y, fsel, ssp);
   }
   const long n_iter = iter;
   const double coef = 1.0 / (double)n_iter;

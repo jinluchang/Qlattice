@@ -69,6 +69,7 @@ int main(int argc, char* argv[])
   size_node_list.push_back(Coordinate(2, 4, 4, 16));
   size_node_list.push_back(Coordinate(4, 4, 4, 16));
   begin(&argc, &argv, size_node_list);
+  display_geometry_node();
   setup_log_idx();
   setup();
   qmkdir_info(ssprintf("analysis"));
@@ -77,11 +78,11 @@ int main(int argc, char* argv[])
   //
   std::vector<std::string> job_tags;
   // SADJUST ME
+  job_tags.push_back("48I");
   job_tags.push_back("24D");
   job_tags.push_back("32D");
   job_tags.push_back("24DH");
   job_tags.push_back("32Dfine");
-  job_tags.push_back("48I");
   job_tags.push_back("64I");
   //
   for (int k = 0; k < (int)job_tags.size(); ++k) {

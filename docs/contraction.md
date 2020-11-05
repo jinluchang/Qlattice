@@ -251,6 +251,28 @@ t_\text{snk} &=& \max(x_t,y_t) + t_\text{sep}
 \ea
 $$
 
+### psel-fsel-distribution
+
+Use ``xg_y`` as point source location, contraction for all available ``xg_x``.
+
+Proper factor is compensated so it can treated as if ``xg_x`` is contracted for all lattice sites.
+
+```cpp
+inline void contract_psel_fsel_distribution_acc(FieldM<Complex, 1>& pos,
+                                                const Coordinate& xg_y,
+                                                const FieldSelection& fsel,
+                                                const ShiftShufflePlan& ssp);
+// ssp = make_shift_shuffle_plan(fsel, -xg_y);
+
+template <class M>
+void rescale_field_with_psel_fsel_distribution(Field<M>& f,
+                                               const FieldM<Complex, 1>& pfdist);
+```
+
+$$
+H(x-y) \texttt{ += } 1
+$$
+
 ### meson-vv
 
 Use ``xg_y`` as point source location, contraction for all available ``xg_x``.
@@ -360,4 +382,23 @@ S_4(y;x)
 ]
 \ea
 $$
+
+### chvp
+
+Use ``xg_y`` as point source location, contraction for all available ``xg_x``.
+
+Proper factor is compensated so it can treated as if ``xg_x`` is contracted for all lattice sites.
+
+```cpp
+inline void contract_chvp(
+    FieldM<Complex, 8 * 8>& chvp,
+    FieldM<Complex, 8 * 8>& meson_vv_meson_backward, const WallSrcProps& wsp1,
+    const WallSrcProps& wsp2, const WallSrcProps& wsp3,
+    const SelProp& prop4_x_y, const Coordinate& xg_y, const long xg_y_psel_idx,
+    const int tsep, const PointSelection& psel, const FieldSelection& fsel,
+    const ShiftShufflePlan& ssp, const ShiftShufflePlan& ssp_reflect);
+// xg_y = psel[xg_y_psel_idx] is the point src location for prop3_x_y
+// ssp = make_shift_shuffle_plan(fsel, -xg_y);
+// ssp_reflect = make_shift_shuffle_plan(fsel, -xg_y, true);
+```
 

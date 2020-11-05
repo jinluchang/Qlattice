@@ -5,17 +5,13 @@
 namespace qlat
 {  //
 
-inline void contract_psel_fsel_distribution(FieldM<Complex, 1>& pos,
-                                            const Coordinate& xg_y,
-                                            const long xg_y_psel_idx,
-                                            const PointSelection& psel,
-                                            const FieldSelection& fsel,
-                                            const ShiftShufflePlan& ssp)
-// xg_y = psel[xg_y_psel_idx] is the point src location for prop3_x_y
+inline void contract_psel_fsel_distribution_acc(FieldM<Complex, 1>& pos,
+                                                const Coordinate& xg_y,
+                                                const FieldSelection& fsel,
+                                                const ShiftShufflePlan& ssp)
 // ssp = make_shift_shuffle_plan(fsel, -xg_y);
 {
   TIMER_VERBOSE("contract_psel_fsel_distribution");
-  qassert(psel[xg_y_psel_idx] == xg_y);
   qassert(ssp.shift == -xg_y);
   qassert(ssp.is_reflect == false);
   SelectedField<Complex> s_pos;
