@@ -530,7 +530,6 @@ and
 ```cpp
 FieldM<Complex, 8 * 8> tmp;
 tmp = forward_2_1_3_4;
-reflect_field(tmp);
 field_permute_mu_nu(tmp);
 field_conjugate_mu_nu(tmp);
 field_complex_conjugate(tmp);

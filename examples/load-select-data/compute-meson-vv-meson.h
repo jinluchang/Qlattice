@@ -115,7 +115,6 @@ inline void compute_meson_vv_meson_type(const std::string& job_tag,
       qassert(is_initialized(f1));
       qassert(is_initialized(f2));
       avg = f2;
-      reflect_field(avg);
       field_permute_mu_nu(avg);
       field_conjugate_mu_nu(avg);
       field_complex_conjugate(avg);

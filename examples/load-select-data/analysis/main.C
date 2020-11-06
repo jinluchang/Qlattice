@@ -452,7 +452,7 @@ inline void set_meson_vv_meson_v4(FieldM<Complex, 8 * 8>& meson_vv_meson,
                                   const std::vector<int>& trajs,
                                   const std::string& tag)
 {
-  TIMER_VERBOSE("set_meson_vv_meson_v3");
+  TIMER_VERBOSE("set_meson_vv_meson_v4");
   meson_vv_meson.init();
   FieldM<Complex, 1> pfdist;
   set_pfdist(pfdist, trajs);
