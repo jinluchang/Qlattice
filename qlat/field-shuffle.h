@@ -1188,7 +1188,8 @@ void reflect_field(Field<M>& f)
   qassert(fsels.size() == 1);
   std::vector<Field<M> > fs;
   shuffle_field(fs, f, sp);
-  f = fs[0];
+  qassert(fs.size() == 1);
+  qswap(f, fs[0]);
 }
 
 // shift shuffle
@@ -1226,8 +1227,8 @@ void field_shift_shuffle(Field<M>& f, const Field<M>& f0,
   qassert(fsels.size() == 1);
   std::vector<Field<M> > fs;
   shuffle_field(fs, f0, sp);
-  f.init();
-  f = fs[0];
+  qassert(fs.size() == 1);
+  qswap(f, fs[0]);
 }
 
 struct ShiftShufflePlan {
@@ -1269,8 +1270,7 @@ void field_shift(SelectedField<M>& sf, const SelectedField<M>& sf0,
   std::vector<SelectedField<M> > sfs;
   shuffle_field(sfs, sf0, sp);
   qassert(sfs.size() == 1);
-  sf.init();
-  sf = sfs[0];
+  qswap(sf, sfs[0]);
 }
 
 // old code

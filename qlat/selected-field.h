@@ -265,6 +265,15 @@ bool is_initialized(const SelectedField<M>& sf)
 }
 
 template <class M>
+void qswap(SelectedField<M>& f1, SelectedField<M>& f2)
+{
+  std::swap(f1.initialized, f2.initialized);
+  std::swap(f1.n_elems, f2.n_elems);
+  std::swap(f1.geo, f2.geo);
+  std::swap(f1.field, f2.field);
+}
+
+template <class M>
 Vector<M> get_data(const SelectedField<M>& sf)
 {
   return get_data(sf.field);

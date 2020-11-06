@@ -333,7 +333,7 @@ long get_data_size(const Field<M>& f)
 }
 
 template <class M>
-void qswap(qlat::Field<M>& f1, qlat::Field<M>& f2)
+void qswap(Field<M>& f1, Field<M>& f2)
 {
   std::swap(f1.initialized, f2.initialized);
   std::swap(f1.geo, f2.geo);
