@@ -73,8 +73,6 @@ inline void compute_meson_vv_type(const std::string& job_tag, const int traj,
     iter += 1;
     const SelProp& prop3_x_y = get_prop_psrc_ama(job_tag, traj, xg_y, type3);
     const ShiftShufflePlan ssp = make_shift_shuffle_plan(fsel, -xg_y);
-    const ShiftShufflePlan ssp_reflect =
-        make_shift_shuffle_plan(fsel, -xg_y, true);
     for (int i = 0; i < num_type; ++i) {
       const int type1 = type1_list[i];
       const int type2 = type2_list[i];
@@ -84,7 +82,7 @@ inline void compute_meson_vv_type(const std::string& job_tag, const int traj,
       const WallSrcProps& wsp2 = get_wall_src_props(job_tag, traj, type2);
       contract_meson_vv_acc(meson_vv_decay_list[i], meson_vv_fission_list[i],
                             wsp1, wsp2, prop3_x_y, xg_y, xg_y_psel_idx, tsep,
-                            psel, fsel, ssp, ssp_reflect);
+                            psel, fsel, ssp);
     }
   }
   const long n_iter = iter;
@@ -129,6 +127,8 @@ inline void compute_meson_vv(const std::string& job_tag, const int traj)
   type2_list.push_back(0);
   type1_list.push_back(0);
   type2_list.push_back(1);
+  type1_list.push_back(1);
+  type2_list.push_back(0);
   type1_list.push_back(1);
   type2_list.push_back(1);
   qassert(type1_list.size() == type2_list.size());

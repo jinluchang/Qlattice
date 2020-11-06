@@ -20,15 +20,17 @@ inline void compute_traj(const std::string& job_tag, const int traj)
   // compute_wall_src_info(job_tag, traj, 0);
   // compute_wall_src_info(job_tag, traj, 1);
   // compute_wall_src_prop_norm_ratio(job_tag, traj);
-  compute_two_point_func(job_tag, traj);
-  compute_two_point_func_light(job_tag, traj);
-  compute_three_point_func(job_tag, traj);
-  compute_three_point_func_light(job_tag, traj);
-  compute_psel_fsel_distribution(job_tag, traj);
+  //
+  // SADJUST ME
+  // compute_two_point_func(job_tag, traj);
+  // compute_two_point_func_light(job_tag, traj);
+  // compute_three_point_func(job_tag, traj);
+  // compute_three_point_func_light(job_tag, traj);
+  // compute_psel_fsel_distribution(job_tag, traj);
   compute_meson_vv(job_tag, traj);
-  compute_meson_vv_light(job_tag, traj);
-  compute_meson_vv_meson(job_tag, traj);
-  compute_meson_vv_meson_light(job_tag, traj);
+  // compute_meson_vv_light(job_tag, traj);
+  // compute_meson_vv_meson(job_tag, traj);
+  // compute_meson_vv_meson_light(job_tag, traj);
   //
   clear_all_data_cache();
 }
@@ -78,11 +80,11 @@ int main(int argc, char* argv[])
   //
   std::vector<std::string> job_tags;
   // SADJUST ME
-  job_tags.push_back("48I");
   job_tags.push_back("24D");
   job_tags.push_back("32D");
   job_tags.push_back("24DH");
   job_tags.push_back("32Dfine");
+  job_tags.push_back("48I");
   job_tags.push_back("64I");
   //
   for (int k = 0; k < (int)job_tags.size(); ++k) {

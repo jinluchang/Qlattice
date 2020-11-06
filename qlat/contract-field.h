@@ -72,10 +72,60 @@ inline std::array<SpinMatrix, 8>& get_va_matrices()
 
 // -----------------------------------------------------------------------------------
 
+inline void field_permute_mu_nu(FieldM<Complex, 8 * 8>& f)
+{
+  TIMER_VERBOSE("field_permute_mu_nu");
+  const Geometry& geo = f.geo;
+  FieldM<Complex, 8 * 8> f0;
+  f0 = f;
+#pragma omp parallel for
+  for (long index = 0; index < geo.local_volume(); ++index) {
+    const Vector<Complex> fv0 = f0.get_elems_const(index);
+    Vector<Complex> fv = f.get_elems(index);
+    for (int mu = 0; mu < 8; ++mu) {
+      for (int nu = 0; nu < 8; ++nu) {
+        fv[mu * 8 + nu] = fv0[nu * 8 + mu];
+      }
+    }
+  }
+}
+
+inline void field_negate_mu_nu(FieldM<Complex, 8 * 8>& f)
+{
+  TIMER_VERBOSE("field_negate_mu_nu");
+  const Geometry& geo = f.geo;
+#pragma omp parallel for
+  for (long index = 0; index < geo.local_volume(); ++index) {
+    Vector<Complex> fv = f.get_elems(index);
+    for (int mu = 0; mu < 8; ++mu) {
+      const double theta_mu = mu < 4 ? 1.0 : -1.0;
+      for (int nu = 0; nu < 8; ++nu) {
+        const double theta_nu = nu < 4 ? 1.0 : -1.0;
+        const double coef = theta_mu * theta_nu;
+        fv[mu * 8 + nu] = coef * fv[mu * 8 + nu];
+      }
+    }
+  }
+}
+
+inline void field_complex_conjugate(Field<Complex>& f)
+{
+  TIMER_VERBOSE("field_complex_conjugate");
+  const Geometry& geo = f.geo;
+#pragma omp parallel for
+  for (long index = 0; index < geo.local_volume(); ++index) {
+    Vector<Complex> fv = f.get_elems(index);
+    for (int m = 0; m < geo.multiplicity; ++m) {
+      fv[m] = std::conj(fv[m]);
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------------
+
 inline void contract_meson_vv_unshifted_acc_x(
-    Vector<Complex> v1, Vector<Complex> v2, const Complex coef,
-    const WallSrcProps& wsp1, const WallSrcProps& wsp2,
-    const WilsonMatrix& wm3_x_y, const WilsonMatrix& wm3_y_x,
+    Vector<Complex> v, const Complex coef, const WallSrcProps& wsp1,
+    const WallSrcProps& wsp2, const WilsonMatrix& wm3_x_y,
     const Coordinate& xg_x, const long xg_x_idx, const Coordinate& xg_y,
     const long xg_y_psel_idx, const int t_wall, const bool exact)
 {
@@ -87,35 +137,25 @@ inline void contract_meson_vv_unshifted_acc_x(
   }
   const WilsonMatrix& wm1_x_tsrc =
       get_prop(wsp1, t_wall, exact).get_elem(xg_x_idx);
-  const WilsonMatrix& wm2_x_tsrc =
-      get_prop(wsp2, t_wall, exact).get_elem(xg_x_idx);
-  const WilsonMatrix& wm1_y_tsrc =
-      get_psel_prop(wsp1, t_wall, exact).get_elem(xg_y_psel_idx);
   const WilsonMatrix& wm2_y_tsrc =
       get_psel_prop(wsp2, t_wall, exact).get_elem(xg_y_psel_idx);
   const WilsonMatrix wm1_tsrc_x =
       gamma5 * (WilsonMatrix)matrix_adjoint(wm1_x_tsrc) * gamma5;
-  const WilsonMatrix wm1_tsrc_y =
-      gamma5 * (WilsonMatrix)matrix_adjoint(wm1_y_tsrc) * gamma5;
   const WilsonMatrix wm_y_tsrc_x = wm2_y_tsrc * gamma5 * wm1_tsrc_x;
-  const WilsonMatrix wm_x_tsrc_y = wm2_x_tsrc * gamma5 * wm1_tsrc_y;
   for (int mu = 0; mu < 8; ++mu) {
-    const WilsonMatrix wm_1 = wm_y_tsrc_x * va_ms[mu] * wm3_x_y;
-    const WilsonMatrix wm_2 = wm_x_tsrc_y * va_ms[mu] * wm3_y_x;
+    const WilsonMatrix wm = wm_y_tsrc_x * va_ms[mu] * wm3_x_y;
     for (int nu = 0; nu < 8; ++nu) {
       const int mu_nu = 8 * mu + nu;
-      v1[mu_nu] += coef * matrix_trace(wm_1, va_ms[nu]);
-      v2[mu_nu] += coef * matrix_trace(wm_2, va_ms[nu]);
+      v[mu_nu] += coef * matrix_trace(wm, va_ms[nu]);
     }
   }
 }
 
 inline void contract_meson_vv_unshifted_acc_x(
-    Vector<Complex> v1, Vector<Complex> v2, const Complex coef,
+    Vector<Complex> v, const Complex coef,
     const WallSrcProps& wsp1, const WallSrcProps& wsp2,
-    const WilsonMatrix& wm3_x_y, const WilsonMatrix& wm3_y_x,
-    const Coordinate& xg_x, const long xg_x_idx, const Coordinate& xg_y,
-    const long xg_y_psel_idx, const int t_wall)
+    const WilsonMatrix& wm3_x_y, const Coordinate& xg_x, const long xg_x_idx,
+    const Coordinate& xg_y, const long xg_y_psel_idx, const int t_wall)
 // perform AMA correction for wall src props
 {
   qassert(wsp1.exact_tslice_mask.size() == wsp2.exact_tslice_mask.size());
@@ -127,42 +167,39 @@ inline void contract_meson_vv_unshifted_acc_x(
     qassert(sloppy_exact_ratio_1 == wsp2.sloppy_exact_ratio_1);
     const Complex coef1 = sloppy_exact_ratio_1 * coef;
     const Complex coef2 = (1.0 - sloppy_exact_ratio_1) * coef;
-    contract_meson_vv_unshifted_acc_x(v1, v2, coef1, wsp1, wsp2, wm3_x_y,
-                                      wm3_y_x, xg_x, xg_x_idx, xg_y,
-                                      xg_y_psel_idx, t_wall, true);
-    contract_meson_vv_unshifted_acc_x(v1, v2, coef2, wsp1, wsp2, wm3_x_y,
-                                      wm3_y_x, xg_x, xg_x_idx, xg_y,
-                                      xg_y_psel_idx, t_wall, false);
+    contract_meson_vv_unshifted_acc_x(v, coef1, wsp1, wsp2, wm3_x_y, xg_x,
+                                      xg_x_idx, xg_y, xg_y_psel_idx, t_wall,
+                                      true);
+    contract_meson_vv_unshifted_acc_x(v, coef2, wsp1, wsp2, wm3_x_y, xg_x,
+                                      xg_x_idx, xg_y, xg_y_psel_idx, t_wall,
+                                      false);
   } else {
-    contract_meson_vv_unshifted_acc_x(v1, v2, coef, wsp1, wsp2, wm3_x_y,
-                                      wm3_y_x, xg_x, xg_x_idx, xg_y,
-                                      xg_y_psel_idx, t_wall, false);
+    contract_meson_vv_unshifted_acc_x(v, coef, wsp1, wsp2, wm3_x_y, xg_x,
+                                      xg_x_idx, xg_y, xg_y_psel_idx, t_wall,
+                                      false);
   }
 }
 
 inline void contract_meson_vv_unshifted(
-    std::vector<SelectedField<Complex> >& meson_vv, const WallSrcProps& wsp1,
+    std::vector<SelectedField<Complex> >& sfs, const WallSrcProps& wsp1,
     const WallSrcProps& wsp2, const SelProp& prop3_x_y, const Coordinate& xg_y,
     const long xg_y_psel_idx, const int tsep, const PointSelection& psel,
     const FieldSelection& fsel)
 // fsel.prob is NOT accounted.
 {
   TIMER_VERBOSE("contract_meson_vv_acc_unshifted");
-  const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
   qassert(psel[xg_y_psel_idx] == xg_y);
   const Geometry& geo = fsel.f_rank.geo;
   const Coordinate total_site = geo.total_site();
   const int multiplicity = 8 * 8;
-  clear(meson_vv);
-  meson_vv.resize(4);
-  for (int i = 0; i < (int)meson_vv.size(); ++i) {
-    meson_vv[i].init(fsel, multiplicity);
-    set_zero(meson_vv[i]);
+  clear(sfs);
+  sfs.resize(2);
+  for (int i = 0; i < (int)sfs.size(); ++i) {
+    sfs[i].init(fsel, multiplicity);
+    set_zero(sfs[i]);
   }
-  SelectedField<Complex>& meson_vv_decay_1 = meson_vv[0];
-  SelectedField<Complex>& meson_vv_decay_2 = meson_vv[1];
-  SelectedField<Complex>& meson_vv_fission_1 = meson_vv[2];
-  SelectedField<Complex>& meson_vv_fission_2 = meson_vv[3];
+  SelectedField<Complex>& s_decay = sfs[0];
+  SelectedField<Complex>& s_fission = sfs[1];
   const int yt = xg_y[3];
 #pragma omp parallel for
   for (long idx = 0; idx < fsel.n_elems; ++idx) {
@@ -181,18 +218,12 @@ inline void contract_meson_vv_unshifted(
       t_snk = mod(yt + tsep, total_site[3]);
     }
     const WilsonMatrix& wm3_x_y = prop3_x_y.get_elem(idx);
-    const WilsonMatrix wm3_y_x =
-        gamma5 * (WilsonMatrix)matrix_adjoint(wm3_x_y) * gamma5;
-    Vector<Complex> vd1 = meson_vv_decay_1.get_elems(idx);
-    Vector<Complex> vd2 = meson_vv_decay_2.get_elems(idx);
-    Vector<Complex> vf1 = meson_vv_fission_1.get_elems(idx);
-    Vector<Complex> vf2 = meson_vv_fission_2.get_elems(idx);
-    contract_meson_vv_unshifted_acc_x(vd1, vd2, 1.0, wsp1, wsp2, wm3_x_y,
-                                      wm3_y_x, xg_x, xg_x_idx, xg_y,
-                                      xg_y_psel_idx, t_src);
-    contract_meson_vv_unshifted_acc_x(vf1, vf2, 1.0, wsp1, wsp2, wm3_x_y,
-                                      wm3_y_x, xg_x, xg_x_idx, xg_y,
-                                      xg_y_psel_idx, t_snk);
+    Vector<Complex> vd = s_decay.get_elems(idx);
+    Vector<Complex> vf = s_fission.get_elems(idx);
+    contract_meson_vv_unshifted_acc_x(vd, 1.0, wsp1, wsp2, wm3_x_y, xg_x,
+                                      xg_x_idx, xg_y, xg_y_psel_idx, t_src);
+    contract_meson_vv_unshifted_acc_x(vf, 1.0, wsp1, wsp2, wm3_x_y, xg_x,
+                                      xg_x_idx, xg_y, xg_y_psel_idx, t_snk);
   }
   sync_node();
 }
@@ -202,11 +233,9 @@ inline void contract_meson_vv_acc(
     FieldM<Complex, 8 * 8>& meson_vv_fission, const WallSrcProps& wsp1,
     const WallSrcProps& wsp2, const SelProp& prop3_x_y, const Coordinate& xg_y,
     const long xg_y_psel_idx, const int tsep, const PointSelection& psel,
-    const FieldSelection& fsel, const ShiftShufflePlan& ssp,
-    const ShiftShufflePlan& ssp_reflect)
+    const FieldSelection& fsel, const ShiftShufflePlan& ssp)
 // xg_y = psel[xg_y_psel_idx] is the point src location for prop3_x_y
 // ssp = make_shift_shuffle_plan(fsel, -xg_y);
-// ssp_reflect = make_shift_shuffle_plan(fsel, -xg_y, true);
 {
   TIMER_VERBOSE("contract_meson_vv_acc");
   const Geometry& geo = fsel.f_rank.geo;
@@ -219,28 +248,19 @@ inline void contract_meson_vv_acc(
   qassert(is_initialized(prop3_x_y));
   qassert(psel[xg_y_psel_idx] == xg_y);
   qassert(ssp.shift == -xg_y);
-  qassert(ssp_reflect.shift == -xg_y);
   qassert(ssp.is_reflect == false);
-  qassert(ssp_reflect.is_reflect == true);
-  std::vector<SelectedField<Complex> > meson_vv;
-  contract_meson_vv_unshifted(meson_vv, wsp1, wsp2, prop3_x_y, xg_y,
+  std::vector<SelectedField<Complex> > sfs;
+  contract_meson_vv_unshifted(sfs, wsp1, wsp2, prop3_x_y, xg_y,
                               xg_y_psel_idx, tsep, psel, fsel);
-  qassert(meson_vv.size() == 4);
-  SelectedField<Complex>& meson_vv_decay_1 = meson_vv[0];
-  SelectedField<Complex>& meson_vv_decay_2 = meson_vv[1];
-  SelectedField<Complex>& meson_vv_fission_1 = meson_vv[2];
-  SelectedField<Complex>& meson_vv_fission_2 = meson_vv[3];
-  field_shift(meson_vv_decay_1, meson_vv_decay_1, ssp);
-  field_shift(meson_vv_decay_2, meson_vv_decay_2, ssp_reflect);
-  field_shift(meson_vv_fission_1, meson_vv_fission_1, ssp);
-  field_shift(meson_vv_fission_2, meson_vv_fission_2, ssp_reflect);
+  qassert(sfs.size() == 2);
+  SelectedField<Complex>& s_decay = sfs[0];
+  SelectedField<Complex>& s_fission = sfs[1];
+  field_shift(s_decay, s_decay, ssp);
+  field_shift(s_fission, s_fission, ssp);
   qassert(fsel.prob == ssp.fsel.prob);
-  qassert(fsel.prob == ssp_reflect.fsel.prob);
-  const Complex coef = 1.0 / 2.0 / fsel.prob;
-  acc_field(meson_vv_decay, coef, meson_vv_decay_1, ssp.fsel);
-  acc_field(meson_vv_decay, coef, meson_vv_decay_2, ssp_reflect.fsel);
-  acc_field(meson_vv_fission, coef, meson_vv_fission_1, ssp.fsel);
-  acc_field(meson_vv_fission, coef, meson_vv_fission_2, ssp_reflect.fsel);
+  const Complex coef = 1.0 / fsel.prob;
+  acc_field(meson_vv_decay, coef, s_decay, ssp.fsel);
+  acc_field(meson_vv_fission, coef, s_fission, ssp.fsel);
 }
 
 // -----------------------------------------------------------------------------------

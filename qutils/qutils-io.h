@@ -136,7 +136,7 @@ inline void qhandler_sigint(const int signum)
     displayln(ssprintf("qhandler_sigint: triggered, current count is: %d / 10.",
                        is_sigint_received()));
     sleep(3.0);
-    if (is_sigint_received() == 10) {
+    if (is_sigint_received() >= 10) {
       qassert(false);
     }
   } else {

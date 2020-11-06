@@ -180,19 +180,9 @@ ssprintf("/decay-%d-%d-%d.field", type1, type2, type3)
 
 $$
 \ba
-H_\text{decay}(x-y)[8\mu+\nu]
+H_\text{decay-1-2-3}(x-y)[8\mu+\nu]
 &=&\mathrm{Tr}
 [S_3(x;y)\gamma^{\mathrm{va}}_\nu S_2(y;t_\text{src})\gamma_5 S_1(t_\text{src};x)\gamma^{\mathrm{va}}_\mu]
-\ea
-$$
-
-or
-$$
-\ba
-H_\text{decay}(y-x)[8\mu+\nu]
-&=&
-\mathrm{Tr}
-[S_3(y;x) \gamma^{\mathrm{va}}_\nu S_2(x;t_\text{src})\gamma_5 S_1(t_\text{src};y)\gamma^{\mathrm{va}}_\mu]
 \ea
 $$
 
@@ -202,22 +192,13 @@ ssprintf("/fission-%d-%d-%d.field", type1, type2, type3)
 
 $$
 \ba
-H_\text{fission}(x-y)[8\mu+\nu]
+H_\text{fission-1-2-3}(x-y)[8\mu+\nu]
 &=&
 \mathrm{Tr}
 [S_3(x;y)\gamma^{\mathrm{va}}_\nu S_2(y;t_\text{snk})\gamma_5 S_1(t_\text{snk};x)\gamma^{\mathrm{va}}_\mu]
 \ea
 $$
 
-or
-$$
-\ba
-H_\text{fission}(y-x)[8\mu+\nu]
-&=&
-\mathrm{Tr}
-[S_3(y;x) \gamma^{\mathrm{va}}_\nu S_2(x;t_\text{snk})\gamma_5 S_1(t_\text{snk};y)\gamma^{\mathrm{va}}_\mu]
-\ea
-$$
 where:
 $$
 \ba

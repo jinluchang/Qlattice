@@ -7,22 +7,11 @@ inline void reflect_and_revert_mu_nu(FieldM<Complex, 8 * 8>& f_munu)
 {
   TIMER_VERBOSE("reflect_and_revert_mu_nu");
   reflect_field(f_munu);
-  FieldM<Complex, 8 * 8> f_munu_tmp;
-  f_munu_tmp = f_munu;
-  const Geometry& geo = f_munu.geo;
-#pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
-    const Vector<Complex> fv0 = f_munu_tmp.get_elems(index);
-    Vector<Complex> fv = f_munu.get_elems(index);
-    for (int mu = 0; mu < 8; ++mu) {
-      for (int nu = 0; nu < 8; ++nu) {
-        fv[mu * 8 + nu] = fv0[nu * 8 + mu];
-      }
-    }
-  }
+  field_permute_mu_nu(f_munu);
 }
 
-inline void set_pfdist(FieldM<Complex, 1>& pfdist, const std::vector<int>& trajs)
+inline void set_pfdist(FieldM<Complex, 1>& pfdist,
+                       const std::vector<int>& trajs)
 {
   TIMER_VERBOSE("set_pfdist");
   pfdist.init();
@@ -263,11 +252,181 @@ inline void test_meson_vv_meson()
       std::sqrt(qnorm(meson_vv_meson_diff) / qnorm(meson_vv_meson_old))));
 }
 
+inline void set_meson_vv_v2(FieldM<Complex, 8 * 8>& meson_vv,
+                            const std::vector<int>& trajs,
+                            const std::string& tag)
+{
+  TIMER_VERBOSE("set_meson_vv_v2");
+  meson_vv.init();
+  FieldM<Complex, 1> pfdist;
+  set_pfdist(pfdist, trajs);
+  for (long i = 0; i < (long)trajs.size(); ++i) {
+    const int traj = trajs[i];
+    FieldM<Complex, 8 * 8> tmp;
+    const std::string path =
+        ssprintf("analysis-v2/field-meson-vv/24D/results=%d/%s-0-0-0.field",
+                 traj, tag.c_str());
+    read_field_double_from_float(tmp, path);
+    tmp *= 1.0 / (double)trajs.size();
+    meson_vv += tmp;
+  }
+  rescale_field_with_psel_fsel_distribution(meson_vv, pfdist);
+}
+
+inline void ref_avg(FieldM<Complex, 8 * 8>& f)
+{
+  TIMER_VERBOSE("ref_avg");
+  FieldM<Complex, 8 * 8> tmp;
+  tmp = f;
+  reflect_field(tmp);
+  field_permute_mu_nu(tmp);
+  field_negate_mu_nu(tmp);
+  field_complex_conjugate(tmp);
+  f += tmp;
+  f *= 0.5;
+}
+
+inline void set_meson_vv_v3(FieldM<Complex, 8 * 8>& meson_vv,
+                            const std::vector<int>& trajs,
+                            const std::string& tag)
+{
+  TIMER_VERBOSE("set_meson_vv_v3");
+  meson_vv.init();
+  FieldM<Complex, 1> pfdist;
+  set_pfdist(pfdist, trajs);
+  for (long i = 0; i < (long)trajs.size(); ++i) {
+    const int traj = trajs[i];
+    FieldM<Complex, 8 * 8> tmp;
+    const std::string path =
+        ssprintf("analysis-v2/field-meson-vv/24D/results=%d/%s-0-0-0.field",
+                 traj, tag.c_str());
+    read_field_double_from_float(tmp, path);
+    meson_vv += tmp;
+  }
+  meson_vv *= 1.0 / (double)trajs.size();
+  ref_avg(meson_vv);
+  rescale_field_with_psel_fsel_distribution(meson_vv, pfdist);
+}
+
+inline void test_meson_vv_v3()
+{
+  TIMER_VERBOSE("test_meson_vv_v3");
+  const std::string tag = "decay";
+  // const std::string tag = "fission";
+  FieldM<Complex, 8 * 8> meson_vv, meson_vv_old, meson_vv_diff;
+  std::vector<int> trajs;
+  for (long traj = 1000; traj < 3000; traj += 10) {
+    if (does_file_exist_sync_node(ssprintf(
+            "analysis-v2/field-meson-vv/24D/results=%d/decay-0-0-0.field",
+            traj))) {
+      trajs.push_back(traj);
+    }
+    if (trajs.size() >= 5) {
+      break;
+    }
+  }
+  set_meson_vv_v3(meson_vv, trajs, tag);
+  set_meson_vv_v3(meson_vv_old, trajs, "fission");
+  reflect_field(meson_vv_old);
+  // set_meson_vv_v2(meson_vv_old, trajs, tag);
+  const long dis_sq_range = sqr(3);
+  set_field_range(meson_vv, dis_sq_range);
+  set_field_range(meson_vv_old, dis_sq_range);
+  const Geometry& geo = meson_vv.geo;
+  displayln_info(show(geo));
+  displayln_info(ssprintf("meson_vv qnorm = %24.17E", qnorm(meson_vv)));
+  displayln_info(ssprintf("meson_vv proj to meson_vv = %24.17E",
+                          qnorm_double(meson_vv, meson_vv) / qnorm(meson_vv)));
+  displayln_info(ssprintf("meson_vv_old qnorm = %24.17E", qnorm(meson_vv_old)));
+  displayln_info(
+      ssprintf("meson_vv_old proj to meson_vv = %24.17E",
+               qnorm_double(meson_vv, meson_vv_old) / qnorm(meson_vv)));
+  meson_vv_diff = meson_vv;
+  meson_vv_diff -= meson_vv_old;
+  displayln_info(
+      ssprintf("meson_vv_diff qnorm = %24.17E", qnorm(meson_vv_diff)));
+  displayln_info(
+      ssprintf("meson_vv_diff_ratio sqrt(qnorm) = %24.17E",
+               std::sqrt(qnorm(meson_vv_diff) / qnorm(meson_vv_old))));
+}
+
+inline void set_meson_vv_meson_v3(FieldM<Complex, 8 * 8>& meson_vv_meson,
+                                  const std::vector<int>& trajs,
+                                  const std::string& tag)
+{
+  TIMER_VERBOSE("set_meson_vv_v3");
+  meson_vv_meson.init();
+  FieldM<Complex, 1> pfdist;
+  set_pfdist(pfdist, trajs);
+  for (long i = 0; i < (long)trajs.size(); ++i) {
+    const int traj = trajs[i];
+    FieldM<Complex, 8 * 8> tmp;
+    const std::string path = ssprintf(
+        "analysis-v2/field-meson-vv-meson/24D/results=%d/%s-0-0-0-0.field",
+        traj, tag.c_str());
+    read_field_double_from_float(tmp, path);
+    meson_vv_meson += tmp;
+  }
+  meson_vv_meson *= 1.0 / (double)trajs.size();
+  rescale_field_with_psel_fsel_distribution(meson_vv_meson, pfdist);
+}
+
+inline void test_meson_vv_meson_v3()
+{
+  TIMER_VERBOSE("test_meson_vv_meson");
+  const std::string tag = "forward";
+  // const std::string tag = "backward";
+  FieldM<Complex, 8 * 8> meson_vv_meson, meson_vv_meson_old,
+      meson_vv_meson_diff;
+  std::vector<int> trajs;
+  for (long traj = 1000; traj < 3000; traj += 10) {
+    if (does_file_exist_sync_node(
+            ssprintf("analysis-v2/field-meson-vv-meson/24D/results=%d/"
+                     "forward-0-0-0-0.field",
+                     traj))) {
+      trajs.push_back(traj);
+    }
+    if (trajs.size() >= 2) {
+      break;
+    }
+  }
+  set_meson_vv_meson_v3(meson_vv_meson, trajs, tag);
+  set_meson_vv_meson_v3(meson_vv_meson_old, trajs, "backward");
+  reflect_field(meson_vv_meson_old);
+  field_permute_mu_nu(meson_vv_meson_old);
+  field_negate_mu_nu(meson_vv_meson_old);
+  field_complex_conjugate(meson_vv_meson_old);
+  const long dis_sq_range = sqr(5);
+  set_field_range(meson_vv_meson, dis_sq_range);
+  set_field_range(meson_vv_meson_old, dis_sq_range);
+  const Geometry& geo = meson_vv_meson.geo;
+  displayln_info(show(geo));
+  displayln_info(
+      ssprintf("meson_vv_meson qnorm = %24.17E", qnorm(meson_vv_meson)));
+  displayln_info(ssprintf(
+      "meson_vv_meson proj to meson_vv = %24.17E",
+      qnorm_double(meson_vv_meson, meson_vv_meson) / qnorm(meson_vv_meson)));
+  displayln_info(ssprintf("meson_vv_meson_old qnorm = %24.17E",
+                          qnorm(meson_vv_meson_old)));
+  displayln_info(ssprintf("meson_vv_meson_old proj to meson_vv_meson = %24.17E",
+                          qnorm_double(meson_vv_meson, meson_vv_meson_old) /
+                              qnorm(meson_vv_meson)));
+  meson_vv_meson_diff = meson_vv_meson;
+  meson_vv_meson_diff -= meson_vv_meson_old;
+  displayln_info(ssprintf("meson_vv_meson_diff qnorm = %24.17E",
+                          qnorm(meson_vv_meson_diff)));
+  displayln_info(ssprintf(
+      "meson_vv_meson_diff_ratio sqrt(qnorm) = %24.17E",
+      std::sqrt(qnorm(meson_vv_meson_diff) / qnorm(meson_vv_meson_old))));
+}
+
 inline void test()
 {
   TIMER_VERBOSE("test");
-  test_meson_vv();
-  test_meson_vv_meson();
+  // test_meson_vv();
+  // test_meson_vv_meson();
+  // test_meson_vv_v3();
+  test_meson_vv_meson_v3();
 }
 
 }  // namespace qlat

@@ -273,6 +273,49 @@ $$
 H(x-y) \texttt{ += } 1
 $$
 
+### utils
+
+```cpp
+template <class M>
+void reflect_field(Field<M>& f);
+```
+
+From ``field-shuffle.h``
+$$
+H(x) \to H(-x)
+$$
+
+```cpp
+inline void field_permute_mu_nu(FieldM<Complex, 8 * 8>& f);
+```
+
+$$
+H(x)[8\mu+\nu] = H(x)[8\nu+\mu]
+$$
+
+```cpp
+inline void field_negate_mu_nu(FieldM<Complex, 8 * 8>& f);
+```
+
+$$
+\theta_\mu =  \left\{ \begin{array}{ll}
+    1 & 0 \leqslant {\mu}< 4\\
+   -1 & 4 \leqslant {\mu}< 8
+  \end{array} \right.
+$$
+
+$$
+H(x)[8\mu+\nu] = \theta_\mu \theta_\nu H(x)[8\mu+\nu]
+$$
+
+```cpp
+inline void field_complex_conjugate(Field<Complex>& f);
+```
+
+$$
+H(x) = H(x)^*
+$$
+
 ### meson-vv
 
 Use ``xg_y`` as point source location, contraction for all available ``xg_x``.
@@ -285,38 +328,65 @@ inline void contract_meson_vv_acc(
     FieldM<Complex, 8 * 8>& meson_vv_fission, const WallSrcProps& wsp1,
     const WallSrcProps& wsp2, const SelProp& prop3_x_y, const Coordinate& xg_y,
     const long xg_y_psel_idx, const int tsep, const PointSelection& psel,
-    const FieldSelection& fsel, const ShiftShufflePlan& ssp,
-    const ShiftShufflePlan& ssp_reflect);
+    const FieldSelection& fsel, const ShiftShufflePlan& ssp);
 // xg_y = psel[xg_y_psel_idx] is the point src location for prop3_x_y
 // ssp = make_shift_shuffle_plan(fsel, -xg_y);
-// ssp_reflect = make_shift_shuffle_plan(fsel, -xg_y, true);
 ```
 
 $$
 \ba
-H_\text{decay}(x-y)[8\mu+\nu]
+H_\text{decay-1-2-3}(x-y)[8\mu+\nu]
 &\texttt{ += }&
-\frac{1}{2}\mathrm{Tr}
+\mathrm{Tr}
 [S_3(x;y)\gamma^{\mathrm{va}}_\nu S_2(y;t_\text{src})\gamma_5 S_1(t_\text{src};x)\gamma^{\mathrm{va}}_\mu]
 \\
-H_\text{decay}(y-x)[8\mu+\nu]
+H_\text{fission-1-2-3}(x-y)[8\mu+\nu]
 &\texttt{ += }&
-\frac{1}{2}\mathrm{Tr}
-[S_3(y;x) \gamma^{\mathrm{va}}_\nu S_2(x;t_\text{src})\gamma_5 S_1(t_\text{src};y)\gamma^{\mathrm{va}}_\mu]
+\mathrm{Tr}
+[S_3(x;y)\gamma^{\mathrm{va}}_\nu S_2(y;t_\text{snk})\gamma_5 S_1(t_\text{snk};x)\gamma^{\mathrm{va}}_\mu]
+\ea
+$$
+
+Some properties:
+$$
+\ba
+\big(H_\text{decay-1-2-3}(x-y)[8\mu+\nu]\big)^\dagger
+&=&
+\mathrm{Tr}
+[S_3(x;y)\gamma^{\mathrm{va}}_\nu S_2(y;t_\text{src})\gamma_5 S_1(t_\text{src};x)\gamma^{\mathrm{va}}_\mu]^\dagger
+\\
+&=&
+\mathrm{Tr}
+[{\gamma^{\mathrm{va}}_\mu}^\dagger S_1(x;t_\text{src}) \gamma_5 S_2(t_\text{src};y){\gamma^{\mathrm{va}}_\nu}^\dagger S_3(y;x)]
+\\
+&=&
+\mathrm{Tr}
+[ S_3(y;x) {\gamma^{\mathrm{va}}_\mu}^\dagger S_1(x;t_\text{src}) \gamma_5 S_2(t_\text{src};y){\gamma^{\mathrm{va}}_\nu}^\dagger]
+\\
+&=&
+\theta_\mu \theta_\nu H_\text{decay-2-1-3}(y-x)[8\nu+\mu]
 \ea
 $$
 
 $$
+\big(H_\text{fission-1-2-3}(x-y)[8\mu+\nu]\big)^\dagger
+=
+\theta_\mu \theta_\nu  H_\text{fission-2-1-3}(y-x)[8\nu+\mu]
+$$
+
+$$
 \ba
-H_\text{fission}(x-y)[8\mu+\nu]
-&\texttt{ += }&
-\frac{1}{2}\mathrm{Tr}
-[S_3(x;y)\gamma^{\mathrm{va}}_\nu S_2(y;t_\text{snk})\gamma_5 S_1(t_\text{snk};x)\gamma^{\mathrm{va}}_\mu]
+H_\text{fission-1-2-3}(x-y)[8\mu+\nu]
+&\iff&
+\mathrm{Tr}
+[S_3(-x;-y)\gamma^{\mathrm{va}}_\nu S_2(-y;-t_\text{snk})\gamma_5 S_1(-t_\text{snk};-x)\gamma^{\mathrm{va}}_\mu]
 \\
-H_\text{fission}(y-x)[8\mu+\nu]
-&\texttt{ += }&
-\frac{1}{2}\mathrm{Tr}
-[S_3(y;x) \gamma^{\mathrm{va}}_\nu S_2(x;t_\text{snk})\gamma_5 S_1(t_\text{snk};y)\gamma^{\mathrm{va}}_\mu]
+&=&
+\mathrm{Tr}
+[S_3(y;x)\gamma^{\mathrm{va}}_\nu S_2(x;t_\text{src})\gamma_5 S_1(t_\text{src};y)\gamma^{\mathrm{va}}_\mu]
+\\
+&=&
+H_\text{decay-1-2-3}(y-x)[8\mu+\nu]
 \ea
 $$
 
@@ -338,6 +408,93 @@ inline void contract_meson_vv_meson_acc(
 // ssp = make_shift_shuffle_plan(fsel, -xg_y);
 // ssp_reflect = make_shift_shuffle_plan(fsel, -xg_y, true);
 ```
+
+$$
+\ba
+H_\text{forward-1-2-3-4}(x-y)[8\mu+\nu]
+&\texttt{ += }&
+\mathrm{Tr}[
+S_1(t_\text{snk};x)\gamma^{\mathrm{va}}_\mu
+S_4(x;y)
+\gamma^{\mathrm{va}}_\nu S_2(y;t_\text{src})
+\gamma_5 S_3(t_\text{src};t_\text{snk})\gamma_5
+]
+\\
+H_\text{backward-1-2-3-4}(x-y)[8\mu+\nu]
+&\texttt{ += }&\mathrm{Tr}[
+S_1(t_\text{src};x)\gamma^{\mathrm{va}}_\mu
+S_4(x;y)
+\gamma^{\mathrm{va}}_\nu S_2(y;t_\text{snk})
+\gamma_5 S_3(t_\text{snk};t_\text{src})\gamma_5
+]
+\ea
+$$
+
+Some properties:
+$$
+\ba
+\big(H_\text{forward-1-2-3-4}(x-y)[8\mu+\nu]\big)^\dagger
+&=&
+\mathrm{Tr}[
+S_1(t_\text{snk};x)\gamma^{\mathrm{va}}_\mu
+S_4(x;y)
+\gamma^{\mathrm{va}}_\nu S_2(y;t_\text{src})
+\gamma_5 S_3(t_\text{src};t_\text{snk})\gamma_5
+]^\dagger
+\\
+&=&
+\mathrm{Tr}[
+\gamma_5 S_3(t_\text{snk};t_\text{src})\gamma_5 
+S_2(t_\text{src};y) {\gamma^{\mathrm{va}}_\nu}^\dagger
+S_4(y;x)
+{\gamma^{\mathrm{va}}_\mu}^\dagger S_1(x;t_\text{snk})
+]
+\\
+&=&
+\mathrm{Tr}[
+S_2(t_\text{src};y) {\gamma^{\mathrm{va}}_\nu}^\dagger
+S_4(y;x)
+{\gamma^{\mathrm{va}}_\mu}^\dagger S_1(x;t_\text{snk})
+\gamma_5 S_3(t_\text{snk};t_\text{src})\gamma_5 
+]
+\\
+&=&
+\theta_\mu \theta_\nu H_\text{backward-2-1-3-4}(y-x)[8\nu+\mu]
+\ea
+$$
+
+$$
+\ba
+\big(H_\text{backward-1-2-3-4}(x-y)[8\mu+\nu]\big)^\dagger
+&=&
+\theta_\mu \theta_\nu H_\text{forward-2-1-3-4}(y-x)[8\nu+\mu]
+\ea
+$$
+
+$$
+\ba
+H_\text{backward-1-2-3-4}(x-y)[8\mu+\nu]
+&\iff&
+\mathrm{Tr}[
+S_1(-t_\text{src};-x)\gamma^{\mathrm{va}}_\mu
+S_4(-x;-y)
+\gamma^{\mathrm{va}}_\nu S_2(-y;-t_\text{snk})
+\gamma_5 S_3(-t_\text{snk};-t_\text{src})\gamma_5
+]
+\\
+&=&
+\mathrm{Tr}[
+S_1(t_\text{snk};y)\gamma^{\mathrm{va}}_\mu
+S_4(y;x)
+\gamma^{\mathrm{va}}_\nu S_2(x;t_\text{src})
+\gamma_5 S_3(t_\text{src};t_\text{snk})\gamma_5
+]
+\\
+&=&
+H_\text{forward-1-2-3-4}(y-x)[8\mu+\nu]
+\ea
+$$
+
 
 $$
 \ba
@@ -382,6 +539,8 @@ S_4(y;x)
 ]
 \ea
 $$
+
+
 
 ### chvp
 
