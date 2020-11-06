@@ -40,6 +40,13 @@ $$
 \end{eqnarray}
 $$
 
+$$
+\theta_\mu =  \left\{ \begin{array}{ll}
+    1 & 0 \leqslant {\mu}< 4\\
+   -1 & 4 \leqslant {\mu}< 8
+  \end{array} \right.
+$$
+
 ### Propagator
 
 Wall source propagator, with Coulomb gauge fixing:
@@ -294,15 +301,8 @@ H(x)[8\mu+\nu] = H(x)[8\nu+\mu]
 $$
 
 ```cpp
-inline void field_negate_mu_nu(FieldM<Complex, 8 * 8>& f);
+inline void field_conjugate_mu_nu(FieldM<Complex, 8 * 8>& f);
 ```
-
-$$
-\theta_\mu =  \left\{ \begin{array}{ll}
-    1 & 0 \leqslant {\mu}< 4\\
-   -1 & 4 \leqslant {\mu}< 8
-  \end{array} \right.
-$$
 
 $$
 H(x)[8\mu+\nu] = \theta_\mu \theta_\nu H(x)[8\mu+\nu]
@@ -324,11 +324,11 @@ Proper factor is compensated so it can treated as if ``xg_x`` is contracted for 
 
 ```cpp
 inline void contract_meson_vv_acc(
-    FieldM<Complex, 8 * 8>& meson_vv_decay,
-    FieldM<Complex, 8 * 8>& meson_vv_fission, const WallSrcProps& wsp1,
-    const WallSrcProps& wsp2, const SelProp& prop3_x_y, const Coordinate& xg_y,
-    const long xg_y_psel_idx, const int tsep, const PointSelection& psel,
-    const FieldSelection& fsel, const ShiftShufflePlan& ssp);
+    FieldM<Complex, 8 * 8>& decay, FieldM<Complex, 8 * 8>& fission,
+    const WallSrcProps& wsp1, const WallSrcProps& wsp2,
+    const SelProp& prop3_x_y, const Coordinate& xg_y, const long xg_y_psel_idx,
+    const int tsep, const PointSelection& psel, const FieldSelection& fsel,
+    const ShiftShufflePlan& ssp);
 // xg_y = psel[xg_y_psel_idx] is the point src location for prop3_x_y
 // ssp = make_shift_shuffle_plan(fsel, -xg_y);
 ```
@@ -390,6 +390,27 @@ H_\text{decay-1-2-3}(y-x)[8\mu+\nu]
 \ea
 $$
 
+Possible post processing:
+
+```cpp
+reflect_field(fission);
+decay += fission;
+decay *= 0.5;
+```
+
+and
+
+```cpp
+FieldM<Complex, 8 * 8> avg;
+avg = decay_2_1_3;
+reflect_field(avg);
+field_permute_mu_nu(avg);
+field_conjugate_mu_nu(avg);
+field_complex_conjugate(avg);
+avg += decay_1_2_3;
+avg *= 0.5;
+```
+
 ### meson-vv-meson
 
 Use ``xg_y`` as point source location, contraction for all available ``xg_x``.
@@ -398,15 +419,13 @@ Proper factor is compensated so it can treated as if ``xg_x`` is contracted for 
 
 ```cpp
 inline void contract_meson_vv_meson_acc(
-    FieldM<Complex, 8 * 8>& meson_vv_meson_forward,
-    FieldM<Complex, 8 * 8>& meson_vv_meson_backward, const WallSrcProps& wsp1,
-    const WallSrcProps& wsp2, const WallSrcProps& wsp3,
-    const SelProp& prop4_x_y, const Coordinate& xg_y, const long xg_y_psel_idx,
-    const int tsep, const PointSelection& psel, const FieldSelection& fsel,
-    const ShiftShufflePlan& ssp, const ShiftShufflePlan& ssp_reflect);
+    FieldM<Complex, 8 * 8>& forward, FieldM<Complex, 8 * 8>& backward,
+    const WallSrcProps& wsp1, const WallSrcProps& wsp2,
+    const WallSrcProps& wsp3, const SelProp& prop4_x_y, const Coordinate& xg_y,
+    const long xg_y_psel_idx, const int tsep, const PointSelection& psel,
+    const FieldSelection& fsel, const ShiftShufflePlan& ssp);
 // xg_y = psel[xg_y_psel_idx] is the point src location for prop3_x_y
 // ssp = make_shift_shuffle_plan(fsel, -xg_y);
-// ssp_reflect = make_shift_shuffle_plan(fsel, -xg_y, true);
 ```
 
 $$
@@ -433,7 +452,9 @@ $$
 Some properties:
 $$
 \ba
+&&\hspace{-2cm}
 \big(H_\text{forward-1-2-3-4}(x-y)[8\mu+\nu]\big)^\dagger
+\nn\\
 &=&
 \mathrm{Tr}[
 S_1(t_\text{snk};x)\gamma^{\mathrm{va}}_\mu
@@ -473,7 +494,8 @@ $$
 
 $$
 \ba
-H_\text{backward-1-2-3-4}(x-y)[8\mu+\nu]
+&&\hspace{-2cm}H_\text{backward-1-2-3-4}(x-y)[8\mu+\nu]
+\nn\\
 &\iff&
 \mathrm{Tr}[
 S_1(-t_\text{src};-x)\gamma^{\mathrm{va}}_\mu
@@ -495,52 +517,28 @@ H_\text{forward-1-2-3-4}(y-x)[8\mu+\nu]
 \ea
 $$
 
+Possible post processing:
 
-$$
-\ba
-H_\text{forward}(x-y)[8\mu+\nu]
-&\texttt{ += }&
-\frac{1}{2}\mathrm{Tr}[
-S_1(t_\text{snk};x)\gamma^{\mathrm{va}}_\mu
-S_4(x;y)
-\gamma^{\mathrm{va}}_\nu S_2(y;t_\text{src})
-\gamma_5 S_3(t_\text{src};t_\text{snk})\gamma_5
-]
-\\
-H_\text{forward}(y-x)[8\mu+\nu]
-&\texttt{ += }&
-\frac{1}{2}\mathrm{Tr}[
-S_1(t_\text{snk};y)\gamma^{\mathrm{va}}_\mu
-S_4(y;x)
-\gamma^{\mathrm{va}}_\nu S_2(x;t_\text{src})
-\gamma_5 S_3(t_\text{src};t_\text{snk})\gamma_5
-]
-\ea
-$$
+```cpp
+reflect_field(backward);
+forward += backward;
+forward *= 0.5;
+```
 
-$$
-\ba
-H_\text{backward}(x-y)[8\mu+\nu]
-&\texttt{ += }&
-\frac{1}{2}\mathrm{Tr}[
-S_1(t_\text{src};x)\gamma^{\mathrm{va}}_\mu
-S_4(x;y)
-\gamma^{\mathrm{va}}_\nu S_2(y;t_\text{snk})
-\gamma_5 S_3(t_\text{snk};t_\text{src})\gamma_5
-]
-\\
-H_\text{backward}(y-x)[8\mu+\nu]
-&\texttt{ += }&
-\frac{1}{2}\mathrm{Tr}[
-S_1(t_\text{src};y)\gamma^{\mathrm{va}}_\mu
-S_4(y;x)
-\gamma^{\mathrm{va}}_\nu S_2(x;t_\text{snk})
-\gamma_5 S_3(t_\text{snk};t_\text{src})\gamma_5
-]
-\ea
-$$
+and
 
+```cpp
+FieldM<Complex, 8 * 8> tmp;
+tmp = forward_2_1_3_4;
+reflect_field(tmp);
+field_permute_mu_nu(tmp);
+field_conjugate_mu_nu(tmp);
+field_complex_conjugate(tmp);
+forward_1_2_3_4 += tmp;
+forward_1_2_3_4 *= 0.5;
+```
 
+# TODO
 
 ### chvp
 

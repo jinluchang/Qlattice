@@ -280,7 +280,7 @@ inline void ref_avg(FieldM<Complex, 8 * 8>& f)
   tmp = f;
   reflect_field(tmp);
   field_permute_mu_nu(tmp);
-  field_negate_mu_nu(tmp);
+  field_conjugate_mu_nu(tmp);
   field_complex_conjugate(tmp);
   f += tmp;
   f *= 0.5;
@@ -312,7 +312,7 @@ inline void set_meson_vv_v3(FieldM<Complex, 8 * 8>& meson_vv,
     read_field_double_from_float(tmp, path);
     reflect_field(tmp);
     field_permute_mu_nu(tmp);
-    field_negate_mu_nu(tmp);
+    field_conjugate_mu_nu(tmp);
     field_complex_conjugate(tmp);
     meson_vv += tmp;
   }
@@ -381,6 +381,27 @@ inline void set_meson_vv_meson_v2(FieldM<Complex, 8 * 8>& meson_vv_meson,
   rescale_field_with_psel_fsel_distribution(meson_vv_meson, pfdist);
 }
 
+inline void set_meson_vv_meson_v2avg(FieldM<Complex, 8 * 8>& meson_vv_meson,
+                                  const std::vector<int>& trajs,
+                                  const std::string& tag)
+{
+  TIMER_VERBOSE("set_meson_vv_meson_v2avg");
+  meson_vv_meson.init();
+  FieldM<Complex, 1> pfdist;
+  set_pfdist(pfdist, trajs);
+  for (long i = 0; i < (long)trajs.size(); ++i) {
+    const int traj = trajs[i];
+    FieldM<Complex, 8 * 8> tmp;
+    const std::string path = ssprintf(
+        "analysis-v2/field-meson-vv-meson-avg/24D/results=%d/%s-0-0.field",
+        traj, tag.c_str());
+    read_field_double_from_float(tmp, path);
+    meson_vv_meson += tmp;
+  }
+  meson_vv_meson *= 1.0 / (double)trajs.size();
+  rescale_field_with_psel_fsel_distribution(meson_vv_meson, pfdist);
+}
+
 inline void set_meson_vv_meson_v3(FieldM<Complex, 8 * 8>& meson_vv_meson,
                                   const std::vector<int>& trajs,
                                   const std::string& tag)
@@ -426,8 +447,12 @@ inline void test_meson_vv_meson_v3()
   set_meson_vv_meson_v3(meson_vv_meson_old, trajs, "backward-1-0");
   reflect_field(meson_vv_meson_old);
   field_permute_mu_nu(meson_vv_meson_old);
-  field_negate_mu_nu(meson_vv_meson_old);
+  field_conjugate_mu_nu(meson_vv_meson_old);
   field_complex_conjugate(meson_vv_meson_old);
+  meson_vv_meson += meson_vv_meson_old;
+  meson_vv_meson *= 0.5;
+  //
+  set_meson_vv_meson_v2avg(meson_vv_meson_old, trajs, "forward-0-1");
   const long dis_sq_range = sqr(5);
   set_field_range(meson_vv_meson, dis_sq_range);
   set_field_range(meson_vv_meson_old, dis_sq_range);

@@ -491,6 +491,10 @@ void acc_field(Field<M>& f, const Complex coef, const SelectedField<M>& sf,
   TIMER("acc_field(f,coef,sf,fsel)");
   const Geometry& geo = fsel.f_rank.geo;
   const int multiplicity = sf.geo.multiplicity;
+  if (not is_initialized(f)) {
+    f.init(geo_remult(geo, multiplicity));
+    set_zero(f);
+  }
   qassert(multiplicity == f.geo.multiplicity);
   qassert(sf.n_elems == fsel.n_elems);
 #pragma omp parallel for

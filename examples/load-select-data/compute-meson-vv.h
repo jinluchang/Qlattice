@@ -24,24 +24,21 @@ inline void compute_meson_vv_type(const std::string& job_tag, const int traj,
   qassert(num_type == (int)type2_list.size());
   const std::string path = get_meson_vv_path(job_tag, traj);
   std::vector<std::string> fn_decay_list(num_type);
-  std::vector<std::string> fn_fission_list(num_type);
   for (int i = 0; i < num_type; ++i) {
     const int type1 = type1_list[i];
     const int type2 = type2_list[i];
-    fn_decay_list[i] =
-        path + ssprintf("/decay-%d-%d-%d.field", type1, type2, type3);
-    fn_fission_list[i] =
-        path + ssprintf("/fission-%d-%d-%d.field", type1, type2, type3);
+    if (type1 <= type2) {
+      fn_decay_list[i] =
+          path + ssprintf("/decay-%d-%d-%d.field", type1, type2, type3);
+    }
   }
   bool is_complete = true;
   for (int i = 0; i < num_type; ++i) {
-    if (not is_d_field(fn_decay_list[i])) {
-      is_complete = false;
-      break;
-    }
-    if (not is_d_field(fn_fission_list[i])) {
-      is_complete = false;
-      break;
+    if (fn_decay_list[i] != "") {
+      if (not is_d_field(fn_decay_list[i])) {
+        is_complete = false;
+        break;
+      }
     }
   }
   if (is_complete) {
@@ -53,14 +50,7 @@ inline void compute_meson_vv_type(const std::string& job_tag, const int traj,
   const FieldSelection& fsel = get_field_selection(job_tag, traj);
   const Geometry& geo = fsel.f_rank.geo;
   const int tsep = tsep_op_wall_src(job_tag);
-  std::vector<FieldM<Complex, 8 * 8> > meson_vv_decay_list(num_type);
-  std::vector<FieldM<Complex, 8 * 8> > meson_vv_fission_list(num_type);
-  for (int i = 0; i < num_type; ++i) {
-    meson_vv_decay_list[i].init(geo);
-    meson_vv_fission_list[i].init(geo);
-    set_zero(meson_vv_decay_list[i]);
-    set_zero(meson_vv_fission_list[i]);
-  }
+  Cache<std::string, FieldM<Complex, 8 * 8> > cache(0);
   long iter = 0;
   for (long n = 0; n < n_points; ++n) {
     const long xg_y_psel_idx = n;
@@ -76,24 +66,55 @@ inline void compute_meson_vv_type(const std::string& job_tag, const int traj,
     for (int i = 0; i < num_type; ++i) {
       const int type1 = type1_list[i];
       const int type2 = type2_list[i];
+      FieldM<Complex, 8 * 8>& decay =
+          cache[ssprintf("decay-%d-%d-%d", type1, type2, type3)];
+      FieldM<Complex, 8 * 8>& fission =
+          cache[ssprintf("fission-%d-%d-%d", type1, type2, type3)];
       displayln_info(fname + ssprintf(":n=%ld iter=%ld types=%d-%d-%d", n, iter,
                                       type1, type2, type3));
       const WallSrcProps& wsp1 = get_wall_src_props(job_tag, traj, type1);
       const WallSrcProps& wsp2 = get_wall_src_props(job_tag, traj, type2);
-      contract_meson_vv_acc(meson_vv_decay_list[i], meson_vv_fission_list[i],
-                            wsp1, wsp2, prop3_x_y, xg_y, xg_y_psel_idx, tsep,
-                            psel, fsel, ssp);
+      contract_meson_vv_acc(decay, fission, wsp1, wsp2, prop3_x_y, xg_y,
+                            xg_y_psel_idx, tsep, psel, fsel, ssp);
     }
   }
   const long n_iter = iter;
   for (int i = 0; i < num_type; ++i) {
+    const int type1 = type1_list[i];
+    const int type2 = type2_list[i];
+    FieldM<Complex, 8 * 8>& decay =
+        cache[ssprintf("decay-%d-%d-%d", type1, type2, type3)];
+    FieldM<Complex, 8 * 8>& fission =
+        cache[ssprintf("fission-%d-%d-%d", type1, type2, type3)];
     const double coef = 1.0 / (double)n_iter;
-    meson_vv_decay_list[i] *= coef;
-    meson_vv_fission_list[i] *= coef;
+    decay *= coef;
+    fission *= coef;
+    // avg decay and fission to decay
+    reflect_field(fission);
+    decay += fission;
+    decay *= 0.5;
   }
   for (int i = 0; i < num_type; ++i) {
-    write_field_float_from_double(meson_vv_decay_list[i], fn_decay_list[i]);
-    write_field_float_from_double(meson_vv_fission_list[i], fn_fission_list[i]);
+    const int type1 = type1_list[i];
+    const int type2 = type2_list[i];
+    if (type1 <= type2) {
+      FieldM<Complex, 8 * 8> avg;
+      FieldM<Complex, 8 * 8>& f1 =
+          cache[ssprintf("decay-%d-%d-%d", type1, type2, type3)];
+      FieldM<Complex, 8 * 8>& f2 =
+          cache[ssprintf("decay-%d-%d-%d", type2, type1, type3)];
+      qassert(is_initialized(f1));
+      qassert(is_initialized(f2));
+      avg = f2;
+      reflect_field(avg);
+      field_permute_mu_nu(avg);
+      field_conjugate_mu_nu(avg);
+      field_complex_conjugate(avg);
+      avg += f1;
+      avg *= 0.5;
+      qassert(fn_decay_list[i] != "");
+      write_field_float_from_double(avg, fn_decay_list[i]);
+    }
   }
 }
 

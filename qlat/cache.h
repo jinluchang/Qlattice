@@ -27,9 +27,14 @@ struct Cache {
   {
     clear();
     name = name_;
-    limit = std::max(limit_, (long)1);
-    buffer_size = std::min(buffer_size_, limit - limit / 2);
-    qassert(buffer_size >= 1);
+    if (limit_ <= 0) {
+      limit = 0;
+      buffer_size = 1;
+    } else {
+      limit = std::max(limit_, (long)1);
+      buffer_size = std::min(buffer_size_, limit - limit / 2);
+      qassert(buffer_size >= 1);
+    }
   }
   //
   bool has(const K& key) const
@@ -65,7 +70,7 @@ struct Cache {
   //
   void gc()
   {
-    if ((long)m.size() >= limit) {
+    if (limit > 0 and (long) m.size() >= limit) {
       TIMER_VERBOSE("Cache::gc");
       displayln_info(ssprintf("%s::%s: before gc: %d / %d.", cname().c_str(),
                               name.c_str(), m.size(), limit));

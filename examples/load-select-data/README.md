@@ -40,6 +40,13 @@ $$
 \end{eqnarray}
 $$
 
+$$
+\theta_\mu =  \left\{ \begin{array}{ll}
+    1 & 0 \leqslant {\mu}< 4\\
+   -1 & 4 \leqslant {\mu}< 8
+  \end{array} \right.
+$$
+
 ### Propagator
 
 Wall source propagator, with Coulomb gauge fixing:
@@ -186,19 +193,6 @@ H_\text{decay-1-2-3}(x-y)[8\mu+\nu]
 \ea
 $$
 
-```cpp
-ssprintf("/fission-%d-%d-%d.field", type1, type2, type3)
-```
-
-$$
-\ba
-H_\text{fission-1-2-3}(x-y)[8\mu+\nu]
-&=&
-\mathrm{Tr}
-[S_3(x;y)\gamma^{\mathrm{va}}_\nu S_2(y;t_\text{snk})\gamma_5 S_1(t_\text{snk};x)\gamma^{\mathrm{va}}_\mu]
-\ea
-$$
-
 where:
 $$
 \ba
@@ -254,50 +248,6 @@ S_4(x;y)
 \ea
 $$
 
-or
-$$
-\ba
-H_\text{forward}(y-x)[8\mu+\nu]
-&=&
-\mathrm{Tr}[
-S_1(t_\text{snk};y)\gamma^{\mathrm{va}}_\mu
-S_4(y;x)
-\gamma^{\mathrm{va}}_\nu S_2(x;t_\text{src})
-\gamma_5 S_3(t_\text{src};t_\text{snk})\gamma_5
-]
-\ea
-$$
-
-```cpp
-ssprintf("/backward-%d-%d-%d.field", type1, type2, type3)
-```
-
-$$
-\ba
-H_\text{backward}(x-y)[8\mu+\nu]
-&=&
-\mathrm{Tr}[
-S_1(t_\text{src};x)\gamma^{\mathrm{va}}_\mu
-S_4(x;y)
-\gamma^{\mathrm{va}}_\nu S_2(y;t_\text{snk})
-\gamma_5 S_3(t_\text{snk};t_\text{src})\gamma_5
-]
-\ea
-$$
-
-or
-$$
-\ba
-H_\text{backward}(y-x)[8\mu+\nu]
-&=&
-\mathrm{Tr}[
-S_1(t_\text{src};y)\gamma^{\mathrm{va}}_\mu
-S_4(y;x)
-\gamma^{\mathrm{va}}_\nu S_2(x;t_\text{snk})
-\gamma_5 S_3(t_\text{snk};t_\text{src})\gamma_5
-]
-\ea
-$$
 where:
 $$
 \ba
