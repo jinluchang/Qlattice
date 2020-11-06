@@ -39,7 +39,6 @@ inline void compute_psel_fsel_distribution_type(const std::string& job_tag,
   const PointSelection& psel = get_point_selection(job_tag, traj);
   const long n_points = psel.size();
   const FieldSelection& fsel = get_field_selection(job_tag, traj);
-  const Geometry& geo = fsel.f_rank.geo;
   FieldM<Complex, 1> pos;
   long iter = 0;
   for (long n = 0; n < n_points; ++n) {
