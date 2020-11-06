@@ -362,7 +362,7 @@ inline void set_meson_vv_meson_v3(FieldM<Complex, 8 * 8>& meson_vv_meson,
     const int traj = trajs[i];
     FieldM<Complex, 8 * 8> tmp;
     const std::string path = ssprintf(
-        "analysis-v2/field-meson-vv-meson/24D/results=%d/%s-0-0-0-0.field",
+        "analysis/field-meson-vv-meson/24D/results=%d/%s-0-0-0-0.field",
         traj, tag.c_str());
     read_field_double_from_float(tmp, path);
     meson_vv_meson += tmp;
@@ -381,12 +381,12 @@ inline void test_meson_vv_meson_v3()
   std::vector<int> trajs;
   for (long traj = 1000; traj < 3000; traj += 10) {
     if (does_file_exist_sync_node(
-            ssprintf("analysis-v2/field-meson-vv-meson/24D/results=%d/"
+            ssprintf("analysis/field-meson-vv-meson/24D/results=%d/"
                      "forward-0-0-0-0.field",
                      traj))) {
       trajs.push_back(traj);
     }
-    if (trajs.size() >= 2) {
+    if (trajs.size() >= 1) {
       break;
     }
   }

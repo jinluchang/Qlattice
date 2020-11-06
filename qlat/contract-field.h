@@ -298,7 +298,11 @@ inline void contract_meson_vv_meson_unshifted_acc_x(
   const WilsonMatrix wm1_tsnk_y =
       gamma5 * (WilsonMatrix)matrix_adjoint(wm1_y_tsnk) * gamma5;
   const WilsonMatrix wm3_tsrc_tsnk =
-      gamma5 * get_wsnk_prop(wsp3, t_wall_snk, exact_snk)[t_wall_src] * gamma5;
+      (Complex)0.5 *
+      (gamma5 * get_wsnk_prop(wsp3, t_wall_snk, exact_snk)[t_wall_src] *
+           gamma5 +
+       (WilsonMatrix)matrix_adjoint(
+           get_wsnk_prop(wsp3, t_wall_src, exact_src)[t_wall_snk]));
   const WilsonMatrix wm_y_tsrc_tsnk_x = wm2_y_tsrc * wm3_tsrc_tsnk * wm1_tsnk_x;
   const WilsonMatrix wm_x_tsrc_tsnk_y = wm2_x_tsrc * wm3_tsrc_tsnk * wm1_tsnk_y;
   for (int mu = 0; mu < 8; ++mu) {
