@@ -30,7 +30,7 @@ qlat.x: *.C
 	[ -f $@ ]
 
 build:
-	-$(CXX) -o qlat.x $(QLAT_CXXFLAGS) *.C $(QLAT_LDFLAGS) 2>&1 | grep --color=always 'error:\|'
+	-time $(CXX) -o qlat.x $(QLAT_CXXFLAGS) *.C $(QLAT_LDFLAGS) 2>&1 | grep --color=always 'error:\|'
 
 show-info:
 	@echo CXX: $(CXX)
