@@ -539,22 +539,111 @@ forward_1_2_3_4 *= 0.5;
 
 # TODO
 
-### chvp
+## meson-chvp
 
 Use ``xg_y`` as point source location, contraction for all available ``xg_x``.
 
 Proper factor is compensated so it can treated as if ``xg_x`` is contracted for all lattice sites.
 
+
 ```cpp
-inline void contract_chvp(
-    FieldM<Complex, 8 * 8>& chvp,
-    FieldM<Complex, 8 * 8>& meson_vv_meson_backward, const WallSrcProps& wsp1,
-    const WallSrcProps& wsp2, const WallSrcProps& wsp3,
-    const SelProp& prop4_x_y, const Coordinate& xg_y, const long xg_y_psel_idx,
-    const int tsep, const PointSelection& psel, const FieldSelection& fsel,
-    const ShiftShufflePlan& ssp, const ShiftShufflePlan& ssp_reflect);
-// xg_y = psel[xg_y_psel_idx] is the point src location for prop3_x_y
-// ssp = make_shift_shuffle_plan(fsel, -xg_y);
-// ssp_reflect = make_shift_shuffle_plan(fsel, -xg_y, true);
+inline void contract_chvp(SelectedField<Complex>& chvp,
+                                const SelProp& prop1_x_y, const SelProp& prop2_x_y,
+    const FieldSelection& fsel);
 ```
+
+$$
+H_\text{chvp-1-2} (x-y) [8\mu+\nu] = \mathrm{Tr}[
+S_1(x;y)\gamma^{\mathrm{va}}_\nu
+S_2(y;x)\gamma^{\mathrm{va}}_\mu
+]
+$$
+
+Some properties:
+$$
+H_\text{chvp-1-2} (x-y) [8\mu+\nu] = H_\text{chvp-2-1} (y-x)[8\nu+\mu]
+$$
+
+$$
+\ba
+\big(H_\text{chvp-1-2} (x-y) [8\mu+\nu] \big)^\dagger
+&=&
+\mathrm{Tr}[
+{\gamma^{\mathrm{va}}_\mu}^\dagger
+S_2(x;y){\gamma^{\mathrm{va}}_\nu}^\dagger
+S_1(y;x)
+]
+\\
+&=&
+\theta_\mu \theta_\nu
+H_\text{chvp-2-1}(x-y)[8\mu+\nu]
+\ea
+$$
+
+
+```cpp
+inline void contract_meson_chvp(FieldM<Complex, 8 * 8>& meson_chvp,
+                                const WallSrcProps& wsp1,
+                                const WallSrcProps& wsp2,
+                                const FieldM<Complex, 8 * 8>& chvp_3_4,
+                                const int t_y, const int tsep);
+```
+
+
+$$
+\ba
+H_\text{1-2-3-4}(x-y)[8\mu+\nu]
+&\texttt{ += }&
+\mathrm{Tr}[
+S_1(t_\text{snk};t_\text{src})
+\gamma_5 S_2(t_\text{src};t_\text{snk})\gamma_5
+]
+\mathrm{Tr}[
+S_3(x;y)\gamma^{\mathrm{va}}_\nu
+S_4(y;x)\gamma^{\mathrm{va}}_\mu
+]
+\ea
+$$
+Some properties:
+$$
+\ba
+\big(H_\text{1-2-3-4}(x-y)[8\mu+\nu]\big)^\dagger
+&=&
+\mathrm{Tr}[
+S_1(t_\text{src};t_\text{snk})
+\gamma_5 S_2(t_\text{snk};t_\text{src})\gamma_5
+]
+\mathrm{Tr}[
+S_4(x;y){\gamma^{\mathrm{va}}_\nu}^\dagger
+S_3(y;x){\gamma^{\mathrm{va}}_\mu}^\dagger
+]
+\\
+&=&
+\theta_\mu \theta_\nu
+H_\text{2-1-4-3}(x-y)[8\mu+\nu]
+\ea
+$$
+
+$$
+H_\text{1-2-3-4}(x-y)[8\mu+\nu] = H_\text{1-2-4-3}(y-x)[8\nu+\mu]
+$$
+
+$$
+\ba
+&&\hspace{-2cm}H_\text{1-2-3-4}(x-y)[8\mu+\nu]
+\nn\\
+&\iff&
+\mathrm{Tr}[
+S_1(t_\text{src};t_\text{snk})
+\gamma_5 S_2(t_\text{snk};t_\text{src})\gamma_5
+]
+\mathrm{Tr}[
+S_3(y;x)\gamma^{\mathrm{va}}_\nu
+S_4(x;y)\gamma^{\mathrm{va}}_\mu
+]
+\\
+&=&
+H_\text{2-1-3-4}(y-x)[8\mu+\nu]
+\ea
+$$
 

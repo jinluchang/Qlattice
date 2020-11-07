@@ -264,6 +264,18 @@ inline void contract_meson_vv_acc(
 
 // -----------------------------------------------------------------------------------
 
+inline WilsonMatrix get_wsnk_prop_avg(const WallSrcProps& wsp, const int t_snk,
+                                      const bool exact_snk, const int t_src,
+                                      const bool exact_src)
+{
+  const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
+  return (Complex)0.5 * (get_wsnk_prop(wsp, t_src, exact_src)[t_snk] +
+                         gamma5 *
+                             (WilsonMatrix)matrix_adjoint(
+                                 get_wsnk_prop(wsp, t_snk, exact_snk)[t_src]) *
+                             gamma5);
+}
+
 inline void contract_meson_vv_meson_unshifted_acc_x(
     Vector<Complex> v, const Complex coef, const WallSrcProps& wsp1,
     const WallSrcProps& wsp2, const WallSrcProps& wsp3,
@@ -290,11 +302,9 @@ inline void contract_meson_vv_meson_unshifted_acc_x(
   const WilsonMatrix wm1_tsnk_x =
       gamma5 * (WilsonMatrix)matrix_adjoint(wm1_x_tsnk) * gamma5;
   const WilsonMatrix wm3_tsrc_tsnk =
-      (Complex)0.5 *
-      (gamma5 * get_wsnk_prop(wsp3, t_wall_snk, exact_snk)[t_wall_src] *
-           gamma5 +
-       (WilsonMatrix)matrix_adjoint(
-           get_wsnk_prop(wsp3, t_wall_src, exact_src)[t_wall_snk]));
+      gamma5 *
+      get_wsnk_prop_avg(wsp3, t_wall_src, exact_src, t_wall_snk, exact_snk) *
+      gamma5;
   const WilsonMatrix wm_y_tsrc_tsnk_x = wm2_y_tsrc * wm3_tsrc_tsnk * wm1_tsnk_x;
   for (int mu = 0; mu < 8; ++mu) {
     const WilsonMatrix wm = wm_y_tsrc_tsnk_x * va_ms[mu] * wm4_x_y;
@@ -467,6 +477,22 @@ inline void contract_meson_vv_meson_acc(
   const Complex coef = 1.0 / fsel.prob;
   acc_field(forward, coef, s_forward, ssp.fsel);
   acc_field(backward, coef, s_backward, ssp.fsel);
+}
+
+// -----------------------------------------------------------------------------------
+
+inline void contract_chvp(SelectedField<Complex>& chvp,
+                          const SelProp& prop1_x_y, const SelProp& prop2_x_y,
+                          const FieldSelection& fsel)
+{
+}
+
+inline void contract_meson_chvp(FieldM<Complex, 8 * 8>& meson_chvp,
+                                const WallSrcProps& wsp1,
+                                const WallSrcProps& wsp2,
+                                const FieldM<Complex, 8 * 8>& chvp_3_4,
+                                const int t_y, const int tsep)
+{
 }
 
 }  // namespace qlat
