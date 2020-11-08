@@ -493,4 +493,111 @@ inline LatData contract_three_point_function(
   return ld;
 }
 
+// -----------------------------------------------------------------------------------
+
+inline LatData mk_meson_snk_src_table(const Coordinate& total_site)
+{
+  LatData ld;
+  ld.info.push_back(lat_dim_number("tsnk", 0, total_site[3] - 1));
+  ld.info.push_back(lat_dim_number("tsrc", 0, total_site[3] - 1));
+  ld.info.push_back(lat_dim_re_im());
+  lat_data_alloc(ld);
+  set_zero(ld);
+  return ld;
+}
+
+inline Complex contract_meson_snk_src(const WallSrcProps& wsp1,
+                                      const WallSrcProps& wsp2, const int t_snk,
+                                      const bool exact_snk, const int t_src,
+                                      const bool exact_src)
+{
+  const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
+  const WilsonMatrix& wm1_snk_src =
+      get_wsnk_prop(wsp1, t_src, exact_src)[t_snk];
+  const WilsonMatrix& wm2_snk_src =
+      get_wsnk_prop(wsp2, t_src, exact_src)[t_snk];
+  const WilsonMatrix& wm1_src_snk =
+      get_wsnk_prop(wsp1, t_snk, exact_snk)[t_src];
+  const WilsonMatrix& wm2_src_snk =
+      get_wsnk_prop(wsp2, t_snk, exact_snk)[t_src];
+  const Complex v1 = matrix_trace(gamma5 * wm1_snk_src, gamma5 * wm2_src_snk);
+  const Complex v2 = matrix_trace(gamma5 * wm2_snk_src, gamma5 * wm1_src_snk);
+  return 0.5 * (v1 + std::conj(v2));
+}
+
+inline Complex contract_meson_snk_src(const WallSrcProps& wsp1,
+                                      const WallSrcProps& wsp2, const int t_snk,
+                                      const int t_src)
+{
+  qassert(wsp1.exact_tslice_mask.size() == wsp2.exact_tslice_mask.size());
+  qassert(0 <= t_snk and t_snk < (int)wsp1.exact_tslice_mask.size());
+  qassert(0 <= t_src and t_src < (int)wsp1.exact_tslice_mask.size());
+  const bool has_exact_snk = wsp1.exact_tslice_mask[t_snk];
+  qassert(wsp2.exact_tslice_mask[t_snk] == has_exact_snk);
+  const bool has_exact_src = wsp1.exact_tslice_mask[t_src];
+  qassert(wsp2.exact_tslice_mask[t_src] == has_exact_src);
+  Complex ret = 0.0;
+  if (t_src == t_snk and has_exact_src) {
+    qassert(has_exact_src == has_exact_snk);
+    const double sloppy_exact_ratio_1 = wsp1.sloppy_exact_ratio_1;
+    qassert(sloppy_exact_ratio_1 == wsp2.sloppy_exact_ratio_1);
+    const Complex coef1 = sloppy_exact_ratio_1;
+    const Complex coef2 = 1.0 - sloppy_exact_ratio_1;
+    ret += coef1 * contract_meson_snk_src(wsp1, wsp2, t_snk, true, t_src, true);
+    ret +=
+        coef2 * contract_meson_snk_src(wsp1, wsp2, t_snk, false, t_src, false);
+  } else if (has_exact_src and has_exact_snk) {
+    const double sloppy_exact_ratio_11 = wsp1.sloppy_exact_ratio_11;
+    const double sloppy_exact_ratio_1 = wsp1.sloppy_exact_ratio_1;
+    qassert(sloppy_exact_ratio_1 == wsp2.sloppy_exact_ratio_1);
+    const Complex coef1 = sloppy_exact_ratio_11;
+    const Complex coef2 = sloppy_exact_ratio_1 - sloppy_exact_ratio_11;
+    const Complex coef3 =
+        1.0 - 2.0 * sloppy_exact_ratio_1 + sloppy_exact_ratio_11;
+    ret += coef1 * contract_meson_snk_src(wsp1, wsp2, t_snk, true, t_src, true);
+    ret +=
+        coef2 * contract_meson_snk_src(wsp1, wsp2, t_snk, false, t_src, true);
+    ret +=
+        coef2 * contract_meson_snk_src(wsp1, wsp2, t_snk, true, t_src, false);
+    ret +=
+        coef3 * contract_meson_snk_src(wsp1, wsp2, t_snk, false, t_src, false);
+  } else if (has_exact_snk or has_exact_src) {
+    const double sloppy_exact_ratio_1 = wsp1.sloppy_exact_ratio_1;
+    qassert(sloppy_exact_ratio_1 == wsp2.sloppy_exact_ratio_1);
+    const Complex coef1 = sloppy_exact_ratio_1;
+    const Complex coef2 = 1.0 - sloppy_exact_ratio_1;
+    if (has_exact_snk and (not has_exact_src)) {
+      ret +=
+          coef1 * contract_meson_snk_src(wsp1, wsp2, t_snk, true, t_src, false);
+    } else if ((not has_exact_snk) and has_exact_src) {
+      ret +=
+          coef1 * contract_meson_snk_src(wsp1, wsp2, t_snk, false, t_src, true);
+    } else {
+      qassert(false);
+    }
+    ret +=
+        coef2 * contract_meson_snk_src(wsp1, wsp2, t_snk, false, t_src, false);
+  } else if ((not has_exact_snk) and (not has_exact_src)) {
+    ret += contract_meson_snk_src(wsp1, wsp2, t_snk, false, t_src, false);
+  } else {
+    qassert(false);
+  }
+  return ret;
+}
+
+inline LatData contract_meson_snk_src(const WallSrcProps& wsp1,
+                                      const WallSrcProps& wsp2,
+                                      const Coordinate& total_site)
+{
+  TIMER_VERBOSE("contract_meson");
+  LatData ld = mk_meson_snk_src_table(total_site);
+  for (int t_snk = 0; t_snk < total_site[3]; ++t_snk) {
+    for (int t_src = 0; t_src < total_site[3]; ++t_src) {
+      lat_data_cget(ld, make_array<int>(t_snk, t_src))[0] =
+          contract_meson_snk_src(wsp1, wsp2, t_snk, t_src);
+    }
+  }
+  return ld;
+}
+
 }  // namespace qlat

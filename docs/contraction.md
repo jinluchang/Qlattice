@@ -539,7 +539,32 @@ forward_1_2_3_4 *= 0.5;
 
 # TODO
 
-## meson-chvp
+### meson-snk-src
+
+```cpp
+inline LatData contract_meson(const WallSrcProps& wsp1,
+                              const WallSrcProps& wsp2)
+```
+
+$$
+\text{ld-1-2}[t_\text{snk}][t_\text{src}]
+=
+\mathrm{Tr}[
+S_1(t_\text{snk};t_\text{src})
+\gamma_5 S_2(t_\text{src};t_\text{snk})\gamma_5
+]
+$$
+
+Some properties:
+$$
+\text{ld-1-2}[t_\text{snk}][t_\text{src}]^\dagger
+=
+\text{ld-2-1}[t_\text{snk}][t_\text{src}]
+=
+\text{ld-1-2}[t_\text{src}][t_\text{snk}]
+$$
+
+## chvp
 
 Use ``xg_y`` as point source location, contraction for all available ``xg_x``.
 
@@ -548,8 +573,8 @@ Proper factor is compensated so it can treated as if ``xg_x`` is contracted for 
 
 ```cpp
 inline void contract_chvp(SelectedField<Complex>& chvp,
-                                const SelProp& prop1_x_y, const SelProp& prop2_x_y,
-    const FieldSelection& fsel);
+                          const SelProp& prop1_x_y, const SelProp& prop2_x_y,
+                          const FieldSelection& fsel);
 ```
 
 $$
@@ -577,16 +602,38 @@ S_1(y;x)
 &=&
 \theta_\mu \theta_\nu
 H_\text{chvp-2-1}(x-y)[8\mu+\nu]
+\\
+&=&
+\theta_\mu \theta_\nu
+H_\text{chvp-1-2}(y-x)[8\nu+\mu]
 \ea
 $$
 
+Possible post processing:
 
 ```cpp
-inline void contract_meson_chvp(FieldM<Complex, 8 * 8>& meson_chvp,
-                                const WallSrcProps& wsp1,
-                                const WallSrcProps& wsp2,
-                                const FieldM<Complex, 8 * 8>& chvp_3_4,
-                                const int t_y, const int tsep);
+FieldM<Complex, 8 * 8> tmp;
+tmp = chvp;
+reflect_field(tmp);
+field_permute_mu_nu(tmp);
+field_conjugate_mu_nu(tmp);
+field_complex_conjugate(tmp);
+chvp += tmp;
+chvp *= 0.5;
+```
+
+### meson-chvp
+
+Use ``xg_y`` as point source location, contraction for all available ``xg_x``.
+
+Proper factor is compensated so it can treated as if ``xg_x`` is contracted for all lattice sites.
+
+
+```cpp
+inline void contract_meson_chvp_acc(FieldM<Complex, 8 * 8>& mchvp,
+                                    const LatData& ld_meson_snk_src_1_2,
+                                    const FieldM<Complex, 8 * 8>& chvp_3_4,
+                                    const int t_y, const int tsep);
 ```
 
 
@@ -606,6 +653,10 @@ S_4(y;x)\gamma^{\mathrm{va}}_\mu
 $$
 Some properties:
 $$
+H_\text{1-2-3-4}(x-y)[8\mu+\nu] = H_\text{1-2-4-3}(y-x)[8\nu+\mu]
+$$
+
+$$
 \ba
 \big(H_\text{1-2-3-4}(x-y)[8\mu+\nu]\big)^\dagger
 &=&
@@ -621,11 +672,11 @@ S_3(y;x){\gamma^{\mathrm{va}}_\mu}^\dagger
 &=&
 \theta_\mu \theta_\nu
 H_\text{2-1-4-3}(x-y)[8\mu+\nu]
+\\
+&=&
+\theta_\mu \theta_\nu
+H_\text{2-1-3-4}(y-x)[8\nu+\mu]
 \ea
-$$
-
-$$
-H_\text{1-2-3-4}(x-y)[8\mu+\nu] = H_\text{1-2-4-3}(y-x)[8\nu+\mu]
 $$
 
 $$
@@ -644,6 +695,25 @@ S_4(x;y)\gamma^{\mathrm{va}}_\mu
 \\
 &=&
 H_\text{2-1-3-4}(y-x)[8\mu+\nu]
+\\
+&=&
+\big(\theta_\mu \theta_\nu H_\text{1-2-3-4}(x-y)[8\nu+\mu]\big)^\dagger
 \ea
 $$
+
+Possible post processing:
+
+```cpp
+FieldM<Complex, 8 * 8> tmp;
+tmp = mchvp_2_1_3_4;
+reflect_field(tmp);
+tmp += mchvp_1_2_3_4;
+tmp *= 0.5;
+mchvp_1_2_3_4 = tmp;
+field_permute_mu_nu(tmp);
+field_conjugate_mu_nu(tmp);
+field_complex_conjugate(tmp);
+mchvp_1_2_3_4 += tmp;
+mchvp_1_2_3_4 *= 0.5;
+```
 

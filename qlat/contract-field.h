@@ -5,6 +5,16 @@
 namespace qlat
 {  //
 
+template <class M>
+void acc_field(Field<M>& f, const Complex coef, const SelectedField<M>& sf,
+               const ShiftShufflePlan& ssp)
+{
+  TIMER("acc_field(f,coef,sf,ssp)");
+  SelectedField<M> sf_shifted;
+  field_shift(sf_shifted, sf, ssp);
+  acc_field(f, coef, sf_shifted, ssp.fsel);
+}
+
 inline void contract_psel_fsel_distribution_acc(FieldM<Complex, 1>& pos,
                                                 const Coordinate& xg_y,
                                                 const FieldSelection& fsel,
@@ -20,10 +30,9 @@ inline void contract_psel_fsel_distribution_acc(FieldM<Complex, 1>& pos,
   for (long idx = 0; idx < fsel.n_elems; ++idx) {
     s_pos.get_elem(idx) = 1.0;
   }
-  field_shift(s_pos, s_pos, ssp);
   qassert(fsel.prob == ssp.fsel.prob);
   const Complex coef = 1.0 / fsel.prob;
-  acc_field(pos, coef, s_pos, ssp.fsel);
+  acc_field(pos, coef, s_pos, ssp);
 }
 
 template <class M>
@@ -254,12 +263,10 @@ inline void contract_meson_vv_acc(
   qassert(sfs.size() == 2);
   SelectedField<Complex>& s_decay = sfs[0];
   SelectedField<Complex>& s_fission = sfs[1];
-  field_shift(s_decay, s_decay, ssp);
-  field_shift(s_fission, s_fission, ssp);
   qassert(fsel.prob == ssp.fsel.prob);
   const Complex coef = 1.0 / fsel.prob;
-  acc_field(decay, coef, s_decay, ssp.fsel);
-  acc_field(fission, coef, s_fission, ssp.fsel);
+  acc_field(decay, coef, s_decay, ssp);
+  acc_field(fission, coef, s_fission, ssp);
 }
 
 // -----------------------------------------------------------------------------------
@@ -471,12 +478,10 @@ inline void contract_meson_vv_meson_acc(
   qassert(sfs.size() == 2);
   SelectedField<Complex>& s_forward = sfs[0];
   SelectedField<Complex>& s_backward = sfs[1];
-  field_shift(s_forward, s_forward, ssp);
-  field_shift(s_backward, s_backward, ssp);
   qassert(fsel.prob == ssp.fsel.prob);
   const Complex coef = 1.0 / fsel.prob;
-  acc_field(forward, coef, s_forward, ssp.fsel);
-  acc_field(backward, coef, s_backward, ssp.fsel);
+  acc_field(forward, coef, s_forward, ssp);
+  acc_field(backward, coef, s_backward, ssp);
 }
 
 // -----------------------------------------------------------------------------------
@@ -485,14 +490,27 @@ inline void contract_chvp(SelectedField<Complex>& chvp,
                           const SelProp& prop1_x_y, const SelProp& prop2_x_y,
                           const FieldSelection& fsel)
 {
+  TIMER_VERBOSE("contract_chvp");
 }
 
-inline void contract_meson_chvp(FieldM<Complex, 8 * 8>& meson_chvp,
-                                const WallSrcProps& wsp1,
-                                const WallSrcProps& wsp2,
-                                const FieldM<Complex, 8 * 8>& chvp_3_4,
-                                const int t_y, const int tsep)
+inline void contract_chvp_acc(FieldM<Complex, 8 * 8>& field,
+                              const SelProp& prop1_x_y,
+                              const SelProp& prop2_x_y, const Coordinate& xg_y,
+                              const FieldSelection& fsel,
+                              const ShiftShufflePlan& ssp)
+// ssp = make_shift_shuffle_plan(fsel, -xg_y);
 {
+  TIMER_VERBOSE("contract_chvp_acc");
+}
+
+// -----------------------------------------------------------------------------------
+
+inline void contract_meson_chvp_acc(FieldM<Complex, 8 * 8>& mchvp,
+                                    const LatData& ld_meson_snk_src_1_2,
+                                    const FieldM<Complex, 8 * 8>& chvp_3_4,
+                                    const int t_y, const int tsep)
+{
+  TIMER_VERBOSE("contract_meson_chvp_acc");
 }
 
 }  // namespace qlat
