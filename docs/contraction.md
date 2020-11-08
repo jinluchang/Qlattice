@@ -537,8 +537,6 @@ forward_1_2_3_4 += tmp;
 forward_1_2_3_4 *= 0.5;
 ```
 
-# TODO
-
 ### meson-snk-src
 
 ```cpp
@@ -563,6 +561,8 @@ $$
 =
 \text{ld-1-2}[t_\text{src}][t_\text{snk}]
 $$
+
+# TODO
 
 ## chvp
 
@@ -634,6 +634,7 @@ inline void contract_meson_chvp_acc(FieldM<Complex, 8 * 8>& mchvp,
                                     const LatData& ld_meson_snk_src_1_2,
                                     const FieldM<Complex, 8 * 8>& chvp_3_4,
                                     const int t_y, const int tsep);
+// chvp_3_4 already shifted to origin
 ```
 
 

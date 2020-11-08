@@ -161,4 +161,50 @@ inline const SelProp& get_prop_psrc_ama(const std::string& job_tag,
   return cache[key];
 }
 
+inline void contract_chvp_ama(SelectedField<Complex>& chvp_ama,
+                              const std::string& job_tag, const int traj,
+                              const Coordinate& xg, const int type1,
+                              const int type2)
+{
+  TIMER_VERBOSE("contract_chvp_ama");
+  chvp_ama.init();
+  const int type_max = std::max(type1, type2);
+  const std::vector<PointInfo>& pis_xgt =
+      get_point_src_info(job_tag, traj, xg, type_max);
+  if (pis_xgt.size() == 0) {
+    return;
+  }
+  const FieldSelection& fsel = get_field_selection(job_tag, traj);
+  const int num_acc = pis_xgt.size();
+  qassert(num_acc >= 1);
+  if (num_acc == 1) {
+    qassert(pis_xgt[0].accuracy == 0);
+    const int acc = 0;
+    const SelProp& prop1 = get_prop_psrc(job_tag, traj, xg, type1, acc);
+    const SelProp& prop2 = get_prop_psrc(job_tag, traj, xg, type2, acc);
+    contract_chvp(chvp_ama, prop1, prop2, fsel);
+    return;
+  }
+  const TypeAccuracyTable& tat = get_type_accuracy_table(job_tag, traj);
+  qassert(get_accuracy_weight(tat, type_max, 0) == 1.0);
+  qassert(num_acc > 1);
+  std::vector<double> coefs(num_acc, 0.0);
+  coefs[0] = 1.0;
+  for (int acc = 1; acc < num_acc; ++acc) {
+    const double weight = get_accuracy_weight(tat, type_max, acc);
+    coefs[acc] += weight;
+    coefs[acc - 1] -= weight;
+  }
+  for (int acc = 0; acc < num_acc; ++acc) {
+    const SelProp& prop1 = get_prop_psrc(job_tag, traj, xg, type1, acc);
+    qassert(is_initialized(prop1));
+    const SelProp& prop2 = get_prop_psrc(job_tag, traj, xg, type2, acc);
+    qassert(is_initialized(prop2));
+    SelectedField<Complex> chvp;
+    contract_chvp(chvp, prop1, prop2, fsel);
+    chvp *= coefs[acc];
+    chvp_ama += chvp;
+  }
+}
+
 }  // namespace qlat

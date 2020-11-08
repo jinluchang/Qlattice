@@ -491,16 +491,28 @@ inline void contract_chvp(SelectedField<Complex>& chvp,
                           const FieldSelection& fsel)
 {
   TIMER_VERBOSE("contract_chvp");
-}
-
-inline void contract_chvp_acc(FieldM<Complex, 8 * 8>& field,
-                              const SelProp& prop1_x_y,
-                              const SelProp& prop2_x_y, const Coordinate& xg_y,
-                              const FieldSelection& fsel,
-                              const ShiftShufflePlan& ssp)
-// ssp = make_shift_shuffle_plan(fsel, -xg_y);
-{
-  TIMER_VERBOSE("contract_chvp_acc");
+  const std::array<SpinMatrix, 8>& va_ms = get_va_matrices();
+  const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
+  qassert(fsel.n_elems == prop1_x_y.n_elems);
+  qassert(fsel.n_elems == prop2_x_y.n_elems);
+  const int multiplicity = 8 * 8;
+  chvp.init();
+  chvp.init(fsel, multiplicity);
+#pragma omp parallel for
+  for (long idx = 0; idx < fsel.n_elems; ++idx) {
+    const WilsonMatrix& wm1_x_y = prop1_x_y.get_elem(idx);
+    const WilsonMatrix& wm2_x_y = prop2_x_y.get_elem(idx);
+    const WilsonMatrix wm2_y_x =
+        gamma5 * (WilsonMatrix)matrix_adjoint(wm2_x_y) * gamma5;
+    Vector<Complex> chvp_v = chvp.get_elems(idx);
+    for (int mu = 0; mu < 8; ++mu) {
+      const WilsonMatrix wm = wm2_y_x * va_ms[mu] * wm1_x_y;
+      for (int nu = 0; nu < 8; ++nu) {
+        const int mu_nu = 8 * mu + nu;
+        chvp_v[mu_nu] += matrix_trace(wm, va_ms[nu]);
+      }
+    }
+  }
 }
 
 // -----------------------------------------------------------------------------------
@@ -509,6 +521,7 @@ inline void contract_meson_chvp_acc(FieldM<Complex, 8 * 8>& mchvp,
                                     const LatData& ld_meson_snk_src_1_2,
                                     const FieldM<Complex, 8 * 8>& chvp_3_4,
                                     const int t_y, const int tsep)
+// chvp_3_4 already shifted to origin
 {
   TIMER_VERBOSE("contract_meson_chvp_acc");
 }

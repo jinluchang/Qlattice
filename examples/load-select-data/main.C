@@ -1,11 +1,12 @@
 #include "compute-check-prop.h"
-#include "compute-meson-vv.h"
+#include "compute-chvp.h"
+#include "compute-meson-snk-src.h"
 #include "compute-meson-vv-meson.h"
+#include "compute-meson-vv.h"
 #include "compute-psel-fsel-distribution.h"
 #include "compute-three-point-func.h"
 #include "compute-two-point-func.h"
 #include "compute-wall-src-prop-norm-ratio.h"
-#include "compute-meson-snk-src.h"
 
 namespace qlat
 {  //
@@ -23,6 +24,7 @@ inline void compute_traj(const std::string& job_tag, const int traj)
   // compute_wall_src_prop_norm_ratio(job_tag, traj);
   //
   // SADJUST ME
+  compute_chvp(job_tag, traj);
   compute_meson_snk_src(job_tag, traj);
   compute_meson_vv_meson(job_tag, traj);
   compute_meson_vv(job_tag, traj);
@@ -30,6 +32,7 @@ inline void compute_traj(const std::string& job_tag, const int traj)
   compute_three_point_func(job_tag, traj);
   //
   // SADJUST ME
+  compute_chvp_light(job_tag, traj);
   compute_meson_snk_src_light(job_tag, traj);
   compute_meson_vv_meson_light(job_tag, traj);
   compute_meson_vv_light(job_tag, traj);
