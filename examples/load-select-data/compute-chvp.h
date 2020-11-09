@@ -44,37 +44,35 @@ inline void compute_chvp_type(const std::string& job_tag, const int traj,
   const int tsep = tsep_op_wall_src(job_tag);
   std::map<std::string, FieldM<Complex, 8 * 8> > cache;
   std::map<std::string, long> counts;
-  long iter = 0;
   for (long n = 0; n < n_points; ++n) {
     const long xg_y_psel_idx = n;
     const Coordinate& xg_y = psel[xg_y_psel_idx];
-    if (get_point_src_info(job_tag, traj, xg_y, type3).size() == 0) {
-      continue;
-    }
     Timer::autodisplay();
     TIMER_VERBOSE("compute_meson_vv_type-iter");
-    iter += 1;
     const ShiftShufflePlan ssp = make_shift_shuffle_plan(fsel, -xg_y);
     for (int i = 0; i < num_type; ++i) {
       const int type1 = type1_list[i];
       const int type2 = type2_list[i];
+      if (get_point_src_info(job_tag, traj, xg_y, type1).size() == 0) {
+        continue;
+      }
+      if (get_point_src_info(job_tag, traj, xg_y, type2).size() == 0) {
+        continue;
+      }
       const std::string tag = ssprintf("chvp-%d-%d", type1, type2);
-      FieldM<Complex, 8 * 8>& chvp = cache[tag];
-      displayln_info(fname + ssprintf(":n=%ld iter=%ld types=%d-%d", n, iter,
-                                      type1, type2));
+      displayln_info(fname + ssprintf(":n=%ld types=%d-%d", n, type1, type2));
       SelectedField<Complex> s_chvp;
-      contract_chvp_ama(chvp_ama, job_tag, traj, xg_y, type1, type2);
-      acc_field(chvp, 1.0, s_chvp, ssp);
+      contract_chvp_ama(s_chvp, job_tag, traj, xg_y, type1, type2);
+      acc_field(cache[tag], 1.0, s_chvp, ssp);
       counts[tag] += 1;
     }
   }
-  const long n_iter = iter;
   for (int i = 0; i < num_type; ++i) {
     const int type1 = type1_list[i];
     const int type2 = type2_list[i];
     const std::string tag = ssprintf("chvp-%d-%d", type1, type2);
     FieldM<Complex, 8 * 8>& chvp = cache[tag];
-    const double coef = 1.0 / (double)n_iter;
+    const double coef = 1.0 / (double)counts[tag];
     chvp *= coef;
     // avg decay and fission to decay
     FieldM<Complex, 8 * 8> tmp;
