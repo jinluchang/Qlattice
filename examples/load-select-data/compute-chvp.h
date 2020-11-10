@@ -37,7 +37,7 @@ inline void compute_chvp_type(const std::string& job_tag, const int traj,
   if (is_complete) {
     return;
   }
-  TIMER_VERBOSE("compute_meson_vv_type");
+  TIMER_VERBOSE("compute_chvp_type");
   const PointSelection& psel = get_point_selection(job_tag, traj);
   const long n_points = psel.size();
   const FieldSelection& fsel = get_field_selection(job_tag, traj);
@@ -48,7 +48,7 @@ inline void compute_chvp_type(const std::string& job_tag, const int traj,
     const long xg_y_psel_idx = n;
     const Coordinate& xg_y = psel[xg_y_psel_idx];
     Timer::autodisplay();
-    TIMER_VERBOSE("compute_meson_vv_type-iter");
+    TIMER_VERBOSE("compute_chvp_type-iter");
     const ShiftShufflePlan ssp = make_shift_shuffle_plan(fsel, -xg_y);
     for (int i = 0; i < num_type; ++i) {
       const int type1 = type1_list[i];

@@ -38,7 +38,7 @@ inline int tsep_op_wall_src(const std::string& job_tag)
 
 inline SelPropCache& get_prop_psrc_ama_cache()
 {
-  static SelPropCache cache("PropPsrcAmaCache", 4, 1);
+  static SelPropCache cache("PropPsrcAmaCache", 16, 2);
   return cache;
 }
 

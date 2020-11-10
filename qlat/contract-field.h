@@ -517,13 +517,66 @@ inline void contract_chvp(SelectedField<Complex>& chvp,
 
 // -----------------------------------------------------------------------------------
 
+inline LatData meson_snk_src_shift(const LatData& ld, const int shift)
+{
+  TIMER_VERBOSE("meson_snk_src_shift");
+  qassert(ld.info.size() == 3);
+  const int t_size = ld.info[0].size;
+  qassert(t_size == ld.info[1].size);
+  qassert(is_lat_info_complex(ld.info));
+  LatData ld_s;
+  ld_s.info = ld.info;
+  lat_data_alloc(ld_s);
+  set_zero(ld_s);
+#pragma omp parallel for collapse(2)
+  for (int tsnk = 0; tsnk < t_size; ++tsnk) {
+    for (int tsrc = 0; tsrc < t_size; ++tsrc) {
+      const std::array<int, 2> idx = make_array<int>(tsnk, tsrc);
+      const int tsnk_s = mod(tsnk + shift, t_size);
+      const int tsrc_s = mod(tsrc + shift, t_size);
+      const std::array<int, 2> idx_s = make_array<int>(tsnk_s, tsrc_s);
+      lat_data_cget(ld_s, idx_s)[0] = lat_data_cget_const(ld, idx)[0];
+    }
+  }
+  return ld_s;
+}
+
 inline void contract_meson_chvp_acc(FieldM<Complex, 8 * 8>& mchvp,
                                     const LatData& ld_meson_snk_src_1_2,
                                     const FieldM<Complex, 8 * 8>& chvp_3_4,
-                                    const int t_y, const int tsep)
-// chvp_3_4 already shifted to origin
+                                    const int tsep)
+// ld_meson_snk_src_1_2 should already shifted to origin (t_y -> 0)
+// chvp_3_4 already should shifted to origin (xg_y -> 0)
 {
   TIMER_VERBOSE("contract_meson_chvp_acc");
+  const Geometry& geo = chvp_3_4.geo;
+  const Coordinate total_site = geo.total_site();
+  if (not is_initialized(mchvp)) {
+    mchvp.init(geo);
+    set_zero(mchvp);
+  }
+#pragma omp parallel for
+  for (long index = 0; index < geo.local_volume(); ++index) {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Coordinate xg = geo.coordinate_g_from_l(xl);
+    const int yt = 0;
+    const int xt = xg[3];
+    int t_src, t_snk;
+    if (smod(xt - yt, total_site[3]) >= 0) {
+      t_src = mod(yt - tsep, total_site[3]);
+      t_snk = mod(xt + tsep, total_site[3]);
+    } else {
+      t_src = mod(xt - tsep, total_site[3]);
+      t_snk = mod(yt + tsep, total_site[3]);
+    }
+    const std::array<int, 2> idx = make_array<int>(t_snk, t_src);
+    const Complex mss = lat_data_cget_const(ld_meson_snk_src_1_2, idx)[0];
+    Vector<Complex> fv = mchvp.get_elems(xl);
+    const Vector<Complex> fv0 = chvp_3_4.get_elems_const(xl);
+    for (int m = 0; m < geo.multiplicity; ++m) {
+      fv[m] += mss * fv0[m];
+    }
+  }
 }
 
 }  // namespace qlat

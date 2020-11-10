@@ -239,12 +239,12 @@ $$
 = \text{Tr}
 \sum_\vec x
 \Big(
-S_1(t_\text{op},\vec x;t_\text{src})  \gamma_5 
+S_1(t_\text{op},\vec x;t_\text{src})  \gamma_5
 S_3(t_\text{src};t_\text{snk})
 \gamma_5
 \big( \gamma_5 S_2(t_\text{snk};t_\text{op},\vec x)^\dagger \gamma_5 \big)
 \Big)
-\Gamma_{\text{op}} 
+\Gamma_{\text{op}}
 \ea
 $$
 
@@ -465,7 +465,7 @@ S_4(x;y)
 \\
 &=&
 \mathrm{Tr}[
-\gamma_5 S_3(t_\text{snk};t_\text{src})\gamma_5 
+\gamma_5 S_3(t_\text{snk};t_\text{src})\gamma_5
 S_2(t_\text{src};y) {\gamma^{\mathrm{va}}_\nu}^\dagger
 S_4(y;x)
 {\gamma^{\mathrm{va}}_\mu}^\dagger S_1(x;t_\text{snk})
@@ -476,7 +476,7 @@ S_4(y;x)
 S_2(t_\text{src};y) {\gamma^{\mathrm{va}}_\nu}^\dagger
 S_4(y;x)
 {\gamma^{\mathrm{va}}_\mu}^\dagger S_1(x;t_\text{snk})
-\gamma_5 S_3(t_\text{snk};t_\text{src})\gamma_5 
+\gamma_5 S_3(t_\text{snk};t_\text{src})\gamma_5
 ]
 \\
 &=&
@@ -562,8 +562,6 @@ $$
 \text{ld-1-2}[t_\text{src}][t_\text{snk}]
 $$
 
-# TODO
-
 ## chvp
 
 Use ``xg_y`` as point source location, contraction for all available ``xg_x``.
@@ -633,8 +631,9 @@ Proper factor is compensated so it can treated as if ``xg_x`` is contracted for 
 inline void contract_meson_chvp_acc(FieldM<Complex, 8 * 8>& mchvp,
                                     const LatData& ld_meson_snk_src_1_2,
                                     const FieldM<Complex, 8 * 8>& chvp_3_4,
-                                    const int t_y, const int tsep);
-// chvp_3_4 already shifted to origin
+                                    const int tsep);
+// ld_meson_snk_src_1_2 should already shifted to origin (t_y -> 0)
+// chvp_3_4 should already shifted to origin (xg_y -> 0)
 ```
 
 

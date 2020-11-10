@@ -98,7 +98,7 @@ inline PselPropCache& get_psel_prop_cache()
 
 inline SelPropCache& get_prop_psrc_cache()
 {
-  static SelPropCache cache("PropPsrcCache", 8, 2);
+  static SelPropCache cache("PropPsrcCache", 128, 2);
   return cache;
 }
 
@@ -650,11 +650,6 @@ inline bool check_prop_psrc(const std::string& job_tag, const int traj,
                             const int type)
 {
   TIMER_VERBOSE("check_prop_psrc");
-  // ADJUST ME
-  if (job_tag == "48I" and type == 1) {
-    return false;
-  }
-  //
   return get_does_file_exist(get_prop_psrc_path(job_tag, traj, type)) and
          get_does_file_exist(get_psel_prop_psrc_path(job_tag, traj, type));
 }
