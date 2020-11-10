@@ -67,6 +67,9 @@ inline void test()
   compute_traj("24D", 1900);
   compute_traj("24D", 1010);
   compute_traj("24D", 1900);
+  Timer::display();
+  sync_node();
+  ssleep(3.0);
   exit(0);
 }
 
