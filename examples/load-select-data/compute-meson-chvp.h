@@ -165,6 +165,9 @@ inline void compute_meson_chvp_type(const std::string& job_tag, const int traj,
             ssprintf("mchvp-%d-%d-%d-%d", type1, type2, type3, type4);
         const std::string tag21 =
             ssprintf("mchvp-%d-%d-%d-%d", type2, type1, type3, type4);
+        const std::string& fn_mss_s_w = fn_mss_s_w_list[i * num_type_34 + j];
+        const LatData& ld_mss_s_w = ld_mss_shift_weight[tag12];
+        lat_data_save_info(fn_mss_s_w, ld_mss_s_w);
         FieldM<Complex, 8 * 8>& mchvp_1_2_3_4 = cache[tag12];
         FieldM<Complex, 8 * 8>& mchvp_2_1_3_4 = cache[tag21];
         FieldM<Complex, 8 * 8> tmp;
@@ -181,9 +184,6 @@ inline void compute_meson_chvp_type(const std::string& job_tag, const int traj,
         const std::string& fn = fn_list[i * num_type_34 + j];
         qassert(fn != "");
         write_field_float_from_double(mchvp_1_2_3_4, fn);
-        const std::string& fn_mss_s_w = fn_mss_s_w_list[i * num_type_34 + j];
-        const LatData& ld_mss_s_w = ld_mss_shift_weight[tag12];
-        lat_data_save_info(fn_mss_s_w, ld_mss_s_w);
       }
     }
   }
@@ -195,8 +195,12 @@ inline void compute_meson_chvp(const std::string& job_tag, const int traj)
   Timer::autodisplay();
   TIMER_VERBOSE("compute_meson_chvp");
   const std::string path = get_meson_chvp_path(job_tag, traj);
+  const std::string path_mss =
+      get_meson_snk_src_shift_weight_path(job_tag, traj);
   const std::string path_checkpoint = path + "/checkpoint.txt";
-  if (does_file_exist_sync_node(path_checkpoint)) {
+  const std::string path_mss_checkpoint = path_mss + "/checkpoint.txt";
+  if (does_file_exist_sync_node(path_checkpoint) and
+      does_file_exist_sync_node(path_mss_checkpoint)) {
     return;
   }
   if (not does_file_exist_sync_node(get_meson_snk_src(job_tag, traj) +
@@ -238,6 +242,7 @@ inline void compute_meson_chvp(const std::string& job_tag, const int traj)
   compute_meson_chvp_type(job_tag, traj, type1_list, type2_list, type3_list,
                           type4_list);
   qtouch_info(path_checkpoint);
+  qtouch_info(path_mss_checkpoint);
   release_lock();
 }
 
@@ -247,8 +252,20 @@ inline void compute_meson_chvp_light(const std::string& job_tag, const int traj)
   Timer::autodisplay();
   TIMER_VERBOSE("compute_meson_chvp_light");
   const std::string path = get_meson_chvp_path(job_tag, traj);
+  const std::string path_mss =
+      get_meson_snk_src_shift_weight_path(job_tag, traj);
   const std::string path_checkpoint = path + "/checkpoint.txt";
-  if (does_file_exist_sync_node(path_checkpoint)) {
+  const std::string path_mss_checkpoint = path_mss + "/checkpoint.txt";
+  if (does_file_exist_sync_node(path_checkpoint) and
+      does_file_exist_sync_node(path_mss_checkpoint)) {
+    return;
+  }
+  if (does_file_exist_sync_node(path + "/mchvp-0-0-0-0.field") and
+      does_file_exist_sync_node(path + "/mchvp-0-0-0-1.field") and
+      does_file_exist_sync_node(path + "/mchvp-0-0-1-1.field") and
+      does_file_exist_sync_node(path_mss + "/meson-snk-src-0-0-0-0.field") and
+      does_file_exist_sync_node(path_mss + "/meson-snk-src-0-0-0-1.field") and
+      does_file_exist_sync_node(path_mss + "/meson-snk-src-0-0-1-1.field")) {
     return;
   }
   if (not does_file_exist_sync_node(get_meson_snk_src(job_tag, traj) +

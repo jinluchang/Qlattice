@@ -25,18 +25,18 @@ inline void compute_traj(const std::string& job_tag, const int traj)
   // compute_wall_src_prop_norm_ratio(job_tag, traj);
   //
   // SADJUST ME
+  compute_meson_snk_src(job_tag, traj);
   compute_meson_chvp(job_tag, traj);
   compute_chvp(job_tag, traj);
-  compute_meson_snk_src(job_tag, traj);
   compute_meson_vv_meson(job_tag, traj);
   compute_meson_vv(job_tag, traj);
   compute_two_point_func(job_tag, traj);
   compute_three_point_func(job_tag, traj);
   //
   // SADJUST ME
+  compute_meson_snk_src_light(job_tag, traj);
   compute_meson_chvp_light(job_tag, traj);
   compute_chvp_light(job_tag, traj);
-  compute_meson_snk_src_light(job_tag, traj);
   compute_meson_vv_meson_light(job_tag, traj);
   compute_meson_vv_light(job_tag, traj);
   compute_two_point_func_light(job_tag, traj);
