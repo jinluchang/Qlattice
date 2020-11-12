@@ -224,7 +224,8 @@ inline void compute_meson_chvp(const std::string& job_tag, const int traj)
   qmkdir_info(ssprintf("analysis/field-meson-chvp/%s", job_tag.c_str()));
   qmkdir_info(path);
   qmkdir_info("analysis/lat-meson-snk-src-shift-weight");
-  qmkdir_info(ssprintf("analysis/lat-meson-snk-src-shift-weight/%s", job_tag.c_str()));
+  qmkdir_info(
+      ssprintf("analysis/lat-meson-snk-src-shift-weight/%s", job_tag.c_str()));
   qmkdir_info(path_mss);
   std::vector<int> type1_list, type2_list;
   type1_list.push_back(0);
@@ -291,7 +292,8 @@ inline void compute_meson_chvp_light(const std::string& job_tag, const int traj)
   qmkdir_info(ssprintf("analysis/field-meson-chvp/%s", job_tag.c_str()));
   qmkdir_info(path);
   qmkdir_info("analysis/lat-meson-snk-src-shift-weight");
-  qmkdir_info(ssprintf("analysis/lat-meson-snk-src-shift-weight/%s", job_tag.c_str()));
+  qmkdir_info(
+      ssprintf("analysis/lat-meson-snk-src-shift-weight/%s", job_tag.c_str()));
   qmkdir_info(path_mss);
   std::vector<int> type1_list, type2_list;
   type1_list.push_back(0);

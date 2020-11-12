@@ -14,6 +14,10 @@ $$
 
 [TOC]
 
+## Contraction functions
+
+See ``Qlattice/docs/contraction.md``.
+
 ## Notation
 
 ### Gamma matrix
@@ -71,7 +75,7 @@ $$
 \end{eqnarray}
 $$
 
-## ```compute-two-point-func.h```
+## ``compute-two-point-func.h``
 
 ```cpp
 ssprintf("analysis/lat-two-point/%s/results=%d", job_tag.c_str(), traj)
@@ -109,7 +113,7 @@ $$
 \ea
 $$
 
-## ```compute-three-point-func.h```
+## ``compute-three-point-func.h``
 
 ```cpp
 ssprintf("analysis/lat-three-point/%s/results=%d", job_tag.c_str(), traj)
@@ -141,7 +145,7 @@ S_3(t_\text{src};t_\text{snk})
 \ea
 $$
 
-## ```compute-psel-fsel-distribution.h```
+## ``compute-psel-fsel-distribution.h``
 
 ```cpp
 ssprintf("analysis/field-psel-fsel-distribution/%s/results=%d", job_tag.c_str(), traj)
@@ -171,7 +175,7 @@ ssprintf("/avg.field")
 
 The average of the above two data sets.
 
-## ```compute-meson-vv.h```
+## ``compute-meson-vv.h``
 
 ```cpp
 ssprintf("analysis/field-meson-vv/%s/results=%d", job_tag.c_str(), traj)
@@ -222,7 +226,7 @@ inline int tsep_op_wall_src(const std::string& job_tag)
 }
 ```
 
-## ```compute-meson-vv-meson.h```
+## ``compute-meson-vv-meson.h``
 
 ```cpp
 ssprintf("analysis/field-meson-vv-meson/%s/results=%d", job_tag.c_str(), traj)
@@ -244,6 +248,135 @@ S_1(t_\text{snk};x)\gamma^{\mathrm{va}}_\mu
 S_4(x;y)
 \gamma^{\mathrm{va}}_\nu S_2(y;t_\text{src})
 \gamma_5 S_3(t_\text{src};t_\text{snk})\gamma_5
+]
+\ea
+$$
+
+where:
+$$
+\ba
+t_\text{src} &=& \min(x_t,y_t) - t_\text{sep}
+\\
+t_\text{snk} &=& \max(x_t,y_t) + t_\text{sep}
+\ea
+$$
+and for $t_\text{sep}$:
+
+```cpp
+inline int tsep_op_wall_src(const std::string& job_tag)
+// parameter
+{
+  if (job_tag == "24D" or job_tag == "32D" or job_tag == "24DH") {
+    return 8;
+  } else if (job_tag == "32Dfine") {
+    return 10;
+  } else if (job_tag == "48I") {
+    return 12;
+  } else if (job_tag == "64I") {
+    return 18;
+  } else {
+    qassert(false);
+  }
+  return 8;
+}
+```
+
+## ``compute-meson-snk-src.h``
+
+```cpp
+ssprintf("analysis/lat-meson-snk-src/%s/results=%d", job_tag.c_str(), traj);
+```
+
+$$
+\text{ld}
+[0\le t_\text{snk}< T]
+[0\le t_\text{src}< T]
+$$
+
+```cpp
+ssprintf("/meson-snk-src-%d-%d.lat", type1, type2);
+```
+
+$$
+\text{ld-1-2}[t_\text{snk}][t_\text{src}]
+=
+\mathrm{Tr}[
+S_1(t_\text{snk};t_\text{src})
+\gamma_5 S_2(t_\text{src};t_\text{snk})\gamma_5
+]
+$$
+
+## ``compute-chvp.h``
+
+```cpp
+ssprintf("analysis/field-chvp/%s/results=%d", job_tag.c_str(), traj);
+```
+
+Data format: ``FieldM<Complex, 8 * 8>`` with ``write_field_float_from_double``.
+
+Use $y$ as the point source location in calculation.
+
+```cpp
+ssprintf("/chvp-%d-%d.field", type1, type2);
+```
+
+$$
+H_\text{chvp-1-2} (x-y) [8\mu+\nu] = \mathrm{Tr}[
+S_1(x;y)\gamma^{\mathrm{va}}_\nu
+S_2(y;x)\gamma^{\mathrm{va}}_\mu
+]
+$$
+
+## ``compute-meson-chvp.h``
+
+```cpp
+ssprintf("analysis/lat-meson-snk-src-shift-weight/%s/results=%d", job_tag.c_str(), traj);
+```
+
+$$
+\text{ld}
+[0\le t_\text{snk}< T]
+[0\le t_\text{src}< T]
+$$
+
+```cpp
+ssprintf("/meson-snk-src-%d-%d-%d-%d.field", type1, type2, type3, type4);
+```
+
+$$
+\text{ld-1-2}[t_\text{snk}][t_\text{src}]
+=
+\mathrm{Tr}[
+S_1(t_\text{snk};t_\text{src})
+\gamma_5 S_2(t_\text{src};t_\text{snk})\gamma_5
+]
+$$
+
+Weighted properly for different time slice according to number of point source propagator available.
+
+```cpp
+ssprintf("analysis/field-meson-chvp/%s/results=%d", job_tag.c_str(), traj);
+```
+
+Data format: ``FieldM<Complex, 8 * 8>`` with ``write_field_float_from_double``.
+
+Use $y$ as the point source location in calculation.
+
+```cpp
+ssprintf("/mchvp-%d-%d-%d-%d.field", type1, type2, type3, type4);
+```
+
+$$
+\ba
+H_\text{1-2-3-4}(x-y)[8\mu+\nu]
+&\texttt{ += }&
+\mathrm{Tr}[
+S_1(t_\text{snk};t_\text{src})
+\gamma_5 S_2(t_\text{src};t_\text{snk})\gamma_5
+]
+\mathrm{Tr}[
+S_3(x;y)\gamma^{\mathrm{va}}_\nu
+S_4(y;x)\gamma^{\mathrm{va}}_\mu
 ]
 \ea
 $$
