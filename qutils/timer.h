@@ -354,8 +354,14 @@ struct Timer {
     if (isRunning > 0) {
       isRunning += 1;
       return;
-    } else {
+    } else if (isRunning == 0) {
       isRunning = 1;
+    } else {
+      TimerInfo& info = get_timer_database()[info_index];
+      info.show_avg("debug", max_function_name_length_shown());
+      displayln(ssprintf("%s::%s ERROR: isRunning=%d", cname,
+                         info.fname.c_str(), isRunning));
+      assert(false);
     }
     TimerInfo& info = get_timer_database()[info_index];
     info.call_times++;
@@ -374,6 +380,7 @@ struct Timer {
   {
     TimerInfo& info = get_timer_database()[info_index];
     if (isRunning <= 0) {
+      info.show_avg("debug", max_function_name_length_shown());
       displayln(ssprintf("%s::%s ERROR: isRunning=%d", cname,
                          info.fname.c_str(), isRunning));
       assert(false);

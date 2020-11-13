@@ -238,6 +238,12 @@ inline cps::FermionActionDomainWall fa_convert(const FermionAction& fa)
   return cfa;
 }
 
+inline cps::GaugeActionImprRect ga_convert(const GaugeAction& ga)
+{
+  cps::GaugeActionImprRect cga(ga.beta, ga.c1);
+  return cga;
+}
+
 inline cps::LancArg lanc_arg_convert(const LancArg& la, const FermionAction& fa)
 {
   qassert(la.initialized);

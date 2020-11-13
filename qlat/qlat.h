@@ -68,6 +68,10 @@
 
 #include <qlat/fermion-action.h>
 
+#include <qlat/gauge-action.h>
+
+#include <qlat/hmc.h>
+
 #endif
 
 #ifndef QLAT_FFTW_OFF
