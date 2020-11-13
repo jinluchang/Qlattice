@@ -55,4 +55,28 @@ inline void set_rand_gauge_momentum(GaugeMomentum& gm, const double sigma,
   set_g_rand_anti_hermitian_matrix_field(gm, rs, sigma);
 }
 
+inline double gm_hamilton_node(const GaugeMomentum& gm)
+{
+  TIMER("gm_hamilton_node");
+  const Geometry geo = geo_reform(gm.geo);
+  FieldM<double, 1> fd;
+  fd.init(geo);
+#pragma omp parallel for
+  for (long index = 0; index < geo.local_volume(); ++index) {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Vector<ColorMatrix> gm_v = gm.get_elems_const(xl);
+    double s = 0.0;
+    qassert(gm_v.size() == 4);
+    for (int mu = 0; mu < 4; ++mu) {
+      s += neg_half_tr_square(gm_v[mu]);
+    }
+    fd.get_elem(index) = s;
+  }
+  double sum = 0.0;
+  for (long index = 0; index < geo.local_volume(); ++index) {
+    sum += fd.get_elem(index);
+  }
+  return sum;
+}
+
 }  // namespace qlat

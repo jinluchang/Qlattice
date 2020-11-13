@@ -240,6 +240,14 @@ inline ColorMatrixT<> make_anti_hermitian_matrix(const std::array<double, 8>& a)
   return m;
 }
 
+inline double neg_half_tr_square(const ColorMatrixT<>& m)
+{
+  const Array<double, 18> p(m.d());
+  return sqr(p[3]) + sqr(p[2]) + sqr(p[1] - p[9]) * 0.25 + sqr(p[5]) +
+         sqr(p[4]) + sqr(p[11]) + sqr(p[10]) +
+         sqr(p[17]) * 0.75;  // 0.75 = (sqrt(3)/2)^2
+}
+
 inline ColorMatrixT<> make_g_rand_anti_hermitian_matrix(RngState& rs,
                                                         const double sigma)
 //  Creates an antihermitian 3x3 complex matrix with each complex
