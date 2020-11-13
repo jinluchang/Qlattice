@@ -372,7 +372,12 @@ struct Timer {
   //
   void stop(bool verbose = false)
   {
-    assert(isRunning > 0);
+    TimerInfo& info = get_timer_database()[info_index];
+    if (isRunning <= 0) {
+      displayln(ssprintf("%s::%s ERROR: isRunning=%d", cname,
+                         info.fname.c_str(), isRunning));
+      assert(false);
+    }
     isRunning -= 1;
     if (isRunning != 0) {
       return;
@@ -383,7 +388,6 @@ struct Timer {
     } else {
       stop_flops = start_flops + flops;
     }
-    TimerInfo& info = get_timer_database()[info_index];
     info.dtime = stop_time - start_time;
     info.dflops = stop_flops - start_flops;
     bool is_show = false;
