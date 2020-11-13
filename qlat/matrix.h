@@ -212,7 +212,7 @@ inline void unitarize(ColorMatrixT<T>& cm)
   cm.em().row(2) = cm.em().row(0).cross(cm.em().row(1));
 }
 
-inline ColorMatrixT<> make_anti_hermitian_matrix(const Array<double, 8> a)
+inline ColorMatrixT<> make_anti_hermitian_matrix(const std::array<double, 8>& a)
 {
   qassert(3 == NUM_COLOR);
   ColorMatrixT<> m;
@@ -242,6 +242,11 @@ inline ColorMatrixT<> make_anti_hermitian_matrix(const Array<double, 8> a)
 
 inline ColorMatrixT<> make_g_rand_anti_hermitian_matrix(RngState& rs,
                                                         const double sigma)
+//  Creates an antihermitian 3x3 complex matrix with each complex
+//  element drawn at random from a gaussian distribution with zero mean.
+//  Hence the matrices are distributed according to
+//
+//  exp[- Tr(mat^2)/(2 sigma**2)]
 {
   const double s = sigma / std::sqrt(2);
   std::array<double, 8> a;

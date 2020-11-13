@@ -12,6 +12,11 @@ QLAT_START_NAMESPACE
 inline void set_g_rand_anti_hermitian_matrix_field(Field<ColorMatrix>& fc,
                                                    const RngState& rs,
                                                    const double sigma)
+//  Creates a field of antihermitian 3x3 complex matrices with each complex
+//  element drawn at random from a gaussian distribution with zero mean.
+//  Hence the matrices are distributed according to
+//
+//  exp[- Tr(mat^2)/(2 sigma**2)]
 {
   TIMER("set_g_rand_anti_hermitian_matrix_field");
   const Geometry& geo = fc.geo;
