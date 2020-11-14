@@ -155,7 +155,19 @@ inline double gf_hamilton_node_no_comm(const GaugeField& gf,
   return -beta / 3.0 * ((1.0 - 8.0 * c1) * sum_plaq + c1 * sum_rect);
 }
 
-inline void gf_evolve(GaugeField& gf, const GaugeMomentum& gm, const double step_size)
+inline double gf_hamilton_node(const GaugeField& gf, const GaugeAction& ga)
+{
+  TIMER("gf_hamilton_node");
+  const Geometry geo_ext = geo_resize(gf.geo, 2);
+  GaugeField gf_ext;
+  gf_ext.init(geo_ext);
+  gf_ext = gf;
+  refresh_expanded(gf_ext);
+  return gf_hamilton_node_no_comm(gf_ext, ga);
+}
+
+inline void gf_evolve(GaugeField& gf, const GaugeMomentum& gm,
+                      const double step_size)
 //  U(t+dt) = exp(i dt H) U(t)
 {
   TIMER("gf_evolve");
@@ -171,6 +183,106 @@ inline void gf_evolve(GaugeField& gf, const GaugeMomentum& gm, const double step
       gf_v[mu] = matrix_evolve(gf_v[mu], gm_v[mu], step_size);
     }
   }
+}
+
+inline ColorMatrix gf_plaq_staple_no_comm(const GaugeField& gf,
+                                          const Coordinate& xl, const int mu)
+// transpose the same way as gf.get_elem(xl, mu)
+{
+  ColorMatrix acc;
+  set_zero(acc);
+  for (int nu = -4; nu < 4; ++nu) {
+    if (nu == mu or -nu - 1 == mu) {
+      continue;
+    }
+    acc += gf_wilson_line_no_comm(gf, xl, make_array<int>(nu, mu, -nu - 1));
+  }
+  return acc;
+}
+
+inline ColorMatrix gf_rect_staple_no_comm(const GaugeField& gf,
+                                          const Coordinate& xl, const int mu)
+// transpose the same way as gf.get_elem(xl, mu)
+{
+  ColorMatrix acc;
+  set_zero(acc);
+  for (int nu = -4; nu < 4; ++nu) {
+    if (nu == mu or -nu - 1 == mu) {
+      continue;
+    }
+    acc += gf_wilson_line_no_comm(
+        gf, xl, make_array<int>(nu, nu, mu, -nu - 1, -nu - 1));
+    acc += gf_wilson_line_no_comm(
+        gf, xl, make_array<int>(nu, mu, mu, -nu - 1, -mu - 1));
+    acc += gf_wilson_line_no_comm(
+        gf, xl, make_array<int>(-mu - 1, nu, mu, mu, -nu - 1));
+  }
+  return acc;
+}
+
+inline ColorMatrix gf_all_staple_no_comm(const GaugeField& gf,
+                                         const GaugeAction& ga,
+                                         const Coordinate& xl, const int mu)
+// transpose the same way as gf.get_elem(xl, mu)
+{
+  ColorMatrix acc;
+  set_zero(acc);
+  const double c1 = ga.c1;
+  acc += (Complex)(1.0 - 8.0 * c1) * gf_plaq_staple_no_comm(gf, xl, mu);
+  acc += (Complex)c1 * gf_rect_staple_no_comm(gf, xl, mu);
+  return acc;
+}
+
+inline ColorMatrix gf_force_site_no_comm(const GaugeField& gf,
+                                         const GaugeAction& ga,
+                                         const Coordinate& xl, const int mu)
+{
+  const double beta = ga.beta;
+  const ColorMatrix ad_staple =
+      matrix_adjoint(gf_all_staple_no_comm(gf, ga, xl, mu));
+  const ColorMatrix force =
+      (Complex)(-beta / 3.0) * (gf.get_elem(xl, mu) * ad_staple);
+  return make_tr_less_anti_herm_matrix(force);
+}
+
+inline void set_gm_force_no_comm(GaugeMomentum& gm_force, const GaugeField& gf,
+                                 const GaugeAction& ga)
+// gf need comm
+{
+  TIMER("set_gm_force_no_comm");
+  const Geometry geo = geo_resize(gf.geo);
+  gm_force.init(geo);
+#pragma omp parallel for
+  for (long index = 0; index < geo.local_volume(); ++index) {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    Vector<ColorMatrix> gm_force_v = gm_force.get_elems(xl);
+    qassert(gm_force_v.size() == 4);
+    for (int mu = 0; mu < 4; ++mu) {
+      gm_force_v[mu] = gf_force_site_no_comm(gf, ga, xl, mu);
+    }
+  }
+}
+
+inline void set_gm_force(GaugeMomentum& gm_force, const GaugeField& gf,
+                         const GaugeAction& ga)
+{
+  TIMER("set_gm_force");
+  const Geometry geo_ext = geo_resize(gf.geo, 2);
+  GaugeField gf_ext;
+  gf_ext.init(geo_ext);
+  gf_ext = gf;
+  refresh_expanded(gf_ext);
+  set_gm_force_no_comm(gm_force, gf_ext, ga);
+}
+
+inline void gm_evolve(GaugeMomentum& gm, const GaugeField& gf,
+                      const GaugeAction& ga, const double dt)
+{
+  TIMER("gm_evolve");
+  GaugeMomentum gm_force;
+  set_gm_force(gm_force, gf, ga);
+  gm_force *= dt;
+  gm += gm_force;
 }
 
 }  // namespace qlat

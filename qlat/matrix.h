@@ -268,10 +268,10 @@ template <class T>
 inline ColorMatrixT<T> make_color_matrix_exp_no_unitarize(
     const ColorMatrixT<T>& a)
 {
-  ColorMatrixT<T> t2 = a;
-  ColorMatrixT<T> t3 = a;
   ColorMatrixT<T> unit;
   set_unit(unit);
+  ColorMatrixT<T> t2 = a;
+  ColorMatrixT<T> t3;
   for (int j = 9; j > 1; --j) {
     t3 = unit + (T)(1.0 / j) * t2;
     t2 = a * t3;
@@ -295,6 +295,19 @@ inline ColorMatrixT<T> matrix_evolve(const ColorMatrixT<T>& gf_cm,
 {
   const ColorMatrixT<T> t = (T)step_size * gm_cm;
   return make_color_matrix_exp_no_unitarize(t) * gf_cm;
+}
+
+inline ColorMatrixT<> make_tr_less_anti_herm_matrix(const ColorMatrixT<>& m)
+// (m - m^\dagger) / 2 - Tr(m - m^\dagger) / 6
+{
+  ColorMatrixT<> ret = m - matrix_adjoint(m);
+  ret *= 0.5;
+  Array<double, 18> p(ret.d());
+  const double c = (p[1] + p[9] + p[17]) / 3.0;
+  p[1] -= c;
+  p[9] -= c;
+  p[17] -= c;
+  return ret;
 }
 
 template <class T = ComplexT>
