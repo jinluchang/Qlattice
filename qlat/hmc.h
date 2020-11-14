@@ -79,4 +79,80 @@ inline double gm_hamilton_node(const GaugeMomentum& gm)
   return sum;
 }
 
+inline double gf_re_tr_plaq_no_comm(const GaugeField& gf, const Coordinate& xl,
+                                    const int mu, const int nu)
+{
+  const ColorMatrix m =
+      gf_wilson_line_no_comm(gf, xl, make_array<int>(mu, nu, -mu - 1, -nu - 1));
+  return matrix_trace(m).real();
+}
+
+inline double gf_re_tr_rect_no_comm(const GaugeField& gf, const Coordinate& xl,
+                                    const int mu, const int nu)
+{
+  const ColorMatrix m = gf_wilson_line_no_comm(
+      gf, xl, make_array<int>(mu, mu, nu, -mu - 1, -mu - 1, -nu - 1));
+  return matrix_trace(m).real();
+}
+
+inline double gf_sum_re_tr_plaq_node_no_comm(const GaugeField& gf)
+{
+  TIMER("gf_sum_re_tr_plaq_node_no_comm");
+  const Geometry geo = geo_reform(gf.geo);
+  FieldM<double, 1> fd;
+  fd.init(geo);
+#pragma omp parallel for
+  for (long index = 0; index < geo.local_volume(); ++index) {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    double s = 0.0;
+    for (int mu = 0; mu < 3; ++mu) {
+      for (int nu = mu + 1; nu < 4; ++nu) {
+        s += gf_re_tr_plaq_no_comm(gf, xl, mu, nu);
+      }
+    }
+    fd.get_elem(index) = s;
+  }
+  double sum = 0.0;
+  for (long index = 0; index < geo.local_volume(); ++index) {
+    sum += fd.get_elem(index);
+  }
+  return sum;
+}
+
+inline double gf_sum_re_tr_rect_node_no_comm(const GaugeField& gf)
+{
+  TIMER("gf_sum_re_tr_rect_node_no_comm");
+  const Geometry geo = geo_reform(gf.geo);
+  FieldM<double, 1> fd;
+  fd.init(geo);
+#pragma omp parallel for
+  for (long index = 0; index < geo.local_volume(); ++index) {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    double s = 0.0;
+    for (int mu = 0; mu < 3; ++mu) {
+      for (int nu = mu + 1; nu < 4; ++nu) {
+        s += gf_re_tr_rect_no_comm(gf, xl, mu, nu);
+        s += gf_re_tr_rect_no_comm(gf, xl, nu, mu);
+      }
+    }
+    fd.get_elem(index) = s;
+  }
+  double sum = 0.0;
+  for (long index = 0; index < geo.local_volume(); ++index) {
+    sum += fd.get_elem(index);
+  }
+  return sum;
+}
+
+inline double gf_hamilton_node_no_comm(const GaugeField& gf,
+                                       const GaugeAction& ga)
+{
+  TIMER("gf_hamilton_node_no_comm");
+  const double sum_plaq = gf_sum_re_tr_plaq_node_no_comm(gf);
+  const double sum_rect = gf_sum_re_tr_rect_node_no_comm(gf);
+  const double beta = ga.beta;
+  const double c1 = ga.c1;
+  return -beta / 3.0 * ((1.0 - 8.0 * c1) * sum_plaq + c1 * sum_rect);
+}
+
 }  // namespace qlat
