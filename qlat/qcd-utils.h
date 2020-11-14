@@ -58,9 +58,9 @@ inline void set_g_rand_color_matrix_field(Field<ColorMatrix>& fc,
   }
 }
 
-inline ColorMatrix gf_wilson_line_no_comm(const GaugeField& gf,
-                                          const Coordinate& xl,
-                                          const std::vector<int>& path)
+template <class Vec>
+ColorMatrix gf_wilson_line_no_comm(const GaugeField& gf, const Coordinate& xl,
+                                   const Vec& path)
 {
   ColorMatrix ret;
   set_unit(ret);
