@@ -101,7 +101,7 @@ inline void test_hmc(const Coordinate& total_site)
   //
   int traj = 0;
   //
-  for (int i = 0; i < 20; i++) {
+  for (int i = 0; i < 30; i++) {
     traj++;
     run_hmc(gf, ga, traj, rs.split(ssprintf("hmc-%d", traj)));
     //
@@ -118,7 +118,7 @@ inline void test_hmc(const Coordinate& total_site)
 int main(int argc, char* argv[])
 {
   using namespace qlat;
-  Coordinate total_site(8, 8, 8, 8);
+  Coordinate total_site(4, 4, 4, 8);
   begin(&argc, &argv);
   test_hmc(total_site);
   Timer::display();
