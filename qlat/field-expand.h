@@ -31,6 +31,7 @@ inline void set_marks_field_all(CommMarks& marks, const Geometry& geo,
   TIMER_VERBOSE("set_marks_field_all");
   marks.init();
   marks.init(geo);
+  set_zero(marks);
 #pragma omp parallel for
   for (long offset = 0; offset < geo.local_volume_expanded() * geo.multiplicity;
        ++offset) {
@@ -48,6 +49,7 @@ inline void set_marks_field_1(CommMarks& marks, const Geometry& geo,
   TIMER_VERBOSE("set_marks_field_1");
   marks.init();
   marks.init(geo);
+  set_zero(marks);
   Geometry geo_full = geo;
   geo_full.eo = 0;
 #pragma omp parallel for
@@ -139,31 +141,57 @@ inline bool operator<(const CommPlanKey& x, const CommPlanKey& y)
 
 inline void g_offset_id_node_from_offset(long& g_offset, int& id_node,
                                          const long offset, const Geometry& geo)
+// offset is expanded
+// g_offset calculated assume 2*total_site (This is a hack, please fix me)
 {
   const Coordinate total_site = geo.total_site();
   const Coordinate xl = geo.coordinate_from_offset(offset);
-  const Coordinate xg =
-      regular_coordinate(geo.coordinate_g_from_l(xl), total_site);
-  const Coordinate coor_node = xg / geo.node_site;
+  qassert(not geo.is_local(xl));
+  qassert(geo.is_on_node(xl));
+  const Coordinate xg = mod(geo.coordinate_g_from_l(xl), 2 * total_site);
+  const Coordinate coor_node = mod(xg, total_site) / geo.node_site;
   id_node = index_from_coordinate(coor_node, geo.geon.size_node);
-  g_offset = index_from_coordinate(xg, total_site) * geo.multiplicity +
+  g_offset = index_from_coordinate(xg, 2 * total_site) * geo.multiplicity +
              offset % geo.multiplicity;
 }
 
-inline long offset_from_g_offset(const long g_offset, const Geometry& geo)
+inline long offset_send_from_g_offset(const long g_offset, const Geometry& geo)
+// g_offset calculated assume 2*total_site
+// return offset is local
 {
   const Coordinate total_site = geo.total_site();
   const Coordinate xg =
-      coordinate_from_index(g_offset / geo.multiplicity, total_site);
-  Coordinate xl = regular_coordinate(geo.coordinate_l_from_g(xg), total_site);
+      coordinate_from_index(g_offset / geo.multiplicity, 2 * total_site);
+  Coordinate xl = geo.coordinate_l_from_g(xg);
   for (int mu = 0; mu < DIMN; ++mu) {
-    while (xl[mu] >= geo.node_site[mu] + geo.expansion_right[mu]) {
+    while (xl[mu] >= geo.node_site[mu]) {
       xl[mu] -= total_site[mu];
     }
-    while (xl[mu] < -geo.expansion_left[mu]) {
+    while (xl[mu] < 0) {
       xl[mu] += total_site[mu];
     }
   }
+  qassert(geo.is_local(xl));
+  return geo.offset_from_coordinate(xl) + g_offset % geo.multiplicity;
+}
+
+inline long offset_recv_from_g_offset(const long g_offset, const Geometry& geo)
+// g_offset calculated assume 2*total_site
+// return offset is expanded
+{
+  const Coordinate total_site = geo.total_site();
+  const Coordinate xg =
+      coordinate_from_index(g_offset / geo.multiplicity, 2 * total_site);
+  Coordinate xl = geo.coordinate_l_from_g(xg);
+  for (int mu = 0; mu < DIMN; ++mu) {
+    while (xl[mu] >= geo.node_site[mu] + geo.expansion_right[mu]) {
+      xl[mu] -= 2 * total_site[mu];
+    }
+    while (xl[mu] < -geo.expansion_left[mu]) {
+      xl[mu] += 2 * total_site[mu];
+    }
+  }
+  qassert(not geo.is_local(xl));
   qassert(geo.is_on_node(xl));
   return geo.offset_from_coordinate(xl) + g_offset % geo.multiplicity;
 }
@@ -288,7 +316,8 @@ inline CommPlan make_comm_plan(const CommMarks& marks)
       long current_offset = -1;
       for (long i = 0; i < (long)g_offsets.size(); ++i) {
         const long g_offset = g_offsets[i];
-        const long offset = offset_from_g_offset(g_offset, geo);
+        const long offset =
+            offset_recv_from_g_offset(g_offset, geo);  // offset is expanded
         if (offset != current_offset) {
           CommPackInfo cpi;
           cpi.offset = offset;
@@ -321,7 +350,8 @@ inline CommPlan make_comm_plan(const CommMarks& marks)
       long current_offset = -1;
       for (long i = 0; i < (long)g_offsets.size(); ++i) {
         const long g_offset = g_offsets[i];
-        const long offset = offset_from_g_offset(g_offset, geo);
+        const long offset =
+            offset_send_from_g_offset(g_offset, geo);  // offset is local
         if (offset != current_offset) {
           CommPackInfo cpi;
           cpi.offset = offset;
