@@ -67,29 +67,24 @@ inline void set_marks_field_1(CommMarks& marks, const Geometry& geo,
   }
 }
 
-inline void set_marks_field_m2(CommMarks& marks, const Geometry& geo,
-                               const std::string& tag)
-// tag is not used
+template <class Vec>
+void set_marks_field_path(CommMarks& marks, const Coordinate xl,
+                          const Vec& path)
 {
-  TIMER_VERBOSE("set_marks_field_m2");
-  marks.init();
-  marks.init(geo);
-#pragma omp parallel for
-  for (long record = 0; record < geo.local_volume_expanded(); ++record) {
-    const Coordinate xl = geo.coordinateFromRecord(record);
-    if (xl[0] < 1 - geo.expansion_left[0] or
-        xl[0] >= geo.node_site[0] + geo.expansion_right[0] -
-                     1  // 1 for checkerboarding. This function is now useless
-                        // anyway.
-        or xl[1] < 2 - geo.expansion_left[1] or
-        xl[1] >= geo.node_site[1] + geo.expansion_right[1] - 2 or
-        xl[2] < 2 - geo.expansion_left[2] or
-        xl[2] >= geo.node_site[2] + geo.expansion_right[2] - 2 or
-        xl[3] < 2 - geo.expansion_left[3] or
-        xl[3] >= geo.node_site[3] + geo.expansion_right[3] - 2) {
-      Vector<int8_t> v = marks.get_elems(xl);
-      for (int m = 0; m < geo.multiplicity; ++m) {
-        v[m] = 1;
+  const Geometry& geo = marks.geo;
+  Coordinate xl1 = xl;
+  for (int i = 0; i < (int)path.size(); ++i) {
+    const int dir = path[i];
+    qassert(-DIMN <= dir && dir < DIMN);
+    if (0 <= dir) {
+      if (not geo.is_local(xl1)) {
+        marks.get_elem(xl1, dir) = 1;
+      }
+      xl1[dir] += 1;
+    } else {
+      xl1[-dir - 1] -= 1;
+      if (not geo.is_local(xl1)) {
+        marks.get_elem(xl1, -dir - 1) = 1;
       }
     }
   }
@@ -117,27 +112,11 @@ struct CommPlan {
 };
 
 struct CommPlanKey {
+  std::string key;
   SetMarksField set_marks_field;
   std::string tag;
   Geometry geo;
 };
-
-inline bool operator<(const CommPlanKey& x, const CommPlanKey& y)
-{
-  if (x.set_marks_field < y.set_marks_field) {
-    return true;
-  } else if (y.set_marks_field < x.set_marks_field) {
-    return false;
-  } else if (x.tag < y.tag) {
-    return true;
-  } else if (y.tag < x.tag) {
-    return false;
-  } else {
-    const std::string xgeo = show(x.geo);
-    const std::string ygeo = show(y.geo);
-    return xgeo < ygeo;
-  }
-}
 
 inline void g_offset_id_node_from_offset(long& g_offset, int& id_node,
                                          const long offset, const Geometry& geo)
@@ -380,18 +359,18 @@ inline CommPlan make_comm_plan(const CommPlanKey& cpk)
   return make_comm_plan(marks);
 }
 
-inline Cache<CommPlanKey, CommPlan>& get_comm_plan_cache()
+inline Cache<std::string, CommPlan>& get_comm_plan_cache()
 {
-  static Cache<CommPlanKey, CommPlan> cache("CommPlanCache", 32);
+  static Cache<std::string, CommPlan> cache("CommPlanCache", 32);
   return cache;
 }
 
 inline const CommPlan& get_comm_plan(const CommPlanKey& cpk)
 {
-  if (!get_comm_plan_cache().has(cpk)) {
-    get_comm_plan_cache()[cpk] = make_comm_plan(cpk);
+  if (!get_comm_plan_cache().has(cpk.key)) {
+    get_comm_plan_cache()[cpk.key] = make_comm_plan(cpk);
   }
-  return get_comm_plan_cache()[cpk];
+  return get_comm_plan_cache()[cpk.key];
 }
 
 inline const CommPlan& get_comm_plan(const SetMarksField& set_marks_field,
@@ -399,6 +378,11 @@ inline const CommPlan& get_comm_plan(const SetMarksField& set_marks_field,
                                      const Geometry& geo)
 {
   CommPlanKey cpk;
+  std::ostringstream out;
+  out << (void*)set_marks_field << "," << tag << "," << geo.multiplicity << ","
+      << geo.eo << "," << show(geo.expansion_left) << ","
+      << show(geo.expansion_right) << "," << show(geo.total_site());
+  cpk.key = out.str();
   cpk.set_marks_field = set_marks_field;
   cpk.tag = tag;
   cpk.geo = geo;
@@ -467,12 +451,40 @@ void refresh_expanded_1(Field<M>& f)
   refresh_expanded(f, plan);
 }
 
-template <class M>
-void refresh_expanded_m2(Field<M>& f)
-{
-  const CommPlan& plan = get_comm_plan(set_marks_field_m2, "", f.geo);
-  refresh_expanded(f, plan);
-}
+// inline void set_marks_field_m2(CommMarks& marks, const Geometry& geo,
+//                                const std::string& tag)
+// // tag is not used
+// {
+//   TIMER_VERBOSE("set_marks_field_m2");
+//   marks.init();
+//   marks.init(geo);
+// #pragma omp parallel for
+//   for (long record = 0; record < geo.local_volume_expanded(); ++record) {
+//     const Coordinate xl = geo.coordinateFromRecord(record);
+//     if (xl[0] < 1 - geo.expansion_left[0] or
+//         xl[0] >= geo.node_site[0] + geo.expansion_right[0] -
+//                      1  // 1 for checkerboarding. This function is now useless
+//                         // anyway.
+//         or xl[1] < 2 - geo.expansion_left[1] or
+//         xl[1] >= geo.node_site[1] + geo.expansion_right[1] - 2 or
+//         xl[2] < 2 - geo.expansion_left[2] or
+//         xl[2] >= geo.node_site[2] + geo.expansion_right[2] - 2 or
+//         xl[3] < 2 - geo.expansion_left[3] or
+//         xl[3] >= geo.node_site[3] + geo.expansion_right[3] - 2) {
+//       Vector<int8_t> v = marks.get_elems(xl);
+//       for (int m = 0; m < geo.multiplicity; ++m) {
+//         v[m] = 1;
+//       }
+//     }
+//   }
+// }
+
+// template <class M>
+// void refresh_expanded_m2(Field<M>& f)
+// {
+//   const CommPlan& plan = get_comm_plan(set_marks_field_m2, "", f.geo);
+//   refresh_expanded(f, plan);
+// }
 
 // template <class M>
 // void refresh_expanded_(Field<M>& field_comm)
