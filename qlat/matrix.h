@@ -265,7 +265,8 @@ inline ColorMatrixT<> make_g_rand_anti_hermitian_matrix(RngState& rs,
 }
 
 template <class T>
-inline ColorMatrixT<T> make_color_matrix_exp(const ColorMatrixT<T>& a)
+inline ColorMatrixT<T> make_color_matrix_exp_no_unitarize(
+    const ColorMatrixT<T>& a)
 {
   ColorMatrixT<T> t2 = a;
   ColorMatrixT<T> t3 = a;
@@ -276,8 +277,24 @@ inline ColorMatrixT<T> make_color_matrix_exp(const ColorMatrixT<T>& a)
     t2 = a * t3;
   }
   t3 = unit + t2;
-  unitarize(t3);
   return t3;
+}
+
+template <class T>
+inline ColorMatrixT<T> make_color_matrix_exp(const ColorMatrixT<T>& a)
+{
+  ColorMatrixT<T> ret = make_color_matrix_exp_no_unitarize(a);
+  unitarize(ret);
+  return ret;
+}
+
+template <class T>
+inline ColorMatrixT<T> matrix_evolve(const ColorMatrixT<T>& gf_cm,
+                                     const ColorMatrixT<T>& gm_cm,
+                                     const double step_size)
+{
+  const ColorMatrixT<T> t = (T)step_size * gm_cm;
+  return make_color_matrix_exp_no_unitarize(t) * gf_cm;
 }
 
 template <class T = ComplexT>

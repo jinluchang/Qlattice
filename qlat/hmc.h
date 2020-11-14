@@ -155,4 +155,22 @@ inline double gf_hamilton_node_no_comm(const GaugeField& gf,
   return -beta / 3.0 * ((1.0 - 8.0 * c1) * sum_plaq + c1 * sum_rect);
 }
 
+inline void gf_evolve(GaugeField& gf, const GaugeMomentum& gm, const double step_size)
+//  U(t+dt) = exp(i dt H) U(t)
+{
+  TIMER("gf_evolve");
+  const Geometry& geo = gf.geo;
+#pragma omp parallel for
+  for (long index = 0; index < geo.local_volume(); ++index) {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    Vector<ColorMatrix> gf_v = gf.get_elems(xl);
+    const Vector<ColorMatrix> gm_v = gm.get_elems_const(xl);
+    qassert(gf_v.size() == 4);
+    qassert(gm_v.size() == 4);
+    for (int mu = 0; mu < 4; ++mu) {
+      gf_v[mu] = matrix_evolve(gf_v[mu], gm_v[mu], step_size);
+    }
+  }
+}
+
 }  // namespace qlat
