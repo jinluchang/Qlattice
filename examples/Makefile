@@ -11,6 +11,7 @@ tests = qcd-utils-tests \
 		fields-io \
 		heatbath \
 		propagators \
+		hmc \
 		template
 
 all:
