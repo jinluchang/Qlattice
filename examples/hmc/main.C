@@ -20,8 +20,11 @@ void gm_evolve_fg(GaugeMomentum& gm, const GaugeField& gf_init,
   //
   gf_evolve(gf, gm_force, fg_dt);
   //
+  set_gm_force(gm_force, gf, ga);
+  //
   // do the actual evolution
-  gm_evolve(gm, gf, ga, dt);
+  gm_force *= dt;
+  gm += gm_force;
 }
 
 void run_hmc(GaugeField& gf, const GaugeAction& ga, const int traj, const RngState& rs)

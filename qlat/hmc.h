@@ -335,14 +335,4 @@ inline void set_gm_force(GaugeMomentum& gm_force, const GaugeField& gf,
   set_gm_force_no_comm(gm_force, gf_ext, ga);
 }
 
-inline void gm_evolve(GaugeMomentum& gm, const GaugeField& gf,
-                      const GaugeAction& ga, const double dt)
-{
-  TIMER("gm_evolve");
-  GaugeMomentum gm_force;
-  set_gm_force(gm_force, gf, ga);
-  gm_force *= dt;
-  gm += gm_force;
-}
-
 }  // namespace qlat
