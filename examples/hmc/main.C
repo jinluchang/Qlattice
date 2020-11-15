@@ -76,7 +76,7 @@ void run_hmc(GaugeField& gf, const GaugeAction& ga, const int traj, const RngSta
       metropolis_accept(accept_prob, delta_h, rs.split("metropolis_accept"));
   displayln_info(
       fname +
-      ssprintf(": accept flag = %d with prob accept = %.1f%% deltaH = %.16f traj = %d\n",
+      ssprintf(": accept flag = %d with prob accept = %.1f%% deltaH = %.16f traj = %d",
                flag, accept_prob * 100, delta_h, traj));
   //
   if (not flag and traj > 10) {
@@ -122,6 +122,8 @@ int main(int argc, char* argv[])
 {
   using namespace qlat;
   Coordinate total_site(4, 4, 4, 8);
+  // Coordinate total_site(8, 8, 8, 16);
+  // Coordinate total_site(16, 16, 16, 16);
   begin(&argc, &argv);
   test_hmc(total_site);
   Timer::display();
