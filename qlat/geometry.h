@@ -6,6 +6,11 @@
 
 QLAT_START_NAMESPACE
 
+inline int eo_from_coordinate(const Coordinate& xl)
+{
+  return 2 - (xl[0] + xl[1] + xl[2] + xl[3] + 16 * 1024 * 1024) % 2;
+}
+
 struct Geometry {
   bool initialized;
   //
@@ -109,7 +114,7 @@ struct Geometry {
     } else {
       qassert(eo == 1 or eo == 2);
       qassert(node_site % 2 == Coordinate());
-      qassert((x[0] + x[1] + x[2] + x[3] + 16 * 1024 * 1024) % 2 == 2 - eo);
+      qassert(eo_from_coordinate(x) == eo);
       xe = xe + expansion_left;
       return qlat::index_from_coordinate(xe, node_site_expanded) / 2 *
              multiplicity;
@@ -130,7 +135,7 @@ struct Geometry {
       x = qlat::coordinate_from_index(offset / multiplicity * 2,
                                       node_site_expanded);
       x = x - expansion_left;
-      if ((x[0] + x[1] + x[2] + x[3] + 16 * 1024 * 1024) % 2 != 2 - eo) {
+      if (eo_from_coordinate(x) != eo) {
         x = qlat::coordinate_from_index(offset / multiplicity * 2 + 1,
                                         node_site_expanded);
         x = x - expansion_left;
@@ -148,7 +153,7 @@ struct Geometry {
     } else {
       qassert(eo == 1 or eo == 2);
       qassert(node_site % 2 == Coordinate());
-      qassert((x[0] + x[1] + x[2] + x[3] + 16 * 1024 * 1024) % 2 == 2 - eo);
+      qassert(eo_from_coordinate(x) == eo);
       return qlat::index_from_coordinate(xm, node_site) / 2;
     }
   }
@@ -163,7 +168,7 @@ struct Geometry {
       qassert(eo == 1 or eo == 2);
       qassert(node_site % 2 == Coordinate());
       Coordinate x = qlat::coordinate_from_index(index * 2, node_site);
-      if ((x[0] + x[1] + x[2] + x[3] + 16 * 1024 * 1024) % 2 != 2 - eo) {
+      if (eo_from_coordinate(x) != eo) {
         x = qlat::coordinate_from_index(index * 2 + 1, node_site);
       }
       return x;
@@ -190,8 +195,7 @@ struct Geometry {
         return false;
       }
     }
-    return eo == 0 or
-           (x[0] + x[1] + x[2] + x[3] + 16 * 1024 * 1024) % 2 == 2 - eo;
+    return eo == 0 or eo_from_coordinate(x) == eo;
   }
   //
   bool is_local(const Coordinate& x) const
@@ -202,8 +206,7 @@ struct Geometry {
         return false;
       }
     }
-    return eo == 0 or
-           (x[0] + x[1] + x[2] + x[3] + 16 * 1024 * 1024) % 2 == 2 - eo;
+    return eo == 0 or eo_from_coordinate(x) == eo;
   }
   //
   bool is_only_local() const
