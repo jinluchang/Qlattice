@@ -44,6 +44,7 @@ clean:
 	-rm -rf huge-data
 
 run-test: qlat.x
+	echo > log
 	time mpirun -x OMP_NUM_THREADS=2 --np 8 ./qlat.x |& tee log.full
 	cat log.full | egrep -v '^Timer|libtorque.so.2' > log
 	make diff | cat
