@@ -3,7 +3,7 @@
 namespace qlat
 {  //
 
-void gm_evolve_fg(GaugeMomentum& gm, const GaugeField& gf_init,
+inline void gm_evolve_fg(GaugeMomentum& gm, const GaugeField& gf_init,
                   const GaugeAction& ga, const double fg_dt, const double dt)
 {
   TIMER("gm_evolve_fg");
@@ -27,7 +27,7 @@ void gm_evolve_fg(GaugeMomentum& gm, const GaugeField& gf_init,
   gm += gm_force;
 }
 
-void run_hmc(GaugeField& gf, const GaugeAction& ga, const int traj, const RngState& rs)
+inline void run_hmc(GaugeField& gf, const GaugeAction& ga, const int traj, const RngState& rs)
 {
   TIMER_VERBOSE("run_hmc");
   const Geometry& geo = gf.geo;
