@@ -21,7 +21,7 @@ inline ColorMatrixT<> make_anti_hermitian_matrix(
   qassert(3 == NUM_COLOR);
   ColorMatrixT<> m;
   Array<double, 18> p(m.d());
-  const double s3 = 1.0 / std::sqrt(3.0) * basis[7];
+  const double s3 = (1.0 / std::sqrt(3.0)) * basis[7];
   p[0] = 0.0;
   p[8] = 0.0;
   p[16] = 0.0;
@@ -100,15 +100,17 @@ M make_matrix_exp(const M& a, const int max_order = 20)
 }
 
 template <class T>
-ColorMatrixT<T> make_color_matrix_exp_no_unitarize(const ColorMatrixT<T>& a)
+ColorMatrixT<T> make_color_matrix_exp_no_unitarize(const ColorMatrixT<T>& a,
+                                                   const int max_order = 20)
 {
-  return make_matrix_exp(a);
+  return make_matrix_exp(a, max_order);
 }
 
 template <class T>
-ColorMatrixT<T> make_color_matrix_exp(const ColorMatrixT<T>& a)
+ColorMatrixT<T> make_color_matrix_exp(const ColorMatrixT<T>& a,
+                                      const int max_order = 9)
 {
-  ColorMatrixT<T> ret = make_color_matrix_exp_no_unitarize(a);
+  ColorMatrixT<T> ret = make_color_matrix_exp_no_unitarize(a, max_order);
   unitarize(ret);
   return ret;
 }
