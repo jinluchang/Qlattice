@@ -100,17 +100,10 @@ M make_matrix_exp(const M& a, const int max_order = 20)
 }
 
 template <class T>
-ColorMatrixT<T> make_color_matrix_exp_no_unitarize(const ColorMatrixT<T>& a,
-                                                   const int max_order = 20)
-{
-  return make_matrix_exp(a, max_order);
-}
-
-template <class T>
 ColorMatrixT<T> make_color_matrix_exp(const ColorMatrixT<T>& a,
                                       const int max_order = 9)
 {
-  ColorMatrixT<T> ret = make_color_matrix_exp_no_unitarize(a, max_order);
+  ColorMatrixT<T> ret = make_matrix_exp(a, max_order);
   unitarize(ret);
   return ret;
 }
@@ -121,7 +114,7 @@ ColorMatrixT<T> matrix_evolve(const ColorMatrixT<T>& gf_cm,
                               const double step_size)
 {
   const ColorMatrixT<T> t = (T)step_size * gm_cm;
-  return make_color_matrix_exp_no_unitarize(t) * gf_cm;
+  return make_matrix_exp(t) * gf_cm;
 }
 
 inline ColorMatrixT<> make_tr_less_anti_herm_matrix(const ColorMatrixT<>& m)
