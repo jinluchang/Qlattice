@@ -604,8 +604,30 @@ Vector<M> operator*=(Vector<M> v, const Complex factor)
   return v;
 }
 
-template <class M>
-inline void random_permute(std::vector<M>& vec, const RngState& rs_)
+template <class M, unsigned long N>
+std::array<M, N> operator+(const std::array<M, N>& v1,
+                           const std::array<M, N>& v2)
+{
+  std::array<M, N> ret;
+  for (unsigned long i = 0; i < N; ++i) {
+    ret[i] = v1[i] + v2[i];
+  }
+  return ret;
+}
+
+template <class M, unsigned long N>
+std::array<M, N> operator-(const std::array<M, N>& v1,
+                           const std::array<M, N>& v2)
+{
+  std::array<M, N> ret;
+  for (unsigned long i = 0; i < N; ++i) {
+    ret[i] = v1[i] - v2[i];
+  }
+  return ret;
+}
+
+    template <class M>
+    inline void random_permute(std::vector<M>& vec, const RngState& rs_)
 {
   RngState rs = rs_;
   const long size = (long)vec.size();

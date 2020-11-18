@@ -12,6 +12,8 @@
 
 #include <qlat/matrix.h>
 
+#include <qlat/matrix-hmc.h>
+
 #include <qlat/mpi.h>
 
 #include <qlat/utils-io.h>
