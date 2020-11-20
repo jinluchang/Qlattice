@@ -337,11 +337,22 @@ inline Geometry geo_reform(const Geometry& geo_, const int multiplicity_ = 1,
   return geo;
 }
 
-inline Geometry geo_eo(const Geometry& geo_, const int eo = 0)
+inline Geometry geo_reform(const Geometry& geo_, const int multiplicity_,
+                           const Coordinate& expansion_left_,
+                           const Coordinate& expansion_right_, const int eo_ = 0)
+{
+  Geometry geo = geo_;
+  geo.remult(multiplicity_);
+  geo.resize(expansion_left_, expansion_right_);
+  geo.eo = eo_;
+  return geo;
+}
+
+inline Geometry geo_eo(const Geometry& geo_, const int eo_ = 0)
 // 0:regular; 1:odd; 2:even
 {
   Geometry geo = geo_;
-  geo.eo = eo;
+  geo.eo = eo_;
   return geo;
 }
 

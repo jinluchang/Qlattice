@@ -321,6 +321,7 @@ inline void set_marks_field_gm_force(CommMarks& marks, const Geometry& geo,
 
 inline void set_gm_force(GaugeMomentum& gm_force, const GaugeField& gf,
                          const GaugeAction& ga)
+// gm_force can be extended
 {
   TIMER("set_gm_force");
   const Coordinate expand_left(2, 2, 2, 2);

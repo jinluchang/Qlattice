@@ -58,6 +58,18 @@ inline void set_g_rand_color_matrix_field(Field<ColorMatrix>& fc,
   }
 }
 
+inline ColorMatrix gf_get_link(const GaugeField& gf, const Coordinate& xl,
+                               const int mu)
+// mu can be negative
+{
+  if (0 <= mu) {
+    return gf.get_elem(xl, mu);
+  } else {
+    const Coordinate xl1 = coordinate_shifts(xl, mu);
+    return matrix_adjoint(gf.get_elem(xl1, -mu - 1));
+  }
+}
+
 template <class Vec>
 ColorMatrix gf_wilson_line_no_comm(const GaugeField& gf, const Coordinate& xl,
                                    const Vec& path)
