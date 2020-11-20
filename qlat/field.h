@@ -26,6 +26,7 @@ struct Field {
   //
   virtual void init()
   {
+    TIMER("Field::init()");
     initialized = false;
     geo.init();
     clear(field);
@@ -33,6 +34,7 @@ struct Field {
   virtual void init(const Geometry& geo_)
   {
     if (!initialized) {
+      TIMER("Field::init(geo)");
       init();
       geo = geo_;
       field.resize(geo.local_volume_expanded() * geo.multiplicity);
@@ -45,6 +47,7 @@ struct Field {
   virtual void init(const Geometry& geo_, const int multiplicity_)
   {
     if (!initialized) {
+      TIMER("Field::init(geo,mult)");
       init();
       geo = geo_remult(geo_, multiplicity_);
       field.resize(geo.local_volume_expanded() * geo.multiplicity);
@@ -61,6 +64,7 @@ struct Field {
   virtual void init(const Field<M>& f)
   {
     if (!initialized) {
+      TIMER("Field::init(f)");
       init();
       geo = f.geo;
       field = f.field;
