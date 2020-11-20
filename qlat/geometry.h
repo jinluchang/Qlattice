@@ -330,6 +330,7 @@ inline Geometry geo_remult(const Geometry& geo_, const int multiplicity_ = 1)
 
 inline Geometry geo_reform(const Geometry& geo_, const int multiplicity_ = 1,
                            const int thick = 0)
+// do not change eo
 {
   Geometry geo = geo_;
   geo.remult(multiplicity_);
@@ -339,12 +340,12 @@ inline Geometry geo_reform(const Geometry& geo_, const int multiplicity_ = 1,
 
 inline Geometry geo_reform(const Geometry& geo_, const int multiplicity_,
                            const Coordinate& expansion_left_,
-                           const Coordinate& expansion_right_, const int eo_ = 0)
+                           const Coordinate& expansion_right_)
+// do not change eo
 {
   Geometry geo = geo_;
   geo.remult(multiplicity_);
   geo.resize(expansion_left_, expansion_right_);
-  geo.eo = eo_;
   return geo;
 }
 
