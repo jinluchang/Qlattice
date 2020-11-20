@@ -18,29 +18,33 @@ struct GaugeMomentum : FieldM<ColorMatrix, 4> {
 };
 
 inline bool metropolis_accept(double& accept_prob, const double delta_h,
-                              const RngState& rs_)
+                              const int traj, const RngState& rs_)
 // only compute at get_id_node() == 0
 // broad_cast the result to all nodes
 {
   TIMER_VERBOSE("metropolis_accept");
-  double flag = 0.0;
+  double flag_d = 0.0;
   accept_prob = 0;
   if (get_id_node() == 0) {
     if (delta_h <= 0.0) {
-      flag = 1.0;
+      flag_d = 1.0;
       accept_prob = 1.0;
     } else {
       RngState rs = rs_;
       const double rand_num = u_rand_gen(rs, 0.0, 1.0);
       accept_prob = std::exp(-delta_h);
       if (rand_num <= accept_prob) {
-        flag = 1.0;
+        flag_d = 1.0;
       }
     }
   }
   bcast(get_data_one_elem(accept_prob));
-  bcast(get_data_one_elem(flag));
-  return flag > 0.5;
+  bcast(get_data_one_elem(flag_d));
+  const bool flag = flag_d > 0.5;
+  displayln_info(fname + ssprintf(": accept flag = %d with prob accept = "
+                                  "%.1f%% deltaH = %.16f traj = %d",
+                                  flag, accept_prob * 100, delta_h, traj));
+  return flag;
 }
 
 inline void set_rand_gauge_momentum(GaugeMomentum& gm, const double sigma,
