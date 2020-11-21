@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <qlat/cache.h>
 #include <qlat/config.h>
 #include <qlat/selected-field.h>
 #include <qlat/utils.h>
@@ -520,7 +521,8 @@ ShufflePlan make_shuffle_plan_generic(std::vector<FieldSelection>& fsels,
     const long gindex_s = func(gindex);
     const Coordinate xg_s = coordinate_from_index(gindex_s, total_site);
     const Coordinate new_coor_node = xg_s / new_node_site;
-    const int new_id_node = index_from_coordinate(new_coor_node, sp.new_size_node);
+    const int new_id_node =
+        index_from_coordinate(new_coor_node, sp.new_size_node);
     const int id_node =
         get_id_node_from_new_id_node(new_id_node, new_num_node, num_node);
     sf_rank.get_elem(idx) = fsel.f_rank.get_elem(xl);

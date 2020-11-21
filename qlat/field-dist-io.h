@@ -3,8 +3,9 @@
 #pragma once
 
 #include <qlat/config.h>
-#include <qlat/utils.h>
 #include <qlat/field-shuffle.h>
+#include <qlat/utils-io.h>
+#include <qlat/utils.h>
 
 namespace qlat
 {  //
@@ -349,7 +350,8 @@ long dist_write_fields(const std::vector<ConstHandle<Field<M> > >& fs,
         const int sizeof_M = get_force_field_write_sizeof_M();
         qassert((f.geo.multiplicity * sizeof(M)) % sizeof_M == 0);
         const int multiplicity = (f.geo.multiplicity * sizeof(M)) / sizeof_M;
-        dist_write_geo_info(geo_remult(f.geo, multiplicity), sizeof_M, path + ".partial", mode);
+        dist_write_geo_info(geo_remult(f.geo, multiplicity), sizeof_M,
+                            path + ".partial", mode);
         get_force_field_write_sizeof_M() = 0;
       }
       break;
@@ -361,7 +363,8 @@ long dist_write_fields(const std::vector<ConstHandle<Field<M> > >& fs,
     dds[i].id_node = fs[i]().geo.geon.id_node;
     dds[i].data = get_data(fs[i]());
   }
-  const long total_bytes = dist_write_dist_data(dds, num_node, path + ".partial", mode);
+  const long total_bytes =
+      dist_write_dist_data(dds, num_node, path + ".partial", mode);
   qrename_info(path + ".partial", path);
   return total_bytes;
 }

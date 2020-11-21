@@ -1,5 +1,7 @@
 #pragma once
 
+#include <qlat/gauge-action.h>
+#include <qlat/qcd-utils.h>
 #include <qlat/qcd.h>
 
 #include <cmath>
@@ -172,8 +174,8 @@ inline void set_marks_field_gf_hamilton(CommMarks& marks, const Geometry& geo,
     const Coordinate xl = geo.coordinate_from_index(index);
     for (int mu = 0; mu < 3; ++mu) {
       for (int nu = mu + 1; nu < 4; ++nu) {
-        set_marks_field_path(
-            marks, xl, make_array<int>(mu, nu, -mu - 1, -nu - 1));
+        set_marks_field_path(marks, xl,
+                             make_array<int>(mu, nu, -mu - 1, -nu - 1));
         set_marks_field_path(
             marks, xl, make_array<int>(mu, mu, nu, -mu - 1, -mu - 1, -nu - 1));
         set_marks_field_path(
@@ -325,7 +327,6 @@ inline void set_marks_field_gm_force(CommMarks& marks, const Geometry& geo,
 
 inline void set_gm_force(GaugeMomentum& gm_force, const GaugeField& gf,
                          const GaugeAction& ga)
-// gm_force can be extended
 {
   TIMER("set_gm_force");
   const Coordinate expand_left(2, 2, 2, 2);

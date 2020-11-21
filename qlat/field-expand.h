@@ -3,15 +3,16 @@
 #pragma once
 
 #include <qlat/config.h>
-#include <qlat/utils.h>
-
+#include <qlat/field-utils.h>
 #include <qlat/mpi.h>
+#include <qlat/utils.h>
 
 #include <map>
 #include <set>
 #include <vector>
 
-QLAT_START_NAMESPACE
+namespace qlat
+{  //
 
 struct CommMarks : Field<int8_t> {
   virtual const std::string& cname()
@@ -463,7 +464,8 @@ void refresh_expanded_1(Field<M>& f)
 //     const Coordinate xl = geo.coordinateFromRecord(record);
 //     if (xl[0] < 1 - geo.expansion_left[0] or
 //         xl[0] >= geo.node_site[0] + geo.expansion_right[0] -
-//                      1  // 1 for checkerboarding. This function is now useless
+//                      1  // 1 for checkerboarding. This function is now
+//                      useless
 //                         // anyway.
 //         or xl[1] < 2 - geo.expansion_left[1] or
 //         xl[1] >= geo.node_site[1] + geo.expansion_right[1] - 2 or
@@ -586,4 +588,4 @@ void refresh_expanded_1(Field<M>& f)
 //   }
 // }
 
-QLAT_END_NAMESPACE
+}  // namespace qlat

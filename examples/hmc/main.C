@@ -73,11 +73,7 @@ inline void run_hmc(GaugeField& gf, const GaugeAction& ga, const int traj, const
   //
   double accept_prob;
   bool flag =
-      metropolis_accept(accept_prob, delta_h, rs.split("metropolis_accept"));
-  displayln_info(
-      fname +
-      ssprintf(": accept flag = %d with prob accept = %.1f%% deltaH = %.16f traj = %d",
-               flag, accept_prob * 100, delta_h, traj));
+      metropolis_accept(accept_prob, delta_h, traj, rs.split("metropolis_accept"));
   //
   if (not flag and traj > 10) {
     displayln_info(fname + ssprintf(": restore gf (traj=%d).", traj));

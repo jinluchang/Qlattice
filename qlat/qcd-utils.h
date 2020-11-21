@@ -2,12 +2,14 @@
 
 #include <qlat/config.h>
 #include <qlat/coordinate-d.h>
-#include <qlat/field.h>
+#include <qlat/matrix-hmc.h>
+#include <qlat/qcd.h>
 
 #include <map>
 #include <set>
 
-QLAT_START_NAMESPACE
+namespace qlat
+{  //
 
 inline void set_g_rand_anti_hermitian_matrix_field(Field<ColorMatrix>& fc,
                                                    const RngState& rs,
@@ -594,4 +596,4 @@ inline void gf_show_info(const GaugeField& gf, const int level = 0)
   }
 }
 
-QLAT_END_NAMESPACE
+}  // namespace qlat

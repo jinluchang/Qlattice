@@ -1,7 +1,9 @@
 #pragma once
 
 #include <qlat/config.h>
+#include <qlat/field-serial-io.h>
 #include <qlat/field.h>
+#include <qlat/matrix-hmc.h>
 #include <qlat/matrix.h>
 
 #ifndef QLAT_FFTW_OFF
@@ -293,12 +295,12 @@ void save_gauge_field(const GaugeFieldT<T>& gf, const std::string& path,
     const Vector<ColorMatrixT<T> > v = gf.get_elems_const(xl);
     Vector<std::array<Complex, 6> > vt = gft.get_elems(xl);
     for (int m = 0; m < geo.multiplicity; ++m) {
-      vt[m][0] = v[m](0,0);
-      vt[m][1] = v[m](0,1);
-      vt[m][2] = v[m](0,2);
-      vt[m][3] = v[m](1,0);
-      vt[m][4] = v[m](1,1);
-      vt[m][5] = v[m](1,2);
+      vt[m][0] = v[m](0, 0);
+      vt[m][1] = v[m](0, 1);
+      vt[m][2] = v[m](0, 2);
+      vt[m][3] = v[m](1, 0);
+      vt[m][4] = v[m](1, 1);
+      vt[m][5] = v[m](1, 2);
     }
     to_from_big_endian_64(get_data(vt));
   }
@@ -314,7 +316,8 @@ void save_gauge_field(const GaugeFieldT<T>& gf, const std::string& path,
 }
 
 template <class T = ComplexT>
-inline long load_gauge_field(GaugeFieldT<T>& gf, const std::string& path, bool big_endianness=true)
+inline long load_gauge_field(GaugeFieldT<T>& gf, const std::string& path,
+                             bool big_endianness = true)
 // assuming gf already initialized and have correct size;
 {
   TIMER_VERBOSE_FLOPS("load_gauge_field");
@@ -332,19 +335,19 @@ inline long load_gauge_field(GaugeFieldT<T>& gf, const std::string& path, bool b
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<std::array<Complex, 6> > vt = gft.get_elems(xl);
-    if(big_endianness){
+    if (big_endianness) {
       to_from_big_endian_64(get_data(vt));
-    }else{
+    } else {
       to_from_little_endian_64(get_data(vt));
     }
     Vector<ColorMatrixT<T> > v = gf.get_elems(xl);
     for (int m = 0; m < geo.multiplicity; ++m) {
-      v[m](0,0) = vt[m][0];
-      v[m](0,1) = vt[m][1];
-      v[m](0,2) = vt[m][2];
-      v[m](1,0) = vt[m][3];
-      v[m](1,1) = vt[m][4];
-      v[m](1,2) = vt[m][5];
+      v[m](0, 0) = vt[m][0];
+      v[m](0, 1) = vt[m][1];
+      v[m](0, 2) = vt[m][2];
+      v[m](1, 0) = vt[m][3];
+      v[m](1, 1) = vt[m][4];
+      v[m](1, 2) = vt[m][5];
       unitarize(v[m]);
     }
   }
@@ -374,12 +377,12 @@ long load_gauge_field_par(GaugeFieldT<T>& gf, const std::string& path)
     to_from_big_endian_64(get_data(vt));
     Vector<ColorMatrixT<T> > v = gf.get_elems(xl);
     for (int m = 0; m < geo.multiplicity; ++m) {
-      v[m](0,0) = vt[m][0];
-      v[m](0,1) = vt[m][1];
-      v[m](0,2) = vt[m][2];
-      v[m](1,0) = vt[m][3];
-      v[m](1,1) = vt[m][4];
-      v[m](1,2) = vt[m][5];
+      v[m](0, 0) = vt[m][0];
+      v[m](0, 1) = vt[m][1];
+      v[m](0, 2) = vt[m][2];
+      v[m](1, 0) = vt[m][3];
+      v[m](1, 1) = vt[m][4];
+      v[m](1, 2) = vt[m][5];
       unitarize(v[m]);
     }
   }
@@ -387,7 +390,8 @@ long load_gauge_field_par(GaugeFieldT<T>& gf, const std::string& path)
   return file_size;
 }
 
-inline long load_gauge_field_cps3x3(GaugeFieldT<Complex>& gf, const std::string& path)
+inline long load_gauge_field_cps3x3(GaugeFieldT<Complex>& gf,
+                                    const std::string& path)
 // assuming gf already initialized and have correct size;
 {
   TIMER_VERBOSE_FLOPS("load_gauge_field_cps3x3");
@@ -415,7 +419,8 @@ inline long load_gauge_field_cps3x3(GaugeFieldT<Complex>& gf, const std::string&
   return file_size;
 }
 
-inline long load_gauge_field_milc(GaugeFieldT<Complex>& gf, const std::string& path,
+inline long load_gauge_field_milc(GaugeFieldT<Complex>& gf,
+                                  const std::string& path,
                                   const bool par_read = false)
 // assuming gf already initialized and have correct size;
 {

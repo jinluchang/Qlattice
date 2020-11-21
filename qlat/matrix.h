@@ -1,10 +1,12 @@
 #pragma once
 
 #include <qlat/config.h>
+#include <qlat/mvector.h>
 
 #include <cmath>
 
-QLAT_START_NAMESPACE
+namespace qlat
+{  //
 
 template <int DIMN, class T = ComplexT>
 struct MatrixT {
@@ -255,7 +257,8 @@ struct SpinMatrixConstantsT {
     // gamma_x
     gammas[0].em() << 0, 0, 0, 1, 0, 0, 1, 0, 0, -1, 0, 0, -1, 0, 0, 0;
     // gamma_y
-    gammas[1].em() << 0, 0, 0, (T)-ii, 0, 0, (T)ii, 0, 0, (T)ii, 0, 0, (T)-ii, 0, 0, 0;
+    gammas[1].em() << 0, 0, 0, (T)-ii, 0, 0, (T)ii, 0, 0, (T)ii, 0, 0, (T)-ii,
+        0, 0, 0;
     // gamma_z
     gammas[2].em() << 0, 0, 1, 0, 0, 0, 0, -1, -1, 0, 0, 0, 0, 1, 0, 0;
     gammas[0] *= (T)(-ii);
@@ -273,7 +276,8 @@ struct SpinMatrixConstantsT {
     // Sigma_x
     cap_sigmas[0].em() << 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0;
     // Sigma_y
-    cap_sigmas[1].em() << 0, (T)-ii, 0, 0, (T)ii, 0, 0, 0, 0, 0, 0, (T)-ii, 0, 0, (T)ii, 0;
+    cap_sigmas[1].em() << 0, (T)-ii, 0, 0, (T)ii, 0, 0, 0, 0, 0, 0, (T)-ii, 0,
+        0, (T)ii, 0;
     // Sigma_z
     cap_sigmas[2].em() << 1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, -1;
     //
@@ -499,4 +503,4 @@ std::string show(const MatrixT<DIMN, T>& m)
   return out.str();
 }
 
-QLAT_END_NAMESPACE
+}  // namespace qlat
