@@ -108,7 +108,7 @@ inline void test_hmc(const Coordinate& total_site)
     const double plaq_sum = product(total_site) * 6 * (1.0 - plaq_avg);
     displayln_info(fname +
                    ssprintf(": traj=%d ; plaq_avg=%24.17E ; plaq_sum=%24.17E.",
-                            plaq_avg, plaq_sum, traj));
+                            traj, plaq_avg, plaq_sum));
   }
 }
 
