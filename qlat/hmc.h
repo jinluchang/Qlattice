@@ -341,4 +341,61 @@ inline void set_gm_force(GaugeMomentum& gm_force, const GaugeField& gf,
   set_gm_force_no_comm(gm_force, gf_ext, ga);
 }
 
+inline std::vector<double> get_gm_force_magnitudes(
+    const GaugeMomentum& gm_force, const int n_elems)
+// return the l1, l2, l4, l8, l16, ... norm of the gm_force magnitudes
+// n_elems == mag_vec.size();
+{
+  TIMER("get_gm_force_magnitudes");
+  qassert(n_elems >= 2);
+  const Geometry geo = geo_reform(gm_force.geo, n_elems);
+  Field<double> fd;
+  fd.init(geo);
+#pragma omp parallel for
+  for (long index = 0; index < geo.local_volume(); ++index) {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Vector<ColorMatrix> gm_force_v = gm_force.get_elems_const(xl);
+    qassert(gm_force_v.size() == 4);
+    Vector<double> fdv = fd.get_elems(xl);
+    for (int mu = 0; mu < 4; ++mu) {
+      // multiply by additional 0.01 factor, will be compensated below
+      const double l2 = 0.01 * 2.0 * neg_half_tr_square(gm_force_v[mu]);
+      const double l1 = std::sqrt(l2);
+      fdv[0] += l1;
+      fdv[1] += l2;
+      double ln = l2;
+      for (int m = 2; m < n_elems; ++m) {
+        ln = sqr(ln);
+        fdv[m] += ln;
+      }
+    }
+  }
+  std::vector<double> mag_vec(n_elems, 0.0);
+  for (long index = 0; index < geo.local_volume(); ++index) {
+    const Vector<double> fdv = fd.get_elems_const(index);
+    for (int m = 0; m < n_elems; ++m) {
+      mag_vec[m] += fdv[m];
+    }
+  }
+  glb_sum(get_data(mag_vec));
+  for (int m = 0; m < n_elems; ++m) {
+    mag_vec[m] *= (1.0 / 4.0) / (double)geo.total_volume();
+    for (int i = 0; i < m; ++i) {
+      mag_vec[m] = std::sqrt(mag_vec[m]);
+    }
+    // The compensate the 0.01 factor introduced above
+    mag_vec[m] *= 10.0;
+  }
+  return mag_vec;
+}
+
+inline void display_gm_force_magnitudes(const GaugeMomentum& gm_force,
+                                        const int n_elems)
+{
+  TIMER_VERBOSE("display_gm_force_magnitudes");
+  const std::vector<double> mag_vec =
+      get_gm_force_magnitudes(gm_force, n_elems);
+  display_info(fname + ssprintf(":\n%s", show_list(mag_vec).c_str()));
+}
+
 }  // namespace qlat
