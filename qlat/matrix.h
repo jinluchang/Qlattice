@@ -190,6 +190,14 @@ MatrixT<DIMN, T> matrix_conjugate(const MatrixT<DIMN, T>& x)
   return ret;
 }
 
+template <int DIMN, class T>
+MatrixT<DIMN, T> matrix_inverse(const MatrixT<DIMN, T>& x)
+{
+  MatrixT<DIMN, T> ret;
+  ret.em() = x.em().inverse();
+  return ret;
+}
+
 template <class T = ComplexT>
 struct ColorMatrixT : MatrixT<NUM_COLOR, T> {
   ColorMatrixT() {}

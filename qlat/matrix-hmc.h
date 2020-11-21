@@ -301,4 +301,43 @@ inline AdjointColorMatrix make_diff_exp_map(const ColorMatrix& m,
   return make_diff_exp_map(make_adjoint_representation(m), max_order);
 }
 
+inline AdjointColorMatrix make_diff_exp_map_diff_ref(const ColorMatrix& m,
+                                                     const int a)
+{
+  const std::array<ColorMatrix, 8>& ts = ColorMatrixConstants::get_ts();
+  const double eps = 1e-4;
+  const ColorMatrix m_p = m + (Complex)eps * ts[a];
+  const ColorMatrix m_n = m - (Complex)eps * ts[a];
+  const AdjointColorMatrix j_p = make_diff_exp_map(m_p);
+  const AdjointColorMatrix j_n = make_diff_exp_map(m_n);
+  return (Complex)(1.0 / (2.0 * eps)) * (j_p - j_n);
+}
+
+inline AdjointColorMatrix make_diff_exp_map_diff(const AdjointColorMatrix& am,
+                                                 const int a,
+                                                 const int max_order = 20)
+{
+  const std::array<AdjointColorMatrix, 8>& f = ColorMatrixConstants::get_f();
+  const AdjointColorMatrix& unit = ColorMatrixConstants::get_aunit();
+  AdjointColorMatrix t2 = -am;
+  AdjointColorMatrix dt2 = f[a];
+  AdjointColorMatrix t3;
+  AdjointColorMatrix dt3;
+  for (int j = max_order; j > 1; --j) {
+    t3 = unit + (Complex)(1.0 / (j + 1)) * t2;
+    dt3 = (Complex)(1.0 / (j + 1)) * dt2;
+    t2 = -am * t3;
+    dt2 = f[a] * t3 - am * dt3;
+  }
+  dt3 = (Complex)0.5 * dt2;
+  return dt3;
+}
+
+inline AdjointColorMatrix make_diff_exp_map_diff(const ColorMatrix& m,
+                                                 const int a,
+                                                 const int max_order = 20)
+{
+  return make_diff_exp_map_diff(make_adjoint_representation(m), a, max_order);
+}
+
 }  // namespace qlat
