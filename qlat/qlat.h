@@ -74,6 +74,8 @@
 
 #include <qlat/hmc.h>
 
+#include <qlat/hmc-stats.h>
+
 #endif
 
 #ifndef QLAT_FFTW_OFF

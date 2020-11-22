@@ -179,35 +179,6 @@ inline void check_sigint()
   }
 }
 
-inline bool check_status()
-{
-  TIMER_VERBOSE("check_status");
-  displayln_info(fname + ssprintf(": ( get_actual_total_time() + "
-                                  "get_default_budget() ) / get_time_limit() "
-                                  "= ( %.2lf + %.2lf ) / %.2lf hours.",
-                                  get_actual_total_time() / 3600.0,
-                                  get_default_budget() / 3600.0,
-                                  get_time_limit() / 3600.0));
-  if (get_default_budget() + get_actual_total_time() > get_time_limit()) {
-    displayln_info(fname + ssprintf(": too little time left."));
-    return true;
-  }
-  if (is_sigint_received() > 0) {
-    displayln_info(fname + ssprintf(": sigint received."));
-    return true;
-  }
-  return false;
-}
-
-inline bool truncate(const std::string& evilFile)
-{
-  std::ofstream evil;
-  evil.open(evilFile.c_str());
-  bool does_exist = evil.good();
-  if (does_exist) evil.close();
-  return does_exist;
-}
-
 inline bool does_file_exist(const std::string& fn)
 {
   struct stat sb;
@@ -245,6 +216,46 @@ inline bool is_directory_sync_node(const std::string& fn)
   }
   glb_sum(nfile);
   return 0 != nfile;
+}
+
+inline void check_stop()
+{
+  if (does_file_exist_sync_node("stop.txt")) {
+    qquit("File 'stop.txt' detected.");
+  }
+}
+
+inline bool check_status()
+{
+  TIMER_VERBOSE("check_status");
+  displayln_info(fname + ssprintf(": ( get_actual_total_time() + "
+                                  "get_default_budget() ) / get_time_limit() "
+                                  "= ( %.2lf + %.2lf ) / %.2lf hours.",
+                                  get_actual_total_time() / 3600.0,
+                                  get_default_budget() / 3600.0,
+                                  get_time_limit() / 3600.0));
+  if (get_default_budget() + get_actual_total_time() > get_time_limit()) {
+    displayln_info(fname + ssprintf(": too little time left."));
+    return true;
+  }
+  if (is_sigint_received() > 0) {
+    displayln_info(fname + ssprintf(": sigint received."));
+    return true;
+  }
+  if (does_file_exist_sync_node("stop.txt")) {
+    displayln_info(fname + ssprintf(": File 'stop.txt' detected."));
+    return true;
+  }
+  return false;
+}
+
+inline bool truncate(const std::string& evilFile)
+{
+  std::ofstream evil;
+  evil.open(evilFile.c_str());
+  bool does_exist = evil.good();
+  if (does_exist) evil.close();
+  return does_exist;
 }
 
 inline mode_t& default_dir_mode()
