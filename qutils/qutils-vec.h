@@ -626,8 +626,8 @@ std::array<M, N> operator-(const std::array<M, N>& v1,
   return ret;
 }
 
-    template <class M>
-    inline void random_permute(std::vector<M>& vec, const RngState& rs_)
+template <class M>
+inline void random_permute(std::vector<M>& vec, const RngState& rs_)
 {
   RngState rs = rs_;
   const long size = (long)vec.size();
@@ -677,6 +677,12 @@ bool does_string_have_tag(const std::string& str, const std::string& tag)
 {
   const std::vector<std::string> tags = split_line_with_spaces(str);
   return does_vec_have(tags, tag);
+}
+
+template <class M>
+void vector_append(std::vector<M>& v, const std::vector<M>& v1)
+{
+  v.insert(v.end(), v1.begin(), v1.end());
 }
 
 }  // namespace qlat
