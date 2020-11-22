@@ -310,8 +310,9 @@ void save_gauge_field(const GaugeFieldT<T>& gf, const std::string& path,
   gfi.simple_checksum = field_simple_checksum(gft);
   gfi.crc32 = field_crc32(gft);
   gfi.total_site = gf.geo.total_site();
-  qtouch_info(path, make_gauge_field_header(gfi));
-  serial_write_field(gft, path);
+  qtouch_info(path + ".partial", make_gauge_field_header(gfi));
+  serial_write_field(gft, path + ".partial");
+  qrename_info(path + ".partial", path);
   timer.flops += get_data(gft).data_size() * gft.geo.geon.num_node;
 }
 
