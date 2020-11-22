@@ -157,4 +157,18 @@ inline void display_gauge_field_info_table_with_ape_smear(const GaugeField& gf,
   display_info(show_gauge_field_info_table(dt));
 }
 
+inline void display_gauge_field_info_table_with_ape_smear(const std::string& fn,
+                                                          const GaugeField& gf,
+                                                          const double alpha,
+                                                          const int steps)
+// e.g. alpha = 0.5; steps = 50;
+{
+  TIMER_VERBOSE("display_gauge_field_info_table_with_ape_smear(fn)");
+  const std::vector<std::vector<double> > dt =
+      get_gauge_field_info_table_with_ape_smear(gf, alpha, steps);
+  const std::string str = show_gauge_field_info_table(dt);
+  display_info(str);
+  qtouch_info(fn, str);
+}
+
 }  // namespace qlat
