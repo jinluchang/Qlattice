@@ -52,7 +52,7 @@ inline void gf_clover_leaf_field_no_comm(CloverLeafField& clf,
   const Geometry geo = geo_reform(gf1.geo, 6, 0);
   clf.init(geo);
   qassert(is_matching_geo_mult(clf.geo, geo));
-#pragma omp parallel
+#pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<ColorMatrix> v = clf.get_elems(xl);
