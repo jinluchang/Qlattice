@@ -92,7 +92,7 @@ M make_matrix_exp(const M& a, const int max_order = 20)
   M t2 = a;
   M t3;
   for (int j = max_order; j > 1; --j) {
-    t3 = unit + (Complex)(1.0 / j) * t2;
+    t3 = unit + (1.0 / j) * t2;
     t2 = a * t3;
   }
   t3 = unit + t2;
@@ -130,11 +130,11 @@ inline ColorMatrixT<> make_tr_less_anti_herm_matrix(const ColorMatrixT<>& m)
   return ret;
 }
 
-struct AdjointColorMatrix : MatrixT<8, ComplexT> {
+struct AdjointColorMatrix : MatrixT<8, double> {
   AdjointColorMatrix() {}
-  AdjointColorMatrix(const MatrixT<8, ComplexT>& m) { *this = m; }
+  AdjointColorMatrix(const MatrixT<8, double>& m) { *this = m; }
   //
-  const AdjointColorMatrix& operator=(const MatrixT<8, ComplexT>& m)
+  const AdjointColorMatrix& operator=(const MatrixT<8, double>& m)
   {
     *this = (const AdjointColorMatrix&)m;
     return *this;
@@ -224,16 +224,16 @@ struct ColorMatrixConstants {
         qassert(qnorm(adx(a, b) - sum) < 1e-20);
       }
     }
-    const Complex coef = 0.2;
+    const double coef = 0.2;
     const AdjointColorMatrix exp_adx = make_matrix_exp(coef * adx);
     for (int b = 0; b < 8; ++b) {
       std::array<double, 8> basis_b;
       for (int a = 0; a < 8; ++a) {
-        basis_b[a] = exp_adx(a, b).real();
+        basis_b[a] = exp_adx(a, b);
       }
       const ColorMatrix mx_b = make_anti_hermitian_matrix(basis_b);
-      const ColorMatrix exp_x = make_matrix_exp(coef * x);
-      const ColorMatrix exp_n_x = make_matrix_exp(-coef * x);
+      const ColorMatrix exp_x = make_matrix_exp((Complex)coef * x);
+      const ColorMatrix exp_n_x = make_matrix_exp(-(Complex)coef * x);
       if (qnorm(mx_b - exp_x * ts[b] * exp_n_x) >= 1e-20) {
         displayln_info("adx_b: " + show(qnorm(mx_b)));
         displayln_info("exp_x b exp_n_x: " +
@@ -242,8 +242,8 @@ struct ColorMatrixConstants {
         qassert(false);
       }
     }
-    const AdjointColorMatrix j_x = make_diff_exp_map(coef * x);
-    const AdjointColorMatrix j_n_x = make_diff_exp_map(-coef * x);
+    const AdjointColorMatrix j_x = make_diff_exp_map((Complex)coef * x);
+    const AdjointColorMatrix j_n_x = make_diff_exp_map(-(Complex)coef * x);
     qassert(qnorm(j_x - matrix_adjoint(j_n_x)) < 1e-20);
     qassert(qnorm(j_n_x - exp_adx * j_x) < 1e-20);
   }
@@ -276,7 +276,7 @@ inline AdjointColorMatrix make_adjoint_representation(const ColorMatrix& m)
   AdjointColorMatrix am;
   set_zero(am);
   for (int a = 0; a < 8; ++a) {
-    am += (Complex)(-basis[a]) * f[a];
+    am += (-basis[a]) * f[a];
   }
   return am;
 }
@@ -288,10 +288,10 @@ inline AdjointColorMatrix make_diff_exp_map(const AdjointColorMatrix& am,
   AdjointColorMatrix t2 = -am;
   AdjointColorMatrix t3;
   for (int j = max_order; j > 1; --j) {
-    t3 = unit + (Complex)(1.0 / (j + 1)) * t2;
+    t3 = unit + (1.0 / (j + 1)) * t2;
     t2 = -am * t3;
   }
-  t3 = unit + (Complex)0.5 * t2;
+  t3 = unit + 0.5 * t2;
   return t3;
 }
 
@@ -310,7 +310,7 @@ inline AdjointColorMatrix make_diff_exp_map_diff_ref(const ColorMatrix& m,
   const ColorMatrix m_n = m - (Complex)eps * ts[a];
   const AdjointColorMatrix j_p = make_diff_exp_map(m_p);
   const AdjointColorMatrix j_n = make_diff_exp_map(m_n);
-  return (Complex)(1.0 / (2.0 * eps)) * (j_p - j_n);
+  return (1.0 / (2.0 * eps)) * (j_p - j_n);
 }
 
 inline AdjointColorMatrix make_diff_exp_map_diff(const AdjointColorMatrix& am,
@@ -324,12 +324,12 @@ inline AdjointColorMatrix make_diff_exp_map_diff(const AdjointColorMatrix& am,
   AdjointColorMatrix t3;
   AdjointColorMatrix dt3;
   for (int j = max_order; j > 1; --j) {
-    t3 = unit + (Complex)(1.0 / (j + 1)) * t2;
-    dt3 = (Complex)(1.0 / (j + 1)) * dt2;
+    t3 = unit + (1.0 / (j + 1)) * t2;
+    dt3 = (1.0 / (j + 1)) * dt2;
     t2 = -am * t3;
     dt2 = f[a] * t3 - am * dt3;
   }
-  dt3 = (Complex)0.5 * dt2;
+  dt3 = 0.5 * dt2;
   return dt3;
 }
 

@@ -103,7 +103,7 @@ MatrixT<DIMN, T> operator*(const MatrixT<DIMN, T>& x, const MatrixT<DIMN, T>& y)
 }
 
 template <int DIMN, class T>
-MatrixT<DIMN, T> operator*(const T& x, const MatrixT<DIMN, T>& y)
+MatrixT<DIMN, T> operator*(const double x, const MatrixT<DIMN, T>& y)
 {
   MatrixT<DIMN, T> ret;
   ret.em() = x * y.em();
@@ -111,7 +111,23 @@ MatrixT<DIMN, T> operator*(const T& x, const MatrixT<DIMN, T>& y)
 }
 
 template <int DIMN, class T>
-MatrixT<DIMN, T> operator*(const MatrixT<DIMN, T>& x, const T& y)
+MatrixT<DIMN, T> operator*(const MatrixT<DIMN, T>& x, const double y)
+{
+  MatrixT<DIMN, T> ret;
+  ret.em() = x.em() * y;
+  return ret;
+}
+
+template <int DIMN, class T>
+MatrixT<DIMN, T> operator*(const Complex& x, const MatrixT<DIMN, T>& y)
+{
+  MatrixT<DIMN, T> ret;
+  ret.em() = x * y.em();
+  return ret;
+}
+
+template <int DIMN, class T>
+MatrixT<DIMN, T> operator*(const MatrixT<DIMN, T>& x, const Complex& y)
 {
   MatrixT<DIMN, T> ret;
   ret.em() = x.em() * y;
@@ -142,7 +158,16 @@ void set_zero(MatrixT<DIMN, T>& m)
 }
 
 template <int DIMN, class T>
-void set_unit(MatrixT<DIMN, T>& m, const Complex& coef = 1.0)
+void set_unit(MatrixT<DIMN, T>& m, const double& coef = 1.0)
+{
+  set_zero(m);
+  for (int i = 0; i < DIMN; ++i) {
+    m(i, i) = coef;
+  }
+}
+
+template <int DIMN, class T>
+void set_unit(MatrixT<DIMN, T>& m, const Complex& coef)
 {
   set_zero(m);
   for (int i = 0; i < DIMN; ++i) {
