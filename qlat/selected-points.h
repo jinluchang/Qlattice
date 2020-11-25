@@ -113,7 +113,7 @@ struct SelectedPoints {
   bool initialized;
   int multiplicity;
   long n_points;
-  std::vector<M> points;  // global quantity, same on each node
+  vector<M> points;  // global quantity, same on each node
   //
   void init()
   {
