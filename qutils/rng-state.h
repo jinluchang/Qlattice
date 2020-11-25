@@ -18,11 +18,11 @@
 
 #pragma once
 
-#include "sha256.h"
-#include "show.h"
-
 #include <endian.h>
+#include <qutils/sha256.h>
+#include <qutils/show.h>
 #include <stdint.h>
+
 #include <cassert>
 #include <climits>
 #include <cmath>

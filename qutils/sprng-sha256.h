@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include "rng-state.h"
+#include <qutils/rng-state.h>
 
 #include <cstring>
 #include <istream>

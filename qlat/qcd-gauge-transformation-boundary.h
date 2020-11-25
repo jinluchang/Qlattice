@@ -37,7 +37,7 @@ inline void make_local_deflation_plan(
   u1gts.resize(Np);
   for (int i = 0; i < Np; i++) {
     u1gts[i].init(geo);
-    for (size_t j = 0; j < u1gts[i].field.size(); j++) {
+    for (long j = 0; j < u1gts[i].field.size(); j++) {
       u1gts[i].field[j] = +1.;
     }
   }

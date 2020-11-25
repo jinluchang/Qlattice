@@ -8,9 +8,9 @@
 
 #include <zlib.h>
 
-#include "show.h"
-#include "qutils.h"
-#include "qutils-vec.h"
+#include <qutils/show.h>
+#include <qutils/qutils.h>
+#include <qutils/qutils-vec.h>
 
 namespace qlat
 {  //

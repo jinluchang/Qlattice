@@ -4,11 +4,11 @@
 #include <array>
 #endif
 
-#include <vector>
-#include <complex>
-#include <cassert>
+#include <qutils/show.h>
 
-#include "show.h"
+#include <cassert>
+#include <complex>
+#include <vector>
 
 // #define SKIP_ASSERT
 
@@ -306,8 +306,7 @@ double adaptive_simpson_level(const F& f, const double a, const double b,
 }
 
 template <typename F>
-struct AdaptiveSimpsonToInf
-{
+struct AdaptiveSimpsonToInf {
   ConstHandle<F> f;
   double start;
   //
@@ -322,8 +321,7 @@ struct AdaptiveSimpsonToInf
 };
 
 template <typename F>
-struct AdaptiveSimpsonFromInf
-{
+struct AdaptiveSimpsonFromInf {
   ConstHandle<F> f;
   double end;
   //
@@ -366,7 +364,8 @@ double adaptive_simpson(const F& f, const double a, const double b,
   }
 }
 
-inline void split_work(long& start, long& size, const long total, const long num_worker, const long id_worker)
+inline void split_work(long& start, long& size, const long total,
+                       const long num_worker, const long id_worker)
 {
   const long size_max = (total - 1) / num_worker + 1;
   start = std::min(id_worker * size_max, total);
@@ -494,5 +493,5 @@ T identity(const T& x)
 }  // namespace qlat
 
 #ifndef USE_NAMESPACE
-    using namespace qlat;
+using namespace qlat;
 #endif

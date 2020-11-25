@@ -1,8 +1,7 @@
 #pragma once
 
-#include "qutils.h"
-
-#include "rng-state.h"
+#include <qutils/qutils.h>
+#include <qutils/rng-state.h>
 
 namespace qlat
 {  //

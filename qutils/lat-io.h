@@ -1,19 +1,17 @@
 #pragma once
 
+#include <endian.h>
+#include <omp.h>
+#include <qutils/crc32.h>
+#include <qutils/qutils-io.h>
+#include <qutils/qutils.h>
+#include <qutils/show.h>
+#include <stdint.h>
+#include <zlib.h>
+
 #include <cassert>
 #include <string>
 #include <vector>
-
-#include <endian.h>
-#include <omp.h>
-#include <stdint.h>
-
-#include <zlib.h>
-
-#include "crc32.h"
-#include "qutils-io.h"
-#include "qutils.h"
-#include "show.h"
 
 namespace qlat
 {  //
@@ -45,10 +43,7 @@ struct LatData {
   void save(const std::string& fn) const;
 };
 
-inline bool is_initialized(const LatData& ld)
-{
-  return ld.res.size() > 0;
-}
+inline bool is_initialized(const LatData& ld) { return ld.res.size() > 0; }
 
 inline long lat_data_size(const LatInfo& info, const int level = 0)
 {
@@ -220,7 +215,7 @@ inline LatDim lat_dim_number(const std::string& name, const long start,
 
 template <unsigned long N>
 LatDim lat_dim_string(const std::string& name,
-                             const std::array<std::string, N>& is)
+                      const std::array<std::string, N>& is)
 {
   LatDim dim;
   dim.name = name;

@@ -20,7 +20,7 @@ void set_zero(Field<M>& f)
 template <class M>
 void set_unit(Field<M>& f)
 {
-  for (size_t offset = 0; offset < f.field.size(); ++offset) {
+  for (long offset = 0; offset < f.field.size(); ++offset) {
     set_unit(f.get_elem(offset));
   }
 }

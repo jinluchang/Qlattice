@@ -1,9 +1,8 @@
 #pragma once
 
-#include "qutils.h"
-#include "qutils-vec.h"
-#include "timer.h"
-
+#include <qutils/qutils-vec.h>
+#include <qutils/qutils.h>
+#include <qutils/timer.h>
 #include <signal.h>
 #include <stdlib.h>
 

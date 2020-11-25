@@ -4,7 +4,7 @@
 #include <qlat/geometry.h>
 #include <qlat/mpi.h>
 #include <qlat/utils.h>
-// #include <qlat/field-utils.h>
+#include <qutils/vector.h>
 
 #include <ctime>
 #include <fstream>
@@ -16,7 +16,7 @@ template <class M>
 struct Field {
   bool initialized;
   Geometry geo;
-  std::vector<M> field;
+  vector<M> field;
   //
   virtual const std::string& cname()
   {
@@ -341,7 +341,7 @@ void qswap(Field<M>& f1, Field<M>& f2)
 {
   std::swap(f1.initialized, f2.initialized);
   std::swap(f1.geo, f2.geo);
-  std::swap(f1.field, f2.field);
+  qswap(f1.field, f2.field);
 }
 
 QLAT_END_NAMESPACE
