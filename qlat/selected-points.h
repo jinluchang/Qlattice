@@ -188,6 +188,7 @@ Vector<M> get_data(const SelectedPoints<M>& sp)
 template <class M>
 void set_zero(SelectedPoints<M>& sp)
 {
+  TIMER("set_zero(SelectedPoints)");
   set_zero(get_data(sp));
 }
 

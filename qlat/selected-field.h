@@ -296,6 +296,7 @@ Vector<M> get_data(const SelectedField<M>& sf)
 template <class M>
 void set_zero(SelectedField<M>& sf)
 {
+  TIMER("set_zero(SelectedField)");
   set_zero(get_data(sf));
 }
 

@@ -15,6 +15,7 @@ namespace qlat
 template <class M>
 void set_zero(Field<M>& f)
 {
+  TIMER("set_zero(Field)");
   set_zero(f.field);
 }
 
