@@ -39,16 +39,16 @@ inline void run_hmc(GaugeField& gf, const GaugeAction& ga, const int traj, const
   gm.init(geo);
   set_rand_gauge_momentum(gm, 1.0, rs.split("set_rand_gauge_momentum"));
   //
-  double energy = gm_hamilton_node(gm) + gf_hamilton_node(gf, ga);
+  const double energy = gm_hamilton_node(gm) + gf_hamilton_node(gf, ga);
   //
   int steps = 6;
   //
-  double dt = 1.0 / steps;
-  double lambda = 0.5 * (1.0 - 1.0 / sqrt(3.0));
+  const double dt = 1.0 / steps;
+  const double lambda = 0.5 * (1.0 - 1.0 / sqrt(3.0));
   // double xi = 0.0;
   // double chi = 0.0;
-  double theta = (2.0 - sqrt(3.0)) / 48.0;
-  double ttheta = theta * dt * dt * dt;
+  const double theta = (2.0 - sqrt(3.0)) / 48.0;
+  const double ttheta = theta * dt * dt * dt;
   // double cchi = chi * dt * dt * dt;
   //
   gf_evolve(gf, gm, lambda * dt);
