@@ -7,7 +7,8 @@
 QLAT_START_NAMESPACE
 
 template <int DIMN, class T = ComplexT>
-struct MvectorT {
+struct alignas(Eigen::Matrix<T, DIMN, 1>) MvectorT
+{
   T p[DIMN];
   //
   // convert to double array

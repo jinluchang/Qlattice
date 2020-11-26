@@ -29,3 +29,6 @@ clean:
 
 dist-clean:
 	-time for i in $(tests) ; do make -C "$$i" dist-clean ; done
+
+clean-logs:
+	-time for i in $(tests) ; do rm -v "$$i"/log ; done

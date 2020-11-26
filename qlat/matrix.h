@@ -9,7 +9,8 @@ namespace qlat
 {  //
 
 template <int DIMN, class T = ComplexT>
-struct MatrixT {
+struct alignas(Eigen::Matrix<T, DIMN, DIMN, Eigen::RowMajor>) MatrixT
+{
   T p[DIMN * DIMN];
   //
   // convert to double array

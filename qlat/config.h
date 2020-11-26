@@ -18,7 +18,7 @@
 #include <omp.h>
 #endif
 
-#define EIGEN_DONT_ALIGN_STATICALLY
+// #define EIGEN_DONT_ALIGN_STATICALLY
 
 #include <Eigen/Eigen>
 
