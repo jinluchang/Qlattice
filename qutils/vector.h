@@ -5,26 +5,112 @@
 
 #include <cstdlib>
 #include <cstring>
+#include <unordered_map>
 
 namespace qlat
 {  //
 
 inline size_t& get_alignment()
 // qlat parameter
+//
+// Should NOT change in the middle of the run.
 {
   static size_t alignment = 16 * 1024;
   return alignment;
 }
 
-inline void* alloc_mem(const long min_size)
+inline size_t get_aligned_mem_size(const size_t alignment, const long min_size)
 {
-  const size_t alignment = get_alignment();
   const long n_elem = 1 + (min_size - 1) / alignment;
   const size_t size = n_elem * alignment;
-  return aligned_alloc(alignment, size);
+  return size;
 }
 
-inline void free_mem(void* ptr) { free(ptr); }
+inline size_t& get_mem_cache_max_size()
+// qlat parameter
+{
+  static size_t max_size = 512L * 1024L * 1024L;
+  return max_size;
+}
+
+struct MemCache {
+  size_t mem_cache_size;
+  std::unordered_multimap<size_t, void*> db;
+  //
+  MemCache() {
+    mem_cache_size = 0;
+  }
+  ~MemCache() { gc(); }
+  //
+  void add(void* ptr, const size_t size)
+  {
+    mem_cache_size += size;
+    std::pair<size_t, void*> p(size, ptr);
+    db.insert(p);
+    if (mem_cache_size > get_mem_cache_max_size()) {
+      gc();
+    }
+  }
+  //
+  void* del(const size_t size)
+  {
+    auto iter = db.find(size);
+    if (iter == db.end()) {
+      return NULL;
+    } else {
+      mem_cache_size -= size;
+      void* ptr = iter->second;
+      db.erase(iter);
+      return ptr;
+    }
+  }
+  //
+  void gc()
+  {
+    TIMER_VERBOSE_FLOPS("MemCache::gc()");
+    timer.flops += mem_cache_size;
+    for (auto iter = db.cbegin(); iter != db.cend(); ++iter) {
+      free(iter->second);
+    }
+    db.clear();
+  }
+};
+
+inline MemCache& get_mem_cache()
+{
+  static MemCache cache;
+  return cache;
+}
+
+inline void* alloc_mem(const long min_size)
+{
+  TIMER_FLOPS("alloc_mem");
+  timer.flops += min_size;
+  const size_t alignment = get_alignment();
+  const size_t size = get_aligned_mem_size(alignment, min_size);
+  MemCache& cache = get_mem_cache();
+  void* ptr = cache.del(size);
+  if (NULL != ptr) {
+    return ptr;
+  }
+  {
+    TIMER_FLOPS("alloc_mem-alloc");
+    timer.flops += min_size;
+    void* ptr = aligned_alloc(alignment, size);
+    memset(ptr, 0, size);
+    return ptr;
+  }
+}
+
+inline void free_mem(void* ptr, const long min_size)
+{
+  TIMER_FLOPS("free_mem");
+  timer.flops += min_size;
+  const size_t alignment = get_alignment();
+  const size_t size = get_aligned_mem_size(alignment, min_size);
+  MemCache& cache = get_mem_cache();
+  cache.add(ptr, size);
+}
 
 template <class M>
 struct vector {
@@ -52,7 +138,7 @@ struct vector {
   void clear()
   {
     if (v.p != NULL) {
-      free_mem(v.p);
+      free_mem(v.p, v.n * sizeof(M));
     }
     v = Vector<M>();
     qassert(v.p == NULL);
