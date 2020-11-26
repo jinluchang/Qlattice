@@ -8,6 +8,7 @@ qlat::begin(): GeometryNode =
 , coor_node   = 0x0x0x0 }
 demo: create splittable random number generator 'rs'
 demo: init field 'f'
+set Q_FIELD_INIT=fast. (implicitly)
 Qlat::make_shuffle_plan_generic: num_send_packs =          2
 Qlat::make_shuffle_plan_generic: num_recv_packs =          7
 Qlat::make_shuffle_plan_generic: num_send_msgs  =          4

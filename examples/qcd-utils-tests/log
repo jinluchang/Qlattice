@@ -96,6 +96,7 @@ gamma_5 =
  (0,0)  (1,0)  (0,0)  (0,0)
  (0,0)  (0,0) (-1,0)  (0,0)
  (0,0)  (0,0)  (0,0) (-1,0)
+set Q_FIELD_INIT=fast. (implicitly)
 Qlat::CommPlanCache: to add 1 / 32.
 plaq :  1.00000000000000000E+00
 Qlat::CommPlanCache: to add 2 / 32.

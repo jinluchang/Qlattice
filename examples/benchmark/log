@@ -6,6 +6,7 @@ qlat::begin(): GeometryNode =
 , id_node     = 0
 , size_node   = 1x2x2x2
 , coor_node   = 0x0x0x0 }
+set Q_FIELD_INIT=fast. (implicitly)
 ::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 0
 fft_complex_field_plan::init : malloc 36864
 fft_complex_field_plan::init : free 36864

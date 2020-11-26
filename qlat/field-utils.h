@@ -6,7 +6,8 @@
 #include <qlat/field.h>
 #include <qlat/matrix.h>
 
-QLAT_START_NAMESPACE
+namespace qlat
+{  //
 
 // field.h and field-utils.h are including each other. Need this forward
 // declaration. template <class M> struct Field; End of forward declaration.
@@ -169,7 +170,8 @@ inline long& get_max_field_shift_direct_msg_size()
 }
 
 template <class M>
-void field_shift_direct(Field<M>& f, const Field<M>& f1, const Coordinate& shift)
+void field_shift_direct(Field<M>& f, const Field<M>& f1,
+                        const Coordinate& shift)
 // shift f1 with 'shift'
 // use the fact that the ordering does not change
 // UNLESS in some direction there is only one node,
@@ -194,7 +196,7 @@ void field_shift_direct(Field<M>& f, const Field<M>& f1, const Coordinate& shift
   const Coordinate shift_remain = shift - shift_corrected;
   std::vector<long> to_send_size(num_node, 0);
   std::vector<long> to_recv_size(num_node, 0);
-  FieldM<long, 2> f_send_idx, f_recv_idx; // id_node, idx_for_that_node
+  FieldM<long, 2> f_send_idx, f_recv_idx;  // id_node, idx_for_that_node
   f_send_idx.init(geo);
   f_recv_idx.init(geo);
   for (long index = 0; index < geo.local_volume(); ++index) {
@@ -202,8 +204,10 @@ void field_shift_direct(Field<M>& f, const Field<M>& f1, const Coordinate& shift
     const Coordinate xg = geo.coordinate_g_from_l(xl);
     const Coordinate xg_send = mod(xg + shift_corrected, total_site);
     const Coordinate xg_recv = mod(xg - shift_corrected, total_site);
-    const long id_node_send = index_from_coordinate(xg_send / node_site, size_node);
-    const long id_node_recv = index_from_coordinate(xg_recv / node_site, size_node);
+    const long id_node_send =
+        index_from_coordinate(xg_send / node_site, size_node);
+    const long id_node_recv =
+        index_from_coordinate(xg_recv / node_site, size_node);
     Vector<long> fsv = f_send_idx.get_elems(index);
     Vector<long> frv = f_recv_idx.get_elems(index);
     fsv[0] = id_node_send;
@@ -337,8 +341,8 @@ void set_u_rand_double(Field<M>& f, const RngState& rs,
 }
 
 template <class M>
-void set_u_rand_float(Field<M>& f, const RngState& rs,
-                       const double upper = 1.0, const double lower = -1.0)
+void set_u_rand_float(Field<M>& f, const RngState& rs, const double upper = 1.0,
+                      const double lower = -1.0)
 {
   TIMER("set_u_rand_float");
   const Geometry& geo = f.geo;
@@ -356,4 +360,4 @@ void set_u_rand_float(Field<M>& f, const RngState& rs,
   }
 }
 
-QLAT_END_NAMESPACE
+}  // namespace qlat

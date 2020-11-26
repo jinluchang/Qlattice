@@ -15,6 +15,7 @@ inline std::vector<double> get_gm_force_magnitudes(
   const Geometry geo = geo_reform(gm_force.geo, n_elems);
   Field<double> fd;
   fd.init(geo);
+  set_zero(fd);
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);

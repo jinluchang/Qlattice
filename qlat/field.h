@@ -13,6 +13,8 @@
 namespace qlat
 {  //
 
+inline int& get_field_init();
+
 template <class M>
 struct Field {
   bool initialized;
@@ -39,7 +41,13 @@ struct Field {
       init();
       geo = geo_;
       field.resize(geo.local_volume_expanded() * geo.multiplicity);
-      // set_u_rand_float(*this, RngState(show(get_time()))); // CHECK init
+      if (1 == get_field_init()) {
+        set_zero(*this);
+      } else if (2 == get_field_init()) {
+        set_u_rand_float(*this, RngState(show(get_time())));
+      } else {
+        qassert(0 == get_field_init());
+      }
       initialized = true;
     } else {
       qassert(is_matching_geo_mult(geo_, geo));
@@ -52,7 +60,13 @@ struct Field {
       init();
       geo = geo_remult(geo_, multiplicity_);
       field.resize(geo.local_volume_expanded() * geo.multiplicity);
-      // set_u_rand_float(*this, RngState(show(get_time()))); // CHECK init
+      if (1 == get_field_init()) {
+        set_zero(*this);
+      } else if (2 == get_field_init()) {
+        set_u_rand_float(*this, RngState(show(get_time())));
+      } else {
+        qassert(0 == get_field_init());
+      }
       initialized = true;
     } else {
       if (not is_matching_geo_mult(geo_remult(geo_, multiplicity_), geo)) {
@@ -169,6 +183,33 @@ struct Field {
     return Vector<M>(&field[index * geo.multiplicity], geo.multiplicity);
   }
 };
+
+inline int get_field_init_from_env()
+{
+  const std::string tag = get_env("Q_FIELD_INIT");
+  if (tag == "fast") {
+    displayln_info("set Q_FIELD_INIT=fast.");
+    return 0;  // do not do anything
+  } else if (tag == "zero") {
+    displayln_info("set Q_FIELD_INIT=zero.");
+    return 1;  // set_zero
+  } else if (tag == "random") {
+    displayln_info("set Q_FIELD_INIT=random.");
+    return 2;  // set rand
+  } else if (tag == "") {
+    displayln_info("set Q_FIELD_INIT=fast. (implicitly)");
+    return 0;
+  } else {
+    qassert(false);
+    return -1;
+  }
+}
+
+inline int& get_field_init()
+{
+  static int t = get_field_init_from_env();
+  return t;
+}
 
 template <class M>
 bool is_initialized(const Field<M>& f)

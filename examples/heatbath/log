@@ -14,6 +14,7 @@ dist_read_par_limit()=16
 dist_write_par_limit()=16
 obtain_lock: Trying to obtain lock 'results/total_site=4x4x4x256/lambda=24.0000000000/mass_sqr=-1.8600000000.txt-lock'.
 obtain_lock: Lock obtained 'results/total_site=4x4x4x256/lambda=24.0000000000/mass_sqr=-1.8600000000.txt-lock'.
+set Q_FIELD_INIT=fast. (implicitly)
 Qlat::CommPlanCache: to add 1 / 32.
 ((total-site (4 4 4 256))
  (mass-sqr -1.8600000000)

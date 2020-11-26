@@ -6,6 +6,7 @@ qlat::begin(): GeometryNode =
 , id_node     = 0
 , size_node   = 1x2x2x2
 , coor_node   = 0x0x0x0 }
+set Q_FIELD_INIT=fast. (implicitly)
 traj     : 0
 Expected : 16
 Mean     : 16.7861

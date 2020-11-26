@@ -134,6 +134,13 @@ struct SelectedPoints {
       multiplicity = multiplicity_;
       n_points = n_points_;
       points.resize(n_points * multiplicity);
+      if (1 == get_field_init()) {
+        set_zero(*this);
+      } else if (2 == get_field_init()) {
+        set_u_rand_float(get_data(points), RngState(show(get_time())));
+      } else {
+        qassert(0 == get_field_init());
+      }
     }
   }
   void init(const Geometry& geo_, const PointSelection& psel)

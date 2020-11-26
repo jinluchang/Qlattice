@@ -214,6 +214,13 @@ struct SelectedField {
       geo = geo_remult(geo_, multiplicity);
       n_elems = n_elems_;
       field.resize(n_elems * multiplicity);
+      if (1 == get_field_init()) {
+        set_zero(*this);
+      } else if (2 == get_field_init()) {
+        set_u_rand_float(get_data(field), RngState(show(get_time())));
+      } else {
+        qassert(0 == get_field_init());
+      }
     }
   }
   void init(const FieldSelection& fsel, const int multiplicity)
@@ -228,6 +235,13 @@ struct SelectedField {
       geo = geo_remult(fsel.f_rank.geo, multiplicity);
       n_elems = fsel.n_elems;
       field.resize(n_elems * multiplicity);
+      if (1 == get_field_init()) {
+        set_zero(*this);
+      } else if (2 == get_field_init()) {
+        set_u_rand_float(get_data(field), RngState(show(get_time())));
+      } else {
+        qassert(0 == get_field_init());
+      }
     }
   }
   //
