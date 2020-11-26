@@ -395,8 +395,8 @@ void refresh_expanded(Field<M>& f, const CommPlan& plan)
 {
   TIMER_FLOPS("refresh_expanded");
   timer.flops += (plan.total_recv_size + plan.total_send_size) * sizeof(M) / 2;
-  std::vector<M> send_buffer(plan.total_send_size);
-  std::vector<M> recv_buffer(plan.total_recv_size);
+  vector<M> send_buffer(plan.total_send_size);
+  vector<M> recv_buffer(plan.total_recv_size);
 #pragma omp parallel for
   for (long i = 0; i < (long)plan.send_pack_infos.size(); ++i) {
     const CommPackInfo& cpi = plan.send_pack_infos[i];
@@ -408,8 +408,8 @@ void refresh_expanded(Field<M>& f, const CommPlan& plan)
     TIMER_FLOPS("refresh_expanded-comm");
     timer.flops +=
         (plan.total_recv_size + plan.total_send_size) * sizeof(M) / 2;
-    std::vector<MPI_Request> send_reqs(plan.send_msg_infos.size());
-    std::vector<MPI_Request> recv_reqs(plan.recv_msg_infos.size());
+    vector<MPI_Request> send_reqs(plan.send_msg_infos.size());
+    vector<MPI_Request> recv_reqs(plan.recv_msg_infos.size());
     {
       TIMER("refresh_expanded-comm-init");
       const int mpi_tag = 10;

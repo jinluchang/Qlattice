@@ -116,16 +116,13 @@ struct vector {
     return *this;
   }
   //
-  const M& operator[](long i) const
-  {
-    return v[i];
-  }
-  M& operator[](long i)
-  {
-    return v[i];
-  }
+  const M& operator[](long i) const { return v[i]; }
+  M& operator[](long i) { return v[i]; }
   //
-  long size() const { return v.n; }
+  long size() const { return v.size(); }
+  //
+  M* data() { return v.data(); }
+  const M* data() const { return v.data(); }
 };
 
 template <class M>
