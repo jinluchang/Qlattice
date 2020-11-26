@@ -1474,7 +1474,12 @@ inline long cg_with_f(
 {
   TIMER("cg_with_f");
   const Geometry geo = geo_resize(in.geo);
-  out.init(geo);
+  if (not is_initialized(out)) {
+    out.init(geo);
+    set_zero(out);
+  } else {
+    out.init(geo);
+  }
   if (max_num_iter == 0) {
     return 0;
   }
@@ -1583,7 +1588,12 @@ long invert_with_cg(FermionField5d& out, const FermionField5d& in,
   if (max_mixed_precision_cycle < 0) {
     max_mixed_precision_cycle = inv.max_mixed_precision_cycle();
   }
-  out.init(geo_resize(in.geo));
+  if (not is_initialized(out)) {
+    out.init(geo_resize(in.geo));
+    set_zero(out);
+  } else {
+    out.init(geo_resize(in.geo));
+  }
   FermionField5d dm_in;
   if (not dminus_multiplied_already and inv.fa.is_multiplying_dminus) {
     multiply_d_minus(dm_in, in, inv);

@@ -258,6 +258,7 @@ void only_keep_selected_points(Field<M>& f, const PointSelection& psel)
   qassert(geo.is_only_local());
   Field<M> f1;
   f1.init(geo);
+  set_zero(f1);
   const long n_points = psel.size();
 #pragma omp parallel for
   for (long idx = 0; idx < n_points; ++idx) {

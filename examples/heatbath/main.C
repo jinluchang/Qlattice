@@ -102,6 +102,7 @@ inline void set_scalar_field(ScalarField& sf, const Coordinate& total_site)
   geo.resize(1);
   sf.init();
   sf.init(geo);
+  set_zero(sf);
 }
 
 inline void refresh_scalar_field(ScalarField& sf)

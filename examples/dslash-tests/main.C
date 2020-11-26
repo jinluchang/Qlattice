@@ -27,6 +27,7 @@ void simple_dwf_tests()
   setup_inverter(inv, gf, fa);
   FermionField4d ff4din;
   ff4din.init(geo);
+  set_zero(ff4din);
   FermionField5d ff5din, ff5dout;
   FermionField5d ff5din1, ff5dout1;
   FermionField5d ff5d;
@@ -34,6 +35,10 @@ void simple_dwf_tests()
   ff5dout.init(geo_remult(geo, fa.ls));
   ff5din1.init(geo_remult(geo, fa.ls));
   ff5dout1.init(geo_remult(geo, fa.ls));
+  set_zero(ff5din);
+  set_zero(ff5din1);
+  set_zero(ff5dout);
+  set_zero(ff5dout1);
   const Coordinate xg =
       mod(Coordinate(rand_gen(rs), rand_gen(rs), rand_gen(rs), rand_gen(rs)),
           geo.total_site());
@@ -108,6 +113,7 @@ void simple_tests()
       inv, RngState(rs, "find_max_eigen_value_hermop_sym2"));
   FermionField4d ff4din;
   ff4din.init(geo);
+  set_zero(ff4din);
   FermionField5d ff5din, ff5dout;
   FermionField5d ff5din1, ff5dout1;
   FermionField5d ff5d;
@@ -115,6 +121,10 @@ void simple_tests()
   ff5dout.init(geo_remult(geo, fa.ls));
   ff5din1.init(geo_remult(geo, fa.ls));
   ff5dout1.init(geo_remult(geo, fa.ls));
+  set_zero(ff5din);
+  set_zero(ff5din1);
+  set_zero(ff5dout);
+  set_zero(ff5dout1);
   const Coordinate xg =
       mod(Coordinate(rand_gen(rs), rand_gen(rs), rand_gen(rs), rand_gen(rs)),
           geo.total_site());

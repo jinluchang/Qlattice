@@ -10,7 +10,8 @@
 #include <fstream>
 #include <vector>
 
-QLAT_START_NAMESPACE
+namespace qlat
+{  //
 
 template <class M>
 struct Field {
@@ -38,7 +39,7 @@ struct Field {
       init();
       geo = geo_;
       field.resize(geo.local_volume_expanded() * geo.multiplicity);
-      set_zero(*this);
+      // set_u_rand_float(*this, RngState(show(get_time()))); // CHECK init
       initialized = true;
     } else {
       qassert(is_matching_geo_mult(geo_, geo));
@@ -51,7 +52,7 @@ struct Field {
       init();
       geo = geo_remult(geo_, multiplicity_);
       field.resize(geo.local_volume_expanded() * geo.multiplicity);
-      set_zero(*this);
+      // set_u_rand_float(*this, RngState(show(get_time()))); // CHECK init
       initialized = true;
     } else {
       if (not is_matching_geo_mult(geo_remult(geo_, multiplicity_), geo)) {
@@ -90,7 +91,7 @@ struct Field {
     init(geo_resize(f.geo));
 #pragma omp parallel for
     for (long index = 0; index < geo.local_volume(); ++index) {
-      Coordinate xl = geo.coordinate_from_index(index);
+      const Coordinate xl = geo.coordinate_from_index(index);
       Vector<M> v = this->get_elems(xl);
       const Vector<M> v_ = f.get_elems_const(xl);
       for (int m = 0; m < geo.multiplicity; ++m) {
@@ -344,4 +345,4 @@ void qswap(Field<M>& f1, Field<M>& f2)
   qswap(f1.field, f2.field);
 }
 
-QLAT_END_NAMESPACE
+}  // namespace qlat

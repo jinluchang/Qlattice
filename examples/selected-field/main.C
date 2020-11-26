@@ -118,6 +118,7 @@ inline void test(const std::string& tag, const long n_per_tslice)
   // init f
   Field<Complex> f;
   f.init(geo, 2);
+  set_zero(f);
   // init fsel
   FieldSelection fsel;
   set_field_selection(fsel, total_site, n_per_tslice, rs.split("free-4nt8").split(0));
@@ -234,6 +235,7 @@ inline void test_grid(const std::string& tag, const long n_per_tslice)
   // init f
   Field<Complex> f;
   f.init(geo, 2);
+  set_zero(f);
   // init fsel
   FieldSelection fsel;
   set_grid_field_selection(fsel, total_site, n_per_tslice,
@@ -396,6 +398,7 @@ inline void test_shift(const std::string& tag, const long n_per_tslice, const lo
                    ssprintf(": f (with sparse and shift) crc32 = %08X ; shift=%s", crc0, show(shift).c_str()));
     const ShiftShufflePlan ssp = make_shift_shuffle_plan(fsel, shift);
     f.init();
+    set_zero(f);
     sf.init();
     sf = sf0;
     field_shift(sf, sf, ssp);
