@@ -413,15 +413,15 @@ void refresh_expanded(Field<M>& f, const CommPlan& plan)
     {
       TIMER("refresh_expanded-comm-init");
       const int mpi_tag = 10;
-      for (size_t i = 0; i < plan.send_msg_infos.size(); ++i) {
-        const CommMsgInfo& cmi = plan.send_msg_infos[i];
-        MPI_Isend(&send_buffer[cmi.buffer_idx], cmi.size * sizeof(M), MPI_BYTE,
-                  cmi.id_node, mpi_tag, get_comm(), &send_reqs[i]);
-      }
       for (size_t i = 0; i < plan.recv_msg_infos.size(); ++i) {
         const CommMsgInfo& cmi = plan.recv_msg_infos[i];
         MPI_Irecv(&recv_buffer[cmi.buffer_idx], cmi.size * sizeof(M), MPI_BYTE,
                   cmi.id_node, mpi_tag, get_comm(), &recv_reqs[i]);
+      }
+      for (size_t i = 0; i < plan.send_msg_infos.size(); ++i) {
+        const CommMsgInfo& cmi = plan.send_msg_infos[i];
+        MPI_Isend(&send_buffer[cmi.buffer_idx], cmi.size * sizeof(M), MPI_BYTE,
+                  cmi.id_node, mpi_tag, get_comm(), &send_reqs[i]);
       }
     }
     MPI_Waitall(recv_reqs.size(), recv_reqs.data(), MPI_STATUS_IGNORE);
