@@ -122,26 +122,26 @@ struct CommPlanKey {
 inline void g_offset_id_node_from_offset(long& g_offset, int& id_node,
                                          const long offset, const Geometry& geo)
 // offset is expanded
-// g_offset calculated assume 2*total_site (This is a hack, please fix me)
+// g_offset calculated assume 4*total_site (This is a hack, please fix me)
 {
   const Coordinate total_site = geo.total_site();
   const Coordinate xl = geo.coordinate_from_offset(offset);
   qassert(not geo.is_local(xl));
   qassert(geo.is_on_node(xl));
-  const Coordinate xg = mod(geo.coordinate_g_from_l(xl), 2 * total_site);
+  const Coordinate xg = mod(geo.coordinate_g_from_l(xl), 4 * total_site);
   const Coordinate coor_node = mod(xg, total_site) / geo.node_site;
   id_node = index_from_coordinate(coor_node, geo.geon.size_node);
-  g_offset = index_from_coordinate(xg, 2 * total_site) * geo.multiplicity +
+  g_offset = index_from_coordinate(xg, 4 * total_site) * geo.multiplicity +
              offset % geo.multiplicity;
 }
 
 inline long offset_send_from_g_offset(const long g_offset, const Geometry& geo)
-// g_offset calculated assume 2*total_site
+// g_offset calculated assume 4*total_site
 // return offset is local
 {
   const Coordinate total_site = geo.total_site();
   const Coordinate xg =
-      coordinate_from_index(g_offset / geo.multiplicity, 2 * total_site);
+      coordinate_from_index(g_offset / geo.multiplicity, 4 * total_site);
   Coordinate xl = geo.coordinate_l_from_g(xg);
   for (int mu = 0; mu < DIMN; ++mu) {
     while (xl[mu] >= geo.node_site[mu]) {
@@ -156,19 +156,19 @@ inline long offset_send_from_g_offset(const long g_offset, const Geometry& geo)
 }
 
 inline long offset_recv_from_g_offset(const long g_offset, const Geometry& geo)
-// g_offset calculated assume 2*total_site
+// g_offset calculated assume 4*total_site
 // return offset is expanded
 {
   const Coordinate total_site = geo.total_site();
   const Coordinate xg =
-      coordinate_from_index(g_offset / geo.multiplicity, 2 * total_site);
+      coordinate_from_index(g_offset / geo.multiplicity, 4 * total_site);
   Coordinate xl = geo.coordinate_l_from_g(xg);
   for (int mu = 0; mu < DIMN; ++mu) {
     while (xl[mu] >= geo.node_site[mu] + geo.expansion_right[mu]) {
-      xl[mu] -= 2 * total_site[mu];
+      xl[mu] -= 4 * total_site[mu];
     }
     while (xl[mu] < -geo.expansion_left[mu]) {
-      xl[mu] += 2 * total_site[mu];
+      xl[mu] += 4 * total_site[mu];
     }
   }
   qassert(not geo.is_local(xl));

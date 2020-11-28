@@ -1,6 +1,7 @@
 #pragma once
 
 #include <qlat/hmc.h>
+#include <qlat/wilson-flow.h>
 
 namespace qlat
 {  //
@@ -85,31 +86,43 @@ inline std::vector<double> get_gauge_field_infos(const GaugeField& gf)
   TIMER("get_gauge_field_infos");
   const int info_vec_size = 4;
   const Geometry geo = geo_reform(gf.geo);
-  CloverLeafField clf;
-  gf_clover_leaf_field(clf, gf);
-  FieldM<double, info_vec_size> fd;
-  fd.init(gf.geo);
-#pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
-    const Coordinate& xl = geo.coordinate_from_index(index);
-    Vector<double> fdv = fd.get_elems(index);
-    fdv[0] = clf_plaq_action_density(clf, xl);
-    fdv[1] = sqr(fdv[0]);
-    fdv[2] = clf_topology_density(clf, xl);
-    fdv[3] = sqr(fdv[2]);
-  }
+  CloverLeafField clf1, clf2, clf3, clf4, clf5;
+  gf_clover_leaf_field_5(clf1, clf2, clf3, clf4, clf5, gf);
+  FieldM<double, 1> paf;
+  clf_plaq_action_field(paf, clf1);
+  FieldM<double, 1> topf;
+  clf_topology_field_5(topf, clf1, clf2, clf3, clf4, clf5);
   std::vector<double> info_vec(info_vec_size, 0.0);
   for (long index = 0; index < geo.local_volume(); ++index) {
-    Vector<double> fdv = fd.get_elems(index);
-    for (int m = 0; m < (int)fdv.size(); ++m) {
-      info_vec[m] += fdv[m];
-    }
+    const double pa = paf.get_elem(index);
+    const double top = topf.get_elem(index);
+    info_vec[0] += pa;
+    info_vec[1] += sqr(pa);
+    info_vec[2] += top;
+    info_vec[3] += sqr(top);
   }
   glb_sum(get_data(info_vec));
   info_vec[0] *= 1.0 / (double)geo.total_volume();
   info_vec[1] *= 1.0 / (double)geo.total_volume();
   info_vec[3] *= 1.0 / (double)geo.total_volume();
   return info_vec;
+}
+
+inline std::string show_gauge_field_info_table(
+    const std::vector<std::vector<double> >& dt)
+{
+  std::ostringstream out;
+  out << "# smear_step avg(plaq_action) avg(plaq_action^2) tot(topo_density) "
+         "avg(topo_density^2)"
+      << std::endl;
+  for (int i = 0; i < (int)dt.size(); ++i) {
+    const std::vector<double>& v = dt[i];
+    qassert(v.size() == 4);
+    out << ssprintf("%5d %24.17E %24.17E %24.17E %24.17E", i, v[0], v[1], v[2],
+                    v[3])
+        << std::endl;
+  }
+  return out.str();
 }
 
 inline std::vector<std::vector<double> >
@@ -130,34 +143,6 @@ get_gauge_field_info_table_with_ape_smear(const GaugeField& gf,
   return dt;
 }
 
-inline std::string show_gauge_field_info_table(
-    const std::vector<std::vector<double> >& dt)
-{
-  std::ostringstream out;
-  out << "# smear_step avg(plaq_action) avg(plaq_action^2) tot(topo_density) "
-         "avg(topo_density^2)"
-      << std::endl;
-  for (int i = 0; i < (int)dt.size(); ++i) {
-    const std::vector<double>& v = dt[i];
-    qassert(v.size() == 4);
-    out << ssprintf("%5d %24.17E %24.17E %24.17E %24.17E", i, v[0], v[1], v[2],
-                    v[3])
-        << std::endl;
-  }
-  return out.str();
-}
-
-inline void display_gauge_field_info_table_with_ape_smear(const GaugeField& gf,
-                                                          const double alpha,
-                                                          const int steps)
-// e.g. alpha = 0.5; steps = 50;
-{
-  TIMER_VERBOSE("display_gauge_field_info_table_with_ape_smear");
-  const std::vector<std::vector<double> > dt =
-      get_gauge_field_info_table_with_ape_smear(gf, alpha, steps);
-  display_info(show_gauge_field_info_table(dt));
-}
-
 inline void display_gauge_field_info_table_with_ape_smear(const std::string& fn,
                                                           const GaugeField& gf,
                                                           const double alpha,
@@ -169,7 +154,46 @@ inline void display_gauge_field_info_table_with_ape_smear(const std::string& fn,
       get_gauge_field_info_table_with_ape_smear(gf, alpha, steps);
   const std::string str = show_gauge_field_info_table(dt);
   display_info(str);
-  qtouch_info(fn, str);
+  if (fn != "") {
+    qtouch_info(fn, str);
+  }
+}
+
+inline std::vector<std::vector<double> >
+get_gauge_field_info_table_with_wilson_flow(const GaugeField& gf,
+                                            const double flow_time,
+                                            const int flow_steps,
+                                            const int steps,
+                                            const double c1 = 0.0)
+// DataTable.size() == steps + 1
+//
+{
+  TIMER("get_gauge_field_info_table_with_wilson_flow");
+  std::vector<std::vector<double> > dt;
+  dt.push_back(get_gauge_field_infos(gf));
+  GaugeField gf1;
+  gf1 = gf;
+  for (int i = 0; i < steps; ++i) {
+    gf_wilson_flow(gf1, flow_time, flow_steps, c1);
+    dt.push_back(get_gauge_field_infos(gf1));
+  }
+  return dt;
+}
+
+inline void display_gauge_field_info_table_with_wilson_flow(
+    const std::string& fn, const GaugeField& gf, const double flow_time,
+    const int flow_steps, const int steps, const double c1 = 0.0)
+// e.g. alpha = 0.5; steps = 50;
+{
+  TIMER_VERBOSE("display_gauge_field_info_table_with_wilson_flow(fn)");
+  const std::vector<std::vector<double> > dt =
+      get_gauge_field_info_table_with_wilson_flow(gf, flow_time, flow_steps,
+                                                  steps, c1);
+  const std::string str = show_gauge_field_info_table(dt);
+  display_info(str);
+  if (fn != "") {
+    qtouch_info(fn, str);
+  }
 }
 
 }  // namespace qlat

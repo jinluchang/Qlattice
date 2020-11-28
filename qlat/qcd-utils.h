@@ -93,6 +93,30 @@ ColorMatrix gf_wilson_line_no_comm(const GaugeField& gf, const Coordinate& xl,
   return ret;
 }
 
+template <class Vec>
+ColorMatrix gf_wilson_line_no_comm(const GaugeField& gf, const Coordinate& xl,
+                                   const Vec& path, const Vec& path_n)
+{
+  qassert((long)path.size() == (long)path_n.size());
+  ColorMatrix ret;
+  set_unit(ret);
+  Coordinate xl1 = xl;
+  for (int i = 0; i < (int)path.size(); ++i) {
+    const int dir = path[i];
+    qassert(-DIMN <= dir && dir < DIMN);
+    for (int j = 0; j < (int)path_n[i]; ++j) {
+      if (0 <= dir) {
+        ret *= gf.get_elem(xl1, dir);
+        xl1[dir] += 1;
+      } else {
+        xl1[-dir - 1] -= 1;
+        ret *= matrix_adjoint(gf.get_elem(xl1, -dir - 1));
+      }
+    }
+  }
+  return ret;
+}
+
 inline ColorMatrix gf_staple_no_comm_v1(const GaugeField& gf,
                                         const Coordinate& xl, const int mu)
 {
