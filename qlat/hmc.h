@@ -156,10 +156,10 @@ inline double gf_hamilton_node_no_comm(const GaugeField& gf,
                                        const GaugeAction& ga)
 {
   TIMER("gf_hamilton_node_no_comm");
-  const double sum_plaq = gf_sum_re_tr_plaq_node_no_comm(gf);
-  const double sum_rect = gf_sum_re_tr_rect_node_no_comm(gf);
   const double beta = ga.beta;
   const double c1 = ga.c1;
+  const double sum_plaq = gf_sum_re_tr_plaq_node_no_comm(gf);
+  const double sum_rect = c1 == 0.0 ? 0.0 : gf_sum_re_tr_rect_node_no_comm(gf);
   return -beta / 3.0 * ((1.0 - 8.0 * c1) * sum_plaq + c1 * sum_rect);
 }
 
@@ -178,10 +178,14 @@ inline void set_marks_field_gf_hamilton(CommMarks& marks, const Geometry& geo,
       for (int nu = mu + 1; nu < 4; ++nu) {
         set_marks_field_path(marks, xl,
                              make_array<int>(mu, nu, -mu - 1, -nu - 1));
-        set_marks_field_path(
-            marks, xl, make_array<int>(mu, mu, nu, -mu - 1, -mu - 1, -nu - 1));
-        set_marks_field_path(
-            marks, xl, make_array<int>(nu, nu, mu, -nu - 1, -nu - 1, -mu - 1));
+        if (tag == "plaq+rect") {
+          set_marks_field_path(
+              marks, xl,
+              make_array<int>(mu, mu, nu, -mu - 1, -mu - 1, -nu - 1));
+          set_marks_field_path(
+              marks, xl,
+              make_array<int>(nu, nu, mu, -nu - 1, -nu - 1, -mu - 1));
+        }
       }
     }
   }
@@ -191,13 +195,17 @@ inline double gf_hamilton_node(const GaugeField& gf, const GaugeAction& ga)
 {
   TIMER("gf_hamilton_node");
   const Coordinate expand_left(0, 0, 0, 0);
-  const Coordinate expand_right(2, 2, 2, 2);
+  Coordinate expand_right(2, 2, 2, 2);
+  if (ga.c1 == 0.0) {
+    expand_right = Coordinate(1, 1, 1, 1);
+  }
   const Geometry geo_ext = geo_resize(gf.geo, expand_left, expand_right);
   GaugeField gf_ext;
   gf_ext.init(geo_ext);
   gf_ext = gf;
+  const std::string tag_comm = ga.c1 == 0.0 ? "plaq" : "plaq+rect";
   const CommPlan& plan =
-      get_comm_plan(set_marks_field_gf_hamilton, "", gf_ext.geo);
+      get_comm_plan(set_marks_field_gf_hamilton, tag_comm, gf_ext.geo);
   refresh_expanded(gf_ext, plan);
   return gf_hamilton_node_no_comm(gf_ext, ga);
 }
@@ -265,7 +273,9 @@ inline ColorMatrix gf_all_staple_no_comm(const GaugeField& gf,
   set_zero(acc);
   const double c1 = ga.c1;
   acc += (Complex)(1.0 - 8.0 * c1) * gf_plaq_staple_no_comm(gf, xl, mu);
-  acc += (Complex)c1 * gf_rect_staple_no_comm(gf, xl, mu);
+  if (c1 != 0.0) {
+    acc += (Complex)c1 * gf_rect_staple_no_comm(gf, xl, mu);
+  }
   return acc;
 }
 
@@ -316,12 +326,14 @@ inline void set_marks_field_gm_force(CommMarks& marks, const Geometry& geo,
           continue;
         }
         set_marks_field_path(marks, xl, make_array<int>(nu, mu, -nu - 1));
-        set_marks_field_path(marks, xl,
-                             make_array<int>(nu, nu, mu, -nu - 1, -nu - 1));
-        set_marks_field_path(marks, xl,
-                             make_array<int>(nu, mu, mu, -nu - 1, -mu - 1));
-        set_marks_field_path(marks, xl,
-                             make_array<int>(-mu - 1, nu, mu, mu, -nu - 1));
+        if (tag == "plaq+rect") {
+          set_marks_field_path(marks, xl,
+                               make_array<int>(nu, nu, mu, -nu - 1, -nu - 1));
+          set_marks_field_path(marks, xl,
+                               make_array<int>(nu, mu, mu, -nu - 1, -mu - 1));
+          set_marks_field_path(marks, xl,
+                               make_array<int>(-mu - 1, nu, mu, mu, -nu - 1));
+        }
       }
     }
   }
@@ -331,14 +343,19 @@ inline void set_gm_force(GaugeMomentum& gm_force, const GaugeField& gf,
                          const GaugeAction& ga)
 {
   TIMER("set_gm_force");
-  const Coordinate expand_left(2, 2, 2, 2);
-  const Coordinate expand_right(2, 2, 2, 2);
+  Coordinate expand_left(2, 2, 2, 2);
+  Coordinate expand_right(2, 2, 2, 2);
+  if (ga.c1 == 0.0) {
+    expand_left = Coordinate(1, 1, 1, 1);
+    expand_right = Coordinate(1, 1, 1, 1);
+  }
   const Geometry geo_ext = geo_resize(gf.geo, expand_left, expand_right);
   GaugeField gf_ext;
   gf_ext.init(geo_ext);
   gf_ext = gf;
+  const std::string tag_comm = ga.c1 == 0.0 ? "plaq" : "plaq+rect";
   const CommPlan& plan =
-      get_comm_plan(set_marks_field_gm_force, "", gf_ext.geo);
+      get_comm_plan(set_marks_field_gm_force, tag_comm, gf_ext.geo);
   refresh_expanded(gf_ext, plan);
   set_gm_force_no_comm(gm_force, gf_ext, ga);
 }
