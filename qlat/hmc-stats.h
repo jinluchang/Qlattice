@@ -108,19 +108,28 @@ inline std::vector<double> get_gauge_field_infos(const GaugeField& gf)
   return info_vec;
 }
 
+inline std::string show_gauge_field_info_header()
+{
+  return "# smear_step avg(plaq_action) avg(plaq_action^2) tot(topo_density) "
+         "avg(topo_density^2)";
+}
+
+inline std::string show_gauge_field_info_line(const int i,
+                                              const std::vector<double>& v)
+{
+  qassert(v.size() == 4);
+  return ssprintf("%5d %24.17E %24.17E %24.17E %24.17E", i, v[0], v[1], v[2],
+                  v[3]);
+}
+
 inline std::string show_gauge_field_info_table(
     const std::vector<std::vector<double> >& dt)
 {
   std::ostringstream out;
-  out << "# smear_step avg(plaq_action) avg(plaq_action^2) tot(topo_density) "
-         "avg(topo_density^2)"
-      << std::endl;
+  out << show_gauge_field_info_header() << std::endl;
   for (int i = 0; i < (int)dt.size(); ++i) {
     const std::vector<double>& v = dt[i];
-    qassert(v.size() == 4);
-    out << ssprintf("%5d %24.17E %24.17E %24.17E %24.17E", i, v[0], v[1], v[2],
-                    v[3])
-        << std::endl;
+    out << show_gauge_field_info_line(i, v) << std::endl;
   }
   return out.str();
 }
@@ -133,12 +142,16 @@ get_gauge_field_info_table_with_ape_smear(const GaugeField& gf,
 {
   TIMER("get_gauge_field_info_table_with_ape_smear");
   std::vector<std::vector<double> > dt;
-  dt.push_back(get_gauge_field_infos(gf));
+  std::vector<double> v = get_gauge_field_infos(gf);
+  displayln_info(show_gauge_field_info_line(0, v));
+  dt.push_back(v);
   GaugeField gf1;
   gf1 = gf;
   for (int i = 0; i < steps; ++i) {
     gf_ape_smear(gf1, gf1, alpha);
-    dt.push_back(get_gauge_field_infos(gf1));
+    v = get_gauge_field_infos(gf1);
+    displayln_info(show_gauge_field_info_line(i + 1, v));
+    dt.push_back(v);
   }
   return dt;
 }
@@ -170,12 +183,16 @@ get_gauge_field_info_table_with_wilson_flow(const GaugeField& gf,
 {
   TIMER("get_gauge_field_info_table_with_wilson_flow");
   std::vector<std::vector<double> > dt;
-  dt.push_back(get_gauge_field_infos(gf));
+  std::vector<double> v = get_gauge_field_infos(gf);
+  displayln_info(show_gauge_field_info_line(0, v));
+  dt.push_back(v);
   GaugeField gf1;
   gf1 = gf;
   for (int i = 0; i < steps; ++i) {
     gf_wilson_flow(gf1, flow_time, flow_steps, c1);
-    dt.push_back(get_gauge_field_infos(gf1));
+    v = get_gauge_field_infos(gf1);
+    displayln_info(show_gauge_field_info_line(i + 1, v));
+    dt.push_back(v);
   }
   return dt;
 }

@@ -265,8 +265,8 @@ inline std::string make_gauge_field_header(
   out << "DIMENSION_2 = " << gfi.total_site[1] << std::endl;
   out << "DIMENSION_3 = " << gfi.total_site[2] << std::endl;
   out << "DIMENSION_4 = " << gfi.total_site[3] << std::endl;
-  out << ssprintf("LINK_TRACE = %.12f", gfi.plaq) << std::endl;
-  out << ssprintf("PLAQUETTE = %.12f", gfi.trace) << std::endl;
+  out << ssprintf("LINK_TRACE = %.12f", gfi.trace) << std::endl;
+  out << ssprintf("PLAQUETTE = %.12f", gfi.plaq) << std::endl;
   out << ssprintf("CHECKSUM = %08x", gfi.simple_checksum) << std::endl;
   out << ssprintf("CRC32HASH = %08x", gfi.crc32) << std::endl;
   out << "CREATOR = " << gfi.creator << std::endl;
@@ -278,6 +278,49 @@ inline std::string make_gauge_field_header(
   out << "FLOATING_POINT = IEEE64BIG" << std::endl;
   out << "END_HEADER" << std::endl;
   return out.str();
+}
+
+inline void read_gauge_field_header(GaugeFieldInfo& gfi,
+                                    const std::string& path)
+{
+  TIMER("read_gauge_field_header");
+  if (get_id_node() == 0) {
+    FILE* fp = qopen(path, "r");
+    if (fp != NULL) {
+      const std::string header = "BEGIN_HEADER\n";
+      std::vector<char> check_line(header.size(), 0);
+      if (1 == fread(check_line.data(), header.size(), 1, fp)) {
+        if (std::string(check_line.data(), check_line.size()) == header) {
+          std::vector<std::string> infos;
+          infos.push_back(header);
+          while (infos.back() != "END_HEADER\n" && infos.back() != "") {
+            infos.push_back(qgetline(fp));
+          }
+          for (int m = 0; m < 4; ++m) {
+            reads(gfi.total_site[m],
+                  info_get_prop(infos, ssprintf("DIMENSION_%d = ", m + 1)));
+          }
+          reads(gfi.trace, info_get_prop(infos, "LINK_TRACE = "));
+          reads(gfi.plaq, info_get_prop(infos, "PLAQUETTE = "));
+          std::string info;
+          info = info_get_prop(infos, "CHECKSUM = ");
+          if (info != "") {
+            gfi.simple_checksum = read_crc32(info);
+          }
+          info = info_get_prop(infos, "CRC32HASH = ");
+          if (info != "") {
+            gfi.crc32 = read_crc32(info);
+          }
+        }
+      }
+    }
+    qclose(fp);
+  }
+  bcast(Vector<Coordinate>(&gfi.total_site, 1));
+  bcast(Vector<double>(&gfi.trace, 1));
+  bcast(Vector<double>(&gfi.plaq, 1));
+  bcast(Vector<crc32_t>(&gfi.simple_checksum, 1));
+  bcast(Vector<crc32_t>(&gfi.crc32, 1));
 }
 
 template <class T>
@@ -317,14 +360,17 @@ void save_gauge_field(const GaugeFieldT<T>& gf, const std::string& path,
 }
 
 template <class T = ComplexT>
-inline long load_gauge_field(GaugeFieldT<T>& gf, const std::string& path,
-                             bool big_endianness = true)
+long load_gauge_field(GaugeFieldT<T>& gf, const std::string& path,
+                      bool big_endianness = true)
 // assuming gf already initialized and have correct size;
 {
   TIMER_VERBOSE_FLOPS("load_gauge_field");
   displayln_info(fname + ssprintf(": '%s'.", path.c_str()));
-  qassert(is_initialized(gf));
-  const Geometry& geo = gf.geo;
+  GaugeFieldInfo gfi;
+  read_gauge_field_header(gfi, path);
+  Geometry geo;
+  geo.init(gfi.total_site, 4);
+  gf.init(geo);
   FieldM<std::array<Complex, 6>, 4> gft;
   gft.init(geo);
   const long file_size = serial_read_field_par(
