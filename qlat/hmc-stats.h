@@ -188,8 +188,10 @@ get_gauge_field_info_table_with_wilson_flow(const GaugeField& gf,
   dt.push_back(v);
   GaugeField gf1;
   gf1 = gf;
+  double existing_flow_time = 0.0;
   for (int i = 0; i < steps; ++i) {
-    gf_wilson_flow(gf1, flow_time, flow_steps, c1);
+    gf_wilson_flow(gf1, existing_flow_time, flow_time, flow_steps, c1);
+    existing_flow_time += flow_time;
     v = get_gauge_field_infos(gf1);
     displayln_info(show_gauge_field_info_line(i + 1, v));
     dt.push_back(v);

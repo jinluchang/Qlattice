@@ -35,13 +35,57 @@ inline void gf_wilson_flow_step(GaugeField& gf, const double epsilon,
   gf_evolve(w, z, epsilon);
 }
 
-inline void gf_wilson_flow(GaugeField& gf, const double flow_time,
-                           const int steps, const double c1 = 0.0)
+inline double gf_energy_density_no_comm(const GaugeField& gf)
+{
+  TIMER("gf_energy_density_no_comm");
+  const Geometry geo = geo_reform(gf.geo);
+  FieldM<double, 1> fd;
+  fd.init(geo);
+#pragma omp parallel for
+  for (long index = 0; index < geo.local_volume(); ++index) {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    double s = 0.0;
+    for (int mu = 0; mu < 3; ++mu) {
+      for (int nu = mu + 1; nu < 4; ++nu) {
+        const ColorMatrix g_mu_nu = make_tr_less_anti_herm_matrix(
+            gf_clover_leaf_no_comm(gf, xl, mu, nu));
+        s += -matrix_trace(g_mu_nu, g_mu_nu).real();
+      }
+    }
+    fd.get_elem(index) = s;
+  }
+  double sum = 0.0;
+  for (long index = 0; index < geo.local_volume(); ++index) {
+    sum += fd.get_elem(index);
+  }
+  glb_sum(sum);
+  sum *= 1.0 / (double)geo.total_volume();
+  return sum;
+}
+
+inline double gf_energy_density(const GaugeField& gf)
+{
+  TIMER("gf_energy_density");
+  GaugeField gf1;
+  gf1.init(geo_resize(gf.geo, 1));
+  gf1 = gf;
+  refresh_expanded(gf1);
+  return gf_energy_density_no_comm(gf1);
+}
+
+inline void gf_wilson_flow(GaugeField& gf, const double existing_flow_time,
+                           const double flow_time, const int steps,
+                           const double c1 = 0.0)
 {
   TIMER("gf_wilson_flow");
   const double epsilon = flow_time / (double)steps;
   for (int i = 0; i < steps; ++i) {
     gf_wilson_flow_step(gf, epsilon, c1);
+    const double t = (i + 1) * epsilon + existing_flow_time;
+    const double energy_density = gf_energy_density(gf);
+    displayln_info(fname +
+                   ssprintf(": t = %24.17E ; E = %24.17E ; t^2 E = %24.17E.", t,
+                            energy_density, sqr(t) * energy_density));
   }
 }
 

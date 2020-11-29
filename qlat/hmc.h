@@ -163,34 +163,6 @@ inline double gf_hamilton_node_no_comm(const GaugeField& gf,
   return -beta / 3.0 * ((1.0 - 8.0 * c1) * sum_plaq + c1 * sum_rect);
 }
 
-inline void set_marks_field_gf_hamilton(CommMarks& marks, const Geometry& geo,
-                                        const std::string& tag)
-{
-  TIMER_VERBOSE("set_marks_field_gf_hamilton");
-  qassert(geo.multiplicity == 4);
-  marks.init();
-  marks.init(geo);
-  set_zero(marks);
-#pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
-    const Coordinate xl = geo.coordinate_from_index(index);
-    for (int mu = 0; mu < 3; ++mu) {
-      for (int nu = mu + 1; nu < 4; ++nu) {
-        set_marks_field_path(marks, xl,
-                             make_array<int>(mu, nu, -mu - 1, -nu - 1));
-        if (tag == "plaq+rect") {
-          set_marks_field_path(
-              marks, xl,
-              make_array<int>(mu, mu, nu, -mu - 1, -mu - 1, -nu - 1));
-          set_marks_field_path(
-              marks, xl,
-              make_array<int>(nu, nu, mu, -nu - 1, -nu - 1, -mu - 1));
-        }
-      }
-    }
-  }
-}
-
 inline double gf_hamilton_node(const GaugeField& gf, const GaugeAction& ga)
 {
   TIMER("gf_hamilton_node");
@@ -305,36 +277,6 @@ inline void set_gm_force_no_comm(GaugeMomentum& gm_force, const GaugeField& gf,
     qassert(gm_force_v.size() == 4);
     for (int mu = 0; mu < 4; ++mu) {
       gm_force_v[mu] = gf_force_site_no_comm(gf, ga, xl, mu);
-    }
-  }
-}
-
-inline void set_marks_field_gm_force(CommMarks& marks, const Geometry& geo,
-                                     const std::string& tag)
-{
-  TIMER_VERBOSE("set_marks_field_gm_force");
-  qassert(geo.multiplicity == 4);
-  marks.init();
-  marks.init(geo);
-  set_zero(marks);
-#pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
-    const Coordinate xl = geo.coordinate_from_index(index);
-    for (int mu = 0; mu < 4; ++mu) {
-      for (int nu = -4; nu < 4; ++nu) {
-        if (nu == mu or -nu - 1 == mu) {
-          continue;
-        }
-        set_marks_field_path(marks, xl, make_array<int>(nu, mu, -nu - 1));
-        if (tag == "plaq+rect") {
-          set_marks_field_path(marks, xl,
-                               make_array<int>(nu, nu, mu, -nu - 1, -nu - 1));
-          set_marks_field_path(marks, xl,
-                               make_array<int>(nu, mu, mu, -nu - 1, -mu - 1));
-          set_marks_field_path(marks, xl,
-                               make_array<int>(-mu - 1, nu, mu, mu, -nu - 1));
-        }
-      }
     }
   }
 }

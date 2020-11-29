@@ -15,6 +15,8 @@ int main(int argc, char* argv[])
   begin(&argc, &argv, size_node_list);
   if (argc < 2) {
     displayln_info("usage: ./gf-info fn");
+    displayln_info("usage: ./gf-info fn wilson/iwasaki max_iter delta_t n_steps");
+    displayln_info("usage: ./gf-info fn ape max_iter");
     exit(-1);
   }
   const std::string fn = remove_trailing_slashes(argv[1]);
@@ -28,7 +30,7 @@ int main(int argc, char* argv[])
   }
   double delta_t = 1.0;
   if (argc >= 5) {
-    max_iter = read_double(argv[4]);
+    delta_t = read_double(argv[4]);
   }
   long n_steps = 100;
   if (argc >= 6) {

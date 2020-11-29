@@ -452,6 +452,64 @@ void refresh_expanded_1(Field<M>& f)
   refresh_expanded(f, plan);
 }
 
+inline void set_marks_field_gf_hamilton(CommMarks& marks, const Geometry& geo,
+                                        const std::string& tag)
+{
+  TIMER_VERBOSE("set_marks_field_gf_hamilton");
+  qassert(geo.multiplicity == 4);
+  marks.init();
+  marks.init(geo);
+  set_zero(marks);
+#pragma omp parallel for
+  for (long index = 0; index < geo.local_volume(); ++index) {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    for (int mu = 0; mu < 3; ++mu) {
+      for (int nu = mu + 1; nu < 4; ++nu) {
+        set_marks_field_path(marks, xl,
+                             make_array<int>(mu, nu, -mu - 1, -nu - 1));
+        if (tag == "plaq+rect") {
+          set_marks_field_path(
+              marks, xl,
+              make_array<int>(mu, mu, nu, -mu - 1, -mu - 1, -nu - 1));
+          set_marks_field_path(
+              marks, xl,
+              make_array<int>(nu, nu, mu, -nu - 1, -nu - 1, -mu - 1));
+        }
+      }
+    }
+  }
+}
+
+inline void set_marks_field_gm_force(CommMarks& marks, const Geometry& geo,
+                                     const std::string& tag)
+{
+  TIMER_VERBOSE("set_marks_field_gm_force");
+  qassert(geo.multiplicity == 4);
+  marks.init();
+  marks.init(geo);
+  set_zero(marks);
+#pragma omp parallel for
+  for (long index = 0; index < geo.local_volume(); ++index) {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    for (int mu = 0; mu < 4; ++mu) {
+      for (int nu = -4; nu < 4; ++nu) {
+        if (nu == mu or -nu - 1 == mu) {
+          continue;
+        }
+        set_marks_field_path(marks, xl, make_array<int>(nu, mu, -nu - 1));
+        if (tag == "plaq+rect") {
+          set_marks_field_path(marks, xl,
+                               make_array<int>(nu, nu, mu, -nu - 1, -nu - 1));
+          set_marks_field_path(marks, xl,
+                               make_array<int>(nu, mu, mu, -nu - 1, -mu - 1));
+          set_marks_field_path(marks, xl,
+                               make_array<int>(-mu - 1, nu, mu, mu, -nu - 1));
+        }
+      }
+    }
+  }
+}
+
 // inline void set_marks_field_m2(CommMarks& marks, const Geometry& geo,
 //                                const std::string& tag)
 // // tag is not used
