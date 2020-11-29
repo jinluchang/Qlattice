@@ -125,6 +125,8 @@ inline std::string show_gauge_field_info_line(const int i,
 inline std::string show_gauge_field_info_table(
     const std::vector<std::vector<double> >& dt)
 {
+  LatData ld;
+  ld.info.push_back(lat_dim_number("smear_step", 0, dt.size() - 1));
   std::ostringstream out;
   out << show_gauge_field_info_header() << std::endl;
   for (int i = 0; i < (int)dt.size(); ++i) {
