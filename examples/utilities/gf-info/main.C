@@ -58,8 +58,10 @@ int main(int argc, char* argv[])
   }
   if (type == "" or type == "ape") {
     gf = gf0;
-    displayln_info("APE smearing (alpha=0.5) info");
-    display_gauge_field_info_table_with_ape_smear("", gf, 0.5, max_iter);
+    const double alpha = 6.0 * delta_t / n_steps;
+    displayln_info(ssprintf("APE smearing (alpha=%24.17E) info", alpha));
+    display_gauge_field_info_table_with_ape_smear("", gf, alpha, n_steps,
+                                                  max_iter);
   }
   Timer::display();
   end();

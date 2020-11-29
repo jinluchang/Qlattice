@@ -198,6 +198,7 @@ inline LatData convert_energy_list(
 
 inline LatData get_gauge_field_info_table_with_ape_smear(const GaugeField& gf,
                                                          const double alpha,
+                                                         const int ape_steps,
                                                          const int steps)
 // DataTable.size() == steps + 1
 //
@@ -210,7 +211,7 @@ inline LatData get_gauge_field_info_table_with_ape_smear(const GaugeField& gf,
   GaugeField gf1;
   gf1 = gf;
   for (int i = 0; i < steps; ++i) {
-    gf_ape_smear(gf1, gf1, alpha);
+    gf_ape_smear(gf1, gf1, alpha, ape_steps);
     v = get_gauge_field_infos(gf1);
     displayln_info(show_gauge_field_info_line(i + 1, v));
     dt.push_back(v);
@@ -221,12 +222,13 @@ inline LatData get_gauge_field_info_table_with_ape_smear(const GaugeField& gf,
 inline void display_gauge_field_info_table_with_ape_smear(const std::string& fn,
                                                           const GaugeField& gf,
                                                           const double alpha,
+                                                          const int ape_steps,
                                                           const int steps)
 // e.g. alpha = 0.5; steps = 50;
 {
   TIMER_VERBOSE("display_gauge_field_info_table_with_ape_smear");
   const LatData ld =
-      get_gauge_field_info_table_with_ape_smear(gf, alpha, steps);
+      get_gauge_field_info_table_with_ape_smear(gf, alpha, ape_steps, steps);
   display_info(show(ld));
   if (fn != "") {
     lat_data_save_info(fn, ld);
