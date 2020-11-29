@@ -72,6 +72,7 @@ struct MemCache {
     for (auto iter = db.cbegin(); iter != db.cend(); ++iter) {
       free(iter->second);
     }
+    mem_cache_size = 0;
     db.clear();
   }
 };
