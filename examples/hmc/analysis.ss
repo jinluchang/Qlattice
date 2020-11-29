@@ -22,10 +22,25 @@
          [lna/r0 (+ d1 (* d2 b-1) (* d3 b-1^2) (* d4 b-1^3))])
     (* 0.5 (exp lna/r0))))
 
+(define sqrt-t0/fm 0.1667) ; in unit of fm
+
+(define (get-t0/a a/fm)
+  (sqr (/ sqrt-t0/fm a/fm)))
+
 (print "hello world")
 
 (print (get-a-iwasaki 2.31))
 
 (print (get-a-dbw2 0.7796))
+
+(print "sqrt(t0)" (sqrt (* 2.7854 (sqr 0.0999))))
+(print "sqrt(t0)" (sqrt (* 5.489 (sqr 0.0710))))
+(print "sqrt(t0)" (sqrt (* 11.241 (sqr 0.0498))))
+
+(print "sqrt(t0) = 0.1667")
+
+(print (get-t0/a (get-a-dbw2 0.7796)))
+(print (get-t0/a 0.2))
+(print (get-t0/a 0.1))
 
 ; (print (get-a-iwasaki 2.7124))
