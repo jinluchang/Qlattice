@@ -26,18 +26,26 @@ int main(int argc, char* argv[])
   if (argc >= 4) {
     max_iter = read_long(argv[3]);
   }
+  double delta_t = 1.0;
+  if (argc >= 5) {
+    max_iter = read_double(argv[4]);
+  }
+  long n_steps = 100;
+  if (argc >= 6) {
+    n_steps = read_long(argv[5]);
+  }
   displayln_info(ssprintf("fn = '%s'", fn.c_str()));
   GaugeField gf, gf0;
   load_gauge_field(gf0, fn);
   if (type == "" or type == "wilson") {
     gf = gf0;
     displayln_info("Wilson flow info");
-    display_gauge_field_info_table_with_wilson_flow("", gf, 1.0, 100, max_iter);
+    display_gauge_field_info_table_with_wilson_flow("", gf, delta_t, n_steps, max_iter);
   }
   if (type == "" or type == "iwasaki") {
     gf = gf0;
     displayln_info("Wilson flow info with c1=-0.331 (Iwasaki action)");
-    display_gauge_field_info_table_with_wilson_flow("", gf, 1.0, 100, max_iter,
+    display_gauge_field_info_table_with_wilson_flow("", gf, delta_t, n_steps, max_iter,
                                                     -0.331);
   }
   if (type == "" or type == "ape") {
