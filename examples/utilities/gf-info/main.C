@@ -10,8 +10,13 @@ int main(int argc, char* argv[])
   std::vector<Coordinate> size_node_list;
   size_node_list.push_back(Coordinate(1, 1, 1, 2));
   size_node_list.push_back(Coordinate(1, 1, 1, 4));
-  size_node_list.push_back(Coordinate(1, 1, 1, 8));
-  size_node_list.push_back(Coordinate(1, 1, 1, 16));
+  size_node_list.push_back(Coordinate(1, 1, 2, 4));
+  size_node_list.push_back(Coordinate(1, 2, 2, 4));
+  size_node_list.push_back(Coordinate(2, 2, 2, 4));
+  size_node_list.push_back(Coordinate(2, 2, 2, 8));
+  size_node_list.push_back(Coordinate(2, 2, 4, 8));
+  size_node_list.push_back(Coordinate(2, 4, 4, 8));
+  size_node_list.push_back(Coordinate(4, 4, 4, 8));
   begin(&argc, &argv, size_node_list);
   if (argc < 2) {
     displayln_info("usage: ./gf-info fn");
