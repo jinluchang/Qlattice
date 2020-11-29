@@ -42,13 +42,14 @@ int main(int argc, char* argv[])
   if (type == "" or type == "wilson") {
     gf = gf0;
     displayln_info("Wilson flow info");
-    display_gauge_field_info_table_with_wilson_flow("", gf, delta_t, n_steps, max_iter);
+    display_gauge_field_info_table_with_wilson_flow("", "", gf, delta_t,
+                                                    n_steps, max_iter);
   }
   if (type == "" or type == "iwasaki") {
     gf = gf0;
     displayln_info("Wilson flow info with c1=-0.331 (Iwasaki action)");
-    display_gauge_field_info_table_with_wilson_flow("", gf, delta_t, n_steps, max_iter,
-                                                    -0.331);
+    display_gauge_field_info_table_with_wilson_flow("", "", gf, delta_t,
+                                                    n_steps, max_iter, -0.331);
   }
   if (type == "" or type == "ape") {
     gf = gf0;

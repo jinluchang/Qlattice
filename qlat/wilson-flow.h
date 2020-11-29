@@ -73,20 +73,25 @@ inline double gf_energy_density(const GaugeField& gf)
   return gf_energy_density_no_comm(gf1);
 }
 
-inline void gf_wilson_flow(GaugeField& gf, const double existing_flow_time,
-                           const double flow_time, const int steps,
-                           const double c1 = 0.0)
+inline std::vector<double> gf_wilson_flow(GaugeField& gf,
+                                          const double existing_flow_time,
+                                          const double flow_time,
+                                          const int steps,
+                                          const double c1 = 0.0)
 {
   TIMER("gf_wilson_flow");
+  std::vector<double> energy_density_list(steps, 0.0);
   const double epsilon = flow_time / (double)steps;
   for (int i = 0; i < steps; ++i) {
     gf_wilson_flow_step(gf, epsilon, c1);
     const double t = (i + 1) * epsilon + existing_flow_time;
     const double energy_density = gf_energy_density(gf);
+    energy_density_list[i] = energy_density;
     displayln_info(fname +
                    ssprintf(": t = %24.17E ; E = %24.17E ; t^2 E = %24.17E.", t,
                             energy_density, sqr(t) * energy_density));
   }
+  return energy_density_list;
 }
 
 }  // namespace qlat
