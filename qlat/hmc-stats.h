@@ -6,6 +6,24 @@
 namespace qlat
 {  //
 
+inline double get_field_max(const FieldM<double, 1>& fd)
+{
+  TIMER("get_field_max");
+  const Geometry& geo = fd.geo;
+  qassert(fd.geo.is_only_local());
+  double m = fd.get_elem(0);
+  for (long index = 1; index < geo.local_volume(); ++index) {
+    m = std::max(m, fd.get_elem(index));
+  }
+  std::vector<double> ms(get_num_node(), 0.0);
+  ms[get_id_node()] = m;
+  glb_sum(get_data(ms));
+  for (int i = 0; i < (int)ms.size(); ++i) {
+    m = std::max(m, ms[i]);
+  }
+  return m;
+}
+
 inline std::vector<double> get_gm_force_magnitudes(
     const GaugeMomentum& gm_force, const int n_elems)
 // return the l1, l2, ..., linf norm of the gm_force magnitudes
@@ -14,16 +32,19 @@ inline std::vector<double> get_gm_force_magnitudes(
 {
   TIMER("get_gm_force_magnitudes");
   qassert(n_elems >= 2);
-  const Geometry geo = geo_reform(gm_force.geo, n_elems);
+  const Geometry geo = geo_reform(gm_force.geo, n_elems - 1);
   Field<double> fd;
   fd.init(geo);
   set_zero(fd);
+  FieldM<double, 1> fd_max;
+  fd_max.init(geo);
+  set_zero(fd_max);
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Vector<ColorMatrix> gm_force_v = gm_force.get_elems_const(xl);
     qassert(gm_force_v.size() == 4);
-    Vector<double> fdv = fd.get_elems(xl);
+    Vector<double> fdv = fd.get_elems(index);
     double linf = 0.0;
     for (int mu = 0; mu < 4; ++mu) {
       // multiply by additional small factor, will be compensated below
@@ -39,22 +60,14 @@ inline std::vector<double> get_gm_force_magnitudes(
       }
       linf = std::max(linf, l1);
     }
-    fdv[n_elems - 1] = linf;
+    fd_max.get_elem(index) = 15.0 * linf;
   }
   std::vector<double> mag_vec(n_elems, 0.0);
-  double mag_linf = 0.0;
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Vector<double> fdv = fd.get_elems_const(index);
     for (int m = 0; m < n_elems - 1; ++m) {
       mag_vec[m] += fdv[m];
     }
-    mag_linf = std::max(mag_linf, fdv[n_elems - 1]);
-  }
-  std::vector<double> mag_linf_list(get_num_node(), 0.0);
-  mag_linf_list[get_id_node()] = mag_linf;
-  glb_sum(get_data(mag_linf_list));
-  for (int i = 0; i < (int)mag_linf_list.size(); ++i) {
-    mag_linf = std::max(mag_linf, mag_linf_list[i]);
   }
   glb_sum(get_data(mag_vec));
   for (int m = 0; m < n_elems; ++m) {
@@ -65,7 +78,7 @@ inline std::vector<double> get_gm_force_magnitudes(
     // The compensate the additional factor introduced above
     mag_vec[m] *= 15.0;
   }
-  mag_vec[n_elems - 1] = 15.0 * mag_linf;
+  mag_vec[n_elems - 1] = get_field_max(fd_max);
   return mag_vec;
 }
 

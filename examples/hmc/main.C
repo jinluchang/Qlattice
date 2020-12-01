@@ -142,12 +142,14 @@ inline void test_hmc(const Coordinate& total_site, const GaugeAction& ga)
                    ssprintf(": traj=%d ; plaq_avg=%24.17E ; plaq_sum=%24.17E.",
                             traj, plaq_avg, plaq_sum));
     //
-    display_gauge_field_info_table_with_wilson_flow(
-        ssprintf("results/gf_info/traj=%d.lat", traj),
-        ssprintf("results/wilson_flow_energy_info/traj=%d.lat", traj), gf, 1.0,
-        100, 2);
-    save_gm_force_magnitudes_list(
-        ssprintf("results/gm_force_info/traj=%d.lat", traj));
+    if (traj % 10 == 0) {
+      display_gauge_field_info_table_with_wilson_flow(
+          ssprintf("results/gf_info/traj=%d.lat", traj),
+          ssprintf("results/wilson_flow_energy_info/traj=%d.lat", traj), gf,
+          1.0, 100, 2);
+      save_gm_force_magnitudes_list(
+          ssprintf("results/gm_force_info/traj=%d.lat", traj));
+    }
   }
 }
 
