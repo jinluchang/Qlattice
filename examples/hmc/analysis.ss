@@ -2,6 +2,20 @@
 
 (import (cslib all))
 
+; http://arxiv.org/abs/hep-lat/9806005v2
+; http://arxiv.org/abs/hep-lat/0309017v1
+
+(define (get-a-wilson beta)
+  (let* ([a1 -1.6805]
+         [a2 -1.7139]
+         [a3 0.8155]
+         [a4 -0.6667]
+         [b-6 (- beta 6)]
+         [b-6^2 (sqr b-6)]
+         [b-6^3 (* b-6 b-6^2)]
+         [lna/r0 (+ a1 (* a2 b-6) (* a3 b-6^2) (* a4 b-6^3))])
+    (* 0.5 (exp lna/r0))))
+
 (define (get-a-iwasaki beta)
   (let* ([c1 -2.1281]
          [c2 -1.0056]
@@ -43,4 +57,6 @@
 (print (get-t0/a 0.2))
 (print (get-t0/a 0.1))
 
-; (print (get-a-iwasaki 2.7124))
+(print (get-a-wilson 5.95935)) ; 0.1 fm
+(print (get-a-iwasaki 2.5868)) ; 0.1 fm
+(print (get-a-dbw2 1.0038)) ; 0.1 fm

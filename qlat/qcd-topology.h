@@ -138,8 +138,9 @@ inline double clf_plaq_action_density(const CloverLeafField& clf,
                                       const Coordinate& xl)
 // \sum_P (1 - 1/3 * Re Tr U_P)
 //
-// Action = total_volume() * 2 * 3 * action_density
-// Single instanton action = 8 * sqr(PI)
+// Action = beta * total_volume() * action_density
+// Single instanton action = 8 * sqr(PI) / g^2
+// beta = 6/g^2
 {
   const Vector<ColorMatrix> v = clf.get_elems_const(xl);
   double sum = 0.0;

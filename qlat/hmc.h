@@ -104,6 +104,7 @@ inline double gf_re_tr_rect_no_comm(const GaugeField& gf, const Coordinate& xl,
 }
 
 inline double gf_sum_re_tr_plaq_node_no_comm(const GaugeField& gf)
+// subtract the free field value
 {
   TIMER("gf_sum_re_tr_plaq_node_no_comm");
   const Geometry geo = geo_reform(gf.geo);
@@ -115,7 +116,7 @@ inline double gf_sum_re_tr_plaq_node_no_comm(const GaugeField& gf)
     double s = 0.0;
     for (int mu = 0; mu < 3; ++mu) {
       for (int nu = mu + 1; nu < 4; ++nu) {
-        s += gf_re_tr_plaq_no_comm(gf, xl, mu, nu);
+        s += gf_re_tr_plaq_no_comm(gf, xl, mu, nu) - 3.0;
       }
     }
     fd.get_elem(index) = s;
@@ -128,6 +129,7 @@ inline double gf_sum_re_tr_plaq_node_no_comm(const GaugeField& gf)
 }
 
 inline double gf_sum_re_tr_rect_node_no_comm(const GaugeField& gf)
+// subtract the free field value
 {
   TIMER("gf_sum_re_tr_rect_node_no_comm");
   const Geometry geo = geo_reform(gf.geo);
@@ -139,8 +141,8 @@ inline double gf_sum_re_tr_rect_node_no_comm(const GaugeField& gf)
     double s = 0.0;
     for (int mu = 0; mu < 3; ++mu) {
       for (int nu = mu + 1; nu < 4; ++nu) {
-        s += gf_re_tr_rect_no_comm(gf, xl, mu, nu);
-        s += gf_re_tr_rect_no_comm(gf, xl, nu, mu);
+        s += gf_re_tr_rect_no_comm(gf, xl, mu, nu) - 3.0;
+        s += gf_re_tr_rect_no_comm(gf, xl, nu, mu) - 3.0;
       }
     }
     fd.get_elem(index) = s;
@@ -180,6 +182,17 @@ inline double gf_hamilton_node(const GaugeField& gf, const GaugeAction& ga)
       get_comm_plan(set_marks_field_gf_hamilton, tag_comm, gf_ext.geo);
   refresh_expanded(gf_ext, plan);
   return gf_hamilton_node_no_comm(gf_ext, ga);
+}
+
+inline double gf_hamilton(const GaugeField& gf, const GaugeAction& ga)
+// beta * ( (1-8*c1) n_plaq (1 - avg_plaq) + c1 n_rect (1 - avg_rect) )
+// n_plaq = total_volume() * 6
+// n_rect = total_volume() * 12
+{
+  TIMER("gf_hamilton");
+  double energy = gf_hamilton_node(gf, ga);
+  glb_sum(energy);
+  return energy;
 }
 
 inline void gf_evolve(GaugeField& gf, const GaugeMomentum& gm,
