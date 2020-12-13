@@ -56,7 +56,15 @@
 (print (get-t0/a (get-a-dbw2 0.7796)))
 (print (get-t0/a 0.2))
 (print (get-t0/a 0.1))
+(print (get-t0/a 0.125))
+
+(print "a/fm")
 
 (print (get-a-wilson 5.95935)) ; 0.1 fm
 (print (get-a-iwasaki 2.5868)) ; 0.1 fm
 (print (get-a-dbw2 1.0038)) ; 0.1 fm
+
+(print (get-a-dbw2 0.91082)) ; 0.125 fm
+
+(print (get-a-dbw2 0.89))
+(print (get-t0/a (get-a-dbw2 0.89)))
