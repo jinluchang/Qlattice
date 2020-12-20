@@ -4,7 +4,7 @@
 
 #ifdef QLAT_GRID
 
-#include <Grid/Eigen>
+#include <Grid/Eigen/Eigen>
 
 #else
 

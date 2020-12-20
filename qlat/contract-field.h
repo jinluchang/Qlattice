@@ -125,7 +125,7 @@ inline void field_complex_conjugate(Field<Complex>& f)
   for (long index = 0; index < geo.local_volume(); ++index) {
     Vector<Complex> fv = f.get_elems(index);
     for (int m = 0; m < geo.multiplicity; ++m) {
-      fv[m] = std::conj(fv[m]);
+      fv[m] = qconj(fv[m]);
     }
   }
 }

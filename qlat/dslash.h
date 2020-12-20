@@ -255,7 +255,7 @@ inline void deflate(HalfVector& hv_out, const HalfVector& hv_in, LowModes& lm)
         const Vector<ComplexF> vbs_j(vbs.p + j * block_size, block_size);
         for (long k = 0; k < block_size; ++k) {
           const ComplexF& vb_k = vb.p[k];
-          vc_j += std::conj(vbs_j.p[k]) * vb_k;
+          vc_j += qconj(vbs_j.p[k]) * vb_k;
         }
       }
       // compute inner products
@@ -265,7 +265,7 @@ inline void deflate(HalfVector& hv_out, const HalfVector& hv_in, LowModes& lm)
         const Vector<ComplexF> vcs_i(vcs.p + i * n_basis, n_basis);
         for (int j = 0; j < n_basis; ++j) {
           const Complex& vc_j = vc.p[j];
-          vp_i += (Complex)std::conj(vcs_i.p[j]) * vc_j;
+          vp_i += (Complex)qconj(vcs_i.p[j]) * vc_j;
         }
       }
     }
@@ -838,8 +838,8 @@ inline void multiply_mdag_e_e(FermionField5d& out, const FermionField5d& in,
   const Geometry& geo = out.geo;
   std::vector<Complex> bee(fa.ls), cee(fa.ls);
   for (int m = 0; m < fa.ls; ++m) {
-    bee[m] = std::conj(1.0 + fa.bs[m] * (4.0 - fa.m5));
-    cee[m] = std::conj(1.0 - fa.cs[m] * (4.0 - fa.m5));
+    bee[m] = qconj(1.0 + fa.bs[m] * (4.0 - fa.m5));
+    cee[m] = qconj(1.0 - fa.cs[m] * (4.0 - fa.m5));
   }
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
@@ -852,11 +852,11 @@ inline void multiply_mdag_e_e(FermionField5d& out, const FermionField5d& in,
           (p_p * (m < fa.ls - 1
                       ? (WilsonVector)((ComplexT)cee[m + 1] * iv[m + 1])
                       : (WilsonVector)(
-                            (ComplexT)(-std::conj((Complex)fa.mass) * cee[0]) *
+                            (ComplexT)(-qconj((Complex)fa.mass) * cee[0]) *
                             iv[0]))) +
           (p_m * (m > 0
                       ? (WilsonVector)((ComplexT)cee[m - 1] * iv[m - 1])
-                      : (WilsonVector)((ComplexT)(-std::conj((Complex)fa.mass) *
+                      : (WilsonVector)((ComplexT)(-qconj((Complex)fa.mass) *
                                                   cee[fa.ls - 1]) *
                                        iv[fa.ls - 1])));
       v[m] -= tmp;
@@ -981,15 +981,15 @@ inline void multiply_mdag_e_e_inv(FermionField5d& out, const FermionField5d& in,
         m == 0 ? fa.mass * cee[0] / bee[0] : ueem[m - 1] * cee[m] / bee[m];
   }
   for (int m = 0; m < fa.ls; ++m) {
-    bee[m] = std::conj(bee[m]);
-    cee[m] = std::conj(cee[m]);
-    dee[m] = std::conj(dee[m]);
+    bee[m] = qconj(bee[m]);
+    cee[m] = qconj(cee[m]);
+    dee[m] = qconj(dee[m]);
   }
   for (int m = 0; m < fa.ls - 1; ++m) {
-    lee[m] = std::conj(lee[m]);
-    leem[m] = std::conj(leem[m]);
-    uee[m] = std::conj(uee[m]);
-    ueem[m] = std::conj(ueem[m]);
+    lee[m] = qconj(lee[m]);
+    leem[m] = qconj(leem[m]);
+    uee[m] = qconj(uee[m]);
+    ueem[m] = qconj(ueem[m]);
   }
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
@@ -1182,8 +1182,8 @@ inline void multiply_mdag_e_o(FermionField5d& out, const FermionField5d& in,
   geo.eo = 3 - in.geo.eo;
   std::vector<Complex> beo(fa.ls), ceo(fa.ls);
   for (int m = 0; m < fa.ls; ++m) {
-    beo[m] = std::conj(fa.bs[m]);
-    ceo[m] = std::conj(-fa.cs[m]);
+    beo[m] = qconj(fa.bs[m]);
+    ceo[m] = qconj(-fa.cs[m]);
   }
   FermionField5d in1;
   in1.init(geo_resize(in.geo, 1));
@@ -1207,11 +1207,11 @@ inline void multiply_mdag_e_o(FermionField5d& out, const FermionField5d& in,
           (p_p * (m < fa.ls - 1
                       ? (WilsonVector)((ComplexT)ceo[m + 1] * iv[m + 1])
                       : (WilsonVector)(
-                            (ComplexT)(-std::conj((Complex)fa.mass) * ceo[0]) *
+                            (ComplexT)(-qconj((Complex)fa.mass) * ceo[0]) *
                             iv[0]))) +
           (p_m * (m > 0
                       ? (WilsonVector)((ComplexT)ceo[m - 1] * iv[m - 1])
-                      : (WilsonVector)((ComplexT)(-std::conj((Complex)fa.mass) *
+                      : (WilsonVector)((ComplexT)(-qconj((Complex)fa.mass) *
                                                   ceo[fa.ls - 1]) *
                                        iv[fa.ls - 1])));
       v[m] -= tmp;
@@ -1458,7 +1458,7 @@ inline Complex dot_product(const FermionField5d& ff1, const FermionField5d& ff2)
                                v2.data_size() / sizeof(ComplexT));
     qassert(cv1.size() == cv2.size());
     for (int k = 0; k < cv1.size(); ++k) {
-      sum += std::conj(cv1[k]) * cv2[k];
+      sum += qconj(cv1[k]) * cv2[k];
     }
   }
   glb_sum(sum);

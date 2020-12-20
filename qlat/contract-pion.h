@@ -522,7 +522,7 @@ inline Complex contract_meson_snk_src(const WallSrcProps& wsp1,
       get_wsnk_prop(wsp2, t_snk, exact_snk)[t_src];
   const Complex v1 = matrix_trace(gamma5 * wm1_snk_src, gamma5 * wm2_src_snk);
   const Complex v2 = matrix_trace(gamma5 * wm2_snk_src, gamma5 * wm1_src_snk);
-  return 0.5 * (v1 + std::conj(v2));
+  return 0.5 * (v1 + qconj(v2));
 }
 
 inline Complex contract_meson_snk_src(const WallSrcProps& wsp1,
