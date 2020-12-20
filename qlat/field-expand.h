@@ -116,7 +116,7 @@ struct CommPlanKey {
   std::string key;
   SetMarksField set_marks_field;
   std::string tag;
-  vector<Geometry> geo;
+  box<Geometry> geo;
 };
 
 inline void g_offset_id_node_from_offset(long& g_offset, int& id_node,
@@ -387,7 +387,7 @@ inline const CommPlan& get_comm_plan(const SetMarksField& set_marks_field,
   cpk.set_marks_field = set_marks_field;
   cpk.tag = tag;
   clear(cpk.geo);
-  cpk.geo.resize(1, geo);
+  cpk.geo.set(geo);
   return get_comm_plan(cpk);
 }
 

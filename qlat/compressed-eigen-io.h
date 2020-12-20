@@ -1273,7 +1273,7 @@ inline void convert_half_vector_bfm_format(Vector<ComplexF> bfm_data,
   }
 }
 
-inline long load_compressed_eigen_vectors(std::vector<double>& eigen_values,
+inline long load_compressed_eigen_vectors(vector<double>& eigen_values,
                                           CompressedEigenSystemInfo& cesi,
                                           CompressedEigenSystemBases& cesb,
                                           CompressedEigenSystemCoefs& cesc,

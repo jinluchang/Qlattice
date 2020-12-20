@@ -134,6 +134,9 @@ inline void free_mem(void* ptr, const long min_size)
 
 template <class M>
 struct vector {
+  // Avoid copy constructor when possible
+  // (it is likely not be what you think it is)
+  //
   bool is_copy;  // do not free memory if is_copy=true
   Vector<M> v;
   //
@@ -165,6 +168,14 @@ struct vector {
     if (not is_copy) {
       clear();
     }
+  }
+  //
+  void init()
+  {
+    if (not is_copy) {
+      clear();
+    }
+    is_copy = false;
   }
   //
   void clear()
@@ -236,7 +247,19 @@ struct vector {
     qassert(not is_copy);
     clear();
     resize(vp.size());
-    std::memcpy(v.p, vp.v.p, v.n * sizeof(M));
+    for (long i = 0; i < v.n; ++i) {
+      v[i] = vp[i];
+    }
+    return *this;
+  }
+  const vector<M>& operator=(const std::vector<M>& vp)
+  {
+    qassert(not is_copy);
+    clear();
+    resize(vp.size());
+    for (long i = 0; i < v.n; ++i) {
+      v[i] = vp[i];
+    }
     return *this;
   }
   //
@@ -282,6 +305,126 @@ template <class M>
 qacc void set_zero(vector<M>& v)
 {
   set_zero(v.v);
+}
+
+template <class M>
+struct box {
+  //
+  // like a one element vector
+  //
+  // Avoid copy constructor when possible
+  // (it is likely not be what you think it is)
+  //
+  bool is_copy;  // do not free memory if is_copy=true
+  Handle<M> v;
+  //
+  box()
+  {
+    qassert(v.p == NULL);
+    is_copy = false;
+  }
+  box(const box<M>& vp)
+  {
+    is_copy = true;
+    this->v = vp.v;
+  }
+  box(const M& x)
+  {
+    qassert(v.p == NULL);
+    is_copy = false;
+    set(x);
+  }
+  //
+  ~box()
+  {
+    if (not is_copy) {
+      clear();
+    }
+  }
+  //
+  void init()
+  {
+    if (not is_copy) {
+      clear();
+    }
+    is_copy = false;
+  }
+  //
+  void clear()
+  {
+    qassert(not is_copy);
+    if (v.p != NULL) {
+      free_mem(v.p, sizeof(M));
+    }
+    v.init();
+    qassert(v.p == NULL);
+  }
+  //
+  qacc void swap(box<M>& x)
+  {
+    qassert(not is_copy);
+    qassert(not x.is_copy);
+    Handle<M> t = v;
+    v = x.v;
+    x.v = t;
+  }
+  //
+  void set(const M& x)
+  {
+    qassert(not is_copy);
+    if (v.p == NULL) {
+      v.p = (M*)alloc_mem(sizeof(M));
+    }
+    v() = x;
+  }
+  //
+  const box<M>& operator=(const box<M>& vp)
+  {
+    qassert(not is_copy);
+    set(vp());
+    return *this;
+  }
+  //
+  qacc const M& operator()() const
+  {
+    return v();
+  }
+  qacc M& operator()()
+  {
+    return v();
+  }
+  //
+  qacc bool null() const { return v.null(); }
+};
+
+template <class M>
+void clear(box<M>& v)
+{
+  v.clear();
+}
+
+template <class M>
+qacc void qswap(box<M>& v1, box<M>& v2)
+{
+  v1.swap(v2);
+}
+
+template <class M>
+qacc Vector<M> get_data(const box<M>& v)
+{
+  if (not v.null()) {
+    return get_data_one_elem(v());
+  } else {
+    return Vector<M>();
+  }
+}
+
+template <class M>
+qacc void set_zero(box<M>& v)
+{
+  if (not v.null()) {
+    set_zero(v());
+  }
 }
 
 }  // namespace qlat

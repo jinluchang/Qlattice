@@ -109,8 +109,8 @@ struct FieldSelection {
     prob = 0.0;
     f_local_idx.init();
     n_elems = 0;
-    clear(ranks);
-    clear(indices);
+    ranks.init();
+    indices.init();
   }
   //
   FieldSelection() { init(); }
@@ -191,16 +191,19 @@ inline void set_field_selection(FieldSelection& fsel,
 
 template <class M>
 struct SelectedField {
+  // Avoid copy constructor when possible
+  // (it is likely not be what you think it is)
+  //
   bool initialized;
-  vector<Geometry> geo;
   long n_elems;
+  box<Geometry> geo;
   vector<M> field;
   //
   void init()
   {
     initialized = false;
-    clear(geo);
-    clear(field);
+    geo.init();
+    field.init();
   }
   void init(const Geometry& geo_, const long n_elems_, const int multiplicity)
   {
@@ -211,7 +214,7 @@ struct SelectedField {
     } else {
       init();
       initialized = true;
-      geo.resize(1, geo_remult(geo_, multiplicity));
+      geo.set(geo_remult(geo_, multiplicity));
       n_elems = n_elems_;
       field.resize(n_elems * multiplicity);
       if (1 == get_field_init()) {
@@ -232,7 +235,7 @@ struct SelectedField {
     } else {
       init();
       initialized = true;
-      geo.resize(1, geo_remult(fsel.f_rank.geo(), multiplicity));
+      geo.set(geo_remult(fsel.f_rank.geo(), multiplicity));
       n_elems = fsel.n_elems;
       field.resize(n_elems * multiplicity);
       if (1 == get_field_init()) {

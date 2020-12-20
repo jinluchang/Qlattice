@@ -300,7 +300,7 @@ struct GaugeTransformInverter
 // the result should be the same as invert with gf_fix where
 // gf_fix is: gf_apply_gauge_transformation(gf_fix, gf, gt);
 {
-  vector<Geometry> geo;
+  box<Geometry> geo;
   FermionAction fa;
   GaugeField gf;
   //
@@ -315,7 +315,7 @@ struct GaugeTransformInverter
   //
   void init()
   {
-    clear(geo);
+    geo.init();
     fa.init();
     gf.init();
     inv.init();
@@ -328,8 +328,7 @@ struct GaugeTransformInverter
     inv.init(inv_);
     gt = gt_;
     gt_invert(gt_inv, gt);
-    clear(geo);
-    geo.resize(1, inv().geo());
+    geo.set(inv().geo());
     fa = inv().fa;
     gf = inv().gf;
   }

@@ -43,7 +43,7 @@ struct LowModesInfo {
 struct LowModes {
   bool initialized;
   LowModesInfo lmi;
-  std::vector<double> eigen_values;
+  vector<double> eigen_values;
   CompressedEigenSystemInfo cesi;
   CompressedEigenSystemBases cesb;
   CompressedEigenSystemCoefs cesc;
@@ -54,7 +54,7 @@ struct LowModes {
   {
     initialized = false;
     lmi.init();
-    clear(eigen_values);
+    eigen_values.init();
     cesi.init();
     cesb.init();
     cesc.init();
@@ -208,7 +208,7 @@ inline long save_low_modes_decompress(LowModes& lm, const std::string& path)
     FILE* fp = qopen(fn, "w");
     qassert(fp != NULL);
     displayln(ssprintf("%ld", lm.eigen_values.size()), fp);
-    for (size_t i = 0; i < lm.eigen_values.size(); ++i) {
+    for (long i = 0; i < lm.eigen_values.size(); ++i) {
       displayln(ssprintf("%.20lE", lm.eigen_values[i]), fp);
     }
     qclose(fp);
@@ -421,7 +421,7 @@ struct InverterParams {
 };
 
 struct InverterDomainWall {
-  vector<Geometry> geo;
+  box<Geometry> geo;
   FermionAction fa;
   GaugeField gf;
   InverterParams ip;
@@ -431,7 +431,7 @@ struct InverterDomainWall {
   //
   void init()
   {
-    clear(geo);
+    geo.init();
     fa.init();
     gf.init();
     ip.init();
@@ -442,8 +442,7 @@ struct InverterDomainWall {
   void setup(const GaugeField& gf_, const FermionAction& fa_)
   {
     TIMER_VERBOSE("Inv::setup(gf,fa)");
-    clear(geo);
-    geo.resize(1, geo_reform(gf_.geo()));
+    geo.set(geo_reform(gf_.geo()));
     gf.init();
     set_left_expanded_gauge_field(gf, gf_);
     fa = fa_;
@@ -454,8 +453,7 @@ struct InverterDomainWall {
              const InverterParams& ip_)
   {
     TIMER_VERBOSE("Inv::setup(gf,fa)");
-    clear(geo);
-    geo.resize(1, geo_reform(gf_.geo()));
+    geo.set(geo_reform(gf_.geo()));
     gf.init();
     set_left_expanded_gauge_field(gf, gf_);
     fa = fa_;
@@ -466,8 +464,7 @@ struct InverterDomainWall {
   void setup(const GaugeField& gf_, const FermionAction& fa_, LowModes& lm_)
   {
     TIMER_VERBOSE("Inv::setup(gf,fa,lm)");
-    clear(geo);
-    geo.resize(1, geo_reform(gf_.geo()));
+    geo.set(geo_reform(gf_.geo()));
     gf.init();
     set_left_expanded_gauge_field(gf, gf_);
     fa = fa_;

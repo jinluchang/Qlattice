@@ -17,8 +17,11 @@ inline int& get_field_init();
 
 template <class M>
 struct Field {
+  // Avoid copy constructor when possible
+  // (it is likely not be what you think it is)
+  //
   bool initialized;
-  vector<Geometry> geo;
+  box<Geometry> geo;
   vector<M> field;
   //
   virtual const std::string& cname()
@@ -30,15 +33,15 @@ struct Field {
   virtual void init()
   {
     initialized = false;
-    clear(geo);
-    clear(field);
+    geo.init();
+    field.init();
   }
   virtual void init(const Geometry& geo_)
   {
     if (!initialized) {
       TIMER("Field::init(geo)");
       init();
-      geo.resize(1, geo_);
+      geo.set(geo_);
       field.resize(geo().local_volume_expanded() * geo().multiplicity);
       if (1 == get_field_init()) {
         set_zero(*this);
@@ -57,7 +60,7 @@ struct Field {
     if (!initialized) {
       TIMER("Field::init(geo,mult)");
       init();
-      geo.resize(1, geo_remult(geo_, multiplicity_));
+      geo.set(geo_remult(geo_, multiplicity_));
       field.resize(geo().local_volume_expanded() * geo().multiplicity);
       if (1 == get_field_init()) {
         set_zero(*this);
