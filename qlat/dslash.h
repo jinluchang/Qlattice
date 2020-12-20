@@ -519,14 +519,14 @@ inline void multiply_m_dwf_no_comm(FermionField5d& out,
   qassert(fa.mobius_scale == 1.0);
   qassert((int)fa.bs.size() == fa.ls);
   qassert((int)fa.cs.size() == fa.ls);
-  const std::array<SpinMatrix, 4>& gammas =
+  const array<SpinMatrix, 4>& gammas =
       SpinMatrixConstants::get_cps_gammas();
   const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
   const SpinMatrix& unit = SpinMatrixConstants::get_unit();
   const SpinMatrix p_p = (ComplexT)0.5 * (unit + gamma5);
   const SpinMatrix p_m = (ComplexT)0.5 * (unit - gamma5);
-  std::array<SpinMatrix, 4> p_mu_p;
-  std::array<SpinMatrix, 4> p_mu_m;
+  array<SpinMatrix, 4> p_mu_p;
+  array<SpinMatrix, 4> p_mu_m;
   for (int mu = 0; mu < 4; ++mu) {
     p_mu_p[mu] = (ComplexT)0.5 * (unit + gammas[mu]);
     p_mu_m[mu] = (ComplexT)0.5 * (unit - gammas[mu]);
@@ -589,11 +589,11 @@ inline void multiply_wilson_d_no_comm(FermionField5d& out,
   set_zero(out);
   const int ls = in.geo.multiplicity;
   qassert(out.geo.multiplicity == ls);
-  const std::array<SpinMatrix, 4>& gammas =
+  const array<SpinMatrix, 4>& gammas =
       SpinMatrixConstants::get_cps_gammas();
   const SpinMatrix& unit = SpinMatrixConstants::get_unit();
-  std::array<SpinMatrix, 4> p_mu_p;
-  std::array<SpinMatrix, 4> p_mu_m;
+  array<SpinMatrix, 4> p_mu_p;
+  array<SpinMatrix, 4> p_mu_m;
   for (int mu = 0; mu < 4; ++mu) {
     p_mu_p[mu] = (ComplexT)0.5 * (unit + gammas[mu]);
     p_mu_m[mu] = (ComplexT)0.5 * (unit - gammas[mu]);
@@ -1045,11 +1045,11 @@ inline void multiply_wilson_d_e_o_no_comm(FermionField5d& out,
   qassert(is_matching_geo(out.geo, in.geo));
   qassert(out.geo.eo != in.geo.eo);
   qassert(out.geo.eo == 1 or out.geo.eo == 2);
-  const std::array<SpinMatrix, 4>& gammas =
+  const array<SpinMatrix, 4>& gammas =
       SpinMatrixConstants::get_cps_gammas();
   const SpinMatrix& unit = SpinMatrixConstants::get_unit();
-  std::array<SpinMatrix, 4> p_mu_p;
-  std::array<SpinMatrix, 4> p_mu_m;
+  array<SpinMatrix, 4> p_mu_p;
+  array<SpinMatrix, 4> p_mu_m;
   for (int mu = 0; mu < 4; ++mu) {
     p_mu_p[mu] = (ComplexT)0.5 * (unit + gammas[mu]);
     p_mu_m[mu] = (ComplexT)0.5 * (unit - gammas[mu]);
@@ -1095,11 +1095,11 @@ inline void multiply_wilson_ddag_e_o_no_comm(FermionField5d& out,
   qassert(is_matching_geo(out.geo, in.geo));
   qassert(out.geo.eo != in.geo.eo);
   qassert(out.geo.eo == 1 or out.geo.eo == 2);
-  const std::array<SpinMatrix, 4>& gammas =
+  const array<SpinMatrix, 4>& gammas =
       SpinMatrixConstants::get_cps_gammas();
   const SpinMatrix& unit = SpinMatrixConstants::get_unit();
-  std::array<SpinMatrix, 4> p_mu_p;
-  std::array<SpinMatrix, 4> p_mu_m;
+  array<SpinMatrix, 4> p_mu_p;
+  array<SpinMatrix, 4> p_mu_m;
   for (int mu = 0; mu < 4; ++mu) {
     p_mu_p[mu] = (ComplexT)0.5 * (unit + gammas[mu]);
     p_mu_m[mu] = (ComplexT)0.5 * (unit - gammas[mu]);

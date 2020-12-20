@@ -881,7 +881,7 @@ inline long index_from_coordinate_perp_dir(const Coordinate& coor,
                                            const Coordinate& size,
                                            const int dir)
 {
-  std::array<int, 3> dirs;
+  array<int, 3> dirs;
   int cur_dir = 0;
   for (int i = 0; i < 4; ++i) {
     if (i != dir) {
@@ -898,7 +898,7 @@ inline Coordinate coordinate_from_index_perp_dir(long index,
                                                  const int dir,
                                                  const int coor_dir)
 {
-  std::array<int, 3> dirs;
+  array<int, 3> dirs;
   int cur_dir = 0;
   for (int i = 0; i < 4; ++i) {
     if (i != dir) {

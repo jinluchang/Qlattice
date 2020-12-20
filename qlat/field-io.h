@@ -14,8 +14,8 @@
 namespace qlat
 {  //
 
-typedef std::array<Complex, 6> MatrixTruncatedSU3;
-typedef std::array<Complex, 9> MatrixSU3;
+typedef array<Complex, 6> MatrixTruncatedSU3;
+typedef array<Complex, 9> MatrixSU3;
 
 class rePort
 {

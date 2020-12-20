@@ -10,7 +10,7 @@ inline void set_local_va_current(Vector<WilsonMatrix> fc,
                                  const WilsonMatrix& prop_b)
 // ->- prop_a ->- op ->- inv_prop_b ->-
 {
-  const std::array<SpinMatrix, 8>& va_ms = get_va_matrices();
+  const array<SpinMatrix, 8>& va_ms = get_va_matrices();
   const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
   const WilsonMatrix inv_prop_b =
       gamma5 * (WilsonMatrix)matrix_adjoint(prop_b) * gamma5;

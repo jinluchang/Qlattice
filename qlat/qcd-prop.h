@@ -7,7 +7,7 @@ namespace qlat
 
 template <class T>
 WilsonMatrixT<T> make_wilson_matrix_from_vectors(
-    const std::array<ConstHandle<WilsonVectorT<T> >, 4 * NUM_COLOR>& cols)
+    const array<ConstHandle<WilsonVectorT<T> >, 4 * NUM_COLOR>& cols)
 {
   WilsonMatrixT<T> ret;
   for (int i = 0; i < 4 * NUM_COLOR; ++i) {
@@ -32,7 +32,7 @@ void set_propagator_from_fermion_fields(
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
-    std::array<ConstHandle<WilsonVectorT<T> >, 4 * NUM_COLOR> cols;
+    array<ConstHandle<WilsonVectorT<T> >, 4 * NUM_COLOR> cols;
     for (int k = 0; k < 4 * NUM_COLOR; ++k) {
       cols[k].init(ffs[k].get_elem(xl));
     }
@@ -195,7 +195,7 @@ void smear_propagator(Propagator4dT<T>& prop, const GaugeFieldT<T>& gf1,
           : geo_resize(geo, Coordinate(1, 1, 1, 0), Coordinate(1, 1, 1, 0));
   const int n_avg = smear_in_time_dir ? 8 : 6;
   const int dir_limit = smear_in_time_dir ? 4 : 3;
-  std::array<Complex, 8> mom_factors;
+  array<Complex, 8> mom_factors;
   for (int i = 0; i < 8; ++i) {
     const int dir = i - 4;
     const double phase = dir >= 0 ? mom[dir] : -mom[-dir - 1];
@@ -456,7 +456,7 @@ void free_mom_invert(Propagator4dT<T>& sol, const Propagator4dT<T>& src,
   for (long index = 0; index < geo.local_volume(); ++index) {
     Coordinate kl = geo.coordinate_from_index(index);
     Coordinate kg = geo.coordinate_g_from_l(kl);
-    std::array<double, DIMN> kk, ks;
+    array<double, DIMN> kk, ks;
     double p2 = 0.0;
     double wp = 1.0 - m5;
     SpinMatrixT<T> pg;

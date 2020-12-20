@@ -16,7 +16,7 @@ qacc void unitarize(ColorMatrixT<T>& cm)
 }
 
 qacc ColorMatrixT<> make_anti_hermitian_matrix(
-    const std::array<double, 8>& basis)
+    const array<double, 8>& basis)
 {
   qassert(3 == NUM_COLOR);
   ColorMatrixT<> m;
@@ -43,12 +43,12 @@ qacc ColorMatrixT<> make_anti_hermitian_matrix(
   return m;
 }
 
-qacc std::array<double, 8> basis_projection_anti_hermitian_matrix(
+qacc array<double, 8> basis_projection_anti_hermitian_matrix(
     const ColorMatrix& m)
 // m is a tr_less_anti_hermitian_matrix
 {
   const Array<double, 18> p(m.d());
-  std::array<double, 8> basis;
+  array<double, 8> basis;
   basis[0] = p[3];
   basis[1] = p[2];
   basis[2] = 0.5 * (p[1] - p[9]);
@@ -69,7 +69,7 @@ qacc ColorMatrixT<> make_g_rand_anti_hermitian_matrix(RngState& rs,
 //  exp[- Tr(mat^2)/(2 sigma**2)]
 {
   const double s = sigma / std::sqrt(2);
-  std::array<double, 8> a;
+  array<double, 8> a;
   for (int i = 0; i < 8; ++i) {
     a[i] = g_rand_gen(rs, 0.0, s);
   }
@@ -156,9 +156,9 @@ struct ColorMatrixConstants {
   // except the norm of T^a matrices: tr(T^a T^b) = -2 \delta^{a,b}
   //
   ColorMatrix unit;
-  std::array<ColorMatrix, 8> ts;
+  array<ColorMatrix, 8> ts;
   AdjointColorMatrix aunit;
-  std::array<AdjointColorMatrix, 8> f;
+  array<AdjointColorMatrix, 8> f;
   //
   // qacc ColorMatrixConstants() { init(); }
   //
@@ -166,7 +166,7 @@ struct ColorMatrixConstants {
   {
     set_unit(unit);
     for (int a = 0; a < 8; ++a) {
-      std::array<double, 8> basis;
+      array<double, 8> basis;
       set_zero(basis);
       basis[a] = 1.0;
       ts[a] = make_anti_hermitian_matrix(basis);
@@ -175,7 +175,7 @@ struct ColorMatrixConstants {
     for (int a = 0; a < 8; ++a) {
       for (int b = 0; b < 8; ++b) {
         const ColorMatrix m = ts[a] * ts[b] - ts[b] * ts[a];
-        std::array<double, 8> basis = basis_projection_anti_hermitian_matrix(m);
+        array<double, 8> basis = basis_projection_anti_hermitian_matrix(m);
         for (int c = 0; c < 8; ++c) {
           f[c](a, b) = basis[c];
         }
@@ -190,7 +190,7 @@ struct ColorMatrixConstants {
       qassert(qnorm(m - ts[a]) < 1e-20);
     }
     for (int a = 0; a < 8; ++a) {
-      std::array<double, 8> basis;
+      array<double, 8> basis;
       set_zero(basis);
       basis[a] = 1.0;
       qassert(qnorm(make_anti_hermitian_matrix(basis) - ts[a]) < 1e-20);
@@ -214,7 +214,7 @@ struct ColorMatrixConstants {
     ColorMatrix x = make_g_rand_anti_hermitian_matrix(rs, 1.0);
     qassert(qnorm(x - make_tr_less_anti_herm_matrix(x)) < 1e-20);
     AdjointColorMatrix adx = make_adjoint_representation(x);
-    std::array<double, 8> basis = basis_projection_anti_hermitian_matrix(x);
+    array<double, 8> basis = basis_projection_anti_hermitian_matrix(x);
     for (int a = 0; a < 8; ++a) {
       for (int b = 0; b < 8; ++b) {
         Complex sum = 0.0;
@@ -227,7 +227,7 @@ struct ColorMatrixConstants {
     const double coef = 0.2;
     const AdjointColorMatrix exp_adx = make_matrix_exp(coef * adx);
     for (int b = 0; b < 8; ++b) {
-      std::array<double, 8> basis_b;
+      array<double, 8> basis_b;
       for (int a = 0; a < 8; ++a) {
         basis_b[a] = exp_adx(a, b);
       }
@@ -256,7 +256,7 @@ struct ColorMatrixConstants {
   //
   static const ColorMatrix& get_unit() { return get_instance().unit; }
   //
-  static const std::array<ColorMatrix, 8>& get_ts()
+  static const array<ColorMatrix, 8>& get_ts()
   {
     return get_instance().ts;
   }
@@ -266,7 +266,7 @@ struct ColorMatrixConstants {
     return get_instance().aunit;
   }
   //
-  static const std::array<AdjointColorMatrix, 8>& get_f()
+  static const array<AdjointColorMatrix, 8>& get_f()
   {
     return get_instance().f;
   }
@@ -274,8 +274,8 @@ struct ColorMatrixConstants {
 
 qacc AdjointColorMatrix make_adjoint_representation(const ColorMatrix& m)
 {
-  const std::array<AdjointColorMatrix, 8>& f = ColorMatrixConstants::get_f();
-  const std::array<double, 8> basis = basis_projection_anti_hermitian_matrix(m);
+  const array<AdjointColorMatrix, 8>& f = ColorMatrixConstants::get_f();
+  const array<double, 8> basis = basis_projection_anti_hermitian_matrix(m);
   AdjointColorMatrix am;
   set_zero(am);
   for (int a = 0; a < 8; ++a) {
@@ -307,7 +307,7 @@ qacc AdjointColorMatrix make_diff_exp_map(const ColorMatrix& m,
 qacc AdjointColorMatrix make_diff_exp_map_diff_ref(const ColorMatrix& m,
                                                    const int a)
 {
-  const std::array<ColorMatrix, 8>& ts = ColorMatrixConstants::get_ts();
+  const array<ColorMatrix, 8>& ts = ColorMatrixConstants::get_ts();
   const double eps = 1e-4;
   const ColorMatrix m_p = m + (Complex)eps * ts[a];
   const ColorMatrix m_n = m - (Complex)eps * ts[a];
@@ -320,7 +320,7 @@ qacc AdjointColorMatrix make_diff_exp_map_diff(const AdjointColorMatrix& am,
                                                const int a,
                                                const int max_order = 20)
 {
-  const std::array<AdjointColorMatrix, 8>& f = ColorMatrixConstants::get_f();
+  const array<AdjointColorMatrix, 8>& f = ColorMatrixConstants::get_f();
   const AdjointColorMatrix& unit = ColorMatrixConstants::get_aunit();
   AdjointColorMatrix t2 = -am;
   AdjointColorMatrix dt2 = f[a];

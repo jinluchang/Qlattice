@@ -15,7 +15,7 @@ struct array {
   //
   qacc void fill(const M& x)
   {
-    for (int i = 0; i < N; ++i) {
+    for (unsigned long i = 0; i < N; ++i) {
       v[i] = x;
     }
   }
@@ -30,7 +30,7 @@ struct array {
 template <class M, unsigned long N>
 qacc bool operator<(const array<M, N>& a1, const array<M, N>& a2)
 {
-  for (int i = 0; i < N; ++i) {
+  for (unsigned long i = 0; i < N; ++i) {
     if (a1[i] < a2[i]) {
       return true;
     } else if (a1[i] > a2[i]) {
@@ -43,7 +43,7 @@ qacc bool operator<(const array<M, N>& a1, const array<M, N>& a2)
 template <class M, unsigned long N>
 qacc bool operator<=(const array<M, N>& a1, const array<M, N>& a2)
 {
-  for (int i = 0; i < N; ++i) {
+  for (unsigned long i = 0; i < N; ++i) {
     if (a1[i] < a2[i]) {
       return true;
     } else if (a1[i] > a2[i]) {

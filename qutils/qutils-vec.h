@@ -7,33 +7,33 @@ namespace qlat
 {  //
 
 template <class M>
-std::array<M, 0> make_array()
+array<M, 0> make_array()
 {
-  std::array<M, 0> arr;
+  array<M, 0> arr;
   return arr;
 }
 
 template <class M>
-std::array<M, 1> make_array(const M& x)
+array<M, 1> make_array(const M& x)
 {
-  std::array<M, 1> arr;
+  array<M, 1> arr;
   arr[0] = x;
   return arr;
 }
 
 template <class M>
-std::array<M, 2> make_array(const M& x, const M& x1)
+array<M, 2> make_array(const M& x, const M& x1)
 {
-  std::array<M, 2> arr;
+  array<M, 2> arr;
   arr[0] = x;
   arr[1] = x1;
   return arr;
 }
 
 template <class M>
-std::array<M, 3> make_array(const M& x, const M& x1, const M& x2)
+array<M, 3> make_array(const M& x, const M& x1, const M& x2)
 {
-  std::array<M, 3> arr;
+  array<M, 3> arr;
   arr[0] = x;
   arr[1] = x1;
   arr[2] = x2;
@@ -41,9 +41,9 @@ std::array<M, 3> make_array(const M& x, const M& x1, const M& x2)
 }
 
 template <class M>
-std::array<M, 4> make_array(const M& x, const M& x1, const M& x2, const M& x3)
+array<M, 4> make_array(const M& x, const M& x1, const M& x2, const M& x3)
 {
-  std::array<M, 4> arr;
+  array<M, 4> arr;
   arr[0] = x;
   arr[1] = x1;
   arr[2] = x2;
@@ -52,10 +52,10 @@ std::array<M, 4> make_array(const M& x, const M& x1, const M& x2, const M& x3)
 }
 
 template <class M>
-std::array<M, 5> make_array(const M& x, const M& x1, const M& x2, const M& x3,
+array<M, 5> make_array(const M& x, const M& x1, const M& x2, const M& x3,
                             const M& x4)
 {
-  std::array<M, 5> arr;
+  array<M, 5> arr;
   arr[0] = x;
   arr[1] = x1;
   arr[2] = x2;
@@ -65,10 +65,10 @@ std::array<M, 5> make_array(const M& x, const M& x1, const M& x2, const M& x3,
 }
 
 template <class M>
-std::array<M, 6> make_array(const M& x, const M& x1, const M& x2, const M& x3,
+array<M, 6> make_array(const M& x, const M& x1, const M& x2, const M& x3,
                             const M& x4, const M& x5)
 {
-  std::array<M, 6> arr;
+  array<M, 6> arr;
   arr[0] = x;
   arr[1] = x1;
   arr[2] = x2;
@@ -79,10 +79,10 @@ std::array<M, 6> make_array(const M& x, const M& x1, const M& x2, const M& x3,
 }
 
 template <class M>
-std::array<M, 7> make_array(const M& x, const M& x1, const M& x2, const M& x3,
+array<M, 7> make_array(const M& x, const M& x1, const M& x2, const M& x3,
                             const M& x4, const M& x5, const M& x6)
 {
-  std::array<M, 7> arr;
+  array<M, 7> arr;
   arr[0] = x;
   arr[1] = x1;
   arr[2] = x2;
@@ -94,10 +94,10 @@ std::array<M, 7> make_array(const M& x, const M& x1, const M& x2, const M& x3,
 }
 
 template <class M>
-std::array<M, 8> make_array(const M& x, const M& x1, const M& x2, const M& x3,
+array<M, 8> make_array(const M& x, const M& x1, const M& x2, const M& x3,
                             const M& x4, const M& x5, const M& x6, const M& x7)
 {
-  std::array<M, 8> arr;
+  array<M, 8> arr;
   arr[0] = x;
   arr[1] = x1;
   arr[2] = x2;
@@ -110,11 +110,11 @@ std::array<M, 8> make_array(const M& x, const M& x1, const M& x2, const M& x3,
 }
 
 template <class M>
-std::array<M, 9> make_array(const M& x, const M& x1, const M& x2, const M& x3,
+array<M, 9> make_array(const M& x, const M& x1, const M& x2, const M& x3,
                             const M& x4, const M& x5, const M& x6, const M& x7,
                             const M& x8)
 {
-  std::array<M, 9> arr;
+  array<M, 9> arr;
   arr[0] = x;
   arr[1] = x1;
   arr[2] = x2;
@@ -128,11 +128,11 @@ std::array<M, 9> make_array(const M& x, const M& x1, const M& x2, const M& x3,
 }
 
 template <class M>
-std::array<M, 10> make_array(const M& x, const M& x1, const M& x2, const M& x3,
+array<M, 10> make_array(const M& x, const M& x1, const M& x2, const M& x3,
                              const M& x4, const M& x5, const M& x6, const M& x7,
                              const M& x8, const M& x9)
 {
-  std::array<M, 10> arr;
+  array<M, 10> arr;
   arr[0] = x;
   arr[1] = x1;
   arr[2] = x2;
@@ -162,7 +162,7 @@ struct Vector {
     n = vec.n;
   }
   template <int N>
-  Vector<M>(const std::array<M, N>& arr)
+  Vector<M>(const array<M, N>& arr)
   {
     p = (M*)arr.data();
     n = arr.size();
@@ -231,7 +231,7 @@ struct Array {
     qassert(N == vec.size());
     p = vec.p;
   }
-  Array<M, N>(const std::array<M, N>& arr) { p = (M*)arr.data(); }
+  Array<M, N>(const array<M, N>& arr) { p = (M*)arr.data(); }
   Array<M, N>(const M* p_) { p = (M*)p_; }
   Array<M, N>(const M& x)
   {
@@ -290,7 +290,7 @@ Vector<M> get_data(Vector<M> vec)
 }
 
 template <class M, unsigned long N>
-Vector<M> get_data(const std::array<M, N>& vec)
+Vector<M> get_data(const array<M, N>& vec)
 {
   return Vector<M>((M*)vec.data(), vec.size());
 }
@@ -430,13 +430,13 @@ inline void from_big_endian_64(char* str, const size_t len)
 }
 
 template <class M, int N>
-void assign(std::array<M, N>& vec, const Array<M, N>& src)
+void assign(array<M, N>& vec, const Array<M, N>& src)
 {
   std::memcpy((void*)vec.data(), (void*)src.data(), src.data_size());
 }
 
 template <class M, int N>
-void assign(std::array<M, N>& vec, const Vector<M>& src)
+void assign(array<M, N>& vec, const Vector<M>& src)
 {
   qassert(N == src.size());
   std::memcpy((void*)vec.data(), (void*)src.data(), src.data_size());
@@ -519,7 +519,7 @@ inline bool is_integer(const std::vector<M>& v)
 }
 
 template <class M, unsigned long N>
-inline bool is_integer(const std::array<M, N>& v)
+inline bool is_integer(const array<M, N>& v)
 {
   for (int i = 0; i < N; ++i) {
     if (!is_integer(v[i])) {
@@ -604,10 +604,10 @@ Vector<M> operator*=(Vector<M> v, const Complex factor)
 }
 
 template <class M, unsigned long N>
-std::array<M, N> operator+(const std::array<M, N>& v1,
-                           const std::array<M, N>& v2)
+array<M, N> operator+(const array<M, N>& v1,
+                           const array<M, N>& v2)
 {
-  std::array<M, N> ret;
+  array<M, N> ret;
   for (unsigned long i = 0; i < N; ++i) {
     ret[i] = v1[i] + v2[i];
   }
@@ -615,10 +615,10 @@ std::array<M, N> operator+(const std::array<M, N>& v1,
 }
 
 template <class M, unsigned long N>
-std::array<M, N> operator-(const std::array<M, N>& v1,
-                           const std::array<M, N>& v2)
+array<M, N> operator-(const array<M, N>& v1,
+                           const array<M, N>& v2)
 {
-  std::array<M, N> ret;
+  array<M, N> ret;
   for (unsigned long i = 0; i < N; ++i) {
     ret[i] = v1[i] - v2[i];
   }

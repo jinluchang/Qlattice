@@ -8,8 +8,8 @@
 namespace qlat
 {  //
 
-struct Coordinate : public std::array<int, DIMN> {
-  qacc Coordinate() { std::array<int, DIMN>::fill(0); }
+struct Coordinate : public array<int, DIMN> {
+  qacc Coordinate() { array<int, DIMN>::fill(0); }
 
   qacc Coordinate(int first, int second, int third, int fourth)
   {

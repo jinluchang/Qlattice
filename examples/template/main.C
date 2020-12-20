@@ -130,7 +130,7 @@ inline bool compute(const std::string& job_tag)
 int main(int argc, char* argv[])
 {
   using namespace qlat;
-  const std::array<std::string, 1> job_tags =
+  const array<std::string, 1> job_tags =
       make_array<std::string>("free-4nt8");
   std::vector<Coordinate> size_node_list;
   size_node_list.push_back(Coordinate(2,2,2,4));

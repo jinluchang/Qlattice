@@ -192,7 +192,7 @@ inline void set_local_current_from_props(FieldM<WilsonMatrix, 4>& cf,
   TIMER_VERBOSE("set_local_current_from_props");
   const Geometry geo = geo_reform(prop1.geo);
   qassert(geo == geo_reform(prop2.geo));
-  const std::array<SpinMatrix, 4>& gammas =
+  const array<SpinMatrix, 4>& gammas =
       SpinMatrixConstants::get_cps_gammas();
   const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
   cf.init(geo);

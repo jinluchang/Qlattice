@@ -268,14 +268,14 @@ struct SpinMatrixT : MatrixT<4, T> {
 template <class T = ComplexT>
 struct SpinMatrixConstantsT {
   SpinMatrixT<T> unit;
-  std::array<SpinMatrixT<T>, 4>
+  array<SpinMatrixT<T>, 4>
       gammas;  // Not using CPS's convention, but a more standard one.
-  std::array<SpinMatrixT<T>, 4> cps_gammas;  // CPS's convention gamma matrices
+  array<SpinMatrixT<T>, 4> cps_gammas;  // CPS's convention gamma matrices
   SpinMatrixT<T> gamma5;                     // Same as CPS's gamma5
-  std::array<SpinMatrixT<T>, 3> cap_sigmas;
-  std::array<SpinMatrixT<T>, 3> cps_cap_sigmas;  // CPS's convention sigmas
-  std::array<SpinMatrixT<T>, 16> gms;
-  std::array<SpinMatrixT<T>, 16> cps_gms;
+  array<SpinMatrixT<T>, 3> cap_sigmas;
+  array<SpinMatrixT<T>, 3> cps_cap_sigmas;  // CPS's convention sigmas
+  array<SpinMatrixT<T>, 16> gms;
+  array<SpinMatrixT<T>, 16> cps_gms;
   //
   qacc SpinMatrixConstantsT() { init(); }
   //
@@ -362,19 +362,19 @@ struct SpinMatrixConstantsT {
     qassert(0 <= mu && mu < 4);
     return get_instance().gammas[mu];
   }
-  static const std::array<SpinMatrixT<T>, 4>& get_gammas()
+  static const array<SpinMatrixT<T>, 4>& get_gammas()
   {
     return get_instance().gammas;
   }
-  static const std::array<SpinMatrixT<T>, 4>& get_cps_gammas()
+  static const array<SpinMatrixT<T>, 4>& get_cps_gammas()
   {
     return get_instance().cps_gammas;
   }
-  static const std::array<SpinMatrixT<T>, 16>& get_gms()
+  static const array<SpinMatrixT<T>, 16>& get_gms()
   {
     return get_instance().gms;
   }
-  static const std::array<SpinMatrixT<T>, 16>& get_cps_gms()
+  static const array<SpinMatrixT<T>, 16>& get_cps_gms()
   {
     return get_instance().cps_gms;
   }
@@ -386,11 +386,11 @@ struct SpinMatrixConstantsT {
   {
     return get_instance().cap_sigmas[i];
   }
-  static const std::array<SpinMatrixT<T>, 3>& get_cap_sigmas()
+  static const array<SpinMatrixT<T>, 3>& get_cap_sigmas()
   {
     return get_instance().cap_sigmas;
   }
-  static const std::array<SpinMatrixT<T>, 3>& get_cps_cap_sigmas()
+  static const array<SpinMatrixT<T>, 3>& get_cps_cap_sigmas()
   {
     return get_instance().cps_cap_sigmas;
   }

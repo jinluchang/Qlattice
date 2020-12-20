@@ -4,7 +4,6 @@
 #include <iostream>
 
 using namespace qlat;
-using namespace std;
 
 void simple_tests()
 {
@@ -74,9 +73,9 @@ void simple_tests()
 
 void show_matrix()
 {
-  const std::array<SpinMatrix, 16>& cps_gms =
+  const qlat::array<SpinMatrix, 16>& cps_gms =
       SpinMatrixConstants::get_cps_gms();
-  const std::array<SpinMatrix, 4>& gammas =
+  const qlat::array<SpinMatrix, 4>& gammas =
       SpinMatrixConstants::get_cps_gammas();
   const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
   for (int i = 0; i < 16; ++i) {

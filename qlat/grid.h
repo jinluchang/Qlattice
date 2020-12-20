@@ -120,11 +120,11 @@ void grid_convert(Grid::LatticeGaugeFieldF& ggf, const GaugeField& gf)
     Grid::Coordinate coor = grid_convert(xl);
     const Vector<ColorMatrix> ms = gf.get_elems_const(xl);
     LorentzColourMatrixF gms;
-    std::array<ComplexF, sizeof(LorentzColourMatrixF) / sizeof(ComplexF)>& fs =
-        (std::array<ComplexF, sizeof(LorentzColourMatrixF) / sizeof(ComplexF)>&)
+    array<ComplexF, sizeof(LorentzColourMatrixF) / sizeof(ComplexF)>& fs =
+        (array<ComplexF, sizeof(LorentzColourMatrixF) / sizeof(ComplexF)>&)
             gms;
-    std::array<ComplexT, sizeof(LorentzColourMatrixF) / sizeof(ComplexF)>& ds =
-        *((std::array<ComplexT, sizeof(LorentzColourMatrixF) /
+    array<ComplexT, sizeof(LorentzColourMatrixF) / sizeof(ComplexF)>& ds =
+        *((array<ComplexT, sizeof(LorentzColourMatrixF) /
                                     sizeof(ComplexF)>*)ms.data());
     qassert(sizeof(LorentzColourMatrixF) ==
             ms.data_size() / sizeof(ComplexT) * sizeof(ComplexF));
@@ -148,12 +148,12 @@ void grid_convert(FermionField5d& ff, const Grid::LatticeFermionF& gff)
     const Coordinate xl = geo.coordinate_from_index(index);
     Grid::Coordinate coor = grid_convert(xl, 0);
     Vector<WilsonVector> wvs = ff.get_elems(xl);
-    std::array<ComplexF, sizeof(WilsonVector) / sizeof(ComplexT)> fs;
+    array<ComplexF, sizeof(WilsonVector) / sizeof(ComplexT)> fs;
     for (int m = 0; m < geo.multiplicity; ++m) {
       coor[0] = m;
       peekLocalSite(fs, gff, coor);
-      std::array<ComplexT, sizeof(WilsonVector) / sizeof(ComplexT)>& ds =
-          (std::array<ComplexT, sizeof(WilsonVector) / sizeof(ComplexT)>&)
+      array<ComplexT, sizeof(WilsonVector) / sizeof(ComplexT)>& ds =
+          (array<ComplexT, sizeof(WilsonVector) / sizeof(ComplexT)>&)
               wvs[m];
       for (int k = 0; k < sizeof(WilsonVector) / sizeof(ComplexT); ++k) {
         ds[k] = fs[k];
@@ -172,11 +172,11 @@ void grid_convert(Grid::LatticeFermionF& gff, const FermionField5d& ff)
     const Coordinate xl = geo.coordinate_from_index(index);
     Grid::Coordinate coor = grid_convert(xl, 0);
     const Vector<WilsonVector> wvs = ff.get_elems_const(xl);
-    std::array<ComplexF, sizeof(WilsonVector) / sizeof(ComplexT)> fs;
+    array<ComplexF, sizeof(WilsonVector) / sizeof(ComplexT)> fs;
     for (int m = 0; m < geo.multiplicity; ++m) {
       coor[0] = m;
-      const std::array<ComplexT, sizeof(WilsonVector) / sizeof(ComplexT)>& ds =
-          (const std::array<ComplexT, sizeof(WilsonVector) / sizeof(ComplexT)>&)
+      const array<ComplexT, sizeof(WilsonVector) / sizeof(ComplexT)>& ds =
+          (const array<ComplexT, sizeof(WilsonVector) / sizeof(ComplexT)>&)
               wvs[m];
       for (int k = 0; k < sizeof(WilsonVector) / sizeof(ComplexT); ++k) {
         fs[k] = ds[k];

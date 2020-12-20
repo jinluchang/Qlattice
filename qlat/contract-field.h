@@ -60,13 +60,13 @@ void rescale_field_with_psel_fsel_distribution(Field<M>& f,
   }
 }
 
-inline std::array<SpinMatrix, 8>& get_va_matrices()
+inline array<SpinMatrix, 8>& get_va_matrices()
 {
   static bool initialized = false;
-  static std::array<SpinMatrix, 8> ms;
+  static array<SpinMatrix, 8> ms;
   if (not initialized) {
     initialized = true;
-    const std::array<SpinMatrix, 16>& gms = SpinMatrixConstants::get_cps_gms();
+    const array<SpinMatrix, 16>& gms = SpinMatrixConstants::get_cps_gms();
     ms[0] = gms[1];
     ms[1] = gms[2];
     ms[2] = gms[4];
@@ -138,7 +138,7 @@ inline void contract_meson_vv_unshifted_acc_x(
     const Coordinate& xg_x, const long xg_x_idx, const Coordinate& xg_y,
     const long xg_y_psel_idx, const int t_wall, const bool exact)
 {
-  const std::array<SpinMatrix, 8>& va_ms = get_va_matrices();
+  const array<SpinMatrix, 8>& va_ms = get_va_matrices();
   const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
   if (exact) {
     qassert(wsp1.exact_tslice_mask[t_wall]);
@@ -290,7 +290,7 @@ inline void contract_meson_vv_meson_unshifted_acc_x(
     const Coordinate& xg_y, const long xg_y_psel_idx, const int t_wall_snk,
     const bool exact_snk, const int t_wall_src, const bool exact_src)
 {
-  const std::array<SpinMatrix, 8>& va_ms = get_va_matrices();
+  const array<SpinMatrix, 8>& va_ms = get_va_matrices();
   const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
   if (exact_src) {
     qassert(wsp1.exact_tslice_mask[t_wall_src]);
@@ -491,7 +491,7 @@ inline void contract_chvp(SelectedField<Complex>& chvp,
                           const FieldSelection& fsel)
 {
   TIMER_VERBOSE("contract_chvp");
-  const std::array<SpinMatrix, 8>& va_ms = get_va_matrices();
+  const array<SpinMatrix, 8>& va_ms = get_va_matrices();
   const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
   qassert(fsel.n_elems == prop1_x_y.n_elems);
   qassert(fsel.n_elems == prop2_x_y.n_elems);
@@ -531,10 +531,10 @@ inline LatData meson_snk_src_shift(const LatData& ld, const int shift)
 #pragma omp parallel for collapse(2)
   for (int tsnk = 0; tsnk < t_size; ++tsnk) {
     for (int tsrc = 0; tsrc < t_size; ++tsrc) {
-      const std::array<int, 2> idx = make_array<int>(tsnk, tsrc);
+      const array<int, 2> idx = make_array<int>(tsnk, tsrc);
       const int tsnk_s = mod(tsnk + shift, t_size);
       const int tsrc_s = mod(tsrc + shift, t_size);
-      const std::array<int, 2> idx_s = make_array<int>(tsnk_s, tsrc_s);
+      const array<int, 2> idx_s = make_array<int>(tsnk_s, tsrc_s);
       lat_data_cget(ld_s, idx_s)[0] = lat_data_cget_const(ld, idx)[0];
     }
   }
@@ -569,7 +569,7 @@ inline void contract_meson_chvp_acc(FieldM<Complex, 8 * 8>& mchvp,
       t_src = mod(xt - tsep, total_site[3]);
       t_snk = mod(yt + tsep, total_site[3]);
     }
-    const std::array<int, 2> idx = make_array<int>(t_snk, t_src);
+    const array<int, 2> idx = make_array<int>(t_snk, t_src);
     const Complex mss = lat_data_cget_const(ld_meson_snk_src_1_2, idx)[0];
     Vector<Complex> fv = mchvp.get_elems(xl);
     const Vector<Complex> fv0 = chvp_3_4.get_elems_const(xl);

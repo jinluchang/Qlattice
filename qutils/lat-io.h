@@ -215,7 +215,7 @@ inline LatDim lat_dim_number(const std::string& name, const long start,
 
 template <unsigned long N>
 LatDim lat_dim_string(const std::string& name,
-                      const std::array<std::string, N>& is)
+                      const array<std::string, N>& is)
 {
   LatDim dim;
   dim.name = name;
@@ -255,7 +255,7 @@ template <class VecS>
 long lat_data_offset(const LatInfo& info, const VecS& idx)
 // will return offset at the level the idx specify
 // VecS can be std::vector<std::string> or std::vector<long>
-// or can be std::array of certain length
+// or can be array of certain length
 {
   assert((long)idx.size() <= (long)info.size());
   long ret = 0;
@@ -439,7 +439,7 @@ Vector<Complex> lat_data_cget_const(const LatData& ld, const VecS& idx)
 
 inline Vector<Complex> lat_data_cget(LatData& ld)
 {
-  std::array<int, 0> idx;
+  array<int, 0> idx;
   return lat_data_cget(ld, idx);
 }
 
@@ -447,7 +447,7 @@ inline Vector<Complex> lat_data_cget_const(const LatData& ld)
 // Be cautious about the const property
 // 改不改靠自觉
 {
-  std::array<int, 0> idx;
+  array<int, 0> idx;
   return lat_data_cget_const(ld, idx);
 }
 

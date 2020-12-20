@@ -167,7 +167,7 @@ inline double clf_topology_density(const CloverLeafField& clf,
 // sum of the density of the topological charge Q
 {
   const Vector<ColorMatrix> v = clf.get_elems_const(xl);
-  std::array<ColorMatrix, 6> arr;
+  array<ColorMatrix, 6> arr;
   for (int i = 0; i < 6; ++i) {
     arr[i] = (ComplexT)0.5 * (v[i] - matrix_adjoint(v[i]));
   }

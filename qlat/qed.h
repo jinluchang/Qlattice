@@ -77,7 +77,7 @@ inline void set_mom_stochastic_qed_field_feynman(Field<T>& f,
     const long gindex = geo.g_index_from_g_coordinate(kg);
     RngState rst = rs.newtype(gindex);
     double s2 = 0.0;
-    std::array<double, DIMN> kk;
+    array<double, DIMN> kk;
     for (int i = 0; i < DIMN; i++) {
       const Coordinate total_site = geo.total_site();
       kk[i] = 2.0 * PI * smod(kg[i], total_site[i]) / (double)total_site[i];
@@ -125,7 +125,7 @@ inline void set_mom_stochastic_qed_field_mass(Field<T>& f, const Geometry& geo,
     const long gindex = geo.g_index_from_g_coordinate(kg);
     RngState rst = rs.newtype(gindex);
     double s2 = sqr(mass);
-    std::array<double, DIMN> kk;
+    array<double, DIMN> kk;
     for (int i = 0; i < DIMN; i++) {
       const Coordinate total_site = geo.total_site();
       kk[i] = 2.0 * PI * smod(kg[i], total_site[i]) / (double)total_site[i];
@@ -152,7 +152,7 @@ inline void set_stochastic_qed_field_mass(Field<T>& f, const Geometry& geo,
 }
 
 inline void prop_mom_photon_invert(QedGaugeField& egf,
-                                   const std::array<double, DIMN>& momtwist)
+                                   const array<double, DIMN>& momtwist)
 // Feynman Gauge
 // All spatial zero mode removed.
 // egf in momentum space.
@@ -162,9 +162,9 @@ inline void prop_mom_photon_invert(QedGaugeField& egf,
   for (long index = 0; index < geo.local_volume(); ++index) {
     Coordinate kl = geo.coordinate_from_index(index);
     Coordinate kg = geo.coordinate_g_from_l(kl);
-    std::array<double, DIMN> kk;
+    array<double, DIMN> kk;
     // FIXME unused 'ks'
-    // std::array<double,DIMN> ks;
+    // array<double,DIMN> ks;
     double s2 = 0.0;
     for (int i = 0; i < DIMN; i++) {
       const Coordinate total_site = geo.total_site();
@@ -186,7 +186,7 @@ inline void prop_mom_photon_invert(QedGaugeField& egf,
 }
 
 inline void prop_photon_invert(QedGaugeField& egf,
-                               const std::array<double, DIMN>& momtwist)
+                               const array<double, DIMN>& momtwist)
 // Feynman Gauge
 // All spatial zero mode removed.
 // egf in coordinate space.
@@ -201,16 +201,16 @@ inline void prop_photon_invert(QedGaugeField& egf,
 
 inline void prop_mom_complex_scaler_invert(
     ComplexScalerField& csf, const double mass,
-    const std::array<double, DIMN>& momtwist)
+    const array<double, DIMN>& momtwist)
 {
   TIMER("prop_mom_complex_scaler_invert");
   const Geometry& geo = csf.geo;
   for (long index = 0; index < geo.local_volume(); ++index) {
     Coordinate kl = geo.coordinate_from_index(index);
     Coordinate kg = geo.coordinate_g_from_l(kl);
-    std::array<double, DIMN> kk;
+    array<double, DIMN> kk;
     // FIXME my compiler says unused variable 'ks'
-    // std::array<double,DIMN> ks;
+    // array<double,DIMN> ks;
     double s2 = 0.0;
     for (int i = 0; i < DIMN; i++) {
       Coordinate total_site = geo.total_site();
@@ -227,7 +227,7 @@ inline void prop_mom_complex_scaler_invert(
 
 inline void prop_complex_scaler_invert(ComplexScalerField& csf,
                                        const double mass,
-                                       const std::array<double, DIMN>& momtwist)
+                                       const array<double, DIMN>& momtwist)
 {
   TIMER_VERBOSE("prop_complex_scaler_invert");
   const Geometry& geo = csf.geo;
@@ -244,7 +244,7 @@ inline double acosh(const double x)
 
 template <class T>
 void prop_mom_spin_propagator4d(SpinPropagator4dT<T>& sp4d, const double mass,
-                                const std::array<double, DIMN>& momtwist)
+                                const array<double, DIMN>& momtwist)
 // DWF infinite L_s
 // M_5 = 1.0
 {
@@ -255,7 +255,7 @@ void prop_mom_spin_propagator4d(SpinPropagator4dT<T>& sp4d, const double mass,
   for (long index = 0; index < geo.local_volume(); ++index) {
     Coordinate kl = geo.coordinate_from_index(index);
     Coordinate kg = geo.coordinate_g_from_l(kl);
-    std::array<double, DIMN> kk, ks;
+    array<double, DIMN> kk, ks;
     double p2 = 0.0;
     double wp = 1.0 - m5;
     SpinMatrixT<T> pg;
@@ -297,7 +297,7 @@ void prop_mom_spin_propagator4d(SpinPropagator4dT<T>& sp4d, const double mass,
 
 template <class T>
 void prop_spin_propagator4d(SpinPropagator4dT<T>& sp4d, const double mass,
-                            const std::array<double, DIMN>& momtwist)
+                            const array<double, DIMN>& momtwist)
 {
   TIMER_VERBOSE("prop_spin_propagator4d");
   const Geometry& geo = sp4d.geo;

@@ -13,7 +13,7 @@
 
 // #define SKIP_ASSERT
 
-#ifdef SKIP_ASSERT || QLAT_USE_GPU
+#if defined SKIP_ASSERT || defined QLAT_USE_GPU
 #define qassert(x) assert(true)
 #else
 #define qassert(x)                            \
@@ -152,7 +152,7 @@ inline void set_zero(double& x) { x = 0; }
 inline void set_zero(Complex& x) { x = 0; }
 
 template <class M, unsigned long N>
-void set_zero(std::array<M, N>& arr)
+void set_zero(array<M, N>& arr)
 {
   long size = N * sizeof(M);
   std::memset((void*)arr.data(), 0, size);
@@ -174,7 +174,7 @@ inline double qnorm(const double& x) { return x * x; }
 inline double qnorm(const double& x, const double& y) { return x * y; }
 
 template <class T, size_t N>
-double qnorm(const std::array<T, N>& mm)
+double qnorm(const array<T, N>& mm)
 {
   double sum = 0.0;
   for (size_t i = 0; i < N; ++i) {
@@ -217,7 +217,7 @@ bool operator==(const std::vector<M>& v1, const std::vector<M>& v2)
 }
 
 template <class M, int N>
-bool operator==(const std::array<M, N>& v1, const std::array<M, N>& v2)
+bool operator==(const array<M, N>& v1, const array<M, N>& v2)
 {
   return is_equal_vec(v1, v2);
 }

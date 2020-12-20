@@ -18,7 +18,7 @@ bool qisnan(const std::complex<T>& arg)
 }
 
 template <class M, unsigned long N>
-inline bool qisnan(const std::array<M, N>& arr)
+inline bool qisnan(const array<M, N>& arr)
 {
   for (int i = 0; i < (int)N; ++i) {
     if (qisnan(arr[i])) {
@@ -39,9 +39,9 @@ inline bool qisnan(const std::vector<M>& arr)
   return false;
 }
 
-struct CoordinateD : public std::array<double, DIMN> {
+struct CoordinateD : public array<double, DIMN> {
   CoordinateD() { memset(this, 0, sizeof(CoordinateD)); }
-  CoordinateD(const std::array<double, DIMN>& arr)
+  CoordinateD(const array<double, DIMN>& arr)
   {
     CoordinateD& c = *this;
     c = arr;

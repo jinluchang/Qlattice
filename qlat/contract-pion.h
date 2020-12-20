@@ -163,16 +163,16 @@ inline LatData contract_two_point_function(const SelProp& prop1,
 // prop2(x)^\dagger gamma5) gms[op_snk] ) 0 <= tsep < total_site[3]
 {
   TIMER_VERBOSE("contract_two_point_function");
-  const std::array<SpinMatrix, 16>& gms = SpinMatrixConstants::get_cps_gms();
+  const array<SpinMatrix, 16>& gms = SpinMatrixConstants::get_cps_gms();
   const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
   const Geometry& geo = prop1.geo;
   const Coordinate total_site = geo.total_site();
-  std::vector<std::array<WilsonMatrix, 16> > gwm_ts(omp_get_max_threads() *
+  std::vector<array<WilsonMatrix, 16> > gwm_ts(omp_get_max_threads() *
                                                     total_site[3]);
   set_zero(gwm_ts);
 #pragma omp parallel
   {
-    std::vector<std::array<WilsonMatrix, 16> > wm_ts(total_site[3]);
+    std::vector<array<WilsonMatrix, 16> > wm_ts(total_site[3]);
     set_zero(wm_ts);
 #pragma omp for
     for (long idx = 0; idx < (long)fsel.indices.size(); ++idx) {
@@ -198,7 +198,7 @@ inline LatData contract_two_point_function(const SelProp& prop1,
       }
     }
   }
-  std::vector<std::array<Complex, 16 * 16> > m_ts(total_site[3]);
+  std::vector<array<Complex, 16 * 16> > m_ts(total_site[3]);
   set_zero(m_ts);
 #pragma omp parallel for
   for (int t = 0; t < total_site[3]; ++t) {
@@ -230,11 +230,11 @@ inline LatData contract_two_point_wall_snk_function(
 // prop2[t]^\dagger gamma5 gms[op_snk] ) 0 <= tsep < total_site[3]
 {
   TIMER_VERBOSE("contract_two_point_wall_snk_function");
-  const std::array<SpinMatrix, 16>& gms = SpinMatrixConstants::get_cps_gms();
+  const array<SpinMatrix, 16>& gms = SpinMatrixConstants::get_cps_gms();
   const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
   qassert((int)prop1.size() == total_site[3]);
   qassert((int)prop2.size() == total_site[3]);
-  std::vector<std::array<Complex, 16 * 16> > m_ts(total_site[3]);
+  std::vector<array<Complex, 16 * 16> > m_ts(total_site[3]);
   set_zero(m_ts);
 #pragma omp parallel for
   for (int t = 0; t < total_site[3]; ++t) {
@@ -379,7 +379,7 @@ inline LatData contract_three_point_function(const SelProp& prop_a,
 // wm_ab (type3)
 {
   TIMER("contract_three_point_function");
-  const std::array<SpinMatrix, 16>& gms = SpinMatrixConstants::get_cps_gms();
+  const array<SpinMatrix, 16>& gms = SpinMatrixConstants::get_cps_gms();
   const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
   const Geometry& geo = fsel.f_rank.geo;
   const Coordinate total_site = geo.total_site();

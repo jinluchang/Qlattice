@@ -331,13 +331,13 @@ void save_gauge_field(const GaugeFieldT<T>& gf, const std::string& path,
   TIMER_VERBOSE_FLOPS("save_gauge_field");
   qassert(is_initialized(gf));
   const Geometry& geo = gf.geo;
-  FieldM<std::array<Complex, 6>, 4> gft;
+  FieldM<array<Complex, 6>, 4> gft;
   gft.init(geo);
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Vector<ColorMatrixT<T> > v = gf.get_elems_const(xl);
-    Vector<std::array<Complex, 6> > vt = gft.get_elems(xl);
+    Vector<array<Complex, 6> > vt = gft.get_elems(xl);
     for (int m = 0; m < geo.multiplicity; ++m) {
       vt[m][0] = v[m](0, 0);
       vt[m][1] = v[m](0, 1);
@@ -372,7 +372,7 @@ long load_gauge_field(GaugeFieldT<T>& gf, const std::string& path,
   Geometry geo;
   geo.init(gfi.total_site, 4);
   gf.init(geo);
-  FieldM<std::array<Complex, 6>, 4> gft;
+  FieldM<array<Complex, 6>, 4> gft;
   gft.init(geo);
   const long file_size = serial_read_field_par(
       gft, path, -get_data_size(gft) * get_num_node(), SEEK_END);
@@ -382,7 +382,7 @@ long load_gauge_field(GaugeFieldT<T>& gf, const std::string& path,
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
-    Vector<std::array<Complex, 6> > vt = gft.get_elems(xl);
+    Vector<array<Complex, 6> > vt = gft.get_elems(xl);
     if (big_endianness) {
       to_from_big_endian_64(get_data(vt));
     } else {
@@ -411,7 +411,7 @@ long load_gauge_field_par(GaugeFieldT<T>& gf, const std::string& path)
   displayln_info(fname + ssprintf(": '%s'.", path.c_str()));
   qassert(is_initialized(gf));
   const Geometry& geo = gf.geo;
-  FieldM<std::array<Complex, 6>, 4> gft;
+  FieldM<array<Complex, 6>, 4> gft;
   gft.init(geo);
   const long file_size = serial_read_field_par(
       gft, path, -get_data_size(gft) * get_num_node(), SEEK_END);
@@ -421,7 +421,7 @@ long load_gauge_field_par(GaugeFieldT<T>& gf, const std::string& path)
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
-    Vector<std::array<Complex, 6> > vt = gft.get_elems(xl);
+    Vector<array<Complex, 6> > vt = gft.get_elems(xl);
     to_from_big_endian_64(get_data(vt));
     Vector<ColorMatrixT<T> > v = gf.get_elems(xl);
     for (int m = 0; m < geo.multiplicity; ++m) {
@@ -446,7 +446,7 @@ inline long load_gauge_field_cps3x3(GaugeFieldT<Complex>& gf,
   displayln_info(fname + ssprintf(": '%s'.", path.c_str()));
   qassert(is_initialized(gf));
   const Geometry& geo = gf.geo;
-  FieldM<std::array<Complex, 9>, 4> gft;
+  FieldM<array<Complex, 9>, 4> gft;
   gft.init(geo);
   const long file_size = serial_read_field_par(
       gft, path, -get_data_size(gft) * get_num_node(), SEEK_END);
@@ -456,7 +456,7 @@ inline long load_gauge_field_cps3x3(GaugeFieldT<Complex>& gf,
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
-    Vector<std::array<Complex, 9> > vt = gft.get_elems(xl);
+    Vector<array<Complex, 9> > vt = gft.get_elems(xl);
     to_from_big_endian_64(get_data(vt));
     Vector<ColorMatrixT<Complex> > v = gf.get_elems(xl);
     for (int m = 0; m < geo.multiplicity; ++m) {
@@ -476,7 +476,7 @@ inline long load_gauge_field_milc(GaugeFieldT<Complex>& gf,
   displayln_info(fname + ssprintf(": '%s'.", path.c_str()));
   qassert(is_initialized(gf));
   const Geometry& geo = gf.geo;
-  FieldM<std::array<ComplexF, 9>, 4> gft;
+  FieldM<array<ComplexF, 9>, 4> gft;
   gft.init(geo);
   // ADJUST ME
   long file_size = 0;
@@ -491,7 +491,7 @@ inline long load_gauge_field_milc(GaugeFieldT<Complex>& gf,
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     Coordinate xl = geo.coordinate_from_index(index);
-    Vector<std::array<ComplexF, 9> > vt = gft.get_elems(xl);
+    Vector<array<ComplexF, 9> > vt = gft.get_elems(xl);
     to_from_big_endian_32((char*)vt.data(), vt.data_size());
     Vector<ColorMatrixT<Complex> > v = gf.get_elems(xl);
     for (int m = 0; m < geo.multiplicity; ++m) {

@@ -50,7 +50,7 @@ struct SprngSha256 {
   template <class Sseq>
   typename std::enable_if<std::is_class<Sseq>::value>::type seed(Sseq& q)
   {
-    std::array<uint32_t, 8> seq;
+    array<uint32_t, 8> seq;
     q.generate(seq.begin(), seq.end());
     reset(rs);
     for (size_t i = 0; i < seq.size(); ++i) {
