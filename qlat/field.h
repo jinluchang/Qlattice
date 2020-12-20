@@ -29,7 +29,6 @@ struct Field {
   //
   virtual void init()
   {
-    TIMER("Field::init()");
     initialized = false;
     geo.init();
     clear(field);
@@ -90,11 +89,6 @@ struct Field {
   }
   //
   Field<M>() { init(); }
-  Field<M>(const Field<M>& f)
-  {
-    qassert(false == f.initialized);
-    init();
-  }
   //
   const Field<M>& operator=(const Field<M>& f)
   {
@@ -115,25 +109,25 @@ struct Field {
     return *this;
   }
   //
-  M& get_elem(const long offset)
+  qacc M& get_elem(const long offset)
   {
     qassert(0 <= offset && offset < (long)field.size());
     return field[offset];
   }
-  const M& get_elem(const long offset) const
+  qacc const M& get_elem(const long offset) const
   {
     qassert(0 <= offset && offset < (long)field.size());
     return field[offset];
   }
   //
-  M& get_elem(const Coordinate& x, const int m)
+  qacc M& get_elem(const Coordinate& x, const int m)
   {
     qassert(geo.is_on_node(x));
     qassert(0 <= m && m < geo.multiplicity);
     const long offset = geo.offset_from_coordinate(x) + m;
     return get_elem(offset);
   }
-  const M& get_elem(const Coordinate& x, const int m) const
+  qacc const M& get_elem(const Coordinate& x, const int m) const
   {
     qassert(geo.is_on_node(x));
     qassert(0 <= m && m < geo.multiplicity);
@@ -141,41 +135,43 @@ struct Field {
     return get_elem(offset);
   }
   //
-  M& get_elem(const Coordinate& x)
+  qacc M& get_elem(const Coordinate& x)
   {
     qassert(1 == geo.multiplicity);
     return get_elem(x, 0);
   }
-  const M& get_elem(const Coordinate& x) const
+  qacc const M& get_elem(const Coordinate& x) const
   {
     qassert(1 == geo.multiplicity);
     return get_elem(x, 0);
   }
   //
-  Vector<M> get_elems(const Coordinate& x)
+  qacc Vector<M> get_elems(const Coordinate& x)
   {
     qassert(geo.is_on_node(x));
     const long offset = geo.offset_from_coordinate(x);
     return Vector<M>(&field[offset], geo.multiplicity);
   }
-  Vector<M> get_elems_const(const Coordinate& x) const
+  qacc Vector<M> get_elems_const(const Coordinate& x) const
   // Be cautious about the const property
   // 改不改靠自觉
   {
     if (not geo.is_on_node(x)) {
+#ifndef QLAT_USE_GPU
       displayln("Field::get_elems_const: x=" + show(x) + "\ngeo=" + show(geo));
+#endif
       qassert(geo.is_on_node(x));
     }
     const long offset = geo.offset_from_coordinate(x);
     return Vector<M>(&field[offset], geo.multiplicity);
   }
   //
-  Vector<M> get_elems(const long index)
+  qacc Vector<M> get_elems(const long index)
   // qassert(geo.is_only_local())
   {
     return Vector<M>(&field[index * geo.multiplicity], geo.multiplicity);
   }
-  Vector<M> get_elems_const(const long index) const
+  qacc Vector<M> get_elems_const(const long index) const
   // Be cautious about the const property
   // 改不改靠自觉
   // qassert(geo.is_only_local())
@@ -358,20 +354,10 @@ struct FieldM : Field<M> {
   }
   //
   FieldM<M, multiplicity>() { init(); }
-  FieldM<M, multiplicity>(const Field<M>& f)
-  {
-    qassert(false == f.initialized);
-    init();
-  }
-  FieldM<M, multiplicity>(const FieldM<M, multiplicity>& f)
-  {
-    qassert(false == f.initialized);
-    init();
-  }
 };
 
 template <class M>
-long get_data_size(const Field<M>& f)
+qacc long get_data_size(const Field<M>& f)
 // NOT including the expended parts, only local volume data size
 // only size on one node
 {

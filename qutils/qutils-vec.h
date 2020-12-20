@@ -7,14 +7,14 @@ namespace qlat
 {  //
 
 template <class M>
-array<M, 0> make_array()
+qacc array<M, 0> make_array()
 {
   array<M, 0> arr;
   return arr;
 }
 
 template <class M>
-array<M, 1> make_array(const M& x)
+qacc array<M, 1> make_array(const M& x)
 {
   array<M, 1> arr;
   arr[0] = x;
@@ -22,7 +22,7 @@ array<M, 1> make_array(const M& x)
 }
 
 template <class M>
-array<M, 2> make_array(const M& x, const M& x1)
+qacc array<M, 2> make_array(const M& x, const M& x1)
 {
   array<M, 2> arr;
   arr[0] = x;
@@ -31,7 +31,7 @@ array<M, 2> make_array(const M& x, const M& x1)
 }
 
 template <class M>
-array<M, 3> make_array(const M& x, const M& x1, const M& x2)
+qacc array<M, 3> make_array(const M& x, const M& x1, const M& x2)
 {
   array<M, 3> arr;
   arr[0] = x;
@@ -41,7 +41,7 @@ array<M, 3> make_array(const M& x, const M& x1, const M& x2)
 }
 
 template <class M>
-array<M, 4> make_array(const M& x, const M& x1, const M& x2, const M& x3)
+qacc array<M, 4> make_array(const M& x, const M& x1, const M& x2, const M& x3)
 {
   array<M, 4> arr;
   arr[0] = x;
@@ -52,7 +52,7 @@ array<M, 4> make_array(const M& x, const M& x1, const M& x2, const M& x3)
 }
 
 template <class M>
-array<M, 5> make_array(const M& x, const M& x1, const M& x2, const M& x3,
+qacc array<M, 5> make_array(const M& x, const M& x1, const M& x2, const M& x3,
                             const M& x4)
 {
   array<M, 5> arr;
@@ -65,7 +65,7 @@ array<M, 5> make_array(const M& x, const M& x1, const M& x2, const M& x3,
 }
 
 template <class M>
-array<M, 6> make_array(const M& x, const M& x1, const M& x2, const M& x3,
+qacc array<M, 6> make_array(const M& x, const M& x1, const M& x2, const M& x3,
                             const M& x4, const M& x5)
 {
   array<M, 6> arr;
@@ -79,7 +79,7 @@ array<M, 6> make_array(const M& x, const M& x1, const M& x2, const M& x3,
 }
 
 template <class M>
-array<M, 7> make_array(const M& x, const M& x1, const M& x2, const M& x3,
+qacc array<M, 7> make_array(const M& x, const M& x1, const M& x2, const M& x3,
                             const M& x4, const M& x5, const M& x6)
 {
   array<M, 7> arr;
@@ -94,7 +94,7 @@ array<M, 7> make_array(const M& x, const M& x1, const M& x2, const M& x3,
 }
 
 template <class M>
-array<M, 8> make_array(const M& x, const M& x1, const M& x2, const M& x3,
+qacc array<M, 8> make_array(const M& x, const M& x1, const M& x2, const M& x3,
                             const M& x4, const M& x5, const M& x6, const M& x7)
 {
   array<M, 8> arr;
@@ -110,7 +110,7 @@ array<M, 8> make_array(const M& x, const M& x1, const M& x2, const M& x3,
 }
 
 template <class M>
-array<M, 9> make_array(const M& x, const M& x1, const M& x2, const M& x3,
+qacc array<M, 9> make_array(const M& x, const M& x1, const M& x2, const M& x3,
                             const M& x4, const M& x5, const M& x6, const M& x7,
                             const M& x8)
 {
@@ -128,7 +128,7 @@ array<M, 9> make_array(const M& x, const M& x1, const M& x2, const M& x3,
 }
 
 template <class M>
-array<M, 10> make_array(const M& x, const M& x1, const M& x2, const M& x3,
+qacc array<M, 10> make_array(const M& x, const M& x1, const M& x2, const M& x3,
                              const M& x4, const M& x5, const M& x6, const M& x7,
                              const M& x8, const M& x9)
 {
@@ -151,18 +151,18 @@ struct Vector {
   M* p;
   long n;
   //
-  Vector<M>()
+  qacc Vector<M>()
   {
     p = NULL;
     n = 0;
   }
-  Vector<M>(const Vector<M>& vec)
+  qacc Vector<M>(const Vector<M>& vec)
   {
     p = vec.p;
     n = vec.n;
   }
   template <int N>
-  Vector<M>(const array<M, N>& arr)
+  qacc Vector<M>(const array<M, N>& arr)
   {
     p = (M*)arr.data();
     n = arr.size();
@@ -172,41 +172,43 @@ struct Vector {
     p = (M*)vec.data();
     n = vec.size();
   }
-  Vector<M>(const M* p_, const long n_)
+  qacc Vector<M>(const M* p_, const long n_)
   {
     p = (M*)p_;
     n = n_;
   }
-  Vector<M>(const M& x)
+  qacc Vector<M>(const M& x)
   {
     p = (M*)&x;
     n = 1;
   }
   //
-  const M& operator[](long i) const
+  qacc const M& operator[](long i) const
   {
     qassert(0 <= i && i < n);
     return p[i];
   }
-  M& operator[](long i)
+  qacc M& operator[](long i)
   {
     if (not(0 <= i && i < n)) {
+#ifndef QLAT_USE_GPU
       displayln(
           ssprintf("ERROR: expect: 0 <= i && i < n but: i=%d n=%d sizeof(M)=%d",
                    i, n, sizeof(M)));
+#endif
       qassert(false);
     }
     return p[i];
   }
   //
-  M* data() { return p; }
-  const M* data() const { return p; }
+  qacc M* data() { return p; }
+  qacc const M* data() const { return p; }
   //
-  long size() const { return n; }
+  qacc long size() const { return n; }
   //
-  long data_size() const { return n * sizeof(M); }
+  qacc long data_size() const { return n * sizeof(M); }
   //
-  const Vector<M>& operator=(const Vector<M>& v)
+  qacc const Vector<M>& operator=(const Vector<M>& v)
   {
     n = v.n;
     p = v.p;
@@ -215,7 +217,7 @@ struct Vector {
 };
 
 template <class M>
-void set_zero(Vector<M> vec)
+qacc void set_zero(Vector<M> vec)
 {
   std::memset((void*)vec.data(), 0, vec.data_size());
 }
@@ -224,45 +226,45 @@ template <class M, int N>
 struct Array {
   M* p;
   //
-  Array<M, N>() { p = NULL; }
-  Array<M, N>(const Array<M, N>& arr) { p = arr.p; }
-  Array<M, N>(const Vector<M>& vec)
+  qacc Array<M, N>() { p = NULL; }
+  qacc Array<M, N>(const Array<M, N>& arr) { p = arr.p; }
+  qacc Array<M, N>(const Vector<M>& vec)
   {
     qassert(N == vec.size());
     p = vec.p;
   }
-  Array<M, N>(const array<M, N>& arr) { p = (M*)arr.data(); }
-  Array<M, N>(const M* p_) { p = (M*)p_; }
-  Array<M, N>(const M& x)
+  qacc Array<M, N>(const array<M, N>& arr) { p = (M*)arr.data(); }
+  qacc Array<M, N>(const M* p_) { p = (M*)p_; }
+  qacc Array<M, N>(const M& x)
   {
     qassert(N == 1);
     p = (M*)&x;
   }
   //
-  const M& operator[](int i) const
+  qacc const M& operator[](int i) const
   {
     qassert(0 <= i && i < N);
     return p[i];
   }
-  M& operator[](int i)
+  qacc M& operator[](int i)
   {
     qassert(0 <= i && i < N);
     return p[i];
   }
   //
-  M* data() { return p; }
-  const M* data() const { return p; }
+  qacc M* data() { return p; }
+  qacc const M* data() const { return p; }
   //
-  int size() const { return N; }
+  qacc int size() const { return N; }
   //
-  long data_size() const { return N * sizeof(M); }
+  qacc long data_size() const { return N * sizeof(M); }
   //
-  const Array<M, N>& operator=(const Array<M, N>& v)
+  qacc const Array<M, N>& operator=(const Array<M, N>& v)
   {
     p = v.p;
     return *this;
   }
-  const Array<M, N>& operator=(const Vector<M>& v)
+  qacc const Array<M, N>& operator=(const Vector<M>& v)
   {
     qassert(N == v.size());
     p = v.p;
@@ -271,26 +273,26 @@ struct Array {
 };
 
 template <class M, int N>
-void set_zero(Array<M, N> arr)
+qacc void set_zero(Array<M, N> arr)
 {
   long size = N * sizeof(M);
   std::memset((void*)arr.data(), 0, size);
 }
 
 template <class M, int N>
-Vector<M> get_data(Array<M, N> arr)
+qacc Vector<M> get_data(Array<M, N> arr)
 {
   return Vector<M>(arr.data(), arr.size());
 }
 
 template <class M>
-Vector<M> get_data(Vector<M> vec)
+qacc Vector<M> get_data(Vector<M> vec)
 {
   return vec;
 }
 
 template <class M, unsigned long N>
-Vector<M> get_data(const array<M, N>& vec)
+qacc Vector<M> get_data(const array<M, N>& vec)
 {
   return Vector<M>((M*)vec.data(), vec.size());
 }
@@ -307,33 +309,33 @@ inline Vector<char> get_data(const std::string& str)
 }
 
 template <class M>
-Vector<M> get_data(const Handle<M>& h)
+qacc Vector<M> get_data(const Handle<M>& h)
 {
   return Vector<M>(h.p, 1);
 }
 
 template <class M>
-Vector<M> get_data(const ConstHandle<M>& h)
+qacc Vector<M> get_data(const ConstHandle<M>& h)
 {
   return Vector<M>(h.p, 1);
 }
 
 template <class M>
-Vector<M> get_data_one_elem(const M& x)
+qacc Vector<M> get_data_one_elem(const M& x)
 {
   return Vector<M>(&x, 1);
 }
 
-inline Vector<long> get_data(const long& x) { return get_data_one_elem(x); }
+qacc Vector<long> get_data(const long& x) { return get_data_one_elem(x); }
 
-inline Vector<double> get_data(const double& x) { return get_data_one_elem(x); }
+qacc Vector<double> get_data(const double& x) { return get_data_one_elem(x); }
 
-inline Vector<int> get_data(const int& x) { return get_data_one_elem(x); }
+qacc Vector<int> get_data(const int& x) { return get_data_one_elem(x); }
 
-inline Vector<float> get_data(const float& x) { return get_data_one_elem(x); }
+qacc Vector<float> get_data(const float& x) { return get_data_one_elem(x); }
 
 template <class T>
-double qnorm(const Vector<T>& mm)
+qacc double qnorm(const Vector<T>& mm)
 {
   double sum = 0.0;
   const long size = mm.size();
@@ -344,7 +346,7 @@ double qnorm(const Vector<T>& mm)
 }
 
 template <class T>
-double qnorm(const Vector<T>& m1, const Vector<T>& m2)
+qacc double qnorm(const Vector<T>& m1, const Vector<T>& m2)
 {
   double sum = 0.0;
   const long size = m1.size();
@@ -356,25 +358,25 @@ double qnorm(const Vector<T>& m1, const Vector<T>& m2)
 }
 
 template <class M>
-Vector<double> get_data_double(const M& v)
+qacc Vector<double> get_data_double(const M& v)
 {
   return Vector<double>(&v, sizeof(M) / sizeof(double));
 }
 
 template <class M>
-Vector<long> get_data_long(const M& v)
+qacc Vector<long> get_data_long(const M& v)
 {
   return Vector<long>(&v, sizeof(M) / sizeof(long));
 }
 
 template <class M>
-long get_data_size(const M& x)
+qacc long get_data_size(const M& x)
 {
   return get_data(x).data_size();
 }
 
 template <class T>
-double qnorm_double(const Vector<T>& m1, const Vector<T>& m2)
+qacc double qnorm_double(const Vector<T>& m1, const Vector<T>& m2)
 {
   const Vector<double> dm1((double*)m1.data(), m1.data_size() / sizeof(double));
   const Vector<double> dm2((double*)m2.data(), m2.data_size() / sizeof(double));
@@ -382,37 +384,37 @@ double qnorm_double(const Vector<T>& m1, const Vector<T>& m2)
 }
 
 template <class M>
-void to_from_little_endian_16(Vector<M> v)
+qacc void to_from_little_endian_16(Vector<M> v)
 {
   to_from_little_endian_16((void*)v.data(), v.data_size());
 }
 
 template <class M>
-void to_from_little_endian_32(Vector<M> v)
+qacc void to_from_little_endian_32(Vector<M> v)
 {
   to_from_little_endian_32((void*)v.data(), v.data_size());
 }
 
 template <class M>
-void to_from_little_endian_64(Vector<M> v)
+qacc void to_from_little_endian_64(Vector<M> v)
 {
   to_from_little_endian_64((void*)v.data(), v.data_size());
 }
 
 template <class M>
-void to_from_big_endian_16(Vector<M> v)
+qacc void to_from_big_endian_16(Vector<M> v)
 {
   to_from_big_endian_16((void*)v.data(), v.data_size());
 }
 
 template <class M>
-void to_from_big_endian_32(Vector<M> v)
+qacc void to_from_big_endian_32(Vector<M> v)
 {
   to_from_big_endian_32((void*)v.data(), v.data_size());
 }
 
 template <class M>
-void to_from_big_endian_64(Vector<M> v)
+qacc void to_from_big_endian_64(Vector<M> v)
 {
   to_from_big_endian_64((void*)v.data(), v.data_size());
 }
@@ -430,20 +432,20 @@ inline void from_big_endian_64(char* str, const size_t len)
 }
 
 template <class M, int N>
-void assign(array<M, N>& vec, const Array<M, N>& src)
+qacc void assign(array<M, N>& vec, const Array<M, N>& src)
 {
   std::memcpy((void*)vec.data(), (void*)src.data(), src.data_size());
 }
 
 template <class M, int N>
-void assign(array<M, N>& vec, const Vector<M>& src)
+qacc void assign(array<M, N>& vec, const Vector<M>& src)
 {
   qassert(N == src.size());
   std::memcpy((void*)vec.data(), (void*)src.data(), src.data_size());
 }
 
 template <class M, int N>
-void assign(std::vector<M>& vec, const Array<M, N>& src)
+qacc void assign(std::vector<M>& vec, const Array<M, N>& src)
 {
   vec.resize(src.size());
   std::memcpy((void*)vec.data(), (void*)src.data(), src.data_size());
@@ -457,41 +459,41 @@ void assign(std::vector<M>& vec, const Vector<M>& src)
 }
 
 template <class M>
-void assign(Vector<M> vec, const Vector<M>& src)
+qacc void assign(Vector<M> vec, const Vector<M>& src)
 {
   qassert(vec.size() == src.size());
   std::memcpy((void*)vec.data(), (void*)src.data(), src.data_size());
 }
 
 template <class M, class N>
-void assign(Vector<M> vec, const Vector<N>& src)
+qacc void assign(Vector<M> vec, const Vector<N>& src)
 {
   qassert(vec.data_size() == src.data_size());
   std::memcpy((void*)vec.data(), (void*)src.data(), src.data_size());
 }
 
 template <class M, int N>
-void assign(Vector<M> vec, const Array<M, N>& src)
+qacc void assign(Vector<M> vec, const Array<M, N>& src)
 {
   qassert(vec.size() == N);
   std::memcpy((void*)vec.data(), (void*)src.data(), src.data_size());
 }
 
 template <class M, int N>
-void assign(Array<M, N> vec, const Array<M, N>& src)
+qacc void assign(Array<M, N> vec, const Array<M, N>& src)
 {
   std::memcpy((void*)vec.data(), (void*)src.data(), src.data_size());
 }
 
 template <class M, int N>
-void assign(Array<M, N> vec, const Vector<M>& src)
+qacc void assign(Array<M, N> vec, const Vector<M>& src)
 {
   qassert(src.size() == N);
   std::memcpy((void*)vec.data(), (void*)src.data(), src.data_size());
 }
 
 template <class M, class N>
-void assign_truncate(M& x, const N& y)
+qacc void assign_truncate(M& x, const N& y)
 {
   if (sizeof(M) <= sizeof(N)) {
     std::memcpy((void*)&x, (void*)&y, sizeof(M));
@@ -501,14 +503,14 @@ void assign_truncate(M& x, const N& y)
   }
 }
 
-inline bool is_integer(const double& x)
+qacc bool is_integer(const double& x)
 {
   const double diff = x - (long)x;
   return 1e-6 > diff || diff > 1 - 1e-6;
 }
 
 template <class M>
-inline bool is_integer(const std::vector<M>& v)
+qacc bool is_integer(const std::vector<M>& v)
 {
   for (int i = 0; i < (int)v.size(); ++i) {
     if (!is_integer(v[i])) {
@@ -519,7 +521,7 @@ inline bool is_integer(const std::vector<M>& v)
 }
 
 template <class M, unsigned long N>
-inline bool is_integer(const array<M, N>& v)
+qacc bool is_integer(const array<M, N>& v)
 {
   for (int i = 0; i < N; ++i) {
     if (!is_integer(v[i])) {
@@ -530,7 +532,7 @@ inline bool is_integer(const array<M, N>& v)
 }
 
 template <class M, int N>
-Array<M, N> operator+=(Array<M, N> v, const Array<M, N> v1)
+qacc Array<M, N> operator+=(Array<M, N> v, const Array<M, N> v1)
 {
   for (int i = 0; i < N; ++i) {
     v.p[i] += v1.p[i];
@@ -539,7 +541,7 @@ Array<M, N> operator+=(Array<M, N> v, const Array<M, N> v1)
 }
 
 template <class M, int N>
-Array<M, N> operator-=(Array<M, N> v, const Array<M, N> v1)
+qacc Array<M, N> operator-=(Array<M, N> v, const Array<M, N> v1)
 {
   for (int i = 0; i < N; ++i) {
     v.p[i] -= v1.p[i];
@@ -548,7 +550,7 @@ Array<M, N> operator-=(Array<M, N> v, const Array<M, N> v1)
 }
 
 template <class M, int N>
-Array<M, N> operator*=(Array<M, N> v, const double factor)
+qacc Array<M, N> operator*=(Array<M, N> v, const double factor)
 {
   for (int i = 0; i < N; ++i) {
     v.p[i] *= factor;
@@ -557,7 +559,7 @@ Array<M, N> operator*=(Array<M, N> v, const double factor)
 }
 
 template <class M, int N>
-Array<M, N> operator*=(Array<M, N> v, const Complex factor)
+qacc Array<M, N> operator*=(Array<M, N> v, const Complex factor)
 {
   for (int i = 0; i < N; ++i) {
     v.p[i] *= factor;
@@ -566,7 +568,7 @@ Array<M, N> operator*=(Array<M, N> v, const Complex factor)
 }
 
 template <class M>
-Vector<M> operator+=(Vector<M> v, const Vector<M> v1)
+qacc Vector<M> operator+=(Vector<M> v, const Vector<M> v1)
 {
   qassert(v.size() == v1.size());
   for (long i = 0; i < v.size(); ++i) {
@@ -576,7 +578,7 @@ Vector<M> operator+=(Vector<M> v, const Vector<M> v1)
 }
 
 template <class M>
-Vector<M> operator-=(Vector<M> v, const Vector<M> v1)
+qacc Vector<M> operator-=(Vector<M> v, const Vector<M> v1)
 {
   qassert(v.size() == v1.size());
   for (long i = 0; i < v.size(); ++i) {
@@ -586,7 +588,7 @@ Vector<M> operator-=(Vector<M> v, const Vector<M> v1)
 }
 
 template <class M>
-Vector<M> operator*=(Vector<M> v, const double factor)
+qacc Vector<M> operator*=(Vector<M> v, const double factor)
 {
   for (long i = 0; i < v.size(); ++i) {
     v.p[i] *= factor;
@@ -595,7 +597,7 @@ Vector<M> operator*=(Vector<M> v, const double factor)
 }
 
 template <class M>
-Vector<M> operator*=(Vector<M> v, const Complex factor)
+qacc Vector<M> operator*=(Vector<M> v, const Complex factor)
 {
   for (long i = 0; i < v.size(); ++i) {
     v.p[i] *= factor;
@@ -604,8 +606,7 @@ Vector<M> operator*=(Vector<M> v, const Complex factor)
 }
 
 template <class M, unsigned long N>
-array<M, N> operator+(const array<M, N>& v1,
-                           const array<M, N>& v2)
+qacc array<M, N> operator+(const array<M, N>& v1, const array<M, N>& v2)
 {
   array<M, N> ret;
   for (unsigned long i = 0; i < N; ++i) {
@@ -615,8 +616,7 @@ array<M, N> operator+(const array<M, N>& v1,
 }
 
 template <class M, unsigned long N>
-array<M, N> operator-(const array<M, N>& v1,
-                           const array<M, N>& v2)
+qacc array<M, N> operator-(const array<M, N>& v1, const array<M, N>& v2)
 {
   array<M, N> ret;
   for (unsigned long i = 0; i < N; ++i) {
@@ -640,8 +640,8 @@ inline void random_permute(std::vector<M>& vec, const RngState& rs_)
 }
 
 template <class M>
-void set_u_rand_double(Vector<M> v, const RngState& rs, const double upper = 1.0,
-                      const double lower = -1.0)
+void set_u_rand_double(Vector<M> v, const RngState& rs,
+                       const double upper = 1.0, const double lower = -1.0)
 {
   RngState rsi = rs;
   Vector<double> dv((double*)v.data(), v.data_size() / sizeof(double));

@@ -33,7 +33,8 @@ struct Coordinate : public array<int, DIMN> {
 
 qacc bool operator==(const Coordinate &c1, const Coordinate &c2)
 {
-  return 0 == memcmp(&c1, &c2, sizeof(Coordinate));
+  return c1[0] == c2[0] and c1[1] == c2[1] and c1[2] == c2[2] and
+         c1[3] == c2[3];
 }
 
 qacc bool operator!=(const Coordinate &c1, const Coordinate &c2)
@@ -122,7 +123,7 @@ qacc int parity(const Coordinate &coor)
   return 2 - sum(coor) % 2;  // 2 for even, 1 for odd
 }
 
-qacc void regularize(Coordinate &coor, const Coordinate &regularizer)
+void regularize(Coordinate &coor, const Coordinate &regularizer)
 {
 #ifndef SUPPRESS_REG_COOR
   // #ifndef USE_SINGLE_NODE // SINGLE_NODE mode (or !USE_MULTI_NODE) does NOT

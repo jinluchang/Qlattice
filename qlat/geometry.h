@@ -7,7 +7,7 @@
 namespace qlat
 {  //
 
-inline int eo_from_coordinate(const Coordinate& xl)
+qacc int eo_from_coordinate(const Coordinate& xl)
 {
   return 2 - (xl[0] + xl[1] + xl[2] + xl[3] + 16 * 1024 * 1024) % 2;
 }
@@ -247,7 +247,7 @@ struct Geometry {
   //
   qacc Coordinate total_site() const { return node_site * geon.size_node; }
   //
-  qacc Coordinate global_size() const
+  Coordinate global_size() const
   {
     warn("use total_site()");
     return total_site();

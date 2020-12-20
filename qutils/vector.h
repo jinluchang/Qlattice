@@ -15,7 +15,7 @@ inline size_t& get_alignment()
 //
 // Should NOT change in the middle of the run.
 {
-  static size_t alignment = 16 * 1024;
+  static size_t alignment = 256;
   return alignment;
 }
 
@@ -68,7 +68,13 @@ struct MemCache {
     TIMER_VERBOSE_FLOPS("MemCache::gc()");
     timer.flops += mem_cache_size;
     for (auto iter = db.cbegin(); iter != db.cend(); ++iter) {
-      free(iter->second);
+      void* ptr = iter->second;
+#ifdef QLAT_USE_GPU
+      cudaError_t code = cudaFree(ptr);
+      qassert(code == cudaSuccess);
+#else
+      free(ptr);
+#endif
     }
     mem_cache_size = 0;
     db.clear();
@@ -83,6 +89,9 @@ inline MemCache& get_mem_cache()
 
 inline void* alloc_mem(const long min_size)
 {
+  if (min_size <= 0) {
+    return NULL;
+  }
   TIMER_FLOPS("alloc_mem");
   timer.flops += min_size;
   const size_t alignment = get_alignment();
@@ -95,7 +104,19 @@ inline void* alloc_mem(const long min_size)
   {
     TIMER_FLOPS("alloc_mem-alloc");
     timer.flops += min_size;
+#ifdef QLAT_USE_GPU
+    void* ptr = NULL;
+    cudaError_t code = cudaMallocManaged(&ptr, size);
+    if (not(code == cudaSuccess)) {
+      for (int i = 0; i < 10; ++i) {
+        displayln(fname + ssprintf(": i=%d error %d.", i, code));
+      }
+      usleep((useconds_t)(10.0 * 1.0e6));
+      qassert(code == cudaSuccess);
+    }
+#else
     void* ptr = aligned_alloc(alignment, size);
+#endif
     memset(ptr, 0, size);
     return ptr;
   }
@@ -113,29 +134,42 @@ inline void free_mem(void* ptr, const long min_size)
 
 template <class M>
 struct vector {
+  bool is_copy;  // do not free memory if is_copy=true
   Vector<M> v;
   //
-  vector() { qassert(v.p == NULL); }
-  vector(const vector<M>& vp)
+  vector()
   {
     qassert(v.p == NULL);
-    *this = vp;
+    is_copy = false;
+  }
+  vector(const vector<M>& vp)
+  {
+    is_copy = true;
+    this->v = vp.v;
   }
   vector(const long size)
   {
     qassert(v.p == NULL);
+    is_copy = false;
     resize(size);
   }
   vector(const long size, const M& x)
   {
     qassert(v.p == NULL);
+    is_copy = false;
     resize(size, x);
   }
   //
-  ~vector() { clear(); }
+  ~vector()
+  {
+    if (not is_copy) {
+      clear();
+    }
+  }
   //
   void clear()
   {
+    qassert(not is_copy);
     if (v.p != NULL) {
       free_mem(v.p, v.n * sizeof(M));
     }
@@ -145,6 +179,8 @@ struct vector {
   //
   qacc void swap(vector<M>& x)
   {
+    qassert(not is_copy);
+    qassert(not x.is_copy);
     Vector<M> t = v;
     v = x.v;
     x.v = t;
@@ -152,6 +188,7 @@ struct vector {
   //
   void resize(const long size)
   {
+    qassert(not is_copy);
     qassert(0 <= size);
     if (v.p == NULL) {
       v.p = (M*)alloc_mem(size * sizeof(M));
@@ -170,6 +207,7 @@ struct vector {
   }
   void resize(const long size, const M& x)
   {
+    qassert(not is_copy);
     qassert(0 <= size);
     if (v.p == NULL) {
       v.p = (M*)alloc_mem(size * sizeof(M));
@@ -195,6 +233,7 @@ struct vector {
   //
   const vector<M>& operator=(const vector<M>& vp)
   {
+    qassert(not is_copy);
     clear();
     resize(vp.size());
     std::memcpy(v.p, vp.v.p, v.n * sizeof(M));

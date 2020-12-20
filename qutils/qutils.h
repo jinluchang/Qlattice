@@ -13,8 +13,10 @@
 
 // #define SKIP_ASSERT
 
-#if defined SKIP_ASSERT || defined QLAT_USE_GPU
+#ifdef SKIP_ASSERT
 #define qassert(x) assert(true)
+#elif defined QLAT_USE_GPU
+#define qassert(x) assert(x)
 #else
 #define qassert(x)                            \
   {                                           \
@@ -44,15 +46,15 @@ void clear(std::vector<M>& vec)
   swap(empty, vec);
 }
 
-inline uint16_t flip_endian_16(uint16_t x) { return ((x >> 8)) | ((x << 8)); }
+qacc uint16_t flip_endian_16(uint16_t x) { return ((x >> 8)) | ((x << 8)); }
 
-inline uint32_t flip_endian_32(uint32_t x)
+qacc uint32_t flip_endian_32(uint32_t x)
 {
   return ((x >> 24)) | ((x >> 8) & 0x0000FF00) | ((x << 8) & 0x00FF0000) |
          ((x << 24));
 }
 
-inline uint64_t flip_endian_64(uint64_t x)
+qacc uint64_t flip_endian_64(uint64_t x)
 {
   return ((x >> 56)) | ((x >> 40) & 0xFF00) | ((x >> 24) & 0xFF0000) |
          ((x >> 8) & 0xFF000000) | ((x << 8) & 0xFF00000000) |
@@ -60,7 +62,7 @@ inline uint64_t flip_endian_64(uint64_t x)
          ((x << 56));
 }
 
-inline void flip_endian_16(void* str, const size_t len)
+qacc void flip_endian_16(void* str, const size_t len)
 {
   qassert(0 == len % 2);
   uint16_t* p = (uint16_t*)str;
@@ -69,7 +71,7 @@ inline void flip_endian_16(void* str, const size_t len)
   }
 }
 
-inline void flip_endian_32(void* str, const size_t len)
+qacc void flip_endian_32(void* str, const size_t len)
 {
   qassert(0 == len % 4);
   uint32_t* p = (uint32_t*)str;
@@ -78,7 +80,7 @@ inline void flip_endian_32(void* str, const size_t len)
   }
 }
 
-inline void flip_endian_64(void* str, const size_t len)
+qacc void flip_endian_64(void* str, const size_t len)
 {
   qassert(0 == len % 8);
   uint64_t* p = (uint64_t*)str;
@@ -87,7 +89,7 @@ inline void flip_endian_64(void* str, const size_t len)
   }
 }
 
-inline bool is_big_endian()
+qacc bool is_big_endian()
 {
 #if defined(__BYTE_ORDER) && (__BYTE_ORDER != 0) && \
     (__BYTE_ORDER == __BIG_ENDIAN)
@@ -97,9 +99,9 @@ inline bool is_big_endian()
 #endif
 }
 
-inline bool is_little_endian() { return not is_big_endian(); }
+qacc bool is_little_endian() { return not is_big_endian(); }
 
-inline void to_from_little_endian_16(void* str, const size_t len)
+qacc void to_from_little_endian_16(void* str, const size_t len)
 {
   qassert(0 == len % 2);
   if (is_big_endian()) {
@@ -107,7 +109,7 @@ inline void to_from_little_endian_16(void* str, const size_t len)
   }
 }
 
-inline void to_from_little_endian_32(void* str, const size_t len)
+qacc void to_from_little_endian_32(void* str, const size_t len)
 {
   qassert(0 == len % 4);
   if (is_big_endian()) {
@@ -115,7 +117,7 @@ inline void to_from_little_endian_32(void* str, const size_t len)
   }
 }
 
-inline void to_from_little_endian_64(void* str, const size_t len)
+qacc void to_from_little_endian_64(void* str, const size_t len)
 {
   qassert(0 == len % 8);
   if (is_big_endian()) {
@@ -123,7 +125,7 @@ inline void to_from_little_endian_64(void* str, const size_t len)
   }
 }
 
-inline void to_from_big_endian_16(void* str, const size_t len)
+qacc void to_from_big_endian_16(void* str, const size_t len)
 {
   qassert(0 == len % 2);
   if (is_little_endian()) {
@@ -131,7 +133,7 @@ inline void to_from_big_endian_16(void* str, const size_t len)
   }
 }
 
-inline void to_from_big_endian_32(void* str, const size_t len)
+qacc void to_from_big_endian_32(void* str, const size_t len)
 {
   qassert(0 == len % 4);
   if (is_little_endian()) {
@@ -139,7 +141,7 @@ inline void to_from_big_endian_32(void* str, const size_t len)
   }
 }
 
-inline void to_from_big_endian_64(void* str, const size_t len)
+qacc void to_from_big_endian_64(void* str, const size_t len)
 {
   qassert(0 == len % 8);
   if (is_little_endian()) {
@@ -147,20 +149,20 @@ inline void to_from_big_endian_64(void* str, const size_t len)
   }
 }
 
-inline void set_zero(double& x) { x = 0; }
+qacc void set_zero(double& x) { x = 0; }
 
-inline void set_zero(Complex& x) { x = 0; }
+qacc void set_zero(Complex& x) { x = 0; }
 
 template <class M, unsigned long N>
-void set_zero(array<M, N>& arr)
+qacc void set_zero(array<M, N>& arr)
 {
   long size = N * sizeof(M);
   std::memset((void*)arr.data(), 0, size);
 }
 
-inline void set_unit(double& x, const double& coef = 1.0) { x = coef; }
+qacc void set_unit(double& x, const double& coef = 1.0) { x = coef; }
 
-inline void set_unit(Complex& x, const Complex& coef = 1.0) { x = coef; }
+qacc void set_unit(Complex& x, const Complex& coef = 1.0) { x = coef; }
 
 template <class M>
 void set_zero(std::vector<M>& vec)
@@ -169,12 +171,12 @@ void set_zero(std::vector<M>& vec)
   std::memset((void*)vec.data(), 0, size);
 }
 
-inline double qnorm(const double& x) { return x * x; }
+qacc double qnorm(const double& x) { return x * x; }
 
-inline double qnorm(const double& x, const double& y) { return x * y; }
+qacc double qnorm(const double& x, const double& y) { return x * y; }
 
 template <class T, size_t N>
-double qnorm(const array<T, N>& mm)
+qacc double qnorm(const array<T, N>& mm)
 {
   double sum = 0.0;
   for (size_t i = 0; i < N; ++i) {
@@ -226,15 +228,15 @@ template <class M>
 struct Handle {
   M* p;
   //
-  Handle<M>() { init(); }
-  Handle<M>(M& obj) { init(obj); }
+  qacc Handle<M>() { init(); }
+  qacc Handle<M>(M& obj) { init(obj); }
   //
-  void init() { p = NULL; }
-  void init(M& obj) { p = (M*)&obj; }
+  qacc void init() { p = NULL; }
+  qacc void init(M& obj) { p = (M*)&obj; }
   //
-  bool null() const { return p == NULL; }
+  qacc bool null() const { return p == NULL; }
   //
-  M& operator()() const
+  qacc M& operator()() const
   {
     qassert(NULL != p);
     return *p;
@@ -245,16 +247,16 @@ template <class M>
 struct ConstHandle {
   const M* p;
   //
-  ConstHandle<M>() { init(); }
-  ConstHandle<M>(const M& obj) { init(obj); }
-  ConstHandle<M>(const Handle<M>& h) { init(h()); }
+  qacc ConstHandle<M>() { init(); }
+  qacc ConstHandle<M>(const M& obj) { init(obj); }
+  qacc ConstHandle<M>(const Handle<M>& h) { init(h()); }
   //
-  void init() { p = NULL; }
-  void init(const M& obj) { p = (M*)&obj; }
+  qacc void init() { p = NULL; }
+  qacc void init(const M& obj) { p = (M*)&obj; }
   //
-  bool null() const { return p == NULL; }
+  qacc bool null() const { return p == NULL; }
   //
-  const M& operator()() const
+  qacc const M& operator()() const
   {
     qassert(NULL != p);
     return *p;
@@ -357,8 +359,8 @@ double adaptive_simpson(const F& f, const double a, const double b,
   }
 }
 
-inline void split_work(long& start, long& size, const long total,
-                       const long num_worker, const long id_worker)
+qacc void split_work(long& start, long& size, const long total,
+                     const long num_worker, const long id_worker)
 {
   const long size_max = (total - 1) / num_worker + 1;
   start = std::min(id_worker * size_max, total);
@@ -366,7 +368,7 @@ inline void split_work(long& start, long& size, const long total,
   size = stop - start;
 }
 
-inline long find_worker(const long idx, const long total, const long num_worker)
+qacc long find_worker(const long idx, const long total, const long num_worker)
 {
   const long size_max = (total - 1) / num_worker + 1;
   return idx / size_max;
