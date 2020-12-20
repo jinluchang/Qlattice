@@ -511,7 +511,7 @@ inline ColorMatrix gf_avg_wilson_loop(const GaugeField& gf, const int l,
       gf_avg_wilson_line(gf, make_wilson_loop_path(Coordinate(l, 0, 0, 0), t)) +
       gf_avg_wilson_line(gf, make_wilson_loop_path(Coordinate(0, l, 0, 0), t)) +
       gf_avg_wilson_line(gf, make_wilson_loop_path(Coordinate(0, 0, l, 0), t));
-  return m / (ComplexT)3.0;
+  return m / ComplexT(3.0);
 }
 
 inline std::vector<Coordinate> spatial_permute_direction(const Coordinate& l)

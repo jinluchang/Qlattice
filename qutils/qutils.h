@@ -4,10 +4,10 @@
 #include <array>
 #endif
 
+#include <qutils/complex.h>
 #include <qutils/show.h>
 
 #include <cassert>
-#include <complex>
 #include <vector>
 
 // #define SKIP_ASSERT
@@ -28,13 +28,7 @@
 namespace qlat
 {  //
 
-typedef std::complex<double> Complex;
-
-typedef std::complex<float> ComplexF;
-
 const double PI = 3.141592653589793;
-
-const Complex ii(0, 1);
 
 template <class T>
 T sqr(const T& x)

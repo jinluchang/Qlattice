@@ -11,7 +11,8 @@
 #include <fstream>
 #include <iostream>
 
-QLAT_START_NAMESPACE
+namespace qlat
+{  //
 
 typedef std::array<Complex, 6> MatrixTruncatedSU3;
 typedef std::array<Complex, 9> MatrixSU3;
@@ -165,7 +166,7 @@ std::string field_hash_crc32(const qlat::Field<M> &origin)
             get_data(origin).size() * sizeof(M));
     }
     sync_node();
-    MPI_Bcast((void*)&hash, 4, MPI_BYTE, id_node, get_comm());
+    MPI_Bcast((void *)&hash, 4, MPI_BYTE, id_node, get_comm());
   }
   return ssprintf("%08X", hash);
 }
@@ -278,8 +279,9 @@ void sophisticated_serial_write(const qlat::Field<M> &origin,
 
 // std::string cps_Matrix_header_generator(const qlat::Field<cps::Matrix>
 // &origin,
-//							const bool does_skip_third
-//= false){ 	NOT yet implemented :( 	qassert(false); 	return "NOT
+//							const bool
+//does_skip_third = false){ 	NOT yet implemented :( 	qassert(false);
+//return "NOT
 // IMPLEMENTED.";
 // }
 
@@ -431,4 +433,4 @@ void sophisticated_serial_read(qlat::Field<M> &destination,
 #endif
 }
 
-QLAT_END_NAMESPACE
+}  // namespace qlat

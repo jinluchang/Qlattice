@@ -7,7 +7,8 @@
 
 #include <cstdlib>
 
-QLAT_START_NAMESPACE
+namespace qlat
+{  //
 
 static int mpi_rank_from_coords_x(const int* coords, void* fdata)
 {
@@ -33,23 +34,28 @@ static int mpi_rank_from_coords_t(const int* coords, void* fdata)
   return rank;
 }
 //
-inline void quda_begin(int mpi_layout[4], bool t=false)
+inline void quda_begin(int mpi_layout[4], bool t = false)
 {
   using namespace quda;
   // The following sets the MPI comm stuff.
-  if(t){
-    initCommsGridQuda(4, mpi_layout, mpi_rank_from_coords_t, reinterpret_cast<void*>(mpi_layout));
-  }else{
-    initCommsGridQuda(4, mpi_layout, mpi_rank_from_coords_x, reinterpret_cast<void*>(mpi_layout));
+  if (t) {
+    initCommsGridQuda(4, mpi_layout, mpi_rank_from_coords_t,
+                      reinterpret_cast<void*>(mpi_layout));
+  } else {
+    initCommsGridQuda(4, mpi_layout, mpi_rank_from_coords_x,
+                      reinterpret_cast<void*>(mpi_layout));
   }
   // comm_set_gridsize(mpi_layout);
   initQuda(-1000);
-  printf("initialized on quda rank #%03d (%03d,%03d,%03d,%03d), qlat rank #%03d (%03d,%03d,%03d,%03d).\n", 
-    comm_rank(), comm_coord(0), comm_coord(1), comm_coord(2), comm_coord(3),  
-    get_id_node(), get_coor_node()[0], get_coor_node()[1], get_coor_node()[2], get_coor_node()[3]);
+  printf(
+      "initialized on quda rank #%03d (%03d,%03d,%03d,%03d), qlat rank #%03d "
+      "(%03d,%03d,%03d,%03d).\n",
+      comm_rank(), comm_coord(0), comm_coord(1), comm_coord(2), comm_coord(3),
+      get_id_node(), get_coor_node()[0], get_coor_node()[1], get_coor_node()[2],
+      get_coor_node()[3]);
   // Make sure there is no mismatch
   qassert(comm_rank() == get_id_node());
-  for(int d = 0; d < 4; d++){
+  for (int d = 0; d < 4; d++) {
     qassert(comm_coord(d) == get_coor_node()[d]);
   }
 }
@@ -127,35 +133,46 @@ void quda_convert_fermion(std::vector<T>& qff, const FermionField5d& ff)
   }
 }
 
-QudaPrecision get_quda_precision(int byte){
-  switch(byte){
-    case 8: return QUDA_DOUBLE_PRECISION; break;
-    case 4: return QUDA_SINGLE_PRECISION; break;
-    case 2: return QUDA_HALF_PRECISION; break;
-    default: 
+QudaPrecision get_quda_precision(int byte)
+{
+  switch (byte) {
+    case 8:
+      return QUDA_DOUBLE_PRECISION;
+      break;
+    case 4:
+      return QUDA_SINGLE_PRECISION;
+      break;
+    case 2:
+      return QUDA_HALF_PRECISION;
+      break;
+    default:
       qassert(false);
       return QUDA_INVALID_PRECISION;
   }
 }
 
-void set_deflation_param(QudaEigParam &df_param) {
+void set_deflation_param(QudaEigParam& df_param)
+{
   df_param.import_vectors = QUDA_BOOLEAN_NO;
-  df_param.run_verify     = QUDA_BOOLEAN_NO;
+  df_param.run_verify = QUDA_BOOLEAN_NO;
 
-  df_param.nk             = df_param.invert_param->nev;
-  df_param.np             = df_param.invert_param->nev*df_param.invert_param->deflation_grid;
-  df_param.extlib_type    = QUDA_EIGEN_EXTLIB;
+  df_param.nk = df_param.invert_param->nev;
+  df_param.np =
+      df_param.invert_param->nev * df_param.invert_param->deflation_grid;
+  df_param.extlib_type = QUDA_EIGEN_EXTLIB;
 
   df_param.cuda_prec_ritz = df_param.invert_param->cuda_prec;
-  df_param.location       = QUDA_CUDA_FIELD_LOCATION;
-  df_param.mem_type_ritz  = QUDA_MEMORY_DEVICE;
+  df_param.location = QUDA_CUDA_FIELD_LOCATION;
+  df_param.mem_type_ritz = QUDA_MEMORY_DEVICE;
 
   // set file i/o parameters
   strcpy(df_param.vec_infile, "/ccs/home/jiquntu/meas-qlat/vec_outfile.txt");
   strcpy(df_param.vec_outfile, "/ccs/home/jiquntu/meas-qlat/vec_outfile.txt");
 }
 
-void set_gauge_param(QudaGaugeParam& gauge_param, const Geometry& geo, const InverterParams& ip){
+void set_gauge_param(QudaGaugeParam& gauge_param, const Geometry& geo,
+                     const InverterParams& ip)
+{
   //
   for (int mu = 0; mu < 4; mu++) {
     gauge_param.X[mu] = geo.node_site[mu];
@@ -177,7 +194,8 @@ void set_gauge_param(QudaGaugeParam& gauge_param, const Geometry& geo, const Inv
   gauge_param.reconstruct = QUDA_RECONSTRUCT_NO;
   gauge_param.cuda_prec_sloppy = get_quda_precision(ip.lower_precision);
   gauge_param.cuda_prec_precondition = get_quda_precision(ip.lower_precision);
-  gauge_param.cuda_prec_refinement_sloppy = get_quda_precision(ip.lower_precision);
+  gauge_param.cuda_prec_refinement_sloppy =
+      get_quda_precision(ip.lower_precision);
   gauge_param.reconstruct_sloppy = QUDA_RECONSTRUCT_NO;
   //
   gauge_param.gauge_fix = QUDA_GAUGE_FIXED_NO;
@@ -185,21 +203,19 @@ void set_gauge_param(QudaGaugeParam& gauge_param, const Geometry& geo, const Inv
   gauge_param.anisotropy = 1.0;
   gauge_param.t_boundary = QUDA_PERIODIC_T;
   //
-  int x_face_size =
-      gauge_param.X[1] * gauge_param.X[2] * gauge_param.X[3] / 2;
-  int y_face_size =
-      gauge_param.X[0] * gauge_param.X[2] * gauge_param.X[3] / 2;
-  int z_face_size =
-      gauge_param.X[0] * gauge_param.X[1] * gauge_param.X[3] / 2;
-  int t_face_size =
-      gauge_param.X[0] * gauge_param.X[1] * gauge_param.X[2] / 2;
+  int x_face_size = gauge_param.X[1] * gauge_param.X[2] * gauge_param.X[3] / 2;
+  int y_face_size = gauge_param.X[0] * gauge_param.X[2] * gauge_param.X[3] / 2;
+  int z_face_size = gauge_param.X[0] * gauge_param.X[1] * gauge_param.X[3] / 2;
+  int t_face_size = gauge_param.X[0] * gauge_param.X[1] * gauge_param.X[2] / 2;
   int pad_size = std::max(x_face_size, y_face_size);
   pad_size = std::max(pad_size, z_face_size);
   pad_size = std::max(pad_size, t_face_size);
   gauge_param.ga_pad = pad_size;
 }
 
-void set_inv_param(QudaInvertParam& inv_param, const FermionAction& fa, const InverterParams& ip){
+void set_inv_param(QudaInvertParam& inv_param, const FermionAction& fa,
+                   const InverterParams& ip)
+{
   inv_param.Ls = fa.ls;
   inv_param.dslash_type = QUDA_MOBIUS_DWF_DSLASH;
   inv_param.mass = fa.mass;
@@ -273,7 +289,8 @@ void set_inv_param(QudaInvertParam& inv_param, const FermionAction& fa, const In
   // The sloppy(inner) solver precision
   inv_param.cuda_prec_sloppy = get_quda_precision(ip.lower_precision);
   inv_param.cuda_prec_precondition = get_quda_precision(ip.lower_precision);
-  inv_param.cuda_prec_refinement_sloppy = get_quda_precision(ip.lower_precision);
+  inv_param.cuda_prec_refinement_sloppy =
+      get_quda_precision(ip.lower_precision);
   inv_param.cuda_prec_ritz = get_quda_precision(ip.lower_precision);
   //
   inv_param.input_location = QUDA_CPU_FIELD_LOCATION;
@@ -299,18 +316,18 @@ void set_inv_param(QudaInvertParam& inv_param, const FermionAction& fa, const In
   // pointer before the solve.
   inv_param.use_init_guess = QUDA_USE_INIT_GUESS_YES;
   //
-  if(      ip.solver_type == 0){
+  if (ip.solver_type == 0) {
     inv_param.inv_type = QUDA_CG_INVERTER;
-  }else if(ip.solver_type == 1){
+  } else if (ip.solver_type == 1) {
     inv_param.inv_type = QUDA_INC_EIGCG_INVERTER;
     inv_param.nev = 16;
     inv_param.deflation_grid = 8;
     inv_param.rhs_idx = 0;
     inv_param.eigcg_max_restarts = 3;
     inv_param.max_restart_num = 3;
-  }else if(ip.solver_type == 2){
+  } else if (ip.solver_type == 2) {
     inv_param.inv_type = QUDA_MSPCG_INVERTER;
-  }else{
+  } else {
     qassert(false);
   }
 }
@@ -327,9 +344,7 @@ struct InverterDomainWallQuda : InverterDomainWall {
   bool qlat_check = true;
   //
   InverterDomainWallQuda() : qgf(0) { init(); }
-  ~InverterDomainWallQuda(){
-    init(); 
-  }
+  ~InverterDomainWallQuda() { init(); }
   //
   void init()
   {
@@ -338,7 +353,7 @@ struct InverterDomainWallQuda : InverterDomainWall {
   }
   //
   void load_gauge()
-  { // Load gauge field to Quda.
+  {  // Load gauge field to Quda.
     // initialize the std::vectors that holds the gauge field.
     TIMER("InvDWQuda::load_gauge()");
     size_t qgf_size = geo.local_volume() * 4 * 18;
@@ -350,8 +365,7 @@ struct InverterDomainWallQuda : InverterDomainWall {
     printfQuda(
         "Computed plaquette is %16.12e (spatial = %16.12e, temporal = "
         "%16.12e)\n",
-        plaq[0], plaq[1], plaq[2]
-    );
+        plaq[0], plaq[1], plaq[2]);
   }
   //
   void setup()
@@ -377,7 +391,8 @@ struct InverterDomainWallQuda : InverterDomainWall {
     InverterDomainWall::setup(gf_, fa_);
     setup();
   }
-  void setup(const GaugeField& gf_, const FermionAction& fa_, const InverterParams& ip_)
+  void setup(const GaugeField& gf_, const FermionAction& fa_,
+             const InverterParams& ip_)
   {
     InverterDomainWall::setup(gf_, fa_, ip_);
     setup();
@@ -390,8 +405,9 @@ struct InverterDomainWallQuda : InverterDomainWall {
   }
   //
   void free() {}
-  // 
-  void allocate_eigcg(){
+  //
+  void allocate_eigcg()
+  {
     TIMER("InvDWQuda::allocate_eigcg()");
     QudaEigParam* df_param = get_df_param();
     df_param->invert_param = &inv_param;
@@ -399,16 +415,19 @@ struct InverterDomainWallQuda : InverterDomainWall {
     inv_param.deflation_op = newDeflationQuda(df_param);
   }
   //
-  void deallocate_eigcg(){
+  void deallocate_eigcg()
+  {
     TIMER("InvDWQuda::deallocate_eigcg()");
-    if(inv_param.deflation_op){
+    if (inv_param.deflation_op) {
       destroyDeflationQuda(inv_param.deflation_op);
-    }else{
+    } else {
       Printf("inv_param.deflation_op is null.");
     }
   }
-private:
-  QudaEigParam* get_df_param(){
+
+ private:
+  QudaEigParam* get_df_param()
+  {
     // Ugly trick to have a static object in a header only library.
     // This is potentially not thread safe but who cares ...
     static QudaEigParam df_param_ = newQudaEigParam();
@@ -459,17 +478,18 @@ inline void invert(FermionField5d& sol, const FermionField5d& src,
   QudaInvertParam inv_param_dup = inv.inv_param;
   // Perform the actual inversion
   invertQuda(qff_sol.data(), qff_src.data(), &inv_param_dup);
-  // Printf("inv_param rhs index    = %03d.\n", InverterDomainWallQuda::inv_param.rhs_idx);
+  // Printf("inv_param rhs index    = %03d.\n",
+  // InverterDomainWallQuda::inv_param.rhs_idx);
   quda_convert_fermion(sol, qff_sol);
   // The difference between Quda and CPS/Grid
   sol *= 1. / ((0.5 * inv.fa.mobius_scale + 0.5) * (4. - inv.fa.m5) + 1.);
   Printf("Output 5d vector norm2 = %16.12e.\n", qnorm(sol));
-  if(inv.qlat_check){
+  if (inv.qlat_check) {
     check.init(geo_resize(src.geo));
     multiply_m_full(check, sol, inv);
     check -= dm_in;
     Printf("Check  5d vector norm2 = %16.12e.\n", qnorm(check));
-  } 
+  }
 }
 
 inline void invert(FermionField4d& sol, const FermionField4d& src,
@@ -479,4 +499,4 @@ inline void invert(FermionField4d& sol, const FermionField4d& src,
   invert_dwf(sol, src, inv);
 }
 
-QLAT_END_NAMESPACE
+}  // namespace qlat

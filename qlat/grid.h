@@ -1,8 +1,9 @@
 #pragma once
 
-#include <qlat/qlat.h>
 
 #ifdef NO_GRID
+
+#include <qlat/qlat.h>
 
 namespace qlat
 {  //
@@ -25,6 +26,7 @@ void grid_end() { end(); }
 #define QLAT_GRID
 
 #include <Grid/Grid.h>
+#include <qlat/qlat.h>
 
 #include <cstdlib>
 

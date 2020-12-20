@@ -2,7 +2,8 @@
 
 #include <qlat/qcd-gauge-transformation.h>
 
-QLAT_START_NAMESPACE
+namespace qlat
+{  //
 
 struct FourInterval : std::pair<Coordinate, Coordinate> {
   virtual const std::string& cname()
@@ -333,4 +334,4 @@ inline void fft_convolution(std::vector<Complex>& out,
   return;
 }
 
-QLAT_END_NAMESPACE
+}  // namespace qlat

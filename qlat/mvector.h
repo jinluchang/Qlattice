@@ -4,7 +4,8 @@
 
 #include <cmath>
 
-QLAT_START_NAMESPACE
+namespace qlat
+{  //
 
 template <int DIMN, class T = ComplexT>
 struct alignas(Eigen::Matrix<T, DIMN, 1>) MvectorT
@@ -178,4 +179,4 @@ std::string show(const MvectorT<DIMN, T>& m)
   return out.str();
 }
 
-QLAT_END_NAMESPACE
+}  // namespace qlat

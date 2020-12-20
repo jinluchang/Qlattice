@@ -8,7 +8,8 @@
 
 #include <fftw3.h>
 
-QLAT_START_NAMESPACE
+namespace qlat
+{  //
 
 struct GaugeTransform : FieldM<ColorMatrix, 1> {
   virtual const std::string& cname()
@@ -136,10 +137,9 @@ inline void prop_apply_gauge_transformation(Propagator4d& prop,
   }
 }
 
-inline void prop_apply_gauge_transformation(SelectedField<WilsonMatrix>& prop,
-                                            const SelectedField<WilsonMatrix>& prop0,
-                                            const GaugeTransform& gt,
-                                            const FieldSelection& fsel)
+inline void prop_apply_gauge_transformation(
+    SelectedField<WilsonMatrix>& prop, const SelectedField<WilsonMatrix>& prop0,
+    const GaugeTransform& gt, const FieldSelection& fsel)
 {
   TIMER("prop_apply_gauge_transformation");
   qassert(is_matching_geo(prop0.geo, gt.geo));
@@ -336,7 +336,7 @@ struct GaugeTransformInverter
 
 template <class Inverter>
 inline void invert(FermionField4d& out, const FermionField4d& in,
-                    const GaugeTransformInverter<Inverter>& gtinv)
+                   const GaugeTransformInverter<Inverter>& gtinv)
 {
   TIMER_VERBOSE("invert(out,in,gt_inv)");
   const Inverter& inv = gtinv.inv();
@@ -375,4 +375,4 @@ void set_wall_src_propagator(Propagator4d& prop, const int tslice,
   }
 }
 
-QLAT_END_NAMESPACE
+}  // namespace qlat

@@ -4,7 +4,8 @@
 #include <qlat/mpi.h>
 #include <qlat/utils.h>
 
-QLAT_START_NAMESPACE
+namespace qlat
+{  //
 
 inline int eo_from_coordinate(const Coordinate& xl)
 {
@@ -407,4 +408,4 @@ inline bool check_matching_geo_mult(const Geometry& geo1, const Geometry& geo2)
   }
 }
 
-QLAT_END_NAMESPACE
+}  // namespace qlat

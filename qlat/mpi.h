@@ -8,7 +8,8 @@
 #include <mpi.h>
 #endif
 
-QLAT_START_NAMESPACE
+namespace qlat
+{  //
 
 inline MPI_Comm& get_comm()
 {
@@ -476,10 +477,7 @@ inline int glb_sum_lat_data(LatData& ld)
   return glb_sum_double_vec(get_data(ld.res));
 }
 
-inline int glb_sum(LatData& ld)
-{
-  return glb_sum_lat_data(ld);
-}
+inline int glb_sum(LatData& ld) { return glb_sum_lat_data(ld); }
 
 template <class M>
 void all_gather(Vector<M> recv, const Vector<M>& send)
@@ -807,4 +805,4 @@ inline void end()
   displayln_info("qlat::end(): MPI Finalized.");
 }
 
-QLAT_END_NAMESPACE
+}  // namespace qlat

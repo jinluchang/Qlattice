@@ -14,7 +14,8 @@
 
 #include <qlat/qlat.h>
 
-QLAT_START_NAMESPACE
+namespace qlat
+{  //
 
 inline void setup_params()
 {
@@ -686,9 +687,9 @@ inline ConfigurationsInfo make_configurations_info_48c96_mu0p00078_ms0p0362(
     fa.bs[6] = 4.4659153528626341e+00;
     fa.bs[7] = 5.5498080139636414e+00;
     fa.bs[8] =
-        std::complex<double>(4.9320961582039766e+00, -3.5559998543638791e+00);
+        Complex(4.9320961582039766e+00, -3.5559998543638791e+00);
     fa.bs[9] =
-        std::complex<double>(4.9320961582039766e+00, 3.5559998543638791e+00);
+        Complex(4.9320961582039766e+00, 3.5559998543638791e+00);
     for (int i = 0; i < fa.ls; i++) {
       fa.cs[i] = fa.bs[i] - 1.0;
     }
@@ -737,4 +738,4 @@ inline ConfigurationsInfo make_configurations_info_milc(
   return csi;
 }
 
-QLAT_END_NAMESPACE
+}  // namespace qlat

@@ -20,13 +20,6 @@
 
 // #define EIGEN_DONT_ALIGN_STATICALLY
 
-#include <Eigen/Eigen>
-
-#define QLAT_START_NAMESPACE \
-  namespace qlat             \
-  {
-#define QLAT_END_NAMESPACE }
-
 #ifndef USE_SINGLE_NODE
 #define USE_MULTI_NODE
 #endif
@@ -34,6 +27,7 @@
 #define USE_NAMESPACE
 
 #include <qutils/crc32.h>
+#include <qutils/eigen.h>
 #include <qutils/lat-io.h>
 #include <qutils/qutils-io.h>
 #include <qutils/qutils-vec.h>

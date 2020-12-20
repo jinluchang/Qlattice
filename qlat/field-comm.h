@@ -4,12 +4,11 @@
 #include <qlat/utils.h>
 #include <qlat/mpi.h>
 
-
 #include <map>
 #include <set>
 #include <vector>
 
-QLAT_START_NAMESPACE
+namespace qlat { //
 
 template <class M>
 void fetch_expanded(Field<M> &field_comm)
@@ -412,4 +411,4 @@ void fetch_expanded_chart(Field<M> &field_comm, Chart<M> &send_chart)
   }
 }
 
-QLAT_END_NAMESPACE
+}

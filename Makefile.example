@@ -18,7 +18,7 @@ QLAT_CFLAGS+= -I$(QLAT_INCLUDE)/qutils
 
 QLAT_CXXFLAGS=$(QLAT_CFLAGS)
 
-QLAT_LDFLAGS=$(QLAT_LIB)/libfftw3.a $(QLAT_LIB)/libcuba.a $(QLAT_LIB)/libz.a -lm
+QLAT_LDFLAGS=-L$(QLAT_LIB) -lfftw3 -lfftw3f -lcuba -lz -lm
 
 all: qlat.x
 

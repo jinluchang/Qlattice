@@ -12,7 +12,8 @@
 
 #include <vector>
 
-QLAT_START_NAMESPACE
+namespace qlat
+{  //
 
 struct fft_complex_field_plan {
   Geometry geo;     // geo.is_only_local == true
@@ -29,13 +30,14 @@ struct fft_complex_field_plan {
     return s;
   }
   //
-  bool is_match(const Geometry& geo_, const int mc_, const int dir_, const bool is_forward_)
+  bool is_match(const Geometry& geo_, const int mc_, const int dir_,
+                const bool is_forward_)
   {
     return geo_ == geo && mc_ == mc && dir_ == dir && is_forward_ == is_forward;
   }
   //
-  static bool check(const Geometry& geo_, const int mc_,
-                    const int dir_, const bool is_forward_)
+  static bool check(const Geometry& geo_, const int mc_, const int dir_,
+                    const bool is_forward_)
   {
     qassert(0 < geo_.multiplicity);
     bool b = true;
@@ -82,7 +84,8 @@ struct fft_complex_field_plan {
     }
   }
   //
-  void init(const Geometry& geo_, const int mc_, const int dir_, const bool is_forward_)
+  void init(const Geometry& geo_, const int mc_, const int dir_,
+            const bool is_forward_)
   {
     TIMER_VERBOSE("fft_complex_field_plan::init");
     qassert(check(geo_, mc_, dir_, is_forward_));
@@ -119,7 +122,8 @@ struct fft_complex_field_plan {
 };
 
 template <class M>
-void fft_complex_field_dir(Field<M>& field, const int dir, const bool is_forward)
+void fft_complex_field_dir(Field<M>& field, const int dir,
+                           const bool is_forward)
 {
   TIMER("fft_complex_field_dir");
   Geometry geo = field.geo;
@@ -141,14 +145,16 @@ void fft_complex_field_dir(Field<M>& field, const int dir, const bool is_forward
   shuffle_field(fft_fields, field, sp);
 #pragma omp parallel for
   for (int i = 0; i < (int)fft_fields.size(); ++i) {
-    if (not (get_data_size(fft_fields[i]) == nc_size * (int)sizeof(Complex))) {
+    if (not(get_data_size(fft_fields[i]) == nc_size * (int)sizeof(Complex))) {
       displayln(fname +
                 ssprintf(": get_data_size=%d ; nc_size*sizeof(Complex)=%d",
                          get_data_size(fft_fields[i]),
                          nc_size * (int)sizeof(Complex)));
       qassert(get_data_size(fft_fields[i]) == nc_size * (int)sizeof(Complex));
     }
-    std::memcpy((void*)&fftdatac[nc_size * i], (void*)get_data(fft_fields[i]).data(), get_data_size(fft_fields[i]));
+    std::memcpy((void*)&fftdatac[nc_size * i],
+                (void*)get_data(fft_fields[i]).data(),
+                get_data_size(fft_fields[i]));
   }
   {
     TIMER("fft_complex_field_dir-fftw");
@@ -156,7 +162,8 @@ void fft_complex_field_dir(Field<M>& field, const int dir, const bool is_forward
   }
 #pragma omp parallel for
   for (int i = 0; i < (int)fft_fields.size(); ++i) {
-    std::memcpy((void*)get_data(fft_fields[i]).data(), (void*)&fftdatac[nc_size * i], get_data_size(fft_fields[i]));
+    std::memcpy((void*)get_data(fft_fields[i]).data(),
+                (void*)&fftdatac[nc_size * i], get_data_size(fft_fields[i]));
   }
   shuffle_field_back(field, fft_fields, sp);
   fftw_free(fftdatac);
@@ -190,4 +197,4 @@ void fft_complex_field_spatial(Field<M>& field, const bool is_forward = true)
   }
 }
 
-QLAT_END_NAMESPACE
+}  // namespace qlat

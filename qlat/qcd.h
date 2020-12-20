@@ -16,7 +16,8 @@
 #include <sstream>
 #include <string>
 
-QLAT_START_NAMESPACE
+namespace qlat
+{  //
 
 template <class T = ComplexT>
 struct GaugeFieldT : FieldM<ColorMatrixT<T>, 4> {
@@ -475,7 +476,7 @@ inline long load_gauge_field_milc(GaugeFieldT<Complex>& gf,
   displayln_info(fname + ssprintf(": '%s'.", path.c_str()));
   qassert(is_initialized(gf));
   const Geometry& geo = gf.geo;
-  FieldM<std::array<std::complex<float>, 9>, 4> gft;
+  FieldM<std::array<ComplexF, 9>, 4> gft;
   gft.init(geo);
   // ADJUST ME
   long file_size = 0;
@@ -490,7 +491,7 @@ inline long load_gauge_field_milc(GaugeFieldT<Complex>& gf,
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     Coordinate xl = geo.coordinate_from_index(index);
-    Vector<std::array<std::complex<float>, 9> > vt = gft.get_elems(xl);
+    Vector<std::array<ComplexF, 9> > vt = gft.get_elems(xl);
     to_from_big_endian_32((char*)vt.data(), vt.data_size());
     Vector<ColorMatrixT<Complex> > v = gf.get_elems(xl);
     for (int m = 0; m < geo.multiplicity; ++m) {
@@ -528,4 +529,4 @@ void twist_boundary_at_boundary(GaugeFieldT<T>& gf, double mom, int mu)
   }
 }
 
-QLAT_END_NAMESPACE
+}  // namespace qlat

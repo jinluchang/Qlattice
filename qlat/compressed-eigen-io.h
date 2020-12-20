@@ -48,6 +48,20 @@ void caxpy_single(std::complex<T>* res, const std::complex<T>& ca,
   }
 }
 
+#ifdef QLAT_USE_GPU
+
+template <class T>
+void caxpy_single(thrust::complex<T>* res, const thrust::complex<T>& ca,
+                  const thrust::complex<T>* x, const thrust::complex<T>* y,
+                  const int c_size)
+{
+  for (int i = 0; i < c_size; i++) {
+    res[i] = ca * x[i] + y[i];
+  }
+}
+
+#endif
+
 inline void read_floats(Vector<float> out, const Vector<uint8_t> fp_data)
 {
   qassert(out.data_size() == fp_data.size());

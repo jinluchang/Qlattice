@@ -2,7 +2,8 @@
 
 #include <qlat/qcd.h>
 
-QLAT_START_NAMESPACE
+namespace qlat
+{  //
 
 template <class T>
 WilsonMatrixT<T> make_wilson_matrix_from_vectors(
@@ -136,7 +137,7 @@ void fermion_field_4d_from_5d(FermionField4dT<T>& ff4d,
 
 template <class Inverter, class T>
 inline long invert_dwf(FermionField4dT<T>& sol, const FermionField4dT<T>& src,
-                        const Inverter& inv, const int ls_ = 0)
+                       const Inverter& inv, const int ls_ = 0)
 // sol do not need to be initialized
 // inv.geo must be the geometry of the fermion field
 // invert(sol5d, src5d, inv) perform the inversion
@@ -159,7 +160,7 @@ inline long invert_dwf(FermionField4dT<T>& sol, const FermionField4dT<T>& src,
 
 template <class Inverter, class T>
 void invert(Propagator4dT<T>& sol, const Propagator4dT<T>& src,
-             const Inverter& inv)
+            const Inverter& inv)
 // sol do not need to be initialized
 // inv.geo must be the geometry of the fermion field
 // invert(4d, 4d, inv) perform the inversion
@@ -336,7 +337,7 @@ inline void set_wall_src_propagator(Propagator4d& prop, const Inverter& inv,
 }
 
 inline void set_volume_src_fermion_field(FermionField4d& ff,
-                                       const CoordinateD& lmom, const int cs)
+                                         const CoordinateD& lmom, const int cs)
 // ff need to be initialized beforehand
 {
   qassert(lmom[3] == 0);
@@ -347,16 +348,16 @@ inline void set_volume_src_fermion_field(FermionField4d& ff,
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
-      double phase = 0.0;
-      for (int i = 0; i < DIMN; ++i) {
-        phase += mom[i] * xg[i];
-      }
-      ff.get_elem(xl)(cs) = std::polar(1.0, phase);
+    double phase = 0.0;
+    for (int i = 0; i < DIMN; ++i) {
+      phase += mom[i] * xg[i];
+    }
+    ff.get_elem(xl)(cs) = std::polar(1.0, phase);
   }
 }
 
 inline void set_volume_src(Propagator4d& prop, const Geometry& geo_input,
-                         const CoordinateD& lmom = CoordinateD())
+                           const CoordinateD& lmom = CoordinateD())
 {
   TIMER_VERBOSE("set_volume_src");
   const Geometry geo = geo_reform(geo_input);
@@ -371,7 +372,7 @@ inline void set_volume_src(Propagator4d& prop, const Geometry& geo_input,
 
 template <class Inverter>
 inline void set_volume_src_propagator(Propagator4d& prop, const Inverter& inv,
-                                    const CoordinateD& lmom = CoordinateD())
+                                      const CoordinateD& lmom = CoordinateD())
 {
   TIMER_VERBOSE("set_volume_src_propagator");
   const Geometry geo = geo_reform(inv.geo);
@@ -569,4 +570,4 @@ inline void set_tslice_mom_src_propagator(Propagator4d& prop, const int tslice,
   }
 }
 
-QLAT_END_NAMESPACE
+}  // namespace qlat

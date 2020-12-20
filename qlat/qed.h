@@ -4,11 +4,10 @@
 #include <qlat/field.h>
 #include <qlat/matrix.h>
 
-#include <Eigen/Eigen>
-
 #include <cmath>
 
-QLAT_START_NAMESPACE
+namespace qlat
+{  //
 
 template <class T = ComplexT>
 struct QedGaugeFieldT : FieldM<T, DIMN> {
@@ -101,7 +100,8 @@ inline void set_mom_stochastic_qed_field_feynman(Field<T>& f,
 }
 
 template <class T>
-inline void set_stochastic_qed_field_feynman(Field<T>& f, const Geometry& geo, const RngState& rs)
+inline void set_stochastic_qed_field_feynman(Field<T>& f, const Geometry& geo,
+                                             const RngState& rs)
 {
   TIMER("set_stochastic_qed_field_feynman");
   set_mom_stochastic_qed_field_feynman(f, geo, rs);
@@ -403,4 +403,4 @@ SpinMatrixT<T> contract_spin_propagator4d(const SpinPropagator4dT<T>& snk,
   return sum;
 }
 
-QLAT_END_NAMESPACE
+}  // namespace qlat

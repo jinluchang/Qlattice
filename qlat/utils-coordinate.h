@@ -6,7 +6,8 @@
 #include <qlat/coordinate.h>
 #include <qlat/utils.h>
 
-QLAT_START_NAMESPACE
+namespace qlat
+{  //
 
 inline std::string show(const qlat::Coordinate& x)
 {
@@ -320,4 +321,4 @@ inline Coordinate read_coordinate(const std::string& str)
   return Coordinate(x, y, z, t);
 }
 
-QLAT_END_NAMESPACE
+}  // namespace qlat

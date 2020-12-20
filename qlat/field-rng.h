@@ -3,7 +3,8 @@
 #include <qlat/config.h>
 #include <qlat/field.h>
 
-QLAT_START_NAMESPACE
+namespace qlat
+{  //
 
 struct RngField : FieldM<RngState, 1> {
   virtual const std::string& cname()
@@ -12,7 +13,7 @@ struct RngField : FieldM<RngState, 1> {
     return s;
   }
   //
-  virtual void init() { FieldM<RngState, 1>::init(); }
+  using FieldM<RngState, 1>::init;
   virtual void init(const Geometry& geo_, const RngState& rs)
   {
     FieldM<RngState, 1>::init(geo_);
@@ -30,4 +31,4 @@ struct RngField : FieldM<RngState, 1> {
   RngField(const RngField& rf) { qassert(false); }
 };
 
-QLAT_END_NAMESPACE
+}  // namespace qlat
