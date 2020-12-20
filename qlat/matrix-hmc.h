@@ -160,7 +160,7 @@ struct ColorMatrixConstants {
   AdjointColorMatrix aunit;
   array<AdjointColorMatrix, 8> f;
   //
-  // qacc ColorMatrixConstants() { init(); }
+  qacc ColorMatrixConstants() { init(); }
   //
   qacc void init()
   {

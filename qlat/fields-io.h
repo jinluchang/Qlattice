@@ -244,8 +244,8 @@ struct FieldsWriter {
       }
       displayln("FieldsWriter: open '" + path + ".partial'.");
       if (is_append and does_file_exist(path)) {
-        qassert(does_file_exist(path + "/geon-info.txt"))
-            qrename(path, path + ".partial");
+        qassert(does_file_exist(path + "/geon-info.txt"));
+        qrename(path, path + ".partial");
       } else {
         fields_writer_dirs_geon_info(geon, path + ".partial");
       }

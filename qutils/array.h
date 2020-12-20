@@ -23,8 +23,8 @@ struct array {
   qacc M* data() { return v; }
   qacc const M* data() const { return v; }
   //
-  qacc M& operator[](int k) { return v[k]; };
-  qacc const M& operator[](int k) const { return v[k]; };
+  qacc M& operator[](unsigned long k) { return v[k]; };
+  qacc const M& operator[](unsigned long k) const { return v[k]; };
 };
 
 template <class M, unsigned long N>
