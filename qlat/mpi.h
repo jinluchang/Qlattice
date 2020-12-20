@@ -29,8 +29,8 @@ struct GeometryNode {
   Coordinate coor_node;
   // 0 <= coor_node[i] < size_node[i]
   //
-  inline void init() { memset((void*)this, 0, sizeof(GeometryNode)); }
-  inline void init(const int id_node_, const Coordinate& size_node_)
+  qacc void init() { memset((void*)this, 0, sizeof(GeometryNode)); }
+  qacc void init(const int id_node_, const Coordinate& size_node_)
   {
     initialized = true;
     num_node = product(size_node_);
@@ -39,19 +39,19 @@ struct GeometryNode {
     coor_node = coordinate_from_index(id_node_, size_node_);
   }
   //
-  GeometryNode() { init(); }
-  GeometryNode(const int id_node_, const Coordinate& size_node_)
+  qacc GeometryNode() { init(); }
+  qacc GeometryNode(const int id_node_, const Coordinate& size_node_)
   {
     init(id_node_, size_node_);
   }
 };
 
-inline bool is_initialized(const GeometryNode& geon)
+qacc bool is_initialized(const GeometryNode& geon)
 {
   return geon.initialized;
 }
 
-inline void init(GeometryNode& geon) { geon.init(); }
+qacc void init(GeometryNode& geon) { geon.init(); }
 
 inline GeometryNode& get_geometry_node_internal()
 {
@@ -64,7 +64,7 @@ inline const GeometryNode& get_geometry_node()
   return get_geometry_node_internal();
 }
 
-inline bool operator==(const GeometryNode& geon1, const GeometryNode& geon2)
+qacc bool operator==(const GeometryNode& geon1, const GeometryNode& geon2)
 {
   return geon1.initialized == geon2.initialized &&
          geon1.num_node == geon2.num_node && geon1.id_node == geon2.id_node &&
@@ -72,7 +72,7 @@ inline bool operator==(const GeometryNode& geon1, const GeometryNode& geon2)
          geon1.coor_node == geon2.coor_node;
 }
 
-inline bool operator!=(const GeometryNode& geon1, const GeometryNode& geon2)
+qacc bool operator!=(const GeometryNode& geon1, const GeometryNode& geon2)
 {
   return !(geon1 == geon2);
 }

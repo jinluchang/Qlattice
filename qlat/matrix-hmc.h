@@ -6,7 +6,7 @@ namespace qlat
 {  //
 
 template <class T>
-void unitarize(ColorMatrixT<T>& cm)
+qacc void unitarize(ColorMatrixT<T>& cm)
 {
   cm.em().row(0).normalize();
   cm.em().row(2) =
@@ -15,7 +15,7 @@ void unitarize(ColorMatrixT<T>& cm)
   cm.em().row(2) = cm.em().row(0).cross(cm.em().row(1));
 }
 
-inline ColorMatrixT<> make_anti_hermitian_matrix(
+qacc ColorMatrixT<> make_anti_hermitian_matrix(
     const std::array<double, 8>& basis)
 {
   qassert(3 == NUM_COLOR);
@@ -43,7 +43,7 @@ inline ColorMatrixT<> make_anti_hermitian_matrix(
   return m;
 }
 
-inline std::array<double, 8> basis_projection_anti_hermitian_matrix(
+qacc std::array<double, 8> basis_projection_anti_hermitian_matrix(
     const ColorMatrix& m)
 // m is a tr_less_anti_hermitian_matrix
 {
@@ -60,8 +60,8 @@ inline std::array<double, 8> basis_projection_anti_hermitian_matrix(
   return basis;
 }
 
-inline ColorMatrixT<> make_g_rand_anti_hermitian_matrix(RngState& rs,
-                                                        const double sigma)
+qacc ColorMatrixT<> make_g_rand_anti_hermitian_matrix(RngState& rs,
+                                                      const double sigma)
 //  Creates an antihermitian 3x3 complex matrix with each complex
 //  element drawn at random from a gaussian distribution with zero mean.
 //  Hence the matrices are distributed according to
@@ -76,7 +76,7 @@ inline ColorMatrixT<> make_g_rand_anti_hermitian_matrix(RngState& rs,
   return make_anti_hermitian_matrix(a);
 }
 
-inline double neg_half_tr_square(const ColorMatrixT<>& m)
+qacc double neg_half_tr_square(const ColorMatrixT<>& m)
 {
   const Array<double, 18> p(m.d());
   return sqr(p[3]) + sqr(p[2]) + sqr(p[1] - p[9]) * 0.25 + sqr(p[5]) +
@@ -85,7 +85,7 @@ inline double neg_half_tr_square(const ColorMatrixT<>& m)
 }
 
 template <class M>
-M make_matrix_exp(const M& a, const int max_order = 20)
+qacc M make_matrix_exp(const M& a, const int max_order = 20)
 {
   M unit;
   set_unit(unit);
@@ -100,8 +100,8 @@ M make_matrix_exp(const M& a, const int max_order = 20)
 }
 
 template <class T>
-ColorMatrixT<T> make_color_matrix_exp(const ColorMatrixT<T>& a,
-                                      const int max_order = 9)
+qacc ColorMatrixT<T> make_color_matrix_exp(const ColorMatrixT<T>& a,
+                                           const int max_order = 9)
 {
   ColorMatrixT<T> ret = make_matrix_exp(a, max_order);
   unitarize(ret);
@@ -109,15 +109,15 @@ ColorMatrixT<T> make_color_matrix_exp(const ColorMatrixT<T>& a,
 }
 
 template <class T>
-ColorMatrixT<T> matrix_evolve(const ColorMatrixT<T>& gf_cm,
-                              const ColorMatrixT<T>& gm_cm,
-                              const double step_size)
+qacc ColorMatrixT<T> matrix_evolve(const ColorMatrixT<T>& gf_cm,
+                                   const ColorMatrixT<T>& gm_cm,
+                                   const double step_size)
 {
   const ColorMatrixT<T> t = (T)step_size * gm_cm;
   return make_matrix_exp(t) * gf_cm;
 }
 
-inline ColorMatrixT<> make_tr_less_anti_herm_matrix(const ColorMatrixT<>& m)
+qacc ColorMatrixT<> make_tr_less_anti_herm_matrix(const ColorMatrixT<>& m)
 // (m - m^\dagger) / 2 - Tr(m - m^\dagger) / 6
 {
   ColorMatrixT<> ret = m - matrix_adjoint(m);
@@ -131,23 +131,23 @@ inline ColorMatrixT<> make_tr_less_anti_herm_matrix(const ColorMatrixT<>& m)
 }
 
 struct AdjointColorMatrix : MatrixT<8, double> {
-  AdjointColorMatrix() {}
-  AdjointColorMatrix(const MatrixT<8, double>& m) { *this = m; }
+  qacc AdjointColorMatrix() {}
+  qacc AdjointColorMatrix(const MatrixT<8, double>& m) { *this = m; }
   //
-  const AdjointColorMatrix& operator=(const MatrixT<8, double>& m)
+  qacc const AdjointColorMatrix& operator=(const MatrixT<8, double>& m)
   {
     *this = (const AdjointColorMatrix&)m;
     return *this;
   }
 };
 
-inline AdjointColorMatrix make_adjoint_representation(const ColorMatrix& cm);
+qacc AdjointColorMatrix make_adjoint_representation(const ColorMatrix& cm);
 
-inline AdjointColorMatrix make_diff_exp_map(const AdjointColorMatrix& am,
-                                            const int max_order = 20);
+qacc AdjointColorMatrix make_diff_exp_map(const AdjointColorMatrix& am,
+                                          const int max_order = 20);
 
-inline AdjointColorMatrix make_diff_exp_map(const ColorMatrix& m,
-                                            const int max_order = 20);
+qacc AdjointColorMatrix make_diff_exp_map(const ColorMatrix& m,
+                                          const int max_order = 20);
 
 struct ColorMatrixConstants {
   //
@@ -160,9 +160,9 @@ struct ColorMatrixConstants {
   AdjointColorMatrix aunit;
   std::array<AdjointColorMatrix, 8> f;
   //
-  ColorMatrixConstants() { init(); }
+  // qacc ColorMatrixConstants() { init(); }
   //
-  void init()
+  qacc void init()
   {
     set_unit(unit);
     for (int a = 0; a < 8; ++a) {
@@ -183,7 +183,7 @@ struct ColorMatrixConstants {
     }
   }
   //
-  void check() const
+  qacc void check() const
   {
     for (int a = 0; a < 8; ++a) {
       ColorMatrix m = make_tr_less_anti_herm_matrix(ts[a]);
@@ -261,7 +261,10 @@ struct ColorMatrixConstants {
     return get_instance().ts;
   }
   //
-  static const AdjointColorMatrix& get_aunit() { return get_instance().aunit; }
+  static const AdjointColorMatrix& get_aunit()
+  {
+    return get_instance().aunit;
+  }
   //
   static const std::array<AdjointColorMatrix, 8>& get_f()
   {
@@ -269,7 +272,7 @@ struct ColorMatrixConstants {
   }
 };
 
-inline AdjointColorMatrix make_adjoint_representation(const ColorMatrix& m)
+qacc AdjointColorMatrix make_adjoint_representation(const ColorMatrix& m)
 {
   const std::array<AdjointColorMatrix, 8>& f = ColorMatrixConstants::get_f();
   const std::array<double, 8> basis = basis_projection_anti_hermitian_matrix(m);
@@ -281,8 +284,8 @@ inline AdjointColorMatrix make_adjoint_representation(const ColorMatrix& m)
   return am;
 }
 
-inline AdjointColorMatrix make_diff_exp_map(const AdjointColorMatrix& am,
-                                            const int max_order)
+qacc AdjointColorMatrix make_diff_exp_map(const AdjointColorMatrix& am,
+                                          const int max_order)
 {
   const AdjointColorMatrix& unit = ColorMatrixConstants::get_aunit();
   AdjointColorMatrix t2 = -am;
@@ -295,14 +298,14 @@ inline AdjointColorMatrix make_diff_exp_map(const AdjointColorMatrix& am,
   return t3;
 }
 
-inline AdjointColorMatrix make_diff_exp_map(const ColorMatrix& m,
-                                            const int max_order)
+qacc AdjointColorMatrix make_diff_exp_map(const ColorMatrix& m,
+                                          const int max_order)
 {
   return make_diff_exp_map(make_adjoint_representation(m), max_order);
 }
 
-inline AdjointColorMatrix make_diff_exp_map_diff_ref(const ColorMatrix& m,
-                                                     const int a)
+qacc AdjointColorMatrix make_diff_exp_map_diff_ref(const ColorMatrix& m,
+                                                   const int a)
 {
   const std::array<ColorMatrix, 8>& ts = ColorMatrixConstants::get_ts();
   const double eps = 1e-4;
@@ -313,9 +316,9 @@ inline AdjointColorMatrix make_diff_exp_map_diff_ref(const ColorMatrix& m,
   return (1.0 / (2.0 * eps)) * (j_p - j_n);
 }
 
-inline AdjointColorMatrix make_diff_exp_map_diff(const AdjointColorMatrix& am,
-                                                 const int a,
-                                                 const int max_order = 20)
+qacc AdjointColorMatrix make_diff_exp_map_diff(const AdjointColorMatrix& am,
+                                               const int a,
+                                               const int max_order = 20)
 {
   const std::array<AdjointColorMatrix, 8>& f = ColorMatrixConstants::get_f();
   const AdjointColorMatrix& unit = ColorMatrixConstants::get_aunit();
@@ -333,9 +336,9 @@ inline AdjointColorMatrix make_diff_exp_map_diff(const AdjointColorMatrix& am,
   return dt3;
 }
 
-inline AdjointColorMatrix make_diff_exp_map_diff(const ColorMatrix& m,
-                                                 const int a,
-                                                 const int max_order = 20)
+qacc AdjointColorMatrix make_diff_exp_map_diff(const ColorMatrix& m,
+                                               const int a,
+                                               const int max_order = 20)
 {
   return make_diff_exp_map_diff(make_adjoint_representation(m), a, max_order);
 }

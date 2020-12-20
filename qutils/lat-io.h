@@ -471,8 +471,8 @@ inline std::string show_double(const LatData& ld)
     }
     const Vector<double> ldv = lat_data_get_const(ld, idx);
     out << ssprintf("%24.17E\n", ldv[0]);
-    idx[info.size() - 1] += 1;
-    for (int a = info.size() - 1; a > 0; --a) {
+    idx[(int)info.size() - 1] += 1;
+    for (int a = (int)info.size() - 1; a > 0; --a) {
       if (idx[a] == info[a].size) {
         idx[a] = 0;
         idx[a - 1] += 1;
@@ -495,17 +495,17 @@ inline std::string show_complex(const LatData& ld)
     }
   }
   out << ssprintf("%24s %24s\n", "RE-VALUE", "IM-VALUE");
-  std::vector<long> idx(info.size() - 1, 0);
+  std::vector<long> idx((int)info.size() - 1, 0);
   for (long k = 0; k < lat_data_size(info) / 2; ++k) {
     for (int a = 0; a < (int)info.size() - 1; ++a) {
       out << ssprintf("%12s ", idx_name(info[a], idx[a]).c_str());
     }
     const Vector<Complex> ldv = lat_data_complex_get_const(ld, idx);
     out << ssprintf("%24.17E %24.17E\n", ldv[0].real(), ldv[0].imag());
-    if (info.size() - 2 >= 0) {
-      idx[info.size() - 2] += 1;
+    if ((int)info.size() - 2 >= 0) {
+      idx[(int)info.size() - 2] += 1;
     }
-    for (int a = info.size() - 2; a > 0; --a) {
+    for (int a = (int)info.size() - 2; a > 0; --a) {
       if (idx[a] == info[a].size) {
         idx[a] = 0;
         idx[a - 1] += 1;

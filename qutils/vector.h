@@ -37,9 +37,7 @@ struct MemCache {
   size_t mem_cache_size;
   std::unordered_multimap<size_t, void*> db;
   //
-  MemCache() {
-    mem_cache_size = 0;
-  }
+  MemCache() { mem_cache_size = 0; }
   ~MemCache() { gc(); }
   //
   void add(void* ptr, const size_t size)
@@ -145,7 +143,7 @@ struct vector {
     qassert(v.p == NULL);
   }
   //
-  void swap(vector<M>& x)
+  qacc void swap(vector<M>& x)
   {
     Vector<M> t = v;
     v = x.v;
@@ -203,13 +201,13 @@ struct vector {
     return *this;
   }
   //
-  const M& operator[](long i) const { return v[i]; }
-  M& operator[](long i) { return v[i]; }
+  qacc const M& operator[](long i) const { return v[i]; }
+  qacc M& operator[](long i) { return v[i]; }
   //
-  long size() const { return v.size(); }
+  qacc long size() const { return v.size(); }
   //
-  M* data() { return v.data(); }
-  const M* data() const { return v.data(); }
+  qacc M* data() { return v.data(); }
+  qacc const M* data() const { return v.data(); }
 };
 
 template <class M>
@@ -219,19 +217,19 @@ void clear(vector<M>& v)
 }
 
 template <class M>
-void qswap(vector<M>& v1, vector<M>& v2)
+qacc void qswap(vector<M>& v1, vector<M>& v2)
 {
   v1.swap(v2);
 }
 
 template <class M>
-Vector<M> get_data(const vector<M>& v)
+qacc Vector<M> get_data(const vector<M>& v)
 {
   return v.v;
 }
 
 template <class M>
-void set_zero(vector<M>& v)
+qacc void set_zero(vector<M>& v)
 {
   set_zero(v.v);
 }

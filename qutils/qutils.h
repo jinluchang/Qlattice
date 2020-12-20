@@ -6,13 +6,14 @@
 
 #include <qutils/complex.h>
 #include <qutils/show.h>
+#include <qutils/array.h>
 
 #include <cassert>
 #include <vector>
 
 // #define SKIP_ASSERT
 
-#ifdef SKIP_ASSERT
+#ifdef SKIP_ASSERT || QLAT_USE_GPU
 #define qassert(x) assert(true)
 #else
 #define qassert(x)                            \

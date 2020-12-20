@@ -30,7 +30,7 @@ struct Geometry {
   // node_site_expanded[i] = expansion_left[i] + node_site[i] +
   // expansion_right[i]
   //
-  void reset_node_site_expanded()
+  qacc void reset_node_site_expanded()
   {
     for (int i = 0; i < DIMN; ++i) {
       node_site_expanded[i] =
@@ -38,7 +38,7 @@ struct Geometry {
     }
   }
   //
-  void init() { memset((void*)this, 0, sizeof(Geometry)); }
+  qacc void init() { memset((void*)this, 0, sizeof(Geometry)); }
   void init(const Coordinate total_site, const int multiplicity_)
   {
     if (!initialized) {
@@ -53,8 +53,8 @@ struct Geometry {
       initialized = true;
     }
   }
-  void init(const GeometryNode& geon_, const Coordinate& node_site_,
-            const int multiplicity_)
+  qacc void init(const GeometryNode& geon_, const Coordinate& node_site_,
+                 const int multiplicity_)
   {
     if (!initialized) {
       init();
@@ -66,10 +66,10 @@ struct Geometry {
     }
   }
   //
-  void remult(const int multiplicity_) { multiplicity = multiplicity_; }
+  qacc void remult(const int multiplicity_) { multiplicity = multiplicity_; }
   //
-  void resize(const Coordinate& expansion_left_,
-              const Coordinate& expansion_right_)
+  qacc void resize(const Coordinate& expansion_left_,
+                   const Coordinate& expansion_right_)
   {
     expansion_left = expansion_left_;
     expansion_right = expansion_right_;
@@ -81,13 +81,13 @@ struct Geometry {
     }
     reset_node_site_expanded();
   }
-  void resize(const int thick)
+  qacc void resize(const int thick)
   {
     const Coordinate expansion(thick, thick, thick, thick);
     resize(expansion, expansion);
   }
   //
-  Geometry() { init(); }
+  qacc Geometry() { init(); }
   //
   Geometry(const Coordinate& total_site, const int multiplicity_)
   {
@@ -95,7 +95,7 @@ struct Geometry {
     init(total_site, multiplicity_);
   }
   //
-  Coordinate mirror(const Coordinate& x) const
+  qacc Coordinate mirror(const Coordinate& x) const
   {
     Coordinate ret = x;
     for (int mu = 0; mu < DIMN; ++mu) {
@@ -106,7 +106,7 @@ struct Geometry {
     return ret;
   }
   //
-  long offset_from_coordinate(const Coordinate& x) const
+  qacc long offset_from_coordinate(const Coordinate& x) const
   {
     Coordinate xe = mirror(x);
     if (eo == 0) {
@@ -122,7 +122,7 @@ struct Geometry {
     }
   }
   //
-  Coordinate coordinate_from_offset(const long offset) const
+  qacc Coordinate coordinate_from_offset(const long offset) const
   // 0 <= offset < local_volume_expanded() * multiplicity
   {
     Coordinate x;
@@ -145,7 +145,7 @@ struct Geometry {
     return x;
   }
   //
-  long index_from_coordinate(const Coordinate& x) const
+  qacc long index_from_coordinate(const Coordinate& x) const
   // 0 <= index < local_volume()
   {
     const Coordinate xm = mirror(x);
@@ -159,7 +159,7 @@ struct Geometry {
     }
   }
   //
-  Coordinate coordinate_from_index(const long index) const
+  qacc Coordinate coordinate_from_index(const long index) const
   // get local coordinate from index
   // 0 <= index < local_volume()
   {
@@ -176,18 +176,18 @@ struct Geometry {
     }
   }
   //
-  long offset_from_index(const long index) const
+  qacc long offset_from_index(const long index) const
   {
     return offset_from_coordinate(coordinate_from_index(index));
   }
   //
-  long g_index_from_g_coordinate(const Coordinate& xg) const
+  qacc long g_index_from_g_coordinate(const Coordinate& xg) const
   {
     const Coordinate ts = total_site();
     return qlat::index_from_coordinate(mod(xg, ts), ts);
   }
   //
-  bool is_on_node(const Coordinate& x) const
+  qacc bool is_on_node(const Coordinate& x) const
   {
     for (int mu = 0; mu < DIMN; mu++) {
       if (not((-expansion_left[mu] <= x[mu] and
@@ -199,7 +199,7 @@ struct Geometry {
     return eo == 0 or eo_from_coordinate(x) == eo;
   }
   //
-  bool is_local(const Coordinate& x) const
+  qacc bool is_local(const Coordinate& x) const
   {
     for (int mu = 0; mu < DIMN; mu++) {
       if (not((0 <= x[mu] and x[mu] < node_site[mu]) or
@@ -210,7 +210,7 @@ struct Geometry {
     return eo == 0 or eo_from_coordinate(x) == eo;
   }
   //
-  bool is_only_local() const
+  qacc bool is_only_local() const
   {
     for (int i = 0; i < 4; i++) {
       if (expansion_left[i] != 0 or expansion_right[i] != 0) {
@@ -220,7 +220,7 @@ struct Geometry {
     return true;
   }
   //
-  long local_volume() const
+  qacc long local_volume() const
   {
     if (eo == 0) {
       return node_site[0] * node_site[1] * node_site[2] * node_site[3];
@@ -231,7 +231,7 @@ struct Geometry {
     }
   }
   //
-  long local_volume_expanded() const
+  qacc long local_volume_expanded() const
   {
     if (eo == 0) {
       return node_site_expanded[0] * node_site_expanded[1] *
@@ -245,17 +245,17 @@ struct Geometry {
     }
   }
   //
-  Coordinate total_site() const { return node_site * geon.size_node; }
+  qacc Coordinate total_site() const { return node_site * geon.size_node; }
   //
-  Coordinate global_size() const
+  qacc Coordinate global_size() const
   {
     warn("use total_site()");
     return total_site();
   }
   //
-  long total_volume() const { return local_volume() * geon.num_node; }
+  qacc long total_volume() const { return local_volume() * geon.num_node; }
   //
-  Coordinate coordinate_g_from_l(const Coordinate& xl) const
+  qacc Coordinate coordinate_g_from_l(const Coordinate& xl) const
   {
     Coordinate xg;
     for (int mu = 0; mu < 4; mu++) {
@@ -264,7 +264,7 @@ struct Geometry {
     return xg;
   }
   //
-  Coordinate coordinate_l_from_g(const Coordinate& xg) const
+  qacc Coordinate coordinate_l_from_g(const Coordinate& xg) const
   {
     Coordinate xl;
     for (int mu = 0; mu < 4; mu++) {
@@ -291,7 +291,7 @@ struct Geometry {
   }
 };
 
-inline bool operator==(const Geometry& geo1, const Geometry& geo2)
+qacc bool operator==(const Geometry& geo1, const Geometry& geo2)
 {
   return geo1.initialized == geo2.initialized && geo1.eo == geo2.eo &&
          geo1.geon == geo2.geon && geo1.multiplicity == geo2.multiplicity &&
@@ -301,36 +301,36 @@ inline bool operator==(const Geometry& geo1, const Geometry& geo2)
          geo1.node_site_expanded == geo2.node_site_expanded;
 }
 
-inline bool operator!=(const Geometry& geo1, const Geometry& geo2)
+qacc bool operator!=(const Geometry& geo1, const Geometry& geo2)
 {
   return !(geo1 == geo2);
 }
 
-inline Geometry geo_resize(const Geometry& geo_, const int thick = 0)
+qacc Geometry geo_resize(const Geometry& geo_, const int thick = 0)
 {
   Geometry geo = geo_;
   geo.resize(thick);
   return geo;
 }
 
-inline Geometry geo_resize(const Geometry& geo_,
-                           const Coordinate& expansion_left_,
-                           const Coordinate& expansion_right_)
+qacc Geometry geo_resize(const Geometry& geo_,
+                         const Coordinate& expansion_left_,
+                         const Coordinate& expansion_right_)
 {
   Geometry geo = geo_;
   geo.resize(expansion_left_, expansion_right_);
   return geo;
 }
 
-inline Geometry geo_remult(const Geometry& geo_, const int multiplicity_ = 1)
+qacc Geometry geo_remult(const Geometry& geo_, const int multiplicity_ = 1)
 {
   Geometry geo = geo_;
   geo.remult(multiplicity_);
   return geo;
 }
 
-inline Geometry geo_reform(const Geometry& geo_, const int multiplicity_ = 1,
-                           const int thick = 0)
+qacc Geometry geo_reform(const Geometry& geo_, const int multiplicity_ = 1,
+                         const int thick = 0)
 // do not change eo
 {
   Geometry geo = geo_;
@@ -339,9 +339,9 @@ inline Geometry geo_reform(const Geometry& geo_, const int multiplicity_ = 1,
   return geo;
 }
 
-inline Geometry geo_reform(const Geometry& geo_, const int multiplicity_,
-                           const Coordinate& expansion_left_,
-                           const Coordinate& expansion_right_)
+qacc Geometry geo_reform(const Geometry& geo_, const int multiplicity_,
+                         const Coordinate& expansion_left_,
+                         const Coordinate& expansion_right_)
 // do not change eo
 {
   Geometry geo = geo_;
@@ -350,7 +350,7 @@ inline Geometry geo_reform(const Geometry& geo_, const int multiplicity_,
   return geo;
 }
 
-inline Geometry geo_eo(const Geometry& geo_, const int eo_ = 0)
+qacc Geometry geo_eo(const Geometry& geo_, const int eo_ = 0)
 // 0:regular; 1:odd; 2:even
 {
   Geometry geo = geo_;
@@ -358,7 +358,7 @@ inline Geometry geo_eo(const Geometry& geo_, const int eo_ = 0)
   return geo;
 }
 
-inline bool is_initialized(const Geometry& geo) { return geo.initialized; }
+qacc bool is_initialized(const Geometry& geo) { return geo.initialized; }
 
 inline std::string show(const qlat::Geometry& geo)
 {
@@ -374,13 +374,13 @@ inline std::string show(const qlat::Geometry& geo)
   return s;
 }
 
-inline bool is_matching_geo(const Geometry& geo1, const Geometry& geo2)
+qacc bool is_matching_geo(const Geometry& geo1, const Geometry& geo2)
 {
   return geo1.initialized == geo2.initialized && geo1.geon == geo2.geon &&
          geo1.node_site == geo2.node_site;
 }
 
-inline bool is_matching_geo_mult(const Geometry& geo1, const Geometry& geo2)
+qacc bool is_matching_geo_mult(const Geometry& geo1, const Geometry& geo2)
 {
   return is_matching_geo(geo1, geo2) && geo1.eo == geo2.eo &&
          geo1.multiplicity == geo2.multiplicity;

@@ -14,13 +14,13 @@ inline std::string show(const qlat::Coordinate& x)
   return ssprintf("%dx%dx%dx%d", x[0], x[1], x[2], x[3]);
 }
 
-inline long sqr(const qlat::Coordinate& xg)
+qacc long sqr(const qlat::Coordinate& xg)
 {
   return sqr((long)xg[0]) + sqr((long)xg[1]) + sqr((long)xg[2]) +
          sqr((long)xg[3]);
 }
 
-inline long modl(const long x, const long len)
+qacc long modl(const long x, const long len)
 {
   qassert(0 < len);
   const int m = x % len;
@@ -31,7 +31,7 @@ inline long modl(const long x, const long len)
   }
 }
 
-inline int mod(const int x, const int len)
+qacc int mod(const int x, const int len)
 {
   qassert(0 < len);
   const int m = x % len;
@@ -42,7 +42,7 @@ inline int mod(const int x, const int len)
   }
 }
 
-inline double mod(const double x, const double len)
+qacc double mod(const double x, const double len)
 {
   qassert(0 < len);
   const double m = x - trunc(x / len) * len;
@@ -53,7 +53,7 @@ inline double mod(const double x, const double len)
   }
 }
 
-inline int smod(const int x, const int len)
+qacc int smod(const int x, const int len)
 {
   qassert(0 < len);
   const int m = mod(x, len);
@@ -64,7 +64,7 @@ inline int smod(const int x, const int len)
   }
 }
 
-inline double smod(const double x, const double len)
+qacc double smod(const double x, const double len)
 {
   qassert(0 < len);
   const double m = mod(x, len);
@@ -75,8 +75,8 @@ inline double smod(const double x, const double len)
   }
 }
 
-inline double smod_sym(const double x, const double len,
-                       const double eps = 1.0e-8)
+qacc double smod_sym(const double x, const double len,
+                     const double eps = 1.0e-8)
 {
   const double m = smod(x, len);
   if (std::abs(std::abs(m * 2) - len) < eps) {
@@ -86,7 +86,7 @@ inline double smod_sym(const double x, const double len,
   }
 }
 
-inline int middle_mod(const int x, const int y, const int len)
+qacc int middle_mod(const int x, const int y, const int len)
 {
   qassert(0 < len);
   const int xm = mod(x, len);
@@ -100,7 +100,7 @@ inline int middle_mod(const int x, const int y, const int len)
   }
 }
 
-inline double middle_mod(const double x, const double y, const double len)
+qacc double middle_mod(const double x, const double y, const double len)
 {
   qassert(0 < len);
   const double xm = mod(x, len);
@@ -114,7 +114,7 @@ inline double middle_mod(const double x, const double y, const double len)
   }
 }
 
-inline Coordinate mod(const Coordinate& x, const Coordinate& size)
+qacc Coordinate mod(const Coordinate& x, const Coordinate& size)
 {
   Coordinate ret;
   ret[0] = mod(x[0], size[0]);
@@ -124,7 +124,7 @@ inline Coordinate mod(const Coordinate& x, const Coordinate& size)
   return ret;
 }
 
-inline CoordinateD mod(const CoordinateD& x, const CoordinateD& size)
+qacc CoordinateD mod(const CoordinateD& x, const CoordinateD& size)
 {
   CoordinateD ret;
   ret[0] = mod(x[0], size[0]);
@@ -134,7 +134,7 @@ inline CoordinateD mod(const CoordinateD& x, const CoordinateD& size)
   return ret;
 }
 
-inline Coordinate smod(const Coordinate& x, const Coordinate& size)
+qacc Coordinate smod(const Coordinate& x, const Coordinate& size)
 {
   Coordinate ret;
   ret[0] = smod(x[0], size[0]);
@@ -144,7 +144,7 @@ inline Coordinate smod(const Coordinate& x, const Coordinate& size)
   return ret;
 }
 
-inline CoordinateD smod(const CoordinateD& x, const CoordinateD& size)
+qacc CoordinateD smod(const CoordinateD& x, const CoordinateD& size)
 {
   CoordinateD ret;
   ret[0] = smod(x[0], size[0]);
@@ -154,7 +154,7 @@ inline CoordinateD smod(const CoordinateD& x, const CoordinateD& size)
   return ret;
 }
 
-inline CoordinateD smod_sym(const CoordinateD& x, const CoordinateD& size)
+qacc CoordinateD smod_sym(const CoordinateD& x, const CoordinateD& size)
 {
   CoordinateD ret;
   ret[0] = smod_sym(x[0], size[0]);
@@ -164,8 +164,8 @@ inline CoordinateD smod_sym(const CoordinateD& x, const CoordinateD& size)
   return ret;
 }
 
-inline Coordinate middle_mod(const Coordinate& x, const Coordinate& y,
-                             const Coordinate& size)
+qacc Coordinate middle_mod(const Coordinate& x, const Coordinate& y,
+                           const Coordinate& size)
 {
   Coordinate ret;
   ret[0] = middle_mod(x[0], y[0], size[0]);
@@ -175,8 +175,8 @@ inline Coordinate middle_mod(const Coordinate& x, const Coordinate& y,
   return ret;
 }
 
-inline CoordinateD middle_mod(const CoordinateD& x, const CoordinateD& y,
-                              const CoordinateD& size)
+qacc CoordinateD middle_mod(const CoordinateD& x, const CoordinateD& y,
+                            const CoordinateD& size)
 {
   CoordinateD ret;
   ret[0] = middle_mod(x[0], y[0], size[0]);
@@ -186,30 +186,30 @@ inline CoordinateD middle_mod(const CoordinateD& x, const CoordinateD& y,
   return ret;
 }
 
-inline bool is_reaching_edge_coordinate(const Coordinate& x,
-                                        const Coordinate& size)
+qacc bool is_reaching_edge_coordinate(const Coordinate& x,
+                                      const Coordinate& size)
 {
   return std::abs(x[0]) * 2 == size[0] || std::abs(x[1]) * 2 == size[1] ||
          std::abs(x[2]) * 2 == size[2] || std::abs(x[3]) * 2 == size[3];
 }
 
-inline bool is_outside_coordinate(const Coordinate& x, const Coordinate& size)
+qacc bool is_outside_coordinate(const Coordinate& x, const Coordinate& size)
 {
   return std::abs(x[0]) * 2 > size[0] || std::abs(x[1]) * 2 > size[1] ||
          std::abs(x[2]) * 2 > size[2] || std::abs(x[3]) * 2 > size[3];
 }
 
-inline long distance_sq_relative_coordinate_g(const Coordinate& xg)
+qacc long distance_sq_relative_coordinate_g(const Coordinate& xg)
 {
   return sqr(xg);
 }
 
-inline double distance_relative_coordinate_g(const Coordinate& xg)
+qacc double distance_relative_coordinate_g(const Coordinate& xg)
 {
   return sqrt(distance_sq_relative_coordinate_g(xg));
 }
 
-inline Coordinate coordinate_from_index(long index, const Coordinate& size)
+qacc Coordinate coordinate_from_index(long index, const Coordinate& size)
 {
   Coordinate x;
   x[0] = index % size[0];
@@ -222,7 +222,7 @@ inline Coordinate coordinate_from_index(long index, const Coordinate& size)
   return x;
 }
 
-inline long index_from_coordinate(const Coordinate& x, const Coordinate& size)
+qacc long index_from_coordinate(const Coordinate& x, const Coordinate& size)
 {
   return ((((long)x[3] * (long)size[2]) + (long)x[2]) * (long)size[1] +
           (long)x[1]) *
@@ -230,37 +230,35 @@ inline long index_from_coordinate(const Coordinate& x, const Coordinate& size)
          (long)x[0];
 }
 
-inline Coordinate regular_coordinate(const Coordinate& x,
-                                     const Coordinate& size)
+qacc Coordinate regular_coordinate(const Coordinate& x, const Coordinate& size)
 {
   return mod(x, size);
 }
 
-inline Coordinate relative_coordinate(const Coordinate& x,
-                                      const Coordinate& size)
+qacc Coordinate relative_coordinate(const Coordinate& x, const Coordinate& size)
 {
   return smod(x, size);
 }
 
-inline void regularize_coordinate(Coordinate& x, const Coordinate& size)
+qacc void regularize_coordinate(Coordinate& x, const Coordinate& size)
 {
   x = regular_coordinate(x, size);
 }
 
-inline CoordinateD relative_coordinate(const CoordinateD& x,
-                                       const CoordinateD& size)
+qacc CoordinateD relative_coordinate(const CoordinateD& x,
+                                     const CoordinateD& size)
 {
   return smod(x, size);
 }
 
-inline Coordinate middle_coordinate(const Coordinate& x, const Coordinate& y,
-                                    const Coordinate& size)
+qacc Coordinate middle_coordinate(const Coordinate& x, const Coordinate& y,
+                                  const Coordinate& size)
 {
   return middle_mod(x, y, size);
 }
 
-inline CoordinateD middle_coordinate(const CoordinateD& x, const CoordinateD& y,
-                                     const CoordinateD& size)
+qacc CoordinateD middle_coordinate(const CoordinateD& x, const CoordinateD& y,
+                                   const CoordinateD& size)
 {
   return middle_mod(x, y, size);
 }

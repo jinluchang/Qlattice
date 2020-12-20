@@ -13,49 +13,49 @@ struct alignas(Eigen::Matrix<T, DIMN, 1>) MvectorT
   T p[DIMN];
   //
   // convert to double array
-  double* d() { return (double*)p; }
-  const double* d() const { return (const double*)p; }
+  qacc double* d() { return (double*)p; }
+  qacc const double* d() const { return (const double*)p; }
   //
   // convert to Eigen Matrix
-  Eigen::Matrix<T, DIMN, 1>& em()
+  qacc Eigen::Matrix<T, DIMN, 1>& em()
   {
     return *((Eigen::Matrix<T, DIMN, 1>*)this);
   }
-  const Eigen::Matrix<T, DIMN, 1>& em() const
+  qacc const Eigen::Matrix<T, DIMN, 1>& em() const
   {
     return *((Eigen::Matrix<T, DIMN, 1>*)this);
   }
   //
-  T& operator()(int i)
+  qacc T& operator()(int i)
   {
     qassert(0 <= i && i < DIMN);
     return p[i];
   }
-  const T& operator()(int i) const
+  qacc const T& operator()(int i) const
   {
     qassert(0 <= i && i < DIMN);
     return p[i];
   }
   //
-  const MvectorT& operator+=(const MvectorT& x)
+  qacc const MvectorT& operator+=(const MvectorT& x)
   {
     *this = *this + x;
     return *this;
   }
   //
-  const MvectorT& operator-=(const MvectorT& x)
+  qacc const MvectorT& operator-=(const MvectorT& x)
   {
     *this = *this - x;
     return *this;
   }
   //
-  const MvectorT& operator*=(const T& x)
+  qacc const MvectorT& operator*=(const T& x)
   {
     *this = *this * x;
     return *this;
   }
   //
-  const MvectorT& operator/=(const T& x)
+  qacc const MvectorT& operator/=(const T& x)
   {
     *this = *this / x;
     return *this;
@@ -63,8 +63,8 @@ struct alignas(Eigen::Matrix<T, DIMN, 1>) MvectorT
 };
 
 template <int DIMN, class T>
-MvectorT<DIMN, T> operator+(const MvectorT<DIMN, T>& x,
-                            const MvectorT<DIMN, T>& y)
+qacc MvectorT<DIMN, T> operator+(const MvectorT<DIMN, T>& x,
+                                 const MvectorT<DIMN, T>& y)
 {
   MvectorT<DIMN, T> ret;
   ret.em() = x.em() + y.em();
@@ -72,8 +72,8 @@ MvectorT<DIMN, T> operator+(const MvectorT<DIMN, T>& x,
 }
 
 template <int DIMN, class T>
-MvectorT<DIMN, T> operator-(const MvectorT<DIMN, T>& x,
-                            const MvectorT<DIMN, T>& y)
+qacc MvectorT<DIMN, T> operator-(const MvectorT<DIMN, T>& x,
+                                 const MvectorT<DIMN, T>& y)
 {
   MvectorT<DIMN, T> ret;
   ret.em() = x.em() - y.em();
@@ -81,7 +81,7 @@ MvectorT<DIMN, T> operator-(const MvectorT<DIMN, T>& x,
 }
 
 template <int DIMN, class T>
-MvectorT<DIMN, T> operator-(const MvectorT<DIMN, T>& x)
+qacc MvectorT<DIMN, T> operator-(const MvectorT<DIMN, T>& x)
 {
   MvectorT<DIMN, T> ret;
   ret.em() = -x.em();
@@ -89,7 +89,7 @@ MvectorT<DIMN, T> operator-(const MvectorT<DIMN, T>& x)
 }
 
 template <int DIMN, class T>
-MvectorT<DIMN, T> operator*(const T& x, const MvectorT<DIMN, T>& y)
+qacc MvectorT<DIMN, T> operator*(const T& x, const MvectorT<DIMN, T>& y)
 {
   MvectorT<DIMN, T> ret;
   ret.em() = x * y.em();
@@ -97,7 +97,7 @@ MvectorT<DIMN, T> operator*(const T& x, const MvectorT<DIMN, T>& y)
 }
 
 template <int DIMN, class T>
-MvectorT<DIMN, T> operator*(const MvectorT<DIMN, T>& x, const T& y)
+qacc MvectorT<DIMN, T> operator*(const MvectorT<DIMN, T>& x, const T& y)
 {
   MvectorT<DIMN, T> ret;
   ret.em() = x.em() * y;
@@ -105,7 +105,7 @@ MvectorT<DIMN, T> operator*(const MvectorT<DIMN, T>& x, const T& y)
 }
 
 template <int DIMN, class T>
-MvectorT<DIMN, T> operator/(const MvectorT<DIMN, T>& x, const T& y)
+qacc MvectorT<DIMN, T> operator/(const MvectorT<DIMN, T>& x, const T& y)
 {
   MvectorT<DIMN, T> ret;
   ret.em() = x.em() / y;
@@ -113,26 +113,26 @@ MvectorT<DIMN, T> operator/(const MvectorT<DIMN, T>& x, const T& y)
 }
 
 template <int DIMN, class T>
-Complex dot_product(const MvectorT<DIMN, T>& x, const MvectorT<DIMN, T>& y)
+qacc Complex dot_product(const MvectorT<DIMN, T>& x, const MvectorT<DIMN, T>& y)
 {
   const Complex ret = x.em().adjoint() * y.em();
   return ret;
 }
 
 template <int DIMN, class T>
-void set_zero(MvectorT<DIMN, T>& m)
+qacc void set_zero(MvectorT<DIMN, T>& m)
 {
   std::memset((void*)&m, 0, sizeof(MvectorT<DIMN, T>));
 }
 
 template <int DIMN, class T>
-double qnorm(const MvectorT<DIMN, T>& m)
+qacc double qnorm(const MvectorT<DIMN, T>& m)
 {
   return m.em().squaredNorm();
 }
 
 template <int DIMN, class T>
-MvectorT<DIMN, T> vector_conjugate(const MvectorT<DIMN, T>& x)
+qacc MvectorT<DIMN, T> vector_conjugate(const MvectorT<DIMN, T>& x)
 {
   MvectorT<DIMN, T> ret;
   ret.em() = x.em().conjugate();
@@ -141,10 +141,10 @@ MvectorT<DIMN, T> vector_conjugate(const MvectorT<DIMN, T>& x)
 
 template <class T = ComplexT>
 struct WilsonVectorT : MvectorT<4 * NUM_COLOR, T> {
-  WilsonVectorT() {}
-  WilsonVectorT(const MvectorT<4 * NUM_COLOR, T>& m) { *this = m; }
+  qacc WilsonVectorT() {}
+  qacc WilsonVectorT(const MvectorT<4 * NUM_COLOR, T>& m) { *this = m; }
   //
-  const WilsonVectorT& operator=(const MvectorT<4 * NUM_COLOR, T>& m)
+  qacc const WilsonVectorT& operator=(const MvectorT<4 * NUM_COLOR, T>& m)
   {
     *this = (const WilsonVectorT&)m;
     return *this;
@@ -153,10 +153,10 @@ struct WilsonVectorT : MvectorT<4 * NUM_COLOR, T> {
 
 template <class T = ComplexT>
 struct SpinVectorT : MvectorT<4, T> {
-  SpinVectorT() {}
-  SpinVectorT(const MvectorT<4, T>& m) { *this = m; }
+  qacc SpinVectorT() {}
+  qacc SpinVectorT(const MvectorT<4, T>& m) { *this = m; }
   //
-  const SpinVectorT& operator=(const MvectorT<4, T>& m)
+  qacc const SpinVectorT& operator=(const MvectorT<4, T>& m)
   {
     *this = (const SpinVectorT&)m;
     return *this;
