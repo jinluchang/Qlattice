@@ -18,7 +18,7 @@ inline int& get_field_init();
 template <class M>
 struct Field {
   bool initialized;
-  Geometry geo;
+  vector<Geometry> geo;
   vector<M> field;
   //
   virtual const std::string& cname()
@@ -30,7 +30,7 @@ struct Field {
   virtual void init()
   {
     initialized = false;
-    geo.init();
+    clear(geo);
     clear(field);
   }
   virtual void init(const Geometry& geo_)
@@ -38,8 +38,8 @@ struct Field {
     if (!initialized) {
       TIMER("Field::init(geo)");
       init();
-      geo = geo_;
-      field.resize(geo.local_volume_expanded() * geo.multiplicity);
+      geo.resize(1, geo_);
+      field.resize(geo().local_volume_expanded() * geo().multiplicity);
       if (1 == get_field_init()) {
         set_zero(*this);
       } else if (2 == get_field_init()) {
@@ -49,7 +49,7 @@ struct Field {
       }
       initialized = true;
     } else {
-      qassert(is_matching_geo_mult(geo_, geo));
+      qassert(is_matching_geo_mult(geo_, geo()));
     }
   }
   virtual void init(const Geometry& geo_, const int multiplicity_)
@@ -57,8 +57,8 @@ struct Field {
     if (!initialized) {
       TIMER("Field::init(geo,mult)");
       init();
-      geo = geo_remult(geo_, multiplicity_);
-      field.resize(geo.local_volume_expanded() * geo.multiplicity);
+      geo.resize(1, geo_remult(geo_, multiplicity_));
+      field.resize(geo().local_volume_expanded() * geo().multiplicity);
       if (1 == get_field_init()) {
         set_zero(*this);
       } else if (2 == get_field_init()) {
@@ -68,8 +68,8 @@ struct Field {
       }
       initialized = true;
     } else {
-      if (not is_matching_geo_mult(geo_remult(geo_, multiplicity_), geo)) {
-        displayln("old geo = " + show(geo));
+      if (not is_matching_geo_mult(geo_remult(geo_, multiplicity_), geo())) {
+        displayln("old geo = " + show(geo()));
         displayln("new geo = " + show(geo_remult(geo_, multiplicity_)));
         qassert(false);
       }
@@ -79,10 +79,9 @@ struct Field {
   {
     if (!initialized) {
       TIMER("Field::init(f)");
-      init();
+      initialized = f.initialized;
       geo = f.geo;
       field = f.field;
-      initialized = true;
     } else {
       (*this) = f;
     }
@@ -96,13 +95,14 @@ struct Field {
     if (this == &f) {
       return *this;
     }
-    init(geo_resize(f.geo));
+    init(geo_resize(f.geo()));
+    const Geometry& geo_v = geo();
 #pragma omp parallel for
-    for (long index = 0; index < geo.local_volume(); ++index) {
-      const Coordinate xl = geo.coordinate_from_index(index);
+    for (long index = 0; index < geo_v.local_volume(); ++index) {
+      const Coordinate xl = geo_v.coordinate_from_index(index);
       Vector<M> v = this->get_elems(xl);
       const Vector<M> v_ = f.get_elems_const(xl);
-      for (int m = 0; m < geo.multiplicity; ++m) {
+      for (int m = 0; m < geo_v.multiplicity; ++m) {
         v[m] = v_[m];
       }
     }
@@ -122,61 +122,67 @@ struct Field {
   //
   qacc M& get_elem(const Coordinate& x, const int m)
   {
-    qassert(geo.is_on_node(x));
-    qassert(0 <= m && m < geo.multiplicity);
-    const long offset = geo.offset_from_coordinate(x) + m;
+    const Geometry& geo_v = geo();
+    qassert(geo_v.is_on_node(x));
+    qassert(0 <= m && m < geo_v.multiplicity);
+    const long offset = geo_v.offset_from_coordinate(x) + m;
     return get_elem(offset);
   }
   qacc const M& get_elem(const Coordinate& x, const int m) const
   {
-    qassert(geo.is_on_node(x));
-    qassert(0 <= m && m < geo.multiplicity);
-    const long offset = geo.offset_from_coordinate(x) + m;
+    const Geometry& geo_v = geo();
+    qassert(geo_v.is_on_node(x));
+    qassert(0 <= m && m < geo_v.multiplicity);
+    const long offset = geo_v.offset_from_coordinate(x) + m;
     return get_elem(offset);
   }
   //
   qacc M& get_elem(const Coordinate& x)
   {
-    qassert(1 == geo.multiplicity);
+    qassert(1 == geo().multiplicity);
     return get_elem(x, 0);
   }
   qacc const M& get_elem(const Coordinate& x) const
   {
-    qassert(1 == geo.multiplicity);
+    qassert(1 == geo().multiplicity);
     return get_elem(x, 0);
   }
   //
   qacc Vector<M> get_elems(const Coordinate& x)
   {
-    qassert(geo.is_on_node(x));
-    const long offset = geo.offset_from_coordinate(x);
-    return Vector<M>(&field[offset], geo.multiplicity);
+    const Geometry& geo_v = geo();
+    qassert(geo_v.is_on_node(x));
+    const long offset = geo_v.offset_from_coordinate(x);
+    return Vector<M>(&field[offset], geo_v.multiplicity);
   }
   qacc Vector<M> get_elems_const(const Coordinate& x) const
   // Be cautious about the const property
   // 改不改靠自觉
   {
-    if (not geo.is_on_node(x)) {
+    const Geometry& geo_v = geo();
+    if (not geo_v.is_on_node(x)) {
 #ifndef QLAT_USE_GPU
-      displayln("Field::get_elems_const: x=" + show(x) + "\ngeo=" + show(geo));
+      displayln("Field::get_elems_const: x=" + show(x) + "\ngeo=" + show(geo_v));
 #endif
-      qassert(geo.is_on_node(x));
+      qassert(geo_v.is_on_node(x));
     }
-    const long offset = geo.offset_from_coordinate(x);
-    return Vector<M>(&field[offset], geo.multiplicity);
+    const long offset = geo_v.offset_from_coordinate(x);
+    return Vector<M>(&field[offset], geo_v.multiplicity);
   }
   //
   qacc Vector<M> get_elems(const long index)
-  // qassert(geo.is_only_local())
+  // qassert(geo().is_only_local())
   {
-    return Vector<M>(&field[index * geo.multiplicity], geo.multiplicity);
+    const Geometry& geo_v = geo();
+    return Vector<M>(&field[index * geo_v.multiplicity], geo_v.multiplicity);
   }
   qacc Vector<M> get_elems_const(const long index) const
   // Be cautious about the const property
   // 改不改靠自觉
-  // qassert(geo.is_only_local())
+  // qassert(geo().is_only_local())
   {
-    return Vector<M>(&field[index * geo.multiplicity], geo.multiplicity);
+    const Geometry& geo_v = geo();
+    return Vector<M>(&field[index * geo_v.multiplicity], geo_v.multiplicity);
   }
 };
 
@@ -227,8 +233,8 @@ const Field<M>& operator+=(Field<M>& f, const Field<M>& f1)
     f = f1;
     return f;
   }
-  qassert(is_matching_geo_mult(f.geo, f1.geo));
-  const Geometry& geo = f.geo;
+  qassert(is_matching_geo_mult(f.geo(), f1.geo()));
+  const Geometry& geo = f.geo();
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     Coordinate x = geo.coordinate_from_index(index);
@@ -244,13 +250,13 @@ const Field<M>& operator-=(Field<M>& f, const Field<M>& f1)
 {
   TIMER("field_operator-=");
   if (not is_initialized(f)) {
-    f.init(f1.geo);
+    f.init(f1.geo());
     set_zero(f);
     f -= f1;
     return f;
   }
-  qassert(is_matching_geo_mult(f.geo, f1.geo));
-  const Geometry& geo = f.geo;
+  qassert(is_matching_geo_mult(f.geo(), f1.geo()));
+  const Geometry& geo = f.geo();
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); index++) {
     Coordinate x = geo.coordinate_from_index(index);
@@ -265,7 +271,7 @@ template <class M>
 const Field<M>& operator*=(Field<M>& f, const double factor)
 {
   TIMER("field_operator*=(F,D)");
-  const Geometry& geo = f.geo;
+  const Geometry& geo = f.geo();
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); index++) {
     const Coordinate x = geo.coordinate_from_index(index);
@@ -280,7 +286,7 @@ template <class M>
 const Field<M>& operator*=(Field<M>& f, const Complex factor)
 {
   TIMER("field_operator*=(F,C)");
-  const Geometry& geo = f.geo;
+  const Geometry& geo = f.geo();
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); index++) {
     Coordinate x = geo.coordinate_from_index(index);
@@ -294,7 +300,7 @@ const Field<M>& operator*=(Field<M>& f, const Complex factor)
 template <class M>
 double qnorm(const Field<M>& f)
 {
-  const Geometry& geo = f.geo;
+  const Geometry& geo = f.geo();
   double sum = 0.0;
 #pragma omp parallel
   {
@@ -321,9 +327,9 @@ double qnorm(const Field<M>& f)
 template <class M>
 double qnorm_double(const Field<M>& f1, const Field<M>& f2)
 {
-  const Geometry& geo = f1.geo;
+  const Geometry& geo = f1.geo();
   qassert(geo.is_only_local());
-  qassert(geo == f2.geo);
+  qassert(geo == f2.geo());
   double sum = qnorm_double(get_data(f1), get_data(f2));
   glb_sum(sum);
   return sum;
@@ -349,7 +355,7 @@ struct FieldM : Field<M> {
   }
   virtual void init(const Field<M>& f)
   {
-    qassert(multiplicity == f.geo.multiplicity);
+    qassert(multiplicity == f.geo().multiplicity);
     Field<M>::init(f);
   }
   //
@@ -361,14 +367,14 @@ qacc long get_data_size(const Field<M>& f)
 // NOT including the expended parts, only local volume data size
 // only size on one node
 {
-  return f.geo.local_volume() * f.geo.multiplicity * sizeof(M);
+  return f.geo().local_volume() * f.geo().multiplicity * sizeof(M);
 }
 
 template <class M>
 void qswap(Field<M>& f1, Field<M>& f2)
 {
   std::swap(f1.initialized, f2.initialized);
-  std::swap(f1.geo, f2.geo);
+  qswap(f1.geo, f2.geo);
   qswap(f1.field, f2.field);
 }
 

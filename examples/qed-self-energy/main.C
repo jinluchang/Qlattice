@@ -90,7 +90,7 @@ void acc_h_field(const FieldM<Complex, 1>& h, const double mass,
                  const int ts_limit, const long x_vec_sq_limit)
 {
   TIMER_VERBOSE("acc_h_field");
-  const Geometry& geo = h.geo;
+  const Geometry& geo = h.geo();
   const Coordinate total_site = geo.total_site();
   qassert(ts_limit >= total_site[3]);
   qassert(x_vec_sq_limit >= sqr(total_site[0] / 2) + sqr(total_site[1] / 2) +

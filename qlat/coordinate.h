@@ -150,7 +150,7 @@ qacc Coordinate coordinate_shifts(const Coordinate &x, const int dir)
 }
 
 qacc Coordinate coordinate_shifts(const Coordinate &x, const int dir1,
-                                    const int dir2)
+                                  const int dir2)
 {
   Coordinate xsh = x;
   qassert(-DIMN <= dir1 && dir1 < DIMN);
@@ -169,7 +169,7 @@ qacc Coordinate coordinate_shifts(const Coordinate &x, const int dir1,
 }
 
 qacc Coordinate coordinate_shifts(const Coordinate &x, const int dir1,
-                                    const int dir2, const int dir3)
+                                  const int dir2, const int dir3)
 {
   Coordinate xsh = x;
   qassert(-DIMN <= dir1 && dir1 < DIMN);
@@ -194,8 +194,8 @@ qacc Coordinate coordinate_shifts(const Coordinate &x, const int dir1,
 }
 
 qacc Coordinate coordinate_shifts(const Coordinate &x, const int dir1,
-                                    const int dir2, const int dir3,
-                                    const int dir4)
+                                  const int dir2, const int dir3,
+                                  const int dir4)
 {
   Coordinate xsh = x;
   qassert(-DIMN <= dir1 && dir1 < DIMN);
@@ -225,7 +225,7 @@ qacc Coordinate coordinate_shifts(const Coordinate &x, const int dir1,
   return xsh;
 }
 
-qacc Coordinate coordinate_shifts(const Coordinate &x,
+inline Coordinate coordinate_shifts(const Coordinate &x,
                                     const std::vector<int> path)
 {
   Coordinate ret = x;

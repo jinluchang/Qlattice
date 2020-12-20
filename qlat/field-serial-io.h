@@ -78,7 +78,7 @@ long serial_write_field(const Field<M>& f, const std::string& path,
                get_comm());
     }
   }
-  const long file_size = get_data(f).data_size() * f.geo.geon.num_node;
+  const long file_size = get_data(f).data_size() * f.geo().geon.num_node;
   timer.flops += file_size;
   return file_size;
 }
@@ -97,7 +97,7 @@ long serial_read_field(Field<M>& f, const std::string& path,
                    ssprintf(": file does not exist: '%s'", path.c_str()));
     return 0;
   }
-  const Geometry& geo = f.geo;
+  const Geometry& geo = f.geo();
   std::vector<Field<M> > fs;
   const std::vector<Geometry> new_geos =
       make_dist_io_geos(geo.total_site(), geo.multiplicity, new_size_node);
@@ -109,7 +109,7 @@ long serial_read_field(Field<M>& f, const std::string& path,
   if (get_id_node() == 0) {
     qassert(fs.size() > 0);
     Field<M> f;
-    f.init(fs[0].geo);
+    f.init(fs[0].geo());
     Vector<M> v = get_data(f);
     const int num_node = get_num_node();
     const int new_num_node = product(new_size_node);
@@ -136,7 +136,7 @@ long serial_read_field(Field<M>& f, const std::string& path,
     }
   }
   shuffle_field_back(f, fs, new_size_node);
-  const long file_size = get_data(f).data_size() * f.geo.geon.num_node;
+  const long file_size = get_data(f).data_size() * f.geo().geon.num_node;
   timer.flops += file_size;
   return file_size;
 }
@@ -155,7 +155,7 @@ long serial_read_field_par(Field<M>& f, const std::string& path,
                    ssprintf(": file does not exist: '%s'", path.c_str()));
     return 0;
   }
-  const Geometry& geo = f.geo;
+  const Geometry& geo = f.geo();
   std::vector<Field<M> > fs;
   const std::vector<Geometry> new_geos =
       make_dist_io_geos(geo.total_site(), geo.multiplicity, new_size_node);
@@ -166,7 +166,7 @@ long serial_read_field_par(Field<M>& f, const std::string& path,
   if (fs.size() > 0) {
     FILE* fp = qopen(path, "r");
     qassert(fp != NULL);
-    fseek(fp, offset + fs[0].geo.geon.id_node * get_data(fs[0]).data_size(),
+    fseek(fp, offset + fs[0].geo().geon.id_node * get_data(fs[0]).data_size(),
           whence);
     for (size_t i = 0; i < fs.size(); ++i) {
       Vector<M> v = get_data(fs[i]);
@@ -176,7 +176,7 @@ long serial_read_field_par(Field<M>& f, const std::string& path,
   }
   shuffle_field_back(f, fs, new_size_node);
   sync_node();
-  const long file_size = get_data(f).data_size() * f.geo.geon.num_node;
+  const long file_size = get_data(f).data_size() * f.geo().geon.num_node;
   timer.flops += file_size;
   return file_size;
 }
@@ -186,7 +186,7 @@ long serial_write_field(const Field<M>& f, const std::string& path)
 // interface_function
 {
   return serial_write_field(
-      f, path, get_default_serial_new_size_node(f.geo, dist_write_par_limit()));
+      f, path, get_default_serial_new_size_node(f.geo(), dist_write_par_limit()));
 }
 
 template <class M>
@@ -195,7 +195,7 @@ long serial_read_field(Field<M>& f, const std::string& path,
 // interface_function
 {
   return serial_read_field(
-      f, path, get_default_serial_new_size_node(f.geo, dist_read_par_limit()),
+      f, path, get_default_serial_new_size_node(f.geo(), dist_read_par_limit()),
       offset, whence);
 }
 
@@ -205,7 +205,7 @@ long serial_read_field_par(Field<M>& f, const std::string& path,
 // interface_function
 {
   return serial_read_field_par(
-      f, path, get_default_serial_new_size_node(f.geo, dist_read_par_limit()),
+      f, path, get_default_serial_new_size_node(f.geo(), dist_read_par_limit()),
       offset, whence);
 }
 
@@ -213,7 +213,7 @@ template <class M>
 crc32_t field_simple_checksum(const Field<M>& f)
 {
   TIMER("field_simple_checksum");
-  qassert(f.geo.is_only_local());
+  qassert(f.geo().is_only_local());
   crc32_t ret = 0;
   const Vector<M> v = get_data(f);
   Vector<crc32_t> vc((crc32_t*)v.data(), v.data_size() / sizeof(crc32_t));
@@ -228,14 +228,14 @@ template <class M>
 crc32_t field_crc32_shuffle(const Field<M>& f)
 {
   TIMER_VERBOSE_FLOPS("field_crc32_shuffle");
-  const Geometry& geo = f.geo;
+  const Geometry& geo = f.geo();
   const Coordinate new_size_node = get_default_serial_new_size_node(geo);
   std::vector<Field<M> > fs;
   shuffle_field(fs, f, new_size_node);
   crc32_t ret = 0;
   for (int i = 0; i < (int)fs.size(); ++i) {
-    const int new_id_node = fs[i].geo.geon.id_node;
-    const int new_num_node = fs[i].geo.geon.num_node;
+    const int new_id_node = fs[i].geo().geon.id_node;
+    const int new_num_node = fs[i].geo().geon.num_node;
     const Vector<M> v = get_data(fs[i]);
     ret ^= crc32_shift(crc32_par(v),
                        (new_num_node - new_id_node - 1) * v.data_size());
@@ -249,7 +249,7 @@ template <class M>
 crc32_t field_crc32_sites(const Field<M>& f)
 {
   TIMER_VERBOSE_FLOPS("field_crc32_sites");
-  const Geometry& geo = f.geo;
+  const Geometry& geo = f.geo();
   const long total_volume = geo.total_volume();
   const long data_size_site = geo.multiplicity * sizeof(M);
   const int v_limit = omp_get_max_threads();
@@ -314,7 +314,7 @@ long write_field(const Field<M>& f, const std::string& path,
   TIMER_VERBOSE_FLOPS("write_field");
   displayln_info(fname + ssprintf(": fn='%s'.", path.c_str()));
   qassert(is_initialized(f));
-  const Geometry& geo = f.geo;
+  const Geometry& geo = f.geo();
   const crc32_t crc32 = field_crc32(f);
   if (get_force_field_write_sizeof_M() == 0) {
     qtouch_info(path + ".partial", make_field_header(geo, sizeof(M), crc32));

@@ -23,12 +23,12 @@ void set_propagator_from_fermion_fields(
     Propagator4dT<T>& prop, const Array<FermionField4dT<T>, 4 * NUM_COLOR> ffs)
 {
   TIMER_VERBOSE("set_propagator_from_fermion_fields");
-  const Geometry& geo = ffs[0].geo;
+  const Geometry& geo = ffs[0].geo();
   for (int i = 0; i < 4 * NUM_COLOR; ++i) {
-    qassert(geo == ffs[i].geo);
+    qassert(geo == ffs[i].geo());
   }
   prop.init(geo_reform(geo));
-  qassert(prop.geo == geo);
+  qassert(prop.geo() == geo);
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -56,8 +56,8 @@ inline void set_propagator_col_from_fermion_field(Propagator4dT<T>& prop,
                                                   const FermionField4dT<T>& ff)
 {
   TIMER("set_propagator_col_from_fermion_field");
-  const Geometry& geo = ff.geo;
-  qassert(geo == prop.geo);
+  const Geometry& geo = ff.geo();
+  qassert(geo == prop.geo());
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -81,9 +81,9 @@ inline void set_fermion_field_from_propagator_col(FermionField4dT<T>& ff,
                                                   const int idx)
 {
   TIMER("set_fermion_field_from_propagator_col");
-  const Geometry& geo = prop.geo;
+  const Geometry& geo = prop.geo();
   ff.init(geo_reform(geo));
-  qassert(geo == ff.geo);
+  qassert(geo == ff.geo());
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -100,7 +100,7 @@ inline void fermion_field_5d_from_4d(FermionField5dT<T>& ff5d,
 // lower componets are left handed
 {
   TIMER("fermion_field_5d_from_4d");
-  const Geometry& geo = ff5d.geo;
+  const Geometry& geo = ff5d.geo();
   set_zero(ff5d);
   const int sizewvh = sizeof(WilsonVectorT<T>) / 2;
 #pragma omp parallel for
@@ -121,7 +121,7 @@ void fermion_field_4d_from_5d(FermionField4dT<T>& ff4d,
 // lower componets are left handed
 {
   TIMER("fermion_field_4d_from_5d");
-  const Geometry& geo = ff5d.geo;
+  const Geometry& geo = ff5d.geo();
   ff4d.init(geo_reform(geo));
   set_zero(ff4d);
   const int sizewvh = sizeof(WilsonVectorT<T>) / 2;
@@ -139,15 +139,15 @@ template <class Inverter, class T>
 inline long invert_dwf(FermionField4dT<T>& sol, const FermionField4dT<T>& src,
                        const Inverter& inv, const int ls_ = 0)
 // sol do not need to be initialized
-// inv.geo must be the geometry of the fermion field
+// inv.geo() must be the geometry of the fermion field
 // invert(sol5d, src5d, inv) perform the inversion
 {
   TIMER_VERBOSE("invert_dwf(4d,4d,inv)");
-  const Geometry& geo = src.geo;
-  qassert(check_matching_geo(geo, inv.geo));
+  const Geometry& geo = src.geo();
+  qassert(check_matching_geo(geo, inv.geo()));
   sol.init(geo);
   const int ls = ls_ != 0 ? ls_ : inv.fa.ls;
-  const Geometry geo_ls = geo_reform(inv.geo, ls, 0);
+  const Geometry geo_ls = geo_reform(inv.geo(), ls, 0);
   FermionField5dT<T> sol5d, src5d;
   sol5d.init(geo_ls);
   src5d.init(geo_ls);
@@ -162,11 +162,11 @@ template <class Inverter, class T>
 void invert(Propagator4dT<T>& sol, const Propagator4dT<T>& src,
             const Inverter& inv)
 // sol do not need to be initialized
-// inv.geo must be the geometry of the fermion field
+// inv.geo() must be the geometry of the fermion field
 // invert(4d, 4d, inv) perform the inversion
 {
   TIMER_VERBOSE("invert(p4d,p4d,inv)");
-  const Geometry geo = geo_reform(src.geo);
+  const Geometry geo = geo_reform(src.geo());
   sol.init(geo);
   FermionField4dT<T> ff_sol, ff_src;
   for (int j = 0; j < 4 * NUM_COLOR; ++j) {
@@ -188,7 +188,7 @@ void smear_propagator(Propagator4dT<T>& prop, const GaugeFieldT<T>& gf1,
   if (0 == step) {
     return;
   }
-  const Geometry& geo = prop.geo;
+  const Geometry& geo = prop.geo();
   const Geometry geo1 =
       smear_in_time_dir
           ? geo_resize(geo, 1)
@@ -229,7 +229,7 @@ void set_point_src_fermion_field(FermionField4dT<T>& ff, const Coordinate& xg,
 // ff need to be initialized
 {
   TIMER("set_point_src_fermion_field");
-  const Geometry& geo = ff.geo;
+  const Geometry& geo = ff.geo();
   set_zero(ff);
   const Coordinate xl = geo.coordinate_l_from_g(xg);
   if (geo.is_local(xl)) {
@@ -257,7 +257,7 @@ void set_point_src_propagator(Propagator4dT<T>& prop, const Inverter& inv,
                               const Coordinate& xg, const Complex& value = 1.0)
 {
   TIMER_VERBOSE("set_point_src_propagator");
-  const Geometry geo = geo_reform(inv.geo);
+  const Geometry geo = geo_reform(inv.geo());
   prop.init(geo);
   FermionField4dT<T> sol, src;
   sol.init(geo);
@@ -285,7 +285,7 @@ inline void set_wall_src_fermion_field(FermionField4d& ff, const int tslice,
 // ff need to be initialized beforehand
 {
   qassert(lmom[3] == 0);
-  const Geometry& geo = ff.geo;
+  const Geometry& geo = ff.geo();
   const CoordinateD mom = lmom * lattice_mom_mult(geo);
   set_zero(ff);
 #pragma omp parallel for
@@ -323,7 +323,7 @@ inline void set_wall_src_propagator(Propagator4d& prop, const Inverter& inv,
                                     const CoordinateD& lmom = CoordinateD())
 {
   TIMER_VERBOSE("set_wall_src_propagator");
-  const Geometry geo = geo_reform(inv.geo);
+  const Geometry geo = geo_reform(inv.geo());
   prop.init(geo);
   FermionField4d sol, src;
   sol.init(geo);
@@ -341,7 +341,7 @@ inline void set_volume_src_fermion_field(FermionField4d& ff,
 // ff need to be initialized beforehand
 {
   qassert(lmom[3] == 0);
-  const Geometry& geo = ff.geo;
+  const Geometry& geo = ff.geo();
   const CoordinateD mom = lmom * lattice_mom_mult(geo);
   set_zero(ff);
 #pragma omp parallel for
@@ -375,7 +375,7 @@ inline void set_volume_src_propagator(Propagator4d& prop, const Inverter& inv,
                                       const CoordinateD& lmom = CoordinateD())
 {
   TIMER_VERBOSE("set_volume_src_propagator");
-  const Geometry geo = geo_reform(inv.geo);
+  const Geometry geo = geo_reform(inv.geo());
   prop.init(geo);
   FermionField4d sol, src;
   sol.init(geo);
@@ -392,7 +392,7 @@ inline void set_mom_src_fermion_field(FermionField4d& ff,
                                       const CoordinateD& lmom, const int cs)
 // ff need to be initialized beforehand
 {
-  const Geometry& geo = ff.geo;
+  const Geometry& geo = ff.geo();
   const CoordinateD mom = lmom * lattice_mom_mult(geo);
   set_zero(ff);
 #pragma omp parallel for
@@ -413,7 +413,7 @@ inline void set_mom_src(Propagator4d& prop, const Geometry& geo_input,
   TIMER_VERBOSE("set_mom_src");
   const Geometry& geo = geo_reform(geo_input);
   prop.init(geo);
-  qassert(prop.geo == geo);
+  qassert(prop.geo() == geo);
   FermionField4d src;
   src.init(geo);
   for (int cs = 0; cs < 4 * NUM_COLOR; ++cs) {
@@ -427,9 +427,9 @@ inline void set_mom_src_propagator(Propagator4d& prop, Inverter& inv,
                                    const CoordinateD& lmom)
 {
   TIMER_VERBOSE("set_mom_src_propagator");
-  const Geometry& geo = geo_remult(inv.geo);
+  const Geometry& geo = geo_remult(inv.geo());
   prop.init(geo);
-  qassert(prop.geo == geo);
+  qassert(prop.geo() == geo);
   FermionField4d src, sol;
   src.init(geo);
   sol.init(geo);
@@ -450,7 +450,7 @@ void free_mom_invert(Propagator4dT<T>& sol, const Propagator4dT<T>& src,
 {
   TIMER("free_mom_invert");
   sol.init(src);
-  const Geometry& geo = src.geo;
+  const Geometry& geo = src.geo();
   const double m5 = 1.0;
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
@@ -502,7 +502,7 @@ void free_invert(Propagator4dT<T>& sol, const Propagator4dT<T>& src,
                  const double mass, const CoordinateD& momtwist = CoordinateD())
 {
   TIMER_VERBOSE("free_invert");
-  const Geometry& geo = src.geo;
+  const Geometry& geo = src.geo();
   sol.init(src);
   fft_complex_field(sol, true);
   free_mom_invert(sol, sol, mass, momtwist);
@@ -519,7 +519,7 @@ inline void set_tslice_mom_src_fermion_field(FermionField4d& ff,
 // ff need to be initialized beforehand
 {
   qassert(lmom[3] == 0);
-  const Geometry& geo = ff.geo;
+  const Geometry& geo = ff.geo();
   const CoordinateD mom = lmom * lattice_mom_mult(geo);
   set_zero(ff);
 #pragma omp parallel for
@@ -556,9 +556,9 @@ inline void set_tslice_mom_src_propagator(Propagator4d& prop, const int tslice,
                                           Inverter& inverter)
 {
   TIMER_VERBOSE("set_tslice_mom_src_propagator");
-  const Geometry& geo = geo_remult(inverter.geo);
+  const Geometry& geo = geo_remult(inverter.geo());
   prop.init(geo);
-  qassert(prop.geo == geo);
+  qassert(prop.geo() == geo);
   FermionField4d src, sol;
   src.init(geo);
   sol.init(geo);

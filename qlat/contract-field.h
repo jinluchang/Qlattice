@@ -40,7 +40,7 @@ void rescale_field_with_psel_fsel_distribution(Field<M>& f,
                                                const FieldM<Complex, 1>& pfdist)
 {
   TIMER_VERBOSE("rescale_field_with_psel_fsel_distribution");
-  const Geometry& geo = f.geo;
+  const Geometry& geo = f.geo();
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -84,7 +84,7 @@ inline array<SpinMatrix, 8>& get_va_matrices()
 inline void field_permute_mu_nu(FieldM<Complex, 8 * 8>& f)
 {
   TIMER_VERBOSE("field_permute_mu_nu");
-  const Geometry& geo = f.geo;
+  const Geometry& geo = f.geo();
   FieldM<Complex, 8 * 8> f0;
   f0 = f;
 #pragma omp parallel for
@@ -102,7 +102,7 @@ inline void field_permute_mu_nu(FieldM<Complex, 8 * 8>& f)
 inline void field_conjugate_mu_nu(FieldM<Complex, 8 * 8>& f)
 {
   TIMER_VERBOSE("field_conjugate_mu_nu");
-  const Geometry& geo = f.geo;
+  const Geometry& geo = f.geo();
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     Vector<Complex> fv = f.get_elems(index);
@@ -120,7 +120,7 @@ inline void field_conjugate_mu_nu(FieldM<Complex, 8 * 8>& f)
 inline void field_complex_conjugate(Field<Complex>& f)
 {
   TIMER_VERBOSE("field_complex_conjugate");
-  const Geometry& geo = f.geo;
+  const Geometry& geo = f.geo();
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     Vector<Complex> fv = f.get_elems(index);
@@ -198,7 +198,7 @@ inline void contract_meson_vv_unshifted(
 {
   TIMER_VERBOSE("contract_meson_vv_acc_unshifted");
   qassert(psel[xg_y_psel_idx] == xg_y);
-  const Geometry& geo = fsel.f_rank.geo;
+  const Geometry& geo = fsel.f_rank.geo();
   const Coordinate total_site = geo.total_site();
   const int multiplicity = 8 * 8;
   clear(sfs);
@@ -247,9 +247,9 @@ inline void contract_meson_vv_acc(
 // ssp = make_shift_shuffle_plan(fsel, -xg_y);
 {
   TIMER_VERBOSE("contract_meson_vv_acc");
-  const Geometry& geo = fsel.f_rank.geo;
+  const Geometry& geo = fsel.f_rank.geo();
   qassert(is_initialized(decay) == is_initialized(fission));
-  qassert(geo == prop3_x_y.geo);
+  qassert(geo == prop3_x_y.geo());
   qassert(fsel.n_elems == prop3_x_y.n_elems);
   qassert(is_initialized(wsp1));
   qassert(is_initialized(wsp2));
@@ -410,7 +410,7 @@ inline void contract_meson_vv_meson_unshifted(
 {
   TIMER_VERBOSE("contract_meson_vv_meson_unshifted");
   qassert(psel[xg_y_psel_idx] == xg_y);
-  const Geometry& geo = fsel.f_rank.geo;
+  const Geometry& geo = fsel.f_rank.geo();
   const Coordinate total_site = geo.total_site();
   const int multiplicity = 8 * 8;
   clear(meson_vv_meson);
@@ -461,9 +461,9 @@ inline void contract_meson_vv_meson_acc(
 // ssp = make_shift_shuffle_plan(fsel, -xg_y);
 {
   TIMER_VERBOSE("contract_meson_vv_meson_acc");
-  const Geometry& geo = fsel.f_rank.geo;
+  const Geometry& geo = fsel.f_rank.geo();
   qassert(is_initialized(forward) == is_initialized(backward));
-  qassert(geo == prop4_x_y.geo);
+  qassert(geo == prop4_x_y.geo());
   qassert(fsel.n_elems == prop4_x_y.n_elems);
   qassert(is_initialized(wsp1));
   qassert(is_initialized(wsp2));
@@ -549,7 +549,7 @@ inline void contract_meson_chvp_acc(FieldM<Complex, 8 * 8>& mchvp,
 // chvp_3_4 already should shifted to origin (xg_y -> 0)
 {
   TIMER_VERBOSE("contract_meson_chvp_acc");
-  const Geometry& geo = chvp_3_4.geo;
+  const Geometry& geo = chvp_3_4.geo();
   const Coordinate total_site = geo.total_site();
   if (not is_initialized(mchvp)) {
     mchvp.init(geo);

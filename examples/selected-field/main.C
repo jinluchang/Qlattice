@@ -91,15 +91,15 @@ inline void demo()
   //
   displayln_info(fname + ssprintf(": compute the sum of all the selected points in 'f'"));
   Complex sum = 0.0;
-  for (long index = 0; index < f.geo.local_volume(); ++index) {
+  for (long index = 0; index < f.geo().local_volume(); ++index) {
     const long idx = fsel.f_local_idx.get_elems_const(index)[0];
     if (idx < 0) {
       continue;
     }
-    const Coordinate xl = f.geo.coordinate_from_index(index);
+    const Coordinate xl = f.geo().coordinate_from_index(index);
     const Vector<Complex> fv = f.get_elems_const(xl);
     // f.geto.multiplicity = 2 is the number of elements per site
-    for (int m = 0; m < f.geo.multiplicity; ++m) {
+    for (int m = 0; m < f.geo().multiplicity; ++m) {
       sum += fv[m];
     }
   }
@@ -335,7 +335,7 @@ inline void test_selected_points(const std::string& tag, const long n_points)
   SelectedPoints<Complex> sp2;
   load_selected_points_complex(sp2, "huge-data/" + tag + "/f.lat");
   Field<Complex> f2;
-  set_field_selected(f2, sp2, f.geo, psel);
+  set_field_selected(f2, sp2, f.geo(), psel);
   const crc32_t crc2 = field_crc32(f2);
   displayln_info(ssprintf(": %06X <- f2 set and set", crc2));
   //

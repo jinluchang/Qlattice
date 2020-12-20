@@ -124,10 +124,10 @@ template <class M, class N>
 inline void field_convert(cps::GridComm<M>& gc, const Field<N>& f)
 {
   TIMER_VERBOSE("field_convert");
-  const Geometry& geo = f.geo;
+  const Geometry& geo = f.geo();
   cps::Geometry cgeo = geo_convert(geo);
   gc.init(cgeo);
-  qassert(check_matching_geo_mult(f.geo, geo_convert(gc.getGeometry())));
+  qassert(check_matching_geo_mult(f.geo(), geo_convert(gc.getGeometry())));
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -146,7 +146,7 @@ inline void field_convert(Field<N>& f, const cps::GridComm<M>& gc)
   const cps::Geometry cgeo = gc.getGeometry();
   Geometry geo = geo_convert(cgeo);
   f.init(geo);
-  qassert(check_matching_geo_mult(f.geo, geo));
+  qassert(check_matching_geo_mult(f.geo(), geo));
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -197,18 +197,18 @@ inline void gt_gf_fix_gauge_coulomb(GaugeTransform& gt, const GaugeField& gf,
   fix_gauge_arg.max_iter_num = max_iter_num;
   fix_gauge_arg.hyperplane_start = 0;
   fix_gauge_arg.hyperplane_step = 1;
-  fix_gauge_arg.hyperplane_num = gf.geo.total_site()[3];
+  fix_gauge_arg.hyperplane_num = gf.geo().total_site()[3];
   cps::CommonArg common_arg;
   cps::Lattice& lat =
       cps::LatticeFactory::Create(cps::F_CLASS_NONE, cps::G_CLASS_NONE);
   cps::AlgFixGauge fg(lat, &common_arg, &fix_gauge_arg);
   fg.run();
-  gt.init(gf.geo);
+  gt.init(gf.geo());
 #pragma omp parallel for
-  for (long index = 0; index < gt.geo.local_volume(); ++index) {
-    const Coordinate& xl = gt.geo.coordinate_from_index(index);
+  for (long index = 0; index < gt.geo().local_volume(); ++index) {
+    const Coordinate& xl = gt.geo().coordinate_from_index(index);
     const int k =
-        ((xl[2] * gt.geo.node_site[1]) + xl[1]) * gt.geo.node_site[0] + xl[0];
+        ((xl[2] * gt.geo().node_site[1]) + xl[1]) * gt.geo().node_site[0] + xl[0];
     value_convert(gt.get_elem(xl), lat.fix_gauge_ptr[xl[3]][k]);
   }
   fg.free();
@@ -303,7 +303,7 @@ inline void run_lanc(LowModesCPS& lm, const GaugeField& gf,
   cps::GaugeField cgf;
   field_convert(cgf, gf);
   cps::LancArg cla = lanc_arg_convert(la, fa);
-  lm.init(geo_reform(gf.geo, fa.ls, 0), fa);
+  lm.init(geo_reform(gf.geo(), fa.ls, 0), fa);
   cps::LanczosRun<float>::run(lm.lanc, cgf, fa_convert(fa), cla);
 }
 
@@ -398,7 +398,7 @@ inline void load_or_compute_low_modes(LowModesCPS& lm, const std::string& path,
   if (path == "") {
     run_lanc(lm, gf, fa, la);
   } else {
-    lm.init(geo_reform(gf.geo, fa.ls, 0), fa);
+    lm.init(geo_reform(gf.geo(), fa.ls, 0), fa);
     if (0 == read_low_modes(lm, path)) {
       lm.init();
       run_lanc(lm, gf, fa, la);
@@ -429,13 +429,13 @@ struct InverterDomainWallCPS {
   void setup() { inverter.reinit(); }
   void setup(const GaugeField& gf_, const FermionAction& fa_)
   {
-    geo = geo_reform(gf_.geo, fa_.ls);
+    geo = geo_reform(gf_.geo(), fa_.ls);
     fa = fa_;
     gf = gf_;
     cps::FermionActionDomainWall cfa = fa_convert(fa);
     cps::GaugeField cgf;
     field_convert(cgf, gf);
-    inverter.geo.initialized = false;
+    inverter.geo().initialized = false;
     inverter.init(cgf, cfa);
   }
   //
@@ -475,7 +475,7 @@ inline long invert(FermionField5d& sol, const FermionField5d& src,
 // sol do not need to be initialized
 {
   TIMER_VERBOSE("invert(5d,5d,IDWCPS)");
-  const Geometry& geo = src.geo;
+  const Geometry& geo = src.geo();
   sol.init(geo);
   cps::FermionField5d csol, csrc;
   field_convert(csrc, src);

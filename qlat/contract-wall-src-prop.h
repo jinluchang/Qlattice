@@ -53,7 +53,7 @@ inline std::vector<WilsonMatrix> contract_wall_snk_prop(
     const SelProp& prop, const FieldSelection& fsel)
 {
   TIMER_VERBOSE("contract_wall_snk_prop");
-  const Geometry& geo = prop.geo;
+  const Geometry& geo = prop.geo();
   const Coordinate total_site = geo.total_site();
   std::vector<WilsonMatrix> gwm_ts(omp_get_max_threads() * total_site[3]);
   set_zero(gwm_ts);
@@ -90,7 +90,7 @@ inline std::vector<WilsonMatrix> contract_wall_snk_prop(
 inline void refresh_wall_snk_prop(WallSrcProps& wsp, const FieldSelection& fsel)
 {
   TIMER_VERBOSE("refresh_wall_snk_prop");
-  const Coordinate total_site = fsel.f_rank.geo.total_site();
+  const Coordinate total_site = fsel.f_rank.geo().total_site();
   wsp.sloppy_wall_snk.resize(total_site[3]);
   wsp.exact_wall_snk.resize(total_site[3]);
   for (int i = 0; i < total_site[3]; ++i) {
@@ -149,7 +149,7 @@ inline void refresh_prop_with_gt(WallSrcProps& wsp, const GaugeTransform& gt,
 // need refresh_wall_snk_prop before this func
 {
   TIMER_VERBOSE("refresh_prop_with_gt");
-  const Coordinate total_site = fsel.f_rank.geo.total_site();
+  const Coordinate total_site = fsel.f_rank.geo().total_site();
   GaugeTransform gt_inv;
   gt_invert(gt_inv, gt);
   for (int i = 0; i < total_site[3]; ++i) {
@@ -186,7 +186,7 @@ inline void refresh_wsp(WallSrcProps& wsp, const int num_exact,
 // interface function
 {
   TIMER_VERBOSE("refresh_wsp");
-  const Coordinate total_site = fsel.f_rank.geo.total_site();
+  const Coordinate total_site = fsel.f_rank.geo().total_site();
   refresh_wall_snk_prop(wsp, fsel);
   refresh_prob(wsp, total_site, num_exact);
   refresh_prop_with_gt(wsp, gt, psel, fsel);

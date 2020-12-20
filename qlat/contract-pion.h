@@ -18,7 +18,7 @@ inline LatData mk_pion_corr_table(const Coordinate& total_site)
 inline LatData contract_pion(const Propagator4d& prop, const int tslice_src)
 {
   TIMER_VERBOSE("contract_pion(prop,tsrc)");
-  const Geometry& geo = prop.geo;
+  const Geometry& geo = prop.geo();
   const Coordinate total_site = geo.total_site();
   LatData ld = mk_pion_corr_table(total_site);
   Vector<Complex> ldv = lat_data_cget(ld);
@@ -56,7 +56,7 @@ inline LatData contract_pion(const SelProp& prop, const int tslice_src,
                              const FieldSelection& fsel)
 {
   TIMER_VERBOSE("contract_pion(s_prop,tsrc,fsel)");
-  const Geometry& geo = prop.geo;
+  const Geometry& geo = prop.geo();
   const Coordinate total_site = geo.total_site();
   LatData ld = mk_pion_corr_table(total_site);
   Vector<Complex> ldv = lat_data_cget(ld);
@@ -77,7 +77,7 @@ inline LatData contract_kaon(const SelProp& prop1, const SelProp& prop2,
                              const int tslice_src, const FieldSelection& fsel)
 {
   TIMER_VERBOSE("contract_kaon(s_prop1,s_prop2,fsel)");
-  const Geometry& geo = prop1.geo;
+  const Geometry& geo = prop1.geo();
   const Coordinate total_site = geo.total_site();
   LatData ld = mk_pion_corr_table(total_site);
   Vector<Complex> ldv = lat_data_cget(ld);
@@ -100,7 +100,7 @@ inline LatData contract_pion_wall_snk(const SelProp& prop, const int tslice_src,
 // is already sparse corrected
 {
   TIMER_VERBOSE("contract_pion_wall_snk(s_prop,fsel)");
-  const Geometry& geo = prop.geo;
+  const Geometry& geo = prop.geo();
   const Coordinate total_site = geo.total_site();
   const std::vector<WilsonMatrix> wm_ts = contract_wall_snk_prop(prop, fsel);
   qassert((int)wm_ts.size() == total_site[3]);
@@ -123,7 +123,7 @@ inline LatData contract_kaon_wall_snk(const SelProp& prop1,
 // is already sparse corrected
 {
   TIMER_VERBOSE("contract_kaon_wall_snk(s_prop1,s_prop2,tsrc,fsel)");
-  const Geometry& geo = prop1.geo;
+  const Geometry& geo = prop1.geo();
   const Coordinate total_site = geo.total_site();
   const std::vector<WilsonMatrix> wm1_ts = contract_wall_snk_prop(prop1, fsel);
   const std::vector<WilsonMatrix> wm2_ts = contract_wall_snk_prop(prop2, fsel);
@@ -165,7 +165,7 @@ inline LatData contract_two_point_function(const SelProp& prop1,
   TIMER_VERBOSE("contract_two_point_function");
   const array<SpinMatrix, 16>& gms = SpinMatrixConstants::get_cps_gms();
   const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
-  const Geometry& geo = prop1.geo;
+  const Geometry& geo = prop1.geo();
   const Coordinate total_site = geo.total_site();
   std::vector<array<WilsonMatrix, 16> > gwm_ts(omp_get_max_threads() *
                                                     total_site[3]);
@@ -282,7 +282,7 @@ inline LatData contract_two_point_wall_snk_function(const SelProp& prop1,
 // prop2[t]^\dagger gamma5 gms[op_snk] ) 0 <= tsep < total_site[3]
 {
   TIMER_VERBOSE("contract_two_point_wall_snk_function");
-  const Geometry& geo = fsel.f_rank.geo;
+  const Geometry& geo = fsel.f_rank.geo();
   const Coordinate total_site = geo.total_site();
   const LatData ld_two_point_func =
       contract_two_point_function(prop1, prop2, tslice, fsel);
@@ -301,7 +301,7 @@ inline LatData contract_two_point_function(const WallSrcProps& wsp1,
   Timer::autodisplay();
   TIMER_VERBOSE("contract_two_point_function(wsp)");
   qassert(wsp1.sloppy_exact_ratio_1 == wsp2.sloppy_exact_ratio_1);
-  const Geometry& geo = fsel.f_rank.geo;
+  const Geometry& geo = fsel.f_rank.geo();
   const Coordinate total_site = geo.total_site();
   LatData ld = mk_two_point_table(total_site);
   for (int tslice = 0; tslice < total_site[3]; ++tslice) {
@@ -328,7 +328,7 @@ inline LatData contract_two_point_wall_snk_function(const WallSrcProps& wsp1,
 {
   TIMER_VERBOSE("contract_two_point_wall_snk_function(wsp)");
   qassert(wsp1.sloppy_exact_ratio_1 == wsp2.sloppy_exact_ratio_1);
-  const Geometry& geo = fsel.f_rank.geo;
+  const Geometry& geo = fsel.f_rank.geo();
   const Coordinate total_site = geo.total_site();
   LatData ld = mk_two_point_table(total_site);
   for (int tslice = 0; tslice < total_site[3]; ++tslice) {
@@ -381,10 +381,10 @@ inline LatData contract_three_point_function(const SelProp& prop_a,
   TIMER("contract_three_point_function");
   const array<SpinMatrix, 16>& gms = SpinMatrixConstants::get_cps_gms();
   const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
-  const Geometry& geo = fsel.f_rank.geo;
+  const Geometry& geo = fsel.f_rank.geo();
   const Coordinate total_site = geo.total_site();
-  qassert(is_matching_geo_mult(prop_a.geo, geo));
-  qassert(is_matching_geo_mult(prop_b.geo, geo));
+  qassert(is_matching_geo_mult(prop_a.geo(), geo));
+  qassert(is_matching_geo_mult(prop_b.geo(), geo));
   std::vector<WilsonMatrix> gwm_ts(omp_get_max_threads() * total_site[3]);
   set_zero(gwm_ts);
 #pragma omp parallel
@@ -432,7 +432,7 @@ inline LatData contract_three_point_function(
     const int yt_measurement_sparsity = 1, const int yt_measurement_start = 0)
 {
   TIMER_VERBOSE("compute_three_point_function");
-  const Geometry& geo = fsel.f_rank.geo;
+  const Geometry& geo = fsel.f_rank.geo();
   const Coordinate total_site = geo.total_site();
   qassert(total_site[3] % yt_measurement_sparsity == 0);
   qassert(0 <= yt_measurement_start and

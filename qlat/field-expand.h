@@ -72,7 +72,7 @@ template <class Vec>
 void set_marks_field_path(CommMarks& marks, const Coordinate xl,
                           const Vec& path)
 {
-  const Geometry& geo = marks.geo;
+  const Geometry& geo = marks.geo();
   Coordinate xl1 = xl;
   for (int i = 0; i < (int)path.size(); ++i) {
     const int dir = path[i];
@@ -116,7 +116,7 @@ struct CommPlanKey {
   std::string key;
   SetMarksField set_marks_field;
   std::string tag;
-  Geometry geo;
+  vector<Geometry> geo;
 };
 
 inline void g_offset_id_node_from_offset(long& g_offset, int& id_node,
@@ -179,7 +179,7 @@ inline long offset_recv_from_g_offset(const long g_offset, const Geometry& geo)
 inline CommPlan make_comm_plan(const CommMarks& marks)
 {
   TIMER_VERBOSE("make_comm_plan");
-  const Geometry& geo = marks.geo;
+  const Geometry& geo = marks.geo();
   CommPlan ret;
   ret.total_send_size = 0;
   ret.total_recv_size = 0;
@@ -356,7 +356,7 @@ inline CommPlan make_comm_plan(const CommMarks& marks)
 inline CommPlan make_comm_plan(const CommPlanKey& cpk)
 {
   CommMarks marks;
-  cpk.set_marks_field(marks, cpk.geo, cpk.tag);
+  cpk.set_marks_field(marks, cpk.geo(), cpk.tag);
   return make_comm_plan(marks);
 }
 
@@ -386,7 +386,8 @@ inline const CommPlan& get_comm_plan(const SetMarksField& set_marks_field,
   cpk.key = out.str();
   cpk.set_marks_field = set_marks_field;
   cpk.tag = tag;
-  cpk.geo = geo;
+  clear(cpk.geo);
+  cpk.geo.resize(1, geo);
   return get_comm_plan(cpk);
 }
 
@@ -441,14 +442,14 @@ void refresh_expanded(
     Field<M>& f, const SetMarksField& set_marks_field = set_marks_field_all,
     const std::string& tag = "")
 {
-  const CommPlan& plan = get_comm_plan(set_marks_field, tag, f.geo);
+  const CommPlan& plan = get_comm_plan(set_marks_field, tag, f.geo());
   refresh_expanded(f, plan);
 }
 
 template <class M>
 void refresh_expanded_1(Field<M>& f)
 {
-  const CommPlan& plan = get_comm_plan(set_marks_field_1, "", f.geo);
+  const CommPlan& plan = get_comm_plan(set_marks_field_1, "", f.geo());
   refresh_expanded(f, plan);
 }
 
@@ -542,7 +543,7 @@ inline void set_marks_field_gm_force(CommMarks& marks, const Geometry& geo,
 // template <class M>
 // void refresh_expanded_m2(Field<M>& f)
 // {
-//   const CommPlan& plan = get_comm_plan(set_marks_field_m2, "", f.geo);
+//   const CommPlan& plan = get_comm_plan(set_marks_field_m2, "", f.geo());
 //   refresh_expanded(f, plan);
 // }
 
@@ -559,20 +560,20 @@ inline void set_marks_field_gm_force(CommMarks& marks, const Geometry& geo,
 //   node Coordinate node_pos; // home node coordinate of a site in node space
 //
 //   // populate send_map with the data that we need to send to other nodes
-//   long record_size = field_comm.geo.local_volume_expanded();
+//   long record_size = field_comm.geo().local_volume_expanded();
 //   for(long record = 0; record < record_size; record++){
-//     pos = field_comm.geo.coordinateFromRecord(record);
-//     if(field_comm.geo.is_local(pos)) continue;
+//     pos = field_comm.geo().coordinateFromRecord(record);
+//     if(field_comm.geo().is_local(pos)) continue;
 //     for(int mu = 0; mu < DIMN; mu++){
-//       local_pos[mu] = pos[mu] % field_comm.geo.node_site[mu];
-//       node_pos[mu] = pos[mu] / field_comm.geo.node_site[mu];
+//       local_pos[mu] = pos[mu] % field_comm.geo().node_site[mu];
+//       node_pos[mu] = pos[mu] / field_comm.geo().node_site[mu];
 //       if(local_pos[mu] < 0){
-//         local_pos[mu] += field_comm.geo.node_site[mu];
+//         local_pos[mu] += field_comm.geo().node_site[mu];
 //         node_pos[mu]--;
 //       }
 //     }
 //     std::vector<M> &vec = send_map[node_pos];
-//     for(int mu = 0; mu < field_comm.geo.multiplicity; mu++)
+//     for(int mu = 0; mu < field_comm.geo().multiplicity; mu++)
 //       vec.push_back(field_comm.get_elems_const(local_pos)[mu]);
 //   }
 //
@@ -600,14 +601,14 @@ inline void set_marks_field_gm_force(CommMarks& marks, const Geometry& geo,
 //     // assuming periodic boundary condition. maybe need some fixing?
 //     id_this = get_id_node();
 //     coor_this = qlat::coordinate_from_index(id_this,
-//         field_comm.geo.geon.size_node);
+//         field_comm.geo().geon.size_node);
 //     coort = coor_this - node_pos;
-//     regularize_coordinate(coort, field_comm.geo.geon.size_node);
+//     regularize_coordinate(coort, field_comm.geo().geon.size_node);
 //     coorf = coor_this + node_pos;
-//     regularize_coordinate(coorf, field_comm.geo.geon.size_node);
+//     regularize_coordinate(coorf, field_comm.geo().geon.size_node);
 //
-//     idt = qlat::index_from_coordinate(coort, field_comm.geo.geon.size_node);
-//     idf = qlat::index_from_coordinate(coorf, field_comm.geo.geon.size_node);
+//     idt = qlat::index_from_coordinate(coort, field_comm.geo().geon.size_node);
+//     idf = qlat::index_from_coordinate(coorf, field_comm.geo().geon.size_node);
 //
 //     MPI_Request req;
 //     MPI_Isend((void*)send, size_bytes, MPI_BYTE, idt, 0, get_comm(), &req);
@@ -623,13 +624,13 @@ inline void set_marks_field_gm_force(CommMarks& marks, const Geometry& geo,
 //   // Now send_map[node_pos] is the vector of data recieved from the node
 //   // pointed to by key.
 //   for(long record = 0; record < record_size; record++){
-//     pos = field_comm.geo.coordinateFromRecord(record);
-//     if(field_comm.geo.is_local(pos)) continue;
+//     pos = field_comm.geo().coordinateFromRecord(record);
+//     if(field_comm.geo().is_local(pos)) continue;
 //     for(int mu = 0; mu < DIMN; mu++){
-//       local_pos[mu] = pos[mu] % field_comm.geo.node_site[mu];
-//       node_pos[mu] = pos[mu] / field_comm.geo.node_site[mu];
+//       local_pos[mu] = pos[mu] % field_comm.geo().node_site[mu];
+//       node_pos[mu] = pos[mu] / field_comm.geo().node_site[mu];
 //       if(local_pos[mu] < 0){
-//         local_pos[mu] += field_comm.geo.node_site[mu];
+//         local_pos[mu] += field_comm.geo().node_site[mu];
 //         node_pos[mu]--;
 //       }
 //     }
@@ -638,7 +639,7 @@ inline void set_marks_field_gm_force(CommMarks& marks, const Geometry& geo,
 //     // send_map[node_pos] corresponds to which site.
 //     int consume = send_map_consume[node_pos];
 //     std::vector<M> &vec = send_map[node_pos];
-//     for(int mu = 0; mu < field_comm.geo.multiplicity; mu++){
+//     for(int mu = 0; mu < field_comm.geo().multiplicity; mu++){
 //       field_comm.get_elems(pos)[mu] = vec[consume];
 //       consume++;
 //     }

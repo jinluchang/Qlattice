@@ -38,7 +38,7 @@ inline void gf_wilson_flow_step(GaugeField& gf, const double epsilon,
 inline double gf_energy_density_no_comm(const GaugeField& gf)
 {
   TIMER("gf_energy_density_no_comm");
-  const Geometry geo = geo_reform(gf.geo);
+  const Geometry geo = geo_reform(gf.geo());
   FieldM<double, 1> fd;
   fd.init(geo);
 #pragma omp parallel for
@@ -67,7 +67,7 @@ inline double gf_energy_density(const GaugeField& gf)
 {
   TIMER("gf_energy_density");
   GaugeField gf1;
-  gf1.init(geo_resize(gf.geo, 1));
+  gf1.init(geo_resize(gf.geo(), 1));
   gf1 = gf;
   refresh_expanded(gf1);
   return gf_energy_density_no_comm(gf1);

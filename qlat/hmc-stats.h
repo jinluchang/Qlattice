@@ -9,8 +9,8 @@ namespace qlat
 inline double get_field_max(const FieldM<double, 1>& fd)
 {
   TIMER("get_field_max");
-  const Geometry& geo = fd.geo;
-  qassert(fd.geo.is_only_local());
+  const Geometry& geo = fd.geo();
+  qassert(fd.geo().is_only_local());
   double m = fd.get_elem(0);
   for (long index = 1; index < geo.local_volume(); ++index) {
     m = std::max(m, fd.get_elem(index));
@@ -32,7 +32,7 @@ inline std::vector<double> get_gm_force_magnitudes(
 {
   TIMER("get_gm_force_magnitudes");
   qassert(n_elems >= 2);
-  const Geometry geo = geo_reform(gm_force.geo, n_elems - 1);
+  const Geometry geo = geo_reform(gm_force.geo(), n_elems - 1);
   Field<double> fd;
   fd.init(geo);
   set_zero(fd);
@@ -140,7 +140,7 @@ inline std::vector<double> get_gauge_field_infos(const GaugeField& gf)
 {
   TIMER("get_gauge_field_infos");
   const int info_vec_size = 4;
-  const Geometry geo = geo_reform(gf.geo);
+  const Geometry geo = geo_reform(gf.geo());
   CloverLeafField clf1, clf2, clf3, clf4, clf5;
   gf_clover_leaf_field_5(clf1, clf2, clf3, clf4, clf5, gf);
   FieldM<double, 1> paf;

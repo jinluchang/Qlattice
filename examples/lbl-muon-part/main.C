@@ -7,7 +7,7 @@ const char* cname = "Main";
 void setField(qlat::Field<qlat::Complex>& f)
 {
   TIMER("setField");
-  const qlat::Geometry& geo = f.geo;
+  const qlat::Geometry& geo = f.geo();
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     qlat::Coordinate x = geo.coordinate_from_index(index);
@@ -34,7 +34,7 @@ qlat::SpinMatrix lblMuonLine(const int tsnk, const int tsrc,
                              const qlat::array<double, qlat::DIMN>& momtwist)
 {
   TIMER("lblMuonLine");
-  const qlat::Geometry& geo = egf1.geo;
+  const qlat::Geometry& geo = egf1.geo();
   qlat::SpinPropagator4d sol;
   sol.init(geo);
   qlat::SpinPropagator4d src;

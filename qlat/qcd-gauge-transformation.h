@@ -33,8 +33,8 @@ inline void gt_apply_gauge_transformation(GaugeTransform& gt0,
 // gt0 <- gt1 * gt0
 {
   TIMER("gt_apply_gauge_transformation");
-  qassert(is_matching_geo_mult(gt0.geo, gt1.geo));
-  const Geometry& geo = gt0.geo;
+  qassert(is_matching_geo_mult(gt0.geo(), gt1.geo()));
+  const Geometry& geo = gt0.geo();
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -52,10 +52,10 @@ inline void gf_apply_gauge_transformation_no_comm(GaugeField& gf,
 // gf <- gt * gf0
 {
   TIMER("gf_apply_gauge_transformation_no_comm");
-  qassert(is_matching_geo(gf0.geo, gt.geo));
-  const Geometry& geo = gf0.geo;
+  qassert(is_matching_geo(gf0.geo(), gt.geo()));
+  const Geometry& geo = gf0.geo();
   gf.init(geo_resize(geo, 0));
-  qassert(is_matching_geo(gf.geo, gf0.geo));
+  qassert(is_matching_geo(gf.geo(), gf0.geo()));
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     Coordinate xl = geo.coordinate_from_index(index);
@@ -75,9 +75,9 @@ inline void gf_apply_gauge_transformation(GaugeField& gf, const GaugeField& gf0,
                                           const GaugeTransform& gt)
 {
   TIMER("gf_apply_gauge_transformation");
-  qassert(is_matching_geo(gf0.geo, gt.geo));
+  qassert(is_matching_geo(gf0.geo(), gt.geo()));
   GaugeTransform gt1;
-  gt1.init(geo_resize(gt.geo, 1));
+  gt1.init(geo_resize(gt.geo(), 1));
   gt1 = gt;
   refresh_expanded(gt1);
   gf_apply_gauge_transformation_no_comm(gf, gf0, gt1);
@@ -86,9 +86,9 @@ inline void gf_apply_gauge_transformation(GaugeField& gf, const GaugeField& gf0,
 inline void gt_invert(GaugeTransform& gt, const GaugeTransform& gt0)
 {
   TIMER("gt_invert");
-  gt.init(geo_resize(gt0.geo));
-  const Geometry& geo = gt.geo;
-  qassert(is_matching_geo_mult(gt.geo, gt0.geo));
+  gt.init(geo_resize(gt0.geo()));
+  const Geometry& geo = gt.geo();
+  qassert(is_matching_geo_mult(gt.geo(), gt0.geo()));
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -101,8 +101,8 @@ inline void ff_apply_gauge_transformation(FermionField4d& ff,
                                           const GaugeTransform& gt)
 {
   TIMER("ff_apply_gauge_transformation");
-  qassert(is_matching_geo(ff0.geo, gt.geo));
-  const Geometry& geo = ff0.geo;
+  qassert(is_matching_geo(ff0.geo(), gt.geo()));
+  const Geometry& geo = ff0.geo();
   ff.init(geo_resize(geo));
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
@@ -121,10 +121,10 @@ inline void prop_apply_gauge_transformation(Propagator4d& prop,
                                             const GaugeTransform& gt)
 {
   TIMER("prop_apply_gauge_transformation");
-  qassert(is_matching_geo(prop0.geo, gt.geo));
-  const Geometry& geo = prop0.geo;
+  qassert(is_matching_geo(prop0.geo(), gt.geo()));
+  const Geometry& geo = prop0.geo();
   prop.init(geo_resize(geo));
-  qassert(is_matching_geo_mult(prop.geo, prop0.geo));
+  qassert(is_matching_geo_mult(prop.geo(), prop0.geo()));
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -142,11 +142,11 @@ inline void prop_apply_gauge_transformation(
     const GaugeTransform& gt, const FieldSelection& fsel)
 {
   TIMER("prop_apply_gauge_transformation");
-  qassert(is_matching_geo(prop0.geo, gt.geo));
-  const Geometry& geo = prop0.geo;
+  qassert(is_matching_geo(prop0.geo(), gt.geo()));
+  const Geometry& geo = prop0.geo();
   const int multiplicity = geo.multiplicity;
   prop.init(fsel, multiplicity);
-  qassert(is_matching_geo_mult(prop.geo, prop0.geo));
+  qassert(is_matching_geo_mult(prop.geo(), prop0.geo()));
 #pragma omp parallel for
   for (long idx = 0; idx < (long)fsel.indices.size(); ++idx) {
     const long index = fsel.indices[idx];
@@ -165,7 +165,7 @@ inline void prop_apply_gauge_transformation(
     const GaugeTransform& gt, const std::vector<Coordinate>& pcs)
 {
   TIMER("prop_apply_gauge_transformation");
-  const Geometry& geo = gt.geo;
+  const Geometry& geo = gt.geo();
   qassert(geo.multiplicity == 1);
   const long num_points = pcs.size();
   qassert((long)prop0.size() == num_points);
@@ -191,7 +191,7 @@ inline void prop_apply_gauge_transformation(
     const PointSelection& psel)
 {
   TIMER("prop_apply_gauge_transformation");
-  const Geometry& geo = gt.geo;
+  const Geometry& geo = gt.geo();
   qassert(geo.multiplicity == 1);
   const long num_points = psel.size();
   qassert(prop0.initialized == true);
@@ -219,7 +219,7 @@ inline void gf_apply_rand_gauge_transformation(GaugeField& gf,
                                                const GaugeField& gf0,
                                                const RngState& rs)
 {
-  const Geometry geo = geo_reform(gf0.geo);
+  const Geometry geo = geo_reform(gf0.geo());
   GaugeTransform gt;
   gt.init(geo);
   set_g_rand_color_matrix_field(gt, rs, 1.0);
@@ -235,9 +235,9 @@ inline void make_temporal_gauge_transformation(GaugeTransform& gt,
 // ``gt.get_elem(xl) = unit'' if ``xg[dir] = tgref''
 {
   TIMER("make_temporal_gauge_transformation");
-  const Geometry geo = geo_reform(gf.geo, 0);
+  const Geometry geo = geo_reform(gf.geo(), 0);
   gt.init(geo);
-  assert(is_matching_geo(gt.geo, gf.geo));
+  assert(is_matching_geo(gt.geo(), gf.geo()));
   Coordinate expension_left, expension_right;
   set_zero(expension_left);
   set_zero(expension_right);
@@ -276,11 +276,11 @@ inline void make_tree_gauge_transformation(
     const Coordinate& dirs = Coordinate(0, 1, 2, 3))
 {
   TIMER("make_tree_gauge_transformation");
-  const Geometry& geo = geo_reform(gf.geo);
+  const Geometry& geo = geo_reform(gf.geo());
   if (false == is_initialized(gt)) {
     gt.init(geo);
   }
-  assert(is_matching_geo(gt.geo, gf.geo));
+  assert(is_matching_geo(gt.geo(), gf.geo()));
   set_unit(gt);
   GaugeTransform gt_dir;
   gt_dir.init(geo);
@@ -300,7 +300,7 @@ struct GaugeTransformInverter
 // the result should be the same as invert with gf_fix where
 // gf_fix is: gf_apply_gauge_transformation(gf_fix, gf, gt);
 {
-  Geometry geo;
+  vector<Geometry> geo;
   FermionAction fa;
   GaugeField gf;
   //
@@ -315,7 +315,7 @@ struct GaugeTransformInverter
   //
   void init()
   {
-    geo.init();
+    clear(geo);
     fa.init();
     gf.init();
     inv.init();
@@ -328,7 +328,8 @@ struct GaugeTransformInverter
     inv.init(inv_);
     gt = gt_;
     gt_invert(gt_inv, gt);
-    geo = inv().geo;
+    clear(geo);
+    geo.resize(1, inv().geo());
     fa = inv().fa;
     gf = inv().gf;
   }
@@ -359,9 +360,9 @@ void set_wall_src_propagator(Propagator4d& prop, const int tslice,
 {
   TIMER_VERBOSE("set_wall_src_propagator");
   warn("obsolete");
-  const Geometry geo = geo_reform(inv.geo);
+  const Geometry geo = geo_reform(inv.geo());
   prop.init(geo);
-  qassert(prop.geo == geo);
+  qassert(prop.geo() == geo);
   FermionField4d src, sol;
   src.init(geo);
   sol.init(geo);

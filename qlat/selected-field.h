@@ -12,7 +12,7 @@ inline void add_field_selection(FieldM<int64_t, 1>& f_rank,
                                                        1024L * 1024L)
 {
   TIMER_VERBOSE("add_field_selection(psel)");
-  const Geometry& geo = f_rank.geo;
+  const Geometry& geo = f_rank.geo();
 #pragma omp parallel for
   for (long i = 0; i < (long)psel.size(); ++i) {
     const Coordinate xl = geo.coordinate_l_from_g(psel[i]);
@@ -37,7 +37,7 @@ inline void mk_field_selection(FieldM<int64_t, 1>& f_rank,
   geo.init(total_site, 1);
   f_rank.init();
   f_rank.init(geo);
-  qassert(f_rank.geo.is_only_local());
+  qassert(f_rank.geo().is_only_local());
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     int64_t& rank = f_rank.get_elem(index);
@@ -70,7 +70,7 @@ inline void set_n_per_tslice(FieldM<int64_t, 1>& f_rank,
 // 0 <= rank < n_per_tslice
 {
   TIMER_VERBOSE("set_n_per_tslice");
-  const Geometry& geo = f_rank.geo;
+  const Geometry& geo = f_rank.geo();
   qassert(geo.is_only_local());
   const Coordinate total_site = geo.total_site();
   const long spatial_vol = total_site[0] * total_site[1] * total_site[2];
@@ -121,7 +121,7 @@ inline void update_field_selection(FieldSelection& fsel)
 // do not touch n_per_tslice and prob at all
 {
   TIMER_VERBOSE("update_field_selection");
-  const Geometry& geo = fsel.f_rank.geo;
+  const Geometry& geo = fsel.f_rank.geo();
   qassert(geo.is_only_local());
   fsel.f_local_idx.init(geo);
   long n_elems = 0;
@@ -152,7 +152,7 @@ inline void update_field_selection(FieldSelection& fsel)
 inline void update_field_selection(FieldSelection& fsel, const long n_per_tslice_)
 // only adjust parameter, do not change contents
 {
-  const Geometry& geo = fsel.f_rank.geo;
+  const Geometry& geo = fsel.f_rank.geo();
   qassert(geo.is_only_local());
   const Coordinate total_site = geo.total_site();
   const long spatial_vol = total_site[0] * total_site[1] * total_site[2];
@@ -192,26 +192,26 @@ inline void set_field_selection(FieldSelection& fsel,
 template <class M>
 struct SelectedField {
   bool initialized;
-  Geometry geo;
+  vector<Geometry> geo;
   long n_elems;
   vector<M> field;
   //
   void init()
   {
     initialized = false;
-    geo.init();
+    clear(geo);
     clear(field);
   }
   void init(const Geometry& geo_, const long n_elems_, const int multiplicity)
   {
     if (initialized) {
-      qassert(geo == geo_remult(geo_, multiplicity));
+      qassert(geo() == geo_remult(geo_, multiplicity));
       qassert(n_elems == n_elems_);
       qassert((long)field.size() == n_elems * multiplicity);
     } else {
       init();
       initialized = true;
-      geo = geo_remult(geo_, multiplicity);
+      geo.resize(1, geo_remult(geo_, multiplicity));
       n_elems = n_elems_;
       field.resize(n_elems * multiplicity);
       if (1 == get_field_init()) {
@@ -226,13 +226,13 @@ struct SelectedField {
   void init(const FieldSelection& fsel, const int multiplicity)
   {
     if (initialized) {
-      qassert(geo == geo_remult(fsel.f_rank.geo, multiplicity));
+      qassert(geo() == geo_remult(fsel.f_rank.geo(), multiplicity));
       qassert(n_elems == fsel.n_elems);
       qassert((long)field.size() == n_elems * multiplicity);
     } else {
       init();
       initialized = true;
-      geo = geo_remult(fsel.f_rank.geo, multiplicity);
+      geo.resize(1, geo_remult(fsel.f_rank.geo(), multiplicity));
       n_elems = fsel.n_elems;
       field.resize(n_elems * multiplicity);
       if (1 == get_field_init()) {
@@ -249,26 +249,26 @@ struct SelectedField {
   //
   M& get_elem(const long& idx)
   {
-    qassert(1 == geo.multiplicity);
+    qassert(1 == geo().multiplicity);
     return field[idx];
   }
   const M& get_elem(const long& idx) const
   {
-    qassert(1 == geo.multiplicity);
+    qassert(1 == geo().multiplicity);
     return field[idx];
   }
   //
   Vector<M> get_elems(const long idx)
-  // qassert(geo.is_only_local())
+  // qassert(geo().is_only_local())
   {
-    return Vector<M>(&field[idx * geo.multiplicity], geo.multiplicity);
+    return Vector<M>(&field[idx * geo().multiplicity], geo().multiplicity);
   }
   Vector<M> get_elems_const(const long idx) const
   // Be cautious about the const property
   // 改不改靠自觉
-  // qassert(geo.is_only_local())
+  // qassert(geo().is_only_local())
   {
-    return Vector<M>(&field[idx * geo.multiplicity], geo.multiplicity);
+    return Vector<M>(&field[idx * geo().multiplicity], geo().multiplicity);
   }
 };
 
@@ -283,8 +283,8 @@ void qswap(SelectedField<M>& f1, SelectedField<M>& f2)
 {
   std::swap(f1.initialized, f2.initialized);
   std::swap(f1.n_elems, f2.n_elems);
-  std::swap(f1.geo, f2.geo);
-  std::swap(f1.field, f2.field);
+  qswap(f1.geo, f2.geo);
+  qswap(f1.field, f2.field);
 }
 
 template <class M>
@@ -315,7 +315,7 @@ const SelectedField<M>& operator+=(SelectedField<M>& f,
     f = f1;
   } else {
     qassert(f1.initialized);
-    qassert(is_matching_geo_mult(f.geo, f1.geo));
+    qassert(is_matching_geo_mult(f.geo(), f1.geo()));
     qassert(f.field.size() == f1.field.size());
 #pragma omp parallel for
     for (long k = 0; k < (long)f.field.size(); ++k) {
@@ -331,12 +331,12 @@ const SelectedField<M>& operator-=(SelectedField<M>& f,
 {
   TIMER("sel_field_operator-=");
   if (not f.initialized) {
-    f.init(f1.geo, f1.n_elems, f1.geo.multiplicity);
+    f.init(f1.geo(), f1.n_elems, f1.geo().multiplicity);
     set_zero(f);
     f -= f1;
   } else {
     qassert(f1.initialized);
-    qassert(is_matching_geo_mult(f.geo, f1.geo));
+    qassert(is_matching_geo_mult(f.geo(), f1.geo()));
     qassert(f.field.size() == f1.field.size());
 #pragma omp parallel for
     for (long k = 0; k < (long)f.field.size(); ++k) {
@@ -374,7 +374,7 @@ inline void set_selected_gindex(SelectedField<long>& sfgi,
                                 const FieldSelection& fsel)
 {
   TIMER_VERBOSE("set_selected_gindex");
-  const Geometry& geo = fsel.f_rank.geo;
+  const Geometry& geo = fsel.f_rank.geo();
   const Coordinate total_site = geo.total_site();
   sfgi.init(fsel, 1);
 #pragma omp parallel for
@@ -391,10 +391,10 @@ template <class M>
 void only_keep_selected_points(Field<M>& f, const FieldSelection& fsel)
 {
   TIMER("only_keep_selected_points");
-  qassert(f.geo.is_only_local());
-  qassert(fsel.f_local_idx.geo.is_only_local());
-  qassert(geo_remult(f.geo) == geo_remult(fsel.f_local_idx.geo));
-  const Geometry& geo = f.geo;
+  qassert(f.geo().is_only_local());
+  qassert(fsel.f_local_idx.geo().is_only_local());
+  qassert(geo_remult(f.geo()) == geo_remult(fsel.f_local_idx.geo()));
+  const Geometry& geo = f.geo();
   const FieldM<long, 1>& f_local_idx = fsel.f_local_idx;
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
@@ -412,10 +412,10 @@ void set_selected_field(SelectedField<M>& sf, const Field<M>& f,
                         const FieldSelection& fsel)
 {
   TIMER("set_selected_field");
-  qassert(f.geo.is_only_local());
-  qassert(fsel.f_local_idx.geo.is_only_local());
-  qassert(geo_remult(f.geo) == fsel.f_local_idx.geo);
-  const Geometry& geo = f.geo;
+  qassert(f.geo().is_only_local());
+  qassert(fsel.f_local_idx.geo().is_only_local());
+  qassert(geo_remult(f.geo()) == fsel.f_local_idx.geo());
+  const Geometry& geo = f.geo();
   const int multiplicity = geo.multiplicity;
   sf.init(fsel, multiplicity);
 #pragma omp parallel for
@@ -434,12 +434,12 @@ void set_selected_field(SelectedField<M>& sf, const SelectedField<M>& sf0,
                         const FieldSelection& fsel, const FieldSelection& fsel0)
 {
   TIMER("set_selected_field");
-  qassert(sf0.geo.is_only_local());
-  qassert(fsel.f_local_idx.geo.is_only_local());
-  qassert(fsel0.f_local_idx.geo.is_only_local());
-  qassert(geo_remult(sf0.geo) == fsel0.f_local_idx.geo);
-  qassert(geo_remult(sf0.geo) == fsel.f_local_idx.geo);
-  const Geometry& geo = sf0.geo;
+  qassert(sf0.geo().is_only_local());
+  qassert(fsel.f_local_idx.geo().is_only_local());
+  qassert(fsel0.f_local_idx.geo().is_only_local());
+  qassert(geo_remult(sf0.geo()) == fsel0.f_local_idx.geo());
+  qassert(geo_remult(sf0.geo()) == fsel.f_local_idx.geo());
+  const Geometry& geo = sf0.geo();
   const int multiplicity = geo.multiplicity;
   sf.init(fsel, multiplicity);
 #pragma omp parallel for
@@ -460,10 +460,10 @@ void set_selected_points(SelectedPoints<M>& sp, const SelectedField<M>& sf,
                          const PointSelection& psel, const FieldSelection& fsel)
 {
   TIMER("set_selected_points");
-  const Geometry& geo = sf.geo;
+  const Geometry& geo = sf.geo();
   qassert(geo.is_only_local());
-  qassert(fsel.f_local_idx.geo.is_only_local());
-  qassert(geo_remult(sf.geo) == fsel.f_local_idx.geo);
+  qassert(fsel.f_local_idx.geo().is_only_local());
+  qassert(geo_remult(sf.geo()) == fsel.f_local_idx.geo());
   const long n_points = psel.size();
   sp.init(geo, psel);
   set_zero(sp.points);
@@ -489,12 +489,12 @@ void set_field_selected(Field<M>& f, const SelectedField<M>& sf,
                         const FieldSelection& fsel)
 {
   TIMER("set_field_selected");
-  qassert(sf.geo.is_only_local());
-  qassert(fsel.f_local_idx.geo.is_only_local());
-  qassert(geo_remult(sf.geo) == fsel.f_local_idx.geo);
-  const Geometry& geo = sf.geo;
+  qassert(sf.geo().is_only_local());
+  qassert(fsel.f_local_idx.geo().is_only_local());
+  qassert(geo_remult(sf.geo()) == fsel.f_local_idx.geo());
+  const Geometry& geo = sf.geo();
   f.init();
-  f.init(sf.geo);
+  f.init(sf.geo());
   set_zero(f);
   const int multiplicity = geo.multiplicity;
 #pragma omp parallel for
@@ -513,13 +513,13 @@ void acc_field(Field<M>& f, const Complex coef, const SelectedField<M>& sf,
                const FieldSelection& fsel)
 {
   TIMER("acc_field(f,coef,sf,fsel)");
-  const Geometry& geo = fsel.f_rank.geo;
-  const int multiplicity = sf.geo.multiplicity;
+  const Geometry& geo = fsel.f_rank.geo();
+  const int multiplicity = sf.geo().multiplicity;
   if (not is_initialized(f)) {
     f.init(geo_remult(geo, multiplicity));
     set_zero(f);
   }
-  qassert(multiplicity == f.geo.multiplicity);
+  qassert(multiplicity == f.geo().multiplicity);
   qassert(sf.n_elems == fsel.n_elems);
 #pragma omp parallel for
   for (long idx = 0; idx < fsel.n_elems; ++idx) {
@@ -540,10 +540,10 @@ void set_selected_field_slow(SelectedField<M>& sf, const Field<M>& f,
                              const FieldSelection& fsel)
 {
   TIMER("set_selected_field_slow");
-  qassert(f.geo.is_only_local());
-  qassert(fsel.f_local_idx.geo.is_only_local());
-  qassert(geo_remult(f.geo) == fsel.f_local_idx.geo);
-  const Geometry& geo = f.geo;
+  qassert(f.geo().is_only_local());
+  qassert(fsel.f_local_idx.geo().is_only_local());
+  qassert(geo_remult(f.geo()) == fsel.f_local_idx.geo());
+  const Geometry& geo = f.geo();
   const int multiplicity = geo.multiplicity;
   sf.init(fsel, multiplicity);
   const FieldM<long, 1>& f_local_idx = fsel.f_local_idx;
@@ -566,12 +566,12 @@ void set_field_selected_slow(Field<M>& f, const SelectedField<M>& sf,
                              const FieldSelection& fsel)
 {
   TIMER("set_field_selected_slow");
-  qassert(sf.geo.is_only_local());
-  qassert(fsel.f_local_idx.geo.is_only_local());
-  qassert(geo_remult(sf.geo) == fsel.f_local_idx.geo);
-  const Geometry& geo = sf.geo;
+  qassert(sf.geo().is_only_local());
+  qassert(fsel.f_local_idx.geo().is_only_local());
+  qassert(geo_remult(sf.geo()) == fsel.f_local_idx.geo());
+  const Geometry& geo = sf.geo();
   f.init();
-  f.init(sf.geo);
+  f.init(sf.geo());
   set_zero(f);
   const int multiplicity = geo.multiplicity;
   const FieldM<long, 1>& f_local_idx = fsel.f_local_idx;

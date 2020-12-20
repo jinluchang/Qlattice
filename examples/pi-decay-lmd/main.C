@@ -9,7 +9,7 @@ inline void scalar_inversion(Field<Complex>& sol, const Field<Complex>& src,
 // the mass is not necessarily the exponent of the exponential fall off
 {
   TIMER("scalar_inversion");
-  const Geometry geo = geo_resize(src.geo);
+  const Geometry geo = geo_resize(src.geo());
   const Coordinate total_site = geo.total_site();
   sol.init(geo);
   sol = src;
@@ -40,12 +40,12 @@ inline void scalar_derivative(Field<Complex>& sol, const Field<Complex>& src,
 // v[m*4 + mu] = sv[m] * std::sin(kk[mu]);
 {
   TIMER("scalar_derivative");
-  const Geometry geo = geo_reform(src.geo, src.geo.multiplicity * 4);
+  const Geometry geo = geo_reform(src.geo(), src.geo().multiplicity * 4);
   sol.init(geo);
-  qassert(sol.geo == geo);
+  qassert(sol.geo() == geo);
   const Coordinate total_site = geo.total_site();
   Field<Complex> src_mom;
-  src_mom.init(geo_resize(src.geo));
+  src_mom.init(geo_resize(src.geo()));
   src_mom = src;
   fft_complex_field(src_mom, true);
 #pragma omp parallel for
@@ -74,12 +74,12 @@ inline void scalar_divergence(Field<Complex>& sol, const Field<Complex>& src,
 // v[m] += sv[m*4+mu] * std::sin(kk[mu]);
 {
   TIMER("scalar_derivative");
-  const Geometry geo = geo_reform(src.geo, src.geo.multiplicity / 4);
+  const Geometry geo = geo_reform(src.geo(), src.geo().multiplicity / 4);
   sol.init(geo);
-  qassert(sol.geo == geo);
+  qassert(sol.geo() == geo);
   const Coordinate total_site = geo.total_site();
   Field<Complex> src_mom;
-  src_mom.init(geo_resize(src.geo));
+  src_mom.init(geo_resize(src.geo()));
   src_mom = src;
   fft_complex_field(src_mom, true);
 #pragma omp parallel for
@@ -109,8 +109,8 @@ inline void set_pion_photon_photon_vertex_two_end(
     const FieldM<Complex, 4>& photon2, const double m_vector, const double f_pi)
 {
   TIMER("set_pion_photon_photon_vertex_two_end");
-  qassert(photon1.geo == photon2.geo);
-  const Geometry geo = geo_reform(photon1.geo, 4 * 4, 0);
+  qassert(photon1.geo() == photon2.geo());
+  const Geometry geo = geo_reform(photon1.geo(), 4 * 4, 0);
   FieldM<Complex, 4 * 4> pinv1, pinv2, p1, p2;
   scalar_derivative(p1, photon1);
   scalar_derivative(p2, photon2);
@@ -158,8 +158,8 @@ inline void set_pion_photon_photon_vertex_vmd(FieldM<Complex, 4 * 4>& pion,
                                               const double f_pi)
 {
   TIMER("set_pion_photon_photon_vertex_vmd");
-  qassert(photon1.geo == photon2.geo);
-  const Geometry geo = geo_reform(photon1.geo, 4 * 4, 0);
+  qassert(photon1.geo() == photon2.geo());
+  const Geometry geo = geo_reform(photon1.geo(), 4 * 4, 0);
   FieldM<Complex, 4 * 4> pinv1, pinv2, p1, p2;
   scalar_derivative(p1, photon1);
   scalar_derivative(p2, photon2);
@@ -233,10 +233,10 @@ inline void set_photon_pion_photon_vertex_two_end(
     const FieldM<Complex, 4>& photon2, const double m_vector, const double f_pi)
 {
   TIMER("set_photon_pion_photon_vertex_two_end");
-  const Geometry geo = geo_reform(photon2.geo, 4, 0);
-  qassert(is_matching_geo(pion.geo, photon2.geo));
+  const Geometry geo = geo_reform(photon2.geo(), 4, 0);
+  qassert(is_matching_geo(pion.geo(), photon2.geo()));
   photon1.init(geo);
-  qassert(photon1.geo == geo);
+  qassert(photon1.geo() == geo);
   set_zero(photon1);
   FieldM<Complex, 4 * 4> pinv1, pinv2, p1, p2;
   scalar_derivative(p2, photon2);
@@ -286,10 +286,10 @@ inline void set_photon_pion_photon_vertex_vmd(FieldM<Complex, 4>& photon1,
                                               const double f_pi)
 {
   TIMER("set_photon_pion_photon_vertex_vmd");
-  const Geometry geo = geo_reform(photon2.geo, 4, 0);
-  qassert(is_matching_geo(pion.geo, photon2.geo));
+  const Geometry geo = geo_reform(photon2.geo(), 4, 0);
+  qassert(is_matching_geo(pion.geo(), photon2.geo()));
   photon1.init(geo);
-  qassert(photon1.geo == geo);
+  qassert(photon1.geo() == geo);
   set_zero(photon1);
   FieldM<Complex, 4 * 4> pinv1, pinv2, p1, p2;
   scalar_derivative(p2, photon2);

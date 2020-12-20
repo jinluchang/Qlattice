@@ -7,13 +7,13 @@ inline void gm_evolve_fg(GaugeMomentum& gm, const GaugeField& gf_init,
                   const GaugeAction& ga, const double fg_dt, const double dt)
 {
   TIMER("gm_evolve_fg");
-  const Geometry& geo = gf_init.geo;
+  const Geometry& geo = gf_init.geo();
   GaugeField gf;
   gf.init(geo);
   gf = gf_init;
   //
   GaugeMomentum gm_force;
-  gm_force.init(gm.geo);
+  gm_force.init(gm.geo());
   set_zero(gm_force);
   //
   set_gm_force(gm_force, gf, ga);
@@ -68,7 +68,7 @@ inline double run_hmc_evolve(GaugeMomentum& gm, GaugeField& gf,
 inline void run_hmc(GaugeField& gf, const GaugeAction& ga, const int traj, const RngState& rs)
 {
   TIMER_VERBOSE("run_hmc");
-  const Geometry& geo = gf.geo;
+  const Geometry& geo = gf.geo();
   //
   const bool is_reverse_test = traj < 3;
   //

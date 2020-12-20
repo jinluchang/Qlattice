@@ -111,19 +111,19 @@ inline void apply_u1_gauge_tranform_on_bfm_vct(void* bfm_vct, size_t Ls,
   // Since this is only a U1 tranformation we treat spin and color equally.
   // Assuming bfm_vct is using even-odd preconditioning(checkerboarding).
 
-  assert(u1gt.geo.eo == 0);  // NO checkerboarding for qlat
-  assert(u1gt.geo.multiplicity == 1);
+  assert(u1gt.geo().eo == 0);  // NO checkerboarding for qlat
+  assert(u1gt.geo().multiplicity == 1);
 
   size_t bfm_vct_block_size =
       Ls * 12;  // 12 = 3 * 4. bfm_vct_block_size is the number single precision
                 // complex number on one 4d site.
   ComplexF* bfm_vct_ComplexF = (ComplexF*)bfm_vct;
-  size_t site_size_4d = u1gt.geo.local_volume();
+  size_t site_size_4d = u1gt.geo().local_volume();
   // Printf("[Apply U1 bfm]: Ls = %d, bfm_vct_block_size = %d, site_size_4d =
   // %d\n", Ls, bfm_vct_block_size, site_size_4d);
 #pragma omp for
   for (size_t m = 0; m < site_size_4d / 2; m++) {
-    Coordinate local_coor = u1gt.geo.coordinate_from_index(m);
+    Coordinate local_coor = u1gt.geo().coordinate_from_index(m);
     if (sum(local_coor) % 2 == 0)
       continue;  // TODO: temporary fix. Fix me!!! We don't want even sites.
 

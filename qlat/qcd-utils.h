@@ -21,7 +21,7 @@ inline void set_g_rand_anti_hermitian_matrix_field(Field<ColorMatrix>& fc,
 //  exp[- Tr(mat^2)/(2 sigma**2)]
 {
   TIMER("set_g_rand_anti_hermitian_matrix_field");
-  const Geometry& geo = fc.geo;
+  const Geometry& geo = fc.geo();
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate& xl = geo.coordinate_from_index(index);
@@ -41,7 +41,7 @@ inline void set_g_rand_color_matrix_field(Field<ColorMatrix>& fc,
                                           const int n_step = 1)
 {
   TIMER("set_g_rand_color_matrix_field");
-  const Geometry& geo = fc.geo;
+  const Geometry& geo = fc.geo();
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate& xl = geo.coordinate_from_index(index);
@@ -190,8 +190,8 @@ inline void set_local_current_from_props(FieldM<WilsonMatrix, 4>& cf,
 // ->- prop1 ->- gamma_mu ->- gamma5 prop2^+ gamma5 ->-
 {
   TIMER_VERBOSE("set_local_current_from_props");
-  const Geometry geo = geo_reform(prop1.geo);
-  qassert(geo == geo_reform(prop2.geo));
+  const Geometry geo = geo_reform(prop1.geo());
+  qassert(geo == geo_reform(prop2.geo()));
   const array<SpinMatrix, 4>& gammas =
       SpinMatrixConstants::get_cps_gammas();
   const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
@@ -368,7 +368,7 @@ inline void set_multiply_simple_wilson_line_field_partial_comm(
 // wlf will be initialized
 {
   TIMER("set_multiply_simple_wilson_line_field_partial_comm");
-  const Geometry geo = geo_reform(gf1.geo);
+  const Geometry geo = geo_reform(gf1.geo());
   qassert(&wlf != &wlf1);
   wlf.init(geo);
   for (size_t i = 0; i < path.size(); ++i) {
@@ -412,7 +412,7 @@ inline void set_multiply_wilson_line_field_partial_comm(
         wlf, wlf1, gf1, pacc.stops[Coordinate()].paths[0]);
     return;
   }
-  const Geometry geo = geo_reform(gf1.geo);
+  const Geometry geo = geo_reform(gf1.geo());
   std::vector<Coordinate> cs;
   std::vector<FieldM<ColorMatrix, 1> > fs(pacc.stops.size());
   std::map<Coordinate, int> dict;
@@ -462,9 +462,9 @@ inline void set_left_expanded_gauge_field(GaugeField& gf1, const GaugeField& gf)
   TIMER_VERBOSE("set_left_expanded_gauge_field");
   const Coordinate expansion_left(1, 1, 1, 1);
   const Coordinate expansion_right(0, 0, 0, 0);
-  const Geometry geo1 = geo_resize(gf.geo, expansion_left, expansion_right);
+  const Geometry geo1 = geo_resize(gf.geo(), expansion_left, expansion_right);
   gf1.init(geo1);
-  qassert(gf1.geo == geo1);
+  qassert(gf1.geo() == geo1);
   gf1 = gf;
   refresh_expanded_1(gf1);
 }
@@ -473,7 +473,7 @@ inline ColorMatrix gf_avg_wilson_line(const GaugeField& gf,
                                       const WilsonLinePath& path)
 {
   TIMER("gf_avg_wilson_line");
-  const Geometry geo = geo_reform(gf.geo);
+  const Geometry geo = geo_reform(gf.geo());
   const Coordinate expansion_left(1, 1, 1, 1);
   const Coordinate expansion_right(0, 0, 0, 0);
   GaugeField gf1;

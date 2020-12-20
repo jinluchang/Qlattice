@@ -126,7 +126,7 @@ void fft_complex_field_dir(Field<M>& field, const int dir,
                            const bool is_forward)
 {
   TIMER("fft_complex_field_dir");
-  Geometry geo = field.geo;
+  Geometry geo = field.geo();
   geo.resize(0);
   const int mc = geo.multiplicity * sizeof(M) / sizeof(Complex);
   fft_complex_field_plan& plan =

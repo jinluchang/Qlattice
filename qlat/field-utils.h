@@ -30,7 +30,7 @@ void set_unit(Field<M>& f)
 template <class M>
 std::vector<M> field_sum(const Field<M>& f)
 {
-  const Geometry& geo = f.geo;
+  const Geometry& geo = f.geo();
   const int multiplicity = geo.multiplicity;
   std::vector<M> vec(multiplicity);
   set_zero(vec);
@@ -67,7 +67,7 @@ std::vector<M> field_project_mom(const Field<M>& f, const CoordinateD& mom)
 // use glb_sum_double_vec to perform glb_sum
 {
   TIMER("field_project_mom");
-  const Geometry& geo = f.geo;
+  const Geometry& geo = f.geo();
   std::vector<M> ret(geo.multiplicity);
   set_zero(ret);
   for (long index = 0; index < geo.local_volume(); ++index) {
@@ -89,7 +89,7 @@ std::vector<M> field_project_mom(const Field<M>& f, const CoordinateD& mom)
 template <class M>
 std::vector<M> field_get_elems(const Field<M>& f, const Coordinate& xg)
 {
-  const Geometry& geo = f.geo;
+  const Geometry& geo = f.geo();
   const Coordinate xl = geo.coordinate_l_from_g(xg);
   std::vector<M> ret(geo.multiplicity);
   if (geo.is_local(xl)) {
@@ -110,7 +110,7 @@ M field_get_elem(const Field<M>& f, const Coordinate& xg, const int m)
 template <class M>
 M field_get_elem(const Field<M>& f, const Coordinate& xg)
 {
-  const Geometry& geo = f.geo;
+  const Geometry& geo = f.geo();
   qassert(geo.multiplicity == 1);
   return field_get_elem(f, xg, 0);
 }
@@ -122,10 +122,10 @@ void field_shift_dir(Field<M>& f, const Field<M>& f1, const int dir,
 {
   TIMER("field_shift_dir");
   qassert(0 <= dir and dir < 4);
-  const Geometry geo = geo_resize(f1.geo);
+  const Geometry geo = geo_resize(f1.geo());
   const Coordinate total_site = geo.total_site();
   f.init(geo);
-  qassert(is_matching_geo_mult(f.geo, f1.geo));
+  qassert(is_matching_geo_mult(f.geo(), f1.geo()));
   Coordinate nvec;
   nvec[dir] = 1;
   Field<M> tmp, tmp1;
@@ -181,7 +181,7 @@ void field_shift_direct(Field<M>& f, const Field<M>& f1,
 // shift it afterwards (in the final step of this function)
 {
   TIMER("field_shift_direct");
-  const Geometry& geo = f1.geo;
+  const Geometry& geo = f1.geo();
   qassert(geo.is_only_local());
   const int num_node = geo.geon.num_node;
   const Coordinate& node_site = geo.node_site;
@@ -326,7 +326,7 @@ void set_u_rand_double(Field<M>& f, const RngState& rs,
                        const double upper = 1.0, const double lower = -1.0)
 {
   TIMER("set_u_rand_double");
-  const Geometry& geo = f.geo;
+  const Geometry& geo = f.geo();
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -346,7 +346,7 @@ void set_u_rand_float(Field<M>& f, const RngState& rs, const double upper = 1.0,
                       const double lower = -1.0)
 {
   TIMER("set_u_rand_float");
-  const Geometry& geo = f.geo;
+  const Geometry& geo = f.geo();
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);

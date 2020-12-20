@@ -70,7 +70,7 @@ template <class T>
 void quda_convert_gauge(std::vector<T>& qgf, const GaugeField& gf)
 {
   TIMER("quda_convert_gauge(qgf,gf)");
-  const Geometry& geo = gf.geo;
+  const Geometry& geo = gf.geo();
   ColorMatrix* quda_pt = reinterpret_cast<ColorMatrix*>(qgf.data());
   qassert(geo.multiplicity == 4);
   long V = geo.local_volume();
@@ -90,7 +90,7 @@ template <class T>
 void quda_convert_fermion(FermionField5d& ff, const std::vector<T>& qff)
 {
   TIMER("quda_convert_fermion(ff,qff)");
-  const Geometry& geo = ff.geo;
+  const Geometry& geo = ff.geo();
   const WilsonVector* quda_pt =
       reinterpret_cast<const WilsonVector*>(qff.data());
   int Ls = geo.multiplicity;
@@ -114,7 +114,7 @@ template <class T>
 void quda_convert_fermion(std::vector<T>& qff, const FermionField5d& ff)
 {
   TIMER("quda_convert_fermion(qff,ff)");
-  const Geometry& geo = ff.geo;
+  const Geometry& geo = ff.geo();
   WilsonVector* quda_pt = reinterpret_cast<WilsonVector*>(qff.data());
   int Ls = geo.multiplicity;
   qassert(Ls > 0);
@@ -460,7 +460,7 @@ inline void invert(FermionField5d& sol, const FermionField5d& src,
                    const InverterDomainWallQuda& inv)
 {
   // initialize the std::vectors that hold source and solution vectors.
-  size_t qff_size = inv.geo.local_volume() * inv.fa.ls * 24;
+  size_t qff_size = inv.geo().local_volume() * inv.fa.ls * 24;
   std::vector<double> qff_src(qff_size);
   std::vector<double> qff_sol(qff_size);
   // inv_param_dup.deflation_op = inv.df_preconditioner;
@@ -485,7 +485,7 @@ inline void invert(FermionField5d& sol, const FermionField5d& src,
   sol *= 1. / ((0.5 * inv.fa.mobius_scale + 0.5) * (4. - inv.fa.m5) + 1.);
   Printf("Output 5d vector norm2 = %16.12e.\n", qnorm(sol));
   if (inv.qlat_check) {
-    check.init(geo_resize(src.geo));
+    check.init(geo_resize(src.geo()));
     multiply_m_full(check, sol, inv);
     check -= dm_in;
     Printf("Check  5d vector norm2 = %16.12e.\n", qnorm(check));

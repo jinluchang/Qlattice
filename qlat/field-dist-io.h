@@ -145,7 +145,7 @@ template <class M>
 crc32_t field_dist_crc32(const Field<M>& f)
 {
   std::vector<DistData<M> > dds(1);
-  dds[0].id_node = f.geo.geon.id_node;
+  dds[0].id_node = f.geo().geon.id_node;
   dds[0].data = get_data(f);
   return dist_crc32(dds, get_num_node());
 }
@@ -341,16 +341,16 @@ long dist_write_fields(const std::vector<ConstHandle<Field<M> > >& fs,
 {
   for (int k = 0; k < (int)fs.size(); ++k) {
     const Field<M>& f = fs[k]();
-    const int id_node = f.geo.geon.id_node;
+    const int id_node = f.geo().geon.id_node;
     if (id_node == 0) {
       dist_mkdir(path + ".partial", id_node, mode);
       if (get_force_field_write_sizeof_M() == 0) {
-        dist_write_geo_info(f.geo, sizeof(M), path + ".partial", mode);
+        dist_write_geo_info(f.geo(), sizeof(M), path + ".partial", mode);
       } else {
         const int sizeof_M = get_force_field_write_sizeof_M();
-        qassert((f.geo.multiplicity * sizeof(M)) % sizeof_M == 0);
-        const int multiplicity = (f.geo.multiplicity * sizeof(M)) / sizeof_M;
-        dist_write_geo_info(geo_remult(f.geo, multiplicity), sizeof_M,
+        qassert((f.geo().multiplicity * sizeof(M)) % sizeof_M == 0);
+        const int multiplicity = (f.geo().multiplicity * sizeof(M)) / sizeof_M;
+        dist_write_geo_info(geo_remult(f.geo(), multiplicity), sizeof_M,
                             path + ".partial", mode);
         get_force_field_write_sizeof_M() = 0;
       }
@@ -360,7 +360,7 @@ long dist_write_fields(const std::vector<ConstHandle<Field<M> > >& fs,
   sync_node();
   std::vector<DistData<M> > dds(fs.size());
   for (size_t i = 0; i < dds.size(); ++i) {
-    dds[i].id_node = fs[i]().geo.geon.id_node;
+    dds[i].id_node = fs[i]().geo().geon.id_node;
     dds[i].data = get_data(fs[i]());
   }
   const long total_bytes =
@@ -387,7 +387,7 @@ long dist_write_field(const Field<M>& f, const std::string& path,
 // interface_function
 {
   TIMER_VERBOSE("dist_write_field");
-  qassert(f.geo.is_only_local());
+  qassert(f.geo().is_only_local());
   std::vector<ConstHandle<Field<M> > > fs(1);
   fs[0].init(f);
   return dist_write_fields(fs, get_num_node(), path, mode);
@@ -514,7 +514,7 @@ long dist_read_fields(std::vector<Field<M> >& fs, Geometry& geo,
   std::vector<DistData<M> > dds(fs.size());
   for (size_t i = 0; i < fs.size(); ++i) {
     fs[i].init(new_geos[i]);
-    dds[i].id_node = fs[i].geo.geon.id_node;
+    dds[i].id_node = fs[i].geo().geon.id_node;
     dds[i].data = get_data(fs[i]);
   }
   return dist_read_dist_data(dds, product(new_size_node), path);
@@ -549,7 +549,7 @@ long dist_read_field(Field<M>& f, const std::string& path)
     return 0;
   } else {
     f.init(geo);
-    qassert(f.geo == geo);
+    qassert(f.geo() == geo);
     shuffle_field_back(f, fs, new_size_node);
     timer.flops += total_bytes;
     return total_bytes;
@@ -561,12 +561,12 @@ void convert_field_float_from_double(Field<N>& ff, const Field<M>& f)
 // interface_function
 {
   TIMER("convert_field_float_from_double");
-  qassert(f.geo.is_only_local());
+  qassert(f.geo().is_only_local());
   qassert(sizeof(M) % sizeof(double) == 0);
   qassert(sizeof(N) % sizeof(float) == 0);
-  qassert(f.geo.multiplicity * sizeof(M) / 2 % sizeof(N) == 0);
-  const int multiplicity = f.geo.multiplicity * sizeof(M) / 2 / sizeof(N);
-  const Geometry geo = geo_remult(f.geo, multiplicity);
+  qassert(f.geo().multiplicity * sizeof(M) / 2 % sizeof(N) == 0);
+  const int multiplicity = f.geo().multiplicity * sizeof(M) / 2 / sizeof(N);
+  const Geometry geo = geo_remult(f.geo(), multiplicity);
   ff.init(geo);
   const Vector<M> fdata = get_data(f);
   const Vector<double> fd((double*)fdata.data(),
@@ -584,12 +584,12 @@ void convert_field_double_from_float(Field<N>& ff, const Field<M>& f)
 // interface_function
 {
   TIMER("convert_field_double_from_float");
-  qassert(f.geo.is_only_local());
+  qassert(f.geo().is_only_local());
   qassert(sizeof(M) % sizeof(float) == 0);
   qassert(sizeof(N) % sizeof(double) == 0);
-  qassert(f.geo.multiplicity * sizeof(M) * 2 % sizeof(N) == 0);
-  const int multiplicity = f.geo.multiplicity * sizeof(M) * 2 / sizeof(N);
-  const Geometry geo = geo_remult(f.geo, multiplicity);
+  qassert(f.geo().multiplicity * sizeof(M) * 2 % sizeof(N) == 0);
+  const int multiplicity = f.geo().multiplicity * sizeof(M) * 2 / sizeof(N);
+  const Geometry geo = geo_remult(f.geo(), multiplicity);
   ff.init(geo);
   const Vector<M> fdata = get_data(f);
   const Vector<float> fd((float*)fdata.data(),

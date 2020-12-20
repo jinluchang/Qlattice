@@ -66,7 +66,7 @@ inline void set_rand_gauge_momentum(GaugeMomentum& gm, const double sigma,
 inline double gm_hamilton_node(const GaugeMomentum& gm)
 {
   TIMER("gm_hamilton_node");
-  const Geometry geo = geo_reform(gm.geo);
+  const Geometry geo = geo_reform(gm.geo());
   FieldM<double, 1> fd;
   fd.init(geo);
 #pragma omp parallel for
@@ -107,7 +107,7 @@ inline double gf_sum_re_tr_plaq_node_no_comm(const GaugeField& gf)
 // subtract the free field value
 {
   TIMER("gf_sum_re_tr_plaq_node_no_comm");
-  const Geometry geo = geo_reform(gf.geo);
+  const Geometry geo = geo_reform(gf.geo());
   FieldM<double, 1> fd;
   fd.init(geo);
 #pragma omp parallel for
@@ -132,7 +132,7 @@ inline double gf_sum_re_tr_rect_node_no_comm(const GaugeField& gf)
 // subtract the free field value
 {
   TIMER("gf_sum_re_tr_rect_node_no_comm");
-  const Geometry geo = geo_reform(gf.geo);
+  const Geometry geo = geo_reform(gf.geo());
   FieldM<double, 1> fd;
   fd.init(geo);
 #pragma omp parallel for
@@ -173,13 +173,13 @@ inline double gf_hamilton_node(const GaugeField& gf, const GaugeAction& ga)
   if (ga.c1 == 0.0) {
     expand_right = Coordinate(1, 1, 1, 1);
   }
-  const Geometry geo_ext = geo_resize(gf.geo, expand_left, expand_right);
+  const Geometry geo_ext = geo_resize(gf.geo(), expand_left, expand_right);
   GaugeField gf_ext;
   gf_ext.init(geo_ext);
   gf_ext = gf;
   const std::string tag_comm = ga.c1 == 0.0 ? "plaq" : "plaq+rect";
   const CommPlan& plan =
-      get_comm_plan(set_marks_field_gf_hamilton, tag_comm, gf_ext.geo);
+      get_comm_plan(set_marks_field_gf_hamilton, tag_comm, gf_ext.geo());
   refresh_expanded(gf_ext, plan);
   return gf_hamilton_node_no_comm(gf_ext, ga);
 }
@@ -200,7 +200,7 @@ inline void gf_evolve(GaugeField& gf, const GaugeMomentum& gm,
 //  U(t+dt) = exp(i dt H) U(t)
 {
   TIMER("gf_evolve");
-  const Geometry& geo = gf.geo;
+  const Geometry& geo = gf.geo();
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -281,7 +281,7 @@ inline void set_gm_force_no_comm(GaugeMomentum& gm_force, const GaugeField& gf,
 // gf need comm
 {
   TIMER("set_gm_force_no_comm");
-  const Geometry geo = geo_resize(gf.geo);
+  const Geometry geo = geo_resize(gf.geo());
   gm_force.init(geo);
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
@@ -304,13 +304,13 @@ inline void set_gm_force(GaugeMomentum& gm_force, const GaugeField& gf,
     expand_left = Coordinate(1, 1, 1, 1);
     expand_right = Coordinate(1, 1, 1, 1);
   }
-  const Geometry geo_ext = geo_resize(gf.geo, expand_left, expand_right);
+  const Geometry geo_ext = geo_resize(gf.geo(), expand_left, expand_right);
   GaugeField gf_ext;
   gf_ext.init(geo_ext);
   gf_ext = gf;
   const std::string tag_comm = ga.c1 == 0.0 ? "plaq" : "plaq+rect";
   const CommPlan& plan =
-      get_comm_plan(set_marks_field_gm_force, tag_comm, gf_ext.geo);
+      get_comm_plan(set_marks_field_gm_force, tag_comm, gf_ext.geo());
   refresh_expanded(gf_ext, plan);
   set_gm_force_no_comm(gm_force, gf_ext, ga);
 }

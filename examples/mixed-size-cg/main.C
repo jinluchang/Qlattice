@@ -35,7 +35,7 @@ inline void simple_cg(FermionField4d& ff_sol, const GaugeField& gf,
   inv.max_num_iter() = 300;
   inv.stop_rsd() = 1e-10;
   ff_sol.init();
-  ff_sol.init(ff_src.geo);
+  ff_sol.init(ff_src.geo());
   invert(ff_sol, ff_src, inv);
 }
 
@@ -48,7 +48,7 @@ inline void set_smooth_gauge_field(GaugeField& sgf, const GaugeField& gf)
   gf_ape_smear(sgf0, sgf0, 0.6);
   const Coordinate expansion_left(2, 2, 2, 2);
   const Coordinate expansion_right(1, 1, 1, 1);
-  const Geometry geo1 = geo_resize(sgf0.geo, expansion_left, expansion_right);
+  const Geometry geo1 = geo_resize(sgf0.geo(), expansion_left, expansion_right);
   sgf.init(geo1);
   sgf = sgf0;
   refresh_expanded(sgf); // TODO
@@ -58,7 +58,7 @@ inline void reduce_half_gauge_field(GaugeField& hgf, const GaugeField& gf)
 // xl = coordinate_shifts(hxl * 2, 0)
 {
   TIMER_VERBOSE("reduce_half_gauge_field");
-  const Geometry& geo = gf.geo;
+  const Geometry& geo = gf.geo();
   Geometry hgeo;
   hgeo.init(geo.geon, geo.node_site / 2, geo.multiplicity);
   const Coordinate expansion_left(1, 1, 1, 1);
@@ -135,7 +135,7 @@ inline void reduce_half_fermion_field(FermionField5d& hff,
 // xl = coordinate_shifts(hxl * 2, 0)
 {
   TIMER_VERBOSE("reduce_half_fermion_field");
-  const Geometry& geo = ff.geo;
+  const Geometry& geo = ff.geo();
   Geometry hgeo;
   hgeo.init(geo.geon, geo.node_site / 2, geo.multiplicity);
   hgeo.eo = geo.eo;
@@ -157,7 +157,7 @@ inline void extend_half_fermion_field(FermionField5d& ff, const FermionField5d& 
 // xl = coordinate_shifts(hxl * 2, 0)
 {
   TIMER_VERBOSE("extend_half_fermion_field");
-  const Geometry& hgeo = hff.geo;
+  const Geometry& hgeo = hff.geo();
   Geometry geo;
   geo.init(hgeo.geon, hgeo.node_site * 2, hgeo.multiplicity);
   geo.eo = hgeo.eo;
@@ -188,12 +188,12 @@ inline long cg_with_herm_sym_2_half(FermionField5d& sol,
   reduce_half_fermion_field(hsol, sol);
   const long half_iter =
       cg_with_f(hsol, hsrc, inv.hinv, multiply_hermop_sym2, stop_rsd, max_num_iter * 16);
-  timer.flops += 5500 * half_iter * inv.fa.ls * inv.geo.local_volume() / 16;
+  timer.flops += 5500 * half_iter * inv.fa.ls * inv.geo().local_volume() / 16;
   extend_half_fermion_field(sol, hsol);
   // set_zero(sol); // ADJUST ME
   const long iter =
       cg_with_f(sol, src, inv, multiply_hermop_sym2, stop_rsd, max_num_iter);
-  timer.flops += 5500 * iter * inv.fa.ls * inv.geo.local_volume();
+  timer.flops += 5500 * iter * inv.fa.ls * inv.geo().local_volume();
   return iter;
 }
 
@@ -205,7 +205,7 @@ inline long cg_with_herm_sym_2(FermionField5d& sol, const FermionField5d& src,
   TIMER_VERBOSE_FLOPS("cg_with_herm_sym_2(5d,5d,inv)");
   const long iter =
       cg_with_f(sol, src, inv, multiply_hermop_sym2, stop_rsd, max_num_iter);
-  timer.flops += 5500 * iter * inv.fa.ls * inv.geo.local_volume();
+  timer.flops += 5500 * iter * inv.fa.ls * inv.geo().local_volume();
   return iter;
 }
 
@@ -231,7 +231,7 @@ long invert_with_cg_with_guess_half(
   if (not dminus_multiplied_already and inv.fa.is_multiplying_dminus) {
     multiply_d_minus(dm_in, in, inv);
   } else {
-    dm_in.init(geo_resize(in.geo));
+    dm_in.init(geo_resize(in.geo()));
     dm_in = in;
   }
   const double qnorm_dm_in = qnorm(dm_in);
@@ -270,7 +270,7 @@ inline long invert_mix_prec(FermionField5d& out, const FermionField5d& in,
   if (inv.fa.is_multiplying_dminus) {
     multiply_d_minus(dm_in, in, inv);
   } else {
-    dm_in.init(geo_resize(in.geo));
+    dm_in.init(geo_resize(in.geo()));
     dm_in = in;
   }
   total_iter += invert_with_cg(out, dm_in, inv, cg_with_herm_sym_2,
@@ -316,7 +316,7 @@ inline void mixed_size_cg(FermionField4d& ff_sol, const GaugeField& gf,
   inv.max_num_iter() = 300;
   inv.stop_rsd() = 1e-10;
   ff_sol.init();
-  ff_sol.init(ff_src.geo);
+  ff_sol.init(ff_src.geo());
   invert(ff_sol, ff_src, inv);
 }
 

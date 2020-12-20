@@ -50,7 +50,7 @@ template <class T>
 inline void take_real_part_and_multiply_sqrt2(Field<T>& f)
 {
   TIMER("take_real_part_and_multiply_sqrt2");
-  const Geometry& geo = f.geo;
+  const Geometry& geo = f.geo();
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -158,7 +158,7 @@ inline void prop_mom_photon_invert(QedGaugeField& egf,
 // egf in momentum space.
 {
   TIMER("prop_mom_photon_invert");
-  const Geometry& geo = egf.geo;
+  const Geometry& geo = egf.geo();
   for (long index = 0; index < geo.local_volume(); ++index) {
     Coordinate kl = geo.coordinate_from_index(index);
     Coordinate kg = geo.coordinate_g_from_l(kl);
@@ -192,7 +192,7 @@ inline void prop_photon_invert(QedGaugeField& egf,
 // egf in coordinate space.
 {
   TIMER_VERBOSE("prop_photon_invert");
-  const Geometry& geo = egf.geo;
+  const Geometry& geo = egf.geo();
   fft_complex_field(egf, true);
   prop_mom_photon_invert(egf, momtwist);
   fft_complex_field(egf, false);
@@ -204,7 +204,7 @@ inline void prop_mom_complex_scaler_invert(
     const array<double, DIMN>& momtwist)
 {
   TIMER("prop_mom_complex_scaler_invert");
-  const Geometry& geo = csf.geo;
+  const Geometry& geo = csf.geo();
   for (long index = 0; index < geo.local_volume(); ++index) {
     Coordinate kl = geo.coordinate_from_index(index);
     Coordinate kg = geo.coordinate_g_from_l(kl);
@@ -230,7 +230,7 @@ inline void prop_complex_scaler_invert(ComplexScalerField& csf,
                                        const array<double, DIMN>& momtwist)
 {
   TIMER_VERBOSE("prop_complex_scaler_invert");
-  const Geometry& geo = csf.geo;
+  const Geometry& geo = csf.geo();
   fft_complex_field(csf, true);
   prop_mom_complex_scaler_invert(csf, mass, momtwist);
   fft_complex_field(csf, false);
@@ -249,7 +249,7 @@ void prop_mom_spin_propagator4d(SpinPropagator4dT<T>& sp4d, const double mass,
 // M_5 = 1.0
 {
   TIMER("prop_mom_spin_propagator4d");
-  const Geometry& geo = sp4d.geo;
+  const Geometry& geo = sp4d.geo();
   const double m5 = 1.0;
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
@@ -300,7 +300,7 @@ void prop_spin_propagator4d(SpinPropagator4dT<T>& sp4d, const double mass,
                             const array<double, DIMN>& momtwist)
 {
   TIMER_VERBOSE("prop_spin_propagator4d");
-  const Geometry& geo = sp4d.geo;
+  const Geometry& geo = sp4d.geo();
   fft_complex_field(sp4d, true);
   prop_mom_spin_propagator4d(sp4d, mass, momtwist);
   fft_complex_field(sp4d, false);
@@ -311,7 +311,7 @@ inline void set_point_source_plusm(QedGaugeField& f, const Complex& coef,
                                    const Coordinate& xg, const int mu)
 {
   TIMER("set_point_source_plusm");
-  const Geometry& geo = f.geo;
+  const Geometry& geo = f.geo();
   Coordinate xl = geo.coordinate_l_from_g(xg);
   if (geo.is_local(xl)) {
     f.get_elem(xl, mu) += coef;
@@ -325,7 +325,7 @@ void set_box_source_plusm(SpinPropagator4dT<T>& f, const Complex& coef,
 // FIXME: Do not handle the cross boundary case very well.
 {
   TIMER("set_box_source_plusm");
-  const Geometry& geo = f.geo;
+  const Geometry& geo = f.geo();
   SpinMatrixT<T> sm;
   set_unit(sm, coef);
 #pragma omp parallel for
@@ -343,7 +343,7 @@ void set_wall_source_plusm(SpinPropagator4dT<T>& f, const Complex& coef,
                            const int t)
 {
   TIMER("set_wall_source_plusm");
-  const Geometry& geo = f.geo;
+  const Geometry& geo = f.geo();
   Coordinate total_site = geo.total_site();
   qassert(0 <= t && t < total_site[3]);
   const Coordinate xg1(0, 0, 0, t);
@@ -358,7 +358,7 @@ void sequential_photon_spin_propagator_plusm(SpinPropagator4dT<T>& src,
                                              const SpinPropagator4dT<T>& sol)
 {
   TIMER("sequential_photon_spin_propagator_plusm");
-  const Geometry& geo = sol.geo;
+  const Geometry& geo = sol.geo();
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     Coordinate xl = geo.coordinate_from_index(index);
@@ -380,7 +380,7 @@ SpinMatrixT<T> contract_spin_propagator4d(const SpinPropagator4dT<T>& snk,
                                           const SpinPropagator4dT<T>& src)
 {
   TIMER("contractSpinPropagator");
-  const Geometry& geo = src.geo;
+  const Geometry& geo = src.geo();
   SpinMatrixT<T> sum;
   set_zero(sum);
 #pragma omp parallel

@@ -71,10 +71,10 @@ template <class T>
 void unitarize(Field<ColorMatrixT<T> >& gf)
 {
   TIMER_VERBOSE("unitarize(gf)");
-  const Geometry& geo = gf.geo;
+  const Geometry& geo = gf.geo();
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
-    Coordinate xl = geo.coordinate_from_index(index);
+    const Coordinate xl = geo.coordinate_from_index(index);
     Vector<ColorMatrixT<T> > v = gf.get_elems(xl);
     for (int m = 0; m < geo.multiplicity; ++m) {
       unitarize(v[m]);
@@ -87,7 +87,7 @@ double gf_avg_plaq_no_comm(const GaugeFieldT<T>& gf)
 // assume proper communication is done
 {
   TIMER("gf_avg_plaq_no_comm");
-  const Geometry& geo = gf.geo;
+  const Geometry& geo = gf.geo();
   std::vector<double> sums(omp_get_max_threads(), 0.0);
 #pragma omp parallel
   {
@@ -133,7 +133,7 @@ double gf_avg_plaq(const GaugeFieldT<T>& gf)
 {
   TIMER("gf_avg_plaq");
   GaugeFieldT<T> gf1;
-  gf1.init(geo_resize(gf.geo, Coordinate(0, 0, 0, 0), Coordinate(1, 1, 1, 1)));
+  gf1.init(geo_resize(gf.geo(), Coordinate(0, 0, 0, 0), Coordinate(1, 1, 1, 1)));
   gf1 = gf;
   refresh_expanded(gf1);
   return gf_avg_plaq_no_comm(gf1);
@@ -144,7 +144,7 @@ double gf_avg_spatial_plaq_no_comm(const GaugeFieldT<T>& gf)
 // assume proper communication is done
 {
   TIMER("gf_avg_spatial_plaq_no_comm");
-  const Geometry& geo = gf.geo;
+  const Geometry& geo = gf.geo();
   std::vector<double> sums(omp_get_max_threads(), 0.0);
 #pragma omp parallel
   {
@@ -190,7 +190,7 @@ double gf_avg_spatial_plaq(const GaugeFieldT<T>& gf)
 {
   TIMER("gf_avg_spatial_plaq");
   GaugeFieldT<T> gf1;
-  gf1.init(geo_resize(gf.geo, Coordinate(0, 0, 0, 0), Coordinate(1, 1, 1, 0)));
+  gf1.init(geo_resize(gf.geo(), Coordinate(0, 0, 0, 0), Coordinate(1, 1, 1, 0)));
   gf1 = gf;
   refresh_expanded(gf1);
   return gf_avg_spatial_plaq_no_comm(gf1);
@@ -200,7 +200,7 @@ template <class T>
 double gf_avg_link_trace(const GaugeFieldT<T>& gf)
 {
   TIMER("gf_avg_link_trace");
-  const Geometry& geo = gf.geo;
+  const Geometry& geo = gf.geo();
   std::vector<double> sums(omp_get_max_threads(), 0.0);
 #pragma omp parallel
   {
@@ -330,7 +330,7 @@ void save_gauge_field(const GaugeFieldT<T>& gf, const std::string& path,
 {
   TIMER_VERBOSE_FLOPS("save_gauge_field");
   qassert(is_initialized(gf));
-  const Geometry& geo = gf.geo;
+  const Geometry& geo = gf.geo();
   FieldM<array<Complex, 6>, 4> gft;
   gft.init(geo);
 #pragma omp parallel for
@@ -353,11 +353,11 @@ void save_gauge_field(const GaugeFieldT<T>& gf, const std::string& path,
   gfi.trace = gf_avg_link_trace(gf);
   gfi.simple_checksum = field_simple_checksum(gft);
   gfi.crc32 = field_crc32(gft);
-  gfi.total_site = gf.geo.total_site();
+  gfi.total_site = gf.geo().total_site();
   qtouch_info(path + ".partial", make_gauge_field_header(gfi));
   serial_write_field(gft, path + ".partial");
   qrename_info(path + ".partial", path);
-  timer.flops += get_data(gft).data_size() * gft.geo.geon.num_node;
+  timer.flops += get_data(gft).data_size() * gft.geo().geon.num_node;
 }
 
 template <class T = ComplexT>
@@ -410,7 +410,7 @@ long load_gauge_field_par(GaugeFieldT<T>& gf, const std::string& path)
   TIMER_VERBOSE_FLOPS("load_gauge_field_par");
   displayln_info(fname + ssprintf(": '%s'.", path.c_str()));
   qassert(is_initialized(gf));
-  const Geometry& geo = gf.geo;
+  const Geometry& geo = gf.geo();
   FieldM<array<Complex, 6>, 4> gft;
   gft.init(geo);
   const long file_size = serial_read_field_par(
@@ -445,7 +445,7 @@ inline long load_gauge_field_cps3x3(GaugeFieldT<Complex>& gf,
   TIMER_VERBOSE_FLOPS("load_gauge_field_cps3x3");
   displayln_info(fname + ssprintf(": '%s'.", path.c_str()));
   qassert(is_initialized(gf));
-  const Geometry& geo = gf.geo;
+  const Geometry& geo = gf.geo();
   FieldM<array<Complex, 9>, 4> gft;
   gft.init(geo);
   const long file_size = serial_read_field_par(
@@ -475,7 +475,7 @@ inline long load_gauge_field_milc(GaugeFieldT<Complex>& gf,
   TIMER_VERBOSE_FLOPS("load_gauge_field_milc");
   displayln_info(fname + ssprintf(": '%s'.", path.c_str()));
   qassert(is_initialized(gf));
-  const Geometry& geo = gf.geo;
+  const Geometry& geo = gf.geo();
   FieldM<array<ComplexF, 9>, 4> gft;
   gft.init(geo);
   // ADJUST ME
@@ -516,7 +516,7 @@ template <class T>
 void twist_boundary_at_boundary(GaugeFieldT<T>& gf, double mom, int mu)
 {
   TIMER_VERBOSE_FLOPS("twist_boundary_at_boundary");
-  const Geometry& geo = gf.geo;
+  const Geometry& geo = gf.geo();
   const double amp = 2.0 * PI * mom;
   const int len = geo.total_site()[mu];
   for (int index = 0; index < geo.local_volume(); index++) {

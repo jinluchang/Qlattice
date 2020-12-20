@@ -212,7 +212,7 @@ void shuffle_field(std::vector<Field<M> >& fs, const Field<M>& f,
   }
   sync_node();
   TIMER_VERBOSE_FLOPS("shuffle_field(fs,f,sp)");
-  const Geometry& geo = f.geo;
+  const Geometry& geo = f.geo();
   if (sp.new_size_node != Coordinate()) {
     displayln_info(
         fname + ssprintf(": %s -> %s (total_site: %s ; site_size: %d ; "
@@ -267,7 +267,7 @@ void shuffle_field_back(Field<M>& f, const std::vector<Field<M> >& fs,
   sync_node();
   TIMER_VERBOSE_FLOPS("shuffle_field_back(f,fs,sp)");
   qassert(is_initialized(f));
-  const Geometry& geo = f.geo;
+  const Geometry& geo = f.geo();
   if (sp.new_size_node != Coordinate()) {
     displayln_info(
         fname + ssprintf(": %s -> %s (total_site: %s ; site_size: %d ; "
@@ -311,7 +311,7 @@ void shuffle_field(std::vector<SelectedField<M> >& fs,
   }
   sync_node();
   TIMER_VERBOSE_FLOPS("shuffle_field(sel_fs,sel_f,sp)");
-  const Geometry& geo = f.geo;
+  const Geometry& geo = f.geo();
   displayln_info(
       fname +
       ssprintf(
@@ -365,7 +365,7 @@ void shuffle_field_back(SelectedField<M>& f,
   sync_node();
   TIMER_VERBOSE_FLOPS("shuffle_field_back(sel_f,sel_fs,sp)");
   qassert(is_initialized(f));
-  const Geometry& geo = f.geo;
+  const Geometry& geo = f.geo();
   displayln_info(
       fname +
       ssprintf(
@@ -493,7 +493,7 @@ ShufflePlan make_shuffle_plan_generic(std::vector<FieldSelection>& fsels,
   ShufflePlan sp;
   sp.new_size_node = new_size_node;
   sp.is_no_shuffle = false;
-  sp.geo_send = fsel.f_rank.geo;
+  sp.geo_send = fsel.f_rank.geo();
   sp.geos_recv = make_dist_io_geos(sp.geo_send.total_site(),
                                    sp.geo_send.multiplicity, sp.new_size_node);
   fsels.resize(sp.geos_recv.size());
@@ -653,7 +653,7 @@ ShufflePlan make_shuffle_plan_generic(std::vector<FieldSelection>& fsels,
     for (int i = 0; i < (int)f_ranks.size(); ++i) {
       f_ranks[i].init(sp.geos_recv[i], 1);
 #pragma omp parallel for
-      for (long index = 0; index < f_ranks[i].geo.local_volume(); ++index) {
+      for (long index = 0; index < f_ranks[i].geo().local_volume(); ++index) {
         int64_t& rank = f_ranks[i].get_elem(index);
         rank = -1;
       }
@@ -749,14 +749,14 @@ inline ShufflePlan make_shuffle_plan(std::vector<FieldSelection>& fsels,
                                      const Coordinate& new_size_node)
 {
   TIMER("make_shuffle_plan");
-  if (new_size_node == fsel.f_rank.geo.geon.size_node) {
+  if (new_size_node == fsel.f_rank.geo().geon.size_node) {
     fsels.clear();
     fsels.resize(1);
     fsels[0] = fsel;
     ShufflePlan sp;
     sp.is_no_shuffle = true;
     sp.new_size_node = new_size_node;
-    sp.scp.global_comm_size = fsel.f_rank.geo.total_volume();
+    sp.scp.global_comm_size = fsel.f_rank.geo().total_volume();
     return sp;
   }
   return make_shuffle_plan_generic(fsels, fsel, new_size_node, identity<long>);
@@ -817,7 +817,7 @@ void shuffle_field(std::vector<Field<M> >& fs, const Field<M>& f,
 {
   sync_node();
   TIMER_FLOPS("shuffle_field");
-  const Geometry& geo = f.geo;
+  const Geometry& geo = f.geo();
   clear(fs);
   const ShufflePlan& sp = get_shuffle_plan(geo.total_site(), new_size_node);
   shuffle_field(fs, f, sp);
@@ -832,7 +832,7 @@ void shuffle_field_back(Field<M>& f, const std::vector<Field<M> >& fs,
 {
   sync_node();
   TIMER_FLOPS("shuffle_field_back");
-  const Geometry& geo = f.geo;
+  const Geometry& geo = f.geo();
   const ShufflePlan& sp = get_shuffle_plan(geo.total_site(), new_size_node);
   shuffle_field_back(f, fs, sp);
   const long total_bytes =
@@ -850,7 +850,7 @@ void shuffle_field(std::vector<SelectedField<M> >& fs,
 {
   sync_node();
   TIMER_FLOPS("shuffle_field(fs,f,nsn,fsel)");
-  const Geometry& geo = f.geo;
+  const Geometry& geo = f.geo();
   const ShufflePlan sp = make_shuffle_plan(fsels, fsel, new_size_node);
   shuffle_field(fs, f, sp);
   const long total_bytes =
@@ -866,7 +866,7 @@ void shuffle_field_back(SelectedField<M>& f,
 {
   sync_node();
   TIMER_FLOPS("shuffle_field_back");
-  const Geometry& geo = f.geo;
+  const Geometry& geo = f.geo();
   std::vector<FieldSelection> fsels;
   const ShufflePlan sp = make_shuffle_plan(fsels, fsel, new_size_node);
   shuffle_field_back(f, fs, sp);
@@ -1177,8 +1177,8 @@ template <class M>
 void reflect_field(Field<M>& f)
 {
   TIMER_VERBOSE_FLOPS("reflect_field");
-  timer.flops += get_data_size(f) * f.geo.geon.num_node;
-  const Geometry& geo = f.geo;
+  timer.flops += get_data_size(f) * f.geo().geon.num_node;
+  const Geometry& geo = f.geo();
   const Coordinate total_site = geo.total_site();
   ShuffleReflectGIndexMap func;
   func.total_site = total_site;
@@ -1214,8 +1214,8 @@ void field_shift_shuffle(Field<M>& f, const Field<M>& f0,
                          const Coordinate& shift, const bool is_reflect = false)
 {
   TIMER_VERBOSE_FLOPS("field_shift_shuffle");
-  timer.flops += get_data_size(f0) * f0.geo.geon.num_node;
-  const Geometry& geo = f0.geo;
+  timer.flops += get_data_size(f0) * f0.geo().geon.num_node;
+  const Geometry& geo = f0.geo();
   const Coordinate total_site = geo.total_site();
   ShuffleShiftGIndexMap func;
   func.total_site = total_site;
@@ -1248,7 +1248,7 @@ inline ShiftShufflePlan make_shift_shuffle_plan(const FieldSelection& fsel,
   ShiftShufflePlan ssp;
   ssp.shift = shift;
   ssp.is_reflect = is_reflect;
-  const Geometry& geo = fsel.f_rank.geo;
+  const Geometry& geo = fsel.f_rank.geo();
   const Coordinate& new_size_node = geo.geon.size_node;
   ShuffleShiftGIndexMap func;
   func.total_site = geo.total_site();
@@ -1266,7 +1266,7 @@ void field_shift(SelectedField<M>& sf, const SelectedField<M>& sf0,
                  const ShiftShufflePlan& ssp)
 {
   TIMER_VERBOSE_FLOPS("field_shift(sf,sf0,ssp)");
-  const Geometry& geo = sf0.geo;
+  const Geometry& geo = sf0.geo();
   const ShufflePlan& sp = ssp.sp;
   timer.flops += sp.scp.global_comm_size * geo.multiplicity * sizeof(M);
   std::vector<SelectedField<M> > sfs;

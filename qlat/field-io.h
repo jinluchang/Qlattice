@@ -109,7 +109,7 @@ template <class M, class N>
 void fieldCastTruncated(Field<M> &dest, const Field<N> &src)
 {
   TIMER("fieldCastTruncated");
-  const Geometry &geo = src.geo;
+  const Geometry &geo = src.geo();
   dest.init(geo);
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
@@ -127,7 +127,7 @@ uint32_t fieldChecksumSum32(const Field<M> &f)
 {
   TIMER("fieldChecksumSum32");
 
-  Geometry geo = geo_resize(f.geo, 0);
+  Geometry geo = geo_resize(f.geo(), 0);
   qassert(geo.is_only_local());
 
   Field<M> f_local;
@@ -158,7 +158,7 @@ std::string field_hash_crc32(const qlat::Field<M> &origin)
 
   TIMER("field_hash_crc32");
 
-  Geometry geo_only_local = geo_resize(origin.geo, 0);
+  Geometry geo_only_local = geo_resize(origin.geo(), 0);
   crc32_t hash;
   for (int id_node = 0; id_node < get_num_node(); id_node++) {
     if (get_id_node() == id_node) {
@@ -182,7 +182,7 @@ void sophisticated_make_to_order(Field<M> &result, const Field<M> &origin)
 {
   TIMER("sophisticated_make_to_order");
 
-  Geometry geo_only_local = geo_resize(origin.geo, 0);
+  Geometry geo_only_local = geo_resize(origin.geo(), 0);
   ;
 
   Field<M> field_recv;
@@ -238,7 +238,7 @@ void sophisticated_serial_write(const qlat::Field<M> &origin,
 {
   TIMER("sophisticated_serial_write");
 
-  Geometry geo_only_local = geo_resize(origin.geo, 0);
+  Geometry geo_only_local = geo_resize(origin.geo(), 0);
 
   Field<M> field_recv;
   field_recv.init(geo_only_local);
@@ -301,7 +301,7 @@ void sophisticated_serial_read(qlat::Field<M> &destination,
 
   TIMER_VERBOSE("sophisticated_serial_read");
 
-  Geometry geo_only_local = geo_resize(destination.geo, 0);
+  Geometry geo_only_local = geo_resize(destination.geo(), 0);
   ;
 
   Field<M> field_recv;

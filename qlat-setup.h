@@ -328,7 +328,7 @@ inline long load_configuration(GaugeField& gf, const std::string& job_tag,
       twist_boundary_at_boundary(gf, -0.5, 3);
     }
   }
-  qassert(is_matching_geo(geo, gf.geo));
+  qassert(is_matching_geo(geo, gf.geo()));
   return file_size;
 }
 

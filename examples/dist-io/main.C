@@ -91,7 +91,7 @@ inline void test_shuffle()
     const crc32_t crc_5 = field_crc32(gf_fft);
     displayln_info(ssprintf("crc32 = %08X after fft backward", crc_5));
     displayln_info(ssprintf("qnorm = %24.17E after fft backward", qnorm(gf_fft)));
-    gf_fft *= 1.0 / (double)gf_fft.geo.total_volume();
+    gf_fft *= 1.0 / (double)gf_fft.geo().total_volume();
     const crc32_t crc_6 = field_crc32(gf_fft);
     displayln_info(ssprintf("crc32 = %08X after rescale", crc_6));
     displayln_info(ssprintf("qnorm = %24.17E after rescale", qnorm(gf_fft)));

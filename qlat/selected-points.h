@@ -262,7 +262,7 @@ template <class M>
 void only_keep_selected_points(Field<M>& f, const PointSelection& psel)
 {
   TIMER("only_keep_selected_points");
-  const Geometry& geo = f.geo;
+  const Geometry& geo = f.geo();
   qassert(geo.is_only_local());
   Field<M> f1;
   f1.init(geo);
@@ -295,7 +295,7 @@ void set_selected_points(SelectedPoints<M>& sp, const Field<M>& f,
                          const PointSelection& psel)
 {
   TIMER("set_selected_points");
-  const Geometry& geo = f.geo;
+  const Geometry& geo = f.geo();
   qassert(geo.is_only_local());
   const long n_points = psel.size();
   sp.init(geo, psel);
@@ -346,7 +346,7 @@ void set_field_selected(Field<M>& f, const SelectedPoints<M>& sp,
                         const PointSelection& psel)
 {
   TIMER("set_field_selected");
-  const Geometry& geo = f.geo;
+  const Geometry& geo = f.geo();
   qassert(geo.multiplicity == sp.multiplicity);
   const long n_points = sp.n_points;
   qassert(n_points == (long)psel.size());

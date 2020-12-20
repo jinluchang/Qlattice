@@ -113,7 +113,7 @@ void grid_convert(Grid::LatticeGaugeFieldF& ggf, const GaugeField& gf)
 {
   TIMER_VERBOSE("grid_convert(ggf,gf)");
   using namespace Grid;
-  const Geometry& geo = gf.geo;
+  const Geometry& geo = gf.geo();
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -142,7 +142,7 @@ void grid_convert(FermionField5d& ff, const Grid::LatticeFermionF& gff)
 {
   TIMER_VERBOSE("grid_convert(ff,gff)");
   using namespace Grid;
-  const Geometry& geo = ff.geo;
+  const Geometry& geo = ff.geo();
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -166,7 +166,7 @@ void grid_convert(Grid::LatticeFermionF& gff, const FermionField5d& ff)
 {
   TIMER_VERBOSE("grid_convert(gff,ff)");
   using namespace Grid;
-  const Geometry& geo = ff.geo;
+  const Geometry& geo = ff.geo();
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -293,7 +293,7 @@ inline void multiply_m_grid(FermionField5d& out, const FermionField5d& in,
                             const InverterDomainWallGrid& inv)
 {
   TIMER("multiply_m_grid(5d,5d,InvGrid)");
-  out.init(geo_resize(in.geo));
+  out.init(geo_resize(in.geo()));
   using namespace Grid;
   GridCartesian* FGrid = inv.FGrid;
   LatticeFermionF gin(FGrid), gout(FGrid);
@@ -308,7 +308,7 @@ inline void invert_grid_no_dminus(FermionField5d& sol,
 // sol do not need to be initialized
 {
   TIMER_VERBOSE("invert_grid_no_dminus(5d,5d,InvGrid)");
-  sol.init(geo_resize(src.geo));
+  sol.init(geo_resize(src.geo()));
   using namespace Grid;
   GridCartesian* FGrid = inv.FGrid;
   LatticeFermionF gsrc(FGrid), gsol(FGrid);
@@ -316,7 +316,7 @@ inline void invert_grid_no_dminus(FermionField5d& sol,
   grid_convert(gsol, sol);
   if (is_checking_invert()) {
     FermionField5d ff;
-    ff.init(geo_resize(src.geo));
+    ff.init(geo_resize(src.geo()));
     grid_convert(ff, gsrc);
     displayln_info(fname + ssprintf(": src qnorm = %24.17E", qnorm(ff)));
     grid_convert(ff, gsol);
@@ -329,7 +329,7 @@ inline void invert_grid_no_dminus(FermionField5d& sol,
   grid_convert(sol, gsol);
   if (is_checking_invert()) {
     FermionField5d src1;
-    src1.init(geo_resize(src.geo));
+    src1.init(geo_resize(src.geo()));
     multiply_m(src1, sol, inv);
     src1 -= src;
     displayln_info(fname + ssprintf(": diff qnorm = %24.17E", qnorm(src1)));
@@ -345,9 +345,9 @@ inline long cg_with_herm_sym_2(FermionField5d& sol, const FermionField5d& src,
   TIMER_VERBOSE_FLOPS("cg_with_herm_sym_2(5d,5d,InvGrid)");
   displayln_info(fname + ssprintf(": stop_rsd=%8.2E ; max_num_iter=%5ld",
                                   stop_rsd, max_num_iter));
-  sol.init(geo_resize(src.geo));
-  qassert(sol.geo.eo == 1);
-  qassert(src.geo.eo == 1);
+  sol.init(geo_resize(src.geo()));
+  qassert(sol.geo().eo == 1);
+  qassert(src.geo().eo == 1);
   using namespace Grid;
   GridRedBlackCartesian* FrbGrid = inv.FrbGrid;
   LatticeFermionF gsrc(FrbGrid), gsol(FrbGrid);
@@ -359,7 +359,7 @@ inline long cg_with_herm_sym_2(FermionField5d& sol, const FermionField5d& src,
   CG(*inv.HermOp, gsrc, gsol);
   grid_convert(sol, gsol);
   const long iter = CG.IterationsToComplete;
-  timer.flops += 5500 * iter * inv.fa.ls * inv.geo.local_volume();
+  timer.flops += 5500 * iter * inv.fa.ls * inv.geo().local_volume();
   return iter;
 }
 

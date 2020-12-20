@@ -29,7 +29,7 @@ inline void mk_grid_field_selection(FieldM<int64_t, 1>& f_rank,
   geo.init(total_site, 1);
   f_rank.init();
   f_rank.init(geo);
-  qassert(f_rank.geo.is_only_local());
+  qassert(f_rank.geo().is_only_local());
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     f_rank.get_elem(index) = -1;
@@ -41,7 +41,7 @@ inline void mk_grid_field_selection(FieldM<int64_t, 1>& f_rank,
   if (fs.size() == 1) {
     // require each tslice is on one node.
     Field<int64_t>& nf = fs[0];
-    const Geometry& ngeo = nf.geo;
+    const Geometry& ngeo = nf.geo();
     qassert(ngeo.multiplicity == 1);
     qassert(new_size_node == ngeo.geon.size_node);
     const int t_start = ngeo.node_site[3] * ngeo.geon.coor_node[3];
@@ -194,9 +194,9 @@ crc32_t field_crc32(const SelectedField<M>& sf, const FieldSelection& fsel,
                     const Coordinate& new_size_node_ = Coordinate())
 {
   TIMER_VERBOSE_FLOPS("field_crc32(sf)");
-  const Geometry& geo = sf.geo;
+  const Geometry& geo = sf.geo();
   qassert(geo.is_only_local());
-  qassert(fsel.f_rank.geo == geo_remult(geo));
+  qassert(fsel.f_rank.geo() == geo_remult(geo));
   const Coordinate total_site = geo.total_site();
   const Coordinate new_size_node = new_size_node_ != Coordinate()
                                        ? new_size_node_
@@ -212,8 +212,8 @@ crc32_t field_crc32(const SelectedField<M>& sf, const FieldSelection& fsel,
   const int new_num_node = product(new_size_node);
   crc32_t crc = 0;
   for (int i = 0; i < (int)sfs.size(); ++i) {
-    const int new_id_node = sfs[i].geo.geon.id_node;
-    qassert(sfs[i].geo.geon.num_node == new_num_node);
+    const int new_id_node = sfs[i].geo().geon.id_node;
+    qassert(sfs[i].geo().geon.num_node == new_num_node);
     const Vector<M> v = get_data(sfs[i].field);
     crc ^= crc32_shift(crc32_par(v),
                        (new_num_node - new_id_node - 1) * v.data_size());
@@ -251,9 +251,9 @@ long write_selected_field(const SelectedField<M>& sf, const std::string& path,
 {
   TIMER_VERBOSE_FLOPS("write_selected_field");
   displayln_info(fname + ssprintf(": fn='%s'.", path.c_str()));
-  const Geometry& geo = sf.geo;
+  const Geometry& geo = sf.geo();
   qassert(geo.is_only_local());
-  qassert(fsel.f_rank.geo == geo_remult(geo));
+  qassert(fsel.f_rank.geo() == geo_remult(geo));
   const Coordinate total_site = geo.total_site();
   const Coordinate new_size_node = new_size_node_ != Coordinate()
                                        ? new_size_node_
@@ -268,7 +268,7 @@ long write_selected_field(const SelectedField<M>& sf, const std::string& path,
   shuffle_field(sfs, sf, sp);
   long check_n_per_tslice = 0;
   for (int i = 0; i < (int)sfs.size(); ++i) {
-    const Coordinate& node_site = sfs[i].geo.node_site;
+    const Coordinate& node_site = sfs[i].geo().node_site;
     qassert(node_site[0] == total_site[0]);
     qassert(node_site[1] == total_site[1]);
     qassert(node_site[2] == total_site[2]);
@@ -287,8 +287,8 @@ long write_selected_field(const SelectedField<M>& sf, const std::string& path,
   const int new_num_node = product(new_size_node);
   crc32_t crc = 0;
   for (int i = 0; i < (int)sfs.size(); ++i) {
-    const int new_id_node = sfs[i].geo.geon.id_node;
-    qassert(sfs[i].geo.geon.num_node == new_num_node);
+    const int new_id_node = sfs[i].geo().geon.id_node;
+    qassert(sfs[i].geo().geon.num_node == new_num_node);
     const Vector<M> v = get_data(sfs[i].field);
     crc ^= crc32_shift(crc32_par(v),
                        (new_num_node - new_id_node - 1) * v.data_size());
@@ -412,7 +412,7 @@ long read_selected_field(SelectedField<M>& sf, const std::string& path,
   }
   Geometry geo;
   geo.init(total_site, multiplicity);
-  qassert(fsel.f_rank.geo == geo_remult(geo));
+  qassert(fsel.f_rank.geo() == geo_remult(geo));
   const Coordinate new_size_node = new_size_node_ != Coordinate()
                                        ? new_size_node_
                                        : get_default_serial_new_size_node(geo);
@@ -430,7 +430,7 @@ long read_selected_field(SelectedField<M>& sf, const std::string& path,
   }
   long check_n_per_tslice = 0;
   for (int i = 0; i < (int)sfs.size(); ++i) {
-    const Coordinate& node_site = sfs[i].geo.node_site;
+    const Coordinate& node_site = sfs[i].geo().node_site;
     qassert(node_site[0] == total_site[0]);
     qassert(node_site[1] == total_site[1]);
     qassert(node_site[2] == total_site[2]);
@@ -452,11 +452,11 @@ long read_selected_field(SelectedField<M>& sf, const std::string& path,
     FILE* fp = qopen(path, "r");
     qassert(fp != NULL);
     fseek(fp,
-          pos + sfs[0].geo.geon.id_node * get_data(sfs[0].field).data_size(),
+          pos + sfs[0].geo().geon.id_node * get_data(sfs[0].field).data_size(),
           SEEK_SET);
     for (int i = 0; i < (int)sfs.size(); ++i) {
-      const int new_id_node = sfs[i].geo.geon.id_node;
-      qassert(sfs[i].geo.geon.num_node == new_num_node);
+      const int new_id_node = sfs[i].geo().geon.id_node;
+      qassert(sfs[i].geo().geon.num_node == new_num_node);
       const Vector<M> v = get_data(sfs[i].field);
       qread_data(v, fp);
       crc ^= crc32_shift(crc32_par(v),
@@ -545,12 +545,12 @@ void convert_field_float_from_double(SelectedField<N>& ff,
 // interface_function
 {
   TIMER("convert_field_float_from_double(sf)");
-  qassert(f.geo.is_only_local());
+  qassert(f.geo().is_only_local());
   qassert(sizeof(M) % sizeof(double) == 0);
   qassert(sizeof(N) % sizeof(float) == 0);
-  qassert(f.geo.multiplicity * sizeof(M) / 2 % sizeof(N) == 0);
-  const int multiplicity = f.geo.multiplicity * sizeof(M) / 2 / sizeof(N);
-  const Geometry geo = geo_remult(f.geo, multiplicity);
+  qassert(f.geo().multiplicity * sizeof(M) / 2 % sizeof(N) == 0);
+  const int multiplicity = f.geo().multiplicity * sizeof(M) / 2 / sizeof(N);
+  const Geometry geo = geo_remult(f.geo(), multiplicity);
   const long n_elems = f.n_elems;
   ff.init(geo, n_elems, multiplicity);
   const Vector<M> fdata = get_data(f);
@@ -570,12 +570,12 @@ void convert_field_double_from_float(SelectedField<N>& ff,
 // interface_function
 {
   TIMER("convert_field_double_from_float(sf)");
-  qassert(f.geo.is_only_local());
+  qassert(f.geo().is_only_local());
   qassert(sizeof(M) % sizeof(float) == 0);
   qassert(sizeof(N) % sizeof(double) == 0);
-  qassert(f.geo.multiplicity * sizeof(M) * 2 % sizeof(N) == 0);
-  const int multiplicity = f.geo.multiplicity * sizeof(M) * 2 / sizeof(N);
-  const Geometry geo = geo_remult(f.geo, multiplicity);
+  qassert(f.geo().multiplicity * sizeof(M) * 2 % sizeof(N) == 0);
+  const int multiplicity = f.geo().multiplicity * sizeof(M) * 2 / sizeof(N);
+  const Geometry geo = geo_remult(f.geo(), multiplicity);
   const long n_elems = f.n_elems;
   ff.init(geo, n_elems, multiplicity);
   const Vector<M> fdata = get_data(f);

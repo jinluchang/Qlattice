@@ -93,9 +93,9 @@ inline void gf_ape_smear_no_comm(GaugeField& gf, const GaugeField& gf0,
 {
   TIMER_VERBOSE("gf_ape_smear_no_comm");
   qassert(&gf != &gf0);
-  const Geometry& geo = gf0.geo;
+  const Geometry& geo = gf0.geo();
   gf.init(geo_resize(geo));
-  qassert(is_matching_geo_mult(geo, gf.geo));
+  qassert(is_matching_geo_mult(geo, gf.geo()));
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -112,7 +112,7 @@ inline void gf_ape_smear(GaugeField& gf, const GaugeField& gf0,
   TIMER_VERBOSE("gf_ape_smear");
   gf = gf0;
   GaugeField gf1;
-  gf1.init(geo_resize(gf0.geo, 1));
+  gf1.init(geo_resize(gf0.geo(), 1));
   for (long i = 0; i < steps; ++i) {
     gf1 = gf;
     refresh_expanded(gf1);
@@ -136,9 +136,9 @@ inline void gf_spatial_ape_smear_no_comm(GaugeField& gf, const GaugeField& gf0,
 {
   TIMER_VERBOSE("gf_spatial_ape_smear_no_comm");
   qassert(&gf != &gf0);
-  const Geometry& geo = gf0.geo;
+  const Geometry& geo = gf0.geo();
   gf.init(geo_resize(geo));
-  qassert(is_matching_geo_mult(geo, gf.geo));
+  qassert(is_matching_geo_mult(geo, gf.geo()));
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -158,7 +158,7 @@ inline void gf_spatial_ape_smear(GaugeField& gf, const GaugeField& gf0,
   const Coordinate expan_left(1, 1, 1, 0);
   const Coordinate expan_right(1, 1, 1, 0);
   GaugeField gf1;
-  gf1.init(geo_resize(gf0.geo, expan_left, expan_right));
+  gf1.init(geo_resize(gf0.geo(), expan_left, expan_right));
   for (long i = 0; i < steps; ++i) {
     gf1 = gf;
     refresh_expanded(gf1);
@@ -260,9 +260,9 @@ inline void gf_hyp_smear_no_comm(GaugeField& gf, const GaugeField& gf0,
 {
   TIMER_VERBOSE("gf_hyp_smear_no_comm");
   qassert(&gf != &gf0);
-  const Geometry& geo = gf0.geo;
+  const Geometry& geo = gf0.geo();
   gf.init(geo_resize(geo));
-  qassert(is_matching_geo_mult(geo, gf.geo));
+  qassert(is_matching_geo_mult(geo, gf.geo()));
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -280,7 +280,7 @@ inline void gf_hyp_smear(GaugeField& gf, const GaugeField& gf0,
 {
   TIMER_VERBOSE("gf_hyp_smear");
   GaugeField gf1;
-  gf1.init(geo_resize(gf0.geo, 1));
+  gf1.init(geo_resize(gf0.geo(), 1));
   gf1 = gf0;
   refresh_expanded(gf1);
   gf_hyp_smear_no_comm(gf, gf1, alpha1, alpha2, alpha3);

@@ -26,20 +26,20 @@ void fetch_expanded(Field<M> &field_comm)
   Coordinate node_pos;  // home node coordinate of a site in node space
 
   // populate send_map with the data that we need to send to other nodes
-  long record_size = field_comm.geo.local_volume_expanded();
+  long record_size = field_comm.geo().local_volume_expanded();
   for (long record = 0; record < record_size; record++) {
-    pos = field_comm.geo.coordinateFromRecord(record);
-    if (field_comm.geo.is_local(pos)) continue;
+    pos = field_comm.geo().coordinateFromRecord(record);
+    if (field_comm.geo().is_local(pos)) continue;
     for (int mu = 0; mu < DIMN; mu++) {
-      local_pos[mu] = pos[mu] % field_comm.geo.node_site[mu];
-      node_pos[mu] = pos[mu] / field_comm.geo.node_site[mu];
+      local_pos[mu] = pos[mu] % field_comm.geo().node_site[mu];
+      node_pos[mu] = pos[mu] / field_comm.geo().node_site[mu];
       if (local_pos[mu] < 0) {
-        local_pos[mu] += field_comm.geo.node_site[mu];
+        local_pos[mu] += field_comm.geo().node_site[mu];
         node_pos[mu]--;
       }
     }
     std::vector<M> &vec = send_map[node_pos];
-    for (int mu = 0; mu < field_comm.geo.multiplicity; mu++)
+    for (int mu = 0; mu < field_comm.geo().multiplicity; mu++)
       vec.push_back(field_comm.get_elems_const(local_pos)[mu]);
   }
 
@@ -67,14 +67,14 @@ void fetch_expanded(Field<M> &field_comm)
     // assuming periodic boundary condition. maybe need some fixing?
     id_this = get_id_node();
     coor_this =
-        qlat::coordinate_from_index(id_this, field_comm.geo.geon.size_node);
+        qlat::coordinate_from_index(id_this, field_comm.geo().geon.size_node);
     coort = coor_this - node_pos;
-    regularize_coordinate(coort, field_comm.geo.geon.size_node);
+    regularize_coordinate(coort, field_comm.geo().geon.size_node);
     coorf = coor_this + node_pos;
-    regularize_coordinate(coorf, field_comm.geo.geon.size_node);
+    regularize_coordinate(coorf, field_comm.geo().geon.size_node);
 
-    idt = qlat::index_from_coordinate(coort, field_comm.geo.geon.size_node);
-    idf = qlat::index_from_coordinate(coorf, field_comm.geo.geon.size_node);
+    idt = qlat::index_from_coordinate(coort, field_comm.geo().geon.size_node);
+    idf = qlat::index_from_coordinate(coorf, field_comm.geo().geon.size_node);
 
     MPI_Request req;
     MPI_Isend((void *)send, size_bytes, MPI_BYTE, idt, 0, get_comm(), &req);
@@ -90,13 +90,13 @@ void fetch_expanded(Field<M> &field_comm)
   // Now send_map[node_pos] is the vector of data recieved from the node
   // pointed to by key.
   for (long record = 0; record < record_size; record++) {
-    pos = field_comm.geo.coordinateFromRecord(record);
-    if (field_comm.geo.is_local(pos)) continue;
+    pos = field_comm.geo().coordinateFromRecord(record);
+    if (field_comm.geo().is_local(pos)) continue;
     for (int mu = 0; mu < DIMN; mu++) {
-      local_pos[mu] = pos[mu] % field_comm.geo.node_site[mu];
-      node_pos[mu] = pos[mu] / field_comm.geo.node_site[mu];
+      local_pos[mu] = pos[mu] % field_comm.geo().node_site[mu];
+      node_pos[mu] = pos[mu] / field_comm.geo().node_site[mu];
       if (local_pos[mu] < 0) {
-        local_pos[mu] += field_comm.geo.node_site[mu];
+        local_pos[mu] += field_comm.geo().node_site[mu];
         node_pos[mu]--;
       }
     }
@@ -105,7 +105,7 @@ void fetch_expanded(Field<M> &field_comm)
     // send_map[node_pos] corresponds to which site.
     int consume = send_map_consume[node_pos];
     std::vector<M> &vec = send_map[node_pos];
-    for (int mu = 0; mu < field_comm.geo.multiplicity; mu++) {
+    for (int mu = 0; mu < field_comm.geo().multiplicity; mu++) {
       field_comm.get_elems(pos)[mu] = vec[consume];
       consume++;
     }
@@ -141,7 +141,7 @@ void produce_chart_envelope(Chart<M> &chart, const Geometry geometry,
 {
   TIMER("produce_chart_envelope()");
 
-  chart.geo = geometry;
+  chart.geo() = geometry;
   std::set<Coordinate> target;
 
   int muP, nuP;
@@ -174,7 +174,7 @@ void produce_chart_envelope(Chart<M> &chart, const Geometry geometry,
             index_pos_m = index_pos;
             index_pos_m[mu] += muI;
             index_pos_m[nu] += nuI;
-            if (!chart.geo.is_local(index_pos_m)) target.insert(index_pos_m);
+            if (!chart.geo().is_local(index_pos_m)) target.insert(index_pos_m);
           }
         }
       }
@@ -215,7 +215,7 @@ void produce_chart_envelope(Chart<M> &chart, const Geometry geometry,
 //								array<int, DIMN - 1> &R,
 //int &T){ 	TIMER("produce_chart_envelope()");
 //
-//	chart.geo = geometry;
+//	chart.geo() = geometry;
 //	std::set<Coordinate> target;
 //
 //	int muP, nuP;
@@ -245,7 +245,7 @@ void produce_chart_envelope(Chart<M> &chart, const Geometry geometry,
 //				index_pos_m = index_pos;
 //				index_pos_m[mu] += muI;
 //				index_pos_m[nu] += nuI;
-//				if(!chart.geo.is_local(index_pos_m))
+//				if(!chart.geo().is_local(index_pos_m))
 //					target.insert(index_pos_m);
 //			}}
 //		}}
@@ -287,7 +287,7 @@ void produce_chart_geo(Chart<M> &chart, const Geometry geometry)
       local_pos;  // coordinate position of a site relative to its home node
   Coordinate node_pos;  // home node coordinate of a site in node space
 
-  chart.geo = geometry;
+  chart.geo() = geometry;
   chart.expansion_left = geometry.expansion_left;
   chart.expansion_right = geometry.expansion_right;
 
@@ -320,7 +320,7 @@ void fetch_expanded_chart(Field<M> &field_comm, Chart<M> &send_chart)
 {
   TIMER("fetch_expanded_chart");
 
-  qassert(is_matching_geo_mult(send_chart.geo, field_comm.geo));
+  qassert(is_matching_geo_mult(send_chart.geo(), field_comm.geo()));
 
   Coordinate node_pos;  // home node coordinate of a site in node space
 
@@ -341,7 +341,7 @@ void fetch_expanded_chart(Field<M> &field_comm, Chart<M> &send_chart)
     std::vector<M> &vec = send_chart.send_map[node_pos];
     for (it_coor = it_chart->second.begin(); it_coor != it_chart->second.end();
          it_coor++) {
-      for (int mu = 0; mu < field_comm.geo.multiplicity; mu++) {
+      for (int mu = 0; mu < field_comm.geo().multiplicity; mu++) {
         vec[consume] = field_comm.get_elems_const(*it_coor)[mu];
         consume++;
       }
@@ -373,14 +373,14 @@ void fetch_expanded_chart(Field<M> &field_comm, Chart<M> &send_chart)
       // assuming periodic boundary condition. maybe need some fixing?
       id_this = get_id_node();
       coor_this =
-          qlat::coordinate_from_index(id_this, field_comm.geo.geon.size_node);
+          qlat::coordinate_from_index(id_this, field_comm.geo().geon.size_node);
       coort = coor_this - node_pos;
-      regularize_coordinate(coort, field_comm.geo.geon.size_node);
+      regularize_coordinate(coort, field_comm.geo().geon.size_node);
       coorf = coor_this + node_pos;
-      regularize_coordinate(coorf, field_comm.geo.geon.size_node);
+      regularize_coordinate(coorf, field_comm.geo().geon.size_node);
 
-      idt = qlat::index_from_coordinate(coort, field_comm.geo.geon.size_node);
-      idf = qlat::index_from_coordinate(coorf, field_comm.geo.geon.size_node);
+      idt = qlat::index_from_coordinate(coort, field_comm.geo().geon.size_node);
+      idf = qlat::index_from_coordinate(coorf, field_comm.geo().geon.size_node);
 
       MPI_Request req;
       MPI_Isend((void *)send, size_bytes, MPI_BYTE, idt, 0, get_comm(), &req);
@@ -402,8 +402,8 @@ void fetch_expanded_chart(Field<M> &field_comm, Chart<M> &send_chart)
     std::vector<M> &vec = send_chart.send_map[node_pos];
     for (it_coor = it_chart->second.begin(); it_coor != it_chart->second.end();
          it_coor++) {
-      for (int mu = 0; mu < field_comm.geo.multiplicity; mu++) {
-        pos = node_pos * field_comm.geo.node_site + *it_coor;
+      for (int mu = 0; mu < field_comm.geo().multiplicity; mu++) {
+        pos = node_pos * field_comm.geo().node_site + *it_coor;
         field_comm.get_elems(pos)[mu] = vec[consume];
         consume++;
       }

@@ -913,7 +913,7 @@ inline std::vector<crc32_t> load_node_data(
                                       get_size_node());
   }
   std::vector<crc32_t> crcs(product(cesi.total_node), 0);
-  const Geometry& geo = cesd.geo;
+  const Geometry& geo = cesd.geo();
   const int idx_size = product(cesi.total_node);
   std::vector<VFile> fps(idx_size);
   for (int idx = 0; idx < idx_size; ++idx) {
@@ -948,8 +948,8 @@ inline std::vector<crc32_t> load_node_data(
 #pragma omp critical
     crcs[idx] ^= crc;
   }
-  if (cesd.geo.geon.size_node == cesi.total_node) {
-    const int id_node = cesd.geo.geon.id_node;
+  if (cesd.geo().geon.size_node == cesi.total_node) {
+    const int id_node = cesd.geo().geon.id_node;
     if (crcs[id_node] == cesi.crcs[id_node]) {
       displayln(fname + ssprintf(": crc check successfull."));
     } else {
@@ -972,7 +972,7 @@ inline crc32_t save_node_data(const CompressedEigenSystemData& cesd,
 // cesd need to be initialized beforehand (or the machine layout will be used)
 {
   TIMER_VERBOSE_FLOPS("save_node_data");
-  const Geometry& geo = cesd.geo;
+  const Geometry& geo = cesd.geo();
   crc32_t crc_node = 0;
   const int idx_size = product(geo.geon.size_node);
   const int idx = geo.geon.id_node;
@@ -1065,8 +1065,8 @@ inline std::vector<crc32_t> load_node(CompressedEigenSystemBases& cesb,
   TIMER_VERBOSE("load_node");
   CompressedEigenSystemData cesd;
   if (cesb.initialized) {
-    init_compressed_eigen_system_data(cesd, cesi, cesb.geo.geon.id_node,
-                                      cesb.geo.geon.size_node);
+    init_compressed_eigen_system_data(cesd, cesi, cesb.geo().geon.id_node,
+                                      cesb.geo().geon.size_node);
   }
   std::vector<crc32_t> crcs = load_node_data(cesd, cesi, path);
   if (not cesb.initialized) {
@@ -1078,8 +1078,8 @@ inline std::vector<crc32_t> load_node(CompressedEigenSystemBases& cesb,
     init_compressed_eigen_system_coefs(cesc, cesi, get_id_node(),
                                        get_size_node());
   }
-  qassert(geo_remult(cesb.geo) == geo_remult(cesc.geo));
-  const Geometry& geo = cesb.geo;
+  qassert(geo_remult(cesb.geo()) == geo_remult(cesc.geo()));
+  const Geometry& geo = cesb.geo();
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -1153,7 +1153,7 @@ inline void decompress_eigen_system(std::vector<BlockedHalfVector>& bhvs,
   const Geometry geo_full = geo_reform(cesb.geo_full);
   const Coordinate& block_site = cesb.block_site;
   const int ls = cesb.ls;
-  qassert(geo_remult(cesb.geo) == geo_remult(cesc.geo));
+  qassert(geo_remult(cesb.geo()) == geo_remult(cesc.geo()));
   qassert(geo_full == cesb.geo_full);
   qassert(geo_full == cesc.geo_full);
   qassert(block_site == cesc.block_site);
@@ -1172,7 +1172,7 @@ inline void decompress_eigen_system(std::vector<BlockedHalfVector>& bhvs,
   const long block_size = cesb.block_vol_eo * ls * HalfVector::c_size;
   const long n_basis = cesb.n_basis;
   qassert(n_basis == cesc.n_basis);
-  const Geometry& geo = bhvs[0].geo;
+  const Geometry& geo = bhvs[0].geo();
   qassert(block_size == geo.multiplicity);
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Vector<ComplexF> bases = cesb.get_elems_const(index);
@@ -1199,8 +1199,8 @@ inline void convert_half_vector(BlockedHalfVector& bhv, const HalfVector& hv,
 {
   TIMER("convert_half_vector");
   const int ls = hv.ls;
-  init_blocked_half_vector(bhv, geo_reform(hv.geo), block_site, ls);
-  const Geometry& geo = hv.geo;
+  init_blocked_half_vector(bhv, geo_reform(hv.geo()), block_site, ls);
+  const Geometry& geo = hv.geo();
   const Coordinate node_block = geo.node_site / block_site;
   qassert(geo.is_only_local());
 #pragma omp parallel for
@@ -1224,7 +1224,7 @@ inline void convert_half_vector(HalfVector& hv, const BlockedHalfVector& bhv)
   const Coordinate& block_site = bhv.block_site;
   const int ls = bhv.ls;
   init_half_vector(hv, bhv.geo_full, ls);
-  const Geometry& geo = hv.geo;
+  const Geometry& geo = hv.geo();
   const Coordinate node_block = geo.node_site / block_site;
   qassert(geo.is_only_local());
 #pragma omp parallel for
@@ -1251,7 +1251,7 @@ inline void convert_half_vectors(std::vector<HalfVector>& hvs,
   hvs.resize(bhvs.size());
   for (int i = 0; i < (int)hvs.size(); ++i) {
     convert_half_vector(hvs[i], bhvs[i]);
-    qassert(hvs[i].geo.is_only_local());
+    qassert(hvs[i].geo().is_only_local());
     bhvs[i].init();
   }
   clear(bhvs);
@@ -1264,7 +1264,7 @@ inline void convert_half_vector_bfm_format(Vector<ComplexF> bfm_data,
 {
   TIMER("convert_half_vector_bfm_format");
   const long size = bfm_data.size();
-  qassert(hv.geo.is_only_local());
+  qassert(hv.geo().is_only_local());
   qassert((long)hv.field.size() == size);
 #pragma omp parallel for
   for (long m = 0; m < size / 2; ++m) {

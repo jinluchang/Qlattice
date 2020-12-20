@@ -145,7 +145,7 @@ inline void sweep_scalar_field(ScalarField& sf, RngField& rf,
                                const double lambda)
 {
   TIMER("sweep_scalar_field(sf,rf,eo,m2,lam)");
-  const Geometry& geo = sf.geo;
+  const Geometry& geo = sf.geo();
   const double k1 = 4.0 + 0.5 * mass_sqr;
   const double k2 = 1.0 / 24.0 * lambda;
 #pragma omp parallel for
@@ -178,7 +178,7 @@ inline void sweep_scalar_field(ScalarField& sf, RngField& rf,
 inline CorrFuncs measure_corr_funcs(const ScalarField& sf, const CorrParams& cp)
 {
   TIMER("measure_corr_funcs");
-  const Geometry& geo = sf.geo;
+  const Geometry& geo = sf.geo();
   const Coordinate total_site = geo.total_site();
   std::vector<double> phi_ts(total_site[3], 0.0);
   std::vector<double> phi_ts2(total_site[3], 0.0);

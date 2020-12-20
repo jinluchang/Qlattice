@@ -156,7 +156,7 @@ inline BitSet mk_bitset_from_field_rank(const FieldM<int64_t, 1>& f_rank,
                                         const int64_t n_per_tslice = -1)
 {
   TIMER("mk_bitset_from_field_rank");
-  const Geometry& geo = f_rank.geo;
+  const Geometry& geo = f_rank.geo();
   BitSet bs(geo.local_volume());
   qassert(geo.is_only_local());
   for (long index = 0; index < geo.local_volume(); ++index) {
@@ -586,7 +586,7 @@ long write(FieldsWriter& fw, const std::string& fn, const Field<M>& field)
 // field already have endianess converted correctly
 {
   TIMER_FLOPS("write(fw,fn,field)");
-  const Geometry& geo = field.geo;
+  const Geometry& geo = field.geo();
   const Vector<M> v = get_data(field);
   const Vector<char> data((const char*)v.data(), v.data_size());
   const long total_bytes = write(fw, fn, geo, data, false);
@@ -601,7 +601,7 @@ long write(FieldsWriter& fw, const std::string& fn, const Field<M>& field,
 // field already have endianess converted correctly
 {
   TIMER_FLOPS("write(fw,fn,field,bs)");
-  const Geometry& geo = field.geo;
+  const Geometry& geo = field.geo();
   const std::vector<char> data = bs.compress(get_data(field));
   const long total_bytes = write(fw, fn, geo, get_data(data), true);
   timer.flops += total_bytes;
@@ -615,7 +615,7 @@ long write(FieldsWriter& fw, const std::string& fn, const SelectedField<M>& sf,
 // field already have endianess converted correctly
 {
   TIMER_FLOPS("write(fw,fn,sf,bs)");
-  const Geometry& geo = sf.geo;
+  const Geometry& geo = sf.geo();
   const std::vector<char> data = bs.compress_selected(get_data(sf));
   const long total_bytes = write(fw, fn, geo, get_data(data), true);
   timer.flops += total_bytes;
@@ -677,7 +677,7 @@ void set_field_from_data_fsel(SelectedField<M>& sf,
                               const FieldSelection& fsel)
 {
   TIMER("set_field_from_data_fsel");
-  const Geometry& geo = fsel.f_rank.geo;
+  const Geometry& geo = fsel.f_rank.geo();
   const long n_elems = fsel.n_elems;
   if (n_elems == 0) {
     sf.init();
@@ -711,7 +711,7 @@ long read(FieldsReader& fr, const std::string& fn, const FieldSelection& fsel,
     return 0;
   }
   qassert(is_sparse_field);
-  qassert(total_site == fsel.f_rank.geo.total_site());
+  qassert(total_site == fsel.f_rank.geo().total_site());
   set_field_from_data_fsel(sf, data, fsel);
   timer.flops += total_bytes;
   return total_bytes;
@@ -768,7 +768,7 @@ inline ShuffledBitSet mk_shuffled_bitset(const FieldM<int64_t, 1>& f_rank,
                                          const Coordinate& new_size_node)
 {
   TIMER_VERBOSE("mk_shuffled_bitset");
-  const Geometry& geo = f_rank.geo;
+  const Geometry& geo = f_rank.geo();
   FieldM<int64_t, 1> f_rank_combined;
   f_rank_combined = f_rank;
   const Coordinate total_site = geo.total_site();
@@ -983,8 +983,8 @@ void set_field_info_from_fields(Coordinate& total_site, int& multiplicity,
   for (int i = 0; i < (int)fs.size(); ++i) {
     const int id_node = sfr.frs[i].geon.id_node;
     if (id_node == id_node_first_available) {
-      total_site = fs[i].geo.total_site();
-      multiplicity = fs[i].geo.multiplicity;
+      total_site = fs[i].geo().total_site();
+      multiplicity = fs[i].geo().multiplicity;
       qassert(get_id_node() == id_node_bcast_from);
     }
   }
@@ -1100,8 +1100,8 @@ void set_field_info_from_fields(Coordinate& total_site, int& multiplicity,
   for (int i = 0; i < (int)sfs.size(); ++i) {
     const int id_node = sfr.frs[i].geon.id_node;
     if (id_node == id_node_first_available) {
-      total_site = sfs[i].geo.total_site();
-      multiplicity = sfs[i].geo.multiplicity;
+      total_site = sfs[i].geo().total_site();
+      multiplicity = sfs[i].geo().multiplicity;
       qassert(get_id_node() == id_node_bcast_from);
     }
   }

@@ -59,9 +59,9 @@ inline void gf_clover_leaf_field_no_comm(CloverLeafField& clf,
 // F_01, F_02, F_03, F_12, F_13, F_23
 {
   TIMER("gf_clover_leaf_field_no_comm");
-  const Geometry geo = geo_reform(gf1.geo, 6, 0);
+  const Geometry geo = geo_reform(gf1.geo(), 6, 0);
   clf.init(geo);
-  qassert(is_matching_geo_mult(clf.geo, geo));
+  qassert(is_matching_geo_mult(clf.geo(), geo));
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -81,9 +81,9 @@ inline void gf_clover_leaf_field_m_n_no_comm(CloverLeafField& clf,
 // F_01, F_02, F_03, F_12, F_13, F_23
 {
   TIMER("gf_clover_leaf_field_m_n_no_comm");
-  const Geometry geo = geo_reform(gf1.geo, 6, 0);
+  const Geometry geo = geo_reform(gf1.geo(), 6, 0);
   clf.init(geo);
-  qassert(is_matching_geo_mult(clf.geo, geo));
+  qassert(is_matching_geo_mult(clf.geo(), geo));
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -112,7 +112,7 @@ inline void gf_clover_leaf_field(CloverLeafField& clf, const GaugeField& gf)
 {
   TIMER("gf_clover_leaf_field");
   GaugeField gf1;
-  gf1.init(geo_resize(gf.geo, 1));
+  gf1.init(geo_resize(gf.geo(), 1));
   gf1 = gf;
   refresh_expanded(gf1);
   gf_clover_leaf_field_no_comm(clf, gf1);
@@ -124,7 +124,7 @@ inline void gf_clover_leaf_field_5(CloverLeafField& clf1, CloverLeafField& clf2,
 {
   TIMER("gf_clover_leaf_field_5");
   GaugeField gf1;
-  gf1.init(geo_resize(gf.geo, 3));
+  gf1.init(geo_resize(gf.geo(), 3));
   gf1 = gf;
   refresh_expanded(gf1);
   gf_clover_leaf_field_m_n_no_comm(clf1, gf1, 1, 1);
@@ -183,9 +183,9 @@ inline void clf_plaq_action_field(FieldM<double, 1>& paf,
                                   const CloverLeafField& clf)
 {
   TIMER("clf_plaq_action_field");
-  const Geometry& geo = clf.geo;
+  const Geometry& geo = clf.geo();
   paf.init(geo);
-  qassert(is_matching_geo(paf.geo, geo));
+  qassert(is_matching_geo(paf.geo(), geo));
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate& xl = geo.coordinate_from_index(index);
@@ -197,9 +197,9 @@ inline void clf_spatial_plaq_action_field(FieldM<double, 1>& spaf,
                                           const CloverLeafField& clf)
 {
   TIMER("clf_spatial_plaq_action_field");
-  const Geometry& geo = clf.geo;
+  const Geometry& geo = clf.geo();
   spaf.init(geo);
-  qassert(is_matching_geo(spaf.geo, geo));
+  qassert(is_matching_geo(spaf.geo(), geo));
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate& xl = geo.coordinate_from_index(index);
@@ -211,9 +211,9 @@ inline void clf_topology_field(FieldM<double, 1>& topf,
                                const CloverLeafField& clf)
 {
   TIMER("clf_topology_field");
-  const Geometry& geo = clf.geo;
+  const Geometry& geo = clf.geo();
   topf.init(geo);
-  qassert(is_matching_geo(topf.geo, geo));
+  qassert(is_matching_geo(topf.geo(), geo));
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate& xl = geo.coordinate_from_index(index);
@@ -229,13 +229,13 @@ inline void clf_topology_field_5(FieldM<double, 1>& topf,
                                  const CloverLeafField& clf5)
 {
   TIMER("clf_topology_field_5");
-  const Geometry& geo = clf1.geo;
+  const Geometry& geo = clf1.geo();
   topf.init(geo);
-  qassert(is_matching_geo(topf.geo, geo));
-  qassert(is_matching_geo(geo, clf2.geo));
-  qassert(is_matching_geo(geo, clf3.geo));
-  qassert(is_matching_geo(geo, clf4.geo));
-  qassert(is_matching_geo(geo, clf5.geo));
+  qassert(is_matching_geo(topf.geo(), geo));
+  qassert(is_matching_geo(geo, clf2.geo()));
+  qassert(is_matching_geo(geo, clf3.geo()));
+  qassert(is_matching_geo(geo, clf4.geo()));
+  qassert(is_matching_geo(geo, clf5.geo()));
   const double c5 = 1.0 / 20.0;
   const double c1 = (19.0 - 55.0 * c5) / 9.0;
   const double c2 = (1.0 - 64.0 * c5) / 9.0;
@@ -265,7 +265,7 @@ inline double topology_charge_5(const GaugeField& gf)
   TIMER("topology_charge_5(gf)");
   FieldM<double, 1> topf;
   clf_topology_field_5(topf, gf);
-  const Geometry& geo = topf.geo;
+  const Geometry& geo = topf.geo();
   qassert(geo.is_only_local());
   double sum = 0.0;
   for (long index = 0; index < geo.local_volume(); ++index) {
