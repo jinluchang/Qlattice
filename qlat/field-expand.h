@@ -119,29 +119,35 @@ struct CommPlanKey {
   box<Geometry> geo;
 };
 
+const int lattice_size_multiplier = 3;
+// g_offset calculated assume lattice_size_multiplier*total_site
+// (This is a hack, please fix me)
+
 inline void g_offset_id_node_from_offset(long& g_offset, int& id_node,
                                          const long offset, const Geometry& geo)
 // offset is expanded
-// g_offset calculated assume 4*total_site (This is a hack, please fix me)
+// g_offset calculated assume lattice_size_multiplier*total_site
 {
   const Coordinate total_site = geo.total_site();
   const Coordinate xl = geo.coordinate_from_offset(offset);
   qassert(not geo.is_local(xl));
   qassert(geo.is_on_node(xl));
-  const Coordinate xg = mod(geo.coordinate_g_from_l(xl), 4 * total_site);
+  const Coordinate xg =
+      mod(geo.coordinate_g_from_l(xl), lattice_size_multiplier * total_site);
   const Coordinate coor_node = mod(xg, total_site) / geo.node_site;
   id_node = index_from_coordinate(coor_node, geo.geon.size_node);
-  g_offset = index_from_coordinate(xg, 4 * total_site) * geo.multiplicity +
+  g_offset = index_from_coordinate(xg, lattice_size_multiplier * total_site) *
+                 geo.multiplicity +
              offset % geo.multiplicity;
 }
 
 inline long offset_send_from_g_offset(const long g_offset, const Geometry& geo)
-// g_offset calculated assume 4*total_site
+// g_offset calculated assume lattice_size_multiplier*total_site
 // return offset is local
 {
   const Coordinate total_site = geo.total_site();
-  const Coordinate xg =
-      coordinate_from_index(g_offset / geo.multiplicity, 4 * total_site);
+  const Coordinate xg = coordinate_from_index(
+      g_offset / geo.multiplicity, lattice_size_multiplier * total_site);
   Coordinate xl = geo.coordinate_l_from_g(xg);
   for (int mu = 0; mu < DIMN; ++mu) {
     while (xl[mu] >= geo.node_site[mu]) {
@@ -156,19 +162,19 @@ inline long offset_send_from_g_offset(const long g_offset, const Geometry& geo)
 }
 
 inline long offset_recv_from_g_offset(const long g_offset, const Geometry& geo)
-// g_offset calculated assume 4*total_site
+// g_offset calculated assume lattice_size_multiplier*total_site
 // return offset is expanded
 {
   const Coordinate total_site = geo.total_site();
-  const Coordinate xg =
-      coordinate_from_index(g_offset / geo.multiplicity, 4 * total_site);
+  const Coordinate xg = coordinate_from_index(
+      g_offset / geo.multiplicity, lattice_size_multiplier * total_site);
   Coordinate xl = geo.coordinate_l_from_g(xg);
   for (int mu = 0; mu < DIMN; ++mu) {
     while (xl[mu] >= geo.node_site[mu] + geo.expansion_right[mu]) {
-      xl[mu] -= 4 * total_site[mu];
+      xl[mu] -= lattice_size_multiplier * total_site[mu];
     }
     while (xl[mu] < -geo.expansion_left[mu]) {
-      xl[mu] += 4 * total_site[mu];
+      xl[mu] += lattice_size_multiplier * total_site[mu];
     }
   }
   qassert(not geo.is_local(xl));
@@ -607,8 +613,9 @@ inline void set_marks_field_gm_force(CommMarks& marks, const Geometry& geo,
 //     coorf = coor_this + node_pos;
 //     regularize_coordinate(coorf, field_comm.geo().geon.size_node);
 //
-//     idt = qlat::index_from_coordinate(coort, field_comm.geo().geon.size_node);
-//     idf = qlat::index_from_coordinate(coorf, field_comm.geo().geon.size_node);
+//     idt = qlat::index_from_coordinate(coort,
+//     field_comm.geo().geon.size_node); idf =
+//     qlat::index_from_coordinate(coorf, field_comm.geo().geon.size_node);
 //
 //     MPI_Request req;
 //     MPI_Isend((void*)send, size_bytes, MPI_BYTE, idt, 0, get_comm(), &req);
