@@ -15,9 +15,9 @@ struct CloverLeafField : FieldM<ColorMatrix, 6> {
   }
 };
 
-inline ColorMatrix gf_clover_leaf_no_comm(const GaugeField& gf1,
-                                          const Coordinate& xl, const int mu,
-                                          const int nu)
+qacc ColorMatrix gf_clover_leaf_no_comm(const GaugeField& gf1,
+                                        const Coordinate& xl, const int mu,
+                                        const int nu)
 {
   ColorMatrix m;
   set_zero(m);
@@ -32,10 +32,10 @@ inline ColorMatrix gf_clover_leaf_no_comm(const GaugeField& gf1,
   return (ComplexT)0.25 * m;
 }
 
-inline ColorMatrix gf_clover_leaf_m_n_no_comm(const GaugeField& gf1,
-                                              const Coordinate& xl,
-                                              const int mu, const int m,
-                                              const int nu, const int n)
+qacc ColorMatrix gf_clover_leaf_m_n_no_comm(const GaugeField& gf1,
+                                            const Coordinate& xl, const int mu,
+                                            const int m, const int nu,
+                                            const int n)
 {
   ColorMatrix cm;
   set_zero(cm);
@@ -62,8 +62,7 @@ inline void gf_clover_leaf_field_no_comm(CloverLeafField& clf,
   const Geometry geo = geo_reform(gf1.geo(), 6, 0);
   clf.init(geo);
   qassert(is_matching_geo_mult(clf.geo(), geo));
-#pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  qacc_for(index, geo.local_volume(), {
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<ColorMatrix> v = clf.get_elems(xl);
     v[0] = gf_clover_leaf_no_comm(gf1, xl, 0, 1);
@@ -72,7 +71,7 @@ inline void gf_clover_leaf_field_no_comm(CloverLeafField& clf,
     v[3] = gf_clover_leaf_no_comm(gf1, xl, 1, 2);
     v[4] = gf_clover_leaf_no_comm(gf1, xl, 1, 3);
     v[5] = gf_clover_leaf_no_comm(gf1, xl, 2, 3);
-  }
+  });
 }
 
 inline void gf_clover_leaf_field_m_n_no_comm(CloverLeafField& clf,
@@ -84,8 +83,7 @@ inline void gf_clover_leaf_field_m_n_no_comm(CloverLeafField& clf,
   const Geometry geo = geo_reform(gf1.geo(), 6, 0);
   clf.init(geo);
   qassert(is_matching_geo_mult(clf.geo(), geo));
-#pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  qacc_for(index, geo.local_volume(), {
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<ColorMatrix> v = clf.get_elems(xl);
     v[0] = gf_clover_leaf_m_n_no_comm(gf1, xl, 0, m, 1, n);
@@ -105,7 +103,7 @@ inline void gf_clover_leaf_field_m_n_no_comm(CloverLeafField& clf,
         v[i] *= 0.5;
       }
     }
-  }
+  });
 }
 
 inline void gf_clover_leaf_field(CloverLeafField& clf, const GaugeField& gf)
@@ -134,8 +132,8 @@ inline void gf_clover_leaf_field_5(CloverLeafField& clf1, CloverLeafField& clf2,
   gf_clover_leaf_field_m_n_no_comm(clf5, gf1, 3, 3);
 }
 
-inline double clf_plaq_action_density(const CloverLeafField& clf,
-                                      const Coordinate& xl)
+qacc double clf_plaq_action_density(const CloverLeafField& clf,
+                                    const Coordinate& xl)
 // \sum_P (1 - 1/3 * Re Tr U_P)
 //
 // Action = beta * total_volume() * action_density
@@ -150,8 +148,8 @@ inline double clf_plaq_action_density(const CloverLeafField& clf,
   return sum;
 }
 
-inline double clf_spatial_plaq_action_density(const CloverLeafField& clf,
-                                              const Coordinate& xl)
+qacc double clf_spatial_plaq_action_density(const CloverLeafField& clf,
+                                            const Coordinate& xl)
 // \sum_P(spatial only) (1 - 1/3 * Re Tr U_P)
 {
   const Vector<ColorMatrix> v = clf.get_elems_const(xl);
@@ -162,7 +160,7 @@ inline double clf_spatial_plaq_action_density(const CloverLeafField& clf,
   return sum;
 }
 
-inline double clf_topology_density(const CloverLeafField& clf,
+qacc double clf_topology_density(const CloverLeafField& clf,
                                    const Coordinate& xl)
 // sum of the density of the topological charge Q
 {
@@ -186,11 +184,10 @@ inline void clf_plaq_action_field(FieldM<double, 1>& paf,
   const Geometry& geo = clf.geo();
   paf.init(geo);
   qassert(is_matching_geo(paf.geo(), geo));
-#pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
-    const Coordinate& xl = geo.coordinate_from_index(index);
+  qacc_for(index, geo.local_volume(), {
+    const Coordinate xl = geo.coordinate_from_index(index);
     paf.get_elem(xl) = clf_plaq_action_density(clf, xl);
-  }
+  });
 }
 
 inline void clf_spatial_plaq_action_field(FieldM<double, 1>& spaf,
@@ -200,11 +197,10 @@ inline void clf_spatial_plaq_action_field(FieldM<double, 1>& spaf,
   const Geometry& geo = clf.geo();
   spaf.init(geo);
   qassert(is_matching_geo(spaf.geo(), geo));
-#pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
-    const Coordinate& xl = geo.coordinate_from_index(index);
+  qacc_for(index, geo.local_volume(), {
+    const Coordinate xl = geo.coordinate_from_index(index);
     spaf.get_elem(xl) = clf_spatial_plaq_action_density(clf, xl);
-  }
+  });
 }
 
 inline void clf_topology_field(FieldM<double, 1>& topf,
@@ -214,11 +210,10 @@ inline void clf_topology_field(FieldM<double, 1>& topf,
   const Geometry& geo = clf.geo();
   topf.init(geo);
   qassert(is_matching_geo(topf.geo(), geo));
-#pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
-    const Coordinate& xl = geo.coordinate_from_index(index);
+  qacc_for(index, geo.local_volume(), {
+    const Coordinate xl = geo.coordinate_from_index(index);
     topf.get_elem(xl) = clf_topology_density(clf, xl);
-  }
+  });
 }
 
 inline void clf_topology_field_5(FieldM<double, 1>& topf,
@@ -241,15 +236,14 @@ inline void clf_topology_field_5(FieldM<double, 1>& topf,
   const double c2 = (1.0 - 64.0 * c5) / 9.0;
   const double c3 = (-64.0 + 640.0 * c5) / 45.0;
   const double c4 = 1.0 / 5.0 - 2.0 * c5;
-#pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
-    const Coordinate& xl = geo.coordinate_from_index(index);
+  qacc_for(index, geo.local_volume(), {
+    const Coordinate xl = geo.coordinate_from_index(index);
     topf.get_elem(xl) = c1 * clf_topology_density(clf1, xl);
     topf.get_elem(xl) += c2 / 16.0 * clf_topology_density(clf2, xl);
     topf.get_elem(xl) += c3 / 4.0 * clf_topology_density(clf3, xl);
     topf.get_elem(xl) += c4 / 9.0 * clf_topology_density(clf4, xl);
     topf.get_elem(xl) += c5 / 81.0 * clf_topology_density(clf5, xl);
-  }
+  });
 }
 
 inline void clf_topology_field_5(FieldM<double, 1>& topf, const GaugeField& gf)

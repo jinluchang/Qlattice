@@ -3,8 +3,10 @@
 // From https://github.com/paboyle/Grid/blob/develop/Grid/threads/Accelerator.h
 // Orignal author: Peter Boyle <paboyle@ph.ed.ac.uk>
 
+#ifndef QLAT_NO_ACC
 #ifdef __NVCC__
 #define QLAT_USE_ACC
+#endif
 #endif
 
 namespace qlat

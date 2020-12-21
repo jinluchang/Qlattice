@@ -24,8 +24,8 @@ inline void set_g_rand_anti_hermitian_matrix_field(Field<ColorMatrix>& fc,
   const Geometry& geo = fc.geo();
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
-    const Coordinate& xl = geo.coordinate_from_index(index);
-    const Coordinate& xg = geo.coordinate_g_from_l(xl);
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Coordinate xg = geo.coordinate_g_from_l(xl);
     const long gindex = geo.g_index_from_g_coordinate(xg);
     RngState rsi(rs, gindex);
     Vector<ColorMatrix> v = fc.get_elems(xl);
@@ -44,8 +44,8 @@ inline void set_g_rand_color_matrix_field(Field<ColorMatrix>& fc,
   const Geometry& geo = fc.geo();
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
-    const Coordinate& xl = geo.coordinate_from_index(index);
-    const Coordinate& xg = geo.coordinate_g_from_l(xl);
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Coordinate xg = geo.coordinate_g_from_l(xl);
     const long gindex = geo.g_index_from_g_coordinate(xg);
     RngState rsi(rs, gindex);
     Vector<ColorMatrix> v = fc.get_elems(xl);
@@ -60,8 +60,8 @@ inline void set_g_rand_color_matrix_field(Field<ColorMatrix>& fc,
   }
 }
 
-inline ColorMatrix gf_get_link(const GaugeField& gf, const Coordinate& xl,
-                               const int mu)
+qacc ColorMatrix gf_get_link(const GaugeField& gf, const Coordinate& xl,
+                             const int mu)
 // mu can be negative
 {
   if (0 <= mu) {
@@ -73,8 +73,8 @@ inline ColorMatrix gf_get_link(const GaugeField& gf, const Coordinate& xl,
 }
 
 template <class Vec>
-ColorMatrix gf_wilson_line_no_comm(const GaugeField& gf, const Coordinate& xl,
-                                   const Vec& path)
+qacc ColorMatrix gf_wilson_line_no_comm(const GaugeField& gf,
+                                        const Coordinate& xl, const Vec& path)
 {
   ColorMatrix ret;
   set_unit(ret);
@@ -94,8 +94,9 @@ ColorMatrix gf_wilson_line_no_comm(const GaugeField& gf, const Coordinate& xl,
 }
 
 template <class Vec>
-ColorMatrix gf_wilson_line_no_comm(const GaugeField& gf, const Coordinate& xl,
-                                   const Vec& path, const Vec& path_n)
+qacc ColorMatrix gf_wilson_line_no_comm(const GaugeField& gf,
+                                        const Coordinate& xl, const Vec& path,
+                                        const Vec& path_n)
 {
   qassert((long)path.size() == (long)path_n.size());
   ColorMatrix ret;
@@ -117,7 +118,7 @@ ColorMatrix gf_wilson_line_no_comm(const GaugeField& gf, const Coordinate& xl,
   return ret;
 }
 
-inline ColorMatrix gf_staple_no_comm_v1(const GaugeField& gf,
+qacc ColorMatrix gf_staple_no_comm_v1(const GaugeField& gf,
                                         const Coordinate& xl, const int mu)
 {
   ColorMatrix ret;
@@ -135,8 +136,8 @@ inline ColorMatrix gf_staple_no_comm_v1(const GaugeField& gf,
   return ret;
 }
 
-inline ColorMatrix gf_staple_no_comm_v2(const GaugeField& gf,
-                                        const Coordinate& xl, const int mu)
+qacc ColorMatrix gf_staple_no_comm_v2(const GaugeField& gf,
+                                      const Coordinate& xl, const int mu)
 {
   ColorMatrix ret;
   set_zero(ret);
@@ -159,15 +160,15 @@ inline ColorMatrix gf_staple_no_comm_v2(const GaugeField& gf,
   return ret;
 }
 
-inline ColorMatrix gf_staple_no_comm(const GaugeField& gf, const Coordinate& xl,
-                                     const int mu)
+qacc ColorMatrix gf_staple_no_comm(const GaugeField& gf, const Coordinate& xl,
+                                   const int mu)
 {
   return gf_staple_no_comm_v1(gf, xl, mu);
   // return gf_staple_no_comm_v2(gf, xl, mu);
 }
 
-inline ColorMatrix gf_spatial_staple_no_comm(const GaugeField& gf,
-                                             const Coordinate& xl, const int mu)
+qacc ColorMatrix gf_spatial_staple_no_comm(const GaugeField& gf,
+                                           const Coordinate& xl, const int mu)
 {
   ColorMatrix ret;
   set_zero(ret);

@@ -39,8 +39,7 @@ inline std::vector<double> get_gm_force_magnitudes(
   FieldM<double, 1> fd_max;
   fd_max.init(geo);
   set_zero(fd_max);
-#pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  qacc_for(index, geo.local_volume(), {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Vector<ColorMatrix> gm_force_v = gm_force.get_elems_const(xl);
     qassert(gm_force_v.size() == 4);
@@ -61,7 +60,7 @@ inline std::vector<double> get_gm_force_magnitudes(
       linf = std::max(linf, l1);
     }
     fd_max.get_elem(index) = 15.0 * linf;
-  }
+  });
   std::vector<double> mag_vec(n_elems, 0.0);
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Vector<double> fdv = fd.get_elems_const(index);

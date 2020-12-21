@@ -41,8 +41,7 @@ inline double gf_energy_density_no_comm(const GaugeField& gf)
   const Geometry geo = geo_reform(gf.geo());
   FieldM<double, 1> fd;
   fd.init(geo);
-#pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  qacc_for(index, geo.local_volume(), {
     const Coordinate xl = geo.coordinate_from_index(index);
     double s = 0.0;
     for (int mu = 0; mu < 3; ++mu) {
@@ -53,7 +52,7 @@ inline double gf_energy_density_no_comm(const GaugeField& gf)
       }
     }
     fd.get_elem(index) = s;
-  }
+  });
   double sum = 0.0;
   for (long index = 0; index < geo.local_volume(); ++index) {
     sum += fd.get_elem(index);

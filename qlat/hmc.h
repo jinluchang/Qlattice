@@ -69,8 +69,7 @@ inline double gm_hamilton_node(const GaugeMomentum& gm)
   const Geometry geo = geo_reform(gm.geo());
   FieldM<double, 1> fd;
   fd.init(geo);
-#pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  qacc_for(index, geo.local_volume(), {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Vector<ColorMatrix> gm_v = gm.get_elems_const(xl);
     double s = 0.0;
@@ -79,7 +78,7 @@ inline double gm_hamilton_node(const GaugeMomentum& gm)
       s += neg_half_tr_square(gm_v[mu]);
     }
     fd.get_elem(index) = s;
-  }
+  });
   double sum = 0.0;
   for (long index = 0; index < geo.local_volume(); ++index) {
     sum += fd.get_elem(index);
@@ -110,8 +109,7 @@ inline double gf_sum_re_tr_plaq_node_no_comm(const GaugeField& gf)
   const Geometry geo = geo_reform(gf.geo());
   FieldM<double, 1> fd;
   fd.init(geo);
-#pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  qacc_for(index, geo.local_volume(), {
     const Coordinate xl = geo.coordinate_from_index(index);
     double s = 0.0;
     for (int mu = 0; mu < 3; ++mu) {
@@ -120,7 +118,7 @@ inline double gf_sum_re_tr_plaq_node_no_comm(const GaugeField& gf)
       }
     }
     fd.get_elem(index) = s;
-  }
+  });
   double sum = 0.0;
   for (long index = 0; index < geo.local_volume(); ++index) {
     sum += fd.get_elem(index);
@@ -135,8 +133,7 @@ inline double gf_sum_re_tr_rect_node_no_comm(const GaugeField& gf)
   const Geometry geo = geo_reform(gf.geo());
   FieldM<double, 1> fd;
   fd.init(geo);
-#pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  qacc_for(index, geo.local_volume(), {
     const Coordinate xl = geo.coordinate_from_index(index);
     double s = 0.0;
     for (int mu = 0; mu < 3; ++mu) {
@@ -146,7 +143,7 @@ inline double gf_sum_re_tr_rect_node_no_comm(const GaugeField& gf)
       }
     }
     fd.get_elem(index) = s;
-  }
+  });
   double sum = 0.0;
   for (long index = 0; index < geo.local_volume(); ++index) {
     sum += fd.get_elem(index);
@@ -201,8 +198,7 @@ inline void gf_evolve(GaugeField& gf, const GaugeMomentum& gm,
 {
   TIMER("gf_evolve");
   const Geometry& geo = gf.geo();
-#pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  qacc_for(index, geo.local_volume(), {
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<ColorMatrix> gf_v = gf.get_elems(xl);
     const Vector<ColorMatrix> gm_v = gm.get_elems_const(xl);
@@ -211,11 +207,11 @@ inline void gf_evolve(GaugeField& gf, const GaugeMomentum& gm,
     for (int mu = 0; mu < 4; ++mu) {
       gf_v[mu] = matrix_evolve(gf_v[mu], gm_v[mu], step_size);
     }
-  }
+  });
 }
 
-inline ColorMatrix gf_plaq_staple_no_comm(const GaugeField& gf,
-                                          const Coordinate& xl, const int mu)
+qacc ColorMatrix gf_plaq_staple_no_comm(const GaugeField& gf,
+                                        const Coordinate& xl, const int mu)
 // transpose the same way as gf.get_elem(xl, mu)
 {
   ColorMatrix acc;
@@ -229,8 +225,8 @@ inline ColorMatrix gf_plaq_staple_no_comm(const GaugeField& gf,
   return acc;
 }
 
-inline ColorMatrix gf_rect_staple_no_comm(const GaugeField& gf,
-                                          const Coordinate& xl, const int mu)
+qacc ColorMatrix gf_rect_staple_no_comm(const GaugeField& gf,
+                                        const Coordinate& xl, const int mu)
 // transpose the same way as gf.get_elem(xl, mu)
 {
   ColorMatrix acc;
@@ -249,9 +245,9 @@ inline ColorMatrix gf_rect_staple_no_comm(const GaugeField& gf,
   return acc;
 }
 
-inline ColorMatrix gf_all_staple_no_comm(const GaugeField& gf,
-                                         const GaugeAction& ga,
-                                         const Coordinate& xl, const int mu)
+qacc ColorMatrix gf_all_staple_no_comm(const GaugeField& gf,
+                                       const GaugeAction& ga,
+                                       const Coordinate& xl, const int mu)
 // transpose the same way as gf.get_elem(xl, mu)
 {
   ColorMatrix acc;
@@ -264,9 +260,9 @@ inline ColorMatrix gf_all_staple_no_comm(const GaugeField& gf,
   return acc;
 }
 
-inline ColorMatrix gf_force_site_no_comm(const GaugeField& gf,
-                                         const GaugeAction& ga,
-                                         const Coordinate& xl, const int mu)
+qacc ColorMatrix gf_force_site_no_comm(const GaugeField& gf,
+                                       const GaugeAction& ga,
+                                       const Coordinate& xl, const int mu)
 {
   const double beta = ga.beta;
   const ColorMatrix ad_staple =
@@ -283,15 +279,14 @@ inline void set_gm_force_no_comm(GaugeMomentum& gm_force, const GaugeField& gf,
   TIMER("set_gm_force_no_comm");
   const Geometry geo = geo_resize(gf.geo());
   gm_force.init(geo);
-#pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  qacc_for(index, geo.local_volume(), {
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<ColorMatrix> gm_force_v = gm_force.get_elems(xl);
     qassert(gm_force_v.size() == 4);
     for (int mu = 0; mu < 4; ++mu) {
       gm_force_v[mu] = gf_force_site_no_comm(gf, ga, xl, mu);
     }
-  }
+  });
 }
 
 inline void set_gm_force(GaugeMomentum& gm_force, const GaugeField& gf,

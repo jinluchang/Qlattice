@@ -206,7 +206,7 @@ inline void gt_gf_fix_gauge_coulomb(GaugeTransform& gt, const GaugeField& gf,
   gt.init(gf.geo());
 #pragma omp parallel for
   for (long index = 0; index < gt.geo().local_volume(); ++index) {
-    const Coordinate& xl = gt.geo().coordinate_from_index(index);
+    const Coordinate xl = gt.geo().coordinate_from_index(index);
     const int k =
         ((xl[2] * gt.geo().node_site[1]) + xl[1]) * gt.geo().node_site[0] + xl[0];
     value_convert(gt.get_elem(xl), lat.fix_gauge_ptr[xl[3]][k]);

@@ -45,25 +45,27 @@ inline int& qacc_num_threads()
   return nt;
 }
 
-#define thread_for(iter1, num, ...)                \
-  DO_PRAGMA(omp parallel for schedule(static))     \
-  for (uint64_t iter1 = 0; iter1 < num; ++iter1) { \
-    __VA_ARGS__                                    \
+#define DO_PRAGMA(x) _Pragma(#x)
+
+#define thread_for(iter1, num, ...)            \
+  DO_PRAGMA(omp parallel for schedule(static)) \
+  for (long iter1 = 0; iter1 < num; ++iter1) { \
+    __VA_ARGS__                                \
   };
 
-#define thread_for2d(iter1, num1, iter2, num2, ...)   \
-  DO_PRAGMA(omp parallel for collapse(2))             \
-  for (uint64_t iter1 = 0; iter1 < num1; ++iter1) {   \
-    for (uint64_t iter2 = 0; iter2 < num2; ++iter2) { \
-      {__VA_ARGS__};                                  \
-    }                                                 \
+#define thread_for2d(iter1, num1, iter2, num2, ...) \
+  DO_PRAGMA(omp parallel for collapse(2))           \
+  for (long iter1 = 0; iter1 < num1; ++iter1) {     \
+    for (long iter2 = 0; iter2 < num2; ++iter2) {   \
+      {__VA_ARGS__};                                \
+    }                                               \
   }
 
 #ifdef QLAT_USE_ACC
 
 #define qacc_for2dNB(iter1, num1, iter2, num2, ...)                 \
   {                                                                 \
-    typedef uint64_t Iterator;                                      \
+    typedef long Iterator;                                          \
     auto lambda = [=] __host__ __device__(Iterator iter1,           \
                                           Iterator iter2) mutable { \
       __VA_ARGS__;                                                  \
@@ -75,10 +77,10 @@ inline int& qacc_num_threads()
   }
 
 template <typename Lambda>
-__global__ void qlambda_apply(uint64_t num1, uint64_t num2, Lambda lam)
+__global__ void qlambda_apply(long num1, long num2, Lambda lam)
 {
-  uint64_t x = threadIdx.x + blockDim.x * blockIdx.x;
-  uint64_t y = threadIdx.y + blockDim.y * blockIdx.y;
+  long x = threadIdx.x + blockDim.x * blockIdx.x;
+  long y = threadIdx.y + blockDim.y * blockIdx.y;
   if ((x < num1) && (y < num2)) {
     lam(x, y);
   }

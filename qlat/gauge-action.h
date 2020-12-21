@@ -8,15 +8,15 @@ struct GaugeAction {
   double beta;
   double c1;
   //
-  void init()
+  qacc void init()
   {
     initialized = false;
     beta = 5.5;
     c1 = -0.331;
   }
   //
-  GaugeAction() { init(); }
-  GaugeAction(const double beta_, const double c1_ = 0.0)
+  qacc GaugeAction() { init(); }
+  qacc GaugeAction(const double beta_, const double c1_ = 0.0)
   {
     init();
     initialized = true;

@@ -34,7 +34,7 @@ namespace qlat
 const double PI = 3.141592653589793;
 
 template <class T>
-T sqr(const T& x)
+qacc T sqr(const T& x)
 {
   return x * x;
 }
