@@ -3,7 +3,7 @@
 namespace qlat
 {  //
 
-#ifdef QLAT_USE_GPU
+#ifdef QLAT_USE_ACC
 
 #define qacc_no_inline __host__ __device__
 

@@ -15,7 +15,7 @@
 
 #ifdef SKIP_ASSERT
 #define qassert(x) assert(true)
-#elif defined QLAT_USE_GPU
+#elif defined QLAT_USE_ACC
 #define qassert(x) assert(x)
 #else
 #define qassert(x)                            \

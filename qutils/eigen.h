@@ -12,7 +12,7 @@
 
 #endif
 
-#ifdef QLAT_USE_GPU
+#ifdef QLAT_USE_ACC
 
 namespace Eigen
 {  //

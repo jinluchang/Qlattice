@@ -48,7 +48,7 @@ void caxpy_single(std::complex<T>* res, const std::complex<T>& ca,
   }
 }
 
-#ifdef QLAT_USE_GPU
+#ifdef QLAT_USE_ACC
 
 template <class T>
 void caxpy_single(thrust::complex<T>* res, const thrust::complex<T>& ca,

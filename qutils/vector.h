@@ -69,7 +69,7 @@ struct MemCache {
     timer.flops += mem_cache_size;
     for (auto iter = db.cbegin(); iter != db.cend(); ++iter) {
       void* ptr = iter->second;
-#ifdef QLAT_USE_GPU
+#ifdef QLAT_USE_ACC
       cudaError_t code = cudaFree(ptr);
       qassert(code == cudaSuccess);
 #else
@@ -104,7 +104,7 @@ inline void* alloc_mem(const long min_size)
   {
     TIMER_FLOPS("alloc_mem-alloc");
     timer.flops += min_size;
-#ifdef QLAT_USE_GPU
+#ifdef QLAT_USE_ACC
     void* ptr = NULL;
     cudaError_t code = cudaMallocManaged(&ptr, size);
     if (not(code == cudaSuccess)) {

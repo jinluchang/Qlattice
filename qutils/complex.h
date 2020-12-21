@@ -3,17 +3,17 @@
 #include <complex>
 
 #ifdef __NVCC__
-#define QLAT_USE_GPU
+#define QLAT_USE_ACC
 #endif
 
-#ifdef QLAT_USE_GPU
+#ifdef QLAT_USE_ACC
 #include <thrust/complex.h>
 #endif
 
 namespace qlat
 {  //
 
-#ifdef QLAT_USE_GPU
+#ifdef QLAT_USE_ACC
 
 typedef thrust::complex<double> Complex;
 

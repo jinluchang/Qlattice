@@ -191,7 +191,7 @@ struct Vector {
   qacc M& operator[](long i)
   {
     if (not(0 <= i && i < n)) {
-#ifndef QLAT_USE_GPU
+#ifndef QLAT_USE_ACC
       displayln(
           ssprintf("ERROR: expect: 0 <= i && i < n but: i=%d n=%d sizeof(M)=%d",
                    i, n, sizeof(M)));

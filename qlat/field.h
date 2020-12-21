@@ -164,7 +164,7 @@ struct Field {
   {
     const Geometry& geo_v = geo();
     if (not geo_v.is_on_node(x)) {
-#ifndef QLAT_USE_GPU
+#ifndef QLAT_USE_ACC
       displayln("Field::get_elems_const: x=" + show(x) + "\ngeo=" + show(geo_v));
 #endif
       qassert(geo_v.is_on_node(x));
