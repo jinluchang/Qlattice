@@ -119,7 +119,7 @@ qacc ColorMatrix gf_wilson_line_no_comm(const GaugeField& gf,
 }
 
 qacc ColorMatrix gf_staple_no_comm_v1(const GaugeField& gf,
-                                        const Coordinate& xl, const int mu)
+                                      const Coordinate& xl, const int mu)
 {
   ColorMatrix ret;
   set_zero(ret);
@@ -141,7 +141,7 @@ qacc ColorMatrix gf_staple_no_comm_v2(const GaugeField& gf,
 {
   ColorMatrix ret;
   set_zero(ret);
-  std::vector<int> path(3);
+  array<int, 3> path;
   path[1] = mu;
   for (int m = 0; m < DIMN; ++m) {
     if (mu != m) {

@@ -238,13 +238,14 @@ const Field<M>& operator+=(Field<M>& f, const Field<M>& f1)
   }
   qassert(is_matching_geo_mult(f.geo(), f1.geo()));
   const Geometry& geo = f.geo();
-#pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
-    Coordinate x = geo.coordinate_from_index(index);
+  qacc_for(index, geo.local_volume(), {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Vector<M> v1 = f1.get_elems_const(xl);
+    Vector<M> v = f.get_elems(xl);
     for (int m = 0; m < geo.multiplicity; ++m) {
-      f.get_elem(x, m) += f1.get_elem(x, m);
+      v[m] += v1[m];
     }
-  }
+  });
   return f;
 }
 
@@ -260,13 +261,14 @@ const Field<M>& operator-=(Field<M>& f, const Field<M>& f1)
   }
   qassert(is_matching_geo_mult(f.geo(), f1.geo()));
   const Geometry& geo = f.geo();
-#pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); index++) {
-    Coordinate x = geo.coordinate_from_index(index);
-    for (int m = 0; m < geo.multiplicity; m++) {
-      f.get_elem(x, m) -= f1.get_elem(x, m);
+  qacc_for(index, geo.local_volume(), {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Vector<M> v1 = f1.get_elems_const(xl);
+    Vector<M> v = f.get_elems(xl);
+    for (int m = 0; m < geo.multiplicity; ++m) {
+      v[m] -= v1[m];
     }
-  }
+  });
   return f;
 }
 
@@ -275,13 +277,13 @@ const Field<M>& operator*=(Field<M>& f, const double factor)
 {
   TIMER("field_operator*=(F,D)");
   const Geometry& geo = f.geo();
-#pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); index++) {
-    const Coordinate x = geo.coordinate_from_index(index);
-    for (int m = 0; m < geo.multiplicity; m++) {
-      f.get_elem(x, m) *= factor;
+  qacc_for(index, geo.local_volume(), {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    Vector<M> v = f.get_elems(xl);
+    for (int m = 0; m < geo.multiplicity; ++m) {
+      v[m] *= factor;
     }
-  }
+  });
   return f;
 }
 
@@ -290,13 +292,13 @@ const Field<M>& operator*=(Field<M>& f, const Complex factor)
 {
   TIMER("field_operator*=(F,C)");
   const Geometry& geo = f.geo();
-#pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); index++) {
-    Coordinate x = geo.coordinate_from_index(index);
-    for (int m = 0; m < geo.multiplicity; m++) {
-      f.get_elem(x, m) *= factor;
+  qacc_for(index, geo.local_volume(), {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    Vector<M> v = f.get_elems(xl);
+    for (int m = 0; m < geo.multiplicity; ++m) {
+      v[m] *= factor;
     }
-  }
+  });
   return f;
 }
 
