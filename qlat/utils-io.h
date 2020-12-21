@@ -71,7 +71,10 @@ inline double& get_default_budget()
 inline void set_default_budget_auto()
 {
   TIMER_VERBOSE("set_default_budget_auto");
-  const std::string stime = get_env("Q_BUDGET");
+  std::string stime = get_env("Q_BUDGET");
+  if (stime == "") {
+    stime = get_env("q_budget");
+  }
   if (stime != "") {
     double budget = 0.0;
     reads(budget, stime);
@@ -84,8 +87,14 @@ inline void set_default_budget_auto()
 inline void set_time_limit_auto()
 {
   TIMER_VERBOSE("set_time_limit_auto");
-  const std::string setime = get_env("Q_END_TIME");
-  const std::string stime = get_env("Q_TIME_LIMIT");
+  std::string setime = get_env("Q_END_TIME");
+  if (setime == "") {
+    setime = get_env("q_end_time");
+  }
+  std::string stime = get_env("Q_TIME_LIMIT");
+  if (stime == "") {
+    stime = get_env("q_time_limit");
+  }
   const std::string ss = get_env("COBALT_STARTTIME");
   const std::string se = get_env("COBALT_ENDTIME");
   if (setime != "") {

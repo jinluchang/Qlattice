@@ -1,5 +1,12 @@
 #pragma once
 
+// From https://github.com/paboyle/Grid/blob/develop/Grid/threads/Accelerator.h
+// Orignal author: Peter Boyle <paboyle@ph.ed.ac.uk>
+
+#ifdef __NVCC__
+#define QLAT_USE_ACC
+#endif
+
 namespace qlat
 {  //
 

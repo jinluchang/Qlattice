@@ -29,14 +29,15 @@
 #include <qutils/crc32.h>
 #include <qutils/eigen.h>
 #include <qutils/lat-io.h>
+#include <qutils/qacc-func.h>
 #include <qutils/qacc.h>
-#include <qutils/vector.h>
 #include <qutils/qutils-io.h>
 #include <qutils/qutils-vec.h>
 #include <qutils/qutils.h>
 #include <qutils/rng-state.h>
 #include <qutils/show.h>
 #include <qutils/timer.h>
+#include <qutils/vector.h>
 
 namespace qlat
 {  //

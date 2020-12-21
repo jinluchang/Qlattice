@@ -1,10 +1,7 @@
 #pragma once
 
+#include <qutils/qacc.h>
 #include <complex>
-
-#ifdef __NVCC__
-#define QLAT_USE_ACC
-#endif
 
 #ifdef QLAT_USE_ACC
 #include <thrust/complex.h>
