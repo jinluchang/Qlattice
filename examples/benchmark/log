@@ -19,6 +19,7 @@ Qlat::make_shuffle_plan_fft: total num_recv_packs =         32
 Qlat::make_shuffle_plan_fft: total num_send_msgs  =          8
 Qlat::make_shuffle_plan_fft: total num_recv_msgs  =          8
 Qlat::make_shuffle_plan_fft: global_comm_size =        512
+get_mem_cache_max_size_default: get_mem_cache_max_size() = 512 MB.
 ::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 1
 fft_complex_field_plan::init : malloc 36864
 fft_complex_field_plan::init : free 36864

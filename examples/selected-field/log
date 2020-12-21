@@ -9,6 +9,7 @@ qlat::begin(): GeometryNode =
 demo: create splittable random number generator 'rs'
 demo: init field 'f'
 set Q_FIELD_INIT=fast. (implicitly)
+get_mem_cache_max_size_default: get_mem_cache_max_size() = 512 MB.
 Qlat::make_shuffle_plan_generic: num_send_packs =          2
 Qlat::make_shuffle_plan_generic: num_recv_packs =          7
 Qlat::make_shuffle_plan_generic: num_send_msgs  =          4

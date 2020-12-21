@@ -75,4 +75,5 @@ Var      : 3.63063
 Expected : 16
 Mean     : 16.8758
 Var      : 0.489169
+get_mem_cache_max_size_default: get_mem_cache_max_size() = 512 MB.
 qlat::end(): MPI Finalized.

@@ -17,6 +17,7 @@ Qlat::dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =         
 Qlat::dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         2359296
 dist_read_field: fn='huge-data/gauge_field_rgf-0.1'.
 Qlat::dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         2359296
+get_mem_cache_max_size_default: get_mem_cache_max_size() = 512 MB.
 Qlat::ShufflePlanCache: to add 1 / 16.
 Qlat::dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         2359296
 Qlat::CommPlanCache: to add 1 / 32.
