@@ -14,7 +14,6 @@ inline void gm_evolve_fg(GaugeMomentum& gm, const GaugeField& gf_init,
   //
   GaugeMomentum gm_force;
   gm_force.init(gm.geo());
-  set_zero(gm_force);
   //
   set_gm_force(gm_force, gf, ga);
   //

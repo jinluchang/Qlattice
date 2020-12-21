@@ -72,14 +72,13 @@ void unitarize(Field<ColorMatrixT<T> >& gf)
 {
   TIMER_VERBOSE("unitarize(gf)");
   const Geometry& geo = gf.geo();
-#pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  qacc_for(index, geo.local_volume(), {
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<ColorMatrixT<T> > v = gf.get_elems(xl);
     for (int m = 0; m < geo.multiplicity; ++m) {
       unitarize(v[m]);
     }
-  }
+  });
 }
 
 template <class T>

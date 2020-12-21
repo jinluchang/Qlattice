@@ -100,15 +100,16 @@ struct Field {
     }
     init(geo_resize(f.geo()));
     const Geometry& geo_v = geo();
-#pragma omp parallel for
-    for (long index = 0; index < geo_v.local_volume(); ++index) {
+    const int multiplicity = geo_v.multiplicity;
+    Field<M>& f0 = *this;
+    qacc_for(index, geo_v.local_volume(), {
       const Coordinate xl = geo_v.coordinate_from_index(index);
-      Vector<M> v = this->get_elems(xl);
-      const Vector<M> v_ = f.get_elems_const(xl);
-      for (int m = 0; m < geo_v.multiplicity; ++m) {
-        v[m] = v_[m];
+      const Vector<M> v = f.get_elems_const(xl);
+      Vector<M> v0 = f0.get_elems(xl);
+      for (int m = 0; m < multiplicity; ++m) {
+        v0[m] = v[m];
       }
-    }
+    });
     return *this;
   }
   //
