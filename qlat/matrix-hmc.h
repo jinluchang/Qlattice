@@ -249,8 +249,9 @@ struct ColorMatrixConstants {
   //
   static const ColorMatrixConstants& get_instance()
   {
-    static ColorMatrixConstants cmcs;
-    return cmcs;
+    static box<ColorMatrixConstants> cmcs =
+        box<ColorMatrixConstants>(ColorMatrixConstants());
+    return cmcs();
   }
   //
   static const ColorMatrix& get_unit() { return get_instance().unit; }

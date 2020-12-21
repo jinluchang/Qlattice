@@ -350,10 +350,11 @@ struct SpinMatrixConstantsT {
     }
   }
   //
-  static const SpinMatrixConstantsT& get_instance()
+  static const SpinMatrixConstantsT<T>& get_instance()
   {
-    static SpinMatrixConstantsT smcs;
-    return smcs;
+    static box<SpinMatrixConstantsT<T> > smcs =
+        box<SpinMatrixConstantsT<T> >(SpinMatrixConstantsT<T>());
+    return smcs();
   }
   //
   static const SpinMatrixT<T>& get_unit() { return get_instance().unit; }
