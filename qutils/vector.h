@@ -26,10 +26,35 @@ inline size_t get_aligned_mem_size(const size_t alignment, const long min_size)
   return size;
 }
 
+inline size_t get_mem_cache_max_size_default()
+{
+  TIMER_VERBOSE("get_mem_cache_max_size_default");
+  const std::string n1 = get_env("Q_MEM_CACHE_MAX_SIZE");
+  if (n1 != "") {
+    const int n = read_long(n1);
+    displayln_info(
+        fname +
+        ssprintf(": get_mem_cache_max_size() = %d MB via Q_MEM_CACHE_MAX_SIZE.",
+                 n));
+    return n;
+  }
+  const std::string n2 = get_env("q_mem_cache_max_size");
+  if (n2 != "") {
+    const int n = read_long(n2);
+    displayln_info(
+        fname +
+        ssprintf(": get_mem_cache_max_size() = %d MB via q_mem_cache_max_size.",
+                 n));
+    return n;
+  }
+  displayln_info(fname + ssprintf(": get_mem_cache_max_size() = %d MB.", 512));
+  return 512;
+}
+
 inline size_t& get_mem_cache_max_size()
 // qlat parameter
 {
-  static size_t max_size = 512L * 1024L * 1024L;
+  static size_t max_size = get_mem_cache_max_size_default() * 1024L * 1024L;
   return max_size;
 }
 

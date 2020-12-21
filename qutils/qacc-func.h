@@ -40,6 +40,7 @@ inline int qacc_num_threads_default()
 }
 
 inline int& qacc_num_threads()
+// qlat parameter
 {
   static int nt = qacc_num_threads_default();
   return nt;
