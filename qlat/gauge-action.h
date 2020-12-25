@@ -1,5 +1,7 @@
 #pragma once
 
+#include <qlat/config.h>
+
 namespace qlat
 {  //
 

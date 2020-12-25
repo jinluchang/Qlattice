@@ -161,6 +161,7 @@ int main(int argc, char* argv[])
   // Coordinate total_site(8, 8, 8, 16);
   // Coordinate total_site(16, 16, 16, 16);
   begin(&argc, &argv);
+  ColorMatrixConstants::get_instance().check();
   const GaugeAction ga1(2.13, -0.331);
   const GaugeAction ga2(5.5, 0.0);
   test_hmc(total_site, ga1);
