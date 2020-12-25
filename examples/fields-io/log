@@ -13,15 +13,15 @@ demo: select 16 points per time slice
 demo: selection is stored in 'fsel' of type 'FieldSelection'
 set Q_FIELD_INIT=fast. (implicitly)
 get_mem_cache_max_size_default: get_mem_cache_max_size() = 512 MB.
-Qlat::make_shuffle_plan_generic: num_send_packs =          7
-Qlat::make_shuffle_plan_generic: num_recv_packs =         12
-Qlat::make_shuffle_plan_generic: num_send_msgs  =          4
-Qlat::make_shuffle_plan_generic: num_recv_msgs  =          4
-Qlat::make_shuffle_plan_generic: total num_send_packs =         56
-Qlat::make_shuffle_plan_generic: total num_recv_packs =         96
-Qlat::make_shuffle_plan_generic: total num_send_msgs  =         32
-Qlat::make_shuffle_plan_generic: total num_recv_msgs  =         32
-Qlat::make_shuffle_plan_generic: global_comm_size =       1728
+make_shuffle_plan_generic: num_send_packs =          7
+make_shuffle_plan_generic: num_recv_packs =         12
+make_shuffle_plan_generic: num_send_msgs  =          4
+make_shuffle_plan_generic: num_recv_msgs  =          4
+make_shuffle_plan_generic: total num_send_packs =         56
+make_shuffle_plan_generic: total num_recv_packs =         96
+make_shuffle_plan_generic: total num_send_msgs  =         32
+make_shuffle_plan_generic: total num_recv_msgs  =         32
+make_shuffle_plan_generic: global_comm_size =       1728
 Qlat::ShufflePlanCache: to add 1 / 16.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
 shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
@@ -44,26 +44,26 @@ demo: (DOES NOT CHANGE THE SIZE IN MOMEORY)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=60386CDD.
 FieldsWriter: open 'huge-data/t0/demo.lfs.partial'.
-Qlat::make_shuffle_plan_generic: num_send_packs =          8
-Qlat::make_shuffle_plan_generic: num_recv_packs =         72
-Qlat::make_shuffle_plan_generic: num_send_msgs  =          4
-Qlat::make_shuffle_plan_generic: num_recv_msgs  =          4
-Qlat::make_shuffle_plan_generic: total num_send_packs =         64
-Qlat::make_shuffle_plan_generic: total num_recv_packs =        576
-Qlat::make_shuffle_plan_generic: total num_send_msgs  =         32
-Qlat::make_shuffle_plan_generic: total num_recv_msgs  =         32
-Qlat::make_shuffle_plan_generic: global_comm_size =       1728
+make_shuffle_plan_generic: num_send_packs =          8
+make_shuffle_plan_generic: num_recv_packs =         72
+make_shuffle_plan_generic: num_send_msgs  =          4
+make_shuffle_plan_generic: num_recv_msgs  =          4
+make_shuffle_plan_generic: total num_send_packs =         64
+make_shuffle_plan_generic: total num_recv_packs =        576
+make_shuffle_plan_generic: total num_send_msgs  =         32
+make_shuffle_plan_generic: total num_recv_msgs  =         32
+make_shuffle_plan_generic: global_comm_size =       1728
 Qlat::ShufflePlanCache: to add 2 / 16.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
-Qlat::make_shuffle_plan_generic: num_send_packs =          4
-Qlat::make_shuffle_plan_generic: num_recv_packs =         12
-Qlat::make_shuffle_plan_generic: num_send_msgs  =          4
-Qlat::make_shuffle_plan_generic: num_recv_msgs  =          4
-Qlat::make_shuffle_plan_generic: total num_send_packs =         32
-Qlat::make_shuffle_plan_generic: total num_recv_packs =         88
-Qlat::make_shuffle_plan_generic: total num_send_msgs  =         32
-Qlat::make_shuffle_plan_generic: total num_recv_msgs  =         32
-Qlat::make_shuffle_plan_generic: global_comm_size =        128
+make_shuffle_plan_generic: num_send_packs =          4
+make_shuffle_plan_generic: num_recv_packs =         12
+make_shuffle_plan_generic: num_send_msgs  =          4
+make_shuffle_plan_generic: num_recv_msgs  =          4
+make_shuffle_plan_generic: total num_send_packs =         32
+make_shuffle_plan_generic: total num_recv_packs =         88
+make_shuffle_plan_generic: total num_send_msgs  =         32
+make_shuffle_plan_generic: total num_recv_msgs  =         32
+make_shuffle_plan_generic: global_comm_size =        128
 demo: save to disk
 write(sfw,fn,field): writting field with fn='f.field'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
@@ -85,15 +85,15 @@ shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_s
 FieldsWriter: close 'huge-data/t0/demo.lfs.partial'.
 FieldsWriter: open 'huge-data/t0/demo.lfs.partial'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
-Qlat::make_shuffle_plan_generic: num_send_packs =          4
-Qlat::make_shuffle_plan_generic: num_recv_packs =         12
-Qlat::make_shuffle_plan_generic: num_send_msgs  =          4
-Qlat::make_shuffle_plan_generic: num_recv_msgs  =          4
-Qlat::make_shuffle_plan_generic: total num_send_packs =         32
-Qlat::make_shuffle_plan_generic: total num_recv_packs =         88
-Qlat::make_shuffle_plan_generic: total num_send_msgs  =         32
-Qlat::make_shuffle_plan_generic: total num_recv_msgs  =         32
-Qlat::make_shuffle_plan_generic: global_comm_size =        128
+make_shuffle_plan_generic: num_send_packs =          4
+make_shuffle_plan_generic: num_recv_packs =         12
+make_shuffle_plan_generic: num_send_msgs  =          4
+make_shuffle_plan_generic: num_recv_msgs  =          4
+make_shuffle_plan_generic: total num_send_packs =         32
+make_shuffle_plan_generic: total num_recv_packs =         88
+make_shuffle_plan_generic: total num_send_msgs  =         32
+make_shuffle_plan_generic: total num_recv_msgs  =         32
+make_shuffle_plan_generic: global_comm_size =        128
 demo: save to disk append
 write(sfw,fn,field): writting field with fn='fa.field'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
@@ -149,15 +149,15 @@ demo:    13 : 'sfa.float.field' from 'huge-data/t0/demo.lfs'.
 demo:    14 : 'sfa.float.sfield' from 'huge-data/t0/demo.lfs'.
 demo:    15 : 'sfa.sfield' from 'huge-data/t0/demo.lfs'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
-Qlat::make_shuffle_plan_generic: num_send_packs =          4
-Qlat::make_shuffle_plan_generic: num_recv_packs =         12
-Qlat::make_shuffle_plan_generic: num_send_msgs  =          4
-Qlat::make_shuffle_plan_generic: num_recv_msgs  =          4
-Qlat::make_shuffle_plan_generic: total num_send_packs =         32
-Qlat::make_shuffle_plan_generic: total num_recv_packs =         88
-Qlat::make_shuffle_plan_generic: total num_send_msgs  =         32
-Qlat::make_shuffle_plan_generic: total num_recv_msgs  =         32
-Qlat::make_shuffle_plan_generic: global_comm_size =        128
+make_shuffle_plan_generic: num_send_packs =          4
+make_shuffle_plan_generic: num_recv_packs =         12
+make_shuffle_plan_generic: num_send_msgs  =          4
+make_shuffle_plan_generic: num_recv_msgs  =          4
+make_shuffle_plan_generic: total num_send_packs =         32
+make_shuffle_plan_generic: total num_recv_packs =         88
+make_shuffle_plan_generic: total num_send_msgs  =         32
+make_shuffle_plan_generic: total num_recv_msgs  =         32
+make_shuffle_plan_generic: global_comm_size =        128
 read(sfr,fn,field): reading field with fn='f.float.field'.
 read_tag(fr,fn,geo): 'f.float.field' from 'huge-data/t0/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
@@ -495,15 +495,15 @@ shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 
 demo: compute crc32=E6136941.
 FieldsWriter: open 'huge-data/t1/demo.lfs.partial'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
-Qlat::make_shuffle_plan_generic: num_send_packs =          1
-Qlat::make_shuffle_plan_generic: num_recv_packs =          2
-Qlat::make_shuffle_plan_generic: num_send_msgs  =          2
-Qlat::make_shuffle_plan_generic: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_generic: total num_send_packs =         14
-Qlat::make_shuffle_plan_generic: total num_recv_packs =         20
-Qlat::make_shuffle_plan_generic: total num_send_msgs  =         17
-Qlat::make_shuffle_plan_generic: total num_recv_msgs  =         17
-Qlat::make_shuffle_plan_generic: global_comm_size =         20
+make_shuffle_plan_generic: num_send_packs =          1
+make_shuffle_plan_generic: num_recv_packs =          2
+make_shuffle_plan_generic: num_send_msgs  =          2
+make_shuffle_plan_generic: num_recv_msgs  =          2
+make_shuffle_plan_generic: total num_send_packs =         14
+make_shuffle_plan_generic: total num_recv_packs =         20
+make_shuffle_plan_generic: total num_send_msgs  =         17
+make_shuffle_plan_generic: total num_recv_msgs  =         17
+make_shuffle_plan_generic: global_comm_size =         20
 demo: save to disk
 write(sfw,fn,field): writting field with fn='f.field'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
@@ -525,15 +525,15 @@ shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_s
 FieldsWriter: close 'huge-data/t1/demo.lfs.partial'.
 FieldsWriter: open 'huge-data/t1/demo.lfs.partial'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
-Qlat::make_shuffle_plan_generic: num_send_packs =          1
-Qlat::make_shuffle_plan_generic: num_recv_packs =          2
-Qlat::make_shuffle_plan_generic: num_send_msgs  =          2
-Qlat::make_shuffle_plan_generic: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_generic: total num_send_packs =         14
-Qlat::make_shuffle_plan_generic: total num_recv_packs =         20
-Qlat::make_shuffle_plan_generic: total num_send_msgs  =         17
-Qlat::make_shuffle_plan_generic: total num_recv_msgs  =         17
-Qlat::make_shuffle_plan_generic: global_comm_size =         20
+make_shuffle_plan_generic: num_send_packs =          1
+make_shuffle_plan_generic: num_recv_packs =          2
+make_shuffle_plan_generic: num_send_msgs  =          2
+make_shuffle_plan_generic: num_recv_msgs  =          2
+make_shuffle_plan_generic: total num_send_packs =         14
+make_shuffle_plan_generic: total num_recv_packs =         20
+make_shuffle_plan_generic: total num_send_msgs  =         17
+make_shuffle_plan_generic: total num_recv_msgs  =         17
+make_shuffle_plan_generic: global_comm_size =         20
 demo: save to disk append
 write(sfw,fn,field): writting field with fn='fa.field'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
@@ -589,15 +589,15 @@ demo:    13 : 'sfa.float.field' from 'huge-data/t1/demo.lfs'.
 demo:    14 : 'sfa.float.sfield' from 'huge-data/t1/demo.lfs'.
 demo:    15 : 'sfa.sfield' from 'huge-data/t1/demo.lfs'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
-Qlat::make_shuffle_plan_generic: num_send_packs =          1
-Qlat::make_shuffle_plan_generic: num_recv_packs =          2
-Qlat::make_shuffle_plan_generic: num_send_msgs  =          2
-Qlat::make_shuffle_plan_generic: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_generic: total num_send_packs =         14
-Qlat::make_shuffle_plan_generic: total num_recv_packs =         20
-Qlat::make_shuffle_plan_generic: total num_send_msgs  =         17
-Qlat::make_shuffle_plan_generic: total num_recv_msgs  =         17
-Qlat::make_shuffle_plan_generic: global_comm_size =         20
+make_shuffle_plan_generic: num_send_packs =          1
+make_shuffle_plan_generic: num_recv_packs =          2
+make_shuffle_plan_generic: num_send_msgs  =          2
+make_shuffle_plan_generic: num_recv_msgs  =          2
+make_shuffle_plan_generic: total num_send_packs =         14
+make_shuffle_plan_generic: total num_recv_packs =         20
+make_shuffle_plan_generic: total num_send_msgs  =         17
+make_shuffle_plan_generic: total num_recv_msgs  =         17
+make_shuffle_plan_generic: global_comm_size =         20
 read(sfr,fn,field): reading field with fn='f.float.field'.
 read_tag(fr,fn,geo): 'f.float.field' from 'huge-data/t1/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
@@ -935,15 +935,15 @@ shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 
 demo: compute crc32=F7F47FEE.
 FieldsWriter: open 'huge-data/t2/demo.lfs.partial'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
-Qlat::make_shuffle_plan_generic: num_send_packs =          0
-Qlat::make_shuffle_plan_generic: num_recv_packs =          1
-Qlat::make_shuffle_plan_generic: num_send_msgs  =          0
-Qlat::make_shuffle_plan_generic: num_recv_msgs  =          1
-Qlat::make_shuffle_plan_generic: total num_send_packs =          5
-Qlat::make_shuffle_plan_generic: total num_recv_packs =          7
-Qlat::make_shuffle_plan_generic: total num_send_msgs  =          7
-Qlat::make_shuffle_plan_generic: total num_recv_msgs  =          7
-Qlat::make_shuffle_plan_generic: global_comm_size =          8
+make_shuffle_plan_generic: num_send_packs =          0
+make_shuffle_plan_generic: num_recv_packs =          1
+make_shuffle_plan_generic: num_send_msgs  =          0
+make_shuffle_plan_generic: num_recv_msgs  =          1
+make_shuffle_plan_generic: total num_send_packs =          5
+make_shuffle_plan_generic: total num_recv_packs =          7
+make_shuffle_plan_generic: total num_send_msgs  =          7
+make_shuffle_plan_generic: total num_recv_msgs  =          7
+make_shuffle_plan_generic: global_comm_size =          8
 demo: save to disk
 write(sfw,fn,field): writting field with fn='f.field'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
@@ -965,15 +965,15 @@ shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_s
 FieldsWriter: close 'huge-data/t2/demo.lfs.partial'.
 FieldsWriter: open 'huge-data/t2/demo.lfs.partial'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
-Qlat::make_shuffle_plan_generic: num_send_packs =          0
-Qlat::make_shuffle_plan_generic: num_recv_packs =          1
-Qlat::make_shuffle_plan_generic: num_send_msgs  =          0
-Qlat::make_shuffle_plan_generic: num_recv_msgs  =          1
-Qlat::make_shuffle_plan_generic: total num_send_packs =          5
-Qlat::make_shuffle_plan_generic: total num_recv_packs =          7
-Qlat::make_shuffle_plan_generic: total num_send_msgs  =          7
-Qlat::make_shuffle_plan_generic: total num_recv_msgs  =          7
-Qlat::make_shuffle_plan_generic: global_comm_size =          8
+make_shuffle_plan_generic: num_send_packs =          0
+make_shuffle_plan_generic: num_recv_packs =          1
+make_shuffle_plan_generic: num_send_msgs  =          0
+make_shuffle_plan_generic: num_recv_msgs  =          1
+make_shuffle_plan_generic: total num_send_packs =          5
+make_shuffle_plan_generic: total num_recv_packs =          7
+make_shuffle_plan_generic: total num_send_msgs  =          7
+make_shuffle_plan_generic: total num_recv_msgs  =          7
+make_shuffle_plan_generic: global_comm_size =          8
 demo: save to disk append
 write(sfw,fn,field): writting field with fn='fa.field'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
@@ -1029,15 +1029,15 @@ demo:    13 : 'sfa.float.field' from 'huge-data/t2/demo.lfs'.
 demo:    14 : 'sfa.float.sfield' from 'huge-data/t2/demo.lfs'.
 demo:    15 : 'sfa.sfield' from 'huge-data/t2/demo.lfs'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
-Qlat::make_shuffle_plan_generic: num_send_packs =          0
-Qlat::make_shuffle_plan_generic: num_recv_packs =          1
-Qlat::make_shuffle_plan_generic: num_send_msgs  =          0
-Qlat::make_shuffle_plan_generic: num_recv_msgs  =          1
-Qlat::make_shuffle_plan_generic: total num_send_packs =          5
-Qlat::make_shuffle_plan_generic: total num_recv_packs =          7
-Qlat::make_shuffle_plan_generic: total num_send_msgs  =          7
-Qlat::make_shuffle_plan_generic: total num_recv_msgs  =          7
-Qlat::make_shuffle_plan_generic: global_comm_size =          8
+make_shuffle_plan_generic: num_send_packs =          0
+make_shuffle_plan_generic: num_recv_packs =          1
+make_shuffle_plan_generic: num_send_msgs  =          0
+make_shuffle_plan_generic: num_recv_msgs  =          1
+make_shuffle_plan_generic: total num_send_packs =          5
+make_shuffle_plan_generic: total num_recv_packs =          7
+make_shuffle_plan_generic: total num_send_msgs  =          7
+make_shuffle_plan_generic: total num_recv_msgs  =          7
+make_shuffle_plan_generic: global_comm_size =          8
 read(sfr,fn,field): reading field with fn='f.float.field'.
 read_tag(fr,fn,geo): 'f.float.field' from 'huge-data/t2/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)

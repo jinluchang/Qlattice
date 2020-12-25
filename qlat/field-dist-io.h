@@ -299,10 +299,9 @@ long dist_write_dist_data(const std::vector<DistData<M> >& dds,
     glb_sum(ops);
     total_bytes += bytes;
     total_ops += ops;
-    displayln_info(ssprintf(
-        "%s::%s: cycle / n_cycle = %4d / %4d ; total_ops = %10ld ; total_bytes "
-        "= %15ld",
-        cname().c_str(), fname, i + 1, n_cycle, total_ops, total_bytes));
+    displayln_info(fname + ssprintf(": cycle / n_cycle = %4d / %4d ; total_ops "
+                                    "= %10ld ; total_bytes = %15ld",
+                                    i + 1, n_cycle, total_ops, total_bytes));
   }
   std::vector<long> id_exists(num_node, 0);
   for (size_t id = 0; id < id_exists.size(); ++id) {
@@ -432,10 +431,9 @@ long dist_read_dist_data(const std::vector<DistData<M> >& dds,
     glb_sum(ops);
     total_bytes += bytes;
     total_ops += ops;
-    displayln_info(ssprintf(
-        "%s::%s: cycle / n_cycle = %4d / %4d ; total_ops = %10ld ; total_bytes "
-        "= %15ld",
-        cname().c_str(), fname, i + 1, n_cycle, total_ops, total_bytes));
+    displayln_info(fname + ssprintf(": cycle / n_cycle = %4d / %4d ; total_ops "
+                                    "= %10ld ; total_bytes = %15ld",
+                                    i + 1, n_cycle, total_ops, total_bytes));
   }
   std::vector<long> id_exists(num_node, 0);
   for (size_t id = 0; id < id_exists.size(); ++id) {

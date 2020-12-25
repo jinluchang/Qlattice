@@ -2,8 +2,12 @@
 
 #pragma once
 
+#include <dirent.h>
 #include <qlat/config.h>
 #include <qlat/mpi.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 #include <cstdarg>
 #include <cstdio>
@@ -12,11 +16,6 @@
 #include <fstream>
 #include <iostream>
 #include <vector>
-
-#include <dirent.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <unistd.h>
 
 namespace qlat
 {  //
@@ -429,8 +428,7 @@ inline int qremove_all_info(const std::string& path)
   }
 }
 
-inline std::string show_file_crc32(
-    const std::pair<std::string, crc32_t>& fcrc)
+inline std::string show_file_crc32(const std::pair<std::string, crc32_t>& fcrc)
 {
   return ssprintf("%08X  fn='%s'", fcrc.second, fcrc.first.c_str());
 }
@@ -598,13 +596,13 @@ inline bool obtain_lock(const std::string& path)
   TIMER_VERBOSE("obtain_lock");
   const std::string path_time = path + "/time.txt";
   const double expiration_time = get_actual_start_time() + get_time_limit();
-  displayln_info(
-      ssprintf("%s: Trying to obtain lock '%s'.", fname, path.c_str()));
+  displayln_info(fname +
+                 ssprintf(": Trying to obtain lock '%s'.", path.c_str()));
   qassert(get_lock_location() == "");
   if (0 == mkdir_lock(path)) {
     qtouch_info(path_time, show(expiration_time) + "\n");
     get_lock_location() = path;
-    displayln_info(ssprintf("%s: Lock obtained '%s'.", fname, path.c_str()));
+    displayln_info(fname + ssprintf(": Lock obtained '%s'.", path.c_str()));
     return true;
   } else if (does_file_exist_sync_node(path_time)) {
     long ret = 0;
@@ -619,18 +617,19 @@ inline bool obtain_lock(const std::string& path)
     glb_sum(ret);
     if (ret > 0) {
       get_lock_location() = path;
-      displayln_info(ssprintf("%s: Lock obtained '%s' (old lock expired).",
-                              fname, path.c_str()));
+      displayln_info(
+          fname +
+          ssprintf(": Lock obtained '%s' (old lock expired).", path.c_str()));
       return true;
     } else {
-      displayln_info(
-          ssprintf("%s: Failed to obtain '%s'.", fname, path.c_str()));
+      displayln_info(fname +
+                     ssprintf(": Failed to obtain '%s'.", path.c_str()));
       return false;
     }
   } else {
-    displayln_info(
-        ssprintf("%s: Failed to obtain '%s' (no creation time info).", fname,
-                 path.c_str()));
+    displayln_info(fname +
+                   ssprintf(": Failed to obtain '%s' (no creation time info).",
+                            path.c_str()));
     return false;
   }
 }
@@ -640,13 +639,13 @@ inline bool obtain_lock_all_node(const std::string& path)
   TIMER_VERBOSE("obtain_lock_all_node");
   const std::string path_time = path + "/time.txt";
   const double expiration_time = get_actual_start_time() + get_time_limit();
-  displayln_info(
-      ssprintf("%s: Trying to obtain lock '%s'.", fname, path.c_str()));
+  displayln_info(fname +
+                 ssprintf(": Trying to obtain lock '%s'.", path.c_str()));
   qassert(get_lock_location() == "");
   if (0 == mkdir_lock_all_node(path)) {
     qtouch(path_time, show(expiration_time) + "\n");
     get_lock_location() = path;
-    displayln_info(ssprintf("%s: Lock obtained '%s'.", fname, path.c_str()));
+    displayln_info(fname + ssprintf(": Lock obtained '%s'.", path.c_str()));
     return true;
   } else if (does_file_exist(path_time)) {
     long ret = 0;
@@ -658,18 +657,19 @@ inline bool obtain_lock_all_node(const std::string& path)
     }
     if (ret > 0) {
       get_lock_location() = path;
-      displayln_info(ssprintf("%s: Lock obtained '%s' (old lock expired).",
-                              fname, path.c_str()));
+      displayln_info(
+          fname +
+          ssprintf(": Lock obtained '%s' (old lock expired).", path.c_str()));
       return true;
     } else {
-      displayln_info(
-          ssprintf("%s: Failed to obtain '%s'.", fname, path.c_str()));
+      displayln_info(fname +
+                     ssprintf(": Failed to obtain '%s'.", path.c_str()));
       return false;
     }
   } else {
-    displayln_info(
-        ssprintf("%s: Failed to obtain '%s' (no creation time info).", fname,
-                 path.c_str()));
+    displayln_info(fname +
+                   ssprintf(": Failed to obtain '%s' (no creation time info).",
+                            path.c_str()));
     return false;
   }
 }
@@ -679,7 +679,7 @@ inline void release_lock()
   TIMER_VERBOSE("release_lock");
   std::string& path = get_lock_location();
   const std::string path_time = path + "/time.txt";
-  displayln_info(ssprintf("%s: Release lock '%s'", fname, path.c_str()));
+  displayln_info(fname + ssprintf(": Release lock '%s'", path.c_str()));
   if (path != "") {
     qremove_info(path_time);
     rmdir_lock(path);
@@ -692,7 +692,7 @@ inline void release_lock_all_node()
   TIMER_VERBOSE("release_lock_all_node");
   std::string& path = get_lock_location();
   const std::string path_time = path + "/time.txt";
-  displayln_info(ssprintf("%s: Release lock '%s'", fname, path.c_str()));
+  displayln_info(fname + ssprintf(": Release lock '%s'", path.c_str()));
   if (path != "") {
     qremove(path_time);
     rmdir_lock_all_node(path);

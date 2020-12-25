@@ -48,22 +48,22 @@
 #endif
 
 #define TIMER(FNAME)                 \
-  static const char* fname = FNAME;  \
+  static std::string fname = FNAME;  \
   static qlat::Timer timer(fname); \
   qlat::TimerCtrl timerctrl(timer);
 
 #define TIMER_VERBOSE(FNAME)         \
-  static const char* fname = FNAME;  \
+  static std::string fname = FNAME;  \
   static qlat::Timer timer(fname); \
   qlat::TimerCtrl timerctrl(timer, true);
 
 #define TIMER_FLOPS(FNAME)                  \
-  static const char* fname = FNAME;         \
+  static std::string fname = FNAME;         \
   static qlat::Timer timer(fname, false); \
   qlat::TimerCtrl timerctrl(timer);
 
-#define TIMER_VERBOSE_FLOPS(FNAME)          \
-  static const char* fname = FNAME;         \
+#define TIMER_VERBOSE_FLOPS(FNAME)        \
+  static std::string fname = FNAME;       \
   static qlat::Timer timer(fname, false); \
   qlat::TimerCtrl timerctrl(timer, true);
 

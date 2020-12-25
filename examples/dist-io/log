@@ -12,23 +12,23 @@ The crc32() of "123456789" is 0xCBF43926 (concat)
 The crc32() of "123456789" is 0xCBF43926 (crc32_shift)
 nthreads=2
 set Q_FIELD_INIT=fast. (implicitly)
-Qlat::dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         2359296
-Qlat::dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         2359296
-Qlat::dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         2359296
+dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         2359296
+dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         2359296
+dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         2359296
 dist_read_field: fn='huge-data/gauge_field_rgf-0.1'.
-Qlat::dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         2359296
+dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         2359296
 get_mem_cache_max_size_default: get_mem_cache_max_size() = 512 MB.
 Qlat::ShufflePlanCache: to add 1 / 16.
-Qlat::dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         2359296
+dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         2359296
 Qlat::CommPlanCache: to add 1 / 32.
 plaq :  9.47925703162884714E-01
 Qlat::CommPlanCache: to add 2 / 32.
 spatial plaq :  9.47619593969194374E-01
 trace:  9.86703685472810399E-01
-Qlat::dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         1179648
+dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         1179648
 dist_read_field: fn='huge-data/gauge_field_rgf-0.1_f'.
-Qlat::dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         1179648
-Qlat::dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         1179648
+dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         1179648
+dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         1179648
 plaq :  9.47925703323386659E-01
 spatial plaq :  9.47619594236182805E-01
 trace:  9.86703685516355788E-01
@@ -36,42 +36,42 @@ plaq :  9.47925703162884714E-01
 spatial plaq :  9.47619593969194374E-01
 trace:  9.86703685472810399E-01
 dist_crc32 = 2C3EF014
-Qlat::make_shuffle_plan_generic: num_send_packs =         16
-Qlat::make_shuffle_plan_generic: num_recv_packs =         16
-Qlat::make_shuffle_plan_generic: num_send_msgs  =          4
-Qlat::make_shuffle_plan_generic: num_recv_msgs  =          4
-Qlat::make_shuffle_plan_generic: total num_send_packs =        128
-Qlat::make_shuffle_plan_generic: total num_recv_packs =        128
-Qlat::make_shuffle_plan_generic: total num_send_msgs  =         32
-Qlat::make_shuffle_plan_generic: total num_recv_msgs  =         32
-Qlat::make_shuffle_plan_generic: global_comm_size =       4096
+make_shuffle_plan_generic: num_send_packs =         16
+make_shuffle_plan_generic: num_recv_packs =         16
+make_shuffle_plan_generic: num_send_msgs  =          4
+make_shuffle_plan_generic: num_recv_msgs  =          4
+make_shuffle_plan_generic: total num_send_packs =        128
+make_shuffle_plan_generic: total num_recv_packs =        128
+make_shuffle_plan_generic: total num_send_msgs  =         32
+make_shuffle_plan_generic: total num_recv_msgs  =         32
+make_shuffle_plan_generic: global_comm_size =       4096
 Qlat::ShufflePlanCache: to add 2 / 16.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 crc32 = 484747F9
-Qlat::make_shuffle_plan_generic: num_send_packs =         16
-Qlat::make_shuffle_plan_generic: num_recv_packs =        128
-Qlat::make_shuffle_plan_generic: num_send_msgs  =          1
-Qlat::make_shuffle_plan_generic: num_recv_msgs  =          8
-Qlat::make_shuffle_plan_generic: total num_send_packs =        128
-Qlat::make_shuffle_plan_generic: total num_recv_packs =        128
-Qlat::make_shuffle_plan_generic: total num_send_msgs  =          8
-Qlat::make_shuffle_plan_generic: total num_recv_msgs  =          8
-Qlat::make_shuffle_plan_generic: global_comm_size =       4096
+make_shuffle_plan_generic: num_send_packs =         16
+make_shuffle_plan_generic: num_recv_packs =        128
+make_shuffle_plan_generic: num_send_msgs  =          1
+make_shuffle_plan_generic: num_recv_msgs  =          8
+make_shuffle_plan_generic: total num_send_packs =        128
+make_shuffle_plan_generic: total num_recv_packs =        128
+make_shuffle_plan_generic: total num_send_msgs  =          8
+make_shuffle_plan_generic: total num_recv_msgs  =          8
+make_shuffle_plan_generic: global_comm_size =       4096
 Qlat::ShufflePlanCache: to add 3 / 16.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x1 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 shuffle_field_back(f,fs,sp): 1x1x1x1 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 dist_crc32 = 2C3EF014
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 crc32 = 484747F9
-Qlat::make_shuffle_plan_generic: num_send_packs =         16
-Qlat::make_shuffle_plan_generic: num_recv_packs =        128
-Qlat::make_shuffle_plan_generic: num_send_msgs  =          1
-Qlat::make_shuffle_plan_generic: num_recv_msgs  =          1
-Qlat::make_shuffle_plan_generic: total num_send_packs =        128
-Qlat::make_shuffle_plan_generic: total num_recv_packs =       1024
-Qlat::make_shuffle_plan_generic: total num_send_msgs  =          8
-Qlat::make_shuffle_plan_generic: total num_recv_msgs  =          8
-Qlat::make_shuffle_plan_generic: global_comm_size =       4096
+make_shuffle_plan_generic: num_send_packs =         16
+make_shuffle_plan_generic: num_recv_packs =        128
+make_shuffle_plan_generic: num_send_msgs  =          1
+make_shuffle_plan_generic: num_recv_msgs  =          1
+make_shuffle_plan_generic: total num_send_packs =        128
+make_shuffle_plan_generic: total num_recv_packs =       1024
+make_shuffle_plan_generic: total num_send_msgs  =          8
+make_shuffle_plan_generic: total num_recv_msgs  =          8
+make_shuffle_plan_generic: global_comm_size =       4096
 Qlat::ShufflePlanCache: to add 4 / 16.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 shuffle_field_back(f,fs,sp): 2x2x2x2 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
@@ -83,45 +83,45 @@ shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size
 dist_crc32 = 2C3EF014
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 crc32 = 484747F9
-Qlat::make_shuffle_plan_generic: num_send_packs =         16
-Qlat::make_shuffle_plan_generic: num_recv_packs =         16
-Qlat::make_shuffle_plan_generic: num_send_msgs  =          2
-Qlat::make_shuffle_plan_generic: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_generic: total num_send_packs =        128
-Qlat::make_shuffle_plan_generic: total num_recv_packs =        128
-Qlat::make_shuffle_plan_generic: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_generic: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_generic: global_comm_size =       4096
+make_shuffle_plan_generic: num_send_packs =         16
+make_shuffle_plan_generic: num_recv_packs =         16
+make_shuffle_plan_generic: num_send_msgs  =          2
+make_shuffle_plan_generic: num_recv_msgs  =          2
+make_shuffle_plan_generic: total num_send_packs =        128
+make_shuffle_plan_generic: total num_recv_packs =        128
+make_shuffle_plan_generic: total num_send_msgs  =         16
+make_shuffle_plan_generic: total num_recv_msgs  =         16
+make_shuffle_plan_generic: global_comm_size =       4096
 Qlat::ShufflePlanCache: to add 5 / 16.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x2x4x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 shuffle_field_back(f,fs,sp): 1x2x4x2 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 dist_crc32 = 2C3EF014
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 crc32 = 484747F9
-Qlat::make_shuffle_plan_generic: num_send_packs =        128
-Qlat::make_shuffle_plan_generic: num_recv_packs =         32
-Qlat::make_shuffle_plan_generic: num_send_msgs  =          2
-Qlat::make_shuffle_plan_generic: num_recv_msgs  =          4
-Qlat::make_shuffle_plan_generic: total num_send_packs =       1024
-Qlat::make_shuffle_plan_generic: total num_recv_packs =        128
-Qlat::make_shuffle_plan_generic: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_generic: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_generic: global_comm_size =       4096
+make_shuffle_plan_generic: num_send_packs =        128
+make_shuffle_plan_generic: num_recv_packs =         32
+make_shuffle_plan_generic: num_send_msgs  =          2
+make_shuffle_plan_generic: num_recv_msgs  =          4
+make_shuffle_plan_generic: total num_send_packs =       1024
+make_shuffle_plan_generic: total num_recv_packs =        128
+make_shuffle_plan_generic: total num_send_msgs  =         16
+make_shuffle_plan_generic: total num_recv_msgs  =         16
+make_shuffle_plan_generic: global_comm_size =       4096
 Qlat::ShufflePlanCache: to add 6 / 16.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x1x1 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 shuffle_field_back(f,fs,sp): 2x2x1x1 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 dist_crc32 = 2C3EF014
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 crc32 = 484747F9
-Qlat::make_shuffle_plan_generic: num_send_packs =         16
-Qlat::make_shuffle_plan_generic: num_recv_packs =        256
-Qlat::make_shuffle_plan_generic: num_send_msgs  =          2
-Qlat::make_shuffle_plan_generic: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_generic: total num_send_packs =        128
-Qlat::make_shuffle_plan_generic: total num_recv_packs =       2048
-Qlat::make_shuffle_plan_generic: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_generic: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_generic: global_comm_size =       4096
+make_shuffle_plan_generic: num_send_packs =         16
+make_shuffle_plan_generic: num_recv_packs =        256
+make_shuffle_plan_generic: num_send_msgs  =          2
+make_shuffle_plan_generic: num_recv_msgs  =          2
+make_shuffle_plan_generic: total num_send_packs =        128
+make_shuffle_plan_generic: total num_recv_packs =       2048
+make_shuffle_plan_generic: total num_send_msgs  =         16
+make_shuffle_plan_generic: total num_recv_msgs  =         16
+make_shuffle_plan_generic: global_comm_size =       4096
 Qlat::ShufflePlanCache: to add 7 / 16.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 4x4x4x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 shuffle_field_back(f,fs,sp): 4x4x4x4 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
@@ -133,9 +133,9 @@ shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576
 crc32 = 484747F9
 dist_write_field: fn='huge-data/gauge_field ; 1x1x1x1'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x1 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-Qlat::dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          1 ; total_bytes =         2359296
+dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          1 ; total_bytes =         2359296
 dist_read_field: fn='huge-data/gauge_field ; 1x1x1x1'.
-Qlat::dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          1 ; total_bytes =         2359296
+dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          1 ; total_bytes =         2359296
 shuffle_field_back(f,fs,sp): 1x1x1x1 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 dist_crc32 = 2C3EF014
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
@@ -145,11 +145,11 @@ shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576
 crc32 = 484747F9
 dist_write_field: fn='huge-data/gauge_field ; 2x2x2x2'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-Qlat::dist_write_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =          8 ; total_bytes =         1179648
-Qlat::dist_write_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         16 ; total_bytes =         2359296
+dist_write_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =          8 ; total_bytes =         1179648
+dist_write_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         16 ; total_bytes =         2359296
 dist_read_field: fn='huge-data/gauge_field ; 2x2x2x2'.
-Qlat::dist_read_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =          8 ; total_bytes =         1179648
-Qlat::dist_read_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         16 ; total_bytes =         2359296
+dist_read_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =          8 ; total_bytes =         1179648
+dist_read_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         16 ; total_bytes =         2359296
 shuffle_field_back(f,fs,sp): 2x2x2x2 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 dist_crc32 = 2C3EF014
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
@@ -159,9 +159,9 @@ shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576
 crc32 = 484747F9
 dist_write_field: fn='huge-data/gauge_field ; 1x1x1x8'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-Qlat::dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         2359296
+dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         2359296
 dist_read_field: fn='huge-data/gauge_field ; 1x1x1x8'.
-Qlat::dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         2359296
+dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         2359296
 shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 dist_crc32 = 2C3EF014
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
@@ -171,11 +171,11 @@ shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576
 crc32 = 484747F9
 dist_write_field: fn='huge-data/gauge_field ; 1x2x4x2'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x2x4x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-Qlat::dist_write_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =          8 ; total_bytes =         1179648
-Qlat::dist_write_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         16 ; total_bytes =         2359296
+dist_write_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =          8 ; total_bytes =         1179648
+dist_write_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         16 ; total_bytes =         2359296
 dist_read_field: fn='huge-data/gauge_field ; 1x2x4x2'.
-Qlat::dist_read_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =          8 ; total_bytes =         1179648
-Qlat::dist_read_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         16 ; total_bytes =         2359296
+dist_read_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =          8 ; total_bytes =         1179648
+dist_read_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         16 ; total_bytes =         2359296
 shuffle_field_back(f,fs,sp): 1x2x4x2 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 dist_crc32 = 2C3EF014
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
@@ -185,9 +185,9 @@ shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576
 crc32 = 484747F9
 dist_write_field: fn='huge-data/gauge_field ; 2x2x1x1'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x1x1 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-Qlat::dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          4 ; total_bytes =         2359296
+dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          4 ; total_bytes =         2359296
 dist_read_field: fn='huge-data/gauge_field ; 2x2x1x1'.
-Qlat::dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          4 ; total_bytes =         2359296
+dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          4 ; total_bytes =         2359296
 shuffle_field_back(f,fs,sp): 2x2x1x1 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 dist_crc32 = 2C3EF014
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
@@ -197,71 +197,71 @@ shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576
 crc32 = 484747F9
 dist_write_field: fn='huge-data/gauge_field ; 4x4x4x4'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 4x4x4x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-Qlat::dist_write_dist_data: cycle / n_cycle =    1 /   32 ; total_ops =          8 ; total_bytes =           73728
-Qlat::dist_write_dist_data: cycle / n_cycle =    2 /   32 ; total_ops =         16 ; total_bytes =          147456
-Qlat::dist_write_dist_data: cycle / n_cycle =    3 /   32 ; total_ops =         24 ; total_bytes =          221184
-Qlat::dist_write_dist_data: cycle / n_cycle =    4 /   32 ; total_ops =         32 ; total_bytes =          294912
-Qlat::dist_write_dist_data: cycle / n_cycle =    5 /   32 ; total_ops =         40 ; total_bytes =          368640
-Qlat::dist_write_dist_data: cycle / n_cycle =    6 /   32 ; total_ops =         48 ; total_bytes =          442368
-Qlat::dist_write_dist_data: cycle / n_cycle =    7 /   32 ; total_ops =         56 ; total_bytes =          516096
-Qlat::dist_write_dist_data: cycle / n_cycle =    8 /   32 ; total_ops =         64 ; total_bytes =          589824
-Qlat::dist_write_dist_data: cycle / n_cycle =    9 /   32 ; total_ops =         72 ; total_bytes =          663552
-Qlat::dist_write_dist_data: cycle / n_cycle =   10 /   32 ; total_ops =         80 ; total_bytes =          737280
-Qlat::dist_write_dist_data: cycle / n_cycle =   11 /   32 ; total_ops =         88 ; total_bytes =          811008
-Qlat::dist_write_dist_data: cycle / n_cycle =   12 /   32 ; total_ops =         96 ; total_bytes =          884736
-Qlat::dist_write_dist_data: cycle / n_cycle =   13 /   32 ; total_ops =        104 ; total_bytes =          958464
-Qlat::dist_write_dist_data: cycle / n_cycle =   14 /   32 ; total_ops =        112 ; total_bytes =         1032192
-Qlat::dist_write_dist_data: cycle / n_cycle =   15 /   32 ; total_ops =        120 ; total_bytes =         1105920
-Qlat::dist_write_dist_data: cycle / n_cycle =   16 /   32 ; total_ops =        128 ; total_bytes =         1179648
-Qlat::dist_write_dist_data: cycle / n_cycle =   17 /   32 ; total_ops =        136 ; total_bytes =         1253376
-Qlat::dist_write_dist_data: cycle / n_cycle =   18 /   32 ; total_ops =        144 ; total_bytes =         1327104
-Qlat::dist_write_dist_data: cycle / n_cycle =   19 /   32 ; total_ops =        152 ; total_bytes =         1400832
-Qlat::dist_write_dist_data: cycle / n_cycle =   20 /   32 ; total_ops =        160 ; total_bytes =         1474560
-Qlat::dist_write_dist_data: cycle / n_cycle =   21 /   32 ; total_ops =        168 ; total_bytes =         1548288
-Qlat::dist_write_dist_data: cycle / n_cycle =   22 /   32 ; total_ops =        176 ; total_bytes =         1622016
-Qlat::dist_write_dist_data: cycle / n_cycle =   23 /   32 ; total_ops =        184 ; total_bytes =         1695744
-Qlat::dist_write_dist_data: cycle / n_cycle =   24 /   32 ; total_ops =        192 ; total_bytes =         1769472
-Qlat::dist_write_dist_data: cycle / n_cycle =   25 /   32 ; total_ops =        200 ; total_bytes =         1843200
-Qlat::dist_write_dist_data: cycle / n_cycle =   26 /   32 ; total_ops =        208 ; total_bytes =         1916928
-Qlat::dist_write_dist_data: cycle / n_cycle =   27 /   32 ; total_ops =        216 ; total_bytes =         1990656
-Qlat::dist_write_dist_data: cycle / n_cycle =   28 /   32 ; total_ops =        224 ; total_bytes =         2064384
-Qlat::dist_write_dist_data: cycle / n_cycle =   29 /   32 ; total_ops =        232 ; total_bytes =         2138112
-Qlat::dist_write_dist_data: cycle / n_cycle =   30 /   32 ; total_ops =        240 ; total_bytes =         2211840
-Qlat::dist_write_dist_data: cycle / n_cycle =   31 /   32 ; total_ops =        248 ; total_bytes =         2285568
-Qlat::dist_write_dist_data: cycle / n_cycle =   32 /   32 ; total_ops =        256 ; total_bytes =         2359296
+dist_write_dist_data: cycle / n_cycle =    1 /   32 ; total_ops =          8 ; total_bytes =           73728
+dist_write_dist_data: cycle / n_cycle =    2 /   32 ; total_ops =         16 ; total_bytes =          147456
+dist_write_dist_data: cycle / n_cycle =    3 /   32 ; total_ops =         24 ; total_bytes =          221184
+dist_write_dist_data: cycle / n_cycle =    4 /   32 ; total_ops =         32 ; total_bytes =          294912
+dist_write_dist_data: cycle / n_cycle =    5 /   32 ; total_ops =         40 ; total_bytes =          368640
+dist_write_dist_data: cycle / n_cycle =    6 /   32 ; total_ops =         48 ; total_bytes =          442368
+dist_write_dist_data: cycle / n_cycle =    7 /   32 ; total_ops =         56 ; total_bytes =          516096
+dist_write_dist_data: cycle / n_cycle =    8 /   32 ; total_ops =         64 ; total_bytes =          589824
+dist_write_dist_data: cycle / n_cycle =    9 /   32 ; total_ops =         72 ; total_bytes =          663552
+dist_write_dist_data: cycle / n_cycle =   10 /   32 ; total_ops =         80 ; total_bytes =          737280
+dist_write_dist_data: cycle / n_cycle =   11 /   32 ; total_ops =         88 ; total_bytes =          811008
+dist_write_dist_data: cycle / n_cycle =   12 /   32 ; total_ops =         96 ; total_bytes =          884736
+dist_write_dist_data: cycle / n_cycle =   13 /   32 ; total_ops =        104 ; total_bytes =          958464
+dist_write_dist_data: cycle / n_cycle =   14 /   32 ; total_ops =        112 ; total_bytes =         1032192
+dist_write_dist_data: cycle / n_cycle =   15 /   32 ; total_ops =        120 ; total_bytes =         1105920
+dist_write_dist_data: cycle / n_cycle =   16 /   32 ; total_ops =        128 ; total_bytes =         1179648
+dist_write_dist_data: cycle / n_cycle =   17 /   32 ; total_ops =        136 ; total_bytes =         1253376
+dist_write_dist_data: cycle / n_cycle =   18 /   32 ; total_ops =        144 ; total_bytes =         1327104
+dist_write_dist_data: cycle / n_cycle =   19 /   32 ; total_ops =        152 ; total_bytes =         1400832
+dist_write_dist_data: cycle / n_cycle =   20 /   32 ; total_ops =        160 ; total_bytes =         1474560
+dist_write_dist_data: cycle / n_cycle =   21 /   32 ; total_ops =        168 ; total_bytes =         1548288
+dist_write_dist_data: cycle / n_cycle =   22 /   32 ; total_ops =        176 ; total_bytes =         1622016
+dist_write_dist_data: cycle / n_cycle =   23 /   32 ; total_ops =        184 ; total_bytes =         1695744
+dist_write_dist_data: cycle / n_cycle =   24 /   32 ; total_ops =        192 ; total_bytes =         1769472
+dist_write_dist_data: cycle / n_cycle =   25 /   32 ; total_ops =        200 ; total_bytes =         1843200
+dist_write_dist_data: cycle / n_cycle =   26 /   32 ; total_ops =        208 ; total_bytes =         1916928
+dist_write_dist_data: cycle / n_cycle =   27 /   32 ; total_ops =        216 ; total_bytes =         1990656
+dist_write_dist_data: cycle / n_cycle =   28 /   32 ; total_ops =        224 ; total_bytes =         2064384
+dist_write_dist_data: cycle / n_cycle =   29 /   32 ; total_ops =        232 ; total_bytes =         2138112
+dist_write_dist_data: cycle / n_cycle =   30 /   32 ; total_ops =        240 ; total_bytes =         2211840
+dist_write_dist_data: cycle / n_cycle =   31 /   32 ; total_ops =        248 ; total_bytes =         2285568
+dist_write_dist_data: cycle / n_cycle =   32 /   32 ; total_ops =        256 ; total_bytes =         2359296
 dist_read_field: fn='huge-data/gauge_field ; 4x4x4x4'.
-Qlat::dist_read_dist_data: cycle / n_cycle =    1 /   32 ; total_ops =          8 ; total_bytes =           73728
-Qlat::dist_read_dist_data: cycle / n_cycle =    2 /   32 ; total_ops =         16 ; total_bytes =          147456
-Qlat::dist_read_dist_data: cycle / n_cycle =    3 /   32 ; total_ops =         24 ; total_bytes =          221184
-Qlat::dist_read_dist_data: cycle / n_cycle =    4 /   32 ; total_ops =         32 ; total_bytes =          294912
-Qlat::dist_read_dist_data: cycle / n_cycle =    5 /   32 ; total_ops =         40 ; total_bytes =          368640
-Qlat::dist_read_dist_data: cycle / n_cycle =    6 /   32 ; total_ops =         48 ; total_bytes =          442368
-Qlat::dist_read_dist_data: cycle / n_cycle =    7 /   32 ; total_ops =         56 ; total_bytes =          516096
-Qlat::dist_read_dist_data: cycle / n_cycle =    8 /   32 ; total_ops =         64 ; total_bytes =          589824
-Qlat::dist_read_dist_data: cycle / n_cycle =    9 /   32 ; total_ops =         72 ; total_bytes =          663552
-Qlat::dist_read_dist_data: cycle / n_cycle =   10 /   32 ; total_ops =         80 ; total_bytes =          737280
-Qlat::dist_read_dist_data: cycle / n_cycle =   11 /   32 ; total_ops =         88 ; total_bytes =          811008
-Qlat::dist_read_dist_data: cycle / n_cycle =   12 /   32 ; total_ops =         96 ; total_bytes =          884736
-Qlat::dist_read_dist_data: cycle / n_cycle =   13 /   32 ; total_ops =        104 ; total_bytes =          958464
-Qlat::dist_read_dist_data: cycle / n_cycle =   14 /   32 ; total_ops =        112 ; total_bytes =         1032192
-Qlat::dist_read_dist_data: cycle / n_cycle =   15 /   32 ; total_ops =        120 ; total_bytes =         1105920
-Qlat::dist_read_dist_data: cycle / n_cycle =   16 /   32 ; total_ops =        128 ; total_bytes =         1179648
-Qlat::dist_read_dist_data: cycle / n_cycle =   17 /   32 ; total_ops =        136 ; total_bytes =         1253376
-Qlat::dist_read_dist_data: cycle / n_cycle =   18 /   32 ; total_ops =        144 ; total_bytes =         1327104
-Qlat::dist_read_dist_data: cycle / n_cycle =   19 /   32 ; total_ops =        152 ; total_bytes =         1400832
-Qlat::dist_read_dist_data: cycle / n_cycle =   20 /   32 ; total_ops =        160 ; total_bytes =         1474560
-Qlat::dist_read_dist_data: cycle / n_cycle =   21 /   32 ; total_ops =        168 ; total_bytes =         1548288
-Qlat::dist_read_dist_data: cycle / n_cycle =   22 /   32 ; total_ops =        176 ; total_bytes =         1622016
-Qlat::dist_read_dist_data: cycle / n_cycle =   23 /   32 ; total_ops =        184 ; total_bytes =         1695744
-Qlat::dist_read_dist_data: cycle / n_cycle =   24 /   32 ; total_ops =        192 ; total_bytes =         1769472
-Qlat::dist_read_dist_data: cycle / n_cycle =   25 /   32 ; total_ops =        200 ; total_bytes =         1843200
-Qlat::dist_read_dist_data: cycle / n_cycle =   26 /   32 ; total_ops =        208 ; total_bytes =         1916928
-Qlat::dist_read_dist_data: cycle / n_cycle =   27 /   32 ; total_ops =        216 ; total_bytes =         1990656
-Qlat::dist_read_dist_data: cycle / n_cycle =   28 /   32 ; total_ops =        224 ; total_bytes =         2064384
-Qlat::dist_read_dist_data: cycle / n_cycle =   29 /   32 ; total_ops =        232 ; total_bytes =         2138112
-Qlat::dist_read_dist_data: cycle / n_cycle =   30 /   32 ; total_ops =        240 ; total_bytes =         2211840
-Qlat::dist_read_dist_data: cycle / n_cycle =   31 /   32 ; total_ops =        248 ; total_bytes =         2285568
-Qlat::dist_read_dist_data: cycle / n_cycle =   32 /   32 ; total_ops =        256 ; total_bytes =         2359296
+dist_read_dist_data: cycle / n_cycle =    1 /   32 ; total_ops =          8 ; total_bytes =           73728
+dist_read_dist_data: cycle / n_cycle =    2 /   32 ; total_ops =         16 ; total_bytes =          147456
+dist_read_dist_data: cycle / n_cycle =    3 /   32 ; total_ops =         24 ; total_bytes =          221184
+dist_read_dist_data: cycle / n_cycle =    4 /   32 ; total_ops =         32 ; total_bytes =          294912
+dist_read_dist_data: cycle / n_cycle =    5 /   32 ; total_ops =         40 ; total_bytes =          368640
+dist_read_dist_data: cycle / n_cycle =    6 /   32 ; total_ops =         48 ; total_bytes =          442368
+dist_read_dist_data: cycle / n_cycle =    7 /   32 ; total_ops =         56 ; total_bytes =          516096
+dist_read_dist_data: cycle / n_cycle =    8 /   32 ; total_ops =         64 ; total_bytes =          589824
+dist_read_dist_data: cycle / n_cycle =    9 /   32 ; total_ops =         72 ; total_bytes =          663552
+dist_read_dist_data: cycle / n_cycle =   10 /   32 ; total_ops =         80 ; total_bytes =          737280
+dist_read_dist_data: cycle / n_cycle =   11 /   32 ; total_ops =         88 ; total_bytes =          811008
+dist_read_dist_data: cycle / n_cycle =   12 /   32 ; total_ops =         96 ; total_bytes =          884736
+dist_read_dist_data: cycle / n_cycle =   13 /   32 ; total_ops =        104 ; total_bytes =          958464
+dist_read_dist_data: cycle / n_cycle =   14 /   32 ; total_ops =        112 ; total_bytes =         1032192
+dist_read_dist_data: cycle / n_cycle =   15 /   32 ; total_ops =        120 ; total_bytes =         1105920
+dist_read_dist_data: cycle / n_cycle =   16 /   32 ; total_ops =        128 ; total_bytes =         1179648
+dist_read_dist_data: cycle / n_cycle =   17 /   32 ; total_ops =        136 ; total_bytes =         1253376
+dist_read_dist_data: cycle / n_cycle =   18 /   32 ; total_ops =        144 ; total_bytes =         1327104
+dist_read_dist_data: cycle / n_cycle =   19 /   32 ; total_ops =        152 ; total_bytes =         1400832
+dist_read_dist_data: cycle / n_cycle =   20 /   32 ; total_ops =        160 ; total_bytes =         1474560
+dist_read_dist_data: cycle / n_cycle =   21 /   32 ; total_ops =        168 ; total_bytes =         1548288
+dist_read_dist_data: cycle / n_cycle =   22 /   32 ; total_ops =        176 ; total_bytes =         1622016
+dist_read_dist_data: cycle / n_cycle =   23 /   32 ; total_ops =        184 ; total_bytes =         1695744
+dist_read_dist_data: cycle / n_cycle =   24 /   32 ; total_ops =        192 ; total_bytes =         1769472
+dist_read_dist_data: cycle / n_cycle =   25 /   32 ; total_ops =        200 ; total_bytes =         1843200
+dist_read_dist_data: cycle / n_cycle =   26 /   32 ; total_ops =        208 ; total_bytes =         1916928
+dist_read_dist_data: cycle / n_cycle =   27 /   32 ; total_ops =        216 ; total_bytes =         1990656
+dist_read_dist_data: cycle / n_cycle =   28 /   32 ; total_ops =        224 ; total_bytes =         2064384
+dist_read_dist_data: cycle / n_cycle =   29 /   32 ; total_ops =        232 ; total_bytes =         2138112
+dist_read_dist_data: cycle / n_cycle =   30 /   32 ; total_ops =        240 ; total_bytes =         2211840
+dist_read_dist_data: cycle / n_cycle =   31 /   32 ; total_ops =        248 ; total_bytes =         2285568
+dist_read_dist_data: cycle / n_cycle =   32 /   32 ; total_ops =        256 ; total_bytes =         2359296
 shuffle_field_back(f,fs,sp): 4x4x4x4 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 dist_crc32 = 2C3EF014
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
@@ -271,9 +271,9 @@ shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576
 crc32 = 484747F9
 dist_write_field: fn='huge-data/gauge_field ; 1x1x1x1_2'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x1 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-Qlat::dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          1 ; total_bytes =         2359296
+dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          1 ; total_bytes =         2359296
 dist_read_field: fn='huge-data/gauge_field ; 1x1x1x1_2'.
-Qlat::dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          1 ; total_bytes =         2359296
+dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          1 ; total_bytes =         2359296
 shuffle_field_back(f,fs,sp): 1x1x1x1 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 dist_crc32 = 2C3EF014
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
@@ -283,11 +283,11 @@ shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576
 crc32 = 484747F9
 dist_write_field: fn='huge-data/gauge_field ; 2x2x2x2_2'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-Qlat::dist_write_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =          8 ; total_bytes =         1179648
-Qlat::dist_write_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         16 ; total_bytes =         2359296
+dist_write_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =          8 ; total_bytes =         1179648
+dist_write_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         16 ; total_bytes =         2359296
 dist_read_field: fn='huge-data/gauge_field ; 2x2x2x2_2'.
-Qlat::dist_read_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =          8 ; total_bytes =         1179648
-Qlat::dist_read_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         16 ; total_bytes =         2359296
+dist_read_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =          8 ; total_bytes =         1179648
+dist_read_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         16 ; total_bytes =         2359296
 shuffle_field_back(f,fs,sp): 2x2x2x2 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 dist_crc32 = 2C3EF014
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
@@ -297,9 +297,9 @@ shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576
 crc32 = 484747F9
 dist_write_field: fn='huge-data/gauge_field ; 1x1x1x8_2'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-Qlat::dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         2359296
+dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         2359296
 dist_read_field: fn='huge-data/gauge_field ; 1x1x1x8_2'.
-Qlat::dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         2359296
+dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         2359296
 shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 dist_crc32 = 2C3EF014
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
@@ -309,11 +309,11 @@ shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576
 crc32 = 484747F9
 dist_write_field: fn='huge-data/gauge_field ; 1x2x4x2_2'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x2x4x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-Qlat::dist_write_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =          8 ; total_bytes =         1179648
-Qlat::dist_write_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         16 ; total_bytes =         2359296
+dist_write_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =          8 ; total_bytes =         1179648
+dist_write_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         16 ; total_bytes =         2359296
 dist_read_field: fn='huge-data/gauge_field ; 1x2x4x2_2'.
-Qlat::dist_read_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =          8 ; total_bytes =         1179648
-Qlat::dist_read_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         16 ; total_bytes =         2359296
+dist_read_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =          8 ; total_bytes =         1179648
+dist_read_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         16 ; total_bytes =         2359296
 shuffle_field_back(f,fs,sp): 1x2x4x2 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 dist_crc32 = 2C3EF014
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
@@ -323,9 +323,9 @@ shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576
 crc32 = 484747F9
 dist_write_field: fn='huge-data/gauge_field ; 2x2x1x1_2'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x1x1 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-Qlat::dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          4 ; total_bytes =         2359296
+dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          4 ; total_bytes =         2359296
 dist_read_field: fn='huge-data/gauge_field ; 2x2x1x1_2'.
-Qlat::dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          4 ; total_bytes =         2359296
+dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          4 ; total_bytes =         2359296
 shuffle_field_back(f,fs,sp): 2x2x1x1 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 dist_crc32 = 2C3EF014
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
@@ -335,71 +335,71 @@ shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576
 crc32 = 484747F9
 dist_write_field: fn='huge-data/gauge_field ; 4x4x4x4_2'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 4x4x4x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
-Qlat::dist_write_dist_data: cycle / n_cycle =    1 /   32 ; total_ops =          8 ; total_bytes =           73728
-Qlat::dist_write_dist_data: cycle / n_cycle =    2 /   32 ; total_ops =         16 ; total_bytes =          147456
-Qlat::dist_write_dist_data: cycle / n_cycle =    3 /   32 ; total_ops =         24 ; total_bytes =          221184
-Qlat::dist_write_dist_data: cycle / n_cycle =    4 /   32 ; total_ops =         32 ; total_bytes =          294912
-Qlat::dist_write_dist_data: cycle / n_cycle =    5 /   32 ; total_ops =         40 ; total_bytes =          368640
-Qlat::dist_write_dist_data: cycle / n_cycle =    6 /   32 ; total_ops =         48 ; total_bytes =          442368
-Qlat::dist_write_dist_data: cycle / n_cycle =    7 /   32 ; total_ops =         56 ; total_bytes =          516096
-Qlat::dist_write_dist_data: cycle / n_cycle =    8 /   32 ; total_ops =         64 ; total_bytes =          589824
-Qlat::dist_write_dist_data: cycle / n_cycle =    9 /   32 ; total_ops =         72 ; total_bytes =          663552
-Qlat::dist_write_dist_data: cycle / n_cycle =   10 /   32 ; total_ops =         80 ; total_bytes =          737280
-Qlat::dist_write_dist_data: cycle / n_cycle =   11 /   32 ; total_ops =         88 ; total_bytes =          811008
-Qlat::dist_write_dist_data: cycle / n_cycle =   12 /   32 ; total_ops =         96 ; total_bytes =          884736
-Qlat::dist_write_dist_data: cycle / n_cycle =   13 /   32 ; total_ops =        104 ; total_bytes =          958464
-Qlat::dist_write_dist_data: cycle / n_cycle =   14 /   32 ; total_ops =        112 ; total_bytes =         1032192
-Qlat::dist_write_dist_data: cycle / n_cycle =   15 /   32 ; total_ops =        120 ; total_bytes =         1105920
-Qlat::dist_write_dist_data: cycle / n_cycle =   16 /   32 ; total_ops =        128 ; total_bytes =         1179648
-Qlat::dist_write_dist_data: cycle / n_cycle =   17 /   32 ; total_ops =        136 ; total_bytes =         1253376
-Qlat::dist_write_dist_data: cycle / n_cycle =   18 /   32 ; total_ops =        144 ; total_bytes =         1327104
-Qlat::dist_write_dist_data: cycle / n_cycle =   19 /   32 ; total_ops =        152 ; total_bytes =         1400832
-Qlat::dist_write_dist_data: cycle / n_cycle =   20 /   32 ; total_ops =        160 ; total_bytes =         1474560
-Qlat::dist_write_dist_data: cycle / n_cycle =   21 /   32 ; total_ops =        168 ; total_bytes =         1548288
-Qlat::dist_write_dist_data: cycle / n_cycle =   22 /   32 ; total_ops =        176 ; total_bytes =         1622016
-Qlat::dist_write_dist_data: cycle / n_cycle =   23 /   32 ; total_ops =        184 ; total_bytes =         1695744
-Qlat::dist_write_dist_data: cycle / n_cycle =   24 /   32 ; total_ops =        192 ; total_bytes =         1769472
-Qlat::dist_write_dist_data: cycle / n_cycle =   25 /   32 ; total_ops =        200 ; total_bytes =         1843200
-Qlat::dist_write_dist_data: cycle / n_cycle =   26 /   32 ; total_ops =        208 ; total_bytes =         1916928
-Qlat::dist_write_dist_data: cycle / n_cycle =   27 /   32 ; total_ops =        216 ; total_bytes =         1990656
-Qlat::dist_write_dist_data: cycle / n_cycle =   28 /   32 ; total_ops =        224 ; total_bytes =         2064384
-Qlat::dist_write_dist_data: cycle / n_cycle =   29 /   32 ; total_ops =        232 ; total_bytes =         2138112
-Qlat::dist_write_dist_data: cycle / n_cycle =   30 /   32 ; total_ops =        240 ; total_bytes =         2211840
-Qlat::dist_write_dist_data: cycle / n_cycle =   31 /   32 ; total_ops =        248 ; total_bytes =         2285568
-Qlat::dist_write_dist_data: cycle / n_cycle =   32 /   32 ; total_ops =        256 ; total_bytes =         2359296
+dist_write_dist_data: cycle / n_cycle =    1 /   32 ; total_ops =          8 ; total_bytes =           73728
+dist_write_dist_data: cycle / n_cycle =    2 /   32 ; total_ops =         16 ; total_bytes =          147456
+dist_write_dist_data: cycle / n_cycle =    3 /   32 ; total_ops =         24 ; total_bytes =          221184
+dist_write_dist_data: cycle / n_cycle =    4 /   32 ; total_ops =         32 ; total_bytes =          294912
+dist_write_dist_data: cycle / n_cycle =    5 /   32 ; total_ops =         40 ; total_bytes =          368640
+dist_write_dist_data: cycle / n_cycle =    6 /   32 ; total_ops =         48 ; total_bytes =          442368
+dist_write_dist_data: cycle / n_cycle =    7 /   32 ; total_ops =         56 ; total_bytes =          516096
+dist_write_dist_data: cycle / n_cycle =    8 /   32 ; total_ops =         64 ; total_bytes =          589824
+dist_write_dist_data: cycle / n_cycle =    9 /   32 ; total_ops =         72 ; total_bytes =          663552
+dist_write_dist_data: cycle / n_cycle =   10 /   32 ; total_ops =         80 ; total_bytes =          737280
+dist_write_dist_data: cycle / n_cycle =   11 /   32 ; total_ops =         88 ; total_bytes =          811008
+dist_write_dist_data: cycle / n_cycle =   12 /   32 ; total_ops =         96 ; total_bytes =          884736
+dist_write_dist_data: cycle / n_cycle =   13 /   32 ; total_ops =        104 ; total_bytes =          958464
+dist_write_dist_data: cycle / n_cycle =   14 /   32 ; total_ops =        112 ; total_bytes =         1032192
+dist_write_dist_data: cycle / n_cycle =   15 /   32 ; total_ops =        120 ; total_bytes =         1105920
+dist_write_dist_data: cycle / n_cycle =   16 /   32 ; total_ops =        128 ; total_bytes =         1179648
+dist_write_dist_data: cycle / n_cycle =   17 /   32 ; total_ops =        136 ; total_bytes =         1253376
+dist_write_dist_data: cycle / n_cycle =   18 /   32 ; total_ops =        144 ; total_bytes =         1327104
+dist_write_dist_data: cycle / n_cycle =   19 /   32 ; total_ops =        152 ; total_bytes =         1400832
+dist_write_dist_data: cycle / n_cycle =   20 /   32 ; total_ops =        160 ; total_bytes =         1474560
+dist_write_dist_data: cycle / n_cycle =   21 /   32 ; total_ops =        168 ; total_bytes =         1548288
+dist_write_dist_data: cycle / n_cycle =   22 /   32 ; total_ops =        176 ; total_bytes =         1622016
+dist_write_dist_data: cycle / n_cycle =   23 /   32 ; total_ops =        184 ; total_bytes =         1695744
+dist_write_dist_data: cycle / n_cycle =   24 /   32 ; total_ops =        192 ; total_bytes =         1769472
+dist_write_dist_data: cycle / n_cycle =   25 /   32 ; total_ops =        200 ; total_bytes =         1843200
+dist_write_dist_data: cycle / n_cycle =   26 /   32 ; total_ops =        208 ; total_bytes =         1916928
+dist_write_dist_data: cycle / n_cycle =   27 /   32 ; total_ops =        216 ; total_bytes =         1990656
+dist_write_dist_data: cycle / n_cycle =   28 /   32 ; total_ops =        224 ; total_bytes =         2064384
+dist_write_dist_data: cycle / n_cycle =   29 /   32 ; total_ops =        232 ; total_bytes =         2138112
+dist_write_dist_data: cycle / n_cycle =   30 /   32 ; total_ops =        240 ; total_bytes =         2211840
+dist_write_dist_data: cycle / n_cycle =   31 /   32 ; total_ops =        248 ; total_bytes =         2285568
+dist_write_dist_data: cycle / n_cycle =   32 /   32 ; total_ops =        256 ; total_bytes =         2359296
 dist_read_field: fn='huge-data/gauge_field ; 4x4x4x4_2'.
-Qlat::dist_read_dist_data: cycle / n_cycle =    1 /   32 ; total_ops =          8 ; total_bytes =           73728
-Qlat::dist_read_dist_data: cycle / n_cycle =    2 /   32 ; total_ops =         16 ; total_bytes =          147456
-Qlat::dist_read_dist_data: cycle / n_cycle =    3 /   32 ; total_ops =         24 ; total_bytes =          221184
-Qlat::dist_read_dist_data: cycle / n_cycle =    4 /   32 ; total_ops =         32 ; total_bytes =          294912
-Qlat::dist_read_dist_data: cycle / n_cycle =    5 /   32 ; total_ops =         40 ; total_bytes =          368640
-Qlat::dist_read_dist_data: cycle / n_cycle =    6 /   32 ; total_ops =         48 ; total_bytes =          442368
-Qlat::dist_read_dist_data: cycle / n_cycle =    7 /   32 ; total_ops =         56 ; total_bytes =          516096
-Qlat::dist_read_dist_data: cycle / n_cycle =    8 /   32 ; total_ops =         64 ; total_bytes =          589824
-Qlat::dist_read_dist_data: cycle / n_cycle =    9 /   32 ; total_ops =         72 ; total_bytes =          663552
-Qlat::dist_read_dist_data: cycle / n_cycle =   10 /   32 ; total_ops =         80 ; total_bytes =          737280
-Qlat::dist_read_dist_data: cycle / n_cycle =   11 /   32 ; total_ops =         88 ; total_bytes =          811008
-Qlat::dist_read_dist_data: cycle / n_cycle =   12 /   32 ; total_ops =         96 ; total_bytes =          884736
-Qlat::dist_read_dist_data: cycle / n_cycle =   13 /   32 ; total_ops =        104 ; total_bytes =          958464
-Qlat::dist_read_dist_data: cycle / n_cycle =   14 /   32 ; total_ops =        112 ; total_bytes =         1032192
-Qlat::dist_read_dist_data: cycle / n_cycle =   15 /   32 ; total_ops =        120 ; total_bytes =         1105920
-Qlat::dist_read_dist_data: cycle / n_cycle =   16 /   32 ; total_ops =        128 ; total_bytes =         1179648
-Qlat::dist_read_dist_data: cycle / n_cycle =   17 /   32 ; total_ops =        136 ; total_bytes =         1253376
-Qlat::dist_read_dist_data: cycle / n_cycle =   18 /   32 ; total_ops =        144 ; total_bytes =         1327104
-Qlat::dist_read_dist_data: cycle / n_cycle =   19 /   32 ; total_ops =        152 ; total_bytes =         1400832
-Qlat::dist_read_dist_data: cycle / n_cycle =   20 /   32 ; total_ops =        160 ; total_bytes =         1474560
-Qlat::dist_read_dist_data: cycle / n_cycle =   21 /   32 ; total_ops =        168 ; total_bytes =         1548288
-Qlat::dist_read_dist_data: cycle / n_cycle =   22 /   32 ; total_ops =        176 ; total_bytes =         1622016
-Qlat::dist_read_dist_data: cycle / n_cycle =   23 /   32 ; total_ops =        184 ; total_bytes =         1695744
-Qlat::dist_read_dist_data: cycle / n_cycle =   24 /   32 ; total_ops =        192 ; total_bytes =         1769472
-Qlat::dist_read_dist_data: cycle / n_cycle =   25 /   32 ; total_ops =        200 ; total_bytes =         1843200
-Qlat::dist_read_dist_data: cycle / n_cycle =   26 /   32 ; total_ops =        208 ; total_bytes =         1916928
-Qlat::dist_read_dist_data: cycle / n_cycle =   27 /   32 ; total_ops =        216 ; total_bytes =         1990656
-Qlat::dist_read_dist_data: cycle / n_cycle =   28 /   32 ; total_ops =        224 ; total_bytes =         2064384
-Qlat::dist_read_dist_data: cycle / n_cycle =   29 /   32 ; total_ops =        232 ; total_bytes =         2138112
-Qlat::dist_read_dist_data: cycle / n_cycle =   30 /   32 ; total_ops =        240 ; total_bytes =         2211840
-Qlat::dist_read_dist_data: cycle / n_cycle =   31 /   32 ; total_ops =        248 ; total_bytes =         2285568
-Qlat::dist_read_dist_data: cycle / n_cycle =   32 /   32 ; total_ops =        256 ; total_bytes =         2359296
+dist_read_dist_data: cycle / n_cycle =    1 /   32 ; total_ops =          8 ; total_bytes =           73728
+dist_read_dist_data: cycle / n_cycle =    2 /   32 ; total_ops =         16 ; total_bytes =          147456
+dist_read_dist_data: cycle / n_cycle =    3 /   32 ; total_ops =         24 ; total_bytes =          221184
+dist_read_dist_data: cycle / n_cycle =    4 /   32 ; total_ops =         32 ; total_bytes =          294912
+dist_read_dist_data: cycle / n_cycle =    5 /   32 ; total_ops =         40 ; total_bytes =          368640
+dist_read_dist_data: cycle / n_cycle =    6 /   32 ; total_ops =         48 ; total_bytes =          442368
+dist_read_dist_data: cycle / n_cycle =    7 /   32 ; total_ops =         56 ; total_bytes =          516096
+dist_read_dist_data: cycle / n_cycle =    8 /   32 ; total_ops =         64 ; total_bytes =          589824
+dist_read_dist_data: cycle / n_cycle =    9 /   32 ; total_ops =         72 ; total_bytes =          663552
+dist_read_dist_data: cycle / n_cycle =   10 /   32 ; total_ops =         80 ; total_bytes =          737280
+dist_read_dist_data: cycle / n_cycle =   11 /   32 ; total_ops =         88 ; total_bytes =          811008
+dist_read_dist_data: cycle / n_cycle =   12 /   32 ; total_ops =         96 ; total_bytes =          884736
+dist_read_dist_data: cycle / n_cycle =   13 /   32 ; total_ops =        104 ; total_bytes =          958464
+dist_read_dist_data: cycle / n_cycle =   14 /   32 ; total_ops =        112 ; total_bytes =         1032192
+dist_read_dist_data: cycle / n_cycle =   15 /   32 ; total_ops =        120 ; total_bytes =         1105920
+dist_read_dist_data: cycle / n_cycle =   16 /   32 ; total_ops =        128 ; total_bytes =         1179648
+dist_read_dist_data: cycle / n_cycle =   17 /   32 ; total_ops =        136 ; total_bytes =         1253376
+dist_read_dist_data: cycle / n_cycle =   18 /   32 ; total_ops =        144 ; total_bytes =         1327104
+dist_read_dist_data: cycle / n_cycle =   19 /   32 ; total_ops =        152 ; total_bytes =         1400832
+dist_read_dist_data: cycle / n_cycle =   20 /   32 ; total_ops =        160 ; total_bytes =         1474560
+dist_read_dist_data: cycle / n_cycle =   21 /   32 ; total_ops =        168 ; total_bytes =         1548288
+dist_read_dist_data: cycle / n_cycle =   22 /   32 ; total_ops =        176 ; total_bytes =         1622016
+dist_read_dist_data: cycle / n_cycle =   23 /   32 ; total_ops =        184 ; total_bytes =         1695744
+dist_read_dist_data: cycle / n_cycle =   24 /   32 ; total_ops =        192 ; total_bytes =         1769472
+dist_read_dist_data: cycle / n_cycle =   25 /   32 ; total_ops =        200 ; total_bytes =         1843200
+dist_read_dist_data: cycle / n_cycle =   26 /   32 ; total_ops =        208 ; total_bytes =         1916928
+dist_read_dist_data: cycle / n_cycle =   27 /   32 ; total_ops =        216 ; total_bytes =         1990656
+dist_read_dist_data: cycle / n_cycle =   28 /   32 ; total_ops =        224 ; total_bytes =         2064384
+dist_read_dist_data: cycle / n_cycle =   29 /   32 ; total_ops =        232 ; total_bytes =         2138112
+dist_read_dist_data: cycle / n_cycle =   30 /   32 ; total_ops =        240 ; total_bytes =         2211840
+dist_read_dist_data: cycle / n_cycle =   31 /   32 ; total_ops =        248 ; total_bytes =         2285568
+dist_read_dist_data: cycle / n_cycle =   32 /   32 ; total_ops =        256 ; total_bytes =         2359296
 shuffle_field_back(f,fs,sp): 4x4x4x4 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 dist_crc32 = 2C3EF014
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
@@ -409,9 +409,9 @@ shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576
 crc32 = 484747F9
 dist_write_field: fn='huge-data/gauge_field ; 1x1x1x1_f'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x1 (total_site: 8x8x8x8 ; site_size: 288 ; total_size: 0.001 GB)
-Qlat::dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          1 ; total_bytes =         1179648
+dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          1 ; total_bytes =         1179648
 dist_read_field: fn='huge-data/gauge_field ; 1x1x1x1_f'.
-Qlat::dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          1 ; total_bytes =         1179648
+dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          1 ; total_bytes =         1179648
 shuffle_field_back(f,fs,sp): 1x1x1x1 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 288 ; total_size: 0.001 GB)
 dist_crc32 = CB48E01D
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
@@ -421,11 +421,11 @@ shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576
 crc32 = 373D0A62
 dist_write_field: fn='huge-data/gauge_field ; 2x2x2x2_f'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x2 (total_site: 8x8x8x8 ; site_size: 288 ; total_size: 0.001 GB)
-Qlat::dist_write_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =          8 ; total_bytes =          589824
-Qlat::dist_write_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         16 ; total_bytes =         1179648
+dist_write_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =          8 ; total_bytes =          589824
+dist_write_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         16 ; total_bytes =         1179648
 dist_read_field: fn='huge-data/gauge_field ; 2x2x2x2_f'.
-Qlat::dist_read_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =          8 ; total_bytes =          589824
-Qlat::dist_read_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         16 ; total_bytes =         1179648
+dist_read_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =          8 ; total_bytes =          589824
+dist_read_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         16 ; total_bytes =         1179648
 shuffle_field_back(f,fs,sp): 2x2x2x2 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 288 ; total_size: 0.001 GB)
 dist_crc32 = CB48E01D
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
@@ -435,9 +435,9 @@ shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576
 crc32 = 373D0A62
 dist_write_field: fn='huge-data/gauge_field ; 1x1x1x8_f'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 288 ; total_size: 0.001 GB)
-Qlat::dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         1179648
+dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         1179648
 dist_read_field: fn='huge-data/gauge_field ; 1x1x1x8_f'.
-Qlat::dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         1179648
+dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         1179648
 shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 288 ; total_size: 0.001 GB)
 dist_crc32 = CB48E01D
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
@@ -447,11 +447,11 @@ shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576
 crc32 = 373D0A62
 dist_write_field: fn='huge-data/gauge_field ; 1x2x4x2_f'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x2x4x2 (total_site: 8x8x8x8 ; site_size: 288 ; total_size: 0.001 GB)
-Qlat::dist_write_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =          8 ; total_bytes =          589824
-Qlat::dist_write_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         16 ; total_bytes =         1179648
+dist_write_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =          8 ; total_bytes =          589824
+dist_write_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         16 ; total_bytes =         1179648
 dist_read_field: fn='huge-data/gauge_field ; 1x2x4x2_f'.
-Qlat::dist_read_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =          8 ; total_bytes =          589824
-Qlat::dist_read_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         16 ; total_bytes =         1179648
+dist_read_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =          8 ; total_bytes =          589824
+dist_read_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         16 ; total_bytes =         1179648
 shuffle_field_back(f,fs,sp): 1x2x4x2 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 288 ; total_size: 0.001 GB)
 dist_crc32 = CB48E01D
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
@@ -461,9 +461,9 @@ shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576
 crc32 = 373D0A62
 dist_write_field: fn='huge-data/gauge_field ; 2x2x1x1_f'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x1x1 (total_site: 8x8x8x8 ; site_size: 288 ; total_size: 0.001 GB)
-Qlat::dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          4 ; total_bytes =         1179648
+dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          4 ; total_bytes =         1179648
 dist_read_field: fn='huge-data/gauge_field ; 2x2x1x1_f'.
-Qlat::dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          4 ; total_bytes =         1179648
+dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          4 ; total_bytes =         1179648
 shuffle_field_back(f,fs,sp): 2x2x1x1 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 288 ; total_size: 0.001 GB)
 dist_crc32 = CB48E01D
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
@@ -473,71 +473,71 @@ shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576
 crc32 = 373D0A62
 dist_write_field: fn='huge-data/gauge_field ; 4x4x4x4_f'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 4x4x4x4 (total_site: 8x8x8x8 ; site_size: 288 ; total_size: 0.001 GB)
-Qlat::dist_write_dist_data: cycle / n_cycle =    1 /   32 ; total_ops =          8 ; total_bytes =           36864
-Qlat::dist_write_dist_data: cycle / n_cycle =    2 /   32 ; total_ops =         16 ; total_bytes =           73728
-Qlat::dist_write_dist_data: cycle / n_cycle =    3 /   32 ; total_ops =         24 ; total_bytes =          110592
-Qlat::dist_write_dist_data: cycle / n_cycle =    4 /   32 ; total_ops =         32 ; total_bytes =          147456
-Qlat::dist_write_dist_data: cycle / n_cycle =    5 /   32 ; total_ops =         40 ; total_bytes =          184320
-Qlat::dist_write_dist_data: cycle / n_cycle =    6 /   32 ; total_ops =         48 ; total_bytes =          221184
-Qlat::dist_write_dist_data: cycle / n_cycle =    7 /   32 ; total_ops =         56 ; total_bytes =          258048
-Qlat::dist_write_dist_data: cycle / n_cycle =    8 /   32 ; total_ops =         64 ; total_bytes =          294912
-Qlat::dist_write_dist_data: cycle / n_cycle =    9 /   32 ; total_ops =         72 ; total_bytes =          331776
-Qlat::dist_write_dist_data: cycle / n_cycle =   10 /   32 ; total_ops =         80 ; total_bytes =          368640
-Qlat::dist_write_dist_data: cycle / n_cycle =   11 /   32 ; total_ops =         88 ; total_bytes =          405504
-Qlat::dist_write_dist_data: cycle / n_cycle =   12 /   32 ; total_ops =         96 ; total_bytes =          442368
-Qlat::dist_write_dist_data: cycle / n_cycle =   13 /   32 ; total_ops =        104 ; total_bytes =          479232
-Qlat::dist_write_dist_data: cycle / n_cycle =   14 /   32 ; total_ops =        112 ; total_bytes =          516096
-Qlat::dist_write_dist_data: cycle / n_cycle =   15 /   32 ; total_ops =        120 ; total_bytes =          552960
-Qlat::dist_write_dist_data: cycle / n_cycle =   16 /   32 ; total_ops =        128 ; total_bytes =          589824
-Qlat::dist_write_dist_data: cycle / n_cycle =   17 /   32 ; total_ops =        136 ; total_bytes =          626688
-Qlat::dist_write_dist_data: cycle / n_cycle =   18 /   32 ; total_ops =        144 ; total_bytes =          663552
-Qlat::dist_write_dist_data: cycle / n_cycle =   19 /   32 ; total_ops =        152 ; total_bytes =          700416
-Qlat::dist_write_dist_data: cycle / n_cycle =   20 /   32 ; total_ops =        160 ; total_bytes =          737280
-Qlat::dist_write_dist_data: cycle / n_cycle =   21 /   32 ; total_ops =        168 ; total_bytes =          774144
-Qlat::dist_write_dist_data: cycle / n_cycle =   22 /   32 ; total_ops =        176 ; total_bytes =          811008
-Qlat::dist_write_dist_data: cycle / n_cycle =   23 /   32 ; total_ops =        184 ; total_bytes =          847872
-Qlat::dist_write_dist_data: cycle / n_cycle =   24 /   32 ; total_ops =        192 ; total_bytes =          884736
-Qlat::dist_write_dist_data: cycle / n_cycle =   25 /   32 ; total_ops =        200 ; total_bytes =          921600
-Qlat::dist_write_dist_data: cycle / n_cycle =   26 /   32 ; total_ops =        208 ; total_bytes =          958464
-Qlat::dist_write_dist_data: cycle / n_cycle =   27 /   32 ; total_ops =        216 ; total_bytes =          995328
-Qlat::dist_write_dist_data: cycle / n_cycle =   28 /   32 ; total_ops =        224 ; total_bytes =         1032192
-Qlat::dist_write_dist_data: cycle / n_cycle =   29 /   32 ; total_ops =        232 ; total_bytes =         1069056
-Qlat::dist_write_dist_data: cycle / n_cycle =   30 /   32 ; total_ops =        240 ; total_bytes =         1105920
-Qlat::dist_write_dist_data: cycle / n_cycle =   31 /   32 ; total_ops =        248 ; total_bytes =         1142784
-Qlat::dist_write_dist_data: cycle / n_cycle =   32 /   32 ; total_ops =        256 ; total_bytes =         1179648
+dist_write_dist_data: cycle / n_cycle =    1 /   32 ; total_ops =          8 ; total_bytes =           36864
+dist_write_dist_data: cycle / n_cycle =    2 /   32 ; total_ops =         16 ; total_bytes =           73728
+dist_write_dist_data: cycle / n_cycle =    3 /   32 ; total_ops =         24 ; total_bytes =          110592
+dist_write_dist_data: cycle / n_cycle =    4 /   32 ; total_ops =         32 ; total_bytes =          147456
+dist_write_dist_data: cycle / n_cycle =    5 /   32 ; total_ops =         40 ; total_bytes =          184320
+dist_write_dist_data: cycle / n_cycle =    6 /   32 ; total_ops =         48 ; total_bytes =          221184
+dist_write_dist_data: cycle / n_cycle =    7 /   32 ; total_ops =         56 ; total_bytes =          258048
+dist_write_dist_data: cycle / n_cycle =    8 /   32 ; total_ops =         64 ; total_bytes =          294912
+dist_write_dist_data: cycle / n_cycle =    9 /   32 ; total_ops =         72 ; total_bytes =          331776
+dist_write_dist_data: cycle / n_cycle =   10 /   32 ; total_ops =         80 ; total_bytes =          368640
+dist_write_dist_data: cycle / n_cycle =   11 /   32 ; total_ops =         88 ; total_bytes =          405504
+dist_write_dist_data: cycle / n_cycle =   12 /   32 ; total_ops =         96 ; total_bytes =          442368
+dist_write_dist_data: cycle / n_cycle =   13 /   32 ; total_ops =        104 ; total_bytes =          479232
+dist_write_dist_data: cycle / n_cycle =   14 /   32 ; total_ops =        112 ; total_bytes =          516096
+dist_write_dist_data: cycle / n_cycle =   15 /   32 ; total_ops =        120 ; total_bytes =          552960
+dist_write_dist_data: cycle / n_cycle =   16 /   32 ; total_ops =        128 ; total_bytes =          589824
+dist_write_dist_data: cycle / n_cycle =   17 /   32 ; total_ops =        136 ; total_bytes =          626688
+dist_write_dist_data: cycle / n_cycle =   18 /   32 ; total_ops =        144 ; total_bytes =          663552
+dist_write_dist_data: cycle / n_cycle =   19 /   32 ; total_ops =        152 ; total_bytes =          700416
+dist_write_dist_data: cycle / n_cycle =   20 /   32 ; total_ops =        160 ; total_bytes =          737280
+dist_write_dist_data: cycle / n_cycle =   21 /   32 ; total_ops =        168 ; total_bytes =          774144
+dist_write_dist_data: cycle / n_cycle =   22 /   32 ; total_ops =        176 ; total_bytes =          811008
+dist_write_dist_data: cycle / n_cycle =   23 /   32 ; total_ops =        184 ; total_bytes =          847872
+dist_write_dist_data: cycle / n_cycle =   24 /   32 ; total_ops =        192 ; total_bytes =          884736
+dist_write_dist_data: cycle / n_cycle =   25 /   32 ; total_ops =        200 ; total_bytes =          921600
+dist_write_dist_data: cycle / n_cycle =   26 /   32 ; total_ops =        208 ; total_bytes =          958464
+dist_write_dist_data: cycle / n_cycle =   27 /   32 ; total_ops =        216 ; total_bytes =          995328
+dist_write_dist_data: cycle / n_cycle =   28 /   32 ; total_ops =        224 ; total_bytes =         1032192
+dist_write_dist_data: cycle / n_cycle =   29 /   32 ; total_ops =        232 ; total_bytes =         1069056
+dist_write_dist_data: cycle / n_cycle =   30 /   32 ; total_ops =        240 ; total_bytes =         1105920
+dist_write_dist_data: cycle / n_cycle =   31 /   32 ; total_ops =        248 ; total_bytes =         1142784
+dist_write_dist_data: cycle / n_cycle =   32 /   32 ; total_ops =        256 ; total_bytes =         1179648
 dist_read_field: fn='huge-data/gauge_field ; 4x4x4x4_f'.
-Qlat::dist_read_dist_data: cycle / n_cycle =    1 /   32 ; total_ops =          8 ; total_bytes =           36864
-Qlat::dist_read_dist_data: cycle / n_cycle =    2 /   32 ; total_ops =         16 ; total_bytes =           73728
-Qlat::dist_read_dist_data: cycle / n_cycle =    3 /   32 ; total_ops =         24 ; total_bytes =          110592
-Qlat::dist_read_dist_data: cycle / n_cycle =    4 /   32 ; total_ops =         32 ; total_bytes =          147456
-Qlat::dist_read_dist_data: cycle / n_cycle =    5 /   32 ; total_ops =         40 ; total_bytes =          184320
-Qlat::dist_read_dist_data: cycle / n_cycle =    6 /   32 ; total_ops =         48 ; total_bytes =          221184
-Qlat::dist_read_dist_data: cycle / n_cycle =    7 /   32 ; total_ops =         56 ; total_bytes =          258048
-Qlat::dist_read_dist_data: cycle / n_cycle =    8 /   32 ; total_ops =         64 ; total_bytes =          294912
-Qlat::dist_read_dist_data: cycle / n_cycle =    9 /   32 ; total_ops =         72 ; total_bytes =          331776
-Qlat::dist_read_dist_data: cycle / n_cycle =   10 /   32 ; total_ops =         80 ; total_bytes =          368640
-Qlat::dist_read_dist_data: cycle / n_cycle =   11 /   32 ; total_ops =         88 ; total_bytes =          405504
-Qlat::dist_read_dist_data: cycle / n_cycle =   12 /   32 ; total_ops =         96 ; total_bytes =          442368
-Qlat::dist_read_dist_data: cycle / n_cycle =   13 /   32 ; total_ops =        104 ; total_bytes =          479232
-Qlat::dist_read_dist_data: cycle / n_cycle =   14 /   32 ; total_ops =        112 ; total_bytes =          516096
-Qlat::dist_read_dist_data: cycle / n_cycle =   15 /   32 ; total_ops =        120 ; total_bytes =          552960
-Qlat::dist_read_dist_data: cycle / n_cycle =   16 /   32 ; total_ops =        128 ; total_bytes =          589824
-Qlat::dist_read_dist_data: cycle / n_cycle =   17 /   32 ; total_ops =        136 ; total_bytes =          626688
-Qlat::dist_read_dist_data: cycle / n_cycle =   18 /   32 ; total_ops =        144 ; total_bytes =          663552
-Qlat::dist_read_dist_data: cycle / n_cycle =   19 /   32 ; total_ops =        152 ; total_bytes =          700416
-Qlat::dist_read_dist_data: cycle / n_cycle =   20 /   32 ; total_ops =        160 ; total_bytes =          737280
-Qlat::dist_read_dist_data: cycle / n_cycle =   21 /   32 ; total_ops =        168 ; total_bytes =          774144
-Qlat::dist_read_dist_data: cycle / n_cycle =   22 /   32 ; total_ops =        176 ; total_bytes =          811008
-Qlat::dist_read_dist_data: cycle / n_cycle =   23 /   32 ; total_ops =        184 ; total_bytes =          847872
-Qlat::dist_read_dist_data: cycle / n_cycle =   24 /   32 ; total_ops =        192 ; total_bytes =          884736
-Qlat::dist_read_dist_data: cycle / n_cycle =   25 /   32 ; total_ops =        200 ; total_bytes =          921600
-Qlat::dist_read_dist_data: cycle / n_cycle =   26 /   32 ; total_ops =        208 ; total_bytes =          958464
-Qlat::dist_read_dist_data: cycle / n_cycle =   27 /   32 ; total_ops =        216 ; total_bytes =          995328
-Qlat::dist_read_dist_data: cycle / n_cycle =   28 /   32 ; total_ops =        224 ; total_bytes =         1032192
-Qlat::dist_read_dist_data: cycle / n_cycle =   29 /   32 ; total_ops =        232 ; total_bytes =         1069056
-Qlat::dist_read_dist_data: cycle / n_cycle =   30 /   32 ; total_ops =        240 ; total_bytes =         1105920
-Qlat::dist_read_dist_data: cycle / n_cycle =   31 /   32 ; total_ops =        248 ; total_bytes =         1142784
-Qlat::dist_read_dist_data: cycle / n_cycle =   32 /   32 ; total_ops =        256 ; total_bytes =         1179648
+dist_read_dist_data: cycle / n_cycle =    1 /   32 ; total_ops =          8 ; total_bytes =           36864
+dist_read_dist_data: cycle / n_cycle =    2 /   32 ; total_ops =         16 ; total_bytes =           73728
+dist_read_dist_data: cycle / n_cycle =    3 /   32 ; total_ops =         24 ; total_bytes =          110592
+dist_read_dist_data: cycle / n_cycle =    4 /   32 ; total_ops =         32 ; total_bytes =          147456
+dist_read_dist_data: cycle / n_cycle =    5 /   32 ; total_ops =         40 ; total_bytes =          184320
+dist_read_dist_data: cycle / n_cycle =    6 /   32 ; total_ops =         48 ; total_bytes =          221184
+dist_read_dist_data: cycle / n_cycle =    7 /   32 ; total_ops =         56 ; total_bytes =          258048
+dist_read_dist_data: cycle / n_cycle =    8 /   32 ; total_ops =         64 ; total_bytes =          294912
+dist_read_dist_data: cycle / n_cycle =    9 /   32 ; total_ops =         72 ; total_bytes =          331776
+dist_read_dist_data: cycle / n_cycle =   10 /   32 ; total_ops =         80 ; total_bytes =          368640
+dist_read_dist_data: cycle / n_cycle =   11 /   32 ; total_ops =         88 ; total_bytes =          405504
+dist_read_dist_data: cycle / n_cycle =   12 /   32 ; total_ops =         96 ; total_bytes =          442368
+dist_read_dist_data: cycle / n_cycle =   13 /   32 ; total_ops =        104 ; total_bytes =          479232
+dist_read_dist_data: cycle / n_cycle =   14 /   32 ; total_ops =        112 ; total_bytes =          516096
+dist_read_dist_data: cycle / n_cycle =   15 /   32 ; total_ops =        120 ; total_bytes =          552960
+dist_read_dist_data: cycle / n_cycle =   16 /   32 ; total_ops =        128 ; total_bytes =          589824
+dist_read_dist_data: cycle / n_cycle =   17 /   32 ; total_ops =        136 ; total_bytes =          626688
+dist_read_dist_data: cycle / n_cycle =   18 /   32 ; total_ops =        144 ; total_bytes =          663552
+dist_read_dist_data: cycle / n_cycle =   19 /   32 ; total_ops =        152 ; total_bytes =          700416
+dist_read_dist_data: cycle / n_cycle =   20 /   32 ; total_ops =        160 ; total_bytes =          737280
+dist_read_dist_data: cycle / n_cycle =   21 /   32 ; total_ops =        168 ; total_bytes =          774144
+dist_read_dist_data: cycle / n_cycle =   22 /   32 ; total_ops =        176 ; total_bytes =          811008
+dist_read_dist_data: cycle / n_cycle =   23 /   32 ; total_ops =        184 ; total_bytes =          847872
+dist_read_dist_data: cycle / n_cycle =   24 /   32 ; total_ops =        192 ; total_bytes =          884736
+dist_read_dist_data: cycle / n_cycle =   25 /   32 ; total_ops =        200 ; total_bytes =          921600
+dist_read_dist_data: cycle / n_cycle =   26 /   32 ; total_ops =        208 ; total_bytes =          958464
+dist_read_dist_data: cycle / n_cycle =   27 /   32 ; total_ops =        216 ; total_bytes =          995328
+dist_read_dist_data: cycle / n_cycle =   28 /   32 ; total_ops =        224 ; total_bytes =         1032192
+dist_read_dist_data: cycle / n_cycle =   29 /   32 ; total_ops =        232 ; total_bytes =         1069056
+dist_read_dist_data: cycle / n_cycle =   30 /   32 ; total_ops =        240 ; total_bytes =         1105920
+dist_read_dist_data: cycle / n_cycle =   31 /   32 ; total_ops =        248 ; total_bytes =         1142784
+dist_read_dist_data: cycle / n_cycle =   32 /   32 ; total_ops =        256 ; total_bytes =         1179648
 shuffle_field_back(f,fs,sp): 4x4x4x4 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 288 ; total_size: 0.001 GB)
 dist_crc32 = CB48E01D
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
@@ -611,105 +611,105 @@ shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576
 crc32 = 1205CEE9 after shift 1x1x1x1
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 crc32 = F9AAC400 after shift -1x-1x-1x-1
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 0
-fft_complex_field_plan::init : malloc 294912
-fft_complex_field_plan::init : free 294912
-Qlat::make_shuffle_plan_fft: num_send_packs =        512
-Qlat::make_shuffle_plan_fft: num_recv_packs =         16
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          1
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          1
-Qlat::make_shuffle_plan_fft: total num_send_packs =       4096
-Qlat::make_shuffle_plan_fft: total num_recv_packs =        128
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =          8
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =          8
-Qlat::make_shuffle_plan_fft: global_comm_size =       4096
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 1
-fft_complex_field_plan::init : malloc 294912
-fft_complex_field_plan::init : free 294912
-Qlat::make_shuffle_plan_fft: num_send_packs =         63
-Qlat::make_shuffle_plan_fft: num_recv_packs =         16
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_fft: total num_send_packs =        504
-Qlat::make_shuffle_plan_fft: total num_recv_packs =        128
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_fft: global_comm_size =       4096
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 2
-fft_complex_field_plan::init : malloc 294912
-fft_complex_field_plan::init : free 294912
-Qlat::make_shuffle_plan_fft: num_send_packs =         16
-Qlat::make_shuffle_plan_fft: num_recv_packs =         16
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_fft: total num_send_packs =        128
-Qlat::make_shuffle_plan_fft: total num_recv_packs =        128
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_fft: global_comm_size =       4096
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 3
-fft_complex_field_plan::init : malloc 294912
-fft_complex_field_plan::init : free 294912
-Qlat::make_shuffle_plan_fft: num_send_packs =         16
-Qlat::make_shuffle_plan_fft: num_recv_packs =         16
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_fft: total num_send_packs =        128
-Qlat::make_shuffle_plan_fft: total num_recv_packs =        128
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_fft: global_comm_size =       4096
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 0
+fft_complex_field_plan::init: malloc 294912
+fft_complex_field_plan::init: free 294912
+make_shuffle_plan_fft: num_send_packs =        512
+make_shuffle_plan_fft: num_recv_packs =         16
+make_shuffle_plan_fft: num_send_msgs  =          1
+make_shuffle_plan_fft: num_recv_msgs  =          1
+make_shuffle_plan_fft: total num_send_packs =       4096
+make_shuffle_plan_fft: total num_recv_packs =        128
+make_shuffle_plan_fft: total num_send_msgs  =          8
+make_shuffle_plan_fft: total num_recv_msgs  =          8
+make_shuffle_plan_fft: global_comm_size =       4096
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 1
+fft_complex_field_plan::init: malloc 294912
+fft_complex_field_plan::init: free 294912
+make_shuffle_plan_fft: num_send_packs =         63
+make_shuffle_plan_fft: num_recv_packs =         16
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =        504
+make_shuffle_plan_fft: total num_recv_packs =        128
+make_shuffle_plan_fft: total num_send_msgs  =         16
+make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: global_comm_size =       4096
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 2
+fft_complex_field_plan::init: malloc 294912
+fft_complex_field_plan::init: free 294912
+make_shuffle_plan_fft: num_send_packs =         16
+make_shuffle_plan_fft: num_recv_packs =         16
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =        128
+make_shuffle_plan_fft: total num_recv_packs =        128
+make_shuffle_plan_fft: total num_send_msgs  =         16
+make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: global_comm_size =       4096
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 3
+fft_complex_field_plan::init: malloc 294912
+fft_complex_field_plan::init: free 294912
+make_shuffle_plan_fft: num_send_packs =         16
+make_shuffle_plan_fft: num_recv_packs =         16
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =        128
+make_shuffle_plan_fft: total num_recv_packs =        128
+make_shuffle_plan_fft: total num_send_msgs  =         16
+make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: global_comm_size =       4096
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 crc32 = D42F281B after fft forward
 qnorm =  2.01326591999999642E+08 after fft forward
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 4
-fft_complex_field_plan::init : malloc 294912
-fft_complex_field_plan::init : free 294912
-Qlat::make_shuffle_plan_fft: num_send_packs =        512
-Qlat::make_shuffle_plan_fft: num_recv_packs =         16
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          1
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          1
-Qlat::make_shuffle_plan_fft: total num_send_packs =       4096
-Qlat::make_shuffle_plan_fft: total num_recv_packs =        128
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =          8
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =          8
-Qlat::make_shuffle_plan_fft: global_comm_size =       4096
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 5
-fft_complex_field_plan::init : malloc 294912
-fft_complex_field_plan::init : free 294912
-Qlat::make_shuffle_plan_fft: num_send_packs =         63
-Qlat::make_shuffle_plan_fft: num_recv_packs =         16
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_fft: total num_send_packs =        504
-Qlat::make_shuffle_plan_fft: total num_recv_packs =        128
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_fft: global_comm_size =       4096
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 6
-fft_complex_field_plan::init : malloc 294912
-fft_complex_field_plan::init : free 294912
-Qlat::make_shuffle_plan_fft: num_send_packs =         16
-Qlat::make_shuffle_plan_fft: num_recv_packs =         16
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_fft: total num_send_packs =        128
-Qlat::make_shuffle_plan_fft: total num_recv_packs =        128
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_fft: global_comm_size =       4096
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 7
-fft_complex_field_plan::init : malloc 294912
-fft_complex_field_plan::init : free 294912
-Qlat::make_shuffle_plan_fft: num_send_packs =         16
-Qlat::make_shuffle_plan_fft: num_recv_packs =         16
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_fft: total num_send_packs =        128
-Qlat::make_shuffle_plan_fft: total num_recv_packs =        128
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_fft: global_comm_size =       4096
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 4
+fft_complex_field_plan::init: malloc 294912
+fft_complex_field_plan::init: free 294912
+make_shuffle_plan_fft: num_send_packs =        512
+make_shuffle_plan_fft: num_recv_packs =         16
+make_shuffle_plan_fft: num_send_msgs  =          1
+make_shuffle_plan_fft: num_recv_msgs  =          1
+make_shuffle_plan_fft: total num_send_packs =       4096
+make_shuffle_plan_fft: total num_recv_packs =        128
+make_shuffle_plan_fft: total num_send_msgs  =          8
+make_shuffle_plan_fft: total num_recv_msgs  =          8
+make_shuffle_plan_fft: global_comm_size =       4096
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 5
+fft_complex_field_plan::init: malloc 294912
+fft_complex_field_plan::init: free 294912
+make_shuffle_plan_fft: num_send_packs =         63
+make_shuffle_plan_fft: num_recv_packs =         16
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =        504
+make_shuffle_plan_fft: total num_recv_packs =        128
+make_shuffle_plan_fft: total num_send_msgs  =         16
+make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: global_comm_size =       4096
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 6
+fft_complex_field_plan::init: malloc 294912
+fft_complex_field_plan::init: free 294912
+make_shuffle_plan_fft: num_send_packs =         16
+make_shuffle_plan_fft: num_recv_packs =         16
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =        128
+make_shuffle_plan_fft: total num_recv_packs =        128
+make_shuffle_plan_fft: total num_send_msgs  =         16
+make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: global_comm_size =       4096
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 7
+fft_complex_field_plan::init: malloc 294912
+fft_complex_field_plan::init: free 294912
+make_shuffle_plan_fft: num_send_packs =         16
+make_shuffle_plan_fft: num_recv_packs =         16
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =        128
+make_shuffle_plan_fft: total num_recv_packs =        128
+make_shuffle_plan_fft: total num_send_msgs  =         16
+make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: global_comm_size =       4096
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 crc32 = 1B6D05A6 after fft backward
 qnorm =  8.24633720832000000E+11 after fft backward
@@ -719,27 +719,27 @@ qnorm =  4.91520000000000000E+04 after rescale
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 crc32 = 9F1B9AA6 after subtract
 qnorm =  1.92579296835827081E-27 after subtract
-Qlat::make_shuffle_plan_generic: num_send_packs =         30
-Qlat::make_shuffle_plan_generic: num_recv_packs =        512
-Qlat::make_shuffle_plan_generic: num_send_msgs  =          8
-Qlat::make_shuffle_plan_generic: num_recv_msgs  =          8
-Qlat::make_shuffle_plan_generic: total num_send_packs =        251
-Qlat::make_shuffle_plan_generic: total num_recv_packs =       4096
-Qlat::make_shuffle_plan_generic: total num_send_msgs  =         64
-Qlat::make_shuffle_plan_generic: total num_recv_msgs  =         64
-Qlat::make_shuffle_plan_generic: global_comm_size =       4096
+make_shuffle_plan_generic: num_send_packs =         30
+make_shuffle_plan_generic: num_recv_packs =        512
+make_shuffle_plan_generic: num_send_msgs  =          8
+make_shuffle_plan_generic: num_recv_msgs  =          8
+make_shuffle_plan_generic: total num_send_packs =        251
+make_shuffle_plan_generic: total num_recv_packs =       4096
+make_shuffle_plan_generic: total num_send_msgs  =         64
+make_shuffle_plan_generic: total num_recv_msgs  =         64
+make_shuffle_plan_generic: global_comm_size =       4096
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 crc32 = F452A2B8 after reflect
-Qlat::make_shuffle_plan_generic: num_send_packs =         30
-Qlat::make_shuffle_plan_generic: num_recv_packs =        512
-Qlat::make_shuffle_plan_generic: num_send_msgs  =          8
-Qlat::make_shuffle_plan_generic: num_recv_msgs  =          8
-Qlat::make_shuffle_plan_generic: total num_send_packs =        251
-Qlat::make_shuffle_plan_generic: total num_recv_packs =       4096
-Qlat::make_shuffle_plan_generic: total num_send_msgs  =         64
-Qlat::make_shuffle_plan_generic: total num_recv_msgs  =         64
-Qlat::make_shuffle_plan_generic: global_comm_size =       4096
+make_shuffle_plan_generic: num_send_packs =         30
+make_shuffle_plan_generic: num_recv_packs =        512
+make_shuffle_plan_generic: num_send_msgs  =          8
+make_shuffle_plan_generic: num_recv_msgs  =          8
+make_shuffle_plan_generic: total num_send_packs =        251
+make_shuffle_plan_generic: total num_recv_packs =       4096
+make_shuffle_plan_generic: total num_send_msgs  =         64
+make_shuffle_plan_generic: total num_recv_msgs  =         64
+make_shuffle_plan_generic: global_comm_size =       4096
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 crc32 = F9AAC400 after reflect twice

@@ -7,200 +7,200 @@ qlat::begin(): GeometryNode =
 , size_node   = 1x2x2x2
 , coor_node   = 0x0x0x0 }
 set Q_FIELD_INIT=fast. (implicitly)
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 0
-fft_complex_field_plan::init : malloc 36864
-fft_complex_field_plan::init : free 36864
-Qlat::make_shuffle_plan_fft: num_send_packs =         64
-Qlat::make_shuffle_plan_fft: num_recv_packs =          4
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          1
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          1
-Qlat::make_shuffle_plan_fft: total num_send_packs =        512
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         32
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =          8
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =          8
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 0
+fft_complex_field_plan::init: malloc 36864
+fft_complex_field_plan::init: free 36864
+make_shuffle_plan_fft: num_send_packs =         64
+make_shuffle_plan_fft: num_recv_packs =          4
+make_shuffle_plan_fft: num_send_msgs  =          1
+make_shuffle_plan_fft: num_recv_msgs  =          1
+make_shuffle_plan_fft: total num_send_packs =        512
+make_shuffle_plan_fft: total num_recv_packs =         32
+make_shuffle_plan_fft: total num_send_msgs  =          8
+make_shuffle_plan_fft: total num_recv_msgs  =          8
+make_shuffle_plan_fft: global_comm_size =        512
 get_mem_cache_max_size_default: get_mem_cache_max_size() = 512 MB.
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 1
-fft_complex_field_plan::init : malloc 36864
-fft_complex_field_plan::init : free 36864
-Qlat::make_shuffle_plan_fft: num_send_packs =         15
-Qlat::make_shuffle_plan_fft: num_recv_packs =          4
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_fft: total num_send_packs =        120
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         32
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 2
-fft_complex_field_plan::init : malloc 36864
-fft_complex_field_plan::init : free 36864
-Qlat::make_shuffle_plan_fft: num_send_packs =          7
-Qlat::make_shuffle_plan_fft: num_recv_packs =          4
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_fft: total num_send_packs =         56
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         32
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 3
-fft_complex_field_plan::init : malloc 36864
-fft_complex_field_plan::init : free 36864
-Qlat::make_shuffle_plan_fft: num_send_packs =          8
-Qlat::make_shuffle_plan_fft: num_recv_packs =          8
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_fft: total num_send_packs =         64
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         64
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 4
-fft_complex_field_plan::init : malloc 36864
-fft_complex_field_plan::init : free 36864
-Qlat::make_shuffle_plan_fft: num_send_packs =         64
-Qlat::make_shuffle_plan_fft: num_recv_packs =          4
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          1
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          1
-Qlat::make_shuffle_plan_fft: total num_send_packs =        512
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         32
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =          8
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =          8
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 5
-fft_complex_field_plan::init : malloc 36864
-fft_complex_field_plan::init : free 36864
-Qlat::make_shuffle_plan_fft: num_send_packs =         15
-Qlat::make_shuffle_plan_fft: num_recv_packs =          4
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_fft: total num_send_packs =        120
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         32
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 6
-fft_complex_field_plan::init : malloc 36864
-fft_complex_field_plan::init : free 36864
-Qlat::make_shuffle_plan_fft: num_send_packs =          7
-Qlat::make_shuffle_plan_fft: num_recv_packs =          4
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_fft: total num_send_packs =         56
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         32
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 7
-fft_complex_field_plan::init : malloc 36864
-fft_complex_field_plan::init : free 36864
-Qlat::make_shuffle_plan_fft: num_send_packs =          8
-Qlat::make_shuffle_plan_fft: num_recv_packs =          8
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_fft: total num_send_packs =         64
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         64
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 1
+fft_complex_field_plan::init: malloc 36864
+fft_complex_field_plan::init: free 36864
+make_shuffle_plan_fft: num_send_packs =         15
+make_shuffle_plan_fft: num_recv_packs =          4
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =        120
+make_shuffle_plan_fft: total num_recv_packs =         32
+make_shuffle_plan_fft: total num_send_msgs  =         16
+make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 2
+fft_complex_field_plan::init: malloc 36864
+fft_complex_field_plan::init: free 36864
+make_shuffle_plan_fft: num_send_packs =          7
+make_shuffle_plan_fft: num_recv_packs =          4
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =         56
+make_shuffle_plan_fft: total num_recv_packs =         32
+make_shuffle_plan_fft: total num_send_msgs  =         16
+make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 3
+fft_complex_field_plan::init: malloc 36864
+fft_complex_field_plan::init: free 36864
+make_shuffle_plan_fft: num_send_packs =          8
+make_shuffle_plan_fft: num_recv_packs =          8
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =         64
+make_shuffle_plan_fft: total num_recv_packs =         64
+make_shuffle_plan_fft: total num_send_msgs  =         16
+make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 4
+fft_complex_field_plan::init: malloc 36864
+fft_complex_field_plan::init: free 36864
+make_shuffle_plan_fft: num_send_packs =         64
+make_shuffle_plan_fft: num_recv_packs =          4
+make_shuffle_plan_fft: num_send_msgs  =          1
+make_shuffle_plan_fft: num_recv_msgs  =          1
+make_shuffle_plan_fft: total num_send_packs =        512
+make_shuffle_plan_fft: total num_recv_packs =         32
+make_shuffle_plan_fft: total num_send_msgs  =          8
+make_shuffle_plan_fft: total num_recv_msgs  =          8
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 5
+fft_complex_field_plan::init: malloc 36864
+fft_complex_field_plan::init: free 36864
+make_shuffle_plan_fft: num_send_packs =         15
+make_shuffle_plan_fft: num_recv_packs =          4
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =        120
+make_shuffle_plan_fft: total num_recv_packs =         32
+make_shuffle_plan_fft: total num_send_msgs  =         16
+make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 6
+fft_complex_field_plan::init: malloc 36864
+fft_complex_field_plan::init: free 36864
+make_shuffle_plan_fft: num_send_packs =          7
+make_shuffle_plan_fft: num_recv_packs =          4
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =         56
+make_shuffle_plan_fft: total num_recv_packs =         32
+make_shuffle_plan_fft: total num_send_msgs  =         16
+make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 7
+fft_complex_field_plan::init: malloc 36864
+fft_complex_field_plan::init: free 36864
+make_shuffle_plan_fft: num_send_packs =          8
+make_shuffle_plan_fft: num_recv_packs =          8
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =         64
+make_shuffle_plan_fft: total num_recv_packs =         64
+make_shuffle_plan_fft: total num_send_msgs  =         16
+make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: global_comm_size =        512
 test_fft: 1
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 8
-fft_complex_field_plan::init : malloc 1024
-fft_complex_field_plan::init : free 1024
-Qlat::make_shuffle_plan_fft: num_send_packs =         64
-Qlat::make_shuffle_plan_fft: num_recv_packs =          4
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          1
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          1
-Qlat::make_shuffle_plan_fft: total num_send_packs =        512
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         32
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =          8
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =          8
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 9
-fft_complex_field_plan::init : malloc 1024
-fft_complex_field_plan::init : free 1024
-Qlat::make_shuffle_plan_fft: num_send_packs =         15
-Qlat::make_shuffle_plan_fft: num_recv_packs =          4
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_fft: total num_send_packs =        120
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         32
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 10
-fft_complex_field_plan::init : malloc 1024
-fft_complex_field_plan::init : free 1024
-Qlat::make_shuffle_plan_fft: num_send_packs =          7
-Qlat::make_shuffle_plan_fft: num_recv_packs =          4
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_fft: total num_send_packs =         56
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         32
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 11
-fft_complex_field_plan::init : malloc 1024
-fft_complex_field_plan::init : free 1024
-Qlat::make_shuffle_plan_fft: num_send_packs =          8
-Qlat::make_shuffle_plan_fft: num_recv_packs =          8
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_fft: total num_send_packs =         64
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         64
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 12
-fft_complex_field_plan::init : malloc 1024
-fft_complex_field_plan::init : free 1024
-Qlat::make_shuffle_plan_fft: num_send_packs =         64
-Qlat::make_shuffle_plan_fft: num_recv_packs =          4
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          1
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          1
-Qlat::make_shuffle_plan_fft: total num_send_packs =        512
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         32
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =          8
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =          8
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 13
-fft_complex_field_plan::init : malloc 1024
-fft_complex_field_plan::init : free 1024
-Qlat::make_shuffle_plan_fft: num_send_packs =         15
-Qlat::make_shuffle_plan_fft: num_recv_packs =          4
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_fft: total num_send_packs =        120
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         32
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 14
-fft_complex_field_plan::init : malloc 1024
-fft_complex_field_plan::init : free 1024
-Qlat::make_shuffle_plan_fft: num_send_packs =          7
-Qlat::make_shuffle_plan_fft: num_recv_packs =          4
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_fft: total num_send_packs =         56
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         32
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 15
-fft_complex_field_plan::init : malloc 1024
-fft_complex_field_plan::init : free 1024
-Qlat::make_shuffle_plan_fft: num_send_packs =          8
-Qlat::make_shuffle_plan_fft: num_recv_packs =          8
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_fft: total num_send_packs =         64
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         64
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 8
+fft_complex_field_plan::init: malloc 1024
+fft_complex_field_plan::init: free 1024
+make_shuffle_plan_fft: num_send_packs =         64
+make_shuffle_plan_fft: num_recv_packs =          4
+make_shuffle_plan_fft: num_send_msgs  =          1
+make_shuffle_plan_fft: num_recv_msgs  =          1
+make_shuffle_plan_fft: total num_send_packs =        512
+make_shuffle_plan_fft: total num_recv_packs =         32
+make_shuffle_plan_fft: total num_send_msgs  =          8
+make_shuffle_plan_fft: total num_recv_msgs  =          8
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 9
+fft_complex_field_plan::init: malloc 1024
+fft_complex_field_plan::init: free 1024
+make_shuffle_plan_fft: num_send_packs =         15
+make_shuffle_plan_fft: num_recv_packs =          4
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =        120
+make_shuffle_plan_fft: total num_recv_packs =         32
+make_shuffle_plan_fft: total num_send_msgs  =         16
+make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 10
+fft_complex_field_plan::init: malloc 1024
+fft_complex_field_plan::init: free 1024
+make_shuffle_plan_fft: num_send_packs =          7
+make_shuffle_plan_fft: num_recv_packs =          4
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =         56
+make_shuffle_plan_fft: total num_recv_packs =         32
+make_shuffle_plan_fft: total num_send_msgs  =         16
+make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 11
+fft_complex_field_plan::init: malloc 1024
+fft_complex_field_plan::init: free 1024
+make_shuffle_plan_fft: num_send_packs =          8
+make_shuffle_plan_fft: num_recv_packs =          8
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =         64
+make_shuffle_plan_fft: total num_recv_packs =         64
+make_shuffle_plan_fft: total num_send_msgs  =         16
+make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 12
+fft_complex_field_plan::init: malloc 1024
+fft_complex_field_plan::init: free 1024
+make_shuffle_plan_fft: num_send_packs =         64
+make_shuffle_plan_fft: num_recv_packs =          4
+make_shuffle_plan_fft: num_send_msgs  =          1
+make_shuffle_plan_fft: num_recv_msgs  =          1
+make_shuffle_plan_fft: total num_send_packs =        512
+make_shuffle_plan_fft: total num_recv_packs =         32
+make_shuffle_plan_fft: total num_send_msgs  =          8
+make_shuffle_plan_fft: total num_recv_msgs  =          8
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 13
+fft_complex_field_plan::init: malloc 1024
+fft_complex_field_plan::init: free 1024
+make_shuffle_plan_fft: num_send_packs =         15
+make_shuffle_plan_fft: num_recv_packs =          4
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =        120
+make_shuffle_plan_fft: total num_recv_packs =         32
+make_shuffle_plan_fft: total num_send_msgs  =         16
+make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 14
+fft_complex_field_plan::init: malloc 1024
+fft_complex_field_plan::init: free 1024
+make_shuffle_plan_fft: num_send_packs =          7
+make_shuffle_plan_fft: num_recv_packs =          4
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =         56
+make_shuffle_plan_fft: total num_recv_packs =         32
+make_shuffle_plan_fft: total num_send_msgs  =         16
+make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 15
+fft_complex_field_plan::init: malloc 1024
+fft_complex_field_plan::init: free 1024
+make_shuffle_plan_fft: num_send_packs =          8
+make_shuffle_plan_fft: num_recv_packs =          8
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =         64
+make_shuffle_plan_fft: total num_recv_packs =         64
+make_shuffle_plan_fft: total num_send_msgs  =         16
+make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: global_comm_size =        512
 test_fft: total_site=4x4x4x8 N=1 fft
 test_fft: total_site=4x4x4x8 N=1 fft-spatial
 test_fft: total_site=4x4x4x8 N=1 fft-x
@@ -211,102 +211,102 @@ test_fft: total_site=4x4x4x8 N=1 fft-t
 test_fft: qnorm(f) =  1.05627194390385830E+03 ; qnorm(diff) =  2.12604310995664443E-27
 test_fft: crc32 of fft(f) = 5E55C399.
 test_fft: 2
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 16
-fft_complex_field_plan::init : malloc 2048
-fft_complex_field_plan::init : free 2048
-Qlat::make_shuffle_plan_fft: num_send_packs =         64
-Qlat::make_shuffle_plan_fft: num_recv_packs =          4
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          1
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          1
-Qlat::make_shuffle_plan_fft: total num_send_packs =        512
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         32
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =          8
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =          8
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 17
-fft_complex_field_plan::init : malloc 2048
-fft_complex_field_plan::init : free 2048
-Qlat::make_shuffle_plan_fft: num_send_packs =         15
-Qlat::make_shuffle_plan_fft: num_recv_packs =          4
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_fft: total num_send_packs =        120
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         32
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 18
-fft_complex_field_plan::init : malloc 2048
-fft_complex_field_plan::init : free 2048
-Qlat::make_shuffle_plan_fft: num_send_packs =          7
-Qlat::make_shuffle_plan_fft: num_recv_packs =          4
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_fft: total num_send_packs =         56
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         32
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 19
-fft_complex_field_plan::init : malloc 2048
-fft_complex_field_plan::init : free 2048
-Qlat::make_shuffle_plan_fft: num_send_packs =          8
-Qlat::make_shuffle_plan_fft: num_recv_packs =          8
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_fft: total num_send_packs =         64
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         64
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 20
-fft_complex_field_plan::init : malloc 2048
-fft_complex_field_plan::init : free 2048
-Qlat::make_shuffle_plan_fft: num_send_packs =         64
-Qlat::make_shuffle_plan_fft: num_recv_packs =          4
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          1
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          1
-Qlat::make_shuffle_plan_fft: total num_send_packs =        512
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         32
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =          8
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =          8
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 21
-fft_complex_field_plan::init : malloc 2048
-fft_complex_field_plan::init : free 2048
-Qlat::make_shuffle_plan_fft: num_send_packs =         15
-Qlat::make_shuffle_plan_fft: num_recv_packs =          4
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_fft: total num_send_packs =        120
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         32
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 22
-fft_complex_field_plan::init : malloc 2048
-fft_complex_field_plan::init : free 2048
-Qlat::make_shuffle_plan_fft: num_send_packs =          7
-Qlat::make_shuffle_plan_fft: num_recv_packs =          4
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_fft: total num_send_packs =         56
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         32
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 23
-fft_complex_field_plan::init : malloc 2048
-fft_complex_field_plan::init : free 2048
-Qlat::make_shuffle_plan_fft: num_send_packs =          8
-Qlat::make_shuffle_plan_fft: num_recv_packs =          8
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_fft: total num_send_packs =         64
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         64
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 16
+fft_complex_field_plan::init: malloc 2048
+fft_complex_field_plan::init: free 2048
+make_shuffle_plan_fft: num_send_packs =         64
+make_shuffle_plan_fft: num_recv_packs =          4
+make_shuffle_plan_fft: num_send_msgs  =          1
+make_shuffle_plan_fft: num_recv_msgs  =          1
+make_shuffle_plan_fft: total num_send_packs =        512
+make_shuffle_plan_fft: total num_recv_packs =         32
+make_shuffle_plan_fft: total num_send_msgs  =          8
+make_shuffle_plan_fft: total num_recv_msgs  =          8
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 17
+fft_complex_field_plan::init: malloc 2048
+fft_complex_field_plan::init: free 2048
+make_shuffle_plan_fft: num_send_packs =         15
+make_shuffle_plan_fft: num_recv_packs =          4
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =        120
+make_shuffle_plan_fft: total num_recv_packs =         32
+make_shuffle_plan_fft: total num_send_msgs  =         16
+make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 18
+fft_complex_field_plan::init: malloc 2048
+fft_complex_field_plan::init: free 2048
+make_shuffle_plan_fft: num_send_packs =          7
+make_shuffle_plan_fft: num_recv_packs =          4
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =         56
+make_shuffle_plan_fft: total num_recv_packs =         32
+make_shuffle_plan_fft: total num_send_msgs  =         16
+make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 19
+fft_complex_field_plan::init: malloc 2048
+fft_complex_field_plan::init: free 2048
+make_shuffle_plan_fft: num_send_packs =          8
+make_shuffle_plan_fft: num_recv_packs =          8
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =         64
+make_shuffle_plan_fft: total num_recv_packs =         64
+make_shuffle_plan_fft: total num_send_msgs  =         16
+make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 20
+fft_complex_field_plan::init: malloc 2048
+fft_complex_field_plan::init: free 2048
+make_shuffle_plan_fft: num_send_packs =         64
+make_shuffle_plan_fft: num_recv_packs =          4
+make_shuffle_plan_fft: num_send_msgs  =          1
+make_shuffle_plan_fft: num_recv_msgs  =          1
+make_shuffle_plan_fft: total num_send_packs =        512
+make_shuffle_plan_fft: total num_recv_packs =         32
+make_shuffle_plan_fft: total num_send_msgs  =          8
+make_shuffle_plan_fft: total num_recv_msgs  =          8
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 21
+fft_complex_field_plan::init: malloc 2048
+fft_complex_field_plan::init: free 2048
+make_shuffle_plan_fft: num_send_packs =         15
+make_shuffle_plan_fft: num_recv_packs =          4
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =        120
+make_shuffle_plan_fft: total num_recv_packs =         32
+make_shuffle_plan_fft: total num_send_msgs  =         16
+make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 22
+fft_complex_field_plan::init: malloc 2048
+fft_complex_field_plan::init: free 2048
+make_shuffle_plan_fft: num_send_packs =          7
+make_shuffle_plan_fft: num_recv_packs =          4
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =         56
+make_shuffle_plan_fft: total num_recv_packs =         32
+make_shuffle_plan_fft: total num_send_msgs  =         16
+make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 23
+fft_complex_field_plan::init: malloc 2048
+fft_complex_field_plan::init: free 2048
+make_shuffle_plan_fft: num_send_packs =          8
+make_shuffle_plan_fft: num_recv_packs =          8
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =         64
+make_shuffle_plan_fft: total num_recv_packs =         64
+make_shuffle_plan_fft: total num_send_msgs  =         16
+make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: global_comm_size =        512
 test_fft: total_site=4x4x4x8 N=2 fft
 test_fft: total_site=4x4x4x8 N=2 fft-spatial
 test_fft: total_site=4x4x4x8 N=2 fft-x
@@ -317,102 +317,102 @@ test_fft: total_site=4x4x4x8 N=2 fft-t
 test_fft: qnorm(f) =  2.09739836163311611E+03 ; qnorm(diff) =  4.22586160136713383E-27
 test_fft: crc32 of fft(f) = 4251C009.
 test_fft: 4
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 24
-fft_complex_field_plan::init : malloc 4096
-fft_complex_field_plan::init : free 4096
-Qlat::make_shuffle_plan_fft: num_send_packs =         64
-Qlat::make_shuffle_plan_fft: num_recv_packs =          4
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          1
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          1
-Qlat::make_shuffle_plan_fft: total num_send_packs =        512
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         32
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =          8
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =          8
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 25
-fft_complex_field_plan::init : malloc 4096
-fft_complex_field_plan::init : free 4096
-Qlat::make_shuffle_plan_fft: num_send_packs =         15
-Qlat::make_shuffle_plan_fft: num_recv_packs =          4
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_fft: total num_send_packs =        120
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         32
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 26
-fft_complex_field_plan::init : malloc 4096
-fft_complex_field_plan::init : free 4096
-Qlat::make_shuffle_plan_fft: num_send_packs =          7
-Qlat::make_shuffle_plan_fft: num_recv_packs =          4
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_fft: total num_send_packs =         56
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         32
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 27
-fft_complex_field_plan::init : malloc 4096
-fft_complex_field_plan::init : free 4096
-Qlat::make_shuffle_plan_fft: num_send_packs =          8
-Qlat::make_shuffle_plan_fft: num_recv_packs =          8
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_fft: total num_send_packs =         64
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         64
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 28
-fft_complex_field_plan::init : malloc 4096
-fft_complex_field_plan::init : free 4096
-Qlat::make_shuffle_plan_fft: num_send_packs =         64
-Qlat::make_shuffle_plan_fft: num_recv_packs =          4
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          1
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          1
-Qlat::make_shuffle_plan_fft: total num_send_packs =        512
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         32
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =          8
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =          8
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 29
-fft_complex_field_plan::init : malloc 4096
-fft_complex_field_plan::init : free 4096
-Qlat::make_shuffle_plan_fft: num_send_packs =         15
-Qlat::make_shuffle_plan_fft: num_recv_packs =          4
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_fft: total num_send_packs =        120
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         32
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 30
-fft_complex_field_plan::init : malloc 4096
-fft_complex_field_plan::init : free 4096
-Qlat::make_shuffle_plan_fft: num_send_packs =          7
-Qlat::make_shuffle_plan_fft: num_recv_packs =          4
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_fft: total num_send_packs =         56
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         32
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 31
-fft_complex_field_plan::init : malloc 4096
-fft_complex_field_plan::init : free 4096
-Qlat::make_shuffle_plan_fft: num_send_packs =          8
-Qlat::make_shuffle_plan_fft: num_recv_packs =          8
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_fft: total num_send_packs =         64
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         64
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 24
+fft_complex_field_plan::init: malloc 4096
+fft_complex_field_plan::init: free 4096
+make_shuffle_plan_fft: num_send_packs =         64
+make_shuffle_plan_fft: num_recv_packs =          4
+make_shuffle_plan_fft: num_send_msgs  =          1
+make_shuffle_plan_fft: num_recv_msgs  =          1
+make_shuffle_plan_fft: total num_send_packs =        512
+make_shuffle_plan_fft: total num_recv_packs =         32
+make_shuffle_plan_fft: total num_send_msgs  =          8
+make_shuffle_plan_fft: total num_recv_msgs  =          8
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 25
+fft_complex_field_plan::init: malloc 4096
+fft_complex_field_plan::init: free 4096
+make_shuffle_plan_fft: num_send_packs =         15
+make_shuffle_plan_fft: num_recv_packs =          4
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =        120
+make_shuffle_plan_fft: total num_recv_packs =         32
+make_shuffle_plan_fft: total num_send_msgs  =         16
+make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 26
+fft_complex_field_plan::init: malloc 4096
+fft_complex_field_plan::init: free 4096
+make_shuffle_plan_fft: num_send_packs =          7
+make_shuffle_plan_fft: num_recv_packs =          4
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =         56
+make_shuffle_plan_fft: total num_recv_packs =         32
+make_shuffle_plan_fft: total num_send_msgs  =         16
+make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 27
+fft_complex_field_plan::init: malloc 4096
+fft_complex_field_plan::init: free 4096
+make_shuffle_plan_fft: num_send_packs =          8
+make_shuffle_plan_fft: num_recv_packs =          8
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =         64
+make_shuffle_plan_fft: total num_recv_packs =         64
+make_shuffle_plan_fft: total num_send_msgs  =         16
+make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 28
+fft_complex_field_plan::init: malloc 4096
+fft_complex_field_plan::init: free 4096
+make_shuffle_plan_fft: num_send_packs =         64
+make_shuffle_plan_fft: num_recv_packs =          4
+make_shuffle_plan_fft: num_send_msgs  =          1
+make_shuffle_plan_fft: num_recv_msgs  =          1
+make_shuffle_plan_fft: total num_send_packs =        512
+make_shuffle_plan_fft: total num_recv_packs =         32
+make_shuffle_plan_fft: total num_send_msgs  =          8
+make_shuffle_plan_fft: total num_recv_msgs  =          8
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 29
+fft_complex_field_plan::init: malloc 4096
+fft_complex_field_plan::init: free 4096
+make_shuffle_plan_fft: num_send_packs =         15
+make_shuffle_plan_fft: num_recv_packs =          4
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =        120
+make_shuffle_plan_fft: total num_recv_packs =         32
+make_shuffle_plan_fft: total num_send_msgs  =         16
+make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 30
+fft_complex_field_plan::init: malloc 4096
+fft_complex_field_plan::init: free 4096
+make_shuffle_plan_fft: num_send_packs =          7
+make_shuffle_plan_fft: num_recv_packs =          4
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =         56
+make_shuffle_plan_fft: total num_recv_packs =         32
+make_shuffle_plan_fft: total num_send_msgs  =         16
+make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 31
+fft_complex_field_plan::init: malloc 4096
+fft_complex_field_plan::init: free 4096
+make_shuffle_plan_fft: num_send_packs =          8
+make_shuffle_plan_fft: num_recv_packs =          8
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =         64
+make_shuffle_plan_fft: total num_recv_packs =         64
+make_shuffle_plan_fft: total num_send_msgs  =         16
+make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: global_comm_size =        512
 test_fft: total_site=4x4x4x8 N=4 fft
 test_fft: total_site=4x4x4x8 N=4 fft-spatial
 test_fft: total_site=4x4x4x8 N=4 fft-x
@@ -423,102 +423,102 @@ test_fft: total_site=4x4x4x8 N=4 fft-t
 test_fft: qnorm(f) =  4.18423078221696596E+03 ; qnorm(diff) =  7.44726985841822425E-27
 test_fft: crc32 of fft(f) = BF46BF0D.
 test_fft: 8
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 32
-fft_complex_field_plan::init : malloc 8192
-fft_complex_field_plan::init : free 8192
-Qlat::make_shuffle_plan_fft: num_send_packs =         64
-Qlat::make_shuffle_plan_fft: num_recv_packs =          4
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          1
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          1
-Qlat::make_shuffle_plan_fft: total num_send_packs =        512
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         32
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =          8
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =          8
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 33
-fft_complex_field_plan::init : malloc 8192
-fft_complex_field_plan::init : free 8192
-Qlat::make_shuffle_plan_fft: num_send_packs =         15
-Qlat::make_shuffle_plan_fft: num_recv_packs =          4
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_fft: total num_send_packs =        120
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         32
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 34
-fft_complex_field_plan::init : malloc 8192
-fft_complex_field_plan::init : free 8192
-Qlat::make_shuffle_plan_fft: num_send_packs =          7
-Qlat::make_shuffle_plan_fft: num_recv_packs =          4
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_fft: total num_send_packs =         56
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         32
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 35
-fft_complex_field_plan::init : malloc 8192
-fft_complex_field_plan::init : free 8192
-Qlat::make_shuffle_plan_fft: num_send_packs =          8
-Qlat::make_shuffle_plan_fft: num_recv_packs =          8
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_fft: total num_send_packs =         64
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         64
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 36
-fft_complex_field_plan::init : malloc 8192
-fft_complex_field_plan::init : free 8192
-Qlat::make_shuffle_plan_fft: num_send_packs =         64
-Qlat::make_shuffle_plan_fft: num_recv_packs =          4
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          1
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          1
-Qlat::make_shuffle_plan_fft: total num_send_packs =        512
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         32
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =          8
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =          8
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 37
-fft_complex_field_plan::init : malloc 8192
-fft_complex_field_plan::init : free 8192
-Qlat::make_shuffle_plan_fft: num_send_packs =         15
-Qlat::make_shuffle_plan_fft: num_recv_packs =          4
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_fft: total num_send_packs =        120
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         32
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 38
-fft_complex_field_plan::init : malloc 8192
-fft_complex_field_plan::init : free 8192
-Qlat::make_shuffle_plan_fft: num_send_packs =          7
-Qlat::make_shuffle_plan_fft: num_recv_packs =          4
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_fft: total num_send_packs =         56
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         32
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 39
-fft_complex_field_plan::init : malloc 8192
-fft_complex_field_plan::init : free 8192
-Qlat::make_shuffle_plan_fft: num_send_packs =          8
-Qlat::make_shuffle_plan_fft: num_recv_packs =          8
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_fft: total num_send_packs =         64
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         64
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 32
+fft_complex_field_plan::init: malloc 8192
+fft_complex_field_plan::init: free 8192
+make_shuffle_plan_fft: num_send_packs =         64
+make_shuffle_plan_fft: num_recv_packs =          4
+make_shuffle_plan_fft: num_send_msgs  =          1
+make_shuffle_plan_fft: num_recv_msgs  =          1
+make_shuffle_plan_fft: total num_send_packs =        512
+make_shuffle_plan_fft: total num_recv_packs =         32
+make_shuffle_plan_fft: total num_send_msgs  =          8
+make_shuffle_plan_fft: total num_recv_msgs  =          8
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 33
+fft_complex_field_plan::init: malloc 8192
+fft_complex_field_plan::init: free 8192
+make_shuffle_plan_fft: num_send_packs =         15
+make_shuffle_plan_fft: num_recv_packs =          4
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =        120
+make_shuffle_plan_fft: total num_recv_packs =         32
+make_shuffle_plan_fft: total num_send_msgs  =         16
+make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 34
+fft_complex_field_plan::init: malloc 8192
+fft_complex_field_plan::init: free 8192
+make_shuffle_plan_fft: num_send_packs =          7
+make_shuffle_plan_fft: num_recv_packs =          4
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =         56
+make_shuffle_plan_fft: total num_recv_packs =         32
+make_shuffle_plan_fft: total num_send_msgs  =         16
+make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 35
+fft_complex_field_plan::init: malloc 8192
+fft_complex_field_plan::init: free 8192
+make_shuffle_plan_fft: num_send_packs =          8
+make_shuffle_plan_fft: num_recv_packs =          8
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =         64
+make_shuffle_plan_fft: total num_recv_packs =         64
+make_shuffle_plan_fft: total num_send_msgs  =         16
+make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 36
+fft_complex_field_plan::init: malloc 8192
+fft_complex_field_plan::init: free 8192
+make_shuffle_plan_fft: num_send_packs =         64
+make_shuffle_plan_fft: num_recv_packs =          4
+make_shuffle_plan_fft: num_send_msgs  =          1
+make_shuffle_plan_fft: num_recv_msgs  =          1
+make_shuffle_plan_fft: total num_send_packs =        512
+make_shuffle_plan_fft: total num_recv_packs =         32
+make_shuffle_plan_fft: total num_send_msgs  =          8
+make_shuffle_plan_fft: total num_recv_msgs  =          8
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 37
+fft_complex_field_plan::init: malloc 8192
+fft_complex_field_plan::init: free 8192
+make_shuffle_plan_fft: num_send_packs =         15
+make_shuffle_plan_fft: num_recv_packs =          4
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =        120
+make_shuffle_plan_fft: total num_recv_packs =         32
+make_shuffle_plan_fft: total num_send_msgs  =         16
+make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 38
+fft_complex_field_plan::init: malloc 8192
+fft_complex_field_plan::init: free 8192
+make_shuffle_plan_fft: num_send_packs =          7
+make_shuffle_plan_fft: num_recv_packs =          4
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =         56
+make_shuffle_plan_fft: total num_recv_packs =         32
+make_shuffle_plan_fft: total num_send_msgs  =         16
+make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 39
+fft_complex_field_plan::init: malloc 8192
+fft_complex_field_plan::init: free 8192
+make_shuffle_plan_fft: num_send_packs =          8
+make_shuffle_plan_fft: num_recv_packs =          8
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =         64
+make_shuffle_plan_fft: total num_recv_packs =         64
+make_shuffle_plan_fft: total num_send_msgs  =         16
+make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: global_comm_size =        512
 test_fft: total_site=4x4x4x8 N=8 fft
 test_fft: total_site=4x4x4x8 N=8 fft-spatial
 test_fft: total_site=4x4x4x8 N=8 fft-x
@@ -529,102 +529,102 @@ test_fft: total_site=4x4x4x8 N=8 fft-t
 test_fft: qnorm(f) =  8.37968263117070637E+03 ; qnorm(diff) =  1.53789046405404705E-26
 test_fft: crc32 of fft(f) = 4E12E4CF.
 test_fft: 12
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 40
-fft_complex_field_plan::init : malloc 12288
-fft_complex_field_plan::init : free 12288
-Qlat::make_shuffle_plan_fft: num_send_packs =         64
-Qlat::make_shuffle_plan_fft: num_recv_packs =          4
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          1
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          1
-Qlat::make_shuffle_plan_fft: total num_send_packs =        512
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         32
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =          8
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =          8
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 41
-fft_complex_field_plan::init : malloc 12288
-fft_complex_field_plan::init : free 12288
-Qlat::make_shuffle_plan_fft: num_send_packs =         15
-Qlat::make_shuffle_plan_fft: num_recv_packs =          4
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_fft: total num_send_packs =        120
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         32
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 42
-fft_complex_field_plan::init : malloc 12288
-fft_complex_field_plan::init : free 12288
-Qlat::make_shuffle_plan_fft: num_send_packs =          7
-Qlat::make_shuffle_plan_fft: num_recv_packs =          4
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_fft: total num_send_packs =         56
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         32
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 43
-fft_complex_field_plan::init : malloc 12288
-fft_complex_field_plan::init : free 12288
-Qlat::make_shuffle_plan_fft: num_send_packs =          8
-Qlat::make_shuffle_plan_fft: num_recv_packs =          8
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_fft: total num_send_packs =         64
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         64
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 44
-fft_complex_field_plan::init : malloc 12288
-fft_complex_field_plan::init : free 12288
-Qlat::make_shuffle_plan_fft: num_send_packs =         64
-Qlat::make_shuffle_plan_fft: num_recv_packs =          4
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          1
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          1
-Qlat::make_shuffle_plan_fft: total num_send_packs =        512
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         32
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =          8
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =          8
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 45
-fft_complex_field_plan::init : malloc 12288
-fft_complex_field_plan::init : free 12288
-Qlat::make_shuffle_plan_fft: num_send_packs =         15
-Qlat::make_shuffle_plan_fft: num_recv_packs =          4
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_fft: total num_send_packs =        120
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         32
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 46
-fft_complex_field_plan::init : malloc 12288
-fft_complex_field_plan::init : free 12288
-Qlat::make_shuffle_plan_fft: num_send_packs =          7
-Qlat::make_shuffle_plan_fft: num_recv_packs =          4
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_fft: total num_send_packs =         56
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         32
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 47
-fft_complex_field_plan::init : malloc 12288
-fft_complex_field_plan::init : free 12288
-Qlat::make_shuffle_plan_fft: num_send_packs =          8
-Qlat::make_shuffle_plan_fft: num_recv_packs =          8
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_fft: total num_send_packs =         64
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         64
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 40
+fft_complex_field_plan::init: malloc 12288
+fft_complex_field_plan::init: free 12288
+make_shuffle_plan_fft: num_send_packs =         64
+make_shuffle_plan_fft: num_recv_packs =          4
+make_shuffle_plan_fft: num_send_msgs  =          1
+make_shuffle_plan_fft: num_recv_msgs  =          1
+make_shuffle_plan_fft: total num_send_packs =        512
+make_shuffle_plan_fft: total num_recv_packs =         32
+make_shuffle_plan_fft: total num_send_msgs  =          8
+make_shuffle_plan_fft: total num_recv_msgs  =          8
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 41
+fft_complex_field_plan::init: malloc 12288
+fft_complex_field_plan::init: free 12288
+make_shuffle_plan_fft: num_send_packs =         15
+make_shuffle_plan_fft: num_recv_packs =          4
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =        120
+make_shuffle_plan_fft: total num_recv_packs =         32
+make_shuffle_plan_fft: total num_send_msgs  =         16
+make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 42
+fft_complex_field_plan::init: malloc 12288
+fft_complex_field_plan::init: free 12288
+make_shuffle_plan_fft: num_send_packs =          7
+make_shuffle_plan_fft: num_recv_packs =          4
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =         56
+make_shuffle_plan_fft: total num_recv_packs =         32
+make_shuffle_plan_fft: total num_send_msgs  =         16
+make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 43
+fft_complex_field_plan::init: malloc 12288
+fft_complex_field_plan::init: free 12288
+make_shuffle_plan_fft: num_send_packs =          8
+make_shuffle_plan_fft: num_recv_packs =          8
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =         64
+make_shuffle_plan_fft: total num_recv_packs =         64
+make_shuffle_plan_fft: total num_send_msgs  =         16
+make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 44
+fft_complex_field_plan::init: malloc 12288
+fft_complex_field_plan::init: free 12288
+make_shuffle_plan_fft: num_send_packs =         64
+make_shuffle_plan_fft: num_recv_packs =          4
+make_shuffle_plan_fft: num_send_msgs  =          1
+make_shuffle_plan_fft: num_recv_msgs  =          1
+make_shuffle_plan_fft: total num_send_packs =        512
+make_shuffle_plan_fft: total num_recv_packs =         32
+make_shuffle_plan_fft: total num_send_msgs  =          8
+make_shuffle_plan_fft: total num_recv_msgs  =          8
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 45
+fft_complex_field_plan::init: malloc 12288
+fft_complex_field_plan::init: free 12288
+make_shuffle_plan_fft: num_send_packs =         15
+make_shuffle_plan_fft: num_recv_packs =          4
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =        120
+make_shuffle_plan_fft: total num_recv_packs =         32
+make_shuffle_plan_fft: total num_send_msgs  =         16
+make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 46
+fft_complex_field_plan::init: malloc 12288
+fft_complex_field_plan::init: free 12288
+make_shuffle_plan_fft: num_send_packs =          7
+make_shuffle_plan_fft: num_recv_packs =          4
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =         56
+make_shuffle_plan_fft: total num_recv_packs =         32
+make_shuffle_plan_fft: total num_send_msgs  =         16
+make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 47
+fft_complex_field_plan::init: malloc 12288
+fft_complex_field_plan::init: free 12288
+make_shuffle_plan_fft: num_send_packs =          8
+make_shuffle_plan_fft: num_recv_packs =          8
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =         64
+make_shuffle_plan_fft: total num_recv_packs =         64
+make_shuffle_plan_fft: total num_send_msgs  =         16
+make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: global_comm_size =        512
 test_fft: total_site=4x4x4x8 N=12 fft
 test_fft: total_site=4x4x4x8 N=12 fft-spatial
 test_fft: total_site=4x4x4x8 N=12 fft-x
@@ -635,102 +635,102 @@ test_fft: total_site=4x4x4x8 N=12 fft-t
 test_fft: qnorm(f) =  1.23570639216967829E+04 ; qnorm(diff) =  2.25686237978438233E-26
 test_fft: crc32 of fft(f) = E5B53F0A.
 test_fft: 16
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 48
-fft_complex_field_plan::init : malloc 16384
-fft_complex_field_plan::init : free 16384
-Qlat::make_shuffle_plan_fft: num_send_packs =         64
-Qlat::make_shuffle_plan_fft: num_recv_packs =          4
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          1
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          1
-Qlat::make_shuffle_plan_fft: total num_send_packs =        512
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         32
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =          8
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =          8
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 49
-fft_complex_field_plan::init : malloc 16384
-fft_complex_field_plan::init : free 16384
-Qlat::make_shuffle_plan_fft: num_send_packs =         15
-Qlat::make_shuffle_plan_fft: num_recv_packs =          4
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_fft: total num_send_packs =        120
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         32
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 50
-fft_complex_field_plan::init : malloc 16384
-fft_complex_field_plan::init : free 16384
-Qlat::make_shuffle_plan_fft: num_send_packs =          7
-Qlat::make_shuffle_plan_fft: num_recv_packs =          4
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_fft: total num_send_packs =         56
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         32
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 51
-fft_complex_field_plan::init : malloc 16384
-fft_complex_field_plan::init : free 16384
-Qlat::make_shuffle_plan_fft: num_send_packs =          8
-Qlat::make_shuffle_plan_fft: num_recv_packs =          8
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_fft: total num_send_packs =         64
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         64
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 52
-fft_complex_field_plan::init : malloc 16384
-fft_complex_field_plan::init : free 16384
-Qlat::make_shuffle_plan_fft: num_send_packs =         64
-Qlat::make_shuffle_plan_fft: num_recv_packs =          4
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          1
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          1
-Qlat::make_shuffle_plan_fft: total num_send_packs =        512
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         32
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =          8
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =          8
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 53
-fft_complex_field_plan::init : malloc 16384
-fft_complex_field_plan::init : free 16384
-Qlat::make_shuffle_plan_fft: num_send_packs =         15
-Qlat::make_shuffle_plan_fft: num_recv_packs =          4
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_fft: total num_send_packs =        120
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         32
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 54
-fft_complex_field_plan::init : malloc 16384
-fft_complex_field_plan::init : free 16384
-Qlat::make_shuffle_plan_fft: num_send_packs =          7
-Qlat::make_shuffle_plan_fft: num_recv_packs =          4
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_fft: total num_send_packs =         56
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         32
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 55
-fft_complex_field_plan::init : malloc 16384
-fft_complex_field_plan::init : free 16384
-Qlat::make_shuffle_plan_fft: num_send_packs =          8
-Qlat::make_shuffle_plan_fft: num_recv_packs =          8
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_fft: total num_send_packs =         64
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         64
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 48
+fft_complex_field_plan::init: malloc 16384
+fft_complex_field_plan::init: free 16384
+make_shuffle_plan_fft: num_send_packs =         64
+make_shuffle_plan_fft: num_recv_packs =          4
+make_shuffle_plan_fft: num_send_msgs  =          1
+make_shuffle_plan_fft: num_recv_msgs  =          1
+make_shuffle_plan_fft: total num_send_packs =        512
+make_shuffle_plan_fft: total num_recv_packs =         32
+make_shuffle_plan_fft: total num_send_msgs  =          8
+make_shuffle_plan_fft: total num_recv_msgs  =          8
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 49
+fft_complex_field_plan::init: malloc 16384
+fft_complex_field_plan::init: free 16384
+make_shuffle_plan_fft: num_send_packs =         15
+make_shuffle_plan_fft: num_recv_packs =          4
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =        120
+make_shuffle_plan_fft: total num_recv_packs =         32
+make_shuffle_plan_fft: total num_send_msgs  =         16
+make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 50
+fft_complex_field_plan::init: malloc 16384
+fft_complex_field_plan::init: free 16384
+make_shuffle_plan_fft: num_send_packs =          7
+make_shuffle_plan_fft: num_recv_packs =          4
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =         56
+make_shuffle_plan_fft: total num_recv_packs =         32
+make_shuffle_plan_fft: total num_send_msgs  =         16
+make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 51
+fft_complex_field_plan::init: malloc 16384
+fft_complex_field_plan::init: free 16384
+make_shuffle_plan_fft: num_send_packs =          8
+make_shuffle_plan_fft: num_recv_packs =          8
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =         64
+make_shuffle_plan_fft: total num_recv_packs =         64
+make_shuffle_plan_fft: total num_send_msgs  =         16
+make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 52
+fft_complex_field_plan::init: malloc 16384
+fft_complex_field_plan::init: free 16384
+make_shuffle_plan_fft: num_send_packs =         64
+make_shuffle_plan_fft: num_recv_packs =          4
+make_shuffle_plan_fft: num_send_msgs  =          1
+make_shuffle_plan_fft: num_recv_msgs  =          1
+make_shuffle_plan_fft: total num_send_packs =        512
+make_shuffle_plan_fft: total num_recv_packs =         32
+make_shuffle_plan_fft: total num_send_msgs  =          8
+make_shuffle_plan_fft: total num_recv_msgs  =          8
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 53
+fft_complex_field_plan::init: malloc 16384
+fft_complex_field_plan::init: free 16384
+make_shuffle_plan_fft: num_send_packs =         15
+make_shuffle_plan_fft: num_recv_packs =          4
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =        120
+make_shuffle_plan_fft: total num_recv_packs =         32
+make_shuffle_plan_fft: total num_send_msgs  =         16
+make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 54
+fft_complex_field_plan::init: malloc 16384
+fft_complex_field_plan::init: free 16384
+make_shuffle_plan_fft: num_send_packs =          7
+make_shuffle_plan_fft: num_recv_packs =          4
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =         56
+make_shuffle_plan_fft: total num_recv_packs =         32
+make_shuffle_plan_fft: total num_send_msgs  =         16
+make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 55
+fft_complex_field_plan::init: malloc 16384
+fft_complex_field_plan::init: free 16384
+make_shuffle_plan_fft: num_send_packs =          8
+make_shuffle_plan_fft: num_recv_packs =          8
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =         64
+make_shuffle_plan_fft: total num_recv_packs =         64
+make_shuffle_plan_fft: total num_send_msgs  =         16
+make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: global_comm_size =        512
 test_fft: total_site=4x4x4x8 N=16 fft
 test_fft: total_site=4x4x4x8 N=16 fft-spatial
 test_fft: total_site=4x4x4x8 N=16 fft-x
@@ -741,102 +741,102 @@ test_fft: total_site=4x4x4x8 N=16 fft-t
 test_fft: qnorm(f) =  1.64211353499753750E+04 ; qnorm(diff) =  2.98155153980922440E-26
 test_fft: crc32 of fft(f) = 1E13E305.
 test_fft: 20
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 56
-fft_complex_field_plan::init : malloc 20480
-fft_complex_field_plan::init : free 20480
-Qlat::make_shuffle_plan_fft: num_send_packs =         64
-Qlat::make_shuffle_plan_fft: num_recv_packs =          4
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          1
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          1
-Qlat::make_shuffle_plan_fft: total num_send_packs =        512
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         32
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =          8
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =          8
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 57
-fft_complex_field_plan::init : malloc 20480
-fft_complex_field_plan::init : free 20480
-Qlat::make_shuffle_plan_fft: num_send_packs =         15
-Qlat::make_shuffle_plan_fft: num_recv_packs =          4
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_fft: total num_send_packs =        120
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         32
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 58
-fft_complex_field_plan::init : malloc 20480
-fft_complex_field_plan::init : free 20480
-Qlat::make_shuffle_plan_fft: num_send_packs =          7
-Qlat::make_shuffle_plan_fft: num_recv_packs =          4
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_fft: total num_send_packs =         56
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         32
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 59
-fft_complex_field_plan::init : malloc 20480
-fft_complex_field_plan::init : free 20480
-Qlat::make_shuffle_plan_fft: num_send_packs =          8
-Qlat::make_shuffle_plan_fft: num_recv_packs =          8
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_fft: total num_send_packs =         64
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         64
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 60
-fft_complex_field_plan::init : malloc 20480
-fft_complex_field_plan::init : free 20480
-Qlat::make_shuffle_plan_fft: num_send_packs =         64
-Qlat::make_shuffle_plan_fft: num_recv_packs =          4
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          1
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          1
-Qlat::make_shuffle_plan_fft: total num_send_packs =        512
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         32
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =          8
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =          8
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 61
-fft_complex_field_plan::init : malloc 20480
-fft_complex_field_plan::init : free 20480
-Qlat::make_shuffle_plan_fft: num_send_packs =         15
-Qlat::make_shuffle_plan_fft: num_recv_packs =          4
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_fft: total num_send_packs =        120
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         32
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 62
-fft_complex_field_plan::init : malloc 20480
-fft_complex_field_plan::init : free 20480
-Qlat::make_shuffle_plan_fft: num_send_packs =          7
-Qlat::make_shuffle_plan_fft: num_recv_packs =          4
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_fft: total num_send_packs =         56
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         32
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 63
-fft_complex_field_plan::init : malloc 20480
-fft_complex_field_plan::init : free 20480
-Qlat::make_shuffle_plan_fft: num_send_packs =          8
-Qlat::make_shuffle_plan_fft: num_recv_packs =          8
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_fft: total num_send_packs =         64
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         64
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 56
+fft_complex_field_plan::init: malloc 20480
+fft_complex_field_plan::init: free 20480
+make_shuffle_plan_fft: num_send_packs =         64
+make_shuffle_plan_fft: num_recv_packs =          4
+make_shuffle_plan_fft: num_send_msgs  =          1
+make_shuffle_plan_fft: num_recv_msgs  =          1
+make_shuffle_plan_fft: total num_send_packs =        512
+make_shuffle_plan_fft: total num_recv_packs =         32
+make_shuffle_plan_fft: total num_send_msgs  =          8
+make_shuffle_plan_fft: total num_recv_msgs  =          8
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 57
+fft_complex_field_plan::init: malloc 20480
+fft_complex_field_plan::init: free 20480
+make_shuffle_plan_fft: num_send_packs =         15
+make_shuffle_plan_fft: num_recv_packs =          4
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =        120
+make_shuffle_plan_fft: total num_recv_packs =         32
+make_shuffle_plan_fft: total num_send_msgs  =         16
+make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 58
+fft_complex_field_plan::init: malloc 20480
+fft_complex_field_plan::init: free 20480
+make_shuffle_plan_fft: num_send_packs =          7
+make_shuffle_plan_fft: num_recv_packs =          4
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =         56
+make_shuffle_plan_fft: total num_recv_packs =         32
+make_shuffle_plan_fft: total num_send_msgs  =         16
+make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 59
+fft_complex_field_plan::init: malloc 20480
+fft_complex_field_plan::init: free 20480
+make_shuffle_plan_fft: num_send_packs =          8
+make_shuffle_plan_fft: num_recv_packs =          8
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =         64
+make_shuffle_plan_fft: total num_recv_packs =         64
+make_shuffle_plan_fft: total num_send_msgs  =         16
+make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 60
+fft_complex_field_plan::init: malloc 20480
+fft_complex_field_plan::init: free 20480
+make_shuffle_plan_fft: num_send_packs =         64
+make_shuffle_plan_fft: num_recv_packs =          4
+make_shuffle_plan_fft: num_send_msgs  =          1
+make_shuffle_plan_fft: num_recv_msgs  =          1
+make_shuffle_plan_fft: total num_send_packs =        512
+make_shuffle_plan_fft: total num_recv_packs =         32
+make_shuffle_plan_fft: total num_send_msgs  =          8
+make_shuffle_plan_fft: total num_recv_msgs  =          8
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 61
+fft_complex_field_plan::init: malloc 20480
+fft_complex_field_plan::init: free 20480
+make_shuffle_plan_fft: num_send_packs =         15
+make_shuffle_plan_fft: num_recv_packs =          4
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =        120
+make_shuffle_plan_fft: total num_recv_packs =         32
+make_shuffle_plan_fft: total num_send_msgs  =         16
+make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 62
+fft_complex_field_plan::init: malloc 20480
+fft_complex_field_plan::init: free 20480
+make_shuffle_plan_fft: num_send_packs =          7
+make_shuffle_plan_fft: num_recv_packs =          4
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =         56
+make_shuffle_plan_fft: total num_recv_packs =         32
+make_shuffle_plan_fft: total num_send_msgs  =         16
+make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 63
+fft_complex_field_plan::init: malloc 20480
+fft_complex_field_plan::init: free 20480
+make_shuffle_plan_fft: num_send_packs =          8
+make_shuffle_plan_fft: num_recv_packs =          8
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =         64
+make_shuffle_plan_fft: total num_recv_packs =         64
+make_shuffle_plan_fft: total num_send_msgs  =         16
+make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: global_comm_size =        512
 test_fft: total_site=4x4x4x8 N=20 fft
 test_fft: total_site=4x4x4x8 N=20 fft-spatial
 test_fft: total_site=4x4x4x8 N=20 fft-x
@@ -847,102 +847,102 @@ test_fft: total_site=4x4x4x8 N=20 fft-t
 test_fft: qnorm(f) =  2.05017369565699883E+04 ; qnorm(diff) =  3.73672528182228178E-26
 test_fft: crc32 of fft(f) = EDD18295.
 test_fft: 32
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 64
-fft_complex_field_plan::init : malloc 32768
-fft_complex_field_plan::init : free 32768
-Qlat::make_shuffle_plan_fft: num_send_packs =         64
-Qlat::make_shuffle_plan_fft: num_recv_packs =          4
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          1
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          1
-Qlat::make_shuffle_plan_fft: total num_send_packs =        512
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         32
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =          8
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =          8
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 65
-fft_complex_field_plan::init : malloc 32768
-fft_complex_field_plan::init : free 32768
-Qlat::make_shuffle_plan_fft: num_send_packs =         15
-Qlat::make_shuffle_plan_fft: num_recv_packs =          4
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_fft: total num_send_packs =        120
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         32
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 66
-fft_complex_field_plan::init : malloc 32768
-fft_complex_field_plan::init : free 32768
-Qlat::make_shuffle_plan_fft: num_send_packs =          7
-Qlat::make_shuffle_plan_fft: num_recv_packs =          4
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_fft: total num_send_packs =         56
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         32
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 67
-fft_complex_field_plan::init : malloc 32768
-fft_complex_field_plan::init : free 32768
-Qlat::make_shuffle_plan_fft: num_send_packs =          8
-Qlat::make_shuffle_plan_fft: num_recv_packs =          8
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_fft: total num_send_packs =         64
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         64
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 68
-fft_complex_field_plan::init : malloc 32768
-fft_complex_field_plan::init : free 32768
-Qlat::make_shuffle_plan_fft: num_send_packs =         64
-Qlat::make_shuffle_plan_fft: num_recv_packs =          4
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          1
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          1
-Qlat::make_shuffle_plan_fft: total num_send_packs =        512
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         32
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =          8
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =          8
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 69
-fft_complex_field_plan::init : malloc 32768
-fft_complex_field_plan::init : free 32768
-Qlat::make_shuffle_plan_fft: num_send_packs =         15
-Qlat::make_shuffle_plan_fft: num_recv_packs =          4
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_fft: total num_send_packs =        120
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         32
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 70
-fft_complex_field_plan::init : malloc 32768
-fft_complex_field_plan::init : free 32768
-Qlat::make_shuffle_plan_fft: num_send_packs =          7
-Qlat::make_shuffle_plan_fft: num_recv_packs =          4
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_fft: total num_send_packs =         56
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         32
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
-::fft_complex_field_plan::get_plan : start to make a new fft plan with id = 71
-fft_complex_field_plan::init : malloc 32768
-fft_complex_field_plan::init : free 32768
-Qlat::make_shuffle_plan_fft: num_send_packs =          8
-Qlat::make_shuffle_plan_fft: num_recv_packs =          8
-Qlat::make_shuffle_plan_fft: num_send_msgs  =          2
-Qlat::make_shuffle_plan_fft: num_recv_msgs  =          2
-Qlat::make_shuffle_plan_fft: total num_send_packs =         64
-Qlat::make_shuffle_plan_fft: total num_recv_packs =         64
-Qlat::make_shuffle_plan_fft: total num_send_msgs  =         16
-Qlat::make_shuffle_plan_fft: total num_recv_msgs  =         16
-Qlat::make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 64
+fft_complex_field_plan::init: malloc 32768
+fft_complex_field_plan::init: free 32768
+make_shuffle_plan_fft: num_send_packs =         64
+make_shuffle_plan_fft: num_recv_packs =          4
+make_shuffle_plan_fft: num_send_msgs  =          1
+make_shuffle_plan_fft: num_recv_msgs  =          1
+make_shuffle_plan_fft: total num_send_packs =        512
+make_shuffle_plan_fft: total num_recv_packs =         32
+make_shuffle_plan_fft: total num_send_msgs  =          8
+make_shuffle_plan_fft: total num_recv_msgs  =          8
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 65
+fft_complex_field_plan::init: malloc 32768
+fft_complex_field_plan::init: free 32768
+make_shuffle_plan_fft: num_send_packs =         15
+make_shuffle_plan_fft: num_recv_packs =          4
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =        120
+make_shuffle_plan_fft: total num_recv_packs =         32
+make_shuffle_plan_fft: total num_send_msgs  =         16
+make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 66
+fft_complex_field_plan::init: malloc 32768
+fft_complex_field_plan::init: free 32768
+make_shuffle_plan_fft: num_send_packs =          7
+make_shuffle_plan_fft: num_recv_packs =          4
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =         56
+make_shuffle_plan_fft: total num_recv_packs =         32
+make_shuffle_plan_fft: total num_send_msgs  =         16
+make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 67
+fft_complex_field_plan::init: malloc 32768
+fft_complex_field_plan::init: free 32768
+make_shuffle_plan_fft: num_send_packs =          8
+make_shuffle_plan_fft: num_recv_packs =          8
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =         64
+make_shuffle_plan_fft: total num_recv_packs =         64
+make_shuffle_plan_fft: total num_send_msgs  =         16
+make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 68
+fft_complex_field_plan::init: malloc 32768
+fft_complex_field_plan::init: free 32768
+make_shuffle_plan_fft: num_send_packs =         64
+make_shuffle_plan_fft: num_recv_packs =          4
+make_shuffle_plan_fft: num_send_msgs  =          1
+make_shuffle_plan_fft: num_recv_msgs  =          1
+make_shuffle_plan_fft: total num_send_packs =        512
+make_shuffle_plan_fft: total num_recv_packs =         32
+make_shuffle_plan_fft: total num_send_msgs  =          8
+make_shuffle_plan_fft: total num_recv_msgs  =          8
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 69
+fft_complex_field_plan::init: malloc 32768
+fft_complex_field_plan::init: free 32768
+make_shuffle_plan_fft: num_send_packs =         15
+make_shuffle_plan_fft: num_recv_packs =          4
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =        120
+make_shuffle_plan_fft: total num_recv_packs =         32
+make_shuffle_plan_fft: total num_send_msgs  =         16
+make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 70
+fft_complex_field_plan::init: malloc 32768
+fft_complex_field_plan::init: free 32768
+make_shuffle_plan_fft: num_send_packs =          7
+make_shuffle_plan_fft: num_recv_packs =          4
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =         56
+make_shuffle_plan_fft: total num_recv_packs =         32
+make_shuffle_plan_fft: total num_send_msgs  =         16
+make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 71
+fft_complex_field_plan::init: malloc 32768
+fft_complex_field_plan::init: free 32768
+make_shuffle_plan_fft: num_send_packs =          8
+make_shuffle_plan_fft: num_recv_packs =          8
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =         64
+make_shuffle_plan_fft: total num_recv_packs =         64
+make_shuffle_plan_fft: total num_send_msgs  =         16
+make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: global_comm_size =        512
 test_fft: total_site=4x4x4x8 N=32 fft
 test_fft: total_site=4x4x4x8 N=32 fft-spatial
 test_fft: total_site=4x4x4x8 N=32 fft-x

@@ -61,8 +61,9 @@ struct fft_complex_field_plan {
         return planV[i];
       }
     }
-    DisplayInfo("", fname, "start to make a new fft plan with id = %d\n",
-                next_plan_index);
+    displayln_info(fname +
+                   ssprintf(": start to make a new fft plan with id = %d",
+                            next_plan_index));
     fft_complex_field_plan& plan = planV[next_plan_index];
     next_plan_index++;
     next_plan_index %= planV.size();
@@ -101,8 +102,8 @@ struct fft_complex_field_plan {
     const int nc_size = nc_stop - nc_start;
     // fftw_init_threads();
     // fftw_plan_with_nthreads(omp_get_max_threads());
-    DisplayInfo("fft_complex_field_plan", "init", "malloc %d\n",
-                nc_size * sizec * sizeof(Complex));
+    displayln_info(ssprintf("fft_complex_field_plan::init: malloc %d",
+                            nc_size * sizec * sizeof(Complex)));
     Complex* fftdatac =
         (Complex*)fftw_malloc(nc_size * sizec * sizeof(Complex));
     const int rank = 1;
@@ -115,8 +116,8 @@ struct fft_complex_field_plan {
         (fftw_complex*)fftdatac, n, stride, dist,
         is_forward ? FFTW_FORWARD : FFTW_BACKWARD, FFTW_ESTIMATE);
     fftw_free(fftdatac);
-    DisplayInfo("fft_complex_field_plan", "init", "free %d\n",
-                nc_size * sizec * sizeof(Complex));
+    displayln_info(ssprintf("fft_complex_field_plan::init: free %d",
+                            nc_size * sizec * sizeof(Complex)));
     sp = make_shuffle_plan_fft(geo.total_site(), dir);
   }
 };
