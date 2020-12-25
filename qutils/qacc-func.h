@@ -35,8 +35,8 @@ inline int qacc_num_threads_default()
         fname + ssprintf(": qacc_num_threads() = %d via OMP_NUM_THREADS.", n));
     return n;
   }
-  displayln_info(fname + ssprintf(": qacc_num_threads() = %d.", 2));
-  return 2;
+  displayln_info(fname + ssprintf(": qacc_num_threads() = %d.", 32));
+  return 32;
 }
 
 inline int& qacc_num_threads()
@@ -48,13 +48,13 @@ inline int& qacc_num_threads()
 
 #define DO_PRAGMA(x) _Pragma(#x)
 
-#define thread_for(iter1, num, ...)            \
+#define qthread_for(iter1, num, ...)            \
   DO_PRAGMA(omp parallel for schedule(static)) \
   for (long iter1 = 0; iter1 < num; ++iter1) { \
     __VA_ARGS__                                \
   };
 
-#define thread_for2d(iter1, num1, iter2, num2, ...) \
+#define qthread_for2d(iter1, num1, iter2, num2, ...) \
   DO_PRAGMA(omp parallel for collapse(2))           \
   for (long iter1 = 0; iter1 < num1; ++iter1) {     \
     for (long iter2 = 0; iter2 < num2; ++iter2) {   \
@@ -64,17 +64,26 @@ inline int& qacc_num_threads()
 
 #ifdef QLAT_USE_ACC
 
-#define qacc_for2dNB(iter1, num1, iter2, num2, ...)                 \
-  {                                                                 \
-    typedef long Iterator;                                          \
-    auto lambda = [=] __host__ __device__(Iterator iter1,           \
-                                          Iterator iter2) mutable { \
-      __VA_ARGS__;                                                  \
-    };                                                              \
-    const int nt = qlat::qacc_num_threads();                        \
-    dim3 cu_threads(nt, 1, 1);                                      \
-    dim3 cu_blocks((num1 + nt - 1) / nt, num2, 1);                  \
-    qlambda_apply<<<cu_blocks, cu_threads>>>(num1, num2, lambda);   \
+#define qacc_continue return
+
+#define qacc_for2dNB(iter1, num1, iter2, num2, ...)                     \
+  {                                                                     \
+    typedef long Iterator;                                              \
+    auto lambda = [=] __host__ __device__(Iterator iter1,               \
+                                          Iterator iter2) mutable {     \
+      __VA_ARGS__;                                                      \
+    };                                                                  \
+    const int nt = qlat::qacc_num_threads();                            \
+    dim3 cu_threads(nt, 1, 1);                                          \
+    dim3 cu_blocks((num1 + nt - 1) / nt, num2, 1);                      \
+    cudaError err = cudaGetLastError();                                 \
+    if (cudaSuccess != err) {                                           \
+      qlat::displayln(                                                  \
+          qlat::ssprintf("qacc_for: Cuda error %s from '%s' Line %d.",  \
+                         cudaGetErrorString(err), __FILE__, __LINE__)); \
+      qassert(false);                                                   \
+    }                                                                   \
+    qlambda_apply<<<cu_blocks, cu_threads>>>(num1, num2, lambda);       \
   }
 
 template <typename Lambda>
@@ -95,6 +104,7 @@ __global__ void qlambda_apply(long num1, long num2, Lambda lam)
       qlat::displayln(                                                     \
           qlat::ssprintf("qacc_barrier: Cuda error %s from '%s' Line %d.", \
                          cudaGetErrorString(err), __FILE__, __LINE__));    \
+      qassert(false);                                                      \
     }                                                                      \
   }
 
@@ -111,10 +121,12 @@ __global__ void qlambda_apply(long num1, long num2, Lambda lam)
 
 #else
 
-#define qacc_for2dNB(iter1, num1, iter2, num2, ...) \
-  thread_for2d(iter1, num1, iter2, num2, {__VA_ARGS__});
+#define qacc_continue continue
 
-#define qacc_forNB(iter1, num1, ...) thread_for(iter1, num1, {__VA_ARGS__});
+#define qacc_for2dNB(iter1, num1, iter2, num2, ...) \
+  qthread_for2d(iter1, num1, iter2, num2, {__VA_ARGS__});
+
+#define qacc_forNB(iter1, num1, ...) qthread_for(iter1, num1, {__VA_ARGS__});
 
 #define qacc_barrier(dummy)
 

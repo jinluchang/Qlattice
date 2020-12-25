@@ -222,11 +222,151 @@ qacc MatrixT<DIMN, T> matrix_conjugate(const MatrixT<DIMN, T>& x)
 }
 
 template <int DIMN, class T>
-qacc MatrixT<DIMN, T> matrix_inverse(const MatrixT<DIMN, T>& x)
+qacc void matrix_ludcmp(MatrixT<DIMN, T>& a,
+                        array<int, (unsigned long)DIMN>& indx, T& d)
+// https://www.astro.umd.edu/~ricotti/NEWWEB/teaching/ASTR415/InClassExamples/NR3/legacy/nr2/C_211/progs.htm
+// https://www.astro.umd.edu/~ricotti/NEWWEB/teaching/ASTR415/InClassExamples/NR3/legacy/nr2/C_211/recipes/ludcmp.c
+//
+// a: input and output
+// indx, d: output
+{
+  MvectorT<DIMN, T> vv;
+  d = 1.0;
+  for (int i = 0; i < DIMN; ++i) {
+    double big = 0.0;
+    for (int j = 0; j < DIMN; ++j) {
+      const double temp = std::abs(a(i, j));
+      if (temp > big) {
+        big = temp;
+      }
+    }
+    if (big == 0.0) {
+      // matrix singular
+      qassert(false);
+    }
+    vv(i) = 1.0 / big;
+  }
+  for (int j = 0; j < DIMN; ++j) {
+    for (int i = 0; i < j; ++i) {
+      T sum = a(i, j);
+      for (int k = 0; k < i; ++k) {
+        sum -= a(i, k) * a(k, j);
+      }
+      a(i, j) = sum;
+    }
+    double big = 0.0;
+    int imax = -1;
+    for (int i = j; i < DIMN; ++i) {
+      T sum = a(i, j);
+      for (int k = 0; k < j; ++k) {
+        sum -= a(i, k) * a(k, j);
+      }
+      a(i, j) = sum;
+      const T dum = vv(i) * std::abs(sum);
+      if (dum >= big) {
+        big = dum;
+        imax = i;
+      }
+    }
+    if (j != imax) {
+      for (int k = 0; k < DIMN; ++k) {
+        const T dum = a(imax, k);
+        a(imax, k) = a(j, k);
+        a(j, k) = dum;
+      }
+      d = -d;
+      vv(imax) = vv(j);
+    }
+    indx[j] = imax;
+    if (a(j, j) == 0.0) {
+      // matrix singular
+      qassert(false);
+    }
+    if (j != DIMN - 1) {
+      const T dum = 1.0 / a(j, j);
+      for (int i = j + 1; i < DIMN; ++i) {
+        a(i, j) *= dum;
+      }
+    }
+  }
+}
+
+template <int DIMN, class T>
+qacc void matrix_lubksb(MvectorT<DIMN, T>& b, const MatrixT<DIMN, T>& a,
+                        const array<int, (unsigned long)DIMN>& indx)
+// https://www.astro.umd.edu/~ricotti/NEWWEB/teaching/ASTR415/InClassExamples/NR3/legacy/nr2/C_211/progs.htm
+// https://www.astro.umd.edu/~ricotti/NEWWEB/teaching/ASTR415/InClassExamples/NR3/legacy/nr2/C_211/recipes/lubksb.c
+//
+// b: input and output
+{
+  int ii = -1;
+  for (int i = 0; i < DIMN; ++i) {
+    const int ip = indx[i];
+    T sum = b(ip);
+    b(ip) = b(i);
+    if (ii >= 0) {
+      for (int j = ii; j < i; j++) {
+        sum -= a(i, j) * b(j);
+      }
+    } else if (sum != 0.0) {
+      ii = i;
+    }
+    b(i) = sum;
+  }
+  for (int i = DIMN - 1; i >= 0; --i) {
+    T sum = b(i);
+    for (int j = i + 1; j < DIMN; ++j) {
+      sum -= a(i, j) * b(j);
+    }
+    b(i) = sum / a(i, i);
+  }
+}
+
+template <int DIMN, class T>
+MatrixT<DIMN, T> matrix_inverse_eigen(const MatrixT<DIMN, T>& x)
 {
   MatrixT<DIMN, T> ret;
   ret.em() = x.em().inverse();
   return ret;
+}
+
+template <int DIMN, class T>
+qacc MatrixT<DIMN, T> matrix_inverse(const MatrixT<DIMN, T>& x)
+{
+  MatrixT<DIMN, T> ret;
+  MatrixT<DIMN, T> a = x;
+  array<int, DIMN> indx;
+  T d;
+  matrix_ludcmp(a, indx, d);
+  MvectorT<DIMN, T> col;
+  for (int j = 0; j < DIMN; ++j) {
+    set_zero(col);
+    col(j) = 1.0;
+    matrix_lubksb(col, a, indx);
+    for (int i = 0; i < DIMN; ++i) {
+      ret(i, j) = col(i);
+    }
+  }
+  return ret;
+}
+
+template <int DIMN, class T>
+T matrix_determinant_eigen(const MatrixT<DIMN, T>& x)
+{
+  return x.em().determinant();
+}
+
+template <int DIMN, class T>
+qacc T matrix_determinant(const MatrixT<DIMN, T>& x)
+{
+  MatrixT<DIMN, T> a = x;
+  array<int, DIMN> indx;
+  T d;
+  matrix_ludcmp(a, indx, d);
+  for (int j = 0; j < DIMN; ++j) {
+    d *= a(j, j);
+  }
+  return d;
 }
 
 template <class T = ComplexT>
@@ -350,11 +490,16 @@ struct SpinMatrixConstantsT {
     }
   }
   //
-  static const SpinMatrixConstantsT<T>& get_instance()
+  static const box<SpinMatrixConstantsT<T> >& get_instance_box()
   {
     static box<SpinMatrixConstantsT<T> > smcs =
         box<SpinMatrixConstantsT<T> >(SpinMatrixConstantsT<T>());
-    return smcs();
+    return smcs;
+  }
+  //
+  static const SpinMatrixConstantsT<T>& get_instance()
+  {
+    return get_instance_box()();
   }
   //
   static const SpinMatrixT<T>& get_unit() { return get_instance().unit; }

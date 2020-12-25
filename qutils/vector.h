@@ -130,9 +130,15 @@ inline void* alloc_mem(const long min_size)
     TIMER_FLOPS("alloc_mem-alloc");
     timer.flops += min_size;
 #ifdef QLAT_USE_ACC
+    cudaError err = cudaGetLastError();
+    if (cudaSuccess != err) {
+      displayln(fname + ssprintf(": Cuda error %s before cudaMallocManaged.",
+                                 cudaGetErrorString(err)));
+      qassert(err == cudaSuccess);
+    }
     void* ptr = NULL;
-    cudaError_t err = cudaMallocManaged(&ptr, size);
-    if (not(err == cudaSuccess)) {
+    err = cudaMallocManaged(&ptr, size);
+    if (cudaSuccess != err) {
       displayln(fname +
                 ssprintf(": Cuda error %s, min_size=%ld, size=%ld, ptr=%lX.",
                          cudaGetErrorString(err), min_size, size, ptr));

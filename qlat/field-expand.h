@@ -69,8 +69,8 @@ inline void set_marks_field_1(CommMarks& marks, const Geometry& geo,
 }
 
 template <class Vec>
-void set_marks_field_path(CommMarks& marks, const Coordinate xl,
-                          const Vec& path)
+qacc void set_marks_field_path(CommMarks& marks, const Coordinate xl,
+                               const Vec& path)
 {
   const Geometry& geo = marks.geo();
   Coordinate xl1 = xl;
