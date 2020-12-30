@@ -294,17 +294,6 @@ struct vector {
     return *this;
   }
   //
-  qacc const M& operator()() const
-  {
-    qassert(v.n == 1);
-    return v[0];
-  }
-  qacc M& operator()()
-  {
-    qassert(v.n == 1);
-    return v[0];
-  }
-  //
   qacc const M& operator[](long i) const { return v[i]; }
   qacc M& operator[](long i) { return v[i]; }
   //
@@ -336,6 +325,16 @@ template <class M>
 qacc void set_zero(vector<M>& v)
 {
   set_zero(v.v);
+}
+
+template <class T>
+qacc double qnorm(const vector<T>& mm)
+{
+  double sum = 0.0;
+  for (size_t i = 0; i < mm.size(); ++i) {
+    sum += qnorm(mm[i]);
+  }
+  return sum;
 }
 
 template <class M>
