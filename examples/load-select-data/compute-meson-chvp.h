@@ -86,7 +86,8 @@ inline void compute_meson_chvp_type(const std::string& job_tag, const int traj,
   const PointSelection& psel = get_point_selection(job_tag, traj);
   const long n_points = psel.size();
   const FieldSelection& fsel = get_field_selection(job_tag, traj);
-  const Coordinate total_site = fsel.f_rank.geo.total_site();
+  const Geometry& geo = fsel.f_rank.geo();
+  const Coordinate total_site = geo.total_site();
   const int tsep = tsep_op_wall_src(job_tag);
   std::map<std::string, FieldM<Complex, 8 * 8> > cache;
   std::map<std::string, long> counts;

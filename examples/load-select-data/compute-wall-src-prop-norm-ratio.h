@@ -181,7 +181,7 @@ inline void scale_prop_wsrc_with_ratio(SelProp& s_prop, const int tslice_src,
                                        const FieldSelection& fsel)
 {
   TIMER_VERBOSE("s_prop,ld");
-  const Geometry& geo = s_prop.geo;
+  const Geometry& geo = s_prop.geo();
   const Coordinate total_site = geo.total_site();
   const Vector<Complex> ldv = lat_data_cget_const(ld);
 #pragma omp parallel for

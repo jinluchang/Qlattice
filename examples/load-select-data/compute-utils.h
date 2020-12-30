@@ -132,7 +132,7 @@ inline const SelProp& get_prop_psrc_ama(const std::string& job_tag,
       const PselProp& ps_prop = get_psel_prop_psrc_ama(job_tag, traj, xg, type);
       const PointSelection& psel = get_point_selection(job_tag, traj);
       const FieldSelection& fsel = get_field_selection(job_tag, traj);
-      const Geometry& geo = fsel.f_rank.geo;
+      const Geometry& geo = fsel.f_rank.geo();
       qassert(ps_prop.n_points == (long)psel.size());
       double qnorm_comm = 0.0;
       double qnorm_diff = 0.0;
