@@ -672,7 +672,7 @@ bool does_vec_have(const std::vector<M>& vec, const M& val)
   return false;
 }
 
-bool does_string_have_tag(const std::string& str, const std::string& tag)
+inline bool does_string_have_tag(const std::string& str, const std::string& tag)
 {
   const std::vector<std::string> tags = split_line_with_spaces(str);
   return does_vec_have(tags, tag);
