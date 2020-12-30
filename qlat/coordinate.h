@@ -123,7 +123,7 @@ qacc int parity(const Coordinate &coor)
   return 2 - sum(coor) % 2;  // 2 for even, 1 for odd
 }
 
-void regularize(Coordinate &coor, const Coordinate &regularizer)
+inline void regularize(Coordinate &coor, const Coordinate &regularizer)
 {
 #ifndef SUPPRESS_REG_COOR
   // #ifndef USE_SINGLE_NODE // SINGLE_NODE mode (or !USE_MULTI_NODE) does NOT
