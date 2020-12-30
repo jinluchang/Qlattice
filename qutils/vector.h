@@ -294,17 +294,6 @@ struct vector {
     return *this;
   }
   //
-  qacc const M& operator()() const
-  {
-    qassert(v.n == 1);
-    return v[0];
-  }
-  qacc M& operator()()
-  {
-    qassert(v.n == 1);
-    return v[0];
-  }
-  //
   qacc const M& operator[](long i) const { return v[i]; }
   qacc M& operator[](long i) { return v[i]; }
   //
