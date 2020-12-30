@@ -338,6 +338,16 @@ qacc void set_zero(vector<M>& v)
   set_zero(v.v);
 }
 
+template <class T>
+qacc double qnorm(const vector<T>& mm)
+{
+  double sum = 0.0;
+  for (size_t i = 0; i < mm.size(); ++i) {
+    sum += qnorm(mm[i]);
+  }
+  return sum;
+}
+
 template <class M>
 struct box {
   //
