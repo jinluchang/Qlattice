@@ -192,7 +192,10 @@ struct Field {
 
 inline int get_field_init_from_env()
 {
-  const std::string tag = get_env("Q_FIELD_INIT");
+  std::string tag = get_env("Q_FIELD_INIT");
+  if (tag == "") {
+    tag = get_env("q_field_init");
+  }
   if (tag == "fast") {
     displayln_info("set Q_FIELD_INIT=fast.");
     return 0;  // do not do anything
@@ -212,6 +215,7 @@ inline int get_field_init_from_env()
 }
 
 inline int& get_field_init()
+// qlat parameter
 {
   static int t = get_field_init_from_env();
   return t;
