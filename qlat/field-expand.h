@@ -400,8 +400,13 @@ inline const CommPlan& get_comm_plan(const SetMarksField& set_marks_field,
 template <class M>
 void refresh_expanded(Field<M>& f, const CommPlan& plan)
 {
+  const long total_bytes =
+      (plan.total_recv_size + plan.total_send_size) * sizeof(M);
+  if (0 == total_bytes) {
+    return;
+  }
   TIMER_FLOPS("refresh_expanded");
-  timer.flops += (plan.total_recv_size + plan.total_send_size) * sizeof(M) / 2;
+  timer.flops += total_bytes / 2;
   vector<M> send_buffer(plan.total_send_size);
   vector<M> recv_buffer(plan.total_recv_size);
 #pragma omp parallel for
