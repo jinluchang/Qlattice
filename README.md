@@ -73,8 +73,8 @@ struct Geometry {
 template <class M>
 struct Field {
   bool initialized;
-  Geometry geo;
-  std::vector<M> field;
+  box<Geometry> geo;
+  vector<M> field;
 };
 ```
 
@@ -97,7 +97,50 @@ The `8` 32-bit unsigned integers are merged into `4` 64-bit unsigned
 integers. These `4` numbers are treated as the random numbers generated
 by this random number generator.
 
-Relavent source files: `qutils/rng-state.h`.
+Relevant source files: `qutils/rng-state.h`.
 
-Relavent examples: `examples/rng-state-tests`, `examples/field-rng-tests`.
+Relevant examples: `examples/rng-state-tests`, `examples/field-rng-tests`.
 
+### Environment variables
+
+- ``q_end_time``
+
+  Program finish time in seconds since epoch.
+
+  Used when ``check_time_limit()``.
+
+  Default is empty.
+
+  ``q_time_limit``
+
+  Total running time of program in seconds.
+
+  Used when ``check_time_limit()``.
+
+  Default is empty.
+
+- ``q_budget``
+
+  Default budget time in seconds.
+
+  Used when ``check_time_limit()``.
+
+  Default is ``15*60``.
+
+- ``q_field_init``
+
+  Control how field objects' data are initialized.
+
+  Choices are ``fast`` (default), ``zero``, ``random``.
+
+- ``q_mem_cache_max_size``
+
+  Memory cache size in MB (per processes) for ``qlat::vector`` allocation.
+
+  Default is ``512 MB``.
+
+- ``q_acc_num_threads``
+
+  Number of ``qacc`` threads.
+
+  Default is ``32``.
