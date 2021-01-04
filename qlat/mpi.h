@@ -550,14 +550,14 @@ inline void bcast(LatData& ld, const int root = 0)
 }
 
 template <class M>
-inline void concat_vector(std::vector<long>& idx, std::vector<M>& data,
+inline void concat_vector(std::vector<long>& row_sizes, std::vector<M>& data,
                           const std::vector<std::vector<M> >& datatable)
 {
-  idx.resize(datatable.size());
+  row_sizes.resize(datatable.size());
   size_t total_size = 0;
   for (size_t i = 0; i < datatable.size(); ++i) {
     const std::vector<M>& row = datatable[i];
-    idx[i] = row.size();
+    row_sizes[i] = row.size();
     total_size += row.size();
   }
   data.resize(total_size);
@@ -573,15 +573,15 @@ inline void concat_vector(std::vector<long>& idx, std::vector<M>& data,
 
 template <class M>
 inline void split_vector(std::vector<std::vector<M> >& datatable,
-                         const std::vector<long>& idx,
+                         const std::vector<long>& row_sizes,
                          const std::vector<M>& data)
 {
   clear(datatable);
-  datatable.resize(idx.size());
+  datatable.resize(row_sizes.size());
   size_t count = 0;
   for (size_t i = 0; i < datatable.size(); ++i) {
     std::vector<M>& row = datatable[i];
-    row.resize(idx[i]);
+    row.resize(row_sizes[i]);
     for (size_t j = 0; j < row.size(); ++j) {
       row[j] = data[count];
       count += 1;
@@ -594,23 +594,23 @@ void bcast(std::vector<std::vector<M> >& datatable, const int root = 0)
 {
 #ifdef USE_MULTI_NODE
   long nrow, total_size;
-  std::vector<long> idx;
+  std::vector<long> row_sizes;
   std::vector<M> data;
   if (get_id_node() == root) {
-    concat_vector(idx, data, datatable);
-    nrow = idx.size();
+    concat_vector(row_sizes, data, datatable);
+    nrow = row_sizes.size();
     total_size = data.size();
   }
   bcast(get_data(nrow), root);
   bcast(get_data(total_size), root);
   if (get_id_node() != root) {
-    idx.resize(nrow);
+    row_sizes.resize(nrow);
     data.resize(total_size);
   }
-  bcast(get_data(idx), root);
+  bcast(get_data(row_sizes), root);
   bcast(get_data(data), root);
   if (get_id_node() != root) {
-    split_vector(datatable, idx, data);
+    split_vector(datatable, row_sizes, data);
   }
 #endif
 }
