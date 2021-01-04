@@ -684,4 +684,53 @@ void vector_append(std::vector<M>& v, const std::vector<M>& v1)
   v.insert(v.end(), v1.begin(), v1.end());
 }
 
+template <class M>
+std::vector<long> vector_map_size(const std::vector<std::vector<M> >& datatable)
+{
+  std::vector<long> row_sizes(datatable.size());
+  for (size_t i = 0; i < datatable.size(); ++i) {
+    const std::vector<M>& row = datatable[i];
+    row_sizes[i] = row.size();
+  }
+  return row_sizes;
+}
+
+template <class M>
+std::vector<M> vector_concat(const std::vector<std::vector<M> >& datatable)
+{
+  size_t total_size = 0;
+  for (size_t i = 0; i < datatable.size(); ++i) {
+    const std::vector<M>& row = datatable[i];
+    total_size += row.size();
+  }
+  std::vector<M> data(total_size);
+  size_t count = 0;
+  for (size_t i = 0; i < datatable.size(); ++i) {
+    const std::vector<M>& row = datatable[i];
+    for (size_t j = 0; j < row.size(); ++j) {
+      data[count] = row[j];
+      count += 1;
+    }
+  }
+  return data;
+}
+
+template <class M>
+std::vector<std::vector<M> > vector_split(const std::vector<M>& data,
+                                          const std::vector<long>& row_sizes)
+{
+  std::vector<std::vector<M> > datatable;
+  datatable.resize(row_sizes.size());
+  size_t count = 0;
+  for (size_t i = 0; i < datatable.size(); ++i) {
+    std::vector<M>& row = datatable[i];
+    row.resize(row_sizes[i]);
+    for (size_t j = 0; j < row.size(); ++j) {
+      row[j] = data[count];
+      count += 1;
+    }
+  }
+  return datatable;
+}
+
 }  // namespace qlat

@@ -496,6 +496,9 @@ template <class M>
 void bcast(Vector<M> recv, const int root = 0)
 {
 #ifdef USE_MULTI_NODE
+  if (get_num_node() == 1) {
+    return;
+  }
   MPI_Bcast((void*)recv.data(), recv.data_size(), MPI_BYTE, root, get_comm());
 #endif
 }
@@ -504,6 +507,9 @@ template <class M>
 void bcast(std::vector<M>& recv, const int root = 0)
 {
 #ifdef USE_MULTI_NODE
+  if (get_num_node() == 1) {
+    return;
+  }
   long size = recv.size();
   bcast(get_data(size), root);
   recv.resize(size);
@@ -514,6 +520,9 @@ void bcast(std::vector<M>& recv, const int root = 0)
 inline void bcast(std::string& recv, const int root = 0)
 {
 #ifdef USE_MULTI_NODE
+  if (get_num_node() == 1) {
+    return;
+  }
   long size = recv.size();
   bcast(get_data(size), root);
   recv.resize(size);
@@ -524,6 +533,9 @@ inline void bcast(std::string& recv, const int root = 0)
 inline void bcast(std::vector<std::string>& recv, const int root = 0)
 {
 #ifdef USE_MULTI_NODE
+  if (get_num_node() == 1) {
+    return;
+  }
   long size = recv.size();
   bcast(get_data(size), root);
   recv.resize(size);
@@ -536,6 +548,9 @@ inline void bcast(std::vector<std::string>& recv, const int root = 0)
 inline void bcast(LatData& ld, const int root = 0)
 {
 #ifdef USE_MULTI_NODE
+  if (get_num_node() == 1) {
+    return;
+  }
   std::string info_str;
   if (get_id_node() == root) {
     info_str = show(ld.info);
@@ -550,54 +565,18 @@ inline void bcast(LatData& ld, const int root = 0)
 }
 
 template <class M>
-inline void concat_vector(std::vector<long>& row_sizes, std::vector<M>& data,
-                          const std::vector<std::vector<M> >& datatable)
-{
-  row_sizes.resize(datatable.size());
-  size_t total_size = 0;
-  for (size_t i = 0; i < datatable.size(); ++i) {
-    const std::vector<M>& row = datatable[i];
-    row_sizes[i] = row.size();
-    total_size += row.size();
-  }
-  data.resize(total_size);
-  size_t count = 0;
-  for (size_t i = 0; i < datatable.size(); ++i) {
-    const std::vector<M>& row = datatable[i];
-    for (size_t j = 0; j < row.size(); ++j) {
-      data[count] = row[j];
-      count += 1;
-    }
-  }
-}
-
-template <class M>
-inline void split_vector(std::vector<std::vector<M> >& datatable,
-                         const std::vector<long>& row_sizes,
-                         const std::vector<M>& data)
-{
-  clear(datatable);
-  datatable.resize(row_sizes.size());
-  size_t count = 0;
-  for (size_t i = 0; i < datatable.size(); ++i) {
-    std::vector<M>& row = datatable[i];
-    row.resize(row_sizes[i]);
-    for (size_t j = 0; j < row.size(); ++j) {
-      row[j] = data[count];
-      count += 1;
-    }
-  }
-}
-
-template <class M>
 void bcast(std::vector<std::vector<M> >& datatable, const int root = 0)
 {
 #ifdef USE_MULTI_NODE
+  if (get_num_node() == 1) {
+    return;
+  }
   long nrow, total_size;
   std::vector<long> row_sizes;
   std::vector<M> data;
   if (get_id_node() == root) {
-    concat_vector(row_sizes, data, datatable);
+    row_sizes = vector_map_size(datatable);
+    data = vector_concat(datatable);
     nrow = row_sizes.size();
     total_size = data.size();
   }
@@ -610,7 +589,7 @@ void bcast(std::vector<std::vector<M> >& datatable, const int root = 0)
   bcast(get_data(row_sizes), root);
   bcast(get_data(data), root);
   if (get_id_node() != root) {
-    split_vector(datatable, row_sizes, data);
+    datatable = vector_split(data, row_sizes);
   }
 #endif
 }
