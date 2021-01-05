@@ -188,7 +188,7 @@ inline long save_low_modes_decompress(LowModes& lm, const std::string& path)
     total_bytes += bytes;
     displayln_info(
         ssprintf("%s::%s: cycle / n_cycle = %4d / %4d ; total_bytes = %15ld",
-                 cname().c_str(), fname, i + 1, n_cycle, total_bytes));
+                 cname().c_str(), fname.c_str(), i + 1, n_cycle, total_bytes));
   }
   glb_sum_byte_vec(get_data(crcs));
   const crc32_t crc = dist_crc32(crcs);

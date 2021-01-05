@@ -1685,7 +1685,7 @@ inline void decompressed_eigen_vectors_check_crc32(const std::string& path)
   if (not obtain_lock(path + "/lock")) {
     return;
   }
-  displayln_info(ssprintf("%s: ", fname) + path);
+  displayln_info(fname + ": " + path);
   qassert(does_file_exist_sync_node(path + "/checksums.txt"));
   set_lock_expiration_time_limit();
   long idx_size = 0;
