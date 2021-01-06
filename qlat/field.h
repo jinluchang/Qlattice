@@ -94,10 +94,10 @@ struct Field {
   //
   const Field<M>& operator=(const Field<M>& f)
   {
-    TIMER("Field::operator=");
     if (this == &f) {
       return *this;
     }
+    TIMER_FLOPS("Field::operator=");
     init(geo_resize(f.geo()));
     const Geometry& geo_v = geo();
     const int multiplicity = geo_v.multiplicity;
@@ -110,6 +110,7 @@ struct Field {
         v0[m] = v[m];
       }
     });
+    timer.flops += get_data(f0).data_size();
     return *this;
   }
   //
