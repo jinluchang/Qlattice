@@ -46,6 +46,18 @@ inline int& qacc_num_threads()
   return nt;
 }
 
+#define qfor(iter1, num, ...)                  \
+  for (long iter1 = 0; iter1 < num; ++iter1) { \
+    __VA_ARGS__                                \
+  };
+
+#define qfor2d(iter1, num1, iter2, num2, ...)     \
+  for (long iter1 = 0; iter1 < num1; ++iter1) {   \
+    for (long iter2 = 0; iter2 < num2; ++iter2) { \
+      {__VA_ARGS__};                              \
+    }                                             \
+  }
+
 #define DO_PRAGMA(x) _Pragma(#x)
 
 #define qthread_for(iter1, num, ...)            \
