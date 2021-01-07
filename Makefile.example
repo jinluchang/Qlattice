@@ -1,24 +1,32 @@
 SHELL=/bin/bash
 
-CXX=mpic++ -std=c++0x -fopenmp -march=native -O2 -Wall
-# -DQLAT_NO_DEFAULT_TYPE
-# -DSKIP_ASSERT
-# -DOLD_CPP
-# -DNO_OMP
+CXX=mpic++ -std=c++0x -fopenmp -march=native -O2 -Wall -fno-strict-aliasing
 
 qlat_prefix=$$HOME/qlat-build/1.0
 
 QLAT_INCLUDE=$(qlat_prefix)/include
 QLAT_LIB=$(qlat_prefix)/lib
 
-QLAT_CFLAGS=-fno-strict-aliasing
+QLAT_CFLAGS=
 QLAT_CFLAGS+= -I$(QLAT_INCLUDE)
 QLAT_CFLAGS+= -I$(QLAT_INCLUDE)/eigen3
 QLAT_CFLAGS+= -I$(QLAT_INCLUDE)/qutils
 
 QLAT_CXXFLAGS=$(QLAT_CFLAGS)
 
-QLAT_LDFLAGS=-L$(QLAT_LIB) -lfftw3 -lfftw3f -lcuba -lz -lm
+QLAT_LDFLAGS=
+QLAT_LDFLAGS+= -L$(QLAT_LIB)
+QLAT_LDFLAGS+= -l:libfftw3.a -l:libfftw3f.a
+QLAT_LDFLAGS+= -l:libcuba.a
+QLAT_LDFLAGS+= -l:libz.a
+QLAT_LDFLAGS+= -lm
+
+CXXFLAGS=
+CXXFLAGS+= $(QLAT_CXXFLAGS)
+
+LDFLAGS=
+LDFLAGS+= $(QLAT_LDFLAGS)
+
 
 all: qlat.x
 
