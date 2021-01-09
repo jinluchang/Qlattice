@@ -38,12 +38,12 @@ qlat.x: *.C
 	[ -f $@ ]
 
 build:
-	-time $(CXX) -o qlat.x $(QLAT_CXXFLAGS) *.C $(QLAT_LDFLAGS) 2>&1 | grep --color=always 'error:\|'
+	-time $(CXX) -o qlat.x $(CXXFLAGS) *.C $(LDFLAGS) 2>&1 | grep --color=always 'error:\|'
 
 show-info:
 	@echo CXX: $(CXX)
-	@echo CXXFLAGS: $(QLAT_CXXFLAGS)
-	@echo LDFLAGS: $(QLAT_LDFLAGS)
+	@echo CXXFLAGS: $(CXXFLAGS)
+	@echo LDFLAGS: $(LDFLAGS)
 
 clean:
 	-rm qlat.x
@@ -63,4 +63,3 @@ diff:
 
 dist-clean: clean
 	-git checkout log
-

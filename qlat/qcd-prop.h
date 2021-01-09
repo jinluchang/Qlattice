@@ -182,6 +182,7 @@ void smear_propagator(Propagator4dT<T>& prop, const GaugeFieldT<T>& gf1,
                       const CoordinateD& mom = CoordinateD(),
                       const bool smear_in_time_dir = false)
 // gf1 is left_expanded and refreshed
+// set_left_expanded_gauge_field(gf1, gf)
 // prop is of qnormal size
 {
   TIMER_VERBOSE("smear_propagator");
