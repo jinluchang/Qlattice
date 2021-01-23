@@ -1,0 +1,35 @@
+qlat::begin(): MPI Initialized. num_node = 8
+qlat::begin(): OMP_NUM_THREADS = 2
+qlat::begin(): GeometryNode =
+{ initialized = true
+, num_node    = 8
+, id_node     = 0
+, size_node   = 1x2x2x2
+, coor_node   = 0x0x0x0 }
+set Q_FIELD_INIT=fast. (implicitly)
+get_mem_cache_max_size_default: get_mem_cache_max_size() = 512 MB.
+Qlat::CommPlanCache: to add 1 / 32.
+plaq :  9.48400361131393588E-01
+Qlat::CommPlanCache: to add 2 / 32.
+spatial plaq :  9.48253412870626700E-01
+trace:  9.86826590890407918E-01
+make_shuffle_plan_generic: num_send_packs =          2
+make_shuffle_plan_generic: num_recv_packs =          7
+make_shuffle_plan_generic: num_send_msgs  =          4
+make_shuffle_plan_generic: num_recv_msgs  =          4
+make_shuffle_plan_generic: total num_send_packs =         16
+make_shuffle_plan_generic: total num_recv_packs =         56
+make_shuffle_plan_generic: total num_send_msgs  =         32
+make_shuffle_plan_generic: total num_recv_msgs  =         32
+make_shuffle_plan_generic: global_comm_size =        512
+Qlat::ShufflePlanCache: to add 1 / 16.
+shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 384 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 384 ; total_size: 0.000 GB)
+load_gauge_field: 'results/ckpoint.0'.
+shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 384 ; total_size: 0.000 GB)
+plaq :  9.48400361131393588E-01
+spatial plaq :  9.48253412870626811E-01
+trace:  9.86826590890407918E-01
+INFO: gf_trace_sum =  6.06306257443066625E+03
+INFO: gf_trace_avg =  9.86826590890407918E-01
+qlat::end(): MPI Finalized.

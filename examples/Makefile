@@ -12,6 +12,7 @@ tests = qcd-utils-tests \
 		heatbath \
 		propagators \
 		hmc \
+		simple-1 \
 		template
 
 all:

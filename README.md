@@ -19,7 +19,7 @@ the following command will install everything into `DEST_DIRECTORY`.
 `$ prefix=DEST_DIRECTORY ./build.sh`
 
 If `$prefix` is not set, the default value in `setenv.sh` is used,
-which is `$HOME/qlat-build/VERSION_NUMBER`.
+which is `$HOME/qlat-build/1.0`.
 
 ## Usage:
 
@@ -37,7 +37,7 @@ to compile all the examples:
 
 ```c++
 const int DIMN = 4;
-struct Coordinate : public std::array<int, DIMN> {};
+struct Coordinate : public array<int, DIMN> {};
 ```
 
 ### GeometryNode
