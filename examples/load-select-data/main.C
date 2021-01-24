@@ -96,7 +96,7 @@ int main(int argc, char* argv[])
   setup();
   qmkdir_info(ssprintf("analysis"));
   //
-  test();
+  // test();
   //
   std::vector<std::string> job_tags;
   // SADJUST ME

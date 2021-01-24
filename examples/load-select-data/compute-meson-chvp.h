@@ -132,6 +132,10 @@ inline void compute_meson_chvp_type(const std::string& job_tag, const int traj,
       const LatData ld_mss_shifted =
           meson_snk_src_shift(ld_mss_list[i], -tslice);
       for (int j = 0; j < num_type_34; ++j) {
+        if (chvp_count_list[j] == 0) {
+          continue;
+        }
+        qassert(is_initialized(chvp_list[j]));
         const int type3 = type3_list[j];
         const int type4 = type4_list[j];
         const std::string tag =

@@ -549,6 +549,8 @@ inline void contract_meson_chvp_acc(FieldM<Complex, 8 * 8>& mchvp,
 // chvp_3_4 already should shifted to origin (xg_y -> 0)
 {
   TIMER_VERBOSE("contract_meson_chvp_acc");
+  qassert(is_initialized(ld_meson_snk_src_1_2));
+  qassert(is_initialized(chvp_3_4));
   const Geometry& geo = chvp_3_4.geo();
   const Coordinate total_site = geo.total_site();
   if (not is_initialized(mchvp)) {
