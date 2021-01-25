@@ -42,27 +42,31 @@ int main(int argc, char* argv[])
   display_geometry_node();
   setup_log_idx();
   setup();
-  qmkdir_info(ssprintf("analysis"));
+  //qmkdir_info(ssprintf("analysis"));
   //
   //test();
   //
   std::vector<std::string> job_tags;
   // SADJUST ME
   job_tags.push_back("24D");
-  job_tags.push_back("32D");
+  //job_tags.push_back("32D");
   //job_tags.push_back("24DH");
   //job_tags.push_back("32Dfine");
   //job_tags.push_back("48I");
   //job_tags.push_back("64I");
 
-  qmkdir_info("data/dwf_gwu/");
+  qmkdir_info(ssprintf("data/dwf_gwu/"));
 
   for (int k = 0; k < (int)job_tags.size(); ++k)
   {
     const std::string& job_tag = job_tags[k];
+    qmkdir_info(ssprintf("data/dwf_gwu/%s",job_tag.c_str()));
 
     const std::vector<int> trajs = get_data_trajs(job_tag);
-    for (int itraj = 0; itraj < (int)trajs.size(); ++itraj){
+    for (int itraj = 0; itraj < (int)trajs.size(); ++itraj)
+    if(trajs[itraj]==2160)
+    {
+    //for (int itraj = 0; itraj < 1; ++itraj)
     const int traj = trajs[itraj];
     setup(job_tag);
     TIMER_VERBOSE("compute_traj");
@@ -95,25 +99,32 @@ int main(int argc, char* argv[])
           const PointSelection& psel = get_point_selection(job_tag, traj);
           const FieldSelection& fsel = get_field_selection(job_tag, traj);
 
-          Geometry geo = s_prop.geo();geo.multiplicity=1.0;
+          Geometry geo0 = s_prop.geo();
+          Geometry geo;
+          geo.init(geo0.total_site(),1);
+          geo.multiplicity=1;
 
           int ionum = 8;
           io_gwu io_use(geo,ionum);
 
           qlat::FieldM<qlat::Complex,1> noi,grid;
           noi.init(geo);grid.init(geo);
+          qlat::set_zero(noi);qlat::set_zero(grid);
+          std::vector<qlat::FermionField4dT<qlat::Complex> > prop_qlat;
+          prop_qlat.resize(12);for(int iv=0;iv<12;iv++){prop_qlat[iv].init(geo);qlat::set_zero(prop_qlat[iv]);}
 
-          if(geo.is_on_node(xg)){
+          {
+            /////long g_index = geo.g_index_from_g_coordinate(xg);
             const Coordinate& xl = geo.coordinate_l_from_g(xg);
-            int index = geo.index_from_coordinate(xl);
-            noi.get_elem(index) = qlat::Complex(1.0,0.0);
+            if(geo.is_on_node(xl)){
+              const long index = geo.index_from_coordinate(xl);
+              noi.get_elem(index) = qlat::Complex(1.0,0.0);
+            }
+
           }
 
-          //const Coordinate xl = geo.coordinate_from_index(index);
-          //const Coordinate xg = geo.coordinate_g_from_l(xl);
-
-          std::vector<qlat::FermionField4dT<qlat::Complex> > prop_qlat;
-          prop_qlat.resize(12);for(int iv=0;iv<12;iv++){prop_qlat[iv].init(geo);}
+          ////const Coordinate xl = geo.coordinate_from_index(index);
+          ////const Coordinate xg = geo.coordinate_g_from_l(xl);
 
           for (long idx = 0; idx < fsel.n_elems; ++idx){
             const long index = fsel.indices[idx];
@@ -128,18 +139,17 @@ int main(int argc, char* argv[])
               //(*prop_s.vec[dc0]).data[gwu].d[dc1/3].c[dc1%3].real = p[dc1 * 24 + dc0*2 + 0];
               //(*prop_s.vec[dc0]).data[gwu].d[dc1/3].c[dc1%3].imag = p[dc1 * 24 + dc0*2 + 1];
             }
-
             grid.get_elem(index) = qlat::Complex(1.0,0.0);
-
           }
 
           char filename[500];
-          sprintf(filename,"data/dwf_gwu/%s_%06d.S",job_tag.c_str(),traj);
+          sprintf(filename,"data/dwf_gwu/%s/rbc.%s.%06d.N%06d.S",job_tag.c_str(),job_tag.c_str(),traj,countsave);
           save_gwu_noi(filename,noi ,io_use);
-          sprintf(filename,"data/dwf_gwu/%s_%06d.G",job_tag.c_str(),traj);
+          sprintf(filename,"data/dwf_gwu/%s/rbc.%s.%06d.N%06d.G",job_tag.c_str(),job_tag.c_str(),traj,countsave);
           save_gwu_noi(filename,grid,io_use);
-          sprintf(filename,"data/dwf_gwu/%s_%06d.prop",job_tag.c_str(),traj);
+          sprintf(filename,"data/dwf_gwu/%s/rbc.%s.%06d.N%06d.prop",job_tag.c_str(),job_tag.c_str(),traj,countsave);
           save_gwu_prop(filename,prop_qlat,io_use);
+          countsave += 1;
 
           //write_gwu_prop(s_prop,job_tag,traj,xg);
 
