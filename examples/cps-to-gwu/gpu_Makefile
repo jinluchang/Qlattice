@@ -1,0 +1,33 @@
+SHELL=/bin/bash
+
+GXX=nvcc -O3 -arch compute_70 
+CXX=mpic++ -std=c++0x -fopenmp -march=native -O2 -Wall
+
+qlat_prefix=/global/homes/g/genwang/project/genwang/Delta_mix/Code/Dec_29_2020/build/
+
+QLAT_INCLUDE=$(qlat_prefix)/include
+QLAT_LIB=$(qlat_prefix)/lib
+
+QLAT_CFLAGS=-std=c++0x -fno-strict-aliasing -Wfatal-errors
+QLAT_CFLAGS+= -I$(QLAT_INCLUDE)  -I${CUDA_ROOT}/include
+QLAT_CFLAGS+= -I$(QLAT_INCLUDE)/eigen3
+QLAT_CFLAGS+= -I$(QLAT_INCLUDE)/qutils
+
+QLAT_GFLAGS=--expt-relaxed-constexpr --expt-extended-lambda -Xcompiler -fopenmp
+QLAT_GFLAGS+= -I$(QLAT_INCLUDE) -I${CUDA_ROOT}/include -I${OPENMPI_DIR}/include
+QLAT_GFLAGS+= -I$(QLAT_INCLUDE)/eigen3
+QLAT_GFLAGS+= -I$(QLAT_INCLUDE)/qutils
+
+
+QLAT_CXXFLAGS=$(QLAT_CFLAGS)
+
+QLAT_LDFLAGS=$(QLAT_LIB)/libfftw3.a $(QLAT_LIB)/libz.a $(QLAT_LIB)/libcuba.a -lm -L${CUDA_ROOT}/lib64 -lcudart
+
+
+all: qlat.x
+
+qlat.x: *.C *.h *.cu
+	-time rm program.gpu;$(GXX) $(QLAT_GFLAGS) -c *.cu -o program.gpu;$(CXX) -o qlat.x $(QLAT_CXXFLAGS) program.gpu $(QLAT_LDFLAGS) 2>&1 | grep --color=always 'error:\|'
+
+clean:
+	rm *.o qlat.x
