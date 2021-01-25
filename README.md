@@ -101,6 +101,13 @@ Relevant source files: `qutils/rng-state.h`.
 
 Relevant examples: `examples/rng-state-tests`, `examples/field-rng-tests`.
 
+### Signal handling
+
+Call ``install_qhandle_sig()`` to use handle ``SIGTERM`` (from ``kill`` command) and ``SIGINT`` (from ``Ctrl-C``).
+
+- ``SIGTERM``: show current information and increase counter ``is_sigterm_received()``. Force quit when the counter is larger than ``10``.
+- ``SIGINT``: show current information and pause of ``1`` second.
+
 ### Environment variables
 
 - ``q_end_time``
