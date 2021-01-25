@@ -83,9 +83,10 @@ inline const PselProp& get_psel_prop_psrc_ama(const std::string& job_tag,
       PselProp ps_prop_diff = ps_prop;
       ps_prop_diff -= get_psel_prop_psrc(job_tag, traj, xg, type, 0);
       displayln_info(
-          fname +
-          ssprintf(": ps_prop ama diff qnorm = %24.17E. ps_prop qnorm = %24.17E",
-                   qnorm(ps_prop_diff), qnorm(ps_prop)));
+          fname + ssprintf(": ps_prop ama diff qnorm = %24.17E. ps_prop qnorm "
+                           "= %24.17E. job_tag=%s ; traj=%d ; xg=%s ; type=%d.",
+                           qnorm(ps_prop_diff), qnorm(ps_prop), job_tag.c_str(),
+                           traj, show(xg).c_str(), type));
     }
   }
   return cache[key];
@@ -152,9 +153,10 @@ inline const SelProp& get_prop_psrc_ama(const std::string& job_tag,
       glb_sum(qnorm_comm);
       glb_sum(qnorm_diff);
       displayln_info(
-          fname +
-          ssprintf(": ps_prop diff qnorm = %24.17E. ps_prop qnorm = %24.17E",
-                   qnorm_diff, qnorm_comm));
+          fname + ssprintf(": ps_prop diff qnorm = %24.17E. ps_prop qnorm = "
+                           "%24.17E. job_tag=%s ; traj=%d ; xg=%s ; type=%d.",
+                           qnorm_diff, qnorm_comm, job_tag.c_str(), traj,
+                           show(xg).c_str(), type));
       qassert(qnorm_diff == 0.0);
     }
   }
