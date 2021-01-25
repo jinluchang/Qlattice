@@ -32,7 +32,7 @@ inline void compute_wall_src_prop_norm_ratio(const std::string& job_tag,
     }
     if (check_prop_wsrc(job_tag, traj, type) and
         check_wall_src_info(job_tag, traj, type)) {
-      check_sigint();
+      check_sigterm();
       check_time_limit();
       if (not obtain_lock(ssprintf("lock-wall-src-prop-norm-raio-%s-%d-%d",
                                    job_tag.c_str(), traj, type))) {

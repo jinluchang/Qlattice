@@ -16,7 +16,7 @@ inline void compute_two_point_func_type(const std::string& job_tag,
                                         const int traj, const int type1,
                                         const int type2)
 {
-  check_sigint();
+  check_sigterm();
   Timer::autodisplay();
   TIMER_VERBOSE("compute_two_point_func_type");
   const WallSrcProps& wsp1 = get_wall_src_props(job_tag, traj, type1);
@@ -59,7 +59,7 @@ inline void compute_two_point_func_type(const std::string& job_tag,
 
 inline void compute_two_point_func(const std::string& job_tag, const int traj)
 {
-  check_sigint();
+  check_sigterm();
   Timer::autodisplay();
   TIMER_VERBOSE("compute_two_point_func");
   const std::string path = get_two_point_func_path(job_tag, traj);
@@ -71,7 +71,7 @@ inline void compute_two_point_func(const std::string& job_tag, const int traj)
           check_wall_src_props(job_tag, traj, 1))) {
     return;
   }
-  check_sigint();
+  check_sigterm();
   check_time_limit();
   if (not obtain_lock(
           ssprintf("lock-two-point-func-%s-%d", job_tag.c_str(), traj))) {
@@ -91,7 +91,7 @@ inline void compute_two_point_func(const std::string& job_tag, const int traj)
 
 inline void compute_two_point_func_light(const std::string& job_tag, const int traj)
 {
-  check_sigint();
+  check_sigterm();
   Timer::autodisplay();
   TIMER_VERBOSE("compute_two_point_func_light");
   const std::string path = get_two_point_func_path(job_tag, traj);
@@ -106,7 +106,7 @@ inline void compute_two_point_func_light(const std::string& job_tag, const int t
   if (not check_wall_src_props(job_tag, traj, 0)) {
     return;
   }
-  check_sigint();
+  check_sigterm();
   check_time_limit();
   if (not obtain_lock(
           ssprintf("lock-two-point-func-%s-%d", job_tag.c_str(), traj))) {

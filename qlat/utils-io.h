@@ -133,6 +133,7 @@ inline void qquit(const std::string& msg)
   release_lock();
   Timer::display();
   displayln_info("qquit: " + msg);
+  Timer::display_stack();
   ssleep(1.0);
   end();
   ssleep(1.0);
@@ -180,10 +181,10 @@ inline void set_lock_expiration_time_limit()
   set_time_limit_auto();
 }
 
-inline void check_sigint()
+inline void check_sigterm()
 {
-  if (is_sigint_received() > 0) {
-    qquit("because sigint received.");
+  if (is_sigterm_received() > 0) {
+    qquit("because sigterm received.");
   }
 }
 
@@ -246,8 +247,8 @@ inline bool check_status()
     displayln_info(fname + ssprintf(": too little time left."));
     return true;
   }
-  if (is_sigint_received() > 0) {
-    displayln_info(fname + ssprintf(": sigint received."));
+  if (is_sigterm_received() > 0) {
+    displayln_info(fname + ssprintf(": sigterm received."));
     return true;
   }
   if (does_file_exist_sync_node("stop.txt")) {

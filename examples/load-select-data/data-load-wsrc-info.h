@@ -122,7 +122,7 @@ inline void compute_wall_src_info(const std::string& job_tag, const int traj,
     return;
   }
   if (check_prop_wsrc(job_tag, traj, type)) {
-    check_sigint();
+    check_sigterm();
     check_time_limit();
     if (not obtain_lock(ssprintf("lock-wall-src-info-%s-%d-%d", job_tag.c_str(),
                                  traj, type))) {

@@ -15,7 +15,7 @@ inline std::string get_psel_fsel_distribution_path(const std::string& job_tag,
 inline void compute_psel_fsel_distribution_type(const std::string& job_tag,
                                                 const int traj, const int type)
 {
-  check_sigint();
+  check_sigterm();
   check_time_limit();
   Timer::autodisplay();
   const std::string path = get_psel_fsel_distribution_path(job_tag, traj);
@@ -71,7 +71,7 @@ inline void compute_psel_fsel_distribution_type(const std::string& job_tag,
 
 inline void compute_psel_fsel_distribution(const std::string& job_tag, const int traj)
 {
-  check_sigint();
+  check_sigterm();
   Timer::autodisplay();
   TIMER_VERBOSE("compute_psel_fsel_distribution");
   const std::string path = get_psel_fsel_distribution_path(job_tag, traj);
@@ -82,7 +82,7 @@ inline void compute_psel_fsel_distribution(const std::string& job_tag, const int
   if (not(check_sparse_parameters(job_tag, traj))) {
     return;
   }
-  check_sigint();
+  check_sigterm();
   check_time_limit();
   if (not obtain_lock(ssprintf("lock-psel-fsel-distribution-%s-%d", job_tag.c_str(), traj))) {
     return;

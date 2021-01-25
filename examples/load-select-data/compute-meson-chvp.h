@@ -27,7 +27,7 @@ inline void compute_meson_chvp_type(const std::string& job_tag, const int traj,
                                     const std::vector<int>& type3_list,
                                     const std::vector<int>& type4_list)
 {
-  check_sigint();
+  check_sigterm();
   check_time_limit();
   Timer::autodisplay();
   const int num_type_12 = type1_list.size();
@@ -196,7 +196,7 @@ inline void compute_meson_chvp_type(const std::string& job_tag, const int traj,
 
 inline void compute_meson_chvp(const std::string& job_tag, const int traj)
 {
-  check_sigint();
+  check_sigterm();
   Timer::autodisplay();
   TIMER_VERBOSE("compute_meson_chvp");
   const std::string path = get_meson_chvp_path(job_tag, traj);
@@ -218,7 +218,7 @@ inline void compute_meson_chvp(const std::string& job_tag, const int traj)
           check_prop_psrc(job_tag, traj, 1))) {
     return;
   }
-  check_sigint();
+  check_sigterm();
   check_time_limit();
   if (not obtain_lock(
           ssprintf("lock-meson-chvp-%s-%d", job_tag.c_str(), traj))) {
@@ -257,7 +257,7 @@ inline void compute_meson_chvp(const std::string& job_tag, const int traj)
 
 inline void compute_meson_chvp_light(const std::string& job_tag, const int traj)
 {
-  check_sigint();
+  check_sigterm();
   Timer::autodisplay();
   TIMER_VERBOSE("compute_meson_chvp_light");
   const std::string path = get_meson_chvp_path(job_tag, traj);
@@ -286,7 +286,7 @@ inline void compute_meson_chvp_light(const std::string& job_tag, const int traj)
           check_prop_psrc(job_tag, traj, 1))) {
     return;
   }
-  check_sigint();
+  check_sigterm();
   check_time_limit();
   if (not obtain_lock(
           ssprintf("lock-meson-chvp-%s-%d", job_tag.c_str(), traj))) {

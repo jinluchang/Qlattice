@@ -87,7 +87,6 @@ void show_matrix()
 
 int main(int argc, char* argv[])
 {
-  Timer::max_function_name_length_shown() = 50;
   begin(&argc, &argv);
   get_global_rng_state() = RngState(get_global_rng_state(), "qcd-utils-tests");
   show_matrix();

@@ -4,9 +4,10 @@
 #include <array>
 #endif
 
+#include <qutils/array.h>
 #include <qutils/complex.h>
 #include <qutils/show.h>
-#include <qutils/array.h>
+#include <qutils/timer.h>
 
 #include <cassert>
 #include <vector>
@@ -18,13 +19,16 @@
 #elif defined QLAT_USE_ACC
 #define qassert(x) assert(x)
 #else
-#define qassert(x)                            \
-  {                                           \
-    if (not(x)) {                             \
-      qlat::displayln("qassert failed: " #x); \
-      usleep((useconds_t)(10.0 * 1.0e6));     \
-      assert(false);                          \
-    }                                         \
+#define qassert(x)                                                            \
+  {                                                                           \
+    if (not(x)) {                                                             \
+      qlat::Timer::display();                                                 \
+      qlat::displayln(qlat::ssprintf("qassert failed: %s from '%s' line %d.", \
+                                     #x, __FILE__, __LINE__));                \
+      qlat::Timer::display_stack();                                           \
+      usleep((useconds_t)(10.0 * 1.0e6));                                     \
+      assert(false);                                                          \
+    }                                                                         \
   }
 #endif
 

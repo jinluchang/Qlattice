@@ -39,7 +39,7 @@ inline void check_all_prop_psrc_exact(const std::string& job_tag,
         get_prop_psrc_exact_path(job_tag, traj), "CHECK-FILE"));
     //
     for (int i = 0; i < (int)pis.size(); ++i) {
-      check_sigint();
+      check_sigterm();
       const PointInfo& pi = pis[i];
       const Coordinate& xg = pi.xg;
       const int type = pi.type;
@@ -64,7 +64,7 @@ inline bool check_all_prop_psrc(const std::string& job_tag, const int traj)
   // qassert(not does_file_exist_sync_node(get_prop_psrc_path(job_tag, traj, 1),
   //                                       "CHECK-FILE"));
   for (int i = 0; i < (int)pis.size(); ++i) {
-    check_sigint();
+    check_sigterm();
     const PointInfo& pi = pis[i];
     const Coordinate& xg = pi.xg;
     const int type = pi.type;
@@ -94,7 +94,7 @@ inline bool check_all_prop_wsrc(const std::string& job_tag, const int traj,
   const std::string path_psel = get_psel_prop_wsrc_path(job_tag, traj, type);
   long count_exact = 0;
   for (int tslice = 0; tslice < total_site[3]; ++tslice) {
-    check_sigint();
+    check_sigterm();
     if (not get_does_prop_wsrc_exist(job_tag, traj, tslice, type, 1)) {
       return false;
     }

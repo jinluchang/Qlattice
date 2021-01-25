@@ -125,6 +125,45 @@ inline void displayln_info(const std::string& str, FILE* fp = NULL)
   }
 }
 
+inline std::string get_env(const std::string& var_name)
+{
+  const char* value = getenv(var_name.c_str());
+  if (value == NULL) {
+    return std::string();
+  } else {
+    return std::string(value);
+  }
+}
+
+inline double get_env_double_default(const double x0,
+                                     const std::string& var_name)
+{
+  const std::string val = get_env(var_name);
+  double x;
+  if (val == "") {
+    x = x0;
+    displayln_info(ssprintf("%s=%lG (default)", var_name.c_str(), x));
+  } else {
+    x = read_double(val);
+    displayln_info(ssprintf("%s=%lG", var_name.c_str(), x));
+  }
+  return x;
+}
+
+inline long get_env_long_default(const long x0, const std::string& var_name)
+{
+  const std::string val = get_env(var_name);
+  long x;
+  if (val == "") {
+    x = x0;
+    displayln_info(ssprintf("%s=%ld (default)", var_name.c_str(), x));
+  } else {
+    x = read_long(val);
+    displayln_info(ssprintf("%s=%ld", var_name.c_str(), x));
+  }
+  return x;
+}
+
 inline long long get_total_flops()
 {
   long long flops = 0;
@@ -212,7 +251,7 @@ struct TimerInfo {
         accumulated_time / call_times, dflops / dtime / 1.0E9, (double)dflops));
   }
   //
-  void show_avg(const char* info, const int fname_len) const
+  void show_avg(const std::string& info, const int fname_len) const
   {
     double total_time = get_total_time();
     std::string fnameCut;
@@ -220,7 +259,7 @@ struct TimerInfo {
     displayln_info(ssprintf(
         "Timer::%s %s :%7.3f%% %8d calls; %.2E,%.2E sec; %.2E,%.2E flops; "
         "%5.2f Gflops",
-        NULL == info ? "" : info,
+        info.c_str(),
         ssprintf(ssprintf("%%%ds", fname_len).c_str(), fnameCut.c_str())
             .c_str(),
         accumulated_time / total_time * 100, call_times,
@@ -270,14 +309,17 @@ struct Timer {
   }
   //
   static double& minimum_autodisplay_interval()
+  // qlat parameter
   {
-    static double time = 5.0 * 60.0;
+    static double time =
+        get_env_double_default(5.0 * 60.0, "q_timer_mini_auto_display");
     return time;
   }
   //
   static double& minimum_duration_for_show_info()
+  // qlat parameter
   {
-    static double time = 1.0;
+    static double time = get_env_double_default(1.0, "q_timer_mini_auto_show");
     return time;
   }
   //
@@ -292,14 +334,17 @@ struct Timer {
   }
   //
   static long& max_call_times_for_always_show_info()
+  // qlat parameter
   {
-    static long max_call_times = 10;
+    static long max_call_times =
+        get_env_long_default(10, "q_timer_max_always_show");
     return max_call_times;
   }
   //
   static long& max_function_name_length_shown()
+  // qlat parameter
   {
-    static long max_len = 50;
+    static long max_len = get_env_long_default(50, "q_timer_max_func_name_len");
     return max_len;
   }
   //
@@ -368,6 +413,7 @@ struct Timer {
       info.show_avg("debug", max_function_name_length_shown());
       displayln(ssprintf("%s::%s ERROR: isRunning=%d", cname,
                          info.fname.c_str(), isRunning));
+      Timer::display_stack();
       assert(false);
     }
     TimerInfo& info = get_timer_database()[info_index];
@@ -385,19 +431,21 @@ struct Timer {
   //
   void stop(bool verbose = false)
   {
+    TimerInfo& info = get_timer_database()[info_index];
     std::vector<long>& t_stack = get_timer_stack();
     assert(not t_stack.empty());
-    if (not t_stack.back() == info_index) {
+    if (not (t_stack.back() == info_index)) {
       displayln(ssprintf("%s::%s ERROR: stack is currupted", cname,
                          info.fname.c_str()));
+      Timer::display_stack();
       assert(false);
     }
     t_stack.pop_back();
-    TimerInfo& info = get_timer_database()[info_index];
     if (isRunning <= 0) {
       info.show_avg("debug", max_function_name_length_shown());
       displayln(ssprintf("%s::%s ERROR: isRunning=%d", cname,
                          info.fname.c_str(), isRunning));
+      Timer::display_stack();
       assert(false);
     }
     isRunning -= 1;
@@ -489,9 +537,10 @@ struct Timer {
   {
     const std::vector<TimerInfo>& tdb = get_timer_database();
     const std::vector<long>& t_stack = get_timer_stack();
-    for (long i = 0; i < (long)t_stack.size(); ++i) {
+    for (long i = (long)t_stack.size() - 1; i >= 0; --i) {
       const long info_index = t_stack[i];
-      tdb[info_index].show_avg("stack", max_function_name_length_shown());
+      tdb[info_index].show_avg(ssprintf("stack[%3ld]", i),
+                               max_function_name_length_shown());
     }
   }
 };

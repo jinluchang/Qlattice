@@ -6,12 +6,15 @@ qlat::begin(): GeometryNode =
 , id_node     = 0
 , size_node   = 1x1x1x8
 , coor_node   = 0x0x0x0 }
+q_timer_mini_auto_show=1 (default)
+q_timer_max_func_name_len=50 (default)
 set_time_limit_auto: get_time_limit() = 12.00 hours.
 set_time_limit_auto: get_time_limit() = 12.00 hours.
 get_time_limit()=12.000000 hours
 get_default_budget()=0.250000 hours
 dist_read_par_limit()=16
 dist_write_par_limit()=16
+q_timer_max_always_show=10 (default)
 obtain_lock: Trying to obtain lock 'results/total_site=4x4x4x256/lambda=24.0000000000/mass_sqr=-1.8600000000.txt-lock'.
 obtain_lock: Lock obtained 'results/total_site=4x4x4x256/lambda=24.0000000000/mass_sqr=-1.8600000000.txt-lock'.
 set Q_FIELD_INIT=fast. (implicitly)
@@ -38,6 +41,7 @@ Qlat::CommPlanCache: to add 1 / 32.
   (phi2  0.118124969952768 0.000000000000000)
   (m_eff 0.899951437145341 0.000000000000000)
   (v_eff nan nan)))
+q_timer_mini_auto_display=300 (default)
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
 ((total-site (4 4 4 256))
  (mass-sqr -1.8600000000)

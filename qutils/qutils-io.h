@@ -122,33 +122,43 @@ inline std::vector<std::string> qgetlines(const std::string& fn)
   return lines;
 }
 
-inline int& is_sigint_received()
+inline int& is_sigterm_received()
 {
   static int n = 0;
   return n;
 }
 
-inline void qhandler_sigint(const int signum)
+inline void qhandler_sig(const int signum)
 {
-  if (signum == SIGINT or signum == SIGTERM) {
-    is_sigint_received() += 1;
-    displayln(ssprintf("qhandler_sigint: triggered, current count is: %d / 10.",
-                       is_sigint_received()));
+  if (signum == SIGTERM) {
+    is_sigterm_received() += 1;
+    displayln(ssprintf(
+        "qhandler_sig: sigterm triggered, current count is: %d / 10.",
+        is_sigterm_received()));
+    Timer::display();
+    Timer::display_stack();
     sleep(3.0);
-    if (is_sigint_received() >= 10) {
+    if (is_sigterm_received() >= 10) {
       qassert(false);
     }
+  } else if (signum == SIGINT) {
+    displayln(ssprintf("qhandler_sig: sigint triggered."));
+    Timer::display();
+    Timer::display_stack();
+    sleep(1.0);
   } else {
     displayln(
-        ssprintf("qhandler_sigint: cannot handle this signal: %d.", signum));
+        ssprintf("qhandler_sig: cannot handle this signal: %d.", signum));
+    Timer::display();
+    Timer::display_stack();
   }
 }
 
-inline int install_qhandle_sigint()
+inline int install_qhandle_sig()
 {
-  TIMER_VERBOSE("install_qhandle_sigint");
+  TIMER_VERBOSE("install_qhandle_sig");
   struct sigaction act;
-  act.sa_handler = qhandler_sigint;
+  act.sa_handler = qhandler_sig;
   return sigaction(SIGINT, &act, NULL) + sigaction(SIGTERM, &act, NULL);
 }
 

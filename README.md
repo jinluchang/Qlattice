@@ -144,3 +144,27 @@ Relevant examples: `examples/rng-state-tests`, `examples/field-rng-tests`.
   Number of ``qacc`` threads.
 
   Default is ``32``.
+
+- ``q_timer_mini_auto_display``
+
+  Minimum time between auto-display of timer information summary.
+
+  Default is ``5.0 * 60.0``.
+
+- ``q_timer_mini_auto_show``
+
+  Minimum run time for a function for its information to be shown when it start or stop.
+
+  Default is ``1.0``.
+
+- ``q_timer_max_always_show``
+
+  Maximum number of times to always show function start or stop.
+
+  Default is ``10``.
+
+- ``q_timer_max_func_name_len``
+
+  Maximum length for a function name before truncation.
+
+  Default is ``50``.
