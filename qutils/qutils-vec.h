@@ -183,12 +183,12 @@ struct Vector {
     n = 1;
   }
   //
-  qacc const M& operator[](long i) const
+  qacc const M& operator[](const long i) const
   {
     qassert(0 <= i && i < n);
     return p[i];
   }
-  qacc M& operator[](long i)
+  qacc M& operator[](const long i)
   {
     if (not(0 <= i && i < n)) {
 #ifndef QLAT_USE_ACC

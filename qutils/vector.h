@@ -241,9 +241,9 @@ struct vector {
       v.p = (M*)alloc_mem(size * sizeof(M));
       v.n = size;
       if (size <= vp.v.n) {
-        std::memcpy(v.p, vp.v.p, size * sizeof(M));
+        std::memcpy((void*)v.p, (void*)vp.v.p, size * sizeof(M));
       } else {
-        std::memcpy(v.p, vp.v.p, vp.v.n * sizeof(M));
+        std::memcpy((void*)v.p, (void*)vp.v.p, vp.v.n * sizeof(M));
       }
     }
   }
@@ -294,8 +294,8 @@ struct vector {
     return *this;
   }
   //
-  qacc const M& operator[](long i) const { return v[i]; }
-  qacc M& operator[](long i) { return v[i]; }
+  qacc const M& operator[](const long i) const { return v[i]; }
+  qacc M& operator[](const long i) { return v[i]; }
   //
   qacc long size() const { return v.size(); }
   //
