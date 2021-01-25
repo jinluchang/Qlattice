@@ -238,9 +238,9 @@ inline bool compare_time_info_p(const TimerInfo* p1, const TimerInfo* p2)
 
 struct Timer {
   const char* cname;
-  int info_index;
+  long info_index;
   bool is_using_total_flops;
-  int isRunning;
+  long isRunning;
   double start_time;
   double stop_time;
   long long start_flops;
@@ -251,6 +251,12 @@ struct Timer {
   {
     static std::vector<TimerInfo> timer_database;
     return timer_database;
+  }
+  //
+  static std::vector<long>& get_timer_stack()
+  {
+    static std::vector<long> stack;
+    return stack;
   }
   //
   static void reset()
@@ -285,15 +291,15 @@ struct Timer {
     return minimum_duration_for_show_info();
   }
   //
-  static int& max_call_times_for_always_show_info()
+  static long& max_call_times_for_always_show_info()
   {
-    static int max_call_times = 10;
+    static long max_call_times = 10;
     return max_call_times;
   }
   //
-  static int& max_function_name_length_shown()
+  static long& max_function_name_length_shown()
   {
-    static int max_len = 50;
+    static long max_len = 50;
     return max_len;
   }
   //
@@ -327,8 +333,8 @@ struct Timer {
   void init(const std::string& fname_str)
   {
     std::vector<TimerInfo>& tdb = get_timer_database();
-    const int size = tdb.size();
-    for (int i = 0; i < size; i++) {
+    const long size = tdb.size();
+    for (long i = 0; i < size; i++) {
       if (fname_str == tdb[i].fname) {
         info_index = i;
         return;
@@ -351,6 +357,7 @@ struct Timer {
   //
   void start(bool verbose = false)
   {
+    get_timer_stack().push_back(info_index);
     if (isRunning > 0) {
       isRunning += 1;
       return;
@@ -378,6 +385,14 @@ struct Timer {
   //
   void stop(bool verbose = false)
   {
+    std::vector<long>& t_stack = get_timer_stack();
+    assert(not t_stack.empty());
+    if (not t_stack.back() == info_index) {
+      displayln(ssprintf("%s::%s ERROR: stack is currupted", cname,
+                         info.fname.c_str()));
+      assert(false);
+    }
+    t_stack.pop_back();
     TimerInfo& info = get_timer_database()[info_index];
     if (isRunning <= 0) {
       info.show_avg("debug", max_function_name_length_shown());
@@ -437,8 +452,8 @@ struct Timer {
     double total_time = get_total_time();
     const std::vector<TimerInfo>& tdb = get_timer_database();
     std::vector<const TimerInfo*> db;
-    const int tdbsize = tdb.size();
-    for (int i = 0; i < tdbsize; i++) {
+    const long tdbsize = tdb.size();
+    for (long i = 0; i < tdbsize; i++) {
       db.push_back(&tdb[i]);
     }
     std::sort(db.begin(), db.end(), compare_time_info_p);
@@ -446,8 +461,8 @@ struct Timer {
         ssprintf("Timer::display-start: %s fname : time%% number of calls; "
                  "Avg,Tot sec; Avg,Tot flops; Gflops",
                  str.c_str()));
-    const int dbsize = db.size();
-    for (int i = 0; i < dbsize; i++) {
+    const long dbsize = db.size();
+    for (long i = 0; i < dbsize; i++) {
       db[i]->show_avg("display", max_function_name_length_shown());
     }
     displayln_info(
@@ -468,6 +483,16 @@ struct Timer {
   {
     const double time = get_time();
     autodisplay(time);
+  }
+  //
+  static void display_stack()
+  {
+    const std::vector<TimerInfo>& tdb = get_timer_database();
+    const std::vector<long>& t_stack = get_timer_stack();
+    for (long i = 0; i < (long)t_stack.size(); ++i) {
+      const long info_index = t_stack[i];
+      tdb[info_index].show_avg("stack", max_function_name_length_shown());
+    }
   }
 };
 

@@ -282,6 +282,13 @@ bool is_initialized(const SelectedField<M>& sf)
 }
 
 template <class M>
+bool is_consistent(const SelectedField<M>& sf, const FieldSelection& fsel)
+{
+  return sf.initialized and sf.n_elems == fsel.n_elems and
+         geo_remult(sf.geo(), 1) == fsel.f_local_idx.geo();
+}
+
+template <class M>
 void qswap(SelectedField<M>& f1, SelectedField<M>& f2)
 {
   std::swap(f1.initialized, f2.initialized);
@@ -509,6 +516,34 @@ void set_field_selected(Field<M>& f, const SelectedField<M>& sf,
       fv[m] = sfv[m];
     }
   }
+}
+
+template <class M>
+bool is_consistent(const SelectedPoints<M>& sp, const SelectedField<M>& sf,
+                   const PointSelection& psel, const FieldSelection& fsel)
+{
+  TIMER("is_consistent(sp,sf)");
+  qassert(is_consistent(sp, psel));
+  qassert(is_consistent(sf, fsel));
+  const Geometry& geo = sf.geo();
+  const long n_points = psel.size();
+  double qnorm_diff = 0.0;
+  qfor(idx, n_points, {
+    const Coordinate& xg = psel[idx];
+    const Coordinate xl = geo.coordinate_l_from_g(xg);
+    if (geo.is_local(xl)) {
+      const long sf_idx = fsel.f_local_idx.get_elem(xl);
+      if (sf_idx >= 0) {
+        const Vector<M> fv = sf.get_elems_const(sf_idx);
+        const Vector<M> spv = sp.get_elems_const(idx);
+        for (int m = 0; m < geo.multiplicity; ++m) {
+          qnorm_diff += qnorm(spv[m] - fv[m]);
+        }
+      }
+    }
+  });
+  glb_sum(qnorm_diff);
+  return qnorm_diff == 0.0;
 }
 
 template <class M>

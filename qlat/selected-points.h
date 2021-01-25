@@ -183,6 +183,12 @@ bool is_initialized(const SelectedPoints<M>& sp)
 }
 
 template <class M>
+bool is_consistent(const SelectedPoints<M>& sp, const PointSelection& psel)
+{
+  return sp.initialized and sp.n_points == (long)psel.size();
+}
+
+template <class M>
 Vector<M> get_data(const SelectedPoints<M>& sp)
 {
   return get_data(sp.points);

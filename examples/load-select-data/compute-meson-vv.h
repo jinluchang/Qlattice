@@ -168,7 +168,7 @@ inline void compute_meson_vv_light(const std::string& job_tag, const int traj)
   if (does_file_exist_sync_node(path_checkpoint)) {
     return;
   }
-  if (does_file_exist_sync_node(path + "/fission-0-0-0.field")) {
+  if (does_file_exist_sync_node(path + "/decay-0-0-0.field")) {
     return;
   }
   if (not(check_wall_src_props(job_tag, traj, 0) and

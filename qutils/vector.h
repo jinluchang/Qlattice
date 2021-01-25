@@ -193,6 +193,11 @@ struct vector {
     is_copy = false;
     resize(size, x);
   }
+  vector(const std::vector<M>& vp)
+  {
+    is_copy = false;
+    *this = vp;
+  }
   //
   ~vector()
   {
