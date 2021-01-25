@@ -93,7 +93,6 @@ inline void compute_meson_vv_meson_type(const std::string& job_tag,
         cache[ssprintf("forward-%d-%d-%d-%d", type1, type2, type3, type4)];
     FieldM<Complex, 8 * 8>& backward =
         cache[ssprintf("backward-%d-%d-%d-%d", type1, type2, type3, type4)];
-
     const double coef = 1.0 / (double)n_iter;
     forward *= coef;
     backward *= coef;
@@ -189,8 +188,7 @@ inline void compute_meson_vv_meson_light(const std::string& job_tag,
   if (does_file_exist_sync_node(path_checkpoint)) {
     return;
   }
-  if (does_file_exist_sync_node(path + "/forward-0-0-0-0.field") and
-      does_file_exist_sync_node(path + "/backward-0-0-0-0.field")) {
+  if (does_file_exist_sync_node(path + "/forward-0-0-0-0.field")) {
     return;
   }
   if (not(check_wall_src_props(job_tag, traj, 0) and
