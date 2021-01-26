@@ -157,6 +157,7 @@ int main(int argc, char* argv[])
   size_node_list.push_back(Coordinate(1,1,2,4));
   size_node_list.push_back(Coordinate(1,1,1,4));
   begin(&argc, &argv, size_node_list);
+  display_geometry_node();
   setup_log_idx();
   setup();
   for (int k = 0; k < (int)job_tags.size(); ++k) {

@@ -206,9 +206,9 @@ crc32_t field_crc32(const SelectedField<M>& sf, const FieldSelection& fsel,
   qassert(new_size_node[2] == 1);
   std::vector<FieldSelection> fsels;
   const ShufflePlan sp = make_shuffle_plan(fsels, fsel, new_size_node);
-  qassert(fsels.size() == sp.geos_recv.size());
   std::vector<SelectedField<M> > sfs;
   shuffle_field(sfs, sf, sp);
+  qassert(fsels.size() == sfs.size());
   const int new_num_node = product(new_size_node);
   crc32_t crc = 0;
   for (int i = 0; i < (int)sfs.size(); ++i) {
@@ -263,9 +263,9 @@ long write_selected_field(const SelectedField<M>& sf, const std::string& path,
   qassert(new_size_node[2] == 1);
   std::vector<FieldSelection> fsels;
   const ShufflePlan sp = make_shuffle_plan(fsels, fsel, new_size_node);
-  qassert(fsels.size() == sp.geos_recv.size());
   std::vector<SelectedField<M> > sfs;
   shuffle_field(sfs, sf, sp);
+  qassert(fsels.size() == sfs.size());
   long check_n_per_tslice = 0;
   for (int i = 0; i < (int)sfs.size(); ++i) {
     const Coordinate& node_site = sfs[i].geo().node_site;

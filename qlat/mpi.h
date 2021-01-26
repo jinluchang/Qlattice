@@ -618,9 +618,11 @@ inline std::vector<int> mk_id_node_list_for_shuffle(const RngState& rs)
   return list;
 }
 
-inline std::vector<int> mk_id_node_list_for_shuffle(const int step_size)
+inline std::vector<int> mk_id_node_list_for_shuffle(const int step_size_)
 {
   const int num_node = get_num_node();
+  const int step_size =
+      (step_size_ < num_node and num_node % step_size_ == 0) ? step_size_ : 1;
   std::vector<int> list(num_node);
   for (int i = 0; i < num_node; ++i) {
     const int id_node_in_shuffle = i;
