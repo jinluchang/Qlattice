@@ -66,7 +66,9 @@ inline bool compute_traj_do(const std::string& job_tag, const int traj)
   //
   // pion contraction
   const LatData ld = contract_pion(prop, xg_point_src[3]);
-  ld.save(job_path + "/pion-corr.lat");
+  if (0 == get_id_node()) {
+    ld.save(job_path + "/pion-corr.lat");
+  }
   qtouch_info(job_path + "/pion-corr.txt", show(ld));
   if (0 == get_id_node()) {
     print(ld);
@@ -152,6 +154,7 @@ int main(int argc, char* argv[])
   job_tags.push_back("free-4nt8");
   std::vector<Coordinate> size_node_list;
   size_node_list.push_back(Coordinate(2,2,2,4));
+  size_node_list.push_back(Coordinate(1,1,2,4));
   size_node_list.push_back(Coordinate(1,1,1,4));
   begin(&argc, &argv, size_node_list);
   setup_log_idx();

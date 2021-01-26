@@ -40,6 +40,7 @@ void test()
   displayln_info(ssprintf("INFO: gf_trace_sum = %24.17E", gf_trace_sum));
   displayln_info(ssprintf("INFO: gf_trace_avg = %24.17E",
                           gf_trace_sum / geo.total_volume() / 4.0 / 3.0));
+  displayln_info(ssprintf("INFO: gf_avg_plaq = %24.17E", gf_avg_plaq(gf)));
 }
 
 }  // namespace qlat

@@ -95,7 +95,7 @@ double gf_avg_plaq_no_comm(const GaugeFieldT<T>& gf)
     for (long index = 0; index < geo.local_volume(); ++index) {
       Coordinate xl = geo.coordinate_from_index(index);
       const Vector<ColorMatrixT<T> > v = gf.get_elems_const(xl);
-      std::vector<Vector<ColorMatrixT<T> > > vms(DIMN);
+      array<Vector<ColorMatrixT<T> >, DIMN> vms;
       for (int m = 0; m < DIMN; ++m) {
         xl[m] += 1;
         vms[m] = gf.get_elems_const(xl);
