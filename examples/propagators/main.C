@@ -154,7 +154,7 @@ int main(int argc, char* argv[])
   job_tags.push_back("free-4nt8");
   std::vector<Coordinate> size_node_list;
   size_node_list.push_back(Coordinate(2,2,2,4));
-  size_node_list.push_back(Coordinate(1,1,2,4));
+  size_node_list.push_back(Coordinate(1,2,2,2));
   size_node_list.push_back(Coordinate(1,1,1,4));
   begin(&argc, &argv, size_node_list);
   display_geometry_node();

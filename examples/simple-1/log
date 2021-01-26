@@ -35,4 +35,5 @@ spatial plaq :  9.48253412870626811E-01
 trace:  9.86826590890407918E-01
 INFO: gf_trace_sum =  6.06306257443066625E+03
 INFO: gf_trace_avg =  9.86826590890407918E-01
+INFO: gf_avg_plaq =  9.48400361131393588E-01
 qlat::end(): MPI Finalized.
