@@ -229,7 +229,7 @@ bool is_initialized(const Field<M>& f)
 }
 
 template <class M>
-Vector<M> get_data(const Field<M>& f)
+qacc Vector<M> get_data(const Field<M>& f)
 {
   return get_data(f.field);
 }
