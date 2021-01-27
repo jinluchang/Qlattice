@@ -52,7 +52,6 @@ inline void setup()
                           get_default_budget() / 3600.0));
   displayln_info(ssprintf("dist_read_par_limit()=%d", dist_read_par_limit()));
   displayln_info(ssprintf("dist_write_par_limit()=%d", dist_write_par_limit()));
-  install_qhandle_sig();
 }
 
 inline void setup(const std::string& job_tag)

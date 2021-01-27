@@ -743,6 +743,7 @@ inline void begin_comm(const MPI_Comm comm, const Coordinate& size_node)
   fflush(get_output_file());
   sync_node();
   // display_geometry_node();
+  install_qhandle_sig();
 }
 
 inline void begin(const int id_node, const Coordinate& size_node)
