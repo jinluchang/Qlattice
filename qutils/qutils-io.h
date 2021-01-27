@@ -145,7 +145,6 @@ inline void qhandler_sig(const int signum)
     displayln(ssprintf("qhandler_sig: sigint triggered."));
     Timer::display();
     Timer::display_stack();
-    sleep(1.0);
   } else {
     displayln(
         ssprintf("qhandler_sig: cannot handle this signal: %d.", signum));
