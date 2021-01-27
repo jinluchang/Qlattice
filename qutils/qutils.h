@@ -19,7 +19,10 @@
 #elif defined QLAT_USE_ACC
 #define qassert(x) assert(x)
 #else
-#define qassert(x)                                                            \
+#define qassert(x) qqassert(x)
+#endif
+
+#define qqassert(x)                                                           \
   {                                                                           \
     if (not(x)) {                                                             \
       qlat::Timer::display();                                                 \
@@ -30,7 +33,6 @@
       assert(false);                                                          \
     }                                                                         \
   }
-#endif
 
 namespace qlat
 {  //
@@ -399,24 +401,24 @@ template <typename T>
 std::vector<T> vector_block(const std::vector<T>& vs, const long n_block)
 // need =, +=, *=
 {
-  qassert(n_block >= 1);
+  qqassert(n_block >= 1);
   const long size = vs.size();
   if (n_block > size) {
     return vs;
   }
   const long block_size = size / n_block;
-  qassert(block_size >= 1);
+  qqassert(block_size >= 1);
   const long reminder = size - block_size * n_block;
   std::vector<T> ret(n_block);
   long cur = 0;
   for (int i = 0; i < n_block; ++i) {
     long count = 0;
-    qassert(cur < size);
+    qqassert(cur < size);
     ret[i] = vs[cur];
     cur += 1;
     count += 1;
     for (int j = 1; j < block_size + (i < reminder ? 1 : 0); ++j) {
-      qassert(cur < size);
+      qqassert(cur < size);
       ret[i] += vs[cur];
       cur += 1;
       count += 1;
@@ -431,7 +433,7 @@ T average(const std::vector<T>& vs)
 // need =, +=, *=
 {
   const long size = vs.size();
-  qassert(size >= 1);
+  qqassert(size >= 1);
   T val;
   val = vs[0];
   for (long i = 1; i < size; ++i) {
@@ -446,7 +448,7 @@ std::vector<T> jackknife(const std::vector<T>& vs)
 // need =, +=, *=
 {
   const long size = vs.size();
-  qassert(size >= 1);
+  qqassert(size >= 1);
   std::vector<T> ret(size + 1);
   ret[0] = average(vs);
   if (size == 1) {
@@ -467,7 +469,7 @@ T jackknife_sigma(const std::vector<T>& vs)
 // need =, *=, -, *, sqrt
 {
   const long size = vs.size();
-  qassert(size >= 2);
+  qqassert(size >= 2);
   T val_sub, val_diff, val_sum, val2_sum;
   val_sub = vs[0];
   val_diff = vs[0] - val_sub;
