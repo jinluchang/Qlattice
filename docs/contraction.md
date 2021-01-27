@@ -717,3 +717,33 @@ mchvp_1_2_3_4 += tmp;
 mchvp_1_2_3_4 *= 0.5;
 ```
 
+### meson-v-v-meson
+
+Selectively contract all possible combinations. No point source propagators are needed.
+
+Proper factor is compensated so it can treated as if ``xg_x`` is contracted for all lattice sites and ``xg_y`` is contracted only on a single site.
+
+```cpp
+inline void contract_meson_v_v_meson_acc(
+    FieldM<Complex, 8 * 8>& mf_v_v,
+    const WallSrcProps& wsp1, const WallSrcProps& wsp2,
+    const WallSrcProps& wsp3, const SelProp& prop4_x_y, const Coordinate& xg_y,
+    const long xg_y_psel_idx, const int tsep, const PointSelection& psel,
+    const FieldSelection& fsel, const ShiftShufflePlan& ssp);
+// xg_y = psel[xg_y_psel_idx] is the point src location for prop3_x_y
+// ssp = make_shift_shuffle_plan(fsel, -xg_y);
+```
+
+$$
+\ba
+H_\text{1-2-3-4}(x-y)[8\mu+\nu]
+&\texttt{ += }&
+\mathrm{Tr}[
+S_1(t_\text{snk};x)\gamma^{\mathrm{va}}_\mu
+S_2(x;t_\text{src})\gamma_5
+S_3(t_\text{src};y) \gamma^{\mathrm{va}}_\nu 
+S_4(y;t_\text{snk})\gamma_5
+]
+\ea
+$$
+

@@ -87,10 +87,6 @@ inline Coordinate coor_node_from_id_node(int id_node)
   return coordinate_from_index(id_node, get_geometry_node().size_node);
 }
 
-inline int get_num_node() { return get_geometry_node().num_node; }
-
-inline int get_id_node() { return get_geometry_node().id_node; }
-
 inline const Coordinate& get_size_node()
 {
   return get_geometry_node().size_node;
@@ -723,8 +719,12 @@ inline int init_mpi(int* argc, char** argv[])
   if (!is_MPI_initialized()) MPI_Init(argc, argv);
   int num_node;
   MPI_Comm_size(MPI_COMM_WORLD, &num_node);
-  displayln_info("qlat::begin(): " +
-                 ssprintf("MPI Initialized. num_node = %d", num_node));
+  int id_node;
+  MPI_Comm_rank(MPI_COMM_WORLD, &id_node);
+  if (0 == id_node) {
+    displayln("qlat::begin(): " +
+              ssprintf("MPI Initialized. num_node = %d", num_node));
+  }
   return num_node;
 }
 
@@ -736,6 +736,8 @@ inline void begin_comm(const MPI_Comm comm, const Coordinate& size_node)
   MPI_Comm_rank(get_comm(), &id_node);
   GeometryNode& geon = get_geometry_node_internal();
   geon.init(id_node, size_node);
+  get_id_node_internal() = geon.id_node;
+  get_num_node_internal() = geon.num_node;
   sync_node();
   displayln_info("qlat::begin(): OMP_NUM_THREADS = " +
                  show(omp_get_max_threads()));

@@ -85,21 +85,28 @@ inline double& get_start_time()
 
 inline double get_total_time() { return get_time() - get_start_time(); }
 
-inline int compute_rank()
+inline int& get_num_node_internal()
+// initialized in begin_comm in qlat/mpi.h
 {
-#ifdef USE_MULTI_NODE
-  int myid;
-  MPI_Comm_rank(MPI_COMM_WORLD, &myid);
-  return myid;
-#else
-  return 0;
-#endif
+  static int num_node = 1;
+  return num_node;
 }
 
-inline int get_rank()
+inline int get_num_node()
 {
-  static int myid = compute_rank();
-  return myid;
+  return get_num_node_internal();
+}
+
+inline int& get_id_node_internal()
+// initialized in begin_comm in qlat/mpi.h
+{
+  static int id_node = 0;
+  return id_node;
+}
+
+inline int get_id_node()
+{
+  return get_id_node_internal();
 }
 
 inline int get_thread_num()
@@ -113,14 +120,14 @@ inline int get_thread_num()
 
 inline void display_info(const std::string& str, FILE* fp = NULL)
 {
-  if (0 == get_rank() && 0 == get_thread_num()) {
+  if (0 == get_id_node() && 0 == get_thread_num()) {
     display(str, fp);
   }
 }
 
 inline void displayln_info(const std::string& str, FILE* fp = NULL)
 {
-  if (0 == get_rank() && 0 == get_thread_num()) {
+  if (0 == get_id_node() && 0 == get_thread_num()) {
     displayln(str, fp);
   }
 }
@@ -251,12 +258,12 @@ struct TimerInfo {
         accumulated_time / call_times, dflops / dtime / 1.0E9, (double)dflops));
   }
   //
-  void show_avg(const std::string& info, const int fname_len) const
+  void show_avg_always(const std::string& info, const int fname_len) const
   {
     double total_time = get_total_time();
     std::string fnameCut;
     fnameCut.assign(fname, 0, fname_len);
-    displayln_info(ssprintf(
+    displayln(ssprintf(
         "Timer::%s %s :%7.3f%% %8d calls; %.2E,%.2E sec; %.2E,%.2E flops; "
         "%5.2f Gflops",
         info.c_str(),
@@ -267,6 +274,12 @@ struct TimerInfo {
         (double)accumulated_flops / (double)call_times,
         (double)accumulated_flops,
         accumulated_flops / accumulated_time / 1.0E9));
+  }
+  void show_avg(const std::string& info, const int fname_len) const
+  {
+    if (0 == get_id_node() && 0 == get_thread_num()) {
+      show_avg_always(info, fname_len);
+    }
   }
 };
 
@@ -410,7 +423,7 @@ struct Timer {
       isRunning = 1;
     } else {
       TimerInfo& info = get_timer_database()[info_index];
-      info.show_avg("debug", max_function_name_length_shown());
+      info.show_avg_always("debug", max_function_name_length_shown());
       displayln(ssprintf("%s::%s ERROR: isRunning=%d", cname,
                          info.fname.c_str(), isRunning));
       Timer::display_stack();
@@ -442,7 +455,7 @@ struct Timer {
     }
     t_stack.pop_back();
     if (isRunning <= 0) {
-      info.show_avg("debug", max_function_name_length_shown());
+      info.show_avg_always("debug", max_function_name_length_shown());
       displayln(ssprintf("%s::%s ERROR: isRunning=%d", cname,
                          info.fname.c_str(), isRunning));
       Timer::display_stack();
@@ -533,14 +546,20 @@ struct Timer {
     autodisplay(time);
   }
   //
-  static void display_stack()
+  static void display_stack_always()
   {
     const std::vector<TimerInfo>& tdb = get_timer_database();
     const std::vector<long>& t_stack = get_timer_stack();
     for (long i = (long)t_stack.size() - 1; i >= 0; --i) {
       const long info_index = t_stack[i];
-      tdb[info_index].show_avg(ssprintf("stack[%3ld]", i),
-                               max_function_name_length_shown());
+      tdb[info_index].show_avg_always(ssprintf("stack[%3ld]", i),
+                                      max_function_name_length_shown());
+    }
+  }
+  static void display_stack()
+  {
+    if (0 == get_id_node() && 0 == get_thread_num()) {
+      display_stack_always();
     }
   }
 };
@@ -612,7 +631,7 @@ inline void Display(const char* cname, const char* fname, const char* format,
 inline void DisplayInfo(const char* cname, const char* fname,
                         const char* format, ...)
 {
-  static int rank = get_rank();
+  static int rank = get_id_node();
   if (0 != rank) {
     return;
   }

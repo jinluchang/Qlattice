@@ -16,10 +16,14 @@
   {                                                                           \
     if (not(x)) {                                                             \
       qlat::Timer::display();                                                 \
-      qlat::displayln(qlat::ssprintf("qassert failed: %s from '%s' line %d.", \
-                                     #x, __FILE__, __LINE__));                \
-      qlat::Timer::display_stack();                                           \
-      usleep((useconds_t)(10.0 * 1.0e6));                                     \
+      qlat::displayln(qlat::ssprintf(                                         \
+          "qassert failed: %s from '%s' line %d. (id_node=%d thread_num=%d)", \
+          #x, __FILE__, __LINE__, get_id_node(), get_thread_num()));          \
+      usleep((useconds_t)(get_id_node() * 0.1 * 1.0e6));                      \
+      usleep((useconds_t)(get_thread_num() * 0.01 * 1.0e6));                  \
+      qlat::Timer::display_stack_always();                                    \
+      usleep((useconds_t)(get_num_node() * 0.1 * 1.0e6));                     \
+      usleep((useconds_t)(2.0 * 1.0e6));                                      \
       assert(false);                                                          \
     }                                                                         \
   }
