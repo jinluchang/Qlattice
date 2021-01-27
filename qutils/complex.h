@@ -17,13 +17,13 @@ typedef thrust::complex<double> Complex;
 typedef thrust::complex<float> ComplexF;
 
 template <class T>
-thrust::complex<T> qconj(const thrust::complex<T>& x)
+qacc thrust::complex<T> qconj(const thrust::complex<T>& x)
 {
   return thrust::conj(x);
 }
 
 template <class T>
-double qnorm(const thrust::complex<T>& x)
+qacc double qnorm(const thrust::complex<T>& x)
 {
   return thrust::norm(x);
 }
