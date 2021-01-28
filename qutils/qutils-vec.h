@@ -186,7 +186,7 @@ struct Vector {
   qacc const M& operator[](const long i) const
   {
     if (not(0 <= i && i < n)) {
-#ifndef QLAT_USE_ACC
+#ifndef QLAT_IN_ACC
       displayln(
           ssprintf("ERROR: expect: 0 <= i && i < n but: i=%d n=%d sizeof(M)=%d",
                    i, n, sizeof(M)));
@@ -198,7 +198,7 @@ struct Vector {
   qacc M& operator[](const long i)
   {
     if (not(0 <= i && i < n)) {
-#ifndef QLAT_USE_ACC
+#ifndef QLAT_IN_ACC
       displayln(
           ssprintf("ERROR: expect: 0 <= i && i < n but: i=%d n=%d sizeof(M)=%d",
                    i, n, sizeof(M)));

@@ -285,7 +285,9 @@ template <class M>
 bool is_consistent(const SelectedField<M>& sf, const FieldSelection& fsel)
 {
   return sf.initialized and sf.n_elems == fsel.n_elems and
-         geo_remult(sf.geo(), 1) == fsel.f_local_idx.geo();
+         geo_remult(sf.geo(), 1) == fsel.f_local_idx.geo() and
+         (long) sf.field.size() == sf.n_elems * (long)sf.geo().multiplicity and
+         fsel.f_local_idx.geo().is_only_local();
 }
 
 template <class M>
@@ -471,9 +473,7 @@ void set_selected_points(SelectedPoints<M>& sp, const SelectedField<M>& sf,
 {
   TIMER("set_selected_points");
   const Geometry& geo = sf.geo();
-  qassert(geo.is_only_local());
-  qassert(fsel.f_local_idx.geo().is_only_local());
-  qassert(geo_remult(sf.geo()) == fsel.f_local_idx.geo());
+  qassert(is_consistent(sf, fsel));
   const long n_points = psel.size();
   sp.init(geo, psel);
   set_zero(sp.points);
@@ -483,7 +483,7 @@ void set_selected_points(SelectedPoints<M>& sp, const SelectedField<M>& sf,
     const Coordinate xl = geo.coordinate_l_from_g(xg);
     if (geo.is_local(xl)) {
       const long sf_idx = fsel.f_local_idx.get_elem(xl);
-      qassert(sf_idx >= 0);
+      qassert(0 <= sf_idx and sf_idx < sf.n_elems);
       const Vector<M> fv = sf.get_elems_const(sf_idx);
       Vector<M> spv = sp.get_elems(idx);
       for (int m = 0; m < geo.multiplicity; ++m) {
