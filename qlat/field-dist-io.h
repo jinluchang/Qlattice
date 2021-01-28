@@ -572,9 +572,9 @@ void convert_field_float_from_double(Field<N>& ff, const Field<M>& f)
   Vector<N> ffdata = get_data(ff);
   Vector<float> ffd((float*)ffdata.data(), ffdata.data_size() / sizeof(float));
   qassert(ffd.size() == fd.size());
-  for (long i = 0; i < ffd.size(); ++i) {
+  qacc_for(i, ffd.size(), {
     ffd[i] = fd[i];
-  }
+  });
 }
 
 template <class M, class N>
@@ -596,9 +596,9 @@ void convert_field_double_from_float(Field<N>& ff, const Field<M>& f)
   Vector<double> ffd((double*)ffdata.data(),
                      ffdata.data_size() / sizeof(double));
   qassert(ffd.size() == fd.size());
-  for (long i = 0; i < ffd.size(); ++i) {
+  qacc_for(i, ffd.size(), {
     ffd[i] = fd[i];
-  }
+  });
 }
 
 template <class M>

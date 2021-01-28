@@ -30,10 +30,9 @@ inline void mk_grid_field_selection(FieldM<int64_t, 1>& f_rank,
   f_rank.init();
   f_rank.init(geo);
   qassert(f_rank.geo().is_only_local());
-#pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  qthread_for(index, geo.local_volume(), {
     f_rank.get_elem(index) = -1;
-  }
+  });
   std::vector<Field<int64_t> > fs;
   const Coordinate new_size_node = get_default_serial_new_size_node(geo);
   shuffle_field(fs, f_rank, new_size_node);
@@ -559,9 +558,9 @@ void convert_field_float_from_double(SelectedField<N>& ff,
   Vector<N> ffdata = get_data(ff);
   Vector<float> ffd((float*)ffdata.data(), ffdata.data_size() / sizeof(float));
   qassert(ffd.size() == fd.size());
-  for (long i = 0; i < ffd.size(); ++i) {
+  qacc_for(i, ffd.size(), {
     ffd[i] = fd[i];
-  }
+  });
 }
 
 template <class M, class N>
@@ -585,9 +584,9 @@ void convert_field_double_from_float(SelectedField<N>& ff,
   Vector<double> ffd((double*)ffdata.data(),
                      ffdata.data_size() / sizeof(double));
   qassert(ffd.size() == fd.size());
-  for (long i = 0; i < ffd.size(); ++i) {
+  qacc_for(i, ffd.size(), {
     ffd[i] = fd[i];
-  }
+  });
 }
 
 template <class M>
