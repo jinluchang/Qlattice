@@ -494,6 +494,7 @@ inline bool read_tag(FieldsReader& fr, std::string& fn, Coordinate& total_site,
   if (1 != fread_convert_endian(&data_len, 8, 1, fr.fp, fr.is_little_endian)) {
     qassert(false);
   }
+  qassert(data_len > 0);
   //
   const long final_offset = ftell(fr.fp) + data_len;
   if (final_offset > fr.max_offset) {
@@ -1048,15 +1049,20 @@ long read(ShuffledFieldsReader& sfr, const std::string& fn, Field<M>& field)
   long total_bytes = 0;
   displayln_info(fname + ssprintf(": reading field with fn='%s'.", fn.c_str()));
   std::vector<Field<M> > fs(sfr.frs.size());
+  long zero_size_count = 0;
   for (int i = 0; i < (int)fs.size(); ++i) {
     const long bytes = read(sfr.frs[i], fn, fs[i]);
     if (0 == bytes) {
+      zero_size_count += 1;
       qassert(0 == total_bytes);
     } else {
       total_bytes += bytes;
     }
   }
   glb_sum(total_bytes);
+  if (0 != zero_size_count) {
+    qassert(0 == total_bytes);
+  }
   if (0 == total_bytes) {
     return 0;
   }
@@ -1100,6 +1106,7 @@ void set_field_info_from_fields(Coordinate& total_site, int& multiplicity,
   for (int i = 0; i < (int)sfs.size(); ++i) {
     const int id_node = sfr.frs[i].geon.id_node;
     if (id_node == id_node_first_available) {
+      qassert(is_initialized(sfs[i]));
       total_site = sfs[i].geo().total_site();
       multiplicity = sfs[i].geo().multiplicity;
       qassert(get_id_node() == id_node_bcast_from);
@@ -1128,23 +1135,31 @@ long read(ShuffledFieldsReader& sfr, const std::string& fn, const ShuffledBitSet
   long total_bytes = 0;
   displayln_info(fname + ssprintf(": reading sparse field with fn='%s'.", fn.c_str()));
   std::vector<SelectedField<M> > sfs(sfr.frs.size());
+  long zero_size_count = 0;
   for (int i = 0; i < (int)sfs.size(); ++i) {
     const long bytes = read(sfr.frs[i], fn, sbs.fsels[i], sfs[i]);
     if (0 == bytes) {
+      zero_size_count += 1;
       qassert(0 == total_bytes);
     } else {
       total_bytes += bytes;
     }
   }
   glb_sum(total_bytes);
+  if (0 != zero_size_count) {
+    qassert(0 == total_bytes);
+  }
   if (0 == total_bytes) {
     return 0;
   }
   Coordinate total_site;
   int multiplicity = 0;
   set_field_info_from_fields(total_site, multiplicity, sfs, sfr);
+  qassert(total_site != Coordinate());
+  qassert(multiplicity > 0);
   sf.init(sbs.fsel, multiplicity);
   shuffle_field_back(sf, sfs, sbs.sp);
+  qassert(is_consistent(sf, sbs.fsel));
   timer.flops += total_bytes;
   return total_bytes;
 }

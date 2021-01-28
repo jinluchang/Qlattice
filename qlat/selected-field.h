@@ -123,6 +123,7 @@ inline void update_field_selection(FieldSelection& fsel)
   TIMER_VERBOSE("update_field_selection");
   const Geometry& geo = fsel.f_rank.geo();
   qassert(geo.is_only_local());
+  fsel.f_local_idx.init();
   fsel.f_local_idx.init(geo);
   long n_elems = 0;
   for (long index = 0; index < geo.local_volume(); ++index) {
@@ -286,6 +287,7 @@ bool is_consistent(const SelectedField<M>& sf, const FieldSelection& fsel)
 {
   return sf.initialized and sf.n_elems == fsel.n_elems and
          geo_remult(sf.geo(), 1) == fsel.f_local_idx.geo() and
+         fsel.f_rank.geo() == fsel.f_local_idx.geo() and
          (long) sf.field.size() == sf.n_elems * (long)sf.geo().multiplicity and
          fsel.f_local_idx.geo().is_only_local();
 }
