@@ -45,7 +45,7 @@ make_shuffle_plan_generic: total num_recv_packs =         56
 make_shuffle_plan_generic: total num_send_msgs  =         32
 make_shuffle_plan_generic: total num_recv_msgs  =         32
 make_shuffle_plan_generic: global_comm_size =        512
-Qlat::ShufflePlanCache: to add 1 / 16.
+ShufflePlanCache: to add 1 / 16.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
 shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
 write_field: fn='results/test-4nt8/results=1000/f-rank.field'.
@@ -54,17 +54,17 @@ shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ;
 read_field: fn='results/test-4nt8/results=1000/f-rank.field'.
 shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
-Qlat::CommPlanCache: to add 1 / 32.
-Qlat::CommPlanCache: to add 2 / 32.
+CommPlanCache: to add 1 / 32.
+CommPlanCache: to add 2 / 32.
 plaq :  6.83965231794668060E-01
-Qlat::CommPlanCache: to add 3 / 32.
+CommPlanCache: to add 3 / 32.
 spatial plaq :  6.83106449306319696E-01
 trace:  9.28858590458644939E-02
-Qlat::CommPlanCache: to add 4 / 32.
-Qlat::CommPlanCache: to add 5 / 32.
+CommPlanCache: to add 4 / 32.
+CommPlanCache: to add 5 / 32.
 invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 1.000000E+00
-Qlat::CommPlanCache: to add 6 / 32.
-Qlat::CommPlanCache: to add 7 / 32.
+CommPlanCache: to add 6 / 32.
+CommPlanCache: to add 7 / 32.
 cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=5.294E-01 stop_rsd=1.000E-08 
 cg_with_f: final iter=  60 sqrt(qnorm_r/qnorm_in)=7.979E-09 stop_rsd=1.000E-08
 invert_with_cg(5d,5d,inv,cg): total_iter=60 cycle=1 stop_rsd=1.000E-08
@@ -137,7 +137,7 @@ make_shuffle_plan_generic: total num_recv_packs =        256
 make_shuffle_plan_generic: total num_send_msgs  =         16
 make_shuffle_plan_generic: total num_recv_msgs  =         16
 make_shuffle_plan_generic: global_comm_size =        512
-Qlat::ShufflePlanCache: to add 2 / 16.
+ShufflePlanCache: to add 2 / 16.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x4 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.001 GB)
 dist_write_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =         16 ; total_bytes =          294912
 dist_write_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         32 ; total_bytes =          589824

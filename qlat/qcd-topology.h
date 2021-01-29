@@ -8,11 +8,6 @@ namespace qlat
 {  //
 
 struct CloverLeafField : FieldM<ColorMatrix, 6> {
-  virtual const std::string& cname()
-  {
-    static const std::string s = "CloverLeafField";
-    return s;
-  }
 };
 
 qacc ColorMatrix gf_clover_leaf_no_comm(const GaugeField& gf1,

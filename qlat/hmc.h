@@ -14,11 +14,6 @@ namespace qlat
 {  //
 
 struct GaugeMomentum : FieldM<ColorMatrix, 4> {
-  virtual const std::string& cname()
-  {
-    static const std::string s = "GaugeMomentum";
-    return s;
-  }
 };
 
 inline bool metropolis_accept(double& accept_prob, const double delta_h,

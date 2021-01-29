@@ -11,16 +11,16 @@ q_timer_mini_auto_show=1 (default)
 q_timer_max_always_show=10 (default)
 set Q_FIELD_INIT=fast. (implicitly)
 get_mem_cache_max_size_default: get_mem_cache_max_size() = 512 MB.
-Qlat::CommPlanCache: to add 1 / 32.
+CommPlanCache: to add 1 / 32.
 plaq :  1.00000000000000000E+00
-Qlat::CommPlanCache: to add 2 / 32.
+CommPlanCache: to add 2 / 32.
 spatial plaq :  1.00000000000000000E+00
 trace:  1.00000000000000000E+00
 plaq :  9.48525556759219013E-01
 spatial plaq :  9.48399549357766380E-01
 trace:  9.86912011041233272E-01
-Qlat::CommPlanCache: to add 3 / 32.
-Qlat::CommPlanCache: to add 4 / 32.
+CommPlanCache: to add 3 / 32.
+CommPlanCache: to add 4 / 32.
 plaq 1x1 :  9.48651564160671867E-01
 plaq 1x2 :  9.25212586145467419E-01
 plaq 2x1 :  9.24250174916469658E-01
@@ -33,7 +33,7 @@ plaq 3x3 :  8.55309122171914793E-01
 plaq (1,1,0,0)x2 :  4.32818150209259542E+01
 plaq (2,1,0,0)x1 :  4.43219409117222654E+01
 testing multiply_m_full and multiply_m
-Qlat::CommPlanCache: to add 5 / 32.
+CommPlanCache: to add 5 / 32.
 1.524000E+01, 1.524000E+01 qnorm(diff) = 0.000000E+00
 qnorm(diff after qnormalization) = 0.000000E+00
 2.246065E+01, 2.246065E+01 qnorm(diff) = 5.113993E-32
@@ -91,8 +91,8 @@ plaq 3x2 :  8.74369361641947784E-01
 plaq 3x3 :  8.51511991520023215E-01
 plaq (1,1,0,0)x2 :  4.30307014237564829E+01
 plaq (2,1,0,0)x1 :  4.42348501419445554E+01
-Qlat::CommPlanCache: to add 6 / 32.
-Qlat::CommPlanCache: to add 7 / 32.
+CommPlanCache: to add 6 / 32.
+CommPlanCache: to add 7 / 32.
 find_max_eigen_value_hermop_sym2:     1: sqrt_qnorm_ratio = 1.79007997920204609E+00. (max eigen value of hermop_sym2)
 find_max_eigen_value_hermop_sym2:     2: sqrt_qnorm_ratio = 2.38308414192340035E+00. (max eigen value of hermop_sym2)
 find_max_eigen_value_hermop_sym2:     3: sqrt_qnorm_ratio = 3.08637021159097191E+00. (max eigen value of hermop_sym2)

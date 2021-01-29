@@ -19,7 +19,7 @@ obtain_lock: Trying to obtain lock 'results/total_site=4x4x4x256/lambda=24.00000
 obtain_lock: Lock obtained 'results/total_site=4x4x4x256/lambda=24.0000000000/mass_sqr=-1.8600000000.txt-lock'.
 set Q_FIELD_INIT=fast. (implicitly)
 get_mem_cache_max_size_default: get_mem_cache_max_size() = 512 MB.
-Qlat::CommPlanCache: to add 1 / 32.
+CommPlanCache: to add 1 / 32.
 ((total-site (4 4 4 256))
  (mass-sqr -1.8600000000)
  (lambda   24.0000000000)
@@ -1441,7 +1441,7 @@ qremove: 'results/total_site=4x4x4x256/lambda=32.0000000000/mass_sqr=-2.00000000
 check_time_limit: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.25 ) / 12.00 hours.
 obtain_lock: Trying to obtain lock 'results/total_site=8x8x8x512/lambda=24.0000000000/mass_sqr=-1.6900000000.txt-lock'.
 obtain_lock: Lock obtained 'results/total_site=8x8x8x512/lambda=24.0000000000/mass_sqr=-1.6900000000.txt-lock'.
-Qlat::CommPlanCache: to add 2 / 32.
+CommPlanCache: to add 2 / 32.
 ((total-site (8 8 8 512))
  (mass-sqr -1.6900000000)
  (lambda   24.0000000000)

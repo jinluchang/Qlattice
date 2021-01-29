@@ -11,9 +11,9 @@ q_timer_mini_auto_show=1 (default)
 q_timer_max_always_show=10 (default)
 set Q_FIELD_INIT=fast. (implicitly)
 get_mem_cache_max_size_default: get_mem_cache_max_size() = 512 MB.
-Qlat::CommPlanCache: to add 1 / 32.
+CommPlanCache: to add 1 / 32.
 plaq :  9.48400361131393588E-01
-Qlat::CommPlanCache: to add 2 / 32.
+CommPlanCache: to add 2 / 32.
 spatial plaq :  9.48253412870626700E-01
 trace:  9.86826590890407918E-01
 make_shuffle_plan_generic: num_send_packs =          2
@@ -25,7 +25,7 @@ make_shuffle_plan_generic: total num_recv_packs =         56
 make_shuffle_plan_generic: total num_send_msgs  =         32
 make_shuffle_plan_generic: total num_recv_msgs  =         32
 make_shuffle_plan_generic: global_comm_size =        512
-Qlat::ShufflePlanCache: to add 1 / 16.
+ShufflePlanCache: to add 1 / 16.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 384 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 384 ; total_size: 0.000 GB)
 load_gauge_field: 'results/ckpoint.0'.

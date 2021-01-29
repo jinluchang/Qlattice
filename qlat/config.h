@@ -43,12 +43,6 @@ const int NUM_COLOR = 3;
 
 typedef Complex ComplexT;  // default Complex type
 
-inline const std::string& cname()
-{
-  static const std::string s = "Qlat";
-  return s;
-}
-
 inline void warn(const std::string& str = "")
 {
   if (str != "") {

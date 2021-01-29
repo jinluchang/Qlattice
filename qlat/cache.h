@@ -16,14 +16,16 @@ struct Cache {
   std::map<K, std::pair<long, M> > m;
   long idx;
   long limit;
-  long buffer_size; // empty slots created by gc()
+  long buffer_size;  // empty slots created by gc()
   //
-  Cache(const std::string& name_ = "Cache", const long limit_ = 16, const long buffer_size_ = 8)
+  Cache(const std::string& name_ = "Cache", const long limit_ = 16,
+        const long buffer_size_ = 8)
   {
     init(name_, limit_, buffer_size_);
   }
   //
-  void init(const std::string& name_, const long limit_, const long buffer_size_)
+  void init(const std::string& name_, const long limit_,
+            const long buffer_size_)
   {
     clear();
     name = name_;
@@ -43,10 +45,7 @@ struct Cache {
     return it != m.end();
   }
   //
-  long erase(const K& key)
-  {
-    return m.erase(key);
-  }
+  long erase(const K& key) { return m.erase(key); }
   //
   M& operator[](const K& key)
   {
@@ -59,8 +58,8 @@ struct Cache {
       return (it->second).second;
     } else {
       gc();
-      displayln_info(ssprintf("%s::%s: to add %d / %d.", cname().c_str(),
-                              name.c_str(), m.size() + 1, limit));
+      displayln_info(
+          ssprintf("%s: to add %d / %d.", name.c_str(), m.size() + 1, limit));
       std::pair<long, M>& v = m[key];
       v.first = idx;
       idx += 1;
@@ -72,8 +71,8 @@ struct Cache {
   {
     if (limit > 0 and (long) m.size() >= limit) {
       TIMER_VERBOSE("Cache::gc");
-      displayln_info(ssprintf("%s::%s: before gc: %d / %d.", cname().c_str(),
-                              name.c_str(), m.size(), limit));
+      displayln_info(
+          ssprintf("%s: before gc: %d / %d.", name.c_str(), m.size(), limit));
       std::vector<long> idxes;
       for (typename std::map<K, std::pair<long, M> >::iterator it = m.begin();
            it != m.end(); ++it) {
@@ -96,8 +95,8 @@ struct Cache {
       for (size_t i = 0; i < to_free.size(); ++i) {
         m.erase(to_free[i]);
       }
-      displayln_info(ssprintf("%s::%s:  after gc: %d / %d.", cname().c_str(),
-                              name.c_str(), m.size(), limit));
+      displayln_info(
+          ssprintf("%s:  after gc: %d / %d.", name.c_str(), m.size(), limit));
     }
   }
   //

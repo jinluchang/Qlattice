@@ -24,19 +24,13 @@ struct Field {
   box<Geometry> geo;
   vector<M> field;
   //
-  virtual const std::string& cname()
-  {
-    static const std::string s = "Field";
-    return s;
-  }
-  //
-  virtual void init()
+  void init()
   {
     initialized = false;
     geo.init();
     field.init();
   }
-  virtual void init(const Geometry& geo_)
+  void init(const Geometry& geo_)
   {
     if (!initialized) {
       TIMER("Field::init(geo)");
@@ -55,7 +49,7 @@ struct Field {
       qassert(is_matching_geo_mult(geo_, geo()));
     }
   }
-  virtual void init(const Geometry& geo_, const int multiplicity_)
+  void init(const Geometry& geo_, const int multiplicity_)
   {
     if (!initialized) {
       TIMER("Field::init(geo,mult)");
@@ -78,7 +72,7 @@ struct Field {
       }
     }
   }
-  virtual void init(const Field<M>& f)
+  void init(const Field<M>& f)
   {
     if (!initialized) {
       TIMER("Field::init(f)");
@@ -348,23 +342,17 @@ double qnorm_double(const Field<M>& f1, const Field<M>& f2)
 
 template <class M, int multiplicity>
 struct FieldM : Field<M> {
-  virtual const std::string& cname()
-  {
-    static const std::string s = "FieldM";
-    return s;
-  }
-  //
   using Field<M>::init;
-  virtual void init(const Geometry& geo_)
+  void init(const Geometry& geo_)
   {
     Field<M>::init(geo_, multiplicity);
   }
-  virtual void init(const Geometry& geo_, const int multiplicity_)
+  void init(const Geometry& geo_, const int multiplicity_)
   {
     qassert(multiplicity == multiplicity_);
     Field<M>::init(geo_, multiplicity);
   }
-  virtual void init(const Field<M>& f)
+  void init(const Field<M>& f)
   {
     qassert(multiplicity == f.geo().multiplicity);
     Field<M>::init(f);

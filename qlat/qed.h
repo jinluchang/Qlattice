@@ -11,29 +11,14 @@ namespace qlat
 
 template <class T = ComplexT>
 struct QedGaugeFieldT : FieldM<T, DIMN> {
-  virtual const std::string& cname()
-  {
-    static const std::string s = "QedGaugeField";
-    return s;
-  }
 };
 
 template <class T = ComplexT>
 struct ComplexScalerFieldT : FieldM<T, 1> {
-  virtual const std::string& cname()
-  {
-    static const std::string s = "ComplexScalerField";
-    return s;
-  }
 };
 
 template <class T = ComplexT>
 struct SpinPropagator4dT : FieldM<SpinMatrixT<T>, 1> {
-  virtual const std::string& cname()
-  {
-    static const std::string s = "SpinPropagator4d";
-    return s;
-  }
 };
 
 #ifndef QLAT_NO_DEFAULT_TYPE

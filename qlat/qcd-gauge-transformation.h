@@ -12,19 +12,9 @@ namespace qlat
 {  //
 
 struct GaugeTransform : FieldM<ColorMatrix, 1> {
-  virtual const std::string& cname()
-  {
-    static const std::string s = "GaugeTransform";
-    return s;
-  }
 };
 
 struct U1GaugeTransform : FieldM<ComplexF, 1> {
-  virtual const std::string& cname()
-  {
-    static const std::string s = "U1GaugeTransform";
-    return s;
-  }
 };
 
 inline void gt_apply_gauge_transformation(GaugeTransform& gt0,

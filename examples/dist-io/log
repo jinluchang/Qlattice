@@ -21,11 +21,11 @@ dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; t
 dist_read_field: fn='huge-data/gauge_field_rgf-0.1'.
 dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         2359296
 get_mem_cache_max_size_default: get_mem_cache_max_size() = 512 MB.
-Qlat::ShufflePlanCache: to add 1 / 16.
+ShufflePlanCache: to add 1 / 16.
 dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         2359296
-Qlat::CommPlanCache: to add 1 / 32.
+CommPlanCache: to add 1 / 32.
 plaq :  9.47925703162884714E-01
-Qlat::CommPlanCache: to add 2 / 32.
+CommPlanCache: to add 2 / 32.
 spatial plaq :  9.47619593969194374E-01
 trace:  9.86703685472810399E-01
 dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         1179648
@@ -48,7 +48,7 @@ make_shuffle_plan_generic: total num_recv_packs =        128
 make_shuffle_plan_generic: total num_send_msgs  =         32
 make_shuffle_plan_generic: total num_recv_msgs  =         32
 make_shuffle_plan_generic: global_comm_size =       4096
-Qlat::ShufflePlanCache: to add 2 / 16.
+ShufflePlanCache: to add 2 / 16.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 crc32 = 484747F9
 make_shuffle_plan_generic: num_send_packs =         16
@@ -60,7 +60,7 @@ make_shuffle_plan_generic: total num_recv_packs =        128
 make_shuffle_plan_generic: total num_send_msgs  =          8
 make_shuffle_plan_generic: total num_recv_msgs  =          8
 make_shuffle_plan_generic: global_comm_size =       4096
-Qlat::ShufflePlanCache: to add 3 / 16.
+ShufflePlanCache: to add 3 / 16.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x1 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 shuffle_field_back(f,fs,sp): 1x1x1x1 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 dist_crc32 = 2C3EF014
@@ -75,7 +75,7 @@ make_shuffle_plan_generic: total num_recv_packs =       1024
 make_shuffle_plan_generic: total num_send_msgs  =          8
 make_shuffle_plan_generic: total num_recv_msgs  =          8
 make_shuffle_plan_generic: global_comm_size =       4096
-Qlat::ShufflePlanCache: to add 4 / 16.
+ShufflePlanCache: to add 4 / 16.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 shuffle_field_back(f,fs,sp): 2x2x2x2 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 dist_crc32 = 2C3EF014
@@ -95,7 +95,7 @@ make_shuffle_plan_generic: total num_recv_packs =        128
 make_shuffle_plan_generic: total num_send_msgs  =         16
 make_shuffle_plan_generic: total num_recv_msgs  =         16
 make_shuffle_plan_generic: global_comm_size =       4096
-Qlat::ShufflePlanCache: to add 5 / 16.
+ShufflePlanCache: to add 5 / 16.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x2x4x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 shuffle_field_back(f,fs,sp): 1x2x4x2 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 dist_crc32 = 2C3EF014
@@ -110,7 +110,7 @@ make_shuffle_plan_generic: total num_recv_packs =        128
 make_shuffle_plan_generic: total num_send_msgs  =         16
 make_shuffle_plan_generic: total num_recv_msgs  =         16
 make_shuffle_plan_generic: global_comm_size =       4096
-Qlat::ShufflePlanCache: to add 6 / 16.
+ShufflePlanCache: to add 6 / 16.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x1x1 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 shuffle_field_back(f,fs,sp): 2x2x1x1 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 dist_crc32 = 2C3EF014
@@ -125,7 +125,7 @@ make_shuffle_plan_generic: total num_recv_packs =       2048
 make_shuffle_plan_generic: total num_send_msgs  =         16
 make_shuffle_plan_generic: total num_recv_msgs  =         16
 make_shuffle_plan_generic: global_comm_size =       4096
-Qlat::ShufflePlanCache: to add 7 / 16.
+ShufflePlanCache: to add 7 / 16.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 4x4x4x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 shuffle_field_back(f,fs,sp): 4x4x4x4 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 dist_crc32 = 2C3EF014

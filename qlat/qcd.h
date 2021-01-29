@@ -21,38 +21,18 @@ namespace qlat
 
 template <class T = ComplexT>
 struct GaugeFieldT : FieldM<ColorMatrixT<T>, 4> {
-  virtual const std::string& cname()
-  {
-    static const std::string s = "GaugeField";
-    return s;
-  }
 };
 
 template <class T = ComplexT>
 struct Propagator4dT : FieldM<WilsonMatrixT<T>, 1> {
-  virtual const std::string& cname()
-  {
-    static const std::string s = "Propagator4d";
-    return s;
-  }
 };
 
 template <class T = ComplexT>
 struct FermionField4dT : FieldM<WilsonVectorT<T>, 1> {
-  virtual const std::string& cname()
-  {
-    static const std::string s = "FermionField4d";
-    return s;
-  }
 };
 
 template <class T = ComplexT>
 struct FermionField5dT : Field<WilsonVectorT<T> > {
-  virtual const std::string& cname()
-  {
-    static const std::string s = "FermionField5d";
-    return s;
-  }
 };
 
 #ifndef QLAT_NO_DEFAULT_TYPE

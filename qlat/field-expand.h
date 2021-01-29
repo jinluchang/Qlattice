@@ -15,11 +15,6 @@ namespace qlat
 {  //
 
 struct CommMarks : Field<int8_t> {
-  virtual const std::string& cname()
-  {
-    static const std::string s = "CommMarks";
-    return s;
-  }
 };
 
 typedef void (*SetMarksField)(CommMarks& marks, const Geometry& geo,

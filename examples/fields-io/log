@@ -25,7 +25,7 @@ make_shuffle_plan_generic: total num_recv_packs =         96
 make_shuffle_plan_generic: total num_send_msgs  =         32
 make_shuffle_plan_generic: total num_recv_msgs  =         32
 make_shuffle_plan_generic: global_comm_size =       1728
-Qlat::ShufflePlanCache: to add 1 / 16.
+ShufflePlanCache: to add 1 / 16.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
 shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
 demo: save selection 'fsel' to disk as a field
@@ -56,7 +56,7 @@ make_shuffle_plan_generic: total num_recv_packs =        576
 make_shuffle_plan_generic: total num_send_msgs  =         32
 make_shuffle_plan_generic: total num_recv_msgs  =         32
 make_shuffle_plan_generic: global_comm_size =       1728
-Qlat::ShufflePlanCache: to add 2 / 16.
+ShufflePlanCache: to add 2 / 16.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
 make_shuffle_plan_generic: num_send_packs =          4
 make_shuffle_plan_generic: num_recv_packs =         12
@@ -116,7 +116,7 @@ shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 
 write(sfw,fn,sf,sbs): writting sparse field with fn='sfa.float.sfield'.
 shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 FieldsWriter: close 'huge-data/t0/demo.lfs.partial'.
-Qlat::ShuffledFieldsReaderCache: to add 1 / 4.
+ShuffledFieldsReaderCache: to add 1 / 4.
 FieldsReader: open 'huge-data/t0/demo.lfs'.
 does_file_exist_sync_node(sfr,fn): reading field with fn='CHECK-FILE'.
 read_tag(fr,fn,geo): 'f.field' from 'huge-data/t0/demo.lfs'.
@@ -556,7 +556,7 @@ shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 
 write(sfw,fn,sf,sbs): writting sparse field with fn='sfa.float.sfield'.
 shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 FieldsWriter: close 'huge-data/t1/demo.lfs.partial'.
-Qlat::ShuffledFieldsReaderCache: to add 2 / 4.
+ShuffledFieldsReaderCache: to add 2 / 4.
 FieldsReader: open 'huge-data/t1/demo.lfs'.
 does_file_exist_sync_node(sfr,fn): reading field with fn='CHECK-FILE'.
 read_tag(fr,fn,geo): 'f.field' from 'huge-data/t1/demo.lfs'.
@@ -996,7 +996,7 @@ shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 
 write(sfw,fn,sf,sbs): writting sparse field with fn='sfa.float.sfield'.
 shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 FieldsWriter: close 'huge-data/t2/demo.lfs.partial'.
-Qlat::ShuffledFieldsReaderCache: to add 3 / 4.
+ShuffledFieldsReaderCache: to add 3 / 4.
 FieldsReader: open 'huge-data/t2/demo.lfs'.
 does_file_exist_sync_node(sfr,fn): reading field with fn='CHECK-FILE'.
 read_tag(fr,fn,geo): 'f.field' from 'huge-data/t2/demo.lfs'.

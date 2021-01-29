@@ -24,12 +24,6 @@ struct fft_complex_field_plan {
   fftw_plan fftplan;
   ShufflePlan sp;
   //
-  virtual const std::string& cname()
-  {
-    static const std::string s = "fft_complex_field_plan";
-    return s;
-  }
-  //
   bool is_match(const Geometry& geo_, const int mc_, const int dir_,
                 const bool is_forward_)
   {
@@ -79,7 +73,7 @@ struct fft_complex_field_plan {
   void end()
   {
     if (geo.initialized) {
-      displayln_info(cname() + "::end(): free a plan.");
+      displayln_info("fft_complex_field_plan::end(): free a plan.");
       fftw_destroy_plan(fftplan);
       geo.initialized = false;
     }

@@ -6,11 +6,6 @@ namespace qlat
 {  //
 
 struct FourInterval : std::pair<Coordinate, Coordinate> {
-  virtual const std::string& cname()
-  {
-    static const std::string s = "FourInterval";
-    return s;
-  }
 };
 
 inline void make_local_deflation_plan(

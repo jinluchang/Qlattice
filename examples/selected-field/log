@@ -22,7 +22,7 @@ make_shuffle_plan_generic: total num_recv_packs =         56
 make_shuffle_plan_generic: total num_send_msgs  =         32
 make_shuffle_plan_generic: total num_recv_msgs  =         32
 make_shuffle_plan_generic: global_comm_size =        512
-Qlat::ShufflePlanCache: to add 1 / 16.
+ShufflePlanCache: to add 1 / 16.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=AB54D286.
 demo: fill with random numbers
@@ -539,7 +539,7 @@ make_shuffle_plan_generic: total num_recv_packs =         64
 make_shuffle_plan_generic: total num_send_msgs  =         16
 make_shuffle_plan_generic: total num_recv_msgs  =         16
 make_shuffle_plan_generic: global_comm_size =        512
-Qlat::ShufflePlanCache: to add 2 / 16.
+ShufflePlanCache: to add 2 / 16.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x2x4 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
 make_shuffle_plan_generic: num_send_packs =          2
 make_shuffle_plan_generic: num_recv_packs =          8

@@ -340,11 +340,6 @@ struct HalfVector : Field<ComplexF> {
   static const int c_size = 12;  // number of complex number per wilson vector
   int ls;
   // geo.multiplicity = ls * c_size;
-  virtual const std::string& cname()
-  {
-    static const std::string s = "HalfVector";
-    return s;
-  }
 };
 
 inline void init_half_vector(HalfVector& hv, const Geometry& geo, const int ls)
@@ -375,13 +370,6 @@ struct CompressedEigenSystemData : Field<uint8_t> {
   long bases_offset_fp16;
   long coefs_offset;
   long end_offset;
-  //
-  virtual const std::string& cname()
-  {
-    static const std::string s = "CompressedEigenSystemData";
-    return s;
-  }
-  //
 };
 
 inline Geometry get_geo_from_cesi(
@@ -456,12 +444,6 @@ struct CompressedEigenSystemBases : Field<ComplexF> {
   // geo.multiplicity = n_basis * c_size_vec;
   Geometry geo_full;
   Coordinate block_site;
-  //
-  virtual const std::string& cname()
-  {
-    static const std::string s = "CompressedEigenSystemBases";
-    return s;
-  }
 };
 
 struct CompressedEigenSystemCoefs : Field<ComplexF> {
@@ -472,12 +454,6 @@ struct CompressedEigenSystemCoefs : Field<ComplexF> {
   // geo.multiplicity = n_vec * c_size_vec;
   Geometry geo_full;
   Coordinate block_site;
-  //
-  virtual const std::string& cname()
-  {
-    static const std::string s = "CompressedEigenSystemCoefs";
-    return s;
-  }
 };
 
 inline void init_compressed_eigen_system_bases(CompressedEigenSystemBases& cesb,
@@ -1121,12 +1097,6 @@ struct BlockedHalfVector : Field<ComplexF> {
   // geo.multiplicity = block_vol_eo * ls * HalfVector::c_size;
   Geometry geo_full;
   Coordinate block_site;
-  //
-  virtual const std::string& cname()
-  {
-    static const std::string s = "BlockedHalfVector";
-    return s;
-  }
 };
 
 inline void init_blocked_half_vector(BlockedHalfVector& bhv,
