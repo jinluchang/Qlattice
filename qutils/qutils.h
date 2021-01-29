@@ -1,9 +1,5 @@
 #pragma once
 
-#ifndef OLD_CPP
-#include <array>
-#endif
-
 #include <qutils/array.h>
 #include <qutils/complex.h>
 #include <qutils/show.h>

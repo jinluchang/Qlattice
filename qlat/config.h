@@ -3,14 +3,9 @@
 #pragma once
 
 #include <unistd.h>
+#include <array>
 #include <cassert>
 #include <complex>
-
-#ifdef OLD_CPP
-#include <array-compatible.h>
-#else
-#include <array>
-#endif
 
 #ifdef NO_OMP
 #include <omp-compatible.h>
