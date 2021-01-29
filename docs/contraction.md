@@ -262,7 +262,7 @@ $$
 
 Use ``xg_y`` as point source location, contraction for all available ``xg_x``.
 
-Proper factor is compensated so it can treated as if ``xg_x`` is contracted for all lattice sites.
+Proper factor is compensated so it can be treated as if ``xg_x`` is contracted for all lattice sites.
 
 ```cpp
 inline void contract_psel_fsel_distribution_acc(FieldM<Complex, 1>& pos,
@@ -320,7 +320,7 @@ $$
 
 Use ``xg_y`` as point source location, contraction for all available ``xg_x``.
 
-Proper factor is compensated so it can treated as if ``xg_x`` is contracted for all lattice sites.
+Proper factor is compensated so it can be treated as if ``xg_x`` is contracted for all lattice sites.
 
 ```cpp
 inline void contract_meson_vv_acc(
@@ -415,7 +415,7 @@ avg *= 0.5;
 
 Use ``xg_y`` as point source location, contraction for all available ``xg_x``.
 
-Proper factor is compensated so it can treated as if ``xg_x`` is contracted for all lattice sites.
+Proper factor is compensated so it can be treated as if ``xg_x`` is contracted for all lattice sites.
 
 ```cpp
 inline void contract_meson_vv_meson_acc(
@@ -566,7 +566,7 @@ $$
 
 Use ``xg_y`` as point source location, contraction for all available ``xg_x``.
 
-Proper factor is compensated so it can treated as if ``xg_x`` is contracted for all lattice sites.
+Proper factor is compensated so it can be treated as if ``xg_x`` is contracted for all lattice sites.
 
 
 ```cpp
@@ -624,7 +624,7 @@ chvp *= 0.5;
 
 Use ``xg_y`` as point source location, contraction for all available ``xg_x``.
 
-Proper factor is compensated so it can treated as if ``xg_x`` is contracted for all lattice sites.
+Proper factor is compensated so it can be treated as if ``xg_x`` is contracted for all lattice sites.
 
 
 ```cpp
@@ -718,6 +718,8 @@ mchvp_1_2_3_4 *= 0.5;
 ```
 
 ### meson-v-v-meson
+
+Require each entire time slice be stored on single processes, i.e. ``size_node=Coordinate(1,1,1,size_node_t)``.
 
 Selectively contract all possible combinations. No point source propagators are needed.
 
