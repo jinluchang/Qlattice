@@ -9,7 +9,8 @@
 #ifdef QLAT_USE_ACC
 template <unsigned int blockSize, typename Ty>
 __global__ void reduce6(const Ty *g_idata, Ty *g_odata, unsigned long n,unsigned int divide){
-  extern __shared__ Ty sdata[];
+  ////extern __shared__ Ty sdata[];
+  __shared__ Ty sdata[blockSize];
   unsigned int tid = threadIdx.x;
   unsigned int iv  = blockIdx.y;
   sdata[tid] = 0;
@@ -37,6 +38,23 @@ __global__ void reduce6(const Ty *g_idata, Ty *g_odata, unsigned long n,unsigned
 
 namespace qlat{
 
+/////if not power of 2, return the first larger number with power of 2
+inline unsigned long nextPowerOf2(unsigned long n)
+{
+    unsigned long count = 0;
+    // First n in the below condition
+    // is for the case where n is 0
+    if (n && !(n & (n - 1)))
+        return n;
+    while( n != 0)
+    {
+        n >>= 1;
+        count += 1;
+    }
+    return 1 << count;
+}
+
+#ifdef QLAT_USE_ACC
 template<typename Ty>
 inline void reduce_T_global6(const Ty* src,Ty* res,const long n, const int nv,long nt, long blockS)
 {
@@ -45,28 +63,27 @@ inline void reduce_T_global6(const Ty* src,Ty* res,const long n, const int nv,lo
   dim3 dimBlock(nt, 1, 1);
 
   long threads = nt;
-  long smemSize = nt*sizeof(Ty);
+  ////long smemSize = nt*sizeof(Ty);
   unsigned int divide = (n+nt*blockS-1)/(nt*blockS);
   /////reduce6 <<<cu_blocks,cu_threads, nt*sizeof(Ty) >>>(src,res,n);
 
-  #ifdef QLAT_USE_ACC
   switch (threads)
   {
-    case 1024:reduce6<1024,Ty><<< dimGrid, dimBlock, smemSize >>>(src, res, n, divide); break;
-    case 512: reduce6< 512,Ty><<< dimGrid, dimBlock, smemSize >>>(src, res, n, divide); break;
-    case 256: reduce6< 256,Ty><<< dimGrid, dimBlock, smemSize >>>(src, res, n, divide); break;
-    case 128: reduce6< 128,Ty><<< dimGrid, dimBlock, smemSize >>>(src, res, n, divide); break;
-    case 64:  reduce6<  64,Ty><<< dimGrid, dimBlock, smemSize >>>(src, res, n, divide); break;
-    case 32:  reduce6<  32,Ty><<< dimGrid, dimBlock, smemSize >>>(src, res, n, divide); break;
-    case 16:  reduce6<  16,Ty><<< dimGrid, dimBlock, smemSize >>>(src, res, n, divide); break;
-    case 8:   reduce6<   8,Ty><<< dimGrid, dimBlock, smemSize >>>(src, res, n, divide); break;
-    case 4:   reduce6<   4,Ty><<< dimGrid, dimBlock, smemSize >>>(src, res, n, divide); break;
-    case 2:   reduce6<   2,Ty><<< dimGrid, dimBlock, smemSize >>>(src, res, n, divide); break;
-    case 1:   reduce6<   1,Ty><<< dimGrid, dimBlock, smemSize >>>(src, res, n, divide); break;
+    case 1024:reduce6<1024,Ty><<< dimGrid, dimBlock >>>(src, res, n, divide); break;
+    case 512: reduce6< 512,Ty><<< dimGrid, dimBlock >>>(src, res, n, divide); break;
+    case 256: reduce6< 256,Ty><<< dimGrid, dimBlock >>>(src, res, n, divide); break;
+    case 128: reduce6< 128,Ty><<< dimGrid, dimBlock >>>(src, res, n, divide); break;
+    case 64:  reduce6<  64,Ty><<< dimGrid, dimBlock >>>(src, res, n, divide); break;
+    case 32:  reduce6<  32,Ty><<< dimGrid, dimBlock >>>(src, res, n, divide); break;
+    case 16:  reduce6<  16,Ty><<< dimGrid, dimBlock >>>(src, res, n, divide); break;
+    case 8:   reduce6<   8,Ty><<< dimGrid, dimBlock >>>(src, res, n, divide); break;
+    case 4:   reduce6<   4,Ty><<< dimGrid, dimBlock >>>(src, res, n, divide); break;
+    case 2:   reduce6<   2,Ty><<< dimGrid, dimBlock >>>(src, res, n, divide); break;
+    case 1:   reduce6<   1,Ty><<< dimGrid, dimBlock >>>(src, res, n, divide); break;
   }
-  #endif
   qacc_barrier(dummy);
 }
+#endif
 
 template<typename Ty>
 inline void reduce_cpu(const Ty *src,Ty &res,const unsigned long n){
@@ -111,7 +128,8 @@ inline void reduce_gpu2d_6(const Ty* src,Ty* res,long n, int nv=1,
   if(n <= cutN){
     //for(int i=0;i<nv;i++)reduce_cpu(&src[i*n],res[i],n);return;
     reduce_T_global6(&src[0],&pres[0], n, nv, nt, 1);
-    for(int i=0;i<nv;i++)res[i] += pres[i];return;
+    for(int i=0;i<nv;i++)res[i] += pres[i];
+    return;
   }
 
   
@@ -123,7 +141,8 @@ inline void reduce_gpu2d_6(const Ty* src,Ty* res,long n, int nv=1,
 
   for(int si=0;si<1000;si++){
     if(Ny0 <= cutN){
-      for(int i=0;i<nv;i++)reduce_cpu(&psrc[i*Ny0],res[i],Ny0);return;
+      for(int i=0;i<nv;i++)reduce_cpu(&psrc[i*Ny0],res[i],Ny0);
+      return;
       //reduce_T_global6(psrc,pres, Ny0, nv, nt, 1);
       //for(int i=0;i<nv;i++)res[i] += pres[i];return;
     }
@@ -134,12 +153,14 @@ inline void reduce_gpu2d_6(const Ty* src,Ty* res,long n, int nv=1,
     Ny0 = Ny1;
   }
   reduce_T_global6(psrc,pres, Ny0, nv, nt, 1);
-  for(int i=0;i<nv;i++)res[i] += pres[i];return;
+  for(int i=0;i<nv;i++)res[i] += pres[i];
+  return;
   /////for(int i=0;i<nv;i++)reduce_cpu(&psrc[i*Ny0],res[i],Ny0);return;
   #endif
   
   #ifndef QLAT_USE_ACC
-  for(int i=0;i<nv;i++)reduce_cpu(&src[i*n],res[i],n);return;
+  for(int i=0;i<nv;i++)reduce_cpu(&src[i*n],res[i],n);
+  return;
   #endif
 }
 
@@ -169,7 +190,7 @@ inline void reduce_gpu(const Ty *src,Ty *res,const long n,const int nv=1,
   #ifdef QLAT_USE_ACC
   const int cutN = qlat::qacc_num_threads()*fac;
   unsigned long Ny = n/Ld;
-  if(n <= cutN){for(int i=0;i<nv;i++)reduce_cpu(&src[i*n],res[i],n);return;}
+  if(n <= cutN){for(int i=0;i<nv;i++){reduce_cpu(&src[i*n],res[i],n);}return;}
 
   Ty *psrc;Ty *pres;Ty *tem;
   long Nres;
@@ -182,16 +203,18 @@ inline void reduce_gpu(const Ty *src,Ty *res,const long n,const int nv=1,
   buf1.resize(nv*Nres);pres = &buf1[0];
 
   for(int si=0;si<1000;si++){
-    if(Nres <= cutN){for(int i=0;i<nv;i++)reduce_cpu(&psrc[i*Nres],res[i],Nres);return;}
+    if(Nres <= cutN){for(int i=0;i<nv;i++){reduce_cpu(&psrc[i*Nres],res[i],Nres);}return;}
     Nres = reduce_T(psrc,pres, Nres, nv, Ld0);
     /////Switch psrc, pres
     tem = pres;pres = psrc;psrc = tem;
   }
-  for(int i=0;i<nv;i++)reduce_cpu(&psrc[i*Nres],res[i],Nres);return;
+  for(int i=0;i<nv;i++)reduce_cpu(&psrc[i*Nres],res[i],Nres);
+  return;
   #endif
 
   #ifndef QLAT_USE_ACC
-  for(int i=0;i<nv;i++)reduce_cpu(&src[i*n],res[i],n);return;
+  for(int i=0;i<nv;i++)reduce_cpu(&src[i*n],res[i],n);
+  return;
   #endif
 }
 
@@ -199,8 +222,8 @@ template<typename Ty>
 void reduce_vec(const Ty* src,Ty* res,long n, int nv=1)
 {
   int thread_pow2 = 8;
-  int divide = 128;
-  int fac = 16;
+  int divide = 512;
+  int fac    = 2;
 
   reduce_gpu2d_6(src,res,n,nv, thread_pow2,divide, fac);
 }
