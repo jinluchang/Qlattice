@@ -1,82 +1,108 @@
-#include "exceptions.h"
 #include "convert.h"
+#include "dispatch.h"
+#include "exceptions.h"
 
 namespace qlat
 {  //
 
 template <class M>
-PyObject* mk_field_type(Geometry* p_geo, const int multiplicty)
+PyObject* mk_field_ctype(Geometry* pgeo, const int multiplicity)
 {
   Field<M>* p_f = new Field<M>();
   Field<M>& f = *p_f;
-  if (p_geo != NULL) {
-    Geometry& geo = *p_geo;
-    if (multiplicty == 0) {
+  if (pgeo != NULL) {
+    Geometry& geo = *pgeo;
+    if (multiplicity == 0) {
       f.init(geo);
     } else {
-      f.init(geo, multiplicty);
+      f.init(geo, multiplicity);
     }
   }
   return PyLong_FromVoidPtr(p_f);
 }
 
 template <class M>
-void free_field_type(void* p_field)
+PyObject* free_field_ctype(void* p_field)
 {
   Field<M>* p_f = (Field<M>*)p_field;
   delete p_f;
+  Py_RETURN_NONE;
+}
+
+template <class M>
+PyObject* set_zero_field_ctype(void* p_field)
+{
+  Field<M>* p_f = (Field<M>*)p_field;
+  Field<M>& f = *p_f;
+  set_zero(f);
+  Py_RETURN_NONE;
+}
+
+template <class M>
+PyObject* set_unit_field_ctype(void* p_field, const Complex& coef = 1.0)
+{
+  Field<M>* p_f = (Field<M>*)p_field;
+  Field<M>& f = *p_f;
+  set_unit(f, coef);
+  Py_RETURN_NONE;
 }
 
 }  // namespace qlat
 
 EXPORT(mk_field, {
   using namespace qlat;
-  PyObject* p_type = NULL;
-  Geometry* p_geo = NULL;
-  int multiplicty = 0;
-  if (!PyArg_ParseTuple(args, "O|li", &p_type, &p_geo, &multiplicty)) {
+  PyObject* p_ctype = NULL;
+  Geometry* pgeo = NULL;
+  int multiplicity = 0;
+  if (!PyArg_ParseTuple(args, "O|li", &p_ctype, &pgeo, &multiplicity)) {
     return NULL;
   }
-  std::string type;
-  py_convert(type, p_type);
+  std::string ctype;
+  py_convert(ctype, p_ctype);
   PyObject* p_field;
-  if ("ColorMatrix" == type) {
-    p_field = mk_field_type<ColorMatrix>(p_geo, multiplicty);
-  } else if ("WilsonMatrix" == type) {
-    p_field = mk_field_type<WilsonMatrix>(p_geo, multiplicty);
-  } else if ("WilsonVector" == type) {
-    p_field = mk_field_type<WilsonVector>(p_geo, multiplicty);
-  } else if ("double" == type) {
-    p_field = mk_field_type<double>(p_geo, multiplicty);
-  } else if ("Complex" == type) {
-    p_field = mk_field_type<Complex>(p_geo, multiplicty);
-  } else {
-    pqerr("mk_field type='%s' does not exist.", type.c_str());
-  }
+  field_dispatch(p_field, mk_field, ctype, pgeo, multiplicity);
   return p_field;
 });
 
 EXPORT(free_field, {
   using namespace qlat;
-  PyObject* p_type = NULL;
+  PyObject* p_ctype = NULL;
   void* p_field = NULL;
-  if (!PyArg_ParseTuple(args, "Ol", &p_type, &p_field)) {
+  if (!PyArg_ParseTuple(args, "Ol", &p_ctype, &p_field)) {
     return NULL;
   }
-  std::string type;
-  py_convert(type, p_type);
-  if ("ColorMatrix" == type) {
-    free_field_type<ColorMatrix>(p_field);
-  } else if ("WilsonMatrix" == type) {
-    free_field_type<WilsonMatrix>(p_field);
-  } else if ("WilsonVector" == type) {
-    free_field_type<WilsonVector>(p_field);
-  } else if ("double" == type) {
-    free_field_type<double>(p_field);
-  } else if ("Complex" == type) {
-    free_field_type<Complex>(p_field);
-  } else {
-    pqerr("mk_field type='%s' does not exist.", type.c_str());
+  std::string ctype;
+  py_convert(ctype, p_ctype);
+  PyObject* p_ret = NULL;
+  field_dispatch(p_ret, free_field, ctype, p_field);
+  return p_ret;
+});
+
+EXPORT(set_zero_field, {
+  using namespace qlat;
+  PyObject* p_ctype = NULL;
+  void* p_field = NULL;
+  if (!PyArg_ParseTuple(args, "Ol", &p_ctype, &p_field)) {
+    return NULL;
   }
-  return PyLong_FromLong(0);
+  std::string ctype;
+  py_convert(ctype, p_ctype);
+  PyObject* p_ret = NULL;
+  field_dispatch(p_ret, set_zero_field, ctype, p_field);
+  return p_ret;
+});
+
+EXPORT(set_unit_field, {
+  using namespace qlat;
+  PyObject* p_ctype = NULL;
+  void* p_field = NULL;
+  Complex coef = 1.0;
+  if (!PyArg_ParseTuple(args, "Ol|D", &p_ctype, &p_field, &coef)) {
+    return NULL;
+  }
+  std::string ctype;
+  py_convert(ctype, p_ctype);
+  PyObject* p_ret = NULL;
+  field_dispatch(p_ret, set_unit_field, ctype, p_field, coef);
+  return p_ret;
 });

@@ -165,6 +165,8 @@ qacc void set_zero(array<M, N>& arr)
 
 qacc void set_unit(double& x, const double& coef = 1.0) { x = coef; }
 
+qacc void set_unit(double& x, const Complex& coef) { x = coef.real(); }
+
 qacc void set_unit(Complex& x, const Complex& coef = 1.0) { x = coef; }
 
 template <class M>

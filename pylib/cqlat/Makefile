@@ -33,5 +33,5 @@ LDFLAGS+= $(QLAT_LDFLAGS)
 
 build:
 	./update.sh
-	$(CXX) --shared -fPIC -o cqlat.so $(CXXFLAGS) *.C $(LDFLAGS)
+	time $(CXX) --shared -fPIC -o cqlat.so $(CXXFLAGS) *.C $(LDFLAGS)
 	mv cqlat.so ..

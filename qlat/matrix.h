@@ -161,17 +161,26 @@ qacc void set_zero(MatrixT<DIMN, T>& m)
   std::memset((void*)&m, 0, sizeof(MatrixT<DIMN, T>));
 }
 
-template <int DIMN, class T>
-qacc void set_unit(MatrixT<DIMN, T>& m, const double& coef = 1.0)
+template <int DIMN>
+qacc void set_unit(MatrixT<DIMN, float>& m, const Complex& coef = 1.0)
 {
   set_zero(m);
   for (int i = 0; i < DIMN; ++i) {
-    m(i, i) = coef;
+    m(i, i) = coef.real();
+  }
+}
+
+template <int DIMN>
+qacc void set_unit(MatrixT<DIMN, double>& m, const Complex& coef = 1.0)
+{
+  set_zero(m);
+  for (int i = 0; i < DIMN; ++i) {
+    m(i, i) = coef.real();
   }
 }
 
 template <int DIMN, class T>
-qacc void set_unit(MatrixT<DIMN, T>& m, const Complex& coef)
+qacc void set_unit(MatrixT<DIMN, T>& m, const Complex& coef = 1.0)
 {
   set_zero(m);
   for (int i = 0; i < DIMN; ++i) {

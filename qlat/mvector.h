@@ -126,6 +126,14 @@ qacc void set_zero(MvectorT<DIMN, T>& m)
 }
 
 template <int DIMN, class T>
+qacc void set_unit(MvectorT<DIMN, T>& m, const Complex& coef = 1.0)
+{
+  for (int i = 0; i < DIMN; ++i) {
+    m(i) = coef;
+  }
+}
+
+template <int DIMN, class T>
 qacc double qnorm(const MvectorT<DIMN, T>& m)
 {
   return m.em().squaredNorm();

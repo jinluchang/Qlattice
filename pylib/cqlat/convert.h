@@ -2,6 +2,7 @@
 
 #include <Python.h>
 #include <qlat/qlat.h>
+#include "exceptions.h"
 
 namespace qlat
 {  //
