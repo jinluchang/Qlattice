@@ -540,7 +540,7 @@ struct VBFile
     entry_total_size = 0;
   }
   //
-  ~VBFile() { qassert(fp == NULL); }
+  ~VBFile() { assert(fp == NULL); }
 };
 
 inline VBFile vbopen(const std::string& fn, const std::string& mode)
@@ -592,7 +592,7 @@ inline void vbclose(VBFile& fp)
 inline void vbread_data(const Vector<uint8_t>& v, VBFile& fp)
 {
   qassert(fp.mode == "r");
-  if (fp.entry_total_size + v.size() > fp.buffer_limit) {
+  if (fp.entry_total_size + v.size() >= fp.buffer_limit) {
     vbflush(fp);
   }
   if (v.size() >= fp.buffer_limit) {
@@ -606,7 +606,7 @@ inline void vbread_data(const Vector<uint8_t>& v, VBFile& fp)
 inline void vbwrite_data(const Vector<uint8_t>& v, VBFile& fp)
 {
   qassert(fp.mode == "w");
-  if (fp.entry_total_size + v.size() > fp.buffer_limit) {
+  if (fp.entry_total_size + v.size() >= fp.buffer_limit) {
     vbflush(fp);
   }
   if (v.size() >= fp.buffer_limit) {

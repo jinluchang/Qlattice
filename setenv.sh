@@ -39,6 +39,7 @@ if [ $arch = bgq ] ; then
 fi
 
 add-to-colon-list PATH "$prefix/bin"
+add-to-colon-list PYTHONPATH "$prefix/pylib"
 add-to-colon-list LD_LIBRARY_PATH "$prefix/lib"
 add-to-colon-list LD_LIBRARY_PATH "$prefix/lib64"
 add-to-colon-list LIBRARY_PATH "$prefix/lib"
