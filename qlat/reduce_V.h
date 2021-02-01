@@ -86,25 +86,25 @@ inline void reduce_T_global6(const Ty* src,Ty* res,const long n, const int nv,lo
 #endif
 
 template<typename Ty>
-inline void reduce_cpu(const Ty *src,Ty &res,const unsigned long n){
-  #pragma omp parallel for reduction(+: res)
-  for(unsigned long index=0;index<n;index++){
-    res += src[index];
-  }
-  //int Nv = omp_get_num_threads();
-  //if(Nv == 1){
+void reduce_cpu(const Ty *src,Ty &res,const unsigned long n){
+  //#pragma omp parallel for reduction(+: res)
   //for(unsigned long index=0;index<n;index++){
   //  res += src[index];
-  //}}
-  //else{
-  //  std::vector<Ty > buf;buf.resize(Nv);
-  //  for(int iv=0;iv<Nv;iv++){buf[iv]=0.0;}
-  //  #pragma omp parallel
-  //  for(unsigned long index=0;index<n;index++){
-  //    buf[omp_get_thread_num()] += src[index];
-  //  }
-  //  for(int iv=0;iv<Nv;iv++){res += buf[iv];}
   //}
+  int Nv = omp_get_num_threads();
+  if(Nv == 1){
+  for(unsigned long index=0;index<n;index++){
+    res += src[index];
+  }}
+  else{
+    std::vector<Ty > buf;buf.resize(Nv);
+    for(int iv=0;iv<Nv;iv++){buf[iv]=0.0;}
+    #pragma omp parallel
+    for(unsigned long index=0;index<n;index++){
+      buf[omp_get_thread_num()] += src[index];
+    }
+    for(int iv=0;iv<Nv;iv++){res += buf[iv];}
+  }
 }
 
 template<typename Ty>
