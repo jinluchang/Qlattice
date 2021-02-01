@@ -146,6 +146,12 @@ Call ``install_qhandle_sig()`` to use handle ``SIGTERM`` (from ``kill`` command)
 
   Default is ``512 MB``.
 
+- ``q_num_threads``
+
+  Number of OpenMP threads (will be override by ``OMP_NUM_THREADS``).
+
+  Default is ``2``.
+
 - ``q_acc_num_threads``
 
   Number of ``qacc`` threads.

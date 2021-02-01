@@ -739,7 +739,11 @@ inline void begin_comm(const MPI_Comm comm, const Coordinate& size_node)
   get_id_node_internal() = geon.id_node;
   get_num_node_internal() = geon.num_node;
   sync_node();
-  displayln_info("qlat::begin(): OMP_NUM_THREADS = " +
+  if (get_env("OMP_NUM_THREADS") == "") {
+    const long num_threads = get_env_long_default(2, "q_num_threads");
+    omp_set_num_threads(num_threads);
+  }
+  displayln_info("qlat::begin(): q_num_threads = " +
                  show(omp_get_max_threads()));
   displayln_info("qlat::begin(): GeometryNode =\n" + show(geon));
   fflush(get_output_file());

@@ -5,8 +5,10 @@
 name=cqlat
 echo "!!!! build $name !!!!"
 
-rm -rf $prefix/pylib/cqlat
-mkdir -p $prefix/pylib
+( cd ./pylib/cqlat ; ./update.sh )
+
+rm -rfv $prefix/pylib/cqlat
+mkdir -pv $prefix/pylib
 cp -rpv pylib/cqlat $prefix/pylib/
 
 make -C $prefix/pylib/cqlat

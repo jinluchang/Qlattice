@@ -5,12 +5,12 @@
 name=qlat
 echo "!!!! build $name !!!!"
 
-rm -rf $prefix/include/qutils
-rm -rf $prefix/include/qlat
-rm -rf $prefix/pylib/qlat
-mkdir -p $prefix/include/qutils
-mkdir -p $prefix/include/qlat
-mkdir -p $prefix/pylib/qlat
+rm -rfv $prefix/include/qutils
+rm -rfv $prefix/include/qlat
+rm -rfv $prefix/pylib/qlat
+mkdir -pv $prefix/include/qutils
+mkdir -pv $prefix/include/qlat
+mkdir -pv $prefix/pylib/qlat
 cp -pv qutils/*.h $prefix/include/qutils
 cp -pv qlat/*.h $prefix/include/qlat
 cp -pv qlat-setup.h $prefix/include

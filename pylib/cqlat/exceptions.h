@@ -17,10 +17,10 @@
                         ":" STR(__LINE__));                      \
   };
 
-#define pqerr(...)                                                      \
+#define pqerr(...)                                                    \
   {                                                                   \
     const std::string msg =                                           \
-        qlat::ssprintf(msg, __VA_ARGS__) +                            \
+        qlat::ssprintf(__VA_ARGS__) +                                 \
         qlat::ssprintf(" in from '%s' line %d ", __FILE__, __LINE__); \
     throw std::string(msg);                                           \
   };
