@@ -1,5 +1,5 @@
 qlat::begin(): MPI Initialized. num_node = 8
-qlat::begin(): OMP_NUM_THREADS = 2
+qlat::begin(): q_num_threads = 2
 qlat::begin(): GeometryNode =
 { initialized = true
 , num_node    = 8
@@ -67,7 +67,6 @@ demo: restore the selected points data to 'f' from 'sf'
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=9B5AE427.
 demo: only save the selected points data of 'f' to disk
-demo: (NOTE THAT 'f', NOT 'sf', IS USED HERE)
 write_selected_field: fn='huge-data/f.sfield'.
 make_shuffle_plan_generic: num_send_packs =          1
 make_shuffle_plan_generic: num_recv_packs =          7
@@ -83,7 +82,6 @@ demo: clear field 'f' in memory
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=AB54D286.
 demo: only read the selected points data of 'f' from disk
-demo: (NOTE THAT 'f', NOT 'sf', IS USED HERE)
 read_selected_field: fn='huge-data/f.sfield'.
 make_shuffle_plan_generic: num_send_packs =          1
 make_shuffle_plan_generic: num_recv_packs =          7
@@ -98,7 +96,9 @@ shuffle_field_back(sel_f,sel_fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; s
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=9B5AE427.
 demo: compute the sum of all the selected points in 'f'
-demo: sum is (-2.26029772183723932E+00 + -3.93777103987270660E+00 j)
+demo: v1 sum is (-2.26029772183723932E+00 + -3.93777103987270660E+00 j)
+demo: v2 sum is (-2.26029772183723932E+00 + -3.93777103987270660E+00 j)
+demo: v3 sum is (-2.26029772183723932E+00 + -3.93777103987270660E+00 j)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
 shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)

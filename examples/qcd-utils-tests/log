@@ -1,5 +1,5 @@
 qlat::begin(): MPI Initialized. num_node = 8
-qlat::begin(): OMP_NUM_THREADS = 2
+qlat::begin(): q_num_threads = 2
 qlat::begin(): GeometryNode =
 { initialized = true
 , num_node    = 8

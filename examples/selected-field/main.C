@@ -75,8 +75,7 @@ inline void demo()
   displayln_info(fname + ssprintf(": compute crc32=%06X.", field_crc32(f)));
   //
   displayln_info(fname + ssprintf(": only save the selected points data of 'f' to disk"));
-  displayln_info(fname + ssprintf(": (NOTE THAT 'f', NOT 'sf', IS USED HERE)"));
-  write_selected_field(f, "huge-data/f.sfield", fsel);
+  write_selected_field(sf, "huge-data/f.sfield", fsel);
   //
   displayln_info(fname + ssprintf(": clear field 'f' in memory"));
   set_zero(f);
@@ -84,26 +83,55 @@ inline void demo()
   displayln_info(fname + ssprintf(": compute crc32=%06X.", field_crc32(f)));
   //
   displayln_info(fname + ssprintf(": only read the selected points data of 'f' from disk"));
-  displayln_info(fname + ssprintf(": (NOTE THAT 'f', NOT 'sf', IS USED HERE)"));
-  read_selected_field(f, "huge-data/f.sfield", fsel);
+  read_selected_field(sf, "huge-data/f.sfield", fsel);
+  set_field_selected(f, sf, fsel);
   //
   displayln_info(fname + ssprintf(": compute crc32=%06X.", field_crc32(f)));
   //
   displayln_info(fname + ssprintf(": compute the sum of all the selected points in 'f'"));
-  Complex sum = 0.0;
-  for (long index = 0; index < f.geo().local_volume(); ++index) {
-    const long idx = fsel.f_local_idx.get_elems_const(index)[0];
-    if (idx < 0) {
-      continue;
+  {
+    Complex sum = 0.0;
+    for (long index = 0; index < f.geo().local_volume(); ++index) {
+      const long idx = fsel.f_local_idx.get_elems_const(index)[0];
+      if (idx < 0) {
+        continue;
+      }
+      const Coordinate xl = f.geo().coordinate_from_index(index);
+      const Vector<Complex> fv = f.get_elems_const(xl);
+      // f.geto.multiplicity = 2 is the number of elements per site
+      for (int m = 0; m < f.geo().multiplicity; ++m) {
+        sum += fv[m];
+      }
     }
-    const Coordinate xl = f.geo().coordinate_from_index(index);
-    const Vector<Complex> fv = f.get_elems_const(xl);
-    // f.geto.multiplicity = 2 is the number of elements per site
-    for (int m = 0; m < f.geo().multiplicity; ++m) {
-      sum += fv[m];
-    }
+    displayln_info(fname + ssprintf(": v1 sum is %s", show(sum).c_str()));
   }
-  displayln_info(fname + ssprintf(": sum is %s", show(sum).c_str()));
+  {
+    Complex sum = 0.0;
+    for (long index = 0; index < f.geo().local_volume(); ++index) {
+      const long idx = fsel.f_local_idx.get_elems_const(index)[0];
+      if (idx < 0) {
+        continue;
+      }
+      const Vector<Complex> fv = sf.get_elems_const(idx);
+      // f.geto.multiplicity = 2 is the number of elements per site
+      for (int m = 0; m < f.geo().multiplicity; ++m) {
+        sum += fv[m];
+      }
+    }
+    displayln_info(fname + ssprintf(": v2 sum is %s", show(sum).c_str()));
+  }
+  {
+    Complex sum = 0.0;
+    for (long idx = 0; idx < sf.n_elems; ++idx) {
+      // const long index = fsel.indices[idx];
+      const Vector<Complex> fv = sf.get_elems_const(idx);
+      // f.geto.multiplicity = 2 is the number of elements per site
+      for (int m = 0; m < f.geo().multiplicity; ++m) {
+        sum += fv[m];
+      }
+    }
+    displayln_info(fname + ssprintf(": v3 sum is %s", show(sum).c_str()));
+  }
 }
 
 inline void test(const std::string& tag, const long n_per_tslice)

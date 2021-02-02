@@ -22,6 +22,7 @@ void set_zero(Field<M>& f)
 template <class M>
 void set_unit(Field<M>& f, const Complex& coef = 1.0)
 {
+  TIMER("set_unit(Field)");
   for (long offset = 0; offset < f.field.size(); ++offset) {
     set_unit(f.get_elem(offset), coef);
   }
