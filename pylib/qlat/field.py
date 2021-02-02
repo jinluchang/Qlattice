@@ -22,4 +22,4 @@ class Field:
         return geo
 
     def mview(self):
-        return None
+        return c.get_mview_field(self.ctype, self.cdata, self)

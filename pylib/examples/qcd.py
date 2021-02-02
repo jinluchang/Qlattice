@@ -39,6 +39,10 @@ q.set_g_rand_color_matrix_field(gf, rng, 0.3, 1)
 
 q.gf_show_info(gf)
 
+mview = gf.mview()
+
+print(mview.nbytes)
+
 q.timer_display_stack()
 
 q.timer_display()

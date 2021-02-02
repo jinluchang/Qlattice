@@ -57,12 +57,17 @@ PyObject* get_geo_field_ctype(void* pfield)
 }
 
 template <class M>
-PyObject* get_mview_field_ctype(void* pfield)
+PyObject* get_mview_field_ctype(void* pfield, PyObject* p_field)
 {
   Field<M>* pf = (Field<M>*)pfield;
   Field<M>& f = *pf;
   Vector<M> fv = get_data(f);
-  return py_convert(fv);
+  PyObject* p_mview = py_convert(fv);
+  pqassert(p_field != NULL);
+  Py_INCREF(p_field);
+  pqassert(!((PyMemoryViewObject*)p_mview)->mbuf->master.obj);
+  ((PyMemoryViewObject*)p_mview)->mbuf->master.obj = p_field;
+  return p_mview;
 }
 
 }  // namespace qlat
@@ -143,12 +148,13 @@ EXPORT(get_mview_field, {
   using namespace qlat;
   PyObject* p_ctype = NULL;
   void* pfield = NULL;
-  if (!PyArg_ParseTuple(args, "Ol", &p_ctype, &pfield)) {
+  PyObject* p_field= NULL;
+  if (!PyArg_ParseTuple(args, "OlO", &p_ctype, &pfield, &p_field)) {
     return NULL;
   }
   std::string ctype;
   py_convert(ctype, p_ctype);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, get_mview_field_ctype, ctype, pfield);
+  FIELD_DISPATCH(p_ret, get_mview_field_ctype, ctype, pfield, p_field);
   return p_ret;
 });
