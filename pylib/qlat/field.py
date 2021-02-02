@@ -1,5 +1,7 @@
 import cqlat as c
 
+from qlat.geo import *
+
 class Field:
 
     def __init__(self, ctype, geo = None, multiplicity = None):
@@ -14,3 +16,10 @@ class Field:
     def __del__(self):
         c.free_field(self.ctype, self.cdata)
 
+    def geo(self):
+        geo = Geometry((0, 0, 0, 0))
+        geo.cdata = c.get_geo_field(self.ctype, self.cdata)
+        return geo
+
+    def mview(self):
+        return None

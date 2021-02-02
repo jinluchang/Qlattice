@@ -19,7 +19,7 @@ EXPORT(mk_rng, {
   } else {
     prng_new = new RngState(*prng, seed);
   }
-  return PyLong_FromVoidPtr(prng_new);
+  return py_convert((void*)prng_new);
 });
 
 EXPORT(free_rng, {

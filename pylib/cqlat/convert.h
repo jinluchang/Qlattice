@@ -41,8 +41,8 @@ inline void py_convert(std::string& s, PyObject* in)
   }
 }
 
-template <typename t>
-void py_convert(std::vector<t>& out, PyObject* in)
+template <class M>
+void py_convert(std::vector<M>& out, PyObject* in)
 {
   if (PyList_Check(in)) {
     out.resize(PyList_Size(in));
@@ -59,15 +59,15 @@ void py_convert(std::vector<t>& out, PyObject* in)
   }
 }
 
-inline void py_convert(qlat::Coordinate& out, PyObject* in)
+inline void py_convert(Coordinate& out, PyObject* in)
 {
   if (PyList_Check(in)) {
-    pqassert(qlat::DIMN == PyList_Size(in));
+    pqassert(DIMN == PyList_Size(in));
     for (size_t i = 0; i < out.size(); i++) {
       py_convert(out[i], PyList_GetItem(in, i));
     }
   } else if (PyTuple_Check(in)) {
-    pqassert(qlat::DIMN == PyTuple_Size(in));
+    pqassert(DIMN == PyTuple_Size(in));
     for (size_t i = 0; i < out.size(); i++) {
       py_convert(out[i], PyTuple_GetItem(in, i));
     }
@@ -76,13 +76,23 @@ inline void py_convert(qlat::Coordinate& out, PyObject* in)
   }
 }
 
-inline PyObject* py_convert(const qlat::Coordinate& coor)
+inline PyObject* py_convert(const Coordinate& coor)
 {
-  PyObject* ret = PyList_New(coor.size());
+  PyObject* ret = PyTuple_New(coor.size());
   for (long i = 0; i < (long)coor.size(); i++) {
-    PyList_SetItem(ret, i, PyLong_FromLong(coor[i]));
+    PyTuple_SetItem(ret, i, PyLong_FromLong(coor[i]));
   }
   return ret;
+}
+
+inline PyObject* py_convert(const long& x) { return PyLong_FromLong(x); }
+
+inline PyObject* py_convert(void* x) { return PyLong_FromVoidPtr(x); }
+
+template <class M>
+PyObject* py_convert(const Vector<M>& x)
+{
+  return PyMemoryView_FromMemory((char*)x.data(), x.data_size(), PyBUF_WRITE);
 }
 
 }  // namespace qlat

@@ -3,6 +3,8 @@ import cqlat as c
 
 from cqlat import begin, end
 
+from cqlat import get_id_node, get_num_node, get_size_node, get_coor_node
+
 from cqlat import timer_display
 
 from cqlat import timer_display_stack

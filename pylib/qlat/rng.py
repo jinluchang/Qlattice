@@ -13,7 +13,7 @@ class RngState:
             seed = str(v1)
             self.cdata = c.mk_rng(rng_state_root.cdata, seed)
         else:
-            raise "RngState init" 
+            raise Exception("RngState init")
 
     def __del__(self):
         c.free_rng(self.cdata)
