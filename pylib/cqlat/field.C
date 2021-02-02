@@ -48,12 +48,12 @@ PyObject* set_unit_field_ctype(void* pfield, const Complex& coef = 1.0)
 }
 
 template <class M>
-PyObject* get_geo_field_ctype(void* pfield)
+PyObject* set_geo_field_ctype(Geometry& geo, void* pfield)
 {
   Field<M>* pf = (Field<M>*)pfield;
   Field<M>& f = *pf;
-  Geometry* pgeo = new Geometry(f.geo());
-  return py_convert((void*)pgeo);
+  geo = f.geo();
+  Py_RETURN_NONE;
 }
 
 template <class M>
@@ -130,17 +130,19 @@ EXPORT(set_unit_field, {
   return p_ret;
 });
 
-EXPORT(get_geo_field, {
+EXPORT(set_geo_field, {
   using namespace qlat;
+  Geometry* pgeo = NULL;
   PyObject* p_ctype = NULL;
   void* pfield = NULL;
-  if (!PyArg_ParseTuple(args, "Ol", &p_ctype, &pfield)) {
+  if (!PyArg_ParseTuple(args, "lOl", &pgeo, &p_ctype, &pfield)) {
     return NULL;
   }
+  Geometry& geo = *pgeo;
   std::string ctype;
   py_convert(ctype, p_ctype);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, get_geo_field_ctype, ctype, pfield);
+  FIELD_DISPATCH(p_ret, set_geo_field_ctype, ctype, geo, pfield);
   return p_ret;
 });
 

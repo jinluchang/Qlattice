@@ -8,7 +8,7 @@ EXPORT(begin, {
   if (!PyArg_ParseTuple(args, "|OO", &p_v1, &p_v2)) {
     return NULL;
   }
-  if (PyLong_Check(p_v1) and p_v2 != NULL) {
+  if (p_v1 != NULL and PyLong_Check(p_v1) and p_v2 != NULL) {
     // initialize with existing MPI
     int id_node = 0;
     Coordinate size_node;

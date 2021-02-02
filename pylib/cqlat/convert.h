@@ -19,6 +19,12 @@ inline void py_convert(long& out, PyObject* in)
   out = PyLong_AsLong(in);
 }
 
+inline void py_convert(double& out, PyObject* in)
+{
+  pqassert(PyFloat_Check(in));
+  out = PyFloat_AsDouble(in);
+}
+
 inline void py_convert(bool& out, PyObject* in)
 {
   pqassert(PyBool_Check(in));
@@ -85,7 +91,19 @@ inline PyObject* py_convert(const Coordinate& coor)
   return ret;
 }
 
+inline PyObject* py_convert(const int& x) { return PyLong_FromLong((long)x); }
+
 inline PyObject* py_convert(const long& x) { return PyLong_FromLong(x); }
+
+inline PyObject* py_convert(const long long& x) { return PyLong_FromLongLong(x); }
+
+inline PyObject* py_convert(const unsigned int& x) { return PyLong_FromUnsignedLong((unsigned long)x); }
+
+inline PyObject* py_convert(const unsigned long& x) { return PyLong_FromUnsignedLong(x); }
+
+inline PyObject* py_convert(const unsigned long long& x) { return PyLong_FromUnsignedLongLong(x); }
+
+inline PyObject* py_convert(const double& x) { return PyFloat_FromDouble(x); }
 
 inline PyObject* py_convert(void* x) { return PyLong_FromVoidPtr(x); }
 

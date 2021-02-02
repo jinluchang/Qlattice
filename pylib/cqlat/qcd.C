@@ -36,3 +36,18 @@ EXPORT(set_g_rand_color_matrix_field, {
   set_g_rand_color_matrix_field(field, rng, sigma, n_step);
   Py_RETURN_NONE;
 });
+
+EXPORT(unitarize_color_matrix_field, {
+  using namespace qlat;
+  PyObject* p_ctype = NULL;
+  void* pfield = NULL;
+  if (!PyArg_ParseTuple(args, "Ol", &p_ctype, &pfield)) {
+    return NULL;
+  }
+  std::string ctype;
+  py_convert(ctype, p_ctype);
+  pqassert(ctype == "ColorMatrix");
+  Field<ColorMatrix>& field = *(Field<ColorMatrix>*)pfield;
+  unitarize(field);
+  Py_RETURN_NONE;
+});

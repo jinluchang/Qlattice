@@ -15,3 +15,9 @@ def set_g_rand_color_matrix_field(x, rng, sigma, n_steps = 1):
     else:
         raise Exception("set_g_rand_color_matrix_field")
 
+def unitarize(x):
+    if type(x) == Field and x.ctype == "ColorMatrix":
+        c.unitarize_color_matrix_field(x.ctype, x.cdata)
+    else:
+        raise Exception("unitarize")
+

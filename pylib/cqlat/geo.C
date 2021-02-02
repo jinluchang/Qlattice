@@ -25,16 +25,20 @@ EXPORT(free_geo, {
   Py_RETURN_NONE;
 });
 
-EXPORT(geo_reform, {
+EXPORT(set_geo_reform, {
   using namespace qlat;
+  Geometry* pgeo_new = NULL;
   Geometry* pgeo = NULL;
   int multiplicity = 1;
   PyObject* p_expansion_left = NULL;
   PyObject* p_expansion_right = NULL;
-  if (!PyArg_ParseTuple(args, "l|iOO", &pgeo, &multiplicity, &p_expansion_left, &p_expansion_right)) {
+  if (!PyArg_ParseTuple(args, "ll|iOO", &pgeo_new, &pgeo, &multiplicity,
+                        &p_expansion_left, &p_expansion_right)) {
     return NULL;
   }
+  pqassert(pgeo_new != NULL);
   pqassert(pgeo != NULL);
+  Geometry& geo_new = *pgeo_new;
   const Geometry& geo = *pgeo;
   Coordinate expansion_left, expansion_right;
   if (NULL != p_expansion_left) {
@@ -43,23 +47,24 @@ EXPORT(geo_reform, {
   if (NULL != p_expansion_right) {
     py_convert(expansion_right, p_expansion_right);
   }
-  Geometry* pgeo_new = new Geometry();
-  *pgeo_new = geo_resize(geo, expansion_left, expansion_right);
-  return py_convert((void*)pgeo_new);
+  geo_new = geo_reform(geo, multiplicity, expansion_left, expansion_right);
+  Py_RETURN_NONE;
 });
 
-EXPORT(geo_eo, {
+EXPORT(set_geo_eo, {
   using namespace qlat;
+  Geometry* pgeo_new = NULL;
   Geometry* pgeo = NULL;
   int eo = 0;
-  if (!PyArg_ParseTuple(args, "l|i", &pgeo, &eo)) {
+  if (!PyArg_ParseTuple(args, "ll|i", &pgeo_new, &pgeo, &eo)) {
     return NULL;
   }
+  pqassert(pgeo_new != NULL);
   pqassert(pgeo != NULL);
+  Geometry& geo_new = *pgeo_new;
   const Geometry& geo = *pgeo;
-  Geometry* pgeo_new = new Geometry();
-  *pgeo_new = geo_eo(geo, eo);
-  return py_convert((void*)pgeo_new);
+  geo_new = geo_eo(geo, eo);
+  Py_RETURN_NONE;
 });
 
 EXPORT(get_total_site_geo, {

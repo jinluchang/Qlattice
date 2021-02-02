@@ -46,17 +46,17 @@ def geo_reform(geo,
         expansion_left = (0, 0, 0, 0),
         expansion_right = (0, 0, 0, 0)):
     if type(geo) == Geometry:
-        geo = Geometry((0, 0, 0, 0))
-        geo.cdata = c.geo_reform(geo.cdata, multiplicity, expansion_left, expansion_right)
-        return geo
+        geo_new = Geometry((0, 0, 0, 0))
+        c.set_geo_reform(geo_new.cdata, geo.cdata, multiplicity, expansion_left, expansion_right)
+        return geo_new
     else:
         raise Exception("geo_reform")
 
 def geo_eo(geo, eo = 0):
     if type(geo) == Geometry:
-        geo = Geometry((0, 0, 0, 0))
-        geo.cdata = c.geo_eo(geo.cdata, eo)
-        return geo
+        geo_new = Geometry((0, 0, 0, 0))
+        c.set_geo_eo(geo_new.cdata, geo.cdata, eo)
+        return geo_new
     else:
         raise Exception("geo_eo")
 
