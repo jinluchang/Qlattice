@@ -7,6 +7,14 @@ def gf_show_info(gf):
     assert type(gf) == Field and gf.ctype == "ColorMatrix"
     c.gf_show_info(gf)
 
+def gf_avg_plaq(gf):
+    assert type(gf) == Field and gf.ctype == "ColorMatrix"
+    return c.gf_avg_plaq(gf)
+
+def gf_avg_link_trace(gf):
+    assert type(gf) == Field and gf.ctype == "ColorMatrix"
+    return c.gf_avg_link_trace(gf)
+
 def set_g_rand_color_matrix_field(fc, rng, sigma, n_steps = 1):
     assert type(fc) == Field and fc.ctype == "ColorMatrix"
     assert type(rng) == RngState

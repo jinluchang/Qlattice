@@ -39,7 +39,7 @@ all: build
 
 build: $(OBJS)
 	$(CXX) --shared -fPIC -o $(NAME) $(OBJS) $(LDFLAGS)
-	ls -l $(NAME)
+	ls -lh $(NAME)
 	mv $(NAME) ..
 
 exports.h: *.C

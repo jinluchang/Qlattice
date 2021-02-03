@@ -41,7 +41,8 @@ q.gf_show_info(gf)
 
 mview = gf.mview()
 
-print(mview.nbytes)
+if q.get_id_node() == 0:
+    print("gf.mview().nbytes =", mview.nbytes)
 
 q.timer_display_stack()
 

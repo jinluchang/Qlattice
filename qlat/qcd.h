@@ -304,7 +304,7 @@ inline void read_gauge_field_header(GaugeFieldInfo& gfi,
 }
 
 template <class T>
-void save_gauge_field(const GaugeFieldT<T>& gf, const std::string& path,
+long save_gauge_field(const GaugeFieldT<T>& gf, const std::string& path,
                       const GaugeFieldInfo& gfi_ = GaugeFieldInfo())
 {
   TIMER_VERBOSE_FLOPS("save_gauge_field");
@@ -334,9 +334,10 @@ void save_gauge_field(const GaugeFieldT<T>& gf, const std::string& path,
   gfi.crc32 = field_crc32(gft);
   gfi.total_site = gf.geo().total_site();
   qtouch_info(path + ".partial", make_gauge_field_header(gfi));
-  serial_write_field(gft, path + ".partial");
+  const long file_size = serial_write_field(gft, path + ".partial");
   qrename_info(path + ".partial", path);
-  timer.flops += get_data(gft).data_size() * gft.geo().geon.num_node;
+  timer.flops += file_size;
+  return file_size;
 }
 
 template <class T = ComplexT>

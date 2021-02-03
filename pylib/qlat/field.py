@@ -24,3 +24,24 @@ class Field:
     def mview(self):
         return c.get_mview_field(self)
 
+    def __imatmul__(self, f1):
+        assert type(f1) == Field and f1.ctype == self.ctype
+        c.set_field(self, f1)
+        return self
+
+    def __iadd__(self, f1):
+        assert type(f1) == Field and f1.ctype == self.ctype
+        c.set_add_field(self, f1)
+        return self
+
+    def __isub__(self, f1):
+        assert type(f1) == Field and f1.ctype == self.ctype
+        c.set_sub_field(self, f1)
+        return self
+
+    def __imul__(self, factor):
+        assert type(factor) == float
+        c.set_mul_double_field(self, factor)
+        return self
+
+

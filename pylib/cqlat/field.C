@@ -28,6 +28,49 @@ PyObject* free_field_ctype(PyField& pf)
 }
 
 template <class M>
+PyObject* set_field_ctype(PyField& pf_new, PyField& pf)
+{
+  Field<M>& f_new = *(Field<M>*)pf_new.cdata;
+  Field<M>& f = *(Field<M>*)pf.cdata;
+  f_new = f;
+  Py_RETURN_NONE;
+}
+
+template <class M>
+PyObject* set_add_field_ctype(PyField& pf_new, PyField& pf)
+{
+  Field<M>& f_new = *(Field<M>*)pf_new.cdata;
+  Field<M>& f = *(Field<M>*)pf.cdata;
+  f_new += f;
+  Py_RETURN_NONE;
+}
+
+template <class M>
+PyObject* set_sub_field_ctype(PyField& pf_new, PyField& pf)
+{
+  Field<M>& f_new = *(Field<M>*)pf_new.cdata;
+  Field<M>& f = *(Field<M>*)pf.cdata;
+  f_new -= f;
+  Py_RETURN_NONE;
+}
+
+template <class M>
+PyObject* set_mul_field_ctype(PyField& pf, const Complex& factor)
+{
+  Field<M>& f = *(Field<M>*)pf.cdata;
+  f *= factor;
+  Py_RETURN_NONE;
+}
+
+template <class M>
+PyObject* set_mul_field_ctype(PyField& pf, const double& factor)
+{
+  Field<M>& f = *(Field<M>*)pf.cdata;
+  f *= factor;
+  Py_RETURN_NONE;
+}
+
+template <class M>
 PyObject* set_zero_field_ctype(PyField& pf)
 {
   Field<M>& f = *(Field<M>*)pf.cdata;
@@ -90,6 +133,64 @@ EXPORT(free_field, {
   PyField pf = py_convert_field(p_field);
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, free_field_ctype, pf.ctype, pf);
+  return p_ret;
+});
+
+EXPORT(set_field, {
+  using namespace qlat;
+  PyObject* p_field_new = NULL;
+  PyObject* p_field = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_field_new, &p_field)) {
+    return NULL;
+  }
+  PyField pf_new = py_convert_field(p_field_new);
+  PyField pf = py_convert_field(p_field);
+  pqassert(pf_new.ctype == pf.ctype)
+  PyObject* p_ret = NULL;
+  FIELD_DISPATCH(p_ret, set_field_ctype, pf.ctype, pf_new, pf);
+  return p_ret;
+});
+
+EXPORT(set_add_field, {
+  using namespace qlat;
+  PyObject* p_field_new = NULL;
+  PyObject* p_field = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_field_new, &p_field)) {
+    return NULL;
+  }
+  PyField pf_new = py_convert_field(p_field_new);
+  PyField pf = py_convert_field(p_field);
+  pqassert(pf_new.ctype == pf.ctype)
+  PyObject* p_ret = NULL;
+  FIELD_DISPATCH(p_ret, set_add_field_ctype, pf.ctype, pf_new, pf);
+  return p_ret;
+});
+
+EXPORT(set_sub_field, {
+  using namespace qlat;
+  PyObject* p_field_new = NULL;
+  PyObject* p_field = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_field_new, &p_field)) {
+    return NULL;
+  }
+  PyField pf_new = py_convert_field(p_field_new);
+  PyField pf = py_convert_field(p_field);
+  pqassert(pf_new.ctype == pf.ctype)
+  PyObject* p_ret = NULL;
+  FIELD_DISPATCH(p_ret, set_sub_field_ctype, pf.ctype, pf_new, pf);
+  return p_ret;
+});
+
+EXPORT(set_mul_double_field, {
+  using namespace qlat;
+  PyObject* p_field = NULL;
+  double factor = 0.0;
+  if (!PyArg_ParseTuple(args, "Od", &p_field, &factor)) {
+    return NULL;
+  }
+  PyField pf = py_convert_field(p_field);
+  PyObject* p_ret = NULL;
+  FIELD_DISPATCH(p_ret, set_mul_field_ctype, pf.ctype, pf, factor);
   return p_ret;
 });
 
