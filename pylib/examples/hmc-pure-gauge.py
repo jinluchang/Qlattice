@@ -104,28 +104,22 @@ def show_machine():
         str(q.get_coor_node()),
         str(q.get_size_node())))
 
-size_node_list = [
-        (1, 1, 1, 1),
-        (1, 1, 1, 2),
-        (1, 1, 1, 4),
-        (1, 1, 1, 8),
-        (2, 2, 2, 2),
-        (2, 2, 2, 4)]
+def main():
+    size_node_list = [
+            (1, 1, 1, 1),
+            (1, 1, 1, 2),
+            (1, 1, 1, 4),
+            (1, 1, 1, 8),
+            (2, 2, 2, 2),
+            (2, 2, 2, 4)]
+    q.begin(sys.argv, size_node_list)
+    show_machine()
+    total_site = (4, 4, 4, 8)
+    ga = q.GaugeAction(2.13, -0.331)
+    test_hmc(total_site, ga)
+    ga = q.GaugeAction(5.5, 0.0)
+    test_hmc(total_site, ga)
+    q.timer_display()
+    q.end()
 
-q.begin(sys.argv, size_node_list)
-
-show_machine()
-
-total_site = (4, 4, 4, 8)
-
-ga = q.GaugeAction(2.13, -0.331)
-
-test_hmc(total_site, ga)
-
-ga = q.GaugeAction(5.5, 0.0)
-
-test_hmc(total_site, ga)
-
-q.timer_display()
-
-q.end()
+main()
