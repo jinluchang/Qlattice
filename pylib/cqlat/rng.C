@@ -12,11 +12,13 @@ EXPORT(mk_rng, {
     prng_new = new RngState();
   } else {
     RngState& rng = py_convert_type<RngState>(p_rng);
-    std::string seed;
-    if (p_seed != NULL) {
+    if (p_seed == NULL) {
+      prng_new = new RngState(rng);
+    } else {
+      std::string seed;
       py_convert(seed, p_seed);
+      prng_new = new RngState(rng, seed);
     }
-    prng_new = new RngState(rng, seed);
   }
   return py_convert((void*)prng_new);
 });

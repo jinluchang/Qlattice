@@ -17,12 +17,4 @@ def set_unit(x, coef = 1.0):
     else:
         raise Exception("set_unit")
 
-def glb_sum(x):
-    if type(x) == float:
-        return c.glb_sum_double(x)
-    elif type(x) == complex:
-        return c.glb_sum_complex(x)
-    elif type(x) == int:
-        return c.glb_sum_long(x)
-    else:
-        raise Exception("glb_sum")
+

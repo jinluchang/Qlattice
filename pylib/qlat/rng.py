@@ -2,11 +2,16 @@ import cqlat as c
 
 class RngState:
 
-    def __init__(self, seed = None):
-        if seed == None:
+    def __init__(self, x = None):
+        if x == None:
             self.cdata = c.mk_rng()
-        else:
-            self.cdata = c.mk_rng(rng_state_root, str(seed))
+        elif type(x) == RngState:
+            # make a copy of x
+            self.cdata = c.mk_rng(x)
+        elif type(x) == str:
+            # seed a new rng
+            seed = x
+            self.cdata = c.mk_rng(rng_state_root, seed)
 
     def __del__(self):
         c.free_rng(self)
@@ -20,7 +25,7 @@ class RngState:
         return c.rand_gen(self)
 
     def u_rand_gen(self, upper = 1.0, lower = 0.0):
-        return c.u_rand_gen(selfupper, lower)
+        return c.u_rand_gen(self, upper, lower)
 
     def g_rand_gen(self, center = 0.0, sigma = 1.0):
         return c.g_rand_gen(self, center, sigma)
