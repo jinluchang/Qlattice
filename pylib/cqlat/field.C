@@ -44,19 +44,17 @@ PyObject* set_unit_field_ctype(PyField& pf, const Complex& coef = 1.0)
 }
 
 template <class M>
-PyObject* set_geo_field_ctype(Geometry& geo, void* pfield)
+PyObject* set_geo_field_ctype(Geometry& geo, PyField& pf)
 {
-  Field<M>* pf = (Field<M>*)pfield;
-  Field<M>& f = *pf;
+  const Field<M>& f = *(Field<M>*)pf.cdata;
   geo = f.geo();
   Py_RETURN_NONE;
 }
 
 template <class M>
-PyObject* get_mview_field_ctype(void* pfield, PyObject* p_field)
+PyObject* get_mview_field_ctype(PyField& pf, PyObject* p_field)
 {
-  Field<M>* pf = (Field<M>*)pfield;
-  Field<M>& f = *pf;
+  Field<M>& f = *(Field<M>*)pf.cdata;
   Vector<M> fv = get_data(f);
   PyObject* p_mview = py_convert(fv);
   pqassert(p_field != NULL);
@@ -122,31 +120,26 @@ EXPORT(set_unit_field, {
 
 EXPORT(set_geo_field, {
   using namespace qlat;
-  Geometry* pgeo = NULL;
-  PyObject* p_ctype = NULL;
-  void* pfield = NULL;
-  if (!PyArg_ParseTuple(args, "lOl", &pgeo, &p_ctype, &pfield)) {
+  PyObject* p_geo = NULL;
+  PyObject* p_field = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_geo, &p_field)) {
     return NULL;
   }
-  Geometry& geo = *pgeo;
-  std::string ctype;
-  py_convert(ctype, p_ctype);
+  Geometry& geo = py_convert_type<Geometry>(p_geo);
+  PyField pf = py_convert_field(p_field);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, set_geo_field_ctype, ctype, geo, pfield);
+  FIELD_DISPATCH(p_ret, set_geo_field_ctype, pf.ctype, geo, pf);
   return p_ret;
 });
 
 EXPORT(get_mview_field, {
   using namespace qlat;
-  PyObject* p_ctype = NULL;
-  void* pfield = NULL;
   PyObject* p_field= NULL;
-  if (!PyArg_ParseTuple(args, "OlO", &p_ctype, &pfield, &p_field)) {
+  if (!PyArg_ParseTuple(args, "O", &p_field)) {
     return NULL;
   }
-  std::string ctype;
-  py_convert(ctype, p_ctype);
+  PyField pf = py_convert_field(p_field);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, get_mview_field_ctype, ctype, pfield, p_field);
+  FIELD_DISPATCH(p_ret, get_mview_field_ctype, pf.ctype, pf, p_field);
   return p_ret;
 });

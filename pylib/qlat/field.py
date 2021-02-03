@@ -18,9 +18,9 @@ class Field:
 
     def geo(self):
         geo = Geometry((0, 0, 0, 0))
-        c.set_geo_field(geo.cdata, self.ctype, self.cdata)
+        c.set_geo_field(geo, self)
         return geo
 
     def mview(self):
-        return c.get_mview_field(self.ctype, self.cdata, self)
+        return c.get_mview_field(self)
 

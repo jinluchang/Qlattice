@@ -3,17 +3,14 @@ import cqlat as c
 from qlat.field import *
 from qlat.rng import *
 
-def gf_show_info(x):
-    if type(x) == Field and x.ctype == "ColorMatrix":
-        c.gf_show_info(x)
-    else:
-        raise Exception("gf_show_info")
+def gf_show_info(gf):
+    assert type(gf) == Field and gf.ctype == "ColorMatrix"
+    c.gf_show_info(gf)
 
-def set_g_rand_color_matrix_field(x, rng, sigma, n_steps = 1):
-    if type(x) == Field and x.ctype == "ColorMatrix" and type(rng) == RngState:
-        c.set_g_rand_color_matrix_field(x, rng, sigma, n_steps)
-    else:
-        raise Exception("set_g_rand_color_matrix_field")
+def set_g_rand_color_matrix_field(fc, rng, sigma, n_steps = 1):
+    assert type(fc) == Field and fc.ctype == "ColorMatrix"
+    assert type(rng) == RngState
+    c.set_g_rand_color_matrix_field(fc, rng, sigma, n_steps)
 
 def unitarize(x):
     if type(x) == Field and x.ctype == "ColorMatrix":
