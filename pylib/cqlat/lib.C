@@ -1,4 +1,5 @@
-// See https://github.com/lehner/gpt/blob/master/lib/cgpt/update
+
+// See https://github.com/lehner/gpt/blob/master/lib/cgpt/lib/lib.cc
 // Original author Christoph Lehner
 
 #include "lib.h"
@@ -33,7 +34,4 @@ static struct PyModuleDef module_def = {
 };
 
 // export module creation
-PyMODINIT_FUNC PyInit_cqlat(void)
-{
-  return PyModule_Create(&module_def);
-}
+PyMODINIT_FUNC PyInit_cqlat(void) { return PyModule_Create(&module_def); }

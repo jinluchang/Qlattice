@@ -1,6 +1,4 @@
-#include "convert.h"
-#include "dispatch.h"
-#include "exceptions.h"
+#include "lib.h"
 
 EXPORT(timer_display, {
   using namespace qlat;
@@ -28,3 +26,32 @@ EXPORT(timer_display_stack, {
   Py_RETURN_NONE;
 });
 
+EXPORT(glb_sum_long, {
+  using namespace qlat;
+  long x = 0;
+  if (!PyArg_ParseTuple(args, "l", &x)) {
+    return NULL;
+  }
+  glb_sum(x);
+  return py_convert(x);
+});
+
+EXPORT(glb_sum_double, {
+  using namespace qlat;
+  double x = 0.0;
+  if (!PyArg_ParseTuple(args, "d", &x)) {
+    return NULL;
+  }
+  glb_sum(x);
+  return py_convert(x);
+});
+
+EXPORT(glb_sum_complex, {
+  using namespace qlat;
+  Complex x = 0.0;
+  if (!PyArg_ParseTuple(args, "D", &x)) {
+    return NULL;
+  }
+  glb_sum(x);
+  return py_convert(x);
+});

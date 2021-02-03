@@ -1,8 +1,8 @@
 #pragma once
 
 #include <Python.h>
+#include <qlat/py_exceptions.h>
 #include <qlat/qlat.h>
-#include "exceptions.h"
 
 namespace qlat
 {  //
@@ -82,6 +82,30 @@ inline void py_convert(Coordinate& out, PyObject* in)
   }
 }
 
+struct PyField {
+  std::string ctype;
+  void* cdata;
+};
+
+inline PyField py_convert_field(PyObject* in)
+{
+  PyObject* p_ctype = PyObject_GetAttrString(in, "ctype");
+  PyObject* p_cdata = PyObject_GetAttrString(in, "cdata");
+  PyField out;
+  py_convert(out.ctype, p_ctype);
+  py_convert((long&)out.cdata, p_cdata);
+  return out;
+}
+
+template <class T>
+inline T& py_convert_type(PyObject* in)
+{
+  PyObject* p_cdata = PyObject_GetAttrString(in, "cdata");
+  T* out;
+  py_convert((long&)out, p_cdata);
+  return *out;
+}
+
 inline PyObject* py_convert(const Coordinate& coor)
 {
   PyObject* ret = PyTuple_New(coor.size());
@@ -106,6 +130,11 @@ inline PyObject* py_convert(const unsigned long long& x) { return PyLong_FromUns
 inline PyObject* py_convert(const double& x) { return PyFloat_FromDouble(x); }
 
 inline PyObject* py_convert(void* x) { return PyLong_FromVoidPtr(x); }
+
+inline PyObject* py_convert(const Complex& x)
+{
+  return PyComplex_FromCComplex((Py_complex&)x);
+}
 
 template <class M>
 PyObject* py_convert(const Vector<M>& x)

@@ -1,6 +1,4 @@
-#include "convert.h"
-#include "dispatch.h"
-#include "exceptions.h"
+#include "lib.h"
 
 EXPORT(mk_gauge_action, {
   using namespace qlat;
@@ -15,33 +13,31 @@ EXPORT(mk_gauge_action, {
 
 EXPORT(free_gauge_action, {
   using namespace qlat;
-  GaugeAction* pga = NULL;
-  if (!PyArg_ParseTuple(args, "l", &pga)) {
+  PyObject* p_ga = NULL;
+  if (!PyArg_ParseTuple(args, "O", &p_ga)) {
     return NULL;
   }
-  pqassert(pga != NULL);
-  delete pga;
+  GaugeAction& ga = py_convert_type<GaugeAction>(p_ga);
+  delete &ga;
   Py_RETURN_NONE;
 });
 
 EXPORT(get_beta_gauge_action, {
   using namespace qlat;
-  GaugeAction* pga = NULL;
-  if (!PyArg_ParseTuple(args, "l", &pga)) {
+  PyObject* p_ga = NULL;
+  if (!PyArg_ParseTuple(args, "O", &p_ga)) {
     return NULL;
   }
-  pqassert(pga != NULL);
-  const GaugeAction& ga = *pga;
+  const GaugeAction& ga = py_convert_type<GaugeAction>(p_ga);
   return py_convert(ga.beta);
 });
 
 EXPORT(get_c1_gauge_action, {
   using namespace qlat;
-  GaugeAction* pga = NULL;
-  if (!PyArg_ParseTuple(args, "l", &pga)) {
+  PyObject* p_ga = NULL;
+  if (!PyArg_ParseTuple(args, "O", &p_ga)) {
     return NULL;
   }
-  pqassert(pga != NULL);
-  const GaugeAction& ga = *pga;
+  const GaugeAction& ga = py_convert_type<GaugeAction>(p_ga);
   return py_convert(ga.c1);
 });

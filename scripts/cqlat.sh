@@ -11,7 +11,7 @@ rm -rfv $prefix/pylib/cqlat
 mkdir -pv $prefix/pylib
 cp -rpv pylib/cqlat $prefix/pylib/
 
-make -C $prefix/pylib/cqlat
+time make -C $prefix/pylib/cqlat -j $num_proc
 
 echo "!!!! $name build !!!!"
 

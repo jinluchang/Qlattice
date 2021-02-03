@@ -31,7 +31,24 @@ CXXFLAGS+= $$(python3-config --includes)
 LDFLAGS=
 LDFLAGS+= $(QLAT_LDFLAGS)
 
-build:
+NAME=cqlat.so
+
+OBJS:=$(patsubst %.C, %.o, $(wildcard *.C))
+
+all: build
+
+build: $(OBJS)
+	$(CXX) --shared -fPIC -o $(NAME) $(OBJS) $(LDFLAGS)
+	ls -l $(NAME)
+	mv $(NAME) ..
+
+exports.h: *.C
 	./update.sh
-	time $(CXX) --shared -fPIC -o cqlat.so $(CXXFLAGS) *.C $(LDFLAGS)
-	mv cqlat.so ..
+
+%.o : %.C exports.h *.h
+	$(CXX) -fPIC -c -o $@ $(CXXFLAGS) $<
+	@echo "$@" "$<"
+
+clean:
+	rm *.o
+

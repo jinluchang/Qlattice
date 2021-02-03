@@ -9,12 +9,12 @@ class Field:
         if geo == None:
             self.cdata = c.mk_field(ctype)
         elif multiplicity == None:
-            self.cdata = c.mk_field(ctype, geo.cdata)
+            self.cdata = c.mk_field(ctype, geo)
         else:
-            self.cdata = c.mk_field(ctype, geo.cdata, multiplicity)
+            self.cdata = c.mk_field(ctype, geo, multiplicity)
 
     def __del__(self):
-        c.free_field(self.ctype, self.cdata)
+        c.free_field(self)
 
     def geo(self):
         geo = Geometry((0, 0, 0, 0))

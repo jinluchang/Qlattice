@@ -9,37 +9,50 @@ class Geometry:
             self.cdata = c.mk_geo(total_site, multiplicity)
 
     def __del__(self):
-        c.free_geo(self.cdata)
+        c.free_geo(self)
 
     def total_site(self):
-        return c.get_total_site_geo(self.cdata)
+        return c.get_total_site_geo(self)
 
     def multiplicity(self):
-        return c.get_multiplicity_geo(self.cdata)
+        return c.get_multiplicity_geo(self)
 
     def node_site(self):
-        return c.get_node_site_geo(self.cdata)
+        return c.get_node_site_geo(self)
 
     def eo(self):
-        return c.get_eo_geo(self.cdata)
+        return c.get_eo_geo(self)
 
     def expansion_left(self):
-        return c.get_expansion_left_geo(self.cdata)
+        return c.get_expansion_left_geo(self)
 
     def expansion_right(self):
-        return c.get_expansion_right_geo(self.cdata)
+        return c.get_expansion_right_geo(self)
 
     def id_node(self):
-        return c.get_id_node_geo(self.cdata)
+        return c.get_id_node_geo(self)
 
     def num_node(self):
-        return c.get_num_node_geo(self.cdata)
+        return c.get_num_node_geo(self)
 
     def coor_node(self):
-        return c.get_coor_node_geo(self.cdata)
+        return c.get_coor_node_geo(self)
 
     def size_node(self):
-        return c.get_size_node_geo(self.cdata)
+        return c.get_size_node_geo(self)
+
+    def show(self):
+        return "Geometry({}, {})".format(
+                str(self.total_site()),
+                self.multiplicity())
+
+    def show_all(self):
+        return "Geometry({}, {}, expansion_left={}, expansion_right={}, eo={})".format(
+                str(self.total_site()),
+                self.multiplicity(),
+                str(self.expansion_left()),
+                str(self.expansion_right()),
+                self.eo())
 
 def geo_reform(geo,
         multiplicity = 1,
@@ -47,7 +60,7 @@ def geo_reform(geo,
         expansion_right = (0, 0, 0, 0)):
     if type(geo) == Geometry:
         geo_new = Geometry((0, 0, 0, 0))
-        c.set_geo_reform(geo_new.cdata, geo.cdata, multiplicity, expansion_left, expansion_right)
+        c.set_geo_reform(geo_new, geo, multiplicity, expansion_left, expansion_right)
         return geo_new
     else:
         raise Exception("geo_reform")
@@ -55,27 +68,8 @@ def geo_reform(geo,
 def geo_eo(geo, eo = 0):
     if type(geo) == Geometry:
         geo_new = Geometry((0, 0, 0, 0))
-        c.set_geo_eo(geo_new.cdata, geo.cdata, eo)
+        c.set_geo_eo(geo_new, geo, eo)
         return geo_new
     else:
         raise Exception("geo_eo")
-
-def show_geo(geo):
-    if type(geo) == Geometry:
-        return "Geometry({}, {})".format(
-                str(geo.total_site()),
-                geo.multiplicity())
-    else:
-        raise Exception("show_geo")
-
-def show_geo_all(geo):
-    if type(geo) == Geometry:
-        return "Geometry({}, {}, expansion_left={}, expansion_right={}, eo={})".format(
-                str(geo.total_site()),
-                geo.multiplicity(),
-                str(geo.expansion_left()),
-                str(geo.expansion_right()),
-                geo.eo())
-    else:
-        raise Exception("show_geo")
 

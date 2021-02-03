@@ -21,3 +21,5 @@ from qlat.qcd import *
 
 from qlat.gauge_action import *
 
+from qlat.hmc import *
+

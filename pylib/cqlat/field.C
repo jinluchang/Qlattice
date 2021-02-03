@@ -1,17 +1,15 @@
-#include "convert.h"
-#include "dispatch.h"
-#include "exceptions.h"
+#include "lib.h"
 
 namespace qlat
 {  //
 
 template <class M>
-PyObject* mk_field_ctype(Geometry* pgeo, const int multiplicity)
+PyObject* mk_field_ctype(PyObject* p_geo, const int multiplicity)
 {
   Field<M>* pf = new Field<M>();
   Field<M>& f = *pf;
-  if (pgeo != NULL) {
-    Geometry& geo = *pgeo;
+  if (p_geo != NULL) {
+    const Geometry& geo = py_convert_type<Geometry>(p_geo);
     if (multiplicity == 0) {
       f.init(geo);
     } else {
@@ -22,27 +20,25 @@ PyObject* mk_field_ctype(Geometry* pgeo, const int multiplicity)
 }
 
 template <class M>
-PyObject* free_field_ctype(void* pfield)
+PyObject* free_field_ctype(PyField& pf)
 {
-  Field<M>* pf = (Field<M>*)pfield;
-  delete pf;
+  Field<M>& f = *(Field<M>*)pf.cdata;
+  delete &f;
   Py_RETURN_NONE;
 }
 
 template <class M>
-PyObject* set_zero_field_ctype(void* pfield)
+PyObject* set_zero_field_ctype(PyField& pf)
 {
-  Field<M>* pf = (Field<M>*)pfield;
-  Field<M>& f = *pf;
+  Field<M>& f = *(Field<M>*)pf.cdata;
   set_zero(f);
   Py_RETURN_NONE;
 }
 
 template <class M>
-PyObject* set_unit_field_ctype(void* pfield, const Complex& coef = 1.0)
+PyObject* set_unit_field_ctype(PyField& pf, const Complex& coef = 1.0)
 {
-  Field<M>* pf = (Field<M>*)pfield;
-  Field<M>& f = *pf;
+  Field<M>& f = *(Field<M>*)pf.cdata;
   set_unit(f, coef);
   Py_RETURN_NONE;
 }
@@ -75,58 +71,52 @@ PyObject* get_mview_field_ctype(void* pfield, PyObject* p_field)
 EXPORT(mk_field, {
   using namespace qlat;
   PyObject* p_ctype = NULL;
-  Geometry* pgeo = NULL;
+  PyObject* p_geo = NULL;
   int multiplicity = 0;
-  if (!PyArg_ParseTuple(args, "O|li", &p_ctype, &pgeo, &multiplicity)) {
+  if (!PyArg_ParseTuple(args, "O|Oi", &p_ctype, &p_geo, &multiplicity)) {
     return NULL;
   }
   std::string ctype;
   py_convert(ctype, p_ctype);
   PyObject* pfield;
-  FIELD_DISPATCH(pfield, mk_field_ctype, ctype, pgeo, multiplicity);
+  FIELD_DISPATCH(pfield, mk_field_ctype, ctype, p_geo, multiplicity);
   return pfield;
 });
 
 EXPORT(free_field, {
   using namespace qlat;
-  PyObject* p_ctype = NULL;
-  void* pfield = NULL;
-  if (!PyArg_ParseTuple(args, "Ol", &p_ctype, &pfield)) {
+  PyObject* p_field = NULL;
+  if (!PyArg_ParseTuple(args, "O", &p_field)) {
     return NULL;
   }
-  std::string ctype;
-  py_convert(ctype, p_ctype);
+  PyField pf = py_convert_field(p_field);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, free_field_ctype, ctype, pfield);
+  FIELD_DISPATCH(p_ret, free_field_ctype, pf.ctype, pf);
   return p_ret;
 });
 
 EXPORT(set_zero_field, {
   using namespace qlat;
-  PyObject* p_ctype = NULL;
-  void* pfield = NULL;
-  if (!PyArg_ParseTuple(args, "Ol", &p_ctype, &pfield)) {
+  PyObject* p_field = NULL;
+  if (!PyArg_ParseTuple(args, "O", &p_field)) {
     return NULL;
   }
-  std::string ctype;
-  py_convert(ctype, p_ctype);
+  PyField pf = py_convert_field(p_field);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, set_zero_field_ctype, ctype, pfield);
+  FIELD_DISPATCH(p_ret, set_zero_field_ctype, pf.ctype, pf);
   return p_ret;
 });
 
 EXPORT(set_unit_field, {
   using namespace qlat;
-  PyObject* p_ctype = NULL;
-  void* pfield = NULL;
+  PyObject* p_field = NULL;
   Complex coef = 1.0;
-  if (!PyArg_ParseTuple(args, "Ol|D", &p_ctype, &pfield, &coef)) {
+  if (!PyArg_ParseTuple(args, "O|D", &p_field, &coef)) {
     return NULL;
   }
-  std::string ctype;
-  py_convert(ctype, p_ctype);
+  PyField pf = py_convert_field(p_field);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, set_unit_field_ctype, ctype, pfield, coef);
+  FIELD_DISPATCH(p_ret, set_unit_field_ctype, pf.ctype, pf, coef);
   return p_ret;
 });
 

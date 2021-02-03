@@ -1,6 +1,4 @@
-#include "convert.h"
-#include "dispatch.h"
-#include "exceptions.h"
+#include "lib.h"
 
 EXPORT(mk_rng, {
   using namespace qlat;

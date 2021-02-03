@@ -22,12 +22,12 @@ total_site = (4, 4, 4, 8)
 geo = q.Geometry(total_site)
 
 if q.get_id_node() == 0:
-    print(q.show_geo_all(geo))
+    print(geo.show_all())
 
 gf = q.Field("ColorMatrix", geo, 4)
 
 if q.get_id_node() == 0:
-    print(q.show_geo_all(gf.geo()))
+    print(gf.geo().show_all())
 
 q.set_unit(gf)
 
