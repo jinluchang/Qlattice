@@ -107,6 +107,14 @@ PyObject* get_mview_field_ctype(PyField& pf, PyObject* p_field)
   return p_mview;
 }
 
+template <class M>
+PyObject* qnorm_field_ctype(PyField& pf)
+{
+  Field<M>& f = *(Field<M>*)pf.cdata;
+  const double ret = qnorm(f);
+  return py_convert(ret);
+}
+
 }  // namespace qlat
 
 EXPORT(mk_field, {
@@ -242,5 +250,17 @@ EXPORT(get_mview_field, {
   PyField pf = py_convert_field(p_field);
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, get_mview_field_ctype, pf.ctype, pf, p_field);
+  return p_ret;
+});
+
+EXPORT(qnorm_field, {
+  using namespace qlat;
+  PyObject* p_field = NULL;
+  if (!PyArg_ParseTuple(args, "O", &p_field)) {
+    return NULL;
+  }
+  PyField pf = py_convert_field(p_field);
+  PyObject* p_ret = NULL;
+  FIELD_DISPATCH(p_ret, qnorm_field_ctype, pf.ctype, pf);
   return p_ret;
 });

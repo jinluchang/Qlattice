@@ -3,6 +3,7 @@
 import sys
 import qlat as q
 import math as m
+import numpy as np
 
 def gm_evolve_fg(gm, gf_init, ga, fg_dt, dt):
     geo = gf_init.geo()
@@ -16,6 +17,8 @@ def gm_evolve_fg(gm, gf_init, ga, fg_dt, dt):
     q.gf_evolve(gf, gm_force, fg_dt)
     #
     q.set_gm_force(gm_force, gf, ga)
+    #
+    q.display_gm_force_magnitudes(gm_force, 5)
     #
     gm_force *= dt
     gm += gm_force
@@ -66,6 +69,9 @@ def metropolis_accept(delta_h, traj, rs):
     return flag, accept_prob
 
 def run_hmc(gf, ga, traj, rs):
+    #
+    is_reverse_test = traj < 3
+    #
     geo = gf.geo()
     gf0 = q.Field("ColorMatrix", geo, 4)
     gf0 @= gf
@@ -78,6 +84,16 @@ def run_hmc(gf, ga, traj, rs):
     #
     delta_h = run_hmc_evolve(gm, gf0, ga, rs, steps, md_time)
     #
+    if is_reverse_test:
+        gm_r = q.Field("ColorMatrix", geo, 4)
+        gm_r @= gm
+        gf0_r = q.Field("ColorMatrix", geo, 4)
+        gf0_r @= gf0
+        delta_h_rev = run_hmc_evolve(gm_r, gf0_r, ga, rs, steps, -md_time)
+        gf0_r -= gf;
+        q.displayln_info("run_hmc_evolve reversed delta_diff: {} / {}".format(delta_h + delta_h_rev, delta_h))
+        q.displayln_info("run_hmc_evolve reversed gf_diff: {} / {}".format(q.qnorm(gf0_r), q.qnorm(gf0)))
+    #
     flag, accept_prob = metropolis_accept(delta_h, traj, rs.split("metropolis_accept"))
     #
     if flag or traj <= 20:
@@ -85,6 +101,12 @@ def run_hmc(gf, ga, traj, rs):
         gf @= gf0
 
 def test_hmc(total_site, ga):
+    #
+    q.qmkdir_info("results");
+    q.qmkdir_info("results/gf_info");
+    q.qmkdir_info("results/wilson_flow_energy_info");
+    q.qmkdir_info("results/gm_force_info");
+    #
     geo = q.Geometry(total_site, 1)
     rs = q.RngState("test_hmc-{}x{}x{}x{}".format(total_site[0], total_site[1], total_site[2], total_site[3]))
     gf = q.Field("ColorMatrix", geo, 4)
@@ -94,8 +116,15 @@ def test_hmc(total_site, ga):
         traj += 1
         run_hmc(gf, ga, traj, rs.split("hmc-{}".format(traj)))
         plaq_avg = q.gf_avg_plaq(gf)
-        if q.get_id_node() == 0:
-            print(traj, plaq_avg)
+        plaq_sum = np.prod(total_site) * 6.0 * (1.0 - plaq_avg)
+        q.displayln_info("test_hmc: traj={} ; plaq_avg={}".format(traj, plaq_avg))
+        if traj % 10 == 0:
+            q.display_gauge_field_info_table_with_wilson_flow(
+                    "results/gf_info/traj={}.lat".format(traj),
+                    "results/wilson_flow_energy_info/traj={}.lat".format(traj),
+                    gf, 1.0, 100, 2)
+            q.save_gm_force_magnitudes_list(
+                    "results/gm_force_info/traj={}.lat".format(traj))
 
 def show_machine():
     print("id_node: {:4} / {} ; coor_node: {:9} / {}".format(
@@ -105,21 +134,26 @@ def show_machine():
         str(q.get_size_node())))
 
 def main():
-    size_node_list = [
-            (1, 1, 1, 1),
-            (1, 1, 1, 2),
-            (1, 1, 1, 4),
-            (1, 1, 1, 8),
-            (2, 2, 2, 2),
-            (2, 2, 2, 4)]
-    q.begin(sys.argv, size_node_list)
-    show_machine()
     total_site = (4, 4, 4, 8)
     ga = q.GaugeAction(2.13, -0.331)
     test_hmc(total_site, ga)
     ga = q.GaugeAction(5.5, 0.0)
     test_hmc(total_site, ga)
-    q.timer_display()
-    q.end()
+
+size_node_list = [
+        (1, 1, 1, 1),
+        (1, 1, 1, 2),
+        (1, 1, 1, 4),
+        (1, 2, 2, 2),
+        (2, 2, 2, 2),
+        (2, 2, 2, 4)]
+
+q.begin(sys.argv, size_node_list)
+
+show_machine()
 
 main()
+
+q.timer_display()
+
+q.end()
