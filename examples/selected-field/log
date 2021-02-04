@@ -11,7 +11,7 @@ q_timer_mini_auto_show=1 (default)
 q_timer_max_always_show=10 (default)
 demo: create splittable random number generator 'rs'
 demo: init field 'f'
-set Q_FIELD_INIT=fast. (implicitly)
+set q_field_init=fast. (implicitly)
 get_mem_cache_max_size_default: get_mem_cache_max_size() = 512 MB.
 make_shuffle_plan_generic: num_send_packs =          2
 make_shuffle_plan_generic: num_recv_packs =          7

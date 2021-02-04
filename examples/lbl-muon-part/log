@@ -53,7 +53,7 @@ Main::displaySpinPropagator4d : geo =
 , expan_left    = 0x0x0x0
 , expan_right   = 0x0x0x0
 , node_site_exp = 4x2x2x4 }
-set Q_FIELD_INIT=fast. (implicitly)
+set q_field_init=fast. (implicitly)
 fft_complex_field_plan::get_plan: start to make a new fft plan with id = 0
 fft_complex_field_plan::init: malloc 16384
 fft_complex_field_plan::init: free 16384

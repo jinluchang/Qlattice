@@ -9,7 +9,7 @@ qlat::begin(): GeometryNode =
 q_timer_max_func_name_len=50 (default)
 q_timer_mini_auto_show=1 (default)
 q_timer_max_always_show=10 (default)
-set Q_FIELD_INIT=fast. (implicitly)
+set q_field_init=fast. (implicitly)
 fft_complex_field_plan::get_plan: start to make a new fft plan with id = 0
 fft_complex_field_plan::init: malloc 36864
 fft_complex_field_plan::init: free 36864

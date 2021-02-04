@@ -34,7 +34,7 @@ obtain_lock: Trying to obtain lock 'results/test-4nt8/results=1000-lock'.
 obtain_lock: Lock obtained 'results/test-4nt8/results=1000-lock'.
 compute_traj: Start computing 'results/test-4nt8/results=1000'.
 compute_traj_do: job_tag='test-4nt8' ; traj=1000
-set Q_FIELD_INIT=fast. (implicitly)
+set q_field_init=fast. (implicitly)
 get_mem_cache_max_size_default: get_mem_cache_max_size() = 512 MB.
 make_shuffle_plan_generic: num_send_packs =          2
 make_shuffle_plan_generic: num_recv_packs =          7

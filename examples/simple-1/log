@@ -9,7 +9,7 @@ qlat::begin(): GeometryNode =
 q_timer_max_func_name_len=50 (default)
 q_timer_mini_auto_show=1 (default)
 q_timer_max_always_show=10 (default)
-set Q_FIELD_INIT=fast. (implicitly)
+set q_field_init=fast. (implicitly)
 get_mem_cache_max_size_default: get_mem_cache_max_size() = 512 MB.
 CommPlanCache: to add 1 / 32.
 plaq :  9.48400361131393588E-01

@@ -142,4 +142,9 @@ PyObject* py_convert(const Vector<M>& x)
   return PyMemoryView_FromMemory((char*)x.data(), x.data_size(), PyBUF_WRITE);
 }
 
+inline PyObject* py_convert(const std::string& x)
+{
+  return PyUnicode_FromStringAndSize(x.c_str(), x.size());
+}
+
 }  // namespace qlat

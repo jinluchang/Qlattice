@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 
 import sys
-import qlat as q
 import math as m
 import numpy as np
+
+import qlat as q
 
 def gm_evolve_fg(gm, gf_init, ga, fg_dt, dt):
     geo = gf_init.geo()

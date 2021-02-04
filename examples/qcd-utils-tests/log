@@ -99,7 +99,7 @@ gamma_5 =
  (0,0)  (1,0)  (0,0)  (0,0)
  (0,0)  (0,0) (-1,0)  (0,0)
  (0,0)  (0,0)  (0,0) (-1,0)
-set Q_FIELD_INIT=fast. (implicitly)
+set q_field_init=fast. (implicitly)
 get_mem_cache_max_size_default: get_mem_cache_max_size() = 512 MB.
 CommPlanCache: to add 1 / 32.
 plaq :  1.00000000000000000E+00

@@ -14,7 +14,7 @@ The crc32() of "123456789" is 0xCBF43926
 The crc32() of "123456789" is 0xCBF43926 (concat)
 The crc32() of "123456789" is 0xCBF43926 (crc32_shift)
 nthreads=2
-set Q_FIELD_INIT=fast. (implicitly)
+set q_field_init=fast. (implicitly)
 dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         2359296
 dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         2359296
 dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         2359296
