@@ -295,16 +295,16 @@ make_shuffle_plan_fft: total num_recv_packs =         64
 make_shuffle_plan_fft: total num_send_msgs  =         16
 make_shuffle_plan_fft: total num_recv_msgs  =         16
 make_shuffle_plan_fft: global_comm_size =        512
-Main::lblShowMuonPartPointSrc : qnorm(muonline) = 2.6392220172278729e-11
+Main::lblShowMuonPartPointSrc : qnorm(muonline) = 2.6392220172278723e-11
 Main::lblShowMuonPartPointSrc : muonline =
 (-2.14546e-07,1.79398e-06)  (3.37724e-09,-1.8606e-07) (-2.14546e-07,1.79398e-06)  (3.37724e-09,-1.8606e-07)
   (3.37724e-09,1.8606e-07)  (2.14546e-07,1.79398e-06)   (3.37724e-09,1.8606e-07)  (2.14546e-07,1.79398e-06)
 (-2.14546e-07,1.79398e-06)  (3.37724e-09,-1.8606e-07) (-2.14546e-07,1.79398e-06)  (3.37724e-09,-1.8606e-07)
   (3.37724e-09,1.8606e-07)  (2.14546e-07,1.79398e-06)   (3.37724e-09,1.8606e-07)  (2.14546e-07,1.79398e-06)
-Main::lblShowMuonPartPointSrc : linearFit[0] = ( 1.37086836249585948E-09 +  7.71954400245855669E-22 j)
-Main::lblShowMuonPartPointSrc : linearFit[1] = ( 7.55243410429594081E-08 + -3.22329123690227522E-22 j)
-Main::lblShowMuonPartPointSrc : linearFit[2] = (-8.70871880210493623E-08 + -1.18628020828741674E-21 j)
-Main::lblShowMuonPartPointSrc : linearFitUni = (-4.23516473627150170E-22 +  3.58796201793979233E-06 j)
+Main::lblShowMuonPartPointSrc : linearFit[0] = ( 1.37086836249564462E-09 + -1.74452971806973025E-22 j)
+Main::lblShowMuonPartPointSrc : linearFit[1] = ( 7.55243410429566552E-08 +  1.28931649476091009E-22 j)
+Main::lblShowMuonPartPointSrc : linearFit[2] = (-8.70871880210472844E-08 + -7.67593075950681347E-22 j)
+Main::lblShowMuonPartPointSrc : linearFitUni = ( 1.18584612615602047E-20 +  3.58796201793979445E-06 j)
 Main::lblShowMuonPartPointSrc : linearFit[0] * 1e9 =       1.37
 Main::lblShowMuonPartPointSrc : linearFit[1] * 1e9 =      75.52
 Main::lblShowMuonPartPointSrc : linearFit[2] * 1e9 =     -87.09
