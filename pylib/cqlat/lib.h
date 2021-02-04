@@ -3,6 +3,7 @@
 // From https://github.com/lehner/gpt/blob/master/lib/cgpt/lib/exception.h
 // Original author Christoph Lehner
 
+#define PY_SSIZE_T_CLEAN
 #include <Python.h>
 #include <qlat/py_convert.h>
 #include "dispatch.h"
