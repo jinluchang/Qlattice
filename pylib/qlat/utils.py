@@ -19,7 +19,7 @@ def set_unit(x, coef = 1.0):
 
 def qnorm(x):
     if type(x) == Field:
-        c.qnorm_field(x)
+        return c.qnorm_field(x)
     else:
         raise Exception("qnorm")
 
