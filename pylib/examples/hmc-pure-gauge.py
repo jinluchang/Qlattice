@@ -6,6 +6,7 @@ import numpy as np
 
 import qlat as q
 
+@q.timer_verbose
 def gm_evolve_fg(gm, gf_init, ga, fg_dt, dt):
     geo = gf_init.geo()
     gf = q.Field("ColorMatrix", geo, 4)
@@ -24,6 +25,7 @@ def gm_evolve_fg(gm, gf_init, ga, fg_dt, dt):
     gm_force *= dt
     gm += gm_force
 
+@q.timer_verbose
 def run_hmc_evolve(gm, gf, ga, rs, steps, md_time = 1.0):
     energy = q.gm_hamilton_node(gm) + q.gf_hamilton_node(gf, ga)
     #
@@ -50,6 +52,7 @@ def run_hmc_evolve(gm, gf, ga, rs, steps, md_time = 1.0):
     #
     return delta_h
 
+@q.timer_verbose
 def metropolis_accept(delta_h, traj, rs):
     flag_d = 0.0
     accept_prob = 0.0
@@ -69,6 +72,7 @@ def metropolis_accept(delta_h, traj, rs):
         flag, accept_prob * 100.0, delta_h, traj))
     return flag, accept_prob
 
+@q.timer_verbose
 def run_hmc(gf, ga, traj, rs):
     #
     is_reverse_test = traj < 3
@@ -101,6 +105,7 @@ def run_hmc(gf, ga, traj, rs):
         q.displayln_info("run_hmc: update gf (traj={:d})".format(traj))
         gf @= gf0
 
+@q.timer_verbose
 def test_hmc(total_site, ga):
     #
     q.qmkdir_info("results");
@@ -127,6 +132,7 @@ def test_hmc(total_site, ga):
             q.save_gm_force_magnitudes_list(
                     "results/gm_force_info/traj={}.lat".format(traj))
 
+@q.timer_verbose
 def show_machine():
     print("id_node: {:4} / {} ; coor_node: {:9} / {}".format(
         q.get_id_node(),
@@ -134,6 +140,7 @@ def show_machine():
         str(q.get_coor_node()),
         str(q.get_size_node())))
 
+@q.timer_verbose
 def main():
     total_site = (4, 4, 4, 8)
     ga = q.GaugeAction(2.13, -0.331)
