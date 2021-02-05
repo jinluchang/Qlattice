@@ -20,6 +20,12 @@ EXPORT(get_size_node, {
   return py_convert(get_size_node());
 });
 
+EXPORT(sync_node, {
+  using namespace qlat;
+  sync_node();
+  Py_RETURN_NONE;
+});
+
 EXPORT(glb_sum_long, {
   using namespace qlat;
   long x = 0;

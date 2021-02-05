@@ -3,6 +3,9 @@ import cqlat as c
 from qlat.field import *
 from qlat.rng import *
 
+def gauge_field(geo):
+    return Field("ColorMatrix", geo, 4)
+
 def gf_show_info(gf):
     assert type(gf) == Field and gf.ctype == "ColorMatrix"
     c.gf_show_info(gf)

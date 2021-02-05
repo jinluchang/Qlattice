@@ -2,6 +2,8 @@ import cqlat as c
 
 from cqlat import get_id_node, get_num_node, get_size_node, get_coor_node
 
+from cqlat import sync_node
+
 def glb_sum(x):
     if type(x) == float:
         return c.glb_sum_double(x)

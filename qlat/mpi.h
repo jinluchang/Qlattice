@@ -11,9 +11,21 @@
 namespace qlat
 {  //
 
-inline std::vector<MPI_Comm>& get_comm_list()
+struct Q_Comm {
+  MPI_Comm comm;
+  Coordinate size_node;
+  //
+  Q_Comm() {}
+  Q_Comm(MPI_Comm comm_, const Coordinate& size_node_)
+  {
+    comm = comm_;
+    size_node = size_node_;
+  }
+};
+
+inline std::vector<Q_Comm>& get_comm_list()
 {
-  static std::vector<MPI_Comm> comm_list;
+  static std::vector<Q_Comm> comm_list;
   return comm_list;
 }
 
@@ -54,10 +66,7 @@ struct GeometryNode {
   }
 };
 
-qacc bool is_initialized(const GeometryNode& geon)
-{
-  return geon.initialized;
-}
+qacc bool is_initialized(const GeometryNode& geon) { return geon.initialized; }
 
 qacc void init(GeometryNode& geon) { geon.init(); }
 
@@ -736,18 +745,33 @@ inline int init_mpi(int* argc, char** argv[])
   return num_node;
 }
 
-inline void begin_comm(const MPI_Comm comm, const Coordinate& size_node)
-// begin Qlat with existing comm (assuming MPI already initialized)
+inline void set_global_geon(const Coordinate& size_node)
 {
-  get_comm_list().push_back(comm);
-  get_comm_internal() = get_comm_list().back();
+  int num_node;
+  MPI_Comm_size(MPI_COMM_WORLD, &num_node);
+  qassert(num_node == product(size_node));
   int id_node;
   MPI_Comm_rank(get_comm(), &id_node);
   GeometryNode& geon = get_geometry_node_internal();
   geon.init(id_node, size_node);
   get_id_node_internal() = geon.id_node;
   get_num_node_internal() = geon.num_node;
+  qassert(geon.num_node == num_node);
+}
+
+inline void begin_comm(const MPI_Comm comm, const Coordinate& size_node)
+// begin Qlat with existing comm (assuming MPI already initialized)
+{
+  get_comm_list().push_back(Q_Comm(comm, size_node));
+  get_comm_internal() = get_comm_list().back().comm;
+  set_global_geon(get_comm_list().back().size_node);
   sync_node();
+  displayln_info(ssprintf(
+      "qlat::begin_comm(comm,size_node): get_comm_list().push_back()"));
+  displayln_info(
+      ssprintf("qlat::begin_comm(comm,size_node): get_comm_list().size() = %d.",
+               (int)get_comm_list().size()));
+  const GeometryNode& geon = get_geometry_node();
   if (get_env("OMP_NUM_THREADS") == "") {
     const long num_threads = get_env_long_default(2, "q_num_threads");
     omp_set_num_threads(num_threads);
@@ -766,11 +790,16 @@ inline void begin(const int id_node, const Coordinate& size_node,
 // begin Qlat with existing id_node maping (assuming MPI already initialized)
 {
   if (get_comm_list().empty()) {
-    get_comm_list().push_back(MPI_COMM_WORLD);
+    get_comm_list().push_back(Q_Comm(MPI_COMM_WORLD, Coordinate()));
   }
+  qassert(0 <= id_node and id_node < product(size_node));
+  qassert(0 <= color);
   MPI_Comm comm;
-  MPI_Comm_split(get_comm_list().back(), color, id_node, &comm);
+  const int ret =
+      MPI_Comm_split(get_comm_list().back().comm, color, id_node, &comm);
+  qassert(ret == MPI_SUCCESS);
   begin_comm(comm, size_node);
+  qassert(get_id_node() == id_node);
 }
 
 inline void begin(int* argc, char** argv[], const Coordinate& size_node)
@@ -805,16 +834,34 @@ inline void end()
   if (get_comm_list().empty()) {
     qassert(false);
   } else {
-    qassert(get_comm_list().back() == get_comm());
+    qassert(get_comm_list().back().comm == get_comm());
     if (get_comm() == MPI_COMM_WORLD) {
+      displayln_info(ssprintf("qlat::end(): get_comm_list().pop_back()"));
+      get_comm_list().pop_back();
+      displayln_info(ssprintf("qlat::end(): get_comm_list().size() = %d.",
+                              (int)get_comm_list().size()));
+      qassert(get_comm_list().size() == 0);
+      displayln_info("qlat::end(): Finalize MPI.");
       if (is_MPI_initialized()) MPI_Finalize();
       displayln_info("qlat::end(): MPI Finalized.");
     } else {
+      displayln_info(ssprintf("qlat::end(): get_comm_list().pop_back()"));
       MPI_Comm comm = get_comm();
-      MPI_Comm_free(&comm);
       get_comm_list().pop_back();
-      get_comm_internal() = get_comm_list().back();
-      displayln_info("qlat::end(): get_comm_list().pop_back()");
+      displayln_info(ssprintf("qlat::end(): get_comm_list().size() = %d.",
+                              (int)get_comm_list().size()));
+      get_comm_internal() = get_comm_list().back().comm;
+      if (get_comm_list().back().size_node != Coordinate()) {
+        displayln_info(
+            ssprintf("qlat::end(): Switch to old comm and setup global geon."));
+        set_global_geon(get_comm_list().back().size_node);
+      } else {
+        displayln_info(ssprintf("qlat::end(): Switch to old comm (foreign)."));
+      }
+      sync_node();
+      displayln_info(ssprintf("qlat::end(): MPI_Comm_free ended comm."));
+      MPI_Comm_free(&comm);
+      sync_node();
     }
   }
 }
