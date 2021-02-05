@@ -11,11 +11,19 @@
 namespace qlat
 {  //
 
-inline MPI_Comm& get_comm()
+inline std::vector<MPI_Comm>& get_comm_list()
+{
+  static std::vector<MPI_Comm> comm_list;
+  return comm_list;
+}
+
+inline MPI_Comm& get_comm_internal()
 {
   static MPI_Comm comm;
   return comm;
 }
+
+inline MPI_Comm get_comm() { return get_comm_internal(); }
 
 struct GeometryNode {
   bool initialized;
@@ -731,7 +739,8 @@ inline int init_mpi(int* argc, char** argv[])
 inline void begin_comm(const MPI_Comm comm, const Coordinate& size_node)
 // begin Qlat with existing comm (assuming MPI already initialized)
 {
-  get_comm() = comm;
+  get_comm_list().push_back(comm);
+  get_comm_internal() = get_comm_list().back();
   int id_node;
   MPI_Comm_rank(get_comm(), &id_node);
   GeometryNode& geon = get_geometry_node_internal();
@@ -752,11 +761,15 @@ inline void begin_comm(const MPI_Comm comm, const Coordinate& size_node)
   install_qhandle_sig();
 }
 
-inline void begin(const int id_node, const Coordinate& size_node)
+inline void begin(const int id_node, const Coordinate& size_node,
+                  const int color = 0)
 // begin Qlat with existing id_node maping (assuming MPI already initialized)
 {
+  if (get_comm_list().empty()) {
+    get_comm_list().push_back(MPI_COMM_WORLD);
+  }
   MPI_Comm comm;
-  MPI_Comm_split(MPI_COMM_WORLD, 0, id_node, &comm);
+  MPI_Comm_split(get_comm_list().back(), color, id_node, &comm);
   begin_comm(comm, size_node);
 }
 
@@ -789,8 +802,21 @@ inline void begin(
 
 inline void end()
 {
-  if (is_MPI_initialized()) MPI_Finalize();
-  displayln_info("qlat::end(): MPI Finalized.");
+  if (get_comm_list().empty()) {
+    qassert(false);
+  } else {
+    qassert(get_comm_list().back() == get_comm());
+    if (get_comm() == MPI_COMM_WORLD) {
+      if (is_MPI_initialized()) MPI_Finalize();
+      displayln_info("qlat::end(): MPI Finalized.");
+    } else {
+      MPI_Comm comm = get_comm();
+      MPI_Comm_free(&comm);
+      get_comm_list().pop_back();
+      get_comm_internal() = get_comm_list().back();
+      displayln_info("qlat::end(): get_comm_list().pop_back()");
+    }
+  }
 }
 
 }  // namespace qlat

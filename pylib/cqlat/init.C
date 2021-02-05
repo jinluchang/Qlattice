@@ -4,16 +4,21 @@ EXPORT(begin, {
   using namespace qlat;
   PyObject* p_v1 = NULL;
   PyObject* p_v2 = NULL;
-  if (!PyArg_ParseTuple(args, "|OO", &p_v1, &p_v2)) {
+  PyObject* p_v3 = NULL;
+  if (!PyArg_ParseTuple(args, "|OOi", &p_v1, &p_v2, &p_v3)) {
     return NULL;
   }
   if (p_v1 != NULL and PyLong_Check(p_v1) and p_v2 != NULL) {
     // initialize with existing MPI
     int id_node = 0;
     Coordinate size_node;
+    int color = 0;
     py_convert(id_node, p_v1);
     py_convert(size_node, p_v2);
-    begin(id_node, size_node);
+    if (p_v3 != NULL) {
+      py_convert(color, p_v3);
+    }
+    begin(id_node, size_node, color);
   } else {
     // initialize MPI by itself
     PyObject* p_sargs = p_v1;
@@ -47,4 +52,3 @@ EXPORT(end, {
   end();
   Py_RETURN_NONE;
 });
-
