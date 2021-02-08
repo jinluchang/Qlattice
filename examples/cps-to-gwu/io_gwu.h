@@ -136,7 +136,7 @@ public:
       for(int xi=0;xi<Nx;xi++)if(map_Nitoi[i][isp*Nx+xi] != inix + xi){flag=1;}
     }
     sum_all_size(&flag,1);
-    if(flag>0){abort_r("Layout not continus in x! \n");}
+    if(flag>0){abort_r("Layout not continuous in x! \n");}
   }
 
   node_ioL.resize(Nmpi);
@@ -176,22 +176,23 @@ inline void send_vec_kentucky(char* src,char* res,int dsize,int gN,const io_gwu&
   //TIMER("IO sort mem time");
   if(node_ioL[rank]>=0)
   for(int ri=0;ri<io.Nmpi;ri++)for(int gi=0;gi<gN;gi++){
-    char* pres=&tmp[(ri*gN+gi)*noden*dsize];
-    char* psrc=&src[gi*vol*dsize];
-    for(size_t isp=0;isp<size_t(noden/Nx);isp++){
-
-      size_t offv = io.map_Nitoi[ri][isp*Nx+ 0];
-      memcpy(&pres[isp*Nx*dsize],&psrc[offv*dsize],Nx*dsize);}
+      #pragma omp parallel for
+      for(size_t isp=0;isp<size_t(noden/Nx);isp++){
+        char* pres=&tmp[(ri*gN+gi)*noden*dsize];
+        char* psrc=&src[gi*vol*dsize];
+        size_t offv = io.map_Nitoi[ri][isp*Nx+ 0];
+        memcpy(&pres[isp*Nx*dsize],&psrc[offv*dsize],Nx*dsize);
+      }
   }
   }
 
   {
-  //TIMER("IO MPI time");
-  //for(int io=0;io<node_ioL.size();io++)if(node_ioL[io]>=0)
-  //{
-  //  MPI_Scatter(tmp,size_c,MPI_CHAR,&res[node_ioL[io]*size_c],size_c,MPI_CHAR,io,MPI_COMM_WORLD);
-  //  ////if(rank==io){memcpy(&res[node_ioL[io]*size_c],tmp,size_c);}
-  //}
+  /////TIMER("IO MPI time");
+  /////for(int io=0;io<node_ioL.size();io++)if(node_ioL[io]>=0)
+  /////{
+  /////  MPI_Scatter(tmp,size_c,MPI_CHAR,&res[node_ioL[io]*size_c],size_c,MPI_CHAR,io,MPI_COMM_WORLD);
+  /////  ////if(rank==io){memcpy(&res[node_ioL[io]*size_c],tmp,size_c);}
+  /////}
 
   std::vector<int > currsend,currrecv,currspls,currrpls;
   currsend.resize(Nmpi);
@@ -212,18 +213,29 @@ inline void send_vec_kentucky(char* src,char* res,int dsize,int gN,const io_gwu&
   }
   for(int n=0;n<Nmpi;n++){
     if(node_ioL[n]>=0){
-      //if(rank == n)for(int ni=0;ni<Nmpi;ni++)currsend[ni] = size_c;
+      ////if(rank == n)for(int ni=0;ni<Nmpi;ni++)currsend[ni] = size_c;
       currrecv[n] = size_c;
       currrpls[n] = size_c*node_ioL[n];
     }
   }
 
-  if(read==true)
-  {MPI_Alltoallv(tmp,(int*) &currsend[0],(int*) &currspls[0], MPI_CHAR,
-                 res,(int*) &currrecv[0],(int*) &currrpls[0], MPI_CHAR, MPI_COMM_WORLD);}
-  if(read==false)
-  {MPI_Alltoallv(res,(int*) &currrecv[0],(int*) &currrpls[0], MPI_CHAR,
-                 tmp,(int*) &currsend[0],(int*) &currspls[0], MPI_CHAR, MPI_COMM_WORLD);}
+  if(qlat::get_num_node() != 1){
+    if(read==true)
+    {
+    MPI_Alltoallv(tmp,(int*) &currsend[0],(int*) &currspls[0], MPI_CHAR,
+                   res,(int*) &currrecv[0],(int*) &currrpls[0], MPI_CHAR, MPI_COMM_WORLD);
+    /////memcpy(res,tmp, size_c);
+    }
+    if(read==false)
+    {
+    MPI_Alltoallv(res,(int*) &currrecv[0],(int*) &currrpls[0], MPI_CHAR,
+                   tmp,(int*) &currsend[0],(int*) &currspls[0], MPI_CHAR, MPI_COMM_WORLD);
+    }
+  }else{
+    //memcpy(res,tmp, size_c);
+    #pragma omp parallel for
+    for(size_t isp=0;isp<size_c;isp++){res[isp] = tmp[isp];}
+  }
 
   }
 
@@ -232,11 +244,13 @@ inline void send_vec_kentucky(char* src,char* res,int dsize,int gN,const io_gwu&
   //TIMER("IO sort mem time");
   if(node_ioL[rank]>=0)
   for(int ri=0;ri<io.Nmpi;ri++)for(int gi=0;gi<gN;gi++){
-    char* pres=&tmp[(ri*gN+gi)*noden*dsize];
-    char* psrc=&src[gi*vol*dsize];
+    #pragma omp parallel for
     for(size_t isp=0;isp<size_t(noden/Nx);isp++){
+      char* pres=&tmp[(ri*gN+gi)*noden*dsize];
+      char* psrc=&src[gi*vol*dsize];
       size_t offv = io.map_Nitoi[ri][isp*Nx+ 0];
-      memcpy(&psrc[offv*dsize],&pres[isp*Nx*dsize],Nx*dsize);}
+      memcpy(&psrc[offv*dsize],&pres[isp*Nx*dsize],Nx*dsize);
+    }
   }
   }
 
@@ -271,7 +285,12 @@ inline void read_kentucky_vector(FILE *file,char* props,int Nvec,const io_gwu& i
     for(int iou=0;iou<ionum;iou++)
     for(int gi=0;gi<gN;gi++)if(curr_v + iou*gN + gi<Nvec){
       int offv = curr_v + iou*gN + gi;
-      memcpy(&res[(iou*gN+gi)*noden*dsize + 0],&props[(offv)*noden*dsize + 0],noden*dsize);
+      //memcpy(&res[(iou*gN+gi)*noden*dsize + 0],&props[(offv)*noden*dsize + 0],noden*dsize);
+
+      char* pres=&res[(iou*gN+gi)*noden*dsize + 0];
+      char* psrc=&props[(offv)*noden*dsize + 0];
+      #pragma omp parallel for
+      for(size_t isp=0;isp<noden*dsize;isp++){pres[isp] = psrc[isp];}
     }
       gettimeofday(&tm2, NULL);
       send_vec_kentucky((char*) &buf[0],(char*) &res[0], dsize,gN, io, read);
@@ -336,7 +355,13 @@ inline void read_kentucky_vector(FILE *file,char* props,int Nvec,const io_gwu& i
     for(int iou=0;iou<ionum;iou++)
     for(int gi=0;gi<gN;gi++)if(curr_v + iou*gN + gi<Nvec){
       int offv = curr_v + iou*gN + gi;
-      memcpy(&props[(offv)*noden*dsize + 0],&res[(iou*gN+gi)*noden*dsize + 0],noden*dsize);}
+      //memcpy(&props[(offv)*noden*dsize + 0],&res[(iou*gN+gi)*noden*dsize + 0],noden*dsize);
+
+      char* pres=&props[(offv)*noden*dsize + 0];
+      char* psrc=&res[(iou*gN+gi)*noden*dsize + 0];
+      #pragma omp parallel for
+      for(size_t isp=0;isp<noden*dsize;isp++){pres[isp] = psrc[isp];}
+    }
     }
     curr_v += ionum*gN;
     if(curr_v >= Nvec)break;
@@ -487,7 +512,8 @@ inline void load_gwu_eigenvalues(std::vector<double > &values,std::vector<double
   if(qlat::get_id_node() != 0){values.resize(nvec*2);errors.resize(nvec);}
 
   MPI_Bcast(&values[0], 2*nvec, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-  MPI_Bcast(&errors[0],   nvec, MPI_DOUBLE, 0, MPI_COMM_WORLD);}
+  MPI_Bcast(&errors[0],   nvec, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+  }
 
 }
 
@@ -519,9 +545,12 @@ void rotate_gwu_vec_file(Ty* src,int n_vec,size_t noden,bool single_file,bool re
   for(int dc1=0;dc1<n_vec;dc1++){
     std::vector<Ty > p;Ty *q;
     p.resize(Np);
-    memcpy(&p[0],&src[dc1*Np],sizeof(Ty)*p.size());
+    //memcpy(&p[0],&src[dc1*Np],sizeof(Ty)*p.size());
+    #pragma omp parallel for
+    for(size_t isp=0;isp<Np;isp++){p[isp] = src[dc1*Np + isp];}
+
     q = &src[dc1*Np];
-    if(read==true)
+    if(read==true){
     #pragma omp parallel for
     for(size_t isp=0;isp<noden;isp++){
       for(int dc0=0;dc0<12;dc0++)
@@ -532,9 +561,9 @@ void rotate_gwu_vec_file(Ty* src,int n_vec,size_t noden,bool single_file,bool re
         ///res[(dc1*noden + isp)*12*2 + dc0*2 + 0] = src[(dc1*12*2 + 0*12 + dc0)*noden + isp];
         ///res[(dc1*noden + isp)*12*2 + dc0*2 + 1] = src[(dc1*12*2 + 1*12 + dc0)*noden + isp];
       }
-    }
+    }}
 
-    if(read==false)
+    if(read==false){
     #pragma omp parallel for
     for(size_t isp=0;isp<noden;isp++){
       for(int dc0=0;dc0<12;dc0++)
@@ -542,7 +571,7 @@ void rotate_gwu_vec_file(Ty* src,int n_vec,size_t noden,bool single_file,bool re
         q[(0*12 + dc0)*noden + isp] = p[isp*12*2 + dc0*2 + 0];
         q[(1*12 + dc0)*noden + isp] = p[isp*12*2 + dc0*2 + 1];
       }
-    }
+    }}
   }
 }
 
@@ -568,7 +597,10 @@ void gwu_to_cps_rotation_vec(Ty* src,int n_vec,size_t noden,bool source=false,bo
       if(PS0 == true){
         std::vector<Ty > p;
         p.resize(12*Np);
-        memcpy(&p[0],&src[(ip*12+0)*Np],sizeof(Ty)*p.size());
+        //memcpy(&p[0],&src[(ip*12+0)*Np],sizeof(Ty)*p.size());
+        #pragma omp parallel for
+        for(size_t isp=0;isp<Np;isp++){p[isp] = src[(ip*12+0)*Np + isp];}
+
 
         dr=0;d0=1;d1=3;
         #pragma omp parallel for
@@ -616,19 +648,43 @@ void gwu_to_cps_rotation_vec(Ty* src,int n_vec,size_t noden,bool source=false,bo
 }
 
 template<typename Ty>
-Ty get_norm_vec(Ty *src,size_t noden){
+inline Ty get_norm_vec(Ty *src,size_t noden){
   Ty res = 0.0;
+
   std::complex<Ty > *p = (std::complex<Ty >*) src;
 
-  ////#pragma omp parallel for
+  /////need sum 12 first to reduce float sum error
   #pragma omp parallel for reduction(+: res)
-  for(size_t isp=0;isp<noden*12;isp++)
+  for(size_t isp=0;isp<noden;isp++)
   {
-    res += std::norm(p[isp]);
+    Ty a = 0.0;
+    for(int dc=0;dc<12;dc++){
+       a += std::norm(p[isp*12+dc]);
+    }
+    res += a;
   }
+
+  //print0("==omp_get_max_threads %8d \n ",omp_get_max_threads());
 
   sum_all_size(&res,1);
   return res;
+
+  //int Nv = omp_get_num_threads();
+  //std::vector<Ty > buf;buf.resize(Nv);
+  //for(int iv=0;iv<Nv;iv++){buf[iv]=0.0;}
+  //#pragma omp parallel
+  //for(size_t isp=0;isp<size_t(noden*12);isp++)
+  //{
+  //  buf[omp_get_thread_num()] += std::norm(p[isp]);
+  //}
+  //////omp_set_dynamic(0);
+  //////omp_set_num_threads(1);
+  //#pragma omp parallel for reduction(+: res)
+  //for(int iv=0;iv<Nv;iv++){res += buf[iv];}
+  //////omp_set_num_threads(omp_get_max_threads());
+  //////omp_set_dynamic(1);
+  ///#pragma omp barrier
+  //#pragma omp parallel for shared(p) reduction(+: res)
 }
 
 inline int test_single(const char *filename,io_gwu &io_use,int iv=0){
@@ -638,6 +694,7 @@ inline int test_single(const char *filename,io_gwu &io_use,int iv=0){
   size_t noden = io_use.noden;
   size_t Fsize = io_use.Nmpi*(noden*12*2)*sizeof(float);
   FILE* file;
+  double err = 1e-3;
 
   {
   std::vector<double > prop_E;
@@ -654,7 +711,7 @@ inline int test_single(const char *filename,io_gwu &io_use,int iv=0){
   normd = get_norm_vec(&prop_E[0],noden);
   }
 
-  if(fabs(normd - 1.0) < 1e-3)return 0;
+  if(fabs(normd - 1.0) < err)return 0;
 
   {
   std::vector<float > prop_E;
@@ -672,10 +729,10 @@ inline int test_single(const char *filename,io_gwu &io_use,int iv=0){
   }
 
 
-  if(fabs(normf - 1.0) < 1e-3)return 1;
+  if(fabs(normf - 1.0) < err)return 1;
 
-  print0("Norm of vector double %.3e .\n",normd);
-  print0("Norm of vector single %.3e .\n",normf);
+  print0("Norm of vector double %.3e, %.3e.\n",normd,normd-1.0);
+  print0("Norm of vector single %.3e, %.3e.\n",normf,normf-1.0);
   return -1;
 }
 
@@ -1011,6 +1068,48 @@ template<typename Ty>
 void save_gwu_noi(const char *filename,qlat::FieldM<Ty,1> &noi,io_gwu &io_use){
   load_gwu_noi(filename,noi,io_use,false);
 }
+
+inline void write_data(std::vector<double > dat,const char *filename, bool read=false){
+  bool Rendian = true;
+  int size = 0;
+
+  if(read==false)size = dat.size();
+  if(read==true){size_t sizeF = get_file_size_o(filename);size = sizeF/sizeof(double);dat.resize(size);}
+
+  ////Set buf with size
+  char* buf=NULL;
+  buf = new char[size*sizeof(double)];
+
+  ////Open file
+  FILE* file = NULL;
+  if(read==false)file = fopen(filename, "wb");
+  if(read==true )file = fopen(filename, "rb");
+
+  /////Switch endian of the file write
+  if(read==false){
+    memcpy(&buf[0],&dat[0],size*sizeof(double));
+    if(Rendian == true )if( is_big_endian_gwu())switchendian((char*)&buf[0], size ,sizeof(double));
+  }
+
+  if(read==false)fwrite(&buf[0], 1, size*sizeof(double), file);
+  if(read==true ) fread(&buf[0], 1, size*sizeof(double), file);
+
+  /////Switch endian of the file write
+  if(read==true ){
+    if(Rendian == true )if( is_big_endian_gwu())switchendian((char*)&buf[0], size ,sizeof(double));
+    memcpy(&dat[0],&buf[0],size*sizeof(double));
+  }
+
+  fclose(file);
+  delete []buf;
+
+}
+
+inline void read_data(std::vector<double > dat,const char *filename){
+  write_data(dat, filename, true);
+}
+
+
 
 }
 
