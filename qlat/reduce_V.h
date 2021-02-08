@@ -14,9 +14,12 @@ __global__ void reduce6(const Ty *g_idata, Ty *g_odata, unsigned long n,unsigned
   unsigned int tid = threadIdx.x;
   unsigned int iv  = blockIdx.y;
   sdata[tid] = 0;
-  unsigned long i  = iv*n + (blockIdx.x*(blockSize) + tid)*divide;
-  unsigned long i_end = i + divide;if(i_end > (iv+1)*n){i_end = (iv+1)*n;}
-  while (i < i_end) { sdata[tid] += g_idata[i]; i += 1; }
+  //unsigned long i  = iv*n + (blockIdx.x*(blockSize) + tid)*divide;
+  //unsigned long i_end = i + divide;if(i_end > (iv+1)*n){i_end = (iv+1)*n;}
+  //while (i < i_end) { sdata[tid] += g_idata[i]; i += 1; }
+  unsigned long i  = iv*n + blockIdx.x*blockSize + tid;
+  unsigned long i_end = (iv+1)*n; unsigned long off_divide = gridDim.x*blockSize;
+  while (i < i_end) { sdata[tid] += g_idata[i]; i += off_divide; }
   __syncthreads();
 
   if (blockSize >=1024) { if (tid < 512) { sdata[tid] += sdata[tid + 512]; } __syncthreads(); }
@@ -34,6 +37,8 @@ __global__ void reduce6(const Ty *g_idata, Ty *g_odata, unsigned long n,unsigned
   if (tid == 0) g_odata[iv*gridDim.x + blockIdx.x] = sdata[0];
 
 }
+
+
 #endif
 
 namespace qlat{
@@ -91,28 +96,48 @@ void reduce_cpu(const Ty *src,Ty &res,const unsigned long n){
   //for(unsigned long index=0;index<n;index++){
   //  res += src[index];
   //}
-  int Nv = omp_get_num_threads();
+  //int Nv = omp_get_num_threads();
+  int Nv = omp_get_max_threads();
+  //if(n < 3*Nv)Nv=1;
+  if(n < 10*Nv)Nv=1;
+  //int Nv = 1;
   if(Nv == 1){
   for(unsigned long index=0;index<n;index++){
     res += src[index];
   }}
   else{
+    ////print0("====Reduce omp \n");
+    omp_set_num_threads(omp_get_max_threads());
     std::vector<Ty > buf;buf.resize(Nv);
     for(int iv=0;iv<Nv;iv++){buf[iv]=0.0;}
-    #pragma omp parallel
-    for(unsigned long index=0;index<n;index++){
-      buf[omp_get_thread_num()] += src[index];
+    size_t bsize = (n + Nv-1)/Nv;
+    #pragma omp parallel for
+    for(int ompi=0;ompi<Nv;ompi++)
+    {
+      int temi = omp_get_thread_num();
+      Ty &pres = buf[temi];
+      const Ty *psrc = &src[temi*bsize];
+      size_t bsize_end = bsize;
+      if(temi*bsize + bsize > n){bsize_end = n - temi*bsize;}
+      for(size_t isp=0;isp<bsize_end;isp++){pres += psrc[isp];}
     }
+
+    //#pragma omp parallel for
+    //for(unsigned long index=0;index<n;index++){
+    //  buf[omp_get_thread_num()] += src[index];
+    //}
     for(int iv=0;iv<Nv;iv++){res += buf[iv];}
   }
 }
+
 
 template<typename Ty>
 inline void reduce_gpu2d_6(const Ty* src,Ty* res,long n, int nv=1,
     int thread_pow2 = 8,int divide=128,int fac=16)
 {
   #ifdef QLAT_USE_ACC
-  long nthreads = qlat::qacc_num_threads();
+  //long nthreads = qlat::qacc_num_threads();
+  long nthreads = 32;
   nthreads = nextPowerOf2(nthreads);
 
   ////long nfac = 1<<thread_pow2;
@@ -131,22 +156,27 @@ inline void reduce_gpu2d_6(const Ty* src,Ty* res,long n, int nv=1,
   if(n <= cutN){
     //for(int i=0;i<nv;i++)reduce_cpu(&src[i*n],res[i],n);return;
     reduce_T_global6(&src[0],&pres[0], n, nv, nt, 1);
+    #pragma omp parallel for
     for(int i=0;i<nv;i++)res[i] += pres[i];
     return;
   }
+
+  /////for(int iv=0;iv<nv;iv++)reduce_cpu(&src[iv*n],res[iv],n);return;
 
   
   reduce_T_global6(src,pres, n, nv, nt, Ny0);
   ////Nres0 = Ny;
   psrc = &buf0[0];pres=&buf1[0];
 
-  ////for(int i=0;i<nv;i++)reduce_cpu(&psrc[i*Ny0],res[i],Ny0);return;
+  //for(int i=0;i<nv;i++)reduce_cpu(&psrc[i*Ny0],res[i],Ny0);return;
 
   for(int si=0;si<1000;si++){
     if(Ny0 <= cutN){
+      #pragma omp parallel for
       for(int i=0;i<nv;i++)reduce_cpu(&psrc[i*Ny0],res[i],Ny0);
       return;
       //reduce_T_global6(psrc,pres, Ny0, nv, nt, 1);
+      //#pragma omp parallel for
       //for(int i=0;i<nv;i++)res[i] += pres[i];return;
     }
     Ny1 = (Ny0 + ntL - 1)/(ntL);
@@ -156,6 +186,7 @@ inline void reduce_gpu2d_6(const Ty* src,Ty* res,long n, int nv=1,
     Ny0 = Ny1;
   }
   reduce_T_global6(psrc,pres, Ny0, nv, nt, 1);
+  #pragma omp parallel for
   for(int i=0;i<nv;i++)res[i] += pres[i];
   return;
   /////for(int i=0;i<nv;i++)reduce_cpu(&psrc[i*Ny0],res[i],Ny0);return;
@@ -191,7 +222,8 @@ inline void reduce_gpu(const Ty *src,Ty *res,const long n,const int nv=1,
   const int Ld=128,const int Ld0=8,const int fac=16)
 {
   #ifdef QLAT_USE_ACC
-  const int cutN = qlat::qacc_num_threads()*fac;
+  //const int cutN = qlat::qacc_num_threads()*fac;
+  const int cutN = 32*fac;
   unsigned long Ny = n/Ld;
   if(n <= cutN){for(int i=0;i<nv;i++){reduce_cpu(&src[i*n],res[i],n);}return;}
 
@@ -224,21 +256,26 @@ inline void reduce_gpu(const Ty *src,Ty *res,const long n,const int nv=1,
 template<typename Ty>
 void reduce_vec(const Ty* src,Ty* res,long n, int nv=1)
 {
-  int thread_pow2 = 8;
-  int divide = 512;
-  int fac    = 2;
+  int thread_pow2 = 1;
+  int divide = 256;
+  int fac    = 4;
+
+  //if(nt_use == 1)nt_use = omp_get_num_threads();
+  //unsigned long nv = nt_use*Aoper;
+  //#ifdef QLAT_USE_ACC
+  //cudaDeviceProp prop;
+  //cudaGetDeviceProperties(&prop, 0);
+  //unsigned int nthreads = omp_get_num_threads();
+  //unsigned long cores = prop.multiProcessorCount;
+  //unsigned long maxthreads = prop.maxThreadsPerMultiProcessor;
+  //unsigned long Fullthreads = maxthreads*cores;
+  //unsigned long maxblock = 8*(Fullthreads + nv-1)/nv;
+  //print0("====cores %8d, maxthreads %8d, maxblock %8d \n",cores,maxthreads,maxblock);
+  //if(blockS_use > maxblock)blockS_use = maxblock;
+  //#endif
 
   reduce_gpu2d_6(src,res,n,nv, thread_pow2,divide, fac);
 }
-
-
-//template<typename Ty>
-//qacc void reduce_gpu(const qlat::Vector<Ty > src,Ty &res)
-//{
-//  const long n = src.size()*sizeof(M);
-//  reduce_gpu(src.p,res,n);
-//}
-
 
 
 }
