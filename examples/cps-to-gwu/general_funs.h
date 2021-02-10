@@ -12,7 +12,11 @@
 #include <time.h>
 #include <typeinfo>
 #include <qlat/qlat.h>
-#include <cuda_runtime.h>
+
+#include <iterator>
+#include <sys/sysinfo.h>
+
+//#include <cuda_runtime.h>
 
 //#include <Eigen/Dense>
 //#include "fftw3.h"
@@ -573,10 +577,11 @@ inline void print_mem_info()
 {
   ////double length = (geo.local_volume()*pow(0.5,30))*12*sizeof(Complexq);
   size_t freeM = 0;size_t totalM = 0;
+  double freeD = 0;double totalD=0;
   #ifdef QLAT_USE_ACC
   cudaMemGetInfo(&freeM,&totalM);
+  freeD = freeM*pow(0.5,30);totalD = totalM*pow(0.5,30);
   #endif
-  double freeD = freeM*pow(0.5,30);double totalD = totalM*pow(0.5,30);
   struct sysinfo s_info;
   sysinfo(&s_info);
   print0("===CPU free %.3e GB, total %.3e GB; GPU free %.3e GB, total %.3e GB. \n"
@@ -620,11 +625,60 @@ int stringtonum(std::string &tem_string)
 
 }
 
+int read_vector(const char *filename, std::vector<double > &dat)
+{
+  int prods = 0; 
+  unsigned long Vsize = 0; 
+  ////{synchronize();fflush(stdout);}
+
+  if(get_node_rank_funs() == 0)
+  {
+    Vsize = get_file_size_o(filename);
+    if(Vsize == 0){prods = 0;}else{prods=Vsize;}
+    Vsize = Vsize/8;
+  }
+  sum_all_size(&prods,1);
+  if(prods==0)return prods;
+
+  sum_all_size((int*)&Vsize,1);
+  dat.resize(Vsize);
+
+  if(get_node_rank_funs() == 0)
+  {
+    FILE* filer = fopen(filename, "rb");
+    //std::vector<double > tem;
+    //tem.resize(3);
+    unsigned long count = 1024*1024;
+    unsigned long sizec = 0; 
+    unsigned long offr  = 0; 
+
+    //char* buf = (char *)&dat[0];
+    //fread(buf, 1, Vsize*8, filer);
+
+    for(int iv=0;iv<Vsize;iv++)
+    {    
+      if(offr >= Vsize*8)break;
+      char* buf = (char *)&dat[offr/8];
+      if((offr + count) <= (Vsize*8)){sizec = count;}
+      else{sizec = Vsize*8 - offr;}
+
+      fread(buf, 1, sizec, filer);
+      offr = offr + sizec;
+    }    
+
+    fclose(filer);
+  }
+
+  sum_all_size(&dat[0],Vsize);
+  return prods;
+
+}
 
 
 inline void read_input(const char *filename,std::vector<std::vector<std::string > > &read_f)
 {
-  if(get_file_size_o(filename) == 0){read_f.resize(0);return;}
+  read_f.resize(0);
+  if(get_file_size_o(filename) == 0){return;}
   FILE* filer = fopen(filename, "r");
   char sTemp[300],tem[300];
   ///std::string s0(sTemp);
@@ -643,11 +697,33 @@ inline void read_input(const char *filename,std::vector<std::vector<std::string 
   fclose(filer);
 }
 
+////Bcast conf_l from zero rank
+void bcast_vstring(std::vector<std::string> &conf_l, const int Host_rank = 0){
+
+  int rank = get_node_rank_funs();
+  ////Bcast strings
+  size_t sizen = 0;if(rank == Host_rank)sizen = conf_l.size();
+  MPI_Bcast(&sizen, sizeof(size_t), MPI_CHAR, Host_rank, MPI_COMM_WORLD);
+  if(rank != Host_rank)conf_l.resize(sizen);
+  for(int is=0;is<conf_l.size();is){
+    if(rank == Host_rank)sizen = conf_l[is].size();
+    MPI_Bcast(&sizen, sizeof(size_t), MPI_CHAR, Host_rank, MPI_COMM_WORLD);
+
+    if(rank != Host_rank)conf_l[is].resize(sizen);
+    MPI_Bcast(&conf_l[is][0], sizen, MPI_CHAR, Host_rank, MPI_COMM_WORLD);
+  }
+  ////Bcast strings
+
+}
+
 struct inputpara{
   std::vector<std::vector<std::string > > read_f;
   int bSize;
   int bSum;
   int cutN;
+  std::string lat;
+  int conf;
+  int save_prop;
   ~inputpara(){
     for(int is=0;is<read_f.size();is++){
      for(int ic=0;ic<read_f[is].size();ic++){read_f[is][ic].resize(0);}
@@ -663,6 +739,19 @@ struct inputpara{
       if(found != std::string::npos and read_f[is].size() >= 2){
         res = stringtonum(read_f[is][1]);
         print0("  %10s %10d \n",str2.c_str(), res);
+        return 1;
+      }
+    }
+    return 0;
+  }
+
+  int find_para(const std::string &str2, std::string &res){
+    for(int is=0;is<read_f.size();is++){
+      ////std::string str2("bSize");
+      std::size_t found = read_f[is][0].find(str2);
+      if(found != std::string::npos and read_f[is].size() >= 2){
+        res = read_f[is][1];
+        print0("  %10s %10s \n",str2.c_str(), res.c_str());
         return 1;
       }
     }
@@ -696,7 +785,26 @@ struct inputpara{
     if(find_para(std::string("bSize"),bSize)==0)bSize = 32;
     if(find_para(std::string("bSum"),bSum)==0)bSum  = 512;
     if(find_para(std::string("cutN"),cutN)==0)cutN  = 8;
+    if(find_para(std::string("lat"),lat)==0)lat  = std::string("24D");
+    if(find_para(std::string("conf"),conf)==0)conf  = 0;
+    if(find_para(std::string("save_prop"),save_prop)==0)save_prop  = 0;
     print0("========End   input \n");
+  }
+
+  void load_para(int argc, char* argv[]){
+    for(int i=1;i<argc;i++){
+      std::string str=argv[i];
+      std::size_t found = str.find(std::string("txt"));
+      if(found != std::string::npos)
+      {
+        load_para(str.c_str());
+        return;
+      }
+    }
+  
+    if(get_file_size_MPI(std::string("input.txt").c_str()) == 0)return;
+    load_para("input.txt");return;
+
   }
 
 };
