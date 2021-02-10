@@ -219,23 +219,20 @@ inline void send_vec_kentucky(char* src,char* res,int dsize,int gN,const io_gwu&
     }
   }
 
-  if(qlat::get_num_node() != 1){
-    if(read==true)
-    {
-    MPI_Alltoallv(tmp,(int*) &currsend[0],(int*) &currspls[0], MPI_CHAR,
-                   res,(int*) &currrecv[0],(int*) &currrpls[0], MPI_CHAR, MPI_COMM_WORLD);
-    /////memcpy(res,tmp, size_c);
-    }
-    if(read==false)
-    {
-    MPI_Alltoallv(res,(int*) &currrecv[0],(int*) &currrpls[0], MPI_CHAR,
-                   tmp,(int*) &currsend[0],(int*) &currspls[0], MPI_CHAR, MPI_COMM_WORLD);
-    }
-  }else{
-    //memcpy(res,tmp, size_c);
-    #pragma omp parallel for
-    for(size_t isp=0;isp<size_c;isp++){res[isp] = tmp[isp];}
-  }
+  //if(qlat::get_num_node() != 1)
+  //{
+  if(read==true)
+  {MPI_Alltoallv(tmp,(int*) &currsend[0],(int*) &currspls[0], MPI_CHAR,
+                 res,(int*) &currrecv[0],(int*) &currrpls[0], MPI_CHAR, MPI_COMM_WORLD);}
+  if(read==false)
+  {MPI_Alltoallv(res,(int*) &currrecv[0],(int*) &currrpls[0], MPI_CHAR,
+                 tmp,(int*) &currsend[0],(int*) &currspls[0], MPI_CHAR, MPI_COMM_WORLD);}
+  //}
+  //else{
+  //  //memcpy(res,tmp, size_c);
+  //  #pragma omp parallel for
+  //  for(size_t isp=0;isp<size_c;isp++){res[isp] = tmp[isp];}
+  //}
 
   }
 
@@ -547,7 +544,7 @@ void rotate_gwu_vec_file(Ty* src,int n_vec,size_t noden,bool single_file,bool re
     p.resize(Np);
     //memcpy(&p[0],&src[dc1*Np],sizeof(Ty)*p.size());
     #pragma omp parallel for
-    for(size_t isp=0;isp<Np;isp++){p[isp] = src[dc1*Np + isp];}
+    for(size_t isp=0;isp<p.size();isp++){p[isp] = src[dc1*Np + isp];}
 
     q = &src[dc1*Np];
     if(read==true){
@@ -599,7 +596,7 @@ void gwu_to_cps_rotation_vec(Ty* src,int n_vec,size_t noden,bool source=false,bo
         p.resize(12*Np);
         //memcpy(&p[0],&src[(ip*12+0)*Np],sizeof(Ty)*p.size());
         #pragma omp parallel for
-        for(size_t isp=0;isp<Np;isp++){p[isp] = src[(ip*12+0)*Np + isp];}
+        for(size_t isp=0;isp<p.size();isp++){p[isp] = src[(ip*12+0)*Np + isp];}
 
 
         dr=0;d0=1;d1=3;
@@ -966,6 +963,7 @@ void load_gwu_prop(const char *filename,std::vector<qlat::FermionField4dT<Ty> > 
     for(int iv=0;iv<12;iv++){
       Ty* res   = (Ty*) qlat::get_data(prop[iv]).data();
       std::complex<float> *src = (std::complex<float>*) &prop_qlat[iv*noden*12*2];
+      #pragma omp parallel for
       for(size_t isp=0;isp<noden*12;isp++)src[isp] = res[isp];
     }
 
@@ -989,6 +987,7 @@ void load_gwu_prop(const char *filename,std::vector<qlat::FermionField4dT<Ty> > 
     for(int iv=0;iv<12;iv++){
       Ty* res   = (Ty*) qlat::get_data(prop[iv]).data();
       std::complex<float> *src = (std::complex<float>*) &prop_qlat[iv*noden*12*2];
+      #pragma omp parallel for
       for(size_t isp=0;isp<noden*12;isp++)res[isp]= src[isp];
     }
     }
