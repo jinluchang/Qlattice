@@ -128,6 +128,12 @@ inline int& is_sigterm_received()
   return n;
 }
 
+inline double& get_last_sigint_time()
+{
+  static double time = 0.0;
+  return time;
+}
+
 inline void qhandler_sig(const int signum)
 {
   if (signum == SIGTERM) {
@@ -145,6 +151,13 @@ inline void qhandler_sig(const int signum)
     displayln(ssprintf("qhandler_sig: sigint triggered."));
     Timer::display();
     Timer::display_stack();
+    const double time = get_total_time();
+    if (time - get_last_sigint_time() <= 3.0) {
+      displayln(ssprintf("qhandler_sig: sigint triggered interval = %.2f <= 3.0. Quit.", time - get_last_sigint_time()));
+      qassert(false);
+    } else {
+      get_last_sigint_time() = time;
+    }
   } else {
     displayln(
         ssprintf("qhandler_sig: cannot handle this signal: %d.", signum));

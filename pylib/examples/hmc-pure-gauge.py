@@ -9,10 +9,10 @@ import qlat as q
 @q.timer_verbose
 def gm_evolve_fg(gm, gf_init, ga, fg_dt, dt):
     geo = gf_init.geo()
-    gf = q.Field("ColorMatrix", geo, 4)
+    gf = q.GaugeField(geo)
     gf @= gf_init
     #
-    gm_force = q.Field("ColorMatrix", geo, 4)
+    gm_force = q.GaugeMomentum(geo)
     #
     q.set_gm_force(gm_force, gf, ga)
     #
@@ -78,10 +78,10 @@ def run_hmc(gf, ga, traj, rs):
     is_reverse_test = traj < 3
     #
     geo = gf.geo()
-    gf0 = q.Field("ColorMatrix", geo, 4)
+    gf0 = q.GaugeField(geo)
     gf0 @= gf
     #
-    gm = q.Field("ColorMatrix", geo, 4)
+    gm = q.GaugeMomentum(geo)
     q.set_rand_gauge_momentum(gm, 1.0, rs.split("set_rand_gauge_momentum"))
     #
     steps = 6
@@ -90,9 +90,9 @@ def run_hmc(gf, ga, traj, rs):
     delta_h = run_hmc_evolve(gm, gf0, ga, rs, steps, md_time)
     #
     if is_reverse_test:
-        gm_r = q.Field("ColorMatrix", geo, 4)
+        gm_r = q.GaugeMomentum(geo)
         gm_r @= gm
-        gf0_r = q.Field("ColorMatrix", geo, 4)
+        gf0_r = q.GaugeField(geo)
         gf0_r @= gf0
         delta_h_rev = run_hmc_evolve(gm_r, gf0_r, ga, rs, steps, -md_time)
         gf0_r -= gf;
@@ -115,7 +115,7 @@ def test_hmc(total_site, ga):
     #
     geo = q.Geometry(total_site, 1)
     rs = q.RngState("test_hmc-{}x{}x{}x{}".format(total_site[0], total_site[1], total_site[2], total_site[3]))
-    gf = q.Field("ColorMatrix", geo, 4)
+    gf = q.GaugeField(geo)
     q.set_unit(gf);
     traj = 0
     for i in range(30):

@@ -24,7 +24,7 @@ geo = q.Geometry(total_site)
 if q.get_id_node() == 0:
     print(geo.show_all())
 
-gf = q.Field("ColorMatrix", geo, 4)
+gf = q.GaugeField(geo)
 
 if q.get_id_node() == 0:
     print(gf.geo().show_all())
