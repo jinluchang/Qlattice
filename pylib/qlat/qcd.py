@@ -8,24 +8,24 @@ class GaugeField(Field):
         Field.__init__(self, "ColorMatrix", geo, 4)
 
 def gf_show_info(gf):
-    assert type(gf) == GaugeField
+    assert isinstance(gf, GaugeField)
     c.gf_show_info(gf)
 
 def gf_avg_plaq(gf):
-    assert type(gf) == GaugeField
+    assert isinstance(gf, GaugeField)
     return c.gf_avg_plaq(gf)
 
 def gf_avg_link_trace(gf):
-    assert type(gf) == GaugeField
+    assert isinstance(gf, GaugeField)
     return c.gf_avg_link_trace(gf)
 
 def set_g_rand_color_matrix_field(fc, rng, sigma, n_steps = 1):
-    assert issubclass(type(fc), Field) and fc.ctype == "ColorMatrix"
-    assert type(rng) == RngState
+    assert isinstance(fc, Field) and fc.ctype == "ColorMatrix"
+    assert isinstance(rng, RngState)
     c.set_g_rand_color_matrix_field(fc, rng, sigma, n_steps)
 
 def unitarize(x):
-    if issubclass(type(x), Field) and x.ctype == "ColorMatrix":
+    if isinstance(x, Field) and x.ctype == "ColorMatrix":
         c.unitarize_color_matrix_field(x)
     else:
         raise Exception("unitarize")

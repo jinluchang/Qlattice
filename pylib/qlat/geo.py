@@ -58,7 +58,7 @@ def geo_reform(geo,
         multiplicity = 1,
         expansion_left = (0, 0, 0, 0),
         expansion_right = (0, 0, 0, 0)):
-    if type(geo) == Geometry:
+    if isinstance(geo, Geometry):
         geo_new = Geometry((0, 0, 0, 0))
         c.set_geo_reform(geo_new, geo, multiplicity, expansion_left, expansion_right)
         return geo_new
@@ -66,7 +66,7 @@ def geo_reform(geo,
         raise Exception("geo_reform")
 
 def geo_eo(geo, eo = 0):
-    if type(geo) == Geometry:
+    if isinstance(geo, Geometry):
         geo_new = Geometry((0, 0, 0, 0))
         c.set_geo_eo(geo_new, geo, eo)
         return geo_new

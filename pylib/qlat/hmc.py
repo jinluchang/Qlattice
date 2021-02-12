@@ -10,27 +10,27 @@ class GaugeMomentum(Field):
         Field.__init__(self, "ColorMatrix", geo, 4)
 
 def set_rand_gauge_momentum(gm, sigma, rng):
-    assert type(gm) == GaugeMomentum
-    assert type(sigma) == float
-    assert type(rng) == RngState
+    assert isinstance(gm, GaugeMomentum)
+    assert isinstance(sigma, float)
+    assert isinstance(rng, RngState)
     return c.set_rand_gauge_momentum(gm, sigma, rng)
 
 def gm_hamilton_node(gm):
-    assert type(gm) == GaugeMomentum
+    assert isinstance(gm, GaugeMomentum)
     return c.gm_hamilton_node(gm)
 
 def gf_hamilton_node(gf, ga):
-    assert type(gf) == GaugeField
-    assert type(ga) == GaugeAction
+    assert isinstance(gf, GaugeField)
+    assert isinstance(ga, GaugeAction)
     return c.gf_hamilton_node(gf, ga)
 
 def gf_evolve(gf, gm, step_size):
-    assert type(gm) == GaugeMomentum
+    assert isinstance(gm, GaugeMomentum)
     return c.gf_evolve(gf, gm, step_size)
 
 def set_gm_force(gm_force, gf, ga):
-    assert type(gm_force) == GaugeMomentum
-    assert type(gf) == GaugeField
-    assert type(ga) == GaugeAction
+    assert isinstance(gm_force, GaugeMomentum)
+    assert isinstance(gf, GaugeField)
+    assert isinstance(ga, GaugeAction)
     return c.set_gm_force(gm_force, gf, ga)
 

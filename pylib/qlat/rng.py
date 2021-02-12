@@ -5,10 +5,10 @@ class RngState:
     def __init__(self, x = None):
         if x == None:
             self.cdata = c.mk_rng()
-        elif type(x) == RngState:
+        elif isinstance(x, RngState):
             # make a copy of x
             self.cdata = c.mk_rng(x)
-        elif type(x) == str:
+        elif isinstance(x, str):
             # seed a new rng
             seed = x
             self.cdata = c.mk_rng(rng_state_root, seed)
