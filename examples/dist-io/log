@@ -1,4 +1,6 @@
 qlat::begin(): MPI Initialized. num_node = 8
+qlat::begin_comm(comm,size_node): get_comm_list().push_back()
+qlat::begin_comm(comm,size_node): get_comm_list().size() = 1.
 qlat::begin(): q_num_threads = 2
 qlat::begin(): GeometryNode =
 { initialized = true
@@ -746,6 +748,9 @@ make_shuffle_plan_generic: global_comm_size =       4096
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 crc32 = F9AAC400 after reflect twice
+qlat::end(): get_comm_list().pop_back()
+qlat::end(): get_comm_list().size() = 0.
+qlat::end(): Finalize MPI.
 qlat::end(): MPI Finalized.
 fft_complex_field_plan::end(): free a plan.
 fft_complex_field_plan::end(): free a plan.

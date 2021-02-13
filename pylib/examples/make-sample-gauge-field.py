@@ -11,12 +11,6 @@ q.begin(sys.argv, [
     (2, 2, 2, 2),
     (2, 2, 2, 4)])
 
-print("id_node: {:4} / {} ; coor_node: {:9} / {}".format(
-    q.get_id_node(),
-    q.get_num_node(),
-    str(q.get_coor_node()),
-    str(q.get_size_node())))
-
 total_site = (4, 4, 4, 8)
 
 geo = q.Geometry(total_site)

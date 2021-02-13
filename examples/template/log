@@ -1,4 +1,6 @@
 qlat::begin(): MPI Initialized. num_node = 8
+qlat::begin_comm(comm,size_node): get_comm_list().push_back()
+qlat::begin_comm(comm,size_node): get_comm_list().size() = 1.
 qlat::begin(): q_num_threads = 2
 qlat::begin(): GeometryNode =
 { initialized = true
@@ -316,4 +318,7 @@ find_max_eigen_value_hermop_sym2:     5: sqrt_qnorm_ratio = 1.58659082254578254E
 release_lock: Release lock 'results/free-4nt8/results=1010-lock'
 qremove: 'results/free-4nt8/results=1010-lock/time.txt'
 program finished successfully for 'free-4nt8'.
+qlat::end(): get_comm_list().pop_back()
+qlat::end(): get_comm_list().size() = 0.
+qlat::end(): Finalize MPI.
 qlat::end(): MPI Finalized.

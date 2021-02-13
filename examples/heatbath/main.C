@@ -376,7 +376,7 @@ inline void compute_several_mass(const Coordinate& total_site,
   qmkdir_info(ssprintf("results/total_site=%s/lambda=%.10lf",
                        show(total_site).c_str(), lambda));
   // ADJUST ME
-  for (int i = 0; i < 10; ++i) {
+  for (int i = 0; i < 2; ++i) {
     evolution(total_site, cp, mass_sqr_start + mass_sqr_step * i, lambda);
   }
   //

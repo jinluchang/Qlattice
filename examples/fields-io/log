@@ -1,4 +1,6 @@
 qlat::begin(): MPI Initialized. num_node = 8
+qlat::begin_comm(comm,size_node): get_comm_list().push_back()
+qlat::begin_comm(comm,size_node): get_comm_list().size() = 1.
 qlat::begin(): q_num_threads = 2
 qlat::begin(): GeometryNode =
 { initialized = true
@@ -1351,6 +1353,9 @@ FBC09573  fn='huge-data/t2/demo.lfs/27/0000000054'
 79E82458  fn='huge-data/t2/demo.lfs/31/0000000062'
 A64F7018  fn='huge-data/t2/demo.lfs/31/0000000063'
 9AE9A27B  fn='huge-data/t2/demo.lfs/geon-info.txt'
+qlat::end(): get_comm_list().pop_back()
+qlat::end(): get_comm_list().size() = 0.
+qlat::end(): Finalize MPI.
 qlat::end(): MPI Finalized.
 FieldsReader: close 'huge-data/t2/demo.lfs'.
 FieldsReader: close 'huge-data/t1/demo.lfs'.

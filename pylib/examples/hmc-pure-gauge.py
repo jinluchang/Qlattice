@@ -118,13 +118,13 @@ def test_hmc(total_site, ga):
     gf = q.GaugeField(geo)
     q.set_unit(gf);
     traj = 0
-    for i in range(30):
+    for i in range(4):
         traj += 1
         run_hmc(gf, ga, traj, rs.split("hmc-{}".format(traj)))
         plaq_avg = q.gf_avg_plaq(gf)
         plaq_sum = np.prod(total_site) * 6.0 * (1.0 - plaq_avg)
         q.displayln_info("test_hmc: traj={} ; plaq_avg={}".format(traj, plaq_avg))
-        if traj % 10 == 0:
+        if traj % 2 == 0:
             q.display_gauge_field_info_table_with_wilson_flow(
                     "results/gf_info/traj={}.lat".format(traj),
                     "results/wilson_flow_energy_info/traj={}.lat".format(traj),
@@ -158,7 +158,7 @@ size_node_list = [
 
 q.begin(sys.argv, size_node_list)
 
-show_machine()
+# show_machine()
 
 main()
 

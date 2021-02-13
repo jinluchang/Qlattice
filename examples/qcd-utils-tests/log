@@ -1,4 +1,6 @@
 qlat::begin(): MPI Initialized. num_node = 8
+qlat::begin_comm(comm,size_node): get_comm_list().push_back()
+qlat::begin_comm(comm,size_node): get_comm_list().size() = 1.
 qlat::begin(): q_num_threads = 2
 qlat::begin(): GeometryNode =
 { initialized = true
@@ -216,4 +218,7 @@ CommPlanCache: to add 16 / 32.
 Consistency: orig qnorm: 6.144000E+03 ; shift qnorm 6.144000E+03 ; diff qnorm: 0.000000E+00
 Reference (field_shift_direct): orig qnorm: 6.144000E+03 ; shift qnorm 6.144000E+03 ; diff qnorm: 0.000000E+00
 Reference (field_shift_steps): orig qnorm: 6.144000E+03 ; shift qnorm 6.144000E+03 ; diff qnorm: 0.000000E+00
+qlat::end(): get_comm_list().pop_back()
+qlat::end(): get_comm_list().size() = 0.
+qlat::end(): Finalize MPI.
 qlat::end(): MPI Finalized.

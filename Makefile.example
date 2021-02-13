@@ -31,7 +31,7 @@ LDFLAGS+= $(QLAT_LDFLAGS)
 all: qlat.x
 
 run: qlat.x
-	time mpirun -x OMP_NUM_THREADS=2 -mca btl_openib_allow_ib true --np 8 ./qlat.x |& tee log
+	time mpirun -x OMP_NUM_THREADS=2 --np 8 ./qlat.x | tee log
 
 qlat.x: *.C
 	time make build
@@ -53,8 +53,8 @@ clean:
 
 run-test: qlat.x
 	echo > log
-	time mpirun -x OMP_NUM_THREADS=2 -mca btl_openib_allow_ib true --np 8 ./qlat.x |& tee log.full
-	cat log.full | egrep -v '^Timer|libtorque.so.2' > log
+	time mpirun -x OMP_NUM_THREADS=2 --np 8 ./qlat.x | tee log.full
+	cat log.full | egrep -v '^Timer' > log
 	make diff | cat
 	# make clean
 

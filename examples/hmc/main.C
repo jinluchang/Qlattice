@@ -131,7 +131,7 @@ inline void test_hmc(const Coordinate& total_site, const GaugeAction& ga)
   //
   int traj = 0;
   //
-  for (int i = 0; i < 30; i++) {
+  for (int i = 0; i < 4; i++) {
     traj++;
     run_hmc(gf, ga, traj, rs.split(ssprintf("hmc-%d", traj)));
     //
@@ -141,7 +141,7 @@ inline void test_hmc(const Coordinate& total_site, const GaugeAction& ga)
                    ssprintf(": traj=%d ; plaq_avg=%24.17E ; plaq_sum=%24.17E.",
                             traj, plaq_avg, plaq_sum));
     //
-    if (traj % 10 == 0) {
+    if (traj % 2 == 0) {
       display_gauge_field_info_table_with_wilson_flow(
           ssprintf("results/gf_info/traj=%d.lat", traj),
           ssprintf("results/wilson_flow_energy_info/traj=%d.lat", traj), gf,

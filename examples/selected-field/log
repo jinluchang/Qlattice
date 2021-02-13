@@ -1,4 +1,6 @@
 qlat::begin(): MPI Initialized. num_node = 8
+qlat::begin_comm(comm,size_node): get_comm_list().push_back()
+qlat::begin_comm(comm,size_node): get_comm_list().size() = 1.
 qlat::begin(): q_num_threads = 2
 qlat::begin(): GeometryNode =
 { initialized = true
@@ -772,4 +774,7 @@ make_shuffle_plan_generic: global_comm_size =         16
 shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_shift: f (from shifted sparse field) crc32 = 6F31A6C2 ; shift=0x2x2x0
+qlat::end(): get_comm_list().pop_back()
+qlat::end(): get_comm_list().size() = 0.
+qlat::end(): Finalize MPI.
 qlat::end(): MPI Finalized.

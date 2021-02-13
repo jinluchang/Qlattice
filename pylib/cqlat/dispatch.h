@@ -12,8 +12,6 @@
       (p_ret) = fname<double>(__VA_ARGS__);                                 \
     } else if ("Complex" == (ctype)) {                                      \
       (p_ret) = fname<Complex>(__VA_ARGS__);                                \
-    } else if ("AdjointColorMatrix" == (ctype)) {                           \
-      (p_ret) = fname<AdjointColorMatrix>(__VA_ARGS__);                     \
     } else {                                                                \
       pqerr("%s %s='%s' does not exist.", #fname, #ctype, (ctype).c_str()); \
       (p_ret) = NULL;                                                       \
