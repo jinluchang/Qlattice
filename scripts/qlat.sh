@@ -16,6 +16,14 @@ cp -pv qlat/*.h $prefix/include/qlat
 cp -pv qlat-setup.h $prefix/include
 cp -pv pylib/qlat/* $prefix/pylib/qlat
 
+( cd ./pylib/cqlat ; ./update.sh )
+
+rm -rfv $prefix/pylib/cqlat
+mkdir -pv $prefix/pylib
+cp -rpv pylib/cqlat $prefix/pylib/
+
+time make -C $prefix/pylib/cqlat -j $num_proc
+
 echo "!!!! $name build !!!!"
 
 rm -rf $temp_dir

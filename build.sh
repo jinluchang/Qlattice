@@ -41,7 +41,6 @@ fi
 ./scripts/zlib.sh
 ./scripts/eigen.sh
 ./scripts/qlat.sh
-./scripts/cqlat.sh
 ./scripts/setenv.sh
 
 rm -rf $temp_dir
