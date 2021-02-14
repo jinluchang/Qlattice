@@ -103,7 +103,7 @@ inline PyField py_convert_field(PyObject* in)
 }
 
 template <class T>
-inline T& py_convert_type(PyObject* in)
+T& py_convert_type(PyObject* in)
 {
   PyObject* p_cdata = PyObject_GetAttrString(in, "cdata");
   T* out;
