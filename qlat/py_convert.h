@@ -87,13 +87,18 @@ struct PyField {
   void* cdata;
 };
 
-inline PyField py_convert_field(PyObject* in)
+inline void py_convert(PyField& out, PyObject* in)
 {
   PyObject* p_ctype = PyObject_GetAttrString(in, "ctype");
   PyObject* p_cdata = PyObject_GetAttrString(in, "cdata");
-  PyField out;
   py_convert(out.ctype, p_ctype);
   py_convert((long&)out.cdata, p_cdata);
+}
+
+inline PyField py_convert_field(PyObject* in)
+{
+  PyField out;
+  py_convert(out, in);
   return out;
 }
 

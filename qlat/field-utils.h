@@ -117,6 +117,66 @@ M field_get_elem(const Field<M>& f, const Coordinate& xg)
 }
 
 template <class M>
+void merge_fields(Field<M>& f, const std::vector<ConstHandle<Field<M> > >& vec)
+// fields in vector should have the same geo and multiplicity
+{
+  TIMER("merge_fields");
+  qassert(vec.size() >= 1);
+  qassert(not vec[0].null());
+  qassert(is_initialized(vec[0]()));
+  const long nf = vec.size();
+  const Geometry& geo_v = vec[0]().geo();
+  qassert(geo_v.is_only_local());
+  const int multiplicity_v = geo_v.multiplicity;
+  const int multiplicity = nf * multiplicity_v;
+  const Geometry geo = geo_reform(geo_v, multiplicity);
+  for (long i = 1; i < nf; ++i) {
+    qassert(geo_v == vec[i]().geo());
+  }
+  f.init(geo);
+  for (long i = 0; i < nf; ++i) {
+    const Field<M>& f1 = vec[i]();
+    const int m_offset = i * multiplicity_v;
+    qacc_for(index, geo.local_volume(), {
+      Vector<M> fv = f.get_elems(index);
+      const Vector<M> f1v = f1.get_elems_const(index);
+      for (int m = 0; m < multiplicity_v; ++m) {
+        fv[m + m_offset] = f1v[m];
+      }
+    });
+  }
+}
+
+template <class M>
+void split_fields(std::vector<Handle<Field<M> > >& vec, const Field<M>& f)
+// fields in vector will be reinitialized to have the same geo and multiplicity
+{
+  TIMER("split_fields");
+  qassert(vec.size() >= 1);
+  qassert(is_initialized(f));
+  const long nf = vec.size();
+  const Geometry& geo = f.geo();
+  qassert(geo.is_only_local());
+  const int multiplicity = geo.multiplicity;
+  const int multiplicity_v = multiplicity / nf;
+  qassert(multiplicity_v * nf == multiplicity);
+  const Geometry geo_v = geo_reform(geo, multiplicity_v);
+  for (long i = 0; i < nf; ++i) {
+    Field<M>& f1 = vec[i]();
+    f1.init();
+    f1.init(geo_v);
+    const int m_offset = i * multiplicity_v;
+    qacc_for(index, geo.local_volume(), {
+      const Vector<M> fv = f.get_elems_const(index);
+      Vector<M> f1v = f1.get_elems(index);
+      for (int m = 0; m < multiplicity_v; ++m) {
+        f1v[m] = fv[m + m_offset];
+      }
+    });
+  }
+}
+
+template <class M>
 void field_shift_dir(Field<M>& f, const Field<M>& f1, const int dir,
                      const int shift)
 // shift f1 in 'dir' direction for 'shift' steps

@@ -16,6 +16,9 @@ cp -pv qlat/*.h $prefix/include/qlat
 cp -pv qlat-setup.h $prefix/include
 cp -pv pylib/qlat/* $prefix/pylib/qlat
 
+
+cp -pv pylib/qlat_gpt.py $prefix/pylib/
+
 ( cd ./pylib/cqlat ; ./update.sh )
 
 rm -rfv $prefix/pylib/cqlat

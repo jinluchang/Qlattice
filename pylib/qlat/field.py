@@ -44,4 +44,20 @@ class Field:
         c.set_mul_double_field(self, factor)
         return self
 
+def split_fields(fs, f):
+    nf = len(fs)
+    assert nf >= 1
+    ctype = f.ctype
+    for i in range(nf):
+        if not isinstance(fs[i], Field):
+            fs[i] = Field(ctype)
+        else:
+            assert fs[i].ctype == ctype
+    c.split_fields_field(fs, f)
 
+def merge_fields(f, fs):
+    nf = len(fs)
+    assert nf >= 1
+    assert isinstance(f, Field)
+    assert f.ctype == fs[0].ctype
+    c.merge_fields_field(f, fs)
