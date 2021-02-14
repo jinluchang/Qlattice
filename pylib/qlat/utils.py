@@ -2,24 +2,19 @@ import cqlat as c
 
 from qlat.field import *
 
+from qlat.lat_io import *
+
 def sqr(x):
     return x * x
 
 def set_zero(x):
-    if isinstance(x, Field):
-        c.set_zero_field(x)
-    else:
-        raise Exception("set_zero")
+    x.set_zero()
 
 def set_unit(x, coef = 1.0):
-    if isinstance(x, Field):
-        c.set_unit_field(x, coef)
-    else:
-        raise Exception("set_unit")
+    x.set_unit(coef)
 
 def qnorm(x):
-    if isinstance(x, Field):
-        return c.qnorm_field(x)
-    else:
-        raise Exception("qnorm")
+    return x.qnorm()
 
+def show(x):
+    return x.show()

@@ -44,6 +44,15 @@ class Field:
         c.set_mul_double_field(self, factor)
         return self
 
+    def set_zero(self):
+        c.set_zero_field(self)
+
+    def set_unit(self, coef = 1.0):
+        c.set_unit_field(self, coef)
+
+    def qnorm(self):
+        return c.qnorm_field(self)
+
 def split_fields(fs, f):
     nf = len(fs)
     assert nf >= 1
