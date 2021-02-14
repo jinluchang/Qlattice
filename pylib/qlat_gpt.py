@@ -99,3 +99,46 @@ def gpt_from_qlat_gauge_field(gf):
         plan(gpt_gf[i], fs[i].mview())
     return gpt_gf
 
+@q.timer
+def qlat_from_gpt_prop4d(gpt_prop):
+    ctype = "WilsonMatrix"
+    total_site = gpt_prop.grid.fdimensions
+    multiplicity = 1
+    tag = "qlat_from_gpt"
+    plan = get_qlat_gpt_copy_plan(ctype, total_site, multiplicity, tag)
+    geo = q.Geometry(total_site, 1)
+    prop = q.Propagator4d(geo)
+    plan(prop.mview(), gpt_prop)
+    return prop
+
+@q.timer
+def gpt_from_qlat_prop4d(prop):
+    assert isinstance(prop, q.Propagator4d)
+    geo = prop.geo()
+    ctype = "WilsonMatrix"
+    total_site = geo.total_site()
+    multiplicity = 1
+    tag = "gpt_from_qlat"
+    plan = get_qlat_gpt_copy_plan(ctype, total_site, multiplicity, tag)
+    grid = mk_grid(geo)
+    gpt_prop = g.mspincolor(grid)
+    plan(gpt_prop, prop.mview())
+    return gpt_prop
+
+@q.timer
+def qlat_from_gpt(gpt_obj):
+    if repr(gpt_obj) == "lattice(ot_matrix_spin_color(4,3),double)":
+        return qlat_from_gpt_prop4d(gpt_obj)
+    elif repr(gpt_obj) == "[lattice(ot_matrix_su_n_fundamental_group(3),double), lattice(ot_matrix_su_n_fundamental_group(3),double), lattice(ot_matrix_su_n_fundamental_group(3),double), lattice(ot_matrix_su_n_fundamental_group(3),double)]":
+        return qlat_from_gpt_gauge_field(gpt_obj)
+    else:
+        raise Exception("qlat_from_gpt")
+
+@q.timer
+def gpt_from_qlat(obj):
+    if isinstance(obj, q.Propagator4d):
+        return gpt_from_qlat_prop4d(obj)
+    elif isinstance(obj, q.GaugeField):
+        return gpt_from_qlat_gauge_field(obj)
+    else:
+        raise Exception("gpt_from_qlat")

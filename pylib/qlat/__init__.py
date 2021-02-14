@@ -18,6 +18,8 @@ from qlat.utils_io import *
 
 from qlat.qcd import *
 
+from qlat.prop import *
+
 from qlat.gauge_action import *
 
 from qlat.hmc import *
