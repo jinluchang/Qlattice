@@ -59,7 +59,7 @@ EXPORT(unitarize_color_matrix_field, {
   Py_RETURN_NONE;
 });
 
-EXPORT(save_gauge_fiel, {
+EXPORT(save_gauge_field, {
   using namespace qlat;
   PyObject* p_gf = NULL;
   PyObject* p_path = NULL;

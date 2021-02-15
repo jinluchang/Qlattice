@@ -18,3 +18,7 @@ def qnorm(x):
 
 def show(x):
     return x.show()
+
+def unitarize(x):
+    x.unitarize()
+
