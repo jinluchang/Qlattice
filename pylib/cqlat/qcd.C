@@ -86,4 +86,3 @@ EXPORT(load_gauge_field, {
   const long ret = load_gauge_field_par(gf, path);
   return py_convert(ret);
 });
-
