@@ -31,6 +31,22 @@ PyObject* set_spfield_ctype(PyField& pf_new, PyField& pf)
   Py_RETURN_NONE;
 }
 
+template <class M>
+PyObject* get_n_points_spfield_ctype(PyField& pf)
+{
+  SelectedPoints<M>& spf = *(SelectedPoints<M>*)pf.cdata;
+  const long ret = spf.n_points;
+  return py_convert(ret);
+}
+
+template <class M>
+PyObject* get_multiplicity_spfield_ctype(PyField& pf)
+{
+  SelectedPoints<M>& spf = *(SelectedPoints<M>*)pf.cdata;
+  const long ret = spf.multiplicity;
+  return py_convert(ret);
+}
+
 }  // namespace qlat
 
 EXPORT(mk_spfield, {
@@ -72,5 +88,29 @@ EXPORT(set_spfield, {
   pqassert(pf_new.ctype == pf.ctype);
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, set_spfield_ctype, pf.ctype, pf_new, pf);
+  return p_ret;
+});
+
+EXPORT(get_n_points_spfield, {
+  using namespace qlat;
+  PyObject* p_field = NULL;
+  if (!PyArg_ParseTuple(args, "O", &p_field)) {
+    return NULL;
+  }
+  PyField pf = py_convert_field(p_field);
+  PyObject* p_ret = NULL;
+  FIELD_DISPATCH(p_ret, get_n_points_spfield_ctype, pf.ctype, pf);
+  return p_ret;
+});
+
+EXPORT(get_multiplicity_spfield, {
+  using namespace qlat;
+  PyObject* p_field = NULL;
+  if (!PyArg_ParseTuple(args, "O", &p_field)) {
+    return NULL;
+  }
+  PyField pf = py_convert_field(p_field);
+  PyObject* p_ret = NULL;
+  FIELD_DISPATCH(p_ret, get_multiplicity_spfield_ctype, pf.ctype, pf);
   return p_ret;
 });

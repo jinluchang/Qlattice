@@ -13,3 +13,14 @@ class SelectedPoints:
 
     def __del__(self):
         c.free_spfield(self)
+
+    def n_points(self):
+        return c.get_n_points_spfield(self)
+
+    def multiplicity(self):
+        return c.get_multiplicity_spfield(self)
+
+    def __imatmul__(self, f1):
+        assert isinstance(f1, SelectedPoints) and f1.ctype == self.ctype
+        c.set_spfield(self, f1)
+        return self

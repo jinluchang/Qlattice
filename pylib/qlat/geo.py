@@ -72,4 +72,3 @@ def geo_eo(geo, eo = 0):
         return geo_new
     else:
         raise Exception("geo_eo")
-
