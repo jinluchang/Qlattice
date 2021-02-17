@@ -8,13 +8,7 @@ EXPORT(mk_lat_data, {
 
 EXPORT(free_lat_data, {
   using namespace qlat;
-  PyObject* p_ld = NULL;
-  if (!PyArg_ParseTuple(args, "O", &p_ld)) {
-    return NULL;
-  }
-  LatData& ld = py_convert_type<LatData>(p_ld);
-  delete &ld;
-  Py_RETURN_NONE;
+  return free_obj<LatData>(args);
 });
 
 EXPORT(set_zero_lat_data, {

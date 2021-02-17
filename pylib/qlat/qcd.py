@@ -14,6 +14,9 @@ class GaugeField(Field):
     def load(self, path):
         c.load_gauge_field(self, path)
 
+    def set_rand(self, rng, sigma = 0.5, n_step = 1):
+        set_g_rand_color_matrix_field(self, rng, sigma, n_step)
+
     def unitarize(self):
         c.unitarize_color_matrix_field(self)
 
@@ -33,4 +36,3 @@ def set_g_rand_color_matrix_field(fc, rng, sigma, n_steps = 1):
     assert isinstance(fc, Field) and fc.ctype == "ColorMatrix"
     assert isinstance(rng, RngState)
     c.set_g_rand_color_matrix_field(fc, rng, sigma, n_steps)
-

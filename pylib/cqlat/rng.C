@@ -25,13 +25,7 @@ EXPORT(mk_rng, {
 
 EXPORT(free_rng, {
   using namespace qlat;
-  PyObject* p_rng = NULL;
-  if (!PyArg_ParseTuple(args, "O", &p_rng)) {
-    return NULL;
-  }
-  RngState& rng = py_convert_type<RngState>(p_rng);
-  delete &rng;
-  Py_RETURN_NONE;
+  return free_obj<RngState>(args);
 });
 
 EXPORT(rand_gen, {

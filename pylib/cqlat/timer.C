@@ -14,13 +14,7 @@ EXPORT(mk_timer, {
 
 EXPORT(free_timer, {
   using namespace qlat;
-  PyObject* p_timer = NULL;
-  if (!PyArg_ParseTuple(args, "O", &p_timer)) {
-    return NULL;
-  }
-  Timer& timer = py_convert_type<Timer>(p_timer);
-  delete &timer;
-  Py_RETURN_NONE;
+  return free_obj<Timer>(args);
 });
 
 EXPORT(start_timer, {

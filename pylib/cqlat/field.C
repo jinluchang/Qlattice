@@ -155,9 +155,9 @@ EXPORT(mk_field, {
   }
   std::string ctype;
   py_convert(ctype, p_ctype);
-  PyObject* pfield;
-  FIELD_DISPATCH(pfield, mk_field_ctype, ctype, p_geo, multiplicity);
-  return pfield;
+  PyObject* p_ret = NULL;
+  FIELD_DISPATCH(p_ret, mk_field_ctype, ctype, p_geo, multiplicity);
+  return p_ret;
 });
 
 EXPORT(free_field, {

@@ -15,13 +15,7 @@ EXPORT(mk_geo, {
 
 EXPORT(free_geo, {
   using namespace qlat;
-  PyObject* p_geo = NULL;
-  if (!PyArg_ParseTuple(args, "O", &p_geo)) {
-    return NULL;
-  }
-  Geometry& geo = py_convert_type<Geometry>(p_geo);
-  delete &geo;
-  Py_RETURN_NONE;
+  return free_obj<Geometry>(args);
 });
 
 EXPORT(set_geo_reform, {

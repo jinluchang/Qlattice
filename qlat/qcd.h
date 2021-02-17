@@ -389,8 +389,11 @@ long load_gauge_field_par(GaugeFieldT<T>& gf, const std::string& path)
 {
   TIMER_VERBOSE_FLOPS("load_gauge_field_par");
   displayln_info(fname + ssprintf(": '%s'.", path.c_str()));
-  qassert(is_initialized(gf));
-  const Geometry& geo = gf.geo();
+  GaugeFieldInfo gfi;
+  read_gauge_field_header(gfi, path);
+  Geometry geo;
+  geo.init(gfi.total_site, 4);
+  gf.init(geo);
   FieldM<array<Complex, 6>, 4> gft;
   gft.init(geo);
   const long file_size = serial_read_field_par(
