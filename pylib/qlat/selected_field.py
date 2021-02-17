@@ -24,3 +24,24 @@ class SelectedPoints:
         assert isinstance(f1, SelectedPoints) and f1.ctype == self.ctype
         c.set_spfield(self, f1)
         return self
+
+    def __iadd__(self, f1):
+        assert isinstance(f1, Field) and f1.ctype == self.ctype
+        c.set_add_spfield(self, f1)
+        return self
+
+    def __isub__(self, f1):
+        assert isinstance(f1, Field) and f1.ctype == self.ctype
+        c.set_sub_spfield(self, f1)
+        return self
+
+    def __imul__(self, factor):
+        assert isinstance(factor, float)
+        c.set_mul_double_spfield(self, factor)
+        return self
+
+    def set_zero(self):
+        c.set_zero_spfield(self)
+
+    def qnorm(self):
+        return c.qnorm_spfield(self)
