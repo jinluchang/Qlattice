@@ -146,7 +146,7 @@ inline void* alloc_mem(const long min_size)
       qassert(err == cudaSuccess);
     }
 #else
-    void* ptr = aligned_alloc(alignment, size);
+    void* ptr = std::aligned_alloc(alignment, size);
 #endif
     memset(ptr, 0, size);
     return ptr;
@@ -336,7 +336,7 @@ template <class T>
 qacc double qnorm(const vector<T>& mm)
 {
   double sum = 0.0;
-  for (size_t i = 0; i < mm.size(); ++i) {
+  for (long i = 0; i < mm.size(); ++i) {
     sum += qnorm(mm[i]);
   }
   return sum;
