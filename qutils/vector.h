@@ -4,6 +4,7 @@
 #include <qutils/qutils.h>
 
 #include <cstdlib>
+#include <stdlib.h>
 #include <cstring>
 #include <unordered_map>
 
@@ -145,8 +146,10 @@ inline void* alloc_mem(const long min_size)
       usleep((useconds_t)(10.0 * 1.0e6));
       qassert(err == cudaSuccess);
     }
+#elif defined NO_ALIGNED_ALLOC
+    void* ptr = malloc(size);
 #else
-    void* ptr = std::aligned_alloc(alignment, size);
+    void* ptr = aligned_alloc(alignment, size);
 #endif
     memset(ptr, 0, size);
     return ptr;

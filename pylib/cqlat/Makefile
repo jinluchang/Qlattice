@@ -1,8 +1,6 @@
-#!/bin/bash
-
 SHELL=/bin/bash
 
-CXX=mpic++ -std=c++0x -fopenmp -march=native -O2 -Wall -fno-strict-aliasing
+CXX=mpic++ -std=c++17 -fopenmp -march=native -O2 -Wall -fno-strict-aliasing
 
 qlat_prefix=$$HOME/qlat-build/1.0
 
