@@ -21,6 +21,7 @@ def gm_evolve_fg(gm, gf_init, ga, fg_dt, dt):
     q.set_gm_force(gm_force, gf, ga)
     #
     q.display_gm_force_magnitudes(gm_force, 5)
+    q.displayln_info(q.get_gm_force_magnitudes(gm_force, 5))
     #
     gm_force *= dt
     gm += gm_force

@@ -12,6 +12,9 @@ def begin_with_gpt():
     id_node = g.rank()
     q.begin(id_node, size_node)
 
+def end_with_gpt():
+    q.end()
+
 def mk_qlat_gpt_copy_plan_key(ctype, total_site, multiplicity, tag):
     return ctype + "," + str(list(total_site)) + "," + str(multiplicity) + "," + tag
 

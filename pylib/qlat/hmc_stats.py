@@ -2,6 +2,9 @@ import cqlat as c
 
 from qlat.hmc import *
 
+def get_gm_force_magnitudes(gm_force, n_elems):
+    return c.get_gm_force_magnitudes(gm_force, n_elems)
+
 def display_gm_force_magnitudes(gm_force, n_elems):
     c.display_gm_force_magnitudes(gm_force, n_elems)
 

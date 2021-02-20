@@ -142,6 +142,16 @@ inline PyObject* py_convert(const Complex& x)
 }
 
 template <class M>
+PyObject* py_convert(std::vector<M>& vec)
+{
+  PyObject* ret = PyList_New(vec.size());
+  for (long i = 0; i < (long)vec.size(); i++) {
+    PyList_SetItem(ret, i, py_convert(vec[i]));
+  }
+  return ret;
+}
+
+template <class M>
 PyObject* py_convert(const Vector<M>& x)
 {
   return PyMemoryView_FromMemory((char*)x.data(), x.data_size(), PyBUF_WRITE);

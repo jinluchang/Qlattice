@@ -1,5 +1,17 @@
 #include "lib.h"
 
+EXPORT(get_gm_force_magnitudes, {
+  using namespace qlat;
+  PyObject* p_gm_force = NULL;
+  int n_elems = 0;
+  if (!PyArg_ParseTuple(args, "Oi", &p_gm_force, &n_elems)) {
+    return NULL;
+  }
+  const GaugeMomentum& gm_force = py_convert_type<GaugeMomentum>(p_gm_force);
+  std::vector<double> ret = get_gm_force_magnitudes(gm_force, n_elems);
+  return py_convert(ret);
+});
+
 EXPORT(display_gm_force_magnitudes, {
   using namespace qlat;
   PyObject* p_gm_force = NULL;
