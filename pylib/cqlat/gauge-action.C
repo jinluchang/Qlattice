@@ -13,13 +13,12 @@ EXPORT(mk_gauge_action, {
 
 EXPORT(free_gauge_action, {
   using namespace qlat;
-  PyObject* p_ga = NULL;
-  if (!PyArg_ParseTuple(args, "O", &p_ga)) {
-    return NULL;
-  }
-  GaugeAction& ga = py_convert_type<GaugeAction>(p_ga);
-  delete &ga;
-  Py_RETURN_NONE;
+  return free_obj<GaugeAction>(args);
+});
+
+EXPORT(set_gauge_action, {
+  using namespace qlat;
+  return set_obj<GaugeAction>(args);
 });
 
 EXPORT(get_beta_gauge_action, {

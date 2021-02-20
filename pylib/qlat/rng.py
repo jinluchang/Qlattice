@@ -16,6 +16,11 @@ class RngState:
     def __del__(self):
         c.free_rng(self)
 
+    def __imatmul__(self, v1):
+        assert isinstance(v1, RngState)
+        c.set_rng(self, v1)
+        return self
+
     def split(self, seed):
         rng = RngState()
         rng.cdata = c.mk_rng(self, str(seed))

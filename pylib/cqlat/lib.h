@@ -37,4 +37,18 @@ PyObject* free_obj(PyObject* args)
   Py_RETURN_NONE;
 }
 
+template <class T>
+PyObject* set_obj(PyObject* args)
+{
+  PyObject* p_obj_new = NULL;
+  PyObject* p_obj = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_obj_new, &p_obj)) {
+    return NULL;
+  }
+  T& obj_new = py_convert_type<T>(p_obj_new);
+  const T& obj = py_convert_type<T>(p_obj);
+  obj_new = obj;
+  Py_RETURN_NONE;
+}
+
 }  // namespace qlat

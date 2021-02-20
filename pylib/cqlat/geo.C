@@ -18,6 +18,11 @@ EXPORT(free_geo, {
   return free_obj<Geometry>(args);
 });
 
+EXPORT(set_geo, {
+  using namespace qlat;
+  return set_obj<Geometry>(args);
+});
+
 EXPORT(set_geo_reform, {
   using namespace qlat;
   PyObject* p_geo_new = NULL;

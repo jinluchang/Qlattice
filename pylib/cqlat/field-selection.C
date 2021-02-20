@@ -19,6 +19,11 @@ EXPORT(free_psel, {
   return free_obj<PointSelection>(args);
 });
 
+EXPORT(set_psel, {
+  using namespace qlat;
+  return set_obj<PointSelection>(args);
+});
+
 EXPORT(load_psel, {
   using namespace qlat;
   PyObject* p_psel = NULL;
@@ -45,6 +50,16 @@ EXPORT(save_psel, {
   py_convert(path, p_path);
   save_point_selection_info(psel, path);
   Py_RETURN_NONE;
+});
+
+EXPORT(mk_list_psel, {
+  using namespace qlat;
+  PyObject* p_psel = NULL;
+  if (!PyArg_ParseTuple(args, "O", &p_psel)) {
+    return NULL;
+  }
+  const PointSelection& psel = py_convert_type<PointSelection>(p_psel);
+  return py_convert(psel);
 });
 
 EXPORT(mk_fsel, {
@@ -76,6 +91,11 @@ EXPORT(mk_fsel, {
 EXPORT(free_fsel, {
   using namespace qlat;
   return free_obj<FieldSelection>(args);
+});
+
+EXPORT(set_fsel, {
+  using namespace qlat;
+  return set_obj<FieldSelection>(args);
 });
 
 EXPORT(load_fsel, {
@@ -136,4 +156,50 @@ EXPORT(update_fsel, {
     update_field_selection(fsel, n_per_tslice);
   }
   Py_RETURN_NONE;
+});
+
+EXPORT(set_geo_fsel, {
+  using namespace qlat;
+  PyObject* p_geo = NULL;
+  PyObject* p_fsel = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_geo, &p_fsel)) {
+    return NULL;
+  }
+  Geometry& geo = py_convert_type<Geometry>(p_geo);
+  const FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
+  geo = fsel.f_rank.geo();
+  Py_RETURN_NONE;
+});
+
+EXPORT(get_n_elems_fsel, {
+  using namespace qlat;
+  PyObject* p_fsel = NULL;
+  if (!PyArg_ParseTuple(args, "O", &p_fsel)) {
+    return NULL;
+  }
+  const FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
+  const long n_elems = fsel.n_elems;
+  return py_convert(n_elems);
+});
+
+EXPORT(get_n_per_tslice_fsel, {
+  using namespace qlat;
+  PyObject* p_fsel = NULL;
+  if (!PyArg_ParseTuple(args, "O", &p_fsel)) {
+    return NULL;
+  }
+  const FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
+  const long n_per_tslice= fsel.n_per_tslice;
+  return py_convert(n_per_tslice);
+});
+
+EXPORT(get_prob_fsel, {
+  using namespace qlat;
+  PyObject* p_fsel = NULL;
+  if (!PyArg_ParseTuple(args, "O", &p_fsel)) {
+    return NULL;
+  }
+  const FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
+  const double prob = fsel.prob;
+  return py_convert(prob);
 });

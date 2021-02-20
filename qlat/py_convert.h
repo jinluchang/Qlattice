@@ -142,7 +142,7 @@ inline PyObject* py_convert(const Complex& x)
 }
 
 template <class M>
-PyObject* py_convert(std::vector<M>& vec)
+PyObject* py_convert(const std::vector<M>& vec)
 {
   PyObject* ret = PyList_New(vec.size());
   for (long i = 0; i < (long)vec.size(); i++) {

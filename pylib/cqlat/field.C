@@ -13,6 +13,7 @@ PyObject* mk_field_ctype(PyObject* p_geo, const int multiplicity)
     if (multiplicity == 0) {
       f.init(geo);
     } else {
+      pqassert(multiplicity > 0);
       f.init(geo, multiplicity);
     }
   }
@@ -84,6 +85,22 @@ PyObject* set_unit_field_ctype(PyField& pf, const Complex& coef = 1.0)
   Field<M>& f = *(Field<M>*)pf.cdata;
   set_unit(f, coef);
   Py_RETURN_NONE;
+}
+
+template <class M>
+PyObject* get_total_site_field_ctype(PyField& pf)
+{
+  Field<M>& f = *(Field<M>*)pf.cdata;
+  const Coordinate ret = f.geo().total_site();
+  return py_convert(ret);
+}
+
+template <class M>
+PyObject* get_multiplicity_field_ctype(PyField& pf)
+{
+  Field<M>& f = *(Field<M>*)pf.cdata;
+  const long ret = f.geo().multiplicity;
+  return py_convert(ret);
 }
 
 template <class M>
@@ -252,6 +269,30 @@ EXPORT(set_unit_field, {
   PyField pf = py_convert_field(p_field);
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, set_unit_field_ctype, pf.ctype, pf, coef);
+  return p_ret;
+});
+
+EXPORT(get_total_site_field, {
+  using namespace qlat;
+  PyObject* p_field = NULL;
+  if (!PyArg_ParseTuple(args, "O", &p_field)) {
+    return NULL;
+  }
+  PyField pf = py_convert_field(p_field);
+  PyObject* p_ret = NULL;
+  FIELD_DISPATCH(p_ret, get_total_site_field_ctype, pf.ctype, pf);
+  return p_ret;
+});
+
+EXPORT(get_multiplicity_field, {
+  using namespace qlat;
+  PyObject* p_field = NULL;
+  if (!PyArg_ParseTuple(args, "O", &p_field)) {
+    return NULL;
+  }
+  PyField pf = py_convert_field(p_field);
+  PyObject* p_ret = NULL;
+  FIELD_DISPATCH(p_ret, get_multiplicity_field_ctype, pf.ctype, pf);
   return p_ret;
 });
 

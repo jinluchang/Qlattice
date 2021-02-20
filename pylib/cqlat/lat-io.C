@@ -11,6 +11,11 @@ EXPORT(free_lat_data, {
   return free_obj<LatData>(args);
 });
 
+EXPORT(set_lat_data, {
+  using namespace qlat;
+  return set_obj<LatData>(args);
+});
+
 EXPORT(set_zero_lat_data, {
   using namespace qlat;
   PyObject* p_ld = NULL;

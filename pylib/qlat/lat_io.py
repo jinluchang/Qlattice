@@ -8,6 +8,11 @@ class LatData:
     def __del__(self):
         c.free_lat_data(self)
 
+    def __imatmul__(self, v1):
+        assert isinstance(v1, LatData)
+        c.set_lat_data(self, v1)
+        return self
+
     def load(self, path):
         c.load_lat_data(self, path)
 

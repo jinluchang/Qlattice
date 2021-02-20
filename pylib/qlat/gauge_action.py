@@ -8,6 +8,11 @@ class GaugeAction:
     def __del__(self):
         c.free_gauge_action(self)
 
+    def __imatmul__(self, v1):
+        assert isinstance(v1, GaugeAction)
+        c.set_gauge_action(self, v1)
+        return self
+
     def beta(self):
         return c.get_beta_gauge_action(self)
 

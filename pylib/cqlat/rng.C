@@ -28,6 +28,11 @@ EXPORT(free_rng, {
   return free_obj<RngState>(args);
 });
 
+EXPORT(set_rng, {
+  using namespace qlat;
+  return set_obj<RngState>(args);
+});
+
 EXPORT(rand_gen, {
   using namespace qlat;
   PyObject* p_rng = NULL;

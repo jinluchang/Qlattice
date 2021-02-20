@@ -11,6 +11,11 @@ class Geometry:
     def __del__(self):
         c.free_geo(self)
 
+    def __imatmul__(self, v1):
+        assert isinstance(v1, Geometry)
+        c.set_geo(self, v1)
+        return self
+
     def total_site(self):
         return c.get_total_site_geo(self)
 
