@@ -408,7 +408,7 @@ template <class M>
 void set_selected_field(SelectedField<M>& sf, const Field<M>& f,
                         const FieldSelection& fsel)
 {
-  TIMER("set_selected_field");
+  TIMER("set_selected_field(sf,f,fsel)");
   qassert(f.geo().is_only_local());
   qassert(fsel.f_local_idx.geo().is_only_local());
   qassert(geo_remult(f.geo()) == fsel.f_local_idx.geo());
@@ -430,7 +430,7 @@ template <class M>
 void set_selected_field(SelectedField<M>& sf, const SelectedField<M>& sf0,
                         const FieldSelection& fsel, const FieldSelection& fsel0)
 {
-  TIMER("set_selected_field");
+  TIMER("set_selected_field(sf,sf0,fsel,fsel0)");
   qassert(sf0.geo().is_only_local());
   qassert(fsel.f_local_idx.geo().is_only_local());
   qassert(fsel0.f_local_idx.geo().is_only_local());
@@ -456,7 +456,7 @@ template <class M>
 void set_selected_points(SelectedPoints<M>& sp, const SelectedField<M>& sf,
                          const PointSelection& psel, const FieldSelection& fsel)
 {
-  TIMER("set_selected_points");
+  TIMER("set_selected_points(sp,sf,psel,fsel)");
   const Geometry& geo = sf.geo();
   qassert(is_consistent(sf, fsel));
   const long n_points = psel.size();

@@ -303,7 +303,7 @@ template <class M>
 void set_selected_points(SelectedPoints<M>& sp, const Field<M>& f,
                          const PointSelection& psel)
 {
-  TIMER("set_selected_points");
+  TIMER("set_selected_points(sp,f,psel)");
   const Geometry& geo = f.geo();
   qassert(geo.is_only_local());
   const long n_points = psel.size();
