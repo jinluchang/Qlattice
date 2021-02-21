@@ -2,6 +2,8 @@ import cqlat as c
 
 from qlat.rng import *
 
+from qlat.geo import *
+
 class PointSelection:
 
     def __init__(self, coordinate_list = None):

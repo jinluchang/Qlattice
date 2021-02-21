@@ -161,6 +161,8 @@ q.begin(sys.argv, size_node_list)
 
 # show_machine()
 
+q.qremove_all_info("results")
+
 main()
 
 q.timer_display()
