@@ -14,8 +14,9 @@ q.displayln_info("geo.show() =", geo.show())
 
 q.qremove_all_info("results")
 
-q.qmkdir("results")
-q.displayln_info(os.listdir("results"))
+q.qmkdir_info("results")
+if q.get_id_node() == 0:
+    q.displayln_info(os.listdir("results"))
 
 psel = q.PointSelection([(0,0,0,0), (0,1,2,0)])
 
@@ -42,7 +43,8 @@ fsel.add_psel(psel)
 
 q.displayln_info("fsel info =", fsel.geo().show(), fsel.n_per_tslice(), fsel.prob())
 
-q.displayln_info(os.listdir("results"))
+if q.get_id_node() == 0:
+    q.displayln_info(os.listdir("results"))
 
 q.timer_display()
 
