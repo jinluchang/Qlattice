@@ -9,16 +9,22 @@ class GaugeField(Field):
         Field.__init__(self, "ColorMatrix", geo, 4)
 
     def save(self, path):
-        c.save_gauge_field(self, path)
+        return c.save_gauge_field(self, path)
 
     def load(self, path):
-        c.load_gauge_field(self, path)
+        return c.load_gauge_field(self, path)
 
     def set_rand(self, rng, sigma = 0.5, n_step = 1):
         set_g_rand_color_matrix_field(self, rng, sigma, n_step)
 
     def unitarize(self):
         c.unitarize_color_matrix_field(self)
+
+    def plaq(self):
+        return gf_avg_plaq(self)
+
+    def link_trace(self):
+        return gf_avg_link_trace(self)
 
 def gf_show_info(gf):
     assert isinstance(gf, GaugeField)

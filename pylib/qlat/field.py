@@ -128,7 +128,7 @@ class Field:
     def load_double(self, path):
         return self.load_64(path)
 
-    def load_double_fromt_float(self, path):
+    def load_double_from_float(self, path):
         ff = Field("float")
         ret = ff.load(path)
         ff.to_from_endianness("big_32")
@@ -147,7 +147,7 @@ class Field:
 
     def to_from_endianness(self, tag):
         assert isinstance(tag, str)
-        c.to_from_endianness(self, tag)
+        c.to_from_endianness_field(self, tag)
 
 def split_fields(fs, f):
     nf = len(fs)
