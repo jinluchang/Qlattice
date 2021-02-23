@@ -32,7 +32,7 @@ template <class M>
 PyObject* set_field_ctype(PyField& pf_new, PyField& pf)
 {
   Field<M>& f_new = *(Field<M>*)pf_new.cdata;
-  Field<M>& f = *(Field<M>*)pf.cdata;
+  const Field<M>& f = *(Field<M>*)pf.cdata;
   f_new = f;
   Py_RETURN_NONE;
 }
@@ -80,10 +80,19 @@ PyObject* set_zero_field_ctype(PyField& pf)
 }
 
 template <class M>
-PyObject* set_unit_field_ctype(PyField& pf, const Complex& coef = 1.0)
+PyObject* set_unit_field_ctype(PyField& pf, const Complex& coef)
 {
   Field<M>& f = *(Field<M>*)pf.cdata;
   set_unit(f, coef);
+  Py_RETURN_NONE;
+}
+
+template <class M>
+PyObject* set_u_rand_double_field_ctype(PyField& pf, const RngState& rs,
+                                        const double upper, const double lower)
+{
+  Field<M>& f = *(Field<M>*)pf.cdata;
+  set_u_rand_double(f, rs, upper, lower);
   Py_RETURN_NONE;
 }
 
@@ -133,6 +142,31 @@ PyObject* qnorm_field_ctype(PyField& pf)
 }
 
 template <class M>
+PyObject* crc32_field_ctype(PyField& pf)
+{
+  const Field<M>& f = *(Field<M>*)pf.cdata;
+  const crc32_t ret = field_crc32(f);
+  return py_convert((long)ret);
+}
+
+template <class M>
+PyObject* save_field_ctype(PyField& pf, const std::string& path,
+                           const Coordinate& new_size_node)
+{
+  const Field<M>& f = *(Field<M>*)pf.cdata;
+  const long ret = write_field(f, path, new_size_node);
+  return py_convert(ret);
+}
+
+template <class M>
+PyObject* load_field_ctype(PyField& pf, const std::string& path)
+{
+  Field<M>& f = *(Field<M>*)pf.cdata;
+  const long ret = read_field(f, path);
+  return py_convert(ret);
+}
+
+template <class M>
 PyObject* split_fields_field_ctype(std::vector<PyField>& pf_vec, PyField& pf)
 {
   Field<M>& f = *(Field<M>*)pf.cdata;
@@ -147,7 +181,8 @@ PyObject* split_fields_field_ctype(std::vector<PyField>& pf_vec, PyField& pf)
 }
 
 template <class M>
-PyObject* merge_fields_field_ctype(PyField& pf, const std::vector<PyField>& pf_vec)
+PyObject* merge_fields_field_ctype(PyField& pf,
+                                   const std::vector<PyField>& pf_vec)
 {
   Field<M>& f = *(Field<M>*)pf.cdata;
   const int nf = pf_vec.size();
@@ -157,6 +192,45 @@ PyObject* merge_fields_field_ctype(PyField& pf, const std::vector<PyField>& pf_v
     vec[i].init(*(Field<M>*)pf_vec[i].cdata);
   }
   merge_fields(f, vec);
+  Py_RETURN_NONE;
+}
+
+template <class M>
+PyObject* convert_float_from_double_field_ctype(PyField& pf_new, PyField& pf)
+{
+  pqassert(pf_new.ctype == "float");
+  Field<float>& f_new = *(Field<float>*)pf_new.cdata;
+  const Field<M>& f = *(Field<M>*)pf.cdata;
+  convert_field_float_from_double(f_new, f);
+  Py_RETURN_NONE;
+}
+
+template <class M>
+PyObject* convert_double_from_float_field_ctype(PyField& pf_new, PyField& pf)
+{
+  pqassert(pf.ctype == "float");
+  const Field<float>& f = *(Field<float>*)pf.cdata;
+  Field<M>& f_new = *(Field<M>*)pf_new.cdata;
+  convert_field_double_from_float(f_new, f);
+  Py_RETURN_NONE;
+}
+
+template <class M>
+PyObject* to_from_endianness_field_ctype(PyField& pf,
+                                         const std::string& endianness_tag)
+{
+  Field<M>& f = *(Field<M>*)pf.cdata;
+  if ("big_32" == endianness_tag) {
+    to_from_big_endian_32(get_data(f));
+  } else if ("big_64" == endianness_tag) {
+    to_from_big_endian_64(get_data(f));
+  } else if ("little_32" == endianness_tag) {
+    to_from_little_endian_32(get_data(f));
+  } else if ("little_64" == endianness_tag) {
+    to_from_little_endian_64(get_data(f));
+  } else {
+    pqassert(false);
+  }
   Py_RETURN_NONE;
 }
 
@@ -272,6 +346,23 @@ EXPORT(set_unit_field, {
   return p_ret;
 });
 
+EXPORT(set_u_rand_double_field, {
+  using namespace qlat;
+  PyObject* p_field = NULL;
+  PyObject* p_rng = NULL;
+  double upper = 1.0;
+  double lower = 0.0;
+  if (!PyArg_ParseTuple(args, "OO|dd", &p_field, &p_rng, &upper, &lower)) {
+    return NULL;
+  }
+  PyField pf = py_convert_field(p_field);
+  const RngState& rng = py_convert_type<RngState>(p_rng);
+  PyObject* p_ret = NULL;
+  FIELD_DISPATCH(p_ret, set_u_rand_double_field_ctype, pf.ctype, pf, rng, upper,
+                 lower);
+  return p_ret;
+});
+
 EXPORT(get_total_site_field, {
   using namespace qlat;
   PyObject* p_field = NULL;
@@ -312,7 +403,7 @@ EXPORT(set_geo_field, {
 
 EXPORT(get_mview_field, {
   using namespace qlat;
-  PyObject* p_field= NULL;
+  PyObject* p_field = NULL;
   if (!PyArg_ParseTuple(args, "O", &p_field)) {
     return NULL;
   }
@@ -331,6 +422,18 @@ EXPORT(qnorm_field, {
   PyField pf = py_convert_field(p_field);
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, qnorm_field_ctype, pf.ctype, pf);
+  return p_ret;
+});
+
+EXPORT(crc32_field, {
+  using namespace qlat;
+  PyObject* p_field = NULL;
+  if (!PyArg_ParseTuple(args, "O", &p_field)) {
+    return NULL;
+  }
+  PyField pf = py_convert_field(p_field);
+  PyObject* p_ret = NULL;
+  FIELD_DISPATCH(p_ret, crc32_field_ctype, pf.ctype, pf);
   return p_ret;
 });
 
@@ -361,5 +464,86 @@ EXPORT(merge_fields_field, {
   py_convert(pf_vec, p_field_vec);
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, merge_fields_field_ctype, pf.ctype, pf, pf_vec);
+  return p_ret;
+});
+
+EXPORT(save_field, {
+  using namespace qlat;
+  PyObject* p_field = NULL;
+  PyObject* p_path = NULL;
+  PyObject* p_new_size_node = NULL;
+  if (!PyArg_ParseTuple(args, "OO|O", &p_field, &p_path, &p_new_size_node)) {
+    return NULL;
+  }
+  PyField pf = py_convert_field(p_field);
+  std::string path;
+  py_convert(path, p_path);
+  Coordinate new_size_node;
+  if (NULL != p_new_size_node) {
+    py_convert(new_size_node, p_new_size_node);
+  }
+  PyObject* p_ret = NULL;
+  FIELD_DISPATCH(p_ret, save_field_ctype, pf.ctype, pf, path, new_size_node);
+  return p_ret;
+});
+
+EXPORT(load_field, {
+  using namespace qlat;
+  PyObject* p_field = NULL;
+  PyObject* p_path = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_field, &p_path)) {
+    return NULL;
+  }
+  PyField pf = py_convert_field(p_field);
+  std::string path;
+  py_convert(path, p_path);
+  PyObject* p_ret = NULL;
+  FIELD_DISPATCH(p_ret, load_field_ctype, pf.ctype, pf, path);
+  return p_ret;
+});
+
+EXPORT(convert_float_from_double_field, {
+  using namespace qlat;
+  PyObject* p_field_new = NULL;
+  PyObject* p_field = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_field_new, &p_field)) {
+    return NULL;
+  }
+  PyField pf_new = py_convert_field(p_field_new);
+  PyField pf = py_convert_field(p_field);
+  PyObject* p_ret = NULL;
+  FIELD_DISPATCH(p_ret, convert_float_from_double_field_ctype, pf.ctype, pf_new,
+                 pf);
+  return p_ret;
+});
+
+EXPORT(convert_double_from_float_field, {
+  using namespace qlat;
+  PyObject* p_field_new = NULL;
+  PyObject* p_field = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_field_new, &p_field)) {
+    return NULL;
+  }
+  PyField pf_new = py_convert_field(p_field_new);
+  PyField pf = py_convert_field(p_field);
+  PyObject* p_ret = NULL;
+  FIELD_DISPATCH(p_ret, convert_double_from_float_field_ctype, pf_new.ctype,
+                 pf_new, pf);
+  return p_ret;
+});
+
+EXPORT(to_from_endianness_field, {
+  using namespace qlat;
+  PyObject* p_field = NULL;
+  PyObject* p_endianness_tag = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_field, &p_endianness_tag)) {
+    return NULL;
+  }
+  PyField pf = py_convert_field(p_field);
+  std::string endianness_tag;
+  py_convert(endianness_tag, p_endianness_tag);
+  PyObject* p_ret = NULL;
+  FIELD_DISPATCH(p_ret, to_from_endianness_field_ctype, pf.ctype, pf,
+                 endianness_tag);
   return p_ret;
 });

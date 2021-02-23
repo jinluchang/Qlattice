@@ -168,11 +168,11 @@ inline void set_field_selection(FieldSelection& fsel,
   update_field_selection(fsel, n_per_tslice);
 }
 
-inline void write_field_selection(const FieldSelection& fsel,
+inline long write_field_selection(const FieldSelection& fsel,
                                   const std::string& path)
 {
   TIMER_VERBOSE("write_field_selection");
-  write_field_64(fsel.f_rank, path);
+  return write_field_64(fsel.f_rank, path);
 }
 
 inline long read_field_selection(FieldSelection& fsel, const std::string& path,

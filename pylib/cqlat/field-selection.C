@@ -109,8 +109,8 @@ EXPORT(load_fsel, {
   FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
   std::string path;
   py_convert(path, p_path);
-  read_field_selection(fsel, path, n_per_tslice);
-  Py_RETURN_NONE;
+  const long ret = read_field_selection(fsel, path, n_per_tslice);
+  return py_convert(ret);
 });
 
 EXPORT(save_fsel, {
@@ -123,8 +123,8 @@ EXPORT(save_fsel, {
   const FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
   std::string path;
   py_convert(path, p_path);
-  write_field_selection(fsel, path);
-  Py_RETURN_NONE;
+  const long ret = write_field_selection(fsel, path);
+  return py_convert(ret);
 });
 
 EXPORT(add_psel_fsel, {
@@ -169,6 +169,16 @@ EXPORT(set_geo_fsel, {
   const FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
   geo = fsel.f_rank.geo();
   Py_RETURN_NONE;
+});
+
+EXPORT(get_total_site_fsel, {
+  using namespace qlat;
+  PyObject* p_fsel = NULL;
+  if (!PyArg_ParseTuple(args, "O", &p_fsel)) {
+    return NULL;
+  }
+  const FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
+  return py_convert(fsel.f_rank.geo().total_site());
 });
 
 EXPORT(get_n_elems_fsel, {

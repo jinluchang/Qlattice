@@ -175,6 +175,10 @@ qacc void set_unit(int64_t& x, const long& coef = 1) { x = coef; }
 
 qacc void set_unit(int64_t& x, const Complex& coef) { x = coef.real(); }
 
+qacc void set_unit(float& x, const double& coef = 1.0) { x = coef; }
+
+qacc void set_unit(float& x, const Complex& coef) { x = coef.real(); }
+
 qacc void set_unit(double& x, const double& coef = 1.0) { x = coef; }
 
 qacc void set_unit(double& x, const Complex& coef) { x = coef.real(); }

@@ -61,15 +61,18 @@ class FieldSelection:
         c.update_fsel(self, n_per_tslice)
 
     def save(self, path):
-        c.save_fsel(self, path)
+        return c.save_fsel(self, path)
 
     def load(self, path, n_per_tslice):
-        c.load_fsel(self, path, n_per_tslice)
+        return c.load_fsel(self, path, n_per_tslice)
 
     def geo(self):
         geo = Geometry((0, 0, 0, 0))
         c.set_geo_fsel(geo, self)
         return geo
+
+    def total_site(self):
+        return c.get_total_site_fsel(self)
 
     def n_elems(self):
         return c.get_n_elems_fsel(self)

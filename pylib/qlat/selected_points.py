@@ -1,5 +1,10 @@
 import cqlat as c
 
+from qlat.timer import *
+from qlat.geo import *
+from qlat.field_selection import *
+from qlat.field import *
+
 class SelectedPoints:
 
     def __init__(self, ctype, n_points = -1, multiplicity = 1):
@@ -10,6 +15,7 @@ class SelectedPoints:
         else:
             assert isinstance(multiplicity, int)
             self.cdata = c.mk_spfield(ctype, n_points, multiplicity)
+        self.psel = None
 
     def __del__(self):
         c.free_spfield(self)
@@ -45,3 +51,23 @@ class SelectedPoints:
 
     def qnorm(self):
         return c.qnorm_spfield(self)
+
+@timer
+def set_selected_points(sp, v1, v2, v3 = None):
+    if isinstance(v1, Field):
+        f = v1
+        psel = v2
+        assert isinstance(psel, PointSelection)
+        assert v3 == None
+        c.set_spfield_field(sp, f, psel)
+        sp.psel = psel
+    elif isinstance(v1, SelectedField):
+        sf = v1
+        psel = v2
+        fsel = v3
+        assert isinstance(psel, PointSelection)
+        assert isinstance(fsel, FieldSelection)
+        c.set_spfield_sfield(sp, sf, psel, fsel)
+        sp.psel = psel
+    else:
+        raise Exception("set_selected_points")
