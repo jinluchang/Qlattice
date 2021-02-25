@@ -89,28 +89,28 @@ struct fft_complex_field_plan {
     dir = dir_;
     is_forward = is_forward_;
     const int sizec = geo.total_site()[dir];
-    const int nc = geo.local_volume() / geo.node_site[dir] * mc;
-    const int chunk = ((nc / mc - 1) / geo.geon.size_node[dir] + 1) * mc;
-    const int nc_start = std::min(nc, geo.geon.coor_node[dir] * chunk);
-    const int nc_stop = std::min(nc, nc_start + chunk);
-    const int nc_size = nc_stop - nc_start;
+    const long nc = geo.local_volume() / geo.node_site[dir] * mc;
+    const long chunk = ((nc / mc - 1) / geo.geon.size_node[dir] + 1) * mc;
+    const long nc_start = std::min(nc, geo.geon.coor_node[dir] * chunk);
+    const long nc_stop = std::min(nc, nc_start + chunk);
+    const long nc_size = nc_stop - nc_start;
     // fftw_init_threads();
     // fftw_plan_with_nthreads(omp_get_max_threads());
-    displayln_info(ssprintf("fft_complex_field_plan::init: malloc %d",
+    displayln_info(ssprintf("fft_complex_field_plan::init: malloc %ld",
                             nc_size * sizec * sizeof(Complex)));
     Complex* fftdatac =
         (Complex*)fftw_malloc(nc_size * sizec * sizeof(Complex));
     const int rank = 1;
     const int n[1] = {sizec};
-    const int howmany = nc_size;
-    const int dist = 1;
-    const int stride = nc_size;
+    const long howmany = nc_size;
+    const long dist = 1;
+    const long stride = nc_size;
     fftplan = fftw_plan_many_dft(
         rank, n, howmany, (fftw_complex*)fftdatac, n, stride, dist,
         (fftw_complex*)fftdatac, n, stride, dist,
         is_forward ? FFTW_FORWARD : FFTW_BACKWARD, FFTW_ESTIMATE);
     fftw_free(fftdatac);
-    displayln_info(ssprintf("fft_complex_field_plan::init: free %d",
+    displayln_info(ssprintf("fft_complex_field_plan::init: free %ld",
                             nc_size * sizec * sizeof(Complex)));
     sp = make_shuffle_plan_fft(geo.total_site(), dir);
   }
@@ -128,11 +128,11 @@ void fft_complex_field_dir(Field<M>& field, const int dir,
       fft_complex_field_plan::get_plan(geo, mc, dir, is_forward);
   fftw_plan& fftplan = plan.fftplan;
   const int sizec = geo.total_site()[dir];
-  const int nc = geo.local_volume() / geo.node_site[dir] * mc;
-  const int chunk = ((nc / mc - 1) / geo.geon.size_node[dir] + 1) * mc;
-  const int nc_start = std::min(nc, geo.geon.coor_node[dir] * chunk);
-  const int nc_stop = std::min(nc, nc_start + chunk);
-  const int nc_size = nc_stop - nc_start;
+  const long nc = geo.local_volume() / geo.node_site[dir] * mc;
+  const long chunk = ((nc / mc - 1) / geo.geon.size_node[dir] + 1) * mc;
+  const long nc_start = std::min(nc, geo.geon.coor_node[dir] * chunk);
+  const long nc_stop = std::min(nc, nc_start + chunk);
+  const long nc_size = nc_stop - nc_start;
   qassert(nc_size >= 0);
   Complex* fftdatac = (Complex*)fftw_malloc(nc_size * sizec * sizeof(Complex));
   const ShufflePlan& sp = plan.sp;
