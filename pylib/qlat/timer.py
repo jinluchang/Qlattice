@@ -69,4 +69,3 @@ def displayln(*args):
 def displayln_info(*args):
     if get_id_node() == 0:
         displayln(*args)
-

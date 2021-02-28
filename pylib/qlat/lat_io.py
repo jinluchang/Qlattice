@@ -13,6 +13,11 @@ class LatData:
         c.set_lat_data(self, v1)
         return self
 
+    def copy(self):
+        x = LatData()
+        x @= self
+        return x
+
     def load(self, path):
         c.load_lat_data(self, path)
 

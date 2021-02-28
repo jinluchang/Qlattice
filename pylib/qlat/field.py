@@ -1,7 +1,7 @@
 import cqlat as c
 
-from qlat.geo import *
-from qlat.rng import *
+from qlat.geometry import *
+from qlat.rng_state import *
 
 class Field:
 
@@ -81,14 +81,14 @@ class Field:
         if isinstance(sel, PointSelection):
             from qlat.selected_points import SelectedPoints, set_selected_points
             psel = sel
-            sp = SelectedPoints(self.ctype)
-            set_selected_points(sp, self, psel)
+            sp = SelectedPoints(self.ctype, psel)
+            set_selected_points(sp, self)
             return sp
         elif isinstance(sel, FieldSelection):
             from qlat.selected_field import SelectedField, set_selected_field
             fsel = sel
-            sf = SelectedField(self.ctype)
-            set_selected_field(sf, self, fsel)
+            sf = SelectedField(self.ctype, fsel)
+            set_selected_field(sf, self)
             return sf
         else:
             raise Exception("Field.sparse")

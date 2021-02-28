@@ -1,7 +1,8 @@
 import cqlat as c
 
 from qlat.field import *
-from qlat.rng import *
+from qlat.rng_state import *
+from qlat.timer import *
 
 class GaugeField(Field):
 
@@ -26,9 +27,15 @@ class GaugeField(Field):
     def link_trace(self):
         return gf_avg_link_trace(self)
 
+    def show_info(self):
+        gf_show_info(self)
+
+@timer_verbose
 def gf_show_info(gf):
     assert isinstance(gf, GaugeField)
-    c.gf_show_info(gf)
+    plaq = gf.plaq()
+    link_trace = gf.link_trace()
+    displayln_info(f"gf_show_info: plaq = {plaq:.16F} ; link_trace = {link_trace:.16F}.")
 
 def gf_avg_plaq(gf):
     assert isinstance(gf, GaugeField)

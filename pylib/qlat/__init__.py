@@ -2,7 +2,7 @@ import cqlat as c
 
 from cqlat import begin, end
 
-from qlat.rng import *
+from qlat.rng_state import *
 
 from qlat.lat_io import *
 
@@ -10,7 +10,7 @@ from qlat.mpi import *
 
 from qlat.timer import *
 
-from qlat.geo import *
+from qlat.geometry import *
 
 from qlat.field import *
 
@@ -20,7 +20,7 @@ from qlat.utils_io import *
 
 from qlat.qcd import *
 
-from qlat.prop import *
+from qlat.propagator import *
 
 from qlat.gauge_action import *
 

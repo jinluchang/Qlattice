@@ -16,6 +16,11 @@ class Geometry:
         c.set_geo(self, v1)
         return self
 
+    def copy(self):
+        x = Geometry((0, 0, 0, 0))
+        x @= self
+        return x
+
     def total_site(self):
         return c.get_total_site_geo(self)
 

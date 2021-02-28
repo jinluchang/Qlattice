@@ -420,12 +420,13 @@ long read_selected_field(SelectedField<M>& sf, const std::string& path,
   qassert(new_size_node[2] == 1);
   std::vector<FieldSelection> fsels;
   const ShufflePlan sp = make_shuffle_plan(fsels, fsel, new_size_node);
-  qassert(fsels.size() == sp.geos_recv.size());
+  if (not is_no_shuffle(sp)) {
+    qassert(fsels.size() == sp.geos_recv.size());
+  }
   std::vector<SelectedField<M> > sfs;
   sfs.resize(fsels.size());
   for (size_t i = 0; i < sfs.size(); ++i) {
-    const Geometry geo_recv = geo_remult(sp.geos_recv[i]);
-    sfs[i].init(geo_recv, sp.n_elems_recv[i], geo.multiplicity);
+    sfs[i].init(fsels[i], geo.multiplicity);
   }
   long check_n_per_tslice = 0;
   for (int i = 0; i < (int)sfs.size(); ++i) {
@@ -470,7 +471,7 @@ long read_selected_field(SelectedField<M>& sf, const std::string& path,
         ssprintf(": crc of data = %08X ; crc of header = %08X", crc, crc_info));
     qassert(false);
   }
-  sf.init(sp.geo_send, sp.n_elems_send, geo.multiplicity);
+  sf.init(fsel, geo.multiplicity);
   shuffle_field_back(sf, sfs, sp);
   const long total_bytes =
       fsel.n_per_tslice * total_site[3] * geo.multiplicity * sizeof(M);

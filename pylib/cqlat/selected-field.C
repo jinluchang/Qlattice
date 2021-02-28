@@ -4,27 +4,18 @@ namespace qlat
 {  //
 
 template <class M>
-PyObject* mk_sfield_ctype(PyObject* p_geo, const long n_elems, const int multiplicity)
+PyObject* mk_sfield_ctype()
 {
   SelectedField<M>* pf = new SelectedField<M>();
-  SelectedField<M>& f = *pf;
-  if (p_geo != NULL) {
-    const Geometry& geo = py_convert_type<Geometry>(p_geo);
-    pqassert(n_elems > 0);
-    pqassert(multiplicity > 0);
-    f.init(geo, n_elems, multiplicity);
-  }
   return py_convert((void*)pf);
 }
 
 template <class M>
-PyObject* mk_sfield_fsel_ctype(PyObject* p_fsel, const int multiplicity)
+PyObject* mk_sfield_fsel_ctype(const FieldSelection& fsel, const int multiplicity)
 {
   SelectedField<M>* pf = new SelectedField<M>();
   SelectedField<M>& f = *pf;
-  pqassert(p_fsel != NULL);
   pqassert(multiplicity > 0);
-  const FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
   f.init(fsel, multiplicity);
   return py_convert((void*)pf);
 }
@@ -149,21 +140,75 @@ PyObject* qnorm_sfield_ctype(PyField& pf)
   return py_convert(ret);
 }
 
+template <class M>
+PyObject* save_sfield_ctype(PyField& pf, const std::string& path,
+                            const FieldSelection& fsel)
+{
+  const SelectedField<M>& f = *(SelectedField<M>*)pf.cdata;
+  const long ret = write_selected_field(f, path, fsel);
+  return py_convert(ret);
+}
+
+template <class M>
+PyObject* load_sfield_ctype(PyField& pf, const std::string& path,
+                            const FieldSelection& fsel)
+{
+  SelectedField<M>& f = *(SelectedField<M>*)pf.cdata;
+  const long ret = read_selected_field(f, path, fsel);
+  return py_convert(ret);
+}
+
+template <class M>
+PyObject* convert_float_from_double_sfield_ctype(PyField& pf_new, PyField& pf)
+{
+  pqassert(pf_new.ctype == "float");
+  SelectedField<float>& f_new = *(SelectedField<float>*)pf_new.cdata;
+  const SelectedField<M>& f = *(SelectedField<M>*)pf.cdata;
+  convert_field_float_from_double(f_new, f);
+  Py_RETURN_NONE;
+}
+
+template <class M>
+PyObject* convert_double_from_float_sfield_ctype(PyField& pf_new, PyField& pf)
+{
+  pqassert(pf.ctype == "float");
+  const SelectedField<float>& f = *(SelectedField<float>*)pf.cdata;
+  SelectedField<M>& f_new = *(SelectedField<M>*)pf_new.cdata;
+  convert_field_double_from_float(f_new, f);
+  Py_RETURN_NONE;
+}
+
+template <class M>
+PyObject* to_from_endianness_sfield_ctype(PyField& pf,
+                                          const std::string& endianness_tag)
+{
+  SelectedField<M>& f = *(SelectedField<M>*)pf.cdata;
+  if ("big_32" == endianness_tag) {
+    to_from_big_endian_32(get_data(f));
+  } else if ("big_64" == endianness_tag) {
+    to_from_big_endian_64(get_data(f));
+  } else if ("little_32" == endianness_tag) {
+    to_from_little_endian_32(get_data(f));
+  } else if ("little_64" == endianness_tag) {
+    to_from_little_endian_64(get_data(f));
+  } else {
+    pqassert(false);
+  }
+  Py_RETURN_NONE;
+}
+
 }  // namespace qlat
 
 EXPORT(mk_sfield, {
   using namespace qlat;
   PyObject* p_ctype = NULL;
-  PyObject* p_geo = NULL;
-  long n_elems = 0;
-  int multiplicity = 0;
-  if (!PyArg_ParseTuple(args, "O|Oli", &p_ctype, &p_geo, &n_elems, &multiplicity)) {
+  if (!PyArg_ParseTuple(args, "O", &p_ctype)) {
     return NULL;
   }
   std::string ctype;
   py_convert(ctype, p_ctype);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, mk_sfield_ctype, ctype, p_geo, n_elems, multiplicity);
+  FIELD_DISPATCH(p_ret, mk_sfield_ctype, ctype);
   return p_ret;
 });
 
@@ -177,8 +222,9 @@ EXPORT(mk_sfield_fsel, {
   }
   std::string ctype;
   py_convert(ctype, p_ctype);
+  const FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, mk_sfield_fsel_ctype, ctype, p_fsel, multiplicity);
+  FIELD_DISPATCH(p_ret, mk_sfield_fsel_ctype, ctype, fsel, multiplicity);
   return p_ret;
 });
 
@@ -213,13 +259,13 @@ EXPORT(set_sfield_field, {
   using namespace qlat;
   PyObject* p_sfield = NULL;
   PyObject* p_field = NULL;
-  PyObject* p_fsel = NULL;
-  if (!PyArg_ParseTuple(args, "OOO", &p_sfield, &p_field, &p_fsel)) {
+  if (!PyArg_ParseTuple(args, "OO", &p_sfield, &p_field)) {
     return NULL;
   }
   PyField psf = py_convert_field(p_sfield);
-  PyField pf = py_convert_field(p_field);
+  PyObject* p_fsel = PyObject_GetAttrString(p_sfield, "fsel");
   const FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
+  PyField pf = py_convert_field(p_field);
   pqassert(psf.ctype == pf.ctype);
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, set_sfield_field_ctype, pf.ctype, psf, pf, fsel);
@@ -230,14 +276,14 @@ EXPORT(set_sfield_sfield, {
   using namespace qlat;
   PyObject* p_sfield = NULL;
   PyObject* p_sfield0 = NULL;
-  PyObject* p_fsel = NULL;
-  PyObject* p_fsel0 = NULL;
-  if (!PyArg_ParseTuple(args, "OOOO", &p_sfield, &p_sfield0, &p_fsel, &p_fsel0)) {
+  if (!PyArg_ParseTuple(args, "OO", &p_sfield, &p_sfield0)) {
     return NULL;
   }
   PyField psf = py_convert_field(p_sfield);
-  PyField psf0 = py_convert_field(p_sfield0);
+  PyObject* p_fsel = PyObject_GetAttrString(p_sfield, "fsel");
   const FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
+  PyField psf0 = py_convert_field(p_sfield0);
+  PyObject* p_fsel0 = PyObject_GetAttrString(p_sfield0, "fsel");
   const FieldSelection& fsel0 = py_convert_type<FieldSelection>(p_fsel0);
   pqassert(psf.ctype == psf0.ctype);
   PyObject* p_ret = NULL;
@@ -359,5 +405,85 @@ EXPORT(qnorm_sfield, {
   PyField pf = py_convert_field(p_field);
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, qnorm_sfield_ctype, pf.ctype, pf);
+  return p_ret;
+});
+
+EXPORT(save_sfield, {
+  using namespace qlat;
+  PyObject* p_field = NULL;
+  PyObject* p_path = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_field, &p_path)) {
+    return NULL;
+  }
+  PyField pf = py_convert_field(p_field);
+  PyObject* p_fsel = PyObject_GetAttrString(p_field, "fsel");
+  const FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
+  std::string path;
+  py_convert(path, p_path);
+  PyObject* p_ret = NULL;
+  FIELD_DISPATCH(p_ret, save_sfield_ctype, pf.ctype, pf, path, fsel);
+  return p_ret;
+});
+
+EXPORT(load_sfield, {
+  using namespace qlat;
+  PyObject* p_field = NULL;
+  PyObject* p_path = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_field, &p_path)) {
+    return NULL;
+  }
+  PyField pf = py_convert_field(p_field);
+  PyObject* p_fsel = PyObject_GetAttrString(p_field, "fsel");
+  const FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
+  std::string path;
+  py_convert(path, p_path);
+  PyObject* p_ret = NULL;
+  FIELD_DISPATCH(p_ret, load_sfield_ctype, pf.ctype, pf, path, fsel);
+  return p_ret;
+});
+
+EXPORT(convert_float_from_double_sfield, {
+  using namespace qlat;
+  PyObject* p_field_new = NULL;
+  PyObject* p_field = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_field_new, &p_field)) {
+    return NULL;
+  }
+  PyField pf_new = py_convert_field(p_field_new);
+  PyField pf = py_convert_field(p_field);
+  PyObject* p_ret = NULL;
+  FIELD_DISPATCH(p_ret, convert_float_from_double_sfield_ctype, pf.ctype,
+                 pf_new, pf);
+  return p_ret;
+});
+
+EXPORT(convert_double_from_float_sfield, {
+  using namespace qlat;
+  PyObject* p_field_new = NULL;
+  PyObject* p_field = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_field_new, &p_field)) {
+    return NULL;
+  }
+  PyField pf_new = py_convert_field(p_field_new);
+  PyField pf = py_convert_field(p_field);
+  PyObject* p_ret = NULL;
+  FIELD_DISPATCH(p_ret, convert_double_from_float_sfield_ctype, pf_new.ctype,
+                 pf_new, pf);
+  return p_ret;
+});
+
+EXPORT(to_from_endianness_sfield, {
+  using namespace qlat;
+  PyObject* p_field = NULL;
+  PyObject* p_endianness_tag = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_field, &p_endianness_tag)) {
+    return NULL;
+  }
+  PyField pf = py_convert_field(p_field);
+  std::string endianness_tag;
+  py_convert(endianness_tag, p_endianness_tag);
+  PyObject* p_ret = NULL;
+  FIELD_DISPATCH(p_ret, to_from_endianness_sfield_ctype, pf.ctype, pf,
+                 endianness_tag);
   return p_ret;
 });

@@ -146,9 +146,9 @@ struct SelectedPoints {
       }
     }
   }
-  void init(const Geometry& geo_, const PointSelection& psel)
+  void init(const PointSelection& psel, const int multiplicity)
   {
-    init(psel.size(), geo_.multiplicity);
+    init(psel.size(), multiplicity);
   }
   //
   SelectedPoints() { init(); }
@@ -307,7 +307,7 @@ void set_selected_points(SelectedPoints<M>& sp, const Field<M>& f,
   const Geometry& geo = f.geo();
   qassert(geo.is_only_local());
   const long n_points = psel.size();
-  sp.init(geo, psel);
+  sp.init(psel, geo.multiplicity);
   set_zero(sp.points);
 #pragma omp parallel for
   for (long idx = 0; idx < n_points; ++idx) {

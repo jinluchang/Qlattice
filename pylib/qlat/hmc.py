@@ -2,7 +2,7 @@ import cqlat as c
 
 from qlat.field import *
 from qlat.qcd import *
-from qlat.rng import *
+from qlat.rng_state import *
 from qlat.gauge_action import *
 
 class GaugeMomentum(Field):

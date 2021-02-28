@@ -21,6 +21,11 @@ class RngState:
         c.set_rng(self, v1)
         return self
 
+    def copy(self):
+        x = RngState()
+        x @= self
+        return x
+
     def split(self, seed):
         rng = RngState()
         rng.cdata = c.mk_rng(self, str(seed))

@@ -1,8 +1,8 @@
 import cqlat as c
 
-from qlat.rng import *
+from qlat.rng_state import *
 
-from qlat.geo import *
+from qlat.geometry import *
 
 class PointSelection:
 

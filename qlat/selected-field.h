@@ -460,7 +460,7 @@ void set_selected_points(SelectedPoints<M>& sp, const SelectedField<M>& sf,
   const Geometry& geo = sf.geo();
   qassert(is_consistent(sf, fsel));
   const long n_points = psel.size();
-  sp.init(geo, psel);
+  sp.init(psel, geo.multiplicity);
   set_zero(sp.points);
 #pragma omp parallel for
   for (long idx = 0; idx < n_points; ++idx) {

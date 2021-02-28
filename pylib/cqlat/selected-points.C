@@ -4,13 +4,18 @@ namespace qlat
 {  //
 
 template <class M>
-PyObject* mk_spfield_ctype(const long n_points, const int multiplicity)
+PyObject* mk_spfield_ctype()
 {
   SelectedPoints<M>* pspfield = new SelectedPoints<M>();
-  if (n_points >= 0) {
-    SelectedPoints<M>& spfield = *pspfield;
-    spfield.init(n_points, multiplicity);
-  }
+  return py_convert((void*)pspfield);
+}
+
+template <class M>
+PyObject* mk_spfield_psel_ctype(const PointSelection& psel, const int multiplicity)
+{
+  SelectedPoints<M>* pspfield = new SelectedPoints<M>();
+  SelectedPoints<M>& spfield = *pspfield;
+  spfield.init(psel, multiplicity);
   return py_convert((void*)pspfield);
 }
 
@@ -118,20 +123,50 @@ PyObject* qnorm_spfield_ctype(PyField& pf)
   return py_convert(ret);
 }
 
+template <class M>
+PyObject* save_complex_spfield_ctype(PyField& pf, const std::string& path)
+{
+  const SelectedPoints<M>& f = *(SelectedPoints<M>*)pf.cdata;
+  save_selected_points_complex(f, path);
+  Py_RETURN_NONE;
+}
+
+template <class M>
+PyObject* load_complex_spfield_ctype(PyField& pf, const std::string& path)
+{
+  SelectedPoints<M>& f = *(SelectedPoints<M>*)pf.cdata;
+  load_selected_points_complex(f, path);
+  Py_RETURN_NONE;
+}
+
 }  // namespace qlat
 
 EXPORT(mk_spfield, {
   using namespace qlat;
   PyObject* p_ctype = NULL;
-  long n_points = -1;
-  int multiplicity = 0;
-  if (!PyArg_ParseTuple(args, "O|li", &p_ctype, &n_points, &multiplicity)) {
+  if (!PyArg_ParseTuple(args, "O", &p_ctype)) {
     return NULL;
   }
   std::string ctype;
   py_convert(ctype, p_ctype);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, mk_spfield_ctype, ctype, n_points, multiplicity);
+  FIELD_DISPATCH(p_ret, mk_spfield_ctype, ctype);
+  return p_ret;
+});
+
+EXPORT(mk_spfield_psel, {
+  using namespace qlat;
+  PyObject* p_ctype = NULL;
+  PyObject* p_psel = NULL;
+  int multiplicity = 0;
+  if (!PyArg_ParseTuple(args, "OOi", &p_ctype, &p_psel, &multiplicity)) {
+    return NULL;
+  }
+  std::string ctype;
+  py_convert(ctype, p_ctype);
+  const PointSelection& psel = py_convert_type<PointSelection>(p_psel);
+  PyObject* p_ret = NULL;
+  FIELD_DISPATCH(p_ret, mk_spfield_psel_ctype, ctype, psel, multiplicity);
   return p_ret;
 });
 
@@ -166,13 +201,13 @@ EXPORT(set_spfield_field, {
   using namespace qlat;
   PyObject* p_spfield = NULL;
   PyObject* p_field = NULL;
-  PyObject* p_psel = NULL;
-  if (!PyArg_ParseTuple(args, "OOO", &p_spfield, &p_field, &p_psel)) {
+  if (!PyArg_ParseTuple(args, "OO", &p_spfield, &p_field)) {
     return NULL;
   }
   PyField pspf = py_convert_field(p_spfield);
-  PyField pf = py_convert_field(p_field);
+  PyObject* p_psel = PyObject_GetAttrString(p_spfield, "psel");
   const PointSelection& psel = py_convert_type<PointSelection>(p_psel);
+  PyField pf = py_convert_field(p_field);
   pqassert(pspf.ctype == pf.ctype);
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, set_spfield_field_ctype, pf.ctype, pspf, pf, psel);
@@ -183,14 +218,14 @@ EXPORT(set_spfield_sfield, {
   using namespace qlat;
   PyObject* p_spfield = NULL;
   PyObject* p_sfield = NULL;
-  PyObject* p_psel = NULL;
-  PyObject* p_fsel = NULL;
-  if (!PyArg_ParseTuple(args, "OOOO", &p_spfield, &p_sfield, &p_psel, &p_fsel)) {
+  if (!PyArg_ParseTuple(args, "OO", &p_spfield, &p_sfield)) {
     return NULL;
   }
   PyField pspf = py_convert_field(p_spfield);
-  PyField psf = py_convert_field(p_sfield);
+  PyObject* p_psel = PyObject_GetAttrString(p_spfield, "psel");
   const PointSelection& psel = py_convert_type<PointSelection>(p_psel);
+  PyField psf = py_convert_field(p_sfield);
+  PyObject* p_fsel = PyObject_GetAttrString(p_sfield, "fsel");
   const FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
   pqassert(pspf.ctype == psf.ctype);
   PyObject* p_ret = NULL;
@@ -286,5 +321,35 @@ EXPORT(qnorm_spfield, {
   PyField pf = py_convert_field(p_field);
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, qnorm_spfield_ctype, pf.ctype, pf);
+  return p_ret;
+});
+
+EXPORT(save_complex_spfield, {
+  using namespace qlat;
+  PyObject* p_field = NULL;
+  PyObject* p_path = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_field, &p_path)) {
+    return NULL;
+  }
+  PyField pf = py_convert_field(p_field);
+  std::string path;
+  py_convert(path, p_path);
+  PyObject* p_ret = NULL;
+  FIELD_DISPATCH(p_ret, save_complex_spfield_ctype, pf.ctype, pf, path);
+  return p_ret;
+});
+
+EXPORT(load_complex_spfield, {
+  using namespace qlat;
+  PyObject* p_field = NULL;
+  PyObject* p_path = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_field, &p_path)) {
+    return NULL;
+  }
+  PyField pf = py_convert_field(p_field);
+  std::string path;
+  py_convert(path, p_path);
+  PyObject* p_ret = NULL;
+  FIELD_DISPATCH(p_ret, load_complex_spfield_ctype, pf.ctype, pf, path);
   return p_ret;
 });
