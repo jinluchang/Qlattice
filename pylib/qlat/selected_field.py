@@ -7,7 +7,7 @@ from qlat.field import *
 
 class SelectedField:
 
-    def __init__(self, ctype, fsel = None, multiplicity = None):
+    def __init__(self, ctype, fsel, multiplicity = None):
         assert isinstance(ctype, str)
         self.ctype = ctype
         self.fsel = fsel

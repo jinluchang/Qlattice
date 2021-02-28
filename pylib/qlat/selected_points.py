@@ -7,7 +7,7 @@ from qlat.field import *
 
 class SelectedPoints:
 
-    def __init__(self, ctype, psel = None, multiplicity = None):
+    def __init__(self, ctype, psel, multiplicity = None):
         self.ctype = ctype
         self.psel = psel
         if psel == None or multiplicity == None:
