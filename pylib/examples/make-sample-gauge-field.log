@@ -17,13 +17,8 @@ set q_field_init=fast. (implicitly)
 Geometry((4, 4, 4, 8), 4, expansion_left=(0, 0, 0, 0), expansion_right=(0, 0, 0, 0), eo=0)
 get_mem_cache_max_size_default: get_mem_cache_max_size() = 512 MB.
 CommPlanCache: to add 1 / 32.
-plaq :  1.00000000000000000E+00
-CommPlanCache: to add 2 / 32.
-spatial plaq :  1.00000000000000000E+00
-trace:  1.00000000000000000E+00
-plaq :  6.18120543985538173E-01
-spatial plaq :  6.17992674870353698E-01
-trace:  8.85249886411779929E-01
+gf_show_info: plaq = 1.0000000000000000 ; link_trace = 1.0000000000000000.
+gf_show_info: plaq = 0.6181205439855382 ; link_trace = 0.8852498864117799.
 gf.mview().nbytes = 36864
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 0.
