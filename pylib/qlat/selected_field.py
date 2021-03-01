@@ -129,7 +129,8 @@ class SelectedField:
 
     def load_64(self, *path):
         ret = self.load(*path)
-        self.to_from_endianness("big_64")
+        if ret > 0:
+            self.to_from_endianness("big_64")
         return ret
 
     def load_double(self, *path):
@@ -138,8 +139,9 @@ class SelectedField:
     def load_double_from_float(self, *path):
         ff = SelectedField("float", self.fsel)
         ret = ff.load(*path)
-        ff.to_from_endianness("big_32")
-        self.double_from_float(ff)
+        if ret > 0:
+            ff.to_from_endianness("big_32")
+            self.double_from_float(ff)
         return ret
 
     def float_from_double(self, f):
