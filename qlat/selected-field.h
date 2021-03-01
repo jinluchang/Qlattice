@@ -150,7 +150,8 @@ inline void update_field_selection(FieldSelection& fsel)
   }
 }
 
-inline void update_field_selection(FieldSelection& fsel, const long n_per_tslice_)
+inline void update_field_selection(FieldSelection& fsel,
+                                   const long n_per_tslice_)
 // only adjust parameter, do not change contents
 {
   const Geometry& geo = fsel.f_rank.geo();

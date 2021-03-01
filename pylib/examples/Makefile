@@ -5,6 +5,7 @@ run: py-examples cplat-example
 tests = make-sample-gauge-field.log \
 		hmc-pure-gauge.log \
 		field-selection.log \
+		selected-field.log \
 		gpt-qlat-mdwf.log
 
 py-examples : $(tests)
