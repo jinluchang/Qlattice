@@ -7,13 +7,9 @@ import sys, os
 q.begin()
 
 q.qremove_all_info("results")
-
 q.qmkdir_info("results")
-
 rs = q.RngState("seed")
-
-geo = q.Geometry((4, 4, 4, 8), 4)
-
+geo = q.Geometry((4, 4, 4, 8), 1)
 q.displayln_info("geo.show() =", geo.show())
 
 psel = q.PointSelection([(0,0,0,0), (0,1,2,0)])

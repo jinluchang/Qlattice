@@ -93,44 +93,64 @@ class Field:
         else:
             raise Exception("Field.sparse")
 
-    def save(self, path, new_size_node = None):
-        assert isinstance(path, str)
-        if new_size_node == None:
-            return c.save_field(self, path)
+    def save(self, path, *args):
+        # possible way to call:
+        # f.save(path)
+        # f.save(path, new_size_node)
+        # f.save(sfw, fn)
+        from qlat.fields_io import ShuffledFieldsWriter
+        if isinstance(path, str):
+            if len(args) == 0:
+                return c.save_field(self, path)
+            else:
+                [new_size_node] = args
+                return c.save_field(self, path, new_size_node)
+        elif isinstance(path, ShuffledFieldsWriter):
+            sfw = path
+            [fn] = args
+            return sfw.write(fn, self)
         else:
-            return c.save_field(self, path, new_size_node)
+            raise Exception("Field.save")
 
-    def load(self, path):
-        assert isinstance(path, str)
-        return c.load_field(self, path)
+    def load(self, path, *args):
+        # possible way to call:
+        # f.load(path)
+        # f.load(sfr, fn)
+        from qlat.fields_io import ShuffledFieldsReader
+        if isinstance(path, str):
+            return c.load_field(self, path)
+        elif isinstance(path, ShuffledFieldsReader):
+            sfr = path
+            [fn] = args
+            return sfr.read(fn, self)
+        else:
+            raise Exception("Field.load")
 
-    def save_64(self, path, new_size_node = None):
-        assert isinstance(path, str)
+    def save_64(self, *path):
         f = self.copy()
         f.to_from_endianness("big_64")
-        return f.save(path, new_size_node)
+        return f.save(*path)
 
-    def save_double(self, path, new_size_node = None):
-        return self.save_64(path, new_size_node)
+    def save_double(self, *path):
+        return self.save_64(*path)
 
-    def save_float_from_double(self, path, new_size_node = None):
+    def save_float_from_double(self, *path):
         ff = Field("float")
         ff.float_from_double(self)
         ff.to_from_endianness("big_32")
-        return ff.save(path, new_size_node)
+        return ff.save(*path)
 
-    def load_64(self, path):
-        assert isinstance(path, str)
-        ret = self.load(path)
+    def load_64(self, *path):
+        ret = self.load(*path)
         self.to_from_endianness("big_64")
         return ret
 
-    def load_double(self, path):
-        return self.load_64(path)
+    def load_double(self, *path):
+        return self.load_64(*path)
 
-    def load_double_from_float(self, path):
+    def load_double_from_float(self, *path):
         ff = Field("float")
-        ret = ff.load(path)
+        ret = ff.load(*path)
         ff.to_from_endianness("big_32")
         self.double_from_float(ff)
         return ret

@@ -8,12 +8,13 @@ from qlat.field import *
 class SelectedPoints:
 
     def __init__(self, ctype, psel, multiplicity = None):
+        assert isinstance(ctype, str)
+        assert isinstance(psel, PointSelection)
         self.ctype = ctype
         self.psel = psel
-        if psel == None or multiplicity == None:
+        if multiplicity is None:
             self.cdata = c.mk_spfield(ctype)
         else:
-            assert isinstance(psel, PointSelection)
             assert isinstance(multiplicity, int)
             self.cdata = c.mk_spfield_psel(ctype, psel, multiplicity)
 

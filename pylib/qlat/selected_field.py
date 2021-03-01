@@ -2,19 +2,19 @@ import cqlat as c
 
 from qlat.timer import *
 from qlat.geometry import *
-from qlat.field_selection import *
 from qlat.field import *
+from qlat.field_selection import *
 
 class SelectedField:
 
     def __init__(self, ctype, fsel, multiplicity = None):
         assert isinstance(ctype, str)
+        assert isinstance(fsel, FieldSelection)
         self.ctype = ctype
         self.fsel = fsel
-        if fsel == None or multiplicity == None:
+        if multiplicity is None:
             self.cdata = c.mk_sfield(ctype)
         else:
-            assert isinstance(fsel, FieldSelection)
             assert isinstance(multiplicity, int)
             self.cdata = c.mk_sfield_fsel(ctype, fsel, multiplicity)
 
@@ -82,41 +82,62 @@ class SelectedField:
         else:
             raise Exception("Field.sparse")
 
-    def save(self, path):
-        assert isinstance(path, str)
-        return c.save_sfield(self, path)
+    def save(self, path, *args):
+        # possible way to call:
+        # f.save(path)
+        # f.save(path, new_size_node)
+        # f.save(sfw, fn)
+        from qlat.fields_io import ShuffledFieldsWriter
+        if isinstance(path, str):
+            assert len(args) == 0
+            return c.save_sfield(self, path)
+        elif isinstance(path, ShuffledFieldsWriter):
+            sfw = path
+            [fn] = args
+            return sfw.write(fn, self)
+        else:
+            raise Exception("SelectedField.save")
 
-    def load(self, path):
-        assert isinstance(path, str)
-        return c.load_sfield(self, path)
+    def load(self, path, *args):
+        # possible way to call:
+        # f.load(path)
+        # f.load(sfr, fn)
+        from qlat.fields_io import ShuffledFieldsReader
+        if isinstance(path, str):
+            return c.load_sfield(self, path)
+        elif isinstance(path, ShuffledFieldsReader):
+            sfr = path
+            [fn] = args
+            return sfr.read(fn, self)
+        else:
+            raise Exception("SelectedField.load")
 
-    def save_64(self, path):
+    def save_64(self, *path):
         assert isinstance(path, str)
         f = self.copy()
         f.to_from_endianness("big_64")
-        return f.save(path)
+        return f.save(*path)
 
-    def save_double(self, path):
-        return self.save_64(path)
+    def save_double(self, *path):
+        return self.save_64(*path)
 
-    def save_float_from_double(self, path):
+    def save_float_from_double(self, *path):
         ff = SelectedField("float", self.fsel)
         ff.float_from_double(self)
         ff.to_from_endianness("big_32")
-        return ff.save(path)
+        return ff.save(*path)
 
-    def load_64(self, path):
-        assert isinstance(path, str)
-        ret = self.load(path)
+    def load_64(self, *path):
+        ret = self.load(*path)
         self.to_from_endianness("big_64")
         return ret
 
-    def load_double(self, path):
-        return self.load_64(path)
+    def load_double(self, *path):
+        return self.load_64(*path)
 
-    def load_double_from_float(self, path):
+    def load_double_from_float(self, *path):
         ff = SelectedField("float", self.fsel)
-        ret = ff.load(path)
+        ret = ff.load(*path)
         ff.to_from_endianness("big_32")
         self.double_from_float(ff)
         return ret

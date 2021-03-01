@@ -870,10 +870,11 @@ struct ShuffledFieldsReader {
   {
     init();
   }
-  ShuffledFieldsReader(const std::string& path_)
+  ShuffledFieldsReader(const std::string& path_,
+                       const Coordinate& new_size_node_ = Coordinate())
   // interface function
   {
-    init(path_);
+    init(path_, new_size_node_);
   }
   //
   void init()

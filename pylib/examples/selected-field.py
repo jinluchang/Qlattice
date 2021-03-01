@@ -6,13 +6,9 @@ import os
 q.begin()
 
 q.qremove_all_info("results")
-
 q.qmkdir_info("results")
-
 rs = q.RngState("seed")
-
 geo = q.Geometry((4, 4, 4, 8), 1)
-
 q.displayln_info("geo.show() =", geo.show())
 
 prop = q.Prop(geo)
@@ -75,5 +71,7 @@ q.displayln_info("prop.qnorm() =", prop.qnorm())
 
 if q.get_id_node() == 0:
     q.displayln(os.listdir("results"))
+
+q.timer_display()
 
 q.end()
