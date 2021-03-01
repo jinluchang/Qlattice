@@ -26,7 +26,7 @@ q.displayln_info("prop.qnorm() =", prop.qnorm())
 
 sp_prop = prop.sparse(psel)
 sp_prop.save("results/prop.lat")
-sp_prop1 = q.PselProp()
+sp_prop1 = q.PselProp(psel)
 sp_prop1.load("results/prop.lat")
 sp_prop1.load("results/prop.lat")
 sp_prop1 -= sp_prop

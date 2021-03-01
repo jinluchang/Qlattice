@@ -113,7 +113,6 @@ class SelectedField:
             raise Exception("SelectedField.load")
 
     def save_64(self, *path):
-        assert isinstance(path, str)
         f = self.copy()
         f.to_from_endianness("big_64")
         return f.save(*path)

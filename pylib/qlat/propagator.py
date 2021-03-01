@@ -14,13 +14,9 @@ class Prop(Propagator4d):
     pass
 
 class SelProp(SelectedField):
-    def __init__(self, fsel = None):
+    def __init__(self, fsel):
         SelectedField.__init__(self, "WilsonMatrix", fsel, 1)
 
 class PselProp(SelectedPoints):
-    def __init__(self, psel = None):
+    def __init__(self, psel):
         SelectedPoints.__init__(self, "WilsonMatrix", psel, 1)
-
-
-
-
