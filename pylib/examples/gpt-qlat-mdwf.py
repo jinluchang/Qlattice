@@ -6,29 +6,25 @@ import gpt as g
 
 qg.begin_with_gpt()
 
-total_site = (4, 4, 4, 8)
-geo = q.Geometry(total_site)
-
+q.qremove_all_info("results")
+q.qmkdir_info("results")
 rs = q.RngState("seed")
+geo = q.Geometry((4, 4, 4, 8), 1)
+q.displayln_info("geo.show() =", geo.show())
 
 gf = q.GaugeField(geo)
 
-q.set_g_rand_color_matrix_field(gf, rs.split("gf-init"), 0.0, 1)
+gf.set_rand(rs.split("gf-init"), 0.05, 2)
 
-
-q.displayln_info(q.gf_avg_plaq(gf))
+gf.show_info()
 
 gpt_gf = qg.gpt_from_qlat(gf)
 
-
-g.qcd.gauge.plaquette(gpt_gf)
-
+q.displayln_info("g.qcd.gauge.plaquette = {g.qcd.gauge.plaquette(gpt_gf):.17f}")
 
 gf1 = qg.qlat_from_gpt(gpt_gf)
 
-
-q.gf_avg_plaq(gf1)
-
+gf1.show_info()
 
 mobius_params = {
         "mass": 0.1,
@@ -58,5 +54,7 @@ prop = qg.qlat_from_gpt(dst_qm)
 ld = q.contract_pion_field(prop, 0)
 
 q.displayln_info(q.show(ld))
+
+q.timer_display()
 
 qg.end_with_gpt()
