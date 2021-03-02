@@ -2,6 +2,7 @@ import cqlat as c
 
 from qlat.field import *
 from qlat.field_selection import *
+from qlat.selected_field import *
 
 class ShuffledFieldsWriter:
 
@@ -25,7 +26,7 @@ class ShuffledFieldsWriter:
         elif isinstance(obj, SelectedField):
             if not (self.fsel is obj.fsel):
                 self.fsel = obj.fsel
-                self.sbs = ShuffledBitSet(fsel, self.new_size_node())
+                self.sbs = ShuffledBitSet(self.fsel, self.new_size_node())
             return c.write_sfw_sfield(self, fn, obj, self.sbs)
         else:
             raise Exception("ShuffledFieldsWriter.save")
@@ -55,7 +56,7 @@ class ShuffledFieldsReader:
         elif isinstance(obj, SelectedField):
             if not (self.fsel is obj.fsel):
                 self.fsel = obj.fsel
-                self.sbs = ShuffledBitSet(fsel, self.new_size_node())
+                self.sbs = ShuffledBitSet(self.fsel, self.new_size_node())
             return c.read_sfr_sfield(self, fn, self.sbs, obj)
         else:
             raise Exception("ShuffledFieldsReader.load")
