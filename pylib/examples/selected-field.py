@@ -46,7 +46,7 @@ sp_prop1 = q.PselProp(psel)
 sp_prop1.load("results/prop.lat")
 sp_prop1 -= sp_prop
 
-q.displayln_info(sp_prop.qnorm(), sp_prop1.qnorm())
+q.displayln_info("prop.sparse(psel)", sp_prop.qnorm(), sp_prop1.qnorm())
 
 s_prop = prop.sparse(fsel)
 s_prop.save_double("results/prop.sfield")
@@ -54,27 +54,21 @@ s_prop1 = q.SelProp(fsel)
 s_prop1.load_double("results/prop.sfield")
 s_prop1 -= s_prop
 
-q.displayln_info(s_prop.qnorm(), s_prop1.qnorm())
+q.displayln_info("prop.sparse(fsel)", s_prop.qnorm(), s_prop1.qnorm())
 
-prop = prop.sparse(fselc)
+prop1 = prop.sparse(fselc)
 
-q.displayln_info(prop.qnorm())
+q.displayln_info("prop.sparse(fselc)", prop.qnorm())
 
-sp_prop = prop.sparse(psel)
-sp_prop.save("results/prop.lat")
-sp_prop1 = q.PselProp(psel)
-sp_prop1.load("results/prop.lat")
+sp_prop1 = prop1.sparse(psel)
 sp_prop1 -= sp_prop
 
-q.displayln_info(sp_prop.qnorm(), sp_prop1.qnorm())
+q.displayln_info("prop1.sparse(psel)", sp_prop.qnorm(), sp_prop1.qnorm())
 
-s_prop = prop.sparse(fsel)
-s_prop.save_double("results/prop.sfield")
-s_prop1 = q.SelProp(fsel)
-s_prop1.load_double("results/prop.sfield")
+s_prop1 = prop1.sparse(fsel)
 s_prop1 -= s_prop
 
-q.displayln_info(s_prop.qnorm(), s_prop1.qnorm())
+q.displayln_info("prop1.sparse(fsel)", s_prop.qnorm(), s_prop1.qnorm())
 
 if q.get_id_node() == 0:
     q.displayln(os.listdir("results"))
