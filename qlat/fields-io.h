@@ -816,7 +816,7 @@ struct ShuffledFieldsWriter {
     if (is_append and does_file_exist_sync_node(path)) {
       qassert(does_file_exist_sync_node(path + "/geon-info.txt"));
       new_size_node = shuffled_fields_reader_size_node_info(path);
-      if (new_size_node_ != new_size_node) {
+      if (new_size_node_ != Coordinate() and new_size_node_ != new_size_node) {
         displayln_info(ssprintf(
             "ShuffledFieldsWriter::init(p,sn,app): WARNING: new_size_node do "
             "not match. file=%s argument=%s . Will use the new_size_node from "

@@ -10,11 +10,19 @@ class ShuffledFieldsWriter:
         assert isinstance(path, str)
         assert isinstance(is_append , bool)
         self.cdata = c.mk_sfw(path, new_size_node, is_append)
+        # cache one fsel and its corresponding sbs
         self.fsel = None
         self.sbs = None
 
-    def __del__(self, ):
-        c.free_sfw(self)
+    def close(self):
+        if not (self.cdata is None):
+            c.free_sfw(self)
+        self.cdata = None
+        self.fsel = None
+        self.sbs = None
+
+    def __del__(self):
+        self.close()
 
     def new_size_node(self):
         return c.get_new_size_node_sfw(self)
@@ -43,8 +51,15 @@ class ShuffledFieldsReader:
         self.fsel = None
         self.sbs = None
 
+    def close(self):
+        if not (self.cdata is None):
+            c.free_sfr(self)
+        self.cdata = None
+        self.fsel = None
+        self.sbs = None
+
     def __del__(self):
-        c.free_sfr(self)
+        self.close()
 
     def new_size_node(self):
         return c.get_new_size_node_sfr(self)
@@ -72,3 +87,19 @@ class ShuffledBitSet:
 
     def __del__(self):
         c.free_sbs(self)
+
+def open_fields(path, mode, new_size_node = None):
+    assert isinstance(path, str)
+    assert isinstance(mode, str)
+    if mode == "r":
+        return ShuffledFieldsReader(path, new_size_node)
+    elif mode == "w":
+        assert not (new_size_node is None)
+        return ShuffledFieldsWriter(path, new_size_node)
+    elif mode == "a":
+        if new_size_node is None:
+            return ShuffledFieldsWriter(path, (0, 0, 0, 0), True)
+        else:
+            return ShuffledFieldsWriter(path, new_size_node, True)
+    else:
+        raise Exception("open_fields")
