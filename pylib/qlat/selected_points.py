@@ -77,6 +77,7 @@ class SelectedPoints:
 
 @timer
 def set_selected_points(sp, f):
+    from qlat.selected_field import SelectedField
     assert isinstance(sp, SelectedPoints)
     if isinstance(f, Field):
         c.set_spfield_field(sp, f)

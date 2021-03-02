@@ -18,11 +18,11 @@ class LatData:
         x @= self
         return x
 
-    def load(self, path):
-        c.load_lat_data(self, path)
-
     def save(self, path):
         c.save_lat_data(self, path)
+
+    def load(self, path):
+        c.load_lat_data(self, path)
 
     def show(self):
         return c.show_lat_data(self)

@@ -4,38 +4,38 @@ namespace qlat
 {  //
 
 template <class M>
-PyObject* write_sfw_field_ctype(ShuffledFieldsWriter& sfw, const std::string& path, PyField& pf)
+PyObject* write_sfw_field_ctype(ShuffledFieldsWriter& sfw, const std::string& fn, PyField& pf)
 {
   const Field<M>& f = *(Field<M>*)pf.cdata;
-  const long ret = write(sfw, path, f);
+  const long ret = write(sfw, fn, f);
   return py_convert(ret);
 }
 
 template <class M>
-PyObject* read_sfr_field_ctype(ShuffledFieldsReader& sfr, const std::string& path, PyField& pf)
+PyObject* read_sfr_field_ctype(ShuffledFieldsReader& sfr, const std::string& fn, PyField& pf)
 {
   Field<M>& f = *(Field<M>*)pf.cdata;
-  const long ret = read(sfr, path, f);
+  const long ret = read(sfr, fn, f);
   return py_convert(ret);
 }
 
 template <class M>
 PyObject* write_sfw_sfield_ctype(ShuffledFieldsWriter& sfw,
-                                 const std::string& path, PyField& pf,
+                                 const std::string& fn, PyField& pf,
                                  const ShuffledBitSet& sbs)
 {
   const SelectedField<M>& f = *(SelectedField<M>*)pf.cdata;
-  const long ret = write(sfw, path, f, sbs);
+  const long ret = write(sfw, fn, f, sbs);
   return py_convert(ret);
 }
 
 template <class M>
 PyObject* read_sfr_sfield_ctype(ShuffledFieldsReader& sfr,
-                                const std::string& path,
+                                const std::string& fn,
                                 const ShuffledBitSet& sbs, PyField& pf)
 {
   SelectedField<M>& f = *(SelectedField<M>*)pf.cdata;
-  const long ret = read(sfr, path, sbs, f);
+  const long ret = read(sfr, fn, sbs, f);
   return py_convert(ret);
 }
 
@@ -127,72 +127,72 @@ EXPORT(free_sbs, {
 EXPORT(write_sfw_field, {
   using namespace qlat;
   PyObject* p_sfw = NULL;
-  PyObject* p_path = NULL;
+  PyObject* p_fn = NULL;
   PyObject* p_field = NULL;
-  if (!PyArg_ParseTuple(args, "OOO", &p_sfw, &p_path, &p_field)) {
+  if (!PyArg_ParseTuple(args, "OOO", &p_sfw, &p_fn, &p_field)) {
     return NULL;
   }
   ShuffledFieldsWriter& sfw = py_convert_type<ShuffledFieldsWriter>(p_sfw);
   PyField pf = py_convert_field(p_field);
-  std::string path;
-  py_convert(path, p_path);
+  std::string fn;
+  py_convert(fn, p_fn);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, write_sfw_field_ctype, pf.ctype, sfw, path, pf);
+  FIELD_DISPATCH(p_ret, write_sfw_field_ctype, pf.ctype, sfw, fn, pf);
   return p_ret;
 });
 
 EXPORT(read_sfr_field, {
   using namespace qlat;
   PyObject* p_sfr = NULL;
-  PyObject* p_path = NULL;
+  PyObject* p_fn = NULL;
   PyObject* p_field = NULL;
-  if (!PyArg_ParseTuple(args, "OOO", &p_sfr, &p_path, &p_field)) {
+  if (!PyArg_ParseTuple(args, "OOO", &p_sfr, &p_fn, &p_field)) {
     return NULL;
   }
   ShuffledFieldsReader& sfr = py_convert_type<ShuffledFieldsReader>(p_sfr);
   PyField pf = py_convert_field(p_field);
-  std::string path;
-  py_convert(path, p_path);
+  std::string fn;
+  py_convert(fn, p_fn);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, read_sfr_field_ctype, pf.ctype, sfr, path, pf);
+  FIELD_DISPATCH(p_ret, read_sfr_field_ctype, pf.ctype, sfr, fn, pf);
   return p_ret;
 });
 
 EXPORT(write_sfw_sfield, {
   using namespace qlat;
   PyObject* p_sfw = NULL;
-  PyObject* p_path = NULL;
+  PyObject* p_fn = NULL;
   PyObject* p_field = NULL;
   PyObject* p_sbs = NULL;
-  if (!PyArg_ParseTuple(args, "OOOO", &p_sfw, &p_path, &p_field, &p_sbs)) {
+  if (!PyArg_ParseTuple(args, "OOOO", &p_sfw, &p_fn, &p_field, &p_sbs)) {
     return NULL;
   }
   ShuffledFieldsWriter& sfw = py_convert_type<ShuffledFieldsWriter>(p_sfw);
-  std::string path;
-  py_convert(path, p_path);
+  std::string fn;
+  py_convert(fn, p_fn);
   PyField pf = py_convert_field(p_field);
   const ShuffledBitSet& sbs = py_convert_type<ShuffledBitSet>(p_sbs);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, write_sfw_sfield_ctype, pf.ctype, sfw, path, pf, sbs);
+  FIELD_DISPATCH(p_ret, write_sfw_sfield_ctype, pf.ctype, sfw, fn, pf, sbs);
   return p_ret;
 });
 
 EXPORT(read_sfr_sfield, {
   using namespace qlat;
   PyObject* p_sfr = NULL;
-  PyObject* p_path = NULL;
+  PyObject* p_fn = NULL;
   PyObject* p_sbs = NULL;
   PyObject* p_field = NULL;
-  if (!PyArg_ParseTuple(args, "OOOO", &p_sfr, &p_path, &p_sbs, &p_field)) {
+  if (!PyArg_ParseTuple(args, "OOOO", &p_sfr, &p_fn, &p_sbs, &p_field)) {
     return NULL;
   }
   ShuffledFieldsReader& sfr = py_convert_type<ShuffledFieldsReader>(p_sfr);
-  std::string path;
-  py_convert(path, p_path);
+  std::string fn;
+  py_convert(fn, p_fn);
   const ShuffledBitSet& sbs = py_convert_type<ShuffledBitSet>(p_sbs);
   PyField pf = py_convert_field(p_field);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, read_sfr_sfield_ctype, pf.ctype, sfr, path, sbs, pf);
+  FIELD_DISPATCH(p_ret, read_sfr_sfield_ctype, pf.ctype, sfr, fn, sbs, pf);
   return p_ret;
 });
 

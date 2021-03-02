@@ -20,6 +20,11 @@ class PointSelection:
         c.set_psel(self, v1)
         return self
 
+    def copy(self):
+        x = PointSelection()
+        x @= self
+        return x
+
     def save(self, path):
         c.save_psel(self, path)
 
@@ -52,6 +57,11 @@ class FieldSelection:
         assert isinstance(v1, FieldSelection)
         c.set_fsel(self, v1)
         return self
+
+    def copy(self):
+        x = FieldSelection()
+        x @= self
+        return x
 
     def add_psel(self, psel):
         c.add_psel_fsel(self, psel)
