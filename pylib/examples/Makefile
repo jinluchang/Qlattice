@@ -7,12 +7,13 @@ tests = make-sample-gauge-field.log \
 		field-selection.log \
 		selected-field.log \
 		fields-io.log \
-		gpt-qlat-mdwf.log
+		gpt-qlat-mdwf.log \
+		gpt-qlat-madwf.log
 
 py-examples : $(tests)
 
 %.log : %.py
-	mpirun --np 8 ./"$<" --mpi 2.2.2.1 | tee "$@".full
+	mpirun --np 4 ./"$<" --mpi 2.2.1.1 | tee "$@".full
 	-rm -rfv results
 	-grep -v "^Timer\|^GPT\|timing" "$@".full > "$@"
 

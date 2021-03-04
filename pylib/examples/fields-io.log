@@ -1,13 +1,13 @@
-qlat::begin(): MPI Initialized. num_node = 8
+qlat::begin(): MPI Initialized. num_node = 4
 qlat::begin_comm(comm,size_node): get_comm_list().push_back()
 qlat::begin_comm(comm,size_node): get_comm_list().size() = 1.
 q_num_threads=2 (default)
 qlat::begin(): q_num_threads = 2
 qlat::begin(): GeometryNode =
 { initialized = true
-, num_node    = 8
+, num_node    = 4
 , id_node     = 0
-, size_node   = 1x2x2x2
+, size_node   = 1x1x2x2
 , coor_node   = 0x0x0x0 }
 q_timer_max_func_name_len=50 (default)
 qremove: 'results'
@@ -16,52 +16,62 @@ q_timer_max_always_show=10 (default)
 geo.show() = Geometry((4, 4, 4, 8), 1)
 set q_field_init=fast. (implicitly)
 get_mem_cache_max_size_default: get_mem_cache_max_size() = 512 MB.
-make_shuffle_plan_generic: num_send_packs =          2
-make_shuffle_plan_generic: num_recv_packs =          7
-make_shuffle_plan_generic: num_send_msgs  =          4
-make_shuffle_plan_generic: num_recv_msgs  =          4
+make_shuffle_plan_generic: num_send_packs =          4
+make_shuffle_plan_generic: num_recv_packs =          4
+make_shuffle_plan_generic: num_send_msgs  =          2
+make_shuffle_plan_generic: num_recv_msgs  =          2
 make_shuffle_plan_generic: total num_send_packs =         16
-make_shuffle_plan_generic: total num_recv_packs =         56
-make_shuffle_plan_generic: total num_send_msgs  =         32
-make_shuffle_plan_generic: total num_recv_msgs  =         32
+make_shuffle_plan_generic: total num_recv_packs =         16
+make_shuffle_plan_generic: total num_send_msgs  =          8
+make_shuffle_plan_generic: total num_recv_msgs  =          8
 make_shuffle_plan_generic: global_comm_size =        512
 ShufflePlanCache: to add 1 / 16.
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
-shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 2304 ; total_size: 0.001 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 1x1x1x4 -> 1x1x2x2 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 4x4x4x8 ; site_size: 2304 ; total_size: 0.001 GB)
 prop 870829356 49123.69045958381
 FieldsWriter: open 'results/prop.fields.partial'.
 sfw.new_size_node() (1, 1, 1, 8)
 write(sfw,fn,field): writting field with fn='prop.d'.
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 2304 ; total_size: 0.001 GB)
+make_shuffle_plan_generic: num_send_packs =          4
+make_shuffle_plan_generic: num_recv_packs =          4
+make_shuffle_plan_generic: num_send_msgs  =          2
+make_shuffle_plan_generic: num_recv_msgs  =          2
+make_shuffle_plan_generic: total num_send_packs =         16
+make_shuffle_plan_generic: total num_recv_packs =         16
+make_shuffle_plan_generic: total num_send_msgs  =          8
+make_shuffle_plan_generic: total num_recv_msgs  =          8
+make_shuffle_plan_generic: global_comm_size =        512
+ShufflePlanCache: to add 2 / 16.
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 2304 ; total_size: 0.001 GB)
 write(sfw,fn,field): writting field with fn='prop'.
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.001 GB)
-s_prop = prop.sparse(fsel) 2129.6228705315016
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.001 GB)
+s_prop = prop.sparse(fsel) 3098.1400867368316
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
 make_shuffle_plan_generic: num_send_packs =          1
 make_shuffle_plan_generic: num_recv_packs =          4
-make_shuffle_plan_generic: num_send_msgs  =          4
-make_shuffle_plan_generic: num_recv_msgs  =          4
-make_shuffle_plan_generic: total num_send_packs =          8
-make_shuffle_plan_generic: total num_recv_packs =         45
-make_shuffle_plan_generic: total num_send_msgs  =         32
-make_shuffle_plan_generic: total num_recv_msgs  =         32
+make_shuffle_plan_generic: num_send_msgs  =          2
+make_shuffle_plan_generic: num_recv_msgs  =          2
+make_shuffle_plan_generic: total num_send_packs =          5
+make_shuffle_plan_generic: total num_recv_packs =         16
+make_shuffle_plan_generic: total num_send_msgs  =          8
+make_shuffle_plan_generic: total num_recv_msgs  =          8
 make_shuffle_plan_generic: global_comm_size =        128
 write(sfw,fn,sf,sbs): writting sparse field with fn='s_prop'.
-shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.000 GB)
-prop1 = prop.sparse(fselc) 2225.2478624036867
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
-make_shuffle_plan_generic: num_send_packs =          1
+shuffle_field(sel_fs,sel_f,sp): 1x1x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.000 GB)
+prop1 = prop.sparse(fselc) 3193.7650786090167
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
+make_shuffle_plan_generic: num_send_packs =          2
 make_shuffle_plan_generic: num_recv_packs =          4
-make_shuffle_plan_generic: num_send_msgs  =          4
-make_shuffle_plan_generic: num_recv_msgs  =          4
-make_shuffle_plan_generic: total num_send_packs =          8
-make_shuffle_plan_generic: total num_recv_packs =         45
-make_shuffle_plan_generic: total num_send_msgs  =         32
-make_shuffle_plan_generic: total num_recv_msgs  =         32
+make_shuffle_plan_generic: num_send_msgs  =          2
+make_shuffle_plan_generic: num_recv_msgs  =          2
+make_shuffle_plan_generic: total num_send_packs =          7
+make_shuffle_plan_generic: total num_recv_packs =         16
+make_shuffle_plan_generic: total num_send_msgs  =          8
+make_shuffle_plan_generic: total num_recv_msgs  =          8
 make_shuffle_plan_generic: global_comm_size =        130
 write(sfw,fn,sf,sbs): writting sparse field with fn='prop1'.
-shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.000 GB)
+shuffle_field(sel_fs,sel_f,sp): 1x1x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.000 GB)
 FieldsWriter: close 'results/prop.fields.partial'.
 FieldsReader: open 'results/prop.fields'.
 does_file_exist_sync_node(sfr,fn): reading field with fn='CHECK-FILE'.
@@ -73,48 +83,48 @@ sfr.list() ['prop', 'prop.d', 'prop1', 's_prop']
 sfr.new_size_node() (1, 1, 1, 8)
 read(sfr,fn,field): reading field with fn='prop.d'.
 read_tag(fr,fn,geo): 'prop.d' from 'results/prop.fields'.
-shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 2304 ; total_size: 0.001 GB)
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 2304 ; total_size: 0.001 GB)
+shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x1x2x2 (total_site: 4x4x4x8 ; site_size: 2304 ; total_size: 0.001 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 4x4x4x8 ; site_size: 2304 ; total_size: 0.001 GB)
 prop_d 870829356 49123.69045958381
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 2304 ; total_size: 0.001 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 4x4x4x8 ; site_size: 2304 ; total_size: 0.001 GB)
 prop_d -= prop 4103169609 0.0
 read(sfr,fn,field): reading field with fn='prop'.
 read_tag(fr,fn,geo): 'prop' from 'results/prop.fields'.
-shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.001 GB)
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 2304 ; total_size: 0.001 GB)
+shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x1x2x2 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.001 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 4x4x4x8 ; site_size: 2304 ; total_size: 0.001 GB)
 prop_f 1892650077 49123.69044826865
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 2304 ; total_size: 0.001 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 4x4x4x8 ; site_size: 2304 ; total_size: 0.001 GB)
 prop_f -= prop 2597284097 2.4941427435872103e-11
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
 make_shuffle_plan_generic: num_send_packs =          1
 make_shuffle_plan_generic: num_recv_packs =          4
-make_shuffle_plan_generic: num_send_msgs  =          4
-make_shuffle_plan_generic: num_recv_msgs  =          4
-make_shuffle_plan_generic: total num_send_packs =          8
-make_shuffle_plan_generic: total num_recv_packs =         45
-make_shuffle_plan_generic: total num_send_msgs  =         32
-make_shuffle_plan_generic: total num_recv_msgs  =         32
+make_shuffle_plan_generic: num_send_msgs  =          2
+make_shuffle_plan_generic: num_recv_msgs  =          2
+make_shuffle_plan_generic: total num_send_packs =          5
+make_shuffle_plan_generic: total num_recv_packs =         16
+make_shuffle_plan_generic: total num_send_msgs  =          8
+make_shuffle_plan_generic: total num_recv_msgs  =          8
 make_shuffle_plan_generic: global_comm_size =        128
 read(sfr,fn,sbs,sf): reading sparse field with fn='s_prop'.
 read_tag(fr,fn,geo): 's_prop' from 'results/prop.fields'.
-shuffle_field_back(sel_f,sel_fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.000 GB)
-s_prop_f 2129.622870232175
-s_prop_f -= s_prop 1.0724639314690186e-12
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
-make_shuffle_plan_generic: num_send_packs =          1
+shuffle_field_back(sel_f,sel_fs,sp): 1x1x1x8 -> 1x1x2x2 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.000 GB)
+s_prop_f 3098.1400859318105
+s_prop_f -= s_prop 1.5970515236215914e-12
+shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
+make_shuffle_plan_generic: num_send_packs =          2
 make_shuffle_plan_generic: num_recv_packs =          4
-make_shuffle_plan_generic: num_send_msgs  =          4
-make_shuffle_plan_generic: num_recv_msgs  =          4
-make_shuffle_plan_generic: total num_send_packs =          8
-make_shuffle_plan_generic: total num_recv_packs =         45
-make_shuffle_plan_generic: total num_send_msgs  =         32
-make_shuffle_plan_generic: total num_recv_msgs  =         32
+make_shuffle_plan_generic: num_send_msgs  =          2
+make_shuffle_plan_generic: num_recv_msgs  =          2
+make_shuffle_plan_generic: total num_send_packs =          7
+make_shuffle_plan_generic: total num_recv_packs =         16
+make_shuffle_plan_generic: total num_send_msgs  =          8
+make_shuffle_plan_generic: total num_recv_msgs  =          8
 make_shuffle_plan_generic: global_comm_size =        130
 read(sfr,fn,sbs,sf): reading sparse field with fn='prop1'.
 read_tag(fr,fn,geo): 'prop1' from 'results/prop.fields'.
-shuffle_field_back(sel_f,sel_fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.000 GB)
-prop1_f 2225.2478624836112
-prop1_f -= prop1 1.116388401686185e-12
+shuffle_field_back(sel_f,sel_fs,sp): 1x1x1x8 -> 1x1x2x2 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.000 GB)
+prop1_f 3193.765078183246
+prop1_f -= prop1 1.6409759938387582e-12
 FieldsReader: close 'results/prop.fields'.
 ['prop.fields']
 qlat::end(): get_comm_list().pop_back()

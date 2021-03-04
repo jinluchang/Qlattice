@@ -337,58 +337,6 @@ inline void set_wall_src_propagator(Propagator4d& prop, const Inverter& inv,
   }
 }
 
-inline void set_volume_src_fermion_field(FermionField4d& ff,
-                                         const CoordinateD& lmom, const int cs)
-// ff need to be initialized beforehand
-{
-  qassert(lmom[3] == 0);
-  const Geometry& geo = ff.geo();
-  const CoordinateD mom = lmom * lattice_mom_mult(geo);
-  set_zero(ff);
-#pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
-    const Coordinate xl = geo.coordinate_from_index(index);
-    const Coordinate xg = geo.coordinate_g_from_l(xl);
-    double phase = 0.0;
-    for (int i = 0; i < DIMN; ++i) {
-      phase += mom[i] * xg[i];
-    }
-    ff.get_elem(xl)(cs) = std::polar(1.0, phase);
-  }
-}
-
-inline void set_volume_src(Propagator4d& prop, const Geometry& geo_input,
-                           const CoordinateD& lmom = CoordinateD())
-{
-  TIMER_VERBOSE("set_volume_src");
-  const Geometry geo = geo_reform(geo_input);
-  prop.init(geo);
-  FermionField4d src;
-  src.init(geo);
-  for (int cs = 0; cs < 4 * NUM_COLOR; ++cs) {
-    set_volume_src_fermion_field(src, lmom, cs);
-    set_propagator_col_from_fermion_field(prop, cs, src);
-  }
-}
-
-template <class Inverter>
-inline void set_volume_src_propagator(Propagator4d& prop, const Inverter& inv,
-                                      const CoordinateD& lmom = CoordinateD())
-{
-  TIMER_VERBOSE("set_volume_src_propagator");
-  const Geometry geo = geo_reform(inv.geo());
-  prop.init(geo);
-  FermionField4d sol, src;
-  sol.init(geo);
-  src.init(geo);
-  for (int cs = 0; cs < 4 * NUM_COLOR; ++cs) {
-    set_volume_src_fermion_field(src, lmom, cs);
-    set_zero(sol);
-    invert(sol, src, inv);
-    set_propagator_col_from_fermion_field(prop, cs, sol);
-  }
-}
-
 inline void set_mom_src_fermion_field(FermionField4d& ff,
                                       const CoordinateD& lmom, const int cs)
 // ff need to be initialized beforehand
@@ -444,15 +392,14 @@ inline void set_mom_src_propagator(Propagator4d& prop, Inverter& inv,
 
 template <class T>
 void free_mom_invert(Propagator4dT<T>& sol, const Propagator4dT<T>& src,
-                     const double mass,
-                     const CoordinateD momtwist = CoordinateD())
+                     const double mass, const double m5 = 1.0,
+                     const CoordinateD& momtwist = CoordinateD())
 // DWF infinite L_s
 // M_5 = 1.0
 {
   TIMER("free_mom_invert");
   sol.init(src);
   const Geometry& geo = src.geo();
-  const double m5 = 1.0;
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     Coordinate kl = geo.coordinate_from_index(index);
@@ -500,15 +447,44 @@ void free_mom_invert(Propagator4dT<T>& sol, const Propagator4dT<T>& src,
 
 template <class T>
 void free_invert(Propagator4dT<T>& sol, const Propagator4dT<T>& src,
-                 const double mass, const CoordinateD& momtwist = CoordinateD())
+                 const double mass, const double m5 = 1.0,
+                 const CoordinateD& momtwist = CoordinateD())
 {
   TIMER_VERBOSE("free_invert");
   const Geometry& geo = src.geo();
   sol.init(src);
   fft_complex_field(sol, true);
-  free_mom_invert(sol, sol, mass, momtwist);
+  free_mom_invert(sol, sol, mass, m5, momtwist);
   fft_complex_field(sol, false);
   sol *= 1.0 / geo.total_volume();
+}
+
+inline void convert_wm_from_mspincolor(Propagator4d& prop_wm, const Propagator4d& prop_msc)
+{
+  TIMER("convert_wm_from_mspincolor");
+  const Geometry& geo = prop_msc.geo();
+  prop_wm.init(geo);
+  qassert(geo.is_only_local());
+  qassert(prop_wm.geo().is_only_local());
+  qacc_for(index, geo.local_volume(), {
+    WilsonMatrix& wm = prop_wm.get_elem(index);
+    const WilsonMatrix& msc = prop_msc.get_elem(index);
+    convert_wm_from_mspincolor(wm, msc);
+  });
+}
+
+inline void convert_mspincolor_from_wm(Propagator4d& prop_msc, const Propagator4d& prop_wm)
+{
+  TIMER("convert_mspincolor_from_wm");
+  const Geometry& geo = prop_wm.geo();
+  prop_msc.init(geo);
+  qassert(geo.is_only_local());
+  qassert(prop_wm.geo().is_only_local());
+  qacc_for(index, geo.local_volume(), {
+    WilsonMatrix& msc = prop_msc.get_elem(index);
+    const WilsonMatrix& wm = prop_wm.get_elem(index);
+    convert_mspincolor_from_wm(msc, wm);
+  });
 }
 
 // -------------------------------------------------------------------------
@@ -567,6 +543,58 @@ inline void set_tslice_mom_src_propagator(Propagator4d& prop, const int tslice,
     set_tslice_mom_src_fermion_field(src, tslice, lmom, cs);
     set_zero(sol);
     invert(sol, src, inverter);
+    set_propagator_col_from_fermion_field(prop, cs, sol);
+  }
+}
+
+inline void set_volume_src_fermion_field(FermionField4d& ff,
+                                         const CoordinateD& lmom, const int cs)
+// ff need to be initialized beforehand
+{
+  qassert(lmom[3] == 0);
+  const Geometry& geo = ff.geo();
+  const CoordinateD mom = lmom * lattice_mom_mult(geo);
+  set_zero(ff);
+#pragma omp parallel for
+  for (long index = 0; index < geo.local_volume(); ++index) {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Coordinate xg = geo.coordinate_g_from_l(xl);
+    double phase = 0.0;
+    for (int i = 0; i < DIMN; ++i) {
+      phase += mom[i] * xg[i];
+    }
+    ff.get_elem(xl)(cs) = std::polar(1.0, phase);
+  }
+}
+
+inline void set_volume_src(Propagator4d& prop, const Geometry& geo_input,
+                           const CoordinateD& lmom = CoordinateD())
+{
+  TIMER_VERBOSE("set_volume_src");
+  const Geometry geo = geo_reform(geo_input);
+  prop.init(geo);
+  FermionField4d src;
+  src.init(geo);
+  for (int cs = 0; cs < 4 * NUM_COLOR; ++cs) {
+    set_volume_src_fermion_field(src, lmom, cs);
+    set_propagator_col_from_fermion_field(prop, cs, src);
+  }
+}
+
+template <class Inverter>
+inline void set_volume_src_propagator(Propagator4d& prop, const Inverter& inv,
+                                      const CoordinateD& lmom = CoordinateD())
+{
+  TIMER_VERBOSE("set_volume_src_propagator");
+  const Geometry geo = geo_reform(inv.geo());
+  prop.init(geo);
+  FermionField4d sol, src;
+  sol.init(geo);
+  src.init(geo);
+  for (int cs = 0; cs < 4 * NUM_COLOR; ++cs) {
+    set_volume_src_fermion_field(src, lmom, cs);
+    set_zero(sol);
+    invert(sol, src, inv);
     set_propagator_col_from_fermion_field(prop, cs, sol);
   }
 }

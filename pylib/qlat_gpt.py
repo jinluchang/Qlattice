@@ -110,22 +110,26 @@ def qlat_from_gpt_prop4d(gpt_prop):
     tag = "qlat_from_gpt"
     plan = get_qlat_gpt_copy_plan(ctype, total_site, multiplicity, tag)
     geo = q.Geometry(total_site, 1)
-    prop = q.Propagator4d(geo)
-    plan(prop.mview(), gpt_prop)
-    return prop
+    prop_msc = q.Prop(geo)
+    plan(prop_msc.mview(), gpt_prop)
+    prop_wm = q.Prop(geo)
+    q.convert_wm_from_mspincolor_prop(prop_wm, prop_msc)
+    return prop_wm
 
 @q.timer
-def gpt_from_qlat_prop4d(prop):
-    assert isinstance(prop, q.Propagator4d)
-    geo = prop.geo()
+def gpt_from_qlat_prop4d(prop_wm):
+    assert isinstance(prop_wm, q.Propagator4d)
+    geo = prop_wm.geo()
     ctype = "WilsonMatrix"
     total_site = geo.total_site()
     multiplicity = 1
     tag = "gpt_from_qlat"
     plan = get_qlat_gpt_copy_plan(ctype, total_site, multiplicity, tag)
+    prop_msc = q.Prop(geo)
+    q.convert_mspincolor_from_wm_prop(prop_msc, prop_wm)
     grid = mk_grid(geo)
     gpt_prop = g.mspincolor(grid)
-    plan(gpt_prop, prop.mview())
+    plan(gpt_prop, prop_msc.mview())
     return gpt_prop
 
 @q.timer
@@ -145,3 +149,21 @@ def gpt_from_qlat(obj):
         return gpt_from_qlat_gauge_field(obj)
     else:
         raise Exception("gpt_from_qlat")
+
+@q.timer
+def gpt_invert(src, g_slv, g_slv_timer = None):
+    sol = g.mspincolor(src.grid)
+    if g_slv_timer is None:
+        sol @= g_slv * src
+    else:
+        g_slv_timer.start()
+        sol @= g_slv * src
+        g_slv_timer.stop()
+    return sol
+
+@q.timer
+def qlat_invert(src, g_slv, g_slv_timer = None):
+    assert isinstance(src, q.Propagator4d)
+    g_src = gpt_from_qlat_prop4d(src)
+    g_sol = gpt_invert(g_src, g_slv, g_slv_timer)
+    return qlat_from_gpt_prop4d(g_sol)

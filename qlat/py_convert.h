@@ -82,6 +82,23 @@ inline void py_convert(Coordinate& out, PyObject* in)
   }
 }
 
+inline void py_convert(CoordinateD& out, PyObject* in)
+{
+  if (PyList_Check(in)) {
+    pqassert(DIMN == PyList_Size(in));
+    for (size_t i = 0; i < out.size(); i++) {
+      py_convert(out[i], PyList_GetItem(in, i));
+    }
+  } else if (PyTuple_Check(in)) {
+    pqassert(DIMN == PyTuple_Size(in));
+    for (size_t i = 0; i < out.size(); i++) {
+      py_convert(out[i], PyTuple_GetItem(in, i));
+    }
+  } else {
+    pqassert(false);
+  }
+}
+
 struct PyField {
   std::string ctype;
   void* cdata;
@@ -113,9 +130,9 @@ T& py_convert_type(PyObject* in)
 
 inline PyObject* py_convert(const Coordinate& coor)
 {
-  PyObject* ret = PyTuple_New(coor.size());
+  PyObject* ret = PyList_New(coor.size());
   for (long i = 0; i < (long)coor.size(); i++) {
-    PyTuple_SetItem(ret, i, PyLong_FromLong(coor[i]));
+    PyList_SetItem(ret, i, PyLong_FromLong(coor[i]));
   }
   return ret;
 }

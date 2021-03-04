@@ -48,4 +48,7 @@ def gf_avg_link_trace(gf):
 def set_g_rand_color_matrix_field(fc, rng, sigma, n_steps = 1):
     assert isinstance(fc, Field) and fc.ctype == "ColorMatrix"
     assert isinstance(rng, RngState)
-    c.set_g_rand_color_matrix_field(fc, rng, sigma, n_steps)
+    return c.set_g_rand_color_matrix_field(fc, rng, sigma, n_steps)
+
+def gf_twist_boundary_at_boundary(gf, mom, mu):
+    return c.gf_twist_boundary_at_boundary(gf, mom, mu)

@@ -676,6 +676,39 @@ qacc WilsonVectorT<T> operator*(const SpinMatrixT<T>& sm,
   return ret;
 }
 
+template <class T>
+qacc void convert_mspincolor_from_wm(WilsonMatrixT<T>& msc,
+                                     const WilsonMatrixT<T>& wm)
+{
+  for (int s1 = 0; s1 < 4; ++s1) {
+    for (int s2 = 0; s2 < 4; ++s2) {
+      for (int c1 = 0; c1 < NUM_COLOR; ++c1) {
+        for (int c2 = 0; c2 < NUM_COLOR; ++c2) {
+          msc.p[(s1 * 4 + s2) * NUM_COLOR * NUM_COLOR + c1 * NUM_COLOR + c2] =
+              wm(s1 * NUM_COLOR + c1, s2 * NUM_COLOR + c2);
+        }
+      }
+    }
+  }
+}
+
+template <class T>
+qacc void convert_wm_from_mspincolor(WilsonMatrixT<T>& wm,
+                                     const WilsonMatrixT<T>& msc)
+{
+  for (int s1 = 0; s1 < 4; ++s1) {
+    for (int s2 = 0; s2 < 4; ++s2) {
+      for (int c1 = 0; c1 < NUM_COLOR; ++c1) {
+        for (int c2 = 0; c2 < NUM_COLOR; ++c2) {
+          wm(s1 * NUM_COLOR + c1, s2 * NUM_COLOR + c2) =
+              msc.p[(s1 * 4 + s2) * NUM_COLOR * NUM_COLOR + c1 * NUM_COLOR +
+                    c2];
+        }
+      }
+    }
+  }
+}
+
 #ifndef QLAT_NO_DEFAULT_TYPE
 
 typedef ColorMatrixT<> ColorMatrix;

@@ -9,7 +9,7 @@ qg.begin_with_gpt()
 q.qremove_all_info("results")
 q.qmkdir_info("results")
 rs = q.RngState("seed")
-geo = q.Geometry((4, 4, 4, 8), 1)
+geo = q.Geometry([4, 4, 4, 8], 1)
 q.displayln_info("geo.show() =", geo.show())
 
 gf = q.GaugeField(geo)
@@ -43,17 +43,36 @@ cg = inv.cg({"eps": 1e-10, "maxiter": 100})
 slv_5d = inv.preconditioned(pc.eo2_ne(), cg)
 slv_qm = qm.propagator(slv_5d)
 
-grid = qg.mk_grid(geo)
-src = g.mspincolor(grid)
-g.create.point(src, [0, 0, 0, 0])
-dst_qm = g.mspincolor(grid)
-dst_qm @= slv_qm * src
+slv_qm_timer = q.Timer("py:slv_qm", True)
 
-prop = qg.qlat_from_gpt(dst_qm)
+def mk_src(geo):
+    src = q.mk_point_src(geo, [0, 0, 0, 0])
+    grid = qg.mk_grid(geo)
+    g_src = g.mspincolor(grid)
+    g.create.point(g_src, [0, 0, 0, 0])
+    src1 = qg.qlat_from_gpt(g_src)
+    src1 -= src
+    assert src1.qnorm() == 0.0
+    return src
 
-ld = q.contract_pion_field(prop, 0)
+def test_inv(geo, slv, slv_timer = None):
+    src = mk_src(geo)
+    q.displayln_info(f"src info {src.qnorm()} {src.crc32()}")
+    sol = qg.qlat_invert(src, slv, slv_timer)
+    q.displayln_info(f"sol info {sol.qnorm()} {sol.crc32()}")
+    sol1 = qg.qlat_invert(sol, slv, slv_timer)
+    q.displayln_info(f"sol1 info {sol1.qnorm()} {sol1.crc32()}")
+    return src, sol, sol1
 
-q.displayln_info(q.show(ld))
+src, sol, sol1 = test_inv(geo, slv_qm, slv_qm_timer)
+
+ld = q.contract_pion_field(sol, 0)
+
+q.displayln_info("q.contract_pion_field(sol)", q.show(ld))
+
+ld1 = q.contract_pion_field(sol1, 0)
+
+q.displayln_info("q.contract_pion_field(sol1)", q.show(ld1))
 
 q.timer_display()
 
