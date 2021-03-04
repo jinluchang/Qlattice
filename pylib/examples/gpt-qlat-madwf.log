@@ -31,13 +31,6 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 Current Grid git commit hash=4705aa541d62e16b070452e4a3f329d9f9565afa: (HEAD, origin/feature/gpt, feature/gpt) clean
 
-Grid : Message : ================================================ 
-Grid : Message : MPI is initialised and logging filters activated 
-Grid : Message : ================================================ 
-Grid : Message : Requested 1073741824 byte stencil comms buffers 
-Grid : Message : MemoryManager::Init() setting up
-Grid : Message : MemoryManager::Init() cache pool for recent allocations: SMALL 32 LARGE 8
-Grid : Message : MemoryManager::Init() Unified memory space
 
 =============================================
               Initialized GPT                
@@ -64,10 +57,6 @@ set q_field_init=fast. (implicitly)
 get_mem_cache_max_size_default: get_mem_cache_max_size() = 512 MB.
 CommPlanCache: to add 1 / 32.
 gf_show_info: plaq = 0.9467131087731072 ; link_trace = 0.9863256128186877.
-Grid : Message : 0.513211 s : ZMobiusFermion (b=1,c=0) with Ls= 10 gamma passed in
-Grid : Message : 0.517223 s : ZMobiusFermion (b=1,c=0) with Ls= 10 gamma passed in
-Grid : Message : 0.522940 s : ZMobiusFermion (b=1,c=0) with Ls= 10 gamma passed in
-Grid : Message : 0.524308 s : ZMobiusFermion (b=1,c=0) with Ls= 10 gamma passed in
 make_shuffle_plan_generic: num_send_packs =          2
 make_shuffle_plan_generic: num_recv_packs =         32
 make_shuffle_plan_generic: num_send_msgs  =          4

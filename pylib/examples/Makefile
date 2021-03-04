@@ -15,7 +15,7 @@ py-examples : $(tests)
 %.log : %.py
 	mpirun --np 4 ./"$<" --mpi 2.2.1.1 | tee "$@".full
 	-rm -rfv results
-	-grep -v "^Timer\|^GPT\|timing" "$@".full > "$@"
+	-grep -v "^Timer\|^GPT\|timing\|^Grid" "$@".full > "$@"
 
 cplat-example:
 	make -C cplat -j 2

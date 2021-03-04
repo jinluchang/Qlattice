@@ -31,13 +31,6 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 Current Grid git commit hash=4705aa541d62e16b070452e4a3f329d9f9565afa: (HEAD, origin/feature/gpt, feature/gpt) clean
 
-Grid : Message : ================================================ 
-Grid : Message : MPI is initialised and logging filters activated 
-Grid : Message : ================================================ 
-Grid : Message : Requested 1073741824 byte stencil comms buffers 
-Grid : Message : MemoryManager::Init() setting up
-Grid : Message : MemoryManager::Init() cache pool for recent allocations: SMALL 32 LARGE 8
-Grid : Message : MemoryManager::Init() Unified memory space
 
 =============================================
               Initialized GPT                
