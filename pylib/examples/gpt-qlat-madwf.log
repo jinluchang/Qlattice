@@ -57,17 +57,17 @@ q_timer_max_func_name_len=50 (default)
 qremove: 'results'
 q_timer_mini_auto_show=1 (default)
 q_timer_max_always_show=10 (default)
-geo.show() = Geometry((4, 4, 4, 4), 1)
+geo.show() = Geometry([4, 4, 4, 4], 1)
 g.qcd.gauge.plaquette = 0.94766063662409461
 g.qcd.gauge.plaquette = 0.94766064484914148 single precision
 set q_field_init=fast. (implicitly)
 get_mem_cache_max_size_default: get_mem_cache_max_size() = 512 MB.
 CommPlanCache: to add 1 / 32.
 gf_show_info: plaq = 0.9467131087731072 ; link_trace = 0.9863256128186877.
-Grid : Message : 0.534126 s : ZMobiusFermion (b=1,c=0) with Ls= 10 gamma passed in
-Grid : Message : 0.536467 s : ZMobiusFermion (b=1,c=0) with Ls= 10 gamma passed in
-Grid : Message : 0.539965 s : ZMobiusFermion (b=1,c=0) with Ls= 10 gamma passed in
-Grid : Message : 0.540796 s : ZMobiusFermion (b=1,c=0) with Ls= 10 gamma passed in
+Grid : Message : 0.570134 s : ZMobiusFermion (b=1,c=0) with Ls= 10 gamma passed in
+Grid : Message : 0.572421 s : ZMobiusFermion (b=1,c=0) with Ls= 10 gamma passed in
+Grid : Message : 0.575812 s : ZMobiusFermion (b=1,c=0) with Ls= 10 gamma passed in
+Grid : Message : 0.576605 s : ZMobiusFermion (b=1,c=0) with Ls= 10 gamma passed in
 make_shuffle_plan_generic: num_send_packs =          2
 make_shuffle_plan_generic: num_recv_packs =         32
 make_shuffle_plan_generic: num_send_msgs  =          4

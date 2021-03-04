@@ -13,7 +13,7 @@ q_timer_max_func_name_len=50 (default)
 qremove: 'results'
 q_timer_mini_auto_show=1 (default)
 q_timer_max_always_show=10 (default)
-geo.show() = Geometry((4, 4, 4, 8), 1)
+geo.show() = Geometry([4, 4, 4, 8], 1)
 set q_field_init=fast. (implicitly)
 get_mem_cache_max_size_default: get_mem_cache_max_size() = 512 MB.
 make_shuffle_plan_generic: num_send_packs =          4
@@ -31,7 +31,7 @@ shuffle_field_back(f,fs,sp): 1x1x1x4 -> 1x1x2x2 (total_site: 4x4x4x8 ; site_size
 shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 4x4x4x8 ; site_size: 2304 ; total_size: 0.001 GB)
 prop 870829356 49123.69045958381
 FieldsWriter: open 'results/prop.fields.partial'.
-sfw.new_size_node() (1, 1, 1, 8)
+sfw.new_size_node() [1, 1, 1, 8]
 write(sfw,fn,field): writting field with fn='prop.d'.
 make_shuffle_plan_generic: num_send_packs =          4
 make_shuffle_plan_generic: num_recv_packs =          4
@@ -80,7 +80,7 @@ read_tag(fr,fn,geo): 'prop' from 'results/prop.fields'.
 read_tag(fr,fn,geo): 's_prop' from 'results/prop.fields'.
 read_tag(fr,fn,geo): 'prop1' from 'results/prop.fields'.
 sfr.list() ['prop', 'prop.d', 'prop1', 's_prop']
-sfr.new_size_node() (1, 1, 1, 8)
+sfr.new_size_node() [1, 1, 1, 8]
 read(sfr,fn,field): reading field with fn='prop.d'.
 read_tag(fr,fn,geo): 'prop.d' from 'results/prop.fields'.
 shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x1x2x2 (total_site: 4x4x4x8 ; site_size: 2304 ; total_size: 0.001 GB)

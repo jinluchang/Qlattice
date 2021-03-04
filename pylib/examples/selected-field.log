@@ -13,7 +13,7 @@ q_timer_max_func_name_len=50 (default)
 qremove: 'results'
 q_timer_mini_auto_show=1 (default)
 q_timer_max_always_show=10 (default)
-geo.show() = Geometry((4, 4, 4, 8), 1)
+geo.show() = Geometry([4, 4, 4, 8], 1)
 set q_field_init=fast. (implicitly)
 get_mem_cache_max_size_default: get_mem_cache_max_size() = 512 MB.
 make_shuffle_plan_generic: num_send_packs =          4
