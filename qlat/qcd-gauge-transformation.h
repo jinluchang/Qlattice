@@ -25,13 +25,31 @@ inline void gt_apply_gauge_transformation(GaugeTransform& gt0,
   TIMER("gt_apply_gauge_transformation");
   qassert(is_matching_geo_mult(gt0.geo(), gt1.geo()));
   const Geometry& geo = gt0.geo();
-#pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  qacc_for(index, geo.local_volume(), {
     const Coordinate xl = geo.coordinate_from_index(index);
     const ColorMatrix& t1 = gt1.get_elem(xl);
     ColorMatrix& t0 = gt0.get_elem(xl);
     t0 = t1 * t0;
-  }
+  });
+}
+
+inline void gt_apply_gauge_transformation(GaugeTransform& gt,
+                                          const GaugeTransform& gt0,
+                                          const GaugeTransform& gt1)
+// gt0 can be the same as gt1
+// gt <- gt1 * gt0
+{
+  TIMER("gt_apply_gauge_transformation");
+  qassert(is_matching_geo_mult(gt0.geo(), gt1.geo()));
+  const Geometry& geo = gt0.geo();
+  gt.init(geo_resize(geo, 0));
+  qacc_for(index, geo.local_volume(), {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const ColorMatrix& t1 = gt1.get_elem(xl);
+    const ColorMatrix& t0 = gt0.get_elem(xl);
+    ColorMatrix& t = gt.get_elem(xl);
+    t = t1 * t0;
+  });
 }
 
 inline void gf_apply_gauge_transformation_no_comm(GaugeField& gf,
@@ -46,8 +64,7 @@ inline void gf_apply_gauge_transformation_no_comm(GaugeField& gf,
   const Geometry& geo = gf0.geo();
   gf.init(geo_resize(geo, 0));
   qassert(is_matching_geo(gf.geo(), gf0.geo()));
-#pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  qacc_for(index, geo.local_volume(), {
     Coordinate xl = geo.coordinate_from_index(index);
     Vector<ColorMatrix> v = gf.get_elems(xl);
     const Vector<ColorMatrix> v0 = gf0.get_elems_const(xl);
@@ -58,7 +75,7 @@ inline void gf_apply_gauge_transformation_no_comm(GaugeField& gf,
       v[m] = t0 * v0[m] * matrix_adjoint(t1);
       xl[m] -= 1;
     }
-  }
+  });
 }
 
 inline void gf_apply_gauge_transformation(GaugeField& gf, const GaugeField& gf0,
@@ -79,11 +96,10 @@ inline void gt_invert(GaugeTransform& gt, const GaugeTransform& gt0)
   gt.init(geo_resize(gt0.geo()));
   const Geometry& geo = gt.geo();
   qassert(is_matching_geo_mult(gt.geo(), gt0.geo()));
-#pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  qacc_for(index, geo.local_volume(), {
     const Coordinate xl = geo.coordinate_from_index(index);
     gt.get_elem(xl) = matrix_adjoint(gt0.get_elem(xl));
-  }
+  });
 }
 
 inline void ff_apply_gauge_transformation(FermionField4d& ff,
@@ -94,8 +110,7 @@ inline void ff_apply_gauge_transformation(FermionField4d& ff,
   qassert(is_matching_geo(ff0.geo(), gt.geo()));
   const Geometry& geo = ff0.geo();
   ff.init(geo_resize(geo));
-#pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  qacc_for(index, geo.local_volume(), {
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<WilsonVector> v = ff.get_elems(xl);
     const Vector<WilsonVector> v0 = ff0.get_elems_const(xl);
@@ -103,7 +118,7 @@ inline void ff_apply_gauge_transformation(FermionField4d& ff,
     for (int m = 0; m < v0.size(); ++m) {
       v[m] = t * v0[m];
     }
-  }
+  });
 }
 
 inline void prop_apply_gauge_transformation(Propagator4d& prop,
@@ -115,8 +130,7 @@ inline void prop_apply_gauge_transformation(Propagator4d& prop,
   const Geometry& geo = prop0.geo();
   prop.init(geo_resize(geo));
   qassert(is_matching_geo_mult(prop.geo(), prop0.geo()));
-#pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  qacc_for(index, geo.local_volume(), {
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<WilsonMatrix> v = prop.get_elems(xl);
     const Vector<WilsonMatrix> v0 = prop0.get_elems_const(xl);
@@ -124,7 +138,7 @@ inline void prop_apply_gauge_transformation(Propagator4d& prop,
     for (int m = 0; m < v0.size(); ++m) {
       v[m] = t * v0[m];
     }
-  }
+  });
 }
 
 inline void prop_apply_gauge_transformation(
@@ -137,8 +151,7 @@ inline void prop_apply_gauge_transformation(
   const int multiplicity = geo.multiplicity;
   prop.init(fsel, multiplicity);
   qassert(is_matching_geo_mult(prop.geo(), prop0.geo()));
-#pragma omp parallel for
-  for (long idx = 0; idx < (long)fsel.indices.size(); ++idx) {
+  qacc_for(idx, fsel.indices.size(), {
     const long index = fsel.indices[idx];
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<WilsonMatrix> v = prop.get_elems(idx);
@@ -147,7 +160,7 @@ inline void prop_apply_gauge_transformation(
     for (int m = 0; m < v0.size(); ++m) {
       v[m] = t * v0[m];
     }
-  }
+  });
 }
 
 inline void prop_apply_gauge_transformation(
@@ -162,15 +175,14 @@ inline void prop_apply_gauge_transformation(
   std::vector<WilsonMatrix> tmp;
   tmp.resize(num_points);
   set_zero(tmp);
-#pragma omp parallel for
-  for (long i = 0; i < num_points; ++i) {
+  qacc_for(i, num_points, {
     const Coordinate& xg = pcs[i];
     const Coordinate xl = geo.coordinate_l_from_g(xg);
     if (geo.is_local(xl)) {
       const ColorMatrix& t = gt.get_elem(xl);
       tmp[i] = t * prop0[i];
     }
-  }
+  });
   glb_sum_double_vec(get_data(tmp));
   prop = tmp;
 }
@@ -190,8 +202,7 @@ inline void prop_apply_gauge_transformation(
   SelectedPoints<WilsonMatrix> tmp;
   tmp.init(num_points, 1);
   set_zero(tmp.points);
-#pragma omp parallel for
-  for (long i = 0; i < num_points; ++i) {
+  qacc_for(i, num_points, {
     const Coordinate& xg = psel[i];
     const Coordinate xl = geo.coordinate_l_from_g(xg);
     if (geo.is_local(xl)) {
@@ -200,7 +211,7 @@ inline void prop_apply_gauge_transformation(
       const WilsonMatrix& wm0 = prop0.get_elem(i);
       wm = t * wm0;
     }
-  }
+  });
   glb_sum_double_vec(get_data(tmp.points));
   prop = tmp;
 }

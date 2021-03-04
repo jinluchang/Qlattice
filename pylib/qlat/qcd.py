@@ -30,6 +30,42 @@ class GaugeField(Field):
     def show_info(self):
         gf_show_info(self)
 
+class GaugeTransform(Field):
+
+    def __init__(self, geo = None):
+        Field.__init__(self, "ColorMatrix", geo, 1)
+
+    def set_rand(self, rng, sigma = 0.5, n_step = 1):
+        set_g_rand_color_matrix_field(self, rng, sigma, n_step)
+
+    def unitarize(self):
+        c.unitarize_color_matrix_field(self)
+
+    def __mul__(self, other):
+        from qlat.propagator import Propagator4d, Prop, SelProp, PselProp
+        if isinstance(other, GaugeTransform):
+            gt = GaugeTransform()
+            c.apply_gt_gt(gt, self, other)
+            return gt
+        elif isinstance(other, GaugeField):
+            gf = GaugeField()
+            c.apply_gt_gf(gf, self, other)
+            return gf
+        elif isinstance(other, Propagator4d):
+            prop = Prop()
+            c.apply_gt_prop(prop, self, other)
+            return prop
+        elif isinstance(other, SelProp):
+            prop = SelProp(other.fsel)
+            c.apply_gt_sprop(prop, self, other)
+            return prop
+        elif isinstance(other, PselProp):
+            prop = PselProp(other.psel)
+            c.apply_gt_psprop(prop, self, other)
+            return prop
+        else:
+            raise Exception("GaugeTransform.__mul__")
+
 @timer_verbose
 def gf_show_info(gf):
     assert isinstance(gf, GaugeField)

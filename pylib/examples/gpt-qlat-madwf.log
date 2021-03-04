@@ -64,10 +64,10 @@ set q_field_init=fast. (implicitly)
 get_mem_cache_max_size_default: get_mem_cache_max_size() = 512 MB.
 CommPlanCache: to add 1 / 32.
 gf_show_info: plaq = 0.9467131087731072 ; link_trace = 0.9863256128186877.
-Grid : Message : 0.570134 s : ZMobiusFermion (b=1,c=0) with Ls= 10 gamma passed in
-Grid : Message : 0.572421 s : ZMobiusFermion (b=1,c=0) with Ls= 10 gamma passed in
-Grid : Message : 0.575812 s : ZMobiusFermion (b=1,c=0) with Ls= 10 gamma passed in
-Grid : Message : 0.576605 s : ZMobiusFermion (b=1,c=0) with Ls= 10 gamma passed in
+Grid : Message : 0.513211 s : ZMobiusFermion (b=1,c=0) with Ls= 10 gamma passed in
+Grid : Message : 0.517223 s : ZMobiusFermion (b=1,c=0) with Ls= 10 gamma passed in
+Grid : Message : 0.522940 s : ZMobiusFermion (b=1,c=0) with Ls= 10 gamma passed in
+Grid : Message : 0.524308 s : ZMobiusFermion (b=1,c=0) with Ls= 10 gamma passed in
 make_shuffle_plan_generic: num_send_packs =          2
 make_shuffle_plan_generic: num_recv_packs =         32
 make_shuffle_plan_generic: num_send_msgs  =          4
