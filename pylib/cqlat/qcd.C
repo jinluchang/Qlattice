@@ -188,3 +188,17 @@ EXPORT(apply_gt_psprop, {
   prop_apply_gauge_transformation(prop, prop0, gt, psel);
   Py_RETURN_NONE;
 });
+
+EXPORT(inv_gt, {
+  using namespace qlat;
+  PyObject* p_gt = NULL;
+  PyObject* p_gt0 = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_gt, &p_gt0)) {
+    return NULL;
+  }
+  // p_gt <- p_gt0^{-1}
+  GaugeTransform& gt = py_convert_type<GaugeTransform>(p_gt);
+  const GaugeTransform& gt0 = py_convert_type<GaugeTransform>(p_gt0);
+  gt_invert(gt, gt0);
+  Py_RETURN_NONE;
+});

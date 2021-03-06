@@ -66,6 +66,11 @@ class GaugeTransform(Field):
         else:
             raise Exception("GaugeTransform.__mul__")
 
+    def inv(self):
+        gt = GaugeTransform()
+        c.gt_invert(gt, self)
+        return gt
+
 @timer_verbose
 def gf_show_info(gf):
     assert isinstance(gf, GaugeField)

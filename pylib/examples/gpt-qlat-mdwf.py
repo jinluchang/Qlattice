@@ -18,14 +18,6 @@ gf.set_rand(rs.split("gf-init"), 0.05, 2)
 
 gf.show_info()
 
-gpt_gf = qg.gpt_from_qlat(gf)
-
-q.displayln_info("g.qcd.gauge.plaquette = {g.qcd.gauge.plaquette(gpt_gf):.17f}")
-
-gf1 = qg.qlat_from_gpt(gpt_gf)
-
-gf1.show_info()
-
 mobius_params = {
         "mass": 0.1,
         "M5": 1.0,
@@ -35,14 +27,21 @@ mobius_params = {
         "boundary_phases": [1.0, 1.0, 1.0, 1.0],
         }
 
-qm = g.qcd.fermion.mobius(gpt_gf, mobius_params)
+gpt_gf = qg.gpt_from_qlat(gf)
 
+q.displayln_info("g.qcd.gauge.plaquette = {g.qcd.gauge.plaquette(gpt_gf):.17f}")
+
+gf1 = qg.qlat_from_gpt(gpt_gf)
+
+gf1.show_info()
+
+gpt_gf = qg.gpt_from_qlat(gf)
+qm = g.qcd.fermion.mobius(gpt_gf, mobius_params)
 pc = g.qcd.fermion.preconditioner
 inv = g.algorithms.inverter
-cg = inv.cg({"eps": 1e-10, "maxiter": 100})
+cg = inv.cg({"eps": 1e-8, "maxiter": 10000})
 slv_5d = inv.preconditioned(pc.eo2_ne(), cg)
 slv_qm = qm.propagator(slv_5d)
-
 slv_qm_timer = q.Timer("py:slv_qm", True)
 
 def mk_src(geo):
