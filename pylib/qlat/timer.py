@@ -72,3 +72,17 @@ def displayln(*args):
 def displayln_info(*args):
     if get_id_node() == 0:
         displayln(*args)
+
+class TimerNone(Timer):
+
+    def __init__(self):
+        pass
+
+    def __del__(self):
+        pass
+
+    def start(self):
+        pass
+
+    def stop(self):
+        pass

@@ -1,4 +1,4 @@
-SharedMemoryMpi:  World communicator of size 4
+SharedMemoryMpi:  World communicator of size 2
 SharedMemoryMpi:  Node  communicator of size 1
 SharedMemoryMpi: SharedMemoryAllocate 1073741824 MMAP anonymous implementation 
 
@@ -42,62 +42,21 @@ q_num_threads=2 (default)
 qlat::begin(): q_num_threads = 2
 qlat::begin(): GeometryNode =
 { initialized = true
-, num_node    = 4
+, num_node    = 2
 , id_node     = 0
-, size_node   = 2x2x1x1
+, size_node   = 1x1x1x2
 , coor_node   = 0x0x0x0 }
 q_timer_max_func_name_len=50 (default)
 qremove: 'results'
 q_timer_mini_auto_show=1 (default)
 q_timer_max_always_show=10 (default)
 geo.show() = Geometry([4, 4, 4, 4], 1)
-g.qcd.gauge.plaquette = 0.94766063662409461
+g.qcd.gauge.plaquette = 0.94766063662409428
 g.qcd.gauge.plaquette = 0.94766064484914148 single precision
 set q_field_init=fast. (implicitly)
 get_mem_cache_max_size_default: get_mem_cache_max_size() = 512 MB.
 CommPlanCache: to add 1 / 32.
-gf_show_info: plaq = 0.9467131087731072 ; link_trace = 0.9863256128186877.
-make_shuffle_plan_generic: num_send_packs =          2
-make_shuffle_plan_generic: num_recv_packs =         32
-make_shuffle_plan_generic: num_send_msgs  =          4
-make_shuffle_plan_generic: num_recv_msgs  =          4
-make_shuffle_plan_generic: total num_send_packs =          8
-make_shuffle_plan_generic: total num_recv_packs =        128
-make_shuffle_plan_generic: total num_send_msgs  =         16
-make_shuffle_plan_generic: total num_recv_msgs  =         16
-make_shuffle_plan_generic: global_comm_size =        256
-ShufflePlanCache: to add 1 / 16.
-shuffle_field(fs,f,sp): 2x2x1x1 -> 1x1x1x4 (total_site: 4x4x4x4 ; site_size: 2304 ; total_size: 0.001 GB)
-src info 12.0 3069144405
-shuffle_field(fs,f,sp): 2x2x1x1 -> 1x1x1x4 (total_site: 4x4x4x4 ; site_size: 2304 ; total_size: 0.001 GB)
-sol info 1.496882542638599 901457551
-shuffle_field(fs,f,sp): 2x2x1x1 -> 1x1x1x4 (total_site: 4x4x4x4 ; site_size: 2304 ; total_size: 0.001 GB)
-sol1 info 10.566072708149456 163736797
-shuffle_field(fs,f,sp): 2x2x1x1 -> 1x1x1x4 (total_site: 4x4x4x4 ; site_size: 2304 ; total_size: 0.001 GB)
-src info 12.0 3069144405
-shuffle_field(fs,f,sp): 2x2x1x1 -> 1x1x1x4 (total_site: 4x4x4x4 ; site_size: 2304 ; total_size: 0.001 GB)
-sol info 1.496882515078101 757326935
-shuffle_field(fs,f,sp): 2x2x1x1 -> 1x1x1x4 (total_site: 4x4x4x4 ; site_size: 2304 ; total_size: 0.001 GB)
-sol1 info 10.56607230324371 345041033
-shuffle_field(fs,f,sp): 2x2x1x1 -> 1x1x1x4 (total_site: 4x4x4x4 ; site_size: 2304 ; total_size: 0.001 GB)
-src info 12.0 3069144405
-shuffle_field(fs,f,sp): 2x2x1x1 -> 1x1x1x4 (total_site: 4x4x4x4 ; site_size: 2304 ; total_size: 0.001 GB)
-sol info 1.4270716539737087 2399122689
-shuffle_field(fs,f,sp): 2x2x1x1 -> 1x1x1x4 (total_site: 4x4x4x4 ; site_size: 2304 ; total_size: 0.001 GB)
-sol1 info 8.618628548341668 3735681437
-shuffle_field(fs,f,sp): 2x2x1x1 -> 1x1x1x4 (total_site: 4x4x4x4 ; site_size: 2304 ; total_size: 0.001 GB)
-src info 12.0 3069144405
-shuffle_field(fs,f,sp): 2x2x1x1 -> 1x1x1x4 (total_site: 4x4x4x4 ; site_size: 2304 ; total_size: 0.001 GB)
-sol info 1.496882539305356 3369116133
-shuffle_field(fs,f,sp): 2x2x1x1 -> 1x1x1x4 (total_site: 4x4x4x4 ; site_size: 2304 ; total_size: 0.001 GB)
-sol1 info 10.566072654461106 1365555882
-sol_f 0.0022682093361681118 0.12397494248389838
-sol_mp 8.828217827337995e-16 3.0438243221095146e-14
-sol_madwf 9.095755818523415e-16 4.441574696208391e-14
-qlat::end(): get_comm_list().pop_back()
-qlat::end(): get_comm_list().size() = 1.
-qlat::end(): Switch to old comm (foreign).
-qlat::end(): MPI_Comm_free ended comm.
+gf_show_info: plaq = 0.9476606366240944 ; link_trace = 0.9863256128186879.
 =============================================
                Finalized GPT                 
 =============================================

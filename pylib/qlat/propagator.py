@@ -28,7 +28,7 @@ class PselProp(SelectedPoints):
 def set_point_src(prop_src, geo, xg, value = 1.0):
     c.set_point_src_prop(prop_src, geo, xg, value)
 
-def set_wall_src(prop_src, geo, tslice, lmom = (0.0, 0.0, 0.0, 0.0)):
+def set_wall_src(prop_src, geo, tslice, lmom = [0.0, 0.0, 0.0, 0.0]):
     c.set_wall_src_prop(prop_src, geo, tslice, lmom)
 
 def mk_point_src(geo, xg, value = 1.0):
@@ -36,13 +36,13 @@ def mk_point_src(geo, xg, value = 1.0):
     set_point_src(prop_src, geo, xg, value);
     return prop_src
 
-def mk_wall_src(geo, tslice, lmom = (0.0, 0.0, 0.0, 0.0)):
+def mk_wall_src(geo, tslice, lmom = [0.0, 0.0, 0.0, 0.0]):
     prop_src = Prop()
     set_wall_src(prop_src, geo, tslice, lmom);
     return prop_src
 
 def free_invert(prop_src, mass,
-        m5 = 1.0, momtwist = (0.0, 0.0, 0.0, 0.0)):
+        m5 = 1.0, momtwist = [0.0, 0.0, 0.0, 0.0]):
     assert isinstance(prop_src, Propagator4d)
     prop_sol = Prop()
     c.free_invert_prop(prop_sol, prop_src, mass, m5, momtwist)

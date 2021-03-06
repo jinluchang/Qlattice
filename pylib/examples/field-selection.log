@@ -1,13 +1,13 @@
-qlat::begin(): MPI Initialized. num_node = 4
+qlat::begin(): MPI Initialized. num_node = 2
 qlat::begin_comm(comm,size_node): get_comm_list().push_back()
 qlat::begin_comm(comm,size_node): get_comm_list().size() = 1.
 q_num_threads=2 (default)
 qlat::begin(): q_num_threads = 2
 qlat::begin(): GeometryNode =
 { initialized = true
-, num_node    = 4
+, num_node    = 2
 , id_node     = 0
-, size_node   = 1x1x2x2
+, size_node   = 1x1x1x2
 , coor_node   = 0x0x0x0 }
 q_timer_max_func_name_len=50 (default)
 qremove: 'results'
@@ -17,28 +17,11 @@ geo.show() = Geometry([4, 4, 4, 8], 1)
 psel.list() = [[0, 0, 0, 0], [0, 1, 2, 0]]
 set q_field_init=fast. (implicitly)
 get_mem_cache_max_size_default: get_mem_cache_max_size() = 512 MB.
-make_shuffle_plan_generic: num_send_packs =          4
-make_shuffle_plan_generic: num_recv_packs =          4
-make_shuffle_plan_generic: num_send_msgs  =          2
-make_shuffle_plan_generic: num_recv_msgs  =          2
-make_shuffle_plan_generic: total num_send_packs =         16
-make_shuffle_plan_generic: total num_recv_packs =         16
-make_shuffle_plan_generic: total num_send_msgs  =          8
-make_shuffle_plan_generic: total num_recv_msgs  =          8
-make_shuffle_plan_generic: global_comm_size =        512
 ShufflePlanCache: to add 1 / 16.
-shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
-shuffle_field_back(f,fs,sp): 1x1x1x4 -> 1x1x2x2 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
 fsel info = Geometry([4, 4, 4, 8], 1) 16 0.25
 write_field: fn='results/fsel.field'.
-shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
-shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
 read_field: fn='results/fsel.field'.
-shuffle_field_back(f,fs,sp): 1x1x1x4 -> 1x1x2x2 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
-shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
 write_field: fn='results/fsel-1.field'.
-shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
-shuffle_field(fs,f,sp): 1x1x2x2 -> 1x1x1x4 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
 fsel info = Geometry([4, 4, 4, 8], 1) 16 0.25
 fsel info = Geometry([4, 4, 4, 8], 1) 16 0.25
 ['psel.txt', 'fsel.field', 'fsel-1.field']

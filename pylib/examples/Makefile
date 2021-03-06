@@ -14,7 +14,7 @@ tests = make-sample-gauge-field.log \
 py-examples : $(tests)
 
 %.log : %.py
-	mpirun --np 4 ./"$<" --mpi 2.2.1.1 | tee "$@".full
+	mpirun --np 2 ./"$<" --mpi 1.1.1.2 | tee "$@".full
 	-rm -rfv results
 	-grep -v "^Timer\|^GPT\|timing\|^Grid" "$@".full > "$@"
 

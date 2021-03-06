@@ -42,7 +42,7 @@ inv = g.algorithms.inverter
 cg = inv.cg({"eps": 1e-8, "maxiter": 10000})
 slv_5d = inv.preconditioned(pc.eo2_ne(), cg)
 slv_qm = qm.propagator(slv_5d)
-slv_qm_timer = q.Timer("py:slv_qm", True)
+inv_qm = qg.InverterGPT(inverter = slv_qm, timer = q.Timer("py:slv_qm", True))
 
 def mk_src(geo):
     src = q.mk_point_src(geo, [0, 0, 0, 0])
@@ -54,16 +54,16 @@ def mk_src(geo):
     assert src1.qnorm() == 0.0
     return src
 
-def test_inv(geo, slv, slv_timer = None):
+def test_inv(geo, inverter):
     src = mk_src(geo)
     q.displayln_info(f"src info {src.qnorm()} {src.crc32()}")
-    sol = qg.qlat_invert(src, slv, slv_timer)
+    sol = inverter * src
     q.displayln_info(f"sol info {sol.qnorm()} {sol.crc32()}")
-    sol1 = qg.qlat_invert(sol, slv, slv_timer)
+    sol1 = inverter * sol
     q.displayln_info(f"sol1 info {sol1.qnorm()} {sol1.crc32()}")
     return src, sol, sol1
 
-src, sol, sol1 = test_inv(geo, slv_qm, slv_qm_timer)
+src, sol, sol1 = test_inv(geo, inv_qm)
 
 ld = q.contract_pion_field(sol, 0)
 

@@ -301,7 +301,9 @@ void set_zero(SelectedField<M>& sf)
 template <class M>
 double qnorm(const SelectedField<M>& sf)
 {
-  return qnorm(sf.field);
+  double s = qnorm(sf.field);
+  glb_sum(s);
+  return s;
 }
 
 template <class M>

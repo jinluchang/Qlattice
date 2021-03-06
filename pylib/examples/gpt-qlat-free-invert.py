@@ -16,28 +16,45 @@ gf = q.GaugeField(geo)
 gf.set_unit()
 gf.show_info()
 
+mass = 0.05
+
+m5 = 1.0
+
+qinv = q.InverterDwfFreeField(mass = mass, m5 = m5, timer = q.Timer("py:InverterDwfFreeField"))
+
 mobius_params = {
-        "mass": 0.05,
-        "M5": 1.0,
+        "mass": mass,
+        "M5": m5,
         "b": 1.0,
         "c": 0.0,
-        "Ls": 16,
+        "Ls": 32,
         "boundary_phases": [1.0, 1.0, 1.0, 1.0],
         }
-
-src = q.mk_point_src(geo, [0, 0, 0, 0])
-
-sol = q.free_invert(src, mobius_params["mass"], mobius_params["M5"])
 
 gpt_gf = qg.gpt_from_qlat(gf)
 qm = g.qcd.fermion.mobius(gpt_gf, mobius_params)
 pc = g.qcd.fermion.preconditioner
 inv = g.algorithms.inverter
-cg = inv.cg({"eps": 1e-8, "maxiter": 10000})
+cg = inv.cg({"eps": 1e-11, "maxiter": 10000})
 slv_5d = inv.preconditioned(pc.eo2_ne(), cg)
 slv_qm = qm.propagator(slv_5d)
+ginv = qg.InverterGPT(inverter = slv_qm, timer = q.Timer("py:InverterDwfFreeField"))
 
-sol1 = qg.qlat_invert(src, slv_qm)
-sol1 -= sol
+src_p = q.mk_point_src(geo, [0, 0, 0, 0])
 
-q.displayln_info(sol.qnorm(), sol1.qnorm())
+src_r = q.Prop(geo)
+src_r.set_rand(rs.split("src_r"))
+
+for src in [src_p, src_r]:
+    sol = qinv * src
+
+    sol1 = ginv * src
+
+    sol_diff = sol1.copy()
+    sol_diff -= sol
+
+    q.displayln_info(sol.qnorm(), sol1.qnorm(), sol_diff.qnorm())
+
+q.timer_display()
+
+qg.end_with_gpt()

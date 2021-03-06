@@ -1,13 +1,13 @@
-qlat::begin(): MPI Initialized. num_node = 4
+qlat::begin(): MPI Initialized. num_node = 2
 qlat::begin_comm(comm,size_node): get_comm_list().push_back()
 qlat::begin_comm(comm,size_node): get_comm_list().size() = 1.
 q_num_threads=2 (default)
 qlat::begin(): q_num_threads = 2
 qlat::begin(): GeometryNode =
 { initialized = true
-, num_node    = 4
+, num_node    = 2
 , id_node     = 0
-, size_node   = 1x1x1x4
+, size_node   = 1x1x1x2
 , coor_node   = 0x0x0x0 }
 q_timer_max_func_name_len=50 (default)
 Geometry([4, 4, 4, 8], 1, expansion_left=[0, 0, 0, 0], expansion_right=[0, 0, 0, 0], eo=0)
@@ -18,8 +18,8 @@ Geometry([4, 4, 4, 8], 4, expansion_left=[0, 0, 0, 0], expansion_right=[0, 0, 0,
 get_mem_cache_max_size_default: get_mem_cache_max_size() = 512 MB.
 CommPlanCache: to add 1 / 32.
 gf_show_info: plaq = 1.0000000000000000 ; link_trace = 1.0000000000000000.
-gf_show_info: plaq = 0.6181205439855382 ; link_trace = 0.8852498864117798.
-gf.mview().nbytes = 73728
+gf_show_info: plaq = 0.6181205439855380 ; link_trace = 0.8852498864117798.
+gf.mview().nbytes = 147456
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 0.
 qlat::end(): Finalize MPI.

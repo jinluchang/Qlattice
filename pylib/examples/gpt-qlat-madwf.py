@@ -88,10 +88,10 @@ slv_qm_madwf = qm.propagator(
                 g.single, g.double),
             eps=1e-8, maxiter=100))
 
-slv_qm_timer = q.Timer("py:slv_qm", True)
-slv_qm_mp_timer = q.Timer("py:slv_qm_mp", True)
-slv_qz_f_timer = q.Timer("py:slv_qz_f", True)
-slv_qm_madwf_timer = q.Timer("py:slv_qm_madwf", True)
+inv_qm = qg.InverterGPT(inverter = slv_qm, timer = q.Timer("py:slv_qm", True))
+inv_qm_mp = qg.InverterGPT(inverter = slv_qm_mp, timer = q.Timer("py:slv_qm_mp", True))
+inv_qz_f = qg.InverterGPT(inverter = slv_qz_f, timer = q.Timer("py:slv_qz_f", True))
+inv_qm_madwf = qg.InverterGPT(inverter = slv_qm_madwf, timer = q.Timer("py:slv_qm_madwf", True))
 
 def mk_src(geo):
     src = q.mk_point_src(geo, [0, 0, 0, 0])
@@ -103,22 +103,22 @@ def mk_src(geo):
     assert src1.qnorm() == 0.0
     return src
 
-def test_inv(geo, slv, slv_timer = None):
+def test_inv(geo, inverter):
     src = mk_src(geo)
     q.displayln_info(f"src info {src.qnorm()} {src.crc32()}")
-    sol = qg.qlat_invert(src, slv, slv_timer)
+    sol = inverter * src
     q.displayln_info(f"sol info {sol.qnorm()} {sol.crc32()}")
-    sol1 = qg.qlat_invert(sol, slv, slv_timer)
+    sol1 = inverter * sol
     q.displayln_info(f"sol1 info {sol1.qnorm()} {sol1.crc32()}")
     return src, sol, sol1
 
-src, sol, sol1 = test_inv(geo, slv_qm, slv_qm_timer)
+src, sol, sol1 = test_inv(geo, inv_qm)
 
-src_mp, sol_mp, sol1_mp = test_inv(geo, slv_qm_mp, slv_qm_mp_timer)
+src_mp, sol_mp, sol1_mp = test_inv(geo, inv_qm_mp)
 
-src_f, sol_f, sol1_f = test_inv(geo, slv_qz_f, slv_qz_f_timer)
+src_f, sol_f, sol1_f = test_inv(geo, inv_qz_f)
 
-src_madwf, sol_madwf, sol1_madwf = test_inv(geo, slv_qm_madwf, slv_qm_madwf_timer)
+src_madwf, sol_madwf, sol1_madwf = test_inv(geo, inv_qm_madwf)
 
 src_f -= src
 sol_f -= sol

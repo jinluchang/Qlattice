@@ -151,19 +151,27 @@ def gpt_from_qlat(obj):
         raise Exception("gpt_from_qlat")
 
 @q.timer
-def gpt_invert(src, g_slv, g_slv_timer = None):
+def gpt_invert(src, inverter, timer = q.TimerNone()):
     sol = g.mspincolor(src.grid)
-    if g_slv_timer is None:
-        sol @= g_slv * src
-    else:
-        g_slv_timer.start()
-        sol @= g_slv * src
-        g_slv_timer.stop()
+    timer.start()
+    sol @= inverter * src
+    timer.stop()
     return sol
 
-@q.timer
-def qlat_invert(src, g_slv, g_slv_timer = None):
-    assert isinstance(src, q.Propagator4d)
-    g_src = gpt_from_qlat_prop4d(src)
-    g_sol = gpt_invert(g_src, g_slv, g_slv_timer)
-    return qlat_from_gpt_prop4d(g_sol)
+class InverterGPT(q.Inverter):
+
+    def __init__(self, **kwargs):
+        self.inverter = kwargs["inverter"]
+        self.timer = kwargs.get("timer", q.TimerNone())
+        self.gpt_timer = kwargs.get("gpt_timer", q.TimerNone())
+        assert isinstance(self.timer, q.Timer)
+        assert isinstance(self.gpt_timer, q.Timer)
+
+    def __mul__(self, prop_src):
+        assert isinstance(prop_src, q.Propagator4d)
+        self.timer.start()
+        g_src = gpt_from_qlat_prop4d(prop_src)
+        g_sol = gpt_invert(g_src, self.inverter, self.gpt_timer)
+        prop_sol = qlat_from_gpt_prop4d(g_sol)
+        self.timer.stop()
+        return prop_sol
