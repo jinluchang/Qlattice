@@ -33,7 +33,7 @@ class InverterGaugeTransform(Inverter):
         assert isinstance(self.inverter, Inverter)
         assert isinstance(self.gt, GaugeTransform)
         assert isinstance(self.timer, Timer)
-        self.gt_inv = gt.inv()
+        self.gt_inv = self.gt.inv()
 
     def __mul__(self, prop_src):
         assert isinstance(prop_src, Propagator4d)

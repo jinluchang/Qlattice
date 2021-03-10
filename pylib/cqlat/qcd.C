@@ -189,7 +189,7 @@ EXPORT(apply_gt_psprop, {
   Py_RETURN_NONE;
 });
 
-EXPORT(inv_gt, {
+EXPORT(gt_invert, {
   using namespace qlat;
   PyObject* p_gt = NULL;
   PyObject* p_gt0 = NULL;

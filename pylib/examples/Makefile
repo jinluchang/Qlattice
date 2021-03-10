@@ -9,7 +9,8 @@ tests = make-sample-gauge-field.log \
 		fields-io.log \
 		gpt-qlat-free-invert.log \
 		gpt-qlat-mdwf.log \
-		gpt-qlat-madwf.log
+		gpt-qlat-madwf.log \
+		gpt-qlat-gfix-mdwf.log
 
 py-examples : $(tests)
 
