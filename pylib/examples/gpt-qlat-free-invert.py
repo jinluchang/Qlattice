@@ -38,7 +38,7 @@ inv = g.algorithms.inverter
 cg = inv.cg({"eps": 1e-11, "maxiter": 10000})
 slv_5d = inv.preconditioned(pc.eo2_ne(), cg)
 slv_qm = qm.propagator(slv_5d)
-ginv = qg.InverterGPT(inverter = slv_qm, timer = q.Timer("py:InverterDwfFreeField"))
+ginv = qg.InverterGPT(inverter = slv_qm, timer = q.Timer("py:InverterGPT"))
 
 src_p = q.mk_point_src(geo, [0, 0, 0, 0])
 

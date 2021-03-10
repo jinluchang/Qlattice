@@ -395,7 +395,7 @@ void free_mom_invert(Propagator4dT<T>& sol, const Propagator4dT<T>& src,
                      const double mass, const double m5 = 1.0,
                      const CoordinateD& momtwist = CoordinateD())
 // DWF infinite L_s
-// M_5 = 1.0
+// M_5 <= 1.0
 {
   TIMER("free_mom_invert");
   sol.init(src);
