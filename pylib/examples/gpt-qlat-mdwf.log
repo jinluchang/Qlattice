@@ -55,7 +55,7 @@ set q_field_init=fast. (implicitly)
 get_mem_cache_max_size_default: get_mem_cache_max_size() = 512 MB.
 CommPlanCache: to add 1 / 32.
 gf_show_info: plaq = 0.9745055472546029 ; link_trace = 0.9934624069374576.
-g.qcd.gauge.plaquette = {g.qcd.gauge.plaquette(gpt_gf):.17f}
+g.qcd.gauge.plaquette = 0.97450554725460303
 gf_show_info: plaq = 0.9745055472546029 ; link_trace = 0.9934624069374576.
 ShufflePlanCache: to add 1 / 16.
 src info 12.0 2788420690
