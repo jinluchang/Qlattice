@@ -67,7 +67,7 @@ def timer_verbose(func):
     return qtimer_func
 
 def displayln(*args):
-    print(*args)
+    print(*args, flush=True)
 
 def displayln_info(*args):
     if get_id_node() == 0:

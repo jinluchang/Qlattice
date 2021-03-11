@@ -9,7 +9,7 @@ qg.begin_with_gpt()
 q.qremove_all_info("results")
 q.qmkdir_info("results")
 rs = q.RngState("seed")
-geo = q.Geometry((4, 4, 4, 4), 1)
+geo = q.Geometry((4, 4, 4, 8), 1)
 q.displayln_info("geo.show() =", geo.show())
 
 grid = qg.mk_grid(geo)

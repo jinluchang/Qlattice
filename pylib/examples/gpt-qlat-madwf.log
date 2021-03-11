@@ -50,13 +50,33 @@ q_timer_max_func_name_len=50 (default)
 qremove: 'results'
 q_timer_mini_auto_show=1 (default)
 q_timer_max_always_show=10 (default)
-geo.show() = Geometry([4, 4, 4, 4], 1)
-g.qcd.gauge.plaquette = 0.94766063662409428
-g.qcd.gauge.plaquette = 0.94766064484914148 single precision
+geo.show() = Geometry([4, 4, 4, 8], 1)
+g.qcd.gauge.plaquette = 0.94517601648581551
+g.qcd.gauge.plaquette = 0.94517599211798775 single precision
 set q_field_init=fast. (implicitly)
 get_mem_cache_max_size_default: get_mem_cache_max_size() = 512 MB.
 CommPlanCache: to add 1 / 32.
-gf_show_info: plaq = 0.9476606366240944 ; link_trace = 0.9863256128186879.
+gf_show_info: plaq = 0.9451760164858156 ; link_trace = 0.9861007789909704.
+ShufflePlanCache: to add 1 / 16.
+src info 12.0 2788420690
+sol info 1.1956162839212885 3589662636
+sol1 info 5.803159635599721 2419626314
+src info 12.0 2788420690
+sol info 1.195616283417512 1514983079
+sol1 info 5.803159618351906 46496093
+src info 12.0 2788420690
+sol info 1.1593942320448907 4283257928
+sol1 info 4.7663038559428 3036802905
+src info 12.0 2788420690
+sol info 1.1956162833238206 1160651071
+sol1 info 5.803159637993653 4121251060
+sol_f 0.001057719245861107 0.062195494393381054
+sol_mp 1.2925503578399883e-13 1.9889686555914592e-12
+sol_madwf 1.3006102101000434e-13 2.0077602711561055e-12
+qlat::end(): get_comm_list().pop_back()
+qlat::end(): get_comm_list().size() = 1.
+qlat::end(): Switch to old comm (foreign).
+qlat::end(): MPI_Comm_free ended comm.
 =============================================
                Finalized GPT                 
 =============================================
