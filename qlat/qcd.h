@@ -496,11 +496,11 @@ inline long load_gauge_field_milc(GaugeFieldT<Complex>& gf,
 }
 
 template <class T>
-void twist_boundary_at_boundary(GaugeFieldT<T>& gf, double mom, int mu)
+void twist_boundary_at_boundary(GaugeFieldT<T>& gf, double lmom, int mu)
 {
   TIMER_VERBOSE_FLOPS("twist_boundary_at_boundary");
   const Geometry& geo = gf.geo();
-  const double amp = 2.0 * PI * mom;
+  const double amp = 2.0 * PI * lmom;
   const int len = geo.total_site()[mu];
   for (int index = 0; index < geo.local_volume(); index++) {
     Coordinate xl = geo.coordinate_from_index(index);

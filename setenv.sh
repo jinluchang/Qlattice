@@ -1,5 +1,5 @@
 if [ -z "$prefix" ] ; then
-    prefix=$HOME/qlat-build/1.0
+    prefix=$HOME/qlat-build/default
 fi
 
 if [ "$(uname -m)" = x86_64 ] ; then

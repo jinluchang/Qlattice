@@ -91,5 +91,5 @@ def set_g_rand_color_matrix_field(fc, rng, sigma, n_steps = 1):
     assert isinstance(rng, RngState)
     return c.set_g_rand_color_matrix_field(fc, rng, sigma, n_steps)
 
-def gf_twist_boundary_at_boundary(gf, mom, mu):
-    return c.gf_twist_boundary_at_boundary(gf, mom, mu)
+def gf_twist_boundary_at_boundary(gf, lmom, mu):
+    return c.gf_twist_boundary_at_boundary(gf, lmom, mu)

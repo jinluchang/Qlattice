@@ -2,7 +2,7 @@ SHELL=/bin/bash
 
 CXX=mpic++ -std=c++17 -fopenmp -march=native -O2 -Wall -fno-strict-aliasing
 
-qlat_prefix=$$HOME/qlat-build/1.0
+qlat_prefix=$$HOME/qlat-build/default
 
 QLAT_INCLUDE=$(qlat_prefix)/include
 QLAT_LIB=$(qlat_prefix)/lib

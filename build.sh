@@ -20,7 +20,7 @@ if [ -e $prefix ] ; then
     done
 fi
 
-rm -rf $prefix || true
+rm -rf $prefix/* || true
 mkdir -p $prefix
 
 if which mpic++ >/dev/null 2>&1 || which mpicxx >/dev/null 2>&1 ; then

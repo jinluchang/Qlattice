@@ -90,14 +90,14 @@ EXPORT(load_gauge_field, {
 EXPORT(gf_twist_boundary_at_boundary, {
   using namespace qlat;
   PyObject* p_gf = NULL;
-  double mom = 0.0;
+  double lmom = 0.0;
   int mu = -1;
-  if (!PyArg_ParseTuple(args, "Odi", &p_gf, &mom, &mu)) {
+  if (!PyArg_ParseTuple(args, "Odi", &p_gf, &lmom, &mu)) {
     return NULL;
   }
   GaugeField& gf = py_convert_type<GaugeField>(p_gf);
   pqassert(0 <= mu and mu < 4);
-  twist_boundary_at_boundary(gf, mom, mu);
+  twist_boundary_at_boundary(gf, lmom, mu);
   Py_RETURN_NONE;
 });
 
