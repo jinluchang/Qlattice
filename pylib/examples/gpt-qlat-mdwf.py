@@ -41,7 +41,7 @@ pc = g.qcd.fermion.preconditioner
 inv = g.algorithms.inverter
 cg = inv.cg({"eps": 1e-8, "maxiter": 10000})
 slv_5d = inv.preconditioned(pc.eo2_ne(), cg)
-slv_qm = qm.propagator(slv_5d)
+slv_qm = qm.propagator(slv_5d).grouped(4)
 inv_qm = qg.InverterGPT(inverter = slv_qm, timer = q.Timer("py:slv_qm", True))
 
 def mk_src(geo):

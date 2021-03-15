@@ -111,3 +111,32 @@ def mk_inverter(gf, job_tag, inv_type, inv_accuracy):
         raise Exception("mk_inverter")
     else:
         raise Exception("mk_inverter")
+
+@q.timer
+def mk_qlat_inverter(gf, job_tag, inv_type, inv_accuracy):
+    timer = q.Timer(f"py:qinv({job_tag},{inv_type},{inv_accuracy})", True)
+    if job_tag == "24D":
+        if inv_type == 0:
+            fa = q.FermionAction(mass = 0.00107, m5 = 1.8, ls = 24, mobius_scale = 4.0)
+            inv = q.InverterDomainWall(gf = gf, fa = fa, timer = timer)
+            return inv
+        elif inv_type == 1:
+            fa = q.FermionAction(mass = 0.0850, m5 = 1.8, ls = 24, mobius_scale = 4.0)
+            inv = q.InverterDomainWall(gf = gf, fa = fa, timer = timer)
+            inv.set_stop_rsd(1e-8)
+            inv.set_max_num_iter(300)
+            maxiter = 100
+            if inv_accuracy == 0:
+                max_mixed_precision_cycle = -1
+            elif inv_accuracy == 1:
+                maxiter = 2
+            elif inv_accuracy == 2:
+                maxiter = 50
+            else:
+                raise Exception("mk_inverter")
+            inv.set_max_mixed_precision_cycle(maxiter)
+            return inv
+        else:
+            raise Exception("mk_inverter_qlat")
+    else:
+        raise Exception("mk_inverter_qlat")

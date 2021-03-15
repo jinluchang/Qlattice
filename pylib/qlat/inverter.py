@@ -58,13 +58,13 @@ class InverterDomainWall(Inverter):
         return c.get_max_num_iter_inverter_domain_wall(self)
 
     def set_max_num_iter(self, max_num_iter):
-        return c.get_max_num_iter_inverter_domain_wall(self, max_num_iter)
+        return c.set_max_num_iter_inverter_domain_wall(self, max_num_iter)
 
     def max_mixed_precision_cycle(self):
         return c.get_max_mixed_precision_cycle_inverter_domain_wall(self)
 
     def set_max_mixed_precision_cycle(self, max_mixed_precision_cycle):
-        return c.get_max_mixed_precision_cycle_inverter_domain_wall(self, max_mixed_precision_cycle)
+        return c.set_max_mixed_precision_cycle_inverter_domain_wall(self, max_mixed_precision_cycle)
 
 class InverterGaugeTransform(Inverter):
 

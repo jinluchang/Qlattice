@@ -1301,9 +1301,10 @@ inline void multiply_hermop_sym2(FermionField5d& out, const FermionField5d& in,
                                  const GaugeField& gf, const FermionAction& fa)
 // odd <- odd (works for even <- even as well)
 {
-  TIMER("multiply_hermop_sym2");
+  TIMER_FLOPS("multiply_hermop_sym2");
   multiply_mpc_sym2(out, in, gf, fa);
   multiply_mpcdag_sym2(out, out, gf, fa);
+  timer.flops += 5500 * fa.ls * gf.geo().local_volume();
 }
 
 inline void multiply_m_e_e(FermionField5d& out, const FermionField5d& in,

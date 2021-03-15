@@ -77,16 +77,16 @@ slv_qm_mp = qm.propagator(
         inv.defect_correcting(
             inv.mixed_precision(
                 slv_5d_mp, g.single, g.double),
-            eps=1e-8, maxiter=100))
+            eps=1e-8, maxiter=100)).grouped(4)
 slv_qz_f = qz.propagator(
         inv.mixed_precision(
-            slv_5d_f, g.single, g.double))
+            slv_5d_f, g.single, g.double)).grouped(4)
 slv_qm_madwf = qm.propagator(
         inv.defect_correcting(
             inv.mixed_precision(
                 pc.mixed_dwf(slv_5d_f, slv_5d_pv_f, qz_f),
                 g.single, g.double),
-            eps=1e-8, maxiter=100))
+            eps=1e-8, maxiter=100)).grouped(4)
 
 inv_qm = qg.InverterGPT(inverter = slv_qm, timer = q.Timer("py:slv_qm", True))
 inv_qm_mp = qg.InverterGPT(inverter = slv_qm_mp, timer = q.Timer("py:slv_qm_mp", True))
