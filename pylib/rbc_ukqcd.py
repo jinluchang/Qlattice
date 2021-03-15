@@ -84,12 +84,13 @@ def mk_inverter(gf, job_tag, inv_type, inv_accuracy):
         inv = g.algorithms.inverter
         cg_mp = None
         if inv_type == 0:
-            cg_mp = inv.cg({"eps": 5e-5, "maxiter": 200})
+            cg_mp = inv.cg({"eps": 1e-8, "maxiter": 200})
         elif inv_type == 1:
-            cg_mp = inv.cg({"eps": 5e-5, "maxiter": 300})
+            cg_mp = inv.cg({"eps": 1e-8, "maxiter": 300})
         else:
             raise Exception("mk_inverter")
-        slv_5d_mp = inv.preconditioned(pc.eo2_ne(), cg_mp)
+        cg_split = inv.split(cg_mp, mpi_split = g.default.get_ivec("--mpi_split", None, 4))
+        slv_5d = inv.preconditioned(pc.eo2_ne(), cg_split)
         maxiter = 100
         if inv_accuracy == 0:
             maxiter = 1
@@ -102,8 +103,8 @@ def mk_inverter(gf, job_tag, inv_type, inv_accuracy):
         slv_qm = qm.propagator(
                 inv.defect_correcting(
                     inv.mixed_precision(
-                        slv_5d_mp, g.single, g.double),
-                    eps=1e-8, maxiter=maxiter))
+                        slv_5d, g.single, g.double),
+                    eps=1e-8, maxiter=maxiter)).grouped(4)
         timer = q.Timer(f"py:inv({job_tag},{inv_type},{inv_accuracy})", True)
         inv_qm = qg.InverterGPT(inverter = slv_qm, timer = timer)
         return inv_qm
