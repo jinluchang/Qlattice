@@ -7,6 +7,7 @@ tests = make-sample-gauge-field.log \
 		field-selection.log \
 		selected-field.log \
 		fields-io.log \
+		free-invert.log \
 		gpt-qlat-free-invert.log \
 		gpt-qlat-mdwf.log \
 		gpt-qlat-madwf.log \

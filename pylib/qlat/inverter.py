@@ -1,6 +1,7 @@
 import cqlat as c
 
 from qlat.propagator import *
+from qlat.fermion_action import *
 from qlat.qcd import *
 
 class Inverter:

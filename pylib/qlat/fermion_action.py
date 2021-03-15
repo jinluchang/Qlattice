@@ -2,7 +2,7 @@ import cqlat as c
 
 class FermionAction:
 
-    def __init__(self, *, mass, *, ls, m5, mobius_scale = 1.0, omega = None):
+    def __init__(self, *, mass, ls, m5, mobius_scale = 1.0, omega = None):
         assert isinstance(mass, float)
         assert isinstance(ls, int)
         assert isinstance(m5, float)
@@ -22,16 +22,16 @@ class FermionAction:
         return self
 
     def mass(self):
-        return c.get_mass_gauge_action(self)
+        return c.get_mass_fermion_action(self)
 
     def ls(self):
-        return c.get_ls_gauge_action(self)
+        return c.get_ls_fermion_action(self)
 
     def m5(self):
-        return c.get_m5_gauge_action(self)
+        return c.get_m5_fermion_action(self)
 
     def omega(self):
-        return c.get_omega_gauge_action(self)
+        return c.get_omega_fermion_action(self)
 
     def mobius_scale(self):
-        return c.get_mobius_scale_gauge_action(self)
+        return c.get_mobius_scale_fermion_action(self)

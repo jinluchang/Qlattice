@@ -45,7 +45,7 @@ EXPORT(set_fermion_action, {
   return set_obj<FermionAction>(args);
 });
 
-EXPORT(get_mass_fermion_acation, {
+EXPORT(get_mass_fermion_action, {
   using namespace qlat;
   PyObject* p_fa = NULL;
   if (!PyArg_ParseTuple(args, "O", &p_fa)) {
@@ -55,7 +55,7 @@ EXPORT(get_mass_fermion_acation, {
   return py_convert(fa.mass);
 });
 
-EXPORT(get_ls_fermion_acation, {
+EXPORT(get_ls_fermion_action, {
   using namespace qlat;
   PyObject* p_fa = NULL;
   if (!PyArg_ParseTuple(args, "O", &p_fa)) {
@@ -65,7 +65,7 @@ EXPORT(get_ls_fermion_acation, {
   return py_convert(fa.ls);
 });
 
-EXPORT(get_m5_fermion_acation, {
+EXPORT(get_m5_fermion_action, {
   using namespace qlat;
   PyObject* p_fa = NULL;
   if (!PyArg_ParseTuple(args, "O", &p_fa)) {
@@ -75,7 +75,7 @@ EXPORT(get_m5_fermion_acation, {
   return py_convert(fa.m5);
 });
 
-EXPORT(get_omega_fermion_acation, {
+EXPORT(get_omega_fermion_action, {
   using namespace qlat;
   PyObject* p_fa = NULL;
   if (!PyArg_ParseTuple(args, "O", &p_fa)) {
@@ -93,7 +93,7 @@ EXPORT(get_omega_fermion_acation, {
   }
 });
 
-EXPORT(get_mobius_scale_fermion_acation, {
+EXPORT(get_mobius_scale_fermion_action, {
   using namespace qlat;
   PyObject* p_fa = NULL;
   if (!PyArg_ParseTuple(args, "O", &p_fa)) {
