@@ -82,7 +82,6 @@ def mk_inverter(gf, job_tag, inv_type, inv_accuracy):
         else:
             qm = g.qcd.fermion.mobius(gpt_gf, param)
         inv = g.algorithms.inverter
-        cg_mp = None
         if inv_type == 0:
             cg_mp = inv.cg({"eps": 1e-8, "maxiter": 200})
         elif inv_type == 1:
@@ -90,7 +89,12 @@ def mk_inverter(gf, job_tag, inv_type, inv_accuracy):
         else:
             raise Exception("mk_inverter")
         cg_split = inv.split(cg_mp, mpi_split = g.default.get_ivec("--mpi_split", None, 4))
-        slv_5d = inv.preconditioned(pc.eo2_ne(), cg_split)
+        if inv_type == 0:
+            slv_5d = inv.preconditioned(pc.eo2_ne(), cg_split)
+        elif inv_type == 1:
+            slv_5d = inv.preconditioned(pc.eo1_ne(), cg_split)
+        else:
+            raise Exception("mk_inverter")
         maxiter = 100
         if inv_accuracy == 0:
             maxiter = 1
