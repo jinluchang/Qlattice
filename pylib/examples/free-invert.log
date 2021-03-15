@@ -1,0 +1,254 @@
+qlat::begin(): MPI Initialized. num_node = 2
+qlat::begin_comm(comm,size_node): get_comm_list().push_back()
+qlat::begin_comm(comm,size_node): get_comm_list().size() = 1.
+q_num_threads=2 (default)
+qlat::begin(): q_num_threads = 2
+qlat::begin(): GeometryNode =
+{ initialized = true
+, num_node    = 2
+, id_node     = 0
+, size_node   = 1x1x1x2
+, coor_node   = 0x0x0x0 }
+q_timer_max_func_name_len=50 (default)
+qremove: 'results'
+q_timer_mini_auto_show=1 (default)
+q_timer_max_always_show=10 (default)
+geo.show() = Geometry([4, 4, 4, 8], 1)
+set q_field_init=fast. (implicitly)
+get_mem_cache_max_size_default: get_mem_cache_max_size() = 512 MB.
+CommPlanCache: to add 1 / 32.
+gf_show_info: plaq = 1.0000000000000000 ; link_trace = 1.0000000000000000.
+CommPlanCache: to add 2 / 32.
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 0
+fft_complex_field_plan::init: malloc 589824
+fft_complex_field_plan::init: free 589824
+make_shuffle_plan_fft: num_send_packs =        256
+make_shuffle_plan_fft: num_recv_packs =          8
+make_shuffle_plan_fft: num_send_msgs  =          1
+make_shuffle_plan_fft: num_recv_msgs  =          1
+make_shuffle_plan_fft: total num_send_packs =        512
+make_shuffle_plan_fft: total num_recv_packs =         16
+make_shuffle_plan_fft: total num_send_msgs  =          2
+make_shuffle_plan_fft: total num_recv_msgs  =          2
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 1
+fft_complex_field_plan::init: malloc 589824
+fft_complex_field_plan::init: free 589824
+make_shuffle_plan_fft: num_send_packs =         64
+make_shuffle_plan_fft: num_recv_packs =          8
+make_shuffle_plan_fft: num_send_msgs  =          1
+make_shuffle_plan_fft: num_recv_msgs  =          1
+make_shuffle_plan_fft: total num_send_packs =        128
+make_shuffle_plan_fft: total num_recv_packs =         16
+make_shuffle_plan_fft: total num_send_msgs  =          2
+make_shuffle_plan_fft: total num_recv_msgs  =          2
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 2
+fft_complex_field_plan::init: malloc 589824
+fft_complex_field_plan::init: free 589824
+make_shuffle_plan_fft: num_send_packs =         16
+make_shuffle_plan_fft: num_recv_packs =          8
+make_shuffle_plan_fft: num_send_msgs  =          1
+make_shuffle_plan_fft: num_recv_msgs  =          1
+make_shuffle_plan_fft: total num_send_packs =         32
+make_shuffle_plan_fft: total num_recv_packs =         16
+make_shuffle_plan_fft: total num_send_msgs  =          2
+make_shuffle_plan_fft: total num_recv_msgs  =          2
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 3
+fft_complex_field_plan::init: malloc 589824
+fft_complex_field_plan::init: free 589824
+make_shuffle_plan_fft: num_send_packs =          8
+make_shuffle_plan_fft: num_recv_packs =          8
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =         16
+make_shuffle_plan_fft: total num_recv_packs =         16
+make_shuffle_plan_fft: total num_send_msgs  =          4
+make_shuffle_plan_fft: total num_recv_msgs  =          4
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 4
+fft_complex_field_plan::init: malloc 589824
+fft_complex_field_plan::init: free 589824
+make_shuffle_plan_fft: num_send_packs =        256
+make_shuffle_plan_fft: num_recv_packs =          8
+make_shuffle_plan_fft: num_send_msgs  =          1
+make_shuffle_plan_fft: num_recv_msgs  =          1
+make_shuffle_plan_fft: total num_send_packs =        512
+make_shuffle_plan_fft: total num_recv_packs =         16
+make_shuffle_plan_fft: total num_send_msgs  =          2
+make_shuffle_plan_fft: total num_recv_msgs  =          2
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 5
+fft_complex_field_plan::init: malloc 589824
+fft_complex_field_plan::init: free 589824
+make_shuffle_plan_fft: num_send_packs =         64
+make_shuffle_plan_fft: num_recv_packs =          8
+make_shuffle_plan_fft: num_send_msgs  =          1
+make_shuffle_plan_fft: num_recv_msgs  =          1
+make_shuffle_plan_fft: total num_send_packs =        128
+make_shuffle_plan_fft: total num_recv_packs =         16
+make_shuffle_plan_fft: total num_send_msgs  =          2
+make_shuffle_plan_fft: total num_recv_msgs  =          2
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 6
+fft_complex_field_plan::init: malloc 589824
+fft_complex_field_plan::init: free 589824
+make_shuffle_plan_fft: num_send_packs =         16
+make_shuffle_plan_fft: num_recv_packs =          8
+make_shuffle_plan_fft: num_send_msgs  =          1
+make_shuffle_plan_fft: num_recv_msgs  =          1
+make_shuffle_plan_fft: total num_send_packs =         32
+make_shuffle_plan_fft: total num_recv_packs =         16
+make_shuffle_plan_fft: total num_send_msgs  =          2
+make_shuffle_plan_fft: total num_recv_msgs  =          2
+make_shuffle_plan_fft: global_comm_size =        512
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 7
+fft_complex_field_plan::init: malloc 589824
+fft_complex_field_plan::init: free 589824
+make_shuffle_plan_fft: num_send_packs =          8
+make_shuffle_plan_fft: num_recv_packs =          8
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =         16
+make_shuffle_plan_fft: total num_recv_packs =         16
+make_shuffle_plan_fft: total num_send_msgs  =          4
+make_shuffle_plan_fft: total num_recv_msgs  =          4
+make_shuffle_plan_fft: global_comm_size =        512
+CommPlanCache: to add 3 / 32.
+invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 1.000000E+00
+CommPlanCache: to add 4 / 32.
+CommPlanCache: to add 5 / 32.
+cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=5.144E-01 stop_rsd=1.000E-08 
+cg_with_f: final iter=  43 sqrt(qnorm_r/qnorm_in)=8.039E-09 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): total_iter=43 cycle=1 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): checking 6.050266E-09 from 1.000000E+00
+invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 1.000000E+00
+cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=5.144E-01 stop_rsd=1.000E-08 
+cg_with_f: final iter=  43 sqrt(qnorm_r/qnorm_in)=8.039E-09 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): total_iter=43 cycle=1 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): checking 6.050266E-09 from 1.000000E+00
+invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 1.000000E+00
+cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=5.144E-01 stop_rsd=1.000E-08 
+cg_with_f: final iter=  43 sqrt(qnorm_r/qnorm_in)=8.039E-09 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): total_iter=43 cycle=1 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): checking 6.050266E-09 from 1.000000E+00
+invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 1.000000E+00
+cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=5.144E-01 stop_rsd=1.000E-08 
+cg_with_f: final iter=  43 sqrt(qnorm_r/qnorm_in)=8.039E-09 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): total_iter=43 cycle=1 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): checking 6.050266E-09 from 1.000000E+00
+invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 1.000000E+00
+cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=5.144E-01 stop_rsd=1.000E-08 
+cg_with_f: final iter=  43 sqrt(qnorm_r/qnorm_in)=8.039E-09 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): total_iter=43 cycle=1 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): checking 6.050266E-09 from 1.000000E+00
+invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 1.000000E+00
+cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=5.144E-01 stop_rsd=1.000E-08 
+cg_with_f: final iter=  43 sqrt(qnorm_r/qnorm_in)=8.039E-09 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): total_iter=43 cycle=1 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): checking 6.050266E-09 from 1.000000E+00
+invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 1.000000E+00
+cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=5.144E-01 stop_rsd=1.000E-08 
+cg_with_f: final iter=  43 sqrt(qnorm_r/qnorm_in)=8.039E-09 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): total_iter=43 cycle=1 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): checking 6.050266E-09 from 1.000000E+00
+invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 1.000000E+00
+cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=5.144E-01 stop_rsd=1.000E-08 
+cg_with_f: final iter=  43 sqrt(qnorm_r/qnorm_in)=8.039E-09 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): total_iter=43 cycle=1 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): checking 6.050266E-09 from 1.000000E+00
+invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 1.000000E+00
+cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=5.144E-01 stop_rsd=1.000E-08 
+cg_with_f: final iter=  43 sqrt(qnorm_r/qnorm_in)=8.039E-09 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): total_iter=43 cycle=1 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): checking 6.050266E-09 from 1.000000E+00
+invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 1.000000E+00
+cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=5.144E-01 stop_rsd=1.000E-08 
+cg_with_f: final iter=  43 sqrt(qnorm_r/qnorm_in)=8.039E-09 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): total_iter=43 cycle=1 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): checking 6.050266E-09 from 1.000000E+00
+invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 1.000000E+00
+cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=5.144E-01 stop_rsd=1.000E-08 
+cg_with_f: final iter=  43 sqrt(qnorm_r/qnorm_in)=8.039E-09 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): total_iter=43 cycle=1 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): checking 6.050266E-09 from 1.000000E+00
+invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 1.000000E+00
+cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=5.144E-01 stop_rsd=1.000E-08 
+cg_with_f: final iter=  43 sqrt(qnorm_r/qnorm_in)=8.039E-09 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): total_iter=43 cycle=1 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): checking 6.050266E-09 from 1.000000E+00
+9.736817294647487 9.736817290497452 2.4044600910585144e-11
+invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 6.400411E+01
+cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=5.309E+01 stop_rsd=1.000E-08 
+cg_with_f: final iter=  43 sqrt(qnorm_r/qnorm_in)=5.898E-09 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): total_iter=43 cycle=1 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): checking 4.490653E-07 from 6.400411E+01
+invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 6.409688E+01
+cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=5.323E+01 stop_rsd=1.000E-08 
+cg_with_f: final iter=  43 sqrt(qnorm_r/qnorm_in)=5.707E-09 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): total_iter=43 cycle=1 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): checking 4.336225E-07 from 6.409688E+01
+invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 6.371756E+01
+cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=5.266E+01 stop_rsd=1.000E-08 
+cg_with_f: final iter=  42 sqrt(qnorm_r/qnorm_in)=9.738E-09 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): total_iter=42 cycle=1 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): checking 7.024036E-07 from 6.371756E+01
+invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 6.371723E+01
+cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=5.284E+01 stop_rsd=1.000E-08 
+cg_with_f: final iter=  43 sqrt(qnorm_r/qnorm_in)=5.356E-09 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): total_iter=43 cycle=1 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): checking 4.036695E-07 from 6.371723E+01
+invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 6.415550E+01
+cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=5.324E+01 stop_rsd=1.000E-08 
+cg_with_f: final iter=  43 sqrt(qnorm_r/qnorm_in)=5.323E-09 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): total_iter=43 cycle=1 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): checking 4.044077E-07 from 6.415550E+01
+invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 6.392588E+01
+cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=5.314E+01 stop_rsd=1.000E-08 
+cg_with_f: final iter=  42 sqrt(qnorm_r/qnorm_in)=8.896E-09 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): total_iter=42 cycle=1 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): checking 6.582386E-07 from 6.392588E+01
+invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 6.388422E+01
+cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=5.273E+01 stop_rsd=1.000E-08 
+cg_with_f: final iter=  42 sqrt(qnorm_r/qnorm_in)=9.646E-09 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): total_iter=42 cycle=1 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): checking 6.926191E-07 from 6.388422E+01
+invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 6.392233E+01
+cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=5.271E+01 stop_rsd=1.000E-08 
+cg_with_f: final iter=  42 sqrt(qnorm_r/qnorm_in)=9.937E-09 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): total_iter=42 cycle=1 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): checking 7.157463E-07 from 6.392233E+01
+invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 6.387223E+01
+cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=5.280E+01 stop_rsd=1.000E-08 
+cg_with_f: final iter=  42 sqrt(qnorm_r/qnorm_in)=9.134E-09 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): total_iter=42 cycle=1 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): checking 6.619332E-07 from 6.387223E+01
+invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 6.388872E+01
+cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=5.290E+01 stop_rsd=1.000E-08 
+cg_with_f: final iter=  43 sqrt(qnorm_r/qnorm_in)=5.663E-09 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): total_iter=43 cycle=1 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): checking 4.282490E-07 from 6.388872E+01
+invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 6.410722E+01
+cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=5.371E+01 stop_rsd=1.000E-08 
+cg_with_f: final iter=  43 sqrt(qnorm_r/qnorm_in)=6.048E-09 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): total_iter=43 cycle=1 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): checking 4.634159E-07 from 6.410722E+01
+invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 6.391824E+01
+cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=5.274E+01 stop_rsd=1.000E-08 
+cg_with_f: final iter=  43 sqrt(qnorm_r/qnorm_in)=5.403E-09 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): total_iter=43 cycle=1 stop_rsd=1.000E-08
+invert_with_cg(5d,5d,inv,cg): checking 4.085757E-07 from 6.391824E+01
+38988.29486921299 38988.29483563643 9.993788273805972e-08
+qlat::end(): get_comm_list().pop_back()
+qlat::end(): get_comm_list().size() = 0.
+qlat::end(): Finalize MPI.
+qlat::end(): MPI Finalized.
+fft_complex_field_plan::end(): free a plan.
+fft_complex_field_plan::end(): free a plan.
+fft_complex_field_plan::end(): free a plan.
+fft_complex_field_plan::end(): free a plan.
+fft_complex_field_plan::end(): free a plan.
+fft_complex_field_plan::end(): free a plan.
+fft_complex_field_plan::end(): free a plan.
+fft_complex_field_plan::end(): free a plan.
