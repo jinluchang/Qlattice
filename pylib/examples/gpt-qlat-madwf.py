@@ -63,24 +63,43 @@ qz_f = g.qcd.fermion.zmobius(gpt_gf_f, zmobius_params)
 
 pc = g.qcd.fermion.preconditioner
 inv = g.algorithms.inverter
+
 cg = inv.cg({"eps": 1e-8, "maxiter": 10000})
 cg_mp = inv.cg({"eps": 3e-5, "maxiter": 300})
+cg_split = inv.split(cg_mp, mpi_split = g.default.get_ivec("--mpi_split", None, 4))
 cg_f = inv.cg({"eps": 5e-4, "maxiter": 1000})
 cg_pv_f = inv.cg({"eps": 5e-4, "maxiter": 1000})
+
 slv_5d = inv.preconditioned(pc.eo2_ne(), cg)
 slv_5d_mp = inv.preconditioned(pc.eo2_ne(), cg_mp)
+slv_5d_split = inv.preconditioned(pc.eo2_ne(), cg_split)
 slv_5d_f = inv.preconditioned(pc.eo2_ne(), cg_f)
 slv_5d_pv_f = inv.preconditioned(pc.eo2_ne(), cg_pv_f)
 
 slv_qm = qm.propagator(slv_5d)
+
+slv_qz_f = qz.propagator(
+        inv.mixed_precision(
+            slv_5d_f, g.single, g.double)).grouped(4)
+
 slv_qm_mp = qm.propagator(
         inv.defect_correcting(
             inv.mixed_precision(
                 slv_5d_mp, g.single, g.double),
             eps=1e-8, maxiter=100)).grouped(4)
-slv_qz_f = qz.propagator(
-        inv.mixed_precision(
-            slv_5d_f, g.single, g.double)).grouped(4)
+
+slv_qm_split_sloppy = qm.propagator(
+        inv.defect_correcting(
+            inv.mixed_precision(
+                slv_5d_split, g.single, g.double),
+            eps=1e-8, maxiter=1)).grouped(4)
+
+slv_qm_split = qm.propagator(
+        inv.defect_correcting(
+            inv.mixed_precision(
+                slv_5d_split, g.single, g.double),
+            eps=1e-8, maxiter=100)).grouped(4)
+
 slv_qm_madwf = qm.propagator(
         inv.defect_correcting(
             inv.mixed_precision(
@@ -89,8 +108,10 @@ slv_qm_madwf = qm.propagator(
             eps=1e-8, maxiter=100)).grouped(4)
 
 inv_qm = qg.InverterGPT(inverter = slv_qm, timer = q.Timer("py:slv_qm", True))
-inv_qm_mp = qg.InverterGPT(inverter = slv_qm_mp, timer = q.Timer("py:slv_qm_mp", True))
 inv_qz_f = qg.InverterGPT(inverter = slv_qz_f, timer = q.Timer("py:slv_qz_f", True))
+inv_qm_mp = qg.InverterGPT(inverter = slv_qm_mp, timer = q.Timer("py:slv_qm_mp", True))
+inv_qm_split = qg.InverterGPT(inverter = slv_qm_split, timer = q.Timer("py:slv_qm_split", True))
+inv_qm_split_sloppy = qg.InverterGPT(inverter = slv_qm_split_sloppy, timer = q.Timer("py:slv_qm_split_sloppy", True))
 inv_qm_madwf = qg.InverterGPT(inverter = slv_qm_madwf, timer = q.Timer("py:slv_qm_madwf", True))
 
 def mk_src(geo):
@@ -112,29 +133,17 @@ def test_inv(geo, inverter):
     q.displayln_info(f"sol1 info {sol1.qnorm()} {sol1.crc32()}")
     return src, sol, sol1
 
-src, sol, sol1 = test_inv(geo, inv_qm)
+tags = [ "qm", "qz_f", "qm_mp", "qm_split", "qm_split_sloppy", "inv_qm_madwf" ]
+invs = [ inv_qm, inv_qz_f, inv_qm_mp, inv_qm_split, inv_qm_split_sloppy, inv_qm_madwf]
 
-src_mp, sol_mp, sol1_mp = test_inv(geo, inv_qm_mp)
+src, sol, sol1 = test_inv(geo, invs[0])
 
-src_f, sol_f, sol1_f = test_inv(geo, inv_qz_f)
-
-src_madwf, sol_madwf, sol1_madwf = test_inv(geo, inv_qm_madwf)
-
-src_f -= src
-sol_f -= sol
-sol1_f -= sol1
-
-src_mp -= src
-sol_mp -= sol
-sol1_mp -= sol1
-
-src_madwf -= src
-sol_madwf -= sol
-sol1_madwf -= sol1
-
-q.displayln_info(f"sol_f {sol_f.qnorm()} {sol1_f.qnorm()}")
-q.displayln_info(f"sol_mp {sol_mp.qnorm()} {sol1_mp.qnorm()}")
-q.displayln_info(f"sol_madwf {sol_madwf.qnorm()} {sol1_madwf.qnorm()}")
+for tag, inv in zip(tags[1:], invs[1:]) :
+    src_n, sol_n, sol1_n = test_inv(geo, inv)
+    src_n -= src
+    sol_n -= sol
+    sol1_n -= sol1
+    q.displayln_info(f"tag={tag} diff src {src_n.qnorm()} sol {sol_n.qnorm()} sol1 {sol1_n.qnorm()}")
 
 q.timer_display()
 

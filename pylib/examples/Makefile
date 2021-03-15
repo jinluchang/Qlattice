@@ -16,9 +16,9 @@ tests = make-sample-gauge-field.log \
 py-examples : $(tests)
 
 %.log : %.py
-	mpirun --np 2 ./"$<" --mpi 1.1.1.2 | tee "$@".full
+	mpirun --np 2 ./"$<" --mpi 1.1.1.2 --mpi_split 1.1.1.1 | tee "$@".full
 	-rm -rfv results
-	-grep -v "^Timer\|^GPT\|timing\|^Grid" "$@".full > "$@"
+	-grep -v "^Timer\|^GPT\|^Grid\|timing: \|Timing: " "$@".full > "$@"
 
 cplat-example:
 	make -C cplat -j 2
