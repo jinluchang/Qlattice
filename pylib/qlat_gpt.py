@@ -160,10 +160,12 @@ def gpt_invert(src, inverter, timer = q.TimerNone()):
 
 class InverterGPT(q.Inverter):
 
-    def __init__(self, **kwargs):
-        self.inverter = kwargs["inverter"]
-        self.timer = kwargs.get("timer", q.TimerNone())
-        self.gpt_timer = kwargs.get("gpt_timer", q.TimerNone())
+    def __init__(self, *, inverter,
+            timer = q.TimerNone(),
+            gpt_timer = q.TimerNone()):
+        self.inverter = inverter
+        self.timer = timer
+        self.gpt_timer = gpt_timer
         assert isinstance(self.timer, q.Timer)
         assert isinstance(self.gpt_timer, q.Timer)
 

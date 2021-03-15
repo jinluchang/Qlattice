@@ -25,6 +25,17 @@ inline void py_convert(double& out, PyObject* in)
   out = PyFloat_AsDouble(in);
 }
 
+inline void py_convert(Complex& out, PyObject* in)
+{
+  if (PyFloat_Check(in)) {
+    out = PyFloat_AsDouble(in);
+  } else {
+    pqassert(PyComplex_Check(in));
+    Py_complex& py_out = (Py_complex&)out;
+    py_out = PyComplex_AsCComplex(in);
+  }
+}
+
 inline void py_convert(bool& out, PyObject* in)
 {
   pqassert(PyBool_Check(in));
@@ -42,24 +53,6 @@ inline void py_convert(std::string& s, PyObject* in)
     pqassert(temp);
     s = PyBytes_AS_STRING(temp);
     Py_DECREF(temp);
-  } else {
-    pqassert(false);
-  }
-}
-
-template <class M>
-void py_convert(std::vector<M>& out, PyObject* in)
-{
-  if (PyList_Check(in)) {
-    out.resize(PyList_Size(in));
-    for (size_t i = 0; i < out.size(); i++) {
-      py_convert(out[i], PyList_GetItem(in, i));
-    }
-  } else if (PyTuple_Check(in)) {
-    out.resize(PyTuple_Size(in));
-    for (size_t i = 0; i < out.size(); i++) {
-      py_convert(out[i], PyTuple_GetItem(in, i));
-    }
   } else {
     pqassert(false);
   }
@@ -91,6 +84,24 @@ inline void py_convert(CoordinateD& out, PyObject* in)
     }
   } else if (PyTuple_Check(in)) {
     pqassert(DIMN == PyTuple_Size(in));
+    for (size_t i = 0; i < out.size(); i++) {
+      py_convert(out[i], PyTuple_GetItem(in, i));
+    }
+  } else {
+    pqassert(false);
+  }
+}
+
+template <class M>
+void py_convert(std::vector<M>& out, PyObject* in)
+{
+  if (PyList_Check(in)) {
+    out.resize(PyList_Size(in));
+    for (size_t i = 0; i < out.size(); i++) {
+      py_convert(out[i], PyList_GetItem(in, i));
+    }
+  } else if (PyTuple_Check(in)) {
+    out.resize(PyTuple_Size(in));
     for (size_t i = 0; i < out.size(); i++) {
       py_convert(out[i], PyTuple_GetItem(in, i));
     }
@@ -164,6 +175,12 @@ inline PyObject* py_convert(const std::string& x)
 }
 
 template <class M>
+PyObject* py_convert(const Vector<M>& x)
+{
+  return PyMemoryView_FromMemory((char*)x.data(), x.data_size(), PyBUF_WRITE);
+}
+
+template <class M>
 PyObject* py_convert(const std::vector<M>& vec)
 {
   PyObject* ret = PyList_New(vec.size());
@@ -171,12 +188,6 @@ PyObject* py_convert(const std::vector<M>& vec)
     PyList_SetItem(ret, i, py_convert(vec[i]));
   }
   return ret;
-}
-
-template <class M>
-PyObject* py_convert(const Vector<M>& x)
-{
-  return PyMemoryView_FromMemory((char*)x.data(), x.data_size(), PyBUF_WRITE);
 }
 
 }  // namespace qlat
