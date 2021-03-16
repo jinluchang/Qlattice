@@ -92,7 +92,7 @@ def mk_inverter(gf, job_tag, inv_type, inv_accuracy):
         if inv_type == 0:
             slv_5d = inv.preconditioned(pc.eo2_ne(), cg_split)
         elif inv_type == 1:
-            slv_5d = inv.preconditioned(pc.eo1_ne(), cg_split)
+            slv_5d = inv.preconditioned(pc.eo2_ne(), cg_split)
         else:
             raise Exception("mk_inverter")
         maxiter = 100
