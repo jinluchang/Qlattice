@@ -16,7 +16,7 @@ $$
 
 ## Contraction functions
 
-See ``Qlattice/docs/contraction.md``.
+See ``Qlattice/docs/contraction.md`` and ``Qlattice/docs/file-format.md``.
 
 ## Notation
 
@@ -177,6 +177,8 @@ The average of the above two data sets.
 
 ## ``compute-meson-vv.h``
 
+<img src="figs/matrix-elements/png/fig-6.png" width=400px />
+
 ```cpp
 ssprintf("analysis/field-meson-vv/%s/results=%d", job_tag.c_str(), traj)
 ```
@@ -227,6 +229,8 @@ inline int tsep_op_wall_src(const std::string& job_tag)
 ```
 
 ## ``compute-meson-vv-meson.h``
+
+<img src="figs/matrix-elements/png/fig-3.png" width=400px />
 
 ```cpp
 ssprintf("analysis/field-meson-vv-meson/%s/results=%d", job_tag.c_str(), traj)
@@ -328,6 +332,8 @@ S_2(y;x)\gamma^{\mathrm{va}}_\mu
 $$
 
 ## ``compute-meson-chvp.h``
+
+<img src="figs/matrix-elements/png/fig-5.png" width=400px />
 
 ```cpp
 ssprintf("analysis/lat-meson-snk-src-shift-weight/%s/results=%d", job_tag.c_str(), traj);

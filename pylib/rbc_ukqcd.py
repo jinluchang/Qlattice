@@ -7,6 +7,8 @@ def get_total_site(job_tag):
         return [8, 8, 8, 16]
     elif job_tag == "24D":
         return [24, 24, 24, 64]
+    elif job_tag == "32D":
+        return [32, 32, 32, 64]
     else:
         raise Exception("get_total_site")
 
@@ -120,7 +122,7 @@ def mk_inverter(gf, job_tag, inv_type, inv_accuracy):
 @q.timer
 def mk_qlat_inverter(gf, job_tag, inv_type, inv_accuracy):
     timer = q.Timer(f"py:qinv({job_tag},{inv_type},{inv_accuracy})", True)
-    if job_tag == "24D":
+    if job_tag == "24D" or job_tag == "32D":
         if inv_type == 0:
             fa = q.FermionAction(mass = 0.00107, m5 = 1.8, ls = 24, mobius_scale = 4.0)
             inv = q.InverterDomainWall(gf = gf, fa = fa, timer = timer)
