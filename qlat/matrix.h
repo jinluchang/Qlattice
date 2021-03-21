@@ -430,6 +430,7 @@ struct SpinMatrixConstantsT {
   //
   qacc void init()
   {
+    Complex ii(0.0, 1.0);
     // TIMER_VERBOSE("SpinMatrixConstants::init()");
     unit.em() << 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1;
     // gamma_x
