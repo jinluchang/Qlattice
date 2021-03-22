@@ -73,7 +73,7 @@ def get_fermion_param(job_tag, inv_type, inv_accuracy):
     return params
 
 @q.timer
-def mk_inverter(gf, job_tag, inv_type, inv_accuracy, *, gt = None):
+def mk_gpt_inverter(gf, job_tag, inv_type, inv_accuracy, *, gt = None):
     gpt_gf = qg.gpt_from_qlat(gf)
     pc = g.qcd.fermion.preconditioner
     if inv_type == 1:
@@ -123,7 +123,7 @@ def mk_inverter(gf, job_tag, inv_type, inv_accuracy, *, gt = None):
         return q.InverterGaugeTransform(inverter = inv_qm, gt = gt)
 
 @q.timer
-def mk_qlat_inverter(gf, job_tag, inv_type, inv_accuracy, *, gt):
+def mk_qlat_inverter(gf, job_tag, inv_type, inv_accuracy, *, gt = None):
     timer = q.Timer(f"py:qinv({job_tag},{inv_type},{inv_accuracy})", True)
     if job_tag == "24D" or job_tag == "32D":
         if inv_type == 0:
@@ -153,3 +153,6 @@ def mk_qlat_inverter(gf, job_tag, inv_type, inv_accuracy, *, gt):
         return inv
     else:
         return q.InverterGaugeTransform(inverter = inv, gt = gt)
+
+def mk_inverter(*args, **kwargs):
+    return mk_gpt_inverter(*args, **kwargs)
