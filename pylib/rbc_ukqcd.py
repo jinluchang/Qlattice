@@ -73,7 +73,7 @@ def get_fermion_param(job_tag, inv_type, inv_accuracy):
     return params
 
 @q.timer
-def mk_inverter(gf, job_tag, inv_type, inv_accuracy):
+def mk_inverter(gf, job_tag, inv_type, inv_accuracy, *, gt = None):
     gpt_gf = qg.gpt_from_qlat(gf)
     pc = g.qcd.fermion.preconditioner
     if inv_type == 1:
@@ -113,14 +113,17 @@ def mk_inverter(gf, job_tag, inv_type, inv_accuracy):
                     eps=1e-8, maxiter=maxiter)).grouped(4)
         timer = q.Timer(f"py:inv({job_tag},{inv_type},{inv_accuracy})", True)
         inv_qm = qg.InverterGPT(inverter = slv_qm, timer = timer)
-        return inv_qm
     elif inv_type == 0:
         raise Exception("mk_inverter")
     else:
         raise Exception("mk_inverter")
+    if gt is None:
+        return inv_qm
+    else:
+        return q.InverterGaugeTransform(inverter = inv_qm, gt = gt)
 
 @q.timer
-def mk_qlat_inverter(gf, job_tag, inv_type, inv_accuracy):
+def mk_qlat_inverter(gf, job_tag, inv_type, inv_accuracy, *, gt):
     timer = q.Timer(f"py:qinv({job_tag},{inv_type},{inv_accuracy})", True)
     if job_tag == "24D" or job_tag == "32D":
         if inv_type == 0:
@@ -142,8 +145,11 @@ def mk_qlat_inverter(gf, job_tag, inv_type, inv_accuracy):
             else:
                 raise Exception("mk_inverter")
             inv.set_max_mixed_precision_cycle(maxiter)
-            return inv
         else:
             raise Exception("mk_inverter_qlat")
     else:
         raise Exception("mk_inverter_qlat")
+    if gt is None:
+        return inv
+    else:
+        return q.InverterGaugeTransform(inverter = inv, gt = gt)
