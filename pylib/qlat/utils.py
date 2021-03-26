@@ -4,6 +4,8 @@ from qlat.field import *
 
 from qlat.lat_io import *
 
+from cqlat import index_from_coordinate, coordinate_from_index
+
 def sqr(x):
     return x * x
 

@@ -125,7 +125,7 @@ PyObject* get_mview_field_ctype(PyField& pf, PyObject* p_field)
 {
   Field<M>& f = *(Field<M>*)pf.cdata;
   Vector<M> fv = get_data(f);
-  PyObject* p_mview = py_convert(fv);
+  PyObject* p_mview = py_convert_mview(fv);
   pqassert(p_field != NULL);
   Py_INCREF(p_field);
   pqassert(!((PyMemoryViewObject*)p_mview)->mbuf->master.obj);

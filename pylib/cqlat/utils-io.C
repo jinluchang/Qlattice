@@ -170,3 +170,23 @@ EXPORT(qrename_info, {
   return py_convert(ret);
 });
 
+EXPORT(qload_datatable, {
+  using namespace qlat;
+  PyObject* p_path = NULL;
+  bool is_par = false;
+  if (!PyArg_ParseTuple(args, "O|O", &p_path, &is_par)) {
+    return NULL;
+  }
+  std::string path;
+  py_convert(path, p_path);
+  DataTable dt;
+  if (0 == get_id_node()) {
+    if (is_par) {
+      dt = qload_datatable_par(path);
+    } else {
+      dt = qload_datatable(path);
+    }
+  }
+  bcast(dt);
+  return py_convert(dt);
+});

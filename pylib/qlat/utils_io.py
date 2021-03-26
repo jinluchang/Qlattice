@@ -6,3 +6,4 @@ from cqlat import qmkdir, qmkdir_info, qmkdir_sync_node
 from cqlat import obtain_lock, release_lock
 from cqlat import qtouch, qtouch_info
 from cqlat import qrename, qrename_info
+from cqlat import qload_datatable

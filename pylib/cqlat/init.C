@@ -23,7 +23,7 @@ EXPORT(begin, {
     // initialize MPI by itself
     PyObject* p_sargs = p_v1;
     PyObject* p_node_size_list = p_v2;
-    std::vector<std::string> sargs;
+    static std::vector<std::string> sargs;
     if (p_sargs != NULL) {
       py_convert(sargs, p_sargs);
     }
@@ -32,7 +32,7 @@ EXPORT(begin, {
       py_convert(node_size_list, p_node_size_list);
     }
     // make cargs
-    std::vector<const char*> cargs(sargs.size() + 1);
+    static std::vector<const char*> cargs(sargs.size() + 1);
     for (long i = 0; i < (long)sargs.size(); ++i) {
       cargs[i] = sargs[i].c_str();
     }

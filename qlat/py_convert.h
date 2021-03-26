@@ -175,12 +175,6 @@ inline PyObject* py_convert(const std::string& x)
 }
 
 template <class M>
-PyObject* py_convert(const Vector<M>& x)
-{
-  return PyMemoryView_FromMemory((char*)x.data(), x.data_size(), PyBUF_WRITE);
-}
-
-template <class M>
 PyObject* py_convert(const std::vector<M>& vec)
 {
   PyObject* ret = PyList_New(vec.size());
@@ -188,6 +182,12 @@ PyObject* py_convert(const std::vector<M>& vec)
     PyList_SetItem(ret, i, py_convert(vec[i]));
   }
   return ret;
+}
+
+template <class M>
+PyObject* py_convert_mview(const Vector<M>& x)
+{
+  return PyMemoryView_FromMemory((char*)x.data(), x.data_size(), PyBUF_WRITE);
 }
 
 }  // namespace qlat

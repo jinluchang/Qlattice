@@ -73,7 +73,7 @@ def get_fermion_param(job_tag, inv_type, inv_accuracy):
     return params
 
 @q.timer
-def mk_gpt_inverter(gf, job_tag, inv_type, inv_accuracy, *, gt = None):
+def mk_gpt_inverter(gf, job_tag, inv_type, inv_accuracy, *, gt = None, n_grouped = 4):
     gpt_gf = qg.gpt_from_qlat(gf)
     pc = g.qcd.fermion.preconditioner
     if inv_type == 1:
@@ -110,7 +110,7 @@ def mk_gpt_inverter(gf, job_tag, inv_type, inv_accuracy, *, gt = None):
                 inv.defect_correcting(
                     inv.mixed_precision(
                         slv_5d, g.single, g.double),
-                    eps=1e-8, maxiter=maxiter)).grouped(4)
+                    eps=1e-8, maxiter=maxiter)).grouped(n_grouped)
         timer = q.Timer(f"py:inv({job_tag},{inv_type},{inv_accuracy})", True)
         inv_qm = qg.InverterGPT(inverter = slv_qm, timer = timer)
     elif inv_type == 0:
