@@ -126,7 +126,8 @@ public:
     LInt offv = ((gs[3]*nz+gs[2])*ny+gs[1])*nx+gs[0];
     map_Nitoi[rank][isp] = offv;
   }
-  for(int ri=0;ri<Nmpi;ri++)MPI_Bcast(&map_Nitoi[ri][0], noden*sizeof(LInt), MPI_CHAR, ri, MPI_COMM_WORLD);
+
+  for(int ri=0;ri<Nmpi;ri++)MPI_Bcast(&map_Nitoi[ri][0], noden*sizeof(LInt), MPI_CHAR, ri, get_comm());
 
   if(checkorder){
     int flag = 0;
@@ -190,7 +191,7 @@ inline void send_vec_kentucky(char* src,char* res,int dsize,int gN,const io_gwu&
   /////TIMER("IO MPI time");
   /////for(int io=0;io<node_ioL.size();io++)if(node_ioL[io]>=0)
   /////{
-  /////  MPI_Scatter(tmp,size_c,MPI_CHAR,&res[node_ioL[io]*size_c],size_c,MPI_CHAR,io,MPI_COMM_WORLD);
+  /////  MPI_Scatter(tmp,size_c,MPI_CHAR,&res[node_ioL[io]*size_c],size_c,MPI_CHAR,io,get_comm());
   /////  ////if(rank==io){memcpy(&res[node_ioL[io]*size_c],tmp,size_c);}
   /////}
 
@@ -223,10 +224,10 @@ inline void send_vec_kentucky(char* src,char* res,int dsize,int gN,const io_gwu&
   //{
   if(read==true)
   {MPI_Alltoallv(tmp,(int*) &currsend[0],(int*) &currspls[0], MPI_CHAR,
-                 res,(int*) &currrecv[0],(int*) &currrpls[0], MPI_CHAR, MPI_COMM_WORLD);}
+                 res,(int*) &currrecv[0],(int*) &currrpls[0], MPI_CHAR, get_comm());}
   if(read==false)
   {MPI_Alltoallv(res,(int*) &currrecv[0],(int*) &currrpls[0], MPI_CHAR,
-                 tmp,(int*) &currsend[0],(int*) &currspls[0], MPI_CHAR, MPI_COMM_WORLD);}
+                 tmp,(int*) &currsend[0],(int*) &currspls[0], MPI_CHAR, get_comm());}
   //}
   //else{
   //  //memcpy(res,tmp, size_c);
@@ -504,12 +505,12 @@ inline void load_gwu_eigenvalues(std::vector<double > &values,std::vector<double
     fclose(filer);
   }
 
-  MPI_Bcast(&nvec, 1, MPI_INT, 0, MPI_COMM_WORLD);
+  MPI_Bcast(&nvec, 1, MPI_INT, 0, get_comm());
   if(nvec != 0 ){
   if(qlat::get_id_node() != 0){values.resize(nvec*2);errors.resize(nvec);}
 
-  MPI_Bcast(&values[0], 2*nvec, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-  MPI_Bcast(&errors[0],   nvec, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+  MPI_Bcast(&values[0], 2*nvec, MPI_DOUBLE, 0, get_comm());
+  MPI_Bcast(&errors[0],   nvec, MPI_DOUBLE, 0, get_comm());
   }
 
 }
@@ -964,7 +965,7 @@ void load_gwu_prop(const char *filename,std::vector<qlat::FermionField4dT<Ty> > 
       Ty* res   = (Ty*) qlat::get_data(prop[iv]).data();
       std::complex<float> *src = (std::complex<float>*) &prop_qlat[iv*noden*12*2];
       #pragma omp parallel for
-      for(size_t isp=0;isp<noden*12;isp++)src[isp] = res[isp];
+      for(size_t isp=0;isp<noden*12;isp++)src[isp] = std::complex<float>(res[isp].real(),res[isp].imag());
     }
 
     ////Do not rotate source, in ps/ky base
@@ -988,7 +989,7 @@ void load_gwu_prop(const char *filename,std::vector<qlat::FermionField4dT<Ty> > 
       Ty* res   = (Ty*) qlat::get_data(prop[iv]).data();
       std::complex<float> *src = (std::complex<float>*) &prop_qlat[iv*noden*12*2];
       #pragma omp parallel for
-      for(size_t isp=0;isp<noden*12;isp++)res[isp]= src[isp];
+      for(size_t isp=0;isp<noden*12;isp++)res[isp]= Ty(src[isp].real(),src[isp].imag());
     }
     }
   }
@@ -1010,7 +1011,7 @@ void load_gwu_prop(const char *filename,std::vector<qlat::FermionField4dT<Ty> > 
     for(int iv=0;iv<12;iv++){
       Ty* res = (Ty*) qlat::get_data(prop[iv]).data();
       std::complex<double> *src = (std::complex<double>*) &prop_qlat[iv*noden*12*2];
-      for(size_t isp=0;isp<noden*12;isp++)res[isp]= src[isp];
+      for(size_t isp=0;isp<noden*12;isp++)res[isp]= Ty(src[isp].real(),src[isp].imag());
     }
 
   }
@@ -1020,6 +1021,129 @@ template<typename Ty>
 void save_gwu_prop(const char *filename,std::vector<qlat::FermionField4dT<Ty> > &prop,io_gwu &io_use){
   load_gwu_prop(filename,prop,io_use,false);
 }
+
+template<typename Ty>
+void prop4d_to_Fermion(Propagator4d& prop,std::vector<qlat::FermionField4dT<Ty > > &buf, int dir=1){
+
+  if(sizeof(Ty) != 2*sizeof(double ) and sizeof(Ty) != 2*sizeof(float )){abort_r("Cannot understand the input format! \n");}
+  if(dir==1){buf.resize(12);for(int iv=0;iv<12;iv++){buf[iv].init(prop.geo());qlat::set_zero(buf[iv]);}}
+  if(dir==0){prop.init(buf[0].geo());}
+
+  for (long index = 0; index < prop.geo().local_volume(); ++index)
+  {
+    ////Assumed prop to be double
+    double* src = (double*) qlat::get_data(prop.get_elems(index)).data();
+    for(int d0=0;d0<12;d0++)
+    {
+      if(sizeof(Ty) == 2*sizeof(float )){
+        float*  res = (float*)&(buf[d0].get_elem(index));
+        for(int d1=0;d1<12;d1++)
+        {
+          if(dir==1){res[d1*2+0] = src[(d1*12 + d0)*2+0];res[d1*2+1] = src[(d1*12 + d0)*2+1];}
+          if(dir==0){src[(d1*12 + d0)*2+0] = res[d1*2+0];src[(d1*12 + d0)*2+1] = res[d1*2+1];}
+        }
+      }
+      if(sizeof(Ty) == 2*sizeof(double )){
+        double*  res = (double*)&(buf[d0].get_elem(index));
+        for(int d1=0;d1<12;d1++)
+        {
+          if(dir==1){res[d1*2+0] = src[(d1*12 + d0)*2+0];res[d1*2+1] = src[(d1*12 + d0)*2+1];}
+          if(dir==0){src[(d1*12 + d0)*2+0] = res[d1*2+0];src[(d1*12 + d0)*2+1] = res[d1*2+1];}
+        }
+      }
+    }
+  }
+}
+
+void save_gwu_prop(const char *filename,Propagator4d& prop){
+  io_gwu io_use(prop.geo(),32);
+  std::vector<qlat::FermionField4dT<qlat::ComplexF> > prop_qlat;
+  prop4d_to_Fermion(prop,prop_qlat, 1);
+  save_gwu_prop(filename,prop_qlat,io_use);
+  ///////load_gwu_prop(filename,prop,io_use,false);
+}
+
+void save_gwu_prop(std::string &filename,Propagator4d& prop){
+  char tem[500];
+  sprintf(tem,filename.c_str());
+  save_gwu_prop(tem,prop);
+}
+
+void load_gwu_prop(const char *filename,Propagator4d& prop){
+  io_gwu io_use(prop.geo(),32);
+  std::vector<qlat::FermionField4dT<qlat::Complex > > prop_qlat;
+  load_gwu_prop(filename,prop_qlat,io_use);
+  prop4d_to_Fermion(prop,prop_qlat, 0);
+  ///////load_gwu_prop(filename,prop,io_use,false);
+}
+
+void load_gwu_prop(std::string &filename,Propagator4d& prop){
+  char tem[500];
+  sprintf(tem,filename.c_str());
+  load_gwu_prop(tem,prop);
+}
+
+
+
+////void save_gwu_link(const char *filename,GaugeField &gf,io_gwu &io_use,bool read=true){
+////  load_gwu_link(filename,gf,io_use,false);
+////}
+
+
+
+void load_gwu_link(const char *filename,GaugeField &gf){
+  io_gwu io_use(gf.geo(),8);
+  //if(sizeof(Ty) != 2*sizeof(double ) and sizeof(Ty) != 2*sizeof(float ))
+  //{abort_r("Cannot understand the input format! \n");}
+
+  size_t noden = io_use.noden;
+  size_t Fsize = io_use.Nmpi*(4*9*noden*2)*sizeof(double);
+
+  FILE* file;
+  //if(read==true)
+  {
+  size_t sizen = get_file_size_MPI(filename);
+  if(sizen != Fsize){abort_r("Link size wrong! \n");}
+  /////gf.init(*io_use.geop);
+  }
+
+  std::vector<double > link_qlat;
+  link_qlat.resize(4*9*noden*2);
+
+  file = io_use.io_read(filename,"rb");
+  read_kentucky_vector(file,(char*) &link_qlat[0], 4*9*2,io_use, false, sizeof(double), false,9*2);
+  io_use.io_close(file);
+    
+  //////double precision eigen vector in ps base
+  ///rotate_gwu_vec_file(&prop_qlat[0], 12,noden, false);
+  /////Do not rotate source, 
+  ///gwu_to_cps_rotation_vec(&link_qlat[0], 12,noden, true, true,true);
+  ///4 dire --> c0 -- > c1
+
+  ////Geometry &geo = *io_use.geop;
+  ////May need to check gf is double prec
+  for (size_t index = 0; index < noden; ++index)
+  {
+    double* res = (double*) qlat::get_data(gf.get_elems(index)).data();
+
+    ////for(int dir=0;dir<4*9*2;dir++)res[dir] = link_qlat[dir*noden + index];
+    for(int dir=0;dir<4;dir++)
+    for(int c0=0;c0<3;c0++)
+    for(int c1=0;c1<3;c1++)
+    for(int im=0;im<2;im++){
+      int dir0 = ((dir*3+c0)*3+c1)*2+im;
+      int dir1 = ((dir*3+c1)*3+c0)*2+im;
+      res[dir0] = link_qlat[dir1*noden + index];
+    }
+  }
+}
+
+void load_gwu_link(std::string &filename,GaugeField &gf){
+  char tem[500];
+  sprintf(tem,filename.c_str());
+  load_gwu_link(tem,gf);
+}
+
 
 template<typename Ty>
 void load_gwu_noi(const char *filename,qlat::FieldM<Ty,1> &noi,io_gwu &io_use,bool read=true){
@@ -1042,7 +1166,7 @@ void load_gwu_noi(const char *filename,qlat::FieldM<Ty,1> &noi,io_gwu &io_use,bo
   if(read==false){
     std::complex<double> *src = (std::complex<double>*) &prop_noi[0];
     Ty* res = (Ty*) qlat::get_data(noi).data();
-    for(size_t isp=0;isp<noden;isp++)src[isp] = res[isp];
+    for(size_t isp=0;isp<noden;isp++)src[isp] = std::complex<double>(res[isp].real(),res[isp].imag());
     reorder_civ((char*) &prop_noi[0],(char*) &prop_noi[0], 1, 2, noden, 1,sizeof(double));
   }
 
@@ -1058,7 +1182,7 @@ void load_gwu_noi(const char *filename,qlat::FieldM<Ty,1> &noi,io_gwu &io_use,bo
     reorder_civ((char*) &prop_noi[0],(char*) &prop_noi[0], 1, 2, noden, 0,sizeof(double));
     std::complex<double> *src = (std::complex<double>*) &prop_noi[0];
     Ty* res = (Ty*) qlat::get_data(noi).data();
-    for(size_t isp=0;isp<noden;isp++)res[isp]= src[isp];
+    for(size_t isp=0;isp<noden;isp++)res[isp]= Ty(src[isp].real(),src[isp].imag());
   }
 
 }
@@ -1066,6 +1190,75 @@ void load_gwu_noi(const char *filename,qlat::FieldM<Ty,1> &noi,io_gwu &io_use,bo
 template<typename Ty>
 void save_gwu_noi(const char *filename,qlat::FieldM<Ty,1> &noi,io_gwu &io_use){
   load_gwu_noi(filename,noi,io_use,false);
+}
+
+void save_gwu_noiP(const char *filename,Propagator4d& prop){
+  io_gwu io_use(prop.geo(),32);
+  qlat::FieldM<qlat::Complex,1> noi;
+  noi.init(prop.geo());
+  qlat::set_zero(noi);
+  
+  size_t noden = io_use.noden;
+  for (size_t index = 0; index < noden; ++index)
+  {
+    ////Assumed double
+    double* src = (double*) qlat::get_data(prop.get_elems(index)).data();
+    double sum = 0.0;
+    for(int d1=0;d1<12;d1++)
+    for(int d0=0;d0<12;d0++)
+    {
+      sum += std::fabs(src[(d1*12 + d0)*2+0]);
+      sum += std::fabs(src[(d1*12 + d0)*2+1]);
+    }
+    qlat::Complex phase = qlat::Complex(src[0],src[1]);
+    if(sum >1e-8)noi.get_elem(index) = 1.0*phase;
+  }
+  save_gwu_noi(filename,noi ,io_use);
+  ///////load_gwu_prop(filename,prop,io_use,false);
+}
+
+void save_gwu_noiP(std::string &filename,Propagator4d& prop){
+  char tem[500];
+  sprintf(tem,filename.c_str());
+  save_gwu_noiP(tem,prop);
+}
+
+void load_gwu_noiP(const char *filename,Propagator4d& prop){
+  io_gwu io_use(prop.geo(),32);
+  qlat::FieldM<qlat::Complex,1> noi;
+  noi.init(prop.geo());
+  qlat::set_zero(noi);
+  load_gwu_noi(filename,noi ,io_use);
+  prop.init(noi.geo());
+  
+  size_t noden = io_use.noden;
+  for (size_t index = 0; index < noden; ++index)
+  {
+    ////Assumed double
+    double* res = (double*) qlat::get_data(prop.get_elems(index)).data();
+    double* src = (double*) qlat::get_data(noi.get_elems(index)).data();
+
+    /////for(int d1=0;d1<12;d1++)
+    /////for(int d0=0;d0<12;d0++)
+    /////{
+    /////  sum += std::fabs(src[(d1*12 + d0)*2+0]);
+    /////  sum += std::fabs(src[(d1*12 + d0)*2+1]);
+    /////}
+    for(int d0=0;d0<12;d0++)
+    {
+      res[(d0*12+d0)*2+0] = src[0];
+      res[(d0*12+d0)*2+1] = src[1];
+    }
+    ///qlat::Complex phase = qlat::Complex(src[0],src[1]);
+    ///if(sum >1e-8)noi.get_elem(index) = 1.0*phase;
+  }
+  ///////load_gwu_prop(filename,prop,io_use,false);
+}
+
+void load_gwu_noiP(std::string &filename,Propagator4d& prop){
+  char tem[500];
+  sprintf(tem,filename.c_str());
+  load_gwu_noiP(tem,prop);
 }
 
 inline void write_data(std::vector<double > dat,const char *filename, bool read=false){

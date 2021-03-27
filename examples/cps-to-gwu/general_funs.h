@@ -96,7 +96,7 @@ namespace qlat
 inline unsigned int get_node_rank_funs()
 {
   int rank;
-  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  MPI_Comm_rank(get_comm(), &rank);
   return rank;
 }
 
@@ -127,7 +127,7 @@ inline size_t get_file_size_MPI(const char *filename)
       sizen = End-Begin;
     }
   }
-  MPI_Bcast(&sizen, sizeof(size_t), MPI_CHAR, 0, MPI_COMM_WORLD);
+  MPI_Bcast(&sizen, sizeof(size_t), MPI_CHAR, 0, get_comm());
   return sizen;
 }
 
@@ -147,10 +147,10 @@ void sum_all_size_threads(Ty *src,Ty *sav,long size)
   int provided;int status = MPI_Query_thread(&provided);
   if(provided == MPI_THREAD_SINGLE)
   {
-  if(std::is_same<Ty, unsigned long>::value)MPI_Allreduce(src,res, size, MPI_UNSIGNED_LONG, MPI_SUM, MPI_COMM_WORLD);
-  if(std::is_same<Ty, int>::value)MPI_Allreduce(src,res, size, MPI_INT   , MPI_SUM, MPI_COMM_WORLD);
-  if(std::is_same<Ty, float>::value)MPI_Allreduce(src,res, size, MPI_FLOAT , MPI_SUM, MPI_COMM_WORLD);
-  if(std::is_same<Ty, double>::value)MPI_Allreduce(src,res, size, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+  if(std::is_same<Ty, unsigned long>::value)MPI_Allreduce(src,res, size, MPI_UNSIGNED_LONG, MPI_SUM, get_comm());
+  if(std::is_same<Ty, int>::value)MPI_Allreduce(src,res, size, MPI_INT   , MPI_SUM, get_comm());
+  if(std::is_same<Ty, float>::value)MPI_Allreduce(src,res, size, MPI_FLOAT , MPI_SUM, get_comm());
+  if(std::is_same<Ty, double>::value)MPI_Allreduce(src,res, size, MPI_DOUBLE, MPI_SUM, get_comm());
   }
 
   if(provided == MPI_THREAD_MULTIPLE)
@@ -163,10 +163,10 @@ void sum_all_size_threads(Ty *src,Ty *sav,long size)
       int off0  = iv*ny;
       Ty *src0 = &src[off0];
       Ty *res0 = &res[off0];
-    if(std::is_same<Ty, unsigned long>::value)MPI_Allreduce(src0,res0, size, MPI_UNSIGNED_LONG, MPI_SUM, MPI_COMM_WORLD);
-    if(std::is_same<Ty, int>::value)MPI_Allreduce(src0,res0, size, MPI_INT   , MPI_SUM, MPI_COMM_WORLD);
-    if(std::is_same<Ty, float>::value)MPI_Allreduce(src0,res0, size, MPI_FLOAT , MPI_SUM, MPI_COMM_WORLD);
-    if(std::is_same<Ty, double>::value)MPI_Allreduce(src0,res0, size, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+    if(std::is_same<Ty, unsigned long>::value)MPI_Allreduce(src0,res0, size, MPI_UNSIGNED_LONG, MPI_SUM, get_comm());
+    if(std::is_same<Ty, int>::value)MPI_Allreduce(src0,res0, size, MPI_INT   , MPI_SUM, get_comm());
+    if(std::is_same<Ty, float>::value)MPI_Allreduce(src0,res0, size, MPI_FLOAT , MPI_SUM, get_comm());
+    if(std::is_same<Ty, double>::value)MPI_Allreduce(src0,res0, size, MPI_DOUBLE, MPI_SUM, get_comm());
     }
   }
 
@@ -187,10 +187,10 @@ void sum_all_size(Ty *src,Ty *sav,long size)
     if(src != sav){memcpy(sav,src,size*sizeof(Ty));return;}
   }
 
-  if(std::is_same<Ty, unsigned long>::value)MPI_Allreduce(src,res, size, MPI_UNSIGNED_LONG, MPI_SUM, MPI_COMM_WORLD);
-  if(std::is_same<Ty, int>::value)MPI_Allreduce(src,res, size, MPI_INT   , MPI_SUM, MPI_COMM_WORLD);
-  if(std::is_same<Ty, float>::value)MPI_Allreduce(src,res, size, MPI_FLOAT , MPI_SUM, MPI_COMM_WORLD);
-  if(std::is_same<Ty, double>::value)MPI_Allreduce(src,res, size, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+  if(std::is_same<Ty, unsigned long>::value)MPI_Allreduce(src,res, size, MPI_UNSIGNED_LONG, MPI_SUM, get_comm());
+  if(std::is_same<Ty, int>::value)MPI_Allreduce(src,res, size, MPI_INT   , MPI_SUM, get_comm());
+  if(std::is_same<Ty, float>::value)MPI_Allreduce(src,res, size, MPI_FLOAT , MPI_SUM, get_comm());
+  if(std::is_same<Ty, double>::value)MPI_Allreduce(src,res, size, MPI_DOUBLE, MPI_SUM, get_comm());
 
   if(src == sav)
   {
@@ -261,7 +261,7 @@ void Bcast_all_Nt(Ty *src,long size,const qlat::Geometry &geo)
   }
 
   MPI_Alltoallv(src,(int*) &send[0],(int*) &spls[0], MPI_CHAR,
-                src,(int*) &recv[0],(int*) &rpls[0], MPI_CHAR, MPI_COMM_WORLD);
+                src,(int*) &recv[0],(int*) &rpls[0], MPI_CHAR, get_comm());
 
 }
 
@@ -308,7 +308,7 @@ void Redistribute_all_Nt(Ty *src,long size,const qlat::Geometry &geo)
   {
   ////TIMER("MPI call CPU");
   MPI_Alltoallv(src,(int*) &send[0],(int*) &spls[0], MPI_CHAR,
-            &buf[0],(int*) &recv[0],(int*) &rpls[0], MPI_CHAR, MPI_COMM_WORLD);
+            &buf[0],(int*) &recv[0],(int*) &rpls[0], MPI_CHAR, get_comm());
   }
   #pragma omp parallel for
   for(long isp=0;isp<size;isp++){src[isp] = buf[isp];}
@@ -325,7 +325,7 @@ void Redistribute_all_Nt(Ty *src,long size,const qlat::Geometry &geo)
   //  int* rplsp = (int*) &rpls[0];
   //  #pragma acc host_data use_device (src, res,sendp,splsp,recvp,rplsp)
   //  MPI_Alltoallv(src,sendp,recvp, MPI_CHAR,
-  //                res,recvp,rplsp, MPI_CHAR, MPI_COMM_WORLD);
+  //                res,recvp,rplsp, MPI_CHAR, get_comm());
   //}
   //qacc_for(isp, size,{ src[isp] = buf[isp];});
 
@@ -337,7 +337,7 @@ void Redistribute_all_Nt(Ty *src,long size,const qlat::Geometry &geo)
   ////cudaMemcpy(buf0,src, size*sizeof(Ty), cudaMemcpyHostToDevice);
   //{TIMER("MPI call GPU");
   //MPI_Alltoallv(src,(int*) &send[0],(int*) &spls[0], MPI_CHAR,
-  //          &buf0[0],(int*) &recv[0],(int*) &rpls[0], MPI_CHAR, MPI_COMM_WORLD);}
+  //          &buf0[0],(int*) &recv[0],(int*) &rpls[0], MPI_CHAR, get_comm());}
   ////cudaMemcpy(src, buf1, size*sizeof(Ty), cudaMemcpyDeviceToHost);
   //cudaMemcpy(src, buf0, size*sizeof(Ty), cudaMemcpyDeviceToDevice);
   //cudaFree(buf0);
@@ -348,7 +348,7 @@ void Redistribute_all_Nt(Ty *src,long size,const qlat::Geometry &geo)
   ////cudaMemcpy(buf0,src, size*sizeof(Ty), cudaMemcpyHostToDevice);
   //{TIMER("MPI call GPU");
   //MPI_Alltoallv(src,(int*) &send[0],(int*) &spls[0], MPI_CHAR,
-  //          &buf0[0],(int*) &recv[0],(int*) &rpls[0], MPI_CHAR, MPI_COMM_WORLD);}
+  //          &buf0[0],(int*) &recv[0],(int*) &rpls[0], MPI_CHAR, get_comm());}
   ////cudaMemcpy(src, buf1, size*sizeof(Ty), cudaMemcpyDeviceToHost);
   //cudaMemcpy(src, buf0, size*sizeof(Ty), cudaMemcpyDeviceToDevice);
   //cudaFree(buf0);
@@ -367,7 +367,7 @@ void Redistribute_all_Nt(Ty *src,long size,const qlat::Geometry &geo)
 
   //#pragma acc host_data use_device (src, res,sendp,splsp,recvp,rplsp)
   //MPI_Alltoallv(&buf0[0],(int*) &sendp[0],(int*) &splsp[0], MPI_CHAR,
-  //          &buf1[0],(int*) &recvp[0],(int*) &rplsp[0], MPI_CHAR, MPI_COMM_WORLD);
+  //          &buf1[0],(int*) &recvp[0],(int*) &rplsp[0], MPI_CHAR, get_comm());
   //}
   //cudaMemcpy(src, buf1, size*sizeof(Ty), cudaMemcpyDeviceToDevice);
   ////cudaMemcpy(src, buf1, size*sizeof(Ty), cudaMemcpyHostToHost);
@@ -384,7 +384,7 @@ void Redistribute_all_Nt(Ty *src,long size,const qlat::Geometry &geo)
 inline void abort_r(std::string stmp)
 {
   print0("%s\n",stmp.c_str());
-  MPI_Barrier(MPI_COMM_WORLD);
+  MPI_Barrier(get_comm());
   fflush(stdout);
   ////MPI_Finalize();
   qlat::end();
@@ -397,7 +397,7 @@ inline void abort_sum(double flag)
   if(flag > 0)
   {
     abort_r("");
-    //MPI_Barrier(MPI_COMM_WORLD);
+    //MPI_Barrier(get_comm());
     //fflush(stdout);
     //MPI_Finalize();
     //abort();
@@ -405,7 +405,7 @@ inline void abort_sum(double flag)
 }
 
 inline void fflush_MPI(){
-  MPI_Barrier(MPI_COMM_WORLD);
+  MPI_Barrier(get_comm());
   fflush(stdout);
 }
 
@@ -479,15 +479,15 @@ inline void set_GPU(){
   #ifdef QLAT_USE_ACC
   //int rank, local_rank, local_size;
   //MPI_Comm local_comm;
-  //MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-  ////MPI_Comm_split_type(MPI_COMM_WORLD, MPI_COMM_TYPE_SHARED, rank,  MPI_INFO_NULL, &local_comm);
+  //MPI_Comm_rank(get_comm(), &rank);
+  ////MPI_Comm_split_type(get_comm(), MPI_COMM_TYPE_SHARED, rank,  MPI_INFO_NULL, &local_comm);
   ////MPI_Comm_size(local_comm, &local_size);
   ////MPI_Comm_rank(local_comm, &local_rank);
   ////cudaSetDevice(local_rank%local_size);
   //cudaSetDevice(local_rank%local_size);
 
-  int num_node;MPI_Comm_size(MPI_COMM_WORLD, &num_node);
-  int id_node;MPI_Comm_rank(MPI_COMM_WORLD, &id_node);
+  int num_node;MPI_Comm_size(get_comm(), &num_node);
+  int id_node;MPI_Comm_rank(get_comm(), &id_node);
 
   int num_gpus = 0;
   cudaGetDeviceCount(&num_gpus);
@@ -543,9 +543,9 @@ inline int init_mpi_thread(int* argc, char **argv[])
   MPI_Init_thread(argc, argv, MPI_THREAD_MULTIPLE, &provided);
 
   int num_node;
-  MPI_Comm_size(MPI_COMM_WORLD, &num_node);
+  MPI_Comm_size(get_comm(), &num_node);
   int id_node;
-  MPI_Comm_rank(MPI_COMM_WORLD, &id_node);
+  MPI_Comm_rank(get_comm(), &id_node);
   if (0 == id_node) {
     displayln("qlat::begin(): " +
               ssprintf("MPI Initialized. num_node = %d", num_node));
@@ -570,7 +570,7 @@ inline void begin_thread(
   if (num_node != product(size_node)) {
     size_node = plan_size_node(num_node);
   }
-  begin_comm(MPI_COMM_WORLD, size_node);
+  begin_comm(get_comm(), size_node);
 }
 
 inline void print_mem_info()
@@ -703,14 +703,14 @@ void bcast_vstring(std::vector<std::string> &conf_l, const int Host_rank = 0){
   int rank = get_node_rank_funs();
   ////Bcast strings
   size_t sizen = 0;if(rank == Host_rank)sizen = conf_l.size();
-  MPI_Bcast(&sizen, sizeof(size_t), MPI_CHAR, Host_rank, MPI_COMM_WORLD);
+  MPI_Bcast(&sizen, sizeof(size_t), MPI_CHAR, Host_rank, get_comm());
   if(rank != Host_rank)conf_l.resize(sizen);
   for(int is=0;is<conf_l.size();is){
     if(rank == Host_rank)sizen = conf_l[is].size();
-    MPI_Bcast(&sizen, sizeof(size_t), MPI_CHAR, Host_rank, MPI_COMM_WORLD);
+    MPI_Bcast(&sizen, sizeof(size_t), MPI_CHAR, Host_rank, get_comm());
 
     if(rank != Host_rank)conf_l[is].resize(sizen);
-    MPI_Bcast(&conf_l[is][0], sizen, MPI_CHAR, Host_rank, MPI_COMM_WORLD);
+    MPI_Bcast(&conf_l[is][0], sizen, MPI_CHAR, Host_rank, get_comm());
   }
   ////Bcast strings
 
@@ -763,20 +763,20 @@ struct inputpara{
     if(rank == 0)read_input(filename, read_f);
     ////===Bcast read_f;
     size_t sizen = 0;if(rank == 0)sizen = read_f.size();
-    MPI_Bcast(&sizen, sizeof(size_t), MPI_CHAR, 0, MPI_COMM_WORLD);
+    MPI_Bcast(&sizen, sizeof(size_t), MPI_CHAR, 0, get_comm());
     if(rank != 0)read_f.resize(sizen);
 
     for(int is=0;is<read_f.size();is++)
     {
       if(rank == 0)sizen = read_f[is].size();
-      MPI_Bcast(&sizen, sizeof(size_t), MPI_CHAR, 0, MPI_COMM_WORLD);
+      MPI_Bcast(&sizen, sizeof(size_t), MPI_CHAR, 0, get_comm());
       if(rank != 0)read_f[is].resize(sizen);
       for(int ic=0;ic<read_f[is].size();ic++)
       {
         if(rank == 0)sizen = read_f[is][ic].size();
-        MPI_Bcast(&sizen, sizeof(size_t), MPI_CHAR, 0, MPI_COMM_WORLD);
+        MPI_Bcast(&sizen, sizeof(size_t), MPI_CHAR, 0, get_comm());
         if(rank != 0)read_f[is][ic].resize(sizen);
-        MPI_Bcast(&read_f[is][ic][0], sizen, MPI_CHAR, 0, MPI_COMM_WORLD);
+        MPI_Bcast(&read_f[is][ic][0], sizen, MPI_CHAR, 0, get_comm());
       }
     }
     ////===Bcast read_f;
@@ -807,6 +807,26 @@ struct inputpara{
 
   }
 
+};
+
+
+template<typename Yl>
+void p_vector(const Yl teml)
+{
+  std::cout << teml << " ";
+};
+
+template<typename Ty>
+void p_vector(const std::vector<Ty> teml)
+{
+  for(int i=0;i< teml.size();i++)
+  {
+    p_vector(teml[i]);
+  }
+  std::cout << std::endl;
+  //std::vector<std::vector<std::vector<int> > > c;
+  //std::cout << typeid(c).name() << std::endl;
+  //if(namev.compare("St6vectorIiSaIiEE") == 0)
 };
 
 

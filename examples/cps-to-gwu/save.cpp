@@ -11,7 +11,7 @@
 #include "../load-select-data/compute-psel-fsel-distribution.h"
 #include "../load-select-data/compute-three-point-func.h"
 #include "../load-select-data/compute-two-point-func.h"
-#include "../load-select-data/compute-wall-src-prop-norm-ratio.h"
+////#include "../load-select-data/compute-wall-src-prop-norm-ratio.h"
 
 namespace qlat{
 
@@ -47,6 +47,8 @@ int main(int argc, char* argv[])
   //in.load_para("input.txt");
   in.load_para(argc,argv);
 
+  int typel = 1;
+
   //qmkdir_info(ssprintf("analysis"));
   //
   //test();
@@ -70,9 +72,12 @@ int main(int argc, char* argv[])
     qmkdir_info(ssprintf("data/dwf_gwu/%s",job_tag.c_str()));
 
     const std::vector<int> trajs = get_data_trajs(job_tag);
+    print0("========\n");
+    if(get_node_rank_funs()==0)p_vector(trajs);
+    print0("========\n");
+    int counttraj = 0;
     for (int itraj = 0; itraj < (int)trajs.size(); ++itraj)
     //if(trajs[itraj]==in.conf)
-    if(itraj==in.conf)
     {
     //for (int itraj = 0; itraj < 1; ++itraj)
     const int traj = trajs[itraj];
@@ -91,16 +96,17 @@ int main(int argc, char* argv[])
           get_prop_psrc_exact_path(job_tag, traj), "CHECK-FILE"));
       //
       int countsave = 0;
+      if(counttraj == in.conf)
       for (int i = 0; i < (int)pis.size(); ++i) {
         ////check_sigint();
         check_sigterm();
-        check_time_limit();
+        ////check_time_limit();
 
         const PointInfo& pi = pis[i];
         const Coordinate& xg = pi.xg;
         const int type = pi.type;
         const int accuracy = pi.accuracy;
-        if (accuracy == 2 and type == 0) {
+        if (accuracy == 2 and type == typel) {
           qassert(get_does_prop_psrc_exact_exist(job_tag, traj, xg, type));
 
           const SelProp& s_prop = get_prop_psrc_exact(job_tag, traj, xg, type);
@@ -144,6 +150,7 @@ int main(int argc, char* argv[])
           for(int ti=0;ti<normT.size();ti++){normT[ti]=0.0;}
           std::vector<double > write;write.resize(2*nt);
           for(int ti=0;ti<write.size();ti++){write[ti]=0.0;}
+
           for (long idx = 0; idx < fsel.n_elems; ++idx){
             const long index = fsel.indices[idx];
             double* p = (double*)&(s_prop.get_elem(idx));
@@ -167,30 +174,43 @@ int main(int argc, char* argv[])
             int t = xg0[3];
             int toff = ((t-tini+nt)%nt);
             normT[toff] += 1.0;
-            write[toff*2 + 0 ] += buf.real();
-            write[toff*2 + 1 ] += buf.imag();
+            //write[toff*2 + 0 ] += buf.real();
+            //write[toff*2 + 1 ] += buf.imag();
 
           }
           sum_all_size((double*) &normT[0],nt);
-          sum_all_size((double*) &write[0],2*nt);
+          //sum_all_size((double*) &write[0],2*nt);
 
           char filename[500];
+          char type_name[500];
+          char namep[500];
+          sprintf(namep,"data/dwf_gwu/%s/",job_tag.c_str());
+          if(typel==0){sprintf(type_name,".");}
+          if(typel==1){sprintf(type_name,".s.");}
+
           if(in.save_prop == 1){
-            sprintf(filename,"data/dwf_gwu/%s/rbc.%s.%06d.N%06d.S",job_tag.c_str(),job_tag.c_str(),traj,countsave);
+            sprintf(filename,"%s/rbc.%s.%06d%sN%06d.S",namep,job_tag.c_str(),traj,type_name,countsave);
             save_gwu_noi(filename,noi ,io_use);
-            sprintf(filename,"data/dwf_gwu/%s/rbc.%s.%06d.N%06d.G",job_tag.c_str(),job_tag.c_str(),traj,countsave);
+            sprintf(filename,"%s/rbc.%s.%06d%sN%06d.G",namep,job_tag.c_str(),traj,type_name,countsave);
             save_gwu_noi(filename,grid,io_use);
-            sprintf(filename,"data/dwf_gwu/%s/rbc.%s.%06d.N%06d.prop",job_tag.c_str(),job_tag.c_str(),traj,countsave);
+            sprintf(filename,"%s/rbc.%s.%06d%sN%06d.prop",namep,job_tag.c_str(),traj,type_name,countsave);
             save_gwu_prop(filename,prop_qlat,io_use);
+
+            /////sprintf(filename,"data/dwf_gwu/%s/rbc.%s.%06d.N%06d.S",job_tag.c_str(),job_tag.c_str(),traj,countsave);
+            /////save_gwu_noi(filename,noi ,io_use);
+            /////sprintf(filename,"data/dwf_gwu/%s/rbc.%s.%06d.N%06d.G",job_tag.c_str(),job_tag.c_str(),traj,countsave);
+            /////save_gwu_noi(filename,grid,io_use);
+            /////sprintf(filename,"data/dwf_gwu/%s/rbc.%s.%06d.N%06d.prop",job_tag.c_str(),job_tag.c_str(),traj,countsave);
+            /////save_gwu_prop(filename,prop_qlat,io_use);
           }
 
-          //get_corr_pion(prop_qlat,xg,write);
+          get_corr_pion(prop_qlat,xg,write);
 
           for(int ti=0;ti<nt;ti++){
             write[ti*2+0] = write[ti*2+0]*nvol/normT[ti];write[ti*2+1] = write[ti*2+1]*nvol/normT[ti];
           }
 
-          sprintf(filename,"data/dwf_gwu/%s/rbc.%s.%06d.N%06d.dat",job_tag.c_str(),job_tag.c_str(),traj,countsave);
+          sprintf(filename,"data/dwf_gwu/%s/rbc.%s.%06d%sN%06d.dat",job_tag.c_str(),job_tag.c_str(),traj,type_name,countsave);
           write_data(write,filename);
 
           countsave += 1;
@@ -199,6 +219,7 @@ int main(int argc, char* argv[])
 
         }
       }
+      counttraj += 1;
     }
     }
   }
