@@ -89,14 +89,14 @@ def mk_gpt_inverter(gf, job_tag, inv_type, inv_accuracy, *, gt = None, n_grouped
         elif inv_type == 1:
             cg_mp = inv.cg({"eps": 1e-8, "maxiter": 300})
         else:
-            raise Exception("mk_inverter")
+            raise Exception("mk_gpt_inverter")
         cg_split = inv.split(cg_mp, mpi_split = g.default.get_ivec("--mpi_split", None, 4))
         if inv_type == 0:
             slv_5d = inv.preconditioned(pc.eo2_ne(), cg_split)
         elif inv_type == 1:
             slv_5d = inv.preconditioned(pc.eo2_ne(), cg_split)
         else:
-            raise Exception("mk_inverter")
+            raise Exception("mk_gpt_inverter")
         maxiter = 100
         if inv_accuracy == 0:
             maxiter = 1
@@ -105,7 +105,7 @@ def mk_gpt_inverter(gf, job_tag, inv_type, inv_accuracy, *, gt = None, n_grouped
         elif inv_accuracy == 2:
             maxiter = 50
         else:
-            raise Exception("mk_inverter")
+            raise Exception("mk_gpt_inverter")
         slv_qm = qm.propagator(
                 inv.defect_correcting(
                     inv.mixed_precision(
@@ -114,9 +114,9 @@ def mk_gpt_inverter(gf, job_tag, inv_type, inv_accuracy, *, gt = None, n_grouped
         timer = q.Timer(f"py:inv({job_tag},{inv_type},{inv_accuracy})", True)
         inv_qm = qg.InverterGPT(inverter = slv_qm, timer = timer)
     elif inv_type == 0:
-        raise Exception("mk_inverter")
+        raise Exception("mk_gpt_inverter")
     else:
-        raise Exception("mk_inverter")
+        raise Exception("mk_gpt_inverter")
     if gt is None:
         return inv_qm
     else:
@@ -143,12 +143,12 @@ def mk_qlat_inverter(gf, job_tag, inv_type, inv_accuracy, *, gt = None):
             elif inv_accuracy == 2:
                 maxiter = 50
             else:
-                raise Exception("mk_inverter")
+                raise Exception("mk_qlat_inverter")
             inv.set_max_mixed_precision_cycle(maxiter)
         else:
-            raise Exception("mk_inverter_qlat")
+            raise Exception("mk_qlat_inverter")
     else:
-        raise Exception("mk_inverter_qlat")
+        raise Exception("mk_qlat_inverter")
     if gt is None:
         return inv
     else:
