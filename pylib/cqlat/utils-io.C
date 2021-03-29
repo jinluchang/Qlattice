@@ -102,6 +102,54 @@ EXPORT(release_lock, {
   Py_RETURN_NONE;
 });
 
+EXPORT(does_file_exist, {
+  using namespace qlat;
+  PyObject* p_path = NULL;
+  if (!PyArg_ParseTuple(args, "O", &p_path)) {
+    return NULL;
+  }
+  std::string path;
+  py_convert(path, p_path);
+  const bool ret = does_file_exist(path);
+  return py_convert(ret);
+});
+
+EXPORT(does_file_exist_sync_node, {
+  using namespace qlat;
+  PyObject* p_path = NULL;
+  if (!PyArg_ParseTuple(args, "O", &p_path)) {
+    return NULL;
+  }
+  std::string path;
+  py_convert(path, p_path);
+  const bool ret = does_file_exist_sync_node(path);
+  return py_convert(ret);
+});
+
+EXPORT(is_directory, {
+  using namespace qlat;
+  PyObject* p_path = NULL;
+  if (!PyArg_ParseTuple(args, "O", &p_path)) {
+    return NULL;
+  }
+  std::string path;
+  py_convert(path, p_path);
+  const bool ret = is_directory(path);
+  return py_convert(ret);
+});
+
+EXPORT(is_directory_sync_node, {
+  using namespace qlat;
+  PyObject* p_path = NULL;
+  if (!PyArg_ParseTuple(args, "O", &p_path)) {
+    return NULL;
+  }
+  std::string path;
+  py_convert(path, p_path);
+  const bool ret = is_directory_sync_node(path);
+  return py_convert(ret);
+});
+
 EXPORT(qtouch, {
   using namespace qlat;
   PyObject* p_path = NULL;
@@ -248,4 +296,16 @@ EXPORT(qload_datatable_sync_node, {
   py_convert(path, p_path);
   const DataTable dt = qload_datatable_sync_node(path, is_par);
   return py_convert(dt);
+});
+
+EXPORT(check_time_limit, {
+  using namespace qlat;
+  check_time_limit();
+  Py_RETURN_NONE;
+});
+
+EXPORT(check_stop, {
+  using namespace qlat;
+  check_stop();
+  Py_RETURN_NONE;
 });
