@@ -568,14 +568,10 @@ inline std::string qcat_sync_node(const std::string& path)
 {
   TIMER("qcat_sync_node");
   std::string ret;
-  long length = 0;
   if (0 == get_id_node()) {
     ret = qcat(path);
-    length = ret.length();
   }
-  glb_sum(length);
-  ret.resize(length, 0);
-  bcast(get_data(ret));
+  bcast(ret);
   return ret;
 }
 
@@ -753,9 +749,9 @@ inline DataTable qload_datatable_par(FILE* fp)
   return ret;
 }
 
-inline DataTable qload_datatable(const std::string& path)
+inline DataTable qload_datatable_serial(const std::string& path)
 {
-  TIMER("qload_datatable(path)");
+  TIMER("qload_datatable_serial(path)");
   if (!does_file_exist(path)) {
     return DataTable();
   }
@@ -768,7 +764,7 @@ inline DataTable qload_datatable(const std::string& path)
 
 inline DataTable qload_datatable_par(const std::string& path)
 {
-  TIMER("qload_datatable(path)");
+  TIMER("qload_datatable_par(path)");
   if (!does_file_exist(path)) {
     return DataTable();
   }
@@ -777,6 +773,26 @@ inline DataTable qload_datatable_par(const std::string& path)
   DataTable ret = qload_datatable_par(fp);
   qclose(fp);
   return ret;
+}
+
+inline DataTable qload_datatable(const std::string& path, const bool is_par = false)
+{
+  if (is_par) {
+    return qload_datatable_par(path);
+  } else {
+    return qload_datatable_serial(path);
+  }
+}
+
+inline DataTable qload_datatable_sync_node(const std::string& path, const bool is_par = false)
+{
+  TIMER_VERBOSE("qload_datatable_sync_node");
+  DataTable dt;
+  if (0 == get_id_node()) {
+    dt = qload_datatable(path, is_par);
+  }
+  bcast(dt);
+  return dt;
 }
 
 inline LatData lat_data_load_info(const std::string& path)

@@ -142,6 +142,36 @@ EXPORT(qtouch_info, {
   }
 });
 
+EXPORT(qappend, {
+  using namespace qlat;
+  PyObject* p_path = NULL;
+  PyObject* p_content = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_path, &p_content)) {
+    return NULL;
+  }
+  std::string path;
+  py_convert(path, p_path);
+  std::string content;
+  py_convert(content, p_content);
+  const int ret = qappend(path, content);
+  return py_convert(ret);
+});
+
+EXPORT(qappend_info, {
+  using namespace qlat;
+  PyObject* p_path = NULL;
+  PyObject* p_content = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_path, &p_content)) {
+    return NULL;
+  }
+  std::string path;
+  py_convert(path, p_path);
+  std::string content;
+  py_convert(content, p_content);
+  const int ret = qappend_info(path, content);
+  return py_convert(ret);
+});
+
 EXPORT(qrename, {
   using namespace qlat;
   PyObject* p_old_path = NULL;
@@ -170,6 +200,30 @@ EXPORT(qrename_info, {
   return py_convert(ret);
 });
 
+EXPORT(qcat, {
+  using namespace qlat;
+  PyObject* p_path = NULL;
+  if (!PyArg_ParseTuple(args, "O", &p_path)) {
+    return NULL;
+  }
+  std::string path;
+  py_convert(path, p_path);
+  const std::string ret = qcat(path);
+  return py_convert(ret);
+});
+
+EXPORT(qcat_sync_node, {
+  using namespace qlat;
+  PyObject* p_path = NULL;
+  if (!PyArg_ParseTuple(args, "O", &p_path)) {
+    return NULL;
+  }
+  std::string path;
+  py_convert(path, p_path);
+  const std::string ret = qcat_sync_node(path);
+  return py_convert(ret);
+});
+
 EXPORT(qload_datatable, {
   using namespace qlat;
   PyObject* p_path = NULL;
@@ -179,14 +233,19 @@ EXPORT(qload_datatable, {
   }
   std::string path;
   py_convert(path, p_path);
-  DataTable dt;
-  if (0 == get_id_node()) {
-    if (is_par) {
-      dt = qload_datatable_par(path);
-    } else {
-      dt = qload_datatable(path);
-    }
+  const DataTable dt = qload_datatable(path, is_par);
+  return py_convert(dt);
+});
+
+EXPORT(qload_datatable_sync_node, {
+  using namespace qlat;
+  PyObject* p_path = NULL;
+  bool is_par = false;
+  if (!PyArg_ParseTuple(args, "O|O", &p_path, &is_par)) {
+    return NULL;
   }
-  bcast(dt);
+  std::string path;
+  py_convert(path, p_path);
+  const DataTable dt = qload_datatable_sync_node(path, is_par);
   return py_convert(dt);
 });

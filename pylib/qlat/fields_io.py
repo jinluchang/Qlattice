@@ -98,7 +98,7 @@ def open_fields(path, mode, new_size_node = None):
         return ShuffledFieldsWriter(path, new_size_node)
     elif mode == "a":
         if new_size_node is None:
-            return ShuffledFieldsWriter(path, (0, 0, 0, 0), True)
+            return ShuffledFieldsWriter(path, [0, 0, 0, 0], True)
         else:
             return ShuffledFieldsWriter(path, new_size_node, True)
     else:
