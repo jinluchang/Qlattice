@@ -112,34 +112,50 @@ class SelectedField:
         else:
             raise Exception("SelectedField.load")
 
-    def save_64(self, *path):
+    def save_64(self, path, *args):
         f = self.copy()
-        f.to_from_endianness("big_64")
-        return f.save(*path)
+        from qlat.fields_io import ShuffledFieldsWriter
+        if isinstance(path, str):
+            f.to_from_endianness("big_64")
+        elif isinstance(path, ShuffledFieldsWriter):
+            f.to_from_endianness("little_64")
+        return f.save(path, *args)
 
-    def save_double(self, *path):
-        return self.save_64(*path)
+    def save_double(self, path, *args):
+        return self.save_64(path, *args)
 
-    def save_float_from_double(self, *path):
+    def save_float_from_double(self, path, *args):
         ff = SelectedField("float", self.fsel)
         ff.float_from_double(self)
-        ff.to_from_endianness("big_32")
-        return ff.save(*path)
+        from qlat.fields_io import ShuffledFieldsWriter
+        if isinstance(path, str):
+            ff.to_from_endianness("big_32")
+        elif isinstance(path, ShuffledFieldsWriter):
+            ff.to_from_endianness("little_32")
+        return ff.save(path, *args)
 
-    def load_64(self, *path):
-        ret = self.load(*path)
+    def load_64(self, path, *args):
+        ret = self.load(path, *args)
         if ret > 0:
-            self.to_from_endianness("big_64")
+            from qlat.fields_io import ShuffledFieldsReader
+            if isinstance(path, str):
+                self.to_from_endianness("big_64")
+            elif isinstance(path, ShuffledFieldsReader):
+                self.to_from_endianness("little_64")
         return ret
 
-    def load_double(self, *path):
-        return self.load_64(*path)
+    def load_double(self, path, *args):
+        return self.load_64(path, *args)
 
-    def load_double_from_float(self, *path):
+    def load_double_from_float(self, path, *args):
         ff = SelectedField("float", self.fsel)
-        ret = ff.load(*path)
+        ret = ff.load(path, *args)
         if ret > 0:
-            ff.to_from_endianness("big_32")
+            from qlat.fields_io import ShuffledFieldsReader
+            if isinstance(path, str):
+                ff.to_from_endianness("big_32")
+            elif isinstance(path, ShuffledFieldsReader):
+                ff.to_from_endianness("little_32")
             self.double_from_float(ff)
         return ret
 
