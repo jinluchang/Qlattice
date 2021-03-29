@@ -67,6 +67,12 @@ EXPORT(timer_display, {
   Py_RETURN_NONE;
 });
 
+EXPORT(timer_autodisplay, {
+  using namespace qlat;
+  Timer::autodisplay();
+  Py_RETURN_NONE;
+});
+
 EXPORT(timer_display_stack_always, {
   using namespace qlat;
   Timer::display_stack_always();
