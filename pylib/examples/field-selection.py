@@ -9,10 +9,11 @@ q.begin()
 q.qremove_all_info("results")
 q.qmkdir_info("results")
 rs = q.RngState("seed")
-geo = q.Geometry((4, 4, 4, 8), 1)
+total_site = [4, 4, 4, 8]
+geo = q.Geometry(total_site, 1)
 q.displayln_info("geo.show() =", geo.show())
 
-psel = q.PointSelection([(0,0,0,0), (0,1,2,0)])
+psel = q.PointSelection([[0,0,0,0], [0,1,2,0]])
 
 psel.save("results/psel.txt")
 
@@ -21,14 +22,16 @@ psel.load("results/psel.txt")
 
 q.displayln_info("psel.list() =", psel.list())
 
-fsel = q.FieldSelection(geo.total_site(), 16, rs)
+n_per_tslice = 16
+
+fsel = q.FieldSelection(geo.total_site(), n_per_tslice, rs)
 
 q.displayln_info("fsel info =", fsel.geo().show(), fsel.n_per_tslice(), fsel.prob())
 
 fsel.save("results/fsel.field")
 
 fsel = q.FieldSelection()
-fsel.load("results/fsel.field", 16)
+fsel.load("results/fsel.field", n_per_tslice)
 fsel.save("results/fsel-1.field")
 
 q.displayln_info("fsel info =", fsel.geo().show(), fsel.n_per_tslice(), fsel.prob())

@@ -19,7 +19,6 @@ get_mem_cache_max_size_default: get_mem_cache_max_size() = 512 MB.
 CommPlanCache: to add 1 / 32.
 gf_show_info: plaq = 1.0000000000000000 ; link_trace = 1.0000000000000000.
 gf_show_info: plaq = 0.6181205439855380 ; link_trace = 0.8852498864117798.
-gf.mview().nbytes = 147456
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 0.
 qlat::end(): Finalize MPI.

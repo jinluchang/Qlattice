@@ -134,32 +134,24 @@ def test_hmc(total_site, ga):
                     "results/gm_force_info/traj={}.lat".format(traj))
 
 @q.timer_verbose
-def show_machine():
-    print("id_node: {:4} / {} ; coor_node: {:9} / {}".format(
-        q.get_id_node(),
-        q.get_num_node(),
-        str(q.get_coor_node()),
-        str(q.get_size_node())))
-
-@q.timer_verbose
 def main():
-    total_site = (4, 4, 4, 8)
+    total_site = [4, 4, 4, 8]
     ga = q.GaugeAction(2.13, -0.331)
     test_hmc(total_site, ga)
     ga = q.GaugeAction(5.5, 0.0)
     test_hmc(total_site, ga)
 
 size_node_list = [
-        (1, 1, 1, 1),
-        (1, 1, 1, 2),
-        (1, 1, 1, 4),
-        (1, 2, 2, 2),
-        (2, 2, 2, 2),
-        (2, 2, 2, 4)]
+        [1, 1, 1, 1],
+        [1, 1, 1, 2],
+        [1, 1, 1, 4],
+        [1, 2, 2, 2],
+        [2, 2, 2, 2],
+        [2, 2, 2, 4]]
 
 q.begin(sys.argv, size_node_list)
 
-# show_machine()
+# q.show_machine()
 
 q.qremove_all_info("results")
 

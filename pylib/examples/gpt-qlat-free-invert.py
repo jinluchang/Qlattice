@@ -8,9 +8,10 @@ qg.begin_with_gpt()
 
 q.qremove_all_info("results")
 q.qmkdir_info("results")
-rs = q.RngState("seed")
-geo = q.Geometry([4, 4, 4, 8], 1)
+total_site = [4, 4, 4, 8]
+geo = q.Geometry(total_site, 1)
 q.displayln_info("geo.show() =", geo.show())
+rs = q.RngState("seed")
 
 gf = q.GaugeField(geo)
 gf.set_unit()

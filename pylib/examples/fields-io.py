@@ -8,11 +8,13 @@ q.begin()
 q.qremove_all_info("results")
 q.qmkdir_info("results")
 rs = q.RngState("seed")
-geo = q.Geometry((4, 4, 4, 8), 1)
+total_site = [4, 4, 4, 8]
+geo = q.Geometry(total_site, 1)
 q.displayln_info("geo.show() =", geo.show())
 
-psel = q.PointSelection([(0,0,0,0), (0,1,2,0)])
-fsel = q.FieldSelection(geo.total_site(), 16, rs.split("fsel"))
+psel = q.PointSelection([[0,0,0,0], [0,1,2,0]])
+n_per_tslice = 16
+fsel = q.FieldSelection(geo.total_site(), n_per_tslice, rs.split("fsel"))
 
 fselc = fsel.copy()
 fselc.add_psel(psel)
@@ -21,7 +23,7 @@ prop = q.Prop(geo)
 prop.set_rand(rs.split("prop-1"))
 q.displayln_info("prop", prop.crc32(), prop.qnorm())
 
-sfw = q.open_fields("results/prop.fields", "w", (1,1,1,8))
+sfw = q.open_fields("results/prop.fields", "w", [1,1,1,8])
 
 q.displayln_info("sfw.new_size_node()", sfw.new_size_node())
 

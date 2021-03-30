@@ -74,9 +74,7 @@ class GaugeTransform(Field):
 @timer_verbose
 def gf_show_info(gf):
     assert isinstance(gf, GaugeField)
-    plaq = gf.plaq()
-    link_trace = gf.link_trace()
-    displayln_info(f"gf_show_info: plaq = {plaq:.16F} ; link_trace = {link_trace:.16F}.")
+    displayln_info(f"gf_show_info: plaq = {gf.plaq():.16F} ; link_trace = {gf.link_trace():.16F}.")
 
 def gf_avg_plaq(gf):
     assert isinstance(gf, GaugeField)

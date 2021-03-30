@@ -8,7 +8,8 @@ q.begin()
 q.qremove_all_info("results")
 q.qmkdir_info("results")
 rs = q.RngState("seed")
-geo = q.Geometry((4, 4, 4, 8), 1)
+total_site = [4, 4, 4, 8]
+geo = q.Geometry(total_site, 1)
 q.displayln_info("geo.show() =", geo.show())
 
 prop = q.Prop(geo)
@@ -34,8 +35,9 @@ prop.load_double_from_float("results/prop-float.field")
 
 q.displayln_info(f"prop.crc32() = {prop.crc32()} ; prop.qnorm() = {prop.qnorm()}")
 
-psel = q.PointSelection([(0,0,0,0), (0,1,2,0)])
-fsel = q.FieldSelection(geo.total_site(), 16, rs.split("fsel"))
+psel = q.PointSelection([[0,0,0,0], [0,1,2,0]])
+n_per_tslice = 16
+fsel = q.FieldSelection(geo.total_site(), n_per_tslice, rs.split("fsel"))
 
 fselc = fsel.copy()
 fselc.add_psel(psel)
