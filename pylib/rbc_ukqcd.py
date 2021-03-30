@@ -27,13 +27,39 @@ def get_fermion_param(job_tag, inv_type, inv_accuracy):
         elif inv_type == 1:
             params["mass"] = 0.04
         params["Ls"] = 8
-    elif job_tag == "24D" or job_tag == "32D" or job_tag == "48D" or job_tag == "24DH":
+    elif job_tag == "24D" or job_tag == "32D" or job_tag == "48D":
         params["b"] = 2.5
         params["c"] = 1.5
         if inv_type == 0:
             params["mass"] = 0.00107
         elif inv_type == 1:
             params["mass"] = 0.0850
+        else:
+            raise Exception("get_fermion_param")
+        if inv_type == 0 and (inv_accuracy == 0 or inv_accuracy == 1):
+            params["omega"] = [
+                    1.0903256131299373,
+                    0.9570283702230611,
+                    0.7048886040934104,
+                    0.48979921782791747,
+                    0.328608311201356,
+                    0.21664245377015995,
+                    0.14121112711957107,
+                    0.0907785101745156,
+                    0.05608303440064219 - 0.007537158177840385j,
+                    0.05608303440064219 + 0.007537158177840385j,
+                    0.0365221637144842 - 0.03343945161367745j,
+                    0.0365221637144842 + 0.03343945161367745j
+                    ]
+        else:
+            params["Ls"] = 24
+    elif job_tag == "24DH":
+        params["b"] = 2.5
+        params["c"] = 1.5
+        if inv_type == 0:
+            params["mass"] = 0.0174
+        elif inv_type == 1:
+            params["mass"] = 0.0985
         else:
             raise Exception("get_fermion_param")
         if inv_type == 0 and (inv_accuracy == 0 or inv_accuracy == 1):
