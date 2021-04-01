@@ -134,12 +134,29 @@ def gpt_from_qlat_prop4d(prop_wm):
     plan(gpt_prop, prop_msc.mview())
     return gpt_prop
 
+def is_gpt_prop4d(obj):
+    if isinstance(obj, g.core.lattice) and obj.describe() == "ot_matrix_spin_color(4,3);none":
+        return True
+    else:
+        return False
+
+def is_gpt_gauge_field(obj):
+    if isinstance(obj, list) and len(obj) == 4:
+        for o in obj:
+            if not (isinstance(o, g.core.lattice) and o.describe() == 'ot_matrix_su_n_fundamental_group(3);none'):
+                return False
+        return True
+    else:
+        return False
+
 @q.timer
 def qlat_from_gpt(gpt_obj):
-    if repr(gpt_obj) == "lattice(ot_matrix_spin_color(4,3),double)":
+    if is_gpt_prop4d(gpt_obj):
         return qlat_from_gpt_prop4d(gpt_obj)
-    elif repr(gpt_obj) == "[lattice(ot_matrix_su_n_fundamental_group(3),double), lattice(ot_matrix_su_n_fundamental_group(3),double), lattice(ot_matrix_su_n_fundamental_group(3),double), lattice(ot_matrix_su_n_fundamental_group(3),double)]":
+    elif is_gpt_gauge_field(gpt_obj):
         return qlat_from_gpt_gauge_field(gpt_obj)
+    elif isinstance(gpt_obj, list):
+        return [ qlat_from_gpt(p) for p in gpt_obj ]
     else:
         raise Exception("qlat_from_gpt")
 
@@ -149,6 +166,8 @@ def gpt_from_qlat(obj):
         return gpt_from_qlat_prop4d(obj)
     elif isinstance(obj, q.GaugeField):
         return gpt_from_qlat_gauge_field(obj)
+    elif isinstance(obj, list):
+        return [ gpt_from_qlat(p) for p in obj ]
     else:
         raise Exception("gpt_from_qlat")
 
@@ -172,10 +191,10 @@ class InverterGPT(q.Inverter):
         assert isinstance(self.gpt_timer, q.Timer)
 
     def __mul__(self, prop_src):
-        assert isinstance(prop_src, q.Propagator4d)
+        assert isinstance(prop_src, q.Propagator4d) or isinstance(prop_src, list)
         self.timer.start()
-        g_src = gpt_from_qlat_prop4d(prop_src)
+        g_src = gpt_from_qlat(prop_src)
         g_sol = gpt_invert(g_src, self.inverter, self.gpt_timer)
-        prop_sol = qlat_from_gpt_prop4d(g_sol)
+        prop_sol = qlat_from_gpt(g_sol)
         self.timer.stop()
         return prop_sol

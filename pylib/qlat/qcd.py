@@ -63,6 +63,8 @@ class GaugeTransform(Field):
             prop = PselProp(other.psel)
             c.apply_gt_psprop(prop, self, other)
             return prop
+        elif isinstance(other, list):
+            return [ self * p for p in other ]
         else:
             raise Exception("GaugeTransform.__mul__")
 
