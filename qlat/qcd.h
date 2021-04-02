@@ -211,6 +211,8 @@ struct GaugeFieldInfo {
   std::string ensemble_label;
   std::string creator;
   std::string date;
+  std::string datatype;
+  std::string floating_point;
   long sequence_num;
   double beta;
   double plaq, trace;
@@ -224,6 +226,8 @@ struct GaugeFieldInfo {
     creator = "Qlat";
     time_t now = std::time(NULL);
     date = shows(std::ctime(&now));
+    datatype = "4D_SU3_GAUGE";
+    floating_point = "IEEE64BIG";
     sequence_num = 0;
     beta = 0.0;
     plaq = 1.0;
@@ -291,6 +295,10 @@ inline void read_gauge_field_header(GaugeFieldInfo& gfi,
           if (info != "") {
             gfi.crc32 = read_crc32(info);
           }
+          gfi.datatype = info_get_prop(infos, "DATATYPE = ");
+          gfi.floating_point = info_get_prop(infos, "FLOATING_POINT = ");
+          remove_trailing_newline(gfi.datatype);
+          remove_trailing_newline(gfi.floating_point);
         }
       }
     }
@@ -301,6 +309,8 @@ inline void read_gauge_field_header(GaugeFieldInfo& gfi,
   bcast(Vector<double>(&gfi.plaq, 1));
   bcast(Vector<crc32_t>(&gfi.simple_checksum, 1));
   bcast(Vector<crc32_t>(&gfi.crc32, 1));
+  bcast(gfi.floating_point);
+  bcast(gfi.datatype);
 }
 
 template <class T>
@@ -341,14 +351,17 @@ long save_gauge_field(const GaugeFieldT<T>& gf, const std::string& path,
 }
 
 template <class T = ComplexT>
-long load_gauge_field(GaugeFieldT<T>& gf, const std::string& path,
-                      bool big_endianness = true)
+long load_gauge_field(GaugeFieldT<T>& gf, const std::string& path)
 // assuming gf already initialized and have correct size;
 {
   TIMER_VERBOSE_FLOPS("load_gauge_field");
   displayln_info(fname + ssprintf(": '%s'.", path.c_str()));
   GaugeFieldInfo gfi;
   read_gauge_field_header(gfi, path);
+  if (gfi.datatype != "4D_SU3_GAUGE") {
+    displayln(fname + ssprintf(": gfi.datatype '%s' id_node=%d.", gfi.datatype.c_str(), get_id_node()));
+    qassert(false);
+  }
   Geometry geo;
   geo.init(gfi.total_site, 4);
   gf.init(geo);
@@ -359,53 +372,17 @@ long load_gauge_field(GaugeFieldT<T>& gf, const std::string& path,
   if (0 == file_size) {
     return 0;
   }
-#pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
-    const Coordinate xl = geo.coordinate_from_index(index);
-    Vector<array<Complex, 6> > vt = gft.get_elems(xl);
-    if (big_endianness) {
-      to_from_big_endian_64(get_data(vt));
-    } else {
-      to_from_little_endian_64(get_data(vt));
-    }
-    Vector<ColorMatrixT<T> > v = gf.get_elems(xl);
-    for (int m = 0; m < geo.multiplicity; ++m) {
-      v[m](0, 0) = vt[m][0];
-      v[m](0, 1) = vt[m][1];
-      v[m](0, 2) = vt[m][2];
-      v[m](1, 0) = vt[m][3];
-      v[m](1, 1) = vt[m][4];
-      v[m](1, 2) = vt[m][5];
-      unitarize(v[m]);
-    }
-  }
-  timer.flops += file_size;
-  return file_size;
-}
-
-template <class T = ComplexT>
-long load_gauge_field_par(GaugeFieldT<T>& gf, const std::string& path)
-// assuming gf already initialized and have correct size;
-{
-  TIMER_VERBOSE_FLOPS("load_gauge_field_par");
-  displayln_info(fname + ssprintf(": '%s'.", path.c_str()));
-  GaugeFieldInfo gfi;
-  read_gauge_field_header(gfi, path);
-  Geometry geo;
-  geo.init(gfi.total_site, 4);
-  gf.init(geo);
-  FieldM<array<Complex, 6>, 4> gft;
-  gft.init(geo);
-  const long file_size = serial_read_field_par(
-      gft, path, -get_data_size(gft) * get_num_node(), SEEK_END);
-  if (file_size == 0) {
-    return 0;
+  if (gfi.floating_point == "IEEE64BIG") {
+    to_from_big_endian_64(get_data(gft));
+  } else if (gfi.floating_point == "IEEE64LITTLE") {
+    to_from_little_endian_64(get_data(gft));
+  } else {
+    qassert(false);
   }
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<array<Complex, 6> > vt = gft.get_elems(xl);
-    to_from_big_endian_64(get_data(vt));
     Vector<ColorMatrixT<T> > v = gf.get_elems(xl);
     for (int m = 0; m < geo.multiplicity; ++m) {
       v[m](0, 0) = vt[m][0];

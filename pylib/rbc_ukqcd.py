@@ -11,6 +11,8 @@ def get_total_site(job_tag):
         return [24, 24, 24, 64]
     elif job_tag == "32D":
         return [32, 32, 32, 64]
+    elif job_tag == "48I":
+        return [48, 48, 48, 96]
     else:
         raise Exception("get_total_site")
 

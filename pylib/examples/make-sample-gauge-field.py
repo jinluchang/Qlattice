@@ -13,11 +13,13 @@ size_node_list = [
 
 q.begin(sys.argv, size_node_list)
 
+q.qremove_all_info("results")
+q.qmkdir_info("results")
+
 total_site = [4, 4, 4, 8]
-
-geo = q.Geometry(total_site)
-
-q.displayln_info(geo.show_all())
+geo = q.Geometry(total_site, 1)
+q.displayln_info("geo.show() =", geo.show())
+rs = q.RngState("seed")
 
 gf = q.GaugeField(geo)
 
@@ -27,11 +29,23 @@ q.set_unit(gf)
 
 q.gf_show_info(gf)
 
-rs = q.RngState("gf-init")
+gf.set_rand(rs.split("gf-init"), 0.3, 1)
 
-gf.set_rand(rs, 0.3, 1)
+gf.show_info()
 
-q.gf_show_info(gf)
+plaq = gf.plaq()
+
+gf.save("results/ckpoint_lat.0")
+
+gf = q.GaugeField()
+
+gf.load("results/ckpoint_lat.0")
+
+gf.show_info()
+
+plaq1 = gf.plaq()
+
+assert abs(plaq - plaq1) < 1e-12
 
 q.timer_display()
 

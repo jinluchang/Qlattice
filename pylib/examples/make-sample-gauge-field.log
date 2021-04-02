@@ -9,16 +9,20 @@ qlat::begin(): GeometryNode =
 , id_node     = 0
 , size_node   = 1x1x1x2
 , coor_node   = 0x0x0x0 }
-Geometry([4, 4, 4, 8], 1, expansion_left=[0, 0, 0, 0], expansion_right=[0, 0, 0, 0], eo=0)
+q_timer_max_func_name_len=50 (default)
+qremove: 'results'
 q_timer_mini_auto_show=1 (default)
 q_timer_max_always_show=10 (default)
-q_timer_max_func_name_len=50 (default)
+geo.show() = Geometry([4, 4, 4, 8], 1)
 set q_field_init=fast. (implicitly)
 Geometry([4, 4, 4, 8], 4, expansion_left=[0, 0, 0, 0], expansion_right=[0, 0, 0, 0], eo=0)
 get_mem_cache_max_size_default: get_mem_cache_max_size() = 512 MB.
 CommPlanCache: to add 1 / 32.
 gf_show_info: plaq = 1.0000000000000000 ; link_trace = 1.0000000000000000.
-gf_show_info: plaq = 0.6181205439855380 ; link_trace = 0.8852498864117798.
+gf_show_info: plaq = 0.6147333258459871 ; link_trace = 0.8844956937132934.
+ShufflePlanCache: to add 1 / 16.
+load_gauge_field: 'results/ckpoint_lat.0'.
+gf_show_info: plaq = 0.6147333258459871 ; link_trace = 0.8844956937132934.
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 0.
 qlat::end(): Finalize MPI.

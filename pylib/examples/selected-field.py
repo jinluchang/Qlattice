@@ -7,10 +7,11 @@ q.begin()
 
 q.qremove_all_info("results")
 q.qmkdir_info("results")
-rs = q.RngState("seed")
+
 total_site = [4, 4, 4, 8]
 geo = q.Geometry(total_site, 1)
 q.displayln_info("geo.show() =", geo.show())
+rs = q.RngState("seed")
 
 prop = q.Prop(geo)
 prop.set_rand(rs.split("prop-1"))

@@ -110,6 +110,14 @@ inline double read_double(const std::string& str)
   return ret;
 }
 
+inline void remove_trailing_newline(std::string& s)
+{
+  while (!s.empty() and
+         (s[s.length() - 1] == '\n' or s[s.length() - 1] == '\r')) {
+    s.erase(s.length() - 1);
+  }
+}
+
 inline std::vector<std::string> split_into_lines(const std::string& str)
 {
   const size_t len = str.length();

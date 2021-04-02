@@ -83,7 +83,7 @@ EXPORT(load_gauge_field, {
   GaugeField& gf = py_convert_type<GaugeField>(p_gf);
   std::string path;
   py_convert(path, p_path);
-  const long ret = load_gauge_field_par(gf, path);
+  const long ret = load_gauge_field(gf, path);
   return py_convert(ret);
 });
 
