@@ -8,10 +8,10 @@ qlat::begin(): GeometryNode =
 , id_node     = 0
 , size_node   = 1x2x2x2
 , coor_node   = 0x0x0x0 }
-q_timer_max_func_name_len=50 (default)
 sizeof RngState = 96
 q_timer_mini_auto_show=1 (default)
 q_timer_max_always_show=10 (default)
+q_timer_max_func_name_len=50 (default)
 expected: -0.231435
 -0.231915
 expected: 0.682689

@@ -240,6 +240,10 @@ struct FieldsWriter {
     qassert(fp == NULL);
     if (geon.id_node == 0) {
       if (does_file_exist(path + ".partial")) {
+        if (is_append) {
+          displayln(ssprintf("FieldsWriter: Cannot append '%s.partial' exists.", path.c_str()));
+          qassert(false);
+        }
         qremove_all(path + ".partial");
       }
       displayln("FieldsWriter: open '" + path + ".partial'.");
