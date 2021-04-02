@@ -3,7 +3,9 @@ import qlat as q
 import gpt as g
 
 def get_total_site(job_tag):
-    if job_tag == "test-8nt16":
+    if job_tag == "test-4nt8":
+        return [4, 4, 4, 8]
+    elif job_tag == "test-8nt16":
         return [8, 8, 8, 16]
     elif job_tag == "24D":
         return [24, 24, 24, 64]
@@ -19,7 +21,7 @@ def get_fermion_param(job_tag, inv_type, inv_accuracy):
             "c": 0.0,
             "boundary_phases": [1.0, 1.0, 1.0, 1.0],
             }
-    if job_tag == "test-8nt16":
+    if job_tag in ["test-4nt8", "test-8nt16"]:
         params["b"] = 1.5
         params["c"] = 0.5
         if inv_type == 0:
@@ -27,7 +29,7 @@ def get_fermion_param(job_tag, inv_type, inv_accuracy):
         elif inv_type == 1:
             params["mass"] = 0.04
         params["Ls"] = 8
-    elif job_tag == "24D" or job_tag == "32D" or job_tag == "48D":
+    elif job_tag in ["24D", "32D", "48D"]:
         params["b"] = 2.5
         params["c"] = 1.5
         if inv_type == 0:
@@ -99,7 +101,12 @@ def get_fermion_param(job_tag, inv_type, inv_accuracy):
     return params
 
 @q.timer
-def mk_gpt_inverter(gf, job_tag, inv_type, inv_accuracy, *, gt = None, n_grouped = 4):
+def mk_gpt_inverter(gf, job_tag, inv_type, inv_accuracy, *,
+        gt = None,
+        n_grouped = 4,
+        mpi_split = None):
+    if mpi_split is None:
+        mpi_split = g.default.get_ivec("--mpi_split", None, 4)
     gpt_gf = qg.gpt_from_qlat(gf)
     pc = g.qcd.fermion.preconditioner
     if inv_type == 1:
@@ -116,7 +123,7 @@ def mk_gpt_inverter(gf, job_tag, inv_type, inv_accuracy, *, gt = None, n_grouped
             cg_mp = inv.cg({"eps": 1e-8, "maxiter": 300})
         else:
             raise Exception("mk_gpt_inverter")
-        cg_split = inv.split(cg_mp, mpi_split = g.default.get_ivec("--mpi_split", None, 4))
+        cg_split = inv.split(cg_mp, mpi_split = mpi_split)
         if inv_type == 0:
             slv_5d = inv.preconditioned(pc.eo2_ne(), cg_split)
         elif inv_type == 1:
@@ -151,7 +158,7 @@ def mk_gpt_inverter(gf, job_tag, inv_type, inv_accuracy, *, gt = None, n_grouped
 @q.timer
 def mk_qlat_inverter(gf, job_tag, inv_type, inv_accuracy, *, gt = None):
     timer = q.Timer(f"py:qinv({job_tag},{inv_type},{inv_accuracy})", True)
-    if job_tag == "24D" or job_tag == "32D":
+    if job_tag in ["24D", "32D"]:
         if inv_type == 0:
             fa = q.FermionAction(mass = 0.00107, m5 = 1.8, ls = 24, mobius_scale = 4.0)
             inv = q.InverterDomainWall(gf = gf, fa = fa, timer = timer)

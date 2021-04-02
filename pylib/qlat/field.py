@@ -66,7 +66,7 @@ class Field:
     def set_unit(self, coef = 1.0):
         c.set_unit_field(self, coef)
 
-    def set_rand(self, rng, upper = 1.0, lower = 1.0):
+    def set_rand(self, rng, upper = 1.0, lower = 0.0):
         assert isinstance(rng, RngState)
         c.set_u_rand_double_field(self, rng, upper, lower)
 

@@ -11,7 +11,8 @@ tests = make-sample-gauge-field.log \
 		gpt-qlat-free-invert.log \
 		gpt-qlat-mdwf.log \
 		gpt-qlat-madwf.log \
-		gpt-qlat-gfix-mdwf.log
+		gpt-qlat-gfix-mdwf.log \
+		gpt-qlat-rbc-ukqcd-invert.log
 
 py-examples : $(tests)
 

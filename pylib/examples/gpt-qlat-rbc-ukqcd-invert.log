@@ -1,0 +1,69 @@
+SharedMemoryMpi:  World communicator of size 2
+SharedMemoryMpi:  Node  communicator of size 1
+SharedMemoryMpi: SharedMemoryAllocate 1073741824 MMAP anonymous implementation 
+
+__|__|__|__|__|__|__|__|__|__|__|__|__|__|__
+__|__|__|__|__|__|__|__|__|__|__|__|__|__|__
+__|_ |  |  |  |  |  |  |  |  |  |  |  | _|__
+__|_                                    _|__
+__|_   GGGG    RRRR    III    DDDD      _|__
+__|_  G        R   R    I     D   D     _|__
+__|_  G        R   R    I     D    D    _|__
+__|_  G  GG    RRRR     I     D    D    _|__
+__|_  G   G    R  R     I     D   D     _|__
+__|_   GGGG    R   R   III    DDDD      _|__
+__|_                                    _|__
+__|__|__|__|__|__|__|__|__|__|__|__|__|__|__
+__|__|__|__|__|__|__|__|__|__|__|__|__|__|__
+  |  |  |  |  |  |  |  |  |  |  |  |  |  |  
+
+
+Copyright (C) 2015 Peter Boyle, Azusa Yamaguchi, Guido Cossu, Antonin Portelli and other authors
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+Current Grid git commit hash=2bb374daea0f412ab131d274c4fd2e60e2a92c3b: (HEAD, origin/feature/gpt, feature/gpt) clean
+
+
+=============================================
+              Initialized GPT                
+     Copyright (C) 2020 Christoph Lehner     
+=============================================
+qlat::begin_comm(comm,size_node): get_comm_list().push_back()
+qlat::begin_comm(comm,size_node): get_comm_list().size() = 2.
+q_num_threads=2 (default)
+qlat::begin(): q_num_threads = 2
+qlat::begin(): GeometryNode =
+{ initialized = true
+, num_node    = 2
+, id_node     = 0
+, size_node   = 1x1x1x2
+, coor_node   = 0x0x0x0 }
+q_timer_max_func_name_len=50 (default)
+qremove: 'results'
+q_timer_mini_auto_show=1 (default)
+q_timer_max_always_show=10 (default)
+geo.show() = Geometry([8, 8, 8, 16], 1)
+set q_field_init=fast. (implicitly)
+get_mem_cache_max_size_default: get_mem_cache_max_size() = 512 MB.
+CommPlanCache: to add 1 / 32.
+gf_show_info: plaq = 0.9737359772127301 ; link_trace = 0.9933659561692338.
+ShufflePlanCache: to add 1 / 16.
+prop src 0 qnorm = 786613.9719512658 crc32 = 1313177195
+prop src 1 qnorm = 786828.5160106712 crc32 = 1984585503
+prop sol 0 qnorm = 53021.38315936312 crc32 = 2971167407
+prop sol 1 qnorm = 53340.26267544426 crc32 = 1564110039
+qlat::end(): get_comm_list().pop_back()
+qlat::end(): get_comm_list().size() = 1.
+qlat::end(): Switch to old comm (foreign).
+qlat::end(): MPI_Comm_free ended comm.
+=============================================
+               Finalized GPT                 
+=============================================

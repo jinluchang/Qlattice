@@ -57,3 +57,8 @@ def convert_wm_from_mspincolor_prop(prop_wm, prop_msc):
     assert isinstance(prop_wm, Propagator4d)
     assert isinstance(prop_msc, Propagator4d)
     return c.convert_wm_from_mspincolor_prop(prop_wm, prop_msc)
+
+class FermionField4d(Field):
+
+    def __init__(self, geo = None):
+        Field.__init__(self, "WilsonVector", geo, 1)

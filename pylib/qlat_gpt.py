@@ -28,6 +28,8 @@ def mk_gpt_field(ctype, geo):
         return g.mcolor(mk_grid(geo))
     elif ctype == "WilsonMatrix":
         return g.mspincolor(mk_grid(geo))
+    elif ctype == "WilsonVector":
+        return g.vspincolor(mk_grid(geo))
     else:
         raise Exception("make_gpt_field")
 
@@ -134,8 +136,40 @@ def gpt_from_qlat_prop4d(prop_wm):
     plan(gpt_prop, prop_msc.mview())
     return gpt_prop
 
+@q.timer
+def qlat_from_gpt_ff4d(gpt_ff):
+    ctype = "WilsonVector"
+    total_site = gpt_ff.grid.fdimensions
+    multiplicity = 1
+    tag = "qlat_from_gpt"
+    plan = get_qlat_gpt_copy_plan(ctype, total_site, multiplicity, tag)
+    geo = q.Geometry(total_site, 1)
+    ff = q.FermionField4d(geo)
+    plan(ff.mview(), gpt_ff)
+    return ff
+
+@q.timer
+def gpt_from_qlat_ff4d(ff):
+    assert isinstance(ff, q.FermionField4d)
+    geo = ff.geo()
+    ctype = "WilsonVector"
+    total_site = geo.total_site()
+    multiplicity = 1
+    tag = "gpt_from_qlat"
+    plan = get_qlat_gpt_copy_plan(ctype, total_site, multiplicity, tag)
+    grid = mk_grid(geo)
+    gpt_ff = g.vspincolor(grid)
+    plan(gpt_ff, ff.mview())
+    return gpt_ff
+
 def is_gpt_prop4d(obj):
     if isinstance(obj, g.core.lattice) and obj.describe() == "ot_matrix_spin_color(4,3);none":
+        return True
+    else:
+        return False
+
+def is_gpt_ff4d(obj):
+    if isinstance(obj, g.core.lattice) and obj.describe() == "ot_vector_spin_color(4,3);none":
         return True
     else:
         return False
@@ -155,6 +189,8 @@ def qlat_from_gpt(gpt_obj):
         return qlat_from_gpt_prop4d(gpt_obj)
     elif is_gpt_gauge_field(gpt_obj):
         return qlat_from_gpt_gauge_field(gpt_obj)
+    elif is_gpt_ff4d(gpt_obj):
+        return qlat_from_gpt_ff4d(gpt_obj)
     elif isinstance(gpt_obj, list):
         return [ qlat_from_gpt(p) for p in gpt_obj ]
     else:
@@ -166,6 +202,8 @@ def gpt_from_qlat(obj):
         return gpt_from_qlat_prop4d(obj)
     elif isinstance(obj, q.GaugeField):
         return gpt_from_qlat_gauge_field(obj)
+    elif isinstance(obj, q.FermionField4d):
+        return gpt_from_qlat_ff4d(obj)
     elif isinstance(obj, list):
         return [ gpt_from_qlat(p) for p in obj ]
     else:
@@ -173,9 +211,8 @@ def gpt_from_qlat(obj):
 
 @q.timer
 def gpt_invert(src, inverter, timer = q.TimerNone()):
-    sol = g.mspincolor(src.grid)
     timer.start()
-    sol @= inverter * src
+    sol = g.eval(inverter * src)
     timer.stop()
     return sol
 
@@ -191,7 +228,7 @@ class InverterGPT(q.Inverter):
         assert isinstance(self.gpt_timer, q.Timer)
 
     def __mul__(self, prop_src):
-        assert isinstance(prop_src, q.Propagator4d) or isinstance(prop_src, list)
+        assert isinstance(prop_src, q.Propagator4d) or isinstance(prop_src, q.FermionField4d) or isinstance(prop_src, list)
         self.timer.start()
         g_src = gpt_from_qlat(prop_src)
         g_sol = gpt_invert(g_src, self.inverter, self.gpt_timer)
