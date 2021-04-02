@@ -20,6 +20,8 @@
 namespace qlat
 {  //
 
+inline void close_all_all_shuffled_fields_writer();
+
 inline void set_time_limit_auto();
 
 inline void set_default_budget_auto();
@@ -130,6 +132,7 @@ inline double get_remaining_time()
 
 inline void qquit(const std::string& msg)
 {
+  close_all_all_shuffled_fields_writer();
   release_lock();
   Timer::display();
   displayln_info("qquit: " + msg);
@@ -149,7 +152,9 @@ inline void check_time_limit(const double budget = get_default_budget())
                "= ( %.2lf + %.2lf ) / %.2lf hours.",
                get_actual_total_time() / 3600.0, budget / 3600.0,
                get_time_limit() / 3600.0));
-  if (budget + get_actual_total_time() > get_time_limit()) {
+  bool b = budget + get_actual_total_time() > get_time_limit();
+  bcast(get_data_one_elem(b));
+  if (b) {
     qquit("because too little time left.");
   }
 }

@@ -788,6 +788,33 @@ inline ShuffledBitSet mk_shuffled_bitset(const FieldM<int64_t, 1>& f_rank,
   return mk_shuffled_bitset(f_rank_combined, 0, new_size_node);
 }
 
+struct ShuffledFieldsWriter;
+
+typedef std::map<long, Handle<ShuffledFieldsWriter> > ShuffledFieldsWriterMap;
+
+inline ShuffledFieldsWriterMap& get_all_shuffled_fields_writer()
+{
+  static ShuffledFieldsWriterMap sfwm;
+  return sfwm;
+}
+
+inline void add_shuffled_fields_writer(ShuffledFieldsWriter& sfw)
+{
+  ShuffledFieldsWriterMap& sfwm = get_all_shuffled_fields_writer();
+  const long key = (long)&sfw;
+  qassert(not has(sfwm, key));
+  sfwm[key] = Handle(sfw);
+}
+
+inline void remove_shuffled_fields_writer(ShuffledFieldsWriter& sfw)
+{
+  ShuffledFieldsWriterMap& sfwm = get_all_shuffled_fields_writer();
+  const long key = (long)&sfw;
+  if (has(sfwm, key)) {
+    sfwm.erase(key);
+  }
+}
+
 struct ShuffledFieldsWriter {
   std::string path;
   Coordinate new_size_node;
@@ -817,6 +844,12 @@ struct ShuffledFieldsWriter {
   {
     init();
     path = path_;
+    if (is_append and does_file_exist_sync_node(path + ".partial")) {
+      displayln_info(
+          ssprintf("ShuffledFieldsWriter: Cannot append '%s.partial' exists.",
+                   path.c_str()));
+      qassert(false);
+    }
     if (is_append and does_file_exist_sync_node(path)) {
       qassert(does_file_exist_sync_node(path + "/geon-info.txt"));
       new_size_node = shuffled_fields_reader_size_node_info(path);
@@ -843,11 +876,13 @@ struct ShuffledFieldsWriter {
         fws[i].init(path, geons[i], is_append);
       }
     }
+    add_shuffled_fields_writer(*this);
   }
   //
   void close()
   // interface function
   {
+    remove_shuffled_fields_writer(*this);
     std::vector<GeometryNode> geons = make_dist_io_geons(new_size_node);
     for (int i = 0; i < (int)fws.size(); ++i) {
       if (geons[i].id_node != 0) {
@@ -863,6 +898,20 @@ struct ShuffledFieldsWriter {
     clear(fws);
   }
 };
+
+inline void close_all_all_shuffled_fields_writer()
+{
+  TIMER_VERBOSE("close_all_all_shuffled_fields_writer");
+  ShuffledFieldsWriterMap& sfwm = get_all_shuffled_fields_writer();
+  std::vector<Handle<ShuffledFieldsWriter> > sfwv;
+  for (auto it = sfwm.begin(); it != sfwm.end(); ++it) {
+    sfwv.push_back(it->second);
+  }
+  for (long i = 0; i < (long)sfwv.size(); ++i) {
+    sfwv[i]().close();
+  }
+  qassert(sfwm.size() == 0);
+}
 
 struct ShuffledFieldsReader {
   std::string path;
