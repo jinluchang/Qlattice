@@ -42,7 +42,7 @@ class GaugeTransform(Field):
         c.unitarize_color_matrix_field(self)
 
     def __mul__(self, other):
-        from qlat.propagator import Propagator4d, Prop, SelProp, PselProp
+        from qlat.propagator import Prop, SelProp, PselProp
         if isinstance(other, GaugeTransform):
             gt = GaugeTransform()
             c.apply_gt_gt(gt, self, other)
@@ -51,7 +51,7 @@ class GaugeTransform(Field):
             gf = GaugeField()
             c.apply_gt_gf(gf, self, other)
             return gf
-        elif isinstance(other, Propagator4d):
+        elif isinstance(other, Prop):
             prop = Prop()
             c.apply_gt_prop(prop, self, other)
             return prop

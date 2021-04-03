@@ -107,7 +107,7 @@ def gpt_from_qlat_gauge_field(gf):
     return gpt_gf
 
 @q.timer
-def qlat_from_gpt_prop4d(gpt_prop):
+def qlat_from_gpt_prop(gpt_prop):
     ctype = "WilsonMatrix"
     total_site = gpt_prop.grid.fdimensions
     multiplicity = 1
@@ -121,8 +121,8 @@ def qlat_from_gpt_prop4d(gpt_prop):
     return prop_wm
 
 @q.timer
-def gpt_from_qlat_prop4d(prop_wm):
-    assert isinstance(prop_wm, q.Propagator4d)
+def gpt_from_qlat_prop(prop_wm):
+    assert isinstance(prop_wm, q.Prop)
     geo = prop_wm.geo()
     ctype = "WilsonMatrix"
     total_site = geo.total_site()
@@ -162,7 +162,7 @@ def gpt_from_qlat_ff4d(ff):
     plan(gpt_ff, ff.mview())
     return gpt_ff
 
-def is_gpt_prop4d(obj):
+def is_gpt_prop(obj):
     if isinstance(obj, g.core.lattice) and obj.describe() == "ot_matrix_spin_color(4,3);none":
         return True
     else:
@@ -185,8 +185,8 @@ def is_gpt_gauge_field(obj):
 
 @q.timer
 def qlat_from_gpt(gpt_obj):
-    if is_gpt_prop4d(gpt_obj):
-        return qlat_from_gpt_prop4d(gpt_obj)
+    if is_gpt_prop(gpt_obj):
+        return qlat_from_gpt_prop(gpt_obj)
     elif is_gpt_gauge_field(gpt_obj):
         return qlat_from_gpt_gauge_field(gpt_obj)
     elif is_gpt_ff4d(gpt_obj):
@@ -198,8 +198,8 @@ def qlat_from_gpt(gpt_obj):
 
 @q.timer
 def gpt_from_qlat(obj):
-    if isinstance(obj, q.Propagator4d):
-        return gpt_from_qlat_prop4d(obj)
+    if isinstance(obj, q.Prop):
+        return gpt_from_qlat_prop(obj)
     elif isinstance(obj, q.GaugeField):
         return gpt_from_qlat_gauge_field(obj)
     elif isinstance(obj, q.FermionField4d):
@@ -228,7 +228,7 @@ class InverterGPT(q.Inverter):
         assert isinstance(self.gpt_timer, q.Timer)
 
     def __mul__(self, prop_src):
-        assert isinstance(prop_src, q.Propagator4d) or isinstance(prop_src, q.FermionField4d) or isinstance(prop_src, list)
+        assert isinstance(prop_src, q.Prop) or isinstance(prop_src, q.FermionField4d) or isinstance(prop_src, list)
         self.timer.start()
         g_src = gpt_from_qlat(prop_src)
         g_sol = gpt_invert(g_src, self.inverter, self.gpt_timer)

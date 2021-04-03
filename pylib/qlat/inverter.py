@@ -24,7 +24,7 @@ class InverterDwfFreeField(Inverter):
         assert isinstance(self.timer, Timer)
 
     def __mul__(self, prop_src):
-        if isinstance(prop_src, Propagator4d):
+        if isinstance(prop_src, Prop):
             self.timer.start()
             prop_sol = free_invert(prop_src, self.mass, self.m5, self.momtwist)
             self.timer.stop()
@@ -45,7 +45,7 @@ class InverterDomainWall(Inverter):
         c.free_inverter_domain_wall(self)
 
     def __mul__(self, prop_src):
-        if isinstance(prop_src, Propagator4d):
+        if isinstance(prop_src, Prop):
             self.timer.start()
             prop_sol = Prop()
             c.invert_inverter_domain_wall(prop_sol, prop_src, self)
@@ -87,7 +87,7 @@ class InverterGaugeTransform(Inverter):
         self.gt_inv = self.gt.inv()
 
     def __mul__(self, prop_src):
-        assert isinstance(prop_src, Propagator4d) or isinstance(prop_src, list)
+        assert isinstance(prop_src, Prop) or isinstance(prop_src, list)
         self.timer.start()
         src = self.gt_inv * prop_src
         sol = self.inverter * src

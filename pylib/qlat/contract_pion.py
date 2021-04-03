@@ -7,7 +7,7 @@ from qlat.propagator import *
 @timer
 def contract_pion_field(prop, tslice):
     ld = LatData()
-    if isinstance(prop, Propagator4d):
+    if isinstance(prop, Prop):
         c.contract_pion_field(ld, prop, tslice)
     elif isinstance(prop, SelProp):
         c.contract_pion_sfield(ld, prop, tslice)
