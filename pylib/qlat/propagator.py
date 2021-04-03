@@ -10,6 +10,11 @@ class Prop(Field):
     def __init__(self, geo = None):
         Field.__init__(self, "WilsonMatrix", geo, 1)
 
+    def copy(self):
+        f = Prop()
+        f @= self
+        return f
+
     def sparse(self, sel):
         if isinstance(sel, PointSelection):
             psel = sel
@@ -29,6 +34,11 @@ class SelProp(SelectedField):
     def __init__(self, fsel):
         SelectedField.__init__(self, "WilsonMatrix", fsel, 1)
 
+    def copy(self):
+        f = SelProp(self.fsel)
+        f @= self
+        return f
+
     def sparse(self, sel):
         if isinstance(sel, PointSelection):
             psel = sel
@@ -47,6 +57,11 @@ class PselProp(SelectedPoints):
 
     def __init__(self, psel):
         SelectedPoints.__init__(self, "WilsonMatrix", psel, 1)
+
+    def copy(self):
+        f = PselProp(self.psel)
+        f @= self
+        return f
 
 def set_point_src(prop_src, geo, xg, value = 1.0):
     c.set_point_src_prop(prop_src, geo, xg, value)
