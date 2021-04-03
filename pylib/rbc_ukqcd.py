@@ -111,7 +111,7 @@ def mk_gpt_inverter(gf, job_tag, inv_type, inv_accuracy, *,
         mpi_split = g.default.get_ivec("--mpi_split", None, 4)
     gpt_gf = qg.gpt_from_qlat(gf)
     pc = g.qcd.fermion.preconditioner
-    if inv_type == 1:
+    if inv_type in [0, 1]:
         param = get_fermion_param(job_tag, inv_type, inv_accuracy)
         qm = None
         if "omega" in param:
@@ -148,8 +148,6 @@ def mk_gpt_inverter(gf, job_tag, inv_type, inv_accuracy, *,
                     eps=1e-8, maxiter=maxiter)).grouped(n_grouped)
         timer = q.Timer(f"py:inv({job_tag},{inv_type},{inv_accuracy})", True)
         inv_qm = qg.InverterGPT(inverter = slv_qm, timer = timer)
-    elif inv_type == 0:
-        raise Exception("mk_gpt_inverter")
     else:
         raise Exception("mk_gpt_inverter")
     if gt is None:
@@ -164,15 +162,24 @@ def mk_qlat_inverter(gf, job_tag, inv_type, inv_accuracy, *, gt = None):
         if inv_type == 0:
             fa = q.FermionAction(mass = 0.00107, m5 = 1.8, ls = 24, mobius_scale = 4.0)
             inv = q.InverterDomainWall(gf = gf, fa = fa, timer = timer)
-            return inv
+            inv.set_stop_rsd(1e-8)
+            inv.set_max_num_iter(300)
+            if inv_accuracy == 0:
+                maxiter = 1
+            elif inv_accuracy == 1:
+                maxiter = 2
+            elif inv_accuracy == 2:
+                maxiter = 50
+            else:
+                raise Exception("mk_qlat_inverter")
+            inv.set_max_mixed_precision_cycle(maxiter)
         elif inv_type == 1:
             fa = q.FermionAction(mass = 0.0850, m5 = 1.8, ls = 24, mobius_scale = 4.0)
             inv = q.InverterDomainWall(gf = gf, fa = fa, timer = timer)
             inv.set_stop_rsd(1e-8)
             inv.set_max_num_iter(300)
-            maxiter = 100
             if inv_accuracy == 0:
-                max_mixed_precision_cycle = -1
+                maxiter = 1
             elif inv_accuracy == 1:
                 maxiter = 2
             elif inv_accuracy == 2:
