@@ -2,7 +2,6 @@ import cqlat as c
 
 from qlat.field import *
 from qlat.rng_state import *
-
 from qlat.selected_field import *
 from qlat.selected_points import *
 

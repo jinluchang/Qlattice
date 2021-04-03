@@ -13,3 +13,19 @@ EXPORT(contract_pion_field, {
   ld = contract_pion(prop, tslice_src);
   Py_RETURN_NONE;
 });
+
+EXPORT(contract_pion_sfield, {
+  using namespace qlat;
+  PyObject* p_ld = NULL;
+  PyObject* p_prop = NULL;
+  int tslice_src = -1;
+  if (!PyArg_ParseTuple(args, "OOi", &p_ld, &p_prop, &tslice_src)) {
+    return NULL;
+  }
+  LatData& ld = py_convert_type<LatData>(p_ld);
+  const SelProp& prop = py_convert_type<SelProp>(p_prop);
+  PyObject* p_fsel = PyObject_GetAttrString(p_prop, "fsel");
+  const FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
+  ld = contract_pion(prop, tslice_src, fsel);
+  Py_RETURN_NONE;
+});
