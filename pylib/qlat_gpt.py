@@ -60,15 +60,15 @@ def mk_qlat_gpt_copy_plan(ctype, total_site, multiplicity, tag):
         q.displayln_info(tag)
         raise Exception("mk_qlat_gpt_copy_plan")
 
-qlat_gpt_copy_plan_cache = {}
+cache_qlat_gpt_copy_plan = q.mk_cache("qlat_gpt_copy_plan")
 
 def get_qlat_gpt_copy_plan(ctype, total_site, multiplicity, tag):
     key = mk_qlat_gpt_copy_plan_key(ctype, total_site, multiplicity, tag)
-    if key in qlat_gpt_copy_plan_cache:
-        return qlat_gpt_copy_plan_cache[key]
+    if key in cache_qlat_gpt_copy_plan:
+        return cache_qlat_gpt_copy_plan[key]
     else:
         plan = mk_qlat_gpt_copy_plan(ctype, total_site, multiplicity, tag)
-        qlat_gpt_copy_plan_cache[key] = plan
+        cache_qlat_gpt_copy_plan[key] = plan
         return plan
 
 @q.timer

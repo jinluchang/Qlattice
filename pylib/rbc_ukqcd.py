@@ -105,10 +105,12 @@ def get_fermion_param(job_tag, inv_type, inv_accuracy):
 @q.timer
 def mk_gpt_inverter(gf, job_tag, inv_type, inv_accuracy, *,
         gt = None,
-        n_grouped = 4,
-        mpi_split = None):
+        mpi_split = None,
+        n_grouped = 1):
     if mpi_split is None:
         mpi_split = g.default.get_ivec("--mpi_split", None, 4)
+        if mpi_split is not None:
+            n_grouped = g.default.get_int("--grouped", 4)
     gpt_gf = qg.gpt_from_qlat(gf)
     pc = g.qcd.fermion.preconditioner
     if inv_type in [0, 1]:
@@ -125,7 +127,10 @@ def mk_gpt_inverter(gf, job_tag, inv_type, inv_accuracy, *,
             cg_mp = inv.cg({"eps": 1e-8, "maxiter": 300})
         else:
             raise Exception("mk_gpt_inverter")
-        cg_split = inv.split(cg_mp, mpi_split = mpi_split)
+        if mpi_split is None:
+            cg_split = cg_mp
+        else:
+            cg_split = inv.split(cg_mp, mpi_split = mpi_split)
         if inv_type == 0:
             slv_5d = inv.preconditioned(pc.eo2_ne(), cg_split)
         elif inv_type == 1:
