@@ -62,6 +62,23 @@ EXPORT(mk_list_psel, {
   return py_convert(psel);
 });
 
+EXPORT(set_rand_psel, {
+  using namespace qlat;
+  PyObject* p_psel = NULL;
+  PyObject* p_rng = NULL;
+  PyObject* p_total_site = NULL;
+  long n_points = 0;
+  if (!PyArg_ParseTuple(args, "OOOl", &p_psel, &p_rng, &p_total_site, &n_points)) {
+    return NULL;
+  }
+  PointSelection& psel = py_convert_type<PointSelection>(p_psel);
+  const RngState& rs = py_convert_type<RngState>(p_rng);
+  Coordinate total_site;
+  py_convert(total_site, p_total_site);
+  psel = mk_random_point_selection(total_site, n_points, rs);
+  Py_RETURN_NONE;
+});
+
 EXPORT(mk_fsel, {
   using namespace qlat;
   PyObject* p_total_site = NULL;

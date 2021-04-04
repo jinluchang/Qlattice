@@ -1,10 +1,10 @@
 import cqlat as c
 
 from qlat.field import *
-
 from qlat.lat_io import *
 
 from cqlat import index_from_coordinate, coordinate_from_index
+from cqlat import random_permute
 
 def sqr(x):
     return x * x

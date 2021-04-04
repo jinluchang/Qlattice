@@ -25,6 +25,9 @@ class PointSelection:
         x @= self
         return x
 
+    def set_rand(self, rs, total_site, n_points):
+        c.set_rand_psel(self, rs, total_site, n_points)
+
     def save(self, path):
         c.save_psel(self, path)
 
