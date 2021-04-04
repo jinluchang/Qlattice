@@ -1,8 +1,11 @@
 import cqlat as c
 
 from qlat.field import *
+from qlat.cache import *
 from qlat.field_selection import *
 from qlat.selected_field import *
+
+cache_fields_io = mk_cache("fields_io")
 
 class ShuffledFieldsWriter:
 
@@ -10,16 +13,12 @@ class ShuffledFieldsWriter:
         assert isinstance(path, str)
         assert isinstance(is_append , bool)
         self.cdata = c.mk_sfw(path, new_size_node, is_append)
-        # cache one fsel and its corresponding sbs
-        self.fsel = None
-        self.sbs = None
 
     def close(self):
         if not (self.cdata is None):
             c.free_sfw(self)
         self.cdata = None
-        self.fsel = None
-        self.sbs = None
+        cache_fields_io.pop(id(self), None)
 
     def __del__(self):
         self.close()
@@ -27,15 +26,21 @@ class ShuffledFieldsWriter:
     def new_size_node(self):
         return c.get_new_size_node_sfw(self)
 
+    def get_cache_sbs(self, fsel):
+        if id(self) in cache_fields_io:
+            [ c_fsel, c_sbs ] = cache_fields_io[id(self)]
+            if fsel is c_fsel:
+                return c_sbs
+        sbs = ShuffledBitSet(fsel, self.new_size_node())
+        cache_fields_io[id(self)] = [ fsel, sbs ]
+        return sbs
+
     def write(self, fn, obj):
         assert isinstance(fn, str)
         if isinstance(obj, Field):
             return c.write_sfw_field(self, fn, obj)
         elif isinstance(obj, SelectedField):
-            if not (self.fsel is obj.fsel):
-                self.fsel = obj.fsel
-                self.sbs = ShuffledBitSet(self.fsel, self.new_size_node())
-            return c.write_sfw_sfield(self, fn, obj, self.sbs)
+            return c.write_sfw_sfield(self, fn, obj, self.get_cache_sbs(obj.fsel))
         else:
             raise Exception("ShuffledFieldsWriter.save")
 
@@ -47,16 +52,12 @@ class ShuffledFieldsReader:
             self.cdata = c.mk_sfr(path)
         else:
             self.cdata = c.mk_sfr(path, new_size_node)
-        # cache one fsel and its corresponding sbs
-        self.fsel = None
-        self.sbs = None
 
     def close(self):
         if not (self.cdata is None):
             c.free_sfr(self)
         self.cdata = None
-        self.fsel = None
-        self.sbs = None
+        cache_fields_io.pop(id(self), None)
 
     def __del__(self):
         self.close()
@@ -64,15 +65,21 @@ class ShuffledFieldsReader:
     def new_size_node(self):
         return c.get_new_size_node_sfr(self)
 
+    def get_cache_sbs(self, fsel):
+        if id(self) in cache_fields_io:
+            [ c_fsel, c_sbs ] = cache_fields_io[id(self)]
+            if fsel is c_fsel:
+                return c_sbs
+        sbs = ShuffledBitSet(fsel, self.new_size_node())
+        cache_fields_io[id(self)] = [ fsel, sbs ]
+        return sbs
+
     def read(self, fn, obj):
         assert isinstance(fn, str)
         if isinstance(obj, Field):
             return c.read_sfr_field(self, fn, obj)
         elif isinstance(obj, SelectedField):
-            if not (self.fsel is obj.fsel):
-                self.fsel = obj.fsel
-                self.sbs = ShuffledBitSet(self.fsel, self.new_size_node())
-            return c.read_sfr_sfield(self, fn, self.sbs, obj)
+            return c.read_sfr_sfield(self, fn, self.get_cache_sbs(obj.fsel), obj)
         else:
             raise Exception("ShuffledFieldsReader.load")
 

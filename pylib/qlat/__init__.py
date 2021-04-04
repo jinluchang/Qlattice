@@ -14,6 +14,8 @@ from qlat.geometry import *
 
 from qlat.field import *
 
+from qlat.cache import *
+
 from qlat.utils import *
 
 from qlat.utils_io import *
