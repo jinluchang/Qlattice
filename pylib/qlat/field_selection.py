@@ -39,17 +39,14 @@ class PointSelection:
 
 class FieldSelection:
 
-    def __init__(self, total_site = None, n_per_tslice = -1, rng = None, psel = None):
-        if None == total_site:
-            self.cdata = c.mk_fsel()
-        else:
+    def __init__(self, total_site = None, n_per_tslice = -1, rs = None, psel = None):
+        self.cdata = c.mk_fsel()
+        if not (total_site is None):
+            assert isinstance(rs, RngState)
             assert isinstance(n_per_tslice, int)
-            assert isinstance(rng, RngState)
-            if None == psel:
-                self.cdata = c.mk_fsel(total_site, n_per_tslice, rng)
-            else:
-                assert isinstance(psel, PointSelection)
-                self.cdata = c.mk_fsel(total_site, n_per_tslice, rng, psel)
+            c.set_rand_fsel(self, rs, total_site, n_per_tslice)
+            if not (psel is None):
+                c.add_psel_fsel(self, psel)
             self.update()
             self.update(n_per_tslice)
 
@@ -66,11 +63,20 @@ class FieldSelection:
         x @= self
         return x
 
+    def set_rand(self, rs, total_site, n_per_tslice):
+        assert isinstance(rs, RngState)
+        assert isinstance(n_per_tslice, int)
+        c.set_rand_fsel(self, rs, total_site, n_per_tslice)
+        self.update()
+        self.update(n_per_tslice)
+
     def add_psel(self, psel):
         c.add_psel_fsel(self, psel)
         self.update()
 
     def update(self, n_per_tslice = -1):
+        # if n_per_tslice < 0: only update various indices
+        # if n_per_tslice >= 0:  only update parameters
         c.update_fsel(self, n_per_tslice)
 
     def save(self, path):

@@ -81,27 +81,7 @@ EXPORT(set_rand_psel, {
 
 EXPORT(mk_fsel, {
   using namespace qlat;
-  PyObject* p_total_site = NULL;
-  long n_per_tslice = 0;
-  PyObject* p_rng = NULL;
-  PyObject* p_psel = NULL;
-  if (!PyArg_ParseTuple(args, "|OlOO", &p_total_site, &n_per_tslice, &p_rng,
-                        &p_psel)) {
-    return NULL;
-  }
   FieldSelection* pfsel = new FieldSelection();
-  if (NULL != p_total_site) {
-    FieldSelection& fsel = *pfsel;
-    Coordinate total_site;
-    py_convert(total_site, p_total_site);
-    pqassert(NULL != p_rng);
-    RngState& rs = py_convert_type<RngState>(p_rng);
-    mk_field_selection(fsel.f_rank, total_site, n_per_tslice, rs);
-    if (NULL != p_psel) {
-      PointSelection& psel = py_convert_type<PointSelection>(p_psel);
-      add_field_selection(fsel.f_rank, psel);
-    }
-  }
   return py_convert((void*)pfsel);
 });
 
@@ -142,6 +122,24 @@ EXPORT(save_fsel, {
   py_convert(path, p_path);
   const long ret = write_field_selection(fsel, path);
   return py_convert(ret);
+});
+
+EXPORT(set_rand_fsel, {
+  using namespace qlat;
+  PyObject* p_fsel = NULL;
+  PyObject* p_rng = NULL;
+  PyObject* p_total_site = NULL;
+  long n_per_tslice = 0;
+  if (!PyArg_ParseTuple(args, "OOOl", &p_fsel, &p_rng, &p_total_site,
+                        &n_per_tslice)) {
+    return NULL;
+  }
+  FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
+  const RngState& rs = py_convert_type<RngState>(p_rng);
+  Coordinate total_site;
+  py_convert(total_site, p_total_site);
+  mk_field_selection(fsel.f_rank, total_site, n_per_tslice, rs);
+  Py_RETURN_NONE;
 });
 
 EXPORT(add_psel_fsel, {

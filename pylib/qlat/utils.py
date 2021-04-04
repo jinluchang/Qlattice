@@ -2,9 +2,9 @@ import cqlat as c
 
 from qlat.field import *
 from qlat.lat_io import *
+from qlat.rng_state import *
 
 from cqlat import index_from_coordinate, coordinate_from_index
-from cqlat import random_permute
 
 def sqr(x):
     return x * x
@@ -24,3 +24,9 @@ def show(x):
 def unitarize(x):
     x.unitarize()
 
+def random_permute(l, rs):
+    # Do not change ``l''.
+    # Return a new permutated list.
+    assert isinstance(l, list)
+    assert isinstance(rs, RngState)
+    return c.random_permute(l, rs)
