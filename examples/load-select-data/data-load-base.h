@@ -397,7 +397,7 @@ inline const SelProp& get_prop_psrc(const std::string& job_tag, const int traj,
                                       "qnorm = %24.17E or %24.17E.",
                                       qnorm_ps_prop_diff, qnorm_ps_prop,
                                       qnorm(ps_prop)));
-      qassert(qnorm_ps_prop_diff == 0.0);
+      qassert(qnorm_ps_prop_diff <= 1e-10 * qnorm_ps_prop);
     }
   }
   return s_cache[key];
@@ -451,7 +451,7 @@ inline const SelProp& get_prop_wsrc(const std::string& job_tag, const int traj,
                                       "qnorm = %24.17E or %24.17E.",
                                       qnorm_ps_prop_diff, qnorm_ps_prop,
                                       qnorm(ps_prop)));
-      qassert(qnorm_ps_prop_diff == 0.0);
+      qassert(qnorm_ps_prop_diff <= 1e-10 * qnorm_ps_prop);
     }
   }
   return s_cache[key];
@@ -508,7 +508,7 @@ inline const SelProp& get_prop_psrc_exact(const std::string& job_tag,
                                       "qnorm = %24.17E or %24.17E.",
                                       qnorm_ps_prop_diff, qnorm_ps_prop,
                                       qnorm(ps_prop)));
-      qassert(qnorm_ps_prop_diff == 0.0);
+      qassert(qnorm_ps_prop_diff <= 1e-10 * qnorm_ps_prop);
     }
   }
   return s_cache[key];
