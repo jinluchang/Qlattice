@@ -30,6 +30,8 @@ inline int tsep_op_wall_src(const std::string& job_tag)
     return 12;
   } else if (job_tag == "64I") {
     return 18;
+  } else if (job_tag == "test-4nt16") {
+    return 2;
   } else {
     qassert(false);
   }

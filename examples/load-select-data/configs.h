@@ -16,6 +16,10 @@ inline std::vector<int> get_data_trajs(const std::string& job_tag)
     for (int i = 500; i < 3000; i += 10) {
       ret.push_back(i);
     }
+  } else if (job_tag == "test-4nt16") {
+    for (int i = 1000; i < 2000; i += 100) {
+      ret.push_back(i);
+    }
   } else if (job_tag == "24D") {
     for (int i = 1010; i < 3000; i += 10) {
       ret.push_back(i);

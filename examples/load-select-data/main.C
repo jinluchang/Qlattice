@@ -63,6 +63,7 @@ inline void compute(const std::string& job_tag)
 inline void test()
 {
   TIMER_VERBOSE("test");
+  compute_traj("test-4nt16", 1010);
   compute_traj("24D", 1010);
   compute_traj("24D", 1900);
   compute_traj("24D", 1010);
@@ -100,6 +101,7 @@ int main(int argc, char* argv[])
   //
   std::vector<std::string> job_tags;
   // SADJUST ME
+  job_tags.push_back("test-4nt16");
   job_tags.push_back("24D");
   job_tags.push_back("32D");
   job_tags.push_back("24DH");
