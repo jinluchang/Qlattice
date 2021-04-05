@@ -239,7 +239,7 @@ inline void test_io()
   displayln_info(ssprintf("crc32 = %08X", field_crc32(gf)));
   qassert(ucrc == field_dist_crc32(gf));
   set_unit(gf);
-  load_gauge_field_par(gf, ssprintf("huge-data/rgf-0.1.gf.conf.%010d", 0));
+  load_gauge_field(gf, ssprintf("huge-data/rgf-0.1.gf.conf.%010d", 0));
   displayln_info(ssprintf("dist_crc32 = %08X", field_dist_crc32(gf)));
   displayln_info(ssprintf("crc32 = %08X", field_crc32(gf)));
   qassert(ucrc == field_dist_crc32(gf));
