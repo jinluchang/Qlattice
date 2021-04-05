@@ -164,7 +164,7 @@ inline void prop_apply_gauge_transformation(
 }
 
 inline void prop_apply_gauge_transformation(
-    std::vector<WilsonMatrix>& prop, const std::vector<WilsonMatrix>& prop0,
+    vector<WilsonMatrix>& prop, const vector<WilsonMatrix>& prop0,
     const GaugeTransform& gt, const std::vector<Coordinate>& pcs)
 {
   TIMER("prop_apply_gauge_transformation");
@@ -172,7 +172,7 @@ inline void prop_apply_gauge_transformation(
   qassert(geo.multiplicity == 1);
   const long num_points = pcs.size();
   qassert((long)prop0.size() == num_points);
-  std::vector<WilsonMatrix> tmp;
+  vector<WilsonMatrix> tmp;
   tmp.resize(num_points);
   set_zero(tmp);
   qacc_for(i, num_points, {

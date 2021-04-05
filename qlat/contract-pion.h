@@ -102,7 +102,7 @@ inline LatData contract_pion_wall_snk(const SelProp& prop, const int tslice_src,
   TIMER_VERBOSE("contract_pion_wall_snk(s_prop,fsel)");
   const Geometry& geo = prop.geo();
   const Coordinate total_site = geo.total_site();
-  const std::vector<WilsonMatrix> wm_ts = contract_wall_snk_prop(prop, fsel);
+  const vector<WilsonMatrix> wm_ts = contract_wall_snk_prop(prop, fsel);
   qassert((int)wm_ts.size() == total_site[3]);
   LatData ld = mk_pion_corr_table(total_site);
   Vector<Complex> ldv = lat_data_cget(ld);
@@ -125,8 +125,8 @@ inline LatData contract_kaon_wall_snk(const SelProp& prop1,
   TIMER_VERBOSE("contract_kaon_wall_snk(s_prop1,s_prop2,tsrc,fsel)");
   const Geometry& geo = prop1.geo();
   const Coordinate total_site = geo.total_site();
-  const std::vector<WilsonMatrix> wm1_ts = contract_wall_snk_prop(prop1, fsel);
-  const std::vector<WilsonMatrix> wm2_ts = contract_wall_snk_prop(prop2, fsel);
+  const vector<WilsonMatrix> wm1_ts = contract_wall_snk_prop(prop1, fsel);
+  const vector<WilsonMatrix> wm2_ts = contract_wall_snk_prop(prop2, fsel);
   qassert((int)wm1_ts.size() == total_site[3]);
   qassert((int)wm2_ts.size() == total_site[3]);
   LatData ld = mk_pion_corr_table(total_site);
@@ -167,28 +167,21 @@ inline LatData contract_two_point_function(const SelProp& prop1,
   const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
   const Geometry& geo = prop1.geo();
   const Coordinate total_site = geo.total_site();
-  std::vector<array<WilsonMatrix, 16> > gwm_ts(omp_get_max_threads() *
-                                                    total_site[3]);
+  vector<array<WilsonMatrix, 16> > gwm_ts(omp_get_max_threads() *
+                                          total_site[3]);
   set_zero(gwm_ts);
-#pragma omp parallel
-  {
-    std::vector<array<WilsonMatrix, 16> > wm_ts(total_site[3]);
-    set_zero(wm_ts);
-#pragma omp for
-    for (long idx = 0; idx < (long)fsel.indices.size(); ++idx) {
-      const long index = fsel.indices[idx];
-      const Coordinate xl = geo.coordinate_from_index(index);
-      const Coordinate xg = geo.coordinate_g_from_l(xl);
-      const int tsep = mod(xg[3] - tslice, total_site[3]);
-      const WilsonMatrix wm = prop1.get_elem(idx);
-      const WilsonMatrix wmd =
-          gamma5 * (WilsonMatrix)matrix_adjoint(prop2.get_elem(idx)) * gamma5;
-      for (int op_src = 0; op_src < 16; ++op_src) {
-        wm_ts[tsep][op_src] += wm * gms[op_src] * wmd;
-      }
-    }
-    for (int t = 0; t < total_site[3]; ++t) {
-      gwm_ts[omp_get_thread_num() * total_site[3] + t] = wm_ts[t];
+#pragma omp parallel for
+  for (long idx = 0; idx < (long)fsel.indices.size(); ++idx) {
+    const long index = fsel.indices[idx];
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Coordinate xg = geo.coordinate_g_from_l(xl);
+    const int tsep = mod(xg[3] - tslice, total_site[3]);
+    const WilsonMatrix wm = prop1.get_elem(idx);
+    const WilsonMatrix wmd =
+        gamma5 * (WilsonMatrix)matrix_adjoint(prop2.get_elem(idx)) * gamma5;
+    for (int op_src = 0; op_src < 16; ++op_src) {
+      gwm_ts[omp_get_thread_num() * total_site[3] + tsep][op_src] +=
+          wm * gms[op_src] * wmd;
     }
   }
   for (int i = 1; i < omp_get_max_threads(); ++i) {
@@ -198,7 +191,7 @@ inline LatData contract_two_point_function(const SelProp& prop1,
       }
     }
   }
-  std::vector<array<Complex, 16 * 16> > m_ts(total_site[3]);
+  vector<array<Complex, 16 * 16> > m_ts(total_site[3]);
   set_zero(m_ts);
 #pragma omp parallel for
   for (int t = 0; t < total_site[3]; ++t) {
@@ -223,8 +216,8 @@ inline LatData contract_two_point_function(const SelProp& prop1,
 }
 
 inline LatData contract_two_point_wall_snk_function(
-    const std::vector<WilsonMatrix>& prop1,
-    const std::vector<WilsonMatrix>& prop2, const int tslice,
+    const vector<WilsonMatrix>& prop1,
+    const vector<WilsonMatrix>& prop2, const int tslice,
     const Coordinate& total_site)
 // m_ts[tsep][op_src][op_snk] = trace( prop1[t] gms[op_src] gamma5
 // prop2[t]^\dagger gamma5 gms[op_snk] ) 0 <= tsep < total_site[3]
@@ -234,7 +227,7 @@ inline LatData contract_two_point_wall_snk_function(
   const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
   qassert((int)prop1.size() == total_site[3]);
   qassert((int)prop2.size() == total_site[3]);
-  std::vector<array<Complex, 16 * 16> > m_ts(total_site[3]);
+  vector<array<Complex, 16 * 16> > m_ts(total_site[3]);
   set_zero(m_ts);
 #pragma omp parallel for
   for (int t = 0; t < total_site[3]; ++t) {
@@ -286,8 +279,8 @@ inline LatData contract_two_point_wall_snk_function(const SelProp& prop1,
   const Coordinate total_site = geo.total_site();
   const LatData ld_two_point_func =
       contract_two_point_function(prop1, prop2, tslice, fsel);
-  const std::vector<WilsonMatrix> wm1_ts = contract_wall_snk_prop(prop1, fsel);
-  const std::vector<WilsonMatrix> wm2_ts = contract_wall_snk_prop(prop2, fsel);
+  const vector<WilsonMatrix> wm1_ts = contract_wall_snk_prop(prop1, fsel);
+  const vector<WilsonMatrix> wm2_ts = contract_wall_snk_prop(prop2, fsel);
   const LatData ld_two_point_wall_snk_func =
       contract_two_point_wall_snk_function(wm1_ts, wm2_ts, tslice, total_site);
   return contract_two_point_wall_snk_function(ld_two_point_wall_snk_func,
@@ -385,27 +378,18 @@ inline LatData contract_three_point_function(const SelProp& prop_a,
   const Coordinate total_site = geo.total_site();
   qassert(is_matching_geo_mult(prop_a.geo(), geo));
   qassert(is_matching_geo_mult(prop_b.geo(), geo));
-  std::vector<WilsonMatrix> gwm_ts(omp_get_max_threads() * total_site[3]);
+  vector<WilsonMatrix> gwm_ts(omp_get_max_threads() * total_site[3]);
   set_zero(gwm_ts);
-#pragma omp parallel
-  {
-    std::vector<WilsonMatrix> wm_ts(total_site[3]);
-    set_zero(wm_ts);
-#pragma omp for
-    for (long idx = 0; idx < (long)fsel.indices.size(); ++idx) {
-      const long index = fsel.indices[idx];
-      const Coordinate xl = geo.coordinate_from_index(index);
-      const Coordinate xg = geo.coordinate_g_from_l(xl);
-      wm_ts[xg[3]] +=
-          (WilsonMatrix)(prop_a.get_elem(idx) * gamma5 * wm_ab) * gamma5 *
-          (gamma5 * (WilsonMatrix)matrix_adjoint(prop_b.get_elem(idx)) *
-           gamma5);
-    }
-    for (int t = 0; t < total_site[3]; ++t) {
-      gwm_ts[omp_get_thread_num() * total_site[3] + t] = wm_ts[t];
-    }
+#pragma omp parallel for
+  for (long idx = 0; idx < (long)fsel.indices.size(); ++idx) {
+    const long index = fsel.indices[idx];
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Coordinate xg = geo.coordinate_g_from_l(xl);
+    gwm_ts[omp_get_thread_num() * total_site[3] + xg[3]] +=
+        (WilsonMatrix)(prop_a.get_elem(idx) * gamma5 * wm_ab) * gamma5 *
+        (gamma5 * (WilsonMatrix)matrix_adjoint(prop_b.get_elem(idx)) * gamma5);
   }
-  std::vector<WilsonMatrix> wm_ts(total_site[3]);
+  vector<WilsonMatrix> wm_ts(total_site[3]);
   set_zero(wm_ts);
   for (int i = 0; i < omp_get_max_threads(); ++i) {
     for (int t = 0; t < total_site[3]; ++t) {

@@ -19,9 +19,9 @@ struct WallSrcProps {
   std::vector<PselProp> exact_point_snk;
   //
   // below is refreshed by refresh_wall_snk_prop
-  std::vector<std::vector<WilsonMatrix> >
+  std::vector<vector<WilsonMatrix> >
       sloppy_wall_snk;  // need sparse correction when contracted with itself
-  std::vector<std::vector<WilsonMatrix> >
+  std::vector<vector<WilsonMatrix> >
       exact_wall_snk;  // need sparse correction when contracted with itself
   //
   // below is refreshed by refresh_prob
@@ -49,30 +49,22 @@ struct WallSrcProps {
 
 inline bool is_initialized(const WallSrcProps& wsp) { return wsp.initialized; }
 
-inline std::vector<WilsonMatrix> contract_wall_snk_prop(
+inline vector<WilsonMatrix> contract_wall_snk_prop(
     const SelProp& prop, const FieldSelection& fsel)
 {
   TIMER_VERBOSE("contract_wall_snk_prop");
   const Geometry& geo = prop.geo();
   const Coordinate total_site = geo.total_site();
-  std::vector<WilsonMatrix> gwm_ts(omp_get_max_threads() * total_site[3]);
+  vector<WilsonMatrix> gwm_ts(omp_get_max_threads() * total_site[3]);
   set_zero(gwm_ts);
-#pragma omp parallel
-  {
-    std::vector<WilsonMatrix> wm_ts(total_site[3]);
-    set_zero(wm_ts);
-#pragma omp for
-    for (long idx = 0; idx < (long)fsel.indices.size(); ++idx) {
-      const long index = fsel.indices[idx];
-      const Coordinate xl = geo.coordinate_from_index(index);
-      const Coordinate xg = geo.coordinate_g_from_l(xl);
-      wm_ts[xg[3]] += prop.get_elem(idx);
-    }
-    for (int t = 0; t < total_site[3]; ++t) {
-      gwm_ts[omp_get_thread_num() * total_site[3] + t] = wm_ts[t];
-    }
+#pragma omp parallel for
+  for (long idx = 0; idx < (long)fsel.indices.size(); ++idx) {
+    const long index = fsel.indices[idx];
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Coordinate xg = geo.coordinate_g_from_l(xl);
+    gwm_ts[omp_get_thread_num() * total_site[3] + xg[3]] += prop.get_elem(idx);
   }
-  std::vector<WilsonMatrix> wm_ts(total_site[3]);
+  vector<WilsonMatrix> wm_ts(total_site[3]);
   set_zero(wm_ts);
   for (int i = 0; i < omp_get_max_threads(); ++i) {
     for (int t = 0; t < total_site[3]; ++t) {
@@ -212,9 +204,9 @@ inline const PselProp& get_psel_prop(const WallSrcProps& wsp, const int tslice,
   }
 }
 
-inline const std::vector<WilsonMatrix>& get_wsnk_prop(const WallSrcProps& wsp,
-                                                      const int tslice,
-                                                      const bool exact)
+inline const vector<WilsonMatrix>& get_wsnk_prop(const WallSrcProps& wsp,
+                                                 const int tslice,
+                                                 const bool exact)
 {
   if (exact) {
     return wsp.exact_wall_snk[tslice];
