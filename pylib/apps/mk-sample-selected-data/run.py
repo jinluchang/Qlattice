@@ -143,12 +143,19 @@ def compute_prop_wsrc_all(gf, gt, wi, job_tag, inv_type, *, path_s, path_sp, pse
 
 @q.timer
 def check_mk_sample(job_tag, traj):
+    # return True if config is finished
     fns = []
     fns.append(get_save_path(f"wall-src-info-light/{job_tag}/traj={traj}.txt"))
     fns.append(get_save_path(f"wall-src-info-strange/{job_tag}/traj={traj}.txt"))
+    for fn in fns:
+        if not q.does_file_exist_sync_node(fn):
+            return False
+    return True
 
 @q.timer
 def run_mk_sample(job_tag, traj):
+    if check_mk_sample(job_tag, traj):
+        return
     q.qmkdir_info("locks")
     q.qmkdir_info(get_save_path(f""))
     q.qmkdir_info(get_save_path(f"configs"))
@@ -210,6 +217,7 @@ def run_mk_sample(job_tag, traj):
                     path_sp = get_save_path(f"psel-prop-wsrc-strange/{job_tag}/traj={traj}"),
                     psel = psel, fsel = fsel, fselc = fselc)
             save_wall_src_info(wi_strange, get_save_path(f"wall-src-info-strange/{job_tag}/traj={traj}.txt"));
+            q.release_lock()
     #
 
 qg.begin_with_gpt()
