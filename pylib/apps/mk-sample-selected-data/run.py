@@ -16,21 +16,25 @@ def get_n_points(job_tag, traj, inv_type, inv_acc):
     return t[inv_type][inv_acc]
 
 @q.timer
-def mk_sample_gauge_field(job_tag, traj, *, sigma = 0.2, n_steps = 1):
+def mk_sample_gauge_field(job_tag, traj):
     rs = q.RngState(f"seed {job_tag} {traj}").split("mk_sample_gauge_field")
     total_site = ru.get_total_site(job_tag)
     geo = q.Geometry(total_site, 1)
     gf = q.GaugeField(geo)
-    gf.set_rand(rs, sigma, n_steps)
+    gf.set_rand(rs, sigma = 0.25, n_step = 4)
+    for i in range(4):
+        q.gf_wilson_flow_step(gf, 0.05)
+    gf.unitarize()
     return gf
 
 @q.timer
-def mk_sample_gauge_transform(job_tag, traj, *, sigma = 0.2, n_steps = 1):
+def mk_sample_gauge_transform(job_tag, traj):
     rs = q.RngState(f"seed {job_tag} {traj}").split("mk_sample_gauge_transform")
     total_site = ru.get_total_site(job_tag)
     geo = q.Geometry(total_site, 1)
     gt = q.GaugeTransform(geo)
-    gt.set_rand(rs, sigma, n_steps)
+    gt.set_rand(rs, sigma = 0.2, n_step = 1)
+    gt.unitarize()
     return gt
 
 @q.timer

@@ -22,6 +22,8 @@ from qlat.utils_io import *
 
 from qlat.qcd import *
 
+from qlat.wilson_flow import *
+
 from qlat.propagator import *
 
 from qlat.gauge_action import *

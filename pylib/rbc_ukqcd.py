@@ -121,7 +121,9 @@ def mk_gpt_inverter(gf, job_tag, inv_type, inv_accuracy, *,
         else:
             qm = g.qcd.fermion.mobius(gpt_gf, param)
         inv = g.algorithms.inverter
-        if inv_type == 0:
+        if job_tag[:5] == "test-":
+            cg_mp = inv.cg({"eps": 1e-8, "maxiter": 100})
+        elif inv_type == 0:
             cg_mp = inv.cg({"eps": 1e-8, "maxiter": 200})
         elif inv_type == 1:
             cg_mp = inv.cg({"eps": 1e-8, "maxiter": 300})
