@@ -35,10 +35,10 @@ int main(int argc, char* argv[])
     displayln_info(
         ssprintf("fns[%5d/%d] = '%s'", i, fns.size(), fns[i].c_str()));
   }
-  install_qhandle_sigint();
+  install_qhandle_sig();
   displayln_info("Start to repartition...");
   for (long i = 0; i < (long)fns.size(); ++i) {
-    if (is_sigint_received() > 0) {
+    if (is_sigterm_received() > 0) {
       Timer::display();
       displayln_info("quit: because sigint received.");
       end();
