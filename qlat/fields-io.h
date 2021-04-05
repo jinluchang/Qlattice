@@ -803,7 +803,7 @@ inline void add_shuffled_fields_writer(ShuffledFieldsWriter& sfw)
   ShuffledFieldsWriterMap& sfwm = get_all_shuffled_fields_writer();
   const long key = (long)&sfw;
   qassert(not has(sfwm, key));
-  sfwm[key] = Handle(sfw);
+  sfwm[key] = Handle<ShuffledFieldsWriter>(sfw);
 }
 
 inline void remove_shuffled_fields_writer(ShuffledFieldsWriter& sfw)
