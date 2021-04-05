@@ -5,6 +5,8 @@ import gpt as g
 def get_total_site(job_tag):
     if job_tag == "test-4nt8":
         return [4, 4, 4, 8]
+    elif job_tag == "test-4nt16":
+        return [4, 4, 4, 16]
     elif job_tag == "test-8nt16":
         return [8, 8, 8, 16]
     elif job_tag == "24D":
@@ -23,7 +25,7 @@ def get_fermion_param(job_tag, inv_type, inv_accuracy):
             "c": 0.0,
             "boundary_phases": [1.0, 1.0, 1.0, 1.0],
             }
-    if job_tag in ["test-4nt8", "test-8nt16"]:
+    if job_tag in ["test-4nt8", "test-4nt16", "test-8nt16"]:
         params["b"] = 1.5
         params["c"] = 0.5
         if inv_type == 0:
@@ -170,7 +172,7 @@ def mk_qlat_inverter(gf, job_tag, inv_type, inv_accuracy, *, gt = None):
             fa = q.FermionAction(mass = 0.00107, m5 = 1.8, ls = 24, mobius_scale = 4.0)
             inv = q.InverterDomainWall(gf = gf, fa = fa, timer = timer)
             inv.set_stop_rsd(1e-8)
-            inv.set_max_num_iter(300)
+            inv.set_max_num_iter(200)
             if inv_accuracy == 0:
                 maxiter = 1
             elif inv_accuracy == 1:

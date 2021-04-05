@@ -148,13 +148,13 @@ def get_inv(gf, job_tag, inv_type, inv_acc, *, gt = None, mpi_split = None, n_gr
     return inv
 
 @q.timer
-def compute_prop_wsrc(gf, gt, tslice, job_tag, inv_type, inv_acc, *, sfw, path_sp, psel, fsel, fselc):
+def compute_prop_wsrc(gf, gt, tslice, job_tag, inv_type, inv_acc, *, idx, sfw, path_sp, psel, fsel, fselc):
     q.check_time_limit()
     tag = f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc}"
     fn_sp = os.path.join(path_sp, f"{tag}.lat")
     if q.does_file_exist_sync_node(fn_sp):
         return None
-    q.displayln_info(f"compute_prop_wsrc: tslice={tslice}", job_tag, inv_type, inv_acc)
+    q.displayln_info(f"compute_prop_wsrc: idx={idx} tslice={tslice}", job_tag, inv_type, inv_acc)
     inv = get_inv(gf, job_tag, inv_type, inv_acc, gt = gt)
     total_site = ru.get_total_site(job_tag)
     geo = q.Geometry(total_site, 1)
@@ -163,13 +163,39 @@ def compute_prop_wsrc(gf, gt, tslice, job_tag, inv_type, inv_acc, *, sfw, path_s
 
 @q.timer
 def compute_prop_wsrc_all(gf, gt, wi, job_tag, inv_type, *, path_s, path_sp, psel, fsel, fselc):
-    sfw = q.open_fields(path_s, "a", [ 1, 1, 1, 8 ])
+    sfw = q.open_fields(path_s, "a", [ 1, 1, 1, 4 ])
     for inv_acc in [ 2, 1 ]:
         for p in wi:
             idx, tslice, inv_type_p, inv_acc_p = p
             if inv_type_p == inv_type and inv_acc_p == inv_acc:
                 compute_prop_wsrc(gf, gt, tslice, job_tag, inv_type, inv_acc,
-                        sfw = sfw, path_sp = path_sp, psel = psel, fsel = fsel, fselc = fselc)
+                        idx = idx, sfw = sfw, path_sp = path_sp, psel = psel, fsel = fsel, fselc = fselc)
+        q.clean_cache(cache_inv)
+    sfw.close()
+
+@q.timer
+def compute_prop_psrc(gf, xg, job_tag, inv_type, inv_acc, *, idx, sfw, path_sp, psel, fsel, fselc):
+    q.check_time_limit()
+    tag = f"xg=({xg[0]},{xg[1]},{xg[2]},{xg[3]}) ; type={inv_type} ; accuracy={inv_acc}"
+    fn_sp = os.path.join(path_sp, f"{tag}.lat")
+    if q.does_file_exist_sync_node(fn_sp):
+        return None
+    q.displayln_info(f"compute_prop_psrc: idx={idx} xg={xg}", job_tag, inv_type, inv_acc)
+    inv = get_inv(gf, job_tag, inv_type, inv_acc)
+    total_site = ru.get_total_site(job_tag)
+    geo = q.Geometry(total_site, 1)
+    src = q.mk_point_src(geo, xg)
+    compute_prop(inv, src, tag = tag, sfw = sfw, fn_sp = fn_sp, psel = psel, fsel = fsel, fselc = fselc)
+
+@q.timer
+def compute_prop_psrc_all(gf, pi, job_tag, inv_type, *, path_s, path_sp, psel, fsel, fselc):
+    sfw = q.open_fields(path_s, "a", [ 1, 1, 1, 8 ])
+    for inv_acc in [ 2, 1, 0 ]:
+        for p in pi:
+            idx, xg, inv_type_p, inv_acc_p = p
+            if inv_type_p == inv_type and inv_acc_p == inv_acc:
+                compute_prop_psrc(gf, xg, job_tag, inv_type, inv_acc,
+                        idx = idx, sfw = sfw, path_sp = path_sp, psel = psel, fsel = fsel, fselc = fselc)
         q.clean_cache(cache_inv)
     sfw.close()
 
@@ -245,6 +271,7 @@ def run_mk_sample(job_tag, traj):
     #
     wi_light = mk_rand_wall_src_info(job_tag, traj, inv_type = 0)
     wi_strange = mk_rand_wall_src_info(job_tag, traj, inv_type = 1)
+    pi = mk_rand_point_src_info(job_tag, traj, psel)
     #
     if not q.does_file_exist_sync_node(get_save_path(f"wall-src-info-light/{job_tag}/traj={traj}.txt")):
         if q.obtain_lock(f"locks/{job_tag}-{traj}-wsrc-light"):
@@ -264,13 +291,22 @@ def run_mk_sample(job_tag, traj):
             save_wall_src_info(wi_strange, get_save_path(f"wall-src-info-strange/{job_tag}/traj={traj}.txt"));
             q.release_lock()
     #
-    pi = mk_rand_point_src_info(job_tag, traj, psel)
-    save_point_src_info(pi, get_save_path(f"point-src-info/{job_tag}/traj={traj}.txt"));
-    #
+    if not q.does_file_exist_sync_node(get_save_path(f"point-src-info/{job_tag}/traj={traj}.txt")):
+        if q.obtain_lock(f"locks/{job_tag}-{traj}-psrc"):
+            compute_prop_psrc_all(gf, pi, job_tag, inv_type = 0,
+                    path_s = get_save_path(f"prop-psrc-light/{job_tag}/traj={traj}"),
+                    path_sp = get_save_path(f"psel-prop-psrc-light/{job_tag}/traj={traj}"),
+                    psel = psel, fsel = fsel, fselc = fselc)
+            compute_prop_psrc_all(gf, pi, job_tag, inv_type = 1,
+                    path_s = get_save_path(f"prop-psrc-strange/{job_tag}/traj={traj}"),
+                    path_sp = get_save_path(f"psel-prop-psrc-strange/{job_tag}/traj={traj}"),
+                    psel = psel, fsel = fsel, fselc = fselc)
+            save_point_src_info(pi, get_save_path(f"point-src-info/{job_tag}/traj={traj}.txt"));
+            q.release_lock()
 
 qg.begin_with_gpt()
 
-run_mk_sample("test-4nt8", 1000)
+run_mk_sample("test-4nt16", 1000)
 
 q.timer_display()
 
