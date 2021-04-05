@@ -5,7 +5,7 @@ class Cache(dict):
 cache = Cache()
 
 def clean_cache(cache = cache):
-    for key, val in cache:
+    for key, val in list(cache.items()):
         if isinstance(val, Cache):
             clean_cache(val)
         else:
