@@ -1,26 +1,67 @@
 SHELL=/bin/bash
 
-CXX=mpic++ -std=c++0x -fopenmp -march=native -O2 -Wall
+CXX=mpic++ -std=c++17 -fopenmp -march=native -O2 -Wall -fno-strict-aliasing
+
+# -static-libstdc++ -static-libgcc
 
 qlat_prefix=$$HOME/qlat-build/default
 
 QLAT_INCLUDE=$(qlat_prefix)/include
 QLAT_LIB=$(qlat_prefix)/lib
 
-QLAT_CFLAGS=-std=c++0x -fno-strict-aliasing -Wfatal-errors
+QLAT_CFLAGS=
 QLAT_CFLAGS+= -I$(QLAT_INCLUDE)
 QLAT_CFLAGS+= -I$(QLAT_INCLUDE)/eigen3
 QLAT_CFLAGS+= -I$(QLAT_INCLUDE)/qutils
 
 QLAT_CXXFLAGS=$(QLAT_CFLAGS)
 
-QLAT_LDFLAGS=$(QLAT_LIB)/libfftw3.a $(QLAT_LIB)/libz.a $(QLAT_LIB)/libcuba.a -lgsl -lgslcblas -lm
+QLAT_LDFLAGS=
+QLAT_LDFLAGS+= -L$(QLAT_LIB)
+QLAT_LDFLAGS+= -l:libfftw3.a -l:libfftw3f.a
+QLAT_LDFLAGS+= -l:libcuba.a
+QLAT_LDFLAGS+= -l:libz.a
+QLAT_LDFLAGS+= -lm
+
+CXXFLAGS=
+CXXFLAGS+= $(QLAT_CXXFLAGS)
+
+LDFLAGS=
+LDFLAGS+= $(QLAT_LDFLAGS)
 
 
 all: qlat.x
 
-qlat.x: *.C *.h
-	-time $(CXX) -o qlat.x $(QLAT_CXXFLAGS) *.C $(QLAT_LDFLAGS) 2>&1 | grep --color=always 'error:\|'
+run: qlat.x
+	time mpirun -x OMP_NUM_THREADS=2 --np 8 ./qlat.x | tee log
+
+qlat.x: *.C
+	time make build
+	[ -f $@ ]
+
+build:
+	-time $(CXX) -o qlat.x $(CXXFLAGS) *.C $(LDFLAGS) 2>&1 | grep --color=always 'error:\|'
+
+show-info:
+	@echo CXX: $(CXX)
+	@echo CXXFLAGS: $(CXXFLAGS)
+	@echo LDFLAGS: $(LDFLAGS)
 
 clean:
-	rm *.o qlat.x
+	-rm qlat.x
+	-rm log.full
+	-rm -rf results*
+	-rm -rf huge-data
+
+run-test: qlat.x
+	echo > log
+	time mpirun -x OMP_NUM_THREADS=2 --np 8 ./qlat.x | tee log.full
+	cat log.full | egrep -v '^Timer' > log
+	make diff | cat
+	# make clean
+
+diff:
+	-git diff log
+
+dist-clean: clean
+	-git checkout log
