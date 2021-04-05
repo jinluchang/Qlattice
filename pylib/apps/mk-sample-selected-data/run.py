@@ -149,11 +149,11 @@ def get_inv(gf, job_tag, inv_type, inv_acc, *, gt = None, mpi_split = None, n_gr
 
 @q.timer
 def compute_prop_wsrc(gf, gt, tslice, job_tag, inv_type, inv_acc, *, idx, sfw, path_sp, psel, fsel, fselc):
-    q.check_time_limit()
     tag = f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc}"
     fn_sp = os.path.join(path_sp, f"{tag}.lat")
     if q.does_file_exist_sync_node(fn_sp):
         return None
+    q.check_time_limit()
     q.displayln_info(f"compute_prop_wsrc: idx={idx} tslice={tslice}", job_tag, inv_type, inv_acc)
     inv = get_inv(gf, job_tag, inv_type, inv_acc, gt = gt)
     total_site = ru.get_total_site(job_tag)
@@ -175,11 +175,11 @@ def compute_prop_wsrc_all(gf, gt, wi, job_tag, inv_type, *, path_s, path_sp, pse
 
 @q.timer
 def compute_prop_psrc(gf, xg, job_tag, inv_type, inv_acc, *, idx, sfw, path_sp, psel, fsel, fselc):
-    q.check_time_limit()
     tag = f"xg=({xg[0]},{xg[1]},{xg[2]},{xg[3]}) ; type={inv_type} ; accuracy={inv_acc}"
     fn_sp = os.path.join(path_sp, f"{tag}.lat")
     if q.does_file_exist_sync_node(fn_sp):
         return None
+    q.check_time_limit()
     q.displayln_info(f"compute_prop_psrc: idx={idx} xg={xg}", job_tag, inv_type, inv_acc)
     inv = get_inv(gf, job_tag, inv_type, inv_acc)
     total_site = ru.get_total_site(job_tag)
@@ -306,8 +306,9 @@ def run_mk_sample(job_tag, traj):
 
 qg.begin_with_gpt()
 
-run_mk_sample("test-4nt16", 1000)
-
-q.timer_display()
+for job_tag in [ "test-4nt16" ]:
+    for traj in range(1000, 1400, 100):
+        run_mk_sample(job_tag, traj)
+        q.timer_display()
 
 qg.end_with_gpt()
