@@ -19,9 +19,9 @@ struct WallSrcProps {
   std::vector<PselProp> exact_point_snk;
   //
   // below is refreshed by refresh_wall_snk_prop
-  std::vector<vector<WilsonMatrix> >
+  std::vector<PselProp>
       sloppy_wall_snk;  // need sparse correction when contracted with itself
-  std::vector<vector<WilsonMatrix> >
+  std::vector<PselProp>
       exact_wall_snk;  // need sparse correction when contracted with itself
   //
   // below is refreshed by refresh_prob
@@ -49,8 +49,11 @@ struct WallSrcProps {
 
 inline bool is_initialized(const WallSrcProps& wsp) { return wsp.initialized; }
 
-inline vector<WilsonMatrix> contract_wall_snk_prop(
-    const SelProp& prop, const FieldSelection& fsel)
+inline PselProp contract_wall_snk_prop(const SelProp& prop,
+                                       const FieldSelection& fsel)
+// ret.n_points = total_site[3]
+// ret.multiplicity = 1
+// ret.get_elem(tslice)
 {
   TIMER_VERBOSE("contract_wall_snk_prop");
   const Geometry& geo = prop.geo();
@@ -64,19 +67,18 @@ inline vector<WilsonMatrix> contract_wall_snk_prop(
     const Coordinate xg = geo.coordinate_g_from_l(xl);
     gwm_ts[omp_get_thread_num() * total_site[3] + xg[3]] += prop.get_elem(idx);
   }
-  vector<WilsonMatrix> wm_ts(total_site[3]);
-  set_zero(wm_ts);
+  PselProp ret;
+  ret.init(total_site[3], 1);
+  set_zero(ret);
   for (int i = 0; i < omp_get_max_threads(); ++i) {
     for (int t = 0; t < total_site[3]; ++t) {
-      wm_ts[t] += gwm_ts[i * total_site[3] + t];
+      ret.get_elem(t) += gwm_ts[i * total_site[3] + t];
     }
   }
-  glb_sum_double_vec(get_data(wm_ts));
+  glb_sum_double_vec(get_data(ret));
   const double ratio = 1.0 / fsel.prob;
-  for (int t = 0; t < total_site[3]; ++t) {
-    wm_ts[t] *= (Complex)ratio;
-  }
-  return wm_ts;
+  ret *= ratio;
+  return ret;
 }
 
 inline void refresh_wall_snk_prop(WallSrcProps& wsp, const FieldSelection& fsel)
@@ -204,9 +206,8 @@ inline const PselProp& get_psel_prop(const WallSrcProps& wsp, const int tslice,
   }
 }
 
-inline const vector<WilsonMatrix>& get_wsnk_prop(const WallSrcProps& wsp,
-                                                 const int tslice,
-                                                 const bool exact)
+inline const PselProp& get_wsnk_prop(const WallSrcProps& wsp, const int tslice,
+                                     const bool exact)
 {
   if (exact) {
     return wsp.exact_wall_snk[tslice];

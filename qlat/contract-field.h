@@ -161,10 +161,10 @@ inline void contract_meson_vv_unshifted_acc_x(
 }
 
 inline void contract_meson_vv_unshifted_acc_x(
-    Vector<Complex> v, const Complex coef,
-    const WallSrcProps& wsp1, const WallSrcProps& wsp2,
-    const WilsonMatrix& wm3_x_y, const Coordinate& xg_x, const long xg_x_idx,
-    const Coordinate& xg_y, const long xg_y_psel_idx, const int t_wall)
+    Vector<Complex> v, const Complex coef, const WallSrcProps& wsp1,
+    const WallSrcProps& wsp2, const WilsonMatrix& wm3_x_y,
+    const Coordinate& xg_x, const long xg_x_idx, const Coordinate& xg_y,
+    const long xg_y_psel_idx, const int t_wall)
 // perform AMA correction for wall src props
 {
   qassert(wsp1.exact_tslice_mask.size() == wsp2.exact_tslice_mask.size());
@@ -258,8 +258,8 @@ inline void contract_meson_vv_acc(
   qassert(ssp.shift == -xg_y);
   qassert(ssp.is_reflect == false);
   std::vector<SelectedField<Complex> > sfs;
-  contract_meson_vv_unshifted(sfs, wsp1, wsp2, prop3_x_y, xg_y,
-                              xg_y_psel_idx, tsep, psel, fsel);
+  contract_meson_vv_unshifted(sfs, wsp1, wsp2, prop3_x_y, xg_y, xg_y_psel_idx,
+                              tsep, psel, fsel);
   qassert(sfs.size() == 2);
   SelectedField<Complex>& s_decay = sfs[0];
   SelectedField<Complex>& s_fission = sfs[1];
@@ -276,11 +276,12 @@ inline WilsonMatrix get_wsnk_prop_avg(const WallSrcProps& wsp, const int t_snk,
                                       const bool exact_src)
 {
   const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
-  return (Complex)0.5 * (get_wsnk_prop(wsp, t_src, exact_src)[t_snk] +
-                         gamma5 *
-                             (WilsonMatrix)matrix_adjoint(
-                                 get_wsnk_prop(wsp, t_snk, exact_snk)[t_src]) *
-                             gamma5);
+  return (Complex)0.5 *
+         (get_wsnk_prop(wsp, t_src, exact_src).get_elem(t_snk) +
+          gamma5 *
+              (WilsonMatrix)matrix_adjoint(
+                  get_wsnk_prop(wsp, t_snk, exact_snk).get_elem(t_src)) *
+              gamma5);
 }
 
 inline void contract_meson_vv_meson_unshifted_acc_x(
@@ -346,9 +347,9 @@ inline void contract_meson_vv_meson_unshifted_acc_x(
     qassert(sloppy_exact_ratio_1 == wsp2.sloppy_exact_ratio_1);
     const Complex coef1 = sloppy_exact_ratio_1 * coef;
     const Complex coef2 = (1.0 - sloppy_exact_ratio_1) * coef;
-    contract_meson_vv_meson_unshifted_acc_x(
-        v, coef1, wsp1, wsp2, wsp3, wm4_x_y, xg_x, xg_x_idx, xg_y,
-        xg_y_psel_idx, t_wall_snk, true, t_wall_src, true);
+    contract_meson_vv_meson_unshifted_acc_x(v, coef1, wsp1, wsp2, wsp3, wm4_x_y,
+                                            xg_x, xg_x_idx, xg_y, xg_y_psel_idx,
+                                            t_wall_snk, true, t_wall_src, true);
     contract_meson_vv_meson_unshifted_acc_x(
         v, coef2, wsp1, wsp2, wsp3, wm4_x_y, xg_x, xg_x_idx, xg_y,
         xg_y_psel_idx, t_wall_snk, false, t_wall_src, false);
@@ -360,9 +361,9 @@ inline void contract_meson_vv_meson_unshifted_acc_x(
     const Complex coef2 = (sloppy_exact_ratio_1 - sloppy_exact_ratio_11) * coef;
     const Complex coef3 =
         (1.0 - 2.0 * sloppy_exact_ratio_1 + sloppy_exact_ratio_11) * coef;
-    contract_meson_vv_meson_unshifted_acc_x(
-        v, coef1, wsp1, wsp2, wsp3, wm4_x_y, xg_x, xg_x_idx, xg_y,
-        xg_y_psel_idx, t_wall_snk, true, t_wall_src, true);
+    contract_meson_vv_meson_unshifted_acc_x(v, coef1, wsp1, wsp2, wsp3, wm4_x_y,
+                                            xg_x, xg_x_idx, xg_y, xg_y_psel_idx,
+                                            t_wall_snk, true, t_wall_src, true);
     contract_meson_vv_meson_unshifted_acc_x(
         v, coef2, wsp1, wsp2, wsp3, wm4_x_y, xg_x, xg_x_idx, xg_y,
         xg_y_psel_idx, t_wall_snk, false, t_wall_src, true);
@@ -379,12 +380,12 @@ inline void contract_meson_vv_meson_unshifted_acc_x(
     const Complex coef2 = (1.0 - sloppy_exact_ratio_1) * coef;
     if (has_exact_snk and (not has_exact_src)) {
       contract_meson_vv_meson_unshifted_acc_x(
-          v, coef1, wsp1, wsp2, wsp3, wm4_x_y, xg_x, xg_x_idx,
-          xg_y, xg_y_psel_idx, t_wall_snk, true, t_wall_src, false);
+          v, coef1, wsp1, wsp2, wsp3, wm4_x_y, xg_x, xg_x_idx, xg_y,
+          xg_y_psel_idx, t_wall_snk, true, t_wall_src, false);
     } else if ((not has_exact_snk) and has_exact_src) {
       contract_meson_vv_meson_unshifted_acc_x(
-          v, coef1, wsp1, wsp2, wsp3, wm4_x_y, xg_x, xg_x_idx,
-          xg_y, xg_y_psel_idx, t_wall_snk, false, t_wall_src, true);
+          v, coef1, wsp1, wsp2, wsp3, wm4_x_y, xg_x, xg_x_idx, xg_y,
+          xg_y_psel_idx, t_wall_snk, false, t_wall_src, true);
     } else {
       qassert(false);
     }
@@ -393,8 +394,8 @@ inline void contract_meson_vv_meson_unshifted_acc_x(
         xg_y_psel_idx, t_wall_snk, false, t_wall_src, false);
   } else if ((not has_exact_snk) and (not has_exact_src)) {
     contract_meson_vv_meson_unshifted_acc_x(
-        v, coef, wsp1, wsp2, wsp3, wm4_x_y, xg_x, xg_x_idx, xg_y,
-        xg_y_psel_idx, t_wall_snk, false, t_wall_src, false);
+        v, coef, wsp1, wsp2, wsp3, wm4_x_y, xg_x, xg_x_idx, xg_y, xg_y_psel_idx,
+        t_wall_snk, false, t_wall_src, false);
   } else {
     qassert(false);
   }

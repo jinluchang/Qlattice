@@ -102,13 +102,13 @@ inline LatData contract_pion_wall_snk(const SelProp& prop, const int tslice_src,
   TIMER_VERBOSE("contract_pion_wall_snk(s_prop,fsel)");
   const Geometry& geo = prop.geo();
   const Coordinate total_site = geo.total_site();
-  const vector<WilsonMatrix> wm_ts = contract_wall_snk_prop(prop, fsel);
-  qassert((int)wm_ts.size() == total_site[3]);
+  const PselProp wm_ts = contract_wall_snk_prop(prop, fsel);
+  qassert(wm_ts.n_points == (long)total_site[3]);
   LatData ld = mk_pion_corr_table(total_site);
   Vector<Complex> ldv = lat_data_cget(ld);
   for (int t = 0; t < total_site[3]; ++t) {
     const int tsep = mod(t - tslice_src, total_site[3]);
-    ldv[tsep] = qnorm(wm_ts[t]);
+    ldv[tsep] = qnorm(wm_ts.get_elem(t));
   }
   LatData ld_ps = contract_pion(prop, tslice_src, fsel);
   ld_ps *= 1.0 - 1.0 / fsel.prob;
@@ -125,15 +125,16 @@ inline LatData contract_kaon_wall_snk(const SelProp& prop1,
   TIMER_VERBOSE("contract_kaon_wall_snk(s_prop1,s_prop2,tsrc,fsel)");
   const Geometry& geo = prop1.geo();
   const Coordinate total_site = geo.total_site();
-  const vector<WilsonMatrix> wm1_ts = contract_wall_snk_prop(prop1, fsel);
-  const vector<WilsonMatrix> wm2_ts = contract_wall_snk_prop(prop2, fsel);
-  qassert((int)wm1_ts.size() == total_site[3]);
-  qassert((int)wm2_ts.size() == total_site[3]);
+  const PselProp wm1_ts = contract_wall_snk_prop(prop1, fsel);
+  const PselProp wm2_ts = contract_wall_snk_prop(prop2, fsel);
+  qassert(wm1_ts.n_points == (long)total_site[3]);
+  qassert(wm2_ts.n_points == (long)total_site[3]);
   LatData ld = mk_pion_corr_table(total_site);
   Vector<Complex> ldv = lat_data_cget(ld);
   for (int t = 0; t < total_site[3]; ++t) {
     const int tsep = mod(t - tslice_src, total_site[3]);
-    ldv[tsep] = matrix_trace(wm1_ts[t], matrix_adjoint(wm2_ts[t]));
+    ldv[tsep] =
+        matrix_trace(wm1_ts.get_elem(t), matrix_adjoint(wm2_ts.get_elem(t)));
   }
   LatData ld_ps = contract_kaon(prop1, prop2, tslice_src, fsel);
   ld_ps *= 1.0 - 1.0 / fsel.prob;
@@ -216,8 +217,7 @@ inline LatData contract_two_point_function(const SelProp& prop1,
 }
 
 inline LatData contract_two_point_wall_snk_function(
-    const vector<WilsonMatrix>& prop1,
-    const vector<WilsonMatrix>& prop2, const int tslice,
+    const PselProp& prop1, const PselProp& prop2, const int tslice,
     const Coordinate& total_site)
 // m_ts[tsep][op_src][op_snk] = trace( prop1[t] gms[op_src] gamma5
 // prop2[t]^\dagger gamma5 gms[op_snk] ) 0 <= tsep < total_site[3]
@@ -225,17 +225,17 @@ inline LatData contract_two_point_wall_snk_function(
   TIMER_VERBOSE("contract_two_point_wall_snk_function");
   const array<SpinMatrix, 16>& gms = SpinMatrixConstants::get_cps_gms();
   const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
-  qassert((int)prop1.size() == total_site[3]);
-  qassert((int)prop2.size() == total_site[3]);
+  qassert(prop1.n_points == (long)total_site[3]);
+  qassert(prop2.n_points == (long)total_site[3]);
   vector<array<Complex, 16 * 16> > m_ts(total_site[3]);
   set_zero(m_ts);
 #pragma omp parallel for
   for (int t = 0; t < total_site[3]; ++t) {
-    const WilsonMatrix& wm = prop1[mod(tslice + t, total_site[3])];
-    const WilsonMatrix wmd =
-        gamma5 *
-        (WilsonMatrix)matrix_adjoint(prop2[mod(tslice + t, total_site[3])]) *
-        gamma5;
+    const WilsonMatrix& wm = prop1.get_elem(mod(tslice + t, total_site[3]));
+    const WilsonMatrix wmd = gamma5 *
+                             (WilsonMatrix)matrix_adjoint(prop2.get_elem(
+                                 mod(tslice + t, total_site[3]))) *
+                             gamma5;
     for (int op_src = 0; op_src < 16; ++op_src) {
       const WilsonMatrix wm_t = wm * gms[op_src] * wmd;
       for (int op_snk = 0; op_snk < 16; ++op_snk) {
@@ -279,8 +279,8 @@ inline LatData contract_two_point_wall_snk_function(const SelProp& prop1,
   const Coordinate total_site = geo.total_site();
   const LatData ld_two_point_func =
       contract_two_point_function(prop1, prop2, tslice, fsel);
-  const vector<WilsonMatrix> wm1_ts = contract_wall_snk_prop(prop1, fsel);
-  const vector<WilsonMatrix> wm2_ts = contract_wall_snk_prop(prop2, fsel);
+  const PselProp wm1_ts = contract_wall_snk_prop(prop1, fsel);
+  const PselProp wm2_ts = contract_wall_snk_prop(prop2, fsel);
   const LatData ld_two_point_wall_snk_func =
       contract_two_point_wall_snk_function(wm1_ts, wm2_ts, tslice, total_site);
   return contract_two_point_wall_snk_function(ld_two_point_wall_snk_func,
@@ -443,28 +443,28 @@ inline LatData contract_three_point_function(
       const int ta = tslice;
       const int tb = mod(ta + tsep, total_site[3]);
       LatData ld_00, ld_10, ld_01, ld_11;
-      ld_00 = contract_three_point_function(wsp1.sloppy[ta], wsp2.sloppy[tb],
-                                            wsp3.sloppy_wall_snk[tb][ta], ta,
-                                            tb, fsel);
+      ld_00 = contract_three_point_function(
+          wsp1.sloppy[ta], wsp2.sloppy[tb],
+          wsp3.sloppy_wall_snk[tb].get_elem(ta), ta, tb, fsel);
       ld += ld_00;
       if (ta != tb) {
         if (wsp1.exact_tslice_mask[ta]) {
-          ld_10 = contract_three_point_function(wsp1.exact[ta], wsp2.sloppy[tb],
-                                                wsp3.sloppy_wall_snk[tb][ta],
-                                                ta, tb, fsel);
+          ld_10 = contract_three_point_function(
+              wsp1.exact[ta], wsp2.sloppy[tb],
+              wsp3.sloppy_wall_snk[tb].get_elem(ta), ta, tb, fsel);
           ld += wsp1.sloppy_exact_ratio_1 * (ld_10 - ld_00);
         }
         if (wsp1.exact_tslice_mask[tb]) {
-          ld_01 = contract_three_point_function(wsp1.sloppy[ta], wsp2.exact[tb],
-                                                wsp3.exact_wall_snk[tb][ta], ta,
-                                                tb, fsel);
+          ld_01 = contract_three_point_function(
+              wsp1.sloppy[ta], wsp2.exact[tb],
+              wsp3.exact_wall_snk[tb].get_elem(ta), ta, tb, fsel);
           ld += wsp1.sloppy_exact_ratio_1 * (ld_01 - ld_00);
         }
       }
       if (wsp1.exact_tslice_mask[ta] and wsp1.exact_tslice_mask[tb]) {
-        ld_11 = contract_three_point_function(wsp1.exact[ta], wsp2.exact[tb],
-                                              wsp3.exact_wall_snk[tb][ta], ta,
-                                              tb, fsel);
+        ld_11 = contract_three_point_function(
+            wsp1.exact[ta], wsp2.exact[tb],
+            wsp3.exact_wall_snk[tb].get_elem(ta), ta, tb, fsel);
         if (ta == tb) {
           ld += wsp1.sloppy_exact_ratio_1 * (ld_11 - ld_00);
         } else {
@@ -497,13 +497,13 @@ inline Complex contract_meson_snk_src(const WallSrcProps& wsp1,
 {
   const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
   const WilsonMatrix& wm1_snk_src =
-      get_wsnk_prop(wsp1, t_src, exact_src)[t_snk];
+      get_wsnk_prop(wsp1, t_src, exact_src).get_elem(t_snk);
   const WilsonMatrix& wm2_snk_src =
-      get_wsnk_prop(wsp2, t_src, exact_src)[t_snk];
+      get_wsnk_prop(wsp2, t_src, exact_src).get_elem(t_snk);
   const WilsonMatrix& wm1_src_snk =
-      get_wsnk_prop(wsp1, t_snk, exact_snk)[t_src];
+      get_wsnk_prop(wsp1, t_snk, exact_snk).get_elem(t_src);
   const WilsonMatrix& wm2_src_snk =
-      get_wsnk_prop(wsp2, t_snk, exact_snk)[t_src];
+      get_wsnk_prop(wsp2, t_snk, exact_snk).get_elem(t_src);
   const Complex v1 = matrix_trace(gamma5 * wm1_snk_src, gamma5 * wm2_src_snk);
   const Complex v2 = matrix_trace(gamma5 * wm2_snk_src, gamma5 * wm1_src_snk);
   return 0.5 * (v1 + qconj(v2));
