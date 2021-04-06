@@ -1,6 +1,6 @@
 SHELL=/bin/bash
 
-CXX=mpic++ -std=c++17 -fopenmp -march=native -O2 -Wall -fno-strict-aliasing
+CXX=mpic++ -std=c++11 -fopenmp -march=native -O2 -Wall -fno-strict-aliasing
 
 # -static-libstdc++ -static-libgcc
 
