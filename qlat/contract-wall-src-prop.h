@@ -11,6 +11,37 @@ typedef SelectedField<WilsonMatrix> SelProp;
 
 typedef SelectedPoints<WilsonMatrix> PselProp;
 
+struct WsrcProps {
+  bool initialized;
+  std::vector<SelProp> vec_prop;
+  std::vector<PselProp> vec_prop_psnk;
+  std::vector<PselProp> vec_prop_wsnk;
+  std::vector<bool> mask;
+  //
+  void init()
+  {
+    initialized = false;
+    clear(vec_prop);
+    clear(vec_prop_psnk);
+    clear(vec_prop_wsnk);
+    clear(mask);
+  }
+  void init(const long n_prop)
+  {
+    init();
+    initialized = true;
+    vec_prop.resize(n_prop);
+    vec_prop_psnk.resize(n_prop);
+    vec_prop_wsnk.resize(n_prop);
+    mask.resize(n_prop, false);
+  }
+  //
+  void set_prop(const long idx, const SelProp& prop, const PselProp& prop_psnk,
+                const PselProp& prop_wsnk)
+  {
+  }
+};
+
 struct WallSrcProps {
   bool initialized;
   std::vector<SelProp> sloppy;

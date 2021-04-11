@@ -95,6 +95,7 @@ struct MemCache {
     timer.flops += mem_cache_size;
     for (auto iter = db.cbegin(); iter != db.cend(); ++iter) {
       void* ptr = iter->second;
+      qassert(ptr != NULL);
 #ifdef QLAT_USE_ACC
       cudaError_t code = cudaFree(ptr);
       qassert(code == cudaSuccess);

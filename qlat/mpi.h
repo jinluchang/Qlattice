@@ -780,6 +780,11 @@ inline void begin_comm(const MPI_Comm comm, const Coordinate& size_node)
                  show(omp_get_max_threads()));
   displayln_info("qlat::begin(): GeometryNode =\n" + show(geon));
   fflush(get_output_file());
+  displayln_info(ssprintf("Timer::get_timer_database().size() = %ld",
+                          Timer::get_timer_database().size()));
+  displayln_info(ssprintf("Timer::get_timer_stack().size() = %ld",
+                          Timer::get_timer_stack().size()));
+  get_mem_cache().gc(); //initialize mem_cache
   sync_node();
   // display_geometry_node();
   // install_qhandle_sig();
