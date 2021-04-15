@@ -24,19 +24,17 @@ rm -rf $prefix/* || true
 mkdir -p $prefix
 
 if which mpic++ >/dev/null 2>&1 || which mpicxx >/dev/null 2>&1 ; then
-    echo "mpi already exist, won't build it"
+    echo "mpi already exist. proceed."
 else
-    ./scripts/hwloc.sh
-    ./scripts/jansson.sh
-    ./scripts/netloc.sh
-    ./scripts/openmpi.sh
+    echo "NO mpic++ or mpicxx available. Quit."
+    exit
 fi
 
 # ./scripts/gsl.sh
-./scripts/fftw.sh
-./scripts/fftwf.sh
 # ./scripts/cmake.sh
 # ./scripts/lapack.sh
+./scripts/fftw.sh
+./scripts/fftwf.sh
 ./scripts/cuba.sh
 ./scripts/zlib.sh
 ./scripts/eigen.sh

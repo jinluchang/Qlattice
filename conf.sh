@@ -8,7 +8,7 @@ fi
 
 wd=$(pwd)
 distfiles=$wd/distfiles
-temp_dir=$wd/temp/qlat-build
+temp_dir=$wd/temp
 src_dir=$temp_dir/src
 build_dir=$temp_dir/build
 
