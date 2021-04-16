@@ -30,14 +30,14 @@ There are also example programs provided in the examples directory. Once the lib
 
 ## Structure
 
-``c++
+```c++
 const int DIMN = 4;
 struct Coordinate : public array<int, DIMN> {};
-``
+```
 
 ### GeometryNode
 
-``c++
+```c++
 struct GeometryNode {
   bool initialized;
   int num_node;
@@ -45,11 +45,11 @@ struct GeometryNode {
   Coordinate size_node;
   Coordinate coor_node;
 };
-``
+```
 
 ### Geometry
 
-``c++
+```c++
 struct Geometry {
   bool initialized;
   GeometryNode geon;
@@ -60,25 +60,25 @@ struct Geometry {
   Coordinate expansion_right;
   Coordinate node_site_expanded;
 };
-``
+```
 
 ### Field
 
-``c++
+```c++
 template <class M>
 struct Field {
   bool initialized;
   box<Geometry> geo;
   vector<M> field;
 };
-``
+```
 
 ### FieldM
 
-``c++
+```c++
 template <class M, int multiplicity>
 struct FieldM : Field<M> {};
-``
+```
 
 ## Random number generator description:
 
