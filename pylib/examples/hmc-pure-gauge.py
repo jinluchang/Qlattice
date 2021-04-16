@@ -129,7 +129,7 @@ def test_hmc(total_site, ga):
             q.display_gauge_field_info_table_with_wilson_flow(
                     "results/gf_info/traj={}.lat".format(traj),
                     "results/wilson_flow_energy_info/traj={}.lat".format(traj),
-                    gf, 1.0, 100, 2)
+                    gf, 0.1, 5, 2)
             q.save_gm_force_magnitudes_list(
                     "results/gm_force_info/traj={}.lat".format(traj))
 
