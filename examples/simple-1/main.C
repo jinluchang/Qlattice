@@ -5,6 +5,7 @@ namespace qlat
 
 void test()
 {
+  displayln_info(ssprintf("sizeof(ColorMatrix) = %d", sizeof(ColorMatrix)));
   const Coordinate total_site(4, 4, 4, 8);
   Geometry geo;
   geo.init(total_site, 1);

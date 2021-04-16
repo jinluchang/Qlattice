@@ -8,7 +8,7 @@ namespace qlat
 {  //
 
 template <int DIMN, class T = ComplexT>
-struct alignas(Eigen::Matrix<T, DIMN, 1>) MvectorT
+struct alignas(QLAT_ALIGNED_BYTES) MvectorT
 {
   T p[DIMN];
   //

@@ -18,6 +18,8 @@
       (p_ret) = fname<long>(__VA_ARGS__);                                   \
     } else if ("int64_t" == (ctype)) {                                      \
       (p_ret) = fname<int64_t>(__VA_ARGS__);                                \
+    } else if ("char" == (ctype)) {                                         \
+      (p_ret) = fname<char>(__VA_ARGS__);                                   \
     } else {                                                                \
       pqerr("%s %s='%s' does not exist.", #fname, #ctype, (ctype).c_str()); \
       (p_ret) = NULL;                                                       \

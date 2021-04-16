@@ -9,7 +9,7 @@ namespace qlat
 {  //
 
 template <int DIMN, class T = ComplexT>
-struct alignas(Eigen::Matrix<T, DIMN, DIMN, Eigen::RowMajor>) MatrixT
+struct alignas(QLAT_ALIGNED_BYTES) MatrixT
 {
   T p[DIMN * DIMN];
   //

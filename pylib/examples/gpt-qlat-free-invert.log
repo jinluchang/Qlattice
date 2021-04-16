@@ -151,8 +151,8 @@ make_shuffle_plan_fft: total num_recv_packs =         16
 make_shuffle_plan_fft: total num_send_msgs  =          4
 make_shuffle_plan_fft: total num_recv_msgs  =          4
 make_shuffle_plan_fft: global_comm_size =        512
-9.736817294647487 9.736817294647567 5.2179972696383235e-21
-38988.29486921299 38988.29486921171 2.1821151166326176e-17
+9.736817294647487 9.736817294647567 5.217997268884972e-21
+38988.29486921298 38988.29486921171 2.1821151374615148e-17
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 1.
 qlat::end(): Switch to old comm (foreign).

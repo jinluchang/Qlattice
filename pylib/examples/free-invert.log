@@ -178,7 +178,7 @@ cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=5.144E-01 stop_rsd=1.00
 cg_with_f: final iter=  43 sqrt(qnorm_r/qnorm_in)=8.039E-09 stop_rsd=1.000E-08
 invert_with_cg(5d,5d,inv,cg): total_iter=43 cycle=1 stop_rsd=1.000E-08
 invert_with_cg(5d,5d,inv,cg): checking 6.050266E-09 from 1.000000E+00
-9.736817294647487 9.736817290497452 2.4044600910585144e-11
+9.736817294647487 9.736817290497452 2.404460091058526e-11
 invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 6.400411E+01
 cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=5.309E+01 stop_rsd=1.000E-08 
 cg_with_f: final iter=  43 sqrt(qnorm_r/qnorm_in)=5.898E-09 stop_rsd=1.000E-08
@@ -239,7 +239,7 @@ cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=5.274E+01 stop_rsd=1.00
 cg_with_f: final iter=  43 sqrt(qnorm_r/qnorm_in)=5.403E-09 stop_rsd=1.000E-08
 invert_with_cg(5d,5d,inv,cg): total_iter=43 cycle=1 stop_rsd=1.000E-08
 invert_with_cg(5d,5d,inv,cg): checking 4.085757E-07 from 6.391824E+01
-38988.29486921299 38988.29483563643 9.993788273805972e-08
+38988.29486921298 38988.29483563643 9.993788273807488e-08
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 0.
 qlat::end(): Finalize MPI.

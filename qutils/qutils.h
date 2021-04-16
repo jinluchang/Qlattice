@@ -152,6 +152,8 @@ qacc void to_from_big_endian_64(void* str, const size_t len)
   }
 }
 
+qacc void set_zero(char& x) { x = 0; }
+
 qacc void set_zero(int32_t& x) { x = 0; }
 
 qacc void set_zero(int64_t& x) { x = 0; }
@@ -166,6 +168,10 @@ qacc void set_zero(array<M, N>& arr)
   long size = N * sizeof(M);
   std::memset((void*)arr.data(), 0, size);
 }
+
+qacc void set_unit(char& x, const long& coef = 1) { x = coef; }
+
+qacc void set_unit(char& x, const Complex& coef = 1) { x = coef.real(); }
 
 qacc void set_unit(int32_t& x, const long& coef = 1) { x = coef; }
 
