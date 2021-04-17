@@ -30,6 +30,7 @@ else
     exit
 fi
 
+./scripts/setenv.sh
 # ./scripts/gsl.sh
 # ./scripts/cmake.sh
 # ./scripts/lapack.sh
@@ -37,8 +38,10 @@ fi
 ./scripts/fftwf.sh
 ./scripts/cuba.sh
 ./scripts/zlib.sh
+./scripts/c-lime.sh
 ./scripts/eigen.sh
 ./scripts/qlat.sh
-./scripts/setenv.sh
+# ./scripts/grid-avx2.sh
+# ./scripts/gpt.sh
 
 rm -rf $temp_dir

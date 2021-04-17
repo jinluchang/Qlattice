@@ -14,7 +14,15 @@ wget -c "https://gitlab.com/libeigen/eigen/-/archive/3.3.9/eigen-3.3.9.tar.bz2"
 
 wget -O c-lime.tar.gz -c "https://github.com/usqcd-software/c-lime/tarball/master"
 
-wget -O Grid.tar.gz -c "https://github.com/waterret/Grid/tarball/feature/gpt"
+wget -O Grid-origin.tar.gz -c "https://github.com/waterret/Grid/tarball/feature/gpt"
+
+(
+rm -rf waterret-Grid-*
+tar xaf Grid-origin.tar.gz
+cd waterret-Grid-*
+pwd
+./bootstrap.sh
+)
 
 wget -O gpt.tar.gz -c "https://github.com/waterret/gpt/tarball/master"
 
