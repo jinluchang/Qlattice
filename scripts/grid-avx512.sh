@@ -20,9 +20,9 @@ ln -vs "${INITDIR}/Eigen/unsupported/Eigen" "${INITDIR}/Grid/Eigen/unsupported"
 
 mkdir build
 cd build
-../configure --enable-simd=AVX2 --enable-alloc-align=4k --enable-comms=mpi-auto \
+../configure --enable-simd=AVX512 --enable-alloc-align=4k --enable-comms=mpi-auto \
     --with-lime="$prefix" --prefix="$prefix" \
-    CXXFLAGS=-fPIC 
+    CXXFLAGS=-fPIC
 
 make -j$num_proc
 make install

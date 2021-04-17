@@ -41,7 +41,12 @@ fi
 ./scripts/c-lime.sh
 ./scripts/eigen.sh
 ./scripts/qlat.sh
+
 # ./scripts/grid-avx2.sh
 # ./scripts/gpt.sh
+
+for cmd in "$@" ; do
+    "$cmd"
+done
 
 rm -rf $temp_dir
