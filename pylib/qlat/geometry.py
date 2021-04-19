@@ -17,7 +17,7 @@ class Geometry:
         return self
 
     def copy(self):
-        x = Geometry((0, 0, 0, 0))
+        x = Geometry([0, 0, 0, 0])
         x @= self
         return x
 
@@ -66,10 +66,10 @@ class Geometry:
 
 def geo_reform(geo,
         multiplicity = 1,
-        expansion_left = (0, 0, 0, 0),
-        expansion_right = (0, 0, 0, 0)):
+        expansion_left = [0, 0, 0, 0],
+        expansion_right = [0, 0, 0, 0]):
     if isinstance(geo, Geometry):
-        geo_new = Geometry((0, 0, 0, 0))
+        geo_new = Geometry([0, 0, 0, 0])
         c.set_geo_reform(geo_new, geo, multiplicity, expansion_left, expansion_right)
         return geo_new
     else:
@@ -77,7 +77,7 @@ def geo_reform(geo,
 
 def geo_eo(geo, eo = 0):
     if isinstance(geo, Geometry):
-        geo_new = Geometry((0, 0, 0, 0))
+        geo_new = Geometry([0, 0, 0, 0])
         c.set_geo_eo(geo_new, geo, eo)
         return geo_new
     else:

@@ -235,3 +235,14 @@ class InverterGPT(q.Inverter):
         prop_sol = qlat_from_gpt(g_sol)
         self.timer.stop()
         return prop_sol
+
+def get_fgrid(total_site, fermion_params):
+    geo = q.Geometry(total_site, 1)
+    gf = q.GaugeField(geo)
+    gf.set_unit()
+    gpt_gf = g.convert(gpt_from_qlat(gf), g.single)
+    if "omega" in fermion_params:
+        qm = g.qcd.fermion.zmobius(gpt_gf, fermion_params)
+    else:
+        qm = g.qcd.fermion.mobius(gpt_gf, fermion_params)
+    return qm.F_grid_eo

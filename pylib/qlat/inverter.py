@@ -3,6 +3,9 @@ import cqlat as c
 from qlat.propagator import *
 from qlat.fermion_action import *
 from qlat.qcd import *
+from qlat.cache import *
+
+cache_inv = mk_cache("inv")
 
 class Inverter:
 
@@ -87,7 +90,7 @@ class InverterGaugeTransform(Inverter):
         self.gt_inv = self.gt.inv()
 
     def __mul__(self, prop_src):
-        assert isinstance(prop_src, Prop) or isinstance(prop_src, list)
+        assert isinstance(prop_src, Prop) or isinstance(prop_src, FermionField4d) or isinstance(prop_src, list)
         self.timer.start()
         src = self.gt_inv * prop_src
         sol = self.inverter * src
