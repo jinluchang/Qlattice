@@ -6,14 +6,18 @@
       (p_ret) = fname<ColorMatrix>(__VA_ARGS__);                            \
     } else if ("WilsonMatrix" == (ctype)) {                                 \
       (p_ret) = fname<WilsonMatrix>(__VA_ARGS__);                           \
+    } else if ("NonRelWilsonMatrix" == (ctype)) {                           \
+      (p_ret) = fname<NonRelWilsonMatrix>(__VA_ARGS__);                     \
+    } else if ("SpinMatrix" == (ctype)) {                                   \
+      (p_ret) = fname<SpinMatrix>(__VA_ARGS__);                             \
     } else if ("WilsonVector" == (ctype)) {                                 \
       (p_ret) = fname<WilsonVector>(__VA_ARGS__);                           \
+    } else if ("Complex" == (ctype)) {                                      \
+      (p_ret) = fname<Complex>(__VA_ARGS__);                                \
     } else if ("double" == (ctype)) {                                       \
       (p_ret) = fname<double>(__VA_ARGS__);                                 \
     } else if ("float" == (ctype)) {                                        \
       (p_ret) = fname<float>(__VA_ARGS__);                                  \
-    } else if ("Complex" == (ctype)) {                                      \
-      (p_ret) = fname<Complex>(__VA_ARGS__);                                \
     } else if ("long" == (ctype)) {                                         \
       (p_ret) = fname<long>(__VA_ARGS__);                                   \
     } else if ("int64_t" == (ctype)) {                                      \

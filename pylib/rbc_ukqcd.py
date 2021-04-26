@@ -313,7 +313,8 @@ def mk_gpt_inverter(gf, job_tag, inv_type, inv_acc, *,
         mpi_split = None,
         n_grouped = 1,
         eig = None,
-        eps = 1e-8):
+        eps = 1e-8,
+        timer = True):
     if mpi_split is None:
         mpi_split = g.default.get_ivec("--mpi_split", None, 4)
         if mpi_split is not None:
@@ -378,7 +379,10 @@ def mk_gpt_inverter(gf, job_tag, inv_type, inv_acc, *,
                     inv.mixed_precision(
                         slv_5d, g.single, g.double),
                     eps=eps, maxiter=maxiter)).grouped(n_grouped)
-        timer = q.Timer(f"py:inv({job_tag},{inv_type},{inv_acc})", True)
+        if timer is True:
+            timer = q.Timer(f"py:inv({job_tag},{inv_type},{inv_acc})", True)
+        elif timer is False:
+            timer = q.TimerNone()
         inv_qm = qg.InverterGPT(inverter = slv_qm, timer = timer)
     else:
         raise Exception("mk_gpt_inverter")
@@ -432,8 +436,8 @@ def mk_inverter(*args, **kwargs):
     return mk_gpt_inverter(*args, **kwargs)
 
 @q.timer
-def get_inv(gf, job_tag, inv_type, inv_acc, *, gt = None, mpi_split = None, n_grouped = 1, eig = None, eps = 1e-8):
-    tag = f"rbc_ukqcd.get_inv {id(gf)} {job_tag} {inv_type} {inv_acc} {id(gt)} {mpi_split} {n_grouped} {id(eig)} {eps}"
+def get_inv(gf, job_tag, inv_type, inv_acc, *, gt = None, mpi_split = None, n_grouped = 1, eig = None, eps = 1e-8, timer = True):
+    tag = f"rbc_ukqcd.get_inv {id(gf)} {job_tag} {inv_type} {inv_acc} {id(gt)} {mpi_split} {n_grouped} {id(eig)} {eps} {id(timer)}"
     if tag in q.cache_inv:
         return q.cache_inv[tag]
     inv = mk_inverter(gf, job_tag, inv_type, inv_acc,
@@ -441,6 +445,7 @@ def get_inv(gf, job_tag, inv_type, inv_acc, *, gt = None, mpi_split = None, n_gr
             mpi_split = mpi_split,
             n_grouped = n_grouped,
             eig = eig,
-            eps = eps)
+            eps = eps,
+            timer = timer)
     q.cache_inv[tag] = inv
     return inv

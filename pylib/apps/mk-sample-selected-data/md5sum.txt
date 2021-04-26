@@ -1,7 +1,31 @@
-bd77b3a18f0ccd910b9234293b28fb3c  results/configs/test-4nt16/ckpoint_lat.1000
-38f8f9f4db690b0e6e01dc5e6e71c883  results/configs/test-4nt16/ckpoint_lat.1100
-877af9405055b9fc93d60fd4664d38aa  results/configs/test-4nt16/ckpoint_lat.1200
-6610e4da835b30543e4fe38dcb240d05  results/configs/test-4nt16/ckpoint_lat.1300
+4bb131e4f23c245c06ac63397c8bbf06  results/configs/test-4nt16/ckpoint_lat.1000
+1f3864fcfd4569be859ea3e06d052421  results/configs/test-4nt16/ckpoint_lat.1100
+1c2b97482f30bfc063f59c9cf77a823a  results/configs/test-4nt16/ckpoint_lat.1200
+f993b5563fdd8d337188db5403728fde  results/configs/test-4nt16/ckpoint_lat.1300
+edb4aaa8f63c4ba1695e41307d966d25  results/eig/test-4nt16/traj=1000/00/0000000000.compressed
+a381eb6772770b1fd976e619daf1fe7a  results/eig/test-4nt16/traj=1000/01/0000000001.compressed
+0fb1f8a9137bfbae64da5e2c8d523487  results/eig/test-4nt16/traj=1000/02/0000000002.compressed
+47f4b72ba97a494f942703476c901bb6  results/eig/test-4nt16/traj=1000/03/0000000003.compressed
+59bbfe990931f090e41ff34d3e94aada  results/eig/test-4nt16/traj=1000/eigen-values.txt
+f34a50d9d9b3261aeafb5eb7ea430e1d  results/eig/test-4nt16/traj=1000/metadata.txt
+47a59da3f87d1114f225d019caf2fa12  results/eig/test-4nt16/traj=1100/00/0000000000.compressed
+23470f8d999bf6e9011ed092b3ec7388  results/eig/test-4nt16/traj=1100/01/0000000001.compressed
+cdb00f43821274d169b3bf4a81c7e889  results/eig/test-4nt16/traj=1100/02/0000000002.compressed
+720a48a053a667e0f8f7d26e262cd7df  results/eig/test-4nt16/traj=1100/03/0000000003.compressed
+6a8b8b32019b01769150d1ca747d68bb  results/eig/test-4nt16/traj=1100/eigen-values.txt
+ae64e7fa337ab9c9ecd31e411b258bcc  results/eig/test-4nt16/traj=1100/metadata.txt
+1e06130a06b21285ae795c3985559da3  results/eig/test-4nt16/traj=1200/00/0000000000.compressed
+89aabacca4b7d4856aa9bc54550d8088  results/eig/test-4nt16/traj=1200/01/0000000001.compressed
+1182a40836edbe7c178e009bda1afec9  results/eig/test-4nt16/traj=1200/02/0000000002.compressed
+4621961916092ea1b16d44fa8c50c1d5  results/eig/test-4nt16/traj=1200/03/0000000003.compressed
+fabf0a18d0e75e07fe9100ea3119f27e  results/eig/test-4nt16/traj=1200/eigen-values.txt
+8dabf657be07b7c28a34690f2ab49649  results/eig/test-4nt16/traj=1200/metadata.txt
+a36f7d22057f48617301729f9e8e9db7  results/eig/test-4nt16/traj=1300/00/0000000000.compressed
+e0cd329625b306c85f1bb94c709c82da  results/eig/test-4nt16/traj=1300/01/0000000001.compressed
+17ff28eb0f8d02563002a3f5f3fa0c34  results/eig/test-4nt16/traj=1300/02/0000000002.compressed
+ca2716426b95a8e38f245d483e0d84d5  results/eig/test-4nt16/traj=1300/03/0000000003.compressed
+54cc52d08de6edfda717d5a9989f4211  results/eig/test-4nt16/traj=1300/eigen-values.txt
+493a7eca9a80e87eaff489dfa405de39  results/eig/test-4nt16/traj=1300/metadata.txt
 e9bb9c5d24d29f8e3eafa6bc1377c806  results/field-selection/test-4nt16/traj=1000.field
 f6c1e6909731c408fc9c3f797ab2e0e9  results/field-selection/test-4nt16/traj=1100.field
 c825b1b49b951e20ace649aa00cec700  results/field-selection/test-4nt16/traj=1200.field
@@ -18,502 +42,502 @@ d56feacd2f0b1fc49b0f20239a94efb5  results/point-selection/test-4nt16/traj=1100.t
 c7ebfca00ed7a61b028346e1753276ae  results/point-src-info/test-4nt16/traj=1100.txt
 10da094e451dacdf4ef6215278d36d06  results/point-src-info/test-4nt16/traj=1200.txt
 b42b8d275894b13ac5ce7e8e5e2de083  results/point-src-info/test-4nt16/traj=1300.txt
-36dbbc660b51197539bc1bc36421670e  results/prop-psrc-light/test-4nt16/traj=1000/00/0000000000
-78430c883ebe3bac6ad6fc14b2ca844c  results/prop-psrc-light/test-4nt16/traj=1000/01/0000000001
-68caaf68fcce6d406656f8cbe4de66bf  results/prop-psrc-light/test-4nt16/traj=1000/02/0000000002
-e0253d1365bfbc16924fb6737313c5f2  results/prop-psrc-light/test-4nt16/traj=1000/03/0000000003
-830d7ad1bf5556054d576b4f205a559e  results/prop-psrc-light/test-4nt16/traj=1000/04/0000000004
-19ddda571b8a60cfa3c80a6c56055949  results/prop-psrc-light/test-4nt16/traj=1000/05/0000000005
-81ca2118b247d31174147eb6fd2481b5  results/prop-psrc-light/test-4nt16/traj=1000/06/0000000006
-607e85c38f31d38ac0dd9c07ca1ece49  results/prop-psrc-light/test-4nt16/traj=1000/07/0000000007
+3cd6be9c720cfd1d6372f8598bf0840c  results/prop-psrc-light/test-4nt16/traj=1000/00/0000000000
+44d7691314606b28de66f8d17ae80448  results/prop-psrc-light/test-4nt16/traj=1000/01/0000000001
+46542f50e2277cab9c624a8d7f7b7740  results/prop-psrc-light/test-4nt16/traj=1000/02/0000000002
+e2afce13bd17968bd844014cfa115463  results/prop-psrc-light/test-4nt16/traj=1000/03/0000000003
+dae44d3f0fcd311b72a4eed49d3566fe  results/prop-psrc-light/test-4nt16/traj=1000/04/0000000004
+4de1948c843017ad46f859a6e3493952  results/prop-psrc-light/test-4nt16/traj=1000/05/0000000005
+0cf529731ac504ad501ff7421ff0b692  results/prop-psrc-light/test-4nt16/traj=1000/06/0000000006
+ef2a3d80041abba0ee3a6b444b9af024  results/prop-psrc-light/test-4nt16/traj=1000/07/0000000007
 96326cc84d8f8bbd913fa5f50552d6a8  results/prop-psrc-light/test-4nt16/traj=1000/geon-info.txt
-0f5d7d6f3cd02e7a4fdc1f87b463a7e0  results/prop-psrc-light/test-4nt16/traj=1100/00/0000000000
-cfb4bd11787c10e10ac629579031bcd8  results/prop-psrc-light/test-4nt16/traj=1100/01/0000000001
-50d5e4895c74fbbc0837daae7b0cf0e4  results/prop-psrc-light/test-4nt16/traj=1100/02/0000000002
-4b42f6e26c3fcd18a2849e71fc758b7c  results/prop-psrc-light/test-4nt16/traj=1100/03/0000000003
-62906d2ba81b13f3ccaee6f1153b1fc6  results/prop-psrc-light/test-4nt16/traj=1100/04/0000000004
-7d02b26e2a0bcf0ec8de351cabb2df1c  results/prop-psrc-light/test-4nt16/traj=1100/05/0000000005
-b0e3feba5af673772853e9845d9380d9  results/prop-psrc-light/test-4nt16/traj=1100/06/0000000006
-072877b868a4e8fb478b00ccfdcd51e9  results/prop-psrc-light/test-4nt16/traj=1100/07/0000000007
+193c34251cc553e89286a7d161f5cdce  results/prop-psrc-light/test-4nt16/traj=1100/00/0000000000
+859cfc020fb972ece435a49fe95d7c66  results/prop-psrc-light/test-4nt16/traj=1100/01/0000000001
+4650b1c39a8760c78c18ae1881d71ef7  results/prop-psrc-light/test-4nt16/traj=1100/02/0000000002
+c9f52bcef5b59e66a904fa6311eb494e  results/prop-psrc-light/test-4nt16/traj=1100/03/0000000003
+5a40fd3a3dc87ad8eae256d53a473f02  results/prop-psrc-light/test-4nt16/traj=1100/04/0000000004
+f17f4b0a7adf426b923ddbffccf40713  results/prop-psrc-light/test-4nt16/traj=1100/05/0000000005
+e218e760e24b4146d94907a38a5786f4  results/prop-psrc-light/test-4nt16/traj=1100/06/0000000006
+22bc2b4e0509897e9523247446aa9756  results/prop-psrc-light/test-4nt16/traj=1100/07/0000000007
 96326cc84d8f8bbd913fa5f50552d6a8  results/prop-psrc-light/test-4nt16/traj=1100/geon-info.txt
-2516f4e1f1d13901fe98725608f88f28  results/prop-psrc-light/test-4nt16/traj=1200/00/0000000000
-aa462429499ebc0e82ed2ef627d3ba46  results/prop-psrc-light/test-4nt16/traj=1200/01/0000000001
-b2c35a1d2478754badb8ba3fbe373444  results/prop-psrc-light/test-4nt16/traj=1200/02/0000000002
-b43c9dd2e3b411bfce35e8434b36dfda  results/prop-psrc-light/test-4nt16/traj=1200/03/0000000003
-e18f38b22645c10934965c8bfc7ff732  results/prop-psrc-light/test-4nt16/traj=1200/04/0000000004
-cdc105ae4fd77fa3702a45cb61dd2fa3  results/prop-psrc-light/test-4nt16/traj=1200/05/0000000005
-6eb87a8b8e9c89e932ca5bacc1ea28e5  results/prop-psrc-light/test-4nt16/traj=1200/06/0000000006
-353b8ac009dca0d24cd6212a1081720a  results/prop-psrc-light/test-4nt16/traj=1200/07/0000000007
+7c9e8f5e8304bc84b0ffd7a93411257f  results/prop-psrc-light/test-4nt16/traj=1200/00/0000000000
+f2d2ebda3e2de1a551f3d59688744dbf  results/prop-psrc-light/test-4nt16/traj=1200/01/0000000001
+84d7a297c3e797bc493a42dc0312729f  results/prop-psrc-light/test-4nt16/traj=1200/02/0000000002
+05804f94f1fc6776cc45fd89250121de  results/prop-psrc-light/test-4nt16/traj=1200/03/0000000003
+827424b8b3c35eb7a33a189fe1245d1a  results/prop-psrc-light/test-4nt16/traj=1200/04/0000000004
+fa1caec9950d82cf229d7cc0a5caecc6  results/prop-psrc-light/test-4nt16/traj=1200/05/0000000005
+49a12085b515874026b51697f6a8a625  results/prop-psrc-light/test-4nt16/traj=1200/06/0000000006
+4ad9fef6b0cc2bba07a9710af5d4d784  results/prop-psrc-light/test-4nt16/traj=1200/07/0000000007
 96326cc84d8f8bbd913fa5f50552d6a8  results/prop-psrc-light/test-4nt16/traj=1200/geon-info.txt
-68683e3e00090cf4c6e72d60f8034d86  results/prop-psrc-light/test-4nt16/traj=1300/00/0000000000
-cb30e620081cb15c070441ea5d0c79bb  results/prop-psrc-light/test-4nt16/traj=1300/01/0000000001
-daa0a394613ec55786979408e42441b7  results/prop-psrc-light/test-4nt16/traj=1300/02/0000000002
-f2303e62eec094cc76f0866b9ce3829c  results/prop-psrc-light/test-4nt16/traj=1300/03/0000000003
-410d36d229609bcd556a95d63d9ae0f7  results/prop-psrc-light/test-4nt16/traj=1300/04/0000000004
-dc61f9b84b6ec87c8bfb1ee1a6784820  results/prop-psrc-light/test-4nt16/traj=1300/05/0000000005
-ce90d0638143762ddca50bfdaf0605c0  results/prop-psrc-light/test-4nt16/traj=1300/06/0000000006
-16f70d3e7cf4958b5c541c0ea8a6b1b7  results/prop-psrc-light/test-4nt16/traj=1300/07/0000000007
+41d1937f39ae54b4f2144e35575c714b  results/prop-psrc-light/test-4nt16/traj=1300/00/0000000000
+923b6d331f2560425a2b769058cda799  results/prop-psrc-light/test-4nt16/traj=1300/01/0000000001
+8121d0d0a606ff0652a4deea025e1eec  results/prop-psrc-light/test-4nt16/traj=1300/02/0000000002
+dd7e4a787c3e4d47fd4d2b3b5b88cf1e  results/prop-psrc-light/test-4nt16/traj=1300/03/0000000003
+f97c713f6d4e003a6d6dfc51a582b139  results/prop-psrc-light/test-4nt16/traj=1300/04/0000000004
+120a757e1cb80ffb8fa397af9f6e4824  results/prop-psrc-light/test-4nt16/traj=1300/05/0000000005
+91c9eebd0e1632d466e3765fe0d3728e  results/prop-psrc-light/test-4nt16/traj=1300/06/0000000006
+458ce03b827057730d6a050c50bf4d1b  results/prop-psrc-light/test-4nt16/traj=1300/07/0000000007
 96326cc84d8f8bbd913fa5f50552d6a8  results/prop-psrc-light/test-4nt16/traj=1300/geon-info.txt
-9012132fcb5e6e0f4143f3ae92591bb9  results/prop-psrc-strange/test-4nt16/traj=1000/00/0000000000
-1b99d7ffce730d5f5cd2849a8358d138  results/prop-psrc-strange/test-4nt16/traj=1000/01/0000000001
-de118ea616b8f6406491fb8bda776fad  results/prop-psrc-strange/test-4nt16/traj=1000/02/0000000002
-2bb9e5d9dfbb9cc2b6da0c04f9d521b1  results/prop-psrc-strange/test-4nt16/traj=1000/03/0000000003
-1605d66425433d368a57e8f75b87227f  results/prop-psrc-strange/test-4nt16/traj=1000/04/0000000004
-4227849bd23e1f8d9df484d3afb574dc  results/prop-psrc-strange/test-4nt16/traj=1000/05/0000000005
-e7c21b8b8b799f84fc5ee90be9f3799b  results/prop-psrc-strange/test-4nt16/traj=1000/06/0000000006
-49201da76271016d5a15a0cca3484bce  results/prop-psrc-strange/test-4nt16/traj=1000/07/0000000007
+965cd596f0e1c0602857d33b79343b30  results/prop-psrc-strange/test-4nt16/traj=1000/00/0000000000
+4d7b4b256e03006a7292314804773138  results/prop-psrc-strange/test-4nt16/traj=1000/01/0000000001
+b30d5cd6c3b95c8503657ef62b4867fa  results/prop-psrc-strange/test-4nt16/traj=1000/02/0000000002
+83b98c29fd8bc559acac7563ffdb1cad  results/prop-psrc-strange/test-4nt16/traj=1000/03/0000000003
+9eda796b1491e418c1d4a5fa7ffe673d  results/prop-psrc-strange/test-4nt16/traj=1000/04/0000000004
+2d30142e23cb0d5be753f430b19eff37  results/prop-psrc-strange/test-4nt16/traj=1000/05/0000000005
+5a2bf77b8a0c00427ecbac844aede6c6  results/prop-psrc-strange/test-4nt16/traj=1000/06/0000000006
+faec66830044c362a239ff3354580876  results/prop-psrc-strange/test-4nt16/traj=1000/07/0000000007
 96326cc84d8f8bbd913fa5f50552d6a8  results/prop-psrc-strange/test-4nt16/traj=1000/geon-info.txt
-e1adf8b05da141065c0a2a07846b51cf  results/prop-psrc-strange/test-4nt16/traj=1100/00/0000000000
-40369dfc5892fb7ecd2fbacc236f7234  results/prop-psrc-strange/test-4nt16/traj=1100/01/0000000001
-c24d2baedf249b97dadc9394854d44f6  results/prop-psrc-strange/test-4nt16/traj=1100/02/0000000002
-498f31385dac489e72c9d8332eea2695  results/prop-psrc-strange/test-4nt16/traj=1100/03/0000000003
-a1ca531386fa58d5decbbf357dbe6ddc  results/prop-psrc-strange/test-4nt16/traj=1100/04/0000000004
-99672e8c701fac5aefaa65009414e9a4  results/prop-psrc-strange/test-4nt16/traj=1100/05/0000000005
-68fbda5d76ae12d8f1572ee0552ca5a0  results/prop-psrc-strange/test-4nt16/traj=1100/06/0000000006
-c3fd0774d069905e9f54050f55f43b24  results/prop-psrc-strange/test-4nt16/traj=1100/07/0000000007
+c3a6ab6d377caa2b79e5c2f383f4a4a0  results/prop-psrc-strange/test-4nt16/traj=1100/00/0000000000
+aa0bbbff08cfdb39631688c22bd01d3e  results/prop-psrc-strange/test-4nt16/traj=1100/01/0000000001
+4ed225529cd5a16500153c40f92e29f1  results/prop-psrc-strange/test-4nt16/traj=1100/02/0000000002
+631845e1ea96238e0e4f4902d7440034  results/prop-psrc-strange/test-4nt16/traj=1100/03/0000000003
+77f02ed60a9c573de42a2ec37227309a  results/prop-psrc-strange/test-4nt16/traj=1100/04/0000000004
+aa31d12807f589407f8c019d2ec6707c  results/prop-psrc-strange/test-4nt16/traj=1100/05/0000000005
+a4f52b25e7241e7f2c8fecf9dfd085c5  results/prop-psrc-strange/test-4nt16/traj=1100/06/0000000006
+ce9dc11d68cc19ffa103695b9816b6ea  results/prop-psrc-strange/test-4nt16/traj=1100/07/0000000007
 96326cc84d8f8bbd913fa5f50552d6a8  results/prop-psrc-strange/test-4nt16/traj=1100/geon-info.txt
-2af7f791d3831412e64d303138b26dfe  results/prop-psrc-strange/test-4nt16/traj=1200/00/0000000000
-881a425372af37d5a7ff543a587eadb1  results/prop-psrc-strange/test-4nt16/traj=1200/01/0000000001
-e5680f90e28d1c45c212dfd9359f147c  results/prop-psrc-strange/test-4nt16/traj=1200/02/0000000002
-fe7ca883b12818b2da566333611e5779  results/prop-psrc-strange/test-4nt16/traj=1200/03/0000000003
-c92bc62eb507ed06f87569d045647dbf  results/prop-psrc-strange/test-4nt16/traj=1200/04/0000000004
-00350fcf320107e01b098b38497a2e17  results/prop-psrc-strange/test-4nt16/traj=1200/05/0000000005
-4cf9c8c1c1852c1641cda277518b24ef  results/prop-psrc-strange/test-4nt16/traj=1200/06/0000000006
-252fd1dcd7bf44230dfbf6002b9b57ac  results/prop-psrc-strange/test-4nt16/traj=1200/07/0000000007
+3da7fbb1e3ce86899eb41c7490674c37  results/prop-psrc-strange/test-4nt16/traj=1200/00/0000000000
+22b7746edfd1f26f2334c2e90f155575  results/prop-psrc-strange/test-4nt16/traj=1200/01/0000000001
+c749f7855a14c3eccd14dfcd95d26621  results/prop-psrc-strange/test-4nt16/traj=1200/02/0000000002
+d31d144891a6869cc69a1ad9f6d5ca4d  results/prop-psrc-strange/test-4nt16/traj=1200/03/0000000003
+bd51021e5fe4a8479c55904283287cf9  results/prop-psrc-strange/test-4nt16/traj=1200/04/0000000004
+e825374b32182a08b7dbea812af414fc  results/prop-psrc-strange/test-4nt16/traj=1200/05/0000000005
+9d3814b03929916a5b3831f67744a71b  results/prop-psrc-strange/test-4nt16/traj=1200/06/0000000006
+c0abdd6e49eb84fe641c1bbc32c42002  results/prop-psrc-strange/test-4nt16/traj=1200/07/0000000007
 96326cc84d8f8bbd913fa5f50552d6a8  results/prop-psrc-strange/test-4nt16/traj=1200/geon-info.txt
-c19646cd4d511b0689e3146945645288  results/prop-psrc-strange/test-4nt16/traj=1300/00/0000000000
-74f8e496da0a15ace9653e3525bfd4c2  results/prop-psrc-strange/test-4nt16/traj=1300/01/0000000001
-4bdf79e0083289df4073e4728bc472ec  results/prop-psrc-strange/test-4nt16/traj=1300/02/0000000002
-2b4b3458933ee795ab1d9fc955e62132  results/prop-psrc-strange/test-4nt16/traj=1300/03/0000000003
-5fd6ecb034062b6af38b7d19321f4b57  results/prop-psrc-strange/test-4nt16/traj=1300/04/0000000004
-982b60de49d7f011da768c6e7b7f4041  results/prop-psrc-strange/test-4nt16/traj=1300/05/0000000005
-2e78a55b79295375b724a00fa2f16382  results/prop-psrc-strange/test-4nt16/traj=1300/06/0000000006
-f264dd71d6227463012e79402ed70173  results/prop-psrc-strange/test-4nt16/traj=1300/07/0000000007
+0e4d58b34a1ba6466dc3b28854cd3a86  results/prop-psrc-strange/test-4nt16/traj=1300/00/0000000000
+927481a7cd2dc14d9ea71fe5ac367a4d  results/prop-psrc-strange/test-4nt16/traj=1300/01/0000000001
+a91be2308b5580698012c4fc5a4c7155  results/prop-psrc-strange/test-4nt16/traj=1300/02/0000000002
+276b251f3e0afe2d84f1388c0664f8be  results/prop-psrc-strange/test-4nt16/traj=1300/03/0000000003
+e46a5bc01534a6d236452e0b048d07a7  results/prop-psrc-strange/test-4nt16/traj=1300/04/0000000004
+9f3d9f063acf3d767a54951f10f3b50f  results/prop-psrc-strange/test-4nt16/traj=1300/05/0000000005
+e53cb65dc549393b990dd80ea42a200b  results/prop-psrc-strange/test-4nt16/traj=1300/06/0000000006
+d8cf1e31d4e5ca7f097fe042d543c252  results/prop-psrc-strange/test-4nt16/traj=1300/07/0000000007
 96326cc84d8f8bbd913fa5f50552d6a8  results/prop-psrc-strange/test-4nt16/traj=1300/geon-info.txt
-11c989f4f6d95c6a711a17671a4741e9  results/prop-wsrc-light/test-4nt16/traj=1000/00/0000000000
-b32c84ca482b0b18bf784d85e5a683d3  results/prop-wsrc-light/test-4nt16/traj=1000/01/0000000001
-ab7bb25fb425399b6aa35a22771fb963  results/prop-wsrc-light/test-4nt16/traj=1000/02/0000000002
-2acccaaeb922d0187afd6b508d92f742  results/prop-wsrc-light/test-4nt16/traj=1000/03/0000000003
+d7b029437311ed6e75ce0e66be74d140  results/prop-wsrc-light/test-4nt16/traj=1000/00/0000000000
+7dd87c4e24001cc3fc5ab660a1c46c65  results/prop-wsrc-light/test-4nt16/traj=1000/01/0000000001
+b6da968215fac6b386bdc58ddb9299c8  results/prop-wsrc-light/test-4nt16/traj=1000/02/0000000002
+14bc42c5c07cd064df98119199ffefb3  results/prop-wsrc-light/test-4nt16/traj=1000/03/0000000003
 8de2da550c832a636dcd4fb7335ce077  results/prop-wsrc-light/test-4nt16/traj=1000/geon-info.txt
-b959e46ed884d738353e2d67deb72db0  results/prop-wsrc-light/test-4nt16/traj=1100/00/0000000000
-6e3d23270879357fe814acaa5345d80f  results/prop-wsrc-light/test-4nt16/traj=1100/01/0000000001
-e47005736f0e2bd5bc717161b1830aba  results/prop-wsrc-light/test-4nt16/traj=1100/02/0000000002
-6a43bc340ddbc6f5c207277cede3b4b6  results/prop-wsrc-light/test-4nt16/traj=1100/03/0000000003
+637aa4cc90d09442fa82e3bf183f74a5  results/prop-wsrc-light/test-4nt16/traj=1100/00/0000000000
+0220fd70d86c7ce67084d36a01a91b2f  results/prop-wsrc-light/test-4nt16/traj=1100/01/0000000001
+e88be71bd9efbc986dda5e03d455b63e  results/prop-wsrc-light/test-4nt16/traj=1100/02/0000000002
+c5c8908f3a82bd058bf6c121887cb3df  results/prop-wsrc-light/test-4nt16/traj=1100/03/0000000003
 8de2da550c832a636dcd4fb7335ce077  results/prop-wsrc-light/test-4nt16/traj=1100/geon-info.txt
-e59953472f45eb1a9aae1ef3b4c3bb73  results/prop-wsrc-light/test-4nt16/traj=1200/00/0000000000
-7b0abd1a8e8e50092b639a94b9177981  results/prop-wsrc-light/test-4nt16/traj=1200/01/0000000001
-ccd36f9f1b7b989cc582785b284209e4  results/prop-wsrc-light/test-4nt16/traj=1200/02/0000000002
-304ce2dc900880bf720c116461824b05  results/prop-wsrc-light/test-4nt16/traj=1200/03/0000000003
+ad72243e08c39d4343f0257b6b5f110d  results/prop-wsrc-light/test-4nt16/traj=1200/00/0000000000
+86008cbbc404f25ce2981fb8e26f4f1a  results/prop-wsrc-light/test-4nt16/traj=1200/01/0000000001
+f9b3f63b9d277473b67685433e860929  results/prop-wsrc-light/test-4nt16/traj=1200/02/0000000002
+37802b1c1df8a27d1d7d274ef564cfca  results/prop-wsrc-light/test-4nt16/traj=1200/03/0000000003
 8de2da550c832a636dcd4fb7335ce077  results/prop-wsrc-light/test-4nt16/traj=1200/geon-info.txt
-3a9d60ceddbb0f0cddc0c6d9540e457d  results/prop-wsrc-light/test-4nt16/traj=1300/00/0000000000
-15fe184b4059773ccc3eabb458625f5f  results/prop-wsrc-light/test-4nt16/traj=1300/01/0000000001
-bca6d98c728687445b6f08c17ff26158  results/prop-wsrc-light/test-4nt16/traj=1300/02/0000000002
-56374d891198abd4a0df3cc89ed896c1  results/prop-wsrc-light/test-4nt16/traj=1300/03/0000000003
+1a367dedb359db155e43bd4bf90f653e  results/prop-wsrc-light/test-4nt16/traj=1300/00/0000000000
+4431a46c5d87a037000927fce138d256  results/prop-wsrc-light/test-4nt16/traj=1300/01/0000000001
+7975cabcfd588ef2880f5d5e72cdd463  results/prop-wsrc-light/test-4nt16/traj=1300/02/0000000002
+69cc0cf76c56ec5865fcf178b1047ead  results/prop-wsrc-light/test-4nt16/traj=1300/03/0000000003
 8de2da550c832a636dcd4fb7335ce077  results/prop-wsrc-light/test-4nt16/traj=1300/geon-info.txt
-0e5436c4f235bc562addd7bede8dc85b  results/prop-wsrc-strange/test-4nt16/traj=1000/00/0000000000
-b422d424550e293c2dcf4dde350360b4  results/prop-wsrc-strange/test-4nt16/traj=1000/01/0000000001
-99d1c78fd7358d9d03b7a0864fa35c50  results/prop-wsrc-strange/test-4nt16/traj=1000/02/0000000002
-4e9ab6f4b8f8ef5c2c347b61b01386fa  results/prop-wsrc-strange/test-4nt16/traj=1000/03/0000000003
+63b015180b3551358f8856b2721b55ed  results/prop-wsrc-strange/test-4nt16/traj=1000/00/0000000000
+d331225f184b528d0b25b12aa06dbc10  results/prop-wsrc-strange/test-4nt16/traj=1000/01/0000000001
+5db62d876355c02c783ede5f1bfe7d4e  results/prop-wsrc-strange/test-4nt16/traj=1000/02/0000000002
+cad7322e35a9ecef2553167797c81c0c  results/prop-wsrc-strange/test-4nt16/traj=1000/03/0000000003
 8de2da550c832a636dcd4fb7335ce077  results/prop-wsrc-strange/test-4nt16/traj=1000/geon-info.txt
-a88219f87c36070a775c7c78d7205085  results/prop-wsrc-strange/test-4nt16/traj=1100/00/0000000000
-dc82c5763d2e5c85f2e339313ed5f324  results/prop-wsrc-strange/test-4nt16/traj=1100/01/0000000001
-6a75c6168ddd096fb5b4cb72df5d495e  results/prop-wsrc-strange/test-4nt16/traj=1100/02/0000000002
-4ef5d48264ca168fe99b714a98379452  results/prop-wsrc-strange/test-4nt16/traj=1100/03/0000000003
+c7497e3ba80773e247a7ddfaeeb3dd67  results/prop-wsrc-strange/test-4nt16/traj=1100/00/0000000000
+c12a31d4673d440c54669b9f5453f0f8  results/prop-wsrc-strange/test-4nt16/traj=1100/01/0000000001
+8361fff12d98eaeebebb5cb47e0290de  results/prop-wsrc-strange/test-4nt16/traj=1100/02/0000000002
+f55e1cdeb1ed6c6e567f92233dd1915e  results/prop-wsrc-strange/test-4nt16/traj=1100/03/0000000003
 8de2da550c832a636dcd4fb7335ce077  results/prop-wsrc-strange/test-4nt16/traj=1100/geon-info.txt
-5cb8eb1d96b687adc6627d19b1d65f33  results/prop-wsrc-strange/test-4nt16/traj=1200/00/0000000000
-838750a0a28b317adadda632c95b8fe2  results/prop-wsrc-strange/test-4nt16/traj=1200/01/0000000001
-5dec1e5aee766e109bac9a428b37ec9c  results/prop-wsrc-strange/test-4nt16/traj=1200/02/0000000002
-4bea72441f12423acefd90a0f9ad21d1  results/prop-wsrc-strange/test-4nt16/traj=1200/03/0000000003
+627effa974893fde8ca1f0cd941d52c5  results/prop-wsrc-strange/test-4nt16/traj=1200/00/0000000000
+686eac49396c689631645b64589af676  results/prop-wsrc-strange/test-4nt16/traj=1200/01/0000000001
+81e54923ee91345b8a06c36b96713a71  results/prop-wsrc-strange/test-4nt16/traj=1200/02/0000000002
+3663b0b51653a22a238fbae3b5ce236f  results/prop-wsrc-strange/test-4nt16/traj=1200/03/0000000003
 8de2da550c832a636dcd4fb7335ce077  results/prop-wsrc-strange/test-4nt16/traj=1200/geon-info.txt
-c3a5b81dbab2cf9734ec68f1eb210be6  results/prop-wsrc-strange/test-4nt16/traj=1300/00/0000000000
-6025d146bca2f5d383cdc7659a22bdad  results/prop-wsrc-strange/test-4nt16/traj=1300/01/0000000001
-98928561512423a0eaa94323062c4469  results/prop-wsrc-strange/test-4nt16/traj=1300/02/0000000002
-e996e89e1eac96c497c64acfdfd0b6fe  results/prop-wsrc-strange/test-4nt16/traj=1300/03/0000000003
+a1653e3f0a3538ca88537e0f96492c77  results/prop-wsrc-strange/test-4nt16/traj=1300/00/0000000000
+f1451db1c757f79233b8c294690a64d7  results/prop-wsrc-strange/test-4nt16/traj=1300/01/0000000001
+00394f20998f34ed8b3491d690e20e51  results/prop-wsrc-strange/test-4nt16/traj=1300/02/0000000002
+bc5a789195be40b2bae5a100ae94fc07  results/prop-wsrc-strange/test-4nt16/traj=1300/03/0000000003
 8de2da550c832a636dcd4fb7335ce077  results/prop-wsrc-strange/test-4nt16/traj=1300/geon-info.txt
-bd1f6b449a1000a0f896651844f8787b  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(0,0,1,14) ; type=0 ; accuracy=0.lat
-14f87d8bb1ba9a9f68bd80371191dbfb  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(0,0,1,5) ; type=0 ; accuracy=0.lat
-89f6c384db83aeb55b4434c8a8f3382c  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(0,0,1,5) ; type=0 ; accuracy=1.lat
-540a38a3839b4ddd2b7a265d3c805068  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(0,0,2,4) ; type=0 ; accuracy=0.lat
-385ca5a60f8d8d3694ef1dac4e760ce6  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(0,0,2,4) ; type=0 ; accuracy=1.lat
-4b33c0b8bd7e6612761002bb193a1d4c  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(0,0,2,4) ; type=0 ; accuracy=2.lat
-cfec1323d135b5e7eeb63d58482f0a99  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(0,1,0,5) ; type=0 ; accuracy=0.lat
-30358bbf32f895500cf1344607dd7dd2  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(0,1,1,0) ; type=0 ; accuracy=0.lat
-1668ddc1e16b2099621dbfe370f3c158  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(0,1,1,0) ; type=0 ; accuracy=1.lat
-a2965c48b637199d51494d9c8764ca47  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(0,1,1,0) ; type=0 ; accuracy=2.lat
-5f9cd185624bec48a8a0083865aeb640  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(0,1,2,15) ; type=0 ; accuracy=0.lat
-cadce26e144288fcb0dd484b9528c453  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(0,1,3,11) ; type=0 ; accuracy=0.lat
-cf4d5a2f202d213805ce221e30d8ca81  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(0,2,1,8) ; type=0 ; accuracy=0.lat
-5844b1280d7af2be8530fc20d9a1d25e  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(0,2,3,10) ; type=0 ; accuracy=0.lat
-40c39fa8c1ca1062bbf785a2ca7e972a  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(0,3,3,0) ; type=0 ; accuracy=0.lat
-68f6f15a431e81241714954881be8b91  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(1,0,0,10) ; type=0 ; accuracy=0.lat
-570fa86ef165a9faffd40e27f8d54fed  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(1,0,2,6) ; type=0 ; accuracy=0.lat
-757bec52683b009143a1a9b63ff1dc96  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(1,0,3,10) ; type=0 ; accuracy=0.lat
-feedbd9548f81c70ff338af34a4b1cb7  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(1,2,1,3) ; type=0 ; accuracy=0.lat
-f23d369075056ef6506e5ad7bf0b511a  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(1,2,3,13) ; type=0 ; accuracy=0.lat
-21644261c0c360c738916566c9410c66  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(1,3,0,4) ; type=0 ; accuracy=0.lat
-aa7c378a9ac7778d796b16f2d87a4d54  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(2,1,3,13) ; type=0 ; accuracy=0.lat
-97eaa8f64b31e0e5ee6cc056d4af68de  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(2,2,1,11) ; type=0 ; accuracy=0.lat
-447144c76adf5bae432d24eade6f4c1a  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(2,2,2,15) ; type=0 ; accuracy=0.lat
-4998de074dd82fa1dc2771f430c6d51a  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(2,2,2,5) ; type=0 ; accuracy=0.lat
-07c75c5dade1e0c6b9afc2fa0e71ce49  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(2,2,2,5) ; type=0 ; accuracy=1.lat
-81d7cfa1dc65c080f30d4b11ad1d75fb  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(2,3,0,1) ; type=0 ; accuracy=0.lat
-c6cd22bb06cdf1020bfbbb430e05cc1f  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(2,3,0,3) ; type=0 ; accuracy=0.lat
-39f53c7a02d7af61e2a28b9372112843  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(2,3,2,15) ; type=0 ; accuracy=0.lat
-9d9db6899a07c7ee2c125b326bc8da0c  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(2,3,3,13) ; type=0 ; accuracy=0.lat
-bfed5119906950011245fa83c16cd306  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(3,0,3,13) ; type=0 ; accuracy=0.lat
-320f7e1bbe7c525c5ad65e06fd07014a  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(3,0,3,15) ; type=0 ; accuracy=0.lat
-7d9eed34890843700ce4988d7f1a4a5e  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(3,0,3,7) ; type=0 ; accuracy=0.lat
-1c601e72d0b1827a2d26df98e1de5f7a  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(3,1,3,9) ; type=0 ; accuracy=0.lat
-502467ff15ddcd454a1069e5b681eebe  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(3,2,0,5) ; type=0 ; accuracy=0.lat
-0c2db5dd1ddd760b1d0a7683ac7ea2b8  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(3,2,2,1) ; type=0 ; accuracy=0.lat
-040f4005559f964f4257a89f3546c20d  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(3,3,1,12) ; type=0 ; accuracy=0.lat
-a5bd7c3d9d8647158dfae54a5db5b033  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(3,3,3,3) ; type=0 ; accuracy=0.lat
-eba0e296020cfe09b46813af1fb410b4  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(0,0,0,15) ; type=0 ; accuracy=0.lat
-f699c3960c1f434f35825e76742cc8a7  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(0,0,3,12) ; type=0 ; accuracy=0.lat
-66e39328b54dedcdcbfd6a2b9731dc0f  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(0,0,3,12) ; type=0 ; accuracy=1.lat
-c6bdbfb72e3411b241705fe2f36e5149  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(0,0,3,12) ; type=0 ; accuracy=2.lat
-15a4b89a142f8ca2b8cd8c7646c6a56f  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(0,1,1,5) ; type=0 ; accuracy=0.lat
-ffc00070c8128786a9417c638002a9fc  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(0,1,2,0) ; type=0 ; accuracy=0.lat
-1675b46decf002391bce2754d9870123  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(0,1,3,11) ; type=0 ; accuracy=0.lat
-b8f90bcac872fd0866a5a4f9a8b2be20  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(0,3,0,4) ; type=0 ; accuracy=0.lat
-66fa4412f4db1cffd28a37b9fcd14a7c  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(0,3,2,0) ; type=0 ; accuracy=0.lat
-33973cd2d28f7a9480c7af0c9fde7a8b  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(1,0,0,9) ; type=0 ; accuracy=0.lat
-3f482881a7cd54888901524208d4c8df  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(1,0,2,8) ; type=0 ; accuracy=0.lat
-ced990bfe7165256df8aa41e025cbc78  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(1,0,2,8) ; type=0 ; accuracy=1.lat
-8f4534f53e3658fa05237753aeda5674  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(1,1,0,15) ; type=0 ; accuracy=0.lat
-04cacaaaca87c7d0f7cecc7531261c88  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(1,1,0,15) ; type=0 ; accuracy=1.lat
-8330fa0c78d57c24d1b723373af70126  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(1,1,0,15) ; type=0 ; accuracy=2.lat
-860056eed8e74d53bc62c64fc6243f4a  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(1,1,3,13) ; type=0 ; accuracy=0.lat
-592f7f5282beba7d8b416b0afe65c1df  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(1,2,2,2) ; type=0 ; accuracy=0.lat
-4215c70c591071b8c9a317dc20f669a5  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(1,2,2,9) ; type=0 ; accuracy=0.lat
-9d8a9a1048c625ad424de15f7fdff6ba  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(1,2,3,14) ; type=0 ; accuracy=0.lat
-9b0b2ff13d27abaf2743e66ee47da70c  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(1,2,3,5) ; type=0 ; accuracy=0.lat
-827cdd03c0a29610e288cbe2e97b0ad8  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(1,3,1,7) ; type=0 ; accuracy=0.lat
-e736ef4cb9e05ea37e553e2fb58c1760  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(2,0,2,2) ; type=0 ; accuracy=0.lat
-fa8ecedf71783f255b6bbe605aa3e462  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(2,0,3,12) ; type=0 ; accuracy=0.lat
-91067ba82a7a54bfffcef67c0fcb11a7  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(2,1,1,11) ; type=0 ; accuracy=0.lat
-f40040f41a68e1762d4ecbf0f744c9aa  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(2,1,1,3) ; type=0 ; accuracy=0.lat
-c646fd73f5a281e213512d1308b2aa0f  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(2,1,3,1) ; type=0 ; accuracy=0.lat
-1fdaf006a1001acc3d667e49d31a1519  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(2,2,1,3) ; type=0 ; accuracy=0.lat
-f6e0e9159f8e9891d040c4e3adee67c0  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(2,2,2,2) ; type=0 ; accuracy=0.lat
-b27bdcd0a8f1d182f8125aa2b865729b  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(2,3,1,9) ; type=0 ; accuracy=0.lat
-4b67e1dbc9d95b4cadcb621456f58738  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(2,3,1,9) ; type=0 ; accuracy=1.lat
-c2aa53e867b7ba25a47bf501fa6f6c0b  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(3,0,0,3) ; type=0 ; accuracy=0.lat
-b986df4e50b43209697c12621ea7533a  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(3,0,0,9) ; type=0 ; accuracy=0.lat
-1c0edcb9a539f2e0ad251be3a0a77235  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(3,0,2,4) ; type=0 ; accuracy=0.lat
-2926d7ef4e853a34bc614f52f10dbe17  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(3,1,1,3) ; type=0 ; accuracy=0.lat
-6ff081f6655c9e91da279b3196e4b71d  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(3,2,1,3) ; type=0 ; accuracy=0.lat
-88e8961c9d08081f210e3f319c73d7cb  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(3,2,2,12) ; type=0 ; accuracy=0.lat
-cc5e5576ef992f4ba8b8a15f3f2dc6fd  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(3,3,3,11) ; type=0 ; accuracy=0.lat
-20b2c6404764b1082b15f1781b8f01f5  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(3,3,3,5) ; type=0 ; accuracy=0.lat
-fe1499e42dd1b1bb7a12bdc34f8b460d  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(0,0,0,4) ; type=0 ; accuracy=0.lat
-53b4aad5f7063305b427cdb8ed063755  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(0,0,0,7) ; type=0 ; accuracy=0.lat
-2e1eadc2d24b0352aca0ef29aa5dc09e  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(0,1,1,11) ; type=0 ; accuracy=0.lat
-6bda46f544aa927bde050d66b757e045  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(0,1,3,10) ; type=0 ; accuracy=0.lat
-5e429bc2763c02bf80e1f364e3d7396c  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(0,1,3,9) ; type=0 ; accuracy=0.lat
-c83fe6fe1561ddb2493b928491153dba  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(0,2,2,6) ; type=0 ; accuracy=0.lat
-3469296f8f7a1da1d496eea0d752e04f  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(1,0,0,2) ; type=0 ; accuracy=0.lat
-ab61c84738fad25db5f5118b6bceb5d7  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(1,0,1,15) ; type=0 ; accuracy=0.lat
-291694361a3b789ea4d8e9736cf74011  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(1,0,3,15) ; type=0 ; accuracy=0.lat
-85b086fe128cbdb92a79285ef2d13c1c  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(1,0,3,7) ; type=0 ; accuracy=0.lat
-6bbfa08da90277bf3189e13aabce0c97  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(1,1,1,5) ; type=0 ; accuracy=0.lat
-bfcf4cb3cccc5c4607af724af72e8f31  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(1,1,1,5) ; type=0 ; accuracy=1.lat
-bbdad1ad48acaa00ffaa843a59e9b2dd  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(1,1,1,5) ; type=0 ; accuracy=2.lat
-25fe06d7c1f555bfbd440930e377d79f  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(1,1,1,7) ; type=0 ; accuracy=0.lat
-c9ca6963282d6873b6ac160f60aea77e  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(1,1,3,2) ; type=0 ; accuracy=0.lat
-61296e81daefccf1f240cab3dfe14762  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(1,1,3,4) ; type=0 ; accuracy=0.lat
-2d7b95812540794b77680aa63ff0a198  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(1,1,3,6) ; type=0 ; accuracy=0.lat
-31a9d2ad4eb00dbf253fd6aab1a6b9e4  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(1,2,2,11) ; type=0 ; accuracy=0.lat
-c2aaad7b2237eb6a8cc8e12f4896831b  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(1,2,2,11) ; type=0 ; accuracy=1.lat
-e7a1850eef795aecc78a0ac0f609fd19  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(1,2,2,11) ; type=0 ; accuracy=2.lat
-ef7e2a446f565eb78116d2442b441bfd  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(1,3,0,4) ; type=0 ; accuracy=0.lat
-3c291af871c5f90fb76a107be358cc16  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(2,0,0,6) ; type=0 ; accuracy=0.lat
-85fc2a08bbc8ad243bde1139e63c2bee  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(2,0,0,6) ; type=0 ; accuracy=1.lat
-f2c7f408d23fefe34e51afc2c7bf8a0c  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(2,0,1,7) ; type=0 ; accuracy=0.lat
-15458d2a5ac8963279067e185e2d6484  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(2,0,3,1) ; type=0 ; accuracy=0.lat
-c887ca6cee059e1c43660ee450645ee8  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(2,1,3,2) ; type=0 ; accuracy=0.lat
-d4118906cde27fec21c2d968fd3d2dcd  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(2,2,1,0) ; type=0 ; accuracy=0.lat
-cbfab290c0ca6a18d6d00d34ff3ebe48  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(2,2,1,11) ; type=0 ; accuracy=0.lat
-af869f4136906a2e16312ed9a3a51f4e  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(2,2,1,11) ; type=0 ; accuracy=1.lat
-164cc97a30916d5dd9b8c9d12f372814  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(2,3,0,1) ; type=0 ; accuracy=0.lat
-367584dd18cc41904e2f741dba809de4  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(2,3,2,14) ; type=0 ; accuracy=0.lat
-bd29ecba09bcbcb033851a3729656e6d  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(2,3,3,2) ; type=0 ; accuracy=0.lat
-267dad010049fa856bc48861211ddda0  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(3,0,2,0) ; type=0 ; accuracy=0.lat
-c668a05696caf9d122c46b9d43de36e8  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(3,1,0,10) ; type=0 ; accuracy=0.lat
-1200fe86a3beb5c79a5e2c3b59d4e2d9  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(3,2,3,12) ; type=0 ; accuracy=0.lat
-fd3e63f6dc98ebdc7968a1e157c11fe0  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(3,3,0,15) ; type=0 ; accuracy=0.lat
-4326d7a5be758b5f08d265047634c028  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(3,3,0,2) ; type=0 ; accuracy=0.lat
-b9a0c685be2d57cf807552e21b5b1089  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(3,3,2,7) ; type=0 ; accuracy=0.lat
-e14dd6aa97c4df9358b5309bdc9cb807  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(0,0,3,14) ; type=0 ; accuracy=0.lat
-94be7e6f3a2ccfc9a27f75fe94b69c31  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(0,0,3,14) ; type=0 ; accuracy=1.lat
-898177d62dcd28f4cb43a17e3c6b114a  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(0,1,2,3) ; type=0 ; accuracy=0.lat
-b388a93d7cff3df7cdd2814502a3de0b  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(0,2,0,12) ; type=0 ; accuracy=0.lat
-7d06cac9b30ba5a57984128f6630b78f  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(1,0,0,0) ; type=0 ; accuracy=0.lat
-2e08974aba7ddb5e87e9b9beeed77741  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(1,0,1,13) ; type=0 ; accuracy=0.lat
-ba23537ed286f76cd3146b26dc819fb7  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(1,1,1,14) ; type=0 ; accuracy=0.lat
-06488f5f38b11ead5ae632200bf01c96  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(1,1,1,4) ; type=0 ; accuracy=0.lat
-51f50e9987ecf9de75a8fef2b035af79  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(1,1,1,4) ; type=0 ; accuracy=1.lat
-5c5decaf21e23c903fc334d39f1dc1e7  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(2,0,0,4) ; type=0 ; accuracy=0.lat
-54fe7e30bead685ce95b81e8c50e6bd8  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(2,0,3,12) ; type=0 ; accuracy=0.lat
-120ca369749dd7ab33c5370f6ec1795b  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(2,1,0,9) ; type=0 ; accuracy=0.lat
-9aa417069a24504b61aaf62f78a0df43  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(2,1,1,2) ; type=0 ; accuracy=0.lat
-a1e384796790ada3a30c5def9ec5c2d9  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(2,1,2,10) ; type=0 ; accuracy=0.lat
-74e01cfe938c5630b740ebbcdff12ce6  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(2,1,2,13) ; type=0 ; accuracy=0.lat
-6e3aebc66b340fec43a7a27e9479b00d  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(2,1,2,2) ; type=0 ; accuracy=0.lat
-d627887a7942b733cebf11aaa44304c1  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(2,1,3,2) ; type=0 ; accuracy=0.lat
-195be1ad450efac64d9320b08a3d5b5f  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(2,2,2,0) ; type=0 ; accuracy=0.lat
-6dd67ad723bb01e374bd3b0a4dc9e166  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(2,2,2,0) ; type=0 ; accuracy=1.lat
-745d5a676be53c77ebcfb2a171563d4f  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(2,2,2,0) ; type=0 ; accuracy=2.lat
-ed9dc68ac9eac91b814fd8445e406cc6  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(2,2,2,2) ; type=0 ; accuracy=0.lat
-b4fc2ced97304b220f5177c057368833  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(2,3,2,6) ; type=0 ; accuracy=0.lat
-650f1f02b7161efc9d1e0f40660b0345  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(2,3,3,6) ; type=0 ; accuracy=0.lat
-47f26faf8b098dde975895dab6a7898e  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(3,0,0,2) ; type=0 ; accuracy=0.lat
-33c0cedc6956ec75db00f4f425ef0e26  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(3,0,1,10) ; type=0 ; accuracy=0.lat
-7dec5e3a360a3cdc1b8dc93b5c4b5866  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(3,0,2,15) ; type=0 ; accuracy=0.lat
-525eeb4a40414c3e36574894cc10c2ac  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(3,0,3,3) ; type=0 ; accuracy=0.lat
-12ade9d2690cb07bac03b0a80db170d7  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(3,1,2,10) ; type=0 ; accuracy=0.lat
-71d9fd939d0ea85393241203db72dd44  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(3,1,2,7) ; type=0 ; accuracy=0.lat
-0853a56f5e31c26f358173ed8f252297  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(3,2,0,13) ; type=0 ; accuracy=0.lat
-6f0339ccaaff74da58bee206a484b5f8  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(3,2,0,8) ; type=0 ; accuracy=0.lat
-9a8e335386e3ec376f16020d0037b0f3  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(3,2,1,12) ; type=0 ; accuracy=0.lat
-c52535dd9899baca6cf169db4725abab  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(3,2,3,13) ; type=0 ; accuracy=0.lat
-f5c612dffb21c3381da8d901aeabe316  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(3,2,3,13) ; type=0 ; accuracy=1.lat
-f6ebb484a660c16714d0eadfc0212f5e  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(3,2,3,13) ; type=0 ; accuracy=2.lat
-96e8c8398142954c845e940c92823aa7  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(3,3,2,10) ; type=0 ; accuracy=0.lat
-41a0b8ac3d439529e0cd6a203eee0a9a  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(3,3,2,9) ; type=0 ; accuracy=0.lat
-2a532b721d7e10cb8912b7bf22d29d1b  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(3,3,3,0) ; type=0 ; accuracy=0.lat
-18d4dcf6040eec322a0c347da7ab9926  results/psel-prop-psrc-strange/test-4nt16/traj=1000/xg=(0,0,1,5) ; type=1 ; accuracy=0.lat
-fbd41f8a30baf2e2215bb7b8e8269f50  results/psel-prop-psrc-strange/test-4nt16/traj=1000/xg=(0,0,1,5) ; type=1 ; accuracy=1.lat
-bced60916aee7ee235a5c86abf18fd98  results/psel-prop-psrc-strange/test-4nt16/traj=1000/xg=(0,0,2,4) ; type=1 ; accuracy=0.lat
-fe03bab5871ff3f0275b45e669ba3d6f  results/psel-prop-psrc-strange/test-4nt16/traj=1000/xg=(0,0,2,4) ; type=1 ; accuracy=1.lat
-af74240ce3a707ffccd565493bbe9ab8  results/psel-prop-psrc-strange/test-4nt16/traj=1000/xg=(0,0,2,4) ; type=1 ; accuracy=2.lat
-2aaa40952f88a84b9fd1867812dd1ef1  results/psel-prop-psrc-strange/test-4nt16/traj=1000/xg=(0,1,0,5) ; type=1 ; accuracy=0.lat
+bb2afc5a9e36343c5dc6476ef1a2c0d2  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(0,0,1,14) ; type=0 ; accuracy=0.lat
+3ade8623316f972cfc57fcace7caa6fd  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(0,0,1,5) ; type=0 ; accuracy=0.lat
+1dd6bd7201c5127019ccc2b966d04ad7  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(0,0,1,5) ; type=0 ; accuracy=1.lat
+7e1f59ef3c568f50b5434c868034f9ab  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(0,0,2,4) ; type=0 ; accuracy=0.lat
+c98565c4dff567bb7335d476074d0064  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(0,0,2,4) ; type=0 ; accuracy=1.lat
+4e2573352c3a10cd0a820c8a16a25ba9  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(0,0,2,4) ; type=0 ; accuracy=2.lat
+d3a11c7ff3bcd0a3ed67c1a722ef9ff9  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(0,1,0,5) ; type=0 ; accuracy=0.lat
+33585e243d7d38d9ae54fc02ad41f8ee  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(0,1,1,0) ; type=0 ; accuracy=0.lat
+b6939e30a68ec5f00916888282f48036  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(0,1,1,0) ; type=0 ; accuracy=1.lat
+68d58b1b511e22cf9cbc46069ff838ef  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(0,1,1,0) ; type=0 ; accuracy=2.lat
+6ba09c1627ef6eedada0e394c4e1bda4  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(0,1,2,15) ; type=0 ; accuracy=0.lat
+1b21a9560312e82ed80e7ce2a17da667  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(0,1,3,11) ; type=0 ; accuracy=0.lat
+3d504639330b1fc1a4e3571c732d1273  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(0,2,1,8) ; type=0 ; accuracy=0.lat
+d937b397d5a2664ca27fa67fcc4d019d  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(0,2,3,10) ; type=0 ; accuracy=0.lat
+3a729eedc2aec98b37824ca64bba4791  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(0,3,3,0) ; type=0 ; accuracy=0.lat
+e1d6b792e6d8a3a225de18bb09579ad7  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(1,0,0,10) ; type=0 ; accuracy=0.lat
+3a8a92ee71e320b32c44794d93eb1892  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(1,0,2,6) ; type=0 ; accuracy=0.lat
+b1c6a41e9e7159482ae2e6f1c778913c  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(1,0,3,10) ; type=0 ; accuracy=0.lat
+3941c5cb2cc2c33f08258b3bd320bba4  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(1,2,1,3) ; type=0 ; accuracy=0.lat
+6f1134c7e68f5c42eb2a7e1942c99fea  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(1,2,3,13) ; type=0 ; accuracy=0.lat
+95551d57843e9449f559f5b8740b0d74  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(1,3,0,4) ; type=0 ; accuracy=0.lat
+504d9b8e77d37890e445d21bd193ff79  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(2,1,3,13) ; type=0 ; accuracy=0.lat
+e2e60434b24340c2b11a86fadca23f04  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(2,2,1,11) ; type=0 ; accuracy=0.lat
+01d015bfaafda6172cd0875b720b62f8  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(2,2,2,15) ; type=0 ; accuracy=0.lat
+cdb075d2a3294114d1d33b656972907f  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(2,2,2,5) ; type=0 ; accuracy=0.lat
+bb3a45a2bcbf1cdbc42902c4bc58981a  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(2,2,2,5) ; type=0 ; accuracy=1.lat
+4b99832f265048a340ed4c25047b92e9  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(2,3,0,1) ; type=0 ; accuracy=0.lat
+0357731c25208ccdad13a30bcb81aed3  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(2,3,0,3) ; type=0 ; accuracy=0.lat
+8803aa7c1d6abfe9ca358c444cc3a06c  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(2,3,2,15) ; type=0 ; accuracy=0.lat
+fd6d499cb27a133f255708857d4c099c  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(2,3,3,13) ; type=0 ; accuracy=0.lat
+bac7c8276c10d2788a741f7b6861ceb4  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(3,0,3,13) ; type=0 ; accuracy=0.lat
+0b56932af84c53d03d558db7405e5748  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(3,0,3,15) ; type=0 ; accuracy=0.lat
+f7a4e5ac545f8c585ae96003b8f85ae0  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(3,0,3,7) ; type=0 ; accuracy=0.lat
+09332275567c70bfd7dc779cbb24089b  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(3,1,3,9) ; type=0 ; accuracy=0.lat
+a5be8e4cc8d046574c352d83c57bbe19  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(3,2,0,5) ; type=0 ; accuracy=0.lat
+1d728e28fb8958883be22ce8c11b7d61  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(3,2,2,1) ; type=0 ; accuracy=0.lat
+5d3bd7d05c634f29ba7bb3ff1fd992b0  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(3,3,1,12) ; type=0 ; accuracy=0.lat
+4385a3d9ff4a7490bf9c47c324a76153  results/psel-prop-psrc-light/test-4nt16/traj=1000/xg=(3,3,3,3) ; type=0 ; accuracy=0.lat
+0a5a6932e738a10e7b18657046718532  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(0,0,0,15) ; type=0 ; accuracy=0.lat
+ce861e3dd41b758c04ceb2a278cfe3b3  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(0,0,3,12) ; type=0 ; accuracy=0.lat
+8af90e7a4abcb7f93ed88bc75621e5f9  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(0,0,3,12) ; type=0 ; accuracy=1.lat
+d7ac2251fc53c3d240b8ad1572308cc4  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(0,0,3,12) ; type=0 ; accuracy=2.lat
+8fafba45cbb6b7f59717fc2bbed8474a  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(0,1,1,5) ; type=0 ; accuracy=0.lat
+5da9af348e738a199d303d7d8315fb95  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(0,1,2,0) ; type=0 ; accuracy=0.lat
+920ce179d207e47fbb3f1eedf876e4be  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(0,1,3,11) ; type=0 ; accuracy=0.lat
+be1aac32c87b99423d6cd4d9b1890b78  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(0,3,0,4) ; type=0 ; accuracy=0.lat
+048cd557e3709c6cf5b6ffc673ebc033  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(0,3,2,0) ; type=0 ; accuracy=0.lat
+a363f1d4aa1578615f6c6aa7b20f17b2  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(1,0,0,9) ; type=0 ; accuracy=0.lat
+9274eeb4eed929b81c709e653552bf8e  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(1,0,2,8) ; type=0 ; accuracy=0.lat
+ceed0b3c1f9ba814fb0a1eafa61c7807  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(1,0,2,8) ; type=0 ; accuracy=1.lat
+c33606c65badc8b818c620ef8fbf84a9  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(1,1,0,15) ; type=0 ; accuracy=0.lat
+f390e65ee0e135f497ad596f83b2ab65  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(1,1,0,15) ; type=0 ; accuracy=1.lat
+15a28bd17a33005ed101d26323a6ca05  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(1,1,0,15) ; type=0 ; accuracy=2.lat
+ddd87170f844c5711099081b3d3735ee  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(1,1,3,13) ; type=0 ; accuracy=0.lat
+5197ac09b1a9a298dfbd01f5c286e86f  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(1,2,2,2) ; type=0 ; accuracy=0.lat
+79764c44142efc664a3cd2eea6468d65  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(1,2,2,9) ; type=0 ; accuracy=0.lat
+3177714021af4a406f4f093cc943b6f7  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(1,2,3,14) ; type=0 ; accuracy=0.lat
+146d3f84f6389dbdc18d27c05d5e0888  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(1,2,3,5) ; type=0 ; accuracy=0.lat
+555e6dea777fdda8847c31daad128bec  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(1,3,1,7) ; type=0 ; accuracy=0.lat
+284c274e0c87df55efe42216d8e88dde  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(2,0,2,2) ; type=0 ; accuracy=0.lat
+448169b7f15ec197fd4ccd1440825230  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(2,0,3,12) ; type=0 ; accuracy=0.lat
+02ec785a15f32a553dd23713c091ea21  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(2,1,1,11) ; type=0 ; accuracy=0.lat
+983bda6fe1a71dd3affe34f06b30eb95  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(2,1,1,3) ; type=0 ; accuracy=0.lat
+f924d6e61eebf4effa8a0b636961e446  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(2,1,3,1) ; type=0 ; accuracy=0.lat
+5731001365d4c411a590a1631344108c  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(2,2,1,3) ; type=0 ; accuracy=0.lat
+f3745e27b5c5838985b42fcd413bd017  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(2,2,2,2) ; type=0 ; accuracy=0.lat
+dcba5c2726805716f08e706a671258df  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(2,3,1,9) ; type=0 ; accuracy=0.lat
+c92821cff5ad043033ab9fa5c3928cb6  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(2,3,1,9) ; type=0 ; accuracy=1.lat
+2438aeb9139c4c3294987b66a4e0fe3c  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(3,0,0,3) ; type=0 ; accuracy=0.lat
+9786f080b6c4f706386ee3eebc3bf27c  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(3,0,0,9) ; type=0 ; accuracy=0.lat
+3eaa097645045a0ab087b300f0f1a185  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(3,0,2,4) ; type=0 ; accuracy=0.lat
+d0253beda22a86b4004ecdf9e34848fa  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(3,1,1,3) ; type=0 ; accuracy=0.lat
+209bac31ba1da907d9f7e062082864f9  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(3,2,1,3) ; type=0 ; accuracy=0.lat
+4984a329ac66637088c91e691d41822e  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(3,2,2,12) ; type=0 ; accuracy=0.lat
+79e79381efa59627a5f49c1162bfb888  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(3,3,3,11) ; type=0 ; accuracy=0.lat
+716dc7c3fbf9a3fd5766abc27c950550  results/psel-prop-psrc-light/test-4nt16/traj=1100/xg=(3,3,3,5) ; type=0 ; accuracy=0.lat
+9ff1b3bc63bd6a41b6bd4364ae057a9c  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(0,0,0,4) ; type=0 ; accuracy=0.lat
+6665b33863164140289f03cb28485b86  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(0,0,0,7) ; type=0 ; accuracy=0.lat
+fdcd83a42969a9712eb607d1b67e2606  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(0,1,1,11) ; type=0 ; accuracy=0.lat
+e206b3170b8a2872595fd06ef45767b8  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(0,1,3,10) ; type=0 ; accuracy=0.lat
+8afe5bdcba94de6d44b90e6710b02fcc  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(0,1,3,9) ; type=0 ; accuracy=0.lat
+eedd5f9d0928d2cb0e6b0c308d5e5974  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(0,2,2,6) ; type=0 ; accuracy=0.lat
+80a655eb20cbb04a70648711600c13fd  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(1,0,0,2) ; type=0 ; accuracy=0.lat
+3263c62de77efb9b9812d03f84b4a2e1  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(1,0,1,15) ; type=0 ; accuracy=0.lat
+cd5d3bf04a0fed2d713229ea0d7024c6  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(1,0,3,15) ; type=0 ; accuracy=0.lat
+4cd6983e44c6d3d6bfb293a16ce6243b  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(1,0,3,7) ; type=0 ; accuracy=0.lat
+85be2d58da588543a2191418af38538a  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(1,1,1,5) ; type=0 ; accuracy=0.lat
+d73605bea2a2dea82ce5ff5f480176f2  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(1,1,1,5) ; type=0 ; accuracy=1.lat
+bb0c6bcbacb77becb6fb10d8bf00f52b  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(1,1,1,5) ; type=0 ; accuracy=2.lat
+704b240e6797a4614aaa586e259b5192  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(1,1,1,7) ; type=0 ; accuracy=0.lat
+5c36e70d9fcbfbfd97b5cc642054de24  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(1,1,3,2) ; type=0 ; accuracy=0.lat
+ed14594635ac8377572775a8b16996db  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(1,1,3,4) ; type=0 ; accuracy=0.lat
+9171075942b57ca74bc5c5f23066e202  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(1,1,3,6) ; type=0 ; accuracy=0.lat
+f89e870a4065214709db260b52a57934  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(1,2,2,11) ; type=0 ; accuracy=0.lat
+ed171d9916f6ae9f8863294c31cfcb57  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(1,2,2,11) ; type=0 ; accuracy=1.lat
+d2446db504e3c6fab417dd393bba7606  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(1,2,2,11) ; type=0 ; accuracy=2.lat
+0a87eda16ec0b4efc74276b6626d1761  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(1,3,0,4) ; type=0 ; accuracy=0.lat
+d592c94cf4cdb8b5c9bd34a7f3f798d7  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(2,0,0,6) ; type=0 ; accuracy=0.lat
+4fb89483ac106b00106dbac73497bcdb  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(2,0,0,6) ; type=0 ; accuracy=1.lat
+597d626962b654a9c15883484535d8de  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(2,0,1,7) ; type=0 ; accuracy=0.lat
+4d57c92c03196aa5c854c2bbe0fd5737  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(2,0,3,1) ; type=0 ; accuracy=0.lat
+90bd25eee328a89e8c989bb4d9e5d23e  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(2,1,3,2) ; type=0 ; accuracy=0.lat
+43726d9ff33a88316dfc7647a2b0a2db  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(2,2,1,0) ; type=0 ; accuracy=0.lat
+b78964bad2e05f11fa4f444e68472c15  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(2,2,1,11) ; type=0 ; accuracy=0.lat
+19655647de40c74e263d07064b6534b7  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(2,2,1,11) ; type=0 ; accuracy=1.lat
+45adde7659fc6cdfb9b44959302c9b76  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(2,3,0,1) ; type=0 ; accuracy=0.lat
+280b41e817f19bfafd9112ce95e1d1d3  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(2,3,2,14) ; type=0 ; accuracy=0.lat
+2e04d187694a0b161a032fc7fee771da  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(2,3,3,2) ; type=0 ; accuracy=0.lat
+40b417aa40c215c4c43ef68e00711299  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(3,0,2,0) ; type=0 ; accuracy=0.lat
+073afaf21a5286d9b3792817b6a4e82d  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(3,1,0,10) ; type=0 ; accuracy=0.lat
+05fa054f29e06cb49feec384e319e346  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(3,2,3,12) ; type=0 ; accuracy=0.lat
+6ece39dca0263bc78bce7047e6032154  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(3,3,0,15) ; type=0 ; accuracy=0.lat
+708a70ee1e9b9fca5d77a0d44e5dbda0  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(3,3,0,2) ; type=0 ; accuracy=0.lat
+64ea23e3ae5d24e7bc5a94ffde1b8cdf  results/psel-prop-psrc-light/test-4nt16/traj=1200/xg=(3,3,2,7) ; type=0 ; accuracy=0.lat
+d23d9fe19075904a9466c37f3638aeb3  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(0,0,3,14) ; type=0 ; accuracy=0.lat
+44ad7e66ccaafe25bd8984450b46b4c6  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(0,0,3,14) ; type=0 ; accuracy=1.lat
+945261bb448869e14cda9cd5832a7c3d  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(0,1,2,3) ; type=0 ; accuracy=0.lat
+2826917566684f3f5507f32e90a20546  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(0,2,0,12) ; type=0 ; accuracy=0.lat
+f10e264e608f58fa4da717ef68550e6c  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(1,0,0,0) ; type=0 ; accuracy=0.lat
+384209a15540816a6c2390fcca7b200e  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(1,0,1,13) ; type=0 ; accuracy=0.lat
+ee503fdf679c31a64a59dcb2237d4523  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(1,1,1,14) ; type=0 ; accuracy=0.lat
+26cb03bc588596535f25e14882dc6dde  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(1,1,1,4) ; type=0 ; accuracy=0.lat
+63022fd713639b68e83a4a494a4bc377  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(1,1,1,4) ; type=0 ; accuracy=1.lat
+414f16af386bd1c13388598d697b250e  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(2,0,0,4) ; type=0 ; accuracy=0.lat
+e7bd8160427398256cd79846afea8125  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(2,0,3,12) ; type=0 ; accuracy=0.lat
+275c042fc268944886aacbeaf9315f65  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(2,1,0,9) ; type=0 ; accuracy=0.lat
+cddab82eaf80f46af12a3f0b2de0a87c  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(2,1,1,2) ; type=0 ; accuracy=0.lat
+960dcb14337fea78e7a5f513e21e13bd  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(2,1,2,10) ; type=0 ; accuracy=0.lat
+90536ac38f7c2a5a69b1c8ea41d8dd10  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(2,1,2,13) ; type=0 ; accuracy=0.lat
+8dc891b29ed9c4f20eadb35621376b36  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(2,1,2,2) ; type=0 ; accuracy=0.lat
+484113d6bc511fded82ada3fdbfbbb93  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(2,1,3,2) ; type=0 ; accuracy=0.lat
+dcd7a12c569bfca224788d0c1146438b  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(2,2,2,0) ; type=0 ; accuracy=0.lat
+5017d6a868cbf9f7d4afd3f821eb9b99  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(2,2,2,0) ; type=0 ; accuracy=1.lat
+2e8f52caaf9cf2c38090f055a635ef05  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(2,2,2,0) ; type=0 ; accuracy=2.lat
+f2f8862bf5caf82fdde7dae25e93aa02  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(2,2,2,2) ; type=0 ; accuracy=0.lat
+bedf77068dea0d29d7a86f70a0cc9246  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(2,3,2,6) ; type=0 ; accuracy=0.lat
+463065a22c040ab0d76e75f718452568  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(2,3,3,6) ; type=0 ; accuracy=0.lat
+ee5a55144d32da935f0dff43376e607e  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(3,0,0,2) ; type=0 ; accuracy=0.lat
+7fa96c29d169c457bdac444660769819  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(3,0,1,10) ; type=0 ; accuracy=0.lat
+da43a2652ebd4d4f33a4513591460ef2  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(3,0,2,15) ; type=0 ; accuracy=0.lat
+bce18676bc524908e4bd545d0564089f  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(3,0,3,3) ; type=0 ; accuracy=0.lat
+247241020874a8d92cd2159f37ed3154  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(3,1,2,10) ; type=0 ; accuracy=0.lat
+756ac2bb45e80b1a490edcfff22b25c2  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(3,1,2,7) ; type=0 ; accuracy=0.lat
+810223e110ef22397ba7edf57e965e19  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(3,2,0,13) ; type=0 ; accuracy=0.lat
+98fa16be07ed05f9a56b3ce4e2dfdc43  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(3,2,0,8) ; type=0 ; accuracy=0.lat
+3ccce6d815c9f5ccac8b01b7de69be77  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(3,2,1,12) ; type=0 ; accuracy=0.lat
+47f91fedb9f7a294beafdfcff0e2d2e2  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(3,2,3,13) ; type=0 ; accuracy=0.lat
+9a82b577d371922844b5269ca7c8d271  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(3,2,3,13) ; type=0 ; accuracy=1.lat
+50417b668d16ba7589c92ced983e057b  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(3,2,3,13) ; type=0 ; accuracy=2.lat
+b8dbd69c1a9fa9958b4324575d46eef6  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(3,3,2,10) ; type=0 ; accuracy=0.lat
+36626cb8bc50fdb73414ef5fb09c0b08  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(3,3,2,9) ; type=0 ; accuracy=0.lat
+b807a63de09e276f3591973c4e3bc47f  results/psel-prop-psrc-light/test-4nt16/traj=1300/xg=(3,3,3,0) ; type=0 ; accuracy=0.lat
+9ddd1559772ccd740d53bd0743f86508  results/psel-prop-psrc-strange/test-4nt16/traj=1000/xg=(0,0,1,5) ; type=1 ; accuracy=0.lat
+60be6b56d97f375530b76dc86e7218bf  results/psel-prop-psrc-strange/test-4nt16/traj=1000/xg=(0,0,1,5) ; type=1 ; accuracy=1.lat
+3b41fd6c4fee936b7e212ee9c1cd07f2  results/psel-prop-psrc-strange/test-4nt16/traj=1000/xg=(0,0,2,4) ; type=1 ; accuracy=0.lat
+3fa6a32a70c7aabfbe03bcf7f97922b2  results/psel-prop-psrc-strange/test-4nt16/traj=1000/xg=(0,0,2,4) ; type=1 ; accuracy=1.lat
+a23a45aaf93c40da56c6fbd0e7d14b84  results/psel-prop-psrc-strange/test-4nt16/traj=1000/xg=(0,0,2,4) ; type=1 ; accuracy=2.lat
+0e49b3ae589b20878126cd895eceba2d  results/psel-prop-psrc-strange/test-4nt16/traj=1000/xg=(0,1,0,5) ; type=1 ; accuracy=0.lat
 6d8ed315a4deda19007cce2af726197c  results/psel-prop-psrc-strange/test-4nt16/traj=1000/xg=(0,1,1,0) ; type=1 ; accuracy=0.lat
 d993d493b7c91514837bfcacb14b8ff7  results/psel-prop-psrc-strange/test-4nt16/traj=1000/xg=(0,1,1,0) ; type=1 ; accuracy=1.lat
-0bea6b3748dc853027d429fae5e55818  results/psel-prop-psrc-strange/test-4nt16/traj=1000/xg=(0,1,1,0) ; type=1 ; accuracy=2.lat
-cd81e07d1e1a4fd45da660ab7734e0fc  results/psel-prop-psrc-strange/test-4nt16/traj=1000/xg=(0,1,3,11) ; type=1 ; accuracy=0.lat
-cac6436baac99bddc402466146acd0d2  results/psel-prop-psrc-strange/test-4nt16/traj=1000/xg=(1,0,0,10) ; type=1 ; accuracy=0.lat
-e0b37dc625673aeac3044600b8a882a2  results/psel-prop-psrc-strange/test-4nt16/traj=1000/xg=(2,1,3,13) ; type=1 ; accuracy=0.lat
+225d0715090dee67bbbc820ea8db57d7  results/psel-prop-psrc-strange/test-4nt16/traj=1000/xg=(0,1,1,0) ; type=1 ; accuracy=2.lat
+bc63542d1d1c2beb2d4ee7ca86b727a0  results/psel-prop-psrc-strange/test-4nt16/traj=1000/xg=(0,1,3,11) ; type=1 ; accuracy=0.lat
+233a8ba6ec02aca806aa6e696fde4cfb  results/psel-prop-psrc-strange/test-4nt16/traj=1000/xg=(1,0,0,10) ; type=1 ; accuracy=0.lat
+6aa9a5225b128484173e5bade4bfac7b  results/psel-prop-psrc-strange/test-4nt16/traj=1000/xg=(2,1,3,13) ; type=1 ; accuracy=0.lat
 358728e9dc4d2e56a9b7fd421150dd6d  results/psel-prop-psrc-strange/test-4nt16/traj=1000/xg=(2,2,2,5) ; type=1 ; accuracy=0.lat
 886de460075b21f72ce0e30624cd19f0  results/psel-prop-psrc-strange/test-4nt16/traj=1000/xg=(2,2,2,5) ; type=1 ; accuracy=1.lat
 6ab33fabbbc7b825ce1865ca75735d4a  results/psel-prop-psrc-strange/test-4nt16/traj=1000/xg=(2,3,0,3) ; type=1 ; accuracy=0.lat
-37f6eecebe2ef47ec277d44c249d9a7e  results/psel-prop-psrc-strange/test-4nt16/traj=1000/xg=(2,3,2,15) ; type=1 ; accuracy=0.lat
-88730841557421ccd3d17d612ca894af  results/psel-prop-psrc-strange/test-4nt16/traj=1000/xg=(2,3,3,13) ; type=1 ; accuracy=0.lat
-5b678944a469513d832b5b191b7b3456  results/psel-prop-psrc-strange/test-4nt16/traj=1000/xg=(3,0,3,13) ; type=1 ; accuracy=0.lat
-fd3a7a1811ec8f3734e6f5221521f870  results/psel-prop-psrc-strange/test-4nt16/traj=1000/xg=(3,0,3,15) ; type=1 ; accuracy=0.lat
-74f2400b0c7381491c7725c8745e3539  results/psel-prop-psrc-strange/test-4nt16/traj=1000/xg=(3,1,3,9) ; type=1 ; accuracy=0.lat
-8d0d8be1139295bb03792bd3ab8b6fdb  results/psel-prop-psrc-strange/test-4nt16/traj=1000/xg=(3,2,2,1) ; type=1 ; accuracy=0.lat
-5cb0d3ae1c38f4ee799e7378b598fda6  results/psel-prop-psrc-strange/test-4nt16/traj=1000/xg=(3,3,1,12) ; type=1 ; accuracy=0.lat
-fbdff8b3b6d3f510baecdd971b1387b1  results/psel-prop-psrc-strange/test-4nt16/traj=1100/xg=(0,0,0,15) ; type=1 ; accuracy=0.lat
-f18ee0eda1432d39bf113b00e7bf7ca0  results/psel-prop-psrc-strange/test-4nt16/traj=1100/xg=(0,0,3,12) ; type=1 ; accuracy=0.lat
-b5e9477b2b493a2fbbbc0f5fd3498bb2  results/psel-prop-psrc-strange/test-4nt16/traj=1100/xg=(0,0,3,12) ; type=1 ; accuracy=1.lat
-959dc68da2f2af2edb04e49ac5d09c30  results/psel-prop-psrc-strange/test-4nt16/traj=1100/xg=(0,0,3,12) ; type=1 ; accuracy=2.lat
+e881be55947f960485e2c2d45dd12cca  results/psel-prop-psrc-strange/test-4nt16/traj=1000/xg=(2,3,2,15) ; type=1 ; accuracy=0.lat
+59953cf8071598968868eca4828f2c39  results/psel-prop-psrc-strange/test-4nt16/traj=1000/xg=(2,3,3,13) ; type=1 ; accuracy=0.lat
+f054e6d11185be844ec9fd111321a7f8  results/psel-prop-psrc-strange/test-4nt16/traj=1000/xg=(3,0,3,13) ; type=1 ; accuracy=0.lat
+b05db485f8d063354327e6f0f60f4515  results/psel-prop-psrc-strange/test-4nt16/traj=1000/xg=(3,0,3,15) ; type=1 ; accuracy=0.lat
+197e2ea92a0c7c40331506afe6c8eca5  results/psel-prop-psrc-strange/test-4nt16/traj=1000/xg=(3,1,3,9) ; type=1 ; accuracy=0.lat
+6d407f7542dfcd4a860a3badb4bd9ebc  results/psel-prop-psrc-strange/test-4nt16/traj=1000/xg=(3,2,2,1) ; type=1 ; accuracy=0.lat
+b8cd422af08c26d3aed23bff1afd35c0  results/psel-prop-psrc-strange/test-4nt16/traj=1000/xg=(3,3,1,12) ; type=1 ; accuracy=0.lat
+6c3ebbb9b8673bcad4860499c4edc99a  results/psel-prop-psrc-strange/test-4nt16/traj=1100/xg=(0,0,0,15) ; type=1 ; accuracy=0.lat
+7229e2b48478ac90f34fdea293b5b70a  results/psel-prop-psrc-strange/test-4nt16/traj=1100/xg=(0,0,3,12) ; type=1 ; accuracy=0.lat
+45288748ed4ba233bbffd3b721e6b2c5  results/psel-prop-psrc-strange/test-4nt16/traj=1100/xg=(0,0,3,12) ; type=1 ; accuracy=1.lat
+6df90231083d5ebda70fd831e1955c53  results/psel-prop-psrc-strange/test-4nt16/traj=1100/xg=(0,0,3,12) ; type=1 ; accuracy=2.lat
 7efa38f27a7b836c0870ee6b81004586  results/psel-prop-psrc-strange/test-4nt16/traj=1100/xg=(0,3,0,4) ; type=1 ; accuracy=0.lat
-daf7f69c28c8e10b6cb9d7aa87ed0018  results/psel-prop-psrc-strange/test-4nt16/traj=1100/xg=(1,0,2,8) ; type=1 ; accuracy=0.lat
-784cd59cdf7332e15adcca0fb1faf77a  results/psel-prop-psrc-strange/test-4nt16/traj=1100/xg=(1,0,2,8) ; type=1 ; accuracy=1.lat
-d70fa7e6e69cad09c5927d2266fb3dc9  results/psel-prop-psrc-strange/test-4nt16/traj=1100/xg=(1,1,0,15) ; type=1 ; accuracy=0.lat
-5a00dd42b616052ff305a11acfec9528  results/psel-prop-psrc-strange/test-4nt16/traj=1100/xg=(1,1,0,15) ; type=1 ; accuracy=1.lat
-6b061a2371797301d8ba90cbfa20f485  results/psel-prop-psrc-strange/test-4nt16/traj=1100/xg=(1,1,0,15) ; type=1 ; accuracy=2.lat
-adaf1fe2f3e9287e9f735e50e7d8f7fe  results/psel-prop-psrc-strange/test-4nt16/traj=1100/xg=(1,1,3,13) ; type=1 ; accuracy=0.lat
-2d3775cac6470161f6d02628535d509f  results/psel-prop-psrc-strange/test-4nt16/traj=1100/xg=(1,2,2,2) ; type=1 ; accuracy=0.lat
-83dc07a7192c24b0f06a211abb81e580  results/psel-prop-psrc-strange/test-4nt16/traj=1100/xg=(1,3,1,7) ; type=1 ; accuracy=0.lat
+f4a74cc728733677ae07ca1f8bc03887  results/psel-prop-psrc-strange/test-4nt16/traj=1100/xg=(1,0,2,8) ; type=1 ; accuracy=0.lat
+09397228e09dfa4113bc7c078ee5e582  results/psel-prop-psrc-strange/test-4nt16/traj=1100/xg=(1,0,2,8) ; type=1 ; accuracy=1.lat
+fa8b4f875dae26eda05fd11e107849ca  results/psel-prop-psrc-strange/test-4nt16/traj=1100/xg=(1,1,0,15) ; type=1 ; accuracy=0.lat
+c29e4661893f315b4aa425763103db62  results/psel-prop-psrc-strange/test-4nt16/traj=1100/xg=(1,1,0,15) ; type=1 ; accuracy=1.lat
+40beddfc6c3a68c8fc3fa35457e58095  results/psel-prop-psrc-strange/test-4nt16/traj=1100/xg=(1,1,0,15) ; type=1 ; accuracy=2.lat
+44b4d14523753902318899dbb6b2f19a  results/psel-prop-psrc-strange/test-4nt16/traj=1100/xg=(1,1,3,13) ; type=1 ; accuracy=0.lat
+58cb8c6533ad7d00b99391698ad43128  results/psel-prop-psrc-strange/test-4nt16/traj=1100/xg=(1,2,2,2) ; type=1 ; accuracy=0.lat
+3ba69deb0556ccfdc3be3cb49ac32c70  results/psel-prop-psrc-strange/test-4nt16/traj=1100/xg=(1,3,1,7) ; type=1 ; accuracy=0.lat
 9f294086a9537c6cfc825239c02879fe  results/psel-prop-psrc-strange/test-4nt16/traj=1100/xg=(2,0,2,2) ; type=1 ; accuracy=0.lat
-e298556d4db26c3858c8eab8606772cb  results/psel-prop-psrc-strange/test-4nt16/traj=1100/xg=(2,0,3,12) ; type=1 ; accuracy=0.lat
+ebb4c1c730f8924b4da0c3c79a1f2242  results/psel-prop-psrc-strange/test-4nt16/traj=1100/xg=(2,0,3,12) ; type=1 ; accuracy=0.lat
 bc51a58d59cbc4aa5d62f27e0d2ada57  results/psel-prop-psrc-strange/test-4nt16/traj=1100/xg=(2,1,1,11) ; type=1 ; accuracy=0.lat
-b0b9996247a581720b02600ae7a5419d  results/psel-prop-psrc-strange/test-4nt16/traj=1100/xg=(2,2,2,2) ; type=1 ; accuracy=0.lat
+680bcc74a7d8c592c893c7188a84f8d4  results/psel-prop-psrc-strange/test-4nt16/traj=1100/xg=(2,2,2,2) ; type=1 ; accuracy=0.lat
 66f5c1fb7e0caa072dab0b9ae8b0086c  results/psel-prop-psrc-strange/test-4nt16/traj=1100/xg=(2,3,1,9) ; type=1 ; accuracy=0.lat
 249af673021ee9078f98ecfffd5be717  results/psel-prop-psrc-strange/test-4nt16/traj=1100/xg=(2,3,1,9) ; type=1 ; accuracy=1.lat
-9f4361cfb4f8ffaed16b2ab53eee33f7  results/psel-prop-psrc-strange/test-4nt16/traj=1100/xg=(3,2,1,3) ; type=1 ; accuracy=0.lat
-7c7bf011fb1f3b83cf8fd9f0fabc320a  results/psel-prop-psrc-strange/test-4nt16/traj=1100/xg=(3,2,2,12) ; type=1 ; accuracy=0.lat
-ecc026c03a4a0a8fa56467dbe4c4391c  results/psel-prop-psrc-strange/test-4nt16/traj=1100/xg=(3,3,3,11) ; type=1 ; accuracy=0.lat
+d49a6cb29ab53c803926cdc8323337c9  results/psel-prop-psrc-strange/test-4nt16/traj=1100/xg=(3,2,1,3) ; type=1 ; accuracy=0.lat
+99e659a52e17d5685b7b8fc6bbe56675  results/psel-prop-psrc-strange/test-4nt16/traj=1100/xg=(3,2,2,12) ; type=1 ; accuracy=0.lat
+0c657be8a19acc40ed9a460e63403705  results/psel-prop-psrc-strange/test-4nt16/traj=1100/xg=(3,3,3,11) ; type=1 ; accuracy=0.lat
 5f8c471e4e058820c81a2bf29f88440e  results/psel-prop-psrc-strange/test-4nt16/traj=1200/xg=(0,1,1,11) ; type=1 ; accuracy=0.lat
 b884cea487f309dfa0967efb626c8023  results/psel-prop-psrc-strange/test-4nt16/traj=1200/xg=(0,1,3,10) ; type=1 ; accuracy=0.lat
-63997dd44e10c4f2d1319d2da6fb1cb3  results/psel-prop-psrc-strange/test-4nt16/traj=1200/xg=(0,1,3,9) ; type=1 ; accuracy=0.lat
-8a7c2cccdd422abf928c5966170ffcec  results/psel-prop-psrc-strange/test-4nt16/traj=1200/xg=(0,2,2,6) ; type=1 ; accuracy=0.lat
-31798ee9c7780a40cafcb4443420d96d  results/psel-prop-psrc-strange/test-4nt16/traj=1200/xg=(1,0,3,7) ; type=1 ; accuracy=0.lat
-d72ce934d122a0eb5a6476e2594a85f6  results/psel-prop-psrc-strange/test-4nt16/traj=1200/xg=(1,1,1,5) ; type=1 ; accuracy=0.lat
-4ec044d9b5ef3dc310b232b95e54e90f  results/psel-prop-psrc-strange/test-4nt16/traj=1200/xg=(1,1,1,5) ; type=1 ; accuracy=1.lat
-2ae0c9c4dd8a1684b91ba9586722dd86  results/psel-prop-psrc-strange/test-4nt16/traj=1200/xg=(1,1,1,5) ; type=1 ; accuracy=2.lat
-fe434eba47653afa4a20cf0082a78100  results/psel-prop-psrc-strange/test-4nt16/traj=1200/xg=(1,1,3,2) ; type=1 ; accuracy=0.lat
-7a00b2f810f15b865359c9e3dad469de  results/psel-prop-psrc-strange/test-4nt16/traj=1200/xg=(1,1,3,4) ; type=1 ; accuracy=0.lat
-0221b60665d2e4b84fd73c88355729ec  results/psel-prop-psrc-strange/test-4nt16/traj=1200/xg=(1,1,3,6) ; type=1 ; accuracy=0.lat
-e818898f01eb90ac6c391962cb9a4902  results/psel-prop-psrc-strange/test-4nt16/traj=1200/xg=(1,2,2,11) ; type=1 ; accuracy=0.lat
-d2d76b3cb1054d11637e87c5d94c533c  results/psel-prop-psrc-strange/test-4nt16/traj=1200/xg=(1,2,2,11) ; type=1 ; accuracy=1.lat
-82db6317eadea8f4521a38b422f4d8de  results/psel-prop-psrc-strange/test-4nt16/traj=1200/xg=(1,2,2,11) ; type=1 ; accuracy=2.lat
-7e839dcea72fc9e4bde50941d2d67130  results/psel-prop-psrc-strange/test-4nt16/traj=1200/xg=(2,0,0,6) ; type=1 ; accuracy=0.lat
-f5451d6341947242a161a29137273b2c  results/psel-prop-psrc-strange/test-4nt16/traj=1200/xg=(2,0,0,6) ; type=1 ; accuracy=1.lat
-4a2fd7ce2d5277bfb663cedf564e6740  results/psel-prop-psrc-strange/test-4nt16/traj=1200/xg=(2,2,1,11) ; type=1 ; accuracy=0.lat
-c9e97c8115f3ecfe43761133ae64d0e6  results/psel-prop-psrc-strange/test-4nt16/traj=1200/xg=(2,2,1,11) ; type=1 ; accuracy=1.lat
-a5c13767bb0e8c059c5a725e5cf4dac1  results/psel-prop-psrc-strange/test-4nt16/traj=1200/xg=(2,3,0,1) ; type=1 ; accuracy=0.lat
+d5fe1847fa2e5051eb610e889abfe8e9  results/psel-prop-psrc-strange/test-4nt16/traj=1200/xg=(0,1,3,9) ; type=1 ; accuracy=0.lat
+6c1caad764a32d146c57a9e3f62171cc  results/psel-prop-psrc-strange/test-4nt16/traj=1200/xg=(0,2,2,6) ; type=1 ; accuracy=0.lat
+5a6af90bf733c280887fb13158b27220  results/psel-prop-psrc-strange/test-4nt16/traj=1200/xg=(1,0,3,7) ; type=1 ; accuracy=0.lat
+bf96863844b5c1dfade8565f38ded0fe  results/psel-prop-psrc-strange/test-4nt16/traj=1200/xg=(1,1,1,5) ; type=1 ; accuracy=0.lat
+4046c6cdf569cfde5af56f7742a98a5e  results/psel-prop-psrc-strange/test-4nt16/traj=1200/xg=(1,1,1,5) ; type=1 ; accuracy=1.lat
+69b7b562245f5d303e33aee8e28045cd  results/psel-prop-psrc-strange/test-4nt16/traj=1200/xg=(1,1,1,5) ; type=1 ; accuracy=2.lat
+d8c449316cabd00b13dc001dd494ca42  results/psel-prop-psrc-strange/test-4nt16/traj=1200/xg=(1,1,3,2) ; type=1 ; accuracy=0.lat
+2f6e39bb6a019a12c1b961bc20d97806  results/psel-prop-psrc-strange/test-4nt16/traj=1200/xg=(1,1,3,4) ; type=1 ; accuracy=0.lat
+bae59d016121acc9c693434332aff098  results/psel-prop-psrc-strange/test-4nt16/traj=1200/xg=(1,1,3,6) ; type=1 ; accuracy=0.lat
+b14f004edf0939a0b86cc31180ecfee6  results/psel-prop-psrc-strange/test-4nt16/traj=1200/xg=(1,2,2,11) ; type=1 ; accuracy=0.lat
+019e5ffe7d107bcb4f2e367f3002c095  results/psel-prop-psrc-strange/test-4nt16/traj=1200/xg=(1,2,2,11) ; type=1 ; accuracy=1.lat
+90eacdd47d4afb98a551c87700589742  results/psel-prop-psrc-strange/test-4nt16/traj=1200/xg=(1,2,2,11) ; type=1 ; accuracy=2.lat
+7f5bc2e64e54860c2d1642dc49bcf5c2  results/psel-prop-psrc-strange/test-4nt16/traj=1200/xg=(2,0,0,6) ; type=1 ; accuracy=0.lat
+d69d71148bef1484ac23b68f61da8b61  results/psel-prop-psrc-strange/test-4nt16/traj=1200/xg=(2,0,0,6) ; type=1 ; accuracy=1.lat
+88e4b55d8c157ae6ba2ce968cb9c4fd5  results/psel-prop-psrc-strange/test-4nt16/traj=1200/xg=(2,2,1,11) ; type=1 ; accuracy=0.lat
+9c10e7cc6bf00a741ba9d8832a26e3f4  results/psel-prop-psrc-strange/test-4nt16/traj=1200/xg=(2,2,1,11) ; type=1 ; accuracy=1.lat
+117d3a61bf283c8849b0d02fa2a3bb0e  results/psel-prop-psrc-strange/test-4nt16/traj=1200/xg=(2,3,0,1) ; type=1 ; accuracy=0.lat
 b964f63d8d934de95e333f226435b993  results/psel-prop-psrc-strange/test-4nt16/traj=1200/xg=(2,3,3,2) ; type=1 ; accuracy=0.lat
-639db854df5d0bd7851fe241079ee378  results/psel-prop-psrc-strange/test-4nt16/traj=1200/xg=(3,2,3,12) ; type=1 ; accuracy=0.lat
-088326d37ca0fe1bbc34cf4a4d2c25e5  results/psel-prop-psrc-strange/test-4nt16/traj=1200/xg=(3,3,0,15) ; type=1 ; accuracy=0.lat
-d0f3c77e42df2cea51bbe450aea104f5  results/psel-prop-psrc-strange/test-4nt16/traj=1300/xg=(0,0,3,14) ; type=1 ; accuracy=0.lat
-af50c912c831fd1420aaeff44b3a6157  results/psel-prop-psrc-strange/test-4nt16/traj=1300/xg=(0,0,3,14) ; type=1 ; accuracy=1.lat
-f3f35540ecff685e00917b1deb2c85b1  results/psel-prop-psrc-strange/test-4nt16/traj=1300/xg=(0,1,2,3) ; type=1 ; accuracy=0.lat
-3076bc8eab35c8bc1c193ab8e4678056  results/psel-prop-psrc-strange/test-4nt16/traj=1300/xg=(1,1,1,14) ; type=1 ; accuracy=0.lat
+93f0025e513115951ba49ae0dcd6777a  results/psel-prop-psrc-strange/test-4nt16/traj=1200/xg=(3,2,3,12) ; type=1 ; accuracy=0.lat
+a1d7658926aa503b54197a858c7090f3  results/psel-prop-psrc-strange/test-4nt16/traj=1200/xg=(3,3,0,15) ; type=1 ; accuracy=0.lat
+d2e7ca29ada43efe97b1bc1c356e3211  results/psel-prop-psrc-strange/test-4nt16/traj=1300/xg=(0,0,3,14) ; type=1 ; accuracy=0.lat
+52ab91bfd136104960b14d49b0a0fad3  results/psel-prop-psrc-strange/test-4nt16/traj=1300/xg=(0,0,3,14) ; type=1 ; accuracy=1.lat
+65b4512228241b1436d542ea0f782c5e  results/psel-prop-psrc-strange/test-4nt16/traj=1300/xg=(0,1,2,3) ; type=1 ; accuracy=0.lat
+c6420cfee7cecda9a34a90f5fecc85ea  results/psel-prop-psrc-strange/test-4nt16/traj=1300/xg=(1,1,1,14) ; type=1 ; accuracy=0.lat
 d579d98915cfa55cb6a553898c54109d  results/psel-prop-psrc-strange/test-4nt16/traj=1300/xg=(1,1,1,4) ; type=1 ; accuracy=0.lat
 52412cae678c05f8978b1e1c0e9f982b  results/psel-prop-psrc-strange/test-4nt16/traj=1300/xg=(1,1,1,4) ; type=1 ; accuracy=1.lat
-f52af6e1ba59e3cd6ba0037f649e4038  results/psel-prop-psrc-strange/test-4nt16/traj=1300/xg=(2,0,0,4) ; type=1 ; accuracy=0.lat
-141b5dde84ab65e7511d451e6aa355f6  results/psel-prop-psrc-strange/test-4nt16/traj=1300/xg=(2,0,3,12) ; type=1 ; accuracy=0.lat
-8e09a29644c9683e6a211b557240966c  results/psel-prop-psrc-strange/test-4nt16/traj=1300/xg=(2,1,2,10) ; type=1 ; accuracy=0.lat
-def01eafbdbcf59348fe56d2d8fce97b  results/psel-prop-psrc-strange/test-4nt16/traj=1300/xg=(2,1,2,2) ; type=1 ; accuracy=0.lat
-0a49284f70970d19de1e71876d963244  results/psel-prop-psrc-strange/test-4nt16/traj=1300/xg=(2,2,2,0) ; type=1 ; accuracy=0.lat
-7135bbe32b31521742cbac8afff689c1  results/psel-prop-psrc-strange/test-4nt16/traj=1300/xg=(2,2,2,0) ; type=1 ; accuracy=1.lat
-16e824f2481577c36580396381f258a7  results/psel-prop-psrc-strange/test-4nt16/traj=1300/xg=(2,2,2,0) ; type=1 ; accuracy=2.lat
-c036199de023f9fb319ce49f2663ba40  results/psel-prop-psrc-strange/test-4nt16/traj=1300/xg=(2,2,2,2) ; type=1 ; accuracy=0.lat
+596712171624dde9e57d7dd4a98784b0  results/psel-prop-psrc-strange/test-4nt16/traj=1300/xg=(2,0,0,4) ; type=1 ; accuracy=0.lat
+6250aa977c7e8058cd49952e0f40d900  results/psel-prop-psrc-strange/test-4nt16/traj=1300/xg=(2,0,3,12) ; type=1 ; accuracy=0.lat
+0b81f20b1dff7b6aba5bb14557e7e44e  results/psel-prop-psrc-strange/test-4nt16/traj=1300/xg=(2,1,2,10) ; type=1 ; accuracy=0.lat
+52959fadf5a5ec88994d8ab943c32d85  results/psel-prop-psrc-strange/test-4nt16/traj=1300/xg=(2,1,2,2) ; type=1 ; accuracy=0.lat
+ac2981fbe28a43fe1cd4ad85e44fb13b  results/psel-prop-psrc-strange/test-4nt16/traj=1300/xg=(2,2,2,0) ; type=1 ; accuracy=0.lat
+8fafb0fb1b3d68ee5c359581e3d1780b  results/psel-prop-psrc-strange/test-4nt16/traj=1300/xg=(2,2,2,0) ; type=1 ; accuracy=1.lat
+815dda9264cb2f86f9968572474f50fb  results/psel-prop-psrc-strange/test-4nt16/traj=1300/xg=(2,2,2,0) ; type=1 ; accuracy=2.lat
+23f6e4a8ec83226ae2285764811769a6  results/psel-prop-psrc-strange/test-4nt16/traj=1300/xg=(2,2,2,2) ; type=1 ; accuracy=0.lat
 0236d58ab3141699915622e1c4592fe8  results/psel-prop-psrc-strange/test-4nt16/traj=1300/xg=(2,3,2,6) ; type=1 ; accuracy=0.lat
 a33b8b2bb0af54be74a674a2bcb6fd79  results/psel-prop-psrc-strange/test-4nt16/traj=1300/xg=(3,0,0,2) ; type=1 ; accuracy=0.lat
-a365e43da3bacfb07fe6d9323ad0aeb8  results/psel-prop-psrc-strange/test-4nt16/traj=1300/xg=(3,0,2,15) ; type=1 ; accuracy=0.lat
-abf47bb42e91fb440d6fcc6f0faf4175  results/psel-prop-psrc-strange/test-4nt16/traj=1300/xg=(3,1,2,7) ; type=1 ; accuracy=0.lat
-2be12ef9305ae087db3f32e995ed4420  results/psel-prop-psrc-strange/test-4nt16/traj=1300/xg=(3,2,0,13) ; type=1 ; accuracy=0.lat
-544b1613b0d60a5272cd457423973b06  results/psel-prop-psrc-strange/test-4nt16/traj=1300/xg=(3,2,3,13) ; type=1 ; accuracy=0.lat
-f48bc88451a1fba66f32c81545eb8790  results/psel-prop-psrc-strange/test-4nt16/traj=1300/xg=(3,2,3,13) ; type=1 ; accuracy=1.lat
-072e20d0acea3c62289900b176dae5f3  results/psel-prop-psrc-strange/test-4nt16/traj=1300/xg=(3,2,3,13) ; type=1 ; accuracy=2.lat
-6ece4532d4052b92ab143fb0b8fcd53f  results/psel-prop-wsrc-light/test-4nt16/traj=1000/tslice=0 ; type=0 ; accuracy=1.lat
-ea9efd2f1b85a5b9df005a5cbed6c194  results/psel-prop-wsrc-light/test-4nt16/traj=1000/tslice=10 ; type=0 ; accuracy=1.lat
-ab6b6f02e7ffb0884efe06d7b7806dfd  results/psel-prop-wsrc-light/test-4nt16/traj=1000/tslice=11 ; type=0 ; accuracy=1.lat
-24d9dcdb4294e722240e0118c7cb8dad  results/psel-prop-wsrc-light/test-4nt16/traj=1000/tslice=12 ; type=0 ; accuracy=1.lat
-b251145c5e21ab73f54ca88e1a31cfdf  results/psel-prop-wsrc-light/test-4nt16/traj=1000/tslice=13 ; type=0 ; accuracy=1.lat
-77677fe512fa76f7b827fcdd3dd642e0  results/psel-prop-wsrc-light/test-4nt16/traj=1000/tslice=14 ; type=0 ; accuracy=1.lat
-91ca38e881feb547719da528c988ccde  results/psel-prop-wsrc-light/test-4nt16/traj=1000/tslice=14 ; type=0 ; accuracy=2.lat
-383e82ba29449b8a0ee65be8e865b9fd  results/psel-prop-wsrc-light/test-4nt16/traj=1000/tslice=15 ; type=0 ; accuracy=1.lat
-772fe372d68a7ff8eafc976b13c52f1c  results/psel-prop-wsrc-light/test-4nt16/traj=1000/tslice=1 ; type=0 ; accuracy=1.lat
-49042ccb425ee96887f1ca0658215881  results/psel-prop-wsrc-light/test-4nt16/traj=1000/tslice=2 ; type=0 ; accuracy=1.lat
-206d977e25d29ed8980525536330bbd5  results/psel-prop-wsrc-light/test-4nt16/traj=1000/tslice=3 ; type=0 ; accuracy=1.lat
-eb270db986586f523de03a826481b6e1  results/psel-prop-wsrc-light/test-4nt16/traj=1000/tslice=4 ; type=0 ; accuracy=1.lat
-52032662c00d9e6ebea6947811c7e7d8  results/psel-prop-wsrc-light/test-4nt16/traj=1000/tslice=5 ; type=0 ; accuracy=1.lat
-842c99aeff3d78efa6650a2b8346a050  results/psel-prop-wsrc-light/test-4nt16/traj=1000/tslice=6 ; type=0 ; accuracy=1.lat
-66d5a8551ed92cf58d132760e37c0e66  results/psel-prop-wsrc-light/test-4nt16/traj=1000/tslice=6 ; type=0 ; accuracy=2.lat
-6131603d5111c2c48865e69e7c1b6fbc  results/psel-prop-wsrc-light/test-4nt16/traj=1000/tslice=7 ; type=0 ; accuracy=1.lat
-40632db68d312cd617aa9cafa3e702fb  results/psel-prop-wsrc-light/test-4nt16/traj=1000/tslice=8 ; type=0 ; accuracy=1.lat
-669b4bc7c993770c85055a40efbaa278  results/psel-prop-wsrc-light/test-4nt16/traj=1000/tslice=9 ; type=0 ; accuracy=1.lat
-f9987b7bc8b705f7f9ba1d4ef5669b02  results/psel-prop-wsrc-light/test-4nt16/traj=1100/tslice=0 ; type=0 ; accuracy=1.lat
-a37008e392cf02d4b688e722006640fe  results/psel-prop-wsrc-light/test-4nt16/traj=1100/tslice=10 ; type=0 ; accuracy=1.lat
-03e2115e044e72ffbd06119f6bb5e1fc  results/psel-prop-wsrc-light/test-4nt16/traj=1100/tslice=11 ; type=0 ; accuracy=1.lat
-d6a6fa2bf98d3317d35e6a2f90145c64  results/psel-prop-wsrc-light/test-4nt16/traj=1100/tslice=12 ; type=0 ; accuracy=1.lat
-890c114d86ec4f12fa3d21b34aa2ad82  results/psel-prop-wsrc-light/test-4nt16/traj=1100/tslice=13 ; type=0 ; accuracy=1.lat
-c440f050f34e8fa12a384ac8aa17090a  results/psel-prop-wsrc-light/test-4nt16/traj=1100/tslice=14 ; type=0 ; accuracy=1.lat
-f3f9eec344a64d6bdcebcb486985ad70  results/psel-prop-wsrc-light/test-4nt16/traj=1100/tslice=15 ; type=0 ; accuracy=1.lat
-3dcf2052e7cd25406e45ed9aff6d4ab6  results/psel-prop-wsrc-light/test-4nt16/traj=1100/tslice=1 ; type=0 ; accuracy=1.lat
-8e39c161a369757df4af8c5e70a929cd  results/psel-prop-wsrc-light/test-4nt16/traj=1100/tslice=2 ; type=0 ; accuracy=1.lat
-84dd6965d3d30eefca463a2e4c0744e9  results/psel-prop-wsrc-light/test-4nt16/traj=1100/tslice=3 ; type=0 ; accuracy=1.lat
-f7d200f015afcc58ef829b9ec12fb172  results/psel-prop-wsrc-light/test-4nt16/traj=1100/tslice=4 ; type=0 ; accuracy=1.lat
-1beeb8baed4b283a2b73eaf642683fbb  results/psel-prop-wsrc-light/test-4nt16/traj=1100/tslice=5 ; type=0 ; accuracy=1.lat
-9a15807bd5ac1e2a970b59329aa74a43  results/psel-prop-wsrc-light/test-4nt16/traj=1100/tslice=6 ; type=0 ; accuracy=1.lat
-86cc0bd584ef5da67c2180bd61fdaea6  results/psel-prop-wsrc-light/test-4nt16/traj=1100/tslice=6 ; type=0 ; accuracy=2.lat
-b5d1bed150add6789b565fb6a75ecaea  results/psel-prop-wsrc-light/test-4nt16/traj=1100/tslice=7 ; type=0 ; accuracy=1.lat
-b832e6d2a3f758adfcf73c5313f7da3c  results/psel-prop-wsrc-light/test-4nt16/traj=1100/tslice=8 ; type=0 ; accuracy=1.lat
-d91d410e84b764b9721c55ef470aa664  results/psel-prop-wsrc-light/test-4nt16/traj=1100/tslice=9 ; type=0 ; accuracy=1.lat
-3c71a5af3dc121a29ada306927a0a31b  results/psel-prop-wsrc-light/test-4nt16/traj=1100/tslice=9 ; type=0 ; accuracy=2.lat
-f34e111a7cd5c5606773cf95ca31ead4  results/psel-prop-wsrc-light/test-4nt16/traj=1200/tslice=0 ; type=0 ; accuracy=1.lat
-64bc499d8ef3011c36f3df549c5d3125  results/psel-prop-wsrc-light/test-4nt16/traj=1200/tslice=10 ; type=0 ; accuracy=1.lat
-2c5f08717fc07d9d3cfd9b2537b91b3a  results/psel-prop-wsrc-light/test-4nt16/traj=1200/tslice=10 ; type=0 ; accuracy=2.lat
-64d6d48d3bd5557c2bc6b18aac098977  results/psel-prop-wsrc-light/test-4nt16/traj=1200/tslice=11 ; type=0 ; accuracy=1.lat
-b7e1b3a100871217c2fa19a693613254  results/psel-prop-wsrc-light/test-4nt16/traj=1200/tslice=12 ; type=0 ; accuracy=1.lat
-0d9d6e5450e228b0abcce462441bb8cb  results/psel-prop-wsrc-light/test-4nt16/traj=1200/tslice=13 ; type=0 ; accuracy=1.lat
-9799b350d67ede9265a9c5e21c25ca3d  results/psel-prop-wsrc-light/test-4nt16/traj=1200/tslice=14 ; type=0 ; accuracy=1.lat
-9b523fcd9d7ff8d2ab865135e2ecbaf7  results/psel-prop-wsrc-light/test-4nt16/traj=1200/tslice=14 ; type=0 ; accuracy=2.lat
-a27eda8f2c857661b0ab248db4cc7af7  results/psel-prop-wsrc-light/test-4nt16/traj=1200/tslice=15 ; type=0 ; accuracy=1.lat
-90772e0c03009ffc25315e9dc1a82ae5  results/psel-prop-wsrc-light/test-4nt16/traj=1200/tslice=1 ; type=0 ; accuracy=1.lat
-9f8c575e62ad429f2d41d7da9bac5449  results/psel-prop-wsrc-light/test-4nt16/traj=1200/tslice=2 ; type=0 ; accuracy=1.lat
-aa6d9aceff22e1a1524c3e9c2396d65b  results/psel-prop-wsrc-light/test-4nt16/traj=1200/tslice=3 ; type=0 ; accuracy=1.lat
-a371251f95b6642230f1df8faddbbb8b  results/psel-prop-wsrc-light/test-4nt16/traj=1200/tslice=4 ; type=0 ; accuracy=1.lat
-f23c0289fa05f53fdcf7401478cf34cf  results/psel-prop-wsrc-light/test-4nt16/traj=1200/tslice=5 ; type=0 ; accuracy=1.lat
-4bbdd8c278ccf3b976c49fb56817cd15  results/psel-prop-wsrc-light/test-4nt16/traj=1200/tslice=6 ; type=0 ; accuracy=1.lat
-2a497c86c3b6eaf014e47db472e00325  results/psel-prop-wsrc-light/test-4nt16/traj=1200/tslice=7 ; type=0 ; accuracy=1.lat
-a97e65ea217a9136d481784ff6991c68  results/psel-prop-wsrc-light/test-4nt16/traj=1200/tslice=8 ; type=0 ; accuracy=1.lat
-e83a13a7e0dc32006fb63c818e03f48d  results/psel-prop-wsrc-light/test-4nt16/traj=1200/tslice=9 ; type=0 ; accuracy=1.lat
-6d70a3b345a7a8df07c1ab7299ba9c68  results/psel-prop-wsrc-light/test-4nt16/traj=1300/tslice=0 ; type=0 ; accuracy=1.lat
-a99036112c366612362fcd05cdf0385a  results/psel-prop-wsrc-light/test-4nt16/traj=1300/tslice=0 ; type=0 ; accuracy=2.lat
-6be4b3a89e764745e28628d96df02744  results/psel-prop-wsrc-light/test-4nt16/traj=1300/tslice=10 ; type=0 ; accuracy=1.lat
-768f0d0eedac5e6beeb6119772857062  results/psel-prop-wsrc-light/test-4nt16/traj=1300/tslice=11 ; type=0 ; accuracy=1.lat
-7fcdb4bf1573c2e87cf00ca5d07dc42c  results/psel-prop-wsrc-light/test-4nt16/traj=1300/tslice=12 ; type=0 ; accuracy=1.lat
-adf619a8c10723f8eebaf2f7ad9ade5e  results/psel-prop-wsrc-light/test-4nt16/traj=1300/tslice=13 ; type=0 ; accuracy=1.lat
-9d33f964639d00bbf2baaee30b37e43d  results/psel-prop-wsrc-light/test-4nt16/traj=1300/tslice=14 ; type=0 ; accuracy=1.lat
-5f07a52c8a4902e7aba1789a801ebf20  results/psel-prop-wsrc-light/test-4nt16/traj=1300/tslice=15 ; type=0 ; accuracy=1.lat
-cb8894b0436c6727f1ef6ac32282a867  results/psel-prop-wsrc-light/test-4nt16/traj=1300/tslice=1 ; type=0 ; accuracy=1.lat
-a88e61fdcde6cd94f116d5f21f4597dc  results/psel-prop-wsrc-light/test-4nt16/traj=1300/tslice=2 ; type=0 ; accuracy=1.lat
-83089115b2ef1dcec494ab9552bfae3f  results/psel-prop-wsrc-light/test-4nt16/traj=1300/tslice=3 ; type=0 ; accuracy=1.lat
-80b129d996d84a2813cfec67354312ea  results/psel-prop-wsrc-light/test-4nt16/traj=1300/tslice=4 ; type=0 ; accuracy=1.lat
-9ccb0d528b22a8c424da32c371c82bf4  results/psel-prop-wsrc-light/test-4nt16/traj=1300/tslice=5 ; type=0 ; accuracy=1.lat
-f8fe82b974e49c904e3360d6e30821ab  results/psel-prop-wsrc-light/test-4nt16/traj=1300/tslice=6 ; type=0 ; accuracy=1.lat
-9622b156efea46cb701dcc35085f171a  results/psel-prop-wsrc-light/test-4nt16/traj=1300/tslice=7 ; type=0 ; accuracy=1.lat
-6007035d9988ea10789d4fb83447e773  results/psel-prop-wsrc-light/test-4nt16/traj=1300/tslice=8 ; type=0 ; accuracy=1.lat
-dfa83f41563300cb3656600b70a44cf7  results/psel-prop-wsrc-light/test-4nt16/traj=1300/tslice=8 ; type=0 ; accuracy=2.lat
-8223b7184cdb6b8ff646d84adc422c85  results/psel-prop-wsrc-light/test-4nt16/traj=1300/tslice=9 ; type=0 ; accuracy=1.lat
-2ae505f0da98ed55f9e633ee261dd25e  results/psel-prop-wsrc-strange/test-4nt16/traj=1000/tslice=0 ; type=1 ; accuracy=1.lat
-245a7d5a11bad52d02e384fd64a87d0d  results/psel-prop-wsrc-strange/test-4nt16/traj=1000/tslice=10 ; type=1 ; accuracy=1.lat
-ebefbadea995b536763d3c8185244aaf  results/psel-prop-wsrc-strange/test-4nt16/traj=1000/tslice=11 ; type=1 ; accuracy=1.lat
-b789642bee044631ea5368660119fb93  results/psel-prop-wsrc-strange/test-4nt16/traj=1000/tslice=12 ; type=1 ; accuracy=1.lat
-046fb4acde41b950815f6c17cbc0869b  results/psel-prop-wsrc-strange/test-4nt16/traj=1000/tslice=13 ; type=1 ; accuracy=1.lat
-d9ff4230165c277f33dff307d82d5955  results/psel-prop-wsrc-strange/test-4nt16/traj=1000/tslice=14 ; type=1 ; accuracy=1.lat
-bd0786bdae643ed94ddc63e90cc10c8d  results/psel-prop-wsrc-strange/test-4nt16/traj=1000/tslice=14 ; type=1 ; accuracy=2.lat
-fa272ea7614e229f6734290c7343a49a  results/psel-prop-wsrc-strange/test-4nt16/traj=1000/tslice=15 ; type=1 ; accuracy=1.lat
-e0989883dc687e73165f865b6a4ca95f  results/psel-prop-wsrc-strange/test-4nt16/traj=1000/tslice=1 ; type=1 ; accuracy=1.lat
-6703e33c3402beacd921fb0d5b09c6c4  results/psel-prop-wsrc-strange/test-4nt16/traj=1000/tslice=2 ; type=1 ; accuracy=1.lat
-686e15b0977eb5372c5460b776d9bcde  results/psel-prop-wsrc-strange/test-4nt16/traj=1000/tslice=3 ; type=1 ; accuracy=1.lat
-9c0c150beafc70ea9acb06d6c76017a8  results/psel-prop-wsrc-strange/test-4nt16/traj=1000/tslice=4 ; type=1 ; accuracy=1.lat
-4e422144f713adb64a5b78daec1efc69  results/psel-prop-wsrc-strange/test-4nt16/traj=1000/tslice=5 ; type=1 ; accuracy=1.lat
-3b3b5f370e55f73483ba582d12ee9cb7  results/psel-prop-wsrc-strange/test-4nt16/traj=1000/tslice=6 ; type=1 ; accuracy=1.lat
-1dec475e9693fdc4fa248ab0a9d21413  results/psel-prop-wsrc-strange/test-4nt16/traj=1000/tslice=6 ; type=1 ; accuracy=2.lat
-00d1627060454f779dcef4a43df1c548  results/psel-prop-wsrc-strange/test-4nt16/traj=1000/tslice=7 ; type=1 ; accuracy=1.lat
-963e19f4e938dc5a66347accb0a1bf01  results/psel-prop-wsrc-strange/test-4nt16/traj=1000/tslice=8 ; type=1 ; accuracy=1.lat
-238a65a846fc7b95c59ebe945af0844f  results/psel-prop-wsrc-strange/test-4nt16/traj=1000/tslice=9 ; type=1 ; accuracy=1.lat
-08739e8122a878aab0e28e454f0a6c7b  results/psel-prop-wsrc-strange/test-4nt16/traj=1100/tslice=0 ; type=1 ; accuracy=1.lat
-b0260cd93579afc65be4b24aba8a1bc5  results/psel-prop-wsrc-strange/test-4nt16/traj=1100/tslice=10 ; type=1 ; accuracy=1.lat
-6cb1b6a01a0e04fcf904b99f047bb69d  results/psel-prop-wsrc-strange/test-4nt16/traj=1100/tslice=11 ; type=1 ; accuracy=1.lat
-c34afe43a0496163d203167709b8c484  results/psel-prop-wsrc-strange/test-4nt16/traj=1100/tslice=12 ; type=1 ; accuracy=1.lat
-c3424aefe62c72a447b4141877b443a2  results/psel-prop-wsrc-strange/test-4nt16/traj=1100/tslice=13 ; type=1 ; accuracy=1.lat
-9126c8483874311cecc3e8c16378d230  results/psel-prop-wsrc-strange/test-4nt16/traj=1100/tslice=14 ; type=1 ; accuracy=1.lat
-07a87961c50ec6415508aefc2f02760e  results/psel-prop-wsrc-strange/test-4nt16/traj=1100/tslice=15 ; type=1 ; accuracy=1.lat
-4582b77ac8b95d8cfa221bc2ea35c6a8  results/psel-prop-wsrc-strange/test-4nt16/traj=1100/tslice=1 ; type=1 ; accuracy=1.lat
-739dbfad8dfa11bd7413d030143cb2ba  results/psel-prop-wsrc-strange/test-4nt16/traj=1100/tslice=2 ; type=1 ; accuracy=1.lat
-35f8f75dc8d189561dcb3c99282802eb  results/psel-prop-wsrc-strange/test-4nt16/traj=1100/tslice=3 ; type=1 ; accuracy=1.lat
-cd4b95f9dfc3b3d87eb217c5f2b27119  results/psel-prop-wsrc-strange/test-4nt16/traj=1100/tslice=4 ; type=1 ; accuracy=1.lat
-c3915cc67ecae09317aee64d8a6b3e11  results/psel-prop-wsrc-strange/test-4nt16/traj=1100/tslice=5 ; type=1 ; accuracy=1.lat
-cf983703a07b59ed6c05bbea5de5cbce  results/psel-prop-wsrc-strange/test-4nt16/traj=1100/tslice=6 ; type=1 ; accuracy=1.lat
-273c1f8d72b1214e2e72ec03efad2298  results/psel-prop-wsrc-strange/test-4nt16/traj=1100/tslice=6 ; type=1 ; accuracy=2.lat
-54edf76da3acd3ab3e22d92e7ba2b36c  results/psel-prop-wsrc-strange/test-4nt16/traj=1100/tslice=7 ; type=1 ; accuracy=1.lat
-fad12e06369a2bd377d50e236c41bd64  results/psel-prop-wsrc-strange/test-4nt16/traj=1100/tslice=8 ; type=1 ; accuracy=1.lat
-0f942448fe59693e9bc7b2a4433f00fe  results/psel-prop-wsrc-strange/test-4nt16/traj=1100/tslice=9 ; type=1 ; accuracy=1.lat
-63dcb8f90c13a895873dc363906baadf  results/psel-prop-wsrc-strange/test-4nt16/traj=1100/tslice=9 ; type=1 ; accuracy=2.lat
-f22efd7b769400e25d751e9e8fefccdd  results/psel-prop-wsrc-strange/test-4nt16/traj=1200/tslice=0 ; type=1 ; accuracy=1.lat
-ff225b6e4d255a9d691072be5335a839  results/psel-prop-wsrc-strange/test-4nt16/traj=1200/tslice=10 ; type=1 ; accuracy=1.lat
-a5ad8a58c391c49951a44cbc6d4374a2  results/psel-prop-wsrc-strange/test-4nt16/traj=1200/tslice=10 ; type=1 ; accuracy=2.lat
-a512ccd763f0f56cbb134030b336af1e  results/psel-prop-wsrc-strange/test-4nt16/traj=1200/tslice=11 ; type=1 ; accuracy=1.lat
-b4b42e0f53a870ee8414819b60e0871b  results/psel-prop-wsrc-strange/test-4nt16/traj=1200/tslice=12 ; type=1 ; accuracy=1.lat
-c6062b35fd838c21343a3e5c88951719  results/psel-prop-wsrc-strange/test-4nt16/traj=1200/tslice=13 ; type=1 ; accuracy=1.lat
-9712261491c23c953c1fe6db9b5afff5  results/psel-prop-wsrc-strange/test-4nt16/traj=1200/tslice=14 ; type=1 ; accuracy=1.lat
-848da19ec8d216c8d49f04f4ad980ded  results/psel-prop-wsrc-strange/test-4nt16/traj=1200/tslice=14 ; type=1 ; accuracy=2.lat
-417dc16930d839bd41548314eaaaee7a  results/psel-prop-wsrc-strange/test-4nt16/traj=1200/tslice=15 ; type=1 ; accuracy=1.lat
-5699e3565ab0e985f23da7643613a38f  results/psel-prop-wsrc-strange/test-4nt16/traj=1200/tslice=1 ; type=1 ; accuracy=1.lat
-a69aa382dc9278f1b9fe2210adcaa1a8  results/psel-prop-wsrc-strange/test-4nt16/traj=1200/tslice=2 ; type=1 ; accuracy=1.lat
-c34641fb0f273106e80a7e4d9ee4ac9e  results/psel-prop-wsrc-strange/test-4nt16/traj=1200/tslice=3 ; type=1 ; accuracy=1.lat
-60d2332c5524f7e19dedd01bebd2b02a  results/psel-prop-wsrc-strange/test-4nt16/traj=1200/tslice=4 ; type=1 ; accuracy=1.lat
-3b7728609c7959d32c49f9000d1cd4c3  results/psel-prop-wsrc-strange/test-4nt16/traj=1200/tslice=5 ; type=1 ; accuracy=1.lat
-afb154a9a117b4d423b0e150e851dc47  results/psel-prop-wsrc-strange/test-4nt16/traj=1200/tslice=6 ; type=1 ; accuracy=1.lat
-59701e88d08e96cbbb7a3dd034698b73  results/psel-prop-wsrc-strange/test-4nt16/traj=1200/tslice=7 ; type=1 ; accuracy=1.lat
-e109de17869f1da1793916d944ad048f  results/psel-prop-wsrc-strange/test-4nt16/traj=1200/tslice=8 ; type=1 ; accuracy=1.lat
-d612ab94056a78713b8a020f965b772e  results/psel-prop-wsrc-strange/test-4nt16/traj=1200/tslice=9 ; type=1 ; accuracy=1.lat
-af252a1eb3c4cf57883423fdab3c3dbc  results/psel-prop-wsrc-strange/test-4nt16/traj=1300/tslice=0 ; type=1 ; accuracy=1.lat
-ff1a37f3e849162a92ee88c457ee76ad  results/psel-prop-wsrc-strange/test-4nt16/traj=1300/tslice=0 ; type=1 ; accuracy=2.lat
-1edfedcb178599284fc05f7fa316ed32  results/psel-prop-wsrc-strange/test-4nt16/traj=1300/tslice=10 ; type=1 ; accuracy=1.lat
-39b17994588c141733d78191b2d1d614  results/psel-prop-wsrc-strange/test-4nt16/traj=1300/tslice=11 ; type=1 ; accuracy=1.lat
-46ebdbb0858615d30115dcfcae20e25e  results/psel-prop-wsrc-strange/test-4nt16/traj=1300/tslice=12 ; type=1 ; accuracy=1.lat
-31a4f90968bedd098d546d09bfb0ca81  results/psel-prop-wsrc-strange/test-4nt16/traj=1300/tslice=13 ; type=1 ; accuracy=1.lat
-ac5fc05085287cd6cea43317554fcc42  results/psel-prop-wsrc-strange/test-4nt16/traj=1300/tslice=14 ; type=1 ; accuracy=1.lat
-8717360053d406126314bf0bc7dad2a2  results/psel-prop-wsrc-strange/test-4nt16/traj=1300/tslice=15 ; type=1 ; accuracy=1.lat
-f19e2e16ee71740c91647d4ec9e4482d  results/psel-prop-wsrc-strange/test-4nt16/traj=1300/tslice=1 ; type=1 ; accuracy=1.lat
-b83e11a30951747cdf65b94c6a578b76  results/psel-prop-wsrc-strange/test-4nt16/traj=1300/tslice=2 ; type=1 ; accuracy=1.lat
-43b2f32d826ff4da6b7b2fe1e1f33d8b  results/psel-prop-wsrc-strange/test-4nt16/traj=1300/tslice=3 ; type=1 ; accuracy=1.lat
-8fc43a15bf3d330288420b3b6afa6bbf  results/psel-prop-wsrc-strange/test-4nt16/traj=1300/tslice=4 ; type=1 ; accuracy=1.lat
-5bfe76d20fb385b8963bc5bfed0357a5  results/psel-prop-wsrc-strange/test-4nt16/traj=1300/tslice=5 ; type=1 ; accuracy=1.lat
-49a690e1215771e3241d4882906be843  results/psel-prop-wsrc-strange/test-4nt16/traj=1300/tslice=6 ; type=1 ; accuracy=1.lat
-30edec10f432fa87c741644fd6d79d72  results/psel-prop-wsrc-strange/test-4nt16/traj=1300/tslice=7 ; type=1 ; accuracy=1.lat
-7e832d6c09539dd70dfaa22dc0ce0509  results/psel-prop-wsrc-strange/test-4nt16/traj=1300/tslice=8 ; type=1 ; accuracy=1.lat
-6689a983a742cd7fb841ce824998f925  results/psel-prop-wsrc-strange/test-4nt16/traj=1300/tslice=8 ; type=1 ; accuracy=2.lat
-6e0dc2a64199018ece763133b0ce004c  results/psel-prop-wsrc-strange/test-4nt16/traj=1300/tslice=9 ; type=1 ; accuracy=1.lat
+4bffe3ab6b4178cc780d5178b2e84c91  results/psel-prop-psrc-strange/test-4nt16/traj=1300/xg=(3,0,2,15) ; type=1 ; accuracy=0.lat
+027d84d9c1ecd752b4c0d26c352a5662  results/psel-prop-psrc-strange/test-4nt16/traj=1300/xg=(3,1,2,7) ; type=1 ; accuracy=0.lat
+e737b5352336709abcdfc95d6dea4bec  results/psel-prop-psrc-strange/test-4nt16/traj=1300/xg=(3,2,0,13) ; type=1 ; accuracy=0.lat
+b92950b075f90356688ab36f12f81a86  results/psel-prop-psrc-strange/test-4nt16/traj=1300/xg=(3,2,3,13) ; type=1 ; accuracy=0.lat
+c5bb916d099a33e1fe4d411c97075a65  results/psel-prop-psrc-strange/test-4nt16/traj=1300/xg=(3,2,3,13) ; type=1 ; accuracy=1.lat
+d1570fdc2975e8a9c461b581bf2578ea  results/psel-prop-psrc-strange/test-4nt16/traj=1300/xg=(3,2,3,13) ; type=1 ; accuracy=2.lat
+13b473ebcf56f3a398581742f83694f4  results/psel-prop-wsrc-light/test-4nt16/traj=1000/tslice=0 ; type=0 ; accuracy=1.lat
+b88196adb685317f03f6fab0ef3f8971  results/psel-prop-wsrc-light/test-4nt16/traj=1000/tslice=10 ; type=0 ; accuracy=1.lat
+992abe8044eef9b1a70230fe7ba53048  results/psel-prop-wsrc-light/test-4nt16/traj=1000/tslice=11 ; type=0 ; accuracy=1.lat
+7068fdb9b23852dd10c1075a7dd0faaa  results/psel-prop-wsrc-light/test-4nt16/traj=1000/tslice=12 ; type=0 ; accuracy=1.lat
+13ab6b3b46951b27bbadb7d2c2e1e3d7  results/psel-prop-wsrc-light/test-4nt16/traj=1000/tslice=13 ; type=0 ; accuracy=1.lat
+e92bc90ff2495405939821a84a198c35  results/psel-prop-wsrc-light/test-4nt16/traj=1000/tslice=14 ; type=0 ; accuracy=1.lat
+cedd33ca04273e34bdbf82b9d476d755  results/psel-prop-wsrc-light/test-4nt16/traj=1000/tslice=14 ; type=0 ; accuracy=2.lat
+51ced336c45974d40426028e0fc04453  results/psel-prop-wsrc-light/test-4nt16/traj=1000/tslice=15 ; type=0 ; accuracy=1.lat
+9c62e1c7629454281c3d80ab9d726d99  results/psel-prop-wsrc-light/test-4nt16/traj=1000/tslice=1 ; type=0 ; accuracy=1.lat
+ae3a8eaa6e8b26ca02e5708451a903ca  results/psel-prop-wsrc-light/test-4nt16/traj=1000/tslice=2 ; type=0 ; accuracy=1.lat
+ddbacb7730d052ba8f309eb9ceda204b  results/psel-prop-wsrc-light/test-4nt16/traj=1000/tslice=3 ; type=0 ; accuracy=1.lat
+a0daec345f3c2c2998510cb90f4a835b  results/psel-prop-wsrc-light/test-4nt16/traj=1000/tslice=4 ; type=0 ; accuracy=1.lat
+cb2f213d21bd8239283152dd1bf269c9  results/psel-prop-wsrc-light/test-4nt16/traj=1000/tslice=5 ; type=0 ; accuracy=1.lat
+02d825af284bc078d710ae9105224ab4  results/psel-prop-wsrc-light/test-4nt16/traj=1000/tslice=6 ; type=0 ; accuracy=1.lat
+e0ff3cf26ddfde61ae0a03df4506a0f9  results/psel-prop-wsrc-light/test-4nt16/traj=1000/tslice=6 ; type=0 ; accuracy=2.lat
+916df5f46822c167a0ba5ce34af238a1  results/psel-prop-wsrc-light/test-4nt16/traj=1000/tslice=7 ; type=0 ; accuracy=1.lat
+b3af5b69498cd7b64d0973852335a741  results/psel-prop-wsrc-light/test-4nt16/traj=1000/tslice=8 ; type=0 ; accuracy=1.lat
+e556d0caed88de82504863f93f024373  results/psel-prop-wsrc-light/test-4nt16/traj=1000/tslice=9 ; type=0 ; accuracy=1.lat
+f03700481227f486f79d9115e658d6b9  results/psel-prop-wsrc-light/test-4nt16/traj=1100/tslice=0 ; type=0 ; accuracy=1.lat
+5448ee26f022e343a4caad3e4f36ec88  results/psel-prop-wsrc-light/test-4nt16/traj=1100/tslice=10 ; type=0 ; accuracy=1.lat
+45849d7ed5810dd9c065282547c8e5e1  results/psel-prop-wsrc-light/test-4nt16/traj=1100/tslice=11 ; type=0 ; accuracy=1.lat
+238d6155ec60ae7dcdeb61e85073e82b  results/psel-prop-wsrc-light/test-4nt16/traj=1100/tslice=12 ; type=0 ; accuracy=1.lat
+477d063368aba34f8280f945f12a9bbb  results/psel-prop-wsrc-light/test-4nt16/traj=1100/tslice=13 ; type=0 ; accuracy=1.lat
+646cfe8a7f29d35a53e178f7a0957c52  results/psel-prop-wsrc-light/test-4nt16/traj=1100/tslice=14 ; type=0 ; accuracy=1.lat
+5d5f4db1f416f22c5da701bdf7b0a4c2  results/psel-prop-wsrc-light/test-4nt16/traj=1100/tslice=15 ; type=0 ; accuracy=1.lat
+eb01d61db4c9f6604e3ba23c7235203b  results/psel-prop-wsrc-light/test-4nt16/traj=1100/tslice=1 ; type=0 ; accuracy=1.lat
+1166d4c493f4fa8d692ff11a4b7db1ee  results/psel-prop-wsrc-light/test-4nt16/traj=1100/tslice=2 ; type=0 ; accuracy=1.lat
+67be78f2b6c08811f2525595c6c8cbb2  results/psel-prop-wsrc-light/test-4nt16/traj=1100/tslice=3 ; type=0 ; accuracy=1.lat
+51925933f6775f40558c0c8a519ca49c  results/psel-prop-wsrc-light/test-4nt16/traj=1100/tslice=4 ; type=0 ; accuracy=1.lat
+ac20aac5e03973f727e58c178d5da661  results/psel-prop-wsrc-light/test-4nt16/traj=1100/tslice=5 ; type=0 ; accuracy=1.lat
+3cce5fa5a34538b379bff8aa71aa9be4  results/psel-prop-wsrc-light/test-4nt16/traj=1100/tslice=6 ; type=0 ; accuracy=1.lat
+80b17c6603571848f0dcd49ab79657b2  results/psel-prop-wsrc-light/test-4nt16/traj=1100/tslice=6 ; type=0 ; accuracy=2.lat
+006d63a662643341ce7219ef7656a5af  results/psel-prop-wsrc-light/test-4nt16/traj=1100/tslice=7 ; type=0 ; accuracy=1.lat
+55a106d33771f5e1748ed65cda9e865a  results/psel-prop-wsrc-light/test-4nt16/traj=1100/tslice=8 ; type=0 ; accuracy=1.lat
+e592cdfaeb4ec2b2cd10a845e179e5fc  results/psel-prop-wsrc-light/test-4nt16/traj=1100/tslice=9 ; type=0 ; accuracy=1.lat
+d07f36d00d01ecdb50483815779a321d  results/psel-prop-wsrc-light/test-4nt16/traj=1100/tslice=9 ; type=0 ; accuracy=2.lat
+0ed6c15e37863eed328093d332fe06c4  results/psel-prop-wsrc-light/test-4nt16/traj=1200/tslice=0 ; type=0 ; accuracy=1.lat
+844ec92b781c2aef9364bf1d5af1d6d5  results/psel-prop-wsrc-light/test-4nt16/traj=1200/tslice=10 ; type=0 ; accuracy=1.lat
+9e06d05eba0e6b89597c94d6322229f9  results/psel-prop-wsrc-light/test-4nt16/traj=1200/tslice=10 ; type=0 ; accuracy=2.lat
+9017892cd54ef18196b7a9ddcf5f56ca  results/psel-prop-wsrc-light/test-4nt16/traj=1200/tslice=11 ; type=0 ; accuracy=1.lat
+d44d262cdab74457d98a448eee037d56  results/psel-prop-wsrc-light/test-4nt16/traj=1200/tslice=12 ; type=0 ; accuracy=1.lat
+182f67bcd97b323a7846b9be89425c60  results/psel-prop-wsrc-light/test-4nt16/traj=1200/tslice=13 ; type=0 ; accuracy=1.lat
+ddfcadd569f75b88dd0bfbc8ed120334  results/psel-prop-wsrc-light/test-4nt16/traj=1200/tslice=14 ; type=0 ; accuracy=1.lat
+eb1c033540178c03e2874a1c39900eaf  results/psel-prop-wsrc-light/test-4nt16/traj=1200/tslice=14 ; type=0 ; accuracy=2.lat
+4fac103acd19600e12f833c71cc75584  results/psel-prop-wsrc-light/test-4nt16/traj=1200/tslice=15 ; type=0 ; accuracy=1.lat
+6efe059752a6b89d98680cabfcc7f052  results/psel-prop-wsrc-light/test-4nt16/traj=1200/tslice=1 ; type=0 ; accuracy=1.lat
+d89d258b804f072b3c063ff5f437f03b  results/psel-prop-wsrc-light/test-4nt16/traj=1200/tslice=2 ; type=0 ; accuracy=1.lat
+7ed1601c153e23501478f505a058c292  results/psel-prop-wsrc-light/test-4nt16/traj=1200/tslice=3 ; type=0 ; accuracy=1.lat
+3884b27766093455ca3d655c100fde71  results/psel-prop-wsrc-light/test-4nt16/traj=1200/tslice=4 ; type=0 ; accuracy=1.lat
+7fe647e8645a92a727c2ca258d02c47a  results/psel-prop-wsrc-light/test-4nt16/traj=1200/tslice=5 ; type=0 ; accuracy=1.lat
+b1fee89c06ef20fa08ac6a295b99a694  results/psel-prop-wsrc-light/test-4nt16/traj=1200/tslice=6 ; type=0 ; accuracy=1.lat
+5c6c8cbe028acde02866afd8a7eae58e  results/psel-prop-wsrc-light/test-4nt16/traj=1200/tslice=7 ; type=0 ; accuracy=1.lat
+6af52a3b0268d0251f52cfbf0719f5f3  results/psel-prop-wsrc-light/test-4nt16/traj=1200/tslice=8 ; type=0 ; accuracy=1.lat
+084c713fc226baf4b81b194e5e5b0aad  results/psel-prop-wsrc-light/test-4nt16/traj=1200/tslice=9 ; type=0 ; accuracy=1.lat
+25547b5af04359e20a0eff6df30db039  results/psel-prop-wsrc-light/test-4nt16/traj=1300/tslice=0 ; type=0 ; accuracy=1.lat
+d4ac71e305ca35b6b88d3ca7ad5e969a  results/psel-prop-wsrc-light/test-4nt16/traj=1300/tslice=0 ; type=0 ; accuracy=2.lat
+b4f8f47237ee8a996121395fd617740d  results/psel-prop-wsrc-light/test-4nt16/traj=1300/tslice=10 ; type=0 ; accuracy=1.lat
+11b106a2ac267d7704ebd9f457cfc2a1  results/psel-prop-wsrc-light/test-4nt16/traj=1300/tslice=11 ; type=0 ; accuracy=1.lat
+1aa65188f336569327355a0909e7c00d  results/psel-prop-wsrc-light/test-4nt16/traj=1300/tslice=12 ; type=0 ; accuracy=1.lat
+d6e24e1fe66891af3e2066540314a01d  results/psel-prop-wsrc-light/test-4nt16/traj=1300/tslice=13 ; type=0 ; accuracy=1.lat
+c73ab6a861ede8c0a2558a7589e98e05  results/psel-prop-wsrc-light/test-4nt16/traj=1300/tslice=14 ; type=0 ; accuracy=1.lat
+acae40c49b38a9df4e317575ed14d46e  results/psel-prop-wsrc-light/test-4nt16/traj=1300/tslice=15 ; type=0 ; accuracy=1.lat
+b0109f974eb953e2e121f820099da6d7  results/psel-prop-wsrc-light/test-4nt16/traj=1300/tslice=1 ; type=0 ; accuracy=1.lat
+d4a5aeb490b583dc127ec787806c9f10  results/psel-prop-wsrc-light/test-4nt16/traj=1300/tslice=2 ; type=0 ; accuracy=1.lat
+1156e86ffb03cf01f73b89db640ed06e  results/psel-prop-wsrc-light/test-4nt16/traj=1300/tslice=3 ; type=0 ; accuracy=1.lat
+3679fce1463b865080c61fde2a610305  results/psel-prop-wsrc-light/test-4nt16/traj=1300/tslice=4 ; type=0 ; accuracy=1.lat
+3766e0096793de53edda256570b29e88  results/psel-prop-wsrc-light/test-4nt16/traj=1300/tslice=5 ; type=0 ; accuracy=1.lat
+a38b59eff643c6c761dbb3c59fc3d896  results/psel-prop-wsrc-light/test-4nt16/traj=1300/tslice=6 ; type=0 ; accuracy=1.lat
+3b158228efc00e3e4fd2cdf6ab9d6eba  results/psel-prop-wsrc-light/test-4nt16/traj=1300/tslice=7 ; type=0 ; accuracy=1.lat
+c01bb84ef10688d7ce93784eca5a138d  results/psel-prop-wsrc-light/test-4nt16/traj=1300/tslice=8 ; type=0 ; accuracy=1.lat
+b38eda7bfb67005473d2dbd72e1e8c5d  results/psel-prop-wsrc-light/test-4nt16/traj=1300/tslice=8 ; type=0 ; accuracy=2.lat
+653bab22b98850225f371a701a210f44  results/psel-prop-wsrc-light/test-4nt16/traj=1300/tslice=9 ; type=0 ; accuracy=1.lat
+8815b47db3c5e998c81fdb34d6427d5e  results/psel-prop-wsrc-strange/test-4nt16/traj=1000/tslice=0 ; type=1 ; accuracy=1.lat
+83d1678ed5c2e18e0348a0e3eacd01c6  results/psel-prop-wsrc-strange/test-4nt16/traj=1000/tslice=10 ; type=1 ; accuracy=1.lat
+8c8809059b72f0f1cc4d6b5ea85c8625  results/psel-prop-wsrc-strange/test-4nt16/traj=1000/tslice=11 ; type=1 ; accuracy=1.lat
+f1ffca74feabadc2258012a64b2829d8  results/psel-prop-wsrc-strange/test-4nt16/traj=1000/tslice=12 ; type=1 ; accuracy=1.lat
+0d47581c2e6ffcdda21ce54ff3d5f3f7  results/psel-prop-wsrc-strange/test-4nt16/traj=1000/tslice=13 ; type=1 ; accuracy=1.lat
+d60bac3758041b88660381e9279c5801  results/psel-prop-wsrc-strange/test-4nt16/traj=1000/tslice=14 ; type=1 ; accuracy=1.lat
+afa16287d19e2f874bbfead86aba79a6  results/psel-prop-wsrc-strange/test-4nt16/traj=1000/tslice=14 ; type=1 ; accuracy=2.lat
+3ff5eb2c3f2401a7c8e1b85e99b428fc  results/psel-prop-wsrc-strange/test-4nt16/traj=1000/tslice=15 ; type=1 ; accuracy=1.lat
+988c8fd8b834a9506d6a9227868e22bf  results/psel-prop-wsrc-strange/test-4nt16/traj=1000/tslice=1 ; type=1 ; accuracy=1.lat
+d3da651702416034f704f18b38deb7aa  results/psel-prop-wsrc-strange/test-4nt16/traj=1000/tslice=2 ; type=1 ; accuracy=1.lat
+e4eae1d1945df5250c7e4edf41a3fa4c  results/psel-prop-wsrc-strange/test-4nt16/traj=1000/tslice=3 ; type=1 ; accuracy=1.lat
+b576629acb77185c4b7f1dd125a6fcec  results/psel-prop-wsrc-strange/test-4nt16/traj=1000/tslice=4 ; type=1 ; accuracy=1.lat
+ba26856a3b4b5f6676dd732f57916f2b  results/psel-prop-wsrc-strange/test-4nt16/traj=1000/tslice=5 ; type=1 ; accuracy=1.lat
+fb1d765d91c572bff7c44f3549f558f2  results/psel-prop-wsrc-strange/test-4nt16/traj=1000/tslice=6 ; type=1 ; accuracy=1.lat
+5b6ea5d82855f2e317750ce9e48df5e3  results/psel-prop-wsrc-strange/test-4nt16/traj=1000/tslice=6 ; type=1 ; accuracy=2.lat
+a5ce3046bae5ba529bef684007980b21  results/psel-prop-wsrc-strange/test-4nt16/traj=1000/tslice=7 ; type=1 ; accuracy=1.lat
+c5a365105140506815491b52cb31010c  results/psel-prop-wsrc-strange/test-4nt16/traj=1000/tslice=8 ; type=1 ; accuracy=1.lat
+46d1ebdc14625c88b994925ce312c3a0  results/psel-prop-wsrc-strange/test-4nt16/traj=1000/tslice=9 ; type=1 ; accuracy=1.lat
+c274203aa2c62999c47e89168ea36b94  results/psel-prop-wsrc-strange/test-4nt16/traj=1100/tslice=0 ; type=1 ; accuracy=1.lat
+a00e708eb902a53bc4401e741887f270  results/psel-prop-wsrc-strange/test-4nt16/traj=1100/tslice=10 ; type=1 ; accuracy=1.lat
+1e2e3852f8e47eb9a7e23f9dda7d0016  results/psel-prop-wsrc-strange/test-4nt16/traj=1100/tslice=11 ; type=1 ; accuracy=1.lat
+898bbfa3bec43aec6b7005859fc01334  results/psel-prop-wsrc-strange/test-4nt16/traj=1100/tslice=12 ; type=1 ; accuracy=1.lat
+0ae633d9e3403134cbefb5008a43d8ce  results/psel-prop-wsrc-strange/test-4nt16/traj=1100/tslice=13 ; type=1 ; accuracy=1.lat
+949861e8bd41391082dfa27d670379fc  results/psel-prop-wsrc-strange/test-4nt16/traj=1100/tslice=14 ; type=1 ; accuracy=1.lat
+90c1351bc067ba8bdde505abe4c0c04c  results/psel-prop-wsrc-strange/test-4nt16/traj=1100/tslice=15 ; type=1 ; accuracy=1.lat
+1ea35e88e93780e74c2414869e087f1f  results/psel-prop-wsrc-strange/test-4nt16/traj=1100/tslice=1 ; type=1 ; accuracy=1.lat
+0518e11c42865844092bfa467fd4a2ce  results/psel-prop-wsrc-strange/test-4nt16/traj=1100/tslice=2 ; type=1 ; accuracy=1.lat
+455034cc0b7e9cbf53db5a216f45712f  results/psel-prop-wsrc-strange/test-4nt16/traj=1100/tslice=3 ; type=1 ; accuracy=1.lat
+0ff915973f2492d8a671895b53a2a55d  results/psel-prop-wsrc-strange/test-4nt16/traj=1100/tslice=4 ; type=1 ; accuracy=1.lat
+9ded10ffbd4262a9344588cb0c65fa67  results/psel-prop-wsrc-strange/test-4nt16/traj=1100/tslice=5 ; type=1 ; accuracy=1.lat
+0c075bcbe049376ada0cad2ae8ac028e  results/psel-prop-wsrc-strange/test-4nt16/traj=1100/tslice=6 ; type=1 ; accuracy=1.lat
+ed8ac482f9d1368263e1c7019480a8fd  results/psel-prop-wsrc-strange/test-4nt16/traj=1100/tslice=6 ; type=1 ; accuracy=2.lat
+f64aa6df1ea69b533ad7e91c7dfe2a52  results/psel-prop-wsrc-strange/test-4nt16/traj=1100/tslice=7 ; type=1 ; accuracy=1.lat
+c027801c7062b65a8726dadd289cc3a7  results/psel-prop-wsrc-strange/test-4nt16/traj=1100/tslice=8 ; type=1 ; accuracy=1.lat
+b4d3aa287ec7371f9174cf173074c4ae  results/psel-prop-wsrc-strange/test-4nt16/traj=1100/tslice=9 ; type=1 ; accuracy=1.lat
+0ac352abceac1442c8375b498bacd71c  results/psel-prop-wsrc-strange/test-4nt16/traj=1100/tslice=9 ; type=1 ; accuracy=2.lat
+b1d5dbf18c1db63d6ac8faadb5b59868  results/psel-prop-wsrc-strange/test-4nt16/traj=1200/tslice=0 ; type=1 ; accuracy=1.lat
+c1b315829406e5240e9d61ec21c4c663  results/psel-prop-wsrc-strange/test-4nt16/traj=1200/tslice=10 ; type=1 ; accuracy=1.lat
+978604a3bdadfb82d9f8d6b188cf425d  results/psel-prop-wsrc-strange/test-4nt16/traj=1200/tslice=10 ; type=1 ; accuracy=2.lat
+e2a2a797987d00a9c0fdae25a788da63  results/psel-prop-wsrc-strange/test-4nt16/traj=1200/tslice=11 ; type=1 ; accuracy=1.lat
+40c41de1bb2004f583007b63a1e3b67f  results/psel-prop-wsrc-strange/test-4nt16/traj=1200/tslice=12 ; type=1 ; accuracy=1.lat
+71185481c415702001d9bfc26d3939ba  results/psel-prop-wsrc-strange/test-4nt16/traj=1200/tslice=13 ; type=1 ; accuracy=1.lat
+9fa51584f77c10c1046896b2eb687e93  results/psel-prop-wsrc-strange/test-4nt16/traj=1200/tslice=14 ; type=1 ; accuracy=1.lat
+20f3d50c4f4706a4eb80bea9eba27583  results/psel-prop-wsrc-strange/test-4nt16/traj=1200/tslice=14 ; type=1 ; accuracy=2.lat
+c6de47527065c56b52861ae5fdda8321  results/psel-prop-wsrc-strange/test-4nt16/traj=1200/tslice=15 ; type=1 ; accuracy=1.lat
+3fee6ad2905d1832a5c287ee65b3ab91  results/psel-prop-wsrc-strange/test-4nt16/traj=1200/tslice=1 ; type=1 ; accuracy=1.lat
+6505f29f86890acade8f21a8d0ac2345  results/psel-prop-wsrc-strange/test-4nt16/traj=1200/tslice=2 ; type=1 ; accuracy=1.lat
+6f41069d638e5e61fc199afa78c68d8d  results/psel-prop-wsrc-strange/test-4nt16/traj=1200/tslice=3 ; type=1 ; accuracy=1.lat
+3ee59e8bbbcbb4d1667f666198e1ef50  results/psel-prop-wsrc-strange/test-4nt16/traj=1200/tslice=4 ; type=1 ; accuracy=1.lat
+ec28a84e29064952b6b8d16982be220b  results/psel-prop-wsrc-strange/test-4nt16/traj=1200/tslice=5 ; type=1 ; accuracy=1.lat
+b9680d04751d818690366b8fa655691c  results/psel-prop-wsrc-strange/test-4nt16/traj=1200/tslice=6 ; type=1 ; accuracy=1.lat
+6516d0006358fe7f1c9bbb0fbef806de  results/psel-prop-wsrc-strange/test-4nt16/traj=1200/tslice=7 ; type=1 ; accuracy=1.lat
+6aeb491fbfc49740586d4676a1af5bcc  results/psel-prop-wsrc-strange/test-4nt16/traj=1200/tslice=8 ; type=1 ; accuracy=1.lat
+24676a894e4e78354803b2b0dc046c35  results/psel-prop-wsrc-strange/test-4nt16/traj=1200/tslice=9 ; type=1 ; accuracy=1.lat
+84f6ad294d1b2957755e214e85fba907  results/psel-prop-wsrc-strange/test-4nt16/traj=1300/tslice=0 ; type=1 ; accuracy=1.lat
+07370f4e128088ed69f709221b0bf0e6  results/psel-prop-wsrc-strange/test-4nt16/traj=1300/tslice=0 ; type=1 ; accuracy=2.lat
+5cba152c0f395a191ee11fde25f27dde  results/psel-prop-wsrc-strange/test-4nt16/traj=1300/tslice=10 ; type=1 ; accuracy=1.lat
+f07c6d8c129c71d743fb6397b1ac45f3  results/psel-prop-wsrc-strange/test-4nt16/traj=1300/tslice=11 ; type=1 ; accuracy=1.lat
+271c07483349610c32763226b5569a8b  results/psel-prop-wsrc-strange/test-4nt16/traj=1300/tslice=12 ; type=1 ; accuracy=1.lat
+30d178d1d5dbb8e51457f29ddf670f56  results/psel-prop-wsrc-strange/test-4nt16/traj=1300/tslice=13 ; type=1 ; accuracy=1.lat
+11b54b8d75d9a3c95b1098858517cfc2  results/psel-prop-wsrc-strange/test-4nt16/traj=1300/tslice=14 ; type=1 ; accuracy=1.lat
+fc1eb955eedcd9f4f53f99fb97d5935e  results/psel-prop-wsrc-strange/test-4nt16/traj=1300/tslice=15 ; type=1 ; accuracy=1.lat
+3bcbfdebebb7c421da1fd2968a25a82c  results/psel-prop-wsrc-strange/test-4nt16/traj=1300/tslice=1 ; type=1 ; accuracy=1.lat
+be61697bd9af248f7b1be67985910ce4  results/psel-prop-wsrc-strange/test-4nt16/traj=1300/tslice=2 ; type=1 ; accuracy=1.lat
+002ec4816c9652ac283e39eb1d4ecb2d  results/psel-prop-wsrc-strange/test-4nt16/traj=1300/tslice=3 ; type=1 ; accuracy=1.lat
+04c0a3df0a26153e46b3ea757eb9f801  results/psel-prop-wsrc-strange/test-4nt16/traj=1300/tslice=4 ; type=1 ; accuracy=1.lat
+a88265c85c8d459b1f3bd9d2ca01ff7a  results/psel-prop-wsrc-strange/test-4nt16/traj=1300/tslice=5 ; type=1 ; accuracy=1.lat
+49809686c98bc722cf135a300e85fedb  results/psel-prop-wsrc-strange/test-4nt16/traj=1300/tslice=6 ; type=1 ; accuracy=1.lat
+6e6ce57ad7df7133908d81427e7ebad4  results/psel-prop-wsrc-strange/test-4nt16/traj=1300/tslice=7 ; type=1 ; accuracy=1.lat
+bb07b40da864c19284e32e9c5117f466  results/psel-prop-wsrc-strange/test-4nt16/traj=1300/tslice=8 ; type=1 ; accuracy=1.lat
+8a6cf91c577007cf67c111fdd5677c6e  results/psel-prop-wsrc-strange/test-4nt16/traj=1300/tslice=8 ; type=1 ; accuracy=2.lat
+32bbbe69a80eaef0f11757b3206c22b0  results/psel-prop-wsrc-strange/test-4nt16/traj=1300/tslice=9 ; type=1 ; accuracy=1.lat
 8dc3e3aef545477bf6aace32cfd73211  results/wall-src-info-light/test-4nt16/traj=1000.txt
 0ebea79db1abd1000f40151ad9d43cf0  results/wall-src-info-light/test-4nt16/traj=1100.txt
 a3e7a2be40b2b73610583cc2536dbfb7  results/wall-src-info-light/test-4nt16/traj=1200.txt

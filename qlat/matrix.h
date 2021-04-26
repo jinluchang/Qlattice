@@ -403,6 +403,18 @@ struct WilsonMatrixT : MatrixT<4 * NUM_COLOR, T> {
 };
 
 template <class T = ComplexT>
+struct NonRelWilsonMatrixT : MatrixT<2 * NUM_COLOR, T> {
+  qacc NonRelWilsonMatrixT() {}
+  qacc NonRelWilsonMatrixT(const MatrixT<2 * NUM_COLOR, T>& m) { *this = m; }
+  //
+  qacc const NonRelWilsonMatrixT& operator=(const MatrixT<2 * NUM_COLOR, T>& m)
+  {
+    *this = (const NonRelWilsonMatrixT&)m;
+    return *this;
+  }
+};
+
+template <class T = ComplexT>
 struct SpinMatrixT : MatrixT<4, T> {
   qacc SpinMatrixT() {}
   qacc SpinMatrixT(const MatrixT<4, T>& m) { *this = m; }
@@ -715,6 +727,8 @@ qacc void convert_wm_from_mspincolor(WilsonMatrixT<T>& wm,
 typedef ColorMatrixT<> ColorMatrix;
 
 typedef WilsonMatrixT<> WilsonMatrix;
+
+typedef NonRelWilsonMatrixT<> NonRelWilsonMatrix;
 
 typedef SpinMatrixT<> SpinMatrix;
 
