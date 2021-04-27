@@ -499,8 +499,7 @@ inline void contract_chvp(SelectedField<Complex>& chvp,
   const int multiplicity = 8 * 8;
   chvp.init();
   chvp.init(fsel, multiplicity);
-#pragma omp parallel for
-  for (long idx = 0; idx < fsel.n_elems; ++idx) {
+  qacc_for(idx, fsel.n_elems, {
     const WilsonMatrix& wm1_x_y = prop1_x_y.get_elem(idx);
     const WilsonMatrix& wm2_x_y = prop2_x_y.get_elem(idx);
     const WilsonMatrix wm2_y_x =
@@ -510,10 +509,35 @@ inline void contract_chvp(SelectedField<Complex>& chvp,
       const WilsonMatrix wm = wm2_y_x * va_ms[mu] * wm1_x_y;
       for (int nu = 0; nu < 8; ++nu) {
         const int mu_nu = 8 * mu + nu;
-        chvp_v[mu_nu] += matrix_trace(wm, va_ms[nu]);
+        chvp_v[mu_nu] = matrix_trace(wm, va_ms[nu]);
       }
     }
-  }
+  });
+}
+
+inline void contract_chvp3(SelectedField<Complex>& chvp,
+                           const SelProp& prop1_x_y, const SelProp& prop2_x_y,
+                           const FieldSelection& fsel)
+{
+  TIMER_VERBOSE("contract_chvp3");
+  const array<SpinMatrix, 4>& v_ms = SpinMatrixConstants::get_cps_gammas();
+  const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
+  qassert(fsel.n_elems == prop1_x_y.n_elems);
+  qassert(fsel.n_elems == prop2_x_y.n_elems);
+  const int multiplicity = 3;
+  chvp.init();
+  chvp.init(fsel, multiplicity);
+  qacc_for(idx, fsel.n_elems, {
+    const WilsonMatrix& wm1_x_y = prop1_x_y.get_elem(idx);
+    const WilsonMatrix& wm2_x_y = prop2_x_y.get_elem(idx);
+    const WilsonMatrix wm2_y_x =
+        gamma5 * (WilsonMatrix)matrix_adjoint(wm2_x_y) * gamma5;
+    Vector<Complex> chvp_v = chvp.get_elems(idx);
+    for (int mu = 0; mu < 3; ++mu) {
+      const WilsonMatrix wm = wm2_y_x * v_ms[mu] * wm1_x_y;
+      chvp_v[mu] = matrix_trace(wm, v_ms[mu]);
+    }
+  });
 }
 
 // -----------------------------------------------------------------------------------

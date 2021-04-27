@@ -51,6 +51,13 @@ sp_prop1 -= sp_prop
 
 q.displayln_info("prop.sparse(psel)", sp_prop.qnorm(), sp_prop1.qnorm())
 
+ld = sp_prop.to_lat_data()
+sp_prop1 = q.PselProp(psel)
+sp_prop1.from_lat_data(ld)
+sp_prop1 -= sp_prop
+
+q.displayln_info("prop.sparse(psel)", sp_prop.qnorm(), sp_prop1.qnorm(), "lat_data conversion")
+
 s_prop = prop.sparse(fsel)
 s_prop.save_double("results/prop.sfield")
 s_prop1 = q.SelProp(fsel)

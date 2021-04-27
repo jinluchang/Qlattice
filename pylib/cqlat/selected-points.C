@@ -139,6 +139,22 @@ PyObject* load_complex_spfield_ctype(PyField& pf, const std::string& path)
   Py_RETURN_NONE;
 }
 
+template <class M>
+PyObject* lat_data_from_complex_spfield_ctype(LatData& ld, PyField& pf)
+{
+  const SelectedPoints<M>& f = *(SelectedPoints<M>*)pf.cdata;
+  ld = lat_data_from_selected_points_complex(f);
+  Py_RETURN_NONE;
+}
+
+template <class M>
+PyObject* complex_spfield_from_lat_data_ctype(PyField& pf, const LatData& ld)
+{
+  SelectedPoints<M>& f = *(SelectedPoints<M>*)pf.cdata;
+  selected_points_from_lat_data_complex(f, ld);
+  Py_RETURN_NONE;
+}
+
 }  // namespace qlat
 
 EXPORT(mk_spfield, {
@@ -351,5 +367,33 @@ EXPORT(load_complex_spfield, {
   py_convert(path, p_path);
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, load_complex_spfield_ctype, pf.ctype, pf, path);
+  return p_ret;
+});
+
+EXPORT(lat_data_from_complex_spfield, {
+  using namespace qlat;
+  PyObject* p_ld = NULL;
+  PyObject* p_field = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_ld, &p_field)) {
+    return NULL;
+  }
+  PyField pf = py_convert_field(p_field);
+  LatData& ld = py_convert_type<LatData>(p_ld);
+  PyObject* p_ret = NULL;
+  FIELD_DISPATCH(p_ret, lat_data_from_complex_spfield_ctype, pf.ctype, ld, pf);
+  return p_ret;
+});
+
+EXPORT(complex_spfield_from_lat_data, {
+  using namespace qlat;
+  PyObject* p_field = NULL;
+  PyObject* p_ld = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_field, &p_ld)) {
+    return NULL;
+  }
+  PyField pf = py_convert_field(p_field);
+  const LatData& ld = py_convert_type<LatData>(p_ld);
+  PyObject* p_ret = NULL;
+  FIELD_DISPATCH(p_ret, complex_spfield_from_lat_data_ctype, pf.ctype, pf, ld);
   return p_ret;
 });

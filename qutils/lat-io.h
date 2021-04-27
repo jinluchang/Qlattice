@@ -206,9 +206,13 @@ inline LatDim lat_dim_number(const std::string& name, const long start,
 {
   LatDim dim;
   dim.name = name;
-  for (long i = start; i <= end; i += inc) {
-    dim.size += 1;
-    dim.indices.push_back(show(i));
+  if (start == 0 and inc == 1) {
+    dim.size = end + 1;
+  } else {
+    for (long i = start; i <= end; i += inc) {
+      dim.size += 1;
+      dim.indices.push_back(show(i));
+    }
   }
   return dim;
 }
@@ -233,15 +237,27 @@ inline LatDim lat_dim_re_im()
 
 inline long lat_dim_idx(const LatDim& dim, const std::string& idx)
 {
-  assert((long)dim.indices.size() <= dim.size);
-  for (long i = 0; i < (long)dim.indices.size(); ++i) {
-    if (idx == dim.indices[i]) {
+  if ((long)dim.indices.size() == 0) {
+    long i = read_long(idx);
+    if (i >= 0) {
+      assert(i < dim.size);
+      return i;
+    } else {
+      i = -i - 1;
+      assert(i < dim.size);
       return i;
     }
+  } else {
+    assert((long)dim.indices.size() <= dim.size);
+    for (long i = 0; i < (long)dim.indices.size(); ++i) {
+      if (idx == dim.indices[i]) {
+        return i;
+      }
+    }
+    const long i = -read_long(idx) - 1;
+    assert((long)dim.indices.size() <= i and i < dim.size);
+    return i;
   }
-  const long i = -read_long(idx) - 1;
-  assert((long)dim.indices.size() <= i and i < dim.size);
-  return i;
 }
 
 inline long lat_dim_idx(const LatDim& dim, const long& idx)
@@ -268,7 +284,9 @@ long lat_data_offset(const LatInfo& info, const VecS& idx)
 
 inline bool is_lat_info_complex(const LatInfo& info)
 {
-  assert((long)info.size() >= 1);
+  if ((long)info.size() < 1) {
+    return false;
+  }
   const LatDim& dim = info.back();
   if (dim.name != "re-im" or dim.size != 2) {
     return false;
@@ -283,7 +301,9 @@ inline bool is_lat_info_complex(const LatInfo& info)
 
 inline std::string idx_name(const LatDim& dim, const long idx)
 {
-  if (idx < (long)dim.indices.size()) {
+  if (0 == (long)dim.indices.size()) {
+    return show(idx);
+  } else if (idx < (long)dim.indices.size()) {
     return dim.indices[idx];
   } else {
     return show(-idx - 1);

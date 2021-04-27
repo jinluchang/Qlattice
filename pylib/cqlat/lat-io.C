@@ -65,3 +65,180 @@ EXPORT(save_lat_data, {
   Py_RETURN_NONE;
 });
 
+EXPORT(bcast_lat_data, {
+  using namespace qlat;
+  PyObject* p_ld = NULL;
+  if (!PyArg_ParseTuple(args, "O", &p_ld)) {
+    return NULL;
+  }
+  LatData& ld = py_convert_type<LatData>(p_ld);
+  bcast(ld);
+  Py_RETURN_NONE;
+});
+
+EXPORT(is_complex_lat_data, {
+  using namespace qlat;
+  PyObject* p_ld = NULL;
+  if (!PyArg_ParseTuple(args, "O", &p_ld)) {
+    return NULL;
+  }
+  LatData& ld = py_convert_type<LatData>(p_ld);
+  bool is_complex_ld = is_lat_info_complex(ld.info);
+  return py_convert(is_complex_ld);
+});
+
+EXPORT(get_ndim_lat_data, {
+  using namespace qlat;
+  PyObject* p_ld = NULL;
+  if (!PyArg_ParseTuple(args, "O", &p_ld)) {
+    return NULL;
+  }
+  LatData& ld = py_convert_type<LatData>(p_ld);
+  bool is_complex_ld = is_lat_info_complex(ld.info);
+  long ndim = ld.info.size();
+  if (is_complex_ld) {
+    ndim -= 1;
+  }
+  return py_convert(ndim);
+});
+
+EXPORT(get_dim_sizes_lat_data, {
+  using namespace qlat;
+  PyObject* p_ld = NULL;
+  if (!PyArg_ParseTuple(args, "O", &p_ld)) {
+    return NULL;
+  }
+  LatData& ld = py_convert_type<LatData>(p_ld);
+  bool is_complex_ld = is_lat_info_complex(ld.info);
+  long ndim = ld.info.size();
+  if (is_complex_ld) {
+    ndim -= 1;
+  }
+  std::vector<long> dim_sizes(ndim);
+  for (long i = 0; i < ndim; ++i) {
+    dim_sizes[i] = ld.info[i].size;
+  }
+  return py_convert(dim_sizes);
+});
+
+EXPORT(get_dim_name_lat_data, {
+  using namespace qlat;
+  PyObject* p_ld = NULL;
+  long dim = 0;
+  if (!PyArg_ParseTuple(args, "Ol", &p_ld, &dim)) {
+    return NULL;
+  }
+  LatData& ld = py_convert_type<LatData>(p_ld);
+  pqassert(0 <= dim and dim < (long)ld.info.size());
+  return py_convert(ld.info[dim].name);
+});
+
+EXPORT(get_dim_indices_lat_data, {
+  using namespace qlat;
+  PyObject* p_ld = NULL;
+  long dim = 0;
+  if (!PyArg_ParseTuple(args, "Ol", &p_ld, &dim)) {
+    return NULL;
+  }
+  LatData& ld = py_convert_type<LatData>(p_ld);
+  pqassert(0 <= dim and dim < (long)ld.info.size());
+  return py_convert(ld.info[dim].indices);
+});
+
+EXPORT(set_dim_sizes_lat_data, {
+  using namespace qlat;
+  PyObject* p_ld = NULL;
+  PyObject* p_dim_sizes = NULL;
+  bool is_complex = true;
+  if (!PyArg_ParseTuple(args, "OO|b", &p_ld, &p_dim_sizes, &is_complex)) {
+    return NULL;
+  }
+  LatData& ld = py_convert_type<LatData>(p_ld);
+  std::vector<long> dim_sizes;
+  py_convert(dim_sizes, p_dim_sizes);
+  clear(ld.info);
+  if (is_complex) {
+    ld.info.resize(dim_sizes.size() + 1);
+    ld.info.back() = lat_dim_re_im();
+  } else {
+    ld.info.resize(dim_sizes.size());
+  }
+  for (long i = 0; i < (long)dim_sizes.size(); ++i) {
+    ld.info[i].size = dim_sizes[i];
+  }
+  lat_data_alloc(ld);
+  Py_RETURN_NONE;
+});
+
+EXPORT(set_dim_name_indices_lat_data, {
+  using namespace qlat;
+  PyObject* p_ld = NULL;
+  long dim = 0;
+  PyObject* p_name = NULL;
+  PyObject* p_indices = NULL;
+  if (!PyArg_ParseTuple(args, "OlO|O", &p_ld, &dim, &p_name, &p_indices)) {
+    return NULL;
+  }
+  LatData& ld = py_convert_type<LatData>(p_ld);
+  long ndim = ld.info.size();
+  pqassert(0 <= dim and dim < ndim);
+  py_convert(ld.info[dim].name, p_name);
+  if (NULL == p_indices) {
+    clear(ld.info[dim].indices);
+  } else {
+    py_convert(ld.info[dim].indices, p_indices);
+  }
+  Py_RETURN_NONE;
+});
+
+EXPORT(is_matching_lat_data, {
+  using namespace qlat;
+  PyObject* p_ld = NULL;
+  PyObject* p_ld1 = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_ld, &p_ld1)) {
+    return NULL;
+  }
+  LatData& ld = py_convert_type<LatData>(p_ld);
+  LatData& ld1 = py_convert_type<LatData>(p_ld1);
+  return py_convert(is_matching(ld, ld1));
+});
+
+EXPORT(peek_lat_data, {
+  using namespace qlat;
+  PyObject* p_ld = NULL;
+  PyObject* p_idx = NULL;
+  if (!PyArg_ParseTuple(args, "O|O", &p_ld, &p_idx)) {
+    return NULL;
+  }
+  LatData& ld = py_convert_type<LatData>(p_ld);
+  std::vector<long> idx;
+  if (p_idx != NULL) {
+    py_convert(idx, p_idx);
+  }
+  bool is_complex_ld = is_lat_info_complex(ld.info);
+  if (is_complex_ld) {
+    return py_convert(lat_data_cget_const(ld, idx));
+  } else {
+    return py_convert(lat_data_get_const(ld, idx));
+  }
+});
+
+EXPORT(poke_lat_data, {
+  using namespace qlat;
+  PyObject* p_ld = NULL;
+  PyObject* p_idx = NULL;
+  PyObject* p_val = NULL;
+  if (!PyArg_ParseTuple(args, "OOO", &p_ld, &p_idx)) {
+    return NULL;
+  }
+  LatData& ld = py_convert_type<LatData>(p_ld);
+  std::vector<long> idx;
+  py_convert(idx, p_idx);
+  bool is_complex_ld = is_lat_info_complex(ld.info);
+  if (is_complex_ld) {
+    py_convert(lat_data_cget(ld, idx), p_val);
+  } else {
+    py_convert(lat_data_get(ld, idx), p_val);
+  }
+  Py_RETURN_NONE;
+});

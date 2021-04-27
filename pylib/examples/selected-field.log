@@ -28,6 +28,7 @@ write_field: fn='results/prop-float.field'.
 read_field: fn='results/prop-float.field'.
 prop.crc32() = 1892650077 ; prop.qnorm() = 49123.69044826866
 prop.sparse(psel) 188.73394748572775 0.0
+prop.sparse(psel) 188.73394748572775 0.0 lat_data conversion
 write_selected_field: fn='results/prop.sfield'.
 read_selected_field: fn='results/prop.sfield'.
 prop.sparse(fsel) 12284.876383957711 0.0

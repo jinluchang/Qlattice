@@ -110,6 +110,24 @@ void py_convert(std::vector<M>& out, PyObject* in)
   }
 }
 
+template <class M>
+void py_convert(Vector<M> out, PyObject* in)
+{
+  if (PyList_Check(in)) {
+    pqassert(out.size() == PyList_Size(in));
+    for (long i = 0; i < out.size(); i++) {
+      py_convert(out[i], PyList_GetItem(in, i));
+    }
+  } else if (PyTuple_Check(in)) {
+    pqassert(out.size() == PyTuple_Size(in));
+    for (long i = 0; i < out.size(); i++) {
+      py_convert(out[i], PyTuple_GetItem(in, i));
+    }
+  } else {
+    pqassert(false);
+  }
+}
+
 struct PyField {
   std::string ctype;
   void* cdata;
@@ -176,6 +194,16 @@ inline PyObject* py_convert(const std::string& x)
 
 template <class M>
 PyObject* py_convert(const std::vector<M>& vec)
+{
+  PyObject* ret = PyList_New(vec.size());
+  for (long i = 0; i < (long)vec.size(); i++) {
+    PyList_SetItem(ret, i, py_convert(vec[i]));
+  }
+  return ret;
+}
+
+template <class M>
+PyObject* py_convert(const Vector<M>& vec)
 {
   PyObject* ret = PyList_New(vec.size());
   for (long i = 0; i < (long)vec.size(); i++) {

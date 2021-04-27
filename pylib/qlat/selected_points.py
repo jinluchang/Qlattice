@@ -4,6 +4,7 @@ from qlat.timer import *
 from qlat.geometry import *
 from qlat.field_selection import *
 from qlat.field import *
+from qlat.lat_io import *
 
 class SelectedPoints:
 
@@ -74,6 +75,15 @@ class SelectedPoints:
     def load_complex(self, path):
         assert isinstance(path, str)
         return c.load_complex_spfield(self, path)
+
+    def to_lat_data(self):
+        ld = LatData()
+        c.lat_data_from_complex_spfield(ld, self)
+        return ld
+
+    def from_lat_data(self, ld):
+        assert isinstance(ld, LatData)
+        c.complex_spfield_from_lat_data(self, ld)
 
 @timer
 def set_selected_points(sp, f):

@@ -155,7 +155,7 @@ make_shuffle_plan_generic: total num_recv_msgs  =         21
 make_shuffle_plan_generic: global_comm_size =         32
 shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.000 GB)
 ndim: 2
-"tsep"[8]: "0" "1" "2" "3" "4" "5" "6" "7"
+"tsep"[8]:
 "re-im"[2]: "re" "im"
 tsep[       0] re-im[      re]  1.47634809100659958E-01
 tsep[       0] re-im[      im]  0.00000000000000000E+00
@@ -278,7 +278,7 @@ make_shuffle_plan_generic: total num_recv_msgs  =         23
 make_shuffle_plan_generic: global_comm_size =         32
 shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.000 GB)
 ndim: 2
-"tsep"[8]: "0" "1" "2" "3" "4" "5" "6" "7"
+"tsep"[8]:
 "re-im"[2]: "re" "im"
 tsep[       0] re-im[      re]  1.57113900933963824E-01
 tsep[       0] re-im[      im]  0.00000000000000000E+00
@@ -402,7 +402,7 @@ make_shuffle_plan_generic: total num_recv_msgs  =         24
 make_shuffle_plan_generic: global_comm_size =         32
 shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.000 GB)
 ndim: 2
-"tsep"[8]: "0" "1" "2" "3" "4" "5" "6" "7"
+"tsep"[8]:
 "re-im"[2]: "re" "im"
 tsep[       0] re-im[      re]  4.77591858462165175E-01
 tsep[       0] re-im[      im]  0.00000000000000000E+00
@@ -525,7 +525,7 @@ make_shuffle_plan_generic: total num_recv_msgs  =         24
 make_shuffle_plan_generic: global_comm_size =         32
 shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.000 GB)
 ndim: 2
-"tsep"[8]: "0" "1" "2" "3" "4" "5" "6" "7"
+"tsep"[8]:
 "re-im"[2]: "re" "im"
 tsep[       0] re-im[      re]  4.77591858462165175E-01
 tsep[       0] re-im[      im]  0.00000000000000000E+00
