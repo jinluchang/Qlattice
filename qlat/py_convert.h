@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Python.h>
-#include <qlat/py_exceptions.h>
 #include <qlat/qlat.h>
 
 namespace qlat
@@ -165,6 +164,8 @@ inline PyObject* py_convert(const Coordinate& coor)
   }
   return ret;
 }
+
+inline PyObject* py_convert(const bool& x) { return PyBool_FromLong((long)x); }
 
 inline PyObject* py_convert(const int& x) { return PyLong_FromLong((long)x); }
 

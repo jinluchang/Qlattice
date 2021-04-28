@@ -6,6 +6,7 @@ tests = make-sample-gauge-field.log \
 		hmc-pure-gauge.log \
 		field-selection.log \
 		selected-field.log \
+		lat-io.log \
 		fields-io.log \
 		free-invert.log \
 		gpt-qlat-free-invert.log \

@@ -76,6 +76,18 @@ EXPORT(bcast_lat_data, {
   Py_RETURN_NONE;
 });
 
+EXPORT(is_matching_lat_data, {
+  using namespace qlat;
+  PyObject* p_ld = NULL;
+  PyObject* p_ld1 = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_ld, &p_ld1)) {
+    return NULL;
+  }
+  LatData& ld = py_convert_type<LatData>(p_ld);
+  LatData& ld1 = py_convert_type<LatData>(p_ld1);
+  return py_convert(is_matching(ld, ld1));
+});
+
 EXPORT(is_complex_lat_data, {
   using namespace qlat;
   PyObject* p_ld = NULL;
@@ -170,7 +182,7 @@ EXPORT(set_dim_sizes_lat_data, {
   Py_RETURN_NONE;
 });
 
-EXPORT(set_dim_name_indices_lat_data, {
+EXPORT(set_dim_name_lat_data, {
   using namespace qlat;
   PyObject* p_ld = NULL;
   long dim = 0;
@@ -189,18 +201,6 @@ EXPORT(set_dim_name_indices_lat_data, {
     py_convert(ld.info[dim].indices, p_indices);
   }
   Py_RETURN_NONE;
-});
-
-EXPORT(is_matching_lat_data, {
-  using namespace qlat;
-  PyObject* p_ld = NULL;
-  PyObject* p_ld1 = NULL;
-  if (!PyArg_ParseTuple(args, "OO", &p_ld, &p_ld1)) {
-    return NULL;
-  }
-  LatData& ld = py_convert_type<LatData>(p_ld);
-  LatData& ld1 = py_convert_type<LatData>(p_ld1);
-  return py_convert(is_matching(ld, ld1));
 });
 
 EXPORT(peek_lat_data, {

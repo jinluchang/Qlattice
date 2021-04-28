@@ -309,13 +309,13 @@ inline Coordinate read_coordinate(const std::string& str)
   long t = 0;
   long cur = 0;
   char c;
-  assert(parse_long(x, cur, str));
-  assert(parse_char(c, cur, str) and (c == 'x' or c == ','));
-  assert(parse_long(y, cur, str));
-  assert(parse_char(c, cur, str) and (c == 'x' or c == ','));
-  assert(parse_long(z, cur, str));
-  assert(parse_char(c, cur, str) and (c == 'x' or c == ','));
-  assert(parse_long(t, cur, str));
+  qassert(parse_long(x, cur, str));
+  qassert(parse_char(c, cur, str) and (c == 'x' or c == ','));
+  qassert(parse_long(y, cur, str));
+  qassert(parse_char(c, cur, str) and (c == 'x' or c == ','));
+  qassert(parse_long(z, cur, str));
+  qassert(parse_char(c, cur, str) and (c == 'x' or c == ','));
+  qassert(parse_long(t, cur, str));
   return Coordinate(x, y, z, t);
 }
 

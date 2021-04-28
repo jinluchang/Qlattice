@@ -238,7 +238,7 @@ inline void make_temporal_gauge_transformation(GaugeTransform& gt,
   TIMER("make_temporal_gauge_transformation");
   const Geometry geo = geo_reform(gf.geo(), 0);
   gt.init(geo);
-  assert(is_matching_geo(gt.geo(), gf.geo()));
+  qassert(is_matching_geo(gt.geo(), gf.geo()));
   Coordinate expension_left, expension_right;
   set_zero(expension_left);
   set_zero(expension_right);
@@ -281,7 +281,7 @@ inline void make_tree_gauge_transformation(
   if (false == is_initialized(gt)) {
     gt.init(geo);
   }
-  assert(is_matching_geo(gt.geo(), gf.geo()));
+  qassert(is_matching_geo(gt.geo(), gf.geo()));
   set_unit(gt);
   GaugeTransform gt_dir;
   gt_dir.init(geo);

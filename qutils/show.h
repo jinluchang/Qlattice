@@ -18,7 +18,6 @@
 
 #pragma once
 
-#include <cassert>
 #include <cstdarg>
 #include <cstdio>
 #include <cstdint>
@@ -28,6 +27,25 @@
 #include <string>
 #include <vector>
 
+#define PSTRX(x) #x
+
+#define PSTR(x) PSTRX(x)
+
+#define pqassert(x)                                              \
+  {                                                              \
+    if (!(x))                                                    \
+      throw std::string("Assert " #x " failed in file " __FILE__ \
+                        ":" PSTR(__LINE__));                      \
+  };
+
+#define pqerr(...)                                                    \
+  {                                                                   \
+    const std::string msg =                                           \
+        qlat::ssprintf(__VA_ARGS__) +                                 \
+        qlat::ssprintf(" in from '%s' line %d ", __FILE__, __LINE__); \
+    throw std::string(msg);                                           \
+  };
+
 namespace qlat
 {  //
 
@@ -36,7 +54,7 @@ inline std::string vssprintf(const char* fmt, va_list args)
   std::string str;
   char* cstr;
   int ret = vasprintf(&cstr, fmt, args);
-  assert(ret >= 0);
+  pqassert(ret >= 0);
   str += std::string(cstr);
   std::free(cstr);
   return str;
@@ -171,7 +189,7 @@ inline bool parse_long(long& num, long& cur, const std::string& data)
   const long start = cur;
   char c;
   while (parse_char(c, cur, data)) {
-    if (not (('0' <= c and c <= '9') or (c == '-') or (c == '+'))) {
+    if (not(('0' <= c and c <= '9') or (c == '-') or (c == '+'))) {
       cur -= 1;
       break;
     }
@@ -190,7 +208,8 @@ inline bool parse_double(double& num, long& cur, const std::string& data)
   const long start = cur;
   char c;
   while (parse_char(c, cur, data)) {
-    if (not (('0' <= c and c <= '9') or (c == '-') or (c == '+') or (c == '.') or (c == 'e')  or (c == 'E'))) {
+    if (not(('0' <= c and c <= '9') or (c == '-') or (c == '+') or (c == '.') or
+            (c == 'e') or (c == 'E'))) {
       cur -= 1;
       break;
     }

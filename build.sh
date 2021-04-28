@@ -8,6 +8,8 @@
 #
 # Authored by Luchang Jin
 
+echo "Need to run ./scripts/download.sh to download all needed packages."
+
 . conf.sh
 
 if [ -e $prefix ] ; then

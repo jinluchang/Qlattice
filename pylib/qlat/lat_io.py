@@ -42,7 +42,34 @@ class LatData:
         return c.show_lat_data(self)
 
     def set_zero(self):
-        c.set_zero_lat_data(x)
+        return c.set_zero_lat_data(self)
 
-    def set_dim_sizes(self, dim_sizes):
-        c.set_dim_sizes_lat_data(self, dim_sizes)
+    def is_match(self, ld1):
+        # ld.info needs to be exactly equal
+        return c.is_matching_lat_data(self, ld1)
+
+    def is_complex(self):
+        return c.is_complex_lat_data(self)
+
+    def ndim(self):
+        return c.get_ndim_lat_data(self)
+
+    def dim_sizes(self):
+        return c.get_dim_sizes_lat_data(self)
+
+    def dim_name(self, dim):
+        return c.get_dim_name_lat_data(self, dim)
+
+    def set_dim_sizes(self, dim_sizes, is_complex = True):
+        return c.set_dim_sizes_lat_data(self, dim_sizes, is_complex)
+
+    def set_dim_name(self, dim, name, indices = []):
+        return c.set_dim_name_lat_data(self, dim, name, indices)
+
+    def __setitem__(self, idx, val):
+        # use list with correct length as val
+        return c.poke_lat_data(self, idx, val)
+
+    def __getitem__(self, idx):
+        # return a new list every call
+        return c.peek_lat_data(self, idx)

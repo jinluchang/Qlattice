@@ -22,7 +22,6 @@
 
 #include <sys/time.h>
 #include <algorithm>
-#include <cassert>
 #include <cstdarg>
 #include <cstdio>
 #include <cstdlib>
@@ -427,7 +426,7 @@ struct Timer {
       displayln(ssprintf("%s::%s ERROR: isRunning=%d", cname,
                          info.fname.c_str(), isRunning));
       Timer::display_stack();
-      assert(false);
+      pqassert(false);
     }
     TimerInfo& info = get_timer_database()[info_index];
     info.call_times++;
@@ -446,12 +445,12 @@ struct Timer {
   {
     TimerInfo& info = get_timer_database()[info_index];
     std::vector<long>& t_stack = get_timer_stack();
-    assert(not t_stack.empty());
+    pqassert(not t_stack.empty());
     if (not (t_stack.back() == info_index)) {
       displayln(ssprintf("%s::%s ERROR: stack is currupted", cname,
                          info.fname.c_str()));
       Timer::display_stack();
-      assert(false);
+      pqassert(false);
     }
     t_stack.pop_back();
     if (isRunning <= 0) {
@@ -459,7 +458,7 @@ struct Timer {
       displayln(ssprintf("%s::%s ERROR: isRunning=%d", cname,
                          info.fname.c_str(), isRunning));
       Timer::display_stack();
-      assert(false);
+      pqassert(false);
     }
     isRunning -= 1;
     if (isRunning != 0) {
@@ -623,7 +622,7 @@ inline void Display(const char* cname, const char* fname, const char* format,
   va_list args;
   va_start(args, format);
   char* str;
-  assert(vasprintf(&str, format, args) >= 0);
+  pqassert(vasprintf(&str, format, args) >= 0);
   display(ssprintf("%s::%s : %s", cname, fname, str));
   std::free(str);
 }
@@ -638,7 +637,7 @@ inline void DisplayInfo(const char* cname, const char* fname,
   va_list args;
   va_start(args, format);
   char* str;
-  assert(vasprintf(&str, format, args) >= 0);
+  pqassert(vasprintf(&str, format, args) >= 0);
   display_info(ssprintf("%s::%s : %s", cname, fname, str));
   std::free(str);
 }

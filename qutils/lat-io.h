@@ -88,21 +88,21 @@ inline LatDim read_lat_dim(const std::string& str)
   long cur = 0;
   char c;
   if (!parse_string(dim.name, cur, str)) {
-    assert(false);
+    qassert(false);
   } else if (!parse_char(c, cur, str) or c != '[') {
-    assert(false);
+    qassert(false);
   } else if (!parse_long(dim.size, cur, str)) {
-    assert(false);
+    qassert(false);
   } else if (!parse_char(c, cur, str) or c != ']') {
-    assert(false);
+    qassert(false);
   } else if (!parse_char(c, cur, str) or c != ':') {
-    assert(false);
+    qassert(false);
   } else {
     while (parse_char(c, cur, str)) {
-      assert(c == ' ');
+      qassert(c == ' ');
       std::string index;
       if (!parse_string(index, cur, str)) {
-        assert(false);
+        qassert(false);
       }
       dim.indices.push_back(index);
     }
@@ -114,11 +114,11 @@ inline LatInfo read_lat_info(const std::string& str)
 {
   LatInfo info;
   const std::vector<std::string> infos = split_into_lines(str);
-  assert(infos.size() >= 1);
+  qassert(infos.size() >= 1);
   const std::string ndim_prop = "ndim: ";
-  assert(infos[0].compare(0, ndim_prop.size(), ndim_prop) == 0);
+  qassert(infos[0].compare(0, ndim_prop.size(), ndim_prop) == 0);
   const long ndim = read_long(std::string(infos[0], ndim_prop.size()));
-  assert(ndim == (long)infos.size() - 1);
+  qassert(ndim == (long)infos.size() - 1);
   for (int i = 1; i < (int)infos.size(); ++i) {
     info.push_back(read_lat_dim(infos[i]));
   }
@@ -128,12 +128,12 @@ inline LatInfo read_lat_info(const std::string& str)
 inline void LatData::load(const std::string& fn)
 {
   FILE* fp = fopen(fn.c_str(), "r");
-  assert(fp != NULL);
+  qassert(fp != NULL);
   std::vector<char> check_line(lat_data_header.size(), 0);
   const long fread_check_len =
       fread(check_line.data(), lat_data_header.size(), 1, fp);
   qassert(fread_check_len == 1);
-  assert(std::string(check_line.data(), check_line.size()) == lat_data_header);
+  qassert(std::string(check_line.data(), check_line.size()) == lat_data_header);
   std::vector<std::string> infos;
   infos.push_back(lat_data_header);
   while (infos.back() != "END_HEADER\n" && infos.back() != "") {
@@ -147,11 +147,11 @@ inline void LatData::load(const std::string& fn)
   info = read_lat_info(info_str);
   const std::string& crc_str = infos[infos.size() - 2];
   const std::string crc_prop = "crc32: ";
-  assert(crc_str.compare(0, crc_prop.size(), crc_prop) == 0);
+  qassert(crc_str.compare(0, crc_prop.size(), crc_prop) == 0);
   const crc32_t crc = read_crc32(std::string(crc_str, crc_prop.size()));
   lat_data_alloc(*this);
-  assert((long)res.size() == lat_data_size(info));
-  assert((long)res.size() * (long)sizeof(double) == read_long(infos[2]));
+  qassert((long)res.size() == lat_data_size(info));
+  qassert((long)res.size() * (long)sizeof(double) == read_long(infos[2]));
   const long fread_res_len = fread(res.data(), sizeof(double), res.size(), fp);
   qassert(fread_res_len == (long)res.size());
   const crc32_t crc_computed =
@@ -160,7 +160,7 @@ inline void LatData::load(const std::string& fn)
     displayln(
         ssprintf("ERROR: crc do not match: file=%08X computed=%08X fn='%s'.",
                  crc, crc_computed, fn.c_str()));
-    assert(false);
+    qassert(false);
   }
   to_from_little_endian_64(res.data(), res.size() * sizeof(double));
   fclose(fp);
@@ -169,11 +169,11 @@ inline void LatData::load(const std::string& fn)
 inline void LatData::save(const std::string& fn) const
 {
   FILE* fp = fopen((fn + ".partial").c_str(), "w");
-  assert(fp != NULL);
+  qassert(fp != NULL);
   std::vector<double> res_copy;
   if (!is_little_endian()) {
     res_copy = res;
-    assert(res_copy.size() == res.size());
+    qassert(res_copy.size() == res.size());
     to_from_little_endian_64(res_copy.data(), res_copy.size() * sizeof(double));
   }
   const std::string data_size =
@@ -240,30 +240,30 @@ inline long lat_dim_idx(const LatDim& dim, const std::string& idx)
   if ((long)dim.indices.size() == 0) {
     long i = read_long(idx);
     if (i >= 0) {
-      assert(i < dim.size);
+      qassert(i < dim.size);
       return i;
     } else {
       i = -i - 1;
-      assert(i < dim.size);
+      qassert(i < dim.size);
       return i;
     }
   } else {
-    assert((long)dim.indices.size() <= dim.size);
+    qassert((long)dim.indices.size() <= dim.size);
     for (long i = 0; i < (long)dim.indices.size(); ++i) {
       if (idx == dim.indices[i]) {
         return i;
       }
     }
     const long i = -read_long(idx) - 1;
-    assert((long)dim.indices.size() <= i and i < dim.size);
+    qassert((long)dim.indices.size() <= i and i < dim.size);
     return i;
   }
 }
 
 inline long lat_dim_idx(const LatDim& dim, const long& idx)
 {
-  assert((long)dim.indices.size() <= dim.size);
-  assert(0 <= idx and idx < dim.size);
+  qassert((long)dim.indices.size() <= dim.size);
+  qassert(0 <= idx and idx < dim.size);
   return idx;
 }
 
@@ -273,7 +273,7 @@ long lat_data_offset(const LatInfo& info, const VecS& idx)
 // VecS can be std::vector<std::string> or std::vector<long>
 // or can be array of certain length
 {
-  assert((long)idx.size() <= (long)info.size());
+  qassert((long)idx.size() <= (long)info.size());
   long ret = 0;
   for (int i = 0; i < (int)idx.size(); ++i) {
     const long k = lat_dim_idx(info[i], idx[i]);
@@ -343,7 +343,7 @@ inline const LatData& operator+=(LatData& ld, const LatData& ld1)
   if (not is_initialized(ld)) {
     ld = ld1;
   } else {
-    assert(is_matching(ld, ld1));
+    qassert(is_matching(ld, ld1));
     for (long i = 0; i < (long)ld.res.size(); ++i) {
       ld.res[i] += ld1.res[i];
     }
@@ -357,7 +357,7 @@ inline const LatData& operator-=(LatData& ld, const LatData& ld1)
     ld = ld1;
     ld *= -1;
   } else {
-    assert(is_matching(ld, ld1));
+    qassert(is_matching(ld, ld1));
     for (long i = 0; i < (long)ld.res.size(); ++i) {
       ld.res[i] -= ld1.res[i];
     }
