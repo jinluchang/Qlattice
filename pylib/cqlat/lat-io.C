@@ -228,7 +228,7 @@ EXPORT(poke_lat_data, {
   PyObject* p_ld = NULL;
   PyObject* p_idx = NULL;
   PyObject* p_val = NULL;
-  if (!PyArg_ParseTuple(args, "OOO", &p_ld, &p_idx)) {
+  if (!PyArg_ParseTuple(args, "OOO", &p_ld, &p_idx, &p_val)) {
     return NULL;
   }
   LatData& ld = py_convert_type<LatData>(p_ld);

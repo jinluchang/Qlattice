@@ -26,7 +26,9 @@ inline void py_convert(double& out, PyObject* in)
 
 inline void py_convert(Complex& out, PyObject* in)
 {
-  if (PyFloat_Check(in)) {
+  if (PyLong_Check(in)) {
+    out = PyLong_AsLong(in);
+  } else if (PyFloat_Check(in)) {
     out = PyFloat_AsDouble(in);
   } else {
     pqassert(PyComplex_Check(in));

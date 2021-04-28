@@ -60,6 +60,9 @@ class LatData:
     def dim_name(self, dim):
         return c.get_dim_name_lat_data(self, dim)
 
+    def dim_indices(self, dim):
+        return c.get_dim_indices_lat_data(self, dim)
+
     def set_dim_sizes(self, dim_sizes, is_complex = True):
         return c.set_dim_sizes_lat_data(self, dim_sizes, is_complex)
 
