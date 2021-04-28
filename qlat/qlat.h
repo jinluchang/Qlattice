@@ -90,5 +90,7 @@
 
 #include <qlat/contract-field.h>
 
+#include <qlat/contract-hvp.h>
+
 #endif
 
