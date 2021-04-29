@@ -289,7 +289,7 @@ EXPORT(qload_datatable_sync_node, {
   using namespace qlat;
   PyObject* p_path = NULL;
   bool is_par = false;
-  if (!PyArg_ParseTuple(args, "O|O", &p_path, &is_par)) {
+  if (!PyArg_ParseTuple(args, "O|b", &p_path, &is_par)) {
     return NULL;
   }
   std::string path;
