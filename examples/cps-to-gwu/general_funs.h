@@ -44,7 +44,8 @@
 #define EigenM Eigen::Matrix< std::complex< double >, Eigen::Dynamic, Eigen::Dynamic ,Eigen::RowMajor>
 #define EigenMD Eigen::Matrix< std::complex< double >, Eigen::Dynamic, Eigen::Dynamic ,Eigen::RowMajor>
 #define EigenV Eigen::VectorXcd
-#define Evector Eigen::Array<std::complex<double >,Eigen::Dynamic,1>
+/////#define Evector Eigen::Array<std::complex<double >,Eigen::Dynamic,1>
+#define Evector qlat::vector<std::complex< double > >
 #define EM Eigen::Map<Eigen::Array<std::complex<double >,Eigen::Dynamic,1> >
 #define FFT_init_threads fftw_init_threads
 #define FFT_plan_with_nthreads fftw_plan_with_nthreads
@@ -73,7 +74,8 @@
 #define EigenM Eigen::Matrix< std::complex< float>, Eigen::Dynamic, Eigen::Dynamic ,Eigen::RowMajor>
 #define EigenMD Eigen::Matrix< std::complex< float>, Eigen::Dynamic, Eigen::Dynamic ,Eigen::RowMajor>
 #define EigenV Eigen::VectorXcf
-#define Evector Eigen::Array<std::complex<float >,Eigen::Dynamic,1>
+/////#define Evector Eigen::Array<std::complex<float >,Eigen::Dynamic,1>
+#define Evector qlat::vector<std::complex< float > >
 //#define EM Eigen::Map<Eigen::Array<std::complex<float >,Eigen::Dynamic,1> >
 #define EM Eigen::Map<Eigen::Array<std::complex<float >,Eigen::Dynamic,1> >
 #define FFT_init_threads fftwf_init_threads
@@ -589,14 +591,14 @@ inline void print_mem_info()
 }
 
 
-std::vector<std::string > stringtolist(std::string &tem_string)
+inline std::vector<std::string > stringtolist(std::string &tem_string)
 {
   std::istringstream iss(tem_string);
   std::vector<std::string> results((std::istream_iterator<std::string>(iss)),std::istream_iterator<std::string>());
   return results;
 }
 
-double stringtodouble(std::string &tem_string)
+inline double stringtodouble(std::string &tem_string)
 {
   //double use = atof(tem_string.c_str());
   double use = 0.0;
@@ -607,7 +609,7 @@ double stringtodouble(std::string &tem_string)
   return use;
 }
 
-int stringtonum(std::string &tem_string)
+inline int stringtonum(std::string &tem_string)
 {
   //int t_Total = 0;
   //if(tem_string!="_NONE_")
@@ -625,7 +627,7 @@ int stringtonum(std::string &tem_string)
 
 }
 
-int read_vector(const char *filename, std::vector<double > &dat)
+inline int read_vector(const char *filename, std::vector<double > &dat)
 {
   int prods = 0; 
   unsigned long Vsize = 0; 
@@ -698,7 +700,7 @@ inline void read_input(const char *filename,std::vector<std::vector<std::string 
 }
 
 ////Bcast conf_l from zero rank
-void bcast_vstring(std::vector<std::string> &conf_l, const int Host_rank = 0){
+inline void bcast_vstring(std::vector<std::string> &conf_l, const int Host_rank = 0){
 
   int rank = get_node_rank_funs();
   ////Bcast strings

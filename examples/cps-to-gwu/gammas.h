@@ -16,6 +16,8 @@
 
 #define Imag Complexq(0.0,1.0)
 
+namespace qlat{
+
 class ga_M
 {
 public:
@@ -237,5 +239,7 @@ qacc Ty reduce_gamma(const Ty *src,const ga_M &ga){
 //  }
 //  return res;
 //}
+
+}
 
 #endif

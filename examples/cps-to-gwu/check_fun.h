@@ -64,7 +64,7 @@ void diff_prop(Propagator4d& p0, Propagator4d& p1)
   }
   sum_all_size(&diffp,1);
   MPI_Barrier(get_comm());fflush(stdout);
-  print0("==prop diff %.5e \n",diffp);
+  print0("==prop diff %.5e \n",diffp/(p0.geo().local_volume()*12*24.0));
   MPI_Barrier(get_comm());fflush(stdout);
 }
 
