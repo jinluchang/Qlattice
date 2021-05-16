@@ -283,6 +283,7 @@ struct FieldsReader {
   bool is_little_endian;  // should be true
   //
   bool is_read_through;
+  std::vector<std::string> fn_list;
   std::map<std::string, long> offsets_map;
   long max_offset;
   //
@@ -302,6 +303,7 @@ struct FieldsReader {
     qassert(fp == NULL);
     is_little_endian = true;
     is_read_through = false;
+    fn_list.clear();
     offsets_map.clear();
     max_offset = 0;
   }
@@ -317,6 +319,7 @@ struct FieldsReader {
     fp = dist_open(path, geon.id_node, geon.num_node, "r");
     qassert(NULL != fp);
     is_read_through = false;
+    fn_list.clear();
     offsets_map.clear();
     max_offset = 0;
   }
@@ -453,34 +456,47 @@ inline bool read_tag(FieldsReader& fr, std::string& fn, Coordinate& total_site,
     fr.is_read_through = true;
     return false;
   }
+  if (not (tag_len > 0)) {
+    qwarn("read_tag: tag_len <= 0");
+    return false;
+  }
   std::vector<char> fnv(tag_len);
   if (1 != fread(fnv.data(), tag_len, 1, fr.fp)) {
-    qassert(false);
+    qwarn("read_tag:");
+    return false;
   }
   fn = std::string(fnv.data(), tag_len - 1);
   //
+  fr.fn_list.push_back(fn);
   fr.offsets_map[fn] = offset_initial;
   //
   // then read crc
   if (1 != fread_convert_endian(&crc, 4, 1, fr.fp, fr.is_little_endian)) {
-    qassert(false);
+    qwarn("read_tag:");
+    return false;
   }
   //
   // then read geometry info
   int32_t nd = 0;
   if (1 != fread_convert_endian(&nd, 4, 1, fr.fp, fr.is_little_endian)) {
-    qassert(false);
+    qwarn("read_tag:");
+    return false;
   }
-  qassert(4 == nd);
+  if (not (4 == nd)) {
+    qwarn("read_tag:");
+    return false;
+  }
   //
   std::vector<int32_t> gd(4, 0);
   std::vector<int32_t> num_procs(4, 0);
   if (4 != fread_convert_endian(&gd[0], 4, 4, fr.fp, fr.is_little_endian)) {
-    qassert(false);
+    qwarn("read_tag:");
+    return false;
   }
   if (4 !=
       fread_convert_endian(&num_procs[0], 4, 4, fr.fp, fr.is_little_endian)) {
-    qassert(false);
+    qwarn("read_tag:");
+    return false;
   }
   //
   if (gd[0] < 0) {
@@ -491,14 +507,21 @@ inline bool read_tag(FieldsReader& fr, std::string& fn, Coordinate& total_site,
   const Coordinate size_node = fr.geon.size_node;
   for (int mu = 0; mu < 4; ++mu) {
     total_site[mu] = gd[mu];
-    qassert(size_node[mu] == (int)num_procs[mu]);
+    if (not(size_node[mu] == (int)num_procs[mu])) {
+      qwarn("read_tag:");
+      return false;
+    }
   }
   //
   // then read data size
   if (1 != fread_convert_endian(&data_len, 8, 1, fr.fp, fr.is_little_endian)) {
-    qassert(false);
+    qwarn("read_tag:");
+    return false;
   }
-  qassert(data_len > 0);
+  if (not (data_len > 0)) {
+    qwarn("read_tag:");
+    return false;
+  }
   //
   const long final_offset = ftell(fr.fp) + data_len;
   if (final_offset > fr.max_offset) {
@@ -519,9 +542,15 @@ inline long read_data(FieldsReader& fr, std::vector<char>& data,
   clear(data);
   data.resize(data_len, 0);
   const long read_data_all = fread(&data[0], data_len, 1, fr.fp);
-  qassert(1 == read_data_all);
+  if (not (1 == read_data_all)) {
+    qwarn("read_data: data not complete");
+    return 0;
+  }
   crc32_t crc_read = crc32_par(get_data(data));
-  qassert(crc_read == crc);
+  if (not(crc_read == crc)) {
+    qwarn("read_data: crc does not match");
+    return 0;
+  }
   timer.flops += data_len;
   return data_len;
 }
@@ -539,18 +568,39 @@ inline long read_next(FieldsReader& fr, std::string& fn, Coordinate& total_site,
   return total_bytes;
 }
 
+inline void read_through(FieldsReader& fr)
+{
+  Coordinate total_site;
+  bool is_sparse_field;
+  while (true) {
+    std::string fn_read = "";
+    crc32_t crc = 0;
+    int64_t data_len = 0;
+    const bool is_ok =
+        read_tag(fr, fn_read, total_site, crc, data_len, is_sparse_field);
+    if (is_ok) {
+      fseek(fr.fp, data_len, SEEK_CUR);
+    } else {
+      return;
+    }
+  }
+}
+
 inline bool does_file_exist(FieldsReader& fr, const std::string& fn)
 {
   TIMER("does_file_exist(fr,fn,site)");
-  Coordinate total_site;
-  bool is_sparse_field;
   if (fr.offsets_map.count(fn) == 1) {
     return true;
   } else if (fr.is_read_through) {
     return false;
   } else {
-    fseek(fr.fp, fr.max_offset, SEEK_SET);
+    const int ret = fseek(fr.fp, fr.max_offset, SEEK_SET);
+    if (ret != 0) {
+      return false;
+    }
   }
+  Coordinate total_site;
+  bool is_sparse_field;
   while (true) {
     std::string fn_read = "";
     crc32_t crc = 0;
@@ -584,6 +634,30 @@ inline long read(FieldsReader& fr, const std::string& fn,
       read_next(fr, fn_r, total_site, data, is_sparse_field);
   qassert(fn == fn_r);
   return total_bytes;
+}
+
+inline long check_file(FieldsReader& fr, const std::string& fn)
+// return final offset of the data
+// if check_file fail, return 0
+{
+  TIMER_FLOPS("check_file(fr,fn)");
+  if (not does_file_exist(fr, fn)) {
+    return false;
+  }
+  qassert(fr.offsets_map.count(fn) == 1);
+  fseek(fr.fp, fr.offsets_map[fn], SEEK_SET);
+  std::string fn_r;
+  Coordinate total_site;
+  std::vector<char> data;
+  bool is_sparse_field;
+  const long total_bytes =
+      read_next(fr, fn_r, total_site, data, is_sparse_field);
+  qassert(fn == fn_r);
+  if (total_bytes > 0) {
+    return ftell(fr.fp);
+  } else {
+    return 0;
+  }
 }
 
 template <class M>
@@ -1057,6 +1131,15 @@ void set_field_info_from_fields(Coordinate& total_site, int& multiplicity,
   }
 }
 
+inline void read_through_sync_node(ShuffledFieldsReader& sfr)
+{
+  TIMER_VERBOSE("read_through_sync_node(sfr)");
+  for (int i = 0; i < (int)sfr.frs.size(); ++i) {
+    read_through(sfr.frs[i]);
+  }
+  sync_node();
+}
+
 inline bool does_file_exist_sync_node(ShuffledFieldsReader& sfr,
                                       const std::string& fn)
 // interface function
@@ -1078,21 +1161,70 @@ inline bool does_file_exist_sync_node(ShuffledFieldsReader& sfr,
   }
 }
 
+inline std::vector<long> check_file_sync_node(ShuffledFieldsReader& sfr,
+                                              const std::string& fn)
+// interface function
+// return final offset if all succeed
+// return empty vector if any fail
+{
+  TIMER_VERBOSE("check_file_sync_node(sfr,fn)");
+  std::vector<long> ret(sfr.frs.size(), 0);
+  displayln_info(fname + ssprintf(": reading field with fn='%s'.", fn.c_str()));
+  long total_failed_counts = 0;
+  for (int i = 0; i < (int)sfr.frs.size(); ++i) {
+    ret[i] = check_file(sfr.frs[i], fn);
+    if (ret[i] == 0) {
+      total_failed_counts += 1;
+    }
+  }
+  glb_sum(total_failed_counts);
+  if (total_failed_counts > 0) {
+    clear(ret);
+  }
+  return ret;
+}
+
 inline std::vector<std::string> list_fields(ShuffledFieldsReader& sfr)
+// interface function
 {
   TIMER_VERBOSE("list_fields");
-  does_file_exist_sync_node(sfr, "CHECK-FILE");
+  read_through_sync_node(sfr);
   std::vector<std::string> ret;
   if (0 == get_id_node()) {
     qassert(sfr.frs.size() > 0);
     FieldsReader& fr = sfr.frs[0];
     qassert(fr.is_read_through);
-    for (auto it = fr.offsets_map.cbegin(); it != fr.offsets_map.cend(); ++it) {
-      ret.push_back(it->first);
-    }
+    ret = fr.fn_list;
   }
   bcast(ret);
   return ret;
+}
+
+inline std::vector<std::string> properly_truncate_sync_node(
+    const std::string& path, const Coordinate& new_size_node = Coordinate())
+// interface function
+// return available fns
+{
+  TIMER_VERBOSE("properly_truncate_sync_node");
+  ShuffledFieldsReader sfr;
+  sfr.init(path, new_size_node);
+  std::vector<std::string> fns = list_fields(sfr);
+  for (long i = (long)fns.size() - 1; i >= 0; i -= 1) {
+    const std::string& fn = fns[i];
+    const std::vector<long> final_offsets = check_file_sync_node(sfr, fn);
+    if (0 != final_offsets.size()) {
+      for (int k = 0; k < (int)sfr.frs.size(); ++k) {
+        FieldsReader& fr = sfr.frs[k];
+        const long final_offset = final_offsets[k];
+        fr.close();
+        const std::string path = fr.path;
+        qtruncate(path, final_offset);
+      }
+      fns.resize(i + 1);
+      sync_node();
+      return fns;
+    }
+  }
 }
 
 template <class M>

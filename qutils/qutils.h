@@ -8,17 +8,22 @@
 #include <cassert>
 #include <vector>
 
-#define qqassert(x)                                                           \
-  {                                                                           \
-    if (not(x)) {                                                             \
-      std::string msg = qlat::ssprintf(                                       \
-          "qassert failed: %s from '%s' line %d. (id_node=%d thread_num=%d)", \
-          #x, __FILE__, __LINE__, get_id_node(), get_thread_num());           \
-      qlat::displayln(msg);                                                   \
-      qlat::Timer::display_stack_always();                                    \
-      usleep((useconds_t)(0.1 * 1.0e6));                                      \
-      throw msg;                                                              \
-    }                                                                         \
+#define qwarn(str)                                                      \
+  {                                                                     \
+    std::string msg = qlat::ssprintf(                                   \
+        "qwarn: %s from '%s' line %d. (id_node=%d thread_num=%d)", str, \
+        __FILE__, __LINE__, get_id_node(), get_thread_num());           \
+    qlat::displayln(msg);                                               \
+    qlat::Timer::display_stack_always();                                \
+  }
+
+#define qqassert(x)                      \
+  {                                      \
+    if (not(x)) {                        \
+      qwarn("qassert: " #x);             \
+      usleep((useconds_t)(0.1 * 1.0e6)); \
+      throw "qassert";                   \
+    }                                    \
   }
 
 // #define SKIP_ASSERT

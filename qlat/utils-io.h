@@ -263,13 +263,21 @@ inline bool check_status()
   return false;
 }
 
-inline bool truncate(const std::string& evilFile)
+inline bool qtruncate(const std::string& evilFile)
 {
   std::ofstream evil;
   evil.open(evilFile.c_str());
   bool does_exist = evil.good();
-  if (does_exist) evil.close();
+  if (does_exist) {
+    evil.close();
+  }
   return does_exist;
+}
+
+inline bool qtruncate(const std::string& path, const long offset)
+{
+  const int ret = truncate(path.c_str(), offset);
+  return ret == 0;
 }
 
 inline mode_t& default_dir_mode()
