@@ -1201,8 +1201,8 @@ inline std::vector<std::string> list_fields(ShuffledFieldsReader& sfr)
 }
 
 inline std::vector<std::string> properly_truncate_fields_sync_node(
-    const std::string& path, const Coordinate& new_size_node = Coordinate(),
-    const bool is_check_all = false)
+    const std::string& path, const bool is_check_all = false,
+    const Coordinate& new_size_node = Coordinate())
 // interface function
 // return available fns
 {

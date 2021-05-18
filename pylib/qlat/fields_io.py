@@ -15,7 +15,7 @@ class ShuffledFieldsWriter:
         self.cdata = c.mk_sfw(path, new_size_node, is_append)
 
     def close(self):
-        if not (self.cdata is None):
+        if self.cdata is not None:
             c.free_sfw(self)
         self.cdata = None
         cache_fields_io.pop(id(self), None)
@@ -54,7 +54,7 @@ class ShuffledFieldsReader:
             self.cdata = c.mk_sfr(path, new_size_node)
 
     def close(self):
-        if not (self.cdata is None):
+        if self.cdata is not None:
             c.free_sfr(self)
         self.cdata = None
         cache_fields_io.pop(id(self), None)
@@ -101,7 +101,7 @@ def open_fields(path, mode, new_size_node = None):
     if mode == "r":
         return ShuffledFieldsReader(path, new_size_node)
     elif mode == "w":
-        assert not (new_size_node is None)
+        assert new_size_node is not None
         return ShuffledFieldsWriter(path, new_size_node)
     elif mode == "a":
         if new_size_node is None:
@@ -110,3 +110,9 @@ def open_fields(path, mode, new_size_node = None):
             return ShuffledFieldsWriter(path, new_size_node, True)
     else:
         raise Exception("open_fields")
+
+def properly_truncate_fields_sync_node(path, is_check_all = False, new_size_node = None):
+    if new_size_node is None:
+        return c.properly_truncate_fields_sync_node(path, is_check_all)
+    else:
+        return c.properly_truncate_fields_sync_node(path, is_check_all, new_size_node)

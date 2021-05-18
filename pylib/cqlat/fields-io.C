@@ -205,3 +205,22 @@ EXPORT(list_sfr, {
   ShuffledFieldsReader& sfr = py_convert_type<ShuffledFieldsReader>(p_sfr);
   return py_convert(list_fields(sfr));
 });
+
+EXPORT(properly_truncate_fields_sync_node, {
+  using namespace qlat;
+  PyObject* p_path = NULL;
+  PyObject* p_new_size_node = NULL;
+  bool is_check_all = false;
+  if (!PyArg_ParseTuple(args, "O|bO", &p_path, &is_check_all,
+                        &p_new_size_node)) {
+    return NULL;
+  }
+  std::string path;
+  py_convert(path, p_path);
+  Coordinate new_size_node;
+  if (p_new_size_node != NULL) {
+    py_convert(new_size_node, p_new_size_node);
+  }
+  return py_convert(
+      properly_truncate_fields_sync_node(path, is_check_all, new_size_node));
+});
