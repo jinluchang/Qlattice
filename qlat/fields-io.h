@@ -1261,6 +1261,7 @@ inline std::vector<std::string> properly_truncate_fields_sync_node(
       if (0 != final_offsets.size()) {
         last_final_offsets = final_offsets;
         last_idx = i;
+        break;
       }
     }
   }
