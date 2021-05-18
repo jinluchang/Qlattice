@@ -1203,7 +1203,9 @@ inline std::vector<long> check_file_sync_node(ShuffledFieldsReader& sfr,
   if (total_failed_counts > 0) {
     clear(ret);
   }
-  displayln_info(fname + ssprintf(": %s.", ret.size() == 0 ? "false" : "true"));
+  displayln_info(fname + ssprintf(": check=%s field fn='%s' from '%s'.",
+                                  ret.size() == 0 ? "false" : "true",
+                                  fn.c_str(), sfr.path.c_str()));
   return ret;
 }
 
