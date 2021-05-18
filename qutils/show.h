@@ -322,7 +322,7 @@ inline void displayln(const std::string& str, FILE* fp = NULL)
   }
 }
 
-const char* get_c_str(const std::string& str) { return str.c_str(); }
+inline const char* get_c_str(const std::string& str) { return str.c_str(); }
 
 //////////////////////////////////////////////////////////////////
 
