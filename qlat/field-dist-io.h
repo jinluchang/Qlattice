@@ -88,9 +88,8 @@ inline FILE* dist_open(const std::string& path, const int id_node,
     ret = qopen(fn, fmode);
   }
   if (ret == NULL) {
-    displayln(ssprintf("dist_open: failed to open '%s'.", fn.c_str()));
+    qwarn("dist_open: " + ssprintf("failed to open '%s'.", fn.c_str()));
   }
-  qassert(ret != NULL);
   return ret;
 }
 
@@ -283,6 +282,7 @@ long dist_write_dist_data(const std::vector<DistData<M> >& dds,
       if (id_node % n_cycle == i) {
         if (id_counts[id_node] == 0) {
           FILE* fp = dist_open(path, id_node, num_node, "w", mode);
+          qassert(fp != NULL);
           for (size_t l = k; l < dds.size(); ++l) {
             const DistData<M>& dd = dds[l];
             if (id_node == dd.id_node) {
@@ -415,6 +415,7 @@ long dist_read_dist_data(const std::vector<DistData<M> >& dds,
       if (id_node % n_cycle == i) {
         if (id_counts[id_node] == 0) {
           FILE* fp = dist_open(path, id_node, num_node, "r");
+          qassert(fp != NULL);
           for (size_t l = k; l < dds.size(); ++l) {
             const DistData<M>& dd = dds[l];
             if (id_node == dd.id_node) {

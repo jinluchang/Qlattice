@@ -317,11 +317,23 @@ struct FieldsReader {
       displayln("FieldsReader: open '" + path + "'.");
     }
     fp = dist_open(path, geon.id_node, geon.num_node, "r");
-    qassert(NULL != fp);
-    is_read_through = false;
+    if (NULL == fp) {
+      is_read_through = true;
+    } else {
+      is_read_through = false;
+    }
     fn_list.clear();
     offsets_map.clear();
     max_offset = 0;
+  }
+  //
+  void mkdir(const mode_t mode = default_dir_mode())
+  {
+    if (fp == NULL and path != "") {
+      fp = dist_open(path, geon.id_node, geon.num_node, "a");
+      dist_close(fp);
+      qassert(fp == NULL);
+    }
   }
   //
   std::string path_file()
@@ -435,6 +447,9 @@ inline long fread_convert_endian(void* ptr, const size_t size,
                                  const size_t nmemb, FILE* fp,
                                  const bool is_little_endian)
 {
+  if (NULL == fp) {
+    return 0;
+  }
   const long total_nmemb = fread(ptr, size, nmemb, fp);
   if (size == 4) {
     convert_endian_32(Vector<int32_t>((int32_t*)ptr, nmemb), is_little_endian);
@@ -455,6 +470,11 @@ inline bool read_tag(FieldsReader& fr, std::string& fn, Coordinate& total_site,
   crc = 0;
   data_len = 0;
   is_sparse_field = false;
+  //
+  if (NULL == fr.fp) {
+    qwarn("read_tag: fr.fp == NULL");
+    return false;
+  }
   //
   const long offset_initial = ftell(fr.fp);
   //
@@ -559,6 +579,10 @@ inline long read_data(FieldsReader& fr, std::vector<char>& data,
   TIMER_FLOPS("read_data(fr,fn,geo,data)");
   clear(data);
   data.resize(data_len, 0);
+  if (NULL == fr.fp) {
+    qwarn("read_data: file does not exist");
+    return 0;
+  }
   const long read_data_all = fread(&data[0], data_len, 1, fr.fp);
   if (not (1 == read_data_all)) {
     qwarn("read_data: data not complete");
@@ -611,6 +635,8 @@ inline bool does_file_exist(FieldsReader& fr, const std::string& fn)
   if (fr.offsets_map.count(fn) == 1) {
     return true;
   } else if (fr.is_read_through) {
+    return false;
+  } else if (NULL == fr.fp) {
     return false;
   } else {
     const int ret = fseek(fr.fp, fr.max_offset, SEEK_SET);
@@ -1272,6 +1298,7 @@ inline std::vector<std::string> properly_truncate_fields_sync_node(
     fr.close();
     displayln_info(fname + ssprintf(": '%s' final_offset=%ld",
                                     path_file.c_str(), final_offset));
+    fr.mkdir();
     const bool b = qtruncate(path_file, final_offset);
     qassert(b);
   }
