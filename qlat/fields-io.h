@@ -1200,31 +1200,49 @@ inline std::vector<std::string> list_fields(ShuffledFieldsReader& sfr)
   return ret;
 }
 
-inline std::vector<std::string> properly_truncate_sync_node(
-    const std::string& path, const Coordinate& new_size_node = Coordinate())
+inline std::vector<std::string> properly_truncate_fields_sync_node(
+    const std::string& path, const Coordinate& new_size_node = Coordinate(),
+    const bool is_check_all = false)
 // interface function
 // return available fns
 {
-  TIMER_VERBOSE("properly_truncate_sync_node");
+  TIMER_VERBOSE("properly_truncate_fields_sync_node");
   ShuffledFieldsReader sfr;
   sfr.init(path, new_size_node);
   std::vector<std::string> fns = list_fields(sfr);
-  for (long i = (long)fns.size() - 1; i >= 0; i -= 1) {
-    const std::string& fn = fns[i];
-    const std::vector<long> final_offsets = check_file_sync_node(sfr, fn);
-    if (0 != final_offsets.size()) {
-      for (int k = 0; k < (int)sfr.frs.size(); ++k) {
-        FieldsReader& fr = sfr.frs[k];
-        const long final_offset = final_offsets[k];
-        fr.close();
-        const std::string path = fr.path;
-        qtruncate(path, final_offset);
+  std::vector<long> last_final_offsets;
+  long last_idx = 0;
+  if (is_check_all) {
+    for (long i = 0; i < (long)fns.size(); ++i) {
+      const std::string& fn = fns[i];
+      const std::vector<long> final_offsets = check_file_sync_node(sfr, fn);
+      if (0 != final_offsets.size()) {
+        last_final_offsets = final_offsets;
+        last_idx = i;
+      } else {
+        break;
       }
-      fns.resize(i + 1);
-      sync_node();
-      return fns;
+    }
+  } else {
+    for (long i = (long)fns.size() - 1; i >= 0; i -= 1) {
+      const std::string& fn = fns[i];
+      const std::vector<long> final_offsets = check_file_sync_node(sfr, fn);
+      if (0 != final_offsets.size()) {
+        last_final_offsets = final_offsets;
+        last_idx = i;
+      }
     }
   }
+  for (int i = 0; i < (int)sfr.frs.size(); ++i) {
+    FieldsReader& fr = sfr.frs[i];
+    const std::string path = fr.path;
+    const long final_offset = last_final_offsets[i];
+    fr.close();
+    qtruncate(path, final_offset);
+  }
+  fns.resize(last_idx + 1);
+  sync_node();
+  return fns;
 }
 
 template <class M>
