@@ -44,6 +44,9 @@ class ShuffledFieldsWriter:
         else:
             raise Exception("ShuffledFieldsWriter.save")
 
+    def flush(self):
+        return c.flush_sfw(self)
+
 class ShuffledFieldsReader:
 
     def __init__(self, path, new_size_node = None):

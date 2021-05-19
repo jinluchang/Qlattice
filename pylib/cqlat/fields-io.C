@@ -224,3 +224,13 @@ EXPORT(properly_truncate_fields_sync_node, {
   return py_convert(
       properly_truncate_fields_sync_node(path, is_check_all, new_size_node));
 });
+
+EXPORT(flush_sfw, {
+  using namespace qlat;
+  PyObject* p_sfw = NULL;
+  if (!PyArg_ParseTuple(args, "O", &p_sfw)) {
+    return NULL;
+  }
+  ShuffledFieldsWriter& sfw = py_convert_type<ShuffledFieldsWriter>(p_sfw);
+  return py_convert(flush(sfw));
+});

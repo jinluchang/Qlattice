@@ -746,6 +746,12 @@ long write(FieldsWriter& fw, const std::string& fn, const SelectedField<M>& sf,
   return total_bytes;
 }
 
+inline int flush(FieldsWriter& fw)
+{
+  TIMER("flush(fw)");
+  return fflush(fw.fp);
+}
+
 template <class M>
 void set_field_from_data(Field<M>& field, const GeometryNode& geon,
                          const Coordinate& total_site,
@@ -1127,6 +1133,17 @@ long write(ShuffledFieldsWriter& sfw, const std::string& fn,
   SelectedField<M> sf;
   set_selected_field(sf, field, sbs.fsel);
   return write(sfw, fn, sf, sbs);
+}
+
+inline long flush(ShuffledFieldsWriter& sfw)
+{
+  TIMER_VERBOSE("flush(sfw)");
+  long ret = 0;
+  for (int i = 0; i < (int)sfw.fws.size(); ++i) {
+    ret += flush(sfw.fws[i]);
+  }
+  glb_sum(ret);
+  return ret;
 }
 
 template <class M>

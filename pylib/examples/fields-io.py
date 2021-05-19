@@ -31,6 +31,8 @@ prop.save_double(sfw, "prop.d")
 
 prop.save_float_from_double(sfw, "prop")
 
+sfw.flush()
+
 s_prop = prop.sparse(fsel)
 q.displayln_info("s_prop = prop.sparse(fsel)", s_prop.qnorm())
 s_prop.save_float_from_double(sfw, "s_prop")
