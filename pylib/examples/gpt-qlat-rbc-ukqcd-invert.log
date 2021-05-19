@@ -55,9 +55,24 @@ set q_field_init=fast. (implicitly)
 get_mem_cache_max_size_default: get_mem_cache_max_size() = 512 MB.
 CommPlanCache: to add 1 / 32.
 gf_show_info: plaq = 0.9737359772127301 ; link_trace = 0.9933659561692338.
+gpt_from_qlat
+plan initialized
+plan source added
+plan destination added
+plan created
 ShufflePlanCache: to add 1 / 16.
 prop src 0 qnorm = 786613.9719512658 crc32 = 1313177195
 prop src 1 qnorm = 786828.5160106712 crc32 = 1984585503
+gpt_from_qlat
+plan initialized
+plan source added
+plan destination added
+plan created
+qlat_from_gpt
+plan initialized
+plan destination added
+plan source added
+plan created
 prop sol 0 qnorm = 53021.38315936312 crc32 = 2971167407
 prop sol 1 qnorm = 53340.26267544426 crc32 = 1564110039
 qlat::end(): get_comm_list().pop_back()

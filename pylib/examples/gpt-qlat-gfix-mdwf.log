@@ -57,6 +57,21 @@ CommPlanCache: to add 1 / 32.
 gf_show_info: plaq = 0.9745055472546029 ; link_trace = 0.9934624069374576.
 CommPlanCache: to add 2 / 32.
 gf_show_info: plaq = 0.9745055472546036 ; link_trace = 0.9663933399982101.
+gpt_from_qlat
+plan initialized
+plan source added
+plan destination added
+plan created
+gpt_from_qlat
+plan initialized
+plan source added
+plan destination added
+plan created
+qlat_from_gpt
+plan initialized
+plan destination added
+plan source added
+plan created
 10928.57555725357 10928.575557253567 0.0
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 1.
