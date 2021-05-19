@@ -969,6 +969,7 @@ struct ShuffledFieldsWriter {
             const bool is_append = false)
   // interface function
   {
+    TIMER_VERBOSE("ShuffledFieldsWriter::init")
     init();
     path = path_;
     if (is_append and does_file_exist_sync_node(path + ".partial")) {
@@ -1009,6 +1010,7 @@ struct ShuffledFieldsWriter {
   void close()
   // interface function
   {
+    TIMER_VERBOSE("ShuffledFieldsWriter::close")
     remove_shuffled_fields_writer(*this);
     std::vector<GeometryNode> geons = make_dist_io_geons(new_size_node);
     for (int i = 0; i < (int)fws.size(); ++i) {
