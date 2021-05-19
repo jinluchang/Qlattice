@@ -20,6 +20,7 @@
 
 // File format should be compatible with Christoph Lehner's file format.
 
+#include <errno.h>
 #include <qlat/selected-field.h>
 #include <qlat/selected-points.h>
 
@@ -624,6 +625,7 @@ inline void read_through(FieldsReader& fr)
     if (is_ok) {
       fseek(fr.fp, data_len, SEEK_CUR);
     } else {
+      errno = 0;
       return;
     }
   }
@@ -1319,6 +1321,7 @@ inline std::vector<std::string> properly_truncate_fields_sync_node(
     const bool b = qtruncate(path_file, final_offset);
     qassert(b);
   }
+  errno = 0;
   fns.resize(last_idx + 1);
   for (long i = 0; i < (long)fns.size(); ++i) {
     const std::string& fn = fns[i];
