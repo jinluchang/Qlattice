@@ -248,6 +248,30 @@ EXPORT(qrename_info, {
   return py_convert(ret);
 });
 
+EXPORT(qls, {
+  using namespace qlat;
+  PyObject* p_path = NULL;
+  if (!PyArg_ParseTuple(args, "O", &p_path)) {
+    return NULL;
+  }
+  std::string path;
+  py_convert(path, p_path);
+  const std::vector<std::string> ret = qls(path);
+  return py_convert(ret);
+});
+
+EXPORT(qls_sync_node, {
+  using namespace qlat;
+  PyObject* p_path = NULL;
+  if (!PyArg_ParseTuple(args, "O", &p_path)) {
+    return NULL;
+  }
+  std::string path;
+  py_convert(path, p_path);
+  const std::vector<std::string> ret = qls_sync_node(path);
+  return py_convert(ret);
+});
+
 EXPORT(qcat, {
   using namespace qlat;
   PyObject* p_path = NULL;

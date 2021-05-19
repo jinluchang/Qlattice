@@ -397,6 +397,16 @@ inline std::vector<std::string> qls(const std::string& path)
   return qls_aux(remove_trailing_slashes(path));
 }
 
+inline std::vector<std::string> qls_sync_node(const std::string& path)
+{
+  std::vector<std::string> ret;
+  if (0 == get_id_node()) {
+    ret = qls(path);
+  }
+  bcast(ret);
+  return ret;
+}
+
 inline int qremove(const std::string& path)
 {
   displayln(ssprintf("qremove: '%s'", path.c_str()));

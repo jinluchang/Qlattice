@@ -9,5 +9,7 @@ from cqlat import is_directory, is_directory_sync_node
 from cqlat import qtouch, qtouch_info
 from cqlat import qappend, qappend_info
 from cqlat import qrename, qrename_info
+from cqlat import qcat, qcat_sync_node
+from cqlat import qls, qls_sync_node
 from cqlat import qload_datatable, qload_datatable_sync_node
 from cqlat import check_time_limit, check_stop
