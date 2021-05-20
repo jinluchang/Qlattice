@@ -1322,10 +1322,9 @@ inline std::vector<std::string> properly_truncate_fields_sync_node(
     const long final_offset = last_final_offsets[i];
     const long file_size = get_file_size(fr);
     fr.close();
-    displayln_info(fname + ssprintf(": '%s' final_offset=%ld file_size=%ld.",
-                                    path_file.c_str(), final_offset,
-                                    file_size));
     if (file_size != final_offset) {
+      displayln(fname + ssprintf(": Truncate '%s': final_offset=%ld, original file_size=%ld.",
+                                 path_file.c_str(), final_offset, file_size));
       if (file_size < 0) {
         mkfile(fr);
       }

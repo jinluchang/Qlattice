@@ -4,7 +4,8 @@ namespace qlat
 {  //
 
 template <class M>
-PyObject* write_sfw_field_ctype(ShuffledFieldsWriter& sfw, const std::string& fn, PyField& pf)
+PyObject* write_sfw_field_ctype(ShuffledFieldsWriter& sfw,
+                                const std::string& fn, PyField& pf)
 {
   const Field<M>& f = *(Field<M>*)pf.cdata;
   const long ret = write(sfw, fn, f);
@@ -12,7 +13,8 @@ PyObject* write_sfw_field_ctype(ShuffledFieldsWriter& sfw, const std::string& fn
 }
 
 template <class M>
-PyObject* read_sfr_field_ctype(ShuffledFieldsReader& sfr, const std::string& fn, PyField& pf)
+PyObject* read_sfr_field_ctype(ShuffledFieldsReader& sfr, const std::string& fn,
+                               PyField& pf)
 {
   Field<M>& f = *(Field<M>*)pf.cdata;
   const long ret = read(sfr, fn, f);
@@ -53,7 +55,8 @@ EXPORT(mk_sfw, {
   py_convert(path, p_path);
   Coordinate new_size_node;
   py_convert(new_size_node, p_new_size_node);
-  ShuffledFieldsWriter* psfw = new ShuffledFieldsWriter(path, new_size_node, is_append);
+  ShuffledFieldsWriter* psfw =
+      new ShuffledFieldsWriter(path, new_size_node, is_append);
   return py_convert((void*)psfw);
 });
 
@@ -68,7 +71,8 @@ EXPORT(get_new_size_node_sfw, {
   if (!PyArg_ParseTuple(args, "O", &p_obj)) {
     return NULL;
   }
-  const ShuffledFieldsWriter& obj = py_convert_type<ShuffledFieldsWriter>(p_obj);
+  const ShuffledFieldsWriter& obj =
+      py_convert_type<ShuffledFieldsWriter>(p_obj);
   return py_convert(obj.new_size_node);
 });
 
@@ -100,7 +104,8 @@ EXPORT(get_new_size_node_sfr, {
   if (!PyArg_ParseTuple(args, "O", &p_obj)) {
     return NULL;
   }
-  const ShuffledFieldsReader& obj = py_convert_type<ShuffledFieldsReader>(p_obj);
+  const ShuffledFieldsReader& obj =
+      py_convert_type<ShuffledFieldsReader>(p_obj);
   return py_convert(obj.new_size_node);
 });
 
@@ -209,8 +214,8 @@ EXPORT(list_sfr, {
 EXPORT(properly_truncate_fields_sync_node, {
   using namespace qlat;
   PyObject* p_path = NULL;
-  PyObject* p_new_size_node = NULL;
   bool is_check_all = false;
+  PyObject* p_new_size_node = NULL;
   if (!PyArg_ParseTuple(args, "O|bO", &p_path, &is_check_all,
                         &p_new_size_node)) {
     return NULL;
