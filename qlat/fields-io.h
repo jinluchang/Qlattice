@@ -1319,9 +1319,9 @@ inline std::vector<std::string> properly_truncate_fields_sync_node(
   for (int i = 0; i < (int)sfr.frs.size(); ++i) {
     FieldsReader& fr = sfr.frs[i];
     const std::string path_file = get_file_path(fr);
-    const long final_offset = last_final_offsets[i];
     const long file_size = get_file_size(fr);
     fr.close();
+    const long final_offset = last_final_offsets[i];
     if (file_size != final_offset) {
       displayln(fname + ssprintf(": Truncate '%s': final_offset=%ld, original file_size=%ld.",
                                  path_file.c_str(), final_offset, file_size));
