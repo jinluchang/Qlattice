@@ -114,6 +114,12 @@ def open_fields(path, mode, new_size_node = None):
     else:
         raise Exception("open_fields")
 
+def list_fields(path, new_size_node = None):
+    sfr = open_fields(path, "r", new_size_node)
+    fns = sfr.list()
+    sfr.close()
+    return fns
+
 def properly_truncate_fields_sync_node(path, is_check_all = False, new_size_node = None):
     if new_size_node is None:
         return c.properly_truncate_fields_sync_node(path, is_check_all)

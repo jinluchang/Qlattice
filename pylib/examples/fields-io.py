@@ -75,6 +75,8 @@ q.displayln_info("prop1_f -= prop1", prop1_f.qnorm())
 
 sfr.close()
 
+q.displayln_info(q.list_fields("results/prop.fields"))
+
 if q.get_id_node() == 0:
     q.displayln_info(os.listdir("results"))
 
