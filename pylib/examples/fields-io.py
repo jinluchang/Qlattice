@@ -77,6 +77,8 @@ sfr.close()
 
 q.displayln_info(q.list_fields("results/prop.fields"))
 
+q.properly_truncate_fields_sync_node("results/prop.fields")
+
 if q.get_id_node() == 0:
     q.displayln_info(os.listdir("results"))
 

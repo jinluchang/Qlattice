@@ -700,18 +700,10 @@ inline long check_file(FieldsReader& fr, const std::string& fn)
 // if check_file fail, return 0
 {
   TIMER_FLOPS("check_file(fr,fn)");
-  if (not does_file_exist(fr, fn)) {
-    return false;
-  }
-  qassert(fr.offsets_map.count(fn) == 1);
-  fseek(fr.fp, fr.offsets_map[fn], SEEK_SET);
-  std::string fn_r;
   Coordinate total_site;
   std::vector<char> data;
   bool is_sparse_field;
-  const long total_bytes =
-      read_next(fr, fn_r, total_site, data, is_sparse_field);
-  qassert(fn == fn_r);
+  const long total_bytes = read(fr, fn, total_site, data, is_sparse_field);
   if (total_bytes > 0) {
     return ftell(fr.fp);
   } else {
@@ -1248,9 +1240,9 @@ inline std::vector<long> check_file_sync_node(ShuffledFieldsReader& sfr,
 // return empty vector if any fail
 {
   TIMER_VERBOSE("check_file_sync_node(sfr,fn)");
-  std::vector<long> ret(sfr.frs.size(), 0);
   displayln_info(fname + ssprintf(": reading field with fn='%s' from '%s'.",
                                   fn.c_str(), sfr.path.c_str()));
+  std::vector<long> ret(sfr.frs.size(), 0);
   long total_failed_counts = 0;
   for (int i = 0; i < (int)sfr.frs.size(); ++i) {
     ret[i] = check_file(sfr.frs[i], fn);
