@@ -552,10 +552,10 @@ make_shuffle_plan_generic: total num_recv_packs =         64
 make_shuffle_plan_generic: total num_send_msgs  =         16
 make_shuffle_plan_generic: total num_recv_msgs  =         16
 make_shuffle_plan_generic: global_comm_size =        447
-FieldsWriter: open 'huge-data/points-1024/fields.partial'.
+FieldsWriter: open 'huge-data/points-1024/fields'.
 write(sfw,fn,sf,sbs): writing sparse field with fn='f.psel' from 'huge-data/points-1024/fields'.
 shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x1x2x4 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
-FieldsWriter: close 'huge-data/points-1024/fields.partial'.
+FieldsWriter: close 'huge-data/points-1024/fields'.
 FieldsReader: open 'huge-data/points-1024/fields'.
 read(sfr,fn,field): reading field with fn='f.psel' from 'huge-data/points-1024/fields'.
 read_tag(fr,fn,geo): 'f.psel' from 'huge-data/points-1024/fields'.

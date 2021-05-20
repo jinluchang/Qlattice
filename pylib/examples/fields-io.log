@@ -125,10 +125,6 @@ check_file_sync_node(sfr,fn): reading field with fn='prop1' from 'results/prop.f
 read_tag(fr,fn,geo): 'prop1' from 'results/prop.fields'.
 check_file_sync_node(sfr,fn): check=true field fn='prop1' from 'results/prop.fields'.
 FieldsReader: close 'results/prop.fields'.
-properly_truncate_fields_sync_node: 'results/prop.fields/00/0000000000' final_offset=260601 file_size=260601.
-properly_truncate_fields_sync_node: 'results/prop.fields/01/0000000001' final_offset=258297 file_size=258297.
-properly_truncate_fields_sync_node: 'results/prop.fields/02/0000000002' final_offset=258297 file_size=258297.
-properly_truncate_fields_sync_node: 'results/prop.fields/03/0000000003' final_offset=258297 file_size=258297.
 properly_truncate_fields_sync_node: i=    0 fn='prop.d'
 properly_truncate_fields_sync_node: i=    1 fn='prop'
 properly_truncate_fields_sync_node: i=    2 fn='s_prop'
