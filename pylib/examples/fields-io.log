@@ -18,7 +18,7 @@ set q_field_init=fast. (implicitly)
 get_mem_cache_max_size_default: get_mem_cache_max_size() = 512 MB.
 ShufflePlanCache: to add 1 / 16.
 prop 870829356 49123.69045958381
-FieldsWriter: open 'results/prop.fields.partial'.
+FieldsWriter: open 'results/prop.fields'.
 sfw.new_size_node() [1, 1, 1, 8]
 write(sfw,fn,field): writing field with fn='prop.d' from 'results/prop.fields'.
 make_shuffle_plan_generic: num_send_packs =          8
@@ -60,7 +60,7 @@ make_shuffle_plan_generic: total num_recv_msgs  =          2
 make_shuffle_plan_generic: global_comm_size =        130
 write(sfw,fn,sf,sbs): writing sparse field with fn='prop1' from 'results/prop.fields'.
 shuffle_field(sel_fs,sel_f,sp): 1x1x1x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.000 GB)
-FieldsWriter: close 'results/prop.fields.partial'.
+FieldsWriter: close 'results/prop.fields'.
 FieldsReader: open 'results/prop.fields'.
 read_tag(fr,fn,geo): 'prop.d' from 'results/prop.fields'.
 read_tag(fr,fn,geo): 'prop' from 'results/prop.fields'.
