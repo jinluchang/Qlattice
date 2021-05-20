@@ -357,6 +357,21 @@ inline std::string get_file_path(FieldsReader& fr)
   return "";
 }
 
+inline long get_file_size(FieldsReader& fr)
+// the file must be opened for reading
+// will restore the position.
+{
+  if (fr.fp != NULL) {
+    const long pos = ftell(fr.fp);
+    fseek(fr.fp, 0L, SEEK_END);
+    const long sz = ftell(fr.fp);
+    fseek(fr.fp, pos, SEEK_SET);
+    return sz;
+  } else {
+    return -1;
+  }
+}
+
 template <class M>
 void convert_endian_32(Vector<M> data, const bool is_little_endian)
 {
@@ -1318,12 +1333,18 @@ inline std::vector<std::string> properly_truncate_fields_sync_node(
     FieldsReader& fr = sfr.frs[i];
     const std::string path_file = get_file_path(fr);
     const long final_offset = last_final_offsets[i];
+    const long file_size = get_file_size(fr);
     fr.close();
-    displayln_info(fname + ssprintf(": '%s' final_offset=%ld",
-                                    path_file.c_str(), final_offset));
-    mkfile(fr);
-    const bool b = qtruncate(path_file, final_offset);
-    qassert(b);
+    displayln_info(fname + ssprintf(": '%s' final_offset=%ld file_size=%ld.",
+                                    path_file.c_str(), final_offset,
+                                    file_size));
+    if (file_size != final_offset) {
+      if (file_size < 0) {
+        mkfile(fr);
+      }
+      const bool b = qtruncate(path_file, final_offset);
+      qassert(b);
+    }
   }
   errno = 0;
   fns.resize(last_idx + 1);

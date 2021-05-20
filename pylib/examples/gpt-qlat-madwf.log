@@ -53,7 +53,12 @@ q_timer_max_always_show=10 (default)
 geo.show() = Geometry([4, 4, 4, 8], 1)
 g.qcd.gauge.plaquette = 0.94517601648581551
 g.qcd.gauge.plaquette = 0.94517599211798775 single precision
+qlat geo created
+gpt field made
 set q_field_init=fast. (implicitly)
+qlat field made
+gpt coordinates collected
+qlat mview made
 qlat_from_gpt
 plan initialized
 plan destination added
@@ -62,6 +67,11 @@ plan created
 get_mem_cache_max_size_default: get_mem_cache_max_size() = 512 MB.
 CommPlanCache: to add 1 / 32.
 gf_show_info: plaq = 0.9451760164858156 ; link_trace = 0.9861007789909704.
+qlat geo created
+gpt field made
+qlat field made
+gpt coordinates collected
+qlat mview made
 qlat_from_gpt
 plan initialized
 plan destination added
@@ -69,6 +79,11 @@ plan source added
 plan created
 ShufflePlanCache: to add 1 / 16.
 src info 12.0 2788420690
+qlat geo created
+gpt field made
+qlat field made
+gpt coordinates collected
+qlat mview made
 gpt_from_qlat
 plan initialized
 plan source added

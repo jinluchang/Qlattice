@@ -55,6 +55,11 @@ set q_field_init=fast. (implicitly)
 get_mem_cache_max_size_default: get_mem_cache_max_size() = 512 MB.
 CommPlanCache: to add 1 / 32.
 gf_show_info: plaq = 0.9737359772127301 ; link_trace = 0.9933659561692338.
+qlat geo created
+gpt field made
+qlat field made
+gpt coordinates collected
+qlat mview made
 gpt_from_qlat
 plan initialized
 plan source added
@@ -63,11 +68,21 @@ plan created
 ShufflePlanCache: to add 1 / 16.
 prop src 0 qnorm = 786613.9719512658 crc32 = 1313177195
 prop src 1 qnorm = 786828.5160106712 crc32 = 1984585503
+qlat geo created
+gpt field made
+qlat field made
+gpt coordinates collected
+qlat mview made
 gpt_from_qlat
 plan initialized
 plan source added
 plan destination added
 plan created
+qlat geo created
+gpt field made
+qlat field made
+gpt coordinates collected
+qlat mview made
 qlat_from_gpt
 plan initialized
 plan destination added
