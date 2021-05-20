@@ -328,23 +328,6 @@ struct FieldsReader {
     max_offset = 0;
   }
   //
-  void mkdir(const mode_t mode = default_dir_mode())
-  {
-    if (fp == NULL and path != "") {
-      fp = dist_open(path, geon.id_node, geon.num_node, "a");
-      dist_close(fp);
-      qassert(fp == NULL);
-    }
-  }
-  //
-  std::string path_file()
-  {
-    if (path != "") {
-      return dist_file_name(path, geon.id_node, geon.num_node);
-    }
-    return "";
-  }
-  //
   void close()
   {
     if (fp != NULL and geon.id_node == 0) {
@@ -354,6 +337,25 @@ struct FieldsReader {
     qassert(fp == NULL);
   }
 };
+
+inline void mkfile(FieldsReader& fr, const mode_t mode = default_dir_mode())
+// create the file (open with appending)
+// does not open the file
+{
+  if (fr.fp == NULL and fr.path != "") {
+    fr.fp = dist_open(fr.path, fr.geon.id_node, fr.geon.num_node, "a");
+    dist_close(fr.fp);
+    qassert(fr.fp == NULL);
+  }
+}
+
+inline std::string get_file_path(FieldsReader& fr)
+{
+  if (fr.path != "") {
+    return dist_file_name(fr.path, fr.geon.id_node, fr.geon.num_node);
+  }
+  return "";
+}
 
 template <class M>
 void convert_endian_32(Vector<M> data, const bool is_little_endian)
@@ -1314,12 +1316,12 @@ inline std::vector<std::string> properly_truncate_fields_sync_node(
   }
   for (int i = 0; i < (int)sfr.frs.size(); ++i) {
     FieldsReader& fr = sfr.frs[i];
-    const std::string path_file = fr.path_file();
+    const std::string path_file = get_file_path(fr);
     const long final_offset = last_final_offsets[i];
     fr.close();
     displayln_info(fname + ssprintf(": '%s' final_offset=%ld",
                                     path_file.c_str(), final_offset));
-    fr.mkdir();
+    mkfile(fr);
     const bool b = qtruncate(path_file, final_offset);
     qassert(b);
   }
