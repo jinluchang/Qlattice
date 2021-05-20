@@ -247,16 +247,14 @@ struct FieldsWriter {
         }
         qremove_all(path + ".partial");
       }
-      displayln("FieldsWriter: open '" + path + ".partial'.");
+      displayln("FieldsWriter: open '" + path + "'.");
       if (is_append and does_file_exist(path)) {
         qassert(does_file_exist(path + "/geon-info.txt"));
-        qrename(path, path + ".partial");
       } else {
-        fields_writer_dirs_geon_info(geon, path + ".partial");
+        fields_writer_dirs_geon_info(geon, path);
       }
     }
-    fp = dist_open(path + ".partial", geon.id_node, geon.num_node,
-                   is_append ? "a" : "w");
+    fp = dist_open(path, geon.id_node, geon.num_node, is_append ? "a" : "w");
     qassert(NULL != fp);
   }
   //
@@ -264,12 +262,9 @@ struct FieldsWriter {
   {
     const bool is_need_close = fp != NULL;
     if (is_need_close and geon.id_node == 0) {
-      displayln("FieldsWriter: close '" + path + ".partial" + "'.");
+      displayln("FieldsWriter: close '" + path + "'.");
     }
     dist_close(fp);
-    if (is_need_close and geon.id_node == 0) {
-      qrename(path + ".partial", path);
-    }
     qassert(fp == NULL);
   }
 };
