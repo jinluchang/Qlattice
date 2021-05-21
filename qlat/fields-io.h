@@ -1233,30 +1233,30 @@ inline bool does_file_exist_sync_node(ShuffledFieldsReader& sfr,
   }
 }
 
-inline std::vector<long> check_file_sync_node(ShuffledFieldsReader& sfr,
-                                              const std::string& fn)
+inline bool check_file_sync_node(ShuffledFieldsReader& sfr,
+                                 const std::string& fn,
+                                 std::vector<long>& final_offsets)
 // interface function
-// return final offset if all succeed
-// return empty vector if any fail
+// set final_offsets to be the files position after loading the data ``fn''
+// return if data is loaded successfully
 {
   TIMER_VERBOSE("check_file_sync_node(sfr,fn)");
   displayln_info(fname + ssprintf(": reading field with fn='%s' from '%s'.",
                                   fn.c_str(), sfr.path.c_str()));
-  std::vector<long> ret(sfr.frs.size(), 0);
+  clear(final_offsets);
+  final_offsets.resize(sfr.frs.size(), 0);
   long total_failed_counts = 0;
   for (int i = 0; i < (int)sfr.frs.size(); ++i) {
-    ret[i] = check_file(sfr.frs[i], fn);
-    if (ret[i] == 0) {
+    final_offsets[i] = check_file(sfr.frs[i], fn);
+    if (final_offsets[i] == 0) {
       total_failed_counts += 1;
     }
   }
   glb_sum(total_failed_counts);
-  if (total_failed_counts > 0) {
-    clear(ret);
-  }
+  bool ret = total_failed_counts == 0;
   displayln_info(fname + ssprintf(": check=%s field fn='%s' from '%s'.",
-                                  ret.size() == 0 ? "false" : "true",
-                                  fn.c_str(), sfr.path.c_str()));
+                                  ret ? "true" : "false", fn.c_str(),
+                                  sfr.path.c_str()));
   return ret;
 }
 
@@ -1297,8 +1297,9 @@ inline std::vector<std::string> properly_truncate_fields_sync_node(
   if (is_check_all) {
     for (long i = 0; i < (long)fns.size(); ++i) {
       const std::string& fn = fns[i];
-      const std::vector<long> final_offsets = check_file_sync_node(sfr, fn);
-      if (0 != final_offsets.size()) {
+      std::vector<long> final_offsets;
+      const bool b = check_file_sync_node(sfr, fn, final_offsets);
+      if (b) {
         last_final_offsets = final_offsets;
         last_idx = i;
       } else {
@@ -1308,8 +1309,9 @@ inline std::vector<std::string> properly_truncate_fields_sync_node(
   } else {
     for (long i = (long)fns.size() - 1; i >= 0; i -= 1) {
       const std::string& fn = fns[i];
-      const std::vector<long> final_offsets = check_file_sync_node(sfr, fn);
-      if (0 != final_offsets.size()) {
+      std::vector<long> final_offsets;
+      const bool b = check_file_sync_node(sfr, fn, final_offsets);
+      if (b) {
         last_final_offsets = final_offsets;
         last_idx = i;
         break;

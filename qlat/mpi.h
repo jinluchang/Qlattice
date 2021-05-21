@@ -609,8 +609,11 @@ void bcast(std::vector<std::vector<M> >& datatable, const int root = 0)
 
 inline void sync_node()
 {
-  long v = 1;
-  glb_sum(Vector<long>(&v, 1));
+  static RngState rs("sync_node");
+  const long v = rand_gen(rs) % (1024 * 1024);
+  long s = v;
+  glb_sum(s);
+  qassert(s == v * get_num_node());
 }
 
 inline std::vector<int> mk_id_node_list_for_shuffle(const RngState& rs)
