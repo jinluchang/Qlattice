@@ -14,12 +14,14 @@ namespace qlat
 struct Q_Comm {
   MPI_Comm comm;
   Coordinate size_node;
+  RngState sync_node_rs;
   //
   Q_Comm() {}
-  Q_Comm(MPI_Comm comm_, const Coordinate& size_node_)
+  Q_Comm(MPI_Comm comm_, const Coordinate& size_node_, const RngState& sync_node_rs_)
   {
     comm = comm_;
     size_node = size_node_;
+    sync_node_rs = sync_node_rs_;
   }
 };
 
@@ -609,7 +611,7 @@ void bcast(std::vector<std::vector<M> >& datatable, const int root = 0)
 
 inline void sync_node()
 {
-  static RngState rs("sync_node");
+  RngState& rs = get_comm_list().back().sync_node_rs;
   const long v = rand_gen(rs) % (1024 * 1024);
   long s = v;
   glb_sum(s);
@@ -765,7 +767,8 @@ inline void set_global_geon(const Coordinate& size_node)
 inline void begin_comm(const MPI_Comm comm, const Coordinate& size_node)
 // begin Qlat with existing comm (assuming MPI already initialized)
 {
-  get_comm_list().push_back(Q_Comm(comm, size_node));
+  get_comm_list().push_back(
+      Q_Comm(comm, size_node, RngState("sync_node:" + show(size_node))));
   get_comm_internal() = get_comm_list().back().comm;
   set_global_geon(get_comm_list().back().size_node);
   sync_node();
@@ -798,7 +801,7 @@ inline void begin(const int id_node, const Coordinate& size_node,
 // begin Qlat with existing id_node maping (assuming MPI already initialized)
 {
   if (get_comm_list().empty()) {
-    get_comm_list().push_back(Q_Comm(MPI_COMM_WORLD, Coordinate()));
+    get_comm_list().push_back(Q_Comm(MPI_COMM_WORLD, Coordinate(), RngState("sync_node")));
   }
   qassert(0 <= id_node and id_node < product(size_node));
   qassert(0 <= color);
