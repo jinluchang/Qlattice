@@ -366,8 +366,8 @@ inline long read_selected_geo_info(Coordinate& total_site, int& multiplicity,
           crc = read_crc32(info_get_prop(infos, "selected_field_crc32 = "));
         }
       }
+      pos = ftell(fp);
     }
-    pos = ftell(fp);
     qclose(fp);
   }
   bcast(get_data_one_elem(pos));
