@@ -3,7 +3,7 @@
 set -e
 
 if [ -z $num_proc ] ; then
-    num_proc=16
+    num_proc=2
 fi
 
 wd=$(pwd)
