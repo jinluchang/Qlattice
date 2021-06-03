@@ -6,12 +6,12 @@
 
 // declare
 #define EXPORT_FUNCTION(name) \
-  extern PyObject* cplat_##name(PyObject* self, PyObject* args);
+  extern PyObject* cplat##_##name(PyObject* self, PyObject* args);
 #include "exports.h"
 #undef EXPORT_FUNCTION
 
 // add to module functions
-#define EXPORT_FUNCTION(name) {#name, cplat_##name, METH_VARARGS, #name},
+#define EXPORT_FUNCTION(name) {#name, cplat##_##name, METH_VARARGS, #name},
 static PyMethodDef module_functions[] = {
 #include "exports.h"
     {NULL, NULL, 0, NULL}};
@@ -34,4 +34,4 @@ static struct PyModuleDef module_def = {
 };
 
 // export module creation
-PyMODINIT_FUNC PyInit_cplat(void) { return PyModule_Create(&module_def); }
+PyMODINIT_FUNC PyInit_##cplat(void) { return PyModule_Create(&module_def); }

@@ -41,6 +41,21 @@ class LatData:
     def show(self):
         return c.show_lat_data(self)
 
+    def __iadd__(self, ld1):
+        assert isinstance(ld1, LatData) and self.is_match(ld1)
+        c.set_add_lat_data(self, ld1)
+        return self
+
+    def __isub__(self, ld1):
+        assert isinstance(ld1, LatData) and self.is_match(ld1)
+        c.set_sub_lat_data(self, ld1)
+        return self
+
+    def __imul__(self, factor):
+        assert isinstance(factor, float)
+        c.set_mul_double_lat_data(self, factor)
+        return self
+
     def set_zero(self):
         return c.set_zero_lat_data(self)
 

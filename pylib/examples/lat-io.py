@@ -43,6 +43,12 @@ ld = q.LatData()
 ld.load("results/test.lat")
 q.displayln_info(ld[ [ 1, 3 ] ])
 
+ld1 = ld.copy()
+ld1 += ld1
+ld1 *= 0.5
+ld1 -= ld
+q.displayln_info(ld1.show())
+
 if q.get_id_node() == 0:
     q.displayln(os.listdir("results"))
 

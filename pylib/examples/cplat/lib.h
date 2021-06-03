@@ -7,15 +7,15 @@
 #include <Python.h>
 #include <qlat/py_convert.h>
 
-#define EXPORT(name, ...)                                \
-  PyObject* cplat_##name(PyObject* self, PyObject* args) \
-  {                                                      \
-    try {                                                \
-      __VA_ARGS__;                                       \
-      return NULL;                                       \
-    } catch (std::string err) {                          \
-      fprintf(stderr, "ERR: %s\n", err.c_str());         \
-      PyErr_SetString(PyExc_RuntimeError, err.c_str());  \
-      return NULL;                                       \
-    }                                                    \
+#define EXPORT(name, ...)                                  \
+  PyObject* cplat##_##name(PyObject* self, PyObject* args) \
+  {                                                        \
+    try {                                                  \
+      __VA_ARGS__;                                         \
+      return NULL;                                         \
+    } catch (std::string err) {                            \
+      fprintf(stderr, "ERR: %s\n", err.c_str());           \
+      PyErr_SetString(PyExc_RuntimeError, err.c_str());    \
+      return NULL;                                         \
+    }                                                      \
   }

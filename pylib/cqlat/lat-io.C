@@ -242,3 +242,41 @@ EXPORT(poke_lat_data, {
   }
   Py_RETURN_NONE;
 });
+
+EXPORT(set_add_lat_data, {
+  using namespace qlat;
+  PyObject* p_ld_new = NULL;
+  PyObject* p_ld = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_ld_new, &p_ld)) {
+    return NULL;
+  }
+  LatData& ld_new = py_convert_type<LatData>(p_ld_new);
+  const LatData& ld = py_convert_type<LatData>(p_ld);
+  ld_new += ld;
+  Py_RETURN_NONE;
+});
+
+EXPORT(set_sub_lat_data, {
+  using namespace qlat;
+  PyObject* p_ld_new = NULL;
+  PyObject* p_ld = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_ld_new, &p_ld)) {
+    return NULL;
+  }
+  LatData& ld_new = py_convert_type<LatData>(p_ld_new);
+  const LatData& ld = py_convert_type<LatData>(p_ld);
+  ld_new -= ld;
+  Py_RETURN_NONE;
+});
+
+EXPORT(set_mul_double_lat_data, {
+  using namespace qlat;
+  PyObject* p_ld_new = NULL;
+  double factor = 0.0;
+  if (!PyArg_ParseTuple(args, "Od", &p_ld_new, &factor)) {
+    return NULL;
+  }
+  LatData& ld_new = py_convert_type<LatData>(p_ld_new);
+  ld_new *= factor;
+  Py_RETURN_NONE;
+});
