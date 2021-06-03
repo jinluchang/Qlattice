@@ -78,17 +78,21 @@ class LatData:
     def dim_indices(self, dim):
         return c.get_dim_indices_lat_data(self, dim)
 
-    def set_dim_sizes(self, dim_sizes, is_complex = True):
+    def set_dim_sizes(self, dim_sizes, *, is_complex = True):
         return c.set_dim_sizes_lat_data(self, dim_sizes, is_complex)
 
     def set_dim_name(self, dim, name, indices = []):
         return c.set_dim_name_lat_data(self, dim, name, indices)
 
-    def to_list(self, *, is_always_double = False):
-        return c.peek_lat_data(self, [], is_always_double)
+    def to_list(self, *, is_complex = True):
+        return c.peek_lat_data(self, [], not is_complex)
 
-    def from_list(self, val, *, is_always_double = False):
-        return c.poke_lat_data(self, [], val, is_always_double)
+    def from_list(self, val, *, is_complex = True):
+        if self.ndim() == 0:
+            self.set_dim_sizes([len(val)], is_complex)
+            self.set_dim_name(0, "i")
+        c.poke_lat_data(self, [], val, not is_complex)
+        return self
 
     def __setitem__(self, idx, val):
         # use list with correct length as val
