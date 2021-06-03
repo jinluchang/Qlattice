@@ -42,12 +42,12 @@ class LatData:
         return c.show_lat_data(self)
 
     def __iadd__(self, ld1):
-        assert isinstance(ld1, LatData) and self.is_match(ld1)
+        assert isinstance(ld1, LatData)
         c.set_add_lat_data(self, ld1)
         return self
 
     def __isub__(self, ld1):
-        assert isinstance(ld1, LatData) and self.is_match(ld1)
+        assert isinstance(ld1, LatData)
         c.set_sub_lat_data(self, ld1)
         return self
 
@@ -83,6 +83,12 @@ class LatData:
 
     def set_dim_name(self, dim, name, indices = []):
         return c.set_dim_name_lat_data(self, dim, name, indices)
+
+    def to_list(self, *, is_always_double = False):
+        return c.peek_lat_data(self, [], is_always_double)
+
+    def from_list(self, val, *, is_always_double = False):
+        return c.poke_lat_data(self, [], val, is_always_double)
 
     def __setitem__(self, idx, val):
         # use list with correct length as val

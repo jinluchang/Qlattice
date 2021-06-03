@@ -34,4 +34,4 @@ static struct PyModuleDef module_def = {
 };
 
 // export module creation
-PyMODINIT_FUNC PyInit_##cplat(void) { return PyModule_Create(&module_def); }
+PyMODINIT_FUNC PyInit_cplat(void) { return PyModule_Create(&module_def); }

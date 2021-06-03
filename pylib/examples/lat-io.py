@@ -49,6 +49,12 @@ ld1 *= 0.5
 ld1 -= ld
 q.displayln_info(ld1.show())
 
+q.displayln_info(ld.to_list())
+
+ld1.from_list(ld.to_list())
+
+q.displayln_info(ld1.show())
+
 if q.get_id_node() == 0:
     q.displayln(os.listdir("results"))
 

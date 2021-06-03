@@ -95,7 +95,7 @@ EXPORT(is_complex_lat_data, {
     return NULL;
   }
   LatData& ld = py_convert_type<LatData>(p_ld);
-  bool is_complex_ld = is_lat_info_complex(ld.info);
+  const bool is_complex_ld = is_lat_info_complex(ld.info);
   return py_convert(is_complex_ld);
 });
 
@@ -106,7 +106,7 @@ EXPORT(get_ndim_lat_data, {
     return NULL;
   }
   LatData& ld = py_convert_type<LatData>(p_ld);
-  bool is_complex_ld = is_lat_info_complex(ld.info);
+  const bool is_complex_ld = is_lat_info_complex(ld.info);
   long ndim = ld.info.size();
   if (is_complex_ld) {
     ndim -= 1;
@@ -121,7 +121,7 @@ EXPORT(get_dim_sizes_lat_data, {
     return NULL;
   }
   LatData& ld = py_convert_type<LatData>(p_ld);
-  bool is_complex_ld = is_lat_info_complex(ld.info);
+  const bool is_complex_ld = is_lat_info_complex(ld.info);
   long ndim = ld.info.size();
   if (is_complex_ld) {
     ndim -= 1;
@@ -207,7 +207,8 @@ EXPORT(peek_lat_data, {
   using namespace qlat;
   PyObject* p_ld = NULL;
   PyObject* p_idx = NULL;
-  if (!PyArg_ParseTuple(args, "O|O", &p_ld, &p_idx)) {
+  bool is_always_double = false;
+  if (!PyArg_ParseTuple(args, "O|Ob", &p_ld, &p_idx, &is_always_double)) {
     return NULL;
   }
   LatData& ld = py_convert_type<LatData>(p_ld);
@@ -215,7 +216,7 @@ EXPORT(peek_lat_data, {
   if (p_idx != NULL) {
     py_convert(idx, p_idx);
   }
-  bool is_complex_ld = is_lat_info_complex(ld.info);
+  const bool is_complex_ld = (not is_always_double) and is_lat_info_complex(ld.info);
   if (is_complex_ld) {
     return py_convert(lat_data_cget_const(ld, idx));
   } else {
@@ -228,13 +229,15 @@ EXPORT(poke_lat_data, {
   PyObject* p_ld = NULL;
   PyObject* p_idx = NULL;
   PyObject* p_val = NULL;
-  if (!PyArg_ParseTuple(args, "OOO", &p_ld, &p_idx, &p_val)) {
+  bool is_always_double = false;
+  if (!PyArg_ParseTuple(args, "OOO|b", &p_ld, &p_idx, &p_val,
+                        &is_always_double)) {
     return NULL;
   }
   LatData& ld = py_convert_type<LatData>(p_ld);
   std::vector<long> idx;
   py_convert(idx, p_idx);
-  bool is_complex_ld = is_lat_info_complex(ld.info);
+  const bool is_complex_ld = (not is_always_double) and is_lat_info_complex(ld.info);
   if (is_complex_ld) {
     py_convert(lat_data_cget(ld, idx), p_val);
   } else {
