@@ -26,6 +26,12 @@ It is also possible to also build `Grid` and `gpt` using the `build.sh` script:
 
 The above command will first build `qlat`, then build `Grid` and `gpt`. There are few different scripts to build the `Grid` library. Choose one best suit the machine (or create a custom one).
 
+After the first complete install, one can re-install individual components by running the specific script. For example, to just re-install the `Qlattice` header files and python library:
+
+`$ prefix=DEST_DIRECTORY ./scripts/qlat.sh`
+
+It can be convenient to create a symbolic link `$HOME/qlat-build/default`, which points to the actual directory `DEST_DIRECTORY`. One can omit the `prefix=DEST_DIRECTORY` in the above command if the symbolic link is created.
+
 ## Usage:
 
 A sample `Makefile` is provided which can compile and run a simple program using the library. The `Makefile` assumes that the library and all its dependencies are installed in their default locations.
