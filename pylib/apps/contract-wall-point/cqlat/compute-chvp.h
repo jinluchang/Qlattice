@@ -109,7 +109,7 @@ inline void compute_chvp(const std::string& job_tag, const int traj)
   }
   check_sigterm();
   check_time_limit();
-  if (not obtain_lock(ssprintf("lock-chvp-%s-%d", job_tag.c_str(), traj))) {
+  if (not obtain_lock(ssprintf("locks/chvp-%s-%d", job_tag.c_str(), traj))) {
     return;
   }
   setup(job_tag, traj);
@@ -147,7 +147,7 @@ inline void compute_chvp_light(const std::string& job_tag, const int traj)
   }
   check_sigterm();
   check_time_limit();
-  if (not obtain_lock(ssprintf("lock-chvp-%s-%d", job_tag.c_str(), traj))) {
+  if (not obtain_lock(ssprintf("locks/chvp-%s-%d", job_tag.c_str(), traj))) {
     return;
   }
   setup(job_tag, traj);

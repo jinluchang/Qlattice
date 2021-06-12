@@ -47,7 +47,7 @@ inline void compute_meson_snk_src(const std::string& job_tag, const int traj)
   check_sigterm();
   check_time_limit();
   if (not obtain_lock(
-          ssprintf("lock-meson-snk-src-%s-%d", job_tag.c_str(), traj))) {
+          ssprintf("locks/meson-snk-src-%s-%d", job_tag.c_str(), traj))) {
     return;
   }
   setup(job_tag, traj);
@@ -81,7 +81,7 @@ inline void compute_meson_snk_src_light(const std::string& job_tag, const int tr
   check_sigterm();
   check_time_limit();
   if (not obtain_lock(
-          ssprintf("lock-meson-snk-src-%s-%d", job_tag.c_str(), traj))) {
+          ssprintf("locks/meson-snk-src-%s-%d", job_tag.c_str(), traj))) {
     return;
   }
   setup(job_tag, traj);

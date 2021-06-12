@@ -59,7 +59,7 @@ inline void compute_three_point_func(const std::string& job_tag, const int traj)
   check_sigterm();
   check_time_limit();
   if (not obtain_lock(
-          ssprintf("lock-three-point-func-%s-%d", job_tag.c_str(), traj))) {
+          ssprintf("locks/three-point-func-%s-%d", job_tag.c_str(), traj))) {
     return;
   }
   setup(job_tag, traj);
@@ -97,7 +97,7 @@ inline void compute_three_point_func_light(const std::string& job_tag, const int
   check_sigterm();
   check_time_limit();
   if (not obtain_lock(
-          ssprintf("lock-three-point-func-%s-%d", job_tag.c_str(), traj))) {
+          ssprintf("locks/three-point-func-%s-%d", job_tag.c_str(), traj))) {
     return;
   }
   setup(job_tag, traj);

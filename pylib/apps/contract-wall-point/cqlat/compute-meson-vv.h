@@ -135,7 +135,7 @@ inline void compute_meson_vv(const std::string& job_tag, const int traj)
   }
   check_sigterm();
   check_time_limit();
-  if (not obtain_lock(ssprintf("lock-meson-vv-%s-%d", job_tag.c_str(), traj))) {
+  if (not obtain_lock(ssprintf("locks/meson-vv-%s-%d", job_tag.c_str(), traj))) {
     return;
   }
   setup(job_tag, traj);
@@ -177,7 +177,7 @@ inline void compute_meson_vv_light(const std::string& job_tag, const int traj)
   }
   check_sigterm();
   check_time_limit();
-  if (not obtain_lock(ssprintf("lock-meson-vv-%s-%d", job_tag.c_str(), traj))) {
+  if (not obtain_lock(ssprintf("locks/meson-vv-%s-%d", job_tag.c_str(), traj))) {
     return;
   }
   setup(job_tag, traj);

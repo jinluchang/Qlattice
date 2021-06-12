@@ -84,7 +84,7 @@ inline void compute_psel_fsel_distribution(const std::string& job_tag, const int
   }
   check_sigterm();
   check_time_limit();
-  if (not obtain_lock(ssprintf("lock-psel-fsel-distribution-%s-%d", job_tag.c_str(), traj))) {
+  if (not obtain_lock(ssprintf("locks/psel-fsel-distribution-%s-%d", job_tag.c_str(), traj))) {
     return;
   }
   setup(job_tag, traj);
