@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import sys
 import qlat_ext as q
 
 @q.timer
@@ -59,7 +60,15 @@ job_tags = [
         ]
 trajs = list(range(200, 3000, 10))
 
-q.begin()
+size_node_list = [
+    [1, 1, 1, 1],
+    [1, 1, 1, 2],
+    [1, 1, 1, 4],
+    [1, 1, 1, 8],
+    [2, 2, 2, 2],
+    [2, 2, 2, 4]]
+
+q.begin(sys.argv, size_node_list)
 
 q.setup_log_idx()
 q.setup()
