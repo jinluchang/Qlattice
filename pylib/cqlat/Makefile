@@ -2,7 +2,7 @@ SHELL=/bin/bash
 
 CXX=mpic++ -std=c++11 -fopenmp -march=native -O2 -Wall -fno-strict-aliasing
 
-qlat_prefix="$$(readlink -m "$$HOME/qlat-build/default")"
+qlat_prefix="$(shell readlink -m "$$HOME/qlat-build/default")"
 
 QLAT_INCLUDE=$(qlat_prefix)/include
 QLAT_LIB=$(qlat_prefix)/lib
@@ -36,7 +36,7 @@ OBJS:=$(patsubst %.C, %.o, $(wildcard *.C))
 all: build
 
 build: $(OBJS)
-	$(CXX) --shared -fPIC -o $(NAME) $(OBJS) $(LDFLAGS)
+	$(CXX) --shared -fPIC -o $(NAME) *.o $(LDFLAGS)
 	ls -lh $(NAME)
 	mv $(NAME) ..
 
@@ -44,7 +44,7 @@ exports.h: *.C
 	./update.sh
 
 %.o : %.C exports.h *.h
-	$(CXX) -fPIC -c -o $@ $(CXXFLAGS) $<
+	$(CXX) -fPIC -c -o $@ $< $(CXXFLAGS)
 	@echo "$@" "$<"
 
 clean:

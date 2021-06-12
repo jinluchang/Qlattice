@@ -2,7 +2,7 @@ SHELL=/bin/bash
 
 CXX=mpic++ -std=c++11 -fopenmp -march=native -O2 -Wall -fno-strict-aliasing
 
-qlat_prefix="$$(readlink -m "$$HOME/qlat-build/default")"
+qlat_prefix="$(shell readlink -m "$$HOME/qlat-build/default")"
 
 QLAT_INCLUDE=$(qlat_prefix)/include
 QLAT_LIB=$(qlat_prefix)/lib
@@ -29,24 +29,30 @@ CXXFLAGS+= $$(python3-config --includes)
 LDFLAGS=
 LDFLAGS+= $(QLAT_LDFLAGS)
 
-NAME=qcontract.so
+NAME=cqlat.so
 
 OBJS:=$(patsubst %.C, %.o, $(wildcard *.C))
 
 all: build
 
-build: $(OBJS)
-	$(CXX) --shared -fPIC -o $(NAME) $(OBJS) $(LDFLAGS)
+build: $(OBJS) lib.o
+	$(CXX) --shared -fPIC -o $(NAME) *.o base/*.o $(LDFLAGS)
 	ls -lh $(NAME)
 	mv $(NAME) ..
 
-exports.h: *.C
-	./update.sh
+exports.h: *.C base/exports.h
+	./base/update.sh base/exports.h
+
+base/exports.h:
+	rsync -av --delete $(qlat_prefix)/pylib/cqlat/ base/
+
+lib.C: base/exports.h
+	rm -v base/lib.o
+	cp -v base/lib.C .
 
 %.o : %.C exports.h *.h
-	$(CXX) -fPIC -c -o $@ $(CXXFLAGS) $<
+	$(CXX) -fPIC -c -o $@ $< $(CXXFLAGS) -Ibase
 	@echo "$@" "$<"
 
 clean:
-	rm *.o
-
+	-rm -rfv *.o lib.C exports.h base
