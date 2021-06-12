@@ -10,3 +10,6 @@ clean:
 	-make clean -C cqlat
 	-rm -rf cqlat.so
 	-rm -rf __pycache__
+
+sync:
+	rsync -av ~/Qlattice-cc/pylib/apps/contract-wall-point/* .
