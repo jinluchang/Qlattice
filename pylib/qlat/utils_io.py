@@ -1,5 +1,7 @@
 import cqlat as c
 
+import os
+
 from cqlat import qremove, qremove_info
 from cqlat import qremove_all, qremove_all_info
 from cqlat import qmkdir, qmkdir_info, qmkdir_sync_node
@@ -13,3 +15,15 @@ from cqlat import qcat, qcat_sync_node
 from cqlat import qls, qls_sync_node
 from cqlat import qload_datatable, qload_datatable_sync_node
 from cqlat import check_time_limit, check_stop
+
+from qlat.mpi import *
+
+@timer
+def qmkdirs(path):
+    os.makedirs(path, exist_ok=True)
+
+@timer
+def qmkdirs_info(path):
+    if q.get_id_node() == 0:
+        q.displayln(f"qmkdirs_info '{path}'.")
+        qmkdirs(path)
