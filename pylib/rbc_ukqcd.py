@@ -12,7 +12,7 @@ def get_total_site(job_tag):
         return [8, 8, 8, 16]
     elif job_tag == "16I":
         return [16, 16, 16, 32]
-    elif job_tag == "24D":
+    elif job_tag in [ "24D", "24DH" ]:
         return [24, 24, 24, 64]
     elif job_tag == "32D":
         return [32, 32, 32, 64]

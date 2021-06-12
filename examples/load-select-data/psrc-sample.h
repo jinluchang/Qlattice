@@ -18,7 +18,7 @@ struct PointInfo {
     init(xg_, type_, accuracy_);
   }
   //
-  void init() { memset(this, 0, sizeof(PointInfo)); }
+  void init() { memset((void*)this, 0, sizeof(PointInfo)); }
   void init(const Coordinate& xg_, const int type_, const int accuracy_)
   {
     init();
