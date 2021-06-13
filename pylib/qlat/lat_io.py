@@ -59,6 +59,9 @@ class LatData:
     def set_zero(self):
         return c.set_zero_lat_data(self)
 
+    def qnorm(self):
+        return c.qnorm_lat_data(self)
+
     def is_match(self, ld1):
         # ld.info needs to be exactly equal
         return c.is_matching_lat_data(self, ld1)

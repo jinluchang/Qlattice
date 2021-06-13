@@ -535,6 +535,8 @@ inline std::string show_complex(const LatData& ld)
   return out.str();
 }
 
+inline double qnorm(const LatData& ld) { return qnorm(ld.res); }
+
 inline std::string show(const LatData& ld)
 {
   const LatInfo& info = ld.info;

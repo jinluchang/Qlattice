@@ -37,6 +37,16 @@ EXPORT(show_lat_data, {
   return py_convert(show(ld));
 });
 
+EXPORT(qnorm_lat_data, {
+  using namespace qlat;
+  PyObject* p_ld = NULL;
+  if (!PyArg_ParseTuple(args, "O", &p_ld)) {
+    return NULL;
+  }
+  LatData& ld = py_convert_type<LatData>(p_ld);
+  return py_convert(qnorm(ld));
+});
+
 EXPORT(load_lat_data, {
   using namespace qlat;
   PyObject* p_ld = NULL;

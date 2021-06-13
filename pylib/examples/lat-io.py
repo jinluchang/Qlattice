@@ -31,6 +31,7 @@ for i0 in range(dim_sizes[0]):
 
 q.displayln_info("ld:")
 q.displayln_info(ld.show())
+q.displayln_info(f"qnorm = {ld.qnorm()}")
 
 ld[ [ 0, 1 ] ] = [ i * 3 + i * 1j for i in range(3) ]
 
@@ -48,12 +49,14 @@ ld1 += ld1
 ld1 *= 0.5
 ld1 -= ld
 q.displayln_info(ld1.show())
+q.displayln_info(f"qnorm = {ld1.qnorm()}")
 
 q.displayln_info(ld.to_list())
 
 ld1.from_list(ld.to_list())
 
 q.displayln_info(ld1.show())
+q.displayln_info(f"qnorm = {ld1.qnorm()}")
 
 if q.get_id_node() == 0:
     q.displayln(os.listdir("results"))
