@@ -13,14 +13,16 @@ namespace qlat
 const int DATA_READ_WRITE_NUMBER_OF_DIRECTORIES = 32;
 
 inline int& dist_write_par_limit()
+// qlat parameter
 {
-  static int npar = 8;
+  static int npar = get_env_long_default("q_write_par_limit", 16);
   return npar;
 }
 
 inline int& dist_read_par_limit()
+// qlat parameter
 {
-  static int npar = 8;
+  static int npar = get_env_long_default("q_read_par_limit", 16);
   return npar;
 }
 

@@ -779,7 +779,7 @@ inline void begin_comm(const MPI_Comm comm, const Coordinate& size_node)
                (int)get_comm_list().size()));
   const GeometryNode& geon = get_geometry_node();
   if (get_env("OMP_NUM_THREADS") == "") {
-    const long num_threads = get_env_long_default(2, "q_num_threads");
+    const long num_threads = get_env_long_default("q_num_threads", 2);
     omp_set_num_threads(num_threads);
   }
   displayln_info("qlat::begin(): q_num_threads = " +

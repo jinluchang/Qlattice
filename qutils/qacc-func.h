@@ -9,40 +9,10 @@
 namespace qlat
 {  //
 
-inline int qacc_num_threads_default()
-{
-  TIMER_VERBOSE("qacc_threads_default");
-  const std::string n1 = get_env("Q_ACC_NUM_THREADS");
-  if (n1 != "") {
-    const int n = read_long(n1);
-    displayln_info(
-        fname +
-        ssprintf(": qacc_num_threads() = %d via Q_ACC_NUM_THREADS.", n));
-    return n;
-  }
-  const std::string n2 = get_env("q_acc_num_threads");
-  if (n2 != "") {
-    const int n = read_long(n2);
-    displayln_info(
-        fname +
-        ssprintf(": qacc_num_threads() = %d via q_acc_num_threads.", n));
-    return n;
-  }
-  const std::string n3 = get_env("OMP_NUM_THREADS");
-  if (n3 != "") {
-    const int n = read_long(n3);
-    displayln_info(
-        fname + ssprintf(": qacc_num_threads() = %d via OMP_NUM_THREADS.", n));
-    return n;
-  }
-  displayln_info(fname + ssprintf(": qacc_num_threads() = %d.", 32));
-  return 32;
-}
-
 inline int& qacc_num_threads()
 // qlat parameter
 {
-  static int nt = qacc_num_threads_default();
+  static int nt = get_env_long_default("q_acc_num_threads", 32);
   return nt;
 }
 

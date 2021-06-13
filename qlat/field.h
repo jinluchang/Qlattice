@@ -187,10 +187,7 @@ struct Field {
 
 inline int get_field_init_from_env()
 {
-  std::string tag = get_env("q_field_init");
-  if (tag == "") {
-    tag = get_env("Q_FIELD_INIT");
-  }
+  std::string tag = get_env_default("q_field_init", "fast");
   if (tag == "fast") {
     displayln_info("set q_field_init=fast.");
     return 0;  // do not do anything
@@ -200,9 +197,6 @@ inline int get_field_init_from_env()
   } else if (tag == "random") {
     displayln_info("set q_field_init=random.");
     return 2;  // set rand
-  } else if (tag == "") {
-    displayln_info("set q_field_init=fast. (implicitly)");
-    return 0;
   } else {
     qassert(false);
     return -1;

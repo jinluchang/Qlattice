@@ -76,9 +76,21 @@ inline double get_time()
   return ((double)tp.tv_sec + (double)tp.tv_usec * 1e-6);
 }
 
-inline double& get_start_time()
+inline double& get_actual_start_time()
+// not affected by Timer::reset()
 {
   static double time = get_time();
+  return time;
+}
+
+inline double get_actual_total_time()
+{
+  return get_time() - get_actual_start_time();
+}
+
+inline double& get_start_time()
+{
+  static double time = get_actual_start_time();
   return time;
 }
 
@@ -141,8 +153,21 @@ inline std::string get_env(const std::string& var_name)
   }
 }
 
-inline double get_env_double_default(const double x0,
-                                     const std::string& var_name)
+inline std::string get_env_default(const std::string& var_name,
+                                   const std::string& x0)
+{
+  const std::string val = get_env(var_name);
+  if (val == "") {
+    displayln_info(ssprintf("%s=%s (default)", var_name.c_str(), x0.c_str()));
+    return x0;
+  } else {
+    displayln_info(ssprintf("%s=%s", var_name.c_str(), val.c_str()));
+    return val;
+  }
+}
+
+inline double get_env_double_default(const std::string& var_name,
+                                     const double x0)
 {
   const std::string val = get_env(var_name);
   double x;
@@ -156,7 +181,7 @@ inline double get_env_double_default(const double x0,
   return x;
 }
 
-inline long get_env_long_default(const long x0, const std::string& var_name)
+inline long get_env_long_default(const std::string& var_name, const long x0)
 {
   const std::string val = get_env(var_name);
   long x;
@@ -324,14 +349,14 @@ struct Timer {
   // qlat parameter
   {
     static double time =
-        get_env_double_default(5.0 * 60.0, "q_timer_mini_auto_display");
+        get_env_double_default("q_timer_mini_auto_display", 5.0 * 60.0);
     return time;
   }
   //
   static double& minimum_duration_for_show_info()
   // qlat parameter
   {
-    static double time = get_env_double_default(1.0, "q_timer_mini_auto_show");
+    static double time = get_env_double_default("q_timer_mini_auto_show", 1.0);
     return time;
   }
   //
@@ -349,14 +374,14 @@ struct Timer {
   // qlat parameter
   {
     static long max_call_times =
-        get_env_long_default(10, "q_timer_max_always_show");
+        get_env_long_default("q_timer_max_always_show", 10);
     return max_call_times;
   }
   //
   static long& max_function_name_length_shown()
   // qlat parameter
   {
-    static long max_len = get_env_long_default(50, "q_timer_max_func_name_len");
+    static long max_len = get_env_long_default("q_timer_max_func_name_len", 50);
     return max_len;
   }
   //

@@ -22,23 +22,7 @@ namespace qlat
 
 inline void close_all_all_shuffled_fields_writer();
 
-inline void set_time_limit_auto();
-
-inline void set_default_budget_auto();
-
 inline void release_lock();
-
-inline double& get_actual_start_time()
-// not affected by Timer::reset()
-{
-  static double time = get_start_time();
-  return time;
-}
-
-inline double get_actual_total_time()
-{
-  return get_time() - get_actual_start_time();
-}
 
 inline int ssleep(const double seconds)
 {
@@ -48,81 +32,21 @@ inline int ssleep(const double seconds)
 inline double& get_time_limit()
 // qlat parameter
 {
-  static double limit = 0.0;
-  if (0.0 == limit) {
-    TIMER_VERBOSE("get_time_limit");
-    limit = 12.0 * 3600.0;
-    set_time_limit_auto();
-  }
+  static const double time_limit_default = 12.0 * 3600.0;
+  static double limit =
+      get_env_double_default(
+          "q_end_limit",
+          get_actual_start_time() +
+              get_env_double_default("q_time_limit", time_limit_default)) -
+      get_actual_start_time();
   return limit;
 }
 
 inline double& get_default_budget()
 // qlat parameter
 {
-  static double budget = 0.0;
-  if (0.0 == budget) {
-    TIMER_VERBOSE("get_default_budget");
-    budget = 15.0 * 60.0;
-    set_default_budget_auto();
-  }
+  static double budget = get_env_double_default("q_budget", 15.0 * 60.0);
   return budget;
-}
-
-inline void set_default_budget_auto()
-{
-  TIMER_VERBOSE("set_default_budget_auto");
-  std::string stime = get_env("Q_BUDGET");
-  if (stime == "") {
-    stime = get_env("q_budget");
-  }
-  if (stime != "") {
-    double budget = 0.0;
-    reads(budget, stime);
-    get_default_budget() = budget;
-    displayln_info(fname + ssprintf(": get_default_budget() = %.2lf hours.",
-                                    get_default_budget() / 3600.0));
-  }
-}
-
-inline void set_time_limit_auto()
-{
-  TIMER_VERBOSE("set_time_limit_auto");
-  std::string setime = get_env("Q_END_TIME");
-  if (setime == "") {
-    setime = get_env("q_end_time");
-  }
-  std::string stime = get_env("Q_TIME_LIMIT");
-  if (stime == "") {
-    stime = get_env("q_time_limit");
-  }
-  const std::string ss = get_env("COBALT_STARTTIME");
-  const std::string se = get_env("COBALT_ENDTIME");
-  if (setime != "") {
-    double etime = 0.0;
-    reads(etime, setime);
-    get_time_limit() = etime - get_actual_start_time();
-    displayln_info(fname + ssprintf(": via Q_END_TIME."));
-  } else if (stime != "") {
-    double time = 0.0;
-    reads(time, stime);
-    get_time_limit() = time;
-    displayln_info(fname + ssprintf(": via Q_TIME_LIMIT."));
-  } else if (ss != "" and se != "") {
-    double start_time = 0.0;
-    double end_time = 0.0;
-    reads(start_time, ss);
-    reads(end_time, se);
-    get_time_limit() = end_time - get_actual_start_time();
-    displayln_info(fname + ssprintf(": via COBALT_ENDTIME."));
-    displayln_info(fname + ssprintf(": job total time = %.2lf hours.",
-                                    (end_time - start_time) / 3600.0));
-    displayln_info(fname +
-                   ssprintf(": job init time = %.2lf hours.",
-                            (get_actual_start_time() - start_time) / 3600.0));
-  }
-  displayln_info(fname + ssprintf(": get_time_limit() = %.2lf hours.",
-                                  get_time_limit() / 3600.0));
 }
 
 inline double get_remaining_time()
@@ -183,7 +107,6 @@ inline void set_lock_expiration_time_limit()
   TIMER_VERBOSE("set_lock_expiration_time_limit");
   displayln_info(
       "WARNING: do not use this function. set_lock_expiration_time_limit");
-  set_time_limit_auto();
 }
 
 inline void check_sigterm()
