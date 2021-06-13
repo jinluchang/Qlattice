@@ -1,0 +1,17 @@
+This is MetaPost, version 2.00 (TeX Live 2020/Debian) (kpathsea version 6.3.2)  17 MAR 2021 06:07
+**fig.mp
+(/usr/share/texlive/texmf-dist/metapost/base/mpost.mp
+(/usr/share/texlive/texmf-dist/metapost/base/plain.mp
+Preloading the plain mem file, version 1.005) ) (./fig.mp
+(/usr/share/texmf/metapost/feynmf/feynmp.mp) [1{psfonts.map}<cmmi10.pfb><cmmi7.
+pfb><cmr10.pfb>] [2<cmmi10.pfb><cmmi7.pfb><cmr10.pfb>] [3<cmmi10.pfb><cmmi7.pfb
+><cmr10.pfb>] [4<cmmi10.pfb><cmmi7.pfb><cmr10.pfb>] [5<cmmi10.pfb><cmmi7.pfb><c
+mr10.pfb>] [6<cmmi10.pfb><cmmi7.pfb><cmr10.pfb>] )
+ 
+Here is how much of MetaPost's memory you used:
+ 295 strings using 4450 characters
+ 1390384 bytes of node memory
+ 950 symbolic tokens
+ 12i,78n,22p,144b,3f stack positions out of 16i,98n,25p,200b,4f
+6 output files written: fig-1.eps .. fig-6.eps
+
