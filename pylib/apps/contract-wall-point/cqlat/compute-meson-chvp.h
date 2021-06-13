@@ -55,7 +55,7 @@ inline void compute_meson_chvp_type(const std::string& job_tag, const int traj,
         fn = path +
              ssprintf("/mchvp-%d-%d-%d-%d.field", type1, type2, type3, type4);
         std::string& fn_mss_s_w = fn_mss_s_w_list[i * num_type_34 + j];
-        fn_mss_s_w = path_mss_s_w + ssprintf("/meson-snk-src-%d-%d-%d-%d.field",
+        fn_mss_s_w = path_mss_s_w + ssprintf("/meson-snk-src-%d-%d-%d-%d.lat",
                                              type1, type2, type3, type4);
       }
     }
@@ -272,9 +272,9 @@ inline void compute_meson_chvp_light(const std::string& job_tag, const int traj)
   if (does_file_exist_sync_node(path + "/mchvp-0-0-0-0.field") and
       does_file_exist_sync_node(path + "/mchvp-0-0-0-1.field") and
       does_file_exist_sync_node(path + "/mchvp-0-0-1-1.field") and
-      does_file_exist_sync_node(path_mss + "/meson-snk-src-0-0-0-0.field") and
-      does_file_exist_sync_node(path_mss + "/meson-snk-src-0-0-0-1.field") and
-      does_file_exist_sync_node(path_mss + "/meson-snk-src-0-0-1-1.field")) {
+      does_file_exist_sync_node(path_mss + "/meson-snk-src-0-0-0-0.lat") and
+      does_file_exist_sync_node(path_mss + "/meson-snk-src-0-0-0-1.lat") and
+      does_file_exist_sync_node(path_mss + "/meson-snk-src-0-0-1-1.lat")) {
     return;
   }
   if (not does_file_exist_sync_node(get_meson_snk_src(job_tag, traj) +
