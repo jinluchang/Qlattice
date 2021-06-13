@@ -19,13 +19,15 @@ display_geo_node : id_node =     4 ; coor_node = 0x0x0x1 ; id_node_in_shuffle = 
 display_geo_node : id_node =     5 ; coor_node = 0x1x0x1 ; id_node_in_shuffle =     3 ; hostname = qcdserver16
 display_geo_node : id_node =     6 ; coor_node = 0x0x1x1 ; id_node_in_shuffle =     5 ; hostname = qcdserver16
 display_geo_node : id_node =     7 ; coor_node = 0x1x1x1 ; id_node_in_shuffle =     7 ; hostname = qcdserver16
-set_time_limit_auto: get_time_limit() = 12.00 hours.
-set_time_limit_auto: get_time_limit() = 12.00 hours.
+q_time_limit=43200 (default)
+q_end_limit=1.62365E+09 (default)
 get_time_limit()=12.000000 hours
+q_budget=900 (default)
 get_default_budget()=0.250000 hours
+q_read_par_limit=16 (default)
 dist_read_par_limit()=16
+q_write_par_limit=16 (default)
 dist_write_par_limit()=16
-set_time_limit_auto: get_time_limit() = 12.00 hours.
 get_time_limit()=12.000000 hours
 get_default_budget()=0.250000 hours
 dist_read_par_limit()=16
@@ -36,8 +38,9 @@ obtain_lock: Trying to obtain lock 'results/test-4nt8/results=1000-lock'.
 obtain_lock: Lock obtained 'results/test-4nt8/results=1000-lock'.
 compute_traj: Start computing 'results/test-4nt8/results=1000'.
 compute_traj_do: job_tag='test-4nt8' ; traj=1000
-set q_field_init=fast. (implicitly)
-get_mem_cache_max_size_default: get_mem_cache_max_size() = 512 MB.
+q_field_init=fast (default)
+set q_field_init=fast.
+q_mem_cache_max_size=512 (default)
 make_shuffle_plan_generic: num_send_packs =          2
 make_shuffle_plan_generic: num_recv_packs =          7
 make_shuffle_plan_generic: num_send_msgs  =          4
@@ -177,7 +180,6 @@ prop qnorm =  2.39843434767638641E-01
 prop[0] qnorm =  2.46214937797465576E-04
 release_lock: Release lock 'results/test-4nt8/results=1000-lock'
 qremove: 'results/test-4nt8/results=1000-lock/time.txt'
-set_time_limit_auto: get_time_limit() = 12.00 hours.
 get_time_limit()=12.000000 hours
 get_default_budget()=0.250000 hours
 dist_read_par_limit()=16
@@ -301,7 +303,6 @@ prop[0] qnorm =  3.58372799883653051E-04
 release_lock: Release lock 'results/test-4nt8/results=1010-lock'
 qremove: 'results/test-4nt8/results=1010-lock/time.txt'
 program finished successfully for 'test-4nt8'.
-set_time_limit_auto: get_time_limit() = 12.00 hours.
 get_time_limit()=12.000000 hours
 get_default_budget()=0.250000 hours
 dist_read_par_limit()=16
@@ -424,7 +425,6 @@ prop qnorm =  2.70413041013967614E+00
 prop[0] qnorm =  6.13619597511707617E-03
 release_lock: Release lock 'results/free-4nt8/results=1000-lock'
 qremove: 'results/free-4nt8/results=1000-lock/time.txt'
-set_time_limit_auto: get_time_limit() = 12.00 hours.
 get_time_limit()=12.000000 hours
 get_default_budget()=0.250000 hours
 dist_read_par_limit()=16

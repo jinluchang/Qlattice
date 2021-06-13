@@ -55,7 +55,8 @@ g.qcd.gauge.plaquette = 0.94517601648581551
 g.qcd.gauge.plaquette = 0.94517599211798775 single precision
 qlat geo created
 gpt field made
-set q_field_init=fast. (implicitly)
+q_field_init=fast (default)
+set q_field_init=fast.
 qlat field made
 gpt coordinates collected
 qlat mview made
@@ -64,7 +65,7 @@ plan initialized
 plan destination added
 plan source added
 plan created
-get_mem_cache_max_size_default: get_mem_cache_max_size() = 512 MB.
+q_mem_cache_max_size=512 (default)
 CommPlanCache: to add 1 / 32.
 gf_show_info: plaq = 0.9451760164858156 ; link_trace = 0.9861007789909704.
 qlat geo created

@@ -13,8 +13,9 @@ q_timer_mini_auto_show=1 (default)
 q_timer_max_always_show=10 (default)
 demo: create splittable random number generator 'rs'
 demo: init field 'f'
-set q_field_init=fast. (implicitly)
-get_mem_cache_max_size_default: get_mem_cache_max_size() = 512 MB.
+q_field_init=fast (default)
+set q_field_init=fast.
+q_mem_cache_max_size=512 (default)
 make_shuffle_plan_generic: num_send_packs =          2
 make_shuffle_plan_generic: num_recv_packs =          7
 make_shuffle_plan_generic: num_send_msgs  =          4
@@ -33,12 +34,14 @@ demo: compute crc32=8B5110BA.
 demo: save to disk
 write_field: fn='huge-data/f.field'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+q_write_par_limit=16 (default)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: clear field 'f' in memory
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=AB54D286.
 demo: read from disk
 read_field: fn='huge-data/f.field'.
+q_read_par_limit=16 (default)
 shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)

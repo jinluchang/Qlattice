@@ -16,13 +16,16 @@ The crc32() of "123456789" is 0xCBF43926
 The crc32() of "123456789" is 0xCBF43926 (concat)
 The crc32() of "123456789" is 0xCBF43926 (crc32_shift)
 nthreads=2
-set q_field_init=fast. (implicitly)
+q_write_par_limit=16 (default)
+q_read_par_limit=16 (default)
+q_field_init=fast (default)
+set q_field_init=fast.
 dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         2359296
 dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         2359296
 dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         2359296
 dist_read_field: fn='huge-data/gauge_field_rgf-0.1'.
 dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         2359296
-get_mem_cache_max_size_default: get_mem_cache_max_size() = 512 MB.
+q_mem_cache_max_size=512 (default)
 ShufflePlanCache: to add 1 / 16.
 dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         2359296
 CommPlanCache: to add 1 / 32.

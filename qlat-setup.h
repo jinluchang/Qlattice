@@ -40,12 +40,6 @@ inline std::string get_job_path(const std::string& job_tag, const int traj)
 inline void setup()
 {
   Timer::minimum_duration_for_show_info() = 1.0;
-  get_time_limit() = 0.5 * 24.0 * 3600.0;
-  set_time_limit_auto();
-  get_default_budget() = 15.0 * 60.0;
-  set_default_budget_auto();
-  dist_write_par_limit() = 16;
-  dist_read_par_limit() = 16;
   displayln_info(
       ssprintf("get_time_limit()=%lf hours", get_time_limit() / 3600.0));
   displayln_info(ssprintf("get_default_budget()=%lf hours",

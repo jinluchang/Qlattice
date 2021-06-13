@@ -14,12 +14,15 @@ qremove: 'results'
 q_timer_mini_auto_show=1 (default)
 q_timer_max_always_show=10 (default)
 geo.show() = Geometry([4, 4, 4, 8], 1)
-set q_field_init=fast. (implicitly)
-get_mem_cache_max_size_default: get_mem_cache_max_size() = 512 MB.
+q_field_init=fast (default)
+set q_field_init=fast.
+q_mem_cache_max_size=512 (default)
 ShufflePlanCache: to add 1 / 16.
 prop.crc32() = 870829356 ; prop.qnorm() = 49123.69045958381
 write_field: fn='results/prop.field'.
+q_write_par_limit=16 (default)
 read_field: fn='results/prop.field'.
+q_read_par_limit=16 (default)
 prop.crc32() = 870829356 ; prop.qnorm() = 49123.69045958381
 write_field: fn='results/prop-double.field'.
 read_field: fn='results/prop-double.field'.

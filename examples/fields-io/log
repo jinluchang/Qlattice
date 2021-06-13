@@ -16,8 +16,9 @@ demo: random select 0 points on entire lattice
 demo: random select points on each time slice
 demo: select 16 points per time slice
 demo: selection is stored in 'fsel' of type 'FieldSelection'
-set q_field_init=fast. (implicitly)
-get_mem_cache_max_size_default: get_mem_cache_max_size() = 512 MB.
+q_field_init=fast (default)
+set q_field_init=fast.
+q_mem_cache_max_size=512 (default)
 make_shuffle_plan_generic: num_send_packs =          7
 make_shuffle_plan_generic: num_recv_packs =         12
 make_shuffle_plan_generic: num_send_msgs  =          4
@@ -33,9 +34,11 @@ shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size
 demo: save selection 'fsel' to disk as a field
 write_field: fn='huge-data/t0/fsel.field'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
+q_write_par_limit=16 (default)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
 demo: read selection 'fsel' from disk as a field
 read_field: fn='huge-data/t0/fsel.field'.
+q_read_par_limit=16 (default)
 shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
 demo: init field 'f'

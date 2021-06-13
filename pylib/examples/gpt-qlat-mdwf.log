@@ -51,8 +51,9 @@ qremove: 'results'
 q_timer_mini_auto_show=1 (default)
 q_timer_max_always_show=10 (default)
 geo.show() = Geometry([4, 4, 4, 8], 1)
-set q_field_init=fast. (implicitly)
-get_mem_cache_max_size_default: get_mem_cache_max_size() = 512 MB.
+q_field_init=fast (default)
+set q_field_init=fast.
+q_mem_cache_max_size=512 (default)
 CommPlanCache: to add 1 / 32.
 gf_show_info: plaq = 0.9745055472546029 ; link_trace = 0.9934624069374576.
 qlat geo created

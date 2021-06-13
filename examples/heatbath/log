@@ -10,17 +10,21 @@ qlat::begin(): GeometryNode =
 , coor_node   = 0x0x0x0 }
 q_timer_max_func_name_len=50 (default)
 q_timer_mini_auto_show=1 (default)
-set_time_limit_auto: get_time_limit() = 12.00 hours.
-set_time_limit_auto: get_time_limit() = 12.00 hours.
+q_time_limit=43200 (default)
+q_end_limit=1.62365E+09 (default)
 get_time_limit()=12.000000 hours
+q_budget=900 (default)
 get_default_budget()=0.250000 hours
+q_read_par_limit=16 (default)
 dist_read_par_limit()=16
+q_write_par_limit=16 (default)
 dist_write_par_limit()=16
 q_timer_max_always_show=10 (default)
 obtain_lock: Trying to obtain lock 'results/total_site=4x4x4x256/lambda=24.0000000000/mass_sqr=-1.8600000000.txt-lock'.
 obtain_lock: Lock obtained 'results/total_site=4x4x4x256/lambda=24.0000000000/mass_sqr=-1.8600000000.txt-lock'.
-set q_field_init=fast. (implicitly)
-get_mem_cache_max_size_default: get_mem_cache_max_size() = 512 MB.
+q_field_init=fast (default)
+set q_field_init=fast.
+q_mem_cache_max_size=512 (default)
 CommPlanCache: to add 1 / 32.
 ((total-site (4 4 4 256))
  (mass-sqr -1.8600000000)

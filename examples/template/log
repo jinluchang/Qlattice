@@ -19,13 +19,15 @@ display_geo_node : id_node =     4 ; coor_node = 0x0x0x1 ; id_node_in_shuffle = 
 display_geo_node : id_node =     5 ; coor_node = 0x1x0x1 ; id_node_in_shuffle =     3 ; hostname = qcdserver16
 display_geo_node : id_node =     6 ; coor_node = 0x0x1x1 ; id_node_in_shuffle =     5 ; hostname = qcdserver16
 display_geo_node : id_node =     7 ; coor_node = 0x1x1x1 ; id_node_in_shuffle =     7 ; hostname = qcdserver16
-set_time_limit_auto: get_time_limit() = 12.00 hours.
-set_time_limit_auto: get_time_limit() = 12.00 hours.
+q_time_limit=43200 (default)
+q_end_limit=1.62365E+09 (default)
 get_time_limit()=12.000000 hours
+q_budget=900 (default)
 get_default_budget()=0.250000 hours
+q_read_par_limit=16 (default)
 dist_read_par_limit()=16
+q_write_par_limit=16 (default)
 dist_write_par_limit()=16
-set_time_limit_auto: get_time_limit() = 12.00 hours.
 get_time_limit()=12.000000 hours
 get_default_budget()=0.250000 hours
 dist_read_par_limit()=16
@@ -35,15 +37,15 @@ compute_traj: Checking 'results/free-4nt8/results=1000'.
 obtain_lock: Trying to obtain lock 'results/free-4nt8/results=1000-lock'.
 obtain_lock: Lock obtained 'results/free-4nt8/results=1000-lock'.
 compute_traj: Start computing 'results/free-4nt8/results=1000'.
-set_time_limit_auto: get_time_limit() = 12.00 hours.
 get_time_limit()=12.000000 hours
 get_default_budget()=0.250000 hours
 dist_read_par_limit()=16
 dist_write_par_limit()=16
 check_status: ( get_actual_total_time() + get_default_budget() ) / get_time_limit() = ( 0.00 + 0.25 ) / 12.00 hours.
 compute_traj_do: job_tag='free-4nt8' ; traj=1000
-set q_field_init=fast. (implicitly)
-get_mem_cache_max_size_default: get_mem_cache_max_size() = 512 MB.
+q_field_init=fast (default)
+set q_field_init=fast.
+q_mem_cache_max_size=512 (default)
 CommPlanCache: to add 1 / 32.
 plaq :  1.00000000000000000E+00
 CommPlanCache: to add 2 / 32.
@@ -175,7 +177,6 @@ find_max_eigen_value_hermop_sym2:     4: sqrt_qnorm_ratio = 1.48877146814636507E
 find_max_eigen_value_hermop_sym2:     5: sqrt_qnorm_ratio = 1.58623325176833019E+00. (max eigen value of hermop_sym2)
 release_lock: Release lock 'results/free-4nt8/results=1000-lock'
 qremove: 'results/free-4nt8/results=1000-lock/time.txt'
-set_time_limit_auto: get_time_limit() = 12.00 hours.
 get_time_limit()=12.000000 hours
 get_default_budget()=0.250000 hours
 dist_read_par_limit()=16
@@ -185,7 +186,6 @@ compute_traj: Checking 'results/free-4nt8/results=1010'.
 obtain_lock: Trying to obtain lock 'results/free-4nt8/results=1010-lock'.
 obtain_lock: Lock obtained 'results/free-4nt8/results=1010-lock'.
 compute_traj: Start computing 'results/free-4nt8/results=1010'.
-set_time_limit_auto: get_time_limit() = 12.00 hours.
 get_time_limit()=12.000000 hours
 get_default_budget()=0.250000 hours
 dist_read_par_limit()=16
