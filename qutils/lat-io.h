@@ -312,7 +312,9 @@ inline std::string idx_name(const LatDim& dim, const long idx)
 
 inline bool operator==(const LatDim& d1, const LatDim& d2)
 {
-  return d1.name == d2.name and d1.size == d2.size and d1.indices == d2.indices;
+  // return d1.name == d2.name and d1.size == d2.size and d1.indices ==
+  // d2.indices;
+  return d1.name == d2.name and d1.size == d2.size;
 }
 
 inline bool operator!=(const LatDim& d1, const LatDim& d2)
