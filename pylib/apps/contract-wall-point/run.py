@@ -12,7 +12,7 @@ def get_load_path(fn):
             "data",
             "../mk-sample-selected-data/results",
             "/home/luchang/application/Public/Qlat-Grid-cc/sample-data/mk-sample-selected-data/results",
-            "/sdcc/u/jluchang/qcdqedta/hlbl-data-with-cache",
+            "/hpcgpfs01/work/lqcd/qcdqedta/hlbl-data-with-cache",
             ]
     for path in path_list:
         if fn == "":
