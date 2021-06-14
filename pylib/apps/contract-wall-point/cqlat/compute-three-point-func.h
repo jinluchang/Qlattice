@@ -17,7 +17,6 @@ inline void compute_three_point_func_type(const std::string& job_tag,
                                           const int type2, const int type3)
 {
   check_sigterm();
-  check_time_limit();
   Timer::autodisplay();
   TIMER_VERBOSE("compute_three_point_func_type");
   const std::string path = get_three_point_func_path(job_tag, traj);

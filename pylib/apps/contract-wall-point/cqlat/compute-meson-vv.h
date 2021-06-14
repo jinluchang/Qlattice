@@ -18,7 +18,6 @@ inline void compute_meson_vv_type(const std::string& job_tag, const int traj,
                                   const int type3)
 {
   check_sigterm();
-  check_time_limit();
   Timer::autodisplay();
   const int num_type = type1_list.size();
   qassert(num_type == (int)type2_list.size());

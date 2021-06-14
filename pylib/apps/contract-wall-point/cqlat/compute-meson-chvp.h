@@ -28,7 +28,6 @@ inline void compute_meson_chvp_type(const std::string& job_tag, const int traj,
                                     const std::vector<int>& type4_list)
 {
   check_sigterm();
-  check_time_limit();
   Timer::autodisplay();
   const int num_type_12 = type1_list.size();
   qassert(num_type_12 == (int)type2_list.size());
