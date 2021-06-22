@@ -53,11 +53,13 @@ def compute(job_tag, traj):
     q.timer_display()
 
 job_tags = [
-        "test-4nt16",
+        "64I",
+        # "48I",
         "24D",
         "24DH",
         "32D",
         "32Dfine",
+        "test-4nt16",
         ]
 trajs = list(range(200, 3000, 10))
 
