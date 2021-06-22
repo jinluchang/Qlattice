@@ -39,6 +39,7 @@ def check_job(job_tag, traj):
 
 @q.timer_verbose
 def compute(job_tag, traj):
+    q.timer_reset()
     q.setup(job_tag)
     q.compute_meson_vv(job_tag, traj)
     q.compute_meson_vv_meson(job_tag, traj)
