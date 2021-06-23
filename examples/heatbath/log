@@ -11,7 +11,6 @@ qlat::begin(): GeometryNode =
 q_timer_max_func_name_len=50 (default)
 q_timer_mini_auto_show=1 (default)
 q_time_limit=43200 (default)
-q_end_limit=1.62442E+09 (default)
 get_time_limit()=12.000000 hours
 q_budget=900 (default)
 get_default_budget()=0.250000 hours

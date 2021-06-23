@@ -16,6 +16,7 @@ inline void compute_chvp_type(const std::string& job_tag, const int traj,
                               const std::vector<int>& type2_list)
 {
   check_sigterm();
+  check_time_limit();
   Timer::autodisplay();
   const int num_type = type1_list.size();
   qassert(num_type == (int)type2_list.size());
