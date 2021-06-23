@@ -84,7 +84,8 @@ struct Field {
     }
   }
   //
-  Field<M>() { init(); }
+  Field() { init(); }
+  Field(Field<M>&&) noexcept = default;
   //
   const Field<M>& operator=(const Field<M>& f)
   {
