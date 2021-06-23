@@ -37,27 +37,58 @@ int main(int argc, char* argv[])
   nz = 24;
   nt = 64;
 
-
   Coordinate total_site = Coordinate(nx, ny, nz, nt);
   Geometry geo;
   geo.init(total_site, 1); 
 
-  std::vector<Propagator4d > propS;
-  propS.resize(1);for(unsigned int i=0;i<propS.size();i++)propS[i].init(geo);
-
-  ////propS.resize(0);
-  propS.resize(5);for(unsigned int i=0;i<propS.size();i++)propS[i].init(geo);
-
-  propS.resize(2);for(unsigned int i=0;i<propS.size();i++)propS[i].init(geo);
-
   std::vector< qlat::vector<qlat::Complex > > src;
-
   resize_EigenM(src, 2, 3);
   resize_EigenM(src,10,10);
+
+  int nmass = 2;
+  std::vector<Propagator4d > prop0;
+  prop0.resize(nmass);for(unsigned int i=0;i<prop0.size();i++)prop0[i].init(geo);
+  qacc_for(isp, long(geo.local_volume()),{
+    for(int im=0;im<nmass;im++)
+    {   
+    qlat::WilsonMatrix& v0 =  prop0[im].get_elem(isp);
+    for(int d0=0;d0<12;d0++)
+    for(int d1=0;d1<12;d1++)
+    {   
+      v0(d0,d1) = im*7 + isp*0.5 + d0*7 + d1*8;
+    }   
+    }   
+  }); 
+
+  std::vector<Propagator4d > propS;propS.resize(1);for(unsigned int i=0;i<propS.size();i++)propS[i].init(geo);
+  //propS.resize(0);
+  propS.resize(nmass);for(unsigned int i=0;i<propS.size();i++)propS[i].init(geo);
+  for(int im=0;im<nmass;im++){propS[im] = prop0[im];}
+
+  std::vector<Propagator4d > propD;propD.resize(nmass);for(unsigned int i=0;i<propD.size();i++)propD[i].init(geo);
+  for(int im=0;im<nmass;im++){propD[im] = prop0[im];}
+
+  double diff = 0.0;
+  for(int im=0;im<nmass;im++)
+  {
+  qacc_for(isp, long(geo.local_volume()), {
+      qlat::WilsonMatrix  vs =  propS[im].get_elem(isp);
+      qlat::WilsonMatrix  vd =  propD[im].get_elem(isp);
+      for(int d0=0;d0<12;d0++)
+      for(int d1=0;d1<12;d1++)
+      {
+        qlat::Complex tem = vs(d0,d1) - vd(d0,d1);
+        diff += tem.real()*tem.real() + tem.imag()*tem.imag();
+      }
+  });
+  }
+
+  qlat::displayln_info(qlat::ssprintf("Prop ori diff %.5e \n",diff));
+
+
 
 
   qlat::Timer::display();
   qlat::end();
   return 0;
 }
-
