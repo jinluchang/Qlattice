@@ -159,9 +159,14 @@ struct vector {
   vector(const vector<M>& vp)
   {
     is_copy = true;
-    this->v = vp.v;
+    v = vp.v;
   }
-  vector(vector<M>&&) = default;
+  vector(vector<M>&& vp) noexcept
+  {
+    is_copy = false;
+    v = vp.v;
+    vp.is_copy = true;
+  }
   vector(const long size)
   {
     qassert(v.p == NULL);
@@ -342,9 +347,14 @@ struct box {
   box(const box<M>& vp)
   {
     is_copy = true;
-    this->v = vp.v;
+    v = vp.v;
   }
-  box(box<M>&&) = default;
+  box(box<M>&& vp) noexcept
+  {
+    is_copy = false;
+    v = vp.v;
+    vp.is_copy = true;
+  }
   box(const M& x)
   {
     qassert(v.p == NULL);

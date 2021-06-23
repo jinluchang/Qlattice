@@ -3,10 +3,12 @@
 
 void resize_EigenM(std::vector< qlat::vector<qlat::Complex > >& a, size_t n0, size_t n1)
 {
+  TIMER_VERBOSE("resize_EigenM");
   /////a.resize(0);
   a.resize(n0);
   for(size_t iv=0;iv<n0;iv++)
   {
+    qlat::displayln_info(fname + qlat::ssprintf(": %ld", iv));
     a[iv].resize(n1);
     set_zero(a[iv]);
   }
