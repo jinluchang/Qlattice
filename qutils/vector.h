@@ -158,6 +158,9 @@ struct vector {
   }
   vector(const vector<M>& vp)
   {
+#ifndef QLAT_USE_ACC
+    qassert(false);
+#endif
     is_copy = true;
     v = vp.v;
   }
@@ -346,6 +349,9 @@ struct box {
   }
   box(const box<M>& vp)
   {
+#ifndef QLAT_USE_ACC
+    qassert(false);
+#endif
     is_copy = true;
     v = vp.v;
   }
