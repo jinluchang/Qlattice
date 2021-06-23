@@ -43,6 +43,7 @@ int main(int argc, char* argv[])
   std::vector<Propagator4d > propS;
   propS.resize(1);for(unsigned int i=0;i<propS.size();i++)propS[i].init(geo);
 
+  ////propS.resize(0);
   propS.resize(5);for(unsigned int i=0;i<propS.size();i++)propS[i].init(geo);
 
   propS.resize(2);for(unsigned int i=0;i<propS.size();i++)propS[i].init(geo);
