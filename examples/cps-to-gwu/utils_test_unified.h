@@ -8,7 +8,7 @@ namespace qlat{
 
 struct test_unified
 {
-  qlat::vector<qlat::Complex > alpha;
+  qlat::vector<qlat::vector<qlat::Complex > > alpha;
 
   test_unified(int a){
     qlat::displayln_info(qlat::ssprintf("construct"));
@@ -18,7 +18,8 @@ struct test_unified
 
   void initiallize_mass(int nmass,int Ns=12)
   {
-    alpha.resize(2*nmass*Ns);set_zero(alpha);
+    alpha.resize(2*nmass*Ns);
+    for(int i=0;i<alpha.size();i++){alpha[i].resize(10);set_zero(alpha[i]);}
   }
   void prop_L()
   {
@@ -30,17 +31,18 @@ struct test_unified
     qlat::displayln_info(qlat::ssprintf("b call"));
  
     alpha.resize(20);
+    for(int i=0;i<alpha.size();i++){alpha[i].resize(10);set_zero(alpha[i]);}
 
     for(int coff=0;coff<int(alpha.size());coff++)
     {
-      alpha[coff] = 0.0;
+      alpha[coff][0] = 0.0;
     }
     qlat::displayln_info(qlat::ssprintf("a for call"));
 
     test_unified& f0 = *this;
 
     qacc_for(coff, long(alpha.size()),{
-      f0.alpha[coff] = 0.0;
+      for(int i=0;i<alpha.size();i++)f0.alpha[coff][i] = 0.0;
     });
     qlat::displayln_info(qlat::ssprintf("a qacc for call"));
   
