@@ -26,10 +26,7 @@ struct test_unified
       alpha[coff] = 0.0;
     });
   
-    //{
-    //TIMER("Global sum");
-    //sum_all_size(reinterpret_cast<Ftype* > (&alpha[0]),2*alpha.size());
-    //}
+
   }
 
   ~test_unified()
