@@ -11,8 +11,9 @@ struct test_unified
   qlat::vector<qlat::Complex > alpha;
 
   test_unified(int a){
-    alpha.resize(a);
-    alpha.resize(0);
+    qlat::displayln_info(qlat::ssprintf("construct"));
+    ////alpha.resize(a);
+    ////alpha.resize(0);
   }
 
   void initiallize_mass(int nmass,int Ns=12)
@@ -49,10 +50,10 @@ struct test_unified
     //}
   }
 
-  ~test_unified()
-  {
-    alpha.resize(0);
-  }
+  //~test_unified()
+  //{
+  //  alpha.resize(0);
+  //}
 
 };
 
