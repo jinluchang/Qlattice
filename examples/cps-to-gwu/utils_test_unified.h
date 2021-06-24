@@ -41,9 +41,16 @@ struct test_unified
 
     test_unified& f0 = *this;
 
+    int n_vec = 10;
+    for(int i=0;i<alpha.size();i++){
+      qlat::displayln_info(qlat::ssprintf("a qacc for size %5d \n", alpha[i].size()));
+    }
+
+    auto& alpha = this -> alpha;
     qacc_for(coff, long(alpha.size()),{
-      //for(int i=0;i<alpha[coff].size();i++)f0.alpha[coff][i] = 0.0;
-      for(int i=0;i<10;i++)f0.alpha[coff][i] = 0.0;
+      for(int i=0;i<n_vec;i++)alpha[coff][i] = 0.0;
+      for(int i=0;i<10;i++)alpha[coff][i] = 0.0;
+      for(int i=0;i<alpha[coff].size();i++)alpha[coff][i] = 0.0;
     });
     qlat::displayln_info(qlat::ssprintf("a qacc for call"));
   
