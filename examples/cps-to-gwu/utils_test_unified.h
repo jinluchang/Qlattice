@@ -8,7 +8,7 @@ namespace qlat{
 
 struct test_unified
 {
-  EigenV alpha;
+  qlat::vector<qlat::Complex> alpha;
 
   test_unified(int a){
     alpha.resize(a);
