@@ -658,11 +658,6 @@ inline bool check_prop_wsrc(const std::string& job_tag, const int traj,
                             const int type)
 {
   TIMER_VERBOSE("check_prop_wsrc");
-  // ADJUST ME
-  if (job_tag == "48I" and type == 1) {
-    return false;
-  }
-  //
   return get_does_file_exist(get_prop_wsrc_path(job_tag, traj, type)) and
          get_does_file_exist(get_psel_prop_wsrc_path(job_tag, traj, type));
 }
