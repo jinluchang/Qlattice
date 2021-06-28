@@ -88,13 +88,15 @@ class LatData:
         return c.set_dim_name_lat_data(self, dim, name, indices)
 
     def to_list(self, *, is_complex = True):
-        return c.peek_lat_data(self, [], not is_complex)
+        is_always_double = not is_complex
+        return c.peek_lat_data(self, [], is_always_double)
 
     def from_list(self, val, *, is_complex = True):
         if self.ndim() == 0:
             self.set_dim_sizes([len(val)], is_complex)
             self.set_dim_name(0, "i")
-        c.poke_lat_data(self, [], val, not is_complex)
+        is_always_double = not is_complex
+        c.poke_lat_data(self, [], val, is_always_double)
         return self
 
     def __setitem__(self, idx, val):
@@ -104,3 +106,22 @@ class LatData:
     def __getitem__(self, idx):
         # return a new list every call
         return c.peek_lat_data(self, idx)
+
+    def __getstate__(self):
+        is_complex = self.is_complex()
+        ndim = self.ndim()
+        dim_sizes = self.dim_sizes()
+        assert len(dim_sizes) == ndim
+        dim_names = [ self.dim_name(dim) for dim in range(ndim) ]
+        dim_indices = [ self.dim_indices(dim) for dim in range(ndim) ]
+        data_list = self.to_list()
+        return [ is_complex, dim_sizes, dim_names, dim_indices, data_list ]
+
+    def __setstate__(self, state):
+        [ is_complex, dim_sizes, dim_names, dim_indices, data_list ] = state
+        self.__init__()
+        self.set_dim_sizes(dim_sizes, is_complex = is_complex)
+        ndim = len(dim_sizes)
+        for dim in range(ndim):
+            self.set_dim_name(dim, dim_names[dim], dim_indices[dim])
+        self.from_list(data_list)

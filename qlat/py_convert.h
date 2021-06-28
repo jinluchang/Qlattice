@@ -158,15 +158,6 @@ T& py_convert_type(PyObject* in)
   return *out;
 }
 
-inline PyObject* py_convert(const Coordinate& coor)
-{
-  PyObject* ret = PyList_New(coor.size());
-  for (long i = 0; i < (long)coor.size(); i++) {
-    PyList_SetItem(ret, i, PyLong_FromLong(coor[i]));
-  }
-  return ret;
-}
-
 inline PyObject* py_convert(const bool& x) { return PyBool_FromLong((long)x); }
 
 inline PyObject* py_convert(const int& x) { return PyLong_FromLong((long)x); }
@@ -188,6 +179,15 @@ inline PyObject* py_convert(void* x) { return PyLong_FromVoidPtr(x); }
 inline PyObject* py_convert(const Complex& x)
 {
   return PyComplex_FromCComplex((Py_complex&)x);
+}
+
+inline PyObject* py_convert(const Coordinate& coor)
+{
+  PyObject* ret = PyList_New(coor.size());
+  for (long i = 0; i < (long)coor.size(); i++) {
+    PyList_SetItem(ret, i, PyLong_FromLong(coor[i]));
+  }
+  return ret;
 }
 
 inline PyObject* py_convert(const std::string& x)
