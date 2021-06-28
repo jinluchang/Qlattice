@@ -50,9 +50,9 @@ int main(int argc, char* argv[])
   qlat::vector<qlat::Complex > a;
   qlat::vector<qlat::Complex > b;
   qlat::vector<qlat::Complex > c;
-  int m = 512;
-  int n =  64;
-  int w = 1024;
+  int m = 1024;
+  int n = 1024;
+  int w = 1024*64;
   a.resize(m*w);b.resize(n*w);c.resize(m*n);
   qacc_for(coff, long(a.size()),{a[coff] = std::cos(coff*0.7);});
   qacc_for(coff, long(b.size()),{b[coff] = qlat::Complex(std::cos(coff*1.7), 0.5/(coff+1));});
@@ -69,9 +69,9 @@ int main(int argc, char* argv[])
   qlat::displayln_info(qlat::ssprintf("a0 qacc for call"));
 
 
-  m =   24;
-  n =   64;
-  w = 2024;
+  m = 2024;
+  n = 2023;
+  w = 2024*12;
 
   a.resize(m*w);b.resize(n*w);c.resize(m*n);
   qacc_for(coff, long(a.size()),{a[coff] = std::cos(coff*0.7);});
@@ -91,7 +91,7 @@ int main(int argc, char* argv[])
 
   /////alpha.resize(0);
   /////alpha.resize(200);
-  qlat::displayln_info(qlat::ssprintf("a1 qacc for call"));
+  /////qlat::displayln_info(qlat::ssprintf("a1 qacc for call"));
 
 
 
@@ -100,4 +100,3 @@ int main(int argc, char* argv[])
   qlat::end();
   return 0;
 }
-
