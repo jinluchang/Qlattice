@@ -73,8 +73,12 @@ struct MemCache {
       void* ptr = iter->second;
       qassert(ptr != NULL);
 #ifdef QLAT_USE_ACC
-      cudaError_t code = cudaFree(ptr);
-      qassert(code == cudaSuccess);
+      cudaError err = cudaFree(ptr);
+      if (cudaSuccess != err) {
+        displayln(fname + ssprintf(": Cuda  error %s after cudaFree.",
+                                   cudaGetErrorString(err)));
+        qassert(err == cudaSuccess);
+      }
 #else
       free(ptr);
 #endif
