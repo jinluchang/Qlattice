@@ -75,7 +75,7 @@ struct MemCache {
 #ifdef QLAT_USE_ACC
       cudaError err = cudaFree(ptr);
       if (cudaSuccess != err) {
-        displayln(fname + ssprintf(": Cuda  error %s after cudaFree.",
+        displayln(fname + ssprintf(": Cuda error %s after cudaFree.",
                                    cudaGetErrorString(err)));
         qassert(err == cudaSuccess);
       }
@@ -170,7 +170,7 @@ struct vector {
   }
   vector(vector<M>&& vp) noexcept
   {
-    is_copy = false;
+    is_copy = vp.is_copy;
     v = vp.v;
     vp.is_copy = true;
   }
@@ -361,7 +361,7 @@ struct box {
   }
   box(box<M>&& vp) noexcept
   {
-    is_copy = false;
+    is_copy = vp.is_copy;
     v = vp.v;
     vp.is_copy = true;
   }
