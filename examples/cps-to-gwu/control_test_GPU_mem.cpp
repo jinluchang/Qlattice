@@ -34,6 +34,7 @@ int main(int argc, char* argv[])
   #endif
 
   omp_set_num_threads(omp_get_max_threads());
+
   //qlat::displayln_info(qlat::ssprintf(
   //    "===nthreads %8d %8d, max %8d \n",qlat::qacc_num_threads(),omp_get_num_threads(),omp_get_max_threads()
   //  ));
@@ -42,9 +43,57 @@ int main(int argc, char* argv[])
   //Geometry geo;
   //geo.init(total_site, 1); 
 
-  test_unified ei(1);
+  //test_unified ei(1);
   //////ei.initiallize_mass(20);
-  ei.prop_L();
+  //ei.prop_L();
+
+  qlat::vector<qlat::Complex > a;
+  qlat::vector<qlat::Complex > b;
+  qlat::vector<qlat::Complex > c;
+  int m = 512;
+  int n =  64;
+  int w = 1024;
+  a.resize(m*w);b.resize(n*w);c.resize(m*n);
+  qacc_for(coff, long(a.size()),{a[coff] = std::cos(coff*0.7);});
+  qacc_for(coff, long(b.size()),{b[coff] = qlat::Complex(std::cos(coff*1.7), 0.5/(coff+1));});
+
+  {TIMER("Loop A");
+  qacc_for(coff, long(m*n),{
+    long mi = coff/n;
+    long ni = coff%n;
+    qlat::Complex buf = 0.0;
+    for(int wi=0;wi<w;wi++){buf += a[mi*w + wi] * b[ni*w + wi];}
+    c[coff] += buf;
+  });}
+
+  qlat::displayln_info(qlat::ssprintf("a0 qacc for call"));
+
+
+  m =   24;
+  n =   64;
+  w = 2024;
+
+  a.resize(m*w);b.resize(n*w);c.resize(m*n);
+  qacc_for(coff, long(a.size()),{a[coff] = std::cos(coff*0.7);});
+  qacc_for(coff, long(b.size()),{b[coff] = qlat::Complex(std::cos(coff*1.7), 0.5/(coff+1));});
+
+  {TIMER("Loop B");
+  qacc_for(coff, long(m*n),{
+    long mi = coff/n;
+    long ni = coff%n;
+    qlat::Complex buf = 0.0;
+    for(int wi=0;wi<w;wi++){buf += a[mi*w + wi] * b[ni*w + wi];}
+    c[coff] += buf;
+  });}
+
+  qlat::displayln_info(qlat::ssprintf("a1 qacc for call"));
+
+
+  /////alpha.resize(0);
+  /////alpha.resize(200);
+  qlat::displayln_info(qlat::ssprintf("a1 qacc for call"));
+
+
 
   qlat::Timer::display();
 
