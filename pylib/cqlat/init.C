@@ -44,6 +44,8 @@ EXPORT(begin, {
     begin(&argc, &argv, node_size_list);
   }
   //
+  qset_line_buf(get_output_file());
+  //
   Py_RETURN_NONE;
 });
 
