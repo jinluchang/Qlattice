@@ -381,6 +381,9 @@ inline int glb_sum(Vector<char> recv, const Vector<char>& send)
 
 inline int glb_sum(Vector<double> vec)
 {
+  if (1 == get_num_node()) {
+    return 0;
+  }
   std::vector<double> tmp(vec.size());
   assign(tmp, vec);
   return glb_sum(vec, tmp);
@@ -388,6 +391,9 @@ inline int glb_sum(Vector<double> vec)
 
 inline int glb_sum(Vector<float> vec)
 {
+  if (1 == get_num_node()) {
+    return 0;
+  }
   std::vector<float> tmp(vec.size());
   assign(tmp, vec);
   return glb_sum(vec, tmp);
@@ -395,6 +401,9 @@ inline int glb_sum(Vector<float> vec)
 
 inline int glb_sum(Vector<Complex> vec)
 {
+  if (1 == get_num_node()) {
+    return 0;
+  }
   std::vector<Complex> tmp(vec.size());
   assign(tmp, vec);
   return glb_sum(vec, tmp);
@@ -402,6 +411,9 @@ inline int glb_sum(Vector<Complex> vec)
 
 inline int glb_sum(Vector<ComplexF> vec)
 {
+  if (1 == get_num_node()) {
+    return 0;
+  }
   std::vector<ComplexF> tmp(vec.size());
   assign(tmp, vec);
   return glb_sum(vec, tmp);
@@ -409,6 +421,9 @@ inline int glb_sum(Vector<ComplexF> vec)
 
 inline int glb_sum(Vector<long> vec)
 {
+  if (1 == get_num_node()) {
+    return 0;
+  }
   std::vector<long> tmp(vec.size());
   assign(tmp, vec);
   return glb_sum(vec, tmp);
@@ -416,6 +431,9 @@ inline int glb_sum(Vector<long> vec)
 
 inline int glb_sum(Vector<char> vec)
 {
+  if (1 == get_num_node()) {
+    return 0;
+  }
   std::vector<char> tmp(vec.size());
   assign(tmp, vec);
   return glb_sum(vec, tmp);
@@ -511,7 +529,7 @@ template <class M>
 void bcast(Vector<M> recv, const int root = 0)
 {
 #ifdef USE_MULTI_NODE
-  if (get_num_node() == 1) {
+  if (1 == get_num_node()) {
     return;
   }
   MPI_Bcast((void*)recv.data(), recv.data_size(), MPI_BYTE, root, get_comm());
@@ -522,7 +540,7 @@ template <class M>
 void bcast(std::vector<M>& recv, const int root = 0)
 {
 #ifdef USE_MULTI_NODE
-  if (get_num_node() == 1) {
+  if (1 == get_num_node()) {
     return;
   }
   long size = recv.size();
@@ -535,7 +553,7 @@ void bcast(std::vector<M>& recv, const int root = 0)
 inline void bcast(std::string& recv, const int root = 0)
 {
 #ifdef USE_MULTI_NODE
-  if (get_num_node() == 1) {
+  if (1 == get_num_node()) {
     return;
   }
   long size = recv.size();
@@ -548,7 +566,7 @@ inline void bcast(std::string& recv, const int root = 0)
 inline void bcast(std::vector<std::string>& recv, const int root = 0)
 {
 #ifdef USE_MULTI_NODE
-  if (get_num_node() == 1) {
+  if (1 == get_num_node()) {
     return;
   }
   long size = recv.size();
@@ -563,7 +581,7 @@ inline void bcast(std::vector<std::string>& recv, const int root = 0)
 inline void bcast(LatData& ld, const int root = 0)
 {
 #ifdef USE_MULTI_NODE
-  if (get_num_node() == 1) {
+  if (1 == get_num_node()) {
     return;
   }
   std::string info_str;
@@ -583,7 +601,7 @@ template <class M>
 void bcast(std::vector<std::vector<M> >& datatable, const int root = 0)
 {
 #ifdef USE_MULTI_NODE
-  if (get_num_node() == 1) {
+  if (1 == get_num_node()) {
     return;
   }
   long nrow, total_size;

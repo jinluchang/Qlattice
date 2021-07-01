@@ -10,6 +10,18 @@ def get_total_site(job_tag):
         return [4, 4, 4, 16]
     elif job_tag == "test-8nt16":
         return [8, 8, 8, 16]
+    elif job_tag == "test-16nt32":
+        return [16, 16, 16, 32]
+    elif job_tag == "test-32nt64":
+        return [32, 32, 32, 64]
+    elif job_tag == "test-48nt96":
+        return [48, 48, 48, 96]
+    elif job_tag == "test-64nt128":
+        return [64, 64, 64, 128]
+    elif job_tag == "test-96nt192":
+        return [96, 96, 96, 192]
+    elif job_tag == "test-128nt256":
+        return [128, 128, 128, 256]
     elif job_tag == "16I":
         return [16, 16, 16, 32]
     elif job_tag in [ "24D", "24DH" ]:
@@ -28,7 +40,7 @@ def get_fermion_param(job_tag, inv_type, inv_acc):
             "c": 0.0,
             "boundary_phases": [1.0, 1.0, 1.0, 1.0], # twist boundary after loading configuration
             }
-    if job_tag in ["test-4nt8", "test-4nt16", "test-8nt16"]:
+    if job_tag[:5] == "test-":
         if inv_acc in [0, 1]:
             params["b"] = 1.5
             params["c"] = 0.5
@@ -130,7 +142,7 @@ def get_lanc_params(job_tag, inv_type):
     inv_acc = 0
     fermion_params = get_fermion_param(job_tag, inv_type, inv_acc)
     pit_params = { "eps": 0.01, "maxiter": 500, "real": True }
-    if job_tag in ["test-4nt8", "test-4nt16"]:
+    if job_tag[:5] == "test-":
         cheby_params = {"low": 0.05, "high": 5.5, "order": 50}
         irl_params = {
                 "Nstop": 20,
@@ -165,7 +177,7 @@ def get_lanc_params(job_tag, inv_type):
 
 def get_clanc_params(job_tag, inv_type):
     inv_acc = 0
-    if job_tag in ["test-4nt8", "test-4nt16"]:
+    if job_tag[:5] == "test-":
         block = [ 2, 2, 2, 2 ]
         nbasis = 20
         cheby_params = {"low": 0.20, "high": 5.5, "order": 50}
