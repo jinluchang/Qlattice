@@ -29,16 +29,17 @@ public:
 
   ga_M(){g.resize(4);ind.resize(4);for(int i=0;i<4;i++){g[i]=0.0;ind[i]=0;}};
      
-  void print()
-  {
-    for(int i=0;i<4;i++)
-    {
-      for(int j=0;j<4;j++)
-        if(ind[i]==j)printf("(%6.2e,%6.2e)",g[i].real(),g[i].imag());
-        else printf("(%6.2e,%6.2e)",0.0,0.0);
-      printf("\n");
-    }
-  }
+  inline void print();
+  //void print()
+  //{
+  //  for(int i=0;i<4;i++)
+  //  {
+  //    for(int j=0;j<4;j++)
+  //      if(ind[i]==j)printf("(%6.2e,%6.2e)",g[i].real(),g[i].imag());
+  //      else printf("(%6.2e,%6.2e)",0.0,0.0);
+  //    printf("\n");
+  //  }
+  //}
      
   qacc ga_M operator*(const ga_M &src)
   {
@@ -51,7 +52,7 @@ public:
     return res;
   }
 
-  void check_sum(unsigned long &resp,unsigned long&resm){
+  inline void check_sum(unsigned long &resp,unsigned long&resm){
     ///unsigned long resp = 0;
     resp = 0;
     for(int i=0;i<4;i++){
@@ -64,20 +65,35 @@ public:
     }
   }
 
-  int ga_sign()
-  {
-    Ftype res=0.0;
-    ga_M tmp; 
-    for(int i=0;i<4;i++)
-    {
-      tmp.g[i]+=g[i];
-      tmp.g[ind[i]]-=qlat::qconj(g[i]);
-    }
-    for(int i=0;i<4;i++)
-       res+=abs(tmp.g[i]);
-    return (res<1e-5)? 1:-1;
-  }
+  inline int ga_sign();
+
 };
+
+void ga_M::print()
+{
+  for(int i=0;i<4;i++)
+  {
+    for(int j=0;j<4;j++)
+      if(ind[i]==j)printf("(%6.2e,%6.2e)",g[i].real(),g[i].imag());
+      else printf("(%6.2e,%6.2e)",0.0,0.0);
+    printf("\n");
+  }
+}
+
+int ga_M::ga_sign()
+{
+  Ftype res=0.0;
+  ga_M tmp;
+  for(int i=0;i<4;i++)
+  {
+    tmp.g[i]+=g[i];
+    tmp.g[ind[i]]-=qlat::qconj(g[i]);
+  }
+  for(int i=0;i<4;i++)
+     res+=abs(tmp.g[i]);
+  return (res<1e-5)? 1:-1;
+}
+
 
 template<typename GAM>
 void set_GAM(GAM &GA)
@@ -230,6 +246,7 @@ qacc Ty reduce_gamma(const Ty *src,const ga_M &ga){
   return res;
 }
 
+
 //template<typename Ty>
 //__device__ inline Ty reduce_gamma(const Ty *src,const int gi){
 //  Ty res = 0.0;
@@ -239,6 +256,23 @@ qacc Ty reduce_gamma(const Ty *src,const ga_M &ga){
 //  }
 //  return res;
 //}
+
+//////Assumed memory d,c--> t, zyx
+inline void vecE_gamma(Complexq* src, ga_M& ga, long noden)
+{
+  qacc_for(isp, long(noden),{
+    Evector tmp;tmp.resize(12);
+    for(unsigned int d=0;d<12;d++){tmp[d] = src[d*noden+ isp];}
+
+    for(unsigned int d = 0; d < 4; d++)
+    for(unsigned int c = 0; c < 3; c++)
+    {
+      src[ (d*3 + c)*noden+ isp] = ga.g[d] * tmp[ga.ind[d]*3 + c];
+    }
+  });
+}
+
+
 
 }
 

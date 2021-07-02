@@ -1,14 +1,18 @@
 SHELL=/bin/bash
 
-GXX=nvcc -O3 -arch compute_70 
-CXX=mpic++ -std=c++0x -fopenmp -march=native -O2 -Wall
+#GXX=nvcc -O3 -arch compute_70 -code compute_70
+#CXX=mpic++ -std=c++0x -fopenmp -march=native -O2 -Wall
+###Do not use O3, it may or may not give very weird results
+GXX=nvcc --cudart shared -std=c++14 -ccbin mpicxx -gencode arch=compute_70,code=sm_70 -Xcompiler -fopenmp -x cu -O2 -Xcompiler -fPIC   --expt-extended-lambda --expt-relaxed-constexpr
+CXX=nvcc -O2 --cudart shared -std=c++14 -ccbin mpicxx -gencode arch=compute_70,code=sm_70 -Xcompiler -fopenmp -link
 
 qlat_prefix=/global/homes/g/genwang/project/genwang/Delta_mix/Code/Dec_29_2020/build/
 
 QLAT_INCLUDE=$(qlat_prefix)/include
 QLAT_LIB=$(qlat_prefix)/lib
 
-QLAT_CFLAGS=-std=c++0x -fno-strict-aliasing -Wfatal-errors
+#QLAT_CFLAGS=-std=c++0x -fno-strict-aliasing -Wfatal-errors
+QLAT_CFLAGS=-std=c++14
 QLAT_CFLAGS+= -I$(QLAT_INCLUDE)  -I${CUDA_ROOT}/include
 QLAT_CFLAGS+= -I$(QLAT_INCLUDE)/eigen3
 QLAT_CFLAGS+= -I$(QLAT_INCLUDE)/qutils
@@ -24,10 +28,11 @@ QLAT_CXXFLAGS=$(QLAT_CFLAGS)
 QLAT_LDFLAGS=$(QLAT_LIB)/libfftw3.a $(QLAT_LIB)/libz.a $(QLAT_LIB)/libcuba.a -lm -L${CUDA_ROOT}/lib64 -lcudart
 
 
-all: qlat.x
+control_%.cu :
+	ln -fs $(basename $@).cpp $(basename $@).cu; sleep 1s;
 
-qlat.x: *.C *.h *.cu
-	-time rm program.gpu;$(GXX) $(QLAT_GFLAGS) -c *.cu -o program.gpu;$(CXX) -o qlat.x $(QLAT_CXXFLAGS) program.gpu $(QLAT_LDFLAGS) 2>&1 | grep --color=always 'error:\|'
+% : *.h  control_%.cu control_%.cpp
+	$(GXX) $(QLAT_GFLAGS) -c control_$@.cu -o program.o;$(CXX) -o $@ $(QLAT_CXXFLAGS) program.o $(QLAT_LDFLAGS);rm program.o control_$@.cu
 
 clean:
 	rm *.o qlat.x

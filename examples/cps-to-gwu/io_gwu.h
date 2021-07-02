@@ -288,7 +288,7 @@ inline void read_kentucky_vector(FILE *file,char* props,int Nvec,const io_gwu& i
       char* pres=&res[(iou*gN+gi)*noden*dsize + 0];
       char* psrc=&props[(offv)*noden*dsize + 0];
       #pragma omp parallel for
-      for(size_t isp=0;isp<noden*dsize;isp++){pres[isp] = psrc[isp];}
+      for(size_t isp=0;isp<size_t(noden*dsize);isp++){pres[isp] = psrc[isp];}
     }
       gettimeofday(&tm2, NULL);
       send_vec_kentucky((char*) &buf[0],(char*) &res[0], dsize,gN, io, read);
@@ -358,7 +358,7 @@ inline void read_kentucky_vector(FILE *file,char* props,int Nvec,const io_gwu& i
       char* pres=&props[(offv)*noden*dsize + 0];
       char* psrc=&res[(iou*gN+gi)*noden*dsize + 0];
       #pragma omp parallel for
-      for(size_t isp=0;isp<noden*dsize;isp++){pres[isp] = psrc[isp];}
+      for(size_t isp=0;isp<size_t(noden*dsize);isp++){pres[isp] = psrc[isp];}
     }
     }
     curr_v += ionum*gN;
@@ -645,44 +645,60 @@ void gwu_to_cps_rotation_vec(Ty* src,int n_vec,size_t noden,bool source=false,bo
 
 }
 
+///////TO DO, Need use omp here
+////double get_norm_vec_qlat(qlat::Complex *src, size_t noden){
+////  double res = 0.0;
+////  /////need sum 12 first to reduce float sum error
+////  #pragma omp parallel for reduction(+: res)
+////  for(size_t isp=0;isp<noden;isp++)
+////  {
+////    double a = 0.0;
+////    for(unsigned int dc=0;dc<12;dc++){
+////       a += qnorm(src[isp*12+dc]);
+////    }
+////    res += a;
+////  }
+////  sum_all_size(&res,1);
+////  return res;
+////}
+
+//template<typename Ty>
+//double get_norm_vec_qlat(Ty *src, size_t noden){
+//  double res = 0.0;
+//  ///////need sum 12 first to reduce float sum error
+//  //#pragma omp parallel for reduction(+: res)
+//  for(size_t isp=0;isp<noden;isp++)
+//  {
+//    double a = 0.0;
+//    for(unsigned int dc=0;dc<12;dc++){
+//       a += qnorm(src[isp*12+dc]);
+//    }
+//    res += a;
+//  }
+//  sum_all_size(&res,1);
+//  return res;
+//}
+
 template<typename Ty>
-inline Ty get_norm_vec(Ty *src,size_t noden){
+Ty get_norm_vec(Ty *src,size_t noden){
   Ty res = 0.0;
 
   std::complex<Ty > *p = (std::complex<Ty >*) src;
-
   /////need sum 12 first to reduce float sum error
   #pragma omp parallel for reduction(+: res)
   for(size_t isp=0;isp<noden;isp++)
   {
     Ty a = 0.0;
-    for(int dc=0;dc<12;dc++){
+    for(unsigned int dc=0;dc<12;dc++){
        a += std::norm(p[isp*12+dc]);
     }
     res += a;
   }
 
   //print0("==omp_get_max_threads %8d \n ",omp_get_max_threads());
-
   sum_all_size(&res,1);
   return res;
 
-  //int Nv = omp_get_num_threads();
-  //std::vector<Ty > buf;buf.resize(Nv);
-  //for(int iv=0;iv<Nv;iv++){buf[iv]=0.0;}
-  //#pragma omp parallel
-  //for(size_t isp=0;isp<size_t(noden*12);isp++)
-  //{
-  //  buf[omp_get_thread_num()] += std::norm(p[isp]);
-  //}
-  //////omp_set_dynamic(0);
-  //////omp_set_num_threads(1);
-  //#pragma omp parallel for reduction(+: res)
-  //for(int iv=0;iv<Nv;iv++){res += buf[iv];}
-  //////omp_set_num_threads(omp_get_max_threads());
-  //////omp_set_dynamic(1);
-  ///#pragma omp barrier
-  //#pragma omp parallel for shared(p) reduction(+: res)
 }
 
 inline int test_single(const char *filename,io_gwu &io_use,int iv=0){
@@ -740,7 +756,7 @@ inline bool check_Eigen_file_size(const char *filename,io_gwu &io_use,int n1,boo
   size_t sizen = get_file_size_MPI(filename);
 
   size_t Fsize = io_use.Nmpi*(noden*12*2)*sizeof(float);
-  if(sizen <  Fsize){abort_r("Eigen file size too small. \n");}
+  if(sizen <  Fsize){print0(filename);abort_r("Eigen file size too small. \n");}
   if(sizen <2*Fsize){
     if(n1 != 1){abort_r("Eigen file size too small 1. \n");}
     /////read with single
@@ -763,8 +779,12 @@ inline bool check_Eigen_file_size(const char *filename,io_gwu &io_use,int n1,boo
 }
 
 /////Read the data into the point resp which have memory allocated already
+/////check --> if false, abort if file is double,
+/////read --> flag for writing and reading, can only write single currently
 template<typename Ty>
-void load_gwu_eigen(const char *filename,std::vector<Ty* > resp,io_gwu &io_use,int n0,int n1,bool check=true, bool read=true){
+void load_gwu_eigen(const char *filename,std::vector<Ty* > resp,io_gwu &io_use,int n0,int n1,
+  bool check=true, bool read=true)
+{
   if(n1<n0 or n0<0){abort_r("Read number of eigen should be larger than 1. \n");}
   if(resp.size()!= size_t(n1-n0)){abort_r("Final point size wrong!\n");}
   ////if(n0!=0 and read==false){abort_r("Write vectors with off not zero!");}
@@ -883,6 +903,7 @@ void load_gwu_eigen(const char *filename,std::vector<Ty > &res,io_gwu &io_use,in
   for(int iv=0;iv<n_vec;iv++){resp[iv] = &res[iv*noden*12*2];}
 
   load_gwu_eigen(filename,resp,io_use,n0,n1,check,read);
+
 }
 
 
@@ -928,7 +949,31 @@ void load_gwu_eigen(const char *filename,std::vector<qlat::FermionField4dT<Ty> >
 
 template<typename Ty>
 void save_gwu_eigen(const char *filename,std::vector<qlat::FermionField4dT<Ty> > &eigen,io_gwu &io_use,int n0,int n1,bool check=true){
-     load_gwu_eigen(filename,eigen,io_use,n0,n1,check,false);
+  load_gwu_eigen(filename,eigen,io_use,n0,n1,check,false);
+}
+
+inline void load_gwu_eigen(const char *filename,EigenM &Mvec,io_gwu &io_use,int n0,int n1,bool check=true,bool read=true)
+{
+  if(n1<n0 or n0<0){abort_r("Read number of eigen should be larger than 1. \n");}
+  int n_vec = n1-n0;
+  if(n_vec > int(Mvec.size())){abort_r("Read number of eigen larger than memory. \n");}
+
+  long Nsize = io_use.noden*12;
+
+  std::vector<Ftype* > resp;resp.resize(n_vec);
+  for(int iv=0;iv<n_vec;iv++){
+    if(Mvec[iv].size() != Nsize){
+      if(read==false)abort_r("Mvec not initialized! \n");
+      if(read==true ){Mvec[iv].resize(Nsize);set_zero(Mvec[iv]);}
+    }
+    resp[iv]= (Ftype*)(&Mvec[iv][0]);
+  }
+  load_gwu_eigen(filename,resp,io_use,n0,n1,check,read);
+}
+
+inline void save_gwu_eigen(const char *filename,EigenM &Mvec,io_gwu &io_use,int n0,int n1,bool check=true)
+{
+  load_gwu_eigen(filename, Mvec,io_use,n0,n1,check,false);
 }
 
 
@@ -1025,37 +1070,29 @@ void save_gwu_prop(const char *filename,std::vector<qlat::FermionField4dT<Ty> > 
 template<typename Ty>
 void prop4d_to_Fermion(Propagator4d& prop,std::vector<qlat::FermionField4dT<Ty > > &buf, int dir=1){
 
-  if(sizeof(Ty) != 2*sizeof(double ) and sizeof(Ty) != 2*sizeof(float )){abort_r("Cannot understand the input format! \n");}
-  if(dir==1){buf.resize(12);for(int iv=0;iv<12;iv++){buf[iv].init(prop.geo());qlat::set_zero(buf[iv]);}}
+  ////if(sizeof(Ty) != 2*sizeof(double ) and sizeof(Ty) != 2*sizeof(float )){abort_r("Cannot understand the input format! \n");}
+  if(dir==1){buf.resize(0);buf.resize(12);for(int iv=0;iv<12;iv++){buf[iv].init(prop.geo());qlat::set_zero(buf[iv]);}}
   if(dir==0){prop.init(buf[0].geo());}
 
   for (long index = 0; index < prop.geo().local_volume(); ++index)
   {
-    ////Assumed prop to be double
-    double* src = (double*) qlat::get_data(prop.get_elems(index)).data();
+    qlat::WilsonMatrix& src =  prop.get_elem(index);
     for(int d0=0;d0<12;d0++)
     {
-      if(sizeof(Ty) == 2*sizeof(float )){
-        float*  res = (float*)&(buf[d0].get_elem(index));
-        for(int d1=0;d1<12;d1++)
-        {
-          if(dir==1){res[d1*2+0] = src[(d1*12 + d0)*2+0];res[d1*2+1] = src[(d1*12 + d0)*2+1];}
-          if(dir==0){src[(d1*12 + d0)*2+0] = res[d1*2+0];src[(d1*12 + d0)*2+1] = res[d1*2+1];}
-        }
+      ////v0(s*3 + c0, ga.ind[d0]*3 + c1)
+      Ty* res = (Ty*)&(buf[d0].get_elem(index));
+      for(int d1=0;d1<12;d1++)
+      {
+        if(dir==1){res[d1] = src(d1, d0);}
+        if(dir==0){src(d1, d0) = res[d1];}
       }
-      if(sizeof(Ty) == 2*sizeof(double )){
-        double*  res = (double*)&(buf[d0].get_elem(index));
-        for(int d1=0;d1<12;d1++)
-        {
-          if(dir==1){res[d1*2+0] = src[(d1*12 + d0)*2+0];res[d1*2+1] = src[(d1*12 + d0)*2+1];}
-          if(dir==0){src[(d1*12 + d0)*2+0] = res[d1*2+0];src[(d1*12 + d0)*2+1] = res[d1*2+1];}
-        }
-      }
+
     }
   }
+
 }
 
-void save_gwu_prop(const char *filename,Propagator4d& prop){
+inline void save_gwu_prop(const char *filename,Propagator4d& prop){
   io_gwu io_use(prop.geo(),32);
   std::vector<qlat::FermionField4dT<qlat::ComplexF> > prop_qlat;
   prop4d_to_Fermion(prop,prop_qlat, 1);
@@ -1063,13 +1100,13 @@ void save_gwu_prop(const char *filename,Propagator4d& prop){
   ///////load_gwu_prop(filename,prop,io_use,false);
 }
 
-void save_gwu_prop(std::string &filename,Propagator4d& prop){
+inline void save_gwu_prop(std::string &filename,Propagator4d& prop){
   char tem[500];
   sprintf(tem,filename.c_str());
   save_gwu_prop(tem,prop);
 }
 
-void load_gwu_prop(const char *filename,Propagator4d& prop){
+inline void load_gwu_prop(const char *filename,Propagator4d& prop){
   io_gwu io_use(prop.geo(),32);
   std::vector<qlat::FermionField4dT<qlat::Complex > > prop_qlat;
   load_gwu_prop(filename,prop_qlat,io_use);
@@ -1077,7 +1114,7 @@ void load_gwu_prop(const char *filename,Propagator4d& prop){
   ///////load_gwu_prop(filename,prop,io_use,false);
 }
 
-void load_gwu_prop(std::string &filename,Propagator4d& prop){
+inline void load_gwu_prop(std::string &filename,Propagator4d& prop){
   char tem[500];
   sprintf(tem,filename.c_str());
   load_gwu_prop(tem,prop);
@@ -1089,9 +1126,7 @@ void load_gwu_prop(std::string &filename,Propagator4d& prop){
 ////  load_gwu_link(filename,gf,io_use,false);
 ////}
 
-
-
-void load_gwu_link(const char *filename,GaugeField &gf){
+inline void load_gwu_link(const char *filename,GaugeField &gf){
   io_gwu io_use(gf.geo(),8);
   //if(sizeof(Ty) != 2*sizeof(double ) and sizeof(Ty) != 2*sizeof(float ))
   //{abort_r("Cannot understand the input format! \n");}
@@ -1138,7 +1173,7 @@ void load_gwu_link(const char *filename,GaugeField &gf){
   }
 }
 
-void load_gwu_link(std::string &filename,GaugeField &gf){
+inline void load_gwu_link(std::string &filename,GaugeField &gf){
   char tem[500];
   sprintf(tem,filename.c_str());
   load_gwu_link(tem,gf);
@@ -1192,7 +1227,7 @@ void save_gwu_noi(const char *filename,qlat::FieldM<Ty,1> &noi,io_gwu &io_use){
   load_gwu_noi(filename,noi,io_use,false);
 }
 
-void save_gwu_noiP(const char *filename,Propagator4d& prop){
+inline void save_gwu_noiP(const char *filename,Propagator4d& prop){
   io_gwu io_use(prop.geo(),32);
   qlat::FieldM<qlat::Complex,1> noi;
   noi.init(prop.geo());
@@ -1201,29 +1236,30 @@ void save_gwu_noiP(const char *filename,Propagator4d& prop){
   size_t noden = io_use.noden;
   for (size_t index = 0; index < noden; ++index)
   {
-    ////Assumed double
-    double* src = (double*) qlat::get_data(prop.get_elems(index)).data();
+    qlat::WilsonMatrix& src =  prop.get_elem(index);
     double sum = 0.0;
     for(int d1=0;d1<12;d1++)
     for(int d0=0;d0<12;d0++)
     {
-      sum += std::fabs(src[(d1*12 + d0)*2+0]);
-      sum += std::fabs(src[(d1*12 + d0)*2+1]);
+      sum += std::fabs(src(d1,d0).real());
+      sum += std::fabs(src(d1,d0).imag());
     }
-    qlat::Complex phase = qlat::Complex(src[0],src[1]);
+    qlat::Complex phase = qlat::Complex(src(0,0).real(),src(0,0).imag());
+
     if(sum >1e-8)noi.get_elem(index) = 1.0*phase;
   }
+
   save_gwu_noi(filename,noi ,io_use);
   ///////load_gwu_prop(filename,prop,io_use,false);
 }
 
-void save_gwu_noiP(std::string &filename,Propagator4d& prop){
+inline void save_gwu_noiP(std::string &filename,Propagator4d& prop){
   char tem[500];
   sprintf(tem,filename.c_str());
   save_gwu_noiP(tem,prop);
 }
 
-void load_gwu_noiP(const char *filename,Propagator4d& prop){
+inline void load_gwu_noiP(const char *filename,Propagator4d& prop){
   io_gwu io_use(prop.geo(),32);
   qlat::FieldM<qlat::Complex,1> noi;
   noi.init(prop.geo());
@@ -1235,8 +1271,11 @@ void load_gwu_noiP(const char *filename,Propagator4d& prop){
   for (size_t index = 0; index < noden; ++index)
   {
     ////Assumed double
-    double* res = (double*) qlat::get_data(prop.get_elems(index)).data();
-    double* src = (double*) qlat::get_data(noi.get_elems(index)).data();
+    ////double* res = (double*) qlat::get_data(prop.get_elems(index)).data();
+    qlat::WilsonMatrix& res =  prop.get_elem(index);
+    for(int d0=0;d0<12;d0++){res(d0,d0) = noi.get_elem(index);}
+
+    ////src = (double*) qlat::get_data(noi.get_elems(index)).data();
 
     /////for(int d1=0;d1<12;d1++)
     /////for(int d0=0;d0<12;d0++)
@@ -1244,18 +1283,18 @@ void load_gwu_noiP(const char *filename,Propagator4d& prop){
     /////  sum += std::fabs(src[(d1*12 + d0)*2+0]);
     /////  sum += std::fabs(src[(d1*12 + d0)*2+1]);
     /////}
-    for(int d0=0;d0<12;d0++)
-    {
-      res[(d0*12+d0)*2+0] = src[0];
-      res[(d0*12+d0)*2+1] = src[1];
-    }
+    //{
+    //  res(d0,d0) = noi.get_elems(index);
+    //  //res[(d0*12+d0)*2+0] = src[0];
+    //  //res[(d0*12+d0)*2+1] = src[1];
+    //}
     ///qlat::Complex phase = qlat::Complex(src[0],src[1]);
     ///if(sum >1e-8)noi.get_elem(index) = 1.0*phase;
   }
   ///////load_gwu_prop(filename,prop,io_use,false);
 }
 
-void load_gwu_noiP(std::string &filename,Propagator4d& prop){
+inline void load_gwu_noiP(std::string &filename,Propagator4d& prop){
   char tem[500];
   sprintf(tem,filename.c_str());
   load_gwu_noiP(tem,prop);

@@ -126,7 +126,8 @@ template<class T>
 void generic_sort(T **list, int left,int right,int (*comparer)(T &_a,T &_b))
 {
         int p = (left + right) / 2;
-        T *tmp = list[p],*tmp2;
+        ///T *tmp = list[p],*tmp2;
+        T *tmp = list[p];
         int i = left,j = right;
         while (i < j) {
                 while (i < p && comparer(*list[i],*tmp)<=0)
@@ -177,7 +178,7 @@ public:
     }
     int ind_2_serial(int ind){
     int imode=ind_2_mode(ind);
-    for(int i=0;i<mode[imode].size();i++)
+    for(unsigned int i=0;i<mode[imode].size();i++)
      if(mode[imode][i].iserial==ind) return mode_off[imode]+i;
     return 0;
     }
@@ -213,16 +214,16 @@ public:
        for(int j=nm;j>=-nm;j--)
        for(int k=nm;k>=-nm;k--)
           lst.push_back(momentum(i,j,k));
-       for(int i=0;i<lst.size();i++)
+       for(unsigned int i=0;i<lst.size();i++)
           plst.push_back(lst.data()+i);
        generic_sort(plst.data(),0,lst.size()-1,lst[0].comparer);
        int last_off=0;int present_size=0;
-       for(int i=0;i<lst.size();i++)
+       for(unsigned int i=0;i<lst.size();i++)
        if(i==lst.size()-1 || lst[0].comparer(*plst[i+1],*plst[i])==1)
        {
            present_size++;
            mode.resize(present_size);
-           for(int j=last_off;j<=i;j++)
+           for(unsigned int j=last_off;j<=i;j++)
               mode[present_size-1].push_back(*plst[j]);
           last_off=i+1;
        }
@@ -230,9 +231,9 @@ public:
     }
     
      int off=0;
-     for(int i=0;i<mode.size();i++)
+     for(unsigned int i=0;i<mode.size();i++)
      {
-          for(int j=0;j<mode[i].size();j++)mom_ind0.push_back(mode[i][j].iserial);
+          for(unsigned int j=0;j<mode[i].size();j++)mom_ind0.push_back(mode[i][j].iserial);
           mode_count.push_back(mode[i].size());
           mode_off.push_back(off);
           off+=mode[i].size();
@@ -253,11 +254,11 @@ public:
     
     void print()
     {
-       for(int i=0;i<mode.size();i++)
+       for(unsigned int i=0;i<mode.size();i++)
        if(mode[i].size()>0)
        {
           printf("%4d%6d%6d",i,mode[i][0].p2,mode[i][0].p4);
-          for(int j=0;j<mode[i].size();j++)
+          for(unsigned int j=0;j<mode[i].size();j++)
              printf("%10d",mode[i][j].iserial);
           printf("\n");
        }
@@ -354,10 +355,10 @@ struct q2_list
       ///double_prn ran(abs(iseed)+1);
       mom_set momX;momX.set(true);
       offset.clear();Npmode.clear();
-      for(int i=0;i<list.size();i++) delete list[i];
+      for(unsigned int i=0;i<list.size();i++) delete list[i];
       list.clear();
-      for(int i=0;i<src.size();i++)
-      for(int j=0;j<sink.size();j++)
+      for(unsigned int i=0;i<src.size();i++)
+      for(unsigned int j=0;j<sink.size();j++)
       if(momX.ind_2_mode(src[i].sub(sink[j]))<cut_off)
          list.push_back(new q2_mode(src[i],sink[j]));
       size=list.size();
@@ -368,7 +369,7 @@ struct q2_list
 
       std::vector<int> sink_offset;
       if(iseed!=0)
-      for(int i=0;i<momX.mode.size();i++)
+      for(unsigned int i=0;i<momX.mode.size();i++)
       {
              //int ioff=(int)(ran.rand()*momX.mode[i].size());
              int ioff=(int)(qlat::u_rand_gen(rs)*momX.mode[i].size());
@@ -388,7 +389,7 @@ struct q2_list
              momentum iqr=momX.mode[iq2][sink_offset[iq2]];
              if(iq.p2!=iqr.p2||iq.p4!=iqr.p4)
                 printf("q2_list:momentum mode mismatch, %10d vs. %10d\n",
-                     iq,iqr);
+                     iq.iserial,iqr.iserial);
              int q_count=0;
              offset.push_back(list_new.size());
              for(int j=last_off;j<=i;j++)
@@ -429,7 +430,7 @@ struct q2_list
       if(iseed!=0)
       {
           list.resize(0);
-          for(int i=0;i<list_new.size();i++)
+          for(unsigned int i=0;i<list_new.size();i++)
               list.push_back(list_new[i]);
           list_new.resize(0);
       }
@@ -466,7 +467,7 @@ struct q2_list
 
   ~q2_list()
   {
-      for(int i=0;i<list.size();i++) delete list[i];
+      for(unsigned int i=0;i<list.size();i++) delete list[i];
   }
 
   int find_q2(int ind_src,int ind_sink,double mass=1.0){

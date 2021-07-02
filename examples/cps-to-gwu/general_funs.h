@@ -2,9 +2,10 @@
 // Gen Wang
 // Jan. 2021
 
-#ifndef general_funs_h
-#define general_funs_h
+#ifndef GENERAL_FUNS_H
+#define GENERAL_FUNS_H
 #pragma once
+
 
 #include <string.h>
 #include <sys/resource.h>
@@ -15,85 +16,39 @@
 
 #include <iterator>
 #include <sys/sysinfo.h>
+#include "float_type.h"
 
-//#include <cuda_runtime.h>
-
-//#include <Eigen/Dense>
-//#include "fftw3.h"
-//#include "fftw3-mpi.h"
-
-
-#define Enablefloat 1
-
-#define large_vuse Elarge_vector
-#if Enablefloat==0
-#define Complexq qlat::Complex
-#define Ftype double
-#define Ctype double
-#define CMPI                  MPI_DOUBLE
-#define FFTtype               fftw
-#define FFTtype_malloc        fftw_malloc
-#define FFTtype_complex       fftw_complex
-#define FFTtype_plan          fftw_plan
-#define FFTtype_plan_dft_3d   fftw_plan_dft_3d
-#define FFTtype_plan_many_dft fftw_plan_many_dft
-#define FFTtype_execute       fftw_execute
-#define FFTtype_free          fftw_free
-#define FFTtype_destroy_plan  fftw_destroy_plan
-#define qcd_vec               qcd::vector
-#define EigenM Eigen::Matrix< std::complex< double >, Eigen::Dynamic, Eigen::Dynamic ,Eigen::RowMajor>
-#define EigenMD Eigen::Matrix< std::complex< double >, Eigen::Dynamic, Eigen::Dynamic ,Eigen::RowMajor>
-#define EigenV Eigen::VectorXcd
-/////#define Evector Eigen::Array<std::complex<double >,Eigen::Dynamic,1>
-#define Evector qlat::vector<std::complex< double > >
-#define EM Eigen::Map<Eigen::Array<std::complex<double >,Eigen::Dynamic,1> >
-#define FFT_init_threads fftw_init_threads
-#define FFT_plan_with_nthreads fftw_plan_with_nthreads
-
-#define FFT_mpi_init              fftw_mpi_init
-#define FFT_mpi_local_size_many   fftw_mpi_local_size_many
-#define FFT_alloc_complex         fftw_alloc_complex
-#define FFT_mpi_plan_many_dft     fftw_mpi_plan_many_dft
-#endif
-
-#if Enablefloat==1
-#define Complexq qlat::ComplexF
-#define Ftype float
-#define Ctype float
-#define CMPI                  MPI_FLOAT
-#define FFTtype               fftwf
-#define FFTtype_malloc        fftwf_malloc
-#define FFTtype_complex       fftwf_complex
-#define FFTtype_plan          fftwf_plan
-#define FFTtype_plan_dft_3d   fftwf_plan_dft_3d
-#define FFTtype_plan_many_dft fftwf_plan_many_dft
-#define FFTtype_execute       fftwf_execute
-#define FFTtype_free          fftwf_free
-#define FFTtype_destroy_plan  fftwf_destroy_plan
-#define qcd_vec               qcd::fvector
-#define EigenM Eigen::Matrix< std::complex< float>, Eigen::Dynamic, Eigen::Dynamic ,Eigen::RowMajor>
-#define EigenMD Eigen::Matrix< std::complex< float>, Eigen::Dynamic, Eigen::Dynamic ,Eigen::RowMajor>
-#define EigenV Eigen::VectorXcf
-/////#define Evector Eigen::Array<std::complex<float >,Eigen::Dynamic,1>
-#define Evector qlat::vector<std::complex< float > >
-//#define EM Eigen::Map<Eigen::Array<std::complex<float >,Eigen::Dynamic,1> >
-#define EM Eigen::Map<Eigen::Array<std::complex<float >,Eigen::Dynamic,1> >
-#define FFT_init_threads fftwf_init_threads
-#define FFT_plan_with_nthreads fftwf_plan_with_nthreads
-
-#define FFT_mpi_init              fftwf_mpi_init
-#define FFT_mpi_local_size_many   fftwf_mpi_local_size_many
-#define FFT_alloc_complex         fftwf_alloc_complex
-#define FFT_mpi_plan_many_dft     fftwf_mpi_plan_many_dft
-#endif
-
-#define ComtypeT std::complex
-
-#define LInt unsigned long int
-
+////#include <cuda_runtime.h>
+//
+////#include <Eigen/Dense>
+////#include "fftw3.h"
+////#include "fftw3-mpi.h"
 
 namespace qlat
 {
+
+#ifndef QLAT_USE_ACC
+#ifdef __GNUC__
+///////Multiply of different types of complex
+
+//inline std::complex<double> operator*(const std::complex<float> &a, const double &b) {
+//    return std::complex<double>(a.real()*b, a.imag()*b);
+//}
+//
+//inline std::complex<double> operator/(const std::complex<float> &a, const double &b) {
+//    return std::complex<double>(a.real()/b, a.imag()/b);
+//}
+
+inline std::complex<double> operator*(const std::complex<float> &a, const std::complex<double > &b) {
+    return std::complex<double>(a.real() * b.real() - a.imag()*b.imag(), a.imag()*b.real() + a.real()*b.imag());
+}
+
+inline std::complex<double> operator*(const std::complex<double > &b, const std::complex<float> &a) {
+    return std::complex<double>(a.real() * b.real() - a.imag()*b.imag(), a.imag()*b.real() + a.real()*b.imag());
+}
+#endif
+#endif
+
 
 inline unsigned int get_node_rank_funs()
 {
@@ -498,6 +453,8 @@ inline void set_GPU(){
   int gpu_id = -1; 
   cudaGetDevice(&gpu_id);
   printf("CPU node %d (of %d) uses CUDA device %d\n", id_node, num_node, gpu_id);
+  fflush(stdout);
+  MPI_Barrier(get_comm());
   #endif
 
 }
@@ -575,19 +532,26 @@ inline void begin_thread(
   begin_comm(get_comm(), size_node);
 }
 
-inline void print_mem_info()
+inline void print_mem_info(std::string stmp = "")
 {
+  print0("%s, ",stmp.c_str());
   ////double length = (geo.local_volume()*pow(0.5,30))*12*sizeof(Complexq);
-  size_t freeM = 0;size_t totalM = 0;
-  double freeD = 0;double totalD=0;
   #ifdef QLAT_USE_ACC
+  double freeD = 0;double totalD=0;
+  size_t freeM = 0;size_t totalM = 0;
   cudaMemGetInfo(&freeM,&totalM);
   freeD = freeM*pow(0.5,30);totalD = totalM*pow(0.5,30);
   #endif
   struct sysinfo s_info;
   sysinfo(&s_info);
+  #ifdef QLAT_USE_ACC
   print0("===CPU free %.3e GB, total %.3e GB; GPU free %.3e GB, total %.3e GB. \n"
-          ,s_info.totalram*pow(0.5,30), s_info.freeram*pow(0.5,30),freeD,totalD);
+          , s_info.freeram*pow(0.5,30),s_info.totalram*pow(0.5,30),freeD,totalD);
+
+  #else
+  print0("===CPU free %.3e GB, total %.3e GB. \n"
+          , s_info.freeram*pow(0.5,30),s_info.totalram*pow(0.5,30));
+  #endif
 }
 
 
@@ -657,7 +621,7 @@ inline int read_vector(const char *filename, std::vector<double > &dat)
     //char* buf = (char *)&dat[0];
     //fread(buf, 1, Vsize*8, filer);
 
-    for(int iv=0;iv<Vsize;iv++)
+    for(unsigned int iv=0;iv<Vsize;iv++)
     {    
       if(offr >= Vsize*8)break;
       char* buf = (char *)&dat[offr/8];
@@ -707,7 +671,7 @@ inline void bcast_vstring(std::vector<std::string> &conf_l, const int Host_rank 
   size_t sizen = 0;if(rank == Host_rank)sizen = conf_l.size();
   MPI_Bcast(&sizen, sizeof(size_t), MPI_CHAR, Host_rank, get_comm());
   if(rank != Host_rank)conf_l.resize(sizen);
-  for(int is=0;is<conf_l.size();is){
+  for(unsigned int is=0;is<conf_l.size();is++){
     if(rank == Host_rank)sizen = conf_l[is].size();
     MPI_Bcast(&sizen, sizeof(size_t), MPI_CHAR, Host_rank, get_comm());
 
@@ -724,23 +688,39 @@ struct inputpara{
   int bSum;
   int cutN;
   std::string lat;
-  int conf;
+  int icfg;
   int save_prop;
+
+  int bini, ncut0, ncut1;
+
+  int nx;
+  int ny;
+  int nz;
+  int nt;
+  int nvec;
+  int ionum;
+  int nmass;
+  std::string Ename;
+  std::string Pname;
+  std::string paraI;
+
+  int debuga;
+
   ~inputpara(){
-    for(int is=0;is<read_f.size();is++){
-     for(int ic=0;ic<read_f[is].size();ic++){read_f[is][ic].resize(0);}
+    for(unsigned int is=0;is<read_f.size();is++){
+     for(unsigned int ic=0;ic<read_f[is].size();ic++){read_f[is][ic].resize(0);}
      read_f[is].resize(0);
     }
     read_f.resize(0);
   }
 
   int find_para(const std::string &str2, int &res){
-    for(int is=0;is<read_f.size();is++){
+    for(unsigned int is=0;is<read_f.size();is++){
       ////std::string str2("bSize");
       std::size_t found = read_f[is][0].find(str2);
       if(found != std::string::npos and read_f[is].size() >= 2){
         res = stringtonum(read_f[is][1]);
-        print0("  %10s %10d \n",str2.c_str(), res);
+        print0("  %20s %10d \n",str2.c_str(), res);
         return 1;
       }
     }
@@ -748,12 +728,17 @@ struct inputpara{
   }
 
   int find_para(const std::string &str2, std::string &res){
-    for(int is=0;is<read_f.size();is++){
+    for(unsigned int is=0;is<read_f.size();is++){
       ////std::string str2("bSize");
       std::size_t found = read_f[is][0].find(str2);
       if(found != std::string::npos and read_f[is].size() >= 2){
-        res = read_f[is][1];
-        print0("  %10s %10s \n",str2.c_str(), res.c_str());
+        if(read_f[is].size()==2){res = read_f[is][1];}else{
+          res = "";
+          for(unsigned int temi=1;temi<read_f[is].size();temi++){
+            res += read_f[is][temi] + " ";}
+        }
+        ////res = read_f[is][1];
+        print0("  %20s %s \n",str2.c_str(), res.c_str());
         return 1;
       }
     }
@@ -768,12 +753,12 @@ struct inputpara{
     MPI_Bcast(&sizen, sizeof(size_t), MPI_CHAR, 0, get_comm());
     if(rank != 0)read_f.resize(sizen);
 
-    for(int is=0;is<read_f.size();is++)
+    for(unsigned int is=0;is<read_f.size();is++)
     {
       if(rank == 0)sizen = read_f[is].size();
       MPI_Bcast(&sizen, sizeof(size_t), MPI_CHAR, 0, get_comm());
       if(rank != 0)read_f[is].resize(sizen);
-      for(int ic=0;ic<read_f[is].size();ic++)
+      for(unsigned int ic=0;ic<read_f[is].size();ic++)
       {
         if(rank == 0)sizen = read_f[is][ic].size();
         MPI_Bcast(&sizen, sizeof(size_t), MPI_CHAR, 0, get_comm());
@@ -788,7 +773,24 @@ struct inputpara{
     if(find_para(std::string("bSum"),bSum)==0)bSum  = 512;
     if(find_para(std::string("cutN"),cutN)==0)cutN  = 8;
     if(find_para(std::string("lat"),lat)==0)lat  = std::string("24D");
-    if(find_para(std::string("conf"),conf)==0)conf  = 0;
+    if(find_para(std::string("icfg"),icfg)==0)icfg  = 0;
+
+    if(find_para(std::string("bini"),bini)==0)bini = -1;
+    if(find_para(std::string("ncut0"),ncut0)==0)ncut0 = 30;
+    if(find_para(std::string("ncut1"),ncut1)==0)ncut1 = 30;
+
+    if(find_para(std::string("nx"),nx)==0)nx  = 0;
+    if(find_para(std::string("ny"),ny)==0)ny  = 0;
+    if(find_para(std::string("nz"),nz)==0)nz  = 0;
+    if(find_para(std::string("nt"),nt)==0)nt  = 0;
+    if(find_para(std::string("nvec"),nvec)==0)nvec  = 0;
+    if(find_para(std::string("ionum"),ionum)==0)ionum  = 0;
+    if(find_para(std::string("Ename"),Ename)==0)Ename  = std::string("NONE");
+    if(find_para(std::string("Pname"),Pname)==0)Pname  = std::string("NONE");
+    if(find_para(std::string("paraI"),paraI)==0)paraI  = std::string("NONE");
+
+    if(find_para(std::string("nmass"),nmass)==0)nmass  = 0;
+    if(find_para(std::string("debuga"),debuga)==0)debuga  = 0;
     if(find_para(std::string("save_prop"),save_prop)==0)save_prop  = 0;
     print0("========End   input \n");
   }
@@ -832,7 +834,163 @@ void p_vector(const std::vector<Ty> teml)
 };
 
 
-////inutpara input_global;
+inline void ran_EigenM(EigenM& a, int cpu=1)
+{
+  int N0 = a.size();if(N0 == 0)return ;
+  //int N1 = a[0].size();
+  timeval tm;gettimeofday(&tm, NULL);
+  ////print0("print time %.3f\n", tm.tv_sec);
+  qlat::RngState rs(qlat::get_id_node() + 1 +int(tm.tv_sec));
+  double ini = qlat::u_rand_gen(rs);
+
+  if(cpu == 0){
+  for(long i=0;i<N0;i++){
+  EigenV& tem = a[i];
+  qacc_for(j, tem.size() ,{
+    tem[j] = Complexq(std::cos((ini+i)*0.5) , (9.0/(j+1))*ini*0.1);
+  });
+  }
+  //qacc_for(isp, long(N0),{
+  //  long i = isp;
+  //  for(long j=0;j<a[i].size();j++)
+  //  {   a[i][j] = Complexq(std::cos((ini+i)*0.5) , (9.0/(j+1))*ini*0.1);}
+  //});
+  //qacc_for(isp, long(N0),{
+  //  long i = isp;
+  //  for(long j=0;j<a[i].size();j++)
+  //  {   a[i][j] = Complexq(std::cos((ini+i)*0.5) , (9.0/(j+1))*ini*0.1);}
+  //});
+  }
+  else{
+  #pragma omp parallel for
+  for(size_t i=0;i < size_t(N0);i++)
+  {
+    for(size_t j = 0; j< size_t(a[i].size()); j++)
+    {
+        a[i][j] = Complexq(std::cos((ini+i)*0.5) , (9.0/(j+1))*ini*0.1);
+    }
+  }}
+}
+
+inline void ran_EigenM(Evector& a,int cpu=1)
+{
+  if(a.size() == 0)return;
+  timeval tm;gettimeofday(&tm, NULL);
+  ////print0("print time %.3f\n", tm.tv_sec);
+  qlat::RngState rs(qlat::get_id_node() + 1 +int(tm.tv_sec));
+
+  double ini = qlat::u_rand_gen(rs);
+
+  if(cpu == 0){
+  size_t bfac = size_t(std::sqrt(a.size()));
+  qacc_for(isp, long(a.size()/bfac + 1),{
+   for(size_t i=0;i<size_t(bfac);i++){  
+    size_t off = isp*bfac + i;
+    if(off < size_t(a.size())){
+      a[isp] = Complexq(std::cos((ini+isp)*0.5) , (5.0/(isp+1))*ini*0.1);
+    }
+  }
+  });}else{
+  #pragma omp parallel for
+  for(size_t isp=0;isp< size_t(a.size());isp++)
+  {
+          a[isp] = Complexq(std::cos((ini+isp)*0.5) , (5.0/(isp+1))*ini*0.1);
+  }}
+}
+
+inline void zeroE(EigenM& a,int cpu=1, bool dummy=true)
+{
+  int N0 = a.size();if(N0 == 0)return ;
+  int N1 = a[0].size();
+
+  #ifdef QLAT_USE_ACC
+  if(cpu == 0){
+    for(int i=0;i<N0;i++){cudaMemsetAsync(&a[i][0], 0, a[i].size()*sizeof(Complexq));}
+    if(dummy)qacc_barrier(dummy);
+    return ;
+  }
+  #endif
+
+  #pragma omp parallel for
+  for(long i=0;i < a.size();i++)
+  for(long j=0;j < a[i].size();j++)
+  {
+    a[i][j] = 0.0;
+  }
+
+  //qacc_for(isp, long(N0*N1),{
+  //  long i = isp/N1;long j = isp%N1;a[i][j] = 0.0;
+  //});
+
+}
+
+inline void zeroE(Evector& a,int cpu=1, bool dummy=true)
+{
+  #ifdef QLAT_USE_ACC
+  if(cpu == 0){
+    cudaMemsetAsync(&a[0], 0, a.size()*sizeof(Complexq));
+    if(dummy)qacc_barrier(dummy);
+    return ;
+  }
+  #endif
+
+  #pragma omp parallel for
+  for(long isp=0;isp<a.size();isp++){  a[isp] = 0.0;}
+
+  //qacc_for(isp, long(a.size()),{ 
+  //  a[isp] = 0.0;
+  //});
+
+}
+
+//qacc void zeroE(std::vector<Complexq >& a)
+//{
+//  for(unsigned int isp=0;isp<a.size();isp++)
+//  {
+//    a[isp] = 0.0;
+//  }
+//}
+
+inline void diff_EigenM(EigenV& a, EigenV& b, std::string lab)
+{
+  double diff = 0.0;
+  if(a.size() != b.size()){print0("%s size not equal %d, %d\n",
+    lab.c_str(), int(a.size()), int(b.size()) );abort_r("");}
+
+  for(long i=0;i < a.size(); i++)
+  { 
+    Complexq tem = a[i] - b[i];
+    diff += (tem.real()*tem.real() + tem.imag()*tem.imag());
+  } 
+
+  sum_all_size(&diff,1);
+  print0("%s diff %.5e, count %d, ava %.5e \n",
+    lab.c_str(),diff, int(a.size()), diff/a.size());
+}
+
+size_t get_threads(size_t thread, size_t Total)
+{
+  for(size_t temb=thread;temb<Total;temb++)
+  {
+    if(Total%temb == 0)
+    {
+      return temb;
+    }
+  }
+  return 1;
+}
+
+#ifdef QLAT_USE_ACC
+#define gpuErrchk(ans) { gpuAssert((ans), __FILE__, __LINE__); }
+inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort=true)
+{
+   if (code != cudaSuccess)
+   {
+      qlat::displayln(qlat::ssprintf("cuda error: %s %s %d\n", cudaGetErrorString(code), file, line ));
+      qassert(false);
+   }
+}
+#endif
 
 }
 

@@ -395,8 +395,8 @@ inline void get_low_rho(std::vector<qlat::FermionField4dT<Complexq > > &eigen,co
   long npoints = eigen[0].geo().local_volume()*12;
   double vGb_vec = npoints*noden*2.0/(1024.0*1024*1024);
 
-  ///int meas = 4;int Fcount = 3 + 1;////((complex multi 6 + plus 2)/2)
-  int meas = 4;int Fcount = 2 + 1;////Original
+  int meas = 4;int Fcount = 3 + 1;////((complex multi 6 + plus 2)/2)
+  ////int meas = 4;int Fcount = 2 + 1;////Original
   double vGb     = vGb_vec*meas*Fcount;
   print0("==total Eigen %.3e Gb \n",vGb_vec*(sizeof(Complexq)/2.0)*n_vec);
 

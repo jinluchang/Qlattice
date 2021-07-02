@@ -5,13 +5,23 @@
 #include <qlat/qlat.h>
 #include "gammas.h"
 #include "utils_momentum.h"
+#include "fft_desc.h"
 
 namespace qlat{
+
+//template<typename Ty1, typename Ty2>
+//inline void cp_C(Ty1 a, Ty2 b)
+//{
+//  if(typeid(Ty1) == typeid(Ty2)){a = b;}
+//  else{
+//    a = Ty1(b.real, b.imag);
+//  }
+//}
 
 void prop4d_src_gamma(Propagator4d& prop, ga_M& ga,int dir = 0)
 {
   ////Rowmajor (a,b), b is continues in memory
-  qacc_for(isp, prop.geo().local_volume(),{ 
+  qacc_for(isp, long(prop.geo().local_volume()),{ 
     qlat::WilsonMatrix& v0 =  prop.get_elem(isp);
     qlat::WilsonMatrix  v1 = v0;
 
@@ -23,6 +33,11 @@ void prop4d_src_gamma(Propagator4d& prop, ga_M& ga,int dir = 0)
       if(dir==0)for(int c1=0;c1<3;c1++)v0(s*3 + c0, ga.ind[d0]*3 + c1) = ga.g[d0] * v1(s*3 + c0, d0*3 + c1);
       /////Sink multiply 
       if(dir==1)for(int c1=0;c1<3;c1++)v0(d0*3 + c0, s*3 + c1) = ga.g[d0] * v1(ga.ind[d0]*3 + c0, s*3 + c1);
+
+      ///////Source multiply 
+      //if(dir==0)for(int c1=0;c1<3;c1++)cp_C(v0(s*3 + c0, ga.ind[d0]*3 + c1), ga.g[d0] * v1(s*3 + c0, d0*3 + c1));
+      ///////Sink multiply 
+      //if(dir==1)for(int c1=0;c1<3;c1++)cp_C(v0(d0*3 + c0, s*3 + c1), ga.g[d0] * v1(ga.ind[d0]*3 + c0, s*3 + c1));
     }
   });
 }
@@ -35,7 +50,7 @@ void prop4d_sink_gamma(Propagator4d& prop, ga_M& ga)
 void prop4d_cps_to_ps(Propagator4d& prop, int dir=0)
 {
   /////sn is -1 for default
-  int sn =-1;if(dir == 1){sn= 1;}
+  double sn =-1;if(dir == 1){sn= 1;}
   const double sqrt2=std::sqrt(2.0);
 
   ////Rowmajor (a,b), b is continues in memory
@@ -88,13 +103,13 @@ void get_corr_pion(std::vector<qlat::FermionField4dT<qlat::Complex> > &prop,cons
   const qlat::Geometry &geo = prop[0].geo();
 
   unsigned long Nvol = geo.local_volume();
-  int Nt = geo.node_site[3];
-  long Nsum = Nvol/Nt;
+  ///int Nt = geo.node_site[3];
+  ///long Nsum = Nvol/Nt;
   int tini = x_ini[3];
 
   std::vector<qlat::Complex > res;res.resize(Nvol);
 
-  qacc_for(isp, Nvol,{
+  qacc_for(isp, long(Nvol),{
     qlat::Complex buf(0.0,0.0);
 
     for(int dc2=0;dc2<12;dc2++){
@@ -110,6 +125,7 @@ void get_corr_pion(std::vector<qlat::FermionField4dT<qlat::Complex> > &prop,cons
 
   const Coordinate vg = geo.total_site();
   int nt = vg[3];
+  write.resize(0);
   write.resize(2*nt);qlat::set_zero(write);
 
   for(unsigned long isp=0;isp<Nvol;isp++){
@@ -125,7 +141,7 @@ void get_corr_pion(std::vector<qlat::FermionField4dT<qlat::Complex> > &prop,cons
 
 }
 
-void vec_corrE(std::vector<Evector> &resE,Evector &res,qlat::fft_desc_basic &fd,int clear=0,int imom=505050)
+void vec_corrE(EigenM &resE,Evector &res,qlat::fft_desc_basic &fd,int clear=0,int imom=505050)
 {
   int NTt  = fd.Nv[3];
   LInt Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
@@ -133,7 +149,7 @@ void vec_corrE(std::vector<Evector> &resE,Evector &res,qlat::fft_desc_basic &fd,
 
   int nt = fd.nt;
 
-  if(clear == 1){res.resize(nmass*nt);qlat::set_zero(res);}
+  if(clear == 1){res.resize(0);res.resize(nmass*nt);qlat::set_zero(res);}
   if(clear == 0)if(res.size() != nmass*nt){print0("res size wrong for corr.");qassert(false);}
 
   Evector tmp;tmp.resize(res.size());qlat::set_zero(tmp);
@@ -152,7 +168,7 @@ void vec_corrE(std::vector<Evector> &resE,Evector &res,qlat::fft_desc_basic &fd,
 
     Evector phaseE;phaseE.resize(Nxyz);
 
-    qacc_for(xi, Nxyz,{
+    qacc_for(xi, long(Nxyz),{
       int pi[3];
       pi[fd.orderN[0]] = xi/(fd.Nv[fd.orderN[1]]*fd.Nv[fd.orderN[2]]);
       pi[fd.orderN[1]] = (xi%(fd.Nv[fd.orderN[1]]*fd.Nv[fd.orderN[2]]))/fd.Nv[fd.orderN[2]];
@@ -160,7 +176,7 @@ void vec_corrE(std::vector<Evector> &resE,Evector &res,qlat::fft_desc_basic &fd,
       for(int ptem=0;ptem<3;ptem++){pi[ptem] = pi[ptem] + fd.Pos0[fd.rank][ptem];}
 
       double theta=mom[0]*p0[0]*pi[0]+mom[1]*p0[1]*pi[1]+mom[2]*p0[2]*pi[2];
-      phaseE[xi] = std::complex<Ctype> (cos(theta),sin(theta));
+      phaseE[xi] = Complexq(cos(theta),sin(theta));
     });
     //////print0("Phase %13.5f \n",phaseE[0].real());
 
@@ -175,7 +191,7 @@ void vec_corrE(std::vector<Evector> &resE,Evector &res,qlat::fft_desc_basic &fd,
     ////#ifdef QLAT_USE_ACC
     size_t Ns = Nxyz;
     Ns = nmass*NTt*Nxyz;
-    qacc_for(i, Ns,{
+    qacc_for(i, long(Ns),{
       LInt mi = i/(NTt*Nxyz);
       LInt ti = (i%(NTt*Nxyz))/Nxyz;
       LInt xi = i%(Nxyz);
@@ -190,12 +206,12 @@ void vec_corrE(std::vector<Evector> &resE,Evector &res,qlat::fft_desc_basic &fd,
   {
     //tmp[mi*nt + t_rank + ti ] += resE[mi*NTt + ti].sum();
     tmp[mi*nt + t_rank + ti ] = 0.0;
-    for(int xi=0;xi<Nxyz;xi++){
+    for(unsigned int xi=0;xi<Nxyz;xi++){
       tmp[mi*nt + t_rank + ti ] += resE[mi*NTt + ti][xi];
     }
   }
 
-  sum_all_size(reinterpret_cast<Ctype* > (&tmp[0]),2*tmp.size());
+  sum_all_size(reinterpret_cast<Ftype* > (&tmp[0]),2*tmp.size());
 
   for(int mi=0;mi<nmass;mi++)
   for(int t=0;t<fd.nt;t++)
@@ -205,18 +221,22 @@ void vec_corrE(std::vector<Evector> &resE,Evector &res,qlat::fft_desc_basic &fd,
 
 }
 
-void ini_propE(std::vector<Evector> &prop,int nmass, qlat::fft_desc_basic &fd)
+void ini_propE(EigenM &prop,int nmass, qlat::fft_desc_basic &fd)
 {
   LInt Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
   int NTt  = fd.Nv[3];
+  prop.resize(0);
   prop.resize(nmass*12*12*NTt);
-  for(int i=0;i<prop.size();i++){
+  for(unsigned int i=0;i<prop.size();i++){
     prop[i].resize(Nxyz);
-    qacc_for(isp, Nxyz,{ prop[i][isp] = 0.0;});
+    //Evector& p = prop[i];
+    //qacc_for(isp, long(Nxyz),{ p[isp] = 0.0;});
+    //set_zero(prop[i]);
+    zeroE(prop[i],0);
   }
 }
 
-void copy_propE(std::vector<Propagator4d > &pV1,std::vector<Evector> &prop, qlat::fft_desc_basic &fd, int dir=0)
+void copy_propE(std::vector<Propagator4d > &pV1,EigenM &prop, qlat::fft_desc_basic &fd, int dir=0)
 {
   TIMER("Copy prop");
   qassert(fd.order_ch == 0);
@@ -226,33 +246,58 @@ void copy_propE(std::vector<Propagator4d > &pV1,std::vector<Evector> &prop, qlat
   if(dir==0){nmass = pV1.size();ini_propE(prop,nmass,fd);}
   if(dir==1){
     nmass = prop.size()/(12*12*NTt);
+    pV1.resize(0);
     pV1.resize(nmass);for(int i=0;i<nmass;i++){pV1[i].init(*fd.geop);}
   }
 
-  qacc_for(isp, NTt*Nxyz,{ 
-    int ti = isp/Nxyz;
-    int xi = isp%Nxyz;
+  ////////only cpu version
+  //#pragma omp parallel for
+  //for(long isp=0;isp< long(NTt*Nxyz);isp++)
+  //{
+  //  int ti = isp/Nxyz;
+  //  int xi = isp%Nxyz;
 
-    for(int mi = 0;mi < nmass;mi++)
-    {
-      qlat::WilsonMatrix v0 =  pV1[mi].get_elem(isp);
+  //  for(int mi = 0;mi < nmass;mi++)
+  //  {
+  //    qlat::WilsonMatrix& v0 =  pV1[mi].get_elem(isp);
 
-      for(int c0 = 0;c0 < 3; c0++)
-      for(int d0 = 0;d0 < 4; d0++)
-      for(int c1 = 0;c1 < 3; c1++)
-      for(int d1 = 0;d1 < 4; d1++)
-      {
-        LInt off = mi*12*12 + (d1*3+c1)*12+d0*3+c0;
-        if(dir==0)prop[off*NTt+ti][xi] = v0(d0*3 + c0, d1*3 + c1);
-        if(dir==1)v0(d0*3 + c0, d1*3 + c1) = prop[off*NTt+ti][xi];
-      }
-    }
-  });
+  //    for(int c0 = 0;c0 < 3; c0++)
+  //    for(int d0 = 0;d0 < 4; d0++)
+  //    for(int c1 = 0;c1 < 3; c1++)
+  //    for(int d1 = 0;d1 < 4; d1++)
+  //    {
+  //      LInt off = mi*12*12 + (d1*3+c1)*12+d0*3+c0;
+  //      if(dir==0)prop[off*NTt+ti][xi] = v0(d0*3 + c0, d1*3 + c1);
+  //      if(dir==1)v0(d0*3 + c0, d1*3 + c1) = prop[off*NTt+ti][xi];
+  //    }
+  //  }
+  //}
+
+  for(int mi = 0;mi < nmass;mi++)
+  {
+    Propagator4d& pv = pV1[mi];
+    qacc_for(isp, long(NTt*Nxyz),{ 
+      int ti = isp/Nxyz;
+      int xi = isp%Nxyz;
+
+        qlat::WilsonMatrix& v0 =  pv.get_elem(isp);
+
+        for(int c0 = 0;c0 < 3; c0++)
+        for(int d0 = 0;d0 < 4; d0++)
+        for(int c1 = 0;c1 < 3; c1++)
+        for(int d1 = 0;d1 < 4; d1++)
+        {
+          LInt off = mi*12*12 + (d1*3+c1)*12+d0*3+c0;
+          if(dir==0)prop[off*NTt+ti][xi] = v0(d0*3 + c0, d1*3 + c1);
+          if(dir==1)v0(d0*3 + c0, d1*3 + c1) = prop[off*NTt+ti][xi];
+        }
+    });
+  }
 
 }
 
 
-void check_prop_size(std::vector<Evector> &prop)
+void check_prop_size(EigenM &prop)
 {
   int sizep = prop.size();
   if(sizep%(12*12) != 0 or sizep == 0)
@@ -264,39 +309,40 @@ void check_prop_size(std::vector<Evector> &prop)
   }
 }
 
-void ini_resE(std::vector<Evector> &res,int nmass, qlat::fft_desc_basic &fd)
+void ini_resE(EigenM &res,int nmass, qlat::fft_desc_basic &fd)
 {
   ////int Nvol = fd.Nv[fd.orderN[0]]*fd.Nv[fd.orderN[1]]*fd.Nv[fd.orderN[2]];
   int NTt  = fd.Nv[3];
   LInt Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
+  res.resize(0);
   res.resize(nmass*NTt);
-  for(int i=0;i<res.size();i++){
+  for(unsigned int i=0;i<res.size();i++){
     res[i].resize(Nxyz);
-    qacc_for(isp, Nxyz,{ res[i][isp] = 0.0;});
+    qacc_for(isp, long(Nxyz),{ res[i][isp] = 0.0;});
   }
 
 }
 
-void clear_vector(std::vector<Evector> &res,qlat::fft_desc_basic &fd)
+void clear_vector(EigenM &res,qlat::fft_desc_basic &fd)
 {
-  int NTt  = fd.Nv[3];
+  ////int NTt  = fd.Nv[3];
   LInt Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
   for(LInt i=0;i<res.size();i++){
     res[i].resize(Nxyz);
-    qacc_for(isp, Nxyz,{ res[i][isp] = 0.0;});
+    qacc_for(isp, long(Nxyz),{ res[i][isp] = 0.0;});
     /////res[i].setZero();
   }
 }
 
 void clear_qv(qlat::vector<Complexq > &G)
 {
-  qacc_for(i, G.size(),{G[i] = 0.0; });
+  qacc_for(i, long(G.size()),{G[i] = 0.0; });
   /////for(int i = 0;i< G.size(); i++){G[i] = 0.0;}
 }
 
 
 void meson_vectorE(std::vector<Propagator4d > &pV1, std::vector<Propagator4d > &pV2, ga_M &ga1,ga_M &ga2,
-        std::vector<Evector> &res, qlat::fft_desc_basic &fd,int clear=1)
+        EigenM &res, qlat::fft_desc_basic &fd,int clear=1)
 {
   TIMER("Meson_vectorE");
   qassert(fd.order_ch == 0);
@@ -314,14 +360,18 @@ void meson_vectorE(std::vector<Propagator4d > &pV1, std::vector<Propagator4d > &
   if(res.size()%NTt !=0 or res.size()==0){print0("Size of res wrong. \n");qassert(false);}
   qassert(pV1.size() == pV2.size());
 
-  qacc_for(isp, pV1[0].geo().local_volume(),{ 
+  for(int mi=0;mi<nmass;mi++)
+  {
+  Propagator4d& pL1 = pV1[mi];
+  Propagator4d& pL2 = pV2[mi];
+
+  qacc_for(isp, long(pV1[0].geo().local_volume()),{ 
     int ti = isp/Nxyz;
     int xi = isp%Nxyz;
-    for(int mi=0;mi<nmass;mi++)
-    {
-      std::complex< Ftype > pres;pres = 0.0;
-      const qlat::WilsonMatrix& p1 =  pV1[mi].get_elem(isp);
-      const qlat::WilsonMatrix& p2 =  pV2[mi].get_elem(isp);
+      //std::complex< Ftype > pres;pres = 0.0;
+      Complexq pres;pres = 0.0;
+      const qlat::WilsonMatrix& p1 =  pL1.get_elem(isp);
+      const qlat::WilsonMatrix& p2 =  pL2.get_elem(isp);
       ///int off1 = mi*12*12 + (d2*3+c2)*12+ga1.ind[d1]*3+c1;
       ///int off2 = mi*12*12 + (ga2.ind[d2]*3+c2)*12+d1*3+c1;
       ///double_complex gi_tem = ga2.g[d2]*ga1.g[d1];
@@ -335,19 +385,22 @@ void meson_vectorE(std::vector<Propagator4d > &pV1, std::vector<Propagator4d > &
       Complexq g_tem = ga2.g[d2]*ga1.g[d1];
       for(int c2=0;c2<3;c2++)
       {
-        pres += 
-          p1(ga1.ind[d1]*3+c1,d2*3+c2) * qlat::qconj(p2(d1*3+c1,ga2.ind[d2]*3+c2)) 
-              * g_tem;
+        pres += g_tem * 
+          p1(ga1.ind[d1]*3+c1,d2*3+c2) * qlat::qconj(p2(d1*3+c1,ga2.ind[d2]*3+c2)) ;
+
+        //pres += 
+        //  p1(ga1.ind[d1]*3+c1,d2*3+c2) * qlat::qconj(p2(d1*3+c1,ga2.ind[d2]*3+c2)) 
+        //      * g_tem;
       }
       }
       res[mi*NTt + ti][xi%Nxyz] += pres;
-    }
   });
+  }
 
 }
 
-void meson_vectorE(std::vector<Evector> &prop1, std::vector<Evector> &prop2, ga_M &ga1,ga_M &ga2,
-        std::vector<Evector> &res, qlat::fft_desc_basic &fd,int clear=1, int invmode=1)
+void meson_vectorE(EigenM &prop1, EigenM &prop2, ga_M &ga1,ga_M &ga2,
+        EigenM &res, qlat::fft_desc_basic &fd,int clear=1, int invmode=1)
 {
   TIMER("Meson_vectorE");
   check_prop_size(prop1);check_prop_size(prop2);
@@ -379,9 +432,9 @@ void meson_vectorE(std::vector<Evector> &prop1, std::vector<Evector> &prop2, ga_
     //double_complex gi_tem = ga2.g[d2]*ga1.g[d1];
     //std::complex<Ftype> giE(gi_tem.real,gi_tem.imag);
     //res[mi*NTt + ti] += (prop1[off1*NTt+ti]*prop2[off2*NTt+ti].conjugate())*(giE);
-    EM vp1(&prop1[off1*NTt+ti][0],Nxyz);
-    EM vp2(&prop2[off2*NTt+ti][0],Nxyz);
-    EM vr0(&res[mi*NTt + ti][0],Nxyz);
+    EA vp1(&prop1[off1*NTt+ti][0],Nxyz);
+    EA vp2(&prop2[off2*NTt+ti][0],Nxyz);
+    EA vr0(&res[mi*NTt + ti][0],Nxyz);
     Complexq g_tem = ga2.g[d2]*ga1.g[d1];
     if(invmode == 1)vr0 += vp1*vp2.conjugate() * g_tem;
     if(invmode == 0)vr0 += vp1*vp2             * g_tem;
@@ -394,17 +447,17 @@ void meson_vectorE(std::vector<Evector> &prop1, std::vector<Evector> &prop2, ga_
 void meson_corrE(std::vector<Propagator4d > &pV1, std::vector<Propagator4d > &pV2,  ga_M &ga1, ga_M &ga2,
   Evector &res, qlat::fft_desc_basic &fd,int clear=1,int imom=505050,int mode_GPU = 0)
 {
-  int NTt  = fd.Nv[3];
-  LInt Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
+  ///int NTt  = fd.Nv[3];
+  ///LInt Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
   int nmass = pV1.size();
-  int nt = fd.nt;
+  ///int nt = fd.nt;
 
-  std::vector<Evector> resE;
+  EigenM resE;
   ini_resE(resE,nmass,fd);
 
   if(mode_GPU == 0){
-    std::vector<Evector> prop1;
-    std::vector<Evector> prop2;
+    EigenM prop1;
+    EigenM prop2;
     copy_propE(pV1,prop1, fd);
     copy_propE(pV2,prop2, fd);
     meson_vectorE(prop1,prop2,ga1,ga2,resE,fd,1);
@@ -414,15 +467,15 @@ void meson_corrE(std::vector<Propagator4d > &pV1, std::vector<Propagator4d > &pV
   vec_corrE(resE,res,fd, clear, imom);
 }
 
-void meson_corrE(std::vector<Evector> &prop1,std::vector<Evector> &prop2,  ga_M &ga1, ga_M &ga2,
+void meson_corrE(EigenM &prop1,EigenM &prop2,  ga_M &ga1, ga_M &ga2,
   Evector &res, qlat::fft_desc_basic &fd,int clear=1,int imom=505050)
 {
-  int NTt  = fd.Nv[3];
-  LInt Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
-  int  nmass = prop1.size()/(12*12*NTt);
-  int nt = fd.nt;
+  ///int NTt  = fd.Nv[3];
+  ////LInt Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
+  ///int  nmass = prop1.size()/(12*12*NTt);
+  ////int nt = fd.nt;
 
-  std::vector<Evector> resE;
+  EigenM resE;
   ////ini_resE(resE,nmass,fd);
 
   meson_vectorE(prop1,prop2,ga1,ga2,resE,fd,1);
@@ -432,9 +485,9 @@ void meson_corrE(std::vector<Evector> &prop1,std::vector<Evector> &prop2,  ga_M 
 
 ///////Proton contractions
 
-void proton_vectorE(std::vector<Evector> &prop1, std::vector<Evector> &prop2, std::vector<Evector> &prop3,
+void proton_vectorE(EigenM &prop1, EigenM &prop2, EigenM &prop3,
   ga_M &ga2,int ind2, ga_M &ga1,int ind1,
-        std::vector<Evector> &res, fft_desc_basic &fd,int clear=1)
+        EigenM &res, fft_desc_basic &fd,int clear=1)
 {
   TIMER("Proton_vectorE");
   ////ga2/ind2 for source, gam1/ind1 for sink
@@ -448,11 +501,11 @@ void proton_vectorE(std::vector<Evector> &prop1, std::vector<Evector> &prop2, st
   if(clear == 1){ini_resE(res,nmass,fd);}
     
   ////Prop format, src d-4, c-3, sink d-4, c-3, Nt, EigenV<Nxyz>
-  ////EM vs0(&outv_sinki0[0],maxN);
+  ////EA vs0(&outv_sinki0[0],maxN);
   ///int Nt   = prop1.size()/(12*12);
   if(res.size()%NTt !=0 or res.size()==0){print0("Size of res wrong. \n");qassert(false);}
 
-  int epsl[3][3];
+  Ftype epsl[3][3];
   for(int i=0;i<3;i++){epsl[i][i]=0;epsl[i][(i+1)%3]=1;epsl[i][(i+2)%3]=-1;}
 
   for(int mi=0;mi<nmass;mi++)
@@ -481,13 +534,13 @@ void proton_vectorE(std::vector<Evector> &prop1, std::vector<Evector> &prop2, st
 
       for(int ti=0;ti<NTt;ti++)
       {
-        EM vp1(&prop1[m1*NTt+ti][0],Nxyz);
-        EM vp2(&prop2[m2*NTt+ti][0],Nxyz);
-        EM vp3(&prop3[m3*NTt+ti][0],Nxyz);
-        EM vn1(&prop1[n1*NTt+ti][0],Nxyz);
-        EM vn2(&prop2[n2*NTt+ti][0],Nxyz);
-        EM vn3(&prop3[n3*NTt+ti][0],Nxyz);
-        EM vr0(&res[mi*NTt + ti][0],Nxyz);
+        EA vp1(&prop1[m1*NTt+ti][0],Nxyz);
+        EA vp2(&prop2[m2*NTt+ti][0],Nxyz);
+        EA vp3(&prop3[m3*NTt+ti][0],Nxyz);
+        EA vn1(&prop1[n1*NTt+ti][0],Nxyz);
+        EA vn2(&prop2[n2*NTt+ti][0],Nxyz);
+        EA vn3(&prop3[n3*NTt+ti][0],Nxyz);
+        EA vr0(&res[mi*NTt + ti][0],Nxyz);
         vr0 -= (vp1*vp2*vp3 + vn1*vn2*vn3)*giE;
       }
     }
@@ -514,8 +567,8 @@ std::vector<int >  get_sec_map(int dT,int nt)
 
 }
 
-void proton_vectorE(std::vector<Evector> &prop1, std::vector<Evector> &prop2, std::vector<Evector> &prop3,
-        std::vector<Evector> &res, fft_desc_basic &fd, ga_M &ga1,int t0,int dT,int clear=1,int oppo=0)
+void proton_vectorE(EigenM &prop1, EigenM &prop2, EigenM &prop3,
+        EigenM &res, fft_desc_basic &fd, ga_M &ga1,int t0,int dT,int clear=1,int oppo=0)
 {
   /////if(clear == 1)clear_vector(res);
   TIMER("Proton_vectorE");
@@ -528,8 +581,8 @@ void proton_vectorE(std::vector<Evector> &prop1, std::vector<Evector> &prop2, st
   if(clear == 1){ini_resE(res,nmass,fd);}
 
   int nv = res.size();int Nsize = res[0].size();
-  std::vector<Evector> resE0;resE0.resize(nv);
-  std::vector<Evector> resE1;resE1.resize(nv);
+  EigenM resE0;resE0.resize(nv);
+  EigenM resE1;resE1.resize(nv);
   for(int i=0;i<nv;i++)
   {
     resE0[i].resize(Nsize);
@@ -547,8 +600,8 @@ void proton_vectorE(std::vector<Evector> &prop1, std::vector<Evector> &prop2, st
   proton_vectorE(prop1,prop2,prop3,ga1,3,ga1,3,resE1,fd,0);
 
   std::vector<int > map_sec = get_sec_map(dT,fd.nt);
-  ////EM vp1(&prop1[m1*NTt+ti][0],Nxyz);
-  ////EM vp2(&prop2[m2*NTt+ti][0],Nxyz);
+  ////EA vp1(&prop1[m1*NTt+ti][0],Nxyz);
+  ////EA vp2(&prop2[m2*NTt+ti][0],Nxyz);
 
   int Nt = fd.Nt;
 
@@ -558,9 +611,9 @@ void proton_vectorE(std::vector<Evector> &prop1, std::vector<Evector> &prop2, st
   for(int ti = 0;ti<Nt;ti++)
   {
     t = ti + fd.Pos0[fd.rank][3];
-    EM r0(&res[mi*Nt+ti][0],Nxyz);
-    EM v0(&resE0[mi*Nt+ti][0],Nxyz);
-    EM v1(&resE1[mi*Nt+ti][0],Nxyz);
+    EA r0(&res[mi*Nt+ti][0],Nxyz);
+    EA v0(&resE0[mi*Nt+ti][0],Nxyz);
+    EA v1(&resE1[mi*Nt+ti][0],Nxyz);
     if(map_sec[(t-t0+nt)%nt]%2==0)
     {
       if(oppo==0)r0 += v0;
@@ -579,16 +632,16 @@ void proton_vectorE(std::vector<Evector> &prop1, std::vector<Evector> &prop2, st
 
 }
 
-void proton_corrE(std::vector<Evector> &prop1, std::vector<Evector> &prop2, std::vector<Evector> &prop3,
+void proton_corrE(EigenM &prop1, EigenM &prop2, EigenM &prop3,
    ga_M &ga2,int ind2,ga_M &ga1,int ind1,
   Evector &res, fft_desc_basic &fd,int clear=1,int imom=50505)
 {
-  int NTt  = fd.Nv[3];
-  LInt Nxyz = prop1[0].size();
-  int nmass = prop1.size()/(12*12*NTt);
-  int nt = fd.nt;
+  ///int NTt  = fd.Nv[3];
+  ////LInt Nxyz = prop1[0].size();
+  ///int nmass = prop1.size()/(12*12*NTt);
+  ////int nt = fd.nt;
 
-  std::vector<Evector> resE;
+  EigenM resE;
   ////ini_resE(resE,nmass,fd);
 
   proton_vectorE(prop1,prop2,prop3,ga2,ind2,ga1,ind1,resE,fd,1);
@@ -596,15 +649,15 @@ void proton_corrE(std::vector<Evector> &prop1, std::vector<Evector> &prop2, std:
   vec_corrE(resE,res,fd,clear,imom);
 }
 
-void proton_corrE(std::vector<Evector> &prop1, std::vector<Evector> &prop2, std::vector<Evector> &prop3,
+void proton_corrE(EigenM &prop1, EigenM &prop2, EigenM &prop3,
  Evector &res, fft_desc_basic &fd, ga_M &ga1,int t0,int dT,int clear=1,int imom=505050)
 {
-  int NTt  = fd.Nv[3];
-  LInt Nxyz = prop1[0].size();
-  int nmass = prop1.size()/(12*12*NTt);
-  int nt = fd.nt;
+  ///int NTt  = fd.Nv[3];
+  ////LInt Nxyz = prop1[0].size();
+  ///int nmass = prop1.size()/(12*12*NTt);
+  ////int nt = fd.nt;
 
-  std::vector<Evector> resE;
+  EigenM resE;
   ////ini_resE(resE,nmass,fd);
   proton_vectorE(prop1,prop2,prop3,resE,fd, ga1, t0,dT,1);
 
@@ -613,9 +666,9 @@ void proton_corrE(std::vector<Evector> &prop1, std::vector<Evector> &prop2, std:
 
 
 /////A source gamma, B sink Gamma, G projections with fermion sign, mL shape of diagram
-void baryon_vectorE(std::vector<Evector> &prop1, std::vector<Evector> &prop2, std::vector<Evector> &prop3,
+void baryon_vectorE(EigenM &prop1, EigenM &prop2, EigenM &prop3,
   ga_M &A, ga_M &B, qlat::vector<Complexq > &G, qlat::vector<int > &mL,
-        std::vector<Evector> &res, fft_desc_basic &fd,int clear=1)
+        EigenM &res, fft_desc_basic &fd,int clear=1)
 {
   TIMER("Proton_vectorE");
   check_prop_size(prop1);check_prop_size(prop2);check_prop_size(prop3);
@@ -630,7 +683,7 @@ void baryon_vectorE(std::vector<Evector> &prop1, std::vector<Evector> &prop2, st
 
   if(res.size()%NTt !=0 or res.size()==0){print0("Size of res wrong. \n");qassert(false);}
 
-  int epsl[3][3];
+  Ftype epsl[3][3];
   for(int i=0;i<3;i++){epsl[i][i]=0;epsl[i][(i+1)%3]=1;epsl[i][(i+2)%3]=-1;}
 
   //mL = {};
@@ -676,10 +729,10 @@ void baryon_vectorE(std::vector<Evector> &prop1, std::vector<Evector> &prop2, st
 
         for(int ti=0;ti<NTt;ti++)
         {
-          EM vp1(&prop1[o1*NTt+ti][0],Nxyz);
-          EM vp2(&prop2[o2*NTt+ti][0],Nxyz);
-          EM vp3(&prop3[o3*NTt+ti][0],Nxyz);
-          EM vr0(&res[massi*NTt + ti][0],Nxyz);
+          EA vp1(&prop1[o1*NTt+ti][0],Nxyz);
+          EA vp2(&prop2[o2*NTt+ti][0],Nxyz);
+          EA vp3(&prop3[o3*NTt+ti][0],Nxyz);
+          EA vr0(&res[massi*NTt + ti][0],Nxyz);
           vr0 += vp1*vp2*vp3 * giE;
         }
       }
@@ -690,9 +743,9 @@ void baryon_vectorE(std::vector<Evector> &prop1, std::vector<Evector> &prop2, st
 
 
 ////A source gamma, B sink Gamma, G projections with fermion sign, mL shape of diagram
-void baryon_vectorE(std::vector<Evector> &prop1, std::vector<Evector> &prop2, std::vector<Evector> &prop3,
+void baryon_vectorE(EigenM &prop1, EigenM &prop2, EigenM &prop3,
   ga_M &A, ga_M &B, qlat::vector<Complexq > &G, qlat::vector<int > &mL, int insertion,
-        std::vector<Evector> &resP, fft_desc_basic &fd,int clear=1)
+        EigenM &resP, fft_desc_basic &fd,int clear=1)
 {
   TIMER("Proton_vectorE");
   check_prop_size(prop1);check_prop_size(prop2);check_prop_size(prop3);
@@ -708,7 +761,7 @@ void baryon_vectorE(std::vector<Evector> &prop1, std::vector<Evector> &prop2, st
   if(clear==1){ini_propE(resP,nmass,fd);}
   check_prop_size(resP);
 
-  int epsl[3][3];
+  Ftype epsl[3][3];
   for(int i=0;i<3;i++){epsl[i][i]=0;epsl[i][(i+1)%3]=1;epsl[i][(i+2)%3]=-1;}
 
   //mL = {};
@@ -759,10 +812,10 @@ void baryon_vectorE(std::vector<Evector> &prop1, std::vector<Evector> &prop2, st
 
         for(int ti=0;ti<NTt;ti++)
         {
-          EM vp1(&prop1[o1*NTt+ti][0],Nxyz);
-          EM vp2(&prop2[o2*NTt+ti][0],Nxyz);
-          EM vp3(&prop3[o3*NTt+ti][0],Nxyz);
-          EM vr0( &resP[r0*NTt+ti][0],Nxyz);
+          EA vp1(&prop1[o1*NTt+ti][0],Nxyz);
+          EA vp2(&prop2[o2*NTt+ti][0],Nxyz);
+          EA vp3(&prop3[o3*NTt+ti][0],Nxyz);
+          EA vr0( &resP[r0*NTt+ti][0],Nxyz);
           if(insertion == 0)vr0 += vp2*vp3 * giE;
           if(insertion == 1)vr0 += vp1*vp3 * giE;
           if(insertion == 2)vr0 += vp1*vp2 * giE;
@@ -775,16 +828,16 @@ void baryon_vectorE(std::vector<Evector> &prop1, std::vector<Evector> &prop2, st
 }
 
 
-void baryon_corrE(std::vector<Evector> &prop1, std::vector<Evector> &prop2, std::vector<Evector> &prop3,
+void baryon_corrE(EigenM &prop1, EigenM &prop2, EigenM &prop3,
    ga_M &ga2,int ind2,ga_M &ga1,int ind1,
   Evector &res, fft_desc_basic &fd,int clear=1,int imom=50505)
 {
   int NTt  = fd.Nv[3];
-  LInt Nxyz = prop1[0].size();
+  ////LInt Nxyz = prop1[0].size();
   int nmass = prop1.size()/(12*12*NTt);
-  int nt = fd.nt;
+  ////int nt = fd.nt;
 
-  std::vector<Evector> resE;
+  EigenM resE;
   ini_resE(resE,nmass,fd);
 
   qlat::vector<Complexq > G;G.resize(16);
@@ -803,16 +856,16 @@ void baryon_corrE(std::vector<Evector> &prop1, std::vector<Evector> &prop2, std:
 }
 
 
-void Omega_corrE(std::vector<Evector> &prop1, std::vector<Evector> &prop2, std::vector<Evector> &prop3,
+void Omega_corrE(EigenM &prop1, EigenM &prop2, EigenM &prop3,
    ga_M &ga2,int ind2,ga_M &ga1,int ind1,
   Evector &res, fft_desc_basic &fd,int clear=1,int imom=50505)
 {
   int NTt  = fd.Nv[3];
-  LInt Nxyz = prop1[0].size();
+  ///LInt Nxyz = prop1[0].size();
   int nmass = prop1.size()/(12*12*NTt);
-  int nt = fd.nt;
+  ///int nt = fd.nt;
 
-  std::vector<Evector> resE;
+  EigenM resE;
   ini_resE(resE,nmass,fd);
 
   qlat::vector<Complexq > G;G.resize(16);

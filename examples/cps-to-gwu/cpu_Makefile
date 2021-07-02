@@ -17,10 +17,8 @@ QLAT_CXXFLAGS=$(QLAT_CFLAGS)
 QLAT_LDFLAGS=$(QLAT_LIB)/libfftw3.a $(QLAT_LIB)/libz.a $(QLAT_LIB)/libcuba.a -lm
 
 
-all: qlat.x
-
-qlat.x: *.C *.h
-	-time $(CXX) -o qlat.x $(QLAT_CXXFLAGS) *.C $(QLAT_LDFLAGS) 2>&1 | grep --color=always 'error:\|'
+% : *.h  control_%.cpp
+	$(CXX) -o $@_knl $(QLAT_CXXFLAGS) control_$@.cpp $(QLAT_LDFLAGS)
 
 clean:
 	rm *.o qlat.x

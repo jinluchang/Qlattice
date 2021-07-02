@@ -12,25 +12,14 @@
 
 #include "general_funs.h"
 
-#define gwuCtype double_complex
-
 namespace qlat{
-//void abort_rl(std::string stmp);
-//void milc2kentucky_propagator_rotation(vector** cpu_single_mass_prop,bool rotate_vec);
-//void kentucky2milc_propagator_rotation(vector** cpu_single_mass_prop,bool rotate_vec);
-////void global_sum_all(double *value,int size);
-////void global_sum_all(float *value,int size);
-//void sum_all(double *value,int size);
-//void sum_all(float *value,int size);
-//void sum_all(int *value,int size);
-//void load_eigenvalues(double_complex pcEigenvalues[],double Residues[],int iNoEig,const char* filename);
-//void mem_info(const char *tag);
 
 class fft_desc_basic
 {
 public:
-  int noden;int rank;int Nmpi;
-  int nx,ny,nz,nt,vol,Nvol;
+  LInt noden;int rank;int Nmpi;
+  int nx,ny,nz,nt;
+  LInt vol,Nvol;
   int inix,iniy,iniz,init;
   int Nx,Ny,Nz,Nt;
   int mx,my,mz,mt;
@@ -78,8 +67,8 @@ public:
     vol   =  nx*ny*nz;////Only the spatial volume
     Nvol  =  Nx*Ny*Nz*Nt;
     noden =  Nx*Ny*Nz*Nt;
-    print0("=Need=====Size of dim,   x %5d  y %5d  z %5d  t %5d nvol %8d \n",nx,ny,nz,nt,vol*nt);
-    print0("=Need=====Size of dim,  Nx %5d Ny %5d Nz %5d Nt %5d Nvol %8d \n",Nx,Ny,Nz,Nt,Nvol);
+    print0("=Need=====Size of dim,   x %5d  y %5d  z %5d  t %5d nvol %ld \n",nx,ny,nz,nt,vol*nt);
+    print0("=Need=====Size of dim,  Nx %5d Ny %5d Nz %5d Nt %5d Nvol %ld \n",Nx,Ny,Nz,Nt,Nvol);
 
     qlat::Coordinate ts = geo.coordinate_from_index(0);
     qlat::Coordinate gs = geo.coordinate_g_from_l(ts);
@@ -87,8 +76,8 @@ public:
 
     ////Do not assume 0 is the initial positions
     std::vector<int> Pos0_tem;Pos0_tem.resize(Nmpi*4);
-    for(int i=0;i<Pos0_tem.size();i++){Pos0_tem[i] = 0;}
-    for(int i=0;i<4;i++)Pos0_tem[rank*4 + i] = gs[i];
+    for(unsigned int i=0;i<Pos0_tem.size();i++){Pos0_tem[i] = 0;}
+    for(unsigned int i=0;i<4;i++)Pos0_tem[rank*4 + i] = gs[i];
     sum_all_size(&Pos0_tem[0], Nmpi*4);
     Pos0.resize(Nmpi);
     for(int ri=0;ri<Nmpi;ri++)
@@ -132,13 +121,13 @@ public:
       }
 
       int flagC = 0;
-      for(int i=0;i<4;i++){if(Nv[i] != ranged[i].size()){flagC = 1;}}
-      for(int i=0;i<4;i++){if(gs[i] != ranged[i][0]){flagC = 1;}}
+      for(unsigned int i=0;i<4;i++){unsigned int tem = Nv[i];if(tem != ranged[i].size()){flagC = 1;}}
+      for(unsigned int i=0;i<4;i++){if(gs[i] != ranged[i][0]){flagC = 1;}}
       sum_all_size(&flagC,1);
       if(flagC>0){
-        for(int i=0;i<4;i++)print0("%5d %5d, ", Nv[i], ranged[i].size());
+        for(int i=0;i<4;i++)print0("%5d %5d, ", Nv[i], int(ranged[i].size()));
         print0("\n");
-        for(int i=0;i<4;i++)print0("%5d %5d, ", gs[i], ranged[i][0]);
+        for(int i=0;i<4;i++)print0("%5d %5d, ", gs[i], int(ranged[i][0]));
         print0("\n");
         abort_r("Layout not continuous in x! \n");
       }
@@ -220,7 +209,7 @@ public:
   
     std::vector<int> mi_list_tem;
     mi_list_tem.resize(mt*mz*my*mx);
-    for(int i=0;i<mi_list_tem.size();i++){mi_list_tem[i] = 0;}
+    for(unsigned int i=0;i<mi_list_tem.size();i++){mi_list_tem[i] = 0;}
     qlat::Coordinate p_tem;
     for(int tmi=0;tmi<mt;tmi++)
     {
@@ -228,7 +217,7 @@ public:
       for(int yi=0;yi<my;yi++)
       for(int xi=0;xi<mx;xi++)
       {
-        int off = (zi*my+yi)*mx+xi;
+        LInt off = (zi*my+yi)*mx+xi;
         p_tem[0] = xi*Nx;
         p_tem[1] = yi*Ny;
         p_tem[2] = zi*Nz;
@@ -240,10 +229,10 @@ public:
     }
     sum_all_size(&mi_list_tem[0], mi_list_tem.size());
     std::vector<int> cp_l;
-    for(int i=0;i<cp_l.size();i++){cp_l[i] = mi_list_tem[i];}
+    for(unsigned int i=0;i<cp_l.size();i++){cp_l[i] = mi_list_tem[i];}
     std::sort(cp_l.begin(), cp_l.end());
-    for(int i=0;i<cp_l.size();i++){
-      int v = cp_l[i];
+    for(unsigned int i=0;i<cp_l.size();i++){
+      unsigned int v = cp_l[i];
       //if(v < 0 or v > Nmpi){abort_r("Node map Duplicated! \n");}
       if(v != i ){abort_r("Node map Duplicated! \n");}
     }
@@ -270,163 +259,6 @@ public:
     maporder_Nitoipos.resize(0);
   }
 };
-
-//class eigen_rotate
-//{
-//public:
-//  //layout_minsurface_eo desc;
-//  layout_minsurface_eo *desc;
-//  bool typeF;
-//  //std::vector< std::vector<int> > ranged;
-//  //std::vector<int> b_numb_l;
-//
-//  /////Use this, 4 will be together
-//  //Matrix<int, 3, 4, RowMajor> Arowmajor = Acolmajor;
-//  //Ev0.col(i).dot(Ev1.col(i))
-//
-//  EigenM Mvec;  //  2*bfac*n_keep,b_size*6
-//  //std::vector<Eigen::Matrix< double, Eigen::Dynamic, 100 ,Eigen::RowMajor> > MvecC;  //  2*bfac*n_keep,b_size*6
-//  EigenM EProp;
-//
-//  //std::vector<int > n_zeros = {0,0};
-//  //EigenM temj; //1,b_size*6
-//  EigenM temP;
-//  EigenV temj;
-//  EigenV alpha;
-//
-//  EigenM MPItem;
-//  EigenM Esource;
-//  //Eigen::VectorXcd temk;
-//
-//  //Normal Size
-//  EigenMD eval_list;
-//  EigenMD alpha_list;
-//
-//  //3pt function
-//  EigenV alpha_list3pt;
-//  EigenV alpha_list3ptC;
-//  EigenV alpha3pt;
-//
-//  EigenV alpha3pt_ker_low;
-//
-//  int Edouble;
-//  int smear_Eigen;
-//  std::vector<EigenM > MvecC;  //  2*bfac*n_keep,b_size*6
-//  EigenM temjC;
-//  std::vector<EigenV >alpha_listC;
-//
-//  std::vector<double_complex > eval_self;
-//  double rho;
-//  double Eeigenerror;
-//
-//  timer Eigen_self;
-//  timer Eigen_real;
-//  timer Lowmode;
-//  timer Vcopy;
-//  vector *src_tmp0[12];
-//
-//  int nx;int ny;int nz;int nt;
-//  int Nx;int Ny;int Nz;int Nt;
-//
-//  int n_vec;
-//  int b_size;
-//  int bfac;
-//  int num_zero;
-//  int one_minus_halfD;
-//  std::vector< std::vector<int> > ranged;
-//  std::vector<int> bi_l;
-//  std::vector<int> bp_l;
-//  std::vector<int> Cur_Xn;
-//
-//
-//
-//  //Projection between gwu and Eigen
-//
-//  eigen_rotate(layout_minsurface_eo &desc_or,int bsize_or,int n_vec_or);
-//  //void gwu2eigen(vector **src,Eigen::Matrix< std::complex< double >, Eigen::Dynamic,  Eigen::Dynamic ,Eigen::RowMajor> &Eres,int ivec);
-//  //void eigen2gwu(Eigen::Matrix< std::complex< double >, Eigen::Dynamic,  Eigen::Dynamic ,Eigen::RowMajor> &Esrc,vector **res,int ivec);
-//
-//  int reorder_flag,reorder_flag_E;
-//  void reorder_offM();
-//  void reorder();
-//  std::vector<int > offM_L;
-//  //std::vector<int > chi_L;
-//  //std::vector<int > bi_L;
-//  //std::vector<int > kn_L;
-//
-//
-//  void copygwu(vector **src,EigenM &Eres);
-//
-//  void gwu2eigenKY(vector **src,EigenM &Eres);
-//
-//  void gwu2eigen(vector **src,EigenM &Eres,int ivec);
-//  void gwu2eigen(vector **src,EigenM &Eres){
-//    //v.rows() << "x" << v.cols()
-//    if(Eres.rows()/(2*bfac) !=12){abort_rl("Cannot transform Eigen Prop with wrong size.");}
-//    for(int i=0;i<12;i++){gwu2eigen(&src[i],Eres,i);}}
-//
-//
-//  //void eigen_rotate::eigen_reorder(EigenM &Eres);
-//  //void eigen_rotate::eigen_reorder_b(EigenM &Eres);
-//
-//
-//
-//  void eigen2gwuKY(EigenM &Esrc,vector **res);
-//  void eigen2gwu(EigenM &Esrc,vector **res,int ivec,int Mvecflag=0);
-//  void eigen2gwu(EigenM &Esrc,vector &res,int ivec,int Mvecflag=0);
-//
-//  void eigen2gwu(EigenM &Esrc,vector **res,int Mvecflag=0){
-//    //v.rows() << "x" << v.cols()
-//    if(Esrc.rows()/(2*bfac)!=12){abort_rl("Cannot transform Eigen Prop with wrong size.");}
-//    for(int i=0;i<12;i++){eigen2gwu(Esrc,&res[i],i,Mvecflag);}}
-//
-//
-//  //void load_eigen(FILE *pfile, const parallel_io &io,int Edouble_or=0);
-//  void load_eigen(char *name_eigen, const parallel_io &io,int Edouble_or=0);
-//  void load_eigen(vec_eigen_pair<vector> &eigen_use, const parallel_io &io,int Edouble_or=0);
-//
-//  void load_eivals(char *name_eigen_evals,double rho_or,double Eerr=1e-9);
-//  void load_eivals(std::vector<double_complex > &eval_self_or,double rho_or,double Eerr=1e-9);
-//
-//  void initiallize(std::vector<double> &mass_or,int one_minus_halfD_or);
-//  void initiallize();
-//  void load_eigen(int icfg,std::string &ov_evecname,double kappa,std::vector<double> &mass,int one_minus_halfD,double eigenerror,const parallel_io &io,int Edouble_or=0);
-//  //void eigen_rotate::load_eigen(vec_eigen_pair<vector> &eigen_use,std::vector<double_complex > &eval_self_or,double kappa,std::vector<double> &mass,int one_minus_halfD,double eigenerror,int Edouble_or=0);
-//  void load_eigen(vec_eigen_pair<vector> &eigen_use,std::vector<double_complex > &eval_self_or,double kappa,std::vector<double> &mass,int one_minus_halfD,double eigenerror,int Edouble_or=0);
-//
-//  void prop_L(vector **src,EigenM &Prop_vec,std::vector<double> &mass_or,int one_minus_halfD_or);
-//  void prop_L(vector **src,vector **prop,std::vector<double> &mass_or,int one_minus_halfD_or);
-//  void deflation_L(vector **src,vector **res);
-//
-//  void seq_L(vector **prop3,double mass_d,double rho,int_vector &map,bool bcast,double_complex* ker_low);
-//  void seq_L(vector **prop3,double mass_d,double rho,int_vector &map,double_complex* ker_low);
-//  void get_MPItem(EigenM &MPItem,std::vector<int > &seq_l,std::vector<std::vector<std::vector<int > > > &nodemap,std::vector<std::vector<int > > &local_update);
-//
-//  void setup_L(vector **prop2);
-//
-//
-//  //void prop_L(vector **src,EigenM &Prop_vec);
-//  void get_Evec(int ni,vector **src);
-//  void get_Evec(int ni,vector &src);
-//  ~eigen_rotate();
-//};
-
-
-//double sum_Eigen(EigenM &Esrc,int ivec,layout_minsurface_eo *desc);
-//bool test_load(lattice_desc& desc,char *name_eigen,const parallel_io& io);
-//
-//void gwu2eigenKY_E(vector **src, std::vector<Evector> &prop,fft_desc_basic &fd,int chiral=0);
-//void eigen2gwuKY_E(std::vector<Evector> &srcE,vector **res, fft_desc_basic &fd,int chiral=0);
-//void check_prop_size(std::vector<Evector > &prop);
-//
-//
-//void gwu2eigenKY_E(noise_vectors &src, std::vector<Evector> &res,fft_desc_basic &fd);
-//void eigen2gwuKY_E(std::vector<Evector> &src,noise_vectors &res, fft_desc_basic &fd);
-//
-//void reorder_civ(std::complex<Ftype>* src,std::complex<Ftype>* res,int civ,int biva,int sizeF,int flag=0,int size_inner=1);
-//void reorder_civ(std::vector<Evector> &src,std::vector<Evector> &res_civ,fft_desc_basic &fd,int civ,int flag=0);
-//
-//void memcpy_omp(Ftype* res,Ftype* src,LInt size);
 
 }
 
