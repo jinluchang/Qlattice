@@ -47,9 +47,9 @@ qlat::begin(): GeometryNode =
 , size_node   = 1x1x1x2
 , coor_node   = 0x0x0x0 }
 q_timer_max_func_name_len=50 (default)
-qremove: 'results'
 q_timer_mini_auto_show=1 (default)
 q_timer_max_always_show=10 (default)
+qremove: 'results'
 geo.show() = Geometry([8, 8, 8, 16], 1)
 q_field_init=fast (default)
 set q_field_init=fast.

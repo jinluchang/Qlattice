@@ -10,9 +10,9 @@ qlat::begin(): GeometryNode =
 , size_node   = 1x1x1x2
 , coor_node   = 0x0x0x0 }
 q_timer_max_func_name_len=50 (default)
-qremove: 'results'
 q_timer_mini_auto_show=1 (default)
 q_timer_max_always_show=10 (default)
+qremove: 'results'
 geo.show() = Geometry([4, 4, 4, 8], 1)
 psel.list() = [[0, 0, 0, 0], [0, 1, 2, 0]]
 q_field_init=fast (default)
