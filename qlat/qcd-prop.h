@@ -271,16 +271,6 @@ void set_point_src_propagator(Propagator4dT<T>& prop, const Inverter& inv,
   }
 }
 
-inline CoordinateD lattice_mom_mult(const Coordinate& total_site)
-{
-  return 2 * PI / CoordinateD(total_site);
-}
-
-inline CoordinateD lattice_mom_mult(const Geometry& geo)
-{
-  return lattice_mom_mult(geo.total_site());
-}
-
 inline void set_wall_src_fermion_field(FermionField4d& ff, const int tslice,
                                        const CoordinateD& lmom, const int cs)
 // ff need to be initialized beforehand

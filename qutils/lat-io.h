@@ -332,69 +332,6 @@ inline bool is_matching(const LatData& ld1, const LatData& ld2)
   return ld1.res.size() == ld2.res.size() and ld1.info == ld2.info;
 }
 
-inline const LatData& operator*=(LatData& ld, const double factor)
-{
-  for (long i = 0; i < (long)ld.res.size(); ++i) {
-    ld.res[i] *= factor;
-  }
-  return ld;
-}
-
-inline const LatData& operator+=(LatData& ld, const LatData& ld1)
-{
-  if (not is_initialized(ld)) {
-    ld = ld1;
-  } else {
-    qassert(is_matching(ld, ld1));
-    for (long i = 0; i < (long)ld.res.size(); ++i) {
-      ld.res[i] += ld1.res[i];
-    }
-  }
-  return ld;
-}
-
-inline const LatData& operator-=(LatData& ld, const LatData& ld1)
-{
-  if (not is_initialized(ld)) {
-    ld = ld1;
-    ld *= -1;
-  } else {
-    qassert(is_matching(ld, ld1));
-    for (long i = 0; i < (long)ld.res.size(); ++i) {
-      ld.res[i] -= ld1.res[i];
-    }
-  }
-  return ld;
-}
-
-inline LatData operator+(const LatData& ld, const LatData& ld1)
-{
-  LatData ret = ld;
-  ret += ld1;
-  return ret;
-}
-
-inline LatData operator-(const LatData& ld, const LatData& ld1)
-{
-  LatData ret = ld;
-  ret -= ld1;
-  return ret;
-}
-
-inline LatData operator*(const LatData& ld, const double factor)
-{
-  LatData ret = ld;
-  for (long i = 0; i < (long)ret.res.size(); ++i) {
-    ret.res[i] *= factor;
-  }
-  return ret;
-}
-
-inline LatData operator*(const double factor, const LatData& ld)
-{
-  return ld * factor;
-}
-
 template <class VecS>
 Vector<double> lat_data_get(LatData& ld, const VecS& idx)
 {
@@ -459,6 +396,20 @@ Vector<Complex> lat_data_cget_const(const LatData& ld, const VecS& idx)
   return lat_data_complex_get_const(ld, idx);
 }
 
+inline Vector<double> lat_data_get(LatData& ld)
+{
+  array<int, 0> idx;
+  return lat_data_get(ld, idx);
+}
+
+inline Vector<double> lat_data_get_const(const LatData& ld)
+// Be cautious about the const property
+// 改不改靠自觉
+{
+  array<int, 0> idx;
+  return lat_data_get_const(ld, idx);
+}
+
 inline Vector<Complex> lat_data_cget(LatData& ld)
 {
   array<int, 0> idx;
@@ -471,6 +422,89 @@ inline Vector<Complex> lat_data_cget_const(const LatData& ld)
 {
   array<int, 0> idx;
   return lat_data_cget_const(ld, idx);
+}
+
+inline const LatData& operator*=(LatData& ld, const double factor)
+{
+  Vector<double> v = lat_data_get(ld);
+  for (long i = 0; i < v.size(); ++i) {
+    v[i] *= factor;
+  }
+  return ld;
+}
+
+inline const LatData& operator*=(LatData& ld, const Complex& factor)
+{
+  Vector<Complex> v = lat_data_cget(ld);
+  for (long i = 0; i < v.size(); ++i) {
+    v[i] *= factor;
+  }
+  return ld;
+}
+
+inline LatData operator*(const LatData& ld, const double factor)
+{
+  LatData ret = ld;
+  ret *= factor;
+  return ret;
+}
+
+inline LatData operator*(const double factor, const LatData& ld)
+{
+  return ld * factor;
+}
+
+inline LatData operator*(const LatData& ld, const Complex& factor)
+{
+  LatData ret = ld;
+  ret *= factor;
+  return ret;
+}
+
+inline LatData operator*(const Complex& factor, const LatData& ld)
+{
+  return ld * factor;
+}
+
+inline const LatData& operator+=(LatData& ld, const LatData& ld1)
+{
+  if (not is_initialized(ld)) {
+    ld = ld1;
+  } else {
+    qassert(is_matching(ld, ld1));
+    for (long i = 0; i < (long)ld.res.size(); ++i) {
+      ld.res[i] += ld1.res[i];
+    }
+  }
+  return ld;
+}
+
+inline const LatData& operator-=(LatData& ld, const LatData& ld1)
+{
+  if (not is_initialized(ld)) {
+    ld = ld1;
+    ld *= -1.0;
+  } else {
+    qassert(is_matching(ld, ld1));
+    for (long i = 0; i < (long)ld.res.size(); ++i) {
+      ld.res[i] -= ld1.res[i];
+    }
+  }
+  return ld;
+}
+
+inline LatData operator+(const LatData& ld, const LatData& ld1)
+{
+  LatData ret = ld;
+  ret += ld1;
+  return ret;
+}
+
+inline LatData operator-(const LatData& ld, const LatData& ld1)
+{
+  LatData ret = ld;
+  ret -= ld1;
+  return ret;
 }
 
 inline std::string show_double(const LatData& ld)

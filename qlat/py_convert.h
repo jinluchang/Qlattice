@@ -20,8 +20,13 @@ inline void py_convert(long& out, PyObject* in)
 
 inline void py_convert(double& out, PyObject* in)
 {
-  pqassert(PyFloat_Check(in));
-  out = PyFloat_AsDouble(in);
+  if (PyFloat_Check(in)) {
+    out = PyFloat_AsDouble(in);
+  } else if (PyLong_Check(in)) {
+    out = PyLong_AsLong(in);
+  } else {
+    pqassert(false);
+  }
 }
 
 inline void py_convert(Complex& out, PyObject* in)
@@ -158,19 +163,38 @@ T& py_convert_type(PyObject* in)
   return *out;
 }
 
+inline PyObject* py_convert(const char& x) { return PyLong_FromLong((long)x); }
+
 inline PyObject* py_convert(const bool& x) { return PyBool_FromLong((long)x); }
 
 inline PyObject* py_convert(const int& x) { return PyLong_FromLong((long)x); }
 
 inline PyObject* py_convert(const long& x) { return PyLong_FromLong(x); }
 
-inline PyObject* py_convert(const long long& x) { return PyLong_FromLongLong(x); }
+inline PyObject* py_convert(const long long& x)
+{
+  return PyLong_FromLongLong(x);
+}
 
-inline PyObject* py_convert(const unsigned int& x) { return PyLong_FromUnsignedLong((unsigned long)x); }
+inline PyObject* py_convert(const unsigned int& x)
+{
+  return PyLong_FromUnsignedLong((unsigned long)x);
+}
 
-inline PyObject* py_convert(const unsigned long& x) { return PyLong_FromUnsignedLong(x); }
+inline PyObject* py_convert(const unsigned long& x)
+{
+  return PyLong_FromUnsignedLong(x);
+}
 
-inline PyObject* py_convert(const unsigned long long& x) { return PyLong_FromUnsignedLongLong(x); }
+inline PyObject* py_convert(const unsigned long long& x)
+{
+  return PyLong_FromUnsignedLongLong(x);
+}
+
+inline PyObject* py_convert(const float& x)
+{
+  return PyFloat_FromDouble((double)x);
+}
 
 inline PyObject* py_convert(const double& x) { return PyFloat_FromDouble(x); }
 
@@ -213,6 +237,26 @@ PyObject* py_convert(const Vector<M>& vec)
     PyList_SetItem(ret, i, py_convert(vec[i]));
   }
   return ret;
+}
+
+inline PyObject* py_convert(const ColorMatrix& x) {
+  return py_convert(get_data_complex(get_data_one_elem(x)));
+}
+
+inline PyObject* py_convert(const WilsonMatrix& x) {
+  return py_convert(get_data_complex(get_data_one_elem(x)));
+}
+
+inline PyObject* py_convert(const NonRelWilsonMatrix& x) {
+  return py_convert(get_data_complex(get_data_one_elem(x)));
+}
+
+inline PyObject* py_convert(const SpinMatrix& x) {
+  return py_convert(get_data_complex(get_data_one_elem(x)));
+}
+
+inline PyObject* py_convert(const WilsonVector& x) {
+  return py_convert(get_data_complex(get_data_one_elem(x)));
 }
 
 template <class M>

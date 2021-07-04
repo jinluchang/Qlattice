@@ -3,6 +3,7 @@ all: run
 run: py-examples cplat-example
 
 tests = make-sample-gauge-field.log \
+		field-utils.log \
 		hmc-pure-gauge.log \
 		field-selection.log \
 		selected-field.log \

@@ -28,9 +28,26 @@ void set_unit(Field<M>& f, const Complex& coef = 1.0)
   }
 }
 
+template <class M, class N>
+void assign(Field<N>& f, const Field<M>& f1)
+{
+  const Geometry& geo1 = f1.geo();
+  qassert(geo1.is_only_local());
+  const Geometry geo =
+      geo_remult(geo1, geo1.multiplicity * sizeof(M) / sizeof(N));
+  f.init();
+  f.init(geo);
+  qacc_for(index, geo.local_volume(), {
+    const Vector<M> v1 = f1.get_elems_const(index);
+    Vector<N> v = f.get_elems(index);
+    assign(v, v1);
+  });
+}
+
 template <class M>
 std::vector<M> field_sum(const Field<M>& f)
 {
+  TIMER("field_sum");
   const Geometry& geo = f.geo();
   const int multiplicity = geo.multiplicity;
   std::vector<M> vec(multiplicity);
@@ -46,8 +63,29 @@ std::vector<M> field_sum(const Field<M>& f)
 }
 
 template <class M>
+std::vector<M> field_sum_tslice(const Field<M>& f)
+{
+  TIMER("field_sum_tslice");
+  const Geometry& geo = f.geo();
+  const int t_size = geo.total_site()[3];
+  const int multiplicity = geo.multiplicity;
+  std::vector<M> vec(t_size * multiplicity);
+  set_zero(vec);
+  qacc_for(index, geo.local_volume(), {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Coordinate xg = geo.coordinate_g_from_l(xl);
+    const Vector<M> fvec = f.get_elems_const(xl);
+    for (int m = 0; m < multiplicity; ++m) {
+      vec[xg[3] * multiplicity + m] += fvec[m];
+    }
+  });
+  return vec;
+}
+
+template <class M>
 std::vector<M> field_glb_sum_double(const Field<M>& f)
 {
+  TIMER("field_glb_sum_double");
   std::vector<M> vec = field_sum(f);
   glb_sum_double_vec(Vector<M>(vec));
   return vec;
@@ -56,9 +94,48 @@ std::vector<M> field_glb_sum_double(const Field<M>& f)
 template <class M>
 std::vector<M> field_glb_sum_long(const Field<M>& f)
 {
+  TIMER("field_glb_sum_long");
   std::vector<M> vec = field_sum(f);
   glb_sum_long_vec(Vector<M>(vec));
   return vec;
+}
+
+template <class M>
+std::vector<std::vector<M> > field_glb_sum_tslice_double(const Field<M>& f)
+{
+  TIMER("field_glb_sum_tslice_double");
+  const Geometry& geo = f.geo();
+  const int t_size = geo.total_site()[3];
+  const int multiplicity = geo.multiplicity;
+  std::vector<M> vec = field_sum_tslice(f);
+  glb_sum_double_vec(Vector<M>(vec));
+  std::vector<std::vector<M> > vecs(t_size);
+  for (int t = 0; t < t_size; ++t) {
+    vecs[t].resize(multiplicity);
+    for (int m = 0; m < multiplicity; ++m) {
+      vecs[t][m] = vec[t * multiplicity + m];
+    }
+  }
+  return vecs;
+}
+
+template <class M>
+std::vector<std::vector<M> > field_glb_sum_tslice_long(const Field<M>& f)
+{
+  TIMER("field_glb_sum_tslice_long");
+  const Geometry& geo = f.geo();
+  const int t_size = geo.total_site()[3];
+  const int multiplicity = geo.multiplicity;
+  std::vector<M> vec = field_sum_tslice(f);
+  glb_sum_long_vec(Vector<M>(vec));
+  std::vector<std::vector<M> > vecs(t_size);
+  for (int t = 0; t < t_size; ++t) {
+    vecs[t].resize(multiplicity);
+    for (int m = 0; m < multiplicity; ++m) {
+      vecs[t][m] = vec[t * multiplicity + m];
+    }
+  }
+  return vecs;
 }
 
 template <class M>
@@ -85,6 +162,59 @@ std::vector<M> field_project_mom(const Field<M>& f, const CoordinateD& mom)
   }
   glb_sum_double_vec(get_data(ret));
   return ret;
+}
+
+inline CoordinateD lattice_mom_mult(const Coordinate& total_site)
+{
+  return 2 * PI / CoordinateD(total_site);
+}
+
+inline CoordinateD lattice_mom_mult(const Geometry& geo)
+{
+  return lattice_mom_mult(geo.total_site());
+}
+
+inline void set_mom_phase_field(FieldM<Complex, 1>& f, const CoordinateD& mom)
+// mom is in lattice unit (1/a)
+// exp(i * mom \cdot xg )
+{
+  TIMER("set_mom_phase_field");
+  const Geometry& geo = f.geo();
+  qacc_for(index, geo.local_volume(), {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Coordinate xg = geo.coordinate_g_from_l(xl);
+    double phase = 0;
+    for (int k = 0; k < DIMN; ++k) {
+      phase += mom[k] * xg[k];
+    }
+    f.get_elem(xl) = std::polar(1.0, phase);
+  });
+}
+
+inline void set_phase_field(FieldM<Complex, 1>& f, const CoordinateD& lmom)
+// lmom is in lattice momentum unit
+// exp(i * 2*pi/L * lmom \cdot xg )
+{
+  TIMER("set_phase_field");
+  const CoordinateD mom = lmom * lattice_mom_mult(f.geo());
+  set_mom_phase_field(f, mom);
+}
+
+template <class M>
+const Field<M>& operator*=(Field<M>& f, const FieldM<Complex, 1>& f_factor)
+{
+  TIMER("field_operator*=(F,FC)");
+  qassert(is_matching_geo(f.geo(), f_factor.geo()));
+  const Geometry& geo = f.geo();
+  qacc_for(index, geo.local_volume(), {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    Vector<M> v = f.get_elems(xl);
+    const Complex& fac = f_factor.get_elem(xl);
+    for (int m = 0; m < geo.multiplicity; ++m) {
+      v[m] *= fac;
+    }
+  });
+  return f;
 }
 
 template <class M>

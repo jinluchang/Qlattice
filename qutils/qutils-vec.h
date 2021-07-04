@@ -364,16 +364,31 @@ qacc double qnorm(const Vector<T>& m1, const Vector<T>& m2)
   return sum;
 }
 
-template <class M>
-qacc Vector<double> get_data_double(const M& v)
+template <class N, class M>
+qacc Vector<N> get_data_as(const Vector<M>& v)
 {
-  return Vector<double>(&v, sizeof(M) / sizeof(double));
+  const long n = v.data_size() / sizeof(N);
+  Vector<N> v1((N*)v.data(), n);
+  qassert(v1.data_size() == v.data_size());
+  return v1;
 }
 
 template <class M>
-qacc Vector<long> get_data_long(const M& v)
+qacc Vector<double> get_data_double(const Vector<M>& v)
 {
-  return Vector<long>(&v, sizeof(M) / sizeof(long));
+  return get_data_as<double>(v);
+}
+
+template <class M>
+qacc Vector<Complex> get_data_complex(const Vector<M>& v)
+{
+  return get_data_as<Complex>(v);
+}
+
+template <class M>
+qacc Vector<long> get_data_long(const Vector<M>& v)
+{
+  return get_data_as<long>(v);
 }
 
 template <class M>

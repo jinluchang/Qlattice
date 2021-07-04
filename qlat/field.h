@@ -284,7 +284,7 @@ const Field<M>& operator*=(Field<M>& f, const double factor)
 }
 
 template <class M>
-const Field<M>& operator*=(Field<M>& f, const Complex factor)
+const Field<M>& operator*=(Field<M>& f, const Complex& factor)
 {
   TIMER("field_operator*=(F,C)");
   const Geometry& geo = f.geo();

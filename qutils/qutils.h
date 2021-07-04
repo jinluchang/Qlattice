@@ -157,6 +157,14 @@ qacc void to_from_big_endian_64(void* str, const size_t len)
   }
 }
 
+qacc long& operator*=(long& x, const Complex& factor) { assert(false); }
+
+qacc double& operator*=(double& x, const Complex& factor) { assert(false); }
+
+qacc float& operator*=(float& x, const Complex& factor) { assert(false); }
+
+qacc char& operator*=(char& x, const Complex& factor) { assert(false); }
+
 qacc void set_zero(char& x) { x = 0; }
 
 qacc void set_zero(int32_t& x) { x = 0; }
@@ -172,6 +180,13 @@ qacc void set_zero(array<M, N>& arr)
 {
   long size = N * sizeof(M);
   std::memset((void*)arr.data(), 0, size);
+}
+
+template <class M>
+void set_zero(std::vector<M>& vec)
+{
+  long size = vec.size() * sizeof(M);
+  std::memset((void*)vec.data(), 0, size);
 }
 
 qacc void set_unit(char& x, const long& coef = 1) { x = coef; }
@@ -195,13 +210,6 @@ qacc void set_unit(double& x, const double& coef = 1.0) { x = coef; }
 qacc void set_unit(double& x, const Complex& coef) { x = coef.real(); }
 
 qacc void set_unit(Complex& x, const Complex& coef = 1.0) { x = coef; }
-
-template <class M>
-void set_zero(std::vector<M>& vec)
-{
-  long size = vec.size() * sizeof(M);
-  std::memset((void*)vec.data(), 0, size);
-}
 
 qacc double qnorm(const double& x) { return x * x; }
 

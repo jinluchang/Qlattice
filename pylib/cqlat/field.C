@@ -56,6 +56,14 @@ PyObject* set_sub_field_ctype(PyField& pf_new, PyField& pf)
 }
 
 template <class M>
+PyObject* set_mul_field_ctype(PyField& pf, const double& factor)
+{
+  Field<M>& f = *(Field<M>*)pf.cdata;
+  f *= factor;
+  Py_RETURN_NONE;
+}
+
+template <class M>
 PyObject* set_mul_field_ctype(PyField& pf, const Complex& factor)
 {
   Field<M>& f = *(Field<M>*)pf.cdata;
@@ -64,10 +72,10 @@ PyObject* set_mul_field_ctype(PyField& pf, const Complex& factor)
 }
 
 template <class M>
-PyObject* set_mul_field_ctype(PyField& pf, const double& factor)
+PyObject* set_mul_field_ctype(PyField& pf, const FieldM<Complex, 1>& f_factor)
 {
   Field<M>& f = *(Field<M>*)pf.cdata;
-  f *= factor;
+  f *= f_factor;
   Py_RETURN_NONE;
 }
 
@@ -233,6 +241,36 @@ EXPORT(set_mul_double_field, {
   PyField pf = py_convert_field(p_field);
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, set_mul_field_ctype, pf.ctype, pf, factor);
+  return p_ret;
+});
+
+EXPORT(set_mul_complex_field, {
+  using namespace qlat;
+  PyObject* p_field = NULL;
+  Complex factor = 0.0;
+  if (!PyArg_ParseTuple(args, "OD", &p_field, &factor)) {
+    return NULL;
+  }
+  PyField pf = py_convert_field(p_field);
+  PyObject* p_ret = NULL;
+  FIELD_DISPATCH(p_ret, set_mul_field_ctype, pf.ctype, pf, factor);
+  return p_ret;
+});
+
+EXPORT(set_mul_cfield_field, {
+  using namespace qlat;
+  PyObject* p_field = NULL;
+  PyObject* p_cfield = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_field, &p_cfield)) {
+    return NULL;
+  }
+  PyField pf = py_convert_field(p_field);
+  PyField pcf = py_convert_field(p_cfield);
+  pqassert(pcf.ctype == "Complex");
+  FieldM<Complex, 1>& f_factor = *(FieldM<Complex, 1>*)pcf.cdata;
+  pqassert(f_factor.geo().multiplicity == 1);
+  PyObject* p_ret = NULL;
+  FIELD_DISPATCH(p_ret, set_mul_field_ctype, pf.ctype, pf, f_factor);
   return p_ret;
 });
 

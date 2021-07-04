@@ -3,6 +3,21 @@ import cqlat as c
 from qlat.geometry import *
 from qlat.rng_state import *
 
+field_ctypes_double = [
+        "ColorMatrix",
+        "WilsonMatrix",
+        "NonRelWilsonMatrix",
+        "SpinMatrix",
+        "WilsonVector",
+        "Complex",
+        "double",
+        ]
+
+field_ctypes_long = [
+        "long",
+        "int64_t",
+        ]
+
 class Field:
 
     def __init__(self, ctype, geo = None, multiplicity = None):
@@ -56,9 +71,17 @@ class Field:
         return self
 
     def __imul__(self, factor):
-        assert isinstance(factor, float)
-        c.set_mul_double_field(self, factor)
-        return self
+        if isinstance(factor, float):
+            c.set_mul_double_field(self, factor)
+            return self
+        elif isinstance(factor, complex):
+            c.set_mul_complex_field(self, factor)
+            return self
+        elif isinstance(factor, Field):
+            c.set_mul_cfield_field(self, factor)
+            return self
+        else:
+            assert False
 
     def set_zero(self):
         c.set_zero_field(self)
@@ -186,6 +209,40 @@ class Field:
     def to_from_endianness(self, tag):
         assert isinstance(tag, str)
         c.to_from_endianness_field(self, tag)
+
+    def as_complex_field(self):
+        f = Field("Complex")
+        c.assign_as_complex_field(f, self)
+        return f
+
+    def from_complex_field(self, f):
+        c.assign_from_complex_field(self, f)
+        return f
+
+    def get_elems(self, xg):
+        return c.get_elems_field(self, xg)
+
+    def get_elem(self, xg):
+        return c.get_elem_field(self, xg)
+
+    def get_elem(self, xg, m):
+        return c.get_elem_field(self, xg, m)
+
+    def glb_sum(self):
+        if self.ctype in field_ctypes_double:
+            return c.glb_sum_double_field(self)
+        elif self.ctype in field_ctypes_long:
+            return c.glb_sum_long_field(self)
+        else:
+            assert False
+
+    def glb_sum_tslice(self):
+        if self.ctype in field_ctypes_double:
+            return c.glb_sum_tslice_double_field(self)
+        elif self.ctype in field_ctypes_long:
+            return c.glb_sum_tslice_long_field(self)
+        else:
+            assert False
 
 def split_fields(fs, f):
     nf = len(fs)
