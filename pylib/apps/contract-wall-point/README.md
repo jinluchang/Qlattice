@@ -136,12 +136,12 @@ $$
 = \text{Tr}
 \sum_\vec x
 \Big(
-S_1(t_\text{op},\vec x;t_\text{src})  \gamma_5 
+S_1(\vec x,t_\text{op};t_\text{src})  \gamma_5 
 S_3(t_\text{src};t_\text{snk})
 \gamma_5
-\big( \gamma_5 S_2(t_\text{snk};t_\text{op},\vec x)^\dagger \gamma_5 \big)
-\Big)
+\big( \gamma_5 S_2(t_\text{snk};\vec x,t_\text{op})^\dagger \gamma_5 \big)
 \Gamma_{\text{op}} 
+\Big)
 \ea
 $$
 

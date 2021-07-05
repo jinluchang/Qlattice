@@ -13,4 +13,6 @@ sync:
 
 diff:
 	-diff -r ~/Qlattice-cc/pylib/apps/summary-neutrino-hadron-scattering/run.py run.py
+	-diff -r ~/Qlattice-cc/pylib/apps/summary-neutrino-hadron-scattering/Makefile Makefile
+	-diff -r ~/Qlattice-cc/pylib/apps/summary-neutrino-hadron-scattering/README.md README.md
 

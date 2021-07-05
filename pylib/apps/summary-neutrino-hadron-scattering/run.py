@@ -31,6 +31,9 @@ def get_save_path(fn):
 
 @q.timer
 def check_job(job_tag, traj):
+    if q.does_file_exist_sync_node(get_save_path(f"{job_tag}/traj={traj}.hdf5")):
+        q.displayln_info(f"check_job: Job finished {job_tag} {traj}")
+        return False
     if get_load_path(f"field-meson-vv-meson/{job_tag}/results={traj}/checkpoint.txt") is None:
         return False
     if get_load_path(f"lat-three-point/{job_tag}/results={traj}/checkpoint.txt") is None:
@@ -40,18 +43,28 @@ def check_job(job_tag, traj):
     return True
 
 def get_t_size(job_tag):
-    if job_tag == "test-4nt16":
-        return 16
-    elif job_tag == "24D":
+    if job_tag in [ "24D", "32D", "24DH", "32Dfine", ]:
         return 64
+    elif job_tag == "48I":
+        return 96
+    elif job_tag == "64I":
+        return 128
+    elif job_tag == "test-4nt16":
+        return 16
     else:
         assert False
 
 def get_tsep(job_tag):
-    if job_tag == "test-4nt16":
-        return 2
-    elif job_tag == "24D":
+    if job_tag in [ "24D", "32D", "24DH", ]:
         return 8
+    elif job_tag == "32Dfine":
+        return 10
+    elif job_tag == "48I":
+        return 12
+    elif job_tag == "64I":
+        return 18
+    elif job_tag == "test-4nt16":
+        return 2
     else:
         assert False
 
@@ -77,7 +90,7 @@ def analysis_two_point(job_tag, traj, type1, type2):
     ld = q.LatData()
     ld.load(get_load_path(f"lat-two-point/{job_tag}/results={traj}/two-point-wall-snk-sparse-corrected-{type1}-{type2}.lat"))
     arr = np.array([ ld[[t, 15, 15,]][0] for t in range(get_t_size(job_tag)) ])
-    # print(arr)
+    # q.displayln_info(arr)
     return arr
 
 @q.timer_verbose
@@ -87,7 +100,7 @@ def analysis_three_point(job_tag, traj, type1, type2, type3):
     arr = np.array([
         [ ld[[t, top, 8,]][0] for top in range(get_t_size(job_tag)) ]
         for t in range(get_t_size(job_tag)) ])
-    # print(arr)
+    # q.displayln_info(arr)
     return arr
 
 @q.timer_verbose
@@ -111,7 +124,7 @@ def analysis_meson_vv_meson(job_tag, traj, type1, type2, type3, type4):
     assert t_size == get_t_size(job_tag)
     assert n_elem == 64
     arr = data.reshape((n_lmom, t_size, 8, 8,))
-    print(arr[0][2])
+    # q.displayln_info(arr[0][2])
     return arr
 
 @q.timer_verbose
@@ -122,21 +135,26 @@ def analysis(job_tag, traj):
         q.timer_reset()
         q.displayln_info(f"analysis {job_tag} {traj}")
         q.qmkdir_info(get_save_path(f"{job_tag}"))
-        with h5py.File(get_save_path(f"{job_tag}/traj={traj}.hdf5"), "w") as f:
-            f.create_dataset("lmom-list", data = np.array(get_analysis_lmom_list()))
-            f.create_dataset("two-point-0-0", data = analysis_two_point(job_tag, traj, 0, 0))
-            f.create_dataset("three-point-0-0-0", data = analysis_three_point(job_tag, traj, 0, 0, 0))
-            f.create_dataset("field-meson-vv-meson-0-0-0-0", data = analysis_meson_vv_meson(job_tag, traj, 0, 0, 0, 0))
+        data = {}
+        data["lmom-list"] = np.array(get_analysis_lmom_list())
+        data["two-point-0-0"] = analysis_two_point(job_tag, traj, 0, 0)
+        data["three-point-0-0-0"] = analysis_three_point(job_tag, traj, 0, 0, 0)
+        data["field-meson-vv-meson-0-0-0-0"] = analysis_meson_vv_meson(job_tag, traj, 0, 0, 0, 0)
+        if q.get_id_node() == 0:
+            with h5py.File(get_save_path(f"{job_tag}/traj={traj}.hdf5"), "w") as f:
+                for k, v in data.items():
+                    f.create_dataset(k, data = v)
+        q.sync_node()
         q.timer_display()
         q.release_lock()
 
 job_tags = [
         "24D",
-        # "48I",
-        # "64I",
-        # "32D",
-        # "32Dfine",
-        # "24DH",
+        "48I",
+        "64I",
+        "32D",
+        "32Dfine",
+        "24DH",
         "test-4nt16",
         ]
 
