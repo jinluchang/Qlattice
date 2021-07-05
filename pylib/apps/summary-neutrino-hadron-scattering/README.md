@@ -108,7 +108,7 @@ $$
 \ba
 H_\text{forward}[l][x_t-y_t][\mu][\nu]
 &=&
-\int d^3\vec x\,
+\sum_\vec x
 e^{-i p_l \cdot (x - y)}
 \mathrm{Tr}[
 S_1(t_\text{snk};x)\gamma^{\mathrm{va}}_\mu
