@@ -16,6 +16,10 @@ $$
 
 ## Notation
 
+### Ensembles
+
+See https://github.com/waterret/rbc-ukqcd-ensembles-info.
+
 ### Gamma matrix
 
 $$
