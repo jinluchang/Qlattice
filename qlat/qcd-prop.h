@@ -183,7 +183,7 @@ void smear_propagator(Propagator4dT<T>& prop, const GaugeFieldT<T>& gf1,
                       const bool smear_in_time_dir = false)
 // gf1 is left_expanded and refreshed
 // set_left_expanded_gauge_field(gf1, gf)
-// prop is of qnormal size
+// prop is of normal size
 {
   TIMER_VERBOSE("smear_propagator");
   if (0 == step) {
@@ -207,20 +207,19 @@ void smear_propagator(Propagator4dT<T>& prop, const GaugeFieldT<T>& gf1,
   for (int i = 0; i < step; ++i) {
     prop1 = prop;
     refresh_expanded_1(prop1);
-#pragma omp parallel for
-    for (long index = 0; index < geo.local_volume(); ++index) {
+    qacc_for(index, geo.local_volume(), {
       const Coordinate xl = geo.coordinate_from_index(index);
       WilsonMatrixT<T>& wm = prop.get_elem(xl);
       wm *= 1 - coef;
       for (int dir = -dir_limit; dir < dir_limit; ++dir) {
         const Coordinate xl1 = coordinate_shifts(xl, dir);
         const ColorMatrixT<T> link =
-            dir >= 0 ? gf1.get_elem(xl, dir)
-                     : (ColorMatrixT<T>)matrix_adjoint(
-                           gf1.get_elem(coordinate_shifts(xl, dir), -dir - 1));
+            dir >= 0
+                ? gf1.get_elem(xl, dir)
+                : (ColorMatrixT<T>)matrix_adjoint(gf1.get_elem(xl1, -dir - 1));
         wm += mom_factors[dir + 4] * (link * prop1.get_elem(xl1));
       }
-    }
+    });
   }
 }
 

@@ -37,6 +37,7 @@ def load_eig_lazy(job_tag, inv_type, path):
         assert isinstance(eig, list)
         assert len(eig) == 1
         if eig[0] is None:
+            q.check_stop()
             q.check_time_limit()
             eig[0] = g.load(path_load, grids = grids)
         return eig[0]
@@ -46,6 +47,7 @@ def load_eig_lazy(job_tag, inv_type, path):
 def compute_eig(gf, job_tag, inv_type, *, path = None, nsingle = 10, mpi = [ 1, 1, 1, 4 ]):
     # return a function ``get_eig''
     # ``get_eig()'' return the ``eig''
+    q.check_stop()
     q.check_time_limit()
     load_eig = load_eig_lazy(job_tag, inv_type, path)
     if load_eig is not None:
@@ -112,10 +114,9 @@ def mk_rand_psel(job_tag, traj):
     return psel
 
 @q.timer
-def mk_rand_fsel(job_tag, traj):
+def mk_rand_fsel(job_tag, traj, n_per_tslice):
     rs = q.RngState(f"seed {job_tag} {traj}").split("mk_rand_fsel")
     total_site = ru.get_total_site(job_tag)
-    n_per_tslice = total_site[0] * total_site[1] * total_site[2] // 16
     fsel = q.FieldSelection()
     fsel.set_rand(rs, total_site, n_per_tslice)
     return fsel
@@ -201,6 +202,7 @@ def compute_prop_wsrc(gf, gt, tslice, job_tag, inv_type, inv_acc, *, idx, sfw, p
     tag = f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc}"
     if tag in finished_tags:
         return None
+    q.check_stop()
     q.check_time_limit()
     q.displayln_info(f"compute_prop_wsrc: idx={idx} tslice={tslice}", job_tag, inv_type, inv_acc)
     inv = ru.get_inv(gf, job_tag, inv_type, inv_acc, gt = gt, eig = eig)
@@ -233,6 +235,7 @@ def compute_prop_psrc(gf, xg, job_tag, inv_type, inv_acc, *, idx, sfw, path_sp, 
     tag = f"xg=({xg[0]},{xg[1]},{xg[2]},{xg[3]}) ; type={inv_type} ; accuracy={inv_acc}"
     if tag in finished_tags:
         return None
+    q.check_stop()
     q.check_time_limit()
     q.displayln_info(f"compute_prop_psrc: idx={idx} xg={xg}", job_tag, inv_type, inv_acc)
     inv = ru.get_inv(gf, job_tag, inv_type, inv_acc, eig = eig)
@@ -322,11 +325,11 @@ def run_job(job_tag, traj):
     path_gf = get_load_path(f"configs/{job_tag}/ckpoint_lat.{traj}")
     if path_gf is None:
         gf = mk_sample_gauge_field(job_tag, traj)
-        gf.show_info()
         gf.save(get_save_path(f"configs/{job_tag}/ckpoint_lat.{traj}"))
     else:
         gf = q.GaugeField()
         gf.load(path_gf)
+    gf.show_info()
     #
     get_eig = load_eig_lazy(job_tag, inv_type = 0, path = f"eig/{job_tag}/traj={traj}")
     if get_eig is None:
@@ -335,14 +338,31 @@ def run_job(job_tag, traj):
             test_eig(gf, get_eig(), job_tag, inv_type = 0)
             q.release_lock()
     #
-    gt = mk_sample_gauge_transform(job_tag, traj)
-    gt.save_double(get_save_path(f"gauge-transform/{job_tag}/traj={traj}.field"))
+    path_gt = get_load_path(f"gauge-transform/{job_tag}/traj={traj}.field")
+    if path_gt is None:
+        gt = mk_sample_gauge_transform(job_tag, traj)
+        gt.save_double(get_save_path(f"gauge-transform/{job_tag}/traj={traj}.field"))
+    else:
+        gt = q.GaugeTransform()
+        gt.load_double(path_gt)
     #
-    psel = mk_rand_psel(job_tag, traj)
-    fsel = mk_rand_fsel(job_tag, traj)
+    path_psel = get_load_path(f"point-selection/{job_tag}/traj={traj}.txt")
+    if path_psel is None:
+        psel = mk_rand_psel(job_tag, traj)
+        psel.save(get_save_path(f"point-selection/{job_tag}/traj={traj}.txt"))
+    else:
+        psel = q.PointSelection()
+        psel.load(path_psel)
+    #
+    n_per_tslice = total_site[0] * total_site[1] * total_site[2] // 16
+    path_fsel = get_load_path(f"field-selection/{job_tag}/traj={traj}.field")
+    if path_fsel is None:
+        fsel = mk_rand_fsel(job_tag, traj, n_per_tslice)
+        fsel.save(get_save_path(f"field-selection/{job_tag}/traj={traj}.field"))
+    else:
+        fsel = q.FieldSelection()
+        fsel.load(path_fsel, n_per_tslice)
     fselc = mk_fselc(fsel, psel)
-    psel.save(get_save_path(f"point-selection/{job_tag}/traj={traj}.txt"))
-    fsel.save(get_save_path(f"field-selection/{job_tag}/traj={traj}.field"))
     #
     if get_load_path(f"prop-wsrc-light/{job_tag}/traj={traj}") is None:
         if get_eig is not None:
