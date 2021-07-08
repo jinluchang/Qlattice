@@ -1,4 +1,4 @@
-#include <qlat/qlat.h>
+#include <qlat/qcd.h>
 #include <sys/sysinfo.h>
 #include "utils_test_unified.h"
 
@@ -100,3 +100,4 @@ int main(int argc, char* argv[])
   qlat::end();
   return 0;
 }
+

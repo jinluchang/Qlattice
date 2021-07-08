@@ -2,13 +2,12 @@
 #define UTILS_EIGENSYS_H
 
 #pragma once
-#include <qlat/qlat.h>
 #include "reduce_V_dev.h"
 #include "gammas.h"
 #include "fft_desc.h"
 #include "utils_Matrix_prod.h"
 
-#define SUMMIT 1
+#define SUMMIT 0
 
 namespace qlat{
 
@@ -278,6 +277,9 @@ void eigen_ov::setup_bfac(long long bsize0, int nV)
 
   int vfac = ncutgpu;int vini = 8 * vfac;
   int vres = int((totalD*0.90 - mem_prop )/memV); 
+  /////TODO Need global sum and average the final result?
+  /////TODO need to test the continuous memory less thant 8GB
+
   //int gsimple = 32;
   //if(temN >= 32){gsimple = (temN/32)*32;}else{gsimple = 32;}
 
@@ -878,11 +880,11 @@ void prop_L_device(eigen_ov& ei,Complexq *src,Complexq *props, int Ns,std::vecto
 
   long long Lat = ei.noden;
   long long vGb = Lat*12;
-  int Fcount0 = 3 + 1;
-  int Fcount1 = 3 + 1;
+  int Fcount0 = 6 + 2;
+  int Fcount1 = 6 + 2;
   long long Tfloat = ei.n_vec*Ns*mN*vGb*Fcount1 + ei.n_vec*Ns*vGb*Fcount0;
   timer.flops += Tfloat;
-  double mem = Lat*12*(ei.n_vec + Ns + Ns*mN)*8.0;
+  double mem = Lat*12*(ei.n_vec + Ns + Ns*mN)*sizeof(Complexq);
   print0("Memory size %.3e GB, %.3e Gflop \n", 
     mem/(1024.0*1024*1024), Tfloat/(1024.0*1024*1024));
   ///////qlat::get_num_node()
@@ -964,8 +966,8 @@ void prop_L_device(eigen_ov& ei,Complexq *src,Complexq *props, int Ns,std::vecto
 
     TIMER_FLOPS("vec reduce");
     long long vGb = 2*bfac*m*n*w;
-    int Fcount0 = 3 + 1;  
-    timer.flops += vGb*Fcount0;
+    int Fcount0   = 6 + 2;  
+    timer.flops  += vGb*Fcount0;
 
     //Complexq* rp = &alpha_bfac[(bini + 0)*n_vec*Ns     + 0];
     //Complexq* Ep = &Mvec0[     (bini + 0)*n_vec*b_size + 0];
@@ -1107,8 +1109,8 @@ void prop_L_device(eigen_ov& ei,Complexq *src,Complexq *props, int Ns,std::vecto
     //TIMER("vec multi");
     TIMER_FLOPS("vec multi");
     long long vGb = 2*bfac*m*n*w;
-    int Fcount0 = 3 + 1;  
-    timer.flops += vGb*Fcount0;
+    int Fcount0   = 2*(3 + 1);  
+    timer.flops  += vGb*Fcount0;
 
     if(ncur<ei.n_vec){zeroE(alpha_bfac,0,false);zeroE(alpha,0,false);}
 
@@ -1162,8 +1164,8 @@ void prop_L_device(eigen_ov& ei,Complexq *src,Complexq *props, int Ns,std::vecto
 //
 //  long long Lat = noden;
 //  long long vGb = Lat*12;
-//  int Fcount0 = 3 + 1;
-//  int Fcount1 = 3 + 1;
+//  int Fcount0 = 6 + 2;
+//  int Fcount1 = 6 + 2;
 //  long long Tfloat = n_vec*Ns*mN*vGb*Fcount1 + n_vec*Ns*vGb*Fcount0;
 //  timer.flops += Tfloat;
 //  double mem = Lat*12*(n_vec + Ns + Ns*mN)*8.0;
@@ -1446,8 +1448,8 @@ void prop_L_device(eigen_ov& ei,Complexq *src,Complexq *props, int Ns,std::vecto
 //  //  long w = b_size;
 //
 //  //  TIMER_FLOPS("vec reduce");
-//  //  long long vGb = 2*bfac*m*Ns*b_size;
-//  //  int Fcount0 = 3 + 1;  
+//  //  long long vGb = bfac*m*Ns*b_size;
+//  //  int Fcount0 = 6 + 2;  
 //  //  timer.flops += vGb*Fcount0;
 //
 //  //  //Complexq* rp = &alpha_bfac[(bini + 0)*n_vec*Ns     + 0];
@@ -1557,8 +1559,8 @@ void prop_L_device(eigen_ov& ei,Complexq *src,Complexq *props, int Ns,std::vecto
 //
 //  //  //TIMER("vec multi");
 //  //  TIMER_FLOPS("vec multi");
-//  //  long long vGb = 2*bfac*m*n*w;
-//  //  int Fcount0 = 3 + 1;  
+//  //  long long vGb = bfac*m*n*w;
+//  //  int Fcount0 = 6 + 2;  
 //  //  timer.flops += vGb*Fcount0;
 //
 //  //  if(ncur<ei.n_vec){zeroE(alpha_bfac,0,false);zeroE(alpha,0,false);}

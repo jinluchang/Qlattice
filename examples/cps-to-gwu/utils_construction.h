@@ -2,7 +2,8 @@
 #define UTILS_CONSTRUCTION_H
 
 #pragma once
-#include <qlat/qlat.h>
+
+#include "float_type.h"
 #include "gammas.h"
 #include "utils_momentum.h"
 #include "fft_desc.h"

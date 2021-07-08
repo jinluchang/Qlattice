@@ -1,4 +1,3 @@
-#include <qlat/qlat.h>
 #include "io_gwu.h"
 //#include "utils_low_rho.h"
 #include "cach_reduce.h"
@@ -76,7 +75,7 @@ int main(int argc, char* argv[])
   //char name0[500],name1[500],filename[500];
   int nDevices;
   cudaGetDeviceCount(&nDevices);
-  if(get_node_rank_funs() == 0)
+  if(qlat::get_id_node() == 0)
   for (int i = 0; i < nDevices; i++) {
     cudaDeviceProp prop;
     cudaGetDeviceProperties(&prop, i);

@@ -1,6 +1,5 @@
-#include <qlat/qlat.h>
 #include "io_gwu.h"
-#include "meson_contra.h"
+//#include "meson_contra.h"
 
 #include "../load-select-data/compute-check-prop.h"
 #include "../load-select-data/compute-chvp.h"
@@ -73,7 +72,7 @@ int main(int argc, char* argv[])
 
     const std::vector<int> trajs = get_data_trajs(job_tag);
     print0("========\n");
-    if(get_node_rank_funs()==0)p_vector(trajs);
+    if(qlat::get_id_node()==0)p_vector(trajs);
     print0("========\n");
     int counttraj = 0;
     for (int itraj = 0; itraj < (int)trajs.size(); ++itraj)

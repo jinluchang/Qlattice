@@ -2,7 +2,7 @@
 #define UTILS_TEST_UNIFIED
 
 #pragma once
-#include <qlat/qlat.h>
+#include <qlat/qcd.h>
 
 namespace qlat{
 

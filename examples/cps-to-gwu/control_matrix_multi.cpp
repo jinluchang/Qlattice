@@ -1,4 +1,3 @@
-#include <qlat/qlat.h>
 #include <sys/sysinfo.h>
 #include "utils_Matrix_prod.h"
 #include "general_funs.h"

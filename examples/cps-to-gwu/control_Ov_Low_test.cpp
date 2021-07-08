@@ -1,4 +1,3 @@
-#include <qlat/qlat.h>
 #include <sys/sysinfo.h>
 #include "io_gwu.h"
 ////#include "utils_low_rho.h"

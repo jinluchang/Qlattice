@@ -6,18 +6,18 @@
 #define Check_FUN_H
 #pragma once
 
-#include <qlat/qlat.h>
 #include "general_funs.h"
 
 namespace qlat
 {
 
-void diff_gauge(GaugeField &g0,GaugeField &g1)
+template <class T>
+void diff_gauge( GaugeFieldT<T> &g0, GaugeFieldT<T> &g1)
 {
   double diff = 0.0;int count_print = 0;
   for (long index = 0; index < g0.geo().local_volume(); ++index) {
-    Vector<ColorMatrixT<Complex> > v0 = g0.get_elems(index);
-    Vector<ColorMatrixT<Complex> > v1 = g1.get_elems(index);
+    Vector<ColorMatrixT<T> > v0 = g0.get_elems(index);
+    Vector<ColorMatrixT<T> > v1 = g1.get_elems(index);
     for(int m = 0; m < 4; ++m){
       const double *p0= (double*) &v0[m](0,0);
       const double *p1= (double*) &v1[m](0,0);
@@ -35,28 +35,31 @@ void diff_gauge(GaugeField &g0,GaugeField &g1)
   print0("===diff conf %.5e \n",diff);
 }
 
-void diff_prop(Propagator4d& p0, Propagator4d& p1)
+template <class T>
+void diff_prop(Propagator4dT<T>& p0, Propagator4dT<T>& p1, double err=1e-15)
 {
-  int rank = get_node_rank_funs();
+  int rank = qlat::get_id_node();
   double diffp = 0.0; int countp = 0;
   for (long index = 0; index < p0.geo().local_volume(); ++index) {
     Coordinate xl0 = p0.geo().coordinate_from_index(index);
     Coordinate xg0 = p0.geo().coordinate_g_from_l(xl0);
 
-    double* s0 = (double*)&(p0.get_elem(index));
-    double* s1 = (double*)&(p1.get_elem(index));
-    for(int d1=0;d1<12*24;d1++)
+    qlat::WilsonMatrixT<T>&  s0 =  p0.get_elem(index);
+    qlat::WilsonMatrixT<T>&  s1 =  p1.get_elem(index);
+    for(int d0=0;d0<12;d0++)
+    for(int d1=0;d1<12;d1++)
     {
-      double p0 = s0[d1];
-      double p1 = s1[d1];
+      T p0 = s0(d0,d1);
+      T p1 = s1(d0,d1);
 
       double diff = 0.0;
-      if(fabs(p0) > 1e-28){diff = std::fabs((p0-p1)/p0);}
+      if(fabs(qlat::qnorm(p1)) > 1e-28){diff = std::fabs(qlat::qnorm((p0-p1))/qlat::qnorm(p1));}
+      if(fabs(qlat::qnorm(p0)) > 1e-28){diff = std::fabs(qlat::qnorm((p0-p1))/qlat::qnorm(p0));}
       diffp += diff;
-      if(diff > 1e-15 and countp < 24)
+      if(diff > err and countp < 64)
       {
-        printf("rank %5d, x %3d, y %3d, z %3d, t %3d, d1 %10d, value %.5e %.5e \n",
-          rank ,xg0[0],xg0[1],xg0[2],xg0[3],d1 ,s0[d1],s1[d1]);
+        printf("rank %5d, x %3d, y %3d, z %3d, t %3d, d %3d, value %.3e %.3e, %.3e %.3e, %.3e \n",
+          rank ,xg0[0],xg0[1],xg0[2],xg0[3],d0*12+d1 ,p0.real(),p0.imag(),p1.real(),p1.imag(), diff);
         countp += 1;
       }
     }

@@ -1,5 +1,5 @@
-#include <qlat/qlat.h>
 #include <sys/sysinfo.h>
+#include "general_funs.h"
 #include "io_gwu.h"
 ////#include "utils_low_rho.h"
 #include "utils_eigensys.h"

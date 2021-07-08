@@ -248,6 +248,8 @@ public:
   
   }
 
+  long get_mi_curr(int dir=3);
+
 
   ~fft_desc_basic()
   {
@@ -259,6 +261,22 @@ public:
     maporder_Nitoipos.resize(0);
   }
 };
+
+/////Get the index for current node in 3D or 4D
+/////fft redistribution needed
+long fft_desc_basic::get_mi_curr(int dir)
+{
+  int tmi = Pos0[rank][3]/Nt;
+  int zmi = Pos0[rank][2]/Nz;
+  int ymi = Pos0[rank][1]/Ny;
+  int xmi = Pos0[rank][0]/Nx;
+
+  long re = (zmi*my + ymi)*mx + xmi;
+
+  if(dir == 4){re += tmi*mz*my*mx;}
+
+  return re;
+}
 
 }
 

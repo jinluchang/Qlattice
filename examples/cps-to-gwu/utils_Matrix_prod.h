@@ -5,7 +5,6 @@
 #define UTILS_MATRIX_PROD_H
 
 #pragma once
-#include <qlat/qlat.h>
 #include "float_type.h"
 
 #define EML  Eigen::Map< Eigen::Matrix<Ty , Eigen::Dynamic, Eigen::Dynamic ,Eigen::RowMajor> >
@@ -436,8 +435,8 @@ void matrix_prod_cpu(Ty* a, Ty* b, Ty* c, const long m, const long n, const long
   //Eigen::setNbThreads(0);
 
   long long vGb = L*m*n*w;
-  int Fcount0 = 3 + 1; 
-  timer.flops += vGb*Fcount0;
+  int Fcount0   = 6 + 2; 
+  timer.flops  += vGb*Fcount0;
 
   double Gsize = (m*n + m*w + n*w)*sizeof(Complexq)/(1024.0*1024*1024);
   /////qlat::displayln_info(qlat::ssprintf("Total memory size %.3e GB \n",Gsize));
@@ -450,7 +449,7 @@ void matrix_prod_gpu(Ty* a, Ty* b, Ty* c, const long m, const long n, const long
 
   TIMER_FLOPS("==Matrix Multi GPU");
   long long vGb = L*m*n*w;
-  int Fcount0 = 3 + 1; 
+  int Fcount0   = 6 + 2; 
   timer.flops += vGb*Fcount0;
 
   /////int modeGPU = 1;

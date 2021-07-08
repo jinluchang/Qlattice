@@ -11,7 +11,7 @@
 #include <mpi.h>
 #include <time.h>
 #include <typeinfo>
-#include <qlat/qlat.h>
+#include <qlat/qcd.h>
 
 #include <iterator>
 #include <sys/sysinfo.h>
@@ -25,54 +25,54 @@
 
 #define LInt unsigned long
 
-#define Enablefloat 1
+#define Enablefloat 0
 
 #define large_vuse Elarge_vector
 #if Enablefloat==0
 #define Complexq qlat::Complex
 #define Ftype double
-#define CMPI                  MPI_DOUBLE
-#define FFTtype               fftw
-#define FFTtype_malloc        fftw_malloc
-#define FFTtype_complex       fftw_complex
-#define FFTtype_plan          fftw_plan
-#define FFTtype_plan_dft_3d   fftw_plan_dft_3d
-#define FFTtype_plan_many_dft fftw_plan_many_dft
-#define FFTtype_execute       fftw_execute
-#define FFTtype_free          fftw_free
-#define FFTtype_destroy_plan  fftw_destroy_plan
-
-#define FFT_init_threads fftw_init_threads
-#define FFT_plan_with_nthreads fftw_plan_with_nthreads
-
-#define FFT_mpi_init              fftw_mpi_init
-#define FFT_mpi_local_size_many   fftw_mpi_local_size_many
-#define FFT_alloc_complex         fftw_alloc_complex
-#define FFT_mpi_plan_many_dft     fftw_mpi_plan_many_dft
+//#define CMPI                  MPI_DOUBLE
+//#define FFTtype               fftw
+//#define FFTtype_malloc        fftw_malloc
+//#define FFTtype_complex       fftw_complex
+//#define FFTtype_plan          fftw_plan
+//#define FFTtype_plan_dft_3d   fftw_plan_dft_3d
+//#define FFTtype_plan_many_dft fftw_plan_many_dft
+//#define FFTtype_execute       fftw_execute
+//#define FFTtype_free          fftw_free
+//#define FFTtype_destroy_plan  fftw_destroy_plan
+//
+//#define FFT_init_threads fftw_init_threads
+//#define FFT_plan_with_nthreads fftw_plan_with_nthreads
+//
+//#define FFT_mpi_init              fftw_mpi_init
+//#define FFT_mpi_local_size_many   fftw_mpi_local_size_many
+//#define FFT_alloc_complex         fftw_alloc_complex
+//#define FFT_mpi_plan_many_dft     fftw_mpi_plan_many_dft
 
 #endif
 
 #if Enablefloat==1
 #define Complexq qlat::ComplexF
 #define Ftype float
-#define CMPI                  MPI_FLOAT
-#define FFTtype               fftwf
-#define FFTtype_malloc        fftwf_malloc
-#define FFTtype_complex       fftwf_complex
-#define FFTtype_plan          fftwf_plan
-#define FFTtype_plan_dft_3d   fftwf_plan_dft_3d
-#define FFTtype_plan_many_dft fftwf_plan_many_dft
-#define FFTtype_execute       fftwf_execute
-#define FFTtype_free          fftwf_free
-#define FFTtype_destroy_plan  fftwf_destroy_plan
-
-#define FFT_init_threads fftwf_init_threads
-#define FFT_plan_with_nthreads fftwf_plan_with_nthreads
-
-#define FFT_mpi_init              fftwf_mpi_init
-#define FFT_mpi_local_size_many   fftwf_mpi_local_size_many
-#define FFT_alloc_complex         fftwf_alloc_complex
-#define FFT_mpi_plan_many_dft     fftwf_mpi_plan_many_dft
+//#define CMPI                  MPI_FLOAT
+//#define FFTtype               fftwf
+//#define FFTtype_malloc        fftwf_malloc
+//#define FFTtype_complex       fftwf_complex
+//#define FFTtype_plan          fftwf_plan
+//#define FFTtype_plan_dft_3d   fftwf_plan_dft_3d
+//#define FFTtype_plan_many_dft fftwf_plan_many_dft
+//#define FFTtype_execute       fftwf_execute
+//#define FFTtype_free          fftwf_free
+//#define FFTtype_destroy_plan  fftwf_destroy_plan
+//
+//#define FFT_init_threads fftwf_init_threads
+//#define FFT_plan_with_nthreads fftwf_plan_with_nthreads
+//
+//#define FFT_mpi_init              fftwf_mpi_init
+//#define FFT_mpi_local_size_many   fftwf_mpi_local_size_many
+//#define FFT_alloc_complex         fftwf_alloc_complex
+//#define FFT_mpi_plan_many_dft     fftwf_mpi_plan_many_dft
 
 #endif
 

@@ -1,4 +1,4 @@
-#include <qlat/qlat.h>
+#include <qlat/qcd.h>
 #include <sys/sysinfo.h>
 
 void resize_EigenM(std::vector< qlat::vector<qlat::Complex > >& a, size_t n0, size_t n1)
@@ -61,7 +61,7 @@ int main(int argc, char* argv[])
   }); 
 
   std::vector<Propagator4d > propS;propS.resize(1);for(unsigned int i=0;i<propS.size();i++)propS[i].init(geo);
-  //propS.resize(0);
+  ////propS.resize(0);
   propS.resize(nmass);for(unsigned int i=0;i<propS.size();i++)propS[i].init(geo);
   for(int im=0;im<nmass;im++){propS[im] = prop0[im];}
 
@@ -72,8 +72,8 @@ int main(int argc, char* argv[])
   for(int im=0;im<nmass;im++)
   {
   qacc_for(isp, long(geo.local_volume()), {
-      qlat::WilsonMatrix  vs =  propS[im].get_elem(isp);
-      qlat::WilsonMatrix  vd =  propD[im].get_elem(isp);
+      qlat::WilsonMatrix&  vs =  propS[im].get_elem(isp);
+      qlat::WilsonMatrix&  vd =  propD[im].get_elem(isp);
       for(int d0=0;d0<12;d0++)
       for(int d1=0;d1<12;d1++)
       {
@@ -92,3 +92,4 @@ int main(int argc, char* argv[])
   qlat::end();
   return 0;
 }
+

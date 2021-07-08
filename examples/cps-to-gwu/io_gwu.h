@@ -6,7 +6,6 @@
 #define IO_GWU_H
 #pragma once
 
-#include <qlat/qlat.h>
 #include "general_funs.h"
 
 //#include "utils_float_type.h"
@@ -1067,8 +1066,8 @@ void save_gwu_prop(const char *filename,std::vector<qlat::FermionField4dT<Ty> > 
   load_gwu_prop(filename,prop,io_use,false);
 }
 
-template<typename Ty>
-void prop4d_to_Fermion(Propagator4d& prop,std::vector<qlat::FermionField4dT<Ty > > &buf, int dir=1){
+template<class T, typename Ty>
+void prop4d_to_Fermion(Propagator4dT<T>& prop,std::vector<qlat::FermionField4dT<Ty > > &buf, int dir=1){
 
   ////if(sizeof(Ty) != 2*sizeof(double ) and sizeof(Ty) != 2*sizeof(float )){abort_r("Cannot understand the input format! \n");}
   if(dir==1){buf.resize(0);buf.resize(12);for(int iv=0;iv<12;iv++){buf[iv].init(prop.geo());qlat::set_zero(buf[iv]);}}
@@ -1076,7 +1075,7 @@ void prop4d_to_Fermion(Propagator4d& prop,std::vector<qlat::FermionField4dT<Ty >
 
   for (long index = 0; index < prop.geo().local_volume(); ++index)
   {
-    qlat::WilsonMatrix& src =  prop.get_elem(index);
+    qlat::WilsonMatrixT<T>& src =  prop.get_elem(index);
     for(int d0=0;d0<12;d0++)
     {
       ////v0(s*3 + c0, ga.ind[d0]*3 + c1)
@@ -1092,7 +1091,8 @@ void prop4d_to_Fermion(Propagator4d& prop,std::vector<qlat::FermionField4dT<Ty >
 
 }
 
-inline void save_gwu_prop(const char *filename,Propagator4d& prop){
+template <class T>
+void save_gwu_prop(const char *filename,Propagator4dT<T>& prop){
   io_gwu io_use(prop.geo(),32);
   std::vector<qlat::FermionField4dT<qlat::ComplexF> > prop_qlat;
   prop4d_to_Fermion(prop,prop_qlat, 1);
@@ -1100,13 +1100,15 @@ inline void save_gwu_prop(const char *filename,Propagator4d& prop){
   ///////load_gwu_prop(filename,prop,io_use,false);
 }
 
-inline void save_gwu_prop(std::string &filename,Propagator4d& prop){
+template <class T>
+void save_gwu_prop(std::string &filename,Propagator4dT<T>& prop){
   char tem[500];
   sprintf(tem,filename.c_str());
   save_gwu_prop(tem,prop);
 }
 
-inline void load_gwu_prop(const char *filename,Propagator4d& prop){
+template <class T>
+void load_gwu_prop(const char *filename,Propagator4dT<T>& prop){
   io_gwu io_use(prop.geo(),32);
   std::vector<qlat::FermionField4dT<qlat::Complex > > prop_qlat;
   load_gwu_prop(filename,prop_qlat,io_use);
@@ -1114,7 +1116,8 @@ inline void load_gwu_prop(const char *filename,Propagator4d& prop){
   ///////load_gwu_prop(filename,prop,io_use,false);
 }
 
-inline void load_gwu_prop(std::string &filename,Propagator4d& prop){
+template <class T>
+void load_gwu_prop(std::string &filename,Propagator4dT<T>& prop){
   char tem[500];
   sprintf(tem,filename.c_str());
   load_gwu_prop(tem,prop);
@@ -1126,7 +1129,8 @@ inline void load_gwu_prop(std::string &filename,Propagator4d& prop){
 ////  load_gwu_link(filename,gf,io_use,false);
 ////}
 
-inline void load_gwu_link(const char *filename,GaugeField &gf){
+template <class T>
+void load_gwu_link(const char *filename,GaugeFieldT<T> &gf){
   io_gwu io_use(gf.geo(),8);
   //if(sizeof(Ty) != 2*sizeof(double ) and sizeof(Ty) != 2*sizeof(float ))
   //{abort_r("Cannot understand the input format! \n");}
@@ -1159,21 +1163,33 @@ inline void load_gwu_link(const char *filename,GaugeField &gf){
   ////May need to check gf is double prec
   for (size_t index = 0; index < noden; ++index)
   {
-    double* res = (double*) qlat::get_data(gf.get_elems(index)).data();
+    //double* res = (double*) qlat::get_data(gf.get_elems(index)).data();
+    //T* res = (T*) qlat::get_data(gf.get_elems(index)).data();
+    ColorMatrixT<T>& res = gf.get_elem(index*gf.geo().multiplicity+0);
 
-    ////for(int dir=0;dir<4*9*2;dir++)res[dir] = link_qlat[dir*noden + index];
+    //for(int dir=0;dir<4*9*2;dir++)res[dir] = link_qlat[dir*noden + index];
     for(int dir=0;dir<4;dir++)
-    for(int c0=0;c0<3;c0++)
-    for(int c1=0;c1<3;c1++)
-    for(int im=0;im<2;im++){
-      int dir0 = ((dir*3+c0)*3+c1)*2+im;
-      int dir1 = ((dir*3+c1)*3+c0)*2+im;
-      res[dir0] = link_qlat[dir1*noden + index];
+    {
+      for(int c0=0;c0<3;c0++)
+      for(int c1=0;c1<3;c1++)
+      {
+        int dir0  = ((dir*3+c0)*3+c1)    ;
+        //int dir0  = (c0*3+c1)    ;
+        int dir1R = ((dir*3+c1)*3+c0)*2+0;
+        int dir1I = ((dir*3+c1)*3+c0)*2+1;
+        res.p[dir0] = T(link_qlat[dir1R*noden + index], link_qlat[dir1I*noden + index]);
+        //for(int im=0;im<2;im++){
+        //  int dir0  = ((dir*3+c0)*3+c1)*2+im ;
+        //  int dir1 = ((dir*3+c1)*3+c0)*2+im;
+        //  res[dir0] = link_qlat[dir1*noden + index];
+        //}
+      }
     }
   }
 }
 
-inline void load_gwu_link(std::string &filename,GaugeField &gf){
+template <class T>
+void load_gwu_link(std::string &filename,GaugeFieldT<T> &gf){
   char tem[500];
   sprintf(tem,filename.c_str());
   load_gwu_link(tem,gf);
@@ -1227,7 +1243,8 @@ void save_gwu_noi(const char *filename,qlat::FieldM<Ty,1> &noi,io_gwu &io_use){
   load_gwu_noi(filename,noi,io_use,false);
 }
 
-inline void save_gwu_noiP(const char *filename,Propagator4d& prop){
+template <class T>
+void save_gwu_noiP(const char *filename,Propagator4dT<T>& prop){
   io_gwu io_use(prop.geo(),32);
   qlat::FieldM<qlat::Complex,1> noi;
   noi.init(prop.geo());
@@ -1236,7 +1253,7 @@ inline void save_gwu_noiP(const char *filename,Propagator4d& prop){
   size_t noden = io_use.noden;
   for (size_t index = 0; index < noden; ++index)
   {
-    qlat::WilsonMatrix& src =  prop.get_elem(index);
+    qlat::WilsonMatrixT<T>&  src =  prop.get_elem(index);
     double sum = 0.0;
     for(int d1=0;d1<12;d1++)
     for(int d0=0;d0<12;d0++)
@@ -1253,13 +1270,15 @@ inline void save_gwu_noiP(const char *filename,Propagator4d& prop){
   ///////load_gwu_prop(filename,prop,io_use,false);
 }
 
-inline void save_gwu_noiP(std::string &filename,Propagator4d& prop){
+template <class T>
+void save_gwu_noiP(std::string &filename,Propagator4dT<T>& prop){
   char tem[500];
   sprintf(tem,filename.c_str());
   save_gwu_noiP(tem,prop);
 }
 
-inline void load_gwu_noiP(const char *filename,Propagator4d& prop){
+template <class T>
+void load_gwu_noiP(const char *filename,Propagator4dT<T>& prop){
   io_gwu io_use(prop.geo(),32);
   qlat::FieldM<qlat::Complex,1> noi;
   noi.init(prop.geo());
@@ -1272,7 +1291,7 @@ inline void load_gwu_noiP(const char *filename,Propagator4d& prop){
   {
     ////Assumed double
     ////double* res = (double*) qlat::get_data(prop.get_elems(index)).data();
-    qlat::WilsonMatrix& res =  prop.get_elem(index);
+    qlat::WilsonMatrixT<T>& res =  prop.get_elem(index);
     for(int d0=0;d0<12;d0++){res(d0,d0) = noi.get_elem(index);}
 
     ////src = (double*) qlat::get_data(noi.get_elems(index)).data();
@@ -1294,7 +1313,8 @@ inline void load_gwu_noiP(const char *filename,Propagator4d& prop){
   ///////load_gwu_prop(filename,prop,io_use,false);
 }
 
-inline void load_gwu_noiP(std::string &filename,Propagator4d& prop){
+template <class T>
+void load_gwu_noiP(std::string &filename,Propagator4dT<T>& prop){
   char tem[500];
   sprintf(tem,filename.c_str());
   load_gwu_noiP(tem,prop);

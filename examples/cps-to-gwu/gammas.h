@@ -10,7 +10,6 @@
 
 #include <cmath>
 #include <complex>
-#include <qlat/qlat.h>
 
 #include "general_funs.h"
 

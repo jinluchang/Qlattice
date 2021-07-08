@@ -1,4 +1,3 @@
-#include <qlat/qlat.h>
 #include <sys/sysinfo.h>
 #include "io_gwu.h"
 #include "utils_low_rho.h"
@@ -41,11 +40,17 @@ int main(int argc, char* argv[])
   //timer walltime;walltime.start("over all");
 
   std::vector<Coordinate> size_node_list;
-  size_node_list.push_back(Coordinate(1, 1, 1, 1));
-  size_node_list.push_back(Coordinate(1, 1, 1, 2));
-  size_node_list.push_back(Coordinate(1, 1, 1, 4));
-  size_node_list.push_back(Coordinate(1, 1, 1, 8));
+  size_node_list.push_back(Coordinate(1, 1, 1,  1));
+  size_node_list.push_back(Coordinate(1, 1, 1,  2));
+  size_node_list.push_back(Coordinate(1, 1, 1,  4));
+  size_node_list.push_back(Coordinate(1, 1, 1,  8));
   size_node_list.push_back(Coordinate(1, 1, 1, 16));
+  size_node_list.push_back(Coordinate(1, 1, 1, 32));
+  size_node_list.push_back(Coordinate(1, 1, 1, 48));
+  size_node_list.push_back(Coordinate(1, 1, 1, 64));
+  size_node_list.push_back(Coordinate(1, 1, 1, 96));
+  size_node_list.push_back(Coordinate(1, 1, 1,128));
+  //size_node_list.push_back(Coordinate(1, 2, 2, 16));
   //size_node_list.push_back(Coordinate(1, 1, 2, 16));
   //size_node_list.push_back(Coordinate(1, 2, 2, 16));
   //size_node_list.push_back(Coordinate(2, 2, 2, 16));
@@ -68,18 +73,22 @@ int main(int argc, char* argv[])
   in.load_para("input.txt");
 
   int nx,ny,nz,nt;
-  nx = 24;
-  ny = 24;
-  nz = 24;
-  nt = 64;
+  nx = in.nx;
+  ny = in.ny;
+  nz = in.nz;
+  nt = in.nt;
+  //nx = 24;
+  //ny = 24;
+  //nz = 24;
+  //nt = 64;
 
-  int icfg  = 1040;
+  int icfg  = in.icfg;
   /////int icfg  = 1320;
   ////int icfg  = 1320;
-  int ionum = 16;
+  int ionum = in.ionum;
 
   int vini  = 0;
-  int n_vec = 30;
+  int n_vec = in.nvec;
   //int n_vec = 200;
   //int n_vec = 350;
   //int n_vec = 400;
@@ -153,9 +162,14 @@ int main(int argc, char* argv[])
   /////char name0[500],name1[500],filename[500];
 
   char ename[500],enamev[500];
+  char Ename[500];
 
-  sprintf(ename ,"/global/homes/g/genwang/cscratch/24IDc/Eigen/f.rbc_conf_2464_m0.00107_0.0850_%06d_hyp.eta_zero.half.overlap.eigensystem",icfg);
-  sprintf(enamev,"/global/homes/g/genwang/cscratch/24IDc/Eigen/f.rbc_conf_2464_m0.00107_0.0850_%06d_hyp.eta_zero.half.overlap.eigensystem.eigvals",icfg);
+  ///sprintf(ename ,Ename,icfg);
+  sprintf(ename,in.Ename.c_str(), icfg);
+  sprintf(enamev,"%s.eigvals",ename);
+
+  //sprintf(ename ,"/global/homes/g/genwang/cscratch/24IDc/Eigen/f.rbc_conf_2464_m0.00107_0.0850_%06d_hyp.eta_zero.half.overlap.eigensystem",icfg);
+  //sprintf(enamev,"/global/homes/g/genwang/cscratch/24IDc/Eigen/f.rbc_conf_2464_m0.00107_0.0850_%06d_hyp.eta_zero.half.overlap.eigensystem.eigvals",icfg);
 
   io_gwu io_use(geo,ionum);
 
