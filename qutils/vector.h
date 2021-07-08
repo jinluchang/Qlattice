@@ -67,8 +67,10 @@ struct MemCache {
   //
   void gc()
   {
+    #ifndef __NO_MEMCACHE_LOG__
     TIMER_VERBOSE_FLOPS("MemCache::gc()");
     timer.flops += mem_cache_size;
+    #endif
     for (auto iter = db.cbegin(); iter != db.cend(); ++iter) {
       void* ptr = iter->second;
       qassert(ptr != NULL);
@@ -99,8 +101,10 @@ inline void* alloc_mem(const long min_size)
   if (min_size <= 0) {
     return NULL;
   }
+  #ifndef __NO_MEMCACHE_LOG__
   TIMER_FLOPS("alloc_mem");
   timer.flops += min_size;
+  #endif
   const size_t alignment = get_alignment();
   const size_t size = get_aligned_mem_size(alignment, min_size);
   MemCache& cache = get_mem_cache();
@@ -109,8 +113,10 @@ inline void* alloc_mem(const long min_size)
     return ptr;
   }
   {
+    #ifndef __NO_MEMCACHE_LOG__
     TIMER_FLOPS("alloc_mem-alloc");
     timer.flops += min_size;
+    #endif
 #ifdef QLAT_USE_ACC
     cudaError err = cudaGetLastError();
     if (cudaSuccess != err) {
@@ -139,8 +145,10 @@ inline void* alloc_mem(const long min_size)
 
 inline void free_mem(void* ptr, const long min_size)
 {
+  #ifndef __NO_MEMCACHE_LOG__
   TIMER_FLOPS("free_mem");
   timer.flops += min_size;
+  #endif
   const size_t alignment = get_alignment();
   const size_t size = get_aligned_mem_size(alignment, min_size);
   MemCache& cache = get_mem_cache();
