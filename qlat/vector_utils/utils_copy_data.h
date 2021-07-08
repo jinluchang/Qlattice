@@ -46,10 +46,10 @@ void cpy_data_from_index(T* Pres, T* Psrc, const TInt* map_res, const TInt* map_
   #pragma omp parallel for
   for(TI0 iv=0;iv<Nvol;iv++)
   {
-    for(TI1 j=0;j<bfac;j++)
-    {
-      Pres[map_res[iv]*bfac + j] = Psrc[map_src[iv]*bfac + j];
-    }
+    memcpy(&Pres[map_res[iv]*bfac], &Psrc[map_src[iv]*bfac], bfac*sizeof(T));
+    //T* res = &Pres[map_res[iv]*bfac];
+    //T* src = &Psrc[map_src[iv]*bfac];
+    //for(TI1 j=0;j<bfac;j++){res[j] = src[j];}
   }
 
 }
