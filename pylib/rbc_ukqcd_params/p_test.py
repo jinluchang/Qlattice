@@ -1,11 +1,11 @@
 import rbc_ukqcd_params as rup
 
 def mk_test_l_t_list():
-    l = []
+    lt_list = []
     for l in [4, 8, 12, 16, 24, 32, 48, 64, 96, 128,]:
         for t in [4, 8, 12, 16, 24, 32, 48, 64, 96, 128, 192, 256,]:
-            l.append([l, t,])
-    return l
+            lt_list.append([l, t,])
+    return lt_list
 
 load_config_params = { "twist_boundary_at_boundary":[ 0.0, 0.0, 0.0, 0.0, ] }
 
@@ -31,7 +31,6 @@ def mk_fermion_params(inv_type, inv_acc):
 
 def mk_dict_fermion_params():
     params = {}
-    params[inv_type][inv_acc] = {}
     for inv_type in [0, 1,]:
         params[inv_type] = {}
         for inv_acc in [0, 1, 2,]:
@@ -87,7 +86,7 @@ def mk_clanc_params(inv_type, inv_acc):
             "cheby_params": cheby_params,
             "irl_params": irl_params,
             "smoother_params": smoother_params,
-            "save_param", save_params,
+            "save_params": save_params,
             }
 
 dict_lanc_params = { 0:{ 0:mk_lanc_params(0, 0) } }

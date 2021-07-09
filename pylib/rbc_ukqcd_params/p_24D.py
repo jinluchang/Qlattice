@@ -41,7 +41,6 @@ def mk_fermion_params(inv_type, inv_acc):
 
 def mk_dict_fermion_params():
     params = {}
-    params[inv_type][inv_acc] = {}
     for inv_type in [0, 1,]:
         params[inv_type] = {}
         for inv_acc in [0, 1, 2,]:
@@ -99,7 +98,7 @@ def mk_clanc_params(inv_type, inv_acc):
             "cheby_params": cheby_params,
             "irl_params": irl_params,
             "smoother_params": smoother_params,
-            "save_param", save_params,
+            "save_params": save_params,
             }
 
 dict_lanc_params = { 0:{ 0:mk_lanc_params(0, 0) } }

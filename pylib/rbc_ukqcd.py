@@ -7,17 +7,25 @@ import rbc_ukqcd_params as rup
 def get_total_site(job_tag : str):
     if job_tag in rup.dict_total_site:
         return rup.dict_total_site[job_tag]
-    elif job_tag == "16I":
-        return [16, 16, 16, 32]
-    elif job_tag in [ "24I", ]:
-        return [24, 24, 24, 64]
-    elif job_tag == "48I":
-        return [48, 48, 48, 96]
     else:
         raise Exception("get_total_site")
 
 @q.timer
+def mk_sample_gauge_field(job_tag, fn):
+    rs = q.RngState(f"seed {job_tag} {fn}").split("mk_sample_gauge_field")
+    total_site = get_total_site(job_tag)
+    geo = q.Geometry(total_site, 1)
+    gf = q.GaugeField(geo)
+    gf.set_rand(rs, sigma = 0.25, n_step = 4)
+    for i in range(4):
+        q.gf_wilson_flow_step(gf, 0.05)
+    gf.unitarize()
+    return gf
+
+@q.timer
 def load_config(job_tag : str, fn : str):
+    if job_tag[:5] == "test-":
+        return mk_sample_gauge_field(job_tag, fn)
     gf = q.GaugeField()
     gf.load(fn)
     if job_tag in rup.dict_load_config_params:
@@ -32,10 +40,9 @@ def load_config(job_tag : str, fn : str):
 
 def get_fermion_params(job_tag, inv_type, inv_acc):
     if job_tag in rup.dict_fermion_params:
-        return rup.dict_fermion_params[inv_type][inv_acc]
+        return rup.dict_fermion_params[job_tag][inv_type][inv_acc]
     else:
         raise Exception("get_fermion_params")
-    return params
 
 def get_ls_from_fermion_params(fermion_params):
     if "omega" in fermion_params:
@@ -45,28 +52,15 @@ def get_ls_from_fermion_params(fermion_params):
 
 def get_lanc_params(job_tag, inv_type, inv_acc = 0):
     if job_tag in rup.dict_lanc_params:
-        return rup.dict_lanc_params[inv_type][inv_acc]
+        return rup.dict_lanc_params[job_tag][inv_type][inv_acc]
     else:
         raise Exception("get_lanc_params")
-    return {
-            "fermion_params": fermion_params,
-            "pit_params": pit_params,
-            "cheby_params": cheby_params,
-            "irl_params": irl_params,
-            }
 
 def get_clanc_params(job_tag, inv_type, inv_acc = 0):
     if job_tag in rup.dict_clanc_params:
-        return rup.dict_clanc_params[inv_type][inv_acc]
+        return rup.dict_clanc_params[job_tag][inv_type][inv_acc]
     else:
         raise Exception("get_clanc_params")
-    return {
-            "block": block,
-            "nbasis": nbasis,
-            "cheby_params": cheby_params,
-            "irl_params": irl_params,
-            "smoother_params": smoother_params,
-            }
 
 @q.timer
 def mk_eig(gf, job_tag, inv_type, inv_acc = 0):
@@ -103,7 +97,7 @@ def mk_eig(gf, job_tag, inv_type, inv_acc = 0):
     return evec, evals
 
 @q.timer
-def mk_ceig(gf, job_tag, inv_type, inv_acc):
+def mk_ceig(gf, job_tag, inv_type, inv_acc = 0):
     timer = q.Timer(f"py:mk_ceig({job_tag},{inv_type},{inv_acc})", True)
     timer.start()
     gpt_gf = g.convert(qg.gpt_from_qlat(gf), g.single)
@@ -138,7 +132,7 @@ def mk_ceig(gf, job_tag, inv_type, inv_acc):
     cparams = get_clanc_params(job_tag, inv_type, inv_acc)
     q.displayln_info(f"mk_ceig: cparams={cparams}")
     #
-    grid_coarse = g.block.grid(w.F_grid_eo, [ get_ls_from_fermion_param(fermion_params) ] + cparams["block"])
+    grid_coarse = g.block.grid(w.F_grid_eo, [ get_ls_from_fermion_params(fermion_params) ] + cparams["block"])
     nbasis = cparams["nbasis"]
     basis = evec[0:nbasis]
     b = g.block.map(grid_coarse, basis)
@@ -169,6 +163,33 @@ def mk_ceig(gf, job_tag, inv_type, inv_acc):
     #
     timer.stop()
     return basis, cevec, smoothed_evals
+
+@q.timer
+def save_ceig(path, eig, job_tag, inv_type = 0, inv_acc = 0):
+    if path is None:
+        return
+    save_params = get_clanc_params(job_tag, inv_type, inv_acc)["save_params"]
+    nsingle = save_params["nsingle"]
+    mpi = save_params["mpi"]
+    fmt = g.format.cevec({"nsingle": nsingle, "mpi": [ 1 ] + mpi, "max_read_blocks": 8})
+    g.save(path, eig, fmt);
+
+@q.timer
+def load_eig_lazy(path, job_tag, inv_type = 0, inv_acc = 0):
+    # return ``None'' or a function ``load_eig''
+    # ``load_eig()'' return the ``eig''
+    if path is None:
+        return None
+    total_site = get_total_site(job_tag)
+    fermion_params = get_fermion_param(job_tag, inv_type, inv_acc)
+    grids = qg.get_fgrid(total_site, fermion_params)
+    eig = None
+    def load_eig():
+        global eig
+        if eig is None:
+            eig = g.load(path, grids = grids)
+        return eig
+    return load_eig
 
 @q.timer
 def mk_gpt_inverter(gf, job_tag, inv_type, inv_acc, *,
