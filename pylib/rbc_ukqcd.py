@@ -5,10 +5,7 @@ import gc
 import rbc_ukqcd_params as rup
 
 def get_total_site(job_tag : str):
-    if job_tag in rup.dict_params["total_site"]:
-        return rup.dict_params["total_site"][job_tag]
-    else:
-        raise Exception("get_total_site")
+    return rup.dict_params[job_tag]["total_site"]
 
 @q.timer
 def mk_sample_gauge_field(job_tag, fn):
@@ -31,8 +28,8 @@ def load_config(job_tag : str, fn : str):
             raise Exception(f"load_config '{fn}' does not exist.")
     gf = q.GaugeField()
     gf.load(fn)
-    if job_tag in rup.dict_params["load_config_params"]:
-        params = rup.dict_params["load_config_params"][job_tag]
+    if (job_tag in rup.dict_params) and ("load_config_params" in rup.dict_params[job_tag]):
+        params = rup.dict_params[job_tag]["load_config_params"]
         twist_boundary_at_boundary = params["twist_boundary_at_boundary"]
         for mu in range(4):
             lmom = twist_boundary_at_boundary[mu]
@@ -42,10 +39,7 @@ def load_config(job_tag : str, fn : str):
     return gf
 
 def get_fermion_params(job_tag, inv_type, inv_acc):
-    if job_tag in rup.dict_params["fermion_params"]:
-        return rup.dict_params["fermion_params"][job_tag][inv_type][inv_acc]
-    else:
-        raise Exception("get_fermion_params")
+    return rup.dict_params[job_tag]["fermion_params"][inv_type][inv_acc]
 
 def get_ls_from_fermion_params(fermion_params):
     if "omega" in fermion_params:
@@ -54,16 +48,10 @@ def get_ls_from_fermion_params(fermion_params):
         return fermion_params["Ls"]
 
 def get_lanc_params(job_tag, inv_type, inv_acc = 0):
-    if job_tag in rup.dict_params["lanc_params"]:
-        return rup.dict_params["lanc_params"][job_tag][inv_type][inv_acc]
-    else:
-        raise Exception("get_lanc_params")
+    return rup.dict_params[job_tag]["lanc_params"][inv_type][inv_acc]
 
 def get_clanc_params(job_tag, inv_type, inv_acc = 0):
-    if job_tag in rup.dict_params["clanc_params"]:
-        return rup.dict_params["clanc_params"][job_tag][inv_type][inv_acc]
-    else:
-        raise Exception("get_clanc_params")
+    return rup.dict_params[job_tag]["clanc_params"][inv_type][inv_acc]
 
 @q.timer
 def mk_eig(gf, job_tag, inv_type, inv_acc = 0):
