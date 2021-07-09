@@ -172,7 +172,7 @@ def load_eig_lazy(path, job_tag, inv_type = 0, inv_acc = 0):
     if path is None:
         return None
     total_site = get_total_site(job_tag)
-    fermion_params = get_fermion_param(job_tag, inv_type, inv_acc)
+    fermion_params = get_fermion_params(job_tag, inv_type, inv_acc)
     grids = qg.get_fgrid(total_site, fermion_params)
     eig = None
     def load_eig():
