@@ -58,9 +58,9 @@ void cpy_data_from_index(T* Pres, T* Psrc, const TInt* map_res, const TInt* map_
 template <class T>
 void cpy_data_from_index(qlat::vector<T >& res, qlat::vector<T >& src, const qlat::vector<long >& map_res, const qlat::vector<long >& map_src, const long bfac, int cpu=0, bool dummy=true)
 {
-  qassert(map_res.size() == map_src.size());
-  qassert(map_res.size() ==     src.size());
-  qassert(map_res.size() ==     res.size());
+  //qassert(map_res.size() ==     src.size());
+  //qassert(map_res.size() ==     res.size());
+  qassert(map_res.size() <= map_src.size());
   cpy_data_from_index(&res[0], &src[0], &map_res[0], &map_src[0], res.size(), bfac, cpu, dummy);
 }
 
