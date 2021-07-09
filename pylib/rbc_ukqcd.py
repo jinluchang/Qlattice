@@ -24,7 +24,7 @@ def get_total_site(job_tag):
         return [128, 128, 128, 256]
     elif job_tag == "16I":
         return [16, 16, 16, 32]
-    elif job_tag in [ "24D", "24DH" ]:
+    elif job_tag in [ "24D", "24DH", "24I", ]:
         return [24, 24, 24, 64]
     elif job_tag == "32D":
         return [32, 32, 32, 64]
@@ -53,7 +53,7 @@ def get_fermion_param(job_tag, inv_type, inv_acc):
             params["mass"] = 0.01
         elif inv_type == 1:
             params["mass"] = 0.04
-    elif job_tag in ["16I"]:
+    elif job_tag in ["16I", "24I",]:
         params["b"] = 1.0
         params["c"] = 0.0
         params["Ls"] = 16
@@ -166,6 +166,30 @@ def get_lanc_params(job_tag, inv_type):
                 "Nminres": 1,
                 # "maxapply": 100
                 }
+    elif job_tag in ["24I"]:
+        cheby_params = {"low": 0.001, "high": 5.5, "order": 100}
+        irl_params = {
+                "Nstop": 250,
+                "Nk": 260,
+                "Nm": 300,
+                "resid": 1e-8,
+                "betastp": 0.0,
+                "maxiter": 20,
+                "Nminres": 3,
+                # "maxapply": 100
+                }
+    elif job_tag in ["24D"]:
+        cheby_params = {"low": 2.97e-4, "high": 5.5, "order": 200}
+        irl_params = {
+                "Nstop": 1000,
+                "Nk": 1040,
+                "Nm": 1200,
+                "resid": 1e-8,
+                "betastp": 0.0,
+                "maxiter": 20,
+                "Nminres": 1,
+                # "maxapply": 100
+                }
     else:
         raise Exception("get_lanc_params")
     return {
@@ -207,8 +231,37 @@ def get_clanc_params(job_tag, inv_type):
                 # "maxapply": 100
                 }
         smoother_params = {"eps": 1e-6, "maxiter": 10}
+    elif job_tag in ["24I"]:
+        block = [ 2, 2, 2, 2 ]
+        cheby_params = {"low": 0.0025, "high": 5.5, "order": 100}
+        nbasis = 250
+        irl_params = {
+                "Nstop": 500,
+                "Nk": 510,
+                "Nm": 550,
+                "resid": 1e-8,
+                "betastp": 0.0,
+                "maxiter": 20,
+                "Nminres": 4,
+                #    "maxapply" : 100
+                }
+        smoother_params = {"eps": 1e-6, "maxiter": 10}
+    elif job_tag in ["24D"]:
+        block = [ 2, 3, 3, 2 ]
+        cheby_params = {"low": 0.000684, "high": 5.5, "order": 200}
+        nbasis = 1000
+        irl_params = {
+                "Nstop": 2000,
+                "Nk": 2100,
+                "Nm": 2600,
+                "resid": 1e-8,
+                "betastp": 0.0,
+                "maxiter": 20,
+                "Nminres": 1,
+                # "maxapply": 100
+                }
     else:
-        raise Exception("get_lanc_params")
+        raise Exception("get_clanc_params")
     return {
             "block": block,
             "nbasis": nbasis,

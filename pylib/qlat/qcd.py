@@ -27,6 +27,10 @@ class GaugeField(Field):
     def link_trace(self):
         return gf_avg_link_trace(self)
 
+    def twist_boundary_at_boundary(self, lmom : float = -0.5, mu : int = 3):
+        # modify in place
+        gf_twist_boundary_at_boundary(self, lmom, mu)
+
     def show_info(self):
         gf_show_info(self)
 
@@ -91,5 +95,6 @@ def set_g_rand_color_matrix_field(fc, rng, sigma, n_steps = 1):
     assert isinstance(rng, RngState)
     return c.set_g_rand_color_matrix_field(fc, rng, sigma, n_steps)
 
-def gf_twist_boundary_at_boundary(gf, lmom, mu):
-    return c.gf_twist_boundary_at_boundary(gf, lmom, mu)
+def gf_twist_boundary_at_boundary(gf : GaugeField, lmom : float = -0.5, mu : int = 3):
+    # modify gf in place
+    c.gf_twist_boundary_at_boundary(gf, lmom, mu)
