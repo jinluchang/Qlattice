@@ -24,8 +24,11 @@ def mk_sample_gauge_field(job_tag, fn):
 
 @q.timer
 def load_config(job_tag : str, fn : str):
-    if job_tag[:5] == "test-":
-        return mk_sample_gauge_field(job_tag, fn)
+    if not q.does_file_exist_sync_node(fn):
+        if job_tag[:5] == "test-":
+            return mk_sample_gauge_field(job_tag, fn)
+        else:
+            raise Exception(f"load_config '{fn}' does not exist.")
     gf = q.GaugeField()
     gf.load(fn)
     if job_tag in rup.dict_load_config_params:

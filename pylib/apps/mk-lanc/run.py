@@ -53,18 +53,6 @@ def test_eig(gf, eig, job_tag, inv_type):
         sol -= sol_ref
         q.displayln_info(f"sol diff norm {sol.qnorm()} inv_acc={inv_acc} without eig")
 
-@q.timer
-def mk_sample_gauge_field(job_tag, traj):
-    rs = q.RngState(f"seed {job_tag} {traj}").split("mk_sample_gauge_field")
-    total_site = ru.get_total_site(job_tag)
-    geo = q.Geometry(total_site, 1)
-    gf = q.GaugeField(geo)
-    gf.set_rand(rs, sigma = 0.25, n_step = 4)
-    for i in range(4):
-        q.gf_wilson_flow_step(gf, 0.05)
-    gf.unitarize()
-    return gf
-
 def run(job_tag, traj):
     q.qmkdir_info(f"locks")
     q.qmkdir_info(get_save_path(f""))
@@ -76,15 +64,17 @@ def run(job_tag, traj):
     q.displayln_info("geo.show() =", geo.show())
     #
     path_gf = get_load_path(f"configs/{job_tag}/ckpoint_lat.{traj}")
-    if job_tag[:5] == "test-":
-        path_gf = f"{traj}"
-    gf = ru.load_config(job_tag, path_gf)
+    if path_gf is not None:
+        gf = ru.load_config(job_tag, path_gf)
+    else:
+        if job_tag[:5] == "test-":
+            gf = ru.load_config(job_tag, f"{traj}")
+            q.qmkdir_info(get_save_path(f"configs"))
+            q.qmkdir_info(get_save_path(f"configs/{job_tag}"))
+            gf.save(get_save_path(f"configs/{job_tag}/ckpoint_lat.{traj}"))
+        else:
+            assert False
     gf.show_info()
-    #
-    if job_tag[:5] == "test-":
-        q.qmkdir_info(get_save_path(f"configs"))
-        q.qmkdir_info(get_save_path(f"configs/{job_tag}"))
-        gf.save(get_save_path(f"configs/{job_tag}/ckpoint_lat.{traj}"))
     #
     if q.obtain_lock(f"locks/{job_tag}-{traj}-compute-eig"):
         get_eig = compute_eig(gf, job_tag, inv_type = 0, path = f"eig/{job_tag}/traj={traj}")
