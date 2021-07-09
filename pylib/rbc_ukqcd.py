@@ -260,6 +260,7 @@ def get_clanc_params(job_tag, inv_type):
                 "Nminres": 1,
                 # "maxapply": 100
                 }
+        smoother_params = {"eps": 1e-8, "maxiter": 100}
     else:
         raise Exception("get_clanc_params")
     return {
