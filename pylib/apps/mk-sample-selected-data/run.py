@@ -268,6 +268,8 @@ def check_job(job_tag, traj):
 
 @q.timer
 def run_job(job_tag, traj):
+    q.check_stop()
+    q.check_time_limit()
     if check_job(job_tag, traj):
         return
     q.qmkdir_info("locks")

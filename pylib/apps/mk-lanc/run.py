@@ -53,7 +53,11 @@ def test_eig(gf, eig, job_tag, inv_type):
         sol -= sol_ref
         q.displayln_info(f"sol diff norm {sol.qnorm()} inv_acc={inv_acc} without eig")
 
+@q.timer
 def run(job_tag, traj):
+    q.check_stop()
+    q.check_time_limit()
+    #
     q.qmkdir_info(f"locks")
     q.qmkdir_info(get_save_path(f""))
     q.qmkdir_info(get_save_path(f"eig"))

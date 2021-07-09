@@ -67,11 +67,7 @@ struct MemCache {
   //
   void gc()
   {
-    #ifndef __NO_MEMCACHE_LOG__
-    TIMER_VERBOSE_FLOPS("MemCache::gc()");
-    #else
     TIMER_FLOPS("MemCache::gc()");
-    #endif
     timer.flops += mem_cache_size;
     for (auto iter = db.cbegin(); iter != db.cend(); ++iter) {
       void* ptr = iter->second;
