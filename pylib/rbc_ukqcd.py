@@ -2,134 +2,39 @@ import qlat_gpt as qg
 import qlat as q
 import gpt as g
 import gc
+import rbc_ukqcd_params as rup
 
-def get_total_site(job_tag):
-    if job_tag == "test-4nt8":
-        return [4, 4, 4, 8]
-    elif job_tag == "test-4nt16":
-        return [4, 4, 4, 16]
-    elif job_tag == "test-8nt16":
-        return [8, 8, 8, 16]
-    elif job_tag == "test-16nt32":
-        return [16, 16, 16, 32]
-    elif job_tag == "test-32nt64":
-        return [32, 32, 32, 64]
-    elif job_tag == "test-48nt96":
-        return [48, 48, 48, 96]
-    elif job_tag == "test-64nt128":
-        return [64, 64, 64, 128]
-    elif job_tag == "test-96nt192":
-        return [96, 96, 96, 192]
-    elif job_tag == "test-128nt256":
-        return [128, 128, 128, 256]
+def get_total_site(job_tag : str):
+    if job_tag in rup.dict_total_site:
+        return rup.dict_total_site[job_tag]
     elif job_tag == "16I":
         return [16, 16, 16, 32]
-    elif job_tag in [ "24D", "24DH", "24I", ]:
+    elif job_tag in [ "24I", ]:
         return [24, 24, 24, 64]
-    elif job_tag == "32D":
-        return [32, 32, 32, 64]
     elif job_tag == "48I":
         return [48, 48, 48, 96]
     else:
         raise Exception("get_total_site")
 
-def get_fermion_param(job_tag, inv_type, inv_acc):
-    params = {
-            "M5": 1.8,
-            "b": 1.0,
-            "c": 0.0,
-            "boundary_phases": [1.0, 1.0, 1.0, 1.0], # twist boundary after loading configuration
-            }
-    if job_tag[:5] == "test-":
-        if inv_acc in [0, 1]:
-            params["b"] = 1.5
-            params["c"] = 0.5
-            params["Ls"] = 8
-        elif inv_acc in [2]:
-            params["b"] = 10/8 + 0.5
-            params["c"] = 10/8 - 0.5
-            params["Ls"] = 10
-        if inv_type == 0:
-            params["mass"] = 0.01
-        elif inv_type == 1:
-            params["mass"] = 0.04
-    elif job_tag in ["16I", "24I",]:
-        params["b"] = 1.0
-        params["c"] = 0.0
-        params["Ls"] = 16
-        if inv_type == 0:
-            params["mass"] = 0.01
-        elif inv_type == 1:
-            params["mass"] = 0.04
-    elif job_tag in ["24D", "32D", "48D"]:
-        params["b"] = 2.5
-        params["c"] = 1.5
-        if inv_type == 0:
-            params["mass"] = 0.00107
-        elif inv_type == 1:
-            params["mass"] = 0.0850
-        else:
-            raise Exception("get_fermion_param")
-        if inv_type == 0 and (inv_acc == 0 or inv_acc == 1):
-            params["omega"] = [
-                    1.0903256131299373,
-                    0.9570283702230611,
-                    0.7048886040934104,
-                    0.48979921782791747,
-                    0.328608311201356,
-                    0.21664245377015995,
-                    0.14121112711957107,
-                    0.0907785101745156,
-                    0.05608303440064219 - 0.007537158177840385j,
-                    0.05608303440064219 + 0.007537158177840385j,
-                    0.0365221637144842 - 0.03343945161367745j,
-                    0.0365221637144842 + 0.03343945161367745j
-                    ]
-        else:
-            params["Ls"] = 24
-    elif job_tag == "24DH":
-        params["b"] = 2.5
-        params["c"] = 1.5
-        if inv_type == 0:
-            params["mass"] = 0.0174
-        elif inv_type == 1:
-            params["mass"] = 0.0985
-        else:
-            raise Exception("get_fermion_param")
-        if inv_type == 0 and (inv_acc == 0 or inv_acc == 1):
-            params["omega"] = [
-                    1.0903256131299373,
-                    0.9570283702230611,
-                    0.7048886040934104,
-                    0.48979921782791747,
-                    0.328608311201356,
-                    0.21664245377015995,
-                    0.14121112711957107,
-                    0.0907785101745156,
-                    0.05608303440064219 - 0.007537158177840385j,
-                    0.05608303440064219 + 0.007537158177840385j,
-                    0.0365221637144842 - 0.03343945161367745j,
-                    0.0365221637144842 + 0.03343945161367745j
-                    ]
-        else:
-            params["Ls"] = 24
-    elif job_tag == "48I":
-        params["b"] = 1.5
-        params["c"] = 0.5
-        if inv_type == 0:
-            params["mass"] = 0.0006979
-        elif inv_type == 1:
-            params["mass"] = 0.03580
-        else:
-            raise Exception("get_fermion_param")
-        if inv_type == 0 and (inv_acc == 0 or inv_acc == 1):
-            raise Exception("get_fermion_param")
-        elif inv_type == 1 or inv_acc == 2:
-            params["Ls"] = 24
-        else:
-            raise Exception("get_fermion_param")
+@q.timer
+def load_config(job_tag : str, fn : str):
+    gf = q.GaugeField()
+    gf.load(fn)
+    if job_tag in rup.dict_load_config_params:
+        params = rup.dict_load_config_params[job_tag]
+        twist_boundary_at_boundary = params["twist_boundary_at_boundary"]
+        for mu in range(4):
+            lmom = twist_boundary_at_boundary[mu]
+            if lmom != 0.0:
+                q.displayln_info(f"load_config fn='{fn}' twist_boundary_at_boundary lmom={lmom} mu={mu}")
+                gf.twist_boundary_at_boundary(lmom, mu)
+    return gf
+
+def get_fermion_params(job_tag, inv_type, inv_acc):
+    if job_tag in rup.dict_fermion_params:
+        return rup.dict_fermion_params[inv_type][inv_acc]
     else:
-        raise Exception("get_fermion_param")
+        raise Exception("get_fermion_params")
     return params
 
 def get_ls_from_fermion_params(fermion_params):
@@ -138,58 +43,9 @@ def get_ls_from_fermion_params(fermion_params):
     else:
         return fermion_params["Ls"]
 
-def get_lanc_params(job_tag, inv_type):
-    inv_acc = 0
-    fermion_params = get_fermion_param(job_tag, inv_type, inv_acc)
-    pit_params = { "eps": 0.01, "maxiter": 500, "real": True }
-    if job_tag[:5] == "test-":
-        cheby_params = {"low": 0.05, "high": 5.5, "order": 50}
-        irl_params = {
-                "Nstop": 20,
-                "Nk": 25,
-                "Nm": 30,
-                "resid": 1e-8,
-                "betastp": 0.0,
-                "maxiter": 20,
-                "Nminres": 1,
-                # "maxapply": 100
-                }
-    elif job_tag in ["16I"]:
-        cheby_params = {"low": 0.005, "high": 5.5, "order": 100}
-        irl_params = {
-                "Nstop": 100,
-                "Nk": 110,
-                "Nm": 150,
-                "resid": 1e-8,
-                "betastp": 0.0,
-                "maxiter": 20,
-                "Nminres": 1,
-                # "maxapply": 100
-                }
-    elif job_tag in ["24I"]:
-        cheby_params = {"low": 0.001, "high": 5.5, "order": 100}
-        irl_params = {
-                "Nstop": 250,
-                "Nk": 260,
-                "Nm": 300,
-                "resid": 1e-8,
-                "betastp": 0.0,
-                "maxiter": 20,
-                "Nminres": 3,
-                # "maxapply": 100
-                }
-    elif job_tag in ["24D"]:
-        cheby_params = {"low": 2.97e-4, "high": 5.5, "order": 200}
-        irl_params = {
-                "Nstop": 1000,
-                "Nk": 1040,
-                "Nm": 1200,
-                "resid": 1e-8,
-                "betastp": 0.0,
-                "maxiter": 20,
-                "Nminres": 1,
-                # "maxapply": 100
-                }
+def get_lanc_params(job_tag, inv_type, inv_acc = 0):
+    if job_tag in rup.dict_lanc_params:
+        return rup.dict_lanc_params[inv_type][inv_acc]
     else:
         raise Exception("get_lanc_params")
     return {
@@ -199,68 +55,9 @@ def get_lanc_params(job_tag, inv_type):
             "irl_params": irl_params,
             }
 
-def get_clanc_params(job_tag, inv_type):
-    inv_acc = 0
-    if job_tag[:5] == "test-":
-        block = [ 2, 2, 2, 2 ]
-        nbasis = 20
-        cheby_params = {"low": 0.20, "high": 5.5, "order": 50}
-        irl_params = {
-                "Nstop": 30,
-                "Nk": 35,
-                "Nm": 40,
-                "resid": 1e-8,
-                "betastp": 0.0,
-                "maxiter": 20,
-                "Nminres": 1,
-                # "maxapply": 100
-                }
-        smoother_params = {"eps": 1e-6, "maxiter": 10}
-    elif job_tag in ["16I"]:
-        block = [ 2, 2, 2, 2 ]
-        cheby_params = {"low": 0.015, "high": 5.5, "order": 100}
-        nbasis = 100
-        irl_params = {
-                "Nstop": 300,
-                "Nk": 310,
-                "Nm": 350,
-                "resid": 1e-8,
-                "betastp": 0.0,
-                "maxiter": 20,
-                "Nminres": 1,
-                # "maxapply": 100
-                }
-        smoother_params = {"eps": 1e-6, "maxiter": 10}
-    elif job_tag in ["24I"]:
-        block = [ 2, 2, 2, 2 ]
-        cheby_params = {"low": 0.0025, "high": 5.5, "order": 100}
-        nbasis = 250
-        irl_params = {
-                "Nstop": 500,
-                "Nk": 510,
-                "Nm": 550,
-                "resid": 1e-8,
-                "betastp": 0.0,
-                "maxiter": 20,
-                "Nminres": 4,
-                #    "maxapply" : 100
-                }
-        smoother_params = {"eps": 1e-6, "maxiter": 10}
-    elif job_tag in ["24D"]:
-        block = [ 2, 3, 3, 2 ]
-        cheby_params = {"low": 0.000684, "high": 5.5, "order": 200}
-        nbasis = 1000
-        irl_params = {
-                "Nstop": 2000,
-                "Nk": 2100,
-                "Nm": 2600,
-                "resid": 1e-8,
-                "betastp": 0.0,
-                "maxiter": 20,
-                "Nminres": 1,
-                # "maxapply": 100
-                }
-        smoother_params = {"eps": 1e-8, "maxiter": 100}
+def get_clanc_params(job_tag, inv_type, inv_acc = 0):
+    if job_tag in rup.dict_clanc_params:
+        return rup.dict_clanc_params[inv_type][inv_acc]
     else:
         raise Exception("get_clanc_params")
     return {
@@ -272,13 +69,13 @@ def get_clanc_params(job_tag, inv_type):
             }
 
 @q.timer
-def mk_eig(gf, job_tag, inv_type):
-    timer = q.Timer(f"py:mk_eig({job_tag},{inv_type})", True)
+def mk_eig(gf, job_tag, inv_type, inv_acc = 0):
+    timer = q.Timer(f"py:mk_eig({job_tag},{inv_type},{inv_acc})", True)
     timer.start()
     gpt_gf = g.convert(qg.gpt_from_qlat(gf), g.single)
     parity = g.odd
-    params = get_lanc_params(job_tag, inv_type)
-    q.displayln_info(f"mk_eig: job_tag={job_tag} inv_type={inv_type}")
+    params = get_lanc_params(job_tag, inv_type, inv_acc)
+    q.displayln_info(f"mk_eig: job_tag={job_tag} inv_type={inv_type} inv_acc={inv_acc}")
     q.displayln_info(f"mk_eig: params={params}")
     fermion_params = params["fermion_params"]
     if "omega" in fermion_params:
@@ -306,13 +103,13 @@ def mk_eig(gf, job_tag, inv_type):
     return evec, evals
 
 @q.timer
-def mk_ceig(gf, job_tag, inv_type):
-    timer = q.Timer(f"py:mk_ceig({job_tag},{inv_type})", True)
+def mk_ceig(gf, job_tag, inv_type, inv_acc):
+    timer = q.Timer(f"py:mk_ceig({job_tag},{inv_type},{inv_acc})", True)
     timer.start()
     gpt_gf = g.convert(qg.gpt_from_qlat(gf), g.single)
     parity = g.odd
-    params = get_lanc_params(job_tag, inv_type)
-    q.displayln_info(f"mk_ceig: job_tag={job_tag} inv_type={inv_type}")
+    params = get_lanc_params(job_tag, inv_type, inv_acc)
+    q.displayln_info(f"mk_ceig: job_tag={job_tag} inv_type={inv_type} inv_acc={inv_acc}")
     q.displayln_info(f"mk_ceig: params={params}")
     fermion_params = params["fermion_params"]
     if "omega" in fermion_params:
@@ -338,10 +135,10 @@ def mk_ceig(gf, job_tag, inv_type):
     #
     inv = g.algorithms.inverter
     #
-    cparams = get_clanc_params(job_tag, inv_type)
+    cparams = get_clanc_params(job_tag, inv_type, inv_acc)
     q.displayln_info(f"mk_ceig: cparams={cparams}")
     #
-    grid_coarse = g.block.grid(w.F_grid_eo, [ get_ls_from_fermion_params(fermion_params) ] + cparams["block"])
+    grid_coarse = g.block.grid(w.F_grid_eo, [ get_ls_from_fermion_param(fermion_params) ] + cparams["block"])
     nbasis = cparams["nbasis"]
     basis = evec[0:nbasis]
     b = g.block.map(grid_coarse, basis)
@@ -388,17 +185,17 @@ def mk_gpt_inverter(gf, job_tag, inv_type, inv_acc, *,
     gpt_gf = qg.gpt_from_qlat(gf)
     pc = g.qcd.fermion.preconditioner
     if inv_type in [0, 1]:
-        param = get_fermion_param(job_tag, inv_type, inv_acc)
+        params = get_fermion_params(job_tag, inv_type, inv_acc)
         if eig is not None:
             # may need madwf
-            param0 = get_fermion_param(job_tag, inv_type, inv_acc = 0)
-            is_madwf = get_ls_from_fermion_params(param) != get_ls_from_fermion_params(param0)
+            params0 = get_fermion_params(job_tag, inv_type, inv_acc = 0)
+            is_madwf = get_ls_from_fermion_params(params) != get_ls_from_fermion_params(params0)
         else:
             is_madwf = False
-        if "omega" in param:
-            qm = g.qcd.fermion.zmobius(gpt_gf, param)
+        if "omega" in params:
+            qm = g.qcd.fermion.zmobius(gpt_gf, params)
         else:
-            qm = g.qcd.fermion.mobius(gpt_gf, param)
+            qm = g.qcd.fermion.mobius(gpt_gf, params)
         inv = g.algorithms.inverter
         if job_tag[:5] == "test-":
             cg_mp = inv.cg({"eps": eps, "maxiter": 100})
@@ -425,10 +222,10 @@ def mk_gpt_inverter(gf, job_tag, inv_type, inv_acc, *,
             raise Exception("mk_gpt_inverter")
         if is_madwf:
             gpt_gf_f = g.convert(gpt_gf, g.single)
-            if "omega" in param0:
-                qm0 = g.qcd.fermion.zmobius(gpt_gf_f, param0)
+            if "omega" in params0:
+                qm0 = g.qcd.fermion.zmobius(gpt_gf_f, params0)
             else:
-                qm0 = g.qcd.fermion.mobius(gpt_gf_f, param0)
+                qm0 = g.qcd.fermion.mobius(gpt_gf_f, params0)
             cg_pv_f = inv.cg({"eps": eps, "maxiter": 90})
             slv_5d_pv_f = inv.preconditioned(pc.eo2_ne(), cg_pv_f)
             slv_5d = pc.mixed_dwf(slv_5d, slv_5d_pv_f, qm0)
