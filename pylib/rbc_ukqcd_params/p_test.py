@@ -95,10 +95,12 @@ dict_clanc_params = { 0:{ 0:mk_clanc_params(0, 0) } }
 def setup_params():
     for l, t in mk_test_l_t_list():
         job_tag = f"test-{l}nt{t}"
-        rup.dict_total_site[job_tag] = [ l, l, l, t, ]
-        rup.dict_load_config_params[job_tag] = load_config_params
-        rup.dict_fermion_params[job_tag] = dict_fermion_params
-        rup.dict_lanc_params[job_tag] = dict_lanc_params
-        rup.dict_clanc_params[job_tag] = dict_clanc_params
+        dict_params = {}
+        rup.dict_params[job_tag] = dict_params
+        dict_params["total_site"] = [ l, l, l, t, ]
+        dict_params["load_config_params"] = load_config_params
+        dict_params["fermion_params"] = dict_fermion_params
+        dict_params["lanc_params"] = dict_lanc_params
+        dict_params["clanc_params"] = dict_clanc_params
 
 setup_params()

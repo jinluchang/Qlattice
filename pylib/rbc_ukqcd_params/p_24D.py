@@ -2,11 +2,13 @@ import rbc_ukqcd_params as rup
 
 job_tag = "24D"
 
-rup.dict_total_site[job_tag] = [ 24, 24, 24, 64, ]
+dict_params = {}
 
-load_config_params = { "twist_boundary_at_boundary":[ 0.0, 0.0, 0.0, -0.5, ] }
+rup.dict_params[job_tag] = dict_params
 
-rup.dict_load_config_params[job_tag] = load_config_params
+dict_params["total_site"] = [ 24, 24, 24, 64, ]
+
+dict_params["load_config_params"] = { "twist_boundary_at_boundary":[ 0.0, 0.0, 0.0, -0.5, ] }
 
 def mk_fermion_params(inv_type, inv_acc):
     params = {}
@@ -47,14 +49,12 @@ def mk_dict_fermion_params():
             params[inv_type][inv_acc] = mk_fermion_params(inv_type, inv_acc)
     return params
 
-dict_fermion_params = mk_dict_fermion_params()
-
-rup.dict_fermion_params[job_tag] = dict_fermion_params
+dict_params["fermion_params"] = mk_dict_fermion_params()
 
 def mk_lanc_params(inv_type, inv_acc):
     assert inv_type == 0
     assert inv_acc == 0
-    fermion_params = dict_fermion_params[inv_type][inv_acc]
+    fermion_params = dict_params["fermion_params"][inv_type][inv_acc]
     pit_params = { "eps": 0.01, "maxiter": 500, "real": True }
     cheby_params = { "low": 2.97e-4, "high": 5.5, "order": 200 }
     irl_params = {
@@ -73,6 +73,8 @@ def mk_lanc_params(inv_type, inv_acc):
             "cheby_params": cheby_params,
             "irl_params": irl_params,
             }
+
+dict_params["lanc_params"] = { 0:{ 0:mk_lanc_params(0, 0) } }
 
 def mk_clanc_params(inv_type, inv_acc):
     assert inv_type == 0
@@ -101,8 +103,4 @@ def mk_clanc_params(inv_type, inv_acc):
             "save_params": save_params,
             }
 
-dict_lanc_params = { 0:{ 0:mk_lanc_params(0, 0) } }
-dict_clanc_params = { 0:{ 0:mk_clanc_params(0, 0) } }
-
-rup.dict_lanc_params[job_tag] = dict_lanc_params
-rup.dict_clanc_params[job_tag] = dict_clanc_params
+dict_params["clanc_params"] = { 0:{ 0:mk_clanc_params(0, 0) } }

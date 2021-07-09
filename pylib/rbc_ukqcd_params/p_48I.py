@@ -2,11 +2,13 @@ import rbc_ukqcd_params as rup
 
 job_tag = "48I"
 
-rup.dict_total_site[job_tag] = [ 48, 48, 48, 96, ]
+dict_params = {}
 
-load_config_params = { "twist_boundary_at_boundary":[ 0.0, 0.0, 0.0, 0.0, ] }
+rup.dict_params[job_tag] = dict_params
 
-rup.dict_load_config_params[job_tag] = load_config_params
+dict_params["total_site"] = [ 48, 48, 48, 96, ]
+
+dict_params["load_config_params"] = { "twist_boundary_at_boundary":[ 0.0, 0.0, 0.0, -0.5, ] }
 
 def mk_fermion_params(inv_type, inv_acc):
     params = {}
@@ -51,6 +53,4 @@ def mk_dict_fermion_params():
             params[inv_type][inv_acc] = mk_fermion_params(inv_type, inv_acc)
     return params
 
-dict_fermion_params = mk_dict_fermion_params()
-
-rup.dict_fermion_params[job_tag] = dict_fermion_params
+dict_params["fermion_params"] = mk_dict_fermion_params()

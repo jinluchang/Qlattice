@@ -1,12 +1,4 @@
-dict_total_site = {}
-
-dict_load_config_params = {}
-
-dict_fermion_params = {}
-
-dict_lanc_params = {}
-
-dict_clanc_params = {}
+dict_params = {}
 
 import rbc_ukqcd_params.p_test
 
