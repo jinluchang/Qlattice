@@ -176,7 +176,7 @@ def load_eig_lazy(path, job_tag, inv_type = 0, inv_acc = 0):
     grids = qg.get_fgrid(total_site, fermion_params)
     eig = None
     def load_eig():
-        global eig
+        nonlocal eig
         if eig is None:
             eig = g.load(path, grids = grids)
         return eig
