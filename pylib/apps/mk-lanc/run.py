@@ -6,6 +6,7 @@ import qlat as q
 import gpt as g
 import qlat_gpt as qg
 import rbc_ukqcd as ru
+import rbc_ukqcd_params as rup
 
 import os
 
