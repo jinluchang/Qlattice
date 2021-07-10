@@ -14,6 +14,7 @@ export CC="gcc -fPIC"
 
 cd $name-*
 ./configure \
+    --build="$(/bin/arch)" \
     --prefix=$prefix
 make
 make install
