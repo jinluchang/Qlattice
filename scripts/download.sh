@@ -14,6 +14,8 @@ wget -c "https://gitlab.com/libeigen/eigen/-/archive/3.3.9/eigen-3.3.9.tar.bz2"
 
 wget -O c-lime.tar.gz -c "https://github.com/usqcd-software/c-lime/tarball/master"
 
+wget -c "https://www.mpfr.org/mpfr-current/mpfr-4.1.0.tar.bz2"
+
 wget -O Grid-origin.tar.gz -c "https://github.com/waterret/Grid/tarball/feature/gpt"
 
 (
