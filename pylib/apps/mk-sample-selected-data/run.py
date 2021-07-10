@@ -6,6 +6,7 @@ import qlat as q
 import gpt as g
 import qlat_gpt as qg
 import rbc_ukqcd as ru
+import rbc_ukqcd_params as rup
 
 import os
 
@@ -403,6 +404,7 @@ def run_job(job_tag, traj):
 
 qg.begin_with_gpt()
 
+# ADJUST ME
 job_tags = [
         # "test-4nt8",
         "test-4nt16",
@@ -413,9 +415,11 @@ job_tags = [
         # "test-64nt128",
         # "test-96nt192",
         # "test-128nt256",
+        # "24D",
         ]
 
 for job_tag in job_tags:
+    q.displayln_info(rup.dict_params[job_tag])
     for traj in range(1000, 1400, 100):
         run_job(job_tag, traj)
         q.timer_display()

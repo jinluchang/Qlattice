@@ -87,7 +87,22 @@ def run(job_tag, traj):
 
 qg.begin_with_gpt()
 
-for job_tag in [ "test-4nt16" ]:
+# ADJUST ME
+job_tags = [
+        # "test-4nt8",
+        "test-4nt16",
+        # "test-8nt16",
+        # "test-16nt32",
+        # "test-32nt64",
+        # "test-48nt96",
+        # "test-64nt128",
+        # "test-96nt192",
+        # "test-128nt256",
+        # "24D",
+        ]
+
+for job_tag in job_tags:
+    q.displayln_info(rup.dict_params[job_tag])
     for traj in range(1000, 1400, 100):
         run(job_tag, traj)
         q.timer_display()
