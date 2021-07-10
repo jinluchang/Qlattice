@@ -25,6 +25,7 @@ cd build
 ../configure --enable-comms=mpi \
     --enable-simd=GPU \
     --enable-accelerator=cuda \
+    --enable-unified=no \
     --with-lime="$prefix" \
     --with-mpfr="$prefix" \
     --prefix=$prefix \
