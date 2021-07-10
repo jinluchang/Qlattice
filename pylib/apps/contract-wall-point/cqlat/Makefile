@@ -1,6 +1,6 @@
 SHELL=/bin/bash
 
-CXX=mpic++ -std=c++11 -fopenmp -march=native -O2 -Wall -fno-strict-aliasing
+CXX=mpic++ -std=c++11 -fopenmp -O2 -Wall -fno-strict-aliasing
 
 qlat_prefix="$(shell readlink -m "$$HOME/qlat-build/default")"
 
