@@ -22,7 +22,9 @@ ln -vs "${INITDIR}/Eigen/unsupported/Eigen" "${INITDIR}/Grid/Eigen/unsupported"
 
 mkdir build
 cd build
-../configure --enable-comms=mpi \
+../configure \
+    --enable-comms=mpi \
+    --enable-shm=shmopen \
     --enable-simd=GPU \
     --enable-accelerator=cuda \
     --enable-unified=no \
