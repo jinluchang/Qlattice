@@ -20,12 +20,12 @@ Geometry([4, 4, 4, 8], 4, expansion_left=[0, 0, 0, 0], expansion_right=[0, 0, 0,
 q_mem_cache_max_size=512 (default)
 CommPlanCache: to add 1 / 32.
 gf_show_info: plaq = 1.0000000000000000 ; link_trace = 1.0000000000000000.
-gf_show_info: plaq = 0.6147333258459871 ; link_trace = 0.8844956937132934.
+gf_show_info: plaq = 0.6147333258459872 ; link_trace = 0.8844956937132934.
 ShufflePlanCache: to add 1 / 16.
 q_write_par_limit=16 (default)
 load_gauge_field: 'results/ckpoint_lat.0'.
 q_read_par_limit=16 (default)
-gf_show_info: plaq = 0.6147333258459871 ; link_trace = 0.8844956937132934.
+gf_show_info: plaq = 0.6147333258459872 ; link_trace = 0.8844956937132934.
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 0.
 qlat::end(): Finalize MPI.

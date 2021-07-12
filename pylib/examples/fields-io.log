@@ -35,7 +35,7 @@ ShufflePlanCache: to add 2 / 16.
 shuffle_field(fs,f,sp): 1x1x1x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 2304 ; total_size: 0.001 GB)
 write(sfw,fn,field): writing field with fn='prop' from 'results/prop.fields'.
 shuffle_field(fs,f,sp): 1x1x1x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.001 GB)
-s_prop = prop.sparse(fsel) 12284.876386438673
+s_prop = prop.sparse(fsel) 12284.876386438671
 shuffle_field(fs,f,sp): 1x1x1x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
 make_shuffle_plan_generic: num_send_packs =          2
 make_shuffle_plan_generic: num_recv_packs =          4
@@ -48,7 +48,7 @@ make_shuffle_plan_generic: total num_recv_msgs  =          2
 make_shuffle_plan_generic: global_comm_size =        128
 write(sfw,fn,sf,sbs): writing sparse field with fn='s_prop' from 'results/prop.fields'.
 shuffle_field(sel_fs,sel_f,sp): 1x1x1x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.000 GB)
-prop1 = prop.sparse(fselc) 12473.610333854784
+prop1 = prop.sparse(fselc) 12473.61033385478
 shuffle_field(fs,f,sp): 1x1x1x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
 make_shuffle_plan_generic: num_send_packs =          3
 make_shuffle_plan_generic: num_recv_packs =          4

@@ -50,36 +50,19 @@ q_timer_mini_auto_show=1 (default)
 q_timer_max_always_show=10 (default)
 q_timer_max_func_name_len=50 (default)
 qremove: 'results'
+{'total_site': [4, 4, 4, 8], 'load_config_params': {'twist_boundary_at_boundary': [0.0, 0.0, 0.0, 0.0]}, 'fermion_params': {0: {0: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 8, 'mass': 0.01}, 1: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 8, 'mass': 0.01}, 2: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.75, 'c': 0.75, 'Ls': 10, 'mass': 0.01}}, 1: {0: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 8, 'mass': 0.04}, 1: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 8, 'mass': 0.04}, 2: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.75, 'c': 0.75, 'Ls': 10, 'mass': 0.04}}}, 'lanc_params': {0: {0: {'fermion_params': {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 8, 'mass': 0.01}, 'pit_params': {'eps': 0.01, 'maxiter': 500, 'real': True}, 'cheby_params': {'low': 0.05, 'high': 5.5, 'order': 50}, 'irl_params': {'Nstop': 20, 'Nk': 25, 'Nm': 30, 'resid': 1e-08, 'betastp': 0.0, 'maxiter': 20, 'Nminres': 1}}}}, 'clanc_params': {0: {0: {'block': [2, 2, 2, 2], 'nbasis': 20, 'cheby_params': {'low': 0.2, 'high': 5.5, 'order': 50}, 'irl_params': {'Nstop': 30, 'Nk': 35, 'Nm': 40, 'resid': 1e-08, 'betastp': 0.0, 'maxiter': 20, 'Nminres': 1}, 'smoother_params': {'eps': 1e-06, 'maxiter': 10}, 'save_params': {'nsingle': 10, 'mpi': [1, 1, 1, 4]}}}}}
+q_budget=900 (default)
+q_time_limit=43200 (default)
+check_time_limit: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.25 ) / 12.00 hours.
 geo.show() = Geometry([4, 4, 4, 8], 1)
-g.qcd.gauge.plaquette = 0.94517601648581551
-g.qcd.gauge.plaquette = 0.94517599211798775 single precision
-qlat geo created
-gpt field made
 q_field_init=fast (default)
 set q_field_init=fast.
-qlat field made
-gpt coordinates collected
-qlat mview made
-qlat_from_gpt
-plan initialized
-plan destination added
-plan source added
-plan created
 q_mem_cache_max_size=512 (default)
 CommPlanCache: to add 1 / 32.
-gf_show_info: plaq = 0.9451760164858156 ; link_trace = 0.9861007789909704.
-qlat geo created
-gpt field made
-qlat field made
-gpt coordinates collected
-qlat mview made
-qlat_from_gpt
-plan initialized
-plan destination added
-plan source added
-plan created
+CommPlanCache: to add 2 / 32.
 ShufflePlanCache: to add 1 / 16.
-src info 12.0 2788420690
+q_write_par_limit=16 (default)
+gf_show_info: plaq = 0.8146277031098884 ; link_trace = 0.8427251675451697.
 qlat geo created
 gpt field made
 qlat field made
@@ -90,32 +73,9 @@ plan initialized
 plan source added
 plan destination added
 plan created
-sol info 1.195616283925891 1974843651
-sol1 info 5.803159633046483 2628055279
-src info 12.0 2788420690
-sol info 1.1593942320448907 4283257928
-sol1 info 4.7663038559428 3036802905
-tag=qz_f diff src 0.0 sol 0.0010577192494466369 sol1 0.062195494406739354
-src info 12.0 2788420690
-sol info 1.195616283417512 1514983079
-sol1 info 5.803159618352916 2829397300
-tag=qm_mp diff src 0.0 sol 1.5054846020419845e-13 sol1 2.313115425888109e-12
-src info 12.0 2788420690
-sol info 1.195616283417512 1514983079
-sol1 info 5.803159618352916 2829397300
-tag=qm_split diff src 0.0 sol 1.5054846020419845e-13 sol1 2.313115425888109e-12
-src info 12.0 2788420690
-sol info 1.1956122489860164 3535872830
-sol1 info 5.803075901337386 2100532221
-tag=qm_split_sloppy diff src 0.0 sol 9.198541738249442e-09 sol1 3.859309322051284e-07
-src info 12.0 2788420690
-sol info 1.1956162833238206 1160651071
-sol1 info 5.8031596349094485 2546554408
-tag=inv_qm_madwf diff src 0.0 sol 1.5124888841901922e-13 sol1 2.3302756374948188e-12
-qlat::end(): get_comm_list().pop_back()
-qlat::end(): get_comm_list().size() = 1.
-qlat::end(): Switch to old comm (foreign).
-qlat::end(): MPI_Comm_free ended comm.
+mk_ceig: job_tag=test-4nt8 inv_type=0 inv_acc=0
+mk_ceig: params={'fermion_params': {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 8, 'mass': 0.01}, 'pit_params': {'eps': 0.01, 'maxiter': 500, 'real': True}, 'cheby_params': {'low': 0.05, 'high': 5.5, 'order': 50}, 'irl_params': {'Nstop': 20, 'Nk': 25, 'Nm': 30, 'resid': 1e-08, 'betastp': 0.0, 'maxiter': 20, 'Nminres': 1}}
+mk_ceig: pit_ev=4.530423308160289
 =============================================
                Finalized GPT                 
 =============================================

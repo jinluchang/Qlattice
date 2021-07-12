@@ -68,7 +68,7 @@ plan destination added
 plan created
 ShufflePlanCache: to add 1 / 16.
 prop src 0 qnorm = 786613.9719512658 crc32 = 1313177195
-prop src 1 qnorm = 786828.5160106712 crc32 = 1984585503
+prop src 1 qnorm = 786828.5160106713 crc32 = 1984585503
 qlat geo created
 gpt field made
 qlat field made
@@ -89,8 +89,8 @@ plan initialized
 plan destination added
 plan source added
 plan created
-prop sol 0 qnorm = 53021.38315936312 crc32 = 2971167407
-prop sol 1 qnorm = 53340.26267544426 crc32 = 1564110039
+prop sol 0 qnorm = 53021.38315936312 crc32 = 1165454352
+prop sol 1 qnorm = 53340.26267544426 crc32 = 2342354678
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 1.
 qlat::end(): Switch to old comm (foreign).
