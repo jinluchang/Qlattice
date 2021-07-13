@@ -8,9 +8,9 @@ qlat::begin(): GeometryNode =
 , id_node     = 0
 , size_node   = 1x2x2x2
 , coor_node   = 0x0x0x0 }
-q_timer_max_func_name_len=50 (default)
 q_timer_mini_auto_show=1 (default)
 q_timer_max_always_show=10 (default)
+q_timer_max_func_name_len=50 (default)
 display_geo_node : id_node =     0 ; coor_node = 0x0x0x0 ; id_node_in_shuffle =     0 ; hostname = qcdserver16
 display_geo_node : id_node =     1 ; coor_node = 0x1x0x0 ; id_node_in_shuffle =     2 ; hostname = qcdserver16
 display_geo_node : id_node =     2 ; coor_node = 0x0x1x0 ; id_node_in_shuffle =     4 ; hostname = qcdserver16
@@ -63,7 +63,7 @@ CommPlanCache: to add 2 / 32.
 plaq :  6.83965231794668060E-01
 CommPlanCache: to add 3 / 32.
 spatial plaq :  6.83106449306319696E-01
-trace:  9.28858590458644939E-02
+trace:  9.28858590458645078E-02
 CommPlanCache: to add 4 / 32.
 CommPlanCache: to add 5 / 32.
 invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 1.000000E+00
@@ -159,24 +159,24 @@ shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_s
 ndim: 2
 "tsep"[8]:
 "re-im"[2]: "re" "im"
-tsep[       0] re-im[      re]  1.47634809100659958E-01
+tsep[       0] re-im[      re]  1.47634809100659931E-01
 tsep[       0] re-im[      im]  0.00000000000000000E+00
-tsep[       1] re-im[      re]  3.87490999804722541E-02
+tsep[       1] re-im[      re]  3.87490999804722472E-02
 tsep[       1] re-im[      im]  0.00000000000000000E+00
-tsep[       2] re-im[      re]  5.56246974927907499E-03
+tsep[       2] re-im[      re]  5.56246974927907239E-03
 tsep[       2] re-im[      im]  0.00000000000000000E+00
-tsep[       3] re-im[      re]  9.49765136830366683E-04
+tsep[       3] re-im[      re]  9.49765136830365924E-04
 tsep[       3] re-im[      im]  0.00000000000000000E+00
-tsep[       4] re-im[      re]  2.87343896924612614E-04
+tsep[       4] re-im[      re]  2.87343896924612235E-04
 tsep[       4] re-im[      im]  0.00000000000000000E+00
-tsep[       5] re-im[      re]  7.96206308258371343E-04
+tsep[       5] re-im[      re]  7.96206308258371018E-04
 tsep[       5] re-im[      im]  0.00000000000000000E+00
-tsep[       6] re-im[      re]  4.96156795369941291E-03
+tsep[       6] re-im[      re]  4.96156795369941030E-03
 tsep[       6] re-im[      im]  0.00000000000000000E+00
 tsep[       7] re-im[      re]  4.09021726415145989E-02
 tsep[       7] re-im[      im]  0.00000000000000000E+00
-prop qnorm =  2.39843434767638641E-01
-prop[0] qnorm =  2.46214937797465576E-04
+prop qnorm =  2.39843434767638614E-01
+prop[0] qnorm =  2.46214937797465685E-04
 release_lock: Release lock 'results/test-4nt8/results=1000-lock'
 qremove: 'results/test-4nt8/results=1000-lock/time.txt'
 get_time_limit()=12.000000 hours
@@ -198,8 +198,8 @@ read_field: fn='results/test-4nt8/results=1010/f-rank.field'.
 shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
 plaq :  6.81609579399775956E-01
-spatial plaq :  6.89426876328337768E-01
-trace:  9.43528341124005437E-02
+spatial plaq :  6.89426876328337657E-01
+trace:  9.43528341124005299E-02
 invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 1.000000E+00
 cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=5.292E-01 stop_rsd=1.000E-08 
 cg_with_f: final iter=  57 sqrt(qnorm_r/qnorm_in)=8.023E-09 stop_rsd=1.000E-08
@@ -281,24 +281,24 @@ shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_s
 ndim: 2
 "tsep"[8]:
 "re-im"[2]: "re" "im"
-tsep[       0] re-im[      re]  1.57113900933963824E-01
+tsep[       0] re-im[      re]  1.57113900933963796E-01
 tsep[       0] re-im[      im]  0.00000000000000000E+00
-tsep[       1] re-im[      re]  3.61583874949638825E-02
+tsep[       1] re-im[      re]  3.61583874949638895E-02
 tsep[       1] re-im[      im]  0.00000000000000000E+00
-tsep[       2] re-im[      re]  4.41843055043518278E-03
+tsep[       2] re-im[      re]  4.41843055043518364E-03
 tsep[       2] re-im[      im]  0.00000000000000000E+00
-tsep[       3] re-im[      re]  7.70025457255655459E-04
+tsep[       3] re-im[      re]  7.70025457255655351E-04
 tsep[       3] re-im[      im]  0.00000000000000000E+00
 tsep[       4] re-im[      re]  2.52584511765734261E-04
 tsep[       4] re-im[      im]  0.00000000000000000E+00
-tsep[       5] re-im[      re]  7.52980471850344811E-04
+tsep[       5] re-im[      re]  7.52980471850344703E-04
 tsep[       5] re-im[      im]  0.00000000000000000E+00
-tsep[       6] re-im[      re]  5.12845259838600777E-03
+tsep[       6] re-im[      re]  5.12845259838600690E-03
 tsep[       6] re-im[      im]  0.00000000000000000E+00
 tsep[       7] re-im[      re]  4.40040912693444655E-02
 tsep[       7] re-im[      im]  0.00000000000000000E+00
 prop qnorm =  2.48598853287965077E-01
-prop[0] qnorm =  3.58372799883653051E-04
+prop[0] qnorm =  3.58372799883653267E-04
 release_lock: Release lock 'results/test-4nt8/results=1010-lock'
 qremove: 'results/test-4nt8/results=1010-lock/time.txt'
 program finished successfully for 'test-4nt8'.
@@ -404,24 +404,24 @@ shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_s
 ndim: 2
 "tsep"[8]:
 "re-im"[2]: "re" "im"
-tsep[       0] re-im[      re]  4.77591858462165175E-01
+tsep[       0] re-im[      re]  4.77591858462161067E-01
 tsep[       0] re-im[      im]  0.00000000000000000E+00
-tsep[       1] re-im[      re]  3.85018818852282618E-01
+tsep[       1] re-im[      re]  3.85018818852282008E-01
 tsep[       1] re-im[      im]  0.00000000000000000E+00
-tsep[       2] re-im[      re]  3.06959408127864375E-01
+tsep[       2] re-im[      re]  3.06959408127864597E-01
 tsep[       2] re-im[      im]  0.00000000000000000E+00
-tsep[       3] re-im[      re]  2.83030918008287946E-01
+tsep[       3] re-im[      re]  2.83030918008288057E-01
 tsep[       3] re-im[      im]  0.00000000000000000E+00
 tsep[       4] re-im[      re]  2.76520261700641479E-01
 tsep[       4] re-im[      im]  0.00000000000000000E+00
-tsep[       5] re-im[      re]  2.83030918008287946E-01
+tsep[       5] re-im[      re]  2.83030918008288057E-01
 tsep[       5] re-im[      im]  0.00000000000000000E+00
-tsep[       6] re-im[      re]  3.06959408127864375E-01
+tsep[       6] re-im[      re]  3.06959408127864652E-01
 tsep[       6] re-im[      im]  0.00000000000000000E+00
-tsep[       7] re-im[      re]  3.85018818852282674E-01
+tsep[       7] re-im[      re]  3.85018818852282174E-01
 tsep[       7] re-im[      im]  0.00000000000000000E+00
-prop qnorm =  2.70413041013967614E+00
-prop[0] qnorm =  6.13619597511707617E-03
+prop qnorm =  2.70413041013967215E+00
+prop[0] qnorm =  6.13619597511778740E-03
 release_lock: Release lock 'results/free-4nt8/results=1000-lock'
 qremove: 'results/free-4nt8/results=1000-lock/time.txt'
 get_time_limit()=12.000000 hours
@@ -526,24 +526,24 @@ shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_s
 ndim: 2
 "tsep"[8]:
 "re-im"[2]: "re" "im"
-tsep[       0] re-im[      re]  4.77591858462165175E-01
+tsep[       0] re-im[      re]  4.77591858462161067E-01
 tsep[       0] re-im[      im]  0.00000000000000000E+00
-tsep[       1] re-im[      re]  3.85018818852282618E-01
+tsep[       1] re-im[      re]  3.85018818852282008E-01
 tsep[       1] re-im[      im]  0.00000000000000000E+00
-tsep[       2] re-im[      re]  3.06959408127864375E-01
+tsep[       2] re-im[      re]  3.06959408127864597E-01
 tsep[       2] re-im[      im]  0.00000000000000000E+00
-tsep[       3] re-im[      re]  2.83030918008287946E-01
+tsep[       3] re-im[      re]  2.83030918008288057E-01
 tsep[       3] re-im[      im]  0.00000000000000000E+00
 tsep[       4] re-im[      re]  2.76520261700641479E-01
 tsep[       4] re-im[      im]  0.00000000000000000E+00
-tsep[       5] re-im[      re]  2.83030918008287946E-01
+tsep[       5] re-im[      re]  2.83030918008288057E-01
 tsep[       5] re-im[      im]  0.00000000000000000E+00
-tsep[       6] re-im[      re]  3.06959408127864375E-01
+tsep[       6] re-im[      re]  3.06959408127864652E-01
 tsep[       6] re-im[      im]  0.00000000000000000E+00
-tsep[       7] re-im[      re]  3.85018818852282674E-01
+tsep[       7] re-im[      re]  3.85018818852282174E-01
 tsep[       7] re-im[      im]  0.00000000000000000E+00
-prop qnorm =  2.70413041013967614E+00
-prop[0] qnorm =  6.13619597511707617E-03
+prop qnorm =  2.70413041013967215E+00
+prop[0] qnorm =  6.13619597511778740E-03
 release_lock: Release lock 'results/free-4nt8/results=1010-lock'
 qremove: 'results/free-4nt8/results=1010-lock/time.txt'
 program finished successfully for 'free-4nt8'.

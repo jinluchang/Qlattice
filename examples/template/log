@@ -8,9 +8,9 @@ qlat::begin(): GeometryNode =
 , id_node     = 0
 , size_node   = 1x2x2x2
 , coor_node   = 0x0x0x0 }
-q_timer_max_func_name_len=50 (default)
 q_timer_mini_auto_show=1 (default)
 q_timer_max_always_show=10 (default)
+q_timer_max_func_name_len=50 (default)
 display_geo_node : id_node =     0 ; coor_node = 0x0x0x0 ; id_node_in_shuffle =     0 ; hostname = qcdserver16
 display_geo_node : id_node =     1 ; coor_node = 0x1x0x0 ; id_node_in_shuffle =     2 ; hostname = qcdserver16
 display_geo_node : id_node =     2 ; coor_node = 0x0x1x0 ; id_node_in_shuffle =     4 ; hostname = qcdserver16
@@ -167,8 +167,8 @@ cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.617E+00 stop_rsd=1.00
 cg_with_f: final iter=  37 sqrt(qnorm_r/qnorm_in)=8.799E-09 stop_rsd=1.000E-08
 invert_with_cg(5d,5d,inv,cg): total_iter=37 cycle=1 stop_rsd=1.000E-08
 invert_with_cg(5d,5d,inv,cg): checking 7.949384E-08 from 8.000000E+00
-prop qnorm =  2.02304498733454295E+02
-prop qnorm =  5.07076866655432834E-01
+prop qnorm =  2.02304498733454380E+02
+prop qnorm =  5.07076866655433167E-01
 find_max_eigen_value_hermop_sym2:     1: sqrt_qnorm_ratio = 1.15444278295577396E+00. (max eigen value of hermop_sym2)
 find_max_eigen_value_hermop_sym2:     2: sqrt_qnorm_ratio = 1.28174895744192674E+00. (max eigen value of hermop_sym2)
 find_max_eigen_value_hermop_sym2:     3: sqrt_qnorm_ratio = 1.38696569401745640E+00. (max eigen value of hermop_sym2)
@@ -291,7 +291,7 @@ invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00
 cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.730E+00 stop_rsd=1.000E-08 
 cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=6.087E-09 stop_rsd=1.000E-08
 invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
-invert_with_cg(5d,5d,inv,cg): checking 5.129897E-08 from 8.000000E+00
+invert_with_cg(5d,5d,inv,cg): checking 5.129898E-08 from 8.000000E+00
 invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00
 cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.638E+00 stop_rsd=1.000E-08 
 cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=5.421E-09 stop_rsd=1.000E-08
@@ -307,8 +307,8 @@ cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.730E+00 stop_rsd=1.00
 cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=6.087E-09 stop_rsd=1.000E-08
 invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
 invert_with_cg(5d,5d,inv,cg): checking 5.129898E-08 from 8.000000E+00
-prop qnorm =  2.80969993217557658E+02
-prop qnorm =  7.21126316898650366E-01
+prop qnorm =  2.80969993217557487E+02
+prop qnorm =  7.21126316898647257E-01
 find_max_eigen_value_hermop_sym2:     1: sqrt_qnorm_ratio = 1.15752294238541942E+00. (max eigen value of hermop_sym2)
 find_max_eigen_value_hermop_sym2:     2: sqrt_qnorm_ratio = 1.28254240720920998E+00. (max eigen value of hermop_sym2)
 find_max_eigen_value_hermop_sym2:     3: sqrt_qnorm_ratio = 1.38719889216406878E+00. (max eigen value of hermop_sym2)

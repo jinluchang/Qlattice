@@ -50,11 +50,11 @@ q_timer_mini_auto_show=1 (default)
 q_timer_max_always_show=10 (default)
 q_timer_max_func_name_len=50 (default)
 qremove: 'results'
-{'total_site': [4, 4, 4, 8], 'load_config_params': {'twist_boundary_at_boundary': [0.0, 0.0, 0.0, 0.0]}, 'fermion_params': {0: {0: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 8, 'mass': 0.01}, 1: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 8, 'mass': 0.01}, 2: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.75, 'c': 0.75, 'Ls': 10, 'mass': 0.01}}, 1: {0: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 8, 'mass': 0.04}, 1: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 8, 'mass': 0.04}, 2: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.75, 'c': 0.75, 'Ls': 10, 'mass': 0.04}}}, 'lanc_params': {0: {0: {'fermion_params': {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 8, 'mass': 0.01}, 'pit_params': {'eps': 0.01, 'maxiter': 500, 'real': True}, 'cheby_params': {'low': 0.05, 'high': 5.5, 'order': 50}, 'irl_params': {'Nstop': 20, 'Nk': 25, 'Nm': 30, 'resid': 1e-08, 'betastp': 0.0, 'maxiter': 20, 'Nminres': 1}}}}, 'clanc_params': {0: {0: {'block': [2, 2, 2, 2], 'nbasis': 20, 'cheby_params': {'low': 0.2, 'high': 5.5, 'order': 50}, 'irl_params': {'Nstop': 30, 'Nk': 35, 'Nm': 40, 'resid': 1e-08, 'betastp': 0.0, 'maxiter': 20, 'Nminres': 1}, 'smoother_params': {'eps': 1e-06, 'maxiter': 10}, 'save_params': {'nsingle': 10, 'mpi': [1, 1, 1, 4]}}}}}
+{'total_site': [4, 4, 4, 16], 'load_config_params': {'twist_boundary_at_boundary': [0.0, 0.0, 0.0, 0.0]}, 'fermion_params': {0: {0: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 8, 'mass': 0.01}, 1: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 8, 'mass': 0.01}, 2: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.75, 'c': 0.75, 'Ls': 10, 'mass': 0.01}}, 1: {0: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 8, 'mass': 0.04}, 1: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 8, 'mass': 0.04}, 2: {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.75, 'c': 0.75, 'Ls': 10, 'mass': 0.04}}}, 'lanc_params': {0: {0: {'fermion_params': {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 8, 'mass': 0.01}, 'pit_params': {'eps': 0.01, 'maxiter': 500, 'real': True}, 'cheby_params': {'low': 0.05, 'high': 5.5, 'order': 50}, 'irl_params': {'Nstop': 20, 'Nk': 25, 'Nm': 30, 'resid': 1e-08, 'betastp': 0.0, 'maxiter': 20, 'Nminres': 1}}}}, 'clanc_params': {0: {0: {'block': [2, 2, 2, 2], 'nbasis': 20, 'cheby_params': {'low': 0.2, 'high': 5.5, 'order': 50}, 'irl_params': {'Nstop': 30, 'Nk': 35, 'Nm': 40, 'resid': 1e-08, 'betastp': 0.0, 'maxiter': 20, 'Nminres': 1}, 'smoother_params': {'eps': 1e-08, 'maxiter': 100}, 'save_params': {'nsingle': 10, 'mpi': [1, 1, 1, 4]}}}}}
 q_budget=900 (default)
 q_time_limit=43200 (default)
 check_time_limit: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.25 ) / 12.00 hours.
-geo.show() = Geometry([4, 4, 4, 8], 1)
+geo.show() = Geometry([4, 4, 4, 16], 1)
 q_field_init=fast (default)
 set q_field_init=fast.
 q_mem_cache_max_size=512 (default)
@@ -62,7 +62,7 @@ CommPlanCache: to add 1 / 32.
 CommPlanCache: to add 2 / 32.
 ShufflePlanCache: to add 1 / 16.
 q_write_par_limit=16 (default)
-gf_show_info: plaq = 0.8146277031098884 ; link_trace = 0.8427251675451697.
+gf_show_info: plaq = 0.8226030400153159 ; link_trace = 0.8516066433367799.
 qlat geo created
 gpt field made
 qlat field made
@@ -73,9 +73,21 @@ plan initialized
 plan source added
 plan destination added
 plan created
-mk_ceig: job_tag=test-4nt8 inv_type=0 inv_acc=0
+mk_ceig: job_tag=test-4nt16 inv_type=0 inv_acc=0
 mk_ceig: params={'fermion_params': {'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 8, 'mass': 0.01}, 'pit_params': {'eps': 0.01, 'maxiter': 500, 'real': True}, 'cheby_params': {'low': 0.05, 'high': 5.5, 'order': 50}, 'irl_params': {'Nstop': 20, 'Nk': 25, 'Nm': 30, 'resid': 1e-08, 'betastp': 0.0, 'maxiter': 20, 'Nminres': 1}}
-mk_ceig: pit_ev=4.530423308160289
+mk_ceig: pit_ev=4.471589069525695
+mk_ceig: cparams={'block': [2, 2, 2, 2], 'nbasis': 20, 'cheby_params': {'low': 0.2, 'high': 5.5, 'order': 50}, 'irl_params': {'Nstop': 30, 'Nk': 35, 'Nm': 40, 'resid': 1e-08, 'betastp': 0.0, 'maxiter': 20, 'Nminres': 1}, 'smoother_params': {'eps': 1e-08, 'maxiter': 100}, 'save_params': {'nsingle': 10, 'mpi': [1, 1, 1, 4]}}
+src norm 0.0
+qlat geo created
+gpt field made
+qlat field made
+gpt coordinates collected
+qlat mview made
+gpt_from_qlat
+plan initialized
+plan source added
+plan destination added
+plan created
 =============================================
                Finalized GPT                 
 =============================================
