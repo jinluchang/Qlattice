@@ -87,7 +87,7 @@ qg.begin_with_gpt()
 
 q.qremove_all_info("results")
 
-job_tag = "test-4nt8"
+job_tag = "test-4nt16"
 traj = 1000
 q.displayln_info(rup.dict_params[job_tag])
 run(job_tag, traj)

@@ -15,11 +15,11 @@ def mk_fermion_params(inv_type, inv_acc):
     params["boundary_phases"] = [1.0, 1.0, 1.0, 1.0] # twist boundary after loading configuration
     params["b"] = 2.5
     params["c"] = 1.5
-    if inv_acc in [0, 1]:
+    if inv_acc in [0, 1,]:
         params["b"] = 1.5
         params["c"] = 0.5
         params["Ls"] = 8
-    elif inv_acc in [2]:
+    elif inv_acc in [2,]:
         params["b"] = 10/8 + 0.5
         params["c"] = 10/8 - 0.5
         params["Ls"] = 10
@@ -78,7 +78,7 @@ def mk_clanc_params(inv_type, inv_acc):
             "Nminres": 1,
             # "maxapply": 100
             }
-    smoother_params = {"eps": 1e-6, "maxiter": 10}
+    smoother_params = {"eps": 1e-8, "maxiter": 100}
     save_params = {"nsingle": 10, "mpi": [ 1, 1, 1, 4, ]}
     return {
             "block": block,
