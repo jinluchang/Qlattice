@@ -148,7 +148,7 @@ def mk_ceig(gf, job_tag, inv_type, inv_acc = 0):
     for i, cv in enumerate(cevec):
         tmpf @= smoother * b.promote * cv
         smoothed_evals = smoothed_evals + g.algorithms.eigen.evals(
-            w.Mpc, [tmpf], check_eps2=10, real=True
+            w.Mpc, [tmpf], check_eps2=1e10, real=True
         )
     g.mem_report()
     #
