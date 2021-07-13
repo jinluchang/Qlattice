@@ -88,6 +88,27 @@ plan initialized
 plan source added
 plan destination added
 plan created
+qlat geo created
+gpt field made
+qlat field made
+gpt coordinates collected
+qlat mview made
+qlat_from_gpt
+plan initialized
+plan destination added
+plan source added
+plan created
+sol_ref norm 1083.1466971031077 with eig
+sol diff norm 0.019792369516351913 inv_acc=0 with eig
+sol diff norm 0.9976570915038065 inv_acc=0 without eig
+sol diff norm 0.019798733299256625 inv_acc=1 with eig
+sol diff norm 0.018154373746259424 inv_acc=1 without eig
+sol diff norm 6.055999834294768e-14 inv_acc=2 with eig
+sol diff norm 1.4405330292081433e-11 inv_acc=2 without eig
+qlat::end(): get_comm_list().pop_back()
+qlat::end(): get_comm_list().size() = 1.
+qlat::end(): Switch to old comm (foreign).
+qlat::end(): MPI_Comm_free ended comm.
 =============================================
                Finalized GPT                 
 =============================================
