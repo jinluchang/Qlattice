@@ -6,7 +6,10 @@ name=setenv
 echo "!!!! build $name !!!!"
 
 mkdir -p $prefix
-echo -e "prefix=$prefix\n" | cat - setenv.sh >"$prefix/setenv.sh"
+cat - setenv.sh >"$prefix/setenv.sh" << EOF
+prefix="$prefix"
+
+EOF
 
 echo "!!!! $name build !!!!"
 

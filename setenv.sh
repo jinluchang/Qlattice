@@ -1,5 +1,5 @@
 if [ -z "$prefix" ] ; then
-    prefix=$HOME/qlat-build/default
+    prefix="$(readlink -m "$HOME/qlat-build/default")"
 fi
 
 if [ "$(uname -m)" = x86_64 ] ; then
