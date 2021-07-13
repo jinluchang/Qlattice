@@ -91,7 +91,7 @@ def mk_clanc_params(inv_type, inv_acc):
             "resid": 1e-8,
             "betastp": 0.0,
             "maxiter": 20,
-            "Nminres": 1,
+            "Nminres": 0,
             # "maxapply": 100
             }
     smoother_params = {"eps": 1e-8, "maxiter": 100}

@@ -20,8 +20,13 @@ ln -vs "${INITDIR}/Eigen/unsupported/Eigen" "${INITDIR}/Grid/Eigen/unsupported"
 
 mkdir build
 cd build
-../configure --enable-simd=GEN --enable-gen-simd-width=16 --enable-alloc-align=4k --enable-comms=mpi-auto \
-    --with-lime="$prefix" --prefix="$prefix" \
+../configure \
+    --enable-simd=GEN \
+    --enable-gen-simd-width=16 \
+    --enable-alloc-align=4k \
+    --enable-comms=mpi-auto \
+    --with-lime="$prefix" \
+    --prefix="$prefix" \
     CXXFLAGS=-fPIC
 
 make -j$num_proc
