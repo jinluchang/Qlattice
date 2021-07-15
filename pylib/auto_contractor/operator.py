@@ -54,6 +54,7 @@ class Qv(Qfield):
     # act as d / d Hb
 
     def __init__(self, f, p, s, c):
+        # interface function
         Qfield.__init__(self, "Qv", f, p, s, c)
 
 class Qb(Qfield):
@@ -61,6 +62,7 @@ class Qb(Qfield):
     # act as d / d Hv
 
     def __init__(self, f, p, s, c):
+        # interface function
         Qfield.__init__(self, "Qb", f, p, s, c)
 
 class Hv(Qfield):
@@ -98,10 +100,31 @@ class S(Op):
         self.c2 = c2
 
     def __repr__(self) -> str:
-        return f"S({self.f!r}, {self.p1!r}, {self.p2!r}, {self.s1!r}, {self.s2!r}, {self.c1!r}, {self.c2!r})"
+        return f"{self.otype}({self.f!r}, {self.p1!r}, {self.p2!r}, {self.s1!r}, {self.s2!r}, {self.c1!r}, {self.c2!r})"
 
     def list(self):
         return [self.otype, self.f, self.p1, self.p2, self.s1, self.s2, self.c1, self.c2]
+
+    def __eq__(self, other) -> bool:
+        return self.list() == other.list()
+
+class G(Op):
+
+    # spin matrix
+
+    # tag = "x", "y", "z", "t", "5" for gamma matrices
+
+    def __init__(self, tag : str, s1 : str, s2 : str):
+        Op.__init__(self, "G")
+        self.tag = tag
+        self.s1 = s1
+        self.s2 = s2
+
+    def __repr__(self) -> str:
+        return f"{self.otype}({self.tag!r}, {self.s1!r}, {self.s2!r})"
+
+    def list(self):
+        return [self.otype, self.tag, self.s1, self.s2]
 
     def __eq__(self, other) -> bool:
         return self.list() == other.list()
@@ -214,7 +237,7 @@ class Expr:
 
 def mk_expr(x) -> Expr:
     if isinstance(x, int) or isinstance(x, float) or isinstance(x, complex):
-        return Expr([Term([], 0),])
+        return Expr([Term([], x),])
     elif isinstance(x, Op):
         return Expr([Term([x,], 1),])
     elif isinstance(x, Term):
@@ -340,8 +363,10 @@ if __name__ == "__main__":
     expr = Expr([
         Term([
             Qb("d", "x1", "s1", "c1"),
+            G("5", "s1", "s2"),
             Qv("u", "x1", "s2", "c1"),
             Qb("u", "x2", "s3", "c2"),
+            G("5", "s3", "s4"),
             Qv("d", "x2", "s4", "c2"),
             ], 1.0),
         ])
@@ -349,5 +374,5 @@ if __name__ == "__main__":
     c_expr = contract_expr(expr)
     c_expr.simplify()
     print(c_expr)
-    print(Qb("u", "x2", "s23", "c23") * Qv("u", "x1", "s11", "c11"))
+    print(Qb("u", "x2", "s23", "c23") * Qv("u", "x1", "s11", "c11") - Qb("d", "x2", "s23", "c23") * Qv("d", "x1", "s11", "c11"))
 
