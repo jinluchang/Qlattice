@@ -23,7 +23,7 @@ cd build
 ../configure \
     --enable-simd=KNL \
     --enable-mkl \
-    --enable-alloc-align=4k \
+    --enable-alloc-align=2MB \
     --enable-comms=mpi-auto \
     --enable-shm=shmget \
     --enable-shmpath=/dev/hugepages \
