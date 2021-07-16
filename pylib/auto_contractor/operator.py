@@ -129,6 +129,38 @@ class G(Op):
     def __eq__(self, other) -> bool:
         return self.list() == other.list()
 
+class Tr(Op):
+
+    # a collection of ops taking the trace
+
+    def __init__(self, tag : str, ops : list[Op]):
+        Op.__init__(self, "Tr")
+        self.tag = tag
+        for op in ops:
+            assert op.is_commute()
+            assert op.otype in ["S", "G",]
+        s = None
+        c = None
+        for op in ops + ops:
+            if op.otype in ["S", "G"]:
+                if s is not None:
+                    assert s == op.s1
+                s = op.s2
+            if op.otype == "G":
+                if c is not None:
+                    assert c == op.c1
+                c = op.c2
+        self.ops = ops
+
+    def __repr__(self) -> str:
+        return f"{self.otype}({self.tag!r}, {self.ops!r})"
+
+    def list(self):
+        return [self.otype, self.tag, self.ops]
+
+    def __eq__(self, other) -> bool:
+        return self.list() == other.list()
+
 class Term:
 
     def __init__(self, ops, coef : complex = 1):
@@ -368,7 +400,7 @@ if __name__ == "__main__":
             Qb("u", "x2", "s3", "c2"),
             G("5", "s3", "s4"),
             Qv("d", "x2", "s4", "c2"),
-            ], 1.0),
+            ], 1),
         ])
     print(expr)
     c_expr = contract_expr(expr)
