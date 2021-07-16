@@ -28,6 +28,9 @@ class Op:
     def __rsub__(self, other):
         return mk_expr(other) + mk_expr(-1) * self
 
+    def sort(self) -> None:
+        pass
+
 class Qfield(Op):
 
     def __init__(self, otype : str, flavor : str, position : str, spin : str, color : str):
@@ -41,7 +44,10 @@ class Qfield(Op):
         return False
 
     def __repr__(self) -> str:
-        return f"{self.otype}({self.f!r}, {self.p!r}, {self.s!r}, {self.c!r})"
+        if self.s == "auto" and self.c == "auto":
+            return f"{self.otype}({self.f!r},{self.p!r})"
+        else:
+            return f"{self.otype}({self.f!r},{self.p!r},{self.s!r},{self.c!r})"
 
     def list(self):
         return [self.otype, self.f, self.p, self.s, self.c]
@@ -89,7 +95,7 @@ class S(Op):
 
     # propagator
 
-    def __init__(self, flavor : str, p1 : str, p2 : str, s1 : str, s2 : str, c1 : str, c2 : str):
+    def __init__(self, flavor : str, p1 : str, p2 : str, s1 : str = "auto", s2 : str = "auto", c1 : str = "auto", c2 : str = "auto"):
         Op.__init__(self, "S")
         self.f = flavor
         self.p1 = p1
@@ -100,7 +106,10 @@ class S(Op):
         self.c2 = c2
 
     def __repr__(self) -> str:
-        return f"{self.otype}({self.f!r}, {self.p1!r}, {self.p2!r}, {self.s1!r}, {self.s2!r}, {self.c1!r}, {self.c2!r})"
+        if self.s1 == "auto" and self.s2 == "auto" and self.c1 == "auto" and self.c2 == "auto":
+            return f"{self.otype}({self.f!r},{self.p1!r},{self.p2!r})"
+        else:
+            return f"{self.otype}({self.f!r},{self.p1!r},{self.p2!r},{self.s1!r},{self.s2!r},{self.c1!r},{self.c2!r})"
 
     def list(self):
         return [self.otype, self.f, self.p1, self.p2, self.s1, self.s2, self.c1, self.c2]
@@ -114,14 +123,17 @@ class G(Op):
 
     # tag = "x", "y", "z", "t", "5" for gamma matrices
 
-    def __init__(self, tag : str, s1 : str, s2 : str):
+    def __init__(self, tag : str, s1 : str = "auto", s2 : str = "auto"):
         Op.__init__(self, "G")
         self.tag = tag
         self.s1 = s1
         self.s2 = s2
 
     def __repr__(self) -> str:
-        return f"{self.otype}({self.tag!r}, {self.s1!r}, {self.s2!r})"
+        if self.s1 == "auto" and self.s2 == "auto":
+            return f"{self.otype}({self.tag!r})"
+        else:
+            return f"{self.otype}({self.tag!r},{self.s1!r},{self.s2!r})"
 
     def list(self):
         return [self.otype, self.tag, self.s1, self.s2]
@@ -159,13 +171,24 @@ class Tr(Op):
             self.tag = ""
         if tag is not None:
             assert self.tag == tag
+        for op in ops:
+            if op.otype in ["S", "G"]:
+                op.s1 = "auto"
+                op.s2 = "auto"
+            if op.otype == "S":
+                op.c1 = "auto"
+                op.c2 = "auto"
         self.ops = ops
 
     def __repr__(self) -> str:
-        return f"{self.otype}({self.ops!r}, {self.tag!r})"
+        return f"{self.otype}({self.ops!r},{self.tag!r})"
 
     def list(self):
         return [self.otype, self.tag, self.ops]
+
+    def sort(self):
+        ops = self.ops
+        self.ops = sorted([ ops[i:] + ops[:i] for i in range(len(ops)) ], key = repr)[0]
 
     def __eq__(self, other) -> bool:
         return self.list() == other.list()
@@ -309,10 +332,12 @@ class Term:
         return mk_expr(other) + mk_expr(-1) * self
 
     def __repr__(self) -> str:
-        return f"Term({self.c_ops + self.a_ops}, {self.coef})"
+        return f"Term({self.c_ops + self.a_ops},{self.coef})"
 
     def sort(self) -> None:
         # only sort commutable factors
+        for op in self.c_ops:
+            op.sort()
         self.c_ops.sort(key = repr)
 
     def collect_traces(self) -> None:
@@ -383,6 +408,7 @@ class Expr:
         self.sort()
         self.combine_terms()
         self.collect_traces()
+        self.sort()
 
 def mk_expr(x) -> Expr:
     if isinstance(x, int) or isinstance(x, float) or isinstance(x, complex):
@@ -523,5 +549,8 @@ if __name__ == "__main__":
     c_expr = contract_expr(expr)
     c_expr.simplify()
     print(c_expr)
+    c_expr_ref = Expr([Term([Tr([G('5'), S('u','x1','x2'), G('5'), S('d','x2','x1')],'sc')],-1)]) - c_expr
+    c_expr_ref.simplify()
+    print(c_expr_ref)
     print(Qb("u", "x2", "s23", "c23") * Qv("u", "x1", "s11", "c11") - Qb("d", "x2", "s23", "c23") * Qv("d", "x1", "s11", "c11"))
 
