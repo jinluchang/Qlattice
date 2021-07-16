@@ -1,5 +1,3 @@
-import copy
-
 class Op:
 
     def __init__(self, otype : str):
