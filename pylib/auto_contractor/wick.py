@@ -1,3 +1,5 @@
+import copy
+
 class Op:
 
     def __init__(self, otype : str):
@@ -19,6 +21,9 @@ class Op:
 
     def __rmul__(self, other):
         return mk_expr(other) * self
+
+    def __neg__(self):
+        return mk_expr(-1) * mk_expr(self)
 
     def __sub__(self, other):
         return mk_expr(self) + mk_expr(-1) * other
@@ -146,6 +151,18 @@ class G(Op):
     def __eq__(self, other) -> bool:
         return self.list() == other.list()
 
+def copy_op_index_auto(op : Op):
+    if op.otype not in ["S", "G"]:
+        return op
+    op = copy.copy(op)
+    if op.otype in ["S", "G"]:
+        op.s1 = "auto"
+        op.s2 = "auto"
+    if op.otype == "S":
+        op.c1 = "auto"
+        op.c2 = "auto"
+    return op
+
 class Tr(Op):
 
     # a collection of ops taking the trace
@@ -176,13 +193,8 @@ class Tr(Op):
             self.tag = ""
         if tag is not None:
             assert self.tag == tag
-        for op in ops:
-            if op.otype in ["S", "G"]:
-                op.s1 = "auto"
-                op.s2 = "auto"
-            if op.otype == "S":
-                op.c1 = "auto"
-                op.c2 = "auto"
+        for i, op in enumerate(ops):
+            ops[i] = copy_op_index_auto(op)
         self.ops = ops
 
     def __repr__(self) -> str:
@@ -196,7 +208,8 @@ class Tr(Op):
 
     def sort(self):
         ops = self.ops
-        self.ops = sorted([ ops[i:] + ops[:i] for i in range(len(ops)) ], key = repr)[0]
+        if len(ops) > 1:
+            self.ops = sorted([ ops[i:] + ops[:i] for i in range(len(ops)) ], key = repr)[0]
 
     def isospin_symmetric_limit(self) -> None:
         for op in self.ops:
@@ -307,7 +320,7 @@ def collect_traces(ops : list[Op]) -> list[Op]:
 class Term:
 
     def __init__(self, ops, coef : complex = 1):
-        self.coef = coef
+        self.coef = complex(coef)
         self.c_ops = []
         self.a_ops = []
         for op in ops:
@@ -338,6 +351,9 @@ class Term:
 
     def __rmul__(self, other):
         return mk_expr(other) * self
+
+    def __neg__(self):
+        return mk_expr(-1) * mk_expr(self)
 
     def __sub__(self, other):
         return mk_expr(self) + mk_expr(-1) * other
@@ -399,6 +415,9 @@ class Expr:
     def __rmul__(self, other):
         return mk_expr(other) * self
 
+    def __neg__(self):
+        return mk_expr(-1) * mk_expr(self)
+
     def __sub__(self, other):
         return mk_expr(self) + mk_expr(-1) * other
 
@@ -417,6 +436,15 @@ class Expr:
         self.terms = combine_terms_expr(self).terms
         self.terms = drop_zero_terms(self).terms
 
+    def round(self, ndigit : int = 14) -> None:
+        # interface function
+        sexpr = copy.deepcopy(self)
+        for term in sexpr.terms:
+            coef = term.coef
+            term.coef = complex(round(coef.real, ndigit), round(coef.imag, ndigit))
+        sexpr.terms = drop_zero_terms(sexpr).terms
+        return sexpr
+
     def collect_traces(self) -> None:
         for term in self.terms:
             term.collect_traces()
@@ -425,7 +453,7 @@ class Expr:
         for term in self.terms:
             term.isospin_symmetric_limit()
 
-    def simplify(self, *, is_isospin_symmetric_limit = False) -> None:
+    def simplify(self, *, is_isospin_symmetric_limit : bool = False) -> None:
         # interface function
         if is_isospin_symmetric_limit:
             self.isospin_symmetric_limit()
@@ -433,6 +461,13 @@ class Expr:
         self.combine_terms()
         self.collect_traces()
         self.sort()
+        self.combine_terms()
+
+def simplified(expr : Expr, *, is_isospin_symmetric_limit : bool = False) -> Expr:
+    # interface function
+    sexpr = copy.deepcopy(expr)
+    sexpr.simplify(is_isospin_symmetric_limit = is_isospin_symmetric_limit)
+    return sexpr
 
 def mk_expr(x) -> Expr:
     if isinstance(x, int) or isinstance(x, float) or isinstance(x, complex):
@@ -444,6 +479,7 @@ def mk_expr(x) -> Expr:
     elif isinstance(x, Expr):
         return x
     else:
+        print(x)
         assert False
 
 def combine_terms_expr(expr : Expr) -> Expr:
@@ -553,6 +589,7 @@ def contract_term(term : Term) -> Expr:
 
 def contract_expr(expr: Expr) -> Expr:
     # interface function
+    # does not change expr
     all_terms = []
     for term in expr.terms:
         all_terms += contract_term(term).terms
@@ -578,4 +615,3 @@ if __name__ == "__main__":
     c_expr.simplify(is_isospin_symmetric_limit = True)
     print(c_expr)
     print(Qb("u", "x2", "s23", "c23") * Qv("u", "x1", "s11", "c11") - Qb("d", "x2", "s23", "c23") * Qv("d", "x1", "s11", "c11"))
-
