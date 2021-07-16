@@ -133,9 +133,8 @@ class Tr(Op):
 
     # a collection of ops taking the trace
 
-    def __init__(self, tag : str, ops : list[Op]):
+    def __init__(self, ops : list[Op], tag = None):
         Op.__init__(self, "Tr")
-        self.tag = tag
         for op in ops:
             assert op.is_commute()
             assert op.otype in ["S", "G",]
@@ -146,20 +145,127 @@ class Tr(Op):
                 if s is not None:
                     assert s == op.s1
                 s = op.s2
-            if op.otype == "G":
+            if op.otype == "S":
                 if c is not None:
                     assert c == op.c1
                 c = op.c2
+        if s is not None and c is not None:
+            self.tag = "sc"
+        elif s is not None:
+            self.tag = "s"
+        elif c is not None:
+            self.tag = "c"
+        else:
+            self.tag = ""
+        if tag is not None:
+            assert self.tag == tag
         self.ops = ops
 
     def __repr__(self) -> str:
-        return f"{self.otype}({self.tag!r}, {self.ops!r})"
+        return f"{self.otype}({self.ops!r}, {self.tag!r})"
 
     def list(self):
         return [self.otype, self.tag, self.ops]
 
     def __eq__(self, other) -> bool:
         return self.list() == other.list()
+
+def pick_one(xs, i):
+    return xs[i], xs[:i] + xs[i + 1:]
+
+def check_trace_spin_index(ops : list[Op], s : str):
+    count1 = 0
+    count2 = 0
+    i1 = None
+    i2 = None
+    for i, op in enumerate(ops):
+        if op.otype in ["S", "G",]:
+            if op.s1 == s:
+                i1 = i
+                count1 += 1
+            if op.s2 == s:
+                i2 = i
+                count2 += 1
+    return count1 == 1 and count2 == 1, i1, i2
+
+def check_trace_color_index(ops : list[Op], c : str):
+    count1 = 0
+    count2 = 0
+    i1 = None
+    i2 = None
+    for i, op in enumerate(ops):
+        if op.otype in ["S",]:
+            if op.c1 == c:
+                i1 = i
+                count1 += 1
+            if op.c2 == c:
+                i2 = i
+                count2 += 1
+    return count1 == 1 and count2 == 1, i1, i2
+
+def check_trace_op(ops : list[Op], op : Op):
+    b = True
+    if op.otype in ["S", "G",]:
+        b = b and check_trace_spin_index(ops, op.s1)[0]
+        b = b and check_trace_spin_index(ops, op.s2)[0]
+    if op.otype in ["S",]:
+        b = b and check_trace_color_index(ops, op.c1)[0]
+        b = b and check_trace_color_index(ops, op.c2)[0]
+    return b
+
+def update_trace_sc(op, s, c):
+    if op.otype in ["S", "G",]:
+        s = op.s2
+    if op.otype in ["S",]:
+        c = op.c2
+    return s, c
+
+def pick_trace_op(ops : list[Op], s, c):
+    for i, op in enumerate(ops):
+        if not check_trace_op(ops, op):
+            continue
+        if op.otype in ["S", "G",]:
+            if s is not None and s != op.s1:
+                continue
+        if op.otype in ["S",]:
+            if c is not None and c != op.c1:
+                continue
+        return i, op
+    return None
+
+def find_trace(ops : list[Op]):
+    # return None or (Tr(tr_ops), remaining_ops,)
+    size = len(ops)
+    for i, op in enumerate(ops):
+        if not check_trace_op(ops, op):
+            continue
+        masks = [ False for op in ops ]
+        tr_ops = []
+        s = None
+        c = None
+        masks[i] = True
+        tr_ops.append(op)
+        s, c = update_trace_sc(op, s, c)
+        while True:
+            p_op = pick_trace_op(ops, s, c)
+            if p_op is None:
+                break
+            i2, op2 = pick_trace_op(ops, s, c)
+            if masks[i2]:
+                return Tr(tr_ops), [op for i, op in enumerate(ops) if not masks[i] ]
+            masks[i2] = True
+            tr_ops.append(op2)
+            s, c = update_trace_sc(op2, s, c)
+    return None
+
+def collect_traces(ops : list[Op]) -> list[Op]:
+    trs = []
+    while True:
+        ft = find_trace(ops)
+        if ft is None:
+            return trs + ops
+        tr, ops = ft
+        trs.append(tr)
 
 class Term:
 
@@ -208,6 +314,9 @@ class Term:
     def sort(self) -> None:
         # only sort commutable factors
         self.c_ops.sort(key = repr)
+
+    def collect_traces(self) -> None:
+        self.c_ops = collect_traces(self.c_ops)
 
 def combine_two_terms(t1 : Term, t2 : Term):
     if t1.c_ops == t2.c_ops and t1.a_ops == t2.a_ops:
@@ -261,11 +370,19 @@ class Expr:
             term.sort()
         self.terms.sort(key = repr)
 
+    def combine_terms(self) -> None:
+        self.terms = combine_terms_expr(self).terms
+        self.terms = drop_zero_terms(self).terms
+
+    def collect_traces(self) -> None:
+        for term in self.terms:
+            term.collect_traces()
+
     def simplify(self) -> None:
         # interface function
         self.sort()
-        self.terms = combine_terms_expr(self).terms
-        self.terms = drop_zero_terms(self).terms
+        self.combine_terms()
+        self.collect_traces()
 
 def mk_expr(x) -> Expr:
     if isinstance(x, int) or isinstance(x, float) or isinstance(x, complex):
