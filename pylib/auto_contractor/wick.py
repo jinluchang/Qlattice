@@ -29,6 +29,9 @@ class Op:
     def sort(self) -> None:
         pass
 
+    def isospin_symmetric_limit(self) -> None:
+        pass
+
 class Qfield(Op):
 
     def __init__(self, otype : str, flavor : str, position : str, spin : str, color : str):
@@ -115,6 +118,10 @@ class S(Op):
     def __eq__(self, other) -> bool:
         return self.list() == other.list()
 
+    def isospin_symmetric_limit(self) -> None:
+        if self.f in ["u", "d",]:
+            self.f = "l"
+
 class G(Op):
 
     # spin matrix
@@ -184,12 +191,16 @@ class Tr(Op):
     def list(self):
         return [self.otype, self.tag, self.ops]
 
+    def __eq__(self, other) -> bool:
+        return self.list() == other.list()
+
     def sort(self):
         ops = self.ops
         self.ops = sorted([ ops[i:] + ops[:i] for i in range(len(ops)) ], key = repr)[0]
 
-    def __eq__(self, other) -> bool:
-        return self.list() == other.list()
+    def isospin_symmetric_limit(self) -> None:
+        for op in self.ops:
+            op.isospin_symmetric_limit()
 
 def pick_one(xs, i):
     return xs[i], xs[:i] + xs[i + 1:]
@@ -225,14 +236,19 @@ def check_trace_color_index(ops : list[Op], c : str):
     return count1 == 1 and count2 == 1, i1, i2
 
 def check_trace_op(ops : list[Op], op : Op):
-    b = True
+    if op.otype not in ["S", "G",]:
+        return False
     if op.otype in ["S", "G",]:
-        b = b and check_trace_spin_index(ops, op.s1)[0]
-        b = b and check_trace_spin_index(ops, op.s2)[0]
+        if not check_trace_spin_index(ops, op.s1)[0]:
+            return False
+        if not check_trace_spin_index(ops, op.s2)[0]:
+            return False
     if op.otype in ["S",]:
-        b = b and check_trace_color_index(ops, op.c1)[0]
-        b = b and check_trace_color_index(ops, op.c2)[0]
-    return b
+        if not check_trace_color_index(ops, op.c1)[0]:
+            return False
+        if not check_trace_color_index(ops, op.c2)[0]:
+            return False
+    return True
 
 def update_trace_sc(op, s, c):
     if op.otype in ["S", "G",]:
@@ -341,6 +357,10 @@ class Term:
     def collect_traces(self) -> None:
         self.c_ops = collect_traces(self.c_ops)
 
+    def isospin_symmetric_limit(self) -> None:
+        for op in self.c_ops:
+            op.isospin_symmetric_limit()
+
 def combine_two_terms(t1 : Term, t2 : Term):
     if t1.c_ops == t2.c_ops and t1.a_ops == t2.a_ops:
         coef = t1.coef + t2.coef
@@ -401,8 +421,14 @@ class Expr:
         for term in self.terms:
             term.collect_traces()
 
-    def simplify(self) -> None:
+    def isospin_symmetric_limit(self) -> None:
+        for term in self.terms:
+            term.isospin_symmetric_limit()
+
+    def simplify(self, *, is_isospin_symmetric_limit = False) -> None:
         # interface function
+        if is_isospin_symmetric_limit:
+            self.isospin_symmetric_limit()
         self.sort()
         self.combine_terms()
         self.collect_traces()
@@ -547,8 +573,9 @@ if __name__ == "__main__":
     c_expr = contract_expr(expr)
     c_expr.simplify()
     print(c_expr)
-    c_expr_ref = Expr([Term([Tr([G('5'), S('u','x1','x2'), G('5'), S('d','x2','x1')],'sc')],-1)]) - c_expr
-    c_expr_ref.simplify()
-    print(c_expr_ref)
+    c_expr_check = Expr([Term([Tr([G('5'), S('u','x1','x2'), G('5'), S('d','x2','x1')],'sc')],-1)]) - c_expr
+    print(c_expr_check)
+    c_expr.simplify(is_isospin_symmetric_limit = True)
+    print(c_expr)
     print(Qb("u", "x2", "s23", "c23") * Qv("u", "x1", "s11", "c11") - Qb("d", "x2", "s23", "c23") * Qv("d", "x1", "s11", "c11"))
 
