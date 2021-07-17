@@ -57,7 +57,7 @@ def compute_prop(inv, src, *, tag, sfw):
     sol.save_double(sfw, tag)
 
 @q.timer
-def compute_prop_psrc(gf, xg, job_tag, inv_type, inv_acc, *, idx, sfw, path_sp, eig, finished_tags):
+def compute_prop_psrc(gf, xg, job_tag, inv_type, inv_acc, *, idx, sfw, eig, finished_tags):
     tag = f"xg=({xg[0]},{xg[1]},{xg[2]},{xg[3]}) ; type={inv_type} ; accuracy={inv_acc}"
     if tag in finished_tags:
         return None
@@ -145,6 +145,8 @@ def run_job(job_tag, traj):
     #
     for inv_type in [0, 1,]:
         if get_load_path(f"prop-psrc-{inv_type}/{job_tag}/traj={traj}") is None:
+            if inv_type == 0 and get_eig is None:
+                continue
             if q.obtain_lock(f"locks/{job_tag}-{traj}-compute-prop-psrc-all-{inv_type}"):
                 q.qmkdir_info(get_save_path(f"prop-psrc-{inv_type}"))
                 q.qmkdir_info(get_save_path(f"prop-psrc-{inv_type}/{job_tag}"))
