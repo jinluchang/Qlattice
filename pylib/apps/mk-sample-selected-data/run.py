@@ -34,6 +34,7 @@ def compute_eig(gf, job_tag, inv_type = 0, inv_acc = 0, *, path = None):
     basis, cevec, smoothed_evals = ru.mk_ceig(gf, job_tag, inv_type, inv_acc)
     eig = [ basis, cevec, smoothed_evals ]
     ru.save_ceig(get_save_path(path), eig, job_tag, inv_type, inv_acc);
+    test_eig(gf, eig, job_tag, inv_type)
     def get_eig():
         return eig
     return get_eig
@@ -315,7 +316,6 @@ def run_job(job_tag, traj):
     #
     if q.obtain_lock(f"locks/{job_tag}-{traj}-compute-eig"):
         get_eig = compute_eig(gf, job_tag, inv_type = 0, path = f"eig/{job_tag}/traj={traj}")
-        test_eig(gf, get_eig(), job_tag, inv_type = 0)
         q.release_lock()
     #
     path_gt = get_load_path(f"gauge-transform/{job_tag}/traj={traj}.field")
