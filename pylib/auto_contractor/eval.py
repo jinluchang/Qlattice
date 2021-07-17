@@ -87,8 +87,9 @@ def get_all_points(total_site, *, tslice = None):
 def compute_prop_psrc_all(gf, job_tag, inv_type, *, path_s, eig):
     finished_tags = q.properly_truncate_fields_sync_node(get_save_path(path_s + ".acc"))
     sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", [ 1, 1, 1, 2 ])
+    total_site = ru.get_total_site(job_tag)
     inv_acc = 2
-    for idx, xg in enumerate(get_all_points()):
+    for idx, xg in enumerate(get_all_points(total_site)):
         compute_prop_psrc(gf, xg, job_tag, inv_type, inv_acc,
                 idx = idx, sfw = sfw, eig = eig,
                 finished_tags = finished_tags)
@@ -123,18 +124,19 @@ def run_job(job_tag, traj):
     q.displayln_info("geo.show() =", geo.show())
     #
     path_gf = get_load_path(f"configs/{job_tag}/ckpoint_lat.{traj}")
-    if path_gf is not None:
-        gf = ru.load_config(job_tag, path_gf)
-    else:
+    if path_gf is None:
         if job_tag[:5] == "test-":
-            gf = mk_sample_gauge_field(job_tag, f"{traj}")
+            gf = ru.mk_sample_gauge_field(job_tag, f"{traj}")
             q.qmkdir_info(get_save_path(f"configs"))
             q.qmkdir_info(get_save_path(f"configs/{job_tag}"))
-            gf.save(get_save_path(f"configs/{job_tag}/ckpoint_lat.{traj}"))
+            path_gf = get_save_path(f"configs/{job_tag}/ckpoint_lat.{traj}")
+            gf.save(path_gf)
         else:
             assert False
+    gf = ru.load_config(job_tag, path_gf)
     gf.show_info()
     #
+    get_eig = None
     if q.obtain_lock(f"locks/{job_tag}-{traj}-compute-eig"):
         q.qmkdir_info(get_save_path(f"eig"))
         q.qmkdir_info(get_save_path(f"eig/{job_tag}"))
@@ -159,6 +161,7 @@ if __name__ == "__main__":
     traj = 1000
     rup.dict_params[job_tag]["fermion_params"][0][2] = rup.dict_params[job_tag]["fermion_params"][0][0]
     rup.dict_params[job_tag]["fermion_params"][1][2] = rup.dict_params[job_tag]["fermion_params"][1][0]
+    rup.dict_params[job_tag]["load_config_params"]["twist_boundary_at_boundary"] = [0.0, 0.0, 0.0, -0.5,]
     run_job(job_tag, traj)
     q.timer_display()
     qg.end_with_gpt()
