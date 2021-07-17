@@ -62,6 +62,8 @@ CommPlanCache: to add 1 / 32.
 CommPlanCache: to add 2 / 32.
 ShufflePlanCache: to add 1 / 16.
 q_write_par_limit=16 (default)
+load_gauge_field: 'results/configs/test-4nt16/ckpoint_lat.1000'.
+q_read_par_limit=16 (default)
 gf_show_info: plaq = 0.8226030400153159 ; link_trace = 0.8516066433367799.
 qlat geo created
 gpt field made
@@ -98,13 +100,13 @@ plan initialized
 plan destination added
 plan source added
 plan created
-sol_ref norm 1083.1466971031077 with eig
-sol diff norm 0.019792369516351913 inv_acc=0 with eig
-sol diff norm 0.9976570915038065 inv_acc=0 without eig
-sol diff norm 0.019798733299256625 inv_acc=1 with eig
-sol diff norm 0.018154373746259424 inv_acc=1 without eig
-sol diff norm 6.055999834294768e-14 inv_acc=2 with eig
-sol diff norm 1.4405330292081433e-11 inv_acc=2 without eig
+sol_ref norm 1083.1466971031066 with eig
+sol diff norm 0.019792369516353447 inv_acc=0 with eig
+sol diff norm 0.9976570915038122 inv_acc=0 without eig
+sol diff norm 0.019798733299105434 inv_acc=1 with eig
+sol diff norm 0.018154378523746198 inv_acc=1 without eig
+sol diff norm 6.055993508255143e-14 inv_acc=2 with eig
+sol diff norm 1.440470121592709e-11 inv_acc=2 without eig
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 1.
 qlat::end(): Switch to old comm (foreign).

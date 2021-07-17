@@ -219,6 +219,7 @@ const Field<M>& operator*=(Field<M>& f, const FieldM<Complex, 1>& f_factor)
 
 template <class M>
 std::vector<M> field_get_elems(const Field<M>& f, const Coordinate& xg)
+// xg is same on all the nodes
 {
   const Geometry& geo = f.geo();
   const Coordinate xl = geo.coordinate_l_from_g(xg);
@@ -234,12 +235,23 @@ std::vector<M> field_get_elems(const Field<M>& f, const Coordinate& xg)
 
 template <class M>
 M field_get_elem(const Field<M>& f, const Coordinate& xg, const int m)
+// xg is same on all the nodes
 {
-  return field_get_elems(f, xg)[m];
+  const Geometry& geo = f.geo();
+  const Coordinate xl = geo.coordinate_l_from_g(xg);
+  M ret;
+  if (geo.is_local(xl)) {
+    ret = f.get_elem(xl, m);
+  } else {
+    set_zero(get_data_one_elem(ret));
+  }
+  glb_sum_byte_vec(get_data_one_elem(ret));
+  return ret;
 }
 
 template <class M>
 M field_get_elem(const Field<M>& f, const Coordinate& xg)
+// xg is same on all the nodes
 {
   const Geometry& geo = f.geo();
   qassert(geo.multiplicity == 1);

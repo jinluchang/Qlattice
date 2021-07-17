@@ -20,6 +20,18 @@ def get_load_path(fn):
     return None
 
 @q.timer
+def mk_sample_gauge_field(job_tag, fn):
+    rs = q.RngState(f"seed {job_tag} {fn}").split("mk_sample_gauge_field")
+    total_site = ru.get_total_site(job_tag)
+    geo = q.Geometry(total_site, 1)
+    gf = q.GaugeField(geo)
+    gf.set_rand(rs, sigma = 0.25, n_step = 12)
+    for i in range(7):
+        q.gf_wilson_flow_step(gf, 0.05)
+    gf.unitarize()
+    return gf
+
+@q.timer
 def compute_eig(gf, job_tag, inv_type = 0, inv_acc = 0, *, path = None):
     # return a function ``get_eig''
     # ``get_eig()'' return the ``eig''
@@ -97,18 +109,32 @@ def compute_prop_psrc_all(gf, job_tag, inv_type, *, path_s, eig):
     sfw.close()
     q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
 
+prop_cache = q.mk_cache("prop_cache") # prop_cache[flavor][src_p] = prop
 
 @q.timer
-def mk_sample_gauge_field(job_tag, fn):
-    rs = q.RngState(f"seed {job_tag} {fn}").split("mk_sample_gauge_field")
-    total_site = ru.get_total_site(job_tag)
-    geo = q.Geometry(total_site, 1)
-    gf = q.GaugeField(geo)
-    gf.set_rand(rs, sigma = 0.25, n_step = 12)
-    for i in range(7):
-        q.gf_wilson_flow_step(gf, 0.05)
-    gf.unitarize()
-    return gf
+def get_prop_psrc(flavor : str, xg):
+    # call load_prop_psrc_all(flavor, path_s) first
+    return prop_cache[flavor][f"xg=({xg[0]},{xg[1]},{xg[2]},{xg[3]})"]
+
+@q.timer
+def load_prop_psrc_all(total_site, flavor : str, path_s : str):
+    cache = q.mk_cache(flavor, cache = prop_cache)
+    get_all_points(total_site)
+    if flavor in ["l", "u", "d",]:
+        inv_type = 0
+    elif flavor in ["s"]:
+        inv_type = 1
+    else:
+        assert False
+    inv_acc = 2
+    sfr = q.open_fields(get_load_path(path_s), "r")
+    for idx, xg in enumerate(get_all_points(total_site)):
+        q.displayln_info(f"load_prop_psrc_all: idx={idx} xg={xg} flavor={flavor} path_s={path_s}")
+        prop = q.Prop()
+        tag = f"xg=({xg[0]},{xg[1]},{xg[2]},{xg[3]}) ; type={inv_type} ; accuracy={inv_acc}"
+        prop.load_double(sfr, tag)
+        cache[f"xg=({xg[0]},{xg[1]},{xg[2]},{xg[3]})"] = prop
+    sfr.close()
 
 @q.timer
 def run_job(job_tag, traj):
@@ -156,6 +182,13 @@ def run_job(job_tag, traj):
                     eig = None
                 compute_prop_psrc_all(gf, job_tag, inv_type, path_s = f"prop-psrc-{inv_type}/{job_tag}/traj={traj}", eig = eig)
                 q.release_lock()
+    #
+    path_prop_list = [ get_load_path(f"prop-psrc-{inv_type}/{job_tag}/traj={traj}") for inv_type in [0, 1,] ]
+    if all(map(lambda x : x is not None, path_prop_list)):
+        load_prop_psrc_all(total_site, "l", f"prop-psrc-0/{job_tag}/traj={traj}")
+        load_prop_psrc_all(total_site, "s", f"prop-psrc-1/{job_tag}/traj={traj}")
+    #
+    q.clean_cache()
 
 if __name__ == "__main__":
     qg.begin_with_gpt()

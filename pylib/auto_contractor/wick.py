@@ -169,6 +169,11 @@ class Tr(Op):
 
     def __init__(self, ops : list[Op], tag = None):
         Op.__init__(self, "Tr")
+        if tag is not None:
+            # do not perform check if tag is set
+            self.ops = ops
+            self.tag = tag
+            return
         for op in ops:
             assert op.is_commute()
             assert op.otype in ["S", "G",]
@@ -191,8 +196,6 @@ class Tr(Op):
             self.tag = "c"
         else:
             self.tag = ""
-        if tag is not None:
-            assert self.tag == tag
         for i, op in enumerate(ops):
             ops[i] = copy_op_index_auto(op)
         self.ops = ops
