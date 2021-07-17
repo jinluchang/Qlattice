@@ -222,11 +222,11 @@ class Field:
     def get_elems(self, xg):
         return c.get_elems_field(self, xg)
 
-    def get_elem(self, xg):
-        return c.get_elem_field(self, xg)
-
-    def get_elem(self, xg, m):
-        return c.get_elem_field(self, xg, m)
+    def get_elem(self, xg, m = None):
+        if m is None:
+            return c.get_elem_field(self, xg)
+        else:
+            return c.get_elem_field(self, xg, m)
 
     def glb_sum(self):
         if self.ctype in field_ctypes_double:

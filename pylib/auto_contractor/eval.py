@@ -117,12 +117,16 @@ def get_prop_psrc(flavor : str, xg):
     return prop_cache[flavor][f"xg=({xg[0]},{xg[1]},{xg[2]},{xg[3]})"]
 
 @q.timer
+def get_prop_psrc_psnk(flavor : str, xg_src, xg_snk):
+    return np.array(get_prop_psrc(flavor, xg_src).get_elem(xg_snk)).reshape((4, 4, 3, 3,))
+
+@q.timer
 def load_prop_psrc_all(total_site, flavor : str, path_s : str):
     cache = q.mk_cache(flavor, cache = prop_cache)
     get_all_points(total_site)
     if flavor in ["l", "u", "d",]:
         inv_type = 0
-    elif flavor in ["s"]:
+    elif flavor in ["s",]:
         inv_type = 1
     else:
         assert False
@@ -133,7 +137,10 @@ def load_prop_psrc_all(total_site, flavor : str, path_s : str):
         prop = q.Prop()
         tag = f"xg=({xg[0]},{xg[1]},{xg[2]},{xg[3]}) ; type={inv_type} ; accuracy={inv_acc}"
         prop.load_double(sfr, tag)
-        cache[f"xg=({xg[0]},{xg[1]},{xg[2]},{xg[3]})"] = prop
+        # convert to GPT/Grid mspincolor wilson matrix order
+        prop_msc = q.Prop()
+        q.convert_mspincolor_from_wm_prop(prop_msc, prop)
+        cache[f"xg=({xg[0]},{xg[1]},{xg[2]},{xg[3]})"] = prop_msc
     sfr.close()
 
 @q.timer
@@ -187,6 +194,7 @@ def run_job(job_tag, traj):
     if all(map(lambda x : x is not None, path_prop_list)):
         load_prop_psrc_all(total_site, "l", f"prop-psrc-0/{job_tag}/traj={traj}")
         load_prop_psrc_all(total_site, "s", f"prop-psrc-1/{job_tag}/traj={traj}")
+        q.displayln_info(get_prop_psrc_psnk("l", [1, 2, 3, 2], [1, 2, 3, 2]))
     #
     q.clean_cache()
 
