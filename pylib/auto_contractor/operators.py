@@ -1,4 +1,4 @@
-from wick import *
+from auto_contract.wick import *
 
 import math
 
