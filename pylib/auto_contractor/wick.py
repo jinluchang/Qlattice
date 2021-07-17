@@ -322,15 +322,14 @@ def collect_traces(ops : list[Op]) -> list[Op]:
 
 class Term:
 
-    def __init__(self, ops, coef : complex = 1):
+    def __init__(self, c_ops, a_ops, coef : complex = 1):
         self.coef = complex(coef)
-        self.c_ops = []
-        self.a_ops = []
-        for op in ops:
-            if op.is_commute():
-                self.c_ops.append(op)
-            else:
-                self.a_ops.append(op)
+        self.c_ops = c_ops
+        self.a_ops = a_ops
+        for op in c_ops:
+            assert op.is_commute()
+        for op in a_ops:
+            assert not op.is_commute()
 
     def check_commute(self) -> bool:
         for op in self.c_ops:
@@ -365,7 +364,7 @@ class Term:
         return mk_expr(other) + mk_expr(-1) * self
 
     def __repr__(self) -> str:
-        return f"Term({self.c_ops + self.a_ops},{self.coef})"
+        return f"Term({self.c_ops},{self.a_ops},{self.coef})"
 
     def sort(self) -> None:
         # only sort commutable factors
@@ -384,9 +383,9 @@ def combine_two_terms(t1 : Term, t2 : Term):
     if t1.c_ops == t2.c_ops and t1.a_ops == t2.a_ops:
         coef = t1.coef + t2.coef
         if coef == 0.0:
-            return Term([], 0.0)
+            return Term([], [], 0.0)
         else:
-            return Term(t1.c_ops + t1.a_ops, coef)
+            return Term(t1.c_ops, t1.a_ops, coef)
     else:
         return None
 
@@ -411,7 +410,7 @@ class Expr:
         for t1 in self.terms:
             for t2 in other.terms:
                 coef = t1.coef * t2.coef
-                t = Term(t1.c_ops + t2.c_ops + t1.a_ops + t2.a_ops, coef)
+                t = Term(t1.c_ops + t2.c_ops, t1.a_ops + t2.a_ops, coef)
                 terms.append(t)
         return Expr(terms)
 
@@ -474,9 +473,12 @@ def simplified(expr : Expr, *, is_isospin_symmetric_limit : bool = False) -> Exp
 
 def mk_expr(x) -> Expr:
     if isinstance(x, int) or isinstance(x, float) or isinstance(x, complex):
-        return Expr([Term([], x),])
+        return Expr([Term([], [], x),])
     elif isinstance(x, Op):
-        return Expr([Term([x,], 1),])
+        if x.is_commute():
+            return Expr([Term([x,], [], 1),])
+        else:
+            return Expr([Term([], [x,], 1),])
     elif isinstance(x, Term):
         return Expr([x,])
     elif isinstance(x, Expr):
@@ -509,17 +511,17 @@ def drop_zero_terms(expr : Expr) -> Expr:
 
 def op_derivative_exp(op : Op):
     if op.otype == "Qv":
-        return Term([SHv(op.f, op.p, op.s, op.c),], -1)
+        return Term([], [SHv(op.f, op.p, op.s, op.c),], -1)
     elif op.otype == "Qb":
-        return Term([HbS(op.f, op.p, op.s, op.c),], 1)
+        return Term([], [HbS(op.f, op.p, op.s, op.c),], 1)
     else:
         return None
 
 def op_derivative_op(op : Op, op1 : Op):
     if op.otype == "Qv" and op1.otype == "HbS" and op.f == op1.f:
-        return Term([S(op.f, op.p, op1.p, op.s, op1.s, op.c, op1.c),], 1)
+        return Term([S(op.f, op.p, op1.p, op.s, op1.s, op.c, op1.c),], [], 1)
     elif op.otype == "Qb" and op1.otype == "SHv" and op.f == op1.f:
-        return Term([S(op.f, op1.p, op.p, op1.s, op.s, op1.c, op.c),], 1)
+        return Term([S(op.f, op1.p, op.p, op1.s, op.s, op1.c, op.c),], [], 1)
     else:
         return None
 
@@ -539,11 +541,11 @@ def op_derivative_term(op : Op, term : Term) -> Expr:
         dop1 = op_derivative_op(op, op1)
         if dop1 is not None:
             sign = flip_sign(i)
-            terms.append(Term(dop1.c_ops + c_ops + a_ops[:i] + dop1.a_ops + a_ops[i+1:], sign * dop1.coef * coef))
+            terms.append(Term(dop1.c_ops + c_ops, a_ops[:i] + dop1.a_ops + a_ops[i+1:], sign * dop1.coef * coef))
     de = op_derivative_exp(op)
     if de is not None:
         sign = flip_sign(len(a_ops))
-        terms.append(Term(de.c_ops + c_ops + a_ops + de.a_ops, sign * de.coef * coef))
+        terms.append(Term(de.c_ops + c_ops, a_ops + de.a_ops, sign * de.coef * coef))
     return Expr(terms)
 
 def op_push_term(op : Op, term : Term) -> Expr:
@@ -553,7 +555,10 @@ def op_push_term(op : Op, term : Term) -> Expr:
         coef = term.coef
         c_ops = term.c_ops
         a_ops = term.a_ops
-        return Expr([Term([op,] + c_ops, a_ops, coef),])
+        if op.is_commute():
+            return Expr([Term([op,] + c_ops, a_ops, coef),])
+        else:
+            return Expr([Term(c_ops, [op,] + a_ops, coef),])
 
 def op_push_expr(op : Op, expr : Expr) -> Expr:
     terms = []
@@ -584,7 +589,7 @@ def remove_hops(expr : Expr) -> Expr:
 def contract_term(term : Term) -> Expr:
     coef = term.coef
     c_ops = term.c_ops
-    expr = Expr([Term(c_ops, coef),])
+    expr = Expr([Term(c_ops, [], coef),])
     a_ops = term.a_ops
     for op in reversed(a_ops):
         expr = op_push_expr(op, expr)
@@ -599,21 +604,19 @@ def contract_expr(expr: Expr) -> Expr:
     return Expr(all_terms)
 
 if __name__ == "__main__":
-    expr = Expr([
-        Term([
-            Qb("d", "x1", "s1", "c1"),
-            G("5", "s1", "s2"),
-            Qv("u", "x1", "s2", "c1"),
-            Qb("u", "x2", "s3", "c2"),
-            G("5", "s3", "s4"),
-            Qv("d", "x2", "s4", "c2"),
-            ], 1),
-        ])
+    expr = (1
+            * Qb("d", "x1", "s1", "c1")
+            * G("5", "s1", "s2")
+            * Qv("u", "x1", "s2", "c1")
+            * Qb("u", "x2", "s3", "c2")
+            * G("5", "s3", "s4")
+            * Qv("d", "x2", "s4", "c2"))
     print(expr)
     c_expr = contract_expr(expr)
     c_expr.simplify()
     print(c_expr)
-    c_expr_check = Expr([Term([Tr([G('5'), S('u','x1','x2'), G('5'), S('d','x2','x1')],'sc')],-1)]) - c_expr
+    c_expr_check = Expr([Term([Tr([G('5'), S('d','x2','x1'), G('5'), S('u','x1','x2')],'sc')],[],(-1+0j))]) - c_expr
+    c_expr_check.simplify()
     print(c_expr_check)
     c_expr.simplify(is_isospin_symmetric_limit = True)
     print(c_expr)
