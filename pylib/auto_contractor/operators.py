@@ -1,3 +1,26 @@
+#    Qlattice (https://github.com/waterret/qlattice)
+#
+#    Copyright (C) 2021
+#
+#    Author: Luchang Jin (ljin.luchang@gmail.com)
+#    Author: Masaaki Tomii
+#
+#    This program is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation; either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License along
+#    with this program; if not, write to the Free Software Foundation, Inc.,
+#    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+# operators definition follows Eq.(103,122) in PHYS. REV. D 101, 014506 (2020)
+
 from auto_contractor.wick import *
 
 import math
@@ -71,6 +94,30 @@ def mk_pipi_i0(p1 : str, p2 : str, is_dagger = False):
             + mk_pi_m(p1, is_dagger) * mk_pi_p(p2, is_dagger)
             + mk_pi_p(p1, is_dagger) * mk_pi_m(p2, is_dagger)
             )
+
+def mk_k_p(p : str, is_dagger = False):
+    if not is_dagger:
+        return 1.0j * mk_meson("u", "s", p)
+    else:
+        return -mk_k_m(p)
+
+def mk_k_m(p : str, is_dagger = False):
+    if not is_dagger:
+        return -1.0j * mk_meson("s", "u", p)
+    else:
+        return -mk_k_p(p)
+
+def mk_k_0(p : str, is_dagger = False):
+    if not is_dagger:
+        return 1.0j * mk_meson("d", "s", p)
+    else:
+        return -mk_k_0_bar(p)
+
+def mk_k_0_bar(p : str, is_dagger = False):
+    if not is_dagger:
+        return -1.0j * mk_meson("s", "d", p)
+    else:
+        return -mk_k_0(p)
 
 if __name__ == "__main__":
     #
