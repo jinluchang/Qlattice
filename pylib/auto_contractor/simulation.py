@@ -6,6 +6,9 @@ import rbc_ukqcd_params as rup
 import numpy as np
 import os
 
+from auto_contractor.eval import *
+from auto_contractor.operators import *
+
 def get_save_path(fn):
     return os.path.join("results", fn)
 
@@ -109,17 +112,6 @@ def compute_prop_psrc_all(gf, job_tag, inv_type, *, path_s, eig):
     sfw.close()
     q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
 
-@q.timer
-def get_prop_psrc(prop_cache, flavor : str, xg):
-    # prop_cache[flavor][src_p] = prop
-    # call load_prop_psrc_all(flavor, path_s) first
-    return prop_cache[flavor][f"xg=({xg[0]},{xg[1]},{xg[2]},{xg[3]})"]
-
-@q.timer
-def get_prop_psrc_psnk(cache, flavor : str, xg_src, xg_snk):
-    wm = get_prop_psrc(cache, flavor, xg_src).get_elem(xg_snk)
-    return g.tensor(np.ascontiguousarray(np.array(wm)), g.ot_matrix_spin_color(4, 3))
-
 def adj_msc(x):
     x = g.adj(x)
     return g.tensor(np.ascontiguousarray(x.array), x.otype)
@@ -147,6 +139,151 @@ def load_prop_psrc_all(job_tag, traj, flavor : str, path_s : str):
         q.convert_mspincolor_from_wm_prop(prop_msc, prop)
         cache[f"xg=({xg[0]},{xg[1]},{xg[2]},{xg[3]})"] = prop_msc
     sfr.close()
+
+@q.timer
+def auto_contractor_simple_test(job_tag, traj):
+    prop_cache = q.mk_cache(f"prop_cache-{job_tag}-{traj}")
+    q.displayln_info(g.gamma[5] * get_prop_psnk_psrc(prop_cache, "l", [1, 2, 3, 2], [1, 2, 3, 2]))
+    q.displayln_info(g.trace(g.gamma[5] * get_prop_psnk_psrc(prop_cache, "l", [1, 2, 3, 2], [1, 2, 3, 2])))
+    q.displayln_info(g.gamma[5] * get_prop_psnk_psrc(prop_cache, "l", [1, 2, 3, 2], [1, 2, 3, 2]) - get_prop_psnk_psrc(prop_cache, "l", [1, 2, 3, 2], [1, 2, 3, 2]))
+    q.displayln_info(g.gamma[5] * adj_msc(get_prop_psnk_psrc(prop_cache, "l", [1, 2, 3, 2], [1, 2, 3, 2])))
+    q.displayln_info(g.norm2(g.gamma[5] * adj_msc(get_prop_psnk_psrc(prop_cache, "l", [1, 2, 3, 2], [1, 2, 3, 4])) * g.gamma[5] - get_prop_psnk_psrc(prop_cache, "l", [1, 2, 3, 4], [1, 2, 3, 2])))
+    expr = (1
+            * Qb("d", "x1", "s1", "c1")
+            * G(5, "s1", "s2")
+            * Qv("u", "x1", "s2", "c1")
+            * Qb("u", "x2", "s3", "c2")
+            * G(5, "s3", "s4")
+            * Qv("d", "x2", "s4", "c2"))
+    expr = contract_expr(expr)
+    expr.simplify(is_isospin_symmetric_limit = True)
+    cexpr = mk_cexpr(expr)
+    cexpr.collect_prop()
+    q.displayln_info(cexpr)
+    positions_dict = {}
+    positions_dict["x1"] = [1, 2, 3, 4]
+    positions_dict["x2"] = [1, 2, 3, 2]
+    val = eval_cexpr(cexpr, positions_dict = positions_dict, prop_cache = prop_cache)
+    q.displayln_info("eval_cexpr: ", val)
+    q.displayln_info("gpt_direct: ",
+            -g.trace(
+                g.gamma[5]
+                * get_prop_psnk_psrc(prop_cache, "l", [1, 2, 3, 4], [1, 2, 3, 2])
+                * g.gamma[5]
+                * get_prop_psnk_psrc(prop_cache, "l", [1, 2, 3, 2], [1, 2, 3, 4])
+                ))
+
+@q.timer
+def auto_contractor_pion_corr(job_tag, traj):
+    expr = mk_pi_p("x2", True) * mk_pi_p("x1")
+    cexpr = contract_simpify_round_compile(expr, is_isospin_symmetric_limit = True)
+    def positions_dict_maker(rs, total_site):
+        t2 = 3
+        x1 = rs.c_rand_gen(total_site)
+        x2 = rs.c_rand_gen(total_site)
+        x2[3] = (x1[3] + t2) % total_site[3]
+        pd = {
+                "x1" : x1,
+                "x2" : x2,
+                }
+        fac = 1.0
+        return pd, fac
+    rng_state = q.RngState("seed")
+    trial_indices = range(10000)
+    total_site = ru.get_total_site(job_tag)
+    prop_cache = q.mk_cache(f"prop_cache-{job_tag}-{traj}")
+    results = eval_cexpr_simulation(cexpr, positions_dict_maker = positions_dict_maker, rng_state = rng_state, trial_indices = trial_indices, total_site = total_site, prop_cache = prop_cache)
+    q.displayln_info(results)
+
+@q.timer
+def auto_contractor_mom_pion_corr(job_tag, traj):
+    expr = mk_pi_p("x2", True) * mk_pi_p("x1")
+    cexpr = contract_simpify_round_compile(expr, is_isospin_symmetric_limit = True)
+    def positions_dict_maker(rs, total_site):
+        t2 = 3
+        lmom1 = [0.0, 0.0, 1.0, 0.0,]
+        lmom2 = [0.0, 0.0, -1.0, 0.0,]
+        x1 = rs.c_rand_gen(total_site)
+        x2 = rs.c_rand_gen(total_site)
+        x2[3] = (x1[3] + t2) % total_site[3]
+        pd = {
+                "x1" : x1,
+                "x2" : x2,
+                }
+        phase = 0.0
+        for mu in range(4):
+            mom1 = 2.0 * math.pi / total_site[mu] * lmom1[mu]
+            mom2 = 2.0 * math.pi / total_site[mu] * lmom2[mu]
+            phase += mom1 * x1[mu]
+            phase += mom2 * x2[mu]
+        fac = cmath.rect(1.0, phase)
+        return pd, fac
+    rng_state = q.RngState("seed")
+    trial_indices = range(10000)
+    total_site = ru.get_total_site(job_tag)
+    prop_cache = q.mk_cache(f"prop_cache-{job_tag}-{traj}")
+    results = eval_cexpr_simulation(cexpr, positions_dict_maker = positions_dict_maker, rng_state = rng_state, trial_indices = trial_indices, total_site = total_site, prop_cache = prop_cache)
+    q.displayln_info(results)
+
+@q.timer
+def auto_contractor_pipi_i22_corr(job_tag, traj):
+    expr = mk_pipi_i22("x21", "x22", True) * mk_pipi_i22("x11", "x12")
+    cexpr = contract_simpify_round_compile(expr, is_isospin_symmetric_limit = True)
+    def positions_dict_maker(rs, total_site):
+        t12 = 2
+        t21 = 5
+        t22 = 7
+        x11 = rs.c_rand_gen(total_site)
+        x12 = rs.c_rand_gen(total_site)
+        x21 = rs.c_rand_gen(total_site)
+        x22 = rs.c_rand_gen(total_site)
+        x12[3] = (x11[3] + t12) % total_site[3]
+        x21[3] = (x11[3] + t21) % total_site[3]
+        x22[3] = (x11[3] + t22) % total_site[3]
+        pd = {
+                "x11" : x11,
+                "x12" : x12,
+                "x21" : x21,
+                "x22" : x22,
+                }
+        fac = 1.0
+        return pd, fac
+    rng_state = q.RngState("seed")
+    trial_indices = range(10000)
+    total_site = ru.get_total_site(job_tag)
+    prop_cache = q.mk_cache(f"prop_cache-{job_tag}-{traj}")
+    results = eval_cexpr_simulation(cexpr, positions_dict_maker = positions_dict_maker, rng_state = rng_state, trial_indices = trial_indices, total_site = total_site, prop_cache = prop_cache)
+    q.displayln_info(results)
+
+@q.timer
+def auto_contractor_pipi_i0_corr(job_tag, traj):
+    expr = mk_pipi_i0("x21", "x22", True) * mk_pipi_i0("x11", "x12")
+    cexpr = contract_simpify_round_compile(expr, is_isospin_symmetric_limit = True)
+    def positions_dict_maker(rs, total_site):
+        t12 = 2
+        t21 = 5
+        t22 = 7
+        x11 = rs.c_rand_gen(total_site)
+        x12 = rs.c_rand_gen(total_site)
+        x21 = rs.c_rand_gen(total_site)
+        x22 = rs.c_rand_gen(total_site)
+        x12[3] = (x11[3] + t12) % total_site[3]
+        x21[3] = (x11[3] + t21) % total_site[3]
+        x22[3] = (x11[3] + t22) % total_site[3]
+        pd = {
+                "x11" : x11,
+                "x12" : x12,
+                "x21" : x21,
+                "x22" : x22,
+                }
+        fac = 1.0
+        return pd, fac
+    rng_state = q.RngState("seed")
+    trial_indices = range(10000)
+    total_site = ru.get_total_site(job_tag)
+    prop_cache = q.mk_cache(f"prop_cache-{job_tag}-{traj}")
+    results = eval_cexpr_simulation(cexpr, positions_dict_maker = positions_dict_maker, rng_state = rng_state, trial_indices = trial_indices, total_site = total_site, prop_cache = prop_cache)
+    q.displayln_info(results)
 
 @q.timer
 def run_job(job_tag, traj):
@@ -199,12 +336,11 @@ def run_job(job_tag, traj):
     if all(map(lambda x : x is not None, path_prop_list)):
         load_prop_psrc_all(job_tag, traj, "l", f"prop-psrc-0/{job_tag}/traj={traj}")
         load_prop_psrc_all(job_tag, traj, "s", f"prop-psrc-1/{job_tag}/traj={traj}")
-        prop_cache = q.mk_cache(f"prop_cache-{job_tag}-{traj}")
-        q.displayln_info(g.gamma[5] * get_prop_psrc_psnk(prop_cache, "l", [1, 2, 3, 2], [1, 2, 3, 2]))
-        q.displayln_info(g.trace(g.gamma[5] * get_prop_psrc_psnk(prop_cache, "l", [1, 2, 3, 2], [1, 2, 3, 2])))
-        q.displayln_info(g.gamma[5] * get_prop_psrc_psnk(prop_cache, "l", [1, 2, 3, 2], [1, 2, 3, 2]) - get_prop_psrc_psnk(prop_cache, "l", [1, 2, 3, 2], [1, 2, 3, 2]))
-        q.displayln_info(g.gamma[5] * adj_msc(get_prop_psrc_psnk(prop_cache, "l", [1, 2, 3, 2], [1, 2, 3, 2])))
-        q.displayln_info(g.norm2(g.gamma[5] * adj_msc(get_prop_psrc_psnk(prop_cache, "l", [1, 2, 3, 2], [1, 2, 3, 4])) * g.gamma[5] - get_prop_psrc_psnk(prop_cache, "l", [1, 2, 3, 4], [1, 2, 3, 2])))
+        auto_contractor_simple_test(job_tag, traj)
+        auto_contractor_pion_corr(job_tag, traj)
+        auto_contractor_mom_pion_corr(job_tag, traj)
+        auto_contractor_pipi_i22_corr(job_tag, traj)
+        auto_contractor_pipi_i0_corr(job_tag, traj)
     #
     q.clean_cache()
 
@@ -215,6 +351,6 @@ if __name__ == "__main__":
     rup.dict_params[job_tag]["fermion_params"][0][2] = rup.dict_params[job_tag]["fermion_params"][0][0]
     rup.dict_params[job_tag]["fermion_params"][1][2] = rup.dict_params[job_tag]["fermion_params"][1][0]
     rup.dict_params[job_tag]["load_config_params"]["twist_boundary_at_boundary"] = [0.0, 0.0, 0.0, -0.5,]
-    # run_job(job_tag, traj)
+    run_job(job_tag, traj)
     q.timer_display()
     qg.end_with_gpt()

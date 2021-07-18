@@ -131,9 +131,9 @@ class G(Op):
 
     # spin matrix
 
-    # tag = "x", "y", "z", "t", "5" for gamma matrices
+    # tag = 0, 1, 2, 3, 5 for gamma matrices
 
-    def __init__(self, tag : str, s1 : str = "auto", s2 : str = "auto"):
+    def __init__(self, tag, s1 : str = "auto", s2 : str = "auto"):
         Op.__init__(self, "G")
         self.tag = tag
         self.s1 = s1
@@ -167,7 +167,7 @@ class Tr(Op):
 
     # a collection of ops taking the trace
 
-    def __init__(self, ops : list[Op], tag = None):
+    def __init__(self, ops : list, tag = None):
         Op.__init__(self, "Tr")
         if tag is not None:
             # do not perform check if tag is set
@@ -221,7 +221,7 @@ class Tr(Op):
 def pick_one(xs, i):
     return xs[i], xs[:i] + xs[i + 1:]
 
-def check_trace_spin_index(ops : list[Op], s : str):
+def check_trace_spin_index(ops : list, s : str):
     count1 = 0
     count2 = 0
     i1 = None
@@ -236,7 +236,7 @@ def check_trace_spin_index(ops : list[Op], s : str):
                 count2 += 1
     return count1 == 1 and count2 == 1, i1, i2
 
-def check_trace_color_index(ops : list[Op], c : str):
+def check_trace_color_index(ops : list, c : str):
     count1 = 0
     count2 = 0
     i1 = None
@@ -251,7 +251,7 @@ def check_trace_color_index(ops : list[Op], c : str):
                 count2 += 1
     return count1 == 1 and count2 == 1, i1, i2
 
-def check_trace_op(ops : list[Op], op : Op):
+def check_trace_op(ops : list, op : Op):
     if op.otype not in ["S", "G",]:
         return False
     if op.otype in ["S", "G",]:
@@ -273,7 +273,7 @@ def update_trace_sc(op, s, c):
         c = op.c2
     return s, c
 
-def pick_trace_op(ops : list[Op], s, c):
+def pick_trace_op(ops : list, s, c):
     for i, op in enumerate(ops):
         if not check_trace_op(ops, op):
             continue
@@ -286,7 +286,7 @@ def pick_trace_op(ops : list[Op], s, c):
         return i, op
     return None
 
-def find_trace(ops : list[Op]):
+def find_trace(ops : list):
     # return None or (Tr(tr_ops), remaining_ops,)
     size = len(ops)
     for i, op in enumerate(ops):
@@ -311,7 +311,7 @@ def find_trace(ops : list[Op]):
             s, c = update_trace_sc(op2, s, c)
     return None
 
-def collect_traces(ops : list[Op]) -> list[Op]:
+def collect_traces(ops : list) -> list:
     trs = []
     while True:
         ft = find_trace(ops)
@@ -455,7 +455,7 @@ class Expr:
         for term in self.terms:
             term.isospin_symmetric_limit()
 
-    def simplify(self, *, is_isospin_symmetric_limit : bool = False) -> None:
+    def simplify(self, *, is_isospin_symmetric_limit : bool = True) -> None:
         # interface function
         if is_isospin_symmetric_limit:
             self.isospin_symmetric_limit()
@@ -465,7 +465,7 @@ class Expr:
         self.sort()
         self.combine_terms()
 
-def simplified(expr : Expr, *, is_isospin_symmetric_limit : bool = False) -> Expr:
+def simplified(expr : Expr, *, is_isospin_symmetric_limit : bool = True) -> Expr:
     # interface function
     sexpr = copy.deepcopy(expr)
     sexpr.simplify(is_isospin_symmetric_limit = is_isospin_symmetric_limit)
@@ -606,17 +606,17 @@ def contract_expr(expr: Expr) -> Expr:
 if __name__ == "__main__":
     expr = (1
             * Qb("d", "x1", "s1", "c1")
-            * G("5", "s1", "s2")
+            * G(5, "s1", "s2")
             * Qv("u", "x1", "s2", "c1")
             * Qb("u", "x2", "s3", "c2")
-            * G("5", "s3", "s4")
+            * G(5, "s3", "s4")
             * Qv("d", "x2", "s4", "c2"))
     print(expr)
     c_expr = contract_expr(expr)
-    c_expr.simplify()
+    c_expr.simplify(is_isospin_symmetric_limit = False)
     print(c_expr)
     c_expr_check = Expr([Term([Tr([G('5'), S('d','x2','x1'), G('5'), S('u','x1','x2')],'sc')],[],(-1+0j))]) - c_expr
-    c_expr_check.simplify()
+    c_expr_check.simplify(is_isospin_symmetric_limit = False)
     print(c_expr_check)
     c_expr.simplify(is_isospin_symmetric_limit = True)
     print(c_expr)

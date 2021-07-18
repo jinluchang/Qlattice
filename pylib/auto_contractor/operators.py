@@ -1,4 +1,4 @@
-from auto_contract.wick import *
+from auto_contractor.wick import *
 
 import math
 
@@ -20,7 +20,7 @@ def mk_meson(f1 : str, f2 : str, p : str):
     s1 = new_spin_index()
     s2 = new_spin_index()
     c = new_color_index()
-    return Qb(f1, p, s1, c) * G("5", s1, s2) * Qv(f2, p, s2, c)
+    return Qb(f1, p, s1, c) * G(5, s1, s2) * Qv(f2, p, s2, c)
 
 def mk_pi_0(p : str, is_dagger = False):
     return 1.0j / math.sqrt(2.0) * (mk_meson("u", "u", p) - mk_meson("d", "d", p))

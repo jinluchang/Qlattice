@@ -263,6 +263,13 @@ qacc CoordinateD middle_coordinate(const CoordinateD& x, const CoordinateD& y,
   return middle_mod(x, y, size);
 }
 
+qacc Coordinate c_rand_gen(RngState& rs, const Coordinate& size)
+{
+  const long total_vol = product(size);
+  const long ri = rand_gen(rs) % total_vol;
+  return coordinate_from_index(ri, size);
+}
+
 struct EpsilonTensorTable {
   int tensor[4][4][4][4];
   //

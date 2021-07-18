@@ -62,30 +62,31 @@ def add_prop_variables(variables, x):
 
 class CExpr:
 
-    def __init__(self, variables, terms, positions = None):
-        self.variables = dict(variables)
-        self.terms = dict(terms)
+    def __init__(self, variables, named_terms, positions = None):
+        self.variables = variables
+        self.named_terms = named_terms
         if positions is not None:
             self.positions = positions
         else:
             s = set()
-            for t in terms.values():
-                add_positions(s, t)
+            for name, term in named_terms:
+                add_positions(s, term)
             self.positions = sorted(list(s))
 
     def __repr__(self) -> str:
-        return f"CExpr({sorted(self.variables.items())},{sorted(self.terms.items())},{self.positions})"
+        return f"CExpr({self.variables},{self.named_terms},{self.positions})"
 
     def collect_prop(self):
-        variables = self.variables
-        for term in self.terms.values():
+        variables = dict(self.variables)
+        for name, term in self.named_terms:
             add_prop_variables(variables, term)
+        self.variables = sorted(variables.items())
 
 def mk_cexpr(expr : Expr):
-    return CExpr({}, { f"T_{i+1}" : term for i, term in enumerate(expr.terms) })
+    return CExpr([], [ (f"T_{i+1}", term,) for i, term in enumerate(expr.terms) ])
 
 if __name__ == "__main__":
-    expr = Qb("d", "x1", "s1", "c1") * G("5", "s1", "s2") * Qv("u", "x1", "s2", "c1") * Qb("u", "x2", "s3", "c2") * G("5", "s3", "s4") * Qv("d", "x2", "s4", "c2")
+    expr = Qb("d", "x1", "s1", "c1") * G(5, "s1", "s2") * Qv("u", "x1", "s2", "c1") * Qb("u", "x2", "s3", "c2") * G(5, "s3", "s4") * Qv("d", "x2", "s4", "c2")
     print(expr)
     expr = simplified(contract_expr(expr))
     print(expr.round())
@@ -93,4 +94,4 @@ if __name__ == "__main__":
     print(cexpr)
     cexpr.collect_prop()
     print(cexpr)
-    print(CExpr([('S_1', S('d','x2','x1')), ('S_2', S('u','x1','x2'))],[('T_1', Term([Tr([G('5'), Var('S_1'), G('5'), Var('S_2')],'sc')],[],(-1+0j)))],['x1', 'x2']))
+    print(CExpr([('S_1', S('d','x2','x1')), ('S_2', S('u','x1','x2'))],[('T_1', Term([Tr([G(5), Var('S_1'), G(5), Var('S_2')],'sc')],[],(-1+0j)))],['x1', 'x2']))

@@ -40,6 +40,10 @@ class RngState:
     def g_rand_gen(self, center = 0.0, sigma = 1.0):
         return c.g_rand_gen(self, center, sigma)
 
+    def c_rand_gen(self, size):
+        # size can be total_site of the lattice
+        return c.c_rand_gen(self, size)
+
     def select(self, l):
         ri = self.rand_gen() % len(l)
         return l[ri]
