@@ -93,4 +93,4 @@ if __name__ == "__main__":
     print(cexpr)
     cexpr.collect_prop()
     print(cexpr)
-    print(CExpr([('S_1', S('d','x2','x1')), ('S_2', S('u','x1','x2'))],[('T_1', Term([Tr([G('5'), Var('S_1'), G('5'), Var('S_2')],'sc')],(-1+0j)))],['x1', 'x2']))
+    print(CExpr([('S_1', S('d','x2','x1')), ('S_2', S('u','x1','x2'))],[('T_1', Term([Tr([G('5'), Var('S_1'), G('5'), Var('S_2')],'sc')],[],(-1+0j)))],['x1', 'x2']))

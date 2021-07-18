@@ -40,4 +40,8 @@ class RngState:
     def g_rand_gen(self, center = 0.0, sigma = 1.0):
         return c.g_rand_gen(self, center, sigma)
 
+    def select(self, l):
+        ri = self.rand_gen() % len(l)
+        return l[ri]
+
 rng_state_root = RngState()
