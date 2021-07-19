@@ -49,7 +49,12 @@ def ascontiguoustensor(tensor):
 
 def eval_op_term_expr(expr, variables_dict, positions_dict, prop_cache):
     def l_eval(x):
-        if isinstance(x, Op):
+        if isinstance(x, list):
+            ans = l_eval(x[0])
+            for op in x[1:]:
+                ans = ascontiguoustensor(ans * l_eval(op))
+            return ans
+        elif isinstance(x, Op):
             if x.otype == "S":
                 flavor = x.f
                 xg_snk = positions_dict[x.p1]
@@ -57,11 +62,19 @@ def eval_op_term_expr(expr, variables_dict, positions_dict, prop_cache):
                 return get_prop_psnk_psrc(prop_cache, flavor, xg_snk, xg_src)
             elif x.otype == "G":
                 return get_spin_matrix(x)
+            elif x.otype == "Tr" and len(x.ops) == 2:
+                return g.trace(l_eval(x.ops[0]) * l_eval(x.ops[1]))
             elif x.otype == "Tr":
                 if not x.ops:
                     return 1
-                ans = l_eval(x.ops[0])
-                for op in x.ops[1:]:
+                start_idx = None
+                for i in range(len(x.ops)):
+                    if x.ops[i].otype != "G":
+                        start_idx = i
+                        break
+                assert start_idx is not None
+                ans = l_eval(x.ops[start_idx])
+                for op in x.ops[start_idx + 1:] + x.ops[:start_idx]:
                     ans = ascontiguoustensor(ans * l_eval(op))
                 return g.trace(ans)
             elif x.otype == "Var":

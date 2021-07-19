@@ -200,8 +200,10 @@ def auto_contractor_meson_corr(job_tag, traj):
             mk_pi_p("x2", True) * mk_pi_p("x1"),
             mk_k_p("x2", True) * mk_k_p("x1"),
             ]
-    q.displayln_info(display_cexpr(contract_simplify_round_compile(*exprs, is_isospin_symmetric_limit = True)))
-    cexpr = contract_simplify_round_compile_collect(*exprs, is_isospin_symmetric_limit = True)
+    cexpr = contract_simplify_round_compile(*exprs, is_isospin_symmetric_limit = True)
+    q.displayln_info(display_cexpr(cexpr))
+    cexpr.collect_op()
+    q.displayln_info(display_cexpr(cexpr))
     def positions_dict_maker(rs, total_site):
         t2 = 5
         x1 = rs.c_rand_gen(total_site)
@@ -227,8 +229,10 @@ def auto_contractor_mom_meson_corr(job_tag, traj):
             mk_pi_p("x2", True) * mk_pi_p("x1"),
             mk_k_p("x2", True) * mk_k_p("x1"),
             ]
-    q.displayln_info(display_cexpr(contract_simplify_round_compile(*exprs, is_isospin_symmetric_limit = True)))
-    cexpr = contract_simplify_round_compile_collect(*exprs, is_isospin_symmetric_limit = True)
+    cexpr = contract_simplify_round_compile(*exprs, is_isospin_symmetric_limit = True)
+    q.displayln_info(display_cexpr(cexpr))
+    cexpr.collect_op()
+    q.displayln_info(display_cexpr(cexpr))
     def positions_dict_maker(rs, total_site):
         t2 = 5
         lmom1 = [0.0, 0.0, 1.0, 0.0,]
@@ -265,8 +269,10 @@ def auto_contractor_pipi_corr(job_tag, traj):
             mk_pipi_i11("x21", "x22", True) * mk_pipi_i11("x11", "x12"),
             mk_pipi_i22("x21", "x22", True) * mk_pipi_i22("x11", "x12"),
             ]
-    q.displayln_info(display_cexpr(contract_simplify_round_compile(*exprs, is_isospin_symmetric_limit = True)))
-    cexpr = contract_simplify_round_compile_collect(*exprs, is_isospin_symmetric_limit = True)
+    cexpr = contract_simplify_round_compile(*exprs, is_isospin_symmetric_limit = True)
+    q.displayln_info(display_cexpr(cexpr))
+    cexpr.collect_op()
+    q.displayln_info(display_cexpr(cexpr))
     def positions_dict_maker(rs, total_site):
         t12 = 2
         t21 = 5
