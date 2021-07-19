@@ -179,7 +179,7 @@ def auto_contractor_simple_test(job_tag, traj):
     expr = contract_expr(expr)
     expr.simplify(is_isospin_symmetric_limit = True)
     cexpr = mk_cexpr(expr)
-    cexpr.collect_prop()
+    cexpr.collect_op()
     q.displayln_info(cexpr)
     positions_dict = {}
     positions_dict["x1"] = [1, 2, 3, 4]
