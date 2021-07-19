@@ -197,7 +197,7 @@ def auto_contractor_simple_test(job_tag, traj):
 @q.timer
 def auto_contractor_pion_corr(job_tag, traj):
     expr = mk_pi_p("x2", True) * mk_pi_p("x1")
-    cexpr = contract_simpify_round_compile(expr, is_isospin_symmetric_limit = True)
+    cexpr = contract_simplify_round_compile_collect(expr, is_isospin_symmetric_limit = True)
     def positions_dict_maker(rs, total_site):
         t2 = 3
         x1 = rs.c_rand_gen(total_site)
@@ -219,7 +219,7 @@ def auto_contractor_pion_corr(job_tag, traj):
 @q.timer
 def auto_contractor_mom_pion_corr(job_tag, traj):
     expr = mk_pi_p("x2", True) * mk_pi_p("x1")
-    cexpr = contract_simpify_round_compile(expr, is_isospin_symmetric_limit = True)
+    cexpr = contract_simplify_round_compile_collect(expr, is_isospin_symmetric_limit = True)
     def positions_dict_maker(rs, total_site):
         t2 = 3
         lmom1 = [0.0, 0.0, 1.0, 0.0,]
@@ -249,7 +249,7 @@ def auto_contractor_mom_pion_corr(job_tag, traj):
 @q.timer
 def auto_contractor_pipi_i22_corr(job_tag, traj):
     expr = mk_pipi_i22("x21", "x22", True) * mk_pipi_i22("x11", "x12")
-    cexpr = contract_simpify_round_compile(expr, is_isospin_symmetric_limit = True)
+    cexpr = contract_simplify_round_compile_collect(expr, is_isospin_symmetric_limit = True)
     def positions_dict_maker(rs, total_site):
         t12 = 2
         t21 = 5
@@ -279,7 +279,7 @@ def auto_contractor_pipi_i22_corr(job_tag, traj):
 @q.timer
 def auto_contractor_pipi_i0_corr(job_tag, traj):
     expr = mk_pipi_i0("x21", "x22", True) * mk_pipi_i0("x11", "x12")
-    cexpr = contract_simpify_round_compile(expr, is_isospin_symmetric_limit = True)
+    cexpr = contract_simplify_round_compile_collect(expr, is_isospin_symmetric_limit = True)
     def positions_dict_maker(rs, total_site):
         t12 = 2
         t21 = 5

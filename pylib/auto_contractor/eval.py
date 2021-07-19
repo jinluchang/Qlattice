@@ -109,15 +109,6 @@ def sqr_component_array(arr):
 def sqrt_component_array(arr):
     return np.array([ sqrt_component(x) for x in arr ])
 
-def contract_simpify_round_compile(expr : Expr, is_isospin_symmetric_limit = True):
-    # interface function
-    expr = copy.deepcopy(expr)
-    expr = contract_expr(expr)
-    expr.simplify(is_isospin_symmetric_limit = is_isospin_symmetric_limit)
-    cexpr = mk_cexpr(expr.round())
-    cexpr.collect_prop()
-    return cexpr
-
 @q.timer
 def eval_cexpr_simulation(cexpr : CExpr, *, positions_dict_maker, rng_state, trial_indices, total_site, prop_cache):
     # interface function

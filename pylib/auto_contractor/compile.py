@@ -98,13 +98,45 @@ class CExpr:
         return f"CExpr({self.variables},{self.named_terms},{self.positions})"
 
     def collect_prop(self):
+        # interface function
         variables = dict(self.variables)
         for name, term in self.named_terms:
             add_prop_variables(variables, term)
         self.variables = sorted(variables.items())
 
 def mk_cexpr(expr : Expr):
+    # interface function
     return CExpr([], [ (f"T_{i+1}", term,) for i, term in enumerate(expr.terms) ])
+
+def contract_simplify_round_compile(expr : Expr, is_isospin_symmetric_limit = True):
+    # interface function
+    expr = copy.deepcopy(expr)
+    expr = contract_expr(expr)
+    expr.simplify(is_isospin_symmetric_limit = is_isospin_symmetric_limit)
+    cexpr = mk_cexpr(expr.round())
+    return cexpr
+
+def contract_simplify_round_compile_collect(expr : Expr, is_isospin_symmetric_limit = True):
+    # interface function
+    expr = copy.deepcopy(expr)
+    expr = contract_expr(expr)
+    expr.simplify(is_isospin_symmetric_limit = is_isospin_symmetric_limit)
+    cexpr = mk_cexpr(expr.round())
+    cexpr.collect_prop()
+    return cexpr
+
+def display_cexpr(cexpr : CExpr):
+    # interface function
+    # return a string
+    lines = []
+    lines.append(f"Begin CExpr")
+    lines.append(f"{'Positions':>10} : {cexpr.positions}")
+    for name, value in cexpr.variables:
+        lines.append(f"{name:>10} : {value}")
+    for name, term in cexpr.named_terms:
+        lines.append(f"{name:>10} : {term}")
+    lines.append(f"End CExpr")
+    return "\n".join(lines)
 
 if __name__ == "__main__":
     expr = Qb("d", "x1", "s1", "c1") * G(5, "s1", "s2") * Qv("u", "x1", "s2", "c1") * Qb("u", "x2", "s3", "c2") * G(5, "s3", "s4") * Qv("d", "x2", "s4", "c2")
@@ -115,4 +147,5 @@ if __name__ == "__main__":
     print(cexpr)
     cexpr.collect_prop()
     print(cexpr)
+    print(display_cexpr(cexpr))
     print(CExpr([('S_1', S('d','x2','x1')), ('S_2', S('u','x1','x2'))],[('T_1', Term([Tr([G(5), Var('S_1'), G(5), Var('S_2')],'sc')],[],(-1+0j)))],['x1', 'x2']))
