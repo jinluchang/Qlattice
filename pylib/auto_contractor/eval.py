@@ -80,7 +80,7 @@ def eval_op_term_expr(expr, variables_dict, positions_dict, prop_cache):
             elif x.otype == "Var":
                 return variables_dict[x.name]
             else:
-                q.displayln_info(f"eval_op_term: ERROR: l_eval({x})")
+                q.displayln_info(f"eval_op_term_expr: ERROR: l_eval({x})")
                 assert False
         elif isinstance(x, Term):
             assert not x.a_ops
@@ -94,7 +94,7 @@ def eval_op_term_expr(expr, variables_dict, positions_dict, prop_cache):
                 ans = ans + l_eval(term)
             return ans
         else:
-            q.displayln_info(f"eval_op_term: ERROR: l_eval({x})")
+            q.displayln_info(f"eval_op_term_expr: ERROR: l_eval({x})")
             assert False
     return g.eval(l_eval(expr))
 

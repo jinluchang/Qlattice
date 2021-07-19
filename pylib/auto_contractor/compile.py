@@ -91,20 +91,20 @@ def collect_op_in_cexpr(variables, named_terms):
         term.sort()
 
 def find_common_subexpr_in_tr(variables_trs):
-    subexpr_set = set()
+    subexpr_count = {}
     def add(x):
         op_repr = repr(x)
-        if op_repr in subexpr_set:
-            return False
-        subexpr_set.add(op_repr)
-        return True
+        if op_repr in subexpr_count:
+            c, op = subexpr_count[op_repr]
+            assert x == op
+            subexpr_count[op_repr] = (c + 1, x)
+        else:
+            subexpr_count[op_repr] = (1, x)
     def find(x):
         if isinstance(x, list):
             # need to represent the product of the list of operators
             for op in x:
-                prod = find(op)
-                if prod is not None:
-                    return prod
+                find(op)
             if len(x) < 2:
                 return None
             for i, op in enumerate(x):
@@ -113,35 +113,30 @@ def find_common_subexpr_in_tr(variables_trs):
                     if op.otype in ["Var", "S",]:
                         if isinstance(op1, Op) and op1.otype in ["Var", "S", "G",]:
                             prod = [op, op1]
-                            if not add(prod):
-                                return prod
+                            add(prod)
                     elif op.otype in ["G",]:
                         if isinstance(op1, Op) and op1.otype in ["Var", "S",]:
                             prod = [op, op1]
-                            if not add(prod):
-                                return prod
+                            add(prod)
         elif isinstance(x, Op) and x.otype == "Tr" and len(x.ops) >= 2:
-            prod = find(x.ops)
-            if prod is not None:
-                return prod
+            find(x.ops)
         elif isinstance(x, Term):
-            prod = find(x.c_ops)
-            if prod is not None:
-                return prod
+            find(x.c_ops)
         elif isinstance(x, Expr):
             for t in x.terms:
-                prod = find(t)
-                if prod is not None:
-                    return prod
-        return None
+                find(t)
     for name, tr in variables_trs:
-        prod = find(tr)
-        if prod is not None:
-            return prod
-    return None
+        find(tr)
+    max_num_repeat = 1
+    best_match = None
+    for num_repeat, op in subexpr_count.values():
+        if num_repeat > max_num_repeat:
+            max_num_repeat = num_repeat
+            best_match = op
+    return best_match
 
-def collect_common_subexpr_in_tr(named_terms, op, var):
-    op_repr = repr(op)
+def collect_common_subexpr_in_tr(variables_trs, op_common, var):
+    op_repr = repr(op_common)
     def replace(x):
         if x is None:
             return None
@@ -152,9 +147,9 @@ def collect_common_subexpr_in_tr(named_terms, op, var):
             if len(x) < 2:
                 return None
             for i, op in enumerate(x):
-                i1 = (i+1) % len(x)
-                op1 = x[i1]
                 if isinstance(op, Op) and op.otype in ["Var", "S", "G",]:
+                    i1 = (i+1) % len(x)
+                    op1 = x[i1]
                     if isinstance(op1, Op) and op1.otype in ["Var", "S", "G",]:
                         prod = [op, op1]
                         if repr(prod) == op_repr:
@@ -167,7 +162,6 @@ def collect_common_subexpr_in_tr(named_terms, op, var):
         elif isinstance(x, Expr):
             for t in x.terms:
                 replace(t)
-        return None
     def remove_none(x):
         # return a None removed x
         # possibly modify in-place
@@ -186,9 +180,9 @@ def collect_common_subexpr_in_tr(named_terms, op, var):
             return x
         else:
             assert False
-    for name, term in named_terms:
-        replace(term)
-        remove_none(term)
+    for name, tr in variables_trs:
+        replace(tr)
+        remove_none(tr)
 
 def collect_subexpr_in_cexpr(variables, named_terms):
     var_nameset = set()
