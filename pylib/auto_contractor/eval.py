@@ -94,8 +94,9 @@ def eval_cexpr(cexpr : CExpr, *, positions_dict, prop_cache):
     variables_dict = {}
     for name, op in cexpr.variables:
         variables_dict[name] = eval_op_term_expr(op, variables_dict, positions_dict, prop_cache)
-    tvals = [ eval_op_term_expr(term, variables_dict, positions_dict, prop_cache) for name, term in cexpr.named_terms ]
-    return np.array(tvals + [sum(tvals),])
+    tvals = { name : eval_op_term_expr(term, variables_dict, positions_dict, prop_cache) for name, term in cexpr.named_terms }
+    evals = { name : sum([ tvals[tname] for tname in expr ]) for name, expr in cexpr.named_exprs }
+    return np.array([ tvals[name] for name, term in cexpr.named_terms] + [ evals[name] for name, expr in cexpr.named_exprs])
 
 def sqr_component(x):
     return x.real * x.real + 1j * x.imag * x.imag
@@ -119,7 +120,7 @@ def eval_cexpr_simulation(cexpr : CExpr, *, positions_dict_maker, rng_state, tri
         results.append(fac * eval_cexpr(cexpr, positions_dict = positions_dict, prop_cache = prop_cache))
     results_avg = sum(results) / len(results)
     results_err = sqrt_component_array(sum([ sqr_component_array(r - results_avg) for r in results ])) / len(results)
-    names = [ name for name, term in cexpr.named_terms ] + ["sum",]
+    names = [ name for name, term in cexpr.named_terms ] + [ name for name, expr in cexpr.named_exprs ]
     summary = {}
     for i in range(len(names)):
         summary[names[i]] = [results_avg[i], results_err[i],]

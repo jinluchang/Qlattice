@@ -83,9 +83,10 @@ def add_prop_variables(variables, x):
 
 class CExpr:
 
-    def __init__(self, variables, named_terms, positions = None):
+    def __init__(self, variables, named_terms, named_exprs, positions = None):
         self.variables = variables
         self.named_terms = named_terms
+        self.named_exprs = named_exprs # expr is a collection of term names representing the sum of these terms
         if positions is not None:
             self.positions = positions
         else:
@@ -95,7 +96,7 @@ class CExpr:
             self.positions = sorted(list(s))
 
     def __repr__(self) -> str:
-        return f"CExpr({self.variables},{self.named_terms},{self.positions})"
+        return f"CExpr({self.variables},{self.named_terms},{self.named_exprs},{self.positions})"
 
     def collect_prop(self):
         # interface function
@@ -104,24 +105,39 @@ class CExpr:
             add_prop_variables(variables, term)
         self.variables = sorted(variables.items())
 
-def mk_cexpr(expr : Expr):
+def mk_cexpr(*exprs):
     # interface function
-    return CExpr([], [ (f"T_{i+1}", term,) for i, term in enumerate(expr.terms) ])
+    named_terms = []
+    named_exprs = []
+    for i, expr in enumerate(exprs):
+        expr_list = []
+        for j, term in enumerate(expr.terms):
+            name = f"T{i+1}_{j+1}"
+            named_terms.append((name, term,))
+            expr_list.append(name)
+        named_exprs.append((f"E{i+1}", expr_list,))
+    return CExpr([], named_terms, named_exprs, [])
 
-def contract_simplify_round_compile(expr : Expr, is_isospin_symmetric_limit = True):
+def contract_simplify_round_compile(*exprs, is_isospin_symmetric_limit = True):
     # interface function
-    expr = copy.deepcopy(expr)
-    expr = contract_expr(expr)
-    expr.simplify(is_isospin_symmetric_limit = is_isospin_symmetric_limit)
-    cexpr = mk_cexpr(expr.round())
+    exprs = list(exprs)
+    for i in range(len(exprs)):
+        expr = copy.deepcopy(exprs[i])
+        expr = contract_expr(expr)
+        expr.simplify(is_isospin_symmetric_limit = is_isospin_symmetric_limit)
+        exprs[i] = expr.round()
+    cexpr = mk_cexpr(*exprs)
     return cexpr
 
-def contract_simplify_round_compile_collect(expr : Expr, is_isospin_symmetric_limit = True):
+def contract_simplify_round_compile_collect(*exprs, is_isospin_symmetric_limit = True):
     # interface function
-    expr = copy.deepcopy(expr)
-    expr = contract_expr(expr)
-    expr.simplify(is_isospin_symmetric_limit = is_isospin_symmetric_limit)
-    cexpr = mk_cexpr(expr.round())
+    exprs = list(exprs)
+    for i in range(len(exprs)):
+        expr = copy.deepcopy(exprs[i])
+        expr = contract_expr(expr)
+        expr.simplify(is_isospin_symmetric_limit = is_isospin_symmetric_limit)
+        exprs[i] = expr.round()
+    cexpr = mk_cexpr(*exprs)
     cexpr.collect_prop()
     return cexpr
 
@@ -135,6 +151,8 @@ def display_cexpr(cexpr : CExpr):
         lines.append(f"{name:>10} : {value}")
     for name, term in cexpr.named_terms:
         lines.append(f"{name:>10} : {term}")
+    for name, expr in cexpr.named_exprs:
+        lines.append(f"{name:>10} : {expr}")
     lines.append(f"End CExpr")
     return "\n".join(lines)
 

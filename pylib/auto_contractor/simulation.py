@@ -195,12 +195,15 @@ def auto_contractor_simple_test(job_tag, traj):
                 ))
 
 @q.timer
-def auto_contractor_pion_corr(job_tag, traj):
-    expr = mk_pi_p("x2", True) * mk_pi_p("x1")
-    q.displayln_info(display_cexpr(contract_simplify_round_compile(expr)))
-    cexpr = contract_simplify_round_compile_collect(expr, is_isospin_symmetric_limit = True)
+def auto_contractor_meson_corr(job_tag, traj):
+    exprs = [
+            mk_pi_p("x2", True) * mk_pi_p("x1"),
+            mk_k_p("x2", True) * mk_k_p("x1"),
+            ]
+    q.displayln_info(display_cexpr(contract_simplify_round_compile(*exprs, is_isospin_symmetric_limit = True)))
+    cexpr = contract_simplify_round_compile_collect(*exprs, is_isospin_symmetric_limit = True)
     def positions_dict_maker(rs, total_site):
-        t2 = 3
+        t2 = 5
         x1 = rs.c_rand_gen(total_site)
         x2 = rs.c_rand_gen(total_site)
         x2[3] = (x1[3] + t2) % total_site[3]
@@ -219,12 +222,15 @@ def auto_contractor_pion_corr(job_tag, traj):
         q.displayln_info(f"{k:>10} : {v}")
 
 @q.timer
-def auto_contractor_mom_pion_corr(job_tag, traj):
-    expr = mk_pi_p("x2", True) * mk_pi_p("x1")
-    q.displayln_info(display_cexpr(contract_simplify_round_compile(expr)))
-    cexpr = contract_simplify_round_compile_collect(expr, is_isospin_symmetric_limit = True)
+def auto_contractor_mom_meson_corr(job_tag, traj):
+    exprs = [
+            mk_pi_p("x2", True) * mk_pi_p("x1"),
+            mk_k_p("x2", True) * mk_k_p("x1"),
+            ]
+    q.displayln_info(display_cexpr(contract_simplify_round_compile(*exprs, is_isospin_symmetric_limit = True)))
+    cexpr = contract_simplify_round_compile_collect(*exprs, is_isospin_symmetric_limit = True)
     def positions_dict_maker(rs, total_site):
-        t2 = 3
+        t2 = 5
         lmom1 = [0.0, 0.0, 1.0, 0.0,]
         lmom2 = [0.0, 0.0, -1.0, 0.0,]
         x1 = rs.c_rand_gen(total_site)
@@ -251,66 +257,16 @@ def auto_contractor_mom_pion_corr(job_tag, traj):
         q.displayln_info(f"{k:>10} : {v}")
 
 @q.timer
-def auto_contractor_kaon_corr(job_tag, traj):
-    expr = mk_k_p("x2", True) * mk_k_p("x1")
-    q.displayln_info(display_cexpr(contract_simplify_round_compile(expr)))
-    cexpr = contract_simplify_round_compile_collect(expr, is_isospin_symmetric_limit = True)
-    def positions_dict_maker(rs, total_site):
-        t2 = 3
-        x1 = rs.c_rand_gen(total_site)
-        x2 = rs.c_rand_gen(total_site)
-        x2[3] = (x1[3] + t2) % total_site[3]
-        pd = {
-                "x1" : x1,
-                "x2" : x2,
-                }
-        fac = 1.0
-        return pd, fac
-    rng_state = q.RngState("seed")
-    trial_indices = range(10000)
-    total_site = ru.get_total_site(job_tag)
-    prop_cache = q.mk_cache(f"prop_cache-{job_tag}-{traj}")
-    results = eval_cexpr_simulation(cexpr, positions_dict_maker = positions_dict_maker, rng_state = rng_state, trial_indices = trial_indices, total_site = total_site, prop_cache = prop_cache)
-    for k, v in results.items():
-        q.displayln_info(f"{k:>10} : {v}")
-
-@q.timer
-def auto_contractor_pipi_i22_corr(job_tag, traj):
-    expr = mk_pipi_i22("x21", "x22", True) * mk_pipi_i22("x11", "x12")
-    q.displayln_info(display_cexpr(contract_simplify_round_compile(expr)))
-    cexpr = contract_simplify_round_compile_collect(expr, is_isospin_symmetric_limit = True)
-    def positions_dict_maker(rs, total_site):
-        t12 = 2
-        t21 = 5
-        t22 = 7
-        x11 = rs.c_rand_gen(total_site)
-        x12 = rs.c_rand_gen(total_site)
-        x21 = rs.c_rand_gen(total_site)
-        x22 = rs.c_rand_gen(total_site)
-        x12[3] = (x11[3] + t12) % total_site[3]
-        x21[3] = (x11[3] + t21) % total_site[3]
-        x22[3] = (x11[3] + t22) % total_site[3]
-        pd = {
-                "x11" : x11,
-                "x12" : x12,
-                "x21" : x21,
-                "x22" : x22,
-                }
-        fac = 1.0
-        return pd, fac
-    rng_state = q.RngState("seed")
-    trial_indices = range(10000)
-    total_site = ru.get_total_site(job_tag)
-    prop_cache = q.mk_cache(f"prop_cache-{job_tag}-{traj}")
-    results = eval_cexpr_simulation(cexpr, positions_dict_maker = positions_dict_maker, rng_state = rng_state, trial_indices = trial_indices, total_site = total_site, prop_cache = prop_cache)
-    for k, v in results.items():
-        q.displayln_info(f"{k:>10} : {v}")
-
-@q.timer
-def auto_contractor_pipi_i0_corr(job_tag, traj):
-    expr = mk_pipi_i0("x21", "x22", True) * mk_pipi_i0("x11", "x12")
-    q.displayln_info(display_cexpr(contract_simplify_round_compile(expr)))
-    cexpr = contract_simplify_round_compile_collect(expr, is_isospin_symmetric_limit = True)
+def auto_contractor_pipi_corr(job_tag, traj):
+    exprs = [
+            mk_pipi_i0("x21", "x22", True),
+            mk_pipi_i0("x11", "x12"),
+            mk_pipi_i0("x21", "x22", True) * mk_pipi_i0("x11", "x12"),
+            mk_pipi_i11("x21", "x22", True) * mk_pipi_i11("x11", "x12"),
+            mk_pipi_i22("x21", "x22", True) * mk_pipi_i22("x11", "x12"),
+            ]
+    q.displayln_info(display_cexpr(contract_simplify_round_compile(*exprs, is_isospin_symmetric_limit = True)))
+    cexpr = contract_simplify_round_compile_collect(*exprs, is_isospin_symmetric_limit = True)
     def positions_dict_maker(rs, total_site):
         t12 = 2
         t21 = 5
@@ -390,11 +346,9 @@ def run_job(job_tag, traj):
         load_prop_psrc_all(job_tag, traj, "l", f"prop-psrc-0/{job_tag}/traj={traj}")
         load_prop_psrc_all(job_tag, traj, "s", f"prop-psrc-1/{job_tag}/traj={traj}")
         auto_contractor_simple_test(job_tag, traj)
-        auto_contractor_pion_corr(job_tag, traj)
-        auto_contractor_mom_pion_corr(job_tag, traj)
-        auto_contractor_kaon_corr(job_tag, traj)
-        auto_contractor_pipi_i22_corr(job_tag, traj)
-        auto_contractor_pipi_i0_corr(job_tag, traj)
+        auto_contractor_meson_corr(job_tag, traj)
+        auto_contractor_mom_meson_corr(job_tag, traj)
+        auto_contractor_pipi_corr(job_tag, traj)
     #
     q.clean_cache()
 
