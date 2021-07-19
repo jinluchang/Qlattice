@@ -197,6 +197,7 @@ def auto_contractor_simple_test(job_tag, traj):
 @q.timer
 def auto_contractor_pion_corr(job_tag, traj):
     expr = mk_pi_p("x2", True) * mk_pi_p("x1")
+    q.displayln_info(display_cexpr(contract_simplify_round_compile(expr)))
     cexpr = contract_simplify_round_compile_collect(expr, is_isospin_symmetric_limit = True)
     def positions_dict_maker(rs, total_site):
         t2 = 3
@@ -214,11 +215,13 @@ def auto_contractor_pion_corr(job_tag, traj):
     total_site = ru.get_total_site(job_tag)
     prop_cache = q.mk_cache(f"prop_cache-{job_tag}-{traj}")
     results = eval_cexpr_simulation(cexpr, positions_dict_maker = positions_dict_maker, rng_state = rng_state, trial_indices = trial_indices, total_site = total_site, prop_cache = prop_cache)
-    q.displayln_info(results)
+    for k, v in results.items():
+        q.displayln_info(f"{k:>10} : {v}")
 
 @q.timer
 def auto_contractor_mom_pion_corr(job_tag, traj):
     expr = mk_pi_p("x2", True) * mk_pi_p("x1")
+    q.displayln_info(display_cexpr(contract_simplify_round_compile(expr)))
     cexpr = contract_simplify_round_compile_collect(expr, is_isospin_symmetric_limit = True)
     def positions_dict_maker(rs, total_site):
         t2 = 3
@@ -244,11 +247,13 @@ def auto_contractor_mom_pion_corr(job_tag, traj):
     total_site = ru.get_total_site(job_tag)
     prop_cache = q.mk_cache(f"prop_cache-{job_tag}-{traj}")
     results = eval_cexpr_simulation(cexpr, positions_dict_maker = positions_dict_maker, rng_state = rng_state, trial_indices = trial_indices, total_site = total_site, prop_cache = prop_cache)
-    q.displayln_info(results)
+    for k, v in results.items():
+        q.displayln_info(f"{k:>10} : {v}")
 
 @q.timer
 def auto_contractor_pipi_i22_corr(job_tag, traj):
     expr = mk_pipi_i22("x21", "x22", True) * mk_pipi_i22("x11", "x12")
+    q.displayln_info(display_cexpr(contract_simplify_round_compile(expr)))
     cexpr = contract_simplify_round_compile_collect(expr, is_isospin_symmetric_limit = True)
     def positions_dict_maker(rs, total_site):
         t12 = 2
@@ -274,11 +279,13 @@ def auto_contractor_pipi_i22_corr(job_tag, traj):
     total_site = ru.get_total_site(job_tag)
     prop_cache = q.mk_cache(f"prop_cache-{job_tag}-{traj}")
     results = eval_cexpr_simulation(cexpr, positions_dict_maker = positions_dict_maker, rng_state = rng_state, trial_indices = trial_indices, total_site = total_site, prop_cache = prop_cache)
-    q.displayln_info(results)
+    for k, v in results.items():
+        q.displayln_info(f"{k:>10} : {v}")
 
 @q.timer
 def auto_contractor_pipi_i0_corr(job_tag, traj):
     expr = mk_pipi_i0("x21", "x22", True) * mk_pipi_i0("x11", "x12")
+    q.displayln_info(display_cexpr(contract_simplify_round_compile(expr)))
     cexpr = contract_simplify_round_compile_collect(expr, is_isospin_symmetric_limit = True)
     def positions_dict_maker(rs, total_site):
         t12 = 2
@@ -304,7 +311,8 @@ def auto_contractor_pipi_i0_corr(job_tag, traj):
     total_site = ru.get_total_site(job_tag)
     prop_cache = q.mk_cache(f"prop_cache-{job_tag}-{traj}")
     results = eval_cexpr_simulation(cexpr, positions_dict_maker = positions_dict_maker, rng_state = rng_state, trial_indices = trial_indices, total_site = total_site, prop_cache = prop_cache)
-    q.displayln_info(results)
+    for k, v in results.items():
+        q.displayln_info(f"{k:>10} : {v}")
 
 @q.timer
 def run_job(job_tag, traj):
