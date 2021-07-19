@@ -90,7 +90,7 @@ def collect_op_in_cexpr(variables, named_terms):
         add_prop_variables(term)
         term.sort()
 
-def find_common_subexpr_in_tr(named_terms):
+def find_common_subexpr_in_tr(variables_trs):
     subexpr_set = set()
     def add(x):
         op_repr = repr(x)
@@ -101,24 +101,29 @@ def find_common_subexpr_in_tr(named_terms):
     def find(x):
         if isinstance(x, list):
             # need to represent the product of the list of operators
+            for op in x:
+                prod = find(op)
+                if prod is not None:
+                    return prod
+            if len(x) < 2:
+                return None
             for i, op in enumerate(x):
-                op1 = x[(i+1) % len(x)]
-                if not isinstance(op, Op):
-                    continue
-                elif op.otype == "Tr" and len(op.ops) >= 2:
-                    prod = find(op.ops)
-                    if prod is not None:
-                        return prod
-                elif op.otype in ["Var", "S",]:
-                    if isinstance(op1, Op) and op1.otype in ["Var", "S", "G",]:
-                        prod = [op, op1]
-                        if not add(prod):
-                            return prod
-                elif op.otype in ["G",]:
-                    if isinstance(op1, Op) and op1.otype in ["Var", "S",]:
-                        prod = [op, op1]
-                        if not add(prod):
-                            return prod
+                if isinstance(op, Op):
+                    op1 = x[(i+1) % len(x)]
+                    if op.otype in ["Var", "S",]:
+                        if isinstance(op1, Op) and op1.otype in ["Var", "S", "G",]:
+                            prod = [op, op1]
+                            if not add(prod):
+                                return prod
+                    elif op.otype in ["G",]:
+                        if isinstance(op1, Op) and op1.otype in ["Var", "S",]:
+                            prod = [op, op1]
+                            if not add(prod):
+                                return prod
+        elif isinstance(x, Op) and x.otype == "Tr" and len(x.ops) >= 2:
+            prod = find(x.ops)
+            if prod is not None:
+                return prod
         elif isinstance(x, Term):
             prod = find(x.c_ops)
             if prod is not None:
@@ -129,8 +134,8 @@ def find_common_subexpr_in_tr(named_terms):
                 if prod is not None:
                     return prod
         return None
-    for name, term in named_terms:
-        prod = find(term)
+    for name, tr in variables_trs:
+        prod = find(tr)
         if prod is not None:
             return prod
     return None
@@ -138,21 +143,25 @@ def find_common_subexpr_in_tr(named_terms):
 def collect_common_subexpr_in_tr(named_terms, op, var):
     op_repr = repr(op)
     def replace(x):
-        if isinstance(x, list):
+        if x is None:
+            return None
+        elif isinstance(x, list):
             # need to represent the product of the list of operators
+            for op in x:
+                replace(op)
+            if len(x) < 2:
+                return None
             for i, op in enumerate(x):
                 i1 = (i+1) % len(x)
                 op1 = x[i1]
-                if not isinstance(op, Op):
-                    continue
-                elif op.otype == "Tr" and len(op.ops) >= 2:
-                    replace(op.ops)
-                elif op.otype in ["Var", "S", "G",]:
+                if isinstance(op, Op) and op.otype in ["Var", "S", "G",]:
                     if isinstance(op1, Op) and op1.otype in ["Var", "S", "G",]:
                         prod = [op, op1]
                         if repr(prod) == op_repr:
                             x[i1] = None
                             x[i] = var
+        elif isinstance(x, Op) and x.otype == "Tr" and len(x.ops) >= 2:
+            replace(x.ops)
         elif isinstance(x, Term):
             replace(x.c_ops)
         elif isinstance(x, Expr):
@@ -182,13 +191,43 @@ def collect_common_subexpr_in_tr(named_terms, op, var):
         remove_none(term)
 
 def collect_subexpr_in_cexpr(variables, named_terms):
-    print(f"collect_subexpr_in_cexpr:")
-    var_counter = 0
     var_nameset = set()
     for name, value in variables:
         var_nameset.add(name)
+    variables_trs = []
+    var_counter_tr = 0
+    var_dataset_tr = {} # var_dataset[op_repr] = op_var
+    def add_tr_varibles(x):
+        nonlocal var_counter_tr
+        if isinstance(x, Term):
+            add_tr_varibles(x.c_ops)
+        elif isinstance(x, Op) and x.otype == "Tr":
+            add_tr_varibles(x.ops)
+        elif isinstance(x, list):
+            for op in x:
+                add_tr_varibles(op)
+            for i, op in enumerate(x):
+                if isinstance(op, Op) and op.otype == "Tr":
+                    op_repr = repr(op)
+                    if op_repr in var_dataset_tr:
+                        x[i] = var_dataset_tr[op_repr]
+                    else:
+                        while True:
+                            var_counter_tr += 1
+                            name = f"V2_{var_counter_tr}"
+                            if name not in var_nameset:
+                                break
+                        variables_trs.append((name, op,))
+                        var = Var(name)
+                        x[i] = var
+                        var_dataset_tr[op_repr] = var
+                        var_nameset.add(name)
+    for name, term in named_terms:
+        add_tr_varibles(term)
+        term.sort()
+    var_counter = 0
     while True:
-        op = find_common_subexpr_in_tr(named_terms)
+        op = find_common_subexpr_in_tr(variables_trs)
         if op is None:
             break
         while True:
@@ -198,7 +237,8 @@ def collect_subexpr_in_cexpr(variables, named_terms):
                 break
         variables.append((name, op,))
         var = Var(name)
-        collect_common_subexpr_in_tr(named_terms, op, var)
+        collect_common_subexpr_in_tr(variables_trs, op, var)
+    variables += variables_trs
 
 class CExpr:
 
