@@ -154,12 +154,15 @@ if __name__ == "__main__":
     print("< pi0(x2)^dag pi0(x1) > - < pi+(x2)^dag pi+(x1) >: ",
             simplified(contract_expr(mk_pi_0("x2", True) * mk_pi_0("x1") - mk_pi_p("x2", True) * mk_pi_p("x1")), is_isospin_symmetric_limit = True).round())
     print()
-    print("< pipiI22(x21,x22)^dag pipiI22(x11,x12) >:\n",
-            simplified(contract_expr(mk_pipi_i22("x21", "x22", True) * mk_pipi_i22("x11", "x12")), is_isospin_symmetric_limit = True).round())
-    print("< pipiI21(x21,x22)^dag pipiI21(x11,x12) - pipiI22(x21,x22)^dag pipiI22(x11,x12) >:",
-            simplified(contract_expr(mk_pipi_i21("x21", "x22", True) * mk_pipi_i21("x11", "x12") - mk_pipi_i22("x21", "x22", True) * mk_pipi_i22("x11", "x12")), is_isospin_symmetric_limit = True).round())
-    print("< pipiI20(x21,x22)^dag pipiI20(x11,x12) - pipiI22(x21,x22)^dag pipiI22(x11,x12) >:",
-            simplified(contract_expr(mk_pipi_i20("x21", "x22", True) * mk_pipi_i20("x11", "x12") - mk_pipi_i22("x21", "x22", True) * mk_pipi_i22("x11", "x12")), is_isospin_symmetric_limit = True).round())
+    print("< pipiI22(x21,x22)^dag pipiI22(x11,x12) >:")
+    expr = mk_pipi_i22("x21", "x22", True) * mk_pipi_i22("x11", "x12")
+    print(display_cexpr(contract_simplify_round_compile(expr)))
+    print("< pipiI21(x21,x22)^dag pipiI21(x11,x12) - pipiI22(x21,x22)^dag pipiI22(x11,x12) >:")
+    expr = mk_pipi_i21("x21", "x22", True) * mk_pipi_i21("x11", "x12") - mk_pipi_i22("x21", "x22", True) * mk_pipi_i22("x11", "x12")
+    print(display_cexpr(contract_simplify_round_compile(expr)))
+    print("< pipiI20(x21,x22)^dag pipiI20(x11,x12) - pipiI22(x21,x22)^dag pipiI22(x11,x12) >:")
+    expr = mk_pipi_i20("x21", "x22", True) * mk_pipi_i20("x11", "x12") - mk_pipi_i22("x21", "x22", True) * mk_pipi_i22("x11", "x12")
+    print(display_cexpr(contract_simplify_round_compile(expr)))
     print()
     print("< pipiI11(x21,x22)^dag pipiI11(x11,x12) >:")
     expr = mk_pipi_i11("x21", "x22", True) * mk_pipi_i11("x11", "x12")
