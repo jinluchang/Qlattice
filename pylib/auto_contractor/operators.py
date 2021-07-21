@@ -31,7 +31,7 @@ spin_index_counter = 0
 color_index_counter = 0
 
 saved_sc_indices = []
-#saved_sc_indices = None
+# saved_sc_indices = None
 
 def save_sc_indices():
     if saved_sc_indices is None:
@@ -45,6 +45,13 @@ def restore_sc_indices():
     global color_index_counter
     spin_index_counter, color_index_counter = saved_sc_indices.pop()
 
+def jump_sc_indices(step = 100):
+    if saved_sc_indices is None:
+        return
+    global spin_index_counter
+    global color_index_counter
+    spin_index_counter += 100
+    color_index_counter += 100
 
 def new_spin_index():
     global spin_index_counter
@@ -175,6 +182,7 @@ def mk_4qOp_VV(f1 : str, f2 : str, f3 : str, f4 : str, p, is_scalar = False, par
         restore_sc_indices()
         sum = sum + mk_vec_mu(f1,f2,p,mu) * mk_vec_mu(f3,f4,p,mu)
     sum.simplify()
+    jump_sc_indices()
     return sum
 
 def mk_4qOp_VA(f1 : str, f2 : str, f3 : str, f4 : str, p, is_scalar = False, parity = None):
@@ -189,6 +197,7 @@ def mk_4qOp_VA(f1 : str, f2 : str, f3 : str, f4 : str, p, is_scalar = False, par
         restore_sc_indices()
         sum = sum + mk_vec_mu(f1,f2,p,mu) * mk_vec5_mu(f3,f4,p,mu)
     sum.simplify()
+    jump_sc_indices()
     return sum
 
 def mk_4qOp_AV(f1 : str, f2 : str, f3 : str, f4 : str, p, is_scalar = False, parity = None ):
@@ -203,6 +212,7 @@ def mk_4qOp_AV(f1 : str, f2 : str, f3 : str, f4 : str, p, is_scalar = False, par
         restore_sc_indices()
         sum = sum + mk_vec5_mu(f1,f2,p,mu) * mk_vec_mu(f3,f4,p,mu)
     sum.simplify()
+    jump_sc_indices()
     return sum
 
 def mk_4qOp_AA(f1 : str, f2 : str, f3 : str, f4 : str, p, is_scalar = False, parity = None ):
@@ -217,6 +227,7 @@ def mk_4qOp_AA(f1 : str, f2 : str, f3 : str, f4 : str, p, is_scalar = False, par
         restore_sc_indices()
         sum = sum + mk_vec5_mu(f1,f2,p,mu) * mk_vec5_mu(f3,f4,p,mu)
     sum.simplify()
+    jump_sc_indices()
     return sum
 
 def mk_4qOp_SS(f1 : str, f2 : str, f3 : str, f4 : str, p ):
@@ -238,34 +249,42 @@ def rsc_call(x, *args):
 def mk_4qOp_LL(*args):
     for mu in range(4):
         save_sc_indices()
-    return simplified( rsc_call(mk_4qOp_VV,*args)
+    expr = simplified( rsc_call(mk_4qOp_VV,*args)
                        - rsc_call(mk_4qOp_VA,*args)
                        - rsc_call(mk_4qOp_AV,*args)
                        + rsc_call(mk_4qOp_AA,*args) )
+    jump_sc_indices()
+    return expr
 
 def mk_4qOp_LR(*args):
     for mu in range(4):
         save_sc_indices()
-    return simplified( rsc_call(mk_4qOp_VV,*args)
+    expr = simplified( rsc_call(mk_4qOp_VV,*args)
                        + rsc_call(mk_4qOp_VA,*args)
                        - rsc_call(mk_4qOp_AV,*args)
                        - rsc_call(mk_4qOp_AA,*args) )
+    jump_sc_indices()
+    return expr
 
 def mk_4qOp_RL(*args):
     for mu in range(4):
         save_sc_indices()
-    return simplified( rsc_call(mk_4qOp_VV,*args)
+    expr = simplified( rsc_call(mk_4qOp_VV,*args)
                        - rsc_call(mk_4qOp_VA,*args)
                        + rsc_call(mk_4qOp_AV,*args)
                        - rsc_call(mk_4qOp_AA,*args) )
+    jump_sc_indices()
+    return expr
 
 def mk_4qOp_RR(*args):
     for mu in range(4):
         save_sc_indices()
-    return simplified( rsc_call(mk_4qOp_VV,*args)
+    expr = simplified( rsc_call(mk_4qOp_VV,*args)
                        + rsc_call(mk_4qOp_VA,*args)
                        + rsc_call(mk_4qOp_AV,*args)
                        + rsc_call(mk_4qOp_AA,*args) )
+    jump_sc_indices()
+    return expr
 
 def mk_4qOp_LL_cmix(f1,f2,f3,f4,p,is_scalar = False, parity = None):
     assert not is_scalar
@@ -284,66 +303,96 @@ def mk_Q2(p, parity = None):
 def mk_Q3(p, parity = None):
     for mu in range(3):
         save_sc_indices()
-    return simplified( rsc_call(mk_4qOp_LL,"s","d","u","u",p,False,parity)
+    expr = simplified( rsc_call(mk_4qOp_LL,"s","d","u","u",p,False,parity)
                        + rsc_call(mk_4qOp_LL,"s","d","d","d",p,False,parity)
                        + rsc_call(mk_4qOp_LL,"s","d","s","s",p,False,parity) )
+    jump_sc_indices()
+    return expr
 
 def mk_Q4(p, parity = None):
     for mu in range(3):
         save_sc_indices()
-    return simplified( rsc_call(mk_4qOp_LL_cmix,"s","d","u","u",p,False,parity)
+    expr = simplified( rsc_call(mk_4qOp_LL_cmix,"s","d","u","u",p,False,parity)
                        + rsc_call(mk_4qOp_LL_cmix,"s","d","d","d",p,False,parity)
                        + rsc_call(mk_4qOp_LL_cmix,"s","d","s","s",p,False,parity) )
+    jump_sc_indices()
+    return expr
 
 def mk_Q5(p, parity = None):
     for mu in range(3):
         save_sc_indices()
-    return simplified( rsc_call(mk_4qOp_LR,"s","d","u","u",p,False,parity)
+    expr = simplified( rsc_call(mk_4qOp_LR,"s","d","u","u",p,False,parity)
                        + rsc_call(mk_4qOp_LR,"s","d","d","d",p,False,parity)
                        + rsc_call(mk_4qOp_LR,"s","d","s","s",p,False,parity) )
+    jump_sc_indices()
+    return expr
 
 def mk_Q6(p, parity = None):
     for mu in range(3):
         save_sc_indices()
-    return simplified( rsc_call(mk_4qOp_LR_cmix,"s","d","u","u",p,False,parity)
+    expr = simplified( rsc_call(mk_4qOp_LR_cmix,"s","d","u","u",p,False,parity)
                        + rsc_call(mk_4qOp_LR_cmix,"s","d","d","d",p,False,parity)
                        + rsc_call(mk_4qOp_LR_cmix,"s","d","s","s",p,False,parity) )
+    jump_sc_indices()
+    return expr
 
 def mk_Q7(p, parity = None):
     for mu in range(3):
         save_sc_indices()
-    return simplified( rsc_call(mk_4qOp_LR,"s","d","u","u",p,False,parity)
+    expr = simplified( rsc_call(mk_4qOp_LR,"s","d","u","u",p,False,parity)
                        - 0.5 * rsc_call(mk_4qOp_LR,"s","d","d","d",p,False,parity)
                        - 0.5 * rsc_call(mk_4qOp_LR,"s","d","s","s",p,False,parity) )
+    jump_sc_indices()
+    return expr
 
 def mk_Q8(p, parity = None):
     for mu in range(3):
         save_sc_indices()
-    return simplified( rsc_call(mk_4qOp_LR_cmix,"s","d","u","u",p,False,parity)
+    expr = simplified( rsc_call(mk_4qOp_LR_cmix,"s","d","u","u",p,False,parity)
                        - 0.5 * rsc_call(mk_4qOp_LR_cmix,"s","d","d","d",p,False,parity)
                        - 0.5 * rsc_call(mk_4qOp_LR_cmix,"s","d","s","s",p,False,parity) )
+    jump_sc_indices()
+    return expr
 
 def mk_Q9(p, parity = None):
     for mu in range(3):
         save_sc_indices()
-    return simplified( rsc_call(mk_4qOp_LL,"s","d","u","u",p,False,parity)
+    expr = simplified( rsc_call(mk_4qOp_LL,"s","d","u","u",p,False,parity)
                        - 0.5 * rsc_call(mk_4qOp_LL,"s","d","d","d",p,False,parity)
                        - 0.5 * rsc_call(mk_4qOp_LL,"s","d","s","s",p,False,parity) )
+    jump_sc_indices()
+    return expr
 
 def mk_Q10(p, parity = None):
     for mu in range(3):
         save_sc_indices()
-    return simplified( rsc_call(mk_4qOp_LL_cmix,"s","d","u","u",p,False,parity)
+    expr = simplified( rsc_call(mk_4qOp_LL_cmix,"s","d","u","u",p,False,parity)
                        - 0.5 * rsc_call(mk_4qOp_LL_cmix,"s","d","d","d",p,False,parity)
                        - 0.5 * rsc_call(mk_4qOp_LL_cmix,"s","d","s","s",p,False,parity) )
+    jump_sc_indices()
+    return expr
 
-def test(*args):
-    for mu in range(4):
+def test():
+    print("test")
+    args = ["x", None]
+    for mu in range(11):
         save_sc_indices()
-    return simplified( rsc_call(mk_Q1,*args)
+    expr1 = simplified( rsc_call(mk_Q1,*args)
                        - rsc_call(mk_Q2,*args)
                        - rsc_call(mk_Q3,*args)
                        + rsc_call(mk_Q4,*args) )
+    expr2 = simplified( 3 * rsc_call(mk_Q1,*args)
+                       - rsc_call(mk_Q3,*args)
+                       - 2 * rsc_call(mk_Q9,*args) )
+    expr3 = simplified( rsc_call(mk_Q1,*args)
+                       + 2 * rsc_call(mk_Q2,*args)
+                       - rsc_call(mk_Q3,*args)
+                       - 2 * rsc_call(mk_Q10,*args))
+    jump_sc_indices()
+    expr1 = mk_pipi_i0("x11", "x12", True) * expr1 * mk_k_0("x2")
+    expr2 = mk_pipi_i0("x11", "x12", True) * expr2 * mk_k_0("x2")
+    expr3 = mk_pipi_i0("x11", "x12", True) * expr3 * mk_k_0("x2")
+    print(display_cexpr(contract_simplify_round_compile(expr1, expr2, expr3)))
 
 if __name__ == "__main__":
     #
@@ -409,5 +458,8 @@ if __name__ == "__main__":
             - mk_pi_0("x1", True) * mk_j_mu("x", "mu") * mk_j_mu("y", "nu") * mk_pi_0("x2")
             )
     print(display_cexpr(contract_simplify_round_compile(expr)))
+    #
+    print()
+    test()
 
 

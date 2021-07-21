@@ -301,6 +301,52 @@ def auto_contractor_pipi_corr(job_tag, traj):
         q.displayln_info(f"{k:>10} : {v}")
 
 @q.timer
+def auto_contractor_kpipi_corr(job_tag, traj):
+    exprs = [
+            mk_pipi_i0("x11", "x12", True) * mk_Q1("x", "odd") * mk_k_0("x2"),
+            mk_pipi_i0("x11", "x12", True) * mk_Q2("x", "odd") * mk_k_0("x2"),
+            mk_pipi_i0("x11", "x12", True) * mk_Q3("x", "odd") * mk_k_0("x2"),
+            mk_pipi_i0("x11", "x12", True) * mk_Q4("x", "odd") * mk_k_0("x2"),
+            mk_pipi_i0("x11", "x12", True) * mk_Q5("x", "odd") * mk_k_0("x2"),
+            mk_pipi_i0("x11", "x12", True) * mk_Q6("x", "odd") * mk_k_0("x2"),
+            mk_pipi_i0("x11", "x12", True) * mk_Q7("x", "odd") * mk_k_0("x2"),
+            mk_pipi_i0("x11", "x12", True) * mk_Q8("x", "odd") * mk_k_0("x2"),
+            mk_pipi_i0("x11", "x12", True) * mk_Q9("x", "odd") * mk_k_0("x2"),
+            mk_pipi_i0("x11", "x12", True) * mk_Q10("x", "odd") * mk_k_0("x2"),
+            mk_pipi_i0("x11", "x12"),
+            ]
+    cexpr = contract_simplify_round_compile(*exprs, is_isospin_symmetric_limit = True)
+    q.displayln_info(display_cexpr(cexpr))
+    cexpr.collect_op()
+    q.displayln_info(display_cexpr(cexpr))
+    def positions_dict_maker(rs, total_site):
+        t11 = 5
+        t12 = 7
+        t = 3
+        x11 = rs.c_rand_gen(total_site)
+        x12 = rs.c_rand_gen(total_site)
+        x = rs.c_rand_gen(total_site)
+        x2 = rs.c_rand_gen(total_site)
+        x11[3] = (x2[3] + t11) % total_site[3]
+        x12[3] = (x2[3] + t12) % total_site[3]
+        x[3] = (x2[3] + t) % total_site[3]
+        pd = {
+                "x11" : x11,
+                "x12" : x12,
+                "x" : x,
+                "x2" : x2,
+                }
+        fac = 1.0
+        return pd, fac
+    rng_state = q.RngState("seed")
+    trial_indices = range(10000)
+    total_site = ru.get_total_site(job_tag)
+    prop_cache = q.mk_cache(f"prop_cache-{job_tag}-{traj}")
+    results = eval_cexpr_simulation(cexpr, positions_dict_maker = positions_dict_maker, rng_state = rng_state, trial_indices = trial_indices, total_site = total_site, prop_cache = prop_cache)
+    for k, v in results.items():
+        q.displayln_info(f"{k:>10} : {v}")
+
+@q.timer
 def run_job(job_tag, traj):
     q.check_stop()
     q.check_time_limit()
@@ -355,6 +401,7 @@ def run_job(job_tag, traj):
         auto_contractor_meson_corr(job_tag, traj)
         auto_contractor_mom_meson_corr(job_tag, traj)
         auto_contractor_pipi_corr(job_tag, traj)
+        auto_contractor_kpipi_corr(job_tag, traj)
     #
     q.clean_cache()
 
