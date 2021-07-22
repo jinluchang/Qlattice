@@ -200,6 +200,10 @@ def auto_contractor_meson_corr(job_tag, traj, num_trials):
             mk_pi_p("x2", True) * mk_pi_p("x1"),
             mk_k_p("x2", True) * mk_k_p("x1"),
             ]
+    names = [
+            "pi pi",
+            "k k",
+            ]
     cexpr = contract_simplify_round_compile(*exprs, is_isospin_symmetric_limit = True)
     q.displayln_info(display_cexpr(cexpr))
     cexpr.collect_op()
@@ -220,14 +224,16 @@ def auto_contractor_meson_corr(job_tag, traj, num_trials):
                 sum([ cmath.rect(1.0, (x2[i] - x1[i]) * 2 * lmom[i]).real for i in range(3) ]) / 3.0,
                 ]
         return pd, facs
+    names_fac = ["rest", "mom1", "mom2",]
     rng_state = q.RngState("seed")
     trial_indices = range(num_trials)
     total_site = ru.get_total_site(job_tag)
     prop_cache = q.mk_cache(f"prop_cache-{job_tag}-{traj}")
     results_list = eval_cexpr_simulation(cexpr, positions_dict_maker = positions_dict_maker, rng_state = rng_state, trial_indices = trial_indices, total_site = total_site, prop_cache = prop_cache, is_only_total = True)
-    for results in results_list:
-        for k, v in results.items():
-            q.displayln_info(f"{k:>10} : {v}")
+    for name_fac, results in zip(names_fac, results_list):
+        q.displayln_info(f"{name_fac} :")
+        for n, (k, v) in zip(names, results.items()):
+            q.displayln_info(f"{k:>10} {n:>40} : {v} ")
 
 @q.timer
 def auto_contractor_pipi_corr(job_tag, traj, num_trials):
@@ -245,6 +251,21 @@ def auto_contractor_pipi_corr(job_tag, traj, num_trials):
             mk_sigma("x22", True) * mk_pipi_i0("x11", "x12"),
             mk_pipi_i11("x21", "x22", True) * mk_pipi_i11("x11", "x12"),
             mk_pipi_i22("x21", "x22", True) * mk_pipi_i22("x11", "x12"),
+            ]
+    names = [
+            "pipi_i0_2",
+            "pipi_i0_1",
+            "sigma_11 ",
+            "sigma_12 ",
+            "sigma_21 ",
+            "sigma_22 ",
+            "pipi_i0_2   pipi_i0_1 ",
+            "pipi_i0_2   sigma_11  ",
+            "pipi_i0_2   sigma_12  ",
+            "sigma_21    pipi_i0_1 ",
+            "sigma_22    pipi_i0_1 ",
+            "pipi_i11_2  pipi_i11_1",
+            "pipi_i22_2  pipi_i22_1",
             ]
     cexpr = contract_simplify_round_compile(*exprs, is_isospin_symmetric_limit = True)
     q.displayln_info(display_cexpr(cexpr))
@@ -272,14 +293,16 @@ def auto_contractor_pipi_corr(job_tag, traj, num_trials):
         fac2 = sum([ cmath.rect(1.0, (x21[i] - x22[i]) * lmom[i]).real for i in range(3) ])
         facs = [1.0, fac1, fac2, fac1 * fac2,]
         return pd, facs
+    names_fac = ["rest-rest", "rest-moving", "moving-rest", "moving-moving",]
     rng_state = q.RngState("seed")
     trial_indices = range(num_trials)
     total_site = ru.get_total_site(job_tag)
     prop_cache = q.mk_cache(f"prop_cache-{job_tag}-{traj}")
     results_list = eval_cexpr_simulation(cexpr, positions_dict_maker = positions_dict_maker, rng_state = rng_state, trial_indices = trial_indices, total_site = total_site, prop_cache = prop_cache, is_only_total = True)
-    for results in results_list:
-        for k, v in results.items():
-            q.displayln_info(f"{k:>10} : {v}")
+    for name_fac, results in zip(names_fac, results_list):
+        q.displayln_info(f"{name_fac} :")
+        for n, (k, v) in zip(names, results.items()):
+            q.displayln_info(f"{k:>10} {n:>40} : {v} ")
 
 @q.timer
 def auto_contractor_kpipi_corr(job_tag, traj, num_trials):
@@ -295,6 +318,7 @@ def auto_contractor_kpipi_corr(job_tag, traj, num_trials):
             mk_Q9("x", "odd"),
             mk_Q10("x", "odd"),
             ]
+    names_odd_ops = [ f"Q{i+1}(o)" for i in range(10) ]
     exprs_even_ops = [
             mk_Q1("x", "even"),
             mk_Q2("x", "even"),
@@ -307,31 +331,40 @@ def auto_contractor_kpipi_corr(job_tag, traj, num_trials):
             mk_Q9("x", "even"),
             mk_Q10("x", "even"),
             ]
+    names_even_ops = [ f"Q{i+1}(e)" for i in range(10) ]
     exprs_k = [
             mk_k_0("x2"),
             ]
+    names_k = [ "k" ]
     exprs_pipi = [
             mk_pipi_i0("x11", "x12", True),
             mk_pipi_i20("x11", "x12", True),
             mk_sigma("x11", True),
             mk_sigma("x12", True),
             ]
+    names_pipi= [ "pipi_i0 ", "pipi_i20", "sigma_11", "sigma_12", ]
     exprs = []
-    for expr_k in exprs_k:
-        for expr_pipi in exprs_pipi:
-            for expr_op in exprs_odd_ops:
+    names = []
+    for name_k, expr_k in zip(names_k, exprs_k):
+        for name_pipi, expr_pipi in zip(names_pipi, exprs_pipi):
+            for name_op, expr_op in zip(names_odd_ops, exprs_odd_ops):
+                names.append(f"{name_pipi} {name_op:6} {name_k}")
                 exprs.append(expr_pipi * expr_op * expr_k)
-    for expr_k in exprs_k:
-        for expr_pipi in exprs_pipi:
-            for expr_op in exprs_even_ops:
+    for name_k, expr_k in zip(names_k, exprs_k):
+        for name_pipi, expr_pipi in zip(names_pipi, exprs_pipi):
+            for name_op, expr_op in zip(names_even_ops, exprs_even_ops):
+                names.append(f"{name_pipi} {name_op:6} {name_k}")
                 exprs.append(expr_pipi * expr_op * expr_k)
-    for expr_k in exprs_k:
-        for expr_op in exprs_odd_ops:
+    for name_k, expr_k in zip(names_k, exprs_k):
+        for name_op, expr_op in zip(names_odd_ops, exprs_odd_ops):
+            names.append(f"{name_op:6} {name_k}")
             exprs.append(expr_op * expr_k)
-    for expr_k in exprs_k:
-        for expr_op in exprs_even_ops:
+    for name_k, expr_k in zip(names_k, exprs_k):
+        for name_op, expr_op in zip(names_even_ops, exprs_even_ops):
+            names.append(f"{name_op:6} {name_k}")
             exprs.append(expr_op * expr_k)
-    for expr_pipi in exprs_pipi:
+    for name_pipi, expr_pipi in zip(names_pipi, exprs_pipi):
+        names.append(f"{name_pipi}")
         exprs.append(expr_pipi)
     cexpr = contract_simplify_round_compile(*exprs, is_isospin_symmetric_limit = True)
     q.displayln_info(display_cexpr(cexpr))
@@ -358,14 +391,16 @@ def auto_contractor_kpipi_corr(job_tag, traj, num_trials):
         fac1 = sum([ cmath.rect(1.0, (x11[i] - x12[i]) * lmom[i]).real for i in range(3) ])
         facs = [1.0, fac1]
         return pd, facs
+    names_fac = ["rest", "moving",]
     rng_state = q.RngState("seed")
     trial_indices = range(num_trials)
     total_site = ru.get_total_site(job_tag)
     prop_cache = q.mk_cache(f"prop_cache-{job_tag}-{traj}")
     results_list = eval_cexpr_simulation(cexpr, positions_dict_maker = positions_dict_maker, rng_state = rng_state, trial_indices = trial_indices, total_site = total_site, prop_cache = prop_cache, is_only_total = True)
-    for results in results_list:
-        for k, v in results.items():
-            q.displayln_info(f"{k:>10} : {v}")
+    for name_fac, results in zip(names_fac, results_list):
+        q.displayln_info(f"{name_fac} :")
+        for n, (k, v) in zip(names, results.items()):
+            q.displayln_info(f"{k:>10} {n:>40} : {v} ")
 
 @q.timer
 def run_job(job_tag, traj):
@@ -419,7 +454,7 @@ def run_job(job_tag, traj):
         load_prop_psrc_all(job_tag, traj, "l", f"prop-psrc-0/{job_tag}/traj={traj}")
         load_prop_psrc_all(job_tag, traj, "s", f"prop-psrc-1/{job_tag}/traj={traj}")
         # auto_contractor_simple_test(job_tag, traj)
-        num_trials = 10000
+        num_trials = 100
         auto_contractor_meson_corr(job_tag, traj, num_trials)
         auto_contractor_pipi_corr(job_tag, traj, num_trials)
         auto_contractor_kpipi_corr(job_tag, traj, num_trials)
