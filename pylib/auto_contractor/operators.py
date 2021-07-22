@@ -143,6 +143,11 @@ def mk_k_0_bar(p : str, is_dagger = False):
     else:
         return -mk_k_0(p)
 
+def mk_sigma(p : str, is_dagger = False):
+    s = new_spin_index()
+    c = new_color_index()
+    return 1.0 / math.sqrt(2.0) * (Qb("u", p, s, c) * Qv("u", p, s, c) + Qb("d", p, s, c) * Qv("d", p, s, c))
+
 def mk_scalar(f1 : str, f2 : str, p : str):
     s = new_spin_index()
     c = new_color_index()
@@ -434,6 +439,13 @@ if __name__ == "__main__":
     print(display_cexpr(contract_simplify_round_compile(expr)))
     print("< pipiI0(x21,x22)^dag pipiI0(x11,x12) >:")
     expr = mk_pipi_i0("x21", "x22", True) * mk_pipi_i0("x11", "x12")
+    print(display_cexpr(contract_simplify_round_compile(expr)))
+    print()
+    print("< sigma(x1) >:")
+    expr = mk_sigma("x1")
+    print(display_cexpr(contract_simplify_round_compile(expr)))
+    print("< pipiI0(x21,x22)^dag sigma(x1) >:")
+    expr = mk_pipi_i0("x21", "x22", True) * mk_sigma("x1")
     print(display_cexpr(contract_simplify_round_compile(expr)))
     print()
     print("< K+(x2)^dag K+(x1)>:")

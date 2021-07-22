@@ -99,7 +99,7 @@ def eval_op_term_expr(expr, variables_dict, positions_dict, prop_cache):
     return g.eval(l_eval(expr))
 
 @q.timer
-def eval_cexpr(cexpr : CExpr, *, positions_dict, prop_cache):
+def eval_cexpr(cexpr : CExpr, *, positions_dict, prop_cache, is_only_total):
     # interface function
     # the last element is the sum
     for pos in cexpr.positions:
@@ -109,7 +109,10 @@ def eval_cexpr(cexpr : CExpr, *, positions_dict, prop_cache):
         variables_dict[name] = eval_op_term_expr(op, variables_dict, positions_dict, prop_cache)
     tvals = { name : eval_op_term_expr(term, variables_dict, positions_dict, prop_cache) for name, term in cexpr.named_terms }
     evals = { name : sum([ tvals[tname] for tname in expr ]) for name, expr in cexpr.named_exprs }
-    return np.array([ tvals[name] for name, term in cexpr.named_terms] + [ evals[name] for name, expr in cexpr.named_exprs])
+    if is_only_total:
+        return np.array([ evals[name] for name, expr in cexpr.named_exprs])
+    else:
+        return np.array([ tvals[name] for name, term in cexpr.named_terms] + [ evals[name] for name, expr in cexpr.named_exprs])
 
 def sqr_component(x):
     return x.real * x.real + 1j * x.imag * x.imag
@@ -124,20 +127,34 @@ def sqrt_component_array(arr):
     return np.array([ sqrt_component(x) for x in arr ])
 
 @q.timer
-def eval_cexpr_simulation(cexpr : CExpr, *, positions_dict_maker, rng_state, trial_indices, total_site, prop_cache):
+def eval_cexpr_simulation(cexpr : CExpr, *, positions_dict_maker, rng_state, trial_indices, total_site, prop_cache, is_only_total):
     # interface function
-    results = []
+    results = None
+    num_fac = None
     for idx in trial_indices:
         rs = rng_state.split(str(idx))
-        positions_dict, fac = positions_dict_maker(rs, total_site)
-        results.append(fac * eval_cexpr(cexpr, positions_dict = positions_dict, prop_cache = prop_cache))
-    results_avg = sum(results) / len(results)
-    results_err = sqrt_component_array(sum([ sqr_component_array(r - results_avg) for r in results ])) / len(results)
-    names = [ name for name, term in cexpr.named_terms ] + [ name for name, expr in cexpr.named_exprs ]
-    summary = {}
-    for i in range(len(names)):
-        summary[names[i]] = [results_avg[i], results_err[i],]
-    return summary
+        positions_dict, facs = positions_dict_maker(rs, total_site)
+        if num_fac is None:
+            num_fac = len(facs)
+            results = [ [] for i in range(num_fac) ]
+        else:
+            assert num_fac == len(facs)
+        for i in range(num_fac):
+            results[i].append(facs[i] * eval_cexpr(cexpr, positions_dict = positions_dict, prop_cache = prop_cache, is_only_total = is_only_total))
+    summaries = []
+    for i in range(num_fac):
+        assert len(results[i]) == len(trial_indices)
+        results_avg = sum(results[i]) / len(trial_indices)
+        results_err = sqrt_component_array(sum([ sqr_component_array(r - results_avg) for r in results[i] ])) / len(trial_indices)
+        if is_only_total:
+            names = [ name for name, expr in cexpr.named_exprs ]
+        else:
+            names = [ name for name, term in cexpr.named_terms ] + [ name for name, expr in cexpr.named_exprs ]
+        summary = {}
+        for i in range(len(names)):
+            summary[names[i]] = [results_avg[i], results_err[i],]
+        summaries.append(summary)
+    return summaries
 
 @q.timer
 def positions_dict_maker_example_1(rs, total_site):
@@ -149,8 +166,8 @@ def positions_dict_maker_example_1(rs, total_site):
             "x1" : x1,
             "x2" : x2,
             }
-    fac = 1.0
-    return pd, fac
+    facs = [1.0,]
+    return pd, facs
 
 @q.timer
 def positions_dict_maker_example_2(rs, total_site):
@@ -174,8 +191,8 @@ def positions_dict_maker_example_2(rs, total_site):
         mom2 = 2.0 * math.pi / total_site[mu] * lmom2[mu]
         phase += mom1 * x1[mu]
         phase += mom2 * x2[mu]
-    fac = cmath.rect(1.0, phase)
-    return pd, fac
+    facs = [1.0, cmath.rect(1.0, phase),]
+    return pd, facs
 
 if __name__ == "__main__":
     rs = q.RngState("3")
