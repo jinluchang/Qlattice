@@ -139,8 +139,9 @@ def eval_cexpr_simulation(cexpr : CExpr, *, positions_dict_maker, rng_state, tri
             results = [ [] for i in range(num_fac) ]
         else:
             assert num_fac == len(facs)
+        res = eval_cexpr(cexpr, positions_dict = positions_dict, prop_cache = prop_cache, is_only_total = is_only_total)
         for i in range(num_fac):
-            results[i].append(facs[i] * eval_cexpr(cexpr, positions_dict = positions_dict, prop_cache = prop_cache, is_only_total = is_only_total))
+            results[i].append(facs[i] * res)
     summaries = []
     for i in range(num_fac):
         assert len(results[i]) == len(trial_indices)
