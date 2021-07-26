@@ -24,7 +24,6 @@ mkdir build
 cd build
 ../configure \
     --enable-comms=mpi \
-    --enable-shm=shmopen \
     --enable-simd=GPU \
     --enable-accelerator=cuda \
     --enable-unified=no \
@@ -35,6 +34,8 @@ cd build
     CXX=nvcc \
     CXXFLAGS="-Xcompiler -fPIC -ccbin mpicxx -gencode arch=compute_70,code=sm_70 -std=c++11" \
     LDFLAGS="-Xcompiler -fopenmp"
+
+    # --enable-shm=shmopen \
 
 make -j$num_proc
 make install
