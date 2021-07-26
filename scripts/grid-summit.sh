@@ -28,6 +28,7 @@ cd build
     --enable-simd=GPU \
     --enable-accelerator=cuda \
     --enable-unified=no \
+    --enable-alloc-align=4k \
     --with-lime="$prefix" \
     --with-mpfr="$prefix" \
     --prefix=$prefix \
