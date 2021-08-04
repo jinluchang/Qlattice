@@ -322,8 +322,9 @@ def auto_contractor_kpipi_corr(job_tag, traj, num_trials):
             vol * mk_Q8("x", "odd"),
             vol * mk_Q9("x", "odd"),
             vol * mk_Q10("x", "odd"),
+            vol * mk_Qsub("x", "odd"),
             ]
-    names_odd_ops = [ f"Q{i+1}(o)" for i in range(10) ]
+    names_odd_ops = [ f"Q{i+1}(o)" for i in range(10) ] + ["Qs(o)",]
     exprs_even_ops = [
             vol * mk_Q1("x", "even"),
             vol * mk_Q2("x", "even"),
@@ -335,8 +336,9 @@ def auto_contractor_kpipi_corr(job_tag, traj, num_trials):
             vol * mk_Q8("x", "even"),
             vol * mk_Q9("x", "even"),
             vol * mk_Q10("x", "even"),
+            vol * mk_Qsub("x", "even"),
             ]
-    names_even_ops = [ f"Q{i+1}(e)" for i in range(10) ]
+    names_even_ops = [ f"Q{i+1}(e)" for i in range(10) ] + ["Qs(e)",]
     exprs_k = [
             vol * mk_k_0("x2"),
             ]

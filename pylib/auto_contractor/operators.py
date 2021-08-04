@@ -299,6 +299,14 @@ def mk_4qOp_LR_cmix(f1,f2,f3,f4,p,is_scalar = False, parity = None):
     assert not is_scalar
     return -2 * mk_4qOp_LR(f1,f4,f3,f2,p,True,parity)
 
+def mk_Qsub(p, parity = None):
+    if parity is None:
+        return mk_Qsub(p, "even") + mk_Qsub(p, "odd")
+    elif parity == "even":
+        return mk_scalar("s", "d", p)
+    elif parity == "odd":
+        return mk_scalar5("s", "d", p)
+
 def mk_Q1(p, parity = None):
     return mk_4qOp_LL("s","d","u","u",p,False,parity)
 
