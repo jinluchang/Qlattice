@@ -223,7 +223,8 @@ def auto_contractor_meson_corr(job_tag, traj, num_trials):
                 sum([ cmath.rect(1.0, (x2[i] - x1[i]) * lmom[i]).real for i in range(3) ]) / 3.0,
                 sum([ cmath.rect(1.0, (x2[i] - x1[i]) * 2 * lmom[i]).real for i in range(3) ]) / 3.0,
                 ]
-        return pd, facs
+        vol = total_site[0] * total_site[1] * total_site[2]
+        return pd, [ f * vol**2 for f in facs ]
     names_fac = ["rest", "mom1", "mom2",]
     rng_state = q.RngState("seed")
     trial_indices = range(num_trials)
@@ -292,7 +293,8 @@ def auto_contractor_pipi_corr(job_tag, traj, num_trials):
         fac1 = sum([ cmath.rect(1.0, (x11[i] - x12[i]) * lmom[i]).real for i in range(3) ])
         fac2 = sum([ cmath.rect(1.0, (x21[i] - x22[i]) * lmom[i]).real for i in range(3) ])
         facs = [1.0, fac1, fac2, fac1 * fac2,]
-        return pd, facs
+        vol = total_site[0] * total_site[1] * total_site[2]
+        return pd, [ f * vol**4 for f in facs ]
     names_fac = ["rest-rest", "rest-moving", "moving-rest", "moving-moving",]
     rng_state = q.RngState("seed")
     trial_indices = range(num_trials)
@@ -390,7 +392,8 @@ def auto_contractor_kpipi_corr(job_tag, traj, num_trials):
         lmom = [ 2 * math.pi / total_site[i] for i in range(3) ]
         fac1 = sum([ cmath.rect(1.0, (x11[i] - x12[i]) * lmom[i]).real for i in range(3) ])
         facs = [1.0, fac1]
-        return pd, facs
+        vol = total_site[0] * total_site[1] * total_site[2]
+        return pd, [ f * vol**4 for f in facs ]
     names_fac = ["rest", "moving",]
     rng_state = q.RngState("seed")
     trial_indices = range(num_trials)
