@@ -305,7 +305,7 @@ def mk_Qsub(p, parity = None):
     elif parity == "even":
         return mk_scalar("s", "d", p)
     elif parity == "odd":
-        return mk_scalar5("s", "d", p)
+        return -mk_scalar5("s", "d", p)
 
 def mk_Q1(p, parity = None):
     return mk_4qOp_LL("s","d","u","u",p,False,parity)

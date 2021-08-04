@@ -199,8 +199,8 @@ def auto_contractor_meson_corr(job_tag, traj, num_trials):
     total_site = ru.get_total_site(job_tag)
     vol = total_site[0] * total_site[1] * total_site[2]
     exprs = [
-            vol * vol * mk_pi_p("x2", True) * mk_pi_p("x1"),
-            vol * vol * mk_k_p("x2", True) * mk_k_p("x1"),
+            vol**2 * mk_pi_p("x2", True) * mk_pi_p("x1"),
+            vol**2 * mk_k_p("x2", True) * mk_k_p("x1"),
             ]
     names = [
             "pi pi",
@@ -339,6 +339,8 @@ def auto_contractor_kpipi_corr(job_tag, traj, num_trials):
             vol * mk_Qsub("x", "even"),
             ]
     names_even_ops = [ f"Q{i+1}(e)" for i in range(10) ] + ["Qs(e)",]
+    exprs_ops = exprs_odd_ops + exprs_even_ops
+    names_ops = names_odd_ops + names_even_ops
     exprs_k = [
             vol * mk_k_0("x2"),
             ]
@@ -348,31 +350,18 @@ def auto_contractor_kpipi_corr(job_tag, traj, num_trials):
             vol**2 * mk_pipi_i20("x11", "x12", True),
             vol * mk_sigma("x11", True),
             vol * mk_sigma("x12", True),
+            vol * mk_pi_0("x11", True),
+            vol * mk_pi_0("x12", True),
+            1,
             ]
-    names_pipi= [ "pipi_i0 ", "pipi_i20", "sigma_11", "sigma_12", ]
+    names_pipi= [ "pipi_i0 ", "pipi_i20", "sigma_11", "sigma_12", "pi_11", "pi_12", "",]
     exprs = []
     names = []
     for name_k, expr_k in zip(names_k, exprs_k):
         for name_pipi, expr_pipi in zip(names_pipi, exprs_pipi):
-            for name_op, expr_op in zip(names_odd_ops, exprs_odd_ops):
+            for name_op, expr_op in zip(names_ops, exprs_ops):
                 names.append(f"{name_pipi} {name_op:6} {name_k}")
                 exprs.append(expr_pipi * expr_op * expr_k)
-    for name_k, expr_k in zip(names_k, exprs_k):
-        for name_pipi, expr_pipi in zip(names_pipi, exprs_pipi):
-            for name_op, expr_op in zip(names_even_ops, exprs_even_ops):
-                names.append(f"{name_pipi} {name_op:6} {name_k}")
-                exprs.append(expr_pipi * expr_op * expr_k)
-    for name_k, expr_k in zip(names_k, exprs_k):
-        for name_op, expr_op in zip(names_odd_ops, exprs_odd_ops):
-            names.append(f"{name_op:6} {name_k}")
-            exprs.append(expr_op * expr_k)
-    for name_k, expr_k in zip(names_k, exprs_k):
-        for name_op, expr_op in zip(names_even_ops, exprs_even_ops):
-            names.append(f"{name_op:6} {name_k}")
-            exprs.append(expr_op * expr_k)
-    for name_pipi, expr_pipi in zip(names_pipi, exprs_pipi):
-        names.append(f"{name_pipi}")
-        exprs.append(expr_pipi)
     cexpr = contract_simplify_round_compile(*exprs, is_isospin_symmetric_limit = True)
     q.displayln_info(display_cexpr(cexpr))
     cexpr.collect_op()
