@@ -159,21 +159,49 @@ def mk_scalar5(f1 : str, f2 : str, p : str):
     c = new_color_index()
     return Qb(f1, p, s1, c) * G(5, s1, s2) * Qv(f2, p, s2, c)
 
-def mk_vec_mu(f1 : str, f2 : str, p : str, mu):
+def mk_vec_mu(f1 : str, f2 : str, p : str, mu, is_dagger = False):
     s1 = new_spin_index()
     s2 = new_spin_index()
     c = new_color_index()
-    return Qb(f1, p, s1, c) * G(mu, s1, s2) * Qv(f2, p, s2, c)
+    if is_dagger:
+        if mu in [0, 1, 2]:
+            return -Qb(f2, p, s1, c) * G(mu, s1, s2) * Qv(f1, p, s2, c)
+        else:
+            return Qb(f2, p, s1, c) * G(mu, s1, s2) * Qv(f1, p, s2, c)
+    else:
+        return Qb(f1, p, s1, c) * G(mu, s1, s2) * Qv(f2, p, s2, c)
 
-def mk_vec5_mu(f1 : str, f2 : str, p : str, mu):
+def mk_vec5_mu(f1 : str, f2 : str, p : str, mu, is_dagger = False):
     s1 = new_spin_index()
     s2 = new_spin_index()
     s3 = new_spin_index()
     c = new_color_index()
-    return Qb(f1, p, s1, c) * G(mu, s1, s2) * G(5, s2, s3) * Qv(f2, p, s3, c)
+    if is_dagger:
+        if mu in [0, 1, 2]:
+            return -Qb(f2, p, s1, c) * G(mu, s1, s2) * G(5, s2, s3) * Qv(f1, p, s3, c)
+        else:
+            return Qb(f2, p, s1, c) * G(mu, s1, s2) * G(5, s2, s3) * Qv(f1, p, s3, c)
+    else:
+        return Qb(f1, p, s1, c) * G(mu, s1, s2) * G(5, s2, s3) * Qv(f2, p, s3, c)
 
-def mk_j_mu(p : str, mu):
-    return 2/3 * mk_vec_mu("u", "u", p, mu) - 1/3 * mk_vec_mu("d", "d", p, mu) - 1/3 * mk_vec_mu("s", "s", p, mu)
+def mk_j_mu(p : str, mu, is_dagger = False):
+    return 2/3 * mk_vec_mu("u", "u", p, mu, is_dagger) - 1/3 * mk_vec_mu("d", "d", p, mu, is_dagger) - 1/3 * mk_vec_mu("s", "s", p, mu, is_dagger)
+
+def mk_jl_mu(p : str, mu, is_dagger = False):
+    # jl = sqrt(2)/6 * (j0 + 3 * j10) if no s quark
+    return 2/3 * mk_vec_mu("u", "u", p, mu, is_dagger) - 1/3 * mk_vec_mu("d", "d", p, mu, is_dagger)
+
+def mk_j0_mu(p : str, mu, is_dagger = False):
+    return 1.0 / math.sqrt(2.0) * (mk_vec_mu("u", "u", p, mu, is_dagger) + mk_vec_mu("d", "d", p, mu, is_dagger))
+
+def mk_j10_mu(p : str, mu, is_dagger = False):
+    return 1.0 / math.sqrt(2.0) * (mk_vec_mu("u", "u", p, mu, is_dagger) - mk_vec_mu("d", "d", p, mu, is_dagger))
+
+def mk_j11_mu(p : str, mu, is_dagger = False):
+    return mk_vec_mu("u", "d", p, mu, is_dagger)
+
+def mk_j1n1_mu(p : str, mu, is_dagger = False):
+    return -mk_vec_mu("d", "u", p, mu, is_dagger)
 
 def mk_4qOp_VV(f1 : str, f2 : str, f3 : str, f4 : str, p, is_scalar = False, parity = None):
     if parity == "odd":
@@ -407,7 +435,58 @@ def test():
     expr3 = mk_pipi_i0("x11", "x12", True) * expr3 * mk_k_0("x2")
     print(display_cexpr(contract_simplify_round_compile(expr1, expr2, expr3)))
 
+def test1():
+    def A(j_p, pi_p, is_dagger = False):
+        return (mk_j10_mu(j_p, 0, is_dagger) * mk_pi_p(pi_p, is_dagger)
+                + mk_j11_mu(j_p, 0, is_dagger) * mk_pi_0(pi_p, is_dagger))
+    def B(j_p, pi_p, is_dagger = False):
+        return (2 * mk_j10_mu(j_p, 0, is_dagger) * mk_pi_0(pi_p, is_dagger)
+                + mk_j1n1_mu(j_p, 0, is_dagger) * mk_pi_p(pi_p, is_dagger)
+                + mk_j11_mu(j_p, 0, is_dagger) * mk_pi_m(pi_p, is_dagger))
+    def C(j_p, pi_p, is_dagger = False):
+        return (mk_j10_mu(j_p, 0, is_dagger) * mk_pi_p(pi_p, is_dagger)
+                - mk_j11_mu(j_p, 0, is_dagger) * mk_pi_0(pi_p, is_dagger))
+    def D(j_p, pi_p, is_dagger = False):
+        return (mk_j1n1_mu(j_p, 0, is_dagger) * mk_pi_p(pi_p, is_dagger)
+                - mk_j11_mu(j_p, 0, is_dagger) * mk_pi_m(pi_p, is_dagger))
+    def E(j_p, pi_p, is_dagger = False):
+        return (-mk_j10_mu(j_p, 0, is_dagger) * mk_pi_0(pi_p, is_dagger)
+                + mk_j1n1_mu(j_p, 0, is_dagger) * mk_pi_p(pi_p, is_dagger)
+                + mk_j11_mu(j_p, 0, is_dagger) * mk_pi_m(pi_p, is_dagger))
+    def F(j_p, pi_p, is_dagger = False):
+        return mk_j0_mu(j_p, 0, is_dagger) * mk_pi_p(pi_p, is_dagger)
+    def G(j_p, pi_p, is_dagger = False):
+        return mk_j0_mu(j_p, 0, is_dagger) * mk_pi_0(pi_p, is_dagger)
+    def jpi_p(j_p, pi_p, is_dagger = False):
+        return mk_jl_mu(j_p, 0, is_dagger) * mk_pi_p(pi_p, is_dagger)
+    def jpi_0(j_p, pi_p, is_dagger = False):
+        return mk_jl_mu(j_p, 0, is_dagger) * mk_pi_0(pi_p, is_dagger)
+    expr1 = 1/4 * (A("x2_j", "x2_p", True) * A("x1_j", "x1_p") + A("x2_j", "x2_p") * A("x1_j", "x1_p", True))
+    expr2 = 1/12 * (B("x2_j", "x2_p", True) * B("x1_j", "x1_p") + B("x2_j", "x2_p") * B("x1_j", "x1_p", True))
+    expr3 = 1/4 * (C("x2_j", "x2_p", True) * C("x1_j", "x1_p") + C("x2_j", "x2_p") * C("x1_j", "x1_p", True))
+    expr4 = 1/4 * (D("x2_j", "x2_p", True) * D("x1_j", "x1_p") + D("x2_j", "x2_p") * D("x1_j", "x1_p", True))
+    expr5 = 1/6 * (E("x2_j", "x2_p", True) * E("x1_j", "x1_p") + E("x2_j", "x2_p") * E("x1_j", "x1_p", True))
+    expr6 = 1/2 * (F("x2_j", "x2_p", True) * F("x1_j", "x1_p") + F("x2_j", "x2_p") * F("x1_j", "x1_p", True))
+    expr7 = 1/2 * (G("x2_j", "x2_p", True) * G("x1_j", "x1_p") + G("x2_j", "x2_p") * G("x1_j", "x1_p", True))
+    expr8 = 1/(4*math.sqrt(2)) * (C("x2_j", "x2_p", True) * F("x1_j", "x1_p") + F("x2_j", "x2_p", True) * C("x1_j", "x1_p")
+            + C("x2_j", "x2_p") * F("x1_j", "x1_p", True) + F("x2_j", "x2_p") * C("x1_j", "x1_p", True))
+    expr9 = 1/(4*math.sqrt(2)) * (D("x2_j", "x2_p", True) * G("x1_j", "x1_p") + G("x2_j", "x2_p", True) * D("x1_j", "x1_p")
+            + D("x2_j", "x2_p") * G("x1_j", "x1_p", True) + G("x2_j", "x2_p") * D("x1_j", "x1_p", True))
+    expr_p = 1/2*(jpi_p("x2_j", "x2_p", True) * jpi_p("x1_j", "x1_p") + jpi_p("x2_j", "x2_p") * jpi_p("x1_j", "x1_p", True))
+    expr_0 = 1/2*(jpi_0("x2_j", "x2_p", True) * jpi_0("x1_j", "x1_p") + jpi_0("x2_j", "x2_p") * jpi_0("x1_j", "x1_p", True))
+    exprs = [expr1, expr1 - expr2, expr3, expr3 - expr4, expr5, expr6, expr6 - expr7, expr8, expr8 - expr9,]
+    print(display_cexpr(contract_simplify_round_compile(*exprs)))
+    exprs1 = [
+            expr_p - 1/18*(9/2*expr1 + 9/2*expr3 + expr6 + 3*math.sqrt(2)*expr8),
+            expr_0 - 1/18*(6*expr2 + 3*expr5 + expr7),
+            (expr_p - expr_0),
+            ]
+    print(display_cexpr(contract_simplify_round_compile(*exprs1)))
+
 if __name__ == "__main__":
+    print()
+    test1()
+    exit()
     #
     print("pi+(x1):\n", mk_pi_p("x1"))
     print("pi+(x2)^dag pi+(x1):\n", (mk_pi_p("x2", True) * mk_pi_p("x1")).round())

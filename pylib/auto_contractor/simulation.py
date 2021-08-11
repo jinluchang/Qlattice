@@ -210,7 +210,7 @@ def auto_contractor_meson_corr(job_tag, traj, num_trials):
     q.displayln_info(display_cexpr(cexpr))
     cexpr.collect_op()
     q.displayln_info(display_cexpr(cexpr))
-    def positions_dict_maker(rs, total_site):
+    def positions_dict_maker(idx, rs, total_site):
         t2 = 5
         x1 = rs.c_rand_gen(total_site)
         x2 = rs.c_rand_gen(total_site)
@@ -274,7 +274,7 @@ def auto_contractor_pipi_corr(job_tag, traj, num_trials):
     q.displayln_info(display_cexpr(cexpr))
     cexpr.collect_op()
     q.displayln_info(display_cexpr(cexpr))
-    def positions_dict_maker(rs, total_site):
+    def positions_dict_maker(idx, rs, total_site):
         t12 = 2
         t21 = 5
         t22 = 7
@@ -366,7 +366,7 @@ def auto_contractor_kpipi_corr(job_tag, traj, num_trials):
     q.displayln_info(display_cexpr(cexpr))
     cexpr.collect_op()
     q.displayln_info(display_cexpr(cexpr))
-    def positions_dict_maker(rs, total_site):
+    def positions_dict_maker(idx, rs, total_site):
         t11 = 5
         t12 = 7
         t = 3
