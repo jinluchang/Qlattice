@@ -484,9 +484,9 @@ def test1():
     print(display_cexpr(contract_simplify_round_compile(*exprs1)))
 
 if __name__ == "__main__":
-    print()
-    test1()
-    exit()
+    # print()
+    # test1()
+    # exit()
     #
     print("pi+(x1):\n", mk_pi_p("x1"))
     print("pi+(x2)^dag pi+(x1):\n", (mk_pi_p("x2", True) * mk_pi_p("x1")).round())
