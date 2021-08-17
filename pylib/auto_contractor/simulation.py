@@ -243,34 +243,42 @@ def auto_contractor_pipi_corr(job_tag, traj, num_trials):
     total_site = ru.get_total_site(job_tag)
     vol = total_site[0] * total_site[1] * total_site[2]
     exprs = [
+            vol**4 * mk_pipi_i22("x2_1", "x2_2", True) * mk_pipi_i22("x1_1", "x1_2"),
+            vol**4 * mk_pipi_i11("x2_1", "x2_2", True) * mk_pipi_i11("x1_1", "x1_2"),
+            vol**4 * mk_pipi_i0("x2_1", "x2_2", True) * mk_pipi_i0("x1_1", "x1_2"),
             vol**2 * mk_pipi_i0("x2_1", "x2_2", True),
             vol**2 * mk_pipi_i0("x1_1", "x1_2"),
+            vol**2 * mk_sigma("x2_1", True) * mk_sigma("x1_1"),
+            vol**2 * mk_sigma("x2_1", True) * mk_sigma("x1_2"),
+            vol**2 * mk_sigma("x2_2", True) * mk_sigma("x1_1"),
+            vol**2 * mk_sigma("x2_2", True) * mk_sigma("x1_2"),
             vol * mk_sigma("x1_1"),
             vol * mk_sigma("x1_2"),
             vol * mk_sigma("x2_1", True),
             vol * mk_sigma("x2_2", True),
-            vol**4 * mk_pipi_i0("x2_1", "x2_2", True) * mk_pipi_i0("x1_1", "x1_2"),
-            vol**3 * mk_pipi_i0("x2_1", "x2_2", True) * mk_sigma("x1_1"),
-            vol**3 * mk_pipi_i0("x2_1", "x2_2", True) * mk_sigma("x1_2"),
             vol**3 * mk_sigma("x2_1", True) * mk_pipi_i0("x1_1", "x1_2"),
             vol**3 * mk_sigma("x2_2", True) * mk_pipi_i0("x1_1", "x1_2"),
-            vol**4 * mk_pipi_i11("x2_1", "x2_2", True) * mk_pipi_i11("x1_1", "x1_2"),
-            vol**4 * mk_pipi_i22("x2_1", "x2_2", True) * mk_pipi_i22("x1_1", "x1_2"),
+            vol**3 * mk_pipi_i0("x2_1", "x2_2", True) * mk_sigma("x1_1"),
+            vol**3 * mk_pipi_i0("x2_1", "x2_2", True) * mk_sigma("x1_2"),
             ]
     names = [
+            "pipi_i22_2  pipi_i22_1",
+            "pipi_i11_2  pipi_i11_1",
+            "pipi_i0_2   pipi_i0_1 ",
             "pipi_i0_2",
             "pipi_i0_1",
+            "sigma_21    sigma_11  ",
+            "sigma_21    sigma_12  ",
+            "sigma_22    sigma_11  ",
+            "sigma_22    sigma_12  ",
             "sigma_11 ",
             "sigma_12 ",
             "sigma_21 ",
             "sigma_22 ",
-            "pipi_i0_2   pipi_i0_1 ",
-            "pipi_i0_2   sigma_11  ",
-            "pipi_i0_2   sigma_12  ",
             "sigma_21    pipi_i0_1 ",
             "sigma_22    pipi_i0_1 ",
-            "pipi_i11_2  pipi_i11_1",
-            "pipi_i22_2  pipi_i22_1",
+            "pipi_i0_2   sigma_11  ",
+            "pipi_i0_2   sigma_12  ",
             ]
     names_dict = { f"E{i+1}" : name for i, name in enumerate(names) }
     cexpr = contract_simplify_round_compile(*exprs, is_isospin_symmetric_limit = True)
@@ -372,14 +380,14 @@ def auto_contractor_kpipi_corr(job_tag, traj, num_trials):
     cexpr.collect_op()
     q.displayln_info(display_cexpr(cexpr))
     def positions_dict_maker(idx, rs, total_site):
-        t11 = 5
+        t1_1 = 5
         t1_2 = 7
         t = 3
         x1_1 = rs.c_rand_gen(total_site)
         x1_2 = rs.c_rand_gen(total_site)
         x = rs.c_rand_gen(total_site)
         x2 = rs.c_rand_gen(total_site)
-        x1_1[3] = (x2[3] + t11) % total_site[3]
+        x1_1[3] = (x2[3] + t1_1) % total_site[3]
         x1_2[3] = (x2[3] + t1_2) % total_site[3]
         x[3] = (x2[3] + t) % total_site[3]
         pd = {

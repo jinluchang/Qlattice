@@ -312,7 +312,8 @@ def mk_cexpr(*exprs):
             typed_expr_list_dict[diagram_type_name].append(name)
             expr_list.append(name)
         for diagram_type_name, typed_expr_list in typed_expr_list_dict.items():
-            named_typed_exprs.append((f"E{i+1}_{diagram_type_name}", typed_expr_list,))
+            if typed_expr_list:
+                named_typed_exprs.append((f"E{i+1}_{diagram_type_name}", typed_expr_list,))
         named_exprs.append((f"E{i+1}", expr_list,))
     return CExpr(diagram_types, [], named_terms, named_typed_exprs, named_exprs)
 
