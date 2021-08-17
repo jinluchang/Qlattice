@@ -236,10 +236,13 @@ def collect_subexpr_in_cexpr(variables, named_terms):
 
 class CExpr:
 
-    def __init__(self, variables, named_terms, named_exprs, positions = None):
+    def __init__(self, diagram_types, variables, named_terms, named_typed_exprs, named_exprs, positions = None):
+        self.diagram_types = diagram_types
         self.variables = variables
         self.named_terms = named_terms
-        self.named_exprs = named_exprs # expr is a collection of term names representing the sum of these terms
+        # typed_expr and expr are a collection of term names representing the sum of these terms
+        self.named_typed_exprs = named_typed_exprs
+        self.named_exprs = named_exprs
         if positions is not None:
             self.positions = positions
         else:
@@ -249,25 +252,69 @@ class CExpr:
             self.positions = sorted(list(s))
 
     def __repr__(self) -> str:
-        return f"CExpr({self.variables},{self.named_terms},{self.named_exprs},{self.positions})"
+        return f"CExpr({self.diagram_types},{self.variables},{self.named_terms},{self.named_typed_exprs},{self.named_exprs},{self.positions})"
 
     def collect_op(self):
         # interface function
         collect_op_in_cexpr(self.variables, self.named_terms)
         collect_subexpr_in_cexpr(self.variables, self.named_terms)
 
+def inc(type_dict, key):
+    if key in type_dict:
+        type_dict[key] += 1
+    else:
+        type_dict[key] = 1
+
+def drop_tag_last_subscript(tag):
+    return tag.rsplit("_", 1)[0]
+
+def loop_term_ops(type_dict, ops):
+    for op in ops:
+        if op.otype == "S":
+            # ADJUST DIAGRAM TYPE DEFINITION
+            # inc(type_dict, (op.f, op.p1, op.p2,))
+            # inc(type_dict, (op.p1, op.p2,))
+            inc(type_dict, (drop_tag_last_subscript(op.p1), drop_tag_last_subscript(op.p2),))
+            #
+        elif op.otype == "Tr":
+            loop_term_ops(type_dict, op.ops)
+
+def get_term_diagram_type_info(term):
+    type_dict = dict()
+    loop_term_ops(type_dict, term.c_ops)
+    return tuple(sorted(type_dict.items()))
+
 def mk_cexpr(*exprs):
     # interface function
+    diagram_type_dict = dict()
+    diagram_type_counter = 0
+    for i, expr in enumerate(exprs):
+        for j, term in enumerate(expr.terms):
+            diagram_type = get_term_diagram_type_info(term)
+            if diagram_type not in diagram_type_dict:
+                diagram_type_counter += 1
+                diagram_type_name = f"ADT{diagram_type_counter}" # ADT is short for "auto diagram type"
+                diagram_type_dict[diagram_type] = diagram_type_name
+    diagram_types = []
+    for diagram_type, diagram_type_name in diagram_type_dict.items():
+        diagram_types.append((diagram_type_name, diagram_type,))
     named_terms = []
+    named_typed_exprs = []
     named_exprs = []
     for i, expr in enumerate(exprs):
         expr_list = []
+        typed_expr_list_dict = { name : [] for name, diagram_type in diagram_types }
         for j, term in enumerate(expr.terms):
-            name = f"T{i+1}_{j+1}"
+            diagram_type = get_term_diagram_type_info(term)
+            diagram_type_name = diagram_type_dict[diagram_type]
+            name = f"T{i+1}_{j+1}_{diagram_type_name}"
             named_terms.append((name, term,))
+            typed_expr_list_dict[diagram_type_name].append(name)
             expr_list.append(name)
+        for diagram_type_name, typed_expr_list in typed_expr_list_dict.items():
+            named_typed_exprs.append((f"E{i+1}_{diagram_type_name}", typed_expr_list,))
         named_exprs.append((f"E{i+1}", expr_list,))
-    return CExpr([], named_terms, named_exprs)
+    return CExpr(diagram_types, [], named_terms, named_typed_exprs, named_exprs)
 
 def contract_simplify_round_compile(*exprs, is_isospin_symmetric_limit = True):
     # interface function
@@ -286,10 +333,14 @@ def display_cexpr(cexpr : CExpr):
     lines = []
     lines.append(f"Begin CExpr")
     lines.append(f"{'Positions':>10} : {cexpr.positions}")
+    for name, diagram_type in cexpr.diagram_types:
+        lines.append(f"{name:>10} : {diagram_type}")
     for name, value in cexpr.variables:
         lines.append(f"{name:>10} : {value}")
     for name, term in cexpr.named_terms:
-        lines.append(f"{name:>10} : {term}")
+        lines.append(f"{name:>20} : {term}")
+    for name, typed_expr in cexpr.named_typed_exprs:
+        lines.append(f"{name:>15} : {typed_expr}")
     for name, expr in cexpr.named_exprs:
         lines.append(f"{name:>10} : {expr}")
     lines.append(f"End CExpr")

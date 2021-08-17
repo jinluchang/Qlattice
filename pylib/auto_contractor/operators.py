@@ -430,10 +430,22 @@ def test():
                        - rsc_call(mk_Q3,*args)
                        - 2 * rsc_call(mk_Q10,*args))
     jump_sc_indices()
-    expr1 = mk_pipi_i0("x11", "x12", True) * expr1 * mk_k_0("x2")
-    expr2 = mk_pipi_i0("x11", "x12", True) * expr2 * mk_k_0("x2")
-    expr3 = mk_pipi_i0("x11", "x12", True) * expr3 * mk_k_0("x2")
+    expr1 = mk_pipi_i0("x1_1", "x1_2", True) * expr1 * mk_k_0("x2")
+    expr2 = mk_pipi_i0("x1_1", "x1_2", True) * expr2 * mk_k_0("x2")
+    expr3 = mk_pipi_i0("x1_1", "x1_2", True) * expr3 * mk_k_0("x2")
     print(display_cexpr(contract_simplify_round_compile(expr1, expr2, expr3)))
+    print(display_cexpr(contract_simplify_round_compile(
+        mk_pipi_i0("x1_1", "x1_2", True) * mk_Q1("x") * mk_k_0("x2"),
+        mk_pipi_i0("x1_1", "x1_2", True) * mk_Q2("x") * mk_k_0("x2"),
+        mk_pipi_i0("x1_1", "x1_2", True) * mk_Q3("x") * mk_k_0("x2"),
+        mk_pipi_i0("x1_1", "x1_2", True) * mk_Q4("x") * mk_k_0("x2"),
+        mk_pipi_i0("x1_1", "x1_2", True) * mk_Q5("x") * mk_k_0("x2"),
+        mk_pipi_i0("x1_1", "x1_2", True) * mk_Q6("x") * mk_k_0("x2"),
+        mk_pipi_i0("x1_1", "x1_2", True) * mk_Q7("x") * mk_k_0("x2"),
+        mk_pipi_i0("x1_1", "x1_2", True) * mk_Q8("x") * mk_k_0("x2"),
+        mk_pipi_i0("x1_1", "x1_2", True) * mk_Q9("x") * mk_k_0("x2"),
+        mk_pipi_i0("x1_1", "x1_2", True) * mk_Q10("x") * mk_k_0("x2"),
+        )))
 
 def test1():
     def A(j_p, pi_p, is_dagger = False):
@@ -504,35 +516,35 @@ if __name__ == "__main__":
     print("< pi0(x2)^dag pi0(x1) > - < pi+(x2)^dag pi+(x1) >: ",
             simplified(contract_expr(mk_pi_0("x2", True) * mk_pi_0("x1") - mk_pi_p("x2", True) * mk_pi_p("x1")), is_isospin_symmetric_limit = True).round())
     print()
-    print("< pipiI22(x21,x22)^dag pipiI22(x11,x12) >:")
-    expr = mk_pipi_i22("x21", "x22", True) * mk_pipi_i22("x11", "x12")
+    print("< pipiI22(x2_1,x2_2)^dag pipiI22(x1_1,x1_2) >:")
+    expr = mk_pipi_i22("x2_1", "x2_2", True) * mk_pipi_i22("x1_1", "x1_2")
     print(display_cexpr(contract_simplify_round_compile(expr)))
-    print("< pipiI21(x21,x22)^dag pipiI21(x11,x12) - pipiI22(x21,x22)^dag pipiI22(x11,x12) >:")
-    expr = mk_pipi_i21("x21", "x22", True) * mk_pipi_i21("x11", "x12") - mk_pipi_i22("x21", "x22", True) * mk_pipi_i22("x11", "x12")
+    print("< pipiI21(x2_1,x2_2)^dag pipiI21(x1_1,x1_2) - pipiI22(x2_1,x2_2)^dag pipiI22(x1_1,x1_2) >:")
+    expr = mk_pipi_i21("x2_1", "x2_2", True) * mk_pipi_i21("x1_1", "x1_2") - mk_pipi_i22("x2_1", "x2_2", True) * mk_pipi_i22("x1_1", "x1_2")
     print(display_cexpr(contract_simplify_round_compile(expr)))
-    print("< pipiI20(x21,x22)^dag pipiI20(x11,x12) - pipiI22(x21,x22)^dag pipiI22(x11,x12) >:")
-    expr = mk_pipi_i20("x21", "x22", True) * mk_pipi_i20("x11", "x12") - mk_pipi_i22("x21", "x22", True) * mk_pipi_i22("x11", "x12")
-    print(display_cexpr(contract_simplify_round_compile(expr)))
-    print()
-    print("< pipiI11(x21,x22)^dag pipiI11(x11,x12) >:")
-    expr = mk_pipi_i11("x21", "x22", True) * mk_pipi_i11("x11", "x12")
-    print(display_cexpr(contract_simplify_round_compile(expr)))
-    print("< pipiI10(x21,x22)^dag pipiI10(x11,x12) - pipiI11(x21,x22)^dag pipiI11(x11,x12) >:")
-    expr = mk_pipi_i10("x21", "x22", True) * mk_pipi_i10("x11", "x12") - mk_pipi_i11("x21", "x22", True) * mk_pipi_i11("x11", "x12")
+    print("< pipiI20(x2_1,x2_2)^dag pipiI20(x1_1,x1_2) - pipiI22(x2_1,x2_2)^dag pipiI22(x1_1,x1_2) >:")
+    expr = mk_pipi_i20("x2_1", "x2_2", True) * mk_pipi_i20("x1_1", "x1_2") - mk_pipi_i22("x2_1", "x2_2", True) * mk_pipi_i22("x1_1", "x1_2")
     print(display_cexpr(contract_simplify_round_compile(expr)))
     print()
-    print("< pipiI0(x11,x12) >:")
-    expr = mk_pipi_i0("x11", "x12")
+    print("< pipiI11(x2_1,x2_2)^dag pipiI11(x1_1,x1_2) >:")
+    expr = mk_pipi_i11("x2_1", "x2_2", True) * mk_pipi_i11("x1_1", "x1_2")
     print(display_cexpr(contract_simplify_round_compile(expr)))
-    print("< pipiI0(x21,x22)^dag pipiI0(x11,x12) >:")
-    expr = mk_pipi_i0("x21", "x22", True) * mk_pipi_i0("x11", "x12")
+    print("< pipiI10(x2_1,x2_2)^dag pipiI10(x1_1,x1_2) - pipiI11(x2_1,x2_2)^dag pipiI11(x1_1,x1_2) >:")
+    expr = mk_pipi_i10("x2_1", "x2_2", True) * mk_pipi_i10("x1_1", "x1_2") - mk_pipi_i11("x2_1", "x2_2", True) * mk_pipi_i11("x1_1", "x1_2")
+    print(display_cexpr(contract_simplify_round_compile(expr)))
+    print()
+    print("< pipiI0(x1_1,x1_2) >:")
+    expr = mk_pipi_i0("x1_1", "x1_2")
+    print(display_cexpr(contract_simplify_round_compile(expr)))
+    print("< pipiI0(x2_1,x2_2)^dag pipiI0(x1_1,x1_2) >:")
+    expr = mk_pipi_i0("x2_1", "x2_2", True) * mk_pipi_i0("x1_1", "x1_2")
     print(display_cexpr(contract_simplify_round_compile(expr)))
     print()
     print("< sigma(x1) >:")
     expr = mk_sigma("x1")
     print(display_cexpr(contract_simplify_round_compile(expr)))
-    print("< pipiI0(x21,x22)^dag sigma(x1) >:")
-    expr = mk_pipi_i0("x21", "x22", True) * mk_sigma("x1")
+    print("< pipiI0(x2_1,x2_2)^dag sigma(x1) >:")
+    expr = mk_pipi_i0("x2_1", "x2_2", True) * mk_sigma("x1")
     print(display_cexpr(contract_simplify_round_compile(expr)))
     print()
     print("< K+(x2)^dag K+(x1)>:")

@@ -47,7 +47,7 @@ def get_spin_matrix(op):
 def ascontiguoustensor(tensor):
     return g.tensor(np.ascontiguousarray(tensor.array), tensor.otype)
 
-def eval_op_term_expr(expr, variables_dict, positions_dict, prop_cache):
+def eval_op_term_expr(expr, variable_dict, positions_dict, prop_cache):
     def l_eval(x):
         if isinstance(x, list):
             ans = l_eval(x[0])
@@ -78,7 +78,7 @@ def eval_op_term_expr(expr, variables_dict, positions_dict, prop_cache):
                     ans = ascontiguoustensor(ans * l_eval(op))
                 return g.trace(ans)
             elif x.otype == "Var":
-                return variables_dict[x.name]
+                return variable_dict[x.name]
             else:
                 q.displayln_info(f"eval_op_term_expr: ERROR: l_eval({x})")
                 assert False
@@ -104,15 +104,21 @@ def eval_cexpr(cexpr : CExpr, *, positions_dict, prop_cache, is_only_total):
     # the last element is the sum
     for pos in cexpr.positions:
         assert pos in positions_dict
-    variables_dict = {}
+    variable_dict = {}
     for name, op in cexpr.variables:
-        variables_dict[name] = eval_op_term_expr(op, variables_dict, positions_dict, prop_cache)
-    tvals = { name : eval_op_term_expr(term, variables_dict, positions_dict, prop_cache) for name, term in cexpr.named_terms }
+        variable_dict[name] = eval_op_term_expr(op, variable_dict, positions_dict, prop_cache)
+    tvals = { name : eval_op_term_expr(term, variable_dict, positions_dict, prop_cache) for name, term in cexpr.named_terms }
     evals = { name : sum([ tvals[tname] for tname in expr ]) for name, expr in cexpr.named_exprs }
-    if is_only_total:
+    if is_only_total in [ True, "total", ]:
         return np.array([ evals[name] for name, expr in cexpr.named_exprs])
+    elif is_only_total in [ "typed_total", ]:
+        tevals = { name : sum([ tvals[tname] for tname in expr ]) for name, expr in cexpr.named_typed_exprs }
+        return np.array([ tevals[name] for name, expr in cexpr.named_typed_exprs ] + [ evals[name] for name, expr in cexpr.named_exprs])
+    elif is_only_total in [ False, "term", ]:
+        tevals = { name : sum([ tvals[tname] for tname in expr ]) for name, expr in cexpr.named_typed_exprs }
+        return np.array([ tvals[name] for name, term in cexpr.named_terms ] + [ tevals[name] for name, expr in cexpr.named_typed_exprs ] + [ evals[name] for name, expr in cexpr.named_exprs])
     else:
-        return np.array([ tvals[name] for name, term in cexpr.named_terms] + [ evals[name] for name, expr in cexpr.named_exprs])
+        assert False
 
 def sqr_component(x):
     return x.real * x.real + 1j * x.imag * x.imag
@@ -147,10 +153,14 @@ def eval_cexpr_simulation(cexpr : CExpr, *, positions_dict_maker, rng_state, tri
         assert len(results[i]) == len(trial_indices)
         results_avg = sum(results[i]) / len(trial_indices)
         results_err = sqrt_component_array(sum([ sqr_component_array(r - results_avg) for r in results[i] ])) / len(trial_indices)
-        if is_only_total:
+        if is_only_total in [ True, "total", ]:
             names = [ name for name, expr in cexpr.named_exprs ]
+        elif is_only_total in [ "typed_total", ]:
+            names = [ name for name, expr in cexpr.named_typed_exprs ] + [ name for name, expr in cexpr.named_exprs ]
+        elif is_only_total in [ False, "term", ]:
+            names = [ name for name, term in cexpr.named_terms ] + [ name for name, expr in cexpr.named_typed_exprs ] + [ name for name, expr in cexpr.named_exprs ]
         else:
-            names = [ name for name, term in cexpr.named_terms ] + [ name for name, expr in cexpr.named_exprs ]
+            assert False
         summary = {}
         for i in range(len(names)):
             summary[names[i]] = [results_avg[i], results_err[i],]
