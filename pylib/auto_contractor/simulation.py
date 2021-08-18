@@ -201,10 +201,12 @@ def auto_contractor_meson_corr(job_tag, traj, num_trials):
     exprs = [
             vol**2 * mk_pi_p("x2", True) * mk_pi_p("x1"),
             vol**2 * mk_k_p("x2", True) * mk_k_p("x1"),
+            vol**2 * mk_k_m("x2", True) * mk_k_m("x1"),
             ]
     names = [
             "pi pi",
             "k k",
+            "k^- k^-",
             ]
     names_dict = { f"E{i+1}" : name for i, name in enumerate(names) }
     cexpr = contract_simplify_round_compile(*exprs, is_isospin_symmetric_limit = True)
