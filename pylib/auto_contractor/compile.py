@@ -21,6 +21,8 @@
 
 from auto_contractor.wick import *
 
+from itertools import permutations
+
 class Var(Op):
 
     def __init__(self, name : str):
@@ -273,21 +275,76 @@ def inc(type_dict, key):
 def drop_tag_last_subscript(tag):
     return tag.rsplit("_", 1)[0]
 
+def mk_permuting_dicts(pos_list):
+    for p_pos_list in permutations(pos_list):
+        yield dict(zip(pos_list, p_pos_list))
+
+def get_position_permutation_groups(term):
+    pos_list = get_positions(term)
+    group_dict = dict()
+    for pos in pos_list:
+        g_pos = drop_tag_last_subscript(pos)
+        if g_pos != pos:
+            if g_pos not in group_dict:
+                group_dict[g_pos] = [ pos, ]
+            else:
+                group_dict[g_pos].append(pos)
+    return group_dict.values()
+
+def mk_combined_permuting_dicts(term):
+    pos_list_list = list(get_position_permutation_groups(term))
+    p_dicts_list = [ list(mk_permuting_dicts(pos_list)) for pos_list in pos_list_list ]
+    def loop(level):
+        if level < 0:
+            yield dict()
+        else:
+            for d1 in loop(level - 1):
+                for d2 in p_dicts_list[level]:
+                    d = d1.copy()
+                    d.update(d2)
+                    yield d
+    return loop(len(p_dicts_list) - 1)
+
 def loop_term_ops(type_dict, ops):
     for op in ops:
         if op.otype == "S":
-            # ADJUST DIAGRAM TYPE DEFINITION
-            # inc(type_dict, (op.f, op.p1, op.p2,))
-            # inc(type_dict, (op.p1, op.p2,))
-            inc(type_dict, (drop_tag_last_subscript(op.p1), drop_tag_last_subscript(op.p2),))
-            #
+            # diagram type elem definition
+            inc(type_dict, (op.p1, op.p2,))
         elif op.otype == "Tr":
             loop_term_ops(type_dict, op.ops)
 
-def get_term_diagram_type_info(term):
+def get_term_diagram_type_info_no_permutation(term):
     type_dict = dict()
     loop_term_ops(type_dict, term.c_ops)
     return tuple(sorted(type_dict.items()))
+
+def permute_tag(x, p_dict):
+    if x in p_dict:
+        return p_dict[x]
+    else:
+        return x
+
+def permute_type_info_entry(x, p_dict):
+    ((p1, p2,), n,) = x
+    p1 = permute_tag(p1, p_dict)
+    p2 = permute_tag(p2, p_dict)
+    return ((p1, p2,), n,)
+
+def permute_type_info(type_info, p_dict):
+    l = [ permute_type_info_entry(e, p_dict) for e in type_info ]
+    return tuple(sorted(l))
+
+def get_term_diagram_type_info(term):
+    base_type_info = get_term_diagram_type_info_no_permutation(term)
+    min_type_info = base_type_info
+    min_type_info_repr = str(min_type_info)
+    for p_dict in mk_combined_permuting_dicts(term):
+        type_info = permute_type_info(base_type_info, p_dict)
+        type_info_repr = repr(type_info)
+        if min_type_info is None or type_info_repr < min_type_info_repr:
+            min_type_info = type_info
+            min_type_info_repr = type_info_repr
+    return min_type_info
 
 def mk_cexpr(*exprs):
     # interface function
