@@ -209,7 +209,7 @@ def auto_contractor_meson_corr(job_tag, traj, num_trials):
             "k^- k^-",
             ]
     names_dict = { f"E{i+1}" : name for i, name in enumerate(names) }
-    cexpr = contract_simplify_round_compile(*exprs, is_isospin_symmetric_limit = True)
+    cexpr = contract_simplify_round_compile(*exprs, is_isospin_symmetric_limit = True, round_ndigit = 7)
     q.displayln_info(display_cexpr(cexpr))
     cexpr.collect_op()
     q.displayln_info(display_cexpr(cexpr))
@@ -283,7 +283,7 @@ def auto_contractor_pipi_corr(job_tag, traj, num_trials):
             "pipi_i0_2   sigma_12  ",
             ]
     names_dict = { f"E{i+1}" : name for i, name in enumerate(names) }
-    cexpr = contract_simplify_round_compile(*exprs, is_isospin_symmetric_limit = True)
+    cexpr = contract_simplify_round_compile(*exprs, is_isospin_symmetric_limit = True, round_ndigit = 7)
     q.displayln_info(display_cexpr(cexpr))
     cexpr.collect_op()
     q.displayln_info(display_cexpr(cexpr))
@@ -377,7 +377,7 @@ def auto_contractor_kpipi_corr(job_tag, traj, num_trials):
                 names.append(f"{name_pipi} {name_op:6} {name_k}")
                 exprs.append(expr_pipi * expr_op * expr_k)
     names_dict = { f"E{i+1}" : name for i, name in enumerate(names) }
-    cexpr = contract_simplify_round_compile(*exprs, is_isospin_symmetric_limit = True)
+    cexpr = contract_simplify_round_compile(*exprs, is_isospin_symmetric_limit = True, round_ndigit = 7)
     q.displayln_info(display_cexpr(cexpr))
     cexpr.collect_op()
     q.displayln_info(display_cexpr(cexpr))

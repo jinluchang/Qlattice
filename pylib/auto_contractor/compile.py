@@ -317,14 +317,14 @@ def mk_cexpr(*exprs):
         named_exprs.append((f"E{i+1}", expr_list,))
     return CExpr(diagram_types, [], named_terms, named_typed_exprs, named_exprs)
 
-def contract_simplify_round_compile(*exprs, is_isospin_symmetric_limit = True):
+def contract_simplify_round_compile(*exprs, is_isospin_symmetric_limit = True, round_ndigit = 14):
     # interface function
     exprs = list(exprs)
     for i in range(len(exprs)):
         expr = copy.deepcopy(exprs[i])
         expr = contract_expr(expr)
         expr.simplify(is_isospin_symmetric_limit = is_isospin_symmetric_limit)
-        exprs[i] = expr.round()
+        exprs[i] = expr.round(round_ndigit)
     cexpr = mk_cexpr(*exprs)
     return cexpr
 
