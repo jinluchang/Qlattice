@@ -54,6 +54,11 @@ def add_positions(s, x):
         for t in x.terms:
             add_positions(s, t)
 
+def get_positions(term):
+    s = set()
+    add_positions(s, term)
+    return sorted(list(s))
+
 def collect_op_in_cexpr(variables, named_terms):
     var_counter = 0
     var_dataset = {} # var_dataset[op_repr] = op_var

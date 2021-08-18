@@ -325,7 +325,7 @@ def mk_4qOp_LL_cmix(f1,f2,f3,f4,p,is_scalar = False, parity = None):
 
 def mk_4qOp_LR_cmix(f1,f2,f3,f4,p,is_scalar = False, parity = None):
     assert not is_scalar
-    return -2 * mk_4qOp_LR(f1,f4,f3,f2,p,True,parity)
+    return -2 * mk_4qOp_RL(f1,f4,f3,f2,p,True,parity)
 
 def mk_Qsub(p, parity = None):
     if parity is None:
