@@ -22,7 +22,7 @@ if [ -e $prefix ] ; then
     done
 fi
 
-rm -rf $prefix/* || true
+rm -rf $prefix/{bin,include,lib,pylib,share} || true
 mkdir -p $prefix
 
 if which mpic++ >/dev/null 2>&1 || which mpicxx >/dev/null 2>&1 ; then
@@ -32,7 +32,14 @@ else
     exit
 fi
 
-./scripts/setenv.sh
+if [ -f $prefix/setenv.sh ] ; then
+    echo "Setup file '$prefix/setenv.sh' already exist."
+else
+    echo "Install default '$prefix/setenv.sh' setup file."
+    ./scripts/setenv.sh
+fi
+
+
 # ./scripts/gsl.sh
 # ./scripts/cmake.sh
 # ./scripts/lapack.sh
@@ -46,9 +53,5 @@ fi
 
 # ./scripts/grid-avx2.sh
 # ./scripts/gpt.sh
-
-for cmd in "$@" ; do
-    "$cmd"
-done
 
 rm -rf $temp_dir
