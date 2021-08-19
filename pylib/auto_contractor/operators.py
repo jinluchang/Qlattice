@@ -143,6 +143,24 @@ def mk_k_0_bar(p : str, is_dagger = False):
     else:
         return -mk_k_0(p)
 
+def mk_kk_i11(p1 : str, p2 : str, is_dagger = False):
+    return mk_k_p(p1, is_dagger) * mk_k_0_bar(p2, is_dagger)
+
+def mk_kk_i10(p1 : str, p2 : str, is_dagger = False):
+    return 1.0 / math.sqrt(2) * (
+            - mk_k_0(p1, is_dagger) * mk_k_0_bar(p2, is_dagger)
+            + mk_k_p(p1, is_dagger) * mk_k_m(p2, is_dagger)
+            )
+
+def mk_kk_i0(p1 : str, p2 : str, is_dagger = False):
+    return 1.0 / math.sqrt(2) * (
+            mk_k_0(p1, is_dagger) * mk_k_0_bar(p2, is_dagger)
+            + mk_k_p(p1, is_dagger) * mk_k_m(p2, is_dagger)
+            )
+
+def mk_k0k0bar(p1 : str, p2 : str, is_dagger = False):
+    return mk_k_0(p1, is_dagger) * mk_k_0_bar(p2, is_dagger)
+
 def mk_sigma(p : str, is_dagger = False):
     s = new_spin_index()
     c = new_color_index()
@@ -495,8 +513,28 @@ def test1():
             ]
     print(display_cexpr(contract_simplify_round_compile(*exprs1)))
 
+def test_kk():
+    expr1 = mk_kk_i0("x2_1", "x2_2", True) * mk_kk_i0("x1_1", "x1_2")
+    expr2 = mk_kk_i0("x2_1", "x2_2", True) * mk_pipi_i0("x1_1", "x1_2")
+    expr3 = mk_kk_i0("x2_1", "x2_2", True) * mk_sigma("x1", "x1")
+    expr4 = mk_k0k0bar("x2_1", "x2_2", True) * mk_k0k0bar("x1_1", "x1_2")
+    expr5 = mk_k0k0bar("x2_1", "x2_2", True) * mk_pipi_i0("x1_1", "x1_2")
+    expr6 = mk_k0k0bar("x2_1", "x2_2", True) * mk_sigma("x1", "x1")
+    all_exprs = [
+            [ expr1, expr4, ],
+            [ expr2, expr5, ],
+            [ expr3, expr6, ],
+            ]
+    names = [ "kk kk", "kk pipi", "kk sigma", ]
+    for name, exprs in zip(names, all_exprs):
+        print(f"\n-- {name} --")
+        cexpr = contract_simplify_round_compile(*exprs)
+        print(display_cexpr(cexpr))
+        cexpr.collect_op()
+        print(display_cexpr(cexpr))
+        print(f"-- {name} --\n")
+
 if __name__ == "__main__":
-    # print()
     # test1()
     # exit()
     #
@@ -569,6 +607,9 @@ if __name__ == "__main__":
             - mk_pi_0("x1", True) * mk_j_mu("xj_1", "mu") * mk_j_mu("xj_2", "nu") * mk_pi_0("x2")
             )
     print(display_cexpr(contract_simplify_round_compile(expr)))
+    #
+    print()
+    test_kk()
     #
     print()
     test()
