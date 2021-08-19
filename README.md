@@ -20,9 +20,10 @@ The `build.sh` will install everything into the `$prefix` directory by running a
 
 If `$prefix` is not set, the default value in `setenv.sh` is used, which is `$HOME/qlat-build/default`.
 
-It is also possible to also build `Grid` and `gpt` using the `build.sh` script:
+It is also possible to also build `Grid` and `gpt` after running the `build.sh` script:
 
-`$ prefix=DEST_DIRECTORY ./build.sh ./scripts/grid-avx2.sh ./scripts/gpt.sh`
+`$ prefix=DEST_DIRECTORY ./scripts/grid-avx2.sh`
+`$ prefix=DEST_DIRECTORY ./scripts/gpt.sh`
 
 The above command will first build `qlat`, then build `Grid` and `gpt`. There are few different scripts to build the `Grid` library. Choose one best suit the machine (or create a custom one).
 

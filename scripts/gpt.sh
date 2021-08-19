@@ -6,13 +6,11 @@ name=gpt
 
 echo "!!!! build $name !!!!"
 
-rm -rf "$prefix"/gpt || true
-mkdir -p "$prefix" || true
+mkdir -p "$prefix"/gpt || true
+
+rsync -av --delete $distfiles/gpt/ "$prefix"/gpt/
 
 cd "$prefix"
-tar xaf $distfiles/gpt.tar.gz
-
-mv waterret-gpt-* gpt
 cd gpt/lib/cgpt
 
 echo "BASIS_SIZE(4)" > lib/basis_size.h

@@ -2,6 +2,8 @@
 
 . conf.sh
 
+mkdir -p $distfiles
+
 cd $distfiles
 
 wget -c "http://www.fftw.org/fftw-3.3.9.tar.gz"
@@ -16,16 +18,39 @@ wget -O c-lime.tar.gz -c "https://github.com/usqcd-software/c-lime/tarball/maste
 
 wget -c "https://www.mpfr.org/mpfr-current/mpfr-4.1.0.tar.bz2"
 
-wget -O Grid-origin.tar.gz -c "https://github.com/waterret/Grid/tarball/feature/gpt"
+if [ -d Grid ] ; then
+    ( cd Grid ; git pull )
+else
+    git clone https://github.com/waterret/Grid.git
+fi
 
 (
-rm -rf waterret-Grid-*
-tar xaf Grid-origin.tar.gz
-cd waterret-Grid-*
+cd Grid
 pwd
+git clean -f
 ./bootstrap.sh
 )
 
-wget -O gpt.tar.gz -c "https://github.com/waterret/gpt/tarball/master"
+if [ -d gpt ] ; then
+    ( cd gpt ; git pull )
+else
+    git clone https://github.com/waterret/gpt.git
+fi
 
 sha256sum *.tar.* > sha256sums.txt
+
+echo >> sha256sums.txt
+
+echo -n "Grid: " >> sha256sums.txt
+(
+cd Grid
+git rev-parse HEAD >> ../sha256sums.txt
+)
+
+echo -n "gpt: " >> sha256sums.txt
+(
+cd gpt
+git rev-parse HEAD >> ../sha256sums.txt
+)
+
+cat sha256sums.txt

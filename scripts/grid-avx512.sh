@@ -8,7 +8,7 @@ echo "!!!! build $name !!!!"
 
 mkdir -p "$prefix"/Grid || true
 
-rsync -av --delete $distfiles/waterret-Grid-*/ "$prefix"/Grid/
+rsync -av --delete $distfiles/Grid/ "$prefix"/Grid/
 
 cd "$prefix"/Grid
 
