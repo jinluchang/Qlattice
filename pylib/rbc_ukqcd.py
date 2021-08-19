@@ -66,7 +66,7 @@ def mk_eig(gf, job_tag, inv_type, inv_acc = 0):
         qm = g.qcd.fermion.mobius(gpt_gf, fermion_params)
     w = g.qcd.fermion.preconditioner.eo2_ne(parity=parity)(qm)
     def make_src(rng):
-        src = g.vspincolor(w.F_grid_eo)
+        src = g.vspincolor(qm.F_grid_eo)
         # src[:] = g.vspincolor([[1, 1, 1], [1, 1, 1], [1, 1, 1], [1, 1, 1]])
         rng.cnormal(src)
         src.checkerboard(parity)
@@ -100,7 +100,7 @@ def mk_ceig(gf, job_tag, inv_type, inv_acc = 0):
         qm = g.qcd.fermion.mobius(gpt_gf, fermion_params)
     w = g.qcd.fermion.preconditioner.eo2_ne(parity=parity)(qm)
     def make_src(rng):
-        src = g.vspincolor(w.F_grid_eo)
+        src = g.vspincolor(qm.F_grid_eo)
         # src[:] = g.vspincolor([[1, 1, 1], [1, 1, 1], [1, 1, 1], [1, 1, 1]])
         rng.cnormal(src)
         src.checkerboard(parity)
@@ -120,7 +120,7 @@ def mk_ceig(gf, job_tag, inv_type, inv_acc = 0):
     cparams = get_clanc_params(job_tag, inv_type, inv_acc)
     q.displayln_info(f"mk_ceig: cparams={cparams}")
     #
-    grid_coarse = g.block.grid(w.F_grid_eo, [ get_ls_from_fermion_params(fermion_params) ] + cparams["block"])
+    grid_coarse = g.block.grid(qm.F_grid_eo, [ get_ls_from_fermion_params(fermion_params) ] + cparams["block"])
     nbasis = cparams["nbasis"]
     basis = evec[0:nbasis]
     b = g.block.map(grid_coarse, basis)

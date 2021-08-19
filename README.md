@@ -20,12 +20,18 @@ The `build.sh` will install everything into the `$prefix` directory by running a
 
 If `$prefix` is not set, the default value in `setenv.sh` is used, which is `$HOME/qlat-build/default`.
 
-It is also possible to also build `Grid` and `gpt` after running the `build.sh` script:
+The environment variables for python library can be set with the following command:
+
+`$ source $prefix/setenv.sh`
+
+where `$prefix` should be replaced with the installation path.
+
+It is also possible to also build `Grid` and `gpt`:
 
 `$ prefix=DEST_DIRECTORY ./scripts/grid-avx2.sh`
 `$ prefix=DEST_DIRECTORY ./scripts/gpt.sh`
 
-The above command will first build `qlat`, then build `Grid` and `gpt`. There are few different scripts to build the `Grid` library. Choose one best suit the machine (or create a custom one).
+There are few different scripts to build the `Grid` library. Choose one best suit the machine (or create a custom one).
 
 After the first complete install, one can re-install individual components by running the specific script. For example, to just re-install the `Qlattice` header files and python library:
 
