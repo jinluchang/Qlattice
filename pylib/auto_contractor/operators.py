@@ -452,18 +452,18 @@ def test():
     expr2 = mk_pipi_i0("x1_1", "x1_2", True) * expr2 * mk_k_0("x2")
     expr3 = mk_pipi_i0("x1_1", "x1_2", True) * expr3 * mk_k_0("x2")
     print(display_cexpr(contract_simplify_round_compile(expr1, expr2, expr3)))
-    print(display_cexpr(contract_simplify_round_compile(
-        mk_pipi_i0("x1_1", "x1_2", True) * mk_Q1("x") * mk_k_0("x2"),
-        mk_pipi_i0("x1_1", "x1_2", True) * mk_Q2("x") * mk_k_0("x2"),
-        mk_pipi_i0("x1_1", "x1_2", True) * mk_Q3("x") * mk_k_0("x2"),
-        mk_pipi_i0("x1_1", "x1_2", True) * mk_Q4("x") * mk_k_0("x2"),
-        mk_pipi_i0("x1_1", "x1_2", True) * mk_Q5("x") * mk_k_0("x2"),
-        mk_pipi_i0("x1_1", "x1_2", True) * mk_Q6("x") * mk_k_0("x2"),
-        mk_pipi_i0("x1_1", "x1_2", True) * mk_Q7("x") * mk_k_0("x2"),
-        mk_pipi_i0("x1_1", "x1_2", True) * mk_Q8("x") * mk_k_0("x2"),
-        mk_pipi_i0("x1_1", "x1_2", True) * mk_Q9("x") * mk_k_0("x2"),
-        mk_pipi_i0("x1_1", "x1_2", True) * mk_Q10("x") * mk_k_0("x2"),
-        )))
+    # print(display_cexpr(contract_simplify_round_compile(
+    #     mk_pipi_i0("x1_1", "x1_2", True) * mk_Q1("x") * mk_k_0("x2"),
+    #     mk_pipi_i0("x1_1", "x1_2", True) * mk_Q2("x") * mk_k_0("x2"),
+    #     mk_pipi_i0("x1_1", "x1_2", True) * mk_Q3("x") * mk_k_0("x2"),
+    #     mk_pipi_i0("x1_1", "x1_2", True) * mk_Q4("x") * mk_k_0("x2"),
+    #     mk_pipi_i0("x1_1", "x1_2", True) * mk_Q5("x") * mk_k_0("x2"),
+    #     mk_pipi_i0("x1_1", "x1_2", True) * mk_Q6("x") * mk_k_0("x2"),
+    #     mk_pipi_i0("x1_1", "x1_2", True) * mk_Q7("x") * mk_k_0("x2"),
+    #     mk_pipi_i0("x1_1", "x1_2", True) * mk_Q8("x") * mk_k_0("x2"),
+    #     mk_pipi_i0("x1_1", "x1_2", True) * mk_Q9("x") * mk_k_0("x2"),
+    #     mk_pipi_i0("x1_1", "x1_2", True) * mk_Q10("x") * mk_k_0("x2"),
+    #     )))
 
 def test1():
     def A(j_p, pi_p, is_dagger = False):
