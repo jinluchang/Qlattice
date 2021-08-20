@@ -149,23 +149,35 @@ def mk_k_0_bar(p : str, is_dagger = False):
     else:
         return -mk_k_0(p) + f"K0b({p})^dag"
 
-def mk_kk_i11(p1 : str, p2 : str, is_dagger = False):
-    return mk_k_p(p1, is_dagger) * mk_k_0_bar(p2, is_dagger) + f"KK_I11({p1},{p2}){show_dagger(is_dagger)}"
+def mk_kk_i11(p1 : str, p2 : str, is_dagger = False, *, is_sym = False):
+    if is_sym:
+        return 1 / sympy.sqrt(2) * (mk_kk_i11(p1, p2, is_dagger) + mk_kk_i11(p2, p1, is_dagger)) + f"KK_I11({p1},{p2},sym){show_dagger(is_dagger)}"
+    else:
+        return mk_k_p(p1, is_dagger) * mk_k_0_bar(p2, is_dagger) + f"KK_I11({p1},{p2}){show_dagger(is_dagger)}"
 
-def mk_kk_i10(p1 : str, p2 : str, is_dagger = False):
-    return 1 / sympy.sqrt(2) * (
+def mk_kk_i10(p1 : str, p2 : str, is_dagger = False, *, is_sym = False):
+    if is_sym:
+        return 1 / sympy.sqrt(2) * (mk_kk_i10(p1, p2, is_dagger) + mk_kk_i10(p2, p1, is_dagger)) + f"KK_I10({p1},{p2},sym){show_dagger(is_dagger)}"
+    else:
+        return 1 / sympy.sqrt(2) * (
             - mk_k_0(p1, is_dagger) * mk_k_0_bar(p2, is_dagger)
             + mk_k_p(p1, is_dagger) * mk_k_m(p2, is_dagger)
             ) + f"KK_I10({p1},{p2}){show_dagger(is_dagger)}"
 
-def mk_kk_i0(p1 : str, p2 : str, is_dagger = False):
-    return 1 / sympy.sqrt(2) * (
+def mk_kk_i0(p1 : str, p2 : str, is_dagger = False, *, is_sym = False):
+    if is_sym:
+        return 1 / sympy.sqrt(2) * (mk_kk_i0(p1, p2, is_dagger) + mk_kk_i0(p2, p1, is_dagger)) + f"KK_I0({p1},{p2},sym){show_dagger(is_dagger)}"
+    else:
+        return 1 / sympy.sqrt(2) * (
             mk_k_0(p1, is_dagger) * mk_k_0_bar(p2, is_dagger)
             + mk_k_p(p1, is_dagger) * mk_k_m(p2, is_dagger)
             ) + f"KK_I0({p1},{p2}){show_dagger(is_dagger)}"
 
-def mk_k0k0bar(p1 : str, p2 : str, is_dagger = False):
-    return mk_k_0(p1, is_dagger) * mk_k_0_bar(p2, is_dagger) + f"K0K0b({p1},{p2}){show_dagger(is_dagger)}"
+def mk_k0k0bar(p1 : str, p2 : str, is_dagger = False, *, is_sym = False):
+    if is_sym:
+        return 1 / sympy.sqrt(2) * (mk_k0k0bar(p1, p2, is_dagger) + mk_k0k0bar(p2, p1, is_dagger)) + f"K0K0b({p1},{p2},sym){show_dagger(is_dagger)}"
+    else:
+        return mk_k_0(p1, is_dagger) * mk_k_0_bar(p2, is_dagger) + f"K0K0b({p1},{p2}){show_dagger(is_dagger)}"
 
 def mk_sigma(p : str, is_dagger = False):
     s = new_spin_index()
@@ -551,6 +563,27 @@ def test_kk():
         print(display_cexpr(cexpr))
         print(f"-- {name} --\n")
 
+def test_kk_sym():
+    expr1 = mk_kk_i0("x2_1", "x2_2", True, is_sym = True) * mk_kk_i0("x1_1", "x1_2", is_sym = True)
+    expr2 = mk_kk_i0("x2_1", "x2_2", True, is_sym = True) * mk_pipi_i0("x1_1", "x1_2")
+    expr3 = mk_kk_i0("x2_1", "x2_2", True, is_sym = True) * mk_sigma("x1", "x1")
+    expr4 = mk_k0k0bar("x2_1", "x2_2", True, is_sym = True) * mk_k0k0bar("x1_1", "x1_2", is_sym = True)
+    expr5 = mk_k0k0bar("x2_1", "x2_2", True, is_sym = True) * mk_pipi_i0("x1_1", "x1_2")
+    expr6 = mk_k0k0bar("x2_1", "x2_2", True, is_sym = True) * mk_sigma("x1", "x1")
+    all_exprs = [
+            [ expr1, expr4, ],
+            [ expr2, expr5, ],
+            [ expr3, expr6, ],
+            ]
+    names = [ "kk kk", "kk pipi", "kk sigma", ]
+    for name, exprs in zip(names, all_exprs):
+        print(f"\n-- {name} --")
+        cexpr = contract_simplify_compile(*exprs)
+        print(display_cexpr(cexpr))
+        cexpr.collect_op()
+        print(display_cexpr(cexpr))
+        print(f"-- {name} --\n")
+
 if __name__ == "__main__":
     # test1()
     # exit()
@@ -627,6 +660,8 @@ if __name__ == "__main__":
     #
     print()
     test_kk()
+    print()
+    test_kk_sym()
     #
     print()
     test()
