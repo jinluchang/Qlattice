@@ -24,7 +24,7 @@
 from auto_contractor.wick import *
 from auto_contractor.compile import *
 
-import math
+import sympy
 
 spin_index_counter = 0
 
@@ -70,17 +70,17 @@ def mk_meson(f1 : str, f2 : str, p : str):
     return Qb(f1, p, s1, c) * G(5, s1, s2) * Qv(f2, p, s2, c)
 
 def mk_pi_0(p : str, is_dagger = False):
-    return 1.0j / math.sqrt(2.0) * (mk_meson("u", "u", p) - mk_meson("d", "d", p))
+    return sympy.I / sympy.sqrt(2) * (mk_meson("u", "u", p) - mk_meson("d", "d", p))
 
 def mk_pi_p(p : str, is_dagger = False):
     if not is_dagger:
-        return 1.0j * mk_meson("u", "d", p)
+        return sympy.I * mk_meson("u", "d", p)
     else:
         return -mk_pi_m(p)
 
 def mk_pi_m(p : str, is_dagger = False):
     if not is_dagger:
-        return -1.0j * mk_meson("d", "u", p)
+        return -sympy.I * mk_meson("d", "u", p)
     else:
         return -mk_pi_p(p)
 
@@ -88,32 +88,32 @@ def mk_pipi_i22(p1 : str, p2 : str, is_dagger = False):
     return mk_pi_p(p1, is_dagger) * mk_pi_p(p2, is_dagger)
 
 def mk_pipi_i21(p1 : str, p2 : str, is_dagger = False):
-    return 1.0 / math.sqrt(2.0) * (
+    return 1 / sympy.sqrt(2) * (
             mk_pi_p(p1, is_dagger) * mk_pi_0(p2, is_dagger)
             + mk_pi_0(p1, is_dagger) * mk_pi_p(p2, is_dagger)
             )
 
 def mk_pipi_i11(p1 : str, p2 : str, is_dagger = False):
-    return 1.0 / math.sqrt(2.0) * (
+    return 1 / sympy.sqrt(2) * (
             mk_pi_p(p1, is_dagger) * mk_pi_0(p2, is_dagger)
             - mk_pi_0(p1, is_dagger) * mk_pi_p(p2, is_dagger)
             )
 
 def mk_pipi_i20(p1 : str, p2 : str, is_dagger = False):
-    return 1.0 / math.sqrt(6.0) * (
-            2.0 * mk_pi_0(p1, is_dagger) * mk_pi_0(p2, is_dagger)
+    return 1 / sympy.sqrt(6) * (
+            2 * mk_pi_0(p1, is_dagger) * mk_pi_0(p2, is_dagger)
             + mk_pi_m(p1, is_dagger) * mk_pi_p(p2, is_dagger)
             + mk_pi_p(p1, is_dagger) * mk_pi_m(p2, is_dagger)
             )
 
 def mk_pipi_i10(p1 : str, p2 : str, is_dagger = False):
-    return 1.0 / math.sqrt(2.0) * (
+    return 1 / sympy.sqrt(2) * (
             mk_pi_p(p1, is_dagger) * mk_pi_m(p2, is_dagger)
             - mk_pi_m(p1, is_dagger) * mk_pi_p(p2, is_dagger)
             )
 
 def mk_pipi_i0(p1 : str, p2 : str, is_dagger = False):
-    return 1.0 / math.sqrt(3.0) * (
+    return 1 / sympy.sqrt(3) * (
             - mk_pi_0(p1, is_dagger) * mk_pi_0(p2, is_dagger)
             + mk_pi_m(p1, is_dagger) * mk_pi_p(p2, is_dagger)
             + mk_pi_p(p1, is_dagger) * mk_pi_m(p2, is_dagger)
@@ -121,25 +121,25 @@ def mk_pipi_i0(p1 : str, p2 : str, is_dagger = False):
 
 def mk_k_p(p : str, is_dagger = False):
     if not is_dagger:
-        return 1.0j * mk_meson("u", "s", p)
+        return sympy.I * mk_meson("u", "s", p)
     else:
         return -mk_k_m(p)
 
 def mk_k_m(p : str, is_dagger = False):
     if not is_dagger:
-        return -1.0j * mk_meson("s", "u", p)
+        return -sympy.I * mk_meson("s", "u", p)
     else:
         return -mk_k_p(p)
 
 def mk_k_0(p : str, is_dagger = False):
     if not is_dagger:
-        return 1.0j * mk_meson("d", "s", p)
+        return sympy.I * mk_meson("d", "s", p)
     else:
         return -mk_k_0_bar(p)
 
 def mk_k_0_bar(p : str, is_dagger = False):
     if not is_dagger:
-        return -1.0j * mk_meson("s", "d", p)
+        return -sympy.I * mk_meson("s", "d", p)
     else:
         return -mk_k_0(p)
 
@@ -147,13 +147,13 @@ def mk_kk_i11(p1 : str, p2 : str, is_dagger = False):
     return mk_k_p(p1, is_dagger) * mk_k_0_bar(p2, is_dagger)
 
 def mk_kk_i10(p1 : str, p2 : str, is_dagger = False):
-    return 1.0 / math.sqrt(2) * (
+    return 1 / sympy.sqrt(2) * (
             - mk_k_0(p1, is_dagger) * mk_k_0_bar(p2, is_dagger)
             + mk_k_p(p1, is_dagger) * mk_k_m(p2, is_dagger)
             )
 
 def mk_kk_i0(p1 : str, p2 : str, is_dagger = False):
-    return 1.0 / math.sqrt(2) * (
+    return 1 / sympy.sqrt(2) * (
             mk_k_0(p1, is_dagger) * mk_k_0_bar(p2, is_dagger)
             + mk_k_p(p1, is_dagger) * mk_k_m(p2, is_dagger)
             )
@@ -164,7 +164,7 @@ def mk_k0k0bar(p1 : str, p2 : str, is_dagger = False):
 def mk_sigma(p : str, is_dagger = False):
     s = new_spin_index()
     c = new_color_index()
-    return 1.0 / math.sqrt(2.0) * (Qb("u", p, s, c) * Qv("u", p, s, c) + Qb("d", p, s, c) * Qv("d", p, s, c))
+    return 1 / sympy.sqrt(2) * (Qb("u", p, s, c) * Qv("u", p, s, c) + Qb("d", p, s, c) * Qv("d", p, s, c))
 
 def mk_scalar(f1 : str, f2 : str, p : str):
     s = new_spin_index()
@@ -203,17 +203,17 @@ def mk_vec5_mu(f1 : str, f2 : str, p : str, mu, is_dagger = False):
         return Qb(f1, p, s1, c) * G(mu, s1, s2) * G(5, s2, s3) * Qv(f2, p, s3, c)
 
 def mk_j_mu(p : str, mu, is_dagger = False):
-    return 2/3 * mk_vec_mu("u", "u", p, mu, is_dagger) - 1/3 * mk_vec_mu("d", "d", p, mu, is_dagger) - 1/3 * mk_vec_mu("s", "s", p, mu, is_dagger)
+    return sympy.simplify(1)*2/3 * mk_vec_mu("u", "u", p, mu, is_dagger) - sympy.simplify(1)*1/3 * mk_vec_mu("d", "d", p, mu, is_dagger) - sympy.simplify(1)*1/3 * mk_vec_mu("s", "s", p, mu, is_dagger)
 
 def mk_jl_mu(p : str, mu, is_dagger = False):
     # jl = sqrt(2)/6 * (j0 + 3 * j10) if no s quark
-    return 2/3 * mk_vec_mu("u", "u", p, mu, is_dagger) - 1/3 * mk_vec_mu("d", "d", p, mu, is_dagger)
+    return sympy.simplify(1)*2/3 * mk_vec_mu("u", "u", p, mu, is_dagger) - sympy.simplify(1)*1/3 * mk_vec_mu("d", "d", p, mu, is_dagger)
 
 def mk_j0_mu(p : str, mu, is_dagger = False):
-    return 1.0 / math.sqrt(2.0) * (mk_vec_mu("u", "u", p, mu, is_dagger) + mk_vec_mu("d", "d", p, mu, is_dagger))
+    return sympy.simplify(1)*1/sympy.sqrt(2) * (mk_vec_mu("u", "u", p, mu, is_dagger) + mk_vec_mu("d", "d", p, mu, is_dagger))
 
 def mk_j10_mu(p : str, mu, is_dagger = False):
-    return 1.0 / math.sqrt(2.0) * (mk_vec_mu("u", "u", p, mu, is_dagger) - mk_vec_mu("d", "d", p, mu, is_dagger))
+    return sympy.simplify(1)*1/sympy.sqrt(2) * (mk_vec_mu("u", "u", p, mu, is_dagger) - mk_vec_mu("d", "d", p, mu, is_dagger))
 
 def mk_j11_mu(p : str, mu, is_dagger = False):
     return mk_vec_mu("u", "d", p, mu, is_dagger)
@@ -399,8 +399,8 @@ def mk_Q7(p, parity = None):
     for mu in range(3):
         save_sc_indices()
     expr = simplified( rsc_call(mk_4qOp_LR,"s","d","u","u",p,False,parity)
-                       - 0.5 * rsc_call(mk_4qOp_LR,"s","d","d","d",p,False,parity)
-                       - 0.5 * rsc_call(mk_4qOp_LR,"s","d","s","s",p,False,parity) )
+                       - sympy.simplify(1)/2* rsc_call(mk_4qOp_LR,"s","d","d","d",p,False,parity)
+                       - sympy.simplify(1)/2* rsc_call(mk_4qOp_LR,"s","d","s","s",p,False,parity) )
     jump_sc_indices()
     return expr
 
@@ -408,8 +408,8 @@ def mk_Q8(p, parity = None):
     for mu in range(3):
         save_sc_indices()
     expr = simplified( rsc_call(mk_4qOp_LR_cmix,"s","d","u","u",p,False,parity)
-                       - 0.5 * rsc_call(mk_4qOp_LR_cmix,"s","d","d","d",p,False,parity)
-                       - 0.5 * rsc_call(mk_4qOp_LR_cmix,"s","d","s","s",p,False,parity) )
+                       - sympy.simplify(1)/2* rsc_call(mk_4qOp_LR_cmix,"s","d","d","d",p,False,parity)
+                       - sympy.simplify(1)/2* rsc_call(mk_4qOp_LR_cmix,"s","d","s","s",p,False,parity) )
     jump_sc_indices()
     return expr
 
@@ -417,8 +417,8 @@ def mk_Q9(p, parity = None):
     for mu in range(3):
         save_sc_indices()
     expr = simplified( rsc_call(mk_4qOp_LL,"s","d","u","u",p,False,parity)
-                       - 0.5 * rsc_call(mk_4qOp_LL,"s","d","d","d",p,False,parity)
-                       - 0.5 * rsc_call(mk_4qOp_LL,"s","d","s","s",p,False,parity) )
+                       - sympy.simplify(1)/2* rsc_call(mk_4qOp_LL,"s","d","d","d",p,False,parity)
+                       - sympy.simplify(1)/2* rsc_call(mk_4qOp_LL,"s","d","s","s",p,False,parity) )
     jump_sc_indices()
     return expr
 
@@ -426,8 +426,8 @@ def mk_Q10(p, parity = None):
     for mu in range(3):
         save_sc_indices()
     expr = simplified( rsc_call(mk_4qOp_LL_cmix,"s","d","u","u",p,False,parity)
-                       - 0.5 * rsc_call(mk_4qOp_LL_cmix,"s","d","d","d",p,False,parity)
-                       - 0.5 * rsc_call(mk_4qOp_LL_cmix,"s","d","s","s",p,False,parity) )
+                       - sympy.simplify(1)/2* rsc_call(mk_4qOp_LL_cmix,"s","d","d","d",p,False,parity)
+                       - sympy.simplify(1)/2* rsc_call(mk_4qOp_LL_cmix,"s","d","s","s",p,False,parity) )
     jump_sc_indices()
     return expr
 
@@ -451,8 +451,8 @@ def test():
     expr1 = mk_pipi_i0("x1_1", "x1_2", True) * expr1 * mk_k_0("x2")
     expr2 = mk_pipi_i0("x1_1", "x1_2", True) * expr2 * mk_k_0("x2")
     expr3 = mk_pipi_i0("x1_1", "x1_2", True) * expr3 * mk_k_0("x2")
-    print(display_cexpr(contract_simplify_round_compile(expr1, expr2, expr3)))
-    # print(display_cexpr(contract_simplify_round_compile(
+    print(display_cexpr(contract_simplify_compile(expr1, expr2, expr3)))
+    # print(display_cexpr(contract_simplify_compile(
     #     mk_pipi_i0("x1_1", "x1_2", True) * mk_Q1("x") * mk_k_0("x2"),
     #     mk_pipi_i0("x1_1", "x1_2", True) * mk_Q2("x") * mk_k_0("x2"),
     #     mk_pipi_i0("x1_1", "x1_2", True) * mk_Q3("x") * mk_k_0("x2"),
@@ -491,27 +491,27 @@ def test1():
         return mk_jl_mu(j_p, 0, is_dagger) * mk_pi_p(pi_p, is_dagger)
     def jpi_0(j_p, pi_p, is_dagger = False):
         return mk_jl_mu(j_p, 0, is_dagger) * mk_pi_0(pi_p, is_dagger)
-    expr1 = 1/4 * (A("x2_j", "x2_p", True) * A("x1_j", "x1_p") + A("x2_j", "x2_p") * A("x1_j", "x1_p", True))
-    expr2 = 1/12 * (B("x2_j", "x2_p", True) * B("x1_j", "x1_p") + B("x2_j", "x2_p") * B("x1_j", "x1_p", True))
-    expr3 = 1/4 * (C("x2_j", "x2_p", True) * C("x1_j", "x1_p") + C("x2_j", "x2_p") * C("x1_j", "x1_p", True))
-    expr4 = 1/4 * (D("x2_j", "x2_p", True) * D("x1_j", "x1_p") + D("x2_j", "x2_p") * D("x1_j", "x1_p", True))
-    expr5 = 1/6 * (E("x2_j", "x2_p", True) * E("x1_j", "x1_p") + E("x2_j", "x2_p") * E("x1_j", "x1_p", True))
-    expr6 = 1/2 * (F("x2_j", "x2_p", True) * F("x1_j", "x1_p") + F("x2_j", "x2_p") * F("x1_j", "x1_p", True))
-    expr7 = 1/2 * (G("x2_j", "x2_p", True) * G("x1_j", "x1_p") + G("x2_j", "x2_p") * G("x1_j", "x1_p", True))
-    expr8 = 1/(4*math.sqrt(2)) * (C("x2_j", "x2_p", True) * F("x1_j", "x1_p") + F("x2_j", "x2_p", True) * C("x1_j", "x1_p")
+    expr1 = sympy.simplify(1)*1/4 * (A("x2_j", "x2_p", True) * A("x1_j", "x1_p") + A("x2_j", "x2_p") * A("x1_j", "x1_p", True))
+    expr2 = sympy.simplify(1)*1/12 * (B("x2_j", "x2_p", True) * B("x1_j", "x1_p") + B("x2_j", "x2_p") * B("x1_j", "x1_p", True))
+    expr3 = sympy.simplify(1)*1/4 * (C("x2_j", "x2_p", True) * C("x1_j", "x1_p") + C("x2_j", "x2_p") * C("x1_j", "x1_p", True))
+    expr4 = sympy.simplify(1)*1/4 * (D("x2_j", "x2_p", True) * D("x1_j", "x1_p") + D("x2_j", "x2_p") * D("x1_j", "x1_p", True))
+    expr5 = sympy.simplify(1)*1/6 * (E("x2_j", "x2_p", True) * E("x1_j", "x1_p") + E("x2_j", "x2_p") * E("x1_j", "x1_p", True))
+    expr6 = sympy.simplify(1)*1/2 * (F("x2_j", "x2_p", True) * F("x1_j", "x1_p") + F("x2_j", "x2_p") * F("x1_j", "x1_p", True))
+    expr7 = sympy.simplify(1)*1/2 * (G("x2_j", "x2_p", True) * G("x1_j", "x1_p") + G("x2_j", "x2_p") * G("x1_j", "x1_p", True))
+    expr8 = sympy.simplify(1)*1/(4*sympy.sqrt(2)) * (C("x2_j", "x2_p", True) * F("x1_j", "x1_p") + F("x2_j", "x2_p", True) * C("x1_j", "x1_p")
             + C("x2_j", "x2_p") * F("x1_j", "x1_p", True) + F("x2_j", "x2_p") * C("x1_j", "x1_p", True))
-    expr9 = 1/(4*math.sqrt(2)) * (D("x2_j", "x2_p", True) * G("x1_j", "x1_p") + G("x2_j", "x2_p", True) * D("x1_j", "x1_p")
+    expr9 = sympy.simplify(1)*1/(4*sympy.sqrt(2)) * (D("x2_j", "x2_p", True) * G("x1_j", "x1_p") + G("x2_j", "x2_p", True) * D("x1_j", "x1_p")
             + D("x2_j", "x2_p") * G("x1_j", "x1_p", True) + G("x2_j", "x2_p") * D("x1_j", "x1_p", True))
-    expr_p = 1/2*(jpi_p("x2_j", "x2_p", True) * jpi_p("x1_j", "x1_p") + jpi_p("x2_j", "x2_p") * jpi_p("x1_j", "x1_p", True))
-    expr_0 = 1/2*(jpi_0("x2_j", "x2_p", True) * jpi_0("x1_j", "x1_p") + jpi_0("x2_j", "x2_p") * jpi_0("x1_j", "x1_p", True))
+    expr_p = sympy.simplify(1)*1/2*(jpi_p("x2_j", "x2_p", True) * jpi_p("x1_j", "x1_p") + jpi_p("x2_j", "x2_p") * jpi_p("x1_j", "x1_p", True))
+    expr_0 = sympy.simplify(1)*1/2*(jpi_0("x2_j", "x2_p", True) * jpi_0("x1_j", "x1_p") + jpi_0("x2_j", "x2_p") * jpi_0("x1_j", "x1_p", True))
     exprs = [expr1, expr1 - expr2, expr3, expr3 - expr4, expr5, expr6, expr6 - expr7, expr8, expr8 - expr9,]
-    print(display_cexpr(contract_simplify_round_compile(*exprs)))
+    print(display_cexpr(contract_simplify_compile(*exprs)))
     exprs1 = [
-            expr_p - 1/18*(9/2*expr1 + 9/2*expr3 + expr6 + 3*math.sqrt(2)*expr8),
-            expr_0 - 1/18*(6*expr2 + 3*expr5 + expr7),
+            expr_p - sympy.simplify(1)*1/18*(9/2*expr1 + 9/2*expr3 + expr6 + 3*sympy.sqrt(2)*expr8),
+            expr_0 - sympy.simplify(1)*1/18*(6*expr2 + 3*expr5 + expr7),
             (expr_p - expr_0),
             ]
-    print(display_cexpr(contract_simplify_round_compile(*exprs1)))
+    print(display_cexpr(contract_simplify_compile(*exprs1)))
 
 def test_kk():
     expr1 = mk_kk_i0("x2_1", "x2_2", True) * mk_kk_i0("x1_1", "x1_2")
@@ -528,7 +528,7 @@ def test_kk():
     names = [ "kk kk", "kk pipi", "kk sigma", ]
     for name, exprs in zip(names, all_exprs):
         print(f"\n-- {name} --")
-        cexpr = contract_simplify_round_compile(*exprs)
+        cexpr = contract_simplify_compile(*exprs)
         print(display_cexpr(cexpr))
         cexpr.collect_op()
         print(display_cexpr(cexpr))
@@ -539,74 +539,74 @@ if __name__ == "__main__":
     # exit()
     #
     print("pi+(x1):\n", mk_pi_p("x1"))
-    print("pi+(x2)^dag pi+(x1):\n", (mk_pi_p("x2", True) * mk_pi_p("x1")).round())
+    print("pi+(x2)^dag pi+(x1):\n", mk_pi_p("x2", True) * mk_pi_p("x1"))
     print("< pi+(x2)^dag pi+(x1) >:")
     expr = mk_pi_p("x2", True) * mk_pi_p("x1")
-    print(display_cexpr(contract_simplify_round_compile(expr)))
+    print(display_cexpr(contract_simplify_compile(expr)))
     print()
     print("pi0(x1):\n", mk_pi_0("x1"))
-    print("pi0(x2)^dag pi0(x1):\n", (mk_pi_0("x2", True) * mk_pi_0("x1")).round())
+    print("pi0(x2)^dag pi0(x1):\n", mk_pi_0("x2", True) * mk_pi_0("x1"))
     print("< pi0(x2)^dag pi0(x1) >:")
     expr = mk_pi_0("x2", True) * mk_pi_0("x1")
-    print(display_cexpr(contract_simplify_round_compile(expr, is_isospin_symmetric_limit = False)))
-    print(display_cexpr(contract_simplify_round_compile(expr)))
+    print(display_cexpr(contract_simplify_compile(expr, is_isospin_symmetric_limit = False)))
+    print(display_cexpr(contract_simplify_compile(expr)))
     print()
     print("< pi0(x2)^dag pi0(x1) > - < pi+(x2)^dag pi+(x1) >: ",
-            simplified(contract_expr(mk_pi_0("x2", True) * mk_pi_0("x1") - mk_pi_p("x2", True) * mk_pi_p("x1")), is_isospin_symmetric_limit = True).round())
+            simplified(contract_expr(mk_pi_0("x2", True) * mk_pi_0("x1") - mk_pi_p("x2", True) * mk_pi_p("x1")), is_isospin_symmetric_limit = True))
     print()
     print("< pipiI22(x2_1,x2_2)^dag pipiI22(x1_1,x1_2) >:")
     expr = mk_pipi_i22("x2_1", "x2_2", True) * mk_pipi_i22("x1_1", "x1_2")
-    print(display_cexpr(contract_simplify_round_compile(expr)))
+    print(display_cexpr(contract_simplify_compile(expr)))
     print("< pipiI21(x2_1,x2_2)^dag pipiI21(x1_1,x1_2) - pipiI22(x2_1,x2_2)^dag pipiI22(x1_1,x1_2) >:")
     expr = mk_pipi_i21("x2_1", "x2_2", True) * mk_pipi_i21("x1_1", "x1_2") - mk_pipi_i22("x2_1", "x2_2", True) * mk_pipi_i22("x1_1", "x1_2")
-    print(display_cexpr(contract_simplify_round_compile(expr)))
+    print(display_cexpr(contract_simplify_compile(expr)))
     print("< pipiI20(x2_1,x2_2)^dag pipiI20(x1_1,x1_2) - pipiI22(x2_1,x2_2)^dag pipiI22(x1_1,x1_2) >:")
     expr = mk_pipi_i20("x2_1", "x2_2", True) * mk_pipi_i20("x1_1", "x1_2") - mk_pipi_i22("x2_1", "x2_2", True) * mk_pipi_i22("x1_1", "x1_2")
-    print(display_cexpr(contract_simplify_round_compile(expr)))
+    print(display_cexpr(contract_simplify_compile(expr)))
     print()
     print("< pipiI11(x2_1,x2_2)^dag pipiI11(x1_1,x1_2) >:")
     expr = mk_pipi_i11("x2_1", "x2_2", True) * mk_pipi_i11("x1_1", "x1_2")
-    print(display_cexpr(contract_simplify_round_compile(expr)))
+    print(display_cexpr(contract_simplify_compile(expr)))
     print("< pipiI10(x2_1,x2_2)^dag pipiI10(x1_1,x1_2) - pipiI11(x2_1,x2_2)^dag pipiI11(x1_1,x1_2) >:")
     expr = mk_pipi_i10("x2_1", "x2_2", True) * mk_pipi_i10("x1_1", "x1_2") - mk_pipi_i11("x2_1", "x2_2", True) * mk_pipi_i11("x1_1", "x1_2")
-    print(display_cexpr(contract_simplify_round_compile(expr)))
+    print(display_cexpr(contract_simplify_compile(expr)))
     print()
     print("< pipiI0(x1_1,x1_2) >:")
     expr = mk_pipi_i0("x1_1", "x1_2")
-    print(display_cexpr(contract_simplify_round_compile(expr)))
+    print(display_cexpr(contract_simplify_compile(expr)))
     print("< pipiI0(x2_1,x2_2)^dag pipiI0(x1_1,x1_2) >:")
     expr = mk_pipi_i0("x2_1", "x2_2", True) * mk_pipi_i0("x1_1", "x1_2")
-    print(display_cexpr(contract_simplify_round_compile(expr)))
+    print(display_cexpr(contract_simplify_compile(expr)))
     print()
     print("< sigma(x1) >:")
     expr = mk_sigma("x1")
-    print(display_cexpr(contract_simplify_round_compile(expr)))
+    print(display_cexpr(contract_simplify_compile(expr)))
     print("< pipiI0(x2_1,x2_2)^dag sigma(x1) >:")
     expr = mk_pipi_i0("x2_1", "x2_2", True) * mk_sigma("x1")
-    print(display_cexpr(contract_simplify_round_compile(expr)))
+    print(display_cexpr(contract_simplify_compile(expr)))
     print()
     print("< K+(x2)^dag K+(x1)>:")
     expr = mk_k_p("x2", True) * mk_k_p("x1")
-    print(display_cexpr(contract_simplify_round_compile(expr)))
+    print(display_cexpr(contract_simplify_compile(expr)))
     print()
     print("< pi0(x2)^dag j_mu(xj_1) j_nu(xj_2) pi0(x1) >:")
     expr = mk_pi_0("x1", True) * mk_j_mu("xj_1", "mu") * mk_j_mu("xj_2", "nu") * mk_pi_0("x2")
-    print(display_cexpr(contract_simplify_round_compile(expr)))
+    print(display_cexpr(contract_simplify_compile(expr)))
     print()
     print("< pi+(x2)^dag j_mu(xj_1) j_nu(xj_2) pi+(x1) / 2 + pi-(x2)^dag j_mu(xj_1) j_nu(xj_2) pi-(x1) / 2 >:")
     expr = (
-            1/2 * mk_pi_p("x2", True) * mk_j_mu("xj_1", "mu") * mk_j_mu("xj_2", "nu") * mk_pi_p("x1")
-            + 1/2 * mk_pi_m("x2", True) * mk_j_mu("xj_1", "mu") * mk_j_mu("xj_2", "nu") * mk_pi_m("x1")
+            sympy.simplify(1)/2 * mk_pi_p("x2", True) * mk_j_mu("xj_1", "mu") * mk_j_mu("xj_2", "nu") * mk_pi_p("x1")
+            + sympy.simplify(1)/2 * mk_pi_m("x2", True) * mk_j_mu("xj_1", "mu") * mk_j_mu("xj_2", "nu") * mk_pi_m("x1")
             )
-    print(display_cexpr(contract_simplify_round_compile(expr)))
+    print(display_cexpr(contract_simplify_compile(expr)))
     print()
     print("< pi+(x2)^dag j_mu(xj_1) j_nu(xj_2) pi+(x1) / 2 + pi-(x2)^dag j_mu(xj_1) j_nu(xj_2) pi-(x1) / 2 - pi0(x2)^dag j_mu(xj_1) j_nu(xj_2) pi0(x1) >:")
     expr = (
-            1/2 * mk_pi_p("x2", True) * mk_j_mu("xj_1", "mu") * mk_j_mu("xj_2", "nu") * mk_pi_p("x1")
-            + 1/2 * mk_pi_m("x2", True) * mk_j_mu("xj_1", "mu") * mk_j_mu("xj_2", "nu") * mk_pi_m("x1")
+            sympy.simplify(1)/2 * mk_pi_p("x2", True) * mk_j_mu("xj_1", "mu") * mk_j_mu("xj_2", "nu") * mk_pi_p("x1")
+            + sympy.simplify(1)/2 * mk_pi_m("x2", True) * mk_j_mu("xj_1", "mu") * mk_j_mu("xj_2", "nu") * mk_pi_m("x1")
             - mk_pi_0("x1", True) * mk_j_mu("xj_1", "mu") * mk_j_mu("xj_2", "nu") * mk_pi_0("x2")
             )
-    print(display_cexpr(contract_simplify_round_compile(expr)))
+    print(display_cexpr(contract_simplify_compile(expr)))
     #
     print()
     test_kk()

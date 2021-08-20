@@ -20,6 +20,7 @@
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 import copy
+import sympy
 
 class Op:
 
@@ -346,8 +347,8 @@ def collect_traces(ops : list) -> list:
 
 class Term:
 
-    def __init__(self, c_ops, a_ops, coef : complex = 1):
-        self.coef = complex(coef)
+    def __init__(self, c_ops, a_ops, coef = 1):
+        self.coef = coef
         self.c_ops = c_ops
         self.a_ops = a_ops
         for op in c_ops:
@@ -361,7 +362,7 @@ class Term:
         for op in self.a_ops:
             assert not op.is_commute()
 
-    def __imul__(self, factor : complex):
+    def __imul__(self, factor):
         self.coef *= factor
 
     def __add__(self, other):
@@ -406,8 +407,8 @@ class Term:
 def combine_two_terms(t1 : Term, t2 : Term):
     if t1.c_ops == t2.c_ops and t1.a_ops == t2.a_ops:
         coef = t1.coef + t2.coef
-        if coef == 0.0:
-            return Term([], [], 0.0)
+        if sympy.simplify(coef) == 0:
+            return Term([], [], 0)
         else:
             return Term(t1.c_ops, t1.a_ops, coef)
     else:
@@ -418,7 +419,7 @@ class Expr:
     def __init__(self, terms):
         self.terms = terms
 
-    def __imul__(self, factor : complex):
+    def __imul__(self, factor):
         for term in self.terms:
             term *= factor
 
@@ -462,12 +463,12 @@ class Expr:
         self.terms = combine_terms_expr(self).terms
         self.terms = drop_zero_terms(self).terms
 
-    def round(self, ndigit : int = 14) -> None:
+    def round(self, ndigit : int = 20) -> None:
         # interface function
         sexpr = copy.deepcopy(self)
         for term in sexpr.terms:
             coef = term.coef
-            term.coef = complex(round(coef.real, ndigit), round(coef.imag, ndigit))
+            term.coef = sympy.simplify(term.coef).evalf(ndigit) # complex(round(coef.real, ndigit), round(coef.imag, ndigit))
         sexpr.terms = drop_zero_terms(sexpr).terms
         return sexpr
 
@@ -496,9 +497,7 @@ def simplified(expr : Expr, *, is_isospin_symmetric_limit : bool = True) -> Expr
     return sexpr
 
 def mk_expr(x) -> Expr:
-    if isinstance(x, int) or isinstance(x, float) or isinstance(x, complex):
-        return Expr([Term([], [], x),])
-    elif isinstance(x, Op):
+    if isinstance(x, Op):
         if x.is_commute():
             return Expr([Term([x,], [], 1),])
         else:
@@ -507,6 +506,8 @@ def mk_expr(x) -> Expr:
         return Expr([x,])
     elif isinstance(x, Expr):
         return x
+    elif isinstance(x, int) or isinstance(x, float) or isinstance(x, complex) or isinstance(x, sympy.Basic):
+        return Expr([Term([], [], x),])
     else:
         print(x)
         assert False
