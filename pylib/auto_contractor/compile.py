@@ -243,7 +243,8 @@ def collect_subexpr_in_cexpr(variables, named_terms):
 
 class CExpr:
 
-    def __init__(self, diagram_types, variables, named_terms, named_typed_exprs, named_exprs, positions = None):
+    def __init__(self, descriptions, diagram_types, variables, named_terms, named_typed_exprs, named_exprs, positions = None):
+        self.descriptions = descriptions
         self.diagram_types = diagram_types
         self.variables = variables
         self.named_terms = named_terms
@@ -259,7 +260,7 @@ class CExpr:
             self.positions = sorted(list(s))
 
     def __repr__(self) -> str:
-        return f"CExpr({self.diagram_types},{self.variables},{self.named_terms},{self.named_typed_exprs},{self.named_exprs},{self.positions})"
+        return f"CExpr({self.descriptions},{self.diagram_types},{self.variables},{self.named_terms},{self.named_typed_exprs},{self.named_exprs},{self.positions})"
 
     def collect_op(self):
         # interface function
@@ -356,6 +357,7 @@ def eval_term_factor(term):
 
 def mk_cexpr(*exprs):
     # interface function
+    descriptions = [ expr.show() for expr in exprs ]
     # build diagram_types
     diagram_type_dict = dict()
     diagram_type_counter = 0
@@ -387,7 +389,7 @@ def mk_cexpr(*exprs):
             if typed_expr_list:
                 named_typed_exprs.append((f"E{i+1}_{diagram_type_name}", typed_expr_list,))
         named_exprs.append((f"E{i+1}", expr_list,))
-    return CExpr(diagram_types, [], named_terms, named_typed_exprs, named_exprs)
+    return CExpr(descriptions, diagram_types, [], named_terms, named_typed_exprs, named_exprs)
 
 def contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True):
     # interface function
@@ -414,7 +416,7 @@ def show_variable_value(value):
         expr = "*".join(map(show_variable_value, value.ops))
         return f"Tr({expr})"
     elif isinstance(value, Term):
-        return "*".join(map(show_variable_value, [value.coef] + value.c_ops + value.a_ops))
+        return "*".join(map(show_variable_value, [ f"({value.coef})", ] + value.c_ops + value.a_ops))
     else:
         return f"{value}"
 
@@ -432,8 +434,8 @@ def display_cexpr_raw(cexpr : CExpr):
         lines.append(f"{name:>20} : {term}")
     for name, typed_expr in cexpr.named_typed_exprs:
         lines.append(f"{name:>20} : {typed_expr}")
-    for name, expr in cexpr.named_exprs:
-        lines.append(f"{name:>20} : {expr}")
+    for description, (name, expr,) in zip(cexpr.descriptions, cexpr.named_exprs):
+        lines.append(f"{description}\n{name:>20} : {expr}")
     lines.append(f"End CExpr")
     return "\n".join(lines)
 
@@ -451,9 +453,14 @@ def display_cexpr(cexpr : CExpr):
         lines.append(f"{name:>20} = {show_variable_value(term)}")
     for name, typed_expr in cexpr.named_typed_exprs:
         s = "+".join(map(show_variable_value, typed_expr))
+        if s == "":
+            s = 0
         lines.append(f"{name:>20} = {s}")
-    for name, expr in cexpr.named_exprs:
+    for description, (name, expr,) in zip(cexpr.descriptions, cexpr.named_exprs):
         s = "+".join(map(show_variable_value, expr))
+        if s == "":
+            s = 0
+        lines.append(f"{name:>20} = {description}")
         lines.append(f"{name:>20} = {s}")
     lines.append(f"End CExpr")
     return "\n".join(lines)

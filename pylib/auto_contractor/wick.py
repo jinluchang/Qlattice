@@ -30,6 +30,9 @@ class Op:
     def is_commute(self) -> bool:
         return True
 
+    def show(self, is_multiply = False):
+        return repr(self)
+
     def __repr__(self) -> str:
         return f"Op({self.otype})"
 
@@ -388,6 +391,9 @@ class Term:
     def __rsub__(self, other):
         return mk_expr(other) + mk_expr(-1) * self
 
+    def show(self, is_multiply = False) -> str:
+        return "*".join([ f"({self.coef})", ] + self.c_ops + self.a_ops)
+
     def __repr__(self) -> str:
         return f"Term({self.c_ops},{self.a_ops},{self.coef})"
 
@@ -416,16 +422,23 @@ def combine_two_terms(t1 : Term, t2 : Term):
 
 class Expr:
 
-    def __init__(self, terms):
+    def __init__(self, terms, description = None):
+        self.description = description
         self.terms = terms
 
     def __imul__(self, factor):
         for term in self.terms:
             term *= factor
+        description = f"{factor} * {self.show(True)}"
 
     def __add__(self, other):
+        # if other is str, then it is used to set the description of the result expr
+        if isinstance(other, str):
+            return Expr(self.terms, other)
+        # otherwise return self + other
         other = mk_expr(other)
-        return Expr(self.terms + other.terms)
+        terms = self.terms + other.terms
+        return Expr(terms, f"+{self.show()} + {other.show()}")
 
     __radd__ = __add__
 
@@ -437,7 +450,7 @@ class Expr:
                 coef = t1.coef * t2.coef
                 t = Term(t1.c_ops + t2.c_ops, t1.a_ops + t2.a_ops, coef)
                 terms.append(t)
-        return Expr(terms)
+        return Expr(terms, f"{self.show(True)} * {other.show(True)}")
 
     def __rmul__(self, other):
         return mk_expr(other) * self
@@ -451,8 +464,24 @@ class Expr:
     def __rsub__(self, other):
         return mk_expr(other) + mk_expr(-1) * self
 
+    def show(self, is_multiply = False):
+        if self.description is not None:
+            assert isinstance(self.description, str)
+            if self.description[0] == "+":
+                if is_multiply:
+                    return f"( {self.description[1:]} )"
+                else:
+                    return f"{self.description[1:]}"
+            else:
+                return self.description
+        else:
+            return repr(self)
+
     def __repr__(self) -> str:
-        return f"Expr({self.terms})"
+        if self.description is None:
+            return f"Expr({self.terms})"
+        else:
+            return f"Expr({self.terms},{self.description})"
 
     def sort(self) -> None:
         for term in self.terms:
@@ -499,15 +528,15 @@ def simplified(expr : Expr, *, is_isospin_symmetric_limit : bool = True) -> Expr
 def mk_expr(x) -> Expr:
     if isinstance(x, Op):
         if x.is_commute():
-            return Expr([Term([x,], [], 1),])
+            return Expr([Term([x,], [], 1),], f"{x}")
         else:
-            return Expr([Term([], [x,], 1),])
+            return Expr([Term([], [x,], 1),], f"{x}")
     elif isinstance(x, Term):
-        return Expr([x,])
+        return Expr([x,], f"x.show()")
     elif isinstance(x, Expr):
         return x
     elif isinstance(x, int) or isinstance(x, float) or isinstance(x, complex) or isinstance(x, sympy.Basic):
-        return Expr([Term([], [], x),])
+        return Expr([Term([], [], x),], f"({x})")
     else:
         print(x)
         assert False
@@ -525,14 +554,14 @@ def combine_terms_expr(expr : Expr) -> Expr:
         else:
             term = ct
     terms.append(term)
-    return Expr(terms)
+    return Expr(terms, expr.description)
 
 def drop_zero_terms(expr : Expr) -> Expr:
     terms = []
     for t in expr.terms:
         if t.coef != 0.0:
             terms.append(t)
-    return Expr(terms)
+    return Expr(terms, expr.description)
 
 def op_derivative_exp(op : Op):
     if op.otype == "Qv":
@@ -626,7 +655,7 @@ def contract_expr(expr: Expr) -> Expr:
     all_terms = []
     for term in expr.terms:
         all_terms += contract_term(term).terms
-    return Expr(all_terms)
+    return Expr(all_terms, f"< {expr.show()} >")
 
 if __name__ == "__main__":
     expr = (1
