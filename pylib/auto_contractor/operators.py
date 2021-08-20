@@ -123,7 +123,7 @@ def mk_pipi_i0(p1 : str, p2 : str, is_dagger = False):
             - mk_pi_0(p1, is_dagger) * mk_pi_0(p2, is_dagger)
             + mk_pi_m(p1, is_dagger) * mk_pi_p(p2, is_dagger)
             + mk_pi_p(p1, is_dagger) * mk_pi_m(p2, is_dagger)
-            ) + f"pipi_I20({p1},{p2}){show_dagger(is_dagger)}"
+            ) + f"pipi_I0({p1},{p2}){show_dagger(is_dagger)}"
 
 def mk_k_p(p : str, is_dagger = False):
     if not is_dagger:
