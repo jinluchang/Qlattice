@@ -400,6 +400,43 @@ def contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True):
     cexpr = mk_cexpr(*exprs)
     return cexpr
 
+def show_variable_value(value):
+    if isinstance(value, list):
+        return "*".join(map(show_variable_value, value))
+    elif isinstance(value, Var):
+        return f"{value.name}"
+    elif isinstance(value, G) and value.tag in [0, 1, 2, 3, 5]:
+        tag = { 0: "x", 1: "y", 2: "z", 3: "t", 5: "5", }[value.tag]
+        return f"gamma_{tag}"
+    elif isinstance(value, S):
+        return f"S_{value.f}({value.p1},{value.p2})"
+    elif isinstance(value, Tr):
+        expr = "*".join(map(show_variable_value, value.ops))
+        return f"Tr({expr})"
+    elif isinstance(value, Term):
+        return "*".join(map(show_variable_value, [value.coef] + value.c_ops + value.a_ops))
+    else:
+        return f"{value}"
+
+def display_cexpr_raw(cexpr : CExpr):
+    # interface function
+    # return a string
+    lines = []
+    lines.append(f"Begin CExpr")
+    lines.append(f"{'Positions':>10} : {cexpr.positions}")
+    for name, diagram_type in cexpr.diagram_types:
+        lines.append(f"{name:>10} : {diagram_type}")
+    for name, value in cexpr.variables:
+        lines.append(f"{name:>20} : {value}")
+    for name, term in cexpr.named_terms:
+        lines.append(f"{name:>20} : {term}")
+    for name, typed_expr in cexpr.named_typed_exprs:
+        lines.append(f"{name:>20} : {typed_expr}")
+    for name, expr in cexpr.named_exprs:
+        lines.append(f"{name:>20} : {expr}")
+    lines.append(f"End CExpr")
+    return "\n".join(lines)
+
 def display_cexpr(cexpr : CExpr):
     # interface function
     # return a string
@@ -409,13 +446,15 @@ def display_cexpr(cexpr : CExpr):
     for name, diagram_type in cexpr.diagram_types:
         lines.append(f"{name:>10} : {diagram_type}")
     for name, value in cexpr.variables:
-        lines.append(f"{name:>10} : {value}")
+        lines.append(f"{name:>20} = {show_variable_value(value)}")
     for name, term in cexpr.named_terms:
-        lines.append(f"{name:>20} : {term}")
+        lines.append(f"{name:>20} = {show_variable_value(term)}")
     for name, typed_expr in cexpr.named_typed_exprs:
-        lines.append(f"{name:>15} : {typed_expr}")
+        s = "+".join(map(show_variable_value, typed_expr))
+        lines.append(f"{name:>20} = {s}")
     for name, expr in cexpr.named_exprs:
-        lines.append(f"{name:>10} : {expr}")
+        s = "+".join(map(show_variable_value, expr))
+        lines.append(f"{name:>20} = {s}")
     lines.append(f"End CExpr")
     return "\n".join(lines)
 
