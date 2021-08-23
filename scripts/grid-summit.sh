@@ -32,7 +32,7 @@ cd build
     --with-mpfr="$prefix" \
     --prefix=$prefix \
     CXX=nvcc \
-    CXXFLAGS="-Xcompiler -fPIC -ccbin mpicxx -gencode arch=compute_70,code=sm_70 -std=c++11" \
+    CXXFLAGS="-Xcompiler -fPIC -ccbin mpicxx -gencode arch=compute_70,code=sm_70 -std=c++14" \
     LDFLAGS="-Xcompiler -fopenmp"
 
     # --enable-shm=shmopen \
