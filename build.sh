@@ -71,6 +71,20 @@ elif [ "$target" = sse4 ] ; then
     #
     ./scripts/grid-sse4.sh
     ./scripts/gpt.sh
+elif [ "$target" = gen16 ] ; then
+    ./scripts/setenv.sh
+    . "$prefix"/setenv.sh
+    #
+    ./scripts/fftw.sh
+    ./scripts/fftwf.sh
+    ./scripts/cuba.sh
+    ./scripts/zlib.sh
+    ./scripts/c-lime.sh
+    ./scripts/eigen.sh
+    ./scripts/qlat.sh
+    #
+    ./scripts/grid-gen-16.sh
+    ./scripts/gpt.sh
 elif [ "$target" = bnlknl ] ; then
     ./scripts/setenv-bnlknl.sh
     . "$prefix"/setenv.sh
