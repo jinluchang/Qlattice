@@ -21,7 +21,7 @@ ln -vs "${INITDIR}/Eigen/unsupported/Eigen" "${INITDIR}/Grid/Eigen/unsupported"
 mkdir build
 cd build
 ../configure \
-    --enable-simd=AVX2 \
+    --enable-simd=SSE4 \
     --enable-alloc-align=4k \
     --enable-comms=mpi-auto \
     --with-lime="$prefix" \

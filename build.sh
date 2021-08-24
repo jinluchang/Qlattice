@@ -12,7 +12,16 @@ echo "Need to run ./scripts/download.sh to download all needed packages."
 
 . conf.sh
 
-if [ -e $prefix ] ; then
+if which mpic++ >/dev/null 2>&1 ; then
+    type mpic++
+elif which mpicxx >/dev/null 2>&1 ; then
+    type mpicxx
+else
+    echo "NO mpic++ or mpicxx available. Quit."
+    exit
+fi
+
+if [ -e "$prefix" ] ; then
     echo "$prefix already exist, continue to build will erase all its contents."
     echo "Use ./scripts/qlat.sh to build Qlat only."
     echo "Ctrl-C to stop."
@@ -22,36 +31,75 @@ if [ -e $prefix ] ; then
     done
 fi
 
-rm -rf $prefix/{bin,include,lib,pylib,share} || true
-mkdir -p $prefix
+rm -rf "$prefix" || true
+mkdir -p "$prefix"
 
-if which mpic++ >/dev/null 2>&1 || which mpicxx >/dev/null 2>&1 ; then
-    echo "mpi already exist. proceed."
-else
-    echo "NO mpic++ or mpicxx available. Quit."
-    exit
+target="$1"
+
+if [ -z "$target" ] ; then
+    target=default
 fi
 
-if [ -f $prefix/setenv.sh ] ; then
-    echo "Setup file '$prefix/setenv.sh' already exist."
-else
-    echo "Install default '$prefix/setenv.sh' setup file."
+if [ "$target" = default ] ; then
     ./scripts/setenv.sh
+    . "$prefix"/setenv.sh
+    #
+    # ./scripts/gsl.sh
+    # ./scripts/cmake.sh
+    # ./scripts/lapack.sh
+    ./scripts/fftw.sh
+    ./scripts/fftwf.sh
+    ./scripts/cuba.sh
+    ./scripts/zlib.sh
+    ./scripts/c-lime.sh
+    ./scripts/eigen.sh
+    ./scripts/qlat.sh
+    #
+    ./scripts/grid-avx2.sh
+    ./scripts/gpt.sh
+elif [ "$target" = sse4 ] ; then
+    ./scripts/setenv.sh
+    . "$prefix"/setenv.sh
+    #
+    ./scripts/fftw.sh
+    ./scripts/fftwf.sh
+    ./scripts/cuba.sh
+    ./scripts/zlib.sh
+    ./scripts/c-lime.sh
+    ./scripts/eigen.sh
+    ./scripts/qlat.sh
+    #
+    ./scripts/grid-sse4.sh
+    ./scripts/gpt.sh
+elif [ "$target" = bnlknl ] ; then
+    ./scripts/setenv-bnlknl.sh
+    . "$prefix"/setenv.sh
+    #
+    ./scripts/fftw.sh
+    ./scripts/fftwf.sh
+    ./scripts/cuba.sh
+    ./scripts/zlib.sh
+    ./scripts/c-lime.sh
+    ./scripts/eigen.sh
+    ./scripts/qlat.sh
+    #
+    ./scripts/grid-knl.sh
+    ./scripts/gpt.sh
+elif [ "$target" = summit ] ; then
+    ./scripts/setenv-summit.sh
+    . "$prefix"/setenv.sh
+    #
+    ./scripts/fftw.sh
+    ./scripts/fftwf.sh
+    ./scripts/cuba.sh
+    ./scripts/zlib.sh
+    ./scripts/c-lime.sh
+    ./scripts/eigen.sh
+    ./scripts/qlat.sh
+    #
+    ./scripts/mpfr.sh
+    ./scripts/grid-summit.sh
+    ./scripts/gpt.sh
 fi
-
-
-# ./scripts/gsl.sh
-# ./scripts/cmake.sh
-# ./scripts/lapack.sh
-./scripts/fftw.sh
-./scripts/fftwf.sh
-./scripts/cuba.sh
-./scripts/zlib.sh
-./scripts/c-lime.sh
-./scripts/eigen.sh
-./scripts/qlat.sh
-
-# ./scripts/grid-avx2.sh
-# ./scripts/gpt.sh
 
 rm -rf $temp_dir

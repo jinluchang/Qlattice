@@ -2,12 +2,6 @@ if [ -z "$prefix" ] ; then
     prefix="$(readlink -m "$HOME/qlat-build/default")"
 fi
 
-if [ "$(uname -m)" = x86_64 ] ; then
-    arch=amd64
-else
-    arch=unknown
-fi
-
 add-to-colon-list () {
     local name="$1"
     local new_value="$2"
