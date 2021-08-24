@@ -122,6 +122,32 @@ def gpt_from_qlat_gauge_field(gf):
     return gpt_gf
 
 @q.timer
+def qlat_from_gpt_gauge_transform(gpt_gt):
+    ctype = "ColorMatrix"
+    total_site = gpt_gt.grid.fdimensions
+    multiplicity = 1
+    tag = "qlat_from_gpt"
+    plan = get_qlat_gpt_copy_plan(ctype, total_site, multiplicity, tag)
+    geo = q.Geometry(total_site, 1)
+    gt = q.GaugeTransform(geo)
+    plan(gt.mview(), gpt_gt)
+    return gt
+
+@q.timer
+def gpt_from_qlat_gauge_transform(gt):
+    assert isinstance(gt, q.GaugeTransform)
+    geo = gt.geo()
+    ctype = "ColorMatrix"
+    total_site = geo.total_site()
+    multiplicity = 1
+    tag = "gpt_from_qlat"
+    plan = get_qlat_gpt_copy_plan(ctype, total_site, multiplicity, tag)
+    grid = mk_grid(geo)
+    gpt_gt = g.mcolor(grid)
+    plan(gpt_gt, gt.mview())
+    return gpt_gt
+
+@q.timer
 def qlat_from_gpt_prop(gpt_prop):
     ctype = "WilsonMatrix"
     total_site = gpt_prop.grid.fdimensions
@@ -198,10 +224,18 @@ def is_gpt_gauge_field(obj):
     else:
         return False
 
+def is_gpt_gauge_transform(obj):
+    if isinstance(obj, g.core.lattice) and obj.describe() == 'ot_matrix_su_n_fundamental_group(3);none':
+        return True
+    else:
+        return False
+
 @q.timer
 def qlat_from_gpt(gpt_obj):
     if is_gpt_prop(gpt_obj):
         return qlat_from_gpt_prop(gpt_obj)
+    elif is_gpt_gauge_transform(gpt_obj):
+        return qlat_from_gpt_gauge_transform(gpt_obj)
     elif is_gpt_gauge_field(gpt_obj):
         return qlat_from_gpt_gauge_field(gpt_obj)
     elif is_gpt_ff4d(gpt_obj):
@@ -215,6 +249,8 @@ def qlat_from_gpt(gpt_obj):
 def gpt_from_qlat(obj):
     if isinstance(obj, q.Prop):
         return gpt_from_qlat_prop(obj)
+    elif isinstance(obj, q.GaugeTransform):
+        return gpt_from_qlat_gauge_transform(obj)
     elif isinstance(obj, q.GaugeField):
         return gpt_from_qlat_gauge_field(obj)
     elif isinstance(obj, q.FermionField4d):
