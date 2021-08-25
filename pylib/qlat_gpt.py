@@ -1,6 +1,8 @@
 import gpt as g
 import qlat as q
 
+import textwrap
+
 def mk_grid(geo = None):
     if geo is None:
         l_size = 8 * 3 * 5
@@ -306,3 +308,103 @@ def save_gauge_field(gf, path):
 def load_gauge_field(path):
     gpt_gf = g.load(path)
     return qlat_from_gpt(gpt_gf)
+
+def gauge_fix_coulomb(
+        gf,
+        *,
+        mpi_split = [ 1, 1, 1, ],
+        maxiter_gd = 100,
+        maxiter_cg = 500,
+        maxcycle_cg = 10,
+        log_every = 10,
+        eps = 1e-12,
+        step = 0.2,
+        step_gd = 0.1,
+        rng_seed = None,
+        ):
+    g.message(textwrap.dedent(f"""\
+            Coulomb gauge fixer run with:
+              mpi_split   = {mpi_split}
+              maxiter_cg  = {maxiter_cg}
+              maxiter_gd  = {maxiter_gd}
+              maxcycle_cg = {maxcycle_cg}
+              log_every   = {log_every}
+              eps         = {eps}
+              step        = {step}
+              step_gd     = {step_gd}
+              random      = {rng_seed}
+            Note: convergence is only guaranteed for sufficiently small step parameter.
+            """
+            ))
+    # create rng if needed
+    rng = None if rng_seed is None else g.random(rng_seed)
+    # load source
+    U = gpt_from_qlat(gf)
+    # split in time
+    Nt = U[0].grid.gdimensions[3]
+    g.message(f"Separate {Nt} time slices")
+    Usep = [g.separate(u, 3) for u in U[0:3]]
+    Vt = [g.mcolor(Usep[0][0].grid) for t in range(Nt)]
+    cache = {}
+    split_grid = Usep[0][0].grid.split(mpi_split, Usep[0][0].grid.fdimensions)
+    #
+    g.message("Split grid")
+    Usep_split = [g.split(Usep[mu], split_grid, cache) for mu in range(3)]
+    Vt_split = g.split(Vt, split_grid, cache)
+    #
+    # optimizer
+    opt = g.algorithms.optimize
+    cg = opt.non_linear_cg(
+        maxiter=maxiter_cg,
+        eps=eps,
+        step=step,
+        line_search=opt.line_search_quadratic,
+        log_functional_every=log_every,
+        beta=opt.polak_ribiere,
+    )
+    gd = opt.gradient_descent(
+        maxiter=maxiter_gd,
+        eps=eps,
+        step=step_gd,
+        log_functional_every=log_every,
+    )
+    #
+    # Coulomb functional on each time-slice
+    Nt_split = len(Vt_split)
+    g.message(f"This rank has {Nt_split} time slices")
+    for t in range(Nt_split):
+
+        f = g.qcd.gauge.fix.landau([Usep_split[mu][t] for mu in range(3)])
+        fa = opt.fourier_accelerate.inverse_phat_square(Vt_split[t].grid, f)
+
+        g.message(f"Run local time slice {t} / {Nt_split}")
+
+        if rng is not None:
+            rng.element(Vt_split[t])
+        else:
+            Vt_split[t] @= g.identity(Vt_split[t])
+
+        if not gd(fa)(Vt_split[t], Vt_split[t]):
+            for i in range(maxcycle_cg):
+                if cg(fa)(Vt_split[t], Vt_split[t]):
+                    break
+    #
+    g.message("Unsplit")
+    g.unsplit(Vt, Vt_split, cache)
+    #
+    g.message("Project to group (should only remove rounding errors)")
+    Vt = [g.project(vt, "defect") for vt in Vt]
+    #
+    g.message("Test")
+    # test results
+    for t in range(Nt):
+        f = g.qcd.gauge.fix.landau([Usep[mu][t] for mu in range(3)])
+        dfv = f.gradient(Vt[t], Vt[t])
+        theta = g.norm2(dfv).real / Vt[t].grid.gsites / dfv.otype.Nc
+        g.message(f"theta[{t}] = {theta}")
+        g.message(f"V[{t}][0,0,0] = ", Vt[t][0, 0, 0])
+    #
+    # merge time slices
+    V = g.merge(Vt, 3)
+    gt = qlat_from_gpt(V)
+    return gt
