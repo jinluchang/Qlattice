@@ -467,7 +467,7 @@ class Expr:
     def show(self, is_multiply = False):
         if self.description is not None:
             assert isinstance(self.description, str)
-            if self.description[0] == "+":
+            if len(self.description) >= 1 and self.description[0] == "+":
                 if is_multiply:
                     return f"( {self.description[1:]} )"
                 else:

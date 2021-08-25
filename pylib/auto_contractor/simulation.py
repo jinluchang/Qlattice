@@ -203,12 +203,6 @@ def auto_contractor_meson_corr(job_tag, traj, num_trials):
             vol**2 * mk_k_p("x2", True) * mk_k_p("x1"),
             vol**2 * mk_k_m("x2", True) * mk_k_m("x1"),
             ]
-    names = [
-            "pi pi",
-            "k k",
-            "k^- k^-",
-            ]
-    names_dict = { f"E{i+1}" : name for i, name in enumerate(names) }
     cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
     q.displayln_info(display_cexpr(cexpr))
     cexpr.collect_op()
@@ -237,8 +231,7 @@ def auto_contractor_meson_corr(job_tag, traj, num_trials):
     for name_fac, results in zip(names_fac, results_list):
         q.displayln_info(f"{name_fac} :")
         for k, v in results.items():
-            n = names_dict[k.rsplit("_", 1)[0]]
-            q.displayln_info(f"{name_fac} {k:>15} {n:>40} : {v} ")
+            q.displayln_info(f"{name_fac} {k}:\n{v}")
 
 @q.timer
 def auto_contractor_pipi_corr(job_tag, traj, num_trials):
@@ -263,26 +256,6 @@ def auto_contractor_pipi_corr(job_tag, traj, num_trials):
             vol**3 * mk_pipi_i0("x2_1", "x2_2", True) * mk_sigma("x1_1"),
             vol**3 * mk_pipi_i0("x2_1", "x2_2", True) * mk_sigma("x1_2"),
             ]
-    names = [
-            "pipi_i22_2  pipi_i22_1",
-            "pipi_i11_2  pipi_i11_1",
-            "pipi_i0_2   pipi_i0_1 ",
-            "pipi_i0_2",
-            "pipi_i0_1",
-            "sigma_21    sigma_11  ",
-            "sigma_21    sigma_12  ",
-            "sigma_22    sigma_11  ",
-            "sigma_22    sigma_12  ",
-            "sigma_11 ",
-            "sigma_12 ",
-            "sigma_21 ",
-            "sigma_22 ",
-            "sigma_21    pipi_i0_1 ",
-            "sigma_22    pipi_i0_1 ",
-            "pipi_i0_2   sigma_11  ",
-            "pipi_i0_2   sigma_12  ",
-            ]
-    names_dict = { f"E{i+1}" : name for i, name in enumerate(names) }
     cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
     q.displayln_info(display_cexpr(cexpr))
     cexpr.collect_op()
@@ -318,51 +291,50 @@ def auto_contractor_pipi_corr(job_tag, traj, num_trials):
     for name_fac, results in zip(names_fac, results_list):
         q.displayln_info(f"{name_fac} :")
         for k, v in results.items():
-            n = names_dict[k.rsplit("_", 1)[0]]
-            q.displayln_info(f"{name_fac} {k:>15} {n:>40} : {v} ")
+            q.displayln_info(f"{name_fac} {k}:\n{v}")
 
 @q.timer
 def auto_contractor_kpipi_corr(job_tag, traj, num_trials):
     total_site = ru.get_total_site(job_tag)
     vol = total_site[0] * total_site[1] * total_site[2]
     exprs_odd_ops = [
-            vol * mk_Q1("x", "odd"),
-            vol * mk_Q2("x", "odd"),
-            vol * mk_Q3("x", "odd"),
-            vol * mk_Q4("x", "odd"),
-            vol * mk_Q5("x", "odd"),
-            vol * mk_Q6("x", "odd"),
-            vol * mk_Q7("x", "odd"),
-            vol * mk_Q8("x", "odd"),
-            vol * mk_Q9("x", "odd"),
-            vol * mk_Q10("x", "odd"),
-            vol * mk_Qsub("x", "odd"),
+            vol * mk_Q1("x", "odd") + "Q1(o)",
+            vol * mk_Q2("x", "odd") + "Q2(o)",
+            vol * mk_Q3("x", "odd") + "Q3(o)",
+            vol * mk_Q4("x", "odd") + "Q4(o)",
+            vol * mk_Q5("x", "odd") + "Q5(o)",
+            vol * mk_Q6("x", "odd") + "Q6(o)",
+            vol * mk_Q7("x", "odd") + "Q7(o)",
+            vol * mk_Q8("x", "odd") + "Q8(o)",
+            vol * mk_Q9("x", "odd") + "Q9(o)",
+            vol * mk_Q10("x", "odd") + "Q10(o)",
+            vol * mk_Qsub("x", "odd") + "Qs(o)",
             ]
     exprs_even_ops = [
-            vol * mk_Q1("x", "even"),
-            vol * mk_Q2("x", "even"),
-            vol * mk_Q3("x", "even"),
-            vol * mk_Q4("x", "even"),
-            vol * mk_Q5("x", "even"),
-            vol * mk_Q6("x", "even"),
-            vol * mk_Q7("x", "even"),
-            vol * mk_Q8("x", "even"),
-            vol * mk_Q9("x", "even"),
-            vol * mk_Q10("x", "even"),
-            vol * mk_Qsub("x", "even"),
+            vol * mk_Q1("x", "even") + "Q1(e)",
+            vol * mk_Q2("x", "even") + "Q2(e)",
+            vol * mk_Q3("x", "even") + "Q3(e)",
+            vol * mk_Q4("x", "even") + "Q4(e)",
+            vol * mk_Q5("x", "even") + "Q5(e)",
+            vol * mk_Q6("x", "even") + "Q6(e)",
+            vol * mk_Q7("x", "even") + "Q7(e)",
+            vol * mk_Q8("x", "even") + "Q8(e)",
+            vol * mk_Q9("x", "even") + "Q9(e)",
+            vol * mk_Q10("x", "even") + "Q10(e)",
+            vol * mk_Qsub("x", "even") + "Qs(e)",
             ]
     exprs_ops = exprs_odd_ops + exprs_even_ops
     exprs_k = [
-            vol * mk_k_0("x2"),
+            vol * mk_k_0("x2") + "K0",
             ]
     exprs_pipi = [
-            vol**2 * mk_pipi_i0("x1_1", "x1_2", True),
-            vol**2 * mk_pipi_i20("x1_1", "x1_2", True),
-            vol * mk_sigma("x1_1", True),
-            vol * mk_sigma("x1_2", True),
-            vol * mk_pi_0("x1_1", True),
-            vol * mk_pi_0("x1_2", True),
-            1,
+            vol**2 * mk_pipi_i0("x1_1", "x1_2", True) + "pipi_I0",
+            vol**2 * mk_pipi_i20("x1_1", "x1_2", True) + "pipi_I2",
+            vol * mk_sigma("x1_1", True) + "sigma_1",
+            vol * mk_sigma("x1_2", True) + "sigma_2",
+            vol * mk_pi_0("x1_1", True) + "pi0_1",
+            vol * mk_pi_0("x1_2", True) + "pi0_2",
+            mk_expr(1) + "1",
             ]
     exprs = []
     for expr_k in exprs_k:
@@ -399,10 +371,30 @@ def auto_contractor_kpipi_corr(job_tag, traj, num_trials):
     trial_indices = range(num_trials)
     prop_cache = q.mk_cache(f"prop_cache-{job_tag}-{traj}")
     results_list = eval_cexpr_simulation(cexpr, positions_dict_maker = positions_dict_maker, rng_state = rng_state, trial_indices = trial_indices, total_site = total_site, prop_cache = prop_cache, is_only_total = "typed_total")
+    q.qremove_all_info("kpipi")
+    q.qmkdir_info("kpipi")
+    def mk_fn(info):
+        def f(c):
+            if c in "()<>/* ":
+                return "_"
+            else:
+                return c
+        info = "".join(map(f, info))
+        while True:
+            fn = info.replace("__", "_")
+            if fn == info:
+                break
+            info = fn
+        if fn[-1] == "_":
+            fn = fn[:-1]
+        return fn
     for name_fac, results in zip(names_fac, results_list):
         q.displayln_info(f"{name_fac} :")
         for k, v in results.items():
-            q.displayln_info(f"{name_fac} {k:>15} : {v} ")
+            q.displayln_info(f"{name_fac} {k}:\n{v}")
+            fn = "kpipi/" + mk_fn(f"{name_fac} {k}") + ".txt"
+            [ a, e, ] = v
+            q.qtouch(fn, f"0 {a.real} {a.imag} {e.real} {e.imag}\n")
 
 @q.timer
 def run_job(job_tag, traj):
