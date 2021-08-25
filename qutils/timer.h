@@ -370,6 +370,13 @@ struct Timer {
     return minimum_duration_for_show_info();
   }
   //
+  static long& verbose_level()
+  // qlat parameter
+  {
+    static long level = get_env_long_default("q_timer_verbose_level", 0);
+    return level;
+  }
+  //
   static long& max_call_times_for_always_show_info()
   // qlat parameter
   {
@@ -455,11 +462,13 @@ struct Timer {
     }
     TimerInfo& info = get_timer_database()[info_index];
     info.call_times++;
-    if (verbose ||
-        info.accumulated_time >=
-            info.call_times * minimum_duration_for_show_info() ||
-        info.call_times <= max_call_times_for_always_show_info()) {
-      info.show_start(max_function_name_length_shown());
+    if (verbose_level() > 0) {
+      if (verbose ||
+          info.accumulated_time >=
+              info.call_times * minimum_duration_for_show_info() ||
+          info.call_times <= max_call_times_for_always_show_info()) {
+        info.show_start(max_function_name_length_shown());
+      }
     }
     start_flops = is_using_total_flops ? get_total_flops() : 0;
     flops = 0;
@@ -498,12 +507,14 @@ struct Timer {
     info.dtime = stop_time - start_time;
     info.dflops = stop_flops - start_flops;
     bool is_show = false;
-    if (verbose ||
-        info.accumulated_time >=
-            info.call_times * minimum_duration_for_show_info() ||
-        info.dtime >= 5.0 * minimum_duration_for_show_info() ||
-        info.call_times <= max_call_times_for_always_show_info()) {
-      is_show = true;
+    if (verbose_level() > 0) {
+      if (verbose ||
+          info.accumulated_time >=
+              info.call_times * minimum_duration_for_show_info() ||
+          info.dtime >= 5.0 * minimum_duration_for_show_info() ||
+          info.call_times <= max_call_times_for_always_show_info()) {
+        is_show = true;
+      }
     }
     info.accumulated_time += info.dtime;
     info.accumulated_flops += info.dflops;

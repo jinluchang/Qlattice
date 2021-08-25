@@ -168,6 +168,12 @@ Call `install_qhandle_sig()` to use handle `SIGTERM` (from `kill` command) and `
 
   Default is `32`.
 
+- `q_timer_verbose_level`
+
+  Level of verbosity. Need to be more than `0` for the timing info to be shown automatically.
+
+  Default is `0`.
+
 - `q_timer_mini_auto_display`
 
   Minimum time between auto-display of timer information summary.
