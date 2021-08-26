@@ -346,6 +346,20 @@ def auto_contractor_kpipi_corr(job_tag, traj, num_trials):
     diagram_type_dict[((('x', 'x'), 1), (('x', 'x2'), 1), (('x1_1', 'x1_2'), 1), (('x1_2', 'x1_1'), 1), (('x2', 'x'), 1))] = "Type4"
     diagram_type_dict[((('x', 'x1_1'), 1), (('x', 'x1_2'), 1), (('x1_1', 'x'), 1), (('x1_2', 'x2'), 1), (('x2', 'x'), 1))] = "Type1"
     diagram_type_dict[((('x', 'x1_1'), 1), (('x', 'x2'), 1), (('x1_1', 'x1_2'), 1), (('x1_2', 'x'), 1), (('x2', 'x'), 1))] = "Type2"
+    diagram_type_dict[((('x', 'x1_1'), 1), (('x1_1', 'x1_2'), 1), (('x1_2', 'x2'), 1), (('x2', 'x'), 1))] = "Type3"
+    diagram_type_dict[((('x', 'x2'), 1), (('x1_1', 'x1_2'), 1), (('x1_2', 'x1_1'), 1), (('x2', 'x'), 1))] = "Type4"
+    diagram_type_dict[((('x', 'x'), 1), (('x', 'x1_1'), 1), (('x1_1', 'x2'), 1), (('x2', 'x'), 1))] = "Type3"
+    diagram_type_dict[((('x', 'x'), 1), (('x', 'x2'), 1), (('x1_1', 'x1_1'), 1), (('x2', 'x'), 1))] = "Type4"
+    diagram_type_dict[((('x', 'x1_1'), 1), (('x', 'x2'), 1), (('x1_1', 'x'), 1), (('x2', 'x'), 1))] = "Type2"
+    diagram_type_dict[((('x', 'x1_1'), 1), (('x1_1', 'x2'), 1), (('x2', 'x'), 1))] = "Type3"
+    diagram_type_dict[((('x', 'x2'), 1), (('x1_1', 'x1_1'), 1), (('x2', 'x'), 1))] = "Type4"
+    diagram_type_dict[((('x', 'x'), 1), (('x', 'x1_2'), 1), (('x1_2', 'x2'), 1), (('x2', 'x'), 1))] = "Type3"
+    diagram_type_dict[((('x', 'x'), 1), (('x', 'x2'), 1), (('x1_2', 'x1_2'), 1), (('x2', 'x'), 1))] = "Type4"
+    diagram_type_dict[((('x', 'x1_2'), 1), (('x', 'x2'), 1), (('x1_2', 'x'), 1), (('x2', 'x'), 1))] = "Type2"
+    diagram_type_dict[((('x', 'x1_2'), 1), (('x1_2', 'x2'), 1), (('x2', 'x'), 1))] = "Type3"
+    diagram_type_dict[((('x', 'x2'), 1), (('x1_2', 'x1_2'), 1), (('x2', 'x'), 1))] = "Type4"
+    diagram_type_dict[((('x', 'x'), 1), (('x', 'x2'), 1), (('x2', 'x'), 1))] = "Type4"
+    diagram_type_dict[((('x', 'x2'), 1), (('x2', 'x'), 1))] = "Type4"
     cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True, diagram_type_dict = diagram_type_dict)
     q.displayln_info(display_cexpr(cexpr))
     cexpr.collect_op()
