@@ -359,6 +359,7 @@ def mk_cexpr(*exprs, diagram_type_dict = dict()):
     descriptions = [ expr.show() for expr in exprs ]
     # build diagram_types
     diagram_type_counter = 0
+    diagram_type_term_dict = dict()
     for expr in exprs:
         for term in expr.terms:
             diagram_type = get_term_diagram_type_info(term)
@@ -366,7 +367,7 @@ def mk_cexpr(*exprs, diagram_type_dict = dict()):
                 diagram_type_counter += 1
                 diagram_type_name = f"ADT{diagram_type_counter}" # ADT is short for "auto diagram type"
                 diagram_type_dict[diagram_type] = diagram_type_name
-            diagram_type_dict[repr([ term.c_ops, term.a_ops, ])] = diagram_type_dict[diagram_type]
+            diagram_type_term_dict[repr([ term.c_ops, term.a_ops, ])] = diagram_type_dict[diagram_type]
     diagram_types = []
     for diagram_type, diagram_type_name in diagram_type_dict.items():
         diagram_types.append((diagram_type_name, diagram_type,))
@@ -378,7 +379,7 @@ def mk_cexpr(*exprs, diagram_type_dict = dict()):
         expr_list = []
         typed_expr_list_dict = { name : [] for name, diagram_type in diagram_types }
         for j, term in enumerate(expr.terms):
-            diagram_type_name = diagram_type_dict[repr([ term.c_ops, term.a_ops, ])]
+            diagram_type_name = diagram_type_term_dict[repr([ term.c_ops, term.a_ops, ])]
             name = f"T{i+1}_{j+1}_{diagram_type_name}"
             named_terms.append((name, term,))
             typed_expr_list_dict[diagram_type_name].append(name)
