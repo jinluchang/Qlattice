@@ -373,7 +373,7 @@ struct Timer {
   static long& verbose_level()
   // qlat parameter
   {
-    static long level = get_env_long_default("q_timer_verbose_level", 0);
+    static long level = get_env_long_default("q_verbose", 0);
     return level;
   }
   //
