@@ -376,8 +376,9 @@ def auto_contractor_kpipi_corr(job_tag, traj, num_trials):
     trial_indices = range(num_trials)
     prop_cache = q.mk_cache(f"prop_cache-{job_tag}-{traj}")
     results_list = eval_cexpr_simulation(cexpr, positions_dict_maker = positions_dict_maker, rng_state = rng_state, trial_indices = trial_indices, total_site = total_site, prop_cache = prop_cache, is_only_total = "typed_total")
-    q.qremove_all_info("kpipi")
-    q.qmkdir_info("kpipi")
+    q.qmkdir_info("analysis")
+    q.qremove_all_info("analysis/kpipi")
+    q.qmkdir_info("analysis/kpipi")
     def mk_fn(info):
         def f(c):
             if c in "()<>/* ":
@@ -397,7 +398,7 @@ def auto_contractor_kpipi_corr(job_tag, traj, num_trials):
         q.displayln_info(f"{name_fac} :")
         for k, v in results.items():
             q.displayln_info(f"{name_fac} {k}:\n  {v}")
-            fn = "kpipi/" + mk_fn(f"{name_fac} {k}") + ".txt"
+            fn = "analysis/kpipi/" + mk_fn(f"{name_fac} {k}") + ".txt"
             [ a, e, ] = v
             q.qtouch(fn, f"0 {a.real} {a.imag} {e.real} {e.imag}\n")
 
