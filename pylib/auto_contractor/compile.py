@@ -354,11 +354,10 @@ def get_term_diagram_type_info(term):
 def eval_term_factor(term):
     term.coef = complex(term.coef)
 
-def mk_cexpr(*exprs):
+def mk_cexpr(*exprs, diagram_type_dict = dict()):
     # interface function
     descriptions = [ expr.show() for expr in exprs ]
     # build diagram_types
-    diagram_type_dict = dict()
     diagram_type_counter = 0
     for expr in exprs:
         for term in expr.terms:
@@ -367,6 +366,7 @@ def mk_cexpr(*exprs):
                 diagram_type_counter += 1
                 diagram_type_name = f"ADT{diagram_type_counter}" # ADT is short for "auto diagram type"
                 diagram_type_dict[diagram_type] = diagram_type_name
+            diagram_type_dict[repr([ term.c_ops, term.a_ops, ])] = diagram_type_dict[diagram_type]
     diagram_types = []
     for diagram_type, diagram_type_name in diagram_type_dict.items():
         diagram_types.append((diagram_type_name, diagram_type,))
@@ -378,8 +378,7 @@ def mk_cexpr(*exprs):
         expr_list = []
         typed_expr_list_dict = { name : [] for name, diagram_type in diagram_types }
         for j, term in enumerate(expr.terms):
-            diagram_type = get_term_diagram_type_info(term)
-            diagram_type_name = diagram_type_dict[diagram_type]
+            diagram_type_name = diagram_type_dict[repr([ term.c_ops, term.a_ops, ])]
             name = f"T{i+1}_{j+1}_{diagram_type_name}"
             named_terms.append((name, term,))
             typed_expr_list_dict[diagram_type_name].append(name)
@@ -390,7 +389,7 @@ def mk_cexpr(*exprs):
         named_exprs.append((f"E{i+1} {descriptions[i]}", expr_list,))
     return CExpr(diagram_types, [], named_terms, named_typed_exprs, named_exprs)
 
-def contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True):
+def contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True, diagram_type_dict = dict()):
     # interface function
     exprs = list(exprs)
     for i in range(len(exprs)):
@@ -398,7 +397,7 @@ def contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True):
         expr = contract_expr(expr)
         expr.simplify(is_isospin_symmetric_limit = is_isospin_symmetric_limit)
         exprs[i] = expr
-    cexpr = mk_cexpr(*exprs)
+    cexpr = mk_cexpr(*exprs, diagram_type_dict = diagram_type_dict)
     return cexpr
 
 def show_variable_value(value):
@@ -432,9 +431,9 @@ def display_cexpr_raw(cexpr : CExpr):
     for name, term in cexpr.named_terms:
         lines.append(f"{name:>20} : {term}")
     for name, typed_expr in cexpr.named_typed_exprs:
-        lines.append(f"{name}:\n{typed_expr}")
+        lines.append(f"{name} :\n  {typed_expr}")
     for name, expr in cexpr.named_exprs:
-        lines.append(f"{name}:\n{expr}")
+        lines.append(f"{name} :\n  {expr}")
     lines.append(f"End CExpr")
     return "\n".join(lines)
 
@@ -454,12 +453,12 @@ def display_cexpr(cexpr : CExpr):
         s = "+".join(map(show_variable_value, typed_expr))
         if s == "":
             s = 0
-        lines.append(f"{name} =\n{s}")
+        lines.append(f"{name} =\n  {s}")
     for name, expr, in cexpr.named_exprs:
         s = "+".join(map(show_variable_value, expr))
         if s == "":
             s = 0
-        lines.append(f"{name} =\n{s}")
+        lines.append(f"{name} =\n  {s}")
     lines.append(f"End CExpr")
     return "\n".join(lines)
 

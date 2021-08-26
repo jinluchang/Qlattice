@@ -206,7 +206,7 @@ def auto_contractor_meson_corr(job_tag, traj, num_trials):
     cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
     q.displayln_info(display_cexpr(cexpr))
     cexpr.collect_op()
-    q.displayln_info(display_cexpr(cexpr))
+    q.displayln_info(display_cexpr_raw(cexpr))
     def positions_dict_maker(idx, rs, total_site):
         t2 = 5
         x1 = rs.c_rand_gen(total_site)
@@ -231,7 +231,7 @@ def auto_contractor_meson_corr(job_tag, traj, num_trials):
     for name_fac, results in zip(names_fac, results_list):
         q.displayln_info(f"{name_fac} :")
         for k, v in results.items():
-            q.displayln_info(f"{name_fac} {k}:\n{v}")
+            q.displayln_info(f"{name_fac} {k}:\n  {v}")
 
 @q.timer
 def auto_contractor_pipi_corr(job_tag, traj, num_trials):
@@ -259,7 +259,7 @@ def auto_contractor_pipi_corr(job_tag, traj, num_trials):
     cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
     q.displayln_info(display_cexpr(cexpr))
     cexpr.collect_op()
-    q.displayln_info(display_cexpr(cexpr))
+    q.displayln_info(display_cexpr_raw(cexpr))
     def positions_dict_maker(idx, rs, total_site):
         t1_2 = 2
         t2_1 = 5
@@ -291,7 +291,7 @@ def auto_contractor_pipi_corr(job_tag, traj, num_trials):
     for name_fac, results in zip(names_fac, results_list):
         q.displayln_info(f"{name_fac} :")
         for k, v in results.items():
-            q.displayln_info(f"{name_fac} {k}:\n{v}")
+            q.displayln_info(f"{name_fac} {k}:\n  {v}")
 
 @q.timer
 def auto_contractor_kpipi_corr(job_tag, traj, num_trials):
@@ -341,10 +341,15 @@ def auto_contractor_kpipi_corr(job_tag, traj, num_trials):
         for expr_pipi in exprs_pipi:
             for expr_op in exprs_ops:
                 exprs.append(expr_pipi * expr_op * expr_k)
-    cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
+    diagram_type_dict = dict()
+    diagram_type_dict[((('x', 'x'), 1), (('x', 'x1_1'), 1), (('x1_1', 'x1_2'), 1), (('x1_2', 'x2'), 1), (('x2', 'x'), 1))] = "Type3"
+    diagram_type_dict[((('x', 'x'), 1), (('x', 'x2'), 1), (('x1_1', 'x1_2'), 1), (('x1_2', 'x1_1'), 1), (('x2', 'x'), 1))] = "Type4"
+    diagram_type_dict[((('x', 'x1_1'), 1), (('x', 'x1_2'), 1), (('x1_1', 'x'), 1), (('x1_2', 'x2'), 1), (('x2', 'x'), 1))] = "Type1"
+    diagram_type_dict[((('x', 'x1_1'), 1), (('x', 'x2'), 1), (('x1_1', 'x1_2'), 1), (('x1_2', 'x'), 1), (('x2', 'x'), 1))] = "Type2"
+    cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True, diagram_type_dict = diagram_type_dict)
     q.displayln_info(display_cexpr(cexpr))
     cexpr.collect_op()
-    q.displayln_info(display_cexpr(cexpr))
+    q.displayln_info(display_cexpr_raw(cexpr))
     def positions_dict_maker(idx, rs, total_site):
         t1_1 = 5
         t1_2 = 7
@@ -391,7 +396,7 @@ def auto_contractor_kpipi_corr(job_tag, traj, num_trials):
     for name_fac, results in zip(names_fac, results_list):
         q.displayln_info(f"{name_fac} :")
         for k, v in results.items():
-            q.displayln_info(f"{name_fac} {k}:\n{v}")
+            q.displayln_info(f"{name_fac} {k}:\n  {v}")
             fn = "kpipi/" + mk_fn(f"{name_fac} {k}") + ".txt"
             [ a, e, ] = v
             q.qtouch(fn, f"0 {a.real} {a.imag} {e.real} {e.imag}\n")
