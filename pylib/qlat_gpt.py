@@ -372,22 +372,23 @@ def gauge_fix_coulomb(
     # Coulomb functional on each time-slice
     Nt_split = len(Vt_split)
     g.message(f"This rank has {Nt_split} time slices")
-    for t in range(Nt_split):
-
+    #
+    @q.timer
+    def fix_t_slice(t):
+        g.message(f"Run local time slice {t} / {Nt_split}")
         f = g.qcd.gauge.fix.landau([Usep_split[mu][t] for mu in range(3)])
         fa = opt.fourier_accelerate.inverse_phat_square(Vt_split[t].grid, f)
-
-        g.message(f"Run local time slice {t} / {Nt_split}")
-
         if rng is not None:
             rng.element(Vt_split[t])
         else:
             Vt_split[t] @= g.identity(Vt_split[t])
-
         if not gd(fa)(Vt_split[t], Vt_split[t]):
             for i in range(maxcycle_cg):
                 if cg(fa)(Vt_split[t], Vt_split[t]):
                     break
+    #
+    for t in range(Nt_split):
+        fix_t_slice(t)
     #
     g.message("Unsplit")
     g.unsplit(Vt, Vt_split, cache)

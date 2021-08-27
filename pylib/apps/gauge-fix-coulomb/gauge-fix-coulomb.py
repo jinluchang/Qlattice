@@ -4,6 +4,7 @@
 # Author: Luchang Jin 2021
 
 import gpt as g
+import qlat as q
 import qlat_gpt as qg
 import sys
 
@@ -34,7 +35,7 @@ gt = qg.gauge_fix_coulomb(
         mpi_split = p_mpi_split,
         maxiter_gd = p_maxiter_gd,
         maxiter_cg = p_maxiter_cg,
-        maxcycle_cg = p_maxiter_cg,
+        maxcycle_cg = p_maxcycle_cg,
         log_every = p_log_every,
         eps = p_eps,
         step = p_step,
@@ -43,5 +44,7 @@ gt = qg.gauge_fix_coulomb(
         )
 
 gt.save_double(p_output)
+
+q.timer_display()
 
 qg.end_with_gpt()
