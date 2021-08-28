@@ -43,6 +43,8 @@ gt = qg.gauge_fix_coulomb(
         rng_seed = p_rng_seed,
         )
 
+qg.check_gauge_fix_coulomb(gf, gt)
+
 gt.save_double(p_output)
 
 q.timer_display()

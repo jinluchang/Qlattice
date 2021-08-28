@@ -403,9 +403,24 @@ def gauge_fix_coulomb(
         dfv = f.gradient(Vt[t], Vt[t])
         theta = g.norm2(dfv).real / Vt[t].grid.gsites / dfv.otype.Nc
         g.message(f"theta[{t}] = {theta}")
-        g.message(f"V[{t}][0,0,0] = ", Vt[t][0, 0, 0])
+        # g.message(f"V[{t}][0,0,0] = ", Vt[t][0, 0, 0])
     #
     # merge time slices
     V = g.merge(Vt, 3)
     gt = qlat_from_gpt(V)
     return gt
+
+def check_gauge_fix_coulomb(gf, gt):
+    V = gpt_from_qlat(gt)
+    U = gpt_from_qlat(gf)
+    Usep = [g.separate(u, 3) for u in U[0:3]]
+    Vt = g.separate(V, 3)
+    s = 0.0
+    for t in range(Nt):
+        f = g.qcd.gauge.fix.landau([Usep[mu][t] for mu in range(3)])
+        dfv = f.gradient(Vt[t], Vt[t])
+        theta = g.norm2(dfv).real / Vt[t].grid.gsites / dfv.otype.Nc
+        s += theta
+        q.displayln_info(f"theta[{t}] = {theta}")
+    q.displayln_info(f"theta sum = {s}")
+    return s
