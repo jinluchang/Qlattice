@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Need --mpi X.X.X.X runtime option
+# Need --mpi X.X.X.X --mpi X.X.X runtime option
 
 import qlat as q
 import gpt as g
@@ -33,7 +33,8 @@ def compute_eig(gf, job_tag, inv_type = 0, inv_acc = 0, *, path = None):
     # evec, evals = ru.mk_eig(gf, job_tag, inv_type, inv_acc)
     basis, cevec, smoothed_evals = ru.mk_ceig(gf, job_tag, inv_type, inv_acc)
     eig = [ basis, cevec, smoothed_evals ]
-    ru.save_ceig(get_save_path(path), eig, job_tag, inv_type, inv_acc);
+    ru.save_ceig(get_save_path(path + ".partial"), eig, job_tag, inv_type, inv_acc);
+    q.qrename_info(get_save_path(path + ".partial"), get_save_path(path))
     test_eig(gf, eig, job_tag, inv_type)
     def get_eig():
         return eig
@@ -58,13 +59,6 @@ def test_eig(gf, eig, job_tag, inv_type):
 def get_n_points(job_tag, traj, inv_type, inv_acc):
     t = [ [ 32, 4, 2 ], [ 16, 4, 2 ] ]
     return t[inv_type][inv_acc]
-
-@q.timer
-def mk_gauge_transform_coulomb(job_tag, traj):
-    total_site = ru.get_total_site(job_tag)
-    geo = q.Geometry(total_site, 1)
-    gt = qg.gauge_fix_coulomb(gf)
-    return gt
 
 @q.timer
 def mk_rand_psel(job_tag, traj):
@@ -250,32 +244,41 @@ def run_job(job_tag, traj):
     geo = q.Geometry(total_site, 1)
     q.displayln_info("geo.show() =", geo.show())
     #
-    path_gf = get_load_path(f"configs/{job_tag}/ckpoint_lat.{traj}")
+    # ADJUST ME
+    # traj_gf = traj
+    traj_gf = 1000
+    #
+    path_gf = get_load_path(f"configs/{job_tag}/ckpoint_lat.{traj_gf}")
     if path_gf is None:
         if job_tag[:5] == "test-":
-            gf = ru.mk_sample_gauge_field(job_tag, f"{traj}")
+            gf = ru.mk_sample_gauge_field(job_tag, f"{traj_gf}")
             q.qmkdir_info(get_save_path(f"configs"))
             q.qmkdir_info(get_save_path(f"configs/{job_tag}"))
-            path_gf = get_save_path(f"configs/{job_tag}/ckpoint_lat.{traj}")
-            gf.save(path_gf)
+            path_gf = get_save_path(f"configs/{job_tag}/ckpoint_lat.{traj_gf}")
+            # gf.save(path_gf)
+            qg.save_gauge_field(gf, path_gf)
         else:
             assert False
     gf = ru.load_config(job_tag, path_gf)
     gf.show_info()
     #
-    get_eig = None
-    if q.obtain_lock(f"locks/{job_tag}-{traj}-compute-eig"):
+    get_eig = ru.load_eig_lazy(get_load_path(f"eig/{job_tag}/traj={traj_gf}"), job_tag)
+    if get_eig is None and q.obtain_lock(f"locks/{job_tag}-{traj_gf}-compute-eig"):
         q.qmkdir_info(get_save_path(f"eig"))
         q.qmkdir_info(get_save_path(f"eig/{job_tag}"))
-        get_eig = compute_eig(gf, job_tag, inv_type = 0, path = f"eig/{job_tag}/traj={traj}")
+        get_eig = compute_eig(gf, job_tag, inv_type = 0, path = f"eig/{job_tag}/traj={traj_gf}")
         q.release_lock()
     #
-    path_gt = get_load_path(f"gauge-transform/{job_tag}/traj={traj}.field")
+    path_gt = get_load_path(f"gauge-transform/{job_tag}/traj={traj_gf}.field")
     if path_gt is None:
-        q.qmkdir_info(get_save_path(f"gauge-transform"))
-        q.qmkdir_info(get_save_path(f"gauge-transform/{job_tag}"))
-        gt = mk_gauge_transform_coulomb(job_tag, traj)
-        gt.save_double(get_save_path(f"gauge-transform/{job_tag}/traj={traj}.field"))
+        if q.obtain_lock(f"locks/{job_tag}-{traj_gf}-gauge_fix_coulomb"):
+            q.qmkdir_info(get_save_path(f"gauge-transform"))
+            q.qmkdir_info(get_save_path(f"gauge-transform/{job_tag}"))
+            gt = qg.gauge_fix_coulomb(gf)
+            gt.save_double(get_save_path(f"gauge-transform/{job_tag}/traj={traj_gf}.field"))
+            q.release_lock()
+        else:
+            gt = None
     else:
         gt = q.GaugeTransform()
         gt.load_double(path_gt)
@@ -303,7 +306,7 @@ def run_job(job_tag, traj):
     fselc = mk_fselc(fsel, psel)
     #
     if get_load_path(f"prop-wsrc-light/{job_tag}/traj={traj}") is None:
-        if get_eig is not None:
+        if get_eig is not None and gt is not None:
             if q.obtain_lock(f"locks/{job_tag}-{traj}-wsrc-light"):
                 q.qmkdir_info(get_save_path(f"wall-src-info-light"))
                 q.qmkdir_info(get_save_path(f"wall-src-info-light/{job_tag}"))
@@ -339,21 +342,22 @@ def run_job(job_tag, traj):
                 q.release_lock()
     #
     if get_load_path(f"prop-wsrc-strange/{job_tag}/traj={traj}") is None:
-        if q.obtain_lock(f"locks/{job_tag}-{traj}-wsrc-strange"):
-            q.qmkdir_info(get_save_path(f"wall-src-info-strange"))
-            q.qmkdir_info(get_save_path(f"wall-src-info-strange/{job_tag}"))
-            q.qmkdir_info(get_save_path(f"prop-wsrc-strange"))
-            q.qmkdir_info(get_save_path(f"prop-wsrc-strange/{job_tag}"))
-            q.qmkdir_info(get_save_path(f"psel-prop-wsrc-strange"))
-            q.qmkdir_info(get_save_path(f"psel-prop-wsrc-strange/{job_tag}"))
-            q.qmkdir_info(get_save_path(f"psel-prop-wsrc-strange/{job_tag}/traj={traj}"))
-            wi_strange = mk_rand_wall_src_info(job_tag, traj, inv_type = 1)
-            save_wall_src_info(wi_strange, f"wall-src-info-strange/{job_tag}/traj={traj}.txt");
-            compute_prop_wsrc_all(gf, gt, wi_strange, job_tag, inv_type = 1,
-                    path_s = f"prop-wsrc-strange/{job_tag}/traj={traj}",
-                    path_sp = f"psel-prop-wsrc-strange/{job_tag}/traj={traj}",
-                    psel = psel, fsel = fsel, fselc = fselc, eig = None)
-            q.release_lock()
+        if gt is not None:
+            if q.obtain_lock(f"locks/{job_tag}-{traj}-wsrc-strange"):
+                q.qmkdir_info(get_save_path(f"wall-src-info-strange"))
+                q.qmkdir_info(get_save_path(f"wall-src-info-strange/{job_tag}"))
+                q.qmkdir_info(get_save_path(f"prop-wsrc-strange"))
+                q.qmkdir_info(get_save_path(f"prop-wsrc-strange/{job_tag}"))
+                q.qmkdir_info(get_save_path(f"psel-prop-wsrc-strange"))
+                q.qmkdir_info(get_save_path(f"psel-prop-wsrc-strange/{job_tag}"))
+                q.qmkdir_info(get_save_path(f"psel-prop-wsrc-strange/{job_tag}/traj={traj}"))
+                wi_strange = mk_rand_wall_src_info(job_tag, traj, inv_type = 1)
+                save_wall_src_info(wi_strange, f"wall-src-info-strange/{job_tag}/traj={traj}.txt");
+                compute_prop_wsrc_all(gf, gt, wi_strange, job_tag, inv_type = 1,
+                        path_s = f"prop-wsrc-strange/{job_tag}/traj={traj}",
+                        path_sp = f"psel-prop-wsrc-strange/{job_tag}/traj={traj}",
+                        psel = psel, fsel = fsel, fselc = fselc, eig = None)
+                q.release_lock()
     #
     if get_load_path(f"prop-psrc-strange/{job_tag}/traj={traj}") is None:
         if q.obtain_lock(f"locks/{job_tag}-{traj}-psrc-strange"):

@@ -479,9 +479,6 @@ if __name__ == "__main__":
     qg.begin_with_gpt()
     job_tag = "test-4nt16"
     traj = 1000
-    rup.dict_params[job_tag]["fermion_params"][0][2] = rup.dict_params[job_tag]["fermion_params"][0][0]
-    rup.dict_params[job_tag]["fermion_params"][1][2] = rup.dict_params[job_tag]["fermion_params"][1][0]
-    rup.dict_params[job_tag]["load_config_params"]["twist_boundary_at_boundary"] = [0.0, 0.0, 0.0, -0.5,]
     run_job(job_tag, traj)
     q.timer_display()
     qg.end_with_gpt()

@@ -398,12 +398,15 @@ def gauge_fix_coulomb(
     #
     g.message("Test")
     # test results
+    s = 0.0
     for t in range(Nt):
         f = g.qcd.gauge.fix.landau([Usep[mu][t] for mu in range(3)])
         dfv = f.gradient(Vt[t], Vt[t])
         theta = g.norm2(dfv).real / Vt[t].grid.gsites / dfv.otype.Nc
+        s += theta
         g.message(f"theta[{t}] = {theta}")
         # g.message(f"V[{t}][0,0,0] = ", Vt[t][0, 0, 0])
+    g.message(f"theta sum = {s}")
     #
     # merge time slices
     V = g.merge(Vt, 3)
