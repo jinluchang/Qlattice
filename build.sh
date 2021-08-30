@@ -21,6 +21,14 @@ else
     exit
 fi
 
+target="$1"
+
+if [ -z "$target" ] ; then
+    target=default
+fi
+
+echo "target is $target"
+
 if [ -e "$prefix" ] ; then
     echo "$prefix already exist, continue to build will erase all its contents."
     echo "Use ./scripts/qlat.sh to build Qlat only."
@@ -29,18 +37,14 @@ if [ -e "$prefix" ] ; then
         echo -n "$i "
         sleep 1;
     done
+    echo
 fi
 
 rm -rf "$prefix" || true
 mkdir -p "$prefix"
 
-target="$1"
-
-if [ -z "$target" ] ; then
-    target=default
-fi
-
 if [ "$target" = default ] ; then
+    #
     ./scripts/setenv.sh
     . "$prefix"/setenv.sh
     #
@@ -114,6 +118,8 @@ elif [ "$target" = summit ] ; then
     ./scripts/mpfr.sh
     ./scripts/grid-summit.sh
     ./scripts/gpt.sh
+else
+    echo "target=$target is not known."
 fi
 
 rm -rf $temp_dir
