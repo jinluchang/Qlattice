@@ -406,14 +406,15 @@ def gauge_fix_coulomb(
         s += theta
         g.message(f"theta[{t}] = {theta}")
         # g.message(f"V[{t}][0,0,0] = ", Vt[t][0, 0, 0])
-    g.message(f"theta sum = {s}")
+    s /= Nt
+    g.message(f"theta slice average = {s}")
     #
     # merge time slices
     V = g.merge(Vt, 3)
     gt = qlat_from_gpt(V)
     return gt
 
-def check_gauge_fix_coulomb(gf, gt):
+def check_gauge_fix_coulomb(gf, gt, eps = 1e-10):
     V = gpt_from_qlat(gt)
     U = gpt_from_qlat(gf)
     Usep = [g.separate(u, 3) for u in U[0:3]]
@@ -425,5 +426,6 @@ def check_gauge_fix_coulomb(gf, gt):
         theta = g.norm2(dfv).real / Vt[t].grid.gsites / dfv.otype.Nc
         s += theta
         q.displayln_info(f"theta[{t}] = {theta}")
-    q.displayln_info(f"theta sum = {s}")
-    return s
+    s /= Nt
+    g.message(f"theta slice average = {s}")
+    return s < eps
