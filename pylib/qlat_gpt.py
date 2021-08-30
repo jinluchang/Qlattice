@@ -414,18 +414,19 @@ def gauge_fix_coulomb(
     gt = qlat_from_gpt(V)
     return gt
 
-def check_gauge_fix_coulomb(gf, gt, eps = 1e-10):
+def check_gauge_fix_coulomb(gf, gt, eps = 1e-20):
+    t_size = gf.geo().total_site()[3]
     V = gpt_from_qlat(gt)
     U = gpt_from_qlat(gf)
     Usep = [g.separate(u, 3) for u in U[0:3]]
     Vt = g.separate(V, 3)
     s = 0.0
-    for t in range(Nt):
+    for t in range(t_size):
         f = g.qcd.gauge.fix.landau([Usep[mu][t] for mu in range(3)])
         dfv = f.gradient(Vt[t], Vt[t])
         theta = g.norm2(dfv).real / Vt[t].grid.gsites / dfv.otype.Nc
         s += theta
         q.displayln_info(f"theta[{t}] = {theta}")
-    s /= Nt
+    s /= t_size
     g.message(f"theta slice average = {s}")
     return s < eps
