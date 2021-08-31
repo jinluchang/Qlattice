@@ -300,15 +300,18 @@ def get_fgrid(total_site, fermion_params):
         qm = g.qcd.fermion.mobius(gpt_gf, fermion_params)
     return qm.F_grid_eo
 
+@q.timer_verbose
 def save_gauge_field(gf, path):
     assert isinstance(gf, q.GaugeField)
     gpt_gf = gpt_from_qlat(gf)
     g.save(path, gpt_gf, g.format.nersc())
 
+@q.timer_verbose
 def load_gauge_field(path):
     gpt_gf = g.load(path)
     return qlat_from_gpt(gpt_gf)
 
+@q.timer_verbose
 def gauge_fix_coulomb(
         gf,
         *,
@@ -414,6 +417,7 @@ def gauge_fix_coulomb(
     gt = qlat_from_gpt(V)
     return gt
 
+@q.timer
 def check_gauge_fix_coulomb(gf, gt, eps = 1e-20):
     t_size = gf.geo().total_site()[3]
     V = gpt_from_qlat(gt)
