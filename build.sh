@@ -113,7 +113,7 @@ elif [ "$target" = summit ] ; then
     ./scripts/zlib.sh
     ./scripts/c-lime.sh
     ./scripts/eigen.sh
-    ./scripts/qlat.sh
+    ./scripts/qlat-summit.sh
     #
     ./scripts/mpfr.sh
     ./scripts/grid-summit.sh
