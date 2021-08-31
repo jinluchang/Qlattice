@@ -23,3 +23,4 @@ add-to-colon-list () {
 add-to-colon-list PYTHONPATH "$prefix/pylib"
 add-to-colon-list PYTHONPATH "$prefix/gpt/lib"
 add-to-colon-list PYTHONPATH "$prefix/gpt/lib/cgpt/build"
+add-to-colon-list LD_LIBRARY_PATH "$prefix/lib"

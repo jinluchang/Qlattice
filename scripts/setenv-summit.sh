@@ -11,6 +11,7 @@ prefix="$prefix"
 
 export num_proc=4
 export PYTHONPATH=
+export LD_LIBRARY_PATH=
 
 module purge
 
@@ -18,8 +19,8 @@ module add DefApps
 module add cuda
 module add gcc
 module add gmp
-module add python
 module add hdf5
+module load python/3.8.10
 
 EOF
 

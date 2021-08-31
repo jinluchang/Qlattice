@@ -115,6 +115,7 @@ elif [ "$target" = summit ] ; then
     ./scripts/eigen.sh
     ./scripts/qlat-summit.sh
     #
+    pip3 install numpy
     ./scripts/mpfr.sh
     ./scripts/grid-summit.sh
     ./scripts/gpt.sh
