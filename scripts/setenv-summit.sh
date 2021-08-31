@@ -11,7 +11,6 @@ prefix="$prefix"
 
 export num_proc=4
 export PYTHONPATH=
-export LD_LIBRARY_PATH=
 
 module purge
 
