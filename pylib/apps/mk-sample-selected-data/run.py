@@ -244,9 +244,11 @@ def run_job(job_tag, traj):
     geo = q.Geometry(total_site, 1)
     q.displayln_info("geo.show() =", geo.show())
     #
-    # ADJUST ME
-    # traj_gf = traj
-    traj_gf = 1000
+    traj_gf = traj
+    if job_tag[:5] == "test-":
+        # ADJUST ME
+        traj_gf = 1000
+        #
     #
     path_gf = get_load_path(f"configs/{job_tag}/ckpoint_lat.{traj_gf}")
     if path_gf is None:
