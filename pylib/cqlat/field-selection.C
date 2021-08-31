@@ -124,6 +124,21 @@ EXPORT(save_fsel, {
   return py_convert(ret);
 });
 
+EXPORT(set_uniform_fsel, {
+  using namespace qlat;
+  PyObject* p_fsel = NULL;
+  PyObject* p_total_site = NULL;
+  int64_t val = 0;
+  if (!PyArg_ParseTuple(args, "OO|l", &p_fsel, &p_total_site, &val)) {
+    return NULL;
+  }
+  FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
+  Coordinate total_site;
+  py_convert(total_site, p_total_site);
+  mk_field_selection(fsel.f_rank, total_site, val);
+  Py_RETURN_NONE;
+});
+
 EXPORT(set_rand_fsel, {
   using namespace qlat;
   PyObject* p_fsel = NULL;

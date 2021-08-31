@@ -8,9 +8,7 @@ qlat::begin(): GeometryNode =
 , id_node     = 0
 , size_node   = 1x2x2x2
 , coor_node   = 0x0x0x0 }
-q_timer_mini_auto_show=1 (default)
-q_timer_max_always_show=10 (default)
-q_timer_max_func_name_len=50 (default)
+q_verbose=0 (default)
 Main::displayGammas : gamma5 =
  (1,0)  (0,0)  (0,0)  (0,0)
  (0,0)  (1,0)  (0,0)  (0,0)
@@ -160,6 +158,7 @@ Main::displaySpinPropagator4d : prop[xgsnk] =
                       (0,0)               (0.0225345,0)   (1.36645e-18,1.36645e-18)  (-1.36645e-18,6.17135e-19)
  (-1.36645e-18,6.17135e-19)  (-1.36645e-18,1.36645e-18)               (0.0225345,0)                       (0,0)
 (-1.36645e-18,-1.36645e-18)   (1.36645e-18,6.17135e-19)                       (0,0)               (0.0225345,0)
+q_timer_max_func_name_len=50 (default)
 Main::lblMuonPart : geo =
 { initialized   = true
 , eo            = 0

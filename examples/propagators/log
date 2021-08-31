@@ -8,9 +8,7 @@ qlat::begin(): GeometryNode =
 , id_node     = 0
 , size_node   = 1x2x2x2
 , coor_node   = 0x0x0x0 }
-q_timer_mini_auto_show=1 (default)
-q_timer_max_always_show=10 (default)
-q_timer_max_func_name_len=50 (default)
+q_verbose=0 (default)
 display_geo_node : id_node =     0 ; coor_node = 0x0x0x0 ; id_node_in_shuffle =     0 ; hostname = qcdserver16
 display_geo_node : id_node =     1 ; coor_node = 0x1x0x0 ; id_node_in_shuffle =     2 ; hostname = qcdserver16
 display_geo_node : id_node =     2 ; coor_node = 0x0x1x0 ; id_node_in_shuffle =     4 ; hostname = qcdserver16
@@ -19,6 +17,7 @@ display_geo_node : id_node =     4 ; coor_node = 0x0x0x1 ; id_node_in_shuffle = 
 display_geo_node : id_node =     5 ; coor_node = 0x1x0x1 ; id_node_in_shuffle =     3 ; hostname = qcdserver16
 display_geo_node : id_node =     6 ; coor_node = 0x0x1x1 ; id_node_in_shuffle =     5 ; hostname = qcdserver16
 display_geo_node : id_node =     7 ; coor_node = 0x1x1x1 ; id_node_in_shuffle =     7 ; hostname = qcdserver16
+q_timer_mini_auto_show=1 (default)
 q_time_limit=43200 (default)
 get_time_limit()=12.000000 hours
 q_budget=900 (default)
@@ -177,6 +176,7 @@ tsep[       7] re-im[      re]  4.09021726415145989E-02
 tsep[       7] re-im[      im]  0.00000000000000000E+00
 prop qnorm =  2.39843434767638614E-01
 prop[0] qnorm =  2.46214937797465685E-04
+q_timer_max_func_name_len=50 (default)
 release_lock: Release lock 'results/test-4nt8/results=1000-lock'
 qremove: 'results/test-4nt8/results=1000-lock/time.txt'
 get_time_limit()=12.000000 hours

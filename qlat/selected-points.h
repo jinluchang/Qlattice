@@ -9,8 +9,9 @@ typedef std::vector<Coordinate> PointSelection;
 
 inline PointSelection mk_random_point_selection(const Coordinate& total_site,
                                                 const long num,
-                                                const RngState& rs)
-// same rs for all node for unifrom result
+                                                const RngState& rs,
+                                                const long pool_factor = 2)
+// same rs for all node for uniform result
 {
   TIMER_VERBOSE("mk_random_point_selection");
   if (num == 0) {
@@ -18,7 +19,7 @@ inline PointSelection mk_random_point_selection(const Coordinate& total_site,
     return psel;
   }
   qassert(num > 0);
-  PointSelection psel_pool(2 * num);
+  PointSelection psel_pool(pool_factor * num);
 #pragma omp parallel for
   for (long i = 0; i < (long)psel_pool.size(); ++i) {
     RngState rsi = rs.split(i);
@@ -47,8 +48,15 @@ inline PointSelection mk_random_point_selection(const Coordinate& total_site,
       }
     }
   }
-  qassert(psel.back() != Coordinate(-1, -1, -1, -1));
-  return psel;
+  if (psel.back() != Coordinate(-1, -1, -1, -1)) {
+    return psel;
+  } else {
+    displayln_info(
+        fname +
+        ssprintf(": pool_factor=%d is too small, rerun with larger factor.",
+                 pool_factor));
+    return mk_random_point_selection(total_site, num, rs, pool_factor + 2);
+  }
 }
 
 inline void save_point_selection(const PointSelection& psel,

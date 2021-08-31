@@ -36,6 +36,8 @@ from qlat.hmc_stats import *
 
 from qlat.contract_pion import *
 
+from qlat.contract_field import *
+
 from qlat.field_selection import *
 
 from qlat.selected_field import *

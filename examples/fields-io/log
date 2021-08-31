@@ -8,9 +8,7 @@ qlat::begin(): GeometryNode =
 , id_node     = 0
 , size_node   = 1x2x2x2
 , coor_node   = 0x0x0x0 }
-q_timer_mini_auto_show=1 (default)
-q_timer_max_always_show=10 (default)
-q_timer_max_func_name_len=50 (default)
+q_verbose=0 (default)
 demo: create splittable random number generator 'rs'
 demo: random select 0 points on entire lattice
 demo: random select points on each time slice
@@ -1353,6 +1351,7 @@ FBC09573  fn='huge-data/t2/demo.lfs/27/0000000054'
 79E82458  fn='huge-data/t2/demo.lfs/31/0000000062'
 A64F7018  fn='huge-data/t2/demo.lfs/31/0000000063'
 9AE9A27B  fn='huge-data/t2/demo.lfs/geon-info.txt'
+q_timer_max_func_name_len=50 (default)
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 0.
 qlat::end(): Finalize MPI.

@@ -8,9 +8,7 @@ qlat::begin(): GeometryNode =
 , id_node     = 0
 , size_node   = 1x2x2x2
 , coor_node   = 0x0x0x0 }
-q_timer_mini_auto_show=1 (default)
-q_timer_max_always_show=10 (default)
-q_timer_max_func_name_len=50 (default)
+q_verbose=0 (default)
 demo: create splittable random number generator 'rs'
 demo: init field 'f'
 q_field_init=fast (default)
@@ -777,6 +775,7 @@ make_shuffle_plan_generic: global_comm_size =         16
 shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_shift: f (from shifted sparse field) crc32 = 6F31A6C2 ; shift=0x2x2x0
+q_timer_max_func_name_len=50 (default)
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 0.
 qlat::end(): Finalize MPI.

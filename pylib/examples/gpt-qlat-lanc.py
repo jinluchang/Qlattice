@@ -74,7 +74,8 @@ def run(job_tag, traj):
             q.qmkdir_info(get_save_path(f"configs"))
             q.qmkdir_info(get_save_path(f"configs/{job_tag}"))
             path_gf = get_save_path(f"configs/{job_tag}/ckpoint_lat.{traj}")
-            gf.save(path_gf)
+            # gf.save(path_gf)
+            qg.save_gauge_field(gf, path_gf)
         else:
             assert False
     gf = ru.load_config(job_tag, path_gf)

@@ -46,9 +46,7 @@ qlat::begin(): GeometryNode =
 , id_node     = 0
 , size_node   = 1x1x1x2
 , coor_node   = 0x0x0x0 }
-q_timer_mini_auto_show=1 (default)
-q_timer_max_always_show=10 (default)
-q_timer_max_func_name_len=50 (default)
+q_verbose=0 (default)
 qremove: 'results'
 geo.show() = Geometry([8, 8, 8, 16], 1)
 q_field_init=fast (default)
@@ -89,8 +87,9 @@ plan initialized
 plan destination added
 plan source added
 plan created
-prop sol 0 qnorm = 53021.38315936312 crc32 = 1165454352
-prop sol 1 qnorm = 53340.26267544426 crc32 = 2342354678
+prop sol 0 qnorm = 53021.38314033827 crc32 = 14296319
+prop sol 1 qnorm = 53340.26263943155 crc32 = 1559676208
+q_timer_max_func_name_len=50 (default)
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 1.
 qlat::end(): Switch to old comm (foreign).

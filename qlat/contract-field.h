@@ -515,6 +515,37 @@ inline void contract_chvp(SelectedField<Complex>& chvp,
   });
 }
 
+inline void contract_chvp_16(FieldM<Complex, 16>& chvp,
+                             const Propagator4d& prop1_x_y,
+                             const Propagator4d& prop2_x_y)
+{
+  TIMER_VERBOSE("contract_chvp_16");
+  const array<SpinMatrix, 4>& gammas = SpinMatrixConstants::get_cps_gammas();
+  const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
+  const Geometry& geo = prop1_x_y.geo();
+  qassert(geo.multiplicity == 1);
+  qassert(is_matching_geo_mult(geo, prop2_x_y.geo()))
+      qassert(prop1_x_y.geo().is_only_local())
+          qassert(prop2_x_y.geo().is_only_local()) chvp.init();
+  chvp.init(geo);
+  set_zero(chvp);
+  qassert(chvp.geo().multiplicity == 16);
+  qacc_for(index, geo.local_volume(), {
+    const WilsonMatrix& wm1_x_y = prop1_x_y.get_elem(index);
+    const WilsonMatrix& wm2_x_y = prop2_x_y.get_elem(index);
+    const WilsonMatrix wm2_y_x =
+        gamma5 * (WilsonMatrix)matrix_adjoint(wm2_x_y) * gamma5;
+    Vector<Complex> chvp_v = chvp.get_elems(index);
+    for (int mu = 0; mu < 4; ++mu) {
+      const WilsonMatrix wm = wm2_y_x * gammas[mu] * wm1_x_y;
+      for (int nu = 0; nu < 4; ++nu) {
+        const int mu_nu = 4 * mu + nu;
+        chvp_v[mu_nu] = matrix_trace(wm, gammas[nu]);
+      }
+    }
+  });
+}
+
 // -----------------------------------------------------------------------------------
 
 inline LatData meson_snk_src_shift(const LatData& ld, const int shift)

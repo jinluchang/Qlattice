@@ -8,9 +8,7 @@ qlat::begin(): GeometryNode =
 , id_node     = 0
 , size_node   = 1x2x2x2
 , coor_node   = 0x0x0x0 }
-q_timer_mini_auto_show=1 (default)
-q_timer_max_always_show=10 (default)
-q_timer_max_func_name_len=50 (default)
+q_verbose=0 (default)
 q_field_init=fast (default)
 set q_field_init=fast.
 fft_complex_field_plan::get_plan: start to make a new fft plan with id = 0
@@ -111,6 +109,8 @@ make_shuffle_plan_fft: total num_send_msgs  =         16
 make_shuffle_plan_fft: total num_recv_msgs  =         16
 make_shuffle_plan_fft: global_comm_size =        512
 test_fft: 1
+q_timer_max_always_show=10 (default)
+q_timer_max_func_name_len=50 (default)
 fft_complex_field_plan::get_plan: start to make a new fft plan with id = 8
 fft_complex_field_plan::init: malloc 1024
 fft_complex_field_plan::init: free 1024
