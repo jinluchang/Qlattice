@@ -168,7 +168,7 @@ void shuffle_field_unpack_send(
 
 template <class M>
 void shuffle_field_unpack_recv(
-    std::vector<Vector<M> >& fsdata, const Vector<M> recv_buffer,
+    vector<Vector<M> >& fsdata, const Vector<M> recv_buffer,
     const std::vector<ShufflePlanRecvPackInfo>& recv_pack_infos,
     const int multiplicity)
 {
@@ -185,7 +185,7 @@ void shuffle_field_unpack_recv(
 
 template <class M>
 void shuffle_field_pack_recv(
-    Vector<M> recv_buffer, const std::vector<Vector<M> >& fsdata,
+    Vector<M> recv_buffer, const vector<Vector<M> >& fsdata,
     const std::vector<ShufflePlanRecvPackInfo>& recv_pack_infos,
     const int multiplicity)
 {
@@ -246,7 +246,7 @@ void shuffle_field(std::vector<Field<M> >& fs, const Field<M>& f,
     geos_recv[i].remult(geo.multiplicity);
     fs[i].init(geos_recv[i]);
   }
-  std::vector<Vector<M> > fsdata(fs.size());
+  vector<Vector<M> > fsdata(fs.size());
   for (size_t i = 0; i < fs.size(); ++i) {
     fsdata[i] = get_data(fs[i]);
   }
@@ -286,7 +286,7 @@ void shuffle_field_back(Field<M>& f, const std::vector<Field<M> >& fs,
   const long total_bytes =
       sp.scp.global_comm_size * geo.multiplicity * sizeof(M);
   timer.flops += total_bytes;
-  std::vector<Vector<M> > fsdata(fs.size());
+  vector<Vector<M> > fsdata(fs.size());
   for (size_t i = 0; i < fs.size(); ++i) {
     fsdata[i] = get_data(fs[i]);
   }
@@ -343,7 +343,7 @@ void shuffle_field(std::vector<SelectedField<M> >& fs,
     geos_recv[i].remult(geo.multiplicity);
     fs[i].init(geos_recv[i], sp.n_elems_recv[i], geo.multiplicity);
   }
-  std::vector<Vector<M> > fsdata(fs.size());
+  vector<Vector<M> > fsdata(fs.size());
   for (size_t i = 0; i < fs.size(); ++i) {
     fsdata[i] = get_data(fs[i]);
   }
@@ -381,7 +381,7 @@ void shuffle_field_back(SelectedField<M>& f,
   const long total_bytes =
       sp.scp.global_comm_size * geo.multiplicity * sizeof(M);
   timer.flops += total_bytes;
-  std::vector<Vector<M> > fsdata(fs.size());
+  vector<Vector<M> > fsdata(fs.size());
   for (size_t i = 0; i < fs.size(); ++i) {
     fsdata[i] = get_data(fs[i]);
   }
@@ -586,34 +586,52 @@ ShufflePlan make_shuffle_plan_generic(std::vector<FieldSelection>& fsels,
   // communicate to determin recv msg size from each node
   std::map<int, long> recv_id_node_size;
   {
-    vector<long> send_size(num_node, 0), recv_size(num_node, 0);
+    vector<long> send_size(num_node, 0), recv_size(num_node, -1);
     for (auto it = send_id_node_size.cbegin(); it != send_id_node_size.cend();
          ++it) {
       const int id_node = it->first;
       const long node_size = it->second;
       qassert(0 <= id_node and id_node < num_node);
+      qassert(0 <= node_size);
       send_size[id_node] = node_size;
     }
-    vector<MPI_Request> reqs(2 * num_node);
-    Vector<MPI_Request> recv_reqs(reqs.data(), num_node);
-    Vector<MPI_Request> send_reqs(reqs.data() + num_node, num_node);
-    const int mpi_tag = 12;
-    for (int i = 0; i < num_node; ++i) {
-      MPI_Irecv(&recv_size[i], 1, MPI_LONG, i, mpi_tag, get_comm(),
-                &recv_reqs[i]);
-    }
-    for (int i = 0; i < num_node; ++i) {
-      MPI_Isend(&send_size[i], 1, MPI_LONG, i, mpi_tag, get_comm(),
-                &send_reqs[i]);
-    }
-    if (reqs.size() > 0) {
-      MPI_Waitall(reqs.size(), reqs.data(), MPI_STATUS_IGNORE);
-    }
-    for (int i = 0; i < num_node; ++i) {
-      if (recv_size[i] > 0) {
-        recv_id_node_size[i] = recv_size[i];
+    long neg_count = 0;
+    do {
+      std::vector<MPI_Request> reqs(2 * num_node);
+      Vector<MPI_Request> recv_reqs(reqs.data(), num_node);
+      Vector<MPI_Request> send_reqs(reqs.data() + num_node, num_node);
+      const int mpi_tag = 12 + 5438;
+      for (int i = 0; i < num_node; ++i) {
+        MPI_Irecv(&recv_size[i], 1, MPI_LONG, i, mpi_tag, get_comm(),
+                  &recv_reqs[i]);
       }
-    }
+      for (int i = 0; i < num_node; ++i) {
+        MPI_Isend(&send_size[i], 1, MPI_LONG, i, mpi_tag, get_comm(),
+                  &send_reqs[i]);
+      }
+      if (reqs.size() > 0) {
+        if (MPI_Waitall(reqs.size(), reqs.data(), MPI_STATUS_IGNORE) !=
+            MPI_SUCCESS) {
+          displayln(fname + ssprintf(": mpi_waitall failed"));
+          qassert(false);
+        }
+      }
+      neg_count = 0;
+      for (int i = 0; i < num_node; ++i) {
+        if (recv_size[i] < 0) {
+          displayln(fname +
+                    ssprintf(": id_node=%d i=%d recv_size[i]=%ld neg_count=%ld",
+                             get_id_node(), i, recv_size[i], neg_count));
+          neg_count += 1;
+        } else if (recv_size[i] > 0) {
+          recv_id_node_size[i] = recv_size[i];
+        }
+      }
+      glb_sum(neg_count);
+      if (neg_count > 0) {
+        displayln_info(fname + ssprintf(": total neg_count=%ld", neg_count));
+      }
+    } while (neg_count > 0);
   }
   // recv_msg_infos
   {

@@ -192,6 +192,62 @@ inline int mpi_recv(void* buf, long count, MPI_Datatype datatype, int source,
   }
 }
 
+inline int mpi_isend(void* buf, long count, MPI_Datatype datatype, int dest,
+                     int tag, MPI_Comm comm, std::vector<MPI_Request>& requests)
+{
+  const long int_max = INT_MAX;
+  if (count <= int_max) {
+    MPI_Request r;
+    int ret = MPI_Isend(buf, count, datatype, dest, tag, comm, &r);
+    requests.push_back(r);
+    qassert(ret == MPI_SUCCESS);
+    return MPI_SUCCESS;
+  } else {
+    int type_size = 0;
+    MPI_Type_size(datatype, &type_size);
+    uint8_t* cbuf = (uint8_t*)buf;
+    while (count > int_max) {
+      mpi_isend(cbuf, int_max, datatype, dest, tag, comm, requests);
+      cbuf += (long)int_max * type_size;
+      count -= int_max;
+    }
+    return mpi_isend(cbuf, count, datatype, dest, tag, comm, requests);
+  }
+}
+
+inline int mpi_irecv(void* buf, long count, MPI_Datatype datatype, int source,
+                     int tag, MPI_Comm comm, std::vector<MPI_Request>& requests)
+{
+  const long int_max = INT_MAX;
+  if (count <= int_max) {
+    MPI_Request r;
+    int ret = MPI_Irecv(buf, count, datatype, source, tag, comm, &r);
+    requests.push_back(r);
+    qassert(ret == MPI_SUCCESS);
+    return MPI_SUCCESS;
+  } else {
+    int type_size = 0;
+    MPI_Type_size(datatype, &type_size);
+    uint8_t* cbuf = (uint8_t*)buf;
+    while (count > int_max) {
+      mpi_irecv(cbuf, int_max, datatype, source, tag, comm, requests);
+      cbuf += (long)int_max * type_size;
+      count -= int_max;
+    }
+    return mpi_irecv(cbuf, count, datatype, source, tag, comm, requests);
+  }
+}
+
+inline int mpi_waitall(std::vector<MPI_Request>& requests)
+{
+  TIMER("mpi_waitall");
+  if (requests.size() > 0) {
+    int ret = MPI_Waitall(requests.size(), requests.data(), MPI_STATUS_IGNORE);
+    qassert(ret == MPI_SUCCESS);
+  }
+  return MPI_SUCCESS;
+}
+
 template <class M>
 inline std::vector<char> pad_flag_data(const int64_t flag, const M& data)
 {
