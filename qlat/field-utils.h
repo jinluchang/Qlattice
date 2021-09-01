@@ -453,29 +453,13 @@ void field_shift_direct(Field<M>& f, const Field<M>& f1,
     timer.flops +=
         geo.local_volume() * (long)geo.multiplicity * (long)sizeof(M);
     const long max_elem = 1 + get_max_field_shift_direct_msg_size() / sizeof(M);
-    std::vector<MPI_Request> send_reqs(n_send), recv_reqs(n_recv);
+    std::vector<MPI_Request> reqs(n_recv + n_send);
+    Vector<MPI_Request> recv_reqs(reqs.data(), n_recv);
+    Vector<MPI_Request> send_reqs(reqs.data() + n_recv, n_send);
     const int mpi_tag = 11;
     int i_send = 0;
     int i_recv = 0;
     for (int i = 0; i < num_node; ++i) {
-      long size_s = to_send[i].size();
-      if (size_s > 0) {
-        const int id_node = i;
-        qassert(i_send < n_send);
-        std::vector<M>& to_send_v = to_send[id_node];
-        long offset = 0;
-        while (size_s > max_elem) {
-          MPI_Request req;
-          MPI_Isend(&to_send_v[offset], max_elem * sizeof(M), MPI_BYTE, id_node,
-                    mpi_tag, get_comm(), &req);
-          recv_reqs.push_back(req);
-          offset += max_elem;
-          size_s -= max_elem;
-        }
-        MPI_Isend(&to_send_v[offset], size_s * sizeof(M), MPI_BYTE, id_node,
-                  mpi_tag, get_comm(), &send_reqs[i_send]);
-        i_send += 1;
-      }
       long size_r = to_recv[i].size();
       if (size_r > 0) {
         const int id_node = i;
@@ -486,7 +470,7 @@ void field_shift_direct(Field<M>& f, const Field<M>& f1,
           MPI_Request req;
           MPI_Irecv(&to_recv_v[offset], max_elem * sizeof(M), MPI_BYTE, id_node,
                     mpi_tag, get_comm(), &req);
-          recv_reqs.push_back(req);
+          reqs.push_back(req);
           offset += max_elem;
           size_r -= max_elem;
         }
@@ -494,9 +478,28 @@ void field_shift_direct(Field<M>& f, const Field<M>& f1,
                   mpi_tag, get_comm(), &recv_reqs[i_recv]);
         i_recv += 1;
       }
+      long size_s = to_send[i].size();
+      if (size_s > 0) {
+        const int id_node = i;
+        qassert(i_send < n_send);
+        std::vector<M>& to_send_v = to_send[id_node];
+        long offset = 0;
+        while (size_s > max_elem) {
+          MPI_Request req;
+          MPI_Isend(&to_send_v[offset], max_elem * sizeof(M), MPI_BYTE, id_node,
+                    mpi_tag, get_comm(), &req);
+          reqs.push_back(req);
+          offset += max_elem;
+          size_s -= max_elem;
+        }
+        MPI_Isend(&to_send_v[offset], size_s * sizeof(M), MPI_BYTE, id_node,
+                  mpi_tag, get_comm(), &send_reqs[i_send]);
+        i_send += 1;
+      }
     }
-    MPI_Waitall(recv_reqs.size(), recv_reqs.data(), MPI_STATUS_IGNORE);
-    MPI_Waitall(send_reqs.size(), send_reqs.data(), MPI_STATUS_IGNORE);
+    if (reqs.size() > 0) {
+      MPI_Waitall(reqs.size(), reqs.data(), MPI_STATUS_IGNORE);
+    }
     sync_node();
   }
   f.init(geo);
