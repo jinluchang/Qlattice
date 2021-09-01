@@ -584,7 +584,36 @@ def test_kk_sym():
         print(display_cexpr(cexpr))
         print(f"-- {name} --\n")
 
+def test_kpipi():
+    s1 = new_spin_index()
+    s2 = new_spin_index()
+    c = new_color_index()
+    expr1 = Qb("s", "x", s1, c) * G("G1", s1, s2) * Qv("d", "x", s2, c) + "sb_G1_d"
+    s1 = new_spin_index()
+    s2 = new_spin_index()
+    c = new_color_index()
+    expr2 = Qb("u", "x", s1, c) * G("G2", s1, s2) * Qv("u", "x", s2, c) + "ub_G2_u"
+    s1 = new_spin_index()
+    s2 = new_spin_index()
+    c = new_color_index()
+    expr3 = Qb("d", "y", s1, c) * G("5", s1, s2) * Qv("s", "y", s2, c) + "db_g5_s"
+    print(expr1)
+    print(expr2)
+    print(expr3)
+    print(display_cexpr(contract_simplify_compile(expr1 * expr2 * expr3, is_isospin_symmetric_limit = False)))
+
+def test_prop():
+    s1 = new_spin_index()
+    s2 = new_spin_index()
+    c1 = new_color_index()
+    c2 = new_color_index()
+    expr = Qv("q", "x", s1, c1) * Qb("q", "y", s2, c2) + "q(x) qb(y)"
+    print(expr)
+    print(display_cexpr(contract_simplify_compile(expr, is_isospin_symmetric_limit = False)))
+
 if __name__ == "__main__":
+    # test_prop()
+    # test_kpipi()
     # test1()
     # exit()
     #
