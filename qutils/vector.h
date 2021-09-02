@@ -171,13 +171,13 @@ inline void* alloc_mem(const long min_size, const bool is_acc = false)
   }
 }
 
-inline void free_mem(void* ptr, const long min_size)
+inline void free_mem(void* ptr, const long min_size, const bool is_acc = false)
 {
   TIMER_FLOPS("free_mem");
   timer.flops += min_size;
   const size_t alignment = get_alignment();
   const size_t size = get_aligned_mem_size(alignment, min_size);
-  MemCache& cache = get_mem_cache();
+  MemCache& cache = get_mem_cache(is_acc);
   cache.add(ptr, size);
 }
 
@@ -252,7 +252,7 @@ struct vector {
   {
     qassert(not is_copy);
     if (v.p != NULL) {
-      free_mem(v.p, v.n * sizeof(M));
+      free_mem(v.p, v.n * sizeof(M), is_acc);
     }
     v = Vector<M>();
     qassert(v.p == NULL);
@@ -453,7 +453,7 @@ struct box {
   {
     qassert(not is_copy);
     if (v.p != NULL) {
-      free_mem(v.p, sizeof(M));
+      free_mem(v.p, sizeof(M), is_acc);
     }
     v = Handle<M>();
     qassert(v.p == NULL);
