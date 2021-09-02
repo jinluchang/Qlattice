@@ -16,6 +16,7 @@ psel.list() = [[0, 0, 0, 0], [0, 1, 2, 0]]
 q_field_init=fast (default)
 set q_field_init=fast.
 q_mem_cache_max_size=512 (default)
+q_mem_cache_acc_max_size=512 (default)
 ShufflePlanCache: to add 1 / 16.
 fsel info = Geometry([4, 4, 4, 8], 1) 16 0.25
 write_field: fn='results/fsel.field'.

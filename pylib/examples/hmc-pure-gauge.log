@@ -14,6 +14,7 @@ qremove: 'results'
 q_field_init=fast (default)
 set q_field_init=fast.
 q_mem_cache_max_size=512 (default)
+q_mem_cache_acc_max_size=512 (default)
 CommPlanCache: to add 1 / 32.
 CommPlanCache: to add 2 / 32.
 # norm_idx gm_force_magnitude

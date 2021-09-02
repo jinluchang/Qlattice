@@ -15,6 +15,7 @@ geo.show() = Geometry([4, 4, 4, 8], 1)
 q_field_init=fast (default)
 set q_field_init=fast.
 q_mem_cache_max_size=512 (default)
+q_mem_cache_acc_max_size=512 (default)
 ShufflePlanCache: to add 1 / 16.
 prop 870829356 49123.69045958381
 FieldsWriter: open 'results/prop.fields'.

@@ -16,6 +16,7 @@ q_field_init=fast (default)
 set q_field_init=fast.
 Geometry([4, 4, 4, 8], 4, expansion_left=[0, 0, 0, 0], expansion_right=[0, 0, 0, 0], eo=0)
 q_mem_cache_max_size=512 (default)
+q_mem_cache_acc_max_size=512 (default)
 CommPlanCache: to add 1 / 32.
 gf_show_info: plaq = 1.0000000000000000 ; link_trace = 1.0000000000000000.
 gf_show_info: plaq = 0.6147333258459872 ; link_trace = 0.8844956937132934.

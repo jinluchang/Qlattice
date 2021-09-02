@@ -52,6 +52,7 @@ geo.show() = Geometry([4, 4, 4, 8], 1)
 q_field_init=fast (default)
 set q_field_init=fast.
 q_mem_cache_max_size=512 (default)
+q_mem_cache_acc_max_size=512 (default)
 CommPlanCache: to add 1 / 32.
 gf_show_info: plaq = 0.9745055472546029 ; link_trace = 0.9934624069374576.
 qlat geo created
