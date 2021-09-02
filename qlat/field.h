@@ -28,7 +28,9 @@ struct Field {
   {
     initialized = false;
     geo.init();
+    geo.set_acc(true);
     field.init();
+    field.set_acc(true);
   }
   void init(const Geometry& geo_)
   {

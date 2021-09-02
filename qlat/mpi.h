@@ -17,7 +17,8 @@ struct Q_Comm {
   RngState sync_node_rs;
   //
   Q_Comm() {}
-  Q_Comm(MPI_Comm comm_, const Coordinate& size_node_, const RngState& sync_node_rs_)
+  Q_Comm(MPI_Comm comm_, const Coordinate& size_node_,
+         const RngState& sync_node_rs_)
   {
     comm = comm_;
     size_node = size_node_;
@@ -154,8 +155,8 @@ inline const GeometryNodeNeighbor& get_geometry_node_neighbor()
   return geonb;
 }
 
-inline int mpi_send(void* buf, long count, MPI_Datatype datatype, int dest,
-                    int tag, MPI_Comm comm)
+inline int mpi_send(const void* buf, long count, MPI_Datatype datatype,
+                    int dest, int tag, MPI_Comm comm)
 {
   const long int_max = INT_MAX;
   if (count <= int_max) {
@@ -192,8 +193,9 @@ inline int mpi_recv(void* buf, long count, MPI_Datatype datatype, int source,
   }
 }
 
-inline int mpi_isend(void* buf, long count, MPI_Datatype datatype, int dest,
-                     int tag, MPI_Comm comm, std::vector<MPI_Request>& requests)
+inline int mpi_isend(const void* buf, long count, MPI_Datatype datatype,
+                     int dest, int tag, MPI_Comm comm,
+                     std::vector<MPI_Request>& requests)
 {
   const long int_max = INT_MAX;
   if (count <= int_max) {
@@ -864,7 +866,7 @@ inline void begin_comm(const MPI_Comm comm, const Coordinate& size_node)
                           Timer::get_timer_database().size()));
   displayln_info(ssprintf("Timer::get_timer_stack().size() = %ld",
                           Timer::get_timer_stack().size()));
-  get_mem_cache().gc(); //initialize mem_cache
+  get_mem_cache().gc();  // initialize mem_cache
   sync_node();
   // display_geometry_node();
   // install_qhandle_sig();
@@ -875,7 +877,8 @@ inline void begin(const int id_node, const Coordinate& size_node,
 // begin Qlat with existing id_node maping (assuming MPI already initialized)
 {
   if (get_comm_list().empty()) {
-    get_comm_list().push_back(Q_Comm(MPI_COMM_WORLD, Coordinate(), RngState("sync_node")));
+    get_comm_list().push_back(
+        Q_Comm(MPI_COMM_WORLD, Coordinate(), RngState("sync_node")));
   }
   qassert(0 <= id_node and id_node < product(size_node));
   qassert(0 <= color);

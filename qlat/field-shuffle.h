@@ -75,28 +75,24 @@ void shuffle_field_comm(Vector<M> recv_buffer, const Vector<M> send_buffer,
   timer.flops += total_bytes;
   qassert(send_buffer.size() == scp.total_send_size * multiplicity);
   qassert(recv_buffer.size() == scp.total_recv_size * multiplicity);
-  vector<MPI_Request> reqs(scp.send_msg_infos.size() + scp.recv_msg_infos.size());
-  Vector<MPI_Request> recv_reqs(reqs.data(), scp.recv_msg_infos.size());
-  Vector<MPI_Request> send_reqs(reqs.data() + scp.recv_msg_infos.size(), scp.send_msg_infos.size());
+  std::vector<MPI_Request> reqs;
   {
     TIMER("shuffle_field_comm-init");
     const int mpi_tag = 4;
     for (size_t i = 0; i < scp.recv_msg_infos.size(); ++i) {
       const ShufflePlanMsgInfo& mi = scp.recv_msg_infos[i];
-      MPI_Irecv(&recv_buffer[mi.idx * multiplicity],
+      mpi_irecv(&recv_buffer[mi.idx * multiplicity],
                 mi.size * multiplicity * sizeof(M), MPI_BYTE, mi.id_node,
-                mpi_tag, get_comm(), &recv_reqs[i]);
+                mpi_tag, get_comm(), reqs);
     }
     for (size_t i = 0; i < scp.send_msg_infos.size(); ++i) {
       const ShufflePlanMsgInfo& mi = scp.send_msg_infos[i];
-      MPI_Isend(&send_buffer[mi.idx * multiplicity],
+      mpi_isend(&send_buffer[mi.idx * multiplicity],
                 mi.size * multiplicity * sizeof(M), MPI_BYTE, mi.id_node,
-                mpi_tag, get_comm(), &send_reqs[i]);
+                mpi_tag, get_comm(), reqs);
     }
   }
-  if (reqs.size() > 0) {
-    MPI_Waitall(reqs.size(), reqs.data(), MPI_STATUS_IGNORE);
-  }
+  mpi_waitall(reqs);
   sync_node();
 }
 
@@ -109,28 +105,24 @@ void shuffle_field_comm_back(Vector<M> send_buffer, const Vector<M> recv_buffer,
   TIMER_FLOPS("shuffle_field_comm_back(send,recv,scp,multiplicity)");
   const long total_bytes = scp.global_comm_size * multiplicity * sizeof(M);
   timer.flops += total_bytes;
-  vector<MPI_Request> reqs(scp.send_msg_infos.size() + scp.recv_msg_infos.size());
-  Vector<MPI_Request> send_reqs(reqs.data(), scp.send_msg_infos.size());
-  Vector<MPI_Request> recv_reqs(reqs.data() + scp.send_msg_infos.size(), scp.recv_msg_infos.size());
+  std::vector<MPI_Request> reqs;
   {
     TIMER("shuffle_field_comm_back-init");
     const int mpi_tag = 5;
     for (size_t i = 0; i < scp.send_msg_infos.size(); ++i) {
       const ShufflePlanMsgInfo& mi = scp.send_msg_infos[i];
-      MPI_Irecv(&send_buffer[mi.idx * multiplicity],
+      mpi_irecv(&send_buffer[mi.idx * multiplicity],
                 mi.size * multiplicity * sizeof(M), MPI_BYTE, mi.id_node,
-                mpi_tag, get_comm(), &send_reqs[i]);
+                mpi_tag, get_comm(), reqs);
     }
     for (size_t i = 0; i < scp.recv_msg_infos.size(); ++i) {
       const ShufflePlanMsgInfo& mi = scp.recv_msg_infos[i];
-      MPI_Isend(&recv_buffer[mi.idx * multiplicity],
+      mpi_isend(&recv_buffer[mi.idx * multiplicity],
                 mi.size * multiplicity * sizeof(M), MPI_BYTE, mi.id_node,
-                mpi_tag, get_comm(), &recv_reqs[i]);
+                mpi_tag, get_comm(), reqs);
     }
   }
-  if (reqs.size() > 0) {
-    MPI_Waitall(reqs.size(), reqs.data(), MPI_STATUS_IGNORE);
-  }
+  mpi_waitall(reqs);
   sync_node();
 }
 
@@ -240,7 +232,7 @@ void shuffle_field(std::vector<Field<M> >& fs, const Field<M>& f,
   shuffle_field_comm(get_data(recv_buffer), get_data(send_buffer), sp.scp,
                      geo.multiplicity);
   clear(send_buffer);
-  std::vector<Geometry> geos_recv = sp.geos_recv;
+  vector<Geometry> geos_recv = sp.geos_recv;
   fs.resize(geos_recv.size());
   for (size_t i = 0; i < fs.size(); ++i) {
     geos_recv[i].remult(geo.multiplicity);
@@ -337,7 +329,7 @@ void shuffle_field(std::vector<SelectedField<M> >& fs,
   shuffle_field_comm(get_data(recv_buffer), get_data(send_buffer), sp.scp,
                      geo.multiplicity);
   clear(send_buffer);
-  std::vector<Geometry> geos_recv = sp.geos_recv;
+  vector<Geometry> geos_recv = sp.geos_recv;
   fs.resize(geos_recv.size());
   for (size_t i = 0; i < fs.size(); ++i) {
     geos_recv[i].remult(geo.multiplicity);
@@ -597,25 +589,15 @@ ShufflePlan make_shuffle_plan_generic(std::vector<FieldSelection>& fsels,
     }
     long neg_count = 0;
     do {
-      std::vector<MPI_Request> reqs(2 * num_node);
-      Vector<MPI_Request> recv_reqs(reqs.data(), num_node);
-      Vector<MPI_Request> send_reqs(reqs.data() + num_node, num_node);
-      const int mpi_tag = 12 + 5438;
+      std::vector<MPI_Request> reqs;
+      const int mpi_tag = 12;
       for (int i = 0; i < num_node; ++i) {
-        MPI_Irecv(&recv_size[i], 1, MPI_LONG, i, mpi_tag, get_comm(),
-                  &recv_reqs[i]);
+        mpi_irecv(&recv_size[i], 1, MPI_LONG, i, mpi_tag, get_comm(), reqs);
       }
       for (int i = 0; i < num_node; ++i) {
-        MPI_Isend(&send_size[i], 1, MPI_LONG, i, mpi_tag, get_comm(),
-                  &send_reqs[i]);
+        mpi_isend(&send_size[i], 1, MPI_LONG, i, mpi_tag, get_comm(), reqs);
       }
-      if (reqs.size() > 0) {
-        if (MPI_Waitall(reqs.size(), reqs.data(), MPI_STATUS_IGNORE) !=
-            MPI_SUCCESS) {
-          displayln(fname + ssprintf(": mpi_waitall failed"));
-          qassert(false);
-        }
-      }
+      mpi_waitall(reqs);
       neg_count = 0;
       for (int i = 0; i < num_node; ++i) {
         if (recv_size[i] < 0) {
@@ -629,7 +611,7 @@ ShufflePlan make_shuffle_plan_generic(std::vector<FieldSelection>& fsels,
       }
       glb_sum(neg_count);
       if (neg_count > 0) {
-        displayln_info(fname + ssprintf(": total neg_count=%ld", neg_count));
+        displayln_info(fname + ssprintf(": WARNING: total neg_count=%ld but should be 0. Retrying.", neg_count));
       }
     } while (neg_count > 0);
   }

@@ -80,6 +80,7 @@ Expected : 16
 Mean     : 16.8758
 Var      : 0.489169
 q_mem_cache_max_size=512 (default)
+q_mem_cache_acc_max_size=512 (default)
 q_timer_max_func_name_len=50 (default)
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 0.

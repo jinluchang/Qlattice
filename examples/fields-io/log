@@ -17,6 +17,7 @@ demo: selection is stored in 'fsel' of type 'FieldSelection'
 q_field_init=fast (default)
 set q_field_init=fast.
 q_mem_cache_max_size=512 (default)
+q_mem_cache_acc_max_size=512 (default)
 make_shuffle_plan_generic: num_send_packs =          7
 make_shuffle_plan_generic: num_recv_packs =         12
 make_shuffle_plan_generic: num_send_msgs  =          4

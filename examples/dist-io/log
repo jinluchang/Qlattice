@@ -24,6 +24,7 @@ dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; t
 dist_read_field: fn='huge-data/gauge_field_rgf-0.1'.
 dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         2359296
 q_mem_cache_max_size=512 (default)
+q_mem_cache_acc_max_size=512 (default)
 ShufflePlanCache: to add 1 / 16.
 dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         2359296
 CommPlanCache: to add 1 / 32.

@@ -39,6 +39,7 @@ compute_traj_do: job_tag='test-4nt8' ; traj=1000
 q_field_init=fast (default)
 set q_field_init=fast.
 q_mem_cache_max_size=512 (default)
+q_mem_cache_acc_max_size=512 (default)
 make_shuffle_plan_generic: num_send_packs =          2
 make_shuffle_plan_generic: num_recv_packs =          7
 make_shuffle_plan_generic: num_send_msgs  =          4

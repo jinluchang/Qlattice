@@ -201,7 +201,7 @@ inline CommPlan make_comm_plan(const CommMarks& marks)
     }
   }
   //
-  std::vector<long> src_id_node_count(
+  vector<long> src_id_node_count(
       get_num_node(), 0);  // number of total send pkgs for each node
   {
     long count = 0;
@@ -226,17 +226,15 @@ inline CommPlan make_comm_plan(const CommMarks& marks)
   std::map<int, std::vector<long> >
       dst_id_node_g_offsets;  // dst node id ; vector of g_offset
   {
-    vector<MPI_Request> reqs(src_id_node_g_offsets.size() + ret.send_msg_infos.size());
-    Vector<MPI_Request> recv_reqs(reqs.data(), ret.send_msg_infos.size());
-    Vector<MPI_Request> send_reqs(reqs.data() + ret.send_msg_infos.size(), src_id_node_g_offsets.size());
+    std::vector<MPI_Request> reqs;
     {
       const int mpi_tag = 8;
       std::vector<CommMsgInfo> send_send_msg_infos(
           src_id_node_g_offsets.size());
       for (int i = 0; i < (int)ret.send_msg_infos.size(); ++i) {
         CommMsgInfo& cmi = ret.send_msg_infos[i];
-        MPI_Irecv(&cmi, sizeof(CommMsgInfo), MPI_BYTE, MPI_ANY_SOURCE, mpi_tag,
-                 get_comm(), &recv_reqs[i]);
+        mpi_irecv(&cmi, sizeof(CommMsgInfo), MPI_BYTE, MPI_ANY_SOURCE, mpi_tag,
+                 get_comm(), reqs);
       }
       int k = 0;
       for (std::map<int, std::vector<long> >::const_iterator it =
@@ -246,13 +244,11 @@ inline CommPlan make_comm_plan(const CommMarks& marks)
         cmi.id_node = get_id_node();
         cmi.buffer_idx = 0;
         cmi.size = it->second.size();
-        MPI_Isend(&cmi, sizeof(CommMsgInfo), MPI_BYTE, it->first, mpi_tag,
-                  get_comm(), &send_reqs[k]);
+        mpi_isend(&cmi, sizeof(CommMsgInfo), MPI_BYTE, it->first, mpi_tag,
+                  get_comm(), reqs);
         k += 1;
       }
-      if (reqs.size() > 0) {
-        MPI_Waitall(reqs.size(), reqs.data(), MPI_STATUS_IGNORE);
-      }
+      mpi_waitall(reqs);
       for (int i = 0; i < (int)ret.send_msg_infos.size(); ++i) {
         CommMsgInfo& cmi = ret.send_msg_infos[i];
         dst_id_node_g_offsets[cmi.id_node].resize(cmi.size);
@@ -270,8 +266,8 @@ inline CommPlan make_comm_plan(const CommMarks& marks)
         cmi.buffer_idx = count;
         cmi.size = it->second.size();
         count += cmi.size;
-        MPI_Irecv(it->second.data(), it->second.size(), MPI_LONG, it->first,
-                  mpi_tag, get_comm(), &recv_reqs[k]);
+        mpi_irecv(it->second.data(), it->second.size(), MPI_LONG, it->first,
+                  mpi_tag, get_comm(), reqs);
         k += 1;
       }
       ret.total_send_size = count;
@@ -280,14 +276,12 @@ inline CommPlan make_comm_plan(const CommMarks& marks)
       for (std::map<int, std::vector<long> >::const_iterator it =
                src_id_node_g_offsets.begin();
            it != src_id_node_g_offsets.end(); ++it) {
-        MPI_Isend((void*)it->second.data(), it->second.size(), MPI_LONG,
-                  it->first, mpi_tag, get_comm(), &send_reqs[k]);
+        mpi_isend((void*)it->second.data(), it->second.size(), MPI_LONG,
+                  it->first, mpi_tag, get_comm(), reqs);
         k += 1;
       }
       // ret.send_msg_infos finish
-      if (reqs.size() > 0) {
-        MPI_Waitall(reqs.size(), reqs.data(), MPI_STATUS_IGNORE);
-      }
+      mpi_waitall(reqs);
     }
   }
   {
@@ -422,26 +416,22 @@ void refresh_expanded(Field<M>& f, const CommPlan& plan)
     TIMER_FLOPS("refresh_expanded-comm");
     timer.flops +=
         (plan.total_recv_size + plan.total_send_size) * sizeof(M) / 2;
-    vector<MPI_Request> reqs(plan.recv_msg_infos.size() + plan.send_msg_infos.size());
-    Vector<MPI_Request> recv_reqs(reqs.data(), plan.recv_msg_infos.size());
-    Vector<MPI_Request> send_reqs(reqs.data() + plan.recv_msg_infos.size(), plan.send_msg_infos.size());
+    std::vector<MPI_Request> reqs;
     {
       TIMER("refresh_expanded-comm-init");
       const int mpi_tag = 10;
       for (size_t i = 0; i < plan.recv_msg_infos.size(); ++i) {
         const CommMsgInfo& cmi = plan.recv_msg_infos[i];
-        MPI_Irecv(&recv_buffer[cmi.buffer_idx], cmi.size * sizeof(M), MPI_BYTE,
-                  cmi.id_node, mpi_tag, get_comm(), &recv_reqs[i]);
+        mpi_irecv(&recv_buffer[cmi.buffer_idx], cmi.size * sizeof(M), MPI_BYTE,
+                  cmi.id_node, mpi_tag, get_comm(), reqs);
       }
       for (size_t i = 0; i < plan.send_msg_infos.size(); ++i) {
         const CommMsgInfo& cmi = plan.send_msg_infos[i];
-        MPI_Isend(&send_buffer[cmi.buffer_idx], cmi.size * sizeof(M), MPI_BYTE,
-                  cmi.id_node, mpi_tag, get_comm(), &send_reqs[i]);
+        mpi_isend(&send_buffer[cmi.buffer_idx], cmi.size * sizeof(M), MPI_BYTE,
+                  cmi.id_node, mpi_tag, get_comm(), reqs);
       }
     }
-    if (reqs.size() > 0) {
-      MPI_Waitall(reqs.size(), reqs.data(), MPI_STATUS_IGNORE);
-    }
+    mpi_waitall(reqs);
     sync_node();
   }
 #pragma omp parallel for

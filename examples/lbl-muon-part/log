@@ -68,6 +68,7 @@ make_shuffle_plan_fft: total num_send_msgs  =          8
 make_shuffle_plan_fft: total num_recv_msgs  =          8
 make_shuffle_plan_fft: global_comm_size =        512
 q_mem_cache_max_size=512 (default)
+q_mem_cache_acc_max_size=512 (default)
 fft_complex_field_plan::get_plan: start to make a new fft plan with id = 1
 fft_complex_field_plan::init: malloc 16384
 fft_complex_field_plan::init: free 16384

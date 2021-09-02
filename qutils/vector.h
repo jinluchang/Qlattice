@@ -27,19 +27,32 @@ inline size_t get_aligned_mem_size(const size_t alignment, const long min_size)
   return size;
 }
 
-inline size_t& get_mem_cache_max_size()
+inline size_t& get_mem_cache_max_size(const bool is_acc = false)
 // qlat parameter
 {
   static size_t max_size =
       get_env_long_default("q_mem_cache_max_size", 512) * 1024L * 1024L;
-  return max_size;
+  static size_t max_size_acc =
+      get_env_long_default("q_mem_cache_acc_max_size",
+                           max_size / (1024L * 1024L)) *
+      1024L * 1024L;
+  if (is_acc) {
+    return max_size_acc;
+  } else {
+    return max_size;
+  }
 }
 
 struct MemCache {
+  bool is_acc;
   size_t mem_cache_size;
   std::unordered_multimap<size_t, void*> db;
   //
-  MemCache() { mem_cache_size = 0; }
+  MemCache(const bool is_acc_ = false)
+  {
+    is_acc = is_acc_;
+    mem_cache_size = 0;
+  }
   ~MemCache() { gc(); }
   //
   void add(void* ptr, const size_t size)
@@ -47,7 +60,7 @@ struct MemCache {
     mem_cache_size += size;
     std::pair<size_t, void*> p(size, ptr);
     db.insert(p);
-    if (mem_cache_size > get_mem_cache_max_size()) {
+    if (mem_cache_size > get_mem_cache_max_size(is_acc)) {
       gc();
     }
   }
@@ -73,11 +86,15 @@ struct MemCache {
       void* ptr = iter->second;
       qassert(ptr != NULL);
 #ifdef QLAT_USE_ACC
-      cudaError err = cudaFree(ptr);
-      if (cudaSuccess != err) {
-        displayln(fname + ssprintf(": Cuda error %s after cudaFree.",
-                                   cudaGetErrorString(err)));
-        qassert(err == cudaSuccess);
+      if (is_acc) {
+        cudaError err = cudaFree(ptr);
+        if (cudaSuccess != err) {
+          displayln(fname + ssprintf(": Cuda error %s after cudaFree.",
+                                     cudaGetErrorString(err)));
+          qassert(err == cudaSuccess);
+        }
+      } else {
+        free(ptr);
       }
 #else
       free(ptr);
@@ -88,13 +105,28 @@ struct MemCache {
   }
 };
 
-inline MemCache& get_mem_cache()
+inline MemCache& get_mem_cache(const bool is_acc = false)
 {
-  static MemCache cache;
-  return cache;
+  static MemCache cache(false);
+  static MemCache cache_acc(true);
+  if (is_acc) {
+    return cache_acc;
+  } else {
+    return cache;
+  }
 }
 
-inline void* alloc_mem(const long min_size)
+inline void* alloc_mem_alloc_no_acc(const long size)
+{
+  const size_t alignment = get_alignment();
+#if defined NO_ALIGNED_ALLOC
+  return malloc(size);
+#else
+  return aligned_alloc(alignment, size);
+#endif
+}
+
+inline void* alloc_mem(const long min_size, const bool is_acc = false)
 {
   if (min_size <= 0) {
     return NULL;
@@ -103,7 +135,7 @@ inline void* alloc_mem(const long min_size)
   timer.flops += min_size;
   const size_t alignment = get_alignment();
   const size_t size = get_aligned_mem_size(alignment, min_size);
-  MemCache& cache = get_mem_cache();
+  MemCache& cache = get_mem_cache(is_acc);
   void* ptr = cache.del(size);
   if (NULL != ptr) {
     return ptr;
@@ -111,26 +143,28 @@ inline void* alloc_mem(const long min_size)
   {
     TIMER_FLOPS("alloc_mem-alloc");
     timer.flops += min_size;
-#ifdef QLAT_USE_ACC
-    cudaError err = cudaGetLastError();
-    if (cudaSuccess != err) {
-      displayln(fname + ssprintf(": Cuda error %s before cudaMallocManaged.",
-                                 cudaGetErrorString(err)));
-      qassert(err == cudaSuccess);
-    }
     void* ptr = NULL;
-    err = cudaMallocManaged(&ptr, size);
-    if (cudaSuccess != err) {
-      displayln(fname +
-                ssprintf(": Cuda error %s, min_size=%ld, size=%ld, ptr=%lX.",
-                         cudaGetErrorString(err), min_size, size, ptr));
-      usleep((useconds_t)(10.0 * 1.0e6));
-      qassert(err == cudaSuccess);
+#ifdef QLAT_USE_ACC
+    if (is_acc) {
+      cudaError err = cudaGetLastError();
+      if (cudaSuccess != err) {
+        displayln(fname + ssprintf(": Cuda error %s before cudaMallocManaged.",
+                                   cudaGetErrorString(err)));
+        qassert(err == cudaSuccess);
+      }
+      err = cudaMallocManaged(&ptr, size);
+      if (cudaSuccess != err) {
+        displayln(fname +
+                  ssprintf(": Cuda error %s, min_size=%ld, size=%ld, ptr=%lX.",
+                           cudaGetErrorString(err), min_size, size, ptr));
+        usleep((useconds_t)(10.0 * 1.0e6));
+        qassert(err == cudaSuccess);
+      }
+    } else {
+      ptr = alloc_mem_alloc_no_acc(size);
     }
-#elif defined NO_ALIGNED_ALLOC
-    void* ptr = malloc(size);
 #else
-    void* ptr = aligned_alloc(alignment, size);
+    ptr = alloc_mem_alloc_no_acc(size);
 #endif
     memset(ptr, 0, size);
     return ptr;
@@ -153,12 +187,14 @@ struct vector {
   // (it is likely not be what you think it is)
   //
   bool is_copy;  // do not free memory if is_copy=true
+  bool is_acc; // if place data on cudaMallocManaged memory (default false)
   Vector<M> v;
   //
   vector()
   {
     qassert(v.p == NULL);
     is_copy = false;
+    is_acc = false;
   }
   vector(const vector<M>& vp)
   {
@@ -166,11 +202,13 @@ struct vector {
     qassert(false);
 #endif
     is_copy = true;
+    is_acc = false;
     v = vp.v;
   }
   vector(vector<M>&& vp) noexcept
   {
     is_copy = vp.is_copy;
+    is_acc = vp.is_acc;
     v = vp.v;
     vp.is_copy = true;
   }
@@ -178,17 +216,20 @@ struct vector {
   {
     qassert(v.p == NULL);
     is_copy = false;
+    is_acc = false;
     resize(size);
   }
   vector(const long size, const M& x)
   {
     qassert(v.p == NULL);
     is_copy = false;
+    is_acc = false;
     resize(size, x);
   }
   vector(const std::vector<M>& vp)
   {
     is_copy = false;
+    is_acc = false;
     *this = vp;
   }
   //
@@ -217,6 +258,22 @@ struct vector {
     qassert(v.p == NULL);
   }
   //
+  void set_acc(const bool is_acc_)
+  {
+    qassert(not is_copy);
+    if (is_acc == is_acc_) {
+      return;
+    }
+    if (NULL == v.p) {
+      is_acc = is_acc_;
+      return;
+    }
+    vector<M> vec;
+    vec.set_acc(is_acc_);
+    vec = *this;
+    swap(vec);
+  }
+  //
   qacc void swap(vector<M>& x)
   {
     qassert(not is_copy);
@@ -231,12 +288,12 @@ struct vector {
     qassert(not is_copy);
     qassert(0 <= size);
     if (v.p == NULL) {
-      v.p = (M*)alloc_mem(size * sizeof(M));
+      v.p = (M*)alloc_mem(size * sizeof(M), is_acc);
       v.n = size;
     } else {
       vector<M> vp;
       vp.v = v;
-      v.p = (M*)alloc_mem(size * sizeof(M));
+      v.p = (M*)alloc_mem(size * sizeof(M), is_acc);
       v.n = size;
       if (size <= vp.v.n) {
         std::memcpy((void*)v.p, (void*)vp.v.p, size * sizeof(M));
@@ -250,7 +307,7 @@ struct vector {
     qassert(not is_copy);
     qassert(0 <= size);
     if (v.p == NULL) {
-      v.p = (M*)alloc_mem(size * sizeof(M));
+      v.p = (M*)alloc_mem(size * sizeof(M), is_acc);
       v.n = size;
       for (long i = 0; i < v.n; ++i) {
         v[i] = x;
@@ -258,7 +315,7 @@ struct vector {
     } else {
       vector<M> vp;
       vp.v = v;
-      v.p = (M*)alloc_mem(size * sizeof(M));
+      v.p = (M*)alloc_mem(size * sizeof(M), is_acc);
       v.n = size;
       if (size <= vp.v.n) {
         std::memcpy(v.p, vp.v.p, size * sizeof(M));
@@ -344,12 +401,14 @@ struct box {
   // (it is likely not be what you think it is)
   //
   bool is_copy;  // do not free memory if is_copy=true
+  bool is_acc; // if place data on cudaMallocManaged memory (default false)
   Handle<M> v;
   //
   box()
   {
     qassert(v.p == NULL);
     is_copy = false;
+    is_acc = false;
   }
   box(const box<M>& vp)
   {
@@ -357,11 +416,13 @@ struct box {
     qassert(false);
 #endif
     is_copy = true;
+    is_acc = vp.is_acc;
     v = vp.v;
   }
   box(box<M>&& vp) noexcept
   {
     is_copy = vp.is_copy;
+    is_acc = vp.is_acc;
     v = vp.v;
     vp.is_copy = true;
   }
@@ -369,6 +430,7 @@ struct box {
   {
     qassert(v.p == NULL);
     is_copy = false;
+    is_acc = false;
     set(x);
   }
   //
@@ -393,8 +455,24 @@ struct box {
     if (v.p != NULL) {
       free_mem(v.p, sizeof(M));
     }
-    v.init();
+    v = Handle<M>();
     qassert(v.p == NULL);
+  }
+  //
+  void set_acc(const bool is_acc_)
+  {
+    qassert(not is_copy);
+    if (is_acc == is_acc_) {
+      return;
+    }
+    if (NULL == v.p) {
+      is_acc = is_acc_;
+      return;
+    }
+    box<M> b;
+    b.set_acc(is_acc_);
+    b = *this;
+    swap(b);
   }
   //
   qacc void swap(box<M>& x)
@@ -410,7 +488,7 @@ struct box {
   {
     qassert(not is_copy);
     if (v.p == NULL) {
-      v.p = (M*)alloc_mem(sizeof(M));
+      v.p = (M*)alloc_mem(sizeof(M), is_acc);
     }
     v() = x;
   }

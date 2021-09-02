@@ -23,6 +23,7 @@ obtain_lock: Lock obtained 'results/total_site=4x4x4x256/lambda=24.0000000000/ma
 q_field_init=fast (default)
 set q_field_init=fast.
 q_mem_cache_max_size=512 (default)
+q_mem_cache_acc_max_size=512 (default)
 CommPlanCache: to add 1 / 32.
 ((total-site (4 4 4 256))
  (mass-sqr -1.8600000000)

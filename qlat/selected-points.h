@@ -131,7 +131,8 @@ struct SelectedPoints {
     initialized = false;
     multiplicity = 0;
     n_points = 0;
-    clear(points);
+    points.init();
+    points.set_acc(true);
   }
   void init(const long n_points_, const int multiplicity_)
   {

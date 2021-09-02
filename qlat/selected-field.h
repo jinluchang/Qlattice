@@ -110,7 +110,9 @@ struct FieldSelection {
     f_local_idx.init();
     n_elems = 0;
     ranks.init();
+    ranks.set_acc(true);
     indices.init();
+    indices.set_acc(true);
   }
   //
   FieldSelection() { init(); }
@@ -205,7 +207,9 @@ struct SelectedField {
   {
     initialized = false;
     geo.init();
+    geo.set_acc(true);
     field.init();
+    field.set_acc(true);
   }
   void init(const Geometry& geo_, const long n_elems_, const int multiplicity)
   {
