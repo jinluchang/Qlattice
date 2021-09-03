@@ -378,7 +378,7 @@ def gauge_fix_coulomb(
     #
     @q.timer
     def fix_t_slice(t):
-        g.message(f"Run local time slice {t} / {Nt_split}")
+        q.displayln(f"Run local time slice {t} / {Nt_split} id_node={q.get_id_node()}")
         f = g.qcd.gauge.fix.landau([Usep_split[mu][t] for mu in range(3)])
         fa = opt.fourier_accelerate.inverse_phat_square(Vt_split[t].grid, f)
         if rng is not None:
