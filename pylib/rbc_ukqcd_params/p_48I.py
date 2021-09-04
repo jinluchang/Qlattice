@@ -8,7 +8,7 @@ rup.dict_params[job_tag] = dict_params
 
 dict_params["total_site"] = [ 48, 48, 48, 96, ]
 
-dict_params["load_config_params"] = { "twist_boundary_at_boundary":[ 0.0, 0.0, 0.0, -0.5, ] }
+dict_params["load_config_params"] = { "twist_boundary_at_boundary":[ 0.0, 0.0, 0.0, 0.0, ] }
 
 def mk_fermion_params(inv_type, inv_acc):
     params = {}
