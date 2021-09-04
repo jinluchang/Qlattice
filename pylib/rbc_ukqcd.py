@@ -36,6 +36,19 @@ def load_config(job_tag : str, fn : str):
                 gf.twist_boundary_at_boundary(lmom, mu)
     return gf
 
+@q.timer
+def load_config_lazy(job_tag : str, fn : str):
+    if not q.does_file_exist_sync_node(fn):
+        return None
+    gf = None
+    def get_gf():
+        nonlocal gf
+        if gf is None
+            gf = load_config(job_tag, path_gf)
+            gf.show_info()
+        return gf
+    return get_gf
+
 def get_fermion_params(job_tag, inv_type, inv_acc):
     return rup.dict_params[job_tag]["fermion_params"][inv_type][inv_acc]
 

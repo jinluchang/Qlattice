@@ -56,9 +56,21 @@ def test_eig(gf, eig, job_tag, inv_type):
         q.displayln_info(f"sol diff norm {sol.qnorm()} inv_acc={inv_acc} without eig")
 
 @q.timer
+def check_job(job_tag, traj):
+    # return True if config is finished
+    fns = []
+    for fn in fns:
+        if fn is None:
+            return False
+    return True
+
+@q.timer
 def run(job_tag, traj):
     q.check_stop()
     q.check_time_limit()
+    #
+    if check_job(job_tag, traj):
+        return
     #
     q.qmkdir_info(f"locks")
     q.qmkdir_info(get_save_path(f""))
@@ -78,15 +90,17 @@ def run(job_tag, traj):
             qg.save_gauge_field(gf, path_gf)
         else:
             assert False
-    gf = ru.load_config(job_tag, path_gf)
-    gf.show_info()
+    get_gf = ru.load_config_lazy(job_tag, path_gf)
+    assert get_gf is not None
     #
     get_eig = None
     if q.obtain_lock(f"locks/{job_tag}-{traj}-compute-eig"):
         q.qmkdir_info(get_save_path(f"eig"))
         q.qmkdir_info(get_save_path(f"eig/{job_tag}"))
-        get_eig = compute_eig(gf, job_tag, inv_type = 0, path = f"eig/{job_tag}/traj={traj}")
+        get_eig = compute_eig(get_gf(), job_tag, inv_type = 0, path = f"eig/{job_tag}/traj={traj}")
         q.release_lock()
+    #
+    q.timer_display()
 
 qg.begin_with_gpt()
 
@@ -108,6 +122,5 @@ for job_tag in job_tags:
     q.displayln_info(rup.dict_params[job_tag])
     for traj in range(1000, 1400, 100):
         run(job_tag, traj)
-        q.timer_display()
 
 qg.end_with_gpt()
