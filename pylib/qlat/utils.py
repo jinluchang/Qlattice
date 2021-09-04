@@ -6,6 +6,18 @@ from qlat.rng_state import *
 
 from cqlat import index_from_coordinate, coordinate_from_index
 
+def lazy_call(f, *args, **kwargs):
+    is_thunk = True
+    ret = None
+    def get():
+        nonlocal ret
+        nonlocal is_thunk_
+        if is_thunk:
+            ret = f(*args, **kwargs)
+            is_thunk = False
+        return ret
+    return get
+
 def sqr(x):
     return x * x
 

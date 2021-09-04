@@ -34,20 +34,14 @@ def load_config(job_tag : str, fn : str):
             if lmom != 0.0:
                 q.displayln_info(f"load_config fn='{fn}' twist_boundary_at_boundary lmom={lmom} mu={mu}")
                 gf.twist_boundary_at_boundary(lmom, mu)
+    gf.show_info()
     return gf
 
 @q.timer
 def load_config_lazy(job_tag : str, fn : str):
     if not q.does_file_exist_sync_node(fn):
         return None
-    gf = None
-    def get_gf():
-        nonlocal gf
-        if gf is None
-            gf = load_config(job_tag, path_gf)
-            gf.show_info()
-        return gf
-    return get_gf
+    return q.lazy_call(load_config, job_tag, path_gf)
 
 def get_fermion_params(job_tag, inv_type, inv_acc):
     return rup.dict_params[job_tag]["fermion_params"][inv_type][inv_acc]
@@ -185,13 +179,7 @@ def load_eig_lazy(path, job_tag, inv_type = 0, inv_acc = 0):
     total_site = get_total_site(job_tag)
     fermion_params = get_fermion_params(job_tag, inv_type, inv_acc)
     grids = qg.get_fgrid(total_site, fermion_params)
-    eig = None
-    def load_eig():
-        nonlocal eig
-        if eig is None:
-            eig = g.load(path, grids = grids)
-        return eig
-    return load_eig
+    return lazy_call(g.load, path, grids = grids)
 
 @q.timer
 def mk_gpt_inverter(gf, job_tag, inv_type, inv_acc, *,
