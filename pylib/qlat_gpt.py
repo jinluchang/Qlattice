@@ -433,5 +433,5 @@ def check_gauge_fix_coulomb(gf, gt, eps = 1e-20):
         s += theta
         q.displayln_info(f"theta[{t}] = {theta}")
     s /= t_size
-    g.message(f"theta slice average = {s}")
+    q.displayln_info(f"check_gauge_fix_coulomb: theta slice average = {s} eps={eps}")
     return s < eps

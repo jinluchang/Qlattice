@@ -10,8 +10,7 @@ def lazy_call(f, *args, **kwargs):
     is_thunk = True
     ret = None
     def get():
-        nonlocal ret
-        nonlocal is_thunk_
+        nonlocal ret, is_thunk
         if is_thunk:
             ret = f(*args, **kwargs)
             is_thunk = False

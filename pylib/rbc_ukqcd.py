@@ -41,7 +41,7 @@ def load_config(job_tag : str, fn : str):
 def load_config_lazy(job_tag : str, fn : str):
     if not q.does_file_exist_sync_node(fn):
         return None
-    return q.lazy_call(load_config, job_tag, path_gf)
+    return q.lazy_call(load_config, job_tag, fn)
 
 def get_fermion_params(job_tag, inv_type, inv_acc):
     return rup.dict_params[job_tag]["fermion_params"][inv_type][inv_acc]

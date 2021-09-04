@@ -7,6 +7,7 @@ import gpt as g
 import qlat_gpt as qg
 import rbc_ukqcd as ru
 import rbc_ukqcd_params as rup
+import pprint
 
 import os
 
@@ -282,11 +283,17 @@ def run_job(job_tag, traj):
             gt = qg.gauge_fix_coulomb(get_gf())
             gt.save_double(get_save_path(f"gauge-transform/{job_tag}/traj={traj_gf}.field"))
             q.release_lock()
+            def get_gt():
+                return gt
         else:
-            gt = None
+            get_gt = None
     else:
-        gt = q.GaugeTransform()
-        gt.load_double(path_gt)
+        def load_gt():
+            gt = q.GaugeTransform()
+            gt.load_double(path_gt)
+            qg.check_gauge_fix_coulomb(get_gf(), gt)
+            return gt
+        get_gt = q.lazy_call(load_gt)
     #
     path_psel = get_load_path(f"point-selection/{job_tag}/traj={traj}.txt")
     if path_psel is None:
@@ -311,7 +318,7 @@ def run_job(job_tag, traj):
     fselc = mk_fselc(fsel, psel)
     #
     if get_load_path(f"prop-wsrc-light/{job_tag}/traj={traj}") is None:
-        if get_eig is not None and gt is not None:
+        if get_eig is not None and get_gt is not None:
             if q.obtain_lock(f"locks/{job_tag}-{traj}-wsrc-light"):
                 q.qmkdir_info(get_save_path(f"wall-src-info-light"))
                 q.qmkdir_info(get_save_path(f"wall-src-info-light/{job_tag}"))
@@ -322,7 +329,7 @@ def run_job(job_tag, traj):
                 q.qmkdir_info(get_save_path(f"psel-prop-wsrc-light/{job_tag}/traj={traj}"))
                 wi_light = mk_rand_wall_src_info(job_tag, traj, inv_type = 0)
                 save_wall_src_info(wi_light, f"wall-src-info-light/{job_tag}/traj={traj}.txt");
-                compute_prop_wsrc_all(get_gf(), gt, wi_light, job_tag, inv_type = 0,
+                compute_prop_wsrc_all(get_gf(), get_gt(), wi_light, job_tag, inv_type = 0,
                         path_s = f"prop-wsrc-light/{job_tag}/traj={traj}",
                         path_sp = f"psel-prop-wsrc-light/{job_tag}/traj={traj}",
                         psel = psel, fsel = fsel, fselc = fselc, eig = get_eig())
@@ -347,7 +354,7 @@ def run_job(job_tag, traj):
                 q.release_lock()
     #
     if get_load_path(f"prop-wsrc-strange/{job_tag}/traj={traj}") is None:
-        if gt is not None:
+        if get_gt is not None:
             if q.obtain_lock(f"locks/{job_tag}-{traj}-wsrc-strange"):
                 q.qmkdir_info(get_save_path(f"wall-src-info-strange"))
                 q.qmkdir_info(get_save_path(f"wall-src-info-strange/{job_tag}"))
@@ -358,7 +365,7 @@ def run_job(job_tag, traj):
                 q.qmkdir_info(get_save_path(f"psel-prop-wsrc-strange/{job_tag}/traj={traj}"))
                 wi_strange = mk_rand_wall_src_info(job_tag, traj, inv_type = 1)
                 save_wall_src_info(wi_strange, f"wall-src-info-strange/{job_tag}/traj={traj}.txt");
-                compute_prop_wsrc_all(get_gf(), gt, wi_strange, job_tag, inv_type = 1,
+                compute_prop_wsrc_all(get_gf(), get_gt(), wi_strange, job_tag, inv_type = 1,
                         path_s = f"prop-wsrc-strange/{job_tag}/traj={traj}",
                         path_sp = f"psel-prop-wsrc-strange/{job_tag}/traj={traj}",
                         psel = psel, fsel = fsel, fselc = fselc, eig = None)
@@ -398,7 +405,7 @@ job_tags = [
         ]
 
 for job_tag in job_tags:
-    q.displayln_info(rup.dict_params[job_tag])
+    q.displayln_info(pprint.pformat(rup.dict_params[job_tag]))
     for traj in range(1000, 1400, 100):
         run_job(job_tag, traj)
         q.timer_display()
