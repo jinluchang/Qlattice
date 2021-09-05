@@ -17,9 +17,11 @@ def mk_fermion_params(inv_type, inv_acc):
     params["b"] = 1.5
     params["c"] = 0.5
     if inv_type == 0:
-        params["mass"] = 0.0006979
+        # params["mass"] = 0.0006979
+        params["mass"] = 0.00078
     elif inv_type == 1:
-        params["mass"] = 0.03580
+        # params["mass"] = 0.03580
+        params["mass"] = 0.0362
     else:
         assert False
     if inv_type == 0 and (inv_acc == 0 or inv_acc == 1):

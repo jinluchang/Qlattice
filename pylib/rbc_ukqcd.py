@@ -3,6 +3,7 @@ import qlat as q
 import gpt as g
 import gc
 import rbc_ukqcd_params as rup
+import os
 
 def get_total_site(job_tag : str):
     return rup.dict_params[job_tag]["total_site"]
@@ -175,6 +176,16 @@ def load_eig_lazy(path, job_tag, inv_type = 0, inv_acc = 0):
     # return ``None'' or a function ``load_eig''
     # ``load_eig()'' return the ``eig''
     if path is None:
+        q.displayln_info(f"load_eig_lazy: path is '{path}'")
+        return None
+    if not q.does_file_exist_sync_node(os.path.join(path, "metadata.txt")):
+        q.displayln_info(f"load_eig_lazy: '{path}' has not metadata.")
+        return None
+    if not q.does_file_exist_sync_node(os.path.join(path, "eigen-values.txt")):
+        q.displayln_info(f"load_eig_lazy: '{path}' has not eigen-values.")
+        return None
+    if not q.does_file_exist_sync_node(os.path.join(path, "00/0000000000.compressed")):
+        q.displayln_info(f"load_eig_lazy: '{path}' has not data file '00/0000000000.compressed'.")
         return None
     total_site = get_total_site(job_tag)
     fermion_params = get_fermion_params(job_tag, inv_type, inv_acc)
