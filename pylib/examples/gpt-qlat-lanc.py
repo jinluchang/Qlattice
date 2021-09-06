@@ -7,6 +7,7 @@ import gpt as g
 import qlat_gpt as qg
 import rbc_ukqcd as ru
 import rbc_ukqcd_params as rup
+import pprint
 
 import os
 
@@ -90,7 +91,7 @@ q.qremove_all_info("results")
 
 job_tag = "test-4nt16"
 traj = 1000
-q.displayln_info(rup.dict_params[job_tag])
+q.displayln_info(pprint.pformat(rup.dict_params[job_tag]))
 run(job_tag, traj)
 
 q.timer_display()
