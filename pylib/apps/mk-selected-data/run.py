@@ -60,28 +60,10 @@ def test_eig(gf, eig, job_tag, inv_type):
         sol -= sol_ref
         q.displayln_info(f"sol diff norm {sol.qnorm()} inv_acc={inv_acc} without eig")
 
-dict_n_points = dict()
-dict_n_points["test-4nt8"] = [
-        [ 6, 2, 1, ],
-        [ 3, 2, 1, ],
-        ]
-dict_n_points["test-4nt16"] = [
-        [ 32, 4, 2, ],
-        [ 16, 4, 2, ],
-        ]
-dict_n_points["48I"] = [
-        [ 2048, 64, 16, ],
-        [ 1024, 64, 16, ],
-        ]
-
 def get_n_points(job_tag, traj, inv_type, inv_acc):
-    if job_tag in dict_n_points:
-        return dict_n_points[job_tag][inv_type][inv_acc]
-    t = [
-            [ 32, 4, 2 ],
-            [ 16, 4, 2 ],
-            ]
-    return t[inv_type][inv_acc]
+    assert job_tag in rup.dict_params
+    assert "n_points" in rup.dict_params[job_tag]
+    return rup.dict_params[job_tag]["n_points"][inv_type][inv_acc]
 
 @q.timer
 def mk_rand_psel(job_tag, traj):
@@ -514,6 +496,23 @@ def run_job(job_tag, traj):
     #
     q.timer_display()
 
+rup.dict_params["test-4nt8"]["n_points"] = [
+        [ 6, 2, 1, ],
+        [ 3, 2, 1, ],
+        ]
+rup.dict_params["test-4nt16"]["n_points"] = [
+        [ 32, 4, 2, ],
+        [ 16, 4, 2, ],
+        ]
+rup.dict_params["48I"]["n_points"] = [
+        [ 2048, 64, 16, ],
+        [ 1024, 64, 16, ],
+        ]
+
+rup.dict_params["test-4nt8"]["trajs"] = list(range(1000, 1400, 100))
+rup.dict_params["test-4nt16"]["trajs"] = list(range(1000, 1400, 100))
+rup.dict_params["48I"]["trajs"] = list(range(500, 3000, 4))
+
 qg.begin_with_gpt()
 
 # ADJUST ME
@@ -532,7 +531,7 @@ job_tags = [
 
 for job_tag in job_tags:
     q.displayln_info(pprint.pformat(rup.dict_params[job_tag]))
-    for traj in range(1000, 1400, 100):
+    for traj in rup.dict_params[job_tag]["trajs"]:
         run_job(job_tag, traj)
 
 qg.end_with_gpt()
