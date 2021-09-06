@@ -62,8 +62,8 @@ def test_eig(gf, eig, job_tag, inv_type):
 
 dict_n_points = dict()
 dict_n_points["test-4nt8"] = [
-        [ 8, 2, 1, ],
-        [ 4, 2, 1, ],
+        [ 6, 2, 1, ],
+        [ 3, 2, 1, ],
         ]
 dict_n_points["test-4nt16"] = [
         [ 32, 4, 2, ],
@@ -178,7 +178,8 @@ def compute_prop(inv, src, *, tag, sfw, fn_sp, psel, fsel, fselc):
     return sol
 
 @q.timer
-def compute_prop_wsrc(gf, gt, tslice, job_tag, inv_type, inv_acc, *, idx, sfw, path_sp, psel, fsel, fselc, eig, finished_tags):
+def compute_prop_wsrc(gf, gt, tslice, job_tag, inv_type, inv_acc, *,
+        idx, sfw, path_sp, psel, fsel, fselc, eig, finished_tags):
     tag = f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc}"
     if tag in finished_tags:
         return None
@@ -191,9 +192,12 @@ def compute_prop_wsrc(gf, gt, tslice, job_tag, inv_type, inv_acc, *, idx, sfw, p
     src = q.mk_wall_src(geo, tslice)
     fn_sp = os.path.join(path_sp, f"{tag}.lat")
     prop = compute_prop(inv, src, tag = tag, sfw = sfw, fn_sp = fn_sp, psel = psel, fsel = fsel, fselc = fselc)
+    fn_spw = os.path.join(path_sp, f"{tag} ; wsnk.lat")
+    prop.glb_sum_tslice().save(get_save_path(fn_spw))
 
 @q.timer
-def compute_prop_wsrc_all(gf, gt, wi, job_tag, inv_type, *, path_s, path_sp, psel, fsel, fselc, eig):
+def compute_prop_wsrc_all(gf, gt, wi, job_tag, inv_type, *,
+        path_s, path_sp, psel, fsel, fselc, eig):
     if q.does_file_exist_sync_node(get_save_path(path_s + ".acc.partial")):
         q.qrename_info(get_save_path(path_s + ".acc.partial"), get_save_path(path_s + ".acc"))
     finished_tags = q.properly_truncate_fields_sync_node(get_save_path(path_s + ".acc"))
@@ -228,9 +232,13 @@ def compute_prop_psrc(gf, gt, xg, job_tag, inv_type, inv_acc, *,
     if sfw_hvp is not None:
         chvp_16 = q.contract_chvp_16(prop, prop)
         chvp_16.save_float_from_double(sfw_hvp, tag)
+    prop_gt = gt * prop
+    fn_spw = os.path.join(path_sp, f"{tag} ; wsnk.lat")
+    prop_gt.glb_sum_tslice().save(get_save_path(fn_spw))
 
 @q.timer
-def compute_prop_psrc_all(gf, gt, pi, job_tag, inv_type, *, path_s, path_hvp = None, path_sp, psel, fsel, fselc, eig):
+def compute_prop_psrc_all(gf, gt, pi, job_tag, inv_type, *,
+        path_s, path_hvp = None, path_sp, psel, fsel, fselc, eig):
     if q.does_file_exist_sync_node(get_save_path(path_s + ".acc.partial")):
         q.qrename_info(get_save_path(path_s + ".acc.partial"), get_save_path(path_s + ".acc"))
     finished_tags = q.properly_truncate_fields_sync_node(get_save_path(path_s + ".acc"))
@@ -238,6 +246,7 @@ def compute_prop_psrc_all(gf, gt, pi, job_tag, inv_type, *, path_s, path_hvp = N
     sfw_hvp = None
     if path_hvp is not None:
         finished_hvp_tags = q.properly_truncate_fields_sync_node(get_save_path(path_hvp + ".acc"))
+        assert finished_tags == finished_hvp_tags
         sfw_hvp = q.open_fields(get_save_path(path_hvp + ".acc"), "a", [ 1, 1, 1, 4, ])
     for inv_acc in [ 2, 1, 0 ]:
         for p in pi:
@@ -249,8 +258,8 @@ def compute_prop_psrc_all(gf, gt, pi, job_tag, inv_type, *, path_s, path_hvp = N
                         finished_tags = finished_tags)
         q.clean_cache(q.cache_inv)
     sfw.close()
-    q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
     q.qrename_info(get_save_path(path_hvp + ".acc"), get_save_path(path_hvp))
+    q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
 
 @q.timer
 def check_job(job_tag, traj):
@@ -471,7 +480,7 @@ def run_prop_psrc_strange(job_tag, traj, get_gf, get_gt, get_psel, get_fsel):
         q.qmkdir_info(get_save_path(f"hvp-psrc-strange/{job_tag}"))
         pi = mk_rand_point_src_info(job_tag, traj, get_psel())
         save_point_src_info(pi, f"point-src-info/{job_tag}/traj={traj}.txt");
-        compute_prop_psrc_all(get_gf(), pi, job_tag, inv_type = 1,
+        compute_prop_psrc_all(get_gf(), get_gt(), pi, job_tag, inv_type = 1,
                 path_s = f"prop-psrc-strange/{job_tag}/traj={traj}",
                 path_hvp = f"hvp-psrc-strange/{job_tag}/traj={traj}",
                 path_sp = f"psel-prop-psrc-strange/{job_tag}/traj={traj}",

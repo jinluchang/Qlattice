@@ -11,12 +11,12 @@ run:
 	find results -type f | sort | xargs -d '\n' md5sum > md5sum.txt
 
 diff:
-	diff ~/Qlattice-cc/pylib/apps/mk-sample-selected-data/run.py run.py
-	diff ~/Qlattice-cc/pylib/apps/mk-sample-selected-data/Makefile Makefile
+	diff ~/Qlattice-cc/pylib/apps/mk-selected-data/run.py run.py
+	diff ~/Qlattice-cc/pylib/apps/mk-selected-data/Makefile Makefile
 
 sync:
-	cp -v ~/Qlattice-cc/pylib/apps/mk-sample-selected-data/run.py .
-	cp -v ~/Qlattice-cc/pylib/apps/mk-sample-selected-data/Makefile .
+	cp -v ~/Qlattice-cc/pylib/apps/mk-selected-data/run.py .
+	cp -v ~/Qlattice-cc/pylib/apps/mk-selected-data/Makefile .
 
 clean:
 	-rm -rf locks results
