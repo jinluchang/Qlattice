@@ -28,6 +28,10 @@ class PointSelection:
     def set_rand(self, rs, total_site, n_points):
         c.set_rand_psel(self, rs, total_site, n_points)
 
+    def set_tslice(self, total_site):
+        # [ [0,0,0,0], [0,0,0,1], ..., [0,0,0,total_site[3]-1], ]
+        c.set_tslice_psel(self, total_site)
+
     def save(self, path):
         c.save_psel(self, path)
 

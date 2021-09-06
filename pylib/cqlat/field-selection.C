@@ -79,6 +79,20 @@ EXPORT(set_rand_psel, {
   Py_RETURN_NONE;
 });
 
+EXPORT(set_tslice_psel, {
+  using namespace qlat;
+  PyObject* p_psel = NULL;
+  PyObject* p_total_site = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_psel, &p_total_site)) {
+    return NULL;
+  }
+  PointSelection& psel = py_convert_type<PointSelection>(p_psel);
+  Coordinate total_site;
+  py_convert(total_site, p_total_site);
+  psel = mk_tslice_point_selection(total_site);
+  Py_RETURN_NONE;
+});
+
 EXPORT(mk_fsel, {
   using namespace qlat;
   FieldSelection* pfsel = new FieldSelection();

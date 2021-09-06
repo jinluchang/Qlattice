@@ -190,7 +190,7 @@ def compute_prop_wsrc(gf, gt, tslice, job_tag, inv_type, inv_acc, *, idx, sfw, p
     geo = q.Geometry(total_site, 1)
     src = q.mk_wall_src(geo, tslice)
     fn_sp = os.path.join(path_sp, f"{tag}.lat")
-    compute_prop(inv, src, tag = tag, sfw = sfw, fn_sp = fn_sp, psel = psel, fsel = fsel, fselc = fselc)
+    prop = compute_prop(inv, src, tag = tag, sfw = sfw, fn_sp = fn_sp, psel = psel, fsel = fsel, fselc = fselc)
 
 @q.timer
 def compute_prop_wsrc_all(gf, gt, wi, job_tag, inv_type, *, path_s, path_sp, psel, fsel, fselc, eig):
@@ -211,7 +211,8 @@ def compute_prop_wsrc_all(gf, gt, wi, job_tag, inv_type, *, path_s, path_sp, pse
     q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
 
 @q.timer
-def compute_prop_psrc(gf, xg, job_tag, inv_type, inv_acc, *, idx, sfw, sfw_hvp = None, path_sp, psel, fsel, fselc, eig, finished_tags):
+def compute_prop_psrc(gf, gt, xg, job_tag, inv_type, inv_acc, *,
+        idx, sfw, sfw_hvp = None, path_sp, psel, fsel, fselc, eig, finished_tags):
     tag = f"xg=({xg[0]},{xg[1]},{xg[2]},{xg[3]}) ; type={inv_type} ; accuracy={inv_acc}"
     if tag in finished_tags:
         return None
@@ -229,7 +230,7 @@ def compute_prop_psrc(gf, xg, job_tag, inv_type, inv_acc, *, idx, sfw, sfw_hvp =
         chvp_16.save_float_from_double(sfw_hvp, tag)
 
 @q.timer
-def compute_prop_psrc_all(gf, pi, job_tag, inv_type, *, path_s, path_hvp = None, path_sp, psel, fsel, fselc, eig):
+def compute_prop_psrc_all(gf, gt, pi, job_tag, inv_type, *, path_s, path_hvp = None, path_sp, psel, fsel, fselc, eig):
     if q.does_file_exist_sync_node(get_save_path(path_s + ".acc.partial")):
         q.qrename_info(get_save_path(path_s + ".acc.partial"), get_save_path(path_s + ".acc"))
     finished_tags = q.properly_truncate_fields_sync_node(get_save_path(path_s + ".acc"))
@@ -242,7 +243,7 @@ def compute_prop_psrc_all(gf, pi, job_tag, inv_type, *, path_s, path_hvp = None,
         for p in pi:
             idx, xg, inv_type_p, inv_acc_p = p
             if inv_type_p == inv_type and inv_acc_p == inv_acc:
-                compute_prop_psrc(gf, xg, job_tag, inv_type, inv_acc,
+                compute_prop_psrc(gf, gt, xg, job_tag, inv_type, inv_acc,
                         idx = idx, sfw = sfw, sfw_hvp = sfw_hvp, path_sp = path_sp,
                         psel = psel, fsel = fsel, fselc = fselc, eig = eig,
                         finished_tags = finished_tags)
@@ -421,7 +422,7 @@ def run_prop_psrc_light(job_tag, traj, get_gf, get_eig, get_gt, get_psel, get_fs
         q.qmkdir_info(get_save_path(f"hvp-psrc-light/{job_tag}"))
         pi = mk_rand_point_src_info(job_tag, traj, get_psel())
         save_point_src_info(pi, f"point-src-info/{job_tag}/traj={traj}.txt");
-        compute_prop_psrc_all(get_gf(), pi, job_tag, inv_type = 0,
+        compute_prop_psrc_all(get_gf(), get_gt(), pi, job_tag, inv_type = 0,
                 path_s = f"prop-psrc-light/{job_tag}/traj={traj}",
                 path_hvp = f"hvp-psrc-light/{job_tag}/traj={traj}",
                 path_sp = f"psel-prop-psrc-light/{job_tag}/traj={traj}",

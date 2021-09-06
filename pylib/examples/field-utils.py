@@ -40,13 +40,10 @@ gf_sum = np.array(gf.glb_sum())
 
 q.displayln_info(gf_sum)
 
-gf_sum_tslice = np.array(gf.glb_sum_tslice())
+gf_sum_tslice = gf.glb_sum_tslice()
 
 for t in range(total_site[3]):
-    if t == 0:
-        gf_sum -= gf_sum_tslice[t]
-    else:
-        gf_sum -= gf_sum_tslice[t]
+    gf_sum -= np.array(gf_sum_tslice.get_elems(t))
 
 q.displayln_info(np.linalg.norm(gf_sum))
 

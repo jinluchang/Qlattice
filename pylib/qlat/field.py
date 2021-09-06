@@ -237,10 +237,17 @@ class Field:
             assert False
 
     def glb_sum_tslice(self):
+        from qlat.field_selection import PointSelection
+        from qlat.selected_points import SelectedPoints, set_selected_points
+        psel = PointSelection()
+        psel.set_tslice(self.total_site())
+        sp = SelectedPoints(self.ctype, psel)
         if self.ctype in field_ctypes_double:
-            return c.glb_sum_tslice_double_field(self)
+            c.glb_sum_tslice_double_field(sp, self)
+            return sp
         elif self.ctype in field_ctypes_long:
-            return c.glb_sum_tslice_long_field(self)
+            c.glb_sum_tslice_long_field(sp, self)
+            return sp
         else:
             assert False
 

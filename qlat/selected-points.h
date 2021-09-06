@@ -7,6 +7,14 @@ namespace qlat
 
 typedef std::vector<Coordinate> PointSelection;
 
+inline PointSelection mk_tslice_point_selection(const Coordinate& total_site)
+{
+  PointSelection psel;
+  psel.resize(total_site[3]);
+  qthread_for(idx, total_site[3], { psel[idx] = Coordinate(0, 0, 0, idx); });
+  return psel;
+}
+
 inline PointSelection mk_random_point_selection(const Coordinate& total_site,
                                                 const long num,
                                                 const RngState& rs,
@@ -125,6 +133,7 @@ struct SelectedPoints {
   int multiplicity;
   long n_points;
   vector<M> points;  // global quantity, same on each node
+  // points.size() == n_points * multiplicity if initialized = true
   //
   void init()
   {
@@ -162,22 +171,31 @@ struct SelectedPoints {
   //
   SelectedPoints() { init(); }
   //
-  M& get_elem(const long& idx)
+  qacc M& get_elem(const long& idx)
   {
     qassert(1 == multiplicity);
     return points[idx];
   }
-  const M& get_elem(const long& idx) const
+  qacc const M& get_elem(const long& idx) const
   {
     qassert(1 == multiplicity);
     return points[idx];
   }
   //
-  Vector<M> get_elems(const long idx)
+  qacc M& get_elem(const long& idx, const int m)
+  {
+    return points[idx * multiplicity + m];
+  }
+  qacc const M& get_elem(const long& idx, const int m) const
+  {
+    return points[idx * multiplicity + m];
+  }
+  //
+  qacc Vector<M> get_elems(const long idx)
   {
     return Vector<M>(&points[idx * multiplicity], multiplicity);
   }
-  Vector<M> get_elems_const(const long idx) const
+  qacc Vector<M> get_elems_const(const long idx) const
   // Be cautious about the const property
   // 改不改靠自觉
   {
@@ -380,6 +398,34 @@ void set_field_selected(Field<M>& f, const SelectedPoints<M>& sp,
       }
     }
   }
+}
+
+template <class M>
+void field_glb_sum_tslice_double(SelectedPoints<M>& sp, const Field<M>& f)
+{
+  TIMER("field_glb_sum_tslice_double(sp,f)");
+  sp.init();
+  const Geometry& geo = f.geo();
+  const int t_size = geo.total_site()[3];
+  const int multiplicity = geo.multiplicity;
+  std::vector<M> vec = field_sum_tslice(f);
+  glb_sum_double_vec(get_data(vec));
+  sp.init(t_size, multiplicity);
+  sp.points = vec;
+}
+
+template <class M>
+void field_glb_sum_tslice_long(SelectedPoints<M>& sp, const Field<M>& f)
+{
+  TIMER("field_glb_sum_tslice_long(sp,f)");
+  sp.init();
+  const Geometry& geo = f.geo();
+  const int t_size = geo.total_site()[3];
+  const int multiplicity = geo.multiplicity;
+  std::vector<M> vec = field_sum_tslice(f);
+  glb_sum_long_vec(get_data(vec));
+  sp.init(t_size, multiplicity);
+  sp.points = vec;
 }
 
 template <class M>

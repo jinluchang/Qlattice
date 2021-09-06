@@ -54,17 +54,21 @@ PyObject* glb_sum_long_field_ctype(PyField& pf)
 }
 
 template <class M>
-PyObject* glb_sum_tslice_double_field_ctype(PyField& pf)
+PyObject* glb_sum_tslice_double_field_ctype(PyField& pspf, PyField& pf)
 {
+  SelectedPoints<M>& sp = *(SelectedPoints<M>*)pspf.cdata;
   const Field<M>& f = *(Field<M>*)pf.cdata;
-  return py_convert(field_glb_sum_tslice_double(f));
+  field_glb_sum_tslice_double(sp, f);
+  Py_RETURN_NONE;
 }
 
 template <class M>
-PyObject* glb_sum_tslice_long_field_ctype(PyField& pf)
+PyObject* glb_sum_tslice_long_field_ctype(PyField& pspf, PyField& pf)
 {
+  SelectedPoints<M>& sp = *(SelectedPoints<M>*)pspf.cdata;
   const Field<M>& f = *(Field<M>*)pf.cdata;
-  return py_convert(field_glb_sum_tslice_double(f));
+  field_glb_sum_tslice_long(sp, f);
+  Py_RETURN_NONE;
 }
 
 }  // namespace qlat
@@ -173,24 +177,28 @@ EXPORT(glb_sum_long_field, {
 
 EXPORT(glb_sum_tslice_double_field, {
   using namespace qlat;
+  PyObject* p_spfield = NULL;
   PyObject* p_field = NULL;
-  if (!PyArg_ParseTuple(args, "O", &p_field)) {
+  if (!PyArg_ParseTuple(args, "OO", &p_spfield, &p_field)) {
     return NULL;
   }
+  PyField pspf = py_convert_field(p_spfield);
   PyField pf = py_convert_field(p_field);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, glb_sum_tslice_double_field_ctype, pf.ctype, pf);
+  FIELD_DISPATCH(p_ret, glb_sum_tslice_double_field_ctype, pf.ctype, pspf, pf);
   return p_ret;
 });
 
 EXPORT(glb_sum_tslice_long_field, {
   using namespace qlat;
+  PyObject* p_spfield = NULL;
   PyObject* p_field = NULL;
-  if (!PyArg_ParseTuple(args, "O", &p_field)) {
+  if (!PyArg_ParseTuple(args, "OO", &p_spfield, &p_field)) {
     return NULL;
   }
+  PyField pspf = py_convert_field(p_spfield);
   PyField pf = py_convert_field(p_field);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, glb_sum_tslice_long_field_ctype, pf.ctype, pf);
+  FIELD_DISPATCH(p_ret, glb_sum_tslice_long_field_ctype, pf.ctype, pspf, pf);
   return p_ret;
 });

@@ -124,6 +124,24 @@ PyObject* qnorm_spfield_ctype(PyField& pf)
 }
 
 template <class M>
+PyObject* get_elems_spfield_ctype(PyField& pf, const long idx)
+{
+  const SelectedPoints<M>& f = *(SelectedPoints<M>*)pf.cdata;
+  return py_convert(f.get_elems_const(idx));
+}
+
+template <class M>
+PyObject* get_elem_spfield_ctype(PyField& pf, const long idx, const int m)
+{
+  const SelectedPoints<M>& f = *(SelectedPoints<M>*)pf.cdata;
+  if (m >= 0) {
+    return py_convert(f.get_elem(idx, m));
+  } else {
+    return py_convert(f.get_elem(idx));
+  }
+}
+
+template <class M>
 PyObject* save_complex_spfield_ctype(PyField& pf, const std::string& path)
 {
   const SelectedPoints<M>& f = *(SelectedPoints<M>*)pf.cdata;
@@ -337,6 +355,33 @@ EXPORT(qnorm_spfield, {
   PyField pf = py_convert_field(p_field);
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, qnorm_spfield_ctype, pf.ctype, pf);
+  return p_ret;
+});
+
+EXPORT(get_elems_spfield, {
+  using namespace qlat;
+  PyObject* p_field = NULL;
+  long idx = -1;
+  if (!PyArg_ParseTuple(args, "Ol", &p_field, &idx)) {
+    return NULL;
+  }
+  PyField pf = py_convert_field(p_field);
+  PyObject* p_ret = NULL;
+  FIELD_DISPATCH(p_ret, get_elems_spfield_ctype, pf.ctype, pf, idx);
+  return p_ret;
+});
+
+EXPORT(get_elem_spfield, {
+  using namespace qlat;
+  PyObject* p_field = NULL;
+  long idx = -1;
+  long m = -1;
+  if (!PyArg_ParseTuple(args, "Ol|l", &p_field, &idx, &m)) {
+    return NULL;
+  }
+  PyField pf = py_convert_field(p_field);
+  PyObject* p_ret = NULL;
+  FIELD_DISPATCH(p_ret, get_elem_spfield_ctype, pf.ctype, pf, idx, m);
   return p_ret;
 });
 

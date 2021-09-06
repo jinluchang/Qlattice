@@ -46,6 +46,7 @@ void assign(Field<N>& f, const Field<M>& f1)
 
 template <class M>
 std::vector<M> field_sum(const Field<M>& f)
+// length = multiplicity
 {
   TIMER("field_sum");
   const Geometry& geo = f.geo();
@@ -64,6 +65,7 @@ std::vector<M> field_sum(const Field<M>& f)
 
 template <class M>
 std::vector<M> field_sum_tslice(const Field<M>& f)
+// length = t_size * multiplicity
 {
   TIMER("field_sum_tslice");
   const Geometry& geo = f.geo();
@@ -71,14 +73,14 @@ std::vector<M> field_sum_tslice(const Field<M>& f)
   const int multiplicity = geo.multiplicity;
   std::vector<M> vec(t_size * multiplicity);
   set_zero(vec);
-  qacc_for(index, geo.local_volume(), {
+  for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
     const Vector<M> fvec = f.get_elems_const(xl);
     for (int m = 0; m < multiplicity; ++m) {
       vec[xg[3] * multiplicity + m] += fvec[m];
     }
-  });
+  }
   return vec;
 }
 
@@ -87,7 +89,7 @@ std::vector<M> field_glb_sum_double(const Field<M>& f)
 {
   TIMER("field_glb_sum_double");
   std::vector<M> vec = field_sum(f);
-  glb_sum_double_vec(Vector<M>(vec));
+  glb_sum_double_vec(get_data(vec));
   return vec;
 }
 
@@ -96,7 +98,7 @@ std::vector<M> field_glb_sum_long(const Field<M>& f)
 {
   TIMER("field_glb_sum_long");
   std::vector<M> vec = field_sum(f);
-  glb_sum_long_vec(Vector<M>(vec));
+  glb_sum_long_vec(get_data(vec));
   return vec;
 }
 
@@ -108,7 +110,7 @@ std::vector<std::vector<M> > field_glb_sum_tslice_double(const Field<M>& f)
   const int t_size = geo.total_site()[3];
   const int multiplicity = geo.multiplicity;
   std::vector<M> vec = field_sum_tslice(f);
-  glb_sum_double_vec(Vector<M>(vec));
+  glb_sum_double_vec(get_data(vec));
   std::vector<std::vector<M> > vecs(t_size);
   for (int t = 0; t < t_size; ++t) {
     vecs[t].resize(multiplicity);
@@ -127,7 +129,7 @@ std::vector<std::vector<M> > field_glb_sum_tslice_long(const Field<M>& f)
   const int t_size = geo.total_site()[3];
   const int multiplicity = geo.multiplicity;
   std::vector<M> vec = field_sum_tslice(f);
-  glb_sum_long_vec(Vector<M>(vec));
+  glb_sum_long_vec(get_data(vec));
   std::vector<std::vector<M> > vecs(t_size);
   for (int t = 0; t < t_size; ++t) {
     vecs[t].resize(multiplicity);
