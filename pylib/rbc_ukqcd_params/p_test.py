@@ -37,12 +37,17 @@ def mk_dict_fermion_params():
 
 dict_fermion_params = mk_dict_fermion_params()
 
-def mk_lanc_params(inv_type, inv_acc):
+def mk_lanc_params(job_tag, inv_type, inv_acc):
     assert inv_type == 0
     assert inv_acc == 0
     fermion_params = dict_fermion_params[inv_type][inv_acc]
     pit_params = { "eps": 0.01, "maxiter": 500, "real": True }
-    cheby_params = {"low": 0.05, "high": 5.5, "order": 50}
+    if job_tag == "test-4nt8":
+        cheby_params = {"low": 0.10, "high": 5.5, "order": 50}
+    elif job_tag == "test-4nt16":
+        cheby_params = {"low": 0.05, "high": 5.5, "order": 50}
+    else:
+        cheby_params = {"low": 0.05, "high": 5.5, "order": 50}
     irl_params = {
             "Nstop": 20,
             "Nk": 25,
@@ -60,7 +65,7 @@ def mk_lanc_params(inv_type, inv_acc):
             "irl_params": irl_params,
             }
 
-def mk_clanc_params(inv_type, inv_acc):
+def mk_clanc_params(job_tag, inv_type, inv_acc):
     assert inv_type == 0
     assert inv_acc == 0
     block = [ 2, 2, 2, 2 ]
@@ -87,9 +92,6 @@ def mk_clanc_params(inv_type, inv_acc):
             "save_params": save_params,
             }
 
-dict_lanc_params = { 0:{ 0:mk_lanc_params(0, 0) } }
-dict_clanc_params = { 0:{ 0:mk_clanc_params(0, 0) } }
-
 def setup_params():
     for l, t in mk_test_l_t_list():
         job_tag = f"test-{l}nt{t}"
@@ -98,6 +100,8 @@ def setup_params():
         dict_params["total_site"] = [ l, l, l, t, ]
         dict_params["load_config_params"] = load_config_params
         dict_params["fermion_params"] = dict_fermion_params
+        dict_lanc_params = { 0:{ 0:mk_lanc_params(job_tag, 0, 0) } }
+        dict_clanc_params = { 0:{ 0:mk_clanc_params(job_tag, 0, 0) } }
         dict_params["lanc_params"] = dict_lanc_params
         dict_params["clanc_params"] = dict_clanc_params
 

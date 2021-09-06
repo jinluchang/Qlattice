@@ -57,8 +57,27 @@ def test_eig(gf, eig, job_tag, inv_type):
         sol -= sol_ref
         q.displayln_info(f"sol diff norm {sol.qnorm()} inv_acc={inv_acc} without eig")
 
+dict_n_points = dict()
+dict_n_points["test-4nt8"] = [
+        [ 8, 2, 1, ],
+        [ 4, 2, 1, ],
+        ]
+dict_n_points["test-4nt16"] = [
+        [ 32, 4, 2, ],
+        [ 16, 4, 2, ],
+        ]
+dict_n_points["48I"] = [
+        [ 2048, 64, 16, ],
+        [ 1024, 64, 16, ],
+        ]
+
 def get_n_points(job_tag, traj, inv_type, inv_acc):
-    t = [ [ 32, 4, 2 ], [ 16, 4, 2 ] ]
+    if job_tag in dict_n_points:
+        return dict_n_points[job_tag][inv_type][inv_acc]
+    t = [
+            [ 32, 4, 2 ],
+            [ 16, 4, 2 ],
+            ]
     return t[inv_type][inv_acc]
 
 @q.timer
@@ -123,8 +142,8 @@ def mk_rand_point_src_info(job_tag, traj, psel):
     xg_list = psel.list()
     assert len(xg_list) == get_n_points(job_tag, traj, 0, 0)
     g_pi = [ [] for _ in xg_list ]
-    for inv_type in [ 0, 1 ]:
-        for inv_acc in [ 0, 1, 2 ]:
+    for inv_type in [ 0, 1, ]:
+        for inv_acc in [ 0, 1, 2, ]:
             for i in range(get_n_points(job_tag, traj, inv_type, inv_acc)):
                 g_pi[i].append([ xg_list[i], inv_type, inv_acc ])
     pi = []
@@ -153,6 +172,7 @@ def compute_prop(inv, src, *, tag, sfw, fn_sp, psel, fsel, fselc):
     s_sol.save_float_from_double(sfw, tag)
     sp_sol = s_sol.sparse(psel)
     sp_sol.save(get_save_path(fn_sp))
+    return sol
 
 @q.timer
 def compute_prop_wsrc(gf, gt, tslice, job_tag, inv_type, inv_acc, *, idx, sfw, path_sp, psel, fsel, fselc, eig, finished_tags):
@@ -174,7 +194,7 @@ def compute_prop_wsrc_all(gf, gt, wi, job_tag, inv_type, *, path_s, path_sp, pse
     if q.does_file_exist_sync_node(get_save_path(path_s + ".acc.partial")):
         q.qrename_info(get_save_path(path_s + ".acc.partial"), get_save_path(path_s + ".acc"))
     finished_tags = q.properly_truncate_fields_sync_node(get_save_path(path_s + ".acc"))
-    sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", [ 1, 1, 1, 4 ])
+    sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", [ 1, 1, 1, 4, ])
     for inv_acc in [ 2, 1 ]:
         for p in wi:
             idx, tslice, inv_type_p, inv_acc_p = p
@@ -188,7 +208,7 @@ def compute_prop_wsrc_all(gf, gt, wi, job_tag, inv_type, *, path_s, path_sp, pse
     q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
 
 @q.timer
-def compute_prop_psrc(gf, xg, job_tag, inv_type, inv_acc, *, idx, sfw, path_sp, psel, fsel, fselc, eig, finished_tags):
+def compute_prop_psrc(gf, xg, job_tag, inv_type, inv_acc, *, idx, sfw, sfw_hvp = None, path_sp, psel, fsel, fselc, eig, finished_tags):
     tag = f"xg=({xg[0]},{xg[1]},{xg[2]},{xg[3]}) ; type={inv_type} ; accuracy={inv_acc}"
     if tag in finished_tags:
         return None
@@ -200,53 +220,264 @@ def compute_prop_psrc(gf, xg, job_tag, inv_type, inv_acc, *, idx, sfw, path_sp, 
     geo = q.Geometry(total_site, 1)
     src = q.mk_point_src(geo, xg)
     fn_sp = os.path.join(path_sp, f"{tag}.lat")
-    compute_prop(inv, src, tag = tag, sfw = sfw, fn_sp = fn_sp, psel = psel, fsel = fsel, fselc = fselc)
+    prop = compute_prop(inv, src, tag = tag, sfw = sfw, fn_sp = fn_sp, psel = psel, fsel = fsel, fselc = fselc)
+    if sfw_hvp is not None:
+        chvp_16 = q.contract_chvp_16(prop, prop)
+        chvp_16.save_float_from_double(sfw_hvp, tag)
 
 @q.timer
-def compute_prop_psrc_all(gf, pi, job_tag, inv_type, *, path_s, path_sp, psel, fsel, fselc, eig):
+def compute_prop_psrc_all(gf, pi, job_tag, inv_type, *, path_s, path_hvp = None, path_sp, psel, fsel, fselc, eig):
     if q.does_file_exist_sync_node(get_save_path(path_s + ".acc.partial")):
         q.qrename_info(get_save_path(path_s + ".acc.partial"), get_save_path(path_s + ".acc"))
     finished_tags = q.properly_truncate_fields_sync_node(get_save_path(path_s + ".acc"))
-    sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", [ 1, 1, 1, 8 ])
+    sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", [ 1, 1, 1, 8, ])
+    sfw_hvp = None
+    if path_hvp is not None:
+        finished_hvp_tags = q.properly_truncate_fields_sync_node(get_save_path(path_hvp + ".acc"))
+        sfw_hvp = q.open_fields(get_save_path(path_hvp + ".acc"), "a", [ 1, 1, 1, 4, ])
     for inv_acc in [ 2, 1, 0 ]:
         for p in pi:
             idx, xg, inv_type_p, inv_acc_p = p
             if inv_type_p == inv_type and inv_acc_p == inv_acc:
                 compute_prop_psrc(gf, xg, job_tag, inv_type, inv_acc,
-                        idx = idx, sfw = sfw, path_sp = path_sp,
+                        idx = idx, sfw = sfw, sfw_hvp = sfw_hvp, path_sp = path_sp,
                         psel = psel, fsel = fsel, fselc = fselc, eig = eig,
                         finished_tags = finished_tags)
         q.clean_cache(q.cache_inv)
     sfw.close()
     q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
+    q.qrename_info(get_save_path(path_hvp + ".acc"), get_save_path(path_hvp))
 
 @q.timer
 def check_job(job_tag, traj):
-    # return True if config is finished
-    fns = []
-    fns.append(get_load_path(f"prop-wsrc-strange/{job_tag}/traj={traj}"))
-    fns.append(get_load_path(f"prop-wsrc-light/{job_tag}/traj={traj}"))
-    fns.append(get_load_path(f"prop-psrc-strange/{job_tag}/traj={traj}"))
-    fns.append(get_load_path(f"prop-psrc-light/{job_tag}/traj={traj}"))
-    for fn in fns:
+    # return True if config is finished or unavailable
+    fns_produce = [
+            get_load_path(f"eig/{job_tag}/traj={traj}"),
+            get_load_path(f"prop-wsrc-strange/{job_tag}/traj={traj}"),
+            get_load_path(f"prop-wsrc-light/{job_tag}/traj={traj}"),
+            get_load_path(f"prop-psrc-strange/{job_tag}/traj={traj}"),
+            get_load_path(f"prop-psrc-light/{job_tag}/traj={traj}"),
+            get_load_path(f"hvp-psrc-strange/{job_tag}/traj={traj}"),
+            get_load_path(f"hvp-psrc-light/{job_tag}/traj={traj}"),
+            ]
+    is_job_done = True
+    for fn in fns_produce:
         if fn is None:
-            return False
-    return True
-
-@q.timer
-def run_job(job_tag, traj):
+            q.displayln_info(f"check_job: {job_tag} {traj} to do as {fn} does not exist.")
+            is_job_done = False
+    if is_job_done:
+        return True
+    #
+    fns_need = [
+            ]
+    if not (job_tag[:5] == "test-"):
+        fns_need.append(get_load_path(f"configs/{job_tag}/ckpoint_lat.{traj}"))
+    for fn in fns_need:
+        if fn is None:
+            q.displayln_info(f"check_job: {job_tag} {traj} unavailable as {fn} does not exist.")
+            return True
+    #
     q.check_stop()
     q.check_time_limit()
-    #
-    if check_job(job_tag, traj):
-        return
     #
     q.qmkdir_info(f"locks")
     q.qmkdir_info(get_save_path(f""))
     #
+    return False
+
+@q.timer
+def run_gf(job_tag, traj):
+    path_gf = get_load_path(f"configs/{job_tag}/ckpoint_lat.{traj}")
+    if path_gf is None:
+        if job_tag[:5] == "test-":
+            gf = ru.mk_sample_gauge_field(job_tag, f"{traj}")
+            q.qmkdir_info(get_save_path(f"configs"))
+            q.qmkdir_info(get_save_path(f"configs/{job_tag}"))
+            path_gf = get_save_path(f"configs/{job_tag}/ckpoint_lat.{traj}")
+            # gf.save(path_gf)
+            qg.save_gauge_field(gf, path_gf)
+        else:
+            assert False
+    get_gf = ru.load_config_lazy(job_tag, path_gf)
+    return get_gf
+
+@q.timer
+def run_eig(job_tag, traj, get_gf):
+    if None in [ get_gf, ]:
+        return None
+    get_eig = ru.load_eig_lazy(get_load_path(f"eig/{job_tag}/traj={traj}"), job_tag)
+    if get_eig is None and get_gf is not None:
+        if q.obtain_lock(f"locks/{job_tag}-{traj}-run-eig"):
+            q.qmkdir_info(get_save_path(f"eig"))
+            q.qmkdir_info(get_save_path(f"eig/{job_tag}"))
+            get_eig = compute_eig(get_gf(), job_tag, inv_type = 0, path = f"eig/{job_tag}/traj={traj}")
+            q.release_lock()
+    return get_eig
+
+@q.timer
+def run_gt(job_tag, traj, get_gf):
+    if None in [ get_gf, ]:
+        return None
+    path_gt = get_load_path(f"gauge-transform/{job_tag}/traj={traj}.field")
+    if path_gt is None:
+        if q.obtain_lock(f"locks/{job_tag}-{traj}-gauge_fix_coulomb"):
+            q.qmkdir_info(get_save_path(f"gauge-transform"))
+            q.qmkdir_info(get_save_path(f"gauge-transform/{job_tag}"))
+            gt = qg.gauge_fix_coulomb(get_gf())
+            gt.save_double(get_save_path(f"gauge-transform/{job_tag}/traj={traj}.field"))
+            q.release_lock()
+            return lambda : gt
+        else:
+            return None
+    else:
+        def load():
+            gt = q.GaugeTransform()
+            gt.load_double(path_gt)
+            qg.check_gauge_fix_coulomb(get_gf(), gt)
+            return gt
+        get_gt = q.lazy_call(load)
+    return get_gt
+
+@q.timer
+def run_psel(job_tag, traj):
+    path_psel = get_load_path(f"point-selection/{job_tag}/traj={traj}.txt")
+    if path_psel is None:
+        q.qmkdir_info(get_save_path(f"point-selection"))
+        q.qmkdir_info(get_save_path(f"point-selection/{job_tag}"))
+        psel = mk_rand_psel(job_tag, traj)
+        psel.save(get_save_path(f"point-selection/{job_tag}/traj={traj}.txt"))
+        return lambda : psel
+    else:
+        def load():
+            psel = q.PointSelection()
+            psel.load(path_psel)
+            return psel
+        return q.lazy_call(load)
+
+@q.timer
+def run_fsel(job_tag, traj, get_psel):
+    if get_psel is None:
+        return None
+    path_fsel = get_load_path(f"field-selection/{job_tag}/traj={traj}.field")
     total_site = ru.get_total_site(job_tag)
-    geo = q.Geometry(total_site, 1)
-    q.displayln_info("geo.show() =", geo.show())
+    n_per_tslice = total_site[0] * total_site[1] * total_site[2] // 16
+    if path_fsel is None:
+        q.qmkdir_info(get_save_path(f"field-selection"))
+        q.qmkdir_info(get_save_path(f"field-selection/{job_tag}"))
+        fsel = mk_rand_fsel(job_tag, traj, n_per_tslice)
+        fsel.save(get_save_path(f"field-selection/{job_tag}/traj={traj}.field"))
+        fselc = mk_fselc(fsel, get_psel())
+        return lambda : ( fsel, fselc, )
+    else:
+        def load():
+            fsel = q.FieldSelection()
+            fsel.load(path_fsel, n_per_tslice)
+            fselc = mk_fselc(fsel, get_psel())
+            return fsel, fselc
+        return q.lazy_call(load)
+
+@q.timer
+def run_prop_wsrc_light(job_tag, traj, get_gf, get_eig, get_gt, get_psel, get_fsel):
+    if None in [ get_gf, get_eig, get_gt, get_psel, get_fsel, ]:
+        return
+    if get_load_path(f"prop-wsrc-light/{job_tag}/traj={traj}") is not None:
+        return
+    fsel, fselc = get_fsel()
+    if q.obtain_lock(f"locks/{job_tag}-{traj}-wsrc-light"):
+        q.qmkdir_info(get_save_path(f"wall-src-info-light"))
+        q.qmkdir_info(get_save_path(f"wall-src-info-light/{job_tag}"))
+        q.qmkdir_info(get_save_path(f"prop-wsrc-light"))
+        q.qmkdir_info(get_save_path(f"prop-wsrc-light/{job_tag}"))
+        q.qmkdir_info(get_save_path(f"psel-prop-wsrc-light"))
+        q.qmkdir_info(get_save_path(f"psel-prop-wsrc-light/{job_tag}"))
+        q.qmkdir_info(get_save_path(f"psel-prop-wsrc-light/{job_tag}/traj={traj}"))
+        wi_light = mk_rand_wall_src_info(job_tag, traj, inv_type = 0)
+        save_wall_src_info(wi_light, f"wall-src-info-light/{job_tag}/traj={traj}.txt");
+        compute_prop_wsrc_all(get_gf(), get_gt(), wi_light, job_tag, inv_type = 0,
+                path_s = f"prop-wsrc-light/{job_tag}/traj={traj}",
+                path_sp = f"psel-prop-wsrc-light/{job_tag}/traj={traj}",
+                psel = get_psel(), fsel = fsel, fselc = fselc, eig = get_eig())
+        q.release_lock()
+
+@q.timer
+def run_prop_psrc_light(job_tag, traj, get_gf, get_eig, get_gt, get_psel, get_fsel):
+    if None in [ get_gf, get_eig, get_gt, get_psel, get_fsel, ]:
+        return
+    if get_load_path(f"prop-psrc-light/{job_tag}/traj={traj}") is not None:
+        return
+    fsel, fselc = get_fsel()
+    if q.obtain_lock(f"locks/{job_tag}-{traj}-psrc-light"):
+        q.qmkdir_info(get_save_path(f"point-src-info"))
+        q.qmkdir_info(get_save_path(f"point-src-info/{job_tag}"))
+        q.qmkdir_info(get_save_path(f"prop-psrc-light"))
+        q.qmkdir_info(get_save_path(f"prop-psrc-light/{job_tag}"))
+        q.qmkdir_info(get_save_path(f"psel-prop-psrc-light"))
+        q.qmkdir_info(get_save_path(f"psel-prop-psrc-light/{job_tag}"))
+        q.qmkdir_info(get_save_path(f"psel-prop-psrc-light/{job_tag}/traj={traj}"))
+        q.qmkdir_info(get_save_path(f"hvp-psrc-light/"))
+        q.qmkdir_info(get_save_path(f"hvp-psrc-light/{job_tag}"))
+        pi = mk_rand_point_src_info(job_tag, traj, get_psel())
+        save_point_src_info(pi, f"point-src-info/{job_tag}/traj={traj}.txt");
+        compute_prop_psrc_all(get_gf(), pi, job_tag, inv_type = 0,
+                path_s = f"prop-psrc-light/{job_tag}/traj={traj}",
+                path_hvp = f"hvp-psrc-light/{job_tag}/traj={traj}",
+                path_sp = f"psel-prop-psrc-light/{job_tag}/traj={traj}",
+                psel = get_psel(), fsel = fsel, fselc = fselc, eig = get_eig())
+        q.release_lock()
+
+@q.timer
+def run_prop_wsrc_strange(job_tag, traj, get_gf, get_gt, get_psel, get_fsel):
+    if None in [ get_gf, get_gt, get_psel, get_fsel, ]:
+        return
+    if get_load_path(f"prop-wsrc-strange/{job_tag}/traj={traj}") is not None:
+        return
+    fsel, fselc = get_fsel()
+    if q.obtain_lock(f"locks/{job_tag}-{traj}-wsrc-strange"):
+        q.qmkdir_info(get_save_path(f"wall-src-info-strange"))
+        q.qmkdir_info(get_save_path(f"wall-src-info-strange/{job_tag}"))
+        q.qmkdir_info(get_save_path(f"prop-wsrc-strange"))
+        q.qmkdir_info(get_save_path(f"prop-wsrc-strange/{job_tag}"))
+        q.qmkdir_info(get_save_path(f"psel-prop-wsrc-strange"))
+        q.qmkdir_info(get_save_path(f"psel-prop-wsrc-strange/{job_tag}"))
+        q.qmkdir_info(get_save_path(f"psel-prop-wsrc-strange/{job_tag}/traj={traj}"))
+        wi_strange = mk_rand_wall_src_info(job_tag, traj, inv_type = 1)
+        save_wall_src_info(wi_strange, f"wall-src-info-strange/{job_tag}/traj={traj}.txt");
+        compute_prop_wsrc_all(get_gf(), get_gt(), wi_strange, job_tag, inv_type = 1,
+                path_s = f"prop-wsrc-strange/{job_tag}/traj={traj}",
+                path_sp = f"psel-prop-wsrc-strange/{job_tag}/traj={traj}",
+                psel = get_psel(), fsel = fsel, fselc = fselc, eig = None)
+        q.release_lock()
+
+@q.timer
+def run_prop_psrc_strange(job_tag, traj, get_gf, get_gt, get_psel, get_fsel):
+    if None in [ get_gf, get_gt, get_psel, get_fsel, ]:
+        return
+    if get_load_path(f"prop-psrc-strange/{job_tag}/traj={traj}") is not None:
+        return
+    fsel, fselc = get_fsel()
+    if q.obtain_lock(f"locks/{job_tag}-{traj}-psrc-strange"):
+        q.qmkdir_info(get_save_path(f"point-src-info"))
+        q.qmkdir_info(get_save_path(f"point-src-info/{job_tag}"))
+        q.qmkdir_info(get_save_path(f"prop-psrc-strange"))
+        q.qmkdir_info(get_save_path(f"prop-psrc-strange/{job_tag}"))
+        q.qmkdir_info(get_save_path(f"psel-prop-psrc-strange"))
+        q.qmkdir_info(get_save_path(f"psel-prop-psrc-strange/{job_tag}"))
+        q.qmkdir_info(get_save_path(f"psel-prop-psrc-strange/{job_tag}/traj={traj}"))
+        q.qmkdir_info(get_save_path(f"hvp-psrc-strange/"))
+        q.qmkdir_info(get_save_path(f"hvp-psrc-strange/{job_tag}"))
+        pi = mk_rand_point_src_info(job_tag, traj, get_psel())
+        save_point_src_info(pi, f"point-src-info/{job_tag}/traj={traj}.txt");
+        compute_prop_psrc_all(get_gf(), pi, job_tag, inv_type = 1,
+                path_s = f"prop-psrc-strange/{job_tag}/traj={traj}",
+                path_hvp = f"hvp-psrc-strange/{job_tag}/traj={traj}",
+                path_sp = f"psel-prop-psrc-strange/{job_tag}/traj={traj}",
+                psel = get_psel(), fsel = fsel, fselc = fselc, eig = None)
+        q.release_lock()
+
+@q.timer
+def run_job(job_tag, traj):
+    if check_job(job_tag, traj):
+        return
     #
     traj_gf = traj
     if job_tag[:5] == "test-":
@@ -254,145 +485,27 @@ def run_job(job_tag, traj):
         traj_gf = 1000
         #
     #
-    path_gf = get_load_path(f"configs/{job_tag}/ckpoint_lat.{traj_gf}")
-    if path_gf is None:
-        if job_tag[:5] == "test-":
-            gf = ru.mk_sample_gauge_field(job_tag, f"{traj_gf}")
-            q.qmkdir_info(get_save_path(f"configs"))
-            q.qmkdir_info(get_save_path(f"configs/{job_tag}"))
-            path_gf = get_save_path(f"configs/{job_tag}/ckpoint_lat.{traj_gf}")
-            # gf.save(path_gf)
-            qg.save_gauge_field(gf, path_gf)
-        else:
-            assert False
-    get_gf = ru.load_config_lazy(job_tag, path_gf)
-    assert get_gf is not None
+    get_gf = run_gf(job_tag, traj_gf)
+    get_eig = run_eig(job_tag, traj_gf, get_gf)
+    get_gt = run_gt(job_tag, traj_gf, get_gf)
     #
-    get_eig = ru.load_eig_lazy(get_load_path(f"eig/{job_tag}/traj={traj_gf}"), job_tag)
-    if get_eig is None and q.obtain_lock(f"locks/{job_tag}-{traj_gf}-compute-eig"):
-        q.qmkdir_info(get_save_path(f"eig"))
-        q.qmkdir_info(get_save_path(f"eig/{job_tag}"))
-        get_eig = compute_eig(get_gf(), job_tag, inv_type = 0, path = f"eig/{job_tag}/traj={traj_gf}")
-        q.release_lock()
+    get_psel = run_psel(job_tag, traj)
+    get_fsel = run_fsel(job_tag, traj, get_psel)
+    assert get_psel is not None
+    assert get_fsel is not None
     #
-    path_gt = get_load_path(f"gauge-transform/{job_tag}/traj={traj_gf}.field")
-    if path_gt is None:
-        if q.obtain_lock(f"locks/{job_tag}-{traj_gf}-gauge_fix_coulomb"):
-            q.qmkdir_info(get_save_path(f"gauge-transform"))
-            q.qmkdir_info(get_save_path(f"gauge-transform/{job_tag}"))
-            gt = qg.gauge_fix_coulomb(get_gf())
-            gt.save_double(get_save_path(f"gauge-transform/{job_tag}/traj={traj_gf}.field"))
-            q.release_lock()
-            def get_gt():
-                return gt
-        else:
-            get_gt = None
-    else:
-        def load_gt():
-            gt = q.GaugeTransform()
-            gt.load_double(path_gt)
-            qg.check_gauge_fix_coulomb(get_gf(), gt)
-            return gt
-        get_gt = q.lazy_call(load_gt)
+    run_prop_wsrc_light(job_tag, traj, get_gf, get_eig, get_gt, get_psel, get_fsel)
+    run_prop_psrc_light(job_tag, traj, get_gf, get_eig, get_gt, get_psel, get_fsel)
+    run_prop_wsrc_strange(job_tag, traj, get_gf, get_gt, get_psel, get_fsel)
+    run_prop_psrc_strange(job_tag, traj, get_gf, get_gt, get_psel, get_fsel)
     #
-    path_psel = get_load_path(f"point-selection/{job_tag}/traj={traj}.txt")
-    if path_psel is None:
-        q.qmkdir_info(get_save_path(f"point-selection"))
-        q.qmkdir_info(get_save_path(f"point-selection/{job_tag}"))
-        psel = mk_rand_psel(job_tag, traj)
-        psel.save(get_save_path(f"point-selection/{job_tag}/traj={traj}.txt"))
-    else:
-        psel = q.PointSelection()
-        psel.load(path_psel)
-    #
-    n_per_tslice = total_site[0] * total_site[1] * total_site[2] // 16
-    path_fsel = get_load_path(f"field-selection/{job_tag}/traj={traj}.field")
-    if path_fsel is None:
-        q.qmkdir_info(get_save_path(f"field-selection"))
-        q.qmkdir_info(get_save_path(f"field-selection/{job_tag}"))
-        fsel = mk_rand_fsel(job_tag, traj, n_per_tslice)
-        fsel.save(get_save_path(f"field-selection/{job_tag}/traj={traj}.field"))
-    else:
-        fsel = q.FieldSelection()
-        fsel.load(path_fsel, n_per_tslice)
-    fselc = mk_fselc(fsel, psel)
-    #
-    if get_load_path(f"prop-wsrc-light/{job_tag}/traj={traj}") is None:
-        if get_eig is not None and get_gt is not None:
-            if q.obtain_lock(f"locks/{job_tag}-{traj}-wsrc-light"):
-                q.qmkdir_info(get_save_path(f"wall-src-info-light"))
-                q.qmkdir_info(get_save_path(f"wall-src-info-light/{job_tag}"))
-                q.qmkdir_info(get_save_path(f"prop-wsrc-light"))
-                q.qmkdir_info(get_save_path(f"prop-wsrc-light/{job_tag}"))
-                q.qmkdir_info(get_save_path(f"psel-prop-wsrc-light"))
-                q.qmkdir_info(get_save_path(f"psel-prop-wsrc-light/{job_tag}"))
-                q.qmkdir_info(get_save_path(f"psel-prop-wsrc-light/{job_tag}/traj={traj}"))
-                wi_light = mk_rand_wall_src_info(job_tag, traj, inv_type = 0)
-                save_wall_src_info(wi_light, f"wall-src-info-light/{job_tag}/traj={traj}.txt");
-                compute_prop_wsrc_all(get_gf(), get_gt(), wi_light, job_tag, inv_type = 0,
-                        path_s = f"prop-wsrc-light/{job_tag}/traj={traj}",
-                        path_sp = f"psel-prop-wsrc-light/{job_tag}/traj={traj}",
-                        psel = psel, fsel = fsel, fselc = fselc, eig = get_eig())
-                q.release_lock()
-    #
-    if get_load_path(f"prop-psrc-light/{job_tag}/traj={traj}") is None:
-        if get_eig is not None:
-            if q.obtain_lock(f"locks/{job_tag}-{traj}-psrc-light"):
-                q.qmkdir_info(get_save_path(f"point-src-info"))
-                q.qmkdir_info(get_save_path(f"point-src-info/{job_tag}"))
-                q.qmkdir_info(get_save_path(f"prop-psrc-light"))
-                q.qmkdir_info(get_save_path(f"prop-psrc-light/{job_tag}"))
-                q.qmkdir_info(get_save_path(f"psel-prop-psrc-light"))
-                q.qmkdir_info(get_save_path(f"psel-prop-psrc-light/{job_tag}"))
-                q.qmkdir_info(get_save_path(f"psel-prop-psrc-light/{job_tag}/traj={traj}"))
-                pi = mk_rand_point_src_info(job_tag, traj, psel)
-                save_point_src_info(pi, f"point-src-info/{job_tag}/traj={traj}.txt");
-                compute_prop_psrc_all(get_gf(), pi, job_tag, inv_type = 0,
-                        path_s = f"prop-psrc-light/{job_tag}/traj={traj}",
-                        path_sp = f"psel-prop-psrc-light/{job_tag}/traj={traj}",
-                        psel = psel, fsel = fsel, fselc = fselc, eig = get_eig())
-                q.release_lock()
-    #
-    if get_load_path(f"prop-wsrc-strange/{job_tag}/traj={traj}") is None:
-        if get_gt is not None:
-            if q.obtain_lock(f"locks/{job_tag}-{traj}-wsrc-strange"):
-                q.qmkdir_info(get_save_path(f"wall-src-info-strange"))
-                q.qmkdir_info(get_save_path(f"wall-src-info-strange/{job_tag}"))
-                q.qmkdir_info(get_save_path(f"prop-wsrc-strange"))
-                q.qmkdir_info(get_save_path(f"prop-wsrc-strange/{job_tag}"))
-                q.qmkdir_info(get_save_path(f"psel-prop-wsrc-strange"))
-                q.qmkdir_info(get_save_path(f"psel-prop-wsrc-strange/{job_tag}"))
-                q.qmkdir_info(get_save_path(f"psel-prop-wsrc-strange/{job_tag}/traj={traj}"))
-                wi_strange = mk_rand_wall_src_info(job_tag, traj, inv_type = 1)
-                save_wall_src_info(wi_strange, f"wall-src-info-strange/{job_tag}/traj={traj}.txt");
-                compute_prop_wsrc_all(get_gf(), get_gt(), wi_strange, job_tag, inv_type = 1,
-                        path_s = f"prop-wsrc-strange/{job_tag}/traj={traj}",
-                        path_sp = f"psel-prop-wsrc-strange/{job_tag}/traj={traj}",
-                        psel = psel, fsel = fsel, fselc = fselc, eig = None)
-                q.release_lock()
-    #
-    if get_load_path(f"prop-psrc-strange/{job_tag}/traj={traj}") is None:
-        if q.obtain_lock(f"locks/{job_tag}-{traj}-psrc-strange"):
-            q.qmkdir_info(get_save_path(f"point-src-info"))
-            q.qmkdir_info(get_save_path(f"point-src-info/{job_tag}"))
-            q.qmkdir_info(get_save_path(f"prop-psrc-strange"))
-            q.qmkdir_info(get_save_path(f"prop-psrc-strange/{job_tag}"))
-            q.qmkdir_info(get_save_path(f"psel-prop-psrc-strange"))
-            q.qmkdir_info(get_save_path(f"psel-prop-psrc-strange/{job_tag}"))
-            q.qmkdir_info(get_save_path(f"psel-prop-psrc-strange/{job_tag}/traj={traj}"))
-            pi = mk_rand_point_src_info(job_tag, traj, psel)
-            save_point_src_info(pi, f"point-src-info/{job_tag}/traj={traj}.txt");
-            compute_prop_psrc_all(get_gf(), pi, job_tag, inv_type = 1,
-                    path_s = f"prop-psrc-strange/{job_tag}/traj={traj}",
-                    path_sp = f"psel-prop-psrc-strange/{job_tag}/traj={traj}",
-                    psel = psel, fsel = fsel, fselc = fselc, eig = None)
-            q.release_lock()
+    q.timer_display()
 
 qg.begin_with_gpt()
 
 # ADJUST ME
 job_tags = [
-        # "test-4nt8",
+        "test-4nt8",
         "test-4nt16",
         # "test-8nt16",
         # "test-16nt32",
@@ -408,6 +521,5 @@ for job_tag in job_tags:
     q.displayln_info(pprint.pformat(rup.dict_params[job_tag]))
     for traj in range(1000, 1400, 100):
         run_job(job_tag, traj)
-        q.timer_display()
 
 qg.end_with_gpt()

@@ -7,6 +7,7 @@ import gpt as g
 import qlat_gpt as qg
 import rbc_ukqcd as ru
 import rbc_ukqcd_params as rup
+import pprint
 
 import os
 
@@ -16,7 +17,9 @@ def get_save_path(fn):
 def get_load_path(fn):
     if fn is None:
         return None
-    path_list = [ "results" ]
+    path_list = [
+            "results",
+            ]
     for path in path_list:
         p = os.path.join(path, fn)
         if q.does_file_exist_sync_node(p):
@@ -57,28 +60,37 @@ def test_eig(gf, eig, job_tag, inv_type):
 
 @q.timer
 def check_job(job_tag, traj):
-    # return True if config is finished
-    fns = []
-    for fn in fns:
+    # return True if config is finished or unavailable
+    fns_produce = [
+            get_load_path(f"eig/{job_tag}/traj={traj}"),
+            ]
+    is_job_done = True
+    for fn in fns_produce:
         if fn is None:
-            return False
-    return True
-
-@q.timer
-def run(job_tag, traj):
+            q.displayln_info(f"check_job: {job_tag} {traj} to do as {fn} does not exist.")
+            is_job_done = False
+    if is_job_done:
+        return True
+    #
+    fns_need = [
+            ]
+    if not (job_tag[:5] == "test-"):
+        fns_need.append(get_load_path(f"configs/{job_tag}/ckpoint_lat.{traj}"))
+    for fn in fns_need:
+        if fn is None:
+            q.displayln_info(f"check_job: {job_tag} {traj} unavailable as {fn} does not exist.")
+            return True
+    #
     q.check_stop()
     q.check_time_limit()
-    #
-    if check_job(job_tag, traj):
-        return
     #
     q.qmkdir_info(f"locks")
     q.qmkdir_info(get_save_path(f""))
     #
-    total_site = ru.get_total_site(job_tag)
-    geo = q.Geometry(total_site, 1)
-    q.displayln_info("geo.show() =", geo.show())
-    #
+    return False
+
+@q.timer
+def run_gf(job_tag, traj):
     path_gf = get_load_path(f"configs/{job_tag}/ckpoint_lat.{traj}")
     if path_gf is None:
         if job_tag[:5] == "test-":
@@ -91,14 +103,28 @@ def run(job_tag, traj):
         else:
             assert False
     get_gf = ru.load_config_lazy(job_tag, path_gf)
-    assert get_gf is not None
+    return get_gf
+
+@q.timer
+def run_eig(job_tag, traj, get_gf):
+    if None in [ get_gf, ]:
+        return None
+    get_eig = ru.load_eig_lazy(get_load_path(f"eig/{job_tag}/traj={traj}"), job_tag)
+    if get_eig is None and get_gf is not None:
+        if q.obtain_lock(f"locks/{job_tag}-{traj}-run-eig"):
+            q.qmkdir_info(get_save_path(f"eig"))
+            q.qmkdir_info(get_save_path(f"eig/{job_tag}"))
+            get_eig = compute_eig(get_gf(), job_tag, inv_type = 0, path = f"eig/{job_tag}/traj={traj}")
+            q.release_lock()
+    return get_eig
+
+@q.timer
+def run(job_tag, traj):
+    if check_job(job_tag, traj):
+        return
     #
-    get_eig = None
-    if q.obtain_lock(f"locks/{job_tag}-{traj}-compute-eig"):
-        q.qmkdir_info(get_save_path(f"eig"))
-        q.qmkdir_info(get_save_path(f"eig/{job_tag}"))
-        get_eig = compute_eig(get_gf(), job_tag, inv_type = 0, path = f"eig/{job_tag}/traj={traj}")
-        q.release_lock()
+    get_gf = run_gf(job_tag, traj)
+    get_eig = run_eig(job_tag, traj, get_gf)
     #
     q.timer_display()
 
@@ -106,7 +132,7 @@ qg.begin_with_gpt()
 
 # ADJUST ME
 job_tags = [
-        # "test-4nt8",
+        "test-4nt8",
         "test-4nt16",
         # "test-8nt16",
         # "test-16nt32",
@@ -119,7 +145,7 @@ job_tags = [
         ]
 
 for job_tag in job_tags:
-    q.displayln_info(rup.dict_params[job_tag])
+    q.displayln_info(pprint.pformat(rup.dict_params[job_tag]))
     for traj in range(1000, 1400, 100):
         run(job_tag, traj)
 

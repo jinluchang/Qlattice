@@ -10,5 +10,13 @@ run:
 	mpirun --np 2 $(mpi_options) ./run.py --mpi 1.1.1.2 $(grid_options)
 	find results -type f | sort | xargs -d '\n' md5sum > md5sum.txt
 
+diff:
+	diff ~/Qlattice-cc/pylib/apps/mk-lanc/run.py run.py
+	diff ~/Qlattice-cc/pylib/apps/mk-lanc/Makefile Makefile
+
+sync:
+	cp -v ~/Qlattice-cc/pylib/apps/mk-lanc/run.py .
+	cp -v ~/Qlattice-cc/pylib/apps/mk-lanc/Makefile .
+
 clean:
 	-rm -rf locks results

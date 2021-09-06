@@ -4,6 +4,7 @@ import gpt as g
 import gc
 import rbc_ukqcd_params as rup
 import os
+import pprint
 
 def get_total_site(job_tag : str):
     return rup.dict_params[job_tag]["total_site"]
@@ -67,7 +68,7 @@ def mk_eig(gf, job_tag, inv_type, inv_acc = 0):
     parity = g.odd
     params = get_lanc_params(job_tag, inv_type, inv_acc)
     q.displayln_info(f"mk_eig: job_tag={job_tag} inv_type={inv_type} inv_acc={inv_acc}")
-    q.displayln_info(f"mk_eig: params={params}")
+    q.displayln_info(f"mk_eig: params=\n{pprint.pformat(params)}")
     fermion_params = params["fermion_params"]
     if "omega" in fermion_params:
         qm = g.qcd.fermion.zmobius(gpt_gf, fermion_params)
@@ -101,7 +102,7 @@ def mk_ceig(gf, job_tag, inv_type, inv_acc = 0):
     parity = g.odd
     params = get_lanc_params(job_tag, inv_type, inv_acc)
     q.displayln_info(f"mk_ceig: job_tag={job_tag} inv_type={inv_type} inv_acc={inv_acc}")
-    q.displayln_info(f"mk_ceig: params={params}")
+    q.displayln_info(f"mk_ceig: params=\n{pprint.pformat(params)}")
     fermion_params = params["fermion_params"]
     if "omega" in fermion_params:
         qm = g.qcd.fermion.zmobius(gpt_gf, fermion_params)
@@ -127,7 +128,7 @@ def mk_ceig(gf, job_tag, inv_type, inv_acc = 0):
     inv = g.algorithms.inverter
     #
     cparams = get_clanc_params(job_tag, inv_type, inv_acc)
-    q.displayln_info(f"mk_ceig: cparams={cparams}")
+    q.displayln_info(f"mk_ceig: cparams=\n{pprint.pformat(cparams)}")
     #
     grid_coarse = g.block.grid(qm.F_grid_eo, [ get_ls_from_fermion_params(fermion_params) ] + cparams["block"])
     nbasis = cparams["nbasis"]
@@ -190,7 +191,7 @@ def load_eig_lazy(path, job_tag, inv_type = 0, inv_acc = 0):
     total_site = get_total_site(job_tag)
     fermion_params = get_fermion_params(job_tag, inv_type, inv_acc)
     grids = qg.get_fgrid(total_site, fermion_params)
-    return lazy_call(g.load, path, grids = grids)
+    return q.lazy_call(g.load, path, grids = grids)
 
 @q.timer
 def mk_gpt_inverter(gf, job_tag, inv_type, inv_acc, *,
