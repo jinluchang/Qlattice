@@ -17,7 +17,10 @@ def get_save_path(fn):
 def get_load_path(fn):
     if fn is None:
         return None
-    path_list = [ "results", "../mk-lanc/results" ]
+    path_list = [
+            "results",
+            "../mk-lanc/results",
+            ]
     for path in path_list:
         p = os.path.join(path, fn)
         if q.does_file_exist_sync_node(p):
