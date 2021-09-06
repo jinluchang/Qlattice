@@ -237,10 +237,14 @@ def mk_gpt_inverter(gf, job_tag, inv_type, inv_acc, *,
             cg = inv.sequence(cg_defl, cg_split)
         else:
             cg = cg_split
+        if "omega" in params and eig is None:
+            pc_ne = pc.eo2_kappa_ne()
+        else:
+            pc_ne = pc.eo2_ne()
         if inv_type == 0:
-            slv_5d = inv.preconditioned(pc.eo2_ne(), cg)
+            slv_5d = inv.preconditioned(pc_ne, cg)
         elif inv_type == 1:
-            slv_5d = inv.preconditioned(pc.eo2_ne(), cg)
+            slv_5d = inv.preconditioned(pc_ne, cg)
         else:
             raise Exception("mk_gpt_inverter")
         if is_madwf:
