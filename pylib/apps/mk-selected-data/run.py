@@ -249,18 +249,20 @@ def check_job(job_tag, traj):
     # return True if config is finished or unavailable
     fns_produce = [
             get_load_path(f"eig/{job_tag}/traj={traj}"),
+            get_load_path(f"gauge-transform/{job_tag}/traj={traj}.field"),
+            get_load_path(f"point-selection/{job_tag}/traj={traj}.txt"),
+            get_load_path(f"field-selection/{job_tag}/traj={traj}.field"),
             get_load_path(f"prop-wsrc-strange/{job_tag}/traj={traj}"),
             get_load_path(f"prop-wsrc-light/{job_tag}/traj={traj}"),
             get_load_path(f"prop-psrc-strange/{job_tag}/traj={traj}"),
             get_load_path(f"prop-psrc-light/{job_tag}/traj={traj}"),
-            get_load_path(f"hvp-psrc-strange/{job_tag}/traj={traj}"),
-            get_load_path(f"hvp-psrc-light/{job_tag}/traj={traj}"),
             ]
     is_job_done = True
     for fn in fns_produce:
         if fn is None:
-            q.displayln_info(f"check_job: {job_tag} {traj} to do as {fn} does not exist.")
+            q.displayln_info(f"check_job: {job_tag} {traj} to do as some file does not exist.")
             is_job_done = False
+            break
     if is_job_done:
         return True
     #
@@ -268,6 +270,9 @@ def check_job(job_tag, traj):
             ]
     if not (job_tag[:5] == "test-"):
         fns_need.append(get_load_path(f"configs/{job_tag}/ckpoint_lat.{traj}"))
+    if job_tag == "48I":
+        fns_need.append(get_load_path(f"eig/{job_tag}/traj={traj}"))
+        fns_need.append(get_load_path(f"gauge-transform/{job_tag}/traj={traj}.field"))
     for fn in fns_need:
         if fn is None:
             q.displayln_info(f"check_job: {job_tag} {traj} unavailable as {fn} does not exist.")
@@ -512,7 +517,7 @@ rup.dict_params["48I"]["n_points"] = [
 
 rup.dict_params["test-4nt8"]["trajs"] = list(range(1000, 1400, 100))
 rup.dict_params["test-4nt16"]["trajs"] = list(range(1000, 1400, 100))
-rup.dict_params["48I"]["trajs"] = list(range(500, 3000, 4))
+rup.dict_params["48I"]["trajs"] = list(range(500, 3000, 5))
 
 qg.begin_with_gpt()
 
@@ -528,6 +533,7 @@ job_tags = [
         # "test-96nt192",
         # "test-128nt256",
         # "24D",
+        # "48I",
         ]
 
 for job_tag in job_tags:
