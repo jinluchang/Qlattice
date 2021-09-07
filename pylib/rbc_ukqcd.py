@@ -25,9 +25,9 @@ def mk_sample_gauge_field(job_tag, fn):
 def load_config(job_tag : str, fn : str):
     if not q.does_file_exist_sync_node(fn):
         raise Exception(f"load_config '{fn}' does not exist.")
-    # gf = q.GaugeField()
-    # gf.load(fn)
-    gf = qg.load_gauge_field(fn)
+    gf = q.GaugeField()
+    gf.load(fn)
+    # gf = qg.load_gauge_field(fn)
     if (job_tag in rup.dict_params) and ("load_config_params" in rup.dict_params[job_tag]):
         params = rup.dict_params[job_tag]["load_config_params"]
         twist_boundary_at_boundary = params["twist_boundary_at_boundary"]

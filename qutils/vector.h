@@ -278,6 +278,9 @@ struct vector {
   {
     qassert(not is_copy);
     qassert(not x.is_copy);
+    bool tb = x.is_acc;
+    x.is_acc = is_acc;
+    is_acc = tb;
     Vector<M> t = v;
     v = x.v;
     x.v = t;
@@ -479,6 +482,9 @@ struct box {
   {
     qassert(not is_copy);
     qassert(not x.is_copy);
+    bool tb = x.is_acc;
+    x.is_acc = is_acc;
+    is_acc = tb;
     Handle<M> t = v;
     v = x.v;
     x.v = t;
