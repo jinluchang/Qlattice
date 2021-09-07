@@ -191,7 +191,13 @@ def load_eig_lazy(path, job_tag, inv_type = 0, inv_acc = 0):
     total_site = get_total_site(job_tag)
     fermion_params = get_fermion_params(job_tag, inv_type, inv_acc)
     grids = qg.get_fgrid(total_site, fermion_params)
-    return q.lazy_call(g.load, path, grids = grids)
+    #
+    @q.timer_verbose
+    def load_eig():
+        eig = g.load(path, grids = grids)
+        return eig
+    #
+    return q.lazy_call(load_eig)
 
 @q.timer
 def mk_gpt_inverter(gf, job_tag, inv_type, inv_acc, *,
