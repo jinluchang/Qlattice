@@ -20,6 +20,7 @@ def get_load_path(fn):
     path_list = [
             "results",
             "../mk-lanc/results",
+            "/gpfs/alpine/lgt116/proj-shared/ljin",
             ]
     for path in path_list:
         p = os.path.join(path, fn)
