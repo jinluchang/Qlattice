@@ -383,9 +383,9 @@ def run_prop_wsrc_light(job_tag, traj, get_gf, get_eig, get_gt, get_psel, get_fs
         return
     if get_load_path(f"prop-wsrc-light/{job_tag}/traj={traj}") is not None:
         return
-    eig = get_eig()
-    fsel, fselc = get_fsel()
     if q.obtain_lock(f"locks/{job_tag}-{traj}-wsrc-light"):
+        eig = get_eig()
+        fsel, fselc = get_fsel()
         q.qmkdir_info(get_save_path(f"wall-src-info-light"))
         q.qmkdir_info(get_save_path(f"wall-src-info-light/{job_tag}"))
         q.qmkdir_info(get_save_path(f"prop-wsrc-light"))
@@ -407,9 +407,9 @@ def run_prop_psrc_light(job_tag, traj, get_gf, get_eig, get_gt, get_psel, get_fs
         return
     if get_load_path(f"prop-psrc-light/{job_tag}/traj={traj}") is not None:
         return
-    eig = get_eig()
-    fsel, fselc = get_fsel()
     if q.obtain_lock(f"locks/{job_tag}-{traj}-psrc-light"):
+        eig = get_eig()
+        fsel, fselc = get_fsel()
         q.qmkdir_info(get_save_path(f"point-src-info"))
         q.qmkdir_info(get_save_path(f"point-src-info/{job_tag}"))
         q.qmkdir_info(get_save_path(f"prop-psrc-light"))
