@@ -1,9 +1,12 @@
+from qlat.timer import *
+
 class Cache(dict):
 
     pass
 
 cache = Cache()
 
+@timer
 def list_cache(cache = cache):
     l = []
     for key, val in cache.items():
@@ -13,13 +16,17 @@ def list_cache(cache = cache):
             l.append(key)
     return l
 
-def clean_cache(cache = cache):
+@timer
+def clean_cache(cache = cache, info_tag = ""):
+    displayln_info(f"clean_cache: {info_tag}:")
     for key, val in list(cache.items()):
         if isinstance(val, Cache):
-            clean_cache(val)
+            clean_cache(val, f"{info_tag}/'{key}'")
         else:
+            displayln_info(f"clean_cache: {info_tag}/'{key}'")
             cache.pop(key)
 
+@timer
 def mk_cache(*keys, cache = cache):
     # if not exist, otherwise return existing elements
     assert keys
@@ -36,6 +43,7 @@ def mk_cache(*keys, cache = cache):
         assert isinstance(cache[key], Cache)
     return cache[key]
 
+@timer
 def rm_cache(*keys, cache = cache):
     # if exist
     assert keys

@@ -19,6 +19,7 @@ def get_load_path(fn):
         return None
     path_list = [
             "results",
+            "../mk-gf-gt/results",
             "../mk-lanc/results",
             "/gpfs/alpine/lgt116/proj-shared/ljin",
             ]
@@ -27,6 +28,44 @@ def get_load_path(fn):
         if q.does_file_exist_sync_node(p):
             return p
     return None
+
+@q.timer_verbose
+def check_job(job_tag, traj):
+    # return True if config is finished or unavailable
+    fns_produce = [
+            get_load_path(f"point-selection/{job_tag}/traj={traj}.txt"),
+            get_load_path(f"field-selection/{job_tag}/traj={traj}.field"),
+            get_load_path(f"prop-wsrc-strange/{job_tag}/traj={traj}"),
+            get_load_path(f"prop-wsrc-light/{job_tag}/traj={traj}"),
+            get_load_path(f"prop-psrc-strange/{job_tag}/traj={traj}"),
+            get_load_path(f"prop-psrc-light/{job_tag}/traj={traj}"),
+            ]
+    is_job_done = True
+    for fn in fns_produce:
+        if fn is None:
+            q.displayln_info(f"check_job: {job_tag} {traj} to do as some file does not exist.")
+            is_job_done = False
+            break
+    if is_job_done:
+        return True
+    #
+    fns_need = [
+            get_load_path(f"configs/{job_tag}/ckpoint_lat.{traj}"),
+            get_load_path(f"gauge-transform/{job_tag}/traj={traj}.field"),
+            get_load_path(f"eig/{job_tag}/traj={traj}"),
+            ]
+    for fn in fns_need:
+        if fn is None:
+            q.displayln_info(f"check_job: {job_tag} {traj} unavailable as {fn} does not exist.")
+            return True
+    #
+    q.check_stop()
+    q.check_time_limit()
+    #
+    q.qmkdir_info(f"locks")
+    q.qmkdir_info(get_save_path(f""))
+    #
+    return False
 
 @q.timer
 def compute_eig(gf, job_tag, inv_type = 0, inv_acc = 0, *, path = None):
@@ -193,7 +232,9 @@ def compute_prop_wsrc_all(gf, gt, wi, job_tag, inv_type, *,
                         idx = idx, sfw = sfw, path_sp = path_sp,
                         psel = psel, fsel = fsel, fselc = fselc, eig = eig,
                         finished_tags = finished_tags)
+        q.displayln_info(pprint.pformat(q.list_cache()))
         q.clean_cache(q.cache_inv)
+        q.displayln_info(pprint.pformat(q.list_cache()))
     sfw.close()
     q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
 
@@ -239,53 +280,13 @@ def compute_prop_psrc_all(gf, gt, pi, job_tag, inv_type, *,
                         idx = idx, sfw = sfw, sfw_hvp = sfw_hvp, path_sp = path_sp,
                         psel = psel, fsel = fsel, fselc = fselc, eig = eig,
                         finished_tags = finished_tags)
+        q.displayln_info(pprint.pformat(q.list_cache()))
         q.clean_cache(q.cache_inv)
+        q.displayln_info(pprint.pformat(q.list_cache()))
     sfw_hvp.close()
     sfw.close()
     q.qrename_info(get_save_path(path_hvp + ".acc"), get_save_path(path_hvp))
     q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
-
-@q.timer_verbose
-def check_job(job_tag, traj):
-    # return True if config is finished or unavailable
-    fns_produce = [
-            get_load_path(f"eig/{job_tag}/traj={traj}"),
-            get_load_path(f"gauge-transform/{job_tag}/traj={traj}.field"),
-            get_load_path(f"point-selection/{job_tag}/traj={traj}.txt"),
-            get_load_path(f"field-selection/{job_tag}/traj={traj}.field"),
-            get_load_path(f"prop-wsrc-strange/{job_tag}/traj={traj}"),
-            get_load_path(f"prop-wsrc-light/{job_tag}/traj={traj}"),
-            get_load_path(f"prop-psrc-strange/{job_tag}/traj={traj}"),
-            get_load_path(f"prop-psrc-light/{job_tag}/traj={traj}"),
-            ]
-    is_job_done = True
-    for fn in fns_produce:
-        if fn is None:
-            q.displayln_info(f"check_job: {job_tag} {traj} to do as some file does not exist.")
-            is_job_done = False
-            break
-    if is_job_done:
-        return True
-    #
-    fns_need = [
-            ]
-    if not (job_tag[:5] == "test-"):
-        fns_need.append(get_load_path(f"configs/{job_tag}/ckpoint_lat.{traj}"))
-    if job_tag == "48I":
-        fns_need.append(get_load_path(f"eig/{job_tag}/traj={traj}"))
-        fns_need.append(get_load_path(f"gauge-transform/{job_tag}/traj={traj}.field"))
-    for fn in fns_need:
-        if fn is None:
-            q.displayln_info(f"check_job: {job_tag} {traj} unavailable as {fn} does not exist.")
-            return True
-    #
-    q.check_stop()
-    q.check_time_limit()
-    #
-    q.qmkdir_info(f"locks")
-    q.qmkdir_info(get_save_path(f""))
-    #
-    return False
 
 @q.timer_verbose
 def run_gf(job_tag, traj):
@@ -323,9 +324,10 @@ def run_gt(job_tag, traj, get_gf):
     path_gt = get_load_path(f"gauge-transform/{job_tag}/traj={traj}.field")
     if path_gt is None:
         if q.obtain_lock(f"locks/{job_tag}-{traj}-gauge_fix_coulomb"):
+            gf = get_gf()
             q.qmkdir_info(get_save_path(f"gauge-transform"))
             q.qmkdir_info(get_save_path(f"gauge-transform/{job_tag}"))
-            gt = qg.gauge_fix_coulomb(get_gf())
+            gt = qg.gauge_fix_coulomb(gf)
             gt.save_double(get_save_path(f"gauge-transform/{job_tag}/traj={traj}.field"))
             q.release_lock()
             return lambda : gt
@@ -390,6 +392,8 @@ def run_prop_wsrc_light(job_tag, traj, get_gf, get_eig, get_gt, get_psel, get_fs
     if get_load_path(f"prop-wsrc-light/{job_tag}/traj={traj}") is not None:
         return
     if q.obtain_lock(f"locks/{job_tag}-{traj}-wsrc-light"):
+        gf = get_gf()
+        gt = get_gt()
         eig = get_eig()
         fsel, fselc = get_fsel()
         q.qmkdir_info(get_save_path(f"wall-src-info-light"))
@@ -401,7 +405,7 @@ def run_prop_wsrc_light(job_tag, traj, get_gf, get_eig, get_gt, get_psel, get_fs
         q.qmkdir_info(get_save_path(f"psel-prop-wsrc-light/{job_tag}/traj={traj}"))
         wi_light = mk_rand_wall_src_info(job_tag, traj, inv_type = 0)
         save_wall_src_info(wi_light, f"wall-src-info-light/{job_tag}/traj={traj}.txt");
-        compute_prop_wsrc_all(get_gf(), get_gt(), wi_light, job_tag, inv_type = 0,
+        compute_prop_wsrc_all(gf, gt, wi_light, job_tag, inv_type = 0,
                 path_s = f"prop-wsrc-light/{job_tag}/traj={traj}",
                 path_sp = f"psel-prop-wsrc-light/{job_tag}/traj={traj}",
                 psel = get_psel(), fsel = fsel, fselc = fselc, eig = eig)
@@ -414,6 +418,8 @@ def run_prop_psrc_light(job_tag, traj, get_gf, get_eig, get_gt, get_psel, get_fs
     if get_load_path(f"prop-psrc-light/{job_tag}/traj={traj}") is not None:
         return
     if q.obtain_lock(f"locks/{job_tag}-{traj}-psrc-light"):
+        gf = get_gf()
+        gt = get_gt()
         eig = get_eig()
         fsel, fselc = get_fsel()
         q.qmkdir_info(get_save_path(f"point-src-info"))
@@ -427,7 +433,7 @@ def run_prop_psrc_light(job_tag, traj, get_gf, get_eig, get_gt, get_psel, get_fs
         q.qmkdir_info(get_save_path(f"hvp-psrc-light/{job_tag}"))
         pi = mk_rand_point_src_info(job_tag, traj, get_psel())
         save_point_src_info(pi, f"point-src-info/{job_tag}/traj={traj}.txt");
-        compute_prop_psrc_all(get_gf(), get_gt(), pi, job_tag, inv_type = 0,
+        compute_prop_psrc_all(gf, gt, pi, job_tag, inv_type = 0,
                 path_s = f"prop-psrc-light/{job_tag}/traj={traj}",
                 path_hvp = f"hvp-psrc-light/{job_tag}/traj={traj}",
                 path_sp = f"psel-prop-psrc-light/{job_tag}/traj={traj}",
@@ -440,8 +446,10 @@ def run_prop_wsrc_strange(job_tag, traj, get_gf, get_gt, get_psel, get_fsel):
         return
     if get_load_path(f"prop-wsrc-strange/{job_tag}/traj={traj}") is not None:
         return
-    fsel, fselc = get_fsel()
     if q.obtain_lock(f"locks/{job_tag}-{traj}-wsrc-strange"):
+        gf = get_gf()
+        gt = get_gt()
+        fsel, fselc = get_fsel()
         q.qmkdir_info(get_save_path(f"wall-src-info-strange"))
         q.qmkdir_info(get_save_path(f"wall-src-info-strange/{job_tag}"))
         q.qmkdir_info(get_save_path(f"prop-wsrc-strange"))
@@ -451,7 +459,7 @@ def run_prop_wsrc_strange(job_tag, traj, get_gf, get_gt, get_psel, get_fsel):
         q.qmkdir_info(get_save_path(f"psel-prop-wsrc-strange/{job_tag}/traj={traj}"))
         wi_strange = mk_rand_wall_src_info(job_tag, traj, inv_type = 1)
         save_wall_src_info(wi_strange, f"wall-src-info-strange/{job_tag}/traj={traj}.txt");
-        compute_prop_wsrc_all(get_gf(), get_gt(), wi_strange, job_tag, inv_type = 1,
+        compute_prop_wsrc_all(gf, gt, wi_strange, job_tag, inv_type = 1,
                 path_s = f"prop-wsrc-strange/{job_tag}/traj={traj}",
                 path_sp = f"psel-prop-wsrc-strange/{job_tag}/traj={traj}",
                 psel = get_psel(), fsel = fsel, fselc = fselc, eig = None)
@@ -465,6 +473,8 @@ def run_prop_psrc_strange(job_tag, traj, get_gf, get_gt, get_psel, get_fsel):
         return
     fsel, fselc = get_fsel()
     if q.obtain_lock(f"locks/{job_tag}-{traj}-psrc-strange"):
+        gf = get_gf()
+        gt = get_gt()
         q.qmkdir_info(get_save_path(f"point-src-info"))
         q.qmkdir_info(get_save_path(f"point-src-info/{job_tag}"))
         q.qmkdir_info(get_save_path(f"prop-psrc-strange"))
@@ -476,7 +486,7 @@ def run_prop_psrc_strange(job_tag, traj, get_gf, get_gt, get_psel, get_fsel):
         q.qmkdir_info(get_save_path(f"hvp-psrc-strange/{job_tag}"))
         pi = mk_rand_point_src_info(job_tag, traj, get_psel())
         save_point_src_info(pi, f"point-src-info/{job_tag}/traj={traj}.txt");
-        compute_prop_psrc_all(get_gf(), get_gt(), pi, job_tag, inv_type = 1,
+        compute_prop_psrc_all(gf, gt, pi, job_tag, inv_type = 1,
                 path_s = f"prop-psrc-strange/{job_tag}/traj={traj}",
                 path_hvp = f"hvp-psrc-strange/{job_tag}/traj={traj}",
                 path_sp = f"psel-prop-psrc-strange/{job_tag}/traj={traj}",
@@ -495,8 +505,8 @@ def run_job(job_tag, traj):
         #
     #
     get_gf = run_gf(job_tag, traj_gf)
-    get_eig = run_eig(job_tag, traj_gf, get_gf)
     get_gt = run_gt(job_tag, traj_gf, get_gf)
+    get_eig = run_eig(job_tag, traj_gf, get_gf)
     #
     get_psel = run_psel(job_tag, traj)
     get_fsel = run_fsel(job_tag, traj, get_psel)
@@ -514,10 +524,12 @@ rup.dict_params["test-4nt8"]["n_points"] = [
         [ 6, 2, 1, ],
         [ 3, 2, 1, ],
         ]
+
 rup.dict_params["test-4nt16"]["n_points"] = [
         [ 32, 4, 2, ],
         [ 16, 4, 2, ],
         ]
+
 rup.dict_params["48I"]["n_points"] = [
         [ 2048, 64, 16, ],
         [ 1024, 64, 16, ],
@@ -529,6 +541,9 @@ rup.dict_params["48I"]["trajs"] = list(range(500, 3000, 5))
 
 rup.dict_params["test-4nt8"]["fermion_params"][0][2]["Ls"] = 10
 rup.dict_params["test-4nt8"]["fermion_params"][1][2]["Ls"] = 10
+
+rup.dict_params["test-4nt16"]["fermion_params"][0][2]["Ls"] = 10
+rup.dict_params["test-4nt16"]["fermion_params"][1][2]["Ls"] = 10
 
 qg.begin_with_gpt()
 

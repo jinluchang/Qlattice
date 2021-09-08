@@ -58,7 +58,7 @@ dict_params["fermion_params"] = mk_dict_fermion_params()
 def mk_lanc_params(inv_type, inv_acc):
     assert inv_type == 0
     assert inv_acc == 0
-    fermion_params = dict_params["fermion_params"][inv_type][inv_acc]
+    fermion_params = mk_dict_fermion_params()[inv_type][inv_acc]
     pit_params = { "eps": 0.01, "maxiter": 500, "real": True }
     cheby_params = { "low": 2.97e-4, "high": 5.5, "order": 200 }
     irl_params = {

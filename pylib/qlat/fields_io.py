@@ -32,7 +32,7 @@ class ShuffledFieldsWriter:
             if fsel is c_fsel:
                 return c_sbs
         sbs = ShuffledBitSet(fsel, self.new_size_node())
-        cache_fields_io[id(self)] = [ fsel, sbs ]
+        cache_fields_io[id(self)] = [ fsel, sbs, ]
         return sbs
 
     def write(self, fn, obj):
@@ -74,7 +74,7 @@ class ShuffledFieldsReader:
             if fsel is c_fsel:
                 return c_sbs
         sbs = ShuffledBitSet(fsel, self.new_size_node())
-        cache_fields_io[id(self)] = [ fsel, sbs ]
+        cache_fields_io[id(self)] = [ fsel, sbs, ]
         return sbs
 
     def read(self, fn, obj):

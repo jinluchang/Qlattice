@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Need --mpi X.X.X.X runtime option
+# Need --mpi X.X.X.X --mpi X.X.X runtime option
 
 import qlat as q
 import gpt as g
@@ -19,7 +19,6 @@ def get_load_path(fn):
         return None
     path_list = [
             "results",
-            "../mk-gf-gt/results",
             "/gpfs/alpine/lgt116/proj-shared/ljin",
             ]
     for path in path_list:
@@ -28,11 +27,12 @@ def get_load_path(fn):
             return p
     return None
 
-@q.timer
+@q.timer_verbose
 def check_job(job_tag, traj):
     # return True if config is finished or unavailable
     fns_produce = [
-            get_load_path(f"eig/{job_tag}/traj={traj}"),
+            get_load_path(f"configs/{job_tag}/ckpoint_lat.{traj}"),
+            get_load_path(f"gauge-transform/{job_tag}/traj={traj}.field"),
             ]
     is_job_done = True
     for fn in fns_produce:
@@ -46,6 +46,8 @@ def check_job(job_tag, traj):
     fns_need = [
             get_load_path(f"configs/{job_tag}/ckpoint_lat.{traj}"),
             ]
+    if job_tag[:5] == "test-":
+        fns_need = []
     for fn in fns_need:
         if fn is None:
             q.displayln_info(f"check_job: {job_tag} {traj} unavailable as {fn} does not exist.")
@@ -58,39 +60,6 @@ def check_job(job_tag, traj):
     q.qmkdir_info(get_save_path(f""))
     #
     return False
-
-@q.timer
-def compute_eig(gf, job_tag, inv_type = 0, inv_acc = 0, *, path = None):
-    # return a function ``get_eig''
-    # ``get_eig()'' return the ``eig''
-    load_eig = ru.load_eig_lazy(get_load_path(path), job_tag)
-    if load_eig is not None:
-        return load_eig
-    # evec, evals = ru.mk_eig(gf, job_tag, inv_type, inv_acc)
-    basis, cevec, smoothed_evals = ru.mk_ceig(gf, job_tag, inv_type, inv_acc)
-    eig = [ basis, cevec, smoothed_evals ]
-    ru.save_ceig(get_save_path(path + ".partial"), eig, job_tag, inv_type, inv_acc);
-    q.qrename_info(get_save_path(path + ".partial"), get_save_path(path))
-    test_eig(gf, eig, job_tag, inv_type)
-    def get_eig():
-        return eig
-    return get_eig
-
-@q.timer
-def test_eig(gf, eig, job_tag, inv_type):
-    geo = gf.geo()
-    src = q.FermionField4d(geo)
-    q.displayln_info(f"src norm {src.qnorm()}")
-    src.set_rand(q.RngState("test_eig:{id(inv)}"))
-    sol_ref = ru.get_inv(gf, job_tag, inv_type, inv_acc = 2, eig = eig, eps = 1e-10, mpi_split = False, timer = False) * src
-    q.displayln_info(f"sol_ref norm {sol_ref.qnorm()} with eig")
-    for inv_acc in [0, 1, 2]:
-        sol = ru.get_inv(gf, job_tag, inv_type, inv_acc, eig = eig, mpi_split = False, timer = False) * src
-        sol -= sol_ref
-        q.displayln_info(f"sol diff norm {sol.qnorm()} inv_acc={inv_acc} with eig")
-        sol = ru.get_inv(gf, job_tag, inv_type, inv_acc, mpi_split = False, timer = False) * src
-        sol -= sol_ref
-        q.displayln_info(f"sol diff norm {sol.qnorm()} inv_acc={inv_acc} without eig")
 
 @q.timer_verbose
 def run_gf(job_tag, traj):
@@ -109,17 +78,32 @@ def run_gf(job_tag, traj):
     return get_gf
 
 @q.timer_verbose
-def run_eig(job_tag, traj, get_gf):
+def run_gt(job_tag, traj, get_gf):
     if None in [ get_gf, ]:
         return None
-    get_eig = ru.load_eig_lazy(get_load_path(f"eig/{job_tag}/traj={traj}"), job_tag)
-    if get_eig is None and get_gf is not None:
-        if q.obtain_lock(f"locks/{job_tag}-{traj}-run-eig"):
-            q.qmkdir_info(get_save_path(f"eig"))
-            q.qmkdir_info(get_save_path(f"eig/{job_tag}"))
-            get_eig = compute_eig(get_gf(), job_tag, inv_type = 0, path = f"eig/{job_tag}/traj={traj}")
+    path_gt = get_load_path(f"gauge-transform/{job_tag}/traj={traj}.field")
+    if path_gt is None:
+        if q.obtain_lock(f"locks/{job_tag}-{traj}-gauge_fix_coulomb"):
+            gf = get_gf()
+            q.qmkdir_info(get_save_path(f"gauge-transform"))
+            q.qmkdir_info(get_save_path(f"gauge-transform/{job_tag}"))
+            gt = qg.gauge_fix_coulomb(gf)
+            gt.save_double(get_save_path(f"gauge-transform/{job_tag}/traj={traj}.field"))
             q.release_lock()
-    return get_eig
+            return lambda : gt
+        else:
+            return None
+    else:
+        @q.timer_verbose
+        def load_gt():
+            gt = q.GaugeTransform()
+            gt.load_double(path_gt)
+            # ADJUST ME
+            # qg.check_gauge_fix_coulomb(get_gf(), gt)
+            #
+            return gt
+        get_gt = q.lazy_call(load_gt)
+    return get_gt
 
 @q.timer
 def run_job(job_tag, traj):
@@ -127,12 +111,44 @@ def run_job(job_tag, traj):
         return
     #
     get_gf = run_gf(job_tag, traj)
-    get_eig = run_eig(job_tag, traj, get_gf)
+    get_gt = run_gt(job_tag, traj, get_gf)
     #
     q.timer_display()
 
+rup.dict_params["test-4nt8"]["n_points"] = [
+        [ 6, 2, 1, ],
+        [ 3, 2, 1, ],
+        ]
+
+rup.dict_params["test-4nt16"]["n_points"] = [
+        [ 32, 4, 2, ],
+        [ 16, 4, 2, ],
+        ]
+
+rup.dict_params["test-4nt8"]["n_points"] = [
+        [ 1, 1, 1, ],
+        [ 1, 1, 1, ],
+        ]
+
+rup.dict_params["test-4nt16"]["n_points"] = [
+        [ 1, 1, 1, ],
+        [ 1, 1, 1, ],
+        ]
+
+rup.dict_params["48I"]["n_points"] = [
+        [ 2048, 64, 16, ],
+        [ 1024, 64, 16, ],
+        ]
+
 rup.dict_params["test-4nt8"]["trajs"] = list(range(1000, 1400, 100))
 rup.dict_params["test-4nt16"]["trajs"] = list(range(1000, 1400, 100))
+rup.dict_params["48I"]["trajs"] = list(range(500, 3000, 5))
+
+rup.dict_params["test-4nt8"]["fermion_params"][0][2]["Ls"] = 10
+rup.dict_params["test-4nt8"]["fermion_params"][1][2]["Ls"] = 10
+
+rup.dict_params["test-4nt16"]["fermion_params"][0][2]["Ls"] = 10
+rup.dict_params["test-4nt16"]["fermion_params"][1][2]["Ls"] = 10
 
 qg.begin_with_gpt()
 
@@ -148,6 +164,7 @@ job_tags = [
         # "test-96nt192",
         # "test-128nt256",
         # "24D",
+        # "48I",
         ]
 
 for job_tag in job_tags:

@@ -7,8 +7,6 @@ def mk_test_l_t_list():
             lt_list.append([l, t,])
     return lt_list
 
-load_config_params = { "twist_boundary_at_boundary" : [ 0.0, 0.0, 0.0, -0.5, ] }
-
 def mk_fermion_params(inv_type, inv_acc):
     params = {}
     params["M5"] = 1.8
@@ -35,12 +33,10 @@ def mk_dict_fermion_params():
             params[inv_type][inv_acc] = mk_fermion_params(inv_type, inv_acc)
     return params
 
-dict_fermion_params = mk_dict_fermion_params()
-
 def mk_lanc_params(job_tag, inv_type, inv_acc):
     assert inv_type == 0
     assert inv_acc == 0
-    fermion_params = dict_fermion_params[inv_type][inv_acc]
+    fermion_params = mk_dict_fermion_params()[inv_type][inv_acc]
     pit_params = { "eps": 0.01, "maxiter": 500, "real": True }
     if job_tag == "test-4nt8":
         cheby_params = {"low": 0.10, "high": 5.5, "order": 50}
@@ -99,8 +95,8 @@ def setup_params():
         rup.dict_params[job_tag] = dict_params
         dict_params["job_tag"] = job_tag
         dict_params["total_site"] = [ l, l, l, t, ]
-        dict_params["load_config_params"] = load_config_params
-        dict_params["fermion_params"] = dict_fermion_params
+        dict_params["load_config_params"] = { "twist_boundary_at_boundary" : [ 0.0, 0.0, 0.0, -0.5, ] }
+        dict_params["fermion_params"] = mk_dict_fermion_params()
         dict_lanc_params = { 0:{ 0:mk_lanc_params(job_tag, 0, 0) } }
         dict_clanc_params = { 0:{ 0:mk_clanc_params(job_tag, 0, 0) } }
         dict_params["lanc_params"] = dict_lanc_params
