@@ -272,6 +272,7 @@ struct vector {
     vec.set_acc(is_acc_);
     vec = *this;
     swap(vec);
+    qassert(is_acc == is_acc_);
   }
   //
   qacc void swap(vector<M>& x)
@@ -295,6 +296,7 @@ struct vector {
       v.n = size;
     } else {
       vector<M> vp;
+      vp.set_acc(is_acc);
       vp.v = v;
       v.p = (M*)alloc_mem(size * sizeof(M), is_acc);
       v.n = size;
@@ -317,6 +319,7 @@ struct vector {
       }
     } else {
       vector<M> vp;
+      vp.set_acc(is_acc);
       vp.v = v;
       v.p = (M*)alloc_mem(size * sizeof(M), is_acc);
       v.n = size;
@@ -476,6 +479,7 @@ struct box {
     b.set_acc(is_acc_);
     b = *this;
     swap(b);
+    qassert(is_acc == is_acc_);
   }
   //
   qacc void swap(box<M>& x)
