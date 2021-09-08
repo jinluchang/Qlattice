@@ -151,7 +151,7 @@ def save_point_src_info(pi, path):
     content = "\n".join([ f"{len(lines)}" ] + lines + [ "" ])
     q.qtouch(get_save_path(path), content)
 
-@q.timer
+@q.timer_verbose
 def compute_prop(inv, src, *, tag, sfw, fn_sp, psel, fsel, fselc):
     sol = inv * src
     s_sol = sol.sparse(fselc)
@@ -178,7 +178,7 @@ def compute_prop_wsrc(gf, gt, tslice, job_tag, inv_type, inv_acc, *,
     fn_spw = os.path.join(path_sp, f"{tag} ; wsnk.lat")
     prop.glb_sum_tslice().save(get_save_path(fn_spw))
 
-@q.timer
+@q.timer_verbose
 def compute_prop_wsrc_all(gf, gt, wi, job_tag, inv_type, *,
         path_s, path_sp, psel, fsel, fselc, eig):
     if q.does_file_exist_sync_node(get_save_path(path_s + ".acc.partial")):
@@ -219,7 +219,7 @@ def compute_prop_psrc(gf, gt, xg, job_tag, inv_type, inv_acc, *,
     fn_spw = os.path.join(path_sp, f"{tag} ; wsnk.lat")
     prop_gt.glb_sum_tslice().save(get_save_path(fn_spw))
 
-@q.timer
+@q.timer_verbose
 def compute_prop_psrc_all(gf, gt, pi, job_tag, inv_type, *,
         path_s, path_hvp = None, path_sp, psel, fsel, fselc, eig):
     if q.does_file_exist_sync_node(get_save_path(path_s + ".acc.partial")):
@@ -240,11 +240,12 @@ def compute_prop_psrc_all(gf, gt, pi, job_tag, inv_type, *,
                         psel = psel, fsel = fsel, fselc = fselc, eig = eig,
                         finished_tags = finished_tags)
         q.clean_cache(q.cache_inv)
+    sfw_hvp.close()
     sfw.close()
     q.qrename_info(get_save_path(path_hvp + ".acc"), get_save_path(path_hvp))
     q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
 
-@q.timer
+@q.timer_verbose
 def check_job(job_tag, traj):
     # return True if config is finished or unavailable
     fns_produce = [
@@ -286,7 +287,7 @@ def check_job(job_tag, traj):
     #
     return False
 
-@q.timer
+@q.timer_verbose
 def run_gf(job_tag, traj):
     path_gf = get_load_path(f"configs/{job_tag}/ckpoint_lat.{traj}")
     if path_gf is None:
@@ -302,7 +303,7 @@ def run_gf(job_tag, traj):
     get_gf = ru.load_config_lazy(job_tag, path_gf)
     return get_gf
 
-@q.timer
+@q.timer_verbose
 def run_eig(job_tag, traj, get_gf):
     if None in [ get_gf, ]:
         return None
@@ -315,7 +316,7 @@ def run_eig(job_tag, traj, get_gf):
             q.release_lock()
     return get_eig
 
-@q.timer
+@q.timer_verbose
 def run_gt(job_tag, traj, get_gf):
     if None in [ get_gf, ]:
         return None
@@ -331,15 +332,18 @@ def run_gt(job_tag, traj, get_gf):
         else:
             return None
     else:
-        def load():
+        @q.timer_verbose
+        def load_gt():
             gt = q.GaugeTransform()
             gt.load_double(path_gt)
-            qg.check_gauge_fix_coulomb(get_gf(), gt)
+            # ADJUST ME
+            # qg.check_gauge_fix_coulomb(get_gf(), gt)
+            #
             return gt
-        get_gt = q.lazy_call(load)
+        get_gt = q.lazy_call(load_gt)
     return get_gt
 
-@q.timer
+@q.timer_verbose
 def run_psel(job_tag, traj):
     path_psel = get_load_path(f"point-selection/{job_tag}/traj={traj}.txt")
     if path_psel is None:
@@ -349,13 +353,14 @@ def run_psel(job_tag, traj):
         psel.save(get_save_path(f"point-selection/{job_tag}/traj={traj}.txt"))
         return lambda : psel
     else:
-        def load():
+        @q.timer_verbose
+        def load_psel():
             psel = q.PointSelection()
             psel.load(path_psel)
             return psel
-        return q.lazy_call(load)
+        return q.lazy_call(load_psel)
 
-@q.timer
+@q.timer_verbose
 def run_fsel(job_tag, traj, get_psel):
     if get_psel is None:
         return None
@@ -370,12 +375,13 @@ def run_fsel(job_tag, traj, get_psel):
         fselc = mk_fselc(fsel, get_psel())
         return lambda : ( fsel, fselc, )
     else:
-        def load():
+        @q.timer_verbose
+        def load_fsel():
             fsel = q.FieldSelection()
             fsel.load(path_fsel, n_per_tslice)
             fselc = mk_fselc(fsel, get_psel())
             return fsel, fselc
-        return q.lazy_call(load)
+        return q.lazy_call(load_fsel)
 
 @q.timer
 def run_prop_wsrc_light(job_tag, traj, get_gf, get_eig, get_gt, get_psel, get_fsel):
@@ -520,6 +526,9 @@ rup.dict_params["48I"]["n_points"] = [
 rup.dict_params["test-4nt8"]["trajs"] = list(range(1000, 1400, 100))
 rup.dict_params["test-4nt16"]["trajs"] = list(range(1000, 1400, 100))
 rup.dict_params["48I"]["trajs"] = list(range(500, 3000, 5))
+
+rup.dict_params["test-4nt8"]["fermion_params"][0][2]["Ls"] = 10
+rup.dict_params["test-4nt8"]["fermion_params"][1][2]["Ls"] = 10
 
 qg.begin_with_gpt()
 

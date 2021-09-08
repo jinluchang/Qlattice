@@ -1,7 +1,7 @@
 SHELL=/bin/bash
 
 grid_options=--dslash-asm --shm-hugepages --shm 4050
-grid_options=
+grid_options=--mpi_split 1.1.1.1 --grouped 2
 
 mpi_options=
 mpi_options=--bind-to none -mca btl_openib_allow_ib true

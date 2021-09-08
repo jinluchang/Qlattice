@@ -356,17 +356,21 @@ long load_gauge_field(GaugeFieldT<T>& gf, const std::string& path)
 {
   TIMER_VERBOSE_FLOPS("load_gauge_field");
   displayln_info(fname + ssprintf(": '%s'.", path.c_str()));
+  gf.init();
   GaugeFieldInfo gfi;
   read_gauge_field_header(gfi, path);
-  if (gfi.datatype != "4D_SU3_GAUGE") {
-    displayln(fname + ssprintf(": gfi.datatype '%s' id_node=%d.", gfi.datatype.c_str(), get_id_node()));
+  const bool is_two_row = gfi.datatype == "4D_SU3_GAUGE";
+  const bool is_three_row = gfi.datatype == "4D_SU3_GAUGE_3x3";
+  const int n_complex_su3 = is_two_row ? 6 : ( is_three_row ? 9 : 0);
+  if (n_complex_su3 == 0) {
+    displayln(fname + ssprintf(": gfi.datatype '%s' id_node=%d.",
+                               gfi.datatype.c_str(), get_id_node()));
     qassert(false);
   }
   Geometry geo;
   geo.init(gfi.total_site, 4);
-  gf.init(geo);
-  FieldM<array<Complex, 6>, 4> gft;
-  gft.init(geo);
+  Field<Complex> gft;
+  gft.init(geo_remult(geo, 4 * n_complex_su3));
   const long file_size = serial_read_field_par(
       gft, path, -get_data_size(gft) * get_num_node(), SEEK_END);
   if (0 == file_size) {
@@ -379,19 +383,26 @@ long load_gauge_field(GaugeFieldT<T>& gf, const std::string& path)
   } else {
     qassert(false);
   }
+  gf.init(geo);
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
-    Vector<array<Complex, 6> > vt = gft.get_elems(xl);
+    Vector<Complex> vt = gft.get_elems(xl);
     Vector<ColorMatrixT<T> > v = gf.get_elems(xl);
     for (int m = 0; m < geo.multiplicity; ++m) {
-      v[m](0, 0) = vt[m][0];
-      v[m](0, 1) = vt[m][1];
-      v[m](0, 2) = vt[m][2];
-      v[m](1, 0) = vt[m][3];
-      v[m](1, 1) = vt[m][4];
-      v[m](1, 2) = vt[m][5];
-      unitarize(v[m]);
+      v[m](0, 0) = vt[m * n_complex_su3 + 0];
+      v[m](0, 1) = vt[m * n_complex_su3 + 1];
+      v[m](0, 2) = vt[m * n_complex_su3 + 2];
+      v[m](1, 0) = vt[m * n_complex_su3 + 3];
+      v[m](1, 1) = vt[m * n_complex_su3 + 4];
+      v[m](1, 2) = vt[m * n_complex_su3 + 5];
+      if (is_three_row) {
+        v[m](2, 0) = vt[m * n_complex_su3 + 6];
+        v[m](2, 1) = vt[m * n_complex_su3 + 7];
+        v[m](2, 2) = vt[m * n_complex_su3 + 8];
+      } else {
+        unitarize(v[m]);
+      }
     }
   }
   timer.flops += file_size;

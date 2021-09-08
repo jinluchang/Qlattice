@@ -6,6 +6,8 @@ dict_params = {}
 
 rup.dict_params[job_tag] = dict_params
 
+dict_params["job_tag"] = job_tag
+
 dict_params["total_site"] = [ 24, 24, 24, 64, ]
 
 dict_params["load_config_params"] = { "twist_boundary_at_boundary":[ 0.0, 0.0, 0.0, -0.5, ] }
@@ -22,7 +24,7 @@ def mk_fermion_params(inv_type, inv_acc):
         params["mass"] = 0.0850
     else:
         assert False
-    if inv_type == 0 and (inv_acc == 0 or inv_acc == 1):
+    if inv_acc == 0 or inv_acc == 1:
         params["b"] = 1.0
         params["c"] = 0.0
         params["omega"] = [

@@ -97,6 +97,7 @@ def setup_params():
         job_tag = f"test-{l}nt{t}"
         dict_params = {}
         rup.dict_params[job_tag] = dict_params
+        dict_params["job_tag"] = job_tag
         dict_params["total_site"] = [ l, l, l, t, ]
         dict_params["load_config_params"] = load_config_params
         dict_params["fermion_params"] = dict_fermion_params

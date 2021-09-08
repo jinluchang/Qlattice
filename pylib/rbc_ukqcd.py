@@ -234,10 +234,12 @@ def mk_gpt_inverter(gf, job_tag, inv_type, inv_acc, *,
             cg_mp = inv.cg({"eps": eps, "maxiter": 300})
         else:
             raise Exception("mk_gpt_inverter")
-        if mpi_split is None or mpi_split == False:
+        if mpi_split is None or mpi_split == False or is_madwf:
             cg_split = cg_mp
+            n_grouped = 1
         else:
             cg_split = inv.split(cg_mp, mpi_split = mpi_split)
+        q.displayln_info(f"mk_gpt_inverter: job_tag={job_tag} inv_type={inv_type} inv_acc={inv_acc} mpi_split={mpi_split} n_grouped={n_grouped}")
         if eig is not None:
             cg_defl = inv.coarse_deflate(eig[1], eig[0], eig[2])
             cg = inv.sequence(cg_defl, cg_split)

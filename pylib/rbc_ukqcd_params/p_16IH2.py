@@ -6,6 +6,8 @@ dict_params = {}
 
 rup.dict_params[job_tag] = dict_params
 
+dict_params["job_tag"] = job_tag
+
 dict_params["total_site"] = [ 16, 16, 16, 32, ]
 
 dict_params["load_config_params"] = { "twist_boundary_at_boundary":[ 0.0, 0.0, 0.0, -0.5, ] }
