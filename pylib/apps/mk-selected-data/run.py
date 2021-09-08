@@ -232,9 +232,7 @@ def compute_prop_wsrc_all(gf, gt, wi, job_tag, inv_type, *,
                         idx = idx, sfw = sfw, path_sp = path_sp,
                         psel = psel, fsel = fsel, fselc = fselc, eig = eig,
                         finished_tags = finished_tags)
-        q.displayln_info(pprint.pformat(q.list_cache()))
         q.clean_cache(q.cache_inv)
-        q.displayln_info(pprint.pformat(q.list_cache()))
     sfw.close()
     q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
 
@@ -280,10 +278,9 @@ def compute_prop_psrc_all(gf, gt, pi, job_tag, inv_type, *,
                         idx = idx, sfw = sfw, sfw_hvp = sfw_hvp, path_sp = path_sp,
                         psel = psel, fsel = fsel, fselc = fselc, eig = eig,
                         finished_tags = finished_tags)
-        q.displayln_info(pprint.pformat(q.list_cache()))
         q.clean_cache(q.cache_inv)
-        q.displayln_info(pprint.pformat(q.list_cache()))
-    sfw_hvp.close()
+    if sfw_hvp is not None:
+        sfw_hvp.close()
     sfw.close()
     q.qrename_info(get_save_path(path_hvp + ".acc"), get_save_path(path_hvp))
     q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))

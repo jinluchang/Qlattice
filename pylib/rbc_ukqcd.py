@@ -215,8 +215,6 @@ def mk_gpt_inverter(gf, job_tag, inv_type, inv_acc, *,
     gpt_gf = qg.gpt_from_qlat(gf)
     pc = g.qcd.fermion.preconditioner
     if inv_type in [0, 1,]:
-        q.sync_node()
-        q.displayln_info(f"mk_gpt_inverter: get_fermion_params")
         params = get_fermion_params(job_tag, inv_type, inv_acc)
         if eig is not None:
             # may need madwf
@@ -224,14 +222,11 @@ def mk_gpt_inverter(gf, job_tag, inv_type, inv_acc, *,
             is_madwf = get_ls_from_fermion_params(params) != get_ls_from_fermion_params(params0)
         else:
             is_madwf = False
-        q.sync_node()
         q.displayln_info(f"mk_gpt_inverter: set qm params={params}")
         if "omega" in params:
             qm = g.qcd.fermion.zmobius(gpt_gf, params)
         else:
             qm = g.qcd.fermion.mobius(gpt_gf, params)
-        q.sync_node()
-        q.displayln_info(f"mk_gpt_inverter: set cg_mp")
         inv = g.algorithms.inverter
         if job_tag[:5] == "test-":
             cg_mp = inv.cg({"eps": eps, "maxiter": 50})
@@ -241,8 +236,6 @@ def mk_gpt_inverter(gf, job_tag, inv_type, inv_acc, *,
             cg_mp = inv.cg({"eps": eps, "maxiter": 300})
         else:
             raise Exception("mk_gpt_inverter")
-        q.sync_node()
-        q.displayln_info(f"mk_gpt_inverter: set cg_split")
         if mpi_split is None or mpi_split == False or is_madwf:
             cg_split = cg_mp
             n_grouped = 1
@@ -250,28 +243,21 @@ def mk_gpt_inverter(gf, job_tag, inv_type, inv_acc, *,
         else:
             cg_split = inv.split(cg_mp, mpi_split = mpi_split)
         q.displayln_info(f"mk_gpt_inverter: mpi_split={mpi_split} n_grouped={n_grouped}")
-        q.sync_node()
-        q.displayln_info(f"mk_gpt_inverter: set eig")
         if eig is not None:
             cg_defl = inv.coarse_deflate(eig[1], eig[0], eig[2])
             cg = inv.sequence(cg_defl, cg_split)
         else:
             cg = cg_split
-        q.sync_node()
-        q.displayln_info(f"mk_gpt_inverter: def pc_ne")
         if "omega" in params and eig is None:
             pc_ne = pc.eo2_kappa_ne()
         else:
             pc_ne = pc.eo2_ne()
-        q.sync_node()
-        q.displayln_info(f"mk_gpt_inverter: def slv_5d")
         if inv_type == 0:
             slv_5d = inv.preconditioned(pc_ne, cg)
         elif inv_type == 1:
             slv_5d = inv.preconditioned(pc_ne, cg)
         else:
             raise Exception("mk_gpt_inverter")
-        q.sync_node()
         q.displayln_info(f"mk_gpt_inverter: deal with is_madwf={is_madwf}")
         if is_madwf:
             gpt_gf_f = g.convert(gpt_gf, g.single)
@@ -282,8 +268,6 @@ def mk_gpt_inverter(gf, job_tag, inv_type, inv_acc, *,
             cg_pv_f = inv.cg({"eps": eps, "maxiter": 90})
             slv_5d_pv_f = inv.preconditioned(pc.eo2_ne(), cg_pv_f)
             slv_5d = pc.mixed_dwf(slv_5d, slv_5d_pv_f, qm0)
-        q.sync_node()
-        q.displayln_info(f"mk_gpt_inverter: set maxiter")
         if inv_acc == 0:
             maxiter = 1
         elif inv_acc == 1:
@@ -292,21 +276,15 @@ def mk_gpt_inverter(gf, job_tag, inv_type, inv_acc, *,
             maxiter = 200
         else:
             raise Exception("mk_gpt_inverter")
-        q.sync_node()
-        q.displayln_info(f"mk_gpt_inverter: mk slv_qm")
         slv_qm = qm.propagator(
                 inv.defect_correcting(
                     inv.mixed_precision(
                         slv_5d, g.single, g.double),
                     eps=eps, maxiter=maxiter)).grouped(n_grouped)
-        q.sync_node()
-        q.displayln_info(f"mk_gpt_inverter: def timer")
         if timer is True:
             timer = q.Timer(f"py:inv({job_tag},{inv_type},{inv_acc})", True)
         elif timer is False:
             timer = q.TimerNone()
-        q.sync_node()
-        q.displayln_info(f"mk_gpt_inverter: def inv_qm")
         inv_qm = qg.InverterGPT(inverter = slv_qm, timer = timer)
     else:
         raise Exception("mk_gpt_inverter")
