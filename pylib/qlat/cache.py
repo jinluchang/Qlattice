@@ -26,7 +26,6 @@ def clean_cache(cache = cache, info_tag = ""):
             displayln_info(f"clean_cache: {info_tag}/'{key}'")
             cache.pop(key)
 
-@timer
 def mk_cache(*keys, cache = cache):
     # if not exist, otherwise return existing elements
     assert keys
