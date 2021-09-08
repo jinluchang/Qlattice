@@ -550,6 +550,7 @@ job_tags = [
 for job_tag in job_tags:
     q.displayln_info(pprint.pformat(rup.dict_params[job_tag]))
     for traj in rup.dict_params[job_tag]["trajs"]:
+        q.displayln_info(pprint.pformat(q.list_cache()))
         run_job(job_tag, traj)
 
 qg.end_with_gpt()

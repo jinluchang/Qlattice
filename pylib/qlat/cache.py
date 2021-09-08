@@ -4,6 +4,15 @@ class Cache(dict):
 
 cache = Cache()
 
+def list_cache(cache = cache):
+    l = []
+    for key, val in cache.items():
+        if isinstance(val, Cache):
+            l.append(( key, list_cache(val), ))
+        else:
+            l.append(key)
+    return l
+
 def clean_cache(cache = cache):
     for key, val in list(cache.items()):
         if isinstance(val, Cache):
