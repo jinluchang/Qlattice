@@ -231,7 +231,7 @@ def mk_gpt_inverter(gf, job_tag, inv_type, inv_acc, *,
         if job_tag[:5] == "test-":
             cg_mp = inv.cg({"eps": eps, "maxiter": 50})
         elif inv_acc == 2:
-            cg_mp = inv.cg({"eps": eps, "maxiter": 400})
+            cg_mp = inv.cg({"eps": eps, "maxiter": 500})
         elif inv_type == 0:
             cg_mp = inv.cg({"eps": eps, "maxiter": 200})
         elif inv_type == 1:
@@ -267,7 +267,7 @@ def mk_gpt_inverter(gf, job_tag, inv_type, inv_acc, *,
                 qm0 = g.qcd.fermion.zmobius(gpt_gf_f, params0)
             else:
                 qm0 = g.qcd.fermion.mobius(gpt_gf_f, params0)
-            cg_pv_f = inv.cg({"eps": eps, "maxiter": 200})
+            cg_pv_f = inv.cg({"eps": eps, "maxiter": 150})
             slv_5d_pv_f = inv.preconditioned(pc.eo2_ne(), cg_pv_f)
             slv_5d = pc.mixed_dwf(slv_5d, slv_5d_pv_f, qm0)
         if inv_acc == 0:
