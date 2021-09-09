@@ -55,6 +55,7 @@ q_mem_cache_max_size=512 (default)
 q_mem_cache_acc_max_size=512 (default)
 CommPlanCache: to add 1 / 32.
 gf_show_info: plaq = 0.9737359772127301 ; link_trace = 0.9933659561692338.
+mk_gpt_inverter: job_tag=test-8nt16 inv_type=1 inv_acc=0 mpi_split=[1, 1, 1, 1] n_grouped=4
 qlat geo created
 gpt field made
 qlat field made
@@ -65,6 +66,9 @@ plan initialized
 plan source added
 plan destination added
 plan created
+mk_gpt_inverter: set qm params={'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 8, 'mass': 0.04}
+mk_gpt_inverter: mpi_split=[1, 1, 1, 1] n_grouped=4
+mk_gpt_inverter: deal with is_madwf=False
 ShufflePlanCache: to add 1 / 16.
 prop src 0 qnorm = 786613.9719512658 crc32 = 1313177195
 prop src 1 qnorm = 786828.5160106713 crc32 = 1984585503
@@ -88,8 +92,8 @@ plan initialized
 plan destination added
 plan source added
 plan created
-prop sol 0 qnorm = 53021.38314033827 crc32 = 14296319
-prop sol 1 qnorm = 53340.26263943155 crc32 = 1559676208
+prop sol 0 qnorm = 53021.74800635131 crc32 = 611277668
+prop sol 1 qnorm = 53340.600487741045 crc32 = 2749568671
 q_timer_max_func_name_len=50 (default)
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 1.
