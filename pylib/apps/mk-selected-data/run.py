@@ -503,15 +503,18 @@ def run_job(job_tag, traj):
     #
     get_gf = run_gf(job_tag, traj_gf)
     get_gt = run_gt(job_tag, traj_gf, get_gf)
-    get_eig = run_eig(job_tag, traj_gf, get_gf)
     #
     get_psel = run_psel(job_tag, traj)
     get_fsel = run_fsel(job_tag, traj, get_psel)
     assert get_psel is not None
     assert get_fsel is not None
     #
-    run_prop_wsrc_light(job_tag, traj, get_gf, get_eig, get_gt, get_psel, get_fsel)
-    run_prop_psrc_light(job_tag, traj, get_gf, get_eig, get_gt, get_psel, get_fsel)
+    def run_with_eig():
+        get_eig = run_eig(job_tag, traj_gf, get_gf)
+        run_prop_wsrc_light(job_tag, traj, get_gf, get_eig, get_gt, get_psel, get_fsel)
+        run_prop_psrc_light(job_tag, traj, get_gf, get_eig, get_gt, get_psel, get_fsel)
+    run_with_eig()
+    #
     run_prop_wsrc_strange(job_tag, traj, get_gf, get_gt, get_psel, get_fsel)
     run_prop_psrc_strange(job_tag, traj, get_gf, get_gt, get_psel, get_fsel)
     #
@@ -534,7 +537,7 @@ rup.dict_params["48I"]["n_points"] = [
 
 rup.dict_params["test-4nt8"]["trajs"] = list(range(1000, 1400, 100))
 rup.dict_params["test-4nt16"]["trajs"] = list(range(1000, 1400, 100))
-rup.dict_params["48I"]["trajs"] = list(range(500, 3000, 5))
+rup.dict_params["48I"]["trajs"] = list(range(3000, 500, -5))
 
 rup.dict_params["test-4nt8"]["fermion_params"][0][2]["Ls"] = 10
 rup.dict_params["test-4nt8"]["fermion_params"][1][2]["Ls"] = 10
