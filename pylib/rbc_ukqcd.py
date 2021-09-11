@@ -238,12 +238,14 @@ def mk_gpt_inverter(gf, job_tag, inv_type, inv_acc, *,
             cg_mp = inv.cg({"eps": eps, "maxiter": 300})
         else:
             raise Exception("mk_gpt_inverter")
-        if mpi_split is None or mpi_split == False or is_madwf:
+        cg_pv_f = inv.cg({"eps": eps, "maxiter": 150})
+        if mpi_split is None or mpi_split == False:
             cg_split = cg_mp
             n_grouped = 1
             mpi_split = None
         else:
             cg_split = inv.split(cg_mp, mpi_split = mpi_split)
+            cg_pv_f = inv.split(cg_pv_f, mpi_split = mpi_split)
         q.displayln_info(f"mk_gpt_inverter: mpi_split={mpi_split} n_grouped={n_grouped}")
         if eig is not None:
             cg_defl = inv.coarse_deflate(eig[1], eig[0], eig[2])
@@ -267,7 +269,6 @@ def mk_gpt_inverter(gf, job_tag, inv_type, inv_acc, *,
                 qm0 = g.qcd.fermion.zmobius(gpt_gf_f, params0)
             else:
                 qm0 = g.qcd.fermion.mobius(gpt_gf_f, params0)
-            cg_pv_f = inv.cg({"eps": eps, "maxiter": 150})
             slv_5d_pv_f = inv.preconditioned(pc.eo2_ne(), cg_pv_f)
             slv_5d = pc.mixed_dwf(slv_5d, slv_5d_pv_f, qm0)
         if inv_acc == 0:
