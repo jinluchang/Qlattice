@@ -518,6 +518,7 @@ def run_job(job_tag, traj):
     run_prop_wsrc_strange(job_tag, traj, get_gf, get_gt, get_psel, get_fsel)
     run_prop_psrc_strange(job_tag, traj, get_gf, get_gt, get_psel, get_fsel)
     #
+    q.clean_cache()
     q.timer_display()
 
 rup.dict_params["test-4nt8"]["n_points"] = [
@@ -567,7 +568,6 @@ q.check_time_limit()
 for job_tag in job_tags:
     q.displayln_info(pprint.pformat(rup.dict_params[job_tag]))
     for traj in rup.dict_params[job_tag]["trajs"]:
-        q.displayln_info(pprint.pformat(q.list_cache()))
         run_job(job_tag, traj)
 
 qg.end_with_gpt()
