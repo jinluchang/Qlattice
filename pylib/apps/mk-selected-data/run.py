@@ -562,6 +562,8 @@ job_tags = [
         # "48I",
         ]
 
+q.check_time_limit()
+
 for job_tag in job_tags:
     q.displayln_info(pprint.pformat(rup.dict_params[job_tag]))
     for traj in rup.dict_params[job_tag]["trajs"]:
