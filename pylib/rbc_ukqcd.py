@@ -342,9 +342,9 @@ def mk_inverter(*args, **kwargs):
 
 @q.timer
 def get_inv(gf, job_tag, inv_type, inv_acc, *, gt = None, mpi_split = None, n_grouped = 1, eig = None, eps = 1e-8, timer = True):
-    tag = f"rbc_ukqcd.get_inv {id(gf)} {job_tag} {inv_type} {inv_acc} {id(gt)} {mpi_split} {n_grouped} {id(eig)} {eps} {id(timer)}"
+    tag = f"rbc_ukqcd.get_inv gf={id(gf)} {job_tag} {inv_type} {inv_acc} gt={id(gt)} {mpi_split} {n_grouped} eig={id(eig)} {eps} timer={id(timer)}"
     if tag in q.cache_inv:
-        return q.cache_inv[tag]
+        return q.cache_inv[tag]["inv"]
     inv = mk_inverter(gf, job_tag, inv_type, inv_acc,
             gt = gt,
             mpi_split = mpi_split,
@@ -352,5 +352,11 @@ def get_inv(gf, job_tag, inv_type, inv_acc, *, gt = None, mpi_split = None, n_gr
             eig = eig,
             eps = eps,
             timer = timer)
-    q.cache_inv[tag] = inv
+    q.cache_inv[tag] = {
+            "inv": inv,
+            "gf": gf,
+            "gt": gt,
+            "eig": eig,
+            "timer": timer,
+            }
     return inv
