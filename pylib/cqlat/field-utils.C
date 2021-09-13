@@ -71,6 +71,15 @@ PyObject* glb_sum_tslice_long_field_ctype(PyField& pspf, PyField& pf)
   Py_RETURN_NONE;
 }
 
+template <class M>
+PyObject* fft_dir_complex_field_ctype(PyField& pf1, PyField& pf, const int fft_dir, const bool is_forward)
+{
+  Field<M>& f1 = *(Field<M>*)pf1.cdata;
+  const Field<M>& f = *(Field<M>*)pf.cdata;
+  fft_complex_field_dir(f1, f, fft_dir, is_forward);
+  Py_RETURN_NONE;
+}
+
 }  // namespace qlat
 
 EXPORT(set_phase_field, {
@@ -200,5 +209,25 @@ EXPORT(glb_sum_tslice_long_field, {
   PyField pf = py_convert_field(p_field);
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, glb_sum_tslice_long_field_ctype, pf.ctype, pspf, pf);
+  return p_ret;
+});
+
+EXPORT(fft_dir_complex_field, {
+  // forward compute
+  // field1(k) <- \sum_{x} exp( - ii * 2 pi * k * x ) field(x)
+  // backwards compute
+  // field1(x) <- \sum_{k} exp( + ii * 2 pi * k * x ) field(k)
+  using namespace qlat;
+  PyObject* p_field1 = NULL;
+  PyObject* p_field = NULL;
+  const int fft_dir = 0;
+  const bool is_forward = true;
+  if (!PyArg_ParseTuple(args, "OOib", &p_field1, &p_field, &fft_dir, &is_forward)) {
+    return NULL;
+  }
+  PyField pf1 = py_convert_field(p_field1);
+  PyField pf = py_convert_field(p_field);
+  PyObject* p_ret = NULL;
+  FIELD_DISPATCH(p_ret, fft_dir_complex_field_ctype, pf.ctype, pf1, pf, fft_dir, is_forward);
   return p_ret;
 });

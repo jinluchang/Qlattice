@@ -117,7 +117,7 @@ struct fft_complex_field_plan {
 };
 
 template <class M>
-void fft_complex_field_dir(Field<M>& field, const int dir,
+void fft_complex_field_dir(Field<M>& field1, const Field<M>& field, const int dir,
                            const bool is_forward)
 {
   TIMER("fft_complex_field_dir");
@@ -134,10 +134,11 @@ void fft_complex_field_dir(Field<M>& field, const int dir,
   const long nc_stop = std::min(nc, nc_start + chunk);
   const long nc_size = nc_stop - nc_start;
   qassert(nc_size >= 0);
-  Complex* fftdatac = (Complex*)fftw_malloc(nc_size * sizec * sizeof(Complex));
   const ShufflePlan& sp = plan.sp;
   std::vector<Field<M> > fft_fields;
   shuffle_field(fft_fields, field, sp);
+  field1.init();
+  Complex* fftdatac = (Complex*)fftw_malloc(nc_size * sizec * sizeof(Complex));
 #pragma omp parallel for
   for (int i = 0; i < (int)fft_fields.size(); ++i) {
     if (not(get_data_size(fft_fields[i]) == nc_size * (int)sizeof(Complex))) {
@@ -160,8 +161,16 @@ void fft_complex_field_dir(Field<M>& field, const int dir,
     std::memcpy((void*)get_data(fft_fields[i]).data(),
                 (void*)&fftdatac[nc_size * i], get_data_size(fft_fields[i]));
   }
-  shuffle_field_back(field, fft_fields, sp);
   fftw_free(fftdatac);
+  field1.init(geo)
+  shuffle_field_back(field1, fft_fields, sp);
+}
+
+template <class M>
+void fft_complex_field_dir(Field<M>& field, const int dir,
+                           const bool is_forward)
+{
+  fft_complex_field_dir(field, field, dir, is_forward);
 }
 
 template <class M>

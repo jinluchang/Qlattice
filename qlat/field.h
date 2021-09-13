@@ -48,7 +48,11 @@ struct Field {
       }
       initialized = true;
     } else {
-      qassert(is_matching_geo_mult(geo_, geo()));
+      if (not is_matching_geo_mult(geo_, geo())) {
+        displayln("old geo = " + show(geo()));
+        displayln("new geo = " + show(geo_));
+        qassert(false);
+      }
     }
   }
   void init(const Geometry& geo_, const int multiplicity_)
