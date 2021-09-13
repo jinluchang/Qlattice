@@ -162,7 +162,7 @@ void fft_complex_field_dir(Field<M>& field1, const Field<M>& field, const int di
                 (void*)&fftdatac[nc_size * i], get_data_size(fft_fields[i]));
   }
   fftw_free(fftdatac);
-  field1.init(geo)
+  field1.init(geo);
   shuffle_field_back(field1, fft_fields, sp);
 }
 

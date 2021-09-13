@@ -28,6 +28,15 @@ gf.set_rand(rs.split("gf-init"), 0.3, 1)
 
 gf.show_info()
 
+fft_f = q.mk_fft(True, is_normalizing)
+fft_b = q.mk_fft(False, is_normalizing)
+
+gfm = fft_f * gf
+
+gf1 = fft_b * gfm
+
+gf1.show_info()
+
 f_factor = q.mk_phase_field(gf.geo(), [1, 0, 0, 0,])
 
 gf *= f_factor
