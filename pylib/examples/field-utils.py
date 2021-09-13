@@ -28,8 +28,8 @@ gf.set_rand(rs.split("gf-init"), 0.3, 1)
 
 gf.show_info()
 
-fft_f = q.mk_fft(True, is_normalizing)
-fft_b = q.mk_fft(False, is_normalizing)
+fft_f = q.mk_fft(True, is_normalizing = True)
+fft_b = q.mk_fft(False, is_normalizing = True)
 
 gfm = fft_f * gf
 

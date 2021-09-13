@@ -20,7 +20,7 @@ class FastFourierTransform:
 
     def __mul__(self, field):
         for fft_dir, is_forward in self.fft_infos:
-            f = Field(field.ctype)
+            f = field.copy(False)
             c.fft_dir_complex_field(f, field, fft_dir, is_forward)
             field = f
         if self.is_normalizing and self.fft_infos:
@@ -35,16 +35,16 @@ class FastFourierTransform:
 def mk_fft(is_forward, *, is_only_spatial = False, is_normalizing = False):
     if is_only_spatial:
         fft_infos = [
-                (0, is_forward,)
-                (1, is_forward,)
-                (2, is_forward,)
+                (0, is_forward,),
+                (1, is_forward,),
+                (2, is_forward,),
                 ]
         return FastFourierTransform(fft_infos, is_normalizing = is_normalizing)
     else:
         fft_infos = [
-                (0, is_forward,)
-                (1, is_forward,)
-                (2, is_forward,)
-                (3, is_forward,)
+                (0, is_forward,),
+                (1, is_forward,),
+                (2, is_forward,),
+                (3, is_forward,),
                 ]
         return FastFourierTransform(fft_infos, is_normalizing = is_normalizing)

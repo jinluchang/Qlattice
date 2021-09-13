@@ -18,6 +18,19 @@ q_mem_cache_max_size=512 (default)
 q_mem_cache_acc_max_size=512 (default)
 CommPlanCache: to add 1 / 32.
 gf_show_info: plaq = 0.6147333258459872 ; link_trace = 0.8844956937132934.
+fft_complex_field_plan::get_plan: start to make a new fft plan with id = 0
+fft_complex_field_plan::init: malloc 147456
+fft_complex_field_plan::init: free 147456
+make_shuffle_plan_fft: num_send_packs =        256
+make_shuffle_plan_fft: num_recv_packs =          8
+make_shuffle_plan_fft: num_send_msgs  =          1
+make_shuffle_plan_fft: num_recv_msgs  =          1
+make_shuffle_plan_fft: total num_send_packs =        512
+make_shuffle_plan_fft: total num_recv_packs =         16
+make_shuffle_plan_fft: total num_send_msgs  =          2
+make_shuffle_plan_fft: total num_recv_msgs  =          2
+make_shuffle_plan_fft: global_comm_size =        512
+gf_show_info: plaq = 0.0384208328653742 ; link_trace = 0.4422478468566466.
 gf_show_info: plaq = 0.3067038575531761 ; link_trace = 0.0005769961056065.
 [[ 9.08746570e-01-0.02443602j -2.54749081e-02-0.40818897j
    4.63220868e-02-0.06457254j -5.69599753e-02-0.41095107j
@@ -84,3 +97,4 @@ qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 0.
 qlat::end(): Finalize MPI.
 qlat::end(): MPI Finalized.
+fft_complex_field_plan::end(): free a plan.

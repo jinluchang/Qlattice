@@ -16,9 +16,10 @@ class Geometry:
         c.set_geo(self, v1)
         return self
 
-    def copy(self):
+    def copy(self, is_copying_data = True):
         x = Geometry([0, 0, 0, 0])
-        x @= self
+        if is_copying_data:
+            x @= self
         return x
 
     def total_site(self):

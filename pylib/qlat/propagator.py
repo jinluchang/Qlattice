@@ -10,9 +10,10 @@ class Prop(Field):
     def __init__(self, geo = None):
         Field.__init__(self, "WilsonMatrix", geo, 1)
 
-    def copy(self):
+    def copy(self, is_copying_data = True):
         f = Prop()
-        f @= self
+        if is_copying_data:
+            f @= self
         return f
 
     def sparse(self, sel):
@@ -34,9 +35,10 @@ class SelProp(SelectedField):
     def __init__(self, fsel):
         SelectedField.__init__(self, "WilsonMatrix", fsel, 1)
 
-    def copy(self):
+    def copy(self, is_copying_data = True):
         f = SelProp(self.fsel)
-        f @= self
+        if is_copying_data:
+            f @= self
         return f
 
     def sparse(self, sel):
@@ -58,9 +60,10 @@ class PselProp(SelectedPoints):
     def __init__(self, psel):
         SelectedPoints.__init__(self, "WilsonMatrix", psel, 1)
 
-    def copy(self):
+    def copy(self, is_copying_data = True):
         f = PselProp(self.psel)
-        f @= self
+        if is_copying_data:
+            f @= self
         return f
 
 def set_point_src(prop_src, geo, xg, value = 1.0):
@@ -100,3 +103,9 @@ class FermionField4d(Field):
 
     def __init__(self, geo = None):
         Field.__init__(self, "WilsonVector", geo, 1)
+
+    def copy(self, is_copying_data = True):
+        f = FermionField4d()
+        if is_copying_data:
+            f @= self
+        return f

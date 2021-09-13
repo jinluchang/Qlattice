@@ -27,9 +27,10 @@ class SelectedField:
         c.set_sfield(self, f1)
         return self
 
-    def copy(self):
+    def copy(self, is_copying_data = True):
         f = SelectedField(self.ctype, self.fsel)
-        f @= self
+        if is_copying_data:
+            f @= self
         return f
 
     def n_elems(self):

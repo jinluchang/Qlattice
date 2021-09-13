@@ -13,9 +13,10 @@ class LatData:
         c.set_lat_data(self, v1)
         return self
 
-    def copy(self):
+    def copy(self, is_copying_data = True):
         x = LatData()
-        x @= self
+        if is_copying_data:
+            x @= self
         return x
 
     def save_node(self, path):

@@ -21,9 +21,10 @@ class RngState:
         c.set_rng(self, v1)
         return self
 
-    def copy(self):
+    def copy(self, is_copying_data = True):
         x = RngState()
-        x @= self
+        if is_copying_data:
+            x @= self
         return x
 
     def split(self, seed):

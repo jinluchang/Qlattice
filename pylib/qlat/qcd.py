@@ -9,6 +9,12 @@ class GaugeField(Field):
     def __init__(self, geo = None):
         Field.__init__(self, "ColorMatrix", geo, 4)
 
+    def copy(self, is_copying_data = True):
+        f = GaugeField()
+        if is_copying_data:
+            f @= self
+        return f
+
     def save(self, path):
         return c.save_gauge_field(self, path)
 
@@ -38,6 +44,12 @@ class GaugeTransform(Field):
 
     def __init__(self, geo = None):
         Field.__init__(self, "ColorMatrix", geo, 1)
+
+    def copy(self, is_copying_data = True):
+        f = GaugeTransform()
+        if is_copying_data:
+            f @= self
+        return f
 
     def set_rand(self, rng, sigma = 0.5, n_step = 1):
         set_g_rand_color_matrix_field(self, rng, sigma, n_step)

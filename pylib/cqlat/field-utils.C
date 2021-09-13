@@ -220,8 +220,8 @@ EXPORT(fft_dir_complex_field, {
   using namespace qlat;
   PyObject* p_field1 = NULL;
   PyObject* p_field = NULL;
-  const int fft_dir = 0;
-  const bool is_forward = true;
+  int fft_dir = 0;
+  bool is_forward = true;
   if (!PyArg_ParseTuple(args, "OOib", &p_field1, &p_field, &fft_dir, &is_forward)) {
     return NULL;
   }

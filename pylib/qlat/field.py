@@ -41,9 +41,10 @@ class Field:
         c.set_field(self, f1)
         return self
 
-    def copy(self):
+    def copy(self, is_copying_data = True):
         f = Field(self.ctype)
-        f @= self
+        if is_copying_data:
+            f @= self
         return f
 
     def total_site(self):
