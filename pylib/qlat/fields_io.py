@@ -120,8 +120,12 @@ def list_fields(path, new_size_node = None):
     sfr.close()
     return fns
 
-def properly_truncate_fields_sync_node(path, is_check_all = False, new_size_node = None):
+def properly_truncate_fields(path, is_check_all = False, is_only_check = False, new_size_node = None):
     if new_size_node is None:
-        return c.properly_truncate_fields_sync_node(path, is_check_all)
+        return c.properly_truncate_fields_sync_node(path, is_check_all, is_only_check)
     else:
-        return c.properly_truncate_fields_sync_node(path, is_check_all, new_size_node)
+        return c.properly_truncate_fields_sync_node(path, is_check_all, is_only_check, new_size_node)
+
+def check_fields(path, is_check_all = True, new_size_node = None):
+    is_only_check = True
+    return properly_truncate_fields(path, is_check_all, is_only_check, new_size_node)

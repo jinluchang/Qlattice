@@ -222,7 +222,7 @@ def compute_prop_wsrc_all(gf, gt, wi, job_tag, inv_type, *,
         path_s, path_sp, psel, fsel, fselc, eig):
     if q.does_file_exist_sync_node(get_save_path(path_s + ".acc.partial")):
         q.qrename_info(get_save_path(path_s + ".acc.partial"), get_save_path(path_s + ".acc"))
-    finished_tags = q.properly_truncate_fields_sync_node(get_save_path(path_s + ".acc"))
+    finished_tags = q.properly_truncate_fields(get_save_path(path_s + ".acc"))
     sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", [ 1, 1, 1, 4, ])
     for inv_acc in [ 2, 1 ]:
         for p in wi:
@@ -263,11 +263,11 @@ def compute_prop_psrc_all(gf, gt, pi, job_tag, inv_type, *,
         path_s, path_hvp = None, path_sp, psel, fsel, fselc, eig):
     if q.does_file_exist_sync_node(get_save_path(path_s + ".acc.partial")):
         q.qrename_info(get_save_path(path_s + ".acc.partial"), get_save_path(path_s + ".acc"))
-    finished_tags = q.properly_truncate_fields_sync_node(get_save_path(path_s + ".acc"))
+    finished_tags = q.properly_truncate_fields(get_save_path(path_s + ".acc"))
     sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", [ 1, 1, 1, 8, ])
     sfw_hvp = None
     if path_hvp is not None:
-        finished_hvp_tags = q.properly_truncate_fields_sync_node(get_save_path(path_hvp + ".acc"))
+        finished_hvp_tags = q.properly_truncate_fields(get_save_path(path_hvp + ".acc"))
         assert finished_tags == finished_hvp_tags
         sfw_hvp = q.open_fields(get_save_path(path_hvp + ".acc"), "a", [ 1, 1, 1, 4, ])
     for inv_acc in [ 2, 1, 0 ]:

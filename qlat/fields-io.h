@@ -485,7 +485,7 @@ inline bool read_tag(FieldsReader& fr, std::string& fn, Coordinate& total_site,
   is_sparse_field = false;
   //
   if (NULL == fr.fp) {
-    qwarn(ssprintf("read_tag: fr.fp == NULL fn='%s'", fr.path.c_str()));
+    qwarn(ssprintf("read_tag: fr.fp == NULL fn='%s'", get_file_path(fr).c_str()));
     return false;
   }
   //
@@ -498,13 +498,13 @@ inline bool read_tag(FieldsReader& fr, std::string& fn, Coordinate& total_site,
     return false;
   }
   if (not (tag_len > 0)) {
-    qwarn(ssprintf("read_tag: tag_len <= 0 fn='%s'", fr.path.c_str()));
+    qwarn(ssprintf("read_tag: tag_len <= 0 fn='%s'", get_file_path(fr).c_str()));
     fr.is_read_through = true;
     return false;
   }
   std::vector<char> fnv(tag_len);
   if (1 != fread(fnv.data(), tag_len, 1, fr.fp)) {
-    qwarn(ssprintf("read_tag: fn='%s'", fr.path.c_str()));
+    qwarn(ssprintf("read_tag: fn='%s'", get_file_path(fr).c_str()));
     fr.is_read_through = true;
     return false;
   }
@@ -515,7 +515,7 @@ inline bool read_tag(FieldsReader& fr, std::string& fn, Coordinate& total_site,
   //
   // then read crc
   if (1 != fread_convert_endian(&crc, 4, 1, fr.fp, fr.is_little_endian)) {
-    qwarn(ssprintf("read_tag: fn='%s'", fr.path.c_str()));
+    qwarn(ssprintf("read_tag: fn='%s'", get_file_path(fr).c_str()));
     fr.is_read_through = true;
     return false;
   }
@@ -523,12 +523,12 @@ inline bool read_tag(FieldsReader& fr, std::string& fn, Coordinate& total_site,
   // then read geometry info
   int32_t nd = 0;
   if (1 != fread_convert_endian(&nd, 4, 1, fr.fp, fr.is_little_endian)) {
-    qwarn(ssprintf("read_tag: fn='%s'", fr.path.c_str()));
+    qwarn(ssprintf("read_tag: fn='%s'", get_file_path(fr).c_str()));
     fr.is_read_through = true;
     return false;
   }
   if (not (4 == nd)) {
-    qwarn(ssprintf("read_tag: fn='%s'", fr.path.c_str()));
+    qwarn(ssprintf("read_tag: fn='%s'", get_file_path(fr).c_str()));
     fr.is_read_through = true;
     return false;
   }
@@ -536,13 +536,13 @@ inline bool read_tag(FieldsReader& fr, std::string& fn, Coordinate& total_site,
   std::vector<int32_t> gd(4, 0);
   std::vector<int32_t> num_procs(4, 0);
   if (4 != fread_convert_endian(&gd[0], 4, 4, fr.fp, fr.is_little_endian)) {
-    qwarn(ssprintf("read_tag: fn='%s'", fr.path.c_str()));
+    qwarn(ssprintf("read_tag: fn='%s'", get_file_path(fr).c_str()));
     fr.is_read_through = true;
     return false;
   }
   if (4 !=
       fread_convert_endian(&num_procs[0], 4, 4, fr.fp, fr.is_little_endian)) {
-    qwarn(ssprintf("read_tag: fn='%s'", fr.path.c_str()));
+    qwarn(ssprintf("read_tag: fn='%s'", get_file_path(fr).c_str()));
     fr.is_read_through = true;
     return false;
   }
@@ -556,7 +556,7 @@ inline bool read_tag(FieldsReader& fr, std::string& fn, Coordinate& total_site,
   for (int mu = 0; mu < 4; ++mu) {
     total_site[mu] = gd[mu];
     if (not(size_node[mu] == (int)num_procs[mu])) {
-      qwarn(ssprintf("read_tag: fn='%s'", fr.path.c_str()));
+      qwarn(ssprintf("read_tag: fn='%s'", get_file_path(fr).c_str()));
       fr.is_read_through = true;
       return false;
     }
@@ -564,12 +564,12 @@ inline bool read_tag(FieldsReader& fr, std::string& fn, Coordinate& total_site,
   //
   // then read data size
   if (1 != fread_convert_endian(&data_len, 8, 1, fr.fp, fr.is_little_endian)) {
-    qwarn(ssprintf("read_tag: fn='%s'", fr.path.c_str()));
+    qwarn(ssprintf("read_tag: fn='%s'", get_file_path(fr).c_str()));
     fr.is_read_through = true;
     return false;
   }
   if (not (data_len > 0)) {
-    qwarn(ssprintf("read_tag: fn='%s'", fr.path.c_str()));
+    qwarn(ssprintf("read_tag: fn='%s'", get_file_path(fr).c_str()));
     fr.is_read_through = true;
     return false;
   }
@@ -593,18 +593,18 @@ inline long read_data(FieldsReader& fr, std::vector<char>& data,
   clear(data);
   data.resize(data_len, 0);
   if (NULL == fr.fp) {
-    qwarn(ssprintf("read_data: file does not exist fn='%s'", fr.path.c_str()));
+    qwarn(ssprintf("read_data: file does not exist fn='%s'", get_file_path(fr).c_str()));
     return 0;
   }
   const long read_data_all = fread(&data[0], data_len, 1, fr.fp);
   if (not (1 == read_data_all)) {
-    qwarn(ssprintf("read_data: data not complete fn='%s'", fr.path.c_str()));
+    qwarn(ssprintf("read_data: data not complete fn='%s'", get_file_path(fr).c_str()));
     fr.is_read_through = true;
     return 0;
   }
   crc32_t crc_read = crc32_par(get_data(data));
   if (not(crc_read == crc)) {
-    qwarn(ssprintf("read_data: crc does not match fn='%s'", fr.path.c_str()));
+    qwarn(ssprintf("read_data: crc does not match fn='%s'", get_file_path(fr).c_str()));
     return 0;
   }
   timer.flops += data_len;
@@ -1278,6 +1278,7 @@ inline std::vector<std::string> list_fields(ShuffledFieldsReader& sfr)
 
 inline std::vector<std::string> properly_truncate_fields_sync_node(
     const std::string& path, const bool is_check_all = false,
+    const bool is_only_check = false,
     const Coordinate& new_size_node = Coordinate())
 // interface function
 // return available fns
@@ -1325,13 +1326,24 @@ inline std::vector<std::string> properly_truncate_fields_sync_node(
     fr.close();
     const long final_offset = last_final_offsets[i];
     if (file_size != final_offset) {
-      displayln(fname + ssprintf(": Truncate '%s': final_offset=%ld, original file_size=%ld.",
-                                 path_file.c_str(), final_offset, file_size));
-      if (file_size < 0) {
-        mkfile(fr);
+      if (is_only_check) {
+        displayln(
+            fname +
+            ssprintf(
+                ": Error in '%s': final_offset=%ld, original file_size=%ld.",
+                path_file.c_str(), final_offset, file_size));
+      } else {
+        displayln(
+            fname +
+            ssprintf(
+                ": Truncate '%s': final_offset=%ld, original file_size=%ld.",
+                path_file.c_str(), final_offset, file_size));
+        if (file_size < 0) {
+          mkfile(fr);
+        }
+        const bool b = qtruncate(path_file, final_offset);
+        qassert(b);
       }
-      const bool b = qtruncate(path_file, final_offset);
-      qassert(b);
     }
   }
   errno = 0;

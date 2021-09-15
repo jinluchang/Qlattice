@@ -215,8 +215,9 @@ EXPORT(properly_truncate_fields_sync_node, {
   using namespace qlat;
   PyObject* p_path = NULL;
   bool is_check_all = false;
+  bool is_only_check = false;
   PyObject* p_new_size_node = NULL;
-  if (!PyArg_ParseTuple(args, "O|bO", &p_path, &is_check_all,
+  if (!PyArg_ParseTuple(args, "O|bbO", &p_path, &is_check_all, &is_only_check,
                         &p_new_size_node)) {
     return NULL;
   }
@@ -227,7 +228,7 @@ EXPORT(properly_truncate_fields_sync_node, {
     py_convert(new_size_node, p_new_size_node);
   }
   return py_convert(
-      properly_truncate_fields_sync_node(path, is_check_all, new_size_node));
+      properly_truncate_fields_sync_node(path, is_check_all, is_only_check, new_size_node));
 });
 
 EXPORT(flush_sfw, {
