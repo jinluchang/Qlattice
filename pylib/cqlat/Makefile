@@ -2,9 +2,9 @@ SHELL=/bin/bash
 
 CXX=mpic++
 
-CXXLD=mpic++
+CXXLD=mpic++ --shared
 
-FLAGS=-std=c++11 -fopenmp -O2 -Wall -fno-strict-aliasing -fPIC --shared
+FLAGS=-std=c++11 -fopenmp -O2 -Wall -fno-strict-aliasing -fPIC
 
 qlat_prefix="$(shell readlink -m "$$HOME/qlat-build/default")"
 

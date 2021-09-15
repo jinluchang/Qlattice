@@ -5,24 +5,38 @@
 name=setenv
 echo "!!!! build $name !!!!"
 
-mkdir -p $prefix
+mkdir -p "$prefix"
 cat - setenv.sh >"$prefix/setenv.sh" << EOF
-prefix="$prefix"
+echo "Soucing '$prefix/setenv.sh'"
 
-export num_proc=32
+if [ -z "\$prefix" ] ; then
+    prefix="$prefix"
+fi
+if [ -z "\$num_proc" ] ; then
+    num_proc=32
+fi
+
 export PYTHONPATH=
 
 module purge
-module load anaconda3/2019.03-py3.7
+
+module add anaconda3/2019.03-py3.7
+module add gcc/9.3.0
 
 # load intel libraries
 # source /hpcgpfs01/software/Intel/psxe2019/bin/compilervars.sh -arch intel64
 source /hpcgpfs01/software/Intel/psxe2020/bin/compilervars.sh -arch intel64
 export INTEL_LICENSE_FILE=/hpcgpfs01/software/Intel/psxe2018.u1/licenses
 
-# module add gcc/9.3.0
-
 EOF
+
+mkdir -p "$prefix/bin"
+cat - >"$prefix/bin/mpic++" << EOF
+#!/bin/bash
+mpiicpc "\$@"
+EOF
+
+chmod +x "$prefix/bin/mpic++"
 
 echo "!!!! $name build !!!!"
 

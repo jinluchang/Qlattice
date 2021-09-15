@@ -27,8 +27,8 @@ mkdir -pv $prefix/pylib
 cp -rpv pylib/cqlat $prefix/pylib/
 
 time make \
-    -C $prefix/pylib/cqlat \
-    -j $num_proc \
+    -C "$prefix/pylib/cqlat" \
+    -j "$num_proc" \
     qlat_prefix="$(readlink -m "$prefix")" \
     CXX="nvcc -x cu" \
     CXXLD="nvcc -link" \

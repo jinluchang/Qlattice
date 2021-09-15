@@ -1,6 +1,5 @@
-if [ -z "$prefix" ] ; then
-    prefix="$(readlink -m "$HOME/qlat-build/default")"
-fi
+echo "prefix=$prefix"
+echo "num_proc=$num_proc"
 
 add-to-colon-list () {
     local name="$1"
@@ -20,6 +19,7 @@ add-to-colon-list () {
     fi
 }
 
+add-to-colon-list PATH "$prefix/bin"
 add-to-colon-list PYTHONPATH "$prefix/pylib"
 add-to-colon-list PYTHONPATH "$prefix/gpt/lib"
 add-to-colon-list PYTHONPATH "$prefix/gpt/lib/cgpt/build"

@@ -55,10 +55,10 @@ if [ "$target" = default ] ; then
     ./scripts/fftwf.sh
     ./scripts/cuba.sh
     ./scripts/zlib.sh
-    ./scripts/c-lime.sh
     ./scripts/eigen.sh
     ./scripts/qlat.sh
     #
+    ./scripts/c-lime.sh
     ./scripts/grid-avx2.sh
     ./scripts/gpt.sh
 elif [ "$target" = sse4 ] ; then
@@ -69,10 +69,10 @@ elif [ "$target" = sse4 ] ; then
     ./scripts/fftwf.sh
     ./scripts/cuba.sh
     ./scripts/zlib.sh
-    ./scripts/c-lime.sh
     ./scripts/eigen.sh
     ./scripts/qlat.sh
     #
+    ./scripts/c-lime.sh
     ./scripts/grid-sse4.sh
     ./scripts/gpt.sh
 elif [ "$target" = gen16 ] ; then
@@ -83,10 +83,10 @@ elif [ "$target" = gen16 ] ; then
     ./scripts/fftwf.sh
     ./scripts/cuba.sh
     ./scripts/zlib.sh
-    ./scripts/c-lime.sh
     ./scripts/eigen.sh
     ./scripts/qlat.sh
     #
+    ./scripts/c-lime.sh
     ./scripts/grid-gen-16.sh
     ./scripts/gpt.sh
 elif [ "$target" = bnlknl ] ; then
@@ -97,10 +97,10 @@ elif [ "$target" = bnlknl ] ; then
     ./scripts/fftwf.sh
     ./scripts/cuba.sh
     ./scripts/zlib.sh
-    ./scripts/c-lime.sh
     ./scripts/eigen.sh
     ./scripts/qlat.sh
     #
+    ./scripts/c-lime.sh
     ./scripts/grid-knl.sh
     ./scripts/gpt.sh
 elif [ "$target" = summit ] ; then
@@ -111,11 +111,11 @@ elif [ "$target" = summit ] ; then
     ./scripts/fftwf.sh
     ./scripts/cuba.sh
     ./scripts/zlib.sh
-    ./scripts/c-lime.sh
     ./scripts/eigen.sh
     ./scripts/qlat-summit.sh
     #
     pip3 install numpy
+    ./scripts/c-lime.sh
     ./scripts/mpfr.sh
     ./scripts/grid-summit.sh
     ./scripts/gpt.sh

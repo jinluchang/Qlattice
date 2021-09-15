@@ -1,10 +1,16 @@
-. setenv.sh
+prefix_default="$(readlink -m "$HOME/qlat-build/default")"
+
+if [ -z "$prefix" ] ; then
+    prefix="$prefix_default"
+fi
+
+if [ -f "$prefix/setenv.sh" ] ; then
+    . "$prefix/setenv.sh"
+else
+    echo "'$prefix/setenv.sh' does not exist."
+fi
 
 set -e
-
-if [ -z $num_proc ] ; then
-    num_proc=2
-fi
 
 wd="$(pwd)"
 distfiles="$wd/distfiles"

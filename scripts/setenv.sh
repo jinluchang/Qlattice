@@ -5,9 +5,16 @@
 name=setenv
 echo "!!!! build $name !!!!"
 
-mkdir -p $prefix
+mkdir -p "$prefix"
 cat - setenv.sh >"$prefix/setenv.sh" << EOF
-prefix="$prefix"
+echo "Soucing '$prefix/setenv.sh'"
+
+if [ -z "\$prefix" ] ; then
+    prefix="$prefix"
+fi
+if [ -z "\$num_proc" ] ; then
+    num_proc=2
+fi
 
 EOF
 
