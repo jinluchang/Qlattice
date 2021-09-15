@@ -9,29 +9,30 @@ CXX=nvcc -O2 --cudart shared -std=c++14 -ccbin mpicxx -gencode arch=compute_70,c
 qlat_prefix=/global/homes/g/genwang/project/genwang/Delta_mix/Code/Dec_29_2020/build/
 
 QLAT_INCLUDE=$(qlat_prefix)/include
+QLAT_VUTILS=$(qlat_prefix)/include/qlat/vector_utils
 QLAT_LIB=$(qlat_prefix)/lib
 
 #QLAT_CFLAGS=-std=c++0x -fno-strict-aliasing -Wfatal-errors
 QLAT_CFLAGS=-std=c++14
-QLAT_CFLAGS+= -I$(QLAT_INCLUDE)  -I${CUDA_ROOT}/include
+QLAT_CFLAGS+= -I$(QLAT_INCLUDE)  -I${CUDA_ROOT}/include -I${QLAT_VUTILS}
 QLAT_CFLAGS+= -I$(QLAT_INCLUDE)/eigen3
 QLAT_CFLAGS+= -I$(QLAT_INCLUDE)/qutils
 
 QLAT_GFLAGS=--expt-relaxed-constexpr --expt-extended-lambda -Xcompiler -fopenmp
-QLAT_GFLAGS+= -I$(QLAT_INCLUDE) -I${CUDA_ROOT}/include -I${OPENMPI_DIR}/include
+QLAT_GFLAGS+= -I$(QLAT_INCLUDE) -I${CUDA_ROOT}/include -I${OPENMPI_DIR}/include -I${QLAT_VUTILS}
 QLAT_GFLAGS+= -I$(QLAT_INCLUDE)/eigen3
 QLAT_GFLAGS+= -I$(QLAT_INCLUDE)/qutils
 
 
 QLAT_CXXFLAGS=$(QLAT_CFLAGS)
 
-QLAT_LDFLAGS=$(QLAT_LIB)/libfftw3.a $(QLAT_LIB)/libz.a $(QLAT_LIB)/libcuba.a -lm -L${CUDA_ROOT}/lib64 -lcudart
+QLAT_LDFLAGS=$(QLAT_LIB)/libfftw3.a $(QLAT_LIB)/libfftw3f.a $(QLAT_LIB)/libfftw3_mpi.a $(QLAT_LIB)/libfftw3f_mpi.a $(QLAT_LIB)/libz.a $(QLAT_LIB)/libcuba.a -lm -L${CUDA_ROOT}/lib64 -lcudart -lcufft
 
 
 control_%.cu :
 	ln -fs $(basename $@).cpp $(basename $@).cu; sleep 1s;
 
-% : *.h  control_%.cu control_%.cpp
+% : ${QLAT_VUTILS}/*.h control_%.cu control_%.cpp
 	$(GXX) $(QLAT_GFLAGS) -c control_$@.cu -o program.o;$(CXX) -o $@ $(QLAT_CXXFLAGS) program.o $(QLAT_LDFLAGS);rm program.o control_$@.cu
 
 clean:
