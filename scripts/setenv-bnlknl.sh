@@ -7,7 +7,7 @@ echo "!!!! build $name !!!!"
 
 mkdir -p "$prefix"
 cat - setenv.sh >"$prefix/setenv.sh" << EOF
-echo "Soucing '$prefix/setenv.sh'"
+echo "Sourcing '$prefix/setenv.sh'"
 
 if [ -z "\$prefix" ] ; then
     prefix="$prefix"
