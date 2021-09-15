@@ -485,7 +485,7 @@ inline bool read_tag(FieldsReader& fr, std::string& fn, Coordinate& total_site,
   is_sparse_field = false;
   //
   if (NULL == fr.fp) {
-    qwarn("read_tag: fr.fp == NULL");
+    qwarn(ssprintf("read_tag: fr.fp == NULL fn='%s'", fr.path.c_str()));
     return false;
   }
   //
@@ -498,13 +498,13 @@ inline bool read_tag(FieldsReader& fr, std::string& fn, Coordinate& total_site,
     return false;
   }
   if (not (tag_len > 0)) {
-    qwarn("read_tag: tag_len <= 0");
+    qwarn(ssprintf("read_tag: tag_len <= 0 fn='%s'", fr.path.c_str()));
     fr.is_read_through = true;
     return false;
   }
   std::vector<char> fnv(tag_len);
   if (1 != fread(fnv.data(), tag_len, 1, fr.fp)) {
-    qwarn("read_tag:");
+    qwarn(ssprintf("read_tag: fn='%s'", fr.path.c_str()));
     fr.is_read_through = true;
     return false;
   }
@@ -515,7 +515,7 @@ inline bool read_tag(FieldsReader& fr, std::string& fn, Coordinate& total_site,
   //
   // then read crc
   if (1 != fread_convert_endian(&crc, 4, 1, fr.fp, fr.is_little_endian)) {
-    qwarn("read_tag:");
+    qwarn(ssprintf("read_tag: fn='%s'", fr.path.c_str()));
     fr.is_read_through = true;
     return false;
   }
@@ -523,12 +523,12 @@ inline bool read_tag(FieldsReader& fr, std::string& fn, Coordinate& total_site,
   // then read geometry info
   int32_t nd = 0;
   if (1 != fread_convert_endian(&nd, 4, 1, fr.fp, fr.is_little_endian)) {
-    qwarn("read_tag:");
+    qwarn(ssprintf("read_tag: fn='%s'", fr.path.c_str()));
     fr.is_read_through = true;
     return false;
   }
   if (not (4 == nd)) {
-    qwarn("read_tag:");
+    qwarn(ssprintf("read_tag: fn='%s'", fr.path.c_str()));
     fr.is_read_through = true;
     return false;
   }
@@ -536,13 +536,13 @@ inline bool read_tag(FieldsReader& fr, std::string& fn, Coordinate& total_site,
   std::vector<int32_t> gd(4, 0);
   std::vector<int32_t> num_procs(4, 0);
   if (4 != fread_convert_endian(&gd[0], 4, 4, fr.fp, fr.is_little_endian)) {
-    qwarn("read_tag:");
+    qwarn(ssprintf("read_tag: fn='%s'", fr.path.c_str()));
     fr.is_read_through = true;
     return false;
   }
   if (4 !=
       fread_convert_endian(&num_procs[0], 4, 4, fr.fp, fr.is_little_endian)) {
-    qwarn("read_tag:");
+    qwarn(ssprintf("read_tag: fn='%s'", fr.path.c_str()));
     fr.is_read_through = true;
     return false;
   }
@@ -556,7 +556,7 @@ inline bool read_tag(FieldsReader& fr, std::string& fn, Coordinate& total_site,
   for (int mu = 0; mu < 4; ++mu) {
     total_site[mu] = gd[mu];
     if (not(size_node[mu] == (int)num_procs[mu])) {
-      qwarn("read_tag:");
+      qwarn(ssprintf("read_tag: fn='%s'", fr.path.c_str()));
       fr.is_read_through = true;
       return false;
     }
@@ -564,12 +564,12 @@ inline bool read_tag(FieldsReader& fr, std::string& fn, Coordinate& total_site,
   //
   // then read data size
   if (1 != fread_convert_endian(&data_len, 8, 1, fr.fp, fr.is_little_endian)) {
-    qwarn("read_tag:");
+    qwarn(ssprintf("read_tag: fn='%s'", fr.path.c_str()));
     fr.is_read_through = true;
     return false;
   }
   if (not (data_len > 0)) {
-    qwarn("read_tag:");
+    qwarn(ssprintf("read_tag: fn='%s'", fr.path.c_str()));
     fr.is_read_through = true;
     return false;
   }
@@ -593,18 +593,18 @@ inline long read_data(FieldsReader& fr, std::vector<char>& data,
   clear(data);
   data.resize(data_len, 0);
   if (NULL == fr.fp) {
-    qwarn("read_data: file does not exist");
+    qwarn(ssprintf("read_data: file does not exist fn='%s'", fr.path.c_str()));
     return 0;
   }
   const long read_data_all = fread(&data[0], data_len, 1, fr.fp);
   if (not (1 == read_data_all)) {
-    qwarn("read_data: data not complete");
+    qwarn(ssprintf("read_data: data not complete fn='%s'", fr.path.c_str()));
     fr.is_read_through = true;
     return 0;
   }
   crc32_t crc_read = crc32_par(get_data(data));
   if (not(crc_read == crc)) {
-    qwarn("read_data: crc does not match");
+    qwarn(ssprintf("read_data: crc does not match fn='%s'", fr.path.c_str()));
     return 0;
   }
   timer.flops += data_len;
