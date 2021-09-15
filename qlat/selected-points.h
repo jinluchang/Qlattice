@@ -132,7 +132,7 @@ struct SelectedPoints {
   bool initialized;
   int multiplicity;
   long n_points;
-  vector<M> points;  // global quantity, same on each node
+  vector_acc<M> points;  // global quantity, same on each node
   // points.size() == n_points * multiplicity if initialized = true
   //
   void init()
@@ -141,7 +141,6 @@ struct SelectedPoints {
     multiplicity = 0;
     n_points = 0;
     points.init();
-    points.set_acc(true);
   }
   void init(const long n_points_, const int multiplicity_)
   {

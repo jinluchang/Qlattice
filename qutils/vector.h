@@ -202,7 +202,8 @@ struct vector {
     qassert(false);
 #endif
     is_copy = true;
-    is_acc = false;
+    qassert(vp.is_acc);
+    is_acc = vp.is_acc;
     v = vp.v;
   }
   vector(vector<M>&& vp) noexcept
@@ -365,6 +366,45 @@ struct vector {
 };
 
 template <class M>
+struct vector_acc : vector<M> {
+  // Avoid copy constructor when possible
+  // (it is likely not be what you think it is)
+  //
+  using vector<M>::v;
+  using vector<M>::is_copy;
+  using vector<M>::is_acc;
+  using vector<M>::resize;
+  using vector<M>::operator=;
+  //
+  vector_acc()
+  {
+    qassert(v.p == NULL);
+    is_copy = false;
+    is_acc = true;
+  }
+  vector_acc(const long size)
+  {
+    qassert(v.p == NULL);
+    is_copy = false;
+    is_acc = true;
+    resize(size);
+  }
+  vector_acc(const long size, const M& x)
+  {
+    qassert(v.p == NULL);
+    is_copy = false;
+    is_acc = true;
+    resize(size, x);
+  }
+  vector_acc(const std::vector<M>& vp)
+  {
+    is_copy = false;
+    is_acc = true;
+    *this = vp;
+  }
+};
+
+template <class M>
 void clear(vector<M>& v)
 {
   v.clear();
@@ -422,6 +462,7 @@ struct box {
     qassert(false);
 #endif
     is_copy = true;
+    qassert(vp.is_acc);
     is_acc = vp.is_acc;
     v = vp.v;
   }
@@ -520,6 +561,34 @@ struct box {
   }
   //
   qacc bool null() const { return v.null(); }
+};
+
+template <class M>
+struct box_acc : box<M> {
+  //
+  // like a one element vector_acc
+  //
+  // Avoid copy constructor when possible
+  // (it is likely not be what you think it is)
+  //
+  using box<M>::v;
+  using box<M>::is_copy;
+  using box<M>::is_acc;
+  using box<M>::set;
+  //
+  box_acc()
+  {
+    qassert(v.p == NULL);
+    is_copy = false;
+    is_acc = true;
+  }
+  box_acc(const M& x)
+  {
+    qassert(v.p == NULL);
+    is_copy = false;
+    is_acc = true;
+    set(x);
+  }
 };
 
 template <class M>

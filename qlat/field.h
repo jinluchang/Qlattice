@@ -21,16 +21,14 @@ struct Field {
   // (it is likely not be what you think it is)
   //
   bool initialized;
-  box<Geometry> geo;
-  vector<M> field;
+  box_acc<Geometry> geo;
+  vector_acc<M> field;
   //
   void init()
   {
     initialized = false;
     geo.init();
-    geo.set_acc(true);
     field.init();
-    field.set_acc(true);
   }
   void init(const Geometry& geo_)
   {

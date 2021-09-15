@@ -99,8 +99,8 @@ struct FieldSelection {
       f_local_idx;  // idx of points on this node (-1 if not selected)
   long n_elems;     // num points of this node
   //
-  vector<int64_t> ranks;  // rank of the selected points
-  vector<long> indices;   // local indices of selected points
+  vector_acc<int64_t> ranks;  // rank of the selected points
+  vector_acc<long> indices;   // local indices of selected points
   //
   void init()
   {
@@ -110,9 +110,7 @@ struct FieldSelection {
     f_local_idx.init();
     n_elems = 0;
     ranks.init();
-    ranks.set_acc(true);
     indices.init();
-    indices.set_acc(true);
   }
   //
   FieldSelection() { init(); }
@@ -200,16 +198,14 @@ struct SelectedField {
   //
   bool initialized;
   long n_elems;
-  box<Geometry> geo;
-  vector<M> field;
+  box_acc<Geometry> geo;
+  vector_acc<M> field;
   //
   void init()
   {
     initialized = false;
     geo.init();
-    geo.set_acc(true);
     field.init();
-    field.set_acc(true);
   }
   void init(const Geometry& geo_, const long n_elems_, const int multiplicity)
   {
