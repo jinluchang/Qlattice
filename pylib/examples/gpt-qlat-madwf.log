@@ -29,7 +29,7 @@ This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
-Current Grid git commit hash=c50f27e68bd4b3e4fb6a1da00aebe224f0a0bc23: (HEAD, origin/feature/gpt, origin/HEAD, feature/gpt) clean
+Current Grid git commit hash=ede8faea7436d927ec867a190195dd61aeab4f3c: (HEAD, origin/feature/gpt, origin/HEAD, feature/gpt) clean
 
 
 =============================================
@@ -50,7 +50,7 @@ q_verbose=0 (default)
 qremove: 'results'
 geo.show() = Geometry([4, 4, 4, 8], 1)
 g.qcd.gauge.plaquette = 0.94517601648581551
-g.qcd.gauge.plaquette = 0.94517600536346436 single precision
+g.qcd.gauge.plaquette = 0.94517599211798775 single precision
 qlat geo created
 gpt field made
 q_field_init=fast (default)
@@ -89,28 +89,28 @@ plan initialized
 plan source added
 plan destination added
 plan created
-sol info 1.195616283871832 1471034418
-sol1 info 5.80315963254231 2635120568
+sol info 1.195616283925891 1974843651
+sol1 info 5.803159633046483 2628055279
 src info 12.0 2788420690
-sol info 1.1593942007570954 1633332154
-sol1 info 4.766304557827087 1047949401
-tag=qz_f diff src 0.0 sol 0.0010577157282614094 sol1 0.06219542886277966
+sol info 1.1593942320448907 4283257928
+sol1 info 4.7663038559428 3036802905
+tag=qz_f diff src 0.0 sol 0.0010577192494466369 sol1 0.062195494406739354
 src info 12.0 2788420690
-sol info 1.1956162834210793 1464948214
-sol1 info 5.803159618401842 3137195607
-tag=qm_mp diff src 0.0 sol 1.509231598513551e-13 sol1 2.3185935623244828e-12
+sol info 1.195616283417512 1514983079
+sol1 info 5.803159618352916 2829397300
+tag=qm_mp diff src 0.0 sol 1.5054846020419845e-13 sol1 2.313115425888109e-12
 src info 12.0 2788420690
-sol info 1.1956162834210793 1464948214
-sol1 info 5.803159618401842 3137195607
-tag=qm_split diff src 0.0 sol 1.509231598513551e-13 sol1 2.3185935623244828e-12
+sol info 1.195616283417512 1514983079
+sol1 info 5.803159618352916 2829397300
+tag=qm_split diff src 0.0 sol 1.5054846020419845e-13 sol1 2.313115425888109e-12
 src info 12.0 2788420690
-sol info 1.1956122214920972 25009775
-sol1 info 5.803075897240534 1623184491
-tag=qm_split_sloppy diff src 0.0 sol 9.197953644359419e-09 sol1 3.859367176594293e-07
+sol info 1.1956122489860164 3535872830
+sol1 info 5.803075901337386 2100532221
+tag=qm_split_sloppy diff src 0.0 sol 9.198541738249442e-09 sol1 3.859309322051284e-07
 src info 12.0 2788420690
-sol info 1.1956162833237438 353006666
-sol1 info 5.803159634907663 2503273929
-tag=inv_qm_madwf diff src 0.0 sol 1.5161822219310034e-13 sol1 2.3356769886267055e-12
+sol info 1.1956162833238206 1160651071
+sol1 info 5.8031596349094485 2546554408
+tag=inv_qm_madwf diff src 0.0 sol 1.5124888841901922e-13 sol1 2.3302756374948188e-12
 q_timer_max_func_name_len=50 (default)
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 1.

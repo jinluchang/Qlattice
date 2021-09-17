@@ -18,6 +18,7 @@ rm -rfv $prefix/pylib/qlat
 rm -rfv $prefix/pylib/rbc_ukqcd_params
 rm -rfv $prefix/pylib/auto_contractor
 rm -rfv $prefix/pylib/*.py
+rm -rfv $prefix/pylib/Makefile.inc
 cp -rpv pylib/qlat $prefix/pylib/
 cp -rpv pylib/rbc_ukqcd_params $prefix/pylib/
 cp -rpv pylib/auto_contractor $prefix/pylib/

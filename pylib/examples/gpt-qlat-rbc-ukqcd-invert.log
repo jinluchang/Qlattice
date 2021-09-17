@@ -29,7 +29,7 @@ This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
-Current Grid git commit hash=c50f27e68bd4b3e4fb6a1da00aebe224f0a0bc23: (HEAD, origin/feature/gpt, origin/HEAD, feature/gpt) clean
+Current Grid git commit hash=ede8faea7436d927ec867a190195dd61aeab4f3c: (HEAD, origin/feature/gpt, origin/HEAD, feature/gpt) clean
 
 
 =============================================
@@ -92,8 +92,8 @@ plan initialized
 plan destination added
 plan source added
 plan created
-prop sol 0 qnorm = 53021.74800635131 crc32 = 611277668
-prop sol 1 qnorm = 53340.600487741045 crc32 = 2749568671
+prop sol 0 qnorm = 53021.74800753512 crc32 = 3978281835
+prop sol 1 qnorm = 53340.600523485235 crc32 = 834584212
 q_timer_max_func_name_len=50 (default)
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 1.

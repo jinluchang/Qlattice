@@ -1,6 +1,8 @@
+SHELL=/bin/bash
+
 all: run
 
-run: py-examples cqlat-example
+run: cqlat-example py-examples
 
 tests = make-sample-gauge-field.log \
 		field-utils.log \

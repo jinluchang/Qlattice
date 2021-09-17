@@ -23,7 +23,7 @@ build: $(OBJS)
 exports.h: *.C
 	./update.sh
 
-%.o : %.C exports.h *.h
+%.o : %.C exports.h
 	$(CXX) $(FLAGS) -c -o $@ $< $(CXXFLAGS)
 	@echo "$@" "$<"
 

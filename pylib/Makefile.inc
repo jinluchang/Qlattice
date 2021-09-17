@@ -1,4 +1,4 @@
-include $(QLAT_PREFIX)/qlat/Makefile.inc
+include $(QLAT_PREFIX)/include/qlat/Makefile.inc
 
 CXXFLAGS+= $$(python3-config --includes)
 # CXXFLAGS+= $$(python3 -c "import numpy; print(numpy.get_include())") 
@@ -24,7 +24,7 @@ lib.C: base/exports.h
 	rm -v base/lib.o
 	cp -v base/lib.C .
 
-%.o : %.C exports.h *.h
+%.o : %.C exports.h
 	$(CXX) $(FLAGS) -c -o $@ $< $(CXXFLAGS) -Ibase
 	@echo "$@" "$<"
 

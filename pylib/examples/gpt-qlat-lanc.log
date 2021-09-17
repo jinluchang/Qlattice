@@ -29,7 +29,7 @@ This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
-Current Grid git commit hash=c50f27e68bd4b3e4fb6a1da00aebe224f0a0bc23: (HEAD, origin/feature/gpt, origin/HEAD, feature/gpt) clean
+Current Grid git commit hash=ede8faea7436d927ec867a190195dd61aeab4f3c: (HEAD, origin/feature/gpt, origin/HEAD, feature/gpt) clean
 
 
 =============================================
@@ -167,7 +167,7 @@ mk_ceig: params=
                 'maxiter': 20,
                 'resid': 1e-08},
  'pit_params': {'eps': 0.01, 'maxiter': 500, 'real': True}}
-mk_ceig: pit_ev=4.4625935282101725
+mk_ceig: pit_ev=4.462593889728983
 mk_ceig: cparams=
 {'block': [2, 2, 2, 2],
  'cheby_params': {'high': 5.5, 'low': 0.2, 'order': 50},
@@ -206,27 +206,27 @@ plan initialized
 plan destination added
 plan source added
 plan created
-sol_ref norm 861.3802017877908 with eig
+sol_ref norm 861.3802017877238 with eig
 mk_gpt_inverter: job_tag=test-4nt16 inv_type=0 inv_acc=0 mpi_split=False n_grouped=1
 mk_gpt_inverter: set qm params={'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 8, 'mass': 0.01}
 mk_gpt_inverter: mpi_split=None n_grouped=1
 mk_gpt_inverter: deal with is_madwf=False
-sol diff norm 0.000722446510187823 inv_acc=0 with eig
+sol diff norm 0.0007224579987440222 inv_acc=0 with eig
 mk_gpt_inverter: job_tag=test-4nt16 inv_type=0 inv_acc=0 mpi_split=False n_grouped=1
 mk_gpt_inverter: set qm params={'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 8, 'mass': 0.01}
 mk_gpt_inverter: mpi_split=None n_grouped=1
 mk_gpt_inverter: deal with is_madwf=False
-sol diff norm 3.221877337178194 inv_acc=0 without eig
+sol diff norm 3.221866691218323 inv_acc=0 without eig
 mk_gpt_inverter: job_tag=test-4nt16 inv_type=0 inv_acc=1 mpi_split=False n_grouped=1
 mk_gpt_inverter: set qm params={'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 8, 'mass': 0.01}
 mk_gpt_inverter: mpi_split=None n_grouped=1
 mk_gpt_inverter: deal with is_madwf=False
-sol diff norm 1.7906876912462757e-10 inv_acc=1 with eig
+sol diff norm 1.790586686282079e-10 inv_acc=1 with eig
 mk_gpt_inverter: job_tag=test-4nt16 inv_type=0 inv_acc=1 mpi_split=False n_grouped=1
 mk_gpt_inverter: set qm params={'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 8, 'mass': 0.01}
 mk_gpt_inverter: mpi_split=None n_grouped=1
 mk_gpt_inverter: deal with is_madwf=False
-sol diff norm 0.02347846051259283 inv_acc=1 without eig
+sol diff norm 0.023478380758233382 inv_acc=1 without eig
 mk_gpt_inverter: job_tag=test-4nt16 inv_type=0 inv_acc=2 mpi_split=False n_grouped=1
 mk_gpt_inverter: set qm params={'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 8, 'mass': 0.01}
 mk_gpt_inverter: mpi_split=None n_grouped=1
@@ -236,7 +236,7 @@ mk_gpt_inverter: job_tag=test-4nt16 inv_type=0 inv_acc=2 mpi_split=False n_group
 mk_gpt_inverter: set qm params={'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 8, 'mass': 0.01}
 mk_gpt_inverter: mpi_split=None n_grouped=1
 mk_gpt_inverter: deal with is_madwf=False
-sol diff norm 1.8623966602184983e-13 inv_acc=2 without eig
+sol diff norm 1.8623676711735307e-13 inv_acc=2 without eig
 q_timer_max_func_name_len=50 (default)
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 1.
