@@ -21,7 +21,7 @@ export PYTHONPATH=
 module purge
 
 module add DefApps
-module add cuda/11.4.0
+module add cuda/11.3.1
 module add gcc
 module add gmp
 module add hdf5
