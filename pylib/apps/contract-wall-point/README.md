@@ -139,7 +139,7 @@ $$
 S_1(\vec x,t_\text{op};t_\text{src})  \gamma_5 
 S_3(t_\text{src};t_\text{snk})
 \gamma_5
-\big( \gamma_5 S_2(t_\text{snk};\vec x,t_\text{op})^\dagger \gamma_5 \big)
+\big( \gamma_5 S_2(\vec x,t_\text{op};t_\text{snk})^\dagger \gamma_5 \big)
 \Gamma_{\text{op}} 
 \Big)
 \ea
