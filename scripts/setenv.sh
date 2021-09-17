@@ -18,6 +18,8 @@ fi
 
 EOF
 
+. "$prefix/setenv.sh" >"$prefix/log.setenv.txt" 2>&1
+
 echo "!!!! $name build !!!!"
 
 rm -rf $temp_dir

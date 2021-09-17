@@ -21,13 +21,17 @@ export PYTHONPATH=
 module purge
 
 module add DefApps
-module add cuda/11.3.1
+module add cuda/10.1.243
 module add gcc
 module add gmp
 module add hdf5
-module load python/3.8.10
+module add python/3.8.10
+
+module list
 
 EOF
+
+. "$prefix/setenv.sh" >"$prefix/log.setenv.txt" 2>&1
 
 echo "!!!! $name build !!!!"
 

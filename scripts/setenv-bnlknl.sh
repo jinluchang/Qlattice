@@ -28,6 +28,8 @@ module add gcc/9.3.0
 source /hpcgpfs01/software/Intel/psxe2020/bin/compilervars.sh -arch intel64
 export INTEL_LICENSE_FILE=/hpcgpfs01/software/Intel/psxe2018.u1/licenses
 
+module list
+
 EOF
 
 mkdir -p "$prefix/bin"
@@ -37,6 +39,8 @@ mpiicpc "\$@"
 EOF
 
 chmod +x "$prefix/bin/mpic++"
+
+. "$prefix/setenv.sh" >"$prefix/log.setenv.txt" 2>&1
 
 echo "!!!! $name build !!!!"
 
