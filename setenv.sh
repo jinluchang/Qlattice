@@ -53,6 +53,6 @@ organize-colon-list LD_LIBRARY_PATH
 
 echo
 for v in PATH PYTHONPATH LD_LIBRARY_PATH QLAT_PREFIX QLAT_CXX QLAT_CXXLD QLAT_FLAGS ; do
-export | grep " $v="'"' || true
+export | grep --color=never " $v="'"' || true
 done
 echo

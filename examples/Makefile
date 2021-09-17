@@ -18,12 +18,8 @@ tests = qcd-utils-tests \
 all:
 	for i in $(tests) ; do make -C "$$i" all & done ; time wait
 
-diff:
-	-git diff
-
 run: all
 	-time for i in $(tests) ; do make -C "$$i" run-test ; done
-	make diff
 
 clean:
 	-time for i in $(tests) ; do make -C "$$i" clean ; done
