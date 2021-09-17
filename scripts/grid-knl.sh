@@ -22,12 +22,14 @@ mkdir build
 cd build
 ../configure \
     --enable-simd=KNL \
-    --enable-mkl \
     --enable-alloc-align=4k \
     --enable-comms=mpi-auto \
+    --enable-mkl \
     --enable-shm=shmget \
     --enable-shmpath=/dev/hugepages \
+    --enable-gparity=no \
     --with-lime="$prefix" \
+    --with-fftw="$prefix" \
     --prefix="$prefix" \
     CXXFLAGS=-fPIC \
     CXX=icpc \

@@ -23,12 +23,15 @@ ln -vs "${INITDIR}/Eigen/unsupported/Eigen" "${INITDIR}/Grid/Eigen/unsupported"
 mkdir build
 cd build
 ../configure \
-    --enable-comms=mpi \
     --enable-simd=GPU \
-    --enable-accelerator=cuda \
-    --enable-unified=no \
     --enable-alloc-align=4k \
+    --enable-comms=mpi \
+    --enable-unified=no \
+    --enable-accelerator=cuda \
+    --enable-accelerator-cshift \
+    --enable-gparity=no \
     --with-lime="$prefix" \
+    --with-fftw="$prefix" \
     --with-mpfr="$prefix" \
     --prefix=$prefix \
     CXX=nvcc \

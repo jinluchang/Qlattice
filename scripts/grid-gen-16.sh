@@ -25,7 +25,9 @@ cd build
     --enable-gen-simd-width=16 \
     --enable-alloc-align=4k \
     --enable-comms=mpi-auto \
+    --enable-gparity=no \
     --with-lime="$prefix" \
+    --with-fftw="$prefix" \
     --prefix="$prefix" \
     CXXFLAGS=-fPIC
 

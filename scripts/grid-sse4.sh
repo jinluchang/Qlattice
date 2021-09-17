@@ -24,7 +24,9 @@ cd build
     --enable-simd=SSE4 \
     --enable-alloc-align=4k \
     --enable-comms=mpi-auto \
+    --enable-gparity=no \
     --with-lime="$prefix" \
+    --with-fftw="$prefix" \
     --prefix="$prefix" \
     CXXFLAGS=-fPIC 
 
