@@ -1,35 +1,10 @@
 SHELL=/bin/bash
 
-CXX=mpic++ -std=c++11 -fopenmp -O2 -Wall -fno-strict-aliasing
+ifeq ($(strip $(QLAT_PREFIX)),)
+	QLAT_PREFIX=$(shell readlink -m "$$HOME/qlat-build/default")
+endif
 
-# -DNO_ALIGNED_ALLOC
-# -static-libstdc++ -static-libgcc
-
-qlat_prefix=$$HOME/qlat-build/default
-
-QLAT_INCLUDE=$(qlat_prefix)/include
-QLAT_LIB=$(qlat_prefix)/lib
-
-QLAT_CFLAGS=
-QLAT_CFLAGS+= -I$(QLAT_INCLUDE)
-QLAT_CFLAGS+= -I$(QLAT_INCLUDE)/eigen3
-QLAT_CFLAGS+= -I$(QLAT_INCLUDE)/qutils
-
-QLAT_CXXFLAGS=$(QLAT_CFLAGS)
-
-QLAT_LDFLAGS=
-QLAT_LDFLAGS+= -L$(QLAT_LIB)
-QLAT_LDFLAGS+= -l:libfftw3.a -l:libfftw3f.a
-QLAT_LDFLAGS+= -l:libcuba.a
-QLAT_LDFLAGS+= -l:libz.a
-QLAT_LDFLAGS+= -lm
-
-CXXFLAGS=
-CXXFLAGS+= $(QLAT_CXXFLAGS)
-
-LDFLAGS=
-LDFLAGS+= $(QLAT_LDFLAGS)
-
+include $(QLAT_PREFIX)/qlat/Makefile.inc
 
 all: qlat.x
 
@@ -41,7 +16,7 @@ qlat.x: *.C
 	[ -f $@ ]
 
 build:
-	-time $(CXX) -o qlat.x $(CXXFLAGS) *.C $(LDFLAGS) 2>&1 | grep --color=always 'error:\|'
+	-time $(CXX) $(FLAGS) -o qlat.x $(CXXFLAGS) *.C $(LDFLAGS) 2>&1 | grep --color=always 'error:\|'
 
 show-info:
 	@echo CXX: $(CXX)

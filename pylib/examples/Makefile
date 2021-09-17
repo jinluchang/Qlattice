@@ -1,6 +1,6 @@
 all: run
 
-run: py-examples cplat-example
+run: py-examples cqlat-example
 
 tests = make-sample-gauge-field.log \
 		field-utils.log \
@@ -24,14 +24,14 @@ py-examples : $(tests)
 	-rm -rfv results
 	-grep -v "^Timer\|^GPT\|^Grid\|timing: \|Timing: " "$@".full > "$@"
 
-cplat-example:
-	make -C cplat -j 2
-	python3 -c "import cplat ; cplat.hello_world()" > cplat.log
+cqlat-example:
+	make -C cqlat -j 2
+	python3 -c "import cqlat ; cqlat.hello_world()" > cqlat.log
 
 clean:
 	-rm -v *.log.full
-	-make -C cplat clean
-	-rm -v cplat.so
+	-make -C cqlat clean
+	-rm -v cqlat.so
 
 clean-logs:
 	-rm -v *.log

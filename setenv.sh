@@ -3,7 +3,7 @@ echo "prefix=$prefix"
 echo
 echo "num_proc=$num_proc"
 
-export qlat_prefix="$prefix"
+export QLAT_PREFIX="$prefix"
 
 add-to-colon-list () {
     local name="$1"
@@ -52,7 +52,7 @@ organize-colon-list PYTHONPATH
 organize-colon-list LD_LIBRARY_PATH
 
 echo
-for v in PATH PYTHONPATH LD_LIBRARY_PATH qlat_prefix qlat_cxx qlat_cxxld qlat_flags ; do
-export | grep " $v="'"'
+for v in PATH PYTHONPATH LD_LIBRARY_PATH QLAT_PREFIX QLAT_CXX QLAT_CXXLD QLAT_FLAGS ; do
+export | grep " $v="'"' || true
 done
 echo
