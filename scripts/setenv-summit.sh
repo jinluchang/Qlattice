@@ -22,7 +22,7 @@ module purge
 
 module add DefApps
 module add cuda/10.1.243
-module add gcc
+module add gcc/7.5.0
 module add gmp
 module add hdf5
 module add python/3.8.10
