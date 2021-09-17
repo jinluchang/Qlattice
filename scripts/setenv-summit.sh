@@ -29,6 +29,10 @@ module add python/3.8.10
 
 module list
 
+export qlat_cxx="nvcc -x cu"
+export qlat_cxxld="nvcc -link"
+export qlat_flags="-w --shared -std=c++14 -O3 -ccbin mpicxx -gencode arch=compute_70,code=sm_70 -Xcompiler -fPIC -Xcompiler -fopenmp -Xcompiler -fno-strict-aliasing --expt-extended-lambda --expt-relaxed-constexpr"
+
 EOF
 
 . "$prefix/setenv.sh" >"$prefix/log.setenv.txt" 2>&1

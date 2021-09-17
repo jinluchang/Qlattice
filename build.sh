@@ -112,7 +112,7 @@ elif [ "$target" = summit ] ; then
     ./scripts/cuba.sh
     ./scripts/zlib.sh
     ./scripts/eigen.sh
-    ./scripts/qlat-summit.sh
+    ./scripts/qlat.sh
     #
     pip3 install numpy
     ./scripts/c-lime.sh

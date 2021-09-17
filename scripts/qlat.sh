@@ -30,7 +30,7 @@ rm -rfv $prefix/pylib/cqlat
 mkdir -pv $prefix/pylib
 cp -rpv pylib/cqlat $prefix/pylib/
 
-time make -C $prefix/pylib/cqlat -j $num_proc qlat_prefix="$(readlink -m "$prefix")"
+time make -C $prefix/pylib/cqlat -j $num_proc
 
 echo "!!!! $name build !!!!"
 

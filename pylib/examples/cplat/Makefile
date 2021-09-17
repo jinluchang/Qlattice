@@ -1,12 +1,26 @@
 SHELL=/bin/bash
 
-CXX=mpic++
+ifeq ($(strip $(qlat_cxx)),)
+	CXX=mpic++
+else
+	CXX=$(qlat_cxx)
+endif
 
-CXXLD=mpic++ --shared
+ifeq ($(strip $(qlat_cxxld)),)
+	CXXLD=mpic++ --shared
+else
+	CXXLD=$(qlat_cxxld)
+endif
 
-FLAGS=-std=c++11 -fopenmp -O2 -Wall -fno-strict-aliasing -fPIC
+ifeq ($(strip $(qlat_flags)),)
+	FLAGS=-std=c++11 -fopenmp -O2 -Wall -fno-strict-aliasing -fPIC
+else
+	FLAGS=$(qlat_flags)
+endif
 
-qlat_prefix="$(shell readlink -m "$$HOME/qlat-build/default")"
+ifeq ($(strip $(qlat_prefix)),)
+	qlat_prefix="$(shell readlink -m "$$HOME/qlat-build/default")"
+endif
 
 QLAT_INCLUDE=$(qlat_prefix)/include
 QLAT_LIB=$(qlat_prefix)/lib

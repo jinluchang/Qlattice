@@ -3,6 +3,8 @@ echo "prefix=$prefix"
 echo
 echo "num_proc=$num_proc"
 
+export qlat_prefix="$prefix"
+
 add-to-colon-list () {
     local name="$1"
     local new_value="$2"
@@ -21,15 +23,36 @@ add-to-colon-list () {
     fi
 }
 
+organize-colon-list() {
+    local name="$1"
+    local value="${!name}"
+    if [ -n "$value" ] ; then
+        IFS=':' read -a vs <<< "$value"
+        value=''
+        for v in "${vs[@]}" ; do
+            value="$v":"$value"
+        done
+        value="${value%:}"
+        IFS=':' read -a vs <<< "$value"
+        export "$name"=""
+        for v in "${vs[@]}" ; do
+            add-to-colon-list "$name" "$v"
+        done
+    fi
+}
+
 add-to-colon-list PATH "$prefix/bin"
 add-to-colon-list PYTHONPATH "$prefix/pylib"
 add-to-colon-list PYTHONPATH "$prefix/gpt/lib"
 add-to-colon-list PYTHONPATH "$prefix/gpt/lib/cgpt/build"
 add-to-colon-list LD_LIBRARY_PATH "$prefix/lib"
 
+organize-colon-list PATH
+organize-colon-list PYTHONPATH
+organize-colon-list LD_LIBRARY_PATH
+
 echo
-echo "PATH=$PATH"
+for v in PATH PYTHONPATH LD_LIBRARY_PATH qlat_prefix qlat_cxx qlat_cxxld qlat_flags ; do
+export | grep " $v="'"'
+done
 echo
-echo "PYTHONPATH=$PYTHONPATH"
-echo
-echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
