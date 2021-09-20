@@ -168,7 +168,7 @@ __global__ void cpy_smear_global3(T* p0, T* p1, long Nvol, const Geometry& geo,c
   }
 }
 
-void get_mapvq(const std::vector<CommPackInfo> &pack_infos, qlat::vector<long >& mapvq, int dir=0)
+void get_mapvq(const std::vector<CommPackInfo> &pack_infos, qlat::vector_acc<long >& mapvq, int dir=0)
 {
   std::vector<long > mapv;//mapv.resize(4*pack_infos.size());
   for (long i = 0; i < (long)pack_infos.size(); ++i) {
@@ -246,7 +246,7 @@ __global__ void shift_copy_global(M* pres, M* psrc, long* map, long long Nvol)
 
 
 template <class M>
-void shift_copy(M* res, M* src,qlat::vector<long > mapvq)
+void shift_copy(M* res, M* src,qlat::vector_acc<long > mapvq)
 {
 
   TIMER("shift copy");
@@ -288,7 +288,7 @@ void shift_copy(M* res, M* src,qlat::vector<long > mapvq)
 }
 
 template <class M>
-void refresh_expanded_GPU(Field<M>& f, const CommPlan& plan, M* send_buffer, M* recv_buffer, qlat::vector<long > &mapvq_send, qlat::vector<long > &mapvq_recv)
+void refresh_expanded_GPU(Field<M>& f, const CommPlan& plan, M* send_buffer, M* recv_buffer, qlat::vector_acc<long > &mapvq_send, qlat::vector_acc<long > &mapvq_recv)
 {
   const long total_bytes =
       (plan.total_recv_size + plan.total_send_size) * sizeof(M);
@@ -427,7 +427,7 @@ void refresh_expanded_GPU(Field<M>& f, const CommPlan& plan, M* send_buffer, M* 
 
 
 template <class T>
-void smear_propagator3(Propagator4dT<T>& prop, const qlat::vector<T >& gf,
+void smear_propagator3(Propagator4dT<T>& prop, const qlat::vector_acc<T >& gf,
                       const double width, const int step, Propagator4dT<T>& prop_buf)
 {
   const double aw   = 3.0*width*width/(2*step);
@@ -449,8 +449,8 @@ void smear_propagator3(Propagator4dT<T>& prop, const qlat::vector<T >& gf,
   cudaMalloc((void **)&send_buffer, plan.total_send_size*sizeof(WilsonMatrixT<T> ));
   cudaMalloc((void **)&recv_buffer, plan.total_recv_size*sizeof(WilsonMatrixT<T> ));
 
-  qlat::vector<long > mapvq_send;
-  qlat::vector<long > mapvq_recv;
+  qlat::vector_acc<long > mapvq_send;
+  qlat::vector_acc<long > mapvq_recv;
   get_mapvq(plan.send_pack_infos, mapvq_send, 0);
   get_mapvq(plan.recv_pack_infos, mapvq_recv, 1);
 
@@ -613,7 +613,7 @@ __global__ void smear_global2(T* pres, const T* psrc, const T* gf, const double 
 }
 
 template <class T>
-void smear_propagator2(Propagator4dT<T>& prop, const qlat::vector<T >& gf,
+void smear_propagator2(Propagator4dT<T>& prop, const qlat::vector_acc<T >& gf,
                       const double width, const int step)
 {
   const double aw   = 3.0*width*width/(2*step);
@@ -695,7 +695,7 @@ void smear_propagator2(Propagator4dT<T>& prop, const qlat::vector<T >& gf,
 
 
 template <class T >
-void smear_propagator1(Propagator4dT<T>& prop, const qlat::vector<T >& gf,
+void smear_propagator1(Propagator4dT<T>& prop, const qlat::vector_acc<T >& gf,
                       const double width, const int step)
 {
 
@@ -758,7 +758,7 @@ void smear_propagator1(Propagator4dT<T>& prop, const qlat::vector<T >& gf,
 }
 
 template <class T>
-void smear_propagator_gpu(Propagator4dT<T>& prop, const qlat::vector<T >& gf, const double width, const int step, int mode=1)
+void smear_propagator_gpu(Propagator4dT<T>& prop, const qlat::vector_acc<T >& gf, const double width, const int step, int mode=1)
 {
   // gf1 is left_expanded and refreshed
   // set_left_expanded_gauge_field(gf1, gf)
@@ -1043,16 +1043,16 @@ struct smear_fun{
 
   void* send_bufferV;
   void* recv_bufferV;
-  qlat::vector<long > mapvq_send;
-  qlat::vector<long > mapvq_recv;
+  qlat::vector_acc<long > mapvq_send;
+  qlat::vector_acc<long > mapvq_recv;
   qlat::vector<MPI_Request> send_reqs;
   qlat::vector<MPI_Request> recv_reqs;
   unsigned int bfac;
   unsigned int Tsize;
   unsigned long Nvol;
 
-  qlat::vector<long > map_buf;
-  qlat::vector<long > map_bufD;
+  qlat::vector_acc<long > map_buf;
+  qlat::vector_acc<long > map_bufD;
   qlat::vector<int> Nv,nv,mv;
 
   int fft_copy;
@@ -1185,7 +1185,7 @@ __global__ void shift_copy_global(T* pres, T* psrc, long* map, long long Nvol, u
 
 
 template <class T>
-void shift_copy(T* res, T* src,qlat::vector<long >& mapvq, unsigned int bfac)
+void shift_copy(T* res, T* src,qlat::vector_acc<long >& mapvq, unsigned int bfac)
 {
 
   TIMER("shift copy");

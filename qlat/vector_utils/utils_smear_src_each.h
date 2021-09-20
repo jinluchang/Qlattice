@@ -206,7 +206,7 @@ void smear_propagator4(T* prop, const T* gf,
 }
 
 template <class T>
-void rotate_Vec_prop(Propagator4dT<T>& prop, qlat::vector<T > &propT, unsigned int NVmpi, unsigned int groupP, int dir = 0)
+void rotate_Vec_prop(Propagator4dT<T>& prop, qlat::vector_acc<T > &propT, unsigned int NVmpi, unsigned int groupP, int dir = 0)
 {
   TIMER("Rotate Vec prop");
   ///unsigned int NVmpi = fd.mz*fd.my*fd.mx;
@@ -263,7 +263,7 @@ void smear_propagator_gpu4(Propagator4dT<T>& prop, const GaugeFieldT<Tg >& gf, c
   // set_left_expanded_gauge_field(gf1, gf)
   // prop is of qnormal size
   long Nvol = geo.local_volume();
-  qlat::vector<T > gfE;gfE.resize(6*Nvol*9);
+qlat::vector_acc<T > gfE;gfE.resize(6*Nvol*9);
   const int dir_limit = 3;
   qacc_for(index,  geo.local_volume(),{
     for (int dir = -dir_limit; dir < dir_limit; ++dir) {
@@ -305,7 +305,7 @@ void smear_propagator_gpu4(Propagator4dT<T>& prop, const GaugeFieldT<Tg >& gf, c
     TIMER_FLOPS("==compute time");
     timer.flops += Tfloat;
     int bfac = 4; int d0 = 12;
-    smear_propagator4((T*) prop.field[0].p, &gfE[0], width, step, (T*) prop_buf.field[0].p, smf, bfac, d0);
+    smear_propagator4((T*) prop.field[0].p, (T*) gfE.data(), width, step, (T*) prop_buf.field[0].p, smf, bfac, d0);
 
     return ;
   }
@@ -321,8 +321,8 @@ void smear_propagator_gpu4(Propagator4dT<T>& prop, const GaugeFieldT<Tg >& gf, c
   size_t g_sizeT = NVmpi*size_t(gfE.size());
   qassert(g_sizeT < 2147483647);/////Check long limit reached?
 
-  qlat::vector<T > gfET;gfET.resize(NVmpi*gfE.size());
-  qlat::vector<T > gfET_buf;gfET_buf.resize(NVmpi*gfE.size());
+  qlat::vector_acc<T > gfET;gfET.resize(NVmpi*gfE.size());
+  qlat::vector_acc<T > gfET_buf;gfET_buf.resize(NVmpi*gfE.size());
 
   //qlat::vector<T > gfET0;gfET0.resize(NVmpi*gfE.size());
   qacc_for(index, gfE.size(),{
@@ -337,7 +337,7 @@ void smear_propagator_gpu4(Propagator4dT<T>& prop, const GaugeFieldT<Tg >& gf, c
   //  });
   //}
 
-  vec_large.reorder((T*) &gfET[0],(T*) &gfET_buf[0], 1, (dir_limit*2)*9 ,   0);
+  vec_large.reorder((T*) gfET.data(),(T*) gfET_buf.data(), 1, (dir_limit*2)*9 ,   0);
 
   //////for(long long a=0;a< gfET.size();a++){
   //////  gfET[a] = gfET_buf[a];
@@ -345,7 +345,8 @@ void smear_propagator_gpu4(Propagator4dT<T>& prop, const GaugeFieldT<Tg >& gf, c
 
   //////int groupP = 1;
 
-  qlat::vector<T > propT;qlat::vector<T > propT_buf;
+  qlat::vector_acc<T > propT;
+  qlat::vector_acc<T > propT_buf;
 
   //////rotate_Vec_prop(prop, propT, NVmpi, groupP, 0);
 
@@ -364,16 +365,16 @@ void smear_propagator_gpu4(Propagator4dT<T>& prop, const GaugeFieldT<Tg >& gf, c
   {
     TIMER_FLOPS("==compute time");
 
-    {TIMER("Vec prop");vec_large.reorder((T*) &propT[0],(T*) &propT_buf[0], 1, groupP*12 ,   0);}
+    {TIMER("Vec prop");vec_large.reorder((T*) propT.data(),(T*) propT_buf.data(), 1, groupP*12 ,   0);}
 
     int bfac = groupP; int d0 = 4;
     //int bfac =1 ; int d0 = 48;
-    smear_propagator4((T*) &propT[0], &gfET[0], width, step, (T*) &propT_buf[0], smf, bfac, d0);
+    smear_propagator4((T*) propT.data(), (T*) gfET.data(), width, step, (T*) propT_buf.data(), smf, bfac, d0);
     //smear_propagator4((T*) &propT[0], &gfET[0], width, step, (T*) prop_buf.field[0].p, smf, bfac, d0);
     //smear_propagator4((T*) &prop.field[0].p, &gfET[0], width, step, (T*) prop_buf.field[0].p, smf, bfac, d0);
 
     timer.flops += Tfloat;
-    {TIMER("Vec prop");vec_large.reorder(&propT[0],&propT_buf[0], 1, groupP*12 , 100);}
+    {TIMER("Vec prop");vec_large.reorder((T*) propT.data(),(T*) propT_buf.data(), 1, groupP*12 , 100);}
   }
   rotate_Vec_prop(prop, propT, NVmpi,groupP, 1);
   //rotate_prop(prop,1);

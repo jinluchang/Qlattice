@@ -56,8 +56,8 @@ namespace qlat{
 ////#define EA Eigen::Map<Eigen::Array<std::complex<Ftype >,Eigen::Dynamic,1 > >
 ////#define EM Eigen::Map< Eigen::Matrix< std::complex<Ftype >, Eigen::Dynamic, Eigen::Dynamic ,Eigen::RowMajor> > 
 
-#define Evector qlat::vector<Complexq >
-#define EigenV  qlat::vector<Complexq >
+#define Evector qlat::vector_acc<Complexq >
+#define EigenV  qlat::vector_acc<Complexq >
 #define EA Eigen::Map<Eigen::Array<Complexq ,Eigen::Dynamic,1 > >
 #define EM Eigen::Map< Eigen::Matrix<Complexq , Eigen::Dynamic, Eigen::Dynamic ,Eigen::RowMajor> > 
 #define EMC Eigen::Map< Eigen::Matrix<Complexq , Eigen::Dynamic, Eigen::Dynamic ,Eigen::ColMajor> > 
@@ -183,6 +183,20 @@ inline void gpuFree(void* res)
 #else
 #define gpuMalloc(bres,bsize, Ty) {bres = (Ty *)malloc(bsize*sizeof(Ty));}
 #endif
+
+inline void free_buf(void* buf, bool GPU){
+  if(buf != NULL){if(GPU){gpuFree(buf);}else{free(buf);}}
+  buf = NULL;
+}
+
+//template<typename Ty>
+//inline void alloc_buf(Ty* buf, size_t size, bool GPU){
+//  free_buf(buf, GPU);
+//  buf = (Ty*) malloc(size * sizeof(Ty));
+//  //if(GPU){gpuMalloc(buf, size, Ty);}
+//  //else{buf = (Ty*) malloc(size * sizeof(Ty));}
+//}
+
 
 #ifndef QLAT_USE_ACC
 #ifdef __GNUC__

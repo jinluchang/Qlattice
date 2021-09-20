@@ -1,5 +1,5 @@
 #include <sys/sysinfo.h>
-#include "io_gwu.h"
+#include "io_vec.h"
 #include "general_funs.h"
 #include "utils_smear_src.h"
 #include "check_fun.h"
@@ -9,49 +9,15 @@
 int main(int argc, char* argv[])
 {
   using namespace qlat;
+  int n_node = init_mpi(&argc, &argv);
 
-  std::vector<Coordinate> size_node_list;
-  size_node_list.push_back(Coordinate(1, 1, 1,  1));
-  size_node_list.push_back(Coordinate(1, 1, 1,  2));
-  size_node_list.push_back(Coordinate(1, 1, 3,  1));
-  size_node_list.push_back(Coordinate(1, 1, 1,  4));
-  //size_node_list.push_back(Coordinate(1, 1, 3,  2));
-  size_node_list.push_back(Coordinate(1, 2, 3,  1));
-  //size_node_list.push_back(Coordinate(1, 1, 1,  8));
-  size_node_list.push_back(Coordinate(1, 2, 4,  1));
-  size_node_list.push_back(Coordinate(1, 1, 1, 12));
-  size_node_list.push_back(Coordinate(1, 1, 1, 16));
-  //size_node_list.push_back(Coordinate(1, 1, 1, 24));
-  size_node_list.push_back(Coordinate(1, 1, 6,  4));
-  size_node_list.push_back(Coordinate(1, 1, 1, 32));
-  size_node_list.push_back(Coordinate(1, 1, 4, 16));
-  //size_node_list.push_back(Coordinate(1, 1, 1, 64));
-  //size_node_list.push_back(Coordinate(1, 1, 1, 48));
-  //size_node_list.push_back(Coordinate(1, 1, 1, 96));
-  //size_node_list.push_back(Coordinate(1, 1, 1,128));
-  size_node_list.push_back(Coordinate(4, 4, 8, 16));
-  size_node_list.push_back(Coordinate(4, 8, 8, 16));
-  //size_node_list.push_back(Coordinate(1, 2, 2, 16));
-  //size_node_list.push_back(Coordinate(1, 1, 2, 16));
-  //size_node_list.push_back(Coordinate(1, 2, 2, 16));
-  //size_node_list.push_back(Coordinate(2, 2, 2, 16));
-  //size_node_list.push_back(Coordinate(2, 2, 4, 16));
-  //size_node_list.push_back(Coordinate(2, 4, 4, 16));
-  //size_node_list.push_back(Coordinate(4, 4, 4, 16));
-
-  //begin_thread(&argc, &argv, size_node_list);
-  begin(&argc, &argv, size_node_list);
-  set_GPU();
-  ///set_GPU_threads();
-
-  //fft_desc_basic fd();
-
-  //Coordinate size_node = Coordinate(fd.mx, fd.my, fd.mz, fd.mt);
-  //begin(fd.rank, size_node);
-  //begin(MPI_COMM_WORLD, size_node);
-
-  inputpara in;
+  inputpara in; 
   in.load_para("input.txt");
+  Coordinate Lat(in.nx, in.ny, in.nz, in.nt);
+  Coordinate spreadT = guess_nodeL(n_node, Lat);
+  begin_comm(MPI_COMM_WORLD , spreadT);
+
+  set_GPU();
 
   int nx,ny,nz,nt;
   nx = in.nx;
@@ -62,7 +28,6 @@ int main(int argc, char* argv[])
   int icfg  = in.icfg;
   int ionum = in.ionum;
 
-  ////int vini  = 0;
   int n_vec = in.nvec;
 
   omp_set_num_threads(omp_get_max_threads());
@@ -73,80 +38,103 @@ int main(int argc, char* argv[])
   geo.init(total_site, 1); 
   fflush_MPI();
 
-  char rbc_conf[500],prop_name[500],namep[500];
-  GaugeField gf;
-  //GaugeFieldT<Complexq> gf;
-  gf.init(geo);
+  ////if(nx == 24)twist_boundary_at_boundary(gf, EIGEN_PI/1.0, 3 );
 
-  Propagator4dT<Complexq > propS;
-  Propagator4dT<Complexq > propD;
-  Propagator4dT<Complexq > prop_s0;
-  Propagator4dT<Complexq > prop_s1;
-
-  propS.init(geo);propD.init(geo);
-  prop_s0.init(geo);prop_s1.init(geo);
-
-  //sprintf(rbc_conf,in.Ename.c_str(), icfg);
-  /////load_gauge_field(gf_gwu,rbc_conf,true);
-  //load_gwu_link(rbc_conf, gf);
-  random_link(gf);
-
-  if(nx == 24)twist_boundary_at_boundary(gf, EIGEN_PI/1.0, 3 );
-
-  //sprintf(prop_name,in.Pname.c_str(), icfg);
-  //load_gwu_prop(prop_name, propS);
-  random_prop(propS);
-  propD = propS;
-
-  ///print0("%s \n",prop_name);
+  fft_desc_basic fd(geo);
+  Vec_redistribute vec_large(fd);
+  long Nvol = geo.local_volume();
 
   if(in.paraI != "None"){
     std::vector<std::string > Li = stringtolist(in.paraI);
     print0("Li %s, size %d \n", in.paraI.c_str(),int(Li.size()) );
     fflush_MPI();
-    qassert(Li.size()%2 == 0);
+    qassert(Li.size()%3 == 0);
 
-    for(int si=0;si<Li.size()/2;si++)
+    for(int si=0;si<Li.size()/3;si++)
     {
-      int nsmear   = stringtonum(   Li[si*2+0]);
-      double width = stringtodouble(Li[si*2+1]);
-      print0("sn%03dsk%6.4f \n", nsmear, width);
+      int step     = stringtonum(   Li[si*3+0]);
+      double width = stringtodouble(Li[si*3+1]);
+      int  Nprop   = stringtodouble(Li[si*3+2]);
+      print0("sn%03dsk%6.4f \n", step, width);
 
-      GaugeField gf1;
-      //GaugeFieldT<Complexq> gf1;
-      ///gf1.init(geo);
-      set_left_expanded_gauge_field(gf1, gf);
+      unsigned int NVmpi = fd.mz*fd.my*fd.mx;
+      int groupP = (12*Nprop + NVmpi-1)/NVmpi;
+      int repeat = 1;
+      if(groupP > 12){repeat = (groupP+12-1)/12;groupP=12;}
+      print0("====Vec redistribute setup, repeat %d, NVmpi %d, groupP %d \n", repeat, NVmpi, groupP);
 
-      /////==============Normal smear
-      //long Nvol = geo.local_volume();
-      //qlat::vector<Complexq > gfE;gfE.resize(6*Nvol*9);
-      //const int dir_limit = 3;
-      //qacc_for(index,  geo.local_volume(),{
-      //  for (int dir = -dir_limit; dir < dir_limit; ++dir) {
-      //    const Coordinate xl = geo.coordinate_from_index(index);
-      //    const ColorMatrixT<qlat::Complex > link =
-      //        dir >= 0 ? gf1.get_elem(xl, dir)
-      //                 : (ColorMatrixT<qlat::Complex >)matrix_adjoint(
-      //                       gf1.get_elem(coordinate_shifts(xl, dir), -dir - 1));
-      //    for(int ci=0; ci<9; ci++){gfE[(dir+3)*Nvol*9 + index*9 + ci] = link.p[ci];}
-      //  }
-      //
-      //});
-      //smear_propagator_gpu(propS, gfE, width, nsmear, 3);
-      /////==============Normal smear
+      ////EigenV propT;EigenV propT_buf;
+      ////propT.resize(repeat*NVmpi*Nvol*groupP*12);
+      ////propT_buf.resize(repeat*NVmpi*Nvol*groupP*12);
+      ////ran_EigenM(propT);
+      ////EigenV gfET;gfET.resize(    NVmpi*6*Nvol*9);
+      ////ran_EigenM(gfET, 0);
 
-      smear_propagator_gpu4(propS, gf, width, nsmear);
-      qlat::WilsonMatrixT<Complexq >& v0 =  propS.get_elem(0);
-      print0("check %.3e %.3e \n", v0(0,0).real(), v0(0,0).imag() );
+      EigenV propT_tmp; propT_tmp.resize(repeat*NVmpi*Nvol*groupP*12);
+      EigenV gfET_tmp;  gfET_tmp.resize(    NVmpi*6*Nvol*9);
+
+      ////ran_EigenM(propT_tmp, 0);
+      ////ran_EigenM(gfET_tmp, 0);
+
+      ////EigenV propT;EigenV propT_buf;
+      Complexq* propT=NULL;
+      Complexq* propT_buf=NULL;
+      Complexq* gfET=NULL;
+
+      //////size_t Np = repeat*NVmpi*Nvol*groupP*12;
+      //gpuMalloc(((void**)&propT    ),propT_tmp.size()*sizeof(Complexq));
+      //gpuMalloc(((void**)&propT_buf),propT_tmp.size()*sizeof(Complexq));
+      //gpuMalloc(((void**)&gfET     ),gfET_tmp.size()*sizeof(Complexq));
+
+      gpuMalloc(propT    ,propT_tmp.size(), Complexq);
+      gpuMalloc(propT_buf,propT_tmp.size(), Complexq);
+      gpuMalloc(gfET     ,gfET_tmp.size() , Complexq);
 
 
-      ///sprintf(namep, "%s.sn%03dsk%6.4f", prop_name, nsmear, width);
-      ///print0("%s \n",namep);
-      ///load_gwu_prop(namep, prop_s1);
+      //gpuErrchk(cudaMalloc(&propT, propT_tmp.size()*sizeof(Complexq)));
+      //gpuErrchk(cudaMalloc(&propT_buf, propT_tmp.size()*sizeof(Complexq)));
+      //gpuErrchk(cudaMalloc(&gfET, gfET_tmp.size()*sizeof(Complexq)));
 
-      //smear_propagator_gwu_convension_cpu(propD, gf1, width, nsmear);
-      //diff_prop(propS,propD, 1e-7);
-    
+      cudaMemcpy(&propT[0], &propT_tmp[0], propT_tmp.size()*sizeof(Complexq),cudaMemcpyDeviceToDevice);
+      cudaMemcpy(&gfET[0], &gfET_tmp[0], gfET_tmp.size()*sizeof(Complexq),cudaMemcpyDeviceToDevice);
+
+      ////random_numbers(propT, Np);
+
+      smear_fun smf;
+      smf.init_distribute(geo);
+
+      long long Tfloat = 0;
+      double mem       = 0.0;
+
+      {long long Lat = geo.local_volume();
+      int nsrc = groupP * NVmpi * repeat; 
+      long long vGb = Lat *nsrc*4;
+      int Fcount = 3*(3*6 + 2*2); 
+      int direction   = 6;
+      Tfloat = step*direction*vGb*Fcount;
+      mem = (Lat*nsrc*12 + Lat*4*9)*8.0;}
+      ////timer.flops += Tfloat;
+      print0("Memory size %.3e GB, %.3e Gflop \n",
+        mem/(1024.0*1024*1024), Tfloat/(1024.0*1024*1024));
+
+      {
+        TIMER_FLOPS("==compute time");
+
+        {TIMER("Vec prop");vec_large.reorder(&propT[0],&propT_buf[0], repeat, groupP*12 ,   0);}
+        for(int i =0; i< repeat; i++ )
+        {
+          long off = i*NVmpi*Nvol*groupP*12;
+          int bfac = groupP; int d0 = 4;
+          smear_propagator4(&propT[off], &gfET[0], width, step, &propT_buf[0], smf, bfac, d0);
+        }
+        {TIMER("Vec prop");vec_large.reorder(&propT[0],&propT_buf[0], repeat, groupP*12 , 100);}
+        timer.flops += Tfloat;
+      }
+
+      gpuFree(propT);
+      gpuFree(propT_buf);
+      gpuFree(gfET);
+
 
     }
   }
@@ -157,47 +145,4 @@ int main(int argc, char* argv[])
   qlat::end();
   return 0;
 }
-
-
-
-//const Coordinate expansion_left(1, 1, 1, 1);
-//const Coordinate expansion_right(0, 0, 0, 0);
-//const Geometry geo1 = geo_resize(gf.geo(), expansion_left, expansion_right);
-//GaugeFieldT<Complexq> gfF;
-//gfF.init(geo1);
-////gfF.init(geo);
-//qacc_for(isp, long(geo1.local_volume_expanded()), {
-//  auto* res = gfF.get_elem(isp).p;
-//  auto* src =  gf.get_elem(isp).p;
-//  for(int m=0;m<3*3*4;m++)res[isp*3*3*4 + m] = src[isp*3*3*4 + m];
-//});
-//gfF = gf1;
-//smear_propagator_gwu_convension(propS, width ,nsmear, zero, false);
-
-/////mode 0, expanded
-//smear_propagator_gwu_convension_cpu(propS, gf1, width ,nsmear, 0);
-
-/////mode 1, normal
-
-
-
-//smear_propagator1(propS, gfE, width ,nsmear);
-//smear_propagator1(propS, gf1, width ,nsmear);
-
-//CoordinateD zero(0,0,0,0);
-//const double aw = 3.0*width*width/(2*nsmear);
-////const double bw = width*width/(4.0*nsmear - 6.0*width*width);
-////const double coef = aw - bw + aw*bw;
-//const double coef = aw;
-////const double fac = std::pow(aw*bw, nsmear);
-//smear_propagator(propS, gf1, coef ,nsmear);
-
-/////smear_propagator_gwu_convension(propS, gf1, width ,nsmear);
-/////propS = propS*fac;
-//#pragma omp parallel for
-//for (long index = 0; index < geo.local_volume(); ++index) {
-//  const Coordinate xl = geo.coordinate_from_index(index);
-//  WilsonMatrix& wm = propS.get_elem(index);
-//  wm = wm * fac;
-//}
 

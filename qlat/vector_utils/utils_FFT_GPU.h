@@ -419,6 +419,7 @@ struct fft_schedule{
     bsize = -1;
   }
 
+  ////-2, nvec, civ with MPI, -3 nvec, civ without MPI 
   template<typename Ty>
   void set_mem(const int nvec_set, const int civ_set, const std::vector<int >& dimN_set=std::vector<int >(), int default_MPI_set = -1 , int maxN_set=16, int dataB_set=1)
   {
@@ -434,44 +435,50 @@ struct fft_schedule{
     if(dim < 3 or dim > 4  ){abort_r("Dimension not supported. \n");}
 
     civ = civ_set;nvec = nvec_set;default_MPI= default_MPI_set;
-    if(!(default_MPI >= -1 and default_MPI < 2)){abort_r("Wrong default_MPI ! \n");};
+    if(!(default_MPI >= -3 and default_MPI < 2)){abort_r("Wrong default_MPI ! \n");};
     long total  = nvec*civ;
     N_extra = -1;int N0 = -1;int N1 = -1;
 
     /////default vector options
     if(dim == 3){N0 = fd.mz * fd.my * fd.mx;N1 = 1;}
     if(dim == 4){N0 = fd.mt * fd.mz * fd.my * fd.mx;N1 = fd.mz * fd.my * fd.mx;}
-    ///////small rotation for 3D not defined, need define it from start;
-    if(default_MPI == -1 and dim == 3 and fd.my * fd.mx != 1){enable_MPI = 0;}
-    //if(default_MPI == -1 and total >= 2*N0){enable_MPI = 0;}
 
-    ////print0("==nvec %d civ %d N %d %d, %d \n", nvec, civ, N0, N1, maxN);
-    ////fflush_MPI();
+    /////====Set up b0, c0
+    std::vector<int > job(5);
 
-    std::vector<int > job0 = get_factor_jobs(nvec, civ, N0, -1, maxN, dataB);
-    std::vector<int > job1 = get_factor_jobs(nvec, civ, N1, -1, maxN, dataB);
-    //std::vector<int > job1 = get_factor_jobs(nvec, civ, N1, -1, maxN*N0/N1);
+    if(default_MPI == -2 or default_MPI == -3)
+    {
+      enable_MPI = 0;
+      if(!GPU){if(default_MPI == -2){enable_MPI = 1;}}
+      if(enable_MPI==0)job[1] = (nvec+N0-1)/N0;
+      if(enable_MPI==1)job[1] = (nvec+N1-1)/N1;
+      job[2] = civ;
+    }else{
+      std::vector<int > job0 = get_factor_jobs(nvec, civ, N0, -1, maxN, dataB);
+      std::vector<int > job1 = get_factor_jobs(nvec, civ, N1, -1, maxN, dataB);
+      ///////small rotation for 3D not defined, need define it from start;
+        
+      if(default_MPI == -1 and dim == 3 and fd.my * fd.mx != 1){enable_MPI = 0;}
 
-    //ckpoint;
-
-    std::vector<int > job;
-    if(enable_MPI == -1){
-    if(GPU){enable_MPI = 0;job = job0;}
-    else{
-    if(default_MPI == -1){job = get_factor_jobs(nvec, civ, N0, N1, maxN, dataB); enable_MPI = job[0];}
-    else{
-      enable_MPI = default_MPI;
-    }}}
-
+      if(enable_MPI == -1){
+        if(GPU){enable_MPI = 0;job = job0;}else{
+        if(default_MPI == -1){job = get_factor_jobs(nvec, civ, N0, N1, maxN, dataB); enable_MPI = job[0];}
+        else{
+          enable_MPI = default_MPI;
+        }}
+      }
+      if(default_MPI >= -1){if(enable_MPI == 0){job = job0;}if(enable_MPI == 1){job = job1;}}
+    }
+    ////print0("job size %d \n", int(job.size()));
     if(enable_MPI == 1 and dim == 3 and fd.my * fd.mx != 1){abort_r("mode not supported ! \n");}
     if(!(enable_MPI == 0 or enable_MPI == 1)){abort_r("enable_MPI not set yes! \n");};
-    if(enable_MPI == 0){job = job0;}
-    if(enable_MPI == 1){job = job1;}
-    ////print0("job size %d \n", int(job.size()));
-    b0 = job[1];c0 = job[2];NEED_COPY = job[4];
 
-    /////NEED_COPY = 1;
-    if(GPU){NEED_COPY = 1;}
+    b0 = job[1];c0 = job[2];///////NEED_COPY = job[4];
+    /////====Set up b0, c0
+
+    if(GPU){qassert(enable_MPI == 0);}
+    NEED_COPY = 0;
+    if(civ%(N_extra*c0) != 0 or GPU){NEED_COPY = 1;}
 
     int mode_rot = -2;
     if(enable_MPI == 0){N_extra = N0;if(dim == 3){mode_rot =  0;}if(dim == 4){mode_rot = 1;}}
@@ -558,9 +565,13 @@ struct fft_schedule{
     int bN = data.size();
     int each = b0*N_extra*c0;
 
-    if(civ_set != -1){set_mem<Ty>(bN, civ);}
+    ////update nvec, civ
+    nvec = bN;if(civ_set != -1)civ = civ_set;
+
+    /////if(civ_set != -1){set_mem<Ty>(bN, civ);}
     if(!flag_mem_set or b0 < 0 or c0 < 0){abort_r("Memory not set for fft_schedule! \n");}
     if(rot.flag_mem_set != true or fft.flag_mem_set != true){abort_r("Memory not set for fft_schedule! \n");}
+    if(civ%c0 != 0){abort_r("civ cannot by divided by c0 ! \n");}
 
     int cN = civ/c0;
     /////print0("bN %d, cN %d, civ %d, c0 %d, vol %d \n", bN, cN, civ, c0, int(fd.noden));
@@ -571,8 +582,10 @@ struct fft_schedule{
       for(int bi=0;bi<bN;bi++)mv_civ.dojob((Ty*) &data[bi][0],(Ty*) &data[bi][0], 1, cN, fd.noden, 1, c0);
     }
 
+    NEED_COPY = 0;
+    if(civ%(N_extra*c0) != 0 or GPU){NEED_COPY = 1;}
 
-    if(NEED_COPY == 0){if(civ%(N_extra*c0) != 0)abort_r("set ups wrong. !\n");}
+    //////if(NEED_COPY == 0){if(civ%(N_extra*c0) != 0)abort_r("set ups wrong. !\n");}
     //////NEED_COPY = 1;
     //////if(GPU)NEED_COPY = 1;
 

@@ -1,6 +1,6 @@
 #include <sys/sysinfo.h>
 #include "general_funs.h"
-#include "io_gwu.h"
+#include "io_vec.h"
 ////#include "utils_low_rho.h"
 #include "utils_eigensys.h"
 #include "utils_construction.h"
@@ -81,7 +81,7 @@ int main(int argc, char* argv[])
   sprintf(ename,in.Ename.c_str(), icfg);
   sprintf(enamev,"%s.eigvals",ename);
 
-  io_gwu io_use(geo,ionum);
+  io_vec io_use(geo,ionum);
 
   double length = (geo.local_volume()*pow(0.5,30))*12*sizeof(Complexq);
   size_t freeM = 0;size_t totalM = 0;

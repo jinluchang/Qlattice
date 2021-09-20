@@ -266,13 +266,15 @@ inline void fflush_MPI(){
   fflush(stdout);
 }
 
+////Only cpu verstion
 ////flag = 1 --> biva * sizeF * civ * size_inner --> biva * civ * sizeF * size_inner
-inline void reorder_civ(char* src,char* res,int biva,int civ,int sizeF,int flag,int size_inner)
+inline void reorder_civ(char* src,char* res,int biva,int civ,size_t sizeF,int flag,int size_inner)
 {
   //TIMER("reorder_civ vectors char");
-  qlat::vector<char* > psrc;psrc.resize(civ);
+  if(biva == 0 or civ == 0 or sizeF == 0 or size_inner == 0){return ;}
 
-  qlat::vector<char > tmp;tmp.resize(biva*sizeF*civ*size_inner);
+  std::vector<char* > psrc;psrc.resize(civ);
+  std::vector<char > tmp;tmp.resize(biva*sizeF*civ*size_inner);
   if(size_inner <= 1){abort_r("size_innter too small ! \n");return;}
 
   if(flag == 1){memcpy((char*)&tmp[0],(char*)&src[0],sizeof(char)*biva*sizeF*civ*size_inner);}
@@ -536,7 +538,10 @@ inline void zeroE(EigenM& a,int cpu=1, bool dummy=true)
 
   #ifdef QLAT_USE_ACC
   if(cpu == 0){
-    for(int i=0;i<N0;i++){cudaMemsetAsync(&a[i][0], 0, a[i].size()*sizeof(Complexq));}
+    for(int i=0;i<N0;i++){
+      Complexq* a0 = (Complexq*) qlat::get_data(a[i]).data();
+      cudaMemsetAsync(a0, 0, a[i].size()*sizeof(Complexq));
+    }
     if(dummy)qacc_barrier(dummy);
     return ;
   }
@@ -555,7 +560,8 @@ inline void zeroE(Evector& a,int cpu=1, bool dummy=true)
 {
   #ifdef QLAT_USE_ACC
   if(cpu == 0){
-    cudaMemsetAsync(&a[0], 0, a.size()*sizeof(Complexq));
+    Complexq* a0 = (Complexq*) qlat::get_data(a).data();
+    cudaMemsetAsync(a0, 0, a.size()*sizeof(Complexq));
     if(dummy)qacc_barrier(dummy);
     return ;
   }
@@ -579,6 +585,21 @@ inline void copy_data(Ty* res, Ty* src, size_t size, int cpu=1, bool dummy=true)
 
   #pragma omp parallel for
   for(size_t isp=0;isp<size;isp++){ res[isp] = src[isp];}
+}
+
+template<typename Ty>
+inline void zero_Ty(Ty* a, long size,int cpu=1, bool dummy=true)
+{
+  #ifdef QLAT_USE_ACC
+  if(cpu == 0){
+    cudaMemsetAsync(&a[0], 0, size*sizeof(Ty));
+    if(dummy)qacc_barrier(dummy);
+    return ;
+  }
+  #endif
+
+  #pragma omp parallel for
+  for(long isp=0;isp<size;isp++){  a[isp] = 0;}
 }
 
 

@@ -1,7 +1,8 @@
 #include <sys/sysinfo.h>
 #include "utils_Matrix_prod.h"
 #include "general_funs.h"
-//#include "io_gwu.h"
+#include "check_fun.h"
+//#include "io_vec.h"
 ////#include "utils_low_rho.h"
 //#include "utils_eigensys.h"
 //#include "utils_construction.h"
@@ -90,21 +91,21 @@ int main(int argc, char* argv[])
   //b.resize( L*w*n);
   //cudaDeviceSynchronize();
 
-  cudaDeviceSynchronize();
-  print0("END 0 memory allocation! \n");fflush_MPI();
+  //cudaDeviceSynchronize();
+  //print0("END 0 memory allocation! \n");fflush_MPI();
 
   zeroE(c0,1);zeroE(c1,1);
   ran_EigenM( a,1);ran_EigenM( b,1);
 
-  cudaDeviceSynchronize();
-  print0("END 1 memory allocation! \n");fflush_MPI();
+  //cudaDeviceSynchronize();
+  //print0("END 1 memory allocation! \n");fflush_MPI();
 
   ////for(int i=0;i< in.debuga;i++){matrix_prod_cpu(&a[0],&b[0],&c0[0], m,n,w,L);}
   for(int i=0;i< in.debuga;i++){matrix_prod_cpu(&a[0],&b[0],&c0[0], m,n,w,L, Conj);fflush_MPI();}
   print0("END CPU Multi! \n");
   fflush_MPI();
 
-  cudaDeviceSynchronize();
+  ////cudaDeviceSynchronize();
   for(int i=0;i< in.debuga;i++){matrix_prod_gpu(&a[0],&b[0],&c1[0], m,n,w,L, Conj, true,false, modeGPU);fflush_MPI();}
     
 

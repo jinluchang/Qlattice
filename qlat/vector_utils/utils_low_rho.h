@@ -213,7 +213,7 @@ inline void reducefM(qlat::vector<Complexq > &fd,Complexq* NabL, long bufN,qlat:
 
   unsigned long Nvol = geo.local_volume();
   int Nt = geo.node_site[3];
-  qlat::vector<Complexq > reduce_sum;reduce_sum.resize((nvec*Nt)*16);
+  qlat::vector_acc<Complexq > reduce_sum;reduce_sum.resize((nvec*Nt)*16);
 
   if(mode_reduce == 1)
   {
@@ -291,7 +291,7 @@ inline void multiplyNab_Global(const Complexq* Nab, qlat::vector<Ftype > &Mres,s
   /////int nt = Nab.size()/(Aoper);
 
   /////Set up Mvalues
-  qlat::vector<Ftype > Mvalues;Mvalues.resize(bufN*nmass*2);
+  qlat::vector_acc<Ftype > Mvalues;Mvalues.resize(bufN*nmass*2);
   #pragma omp parallel for
   for(unsigned long bmi=0;bmi<bufN*nmass;bmi++){
     unsigned long bi = bmi/nmass;
@@ -628,16 +628,16 @@ inline void get_low_rho(std::vector<qlat::FermionField4dT<Complexq > > &eigen,co
   /////Get map list
   unsigned short Nt = geo.node_site[3];
 
-  qlat::vector<ga_M > gL;gL.resize(Aoper);
-  qlat::vector<signed char> GmapM;GmapM.resize(32*4);
+  qlat::vector_acc<ga_M > gL;gL.resize(Aoper);
+  qlat::vector_acc<signed char> GmapM;GmapM.resize(32*4);
 
   {
   TIMER("Copy gammas");
   ga_matrices_cps   ga_cps;
-  qlat::vector<ga_M > g0;g0.resize(Aoper);
-  qlat::vector<ga_M > g05;g05.resize(Aoper);
-  qlat::vector<ga_M > g1;g1.resize(Aoper);
-  qlat::vector<ga_M > g15;g15.resize(Aoper);
+  qlat::vector_acc<ga_M > g0;g0.resize(Aoper);
+  qlat::vector_acc<ga_M > g05;g05.resize(Aoper);
+  qlat::vector_acc<ga_M > g1;g1.resize(Aoper);
+  qlat::vector_acc<ga_M > g15;g15.resize(Aoper);
   //////0 , 1, 2, 3, 4, 5, 6
   //////1-2, 1-3, 1-4, 1-5
   //////2-3, 2-4, 2-5
@@ -662,10 +662,10 @@ inline void get_low_rho(std::vector<qlat::FermionField4dT<Complexq > > &eigen,co
   ///std::vector<std::vector<int > > Gmap;Gmap.resize(4);
   ///for(int gi=0;gi<4;gi++){Gmap[gi].resize(32);}
   //qlat::vector<signed char> Gmap;///g0
-  qlat::vector<signed char> Gmap0;///g0
-  qlat::vector<signed char> Gmap1;///g05
-  qlat::vector<signed char> Gmap2;///g1
-  qlat::vector<signed char> Gmap3;///g15
+  qlat::vector_acc<signed char> Gmap0;///g0
+  qlat::vector_acc<signed char> Gmap1;///g05
+  qlat::vector_acc<signed char> Gmap2;///g1
+  qlat::vector_acc<signed char> Gmap3;///g15
   get_map_gammaL(g0 ,gL, Gmap0);for(int i=0;i<32;i++){GmapM[0*32+i] = Gmap0[i];}
   get_map_gammaL(g05,gL, Gmap1);for(int i=0;i<32;i++){GmapM[1*32+i] = Gmap1[i];}
   get_map_gammaL(g1 ,gL, Gmap2);for(int i=0;i<32;i++){GmapM[2*32+i] = Gmap2[i];}
@@ -709,7 +709,7 @@ inline void get_low_rho(std::vector<qlat::FermionField4dT<Complexq > > &eigen,co
   //qlat::FermionField4dT<Complexq > *b0p;
   Complexq* a0p;Complexq* b0p;
 
-  qlat::vector<Complexq > prodFM;
+  qlat::vector_acc<Complexq > prodFM;
   if(mode_reduce == 0)prodFM.resize(Nmpi*Nt*16);
   if(mode_reduce == 1)prodFM.resize(Nmpi*geo.local_volume()*16/32);
 
@@ -776,7 +776,7 @@ inline void get_low_rho(std::vector<qlat::FermionField4dT<Complexq > > &eigen,co
   fflush_MPI();
 
   //Mres.resize(nmass*16*nt*nt);set_zero(Mres);
-  qlat::vector<Ftype > MresL;
+  qlat::vector_acc<Ftype > MresL;
   {TIMER("CUDA mem allocate");MresL.resize(bufN*MresL_size);set_zero(MresL);}
   //qlat::vector<Complexq > Nab;Nab.resize(16*nt);
   //set_zero(Nab);

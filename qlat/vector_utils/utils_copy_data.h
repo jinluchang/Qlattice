@@ -50,10 +50,10 @@ void cpy_data_from_index(T* Pres, T* Psrc, const TInt* map_res, const TInt* map_
   #pragma omp parallel for
   for(TI0 iv=0;iv<Nvol;iv++)
   {
-    memcpy(&Pres[map_res[iv]*bfac], &Psrc[map_src[iv]*bfac], bfac*sizeof(T));
-    //T* res = &Pres[map_res[iv]*bfac];
-    //T* src = &Psrc[map_src[iv]*bfac];
-    //for(TI1 j=0;j<bfac;j++){res[j] = src[j];}
+    //memcpy(&Pres[map_res[iv]*bfac], &Psrc[map_src[iv]*bfac], bfac*sizeof(T));
+    T* res = &Pres[map_res[iv]*bfac];
+    T* src = &Psrc[map_src[iv]*bfac];
+    for(TI1 j=0;j<bfac;j++){res[j] = src[j];}
   }
 
 }
@@ -65,18 +65,43 @@ void cpy_data_from_index(qlat::vector<T >& res, qlat::vector<T >& src, const qla
   //qassert(map_res.size() ==     src.size());
   //qassert(map_res.size() ==     res.size());
   qassert(map_res.size() <= map_src.size());
-  cpy_data_from_index(&res[0], &src[0], &map_res[0], &map_src[0], res.size(), bfac, cpu, dummy);
+  /////qlat vector correct data pointer
+  T* s1 = (T*) qlat::get_data(res).data();
+  T* s0 = (T*) qlat::get_data(src).data();
+  long* m1 = (long*) qlat::get_data(map_res).data();
+  long* m0 = (long*) qlat::get_data(map_src).data();
+  cpy_data_from_index(s1, s0, m1, m1, res.size(), bfac, cpu, dummy);
 }
+
+#ifdef QLAT_USE_ACC
+template <typename T0, typename T1, typename TInt, int bfac>
+__global__ void cpy_data_thread_global(T0* Pres, T1* Psrc,  const TInt Nvol)
+{
+  TInt off = blockIdx.x*blockDim.x*bfac + threadIdx.x;
+  for(int i=0;i<bfac;i++)
+  {
+    if(off < Nvol){Pres[off] = Psrc[off];}
+    off += blockDim.x;
+  }
+}
+#endif
 
 //////Copy data thread
 template <typename T0, typename T1, typename TInt>
 void cpy_data_thread(T0* Pres, T1* Psrc, const TInt Nvol, int cpu=0, bool dummy=true)
 {
-  TIMERB("cpy_data_thread");
+  TIMERA("cpy_data_thread");
 
   #ifdef QLAT_USE_ACC
   if(cpu == 0){
-  qacc_forNB(i, Nvol, {Pres[i]=Psrc[i];});
+  //qacc_forNB(i, Nvol, {Pres[i]=Psrc[i];});
+
+  const int Threads = 64;const int Biva = (4*16+sizeof(T0)-1)/sizeof(T0);
+  long Nb = (Nvol + Threads*Biva -1)/(Threads*Biva);
+  dim3 dimBlock(    Threads,    1, 1);
+  dim3 dimGrid(     Nb,    1, 1);
+  cpy_data_thread_global<T0, T1, TInt , Biva><<< dimGrid, dimBlock >>>(Pres, Psrc, Nvol);
+
   if(dummy)qacc_barrier(dummy);
   return ;}
   #endif
@@ -90,27 +115,63 @@ void cpy_data_thread(T0* Pres, T1* Psrc, const TInt Nvol, int cpu=0, bool dummy=
 
 ////flag = 1 --> biva * sizeF * civ * size_inner --> biva * civ * sizeF * size_inner
 #ifdef QLAT_USE_ACC
-template <typename Ty, bool flag>
-__global__ void move_index_global(Ty* src, Ty* res, int size_inner)
+template <typename Ty, bool flag, int Threads, int Biva>
+__global__ void move_index_global(Ty* src, Ty* res, long sizeF, int civ, int inner)
 {
-  //  dim3 dimBlock(  civ ,    1, 1);
-  //  dim3 dimGrid(  sizeF, biva, 1);
-  size_t   sizeF = gridDim.x;
-  size_t   si    = blockIdx.x;
+  __shared__ Ty buf[Threads*Biva];
 
-  //unsigned int   biva  = gridDim.y;
-  unsigned int   bi    = blockIdx.y;
+  int    tid = threadIdx.x;
+  long s0    = blockIdx.x*blockDim.x;
 
-  unsigned int   civ   = blockDim.x;
-  unsigned int   ci    = threadIdx.x;
+  int Total = Threads*civ*inner;
+  if(s0 + Threads > sizeF){Total = (sizeF - s0) * civ*inner;}
 
-  size_t off_0 = ((bi*sizeF + si)*civ + ci)*size_inner;
-  size_t off_1 = ((bi*civ+ci)*sizeF   + si)*size_inner;
-  Ty* s0 = NULL; 
-  Ty* s1 = NULL; 
-  if( flag){s0 = &src[off_0];s1 = &res[off_1];}
-  if(!flag){s0 = &src[off_1];s1 = &res[off_0];}
-  for(int i=0;i<size_inner;i++)s1[i] = s0[i];
+  int nB    = (Total + Threads-1)/Threads;
+  int nC    = (Total + Biva*Threads-1)/(Biva*Threads);
+    
+  int ci, si, i0;
+  long z0 = 0;long off = 0;long off1 = 0;
+  for(int ni=0;ni < nC; ni++)
+  {
+    if(z0 >= Total){break;}
+    if(flag){
+    off = z0 + tid;
+    for(int xi=0;xi<Biva;xi++)
+    {
+      if(off < Total){buf[xi*Threads + tid] = src[s0*civ*inner + off];off += Threads;}
+    }
+    __syncthreads();
+    }
+
+    off = tid;
+    for(int xi=0;xi<nB;xi++)
+    {
+      ci = off/(Threads*inner);
+      si = (off/inner)%Threads;
+      i0 = off%inner;
+
+      off1 = (si*civ + ci)*inner + i0 - z0;
+      if(off1 >= 0)
+      if((off1 < Threads*Biva) and (off1 < (Total - z0)) )
+      {
+        if( flag){res[(ci*sizeF+s0+si)*inner + i0] = buf[off1];}
+        if(!flag){buf[off1] = src[(ci*sizeF+s0+si)*inner + i0];}
+      }
+      off += Threads;
+    }
+    __syncthreads();
+
+    if(!flag){
+    off = z0 + tid;
+    for(int xi=0;xi<Biva;xi++)
+    {
+      if(off < Total){res[s0*civ*inner + off] = buf[xi*Threads + tid];off += Threads;}
+    }
+    __syncthreads();
+    }
+
+    z0 += Threads*Biva;
+  }
 
 }
 #endif
@@ -123,7 +184,7 @@ struct move_index
 
   void* buf;
   size_t buf_size;
-  qlat::vector<char* > psrc;
+  //qlat::vector<char* > pciv;
 
   move_index(bool GPU_set=false){
     #ifndef QLAT_USE_ACC
@@ -144,83 +205,84 @@ struct move_index
       else{buf = (void *)malloc(Bsize);}
       buf_size = Bsize;
     }
-    psrc.resize(civ);
+    //////psrc.resize(civ);
   }
 
 
   ////flag = 1 --> biva * sizeF * civ * size_inner --> biva * civ * sizeF * size_inner
   template <typename Ty >
-  void dojob(Ty* src,Ty* res,int biva,int civ,long sizeF0,int flag, int size_inner)
+  void dojob(Ty* src,Ty* res,int biva,int civ,long sizeF,int flag, int size_inner)
   {
-  size_t sizeF = sizeF0;
+  if(biva == 0 or civ == 0 or sizeF == 0 or size_inner == 0){return ;}
+  /////size_t sizeF = sizeF0;
 
-  TIMERB("reorder index");
+  ////size_t bufN = biva*civ*size_inner*sizeof(Ty)*sizeF;
+  size_t Off = civ*sizeF*size_inner;
+  #if PRINT_TIMER>5
+  TIMER_FLOPS("reorder index");
+  timer.flops += biva*Off*sizeof(Ty); 
+  #endif
+
+  ////TIMERB("reorder index");
   if(size_inner < 1){qlat::displayln_info(qlat::ssprintf("size_inner too small %d !\n", size_inner));
     MPI_Barrier(get_comm());fflush(stdout);qassert(false);
   }
 
-  size_t bufN = biva*civ*size_inner*sizeof(Ty)*sizeF;
-
-  #ifdef QLAT_USE_ACC
-  if(GPU){
-  
-  Ty* tem;
-  if(src == res){set_mem(civ, bufN);tem = (Ty*)buf;}else{tem = res;}
-
-  if(src == res)if(bufN % sizeof(qlat::ComplexF) != 0){
+  if(src == res){set_mem(civ, Off*sizeof(Ty));}
+  //pciv.resize(civ);
+  Ty* s0;Ty *s1;
+  //#ifdef QLAT_USE_ACC
+  //if(GPU)
+  if(src == res)if((Off*sizeof(Ty)) % sizeof(qlat::ComplexF) != 0){
     qlat::displayln_info(qlat::ssprintf("size not divided by 16, too small. \n"));qassert(false);}
+  ///#endif
+ 
+  for(int bi=0;bi<biva;bi++){
+    s0 = &src[bi*Off];
+    if(src == res){s1 = (Ty*)buf;}else{s1 = (Ty*) &res[bi*Off];}
+    #ifdef QLAT_USE_ACC
+    if(GPU){
 
-  {
-  dim3 dimBlock(  civ ,    1, 1);
-  dim3 dimGrid(  sizeF, biva, 1);
-  if(flag==0)move_index_global<Ty, false ><<< dimGrid, dimBlock >>>(src, tem, size_inner);
-  if(flag==1)move_index_global<Ty, true  ><<< dimGrid, dimBlock >>>(src, tem, size_inner);
-  }
-  qacc_barrier(dummy);
+      {
+      const int Threads = 32;const int Biva =  (16*16+sizeof(Ty)-1)/sizeof(Ty);
+      long Nb = (sizeF + Threads -1)/Threads;
+      dim3 dimBlock(    Threads,    1, 1);
+      dim3 dimGrid(     Nb,    1, 1);
+      if(flag==0)move_index_global<Ty, false , Threads, Biva><<< dimGrid, dimBlock >>>(s0, s1, sizeF, civ, size_inner);
+      if(flag==1)move_index_global<Ty, true  , Threads, Biva><<< dimGrid, dimBlock >>>(s0, s1, sizeF, civ, size_inner);
+      qacc_barrier(dummy);
+      }
 
-  if(src == res){
-  long Nvol = long(bufN/sizeof(qlat::ComplexF));
-  qlat::ComplexF* s0 = (qlat::ComplexF*) tem;
-  qlat::ComplexF* s1 = (qlat::ComplexF*) res;
-  qacc_for(i, Nvol, {s1[i] = s0[i];});
-  }
+      if(src == res){
+      long Nvol = long(Off*sizeof(Ty)/sizeof(qlat::ComplexF));
+      cpy_data_thread((qlat::ComplexF*) &res[bi*Off], (qlat::ComplexF*) s1, Nvol, 0);
+      //cpy_data_thread((Ty*) &res[bi*Off], (Ty*) s1, Off, 0);
+      }
 
-  return ;}
-  #endif
-
-  set_mem(civ, bufN);
-  Ty* tem;tem = (Ty*)buf;
-  if(flag == 1){
-    ///memcpy((Ty*)&tem[0],(Ty*)&src[0],biva*sizeof(Ty)*sizeF*civ*size_inner);
-    cpy_data_thread((Ty*)&tem[0], (Ty*)&res[0], biva*sizeF*civ*size_inner, 1);
-  }
-  for(size_t bi=0;bi<size_t(biva);bi++)
-  {
-    for(int ci=0;ci<civ;ci++)
-    {
-      if(flag==0)psrc[ci] = (char*) &src[(bi*civ*sizeF + ci*sizeF + 0)*size_inner];
-      if(flag==1)psrc[ci] = (char*) &res[(bi*civ*sizeF + ci*sizeF + 0)*size_inner];
-    }
+    continue ;}
+    #endif
 
     #pragma omp parallel for
-    for(size_t si=0;si<sizeF;si++)
+    for(long   si=0;si<sizeF;si++)
     for(int    ci=0;ci<civ;ci++)
     {
-      Ty* s0 = (Ty*) &tem[(bi*sizeF*civ + si*civ + ci)*size_inner];
-      Ty* s1 = (Ty*) &(psrc[ci][si*sizeof(Ty)*size_inner]);
-      if(flag==0){
-        //for(int i0=0;i0<size_inner;i0++){s0[i0] = s1[i0];}
-        memcpy(s0, s1,sizeof(Ty)*size_inner);
+      Ty* p0;Ty* p1;
+      if(flag == 1){
+        p0 = (Ty*) &s0[(si*civ   + ci)*size_inner];
+        p1 = (Ty*) &s1[(ci*sizeF + si)*size_inner];
       }
-      if(flag==1){
-        //for(int i0=0;i0<size_inner;i0++){s1[i0] = s0[i0];}
-        memcpy(s1, s0,sizeof(Ty)*size_inner);
+      if(flag == 0){
+        p0 = (Ty*) &s0[(ci*sizeF + si)*size_inner];
+        p1 = (Ty*) &s1[(si*civ   + ci)*size_inner];
       }
+      memcpy(p1, p0, sizeof(Ty)*size_inner);
     }
-  }
-  if(flag == 0){
-    ////memcpy((Ty*)&res[0],(Ty*)&tem[0],biva*sizeof(Ty)*sizeF*civ*size_inner);
-    cpy_data_thread((Ty*)&res[0], (Ty*)&tem[0], biva*sizeF*civ*size_inner, 1);
+
+    if(src == res){
+      long Nvol = long(Off*sizeof(Ty)/sizeof(qlat::ComplexF));
+      cpy_data_thread((qlat::ComplexF*) &res[bi*Off], (qlat::ComplexF*) s1, Nvol, 1);
+    }
+
   }
 
 
@@ -228,12 +290,13 @@ struct move_index
 
 
   void free_mem(){
-    if(buf != NULL){
-      if(GPU){gpuFree(buf);}else{free(buf);}
-      buf = NULL;
-    }
+    free_buf(buf, GPU);
+    ////if(buf != NULL){
+    ////  if(GPU){gpuFree(buf);}else{free(buf);}
+    ////  buf = NULL;
+    ////}
     buf_size = 0;
-    psrc.resize(0);
+    //psrc.resize(0);
   }
 
   ~move_index(){

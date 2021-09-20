@@ -138,7 +138,9 @@ void get_corr_pion(std::vector<qlat::FermionField4dT<qlat::Complex> > &prop,cons
     write[ toff*2 + 0 ] += res[isp].real();
     write[ toff*2 + 1 ] += res[isp].imag();
   }
-  sum_all_size((double*) &write[0],2*nt);
+  ////May need to be changed for Evector
+  //sum_all_size((double*) &write[0],2*nt);
+  sum_all_size((double*) write.data(), 2*nt);
 
 }
 

@@ -1,5 +1,5 @@
 #include <sys/sysinfo.h>
-#include "io_gwu.h"
+#include "io_vec.h"
 #include "general_funs.h"
 #include "utils_smear_src.h"
 #include "check_fun.h"
@@ -129,9 +129,9 @@ int main(int argc, char* argv[])
     std::vector<std::string > Li = stringtolist(in.paraI);
     print0("Li %s, size %d \n", in.paraI.c_str(),int(Li.size()) );
     fflush_MPI();
-    qassert(Li.size()%2 == 0);
+    //qassert(Li.size()%2 == 0);
 
-    for(int si=0;si<Li.size()/2;si++)
+    for(int si=0;si<1;si++)
     {
       int nsmear   = stringtonum(   Li[si*2+0]);
       double width = stringtodouble(Li[si*2+1]);
