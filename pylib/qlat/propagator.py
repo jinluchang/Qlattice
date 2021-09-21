@@ -1,6 +1,8 @@
 import cqlat as c
 
+from qlat.timer import *
 from qlat.field import *
+from qlat.field_utils import *
 from qlat.rng_state import *
 from qlat.selected_field import *
 from qlat.selected_points import *
@@ -82,6 +84,7 @@ def mk_wall_src(geo, tslice, lmom = [0.0, 0.0, 0.0, 0.0]):
     set_wall_src(prop_src, geo, tslice, lmom);
     return prop_src
 
+@timer
 def free_invert(prop_src, mass,
         m5 = 1.0, momtwist = [0.0, 0.0, 0.0, 0.0]):
     assert isinstance(prop_src, Prop)
@@ -99,13 +102,13 @@ def convert_wm_from_mspincolor_prop(prop_wm, prop_msc):
     assert isinstance(prop_msc, Prop)
     return c.convert_wm_from_mspincolor_prop(prop_wm, prop_msc)
 
-@q.timer
+@timer
 def free_scalar_invert_mom_cfield(f, mass):
-    assert isinstance(f, q.Field)
+    assert isinstance(f, Field)
     assert f.ctype == "Complex"
     c.free_scalar_invert_mom_cfield(f, mass)
 
-@q.timer
+@timer
 def free_scalar_invert_cfield(src, mass):
     fft_f = mk_fft(True, is_normalizing = True)
     fft_b = mk_fft(False, is_normalizing = True)
