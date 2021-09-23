@@ -55,14 +55,17 @@ $$
 
 With lattice regularization
 $$
-q_\mu \to 2 \sin({q_\mu \over 2})
+q_\mu \to 2 \sin \Big({q_\mu \over 2}\Big)
 $$
 
 $$
-M_\pi^2 \to 2\big(\cosh(M_\pi) - 1\big)
+M_\pi^2 \to 2\big(\cosh(M_\pi) - 1\big) = 4 \sinh^2\Big({M_\pi \over 2}\Big)
 $$
 
 $$
-p_t \to i M_\pi
+p_t \to 2 i \sinh \Big({M_\pi \over 2}\Big)
 $$
 
+```
+reverted
+```

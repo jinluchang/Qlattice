@@ -20,6 +20,12 @@ EXPORT(set_pion_four_point_mom_field, {
   py_convert(tag, p_tag);
   const Coordinate total_site = geo.total_site();
   const CoordinateD momtwist;
+  int tag_index = 0;
+  if ("" == tag) {
+    tag_index = 0;
+  } else {
+    qassert(false);
+  }
   qacc_for(index, geo.local_volume(), {
     const Coordinate kl = geo.coordinate_from_index(index);
     Coordinate kg = geo.coordinate_g_from_l(kl);
@@ -33,9 +39,25 @@ EXPORT(set_pion_four_point_mom_field, {
     }
     Vector<Complex> v = f.get_elems(kl);
     set_zero(v);
+    array<Complex, 4> tp_p_q, tp_m_q;
+    set_zero(tp_p_q);
+    set_zero(tp_m_q);
+    tp_p_q[0] = 2 * ii * pion_mass;
+    tp_m_q[0] = 2 * ii * pion_mass;
+    for (int mu = 0; mu < 4; ++mu) {
+      tp_p_q[mu] += ks[mu];
+      tp_m_q[mu] -= ks[mu];
+    }
+    for (int mu = 0; mu < 4; ++mu) {
+      for (int nu = 0; nu < 4; ++nu) {
+        int mu_nu = mu * 4 + nu;
+        if (mu == nu) {
+          v[mu_nu] += 2.0;
+        }
+
+      }
+    }
     // TODO
   });
   Py_RETURN_NONE;
 });
-
-

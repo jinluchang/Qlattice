@@ -25,6 +25,7 @@ import gpt as g
 import rbc_ukqcd as ru
 import rbc_ukqcd_params as rup
 import numpy as np
+import pprint
 import os
 
 from auto_contractor.eval import *
@@ -278,8 +279,8 @@ def auto_contractor_pipi_corr(job_tag, traj, num_trials):
                 "x2_2" : x2_2,
                 }
         lmom = [ 2 * math.pi / total_site[i] for i in range(3) ]
-        fac1 = sum([ cmath.rect(1.0, (x1_1[i] - x1_2[i]) * lmom[i]).real for i in range(3) ])
-        fac2 = sum([ cmath.rect(1.0, (x2_1[i] - x2_2[i]) * lmom[i]).real for i in range(3) ])
+        fac1 = sum([ 2 * cmath.rect(1.0, (x1_1[i] - x1_2[i]) * lmom[i]).real for i in range(3) ]) / np.sqrt(6)
+        fac2 = sum([ 2 * cmath.rect(1.0, (x2_1[i] - x2_2[i]) * lmom[i]).real for i in range(3) ]) / np.sqrt(6)
         facs = [1.0, fac1, fac2, fac1 * fac2,]
         return pd, facs
     names_fac = ["rest-rest", "rest-moving", "moving-rest", "moving-moving",]
@@ -382,7 +383,7 @@ def auto_contractor_kpipi_corr(job_tag, traj, num_trials):
                 "x2" : x2,
                 }
         lmom = [ 2 * math.pi / total_site[i] for i in range(3) ]
-        fac1 = sum([ cmath.rect(1.0, (x1_1[i] - x1_2[i]) * lmom[i]).real for i in range(3) ])
+        fac1 = sum([ 2 * cmath.rect(1.0, (x1_1[i] - x1_2[i]) * lmom[i]).real for i in range(3) ]) / np.sqrt(6)
         facs = [1.0, fac1]
         return pd, facs
     names_fac = [ "rest", "moving", ]
@@ -420,7 +421,6 @@ def auto_contractor_kpipi_corr(job_tag, traj, num_trials):
 def run_job(job_tag, traj):
     q.check_stop()
     q.check_time_limit()
-    q.displayln_info(rup.dict_params[job_tag])
     #
     q.qmkdir_info(f"locks")
     q.qmkdir_info(get_save_path(f""))
@@ -478,6 +478,7 @@ def run_job(job_tag, traj):
 if __name__ == "__main__":
     qg.begin_with_gpt()
     job_tag = "test-4nt16"
+    q.displayln_info(pprint.pformat(rup.dict_params[job_tag]))
     traj = 1000
     run_job(job_tag, traj)
     q.timer_display()

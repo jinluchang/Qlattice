@@ -92,7 +92,7 @@ EXPORT(free_scalar_invert_mom_cfield, {
   const Geometry& geo = f.geo();
   const Coordinate total_site = geo.total_site();
   const CoordinateD momtwist;
-  const double m_pi_sq = 2.0 * std::abs(std::cosh(mass) - 1.0);
+  const double m_pi_sq = 4.0 * sqr(std::sinh(mass / 2.0));
   qacc_for(index, geo.local_volume(), {
     const Coordinate kl = geo.coordinate_from_index(index);
     Coordinate kg = geo.coordinate_g_from_l(kl);
