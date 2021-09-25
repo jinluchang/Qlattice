@@ -71,6 +71,26 @@ EXPORT(get_total_site_geo, {
   return py_convert(geo.total_site());
 });
 
+EXPORT(get_local_volume_geo, {
+  using namespace qlat;
+  PyObject* p_geo = NULL;
+  if (!PyArg_ParseTuple(args, "O", &p_geo)) {
+    return NULL;
+  }
+  const Geometry& geo = py_convert_type<Geometry>(p_geo);
+  return py_convert(geo.local_volume());
+});
+
+EXPORT(get_total_volume_geo, {
+  using namespace qlat;
+  PyObject* p_geo = NULL;
+  if (!PyArg_ParseTuple(args, "O", &p_geo)) {
+    return NULL;
+  }
+  const Geometry& geo = py_convert_type<Geometry>(p_geo);
+  return py_convert(geo.total_volume());
+});
+
 EXPORT(get_multiplicity_geo, {
   using namespace qlat;
   PyObject* p_geo = NULL;

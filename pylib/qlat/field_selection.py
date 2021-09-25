@@ -38,8 +38,12 @@ class PointSelection:
     def load(self, path):
         c.load_psel(self, path)
 
-    def list(self):
+    def to_list(self):
         return c.mk_list_psel(self)
+
+    def from_list(self, coordinate_list):
+        c.set_list_psel(self, coordinate_list)
+        return self
 
 class FieldSelection:
 

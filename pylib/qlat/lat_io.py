@@ -70,14 +70,19 @@ class LatData:
     def is_complex(self):
         return c.is_complex_lat_data(self)
 
-    def ndim(self):
-        return c.get_ndim_lat_data(self)
+    def ndim(self, *, is_complex = True):
+        is_always_double = not is_complex
+        return c.get_ndim_lat_data(self, is_always_double)
 
-    def dim_sizes(self):
-        return c.get_dim_sizes_lat_data(self)
+    def dim_sizes(self, *, is_complex = True):
+        is_always_double = not is_complex
+        return c.get_dim_sizes_lat_data(self, is_always_double)
 
     def dim_name(self, dim):
         return c.get_dim_name_lat_data(self, dim)
+
+    def dim_size(self, dim):
+        return c.get_dim_size_lat_data(self, dim)
 
     def dim_indices(self, dim):
         return c.get_dim_indices_lat_data(self, dim)
@@ -126,3 +131,39 @@ class LatData:
         for dim in range(ndim):
             self.set_dim_name(dim, dim_names[dim], dim_indices[dim])
         self.from_list(data_list)
+
+    def info(self, dim = None, *, is_complex = True):
+        if dim is None:
+            ndim = self.ndim(is_complex = is_complex)
+            return [ self.info(i) for i in range(ndim) ]
+        else:
+            dim_name = self.dim_name(dim)
+            dim_size = self.dim_size(dim)
+            dim_indices = self.dim_indices(dim)
+            return [ dim_name, dim_size, dim_indices, ]
+
+    def set_info(self, *info_list, is_complex = True):
+        # info_list format:
+        # [ [ dim_name, dim_size, dim_indices, ], ... ]
+        # dim_indices can be optional
+        for info in info_list:
+            assert len(info) >= 2
+        dim_sizes = [ info[1] for info in info_list ]
+        self.set_dim_sizes(dim_sizes, is_complex = is_complex)
+        ndim = len(dim_sizes)
+        for dim in range(ndim):
+            info = info_list[dim]
+            if len(info) == 2:
+                dim_name, dim_size = info
+                self.set_dim_name(dim, dim_name)
+            elif len(info) == 3:
+                dim_name, dim_size, dim_indices = info
+                self.set_dim_name(dim, dim_name, dim_indices)
+            else:
+                raise Exception(f"LatData setinfo info_list={info_list} is_complex={is_complex}")
+        self.set_zero()
+
+def mk_ld(*info_list, is_complex = True):
+    ld = LatData()
+    ld.set_info(*info_list, is_complex = is_complex)
+    return ld

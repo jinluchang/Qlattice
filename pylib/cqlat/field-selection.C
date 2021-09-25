@@ -62,6 +62,18 @@ EXPORT(mk_list_psel, {
   return py_convert(psel);
 });
 
+EXPORT(set_list_psel, {
+  using namespace qlat;
+  PyObject* p_psel = NULL;
+  PyObject* p_coordinate_list = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_psel, &p_coordinate_list)) {
+    return NULL;
+  }
+  PointSelection& psel = py_convert_type<PointSelection>(p_psel);
+  py_convert(psel, p_coordinate_list);
+  Py_RETURN_NONE;
+});
+
 EXPORT(set_rand_psel, {
   using namespace qlat;
   PyObject* p_psel = NULL;

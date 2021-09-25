@@ -44,12 +44,23 @@ F_\pi^2(q^2)
 \over
 (p - q)^2 + M_\pi^2
 }
+
 \Big]
+\ea
+$$
+for zero spatial momentum, we set
+$$
+\ba
+\int d^3 x
+{1 \over 2 M_\pi}
+\la \pi(\vec 0) | J_\mu(x) J_\nu(0) | \pi(\vec 0) \ra
+&=&
+e^2
 \ea
 $$
 where
 $$
-F_\pi(q^2) = 1 - {r_\pi^2 \over 6}q^2
+F_\pi(q^2) = 1 - {r_\pi^2 \over 6}q^2 + \
 $$
 
 
@@ -63,9 +74,7 @@ M_\pi^2 \to 2\big(\cosh(M_\pi) - 1\big) = 4 \sinh^2\Big({M_\pi \over 2}\Big)
 $$
 
 $$
-p_t \to 2 i \sinh \Big({M_\pi \over 2}\Big)
+p_t \to 2 i \sinh \Big({M_\pi \over 2}\Big).
 $$
 
-```
-reverted
-```
+In the code, we set $e=1$.

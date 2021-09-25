@@ -25,6 +25,12 @@ class Geometry:
     def total_site(self):
         return c.get_total_site_geo(self)
 
+    def total_volume(self):
+        return c.get_total_volume_geo(self)
+
+    def local_volume(self):
+        return c.get_local_volume_geo(self)
+
     def multiplicity(self):
         return c.get_multiplicity_geo(self)
 

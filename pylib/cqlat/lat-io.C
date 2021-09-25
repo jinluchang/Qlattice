@@ -112,14 +112,17 @@ EXPORT(is_complex_lat_data, {
 EXPORT(get_ndim_lat_data, {
   using namespace qlat;
   PyObject* p_ld = NULL;
-  if (!PyArg_ParseTuple(args, "O", &p_ld)) {
+  bool is_always_double = false;
+  if (!PyArg_ParseTuple(args, "O|b", &p_ld, &is_always_double)) {
     return NULL;
   }
   LatData& ld = py_convert_type<LatData>(p_ld);
-  const bool is_complex_ld = is_lat_info_complex(ld.info);
   long ndim = ld.info.size();
-  if (is_complex_ld) {
-    ndim -= 1;
+  if (not is_always_double) {
+    const bool is_complex_ld = is_lat_info_complex(ld.info);
+    if (is_complex_ld) {
+      ndim -= 1;
+    }
   }
   return py_convert(ndim);
 });
@@ -127,14 +130,17 @@ EXPORT(get_ndim_lat_data, {
 EXPORT(get_dim_sizes_lat_data, {
   using namespace qlat;
   PyObject* p_ld = NULL;
-  if (!PyArg_ParseTuple(args, "O", &p_ld)) {
+  bool is_always_double = false;
+  if (!PyArg_ParseTuple(args, "O|b", &p_ld, &is_always_double)) {
     return NULL;
   }
   LatData& ld = py_convert_type<LatData>(p_ld);
-  const bool is_complex_ld = is_lat_info_complex(ld.info);
   long ndim = ld.info.size();
-  if (is_complex_ld) {
-    ndim -= 1;
+  if (not is_always_double) {
+    const bool is_complex_ld = is_lat_info_complex(ld.info);
+    if (is_complex_ld) {
+      ndim -= 1;
+    }
   }
   std::vector<long> dim_sizes(ndim);
   for (long i = 0; i < ndim; ++i) {
@@ -153,6 +159,18 @@ EXPORT(get_dim_name_lat_data, {
   LatData& ld = py_convert_type<LatData>(p_ld);
   pqassert(0 <= dim and dim < (long)ld.info.size());
   return py_convert(ld.info[dim].name);
+});
+
+EXPORT(get_dim_size_lat_data, {
+  using namespace qlat;
+  PyObject* p_ld = NULL;
+  long dim = 0;
+  if (!PyArg_ParseTuple(args, "Ol", &p_ld, &dim)) {
+    return NULL;
+  }
+  LatData& ld = py_convert_type<LatData>(p_ld);
+  pqassert(0 <= dim and dim < (long)ld.info.size());
+  return py_convert(ld.info[dim].size);
 });
 
 EXPORT(get_dim_indices_lat_data, {
