@@ -7,7 +7,7 @@ def mk_grid(geo = None):
     if geo is None:
         l_size = 8 * 3 * 5
         t_size = l_size * 2
-        total_site = [l_size, l_size, l_size, t_size]
+        total_site = [ l_size, l_size, l_size, t_size, ]
     else:
         total_site = geo.total_site()
     return g.grid(total_site, g.double)
@@ -32,6 +32,8 @@ def mk_gpt_field(ctype, geo):
         return g.mspincolor(mk_grid(geo))
     elif ctype == "WilsonVector":
         return g.vspincolor(mk_grid(geo))
+    elif ctype == "Complex":
+        return g.complex(mk_grid(geo))
     else:
         raise Exception("make_gpt_field")
 
@@ -114,13 +116,15 @@ def gpt_from_qlat_gauge_field(gf):
     multiplicity = 1
     tag = "gpt_from_qlat"
     plan = get_qlat_gpt_copy_plan(ctype, total_site, multiplicity, tag)
-    fs = [None] * 4
+    fs = [ None, ] * 4
     q.split_fields(fs, gf)
     assert len(fs) == 4
     grid = mk_grid(geo)
-    gpt_gf = [g.mcolor(grid) for i in range(4)]
+    gpt_gf = [ None, ] * 4
     for i in range(4):
+        gpt_gf[i] = g.mcolor(grid)
         plan(gpt_gf[i], fs[i].mview())
+        fs[i] = None
     return gpt_gf
 
 @q.timer
@@ -205,6 +209,47 @@ def gpt_from_qlat_ff4d(ff):
     plan(gpt_ff, ff.mview())
     return gpt_ff
 
+@q.timer
+def qlat_from_gpt_complex(gpt_fcs):
+    assert isinstance(gpt_fcs, list)
+    assert len(gpt_fcs) >= 1
+    ctype = "Complex"
+    total_site = gpt_fcs[0].grid.fdimensions
+    multiplicity = 1
+    tag = "qlat_from_gpt"
+    plan = get_qlat_gpt_copy_plan(ctype, total_site, multiplicity, tag)
+    geo = q.Geometry(total_site, 1)
+    n = len(gpt_fcs)
+    fs = [ q.Field(ctype, geo) for i in range(n) ]
+    for i in range(n):
+        plan(fs[i].mview(), gpt_fcs[i])
+    if n == 1:
+        return fs[0]
+    ff = q.Field(ctype, q.Geometry(total_site, n))
+    q.merge_fields(ff, fs)
+    return ff
+
+@q.timer
+def gpt_from_qlat_complex(fc):
+    assert isinstance(fc, q.Field)
+    geo = fc.geo()
+    ctype = "Complex"
+    assert fc.ctype == ctype
+    total_site = geo.total_site()
+    multiplicity = 1
+    tag = "gpt_from_qlat"
+    plan = get_qlat_gpt_copy_plan(ctype, total_site, multiplicity, tag)
+    n = geo.multiplicity()
+    fs = [ None, ] * n
+    q.split_fields(fs, fc)
+    grid = mk_grid(geo)
+    gpt_fcs = [ None, ] * n
+    for i in range(n):
+        gpt_fcs[i] = g.complex(grid)
+        plan(gpt_fcs[i], fs[i].mview())
+        fs[i] = None
+    return gpt_fcs
+
 def is_gpt_prop(obj):
     if isinstance(obj, g.core.lattice) and obj.describe() == "ot_matrix_spin_color(4,3);none":
         return True
@@ -232,6 +277,15 @@ def is_gpt_gauge_transform(obj):
     else:
         return False
 
+def is_gpt_complex(obj):
+    if isinstance(obj, list):
+        for o in obj:
+            if not (isinstance(o, g.core.lattice) and o.describe() == 'ot_complex_additive_group;none'):
+                return False
+        return True
+    else:
+        return False
+
 @q.timer
 def qlat_from_gpt(gpt_obj):
     if is_gpt_prop(gpt_obj):
@@ -242,6 +296,8 @@ def qlat_from_gpt(gpt_obj):
         return qlat_from_gpt_gauge_field(gpt_obj)
     elif is_gpt_ff4d(gpt_obj):
         return qlat_from_gpt_ff4d(gpt_obj)
+    elif is_gpt_complex(gpt_obj):
+        return qlat_from_gpt_complex(gpt_obj)
     elif isinstance(gpt_obj, list):
         return [ qlat_from_gpt(p) for p in gpt_obj ]
     else:
@@ -257,6 +313,8 @@ def gpt_from_qlat(obj):
         return gpt_from_qlat_gauge_field(obj)
     elif isinstance(obj, q.FermionField4d):
         return gpt_from_qlat_ff4d(obj)
+    elif isinstance(obj, q.Field) and obj.ctype == "Complex":
+        return gpt_from_qlat_complex(obj)
     elif isinstance(obj, list):
         return [ gpt_from_qlat(p) for p in obj ]
     else:

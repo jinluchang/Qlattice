@@ -100,5 +100,3 @@ EXPORT(set_max_mixed_precision_cycle_inverter_domain_wall, {
   inv.max_mixed_precision_cycle() = max_mixed_precision_cycle;
   Py_RETURN_NONE;
 });
-
-

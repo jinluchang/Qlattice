@@ -53,6 +53,8 @@ def check_job(job_tag, traj):
             get_load_path(f"configs/{job_tag}/ckpoint_lat.{traj}"),
             get_load_path(f"gauge-transform/{job_tag}/traj={traj}.field"),
             get_load_path(f"eig/{job_tag}/traj={traj}"),
+            get_load_path(f"eig/{job_tag}/traj={traj}/metadata.txt"),
+            get_load_path(f"eig/{job_tag}/traj={traj}/eigen-values.txt"),
             ]
     for fn in fns_need:
         if fn is None:
@@ -468,10 +470,10 @@ def run_prop_psrc_strange(job_tag, traj, get_gf, get_gt, get_psel, get_fsel):
         return
     if get_load_path(f"prop-psrc-strange/{job_tag}/traj={traj}") is not None:
         return
-    fsel, fselc = get_fsel()
     if q.obtain_lock(f"locks/{job_tag}-{traj}-psrc-strange"):
         gf = get_gf()
         gt = get_gt()
+        fsel, fselc = get_fsel()
         q.qmkdir_info(get_save_path(f"point-src-info"))
         q.qmkdir_info(get_save_path(f"point-src-info/{job_tag}"))
         q.qmkdir_info(get_save_path(f"prop-psrc-strange"))

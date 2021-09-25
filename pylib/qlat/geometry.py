@@ -2,7 +2,7 @@ import cqlat as c
 
 class Geometry:
 
-    def __init__(self, total_site, multiplicity=None):
+    def __init__(self, total_site, multiplicity = None):
         if multiplicity == None:
             self.cdata = c.mk_geo(total_site)
         else:
@@ -64,6 +64,15 @@ class Geometry:
                 str(self.expansion_left()),
                 str(self.expansion_right()),
                 self.eo())
+
+    def coordinate_g_from_l(self, xl):
+        return c.coordinate_g_from_l_geo(self, xl)
+
+    def coordinate_l_from_g(self, xg):
+        return c.coordinate_l_from_g_geo(self, xg)
+
+    def is_local(self, xl):
+        return c.is_local_geo(self, xl)
 
 def geo_reform(geo,
         multiplicity = 1,

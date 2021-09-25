@@ -160,3 +160,42 @@ EXPORT(get_size_node_geo, {
   const Geometry& geo = py_convert_type<Geometry>(p_geo);
   return py_convert(geo.geon.size_node);
 });
+
+EXPORT(coordinate_g_from_l_geo, {
+  using namespace qlat;
+  PyObject* p_geo = NULL;
+  PyObject* p_xl = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_geo, &p_xl)) {
+    return NULL;
+  }
+  const Geometry& geo = py_convert_type<Geometry>(p_geo);
+  Coordinate xl;
+  py_convert(xl, p_xl);
+  return py_convert(geo.coordinate_g_from_l(xl));
+});
+
+EXPORT(coordinate_l_from_g_geo, {
+  using namespace qlat;
+  PyObject* p_geo = NULL;
+  PyObject* p_xg = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_geo, &p_xg)) {
+    return NULL;
+  }
+  const Geometry& geo = py_convert_type<Geometry>(p_geo);
+  Coordinate xg;
+  py_convert(xg, p_xg);
+  return py_convert(geo.coordinate_l_from_g(xg));
+});
+
+EXPORT(is_local_geo, {
+  using namespace qlat;
+  PyObject* p_geo = NULL;
+  PyObject* p_xl = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_geo, &p_xl)) {
+    return NULL;
+  }
+  const Geometry& geo = py_convert_type<Geometry>(p_geo);
+  Coordinate xl;
+  py_convert(xl, p_xl);
+  return py_convert(geo.is_local(xl));
+});

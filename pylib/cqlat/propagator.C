@@ -78,3 +78,37 @@ EXPORT(convert_mspincolor_from_wm_prop, {
   convert_mspincolor_from_wm(prop_msc, prop_wm);
   Py_RETURN_NONE;
 });
+
+EXPORT(free_scalar_invert_mom_cfield, {
+  using namespace qlat;
+  PyObject* p_field = NULL;
+  double mass = 0.0;
+  if (!PyArg_ParseTuple(args, "Od", &p_field, &mass)) {
+    return NULL;
+  }
+  PyField pf = py_convert_field(p_field);
+  pqassert(pf.ctype == "Complex");
+  Field<Complex>& f = *(Field<Complex>*)pf.cdata;
+  const Geometry& geo = f.geo();
+  const Coordinate total_site = geo.total_site();
+  const CoordinateD momtwist;
+  const double m_pi_sq = 2.0 * std::abs(std::cosh(mass) - 1.0);
+  qacc_for(index, geo.local_volume(), {
+    const Coordinate kl = geo.coordinate_from_index(index);
+    Coordinate kg = geo.coordinate_g_from_l(kl);
+    CoordinateD kk, ks;
+    double s2 = 0.0;
+    for (int i = 0; i < DIMN; i++) {
+      kg[i] = smod(kg[i], total_site[i]);
+      kk[i] = 2.0 * PI * (kg[i] + momtwist[i]) / (double)total_site[i];
+      ks[i] = 2.0 * std::sin(kk[i] / 2.0);
+      s2 += sqr(ks[i]);
+    }
+    const double fac = 1.0 / (m_pi_sq + s2);
+    Vector<Complex> v = f.get_elems(kl);
+    for (int i = 0; i < v.size(); ++i) {
+      v[i] *= fac;
+    }
+  });
+  Py_RETURN_NONE;
+});

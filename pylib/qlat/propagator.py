@@ -99,6 +99,21 @@ def convert_wm_from_mspincolor_prop(prop_wm, prop_msc):
     assert isinstance(prop_msc, Prop)
     return c.convert_wm_from_mspincolor_prop(prop_wm, prop_msc)
 
+@q.timer
+def free_scalar_invert_mom_cfield(f, mass):
+    assert isinstance(f, q.Field)
+    assert f.ctype == "Complex"
+    c.free_scalar_invert_mom_cfield(f, mass)
+
+@q.timer
+def free_scalar_invert_cfield(src, mass):
+    fft_f = mk_fft(True, is_normalizing = True)
+    fft_b = mk_fft(False, is_normalizing = True)
+    f = fft_f * src
+    free_scalar_invert_mom_cfield(f, mass)
+    sol = fft_b * f
+    return sol
+
 class FermionField4d(Field):
 
     def __init__(self, geo = None):
