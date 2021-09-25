@@ -27,7 +27,7 @@ py-examples : $(tests)
 	-grep -v "^Timer\|^GPT\|^Grid\|timing: \|Timing: " "$@".full > "$@"
 
 cqlat-example:
-	make -C cqlat -j 2
+	-make -C cqlat -j 2
 	python3 -c "import cqlat ; cqlat.hello_world()" > cqlat.log
 
 clean:

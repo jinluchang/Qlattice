@@ -12,7 +12,7 @@ qlat::begin(): GeometryNode =
 q_verbose=0 (default)
 qremove: 'results'
 geo.show() = Geometry([4, 4, 4, 8], 1)
-psel.list() = [[0, 0, 0, 0], [0, 1, 2, 0]]
+psel.to_list() = [[0, 0, 0, 0], [0, 1, 2, 0]]
 q_field_init=fast (default)
 set q_field_init=fast.
 q_mem_cache_max_size=512 (default)

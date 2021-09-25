@@ -1,4 +1,5 @@
 import cqlat as c
+import numpy as np
 
 class LatData:
 
@@ -107,11 +108,11 @@ class LatData:
 
     def __setitem__(self, idx, val):
         # use list with correct length as val
-        return c.poke_lat_data(self, idx, val)
+        return c.poke_lat_data(self, idx, list(val))
 
     def __getitem__(self, idx):
         # return a new list every call
-        return c.peek_lat_data(self, idx)
+        return np.array(c.peek_lat_data(self, idx))
 
     def __getstate__(self):
         is_complex = self.is_complex()

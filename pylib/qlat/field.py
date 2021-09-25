@@ -3,6 +3,8 @@ import cqlat as c
 from qlat.geometry import *
 from qlat.rng_state import *
 
+import numpy as np
+
 field_ctypes_double = [
         "ColorMatrix",
         "WilsonMatrix",
@@ -221,19 +223,19 @@ class Field:
         return f
 
     def get_elems(self, xg):
-        return c.get_elems_field(self, xg)
+        return np.array(c.get_elems_field(self, xg))
 
     def get_elem(self, xg, m = None):
         if m is None:
-            return c.get_elem_field(self, xg)
+            return np.array(c.get_elem_field(self, xg))
         else:
-            return c.get_elem_field(self, xg, m)
+            return np.array(c.get_elem_field(self, xg, m))
 
     def glb_sum(self):
         if self.ctype in field_ctypes_double:
-            return c.glb_sum_double_field(self)
+            return np.array(c.glb_sum_double_field(self))
         elif self.ctype in field_ctypes_long:
-            return c.glb_sum_long_field(self)
+            return np.array(c.glb_sum_long_field(self))
         else:
             assert False
 

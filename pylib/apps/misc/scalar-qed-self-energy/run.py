@@ -7,6 +7,9 @@ import gpt as g
 import qlat_gpt as qg
 import pprint
 import math
+import rbc_ukqcd_params as rup
+import rbc_ukqcd as ru
+import numpy as np
 
 import os
 
@@ -18,6 +21,7 @@ def get_load_path(fn):
         return None
     path_list = [
             "results",
+            "/home/frank/application/Public/Muon-GM2-cc/jobs/final-run/all-analysis-data",
             ]
     for path in path_list:
         p = os.path.join(path, fn)
@@ -44,26 +48,55 @@ def mk_pion_prop(total_site, pion_mass):
 r_scaling_factor = 5.0
 
 @q.timer
-def mk_four_point_func_table(total_site, pion_mass, tag = ""):
+def mk_four_point_func_table(total_site, n_dtype):
     info_list = [
-            [ "type", 1, ],
+            [ "type", n_dtype, ],
             [ "t", math.ceil(total_site[3] / 2), ],
             [ "r", math.ceil(1.0 + r_scaling_factor * math.sqrt(3.0) *
                 total_site[0] / 2.0), ],
             [ "em", 4, [ "mm", "tt", "ii", "xx", ], ],
             ]
     ld = q.mk_ld(*info_list)
-    r_pi = 3.0
-    f = q.mk_pion_four_point_field(total_site, pion_mass, tag, r_pi)
-    q.acc_four_point_func_em(ld, f, 0, r_scaling_factor)
+    return ld
+
+@q.timer
+def mk_four_point_func_table_ff(total_site, pion_mass, tag = ""):
+    r_pi_list = [ 3.0, ]
+    n_dtype = len(r_pi_list)
+    ld = mk_four_point_func_table(total_site, n_dtype)
+    for dtype, r_pi in enumerate(r_pi_list):
+        f = q.mk_pion_four_point_field(total_site, pion_mass, tag, r_pi)
+        q.acc_four_point_func_em(ld, f, dtype, r_scaling_factor)
+    ld.save(f"results/table-{total_site[0]}nt{total_site[3]}-{pion_mass}-({tag}).lat")
+    # q.partial_sum_r_four_point_func_em(ld)
+
+rup.dict_params["48I"]["data_path_em"] = get_load_path("lat-four-point-em/48I-0.00078")
+rup.dict_params["48I"]["ainv/gev"] = 1.73
+
+rup.dict_params["64I"]["data_path_em"] = get_load_path("lat-four-point-em/64I-0.000678")
+rup.dict_params["64I"]["ainv/gev"] = 2.359
+
+@q.timer
+def get_four_point_em(job_tag, traj, dtype):
+    path = rup.dict_params[job_tag]["data_path_em"]
+    fn = f"{path}/results={traj}/four-point-func-em.lat"
+    ld = q.LatData()
+    ld.load(fn)
+    ld[(0,)] *= 1 / space_volume
+    ld[(1,)] *= 1 / space_volume
+
+    if dtype in [ 0, 1, ]:
+        total_site = rup.dict_params[job_tag]["total_site"]
+        space_volume = total_site[0] * total_site[1] * total_site[2]
     q.partial_sum_r_four_point_func_em(ld)
-    ld.save(f"table({tag}).lat")
-    for t in range(12):
-        for i in range(16):
-            q.displayln_info("spatial", t, i, f.get_elems([0, 0, i, t,])[15].real)
-    psf = f.glb_sum_tslice()
-    for i in range(32):
-        q.displayln_info(i, psf.get_elem(i, 15))
+    r_max = ld.dim_size(2) - 1
+    for dtype in [ 0, 1, ]:
+        for t in range(ld.dim_size(1)):
+            fac = 2 / ld[(1, t, r_max, 1,)]
+            if t == 0:
+                fac /= 2
+            ld[(dtype, t,)] *= fac
+    return ld
 
 @q.timer
 def run_job(total_site, pion_mass):
@@ -82,6 +115,10 @@ q.check_time_limit()
 total_site = [ 32, 32, 32, 64, ]
 pion_mass = 0.135
 
-run_job(total_site, pion_mass)
+q.qmkdir_info(f"results")
+
+# run_job(total_site, pion_mass)
+
+q.displayln_info(get_four_point_em("64I", 2810).show())
 
 qg.end_with_gpt()

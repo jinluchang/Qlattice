@@ -20,7 +20,7 @@ psel.save("results/psel.txt")
 psel = q.PointSelection()
 psel.load("results/psel.txt")
 
-q.displayln_info("psel.list() =", psel.list())
+q.displayln_info("psel.to_list() =", psel.to_list())
 
 n_per_tslice = 16
 
