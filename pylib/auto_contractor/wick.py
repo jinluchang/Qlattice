@@ -50,6 +50,9 @@ class Op:
     def __neg__(self):
         return mk_expr(-1) * mk_expr(self)
 
+    def __pos__(self):
+        return self
+
     def __sub__(self, other):
         return mk_expr(self) + mk_expr(-1) * other
 
@@ -385,6 +388,9 @@ class Term:
     def __neg__(self):
         return mk_expr(-1) * mk_expr(self)
 
+    def __pos__(self):
+        return self
+
     def __sub__(self, other):
         return mk_expr(self) + mk_expr(-1) * other
 
@@ -457,6 +463,9 @@ class Expr:
 
     def __neg__(self):
         return mk_expr(-1) * mk_expr(self)
+
+    def __pos__(self):
+        return self
 
     def __sub__(self, other):
         return mk_expr(self) + mk_expr(-1) * other

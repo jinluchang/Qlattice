@@ -14,7 +14,7 @@ def glb_sum(x):
     elif isinstance(x, int):
         return c.glb_sum_long(x)
     else:
-        raise Exception("glb_sum")
+        return x.glb_sum()
 
 @timer_verbose
 def show_machine():

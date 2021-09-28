@@ -184,11 +184,11 @@ inline void prop_photon_invert(QedGaugeField& egf,
   egf *= 1.0 / geo.total_volume();
 }
 
-inline void prop_mom_complex_scaler_invert(
+inline void prop_mom_complex_scalar_invert(
     ComplexScalerField& csf, const double mass,
     const array<double, DIMN>& momtwist)
 {
-  TIMER("prop_mom_complex_scaler_invert");
+  TIMER("prop_mom_complex_scalar_invert");
   const Geometry& geo = csf.geo();
   for (long index = 0; index < geo.local_volume(); ++index) {
     Coordinate kl = geo.coordinate_from_index(index);
@@ -210,14 +210,14 @@ inline void prop_mom_complex_scaler_invert(
   }
 }
 
-inline void prop_complex_scaler_invert(ComplexScalerField& csf,
+inline void prop_complex_scalar_invert(ComplexScalerField& csf,
                                        const double mass,
                                        const array<double, DIMN>& momtwist)
 {
-  TIMER_VERBOSE("prop_complex_scaler_invert");
+  TIMER_VERBOSE("prop_complex_scalar_invert");
   const Geometry& geo = csf.geo();
   fft_complex_field(csf, true);
-  prop_mom_complex_scaler_invert(csf, mass, momtwist);
+  prop_mom_complex_scalar_invert(csf, mass, momtwist);
   fft_complex_field(csf, false);
   csf *= 1.0 / geo.total_volume();
 }

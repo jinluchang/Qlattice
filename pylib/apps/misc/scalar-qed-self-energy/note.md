@@ -26,7 +26,11 @@ $$
 \la \pi(\vec 0) | J_\mu(x) J_\nu(0) | \pi(\vec 0) \ra
 &=&
 e^2
+{
 F_\pi^2(q^2)
+\over
+2 M_\pi
+}
 \Big[
 2 \delta_{\mu,\nu}
 -
@@ -53,14 +57,14 @@ $$
 \ba
 \int d^3 x
 {1 \over 2 M_\pi}
-\la \pi(\vec 0) | J_\mu(x) J_\nu(0) | \pi(\vec 0) \ra
+\la \pi(\vec 0) | J_t(x) J_t(0) | \pi(\vec 0) \ra
 &=&
 e^2
 \ea
 $$
 where
 $$
-F_\pi(q^2) = 1 - {r_\pi^2 \over 6}q^2 + \
+F_\pi(q^2) = 1 - {r_\pi^2 \over 6}q^2 + \cdots
 $$
 
 
@@ -77,4 +81,7 @@ $$
 p_t \to 2 i \sinh \Big({M_\pi \over 2}\Big).
 $$
 
+In for $q$ and $\mu$ that $q_\mu = \pi$, we will use the following special replacement $q_\mu^2 \to 4$ and $q_\mu \to 0$.
+
 In the code, we set $e=1$.
+

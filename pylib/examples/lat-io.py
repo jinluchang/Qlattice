@@ -10,7 +10,7 @@ q.qmkdir_info("results")
 
 ld = q.LatData()
 
-dim_sizes = [ 2, 4, 3 ]
+dim_sizes = [ 2, 4, 3, ]
 
 ld.set_dim_sizes(dim_sizes)
 ld.set_dim_name(0, "index0", [ "u", "d" ])
@@ -27,22 +27,22 @@ for dim in range(ld.ndim()):
 for i0 in range(dim_sizes[0]):
     for i1 in range(dim_sizes[1]):
         for i2 in range(dim_sizes[2]):
-            ld[ [ i0, i1, i2 ] ] = [ 1e6 + i0 * 1e4 + i1 * 1e2 + i2 ]
+            ld[(i0, i1, i2,)] = [ 1e6 + i0 * 1e4 + i1 * 1e2 + i2 ]
 
 q.displayln_info("ld:")
 q.displayln_info(ld.show())
 q.displayln_info(f"qnorm = {ld.qnorm()}")
 
-ld[ [ 0, 1 ] ] = [ i * 3 + i * 1j for i in range(3) ]
+ld[(0, 1,)] = [ i * 3 + i * 1j for i in range(3) ]
 
-q.displayln_info(ld[ [ 0 ] ])
-q.displayln_info(ld[ [ 1, 2 ] ])
+q.displayln_info(ld[(0,)])
+q.displayln_info(ld[(1, 2,)])
 
 ld.save("results/test.lat")
 
 ld = q.LatData()
 ld.load("results/test.lat")
-q.displayln_info(ld[ [ 1, 3 ] ])
+q.displayln_info(ld[(1, 3,)])
 
 ld1 = ld.copy()
 ld1 += ld1

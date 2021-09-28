@@ -24,6 +24,27 @@ def qmkdirs(path):
 
 @timer
 def qmkdirs_info(path):
-    if q.get_id_node() == 0:
-        q.displayln(f"qmkdirs_info '{path}'.")
+    if get_id_node() == 0:
+        displayln(f"qmkdirs_info: '{path}'.")
         qmkdirs(path)
+
+@timer
+def mk_dirs(path):
+    os.makedirs(path, exist_ok=True)
+
+@timer
+def mk_dirs_info(path):
+    if get_id_node() == 0:
+        displayln(f"mk_dirs_info: '{path}'.")
+        mk_dirs(path)
+
+@timer
+def mk_file_dirs(fn):
+    path = os.path.dirname(fn)
+    os.makedirs(path, exist_ok=True)
+
+@timer
+def mk_file_dirs_info(path):
+    if get_id_node() == 0:
+        displayln(f"mk_file_dirs_info: '{path}'.")
+        mk_file_dirs(path)

@@ -20,6 +20,12 @@ class LatData:
             x @= self
         return x
 
+    def __copy__(self):
+        return self.copy()
+
+    def __deepcopy__(self, memo):
+        return self.copy()
+
     def save_node(self, path):
         c.save_lat_data(self, path)
 
@@ -28,6 +34,11 @@ class LatData:
 
     def bcast(self):
         c.bcast_lat_data(self)
+        return self
+
+    def glb_sum(self):
+        c.glb_sum_lat_data(self)
+        return self
 
     def save(self, path):
         from qlat.mpi import get_id_node
@@ -56,6 +67,31 @@ class LatData:
     def __imul__(self, factor):
         assert isinstance(factor, float)
         c.set_mul_double_lat_data(self, factor)
+        return self
+
+    def __add__(self, ld1):
+        ld = self.copy()
+        ld += ld1
+        return ld
+
+    def __sub__(self, ld1):
+        ld = self.copy()
+        ld -= ld1
+        return ld
+
+    def __mul__(self, factor):
+        ld = self.copy()
+        ld *= factor
+        return ld
+
+    __rmul__ = __mul__
+
+    def __neg__(self):
+        ld = self.copy()
+        ld *= -1
+        return ld
+
+    def __pos__(self):
         return self
 
     def set_zero(self):
@@ -100,19 +136,36 @@ class LatData:
 
     def from_list(self, val, *, is_complex = True):
         if self.ndim() == 0:
-            self.set_dim_sizes([len(val)], is_complex)
+            self.set_dim_sizes([len(val)], is_complex = is_complex)
             self.set_dim_name(0, "i")
         is_always_double = not is_complex
         c.poke_lat_data(self, [], val, is_always_double)
         return self
 
+    def to_numpy(self, *, is_complex = True):
+        is_always_double = not is_complex
+        v = np.array(c.peek_lat_data(self, [], is_always_double))
+        return v.reshape(self.dim_sizes(is_complex = is_complex))
+
+    def from_numpy(self, val, *, is_complex = True):
+        if self.ndim() == 0:
+            self.set_dim_sizes(list(val.shape), is_complex = is_complex)
+            for dim, (size, name) in enumerate(zip(val.shape, "ijklmnopqrstuvwxyz")):
+                self.set_dim_name(dim, name)
+        is_always_double = not is_complex
+        c.poke_lat_data(self, [], list(val.flatten()), is_always_double)
+        return self
+
     def __setitem__(self, idx, val):
         # use list with correct length as val
+        if isinstance(val, np.ndarray):
+            val = val.flatten()
         return c.poke_lat_data(self, idx, list(val))
 
     def __getitem__(self, idx):
         # return a new list every call
-        return np.array(c.peek_lat_data(self, idx))
+        shape = self.dim_sizes()[len(idx):]
+        return np.array(c.peek_lat_data(self, idx)).reshape(shape)
 
     def __getstate__(self):
         is_complex = self.is_complex()
@@ -143,7 +196,7 @@ class LatData:
             dim_indices = self.dim_indices(dim)
             return [ dim_name, dim_size, dim_indices, ]
 
-    def set_info(self, *info_list, is_complex = True):
+    def set_info(self, info_list, *, is_complex = True):
         # info_list format:
         # [ [ dim_name, dim_size, dim_indices, ], ... ]
         # dim_indices can be optional
@@ -164,7 +217,12 @@ class LatData:
                 raise Exception(f"LatData setinfo info_list={info_list} is_complex={is_complex}")
         self.set_zero()
 
-def mk_ld(*info_list, is_complex = True):
+def mk_lat_data(info_list, *, is_complex = True):
     ld = LatData()
-    ld.set_info(*info_list, is_complex = is_complex)
+    ld.set_info(info_list, is_complex = is_complex)
+    return ld
+
+def load_lat_data(path):
+    ld = LatData()
+    ld.load(path)
     return ld

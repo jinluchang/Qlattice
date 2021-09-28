@@ -6,6 +6,8 @@ from qlat.rng_state import *
 
 from qlat.lat_io import *
 
+from qlat.data import *
+
 from qlat.mpi import *
 
 from qlat.timer import *
