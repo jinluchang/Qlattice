@@ -245,35 +245,41 @@ inline CompressedEigenSystemInfo read_compressed_eigen_system_info(
       }
       crcs.push_back(read_crc32(value));
     }
-    const long global_volume = crcs.size() * product(cesdi.node_site);
-    if (64 * 64 * 64 * 128 == global_volume) {
-      cesdi.total_site = Coordinate(64, 64, 64, 128);
-    } else if (48 * 48 * 48 * 96 == global_volume) {
-      cesdi.total_site = Coordinate(48, 48, 48, 96);
-    } else if (48 * 48 * 48 * 64 == global_volume) {
-      cesdi.total_site = Coordinate(48, 48, 48, 64);
-    } else if (24 * 24 * 24 * 64 == global_volume) {
-      cesdi.total_site = Coordinate(24, 24, 24, 64);
-    } else if (32 * 32 * 32 * 64 == global_volume) {
-      cesdi.total_site = Coordinate(32, 32, 32, 64);
-    } else if (16 * 16 * 16 * 32 == global_volume) {
-      cesdi.total_site = Coordinate(16, 16, 16, 32);
-    } else {
-      cesdi.total_site = Coordinate();
-    }
+    cesdi.total_site = Coordinate();
     for (int i = 0; i < 4; ++i) {
       const std::string str_gs = info_get_prop(lines, ssprintf("gs[%d] = ", i));
       if (str_gs != "") {
         reads(cesdi.total_site[i], str_gs);
       }
     }
+    const long global_volume = crcs.size() * product(cesdi.node_site);
+    if (cesdi.total_site == Coordinate()) {
+      if (64 * 64 * 64 * 128 == global_volume) {
+        cesdi.total_site = Coordinate(64, 64, 64, 128);
+      } else if (48 * 48 * 48 * 96 == global_volume) {
+        cesdi.total_site = Coordinate(48, 48, 48, 96);
+      } else if (48 * 48 * 48 * 64 == global_volume) {
+        cesdi.total_site = Coordinate(48, 48, 48, 64);
+      } else if (24 * 24 * 24 * 64 == global_volume) {
+        cesdi.total_site = Coordinate(24, 24, 24, 64);
+      } else if (32 * 32 * 32 * 64 == global_volume) {
+        cesdi.total_site = Coordinate(32, 32, 32, 64);
+      } else if (16 * 16 * 16 * 32 == global_volume) {
+        cesdi.total_site = Coordinate(16, 16, 16, 32);
+      } else {
+        cesdi.total_site = cesdi.node_site;
+        cesdi.total_site[3] *= crcs.size();
+      }
+      displayln_info(fname + ssprintf(": using guessed total_site=%s",
+                                      show(cesdi.total_site).c_str()));
+    }
+    qassert(product(cesdi.total_site) == global_volume);
     const std::string str_gs5 = info_get_prop(lines, ssprintf("gs[4] = "));
     if (str_gs5 != "") {
       int gs5;
       reads(gs5, str_gs5);
       qassert(cesdi.ls == gs5);
     }
-    qassert(product(cesdi.total_site) == global_volume);
   }
   bcast(Vector<CompressedEigenSystemDenseInfo>(&cesdi, 1));
   crcs.resize(product(cesdi.total_site / cesdi.node_site));

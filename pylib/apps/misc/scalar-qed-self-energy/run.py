@@ -280,7 +280,6 @@ def diagnose_four_point_em(ld):
     for dtype in range(ld.dim_size(0)):
         q.displayln_info(get_curve(ld, dtype, t_s, "tt"))
 
-
 def fit_r_pi_fm(job_tag, jk_list_four_point_em, pion_type, ff_tag, curve_tag, t_s_ratio):
     total_site = rup.dict_params[job_tag]["total_site"]
     m_pi = rup.dict_params[job_tag]["m_pi"]
@@ -297,6 +296,18 @@ def fit_r_pi_fm(job_tag, jk_list_four_point_em, pion_type, ff_tag, curve_tag, t_
         r_pi_fm = interpolate_r_pi_fm(i_best)
         jk_list_r_pi_fm.append(r_pi_fm)
     q.displayln_info(f"r_pi_fm = {q.jk_avg(jk_list_r_pi_fm)} +/- {q.jk_err(jk_list_r_pi_fm)} t_s={t_s} job_tag={job_tag} pion_type={pion_type} ff_tag={ff_tag} curve_tag={curve_tag} t_s_ratio={t_s_ratio}")
+    # avg plot
+    curve = get_curve(jk_list[0], 0, t_s, curve_tag)
+    i_best = match_curve(curve, curve_ff_list)
+    r_pi_fm = interpolate_r_pi_fm(i_best)
+    curve_ff = interpolate_curve(curve_ff_list, i_best)
+    fn = f"results/curve-fits/{job_tag}-{pion_type}-{ff_tag}-{curve_tag}-{t_s_ratio}.txt"
+    q.mk_file_dirs_info(fn)
+    lines = []
+    lines.append(f"# r curve-data curve-form-factor-fit curve-scalar-qed")
+    for i, (v1, v2, v3,) in enumerate(zip(curve, curve_ff, curve_ff_list[0])):
+        lines.append(f"{i} {v1} {v2} {v3}")
+    q.qtouch(fn, "\n".join(lines))
 
 @q.timer
 def run_job(job_tag):

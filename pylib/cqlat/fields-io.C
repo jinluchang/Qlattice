@@ -240,3 +240,14 @@ EXPORT(flush_sfw, {
   ShuffledFieldsWriter& sfw = py_convert_type<ShuffledFieldsWriter>(p_sfw);
   return py_convert(flush(sfw));
 });
+
+EXPORT(check_compressed_eigen_vectors, {
+  using namespace qlat;
+  PyObject* p_path = NULL;
+  if (!PyArg_ParseTuple(args, "O", &p_path)) {
+    return NULL;
+  }
+  std::string path;
+  py_convert(path, p_path);
+  return py_convert(qlat::check_compressed_eigen_vectors(path));
+});

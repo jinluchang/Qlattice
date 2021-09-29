@@ -127,5 +127,10 @@ def properly_truncate_fields(path, is_check_all = False, is_only_check = False, 
         return c.properly_truncate_fields_sync_node(path, is_check_all, is_only_check, new_size_node)
 
 def check_fields(path, is_check_all = True, new_size_node = None):
+    # return list of field that is stored successful
     is_only_check = True
     return properly_truncate_fields(path, is_check_all, is_only_check, new_size_node)
+
+def check_compressed_eigen_vectors(path):
+    # return bool value suggest whether the data can be read successfully
+    return c.check_compressed_eigen_vectors(path)
