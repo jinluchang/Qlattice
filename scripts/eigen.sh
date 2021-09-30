@@ -21,7 +21,7 @@ cd $build_dir
 
 rm -rf $prefix/include/eigen3
 mkdir -p $prefix/include/eigen3
-rsync -av $src_dir/$name-*/{Eigen,signature_of_eigen3_matrix_library,unsupported} $prefix/include/eigen3
+rsync -av $src_dir/$name-*/{Eigen,signature_of_eigen3_matrix_library,unsupported} $prefix/include/
 
 cd $wd
 
