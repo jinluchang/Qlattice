@@ -62,7 +62,7 @@ def mk_four_point_func_table(total_site, n_dtype):
 
 gev_inv_fm = 0.197326979
 
-r_pi_fm_list = [ 0.0, 0.60, 0.65, 0.66, 0.67, 0.70, ]
+r_pi_fm_list = [ 0.0, 0.60, 0.65, 0.66, 0.67, 0.70, 0.75, 0.80, 0.90, 1.00, ]
 
 def interpolate_r_pi_fm(i):
     # best approximate r_pi_fm_list[i]

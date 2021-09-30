@@ -1,10 +1,8 @@
 #!/bin/bash
 
-echo "Need to run './scripts/mpfr.sh' first"
-
 . conf.sh
 
-name=Grid
+name=Grid-tblum
 
 echo "!!!! build $name !!!!"
 
@@ -23,22 +21,20 @@ ln -vs "${INITDIR}/Eigen/unsupported/Eigen" "${INITDIR}/Grid/Eigen/unsupported"
 mkdir build
 cd build
 ../configure \
-    --enable-simd=GPU \
+    --enable-simd=KNL \
     --enable-alloc-align=4k \
-    --enable-comms=mpi \
-    --enable-unified=no \
-    --enable-accelerator=cuda \
-    --enable-accelerator-cshift \
+    --enable-comms=mpi-auto \
+    --enable-mkl \
+    --enable-shm=shmget \
+    --enable-shmpath=/dev/hugepages \
     --enable-gparity=no \
     --with-lime="$prefix" \
+    --with-hdf5="$prefix" \
     --with-fftw="$prefix" \
-    --with-mpfr="$prefix" \
-    --prefix=$prefix \
-    CXX=nvcc \
-    CXXFLAGS="-Xcompiler -fPIC -ccbin mpicxx -gencode arch=compute_70,code=sm_70 -std=c++14" \
-    LDFLAGS="-Xcompiler -fopenmp"
-
-    # --enable-shm=shmopen \
+    --prefix="$prefix/grid-tblum" \
+    CXXFLAGS=-fPIC \
+    CXX=icpc \
+    MPICXX=mpiicpc
 
 make -j$num_proc
 make install

@@ -6,12 +6,13 @@ name=gpt
 
 echo "!!!! build $name !!!!"
 
-mkdir -p "$prefix"/gpt || true
+mkdir -p "$prefix"/$name || true
 
-rsync -av --delete $distfiles/gpt/ "$prefix"/gpt/
+rsync -av --delete $distfiles/$name/ "$prefix"/$name/
 
-cd "$prefix"
-cd gpt/lib/cgpt
+cd "$prefix/$name"
+
+cd lib/cgpt
 
 echo "BASIS_SIZE(4)" > lib/basis_size.h
 echo "BASIS_SIZE(10)" >> lib/basis_size.h

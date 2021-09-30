@@ -10,16 +10,11 @@ sha256sum *.tar.* > sha256sums.txt
 
 echo >> sha256sums.txt
 
-echo -n "Grid: " >> sha256sums.txt
-(
-cd Grid
-git rev-parse HEAD >> ../sha256sums.txt
-)
-
-echo -n "gpt: " >> sha256sums.txt
-(
-cd gpt
-git rev-parse HEAD >> ../sha256sums.txt
-)
+for fn in * ; do
+    if [ -e "$fn"/.git ] ; then
+        echo -n "$fn: " >> sha256sums.txt
+        ( cd "$fn" ; git rev-parse HEAD >> ../sha256sums.txt )
+    fi
+done
 
 cat sha256sums.txt

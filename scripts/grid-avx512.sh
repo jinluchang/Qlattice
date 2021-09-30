@@ -6,11 +6,11 @@ name=Grid
 
 echo "!!!! build $name !!!!"
 
-mkdir -p "$prefix"/Grid || true
+mkdir -p "$prefix"/$name || true
 
-rsync -av --delete $distfiles/Grid/ "$prefix"/Grid/
+rsync -av --delete $distfiles/$name/ "$prefix"/$name/
 
-cd "$prefix"/Grid
+cd "$prefix/$name"
 
 INITDIR="$(pwd)"
 rm -v "${INITDIR}/Eigen/Eigen/unsupported"
