@@ -33,6 +33,19 @@ EXPORT(gf_avg_link_trace, {
   return py_convert(ret);
 });
 
+EXPORT(gf_avg_wilson_loop_normalized_tr, {
+  using namespace qlat;
+  PyObject* p_gf = NULL;
+  int l = 0;
+  int t = 0;
+  if (!PyArg_ParseTuple(args, "Oii", &p_gf, &l, &t)) {
+    return NULL;
+  }
+  const GaugeField& gf = py_convert_type<GaugeField>(p_gf);
+  const double ret = matrix_trace(gf_avg_wilson_loop(gf, l, t)).real() / 3.0;
+  return py_convert(ret);
+});
+
 EXPORT(set_g_rand_color_matrix_field, {
   using namespace qlat;
   PyObject* p_field = NULL;

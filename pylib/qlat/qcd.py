@@ -102,6 +102,12 @@ def gf_avg_link_trace(gf):
     assert isinstance(gf, GaugeField)
     return c.gf_avg_link_trace(gf)
 
+def gf_avg_wilson_loop_normalized_tr(gf, l, t):
+    assert isinstance(gf, GaugeField)
+    assert isinstance(l, int)
+    assert isinstance(t, int)
+    return c.gf_avg_wilson_loop_normalized_tr(gf, l, t)
+
 def set_g_rand_color_matrix_field(fc, rng, sigma, n_steps = 1):
     assert isinstance(fc, Field) and fc.ctype == "ColorMatrix"
     assert isinstance(rng, RngState)
