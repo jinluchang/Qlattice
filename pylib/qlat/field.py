@@ -39,8 +39,19 @@ class Field:
         c.free_field(self)
 
     def __imatmul__(self, f1):
-        assert isinstance(f1, Field) and f1.ctype == self.ctype
-        c.set_field(self, f1)
+        # field geo does not change
+        assert f1.ctype == self.ctype
+        if isinstance(f1, Field):
+            c.set_field(self, f1)
+        else:
+            from qlat.selected_field import SelectedField
+            from qlat.selected_points import SelectedPoints
+            if isinstance(f1, SelectedField):
+                c.set_field_sfield(self, f1)
+            elif isinstance(f1, SelectedPoints):
+                c.set_field_spfield(self, f1)
+            else:
+                raise Exception(f"Field @= type mismatch")
         return self
 
     def copy(self, is_copying_data = True):
@@ -103,6 +114,7 @@ class Field:
         return c.crc32_field(self)
 
     def sparse(self, sel):
+        # deprecated
         from qlat.field_selection import PointSelection, FieldSelection
         if isinstance(sel, PointSelection):
             from qlat.selected_points import SelectedPoints, set_selected_points

@@ -22,9 +22,15 @@ class SelectedField:
         c.free_sfield(self)
 
     def __imatmul__(self, f1):
-        assert isinstance(f1, SelectedField) and f1.ctype == self.ctype
-        self.fsel = f1.fsel
-        c.set_sfield(self, f1)
+        # won't change self.fsel
+        assert f1.ctype == self.ctype
+        if isinstance(f1, SelectedField):
+            if self.fsel is f1.fsel:
+                c.set_sfield(self, f1)
+            else:
+                c.set_sfield_sfield(self, f1)
+        elif isinstance(f1, Field):
+            c.set_sfield_field(self, f1)
         return self
 
     def copy(self, is_copying_data = True):
@@ -37,7 +43,7 @@ class SelectedField:
         return c.get_n_elems_sfield(self)
 
     def total_site(self):
-        return c.get_total_site_field(self)
+        return c.get_total_site_sfield(self)
 
     def multiplicity(self):
         return c.get_multiplicity_sfield(self)
@@ -69,6 +75,7 @@ class SelectedField:
         return c.qnorm_sfield(self)
 
     def sparse(self, sel):
+        # deprecated
         if isinstance(sel, PointSelection):
             from qlat.selected_points import SelectedPoints, set_selected_points
             psel = sel
@@ -174,8 +181,23 @@ class SelectedField:
         assert isinstance(tag, str)
         c.to_from_endianness_sfield(self, tag)
 
+    def glb_sum_tslice(self):
+        from qlat.selected_points import SelectedPoints
+        psel = PointSelection()
+        psel.set_tslice(self.total_site())
+        sp = SelectedPoints(self.ctype, psel)
+        if self.ctype in field_ctypes_double:
+            c.glb_sum_tslice_double_sfield(sp, self)
+            return sp
+        elif self.ctype in field_ctypes_long:
+            c.glb_sum_tslice_long_sfield(sp, self)
+            return sp
+        else:
+            assert False
+
 @timer
 def set_selected_field(sf, f):
+    # deprecated use @=
     assert isinstance(sf, SelectedField)
     if isinstance(f, Field):
         c.set_sfield_field(sf, f)

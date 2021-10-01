@@ -113,4 +113,6 @@ class FieldSelection:
         return c.get_n_per_tslice_fsel(self)
 
     def prob(self):
+        # return fsel.prob
+        # n_per_tslice / spatial_volume
         return c.get_prob_fsel(self)

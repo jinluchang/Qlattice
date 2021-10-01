@@ -379,6 +379,7 @@ void set_field_selected(Field<M>& f, const SelectedPoints<M>& sp,
 template <class M>
 void set_field_selected(Field<M>& f, const SelectedPoints<M>& sp,
                         const PointSelection& psel)
+// deprecated
 {
   TIMER("set_field_selected");
   const Geometry& geo = f.geo();

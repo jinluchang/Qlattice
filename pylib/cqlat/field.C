@@ -389,5 +389,3 @@ EXPORT(get_mview_field, {
   FIELD_DISPATCH(p_ret, get_mview_field_ctype, pf.ctype, pf, p_field);
   return p_ret;
 });
-
-

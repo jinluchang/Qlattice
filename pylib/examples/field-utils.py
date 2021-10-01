@@ -68,6 +68,24 @@ gf1 -= gf
 
 q.displayln_info("diff norm", gf1.qnorm())
 
+n_per_tslice = 16
+fsel = q.FieldSelection(geo.total_site(), n_per_tslice, rs.split("fsel"))
+
+prop = q.Prop(geo)
+prop.set_rand(rs.split("prop-1"))
+s_prop = q.SelProp(fsel)
+s_prop @= prop
+prop @= s_prop
+
+sum_tslice1 = prop.glb_sum_tslice()
+
+sum_tslice2 = s_prop.glb_sum_tslice()
+
+sum_tslice = sum_tslice1.copy()
+sum_tslice -= sum_tslice2
+
+q.displayln_info(f"{sum_tslice1.qnorm()} {sum_tslice2.qnorm()} {sum_tslice.qnorm()}")
+
 q.timer_display()
 
 q.end()

@@ -59,6 +59,16 @@ PyObject* set_sfield_sfield_ctype(PyField& psf, PyField& psf0,
 }
 
 template <class M>
+PyObject* set_field_sfield_ctype(PyField& pf, PyField& psf,
+                                 const FieldSelection& fsel)
+{
+  Field<M>& f = *(Field<M>*)pf.cdata;
+  const SelectedField<M>& sf = *(SelectedField<M>*)psf.cdata;
+  set_field_selected(f, sf, fsel);
+  Py_RETURN_NONE;
+}
+
+template <class M>
 PyObject* set_add_sfield_ctype(PyField& pf_new, PyField& pf)
 {
   SelectedField<M>& f_new = *(SelectedField<M>*)pf_new.cdata;
@@ -138,6 +148,26 @@ PyObject* qnorm_sfield_ctype(PyField& pf)
   SelectedField<M>& f = *(SelectedField<M>*)pf.cdata;
   const double ret = qnorm(f);
   return py_convert(ret);
+}
+
+template <class M>
+PyObject* glb_sum_tslice_double_sfield_ctype(PyField& pspf, PyField& pf,
+                                             const FieldSelection& fsel)
+{
+  SelectedPoints<M>& sp = *(SelectedPoints<M>*)pspf.cdata;
+  const SelectedField<M>& f = *(SelectedField<M>*)pf.cdata;
+  field_glb_sum_tslice_double(sp, f, fsel);
+  Py_RETURN_NONE;
+}
+
+template <class M>
+PyObject* glb_sum_tslice_long_sfield_ctype(PyField& pspf, PyField& pf,
+                                           const FieldSelection& fsel)
+{
+  SelectedPoints<M>& sp = *(SelectedPoints<M>*)pspf.cdata;
+  const SelectedField<M>& f = *(SelectedField<M>*)pf.cdata;
+  field_glb_sum_tslice_long(sp, f, fsel);
+  Py_RETURN_NONE;
 }
 
 template <class M>
@@ -269,6 +299,23 @@ EXPORT(set_sfield_field, {
   pqassert(psf.ctype == pf.ctype);
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, set_sfield_field_ctype, pf.ctype, psf, pf, fsel);
+  return p_ret;
+});
+
+EXPORT(set_field_sfield, {
+  using namespace qlat;
+  PyObject* p_field = NULL;
+  PyObject* p_sfield = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_field, &p_sfield)) {
+    return NULL;
+  }
+  PyField pf = py_convert_field(p_field);
+  PyField psf = py_convert_field(p_sfield);
+  PyObject* p_fsel = PyObject_GetAttrString(p_sfield, "fsel");
+  const FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
+  pqassert(psf.ctype == pf.ctype);
+  PyObject* p_ret = NULL;
+  FIELD_DISPATCH(p_ret, set_field_sfield_ctype, pf.ctype, pf, psf, fsel);
   return p_ret;
 });
 
@@ -405,6 +452,38 @@ EXPORT(qnorm_sfield, {
   PyField pf = py_convert_field(p_field);
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, qnorm_sfield_ctype, pf.ctype, pf);
+  return p_ret;
+});
+
+EXPORT(glb_sum_tslice_double_sfield, {
+  using namespace qlat;
+  PyObject* p_spfield = NULL;
+  PyObject* p_field = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_spfield, &p_field)) {
+    return NULL;
+  }
+  PyField pspf = py_convert_field(p_spfield);
+  PyField pf = py_convert_field(p_field);
+  PyObject* p_fsel = PyObject_GetAttrString(p_field, "fsel");
+  const FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
+  PyObject* p_ret = NULL;
+  FIELD_DISPATCH(p_ret, glb_sum_tslice_double_sfield_ctype, pf.ctype, pspf, pf, fsel);
+  return p_ret;
+});
+
+EXPORT(glb_sum_tslice_long_sfield, {
+  using namespace qlat;
+  PyObject* p_spfield = NULL;
+  PyObject* p_field = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_spfield, &p_field)) {
+    return NULL;
+  }
+  PyField pspf = py_convert_field(p_spfield);
+  PyField pf = py_convert_field(p_field);
+  PyObject* p_fsel = PyObject_GetAttrString(p_field, "fsel");
+  const FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
+  PyObject* p_ret = NULL;
+  FIELD_DISPATCH(p_ret, glb_sum_tslice_long_sfield_ctype, pf.ctype, pspf, pf, fsel);
   return p_ret;
 });
 

@@ -811,6 +811,7 @@ template <class M>
 void set_field_from_data_fsel(SelectedField<M>& sf,
                               const std::vector<char>& data,
                               const FieldSelection& fsel)
+// fsel must match the actual data
 {
   TIMER("set_field_from_data_fsel");
   const Geometry& geo = fsel.f_rank.geo();
@@ -837,6 +838,7 @@ template <class M>
 long read(FieldsReader& fr, const std::string& fn, const FieldSelection& fsel,
           SelectedField<M>& sf)
 // field endianess not converted at all
+// fsel must match the actual data
 {
   TIMER_FLOPS("read(fr,fn,fsel,sf)");
   Coordinate total_site;
@@ -1114,6 +1116,7 @@ template <class M>
 long write(ShuffledFieldsWriter& sfw, const std::string& fn,
            const SelectedField<M>& sf, const ShuffledBitSet& sbs)
 // interface function
+// sbs must match the actual data
 {
   TIMER_VERBOSE_FLOPS("write(sfw,fn,sf,sbs)");
   displayln_info(fname +
@@ -1447,6 +1450,7 @@ void set_field_info_from_fields(Coordinate& total_site, int& multiplicity,
 template <class M>
 long read(ShuffledFieldsReader& sfr, const std::string& fn, const ShuffledBitSet& sbs, SelectedField<M>& sf)
 // interface function
+// sbs must match the actual data
 {
   TIMER_VERBOSE_FLOPS("read(sfr,fn,sbs,sf)");
   sf.init();
@@ -1502,6 +1506,7 @@ template <class M>
 long write_float_from_double(ShuffledFieldsWriter& sfw, const std::string& fn,
                              const SelectedField<M>& sf, const ShuffledBitSet& sbs)
 // interface function
+// sbs must match the actual data
 {
   TIMER_VERBOSE_FLOPS("write_float_from_double(sfw,fn,sf,sbs)");
   SelectedField<float> sff;
@@ -1545,6 +1550,7 @@ template <class M>
 long read_double_from_float(ShuffledFieldsReader& sfr, const std::string& fn,
                             const ShuffledBitSet& sbs, SelectedField<M>& sf)
 // interface function
+// sbs must match the actual data
 {
   TIMER_VERBOSE_FLOPS("read_double_from_float(sfr,fn,sbs,sf)");
   sf.init();
@@ -1591,6 +1597,7 @@ long read_field(Field<M>& field, const std::string& path, const std::string& fn)
 template <class M>
 long read_field(SelectedField<M>& sf, const std::string& path, const std::string& fn, const ShuffledBitSet& sbs)
 // interface function
+// sbs must match the actual data
 {
   TIMER_VERBOSE("read_field(sf,path,fn,sbs)");
   ShuffledFieldsReader& sfr = get_shuffled_fields_reader(path);
@@ -1613,6 +1620,7 @@ long read_field_double_from_float(SelectedField<M>& sf,
                                   const std::string& fn,
                                   const ShuffledBitSet& sbs)
 // interface function
+// sbs must match the actual data
 {
   TIMER_VERBOSE("read_field_double_from_float(sf,path,fn,sbs)");
   ShuffledFieldsReader& sfr = get_shuffled_fields_reader(path);

@@ -23,9 +23,18 @@ class SelectedPoints:
         c.free_spfield(self)
 
     def __imatmul__(self, f1):
-        assert isinstance(f1, SelectedPoints) and f1.ctype == self.ctype
-        self.psel = f1.psel
-        c.set_spfield(self, f1)
+        assert f1.ctype == self.ctype
+        if isinstance(f1, SelectedPoints):
+            if self.psel is f1.psel:
+                c.set_spfield(self, f1)
+            else:
+                raise Exception("SelectedPoints @= psel not match")
+        elif isinstance(f1, SelectedField):
+            c.set_spfield_sfield(self, f1)
+        elif isinstance(f1, Field):
+            c.set_spfield_field(self, f1)
+        else:
+            raise Exception("SelectedPoints @= type mismatch")
         return self
 
     def copy(self, is_copying_data = True):
@@ -97,6 +106,7 @@ class SelectedPoints:
 
 @timer
 def set_selected_points(sp, f):
+    # deprecated use @=
     from qlat.selected_field import SelectedField
     assert isinstance(sp, SelectedPoints)
     if isinstance(f, Field):
