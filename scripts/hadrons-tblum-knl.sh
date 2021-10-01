@@ -20,7 +20,7 @@ cd build
 
 ../configure \
     --with-grid="$prefix/grid-tblum" \
-    CXXFLAGS=-fPIC \
+    CXXFLAGS="-DUSE_QLATTICE" \
     CXX=icpc \
     MPICXX=mpiicpc
 
