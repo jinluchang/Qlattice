@@ -18,7 +18,11 @@ mkdir build
 
 cd build
 
-../configure --with-grid="$prefix/grid-tblum"
+../configure \
+    --with-grid="$prefix/grid-tblum" \
+    CXXFLAGS=-fPIC \
+    CXX=icpc \
+    MPICXX=mpiicpc
 
 make -j "$num_proc"
 
