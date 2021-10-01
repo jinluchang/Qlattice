@@ -19,8 +19,7 @@ mkdir build
 cd build
 
 ../configure \
-    --with-grid="$prefix/grid-tblum" \
-    CXXFLAGS="-DUSE_QLATTICE"
+    --with-grid="$prefix/grid-tblum"
 
 make -j "$num_proc"
 
