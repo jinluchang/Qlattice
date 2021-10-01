@@ -43,7 +43,7 @@ fi
 rm -rf "$prefix" || true
 mkdir -p "$prefix"
 
-if [ "$target" = default ] ; then
+if [ "$target" = "default" ] ; then
     #
     ./scripts/setenv.sh
     . "$prefix"/setenv.sh
@@ -61,7 +61,24 @@ if [ "$target" = default ] ; then
     ./scripts/c-lime.sh
     ./scripts/grid-avx2.sh
     ./scripts/gpt.sh
-elif [ "$target" = sse4 ] ; then
+elif [ "$target" = "tblum" ] ; then
+    ./scripts/setenv.sh
+    . "$prefix"/setenv.sh
+    #
+    ./scripts/fftw.sh
+    ./scripts/fftwf.sh
+    ./scripts/cuba.sh
+    ./scripts/zlib.sh
+    ./scripts/eigen.sh
+    ./scripts/qlat.sh
+    #
+    ./scripts/c-lime.sh
+    ./scripts/hdf5.sh
+    ./scripts/grid-tblum-avx2.sh
+    ./scripts/hadrons-tblum.sh
+    ./scripts/grid-avx2.sh
+    ./scripts/gpt.sh
+elif [ "$target" = "sse4" ] ; then
     ./scripts/setenv.sh
     . "$prefix"/setenv.sh
     #
@@ -75,7 +92,7 @@ elif [ "$target" = sse4 ] ; then
     ./scripts/c-lime.sh
     ./scripts/grid-sse4.sh
     ./scripts/gpt.sh
-elif [ "$target" = gen16 ] ; then
+elif [ "$target" = "gen16" ] ; then
     ./scripts/setenv.sh
     . "$prefix"/setenv.sh
     #
@@ -89,7 +106,7 @@ elif [ "$target" = gen16 ] ; then
     ./scripts/c-lime.sh
     ./scripts/grid-gen-16.sh
     ./scripts/gpt.sh
-elif [ "$target" = bnlknl ] ; then
+elif [ "$target" = "bnlknl" ] ; then
     ./scripts/setenv-bnlknl.sh
     . "$prefix"/setenv.sh
     #
@@ -103,7 +120,24 @@ elif [ "$target" = bnlknl ] ; then
     ./scripts/c-lime.sh
     ./scripts/grid-knl.sh
     ./scripts/gpt.sh
-elif [ "$target" = summit ] ; then
+elif [ "$target" = "bnlknl-tblum" ] ; then
+    ./scripts/setenv-bnlknl.sh
+    . "$prefix"/setenv.sh
+    #
+    ./scripts/fftw.sh
+    ./scripts/fftwf.sh
+    ./scripts/cuba.sh
+    ./scripts/zlib.sh
+    ./scripts/eigen.sh
+    ./scripts/qlat.sh
+    #
+    ./scripts/c-lime.sh
+    ./scripts/hdf5.sh
+    ./scripts/grid-tblum-knl.sh
+    ./scripts/hadrons-tblum-knl.sh
+    ./scripts/grid-knl.sh
+    ./scripts/gpt.sh
+elif [ "$target" = "summit" ] ; then
     ./scripts/setenv-summit.sh
     . "$prefix"/setenv.sh
     #
