@@ -126,13 +126,12 @@ def sqrt_component_array(arr):
     return np.array([ sqrt_component(x) for x in arr ])
 
 @q.timer
-def eval_cexpr_simulation(cexpr : CExpr, *, positions_dict_maker, rng_state, trial_indices, total_site, prop_get, is_only_total):
+def eval_cexpr_simulation(cexpr : CExpr, *, positions_dict_maker, trial_indices, prop_get, is_only_total = "typed_total"):
     # interface function
     results = None
     num_fac = None
     for idx in trial_indices:
-        rs = rng_state.split(str(idx))
-        positions_dict, facs = positions_dict_maker(idx, rs, total_site)
+        positions_dict, facs = positions_dict_maker(idx)
         if num_fac is None:
             num_fac = len(facs)
             results = [ [] for i in range(num_fac) ]
@@ -161,7 +160,9 @@ def eval_cexpr_simulation(cexpr : CExpr, *, positions_dict_maker, rng_state, tri
     return summaries
 
 @q.timer
-def positions_dict_maker_example_1(idx, rs, total_site):
+def positions_dict_maker_example_1(idx):
+    total_site = [4, 4, 4, 16,]
+    rs = q.RngState("positions_dict_maker").split(str(idx))
     t2 = 3
     x1 = rs.c_rand_gen(total_site)
     x2 = rs.c_rand_gen(total_site)
@@ -174,7 +175,9 @@ def positions_dict_maker_example_1(idx, rs, total_site):
     return pd, facs
 
 @q.timer
-def positions_dict_maker_example_2(idx, rs, total_site):
+def positions_dict_maker_example_2(idx):
+    total_site = [4, 4, 4, 16,]
+    rs = q.RngState("positions_dict_maker").split(str(idx))
     lmom1 = [0.0, 0.0, 1.0, 0.0,]
     lmom2 = [0.0, 0.0, -1.0, 0.0,]
     t2 = 2
@@ -199,10 +202,7 @@ def positions_dict_maker_example_2(idx, rs, total_site):
     return pd, facs
 
 if __name__ == "__main__":
-    rs = q.RngState("3")
-    q.displayln_info(rs)
-    total_site = [4, 4, 4, 16,]
-    print(positions_dict_maker_example_1(0, rs, total_site))
-    print(positions_dict_maker_example_2(0, rs, total_site))
+    print(positions_dict_maker_example_1(0, total_site))
+    print(positions_dict_maker_example_2(0, total_site))
     print(CExpr([('S_1', S('d','x2','x1')), ('S_2', S('u','x1','x2'))],[('T_1', Term([Tr([G(5), Var('S_1'), G(5), Var('S_2')],'sc')],[],(-1+0j)))],['x1', 'x2']))
 

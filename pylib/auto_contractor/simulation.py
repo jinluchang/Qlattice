@@ -225,7 +225,9 @@ def auto_contractor_meson_corr(job_tag, traj, num_trials):
     q.displayln_info(display_cexpr(cexpr))
     cexpr.collect_op()
     q.displayln_info(display_cexpr_raw(cexpr))
-    def positions_dict_maker(idx, rs, total_site):
+    rng_state = q.RngState("seed")
+    def positions_dict_maker(idx):
+        rs = rng_state.split(str(idx))
         t2 = 5
         x1 = rs.c_rand_gen(total_site)
         x2 = rs.c_rand_gen(total_site)
@@ -242,11 +244,10 @@ def auto_contractor_meson_corr(job_tag, traj, num_trials):
                 ]
         return pd, facs
     names_fac = ["rest", "mom1", "mom2",]
-    rng_state = q.RngState("seed")
     trial_indices = range(num_trials)
     prop_cache = q.mk_cache(f"prop_cache-{job_tag}-{traj}")
     prop_get = mk_prop_get(prop_cache)
-    results_list = eval_cexpr_simulation(cexpr, positions_dict_maker = positions_dict_maker, rng_state = rng_state, trial_indices = trial_indices, total_site = total_site, prop_get = prop_get, is_only_total = "typed_total")
+    results_list = eval_cexpr_simulation(cexpr, positions_dict_maker = positions_dict_maker, trial_indices = trial_indices, prop_get = prop_get, is_only_total = "typed_total")
     for name_fac, results in zip(names_fac, results_list):
         q.displayln_info(f"{name_fac} :")
         for k, v in results.items():
@@ -279,7 +280,9 @@ def auto_contractor_pipi_corr(job_tag, traj, num_trials):
     q.displayln_info(display_cexpr(cexpr))
     cexpr.collect_op()
     q.displayln_info(display_cexpr_raw(cexpr))
-    def positions_dict_maker(idx, rs, total_site):
+    rng_state = q.RngState("seed")
+    def positions_dict_maker(idx):
+        rs = rng_state.split(str(idx))
         t1_2 = 2
         t2_1 = 5
         t2_2 = 7
@@ -302,12 +305,10 @@ def auto_contractor_pipi_corr(job_tag, traj, num_trials):
         facs = [1.0, fac1, fac2, fac1 * fac2,]
         return pd, facs
     names_fac = ["rest-rest", "rest-moving", "moving-rest", "moving-moving",]
-    rng_state = q.RngState("seed")
     trial_indices = range(num_trials)
-    total_site = ru.get_total_site(job_tag)
     prop_cache = q.mk_cache(f"prop_cache-{job_tag}-{traj}")
     prop_get = mk_prop_get(prop_cache)
-    results_list = eval_cexpr_simulation(cexpr, positions_dict_maker = positions_dict_maker, rng_state = rng_state, trial_indices = trial_indices, total_site = total_site, prop_get = prop_get, is_only_total = "typed_total")
+    results_list = eval_cexpr_simulation(cexpr, positions_dict_maker = positions_dict_maker, trial_indices = trial_indices, prop_get = prop_get, is_only_total = "typed_total")
     for name_fac, results in zip(names_fac, results_list):
         q.displayln_info(f"{name_fac} :")
         for k, v in results.items():
@@ -384,7 +385,9 @@ def auto_contractor_kpipi_corr(job_tag, traj, num_trials):
     q.displayln_info(display_cexpr(cexpr))
     cexpr.collect_op()
     q.displayln_info(display_cexpr_raw(cexpr))
-    def positions_dict_maker(idx, rs, total_site):
+    rng_state = q.RngState("seed")
+    def positions_dict_maker(idx):
+        rs = rng_state.split(str(idx))
         t1_1 = 5
         t1_2 = 7
         t = 3
@@ -406,11 +409,10 @@ def auto_contractor_kpipi_corr(job_tag, traj, num_trials):
         facs = [1.0, fac1]
         return pd, facs
     names_fac = [ "rest", "moving", ]
-    rng_state = q.RngState("seed")
     trial_indices = range(num_trials)
     prop_cache = q.mk_cache(f"prop_cache-{job_tag}-{traj}")
     prop_get = mk_prop_get(prop_cache)
-    results_list = eval_cexpr_simulation(cexpr, positions_dict_maker = positions_dict_maker, rng_state = rng_state, trial_indices = trial_indices, total_site = total_site, prop_get = prop_get, is_only_total = "typed_total")
+    results_list = eval_cexpr_simulation(cexpr, positions_dict_maker = positions_dict_maker, trial_indices = trial_indices, prop_get = prop_get, is_only_total = "typed_total")
     q.qmkdir_info("analysis")
     q.qremove_all_info("analysis/kpipi")
     q.qmkdir_info("analysis/kpipi")
