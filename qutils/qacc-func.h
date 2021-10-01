@@ -28,16 +28,16 @@ inline int& qacc_num_threads()
     }                                             \
   }
 
-#define DO_PRAGMA(x) _Pragma(#x)
+#define q_do_pragma(x) _Pragma(#x)
 
 #define qthread_for(iter1, num, ...)            \
-  DO_PRAGMA(omp parallel for schedule(static)) \
+  q_do_pragma(omp parallel for schedule(static)) \
   for (long iter1 = 0; iter1 < num; ++iter1) { \
     __VA_ARGS__                                \
   };
 
 #define qthread_for2d(iter1, num1, iter2, num2, ...) \
-  DO_PRAGMA(omp parallel for collapse(2))           \
+  q_do_pragma(omp parallel for collapse(2))           \
   for (long iter1 = 0; iter1 < num1; ++iter1) {     \
     for (long iter2 = 0; iter2 < num2; ++iter2) {   \
       {__VA_ARGS__};                                \
