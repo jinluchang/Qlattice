@@ -29,7 +29,7 @@ cd build
     --with-fftw="$prefix" \
     --with-hdf5="$prefix" \
     --prefix="$prefix/grid-tblum" \
-    CXXFLAGS=-fPIC 
+    CXXFLAGS="-fPIC -DUSE_QLATTICE"
 
 make -j$num_proc
 make install

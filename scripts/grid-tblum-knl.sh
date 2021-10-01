@@ -32,7 +32,7 @@ cd build
     --with-hdf5="$prefix" \
     --with-fftw="$prefix" \
     --prefix="$prefix/grid-tblum" \
-    CXXFLAGS=-fPIC \
+    CXXFLAGS="-fPIC -DUSE_QLATTICE" \
     CXX=icpc \
     MPICXX=mpiicpc
 
