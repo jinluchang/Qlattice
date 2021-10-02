@@ -28,11 +28,8 @@ class PointSelection:
     def set_rand(self, rs, total_site, n_points):
         c.set_rand_psel(self, rs, total_site, n_points)
 
-    def set_tslice(self, total_site):
-        # [ [0,0,0,0], [0,0,0,1], ..., [0,0,0,total_site[3]-1], ]
-        c.set_tslice_psel(self, total_site)
-
     def save(self, path):
+        mk_file_dirs_info(path)
         c.save_psel(self, path)
 
     def load(self, path):
@@ -44,6 +41,19 @@ class PointSelection:
     def from_list(self, coordinate_list):
         c.set_list_psel(self, coordinate_list)
         return self
+
+cache_point_selection = mk_cache("point_selection")
+
+def get_psel_tslice(total_site):
+    # [ [0,0,0,0], [0,0,0,1], ..., [0,0,0,total_site[3]-1], ]
+    assert isinstance(total_site, list)
+    total_site_tuple = tuple(total_site)
+    if total_site_tuple not in cache_point_selection:
+        psel = PointSelection()
+        c.set_tslice_psel(psel, total_site)
+        psel.set_tslice(total_site)
+        cache_point_selection[total_site_tuple] = psel
+    return cache_point_selection[total_site_tuple]
 
 class FieldSelection:
 
@@ -93,6 +103,7 @@ class FieldSelection:
         c.update_fsel(self, n_per_tslice)
 
     def save(self, path):
+        mk_file_dirs_info(path)
         return c.save_fsel(self, path)
 
     def load(self, path, n_per_tslice):

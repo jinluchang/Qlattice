@@ -2,6 +2,7 @@ import cqlat as c
 
 from qlat.field import *
 from qlat.rng_state import *
+from qlat.utils_io import *
 from qlat.timer import *
 
 class GaugeField(Field):
@@ -16,6 +17,7 @@ class GaugeField(Field):
         return f
 
     def save(self, path):
+        mk_file_dirs_info(path)
         return c.save_gauge_field(self, path)
 
     def load(self, path):

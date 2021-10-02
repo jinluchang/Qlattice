@@ -2,6 +2,7 @@ import cqlat as c
 
 from qlat.geometry import *
 from qlat.rng_state import *
+from qlat.utils_io import *
 
 import numpy as np
 
@@ -21,6 +22,9 @@ field_ctypes_long = [
         ]
 
 class Field:
+
+    # self.ctype
+    # self.cdata
 
     def __init__(self, ctype, geo = None, multiplicity = None):
         assert isinstance(ctype, str)
@@ -59,6 +63,13 @@ class Field:
         if is_copying_data:
             f @= self
         return f
+
+    def swap(self, x):
+        assert isinstance(x, Field)
+        assert x.ctype == self.ctype
+        cdata = x.cdata
+        x.cdata = self.cdata
+        self.cdata = cdata
 
     def total_site(self):
         return c.get_total_site_field(self)
@@ -138,10 +149,11 @@ class Field:
         # f.save(sfw, fn)
         from qlat.fields_io import ShuffledFieldsWriter
         if isinstance(path, str):
+            mk_file_dirs_info(path)
             if len(args) == 0:
                 return c.save_field(self, path)
             else:
-                [new_size_node] = args
+                [ new_size_node, ] = args
                 return c.save_field(self, path, new_size_node)
         elif isinstance(path, ShuffledFieldsWriter):
             sfw = path
@@ -159,7 +171,7 @@ class Field:
             return c.load_field(self, path)
         elif isinstance(path, ShuffledFieldsReader):
             sfr = path
-            [fn] = args
+            [ fn, ] = args
             return sfr.read(fn, self)
         else:
             raise Exception("Field.load")
@@ -254,8 +266,7 @@ class Field:
     def glb_sum_tslice(self):
         from qlat.field_selection import PointSelection
         from qlat.selected_points import SelectedPoints, set_selected_points
-        psel = PointSelection()
-        psel.set_tslice(self.total_site())
+        psel = get_psel_tslice(self.total_site())
         sp = SelectedPoints(self.ctype, psel)
         if self.ctype in field_ctypes_double:
             c.glb_sum_tslice_double_field(sp, self)

@@ -150,7 +150,7 @@ def mk_rand_wall_src_info(job_tag, traj, inv_type):
             wi_e.append([ t, inv_type, inv_acc_e ])
     wi = wi_e + wi_s
     for i in range(len(wi)):
-        wi[i] = [ i ] + wi[i]
+        wi[i] = [ i, ] + wi[i]
     return wi
 
 @q.timer

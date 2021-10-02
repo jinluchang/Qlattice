@@ -1,6 +1,8 @@
 import cqlat as c
 import numpy as np
 
+from qlat.utils_io import *
+
 class LatData:
 
     def __init__(self):
@@ -27,6 +29,7 @@ class LatData:
         return self.copy()
 
     def save_node(self, path):
+        mk_file_dirs(path)
         c.save_lat_data(self, path)
 
     def load_node(self, path):
@@ -43,6 +46,7 @@ class LatData:
     def save(self, path):
         from qlat.mpi import get_id_node
         if get_id_node() == 0:
+            mk_file_dirs(path)
             self.save_node(path)
 
     def load(self, path):

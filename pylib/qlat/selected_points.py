@@ -8,6 +8,10 @@ from qlat.lat_io import *
 
 class SelectedPoints:
 
+    # self.ctype
+    # self.psel
+    # self.cdata
+
     def __init__(self, ctype, psel, multiplicity = None):
         assert isinstance(ctype, str)
         assert isinstance(psel, PointSelection)
@@ -23,6 +27,7 @@ class SelectedPoints:
         c.free_spfield(self)
 
     def __imatmul__(self, f1):
+        # won't change self.psel
         assert f1.ctype == self.ctype
         if isinstance(f1, SelectedPoints):
             if self.psel is f1.psel:
@@ -42,6 +47,14 @@ class SelectedPoints:
         if is_copying_data:
             f @= self
         return f
+
+    def swap(self, x):
+        assert isinstance(x, SelectedPoints)
+        assert x.ctype == self.ctype
+        assert x.psel is self.psel
+        cdata = x.cdata
+        x.cdata = self.cdata
+        self.cdata = cdata
 
     def n_points(self):
         return c.get_n_points_spfield(self)
@@ -89,6 +102,7 @@ class SelectedPoints:
 
     def save_complex(self, path):
         assert isinstance(path, str)
+        mk_file_dirs_info(path)
         return c.save_complex_spfield(self, path)
 
     def load_complex(self, path):

@@ -4,8 +4,13 @@ from qlat.timer import *
 from qlat.geometry import *
 from qlat.field import *
 from qlat.field_selection import *
+from qlat.utils_io import *
 
 class SelectedField:
+
+    # self.ctype
+    # self.fsel
+    # self.cdata
 
     def __init__(self, ctype, fsel, multiplicity = None):
         assert isinstance(ctype, str)
@@ -38,6 +43,14 @@ class SelectedField:
         if is_copying_data:
             f @= self
         return f
+
+    def swap(self, x):
+        assert isinstance(x, SelectedField)
+        assert x.ctype == self.ctype
+        assert x.fsel is self.fsel
+        cdata = x.cdata
+        x.cdata = self.cdata
+        self.cdata = cdata
 
     def n_elems(self):
         return c.get_n_elems_sfield(self)
@@ -98,6 +111,7 @@ class SelectedField:
         from qlat.fields_io import ShuffledFieldsWriter
         if isinstance(path, str):
             assert len(args) == 0
+            mk_file_dirs_info(path)
             return c.save_sfield(self, path)
         elif isinstance(path, ShuffledFieldsWriter):
             sfw = path
@@ -183,8 +197,7 @@ class SelectedField:
 
     def glb_sum_tslice(self):
         from qlat.selected_points import SelectedPoints
-        psel = PointSelection()
-        psel.set_tslice(self.total_site())
+        psel = get_psel_tslice(self.total_site())
         sp = SelectedPoints(self.ctype, psel)
         if self.ctype in field_ctypes_double:
             c.glb_sum_tslice_double_sfield(sp, self)

@@ -4,6 +4,7 @@ from qlat.field import *
 from qlat.cache import *
 from qlat.field_selection import *
 from qlat.selected_field import *
+from qlat.utils_io import *
 
 cache_fields_io = mk_cache("fields_io")
 
@@ -12,6 +13,7 @@ class ShuffledFieldsWriter:
     def __init__(self, path, new_size_node, is_append = False):
         assert isinstance(path, str)
         assert isinstance(is_append , bool)
+        mk_file_dirs_info(path)
         self.cdata = c.mk_sfw(path, new_size_node, is_append)
 
     def close(self):
