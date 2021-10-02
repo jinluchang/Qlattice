@@ -12,15 +12,6 @@ echo "Need to run ./scripts/download.sh to download all needed packages."
 
 . conf.sh
 
-if which mpic++ >/dev/null 2>&1 ; then
-    type mpic++
-elif which mpicxx >/dev/null 2>&1 ; then
-    type mpicxx
-else
-    echo "NO mpic++ or mpicxx available. Quit."
-    exit
-fi
-
 target="$1"
 
 if [ -z "$target" ] ; then
@@ -119,6 +110,20 @@ elif [ "$target" = "bnlknl" ] ; then
     #
     ./scripts/c-lime.sh
     ./scripts/grid-knl.sh
+    ./scripts/gpt.sh
+elif [ "$target" = "bnlic" ] ; then
+    ./scripts/setenv-bnlic.sh
+    . "$prefix"/setenv.sh
+    #
+    ./scripts/fftw.sh
+    ./scripts/fftwf.sh
+    ./scripts/cuba.sh
+    ./scripts/zlib.sh
+    ./scripts/eigen.sh
+    ./scripts/qlat.sh
+    #
+    ./scripts/c-lime.sh
+    ./scripts/grid-avx2.sh
     ./scripts/gpt.sh
 elif [ "$target" = "bnlknl-tblum" ] ; then
     ./scripts/setenv-bnlknl.sh

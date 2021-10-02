@@ -10,6 +10,14 @@ prefix="$(readlink -m "$prefix")"
 
 if [ -f "$prefix/setenv.sh" ] ; then
     . "$prefix/setenv.sh"
+    if which mpic++ >/dev/null 2>&1 ; then
+        type mpic++
+    elif which mpicxx >/dev/null 2>&1 ; then
+        type mpicxx
+    else
+        echo "NO mpic++ or mpicxx available. Quit."
+        exit
+    fi
 else
     echo "'$prefix/setenv.sh' does not exist."
 fi
