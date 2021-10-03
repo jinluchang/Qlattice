@@ -17,7 +17,7 @@ def get_load_path(fn):
             "../mk-gf-gt/results",
             "../mk-lanc/results",
             "../mk-selected-data/results",
-            "/sdcc/u/jluchang/qcdqedta/hlbl-data",
+            "/sdcc/u/jluchang/qcdqedta/hlbl-data-with-cache",
             ]
     for path in path_list:
         p = os.path.join(path, fn)
@@ -44,9 +44,8 @@ def check_job(job_tag, traj):
     fns_need = [
             get_load_path(f"point-selection/{job_tag}/traj={traj}.txt"),
             get_load_path(f"field-selection/{job_tag}/traj={traj}.field"),
-            get_load_path(f"prop-wsrc-strange/{job_tag}/traj={traj}"),
             get_load_path(f"prop-wsrc-light/{job_tag}/traj={traj}"),
-            get_load_path(f"gauge-transform/{job_tag}/traj={traj}.field"),
+            get_load_path(f"prop-wsrc-strange/{job_tag}/traj={traj}"),
             ]
     for fn in fns_need:
         if fn is None:
