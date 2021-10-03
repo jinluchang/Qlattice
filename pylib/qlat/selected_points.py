@@ -28,6 +28,7 @@ class SelectedPoints:
 
     def __imatmul__(self, f1):
         # won't change self.psel
+        from qlat.selected_field import SelectedField
         assert f1.ctype == self.ctype
         if isinstance(f1, SelectedPoints):
             if self.psel is f1.psel:

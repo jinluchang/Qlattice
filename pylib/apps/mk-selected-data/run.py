@@ -195,9 +195,11 @@ def save_point_src_info(pi, path):
 @q.timer_verbose
 def compute_prop(inv, src, *, tag, sfw, fn_sp, psel, fsel, fselc):
     sol = inv * src
-    s_sol = sol.sparse(fselc)
+    s_sol = q.SelProp(fselc)
+    s_sol @= sol
     s_sol.save_float_from_double(sfw, tag)
-    sp_sol = s_sol.sparse(psel)
+    sp_sol = q.PselProp(psel)
+    sp_sol @= s_sol
     sp_sol.save(get_save_path(fn_sp))
     return sol
 
