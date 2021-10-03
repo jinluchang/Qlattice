@@ -159,7 +159,7 @@ def get_four_point_em_jk_list(job_tag):
     # with 'partial_sum_and_normalize_four_point_em'
     trajs = rup.dict_params[job_tag]["trajs"]
     eps = 1.0
-    jk_list = q.jacknife([ q.Data(get_four_point_em(job_tag, traj)) for traj in trajs ])
+    jk_list = q.jackknife([ q.Data(get_four_point_em(job_tag, traj)) for traj in trajs ])
     return list(map(partial_sum_and_normalize_four_point_em, map(q.Data.get_val, jk_list)))
 
 @q.timer
