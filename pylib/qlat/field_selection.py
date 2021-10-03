@@ -1,8 +1,8 @@
 import cqlat as c
 
 from qlat.rng_state import *
-
 from qlat.geometry import *
+from qlat.cache import *
 
 class PointSelection:
 
@@ -51,7 +51,6 @@ def get_psel_tslice(total_site):
     if total_site_tuple not in cache_point_selection:
         psel = PointSelection()
         c.set_tslice_psel(psel, total_site)
-        psel.set_tslice(total_site)
         cache_point_selection[total_site_tuple] = psel
     return cache_point_selection[total_site_tuple]
 
