@@ -176,6 +176,8 @@ gf_show_info: plaq = 0.3067038575531761 ; link_trace = 0.0005769961056065.
  -6.01342095e-02+0.10259023j  7.72723734e-02-0.0272382j
   5.55058971e-02+0.09205889j  9.89613954e-01-0.04894425j]
 diff norm 0.0
+ShufflePlanCache: to add 1 / 16.
+12345.83670174641 12345.83670174641 0.0
 q_timer_max_func_name_len=50 (default)
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 0.

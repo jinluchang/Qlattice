@@ -20,6 +20,7 @@ q_mem_cache_acc_max_size=512 (default)
 CommPlanCache: to add 1 / 32.
 gf_show_info: plaq = 1.0000000000000000 ; link_trace = 1.0000000000000000.
 gf_show_info: plaq = 0.6147333258459872 ; link_trace = 0.8844956937132934.
+mk_file_dirs_info: 'results/ckpoint_lat.0'.
 ShufflePlanCache: to add 1 / 16.
 q_write_par_limit=16 (default)
 load_gauge_field: 'results/ckpoint_lat.0'.

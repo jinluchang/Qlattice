@@ -18,19 +18,24 @@ q_mem_cache_max_size=512 (default)
 q_mem_cache_acc_max_size=512 (default)
 ShufflePlanCache: to add 1 / 16.
 prop.crc32() = 870829356 ; prop.qnorm() = 49123.69045958381
+mk_file_dirs_info: 'results/prop.field'.
 write_field: fn='results/prop.field'.
 q_write_par_limit=16 (default)
 read_field: fn='results/prop.field'.
 q_read_par_limit=16 (default)
 prop.crc32() = 870829356 ; prop.qnorm() = 49123.69045958381
+mk_file_dirs_info: 'results/prop-double.field'.
 write_field: fn='results/prop-double.field'.
 read_field: fn='results/prop-double.field'.
 prop.crc32() = 870829356 ; prop.qnorm() = 49123.69045958381
+mk_file_dirs_info: 'results/prop-float.field'.
 write_field: fn='results/prop-float.field'.
 read_field: fn='results/prop-float.field'.
 prop.crc32() = 1892650077 ; prop.qnorm() = 49123.69044826866
+mk_file_dirs_info: 'results/prop.lat'.
 prop.sparse(psel) 188.73394748572775 0.0
 prop.sparse(psel) 188.73394748572775 0.0 lat_data conversion
+mk_file_dirs_info: 'results/prop.sfield'.
 write_selected_field: fn='results/prop.sfield'.
 read_selected_field: fn='results/prop.sfield'.
 prop.sparse(fsel) 12284.876383957711 0.0

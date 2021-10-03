@@ -18,6 +18,7 @@ q_mem_cache_max_size=512 (default)
 q_mem_cache_acc_max_size=512 (default)
 ShufflePlanCache: to add 1 / 16.
 prop 870829356 49123.69045958381
+mk_file_dirs_info: 'results/prop.fields'.
 FieldsWriter: open 'results/prop.fields'.
 sfw.new_size_node() [1, 1, 1, 8]
 write(sfw,fn,field): writing field with fn='prop.d' from 'results/prop.fields'.
@@ -34,7 +35,7 @@ ShufflePlanCache: to add 2 / 16.
 shuffle_field(fs,f,sp): 1x1x1x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 2304 ; total_size: 0.001 GB)
 write(sfw,fn,field): writing field with fn='prop' from 'results/prop.fields'.
 shuffle_field(fs,f,sp): 1x1x1x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.001 GB)
-s_prop = prop.sparse(fsel) 12284.876386438671
+s_prop = SelProp(fsel) and s_prop @= prop 12284.876386438671
 shuffle_field(fs,f,sp): 1x1x1x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
 make_shuffle_plan_generic: num_send_packs =          2
 make_shuffle_plan_generic: num_recv_packs =          4
@@ -47,7 +48,7 @@ make_shuffle_plan_generic: total num_recv_msgs  =          2
 make_shuffle_plan_generic: global_comm_size =        128
 write(sfw,fn,sf,sbs): writing sparse field with fn='s_prop' from 'results/prop.fields'.
 shuffle_field(sel_fs,sel_f,sp): 1x1x1x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.000 GB)
-prop1 = prop.sparse(fselc) 12473.61033385478
+prop1 = SelProp(fselc) and prop1 @= prop 12473.61033385478
 shuffle_field(fs,f,sp): 1x1x1x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
 make_shuffle_plan_generic: num_send_packs =          3
 make_shuffle_plan_generic: num_recv_packs =          4
@@ -130,6 +131,68 @@ properly_truncate_fields_sync_node: i=    1 fn='prop'
 properly_truncate_fields_sync_node: i=    2 fn='s_prop'
 properly_truncate_fields_sync_node: i=    3 fn='prop1'
 properly_truncate_fields_sync_node: fns.size()=    4 'results/prop.fields'
+FieldsReader: open 'results/prop.fields'.
+read_tag(fr,fn,geo): 'prop.d' from 'results/prop.fields'.
+read_tag(fr,fn,geo): 'prop' from 'results/prop.fields'.
+read_tag(fr,fn,geo): 's_prop' from 'results/prop.fields'.
+read_tag(fr,fn,geo): 'prop1' from 'results/prop.fields'.
+FieldsReader: close 'results/prop.fields'.
+['prop.d', 'prop', 's_prop', 'prop1']
+FieldsReader: open 'results/prop.fields'.
+read_tag(fr,fn,geo): 'prop.d' from 'results/prop.fields'.
+read_tag(fr,fn,geo): 'prop' from 'results/prop.fields'.
+read_tag(fr,fn,geo): 's_prop' from 'results/prop.fields'.
+read_tag(fr,fn,geo): 'prop1' from 'results/prop.fields'.
+check_file_sync_node(sfr,fn): reading field with fn='prop1' from 'results/prop.fields'.
+read_tag(fr,fn,geo): 'prop1' from 'results/prop.fields'.
+check_file_sync_node(sfr,fn): check=true field fn='prop1' from 'results/prop.fields'.
+FieldsReader: close 'results/prop.fields'.
+FieldsReader: open 'results/prop.fields'.
+read_tag(fr,fn,geo): 'prop.d' from 'results/prop.fields'.
+read_tag(fr,fn,geo): 'prop' from 'results/prop.fields'.
+read_tag(fr,fn,geo): 's_prop' from 'results/prop.fields'.
+read_tag(fr,fn,geo): 'prop1' from 'results/prop.fields'.
+FieldsReader: close 'results/prop.fields'.
+['prop.d', 'prop', 's_prop', 'prop1']
+FieldsReader: open 'results/prop.fields'.
+read_tag(fr,fn,geo): 'prop.d' from 'results/prop.fields'.
+read_tag(fr,fn,geo): 'prop' from 'results/prop.fields'.
+read_tag(fr,fn,geo): 's_prop' from 'results/prop.fields'.
+read_tag(fr,fn,geo): 'prop1' from 'results/prop.fields'.
+check_file_sync_node(sfr,fn): reading field with fn='s_prop' from 'results/prop.fields'.
+read_tag(fr,fn,geo): 's_prop' from 'results/prop.fields'.
+check_file_sync_node(sfr,fn): check=true field fn='s_prop' from 'results/prop.fields'.
+FieldsReader: close 'results/prop.fields'.
+truncate_fields_sync_node: Truncate 'results/prop.fields/04/0000000004': final_offset=239799, original file_size=258297.
+truncate_fields_sync_node: Truncate 'results/prop.fields/00/0000000000': final_offset=239799, original file_size=260601.
+truncate_fields_sync_node: Truncate 'results/prop.fields/05/0000000005': final_offset=239799, original file_size=258297.
+truncate_fields_sync_node: Truncate 'results/prop.fields/01/0000000001': final_offset=239799, original file_size=258297.
+truncate_fields_sync_node: Truncate 'results/prop.fields/06/0000000006': final_offset=239799, original file_size=258297.
+truncate_fields_sync_node: Truncate 'results/prop.fields/02/0000000002': final_offset=239799, original file_size=258297.
+truncate_fields_sync_node: Truncate 'results/prop.fields/07/0000000007': final_offset=239799, original file_size=258297.
+truncate_fields_sync_node: Truncate 'results/prop.fields/03/0000000003': final_offset=239799, original file_size=258297.
+FieldsReader: open 'results/prop.fields'.
+read_tag(fr,fn,geo): 'prop.d' from 'results/prop.fields'.
+read_tag(fr,fn,geo): 'prop' from 'results/prop.fields'.
+read_tag(fr,fn,geo): 's_prop' from 'results/prop.fields'.
+FieldsReader: close 'results/prop.fields'.
+['prop.d', 'prop', 's_prop']
+FieldsReader: open 'results/prop.fields'.
+read_tag(fr,fn,geo): 'prop.d' from 'results/prop.fields'.
+read_tag(fr,fn,geo): 'prop' from 'results/prop.fields'.
+read_tag(fr,fn,geo): 's_prop' from 'results/prop.fields'.
+FieldsReader: close 'results/prop.fields'.
+truncate_fields_sync_node: Truncate 'results/prop.fields/00/0000000000': final_offset=0, original file_size=239799.
+truncate_fields_sync_node: Truncate 'results/prop.fields/04/0000000004': final_offset=0, original file_size=239799.
+truncate_fields_sync_node: Truncate 'results/prop.fields/05/0000000005': final_offset=0, original file_size=239799.
+truncate_fields_sync_node: Truncate 'results/prop.fields/01/0000000001': final_offset=0, original file_size=239799.
+truncate_fields_sync_node: Truncate 'results/prop.fields/06/0000000006': final_offset=0, original file_size=239799.
+truncate_fields_sync_node: Truncate 'results/prop.fields/02/0000000002': final_offset=0, original file_size=239799.
+truncate_fields_sync_node: Truncate 'results/prop.fields/07/0000000007': final_offset=0, original file_size=239799.
+truncate_fields_sync_node: Truncate 'results/prop.fields/03/0000000003': final_offset=0, original file_size=239799.
+FieldsReader: open 'results/prop.fields'.
+FieldsReader: close 'results/prop.fields'.
+[]
 ['prop.fields']
 q_timer_max_func_name_len=50 (default)
 qlat::end(): get_comm_list().pop_back()

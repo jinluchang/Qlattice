@@ -12,6 +12,7 @@ qlat::begin(): GeometryNode =
 q_verbose=0 (default)
 qremove: 'results'
 geo.show() = Geometry([4, 4, 4, 8], 1)
+mk_file_dirs_info: 'results/psel.txt'.
 psel.to_list() = [[0, 0, 0, 0], [0, 1, 2, 0]]
 q_field_init=fast (default)
 set q_field_init=fast.
@@ -19,10 +20,12 @@ q_mem_cache_max_size=512 (default)
 q_mem_cache_acc_max_size=512 (default)
 ShufflePlanCache: to add 1 / 16.
 fsel info = Geometry([4, 4, 4, 8], 1) 16 0.25
+mk_file_dirs_info: 'results/fsel.field'.
 write_field: fn='results/fsel.field'.
 q_write_par_limit=16 (default)
 read_field: fn='results/fsel.field'.
 q_read_par_limit=16 (default)
+mk_file_dirs_info: 'results/fsel-1.field'.
 write_field: fn='results/fsel-1.field'.
 fsel info = Geometry([4, 4, 4, 8], 1) 16 0.25
 fsel info = Geometry([4, 4, 4, 8], 1) 16 0.25

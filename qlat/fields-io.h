@@ -1240,7 +1240,7 @@ inline bool check_file_sync_node(ShuffledFieldsReader& sfr,
                                  const std::string& fn,
                                  std::vector<long>& final_offsets)
 // interface function
-// set final_offsets to be the files position after loading the data ``fn''
+// set final_offsets to be the files position after loading the data ``fn'' (zero if failed for that file)
 // return if data is loaded successfully
 {
   TIMER_VERBOSE("check_file_sync_node(sfr,fn)");
@@ -1277,6 +1277,57 @@ inline std::vector<std::string> list_fields(ShuffledFieldsReader& sfr)
   }
   bcast(ret);
   return ret;
+}
+
+inline int truncate_fields_sync_node(
+    const std::string& path, const std::vector<std::string>& fns_keep,
+    const Coordinate& new_size_node = Coordinate())
+{
+  TIMER_VERBOSE("truncate_fields_sync_node");
+  ShuffledFieldsReader sfr;
+  sfr.init(path, new_size_node);
+  const std::vector<std::string> fns = list_fields(sfr);
+  if (fns.size() < fns_keep.size()) {
+    qwarn(fname + ssprintf(": fns.size()=%ld fns_keep.size()=%ld", fns.size(),
+                           fns_keep.size()));
+    return 1;
+  }
+  for (long i = 0; i < (long)fns_keep.size(); ++i) {
+    if (fns[i] != fns_keep[i]) {
+      qwarn(fname + ssprintf(": fns[i]='%s' fns_keep[i]='%s'", fns[i].c_str(),
+                             fns_keep[i].c_str()));
+      return 2;
+    }
+  }
+  std::vector<long> final_offsets(sfr.frs.size(), 0);
+  if (fns_keep.size() >= 1) {
+    const std::string& fn_last = fns_keep.back();
+    const bool is_fn_last_valid =
+        check_file_sync_node(sfr, fn_last, final_offsets);
+    if (not is_fn_last_valid) {
+      qwarn(fname + ssprintf(": fn_last='%s' check failed", fn_last.c_str()));
+      return 2;
+    }
+  }
+  for (int i = 0; i < (int)sfr.frs.size(); ++i) {
+    FieldsReader& fr = sfr.frs[i];
+    const std::string path_file = get_file_path(fr);
+    const long file_size = get_file_size(fr);
+    fr.close();
+    const long final_offset = final_offsets[i];
+    if (file_size != final_offset) {
+      displayln(
+          fname +
+          ssprintf(": Truncate '%s': final_offset=%ld, original file_size=%ld.",
+                   path_file.c_str(), final_offset, file_size));
+      if (file_size < 0) {
+        mkfile(fr);
+      }
+      const bool b = qtruncate(path_file, final_offset);
+      qassert(b);
+    }
+  }
+  return 0;
 }
 
 inline std::vector<std::string> properly_truncate_fields_sync_node(

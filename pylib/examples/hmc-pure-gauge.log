@@ -191,6 +191,9 @@ metropolis_accept: flag=0 with accept_prob=1.2% delta_h=4.4281333045064457 traj=
 run_hmc: update gf (traj=1)
 CommPlanCache: to add 3 / 32.
 test_hmc: traj=1 ; plaq_avg=0.812143046289839
+CommPlanCache: to add 4 / 32.
+CommPlanCache: to add 5 / 32.
+test_hmc: wilson_loop 0.808707840668113
 # norm_idx gm_force_magnitude
     0  6.07014276901974092E+00
     1  6.24893294108425046E+00
@@ -364,10 +367,11 @@ run_hmc_evolve reversed gf_diff: 2.0749755106205578e-27 / 6144.0
 metropolis_accept: flag=1 with accept_prob=34.5% delta_h=1.0651127354130949 traj=2
 run_hmc: update gf (traj=2)
 test_hmc: traj=2 ; plaq_avg=0.7427065632927438
-CommPlanCache: to add 4 / 32.
-    0  1.54376062024353722E+00  2.41289146050876280E+00  1.09453106640150399E-01  5.60965428553758988E-05
-CommPlanCache: to add 5 / 32.
+test_hmc: wilson_loop 0.7378948061308904
 CommPlanCache: to add 6 / 32.
+    0  1.54376062024353722E+00  2.41289146050876280E+00  1.09453106640150399E-01  5.60965428553758988E-05
+CommPlanCache: to add 7 / 32.
+CommPlanCache: to add 8 / 32.
 gf_wilson_flow: t =  2.00000000000000004E-02 ; E =  1.52632704382557183E+00 ; t^2 E =  6.10530817530228814E-04.
 gf_wilson_flow: t =  4.00000000000000008E-02 ; E =  1.39395545719992664E+00 ; t^2 E =  2.23032873151988260E-03.
 gf_wilson_flow: t =  5.99999999999999978E-02 ; E =  1.26444517283845226E+00 ; t^2 E =  4.55200262221842813E-03.
@@ -414,6 +418,7 @@ gf_wilson_flow: t =  2.00000000000000011E-01 ; E =  5.99912986704202122E-01 ; t^
            2 avg(plaq_action^2)  6.75678798621573984E-02
            2 tot(topo_density) -3.49802468569529457E-03
            2 avg(topo_density^2)  8.35628185211913578E-06
+mk_file_dirs_info: 'results/gm_force_info/traj=2.lat'.
 # norm_idx gm_force_magnitude
     0  6.77462752209160524E+00
     1  6.95591453514394242E+00
@@ -501,6 +506,7 @@ gf_wilson_flow: t =  2.00000000000000011E-01 ; E =  5.99912986704202122E-01 ; t^
 metropolis_accept: flag=0 with accept_prob=51.7% delta_h=0.6596611557906726 traj=3
 run_hmc: update gf (traj=3)
 test_hmc: traj=3 ; plaq_avg=0.6875147205799068
+test_hmc: wilson_loop 0.6839381422595826
 # norm_idx gm_force_magnitude
     0  7.13396832431895866E+00
     1  7.33607833988560731E+00
@@ -588,6 +594,7 @@ test_hmc: traj=3 ; plaq_avg=0.6875147205799068
 metropolis_accept: flag=1 with accept_prob=76.5% delta_h=0.2684873632342715 traj=4
 run_hmc: update gf (traj=4)
 test_hmc: traj=4 ; plaq_avg=0.6565132923388937
+test_hmc: wilson_loop 0.6520477974200537
     0  2.06092024596663670E+00  4.30033804233253036E+00  4.57980927397923093E-02  9.31981582610314749E-05
 gf_wilson_flow: t =  2.00000000000000004E-02 ; E =  1.98953813906126209E+00 ; t^2 E =  7.95815255624504917E-04.
 gf_wilson_flow: t =  4.00000000000000008E-02 ; E =  1.86794474306226310E+00 ; t^2 E =  2.98871158889962114E-03.
@@ -635,7 +642,8 @@ gf_wilson_flow: t =  2.00000000000000011E-01 ; E =  9.25517311948635069E-01 ; t^
            2 avg(plaq_action^2)  1.81074204574794728E-01
            2 tot(topo_density) -8.88666298510614461E-02
            2 avg(topo_density^2)  2.07894550269613213E-05
-CommPlanCache: to add 7 / 32.
+mk_file_dirs_info: 'results/gm_force_info/traj=4.lat'.
+CommPlanCache: to add 9 / 32.
 # norm_idx gm_force_magnitude
     0  1.29647900205106748E+00
     1  1.33595673953873684E+00
@@ -809,6 +817,7 @@ run_hmc_evolve reversed gf_diff: 1.1967035516992973e-27 / 6144.0
 metropolis_accept: flag=0 with accept_prob=2.0% delta_h=3.9198068174700893 traj=1
 run_hmc: update gf (traj=1)
 test_hmc: traj=1 ; plaq_avg=0.8471717980458033
+test_hmc: wilson_loop 0.8445062616631045
 # norm_idx gm_force_magnitude
     0  5.35050857919329292E+00
     1  5.50491083393063807E+00
@@ -982,6 +991,7 @@ run_hmc_evolve reversed gf_diff: 1.785105487214733e-27 / 6144.0
 metropolis_accept: flag=1 with accept_prob=36.6% delta_h=1.0060782075424868 traj=2
 run_hmc: update gf (traj=2)
 test_hmc: traj=2 ; plaq_avg=0.7777482122060552
+test_hmc: wilson_loop 0.7738665046956744
     0  1.33351072676366744E+00  1.80399945673817363E+00  7.76498348631161350E-02  3.29520205108148811E-05
 gf_wilson_flow: t =  2.00000000000000004E-02 ; E =  1.15981359511352577E+00 ; t^2 E =  4.63925438045410343E-04.
 gf_wilson_flow: t =  4.00000000000000008E-02 ; E =  1.03768128543816607E+00 ; t^2 E =  1.66029005670106575E-03.
@@ -1029,6 +1039,7 @@ gf_wilson_flow: t =  2.00000000000000011E-01 ; E =  3.98698494370809009E-01 ; t^
            2 avg(plaq_action^2)  3.36993704826570595E-02
            2 tot(topo_density)  2.99761996090847777E-04
            2 avg(topo_density^2)  3.67985467023373897E-06
+mk_file_dirs_info: 'results/gm_force_info/traj=2.lat'.
 # norm_idx gm_force_magnitude
     0  6.00841709489937692E+00
     1  6.16336780426232789E+00
@@ -1116,6 +1127,7 @@ gf_wilson_flow: t =  2.00000000000000011E-01 ; E =  3.98698494370809009E-01 ; t^
 metropolis_accept: flag=0 with accept_prob=49.7% delta_h=0.6983008384058849 traj=3
 run_hmc: update gf (traj=3)
 test_hmc: traj=3 ; plaq_avg=0.7136148801210028
+test_hmc: wilson_loop 0.7100150940624782
 # norm_idx gm_force_magnitude
     0  6.34663550059950321E+00
     1  6.51308017858140698E+00
@@ -1203,6 +1215,7 @@ test_hmc: traj=3 ; plaq_avg=0.7136148801210028
 metropolis_accept: flag=1 with accept_prob=69.9% delta_h=0.3585174500412904 traj=4
 run_hmc: update gf (traj=4)
 test_hmc: traj=4 ; plaq_avg=0.6719471126029463
+test_hmc: wilson_loop 0.6694463651489501
     0  1.96831732438232243E+00  3.92439926383498250E+00  3.96450524153750816E-02  6.45578592049421375E-05
 gf_wilson_flow: t =  2.00000000000000004E-02 ; E =  1.67312585481513842E+00 ; t^2 E =  6.69250341926055426E-04.
 gf_wilson_flow: t =  4.00000000000000008E-02 ; E =  1.54957254494734809E+00 ; t^2 E =  2.47931607191575684E-03.
@@ -1250,6 +1263,7 @@ gf_wilson_flow: t =  2.00000000000000011E-01 ; E =  6.88420696925417852E-01 ; t^
            2 avg(plaq_action^2)  1.11978570072380157E-01
            2 tot(topo_density) -1.01901695994393859E-02
            2 avg(topo_density^2)  9.95445717431649219E-06
+mk_file_dirs_info: 'results/gm_force_info/traj=4.lat'.
 q_timer_max_func_name_len=50 (default)
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 0.

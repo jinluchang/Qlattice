@@ -231,6 +231,25 @@ EXPORT(properly_truncate_fields_sync_node, {
       properly_truncate_fields_sync_node(path, is_check_all, is_only_check, new_size_node));
 });
 
+EXPORT(truncate_fields_sync_node, {
+  using namespace qlat;
+  PyObject* p_path = NULL;
+  PyObject* p_fns_keep = NULL;
+  PyObject* p_new_size_node = NULL;
+  if (!PyArg_ParseTuple(args, "OO|O", &p_path, &p_fns_keep, &p_new_size_node)) {
+    return NULL;
+  }
+  std::string path;
+  py_convert(path, p_path);
+  std::vector<std::string> fns_keep;
+  py_convert(fns_keep, p_fns_keep);
+  Coordinate new_size_node;
+  if (p_new_size_node != NULL) {
+    py_convert(new_size_node, p_new_size_node);
+  }
+  return py_convert(truncate_fields_sync_node(path, fns_keep, new_size_node));
+});
+
 EXPORT(flush_sfw, {
   using namespace qlat;
   PyObject* p_sfw = NULL;

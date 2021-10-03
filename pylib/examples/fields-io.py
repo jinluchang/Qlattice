@@ -33,17 +33,21 @@ prop.save_float_from_double(sfw, "prop")
 
 sfw.flush()
 
-s_prop = prop.sparse(fsel)
-q.displayln_info("s_prop = prop.sparse(fsel)", s_prop.qnorm())
+s_prop = q.SelProp(fsel)
+s_prop @= prop
+q.displayln_info("s_prop = SelProp(fsel) and s_prop @= prop", s_prop.qnorm())
 s_prop.save_float_from_double(sfw, "s_prop")
 
-prop1 = prop.sparse(fselc)
-q.displayln_info("prop1 = prop.sparse(fselc)", prop1.qnorm())
+prop1 = q.SelProp(fselc)
+prop1 @= prop
+q.displayln_info("prop1 = SelProp(fselc) and prop1 @= prop", prop1.qnorm())
 prop1.save_float_from_double(sfw, "prop1")
 
 sfw.close()
 
 sfr = q.open_fields("results/prop.fields", "r")
+
+fns = sfr.list()
 
 q.displayln_info("sfr.list()", sfr.list())
 
@@ -78,6 +82,20 @@ sfr.close()
 q.displayln_info(q.list_fields("results/prop.fields"))
 
 q.properly_truncate_fields("results/prop.fields")
+
+q.displayln_info(q.list_fields("results/prop.fields"))
+
+q.truncate_fields("results/prop.fields", fns)
+
+q.displayln_info(q.list_fields("results/prop.fields"))
+
+q.truncate_fields("results/prop.fields", fns[:-1])
+
+q.displayln_info(q.list_fields("results/prop.fields"))
+
+q.truncate_fields("results/prop.fields", [])
+
+q.displayln_info(q.list_fields("results/prop.fields"))
 
 if q.get_id_node() == 0:
     q.displayln_info(os.listdir("results"))
