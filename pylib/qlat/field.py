@@ -264,8 +264,8 @@ class Field:
             assert False
 
     def glb_sum_tslice(self):
-        from qlat.field_selection import PointSelection
-        from qlat.selected_points import SelectedPoints, set_selected_points
+        from qlat.field_selection import get_psel_tslice
+        from qlat.selected_points import SelectedPoints
         psel = get_psel_tslice(self.total_site())
         sp = SelectedPoints(self.ctype, psel)
         if self.ctype in field_ctypes_double:
