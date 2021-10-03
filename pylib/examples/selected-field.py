@@ -43,42 +43,47 @@ fsel = q.FieldSelection(geo.total_site(), n_per_tslice, rs.split("fsel"))
 fselc = fsel.copy()
 fselc.add_psel(psel)
 
-sp_prop = prop.sparse(psel)
+sp_prop = q.PselProp(psel)
+sp_prop @= prop
 sp_prop.save("results/prop.lat")
 sp_prop1 = q.PselProp(psel)
 sp_prop1.load("results/prop.lat")
 sp_prop1 -= sp_prop
 
-q.displayln_info("prop.sparse(psel)", sp_prop.qnorm(), sp_prop1.qnorm())
+q.displayln_info("sp_prop", sp_prop.qnorm(), sp_prop1.qnorm())
 
 ld = sp_prop.to_lat_data()
 sp_prop1 = q.PselProp(psel)
 sp_prop1.from_lat_data(ld)
 sp_prop1 -= sp_prop
 
-q.displayln_info("prop.sparse(psel)", sp_prop.qnorm(), sp_prop1.qnorm(), "lat_data conversion")
+q.displayln_info("sp_prop", sp_prop.qnorm(), sp_prop1.qnorm(), "lat_data conversion")
 
-s_prop = prop.sparse(fsel)
+s_prop = q.SelProp(fsel)
+s_prop @= prop
 s_prop.save_double("results/prop.sfield")
 s_prop1 = q.SelProp(fsel)
 s_prop1.load_double("results/prop.sfield")
 s_prop1 -= s_prop
 
-q.displayln_info("prop.sparse(fsel)", s_prop.qnorm(), s_prop1.qnorm())
+q.displayln_info("s_prop", s_prop.qnorm(), s_prop1.qnorm())
 
-prop1 = prop.sparse(fselc)
+prop1 = q.SelProp(fselc)
+prop1 @= prop
 
-q.displayln_info("prop.sparse(fselc)", prop.qnorm())
+q.displayln_info("prop1", prop1.qnorm())
 
-sp_prop1 = prop1.sparse(psel)
+sp_prop1 = q.PselProp(psel)
+sp_prop1 @= prop1
 sp_prop1 -= sp_prop
 
-q.displayln_info("prop1.sparse(psel)", sp_prop.qnorm(), sp_prop1.qnorm())
+q.displayln_info("sp_prop1", sp_prop.qnorm(), sp_prop1.qnorm())
 
-s_prop1 = prop1.sparse(fsel)
+s_prop1 = q.SelProp(fsel)
+s_prop1 @= prop1
 s_prop1 -= s_prop
 
-q.displayln_info("prop1.sparse(fsel)", s_prop.qnorm(), s_prop1.qnorm())
+q.displayln_info("s_prop1", s_prop.qnorm(), s_prop1.qnorm())
 
 if q.get_id_node() == 0:
     q.displayln(os.listdir("results"))

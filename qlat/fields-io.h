@@ -1316,7 +1316,7 @@ inline int truncate_fields_sync_node(
     fr.close();
     const long final_offset = final_offsets[i];
     if (file_size != final_offset) {
-      displayln(
+      displayln_info(
           fname +
           ssprintf(": Truncate '%s': final_offset=%ld, original file_size=%ld.",
                    path_file.c_str(), final_offset, file_size));

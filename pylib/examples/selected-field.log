@@ -33,15 +33,15 @@ write_field: fn='results/prop-float.field'.
 read_field: fn='results/prop-float.field'.
 prop.crc32() = 1892650077 ; prop.qnorm() = 49123.69044826866
 mk_file_dirs_info: 'results/prop.lat'.
-prop.sparse(psel) 188.73394748572775 0.0
-prop.sparse(psel) 188.73394748572775 0.0 lat_data conversion
+sp_prop 188.73394748572775 0.0
+sp_prop 188.73394748572775 0.0 lat_data conversion
 mk_file_dirs_info: 'results/prop.sfield'.
 write_selected_field: fn='results/prop.sfield'.
 read_selected_field: fn='results/prop.sfield'.
-prop.sparse(fsel) 12284.876383957711 0.0
-prop.sparse(fselc) 49123.69044826866
-prop1.sparse(psel) 188.73394748572775 0.0
-prop1.sparse(fsel) 12284.876383957711 0.0
+s_prop 12284.876383957711 0.0
+prop1 12473.61033144344
+sp_prop1 188.73394748572775 0.0
+s_prop1 12284.876383957711 0.0
 ['prop.field', 'prop-double.field', 'prop-float.field', 'prop.lat', 'prop.sfield']
 q_timer_max_func_name_len=50 (default)
 qlat::end(): get_comm_list().pop_back()
