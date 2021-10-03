@@ -260,18 +260,31 @@ def compute_prop_psrc(gf, gt, xg, job_tag, inv_type, inv_acc, *,
     fn_spw = os.path.join(path_sp, f"{tag} ; wsnk.lat")
     prop_gt.glb_sum_tslice().save(get_save_path(fn_spw))
 
+def get_common_finished_tags(l1, l2):
+    len1 = len(l1)
+    len2 = len(l2)
+    len_min = min(len1, len2)
+    l = l1[:len_min]
+    assert l == l2[:len_min]
+    return l
+
 @q.timer_verbose
 def compute_prop_psrc_all(gf, gt, pi, job_tag, inv_type, *,
         path_s, path_hvp = None, path_sp, psel, fsel, fselc, eig):
     if q.does_file_exist_sync_node(get_save_path(path_s + ".acc.partial")):
         q.qrename_info(get_save_path(path_s + ".acc.partial"), get_save_path(path_s + ".acc"))
-    finished_tags = q.properly_truncate_fields(get_save_path(path_s + ".acc"))
-    sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", [ 1, 1, 1, 8, ])
+    finished_prop_tags = q.properly_truncate_fields(get_save_path(path_s + ".acc"))
+    finished_tags = finished_prop_tags
     sfw_hvp = None
     if path_hvp is not None:
         finished_hvp_tags = q.properly_truncate_fields(get_save_path(path_hvp + ".acc"))
-        assert finished_tags == finished_hvp_tags
+        finished_tags = get_common_finished_tags(finished_prop_tags, finished_hvp_tags)
+        if finished_tags != finished_prop_tags:
+            q.truncate_fields(get_save_path(path_s + ".acc"), finished_tags)
+        if finished_tags != finished_hvp_tags:
+            q.truncate_fields(get_save_path(path_hvp + ".acc"), finished_tags)
         sfw_hvp = q.open_fields(get_save_path(path_hvp + ".acc"), "a", [ 1, 1, 1, 4, ])
+    sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", [ 1, 1, 1, 8, ])
     for inv_acc in [ 2, 1, 0 ]:
         for p in pi:
             idx, xg, inv_type_p, inv_acc_p = p

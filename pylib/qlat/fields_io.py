@@ -133,11 +133,12 @@ def truncate_fields(path, fns_keep, new_size_node = None):
     # fns_keep needs to be in the same order as the data is stored in path
     # all fns_keep must be already in the path
     # fns_keep can be empty list
-    # return 0 if successful, non zero if error occur
     if new_size_node is None:
-        return c.truncate_fields_sync_node(path, fns_keep)
+        ret = c.truncate_fields_sync_node(path, fns_keep)
     else:
-        return c.truncate_fields_sync_node(path, fns_keep, new_size_node)
+        ret = c.truncate_fields_sync_node(path, fns_keep, new_size_node)
+    if ret != 0:
+        raise Exception(f"truncate_fields error {ret}")
 
 def check_fields(path, is_check_all = True, new_size_node = None):
     # return list of field that is stored successful
