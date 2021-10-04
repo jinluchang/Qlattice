@@ -214,7 +214,7 @@ def mk_gpt_inverter(gf, job_tag, inv_type, inv_acc, *,
     q.displayln_info(f"mk_gpt_inverter: job_tag={job_tag} inv_type={inv_type} inv_acc={inv_acc} mpi_split={mpi_split} n_grouped={n_grouped}")
     gpt_gf = qg.gpt_from_qlat(gf)
     pc = g.qcd.fermion.preconditioner
-    if inv_type in [0, 1,]:
+    if inv_type in [ 0, 1, 2, ]:
         params = get_fermion_params(job_tag, inv_type, inv_acc)
         if eig is not None:
             # may need madwf
@@ -234,7 +234,7 @@ def mk_gpt_inverter(gf, job_tag, inv_type, inv_acc, *,
             cg_mp = inv.cg({"eps": eps, "maxiter": 500})
         elif inv_type == 0:
             cg_mp = inv.cg({"eps": eps, "maxiter": 200})
-        elif inv_type == 1:
+        elif inv_type in [ 1, 2, ]:
             cg_mp = inv.cg({"eps": eps, "maxiter": 300})
         else:
             raise Exception("mk_gpt_inverter")
@@ -258,7 +258,7 @@ def mk_gpt_inverter(gf, job_tag, inv_type, inv_acc, *,
             pc_ne = pc.eo2_ne()
         if inv_type == 0:
             slv_5d = inv.preconditioned(pc_ne, cg)
-        elif inv_type == 1:
+        elif inv_type in [ 1, 2, ]:
             slv_5d = inv.preconditioned(pc_ne, cg)
         else:
             raise Exception("mk_gpt_inverter")

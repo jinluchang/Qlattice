@@ -1,6 +1,7 @@
 #pragma once
 
 #include <qlat/qcd.h>
+#include <qlat/selected-points.h>
 
 namespace qlat
 {  //
@@ -324,6 +325,48 @@ inline void set_wall_src_propagator(Propagator4d& prop, const Inverter& inv,
     invert(sol, src, inv);
     set_propagator_col_from_fermion_field(prop, cs, sol);
   }
+}
+
+inline void set_rand_u1_src_psel(Propagator4d& prop, FieldM<Complex, 1>& fu1,
+                                 const Geometry& geo_,
+                                 const PointSelection& psel, const RngState& rs)
+{
+  TIMER_VERBOSE("set_rand_u1_src_psel");
+  const Geometry geo = geo_reform(geo_);
+  const Coordinate total_site = geo.total_site();
+  prop.init(geo);
+  fu1.init(geo);
+  set_zero(prop);
+  set_zero(fu1);
+  qthread_for(idx, (long)psel.size(), {
+    const Coordinate xg = psel[idx];
+    const Coordinate xl = geo.coordinate_l_from_g(xg);
+    if (geo.is_local(xl)) {
+      const long gindex = index_from_coordinate(xg, total_site);
+      RngState rst = rs.newtype(gindex);
+      const double phase = u_rand_gen(rst, PI, -PI);
+      const Complex u1 = std::polar(1.0, phase);
+      set_unit(prop.get_elem(xl), u1);
+      fu1.get_elem(xl) = u1;
+    }
+  });
+}
+
+inline void set_rand_u1_sol_psel(SelectedPoints<WilsonMatrix>& sp_prop,
+                                 const Propagator4d& prop,
+                                 const FieldM<Complex, 1>& fu1,
+                                 const PointSelection& psel)
+// calculate self loop at psel locations
+{
+  TIMER_VERBOSE("set_rand_u1_sol_psel")
+  SelectedPoints<Complex> sp_fu1;
+  set_selected_points(sp_prop, prop, psel);
+  set_selected_points(sp_fu1, fu1, psel);
+  qthread_for(idx, (long)psel.size(), {
+    const Complex& u1 = sp_fu1.get_elem(idx);
+    WilsonMatrix& wm = sp_prop.get_elem(idx);
+    wm *= std::conj(u1);
+  });
 }
 
 inline void set_mom_src_fermion_field(FermionField4d& ff,

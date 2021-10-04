@@ -29,9 +29,9 @@ class Field:
     def __init__(self, ctype, geo = None, multiplicity = None):
         assert isinstance(ctype, str)
         self.ctype = ctype
-        if geo == None:
+        if geo is None:
             self.cdata = c.mk_field(ctype)
-        elif multiplicity == None:
+        elif multiplicity is None:
             assert isinstance(geo, Geometry)
             self.cdata = c.mk_field(ctype, geo)
         else:

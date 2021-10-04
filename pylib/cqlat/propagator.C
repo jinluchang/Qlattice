@@ -34,6 +34,46 @@ EXPORT(set_wall_src_prop, {
   Py_RETURN_NONE;
 });
 
+EXPORT(set_rand_u1_src_psel, {
+  using namespace qlat;
+  PyObject* p_prop = NULL;
+  PyObject* p_fu1 = NULL;
+  PyObject* p_geo = NULL;
+  PyObject* p_psel = NULL;
+  PyObject* p_rs = NULL;
+  if (!PyArg_ParseTuple(args, "OOOOO", &p_prop, &p_fu1, &p_geo, &p_psel, &p_rs)) {
+    return NULL;
+  }
+  Propagator4d& prop = py_convert_type<Propagator4d>(p_prop);
+  prop.init();
+  FieldM<Complex, 1>& fu1 = py_convert_type<FieldM<Complex, 1> >(p_fu1);
+  fu1.init();
+  const Geometry& geo = py_convert_type<Geometry>(p_geo);
+  const PointSelection& psel = py_convert_type<PointSelection>(p_psel);
+  const RngState& rs = py_convert_type<RngState>(p_rs);
+  set_rand_u1_src_psel(prop, fu1, geo, psel, rs);
+  Py_RETURN_NONE;
+});
+
+EXPORT(set_rand_u1_sol_psel, {
+  using namespace qlat;
+  PyObject* p_sp_prop = NULL;
+  PyObject* p_prop = NULL;
+  PyObject* p_fu1 = NULL;
+  PyObject* p_psel = NULL;
+  if (!PyArg_ParseTuple(args, "OOOO", &p_sp_prop, &p_prop, &p_fu1, &p_psel)) {
+    return NULL;
+  }
+  SelectedPoints<WilsonMatrix>& sp_prop =
+      py_convert_type<SelectedPoints<WilsonMatrix> >(p_sp_prop);
+  const Propagator4d& prop = py_convert_type<Propagator4d>(p_prop);
+  const FieldM<Complex, 1>& fu1 = py_convert_type<FieldM<Complex, 1> >(p_fu1);
+  pqassert(fu1.geo().multiplicity == 1);
+  const PointSelection& psel = py_convert_type<PointSelection>(p_psel);
+  set_rand_u1_sol_psel(sp_prop, prop, fu1, psel);
+  Py_RETURN_NONE;
+});
+
 EXPORT(free_invert_prop, {
   using namespace qlat;
   PyObject* p_prop_sol = NULL;
