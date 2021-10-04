@@ -21,6 +21,7 @@ def get_load_path(fn):
             "results",
             "../mk-gf-gt/results",
             "../mk-selected-data/results",
+            "/sdcc/u/jluchang/qcdqedta/hlbl-data-with-cache",
             ]
     for path in path_list:
         p = os.path.join(path, fn)
@@ -181,6 +182,7 @@ rup.dict_params["64I"]["n_rand_u1"] = 4
 rup.dict_params["test-4nt8"]["trajs"] = list(range(1000, 1400, 100))
 rup.dict_params["test-4nt16"]["trajs"] = list(range(1000, 1400, 100))
 rup.dict_params["48I"]["trajs"] = list(range(3000, 500, -5))
+rup.dict_params["64I"]["trajs"] = list(range(3000, 500, -5))
 
 # rup.dict_params["test-4nt8"]["fermion_params"][0][2]["Ls"] = 10
 # rup.dict_params["test-4nt8"]["fermion_params"][1][2]["Ls"] = 10
