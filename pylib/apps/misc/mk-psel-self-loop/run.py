@@ -32,7 +32,8 @@ def get_load_path(fn):
 def check_job(job_tag, traj):
     # return True if config is finished or unavailable
     fns_produce = [
-            get_load_path(f"psel-prop-rand-u1-charm/{job_tag}/traj={traj}/checkpoint.txt"),
+            get_load_path(f"psel-prop-rand-u1/{job_tag}/traj={traj}/checkpoint ; type=1.txt"),
+            get_load_path(f"psel-prop-rand-u1/{job_tag}/traj={traj}/checkpoint ; type=2.txt"),
             ]
     is_job_done = True
     for fn in fns_produce:
@@ -85,32 +86,35 @@ def compute_prop_rand_u1(*, job_tag, traj, gf, inv_type, path_sp, psel):
             inv = ru.get_inv(gf, job_tag, inv_type, inv_acc)
             sp_prop = q.mk_rand_u1_prop(inv, geo, psel, rs.split(idx_rand_u1))
             sp_prop.save(get_save_path(fn_sp))
+    q.qtouch(get_save_path(os.path.join(path_sp, f"checkpoint ; type={inv_type}.txt")))
 
 @q.timer_verbose
 def run_prop_rand_u1_charm(job_tag, traj, get_gf, get_psel):
+    inv_type = 2
     if None in [ get_gf, get_psel, ]:
         return
-    if get_load_path(f"psel-prop-rand-u1-charm/{job_tag}/traj={traj}/checkpoint.txt") is not None:
+    if get_load_path(f"psel-prop-rand-u1/{job_tag}/traj={traj}/checkpoint ; type={inv_type}.txt") is not None:
         return
     if q.obtain_lock(f"locks/{job_tag}-{traj}-rand-u1-charm"):
         gf = get_gf()
         psel = get_psel()
         compute_prop_rand_u1(job_tag = job_tag, traj = traj,
-                gf = get_gf(), inv_type = 2,
-                path_sp = f"psel-prop-rand-u1-charm/{job_tag}/traj={traj}",
+                gf = get_gf(), inv_type = inv_type,
+                path_sp = f"psel-prop-rand-u1/{job_tag}/traj={traj}",
                 psel = get_psel())
         q.release_lock()
 
 @q.timer_verbose
 def run_prop_rand_u1_strange(job_tag, traj, get_gf, get_psel):
+    inv_type = 1
     if None in [ get_gf, get_psel, ]:
         return
-    if get_load_path(f"psel-prop-rand-u1-strange/{job_tag}/traj={traj}/checkpoint.txt") is not None:
+    if get_load_path(f"psel-prop-rand-u1-strange/{job_tag}/traj={traj}/checkpoint ; type={inv_type}.txt") is not None:
         return
     if q.obtain_lock(f"locks/{job_tag}-{traj}-rand-u1-strange"):
         compute_prop_rand_u1(job_tag = job_tag, traj = traj,
-                gf = get_gf(), inv_type = 1,
-                path_sp = f"psel-prop-rand-u1-charm/{job_tag}/traj={traj}",
+                gf = get_gf(), inv_type = inv_type,
+                path_sp = f"psel-prop-rand-u1/{job_tag}/traj={traj}",
                 psel = get_psel())
         q.release_lock()
 
