@@ -16,9 +16,13 @@ There are other scripts in the `scripts` directory used to install the dependenc
 
 The `build.sh` will install everything into the `$prefix` directory by running all the scripts in the `scripts` directory. For example, the following command will install everything into `DEST_DIRECTORY`.
 
-`$ prefix=DEST_DIRECTORY ./build.sh`
+`$ export prefix=DEST_DIRECTORY`
 
 If `$prefix` is not set, the default value in `setenv.sh` is used, which is `$HOME/qlat-build/default`.
+
+`$ ./build.sh TARGET`
+
+`TARGET` can be empty or `default`, `sse4`, `bnlknl`, `summit`, ..., depend on which computer you are compiling on.
 
 The environment variables for python library can be set with the following command:
 
@@ -28,14 +32,15 @@ where `$prefix` should be replaced with the installation path.
 
 It is also possible to also build `Grid` and `gpt`:
 
-`$ prefix=DEST_DIRECTORY ./scripts/grid-avx2.sh`
-`$ prefix=DEST_DIRECTORY ./scripts/gpt.sh`
+`$ ./scripts/grid-avx2.sh`
+
+`$ ./scripts/gpt.sh`
 
 There are few different scripts to build the `Grid` library. Choose one best suit the machine (or create a custom one).
 
 After the first complete install, one can re-install individual components by running the specific script. For example, to just re-install the `Qlattice` header files and python library:
 
-`$ prefix=DEST_DIRECTORY ./scripts/qlat.sh`
+`$ ./scripts/qlat.sh`
 
 It can be convenient to create a symbolic link `$HOME/qlat-build/default`, which points to the actual directory `DEST_DIRECTORY`. One can omit the `prefix=DEST_DIRECTORY` in the above command if the symbolic link is created.
 
