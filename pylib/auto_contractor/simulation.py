@@ -173,15 +173,15 @@ def get_prop_psnk_psrc(prop_cache, flavor : str, xg_snk, xg_src):
     wm = get_prop_psrc(prop_cache, flavor, xg_src).get_elem(xg_snk)
     return g.tensor(np.ascontiguousarray(np.array(wm)), g.ot_matrix_spin_color(4, 3))
 
-def mk_prop_get(prop_cache):
-    def prop_get(flavor, xg_snk, xg_src):
+def mk_get_prop(prop_cache):
+    def get_prop(flavor, xg_snk, xg_src):
         return get_prop_psnk_psrc(prop_cache, flavor, xg_snk, xg_src)
-    return prop_get
+    return get_prop
 
 @q.timer
 def auto_contractor_simple_test(job_tag, traj):
     prop_cache = q.mk_cache(f"prop_cache-{job_tag}-{traj}")
-    prop_get = mk_prop_get(prop_cache)
+    get_prop = mk_get_prop(prop_cache)
     q.displayln_info(g.gamma[5] * get_prop_psnk_psrc(prop_cache, "l", [1, 2, 3, 2], [1, 2, 3, 2]))
     q.displayln_info(g.trace(g.gamma[5] * get_prop_psnk_psrc(prop_cache, "l", [1, 2, 3, 2], [1, 2, 3, 2])))
     q.displayln_info(g.gamma[5] * get_prop_psnk_psrc(prop_cache, "l", [1, 2, 3, 2], [1, 2, 3, 2]) - get_prop_psnk_psrc(prop_cache, "l", [1, 2, 3, 2], [1, 2, 3, 2]))
@@ -202,14 +202,14 @@ def auto_contractor_simple_test(job_tag, traj):
     positions_dict = {}
     positions_dict["x1"] = [1, 2, 3, 4]
     positions_dict["x2"] = [1, 2, 3, 2]
-    val = eval_cexpr(cexpr, positions_dict = positions_dict, prop_get = prop_get)
+    val = eval_cexpr(cexpr, positions_dict = positions_dict, get_prop = get_prop)
     q.displayln_info("eval_cexpr: ", val)
     q.displayln_info("gpt_direct: ",
             -g.trace(
                 g.gamma[5]
-                * prop_get("l", [1, 2, 3, 4], [1, 2, 3, 2])
+                * get_prop("l", [1, 2, 3, 4], [1, 2, 3, 2])
                 * g.gamma[5]
-                * prop_get("l", [1, 2, 3, 2], [1, 2, 3, 4])
+                * get_prop("l", [1, 2, 3, 2], [1, 2, 3, 4])
                 ))
 
 @q.timer
@@ -246,8 +246,8 @@ def auto_contractor_meson_corr(job_tag, traj, num_trials):
     names_fac = ["rest", "mom1", "mom2",]
     trial_indices = range(num_trials)
     prop_cache = q.mk_cache(f"prop_cache-{job_tag}-{traj}")
-    prop_get = mk_prop_get(prop_cache)
-    results_list = eval_cexpr_simulation(cexpr, positions_dict_maker = positions_dict_maker, trial_indices = trial_indices, prop_get = prop_get, is_only_total = "typed_total")
+    get_prop = mk_get_prop(prop_cache)
+    results_list = eval_cexpr_simulation(cexpr, positions_dict_maker = positions_dict_maker, trial_indices = trial_indices, get_prop = get_prop, is_only_total = "typed_total")
     for name_fac, results in zip(names_fac, results_list):
         q.displayln_info(f"{name_fac} :")
         for k, v in results.items():
@@ -307,8 +307,8 @@ def auto_contractor_pipi_corr(job_tag, traj, num_trials):
     names_fac = ["rest-rest", "rest-moving", "moving-rest", "moving-moving",]
     trial_indices = range(num_trials)
     prop_cache = q.mk_cache(f"prop_cache-{job_tag}-{traj}")
-    prop_get = mk_prop_get(prop_cache)
-    results_list = eval_cexpr_simulation(cexpr, positions_dict_maker = positions_dict_maker, trial_indices = trial_indices, prop_get = prop_get, is_only_total = "typed_total")
+    get_prop = mk_get_prop(prop_cache)
+    results_list = eval_cexpr_simulation(cexpr, positions_dict_maker = positions_dict_maker, trial_indices = trial_indices, get_prop = get_prop, is_only_total = "typed_total")
     for name_fac, results in zip(names_fac, results_list):
         q.displayln_info(f"{name_fac} :")
         for k, v in results.items():
@@ -411,8 +411,8 @@ def auto_contractor_kpipi_corr(job_tag, traj, num_trials):
     names_fac = [ "rest", "moving", ]
     trial_indices = range(num_trials)
     prop_cache = q.mk_cache(f"prop_cache-{job_tag}-{traj}")
-    prop_get = mk_prop_get(prop_cache)
-    results_list = eval_cexpr_simulation(cexpr, positions_dict_maker = positions_dict_maker, trial_indices = trial_indices, prop_get = prop_get, is_only_total = "typed_total")
+    get_prop = mk_get_prop(prop_cache)
+    results_list = eval_cexpr_simulation(cexpr, positions_dict_maker = positions_dict_maker, trial_indices = trial_indices, get_prop = get_prop, is_only_total = "typed_total")
     q.qmkdir_info("analysis")
     q.qremove_all_info("analysis/kpipi")
     q.qmkdir_info("analysis/kpipi")
