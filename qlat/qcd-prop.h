@@ -365,7 +365,7 @@ inline void set_rand_u1_sol_psel(SelectedPoints<WilsonMatrix>& sp_prop,
   qthread_for(idx, (long)psel.size(), {
     const Complex& u1 = sp_fu1.get_elem(idx);
     WilsonMatrix& wm = sp_prop.get_elem(idx);
-    wm *= std::conj(u1);
+    wm *= qlat::qconj(u1);
   });
 }
 
