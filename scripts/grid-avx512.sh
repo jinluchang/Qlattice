@@ -13,8 +13,8 @@ rsync -av --delete $distfiles/$name/ "$prefix"/$name/
 cd "$prefix/$name"
 
 INITDIR="$(pwd)"
-rm -v "${INITDIR}/Eigen/Eigen/unsupported"
-rm -v "${INITDIR}/Grid/Eigen"
+rm -rfv "${INITDIR}/Eigen/Eigen/unsupported"
+rm -rfv "${INITDIR}/Grid/Eigen"
 ln -vs "${INITDIR}/Eigen/Eigen" "${INITDIR}/Grid/Eigen"
 ln -vs "${INITDIR}/Eigen/unsupported/Eigen" "${INITDIR}/Grid/Eigen/unsupported"
 
