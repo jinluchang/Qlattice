@@ -12,23 +12,27 @@ The major dependencies can be downloaded with
 
 These dependencies will be downloaded to the `distfiles` directory.
 
-There are other scripts in the `scripts` directory used to install the dependencies.
+There are scripts in the `scripts` directory used to install the dependencies.
 
-The `build.sh` will install everything into the `$prefix` directory by running all the scripts in the `scripts` directory. For example, the following command will install everything into `DEST_DIRECTORY`.
+To install, we fist set the `prefix` variable to specify the target directory.
 
 `$ export prefix=DEST_DIRECTORY`
 
-If `$prefix` is not set, the default value in `setenv.sh` is used, which is `$HOME/qlat-build/default`.
+If `$prefix` is not set, the default value in `conf.sh` is used, which is `$HOME/qlat-build/default`.
+
+The `build.sh` will install everything into the `$prefix` directory by running all the scripts in the `scripts` directory. For example, the following command will install everything into `DEST_DIRECTORY`.
+
+`$ ./build.sh`
+
+On some systems, one may need to specify the system type:
 
 `$ ./build.sh TARGET`
 
-`TARGET` can be empty or `default`, `sse4`, `bnlknl`, `summit`, ..., depend on which computer you are compiling on.
+`TARGET` can be `default`, `sse4`, `bnlknl`, `summit`, ...
 
 The environment variables for python library can be set with the following command:
 
-`$ source $prefix/setenv.sh`
-
-where `$prefix` should be replaced with the installation path.
+`$ source DEST_DIRECTORY/setenv.sh`
 
 It is also possible to also build `Grid` and `gpt`:
 
