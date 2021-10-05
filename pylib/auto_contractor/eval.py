@@ -28,8 +28,8 @@ import cmath
 import math
 
 @q.timer
-def get_prop_psnk_psrc(prop_get, flavor : str, xg_snk, xg_src):
-    return prop_get(flavor, xg_snk, xg_src)
+def get_prop_psnk_psrc(get_prop, flavor : str, xg_snk, xg_src):
+    return get_prop(flavor, xg_snk, xg_src)
 
 def get_spin_matrix(op):
     assert op.otype == "G"
@@ -40,7 +40,7 @@ def get_spin_matrix(op):
 def ascontiguoustensor(tensor):
     return g.tensor(np.ascontiguousarray(tensor.array), tensor.otype)
 
-def eval_op_term_expr(expr, variable_dict, positions_dict, prop_get):
+def eval_op_term_expr(expr, variable_dict, positions_dict, get_prop):
     def l_eval(x):
         if isinstance(x, list):
             ans = l_eval(x[0])
@@ -52,7 +52,7 @@ def eval_op_term_expr(expr, variable_dict, positions_dict, prop_get):
                 flavor = x.f
                 xg_snk = positions_dict[x.p1]
                 xg_src = positions_dict[x.p2]
-                return get_prop_psnk_psrc(prop_get, flavor, xg_snk, xg_src)
+                return get_prop_psnk_psrc(get_prop, flavor, xg_snk, xg_src)
             elif x.otype == "G":
                 return get_spin_matrix(x)
             elif x.otype == "Tr" and len(x.ops) == 2:
@@ -92,15 +92,15 @@ def eval_op_term_expr(expr, variable_dict, positions_dict, prop_get):
     return g.eval(l_eval(expr))
 
 @q.timer
-def eval_cexpr(cexpr : CExpr, *, positions_dict, prop_get, is_only_total):
+def eval_cexpr(cexpr : CExpr, *, positions_dict, get_prop, is_only_total):
     # interface function
     # the last element is the sum
     for pos in cexpr.positions:
         assert pos in positions_dict
     variable_dict = {}
     for name, op in cexpr.variables:
-        variable_dict[name] = eval_op_term_expr(op, variable_dict, positions_dict, prop_get)
-    tvals = { name : eval_op_term_expr(term, variable_dict, positions_dict, prop_get) for name, term in cexpr.named_terms }
+        variable_dict[name] = eval_op_term_expr(op, variable_dict, positions_dict, get_prop)
+    tvals = { name : eval_op_term_expr(term, variable_dict, positions_dict, get_prop) for name, term in cexpr.named_terms }
     evals = { name : sum([ tvals[tname] for tname in expr ]) for name, expr in cexpr.named_exprs }
     if is_only_total in [ True, "total", ]:
         return np.array([ evals[name] for name, expr in cexpr.named_exprs])
@@ -126,7 +126,7 @@ def sqrt_component_array(arr):
     return np.array([ sqrt_component(x) for x in arr ])
 
 @q.timer
-def eval_cexpr_simulation(cexpr : CExpr, *, positions_dict_maker, trial_indices, prop_get, is_only_total = "typed_total"):
+def eval_cexpr_simulation(cexpr : CExpr, *, positions_dict_maker, trial_indices, get_prop, is_only_total = "typed_total"):
     # interface function
     results = None
     num_fac = None
@@ -137,7 +137,7 @@ def eval_cexpr_simulation(cexpr : CExpr, *, positions_dict_maker, trial_indices,
             results = [ [] for i in range(num_fac) ]
         else:
             assert num_fac == len(facs)
-        res = eval_cexpr(cexpr, positions_dict = positions_dict, prop_get = prop_get , is_only_total = is_only_total)
+        res = eval_cexpr(cexpr, positions_dict = positions_dict, get_prop = get_prop , is_only_total = is_only_total)
         for i in range(num_fac):
             results[i].append(facs[i] * res)
     summaries = []
