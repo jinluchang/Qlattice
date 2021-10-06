@@ -42,6 +42,19 @@ else
     wget -c "https://www.mpfr.org/mpfr-current/mpfr-4.1.0.tar.bz2"
 fi
 
+if [ -f "autoconf-2.71.tar.gz" ] ; then
+    echo "autoconf is downloaded"
+else
+    wget -c "http://ftp.gnu.org/gnu/autoconf/autoconf-2.71.tar.gz"
+fi
+
+if [ -f "automake-1.16.5.tar.gz" ] ; then
+    echo "automake is downloaded"
+else
+    wget -c "http://ftp.gnu.org/gnu/automake/automake-1.16.5.tar.gz"
+fi
+
+
 if [ -f "hdf5-1.12.1.tar.bz2" ] ; then
     echo "hdf5 is downloaded"
 else
