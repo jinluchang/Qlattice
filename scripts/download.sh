@@ -51,7 +51,7 @@ fi
 if [ -d Grid ] ; then
     ( cd Grid ; git pull )
 else
-    git clone https://github.com/waterret/Grid.git
+    git clone https://github.com/paboyle/Grid.git Grid
 fi
 
 if [ -e Grid/configure ] ; then
@@ -60,10 +60,22 @@ else
     ( cd Grid ; git clean -f ; ./bootstrap.sh )
 fi
 
+if [ -d Grid-lehner ] ; then
+    ( cd Grid-lehner ; git pull )
+else
+    git clone https://github.com/lehner/Grid.git Grid-lehner
+fi
+
+if [ -e Grid-lehner/configure ] ; then
+    echo "Grid-lehner bootstrapped."
+else
+    ( cd Grid-lehner ; git clean -f ; ./bootstrap.sh )
+fi
+
 if [ -d gpt ] ; then
     ( cd gpt ; git pull )
 else
-    git clone https://github.com/waterret/gpt.git
+    git clone https://github.com/lehner/gpt.git
 fi
 
 if [ -d Grid-tblum ] ; then

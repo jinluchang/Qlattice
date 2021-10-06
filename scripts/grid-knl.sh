@@ -8,9 +8,11 @@ echo "!!!! build $name !!!!"
 
 mkdir -p "$prefix"/$name || true
 
-rsync -av --delete $distfiles/$name/ "$prefix"/$name/
+rsync -av --delete $distfiles/$name-lehner/ "$prefix"/$name/
 
 cd "$prefix/$name"
+
+git checkout c50f27e68bd4b3e4fb6a1da00aebe224f0a0bc23
 
 INITDIR="$(pwd)"
 rm -rfv "${INITDIR}/Eigen/Eigen/unsupported"

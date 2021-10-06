@@ -8,7 +8,7 @@ echo "!!!! build $name !!!!"
 
 mkdir -p "$prefix"/$name || true
 
-rsync -av --delete $distfiles/$name/ "$prefix"/$name/
+rsync -av --delete $distfiles/$name-lehner/ "$prefix"/$name/
 
 cd "$prefix/$name"
 
