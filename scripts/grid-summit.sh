@@ -24,12 +24,16 @@ mkdir build
 cd build
 ../configure \
     --enable-simd=GPU \
+    --enable-gen-simd-width=32 \
     --enable-alloc-align=4k \
     --enable-comms=mpi \
+    --enable-shm=nvlink \
     --enable-unified=no \
     --enable-accelerator=cuda \
     --enable-accelerator-cshift \
     --enable-gparity=no \
+    --enable-setdevice \
+    --disable-fermion-reps \
     --with-lime="$prefix" \
     --with-fftw="$prefix" \
     --with-mpfr="$prefix" \
