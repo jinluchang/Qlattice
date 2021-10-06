@@ -37,7 +37,6 @@ mkdir -p "$prefix"
 if [ "$target" = "default" ] ; then
     #
     ./scripts/setenv.sh
-    . "$prefix"/setenv.sh
     #
     # ./scripts/gsl.sh
     # ./scripts/cmake.sh
@@ -54,7 +53,6 @@ if [ "$target" = "default" ] ; then
     ./scripts/gpt.sh
 elif [ "$target" = "tblum" ] ; then
     ./scripts/setenv.sh
-    . "$prefix"/setenv.sh
     #
     ./scripts/fftw.sh
     ./scripts/fftwf.sh
@@ -71,7 +69,6 @@ elif [ "$target" = "tblum" ] ; then
     ./scripts/gpt.sh
 elif [ "$target" = "sse4" ] ; then
     ./scripts/setenv.sh
-    . "$prefix"/setenv.sh
     #
     ./scripts/fftw.sh
     ./scripts/fftwf.sh
@@ -85,7 +82,6 @@ elif [ "$target" = "sse4" ] ; then
     ./scripts/gpt.sh
 elif [ "$target" = "gen16" ] ; then
     ./scripts/setenv.sh
-    . "$prefix"/setenv.sh
     #
     ./scripts/fftw.sh
     ./scripts/fftwf.sh
@@ -99,7 +95,6 @@ elif [ "$target" = "gen16" ] ; then
     ./scripts/gpt.sh
 elif [ "$target" = "bnlknl" ] ; then
     ./scripts/setenv-bnlknl.sh
-    . "$prefix"/setenv.sh
     #
     ./scripts/fftw.sh
     ./scripts/fftwf.sh
@@ -113,7 +108,6 @@ elif [ "$target" = "bnlknl" ] ; then
     ./scripts/gpt.sh
 elif [ "$target" = "bnlic" ] ; then
     ./scripts/setenv-bnlic.sh
-    . "$prefix"/setenv.sh
     #
     ./scripts/fftw.sh
     ./scripts/fftwf.sh
@@ -127,7 +121,6 @@ elif [ "$target" = "bnlic" ] ; then
     ./scripts/gpt.sh
 elif [ "$target" = "bnlknl-tblum" ] ; then
     ./scripts/setenv-bnlknl.sh
-    . "$prefix"/setenv.sh
     #
     ./scripts/fftw.sh
     ./scripts/fftwf.sh
@@ -144,7 +137,6 @@ elif [ "$target" = "bnlknl-tblum" ] ; then
     ./scripts/gpt.sh
 elif [ "$target" = "summit" ] ; then
     ./scripts/setenv-summit.sh
-    . "$prefix"/setenv.sh
     #
     ./scripts/fftw.sh
     ./scripts/fftwf.sh
@@ -154,6 +146,7 @@ elif [ "$target" = "summit" ] ; then
     ./scripts/qlat.sh
     #
     pip3 install numpy
+    pip3 install simpy
     ./scripts/c-lime.sh
     ./scripts/mpfr.sh
     ./scripts/grid-summit.sh
