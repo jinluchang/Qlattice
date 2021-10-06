@@ -9,6 +9,8 @@
 ./scripts/eigen.sh
 ./scripts/qlat.sh
 
+./scripts/autoconf.sh
+./scripts/automake.sh
 ./scripts/c-lime.sh
 ./scripts/hdf5.sh
 ./scripts/grid-tblum-knl.sh

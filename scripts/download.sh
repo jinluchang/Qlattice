@@ -36,6 +36,12 @@ else
     wget -O c-lime.tar.gz -c "https://github.com/usqcd-software/c-lime/tarball/master"
 fi
 
+if [ -f "gmp-6.2.1.tar.bz2" ] ; then
+    echo "gmp is downloaded"
+else
+    wget -c "https://gmplib.org/download/gmp/gmp-6.2.1.tar.bz2"
+fi
+
 if [ -f "mpfr-4.1.0.tar.bz2" ] ; then
     echo "mpfr is downloaded"
 else
@@ -53,7 +59,6 @@ if [ -f "automake-1.16.5.tar.gz" ] ; then
 else
     wget -c "http://ftp.gnu.org/gnu/automake/automake-1.16.5.tar.gz"
 fi
-
 
 if [ -f "hdf5-1.12.1.tar.bz2" ] ; then
     echo "hdf5 is downloaded"
