@@ -11,15 +11,9 @@ cd $src_dir
 tar xaf $distfiles/$name-*.tar.*
 
 cd $name-*
-if [ ppc64 = "$(uname -m)" ] ; then
-    ./Configure linux-ppc64 \
-        --prefix=$prefix \
-        shared
-else
-    ./config \
-        --prefix=$prefix \
-        shared
-fi
+./config \
+    --prefix=$prefix \
+    shared
 make -j$num_proc
 make install
 

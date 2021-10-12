@@ -13,6 +13,7 @@ pip3 install numpy
 pip3 install simpy
 
 ./scripts/c-lime.sh
+./scripts/gmp.sh
 ./scripts/mpfr.sh
 ./scripts/grid-summit.sh
 ./scripts/gpt.sh

@@ -30,11 +30,11 @@ On some systems, one may need to specify the system type:
 
 `TARGET` can be `default`, `sse4`, `bnlknl`, `summit`, ...
 
-The environment variables for python library can be set with the following command:
+The environment variables needed to use the library can be set with the following command:
 
 `$ source DEST_DIRECTORY/setenv.sh`
 
-It is also possible to also build `Grid` and `gpt`:
+It is also possible to also build `Grid` and `gpt`. For examples:
 
 `$ ./scripts/grid-avx2.sh`
 
@@ -46,7 +46,13 @@ After the first complete install, one can re-install individual components by ru
 
 `$ ./scripts/qlat.sh`
 
-It can be convenient to create a symbolic link `$HOME/qlat-build/default`, which points to the actual directory `DEST_DIRECTORY`. One can omit the `prefix=DEST_DIRECTORY` in the above command if the symbolic link is created.
+It can be convenient to create a symbolic link `$HOME/qlat-build/default`, which points to the actual directory `DEST_DIRECTORY`. The `prefix` environment variable can be empty if the symbolic link is created.
+
+## Install on new machines
+
+If there is not existing `./scripts/build.TARGET.sh` for the machine. You may need to create a new one. In particular, one may need to create a `./scripts/setenv-TARGET.sh` scripts.
+
+The purpose of the `./scripts/setenv-TARGET.sh` is to create the `DEST_DIRECTORY/setenv.sh` scripts, which can be sourced to set the environmental variables. The `DEST_DIRECTORY/setenv.sh` scripts will be sourced automatically in all the other installation scripts.
 
 ## Usage:
 

@@ -2,7 +2,7 @@
 
 . conf.sh
 
-name=mpfr
+name=gcc
 
 echo "!!!! build $name !!!!"
 
@@ -17,7 +17,9 @@ cd $build_dir
 
 $src_dir/$name-*/configure \
     --prefix=$prefix \
-    --with-gmp=$prefix
+    --with-gmp=$prefix \
+    --with-mpfr --with-mpc \
+    --disable-multilib
 make -j$num_proc
 make install
 

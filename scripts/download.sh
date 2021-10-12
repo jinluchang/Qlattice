@@ -6,65 +6,51 @@ mkdir -p $distfiles
 
 cd $distfiles
 
-if [ -f "fftw-3.3.9.tar.gz" ] ; then
-    echo "fftw is downloaded"
-else
-    wget -c "http://www.fftw.org/fftw-3.3.9.tar.gz"
-fi
+dget() {
+    name="$1"
+    url="$2"
+    if [ -f "$name" ] ; then
+        echo "$name is downloaded"
+    else
+        wget -O "$name" -c "$url"
+    fi
+}
 
-if [ -f "Cuba-4.2.1.tar.gz" ] ; then
-    echo "cuba is downloaded"
-else
-    wget -c "http://www.feynarts.de/cuba/Cuba-4.2.1.tar.gz"
-fi
+dget "xz-5.2.5.tar.gz" "https://tukaani.org/xz/xz-5.2.5.tar.gz"
 
-if [ -f "zlib-1.2.11.tar.gz" ] ; then
-    echo "zlib is downloaded"
-else
-    wget -c "https://zlib.net/zlib-1.2.11.tar.gz"
-fi
+dget "tar-1.34.tar.gz" "https://ftp.gnu.org/gnu/tar/tar-1.34.tar.gz"
 
-if [ -f "eigen-3.3.9.tar.bz2" ] ; then
-    echo "eigen is downloaded"
-else
-    wget -c "https://gitlab.com/libeigen/eigen/-/archive/3.3.9/eigen-3.3.9.tar.bz2"
-fi
+dget "fftw-3.3.10.tar.gz" "http://www.fftw.org/fftw-3.3.10.tar.gz"
 
-if [ -f "c-lime.tar.gz" ] ; then
-    echo "c-lime is downloaded"
-else
-    wget -O c-lime.tar.gz -c "https://github.com/usqcd-software/c-lime/tarball/master"
-fi
+dget "Cuba-4.2.1.tar.gz"  "http://www.feynarts.de/cuba/Cuba-4.2.1.tar.gz"
 
-if [ -f "gmp-6.2.1.tar.bz2" ] ; then
-    echo "gmp is downloaded"
-else
-    wget -c "https://gmplib.org/download/gmp/gmp-6.2.1.tar.bz2"
-fi
+dget "zlib-1.2.11.tar.gz" "https://zlib.net/zlib-1.2.11.tar.gz"
 
-if [ -f "mpfr-4.1.0.tar.bz2" ] ; then
-    echo "mpfr is downloaded"
-else
-    wget -c "https://www.mpfr.org/mpfr-current/mpfr-4.1.0.tar.bz2"
-fi
+dget "eigen-3.3.9.tar.bz2" "https://gitlab.com/libeigen/eigen/-/archive/3.3.9/eigen-3.3.9.tar.bz2"
 
-if [ -f "autoconf-2.71.tar.gz" ] ; then
-    echo "autoconf is downloaded"
-else
-    wget -c "http://ftp.gnu.org/gnu/autoconf/autoconf-2.71.tar.gz"
-fi
+dget "c-lime.tar.gz" "https://github.com/usqcd-software/c-lime/tarball/master"
 
-if [ -f "automake-1.16.5.tar.gz" ] ; then
-    echo "automake is downloaded"
-else
-    wget -c "http://ftp.gnu.org/gnu/automake/automake-1.16.5.tar.gz"
-fi
+dget "gmp-6.2.1.tar.bz2" "https://gmplib.org/download/gmp/gmp-6.2.1.tar.bz2"
 
-if [ -f "hdf5-1.12.1.tar.bz2" ] ; then
-    echo "hdf5 is downloaded"
-else
-    wget -c "https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.12/hdf5-1.12.1/src/hdf5-1.12.1.tar.bz2"
-fi
+dget "mpfr-4.1.0.tar.bz2" "https://www.mpfr.org/mpfr-current/mpfr-4.1.0.tar.bz2"
+
+dget "mpc-1.2.1.tar.gz" "https://ftp.gnu.org/gnu/mpc/mpc-1.2.1.tar.gz"
+
+dget "autoconf-2.71.tar.gz" "http://ftp.gnu.org/gnu/autoconf/autoconf-2.71.tar.gz"
+
+dget "automake-1.16.5.tar.gz" "http://ftp.gnu.org/gnu/automake/automake-1.16.5.tar.gz"
+
+dget "cmake-3.21.3.tar.gz" "https://github.com/Kitware/CMake/releases/download/v3.21.3/cmake-3.21.3.tar.gz"
+
+dget "hdf5-1.10.7.tar.bz2" "https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-1.10.7/src/hdf5-1.10.7.tar.bz2"
+
+dget "gcc-11.2.0.tar.xz" "http://mirrors.concertpass.com/gcc/releases/gcc-11.2.0/gcc-11.2.0.tar.xz"
+
+dget "openmpi-4.1.1.tar.bz2" "https://download.open-mpi.org/release/open-mpi/v4.1/openmpi-4.1.1.tar.bz2"
+
+dget "llvm-project-13.0.0.src.tar.xz" "https://github.com/llvm/llvm-project/releases/download/llvmorg-13.0.0/llvm-project-13.0.0.src.tar.xz"
+
+dget "openssl-3.0.0.tar.gz" "https://www.openssl.org/source/openssl-3.0.0.tar.gz"
 
 if [ -d Grid ] ; then
     ( cd Grid ; git pull )

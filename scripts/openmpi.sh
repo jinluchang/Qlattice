@@ -2,7 +2,7 @@
 
 . conf.sh
 
-name=mpfr
+name=openmpi
 
 echo "!!!! build $name !!!!"
 
@@ -17,7 +17,7 @@ cd $build_dir
 
 $src_dir/$name-*/configure \
     --prefix=$prefix \
-    --with-gmp=$prefix
+    --with-hwloc=internal
 make -j$num_proc
 make install
 

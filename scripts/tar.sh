@@ -2,7 +2,7 @@
 
 . conf.sh
 
-name=mpfr
+name=tar
 
 echo "!!!! build $name !!!!"
 
@@ -16,8 +16,7 @@ mkdir -p $build_dir || true
 cd $build_dir
 
 $src_dir/$name-*/configure \
-    --prefix=$prefix \
-    --with-gmp=$prefix
+    --prefix=$prefix
 make -j$num_proc
 make install
 

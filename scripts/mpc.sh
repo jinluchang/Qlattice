@@ -2,7 +2,7 @@
 
 . conf.sh
 
-name=mpfr
+name=mpc
 
 echo "!!!! build $name !!!!"
 
