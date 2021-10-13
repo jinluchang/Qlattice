@@ -13,7 +13,7 @@ mkdir -p $build_dir
 cd $build_dir
 
 cmake -DCMAKE_INSTALL_PREFIX:PATH=$prefix \
-    -DLLVM_ENABLE_PROJECTS="all" \
+    -DLLVM_ENABLE_PROJECTS="clang" \
     -DCMAKE_C_COMPILER=gcc \
     -DCMAKE_CXX_COMPILER=g++ \
     $src_dir/$name-*/llvm

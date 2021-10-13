@@ -46,13 +46,26 @@ add-to-colon-list PYTHONPATH "$prefix/pylib"
 add-to-colon-list PYTHONPATH "$prefix/gpt/lib"
 add-to-colon-list PYTHONPATH "$prefix/gpt/lib/cgpt/build"
 add-to-colon-list LD_LIBRARY_PATH "$prefix/lib"
+add-to-colon-list LD_LIBRARY_PATH "$prefix/lib64"
+add-to-colon-list LIBRARY_PATH "$prefix/lib"
+add-to-colon-list LIBRARY_PATH "$prefix/lib64"
+add-to-colon-list C_INCLUDE_PATH "$prefix/include/ncurses"
+add-to-colon-list C_INCLUDE_PATH "$prefix/include"
+add-to-colon-list CPLUS_INCLUDE_PATH "$prefix/include/ncurses"
+add-to-colon-list CPLUS_INCLUDE_PATH "$prefix/include"
+add-to-colon-list PKG_CONFIG_PATH "$prefix/lib/pkgconfig"
+add-to-colon-list PKG_CONFIG_PATH "$prefix/lib64/pkgconfig"
 
 organize-colon-list PATH
 organize-colon-list PYTHONPATH
 organize-colon-list LD_LIBRARY_PATH
+organize-colon-list LIBRARY_PATH
+organize-colon-list C_INCLUDE_PATH
+organize-colon-list CPLUS_INCLUDE_PATH
+organize-colon-list PKG_CONFIG_PATH
 
 echo
-for v in PATH PYTHONPATH LD_LIBRARY_PATH QLAT_PREFIX QLAT_CXX QLAT_CXXLD QLAT_FLAGS ; do
+for v in PATH PYTHONPATH LD_LIBRARY_PATH LIBRARY_PATH C_INCLUDE_PATH CPLUS_INCLUDE_PATH PKG_CONFIG_PATH QLAT_PREFIX QLAT_CXX QLAT_CXXLD QLAT_FLAGS ; do
 export | grep --color=never " $v="'"' || true
 done
 echo

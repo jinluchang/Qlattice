@@ -52,6 +52,23 @@ dget "llvm-project-13.0.0.src.tar.xz" "https://github.com/llvm/llvm-project/rele
 
 dget "openssl-3.0.0.tar.gz" "https://www.openssl.org/source/openssl-3.0.0.tar.gz"
 
+dget "Python-3.10.0.tar.xz" "https://www.python.org/ftp/python/3.10.0/Python-3.10.0.tar.xz"
+
+dget "libffi-3.4.2.tar.gz" "https://github.com/libffi/libffi/releases/download/v3.4.2/libffi-3.4.2.tar.gz"
+
+(
+mkdir -p python-packages
+cd python-packages
+dget "numpy-1.21.2.zip" "https://files.pythonhosted.org/packages/3a/be/650f9c091ef71cb01d735775d554e068752d3ff63d7943b26316dc401749/numpy-1.21.2.zip"
+dget "Cython-0.29.24.tar.gz" "https://files.pythonhosted.org/packages/59/e3/78c921adf4423fff68da327cc91b73a16c63f29752efe7beb6b88b6dd79d/Cython-0.29.24.tar.gz"
+dget "setuptools-49.1.3.zip" "https://files.pythonhosted.org/packages/d0/4a/22ee76842d8ffc123d4fc48d24a623c1d206b99968fe3960039f1efc2cbc/setuptools-49.1.3.zip"
+dget "wheel-0.36.2.tar.gz" "https://files.pythonhosted.org/packages/ed/46/e298a50dde405e1c202e316fa6a3015ff9288423661d7ea5e8f22f589071/wheel-0.36.2.tar.gz"
+dget "sympy-1.9.tar.gz" "https://files.pythonhosted.org/packages/26/86/902ee78db1bab1f0410f799869a49bb03b83be8d44c23b224d9db34f21c3/sympy-1.9.tar.gz"
+dget "mpmath-1.2.1.tar.gz" "https://files.pythonhosted.org/packages/95/ba/7384cb4db4ed474d4582944053549e02ec25da630810e4a23454bc9fa617/mpmath-1.2.1.tar.gz"
+dget "mpmath-1.2.1-py3-none-any.whl" "https://files.pythonhosted.org/packages/d4/cf/3965bddbb4f1a61c49aacae0e78fd1fe36b5dc36c797b31f30cf07dcbbb7/mpmath-1.2.1-py3-none-any.whl"
+)
+
+
 if [ -d Grid ] ; then
     ( cd Grid ; git pull )
 else
