@@ -511,7 +511,7 @@ def auto_contractor_kpipi_corr(job_tag, traj, num_trials):
             q.qtouch(fn, f"0 {a.real} {a.imag} {e.real} {e.imag}\n")
 
 @q.timer
-def run_job(job_tag, traj, src_type, gfix_flag = False):
+def run_job(job_tag, traj):
     q.check_stop()
     q.check_time_limit()
     #
@@ -542,36 +542,47 @@ def run_job(job_tag, traj, src_type, gfix_flag = False):
         get_eig = compute_eig(gf, job_tag, inv_type = 0, path = f"eig/{job_tag}/traj={traj}")
         q.release_lock()
     #
-    if gfix_flag:
-        path_gt = get_load_path(f"gauge-transform/{job_tag}/traj={traj}.field")
-        if path_gt is None:
-            q.qmkdir_info(get_save_path(f"gauge-transform"))
-            q.qmkdir_info(get_save_path(f"gauge-transform/{job_tag}"))
-            gt = mk_sample_gauge_transform(job_tag, traj)
-            gt.save_double(get_save_path(f"gauge-transform/{job_tag}/traj={traj}.field"))
-        else:
-            gt = q.GaugeTransform()
-            gt.load_double(path_gt)
+    path_gt = get_load_path(f"gauge-transform/{job_tag}/traj={traj}.field")
+    if path_gt is None:
+        q.qmkdir_info(get_save_path(f"gauge-transform"))
+        q.qmkdir_info(get_save_path(f"gauge-transform/{job_tag}"))
+        gt = mk_sample_gauge_transform(job_tag, traj)
+        gt.save_double(get_save_path(f"gauge-transform/{job_tag}/traj={traj}.field"))
+    else:
+        gt = q.GaugeTransform()
+        gt.load_double(path_gt)
     #
     for inv_type in [0, 1,]:
-        if get_load_path(f"prop-{src_type}-{inv_type}/{job_tag}/traj={traj}") is None:
+        if get_load_path(f"prop-wsrc-{inv_type}/{job_tag}/traj={traj}") is None:
             if inv_type == 0 and get_eig is None:
                 continue
-            if q.obtain_lock(f"locks/{job_tag}-{traj}-compute-prop-{src_type}-all-{inv_type}"):
-                q.qmkdir_info(get_save_path(f"prop-{src_type}-{inv_type}"))
-                q.qmkdir_info(get_save_path(f"prop-{src_type}-{inv_type}/{job_tag}"))
+            if q.obtain_lock(f"locks/{job_tag}-{traj}-compute-prop-wsrc-all-{inv_type}"):
+                q.qmkdir_info(get_save_path(f"prop-wsrc-{inv_type}"))
+                q.qmkdir_info(get_save_path(f"prop-wsrc-{inv_type}/{job_tag}"))
                 if inv_type == 0:
                     eig = get_eig()
                 else:
                     eig = None
-                #compute_prop_{src_type}_all(gf, job_tag, inv_type, path_s = f"prop-{src_type}-{inv_type}/{job_tag}/traj={traj}", eig = eig)
-                compute_prop_wsrc_all(gf, gt, job_tag, inv_type, path_s = f"prop-{src_type}-{inv_type}/{job_tag}/traj={traj}", eig = eig)
+                compute_prop_wsrc_all(gf, gt, job_tag, inv_type, path_s = f"prop-wsrc-{inv_type}/{job_tag}/traj={traj}", eig = eig)
+                q.release_lock()
+        #
+        if get_load_path(f"prop-psrc-{inv_type}/{job_tag}/traj={traj}") is None:
+            if inv_type == 0 and get_eig is None:
+                continue
+            if q.obtain_lock(f"locks/{job_tag}-{traj}-compute-prop-psrc-all-{inv_type}"):
+                q.qmkdir_info(get_save_path(f"prop-psrc-{inv_type}"))
+                q.qmkdir_info(get_save_path(f"prop-psrc-{inv_type}/{job_tag}"))
+                if inv_type == 0:
+                    eig = get_eig()
+                else:
+                    eig = None
+                compute_prop_psrc_all(gf, job_tag, inv_type, path_s = f"prop-psrc-{inv_type}/{job_tag}/traj={traj}", eig = eig)
                 q.release_lock()
     #
-    path_prop_list = [ get_load_path(f"prop-{src_type}-{inv_type}/{job_tag}/traj={traj}") for inv_type in [0, 1,] ]
+    path_prop_list = [ get_load_path(f"prop-wsrc-{inv_type}/{job_tag}/traj={traj}") for inv_type in [0, 1,] ]
     if all(map(lambda x : x is not None, path_prop_list)):
-        load_prop_psrc_all(job_tag, traj, "l", f"prop-{src_type}-0/{job_tag}/traj={traj}")
-        load_prop_psrc_all(job_tag, traj, "s", f"prop-{src_type}-1/{job_tag}/traj={traj}")
+        load_prop_psrc_all(job_tag, traj, "l", f"prop-wsrc-0/{job_tag}/traj={traj}")
+        load_prop_psrc_all(job_tag, traj, "s", f"prop-wsrc-1/{job_tag}/traj={traj}")
         # auto_contractor_simple_test(job_tag, traj)
         num_trials = 100
         auto_contractor_meson_corr(job_tag, traj, num_trials)
@@ -583,10 +594,8 @@ def run_job(job_tag, traj, src_type, gfix_flag = False):
 if __name__ == "__main__":
     qg.begin_with_gpt()
     job_tag = "test-4nt16"
-    src_type = "wsrc"
-    gfix_flag = True
     q.displayln_info(pprint.pformat(rup.dict_params[job_tag]))
     traj = 1000
-    run_job(job_tag, traj, src_type, gfix_flag)
+    run_job(job_tag, traj)
     q.timer_display()
     qg.end_with_gpt()
