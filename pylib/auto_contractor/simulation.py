@@ -89,6 +89,16 @@ def test_eig(gf, eig, job_tag, inv_type):
         q.displayln_info(f"sol diff norm {sol.qnorm()} inv_acc={inv_acc} without eig")
 
 @q.timer
+def mk_sample_gauge_transform(job_tag, traj):
+    rs = q.RngState(f"seed {job_tag} {traj}").split("mk_sample_gauge_transform")
+    total_site = ru.get_total_site(job_tag)
+    geo = q.Geometry(total_site, 1)
+    gt = q.GaugeTransform(geo)
+    gt.set_rand(rs, sigma = 0.2, n_step = 1)
+    gt.unitarize()
+    return gt
+
+@q.timer
 def compute_prop(inv, src, *, tag, sfw):
     sol = inv * src
     sol.save_double(sfw, tag)
