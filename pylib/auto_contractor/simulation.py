@@ -48,6 +48,7 @@ def get_load_path(fn):
 def compute_prop(inv, src, *, tag, sfw):
     sol = inv * src
     sol.save_double(sfw, tag)
+    return sol
 
 @q.timer
 def compute_prop_psrc(gf, xg, job_tag, inv_type, inv_acc, *, idx, sfw, eig, finished_tags):
@@ -91,7 +92,7 @@ def compute_prop_psrc_all(gf, job_tag, inv_type, *, path_s, eig):
     q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
 
 @q.timer
-def compute_prop_wsrc(gf, gt, xg, job_tag, inv_type, inv_acc, *, idx, sfw, eig, finished_tags):
+def compute_prop_wsrc(gf, gt, xg, job_tag, inv_type, inv_acc, *, idx, sfw, path_sp, eig, finished_tags):
     assert xg[0] == "wall"
     tag = f"xg=({xg[0]},{xg[1]}) ; type={inv_type} ; accuracy={inv_acc}"
     if tag in finished_tags:
@@ -104,7 +105,9 @@ def compute_prop_wsrc(gf, gt, xg, job_tag, inv_type, inv_acc, *, idx, sfw, eig, 
     total_site = ru.get_total_site(job_tag)
     geo = q.Geometry(total_site, 1)
     src = q.mk_wall_src(geo, tslice)
-    compute_prop(inv, src, tag = tag, sfw = sfw)
+    prop = compute_prop(inv, src, tag = tag, sfw = sfw)
+    fn_spw = os.path.join(path_sp, f"{tag} ; wsnk.lat")
+    prop.glb_sum_tslice().save(get_save_path(fn_spw))
 
 def get_all_walls(time_vol):
     all_walls = []
@@ -113,14 +116,14 @@ def get_all_walls(time_vol):
     return all_walls
 
 @q.timer
-def compute_prop_wsrc_all(gf, gt, job_tag, inv_type, *, path_s, eig):
+def compute_prop_wsrc_all(gf, gt, job_tag, inv_type, *, path_s, path_sp, eig):
     finished_tags = q.properly_truncate_fields(get_save_path(path_s + ".acc"))
     sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", [ 1, 1, 1, 2 ])
     total_site = ru.get_total_site(job_tag)
     inv_acc = 2
     for idx, xg in enumerate(get_all_walls(total_site[3])):
         compute_prop_wsrc(gf, gt, xg, job_tag, inv_type, inv_acc,
-                idx = idx, sfw = sfw, eig = eig,
+                idx = idx, sfw = sfw, path_sp = path_sp, eig = eig,
                 finished_tags = finished_tags)
     q.clean_cache(q.cache_inv)
     sfw.close()
@@ -548,7 +551,10 @@ def run_prop(job_tag, traj, get_gf, get_gt, get_eig):
                     eig = get_eig()
                 else:
                     eig = None
-                compute_prop_wsrc_all(get_gf(), get_gt(), job_tag, inv_type, path_s = f"prop-wsrc-{inv_type}/{job_tag}/traj={traj}", eig = eig)
+                compute_prop_wsrc_all(get_gf(), get_gt(), job_tag, inv_type,
+                        path_s = f"prop-wsrc-{inv_type}/{job_tag}/traj={traj}",
+                        path_sp = f"psel-prop-wsrc-{inv_type}/{job_tag}/traj={traj}",
+                        eig = eig)
                 q.release_lock()
         #
         if get_load_path(f"prop-psrc-{inv_type}/{job_tag}/traj={traj}") is None:
@@ -561,7 +567,9 @@ def run_prop(job_tag, traj, get_gf, get_gt, get_eig):
                     eig = get_eig()
                 else:
                     eig = None
-                compute_prop_psrc_all(get_gf(), job_tag, inv_type, path_s = f"prop-psrc-{inv_type}/{job_tag}/traj={traj}", eig = eig)
+                compute_prop_psrc_all(get_gf(), job_tag, inv_type,
+                        path_s = f"prop-psrc-{inv_type}/{job_tag}/traj={traj}",
+                        eig = eig)
                 q.release_lock()
     #
     path_prop_list = \
