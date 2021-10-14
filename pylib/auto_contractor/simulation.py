@@ -575,6 +575,6 @@ if __name__ == "__main__":
     src_type = "wsrc"
     q.displayln_info(pprint.pformat(rup.dict_params[job_tag]))
     traj = 1000
-    run_job(job_tag, traj, wsrc)
+    run_job(job_tag, traj, src_type)
     q.timer_display()
     qg.end_with_gpt()
