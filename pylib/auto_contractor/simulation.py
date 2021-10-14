@@ -514,7 +514,7 @@ def auto_contractor_kpipi_corr(job_tag, traj, num_trials):
             q.qtouch(fn, f"0 {a.real} {a.imag} {e.real} {e.imag}\n")
 
 @q.timer
-def run_job(job_tag, traj, src_type, gfix_flag = false):
+def run_job(job_tag, traj, src_type, gfix_flag = False):
     q.check_stop()
     q.check_time_limit()
     #
@@ -545,7 +545,9 @@ def run_job(job_tag, traj, src_type, gfix_flag = false):
         get_eig = compute_eig(gf, job_tag, inv_type = 0, path = f"eig/{job_tag}/traj={traj}")
         q.release_lock()
     #
+    print("AAA")
     if gfix_flag:
+        print("BBB")
         path_gt = get_load_path(f"gauge-transform/{job_tag}/traj={traj}.field")
         if path_gt is None:
             q.qmkdir_info(get_save_path(f"gauge-transform"))
@@ -556,8 +558,10 @@ def run_job(job_tag, traj, src_type, gfix_flag = false):
             gt = q.GaugeTransform()
             gt.load_double(path_gt)
     #
+    print("CCC")
     for inv_type in [0, 1,]:
         if get_load_path(f"prop-{src_type}-{inv_type}/{job_tag}/traj={traj}") is None:
+            print("DDD")
             if inv_type == 0 and get_eig is None:
                 continue
             if q.obtain_lock(f"locks/{job_tag}-{traj}-compute-prop-{src_type}-all-{inv_type}"):
@@ -568,6 +572,7 @@ def run_job(job_tag, traj, src_type, gfix_flag = false):
                 else:
                     eig = None
                 #compute_prop_{src_type}_all(gf, job_tag, inv_type, path_s = f"prop-{src_type}-{inv_type}/{job_tag}/traj={traj}", eig = eig)
+                print("EEE")
                 compute_prop_wsrc_all(gf, gt, job_tag, inv_type, path_s = f"prop-{src_type}-{inv_type}/{job_tag}/traj={traj}", eig = eig)
                 q.release_lock()
     #
@@ -587,7 +592,7 @@ if __name__ == "__main__":
     qg.begin_with_gpt()
     job_tag = "test-4nt16"
     src_type = "wsrc"
-    gfix_flag = true
+    gfix_flag = True
     q.displayln_info(pprint.pformat(rup.dict_params[job_tag]))
     traj = 1000
     run_job(job_tag, traj, src_type, gfix_flag)
