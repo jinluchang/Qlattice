@@ -229,7 +229,7 @@ def auto_contractor_simple_test(job_tag, traj):
                 ))
 
 @q.timer
-def auto_contractor_meson_corr(job_tag, traj, num_trials):
+def auto_contractor_meson_corr(job_tag, traj, get_prop, num_trials):
     total_site = ru.get_total_site(job_tag)
     vol = total_site[0] * total_site[1] * total_site[2]
     exprs = [
@@ -261,8 +261,6 @@ def auto_contractor_meson_corr(job_tag, traj, num_trials):
         return pd, facs
     names_fac = ["rest", "mom1", "mom2",]
     trial_indices = range(num_trials)
-    prop_cache = q.mk_cache(f"prop_cache-{job_tag}-{traj}")
-    get_prop = mk_get_prop(prop_cache)
     results_list = eval_cexpr_simulation(cexpr, positions_dict_maker = positions_dict_maker, trial_indices = trial_indices, get_prop = get_prop, is_only_total = "typed_total")
     for name_fac, results in zip(names_fac, results_list):
         q.displayln_info(f"{name_fac} :")
@@ -270,7 +268,7 @@ def auto_contractor_meson_corr(job_tag, traj, num_trials):
             q.displayln_info(f"{name_fac} {k}:\n  {v}")
 
 @q.timer
-def auto_contractor_pipi_corr(job_tag, traj, num_trials):
+def auto_contractor_pipi_corr(job_tag, traj, get_prop, num_trials):
     total_site = ru.get_total_site(job_tag)
     vol = total_site[0] * total_site[1] * total_site[2]
     exprs = [
@@ -322,8 +320,6 @@ def auto_contractor_pipi_corr(job_tag, traj, num_trials):
         return pd, facs
     names_fac = ["rest-rest", "rest-moving", "moving-rest", "moving-moving",]
     trial_indices = range(num_trials)
-    prop_cache = q.mk_cache(f"prop_cache-{job_tag}-{traj}")
-    get_prop = mk_get_prop(prop_cache)
     results_list = eval_cexpr_simulation(cexpr, positions_dict_maker = positions_dict_maker, trial_indices = trial_indices, get_prop = get_prop, is_only_total = "typed_total")
     for name_fac, results in zip(names_fac, results_list):
         q.displayln_info(f"{name_fac} :")
@@ -331,7 +327,7 @@ def auto_contractor_pipi_corr(job_tag, traj, num_trials):
             q.displayln_info(f"{name_fac} {k}:\n  {v}")
 
 @q.timer
-def auto_contractor_kpipi_corr(job_tag, traj, num_trials):
+def auto_contractor_kpipi_corr(job_tag, traj, get_prop, num_trials):
     total_site = ru.get_total_site(job_tag)
     vol = total_site[0] * total_site[1] * total_site[2]
     exprs_odd_ops = [
@@ -426,8 +422,6 @@ def auto_contractor_kpipi_corr(job_tag, traj, num_trials):
         return pd, facs
     names_fac = [ "rest", "moving", ]
     trial_indices = range(num_trials)
-    prop_cache = q.mk_cache(f"prop_cache-{job_tag}-{traj}")
-    get_prop = mk_get_prop(prop_cache)
     results_list = eval_cexpr_simulation(cexpr, positions_dict_maker = positions_dict_maker, trial_indices = trial_indices, get_prop = get_prop, is_only_total = "typed_total")
     q.qmkdir_info("analysis")
     q.qremove_all_info("analysis/kpipi")
@@ -595,9 +589,9 @@ def run_job(job_tag, traj):
     if get_prop is not None:
         # auto_contractor_simple_test(job_tag, traj)
         num_trials = 100
-        auto_contractor_meson_corr(job_tag, traj, num_trials)
-        auto_contractor_pipi_corr(job_tag, traj, num_trials)
-        auto_contractor_kpipi_corr(job_tag, traj, num_trials)
+        auto_contractor_meson_corr(job_tag, traj, get_prop, num_trials)
+        auto_contractor_pipi_corr(job_tag, traj, get_prop, num_trials)
+        auto_contractor_kpipi_corr(job_tag, traj, get_prop, num_trials)
     #
     q.clean_cache()
 
