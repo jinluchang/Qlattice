@@ -168,21 +168,15 @@ def get_all_walls(time_vol):
     return all_walls
 
 @q.timer
-def compute_prop_wsrc_all2(gf, gt, job_tag, inv_type, *, path_s, eig):
-    print("AA");
+def compute_prop_wsrc_all(gf, gt, job_tag, inv_type, *, path_s, eig):
     finished_tags = q.properly_truncate_fields(get_save_path(path_s + ".acc"))
-    print("BB");
     sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", [ 1, 1, 1, 2 ])
-    print("CC");
     total_site = ru.get_total_site(job_tag)
-    print("DD");
     inv_acc = 2
     for idx, xg in enumerate(get_all_walls(total_site[3])):
-        print("EE",idx);
         compute_prop_wsrc(gf, gt, xg, job_tag, inv_type, inv_acc,
                 idx = idx, sfw = sfw, eig = eig,
                 finished_tags = finished_tags)
-    print("CC");
     q.clean_cache(q.cache_inv)
     sfw.close()
     q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
@@ -548,9 +542,7 @@ def run_job(job_tag, traj, src_type, gfix_flag = False):
         get_eig = compute_eig(gf, job_tag, inv_type = 0, path = f"eig/{job_tag}/traj={traj}")
         q.release_lock()
     #
-    print("AAA")
     if gfix_flag:
-        print("BBB")
         path_gt = get_load_path(f"gauge-transform/{job_tag}/traj={traj}.field")
         if path_gt is None:
             q.qmkdir_info(get_save_path(f"gauge-transform"))
@@ -561,10 +553,8 @@ def run_job(job_tag, traj, src_type, gfix_flag = False):
             gt = q.GaugeTransform()
             gt.load_double(path_gt)
     #
-    print("CCC")
     for inv_type in [0, 1,]:
         if get_load_path(f"prop-{src_type}-{inv_type}/{job_tag}/traj={traj}") is None:
-            print("DDD")
             if inv_type == 0 and get_eig is None:
                 continue
             if q.obtain_lock(f"locks/{job_tag}-{traj}-compute-prop-{src_type}-all-{inv_type}"):
@@ -575,9 +565,7 @@ def run_job(job_tag, traj, src_type, gfix_flag = False):
                 else:
                     eig = None
                 #compute_prop_{src_type}_all(gf, job_tag, inv_type, path_s = f"prop-{src_type}-{inv_type}/{job_tag}/traj={traj}", eig = eig)
-                print("EEE")
-                compute_prop_wsrc_all2(gf, gt, job_tag, inv_type, path_s = f"prop-{src_type}-{inv_type}/{job_tag}/traj={traj}", eig = eig)
-                print("FFF")
+                compute_prop_wsrc_all(gf, gt, job_tag, inv_type, path_s = f"prop-{src_type}-{inv_type}/{job_tag}/traj={traj}", eig = eig)
                 q.release_lock()
     #
     path_prop_list = [ get_load_path(f"prop-{src_type}-{inv_type}/{job_tag}/traj={traj}") for inv_type in [0, 1,] ]
