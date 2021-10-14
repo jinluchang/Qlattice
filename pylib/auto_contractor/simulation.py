@@ -134,6 +134,43 @@ def compute_prop_psrc_all(gf, job_tag, inv_type, *, path_s, eig):
     sfw.close()
     q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
 
+@q.timer
+def compute_prop_wsrc(gf, gt, xg, job_tag, inv_type, inv_acc, *, idx, sfw, eig, finished_tags):
+    assert xg[0] == "wall"
+    tag = f"xg=({xg[0]},{xg[1]}) ; type={inv_type} ; accuracy={inv_acc}"
+    if tag in finished_tags:
+        return None
+    q.check_stop()
+    q.check_time_limit()
+    tslice = xg[1]
+    q.displayln_info(f"compute_prop_wsrc: idx={idx} tslice={tslice}", job_tag, inv_type, inv_acc)
+    inv = ru.get_inv(gf, job_tag, inv_type, inv_acc, eig = eig)
+    total_site = ru.get_total_site(job_tag)
+    geo = q.Geometry(total_site, 1)
+    src = q.mk_wall_src(geo, tslice)
+    compute_prop(inv, src, tag = tag, sfw = sfw)
+
+#def get_all_walls(total_site, *, tslice = None):
+def get_all_walls(time_vol):
+    all_walls = []
+    for t in range(time_vol):
+        all_walls.append(("wall", t))
+    return all_walls
+
+@q.timer
+def compute_prop_wsrc_all(gf, gt, job_tag, inv_type, *, path_s, eig):
+    finished_tags = q.properly_truncate_fields(get_save_path(path_s + ".acc"))
+    sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", [ 1, 1, 1, 2 ])
+    total_site = ru.get_total_site(job_tag)
+    inv_acc = 2
+    for idx, xg in enumerate(get_all_walls(total_site[3])):
+        compute_prop_wsrc(gf, gt, xg, job_tag, inv_type, inv_acc,
+                idx = idx, sfw = sfw, eig = eig,
+                finished_tags = finished_tags)
+    q.clean_cache(q.cache_inv)
+    sfw.close()
+    q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
+
 def adj_msc(x):
     x = g.adj(x)
     return g.tensor(np.ascontiguousarray(x.array), x.otype)
@@ -160,6 +197,30 @@ def load_prop_psrc_all(job_tag, traj, flavor : str, path_s : str):
         prop_msc = q.Prop()
         q.convert_mspincolor_from_wm_prop(prop_msc, prop)
         cache[f"xg=({xg[0]},{xg[1]},{xg[2]},{xg[3]})"] = prop_msc
+    sfr.close()
+
+@q.timer
+def load_prop_wsrc_all(job_tag, traj, flavor : str, path_s : str):
+    cache = q.mk_cache(f"prop_cache-{job_tag}-{traj}", flavor)
+    total_site = ru.get_total_site(job_tag)
+    get_all_points(total_site)
+    if flavor in ["l", "u", "d",]:
+        inv_type = 0
+    elif flavor in ["s",]:
+        inv_type = 1
+    else:
+        assert False
+    inv_acc = 2
+    sfr = q.open_fields(get_load_path(path_s), "r")
+    for idx, xg in enumerate(get_all_walls(total_site[3])):
+        q.displayln_info(f"load_prop_wsrc_all: idx={idx} xg={xg} flavor={flavor} path_s={path_s}")
+        prop = q.Prop()
+        tag = f"xg=({xg[0]},{xg[1]}) ; type={inv_type} ; accuracy={inv_acc}"
+        prop.load_double(sfr, tag)
+        # convert to GPT/Grid prop mspincolor order
+        prop_msc = q.Prop()
+        q.convert_mspincolor_from_wm_prop(prop_msc, prop)
+        cache[f"xg=({xg[0]},{xg[1]})"] = prop_msc
     sfr.close()
 
 @q.timer
@@ -440,7 +501,7 @@ def auto_contractor_kpipi_corr(job_tag, traj, num_trials):
             q.qtouch(fn, f"0 {a.real} {a.imag} {e.real} {e.imag}\n")
 
 @q.timer
-def run_job(job_tag, traj):
+def run_job(job_tag, traj, src_type):
     q.check_stop()
     q.check_time_limit()
     #
@@ -471,24 +532,35 @@ def run_job(job_tag, traj):
         get_eig = compute_eig(gf, job_tag, inv_type = 0, path = f"eig/{job_tag}/traj={traj}")
         q.release_lock()
     #
+    path_gt = get_load_path(f"gauge-transform/{job_tag}/traj={traj}.field")
+    if path_gt is None:
+        q.qmkdir_info(get_save_path(f"gauge-transform"))
+        q.qmkdir_info(get_save_path(f"gauge-transform/{job_tag}"))
+        gt = mk_sample_gauge_transform(job_tag, traj)
+        gt.save_double(get_save_path(f"gauge-transform/{job_tag}/traj={traj}.field"))
+    else:
+        gt = q.GaugeTransform()
+        gt.load_double(path_gt)
+    #
     for inv_type in [0, 1,]:
-        if get_load_path(f"prop-psrc-{inv_type}/{job_tag}/traj={traj}") is None:
+        if get_load_path(f"prop-{src_type}-{inv_type}/{job_tag}/traj={traj}") is None:
             if inv_type == 0 and get_eig is None:
                 continue
-            if q.obtain_lock(f"locks/{job_tag}-{traj}-compute-prop-psrc-all-{inv_type}"):
-                q.qmkdir_info(get_save_path(f"prop-psrc-{inv_type}"))
-                q.qmkdir_info(get_save_path(f"prop-psrc-{inv_type}/{job_tag}"))
+            if q.obtain_lock(f"locks/{job_tag}-{traj}-compute-prop-{src_type}-all-{inv_type}"):
+                q.qmkdir_info(get_save_path(f"prop-{src_type}-{inv_type}"))
+                q.qmkdir_info(get_save_path(f"prop-{src_type}-{inv_type}/{job_tag}"))
                 if inv_type == 0:
                     eig = get_eig()
                 else:
                     eig = None
-                compute_prop_psrc_all(gf, job_tag, inv_type, path_s = f"prop-psrc-{inv_type}/{job_tag}/traj={traj}", eig = eig)
+                #compute_prop_{src_type}_all(gf, job_tag, inv_type, path_s = f"prop-{src_type}-{inv_type}/{job_tag}/traj={traj}", eig = eig)
+                compute_prop_wsrc_all(gf, gt, job_tag, inv_type, path_s = f"prop-{src_type}-{inv_type}/{job_tag}/traj={traj}", eig = eig)
                 q.release_lock()
     #
-    path_prop_list = [ get_load_path(f"prop-psrc-{inv_type}/{job_tag}/traj={traj}") for inv_type in [0, 1,] ]
+    path_prop_list = [ get_load_path(f"prop-{src_type}-{inv_type}/{job_tag}/traj={traj}") for inv_type in [0, 1,] ]
     if all(map(lambda x : x is not None, path_prop_list)):
-        load_prop_psrc_all(job_tag, traj, "l", f"prop-psrc-0/{job_tag}/traj={traj}")
-        load_prop_psrc_all(job_tag, traj, "s", f"prop-psrc-1/{job_tag}/traj={traj}")
+        load_prop_psrc_all(job_tag, traj, "l", f"prop-{src_type}-0/{job_tag}/traj={traj}")
+        load_prop_psrc_all(job_tag, traj, "s", f"prop-{src_type}-1/{job_tag}/traj={traj}")
         # auto_contractor_simple_test(job_tag, traj)
         num_trials = 100
         auto_contractor_meson_corr(job_tag, traj, num_trials)
@@ -500,8 +572,9 @@ def run_job(job_tag, traj):
 if __name__ == "__main__":
     qg.begin_with_gpt()
     job_tag = "test-4nt16"
+    src_type = "wsrc"
     q.displayln_info(pprint.pformat(rup.dict_params[job_tag]))
     traj = 1000
-    run_job(job_tag, traj)
+    run_job(job_tag, traj, wsrc)
     q.timer_display()
     qg.end_with_gpt()
