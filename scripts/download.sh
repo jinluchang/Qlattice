@@ -50,6 +50,8 @@ dget "openmpi-4.1.1.tar.bz2" "https://download.open-mpi.org/release/open-mpi/v4.
 
 dget "llvm-project-13.0.0.src.tar.xz" "https://github.com/llvm/llvm-project/releases/download/llvmorg-13.0.0/llvm-project-13.0.0.src.tar.xz"
 
+dget "perl-5.34.0.tar.gz" "https://www.cpan.org/src/5.0/perl-5.34.0.tar.gz"
+
 dget "openssl-3.0.0.tar.gz" "https://www.openssl.org/source/openssl-3.0.0.tar.gz"
 
 dget "Python-3.10.0.tar.xz" "https://www.python.org/ftp/python/3.10.0/Python-3.10.0.tar.xz"

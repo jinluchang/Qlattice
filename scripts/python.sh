@@ -15,6 +15,9 @@ rm -rf $build_dir || true
 mkdir -p $build_dir || true
 cd $build_dir
 
+export LDFLAGS="-L$prefix/lib64 -L$prefix/lib"
+export LIBS="-lffi"
+
 $src_dir/$name-*/configure \
     --prefix=$prefix
 make -j$num_proc
