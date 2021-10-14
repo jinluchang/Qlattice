@@ -168,7 +168,7 @@ def get_all_walls(time_vol):
     return all_walls
 
 @q.timer
-def compute_prop_wsrc_all(gf, gt, job_tag, inv_type, *, path_s, eig):
+def compute_prop_wsrc_all2(gf, gt, job_tag, inv_type, *, path_s, eig):
     print("AA");
     finished_tags = q.properly_truncate_fields(get_save_path(path_s + ".acc"))
     print("BB");
@@ -576,7 +576,7 @@ def run_job(job_tag, traj, src_type, gfix_flag = False):
                     eig = None
                 #compute_prop_{src_type}_all(gf, job_tag, inv_type, path_s = f"prop-{src_type}-{inv_type}/{job_tag}/traj={traj}", eig = eig)
                 print("EEE")
-                compute_prop_wsrc_all(gf, gt, job_tag, inv_type, path_s = f"prop-{src_type}-{inv_type}/{job_tag}/traj={traj}", eig = eig)
+                compute_prop_wsrc_all2(gf, gt, job_tag, inv_type, path_s = f"prop-{src_type}-{inv_type}/{job_tag}/traj={traj}", eig = eig)
                 q.release_lock()
     #
     path_prop_list = [ get_load_path(f"prop-{src_type}-{inv_type}/{job_tag}/traj={traj}") for inv_type in [0, 1,] ]
