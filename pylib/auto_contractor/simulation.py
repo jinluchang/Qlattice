@@ -173,10 +173,13 @@ def compute_prop_wsrc_all(gf, gt, job_tag, inv_type, *, path_s, eig):
     sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", [ 1, 1, 1, 2 ])
     total_site = ru.get_total_site(job_tag)
     inv_acc = 2
+    print("AA");
     for idx, xg in enumerate(get_all_walls(total_site[3])):
+        print("BB",idx);
         compute_prop_wsrc(gf, gt, xg, job_tag, inv_type, inv_acc,
                 idx = idx, sfw = sfw, eig = eig,
                 finished_tags = finished_tags)
+    print("CC");
     q.clean_cache(q.cache_inv)
     sfw.close()
     q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
@@ -511,7 +514,7 @@ def auto_contractor_kpipi_corr(job_tag, traj, num_trials):
             q.qtouch(fn, f"0 {a.real} {a.imag} {e.real} {e.imag}\n")
 
 @q.timer
-def run_job(job_tag, traj, src_type):
+def run_job(job_tag, traj, src_type, gfix_flag = false):
     q.check_stop()
     q.check_time_limit()
     #
@@ -542,15 +545,16 @@ def run_job(job_tag, traj, src_type):
         get_eig = compute_eig(gf, job_tag, inv_type = 0, path = f"eig/{job_tag}/traj={traj}")
         q.release_lock()
     #
-    path_gt = get_load_path(f"gauge-transform/{job_tag}/traj={traj}.field")
-    if path_gt is None:
-        q.qmkdir_info(get_save_path(f"gauge-transform"))
-        q.qmkdir_info(get_save_path(f"gauge-transform/{job_tag}"))
-        gt = mk_sample_gauge_transform(job_tag, traj)
-        gt.save_double(get_save_path(f"gauge-transform/{job_tag}/traj={traj}.field"))
-    else:
-        gt = q.GaugeTransform()
-        gt.load_double(path_gt)
+    if gfix_flag:
+        path_gt = get_load_path(f"gauge-transform/{job_tag}/traj={traj}.field")
+        if path_gt is None:
+            q.qmkdir_info(get_save_path(f"gauge-transform"))
+            q.qmkdir_info(get_save_path(f"gauge-transform/{job_tag}"))
+            gt = mk_sample_gauge_transform(job_tag, traj)
+            gt.save_double(get_save_path(f"gauge-transform/{job_tag}/traj={traj}.field"))
+        else:
+            gt = q.GaugeTransform()
+            gt.load_double(path_gt)
     #
     for inv_type in [0, 1,]:
         if get_load_path(f"prop-{src_type}-{inv_type}/{job_tag}/traj={traj}") is None:
@@ -583,8 +587,9 @@ if __name__ == "__main__":
     qg.begin_with_gpt()
     job_tag = "test-4nt16"
     src_type = "wsrc"
+    gfix_flag = true
     q.displayln_info(pprint.pformat(rup.dict_params[job_tag]))
     traj = 1000
-    run_job(job_tag, traj, src_type)
+    run_job(job_tag, traj, src_type, gfix_flag)
     q.timer_display()
     qg.end_with_gpt()
