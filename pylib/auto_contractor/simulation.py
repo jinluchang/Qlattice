@@ -126,10 +126,6 @@ def compute_prop_wsrc_all(gf, gt, job_tag, inv_type, *, path_s, eig):
     sfw.close()
     q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
 
-def adj_msc(x):
-    x = g.adj(x)
-    return g.tensor(np.ascontiguousarray(x.array), x.otype)
-
 @q.timer
 def load_prop_psrc_all(job_tag, traj, flavor : str, path_s : str):
     cache = q.mk_cache(f"prop_cache-{job_tag}-{traj}", flavor)
@@ -193,6 +189,10 @@ def mk_get_prop(prop_cache):
     def get_prop(flavor, xg_snk, xg_src):
         return get_prop_psnk_psrc(prop_cache, flavor, xg_snk, xg_src)
     return get_prop
+
+def adj_msc(x):
+    x = g.adj(x)
+    return g.tensor(np.ascontiguousarray(x.array), x.otype)
 
 @q.timer
 def auto_contractor_simple_test(job_tag, traj):
@@ -541,15 +541,8 @@ def run_eig(job_tag, traj, get_gf):
             q.release_lock()
     return get_eig
 
-@q.timer
-def run_job(job_tag, traj):
-    q.check_stop()
-    q.check_time_limit()
-    #
-    get_gf = run_gf(job_tag, traj)
-    get_gt = run_gt(job_tag, traj, get_gf)
-    get_eig = run_eig(job_tag, traj, get_gf)
-    #
+@q.timer_verbose
+def run_prop(job_tag, traj, get_gf, get_gt, get_eig):
     for inv_type in [0, 1,]:
         if get_load_path(f"prop-wsrc-{inv_type}/{job_tag}/traj={traj}") is None:
             if inv_type == 0 and get_eig is None:
@@ -583,6 +576,23 @@ def run_job(job_tag, traj):
     if all(map(lambda x : x is not None, path_prop_list)):
         load_prop_psrc_all(job_tag, traj, "l", f"prop-psrc-0/{job_tag}/traj={traj}")
         load_prop_psrc_all(job_tag, traj, "s", f"prop-psrc-1/{job_tag}/traj={traj}")
+        prop_cache = q.mk_cache(f"prop_cache-{job_tag}-{traj}")
+        get_prop = mk_get_prop(prop_cache)
+        return get_prop
+    return None
+
+@q.timer
+def run_job(job_tag, traj):
+    q.check_stop()
+    q.check_time_limit()
+    #
+    get_gf = run_gf(job_tag, traj)
+    get_gt = run_gt(job_tag, traj, get_gf)
+    get_eig = run_eig(job_tag, traj, get_gf)
+    #
+    get_prop = run_prop(job_tag, traj, get_gf, get_gt, get_eig)
+    #
+    if get_prop is not None:
         # auto_contractor_simple_test(job_tag, traj)
         num_trials = 100
         auto_contractor_meson_corr(job_tag, traj, num_trials)
