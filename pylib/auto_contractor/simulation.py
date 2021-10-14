@@ -154,7 +154,7 @@ def compute_prop_wsrc(gf, gt, xg, job_tag, inv_type, inv_acc, *, idx, sfw, eig, 
     q.check_time_limit()
     tslice = xg[1]
     q.displayln_info(f"compute_prop_wsrc: idx={idx} tslice={tslice}", job_tag, inv_type, inv_acc)
-    inv = ru.get_inv(gf, job_tag, inv_type, inv_acc, eig = eig)
+    inv = ru.get_inv(gf, job_tag, inv_type, inv_acc, gt = gt, eig = eig)
     total_site = ru.get_total_site(job_tag)
     geo = q.Geometry(total_site, 1)
     src = q.mk_wall_src(geo, tslice)
