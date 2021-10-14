@@ -45,60 +45,6 @@ def get_load_path(fn):
     return None
 
 @q.timer
-def mk_sample_gauge_field(job_tag, fn):
-    rs = q.RngState(f"seed {job_tag} {fn}").split("mk_sample_gauge_field")
-    total_site = ru.get_total_site(job_tag)
-    geo = q.Geometry(total_site, 1)
-    gf = q.GaugeField(geo)
-    gf.set_rand(rs, sigma = 0.25, n_step = 12)
-    for i in range(7):
-        q.gf_wilson_flow_step(gf, 0.05)
-    gf.unitarize()
-    return gf
-
-@q.timer
-def compute_eig(gf, job_tag, inv_type = 0, inv_acc = 0, *, path = None):
-    # return a function ``get_eig''
-    # ``get_eig()'' return the ``eig''
-    load_eig = ru.load_eig_lazy(get_load_path(path), job_tag)
-    if load_eig is not None:
-        return load_eig
-    # evec, evals = ru.mk_eig(gf, job_tag, inv_type, inv_acc)
-    basis, cevec, smoothed_evals = ru.mk_ceig(gf, job_tag, inv_type, inv_acc)
-    eig = [ basis, cevec, smoothed_evals ]
-    ru.save_ceig(get_save_path(path), eig, job_tag, inv_type, inv_acc);
-    test_eig(gf, eig, job_tag, inv_type)
-    def get_eig():
-        return eig
-    return get_eig
-
-@q.timer
-def test_eig(gf, eig, job_tag, inv_type):
-    geo = gf.geo()
-    src = q.FermionField4d(geo)
-    q.displayln_info(f"src norm {src.qnorm()}")
-    src.set_rand(q.RngState("test_eig:{id(inv)}"))
-    sol_ref = ru.get_inv(gf, job_tag, inv_type, inv_acc = 2, eig = eig, eps = 1e-10, mpi_split = False, timer = False) * src
-    q.displayln_info(f"sol_ref norm {sol_ref.qnorm()} with eig")
-    for inv_acc in [0, 1,]:
-        sol = ru.get_inv(gf, job_tag, inv_type, inv_acc, eig = eig, mpi_split = False, timer = False) * src
-        sol -= sol_ref
-        q.displayln_info(f"sol diff norm {sol.qnorm()} inv_acc={inv_acc} with eig")
-        sol = ru.get_inv(gf, job_tag, inv_type, inv_acc, mpi_split = False, timer = False) * src
-        sol -= sol_ref
-        q.displayln_info(f"sol diff norm {sol.qnorm()} inv_acc={inv_acc} without eig")
-
-@q.timer
-def mk_sample_gauge_transform(job_tag, traj):
-    rs = q.RngState(f"seed {job_tag} {traj}").split("mk_sample_gauge_transform")
-    total_site = ru.get_total_site(job_tag)
-    geo = q.Geometry(total_site, 1)
-    gt = q.GaugeTransform(geo)
-    gt.set_rand(rs, sigma = 0.2, n_step = 1)
-    gt.unitarize()
-    return gt
-
-@q.timer
 def compute_prop(inv, src, *, tag, sfw):
     sol = inv * src
     sol.save_double(sfw, tag)
@@ -160,7 +106,6 @@ def compute_prop_wsrc(gf, gt, xg, job_tag, inv_type, inv_acc, *, idx, sfw, eig, 
     src = q.mk_wall_src(geo, tslice)
     compute_prop(inv, src, tag = tag, sfw = sfw)
 
-#def get_all_walls(total_site, *, tslice = None):
 def get_all_walls(time_vol):
     all_walls = []
     for t in range(time_vol):
@@ -510,47 +455,100 @@ def auto_contractor_kpipi_corr(job_tag, traj, num_trials):
             [ a, e, ] = v
             q.qtouch(fn, f"0 {a.real} {a.imag} {e.real} {e.imag}\n")
 
+@q.timer_verbose
+def run_gf(job_tag, traj):
+    path_gf = get_load_path(f"configs/{job_tag}/ckpoint_lat.{traj}")
+    if path_gf is None:
+        if job_tag[:5] == "test-":
+            gf = ru.mk_sample_gauge_field(job_tag, f"{traj}")
+            path_gf = get_save_path(f"configs/{job_tag}/ckpoint_lat.{traj}")
+            # gf.save(path_gf)
+            qg.save_gauge_field(gf, path_gf)
+        else:
+            assert False
+    get_gf = ru.load_config_lazy(job_tag, path_gf)
+    return get_gf
+
+@q.timer_verbose
+def run_gt(job_tag, traj, get_gf):
+    if None in [ get_gf, ]:
+        return None
+    path_gt = get_load_path(f"gauge-transform/{job_tag}/traj={traj}.field")
+    if path_gt is None:
+        if q.obtain_lock(f"locks/{job_tag}-{traj}-gauge_fix_coulomb"):
+            gf = get_gf()
+            gt = qg.gauge_fix_coulomb(gf)
+            gt.save_double(get_save_path(f"gauge-transform/{job_tag}/traj={traj}.field"))
+            q.release_lock()
+            return lambda : gt
+        else:
+            return None
+    else:
+        @q.timer_verbose
+        def load_gt():
+            gt = q.GaugeTransform()
+            gt.load_double(path_gt)
+            # ADJUST ME
+            # qg.check_gauge_fix_coulomb(get_gf(), gt)
+            #
+            return gt
+        get_gt = q.lazy_call(load_gt)
+    return get_gt
+
+@q.timer
+def compute_eig(gf, job_tag, inv_type = 0, inv_acc = 0, *, path = None):
+    # return a function ``get_eig''
+    # ``get_eig()'' return the ``eig''
+    load_eig = ru.load_eig_lazy(get_load_path(path), job_tag)
+    if load_eig is not None:
+        return load_eig
+    # evec, evals = ru.mk_eig(gf, job_tag, inv_type, inv_acc)
+    basis, cevec, smoothed_evals = ru.mk_ceig(gf, job_tag, inv_type, inv_acc)
+    eig = [ basis, cevec, smoothed_evals ]
+    ru.save_ceig(get_save_path(path + ".partial"), eig, job_tag, inv_type, inv_acc);
+    q.qrename_info(get_save_path(path + ".partial"), get_save_path(path))
+    test_eig(gf, eig, job_tag, inv_type)
+    def get_eig():
+        return eig
+    return get_eig
+
+@q.timer
+def test_eig(gf, eig, job_tag, inv_type):
+    geo = gf.geo()
+    src = q.FermionField4d(geo)
+    q.displayln_info(f"src norm {src.qnorm()}")
+    src.set_rand(q.RngState("test_eig:{id(inv)}"))
+    sol_ref = ru.get_inv(gf, job_tag, inv_type, inv_acc = 2, eig = eig, eps = 1e-10, mpi_split = False, timer = False) * src
+    q.displayln_info(f"sol_ref norm {sol_ref.qnorm()} with eig")
+    for inv_acc in [0, 1, 2]:
+        sol = ru.get_inv(gf, job_tag, inv_type, inv_acc, eig = eig, mpi_split = False, timer = False) * src
+        sol -= sol_ref
+        q.displayln_info(f"sol diff norm {sol.qnorm()} inv_acc={inv_acc} with eig")
+        sol = ru.get_inv(gf, job_tag, inv_type, inv_acc, mpi_split = False, timer = False) * src
+        sol -= sol_ref
+        q.displayln_info(f"sol diff norm {sol.qnorm()} inv_acc={inv_acc} without eig")
+
+@q.timer_verbose
+def run_eig(job_tag, traj, get_gf):
+    if None in [ get_gf, ]:
+        return None
+    get_eig = ru.load_eig_lazy(get_load_path(f"eig/{job_tag}/traj={traj}"), job_tag)
+    if get_eig is None and get_gf is not None:
+        if q.obtain_lock(f"locks/{job_tag}-{traj}-run-eig"):
+            q.qmkdir_info(get_save_path(f"eig"))
+            q.qmkdir_info(get_save_path(f"eig/{job_tag}"))
+            get_eig = compute_eig(get_gf(), job_tag, inv_type = 0, path = f"eig/{job_tag}/traj={traj}")
+            q.release_lock()
+    return get_eig
+
 @q.timer
 def run_job(job_tag, traj):
     q.check_stop()
     q.check_time_limit()
     #
-    q.qmkdir_info(f"locks")
-    q.qmkdir_info(get_save_path(f""))
-    #
-    total_site = ru.get_total_site(job_tag)
-    geo = q.Geometry(total_site, 1)
-    q.displayln_info("geo.show() =", geo.show())
-    #
-    path_gf = get_load_path(f"configs/{job_tag}/ckpoint_lat.{traj}")
-    if path_gf is None:
-        if job_tag[:5] == "test-":
-            gf = ru.mk_sample_gauge_field(job_tag, f"{traj}")
-            q.qmkdir_info(get_save_path(f"configs"))
-            q.qmkdir_info(get_save_path(f"configs/{job_tag}"))
-            path_gf = get_save_path(f"configs/{job_tag}/ckpoint_lat.{traj}")
-            gf.save(path_gf)
-        else:
-            assert False
-    gf = ru.load_config(job_tag, path_gf)
-    gf.show_info()
-    #
-    get_eig = None
-    if q.obtain_lock(f"locks/{job_tag}-{traj}-compute-eig"):
-        q.qmkdir_info(get_save_path(f"eig"))
-        q.qmkdir_info(get_save_path(f"eig/{job_tag}"))
-        get_eig = compute_eig(gf, job_tag, inv_type = 0, path = f"eig/{job_tag}/traj={traj}")
-        q.release_lock()
-    #
-    path_gt = get_load_path(f"gauge-transform/{job_tag}/traj={traj}.field")
-    if path_gt is None:
-        q.qmkdir_info(get_save_path(f"gauge-transform"))
-        q.qmkdir_info(get_save_path(f"gauge-transform/{job_tag}"))
-        gt = mk_sample_gauge_transform(job_tag, traj)
-        gt.save_double(get_save_path(f"gauge-transform/{job_tag}/traj={traj}.field"))
-    else:
-        gt = q.GaugeTransform()
-        gt.load_double(path_gt)
+    get_gf = run_gf(job_tag, traj)
+    get_gt = run_gt(job_tag, traj, get_gf)
+    get_eig = run_eig(job_tag, traj, get_gf)
     #
     for inv_type in [0, 1,]:
         if get_load_path(f"prop-wsrc-{inv_type}/{job_tag}/traj={traj}") is None:
@@ -563,7 +561,7 @@ def run_job(job_tag, traj):
                     eig = get_eig()
                 else:
                     eig = None
-                compute_prop_wsrc_all(gf, gt, job_tag, inv_type, path_s = f"prop-wsrc-{inv_type}/{job_tag}/traj={traj}", eig = eig)
+                compute_prop_wsrc_all(get_gf(), get_gt(), job_tag, inv_type, path_s = f"prop-wsrc-{inv_type}/{job_tag}/traj={traj}", eig = eig)
                 q.release_lock()
         #
         if get_load_path(f"prop-psrc-{inv_type}/{job_tag}/traj={traj}") is None:
@@ -576,13 +574,15 @@ def run_job(job_tag, traj):
                     eig = get_eig()
                 else:
                     eig = None
-                compute_prop_psrc_all(gf, job_tag, inv_type, path_s = f"prop-psrc-{inv_type}/{job_tag}/traj={traj}", eig = eig)
+                compute_prop_psrc_all(get_gf(), job_tag, inv_type, path_s = f"prop-psrc-{inv_type}/{job_tag}/traj={traj}", eig = eig)
                 q.release_lock()
     #
-    path_prop_list = [ get_load_path(f"prop-wsrc-{inv_type}/{job_tag}/traj={traj}") for inv_type in [0, 1,] ]
+    path_prop_list = \
+            [ get_load_path(f"prop-psrc-{inv_type}/{job_tag}/traj={traj}") for inv_type in [0, 1,] ] + \
+            [ get_load_path(f"prop-wsrc-{inv_type}/{job_tag}/traj={traj}") for inv_type in [0, 1,] ]
     if all(map(lambda x : x is not None, path_prop_list)):
-        load_prop_psrc_all(job_tag, traj, "l", f"prop-wsrc-0/{job_tag}/traj={traj}")
-        load_prop_psrc_all(job_tag, traj, "s", f"prop-wsrc-1/{job_tag}/traj={traj}")
+        load_prop_psrc_all(job_tag, traj, "l", f"prop-psrc-0/{job_tag}/traj={traj}")
+        load_prop_psrc_all(job_tag, traj, "s", f"prop-psrc-1/{job_tag}/traj={traj}")
         # auto_contractor_simple_test(job_tag, traj)
         num_trials = 100
         auto_contractor_meson_corr(job_tag, traj, num_trials)

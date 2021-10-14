@@ -362,6 +362,7 @@ def get_fgrid(total_site, fermion_params):
 def save_gauge_field(gf, path):
     assert isinstance(gf, q.GaugeField)
     gpt_gf = gpt_from_qlat(gf)
+    q.mk_file_dirs_info(path)
     g.save(path, gpt_gf, g.format.nersc())
 
 @q.timer_verbose
