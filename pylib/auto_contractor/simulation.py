@@ -131,7 +131,6 @@ def compute_prop_wsrc_all(gf, gt, job_tag, inv_type, *, path_s, path_sp, eig):
 def load_prop_psrc_all(job_tag, traj, flavor : str, path_s : str):
     cache = q.mk_cache(f"prop_cache-{job_tag}-{traj}", flavor)
     total_site = ru.get_total_site(job_tag)
-    get_all_points(total_site)
     if flavor in ["l", "u", "d",]:
         inv_type = 0
     elif flavor in ["s",]:
@@ -152,10 +151,10 @@ def load_prop_psrc_all(job_tag, traj, flavor : str, path_s : str):
     sfr.close()
 
 @q.timer
-def load_prop_wsrc_all(job_tag, traj, flavor : str, path_s : str):
+def load_prop_wsrc_all(job_tag, traj, flavor : str, path_s : str, path_sp : str, gt):
     cache = q.mk_cache(f"prop_cache-{job_tag}-{traj}", flavor)
     total_site = ru.get_total_site(job_tag)
-    get_all_points(total_site)
+    psel = q.get_psel_tslice(self.total_site())
     if flavor in ["l", "u", "d",]:
         inv_type = 0
     elif flavor in ["s",]:
@@ -163,16 +162,24 @@ def load_prop_wsrc_all(job_tag, traj, flavor : str, path_s : str):
     else:
         assert False
     inv_acc = 2
+    gt_inv = gt.inv()
     sfr = q.open_fields(get_load_path(path_s), "r")
-    for idx, xg in enumerate(get_all_walls(total_site[3])):
+    for idx, tslice in enumerate(get_all_walls(total_site[3])):
         q.displayln_info(f"load_prop_wsrc_all: idx={idx} xg={xg} flavor={flavor} path_s={path_s}")
         prop = q.Prop()
-        tag = f"xg=({xg[0]},{xg[1]}) ; type={inv_type} ; accuracy={inv_acc}"
+        tag = f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc}"
         prop.load_double(sfr, tag)
+        prop = gt_inv * prop
         # convert to GPT/Grid prop mspincolor order
         prop_msc = q.Prop()
         q.convert_mspincolor_from_wm_prop(prop_msc, prop)
-        cache[f"xg=({xg[0]},{xg[1]})"] = prop_msc
+        cache[f"tslice={tslice}"] = prop_msc
+        # load wsnk prop
+        fn_spw = os.path.join(path_sp, f"{tag} ; wsnk.lat")
+        sp_prop = q.PselProp(psel)
+        sp_prop.load(get_save_path(fn_spw))
+        # TODO convert mspincolor
+        cache[f"tslice={tslice} ; wsnk"] = sp_prop
     sfr.close()
 
 @q.timer
