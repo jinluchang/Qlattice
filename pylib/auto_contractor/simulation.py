@@ -92,14 +92,12 @@ def compute_prop_psrc_all(gf, job_tag, inv_type, *, path_s, eig):
     q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
 
 @q.timer
-def compute_prop_wsrc(gf, gt, xg, job_tag, inv_type, inv_acc, *, idx, sfw, path_sp, eig, finished_tags):
-    assert xg[0] == "wall"
-    tag = f"xg=({xg[0]},{xg[1]}) ; type={inv_type} ; accuracy={inv_acc}"
+def compute_prop_wsrc(gf, gt, tslice, job_tag, inv_type, inv_acc, *, idx, sfw, path_sp, eig, finished_tags):
+    tag = f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc}"
     if tag in finished_tags:
         return None
     q.check_stop()
     q.check_time_limit()
-    tslice = xg[1]
     q.displayln_info(f"compute_prop_wsrc: idx={idx} tslice={tslice}", job_tag, inv_type, inv_acc)
     inv = ru.get_inv(gf, job_tag, inv_type, inv_acc, gt = gt, eig = eig)
     total_site = ru.get_total_site(job_tag)
@@ -112,7 +110,7 @@ def compute_prop_wsrc(gf, gt, xg, job_tag, inv_type, inv_acc, *, idx, sfw, path_
 def get_all_walls(time_vol):
     all_walls = []
     for t in range(time_vol):
-        all_walls.append(("wall", t))
+        all_walls.append(t)
     return all_walls
 
 @q.timer
@@ -121,8 +119,8 @@ def compute_prop_wsrc_all(gf, gt, job_tag, inv_type, *, path_s, path_sp, eig):
     sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", [ 1, 1, 1, 2 ])
     total_site = ru.get_total_site(job_tag)
     inv_acc = 2
-    for idx, xg in enumerate(get_all_walls(total_site[3])):
-        compute_prop_wsrc(gf, gt, xg, job_tag, inv_type, inv_acc,
+    for idx, tslice in enumerate(get_all_walls(total_site[3])):
+        compute_prop_wsrc(gf, gt, tslice, job_tag, inv_type, inv_acc,
                 idx = idx, sfw = sfw, path_sp = path_sp, eig = eig,
                 finished_tags = finished_tags)
     q.clean_cache(q.cache_inv)
