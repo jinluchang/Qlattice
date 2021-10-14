@@ -169,13 +169,16 @@ def get_all_walls(time_vol):
 
 @q.timer
 def compute_prop_wsrc_all(gf, gt, job_tag, inv_type, *, path_s, eig):
-    finished_tags = q.properly_truncate_fields(get_save_path(path_s + ".acc"))
-    sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", [ 1, 1, 1, 2 ])
-    total_site = ru.get_total_site(job_tag)
-    inv_acc = 2
     print("AA");
+    finished_tags = q.properly_truncate_fields(get_save_path(path_s + ".acc"))
+    print("BB");
+    sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", [ 1, 1, 1, 2 ])
+    print("CC");
+    total_site = ru.get_total_site(job_tag)
+    print("DD");
+    inv_acc = 2
     for idx, xg in enumerate(get_all_walls(total_site[3])):
-        print("BB",idx);
+        print("EE",idx);
         compute_prop_wsrc(gf, gt, xg, job_tag, inv_type, inv_acc,
                 idx = idx, sfw = sfw, eig = eig,
                 finished_tags = finished_tags)
