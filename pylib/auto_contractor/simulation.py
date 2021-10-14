@@ -577,6 +577,7 @@ def run_job(job_tag, traj, src_type, gfix_flag = False):
                 #compute_prop_{src_type}_all(gf, job_tag, inv_type, path_s = f"prop-{src_type}-{inv_type}/{job_tag}/traj={traj}", eig = eig)
                 print("EEE")
                 compute_prop_wsrc_all2(gf, gt, job_tag, inv_type, path_s = f"prop-{src_type}-{inv_type}/{job_tag}/traj={traj}", eig = eig)
+                print("FFF")
                 q.release_lock()
     #
     path_prop_list = [ get_load_path(f"prop-{src_type}-{inv_type}/{job_tag}/traj={traj}") for inv_type in [0, 1,] ]
