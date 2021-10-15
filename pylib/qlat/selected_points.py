@@ -85,13 +85,13 @@ class SelectedPoints:
         return c.qnorm_spfield(self)
 
     def get_elems(self, idx):
-        return c.get_elems_spfield(self, idx)
+        return np.array(c.get_elems_spfield(self, idx))
 
     def get_elem(self, idx, m = None):
         if m is None:
-            return c.get_elem_spfield(self, idx)
+            return np.array(c.get_elem_spfield(self, idx))
         else:
-            return c.get_elem_spfield(self, idx, m)
+            return np.array(c.get_elem_spfield(self, idx, m))
 
     def save(self, path):
         assert isinstance(path, str)

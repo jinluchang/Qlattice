@@ -180,6 +180,10 @@ def load_prop_wsrc_all(job_tag, traj, flavor : str, path_s : str, path_sp : str,
         cache[f"tslice={tslice} ; wsnk"] = sp_prop_msc
     sfr.close()
 
+def adj_msc(x):
+    x = g.adj(x)
+    return g.tensor(np.ascontiguousarray(x.array), x.otype)
+
 @q.timer
 def get_prop_psrc(prop_cache, flavor : str, xg_src):
     # prop_cache[flavor][src_p] = prop
@@ -187,18 +191,47 @@ def get_prop_psrc(prop_cache, flavor : str, xg_src):
     return prop_cache[flavor][f"xg=({xg_src[0]},{xg_src[1]},{xg_src[2]},{xg_src[3]})"]
 
 @q.timer
-def get_prop_psnk_psrc(prop_cache, flavor : str, xg_snk, xg_src):
-    wm = get_prop_psrc(prop_cache, flavor, xg_src).get_elem(xg_snk)
+def get_prop_wsrc(prop_cache, flavor : str, t_src):
+    # prop_cache[flavor][src_p] = prop
+    # call load_prop_wsrc_all(flavor, path_s) first
+    return prop_cache[flavor][f"tslice={t_src}"]
+
+@q.timer
+def get_prop_wsnk_wsrc(prop_cache, flavor : str, t_snk, t_src):
+    # prop_cache[flavor][src_p] = prop
+    # call load_prop_wsrc_all(flavor, path_s) first
+    return prop_cache[flavor][f"tslice={t_src} ; wsnk"].get_elem(t_snk)
+
+@q.timer
+def get_prop_psnk_psrc(prop_cache, flavor : str, p_snk, p_src):
+    if isinstance(p_snk, list) and isinstance(p_src, list):
+        assert 4 == len(p_snk)
+        assert 4 == len(p_src)
+        xg_snk = p_snk
+        xg_src = p_src
+        wm = get_prop_psrc(prop_cache, flavor, xg_src).get_elem(xg_snk)
+    else:
+        assert isinstance(p_snk, tuple) and isinstance(p_src, tuple)
+        assert 2 == len(p_snk)
+        assert 2 == len(p_src)
+        type_snk, pos_snk = p_snk
+        type_src, pos_src = p_src
+        if type_snk == "wall" and type_src == "wall":
+            wm = get_prop_wsnk_wsrc(prop_cache, flavor, pos_snk, pos_src)
+        elif type_snk == "point" and type_src == "wall":
+            wm = get_prop_wsrc(prop_cache, flavor, pos_src).get_elem(pos_snk)
+        elif type_snk == "wall" and type_src == "point":
+            wm = adj_msc(get_prop_wsrc(prop_cache, flavor, pos_snk).get_elem(pos_src))
+        elif type_snk == "point" and type_src == "point":
+            wm = get_prop_psrc(prop_cache, flavor, pos_src).get_elem(pos_snk)
+        else:
+            raise Exception("get_prop_psnk_psrc unknown p_snk={p_snk} p_src={p_src}")
     return g.tensor(np.ascontiguousarray(np.array(wm)), g.ot_matrix_spin_color(4, 3))
 
 def mk_get_prop(prop_cache):
-    def get_prop(flavor, xg_snk, xg_src):
-        return get_prop_psnk_psrc(prop_cache, flavor, xg_snk, xg_src)
+    def get_prop(flavor, p_snk, p_src):
+        return get_prop_psnk_psrc(prop_cache, flavor, p_snk, p_src)
     return get_prop
-
-def adj_msc(x):
-    x = g.adj(x)
-    return g.tensor(np.ascontiguousarray(x.array), x.otype)
 
 @q.timer
 def auto_contractor_simple_test(job_tag, traj):
@@ -255,8 +288,8 @@ def auto_contractor_meson_corr(job_tag, traj, get_prop, num_trials):
         x2 = rs.c_rand_gen(total_site)
         x2[3] = (x1[3] + t2) % total_site[3]
         pd = {
-                "x1" : x1,
-                "x2" : x2,
+                "x1" : ("point", x1,),
+                "x2" : ("point", x2,),
                 }
         lmom = [ 2 * math.pi / total_site[i] for i in range(3) ]
         facs = [
@@ -314,10 +347,10 @@ def auto_contractor_pipi_corr(job_tag, traj, get_prop, num_trials):
         x2_1[3] = (x1_1[3] + t2_1) % total_site[3]
         x2_2[3] = (x1_1[3] + t2_2) % total_site[3]
         pd = {
-                "x1_1" : x1_1,
-                "x1_2" : x1_2,
-                "x2_1" : x2_1,
-                "x2_2" : x2_2,
+                "x1_1" : ("point", x1_1,),
+                "x1_2" : ("point", x1_2,),
+                "x2_1" : ("point", x2_1,),
+                "x2_2" : ("point", x2_2,),
                 }
         lmom = [ 2 * math.pi / total_site[i] for i in range(3) ]
         fac1 = sum([ 2 * cmath.rect(1.0, (x1_1[i] - x1_2[i]) * lmom[i]).real for i in range(3) ]) / np.sqrt(6)
@@ -417,10 +450,10 @@ def auto_contractor_kpipi_corr(job_tag, traj, get_prop, num_trials):
         x1_2[3] = (x2[3] + t1_2) % total_site[3]
         x[3] = (x2[3] + t) % total_site[3]
         pd = {
-                "x1_1" : x1_1,
-                "x1_2" : x1_2,
-                "x" : x,
-                "x2" : x2,
+                "x1_1" : ("point", x1_1,),
+                "x1_2" : ("point", x1_2,),
+                "x" : ("point", x,),
+                "x2" : ("point", x2,),
                 }
         lmom = [ 2 * math.pi / total_site[i] for i in range(3) ]
         fac1 = sum([ 2 * cmath.rect(1.0, (x1_1[i] - x1_2[i]) * lmom[i]).real for i in range(3) ]) / np.sqrt(6)
