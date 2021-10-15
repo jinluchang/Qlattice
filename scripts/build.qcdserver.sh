@@ -8,6 +8,7 @@
 ./scripts/mpfr.sh
 ./scripts/mpc.sh
 ./scripts/gcc.sh
+./scripts/cmake.sh
 ./scripts/llvm-project.sh
 ./scripts/openmpi.sh
 ./scripts/perl.sh
