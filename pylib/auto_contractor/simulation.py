@@ -153,7 +153,7 @@ def load_prop_psrc_all(job_tag, traj, flavor : str, path_s : str):
 def load_prop_wsrc_all(job_tag, traj, flavor : str, path_s : str, path_sp : str, gt):
     cache = q.mk_cache(f"prop_cache-{job_tag}-{traj}", flavor)
     total_site = ru.get_total_site(job_tag)
-    psel = q.get_psel_tslice(self.total_site())
+    psel = q.get_psel_tslice(total_site)
     if flavor in ["l", "u", "d",]:
         inv_type = 0
     elif flavor in ["s",]:
@@ -164,7 +164,7 @@ def load_prop_wsrc_all(job_tag, traj, flavor : str, path_s : str, path_sp : str,
     gt_inv = gt.inv()
     sfr = q.open_fields(get_load_path(path_s), "r")
     for idx, tslice in enumerate(get_all_walls(total_site[3])):
-        q.displayln_info(f"load_prop_wsrc_all: idx={idx} xg={xg} flavor={flavor} path_s={path_s}")
+        q.displayln_info(f"load_prop_wsrc_all: idx={idx} tslice={tslice} flavor={flavor} path_s={path_s} path_sp={path_sp}")
         prop = q.Prop()
         tag = f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc}"
         prop.load_double(sfr, tag)
@@ -175,9 +175,9 @@ def load_prop_wsrc_all(job_tag, traj, flavor : str, path_s : str, path_sp : str,
         # load wsnk prop
         fn_spw = os.path.join(path_sp, f"{tag} ; wsnk.lat")
         sp_prop = q.PselProp(psel)
-        sp_prop.load(get_save_path(fn_spw))
-        # TODO convert mspincolor
-        cache[f"tslice={tslice} ; wsnk"] = sp_prop
+        sp_prop.load(get_load_path(fn_spw))
+        sp_prop_msc = q.convert_mspincolor_from_wm(sp_prop)
+        cache[f"tslice={tslice} ; wsnk"] = sp_prop_msc
     sfr.close()
 
 @q.timer
@@ -579,6 +579,14 @@ def run_prop(job_tag, traj, get_gf, get_gt, get_eig):
             [ get_load_path(f"prop-psrc-{inv_type}/{job_tag}/traj={traj}") for inv_type in [0, 1,] ] + \
             [ get_load_path(f"prop-wsrc-{inv_type}/{job_tag}/traj={traj}") for inv_type in [0, 1,] ]
     if all(map(lambda x : x is not None, path_prop_list)):
+        load_prop_wsrc_all(job_tag, traj, "l",
+                f"prop-wsrc-0/{job_tag}/traj={traj}",
+                f"psel-prop-wsrc-0/{job_tag}/traj={traj}",
+                get_gt())
+        load_prop_wsrc_all(job_tag, traj, "s",
+                f"prop-wsrc-1/{job_tag}/traj={traj}",
+                f"psel-prop-wsrc-1/{job_tag}/traj={traj}",
+                get_gt())
         load_prop_psrc_all(job_tag, traj, "l", f"prop-psrc-0/{job_tag}/traj={traj}")
         load_prop_psrc_all(job_tag, traj, "s", f"prop-psrc-1/{job_tag}/traj={traj}")
         prop_cache = q.mk_cache(f"prop_cache-{job_tag}-{traj}")
