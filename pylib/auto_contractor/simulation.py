@@ -135,6 +135,8 @@ def load_prop_psrc_all(job_tag, traj, flavor : str, path_s : str):
         inv_type = 0
     elif flavor in ["s",]:
         inv_type = 1
+    elif flavor in ["c",]:
+        inv_type = 2
     else:
         assert False
     inv_acc = 2
@@ -158,6 +160,8 @@ def load_prop_wsrc_all(job_tag, traj, flavor : str, path_s : str, path_sp : str,
         inv_type = 0
     elif flavor in ["s",]:
         inv_type = 1
+    elif flavor in ["c",]:
+        inv_type = 2
     else:
         assert False
     inv_acc = 2
@@ -593,7 +597,7 @@ def run_eig(job_tag, traj, get_gf):
 
 @q.timer_verbose
 def run_prop(job_tag, traj, get_gf, get_gt, get_eig):
-    for inv_type in [0, 1,]:
+    for inv_type in [0, 1, 2,]:
         if get_load_path(f"prop-wsrc-{inv_type}/{job_tag}/traj={traj}") is None:
             if inv_type == 0 and get_eig is None:
                 continue
@@ -626,8 +630,8 @@ def run_prop(job_tag, traj, get_gf, get_gt, get_eig):
                 q.release_lock()
     #
     path_prop_list = \
-            [ get_load_path(f"prop-psrc-{inv_type}/{job_tag}/traj={traj}") for inv_type in [0, 1,] ] + \
-            [ get_load_path(f"prop-wsrc-{inv_type}/{job_tag}/traj={traj}") for inv_type in [0, 1,] ]
+            [ get_load_path(f"prop-psrc-{inv_type}/{job_tag}/traj={traj}") for inv_type in [0, 1, 2,] ] + \
+            [ get_load_path(f"prop-wsrc-{inv_type}/{job_tag}/traj={traj}") for inv_type in [0, 1, 2,] ]
     if all(map(lambda x : x is not None, path_prop_list)):
         load_prop_wsrc_all(job_tag, traj, "l",
                 f"prop-wsrc-0/{job_tag}/traj={traj}",
@@ -637,8 +641,13 @@ def run_prop(job_tag, traj, get_gf, get_gt, get_eig):
                 f"prop-wsrc-1/{job_tag}/traj={traj}",
                 f"psel-prop-wsrc-1/{job_tag}/traj={traj}",
                 get_gt())
+        load_prop_wsrc_all(job_tag, traj, "c",
+                f"prop-wsrc-2/{job_tag}/traj={traj}",
+                f"psel-prop-wsrc-2/{job_tag}/traj={traj}",
+                get_gt())
         load_prop_psrc_all(job_tag, traj, "l", f"prop-psrc-0/{job_tag}/traj={traj}")
         load_prop_psrc_all(job_tag, traj, "s", f"prop-psrc-1/{job_tag}/traj={traj}")
+        load_prop_psrc_all(job_tag, traj, "c", f"prop-psrc-2/{job_tag}/traj={traj}")
         prop_cache = q.mk_cache(f"prop_cache-{job_tag}-{traj}")
         get_prop = mk_get_prop(prop_cache)
         return get_prop
