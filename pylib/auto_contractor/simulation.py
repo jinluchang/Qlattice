@@ -221,7 +221,11 @@ def get_prop_psnk_psrc(prop_cache, flavor : str, p_snk, p_src):
         elif type_snk == "point" and type_src == "wall":
             wm = get_prop_wsrc(prop_cache, flavor, pos_src).get_elem(pos_snk)
         elif type_snk == "wall" and type_src == "point":
-            wm = adj_msc(get_prop_wsrc(prop_cache, flavor, pos_snk).get_elem(pos_src))
+            wm = ascontiguoustensor(
+                    ascontiguoustensor(
+                        g.gamma[5]
+                        * adj_msc(get_prop_wsrc(prop_cache, flavor, pos_snk).get_elem(pos_src)))
+                    * g.gamma[5])
         elif type_snk == "point" and type_src == "point":
             wm = get_prop_psrc(prop_cache, flavor, pos_src).get_elem(pos_snk)
         else:
