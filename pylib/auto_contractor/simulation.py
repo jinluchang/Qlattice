@@ -203,7 +203,7 @@ def get_prop_wsnk_wsrc(prop_cache, flavor : str, t_snk, t_src):
     return prop_cache[flavor][f"tslice={t_src} ; wsnk"].get_elem(t_snk)
 
 def as_mspincolor(x):
-    return g.tensor(np.ascontiguousarray(x), g.ot_matrix_spin_color(4, 3))
+    return g.tensor(np.ascontiguousarray(np.array(x)), g.ot_matrix_spin_color(4, 3))
 
 @q.timer
 def get_prop_psnk_psrc(prop_cache, flavor : str, p_snk, p_src):
@@ -227,7 +227,9 @@ def get_prop_psnk_psrc(prop_cache, flavor : str, p_snk, p_src):
             msc = ascontiguoustensor(
                     ascontiguoustensor(
                         g.gamma[5]
-                        * adj_msc(as_mspincolor(get_prop_wsrc(prop_cache, flavor, pos_snk).get_elem(pos_src))))
+                        * adj_msc(
+                            as_mspincolor(
+                                get_prop_wsrc(prop_cache, flavor, pos_snk).get_elem(pos_src))))
                     * g.gamma[5])
         elif type_snk == "point" and type_src == "point":
             msc = get_prop_psrc(prop_cache, flavor, pos_src).get_elem(pos_snk)
