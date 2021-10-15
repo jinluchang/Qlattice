@@ -202,6 +202,9 @@ def get_prop_wsnk_wsrc(prop_cache, flavor : str, t_snk, t_src):
     # call load_prop_wsrc_all(flavor, path_s) first
     return prop_cache[flavor][f"tslice={t_src} ; wsnk"].get_elem(t_snk)
 
+def as_mspincolor(x):
+    return g.tensor(np.ascontiguousarray(x), g.ot_matrix_spin_color(4, 3))
+
 @q.timer
 def get_prop_psnk_psrc(prop_cache, flavor : str, p_snk, p_src):
     if isinstance(p_snk, list) and isinstance(p_src, list):
@@ -209,7 +212,7 @@ def get_prop_psnk_psrc(prop_cache, flavor : str, p_snk, p_src):
         assert 4 == len(p_src)
         xg_snk = p_snk
         xg_src = p_src
-        wm = get_prop_psrc(prop_cache, flavor, xg_src).get_elem(xg_snk)
+        msc = get_prop_psrc(prop_cache, flavor, xg_src).get_elem(xg_snk)
     else:
         assert isinstance(p_snk, tuple) and isinstance(p_src, tuple)
         assert 2 == len(p_snk)
@@ -217,20 +220,20 @@ def get_prop_psnk_psrc(prop_cache, flavor : str, p_snk, p_src):
         type_snk, pos_snk = p_snk
         type_src, pos_src = p_src
         if type_snk == "wall" and type_src == "wall":
-            wm = get_prop_wsnk_wsrc(prop_cache, flavor, pos_snk, pos_src)
+            msc = get_prop_wsnk_wsrc(prop_cache, flavor, pos_snk, pos_src)
         elif type_snk == "point" and type_src == "wall":
-            wm = get_prop_wsrc(prop_cache, flavor, pos_src).get_elem(pos_snk)
+            msc = get_prop_wsrc(prop_cache, flavor, pos_src).get_elem(pos_snk)
         elif type_snk == "wall" and type_src == "point":
-            wm = ascontiguoustensor(
+            msc = ascontiguoustensor(
                     ascontiguoustensor(
                         g.gamma[5]
-                        * adj_msc(get_prop_wsrc(prop_cache, flavor, pos_snk).get_elem(pos_src)))
+                        * adj_msc(as_mspincolor(get_prop_wsrc(prop_cache, flavor, pos_snk).get_elem(pos_src))))
                     * g.gamma[5])
         elif type_snk == "point" and type_src == "point":
-            wm = get_prop_psrc(prop_cache, flavor, pos_src).get_elem(pos_snk)
+            msc = get_prop_psrc(prop_cache, flavor, pos_src).get_elem(pos_snk)
         else:
             raise Exception("get_prop_psnk_psrc unknown p_snk={p_snk} p_src={p_src}")
-    return g.tensor(np.ascontiguousarray(np.array(wm)), g.ot_matrix_spin_color(4, 3))
+    return as_mspincolor(msc)
 
 def mk_get_prop(prop_cache):
     def get_prop(flavor, p_snk, p_src):
@@ -279,6 +282,9 @@ def auto_contractor_meson_corr(job_tag, traj, get_prop, num_trials):
             vol**2 * mk_pi_p("x2", True) * mk_pi_p("x1"),
             vol**2 * mk_k_p("x2", True) * mk_k_p("x1"),
             vol**2 * mk_k_m("x2", True) * mk_k_m("x1"),
+            vol * mk_pi_p("x2", True) * mk_pi_p("t1"),
+            vol * mk_pi_p("t2", True) * mk_pi_p("x1"),
+            mk_pi_p("t2", True) * mk_pi_p("t1"),
             ]
     cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
     q.displayln_info(display_cexpr(cexpr))
@@ -294,6 +300,8 @@ def auto_contractor_meson_corr(job_tag, traj, get_prop, num_trials):
         pd = {
                 "x1" : ("point", x1,),
                 "x2" : ("point", x2,),
+                "t1" : ("wall", x1[3],),
+                "t2" : ("wall", x2[3],),
                 }
         lmom = [ 2 * math.pi / total_site[i] for i in range(3) ]
         facs = [
