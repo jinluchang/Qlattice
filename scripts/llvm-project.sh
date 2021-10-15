@@ -14,8 +14,6 @@ cd $build_dir
 
 cmake -DCMAKE_INSTALL_PREFIX:PATH=$prefix \
     -DLLVM_ENABLE_PROJECTS=all \
-    -DLLVM_PARALLEL_COMPILE_JOBS=8 \
-    -DLLVM_PARALLEL_LINK_JOBS=2 \
     -DCMAKE_C_COMPILER=gcc \
     -DCMAKE_CXX_COMPILER=g++ \
     $src_dir/$name-*/llvm
