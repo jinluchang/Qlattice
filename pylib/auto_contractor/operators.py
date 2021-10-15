@@ -149,6 +149,12 @@ def mk_k_0_bar(p : str, is_dagger = False):
     else:
         return -mk_k_0(p) + f"K0b({p})^dag"
 
+def mk_k_0_star_mu(p : str, mu, is_dagger = False):
+    return mk_vec_mu("d", "s", mu, is_dagger)
+
+def mk_k_0_star_bar_mu(p : str, mu, is_dagger = False):
+    return mk_vec_mu("s", "d", mu, is_dagger)
+
 def mk_kk_i11(p1 : str, p2 : str, is_dagger = False, *, is_sym = False):
     if is_sym:
         return 1 / sympy.sqrt(2) * (mk_kk_i11(p1, p2, is_dagger) + mk_kk_i11(p2, p1, is_dagger)) + f"KK_I11({p1},{p2},sym){show_dagger(is_dagger)}"
@@ -178,6 +184,12 @@ def mk_k0k0bar(p1 : str, p2 : str, is_dagger = False, *, is_sym = False):
         return 1 / sympy.sqrt(2) * (mk_k0k0bar(p1, p2, is_dagger) + mk_k0k0bar(p2, p1, is_dagger)) + f"K0K0b({p1},{p2},sym){show_dagger(is_dagger)}"
     else:
         return mk_k_0(p1, is_dagger) * mk_k_0_bar(p2, is_dagger) + f"K0K0b({p1},{p2}){show_dagger(is_dagger)}"
+
+def mk_k0pi0(p1 : str, p2 : str, is_dagger = False, *, is_sym = False):
+    if is_sym:
+        return 1 / sympy.sqrt(2) * (mk_k0pi0(p1, p2, is_dagger) + mk_k0pi0(p2, p1, is_dagger)) + f"K0pi0({p1},{p2},sym){show_dagger(is_dagger)}"
+    else:
+        return mk_k0pi0(p1, p2, is_dagger) + f"K0pi0({p1},{p2},sym){show_dagger(is_dagger)}"
 
 def mk_sigma(p : str, is_dagger = False):
     s = new_spin_index()
