@@ -203,7 +203,10 @@ def get_prop_wsnk_wsrc(prop_cache, flavor : str, t_snk, t_src):
     return prop_cache[flavor][f"tslice={t_src} ; wsnk"].get_elem(t_snk)
 
 def as_mspincolor(x):
-    return g.tensor(np.ascontiguousarray(np.array(x)), g.ot_matrix_spin_color(4, 3))
+    if isinstance(x, g.core.tensor):
+        return x
+    else:
+        return g.tensor(np.ascontiguousarray(np.array(x)), g.ot_matrix_spin_color(4, 3))
 
 @q.timer
 def get_prop_psnk_psrc(prop_cache, flavor : str, p_snk, p_src):
