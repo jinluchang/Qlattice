@@ -33,7 +33,7 @@ EOF
 mkdir -p "$prefix/bin"
 cat - >"$prefix/bin/mpic++" << EOF
 #!/bin/bash
-mpiicpc "\$@"
+mpiicpc -cxx=clang++ "\$@"
 EOF
 
 chmod +x "$prefix/bin/mpic++"

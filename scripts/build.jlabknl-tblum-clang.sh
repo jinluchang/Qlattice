@@ -1,6 +1,6 @@
 #!/bin/bash
 
-./scripts/setenv-jlabknl.sh
+./scripts/setenv-jlabknl-clang.sh
 
 ./scripts/xz.sh
 ./scripts/tar.sh

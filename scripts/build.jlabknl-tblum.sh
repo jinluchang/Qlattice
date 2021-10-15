@@ -2,6 +2,15 @@
 
 ./scripts/setenv-jlabknl.sh
 
+./scripts/xz.sh
+./scripts/tar.sh
+./scripts/perl.sh
+./scripts/openssl.sh
+./scripts/libffi.sh
+./scripts/zlib.sh
+./scripts/python.sh
+./scripts/python-packages.sh
+
 ./scripts/fftw.sh
 ./scripts/fftwf.sh
 ./scripts/cuba.sh
