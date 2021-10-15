@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# need to have mpi, python3 (numpy, simpy), openssl installed beforehand.
+
 ./scripts/setenv.sh
 
 ./scripts/fftw.sh

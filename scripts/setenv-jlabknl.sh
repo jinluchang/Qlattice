@@ -20,7 +20,7 @@ export PYTHONPATH=
 
 module purge
 
-module add anaconda-latest
+module add anaconda3-latest
 module add gcc-7.2.0
 
 # load intel libraries

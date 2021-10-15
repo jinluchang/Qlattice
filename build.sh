@@ -10,8 +10,6 @@
 
 echo "Need to run ./scripts/download.sh to download all needed packages."
 
-. conf.sh
-
 target="$1"
 
 if [ -z "$target" ] ; then
@@ -19,6 +17,13 @@ if [ -z "$target" ] ; then
 fi
 
 echo "target is $target"
+
+if [ -f "scripts/build.$target.sh" ] ; then
+    :
+else
+    echo "No 'scripts/build.$target.sh' to build '$target'."
+    exit
+fi
 
 if [ -e "$prefix" ] ; then
     echo "$prefix already exist, continue to build will erase all its contents."
@@ -36,8 +41,6 @@ mkdir -p "$prefix"
 
 if [ -f "scripts/build.$target.sh" ] ; then
     "scripts/build.$target.sh"
-else
-    echo "No 'scripts/build.$target.sh' to build '$target'."
 fi
 
 rm -rf $temp_dir
