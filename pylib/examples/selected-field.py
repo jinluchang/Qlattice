@@ -85,6 +85,42 @@ s_prop1 -= s_prop
 
 q.displayln_info("s_prop1", s_prop.qnorm(), s_prop1.qnorm())
 
+prop = q.Prop(geo)
+prop.set_rand(rs.split("prop-1"))
+q.displayln_info(f"prop : {prop.crc32()}")
+prop_msc = q.convert_mspincolor_from_wm(prop)
+q.displayln_info(f"prop_msc : {prop_msc.crc32()}")
+prop_wm = q.convert_wm_from_mspincolor(prop_msc)
+q.displayln_info(f"prop_wm : {prop_wm.crc32()}")
+prop_wm -= prop
+assert prop_wm.qnorm() == 0
+
+s_prop = q.SelProp(fsel)
+s_prop_msc = q.SelProp(fsel)
+s_prop_wm = q.SelProp(fsel)
+s_prop @= prop
+s_prop_msc @= prop_msc
+s_prop_wm @= prop
+s_prop_msc1 = q.convert_mspincolor_from_wm(s_prop)
+s_prop_wm1 = q.convert_wm_from_mspincolor(s_prop_msc)
+s_prop_msc1 -= s_prop_msc
+s_prop_wm1 -= s_prop_wm
+assert s_prop_msc1.qnorm() == 0
+assert s_prop_wm1.qnorm() == 0
+
+sp_prop = q.PselProp(psel)
+sp_prop_msc = q.PselProp(psel)
+sp_prop_wm = q.PselProp(psel)
+sp_prop @= prop
+sp_prop_msc @= prop_msc
+sp_prop_wm @= prop
+sp_prop_msc1 = q.convert_mspincolor_from_wm(sp_prop)
+sp_prop_wm1 = q.convert_wm_from_mspincolor(sp_prop_msc)
+sp_prop_msc1 -= sp_prop_msc
+sp_prop_wm1 -= sp_prop_wm
+assert sp_prop_msc1.qnorm() == 0
+assert sp_prop_wm1.qnorm() == 0
+
 if q.get_id_node() == 0:
     q.displayln(os.listdir("results"))
 

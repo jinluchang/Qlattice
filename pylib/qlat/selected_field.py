@@ -67,12 +67,14 @@ class SelectedField:
         return geo
 
     def __iadd__(self, f1):
-        assert isinstance(f1, SelectedField) and f1.ctype == self.ctype
+        assert isinstance(f1, SelectedField)
+        assert f1.ctype == self.ctype
         c.set_add_sfield(self, f1)
         return self
 
     def __isub__(self, f1):
-        assert isinstance(f1, SelectedField) and f1.ctype == self.ctype
+        assert isinstance(f1, SelectedField)
+        assert f1.ctype == self.ctype
         c.set_sub_sfield(self, f1)
         return self
 

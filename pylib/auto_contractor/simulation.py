@@ -145,8 +145,7 @@ def load_prop_psrc_all(job_tag, traj, flavor : str, path_s : str):
         tag = f"xg=({xg[0]},{xg[1]},{xg[2]},{xg[3]}) ; type={inv_type} ; accuracy={inv_acc}"
         prop.load_double(sfr, tag)
         # convert to GPT/Grid prop mspincolor order
-        prop_msc = q.Prop()
-        q.convert_mspincolor_from_wm_prop(prop_msc, prop)
+        prop_msc = q.convert_mspincolor_from_wm(prop)
         cache[f"xg=({xg[0]},{xg[1]},{xg[2]},{xg[3]})"] = prop_msc
     sfr.close()
 
@@ -171,8 +170,7 @@ def load_prop_wsrc_all(job_tag, traj, flavor : str, path_s : str, path_sp : str,
         prop.load_double(sfr, tag)
         prop = gt_inv * prop
         # convert to GPT/Grid prop mspincolor order
-        prop_msc = q.Prop()
-        q.convert_mspincolor_from_wm_prop(prop_msc, prop)
+        prop_msc = q.convert_mspincolor_from_wm(prop)
         cache[f"tslice={tslice}"] = prop_msc
         # load wsnk prop
         fn_spw = os.path.join(path_sp, f"{tag} ; wsnk.lat")

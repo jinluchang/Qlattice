@@ -1,6 +1,7 @@
 #pragma once
 
 #include <qlat/qcd.h>
+#include <qlat/selected-field.h>
 #include <qlat/selected-points.h>
 
 namespace qlat
@@ -515,6 +516,54 @@ inline void convert_mspincolor_from_wm(Propagator4d& prop_msc, const Propagator4
   qacc_for(index, geo.local_volume(), {
     WilsonMatrix& msc = prop_msc.get_elem(index);
     const WilsonMatrix& wm = prop_wm.get_elem(index);
+    convert_mspincolor_from_wm(msc, wm);
+  });
+}
+
+inline void convert_wm_from_mspincolor(SelectedField<WilsonMatrix>& prop_wm, const SelectedField<WilsonMatrix>& prop_msc)
+{
+  TIMER("convert_wm_from_mspincolor(s_prop)");
+  qassert(prop_msc.geo().multiplicity == 1);
+  prop_wm.init(prop_msc.geo(), prop_msc.n_elems, 1);
+  qacc_for(idx, prop_msc.n_elems, {
+    WilsonMatrix& wm = prop_wm.get_elem(idx);
+    const WilsonMatrix& msc = prop_msc.get_elem(idx);
+    convert_wm_from_mspincolor(wm, msc);
+  });
+}
+
+inline void convert_mspincolor_from_wm(SelectedField<WilsonMatrix>& prop_msc, const SelectedField<WilsonMatrix>& prop_wm)
+{
+  TIMER("convert_mspincolor_from_wm(s_prop)");
+  qassert(prop_wm.geo().multiplicity == 1);
+  prop_msc.init(prop_wm.geo(), prop_wm.n_elems, 1);
+  qacc_for(idx, prop_wm.n_elems, {
+    WilsonMatrix& msc = prop_msc.get_elem(idx);
+    const WilsonMatrix& wm = prop_wm.get_elem(idx);
+    convert_mspincolor_from_wm(msc, wm);
+  });
+}
+
+inline void convert_wm_from_mspincolor(SelectedPoints<WilsonMatrix>& prop_wm, const SelectedPoints<WilsonMatrix>& prop_msc)
+{
+  TIMER("convert_wm_from_mspincolor(sp_prop)");
+  qassert(prop_msc.multiplicity == 1);
+  prop_wm.init(prop_msc.n_points, 1);
+  qacc_for(idx, prop_msc.n_points, {
+    WilsonMatrix& wm = prop_wm.get_elem(idx);
+    const WilsonMatrix& msc = prop_msc.get_elem(idx);
+    convert_wm_from_mspincolor(wm, msc);
+  });
+}
+
+inline void convert_mspincolor_from_wm(SelectedPoints<WilsonMatrix>& prop_msc, const SelectedPoints<WilsonMatrix>& prop_wm)
+{
+  TIMER("convert_mspincolor_from_wm(sp_prop)");
+  qassert(prop_wm.multiplicity == 1);
+  prop_msc.init(prop_wm.n_points, 1);
+  qacc_for(idx, prop_wm.n_points, {
+    WilsonMatrix& msc = prop_msc.get_elem(idx);
+    const WilsonMatrix& wm = prop_wm.get_elem(idx);
     convert_mspincolor_from_wm(msc, wm);
   });
 }

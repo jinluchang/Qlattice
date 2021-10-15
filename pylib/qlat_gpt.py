@@ -163,8 +163,7 @@ def qlat_from_gpt_prop(gpt_prop):
     geo = q.Geometry(total_site, 1)
     prop_msc = q.Prop(geo)
     plan(prop_msc.mview(), gpt_prop)
-    prop_wm = q.Prop(geo)
-    q.convert_wm_from_mspincolor_prop(prop_wm, prop_msc)
+    prop_wm = q.convert_wm_from_mspincolor(prop_msc)
     return prop_wm
 
 @q.timer
@@ -176,8 +175,7 @@ def gpt_from_qlat_prop(prop_wm):
     multiplicity = 1
     tag = "gpt_from_qlat"
     plan = get_qlat_gpt_copy_plan(ctype, total_site, multiplicity, tag)
-    prop_msc = q.Prop(geo)
-    q.convert_mspincolor_from_wm_prop(prop_msc, prop_wm)
+    prop_msc = q.convert_mspincolor_from_wm(prop_wm)
     grid = mk_grid(geo)
     gpt_prop = g.mspincolor(grid)
     plan(gpt_prop, prop_msc.mview())

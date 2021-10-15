@@ -119,6 +119,66 @@ EXPORT(convert_mspincolor_from_wm_prop, {
   Py_RETURN_NONE;
 });
 
+EXPORT(convert_wm_from_mspincolor_sp_prop, {
+  using namespace qlat;
+  PyObject* p_prop_wm = NULL;
+  PyObject* p_prop_msc = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_prop_wm, &p_prop_msc)) {
+    return NULL;
+  }
+  SelectedPoints<WilsonMatrix>& prop_wm =
+      py_convert_type<SelectedPoints<WilsonMatrix> >(p_prop_wm);
+  const SelectedPoints<WilsonMatrix>& prop_msc =
+      py_convert_type<SelectedPoints<WilsonMatrix> >(p_prop_msc);
+  convert_wm_from_mspincolor(prop_wm, prop_msc);
+  Py_RETURN_NONE;
+});
+
+EXPORT(convert_mspincolor_from_wm_sp_prop, {
+  using namespace qlat;
+  PyObject* p_prop_msc = NULL;
+  PyObject* p_prop_wm = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_prop_msc, &p_prop_wm)) {
+    return NULL;
+  }
+  SelectedPoints<WilsonMatrix>& prop_msc =
+      py_convert_type<SelectedPoints<WilsonMatrix> >(p_prop_msc);
+  const SelectedPoints<WilsonMatrix>& prop_wm =
+      py_convert_type<SelectedPoints<WilsonMatrix> >(p_prop_wm);
+  convert_mspincolor_from_wm(prop_msc, prop_wm);
+  Py_RETURN_NONE;
+});
+
+EXPORT(convert_wm_from_mspincolor_s_prop, {
+  using namespace qlat;
+  PyObject* p_prop_wm = NULL;
+  PyObject* p_prop_msc = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_prop_wm, &p_prop_msc)) {
+    return NULL;
+  }
+  SelectedField<WilsonMatrix>& prop_wm =
+      py_convert_type<SelectedField<WilsonMatrix> >(p_prop_wm);
+  const SelectedField<WilsonMatrix>& prop_msc =
+      py_convert_type<SelectedField<WilsonMatrix> >(p_prop_msc);
+  convert_wm_from_mspincolor(prop_wm, prop_msc);
+  Py_RETURN_NONE;
+});
+
+EXPORT(convert_mspincolor_from_wm_s_prop, {
+  using namespace qlat;
+  PyObject* p_prop_msc = NULL;
+  PyObject* p_prop_wm = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_prop_msc, &p_prop_wm)) {
+    return NULL;
+  }
+  SelectedField<WilsonMatrix>& prop_msc =
+      py_convert_type<SelectedField<WilsonMatrix> >(p_prop_msc);
+  const SelectedField<WilsonMatrix>& prop_wm =
+      py_convert_type<SelectedField<WilsonMatrix> >(p_prop_wm);
+  convert_mspincolor_from_wm(prop_msc, prop_wm);
+  Py_RETURN_NONE;
+});
+
 EXPORT(free_scalar_invert_mom_cfield, {
   using namespace qlat;
   PyObject* p_field = NULL;

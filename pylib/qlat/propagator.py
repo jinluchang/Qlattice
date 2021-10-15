@@ -127,15 +127,29 @@ def free_invert(prop_src, mass,
     c.free_invert_prop(prop_sol, prop_src, mass, m5, momtwist)
     return prop_sol
 
-def convert_mspincolor_from_wm_prop(prop_msc, prop_wm):
-    assert isinstance(prop_msc, Prop)
-    assert isinstance(prop_wm, Prop)
-    return c.convert_mspincolor_from_wm_prop(prop_msc, prop_wm)
+def convert_mspincolor_from_wm(prop_wm):
+    prop_msc = prop_wm.copy(False)
+    if isinstance(prop_wm, Prop):
+        c.convert_mspincolor_from_wm_prop(prop_msc, prop_wm)
+    elif isinstance(prop_wm, SelProp):
+        c.convert_mspincolor_from_wm_s_prop(prop_msc, prop_wm)
+    elif isinstance(prop_wm, PselProp):
+        c.convert_mspincolor_from_wm_sp_prop(prop_msc, prop_wm)
+    else:
+        raise Exception("prop type match failed")
+    return prop_msc
 
-def convert_wm_from_mspincolor_prop(prop_wm, prop_msc):
-    assert isinstance(prop_wm, Prop)
-    assert isinstance(prop_msc, Prop)
-    return c.convert_wm_from_mspincolor_prop(prop_wm, prop_msc)
+def convert_wm_from_mspincolor(prop_msc):
+    prop_wm = prop_msc.copy(False)
+    if isinstance(prop_msc, Prop):
+        c.convert_wm_from_mspincolor_prop(prop_wm, prop_msc)
+    elif isinstance(prop_msc, SelProp):
+        c.convert_wm_from_mspincolor_s_prop(prop_wm, prop_msc)
+    elif isinstance(prop_msc, PselProp):
+        c.convert_wm_from_mspincolor_sp_prop(prop_wm, prop_msc)
+    else:
+        raise Exception("prop type match failed")
+    return prop_wm
 
 @timer
 def free_scalar_invert_mom_cfield(f, mass):

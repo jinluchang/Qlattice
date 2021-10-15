@@ -160,6 +160,7 @@ plan initialized
 plan source added
 plan destination added
 plan created
+mk_file_dirs_info: 'results/configs/test-4nt16/ckpoint_lat.1000'.
 load_gauge_field: 'results/configs/test-4nt16/ckpoint_lat.1000'.
 q_read_par_limit=16 (default)
 ShufflePlanCache: to add 1 / 16.

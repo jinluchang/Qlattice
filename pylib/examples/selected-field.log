@@ -42,6 +42,9 @@ s_prop 12284.876383957711 0.0
 prop1 12473.61033144344
 sp_prop1 188.73394748572775 0.0
 s_prop1 12284.876383957711 0.0
+prop : 870829356
+prop_msc : 1691244877
+prop_wm : 870829356
 ['prop.field', 'prop-double.field', 'prop-float.field', 'prop.lat', 'prop.sfield']
 q_timer_max_func_name_len=50 (default)
 qlat::end(): get_comm_list().pop_back()
