@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 ./scripts/setenv-jlabknl-clang.sh
 
 ./scripts/xz.sh
@@ -9,13 +11,13 @@
 ./scripts/mpc.sh
 ./scripts/gcc.sh
 ./scripts/cmake.sh
-./scripts/llvm-project.sh
 ./scripts/perl.sh
 ./scripts/openssl.sh
 ./scripts/libffi.sh
 ./scripts/zlib.sh
 ./scripts/python.sh
 ./scripts/python-packages.sh
+./scripts/llvm-project.sh
 
 ./scripts/fftw.sh
 ./scripts/fftwf.sh

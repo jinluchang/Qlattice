@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 ./scripts/setenv-summit.sh
 
 ./scripts/fftw.sh

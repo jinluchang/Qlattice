@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 ./scripts/setenv-bnlknl.sh
 
 ./scripts/fftw.sh

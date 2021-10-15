@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # need to have mpi, python3 (numpy, simpy), openssl installed beforehand.
 
 ./scripts/setenv.sh
