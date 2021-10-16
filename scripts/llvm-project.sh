@@ -9,17 +9,19 @@ mkdir -p $src_dir
 cd $src_dir
 tar xaf $distfiles/$name-*.xz
 
-mkdir -p $build_dir
-cd $build_dir
+cd $name-*
 
-cmake -DCMAKE_INSTALL_PREFIX:PATH=$prefix \
+cmake \
+    -S llvm -B build -G Ninja \
     -DLLVM_ENABLE_PROJECTS=all \
+    -DCMAKE_INSTALL_PREFIX="$prefix" \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DLLVM_PARALLEL_LINK_JOBS=2 \
+    -DLLVM_PARALLEL_COMPILE_JOBS="$num_proc" \
     -DCMAKE_C_COMPILER=gcc \
-    -DCMAKE_CXX_COMPILER=g++ \
-    $src_dir/$name-*/llvm
+    -DCMAKE_CXX_COMPILER=g++
 
-make -j$num_proc
-make install
+cmake --build build
 
 cd $wd
 echo "!!!! $name build !!!!"

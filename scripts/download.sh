@@ -58,6 +58,10 @@ dget "Python-3.10.0.tar.xz" "https://www.python.org/ftp/python/3.10.0/Python-3.1
 
 dget "libffi-3.4.2.tar.gz" "https://github.com/libffi/libffi/releases/download/v3.4.2/libffi-3.4.2.tar.gz"
 
+dget "re2c-2.2.tar.xz" "https://github.com/skvadrik/re2c/releases/download/2.2/re2c-2.2.tar.xz"
+
+dget "ninja-1.10.2.tar.gz" "https://github.com/ninja-build/ninja/archive/refs/tags/v1.10.2.tar.gz"
+
 (
 mkdir -p python-packages
 cd python-packages
