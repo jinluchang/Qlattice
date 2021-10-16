@@ -10,7 +10,7 @@ mkdir -p "$prefix/bin"
 
 cat - >"$prefix/bin/CC" << EOF
 #!/bin/bash
-if [ -f "$prefix/bin/clang++" ] ; then
+if [ -f "$prefix/bin/clang" ] ; then
     clang "\$@"
 elif which icc >/dev/null 2>&1 ; then
     icc "\$@"
