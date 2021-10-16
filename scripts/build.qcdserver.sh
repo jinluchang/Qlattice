@@ -21,13 +21,7 @@ set -e
 ./scripts/ninja.sh
 ./scripts/llvm-project.sh
 
-export CC=clang
-export CXX=clang++
-
 ./scripts/openmpi.sh
-
-export OMPI_CC=clang
-export OMPI_CXX=clang++
 
 ./scripts/fftw.sh
 ./scripts/fftwf.sh
