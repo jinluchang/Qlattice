@@ -18,7 +18,6 @@ export CXX=g++
 cmake \
     -S llvm -B build -G Ninja \
     -DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra;openmp" \
-    -DLLVM_LIBC_ENABLE_LINTING=OFF \
     -DCMAKE_INSTALL_PREFIX="$prefix" \
     -DCMAKE_PREFIX_PATH="$prefix" \
     -DCMAKE_BUILD_TYPE=Release \
