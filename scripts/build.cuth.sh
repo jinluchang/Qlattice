@@ -33,5 +33,5 @@ set -e
 ./scripts/automake.sh
 ./scripts/c-lime.sh
 ./scripts/hdf5.sh
-./scripts/grid.gen-16.sh
+./scripts/grid.gen16.sh
 ./scripts/gpt.sh
