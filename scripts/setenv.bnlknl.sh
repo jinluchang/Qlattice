@@ -14,7 +14,7 @@ if [ -z "\$prefix" ] ; then
     prefix="$prefix"
 fi
 if [ -z "\$num_proc" ] ; then
-    num_proc=32
+    num_proc=8
 fi
 export PYTHONPATH=
 module purge
