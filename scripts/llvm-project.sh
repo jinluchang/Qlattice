@@ -10,6 +10,7 @@ cd $src_dir
 tar xaf $distfiles/$name-*.xz
 
 cd $name-*
+mkdir -p build
 
 cmake \
     -S llvm -B build -G Ninja \
