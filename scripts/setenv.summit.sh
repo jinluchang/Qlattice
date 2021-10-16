@@ -20,13 +20,13 @@ module add DefApps
 module add cuda/10.1.243
 module add gcc/7.5.0
 module list
-export CC=CC
-export CXX=CXX
-export MPICC=MPICC
-export MPICXX=MPICXX
 export QLAT_CXX="nvcc -w -std=c++14 -O3 -ccbin mpicxx -Xcompiler -fopenmp -Xcompiler -fno-strict-aliasing --expt-extended-lambda --expt-relaxed-constexpr -gencode arch=compute_70,code=sm_70"
 export QLAT_CXXFLAGS="-x cu -Xcompiler -fPIC "
 export QLAT_LDFLAGS="-link --shared"
+export CC=CC.sh
+export CXX=CXX.sh
+export MPICC=MPICC.sh
+export MPICXX=MPICXX.sh
 EOF
 
 ./scripts/compiler-wrappers.sh

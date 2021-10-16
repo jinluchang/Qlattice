@@ -25,10 +25,10 @@ module add gcc/9.3.0
 source /hpcgpfs01/software/Intel/psxe2020/bin/compilervars.sh -arch intel64
 export INTEL_LICENSE_FILE=/hpcgpfs01/software/Intel/psxe2018.u1/licenses
 module list
-export CC=CC
-export CXX=CXX
-export MPICC=MPICC
-export MPICXX=MPICXX
+export CC=CC.sh
+export CXX=CXX.sh
+export MPICC=MPICC.sh
+export MPICXX=MPICXX.sh
 EOF
 
 ./scripts/compiler-wrappers.sh

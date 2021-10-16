@@ -20,10 +20,10 @@ module add gcc-7.2.0
 # load intel libraries
 source /dist/intel/parallel_studio_xe/parallel_studio_xe/psxevars.sh intel64
 module list
-export CC=CC
-export CXX=CXX
-export MPICC=MPICC
-export MPICXX=MPICXX
+export CC=CC.sh
+export CXX=CXX.sh
+export MPICC=MPICC.sh
+export MPICXX=MPICXX.sh
 EOF
 
 ./scripts/compiler-wrappers.sh

@@ -8,7 +8,7 @@ echo "!!!! build $name !!!!"
 
 mkdir -p "$prefix/bin"
 
-cat - >"$prefix/bin/CC" << EOF
+cat - >"$prefix/bin/CC.sh" << EOF
 #!/bin/bash
 if [ -f "$prefix/bin/clang" ] ; then
     clang "\$@"
@@ -18,9 +18,9 @@ else
     gcc "\$@"
 fi
 EOF
-chmod +x "$prefix/bin/CC"
+chmod +x "$prefix/bin/CC.sh"
 
-cat - >"$prefix/bin/CXX" << EOF
+cat - >"$prefix/bin/CXX.sh" << EOF
 #!/bin/bash
 if [ -f "$prefix/bin/clang++" ] ; then
     clang++ "\$@"
@@ -30,9 +30,9 @@ else
     g++ "\$@"
 fi
 EOF
-chmod +x "$prefix/bin/CXX"
+chmod +x "$prefix/bin/CXX.sh"
 
-cat - >"$prefix/bin/MPICC" << EOF
+cat - >"$prefix/bin/MPICC.sh" << EOF
 #!/bin/bash
 if which mpiicc >/dev/null 2>&1 ; then
     if [ -f "$prefix/bin/clang" ] ; then
@@ -44,9 +44,9 @@ else
     mpicc "\$@"
 fi
 EOF
-chmod +x "$prefix/bin/MPICC"
+chmod +x "$prefix/bin/MPICC.sh"
 
-cat - >"$prefix/bin/MPICXX" << EOF
+cat - >"$prefix/bin/MPICXX.sh" << EOF
 #!/bin/bash
 if which mpiicpc >/dev/null 2>&1 ; then
     if [ -f "$prefix/bin/clang++" ] ; then
@@ -64,6 +64,6 @@ else
     mpic++ "\$@"
 fi
 EOF
-chmod +x "$prefix/bin/MPICXX"
+chmod +x "$prefix/bin/MPICXX.sh"
 
 echo "!!!! $name build !!!!"

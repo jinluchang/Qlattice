@@ -16,10 +16,10 @@ fi
 if [ -z "\$num_proc" ] ; then
     num_proc=2
 fi
-export CC=CC
-export CXX=CXX
-export MPICC=MPICC
-export MPICXX=MPICXX
+export CC=CC.sh
+export CXX=CXX.sh
+export MPICC=MPICC.sh
+export MPICXX=MPICXX.sh
 EOF
 
 ./scripts/compiler-wrappers.sh
