@@ -2,7 +2,7 @@
 
 set -e
 
-./scripts/setenv-jlabknl-clang.sh
+./scripts/setenv.jlabknl.sh
 
 ./scripts/xz.sh
 ./scripts/tar.sh
@@ -26,13 +26,16 @@ set -e
 ./scripts/cuba.sh
 ./scripts/zlib.sh
 ./scripts/eigen.sh
-./scripts/qlat.sh
-
 ./scripts/autoconf.sh
 ./scripts/automake.sh
 ./scripts/c-lime.sh
 ./scripts/hdf5.sh
-./scripts/grid-tblum-knl-clang.sh
-./scripts/hadrons-tblum-knl-clang.sh
-./scripts/grid-knl-clang.sh
+
+export CXX="clang++"
+export MPICXX="mpiicpc -cxx clang++"
+
+./scripts/qlat.sh
+./scripts/grid-tblum-knl.sh
+./scripts/hadrons-tblum.sh
+./scripts/grid-knl.sh
 ./scripts/gpt.sh

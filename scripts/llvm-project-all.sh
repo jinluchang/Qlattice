@@ -12,9 +12,6 @@ tar xaf $distfiles/$name-*.xz
 cd $name-*
 mkdir -p build
 
-export CC=clang
-export CXX=clang++
-
 cmake \
     -S llvm -B build -G Ninja \
     -DLLVM_ENABLE_PROJECTS=all \

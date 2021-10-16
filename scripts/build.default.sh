@@ -4,7 +4,7 @@ set -e
 
 # need to have mpi, python3 (numpy, simpy), openssl installed beforehand.
 
-./scripts/setenv.sh
+./scripts/setenv.default.sh
 
 ./scripts/fftw.sh
 ./scripts/fftwf.sh

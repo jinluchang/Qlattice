@@ -21,14 +21,14 @@ ln -vs "${INITDIR}/Eigen/unsupported/Eigen" "${INITDIR}/Grid/Eigen/unsupported"
 mkdir build
 cd build
 ../configure \
-    --enable-simd=SSE4 \
+    --enable-simd=GEN \
+    --enable-gen-simd-width=16 \
     --enable-alloc-align=4k \
     --enable-comms=mpi-auto \
     --enable-gparity=no \
     --with-lime="$prefix" \
     --with-fftw="$prefix" \
-    --prefix="$prefix" \
-    CXXFLAGS=-fPIC 
+    --prefix="$prefix"
 
 make -j$num_proc
 make install

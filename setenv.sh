@@ -5,6 +5,38 @@ echo "num_proc=$num_proc"
 
 export QLAT_PREFIX="$prefix"
 
+if [ -z "$CC" ] ; then
+    export CC=gcc
+fi
+
+if [ -z "$CXX" ] ; then
+    export CXX=CXX
+fi
+
+if [ -z "$CFLAGS" ] ; then
+    export CFLAGS=-fPIC
+fi
+
+if [ -z "$CXXFLAGS" ] ; then
+    export CXXFLAGS=-fPIC
+fi
+
+if [ -z "$LDFLAGS" ] ; then
+    export LDFLAGS=
+fi
+
+if [ -z "$LIBS" ] ; then
+    export LIBS=
+fi
+
+if [ -z "$MPICC" ] ; then
+    export MPICC=mpicc
+fi
+
+if [ -z "$MPICXX" ] ; then
+    export MPICXX=MPICXX
+fi
+
 add-to-colon-list () {
     local name="$1"
     local new_value="$2"
@@ -65,7 +97,7 @@ organize-colon-list CPLUS_INCLUDE_PATH
 organize-colon-list PKG_CONFIG_PATH
 
 echo
-for v in PATH PYTHONPATH LD_LIBRARY_PATH LIBRARY_PATH C_INCLUDE_PATH CPLUS_INCLUDE_PATH PKG_CONFIG_PATH QLAT_PREFIX QLAT_CXX QLAT_CXXLD QLAT_FLAGS ; do
+for v in PATH PYTHONPATH LD_LIBRARY_PATH LIBRARY_PATH C_INCLUDE_PATH CPLUS_INCLUDE_PATH PKG_CONFIG_PATH QLAT_PREFIX QLAT_MPICXX QLAT_CXXFLAGS QLAT_LDFLAGS QLAT_LIBS ; do
 export | grep --color=never " $v="'"' || true
 done
 echo

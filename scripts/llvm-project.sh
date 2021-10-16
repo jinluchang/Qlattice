@@ -12,9 +12,6 @@ tar xaf $distfiles/$name-*.xz
 cd $name-*
 mkdir -p build
 
-export CC=gcc
-export CXX=g++
-
 cmake \
     -S llvm -B build -G Ninja \
     -DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra;openmp" \

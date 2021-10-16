@@ -1,37 +1,45 @@
-ifeq ($(strip $(QLAT_CXX)),)
-	CXX=mpic++
+ifeq ($(strip $(QLAT_MPICXX)),)
+	ifeq ($(strip $(MPICXX)),)
+		MPICXX=mpic++ -std=c++11 -fopenmp -O2 -Wall -fno-strict-aliasing
+	else
+		MPICXX=$(MPICXX) -std=c++11 -fopenmp -O2 -Wall -fno-strict-aliasing
+	endif
 else
-	CXX=$(QLAT_CXX)
+	MPICXX=$(QLAT_MPICXX)
 endif
 
-ifeq ($(strip $(QLAT_CXXLD)),)
-	CXXLD=mpic++ --shared
+ifeq ($(strip $(QLAT_CXXFLAGS)),)
+	ifeq ($(strip $(CXXFLAGS)),)
+		CXXFLAGS=-fPIC
+	endif
 else
-	CXXLD=$(QLAT_CXXLD)
+	CXXFLAGS=$(QLAT_CXXFLAGS)
 endif
 
-ifeq ($(strip $(QLAT_FLAGS)),)
-	FLAGS=-std=c++11 -fopenmp -O2 -Wall -fno-strict-aliasing -fPIC
+ifeq ($(strip $(QLAT_LDFLAGS)),)
+	ifeq ($(strip $(LDFLAGS)),)
+		LDFLAGS=--shared
+	endif
 else
-	FLAGS=$(QLAT_FLAGS)
+	LDFLAGS=$(QLAT_LDFLAGS)
+endif
+
+ifeq ($(strip $(QLAT_LIBS)),)
+	ifeq ($(strip $(LIBS)),)
+		LIBS=
+	endif
+else
+	LIBS=$(QLAT_LIBS)
 endif
 
 QLAT_INCLUDE=$(QLAT_PREFIX)/include
 QLAT_LIB=$(QLAT_PREFIX)/lib
 
-QLAT_CFLAGS=
-QLAT_CFLAGS+= -I$(QLAT_INCLUDE)
+CXXFLAGS+= -I$(QLAT_INCLUDE)
 
-QLAT_CXXFLAGS=$(QLAT_CFLAGS)
+LDFLAGS+= -L$(QLAT_LIB)
 
-QLAT_LDFLAGS=
-QLAT_LDFLAGS+= -L$(QLAT_LIB)
-QLAT_LDFLAGS+= -l:libfftw3.a -l:libfftw3f.a
-QLAT_LDFLAGS+= -l:libcuba.a
-QLAT_LDFLAGS+= -l:libz.a
-QLAT_LDFLAGS+= -lm
-
-CXXFLAGS=
-CXXFLAGS+= $(QLAT_CXXFLAGS)
-LDFLAGS=
-LDFLAGS+= $(QLAT_LDFLAGS)
+LIBS+= -lfftw3 -lfftw3f
+LIBS+= -lcuba
+LIBS+= -lz
+LIBS+= -lm

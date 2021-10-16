@@ -2,7 +2,19 @@
 
 set -e
 
-./scripts/setenv-summit.sh
+./scripts/setenv.summit.sh
+
+./scripts/xz.sh
+./scripts/tar.sh
+./scripts/gmp.sh
+./scripts/mpfr.sh
+
+./scripts/perl.sh
+./scripts/openssl.sh
+./scripts/libffi.sh
+./scripts/zlib.sh
+./scripts/python.sh
+./scripts/python-packages.sh
 
 ./scripts/fftw.sh
 ./scripts/fftwf.sh
@@ -11,11 +23,7 @@ set -e
 ./scripts/eigen.sh
 ./scripts/qlat.sh
 
-pip3 install numpy
-pip3 install simpy
-
 ./scripts/c-lime.sh
-./scripts/gmp.sh
-./scripts/mpfr.sh
+./scripts/hdf5.sh
 ./scripts/grid-summit.sh
 ./scripts/gpt.sh

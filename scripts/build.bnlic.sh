@@ -2,7 +2,7 @@
 
 set -e
 
-./scripts/setenv-bnlic.sh
+./scripts/setenv.bnlic.sh
 
 ./scripts/fftw.sh
 ./scripts/fftwf.sh
@@ -12,5 +12,5 @@ set -e
 ./scripts/qlat.sh
 
 ./scripts/c-lime.sh
-./scripts/grid-avx2.sh
+./scripts/grid.avx2.sh
 ./scripts/gpt.sh

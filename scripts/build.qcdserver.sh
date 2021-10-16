@@ -2,7 +2,7 @@
 
 set -e
 
-./scripts/setenv.sh
+./scripts/setenv.default.sh
 
 ./scripts/xz.sh
 ./scripts/tar.sh
@@ -10,10 +10,9 @@ set -e
 ./scripts/mpfr.sh
 ./scripts/mpc.sh
 ./scripts/gcc.sh
-./scripts/cmake.sh
-./scripts/openmpi.sh
 ./scripts/perl.sh
 ./scripts/openssl.sh
+./scripts/cmake.sh
 ./scripts/libffi.sh
 ./scripts/zlib.sh
 ./scripts/python.sh
@@ -21,6 +20,14 @@ set -e
 ./scripts/re2c.sh
 ./scripts/ninja.sh
 ./scripts/llvm-project.sh
+
+export CC=clang
+export CXX=clang++
+
+./scripts/openmpi.sh
+
+export OMPI_CC=clang
+export OMPI_CXX=clang++
 
 ./scripts/fftw.sh
 ./scripts/fftwf.sh
@@ -32,7 +39,7 @@ set -e
 ./scripts/automake.sh
 ./scripts/c-lime.sh
 ./scripts/hdf5.sh
-./scripts/grid-avx2.sh
+./scripts/grid.avx2.sh
 ./scripts/gpt.sh
-./scripts/grid-tblum-knl-clang.sh
-./scripts/hadrons-tblum-knl-clang.sh
+./scripts/grid-tblum.avx2.sh
+./scripts/hadrons-tblum.sh

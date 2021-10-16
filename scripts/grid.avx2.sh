@@ -1,7 +1,5 @@
 #!/bin/bash
 
-echo "Need to run './scripts/mpfr.sh' first"
-
 . conf.sh
 
 name=Grid
@@ -10,7 +8,6 @@ echo "!!!! build $name !!!!"
 
 mkdir -p "$prefix"/$name || true
 
-# rsync -av --delete $distfiles/$name/ "$prefix"/$name/
 rsync -av --delete $distfiles/$name-lehner/ "$prefix"/$name/
 
 cd "$prefix/$name"
@@ -24,26 +21,13 @@ ln -vs "${INITDIR}/Eigen/unsupported/Eigen" "${INITDIR}/Grid/Eigen/unsupported"
 mkdir build
 cd build
 ../configure \
-    --enable-simd=GPU \
-    --enable-gen-simd-width=32 \
+    --enable-simd=AVX2 \
     --enable-alloc-align=4k \
-    --enable-comms=mpi \
-    --enable-shm=nvlink \
-    --enable-unified=no \
-    --enable-accelerator=cuda \
-    --enable-accelerator-cshift \
+    --enable-comms=mpi-auto \
     --enable-gparity=no \
-    --enable-setdevice \
-    --disable-fermion-reps \
     --with-lime="$prefix" \
     --with-fftw="$prefix" \
-    --with-mpfr="$prefix" \
-    --prefix=$prefix \
-    CXX=nvcc \
-    CXXFLAGS="-Xcompiler -fPIC -ccbin mpicxx -gencode arch=compute_70,code=sm_70 -std=c++14" \
-    LDFLAGS="-Xcompiler -fopenmp"
-
-    # --enable-shm=shmopen \
+    --prefix="$prefix"
 
 make -j$num_proc
 make install

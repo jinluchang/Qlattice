@@ -16,7 +16,7 @@ OBJS:=$(patsubst %.C, %.o, $(wildcard *.C))
 all: build
 
 build: $(OBJS)
-	$(CXXLD) $(FLAGS) -o $(NAME) *.o $(LDFLAGS)
+	$(MPICXX) $(LDFLAGS) -o $(NAME) *.o $(LIBS)
 	ls -lh $(NAME)
 	mv $(NAME) ..
 
@@ -24,7 +24,7 @@ exports.h: *.C
 	./update.sh
 
 %.o : %.C exports.h
-	$(CXX) $(FLAGS) -c -o $@ $< $(CXXFLAGS)
+	$(MPICXX) $(CXXFLAGS) -c -o $@ $<
 	@echo "$@" "$<"
 
 clean:

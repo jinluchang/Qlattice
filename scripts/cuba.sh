@@ -10,11 +10,10 @@ mkdir -p $src_dir
 cd $src_dir
 tar xaf $distfiles/$name-*.tar.*
 
-export CC="gcc -fPIC"
+export CC="$CC -fPIC"
 
 cd $name-*
 ./configure \
-    --build="$(/bin/arch)" \
     --prefix=$prefix
 make
 make install

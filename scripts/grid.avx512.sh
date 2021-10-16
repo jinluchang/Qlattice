@@ -12,12 +12,6 @@ rsync -av --delete $distfiles/$name-lehner/ "$prefix"/$name/
 
 cd "$prefix/$name"
 
-git checkout c50f27e68bd4b3e4fb6a1da00aebe224f0a0bc23
-echo '-- generating Make.inc files...'
-./scripts/filelist
-echo '-- generating configure script...'
-autoreconf -fvi
-
 INITDIR="$(pwd)"
 rm -rfv "${INITDIR}/Eigen/Eigen/unsupported"
 rm -rfv "${INITDIR}/Grid/Eigen"
@@ -27,19 +21,13 @@ ln -vs "${INITDIR}/Eigen/unsupported/Eigen" "${INITDIR}/Grid/Eigen/unsupported"
 mkdir build
 cd build
 ../configure \
-    --enable-simd=KNL \
+    --enable-simd=AVX512 \
     --enable-alloc-align=4k \
     --enable-comms=mpi-auto \
-    --enable-mkl \
-    --enable-shm=shmget \
-    --enable-shmpath=/dev/hugepages \
     --enable-gparity=no \
     --with-lime="$prefix" \
     --with-fftw="$prefix" \
-    --prefix="$prefix" \
-    CXXFLAGS=-fPIC \
-    CXX=clang++ \
-    MPICXX="mpiicpc -cxx=clang++"
+    --prefix="$prefix"
 
 make -j$num_proc
 make install

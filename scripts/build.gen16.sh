@@ -2,7 +2,7 @@
 
 set -e
 
-./scripts/setenv.sh
+./scripts/setenv.default.sh
 
 ./scripts/fftw.sh
 ./scripts/fftwf.sh

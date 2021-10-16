@@ -11,7 +11,7 @@ mkdir -p $src_dir || true
 cd $src_dir
 tar xzf $distfiles/$name-*.tar.gz
 
-export CC="gcc -fPIC"
+export CC="$CC -fPIC"
 
 cd $name-*
 ./configure \

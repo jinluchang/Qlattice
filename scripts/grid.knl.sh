@@ -2,15 +2,21 @@
 
 . conf.sh
 
-name=Grid-tblum
+name=Grid
 
 echo "!!!! build $name !!!!"
 
 mkdir -p "$prefix"/$name || true
 
-rsync -av --delete $distfiles/$name/ "$prefix"/$name/
+rsync -av --delete $distfiles/$name-lehner/ "$prefix"/$name/
 
 cd "$prefix/$name"
+
+git checkout c50f27e68bd4b3e4fb6a1da00aebe224f0a0bc23
+echo '-- generating Make.inc files...'
+./scripts/filelist
+echo '-- generating configure script...'
+autoreconf -fvi
 
 INITDIR="$(pwd)"
 rm -rfv "${INITDIR}/Eigen/Eigen/unsupported"
@@ -21,15 +27,16 @@ ln -vs "${INITDIR}/Eigen/unsupported/Eigen" "${INITDIR}/Grid/Eigen/unsupported"
 mkdir build
 cd build
 ../configure \
-    --enable-simd=AVX2 \
+    --enable-simd=KNL \
     --enable-alloc-align=4k \
     --enable-comms=mpi-auto \
+    --enable-mkl \
+    --enable-shm=shmget \
+    --enable-shmpath=/dev/hugepages \
     --enable-gparity=no \
     --with-lime="$prefix" \
     --with-fftw="$prefix" \
-    --with-hdf5="$prefix" \
-    --prefix="$prefix/grid-tblum" \
-    CXXFLAGS="-fPIC -DUSE_QLATTICE"
+    --prefix="$prefix"
 
 make -j$num_proc
 make install

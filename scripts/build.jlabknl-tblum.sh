@@ -2,7 +2,7 @@
 
 set -e
 
-./scripts/setenv-jlabknl.sh
+./scripts/setenv.jlabknl.sh
 
 ./scripts/xz.sh
 ./scripts/tar.sh
@@ -18,13 +18,16 @@ set -e
 ./scripts/cuba.sh
 ./scripts/zlib.sh
 ./scripts/eigen.sh
-./scripts/qlat.sh
-
 ./scripts/autoconf.sh
 ./scripts/automake.sh
 ./scripts/c-lime.sh
 ./scripts/hdf5.sh
+
+export CXX=icpc
+export MPICXX=mpiicpc
+
+./scripts/qlat.sh
 ./scripts/grid-tblum-knl.sh
-./scripts/hadrons-tblum-knl.sh
+./scripts/hadrons-tblum.sh
 ./scripts/grid-knl.sh
 ./scripts/gpt.sh
