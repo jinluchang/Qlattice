@@ -11,7 +11,6 @@ set -e
 ./scripts/mpc.sh
 ./scripts/gcc.sh
 ./scripts/cmake.sh
-./scripts/llvm-project.sh
 ./scripts/openmpi.sh
 ./scripts/perl.sh
 ./scripts/openssl.sh
@@ -19,6 +18,9 @@ set -e
 ./scripts/zlib.sh
 ./scripts/python.sh
 ./scripts/python-packages.sh
+./scripts/re2c.sh
+./scripts/ninja.sh
+./scripts/llvm-project.sh
 
 ./scripts/fftw.sh
 ./scripts/fftwf.sh
@@ -26,6 +28,11 @@ set -e
 ./scripts/eigen.sh
 ./scripts/qlat.sh
 
+./scripts/autoconf.sh
+./scripts/automake.sh
 ./scripts/c-lime.sh
+./scripts/hdf5.sh
 ./scripts/grid-avx2.sh
 ./scripts/gpt.sh
+./scripts/grid-tblum-knl-clang.sh
+./scripts/hadrons-tblum-knl-clang.sh
