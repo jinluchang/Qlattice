@@ -40,7 +40,7 @@ rm -rf "$prefix" || true
 mkdir -p "$prefix"
 
 if [ -f "scripts/build.$target.sh" ] ; then
-    "scripts/build.$target.sh"
+    "scripts/build.$target.sh" |& tee "$prefix/log.build.txt"
 fi
 
 rm -rf $temp_dir
