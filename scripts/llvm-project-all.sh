@@ -12,12 +12,12 @@ tar xaf $distfiles/$name-*.xz
 cd $name-*
 mkdir -p build
 
-export CC=gcc
-export CXX=g++
+export CC=clang
+export CXX=clang++
 
 cmake \
     -S llvm -B build -G Ninja \
-    -DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra;openmp" \
+    -DLLVM_ENABLE_PROJECTS=all \
     -DLLVM_LIBC_ENABLE_LINTING=OFF \
     -DCMAKE_INSTALL_PREFIX="$prefix" \
     -DCMAKE_PREFIX_PATH="$prefix" \
