@@ -14,7 +14,7 @@ These dependencies will be downloaded to the `distfiles` directory.
 
 There are scripts in the `scripts` directory used to install the dependencies.
 
-To install, we fist set the `prefix` variable to specify the target directory.
+To install, we fist set the `prefix` environment variable to specify the target directory.
 
 `$ export prefix=DEST_DIRECTORY`
 
@@ -28,17 +28,11 @@ On some systems, one may need to specify the system type:
 
 `$ ./build.sh TARGET`
 
-`TARGET` can be `default`, `qcdserver`, `bnlknl`, `summit`, ...
+`TARGET` can be `default`, `qcdserver`, `bnlknl`, `summit`, ... This script will call `./scripts/build.TARGET.sh` to perform relevant builds.
 
 The environment variables needed to use the library can be set with the following command:
 
 `$ source DEST_DIRECTORY/setenv.sh`
-
-It is also possible to also build `Grid` and `gpt`. For examples:
-
-`$ ./scripts/grid-avx2.sh`
-
-`$ ./scripts/gpt.sh`
 
 There are few different scripts to build the `Grid` library. Choose one best suit the machine (or create a custom one).
 
@@ -46,13 +40,37 @@ After the first complete install, one can re-install individual components by ru
 
 `$ ./scripts/qlat.sh`
 
-It can be convenient to create a symbolic link `$HOME/qlat-build/default`, which points to the actual directory `DEST_DIRECTORY`. The `prefix` environment variable can be empty if the symbolic link is created.
+The most time consuming part of the above command is the compilation the `cqlat.so` dynamic library. To avoid the compilation of `cqlat.so`, but re-install the header files and the `qlat` python files:
+
+`$ ./scripts/qlat-header.sh`
+
+It is also possible to build `Grid` and `gpt`. For examples:
+
+`$ ./scripts/grid.avx2.sh`
+
+`$ ./scripts/gpt.sh`
+
+It may be convenient to create a symbolic link `$HOME/qlat-build/default`, which points to the actual directory `DEST_DIRECTORY`. The `prefix` environment variable can be empty if the symbolic link is created.
 
 ## Install on new machines
 
-If there is not existing `./scripts/build.TARGET.sh` for the machine. You may need to create a new one. In particular, one may need to create a `./scripts/setenv-TARGET.sh` scripts.
+If there is no existing `./scripts/build.TARGET.sh` for the machine. You may need to create a new one. Also, you may need to create a `./scripts/setenv.TARGET.sh` script.
 
-The purpose of the `./scripts/setenv-TARGET.sh` is to create the `DEST_DIRECTORY/setenv.sh` scripts, which can be sourced to set the environmental variables. The `DEST_DIRECTORY/setenv.sh` scripts will be sourced automatically in all the other installation scripts.
+The purpose of the `./scripts/setenv.TARGET.sh` is to create the `DEST_DIRECTORY/setenv.sh` scripts, which can be sourced to set the environmental variables. The `DEST_DIRECTORY/setenv.sh` scripts will be sourced automatically in all the other installation scripts (e.g. `./scripts/qlat.sh`).
+
+The `./scripts/compiler-wrappers.sh` script will create the following wrappers:
+
+`DEST_DIRECTORY/bin/CC.sh`
+
+`DEST_DIRECTORY/bin/CXX.sh`
+
+`DEST_DIRECTORY/bin/MPICC.sh`
+
+`DEST_DIRECTORY/bin/MPICXX.sh`
+
+These wrappers will simply try to call the appropriate corresponding compiler.
+
+The environment variables, `CC`, `CXX`, `MPICC`, `MPICXX`, affect most installation scripts in `./scripts`. If these environment variables are empty, then the default `setenv.sh` will set them to use the wrappers created by `./scripts/compiler-wrappers.sh`. This behavior can be overridden by setting these environment variables to the desired non-empty value in `./scripts/setenv.TARGET.sh` or `./scripts/build.TARGET.sh`.
 
 ## Usage:
 

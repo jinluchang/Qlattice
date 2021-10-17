@@ -1,7 +1,5 @@
 #!/bin/bash
 
-echo "Need to run './scripts/mpfr.sh' first"
-
 . conf.sh
 
 name=Grid
@@ -62,4 +60,4 @@ make install
 cd $wd
 echo "!!!! $name build !!!!"
 
-rm -rf $temp_dir
+rm -rf $temp_dir || true

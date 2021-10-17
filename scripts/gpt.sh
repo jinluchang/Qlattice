@@ -30,4 +30,4 @@ echo "SPIN_COLOR(4,3)" >> lib/spin_color.h
 cd $wd
 echo "!!!! $name build !!!!"
 
-rm -rf $temp_dir
+rm -rf $temp_dir || true

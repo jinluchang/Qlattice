@@ -22,4 +22,7 @@ temp_dir="$prefix/temp"
 src_dir="$temp_dir/src"
 build_dir="$temp_dir/build"
 
-rm -rf $temp_dir || true
+if [ -e $temp_dir ] ; then
+    mv $temp_dir $temp_dir.tmp
+    rm -rf $temp_dir.tmp || true
+fi
