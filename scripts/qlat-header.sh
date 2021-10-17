@@ -29,4 +29,4 @@ cp -pv pylib/Makefile.inc $prefix/pylib/
 
 echo "!!!! $name build !!!!"
 
-rm -rf $temp_dir
+rm -rf $temp_dir || true

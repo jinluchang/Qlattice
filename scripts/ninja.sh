@@ -21,4 +21,4 @@ cp -pv ninja $prefix/bin
 cd $wd
 echo "!!!! $name build !!!!"
 
-rm -rf $temp_dir
+rm -rf $temp_dir || true

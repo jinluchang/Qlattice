@@ -14,4 +14,4 @@ pip3 install --verbose --no-index -f $distfiles/python-packages sympy
 
 echo "!!!! $name build !!!!"
 
-rm -rf $temp_dir
+rm -rf $temp_dir || true

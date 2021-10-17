@@ -30,4 +30,4 @@ EOF
 
 echo "!!!! $name build !!!!"
 
-rm -rf $temp_dir
+rm -rf $temp_dir || true
