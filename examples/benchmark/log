@@ -215,8 +215,8 @@ test_fft: total_site=4x4x4x8 N=1 fft-y
 test_fft: 1
 test_fft: total_site=4x4x4x8 N=1 fft-z
 test_fft: total_site=4x4x4x8 N=1 fft-t
-test_fft: qnorm(f) =  1.05627194390385830E+03 ; qnorm(diff) =  1.86721473958603581E-27
-test_fft: crc32 of fft(f) = 5FFD2CD8.
+test_fft: qnorm(f) =  1.05627194390385807E+03 ; qnorm(diff) =  1.86721473958603581E-27
+test_fft: crc32 of fft(f) = A1FB4AD1.
 test_fft: 2
 fft_complex_field_plan::get_plan: start to make a new fft plan with id = 16
 fft_complex_field_plan::init: malloc 2048
@@ -322,7 +322,7 @@ test_fft: 2
 test_fft: total_site=4x4x4x8 N=2 fft-z
 test_fft: total_site=4x4x4x8 N=2 fft-t
 test_fft: qnorm(f) =  2.09739836163311566E+03 ; qnorm(diff) =  3.86233831019189433E-27
-test_fft: crc32 of fft(f) = BA731056.
+test_fft: crc32 of fft(f) = 128627AA.
 test_fft: 4
 fft_complex_field_plan::get_plan: start to make a new fft plan with id = 24
 fft_complex_field_plan::init: malloc 4096
@@ -428,7 +428,7 @@ test_fft: 4
 test_fft: total_site=4x4x4x8 N=4 fft-z
 test_fft: total_site=4x4x4x8 N=4 fft-t
 test_fft: qnorm(f) =  4.18423078221696596E+03 ; qnorm(diff) =  7.89794221647088482E-27
-test_fft: crc32 of fft(f) = 2C17F12E.
+test_fft: crc32 of fft(f) = BAC3987.
 test_fft: 8
 fft_complex_field_plan::get_plan: start to make a new fft plan with id = 32
 fft_complex_field_plan::init: malloc 8192
@@ -534,7 +534,7 @@ test_fft: 8
 test_fft: total_site=4x4x4x8 N=8 fft-z
 test_fft: total_site=4x4x4x8 N=8 fft-t
 test_fft: qnorm(f) =  8.37968263117070819E+03 ; qnorm(diff) =  1.57435070720171095E-26
-test_fft: crc32 of fft(f) = 64FABE2F.
+test_fft: crc32 of fft(f) = 36DC150C.
 test_fft: 12
 fft_complex_field_plan::get_plan: start to make a new fft plan with id = 40
 fft_complex_field_plan::init: malloc 12288
@@ -640,7 +640,7 @@ test_fft: 12
 test_fft: total_site=4x4x4x8 N=12 fft-z
 test_fft: total_site=4x4x4x8 N=12 fft-t
 test_fft: qnorm(f) =  1.23570639216967829E+04 ; qnorm(diff) =  2.30299752513220906E-26
-test_fft: crc32 of fft(f) = 8AF8CDB6.
+test_fft: crc32 of fft(f) = 69F8DF9C.
 test_fft: 16
 fft_complex_field_plan::get_plan: start to make a new fft plan with id = 48
 fft_complex_field_plan::init: malloc 16384
@@ -746,7 +746,7 @@ test_fft: 16
 test_fft: total_site=4x4x4x8 N=16 fft-z
 test_fft: total_site=4x4x4x8 N=16 fft-t
 test_fft: qnorm(f) =  1.64211353499753750E+04 ; qnorm(diff) =  2.97920593369503675E-26
-test_fft: crc32 of fft(f) = 465FF4F2.
+test_fft: crc32 of fft(f) = AD6F3448.
 test_fft: 20
 fft_complex_field_plan::get_plan: start to make a new fft plan with id = 56
 fft_complex_field_plan::init: malloc 20480
@@ -852,7 +852,7 @@ test_fft: 20
 test_fft: total_site=4x4x4x8 N=20 fft-z
 test_fft: total_site=4x4x4x8 N=20 fft-t
 test_fft: qnorm(f) =  2.05017369565699846E+04 ; qnorm(diff) =  3.72491876163860902E-26
-test_fft: crc32 of fft(f) = CB298648.
+test_fft: crc32 of fft(f) = 1F698477.
 test_fft: 32
 fft_complex_field_plan::get_plan: start to make a new fft plan with id = 64
 fft_complex_field_plan::init: malloc 32768
@@ -958,7 +958,7 @@ test_fft: 32
 test_fft: total_site=4x4x4x8 N=32 fft-z
 test_fft: total_site=4x4x4x8 N=32 fft-t
 test_fft: qnorm(f) =  3.27996466397265103E+04 ; qnorm(diff) =  5.96225019221474319E-26
-test_fft: crc32 of fft(f) = B2C0240F.
+test_fft: crc32 of fft(f) = 8BAFF2E0.
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 0.
 qlat::end(): Finalize MPI.

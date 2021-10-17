@@ -38,44 +38,44 @@ testing multiply_m_full and multiply_m
 CommPlanCache: to add 5 / 32.
 1.524000E+01, 1.524000E+01 qnorm(diff) = 0.000000E+00
 qnorm(diff after qnormalization) = 0.000000E+00
-2.246065E+01, 2.246065E+01 qnorm(diff) = 5.056177E-32
-qnorm(diff after qnormalization) = 1.595287E-33
-2.828676E+01, 2.828676E+01 qnorm(diff) = 3.805121E-31
-qnorm(diff after qnormalization) = 1.258374E-32
-3.318975E+01, 3.318975E+01 qnorm(diff) = 7.400039E-31
-qnorm(diff after qnormalization) = 2.741566E-32
-3.744811E+01, 3.744811E+01 qnorm(diff) = 1.503585E-30
-qnorm(diff after qnormalization) = 4.231845E-32
-4.120674E+01, 4.120674E+01 qnorm(diff) = 1.649220E-30
-qnorm(diff after qnormalization) = 4.414643E-32
-4.454089E+01, 4.454089E+01 qnorm(diff) = 1.950545E-30
-qnorm(diff after qnormalization) = 4.654377E-32
-4.749140E+01, 4.749140E+01 qnorm(diff) = 1.715331E-30
-qnorm(diff after qnormalization) = 3.967512E-32
-5.008413E+01, 5.008413E+01 qnorm(diff) = 1.839808E-30
-qnorm(diff after qnormalization) = 4.242620E-32
-5.234027E+01, 5.234027E+01 qnorm(diff) = 1.915315E-30
-qnorm(diff after qnormalization) = 3.940748E-32
-5.428147E+01, 5.428147E+01 qnorm(diff) = 1.975429E-30
-qnorm(diff after qnormalization) = 3.908927E-32
-5.593236E+01, 5.593236E+01 qnorm(diff) = 1.941725E-30
-qnorm(diff after qnormalization) = 7.484752E-32
-5.732141E+01, 5.732141E+01 qnorm(diff) = 4.054236E-30
-qnorm(diff after qnormalization) = 3.883381E-32
-5.848045E+01, 5.848045E+01 qnorm(diff) = 2.105121E-30
-qnorm(diff after qnormalization) = 3.654504E-32
-5.944300E+01, 5.944300E+01 qnorm(diff) = 1.979187E-30
-qnorm(diff after qnormalization) = 7.326646E-32
-6.024207E+01, 6.024207E+01 qnorm(diff) = 4.253780E-30
-qnorm(diff after qnormalization) = 3.777352E-32
-6.090815E+01, 6.090815E+01 qnorm(diff) = 2.024458E-30
-qnorm(diff after qnormalization) = 3.407707E-32
-6.146781E+01, 6.146781E+01 qnorm(diff) = 1.988660E-30
-qnorm(diff after qnormalization) = 3.292019E-32
-6.194305E+01, 6.194305E+01 qnorm(diff) = 1.899136E-30
-qnorm(diff after qnormalization) = 3.105834E-32
-6.235138E+01, 6.235138E+01 qnorm(diff) = 1.925342E-30
-qnorm(diff after qnormalization) = 3.114755E-32
+2.246630E+01, 2.246630E+01 qnorm(diff) = 1.244632E-31
+qnorm(diff after qnormalization) = 7.753373E-33
+2.832228E+01, 2.832228E+01 qnorm(diff) = 1.282666E-30
+qnorm(diff after qnormalization) = 4.862854E-32
+3.323759E+01, 3.323759E+01 qnorm(diff) = 3.422596E-30
+qnorm(diff after qnormalization) = 1.109955E-31
+3.748840E+01, 3.748840E+01 qnorm(diff) = 2.826528E-30
+qnorm(diff after qnormalization) = 7.783583E-32
+4.123139E+01, 4.123139E+01 qnorm(diff) = 3.047831E-30
+qnorm(diff after qnormalization) = 8.129266E-32
+4.455231E+01, 4.455231E+01 qnorm(diff) = 3.259386E-30
+qnorm(diff after qnormalization) = 7.688721E-32
+4.749606E+01, 4.749606E+01 qnorm(diff) = 3.141052E-30
+qnorm(diff after qnormalization) = 7.196489E-32
+5.008724E+01, 5.008724E+01 qnorm(diff) = 3.012580E-30
+qnorm(diff after qnormalization) = 6.991795E-32
+5.234368E+01, 5.234368E+01 qnorm(diff) = 3.245858E-30
+qnorm(diff after qnormalization) = 6.581200E-32
+5.428423E+01, 5.428423E+01 qnorm(diff) = 3.126190E-30
+qnorm(diff after qnormalization) = 5.546833E-32
+5.593221E+01, 5.593221E+01 qnorm(diff) = 2.731153E-30
+qnorm(diff after qnormalization) = 5.730523E-32
+5.731619E+01, 5.731619E+01 qnorm(diff) = 2.985848E-30
+qnorm(diff after qnormalization) = 5.457312E-32
+5.846880E+01, 5.846880E+01 qnorm(diff) = 3.024007E-30
+qnorm(diff after qnormalization) = 4.792040E-32
+5.942453E+01, 5.942453E+01 qnorm(diff) = 2.581300E-30
+qnorm(diff after qnormalization) = 4.529799E-32
+6.021720E+01, 6.021720E+01 qnorm(diff) = 2.472138E-30
+qnorm(diff after qnormalization) = 1.537594E-31
+6.087776E+01, 6.087776E+01 qnorm(diff) = 9.290728E-30
+qnorm(diff after qnormalization) = 5.443971E-32
+6.143298E+01, 6.143298E+01 qnorm(diff) = 3.078128E-30
+qnorm(diff after qnormalization) = 5.073577E-32
+6.190489E+01, 6.190489E+01 qnorm(diff) = 3.099010E-30
+qnorm(diff after qnormalization) = 4.487350E-32
+6.231092E+01, 6.231092E+01 qnorm(diff) = 2.550477E-30
+qnorm(diff after qnormalization) = 4.121449E-32
 plaq :  1.00000000000000000E+00
 spatial plaq :  1.00000000000000000E+00
 trace:  1.00000000000000000E+00
@@ -198,110 +198,110 @@ find_max_eigen_value_hermop_sym2:   100: sqrt_qnorm_ratio = 6.08735823094665918E
 testing multiply_m_full and multiply_m
 1.424626E+01, 1.424626E+01 qnorm(diff) = 0.000000E+00
 qnorm(diff after qnormalization) = 0.000000E+00
-2.190967E+01, 2.190967E+01 qnorm(diff) = 8.548820E-32
-qnorm(diff after qnormalization) = 4.505801E-33
-1.618527E+02, 1.618527E+02 qnorm(diff) = 5.405958E-30
-qnorm(diff after qnormalization) = 6.525410E-32
-2.790764E+03, 2.790764E+03 qnorm(diff) = 2.169316E-28
-qnorm(diff after qnormalization) = 9.187304E-32
-3.217821E+03, 3.217821E+03 qnorm(diff) = 3.371662E-28
-qnorm(diff after qnormalization) = 9.164738E-32
-4.069080E+03, 4.069080E+03 qnorm(diff) = 3.435223E-28
-qnorm(diff after qnormalization) = 8.428041E-32
-5.287321E+03, 5.287321E+03 qnorm(diff) = 4.472842E-28
-qnorm(diff after qnormalization) = 8.509666E-32
-5.408037E+03, 5.408037E+03 qnorm(diff) = 4.537572E-28
-qnorm(diff after qnormalization) = 8.631713E-32
-5.057906E+03, 5.057906E+03 qnorm(diff) = 4.533664E-28
-qnorm(diff after qnormalization) = 9.854303E-32
-4.987892E+03, 4.987892E+03 qnorm(diff) = 4.935101E-28
-qnorm(diff after qnormalization) = 1.020251E-31
-5.281433E+03, 5.281433E+03 qnorm(diff) = 5.297326E-28
-qnorm(diff after qnormalization) = 1.031444E-31
-5.628790E+03, 5.628790E+03 qnorm(diff) = 5.451205E-28
-qnorm(diff after qnormalization) = 9.360862E-32
-5.745833E+03, 5.745833E+03 qnorm(diff) = 4.958906E-28
-qnorm(diff after qnormalization) = 9.046894E-32
-5.657254E+03, 5.657254E+03 qnorm(diff) = 4.786048E-28
-qnorm(diff after qnormalization) = 8.807418E-32
-5.502695E+03, 5.502695E+03 qnorm(diff) = 4.784458E-28
-qnorm(diff after qnormalization) = 1.258656E-31
-5.378101E+03, 5.378101E+03 qnorm(diff) = 6.559345E-28
-qnorm(diff after qnormalization) = 9.506375E-32
-5.347313E+03, 5.347313E+03 qnorm(diff) = 4.816744E-28
-qnorm(diff after qnormalization) = 9.279266E-32
-5.465870E+03, 5.465870E+03 qnorm(diff) = 5.059664E-28
-qnorm(diff after qnormalization) = 9.532547E-32
-5.748435E+03, 5.748435E+03 qnorm(diff) = 5.466738E-28
-qnorm(diff after qnormalization) = 1.076336E-31
-6.107181E+03, 6.107181E+03 qnorm(diff) = 6.326954E-28
-qnorm(diff after qnormalization) = 1.072080E-31
+2.192685E+01, 2.192685E+01 qnorm(diff) = 1.255672E-31
+qnorm(diff after qnormalization) = 6.001745E-33
+1.633452E+02, 1.633452E+02 qnorm(diff) = 3.497402E-30
+qnorm(diff after qnormalization) = 2.330768E-32
+2.815949E+03, 2.815949E+03 qnorm(diff) = 8.605148E-29
+qnorm(diff after qnormalization) = 3.201031E-32
+3.243387E+03, 3.243387E+03 qnorm(diff) = 1.313539E-28
+qnorm(diff after qnormalization) = 4.431112E-32
+4.094865E+03, 4.094865E+03 qnorm(diff) = 2.165865E-28
+qnorm(diff after qnormalization) = 5.287164E-32
+5.290373E+03, 5.290373E+03 qnorm(diff) = 2.852985E-28
+qnorm(diff after qnormalization) = 9.445670E-32
+5.392200E+03, 5.392200E+03 qnorm(diff) = 4.441065E-28
+qnorm(diff after qnormalization) = 8.361153E-32
+5.036714E+03, 5.036714E+03 qnorm(diff) = 3.829835E-28
+qnorm(diff after qnormalization) = 6.593965E-32
+4.967458E+03, 4.967458E+03 qnorm(diff) = 3.166396E-28
+qnorm(diff after qnormalization) = 6.630459E-32
+5.268203E+03, 5.268203E+03 qnorm(diff) = 3.532173E-28
+qnorm(diff after qnormalization) = 8.204563E-32
+5.623260E+03, 5.623260E+03 qnorm(diff) = 4.226450E-28
+qnorm(diff after qnormalization) = 7.902152E-32
+5.738884E+03, 5.738884E+03 qnorm(diff) = 4.426834E-28
+qnorm(diff after qnormalization) = 8.093537E-32
+5.641152E+03, 5.641152E+03 qnorm(diff) = 4.228063E-28
+qnorm(diff after qnormalization) = 7.325594E-32
+5.477364E+03, 5.477364E+03 qnorm(diff) = 3.905843E-28
+qnorm(diff after qnormalization) = 5.880135E-32
+5.350619E+03, 5.350619E+03 qnorm(diff) = 3.098623E-28
+qnorm(diff after qnormalization) = 6.148768E-32
+5.329043E+03, 5.329043E+03 qnorm(diff) = 3.224325E-28
+qnorm(diff after qnormalization) = 7.386864E-32
+5.465354E+03, 5.465354E+03 qnorm(diff) = 3.968840E-28
+qnorm(diff after qnormalization) = 7.585302E-32
+5.760930E+03, 5.760930E+03 qnorm(diff) = 4.448310E-28
+qnorm(diff after qnormalization) = 8.014118E-32
+6.113143E+03, 6.113143E+03 qnorm(diff) = 4.793804E-28
+qnorm(diff after qnormalization) = 1.572171E-31
 testing multiply_m_full and multiply_m_with_prec_sym2
-1.424626E+01, 1.424626E+01 qnorm(diff) = 2.407940E-31
-qnorm(diff after qnormalization) = 1.806438E-32
-2.190967E+01, 2.190967E+01 qnorm(diff) = 1.335279E-29
-qnorm(diff after qnormalization) = 6.284955E-31
-1.618527E+02, 1.618527E+02 qnorm(diff) = 1.986541E-27
-qnorm(diff after qnormalization) = 1.214366E-29
-2.790764E+03, 2.790764E+03 qnorm(diff) = 4.856517E-26
-qnorm(diff after qnormalization) = 1.733306E-29
-3.217821E+03, 3.217821E+03 qnorm(diff) = 8.539900E-26
-qnorm(diff after qnormalization) = 2.652042E-29
-4.069080E+03, 4.069080E+03 qnorm(diff) = 1.506322E-25
-qnorm(diff after qnormalization) = 3.694280E-29
-5.287321E+03, 5.287321E+03 qnorm(diff) = 2.101602E-25
-qnorm(diff after qnormalization) = 3.959801E-29
-5.408037E+03, 5.408037E+03 qnorm(diff) = 2.118241E-25
-qnorm(diff after qnormalization) = 3.919391E-29
-5.057906E+03, 5.057906E+03 qnorm(diff) = 2.022998E-25
-qnorm(diff after qnormalization) = 3.999249E-29
-4.987892E+03, 4.987892E+03 qnorm(diff) = 2.087041E-25
-qnorm(diff after qnormalization) = 4.183122E-29
-5.281433E+03, 5.281433E+03 qnorm(diff) = 2.279029E-25
-qnorm(diff after qnormalization) = 4.316546E-29
-5.628790E+03, 5.628790E+03 qnorm(diff) = 2.437910E-25
-qnorm(diff after qnormalization) = 4.331228E-29
-5.745833E+03, 5.745833E+03 qnorm(diff) = 2.473333E-25
-qnorm(diff after qnormalization) = 4.292860E-29
-5.657254E+03, 5.657254E+03 qnorm(diff) = 2.406393E-25
-qnorm(diff after qnormalization) = 4.244293E-29
-5.502695E+03, 5.502695E+03 qnorm(diff) = 2.289702E-25
-qnorm(diff after qnormalization) = 4.160972E-29
-5.378101E+03, 5.378101E+03 qnorm(diff) = 2.207062E-25
-qnorm(diff after qnormalization) = 4.104993E-29
-5.347313E+03, 5.347313E+03 qnorm(diff) = 2.221647E-25
-qnorm(diff after qnormalization) = 4.154602E-29
-5.465870E+03, 5.465870E+03 qnorm(diff) = 2.411976E-25
-qnorm(diff after qnormalization) = 4.412421E-29
-5.748435E+03, 5.748435E+03 qnorm(diff) = 2.792116E-25
-qnorm(diff after qnormalization) = 4.857139E-29
-6.107181E+03, 6.107181E+03 qnorm(diff) = 3.253173E-25
-qnorm(diff after qnormalization) = 5.320821E-29
-m_e_e qnorm(diff) = 5.177461E-32
-mdag_e_e qnorm(diff) = 1.706263E-31
-qnorm = 4.999825E-01, dot = 4.999825E-01
-dot = ( 1.54658672594264139E+01 + -1.56115759426542988E+00 j)
-dot = ( 1.54658672594264051E+01 + -1.56115759426542944E+00 j)
-dot = ( 1.50573546380568732E-02 +  2.23739510093450824E-03 j)
-dot = ( 1.50573546380568645E-02 +  2.23739510093450954E-03 j)
-dot = ( 7.63806233839048048E+01 +  1.22923045064886196E+01 j)
-dot = ( 7.63806233839048616E+01 +  1.22923045064886374E+01 j)
-qnorm = 5.000175E-01, dot = 5.000175E-01
-multiply qnorm = 4.382773E+00
-cg_with_f: start max_num_iter=50000        sqrt(qnorm_in)=2.094E+00 stop_rsd=1.000E-08 
-cg_with_f: final iter= 167 sqrt(qnorm_r/qnorm_in)=8.960E-09 stop_rsd=1.000E-08
-qnorm = 5.000175E-01
-diff qnorm = 4.403969E-14
+1.424626E+01, 1.424626E+01 qnorm(diff) = 2.512705E-31
+qnorm(diff after qnormalization) = 1.998436E-32
+2.192685E+01, 2.192685E+01 qnorm(diff) = 1.491184E-29
+qnorm(diff after qnormalization) = 6.538753E-31
+1.633452E+02, 1.633452E+02 qnorm(diff) = 2.381598E-27
+qnorm(diff after qnormalization) = 1.459364E-29
+2.815949E+03, 2.815949E+03 qnorm(diff) = 6.097526E-26
+qnorm(diff after qnormalization) = 2.167376E-29
+3.243387E+03, 3.243387E+03 qnorm(diff) = 1.043481E-25
+qnorm(diff after qnormalization) = 3.227078E-29
+4.094865E+03, 4.094865E+03 qnorm(diff) = 1.871875E-25
+qnorm(diff after qnormalization) = 4.562520E-29
+5.290373E+03, 5.290373E+03 qnorm(diff) = 2.759427E-25
+qnorm(diff after qnormalization) = 5.208723E-29
+5.392200E+03, 5.392200E+03 qnorm(diff) = 2.924734E-25
+qnorm(diff after qnormalization) = 5.434087E-29
+5.036714E+03, 5.036714E+03 qnorm(diff) = 2.814696E-25
+qnorm(diff after qnormalization) = 5.580535E-29
+4.967458E+03, 4.967458E+03 qnorm(diff) = 2.817031E-25
+qnorm(diff after qnormalization) = 5.674196E-29
+5.268203E+03, 5.268203E+03 qnorm(diff) = 2.983568E-25
+qnorm(diff after qnormalization) = 5.666327E-29
+5.623260E+03, 5.623260E+03 qnorm(diff) = 3.157043E-25
+qnorm(diff after qnormalization) = 5.615235E-29
+5.738884E+03, 5.738884E+03 qnorm(diff) = 3.207177E-25
+qnorm(diff after qnormalization) = 5.587489E-29
+5.641152E+03, 5.641152E+03 qnorm(diff) = 3.140195E-25
+qnorm(diff after qnormalization) = 5.562606E-29
+5.477364E+03, 5.477364E+03 qnorm(diff) = 3.017036E-25
+qnorm(diff after qnormalization) = 5.497123E-29
+5.350619E+03, 5.350619E+03 qnorm(diff) = 2.860154E-25
+qnorm(diff after qnormalization) = 5.345555E-29
+5.329043E+03, 5.329043E+03 qnorm(diff) = 2.766083E-25
+qnorm(diff after qnormalization) = 5.188781E-29
+5.465354E+03, 5.465354E+03 qnorm(diff) = 2.838259E-25
+qnorm(diff after qnormalization) = 5.194137E-29
+5.760930E+03, 5.760930E+03 qnorm(diff) = 3.173816E-25
+qnorm(diff after qnormalization) = 5.503175E-29
+6.113143E+03, 6.113143E+03 qnorm(diff) = 3.691672E-25
+qnorm(diff after qnormalization) = 6.038489E-29
+m_e_e qnorm(diff) = 5.493186E-32
+mdag_e_e qnorm(diff) = 1.618798E-31
+qnorm = 5.000880E-01, dot = 5.000880E-01
+dot = ( 1.54902257347579440E+01 + -1.53290178053434678E+00 j)
+dot = ( 1.54902257347579244E+01 + -1.53290178053434567E+00 j)
+dot = ( 1.50270818353454173E-02 +  2.20735465998678475E-03 j)
+dot = ( 1.50270818353454121E-02 +  2.20735465998678475E-03 j)
+dot = ( 7.63197292672290786E+01 +  1.21843869858945482E+01 j)
+dot = ( 7.63197292672294054E+01 +  1.21843869858945837E+01 j)
+qnorm = 4.999120E-01, dot = 4.999120E-01
+multiply qnorm = 4.280379E+00
+cg_with_f: start max_num_iter=50000        sqrt(qnorm_in)=2.069E+00 stop_rsd=1.000E-08 
+cg_with_f: final iter= 167 sqrt(qnorm_r/qnorm_in)=9.955E-09 stop_rsd=1.000E-08
+qnorm = 4.999120E-01
+diff qnorm = 3.296134E-14
 orig qnorm = 1.000000E+00
-tmp qnorm = 6.381193E+03
-invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 3.803129E+03
-cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=2.947E+03 stop_rsd=1.000E-12 
-cg_with_f: final max_num_iter= 200 sqrt(qnorm_r/qnorm_in)=1.293E-09 stop_rsd=1.000E-12
-cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=3.810E-06 stop_rsd=7.733E-04 
-cg_with_f: final iter= 122 sqrt(qnorm_r/qnorm_in)=6.635E-04 stop_rsd=7.733E-04
-invert_with_cg(5d,5d,inv,cg): total_iter=323 cycle=2 stop_rsd=1.000E-12
-invert_with_cg(5d,5d,inv,cg): checking 3.862175E-09 from 3.803129E+03
-invert diff qnorm = 1.491640E-17
+tmp qnorm = 6.364372E+03
+invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 3.792764E+03
+cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=2.906E+03 stop_rsd=1.000E-12 
+cg_with_f: final max_num_iter= 200 sqrt(qnorm_r/qnorm_in)=3.289E-10 stop_rsd=1.000E-12
+cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=9.557E-07 stop_rsd=3.040E-03 
+cg_with_f: final iter= 106 sqrt(qnorm_r/qnorm_in)=2.955E-03 stop_rsd=3.040E-03
+invert_with_cg(5d,5d,inv,cg): total_iter=307 cycle=2 stop_rsd=1.000E-12
+invert_with_cg(5d,5d,inv,cg): checking 4.701092E-09 from 3.792764E+03
+invert diff qnorm = 2.210026E-17
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 0.
 qlat::end(): Finalize MPI.

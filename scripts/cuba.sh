@@ -10,8 +10,6 @@ mkdir -p $src_dir
 cd $src_dir
 tar xaf $distfiles/$name-*.tar.*
 
-export CC="$CC -fPIC"
-
 cd $name-*
 ./configure \
     --prefix=$prefix

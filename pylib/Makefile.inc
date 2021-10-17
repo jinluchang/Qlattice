@@ -10,7 +10,7 @@ OBJS := $(patsubst %.C, %.o, $(wildcard *.C))
 all: build
 
 build: $(OBJS) lib.o
-	$(MPICXX) $(LDFLAGS) -o $(NAME) *.o base/*.o $(LIBS)
+	$(MPICXX) --shared $(LDFLAGS) -o $(NAME) *.o base/*.o $(LIBS)
 	ls -lh $(NAME)
 	mv $(NAME) ..
 

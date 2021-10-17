@@ -531,9 +531,9 @@ check_all_files_crc32_info: summary for path='huge-data/grid-16'
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 : 79A1C7E2 <- f-init
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
-: DD357EBC <- f1 only selected
+: 96AFBBCB <- f1 only selected
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
-: DD357EBC <- f2 set and set
+: 96AFBBCB <- f2 set and set
 make_shuffle_plan_generic: num_send_packs =          2
 make_shuffle_plan_generic: num_recv_packs =          8
 make_shuffle_plan_generic: num_send_msgs  =          2
@@ -553,7 +553,7 @@ make_shuffle_plan_generic: total num_send_packs =         16
 make_shuffle_plan_generic: total num_recv_packs =         64
 make_shuffle_plan_generic: total num_send_msgs  =         16
 make_shuffle_plan_generic: total num_recv_msgs  =         16
-make_shuffle_plan_generic: global_comm_size =        447
+make_shuffle_plan_generic: global_comm_size =        437
 FieldsWriter: open 'huge-data/points-1024/fields'.
 write(sfw,fn,sf,sbs): writing sparse field with fn='f.psel' from 'huge-data/points-1024/fields'.
 shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x1x2x4 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
@@ -565,30 +565,30 @@ read_tag(fr,fn,geo): 'f.psel' from 'huge-data/points-1024/fields'.
 shuffle_field_back(f,fs,sp): 1x1x2x4 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 FieldsReader: close 'huge-data/points-1024/fields'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
-: DD357EBC <- f3 write and read
+: 96AFBBCB <- f3 write and read
 check_all_files_crc32_info: start checking path='huge-data/points-1024'
-C0B99607  fn='huge-data/points-1024/point-selection.txt'
-FA70C035  fn='huge-data/points-1024/f.lat'
-1ADF2F8F  fn='huge-data/points-1024/fields/00/0000000000'
-343C704A  fn='huge-data/points-1024/fields/01/0000000001'
-9B90DBDD  fn='huge-data/points-1024/fields/02/0000000002'
-EB0FBEF8  fn='huge-data/points-1024/fields/03/0000000003'
-7BE948C3  fn='huge-data/points-1024/fields/04/0000000004'
-A52F460E  fn='huge-data/points-1024/fields/05/0000000005'
-B95D6299  fn='huge-data/points-1024/fields/06/0000000006'
-21106785  fn='huge-data/points-1024/fields/07/0000000007'
+F29EE06E  fn='huge-data/points-1024/point-selection.txt'
+0C0510F3  fn='huge-data/points-1024/f.lat'
+B638AB78  fn='huge-data/points-1024/fields/00/0000000000'
+157E9519  fn='huge-data/points-1024/fields/01/0000000001'
+34F3D331  fn='huge-data/points-1024/fields/02/0000000002'
+8EECF977  fn='huge-data/points-1024/fields/03/0000000003'
+6A0B878B  fn='huge-data/points-1024/fields/04/0000000004'
+4CCBA03C  fn='huge-data/points-1024/fields/05/0000000005'
+F53358F7  fn='huge-data/points-1024/fields/06/0000000006'
+ADD8CC75  fn='huge-data/points-1024/fields/07/0000000007'
 9BFC07C9  fn='huge-data/points-1024/fields/geon-info.txt'
 check_all_files_crc32_info: summary for path='huge-data/points-1024'
-    0 C0B99607  fn='huge-data/points-1024/point-selection.txt'
-    1 FA70C035  fn='huge-data/points-1024/f.lat'
-    2 1ADF2F8F  fn='huge-data/points-1024/fields/00/0000000000'
-    3 343C704A  fn='huge-data/points-1024/fields/01/0000000001'
-    4 9B90DBDD  fn='huge-data/points-1024/fields/02/0000000002'
-    5 EB0FBEF8  fn='huge-data/points-1024/fields/03/0000000003'
-    6 7BE948C3  fn='huge-data/points-1024/fields/04/0000000004'
-    7 A52F460E  fn='huge-data/points-1024/fields/05/0000000005'
-    8 B95D6299  fn='huge-data/points-1024/fields/06/0000000006'
-    9 21106785  fn='huge-data/points-1024/fields/07/0000000007'
+    0 F29EE06E  fn='huge-data/points-1024/point-selection.txt'
+    1 0C0510F3  fn='huge-data/points-1024/f.lat'
+    2 B638AB78  fn='huge-data/points-1024/fields/00/0000000000'
+    3 157E9519  fn='huge-data/points-1024/fields/01/0000000001'
+    4 34F3D331  fn='huge-data/points-1024/fields/02/0000000002'
+    5 8EECF977  fn='huge-data/points-1024/fields/03/0000000003'
+    6 6A0B878B  fn='huge-data/points-1024/fields/04/0000000004'
+    7 4CCBA03C  fn='huge-data/points-1024/fields/05/0000000005'
+    8 F53358F7  fn='huge-data/points-1024/fields/06/0000000006'
+    9 ADD8CC75  fn='huge-data/points-1024/fields/07/0000000007'
    10 9BFC07C9  fn='huge-data/points-1024/fields/geon-info.txt'
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_shift: f crc32 = 21C87191

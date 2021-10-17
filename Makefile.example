@@ -16,12 +16,13 @@ qlat.x: *.C
 	[ -f $@ ]
 
 build:
-	-time $(CXX) $(FLAGS) -o qlat.x $(CXXFLAGS) *.C $(LDFLAGS) 2>&1 | grep --color=always 'error:\|'
+	-time $(MPICXX) $(CXXFLAGS) $(LDFLAGS) -o qlat.x *.C $(LIBS) 2>&1 | grep --color=always 'error:\|'
 
 show-info:
-	@echo CXX: $(CXX)
+	@echo MPICXX: $(MPICXX)
 	@echo CXXFLAGS: $(CXXFLAGS)
 	@echo LDFLAGS: $(LDFLAGS)
+	@echo LIBS: $(LIBS)
 
 clean:
 	-rm qlat.x

@@ -15,7 +15,7 @@ else
 endif
 
 ifeq ($(strip $(QLAT_LDFLAGS)),)
-	LDFLAGS += --shared
+	LDFLAGS +=
 else
 	LDFLAGS = $(QLAT_LDFLAGS)
 endif
