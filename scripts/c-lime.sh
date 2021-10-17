@@ -22,7 +22,8 @@ cd $build_dir
 export CFLAGS="$CFLAGS -fPIC"
 export CXXFLAGS="$CXXFLAGS -fPIC"
 
-"$src_dir"/*"$name"*/configure --prefix="$prefix"
+"$src_dir"/*"$name"*/configure \
+    --prefix="$prefix"
 
 make -j$num_proc
 make install

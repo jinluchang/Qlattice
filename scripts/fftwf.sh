@@ -13,11 +13,9 @@ tar xzf $distfiles/$name-*.tar.gz
 
 cd $name-*
 
-export CFLAGS="$CFLAGS -fPIC"
-export CXXFLAGS="$CXXFLAGS -fPIC"
-
 ./configure \
     --prefix=$prefix \
+    --enable-shared \
     --enable-float
 #     --enable-openmp
 
