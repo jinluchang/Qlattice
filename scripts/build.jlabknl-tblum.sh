@@ -4,6 +4,9 @@ set -e
 
 ./scripts/setenv.jlabknl.sh
 
+export CC=gcc
+export CXX=g++
+
 ./scripts/xz.sh
 ./scripts/tar.sh
 ./scripts/perl.sh
@@ -22,6 +25,9 @@ set -e
 ./scripts/automake.sh
 ./scripts/c-lime.sh
 ./scripts/hdf5.sh
+
+export CC=
+export CXX=
 
 ./scripts/qlat.sh
 ./scripts/grid-tblum.knl.sh

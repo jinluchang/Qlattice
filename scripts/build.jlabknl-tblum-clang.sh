@@ -4,6 +4,9 @@ set -e
 
 ./scripts/setenv.jlabknl.sh
 
+export CC=gcc
+export CXX=g++
+
 ./scripts/xz.sh
 ./scripts/tar.sh
 ./scripts/gmp.sh
@@ -20,6 +23,9 @@ set -e
 ./scripts/re2c.sh
 ./scripts/ninja.sh
 ./scripts/llvm-project.sh
+
+export CC=
+export CXX=
 
 ./scripts/fftw.sh
 ./scripts/fftwf.sh
