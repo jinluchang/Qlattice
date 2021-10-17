@@ -9,7 +9,7 @@ else
 endif
 
 ifeq ($(strip $(QLAT_CXXFLAGS)),)
-	CXXFLAGS += -fPIC
+	CXXFLAGS +=
 else
 	CXXFLAGS = $(QLAT_CXXFLAGS)
 endif

@@ -10,6 +10,9 @@ mkdir -p $src_dir
 cd $src_dir
 tar xaf $distfiles/$name-*.tar.*
 
+export CFLAGS="$CFLAGS -fPIC"
+export CXXFLAGS="$CXXFLAGS -fPIC"
+
 cd $name-*
 ./configure \
     --prefix=$prefix

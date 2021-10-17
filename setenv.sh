@@ -14,11 +14,11 @@ if [ -z "$CXX" ] ; then
 fi
 
 if [ -z "$CFLAGS" ] ; then
-    export CFLAGS=-fPIC
+    export CFLAGS=
 fi
 
 if [ -z "$CXXFLAGS" ] ; then
-    export CXXFLAGS=-fPIC
+    export CXXFLAGS=
 fi
 
 if [ -z "$LDFLAGS" ] ; then

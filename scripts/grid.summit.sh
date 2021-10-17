@@ -30,6 +30,8 @@ export LIBS=
 export MPICXX=
 export MPICC=
 
+export CXXFLAGS="$CXXFLAGS -fPIC"
+
 mkdir build
 cd build
 ../configure \

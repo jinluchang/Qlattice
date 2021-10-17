@@ -4,6 +4,9 @@ ifeq ($(strip $(QLAT_PREFIX)),)
 	QLAT_PREFIX = $(shell readlink -m "$$HOME/qlat-build/default")
 endif
 
+CXXFLAGS += -fPIC
+LDFLAGS += --shared
+
 include $(QLAT_PREFIX)/include/qlat/Makefile.inc
 
 CXXFLAGS += $$(python3-config --includes)
@@ -16,7 +19,7 @@ OBJS := $(patsubst %.C, %.o, $(wildcard *.C))
 all: build
 
 build: $(OBJS)
-	$(MPICXX) --shared $(LDFLAGS) -o $(NAME) *.o $(LIBS)
+	$(MPICXX) $(LDFLAGS) -o $(NAME) *.o $(LIBS)
 	ls -lh $(NAME)
 	mv $(NAME) ..
 

@@ -1,3 +1,6 @@
+CXXFLAGS += -fPIC
+LDFLAGS += --shared
+
 include $(QLAT_PREFIX)/include/qlat/Makefile.inc
 
 CXXFLAGS += $$(python3-config --includes)
@@ -10,7 +13,7 @@ OBJS := $(patsubst %.C, %.o, $(wildcard *.C))
 all: build
 
 build: $(OBJS) lib.o
-	$(MPICXX) --shared $(LDFLAGS) -o $(NAME) *.o base/*.o $(LIBS)
+	$(MPICXX) $(LDFLAGS) -o $(NAME) *.o base/*.o $(LIBS)
 	ls -lh $(NAME)
 	mv $(NAME) ..
 
