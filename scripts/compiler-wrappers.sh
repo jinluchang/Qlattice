@@ -55,11 +55,7 @@ if which mpiicpc >/dev/null 2>&1 ; then
         mpiicpc "\$@"
     fi
 elif which mpicxx >/dev/null 2>&1 ; then
-    if [ -f "$prefix/bin/clang++" ] ; then
-        mpicxx -cxx=clang++ "\$@"
-    else
-        mpicxx "\$@"
-    fi
+    mpicxx "\$@"
 else
     mpic++ "\$@"
 fi

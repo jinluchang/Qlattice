@@ -1,11 +1,11 @@
 include $(QLAT_PREFIX)/include/qlat/Makefile.inc
 
-CXXFLAGS+= $$(python3-config --includes)
-# CXXFLAGS+= $$(python3 -c "import numpy; print(numpy.get_include())") 
+CXXFLAGS += $$(python3-config --includes)
+# CXXFLAGS += $$(python3 -c "import numpy; print(numpy.get_include())")
 
-NAME=cqlat.so
+NAME = cqlat.so
 
-OBJS:=$(patsubst %.C, %.o, $(wildcard *.C))
+OBJS := $(patsubst %.C, %.o, $(wildcard *.C))
 
 all: build
 
