@@ -25,5 +25,5 @@ set -e
 
 ./scripts/c-lime.sh
 ./scripts/hdf5.sh
-./scripts/grid-summit.sh
+./scripts/grid.summit.sh
 ./scripts/gpt.sh
