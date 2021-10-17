@@ -40,6 +40,7 @@ rm -rf "$prefix" || true
 mkdir -p "$prefix"
 
 if [ -f "scripts/build.$target.sh" ] ; then
+    "scripts/dist-update-hash.sh" |& tee "$prefix/log.packages.txt"
     "scripts/build.$target.sh" |& tee "$prefix/log.build.txt"
 fi
 
