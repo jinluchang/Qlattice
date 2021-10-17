@@ -15,6 +15,7 @@ export CXXFLAGS="$CXXFLAGS -fPIC"
 
 cd $name-*
 ./configure \
+    --build="$(arch)" \
     --prefix=$prefix
 make
 make install
