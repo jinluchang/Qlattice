@@ -13,6 +13,7 @@ export CXX=g++
 ./scripts/mpfr.sh
 ./scripts/mpc.sh
 ./scripts/gcc.sh
+./scripts/binutils.sh
 ./scripts/cmake.sh
 ./scripts/perl.sh
 ./scripts/openssl.sh

@@ -46,6 +46,8 @@ dget "hdf5-1.10.7.tar.bz2" "https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-
 
 dget "gcc-11.2.0.tar.xz" "http://mirrors.concertpass.com/gcc/releases/gcc-11.2.0/gcc-11.2.0.tar.xz"
 
+dget "binutils-2.37.tar.xz" "https://ftp.gnu.org/gnu/binutils/binutils-2.37.tar.xz"
+
 dget "openmpi-4.1.1.tar.bz2" "https://download.open-mpi.org/release/open-mpi/v4.1/openmpi-4.1.1.tar.bz2"
 
 dget "llvm-project-13.0.0.src.tar.xz" "https://github.com/llvm/llvm-project/releases/download/llvmorg-13.0.0/llvm-project-13.0.0.src.tar.xz"

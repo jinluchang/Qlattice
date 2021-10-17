@@ -10,6 +10,7 @@ set -e
 ./scripts/mpfr.sh
 ./scripts/mpc.sh
 ./scripts/gcc.sh
+./scripts/binutils.sh
 ./scripts/perl.sh
 ./scripts/openssl.sh
 ./scripts/cmake.sh

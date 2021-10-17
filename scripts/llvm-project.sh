@@ -14,7 +14,7 @@ mkdir -p build
 
 cmake \
     -S llvm -B build -G Ninja \
-    -DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra;openmp" \
+    -DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra;openmp;lld" \
     -DCMAKE_INSTALL_PREFIX="$prefix" \
     -DCMAKE_PREFIX_PATH="$prefix" \
     -DCMAKE_BUILD_TYPE=Release \
