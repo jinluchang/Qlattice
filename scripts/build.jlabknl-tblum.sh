@@ -23,11 +23,8 @@ set -e
 ./scripts/c-lime.sh
 ./scripts/hdf5.sh
 
-export CXX=icpc
-export MPICXX=mpiicpc
-
 ./scripts/qlat.sh
-./scripts/grid-tblum-knl.sh
+./scripts/grid-tblum.knl.sh
 ./scripts/hadrons-tblum.sh
-./scripts/grid-knl.sh
+./scripts/grid.knl.sh
 ./scripts/gpt.sh

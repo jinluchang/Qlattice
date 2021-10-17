@@ -31,11 +31,8 @@ set -e
 ./scripts/c-lime.sh
 ./scripts/hdf5.sh
 
-export CXX="clang++"
-export MPICXX="mpiicpc -cxx clang++"
-
 ./scripts/qlat.sh
-./scripts/grid-tblum-knl.sh
+./scripts/grid-tblum.knl.sh
 ./scripts/hadrons-tblum.sh
-./scripts/grid-knl.sh
+./scripts/grid.knl.sh
 ./scripts/gpt.sh
