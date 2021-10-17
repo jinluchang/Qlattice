@@ -6,11 +6,11 @@ echo "num_proc=$num_proc"
 export QLAT_PREFIX="$prefix"
 
 if [ -z "$CC" ] ; then
-    export CC=gcc
+    export CC=CC.sh
 fi
 
 if [ -z "$CXX" ] ; then
-    export CXX=CXX
+    export CXX=CXX.sh
 fi
 
 if [ -z "$CFLAGS" ] ; then
@@ -30,11 +30,11 @@ if [ -z "$LIBS" ] ; then
 fi
 
 if [ -z "$MPICC" ] ; then
-    export MPICC=mpicc
+    export MPICC=MPICC.sh
 fi
 
 if [ -z "$MPICXX" ] ; then
-    export MPICXX=MPICXX
+    export MPICXX=MPICXX.sh
 fi
 
 add-to-colon-list () {
