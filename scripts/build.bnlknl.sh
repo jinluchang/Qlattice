@@ -13,9 +13,6 @@ set -e
 ./scripts/automake.sh
 ./scripts/c-lime.sh
 
-export CXX=icpc
-export MPICXX=mpiicpc
-
 ./scripts/qlat.sh
 ./scripts/grid.knl.sh
 ./scripts/gpt.sh
