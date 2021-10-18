@@ -2,6 +2,11 @@
 
 set -e
 
+{
+
+./scripts/dist-update-hash.sh
+./scripts/clean-prefix.sh
+
 ./scripts/setenv.bnlknl.sh
 
 export CC=gcc
@@ -22,3 +27,5 @@ export CXX=
 ./scripts/qlat.sh
 ./scripts/grid.knl.sh
 ./scripts/gpt.sh
+
+} |& tee $prefix/log.build.txt

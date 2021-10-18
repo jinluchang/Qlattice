@@ -2,6 +2,11 @@
 
 set -e
 
+{
+
+./scripts/dist-update-hash.sh
+./scripts/clean-prefix.sh
+
 ./scripts/setenv.default.sh
 
 ./scripts/fftw.sh
@@ -14,3 +19,5 @@ set -e
 ./scripts/c-lime.sh
 ./scripts/grid-sse4.sh
 ./scripts/gpt.sh
+
+} |& tee $prefix/log.build.txt

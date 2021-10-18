@@ -25,23 +25,6 @@ else
     exit
 fi
 
-if [ -e "$prefix" ] ; then
-    echo "$prefix already exist, continue to build will erase all its contents."
-    echo "Use ./scripts/qlat.sh to build Qlat only."
-    echo "Ctrl-C to stop."
-    for i in {10..0} ; do
-        echo -n "$i "
-        sleep 1;
-    done
-    echo
-fi
-
-rm -rf "$prefix" || true
-mkdir -p "$prefix"
-
 if [ -f "scripts/build.$target.sh" ] ; then
-    "scripts/dist-update-hash.sh" |& tee "$prefix/log.packages.txt"
-    "scripts/build.$target.sh" |& tee "$prefix/log.build.txt"
+    "scripts/build.$target.sh"
 fi
-
-rm -rf $temp_dir

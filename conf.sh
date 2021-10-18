@@ -23,7 +23,7 @@ src_dir="$temp_dir/src"
 build_dir="$temp_dir/build"
 
 if [ -e $temp_dir ] ; then
-    temp_dir_tmp=$(mktemp -d $temp_dir.XXXXX)
+    temp_dir_tmp=$(mktemp -d $temp_dir.tmp.XXXXX)
     mv $temp_dir $temp_dir_tmp
     rm -rf $temp_dir.* || true
 fi

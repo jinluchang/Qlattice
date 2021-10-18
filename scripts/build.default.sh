@@ -1,8 +1,13 @@
 #!/bin/bash
 
+# need to have mpi, python3 (numpy, simpy), openssl installed beforehand.
+
 set -e
 
-# need to have mpi, python3 (numpy, simpy), openssl installed beforehand.
+{
+
+./scripts/dist-update-hash.sh
+./scripts/clean-prefix.sh
 
 ./scripts/setenv.default.sh
 
@@ -16,3 +21,5 @@ set -e
 ./scripts/c-lime.sh
 ./scripts/grid.avx2.sh
 ./scripts/gpt.sh
+
+} |& tee $prefix/log.build.txt

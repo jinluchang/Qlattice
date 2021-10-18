@@ -2,6 +2,11 @@
 
 set -e
 
+{
+
+./scripts/dist-update-hash.sh
+./scripts/clean-prefix.sh
+
 ./scripts/setenv.summit.sh
 
 ./scripts/xz.sh
@@ -27,3 +32,5 @@ set -e
 ./scripts/hdf5.sh
 ./scripts/grid.summit.sh
 ./scripts/gpt.sh
+
+} |& tee $prefix/log.build.txt
