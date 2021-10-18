@@ -2,10 +2,11 @@
 
 set -e
 
+./scripts/clean-prefix.sh
+
 {
 
 ./scripts/dist-update-hash.sh
-./scripts/clean-prefix.sh
 
 ./scripts/setenv.bnlic.sh
 

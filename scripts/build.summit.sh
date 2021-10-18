@@ -2,9 +2,10 @@
 
 set -e
 
+./scripts/dist-update-hash.sh
+
 {
 
-./scripts/dist-update-hash.sh
 ./scripts/clean-prefix.sh
 
 ./scripts/setenv.summit.sh
