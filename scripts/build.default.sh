@@ -4,11 +4,11 @@
 
 set -e
 
-./scripts/dist-update-hash.sh
+./scripts/clean-prefix.sh
 
 {
 
-./scripts/clean-prefix.sh
+./scripts/dist-update-hash.sh
 
 ./scripts/setenv.default.sh
 
