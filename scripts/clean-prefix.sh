@@ -2,7 +2,7 @@
 
 . conf.sh
 
-name=distclean
+name=clean-prefix
 echo "!!!! build $name !!!!"
 
 if [ -e "$prefix" ] ; then
