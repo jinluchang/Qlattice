@@ -185,11 +185,11 @@ def mk_k0k0bar(p1 : str, p2 : str, is_dagger = False, *, is_sym = False):
     else:
         return mk_k_0(p1, is_dagger) * mk_k_0_bar(p2, is_dagger) + f"K0K0b({p1},{p2}){show_dagger(is_dagger)}"
 
-def mk_k0pi0(p1 : str, p2 : str, is_dagger = False, *, is_sym = False):
-    if is_sym:
-        return 1 / sympy.sqrt(2) * (mk_k0pi0(p1, p2, is_dagger) + mk_k0pi0(p2, p1, is_dagger)) + f"K0pi0({p1},{p2},sym){show_dagger(is_dagger)}"
-    else:
-        return mk_k0pi0(p1, p2, is_dagger) + f"K0pi0({p1},{p2},sym){show_dagger(is_dagger)}"
+#def mk_k0pi0(p1 : str, p2 : str, is_dagger = False, *, is_sym = False):
+#    if is_sym:
+#        return 1 / sympy.sqrt(2) * (mk_k0pi0(p1, p2, is_dagger) + mk_k0pi0(p2, p1, is_dagger)) + f"K0pi0({p1},{p2},sym){show_dagger(is_dagger)}"
+#    else:
+#        return mk_k_0(p1,is_dagger) * mk_pi_0(p2,is_dagger) + f"K0pi0({p1},{p2},sym){show_dagger(is_dagger)}"
 
 def mk_sigma(p : str, is_dagger = False):
     s = new_spin_index()
@@ -495,36 +495,42 @@ def mk_Q0_b81(p, parity = None):
 def mk_Q1_b81(p, parity = None):
     for mu in range (4):
         save_sc_indices()
-    expr = simplified( sympy.simplify(1)/sympy.sqrt(10)* rsc_call(mk_4qOq_LL,"s","d","u","u",p,False,parity)
-                       + sympy.simplify(1)/sympy.sqrt(10)* rsc_call(mk_4qOq_LL_cmix,"s","d","u","u",p,False,parity)
-                       + sympy.sqrt(2)/sympy.sqrt(10)* rsc_call(mk_4qOq_LL,"s","d","d","d",p,False,parity)
-                       + sympy.sqrt(2)/sympy.sqrt(10)* rsc_call(mk_4qOq_LL,"s","d","s","s",p,False,parity) )
+    expr = simplified( sympy.simplify(1)/sympy.sqrt(10)* rsc_call(mk_4qOp_LL,"s","d","u","u",p,False,parity)
+                       + sympy.simplify(1)/sympy.sqrt(10)* rsc_call(mk_4qOp_LL_cmix,"s","d","u","u",p,False,parity)
+                       + sympy.sqrt(2)/sympy.sqrt(10)* rsc_call(mk_4qOp_LL,"s","d","d","d",p,False,parity)
+                       + sympy.sqrt(2)/sympy.sqrt(10)* rsc_call(mk_4qOp_LL,"s","d","s","s",p,False,parity) )
+#    expr = simplified( sympy.simplify(1)/sympy.sqrt(10)* rsc_call(mk_4qOp_LL,"s","d","u","u",p,False,parity)
+#                       + sympy.simplify(1)/sympy.sqrt(10)* rsc_call(mk_4qOp_LL_cmix,"s","d","u","u",p,False,parity)
+#                       + sympy.simplify(1)/sympy.sqrt(10)* rsc_call(mk_4qOp_LL,"s","d","d","d",p,False,parity)
+#                       + sympy.simplify(1)/sympy.sqrt(10)* rsc_call(mk_4qOp_LL_cmix,"s","d","d","d",p,False,parity)
+#                       + sympy.simplify(1)/sympy.sqrt(10)* rsc_call(mk_4qOp_LL,"s","d","s","s",p,False,parity)
+#                       + sympy.simplify(1)/sympy.sqrt(10)* rsc_call(mk_4qOp_LL_cmix,"s","d","s","s",p,False,parity) )
     jump_sc_indices()
     return expr + f"Q1_b81({p}{show_parity(parity)})"
 
 def mk_Q2_b81(p, parity = None):
     for mu in range (2):
         save_sc_indices()
-    expr = simplified( sympy.simplify(1)/sympy.sqrt(2)* rsc_call(mk_4qOq_LL,"s","d","u","u",p,False,parity)
-                       - sympy.simplify(1)/sympy.sqrt(2)* rsc_call(mk_4qOq_LL_cmix,"s","d","u","u",p,False,parity) )
+    expr = simplified( sympy.simplify(1)/sympy.sqrt(2)* rsc_call(mk_4qOp_LL,"s","d","u","u",p,False,parity)
+                       - sympy.simplify(1)/sympy.sqrt(2)* rsc_call(mk_4qOp_LL_cmix,"s","d","u","u",p,False,parity) )
     jump_sc_indices()
     return expr + f"Q2_b81({p}{show_parity(parity)})"
 
 def mk_Q3_b81(p, parity = None):
     for mu in range (4):
         save_sc_indices()
-    expr = simplified( sympy.simplify(1)/sympy.sqrt(3)* rsc_call(mk_4qOq_LR,"s","d","u","u",p,False,parity)
-                       + sympy.simplify(1)/sympy.sqrt(3)* rsc_call(mk_4qOq_LR,"s","d","d","d",p,False,parity)
-                       + sympy.simplify(1)/sympy.sqrt(3)* rsc_call(mk_4qOq_LR,"s","d","s","s",p,False,parity) )
+    expr = simplified( sympy.simplify(1)/sympy.sqrt(3)* rsc_call(mk_4qOp_LR,"s","d","u","u",p,False,parity)
+                       + sympy.simplify(1)/sympy.sqrt(3)* rsc_call(mk_4qOp_LR,"s","d","d","d",p,False,parity)
+                       + sympy.simplify(1)/sympy.sqrt(3)* rsc_call(mk_4qOp_LR,"s","d","s","s",p,False,parity) )
     jump_sc_indices()
     return expr + f"Q3_b81({p}{show_parity(parity)})"
 
 def mk_Q4_b81(p, parity = None):
     for mu in range (4):
         save_sc_indices()
-    expr = simplified( sympy.simplify(1)/sympy.sqrt(3)* rsc_call(mk_4qOq_LR_cmix,"s","d","u","u",p,False,parity)
-                       + sympy.simplify(1)/sympy.sqrt(3)* rsc_call(mk_4qOq_LR_cmix,"s","d","d","d",p,False,parity)
-                       + sympy.simplify(1)/sympy.sqrt(3)* rsc_call(mk_4qOq_LR_cmix,"s","d","s","s",p,False,parity) )
+    expr = simplified( sympy.simplify(1)/sympy.sqrt(3)* rsc_call(mk_4qOp_LR_cmix,"s","d","u","u",p,False,parity)
+                       + sympy.simplify(1)/sympy.sqrt(3)* rsc_call(mk_4qOp_LR_cmix,"s","d","d","d",p,False,parity)
+                       + sympy.simplify(1)/sympy.sqrt(3)* rsc_call(mk_4qOp_LR_cmix,"s","d","s","s",p,False,parity) )
     jump_sc_indices()
     return expr + f"Q4_b81({p}{show_parity(parity)})"
 
