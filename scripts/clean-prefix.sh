@@ -14,11 +14,10 @@ if [ -e "$prefix" ] ; then
         sleep 1;
     done
     echo
+    prefix_tmp=$(mktemp -d $prefix.tmp.XXXXX)
+    mv $prefix $prefix_tmp
+    rm -rf $prefix_tmp || true
 fi
-
-prefix_tmp=$(mktemp -d $prefix.tmp.XXXXX)
-mv $prefix $prefix_tmp
-rm -rf $prefix_tmp || true
 
 mkdir -p $prefix || true
 
