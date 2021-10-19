@@ -533,12 +533,6 @@ def mk_Q1_b81(p, parity = None):
                        + sympy.simplify(1)/sympy.sqrt(10)* rsc_call(mk_4qOp_LL_cmix,"s","d","u","u",p,False,parity)
                        + sympy.simplify(2)/sympy.sqrt(10)* rsc_call(mk_4qOp_LL,"s","d","d","d",p,False,parity)
                        + sympy.simplify(2)/sympy.sqrt(10)* rsc_call(mk_4qOp_LL,"s","d","s","s",p,False,parity) )
-#    expr = simplified( sympy.simplify(1)/sympy.sqrt(10)* rsc_call(mk_4qOp_LL,"s","d","u","u",p,False,parity)
-#                       + sympy.simplify(1)/sympy.sqrt(10)* rsc_call(mk_4qOp_LL_cmix,"s","d","u","u",p,False,parity)
-#                       + sympy.simplify(1)/sympy.sqrt(10)* rsc_call(mk_4qOp_LL,"s","d","d","d",p,False,parity)
-#                       + sympy.simplify(1)/sympy.sqrt(10)* rsc_call(mk_4qOp_LL_cmix,"s","d","d","d",p,False,parity)
-#                       + sympy.simplify(1)/sympy.sqrt(10)* rsc_call(mk_4qOp_LL,"s","d","s","s",p,False,parity)
-#                       + sympy.simplify(1)/sympy.sqrt(10)* rsc_call(mk_4qOp_LL_cmix,"s","d","s","s",p,False,parity) )
     jump_sc_indices()
     return expr + f"Q1_b81({p}{show_parity(parity)})"
 
