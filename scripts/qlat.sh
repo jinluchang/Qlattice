@@ -4,6 +4,8 @@
 
 name=qlat
 
+{
+
 echo "!!!! build $name !!!!"
 
 mkdir -pv $prefix/include
@@ -36,3 +38,5 @@ time make -C $prefix/pylib/cqlat -j $num_proc
 echo "!!!! $name build !!!!"
 
 rm -rf $temp_dir || true
+
+} |& tee $prefix/log.$name.txt

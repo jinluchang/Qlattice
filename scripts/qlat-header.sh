@@ -4,6 +4,8 @@
 
 name=qlat-header
 
+{
+
 echo "!!!! build $name !!!!"
 
 mkdir -pv $prefix/include
@@ -30,3 +32,5 @@ cp -pv pylib/Makefile.inc $prefix/pylib/
 echo "!!!! $name build !!!!"
 
 rm -rf $temp_dir || true
+
+} |& tee $prefix/log.$name.txt

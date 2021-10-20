@@ -4,6 +4,8 @@
 
 name=Grid
 
+{
+
 echo "!!!! build $name !!!!"
 
 mkdir -p "$prefix"/$name || true
@@ -38,3 +40,5 @@ cd $wd
 echo "!!!! $name build !!!!"
 
 rm -rf $temp_dir || true
+
+} |& tee $prefix/log.$name.txt

@@ -3,6 +3,9 @@
 . conf.sh
 
 name=llvm-project
+
+{
+
 echo "!!!! build $name !!!!"
 
 mkdir -p $src_dir
@@ -31,3 +34,5 @@ cd $wd
 echo "!!!! $name build !!!!"
 
 rm -rf $temp_dir || true
+
+} |& tee $prefix/log.$name-all.txt

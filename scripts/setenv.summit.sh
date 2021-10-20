@@ -3,6 +3,9 @@
 . conf.sh
 
 name=setenv
+
+{
+
 echo "!!!! build $name !!!!"
 
 mkdir -p $prefix
@@ -32,3 +35,5 @@ EOF
 echo "!!!! $name build !!!!"
 
 rm -rf $temp_dir || true
+
+} |& tee $prefix/log.$name-build.txt

@@ -4,6 +4,8 @@
 
 name=Hadrons-tblum
 
+{
+
 echo "!!!! build $name !!!!"
 
 echo "!!!! build $name !!!!"
@@ -27,3 +29,5 @@ cd $wd
 echo "!!!! $name build !!!!"
 
 rm -rf $temp_dir || true
+
+} |& tee $prefix/log.$name.txt

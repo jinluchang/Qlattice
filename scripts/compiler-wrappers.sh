@@ -4,6 +4,8 @@
 
 name=compiler-wrappers
 
+{
+
 echo "!!!! build $name !!!!"
 
 mkdir -p "$prefix/bin"
@@ -63,3 +65,5 @@ EOF
 chmod +x "$prefix/bin/MPICXX.sh"
 
 echo "!!!! $name build !!!!"
+
+} |& tee $prefix/log.$name.txt

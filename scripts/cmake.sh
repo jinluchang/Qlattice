@@ -3,6 +3,9 @@
 . conf.sh
 
 name=cmake
+
+{
+
 echo "!!!! build $name !!!!"
 
 rm -rf $src_dir
@@ -20,3 +23,5 @@ cd $wd
 echo "!!!! $name build !!!!"
 
 rm -rf $temp_dir || true
+
+} |& tee $prefix/log.$name.txt

@@ -4,6 +4,8 @@
 
 name=c-lime
 
+{
+
 echo "!!!! build $name !!!!"
 
 rm -rf $src_dir || true
@@ -32,3 +34,4 @@ cd $wd
 echo "!!!! $name build !!!!"
 
 rm -rf $temp_dir || true
+} |& tee $prefix/log.$name.txt
