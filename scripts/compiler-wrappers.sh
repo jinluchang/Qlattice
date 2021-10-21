@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# With the wrappers:
+# 1) select compiler based on availability
+# 2) support --wrapper-remove-arg=XXX option to remove unwanted flags
+
 . conf.sh
 
 name=compiler-wrappers
@@ -10,64 +14,105 @@ echo "!!!! build $name !!!!"
 
 mkdir -p "$prefix/bin"
 
+cat - >"$prefix/bin/compiler-options.py" << EOF
+#!/usr/bin/env python3
+import sys
+import subprocess as p
+def process_remove_arg(argv):
+    name = "--wrapper-remove-arg="
+    name_len = len(name)
+    args_to_remove = []
+    for arg in argv:
+        if arg[:name_len] == name:
+            args_to_remove.append(arg)
+            args_to_remove.append(arg[name_len:])
+    for x in args_to_remove:
+        while x in argv:
+            argv.remove(x)
+argv = sys.argv.copy()
+process_remove_arg(argv)
+p.run(argv[1:])
+EOF
+chmod +x "$prefix/bin/compiler-options.py"
+
 cat - >"$prefix/bin/CC.sh" << EOF
 #!/bin/bash
-if [ -f "$prefix/bin/clang" ] ; then
-    clang "\$@"
-elif [ -f "$prefix/bin/gcc" ] ; then
-    gcc "\$@"
-elif which icc >/dev/null 2>&1 ; then
-    icc "\$@"
+if which python3 >/dev/null 2>&1 ; then
+    run=compiler-options.py
 else
-    gcc "\$@"
+    run=
+fi
+if [ -f "$prefix/bin/clang" ] ; then
+    \$run clang "\$@"
+elif [ -f "$prefix/bin/gcc" ] ; then
+    \$run gcc "\$@"
+elif which icc >/dev/null 2>&1 ; then
+    \$run icc "\$@"
+else
+    \$run gcc "\$@"
 fi
 EOF
 chmod +x "$prefix/bin/CC.sh"
 
 cat - >"$prefix/bin/CXX.sh" << EOF
 #!/bin/bash
-if [ -f "$prefix/bin/clang++" ] ; then
-    clang++ "\$@"
-elif [ -f "$prefix/bin/g++" ] ; then
-    g++ "\$@"
-elif which icpc >/dev/null 2>&1 ; then
-    icpc "\$@"
+if which python3 >/dev/null 2>&1 ; then
+    run=compiler-options.py
 else
-    g++ "\$@"
+    run=
+fi
+if [ -f "$prefix/bin/clang++" ] ; then
+    \$run clang++ "\$@"
+elif [ -f "$prefix/bin/g++" ] ; then
+    \$run g++ "\$@"
+elif which icpc >/dev/null 2>&1 ; then
+    \$run icpc "\$@"
+else
+    \$run g++ "\$@"
 fi
 EOF
 chmod +x "$prefix/bin/CXX.sh"
 
 cat - >"$prefix/bin/MPICC.sh" << EOF
 #!/bin/bash
+if which python3 >/dev/null 2>&1 ; then
+    run=compiler-options.py
+else
+    run=
+fi
 if which mpiicc >/dev/null 2>&1 ; then
     if [ -f "$prefix/bin/clang" ] ; then
-        mpiicc -cc=clang "\$@"
+        \$run mpiicc -cc=clang "\$@"
     elif [ -f "$prefix/bin/gcc" ] ; then
-        mpiicc -cc=gcc "\$@"
+        \$run mpiicc -cc=gcc "\$@"
     else
-        mpiicc "\$@"
+        \$run mpiicc "\$@"
     fi
 else
-    mpicc "\$@"
+    \$run mpicc "\$@"
 fi
 EOF
 chmod +x "$prefix/bin/MPICC.sh"
 
 cat - >"$prefix/bin/MPICXX.sh" << EOF
 #!/bin/bash
+if which python3 >/dev/null 2>&1 ; then
+    run=compiler-options.py
+else
+    run=
+fi
 if which mpiicpc >/dev/null 2>&1 ; then
     if [ -f "$prefix/bin/clang++" ] ; then
-        mpiicpc -cxx=clang++ "\$@"
+        \$run mpiicpc -cxx=clang++ "\$@"
     elif [ -f "$prefix/bin/g++" ] ; then
-        mpiicpc -cxx=g++ "\$@"
+        \$run mpiicpc -cxx=g++ "\$@"
     else
-        mpiicpc "\$@"
+        \$run mpiicpc "\$@"
     fi
 elif which mpicxx >/dev/null 2>&1 ; then
-    mpicxx "\$@"
+    \$run mpicxx "\$@"
 else
-    mpic++ "\$@"
+    \$run mpic++ "\$@"
 fi
 EOF
 chmod +x "$prefix/bin/MPICXX.sh"
