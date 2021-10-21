@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# need to have mpi, python3 (numpy, simpy), openssl installed beforehand.
+# need to have gcc, mpi, python3 (numpy, simpy), openssl installed beforehand.
 
 set -e
 
