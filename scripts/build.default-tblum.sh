@@ -34,9 +34,9 @@ export CC=
 export CXX=
 
 ./scripts/qlat.sh
-./scripts/grid-tblum.knl.sh
+./scripts/grid-tblum.avx2-amd.sh
 ./scripts/hadrons-tblum.sh
-./scripts/grid.knl.sh
+./scripts/grid.avx2-amd.sh.sh
 ./scripts/gpt.sh
 
 } |& tee $prefix/log.build.txt
