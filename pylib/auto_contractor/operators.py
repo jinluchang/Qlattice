@@ -191,15 +191,21 @@ def mk_k0pi0(p1 : str, p2 : str, is_dagger = False, *, is_sym = False):
     else:
         return mk_k_0(p1, is_dagger) * mk_pi_0(p2, is_dagger) + f"K0pi0({p1},{p2}){show_dagger(is_dagger)}"
 
+def mk_k0barpi0(p1 : str, p2 : str, is_dagger = False, *, is_sym = False):
+    if is_sym:
+        return 1 / sympy.sqrt(2) * (mk_k0barpi0(p1, p2, is_dagger) + mk_k0barpi0(p2, p1, is_dagger)) + f"K0barpi0({p1},{p2},sym){show_dagger(is_dagger)}"
+    else:
+        return mk_k_0_bar(p1, is_dagger) * mk_pi_0(p2, is_dagger) + f"K0barpi0({p1},{p2}){show_dagger(is_dagger)}"
+
 def mk_kppim(p1 : str, p2 : str, is_dagger = False, *, is_sym = False):
     if is_sym:
-        return 1 / sympy.sqrt(2) * (mk_k0k0bar(p1, p2, is_dagger) + mk_k0k0bar(p2, p1, is_dagger)) + f"K+pi-({p1},{p2},sym){show_dagger(is_dagger)}"
+        return 1 / sympy.sqrt(2) * (mk_kppim(p1, p2, is_dagger) + mk_kppim(p2, p1, is_dagger)) + f"K+pi-({p1},{p2},sym){show_dagger(is_dagger)}"
     else:
         return mk_k_p(p1, is_dagger) * mk_pi_m(p2, is_dagger) + f"K+pi-({p1},{p2}){show_dagger(is_dagger)}"
 
 def mk_kmpip(p1 : str, p2 : str, is_dagger = False, *, is_sym = False):
     if is_sym:
-        return 1 / sympy.sqrt(2) * (mk_k0k0bar(p1, p2, is_dagger) + mk_k0k0bar(p2, p1, is_dagger)) + f"K-pi+({p1},{p2},sym){show_dagger(is_dagger)}"
+        return 1 / sympy.sqrt(2) * (mk_kmpip(p1, p2, is_dagger) + mk_kmpip(p2, p1, is_dagger)) + f"K-pi+({p1},{p2},sym){show_dagger(is_dagger)}"
     else:
         return mk_k_m(p1, is_dagger) * mk_pi_p(p2, is_dagger) + f"K-pi+({p1},{p2}){show_dagger(is_dagger)}"
 
