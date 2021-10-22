@@ -2,6 +2,10 @@
 
 . conf.sh
 
+name=dist-update-hash
+
+{
+
 mkdir -p $distfiles
 
 cd $distfiles
@@ -22,3 +26,5 @@ for fn in * ; do
 done
 
 cat sha256sums.txt
+
+} |& tee $prefix/log.$name.txt

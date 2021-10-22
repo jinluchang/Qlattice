@@ -26,5 +26,7 @@ else
 fi
 
 if [ -f "scripts/build.$target.sh" ] ; then
+    ./scripts/clean-prefix.sh
+    ./scripts/dist-update-hash.sh
     "scripts/build.$target.sh"
 fi
