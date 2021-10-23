@@ -700,14 +700,14 @@ def auto_contractor_3f4f_matching(job_tag, traj, get_prop, num_trials):
             ]
     exprs_ops = exprs_odd_ops + exprs_even_ops
     exprs_k = [
-            vol * mk_k_0("x2") + "K0",
-            #vol * mk_neutral_kpi_i1half("x2", "x2") + "Kpi_I3half",
-            #vol * mk_neutral_kpi_i3halves("x2", "x2") + "Kpi_I3halves",
+            vol * mk_k_0("t2") + "K0",
+            #vol * mk_neutral_kpi_i1half("t2", "t2") + "Kpi_I3half",
+            #vol * mk_neutral_kpi_i3halves("t2", "t2") + "Kpi_I3halves",
             ]
     exprs_pipi = [
-            vol**2 * mk_pipi_i0("x1_1", "x1_2", True) + "pipi_I0",
-            vol * mk_sigma("x1_1", True) + "sigma_1",
-            vol * mk_pi_0("x1_1", True) + "pi0_1",
+            vol**2 * mk_pipi_i0("t1_1", "t1_2", True) + "pipi_I0",
+            vol * mk_sigma("t_1", True) + "sigma_1",
+            vol * mk_pi_0("t1_1", True) + "pi0_1",
             mk_expr(1) + "1",
             ]
     exprs = []
@@ -726,24 +726,17 @@ def auto_contractor_3f4f_matching(job_tag, traj, get_prop, num_trials):
         t1_1 = 5
         t1_2 = 7
         t = 3
-        x1_1 = rs.c_rand_gen(total_site)
-        x1_2 = rs.c_rand_gen(total_site)
         x = rs.c_rand_gen(total_site)
-        x2 = rs.c_rand_gen(total_site)
-        x1_1[3] = (x2[3] + t1_1) % total_site[3]
-        x1_2[3] = (x2[3] + t1_2) % total_site[3]
         x[3] = (x2[3] + t) % total_site[3]
         pd = {
-                "x1_1" : ("point", x1_1,),
-                "x1_2" : ("point", x1_2,),
+                "t1_1" : ("wall", t1_1,),
+                "t1_2" : ("wall", t1_2,),
                 "x" : ("point", x,),
-                "x2" : ("point", x2,),
+                "t2" : ("wall", t2,),
                 }
-        lmom = [ 2 * math.pi / total_site[i] for i in range(3) ]
-        fac1 = sum([ 2 * cmath.rect(1.0, (x1_1[i] - x1_2[i]) * lmom[i]).real for i in range(3) ]) / np.sqrt(6)
-        facs = [1.0, fac1]
+        facs = [1.0]
         return pd, facs
-    names_fac = [ "rest", "moving", ]
+    names_fac = [ "rest", ]
     trial_indices = range(num_trials)
     results_list = eval_cexpr_simulation(cexpr, positions_dict_maker = positions_dict_maker, trial_indices = trial_indices, get_prop = get_prop, is_only_total = "typed_total")
     q.qmkdir_info("analysis")
