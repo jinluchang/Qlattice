@@ -723,11 +723,13 @@ def auto_contractor_3f4f_matching(job_tag, traj, get_prop, num_trials):
     rng_state = q.RngState("seed")
     def positions_dict_maker(idx):
         rs = rng_state.split(str(idx))
-        t1_1 = 5
-        t1_2 = 7
-        t = 3
+        dt1_1 = 2
+        dt1_2 = 4
+        dt2 = -3
         x = rs.c_rand_gen(total_site)
-        x[3] = (x2[3] + t) % total_site[3]
+        t2   = ( x[3] + dt2   + total_site[3] ) % total_site[3]
+        t1_1 = ( x[3] + dt1_1 + total_site[3] ) % total_site[3]
+        t1_2 = ( x[3] + dt1_2 + total_site[3] ) % total_site[3]
         pd = {
                 "t1_1" : ("wall", t1_1,),
                 "t1_2" : ("wall", t1_2,),
