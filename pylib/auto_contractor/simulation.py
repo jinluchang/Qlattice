@@ -933,8 +933,8 @@ def run_job(job_tag, traj):
 #        auto_contractor_meson_corr(job_tag, traj, get_prop, num_trials)
 #        auto_contractor_pipi_corr(job_tag, traj, get_prop, num_trials)
 #        auto_contractor_kpipi_corr(job_tag, traj, get_prop, num_trials)
-        auto_contractor_kpipi_corr_81oprs(job_tag, traj, get_prop, num_trials)
-#        auto_contractor_3f4f_matching(job_tag, traj, get_prop, num_trials)
+#        auto_contractor_kpipi_corr_81oprs(job_tag, traj, get_prop, num_trials)
+        auto_contractor_3f4f_matching(job_tag, traj, get_prop, num_trials)
     #
     q.clean_cache()
 
