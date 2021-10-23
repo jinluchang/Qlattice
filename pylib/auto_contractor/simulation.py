@@ -328,6 +328,68 @@ def auto_contractor_meson_corr(job_tag, traj, get_prop, num_trials):
             q.displayln_info(f"{name_fac} {k}:\n  {v}")
 
 @q.timer
+def auto_contractor_test_corr(job_tag, traj, get_prop, num_trials):
+    total_site = ru.get_total_site(job_tag)
+    vol = total_site[0] * total_site[1] * total_site[2]
+    exprs = [
+            vol**2 * mk_k0pi0("x2_1", "x2_2", True) * mk_k0pi0("x1_1", "x1_2"),
+            vol**2 * mk_k0pi0("x2_1", "x2_2", True) * mk_kmpip("x1_1", "x1_2"),
+            vol**2 * mk_kmpip("x2_1", "x2_2", True) * mk_kmpip("x1_1", "x1_2"),
+            vol**2 * mk_kppim("x2_1", "x2_2", True) * mk_kppim("x1_1", "x1_2"),
+            vol**2 * mk_k0barpi0("x2_1", "x2_2", True) * mk_k0barpi0("x1_1", "x1_2"),
+            vol**2 * mk_kpi_0_i1half("x2_1", "x2_2", True) * mk_kpi_0_i1half("x1_1", "x1_2"),
+            vol**2 * mk_kpi_0_i1half("x2_1", "x2_2", True) * mk_kpi_m_i1half("x1_1", "x1_2"),
+            vol**2 * mk_kpi_m_i1half("x2_1", "x2_2", True) * mk_kpi_m_i1half("x1_1", "x1_2"),
+            vol**2 * mk_kpi_0_i1half("x2_1", "x2_2", True) * mk_kpi_0_i3halves("x1_1", "x1_2"),
+            vol**2 * mk_kpi_m_i1half("x2_1", "x2_2", True) * mk_kpi_m1_i3halves("x1_1", "x1_2"),
+            vol**2 * mk_kpi_0_i3halves("x2_1", "x2_2", True) * mk_kpi_0_i3halves("x1_1", "x1_2"),
+            vol**2 * mk_k_0("x2_1", True) * mk_kpi_0_i1half("x1_1", "x1_2"),
+            vol**2 * mk_k_0("x2_1", True) * mk_kpi_0_i3halves("x1_1", "x1_2"),
+            vol**2 * mk_k_m("x2_1", True) * mk_kpi_m_i1half("x1_1", "x1_2"),
+            vol**2 * mk_k_m("x2_1", True) * mk_kpi_m1_i3halves("x1_1", "x1_2"),
+            vol**2 * mk_kpi_p_i3halves("x2_1", "x2_2", True) * mk_kpi_0_i3halves("x1_1", "x1_2"),
+            vol**2 * mk_kpi_m1_i3halves("x2_1", "x2_2", True) * mk_kpi_0_i3halves("x1_1", "x1_2"),
+            vol**2 * mk_kpi_m1_i3halves("x2_1", "x2_2", True) * mk_kpi_m1_i3halves("x1_1", "x1_2"),
+            vol**2 * mk_kpi_m2_i3halves("x2_1", "x2_2", True) * mk_kpi_0_i3halves("x1_1", "x1_2"),
+            vol**2 * mk_kpi_m2_i3halves("x2_1", "x2_2", True) * mk_kpi_m2_i3halves("x1_1", "x1_2"),
+            ]
+    cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
+    q.displayln_info(display_cexpr(cexpr))
+    cexpr.collect_op()
+    q.displayln_info(display_cexpr_raw(cexpr))
+    rng_state = q.RngState("seed")
+    def positions_dict_maker(idx):
+        rs = rng_state.split(str(idx))
+        t1_2 = 2
+        t2_1 = 5
+        t2_2 = 7
+        x1_1 = rs.c_rand_gen(total_site)
+        x1_2 = rs.c_rand_gen(total_site)
+        x2_1 = rs.c_rand_gen(total_site)
+        x2_2 = rs.c_rand_gen(total_site)
+        x1_2[3] = (x1_1[3] + t1_2) % total_site[3]
+        x2_1[3] = (x1_1[3] + t2_1) % total_site[3]
+        x2_2[3] = (x1_1[3] + t2_2) % total_site[3]
+        pd = {
+                "x1_1" : ("point", x1_1,),
+                "x1_2" : ("point", x1_2,),
+                "x2_1" : ("point", x2_1,),
+                "x2_2" : ("point", x2_2,),
+                }
+        lmom = [ 2 * math.pi / total_site[i] for i in range(3) ]
+        fac1 = sum([ 2 * cmath.rect(1.0, (x1_1[i] - x1_2[i]) * lmom[i]).real for i in range(3) ]) / np.sqrt(6)
+        fac2 = sum([ 2 * cmath.rect(1.0, (x2_1[i] - x2_2[i]) * lmom[i]).real for i in range(3) ]) / np.sqrt(6)
+        facs = [1.0, fac1, fac2, fac1 * fac2,]
+        return pd, facs
+    names_fac = ["rest-rest", "rest-moving", "moving-rest", "moving-moving",]
+    trial_indices = range(num_trials)
+    results_list = eval_cexpr_simulation(cexpr, positions_dict_maker = positions_dict_maker, trial_indices = trial_indices, get_prop = get_prop, is_only_total = "typed_total")
+    for name_fac, results in zip(names_fac, results_list):
+        q.displayln_info(f"{name_fac} :")
+        for k, v in results.items():
+            q.displayln_info(f"{name_fac} {k}:\n  {v}")
+
+@q.timer
 def auto_contractor_pipi_corr(job_tag, traj, get_prop, num_trials):
     total_site = ru.get_total_site(job_tag)
     vol = total_site[0] * total_site[1] * total_site[2]
@@ -610,6 +672,105 @@ def auto_contractor_kpipi_corr_81oprs(job_tag, traj, get_prop, num_trials):
             [ a, e, ] = v
             q.qtouch(fn, f"0 {a.real} {a.imag} {e.real} {e.imag}\n")
 
+@q.timer
+def auto_contractor_3f4f_matching(job_tag, traj, get_prop, num_trials):
+    total_site = ru.get_total_site(job_tag)
+    vol = total_site[0] * total_site[1] * total_site[2]
+    exprs_odd_ops = [
+            vol * mk_Q0_b81("x", "odd") + "Q0_b81(o)",
+            vol * mk_Q1_b81("x", "odd") + "Q1_b81(o)",
+            vol * mk_Q2_b81("x", "odd") + "Q2_b81(o)",
+            vol * mk_Q3_b81("x", "odd") + "Q3_b81(o)",
+            vol * mk_Q4_b81("x", "odd") + "Q4_b81(o)",
+            vol * mk_Q5_b81("x", "odd") + "Q5_b81(o)",
+            vol * mk_Q6_b81("x", "odd") + "Q6_b81(o)",
+            vol * mk_Q7_b81("x", "odd") + "Q7_b81(o)",
+            vol * mk_Q8_b81("x", "odd") + "Q8_b81(o)",
+            ]
+    exprs_even_ops = [
+            vol * mk_Q0_b81("x", "even") + "Q0_b81(e)",
+            vol * mk_Q1_b81("x", "even") + "Q1_b81(e)",
+            vol * mk_Q2_b81("x", "even") + "Q2_b81(e)",
+            vol * mk_Q3_b81("x", "even") + "Q3_b81(e)",
+            vol * mk_Q4_b81("x", "even") + "Q4_b81(e)",
+            vol * mk_Q5_b81("x", "even") + "Q5_b81(e)",
+            vol * mk_Q6_b81("x", "even") + "Q6_b81(e)",
+            vol * mk_Q7_b81("x", "even") + "Q7_b81(e)",
+            vol * mk_Q8_b81("x", "even") + "Q8_b81(e)",
+            ]
+    exprs_ops = exprs_odd_ops + exprs_even_ops
+    exprs_k = [
+            vol * mk_k_0("x2") + "K0",
+            #vol * mk_neutral_kpi_i1half("x2", "x2") + "Kpi_I3half",
+            #vol * mk_neutral_kpi_i3halves("x2", "x2") + "Kpi_I3halves",
+            ]
+    exprs_pipi = [
+            vol**2 * mk_pipi_i0("x1_1", "x1_2", True) + "pipi_I0",
+            vol * mk_sigma("x1_1", True) + "sigma_1",
+            vol * mk_pi_0("x1_1", True) + "pi0_1",
+            mk_expr(1) + "1",
+            ]
+    for expr_k in exprs_k:
+        for expr_pipi in exprs_pipi:
+            for expr_op in exprs_ops:
+                exprs.append(expr_pipi * expr_op * expr_k)
+    diagram_type_dict = dict()
+    cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True, diagram_type_dict = diagram_type_dict)
+    q.displayln_info(display_cexpr(cexpr))
+    cexpr.collect_op()
+    q.displayln_info(display_cexpr_raw(cexpr))
+    rng_state = q.RngState("seed")
+    def positions_dict_maker(idx):
+        rs = rng_state.split(str(idx))
+        t1_1 = 5
+        t1_2 = 7
+        t = 3
+        x1_1 = rs.c_rand_gen(total_site)
+        x1_2 = rs.c_rand_gen(total_site)
+        x = rs.c_rand_gen(total_site)
+        x2 = rs.c_rand_gen(total_site)
+        x1_1[3] = (x2[3] + t1_1) % total_site[3]
+        x1_2[3] = (x2[3] + t1_2) % total_site[3]
+        x[3] = (x2[3] + t) % total_site[3]
+        pd = {
+                "x1_1" : ("point", x1_1,),
+                "x1_2" : ("point", x1_2,),
+                "x" : ("point", x,),
+                "x2" : ("point", x2,),
+                }
+        lmom = [ 2 * math.pi / total_site[i] for i in range(3) ]
+        fac1 = sum([ 2 * cmath.rect(1.0, (x1_1[i] - x1_2[i]) * lmom[i]).real for i in range(3) ]) / np.sqrt(6)
+        facs = [1.0, fac1]
+        return pd, facs
+    names_fac = [ "rest", "moving", ]
+    trial_indices = range(num_trials)
+    results_list = eval_cexpr_simulation(cexpr, positions_dict_maker = positions_dict_maker, trial_indices = trial_indices, get_prop = get_prop, is_only_total = "typed_total")
+    q.qmkdir_info("analysis")
+    q.qremove_all_info("analysis/3f4f_b81")
+    q.qmkdir_info("analysis/3f4f_b81")
+    def mk_fn(info):
+        def f(c):
+            if c in "()<>/* ":
+                return "_"
+            else:
+                return c
+        info = "".join(map(f, info))
+        while True:
+            fn = info.replace("__", "_")
+            if fn == info:
+                break
+            info = fn
+        if fn[-1] == "_":
+            fn = fn[:-1]
+        return fn
+    for name_fac, results in zip(names_fac, results_list):
+        q.displayln_info(f"{name_fac} :")
+        for k, v in results.items():
+            q.displayln_info(f"{name_fac} {k}:\n  {v}")
+            fn = "analysis/3f4f_b81/" + mk_fn(f"{name_fac} {k}") + ".txt"
+            [ a, e, ] = v
+            q.qtouch(fn, f"0 {a.real} {a.imag} {e.real} {e.imag}\n")
+
 @q.timer_verbose
 def run_gf(job_tag, traj):
     path_gf = get_load_path(f"configs/{job_tag}/ckpoint_lat.{traj}")
@@ -768,10 +929,12 @@ def run_job(job_tag, traj):
     if get_prop is not None:
         # auto_contractor_simple_test(job_tag, traj)
         num_trials = 100
-        auto_contractor_meson_corr(job_tag, traj, get_prop, num_trials)
-        auto_contractor_pipi_corr(job_tag, traj, get_prop, num_trials)
-        auto_contractor_kpipi_corr(job_tag, traj, get_prop, num_trials)
+        auto_contractor_test_corr(job_tag, traj, get_prop, num_trials)
+#        auto_contractor_meson_corr(job_tag, traj, get_prop, num_trials)
+#        auto_contractor_pipi_corr(job_tag, traj, get_prop, num_trials)
+#        auto_contractor_kpipi_corr(job_tag, traj, get_prop, num_trials)
         auto_contractor_kpipi_corr_81oprs(job_tag, traj, get_prop, num_trials)
+#        auto_contractor_3f4f_matching(job_tag, traj, get_prop, num_trials)
     #
     q.clean_cache()
 
