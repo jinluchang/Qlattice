@@ -762,7 +762,15 @@ def auto_contractor_3f4f_matching(job_tag, traj, get_prop, num_trials):
     for name_fac, results in zip(names_fac, results_list):
         q.displayln_info(f"{name_fac} :")
         for k, v in results.items():
-            q.displayln_info(f"{name_fac} {k}:\n  {v}")
+            if v[1].real == 0:
+                ratio_real = None
+            else:
+                ratio_real = v[0].real / v[1].real
+            if v[1].imag == 0:
+                ratio_imag = None
+            else:
+                ratio_imag = v[0].imag / v[1].imag
+            q.displayln_info(f"{name_fac} {k}:\n  {v}, ({ratio_real}, {ratio_imag})")
             fn = "analysis/3f4f_b81/" + mk_fn(f"{name_fac} {k}") + ".txt"
             [ a, e, ] = v
             q.qtouch(fn, f"0 {a.real} {a.imag} {e.real} {e.imag}\n")
@@ -925,7 +933,7 @@ def run_job(job_tag, traj):
     if get_prop is not None:
         # auto_contractor_simple_test(job_tag, traj)
         num_trials = 100
-        auto_contractor_test_corr(job_tag, traj, get_prop, num_trials)
+#        auto_contractor_test_corr(job_tag, traj, get_prop, num_trials)
 #        auto_contractor_meson_corr(job_tag, traj, get_prop, num_trials)
 #        auto_contractor_pipi_corr(job_tag, traj, get_prop, num_trials)
 #        auto_contractor_kpipi_corr(job_tag, traj, get_prop, num_trials)
