@@ -706,7 +706,7 @@ def auto_contractor_3f4f_matching(job_tag, traj, get_prop, num_trials):
             ]
     exprs_pipi = [
             vol**2 * mk_pipi_i0("t1_1", "t1_2", True) + "pipi_I0",
-            vol * mk_sigma("t_1", True) + "sigma_1",
+            vol * mk_sigma("t1_1", True) + "sigma_1",
             vol * mk_pi_0("t1_1", True) + "pi0_1",
             mk_expr(1) + "1",
             ]
