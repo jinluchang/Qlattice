@@ -37,8 +37,20 @@ def get_spin_matrix(op):
     assert op.tag in [0, 1, 2, 3, 5]
     return g.gamma[op.tag]
 
-def ascontiguoustensor(tensor):
-    return g.tensor(np.ascontiguousarray(tensor.array), tensor.otype)
+def ascontiguoustensor(x):
+    # isinstance(x, g.core.tensor)
+    return g.tensor(np.ascontiguousarray(x.array), x.otype)
+
+def as_mspincolor(x):
+    if isinstance(x, g.core.tensor):
+        return ascontiguoustensor(x)
+    else:
+        return g.tensor(np.ascontiguousarray(np.array(x)), g.ot_matrix_spin_color(4, 3))
+
+def adj_msc(x):
+    # isinstance(x, g.core.tensor)
+    x = g.adj(x)
+    return ascontiguoustensor(x)
 
 def eval_op_term_expr(expr, variable_dict, positions_dict, get_prop):
     def l_eval(x):

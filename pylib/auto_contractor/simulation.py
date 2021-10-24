@@ -184,10 +184,6 @@ def load_prop_wsrc_all(job_tag, traj, flavor : str, path_s : str, path_sp : str,
         cache[f"tslice={tslice} ; wsnk"] = sp_prop_msc
     sfr.close()
 
-def adj_msc(x):
-    x = g.adj(x)
-    return g.tensor(np.ascontiguousarray(x.array), x.otype)
-
 @q.timer
 def get_prop_psrc(prop_cache, flavor : str, xg_src):
     # prop_cache[flavor][src_p] = prop
@@ -205,12 +201,6 @@ def get_prop_wsnk_wsrc(prop_cache, flavor : str, t_snk, t_src):
     # prop_cache[flavor][src_p] = prop
     # call load_prop_wsrc_all(flavor, path_s) first
     return prop_cache[flavor][f"tslice={t_src} ; wsnk"].get_elem(t_snk)
-
-def as_mspincolor(x):
-    if isinstance(x, g.core.tensor):
-        return x
-    else:
-        return g.tensor(np.ascontiguousarray(np.array(x)), g.ot_matrix_spin_color(4, 3))
 
 @q.timer
 def get_prop_psnk_psrc(prop_cache, flavor : str, p_snk, p_src):
