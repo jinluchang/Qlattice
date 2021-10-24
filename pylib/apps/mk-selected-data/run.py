@@ -159,7 +159,7 @@ def save_wall_src_info(wi, path):
     if 0 != q.get_id_node():
         return None
     lines = [ " ".join([ f"{v:5d}" for v in l ]) for l in wi ]
-    content = "\n".join(lines + [""])
+    content = "\n".join(lines + [ "" ])
     q.qtouch(get_save_path(path), content)
 
 @q.timer
@@ -238,6 +238,8 @@ def compute_prop_wsrc_all(gf, gt, wi, job_tag, inv_type, *,
                         finished_tags = finished_tags)
         q.clean_cache(q.cache_inv)
     sfw.close()
+    q.qtouch_info(get_save_path(os.path.join(path_sp, "checkpoint.txt")))
+    q.qtouch_info(get_save_path(os.path.join(path_sp, "checkpoint ; wsnk.txt")))
     q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
 
 @q.timer
@@ -299,6 +301,7 @@ def compute_prop_psrc_all(gf, gt, pi, job_tag, inv_type, *,
     if sfw_hvp is not None:
         sfw_hvp.close()
     sfw.close()
+    q.qtouch_info(get_save_path(os.path.join(path_sp, "checkpoint.txt")))
     q.qrename_info(get_save_path(path_hvp + ".acc"), get_save_path(path_hvp))
     q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
 

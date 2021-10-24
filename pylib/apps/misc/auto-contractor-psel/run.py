@@ -1,0 +1,199 @@
+#!/usr/bin/env python3
+
+# Need --mpi X.X.X.X --mpi X.X.X runtime option
+
+import qlat as q
+import gpt as g
+import qlat_gpt as qg
+import rbc_ukqcd as ru
+import rbc_ukqcd_params as rup
+import pprint
+
+import os
+
+import jobs
+from jobs import *
+
+jobs.save_path_default = "results"
+
+jobs.load_path_list = [
+        "results",
+        "../mk-gf-gt/results",
+        "../mk-selected-data/results",
+        "../mk-psel-self-loop/results",
+        "/sdcc/u/jluchang/qcdqedta/hlbl-data-with-cache",
+        ]
+
+@q.timer_verbose
+def check_job(job_tag, traj):
+    # return True if config is finished or unavailable
+    fns_produce = [
+            f"results/auto-contractor-psel/{job_tag}/traj={traj}",
+            ]
+    is_job_done = True
+    for fn in fns_produce:
+        if get_load_path(fn) is None:
+            q.displayln_info(f"check_job: {job_tag} {traj} to do as some file does not exist.")
+            is_job_done = False
+            break
+    if is_job_done:
+        return True
+    #
+    fns_need = [
+            f"configs/{job_tag}/ckpoint_lat.{traj}",
+            f"point-selection/{job_tag}/traj={traj}.txt",
+            f"gauge-transform/{job_tag}/traj={traj}.field",
+            f"psel-prop-rand-u1/{job_tag}/traj={traj}/checkpoint ; type=1.txt",
+            f"psel-prop-rand-u1/{job_tag}/traj={traj}/checkpoint ; type=2.txt",
+            f"psel-prop-wsrc-light/{job_tag}/traj={traj}/checkpoint.txt",
+            f"psel-prop-wsrc-light/{job_tag}/traj={traj}/checkpoint ; wsnk.txt",
+            f"psel-prop-wsrc-strange/{job_tag}/traj={traj}/checkpoint.txt",
+            f"psel-prop-wsrc-strange/{job_tag}/traj={traj}/checkpoint ; wsnk.txt",
+            f"psel-prop-psrc-light/{job_tag}/traj={traj}/checkpoint.txt",
+            f"psel-prop-psrc-strange/{job_tag}/traj={traj}/checkpoint.txt",
+            f"wall-src-info-light/{job_tag}/traj={traj}.txt",
+            f"wall-src-info-strange/{job_tag}/traj={traj}.txt",
+            f"point-src-info/{job_tag}/traj={traj}.txt",
+            ]
+    for fn in fns_need:
+        if get_load_path(fn) is None:
+            q.displayln_info(f"check_job: {job_tag} {traj} unavailable as {fn} does not exist.")
+            return True
+    #
+    q.check_stop()
+    q.check_time_limit()
+    #
+    return False
+
+@q.timer
+def load_prop_wsrc_all(job_tag, traj, flavor, wi, psel, gt):
+    cache = q.mk_cache(f"prop_cache", "{job_tag}", "{traj}")
+    total_site = ru.get_total_site(job_tag)
+    psel_ts = q.get_psel_tslice(total_site)
+    if flavor in ["l", "u", "d",]:
+        flavor_inv_type = 0
+        flavor_tag = "light"
+    elif flavor in ["s",]:
+        flavor_inv_type = 1
+        flavor_tag = "strange"
+    else:
+        assert False
+    path_sp = f"psel-prop-wsrc-{flavor_tag}/{job_tag}/traj={traj}"
+    gt_inv = gt.inv()
+    for idx, tslice, inv_type, inv_acc in wi:
+        if inv_type != flavor_inv_type:
+            continue
+        q.displayln_info(f"load_prop_wsrc_all: idx={idx} tslice={tslice} inv_type={inv_type} path_sp={path_sp}")
+        tag = f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc}"
+        # load psel psnk prop
+        fn_sp = os.path.join(path_sp, f"{tag}.lat")
+        sp_prop = q.PselProp(psel)
+        sp_prop.load(get_load_path(fn_sp))
+        sp_prop = gt_inv * sp_prop
+        # convert to GPT/Grid prop mspincolor order
+        cache[f"{tag} ; psel"] = q.convert_mspincolor_from_wm(sp_prop)
+        # load wsnk prop
+        fn_spw = os.path.join(path_sp, f"{tag} ; wsnk.lat")
+        spw_prop = q.PselProp(psel_ts)
+        spw_prop.load(get_load_path(fn_spw))
+        # convert to GPT/Grid prop mspincolor order
+        cache[f"{tag} ; psel ; wsnk"] = q.convert_mspincolor_from_wm(spw_prop)
+
+@q.timer
+def load_prop_psrc_all(job_tag, traj, flavor, pi, psel):
+    cache = q.mk_cache(f"prop_cache", "{job_tag}", "{traj}")
+    total_site = ru.get_total_site(job_tag)
+    psel_ts = q.get_psel_tslice(total_site)
+    if flavor in ["l", "u", "d",]:
+        flavor_inv_type = 0
+        flavor_tag = "light"
+    elif flavor in ["s",]:
+        flavor_inv_type = 1
+        flavor_tag = "strange"
+    else:
+        assert False
+    path_sp = f"psel-prop-psrc-{flavor_tag}/{job_tag}/traj={traj}"
+    for idx, xg, inv_type, inv_acc in pi:
+        if inv_type != flavor_inv_type:
+            continue
+        q.displayln_info(f"load_prop_psrc_all: idx={idx} xg={xg} inv_type={inv_type} path_sp={path_sp}")
+        tag = f"xg=({xg[0]},{xg[1]},{xg[2]},{xg[3]}) ; type={inv_type} ; accuracy={inv_acc}"
+        # load psel psnk prop
+        fn_sp = os.path.join(path_sp, f"{tag}.lat")
+        sp_prop = q.PselProp(psel)
+        sp_prop.load(get_load_path(fn_sp))
+        # convert to GPT/Grid prop mspincolor order
+        cache[f"{tag} ; psel"] = q.convert_mspincolor_from_wm(sp_prop)
+
+@q.timer_verbose
+def mk_get_prop(job_tag, traj, get_gt, get_psel, get_pi, get_wi):
+    load_prop_psrc_all(job_tag, traj, "l", get_pi(), get_psel())
+    load_prop_psrc_all(job_tag, traj, "s", get_pi(), get_psel())
+    load_prop_wsrc_all(job_tag, traj, "l", get_wi(), get_psel(), get_gt())
+    load_prop_wsrc_all(job_tag, traj, "s", get_wi(), get_psel(), get_gt())
+    return None
+
+@q.timer_verbose
+def run_job(job_tag, traj):
+    if check_job(job_tag, traj):
+        return
+    #
+    traj_gf = traj
+    if job_tag[:5] == "test-":
+        # ADJUST ME
+        traj_gf = 1000
+        #
+    #
+    get_gf = run_gf(job_tag, traj_gf)
+    get_gt = run_gt(job_tag, traj_gf, get_gf)
+    #
+    get_psel = run_psel(job_tag, traj)
+    get_pi = run_pi(job_tag, traj, get_psel)
+    get_wi = run_wi(job_tag, traj)
+    #
+    get_prop = mk_get_prop(job_tag, traj, get_gt, get_psel, get_pi, get_wi)
+    #
+    q.clean_cache()
+    q.timer_display()
+
+rup.dict_params["test-4nt8"]["n_rand_u1"] = 4
+rup.dict_params["test-4nt16"]["n_rand_u1"] = 4
+rup.dict_params["48I"]["n_rand_u1"] = 4
+rup.dict_params["64I"]["n_rand_u1"] = 4
+
+rup.dict_params["test-4nt8"]["trajs"] = list(range(1000, 1400, 100))
+rup.dict_params["test-4nt16"]["trajs"] = list(range(1000, 1400, 100))
+rup.dict_params["48I"]["trajs"] = list(range(3000, 500, -5))
+rup.dict_params["64I"]["trajs"] = list(range(3000, 500, -5))
+
+# rup.dict_params["test-4nt8"]["fermion_params"][0][2]["Ls"] = 10
+# rup.dict_params["test-4nt8"]["fermion_params"][1][2]["Ls"] = 10
+
+# rup.dict_params["test-4nt16"]["fermion_params"][0][2]["Ls"] = 10
+# rup.dict_params["test-4nt16"]["fermion_params"][1][2]["Ls"] = 10
+
+qg.begin_with_gpt()
+
+# ADJUST ME
+job_tags = [
+        "test-4nt8",
+        "test-4nt16",
+        # "test-8nt16",
+        # "test-16nt32",
+        # "test-32nt64",
+        # "test-48nt96",
+        # "test-64nt128",
+        # "test-96nt192",
+        # "test-128nt256",
+        # "24D",
+        # "48I",
+        ]
+
+q.check_time_limit()
+
+for job_tag in job_tags:
+    q.displayln_info(pprint.pformat(rup.dict_params[job_tag]))
+    for traj in rup.dict_params[job_tag]["trajs"]:
+        run_job(job_tag, traj)
+
+qg.end_with_gpt()
