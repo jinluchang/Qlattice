@@ -213,47 +213,41 @@ def mk_kpi_0_i1half(p1 : str, p2: str, is_dagger = False, *, is_sym = False):# s
     if is_sym:
         return 1 / sympy.sqrt(2) * (mk_kpi_0_i1half(p1, p2, is_dagger) + mk_kpi_0_i1half(p2, p1, is_dagger)) + f"Kpi_0_I1half({p1},{p2},sym){show_dagger(is_dagger)}"
     else:
-        return simplified( sympy.simplify(1)/sympy.sqrt(2)* mk_k_0(p1, is_dagger) * mk_pi_0(p2, is_dagger)
-                           - sympy.simplify(1)/sympy.sqrt(2)* mk_k_m(p1, is_dagger) * mk_pi_p(p2, is_dagger) ) + f"Kpi_0_I1half({p1},{p2}){show_dagger(is_dagger)}"
-#        return simplified( sympy.simplify(1)/sympy.sqrt(3)* mk_k_0(p1, is_dagger) * mk_pi_0(p2, is_dagger)
-#                           - sympy.sqrt(2)/sympy.sqrt(3)* mk_k_m(p1, is_dagger) * mk_pi_p(p2, is_dagger) ) + f"Kpi_0_I1half({p1},{p2}){show_dagger(is_dagger)}"
+        return simplified( sympy.simplify(1)/sympy.sqrt(3)* mk_k_0(p1, is_dagger) * mk_pi_0(p2, is_dagger)
+                           + sympy.sqrt(2)/sympy.sqrt(3)* mk_k_p(p1, is_dagger) * mk_pi_m(p2, is_dagger) ) + f"Kpi_0_I1half({p1},{p2}){show_dagger(is_dagger)}"
 
-def mk_kpi_m_i1half(p1 : str, p2: str, is_dagger = False, *, is_sym = False):# strangeness = +1
-    if is_sym:
-        return 1 / sympy.sqrt(2) * (mk_kpi_m_i1half(p1, p2, is_dagger) + mk_kpi_m_i1half(p2, p1, is_dagger)) + f"Kpi_-_I1half({p1},{p2},sym){show_dagger(is_dagger)}"
-    else:
-        return simplified( sympy.simplify(1)/sympy.sqrt(2)* mk_k_0(p1, is_dagger) * mk_pi_m(p2, is_dagger)
-                           - sympy.simplify(1)/sympy.sqrt(2)* mk_k_m(p1, is_dagger) * mk_pi_0(p2, is_dagger) ) + f"Kpi_-_I1half({p1},{p2}){show_dagger(is_dagger)}"
+#def mk_kpi_m_i1half(p1 : str, p2: str, is_dagger = False, *, is_sym = False):# strangeness = +1
+#    if is_sym:
+#        return 1 / sympy.sqrt(2) * (mk_kpi_m_i1half(p1, p2, is_dagger) + mk_kpi_m_i1half(p2, p1, is_dagger)) + f"Kpi_-_I1half({p1},{p2},sym){show_dagger(is_dagger)}"
+#    else:
 #        return simplified( sympy.sqrt(2)/sympy.sqrt(3)* mk_k_0(p1, is_dagger) * mk_pi_m(p2, is_dagger)
 #                           - sympy.simplify(1)/sympy.sqrt(3)* mk_k_m(p1, is_dagger) * mk_pi_0(p2, is_dagger) ) + f"Kpi_-_I1half({p1},{p2}){show_dagger(is_dagger)}"
 
-def mk_kpi_p_i3halves(p1 : str, p2: str, is_dagger = False, *, is_sym = False):# strangeness = +1
+def mk_kpi_m_i3halves(p1 : str, p2: str, is_dagger = False, *, is_sym = False):# strangeness = +1
     if is_sym:
-        return 1 / sympy.sqrt(2) * ( mk_kpi_p_i3halves(p1, p2, is_dagger) + mk_kpi_p_i3halves(p2, p1, is_dagger) ) + f"Kpi_+_I3halves({p1},{p2},sym){show_dagger(is_dagger)}"
+        return 1 / sympy.sqrt(2) * ( mk_kpi_m_i3halves(p1, p2, is_dagger) + mk_kpi_m_i3halves(p2, p1, is_dagger) ) + f"Kpi_+_I3halves({p1},{p2},sym){show_dagger(is_dagger)}"
     else:
-        return mk_k_0(p1, is_dagger) * mk_pi_p(p2, is_dagger) + f"Kpi_+_I3halves({p1},{p2}){show_dagger(is_dagger)}"
+        return mk_k_0(p1, is_dagger) * mk_pi_m(p2, is_dagger) + f"Kpi_-_I3halves({p1},{p2}){show_dagger(is_dagger)}"
 
 def mk_kpi_0_i3halves(p1 : str, p2: str, is_dagger = False, *, is_sym = False):# strangeness = +1
     if is_sym:
         return 1 / sympy.sqrt(2) * (mk_kpi_0_i3halves(p1, p2, is_dagger) + mk_kpi_0_i3halves(p2, p1, is_dagger)) + f"Kpi_0_I3halves({p1},{p2},sym){show_dagger(is_dagger)}"
     else:
-        return simplified( sympy.simplify(1)/sympy.sqrt(2)* mk_k_0(p1, is_dagger) * mk_pi_0(p2, is_dagger)
-                           + sympy.simplify(1)/sympy.sqrt(2)* mk_k_m(p1, is_dagger) * mk_pi_p(p2, is_dagger) ) + f"Kpi_0_I3halves({p1},{p2}){show_dagger(is_dagger)}"
-#        return simplified( sympy.sqrt(2)/sympy.sqrt(3)* mk_k_0(p1, is_dagger) * mk_pi_0(p2, is_dagger)
-#                           + sympy.simplify(1)/sympy.sqrt(3)* mk_k_m(p1, is_dagger) * mk_pi_p(p2, is_dagger) ) + f"Kpi_0_I3halves({p1},{p2}){show_dagger(is_dagger)}"
+        return simplified( sympy.sqrt(2)/sympy.sqrt(3)* mk_k_0(p1, is_dagger) * mk_pi_0(p2, is_dagger)
+                           - sympy.simplify(1)/sympy.sqrt(3)* mk_k_p(p1, is_dagger) * mk_pi_m(p2, is_dagger) ) + f"Kpi_0_I3halves({p1},{p2}){show_dagger(is_dagger)}"
 
-def mk_kpi_m1_i3halves(p1 : str, p2: str, is_dagger = False, *, is_sym = False):# strangeness = +1
-    if is_sym:
-        return 1 / sympy.sqrt(2) * (mk_kpi_m1_i3halves(p1, p2, is_dagger) + mk_kpi_m1_i3halves(p2, p1, is_dagger)) + f"Kpi_-_I3halves({p1},{p2},sym){show_dagger(is_dagger)}"
-    else:
-        return simplified( sympy.simplify(1)/sympy.sqrt(3)* mk_k_0(p1, is_dagger) * mk_pi_m(p2, is_dagger)
-                           + sympy.sqrt(2)/sympy.sqrt(3)* mk_k_m(p1, is_dagger) * mk_pi_0(p2, is_dagger) ) + f"Kpi_-_I3halves({p1},{p2}){show_dagger(is_dagger)}"
+#def mk_kpi_p1_i3halves(p1 : str, p2: str, is_dagger = False, *, is_sym = False):# strangeness = +1
+#    if is_sym:
+#        return 1 / sympy.sqrt(2) * (mk_kpi_p1_i3halves(p1, p2, is_dagger) + mk_kpi_p1_i3halves(p2, p1, is_dagger)) + f"Kpi_-_I3halves({p1},{p2},sym){show_dagger(is_dagger)}"
+#    else:
+#        return simplified( sympy.simplify(1)/sympy.sqrt(3)* mk_k_0(p1, is_dagger) * mk_pi_m(p2, is_dagger)
+#                           + sympy.sqrt(2)/sympy.sqrt(3)* mk_k_m(p1, is_dagger) * mk_pi_0(p2, is_dagger) ) + f"Kpi_-_I3halves({p1},{p2}){show_dagger(is_dagger)}"
 
-def mk_kpi_m2_i3halves(p1 : str, p2: str, is_dagger = False, *, is_sym = False):# strangeness = +1
-    if is_sym:
-        return 1 / sympy.sqrt(2) * (mk_kpi_m2_i3halves(p1, p2, is_dagger) + mk_kpi_m2_i3halves(p2, p1, is_dagger)) + f"Kpi_--_I3halves({p1},{p2},sym){show_dagger(is_dagger)}"
-    else:
-        return mk_k_0(p1, is_dagger) * mk_pi_p(p2, is_dagger) + f"Kpi_--_I3halves({p1},{p2}){show_dagger(is_dagger)}"
+#def mk_kpi_p2_i3halves(p1 : str, p2: str, is_dagger = False, *, is_sym = False):# strangeness = +1
+#    if is_sym:
+#        return 1 / sympy.sqrt(2) * (mk_kpi_p2_i3halves(p1, p2, is_dagger) + mk_kpi_p2_i3halves(p2, p1, is_dagger)) + f"Kpi_--_I3halves({p1},{p2},sym){show_dagger(is_dagger)}"
+#    else:
+#        return mk_k_0(p1, is_dagger) * mk_pi_p(p2, is_dagger) + f"Kpi_--_I3halves({p1},{p2}){show_dagger(is_dagger)}"
 
 def mk_sigma(p : str, is_dagger = False):
     s = new_spin_index()
@@ -845,6 +839,10 @@ if __name__ == "__main__":
     print()
     test_kk_sym()
     #
+    print()
+    print("< KpiI3/2_Iz1/2(x2_1,x2_2)^dag KpiI1/2_Iz1/2(x1_1,x1_2) >:")
+    expr = mk_kpi_0_i3halves("x2_1", "x2_2", True) * mk_kpi_0_i1half("x1_1", "x1_2")
+    print(display_cexpr(contract_simplify_compile(expr)))
     print()
     test()
 
