@@ -11,6 +11,9 @@ import pprint
 
 import os
 
+from auto_contractor.eval import *
+from auto_contractor.operators import *
+
 import jobs
 from jobs import *
 
@@ -125,13 +128,247 @@ def load_prop_psrc_all(job_tag, traj, flavor, pi, psel):
         # convert to GPT/Grid prop mspincolor order
         cache[f"{tag} ; psel"] = q.convert_mspincolor_from_wm(sp_prop)
 
+@q.timer
+def get_prop_psrc_psel(prop_cache, inv_type, xg_src):
+    inv_acc = 0
+    xg = xg_src
+    tag = f"xg=({xg[0]},{xg[1]},{xg[2]},{xg[3]}) ; type={inv_type} ; accuracy={inv_acc}"
+    return prop_cache.get(f"{tag} ; psel")
+
+@q.timer
+def get_prop_wsrc_psel(prop_cache, inv_type, t_src):
+    inv_acc = 1
+    tslice = t_src
+    tag = f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc}"
+    return prop_cache.get(f"{tag} ; psel")
+
+@q.timer
+def get_prop_wsnk_wsrc(prop_cache, inv_type, t_snk, t_src):
+    inv_acc = 1
+    tslice = t_src
+    tag = f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc}"
+    return prop_cache[f"{tag} ; psel ; wsnk"].get_elem(t_snk)
+
+@q.timer
+def get_prop_snk_src(prop_cache, flavor, p_snk, p_src, *, psel_pos_dict):
+    # psel_pos_dict[x] == idx
+    # x == tuple(pos)
+    # psel.to_list()[idx] == pos
+    if flavor in [ "l", "u", "d", ]:
+        flavor_inv_type = 0
+    elif flavor in [ "s", ]:
+        flavor_inv_type = 1
+    else:
+        assert False
+    assert isinstance(p_snk, tuple) and isinstance(p_src, tuple)
+    assert 2 == len(p_snk)
+    assert 2 == len(p_src)
+    type_snk, pos_snk = p_snk
+    type_src, pos_src = p_src
+    if type_snk == "wall" and type_src == "wall":
+        msc = get_prop_wsnk_wsrc(
+                prop_cache, flavor_inv_type, pos_snk, pos_src)
+    elif type_snk == "point" and type_src == "wall":
+        pos_snk_tuple = tuple(pos_snk)
+        assert pos_snk_tuple in psel_pos_dict
+        msc = get_prop_wsrc_psel(
+                prop_cache, flavor_inv_type, pos_src
+                ).get_elem(psel_pos_dict[pos_snk_tuple])
+    elif type_snk == "wall" and type_src == "point":
+        pos_src_tuple = tuple(pos_src)
+        assert pos_src_tuple in psel_pos_dict
+        msc = g5_herm(
+                get_prop_wsrc_psel(
+                    prop_cache, flavor_inv_type, pos_snk
+                    ).get_elem(psel_pos_dict[pos_src_tuple]))
+    elif type_snk == "point" and type_src == "point":
+        pos_snk_tuple = tuple(pos_snk)
+        pos_src_tuple = tuple(pos_src)
+        assert pos_snk_tuple in psel_pos_dict
+        assert pos_src_tuple in psel_pos_dict
+        sp_prop = get_prop_psrc_psel(prop_cache, flavor_inv_type, pos_src)
+        if sp_prop is not None:
+            msc = sp_prop.get_elem(psel_pos_dict[pos_snk_tuple])
+        else:
+            sp_prop = get_prop_psrc_psel(prop_cache, flavor_inv_type, pos_snk)
+            msc = g5_herm(sp_prop.get_elem(psel_pos_dict[pos_src_tuple]))
+    else:
+        raise Exception("get_prop_snk_src unknown p_snk={p_snk} p_src={p_src}")
+    return as_mspincolor(msc)
+
 @q.timer_verbose
 def mk_get_prop(job_tag, traj, get_gt, get_psel, get_pi, get_wi):
     load_prop_psrc_all(job_tag, traj, "l", get_pi(), get_psel())
     load_prop_psrc_all(job_tag, traj, "s", get_pi(), get_psel())
     load_prop_wsrc_all(job_tag, traj, "l", get_wi(), get_psel(), get_gt())
     load_prop_wsrc_all(job_tag, traj, "s", get_wi(), get_psel(), get_gt())
-    return None
+    prop_cache = q.mk_cache(f"prop_cache", "{job_tag}", "{traj}")
+    psel_pos_dict = dict([ (tuple(pos), i) for i, pos in enumerate(get_psel().to_list()) ])
+    def get_prop(flavor, p_snk, p_src):
+        return get_prop_snk_src(prop_cache, flavor, p_snk, p_src, psel_pos_dict = psel_pos_dict)
+    return get_prop
+
+@q.timer
+def get_strange_psrc_psel(pi):
+    coordinate_list = []
+    for idx, xg, inv_type, inv_acc in pi:
+        if inv_type == 1 and inv_acc == 0:
+            coordinate_list.append(xg)
+    return q.PointSelection(coordinate_list)
+
+def rel_mod(x, size):
+    x = (x + 2 * size) % size
+    assert x >= 0
+    if 2 * x >= size:
+        return x - size
+    else:
+        return -x
+
+@q.timer_verbose
+def auto_contractor_meson_corr_wsrc_wsnk(job_tag, traj, get_prop, get_psel, get_pi, get_wi):
+    total_site = ru.get_total_site(job_tag)
+    vol = total_site[0] * total_site[1] * total_site[2]
+    exprs = [
+            mk_pi_p("t2", True) * mk_pi_p("t1"),
+            mk_k_p("t2", True) * mk_k_p("t1"),
+            ]
+    cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
+    q.displayln_info(display_cexpr(cexpr))
+    cexpr.collect_op()
+    q.displayln_info(display_cexpr_raw(cexpr))
+    names_fac = [ "rest", ]
+    ld = q.mk_lat_data([
+        [ "tsep", total_site[3] // 2 + 1, ],
+        [ "name_fac", len(names_fac), names_fac, ],
+        [ "expr_name", len(exprs), get_cexpr_names(cexpr), ],
+        [ "val-err-n", 3, [ "val", "err", "n-trails", ] ],
+        ])
+    for tsep in range(total_site[3] // 2 + 1):
+        trial_indices = []
+        for t1 in range(total_site[3]):
+            t2 = (t1 + tsep) % total_site[3]
+            pd = {
+                    "t1" : ("wall", t1,),
+                    "t2" : ("wall", t2,),
+                    }
+            trial_indices.append(pd)
+            t2 = (t1 + total_site[3] - tsep) % total_site[3]
+            pd = {
+                    "t1" : ("wall", t1,),
+                    "t2" : ("wall", t2,),
+                    }
+            trial_indices.append(pd)
+        if len(trial_indices) == 0:
+            continue
+        def positions_dict_maker(idx):
+            pd = idx
+            facs = [ 1.0, ]
+            return pd, facs
+        results_list = eval_cexpr_simulation(
+                cexpr,
+                positions_dict_maker = positions_dict_maker,
+                trial_indices = trial_indices,
+                get_prop = get_prop,
+                is_only_total = "total"
+                )
+        for idx_name_fac, (name_fac, results,) in enumerate(zip(names_fac, results_list)):
+            for i_k, (k, v,) in enumerate(results.items()):
+                ld[(tsep, idx_name_fac, i_k,)] = v + [ complex(len(trial_indices)), ]
+    q.displayln_info(ld.show())
+
+@q.timer_verbose
+def auto_contractor_meson_corr_wsrc_psnk(job_tag, traj, get_prop, get_psel, get_pi, get_wi):
+    total_site = ru.get_total_site(job_tag)
+    vol = total_site[0] * total_site[1] * total_site[2]
+    exprs = [
+            vol * mk_pi_p("x2", True) * mk_pi_p("t1"),
+            vol * mk_k_p("x2", True) * mk_k_p("t1"),
+            ]
+    cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
+    q.displayln_info(display_cexpr(cexpr))
+    cexpr.collect_op()
+    q.displayln_info(display_cexpr_raw(cexpr))
+    names_fac = [ "rest", ]
+    ld = q.mk_lat_data([
+        [ "tsep", total_site[3] // 2 + 1, ],
+        [ "name_fac", len(names_fac), names_fac, ],
+        [ "expr_name", len(exprs), get_cexpr_names(cexpr), ],
+        [ "val-err-n", 3, [ "val", "err", "n-trails", ] ],
+        ])
+    for tsep in range(total_site[3] // 2 + 1):
+        trial_indices = []
+        for t1 in range(total_site[3]):
+            for x2 in get_psel().to_list():
+                if tsep == abs(rel_mod(x2[3] - t1, total_site[3])):
+                    pd = {
+                            "t1" : ("wall", t1,),
+                            "x2" : ("point", x2,),
+                            }
+                    trial_indices.append(pd)
+        if len(trial_indices) == 0:
+            continue
+        def positions_dict_maker(idx):
+            pd = idx
+            facs = [ 1.0, ]
+            return pd, facs
+        results_list = eval_cexpr_simulation(
+                cexpr,
+                positions_dict_maker = positions_dict_maker,
+                trial_indices = trial_indices,
+                get_prop = get_prop,
+                is_only_total = "total"
+                )
+        for idx_name_fac, (name_fac, results,) in enumerate(zip(names_fac, results_list)):
+            for i_k, (k, v,) in enumerate(results.items()):
+                ld[(tsep, idx_name_fac, i_k,)] = v + [ complex(len(trial_indices)), ]
+    q.displayln_info(ld.show())
+
+@q.timer_verbose
+def auto_contractor_meson_corr_psrc_psnk(job_tag, traj, get_prop, get_psel, get_pi, get_wi):
+    total_site = ru.get_total_site(job_tag)
+    vol = total_site[0] * total_site[1] * total_site[2]
+    exprs = [
+            vol**2 * mk_pi_p("x2", True) * mk_pi_p("x1"),
+            vol**2 * mk_k_p("x2", True) * mk_k_p("x1"),
+            ]
+    cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
+    q.displayln_info(display_cexpr(cexpr))
+    cexpr.collect_op()
+    q.displayln_info(display_cexpr_raw(cexpr))
+    names_fac = [ "rest", ]
+    ld = q.mk_lat_data([
+        [ "tsep", total_site[3] // 2 + 1, ],
+        [ "name_fac", len(names_fac), names_fac, ],
+        [ "expr_name", len(exprs), get_cexpr_names(cexpr), ],
+        [ "val-err-n", 3, [ "val", "err", "n-trails", ] ],
+        ])
+    for tsep in range(total_site[3] // 2 + 1):
+        trial_indices = []
+        for x1 in get_strange_psrc_psel(get_pi()).to_list():
+            for x2 in get_psel().to_list():
+                if tsep == abs(rel_mod(x2[3] - x1[3], total_site[3])):
+                    pd = {
+                            "x1" : ("point", x1,),
+                            "x2" : ("point", x2,),
+                            }
+                    trial_indices.append(pd)
+        if len(trial_indices) == 0:
+            continue
+        def positions_dict_maker(idx):
+            pd = idx
+            facs = [ 1.0, ]
+            return pd, facs
+        results_list = eval_cexpr_simulation(
+                cexpr,
+                positions_dict_maker = positions_dict_maker,
+                trial_indices = trial_indices,
+                get_prop = get_prop,
+                is_only_total = "total"
+                )
+        for idx_name_fac, (name_fac, results,) in enumerate(zip(names_fac, results_list)):
+            for i_k, (k, v,) in enumerate(results.items()):
+                ld[(tsep, idx_name_fac, i_k,)] = v + [ complex(len(trial_indices)), ]
+    q.displayln_info(ld.show())
 
 @q.timer_verbose
 def run_job(job_tag, traj):
@@ -152,6 +389,10 @@ def run_job(job_tag, traj):
     get_wi = run_wi(job_tag, traj)
     #
     get_prop = mk_get_prop(job_tag, traj, get_gt, get_psel, get_pi, get_wi)
+    #
+    auto_contractor_meson_corr_wsrc_wsnk(job_tag, traj, get_prop, get_psel, get_pi, get_wi)
+    auto_contractor_meson_corr_wsrc_psnk(job_tag, traj, get_prop, get_psel, get_pi, get_wi)
+    auto_contractor_meson_corr_psrc_psnk(job_tag, traj, get_prop, get_psel, get_pi, get_wi)
     #
     q.clean_cache()
     q.timer_display()

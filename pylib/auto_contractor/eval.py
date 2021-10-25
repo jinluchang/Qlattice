@@ -52,6 +52,15 @@ def adj_msc(x):
     x = g.adj(x)
     return ascontiguoustensor(x)
 
+def g5_herm(x):
+    x_h = ascontiguoustensor(
+            ascontiguoustensor(
+                g.gamma[5]
+                * adj_msc(
+                    as_mspincolor(x)))
+                * g.gamma[5])
+    return x_h
+
 def eval_op_term_expr(expr, variable_dict, positions_dict, get_prop):
     def l_eval(x):
         if isinstance(x, list):
@@ -138,8 +147,26 @@ def sqrt_component_array(arr):
     return np.array([ sqrt_component(x) for x in arr ])
 
 @q.timer
-def eval_cexpr_simulation(cexpr : CExpr, *, positions_dict_maker, trial_indices, get_prop, is_only_total = "typed_total"):
+def get_cexpr_names(cexpr, is_only_total = "total"):
+    if is_only_total in [ True, "total", ]:
+        names = [ name for name, expr in cexpr.named_exprs ]
+    elif is_only_total in [ "typed_total", ]:
+        names = ([ name for name, expr in cexpr.named_typed_exprs ]
+                + [ name for name, expr in cexpr.named_exprs ])
+    elif is_only_total in [ False, "term", ]:
+        names = ([ name for name, term in cexpr.named_terms ]
+                + [ name for name, expr in cexpr.named_typed_exprs ]
+                + [ name for name, expr in cexpr.named_exprs ])
+    else:
+        assert False
+    return names
+
+
+@q.timer
+def eval_cexpr_simulation(cexpr : CExpr, *, positions_dict_maker, trial_indices, get_prop, is_only_total = "total"):
     # interface function
+    if len(trial_indices) == 0:
+        return None
     results = None
     num_fac = None
     for idx in trial_indices:
@@ -157,17 +184,10 @@ def eval_cexpr_simulation(cexpr : CExpr, *, positions_dict_maker, trial_indices,
         assert len(results[i]) == len(trial_indices)
         results_avg = sum(results[i]) / len(trial_indices)
         results_err = sqrt_component_array(sum([ sqr_component_array(r - results_avg) for r in results[i] ])) / len(trial_indices)
-        if is_only_total in [ True, "total", ]:
-            names = [ name for name, expr in cexpr.named_exprs ]
-        elif is_only_total in [ "typed_total", ]:
-            names = [ name for name, expr in cexpr.named_typed_exprs ] + [ name for name, expr in cexpr.named_exprs ]
-        elif is_only_total in [ False, "term", ]:
-            names = [ name for name, term in cexpr.named_terms ] + [ name for name, expr in cexpr.named_typed_exprs ] + [ name for name, expr in cexpr.named_exprs ]
-        else:
-            assert False
+        names = get_cexpr_names(cexpr, is_only_total)
         summary = {}
         for i in range(len(names)):
-            summary[names[i]] = [results_avg[i], results_err[i],]
+            summary[names[i]] = [ results_avg[i], results_err[i], ]
         summaries.append(summary)
     return summaries
 
