@@ -27,10 +27,6 @@ import copy
 import cmath
 import math
 
-@q.timer
-def get_prop_psnk_psrc(get_prop, flavor : str, xg_snk, xg_src):
-    return get_prop(flavor, xg_snk, xg_src)
-
 def get_spin_matrix(op):
     assert op.otype == "G"
     assert op.s1 == "auto" and op.s2 == "auto"
@@ -73,7 +69,7 @@ def eval_op_term_expr(expr, variable_dict, positions_dict, get_prop):
                 flavor = x.f
                 xg_snk = positions_dict[x.p1]
                 xg_src = positions_dict[x.p2]
-                return get_prop_psnk_psrc(get_prop, flavor, xg_snk, xg_src)
+                return get_prop(flavor, xg_snk, xg_src)
             elif x.otype == "G":
                 return get_spin_matrix(x)
             elif x.otype == "Tr" and len(x.ops) == 2:

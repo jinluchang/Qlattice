@@ -169,30 +169,32 @@ def get_prop_snk_src(prop_cache, flavor, p_snk, p_src, *, psel_pos_dict):
     if type_snk == "wall" and type_src == "wall":
         msc = get_prop_wsnk_wsrc(
                 prop_cache, flavor_inv_type, pos_snk, pos_src)
-    elif type_snk == "point" and type_src == "wall":
+    elif type_snk[:5] == "point" and type_src == "wall":
         pos_snk_tuple = tuple(pos_snk)
         assert pos_snk_tuple in psel_pos_dict
         msc = get_prop_wsrc_psel(
                 prop_cache, flavor_inv_type, pos_src
                 ).get_elem(psel_pos_dict[pos_snk_tuple])
-    elif type_snk == "wall" and type_src == "point":
+    elif type_snk == "wall" and type_src[:5] == "point":
         pos_src_tuple = tuple(pos_src)
         assert pos_src_tuple in psel_pos_dict
         msc = g5_herm(
                 get_prop_wsrc_psel(
                     prop_cache, flavor_inv_type, pos_snk
                     ).get_elem(psel_pos_dict[pos_src_tuple]))
-    elif type_snk == "point" and type_src == "point":
+    elif type_snk[:5] == "point" and type_src[:5] == "point":
         pos_snk_tuple = tuple(pos_snk)
         pos_src_tuple = tuple(pos_src)
         assert pos_snk_tuple in psel_pos_dict
         assert pos_src_tuple in psel_pos_dict
-        sp_prop = get_prop_psrc_psel(prop_cache, flavor_inv_type, pos_src)
-        if sp_prop is not None:
+        if type_src == "point":
+            sp_prop = get_prop_psrc_psel(prop_cache, flavor_inv_type, pos_src)
             msc = sp_prop.get_elem(psel_pos_dict[pos_snk_tuple])
-        else:
+        elif type_snk == "point":
             sp_prop = get_prop_psrc_psel(prop_cache, flavor_inv_type, pos_snk)
             msc = g5_herm(sp_prop.get_elem(psel_pos_dict[pos_src_tuple]))
+        else:
+            raise Exception("get_prop_snk_src unknown p_snk={p_snk} p_src={p_src}")
     else:
         raise Exception("get_prop_snk_src unknown p_snk={p_snk} p_src={p_src}")
     return as_mspincolor(msc)
@@ -304,7 +306,7 @@ def auto_contractor_meson_corr_psnk_wsrc(job_tag, traj, get_prop, get_psel, get_
                 if tsep == abs(rel_mod(x2[3] - t1, total_site[3])):
                     pd = {
                             "t1" : ("wall", t1,),
-                            "x2" : ("point", x2,),
+                            "x2" : ("point-snk", x2,),
                             }
                     trial_indices.append(pd)
         if len(trial_indices) == 0:
@@ -352,7 +354,7 @@ def auto_contractor_meson_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_
                 if tsep == abs(rel_mod(x2[3] - x1[3], total_site[3])):
                     pd = {
                             "x1" : ("point", x1,),
-                            "x2" : ("point", x2,),
+                            "x2" : ("point-snk", x2,),
                             }
                     trial_indices.append(pd)
         if len(trial_indices) == 0:

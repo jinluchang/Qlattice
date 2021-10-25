@@ -755,7 +755,16 @@ def test_prop():
     print(expr)
     print(display_cexpr(contract_simplify_compile(expr, is_isospin_symmetric_limit = False)))
 
+def test_pipi():
+    expr1 = mk_pi_0("x21", True) * mk_pi_0("x22", True) * mk_pi_0("x11") * mk_pi_0("x12")
+    expr2 = mk_pi_p("x21", True) * mk_pi_m("x22", True) * mk_pi_p("x11") * mk_pi_m("x12")
+    expr2p = mk_pi_m("x21", True) * mk_pi_p("x22", True) * mk_pi_p("x11") * mk_pi_m("x12")
+    expr = sympy.simplify(1)/2 * (expr2 + expr2p) - expr1
+    print(expr)
+    print(display_cexpr(contract_simplify_compile(expr, is_isospin_symmetric_limit = True)))
+
 if __name__ == "__main__":
+    # test_pipi()
     # test_prop()
     # test_kpipi()
     # test1()
