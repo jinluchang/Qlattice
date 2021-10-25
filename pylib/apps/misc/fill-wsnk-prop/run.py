@@ -169,11 +169,9 @@ rup.dict_params["64I"]["trajs"] = list(range(500, 3000, 5))
 
 # ADJUST ME
 job_tags = [
-        "test-4nt8",
-        "test-4nt16",
+        "test-4nt8", "test-4nt16",
+        # "48I", "64I",
         # "24D",
-        # "64I",
-        # "48I",
         # "24DH",
         # "32D",
         # "32Dfine",
