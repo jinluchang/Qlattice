@@ -19,6 +19,7 @@ def get_load_path(fn):
             "../mk-selected-data/results",
             "data-cache",
             "/sdcc/u/jluchang/qcdqedta/hlbl-data-with-cache",
+            "/sdcc/u/jluchang/qcdqedta/hlbl-data",
             ]
     for path in path_list:
         p = os.path.join(path, fn)
