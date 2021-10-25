@@ -4,7 +4,7 @@ import qlat as q
 import rbc_ukqcd_params as rup
 import pprint
 
-import os
+import os, sys
 
 def get_save_path(fn):
     return os.path.join("results", fn)
