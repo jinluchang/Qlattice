@@ -7,13 +7,13 @@ mpi_options=--bind-to none -mca btl_openib_allow_ib true
 mpi_options=
 
 run:
-	q_verbose=1 mpirun --np 2 $(mpi_options) ./run.py $(grid_options) |& tee log.txt
+	q_verbose=1 mpirun --np 8 $(mpi_options) ./run.py $(grid_options) |& tee log.txt
 
 src_path=~/Qlattice-cc/pylib/apps/misc/fill-wsnk-prop
 
 diff:
-	diff $(src_path)/run.py run.py
-	diff $(src_path)/Makefile Makefile
+	-diff $(src_path)/run.py run.py
+	-diff $(src_path)/Makefile Makefile
 
 sync:
 	cp -v $(src_path)/run.py .

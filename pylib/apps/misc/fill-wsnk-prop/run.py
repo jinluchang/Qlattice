@@ -17,6 +17,7 @@ def get_load_path(fn):
             "../mk-gf-gt/results",
             "../mk-lanc/results",
             "../mk-selected-data/results",
+            "data-cache",
             "/sdcc/u/jluchang/qcdqedta/hlbl-data-with-cache",
             ]
     for path in path_list:
@@ -153,6 +154,7 @@ def run_job(job_tag, traj):
     #
     get_psel = run_psel(job_tag, traj)
     get_fsel = run_fsel(job_tag, traj, get_psel)
+    #
     run_prop_wsrc_light(job_tag, traj, get_fsel)
     run_prop_wsrc_strange(job_tag, traj, get_fsel)
     #
@@ -177,7 +179,13 @@ job_tags = [
         # "32Dfine",
         ]
 
-q.begin()
+size_node_list = [
+        [1, 1, 1, 1],
+        [1, 1, 1, 4],
+        [1, 1, 1, 8],
+        ]
+
+q.begin(sys.argv, size_node_list)
 
 q.check_time_limit()
 
