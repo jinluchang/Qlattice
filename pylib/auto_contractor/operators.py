@@ -840,10 +840,10 @@ if __name__ == "__main__":
     test_kk_sym()
     #
     print()
+    test()
     print("< KpiI3/2_Iz1/2(x2_1,x2_2)^dag KpiI1/2_Iz1/2(x1_1,x1_2) >:")
     expr = mk_kpi_0_i3halves("x2_1", "x2_2", True) * mk_kpi_0_i1half("x1_1", "x1_2")
     print(display_cexpr(contract_simplify_compile(expr)))
     print()
-    test()
 
 
