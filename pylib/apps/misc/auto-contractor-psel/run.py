@@ -25,6 +25,7 @@ jobs.load_path_list = [
         "../mk-selected-data/results",
         "../mk-psel-self-loop/results",
         "/sdcc/u/jluchang/qcdqedta/hlbl-data-with-cache",
+        "/sdcc/u/jluchang/qcdqedta/luchang/data-gen/fill-wsnk-prop/results"
         ]
 
 @q.timer_verbose
@@ -43,11 +44,11 @@ def check_job(job_tag, traj):
         return True
     #
     fns_need = [
-            f"configs/{job_tag}/ckpoint_lat.{traj}",
+            # f"configs/{job_tag}/ckpoint_lat.{traj}",
             f"point-selection/{job_tag}/traj={traj}.txt",
             f"gauge-transform/{job_tag}/traj={traj}.field",
-            f"psel-prop-rand-u1/{job_tag}/traj={traj}/checkpoint ; type=1.txt",
-            f"psel-prop-rand-u1/{job_tag}/traj={traj}/checkpoint ; type=2.txt",
+            # f"psel-prop-rand-u1/{job_tag}/traj={traj}/checkpoint ; type=1.txt",
+            # f"psel-prop-rand-u1/{job_tag}/traj={traj}/checkpoint ; type=2.txt",
             f"psel-prop-wsrc-light/{job_tag}/traj={traj}/checkpoint.txt",
             f"psel-prop-wsrc-light/{job_tag}/traj={traj}/checkpoint ; wsnk.txt",
             f"psel-prop-wsrc-strange/{job_tag}/traj={traj}/checkpoint.txt",
@@ -225,7 +226,7 @@ def rel_mod(x, size):
         return -x
 
 @q.timer_verbose
-def auto_contractor_meson_corr_wsrc_wsnk(job_tag, traj, get_prop, get_psel, get_pi, get_wi):
+def auto_contractor_meson_corr_wsnk_wsrc(job_tag, traj, get_prop, get_psel, get_pi, get_wi):
     total_site = ru.get_total_site(job_tag)
     vol = total_site[0] * total_site[1] * total_site[2]
     exprs = [
@@ -275,9 +276,10 @@ def auto_contractor_meson_corr_wsrc_wsnk(job_tag, traj, get_prop, get_psel, get_
             for i_k, (k, v,) in enumerate(results.items()):
                 ld[(tsep, idx_name_fac, i_k,)] = v + [ complex(len(trial_indices)), ]
     q.displayln_info(ld.show())
+    ld.save(f"results/meson_corr/{job_tag}/traj={traj}/wsnk_wsrc.lat")
 
 @q.timer_verbose
-def auto_contractor_meson_corr_wsrc_psnk(job_tag, traj, get_prop, get_psel, get_pi, get_wi):
+def auto_contractor_meson_corr_psnk_wsrc(job_tag, traj, get_prop, get_psel, get_pi, get_wi):
     total_site = ru.get_total_site(job_tag)
     vol = total_site[0] * total_site[1] * total_site[2]
     exprs = [
@@ -322,9 +324,10 @@ def auto_contractor_meson_corr_wsrc_psnk(job_tag, traj, get_prop, get_psel, get_
             for i_k, (k, v,) in enumerate(results.items()):
                 ld[(tsep, idx_name_fac, i_k,)] = v + [ complex(len(trial_indices)), ]
     q.displayln_info(ld.show())
+    ld.save(f"results/meson_corr/{job_tag}/traj={traj}/psnk_wsrc.lat")
 
 @q.timer_verbose
-def auto_contractor_meson_corr_psrc_psnk(job_tag, traj, get_prop, get_psel, get_pi, get_wi):
+def auto_contractor_meson_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_pi, get_wi):
     total_site = ru.get_total_site(job_tag)
     vol = total_site[0] * total_site[1] * total_site[2]
     exprs = [
@@ -369,6 +372,7 @@ def auto_contractor_meson_corr_psrc_psnk(job_tag, traj, get_prop, get_psel, get_
             for i_k, (k, v,) in enumerate(results.items()):
                 ld[(tsep, idx_name_fac, i_k,)] = v + [ complex(len(trial_indices)), ]
     q.displayln_info(ld.show())
+    ld.save(f"results/meson_corr/{job_tag}/traj={traj}/psnk_psrc.lat")
 
 @q.timer_verbose
 def run_job(job_tag, traj):
@@ -390,9 +394,9 @@ def run_job(job_tag, traj):
     #
     get_prop = mk_get_prop(job_tag, traj, get_gt, get_psel, get_pi, get_wi)
     #
-    auto_contractor_meson_corr_wsrc_wsnk(job_tag, traj, get_prop, get_psel, get_pi, get_wi)
-    auto_contractor_meson_corr_wsrc_psnk(job_tag, traj, get_prop, get_psel, get_pi, get_wi)
-    auto_contractor_meson_corr_psrc_psnk(job_tag, traj, get_prop, get_psel, get_pi, get_wi)
+    auto_contractor_meson_corr_wsnk_wsrc(job_tag, traj, get_prop, get_psel, get_pi, get_wi)
+    auto_contractor_meson_corr_psnk_wsrc(job_tag, traj, get_prop, get_psel, get_pi, get_wi)
+    auto_contractor_meson_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_pi, get_wi)
     #
     q.clean_cache()
     q.timer_display()

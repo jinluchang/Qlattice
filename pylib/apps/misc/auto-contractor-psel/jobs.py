@@ -34,7 +34,10 @@ def run_gf(job_tag, traj):
             # gf.save(path_gf)
             qg.save_gauge_field(gf, path_gf)
         else:
-            assert False
+            @q.timer_verbose
+            def load_gf():
+                assert False
+            return load_gf
     get_gf = ru.load_config_lazy(job_tag, path_gf)
     return get_gf
 

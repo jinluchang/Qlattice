@@ -12,11 +12,13 @@ run:
 src_path=~/Qlattice-cc/pylib/apps/misc/auto-contractor-psel
 
 diff:
-	diff $(src_path)/run.py run.py
-	diff $(src_path)/Makefile Makefile
+	-diff $(src_path)/run.py run.py
+	-diff $(src_path)/jobs.py jobs.py
+	-diff $(src_path)/Makefile Makefile
 
 sync:
 	cp -v $(src_path)/run.py .
+	cp -v $(src_path)/jobs.py .
 	cp -v $(src_path)/Makefile .
 
 clean:
