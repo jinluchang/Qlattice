@@ -701,6 +701,9 @@ def auto_contractor_3f4f_matching(job_tag, traj, get_prop, num_trials):
             vol * mk_pi_0("t1_1", True) + "pi0",
             mk_expr(1) + "1",
             ]
+    exprs_src_snk = [
+        vol**2 * mk_
+        ]
     exprs = []
     for expr_src in exprs_src:
         for expr_snk in exprs_snk:
@@ -735,9 +738,11 @@ def auto_contractor_3f4f_matching(job_tag, traj, get_prop, num_trials):
         return fn
     #
     for tsnk_tsrc in src_snk_seps:
-        fn = f"analysis/3f4f_b81/tsnk_tsrc{tsnk_tsrc}.bin"
+        max_top_tsrc = int(tsnk_tsrc/2)
+        min_top_tsrc = int(tsnk_tsrc/2)
+        fn = f"analysis/3f4f_b81/tsnk_tsrc{tsnk_tsrc}_top_tsrc{min_top_tsrc}-{max_top_tsrc}.bin"
         with open(fn, mode='wb') as f:
-            for top_tsrc in range(1,tsnk_tsrc):
+            for top_tsrc in range(min_top_tsrc,max_top_tsrc+1):
                 def positions_dict_maker(idx):
                     rs = rng_state.split(str(idx))
                     tsrc1_top = - top_tsrc
@@ -760,7 +765,7 @@ def auto_contractor_3f4f_matching(job_tag, traj, get_prop, num_trials):
                     facs = [1.0]
                     return pd, facs
                 trial_indices = range(num_trials)
-                results_list = eval_cexpr_simulation(cexpr, positions_dict_maker = positions_dict_maker, trial_indices = trial_indices, get_prop = get_prop, is_only_total = "typed_total")
+                results_list = eval_cexpr_simulation(cexpr, positions_dict_maker = positions_dict_maker, trial_indices = trial_indices, get_prop = get_prop, is_only_total = "total")
                 #for results in results_list:
                 results = results_list[0]
                 for k, v in results.items():
@@ -777,7 +782,7 @@ def auto_contractor_3f4f_matching(job_tag, traj, get_prop, num_trials):
                     [ a, e, ] = v
                     f.write(a)
                     f.write(e)
-                if top_tsrc == 1 and tsnk_tsrc == src_snk_seps[0]:
+                if top_tsrc == min_top_tsrc and tsnk_tsrc == src_snk_seps[0]:
                     metafn = f"analysis/3f4f_b81/meta.txt"
                     with open(metafn, mode='w') as metaf:
                         for k, v in results.items():
