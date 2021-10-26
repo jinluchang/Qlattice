@@ -782,7 +782,7 @@ def auto_contractor_3f4f_matching(job_tag, traj, get_prop, num_trials):
                     with open(metafn, mode='w') as metaf:
                         for k, v in results.items():
                             key = mk_key(f"{k}")
-                            metaf.write(key)
+                            metaf.write(key,"\n")
 
 @q.timer_verbose
 def run_gf(job_tag, traj):
