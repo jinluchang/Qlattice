@@ -735,7 +735,7 @@ def auto_contractor_3f4f_matching(job_tag, traj, get_prop, num_trials):
         return fn
     #
     for tsnk_tsrc in src_snk_seps:
-        fn = "analysis/3f4f_b81/tsnk_tsrc{tsnk_tsrc}.bin"
+        fn = f"analysis/3f4f_b81/tsnk_tsrc{tsnk_tsrc}.bin"
         with open(fn, mode='wb') as f:
             for top_tsrc in range(1,tsnk_tsrc):
                 def positions_dict_maker(idx):
@@ -777,11 +777,12 @@ def auto_contractor_3f4f_matching(job_tag, traj, get_prop, num_trials):
                     [ a, e, ] = v
                     f.write(a)
                     f.write(e)
-                if ( top_tsrc == 1 ):
-                    metafn = "analysis/3f4f_b81/tsnk_tsrc{tsnk_tsrc}.meta.txt"
+                if top_tsrc == 1 and tsnk_tsrc == src_snk_seps[0]:
+                    metafn = f"analysis/3f4f_b81/meta.txt"
+                    with open(metafn, mode='wb') as metaf:
                     for k, v in results.items():
                         key = mk_key(f"{k}")
-                        q.qtouch(metafn, f"{key}\n")
+                        metaf.write(key)
 
 @q.timer_verbose
 def run_gf(job_tag, traj):
