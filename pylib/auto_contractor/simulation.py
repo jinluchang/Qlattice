@@ -701,9 +701,9 @@ def auto_contractor_3f4f_matching(job_tag, traj, get_prop, num_trials):
             vol * mk_pi_0("t1_1", True) + "pi0",
             mk_expr(1) + "1",
             ]
-    exprs_src_snk = [
-        vol**2 * mk_
-        ]
+#    exprs_src_snk = [
+#        vol**2 * mk_
+#        ]
     exprs = []
     for expr_src in exprs_src:
         for expr_snk in exprs_snk:
