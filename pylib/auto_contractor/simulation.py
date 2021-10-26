@@ -689,52 +689,36 @@ def auto_contractor_3f4f_matching(job_tag, traj, get_prop, num_trials):
             vol * mk_Q8_b81("x", "even") + "Q8_b81(e)",
             ]
     exprs_ops = exprs_odd_ops + exprs_even_ops
-    exprs_k = [
-            vol * mk_k_0("t2") + "K0",
-            #vol * mk_neutral_kpi_i1half("t2", "t2") + "Kpi_I3half",
-            #vol * mk_neutral_kpi_i3halves("t2", "t2") + "Kpi_I3halves",
+    exprs_src = [
+            vol * mk_k_0("t2_1") + "K0",
+            vol * mk_kpi_0_i1half("t2_1", "t2_2") + "Kpi_0_I1half",
+            vol * mk_kpi_0_i3halves("t2_1", "t2_2") + "Kpi_0_I3halves",
             ]
-    exprs_pipi = [
+    exprs_snk = [
+            vol**2 * mk_pipi_i20("t1_1", "t1_2", True) + "pipi_I2",
             vol**2 * mk_pipi_i0("t1_1", "t1_2", True) + "pipi_I0",
-            vol * mk_sigma("t1_1", True) + "sigma_1",
-            vol * mk_pi_0("t1_1", True) + "pi0_1",
+            vol * mk_sigma("t1_1", True) + "sigma",
+            vol * mk_pi_0("t1_1", True) + "pi0",
             mk_expr(1) + "1",
             ]
     exprs = []
-    for expr_k in exprs_k:
-        for expr_pipi in exprs_pipi:
+    for expr_src in exprs_src:
+        for expr_snk in exprs_snk:
             for expr_op in exprs_ops:
-                exprs.append(expr_pipi * expr_op * expr_k)
+                exprs.append(expr_snk * expr_op * expr_src)
     diagram_type_dict = dict()
     cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True, diagram_type_dict = diagram_type_dict)
     q.displayln_info(display_cexpr(cexpr))
     cexpr.collect_op()
     q.displayln_info(display_cexpr_raw(cexpr))
     rng_state = q.RngState("seed")
-    def positions_dict_maker(idx):
-        rs = rng_state.split(str(idx))
-        dt1_1 = 2
-        dt1_2 = 4
-        dt2 = -3
-        x = rs.c_rand_gen(total_site)
-        t2   = ( x[3] + dt2   + total_site[3] ) % total_site[3]
-        t1_1 = ( x[3] + dt1_1 + total_site[3] ) % total_site[3]
-        t1_2 = ( x[3] + dt1_2 + total_site[3] ) % total_site[3]
-        pd = {
-                "t1_1" : ("wall", t1_1,),
-                "t1_2" : ("wall", t1_2,),
-                "x" : ("point", x,),
-                "t2" : ("wall", t2,),
-                }
-        facs = [1.0]
-        return pd, facs
-    names_fac = [ "rest", ]
-    trial_indices = range(num_trials)
-    results_list = eval_cexpr_simulation(cexpr, positions_dict_maker = positions_dict_maker, trial_indices = trial_indices, get_prop = get_prop, is_only_total = "typed_total")
+    src_snk_seps = [8,10,12,14,16]
+    tsep_src = -1
+    tsep_snk = 1
     q.qmkdir_info("analysis")
     q.qremove_all_info("analysis/3f4f_b81")
     q.qmkdir_info("analysis/3f4f_b81")
-    def mk_fn(info):
+    def mk_key(info):
         def f(c):
             if c in "()<>/* ":
                 return "_"
@@ -749,21 +733,55 @@ def auto_contractor_3f4f_matching(job_tag, traj, get_prop, num_trials):
         if fn[-1] == "_":
             fn = fn[:-1]
         return fn
-    for name_fac, results in zip(names_fac, results_list):
-        q.displayln_info(f"{name_fac} :")
-        for k, v in results.items():
-            if v[1].real == 0:
-                ratio_real = None
-            else:
-                ratio_real = v[0].real / v[1].real
-            if v[1].imag == 0:
-                ratio_imag = None
-            else:
-                ratio_imag = v[0].imag / v[1].imag
-            q.displayln_info(f"{name_fac} {k}:\n  {v}, ({ratio_real}, {ratio_imag})")
-            fn = "analysis/3f4f_b81/" + mk_fn(f"{name_fac} {k}") + ".txt"
-            [ a, e, ] = v
-            q.qtouch(fn, f"0 {a.real} {a.imag} {e.real} {e.imag}\n")
+    #
+    for tsnk_tsrc in src_snk_seps:
+        fn = "analysis/3f4f_b81/tsnk_tsrc{tsnk_tsrc}.bin"
+        with open(fn, mode='wb') as f:
+            for top_tsrc in range(1,tsnk_tsrc):
+                def positions_dict_maker(idx):
+                    rs = rng_state.split(str(idx))
+                    tsrc1_top = - top_tsrc
+                    tsrc2_top = tsep_src  + tsrc1_top
+                    tsnk1_top = tsnk_tsrc + tsrc1_top
+                    tsnk2_top = tsep_snk  + tsnk1_top
+                    dt1_2 = 4
+                    x = rs.c_rand_gen(total_site)
+                    t2_1 = ( tsrc1_top + x[3] + total_site[3] ) % total_site[3]
+                    t2_2 = ( tsrc2_top + x[3] + total_site[3] ) % total_site[3]
+                    t1_1 = ( tsnk1_top + x[3] + total_site[3] ) % total_site[3]
+                    t1_2 = ( tsnk2_top + x[3] + total_site[3] ) % total_site[3]
+                    pd = {
+                        "t1_1" : ("wall", t1_1,),
+                        "t1_2" : ("wall", t1_2,),
+                        "x" : ("point", x,),
+                        "t2_1" : ("wall", t2_1,),
+                        "t2_2" : ("wall", t2_2,),
+                    }
+                    facs = [1.0]
+                    return pd, facs
+                trial_indices = range(num_trials)
+                results_list = eval_cexpr_simulation(cexpr, positions_dict_maker = positions_dict_maker, trial_indices = trial_indices, get_prop = get_prop, is_only_total = "typed_total")
+                #for results in results_list:
+                results = results_list[0]
+                for k, v in results.items():
+                    if v[1].real == 0:
+                        ratio_real = None
+                    else:
+                        ratio_real = v[0].real / v[1].real
+                    if v[1].imag == 0:
+                        ratio_imag = None
+                    else:
+                        ratio_imag = v[0].imag / v[1].imag
+                    q.displayln_info(f"{name_fac} {k}:\n  {v}, ({ratio_real}, {ratio_imag})")
+                    ###
+                    [ a, e, ] = v
+                    f.write(a)
+                    f.write(e)
+                if ( top_tsrc == 1 ):
+                    metafn = "analysis/3f4f_b81/tsnk_tsrc{tsnk_tsrc}.meta.txt"
+                    for k, v in results.items():
+                        key = mk_key(f"{k}")
+                        q.qtouch(metafn, f"{key}\n")
 
 @q.timer_verbose
 def run_gf(job_tag, traj):
