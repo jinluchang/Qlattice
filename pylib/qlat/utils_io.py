@@ -1,6 +1,7 @@
 import cqlat as c
 
 import os
+import pickle
 
 from cqlat import qremove, qremove_info
 from cqlat import qremove_all, qremove_all_info
@@ -80,3 +81,21 @@ def obtain_lock(path):
 
 def release_lock():
     return c.release_lock()
+
+@q.timer
+def save_pickle_obj(obj, path):
+    # only save from node 0
+    mk_file_dirs_info(path)
+    if get_id_node() == 0:
+        with open(path, "wb") as f:
+            pickle.dump(obj, f)
+
+@q.timer
+def load_pickle_obj(path):
+    # all the nodes read the same data
+    if does_file_exist_sync_node(path):
+        with open(path, "rb") as f:
+            obj = pickle.load(f)
+        return obj
+    else:
+        return None
