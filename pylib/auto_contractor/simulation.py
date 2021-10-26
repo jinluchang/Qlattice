@@ -780,9 +780,9 @@ def auto_contractor_3f4f_matching(job_tag, traj, get_prop, num_trials):
                 if top_tsrc == 1 and tsnk_tsrc == src_snk_seps[0]:
                     metafn = f"analysis/3f4f_b81/meta.txt"
                     with open(metafn, mode='wb') as metaf:
-                    for k, v in results.items():
-                        key = mk_key(f"{k}")
-                        metaf.write(key)
+                        for k, v in results.items():
+                            key = mk_key(f"{k}")
+                            metaf.write(key)
 
 @q.timer_verbose
 def run_gf(job_tag, traj):
