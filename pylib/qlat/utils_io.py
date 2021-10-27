@@ -82,7 +82,7 @@ def obtain_lock(path):
 def release_lock():
     return c.release_lock()
 
-@q.timer
+@timer
 def save_pickle_obj(obj, path):
     # only save from node 0
     mk_file_dirs_info(path)
@@ -90,12 +90,12 @@ def save_pickle_obj(obj, path):
         with open(path, "wb") as f:
             pickle.dump(obj, f)
 
-@q.timer
-def load_pickle_obj(path):
+@timer
+def load_pickle_obj(path, default_value = None):
     # all the nodes read the same data
     if does_file_exist_sync_node(path):
         with open(path, "rb") as f:
             obj = pickle.load(f)
         return obj
     else:
-        return None
+        return default_value

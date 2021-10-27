@@ -505,9 +505,13 @@ def auto_contractor_kpipi_corr(job_tag, traj, get_prop, num_trials):
     diagram_type_dict[((('x', 'x2'), 1), (('x1_2', 'x1_2'), 1), (('x2', 'x'), 1))] = "Type4"
     diagram_type_dict[((('x', 'x'), 1), (('x', 'x2'), 1), (('x2', 'x'), 1))] = "Type4"
     diagram_type_dict[((('x', 'x2'), 1), (('x2', 'x'), 1))] = "Type4"
-    cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True, diagram_type_dict = diagram_type_dict)
-    q.displayln_info(display_cexpr(cexpr))
-    cexpr.collect_op()
+    path_cexpr = "cache/auto_contractor_cexprs/kpipi.pickle"
+    cexpr = q.load_pickle_obj(path_cexpr)
+    if cexpr is None:
+        cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True, diagram_type_dict = diagram_type_dict)
+        q.displayln_info(display_cexpr(cexpr))
+        cexpr.collect_op()
+        q.save_pickle_obj(cexpr, path_cexpr)
     q.displayln_info(display_cexpr_raw(cexpr))
     rng_state = q.RngState("seed")
     def positions_dict_maker(idx):
