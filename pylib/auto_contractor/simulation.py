@@ -128,7 +128,7 @@ def compute_prop_wsrc_all(gf, gt, job_tag, inv_type, *, path_s, path_sp, eig):
     q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
 
 @q.timer
-def load_prop_psrc_all(job_tag, traj, flavor : str, path_s : str):
+def load_prop_psrc_all(job_tag, traj, flavor : str, path_s : str, psel):
     cache = q.mk_cache(f"prop_cache-{job_tag}-{traj}", flavor)
     total_site = ru.get_total_site(job_tag)
     if flavor in ["l", "u", "d",]:
@@ -148,14 +148,16 @@ def load_prop_psrc_all(job_tag, traj, flavor : str, path_s : str):
         prop.load_double(sfr, tag)
         # convert to GPT/Grid prop mspincolor order
         prop_msc = q.convert_mspincolor_from_wm(prop)
-        cache[f"xg=({xg[0]},{xg[1]},{xg[2]},{xg[3]})"] = prop_msc
+        sp_prop_msc = q.PselProp(psel)
+        sp_prop_msc @= prop_msc
+        cache[f"xg=({xg[0]},{xg[1]},{xg[2]},{xg[3]})"] = sp_prop_msc
     sfr.close()
 
 @q.timer
-def load_prop_wsrc_all(job_tag, traj, flavor : str, path_s : str, path_sp : str, gt):
+def load_prop_wsrc_all(job_tag, traj, flavor : str, path_s : str, path_sp : str, psel, gt):
     cache = q.mk_cache(f"prop_cache-{job_tag}-{traj}", flavor)
     total_site = ru.get_total_site(job_tag)
-    psel = q.get_psel_tslice(total_site)
+    psel_ts = q.get_psel_tslice(total_site)
     if flavor in ["l", "u", "d",]:
         inv_type = 0
     elif flavor in ["s",]:
@@ -175,13 +177,15 @@ def load_prop_wsrc_all(job_tag, traj, flavor : str, path_s : str, path_sp : str,
         prop = gt_inv * prop
         # convert to GPT/Grid prop mspincolor order
         prop_msc = q.convert_mspincolor_from_wm(prop)
-        cache[f"tslice={tslice}"] = prop_msc
+        sp_prop_msc = q.PselProp(psel)
+        sp_prop_msc @= prop_msc
+        cache[f"tslice={tslice}"] = sp_prop_msc
         # load wsnk prop
         fn_spw = os.path.join(path_sp, f"{tag} ; wsnk.lat")
-        sp_prop = q.PselProp(psel)
-        sp_prop.load(get_load_path(fn_spw))
-        sp_prop_msc = q.convert_mspincolor_from_wm(sp_prop)
-        cache[f"tslice={tslice} ; wsnk"] = sp_prop_msc
+        spw_prop = q.PselProp(psel_ts)
+        spw_prop.load(get_load_path(fn_spw))
+        spw_prop_msc = q.convert_mspincolor_from_wm(spw_prop)
+        cache[f"tslice={tslice} ; wsnk"] = spw_prop_msc
     sfr.close()
 
 @q.timer
@@ -203,13 +207,13 @@ def get_prop_wsnk_wsrc(prop_cache, flavor : str, t_snk, t_src):
     return prop_cache[flavor][f"tslice={t_src} ; wsnk"].get_elem(t_snk)
 
 @q.timer
-def get_prop_psnk_psrc(prop_cache, flavor : str, p_snk, p_src):
+def get_prop_psnk_psrc(prop_cache, flavor : str, p_snk, p_src, *, psel_pos_dict):
     if isinstance(p_snk, list) and isinstance(p_src, list):
         assert 4 == len(p_snk)
         assert 4 == len(p_src)
         xg_snk = p_snk
         xg_src = p_src
-        msc = get_prop_psrc(prop_cache, flavor, xg_src).get_elem(xg_snk)
+        msc = get_prop_psrc(prop_cache, flavor, xg_src).get_elem(psel_pos_dict[tuple(xg_snk)])
     else:
         assert isinstance(p_snk, tuple) and isinstance(p_src, tuple)
         assert 2 == len(p_snk)
@@ -229,25 +233,23 @@ def get_prop_psnk_psrc(prop_cache, flavor : str, p_snk, p_src):
                                 get_prop_wsrc(prop_cache, flavor, pos_snk).get_elem(pos_src))))
                     * g.gamma[5])
         elif type_snk == "point" and type_src == "point":
-            msc = get_prop_psrc(prop_cache, flavor, pos_src).get_elem(pos_snk)
+            msc = get_prop_psrc(prop_cache, flavor, pos_src).get_elem(psel_pos_dict[tuple(pos_snk)])
         else:
             raise Exception("get_prop_psnk_psrc unknown p_snk={p_snk} p_src={p_src}")
     return as_mspincolor(msc)
 
-def mk_get_prop(prop_cache):
+def mk_get_prop(prop_cache, *, psel_pos_dict):
     def get_prop(flavor, p_snk, p_src):
-        return get_prop_psnk_psrc(prop_cache, flavor, p_snk, p_src)
+        return get_prop_psnk_psrc(prop_cache, flavor, p_snk, p_src, psel_pos_dict = psel_pos_dict)
     return get_prop
 
 @q.timer
-def auto_contractor_simple_test(job_tag, traj):
-    prop_cache = q.mk_cache(f"prop_cache-{job_tag}-{traj}")
-    get_prop = mk_get_prop(prop_cache)
-    q.displayln_info(g.gamma[5] * get_prop_psnk_psrc(prop_cache, "l", [1, 2, 3, 2], [1, 2, 3, 2]))
-    q.displayln_info(g.trace(g.gamma[5] * get_prop_psnk_psrc(prop_cache, "l", [1, 2, 3, 2], [1, 2, 3, 2])))
-    q.displayln_info(g.gamma[5] * get_prop_psnk_psrc(prop_cache, "l", [1, 2, 3, 2], [1, 2, 3, 2]) - get_prop_psnk_psrc(prop_cache, "l", [1, 2, 3, 2], [1, 2, 3, 2]))
-    q.displayln_info(g.gamma[5] * adj_msc(get_prop_psnk_psrc(prop_cache, "l", [1, 2, 3, 2], [1, 2, 3, 2])))
-    q.displayln_info(g.norm2(g.gamma[5] * adj_msc(get_prop_psnk_psrc(prop_cache, "l", [1, 2, 3, 2], [1, 2, 3, 4])) * g.gamma[5] - get_prop_psnk_psrc(prop_cache, "l", [1, 2, 3, 4], [1, 2, 3, 2])))
+def auto_contractor_simple_test(job_tag, traj, get_prop):
+    q.displayln_info(g.gamma[5] * get_prop("l", [1, 2, 3, 2], [1, 2, 3, 2]))
+    q.displayln_info(g.trace(g.gamma[5] * get_prop("l", [1, 2, 3, 2], [1, 2, 3, 2])))
+    q.displayln_info(g.gamma[5] * get_prop("l", [1, 2, 3, 2], [1, 2, 3, 2]) - get_prop("l", [1, 2, 3, 2], [1, 2, 3, 2]))
+    q.displayln_info(g.gamma[5] * adj_msc(get_prop("l", [1, 2, 3, 2], [1, 2, 3, 2])))
+    q.displayln_info(g.norm2(g.gamma[5] * adj_msc(get_prop("l", [1, 2, 3, 2], [1, 2, 3, 4])) * g.gamma[5] - get_prop("l", [1, 2, 3, 4], [1, 2, 3, 2])))
     expr = (1
             * Qb("d", "x1", "s1", "c1")
             * G(5, "s1", "s2")
@@ -263,7 +265,7 @@ def auto_contractor_simple_test(job_tag, traj):
     positions_dict = {}
     positions_dict["x1"] = [1, 2, 3, 4]
     positions_dict["x2"] = [1, 2, 3, 2]
-    val = eval_cexpr(cexpr, positions_dict = positions_dict, get_prop = get_prop)
+    val = eval_cexpr(cexpr, positions_dict = positions_dict, get_prop = get_prop, is_only_total = "total")
     q.displayln_info("eval_cexpr: ", val)
     q.displayln_info("gpt_direct: ",
             -g.trace(
@@ -439,80 +441,87 @@ def auto_contractor_pipi_corr(job_tag, traj, get_prop, num_trials):
             q.displayln_info(f"{name_fac} {k}:\n  {v}")
 
 @q.timer
-def auto_contractor_kpipi_corr(job_tag, traj, get_prop, num_trials):
-    total_site = ru.get_total_site(job_tag)
-    vol = total_site[0] * total_site[1] * total_site[2]
-    exprs_odd_ops = [
-            vol * mk_Q1("x", "odd") + "Q1(o)",
-            vol * mk_Q2("x", "odd") + "Q2(o)",
-            vol * mk_Q3("x", "odd") + "Q3(o)",
-            vol * mk_Q4("x", "odd") + "Q4(o)",
-            vol * mk_Q5("x", "odd") + "Q5(o)",
-            vol * mk_Q6("x", "odd") + "Q6(o)",
-            vol * mk_Q7("x", "odd") + "Q7(o)",
-            vol * mk_Q8("x", "odd") + "Q8(o)",
-            vol * mk_Q9("x", "odd") + "Q9(o)",
-            vol * mk_Q10("x", "odd") + "Q10(o)",
-            vol * mk_Qsub("x", "odd") + "Qs(o)",
-            ]
-    exprs_even_ops = [
-            vol * mk_Q1("x", "even") + "Q1(e)",
-            vol * mk_Q2("x", "even") + "Q2(e)",
-            vol * mk_Q3("x", "even") + "Q3(e)",
-            vol * mk_Q4("x", "even") + "Q4(e)",
-            vol * mk_Q5("x", "even") + "Q5(e)",
-            vol * mk_Q6("x", "even") + "Q6(e)",
-            vol * mk_Q7("x", "even") + "Q7(e)",
-            vol * mk_Q8("x", "even") + "Q8(e)",
-            vol * mk_Q9("x", "even") + "Q9(e)",
-            vol * mk_Q10("x", "even") + "Q10(e)",
-            vol * mk_Qsub("x", "even") + "Qs(e)",
-            ]
-    exprs_ops = exprs_odd_ops + exprs_even_ops
-    exprs_k = [
-            vol * mk_k_0("x2") + "K0",
-            ]
-    exprs_pipi = [
-            vol**2 * mk_pipi_i0("x1_1", "x1_2", True) + "pipi_I0",
-            vol**2 * mk_pipi_i20("x1_1", "x1_2", True) + "pipi_I2",
-            vol * mk_sigma("x1_1", True) + "sigma_1",
-            vol * mk_sigma("x1_2", True) + "sigma_2",
-            vol * mk_pi_0("x1_1", True) + "pi0_1",
-            vol * mk_pi_0("x1_2", True) + "pi0_2",
-            mk_expr(1) + "1",
-            ]
-    exprs = []
-    for expr_k in exprs_k:
-        for expr_pipi in exprs_pipi:
-            for expr_op in exprs_ops:
-                exprs.append(expr_pipi * expr_op * expr_k)
-    diagram_type_dict = dict()
-    diagram_type_dict[((('x', 'x'), 1), (('x', 'x1_1'), 1), (('x1_1', 'x1_2'), 1), (('x1_2', 'x2'), 1), (('x2', 'x'), 1))] = "Type3"
-    diagram_type_dict[((('x', 'x'), 1), (('x', 'x2'), 1), (('x1_1', 'x1_2'), 1), (('x1_2', 'x1_1'), 1), (('x2', 'x'), 1))] = "Type4"
-    diagram_type_dict[((('x', 'x1_1'), 1), (('x', 'x1_2'), 1), (('x1_1', 'x'), 1), (('x1_2', 'x2'), 1), (('x2', 'x'), 1))] = "Type1"
-    diagram_type_dict[((('x', 'x1_1'), 1), (('x', 'x2'), 1), (('x1_1', 'x1_2'), 1), (('x1_2', 'x'), 1), (('x2', 'x'), 1))] = "Type2"
-    diagram_type_dict[((('x', 'x1_1'), 1), (('x1_1', 'x1_2'), 1), (('x1_2', 'x2'), 1), (('x2', 'x'), 1))] = "Type3"
-    diagram_type_dict[((('x', 'x2'), 1), (('x1_1', 'x1_2'), 1), (('x1_2', 'x1_1'), 1), (('x2', 'x'), 1))] = "Type4"
-    diagram_type_dict[((('x', 'x'), 1), (('x', 'x1_1'), 1), (('x1_1', 'x2'), 1), (('x2', 'x'), 1))] = "Type3"
-    diagram_type_dict[((('x', 'x'), 1), (('x', 'x2'), 1), (('x1_1', 'x1_1'), 1), (('x2', 'x'), 1))] = "Type4"
-    diagram_type_dict[((('x', 'x1_1'), 1), (('x', 'x2'), 1), (('x1_1', 'x'), 1), (('x2', 'x'), 1))] = "Type2"
-    diagram_type_dict[((('x', 'x1_1'), 1), (('x1_1', 'x2'), 1), (('x2', 'x'), 1))] = "Type3"
-    diagram_type_dict[((('x', 'x2'), 1), (('x1_1', 'x1_1'), 1), (('x2', 'x'), 1))] = "Type4"
-    diagram_type_dict[((('x', 'x'), 1), (('x', 'x1_2'), 1), (('x1_2', 'x2'), 1), (('x2', 'x'), 1))] = "Type3"
-    diagram_type_dict[((('x', 'x'), 1), (('x', 'x2'), 1), (('x1_2', 'x1_2'), 1), (('x2', 'x'), 1))] = "Type4"
-    diagram_type_dict[((('x', 'x1_2'), 1), (('x', 'x2'), 1), (('x1_2', 'x'), 1), (('x2', 'x'), 1))] = "Type2"
-    diagram_type_dict[((('x', 'x1_2'), 1), (('x1_2', 'x2'), 1), (('x2', 'x'), 1))] = "Type3"
-    diagram_type_dict[((('x', 'x2'), 1), (('x1_2', 'x1_2'), 1), (('x2', 'x'), 1))] = "Type4"
-    diagram_type_dict[((('x', 'x'), 1), (('x', 'x2'), 1), (('x2', 'x'), 1))] = "Type4"
-    diagram_type_dict[((('x', 'x2'), 1), (('x2', 'x'), 1))] = "Type4"
-    path_cexpr = "cache/auto_contractor_cexprs/kpipi.pickle"
-    cexpr = q.load_pickle_obj(path_cexpr)
-    if cexpr is None:
+def get_kpipi_cexpr(job_tag):
+    @q.timer
+    def mk_kpipi_cexpr():
+        total_site = ru.get_total_site(job_tag)
+        vol = total_site[0] * total_site[1] * total_site[2]
+        exprs_odd_ops = [
+                vol * mk_Q1("x", "odd") + "Q1(o)",
+                vol * mk_Q2("x", "odd") + "Q2(o)",
+                vol * mk_Q3("x", "odd") + "Q3(o)",
+                vol * mk_Q4("x", "odd") + "Q4(o)",
+                vol * mk_Q5("x", "odd") + "Q5(o)",
+                vol * mk_Q6("x", "odd") + "Q6(o)",
+                vol * mk_Q7("x", "odd") + "Q7(o)",
+                vol * mk_Q8("x", "odd") + "Q8(o)",
+                vol * mk_Q9("x", "odd") + "Q9(o)",
+                vol * mk_Q10("x", "odd") + "Q10(o)",
+                vol * mk_Qsub("x", "odd") + "Qs(o)",
+                ]
+        exprs_even_ops = [
+                vol * mk_Q1("x", "even") + "Q1(e)",
+                vol * mk_Q2("x", "even") + "Q2(e)",
+                vol * mk_Q3("x", "even") + "Q3(e)",
+                vol * mk_Q4("x", "even") + "Q4(e)",
+                vol * mk_Q5("x", "even") + "Q5(e)",
+                vol * mk_Q6("x", "even") + "Q6(e)",
+                vol * mk_Q7("x", "even") + "Q7(e)",
+                vol * mk_Q8("x", "even") + "Q8(e)",
+                vol * mk_Q9("x", "even") + "Q9(e)",
+                vol * mk_Q10("x", "even") + "Q10(e)",
+                vol * mk_Qsub("x", "even") + "Qs(e)",
+                ]
+        exprs_ops = exprs_odd_ops + exprs_even_ops
+        exprs_k = [
+                vol * mk_k_0("x2") + "K0",
+                ]
+        exprs_pipi = [
+                vol**2 * mk_pipi_i0("x1_1", "x1_2", True) + "pipi_I0",
+                vol**2 * mk_pipi_i20("x1_1", "x1_2", True) + "pipi_I2",
+                vol * mk_sigma("x1_1", True) + "sigma_1",
+                vol * mk_sigma("x1_2", True) + "sigma_2",
+                vol * mk_pi_0("x1_1", True) + "pi0_1",
+                vol * mk_pi_0("x1_2", True) + "pi0_2",
+                mk_expr(1) + "1",
+                ]
+        exprs = []
+        for expr_k in exprs_k:
+            for expr_pipi in exprs_pipi:
+                for expr_op in exprs_ops:
+                    exprs.append(expr_pipi * expr_op * expr_k)
+        diagram_type_dict = dict()
+        diagram_type_dict[((('x', 'x'), 1), (('x', 'x1_1'), 1), (('x1_1', 'x1_2'), 1), (('x1_2', 'x2'), 1), (('x2', 'x'), 1))] = "Type3"
+        diagram_type_dict[((('x', 'x'), 1), (('x', 'x2'), 1), (('x1_1', 'x1_2'), 1), (('x1_2', 'x1_1'), 1), (('x2', 'x'), 1))] = "Type4"
+        diagram_type_dict[((('x', 'x1_1'), 1), (('x', 'x1_2'), 1), (('x1_1', 'x'), 1), (('x1_2', 'x2'), 1), (('x2', 'x'), 1))] = "Type1"
+        diagram_type_dict[((('x', 'x1_1'), 1), (('x', 'x2'), 1), (('x1_1', 'x1_2'), 1), (('x1_2', 'x'), 1), (('x2', 'x'), 1))] = "Type2"
+        diagram_type_dict[((('x', 'x1_1'), 1), (('x1_1', 'x1_2'), 1), (('x1_2', 'x2'), 1), (('x2', 'x'), 1))] = "Type3"
+        diagram_type_dict[((('x', 'x2'), 1), (('x1_1', 'x1_2'), 1), (('x1_2', 'x1_1'), 1), (('x2', 'x'), 1))] = "Type4"
+        diagram_type_dict[((('x', 'x'), 1), (('x', 'x1_1'), 1), (('x1_1', 'x2'), 1), (('x2', 'x'), 1))] = "Type3"
+        diagram_type_dict[((('x', 'x'), 1), (('x', 'x2'), 1), (('x1_1', 'x1_1'), 1), (('x2', 'x'), 1))] = "Type4"
+        diagram_type_dict[((('x', 'x1_1'), 1), (('x', 'x2'), 1), (('x1_1', 'x'), 1), (('x2', 'x'), 1))] = "Type2"
+        diagram_type_dict[((('x', 'x1_1'), 1), (('x1_1', 'x2'), 1), (('x2', 'x'), 1))] = "Type3"
+        diagram_type_dict[((('x', 'x2'), 1), (('x1_1', 'x1_1'), 1), (('x2', 'x'), 1))] = "Type4"
+        diagram_type_dict[((('x', 'x'), 1), (('x', 'x1_2'), 1), (('x1_2', 'x2'), 1), (('x2', 'x'), 1))] = "Type3"
+        diagram_type_dict[((('x', 'x'), 1), (('x', 'x2'), 1), (('x1_2', 'x1_2'), 1), (('x2', 'x'), 1))] = "Type4"
+        diagram_type_dict[((('x', 'x1_2'), 1), (('x', 'x2'), 1), (('x1_2', 'x'), 1), (('x2', 'x'), 1))] = "Type2"
+        diagram_type_dict[((('x', 'x1_2'), 1), (('x1_2', 'x2'), 1), (('x2', 'x'), 1))] = "Type3"
+        diagram_type_dict[((('x', 'x2'), 1), (('x1_2', 'x1_2'), 1), (('x2', 'x'), 1))] = "Type4"
+        diagram_type_dict[((('x', 'x'), 1), (('x', 'x2'), 1), (('x2', 'x'), 1))] = "Type4"
+        diagram_type_dict[((('x', 'x2'), 1), (('x2', 'x'), 1))] = "Type4"
         cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True, diagram_type_dict = diagram_type_dict)
         q.displayln_info(display_cexpr(cexpr))
         cexpr.collect_op()
-        q.save_pickle_obj(cexpr, path_cexpr)
+        return cexpr
+    cexpr = q.pickle_cache_call(mk_kpipi_cexpr, f"cache/auto_contractor_cexpr/kpipi-cexpr.{job_tag}.pickle")
     q.displayln_info(display_cexpr_raw(cexpr))
+    return cexpr
+
+@q.timer
+def auto_contractor_kpipi_corr(job_tag, traj, get_prop, num_trials):
+    cexpr = get_kpipi_cexpr(job_tag)
+    total_site = ru.get_total_site(job_tag)
+    vol = total_site[0] * total_site[1] * total_site[2]
     rng_state = q.RngState("seed")
     def positions_dict_maker(idx):
         rs = rng_state.split(str(idx))
@@ -537,11 +546,11 @@ def auto_contractor_kpipi_corr(job_tag, traj, get_prop, num_trials):
         facs = [1.0, fac1]
         return pd, facs
     names_fac = [ "rest", "moving", ]
-    trial_indices = range(num_trials)
+    num_chunk = num_trials // q.get_num_node()
+    num_start = num_chunk * q.get_id_node()
+    trial_indices = range(num_start, num_start + num_chunk)
     results_list = eval_cexpr_simulation(cexpr, positions_dict_maker = positions_dict_maker, trial_indices = trial_indices, get_prop = get_prop, is_only_total = "typed_total")
-    q.qmkdir_info("analysis")
     q.qremove_all_info("analysis/kpipi")
-    q.qmkdir_info("analysis/kpipi")
     def mk_fn(info):
         def f(c):
             if c in "()<>/* ":
@@ -917,23 +926,26 @@ def run_prop(job_tag, traj, get_gf, get_gt, get_eig):
             [ get_load_path(f"prop-psrc-{inv_type}/{job_tag}/traj={traj}") for inv_type in [0, 1, 2,] ] + \
             [ get_load_path(f"prop-wsrc-{inv_type}/{job_tag}/traj={traj}") for inv_type in [0, 1, 2,] ]
     if all(map(lambda x : x is not None, path_prop_list)):
+        total_site = ru.get_total_site(job_tag)
+        psel = q.PointSelection(get_all_points(total_site))
+        psel_pos_dict = dict([ (tuple(pos), i) for i, pos in enumerate(psel.to_list()) ])
         load_prop_wsrc_all(job_tag, traj, "l",
                 f"prop-wsrc-0/{job_tag}/traj={traj}",
                 f"psel-prop-wsrc-0/{job_tag}/traj={traj}",
-                get_gt())
+                psel, get_gt())
         load_prop_wsrc_all(job_tag, traj, "s",
                 f"prop-wsrc-1/{job_tag}/traj={traj}",
                 f"psel-prop-wsrc-1/{job_tag}/traj={traj}",
-                get_gt())
+                psel, get_gt())
         load_prop_wsrc_all(job_tag, traj, "c",
                 f"prop-wsrc-2/{job_tag}/traj={traj}",
                 f"psel-prop-wsrc-2/{job_tag}/traj={traj}",
-                get_gt())
-        load_prop_psrc_all(job_tag, traj, "l", f"prop-psrc-0/{job_tag}/traj={traj}")
-        load_prop_psrc_all(job_tag, traj, "s", f"prop-psrc-1/{job_tag}/traj={traj}")
-        load_prop_psrc_all(job_tag, traj, "c", f"prop-psrc-2/{job_tag}/traj={traj}")
+                psel, get_gt())
+        load_prop_psrc_all(job_tag, traj, "l", f"prop-psrc-0/{job_tag}/traj={traj}", psel)
+        load_prop_psrc_all(job_tag, traj, "s", f"prop-psrc-1/{job_tag}/traj={traj}", psel)
+        load_prop_psrc_all(job_tag, traj, "c", f"prop-psrc-2/{job_tag}/traj={traj}", psel)
         prop_cache = q.mk_cache(f"prop_cache-{job_tag}-{traj}")
-        get_prop = mk_get_prop(prop_cache)
+        get_prop = mk_get_prop(prop_cache, psel_pos_dict = psel_pos_dict)
         return get_prop
     return None
 
@@ -949,14 +961,14 @@ def run_job(job_tag, traj):
     get_prop = run_prop(job_tag, traj, get_gf, get_gt, get_eig)
     #
     if get_prop is not None:
-        # auto_contractor_simple_test(job_tag, traj)
+        # auto_contractor_simple_test(job_tag, traj, get_prop)
         num_trials = 100
-#        auto_contractor_test_corr(job_tag, traj, get_prop, num_trials)
-#        auto_contractor_meson_corr(job_tag, traj, get_prop, num_trials)
-#        auto_contractor_pipi_corr(job_tag, traj, get_prop, num_trials)
-#        auto_contractor_kpipi_corr(job_tag, traj, get_prop, num_trials)
-#        auto_contractor_kpipi_corr_81oprs(job_tag, traj, get_prop, num_trials)
-        auto_contractor_3f4f_matching(job_tag, traj, get_prop, num_trials)
+        # auto_contractor_test_corr(job_tag, traj, get_prop, num_trials)
+        # auto_contractor_meson_corr(job_tag, traj, get_prop, num_trials)
+        # auto_contractor_pipi_corr(job_tag, traj, get_prop, num_trials)
+        auto_contractor_kpipi_corr(job_tag, traj, get_prop, num_trials)
+        # auto_contractor_kpipi_corr_81oprs(job_tag, traj, get_prop, num_trials)
+        # auto_contractor_3f4f_matching(job_tag, traj, get_prop, num_trials)
     #
     q.clean_cache()
 

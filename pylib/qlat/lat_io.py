@@ -191,6 +191,7 @@ class LatData:
         self.from_list(data_list)
 
     def info(self, dim = None, *, is_complex = True):
+        # by default, return list can be used as the input argument for ld.set_info or mk_lat_data
         if dim is None:
             ndim = self.ndim(is_complex = is_complex)
             return [ self.info(i) for i in range(ndim) ]

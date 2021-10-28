@@ -99,3 +99,12 @@ def load_pickle_obj(path, default_value = None):
         return obj
     else:
         return default_value
+
+@timer
+def pickle_cache_call(func, path):
+    if not does_file_exist_sync_node(path):
+        obj = func()
+        save_pickle_obj(obj, path)
+    else:
+        obj = load_pickle_obj(path)
+    return obj
