@@ -5,6 +5,8 @@ import rbc_ukqcd_params.p_test
 import rbc_ukqcd_params.p_24D
 import rbc_ukqcd_params.p_32D
 
+import rbc_ukqcd_params.p_32Dfine
+
 import rbc_ukqcd_params.p_24DH
 
 import rbc_ukqcd_params.p_16IH2
