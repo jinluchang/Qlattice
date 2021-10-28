@@ -150,9 +150,6 @@ def run_prop_wsrc_strange(job_tag, traj, get_fsel):
 
 @q.timer_verbose
 def run_job(job_tag, traj):
-    if check_job(job_tag, traj):
-        return
-    #
     get_psel = run_psel(job_tag, traj)
     get_fsel = run_fsel(job_tag, traj, get_psel)
     #
@@ -165,6 +162,9 @@ def run_job(job_tag, traj):
 rup.dict_params["test-4nt8"]["trajs"] = list(range(500, 3000, 5))
 rup.dict_params["test-4nt16"]["trajs"] = list(range(500, 3000, 5))
 rup.dict_params["24D"]["trajs"] = list(range(500, 3000, 5))
+rup.dict_params["24DH"]["trajs"] = list(range(200, 1000, 5))
+rup.dict_params["32D"]["trajs"] = list(range(500, 3000, 5))
+rup.dict_params["32Dfine"]["trajs"] = list(range(500, 3000, 5))
 rup.dict_params["48I"]["trajs"] = list(range(500, 3000, 5))
 rup.dict_params["64I"]["trajs"] = list(range(500, 3000, 5))
 
@@ -172,10 +172,7 @@ rup.dict_params["64I"]["trajs"] = list(range(500, 3000, 5))
 job_tags = [
         "test-4nt8", "test-4nt16",
         # "48I", "64I",
-        # "24D",
-        # "24DH",
-        # "32D",
-        # "32Dfine",
+        # "24D", "24DH", "32D", "32Dfine",
         ]
 
 size_node_list = [
@@ -191,6 +188,8 @@ q.check_time_limit()
 for job_tag in job_tags:
     q.displayln_info(pprint.pformat(rup.dict_params[job_tag]))
     for traj in rup.dict_params[job_tag]["trajs"]:
+        if check_job(job_tag, traj):
+            continue
         run_job(job_tag, traj)
 
 q.end()
