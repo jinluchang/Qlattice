@@ -6,8 +6,11 @@ grid_options=
 mpi_options=--bind-to none -mca btl_openib_allow_ib true
 mpi_options=
 
+mpirun=mpirun --np 2
+mpirun=
+
 run:
-	q_verbose=1 q_time_limit=2000000 mpirun --np 2 $(mpi_options) ./run.py $(grid_options) |& tee log.txt
+	q_verbose=1 q_time_limit=2000000 q_num_threads=1 $(mpirun) $(mpi_options) ./run.py $(grid_options) |& tee log.txt
 
 src_path=~/Qlattice-cc/pylib/apps/misc/fill-wsnk-prop
 
