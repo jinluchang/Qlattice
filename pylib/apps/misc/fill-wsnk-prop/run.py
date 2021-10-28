@@ -71,7 +71,7 @@ def compute_prop_wsrc_all(path_sp, path_s, fsel, fselc):
     tags = sfr.list()
     for tag in tags:
         fn_spw = os.path.join(path_sp, f"{tag} ; wsnk.lat")
-        if q.does_file_exist_sync_node(get_load_path(fn_spw)):
+        if get_load_path(fn_spw) is not None:
             continue
         sprop_c.load_double_from_float(sfr, tag)
         sprop @= sprop_c
