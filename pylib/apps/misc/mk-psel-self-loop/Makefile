@@ -6,17 +6,23 @@ grid_options=
 mpi_options=--bind-to none -mca btl_openib_allow_ib true
 mpi_options=
 
+mpirun=mpirun --np 2 $(mpi_options) ./run.py --mpi 1.1.1.2 $(grid_options)
+
+env=q_verbose=1 q_num_threads=2
+
 run:
-	q_verbose=1 mpirun --np 2 $(mpi_options) ./run.py --mpi 1.1.1.2 $(grid_options) |& tee log.txt
+	$(env) $(mpirun) |& tee log.txt
 
 src_path=~/Qlattice-cc/pylib/apps/misc/mk-psel-self-loop
 
 diff:
-	diff $(src_path)/run.py run.py
-	diff $(src_path)/Makefile Makefile
+	-diff $(src_path)/run.py run.py
+	-diff $(src_path)/jobs.py jobs.py
+	-diff $(src_path)/Makefile Makefile
 
 sync:
 	cp -v $(src_path)/run.py .
+	cp -v $(src_path)/jobs.py .
 	cp -v $(src_path)/Makefile .
 
 clean:
