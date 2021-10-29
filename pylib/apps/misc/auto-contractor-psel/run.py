@@ -32,12 +32,12 @@ jobs.load_path_list = [
 def check_job(job_tag, traj):
     # return True if config is finished or unavailable
     fns_produce = [
-            f"results/auto-contractor-psel/{job_tag}/traj={traj}",
+            f"auto-contractor-psel/{job_tag}/traj={traj}/checkpoint.txt",
             ]
     is_job_done = True
     for fn in fns_produce:
         if get_load_path(fn) is None:
-            q.displayln_info(f"check_job: {job_tag} {traj} to do as some file does not exist.")
+            q.displayln_info(f"check_job: {job_tag} {traj} to do as file '{fn}' does not exist.")
             is_job_done = False
             break
     if is_job_done:

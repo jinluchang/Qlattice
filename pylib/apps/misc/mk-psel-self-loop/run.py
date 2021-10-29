@@ -11,46 +11,40 @@ import pprint
 
 import os
 
-def get_save_path(fn):
-    return os.path.join("results", fn)
+import jobs
+from jobs import *
 
-def get_load_path(fn):
-    if fn is None:
-        return None
-    path_list = [
-            "results",
-            "../mk-gf-gt/results",
-            "../mk-selected-data/results",
-            "/sdcc/u/jluchang/qcdqedta/hlbl-data-with-cache",
-            ]
-    for path in path_list:
-        p = os.path.join(path, fn)
-        if q.does_file_exist_sync_node(p):
-            return p
-    return None
+jobs.save_path_default = "results"
+
+jobs.load_path_list = [
+        "results",
+        "../mk-gf-gt/results",
+        "../mk-selected-data/results",
+        "/sdcc/u/jluchang/qcdqedta/hlbl-data-with-cache",
+        ]
 
 @q.timer_verbose
 def check_job(job_tag, traj):
     # return True if config is finished or unavailable
     fns_produce = [
-            get_load_path(f"psel-prop-rand-u1/{job_tag}/traj={traj}/checkpoint ; type=1.txt"),
-            get_load_path(f"psel-prop-rand-u1/{job_tag}/traj={traj}/checkpoint ; type=2.txt"),
+            f"psel-prop-rand-u1/{job_tag}/traj={traj}/checkpoint ; type=1.txt",
+            f"psel-prop-rand-u1/{job_tag}/traj={traj}/checkpoint ; type=2.txt",
             ]
     is_job_done = True
     for fn in fns_produce:
-        if fn is None:
-            q.displayln_info(f"check_job: {job_tag} {traj} to do as some file does not exist.")
+        if get_load_path(fn) is None:
+            q.displayln_info(f"check_job: {job_tag} {traj} to do as file '{fn}' does not exist.")
             is_job_done = False
             break
     if is_job_done:
         return True
     #
     fns_need = [
-            get_load_path(f"configs/{job_tag}/ckpoint_lat.{traj}"),
-            get_load_path(f"point-selection/{job_tag}/traj={traj}.txt"),
+            f"configs/{job_tag}/ckpoint_lat.{traj}",
+            f"point-selection/{job_tag}/traj={traj}.txt",
             ]
     for fn in fns_need:
-        if fn is None:
+        if get_load_path(fn) is None:
             q.displayln_info(f"check_job: {job_tag} {traj} unavailable as {fn} does not exist.")
             return True
     #
@@ -58,20 +52,6 @@ def check_job(job_tag, traj):
     q.check_time_limit()
     #
     return False
-
-def get_n_points(job_tag, traj, inv_type, inv_acc):
-    assert job_tag in rup.dict_params
-    assert "n_points" in rup.dict_params[job_tag]
-    return rup.dict_params[job_tag]["n_points"][inv_type][inv_acc]
-
-@q.timer
-def mk_rand_psel(job_tag, traj):
-    rs = q.RngState(f"seed {job_tag} {traj}").split("mk_rand_psel")
-    total_site = ru.get_total_site(job_tag)
-    n_points = get_n_points(job_tag, traj, 0, 0)
-    psel = q.PointSelection()
-    psel.set_rand(rs, total_site, n_points)
-    return psel
 
 @q.timer_verbose
 def compute_prop_rand_u1(*, job_tag, traj, gf, inv_type, path_sp, psel):
@@ -120,39 +100,6 @@ def run_prop_rand_u1_strange(job_tag, traj, get_gf, get_psel):
         q.release_lock()
 
 @q.timer_verbose
-def run_gf(job_tag, traj):
-    path_gf = get_load_path(f"configs/{job_tag}/ckpoint_lat.{traj}")
-    if path_gf is None:
-        if job_tag[:5] == "test-":
-            gf = ru.mk_sample_gauge_field(job_tag, f"{traj}")
-            q.qmkdir_info(get_save_path(f"configs"))
-            q.qmkdir_info(get_save_path(f"configs/{job_tag}"))
-            path_gf = get_save_path(f"configs/{job_tag}/ckpoint_lat.{traj}")
-            # gf.save(path_gf)
-            qg.save_gauge_field(gf, path_gf)
-        else:
-            assert False
-    get_gf = ru.load_config_lazy(job_tag, path_gf)
-    return get_gf
-
-@q.timer_verbose
-def run_psel(job_tag, traj):
-    path_psel = get_load_path(f"point-selection/{job_tag}/traj={traj}.txt")
-    if path_psel is None:
-        q.qmkdir_info(get_save_path(f"point-selection"))
-        q.qmkdir_info(get_save_path(f"point-selection/{job_tag}"))
-        psel = mk_rand_psel(job_tag, traj)
-        psel.save(get_save_path(f"point-selection/{job_tag}/traj={traj}.txt"))
-        return lambda : psel
-    else:
-        @q.timer_verbose
-        def load_psel():
-            psel = q.PointSelection()
-            psel.load(path_psel)
-            return psel
-        return q.lazy_call(load_psel)
-
-@q.timer_verbose
 def run_job(job_tag, traj):
     if check_job(job_tag, traj):
         return
@@ -166,7 +113,6 @@ def run_job(job_tag, traj):
     get_gf = run_gf(job_tag, traj_gf)
     #
     get_psel = run_psel(job_tag, traj)
-    assert get_psel is not None
     #
     run_prop_rand_u1_charm(job_tag, traj, get_gf, get_psel)
     run_prop_rand_u1_strange(job_tag, traj, get_gf, get_psel)
@@ -194,17 +140,10 @@ qg.begin_with_gpt()
 
 # ADJUST ME
 job_tags = [
-        "test-4nt8",
-        "test-4nt16",
-        # "test-8nt16",
-        # "test-16nt32",
-        # "test-32nt64",
-        # "test-48nt96",
-        # "test-64nt128",
-        # "test-96nt192",
-        # "test-128nt256",
-        # "24D",
+        "test-4nt8", "test-4nt16",
+        # "64I",
         # "48I",
+        # "24D",
         ]
 
 q.check_time_limit()
