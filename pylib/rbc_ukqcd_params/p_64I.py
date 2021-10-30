@@ -33,9 +33,9 @@ def mk_fermion_params(inv_type, inv_acc):
 
 def mk_dict_fermion_params():
     params = {}
-    for inv_type in [0, 1,]:
+    for inv_type in [ 0, 1, 2, ]:
         params[inv_type] = {}
-        for inv_acc in [0, 1, 2,]:
+        for inv_acc in [ 0, 1, 2, ]:
             params[inv_type][inv_acc] = mk_fermion_params(inv_type, inv_acc)
     return params
 
