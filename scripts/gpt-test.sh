@@ -9,7 +9,8 @@ name=gpt-test
 echo "!!!! build $name !!!!"
 
 # grid_options="--dslash-asm --shm-hugepages --shm 4050"
-grid_options="--dslash-asm"
+# grid_options="--dslash-asm"
+grid_options=""
 
 geo_options="--grid 16.16.16.16 --mpi 1.1.1.1"
 
