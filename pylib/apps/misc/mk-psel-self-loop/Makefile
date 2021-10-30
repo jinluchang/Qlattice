@@ -26,4 +26,5 @@ sync:
 	cp -v $(src_path)/Makefile .
 
 clean:
-	-rm -rf locks results
+	-rm -rf locks
+	# -rm -rf results
