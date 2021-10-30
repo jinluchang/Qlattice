@@ -19,6 +19,8 @@ if [ -z "\$num_proc" ] ; then
     num_proc=8
 fi
 export PYTHONPATH=
+CC_OLD="\$CC"
+CXX_OLD="\$CXX"
 module purge
 module add anaconda3/2019.03-py3.7
 module add gcc/9.3.0
@@ -27,6 +29,8 @@ module add gcc/9.3.0
 source /hpcgpfs01/software/Intel/psxe2020/bin/compilervars.sh -arch intel64
 export INTEL_LICENSE_FILE=/hpcgpfs01/software/Intel/psxe2018.u1/licenses
 module list
+export CC="\$CC_OLD"
+export CXX="\$CXX_OLD"
 EOF
 
 ./scripts/compiler-wrappers.sh
