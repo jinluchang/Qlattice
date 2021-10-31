@@ -122,21 +122,31 @@ def run_job(job_tag, traj):
     q.clean_cache()
     q.timer_display()
 
-rup.dict_params["test-4nt8"]["n_rand_u1"] = 4
-rup.dict_params["test-4nt16"]["n_rand_u1"] = 4
-rup.dict_params["48I"]["n_rand_u1"] = 4
-rup.dict_params["64I"]["n_rand_u1"] = 4
-
-rup.dict_params["test-4nt8"]["trajs"] = list(range(1000, 1400, 100))
-rup.dict_params["test-4nt16"]["trajs"] = list(range(1000, 1400, 100))
-rup.dict_params["48I"]["trajs"] = list(range(3000, 500, -5))
-rup.dict_params["64I"]["trajs"] = list(range(3000, 500, -5))
-
 # rup.dict_params["test-4nt8"]["fermion_params"][0][2]["Ls"] = 10
 # rup.dict_params["test-4nt8"]["fermion_params"][1][2]["Ls"] = 10
 
 # rup.dict_params["test-4nt16"]["fermion_params"][0][2]["Ls"] = 10
 # rup.dict_params["test-4nt16"]["fermion_params"][1][2]["Ls"] = 10
+
+rup.dict_params["test-4nt8"]["n_rand_u1"] = 4
+rup.dict_params["test-4nt16"]["n_rand_u1"] = 4
+
+rup.dict_params["test-4nt8"]["trajs"] = list(range(1000, 1400, 100))
+rup.dict_params["test-4nt16"]["trajs"] = list(range(1000, 1400, 100))
+
+rup.dict_params["48I"]["n_rand_u1"] = 2
+rup.dict_params["64I"]["n_rand_u1"] = 2
+
+for inv_acc in [ 0, 1, 2, ]:
+    rup.dict_params["64I"]["fermion_params"][0][inv_acc]["mass"] = 0.0006203
+    rup.dict_params["64I"]["fermion_params"][1][inv_acc]["mass"] = 0.02539
+
+for inv_acc in [ 0, 1, 2, ]:
+    rup.dict_params["48I"]["fermion_params"][0][inv_acc]["mass"] = 0.0006979
+    rup.dict_params["48I"]["fermion_params"][1][inv_acc]["mass"] = 0.03580
+
+rup.dict_params["48I"]["trajs"] = list(range(3000, 500, -5))
+rup.dict_params["64I"]["trajs"] = list(range(3000, 500, -5))
 
 qg.begin_with_gpt()
 
