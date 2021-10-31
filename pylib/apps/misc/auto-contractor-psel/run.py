@@ -27,7 +27,8 @@ jobs.load_path_list = [
         "../mk-selected-data/results",
         "../mk-psel-self-loop/results",
         "/sdcc/u/jluchang/qcdqedta/hlbl-data-with-cache",
-        "/sdcc/u/jluchang/qcdqedta/luchang/data-gen/fill-wsnk-prop/results"
+        "/sdcc/u/jluchang/qcdqedta/luchang/data-gen/mk-psel-self-loop/results",
+        "/sdcc/u/jluchang/qcdqedta/luchang/data-gen/fill-wsnk-prop/results",
         ]
 
 @q.timer_verbose
@@ -490,17 +491,10 @@ qg.begin_with_gpt()
 
 # ADJUST ME
 job_tags = [
-        "test-4nt8",
-        "test-4nt16",
-        # "test-8nt16",
-        # "test-16nt32",
-        # "test-32nt64",
-        # "test-48nt96",
-        # "test-64nt128",
-        # "test-96nt192",
-        # "test-128nt256",
-        # "24D",
+        "test-4nt8", "test-4nt16",
+        # "64I",
         # "48I",
+        # "24D",
         ]
 
 q.check_time_limit()
