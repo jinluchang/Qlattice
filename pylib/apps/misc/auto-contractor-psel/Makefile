@@ -14,12 +14,15 @@ src_path=~/Qlattice-cc/pylib/apps/misc/auto-contractor-psel
 diff:
 	-diff $(src_path)/run.py run.py
 	-diff $(src_path)/jobs.py jobs.py
+	-diff $(src_path)/cexpr.py cexpr.py
 	-diff $(src_path)/Makefile Makefile
 
 sync:
 	cp -v $(src_path)/run.py .
 	cp -v $(src_path)/jobs.py .
+	cp -v $(src_path)/cexpr.py .
 	cp -v $(src_path)/Makefile .
 
 clean:
-	-rm -rf locks results
+	-rm -rf locks
+	#-rm -rf results

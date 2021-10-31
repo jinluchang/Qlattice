@@ -117,7 +117,7 @@ def run_job(job_tag, traj):
     get_psel = run_psel(job_tag, traj)
     #
     run_prop_rand_u1_charm(job_tag, traj, get_gf, get_psel)
-    # run_prop_rand_u1_strange(job_tag, traj, get_gf, get_psel)
+    run_prop_rand_u1_strange(job_tag, traj, get_gf, get_psel)
     #
     q.clean_cache()
     q.timer_display()

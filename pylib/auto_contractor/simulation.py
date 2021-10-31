@@ -276,6 +276,55 @@ def auto_contractor_simple_test(job_tag, traj, get_prop):
                 ))
 
 @q.timer
+def get_cexpr_vev():
+    def calc_cexpr():
+        s = new_spin_index()
+        c = new_color_index()
+        p = "x"
+        exprs = [
+                Qb("u", "x", s, c) * Qv("u", "x", s, c) + "u_bar*u",
+                Qb("d", "x", s, c) * Qv("d", "x", s, c) + "d_bar*d",
+                Qb("s", "x", s, c) * Qv("s", "x", s, c) + "s_bar*s",
+                Qb("c", "x", s, c) * Qv("c", "x", s, c) + "c_bar*c",
+                ]
+        cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
+        q.displayln_info(display_cexpr(cexpr))
+        cexpr.collect_op()
+        return cexpr
+    cexpr = q.pickle_cache_call(calc_cexpr, f"cache/auto_contractor_cexpr/vev-cexpr.pickle")
+    q.displayln_info(display_cexpr_raw(cexpr))
+    return cexpr
+
+@q.timer
+def auto_contractor_vev(job_tag, traj, get_prop, num_trials):
+    total_site = ru.get_total_site(job_tag)
+    vol = total_site[0] * total_site[1] * total_site[2]
+    cexpr = get_cexpr_vev()
+    rng_state = q.RngState("seed")
+    def positions_dict_maker(idx):
+        rs = rng_state.split(str(idx))
+        x = rs.c_rand_gen(total_site)
+        pd = {
+                "x" : ("point", x,),
+                }
+        facs = [ 1.0, ]
+        return pd, facs
+    names_fac = [ "rest", ]
+    num_chunk = num_trials // q.get_num_node()
+    num_start = num_chunk * q.get_id_node()
+    trial_indices = range(num_start, num_start + num_chunk)
+    results_list = eval_cexpr_simulation(
+            cexpr,
+            positions_dict_maker = positions_dict_maker,
+            trial_indices = trial_indices,
+            get_prop = get_prop,
+            is_only_total = "total")
+    for name_fac, results in zip(names_fac, results_list):
+        q.displayln_info(f"{name_fac} :")
+        for k, v in results.items():
+            q.displayln_info(f"{name_fac} {k}:\n  {v}")
+
+@q.timer
 def auto_contractor_meson_corr(job_tag, traj, get_prop, num_trials):
     total_site = ru.get_total_site(job_tag)
     vol = total_site[0] * total_site[1] * total_site[2]
@@ -441,9 +490,9 @@ def auto_contractor_pipi_corr(job_tag, traj, get_prop, num_trials):
             q.displayln_info(f"{name_fac} {k}:\n  {v}")
 
 @q.timer
-def get_kpipi_cexpr(job_tag):
+def get_cexpr_kpipi(job_tag):
     @q.timer
-    def mk_kpipi_cexpr():
+    def calc_cexpr():
         total_site = ru.get_total_site(job_tag)
         vol = total_site[0] * total_site[1] * total_site[2]
         exprs_odd_ops = [
@@ -513,13 +562,13 @@ def get_kpipi_cexpr(job_tag):
         q.displayln_info(display_cexpr(cexpr))
         cexpr.collect_op()
         return cexpr
-    cexpr = q.pickle_cache_call(mk_kpipi_cexpr, f"cache/auto_contractor_cexpr/kpipi-cexpr.{job_tag}.pickle")
+    cexpr = q.pickle_cache_call(calc_cexpr, f"cache/auto_contractor_cexpr/kpipi-cexpr.{job_tag}.pickle")
     q.displayln_info(display_cexpr_raw(cexpr))
     return cexpr
 
 @q.timer
 def auto_contractor_kpipi_corr(job_tag, traj, get_prop, num_trials):
-    cexpr = get_kpipi_cexpr(job_tag)
+    cexpr = get_cexpr_kpipi(job_tag)
     total_site = ru.get_total_site(job_tag)
     vol = total_site[0] * total_site[1] * total_site[2]
     rng_state = q.RngState("seed")
@@ -963,10 +1012,11 @@ def run_job(job_tag, traj):
     if get_prop is not None:
         # auto_contractor_simple_test(job_tag, traj, get_prop)
         num_trials = 100
+        auto_contractor_vev(job_tag, traj, get_prop, num_trials)
         # auto_contractor_test_corr(job_tag, traj, get_prop, num_trials)
         # auto_contractor_meson_corr(job_tag, traj, get_prop, num_trials)
         # auto_contractor_pipi_corr(job_tag, traj, get_prop, num_trials)
-        auto_contractor_kpipi_corr(job_tag, traj, get_prop, num_trials)
+        # auto_contractor_kpipi_corr(job_tag, traj, get_prop, num_trials)
         # auto_contractor_kpipi_corr_81oprs(job_tag, traj, get_prop, num_trials)
         # auto_contractor_3f4f_matching(job_tag, traj, get_prop, num_trials)
     #
