@@ -157,6 +157,16 @@ def get_cexpr_names(cexpr, is_only_total = "total"):
         assert False
     return names
 
+def get_mpi_chunk(total_list):
+    total = len(total_list)
+    id_worker = q.get_id_node()
+    num_worker = q.get_num_node()
+    size_max = (total - 1) // num_worker + 1;
+    start = min(id_worker * size_max, total);
+    stop = min(start + size_max, total);
+    # size = stop - start;
+    return total_list[start:stop]
+
 @q.timer
 def eval_cexpr_simulation(cexpr : CExpr, *, positions_dict_maker, trial_indices, get_prop, is_only_total = "total"):
     # interface function

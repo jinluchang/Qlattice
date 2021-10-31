@@ -223,14 +223,14 @@ def get_prop_psnk_psrc(prop_cache, flavor : str, p_snk, p_src, *, psel_pos_dict)
         if type_snk == "wall" and type_src == "wall":
             msc = get_prop_wsnk_wsrc(prop_cache, flavor, pos_snk, pos_src)
         elif type_snk == "point" and type_src == "wall":
-            msc = get_prop_wsrc(prop_cache, flavor, pos_src).get_elem(pos_snk)
+            msc = get_prop_wsrc(prop_cache, flavor, pos_src).get_elem(psel_pos_dict[tuple(pos_snk)])
         elif type_snk == "wall" and type_src == "point":
             msc = ascontiguoustensor(
                     ascontiguoustensor(
                         g.gamma[5]
                         * adj_msc(
                             as_mspincolor(
-                                get_prop_wsrc(prop_cache, flavor, pos_snk).get_elem(pos_src))))
+                                get_prop_wsrc(prop_cache, flavor, pos_snk).get_elem(psel_pos_dict[tuple(pos_src)]))))
                     * g.gamma[5])
         elif type_snk == "point" and type_src == "point":
             msc = get_prop_psrc(prop_cache, flavor, pos_src).get_elem(psel_pos_dict[tuple(pos_snk)])
@@ -310,9 +310,7 @@ def auto_contractor_vev(job_tag, traj, get_prop, num_trials):
         facs = [ 1.0, ]
         return pd, facs
     names_fac = [ "rest", ]
-    num_chunk = num_trials // q.get_num_node()
-    num_start = num_chunk * q.get_id_node()
-    trial_indices = range(num_start, num_start + num_chunk)
+    trial_indices = get_mpi_chunk(range(num_trials))
     results_list = eval_cexpr_simulation(
             cexpr,
             positions_dict_maker = positions_dict_maker,
@@ -361,43 +359,51 @@ def auto_contractor_meson_corr(job_tag, traj, get_prop, num_trials):
                 ]
         return pd, facs
     names_fac = ["rest", "mom1", "mom2",]
-    trial_indices = range(num_trials)
+    trial_indices = get_mpi_chunk(range(num_trials))
     results_list = eval_cexpr_simulation(cexpr, positions_dict_maker = positions_dict_maker, trial_indices = trial_indices, get_prop = get_prop, is_only_total = "typed_total")
     for name_fac, results in zip(names_fac, results_list):
         q.displayln_info(f"{name_fac} :")
         for k, v in results.items():
             q.displayln_info(f"{name_fac} {k}:\n  {v}")
+
+@q.timer
+def get_cexpr_test_corr(vol):
+    def calc_cexpr():
+        exprs = [
+                vol**2 * mk_k0pi0("x2_1", "x2_2", True) * mk_k0pi0("x1_1", "x1_2"),
+                vol**2 * mk_k0pi0("x2_1", "x2_2", True) * mk_kmpip("x1_1", "x1_2"),
+                vol**2 * mk_kmpip("x2_1", "x2_2", True) * mk_kmpip("x1_1", "x1_2"),
+                vol**2 * mk_kppim("x2_1", "x2_2", True) * mk_kppim("x1_1", "x1_2"),
+                vol**2 * mk_k0barpi0("x2_1", "x2_2", True) * mk_k0barpi0("x1_1", "x1_2"),
+                vol**2 * mk_kpi_0_i1half("x2_1", "x2_2", True) * mk_kpi_0_i1half("x1_1", "x1_2"),
+                vol**2 * mk_kpi_0_i1half("x2_1", "x2_2", True) * mk_kpi_m_i1half("x1_1", "x1_2"),
+                vol**2 * mk_kpi_m_i1half("x2_1", "x2_2", True) * mk_kpi_m_i1half("x1_1", "x1_2"),
+                vol**2 * mk_kpi_0_i1half("x2_1", "x2_2", True) * mk_kpi_0_i3halves("x1_1", "x1_2"),
+                vol**2 * mk_kpi_m_i1half("x2_1", "x2_2", True) * mk_kpi_m1_i3halves("x1_1", "x1_2"),
+                vol**2 * mk_kpi_0_i3halves("x2_1", "x2_2", True) * mk_kpi_0_i3halves("x1_1", "x1_2"),
+                vol**2 * mk_k_0("x2_1", True) * mk_kpi_0_i1half("x1_1", "x1_2"),
+                vol**2 * mk_k_0("x2_1", True) * mk_kpi_0_i3halves("x1_1", "x1_2"),
+                vol**2 * mk_k_m("x2_1", True) * mk_kpi_m_i1half("x1_1", "x1_2"),
+                vol**2 * mk_k_m("x2_1", True) * mk_kpi_m1_i3halves("x1_1", "x1_2"),
+                vol**2 * mk_kpi_p_i3halves("x2_1", "x2_2", True) * mk_kpi_0_i3halves("x1_1", "x1_2"),
+                vol**2 * mk_kpi_m1_i3halves("x2_1", "x2_2", True) * mk_kpi_0_i3halves("x1_1", "x1_2"),
+                vol**2 * mk_kpi_m1_i3halves("x2_1", "x2_2", True) * mk_kpi_m1_i3halves("x1_1", "x1_2"),
+                vol**2 * mk_kpi_m2_i3halves("x2_1", "x2_2", True) * mk_kpi_0_i3halves("x1_1", "x1_2"),
+                vol**2 * mk_kpi_m2_i3halves("x2_1", "x2_2", True) * mk_kpi_m2_i3halves("x1_1", "x1_2"),
+                ]
+        cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
+        q.displayln_info(display_cexpr(cexpr))
+        cexpr.collect_op()
+        return cexpr
+    cexpr = q.pickle_cache_call(calc_cexpr, f"cache/auto_contractor_cexpr/test_corr-cexpr.{vol}.pickle")
+    q.displayln_info(display_cexpr_raw(cexpr))
+    return cexpr
 
 @q.timer
 def auto_contractor_test_corr(job_tag, traj, get_prop, num_trials):
     total_site = ru.get_total_site(job_tag)
     vol = total_site[0] * total_site[1] * total_site[2]
-    exprs = [
-            vol**2 * mk_k0pi0("x2_1", "x2_2", True) * mk_k0pi0("x1_1", "x1_2"),
-            vol**2 * mk_k0pi0("x2_1", "x2_2", True) * mk_kmpip("x1_1", "x1_2"),
-            vol**2 * mk_kmpip("x2_1", "x2_2", True) * mk_kmpip("x1_1", "x1_2"),
-            vol**2 * mk_kppim("x2_1", "x2_2", True) * mk_kppim("x1_1", "x1_2"),
-            vol**2 * mk_k0barpi0("x2_1", "x2_2", True) * mk_k0barpi0("x1_1", "x1_2"),
-            vol**2 * mk_kpi_0_i1half("x2_1", "x2_2", True) * mk_kpi_0_i1half("x1_1", "x1_2"),
-            vol**2 * mk_kpi_0_i1half("x2_1", "x2_2", True) * mk_kpi_m_i1half("x1_1", "x1_2"),
-            vol**2 * mk_kpi_m_i1half("x2_1", "x2_2", True) * mk_kpi_m_i1half("x1_1", "x1_2"),
-            vol**2 * mk_kpi_0_i1half("x2_1", "x2_2", True) * mk_kpi_0_i3halves("x1_1", "x1_2"),
-            vol**2 * mk_kpi_m_i1half("x2_1", "x2_2", True) * mk_kpi_m1_i3halves("x1_1", "x1_2"),
-            vol**2 * mk_kpi_0_i3halves("x2_1", "x2_2", True) * mk_kpi_0_i3halves("x1_1", "x1_2"),
-            vol**2 * mk_k_0("x2_1", True) * mk_kpi_0_i1half("x1_1", "x1_2"),
-            vol**2 * mk_k_0("x2_1", True) * mk_kpi_0_i3halves("x1_1", "x1_2"),
-            vol**2 * mk_k_m("x2_1", True) * mk_kpi_m_i1half("x1_1", "x1_2"),
-            vol**2 * mk_k_m("x2_1", True) * mk_kpi_m1_i3halves("x1_1", "x1_2"),
-            vol**2 * mk_kpi_p_i3halves("x2_1", "x2_2", True) * mk_kpi_0_i3halves("x1_1", "x1_2"),
-            vol**2 * mk_kpi_m1_i3halves("x2_1", "x2_2", True) * mk_kpi_0_i3halves("x1_1", "x1_2"),
-            vol**2 * mk_kpi_m1_i3halves("x2_1", "x2_2", True) * mk_kpi_m1_i3halves("x1_1", "x1_2"),
-            vol**2 * mk_kpi_m2_i3halves("x2_1", "x2_2", True) * mk_kpi_0_i3halves("x1_1", "x1_2"),
-            vol**2 * mk_kpi_m2_i3halves("x2_1", "x2_2", True) * mk_kpi_m2_i3halves("x1_1", "x1_2"),
-            ]
-    cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
-    q.displayln_info(display_cexpr(cexpr))
-    cexpr.collect_op()
-    q.displayln_info(display_cexpr_raw(cexpr))
+    cexpr = get_cexpr_test_corr(vol)
     rng_state = q.RngState("seed")
     def positions_dict_maker(idx):
         rs = rng_state.split(str(idx))
@@ -423,40 +429,48 @@ def auto_contractor_test_corr(job_tag, traj, get_prop, num_trials):
         facs = [1.0, fac1, fac2, fac1 * fac2,]
         return pd, facs
     names_fac = ["rest-rest", "rest-moving", "moving-rest", "moving-moving",]
-    trial_indices = range(num_trials)
+    trial_indices = get_mpi_chunk(range(num_trials))
     results_list = eval_cexpr_simulation(cexpr, positions_dict_maker = positions_dict_maker, trial_indices = trial_indices, get_prop = get_prop, is_only_total = "typed_total")
     for name_fac, results in zip(names_fac, results_list):
         q.displayln_info(f"{name_fac} :")
         for k, v in results.items():
             q.displayln_info(f"{name_fac} {k}:\n  {v}")
+
+@q.timer
+def get_cexpr_pipi_corr(vol):
+    def calc_cexpr():
+        exprs = [
+                vol**4 * mk_pipi_i22("x2_1", "x2_2", True) * mk_pipi_i22("x1_1", "x1_2"),
+                vol**4 * mk_pipi_i11("x2_1", "x2_2", True) * mk_pipi_i11("x1_1", "x1_2"),
+                vol**4 * mk_pipi_i0("x2_1", "x2_2", True) * mk_pipi_i0("x1_1", "x1_2"),
+                vol**2 * mk_pipi_i0("x2_1", "x2_2", True),
+                vol**2 * mk_pipi_i0("x1_1", "x1_2"),
+                vol**2 * mk_sigma("x2_1", True) * mk_sigma("x1_1"),
+                vol**2 * mk_sigma("x2_1", True) * mk_sigma("x1_2"),
+                vol**2 * mk_sigma("x2_2", True) * mk_sigma("x1_1"),
+                vol**2 * mk_sigma("x2_2", True) * mk_sigma("x1_2"),
+                vol * mk_sigma("x1_1"),
+                vol * mk_sigma("x1_2"),
+                vol * mk_sigma("x2_1", True),
+                vol * mk_sigma("x2_2", True),
+                vol**3 * mk_sigma("x2_1", True) * mk_pipi_i0("x1_1", "x1_2"),
+                vol**3 * mk_sigma("x2_2", True) * mk_pipi_i0("x1_1", "x1_2"),
+                vol**3 * mk_pipi_i0("x2_1", "x2_2", True) * mk_sigma("x1_1"),
+                vol**3 * mk_pipi_i0("x2_1", "x2_2", True) * mk_sigma("x1_2"),
+                ]
+        cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
+        q.displayln_info(display_cexpr(cexpr))
+        cexpr.collect_op()
+        return cexpr
+    cexpr = q.pickle_cache_call(calc_cexpr, f"cache/auto_contractor_cexpr/pipi_corr-cexpr.{vol}.pickle")
+    q.displayln_info(display_cexpr_raw(cexpr))
+    return cexpr
 
 @q.timer
 def auto_contractor_pipi_corr(job_tag, traj, get_prop, num_trials):
     total_site = ru.get_total_site(job_tag)
     vol = total_site[0] * total_site[1] * total_site[2]
-    exprs = [
-            vol**4 * mk_pipi_i22("x2_1", "x2_2", True) * mk_pipi_i22("x1_1", "x1_2"),
-            vol**4 * mk_pipi_i11("x2_1", "x2_2", True) * mk_pipi_i11("x1_1", "x1_2"),
-            vol**4 * mk_pipi_i0("x2_1", "x2_2", True) * mk_pipi_i0("x1_1", "x1_2"),
-            vol**2 * mk_pipi_i0("x2_1", "x2_2", True),
-            vol**2 * mk_pipi_i0("x1_1", "x1_2"),
-            vol**2 * mk_sigma("x2_1", True) * mk_sigma("x1_1"),
-            vol**2 * mk_sigma("x2_1", True) * mk_sigma("x1_2"),
-            vol**2 * mk_sigma("x2_2", True) * mk_sigma("x1_1"),
-            vol**2 * mk_sigma("x2_2", True) * mk_sigma("x1_2"),
-            vol * mk_sigma("x1_1"),
-            vol * mk_sigma("x1_2"),
-            vol * mk_sigma("x2_1", True),
-            vol * mk_sigma("x2_2", True),
-            vol**3 * mk_sigma("x2_1", True) * mk_pipi_i0("x1_1", "x1_2"),
-            vol**3 * mk_sigma("x2_2", True) * mk_pipi_i0("x1_1", "x1_2"),
-            vol**3 * mk_pipi_i0("x2_1", "x2_2", True) * mk_sigma("x1_1"),
-            vol**3 * mk_pipi_i0("x2_1", "x2_2", True) * mk_sigma("x1_2"),
-            ]
-    cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
-    q.displayln_info(display_cexpr(cexpr))
-    cexpr.collect_op()
-    q.displayln_info(display_cexpr_raw(cexpr))
+    cexpr = get_cexpr_pipi_corr(vol)
     rng_state = q.RngState("seed")
     def positions_dict_maker(idx):
         rs = rng_state.split(str(idx))
@@ -482,7 +496,7 @@ def auto_contractor_pipi_corr(job_tag, traj, get_prop, num_trials):
         facs = [1.0, fac1, fac2, fac1 * fac2,]
         return pd, facs
     names_fac = ["rest-rest", "rest-moving", "moving-rest", "moving-moving",]
-    trial_indices = range(num_trials)
+    trial_indices = get_mpi_chunk(range(num_trials))
     results_list = eval_cexpr_simulation(cexpr, positions_dict_maker = positions_dict_maker, trial_indices = trial_indices, get_prop = get_prop, is_only_total = "typed_total")
     for name_fac, results in zip(names_fac, results_list):
         q.displayln_info(f"{name_fac} :")
@@ -490,7 +504,7 @@ def auto_contractor_pipi_corr(job_tag, traj, get_prop, num_trials):
             q.displayln_info(f"{name_fac} {k}:\n  {v}")
 
 @q.timer
-def get_cexpr_kpipi(job_tag):
+def get_cexpr_kpipi(vol):
     @q.timer
     def calc_cexpr():
         total_site = ru.get_total_site(job_tag)
@@ -562,15 +576,15 @@ def get_cexpr_kpipi(job_tag):
         q.displayln_info(display_cexpr(cexpr))
         cexpr.collect_op()
         return cexpr
-    cexpr = q.pickle_cache_call(calc_cexpr, f"cache/auto_contractor_cexpr/kpipi-cexpr.{job_tag}.pickle")
+    cexpr = q.pickle_cache_call(calc_cexpr, f"cache/auto_contractor_cexpr/kpipi-cexpr.{vol}.pickle")
     q.displayln_info(display_cexpr_raw(cexpr))
     return cexpr
 
 @q.timer
 def auto_contractor_kpipi_corr(job_tag, traj, get_prop, num_trials):
-    cexpr = get_cexpr_kpipi(job_tag)
     total_site = ru.get_total_site(job_tag)
     vol = total_site[0] * total_site[1] * total_site[2]
+    cexpr = get_cexpr_kpipi(vol)
     rng_state = q.RngState("seed")
     def positions_dict_maker(idx):
         rs = rng_state.split(str(idx))
@@ -595,9 +609,7 @@ def auto_contractor_kpipi_corr(job_tag, traj, get_prop, num_trials):
         facs = [1.0, fac1]
         return pd, facs
     names_fac = [ "rest", "moving", ]
-    num_chunk = num_trials // q.get_num_node()
-    num_start = num_chunk * q.get_id_node()
-    trial_indices = range(num_start, num_start + num_chunk)
+    trial_indices = get_mpi_chunk(range(num_trials))
     results_list = eval_cexpr_simulation(cexpr, positions_dict_maker = positions_dict_maker, trial_indices = trial_indices, get_prop = get_prop, is_only_total = "typed_total")
     q.qremove_all_info("analysis/kpipi")
     def mk_fn(info):
@@ -696,7 +708,7 @@ def auto_contractor_kpipi_corr_81oprs(job_tag, traj, get_prop, num_trials):
         facs = [1.0, fac1]
         return pd, facs
     names_fac = [ "rest", "moving", ]
-    trial_indices = range(num_trials)
+    trial_indices = get_mpi_chunk(range(num_trials))
     results_list = eval_cexpr_simulation(cexpr, positions_dict_maker = positions_dict_maker, trial_indices = trial_indices, get_prop = get_prop, is_only_total = "typed_total")
     q.qmkdir_info("analysis")
     q.qremove_all_info("analysis/kpipi_b81")
@@ -826,7 +838,7 @@ def auto_contractor_3f4f_matching(job_tag, traj, get_prop, num_trials):
                     }
                     facs = [1.0]
                     return pd, facs
-                trial_indices = range(num_trials)
+                trial_indices = get_mpi_chunk(range(num_trials))
                 results_list = eval_cexpr_simulation(cexpr, positions_dict_maker = positions_dict_maker, trial_indices = trial_indices, get_prop = get_prop, is_only_total = "total")
                 #for results in results_list:
                 results = results_list[0]
@@ -1014,9 +1026,9 @@ def run_job(job_tag, traj):
         num_trials = 100
         auto_contractor_vev(job_tag, traj, get_prop, num_trials)
         # auto_contractor_test_corr(job_tag, traj, get_prop, num_trials)
-        # auto_contractor_meson_corr(job_tag, traj, get_prop, num_trials)
-        # auto_contractor_pipi_corr(job_tag, traj, get_prop, num_trials)
-        # auto_contractor_kpipi_corr(job_tag, traj, get_prop, num_trials)
+        auto_contractor_meson_corr(job_tag, traj, get_prop, num_trials)
+        auto_contractor_pipi_corr(job_tag, traj, get_prop, num_trials)
+        auto_contractor_kpipi_corr(job_tag, traj, get_prop, num_trials)
         # auto_contractor_kpipi_corr_81oprs(job_tag, traj, get_prop, num_trials)
         # auto_contractor_3f4f_matching(job_tag, traj, get_prop, num_trials)
     #

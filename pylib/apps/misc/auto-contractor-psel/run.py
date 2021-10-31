@@ -224,21 +224,27 @@ def get_prop_snk_src(prop_cache, flavor, p_snk, p_src, *, psel_pos_dict):
                     prop_cache, flavor_inv_type, pos_snk
                     ).get_elem(psel_pos_dict[pos_src_tuple]))
     elif type_snk[:5] == "point" and type_src[:5] == "point":
+        # type can be "point" or "point-snk"
         pos_snk_tuple = tuple(pos_snk)
         pos_src_tuple = tuple(pos_src)
         assert pos_snk_tuple in psel_pos_dict
         assert pos_src_tuple in psel_pos_dict
         if type_src == "point":
+            # means we use point source at the source location
             sp_prop = get_prop_psrc_psel(prop_cache, flavor_inv_type, pos_src)
             msc = sp_prop.get_elem(psel_pos_dict[pos_snk_tuple])
         elif type_snk == "point":
+            # means we use point source at the sink location
             sp_prop = get_prop_psrc_psel(prop_cache, flavor_inv_type, pos_snk)
             msc = g5_herm(sp_prop.get_elem(psel_pos_dict[pos_src_tuple]))
         elif pos_snk_tuple == pos_src_tuple and flavor in [ "c", "s", ]:
+            # use the rand_u1 source
             sp_prop = get_prop_rand_u1_psel(prop_cache, flavor_inv_type)
             msc = sp_prop.get_elem(psel_pos_dict[pos_snk_tuple])
         else:
-            raise Exception("get_prop_snk_src unknown p_snk={p_snk} p_src={p_src}")
+            # if nothing else work, try use point src propagator
+            sp_prop = get_prop_psrc_psel(prop_cache, flavor_inv_type, pos_src)
+            msc = sp_prop.get_elem(psel_pos_dict[pos_snk_tuple])
     else:
         raise Exception("get_prop_snk_src unknown p_snk={p_snk} p_src={p_src}")
     return as_mspincolor(msc)
@@ -309,7 +315,7 @@ def auto_contractor_meson_corr_wsnk_wsrc(job_tag, traj, get_prop, get_psel, get_
         results_list = eval_cexpr_simulation(
                 cexpr,
                 positions_dict_maker = positions_dict_maker,
-                trial_indices = trial_indices,
+                trial_indices = get_mpi_chunk(trial_indices),
                 get_prop = get_prop,
                 is_only_total = "total"
                 )
@@ -351,7 +357,7 @@ def auto_contractor_meson_corr_psnk_wsrc(job_tag, traj, get_prop, get_psel, get_
         results_list = eval_cexpr_simulation(
                 cexpr,
                 positions_dict_maker = positions_dict_maker,
-                trial_indices = trial_indices,
+                trial_indices = get_mpi_chunk(trial_indices),
                 get_prop = get_prop,
                 is_only_total = "total"
                 )
@@ -393,7 +399,7 @@ def auto_contractor_meson_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_
         results_list = eval_cexpr_simulation(
                 cexpr,
                 positions_dict_maker = positions_dict_maker,
-                trial_indices = trial_indices,
+                trial_indices = get_mpi_chunk(trial_indices),
                 get_prop = get_prop,
                 is_only_total = "total"
                 )
@@ -416,8 +422,7 @@ def auto_contractor_vev(job_tag, traj, get_prop, get_psel, get_pi, get_wi):
     trial_indices = []
     for x in get_psel().to_list():
         pd = {
-                "x" : ("point", x,),
-                "x_snk" : ("point-snk", x,),
+                "x" : ("point-snk", x,),
                 }
         trial_indices.append(pd)
     def positions_dict_maker(idx):
@@ -427,7 +432,7 @@ def auto_contractor_vev(job_tag, traj, get_prop, get_psel, get_pi, get_wi):
     results_list = eval_cexpr_simulation(
             cexpr,
             positions_dict_maker = positions_dict_maker,
-            trial_indices = trial_indices,
+            trial_indices = get_mpi_chunk(trial_indices),
             get_prop = get_prop,
             is_only_total = "total"
             )
