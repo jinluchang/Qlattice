@@ -64,6 +64,8 @@ def compute_prop_rand_u1(*, job_tag, traj, gf, inv_type, path_sp, psel):
         tag = f"idx_rand_u1={idx_rand_u1} ; type={inv_type} ; accuracy={inv_acc}"
         fn_sp = os.path.join(path_sp, f"{tag}.lat")
         if get_load_path(fn_sp) is None:
+            q.check_stop()
+            q.check_time_limit()
             inv = ru.get_inv(gf, job_tag, inv_type, inv_acc)
             sp_prop = q.mk_rand_u1_prop(inv, geo, psel, rs.split(idx_rand_u1))
             sp_prop.save(get_save_path(fn_sp))
@@ -115,7 +117,7 @@ def run_job(job_tag, traj):
     get_psel = run_psel(job_tag, traj)
     #
     run_prop_rand_u1_charm(job_tag, traj, get_gf, get_psel)
-    run_prop_rand_u1_strange(job_tag, traj, get_gf, get_psel)
+    # run_prop_rand_u1_strange(job_tag, traj, get_gf, get_psel)
     #
     q.clean_cache()
     q.timer_display()
