@@ -737,7 +737,7 @@ def auto_contractor_kpipi_corr_81oprs(job_tag, traj, get_prop, num_trials):
             q.qtouch(fn, f"0 {a.real} {a.imag} {e.real} {e.imag}\n")
 
 @q.timer
-def auto_contractor_3f4f_matching(job_tag, traj, get_prop, num_trials):
+def get_cexpr_3f4f(vol):
     @q.timer
     def calc_cexpr():
         total_site = ru.get_total_site(job_tag)
@@ -792,8 +792,13 @@ def auto_contractor_3f4f_matching(job_tag, traj, get_prop, num_trials):
         return cexpr
     cexpr = q.pickle_cache_call(calc_cexpr, f"cache/auto_contractor_cexpr/3f4f-cexpr.{vol}.pickle")
     q.displayln_info(display_cexpr(cexpr))
-    cexpr.collect_op()
-    q.displayln_info(display_cexpr_raw(cexpr))
+    return cexpr
+
+@q.timer
+def auto_contractor_3f4f_matching(job_tag, traj, get_prop, num_trials):
+    total_site = ru.get_total_site(job_tag)
+    vol = total_site[0] * total_site[1] * total_site[2]
+    cexpr = get_cexpr_3f4f(vol)
     rng_state = q.RngState("seed")
     src_snk_seps = [8,10,12,14,16]
     tsep_src = -1
