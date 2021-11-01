@@ -562,16 +562,17 @@ rup.dict_params["48I"]["trajs"] = list(range(3000, 500, -5))
 
 rup.dict_params["test-4nt8"]["fermion_params"][0][2]["Ls"] = 10
 rup.dict_params["test-4nt8"]["fermion_params"][1][2]["Ls"] = 10
+rup.dict_params["test-4nt8"]["fermion_params"][2][2]["Ls"] = 10
 
-rup.dict_params["test-4nt16"]["fermion_params"][0][2]["Ls"] = 10
-rup.dict_params["test-4nt16"]["fermion_params"][1][2]["Ls"] = 10
+# rup.dict_params["test-4nt16"]["fermion_params"][0][2]["Ls"] = 10
+# rup.dict_params["test-4nt16"]["fermion_params"][1][2]["Ls"] = 10
+# rup.dict_params["test-4nt16"]["fermion_params"][2][2]["Ls"] = 10
 
 qg.begin_with_gpt()
 
 # ADJUST ME
 job_tags = [
-        "test-4nt8",
-        "test-4nt16",
+        "test-4nt8", "test-4nt16",
         # "test-8nt16",
         # "test-16nt32",
         # "test-32nt64",

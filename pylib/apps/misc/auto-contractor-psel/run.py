@@ -87,6 +87,7 @@ def load_prop_wsrc_all(job_tag, traj, flavor, wi, psel, gt):
         assert False
     path_sp = f"psel-prop-wsrc-{flavor_tag}/{job_tag}/traj={traj}"
     gt_inv = gt.inv()
+    count = { 1: 0, 2: 0, }
     for idx, tslice, inv_type, inv_acc in wi:
         if inv_type != flavor_inv_type:
             continue
@@ -105,6 +106,10 @@ def load_prop_wsrc_all(job_tag, traj, flavor, wi, psel, gt):
         spw_prop.load(get_load_path(fn_spw))
         # convert to GPT/Grid prop mspincolor order
         cache[f"{tag} ; psel ; wsnk"] = q.convert_mspincolor_from_wm(spw_prop)
+        count[inv_acc] += 1
+    assert count[1] == total_site[3]
+    cache[f"type={flavor_inv_type} ; accuracy=1 ; wsrc ; prob"] = count[1] / total_site[3]
+    cache[f"type={flavor_inv_type} ; accuracy=2 ; wsrc ; prob"] = count[2] / total_site[3]
 
 @q.timer
 def load_prop_psrc_all(job_tag, traj, flavor, pi, psel):
@@ -131,6 +136,25 @@ def load_prop_psrc_all(job_tag, traj, flavor, pi, psel):
         sp_prop.load(get_load_path(fn_sp))
         # convert to GPT/Grid prop mspincolor order
         cache[f"{tag} ; psel"] = q.convert_mspincolor_from_wm(sp_prop)
+
+@q.timer
+def set_prop_psrc_prob(job_tag, traj, pi, psel):
+    cache = q.mk_cache(f"prop_cache", "{job_tag}", "{traj}")
+    n_point = len(psel.to_list())
+    count_l = { 0: 0, 1: 0, 2: 0, }
+    count_s = { 0: 0, 1: 0, 2: 0, }
+    count = [ count_l, count_s, ]
+    for idx, xg, inv_type, inv_acc in pi:
+        count[inv_type][inv_acc] += 1
+    assert count[0][0] == n_point
+    assert count[0][1] == count[1][1]
+    assert count[0][2] == count[1][2]
+    for inv_type in [ 0, 1, ]:
+        for inv_acc in [ 0, 1, 2, ]:
+            cache[f"type={inv_type} ; accuracy={inv_acc} ; psrc ; prob"] = count[inv_type][inv_acc] / n_point
+    sp_prop = q.PselProp(psel)
+    q.set_zero(sp_prop)
+    cache[f"psrc ; psel ; zero"] = sp_prop
 
 @q.timer
 def load_prop_rand_u1_all(job_tag, traj, flavor, psel):
@@ -169,26 +193,86 @@ def get_prop_rand_u1_psel(prop_cache, inv_type):
     tag = f"type={inv_type} ; accuracy={inv_acc} ; rand_u1 ; psel"
     return prop_cache.get(tag)
 
+def mk_ama_val(val, source_specification, val_list, rel_acc_list, prob_list):
+    assert len(val_list) == len(prob_list)
+    corrections = []
+    for val_i, rel_acc_i, prob_i in zip(val_list, rel_acc_list, prob_list):
+        if val_i is not None:
+            corrections.append((val_i, { source_specification: (rel_acc_i, prob_i), },))
+    return AmaVal(val, corrections)
+
 @q.timer
 def get_prop_psrc_psel(prop_cache, inv_type, xg_src):
     inv_acc = 0
     xg = xg_src
-    tag = f"xg=({xg[0]},{xg[1]},{xg[2]},{xg[3]}) ; type={inv_type} ; accuracy={inv_acc}"
-    return prop_cache.get(f"{tag} ; psel")
+    def mk_tag(inv_acc):
+        return f"xg=({xg[0]},{xg[1]},{xg[2]},{xg[3]}) ; type={inv_type} ; accuracy={inv_acc} ; psel"
+    tag = mk_tag(inv_acc = 0)
+    tag1 = mk_tag(inv_acc = 1)
+    tag2 = mk_tag(inv_acc = 2)
+    prob = prop_cache[f"type={inv_type} ; accuracy=0 ; psrc ; prob"]
+    # level light_accuracy strange_accuracy
+    # 0     inv_acc=0      zero prop
+    # 1     inv_acc=0      inv_acc=0
+    # 2     inv_acc=1      inv_acc=1
+    # 3     inv_acc=2      inv_acc=2
+    if inv_type == 0:
+        assert prob == 1
+        val = prop_cache.get(tag)
+        if tag1 not in prop_cache:
+            return val
+    else:
+        assert prob < 1
+        val = prop_cache.get(f"psrc ; psel ; zero")
+        if tag not in prop_cache:
+            return val
+    source_specification = ("point", tuple(xg_src),)
+    val_list = [
+            val,
+            prop_cache.get(tag),
+            prop_cache.get(tag1),
+            prop_cache.get(tag2),
+            ]
+    rel_acc_list = [ 0, 1, 2, 3, ]
+    prob_list = [
+            1.0,
+            prop_cache[f"type=1 ; accuracy=0 ; psrc ; prob"],
+            prop_cache[f"type=1 ; accuracy=1 ; psrc ; prob"],
+            prop_cache[f"type=1 ; accuracy=2 ; psrc ; prob"],
+            ]
+    return mk_ama_val(val, source_specification, val_list, rel_acc_list, prob_list)
+
+@q.timer
+def get_prop_wsrc(prop_cache, inv_type, t_src, tag_snk_type):
+    tslice = t_src
+    def mk_tag(inv_acc):
+        return f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc} ; {tag_snk_type}"
+    tag = mk_tag(inv_acc = 1)
+    tag1 = mk_tag(inv_acc = 2)
+    prob = prop_cache[f"type={inv_type} ; accuracy=1 ; wsrc ; prob"]
+    # level light_accuracy strange_accuracy
+    # 0     inv_acc=1      inv_acc=1
+    # 3     inv_acc=2      inv_acc=2
+    assert prob == 1
+    val = prop_cache.get(tag)
+    if tag1 not in prop_cache:
+        return val
+    source_specification = ("wall", t_src,)
+    val_list = [ val, prop_cache.get(tag1), ]
+    rel_acc_list = [ 0, 3, ]
+    prob_list = [ 1, prop_cache[f"type={inv_type} ; accuracy=2 ; wsrc ; prob"], ]
+    return mk_ama_val(val, source_specification, val_list, rel_acc_list, prob_list)
 
 @q.timer
 def get_prop_wsrc_psel(prop_cache, inv_type, t_src):
-    inv_acc = 1
-    tslice = t_src
-    tag = f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc}"
-    return prop_cache.get(f"{tag} ; psel")
+    return get_prop_wsrc(prop_cache, inv_type, t_src, "psel")
 
 @q.timer
 def get_prop_wsnk_wsrc(prop_cache, inv_type, t_snk, t_src):
-    inv_acc = 1
-    tslice = t_src
-    tag = f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc}"
-    return prop_cache[f"{tag} ; psel ; wsnk"].get_elem(t_snk)
+    sp_prop = get_prop_wsrc(prop_cache, inv_type, t_src, "psel ; wsnk")
+    def f(x):
+        return x.get_elem(t_snk)
+    return ama_apply1(f, sp_prop)
 
 @q.timer
 def get_prop_snk_src(prop_cache, flavor, p_snk, p_src, *, psel_pos_dict):
@@ -214,16 +298,17 @@ def get_prop_snk_src(prop_cache, flavor, p_snk, p_src, *, psel_pos_dict):
     elif type_snk[:5] == "point" and type_src == "wall":
         pos_snk_tuple = tuple(pos_snk)
         assert pos_snk_tuple in psel_pos_dict
-        msc = get_prop_wsrc_psel(
-                prop_cache, flavor_inv_type, pos_src
-                ).get_elem(psel_pos_dict[pos_snk_tuple])
+        sp_prop = get_prop_wsrc_psel(prop_cache, flavor_inv_type, pos_src)
+        def f(x):
+            return x.get_elem(psel_pos_dict[pos_snk_tuple])
+        msc = ama_apply1(f, sp_prop)
     elif type_snk == "wall" and type_src[:5] == "point":
         pos_src_tuple = tuple(pos_src)
         assert pos_src_tuple in psel_pos_dict
-        msc = g5_herm(
-                get_prop_wsrc_psel(
-                    prop_cache, flavor_inv_type, pos_snk
-                    ).get_elem(psel_pos_dict[pos_src_tuple]))
+        sp_prop = get_prop_wsrc_psel(prop_cache, flavor_inv_type, pos_snk)
+        def f(x):
+            return g5_herm(x.get_elem(psel_pos_dict[pos_src_tuple]))
+        msc = ama_apply1(f, sp_prop)
     elif type_snk[:5] == "point" and type_src[:5] == "point":
         # type can be "point" or "point-snk"
         pos_snk_tuple = tuple(pos_snk)
@@ -233,27 +318,36 @@ def get_prop_snk_src(prop_cache, flavor, p_snk, p_src, *, psel_pos_dict):
         if type_src == "point":
             # means we use point source at the source location
             sp_prop = get_prop_psrc_psel(prop_cache, flavor_inv_type, pos_src)
-            msc = sp_prop.get_elem(psel_pos_dict[pos_snk_tuple])
+            def f(x):
+                return x.get_elem(psel_pos_dict[pos_snk_tuple])
+            msc = ama_apply1(f, sp_prop)
         elif type_snk == "point":
             # means we use point source at the sink location
             sp_prop = get_prop_psrc_psel(prop_cache, flavor_inv_type, pos_snk)
-            msc = g5_herm(sp_prop.get_elem(psel_pos_dict[pos_src_tuple]))
+            def f(x):
+                return g5_herm(x.get_elem(psel_pos_dict[pos_src_tuple]))
+            msc = ama_apply1(f, sp_prop)
         elif pos_snk_tuple == pos_src_tuple and flavor in [ "c", "s", ]:
             # use the rand_u1 source
             sp_prop = get_prop_rand_u1_psel(prop_cache, flavor_inv_type)
-            msc = sp_prop.get_elem(psel_pos_dict[pos_snk_tuple])
+            def f(x):
+                return x.get_elem(psel_pos_dict[pos_snk_tuple])
+            msc = ama_apply1(f, sp_prop)
         else:
             # if nothing else work, try use point src propagator
             sp_prop = get_prop_psrc_psel(prop_cache, flavor_inv_type, pos_src)
-            msc = sp_prop.get_elem(psel_pos_dict[pos_snk_tuple])
+            def f(x):
+                return x.get_elem(psel_pos_dict[pos_snk_tuple])
+            msc = ama_apply1(f, sp_prop)
     else:
         raise Exception("get_prop_snk_src unknown p_snk={p_snk} p_src={p_src}")
-    return as_mspincolor(msc)
+    return ama_apply1(as_mspincolor, msc)
 
 @q.timer_verbose
 def mk_get_prop(job_tag, traj, get_gt, get_psel, get_pi, get_wi):
     load_prop_psrc_all(job_tag, traj, "l", get_pi(), get_psel())
     load_prop_psrc_all(job_tag, traj, "s", get_pi(), get_psel())
+    set_prop_psrc_prob(job_tag, traj, get_pi(), get_psel())
     load_prop_wsrc_all(job_tag, traj, "l", get_wi(), get_psel(), get_gt())
     load_prop_wsrc_all(job_tag, traj, "s", get_wi(), get_psel(), get_gt())
     load_prop_rand_u1_all(job_tag, traj, "c", get_psel())
@@ -383,7 +477,8 @@ def auto_contractor_meson_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_
         ])
     for tsep in range(total_site[3] // 2 + 1):
         trial_indices = []
-        for x1 in get_strange_psrc_psel(get_pi()).to_list():
+        # for x1 in get_strange_psrc_psel(get_pi()).to_list():
+        for x1 in get_psel().to_list():
             for x2 in get_psel().to_list():
                 if tsep == abs(rel_mod(x2[3] - x1[3], total_site[3])):
                     pd = {
@@ -491,11 +586,13 @@ for inv_acc in [ 0, 1, 2, ]:
 rup.dict_params["48I"]["trajs"] = list(range(3000, 500, -5))
 rup.dict_params["64I"]["trajs"] = list(range(3000, 500, -5))
 
-# rup.dict_params["test-4nt8"]["fermion_params"][0][2]["Ls"] = 10
-# rup.dict_params["test-4nt8"]["fermion_params"][1][2]["Ls"] = 10
+rup.dict_params["test-4nt8"]["fermion_params"][0][2]["Ls"] = 10
+rup.dict_params["test-4nt8"]["fermion_params"][1][2]["Ls"] = 10
+rup.dict_params["test-4nt8"]["fermion_params"][2][2]["Ls"] = 10
 
 # rup.dict_params["test-4nt16"]["fermion_params"][0][2]["Ls"] = 10
 # rup.dict_params["test-4nt16"]["fermion_params"][1][2]["Ls"] = 10
+# rup.dict_params["test-4nt16"]["fermion_params"][2][2]["Ls"] = 10
 
 qg.begin_with_gpt()
 
