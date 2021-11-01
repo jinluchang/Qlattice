@@ -315,6 +315,10 @@ def get_prop_snk_src(prop_cache, flavor, p_snk, p_src, *, psel_pos_dict):
         pos_src_tuple = tuple(pos_src)
         assert pos_snk_tuple in psel_pos_dict
         assert pos_src_tuple in psel_pos_dict
+        # ADJUST ME
+        rand_u1_flavors = [ "c", "s", ]
+        # rand_u1_flavors = [ "c", ]
+        #
         if type_src == "point":
             # means we use point source at the source location
             sp_prop = get_prop_psrc_psel(prop_cache, flavor_inv_type, pos_src)
@@ -327,7 +331,7 @@ def get_prop_snk_src(prop_cache, flavor, p_snk, p_src, *, psel_pos_dict):
             def f(x):
                 return g5_herm(x.get_elem(psel_pos_dict[pos_src_tuple]))
             msc = ama_apply1(f, sp_prop)
-        elif pos_snk_tuple == pos_src_tuple and flavor in [ "c", "s", ]:
+        elif pos_snk_tuple == pos_src_tuple and flavor in rand_u1_flavors:
             # use the rand_u1 source
             sp_prop = get_prop_rand_u1_psel(prop_cache, flavor_inv_type)
             def f(x):

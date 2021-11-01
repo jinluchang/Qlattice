@@ -266,7 +266,7 @@ def get_cexpr_names(cexpr, is_only_total = "total"):
         assert False
     return names
 
-def get_mpi_chunk(total_list):
+def get_mpi_chunk(total_list, *, rng_state = q.RngState("get_mpi_chunk")):
     total = len(total_list)
     id_worker = q.get_id_node()
     num_worker = q.get_num_node()
@@ -274,6 +274,7 @@ def get_mpi_chunk(total_list):
     start = min(id_worker * size_max, total);
     stop = min(start + size_max, total);
     # size = stop - start;
+    total_list = q.random_permute(total_list, rng_state)
     return total_list[start:stop]
 
 @q.timer

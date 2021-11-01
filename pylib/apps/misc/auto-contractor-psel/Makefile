@@ -7,7 +7,7 @@ mpi_options=--bind-to none -mca btl_openib_allow_ib true
 mpi_options=
 
 run:
-	q_verbose=1 mpirun --np 1 $(mpi_options) ./run.py --mpi 1.1.1.1 $(grid_options) |& tee log.txt
+	q_verbose=1 mpirun --np 2 $(mpi_options) ./run.py --mpi 1.1.1.2 $(grid_options) |& tee log.txt
 
 src_path=~/Qlattice-cc/pylib/apps/misc/auto-contractor-psel
 
