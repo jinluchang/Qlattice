@@ -1030,13 +1030,13 @@ def run_job(job_tag, traj):
     if get_prop is not None:
         # auto_contractor_simple_test(job_tag, traj, get_prop)
         num_trials = 100
-        auto_contractor_vev(job_tag, traj, get_prop, num_trials)
+        # auto_contractor_vev(job_tag, traj, get_prop, num_trials)
         # auto_contractor_test_corr(job_tag, traj, get_prop, num_trials)
-        auto_contractor_meson_corr(job_tag, traj, get_prop, num_trials)
-        auto_contractor_pipi_corr(job_tag, traj, get_prop, num_trials)
-        auto_contractor_kpipi_corr(job_tag, traj, get_prop, num_trials)
+        # auto_contractor_meson_corr(job_tag, traj, get_prop, num_trials)
+        # auto_contractor_pipi_corr(job_tag, traj, get_prop, num_trials)
+        # auto_contractor_kpipi_corr(job_tag, traj, get_prop, num_trials)
         # auto_contractor_kpipi_corr_81oprs(job_tag, traj, get_prop, num_trials)
-        # auto_contractor_3f4f_matching(job_tag, traj, get_prop, num_trials)
+        auto_contractor_3f4f_matching(job_tag, traj, get_prop, num_trials)
     #
     q.clean_cache()
 
