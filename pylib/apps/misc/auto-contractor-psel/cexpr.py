@@ -72,8 +72,6 @@ def get_cexpr_meson_corr_wsnk_wsrc():
 def get_cexpr_3f4f_matching(vol):
     @q.timer
     def calc_cexpr():
-        total_site = ru.get_total_site(job_tag)
-        vol = total_site[0] * total_site[1] * total_site[2]
         exprs_odd_ops = [
             vol * mk_Q0_b81("x", "odd") + "Q0_b81(o)",
             vol * mk_Q1_b81("x", "odd") + "Q1_b81(o)",
