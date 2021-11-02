@@ -546,18 +546,11 @@ def auto_contractor_vev(job_tag, traj, get_prop, get_psel, get_pi, get_wi):
 def auto_contractor_3f4f_matching(job_tag, traj, get_prop, get_psel, get_pi, get_wi):
     total_site = ru.get_total_site(job_tag)
     vol = total_site[0] * total_site[1] * total_site[2]
-    cexpr = get_cexpr_3f4f_matching(vol)
+    cexpr = get_cexpr_3f4f_matching()
     names_expr = get_cexpr_names(cexpr)
     src_snk_seps = [8,10,12,14,16]
-    tsep_src = -1
-    tsep_snk = 1
-    # names_fac = [ "rest", ]
-    ld = q.mk_lat_data([
-        [ "tsep", total_site[3] // 2 + 1, ],
-        [ "name_fac", len(names_fac), names_fac, ],
-        [ "expr_name", len(names_expr), names_expr, ],
-        [ "val-err-n", 3, [ "val", "err", "n-trails", ] ],
-        ])
+    tsep_src = -4
+    tsep_snk = 4
     for tsnk_tsrc in src_snk_seps:
         max_top_tsrc = tsnk_tsrc // 2
         min_top_tsrc = tsnk_tsrc // 2
@@ -607,8 +600,8 @@ def auto_contractor_3f4f_matching(job_tag, traj, get_prop, get_psel, get_pi, get
                     q.displayln_info(f"{k}:\n  {v}, ({ratio_real}, {ratio_imag})")
                     ###
                     [ a, e, ] = v
-                    f.write(a)
-                    f.write(e)
+                    f.write(complex(a))
+                    f.write(complex(e))
                 if top_tsrc == min_top_tsrc and tsnk_tsrc == src_snk_seps[0]:
                     metafn = f"analysis/3f4f_b81/meta.txt"
                     with open(metafn, mode='w') as metaf:
