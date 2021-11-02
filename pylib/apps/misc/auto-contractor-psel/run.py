@@ -568,7 +568,7 @@ def auto_contractor_3f4f_matching(job_tag, traj, get_prop, get_psel, get_pi, get
             tsnk1_top = tsnk_tsrc + tsrc1_top
             tsnk2_top = tsep_snk  + tsnk1_top
             trial_indices = []
-            fn = f"analysis/3f4f_b81/tsnk_tsrc{tsnk_tsrc}_top_tsrc{top_tsrc}.bin"
+            fn = f"results/3f4f_b81/tsnk_tsrc{tsnk_tsrc}_top_tsrc{top_tsrc}.bin"
             with open(fn, mode='wb') as f:
                 for x in get_psel().to_list():
                     t2_1 = ( tsrc1_top + x[3] + total_site[3] ) % total_site[3]
