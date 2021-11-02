@@ -543,6 +543,80 @@ def auto_contractor_vev(job_tag, traj, get_prop, get_psel, get_pi, get_wi):
     ld.save(f"results/vev/{job_tag}/traj={traj}/vev.lat")
 
 @q.timer_verbose
+def auto_contractor_3f4f_matching(job_tag, traj, get_prop, get_psel, get_pi, get_wi):
+    total_site = ru.get_total_site(job_tag)
+    vol = total_site[0] * total_site[1] * total_site[2]
+    cexpr = get_cexpr_3f4f_matching(vol)
+    names_expr = get_cexpr_names(cexpr)
+    src_snk_seps = [8,10,12,14,16]
+    tsep_src = -1
+    tsep_snk = 1
+    # names_fac = [ "rest", ]
+    ld = q.mk_lat_data([
+        [ "tsep", total_site[3] // 2 + 1, ],
+        [ "name_fac", len(names_fac), names_fac, ],
+        [ "expr_name", len(names_expr), names_expr, ],
+        [ "val-err-n", 3, [ "val", "err", "n-trails", ] ],
+        ])
+    for tsnk_tsrc in src_snk_seps:
+        max_top_tsrc = tsnk_tsrc // 2
+        min_top_tsrc = tsnk_tsrc // 2
+        #
+        for top_tsrc in range(min_top_tsrc,max_top_tsrc+1):
+            tsrc1_top = - top_tsrc
+            tsrc2_top = tsep_src  + tsrc1_top
+            tsnk1_top = tsnk_tsrc + tsrc1_top
+            tsnk2_top = tsep_snk  + tsnk1_top
+            trial_indices = []
+            fn = f"analysis/3f4f_b81/tsnk_tsrc{tsnk_tsrc}_top_tsrc{top_tsrc}.bin"
+            with open(fn, mode='wb') as f:
+                for x in get_psel().to_list():
+                    t2_1 = ( tsrc1_top + x[3] + total_site[3] ) % total_site[3]
+                    t2_2 = ( tsrc2_top + x[3] + total_site[3] ) % total_site[3]
+                    t1_1 = ( tsnk1_top + x[3] + total_site[3] ) % total_site[3]
+                    t1_2 = ( tsnk2_top + x[3] + total_site[3] ) % total_site[3]
+                    pd = {
+                        "t1_1" : ("wall", t1_1,),
+                        "t1_2" : ("wall", t1_2,),
+                        "x" : ("point", x,),
+                        "t2_1" : ("wall", t2_1,),
+                        "t2_2" : ("wall", t2_2,),
+                    }
+                    trial_indices.append(pd)
+                def positions_dict_maker(idx):
+                    pd = idx
+                    facs = [ 1.0, ]
+                    return pd, facs
+                results_list = eval_cexpr_simulation(
+                    cexpr,
+                    positions_dict_maker = positions_dict_maker,
+                    trial_indices = get_mpi_chunk(trial_indices),
+                    get_prop = get_prop,
+                    is_only_total = "total"
+                )
+                results = results_list[0]
+                for k, v in results.items():
+                    if v[1].real == 0:
+                        ratio_real = None
+                    else:
+                        ratio_real = v[0].real / v[1].real
+                    if v[1].imag == 0:
+                        ratio_imag = None
+                    else:
+                        ratio_imag = v[0].imag / v[1].imag
+                    q.displayln_info(f"{k}:\n  {v}, ({ratio_real}, {ratio_imag})")
+                    ###
+                    [ a, e, ] = v
+                    f.write(a)
+                    f.write(e)
+                if top_tsrc == min_top_tsrc and tsnk_tsrc == src_snk_seps[0]:
+                    metafn = f"analysis/3f4f_b81/meta.txt"
+                    with open(metafn, mode='w') as metaf:
+                        for k, v in results.items():
+                            key = mk_key(f"{k}")
+                            metaf.write(f"{key}\n")
+
+@q.timer_verbose
 def run_job(job_tag, traj):
     if check_job(job_tag, traj):
         return
@@ -566,6 +640,7 @@ def run_job(job_tag, traj):
     auto_contractor_meson_corr_wsnk_wsrc(job_tag, traj, get_prop, get_psel, get_pi, get_wi)
     auto_contractor_meson_corr_psnk_wsrc(job_tag, traj, get_prop, get_psel, get_pi, get_wi)
     auto_contractor_meson_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_pi, get_wi)
+    auto_contractor_3f4f_matching(job_tag, traj, get_prop, get_psel, get_pi, get_wi)
     #
     q.clean_cache()
     q.timer_display()
