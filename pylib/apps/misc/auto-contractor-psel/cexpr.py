@@ -125,3 +125,7 @@ def get_cexpr_3f4f_matching(vol):
     cexpr = q.pickle_cache_call(calc_cexpr, f"cache/auto_contractor_cexpr/3f4f-cexpr.{vol}.pickle")
     q.displayln_info(display_cexpr(cexpr))
     return cexpr
+
+if __name__ == "__main__":
+    get_cexpr_meson_corr_wsnk_wsrc()
+    get_cexpr_vev()
