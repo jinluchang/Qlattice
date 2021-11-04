@@ -10,8 +10,8 @@ class GaugeMomentum(Field):
     def __init__(self, geo = None):
         Field.__init__(self, "ColorMatrix", geo, 4)
 
-    def set_rand(self, sigma, rng):
-        set_rand_gauge_momentum(sigma, rng)
+    def set_rand(self, rng, sigma = 1.0):
+        set_rand_gauge_momentum(self, sigma, rng)
 
 def set_rand_gauge_momentum(gm, sigma, rng):
     assert isinstance(gm, GaugeMomentum)

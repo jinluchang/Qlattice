@@ -44,13 +44,11 @@ class LatData:
         return self
 
     def save(self, path):
-        from qlat.mpi import get_id_node
         if get_id_node() == 0:
             mk_file_dirs(path)
             self.save_node(path)
 
     def load(self, path):
-        from qlat.mpi import get_id_node
         if get_id_node() == 0:
             self.load_node(path)
         self.bcast()
@@ -131,7 +129,9 @@ class LatData:
     def set_dim_sizes(self, dim_sizes, *, is_complex = True):
         return c.set_dim_sizes_lat_data(self, dim_sizes, is_complex)
 
-    def set_dim_name(self, dim, name, indices = []):
+    def set_dim_name(self, dim, name, indices = None):
+        if indices is None:
+            indices = []
         return c.set_dim_name_lat_data(self, dim, name, indices)
 
     def to_list(self, *, is_complex = True):
@@ -154,7 +154,7 @@ class LatData:
     def from_numpy(self, val, *, is_complex = True):
         if self.ndim() == 0:
             self.set_dim_sizes(list(val.shape), is_complex = is_complex)
-            for dim, (size, name) in enumerate(zip(val.shape, "ijklmnopqrstuvwxyz")):
+            for dim, (dummy_size, name) in enumerate(zip(val.shape, "ijklmnopqrstuvwxyz")):
                 self.set_dim_name(dim, name)
         is_always_double = not is_complex
         c.poke_lat_data(self, [], list(val.flatten()), is_always_double)
@@ -213,10 +213,10 @@ class LatData:
         for dim in range(ndim):
             info = info_list[dim]
             if len(info) == 2:
-                dim_name, dim_size = info
+                dim_name, dummy_dim_size = info
                 self.set_dim_name(dim, dim_name)
             elif len(info) == 3:
-                dim_name, dim_size, dim_indices = info
+                dim_name, dummy_dim_size, dim_indices = info
                 self.set_dim_name(dim, dim_name, dim_indices)
             else:
                 raise Exception(f"LatData setinfo info_list={info_list} is_complex={is_complex}")

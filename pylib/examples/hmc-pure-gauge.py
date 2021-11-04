@@ -83,7 +83,7 @@ def run_hmc(gf, ga, traj, rs):
     gf0 @= gf
     #
     gm = q.GaugeMomentum(geo)
-    q.set_rand_gauge_momentum(gm, 1.0, rs.split("set_rand_gauge_momentum"))
+    gm.set_rand(rs.split("set_rand_gauge_momentum"), 1.0)
     #
     steps = 6
     md_time = 1.0

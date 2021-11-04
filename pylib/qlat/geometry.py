@@ -17,7 +17,7 @@ class Geometry:
         return self
 
     def copy(self, is_copying_data = True):
-        x = Geometry([0, 0, 0, 0])
+        x = Geometry([ 0, 0, 0, 0, ])
         if is_copying_data:
             x @= self
         return x
@@ -80,21 +80,18 @@ class Geometry:
     def is_local(self, xl):
         return c.is_local_geo(self, xl)
 
-def geo_reform(geo,
-        multiplicity = 1,
-        expansion_left = [0, 0, 0, 0],
-        expansion_right = [0, 0, 0, 0]):
-    if isinstance(geo, Geometry):
-        geo_new = Geometry([0, 0, 0, 0])
-        c.set_geo_reform(geo_new, geo, multiplicity, expansion_left, expansion_right)
-        return geo_new
-    else:
-        raise Exception("geo_reform")
+def geo_reform(geo, multiplicity = 1, expansion_left = None, expansion_right = None):
+    assert isinstance(geo, Geometry)
+    if expansion_left is None:
+        expansion_left = [ 0, 0, 0, 0, ]
+    if expansion_right is None:
+        expansion_right = [ 0, 0, 0, 0, ]
+    geo_new = Geometry([ 0, 0, 0, 0, ])
+    c.set_geo_reform(geo_new, geo, multiplicity, expansion_left, expansion_right)
+    return geo_new
 
 def geo_eo(geo, eo = 0):
-    if isinstance(geo, Geometry):
-        geo_new = Geometry([0, 0, 0, 0])
-        c.set_geo_eo(geo_new, geo, eo)
-        return geo_new
-    else:
-        raise Exception("geo_eo")
+    assert isinstance(geo, Geometry)
+    geo_new = Geometry([ 0, 0, 0, 0, ])
+    c.set_geo_eo(geo_new, geo, eo)
+    return geo_new

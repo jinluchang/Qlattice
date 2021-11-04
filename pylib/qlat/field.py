@@ -55,7 +55,7 @@ class Field:
             elif isinstance(f1, SelectedPoints):
                 c.set_field_spfield(self, f1)
             else:
-                raise Exception(f"Field @= type mismatch")
+                raise Exception(f"Field @= type mismatch {type(self)} {type(f1)}")
         return self
 
     def copy(self, is_copying_data = True):
@@ -98,15 +98,13 @@ class Field:
     def __imul__(self, factor):
         if isinstance(factor, float):
             c.set_mul_double_field(self, factor)
-            return self
         elif isinstance(factor, complex):
             c.set_mul_complex_field(self, factor)
-            return self
         elif isinstance(factor, Field):
             c.set_mul_cfield_field(self, factor)
-            return self
         else:
             assert False
+        return self
 
     def set_zero(self):
         c.set_zero_field(self)
@@ -262,6 +260,7 @@ class Field:
             return np.array(c.glb_sum_long_field(self))
         else:
             assert False
+            return None
 
     def glb_sum_tslice(self):
         from qlat.field_selection import get_psel_tslice
@@ -276,6 +275,7 @@ class Field:
             return sp
         else:
             assert False
+            return None
 
 def split_fields(fs, f):
     nf = len(fs)

@@ -203,12 +203,11 @@ class SelectedField:
         sp = SelectedPoints(self.ctype, psel)
         if self.ctype in field_ctypes_double:
             c.glb_sum_tslice_double_sfield(sp, self)
-            return sp
         elif self.ctype in field_ctypes_long:
             c.glb_sum_tslice_long_sfield(sp, self)
-            return sp
         else:
             assert False
+        return sp
 
 @timer
 def set_selected_field(sf, f):

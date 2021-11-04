@@ -15,12 +15,14 @@ class InverterDwfFreeField(Inverter):
 
     def __init__(self, *, mass,
             m5 = 1.0,
-            momtwist = [0.0, 0.0, 0.0, 0.0],
-            timer = TimerNone()):
+            momtwist = None,
+            qtimer = TimerNone()):
+        if momtwist is None:
+            momtwist = [ 0.0, 0.0, 0.0, 0.0, ]
         self.mass = mass
         self.m5 = m5
         self.momtwist = momtwist
-        self.timer = timer
+        self.timer = qtimer
         assert isinstance(self.mass, float)
         assert isinstance(self.m5, float)
         assert isinstance(self.momtwist, list)
@@ -40,9 +42,9 @@ class InverterDwfFreeField(Inverter):
 class InverterDomainWall(Inverter):
 
     def __init__(self, *, gf, fa,
-            timer = TimerNone()):
+            qtimer = TimerNone()):
         self.cdata = c.mk_inverter_domain_wall(gf, fa)
-        self.timer = timer
+        self.timer = qtimer
 
     def __del__(self):
         c.free_inverter_domain_wall(self)
@@ -80,17 +82,17 @@ class InverterDomainWall(Inverter):
 class InverterGaugeTransform(Inverter):
 
     def __init__(self, *, inverter, gt,
-            timer = TimerNone()):
+            qtimer = TimerNone()):
         self.inverter = inverter
         self.gt = gt
-        self.timer = timer
+        self.timer = qtimer
         assert isinstance(self.inverter, Inverter)
         assert isinstance(self.gt, GaugeTransform)
         assert isinstance(self.timer, Timer)
         self.gt_inv = self.gt.inv()
 
     def __mul__(self, prop_src):
-        assert isinstance(prop_src, Prop) or isinstance(prop_src, FermionField4d) or isinstance(prop_src, list)
+        assert isinstance(prop_src, (Prop, FermionField4d, list,))
         self.timer.start()
         src = self.gt_inv * prop_src
         sol = self.inverter * src

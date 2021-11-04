@@ -1,6 +1,5 @@
 from qlat.lat_io import *
 
-import numpy as np
 import math
 import copy
 
@@ -61,14 +60,14 @@ class Data:
     def __sub__(self, other):
         if isinstance(other, Data):
             if self.val == 0:
-                return other
+                return Data(-other.val)
             elif other.val == 0:
                 return self
             else:
                 return Data(self.val - other.val)
         else:
             if self.val == 0:
-                return Data(other)
+                return Data(-other)
             elif other == 0:
                 return self
             else:
@@ -77,16 +76,16 @@ class Data:
     def __rsub__(self, other):
         if isinstance(other, Data):
             if self.val == 0:
-                return -other
+                return other
             elif other.val == 0:
-                return self
+                return Data(-self.val)
             else:
                 return Data(other.val - self.val)
         else:
             if self.val == 0:
-                return Data(-self.val)
+                return Data(other)
             elif other == 0:
-                return self
+                return Data(-self.val)
             else:
                 return Data(other - self.val)
 
@@ -106,7 +105,7 @@ def jackknife(data_list, eps = 1):
     return jks
 
 def fsqr(data):
-    if isinstance(data, float) or isinstance(data, int):
+    if isinstance(data, (float, int,)):
         return data * data
     elif isinstance(data, complex):
         r = data.real
@@ -116,7 +115,7 @@ def fsqr(data):
         raise Exception(f"fsqr {data} type not supported")
 
 def fsqrt(data):
-    if isinstance(data, float) or isinstance(data, int):
+    if isinstance(data, (float, int,)):
         return math.sqrt(data)
     elif isinstance(data, complex):
         r = data.real

@@ -19,5 +19,5 @@ def glb_sum(x):
 @timer_verbose
 def show_machine():
     displayln(f"id_node: {get_id_node():4} / {get_num_node()}"
-            f" ; coor_node: {str(q.get_coor_node()):9}"
-            f" / {str(q.get_size_node())}")
+            f" ; coor_node: {str(get_coor_node()):9}"
+            f" / {str(get_size_node())}")

@@ -73,17 +73,21 @@ class PselProp(SelectedPoints):
 def set_point_src(prop_src, geo, xg, value = 1.0):
     c.set_point_src_prop(prop_src, geo, xg, value)
 
-def set_wall_src(prop_src, geo, tslice, lmom = [0.0, 0.0, 0.0, 0.0]):
+def set_wall_src(prop_src, geo, tslice, lmom = None):
+    if lmom is None:
+        lmom = [ 0.0, 0.0, 0.0, 0.0, ]
     c.set_wall_src_prop(prop_src, geo, tslice, lmom)
 
 def mk_point_src(geo, xg, value = 1.0):
     prop_src = Prop()
-    set_point_src(prop_src, geo, xg, value);
+    set_point_src(prop_src, geo, xg, value)
     return prop_src
 
-def mk_wall_src(geo, tslice, lmom = [0.0, 0.0, 0.0, 0.0]):
+def mk_wall_src(geo, tslice, lmom = None):
+    if lmom is None:
+        lmom = [ 0.0, 0.0, 0.0, 0.0, ]
     prop_src = Prop()
-    set_wall_src(prop_src, geo, tslice, lmom);
+    set_wall_src(prop_src, geo, tslice, lmom)
     return prop_src
 
 @timer
@@ -120,9 +124,10 @@ def mk_rand_u1_prop(inv, geo, sel, rs):
     return get_rand_u1_sol(prop_sol, fu1, sel)
 
 @timer
-def free_invert(prop_src, mass,
-        m5 = 1.0, momtwist = [ 0.0, 0.0, 0.0, 0.0, ]):
+def free_invert(prop_src, mass, m5 = 1.0, momtwist = None):
     assert isinstance(prop_src, Prop)
+    if momtwist is None:
+        momtwist = [ 0.0, 0.0, 0.0, 0.0, ]
     prop_sol = Prop()
     c.free_invert_prop(prop_sol, prop_src, mass, m5, momtwist)
     return prop_sol
