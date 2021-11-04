@@ -422,7 +422,7 @@ def auto_contractor_meson_corr_wsnk_wsrc(job_tag, traj, get_prop, get_psel, get_
             for i_k, (k, v,) in enumerate(results.items()):
                 ld[(tsep, idx_name_fac, i_k,)] = v + [ complex(len(trial_indices)), ]
     q.displayln_info(ld.show())
-    ld.save(f"results/meson_corr/{job_tag}/traj={traj}/wsnk_wsrc.lat")
+    ld.save(get_save_path(f"auto_contractor-psel/{job_tag}/traj={traj}/meson_corr_wsnk_wsrc.lat"))
 
 @q.timer_verbose
 def auto_contractor_meson_corr_psnk_wsrc(job_tag, traj, get_prop, get_psel, get_pi, get_wi):
@@ -464,7 +464,7 @@ def auto_contractor_meson_corr_psnk_wsrc(job_tag, traj, get_prop, get_psel, get_
             for i_k, (k, v,) in enumerate(results.items()):
                 ld[(tsep, idx_name_fac, i_k,)] = v + [ complex(len(trial_indices)), ]
     q.displayln_info(ld.show())
-    ld.save(f"results/meson_corr/{job_tag}/traj={traj}/psnk_wsrc.lat")
+    ld.save(get_save_path(f"auto-contractor-psel/{job_tag}/traj={traj}/meson_corr_psnk_wsrc.lat"))
 
 @q.timer_verbose
 def auto_contractor_meson_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_pi, get_wi):
@@ -507,7 +507,7 @@ def auto_contractor_meson_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_
             for i_k, (k, v,) in enumerate(results.items()):
                 ld[(tsep, idx_name_fac, i_k,)] = v + [ complex(len(trial_indices)), ]
     q.displayln_info(ld.show())
-    ld.save(f"results/meson_corr/{job_tag}/traj={traj}/psnk_psrc.lat")
+    ld.save(get_save_path(f"auto-contractor-psel/{job_tag}/traj={traj}/meson_corr_psnk_psrc.lat"))
 
 @q.timer_verbose
 def auto_contractor_vev(job_tag, traj, get_prop, get_psel, get_pi, get_wi):
@@ -540,7 +540,7 @@ def auto_contractor_vev(job_tag, traj, get_prop, get_psel, get_pi, get_wi):
         for i_k, (k, v,) in enumerate(results.items()):
             ld[(idx_name_fac, i_k,)] = v + [ complex(len(trial_indices)), ]
     q.displayln_info(ld.show())
-    ld.save(f"results/vev/{job_tag}/traj={traj}/vev.lat")
+    ld.save(get_save_path(f"auto-contractor-psel/{job_tag}/traj={traj}/vev.lat"))
 
 @q.timer_verbose
 def auto_contractor_3f4f_matching(job_tag, traj, get_prop, get_psel, get_pi, get_wi):
@@ -551,6 +551,7 @@ def auto_contractor_3f4f_matching(job_tag, traj, get_prop, get_psel, get_pi, get
     src_snk_seps = [8,10,12,14,16]
     tsep_src = -4
     tsep_snk = 4
+    q.mk_dirs_info(get_save_path(f"auto-contractor-psel/{job_tag}/traj={traj}/3f4f_b81"))
     for tsnk_tsrc in src_snk_seps:
         max_top_tsrc = tsnk_tsrc // 2
         min_top_tsrc = tsnk_tsrc // 2
@@ -561,7 +562,7 @@ def auto_contractor_3f4f_matching(job_tag, traj, get_prop, get_psel, get_pi, get
             tsnk1_top = tsnk_tsrc + tsrc1_top
             tsnk2_top = tsep_snk  + tsnk1_top
             trial_indices = []
-            fn = f"results/3f4f_b81/tsnk_tsrc{tsnk_tsrc}_top_tsrc{top_tsrc}.bin"
+            fn = get_save_path(f"auto-contractor-psel/{job_tag}/traj={traj}/3f4f_b81/tsnk_tsrc{tsnk_tsrc}_top_tsrc{top_tsrc}.bin")
             with open(fn, mode='wb') as f:
                 for x in get_psel().to_list():
                     t2_1 = ( tsrc1_top + x[3] + total_site[3] ) % total_site[3]
@@ -602,12 +603,11 @@ def auto_contractor_3f4f_matching(job_tag, traj, get_prop, get_psel, get_pi, get
                     [ a, e, ] = v
                     f.write(complex(a))
                     f.write(complex(e))
-                if top_tsrc == min_top_tsrc and tsnk_tsrc == src_snk_seps[0]:
-                    metafn = f"analysis/3f4f_b81/meta.txt"
-                    with open(metafn, mode='w') as metaf:
-                        for k, v in results.items():
-                            key = mk_key(f"{k}")
-                            metaf.write(f"{key}\n")
+    metafn = get_save_path(f"auto-contractor-psel/{job_tag}/traj={traj}/3f4f_b81/meta.txt")
+    with open(metafn, mode='w') as metaf:
+        for k, v in results.items():
+            key = mk_key(f"{k}")
+            metaf.write(f"{key}\n")
 
 @q.timer_verbose
 def run_job(job_tag, traj):
@@ -627,13 +627,19 @@ def run_job(job_tag, traj):
     get_pi = run_pi(job_tag, traj, get_psel)
     get_wi = run_wi(job_tag, traj)
     #
-    get_prop = mk_get_prop(job_tag, traj, get_gt, get_psel, get_pi, get_wi)
-    #
-    auto_contractor_vev(job_tag, traj, get_prop, get_psel, get_pi, get_wi)
-    auto_contractor_meson_corr_wsnk_wsrc(job_tag, traj, get_prop, get_psel, get_pi, get_wi)
-    auto_contractor_meson_corr_psnk_wsrc(job_tag, traj, get_prop, get_psel, get_pi, get_wi)
-    auto_contractor_meson_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_pi, get_wi)
-    auto_contractor_3f4f_matching(job_tag, traj, get_prop, get_psel, get_pi, get_wi)
+    fn_checkpoint = f"auto-contractor-psel/{job_tag}/traj={traj}/checkpoint.txt"
+    if get_load_path(fn_checkpoint) is None:
+        if q.obtain_lock(f"locks/{job_tag}-{traj}-auto-contractor"):
+            get_prop = mk_get_prop(job_tag, traj, get_gt, get_psel, get_pi, get_wi)
+            # ADJUST ME
+            auto_contractor_vev(job_tag, traj, get_prop, get_psel, get_pi, get_wi)
+            # auto_contractor_meson_corr_wsnk_wsrc(job_tag, traj, get_prop, get_psel, get_pi, get_wi)
+            # auto_contractor_meson_corr_psnk_wsrc(job_tag, traj, get_prop, get_psel, get_pi, get_wi)
+            # auto_contractor_meson_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_pi, get_wi)
+            # auto_contractor_3f4f_matching(job_tag, traj, get_prop, get_psel, get_pi, get_wi)
+            #
+            q.qtouch_info(get_save_path(fn_checkpoint))
+            q.release_lock()
     #
     q.clean_cache()
     q.timer_display()
