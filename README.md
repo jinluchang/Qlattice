@@ -158,9 +158,9 @@ Relevant source files: `qutils/rng-state.h`
 
   Total running time of program in seconds.
 
-  Used when `check_time_limit()`.
+  Used when `check_time_limit()`, but will be override if `q_end_time` is set.
 
-  Default is empty.
+  Default is `43200`.
 
 - `q_budget`
 
@@ -168,7 +168,7 @@ Relevant source files: `qutils/rng-state.h`
 
   Used when `check_time_limit()`.
 
-  Default is `15*60`.
+  Default is `900`.
 
 - `q_field_init`
 
