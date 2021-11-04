@@ -572,7 +572,7 @@ def auto_contractor_3f4f_matching(job_tag, traj, get_prop, get_psel, get_pi, get
                     pd = {
                         "t1_1" : ("wall", t1_1,),
                         "t1_2" : ("wall", t1_2,),
-                        "x" : ("point", x,),
+                        "x" : ("point-snk", x,),
                         "t2_1" : ("wall", t2_1,),
                         "t2_2" : ("wall", t2_2,),
                     }
