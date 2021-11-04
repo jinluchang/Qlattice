@@ -10,7 +10,7 @@ echo "!!!! build $name !!!!"
 
 mkdir -p "$prefix"/$name || true
 
-rsync -av --delete $distfiles/$name/ "$prefix"/$name/
+rsync -avr --delete $distfiles/$name/ "$prefix"/$name/
 
 cd "$prefix/$name"
 
