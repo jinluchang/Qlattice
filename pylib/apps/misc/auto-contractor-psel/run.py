@@ -746,21 +746,21 @@ def auto_contractor_3f4f_matching(job_tag, traj, get_prop, get_psel, get_pi, get
                         f.write()
                         f.write(complex(e.real,e.imag))
     if q.get_id_node() == 0:
-    def mk_key(info):
-        def f(c):
-            if c in "()<>/* ":
-                return "_"
-            else:
-                return c
-        info = "".join(map(f, info))
-        while True:
-            fn = info.replace("__", "_")
-            if fn == info:
-                break
-            info = fn
-        if fn[-1] == "_":
-            fn = fn[:-1]
-        return fn
+        def mk_key(info):
+            def f(c):
+                if c in "()<>/* ":
+                    return "_"
+                else:
+                    return c
+            info = "".join(map(f, info))
+            while True:
+                fn = info.replace("__", "_")
+                if fn == info:
+                    break
+                info = fn
+            if fn[-1] == "_":
+                fn = fn[:-1]
+            return fn
         metafn = get_save_path(f"auto-contractor-psel/{job_tag}/traj={traj}/3f4f_b81/meta.txt")
         with open(metafn, mode='w') as metaf:
             for k, v in results.items():
