@@ -831,6 +831,9 @@ rup.dict_params["48I"]["trajs"] = list(range(3000, 500, -5))
 rup.dict_params["64I"]["trajs"] = list(range(3000, 500, -5))
 
 rup.dict_params["24D"]["trajs"] = list(range(3000, 500, -5))
+rup.dict_params["32D"]["trajs"] = list(range(3000, 500, -5))
+rup.dict_params["32Dfine"]["trajs"] = list(range(3000, 500, -5))
+rup.dict_params["24DH"]["trajs"] = list(range(3000, 200, -5))
 
 rup.dict_params["test-4nt8"]["fermion_params"][0][2]["Ls"] = 10
 rup.dict_params["test-4nt8"]["fermion_params"][1][2]["Ls"] = 10
@@ -847,7 +850,7 @@ job_tags = [
         "test-4nt8", "test-4nt16",
         # "64I",
         # "48I",
-        # "24D",
+        # "24D", "32D", "32Dfine","24DH",
         ]
 
 q.check_time_limit()
