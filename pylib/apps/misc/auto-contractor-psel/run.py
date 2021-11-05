@@ -742,8 +742,10 @@ def auto_contractor_3f4f_matching(job_tag, traj, get_prop, get_psel, get_pi, get
                             ratio_imag = v[0].imag / v[1].imag
                         q.displayln_info(f"{k}:\n  {v}, ({ratio_real}, {ratio_imag})")
                         ###
-                        f.write(v[0])
-                        f.write(v[1])
+                        f.write(v[0].real)
+                        f.write(v[0].imag)
+                        f.write(v[1].real)
+                        f.write(v[1].imag)
     if q.get_id_node() == 0:
         def mk_key(info):
             def f(c):
