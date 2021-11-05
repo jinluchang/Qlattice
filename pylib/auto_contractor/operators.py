@@ -63,11 +63,58 @@ def new_color_index():
     color_index_counter += 1
     return f"a_c_{color_index_counter}"
 
-def mk_meson(f1 : str, f2 : str, p : str):
+def mk_scalar(f1 : str, f2 : str, p : str, is_dagger = False):
+    s = new_spin_index()
+    c = new_color_index()
+    if is_dagger:
+        return Qb(f2, p, s, c) * Qv(f1, p, s, c)
+    else:
+        return Qb(f1, p, s, c) * Qv(f2, p, s, c)
+
+def mk_scalar5(f1 : str, f2 : str, p : str, is_dagger = False):
     s1 = new_spin_index()
     s2 = new_spin_index()
     c = new_color_index()
-    return Qb(f1, p, s1, c) * G(5, s1, s2) * Qv(f2, p, s2, c)
+    if is_dagger:
+        return Qb(f2, p, s1, c) * G(5, s1, s2) * Qv(f1, p, s2, c)
+    else:
+        return Qb(f1, p, s1, c) * G(5, s1, s2) * Qv(f2, p, s2, c)
+
+def mk_vec_mu(f1 : str, f2 : str, p : str, mu, is_dagger = False):
+    s1 = new_spin_index()
+    s2 = new_spin_index()
+    c = new_color_index()
+    if is_dagger:
+        if mu in [ 0, 1, 2, 5 ]:
+            return -Qb(f2, p, s1, c) * G(mu, s1, s2) * Qv(f1, p, s2, c)
+        else:
+            assert mu in [ 3, ]
+            return Qb(f2, p, s1, c) * G(mu, s1, s2) * Qv(f1, p, s2, c)
+    else:
+        return Qb(f1, p, s1, c) * G(mu, s1, s2) * Qv(f2, p, s2, c)
+
+def mk_vec5_mu(f1 : str, f2 : str, p : str, mu, is_dagger = False):
+    s1 = new_spin_index()
+    s2 = new_spin_index()
+    s3 = new_spin_index()
+    c = new_color_index()
+    if is_dagger:
+        if mu in [ 0, 1, 2, ]:
+            return -Qb(f2, p, s1, c) * G(mu, s1, s2) * G(5, s2, s3) * Qv(f1, p, s3, c)
+        else:
+            assert mu in [ 3, 5, ]
+            return Qb(f2, p, s1, c) * G(mu, s1, s2) * G(5, s2, s3) * Qv(f1, p, s3, c)
+    else:
+        return Qb(f1, p, s1, c) * G(mu, s1, s2) * G(5, s2, s3) * Qv(f2, p, s3, c)
+
+def mk_meson(f1 : str, f2 : str, p : str, is_dagger = False):
+    return mk_scalar5(f1, f2, p, is_dagger)
+
+def show_dagger(is_dagger):
+    if is_dagger:
+        return "^dag"
+    else:
+        return ""
 
 def mk_pi_0(p : str, is_dagger = False):
     return sympy.I / sympy.sqrt(2) * (mk_meson("u", "u", p) - mk_meson("d", "d", p)) + f"pi0({p})"
@@ -84,11 +131,35 @@ def mk_pi_m(p : str, is_dagger = False):
     else:
         return -mk_pi_p(p) + f"pi-({p})^dag"
 
-def show_dagger(is_dagger):
-    if is_dagger:
-        return "^dag"
+def mk_k_p(p : str, is_dagger = False):
+    if not is_dagger:
+        return sympy.I * mk_meson("u", "s", p) + f"K+({p})"
     else:
-        return ""
+        return -mk_k_m(p) + f"K+({p})^dag"
+
+def mk_k_m(p : str, is_dagger = False):
+    if not is_dagger:
+        return -sympy.I * mk_meson("s", "u", p) + f"K-({p})"
+    else:
+        return -mk_k_p(p) + f"K-({p})^dag"
+
+def mk_k_0(p : str, is_dagger = False):
+    if not is_dagger:
+        return sympy.I * mk_meson("d", "s", p) + f"K0({p})"
+    else:
+        return -mk_k_0_bar(p) + f"K0({p})^dag"
+
+def mk_k_0_bar(p : str, is_dagger = False):
+    if not is_dagger:
+        return -sympy.I * mk_meson("s", "d", p) + f"K0b({p})"
+    else:
+        return -mk_k_0(p) + f"K0b({p})^dag"
+
+def mk_j5pi_mu(p : str, mu, is_dagger = False):
+    return mk_vec5_mu("d", "u", p, mu, is_dagger)
+
+def mk_j5k_mu(p : str, mu, is_dagger = False):
+    return mk_vec5_mu("s", "u", p, mu, is_dagger)
 
 def mk_pipi_i22(p1 : str, p2 : str, is_dagger = False):
     return mk_pi_p(p1, is_dagger) * mk_pi_p(p2, is_dagger) + f"pipi_I22({p1},{p2}){show_dagger(is_dagger)}"
@@ -124,30 +195,6 @@ def mk_pipi_i0(p1 : str, p2 : str, is_dagger = False):
             + mk_pi_m(p1, is_dagger) * mk_pi_p(p2, is_dagger)
             + mk_pi_p(p1, is_dagger) * mk_pi_m(p2, is_dagger)
             ) + f"pipi_I0({p1},{p2}){show_dagger(is_dagger)}"
-
-def mk_k_p(p : str, is_dagger = False):
-    if not is_dagger:
-        return sympy.I * mk_meson("u", "s", p) + f"K+({p})"
-    else:
-        return -mk_k_m(p) + f"K+({p})^dag"
-
-def mk_k_m(p : str, is_dagger = False):
-    if not is_dagger:
-        return -sympy.I * mk_meson("s", "u", p) + f"K-({p})"
-    else:
-        return -mk_k_p(p) + f"K-({p})^dag"
-
-def mk_k_0(p : str, is_dagger = False):
-    if not is_dagger:
-        return sympy.I * mk_meson("d", "s", p) + f"K0({p})"
-    else:
-        return -mk_k_0_bar(p) + f"K0({p})^dag"
-
-def mk_k_0_bar(p : str, is_dagger = False):
-    if not is_dagger:
-        return -sympy.I * mk_meson("s", "d", p) + f"K0b({p})"
-    else:
-        return -mk_k_0(p) + f"K0b({p})^dag"
 
 def mk_k_0_star_mu(p : str, mu, is_dagger = False):
     return mk_vec_mu("d", "s", mu, is_dagger)
@@ -253,42 +300,6 @@ def mk_sigma(p : str, is_dagger = False):
     s = new_spin_index()
     c = new_color_index()
     return 1 / sympy.sqrt(2) * (Qb("u", p, s, c) * Qv("u", p, s, c) + Qb("d", p, s, c) * Qv("d", p, s, c)) + f"sigma({p})"
-
-def mk_scalar(f1 : str, f2 : str, p : str):
-    s = new_spin_index()
-    c = new_color_index()
-    return Qb(f1, p, s, c) * Qv(f2, p, s, c)
-
-def mk_scalar5(f1 : str, f2 : str, p : str):
-    s1 = new_spin_index()
-    s2 = new_spin_index()
-    c = new_color_index()
-    return Qb(f1, p, s1, c) * G(5, s1, s2) * Qv(f2, p, s2, c)
-
-def mk_vec_mu(f1 : str, f2 : str, p : str, mu, is_dagger = False):
-    s1 = new_spin_index()
-    s2 = new_spin_index()
-    c = new_color_index()
-    if is_dagger:
-        if mu in [0, 1, 2]:
-            return -Qb(f2, p, s1, c) * G(mu, s1, s2) * Qv(f1, p, s2, c)
-        else:
-            return Qb(f2, p, s1, c) * G(mu, s1, s2) * Qv(f1, p, s2, c)
-    else:
-        return Qb(f1, p, s1, c) * G(mu, s1, s2) * Qv(f2, p, s2, c)
-
-def mk_vec5_mu(f1 : str, f2 : str, p : str, mu, is_dagger = False):
-    s1 = new_spin_index()
-    s2 = new_spin_index()
-    s3 = new_spin_index()
-    c = new_color_index()
-    if is_dagger:
-        if mu in [0, 1, 2]:
-            return -Qb(f2, p, s1, c) * G(mu, s1, s2) * G(5, s2, s3) * Qv(f1, p, s3, c)
-        else:
-            return Qb(f2, p, s1, c) * G(mu, s1, s2) * G(5, s2, s3) * Qv(f1, p, s3, c)
-    else:
-        return Qb(f1, p, s1, c) * G(mu, s1, s2) * G(5, s2, s3) * Qv(f2, p, s3, c)
 
 def mk_j_mu(p : str, mu, is_dagger = False):
     return sympy.simplify(1)*2/3 * mk_vec_mu("u", "u", p, mu, is_dagger) - sympy.simplify(1)*1/3 * mk_vec_mu("d", "d", p, mu, is_dagger) - sympy.simplify(1)*1/3 * mk_vec_mu("s", "s", p, mu, is_dagger) + f"j_mu({p},{mu}){show_dagger(is_dagger)}"
