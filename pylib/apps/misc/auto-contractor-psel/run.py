@@ -728,7 +728,7 @@ def auto_contractor_3f4f_matching(job_tag, traj, get_prop, get_psel, get_pi, get
                 is_only_total = "total"
             )
             results = results_list[0]
-            if get_id_node() == 0:
+            if q.get_id_node() == 0:
                 fn = get_save_path(f"auto-contractor-psel/{job_tag}/traj={traj}/3f4f_b81/tsnk_tsrc{tsnk_tsrc}_top_tsrc{top_tsrc}.bin")
                 with open(fn, mode='wb') as f:
                     for k, v in results.items():
@@ -742,10 +742,25 @@ def auto_contractor_3f4f_matching(job_tag, traj, get_prop, get_psel, get_pi, get
                             ratio_imag = v[0].imag / v[1].imag
                         q.displayln_info(f"{k}:\n  {v}, ({ratio_real}, {ratio_imag})")
                         ###
-                        [ a, e, ] = v
-                        f.write(complex(a.real,a.imag))
+                        a = complex(v[0].real,v[0].imag)
+                        f.write()
                         f.write(complex(e.real,e.imag))
-    if get_id_node() == 0:
+    if q.get_id_node() == 0:
+    def mk_key(info):
+        def f(c):
+            if c in "()<>/* ":
+                return "_"
+            else:
+                return c
+        info = "".join(map(f, info))
+        while True:
+            fn = info.replace("__", "_")
+            if fn == info:
+                break
+            info = fn
+        if fn[-1] == "_":
+            fn = fn[:-1]
+        return fn
         metafn = get_save_path(f"auto-contractor-psel/{job_tag}/traj={traj}/3f4f_b81/meta.txt")
         with open(metafn, mode='w') as metaf:
             for k, v in results.items():
