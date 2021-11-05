@@ -59,7 +59,7 @@ def g5_herm(x):
 
 class AmaVal:
 
-    def __init__(self, val = None, corrections = []):
+    def __init__(self, val = None, corrections = None):
         # should have the following:
         # self.val: sloppy value
         # self.corrections: list [ (val, description_dict,), ... ]
@@ -69,7 +69,10 @@ class AmaVal:
         #    probability_of_having_this_accuracy,),
         # }
         self.val = val
-        self.corrections = corrections
+        if corrections is None:
+            self.corrections = []
+        else:
+            self.corrections = corrections
 
 def ama_apply1(f, x):
     if not isinstance(x, AmaVal):
@@ -266,7 +269,9 @@ def get_cexpr_names(cexpr, is_only_total = "total"):
         assert False
     return names
 
-def get_mpi_chunk(total_list, *, rng_state = q.RngState("get_mpi_chunk")):
+def get_mpi_chunk(total_list, *, rng_state = None):
+    if rng_state is None:
+        rng_state = q.RngState("get_mpi_chunk")
     total = len(total_list)
     id_worker = q.get_id_node()
     num_worker = q.get_num_node()
@@ -365,7 +370,6 @@ def positions_dict_maker_example_2(idx):
     return pd, facs
 
 if __name__ == "__main__":
-    print(positions_dict_maker_example_1(0, total_site))
-    print(positions_dict_maker_example_2(0, total_site))
-    print(CExpr([('S_1', S('d','x2','x1')), ('S_2', S('u','x1','x2'))],[('T_1', Term([Tr([G(5), Var('S_1'), G(5), Var('S_2')],'sc')],[],(-1+0j)))],['x1', 'x2']))
+    print(positions_dict_maker_example_1(0))
+    print(positions_dict_maker_example_2(0))
 
