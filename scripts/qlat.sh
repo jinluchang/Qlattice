@@ -27,6 +27,9 @@ cp -rpv pylib/auto_contractor $prefix/pylib/
 cp -pv pylib/*.py $prefix/pylib/
 cp -pv pylib/Makefile.inc $prefix/pylib/
 
+cp pylib/apps/lat-io-glimpse/lat-io-glimpse $prefix/bin/
+cp pylib/apps/gauge-fix-coulomb/gauge-fix-coulomb $prefix/bin/
+
 ( cd ./pylib/cqlat ; ./update.sh )
 
 mkdir -pv $prefix/pylib
