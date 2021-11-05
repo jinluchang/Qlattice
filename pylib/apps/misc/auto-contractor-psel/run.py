@@ -385,16 +385,16 @@ def auto_contractor_meson_corr_wsnk_wsrc(job_tag, traj, get_prop, get_psel, get_
     names_expr = get_cexpr_names(cexpr)
     names_fac = [ "rest", ]
     ld = q.mk_lat_data([
-        [ "tsep", total_site[3] // 2 + 1, ],
         [ "name_fac", len(names_fac), names_fac, ],
         [ "expr_name", len(names_expr), names_expr, ],
+        [ "tsep", total_site[3], ],
         [ "val-err-n", 3, [ "val", "err", "n-trails", ] ],
         ])
-    for tsep in range(total_site[3] // 2 + 1):
+    for tsep in range(total_site[3]):
         trial_indices = []
         for t1 in range(total_site[3]):
             for t2 in range(total_site[3]):
-                if tsep == abs(rel_mod(t2 - t1, total_site[3])):
+                if tsep == (t2 - t1) % total_site[3]:
                     pd = {
                             "x1" : ("wall", t1,),
                             "x2" : ("wall", t2,),
@@ -415,7 +415,7 @@ def auto_contractor_meson_corr_wsnk_wsrc(job_tag, traj, get_prop, get_psel, get_
                 )
         for idx_name_fac, (name_fac, results,) in enumerate(zip(names_fac, results_list)):
             for i_k, (k, v,) in enumerate(results.items()):
-                ld[(tsep, idx_name_fac, i_k,)] = v + [ complex(len(trial_indices)), ]
+                ld[(idx_name_fac, i_k, tsep,)] = v + [ complex(len(trial_indices)), ]
     q.displayln_info(ld.show())
     ld.save(get_save_path(f"auto-contractor-psel/{job_tag}/traj={traj}/meson_corr/wsnk_wsrc.lat"))
 
@@ -426,16 +426,17 @@ def auto_contractor_meson_corr_psnk_wsrc(job_tag, traj, get_prop, get_psel, get_
     names_expr = get_cexpr_names(cexpr)
     names_fac = [ "rest", ]
     ld = q.mk_lat_data([
-        [ "tsep", total_site[3] // 2 + 1, ],
         [ "name_fac", len(names_fac), names_fac, ],
         [ "expr_name", len(names_expr), names_expr, ],
+        [ "tsep", total_site[3], ],
         [ "val-err-n", 3, [ "val", "err", "n-trails", ] ],
         ])
-    for tsep in range(total_site[3] // 2 + 1):
+    for tsep in range(total_site[3]):
         trial_indices = []
         for t1 in range(total_site[3]):
             for x2 in get_psel().to_list():
-                if tsep == abs(rel_mod(x2[3] - t1, total_site[3])):
+                t2 = x2[3]
+                if tsep == (t2 - t1) % total_site[3]:
                     pd = {
                             "x1" : ("wall", t1,),
                             "x2" : ("point-snk", x2,),
@@ -456,7 +457,7 @@ def auto_contractor_meson_corr_psnk_wsrc(job_tag, traj, get_prop, get_psel, get_
                 )
         for idx_name_fac, (name_fac, results,) in enumerate(zip(names_fac, results_list)):
             for i_k, (k, v,) in enumerate(results.items()):
-                ld[(tsep, idx_name_fac, i_k,)] = v + [ complex(len(trial_indices)), ]
+                ld[(idx_name_fac, i_k, tsep,)] = v + [ complex(len(trial_indices)), ]
     q.displayln_info(ld.show())
     ld.save(get_save_path(f"auto-contractor-psel/{job_tag}/traj={traj}/meson_corr/psnk_wsrc.lat"))
 
@@ -467,16 +468,18 @@ def auto_contractor_meson_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_
     names_expr = get_cexpr_names(cexpr)
     names_fac = [ "rest", ]
     ld = q.mk_lat_data([
-        [ "tsep", total_site[3] // 2 + 1, ],
         [ "name_fac", len(names_fac), names_fac, ],
         [ "expr_name", len(names_expr), names_expr, ],
+        [ "tsep", total_site[3], ],
         [ "val-err-n", 3, [ "val", "err", "n-trails", ] ],
         ])
-    for tsep in range(total_site[3] // 2 + 1):
+    for tsep in range(total_site[3]):
         trial_indices = []
         for x1 in get_psel().to_list():
+            t1 = x1[3]
             for x2 in get_psel().to_list():
-                if tsep == abs(rel_mod(x2[3] - x1[3], total_site[3])):
+                t2 = x2[3]
+                if tsep == (t2 - t1) % total_site[3]:
                     pd = {
                             "x1" : ("point", x1,),
                             "x2" : ("point-snk", x2,),
@@ -497,7 +500,7 @@ def auto_contractor_meson_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_
                 )
         for idx_name_fac, (name_fac, results,) in enumerate(zip(names_fac, results_list)):
             for i_k, (k, v,) in enumerate(results.items()):
-                ld[(tsep, idx_name_fac, i_k,)] = v + [ complex(len(trial_indices)), ]
+                ld[(idx_name_fac, i_k, tsep,)] = v + [ complex(len(trial_indices)), ]
     q.displayln_info(ld.show())
     ld.save(get_save_path(f"auto-contractor-psel/{job_tag}/traj={traj}/meson_corr/psnk_psrc.lat"))
 
@@ -508,18 +511,18 @@ def auto_contractor_meson_corr_with_env_wsnk_wsrc(job_tag, traj, get_prop, get_p
     names_expr = get_cexpr_names(cexpr)
     names_fac = [ "rest", ]
     ld = q.mk_lat_data([
-        [ "tsep", total_site[3] // 2 + 1, ],
         [ "name_fac", len(names_fac), names_fac, ],
         [ "expr_name", len(names_expr), names_expr, ],
+        [ "tsep", total_site[3], ],
         [ "val-err-n", 3, [ "val", "err", "n-trails", ] ],
         ])
     tsep_env = 6
-    for tsep in range(total_site[3] // 2 + 1):
+    for tsep in range(total_site[3]):
         trial_indices = []
         for t1 in range(total_site[3]):
             for t2 in range(total_site[3]):
-                tsep_r = rel_mod(t2 - t1, total_site[3])
-                if tsep == abs(tsep_r):
+                if tsep == (t2 - t1) % total_site[3]:
+                    tsep_r = rel_mod(t2 - t1, total_site[3])
                     if tsep_r >= 0:
                         tsep_env_r = tsep_env
                     else:
@@ -546,7 +549,7 @@ def auto_contractor_meson_corr_with_env_wsnk_wsrc(job_tag, traj, get_prop, get_p
                 )
         for idx_name_fac, (name_fac, results,) in enumerate(zip(names_fac, results_list)):
             for i_k, (k, v,) in enumerate(results.items()):
-                ld[(tsep, idx_name_fac, i_k,)] = v + [ complex(len(trial_indices)), ]
+                ld[(idx_name_fac, i_k, tsep,)] = v + [ complex(len(trial_indices)), ]
     q.displayln_info(ld.show())
     ld.save(get_save_path(f"auto-contractor-psel/{job_tag}/traj={traj}/meson_corr_with_env/wsnk_wsrc.lat"))
 
@@ -557,19 +560,19 @@ def auto_contractor_meson_corr_with_env_psnk_wsrc(job_tag, traj, get_prop, get_p
     names_expr = get_cexpr_names(cexpr)
     names_fac = [ "rest", ]
     ld = q.mk_lat_data([
-        [ "tsep", total_site[3] // 2 + 1, ],
         [ "name_fac", len(names_fac), names_fac, ],
         [ "expr_name", len(names_expr), names_expr, ],
+        [ "tsep", total_site[3], ],
         [ "val-err-n", 3, [ "val", "err", "n-trails", ] ],
         ])
     tsep_env = 6
-    for tsep in range(total_site[3] // 2 + 1):
+    for tsep in range(total_site[3]):
         trial_indices = []
         for t1 in range(total_site[3]):
             for x2 in get_psel().to_list():
                 t2 = x2[3]
-                tsep_r = rel_mod(t2 - t1, total_site[3])
-                if tsep == abs(tsep_r):
+                if tsep == (t2 - t1) % total_site[3]:
+                    tsep_r = rel_mod(t2 - t1, total_site[3])
                     if tsep_r >= 0:
                         tsep_env_r = tsep_env
                     else:
@@ -596,7 +599,7 @@ def auto_contractor_meson_corr_with_env_psnk_wsrc(job_tag, traj, get_prop, get_p
                 )
         for idx_name_fac, (name_fac, results,) in enumerate(zip(names_fac, results_list)):
             for i_k, (k, v,) in enumerate(results.items()):
-                ld[(tsep, idx_name_fac, i_k,)] = v + [ complex(len(trial_indices)), ]
+                ld[(idx_name_fac, i_k, tsep,)] = v + [ complex(len(trial_indices)), ]
     q.displayln_info(ld.show())
     ld.save(get_save_path(f"auto-contractor-psel/{job_tag}/traj={traj}/meson_corr_with_env/psnk_wsrc.lat"))
 
@@ -607,20 +610,20 @@ def auto_contractor_meson_corr_with_env_psnk_psrc(job_tag, traj, get_prop, get_p
     names_expr = get_cexpr_names(cexpr)
     names_fac = [ "rest", ]
     ld = q.mk_lat_data([
-        [ "tsep", total_site[3] // 2 + 1, ],
         [ "name_fac", len(names_fac), names_fac, ],
         [ "expr_name", len(names_expr), names_expr, ],
+        [ "tsep", total_site[3], ],
         [ "val-err-n", 3, [ "val", "err", "n-trails", ] ],
         ])
     tsep_env = 6
-    for tsep in range(total_site[3] // 2 + 1):
+    for tsep in range(total_site[3]):
         trial_indices = []
         for x1 in get_psel().to_list():
             t1 = x1[3]
             for x2 in get_psel().to_list():
                 t2 = x2[3]
-                tsep_r = rel_mod(t2 - t1, total_site[3])
-                if tsep == abs(tsep_r):
+                if tsep == (t2 - t1) % total_site[3]:
+                    tsep_r = rel_mod(t2 - t1, total_site[3])
                     if tsep_r >= 0:
                         tsep_env_r = tsep_env
                     else:
@@ -647,7 +650,7 @@ def auto_contractor_meson_corr_with_env_psnk_psrc(job_tag, traj, get_prop, get_p
                 )
         for idx_name_fac, (name_fac, results,) in enumerate(zip(names_fac, results_list)):
             for i_k, (k, v,) in enumerate(results.items()):
-                ld[(tsep, idx_name_fac, i_k,)] = v + [ complex(len(trial_indices)), ]
+                ld[(idx_name_fac, i_k, tsep,)] = v + [ complex(len(trial_indices)), ]
     q.displayln_info(ld.show())
     ld.save(get_save_path(f"auto-contractor-psel/{job_tag}/traj={traj}/meson_corr_with_env/psnk_psrc.lat"))
 
@@ -671,6 +674,7 @@ def auto_contractor_vev(job_tag, traj, get_prop, get_psel, get_pi, get_wi):
         pd = idx
         facs = [ 1.0, ]
         return pd, facs
+    assert trial_indices
     results_list = eval_cexpr_simulation(
             cexpr,
             positions_dict_maker = positions_dict_maker,
@@ -791,17 +795,17 @@ def run_job(job_tag, traj):
         if q.obtain_lock(f"locks/{job_tag}-{traj}-auto-contractor"):
             get_prop = mk_get_prop(job_tag, traj, get_gt, get_psel, get_pi, get_wi)
             # ADJUST ME
-            # auto_contractor_vev(job_tag, traj, get_prop, get_psel, get_pi, get_wi)
-            # auto_contractor_meson_corr_wsnk_wsrc(job_tag, traj, get_prop, get_psel, get_pi, get_wi)
-            # auto_contractor_meson_corr_psnk_wsrc(job_tag, traj, get_prop, get_psel, get_pi, get_wi)
-            # auto_contractor_meson_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_pi, get_wi)
-            # auto_contractor_meson_corr_with_env_wsnk_wsrc(job_tag, traj, get_prop, get_psel, get_pi, get_wi)
-            # auto_contractor_meson_corr_with_env_psnk_wsrc(job_tag, traj, get_prop, get_psel, get_pi, get_wi)
-            # auto_contractor_meson_corr_with_env_psnk_psrc(job_tag, traj, get_prop, get_psel, get_pi, get_wi)
-            auto_contractor_3f4f_matching(job_tag, traj, get_prop, get_psel, get_pi, get_wi)
+            auto_contractor_vev(job_tag, traj, get_prop, get_psel, get_pi, get_wi)
+            auto_contractor_meson_corr_wsnk_wsrc(job_tag, traj, get_prop, get_psel, get_pi, get_wi)
+            auto_contractor_meson_corr_psnk_wsrc(job_tag, traj, get_prop, get_psel, get_pi, get_wi)
+            auto_contractor_meson_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_pi, get_wi)
+            auto_contractor_meson_corr_with_env_wsnk_wsrc(job_tag, traj, get_prop, get_psel, get_pi, get_wi)
+            auto_contractor_meson_corr_with_env_psnk_wsrc(job_tag, traj, get_prop, get_psel, get_pi, get_wi)
+            auto_contractor_meson_corr_with_env_psnk_psrc(job_tag, traj, get_prop, get_psel, get_pi, get_wi)
+            # auto_contractor_3f4f_matching(job_tag, traj, get_prop, get_psel, get_pi, get_wi)
             #
-            # q.qtouch_info(get_save_path(fn_checkpoint))
-            # q.release_lock()
+            q.qtouch_info(get_save_path(fn_checkpoint))
+            q.release_lock()
     #
     q.clean_cache()
     q.timer_display()

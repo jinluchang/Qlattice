@@ -24,8 +24,10 @@ def get_cexpr_vev():
 def get_cexpr_meson_corr():
     def calc_cexpr():
         exprs = [
-                mk_pi_p("x2", True) * mk_pi_p("x1"),
-                mk_k_p("x2", True) * mk_k_p("x1"),
+                mk_pi_p("x2", True) * mk_pi_p("x1") + "(pi   * pi)",
+                mk_j5pi_mu("x2", 3) * mk_pi_p("x1") + "(a_pi * pi)",
+                mk_k_p("x2", True)  * mk_k_p("x1")  + "(k    * k )",
+                mk_j5k_mu("x2", 3)  * mk_k_p("x1")  + "(a_k  * k )",
                 ]
         cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
         q.displayln_info(display_cexpr(cexpr))
@@ -38,16 +40,22 @@ def get_cexpr_meson_corr():
 @q.timer
 def get_cexpr_meson_corr_with_env():
     def calc_cexpr():
-        exprs = [
-                mk_pi_p("x2", True) * mk_pi_p("x1"),
-                mk_k_p("x2", True)  * mk_k_p("x1"),
-                mk_pi_p("x2p") * mk_pi_p("x2", True) * mk_pi_p("x1") * mk_pi_p("x1p", True),
-                mk_pi_0("x2p") * mk_pi_p("x2", True) * mk_pi_p("x1") * mk_pi_0("x1p", True),
-                mk_pi_m("x2p") * mk_pi_p("x2", True) * mk_pi_p("x1") * mk_pi_m("x1p", True),
-                mk_pi_p("x2p") * mk_k_p("x2", True)  * mk_k_p("x1")  * mk_pi_p("x1p", True),
-                mk_pi_0("x2p") * mk_k_p("x2", True)  * mk_k_p("x1")  * mk_pi_0("x1p", True),
-                mk_pi_m("x2p") * mk_k_p("x2", True)  * mk_k_p("x1")  * mk_pi_m("x1p", True),
+        exprs_inner = [
+                mk_pi_p("x2", True) * mk_pi_p("x1") + "(pi   * pi)",
+                mk_j5pi_mu("x2", 3) * mk_pi_p("x1") + "(a_pi * pi)",
+                mk_k_p("x2", True)  * mk_k_p("x1")  + "(k    * k )",
+                mk_j5k_mu("x2", 3)  * mk_k_p("x1")  + "(a_k  * k )",
                 ]
+        exprs_outer = [
+                mk_expr(1)                            + "vac_env ",
+                mk_pi_p("x2p", True) * mk_pi_p("x1p") + "pi_p_env",
+                mk_pi_0("x2p", True) * mk_pi_0("x1p") + "pi_0_env",
+                mk_pi_m("x2p", True) * mk_pi_m("x1p") + "pi_m_env",
+                ]
+        exprs = []
+        for e_o in exprs_outer:
+            for e_i in exprs_inner:
+                exprs.append(e_o * e_i)
         cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
         q.displayln_info(display_cexpr(cexpr))
         cexpr.collect_op()

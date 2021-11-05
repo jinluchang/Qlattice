@@ -285,12 +285,19 @@ def get_mpi_chunk(total_list, *, rng_state = None):
 @q.timer
 def eval_cexpr_simulation(cexpr : CExpr, *, positions_dict_maker, trial_indices, get_prop, is_only_total = "total"):
     # interface function
-    if len(trial_indices) == 0:
+    assert isinstance(trial_indices, list)
+    total_num_trials = q.glb_sum(len(trial_indices))
+    if total_num_trials == 0:
         return None
+    if trial_indices:
+        has_data = 1
+    else:
+        has_data = 0
+    num_has_data = q.glb_sum(has_data)
     names = get_cexpr_names(cexpr, is_only_total)
     num_value = len(names)
-    results = None
     num_fac = None
+    results = None
     for idx in trial_indices:
         positions_dict, facs = positions_dict_maker(idx)
         if num_fac is None:
@@ -302,20 +309,31 @@ def eval_cexpr_simulation(cexpr : CExpr, *, positions_dict_maker, trial_indices,
         assert len(res) == num_value
         for i in range(num_fac):
             results[i].append(facs[i] * res)
-    for i in range(num_fac):
-        assert len(results[i]) == len(trial_indices)
-    total_num_trials = q.glb_sum(len(trial_indices))
+    if trial_indices:
+        assert num_fac is not None
+    else:
+        assert num_fac is None
+        num_fac = 0
+    g_num_fac = q.glb_sum(num_fac)
+    if trial_indices:
+        assert g_num_fac == num_fac * num_has_data
+        for i in range(num_fac):
+            assert len(results[i]) == len(trial_indices)
+    else:
+        num_fac = g_num_fac // num_has_data
     ld_info = [
             [ "fac", num_fac ],
             [ "name", num_value, ],
             ]
     ld = q.mk_lat_data(ld_info)
-    for i in range(num_fac):
-        ld[(i,)] = sum(results[i])
+    if trial_indices:
+        for i in range(num_fac):
+            ld[(i,)] = sum(results[i])
     ld_avg = (1 / total_num_trials) * q.glb_sum(ld)
     ld = q.mk_lat_data(ld_info)
-    for i in range(num_fac):
-        ld[(i,)] = sum([ sqr_component_array(r - ld_avg[(i,)]) for r in results[i] ])
+    if trial_indices:
+        for i in range(num_fac):
+            ld[(i,)] = sum([ sqr_component_array(r - ld_avg[(i,)]) for r in results[i] ])
     ld_var = (1 / total_num_trials) * q.glb_sum(ld)
     summaries = []
     for i in range(num_fac):
