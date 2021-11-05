@@ -742,9 +742,8 @@ def auto_contractor_3f4f_matching(job_tag, traj, get_prop, get_psel, get_pi, get
                             ratio_imag = v[0].imag / v[1].imag
                         q.displayln_info(f"{k}:\n  {v}, ({ratio_real}, {ratio_imag})")
                         ###
-                        a = complex(v[0].real,v[0].imag)
-                        f.write()
-                        f.write(complex(e.real,e.imag))
+                        f.write(v[0])
+                        f.write(v[1])
     if q.get_id_node() == 0:
         def mk_key(info):
             def f(c):
@@ -790,17 +789,17 @@ def run_job(job_tag, traj):
         if q.obtain_lock(f"locks/{job_tag}-{traj}-auto-contractor"):
             get_prop = mk_get_prop(job_tag, traj, get_gt, get_psel, get_pi, get_wi)
             # ADJUST ME
-            auto_contractor_vev(job_tag, traj, get_prop, get_psel, get_pi, get_wi)
-            auto_contractor_meson_corr_wsnk_wsrc(job_tag, traj, get_prop, get_psel, get_pi, get_wi)
-            auto_contractor_meson_corr_psnk_wsrc(job_tag, traj, get_prop, get_psel, get_pi, get_wi)
-            auto_contractor_meson_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_pi, get_wi)
-            auto_contractor_meson_corr_with_env_wsnk_wsrc(job_tag, traj, get_prop, get_psel, get_pi, get_wi)
-            auto_contractor_meson_corr_with_env_psnk_wsrc(job_tag, traj, get_prop, get_psel, get_pi, get_wi)
-            auto_contractor_meson_corr_with_env_psnk_psrc(job_tag, traj, get_prop, get_psel, get_pi, get_wi)
-            # auto_contractor_3f4f_matching(job_tag, traj, get_prop, get_psel, get_pi, get_wi)
+            # auto_contractor_vev(job_tag, traj, get_prop, get_psel, get_pi, get_wi)
+            # auto_contractor_meson_corr_wsnk_wsrc(job_tag, traj, get_prop, get_psel, get_pi, get_wi)
+            # auto_contractor_meson_corr_psnk_wsrc(job_tag, traj, get_prop, get_psel, get_pi, get_wi)
+            # auto_contractor_meson_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_pi, get_wi)
+            # auto_contractor_meson_corr_with_env_wsnk_wsrc(job_tag, traj, get_prop, get_psel, get_pi, get_wi)
+            # auto_contractor_meson_corr_with_env_psnk_wsrc(job_tag, traj, get_prop, get_psel, get_pi, get_wi)
+            # auto_contractor_meson_corr_with_env_psnk_psrc(job_tag, traj, get_prop, get_psel, get_pi, get_wi)
+            auto_contractor_3f4f_matching(job_tag, traj, get_prop, get_psel, get_pi, get_wi)
             #
-            q.qtouch_info(get_save_path(fn_checkpoint))
-            q.release_lock()
+            # q.qtouch_info(get_save_path(fn_checkpoint))
+            # q.release_lock()
     #
     q.clean_cache()
     q.timer_display()
