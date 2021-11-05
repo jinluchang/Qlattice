@@ -703,52 +703,54 @@ def auto_contractor_3f4f_matching(job_tag, traj, get_prop, get_psel, get_pi, get
             tsnk1_top = tsnk_tsrc + tsrc1_top
             tsnk2_top = tsep_snk  + tsnk1_top
             trial_indices = []
-            fn = get_save_path(f"auto-contractor-psel/{job_tag}/traj={traj}/3f4f_b81/tsnk_tsrc{tsnk_tsrc}_top_tsrc{top_tsrc}.bin")
-            with open(fn, mode='wb') as f:
-                for x in get_psel().to_list():
-                    t2_1 = ( tsrc1_top + x[3] + total_site[3] ) % total_site[3]
-                    t2_2 = ( tsrc2_top + x[3] + total_site[3] ) % total_site[3]
-                    t1_1 = ( tsnk1_top + x[3] + total_site[3] ) % total_site[3]
-                    t1_2 = ( tsnk2_top + x[3] + total_site[3] ) % total_site[3]
-                    pd = {
-                        "t1_1" : ("wall", t1_1,),
-                        "t1_2" : ("wall", t1_2,),
-                        "x" : ("point-snk", x,),
-                        "t2_1" : ("wall", t2_1,),
-                        "t2_2" : ("wall", t2_2,),
-                    }
-                    trial_indices.append(pd)
-                def positions_dict_maker(idx):
-                    pd = idx
-                    facs = [ 1.0, ]
-                    return pd, facs
-                results_list = eval_cexpr_simulation(
-                    cexpr,
-                    positions_dict_maker = positions_dict_maker,
-                    trial_indices = get_mpi_chunk(trial_indices),
-                    get_prop = get_prop,
-                    is_only_total = "total"
-                )
-                results = results_list[0]
-                for k, v in results.items():
-                    if v[1].real == 0:
-                        ratio_real = None
-                    else:
-                        ratio_real = v[0].real / v[1].real
-                    if v[1].imag == 0:
-                        ratio_imag = None
-                    else:
-                        ratio_imag = v[0].imag / v[1].imag
-                    q.displayln_info(f"{k}:\n  {v}, ({ratio_real}, {ratio_imag})")
-                    ###
-                    [ a, e, ] = v
-                    f.write(complex(a))
-                    f.write(complex(e))
-    metafn = get_save_path(f"auto-contractor-psel/{job_tag}/traj={traj}/3f4f_b81/meta.txt")
-    with open(metafn, mode='w') as metaf:
-        for k, v in results.items():
-            key = mk_key(f"{k}")
-            metaf.write(f"{key}\n")
+            for x in get_psel().to_list():
+                t2_1 = ( tsrc1_top + x[3] + total_site[3] ) % total_site[3]
+                t2_2 = ( tsrc2_top + x[3] + total_site[3] ) % total_site[3]
+                t1_1 = ( tsnk1_top + x[3] + total_site[3] ) % total_site[3]
+                t1_2 = ( tsnk2_top + x[3] + total_site[3] ) % total_site[3]
+                pd = {
+                    "t1_1" : ("wall", t1_1,),
+                    "t1_2" : ("wall", t1_2,),
+                    "x" : ("point-snk", x,),
+                    "t2_1" : ("wall", t2_1,),
+                    "t2_2" : ("wall", t2_2,),
+                }
+                trial_indices.append(pd)
+            def positions_dict_maker(idx):
+                pd = idx
+                facs = [ 1.0, ]
+                return pd, facs
+            results_list = eval_cexpr_simulation(
+                cexpr,
+                positions_dict_maker = positions_dict_maker,
+                trial_indices = get_mpi_chunk(trial_indices),
+                get_prop = get_prop,
+                is_only_total = "total"
+            )
+            results = results_list[0]
+            if get_id_node() == 0:
+                fn = get_save_path(f"auto-contractor-psel/{job_tag}/traj={traj}/3f4f_b81/tsnk_tsrc{tsnk_tsrc}_top_tsrc{top_tsrc}.bin")
+                with open(fn, mode='wb') as f:
+                    for k, v in results.items():
+                        if v[1].real == 0:
+                            ratio_real = None
+                        else:
+                            ratio_real = v[0].real / v[1].real
+                        if v[1].imag == 0:
+                            ratio_imag = None
+                        else:
+                            ratio_imag = v[0].imag / v[1].imag
+                        q.displayln_info(f"{k}:\n  {v}, ({ratio_real}, {ratio_imag})")
+                        ###
+                        [ a, e, ] = v
+                        f.write(complex(a.real,a.imag))
+                        f.write(complex(e.real,e.imag))
+    if get_id_node() == 0:
+        metafn = get_save_path(f"auto-contractor-psel/{job_tag}/traj={traj}/3f4f_b81/meta.txt")
+        with open(metafn, mode='w') as metaf:
+            for k, v in results.items():
+                key = mk_key(f"{k}")
+                metaf.write(f"{key}\n")
 
 @q.timer_verbose
 def run_job(job_tag, traj):
