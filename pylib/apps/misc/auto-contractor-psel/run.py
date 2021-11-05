@@ -808,6 +808,8 @@ for inv_acc in [ 0, 1, 2, ]:
 rup.dict_params["48I"]["trajs"] = list(range(3000, 500, -5))
 rup.dict_params["64I"]["trajs"] = list(range(3000, 500, -5))
 
+rup.dict_params["24D"]["trajs"] = list(range(3000, 500, -5))
+
 rup.dict_params["test-4nt8"]["fermion_params"][0][2]["Ls"] = 10
 rup.dict_params["test-4nt8"]["fermion_params"][1][2]["Ls"] = 10
 rup.dict_params["test-4nt8"]["fermion_params"][2][2]["Ls"] = 10
