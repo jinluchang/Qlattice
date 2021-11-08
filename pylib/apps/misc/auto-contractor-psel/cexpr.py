@@ -107,14 +107,34 @@ def get_cexpr_3f4f_matching():
             mk_pipi_i0("t1_1", "t1_2", True) + "pipi_I0",
             mk_sigma("t1_1", True) + "sigma",
         ]
-        #    exprs_src_snk = [
-        #        vol**2 * mk_
-        #        ]
+        exprs_src_vec = [
+            [
+                mk_k_0_star_mu("t2_1",0) + "K0star0",
+                mk_k_0_star_mu("t2_1",1) + "K0star1",
+                mk_k_0_star_mu("t2_1",2) + "K0star2",
+            ],
+        ]
+        exprs_snk_vec = [
+            [
+                mk_j10_mu("t2_1",0) + "rho0",
+                mk_j10_mu("t2_1",1) + "rho1",
+                mk_j10_mu("t2_1",2) + "rho2",
+            ],
+            [
+                mk_j0_mu("t2_1",0) + "omega0",
+                mk_j0_mu("t2_1",1) + "omega1",
+                mk_j0_mu("t2_1",2) + "omega2",
+            ],
+        ]
         exprs = []
         for expr_src in exprs_src:
             for expr_snk in exprs_snk:
                 for expr_op in exprs_ops:
                     exprs.append(expr_snk * expr_op * expr_src)
+        for expr_src_vec in exprs_src_vec:
+            for expr_snk in exprs_snk:
+                for expr_op in exprs_ops:
+                    exprs.append(expr_snk_vec[0] * expr_op * expr_src_vec[0] + expr_snk_vec[1] * expr_op * expr_src_vec[1] + expr_snk_vec[2] * expr_op * expr_src_vec[2])
         for expr_vac in exprs_vac:
             exprs.append(expr_vac)
         diagram_type_dict = dict()
