@@ -132,7 +132,7 @@ def get_cexpr_3f4f_matching():
                 for expr_op in exprs_ops:
                     exprs.append(expr_snk * expr_op * expr_src)
         for expr_src_vec in exprs_src_vec:
-            for expr_snk in exprs_snk:
+            for expr_snk_vec in exprs_snk_vec:
                 for expr_op in exprs_ops:
                     exprs.append(expr_snk_vec[0] * expr_op * expr_src_vec[0] + expr_snk_vec[1] * expr_op * expr_src_vec[1] + expr_snk_vec[2] * expr_op * expr_src_vec[2])
         for expr_vac in exprs_vac:
