@@ -197,10 +197,10 @@ def mk_pipi_i0(p1 : str, p2 : str, is_dagger = False):
             ) + f"pipi_I0({p1},{p2}){show_dagger(is_dagger)}"
 
 def mk_k_0_star_mu(p : str, mu, is_dagger = False):
-    return mk_vec_mu("d", "s", mu, is_dagger)
+    return mk_vec_mu("d", "s", p, mu, is_dagger)
 
 def mk_k_0_star_bar_mu(p : str, mu, is_dagger = False):
-    return mk_vec_mu("s", "d", mu, is_dagger)
+    return mk_vec_mu("s", "d", p, mu, is_dagger)
 
 def mk_kk_i11(p1 : str, p2 : str, is_dagger = False, *, is_sym = False):
     if is_sym:
