@@ -48,7 +48,26 @@ def mk_pion_prop(total_site, m_pi):
 
 r_scaling_factor = 5.0
 
-@q.timer 
+def partial_sum_arr(arr):
+    size = arr.shape[0]
+    arr = np.copy(arr)
+    for i in range(1, size):
+        arr[i] += arr[i - 1]
+    return arr
+
+@q.timer
+def partial_sum_r_four_point_func_em(ld):
+    sizes = ld.dim_sizes()
+    ld = ld.copy()
+    arr = ld[()]
+    (dtype_size, t_size, r_size, em_size,) = arr.shape
+    for dtype in range(dtype_size):
+        for t in range(t_size):
+            arr[dtype, t] = partial_sum_arr(arr[dtype, t])
+    ld[()] = arr
+    return ld
+
+@q.timer
 def mk_four_point_func_table(total_site, n_dtype):
     info_list = [
             [ "type", n_dtype, ],
@@ -62,22 +81,26 @@ def mk_four_point_func_table(total_site, n_dtype):
 
 gev_inv_fm = 0.197326979
 
-r_pi_fm_list = [ 0.0, 0.60, 0.65, 0.66, 0.67, 0.70, 0.75, 0.80, 0.90, 1.00, ]
+r_pi_fm_list = [ 0.0, 0.58, 0.59, 0.60, 0.61, 0.62, 0.63, 0.64, 0.65, 0.66, 0.67, 0.68, 0.69, 0.70, 0.71, 0.72, 0.73, 0.74, 0.75, 0.80, 0.90, 1.00, 1.10, 1.20, 1.30, ]
 
-def interpolate_r_pi_fm(i):
-    # best approximate r_pi_fm_list[i]
+def interpolate(v, i):
+    size = len(v)
     i1 = math.floor(i)
     assert i1 >= 0
     i2 = i1 + 1
-    if i2 >= len(r_pi_fm_list):
-        return r_pi_fm_list[-1]
+    if i2 >= size:
+        return v[size - 1]
     elif i1 < 0:
-        return r_pi_fm_list[0]
-    v1 = r_pi_fm_list[i1]
-    v2 = r_pi_fm_list[i2]
+        return v[0]
+    v1 = v[i1]
+    v2 = v[i2]
     a1 = i2 - i
     a2 = i - i1
     return a1 * v1 + a2 * v2
+
+def interpolate_r_pi_fm(i):
+    # best approximate r_pi_fm_list[i]
+    return interpolate(r_pi_fm_list, i)
 
 @q.timer
 def mk_four_point_func_table_ff(total_site, m_pi, ainv_gev, ff_tag = ""):
@@ -96,13 +119,13 @@ def mk_four_point_func_table_ff(total_site, m_pi, ainv_gev, ff_tag = ""):
         q.glb_sum(ld)
         q.mk_file_dirs_info(fn)
         ld.save(fn)
-    q.partial_sum_r_four_point_func_em(ld)
     return ld
 
 def check_traj(job_tag, traj):
     path = rup.dict_params[job_tag]["data_path_em"]
     fn = f"{path}/results={traj}/four-point-func-em.lat"
-    return q.does_file_exist_sync_node(fn)
+    fnw = f"{path}/results={traj}/four-point-func-emw.lat"
+    return q.does_file_exist_sync_node(fn) or q.does_file_exist_sync_node(fnw)
 
 def find_trajs(job_tag):
     trajs = []
@@ -121,10 +144,32 @@ rup.dict_params["64I"]["ainv/gev"] = 2.359
 rup.dict_params["64I"]["m_pi"] = 0.135 / rup.dict_params["64I"]["ainv/gev"]
 rup.dict_params["64I"]["trajs"] = find_trajs("64I")
 
+rup.dict_params["24D"]["data_path_em"] = get_load_path("lat-four-point-emw/24D-0.00107")
+rup.dict_params["24D"]["ainv/gev"] = 1.0158
+rup.dict_params["24D"]["m_pi"] = 0.13975
+rup.dict_params["24D"]["trajs"] = find_trajs("24D")
+
+rup.dict_params["24DH"]["data_path_em"] = get_load_path("lat-four-point-emw/24D-0.0174")
+rup.dict_params["24DH"]["ainv/gev"] = 1.0158
+rup.dict_params["24DH"]["m_pi"] = 0.3357
+rup.dict_params["24DH"]["trajs"] = find_trajs("24DH")
+
+rup.dict_params["32D"]["data_path_em"] = get_load_path("lat-four-point-emw/32D-0.00107")
+rup.dict_params["32D"]["ainv/gev"] = 1.0158
+rup.dict_params["32D"]["m_pi"] = 0.139474
+rup.dict_params["32D"]["trajs"] = find_trajs("32D")
+
+rup.dict_params["32Dfine"]["data_path_em"] = get_load_path("lat-four-point-emw/32Dfine-0.0001")
+rup.dict_params["32Dfine"]["ainv/gev"] = 1.378
+rup.dict_params["32Dfine"]["m_pi"] = 0.10468
+rup.dict_params["32Dfine"]["trajs"] = find_trajs("32Dfine")
+
 @q.timer
 def get_four_point_em(job_tag, traj):
     path = rup.dict_params[job_tag]["data_path_em"]
     fn = f"{path}/results={traj}/four-point-func-em.lat"
+    if not q.does_file_exist_sync_node(fn):
+        fn = f"{path}/results={traj}/four-point-func-emw.lat"
     ld = q.LatData()
     ld.load(fn)
     total_site = rup.dict_params[job_tag]["total_site"]
@@ -134,107 +179,132 @@ def get_four_point_em(job_tag, traj):
     return ld
 
 @q.timer
-def partial_sum_and_normalize_four_point_em(ld):
+def normalize_four_point_em(ld):
     ld = ld.copy()
-    q.partial_sum_r_four_point_func_em(ld)
+    ld_sum = partial_sum_r_four_point_func_em(ld)
     r_max = ld.dim_size(2) - 1
+    n_dtype = ld.dim_size(0)
+    assert n_dtype >= 2
     for t in range(ld.dim_size(1)):
-        fac = -ld[(1, t, r_max, 1,)]
+        fac = -ld_sum[(1, t, r_max, 1,)]
         if not t == 0:
             fac /= 2
         for dtype in [ 0, 1, ]:
             ld[(dtype, t,)] /= fac
-    for t in range(ld.dim_size(1)):
-        fac = 0
-        for dtype in [ 2, 3, 4, 5, ]:
-            fac += 0.5 * ld[(dtype, t, r_max, 1,)]
-        if not t == 0:
-            fac /= 2
-        for dtype in [ 2, 3, 4, 5, ]:
-            ld[(dtype, t,)] /= fac
+    if n_dtype >= 6:
+        for t in range(ld.dim_size(1)):
+            fac = 0
+            for dtype in [ 2, 3, 4, 5, ]:
+                fac += 0.5 * ld_sum[(dtype, t, r_max, 1,)]
+            if not t == 0:
+                fac /= 2
+            for dtype in [ 2, 3, 4, 5, ]:
+                ld[(dtype, t,)] /= fac
     return ld
 
 @q.timer
 def get_four_point_em_jk_list(job_tag):
-    # with 'partial_sum_and_normalize_four_point_em'
+    # with 'normalize_four_point_em'
     trajs = rup.dict_params[job_tag]["trajs"]
     eps = 1.0
     jk_list = q.jackknife([ q.Data(get_four_point_em(job_tag, traj)) for traj in trajs ])
-    return list(map(partial_sum_and_normalize_four_point_em, map(q.Data.get_val, jk_list)))
+    return list(map(normalize_four_point_em, map(q.Data.get_val, jk_list)))
 
 @q.timer
 def combine_dtypes(ld, pion_type):
     info_list = [ [ "type", 1, ], ] + ld.info()[1:]
     ld_c = q.mk_lat_data(info_list)
+    n_dtype = ld.dim_size(0)
     if pion_type == "type1":
         ld_c[(0,)] = ld[(0,)]
     elif pion_type == "type2":
         ld_c[(0,)] = -1 * ld[(1,)]
     elif pion_type == "type3":
+        assert n_dtype >= 6
         ld_c[(0,)] = 1/2 * (ld[(2,)] + ld[(3,)] + ld[(4,)] + ld[(5,)])
     elif pion_type == "charged-pion":
+        assert n_dtype >= 6
         ld_c[(0,)] = 4/9 * -1 * ld[(1,)] + 5/9 * 1/2 * (ld[(2,)] + ld[(3,)] + ld[(4,)] + ld[(5,)])
+    elif pion_type == "pion-diff":
+        ld_c[(0,)] = ld[(0,)] - ld[(1,)]
     else:
         raise Exception(f"combine_dtypes pion_type={pion_type}")
     return ld_c
 
 def interpolate_t(ld, dtype, t):
-    t1 = math.floor(t)
-    t2 = t1 + 1
-    t_max = ld.dim_size(1) - 1
-    if t2 > t_max:
-        return ld[(dtype, t_max,)]
-    elif t1 < 0:
-        return ld[(dtype, 0,)]
-    v1 = ld[(dtype, t1,)]
-    v2 = ld[(dtype, t2,)]
-    a1 = t2 - t
-    a2 = t - t1
-    return a1 * v1 + a2 * v2
+    arr = ld[(dtype,)]
+    return interpolate(arr, t)
+
+def partial_sum_with_r_sqr_flat(arr):
+    size = arr.shape[0]
+    arr_original = arr
+    arr_rsum = np.copy(arr)
+    for ri in reversed(range(size - 1)):
+        arr_rsum[ri] += arr_rsum[ri + 1]
+    arr = np.copy(arr)
+    s = arr[0] * 0
+    for ri in range(1, size):
+        r = ri / r_scaling_factor
+        s += arr[ri] * r**2
+        if ri + 1 < size:
+            arr[ri] = s + arr_rsum[ri + 1] * r**2
+        else:
+            arr[ri] = s
+    return arr
+
+def partial_sum_with_r_sqr(arr):
+    size = arr.shape[0]
+    arr_original = arr
+    arr = np.copy(arr)
+    s = arr[0] * 0
+    for ri in range(1, size):
+        r = ri / r_scaling_factor
+        s += arr[ri] * r**4
+        arr[ri] = s
+    return arr
 
 @q.timer
-def get_curve(ld, dtype, t_s, curve_tag):
+def get_curve(ld, dtype, t_s, a_fm, curve_tag):
+    r_range_tag, em_tag = curve_tag
     # t_s may be L / 2
     v = interpolate_t(ld, dtype, t_s)
-    r_len = v.shape[0]
-    r_max = r_len - 1
-    r_list = list(range(0, r_len, 10)) + [ r_max, ]
-    if curve_tag == "tt":
-        return np.array([ v[r, 1].real for r in r_list ])
-    elif curve_tag == "ii":
-        return np.array([ v[r, 2].real for r in r_list ])
-    elif curve_tag == "xx":
-        return np.array([ v[r, 3].real for r in r_list ])
+    # ADJUST ME
+    # v = partial_sum_arr(v)
+    v = partial_sum_with_r_sqr(v)
+    #
+    if r_range_tag == "all":
+        r_len = v.shape[0]
+        r_max = r_len - 1
+        r_list = list(range(0, r_len, 10)) + [ r_max, ]
+    else:
+        r_cut_i = float(r_range_tag) / a_fm * r_scaling_factor
+        r_list = [ r_cut_i, ]
+    if em_tag == "tt":
+        return np.array([ interpolate(v, r)[1].real for r in r_list ])
+    elif em_tag == "ii":
+        return np.array([ interpolate(v, r)[2].real for r in r_list ])
+    elif em_tag == "xx":
+        return np.array([ interpolate(v, r)[3].real for r in r_list ])
     else:
         raise Exception("get_curve tag='{tag}'")
 
 @q.timer
-def get_curves(ld, t_s, curve_tag):
+def get_curves(ld, t_s, a_fm, curve_tag):
     dtype_len = ld.dim_size(0)
-    return [ get_curve(ld, dtype, t_s, curve_tag) for dtype in range(dtype_len) ]
+    return [ get_curve(ld, dtype, t_s, a_fm, curve_tag) for dtype in range(dtype_len) ]
 
-def interpolate_curve(curve_ff_list, i):
+def interpolate_curves(curve_ff_list, i):
     # best approximate curve_ff_list[i]
     # linear interpolate within the range 0 <= i <= len(curve_ff_list) - 1
     # return boundary value if out of range
-    i1 = math.floor(i)
-    assert i1 >= 0
-    i2 = i1 + 1
-    if i2 >= len(curve_ff_list):
-        return curve_ff_list[-1]
-    elif i1 < 0:
-        return curve_ff_list[0]
-    v1 = curve_ff_list[i1]
-    v2 = curve_ff_list[i2]
-    a1 = i2 - i
-    a2 = i - i1
-    return a1 * v1 + a2 * v2
+    return interpolate(curve_ff_list, i)
 
 @q.timer
 def match_curve(curve, curve_ff_list, eps = 1e-4, n_divide = 10):
     # return best i so that curve_ff_list[i] approximate curve
     def fcn(i):
-        return np.linalg.norm(curve - interpolate_curve(curve_ff_list, i))
+        curve_i = interpolate_curves(curve_ff_list, i)
+        return np.linalg.norm(curve - curve_i)
     val_min = fcn(0)
     i_min = 0
     def find(i0, i1):
@@ -261,7 +331,7 @@ def match_curve(curve, curve_ff_list, eps = 1e-4, n_divide = 10):
 
 @q.timer
 def diagnose_four_point_em(ld):
-    # after 'partial_sum_and_normalize_four_point_em'
+    # after 'normalize_four_point_em'
     r_max = ld.dim_size(2) - 1
     t_s = math.floor(ld.dim_size(1) / 2)
     if False:
@@ -277,61 +347,89 @@ def diagnose_four_point_em(ld):
                 s += q.sqr(t) * ld[(dtype, t, r_max, 2,)]
                 tt_val = ld[(dtype, t, r_max, 1,)]
                 q.displayln_info(f"dtype={dtype} t={t} \\alpha_\\pi partial sum={s} tt={tt_val}")
+    a_fm = 0.1
     for dtype in range(ld.dim_size(0)):
-        q.displayln_info(get_curve(ld, dtype, t_s, "tt"))
+        q.displayln_info(get_curve(ld, dtype, t_s, a_fm, "tt"))
 
-def fit_r_pi_fm(job_tag, jk_list_four_point_em, pion_type, ff_tag, curve_tag, t_s_ratio):
+def fit_r_pi_fm(job_tag, jk_list_four_point_em, pion_type, ff_tag, curve_tag, t_s_fm):
     total_site = rup.dict_params[job_tag]["total_site"]
     m_pi = rup.dict_params[job_tag]["m_pi"]
     ainv_gev = rup.dict_params[job_tag]["ainv/gev"]
+    a_fm = gev_inv_fm / ainv_gev
     jk_list = list(map(lambda ld : combine_dtypes(ld, pion_type), jk_list_four_point_em))
     ld_ff = mk_four_point_func_table_ff(total_site, m_pi, ainv_gev, ff_tag)
-    t_s = total_site[0] * t_s_ratio
-    curve_ff_list = get_curves(ld_ff, t_s, curve_tag)
+    t_s = t_s_fm / a_fm
+    curve_ff_list = get_curves(ld_ff, t_s, a_fm, curve_tag)
     ld = q.jk_avg(jk_list)
     jk_list_r_pi_fm = []
     for ld in jk_list:
-        curve = get_curve(ld, 0, t_s, curve_tag)
+        curve = get_curve(ld, 0, t_s, a_fm, curve_tag)
         i_best = match_curve(curve, curve_ff_list)
         r_pi_fm = interpolate_r_pi_fm(i_best)
         jk_list_r_pi_fm.append(r_pi_fm)
-    q.displayln_info(f"r_pi_fm = {q.jk_avg(jk_list_r_pi_fm)} +/- {q.jk_err(jk_list_r_pi_fm)} t_s={t_s} job_tag={job_tag} pion_type={pion_type} ff_tag={ff_tag} curve_tag={curve_tag} t_s_ratio={t_s_ratio}")
+    result_str = f"r_pi_fm = {q.jk_avg(jk_list_r_pi_fm)} +/- {q.jk_err(jk_list_r_pi_fm)} t_s={t_s} job_tag={job_tag} pion_type={pion_type} ff_tag={ff_tag} curve_tag={curve_tag} t_s_fm={t_s_fm}"
+    q.displayln_info(result_str)
     # avg plot
-    curve = get_curve(jk_list[0], 0, t_s, curve_tag)
+    curve = get_curve(jk_list[0], 0, t_s, a_fm, curve_tag)
     i_best = match_curve(curve, curve_ff_list)
     r_pi_fm = interpolate_r_pi_fm(i_best)
-    curve_ff = interpolate_curve(curve_ff_list, i_best)
-    fn = f"results/curve-fits/{job_tag}-{pion_type}-{ff_tag}-{curve_tag}-{t_s_ratio}.txt"
+    curve_ff = interpolate_curves(curve_ff_list, i_best)
+    fn = f"results/curve-fits/{job_tag}-{pion_type}-{ff_tag}-{curve_tag}-{t_s_fm}.txt"
     q.mk_file_dirs_info(fn)
     lines = []
     lines.append(f"# r curve-data curve-form-factor-fit curve-scalar-qed")
+    lines.append(f"# {result_str}")
     for i, (v1, v2, v3,) in enumerate(zip(curve, curve_ff, curve_ff_list[0])):
         lines.append(f"{i} {v1} {v2} {v3}")
+    lines.append("")
     q.qtouch(fn, "\n".join(lines))
 
 @q.timer
 def run_job(job_tag):
     jk_list_four_point_em = get_four_point_em_jk_list(job_tag)
-    #
-    pion_type_list = [ "type2", "charged-pion", ]
-    ff_tag_list = [ "pole", "linear", ]
-    curve_tag_list = [ "tt", ]
-    t_s_ratio_list = [ 1/2, 1/3, 2/3, ]
+    # ADJUST ME
+    pion_type_list = [
+            "type2",
+            "pion-diff",
+            # "charged-pion",
+            ]
+    ff_tag_list = [
+            "pole",
+            "pole_p",
+            "linear",
+            ]
+    curve_tag_list = [
+            (1.0, "tt",),
+            (1.5, "tt",),
+            (2.0, "tt",),
+            (2.5, "tt",),
+            (10.0, "tt",),
+            ]
+    t_s_fm_list = [ 0.5, 1.0, 1.5, 2.0, 2.5, ]
     #
     for pion_type in pion_type_list:
         for ff_tag in ff_tag_list:
             for curve_tag in curve_tag_list:
-                for t_s_ratio in t_s_ratio_list:
-                    fit_r_pi_fm(job_tag, jk_list_four_point_em, pion_type, ff_tag, curve_tag, t_s_ratio)
+                for t_s_fm in t_s_fm_list:
+                    fit_r_pi_fm(job_tag, jk_list_four_point_em, pion_type, ff_tag, curve_tag, t_s_fm)
     #
     q.clean_cache()
     q.timer_display()
+
+# PDG: r_pi_fm = 0.659(4)
 
 qg.begin_with_gpt()
 
 q.check_time_limit()
 
-job_tag_list = [ "48I", "64I", ]
+job_tag_list = [
+        "24D",
+        "32D",
+        "24DH",
+        "32Dfine",
+        "48I",
+        "64I",
+        ]
 
 for job_tag in job_tag_list:
     run_job(job_tag)

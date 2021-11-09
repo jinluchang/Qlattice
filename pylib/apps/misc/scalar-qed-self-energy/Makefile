@@ -4,7 +4,7 @@ all:
 	time make -C cqlat -j16
 
 run:
-	q_verbose=1 q_num_threads=2 mpirun --np 4 ./run.py --mpi 1.1.1.4 |& tee log.txt
+	q_verbose=1 q_num_threads=2 mpirun --np 8 ./run.py --mpi 1.1.1.8 |& tee log.txt
 
 clean:
 	-make clean -C cqlat

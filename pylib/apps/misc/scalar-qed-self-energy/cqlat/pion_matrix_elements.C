@@ -65,26 +65,6 @@ inline void acc_four_point_func_em(LatData& ld,
   }
 }
 
-inline void partial_sum_r_four_point_func_em(LatData& ld)
-{
-  TIMER("partial_sum_r_four_point_func_em");
-  for (int type = 0; type < ld.info[0].size; ++type) {
-    for (int t = 0; t < ld.info[1].size; ++t) {
-      for (int r = 1; r < ld.info[2].size; ++r) {
-        const Vector<Complex> v1 =
-            lat_data_complex_get(ld, make_array<int>(type, t, r - 1));
-        Vector<Complex> v2 =
-            lat_data_complex_get(ld, make_array<int>(type, t, r));
-        qassert(v1.size() == ld.info[3].size);
-        qassert(v2.size() == ld.info[3].size);
-        for (int em = 0; em < ld.info[3].size; ++em) {
-          v2[em] += v1[em];
-        }
-      }
-    }
-  }
-}
-
 }  // namespace qlat
 
 EXPORT(set_pion_four_point_mom_field, {
@@ -111,8 +91,10 @@ EXPORT(set_pion_four_point_mom_field, {
     tag_index = 0;
   } else if ("pole" == tag) {
     tag_index = 1;
-  } else if ("linear" == tag) {
+  } else if ("pole_p" == tag) {
     tag_index = 2;
+  } else if ("linear" == tag) {
+    tag_index = 3;
   } else if ("0-pole" == tag) {
     tag_index = -1;
   } else if ("0-linear" == tag) {
@@ -141,6 +123,8 @@ EXPORT(set_pion_four_point_mom_field, {
     } else if (1 == tag_index) {
       f_pi_sq = sqr(1.0 / (1.0 + sqr(r_pi) / 6.0 * s2));
     } else if (2 == tag_index) {
+      f_pi_sq = sqr(1.0 / (1.0 + sqr(r_pi) / 6.0 * s2 + 0.01 * sqr(sqr(r_pi) / 6.0 * s2)));
+    } else if (3 == tag_index) {
       f_pi_sq = sqr(1.0 - sqr(r_pi) / 6.0 * s2);
     } else if (-1 == tag_index) {
       f_pi_sq = sqr(sqr(r_pi) / 6.0 * s2 / (1.0 + sqr(r_pi) / 6.0 * s2));
@@ -231,16 +215,5 @@ EXPORT(acc_four_point_func_em, {
   pqassert(pf.ctype == "Complex");
   Field<Complex>& f = *(Field<Complex>*)pf.cdata;
   qlat::acc_four_point_func_em(ld, f, type, r_scaling_factor);
-  Py_RETURN_NONE;
-});
-
-EXPORT(partial_sum_r_four_point_func_em, {
-  using namespace qlat;
-  PyObject* p_ld = NULL;
-  if (!PyArg_ParseTuple(args, "O", &p_ld)) {
-    return NULL;
-  }
-  LatData& ld = py_convert_type<LatData>(p_ld);
-  qlat::partial_sum_r_four_point_func_em(ld);
   Py_RETURN_NONE;
 });
