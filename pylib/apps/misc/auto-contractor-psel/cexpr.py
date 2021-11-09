@@ -116,14 +116,14 @@ def get_cexpr_3f4f_matching():
         ]
         exprs_snk_vec = [
             [
-                mk_j10_mu("t2_1",0) + "rho0",
-                mk_j10_mu("t2_1",1) + "rho1",
-                mk_j10_mu("t2_1",2) + "rho2",
+                mk_j10_mu("t1_1",0) + "rho0",
+                mk_j10_mu("t1_1",1) + "rho1",
+                mk_j10_mu("t1_1",2) + "rho2",
             ],
             [
-                mk_j0_mu("t2_1",0) + "omega0",
-                mk_j0_mu("t2_1",1) + "omega1",
-                mk_j0_mu("t2_1",2) + "omega2",
+                mk_j0_mu("t1_1",0) + "omega0",
+                mk_j0_mu("t1_1",1) + "omega1",
+                mk_j0_mu("t1_1",2) + "omega2",
             ],
         ]
         exprs = []
