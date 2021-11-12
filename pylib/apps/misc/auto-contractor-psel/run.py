@@ -376,10 +376,13 @@ def rel_mod(x, size):
     if 2 * x >= size:
         return x - size
     else:
-        return -x
+        return x
 
 @q.timer_verbose
 def auto_contractor_meson_corr_wsnk_wsrc(job_tag, traj, get_prop, get_psel, get_pi, get_wi):
+    fn = f"auto-contractor-psel/{job_tag}/traj={traj}/meson_corr/wsnk_wsrc.lat"
+    if get_load_path(fn) is not None:
+        return
     total_site = ru.get_total_site(job_tag)
     cexpr = get_cexpr_meson_corr()
     names_expr = get_cexpr_names(cexpr)
@@ -417,10 +420,13 @@ def auto_contractor_meson_corr_wsnk_wsrc(job_tag, traj, get_prop, get_psel, get_
             for i_k, (k, v,) in enumerate(results.items()):
                 ld[(idx_name_fac, i_k, tsep,)] = v + [ complex(len(trial_indices)), ]
     q.displayln_info(ld.show())
-    ld.save(get_save_path(f"auto-contractor-psel/{job_tag}/traj={traj}/meson_corr/wsnk_wsrc.lat"))
+    ld.save(get_save_path(fn))
 
 @q.timer_verbose
 def auto_contractor_meson_corr_psnk_wsrc(job_tag, traj, get_prop, get_psel, get_pi, get_wi):
+    fn = f"auto-contractor-psel/{job_tag}/traj={traj}/meson_corr/psnk_wsrc.lat"
+    if get_load_path(fn) is not None:
+        return
     total_site = ru.get_total_site(job_tag)
     cexpr = get_cexpr_meson_corr()
     names_expr = get_cexpr_names(cexpr)
@@ -459,10 +465,13 @@ def auto_contractor_meson_corr_psnk_wsrc(job_tag, traj, get_prop, get_psel, get_
             for i_k, (k, v,) in enumerate(results.items()):
                 ld[(idx_name_fac, i_k, tsep,)] = v + [ complex(len(trial_indices)), ]
     q.displayln_info(ld.show())
-    ld.save(get_save_path(f"auto-contractor-psel/{job_tag}/traj={traj}/meson_corr/psnk_wsrc.lat"))
+    ld.save(get_save_path(fn))
 
 @q.timer_verbose
 def auto_contractor_meson_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_pi, get_wi):
+    fn = f"auto-contractor-psel/{job_tag}/traj={traj}/meson_corr/psnk_psrc.lat"
+    if get_load_path(fn) is not None:
+        return
     total_site = ru.get_total_site(job_tag)
     cexpr = get_cexpr_meson_corr()
     names_expr = get_cexpr_names(cexpr)
@@ -502,10 +511,13 @@ def auto_contractor_meson_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_
             for i_k, (k, v,) in enumerate(results.items()):
                 ld[(idx_name_fac, i_k, tsep,)] = v + [ complex(len(trial_indices)), ]
     q.displayln_info(ld.show())
-    ld.save(get_save_path(f"auto-contractor-psel/{job_tag}/traj={traj}/meson_corr/psnk_psrc.lat"))
+    ld.save(get_save_path(fn))
 
 @q.timer_verbose
 def auto_contractor_meson_corr_with_env_wsnk_wsrc(job_tag, traj, get_prop, get_psel, get_pi, get_wi):
+    fn = f"auto-contractor-psel/{job_tag}/traj={traj}/meson_corr_with_env/wsnk_wsrc.lat"
+    if get_load_path(fn) is not None:
+        return
     total_site = ru.get_total_site(job_tag)
     cexpr = get_cexpr_meson_corr_with_env()
     names_expr = get_cexpr_names(cexpr)
@@ -522,16 +534,11 @@ def auto_contractor_meson_corr_with_env_wsnk_wsrc(job_tag, traj, get_prop, get_p
         for t1 in range(total_site[3]):
             for t2 in range(total_site[3]):
                 if tsep == (t2 - t1) % total_site[3]:
-                    tsep_r = rel_mod(t2 - t1, total_site[3])
-                    if tsep_r >= 0:
-                        tsep_env_r = tsep_env
-                    else:
-                        tsep_env_r = -tsep_env
                     pd = {
                             "x1" : ("wall", t1,),
                             "x2" : ("wall", t2,),
-                            "x1p" : ("wall", (t1 - tsep_env_r) % total_site[3],),
-                            "x2p" : ("wall", (t2 + tsep_env_r) % total_site[3],),
+                            "x1p" : ("wall", (t1 - tsep_env) % total_site[3],),
+                            "x2p" : ("wall", (t2 + tsep_env) % total_site[3],),
                             }
                     trial_indices.append(pd)
         if len(trial_indices) == 0:
@@ -551,10 +558,13 @@ def auto_contractor_meson_corr_with_env_wsnk_wsrc(job_tag, traj, get_prop, get_p
             for i_k, (k, v,) in enumerate(results.items()):
                 ld[(idx_name_fac, i_k, tsep,)] = v + [ complex(len(trial_indices)), ]
     q.displayln_info(ld.show())
-    ld.save(get_save_path(f"auto-contractor-psel/{job_tag}/traj={traj}/meson_corr_with_env/wsnk_wsrc.lat"))
+    ld.save(get_save_path(fn))
 
 @q.timer_verbose
 def auto_contractor_meson_corr_with_env_psnk_wsrc(job_tag, traj, get_prop, get_psel, get_pi, get_wi):
+    fn = f"auto-contractor-psel/{job_tag}/traj={traj}/meson_corr_with_env/psnk_wsrc.lat"
+    if get_load_path(fn) is not None:
+        return
     total_site = ru.get_total_site(job_tag)
     cexpr = get_cexpr_meson_corr_with_env()
     names_expr = get_cexpr_names(cexpr)
@@ -572,16 +582,11 @@ def auto_contractor_meson_corr_with_env_psnk_wsrc(job_tag, traj, get_prop, get_p
             for x2 in get_psel().to_list():
                 t2 = x2[3]
                 if tsep == (t2 - t1) % total_site[3]:
-                    tsep_r = rel_mod(t2 - t1, total_site[3])
-                    if tsep_r >= 0:
-                        tsep_env_r = tsep_env
-                    else:
-                        tsep_env_r = -tsep_env
                     pd = {
                             "x1" : ("wall", t1,),
                             "x2" : ("point-snk", x2,),
-                            "x1p" : ("wall", (t1 - tsep_env_r) % total_site[3],),
-                            "x2p" : ("wall", (t2 + tsep_env_r) % total_site[3],),
+                            "x1p" : ("wall", (t1 - tsep_env) % total_site[3],),
+                            "x2p" : ("wall", (t2 + tsep_env) % total_site[3],),
                             }
                     trial_indices.append(pd)
         if len(trial_indices) == 0:
@@ -601,10 +606,13 @@ def auto_contractor_meson_corr_with_env_psnk_wsrc(job_tag, traj, get_prop, get_p
             for i_k, (k, v,) in enumerate(results.items()):
                 ld[(idx_name_fac, i_k, tsep,)] = v + [ complex(len(trial_indices)), ]
     q.displayln_info(ld.show())
-    ld.save(get_save_path(f"auto-contractor-psel/{job_tag}/traj={traj}/meson_corr_with_env/psnk_wsrc.lat"))
+    ld.save(get_save_path(fn))
 
 @q.timer_verbose
 def auto_contractor_meson_corr_with_env_psnk_psrc(job_tag, traj, get_prop, get_psel, get_pi, get_wi):
+    fn = f"auto-contractor-psel/{job_tag}/traj={traj}/meson_corr_with_env/psnk_psrc.lat"
+    if get_load_path(fn) is not None:
+        return
     total_site = ru.get_total_site(job_tag)
     cexpr = get_cexpr_meson_corr_with_env()
     names_expr = get_cexpr_names(cexpr)
@@ -623,16 +631,11 @@ def auto_contractor_meson_corr_with_env_psnk_psrc(job_tag, traj, get_prop, get_p
             for x2 in get_psel().to_list():
                 t2 = x2[3]
                 if tsep == (t2 - t1) % total_site[3]:
-                    tsep_r = rel_mod(t2 - t1, total_site[3])
-                    if tsep_r >= 0:
-                        tsep_env_r = tsep_env
-                    else:
-                        tsep_env_r = -tsep_env
                     pd = {
                             "x1" : ("point", x1,),
                             "x2" : ("point-snk", x2,),
-                            "x1p" : ("wall", (t1 - tsep_env_r) % total_site[3],),
-                            "x2p" : ("wall", (t2 + tsep_env_r) % total_site[3],),
+                            "x1p" : ("wall", (t1 - tsep_env) % total_site[3],),
+                            "x2p" : ("wall", (t2 + tsep_env) % total_site[3],),
                             }
                     trial_indices.append(pd)
         if len(trial_indices) == 0:
@@ -652,10 +655,13 @@ def auto_contractor_meson_corr_with_env_psnk_psrc(job_tag, traj, get_prop, get_p
             for i_k, (k, v,) in enumerate(results.items()):
                 ld[(idx_name_fac, i_k, tsep,)] = v + [ complex(len(trial_indices)), ]
     q.displayln_info(ld.show())
-    ld.save(get_save_path(f"auto-contractor-psel/{job_tag}/traj={traj}/meson_corr_with_env/psnk_psrc.lat"))
+    ld.save(get_save_path(fn))
 
 @q.timer_verbose
 def auto_contractor_vev(job_tag, traj, get_prop, get_psel, get_pi, get_wi):
+    fn = f"auto-contractor-psel/{job_tag}/traj={traj}/vev.lat"
+    if get_load_path(fn) is not None:
+        return
     cexpr = get_cexpr_vev()
     names_expr = get_cexpr_names(cexpr)
     names_fac = [ "rest", ]
@@ -686,7 +692,7 @@ def auto_contractor_vev(job_tag, traj, get_prop, get_psel, get_pi, get_wi):
         for i_k, (k, v,) in enumerate(results.items()):
             ld[(idx_name_fac, i_k,)] = v + [ complex(len(trial_indices)), ]
     q.displayln_info(ld.show())
-    ld.save(get_save_path(f"auto-contractor-psel/{job_tag}/traj={traj}/vev.lat"))
+    ld.save(get_save_path(fn))
 
 @q.timer_verbose
 def auto_contractor_3f4f_matching(job_tag, traj, get_prop, get_psel, get_pi, get_wi):
