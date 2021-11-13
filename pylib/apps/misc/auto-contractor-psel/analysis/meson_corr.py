@@ -10,7 +10,7 @@ save_path_default = "results"
 load_path_list = [
         "results",
         "../results",
-        "/home/frank/qcdqedta/luchang/auto-contractor-psel/v4/results",
+        "/home/frank/qcdqedta/luchang/auto-contractor-psel/v5/results",
         ]
 
 def get_save_path(fn):
@@ -82,8 +82,8 @@ def subtract_discon(job_tag, ld_ww, ld_pw):
     i_outer_other = 2
     i_outer_oppo = 3
     for tsep in range(t_size):
-        t_env = (tsep - 2 * tsep_env) % t_size
-        t_env1 = (tsep - tsep_env) % t_size
+        t_env = (tsep + 2 * tsep_env) % t_size
+        t_env1 = (tsep + tsep_env) % t_size
         ld_ww[i_outer_same * n_inner + i_inner_pipi][tsep] -= (
                 ld_ww[i_inner_pipi][tsep] * ld_ww[i_inner_pipi][t_env]
                 + ld_ww[i_inner_pipi][t_env1] * ld_ww[i_inner_pipi][t_env1])
@@ -115,7 +115,7 @@ def divide_norm(job_tag, ld_ww, ld_pw):
     for i_outer in [ 1, 2, 3, ]:
         for i_inner in [ 0, 1, 2, 3, ]:
             for tsep in range(t_size):
-                t_env = (tsep - 2 * tsep_env) % t_size
+                t_env = (tsep + 2 * tsep_env) % t_size
                 ld_ww[i_outer * n_inner + i_inner][tsep] /= ld_ww[i_inner_pipi][t_env]
                 ld_pw[i_outer * n_inner + i_inner][tsep] /= ld_ww[i_inner_pipi][t_env]
                 ld_ww[i_outer * n_inner + i_inner][tsep] /= ld_ww[i_inner][tsep]
@@ -137,9 +137,9 @@ def analysis(job_tag):
     for ld_ww, ld_pw in zip(lds_ww, lds_pw):
         ld = sum([ ld_ww.val[i * 4 + i_inner] for i in [ 1, 2, 3, ] ])
         data.append(ld)
-    q.displayln_info(np.array(list(reversed(q.jk_avg(data)[-20:]))))
-    q.displayln_info(np.array(list(reversed(q.jk_err(data)[-20:]))))
+    q.displayln_info(q.jk_avg(data)[:20])
+    q.displayln_info(q.jk_err(data)[:20])
 
-job_tag = "32D"
+job_tag = "24D"
 
 analysis(job_tag)

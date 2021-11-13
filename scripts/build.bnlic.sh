@@ -6,6 +6,8 @@ set -e
 
 ./scripts/setenv.bnlic.sh
 
+./scripts/tar.sh
+
 ./scripts/fftw.sh
 ./scripts/fftwf.sh
 ./scripts/cuba.sh
