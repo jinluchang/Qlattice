@@ -92,14 +92,30 @@ def subtract_discon(job_tag, ld_ww, ld_pw):
         ld_ww[i_outer_oppo * n_inner + i_inner_pipi][tsep] -= (
                 ld_ww[i_inner_pipi][tsep] * ld_ww[i_inner_pipi][t_env]
                 + ld_ww[i_inner_pipi][tsep_env] * ld_ww[i_inner_pipi][tsep_env])
-        ld_pw[i_outer_same * n_inner + i_inner_pipi][tsep] -= (
-                ld_pw[i_inner_pipi][tsep] * ld_ww[i_inner_pipi][t_env]
-                + ld_pw[i_inner_pipi][t_env1] * ld_ww[i_inner_pipi][t_env1])
+        ld_ww[i_outer_same * n_inner + i_inner_apipi][tsep] -= (
+                ld_ww[i_inner_apipi][tsep] * ld_ww[i_inner_pipi][t_env]
+                + ld_ww[i_inner_apipi][t_env1] * ld_ww[i_inner_pipi][t_env1])
+        ld_ww[i_outer_other * n_inner + i_inner_apipi][tsep] -= (
+                ld_ww[i_inner_apipi][tsep] * ld_ww[i_inner_pipi][t_env])
+        ld_ww[i_outer_oppo * n_inner + i_inner_apipi][tsep] -= (
+                ld_ww[i_inner_apipi][tsep] * ld_ww[i_inner_pipi][t_env]
+                - ld_ww[i_inner_apipi][tsep_env] * ld_ww[i_inner_pipi][tsep_env])
+        ld_ww[i_outer_same * n_inner + i_inner_pipi][tsep] -= (
+                ld_ww[i_inner_pipi][tsep] * ld_ww[i_inner_pipi][t_env]
+                + ld_ww[i_inner_pipi][t_env1] * ld_ww[i_inner_pipi][t_env1])
         ld_pw[i_outer_other * n_inner + i_inner_pipi][tsep] -= (
                 ld_pw[i_inner_pipi][tsep] * ld_ww[i_inner_pipi][t_env])
         ld_pw[i_outer_oppo * n_inner + i_inner_pipi][tsep] -= (
                 ld_pw[i_inner_pipi][tsep] * ld_ww[i_inner_pipi][t_env]
                 + ld_pw[i_inner_pipi][tsep_env] * ld_ww[i_inner_pipi][tsep_env])
+        ld_pw[i_outer_same * n_inner + i_inner_apipi][tsep] -= (
+                ld_pw[i_inner_apipi][tsep] * ld_ww[i_inner_pipi][t_env]
+                + ld_pw[i_inner_apipi][t_env1] * ld_ww[i_inner_pipi][t_env1])
+        ld_pw[i_outer_other * n_inner + i_inner_apipi][tsep] -= (
+                ld_pw[i_inner_apipi][tsep] * ld_ww[i_inner_pipi][t_env])
+        ld_pw[i_outer_oppo * n_inner + i_inner_apipi][tsep] -= (
+                ld_pw[i_inner_apipi][tsep] * ld_ww[i_inner_pipi][t_env]
+                - ld_pw[i_inner_apipi][tsep_env] * ld_ww[i_inner_pipi][tsep_env])
         for i_inner in [ i_inner_kk, i_inner_akk, ]:
             for i_outer in [ 1, 2, 3, ]:
                 ld_ww[i_outer * n_inner + i_inner][tsep] -= (
@@ -133,10 +149,11 @@ def analysis(job_tag):
         divide_norm(job_tag, ld_ww.val, ld_pw.val)
         pass
     data = []
-    i_inner = 0
+    i_inner = 1
     for ld_ww, ld_pw in zip(lds_ww, lds_pw):
-        ld = sum([ ld_ww.val[i * 4 + i_inner] for i in [ 1, 2, 3, ] ])
+        ld = sum([ ld_pw.val[i * 4 + i_inner] for i in [ 1, 2, 3, ] ])
         data.append(ld)
+    q.displayln_info(q.jk_avg(lds_pw).val[i_inner,:20])
     q.displayln_info(q.jk_avg(data)[:20])
     q.displayln_info(q.jk_err(data)[:20])
 
