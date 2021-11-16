@@ -259,6 +259,17 @@ def partial_sum_with_r_sqr(arr):
     s = arr[0] * 0
     for ri in range(1, size):
         r = ri / r_scaling_factor
+        s += arr[ri] * r**2
+        arr[ri] = s
+    return arr
+
+def partial_sum_with_r4(arr):
+    size = arr.shape[0]
+    arr_original = arr
+    arr = np.copy(arr)
+    s = arr[0] * 0
+    for ri in range(1, size):
+        r = ri / r_scaling_factor
         s += arr[ri] * r**4
         arr[ri] = s
     return arr
@@ -268,25 +279,29 @@ def get_curve(ld, dtype, t_s, a_fm, curve_tag):
     r_range_tag, em_tag = curve_tag
     # t_s may be L / 2
     v = interpolate_t(ld, dtype, t_s)
+    v_list = []
     # ADJUST ME
-    # v = partial_sum_arr(v)
-    v = partial_sum_with_r_sqr(v)
+    # v_list.append(partial_sum_arr(v))
+    v_list.append(partial_sum_with_r_sqr(v)) # default
+    v_list.append(partial_sum_with_r4(v)) # default
+    # v_list.append(partial_sum_with_r_sqr_flat(v))
     #
     if r_range_tag == "all":
         r_len = v.shape[0]
         r_max = r_len - 1
-        r_list = list(range(0, r_len, 10)) + [ r_max, ]
+        r_list = list(range(0, r_len, 5)) + [ r_max, ]
     else:
         r_cut_i = float(r_range_tag) / a_fm * r_scaling_factor
         r_list = [ r_cut_i, ]
     if em_tag == "tt":
-        return np.array([ interpolate(v, r)[1].real for r in r_list ])
+        em = 1
     elif em_tag == "ii":
-        return np.array([ interpolate(v, r)[2].real for r in r_list ])
+        em = 2
     elif em_tag == "xx":
-        return np.array([ interpolate(v, r)[3].real for r in r_list ])
+        em = 3
     else:
         raise Exception("get_curve tag='{tag}'")
+    return np.array([ interpolate(v, r)[em].real for v in v_list for r in r_list ])
 
 @q.timer
 def get_curves(ld, t_s, a_fm, curve_tag):
@@ -300,10 +315,14 @@ def interpolate_curves(curve_ff_list, i):
     return interpolate(curve_ff_list, i)
 
 @q.timer
-def match_curve(curve, curve_ff_list, eps = 1e-4, n_divide = 10):
-    # return best i so that curve_ff_list[i] approximate curve
+def match_curve(curve, curve_ff_list_list, *, eps = 1e-4, n_divide = 10):
+    # return best i so that \sum_k a_k curve_ff_list_list[k][i] (where \sum_k a_k = 1) approximate curve
+    # curve_ff_list_list = [ curve_ff_list_for_one_ff_tag, ... ]
+    # curve_ff_list_for_one_ff_tag = [ curve_for_one_r_pi, ... ]
+    # curve_for_one_r_pi = [ curve_value_at_one_r, ... ]
     def fcn(i):
-        curve_i = interpolate_curves(curve_ff_list, i)
+        curve_i_list = [ interpolate_curves(curve_ff_list, i) for curve_ff_list in curve_ff_list_list ]
+        curve_i = curve_i_list[0]
         return np.linalg.norm(curve - curve_i)
     val_min = fcn(0)
     i_min = 0
@@ -326,7 +345,7 @@ def match_curve(curve, curve_ff_list, eps = 1e-4, n_divide = 10):
         else:
             return find(i_list[n_min - 1], i_list[n_min + 1])
     low = 0
-    high = len(curve_ff_list) - 1
+    high = len(curve_ff_list_list[0]) - 1
     return find(low, high)
 
 @q.timer
@@ -351,35 +370,37 @@ def diagnose_four_point_em(ld):
     for dtype in range(ld.dim_size(0)):
         q.displayln_info(get_curve(ld, dtype, t_s, a_fm, "tt"))
 
-def fit_r_pi_fm(job_tag, jk_list_four_point_em, pion_type, ff_tag, curve_tag, t_s_fm):
+def fit_r_pi_fm(job_tag, jk_list_four_point_em, pion_type, ff_tag_list, curve_tag, t_s_fm):
     total_site = rup.dict_params[job_tag]["total_site"]
     m_pi = rup.dict_params[job_tag]["m_pi"]
     ainv_gev = rup.dict_params[job_tag]["ainv/gev"]
     a_fm = gev_inv_fm / ainv_gev
     jk_list = list(map(lambda ld : combine_dtypes(ld, pion_type), jk_list_four_point_em))
-    ld_ff = mk_four_point_func_table_ff(total_site, m_pi, ainv_gev, ff_tag)
     t_s = t_s_fm / a_fm
-    curve_ff_list = get_curves(ld_ff, t_s, a_fm, curve_tag)
+    curve_ff_list_list = []
+    for ff_tag in ff_tag_list:
+        ld_ff = mk_four_point_func_table_ff(total_site, m_pi, ainv_gev, ff_tag)
+        curve_ff_list_list.append(get_curves(ld_ff, t_s, a_fm, curve_tag))
     ld = q.jk_avg(jk_list)
     jk_list_r_pi_fm = []
     for ld in jk_list:
         curve = get_curve(ld, 0, t_s, a_fm, curve_tag)
-        i_best = match_curve(curve, curve_ff_list)
+        i_best = match_curve(curve, curve_ff_list_list)
         r_pi_fm = interpolate_r_pi_fm(i_best)
         jk_list_r_pi_fm.append(r_pi_fm)
-    result_str = f"r_pi_fm = {q.jk_avg(jk_list_r_pi_fm)} +/- {q.jk_err(jk_list_r_pi_fm)} t_s={t_s} job_tag={job_tag} pion_type={pion_type} ff_tag={ff_tag} curve_tag={curve_tag} t_s_fm={t_s_fm}"
+    result_str = f"r_pi_fm = {q.jk_avg(jk_list_r_pi_fm)} +/- {q.jk_err(jk_list_r_pi_fm)} t_s={t_s} job_tag={job_tag} pion_type={pion_type} ff_tag_list={ff_tag_list} curve_tag={curve_tag} t_s_fm={t_s_fm}"
     q.displayln_info(result_str)
     # avg plot
     curve = get_curve(jk_list[0], 0, t_s, a_fm, curve_tag)
-    i_best = match_curve(curve, curve_ff_list)
+    i_best = match_curve(curve, curve_ff_list_list)
     r_pi_fm = interpolate_r_pi_fm(i_best)
-    curve_ff = interpolate_curves(curve_ff_list, i_best)
-    fn = f"results/curve-fits/{job_tag}-{pion_type}-{ff_tag}-{curve_tag}-{t_s_fm}.txt"
+    curve_ff = interpolate_curves(curve_ff_list_list[0], i_best)
+    fn = f"results/curve-fits/{job_tag}-{pion_type}-{ff_tag_list}-{curve_tag}-{t_s_fm}.txt"
     q.mk_file_dirs_info(fn)
     lines = []
-    lines.append(f"# r curve-data curve-form-factor-fit curve-scalar-qed")
+    lines.append(f"# r curve-data curve-form-factor-fit({ff_tag_list[0]}) curve-scalar-qed")
     lines.append(f"# {result_str}")
-    for i, (v1, v2, v3,) in enumerate(zip(curve, curve_ff, curve_ff_list[0])):
+    for i, (v1, v2, v3,) in enumerate(zip(curve, curve_ff, curve_ff_list_list[0][0])):
         lines.append(f"{i} {v1} {v2} {v3}")
     lines.append("")
     q.qtouch(fn, "\n".join(lines))
@@ -393,12 +414,13 @@ def run_job(job_tag):
             "pion-diff",
             # "charged-pion",
             ]
-    ff_tag_list = [
-            "pole",
-            "pole_p",
-            "linear",
+    ff_tag_list_list = [
+            [ "pole", ],
+            [ "pole_p", ],
+            [ "linear", ],
             ]
     curve_tag_list = [
+            ("all", "tt",),
             (1.0, "tt",),
             (1.5, "tt",),
             (2.0, "tt",),
@@ -408,10 +430,10 @@ def run_job(job_tag):
     t_s_fm_list = [ 0.5, 1.0, 1.5, 2.0, 2.5, ]
     #
     for pion_type in pion_type_list:
-        for ff_tag in ff_tag_list:
+        for ff_tag_list in ff_tag_list_list:
             for curve_tag in curve_tag_list:
                 for t_s_fm in t_s_fm_list:
-                    fit_r_pi_fm(job_tag, jk_list_four_point_em, pion_type, ff_tag, curve_tag, t_s_fm)
+                    fit_r_pi_fm(job_tag, jk_list_four_point_em, pion_type, ff_tag_list, curve_tag, t_s_fm)
     #
     q.clean_cache()
     q.timer_display()
