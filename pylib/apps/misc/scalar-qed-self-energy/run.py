@@ -404,6 +404,7 @@ def fit_r_pi_fm(job_tag, jk_list_four_point_em, pion_type, ff_tag_list, curve_ta
         lines.append(f"{i} {v1} {v2} {v3}")
     lines.append("")
     q.qtouch(fn, "\n".join(lines))
+    return jk_list_r_pi_fm
 
 @q.timer
 def run_job(job_tag):
@@ -429,11 +430,22 @@ def run_job(job_tag):
             ]
     t_s_fm_list = [ 0.5, 1.0, 1.5, 2.0, 2.5, ]
     #
-    for pion_type in pion_type_list:
-        for ff_tag_list in ff_tag_list_list:
-            for curve_tag in curve_tag_list:
-                for t_s_fm in t_s_fm_list:
-                    fit_r_pi_fm(job_tag, jk_list_four_point_em, pion_type, ff_tag_list, curve_tag, t_s_fm)
+    # for pion_type in pion_type_list:
+    #     for ff_tag_list in ff_tag_list_list:
+    #         for curve_tag in curve_tag_list:
+    #             for t_s_fm in t_s_fm_list:
+    #                 fit_r_pi_fm(job_tag, jk_list_four_point_em, pion_type, ff_tag_list, curve_tag, t_s_fm)
+    pion_type = "pion-diff"
+    ff_tag_list = [ "pole", ]
+    curve_tag = ("all", "tt",)
+    t_s_fm_list = list(np.arange(0.0, 2.6, 0.1))
+    table = []
+    for t_s_fm in t_s_fm_list:
+        jks = fit_r_pi_fm(job_tag, jk_list_four_point_em, pion_type, ff_tag_list, curve_tag, t_s_fm)
+        v = [ t_s_fm, q.jk_avg(jks), q.jk_err(jks), ]
+        table.append(v)
+    content = "\n".join([ " ".join(map(str, v)) for v in table ] + [ "", ])
+    q.qtouch_info(get_save_path(f"curve-fits/{job_tag}/curve.txt"), content)
     #
     q.clean_cache()
     q.timer_display()
