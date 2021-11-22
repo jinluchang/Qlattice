@@ -109,12 +109,12 @@ slv_qm_madwf = qm.propagator(
                 g.single, g.double),
             eps=1e-8, maxiter=100)).grouped(4)
 
-inv_qm = qg.InverterGPT(inverter = slv_qm, timer = q.Timer("py:slv_qm", True))
-inv_qz_f = qg.InverterGPT(inverter = slv_qz_f, timer = q.Timer("py:slv_qz_f", True))
-inv_qm_mp = qg.InverterGPT(inverter = slv_qm_mp, timer = q.Timer("py:slv_qm_mp", True))
-inv_qm_split = qg.InverterGPT(inverter = slv_qm_split, timer = q.Timer("py:slv_qm_split", True))
-inv_qm_split_sloppy = qg.InverterGPT(inverter = slv_qm_split_sloppy, timer = q.Timer("py:slv_qm_split_sloppy", True))
-inv_qm_madwf = qg.InverterGPT(inverter = slv_qm_madwf, timer = q.Timer("py:slv_qm_madwf", True))
+inv_qm = qg.InverterGPT(inverter = slv_qm, qtimer = q.Timer("py:slv_qm", True))
+inv_qz_f = qg.InverterGPT(inverter = slv_qz_f, qtimer = q.Timer("py:slv_qz_f", True))
+inv_qm_mp = qg.InverterGPT(inverter = slv_qm_mp, qtimer = q.Timer("py:slv_qm_mp", True))
+inv_qm_split = qg.InverterGPT(inverter = slv_qm_split, qtimer = q.Timer("py:slv_qm_split", True))
+inv_qm_split_sloppy = qg.InverterGPT(inverter = slv_qm_split_sloppy, qtimer = q.Timer("py:slv_qm_split_sloppy", True))
+inv_qm_madwf = qg.InverterGPT(inverter = slv_qm_madwf, qtimer = q.Timer("py:slv_qm_madwf", True))
 
 def mk_src(geo):
     src = q.mk_point_src(geo, [0, 0, 0, 0])

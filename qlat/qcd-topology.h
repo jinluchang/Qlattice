@@ -156,7 +156,7 @@ qacc double clf_spatial_plaq_action_density(const CloverLeafField& clf,
 }
 
 qacc double clf_topology_density(const CloverLeafField& clf,
-                                   const Coordinate& xl)
+                                 const Coordinate& xl)
 // sum of the density of the topological charge Q
 {
   const Vector<ColorMatrix> v = clf.get_elems_const(xl);
@@ -242,6 +242,7 @@ inline void clf_topology_field_5(FieldM<double, 1>& topf,
 }
 
 inline void clf_topology_field_5(FieldM<double, 1>& topf, const GaugeField& gf)
+// https://arxiv.org/pdf/hep-lat/9701012v2.pdf
 {
   TIMER("clf_topology_field_5(topf,gf)");
   CloverLeafField clf1, clf2, clf3, clf4, clf5;

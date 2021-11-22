@@ -89,11 +89,10 @@ EXPORT(set_phase_field, {
   if (!PyArg_ParseTuple(args, "OO", &p_field, &p_lmom)) {
     return NULL;
   }
-  PyField pf = py_convert_field(p_field);
   CoordinateD lmom;
   py_convert(lmom, p_lmom);
-  pqassert(pf.ctype == "Complex");
-  FieldM<Complex, 1>& f = *(FieldM<Complex, 1>*)pf.cdata;
+  pqassert(py_get_ctype(p_field) == "Complex");
+  FieldM<Complex, 1>& f = py_convert_type<FieldM<Complex, 1> >(p_field);
   pqassert(f.geo().multiplicity == 1);
   set_phase_field(f, lmom);
   Py_RETURN_NONE;

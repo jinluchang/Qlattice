@@ -56,3 +56,20 @@ EXPORT(gf_hyp_smear, {
   gf_hyp_smear(gf, gf0, alpha1, alpha2, alpha3);
   Py_RETURN_NONE;
 });
+
+EXPORT(gf_topology_field, {
+  // using the 5 loop improved definition
+  // https://arxiv.org/pdf/hep-lat/9701012v2.pdf
+  using namespace qlat;
+  PyObject* p_topf = NULL;
+  PyObject* p_gf = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_topf, &p_gf)) {
+    return NULL;
+  }
+  const GaugeField& gf = py_convert_type<GaugeField>(p_gf);
+  pqassert(py_get_ctype(p_topf) == "double");
+  FieldM<double, 1>& topf = py_convert_type<FieldM<double, 1> >(p_topf);
+  pqassert(topf.geo().multiplicity == 1);
+  clf_topology_field_5(topf, gf);
+  Py_RETURN_NONE;
+});

@@ -63,6 +63,8 @@ inline double gf_energy_density_no_comm(const GaugeField& gf)
 }
 
 inline double gf_energy_density(const GaugeField& gf)
+// https://arxiv.org/pdf/1006.4518.pdf Eq. (2.1) (Fig. 1) (approximate Eq. (3.1))
+// https://arxiv.org/pdf/1203.4469.pdf
 {
   TIMER("gf_energy_density");
   GaugeField gf1;

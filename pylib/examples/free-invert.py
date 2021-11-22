@@ -18,9 +18,9 @@ gf.show_info()
 
 fa = q.FermionAction(mass = 0.05, ls = 16, m5 = 1.0)
 
-qinv_free = q.InverterDwfFreeField(mass = fa.mass(), m5 = fa.m5(), timer = q.Timer("py:InverterDwfFreeField"))
+qinv_free = q.InverterDwfFreeField(mass = fa.mass(), m5 = fa.m5(), qtimer = q.Timer("py:InverterDwfFreeField"))
 
-qinv_dwf = q.InverterDomainWall(gf = gf, fa = fa, timer = q.Timer("py:InverterDomainWall"))
+qinv_dwf = q.InverterDomainWall(gf = gf, fa = fa, qtimer = q.Timer("py:InverterDomainWall"))
 
 src_p = q.mk_point_src(geo, [0, 0, 0, 0])
 

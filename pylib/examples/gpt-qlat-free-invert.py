@@ -21,7 +21,7 @@ mass = 0.05
 
 m5 = 1.0
 
-qinv = q.InverterDwfFreeField(mass = mass, m5 = m5, timer = q.Timer("py:InverterDwfFreeField"))
+qinv = q.InverterDwfFreeField(mass = mass, m5 = m5, qtimer = q.Timer("py:InverterDwfFreeField"))
 
 mobius_params = {
         "mass": mass,
@@ -39,7 +39,7 @@ inv = g.algorithms.inverter
 cg = inv.cg({"eps": 1e-11, "maxiter": 10000})
 slv_5d = inv.preconditioned(pc.eo2_ne(), cg)
 slv_qm = qm.propagator(slv_5d)
-ginv = qg.InverterGPT(inverter = slv_qm, timer = q.Timer("py:InverterGPT"))
+ginv = qg.InverterGPT(inverter = slv_qm, qtimer = q.Timer("py:InverterGPT"))
 
 src_p = q.mk_point_src(geo, [0, 0, 0, 0])
 

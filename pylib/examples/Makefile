@@ -6,6 +6,7 @@ run: cqlat-example py-examples
 
 tests = make-sample-gauge-field.log \
 		field-utils.log \
+		qcd-utils.log \
 		hmc-pure-gauge.log \
 		field-selection.log \
 		selected-field.log \

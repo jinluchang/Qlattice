@@ -154,6 +154,14 @@ inline PyField py_convert_field(PyObject* in)
   return out;
 }
 
+inline std::string py_get_ctype(PyObject* in)
+{
+  PyObject* p_ctype = PyObject_GetAttrString(in, "ctype");
+  std::string ctype;
+  py_convert(ctype, p_ctype);
+  return ctype;
+}
+
 template <class T>
 T& py_convert_type(PyObject* in)
 {

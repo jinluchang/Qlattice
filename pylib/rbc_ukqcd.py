@@ -62,8 +62,8 @@ def get_clanc_params(job_tag, inv_type, inv_acc = 0):
 
 @q.timer_verbose
 def mk_eig(gf, job_tag, inv_type, inv_acc = 0):
-    timer = q.Timer(f"py:mk_eig({job_tag},{inv_type},{inv_acc})", True)
-    timer.start()
+    qtimer = q.Timer(f"py:mk_eig({job_tag},{inv_type},{inv_acc})", True)
+    qtimer.start()
     gpt_gf = g.convert(qg.gpt_from_qlat(gf), g.single)
     parity = g.odd
     params = get_lanc_params(job_tag, inv_type, inv_acc)
@@ -91,13 +91,13 @@ def mk_eig(gf, job_tag, inv_type, inv_acc = 0):
     evals = g.algorithms.eigen.evals(w.Mpc, evec, check_eps2=1e-6, real=True)
     g.mem_report()
     #
-    timer.stop()
+    qtimer.stop()
     return evec, evals
 
 @q.timer_verbose
 def mk_ceig(gf, job_tag, inv_type, inv_acc = 0):
-    timer = q.Timer(f"py:mk_ceig({job_tag},{inv_type},{inv_acc})", True)
-    timer.start()
+    qtimer = q.Timer(f"py:mk_ceig({job_tag},{inv_type},{inv_acc})", True)
+    qtimer.start()
     gpt_gf = g.convert(qg.gpt_from_qlat(gf), g.single)
     parity = g.odd
     params = get_lanc_params(job_tag, inv_type, inv_acc)
@@ -159,7 +159,7 @@ def mk_ceig(gf, job_tag, inv_type, inv_acc = 0):
         )
     g.mem_report()
     #
-    timer.stop()
+    qtimer.stop()
     return basis, cevec, smoothed_evals
 
 @q.timer_verbose
@@ -206,7 +206,7 @@ def mk_gpt_inverter(gf, job_tag, inv_type, inv_acc, *,
         n_grouped = 1,
         eig = None,
         eps = 1e-8,
-        timer = True):
+        qtimer = True):
     if mpi_split is None:
         mpi_split = g.default.get_ivec("--mpi_split", None, 4)
         if mpi_split is not None:
@@ -284,11 +284,11 @@ def mk_gpt_inverter(gf, job_tag, inv_type, inv_acc, *,
                     inv.mixed_precision(
                         slv_5d, g.single, g.double),
                     eps=eps, maxiter=maxiter)).grouped(n_grouped)
-        if timer is True:
-            timer = q.Timer(f"py:inv({job_tag},{inv_type},{inv_acc})", True)
-        elif timer is False:
-            timer = q.TimerNone()
-        inv_qm = qg.InverterGPT(inverter = slv_qm, timer = timer)
+        if qtimer is True:
+            qtimer = q.Timer(f"py:inv({job_tag},{inv_type},{inv_acc})", True)
+        elif qtimer is False:
+            qtimer = q.TimerNone()
+        inv_qm = qg.InverterGPT(inverter = slv_qm, qtimer = qtimer)
     else:
         raise Exception("mk_gpt_inverter")
     if gt is None:
@@ -298,11 +298,11 @@ def mk_gpt_inverter(gf, job_tag, inv_type, inv_acc, *,
 
 @q.timer_verbose
 def mk_qlat_inverter(gf, job_tag, inv_type, inv_acc, *, gt = None):
-    timer = q.Timer(f"py:qinv({job_tag},{inv_type},{inv_acc})", True)
+    qtimer = q.Timer(f"py:qinv({job_tag},{inv_type},{inv_acc})", True)
     if job_tag in ["24D", "32D"]:
         if inv_type == 0:
             fa = q.FermionAction(mass = 0.00107, m5 = 1.8, ls = 24, mobius_scale = 4.0)
-            inv = q.InverterDomainWall(gf = gf, fa = fa, timer = timer)
+            inv = q.InverterDomainWall(gf = gf, fa = fa, qtimer = qtimer)
             inv.set_stop_rsd(1e-8)
             inv.set_max_num_iter(200)
             if inv_acc == 0:
@@ -316,7 +316,7 @@ def mk_qlat_inverter(gf, job_tag, inv_type, inv_acc, *, gt = None):
             inv.set_max_mixed_precision_cycle(maxiter)
         elif inv_type == 1:
             fa = q.FermionAction(mass = 0.0850, m5 = 1.8, ls = 24, mobius_scale = 4.0)
-            inv = q.InverterDomainWall(gf = gf, fa = fa, timer = timer)
+            inv = q.InverterDomainWall(gf = gf, fa = fa, qtimer = qtimer)
             inv.set_stop_rsd(1e-8)
             inv.set_max_num_iter(300)
             if inv_acc == 0:
@@ -341,8 +341,8 @@ def mk_inverter(*args, **kwargs):
     return mk_gpt_inverter(*args, **kwargs)
 
 @q.timer
-def get_inv(gf, job_tag, inv_type, inv_acc, *, gt = None, mpi_split = None, n_grouped = 1, eig = None, eps = 1e-8, timer = True):
-    tag = f"rbc_ukqcd.get_inv gf={id(gf)} {job_tag} {inv_type} {inv_acc} gt={id(gt)} {mpi_split} {n_grouped} eig={id(eig)} {eps} timer={id(timer)}"
+def get_inv(gf, job_tag, inv_type, inv_acc, *, gt = None, mpi_split = None, n_grouped = 1, eig = None, eps = 1e-8, qtimer = True):
+    tag = f"rbc_ukqcd.get_inv gf={id(gf)} {job_tag} {inv_type} {inv_acc} gt={id(gt)} {mpi_split} {n_grouped} eig={id(eig)} {eps} qtimer={id(qtimer)}"
     if tag in q.cache_inv:
         return q.cache_inv[tag]["inv"]
     inv = mk_inverter(gf, job_tag, inv_type, inv_acc,
@@ -351,12 +351,12 @@ def get_inv(gf, job_tag, inv_type, inv_acc, *, gt = None, mpi_split = None, n_gr
             n_grouped = n_grouped,
             eig = eig,
             eps = eps,
-            timer = timer)
+            qtimer = qtimer)
     q.cache_inv[tag] = {
             "inv": inv,
             "gf": gf,
             "gt": gt,
             "eig": eig,
-            "timer": timer,
+            "qtimer": qtimer,
             }
     return inv

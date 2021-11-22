@@ -319,20 +319,20 @@ def gpt_from_qlat(obj):
         raise Exception("gpt_from_qlat")
 
 @q.timer
-def gpt_invert(src, inverter, timer = q.TimerNone()):
-    timer.start()
+def gpt_invert(src, inverter, qtimer = q.TimerNone()):
+    qtimer.start()
     sol = g.eval(inverter * src)
-    timer.stop()
+    qtimer.stop()
     return sol
 
 class InverterGPT(q.Inverter):
 
     def __init__(self, *, inverter,
-            timer = q.TimerNone(),
-            gpt_timer = q.TimerNone()):
+            qtimer = q.TimerNone(),
+            gpt_qtimer = q.TimerNone()):
         self.inverter = inverter
-        self.timer = timer
-        self.gpt_timer = gpt_timer
+        self.timer = qtimer
+        self.gpt_timer = gpt_qtimer
         assert isinstance(self.timer, q.Timer)
         assert isinstance(self.gpt_timer, q.Timer)
 

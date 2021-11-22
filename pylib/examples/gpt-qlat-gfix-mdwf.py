@@ -26,7 +26,7 @@ gf_gfix = gt * gf
 
 gf_gfix.show_info()
 
-def mk_inverter_gpt(gf, timer):
+def mk_inverter_gpt(gf, qtimer):
     mobius_params = {
             "mass": 0.1,
             "M5": 1.0,
@@ -42,7 +42,7 @@ def mk_inverter_gpt(gf, timer):
     cg = inv.cg({"eps": 1e-8, "maxiter": 10000})
     slv_5d = inv.preconditioned(pc.eo2_ne(), cg)
     slv_qm = qm.propagator(slv_5d)
-    inv_qm = qg.InverterGPT(inverter = slv_qm, timer = timer)
+    inv_qm = qg.InverterGPT(inverter = slv_qm, qtimer = qtimer)
     return inv_qm
 
 inv = mk_inverter_gpt(gf_gfix, q.Timer("py:slv_qm", True))
@@ -50,7 +50,7 @@ inv = mk_inverter_gpt(gf_gfix, q.Timer("py:slv_qm", True))
 inv_gt = q.InverterGaugeTransform(
         inverter = mk_inverter_gpt(gf, q.Timer("py:slv_qm", True)),
         gt = gt,
-        timer = q.Timer("py:inv_gfix", True))
+        qtimer = q.Timer("py:inv_gfix", True))
 
 src = q.Prop(geo)
 src.set_rand(rs.split("src_r"))
