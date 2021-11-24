@@ -354,8 +354,10 @@ def get_term_diagram_type_info(term):
 def eval_term_factor(term):
     term.coef = complex(term.coef)
 
-def mk_cexpr(*exprs, diagram_type_dict = dict()):
+def mk_cexpr(*exprs, diagram_type_dict = None):
     # interface function
+    if diagram_type_dict is None:
+        diagram_type_dict = dict()
     descriptions = [ expr.show() for expr in exprs ]
     # build diagram_types
     diagram_type_counter = 0
@@ -390,8 +392,10 @@ def mk_cexpr(*exprs, diagram_type_dict = dict()):
         named_exprs.append((f"E{i+1} {descriptions[i]}", expr_list,))
     return CExpr(diagram_types, [], named_terms, named_typed_exprs, named_exprs)
 
-def contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True, diagram_type_dict = dict()):
+def contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True, diagram_type_dict = None):
     # interface function
+    if diagram_type_dict is None:
+        diagram_type_dict = dict()
     exprs = list(exprs)
     for i in range(len(exprs)):
         expr = copy.deepcopy(exprs[i])

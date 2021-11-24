@@ -844,6 +844,17 @@ if __name__ == "__main__":
             - mk_pi_0("x1", True) * mk_j_mu("xj_1", "mu") * mk_j_mu("xj_2", "nu") * mk_pi_0("x2")
             )
     print(display_cexpr(contract_simplify_compile(expr)))
+    print("< pi+(x2)^dag dm(xj_1) dm(xj_2) pi+(x1) / 2 + pi-(x2)^dag dm(xj_1) dm(xj_2) pi-(x1) / 2 - pi0(x2)^dag dm(xj_1) dm(xj_2) pi0(x1) >:")
+    expr_dm1 = mk_scalar("d", "d", "xj_1") - mk_scalar("u", "u", "xj_1")
+    expr_dm2 = mk_scalar("d", "d", "xj_2") - mk_scalar("u", "u", "xj_2")
+    expr_dm = expr_dm1 * expr_dm2
+    expr = (
+            sympy.simplify(1)/2 * mk_pi_p("x2", True) * expr_dm * mk_pi_p("x1")
+            + sympy.simplify(1)/2 * mk_pi_m("x2", True) * expr_dm * mk_pi_m("x1")
+            - mk_pi_0("x1", True) * expr_dm * mk_pi_0("x2")
+            )
+    print(display_cexpr(contract_simplify_compile(expr)))
+    exit()
     #
     print()
     test_kk()
