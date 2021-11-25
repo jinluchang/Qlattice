@@ -21,7 +21,7 @@ struct shift_vec{
   int Nx,Ny,Nz;
 
   int N0,N1,N2,Nt;
-  std::vector<int> Nv,nv;
+  qlat::vector_acc<int> Nv,nv;
 
   fft_desc_basic *fd;
 
@@ -109,7 +109,7 @@ struct shift_vec{
 
 };
 
-shift_vec::shift_vec(fft_desc_basic &fds, bool GPU_set):mv_civ(GPU_set)
+shift_vec::shift_vec(fft_desc_basic &fds, bool GPU_set)
 {
   TIMERB("Construct shift_vec");
   #ifndef QLAT_USE_ACC
@@ -306,19 +306,22 @@ void shift_vec::set_MPI_size(int biva_or, int civ_or, int dir_or )
   /////====set up bufs for shift
   LInt Ng = Nt*N0*N1*N2;
   if(zeroP_Size != Ng){
+  free_buf(zeroP, GPU);
   if(GPU){gpuMalloc(zeroP, Ng, Ty);}
-  else{zeroP = malloc(Ng * sizeof(Ty));}zeroP_Size = Ng;
-  Ty* zero = (Ty*) zeroP;
-  zero_Ty((Ty*) zeroP, Ng, !GPU, true);
+  else{zeroP = aligned_alloc_no_acc(Ng * sizeof(Ty));}zeroP_Size = Ng;
+  ////Ty* zero = (Ty*) zeroP;
+  zero_Ty((Ty*) zeroP, Ng, GPU, true);
   }
 
   if(bufsP_Size != Ng*biva_or*civ_or){
+  free_buf(bufsP, GPU);
   if(GPU){gpuMalloc(bufsP, Ng*biva_or*civ_or, Ty);}
-  else{bufsP = malloc(Ng*biva_or*civ_or * sizeof(Ty));}bufsP_Size = Ng*biva_or*civ_or;}
+  else{bufsP = aligned_alloc_no_acc(Ng*biva_or*civ_or * sizeof(Ty));}bufsP_Size = Ng*biva_or*civ_or;}
 
   if(bufrP_Size != Ng*biva_or*civ_or){
+  free_buf(bufrP, GPU);
   if(GPU){gpuMalloc(bufrP, Ng*biva_or*civ_or, Ty);}
-  else{bufrP = malloc(Ng*biva_or*civ_or * sizeof(Ty));}bufrP_Size = Ng*biva_or*civ_or;}
+  else{bufrP = aligned_alloc_no_acc(Ng*biva_or*civ_or * sizeof(Ty));}bufrP_Size = Ng*biva_or*civ_or;}
   /////====set up bufs for shift
 
   ////==assign current direction
@@ -326,7 +329,7 @@ void shift_vec::set_MPI_size(int biva_or, int civ_or, int dir_or )
   ////==assign current direction
   if(biva_or == biva and civ_or == civ and bsize == sizeof(Ty)){
     if(sendoffa[dir_cur].size() == 0){return ;}else
-    {if(bufP_Size[dir_cur] == biva_or*civ_or*(sendoffa[dir_cur].size())*CON_SEND[dir_cur]){return  ;}}
+    {if(bufP_Size[dir_cur] == (LInt) biva_or*civ_or*(sendoffa[dir_cur].size())*CON_SEND[dir_cur]){return  ;}}
   }
 
   //Length = Nt*N0*N1*N2;
@@ -350,13 +353,13 @@ void shift_vec::set_MPI_size(int biva_or, int civ_or, int dir_or )
   {
     clear_mem_dir(dir_cur);
     if(GPU){gpuMalloc(sendbufP[dir_cur], MPI_size[dir_cur], Ty);}
-    else{sendbufP[dir_cur] = malloc(MPI_size[dir_cur] * sizeof(Ty));}
+    else{sendbufP[dir_cur] = aligned_alloc_no_acc(MPI_size[dir_cur] * sizeof(Ty));}
 
     if(GPU){gpuMalloc(recvbufP[dir_cur], MPI_size[dir_cur], Ty);}
-    else{recvbufP[dir_cur] = malloc(MPI_size[dir_cur] * sizeof(Ty));}
+    else{recvbufP[dir_cur] = aligned_alloc_no_acc(MPI_size[dir_cur] * sizeof(Ty));}
 
-    //sendbufP[dir_cur] = malloc(MPI_size * sizeof(Ty));
-    //recvbufP[dir_cur] = malloc(MPI_size * sizeof(Ty));
+    //sendbufP[dir_cur] = aligned_alloc_no_acc(MPI_size * sizeof(Ty));
+    //recvbufP[dir_cur] = aligned_alloc_no_acc(MPI_size * sizeof(Ty));
     //alloc_buf((Ty*) sendbufP[dir_cur], MPI_size, GPU);
     //alloc_buf((Ty*) recvbufP[dir_cur], MPI_size, GPU);
     //sendbuf.resize(MPI_size);
@@ -417,7 +420,7 @@ void shift_vec::write_send_recv(Ty* src, Ty* res)
   //    memcpy(&s_tem[bi*civ*writeN + off1*civ + 0],&src[bi*Length*civ + off0*civ + 0], sizeof(Ty)*civ);
   //  }
   //}
-  for(LInt bi=0;bi<biva;bi++){
+  for(int bi=0;bi<biva;bi++){
   LInt* s0 = (LInt*) qlat::get_data(sendoffa[dir_cur]).data();
   LInt* s1 = (LInt*) qlat::get_data(sendoffx[dir_cur]).data();
   //cpy_data_from_index( &s_tem[bi*writeN*civ], &src[bi*writeN*civ], 
@@ -432,7 +435,7 @@ void shift_vec::write_send_recv(Ty* src, Ty* res)
   ////Write Result
   if(flag == 1)
   {
-  for(LInt bi=0;bi<biva;bi++){
+  for(int bi=0;bi<biva;bi++){
   LInt* s1 = (LInt*) qlat::get_data(sendoffb[dir_cur]).data();
   LInt* s0 = (LInt*) qlat::get_data(sendoffx[dir_cur]).data();
   //cpy_data_from_index( &res[bi*writeN*civ], &r_tem[bi*writeN*civ], 
@@ -446,7 +449,7 @@ void shift_vec::write_send_recv(Ty* src, Ty* res)
 
   if(flag == 2)
   {
-  for(LInt bi=0;bi<biva;bi++){
+  for(int bi=0;bi<biva;bi++){
   LInt* s1 = (LInt*) qlat::get_data(buffoffb[dir_cur]).data();
   LInt* s0 = (LInt*) qlat::get_data(buffoffa[dir_cur]).data();
   //cpy_data_from_index( &res[bi*Length*civ], &src[bi*Length*civ], 
@@ -524,7 +527,7 @@ void shift_vec::shift_vecs(std::vector<Ty* > &src,std::vector<Ty* > &res,std::ve
   #if PRINT_TIMER>4
   TIMER_FLOPS("shift_Evec");
   {
-    int count = 1; for(int di=0;di<iDir.size();di++){count += int(std::abs(iDir[di]));}
+    int count = 1; for(LInt di=0;di<iDir.size();di++){count += int(std::abs(iDir[di]));}
     timer.flops += count * src.size() * Ng*civ_or*sizeof(Ty) ;
   }
   #endif
@@ -556,18 +559,18 @@ void shift_vec::shift_vecs(std::vector<Ty* > &src,std::vector<Ty* > &res,std::ve
   if(dir_curl.size()==0){
     LInt Nsize = Nt*N0*N1*N2*civ_or;
     std::vector<Ty > tem;tem.resize(Nsize);
-    for(LInt vi=0;vi<biva_or;vi++)
+    for(LInt vi=0;vi<(LInt) biva_or;vi++)
     {
       //memcpy(&tem[0], &src[vi][0],sizeof(Ty )*Nsize);
       //memcpy(&res[vi][0] ,&tem[0],sizeof(Ty )*Nsize);
       if(src[vi] != res[vi]){
-      cpy_data_thread(&tem[0], &src[vi][0], Nsize, !GPU, false);
-      cpy_data_thread(&res[vi][0] ,&tem[0], Nsize, !GPU, true );}
+      cpy_data_thread(&tem[0], &src[vi][0], Nsize, GPU, false);
+      cpy_data_thread(&res[vi][0] ,&tem[0], Nsize, GPU, true );}
     }
     return;
   }
 
-  LInt size_vec = biva_or*civ_or;
+  int size_vec = biva_or*civ_or;
   Ty* zero = (Ty*) zeroP;
 
   if(flag_shift_set == false){if(civ_or==1)set_MPI_size<Ty >(1,12);if(civ_or != 1)set_MPI_size<Ty >(1, civ_or);}
@@ -603,7 +606,7 @@ void shift_vec::shift_vecs(std::vector<Ty* > &src,std::vector<Ty* > &res,std::ve
         for(int ci=0;ci<civ ;ci++)
         {
           ////memcpy(&vec_s[(li*civ +ci)*Ng+0],&ptem0[ci][0],sizeof(Ty)*Ng);
-          cpy_data_thread(&vec_s[(li*civ +ci)*Ng+0],&ptem0[ci][0], Ng, !GPU, false);
+          cpy_data_thread(&vec_s[(li*civ +ci)*Ng+0],&ptem0[ci][0], Ng, GPU, false);
         }
       }
       }
@@ -612,7 +615,7 @@ void shift_vec::shift_vecs(std::vector<Ty* > &src,std::vector<Ty* > &res,std::ve
       {
       if(count < size_vec){
       ////memcpy(&vec_s[li*Ng*civ_or+0],&src[count/civ_or][0],sizeof(Ty)*Ng*civ_or);
-      cpy_data_thread(&vec_s[li*Ng*civ_or+0],&src[count/civ_or][0], Ng*civ_or, !GPU, false);
+      cpy_data_thread(&vec_s[li*Ng*civ_or+0],&src[count/civ_or][0], Ng*civ_or, GPU, false);
       count = count + civ_or;
       }
       if(count == size_vec)flagend = 1;
@@ -620,23 +623,23 @@ void shift_vec::shift_vecs(std::vector<Ty* > &src,std::vector<Ty* > &res,std::ve
       qacc_barrier(dummy);
 
     }
-    if(civ_or == 1)reorder_civ((char*) &vec_s[0],(char*) &vec_s[0], civ ,biva,Ng,0, sizeof(Ty));
-    //if(civ_or == 1)mv_civ.dojob(&vec_s[0], &vec_s[0],civ, biva, Ng, 0, 1);
+    ////if(civ_or == 1)reorder_civ((char*) &vec_s[0],(char*) &vec_s[0], civ ,biva,Ng,0, sizeof(Ty));
+    if(civ_or == 1)mv_civ.dojob(&vec_s[0], &vec_s[0],civ, biva, Ng, 0, 1, GPU);
 
     /////Shift direction kernal
-    for(int di=0;di<dir_curl.size();di++)
+    for(LInt di=0;di<dir_curl.size();di++)
     {
     for(int si=0;si<dir_numl[di];si++)
     {
       call_MPI((Ty*) &vec_s[0], (Ty*) &vec_r[0],dir_curl[di]);
       ///memcpy(&vec_s[0],&vec_r[0],sizeof(Ty)*(biva*Ng*civ));
-      cpy_data_thread(&vec_s[0],&vec_r[0], (biva*Ng*civ), !GPU, true);
+      cpy_data_thread(&vec_s[0],&vec_r[0], (biva*Ng*civ), GPU, true);
     }
     }
     /////Shift direction kernal
 
-    if(civ_or == 1)reorder_civ((char*) &vec_s[0],(char*) &vec_s[0],civ ,biva,Ng,1, sizeof(Ty));
-    //if(civ_or == 1)mv_civ.dojob(&vec_s[0], &vec_s[0],civ, biva, Ng,1, 1);
+    ///if(civ_or == 1)reorder_civ((char*) &vec_s[0],(char*) &vec_s[0],civ ,biva,Ng,1, sizeof(Ty));
+    if(civ_or == 1)mv_civ.dojob(&vec_s[0], &vec_s[0],civ, biva, Ng,1, 1, GPU);
 
     //TIMER("Reorder heavy data.");
     for(int li=0;li< biva ;li++)
@@ -657,7 +660,7 @@ void shift_vec::shift_vecs(std::vector<Ty* > &src,std::vector<Ty* > &res,std::ve
         for(int ci=0;ci<civ ;ci++)
         {
           //memcpy(&ptem0[ci][0],&vec_s[(li*civ +ci)*Ng+0],sizeof(Ty)*Ng);
-          cpy_data_thread(&ptem0[ci][0],&vec_s[(li*civ +ci)*Ng+0], Ng, !GPU, false);
+          cpy_data_thread(&ptem0[ci][0],&vec_s[(li*civ +ci)*Ng+0], Ng, GPU, false);
         }
       }
       //write_in_MPIsend(ptem0,li,1);
@@ -666,7 +669,7 @@ void shift_vec::shift_vecs(std::vector<Ty* > &src,std::vector<Ty* > &res,std::ve
       {
       if(start < size_vec){
         //memcpy(&res[start/civ_or][0],&vec_s[li*Ng*civ_or+0],sizeof(Ty)*Ng*civ_or);
-        cpy_data_thread(&res[start/civ_or][0],&vec_s[li*Ng*civ_or+0], Ng*civ_or, !GPU, false);
+        cpy_data_thread(&res[start/civ_or][0],&vec_s[li*Ng*civ_or+0], Ng*civ_or, GPU, false);
         start = start + civ_or;
       }
       qacc_barrier(dummy);

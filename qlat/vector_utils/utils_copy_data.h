@@ -74,236 +74,140 @@ void cpy_data_from_index(qlat::vector<T >& res, qlat::vector<T >& src, const qla
 }
 
 #ifdef QLAT_USE_ACC
-template <typename T0, typename T1, typename TInt, int bfac>
-__global__ void cpy_data_thread_global(T0* Pres, T1* Psrc,  const TInt Nvol)
+template <typename T0, typename T1, typename TInt, int bfac, int ADD_FAC>
+__global__ void cpy_data_thread_global(T0* Pres, const T1* Psrc,  const TInt Nvol, const double ADD)
 {
   TInt off = blockIdx.x*blockDim.x*bfac + threadIdx.x;
   for(int i=0;i<bfac;i++)
   {
-    if(off < Nvol){Pres[off] = Psrc[off];}
+    if(ADD_FAC== 0)if(off < Nvol){Pres[off]  = Psrc[off];}
+    if(ADD_FAC== 1)if(off < Nvol){Pres[off] += ADD*Psrc[off];}
     off += blockDim.x;
   }
 }
 #endif
 
-//////Copy data thread
+//////Copy data thread, cannot give to zero with ADD = 0
 template <typename T0, typename T1, typename TInt>
-void cpy_data_thread(T0* Pres, T1* Psrc, const TInt Nvol, int cpu=0, bool dummy=true)
+void CPY_data_thread_basic(T0* Pres, const T1* Psrc, const TInt Nvol, int GPU=1, bool dummy=true, const double ADD = 0)
 {
-  TIMERA("cpy_data_thread");
+  if(GPU != 0 and GPU != 1){qassert(false);}
+  bool do_copy = true;
+  if(qlat::qnorm(ADD) <  1e-13){do_copy = true ;}
+  if(qlat::qnorm(ADD) >= 1e-13){do_copy = false;}
 
   #ifdef QLAT_USE_ACC
-  if(cpu == 0){
-  //qacc_forNB(i, Nvol, {Pres[i]=Psrc[i];});
+  if(GPU == 1){
+  /////qacc_forNB(i, Nvol, {Pres[i]=Psrc[i];});
 
   const int Threads = 64;const int Biva = (4*16+sizeof(T0)-1)/sizeof(T0);
   long Nb = (Nvol + Threads*Biva -1)/(Threads*Biva);
   dim3 dimBlock(    Threads,    1, 1);
   dim3 dimGrid(     Nb,    1, 1);
-  cpy_data_thread_global<T0, T1, TInt , Biva><<< dimGrid, dimBlock >>>(Pres, Psrc, Nvol);
+
+  if( do_copy)cpy_data_thread_global<T0, T1, TInt , Biva, 0><<< dimGrid, dimBlock >>>(Pres, Psrc, Nvol, ADD);
+  if(!do_copy)cpy_data_thread_global<T0, T1, TInt , Biva, 1><<< dimGrid, dimBlock >>>(Pres, Psrc, Nvol, ADD);
 
   if(dummy)qacc_barrier(dummy);
   return ;}
   #endif
 
-  #pragma omp parallel for
-  for(TInt i=0;i<Nvol;i++)
-  {
-    Pres[i]=Psrc[i];
-  }
-}
-
-////flag = 1 --> biva * sizeF * civ * size_inner --> biva * civ * sizeF * size_inner
-#ifdef QLAT_USE_ACC
-template <typename Ty, bool flag, int Threads, int Biva>
-__global__ void move_index_global(Ty* src, Ty* res, long sizeF, int civ, int inner)
-{
-  __shared__ Ty buf[Threads*Biva];
-
-  int    tid = threadIdx.x;
-  long s0    = blockIdx.x*blockDim.x;
-
-  int Total = Threads*civ*inner;
-  if(s0 + Threads > sizeF){Total = (sizeF - s0) * civ*inner;}
-
-  int nB    = (Total + Threads-1)/Threads;
-  int nC    = (Total + Biva*Threads-1)/(Biva*Threads);
-    
-  int ci, si, i0;
-  long z0 = 0;long off = 0;long off1 = 0;
-  for(int ni=0;ni < nC; ni++)
-  {
-    if(z0 >= Total){break;}
-    if(flag){
-    off = z0 + tid;
-    for(int xi=0;xi<Biva;xi++)
+  //////===from device to device, mode 0
+  if(do_copy){
+    #pragma omp parallel for
+    for(TInt i=0;i<Nvol;i++)
     {
-      if(off < Total){buf[xi*Threads + tid] = src[s0*civ*inner + off];off += Threads;}
+      Pres[i] = Psrc[i];
     }
-    __syncthreads();
-    }
-
-    off = tid;
-    for(int xi=0;xi<nB;xi++)
+  }else{
+    //////print0("value add %.3e %.3e", ADD.real(), ADD.imag());
+    #pragma omp parallel for
+    for(TInt i=0;i<Nvol;i++)
     {
-      ci = off/(Threads*inner);
-      si = (off/inner)%Threads;
-      i0 = off%inner;
-
-      off1 = (si*civ + ci)*inner + i0 - z0;
-      if(off1 >= 0)
-      if((off1 < Threads*Biva) and (off1 < (Total - z0)) )
-      {
-        if( flag){res[(ci*sizeF+s0+si)*inner + i0] = buf[off1];}
-        if(!flag){buf[off1] = src[(ci*sizeF+s0+si)*inner + i0];}
-      }
-      off += Threads;
+      ////Pres[i] = Pres[i] + (ADD*Psrc[i]);
+      Pres[i] += ADD*Psrc[i];
+      //Pres[i] = 0.0;
     }
-    __syncthreads();
-
-    if(!flag){
-    off = z0 + tid;
-    for(int xi=0;xi<Biva;xi++)
-    {
-      if(off < Total){res[s0*civ*inner + off] = buf[xi*Threads + tid];off += Threads;}
-    }
-    __syncthreads();
-    }
-
-    z0 += Threads*Biva;
   }
 
 }
-#endif
 
-
-////TODO change into Ty*
-struct move_index
+//////Copy data thread
+template <typename T0, typename T1,  typename TInt>
+void cpy_data_thread(T0* Pres, const T1* Psrc, const TInt Nvol, int GPU=1, bool dummy=true, const double ADD = 0)
 {
-  bool GPU;
+  TIMERA("cpy_data_thread");
+  ////if(Pres == Psrc){return ;}
+  if(GPU == 0 or GPU == 1){CPY_data_thread_basic(Pres, Psrc, Nvol, GPU, dummy, ADD);return ;}
+  /////if(GPU == 2 or GPU == 3){if(ADD != 0){qassert(false);}}
 
-  void* buf;
-  size_t buf_size;
-  //qlat::vector<char* > pciv;
-
-  move_index(bool GPU_set=false){
-    #ifndef QLAT_USE_ACC
-    GPU = false;
-    #else
-    GPU = GPU_set;
-    #endif
-    buf = NULL;
-    buf_size = 0;
+  #ifdef QLAT_USE_ACC
+  //////===from host to device
+  if(GPU ==  2){
+  /////qassert(sizeof(T0) == sizeof(T1));
+  if(sizeof(T0) == sizeof(T1) and qlat::qnorm(ADD) <  1e-13){
+    gpuErrchk(cudaMemcpyAsync(Pres, Psrc , Nvol*sizeof(T0), cudaMemcpyHostToDevice));
+    if(dummy)qacc_barrier(dummy);
+  }else{
+    qlat::vector_acc< T0 > buf;buf.resize(Nvol);T0* s0 = (T0*) qlat::get_data(buf).data();
+    /////host to host
+    CPY_data_thread_basic(s0, Psrc, Nvol, 0, false);
+    /////devic to device
+    CPY_data_thread_basic(Pres, s0, Nvol, 1, dummy, ADD);
   }
+  return ;}
 
-  void set_mem(int civ, size_t Bsize)
-  {
-    TIMERA("move_index set_mem");
-    if(buf_size != Bsize){
-      free_mem();
-      if(GPU){gpuMalloc(buf, Bsize, char);}
-      else{buf = (void *)malloc(Bsize);}
-      buf_size = Bsize;
-    }
-    //////psrc.resize(civ);
+  //////===from device to host
+  if(GPU ==  3){
+  ////qassert(sizeof(T0) == sizeof(T1));
+  if(sizeof(T0) == sizeof(T1) and qlat::qnorm(ADD) <  1e-13){
+    gpuErrchk(cudaMemcpyAsync(Pres, Psrc , Nvol*sizeof(T0), cudaMemcpyDeviceToHost));
+    if(dummy)qacc_barrier(dummy);
+  }else{
+    qlat::vector_acc< T0 > buf;buf.resize(Nvol);T0* s0 = (T0*) qlat::get_data(buf).data();
+    /////device to device
+    CPY_data_thread_basic(s0, Psrc, Nvol, 1, true);
+    /////host to host
+    CPY_data_thread_basic(Pres, s0, Nvol, 0, false, ADD);
   }
+  return ;}
 
-
-  ////flag = 1 --> biva * sizeF * civ * size_inner --> biva * civ * sizeF * size_inner
-  template <typename Ty >
-  void dojob(Ty* src,Ty* res,int biva,int civ,long sizeF,int flag, int size_inner)
-  {
-  if(biva == 0 or civ == 0 or sizeF == 0 or size_inner == 0){return ;}
-  /////size_t sizeF = sizeF0;
-
-  ////size_t bufN = biva*civ*size_inner*sizeof(Ty)*sizeF;
-  size_t Off = civ*sizeF*size_inner;
-  #if PRINT_TIMER>5
-  TIMER_FLOPS("reorder index");
-  timer.flops += biva*Off*sizeof(Ty); 
+  #else
+  CPY_data_thread_basic(Pres, Psrc, Nvol, 0, false, ADD);
   #endif
 
-  ////TIMERB("reorder index");
-  if(size_inner < 1){qlat::displayln_info(qlat::ssprintf("size_inner too small %d !\n", size_inner));
-    MPI_Barrier(get_comm());fflush(stdout);qassert(false);
-  }
+}
 
-  if(src == res){set_mem(civ, Off*sizeof(Ty));}
-  //pciv.resize(civ);
-  Ty* s0;Ty *s1;
-  //#ifdef QLAT_USE_ACC
-  //if(GPU)
-  if(src == res)if((Off*sizeof(Ty)) % sizeof(qlat::ComplexF) != 0){
-    qlat::displayln_info(qlat::ssprintf("size not divided by 16, too small. \n"));qassert(false);}
-  ///#endif
- 
-  for(int bi=0;bi<biva;bi++){
-    s0 = &src[bi*Off];
-    if(src == res){s1 = (Ty*)buf;}else{s1 = (Ty*) &res[bi*Off];}
-    #ifdef QLAT_USE_ACC
-    if(GPU){
+template <typename Ty>
+void touch_GPU(Ty* Mres, long long Msize,long long offM = 0,long long size = -1, int mode = 1)
+{
+  if(offM <= 0)return;
+  long long Total = size;
 
-      {
-      const int Threads = 32;const int Biva =  (16*16+sizeof(Ty)-1)/sizeof(Ty);
-      long Nb = (sizeF + Threads -1)/Threads;
-      dim3 dimBlock(    Threads,    1, 1);
-      dim3 dimGrid(     Nb,    1, 1);
-      if(flag==0)move_index_global<Ty, false , Threads, Biva><<< dimGrid, dimBlock >>>(s0, s1, sizeF, civ, size_inner);
-      if(flag==1)move_index_global<Ty, true  , Threads, Biva><<< dimGrid, dimBlock >>>(s0, s1, sizeF, civ, size_inner);
-      qacc_barrier(dummy);
-      }
+  if(offM >= Msize or offM <= 0)return;
+  if(Total == -1){Total = Msize - offM;}
+  if(Total + offM > Msize){Total = Msize - offM;}
 
-      if(src == res){
-      long Nvol = long(Off*sizeof(Ty)/sizeof(qlat::ComplexF));
-      cpy_data_thread((qlat::ComplexF*) &res[bi*Off], (qlat::ComplexF*) s1, Nvol, 0);
-      //cpy_data_thread((Ty*) &res[bi*Off], (Ty*) s1, Off, 0);
-      }
+  #ifdef QLAT_USE_ACC
+  int gpu_id = -1;
+  cudaGetDevice(&gpu_id);
+  cudaMemAdvise(&Mres[offM], Total*sizeof(Ty), cudaMemAdviseSetReadMostly, gpu_id);
+  if(mode == 1){
+  cudaMemPrefetchAsync(&Mres[offM], Total*sizeof(Ty), gpu_id, cudaStreamLegacy);}
+  #endif
+}
 
-    continue ;}
-    #endif
+template <typename Ty>
+void untouch_GPU(Ty* Mres , long long Msize)
+{
+  #ifdef QLAT_USE_ACC
+  size_t Total = Msize;
+  int gpu_id = -1;
+  cudaGetDevice(&gpu_id);
+  cudaMemAdvise(&Mres[0], Total*sizeof(Ty), cudaMemAdviseUnsetReadMostly, gpu_id);
+  #endif
+}
 
-    #pragma omp parallel for
-    for(long   si=0;si<sizeF;si++)
-    for(int    ci=0;ci<civ;ci++)
-    {
-      Ty* p0;Ty* p1;
-      if(flag == 1){
-        p0 = (Ty*) &s0[(si*civ   + ci)*size_inner];
-        p1 = (Ty*) &s1[(ci*sizeF + si)*size_inner];
-      }
-      if(flag == 0){
-        p0 = (Ty*) &s0[(ci*sizeF + si)*size_inner];
-        p1 = (Ty*) &s1[(si*civ   + ci)*size_inner];
-      }
-      memcpy(p1, p0, sizeof(Ty)*size_inner);
-    }
-
-    if(src == res){
-      long Nvol = long(Off*sizeof(Ty)/sizeof(qlat::ComplexF));
-      cpy_data_thread((qlat::ComplexF*) &res[bi*Off], (qlat::ComplexF*) s1, Nvol, 1);
-    }
-
-  }
-
-
-  }
-
-
-  void free_mem(){
-    free_buf(buf, GPU);
-    ////if(buf != NULL){
-    ////  if(GPU){gpuFree(buf);}else{free(buf);}
-    ////  buf = NULL;
-    ////}
-    buf_size = 0;
-    //psrc.resize(0);
-  }
-
-  ~move_index(){
-    free_mem();
-  }
-
-};
 
 
 }

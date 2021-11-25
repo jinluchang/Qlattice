@@ -294,7 +294,7 @@ void FFT_Vecs::do_fft(Ty* inputD, bool fftdir, bool dummy)
   ////print0("civ %d, nt %d, nz %d, ny %d, nx %d, block0 %d \n", civ, nv[0], nv[1], nv[2], nv[3], int(block0));
   ////print0("alloc_local %d, MPI_datasize %d . \n ", int(alloc_local), int(MPI_datasize/bsize));
   ////abort_r("check point. \n");
-  if(MPI_para.size() != 0)cpy_data_thread((Ty*) fft_dat, inputD, MPI_datasize/bsize, 1);
+  if(MPI_para.size() != 0)cpy_data_thread((Ty*) fft_dat, inputD, MPI_datasize/bsize, GPU);
 
   if(MPI_para.size() != 0){
   if(single_type == 0){
@@ -314,7 +314,7 @@ void FFT_Vecs::do_fft(Ty* inputD, bool fftdir, bool dummy)
   if(fftdir == true )fftwf_execute_dft(plan_cpuF0, (fftwf_complex*) fft_dat, (fftwf_complex*) fft_dat);
   if(fftdir == false)fftwf_execute_dft(plan_cpuF1, (fftwf_complex*) fft_dat, (fftwf_complex*) fft_dat);}}
 
-  if(MPI_para.size() != 0)cpy_data_thread(inputD, (Ty*) fft_dat, MPI_datasize/bsize, 1);
+  if(MPI_para.size() != 0)cpy_data_thread(inputD, (Ty*) fft_dat, MPI_datasize/bsize, GPU);
 
   }
 
@@ -348,7 +348,7 @@ std::vector<int > get_factor_jobs(int nvec, int civ, int N0=-1, int N1=-1, int m
   if(N1 == -1){Nl.resize(1);Nl[0] = N0;}
   int total = nvec * civ;
   std::vector<std::vector<int > > jobL;
-  for(int i=0;i<Nl.size();i++)
+  for(LInt i=0;i<Nl.size();i++)
   {
     int Ne = Nl[i];
     int maxN = maxN0;
@@ -401,7 +401,7 @@ struct fft_schedule{
   int dataB;
   int bsize;
 
-  fft_schedule(fft_desc_basic& fd_set, bool GPU_set=true):fd(),rot(fd_set,GPU_set),fft(GPU_set),fft_gpu(GPU_set),mv_civ(GPU_set)
+  fft_schedule(fft_desc_basic& fd_set, bool GPU_set=true):fd(),rot(fd_set,GPU_set),fft(GPU_set),fft_gpu(GPU_set)
   {
     #ifndef QLAT_USE_ACC
     GPU = false;
@@ -579,7 +579,7 @@ struct fft_schedule{
     if(civ != c0){
       TIMERB("fft mem reorder");
       //for(int bi=0;bi<bN;bi++)mv_civ.dojob((char*) &data[bi][0],(char*) &data[bi][0], 1, cN, fd.noden, 1, c0*sizeof(Ty));
-      for(int bi=0;bi<bN;bi++)mv_civ.dojob((Ty*) &data[bi][0],(Ty*) &data[bi][0], 1, cN, fd.noden, 1, c0);
+      for(int bi=0;bi<bN;bi++)mv_civ.dojob((Ty*) &data[bi][0],(Ty*) &data[bi][0], 1, cN, fd.noden, 1, c0, GPU);
     }
 
     NEED_COPY = 0;
@@ -606,7 +606,7 @@ struct fft_schedule{
 
         for(int bi=0;bi<b0*N_extra;bi++){
           dp = &(data[bma][cma*fd.noden]);
-          cpy_data_thread(&src[bi*fd.noden*c0], dp, fd.noden*c0, !GPU , false);
+          cpy_data_thread(&src[bi*fd.noden*c0], dp, fd.noden*c0, GPU , false);
           cma += c0;if(cma == civ){cma=0;bma+=1;if(bma == bN)break;}
         }
         qacc_barrier(dummy);
@@ -621,7 +621,7 @@ struct fft_schedule{
 
         for(int bi=0;bi<b0*N_extra;bi++){
           dp = &(data[bm ][cm *fd.noden]);
-          cpy_data_thread(dp, &src[bi*fd.noden*c0], fd.noden*c0, !GPU , false);
+          cpy_data_thread(dp, &src[bi*fd.noden*c0], fd.noden*c0, GPU , false);
           cm  += c0;if(cm  == civ){cm =0;bm +=1;if(bm  == bN)break;}
         }
         qacc_barrier(dummy);
@@ -643,7 +643,7 @@ struct fft_schedule{
     if(civ != c0){
       TIMERB("fft mem reorder");
       //for(int bi=0;bi<bN;bi++)mv_civ.dojob((char*) &data[bi][0],(char*) &data[bi][0], 1, cN, fd.noden, 0, c0*sizeof(Ty));
-      for(int bi=0;bi<bN;bi++)mv_civ.dojob((Ty*) &data[bi][0],(Ty*) &data[bi][0], 1, cN, fd.noden, 0, c0);
+      for(int bi=0;bi<bN;bi++)mv_civ.dojob((Ty*) &data[bi][0],(Ty*) &data[bi][0], 1, cN, fd.noden, 0, c0, GPU);
     }
   }
 

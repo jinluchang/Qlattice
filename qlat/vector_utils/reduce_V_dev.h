@@ -91,7 +91,7 @@ inline void reduce_T_global6(const Ty* src,Ty* res,const long n, const int nv,lo
 #endif
 
 template<typename Ty>
-void reduce_cpu(const Ty *src,Ty &res,const unsigned long n){
+void reduce_cpu(const Ty *src,Ty &res,const long n){
   //#pragma omp parallel for reduction(+: res)
   //for(unsigned long index=0;index<n;index++){
   //  res += src[index];
@@ -102,7 +102,7 @@ void reduce_cpu(const Ty *src,Ty &res,const unsigned long n){
   if(n < 10*Nv)Nv=1;
   //int Nv = 1;
   if(Nv == 1){
-  for(unsigned long index=0;index<n;index++){
+  for(long index=0;index<n;index++){
     res += src[index];
   }}
   else{
@@ -118,7 +118,7 @@ void reduce_cpu(const Ty *src,Ty &res,const unsigned long n){
       Ty &pres = buf[temi];
       const Ty *psrc = &src[temi*bsize];
       size_t bsize_end = bsize;
-      if(temi*bsize + bsize > n){bsize_end = n - temi*bsize;}
+      if(temi*bsize + bsize > (LInt) n){bsize_end = n - temi*bsize;}
       for(size_t isp=0;isp<bsize_end;isp++){pres += psrc[isp];}
     }
 
@@ -149,7 +149,7 @@ inline void reduce_gpu2d_6(const Ty* src,Ty* res,long n, int nv=1,
   long Ny0 = (n  + ntL - 1)/(ntL);
   long Ny1 = (Ny0 + ntL - 1)/(ntL);
   Ty *psrc;Ty *pres;Ty *tem;
-  qlat::vector<Ty > buf0,buf1;
+  qlat::vector_acc<Ty > buf0,buf1;
   buf0.resize(nv*Ny0);buf1.resize(nv*Ny1);
   pres = &buf0[0];
 
@@ -163,7 +163,6 @@ inline void reduce_gpu2d_6(const Ty* src,Ty* res,long n, int nv=1,
 
   /////for(int iv=0;iv<nv;iv++)reduce_cpu(&src[iv*n],res[iv],n);return;
 
-  
   reduce_T_global6(src,pres, n, nv, nt, Ny0);
   ////Nres0 = Ny;
   psrc = &buf0[0];pres=&buf1[0];
@@ -254,11 +253,18 @@ inline void reduce_gpu(const Ty *src,Ty *res,const long n,const int nv=1,
 }
 
 template<typename Ty>
-void reduce_vec(const Ty* src,Ty* res,long n, int nv=1)
+void reduce_cpu(const Ty* src,Ty* res,long n, int nv)
+{
+  for(int i=0;i<nv;i++)reduce_cpu(&src[i*n], res[i],n);
+}
+
+
+template<typename Ty>
+void reduce_vec(const Ty* src, Ty* res,long n, int nv=1)
 {
   #ifndef QLAT_USE_ACC
-  for(int i=0;i<nv;i++)reduce_cpu(&src[i*n],res[i],n);
-  return;
+  reduce_cpu(src, res, n , nv);
+  return ;
   #else
   int thread_pow2 = 1;
   int divide = 256;
@@ -277,7 +283,7 @@ void reduce_vec(const Ty* src,Ty* res,long n, int nv=1)
   //print0("====cores %8d, maxthreads %8d, maxblock %8d \n",cores,maxthreads,maxblock);
   //if(blockS_use > maxblock)blockS_use = maxblock;
   //#endif
-  reduce_gpu2d_6(src,res,n,nv, thread_pow2,divide, fac);
+  reduce_gpu2d_6(src, res, n, nv, thread_pow2,divide, fac);
   #endif
 
 }

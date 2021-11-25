@@ -66,15 +66,10 @@ int main(int argc, char* argv[])
       ////EigenV propT;EigenV propT_buf;
       ////propT.resize(repeat*NVmpi*Nvol*groupP*12);
       ////propT_buf.resize(repeat*NVmpi*Nvol*groupP*12);
-      ////ran_EigenM(propT);
       ////EigenV gfET;gfET.resize(    NVmpi*6*Nvol*9);
-      ////ran_EigenM(gfET, 0);
 
       EigenV propT_tmp; propT_tmp.resize(repeat*NVmpi*Nvol*groupP*12);
       EigenV gfET_tmp;  gfET_tmp.resize(    NVmpi*6*Nvol*9);
-
-      ////ran_EigenM(propT_tmp, 0);
-      ////ran_EigenM(gfET_tmp, 0);
 
       ////EigenV propT;EigenV propT_buf;
       Complexq* propT=NULL;
@@ -131,9 +126,9 @@ int main(int argc, char* argv[])
         timer.flops += Tfloat;
       }
 
-      gpuFree(propT);
-      gpuFree(propT_buf);
-      gpuFree(gfET);
+      gpuFree(propT);propT = NULL;
+      gpuFree(propT_buf);propT_buf = NULL;
+      gpuFree(gfET);gfET = NULL;
 
 
     }

@@ -6,6 +6,7 @@
 #pragma once
 
 #include "general_funs.h"
+#include "utils_reduce_vec.h"
 
 namespace qlat
 {
@@ -38,7 +39,8 @@ template <class T>
 void diff_prop(Propagator4dT<T>& p0, Propagator4dT<T>& p1, double err=1e-15)
 {
   int rank = qlat::get_id_node();
-  double diffp = 0.0; int countp = 0;
+  long MAX_COUNT = 64;
+  double diffp = 0.0; long countp = 0;
   for (long index = 0; index < p0.geo().local_volume(); ++index) {
     Coordinate xl0 = p0.geo().coordinate_from_index(index);
     Coordinate xg0 = p0.geo().coordinate_g_from_l(xl0);
@@ -52,10 +54,17 @@ void diff_prop(Propagator4dT<T>& p0, Propagator4dT<T>& p1, double err=1e-15)
       T p1 = s1(d0,d1);
 
       double diff = 0.0;
-      if(fabs(qlat::qnorm(p1)) > 1e-28){diff = std::fabs(qlat::qnorm((p0-p1))/qlat::qnorm(p1));}
-      if(fabs(qlat::qnorm(p0)) > 1e-28){diff = std::fabs(qlat::qnorm((p0-p1))/qlat::qnorm(p0));}
+      double n0 = qlat::qnorm(p0);
+      double n1 = qlat::qnorm(p1);
+      bool checknan = false;
+      if(std::isnan(p0.real()) or std::isnan(p0.imag())){checknan = true;}
+      if(std::isnan(p1.real()) or std::isnan(p1.imag())){checknan = true;}
+
+      if(n1 > 1e-18){diff = std::fabs(qlat::qnorm(p0-p1)/n1);}
+      else{
+      if(n0 > 1e-18){diff = std::fabs(qlat::qnorm(p0-p1)/n0);}}
       diffp += diff;
-      if(diff > err and countp < 64)
+      if((diff > err or checknan) and countp < MAX_COUNT )
       {
         printf("rank %5d, x %5d, y %5d, z %5d, t %5d, d %5d, value %.3e %.3e, %.3e %.3e, %.3e \n",
           rank ,xg0[0],xg0[1],xg0[2],xg0[3],d0*12+d1 ,p0.real(),p0.imag(),p1.real(),p1.imag(), diff);
@@ -195,6 +204,17 @@ void get_mom_fft(qlat::FieldM<Ty0, civ> &src, std::vector<int >& mom, std::vecto
 
   sum_all_size(&dat[0], dat.size());
 
+}
+
+
+template<typename Ty>
+void print_sum(const Ty* a, size_t size, std::string stmp=std::string(""), int GPU = 1)
+{
+  qlat::vector_acc<Ty > sum;sum.resize(1);sum[0] = 0.0;
+  Ty* pres = sum.data();
+  if(GPU == 1){reduce_vec(a, pres , size, 1);}
+  if(GPU == 0){reduce_cpu(a, pres , size, 1);}
+  print0("%s, sum %.3e \n", stmp.c_str(), qlat::qnorm(sum[0]) );
 }
 
 

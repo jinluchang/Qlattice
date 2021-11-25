@@ -396,6 +396,7 @@ void matrix_prod_cpu(Ty* a, Ty* b, Ty* c, const long m, const long n, const long
   #ifdef QLAT_USE_ACC
   Nv = 1;
   #endif
+  ////Nv = 1;
   if(m*L < Nv){Nv = 1;}
 
   if(Nv == 1){
@@ -412,17 +413,17 @@ void matrix_prod_cpu(Ty* a, Ty* b, Ty* c, const long m, const long n, const long
     //int Nm = get_threads_GPU(m,Nv);
     //int Nfac = m/Nm;
     int Nfac = Nv;
-    int Nm = (m-1)/Nv + 1;
+    int Nm = (m+Nv-1)/Nv;
     #pragma omp parallel for
     for(long off=0;off<L*Nfac;off++)
     {
       int li   = off/Nfac;
       int mi   = off%Nfac;
-      int mcut = Nm;if(mi*Nm + mcut > m){mcut = m - mi*Nm;}
+      int mcut = Nm;if(mi*Nm + mcut > m){mcut = m - mi*Nm;if(mcut <=0){continue;}}
 
-      ///if(mi*Nm + Nm > m){mcut = m - mi*Nm;}
+      /////if(mi*Nm + Nm > m){mcut = m - mi*Nm;}
       EML  A(&a[li*offA+(mi*Nm)*w], mcut, w);
-      ///EMLC B(&b[li*offB], w, n);
+      /////EMLC B(&b[li*offB], w, n);
       EMLC B0(&b[li*offB], w, n);
       EML  B1(&b[li*offB], w, n);
       EML  C(&c[li*offC+(mi*Nm)*n], mcut, n);
@@ -437,7 +438,7 @@ void matrix_prod_cpu(Ty* a, Ty* b, Ty* c, const long m, const long n, const long
   int Fcount0   = 6 + 2; 
   timer.flops  += vGb*Fcount0;
 
-  double Gsize = (m*n + m*w + n*w)*sizeof(Complexq)/(1024.0*1024*1024);
+  //double Gsize = (m*n + m*w + n*w)*sizeof(Complexq)/(1024.0*1024*1024);
   /////qlat::displayln_info(qlat::ssprintf("Total memory size %.3e GB \n",Gsize));
 }
 

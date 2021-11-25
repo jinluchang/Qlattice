@@ -6,56 +6,14 @@
 #include "utils_shift_vecs.h"
 
 #define TyD qlat::Complex
-#define TyF qlat::ComplexF
+#define TyF qlat::Complex
 
 int main(int argc, char* argv[])
 {
   using namespace qlat;
 
-  int mode_dis = 1;
-
-  inputpara in;
-  if(mode_dis == 0)
-  {
-  int n_node = init_mpi(&argc, &argv);
-  in.load_para("input.txt");
-  Coordinate Lat(in.nx, in.ny, in.nz, in.nt);
-  Coordinate spreadT = guess_nodeL(n_node, Lat);
-  ///3D begin
-  ////begin_comm(MPI_COMM_WORLD , spreadT);
-
-  ///4D begin
-  int id_node, n;
-  MPI_Comm_size(MPI_COMM_WORLD, &n);
-  MPI_Comm_rank(MPI_COMM_WORLD, &id_node);
-  int t =  id_node/(spreadT[0]*spreadT[1]*spreadT[2]);
-  int z = (id_node/(spreadT[0]*spreadT[1]))%(spreadT[2]);
-  int y = (id_node/(spreadT[0]))%(spreadT[1]);
-  int x = (id_node%(spreadT[0]));
-  ///int new_id = ((z*spreadT[1] + y)*spreadT[0] + x)*spreadT[3] + t;
-  int new_id = ((x*spreadT[1] + y)*spreadT[2] + z)*spreadT[3] + t;
-  //begin(new_id, spreadT);
-  begin(id_node, spreadT);
-  }
-
-  if(mode_dis == 1)
-  {
-  std::vector<Coordinate> size_node_list;
-  add_nodeL(size_node_list);
-  begin(&argc, &argv, size_node_list);
-  in.load_para("input.txt");
-  }
-
-
-  fflush_MPI();
-
-  set_GPU();
-
-  //fftw_init_threads();
-  //fftw_plan_with_nthreads(omp_get_max_threads());
-  //fftwf_init_threads();
-  //fftwf_plan_with_nthreads(omp_get_max_threads());
-
+  inputpara in;int mode_dis = -1;
+  begin_Lat(&argc, &argv, in, mode_dis);
 
   int nx,ny,nz,nt;
   nx = in.nx;
@@ -63,14 +21,8 @@ int main(int argc, char* argv[])
   nz = in.nz;
   nt = in.nt;
 
-  int icfg  = in.icfg;
-  int ionum = in.ionum;
-
-
-  omp_set_num_threads(omp_get_max_threads());
-  print0("===nthreads %8d %8d, max %8d \n",qlat::qacc_num_threads(),omp_get_num_threads(),omp_get_max_threads());
-  fflush_MPI();
-  print_mem_info();
+  ///int icfg  = in.icfg;
+  ///int ionum = in.ionum;
 
   Coordinate total_site = Coordinate(nx, ny, nz, nt);
   Geometry geo;
@@ -81,8 +33,9 @@ int main(int argc, char* argv[])
 
   fft_desc_basic fd(geo);
 
-  int Nvec = in.nvec;
-  const int inner = 12*12;
+  //int Nvec = in.nvec;
+  int Nvec = fd.Nmpi;
+  const int inner = 6;
   ////int ns   = in.bfac;
 
   std::vector<qlat::FieldM<TyD, inner> > src ;src.resize(Nvec) ;
@@ -90,16 +43,17 @@ int main(int argc, char* argv[])
   std::vector<qlat::FieldM<TyF, inner> > srcF;srcF.resize(Nvec);
   std::vector<qlat::FieldM<TyF, inner> > resF;resF.resize(Nvec);
 
-  for(int iv=0;iv<src.size();iv++){
+  for(LInt iv=0;iv<src.size();iv++){
     src[iv].init(geo);
     srcF[iv].init(geo);
     res[iv].init(geo);
     resF[iv].init(geo);
   }
   TyF* PF0 =NULL ;TyD* PD1 =NULL ;
-  TyF* PFa =NULL ;TyD* PDa =NULL ;
-  qlat::RngState rs(qlat::get_id_node() + 134 );
-  double ini = qlat::u_rand_gen(rs);
+  TyF* PFa =NULL ;
+  TyD* PDa =NULL ;
+  //qlat::RngState rs(qlat::get_id_node() + 134 );
+  //double ini = qlat::u_rand_gen(rs);
   for(int iv=0;iv<Nvec;iv++){
   PD1 = (TyD*) (qlat::get_data(src[iv]).data());
   for(long isp=0;isp < geo.local_volume(); isp++){
@@ -117,8 +71,9 @@ int main(int argc, char* argv[])
   }
 
   int biva = src.size();int civ = inner;
-  //shift_vec svec(fd, false);
-  shift_vec svec(fd, true);
+  bool GPU = true;if(in.GPU == 0){GPU = false;}
+  shift_vec svec(fd, GPU);
+  //shift_vec svec(fd, true);
   svec.set_MPI_size<TyF >(biva, civ);
 
   //shift_vec svec(fd, false);
@@ -126,13 +81,13 @@ int main(int argc, char* argv[])
   //ckpoint;
 
   long volE = geo.local_volume() * civ;
-  for(int ni=0;ni<src.size();ni++){
+  for(LInt ni=0;ni<src.size();ni++){
     PF0 = (TyF*) qlat::get_data(srcF[ni]).data();
     PD1 = (TyD*) qlat::get_data(src[ ni]).data();
-    cpy_data_thread(PF0, PD1, volE);
+    cpy_data_thread(PF0, PD1, volE, 1, true);
 
     PDa = (TyD*) qlat::get_data(res[ ni]).data();
-    cpy_data_thread(PDa, PD1, volE);
+    cpy_data_thread(PDa, PD1, volE, 1, true);
 
   }
 
@@ -164,34 +119,43 @@ int main(int argc, char* argv[])
   //}
 
   ////svec.shift_Evec(srcE, resE, iDir, civ);
-  shift_fieldM(svec, srcF, resF, iDir);
+
+  for(int li=0;li<in.nvec;li++){
+    shift_fieldM(svec, srcF, resF, iDir);
+    for(LInt ni=0;ni<srcF.size();ni++){
+      PF0 = (TyF*) qlat::get_data(srcF[ni]).data();
+      PFa = (TyF*) qlat::get_data(resF[ ni]).data();
+      cpy_data_thread(PF0, PFa, volE, 1, true);
+    }
+  }
+
   svec.print_info();
 
   //////=====fft_desc shift
   //////ckpoint;
 
   //////=====qlat shift
-  for(int ni=0;ni<src.size();ni++){
+  for(int li=0;li<in.nvec;li++){
+  for(LInt ni=0;ni<src.size();ni++){
   for(int dir=0;dir<4;dir++){
     field_shift_dir(src[ni], src[ni], dir, iDir[dir]);
-  }}
+  }}}
   //////=====qlat shift
-
 
   ////===check diff
 
   double diff = 0.0;double sum = 0.0;double sum0 = 0.0;double sum1 = 0.0;
   double diff0 = 0.0;double diff1 = 0.0;
-  qlat::vector_acc<int > iDir_acc;iDir_acc.resize(4);for(int i=0;i<4;i++){iDir_acc[i] = iDir[i];}
+  qlat::vector_acc<int > iDir_acc;iDir_acc.resize(4);for(int i=0;i<4;i++){iDir_acc[i] = iDir[i]*in.nvec;}
   qlat::vector_acc<int > nv_acc;nv_acc.resize(4);for(int i=0;i<4;i++){nv_acc[i] = fd.nv[i];}
-  for(int iv=0;iv<src.size();iv++){
+  for(LInt iv=0;iv<src.size();iv++){
     PF0 = (TyF*) qlat::get_data(resF[iv]).data();
     PD1 = (TyD*) qlat::get_data(src[ iv]).data();
     for(long isp=0;isp<geo.local_volume();isp++){
       qlat::Coordinate ts = geo.coordinate_from_index(isp);
       qlat::Coordinate p  = geo.coordinate_g_from_l(ts);
       double offV0 = ((p[3]*900+p[2])*900+p[1])*900+p[0];
-      for(int i=0;i<4;i++){p[i] = (p[i] - iDir[i] + nv_acc[i])%nv_acc[i];}
+      for(int i=0;i<4;i++){p[i] = (p[i] - iDir_acc[i] + nv_acc[i])%nv_acc[i];}
       //for(int i=0;i<4;i++){p[i] = (p[i] + iDir_acc[i] + nv_acc[i])%nv_acc[i];}
       double offV1 = ((p[3]*900+p[2])*900+p[1])*900+p[0];
 

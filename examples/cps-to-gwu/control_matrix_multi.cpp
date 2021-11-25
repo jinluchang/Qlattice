@@ -94,8 +94,8 @@ int main(int argc, char* argv[])
   //cudaDeviceSynchronize();
   //print0("END 0 memory allocation! \n");fflush_MPI();
 
-  zeroE(c0,1);zeroE(c1,1);
-  ran_EigenM( a,1);ran_EigenM( b,1);
+  zeroE(c0,0);zeroE(c1,0);
+  random_EigenM( a, 0);random_EigenM( b, 0);
 
   //cudaDeviceSynchronize();
   //print0("END 1 memory allocation! \n");fflush_MPI();

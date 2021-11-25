@@ -17,16 +17,18 @@
 
 namespace qlat{
 
-class ga_M
+struct ga_M
 {
-public:
   ////std::complex<double> g[4];
   ////int ind[4];
   
-  qlat::vector<Complexq > g;
-  qlat::vector<int > ind;
+  qlat::vector_acc<Complexq > g;
+  qlat::vector_acc<int > ind;
 
   ga_M(){g.resize(4);ind.resize(4);for(int i=0;i<4;i++){g[i]=0.0;ind[i]=0;}};
+
+  ////ga_M(const ga_M&) = default;
+  ////const ga_M(const ga_M&) = default;
      
   inline void print();
   //void print()
@@ -39,7 +41,57 @@ public:
   //    printf("\n");
   //  }
   //}
-     
+
+  //ga_M(ga_M& vec)
+  //{
+  //  g.v.p = vec.g.v.p;
+  //  g.v.n = vec.g.v.n;
+  //  g.is_acc = vec.g.is_acc;
+  //  g.is_copy = true;
+  //  ind.v.p = vec.ind.v.p;
+  //  ind.v.n = vec.ind.v.n;
+  //  ind.is_copy = vec.ind.is_copy;
+  //  ind.is_copy = true;
+  //}
+
+  //void clear()
+  //{if(!g.is_copy)g.resize(0);if(!ind.is_copy)ind.resize(0);}
+
+  //ga_M(const ga_M& vp)
+  //{
+  //  /////g.v = qlat::vector_acc<Complexq >(vec.g);
+  //  //g.resize(4);ind.resize(4);
+  //  //for(int i=0;i<4;i++){g[i]=vp.g[i];ind[i]=vp.ind[i];}
+  //  clear();
+  //  g.v = vp.g.v;
+  //  ind.v = vp.ind.v;
+
+  //  g.is_copy = true;
+  //  ind.is_copy = true;
+  //}
+
+  //ga_M(ga_M&& vp) noexcept
+  //{
+  //  //g.resize(4);ind.resize(4);
+  //  //for(int i=0;i<4;i++){g[i]=vp.g[i];ind[i]=vp.ind[i];}
+
+  //  clear();
+  //  g.is_copy = vp.g.is_copy;
+  //  g.v = vp.g.v;
+  //  vp.g.is_copy = true;
+
+  //  ind.is_copy = vp.ind.is_copy;
+  //  ind.v = vp.ind.v;
+  //  vp.ind.is_copy = true;
+  //}
+
+  const ga_M& operator=(const ga_M& vp)
+  {
+    g.resize(4);ind.resize(4);
+    for(int i=0;i<4;i++){g[i]=vp.g[i];ind[i]=vp.ind[i];}
+    return *this;
+  }
+
   qacc ga_M operator*(const ga_M &src)
   {
     ga_M res;
@@ -269,6 +321,28 @@ inline void vecE_gamma(Complexq* src, ga_M& ga, long noden)
       src[ (d*3 + c)*noden+ isp] = ga.g[d] * tmp[ga.ind[d]*3 + c];
     }
   });
+}
+
+void get_g_pointer(std::vector<ga_M >& gL, qlat::vector_acc<Complexq* >& gP, qlat::vector_acc<int* >& iP)
+{
+  /////qlat::vector_acc<Complexq* > gP; qlat::vector_acc<int* > iP;get_g_pointer(gL, gP, iP);
+  gP.resize(gL.size());
+  iP.resize(gL.size());
+  for(unsigned int i=0;i<gL.size();i++)
+  {
+    gP[i] = gL[i].g.data();
+    iP[i] = gL[i].ind.data();
+  }
+}
+
+template<typename Ty>
+qacc Ty reduce_gamma(const Ty *src, const Complexq* gP, const int* iP){
+  Ty res = 0.0;
+  for(int i=0;i<4;i++){
+    Ty tem(gP[i].real(),gP[i].imag()); 
+    res += tem*src[i*4 + iP[i]];
+  }
+  return res;
 }
 
 

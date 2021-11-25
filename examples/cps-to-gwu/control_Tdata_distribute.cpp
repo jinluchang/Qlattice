@@ -134,7 +134,7 @@ int main(int argc, char* argv[])
   qlat::Complex* sendT;
   gpuMalloc(sendT, sendbuf.size() , qlat::Complex);
   for(int i=0;i<100;i++){TIMER("=====Rotate 4D");rot.reorder(false, (double*) &sendT[0]);}
-  gpuFree(sendT);
+  gpuFree(sendT);sendT = NULL;
 
   //for(int ni=0;ni<in.nvec;ni++){
   //rot.reorder(false, (qlat::Complex*) &sendbuf[0]);}
@@ -220,7 +220,7 @@ int main(int argc, char* argv[])
   qlat::Complex* sendT;
   gpuMalloc(sendT, sendbuf.size() , qlat::Complex);
   for(int i=0;i<100;i++){TIMER("=====Rotate 3D");rot.reorder(false, (double*) &sendT[0]);}
-  gpuFree(sendT);
+  gpuFree(sendT);sendT = NULL;
 
   //for(int ni=0;ni<in.nvec;ni++){
   //rot.reorder(false, (double*) &tem_buf[0]);}

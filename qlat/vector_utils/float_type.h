@@ -18,7 +18,7 @@
 
 namespace qlat{
 
-#define Enablefloat 0
+#define Enablefloat 1
 
 #define PRINT_TIMER 10
 //#define PRINT_TIMER 100
@@ -45,11 +45,14 @@ namespace qlat{
 #if Enablefloat==0
 #define Complexq qlat::Complex
 #define Ftype double
+//////needed for contraction change to small power of 2 if shared memory too small
+#define BFACG_SHARED 4
 #endif
 
 #if Enablefloat==1
 #define Complexq qlat::ComplexF
 #define Ftype float
+#define BFACG_SHARED 8
 #endif
 
 ////#define Evector qlat::vector<std::complex< Ftype > >
@@ -70,6 +73,15 @@ namespace qlat{
 
 #define EG  Eigen::Matrix<Complexq , Eigen::Dynamic, Eigen::Dynamic ,Eigen::RowMajor>  
 #define EGC Eigen::Matrix<Complexq , Eigen::Dynamic, Eigen::Dynamic ,Eigen::ColMajor> 
+
+#define qnoi qlat::FieldM<Complexq, 1>
+//////dim 12*12 --> Nt --> Nxyz
+#define qprop  qlat::FieldM<Complexq, 12*12>
+
+#define qnoiT qlat::FieldM<Ty, 1>
+//////dim 12*12 --> Nt --> Nxyz
+#define qpropT  qlat::FieldM<Ty, 12*12>
+
 
 
 void print_NONE(const char *filename){return ;}
@@ -184,6 +196,17 @@ inline void gpuFree(void* res)
 #define gpuMalloc(bres,bsize, Ty) {bres = (Ty *)malloc(bsize*sizeof(Ty));}
 #endif
 
+inline void* aligned_alloc_no_acc(const size_t size)
+{
+  const size_t alignment = get_alignment();
+#if defined NO_ALIGNED_ALLOC
+  return malloc(size);
+#else
+  return aligned_alloc(alignment, size);
+#endif
+}
+
+
 inline void free_buf(void* buf, bool GPU){
   if(buf != NULL){if(GPU){gpuFree(buf);}else{free(buf);}}
   buf = NULL;
@@ -217,8 +240,51 @@ inline std::complex<double> operator*(const std::complex<float> &a, const std::c
 inline std::complex<double> operator*(const std::complex<double > &b, const std::complex<float> &a) {
     return std::complex<double>(a.real() * b.real() - a.imag()*b.imag(), a.imag()*b.real() + a.real()*b.imag());
 }
+
+inline std::complex<double> operator-(const std::complex<double > &a, const std::complex<float> &b) {
+    return std::complex<double>(a.real() - b.real() , a.imag() - b.imag());
+}
+inline std::complex<double> operator-(const std::complex<float > &a, const std::complex<double> &b) {
+    return std::complex<double>(a.real() - b.real() , a.imag() - b.imag());
+}
 #endif
 #endif
+
+template<typename Ty>
+void zero_Ty(Ty* a, long size,int GPU=0, bool dummy=true)
+{
+  #ifdef QLAT_USE_ACC
+  if(GPU == 1){
+    cudaMemsetAsync(a, 0, size*sizeof(Ty));
+    if(dummy)qacc_barrier(dummy);
+    return ;
+  }
+  #endif
+
+  #pragma omp parallel for
+  for(long isp=0;isp<size;isp++){  a[isp] = 0;}
+}
+
+#define print0 if(qlat::get_id_node() == 0) printf
+
+inline unsigned int get_node_rank_funs0()
+{
+  int rank;
+  //MPI_Comm_rank(get_comm(), &rank);
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  return rank;
+}
+
+inline void abort_r(std::string stmp=std::string(""))
+{
+  print0("%s\n",stmp.c_str());
+  MPI_Barrier(get_comm());
+  fflush(stdout);
+  ////MPI_Finalize();
+  qlat::end();
+  abort();
+}
+
 
 
 }

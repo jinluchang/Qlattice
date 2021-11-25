@@ -22,11 +22,9 @@ struct Vec_redistribute
   int mx,my,mz,mt;
   bool GPU;
 
-  std::vector<int> Nv,nv,mv;
-  ////qlat::vector<qlat::vector<int> > Pos0;
-  ////qlat::vector<qlat::vector<int>  > mi_list;
+  qlat::vector_acc<int> Nv,nv,mv;
 
-  std::vector<int > orderN;
+  qlat::vector_acc<int > orderN;
   fft_desc_basic *fd;
 
 
@@ -119,7 +117,7 @@ Vec_redistribute::Vec_redistribute(fft_desc_basic &fds, bool GPU_set)
 
   //////Needed for three point functions, need copy from dev
   secT.resize(fd->Nmpi);
-  for(int i=0;i<secT.size();i++){secT[i] = fd->Nt;}
+  for(LInt i=0;i<secT.size();i++){secT[i] = fd->Nt;}
 
   //////if(secT_or.size()!=fd->Nmpi){print0("secT wrong %8d ! \n", int(secT_or.size()));qassert(false);}
   ////secT = secT_or;
@@ -142,7 +140,7 @@ Vec_redistribute::Vec_redistribute(fft_desc_basic &fds, bool GPU_set)
   ////Check same number secT for MPI
 
   map_mpi_vec.resize(Nmpi);
-  for(int mapi=0;mapi<map_mpi_vec.size();mapi++){map_mpi_vec[mapi] = 0;}
+  for(LInt mapi=0;mapi<map_mpi_vec.size();mapi++){map_mpi_vec[mapi] = 0;}
 
   //for(int icomm=0;icomm<vec_comm_list.size();icomm++)
   //{MPI_Comm_free(&vec_comm_list[icomm]);}
@@ -183,20 +181,18 @@ void Vec_redistribute::set_mem(int b0_or,int civa_or)
   //fd->set_up_map();
   ///map i --> nz*ny*nx   to recieve position
   /////2 is the fatest
-  /////mapcur_itoV.resize(b0*nx*ny*nz*Nt);
-  /////mapcur_Vtoi.resize(b0*nx*ny*nz*Nt);
   mapcur_Vtoi.resize(nx*ny*nz/Nv[orderN[2]]);
   int Nts = secT[fd->rank];
   for(int tmi=0;tmi<mt;tmi++)
   {
     int t0 = fd->Pos0[fd->mi_list[tmi][0]][3];
     if(t0 == fd->Pos0[rank][3])
-    for(int temmi=0;temmi<fd->mi_list[tmi].size();temmi++)
+    for(LInt temmi=0;temmi<fd->mi_list[tmi].size();temmi++)
     {
       //int off = Nx*Ny*Nz*Nt*temmi;
       //for(int iv=0;iv<Nx*Ny*Nz*Nt;iv++)
       //#pragma omp parallel for
-      for(LInt iv=0;iv<Nx*Ny*Nz;iv++)
+      for(LInt iv=0;iv< ((LInt) Nx)*Ny*Nz;iv++)
       {
         //LInt Vi = fd->maporder_Nitoipos[fd->mi_list[tmi][temmi]][iv];
         int rank_tem = fd->mi_list[tmi][temmi];
@@ -256,7 +252,7 @@ void Vec_redistribute::set_mem(int b0_or,int civa_or)
     int t0 = fd->Pos0[fd->mi_list[tmi][0]][3]; //Determine the initial time
     if(t0 == fd->Pos0[rank][3]) // If current node initial time is the working initial time
     {
-      for(int temmi=0;temmi<fd->mi_list[tmi].size();temmi++) //Determine the communication nodes of this node
+      for(LInt temmi=0;temmi<fd->mi_list[tmi].size();temmi++) //Determine the communication nodes of this node
       {
         //int umi = mi_list[tmi][temmi];
         int umi = temmi;
@@ -298,7 +294,6 @@ void Vec_redistribute::call_MPI(int flag)
   qassert(off%M_size == 0);off = off/M_size;
 
   if(tem_off != off){
-
     ///if(findN && sizeof(Ty)== 8){curr = MPI_FLOAT ;off = off/sizeof(float)  ;findN=false;}
     ///if(findN && sizeof(Ty)==16){curr = MPI_DOUBLE;off = off/sizeof(double) ;findN=false;}
     ///////print0("Check int %d, long %d \n",sizeof(int), sizeof(long));
@@ -319,7 +314,8 @@ void Vec_redistribute::call_MPI(int flag)
   //int ranklocal = fd->rank;
   qassert(currsend[ranklocal] == currrecv[ranklocal]);
   if(currsend[ranklocal] != 0){
-    copy_data(&res[currrpls[ranklocal]], &src[currspls[ranklocal]], currsend[ranklocal], !GPU, true);
+    //////copy_data(&res[currrpls[ranklocal]], &src[currspls[ranklocal]], currsend[ranklocal], !GPU, true);
+    cpy_data_thread(&res[currrpls[ranklocal]], &src[currspls[ranklocal]], currsend[ranklocal], GPU, false);
     sendM[ranklocal] = 0;
     recvM[ranklocal] = 0;
   }}
@@ -342,6 +338,7 @@ void Vec_redistribute::call_MPI(int flag)
     }    
     MPI_Waitall(c1, send_reqs.data(), MPI_STATUS_IGNORE);
   }
+  qacc_barrier(dummy);
 
   src = NULL;res = NULL;
 }
@@ -350,82 +347,14 @@ template<typename Ty>
 void Vec_redistribute::re_order_recv(int flag)
 {
   TIMERB("Copy and arrange data");
-  //int Nt = fd->Nt;
-  ////print0("===nx %d, ny %d, nz %d, Nx %d, Ny %d, Nz %d  \n", nx,ny,nz, Nv[0],Nv[1],Nv[2]);
-  //size_t svol = fd->nx*fd->ny*fd->nz;
-  //int Nts = secT[fd->rank];
   Ty* recv = (Ty*) recvV;
   Ty* send = (Ty*) sendV;
-
-  //auto& Nv = this->Nv;
-  //auto& orderN = this->orderN;
-  //auto& civa = this->civa;
-  //auto& b0 = this->b0;
-  ///////auto& mapcur_Vtoi = this->mapcur_Vtoi;
-  //auto& map_order  = this->map_order;
-  //auto& map_Dorder = this->map_Dorder;
-
-  //copy_data(res, src, currsend, GPU, true);
-  /////print0("=====Check Nts %d Nv %d \n", Nts, Nv[orderN[2]]);
-  //  #pragma omp parallel for
-  //size_t LoopN = svol/Nv[orderN[2]];
-
-  //map_src[iv] = (Aoff +      i        *Nv[orderN[2]])/Nv[orderN[2]]; 
-  //map_res[iv] = (Boff + mapcur_Vtoi[i]*Nv[orderN[2]])/Nv[orderN[2]]; 
-  ////this->fd->print_info();
-  //print0("size map %.3e %d \n", double(map_order.size()), civa);
-  //if(fd->rank == 0){
-  //p_vector(map_order);
-  //p_vector(map_Dorder);}
 
   long bfac = Nv[orderN[2]]*civa;
   LInt* m0 = (LInt*) qlat::get_data(map_order).data();
   LInt* m1 = (LInt*) qlat::get_data(map_Dorder).data();
-  if(flag==0)cpy_data_from_index(&send[0],&recv[0], m0, m1, map_order.size(), bfac, !GPU, true);
-  if(flag==1)cpy_data_from_index(&recv[0],&send[0], m1, m0 , map_order.size(), bfac, !GPU, true);
-
-  //print0("bfac %d, Ty %d \n",int(bfac), int(sizeof(Ty)));
-  //if(GPU == 1){
-  ////qacc_for(iv, long(b0*Nts * LoopN), {
-  ////  int bi   =  iv/(Nts*LoopN);
-  ////  int ti   = (iv%(Nts*LoopN))/LoopN;
-  ////  size_t i =  iv%(LoopN);
-  ////  size_t Aoff = (bi*Nts + ti)*svol;
-
-  ////  size_t Boff = (bi*Nts + ti)*Nv[0]*Nv[1]*Nv[2];
-
-  ////  size_t off  = (Aoff +      i        *Nv[orderN[2]])*civa;
-  ////  size_t offV = (Boff + mapcur_Vtoi[i]*Nv[orderN[2]])*civa;
-
-  ////  ////if(flag==0)copy_data(&send[off ],&recv[offV], Nv[orderN[2]]*civa, GPU, false);
-  ////  ////if(flag==1)copy_data(&recv[offV],&send[off ], Nv[orderN[2]]*civa, GPU, false);
-  ////  for(size_t ip=0;ip<Nv[orderN[2]]*civa;ip++){
-  ////    if(flag==0)send[off  + ip] = recv[offV + ip];
-  ////    if(flag==1)recv[offV + ip] = send[off  + ip];
-  ////  }
-  ////});
-  //qacc_barrier(dummy);
-
-  //}
-  //if(GPU == 0){
-  //qthread_for(iv, long(b0*Nts * LoopN), {
-  //  int bi   =  iv/(Nts*LoopN);
-  //  int ti   = (iv%(Nts*LoopN))/LoopN;
-  //  size_t i =  iv%(LoopN);
-  //  size_t Aoff = (bi*Nts + ti)*svol;
-
-  //  size_t Boff = (bi*Nts + ti)*Nv[0]*Nv[1]*Nv[2];
-
-  //  size_t off  = (Aoff +      i        *Nv[orderN[2]])*civa;
-  //  size_t offV = (Boff + mapcur_Vtoi[i]*Nv[orderN[2]])*civa;
-
-  //  for(size_t ip=0;ip<Nv[orderN[2]]*civa;ip++){
-  //    if(flag==0)send[off  + ip] = recv[offV + ip];
-  //    if(flag==1)recv[offV + ip] = send[off  + ip];
-  //  }
-  //});
-  //
-  //}
+  if(flag==0){cpy_data_from_index(&send[0],&recv[0], m0, m1, map_order.size(), bfac, !GPU, true);}
+  if(flag==1){cpy_data_from_index(&recv[0],&send[0], m1, m0, map_order.size(), bfac, !GPU, true);}
 
 
 }
@@ -576,8 +505,8 @@ struct Rotate_vecs{
     ////print0("===Bsize %.2f .\n", double(Bsize));
     if(GPU){gpuMalloc(buf, Bsize/sizeof(Ty), Ty);gpuMalloc(src, Bsize/sizeof(Ty), Ty);}
     else{ 
-      src = malloc(Bsize);
-      if(mode != -1)buf = malloc(Bsize);
+      src = aligned_alloc_no_acc(Bsize);
+      if(mode != -1)buf = aligned_alloc_no_acc(Bsize);
     }
     qassert(b0 > 0 and civa > 0 and vol_buf > 0);
 

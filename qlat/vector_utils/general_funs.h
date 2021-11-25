@@ -19,6 +19,7 @@
 #include <iterator>
 #include <sys/sysinfo.h>
 #include "utils_read_txt.h"
+#include "utils_vector_GPU.h"
 
 namespace qlat
 {
@@ -77,20 +78,23 @@ void get_MPI_type(Ty& a, MPI_Datatype& curr, unsigned int& size, int mode = 1)
 template<typename Ty>
 void sum_all_size(Ty *src,Ty *sav,long size, int GPU=0, MPI_Comm* commp=NULL)
 {
-  Ty *res;/////qlat::vector<Ty >buf;
+  qlat::vector_gpu<Ty > res;//// buf.resize(size, GPU);
+  ///Ty *res;/////qlat::vector<Ty >buf;
   if(src == sav){
-    if(GPU == 0){res = (Ty *)malloc(size*sizeof(Ty));}
-    if(GPU == 1){gpuMalloc(res, size, Ty);}
-  }else{res = sav;}
+    res.resize(size, GPU);
+    //if(GPU == 0){res = (Ty *)aligned_alloc_no_acc(size*sizeof(Ty));}
+    //else{gpuMalloc(res, size, Ty);}
+  }else{res.p = sav;}////small modify for pointers
   if(qlat::get_num_node() == 1){
     if(src == sav){return;}
     if(src != sav){
-      #ifdef QLAT_USE_ACC
-      if(GPU==0)memcpy(sav,src,size*sizeof(Ty));
-      if(GPU==1){cudaMemcpy(sav, src, size*sizeof(Ty), cudaMemcpyDeviceToDevice);}
-      #else
-      memcpy(sav, src, size*sizeof(Ty));
-      #endif
+      cpy_data_thread(sav, src, size, GPU, true);
+      ////#ifdef QLAT_USE_ACC
+      ////if(GPU==0)memcpy(sav,src,size*sizeof(Ty));
+      ////if(GPU==1){cudaMemcpy(sav, src, size*sizeof(Ty), cudaMemcpyDeviceToDevice);}
+      ////#else
+      ////memcpy(sav, src, size*sizeof(Ty));
+      ////#endif
     return;}
   }
 
@@ -99,18 +103,20 @@ void sum_all_size(Ty *src,Ty *sav,long size, int GPU=0, MPI_Comm* commp=NULL)
   get_MPI_type(atem, curr, M_size, 2);
   qassert(sizeof(Ty)%M_size == 0);int fac = sizeof(Ty)/M_size;
 
-  if(commp == NULL)MPI_Allreduce(src,res, size * fac, curr, MPI_SUM, get_comm());
-  else{MPI_Allreduce(src,res, size * fac, curr, MPI_SUM, *commp);}
+  if(commp == NULL){MPI_Allreduce(src,res.data(), size * fac, curr, MPI_SUM, get_comm());}
+  else{MPI_Allreduce(src,res.data(), size * fac, curr, MPI_SUM, *commp);}
 
   if(src == sav)
   {
-    #ifdef QLAT_USE_ACC
-    if(GPU==0){memcpy(sav,res,size*sizeof(Ty));free(res);}
-    if(GPU==1){cudaMemcpy(sav, res, size*sizeof(Ty), cudaMemcpyDeviceToDevice);gpuFree(res);}
-    #else
-    memcpy(sav,res,size*sizeof(Ty));free(res);
-    #endif
+    cpy_data_thread(sav, res.data(), size, GPU, true);
+    //#ifdef QLAT_USE_ACC
+    //if(GPU==0){memcpy(sav,res.data(),size*sizeof(Ty));}  ////free(res);
+    //if(GPU==1){cudaMemcpy(sav, res.data(), size*sizeof(Ty), cudaMemcpyDeviceToDevice);} ///gpuFree(res);res = NULL;
+    //#else
+    //memcpy(sav,res.data(),size*sizeof(Ty));////free(res);res = NULL;
+    //#endif
   }
+  if(src != sav){res.p = NULL;}
 }
 
 template<typename Ty>
@@ -211,14 +217,15 @@ void Redistribute_all_Nt(Ty *src,long size,const qlat::Geometry &geo, int GPU=0)
     rpls[ri] = size_c*ri;
   }
 
-  Ty* buf;
-  if(GPU == 0){buf = (Ty *)malloc(size*sizeof(Ty));}
-  if(GPU == 1){gpuMalloc(buf, size, Ty);}
+  //Ty* buf;
+  //if(GPU == 0){buf = (Ty *)aligned_alloc_no_acc(size*sizeof(Ty));}
+  //if(GPU == 1){gpuMalloc(buf, size, Ty);}
+  qlat::vector_gpu<Ty > buf; buf.resize(size, GPU);
 
   {
   ////TIMER("MPI call CPU");
-  MPI_Alltoallv(src,(int*) &send[0],(int*) &spls[0], MPI_CHAR,
-            &buf[0],(int*) &recv[0],(int*) &rpls[0], MPI_CHAR, get_comm());
+  MPI_Alltoallv(src   ,(int*) &send[0],(int*) &spls[0], MPI_CHAR,
+            buf.data(),(int*) &recv[0],(int*) &rpls[0], MPI_CHAR, get_comm());
   }
 
   #ifdef QLAT_USE_ACC
@@ -226,38 +233,28 @@ void Redistribute_all_Nt(Ty *src,long size,const qlat::Geometry &geo, int GPU=0)
     #pragma omp parallel for
     for(long isp=0;isp<size;isp++){src[isp] = buf[isp];}
     ///delete [] buf;
-    free(buf);
+    //free(buf);
   }
   if(GPU == 1){
     /////qacc_for(isp, size,{ src[isp] = buf[isp];});
-    cudaMemcpy(src, buf, size*sizeof(Ty), cudaMemcpyDeviceToDevice);
-    gpuFree(buf);
+    cudaMemcpy(src, buf.data(), size*sizeof(Ty), cudaMemcpyDeviceToDevice);
+    ////gpuFree(buf);
   }
   #else
   #pragma omp parallel for
   for(long isp=0;isp<size;isp++){src[isp] = buf[isp];}
   //delete [] buf;
-  free(buf);
+  //free(buf);
   #endif
 
 }
 
-inline void abort_r(std::string stmp=std::string(""))
-{
-  print0("%s\n",stmp.c_str());
-  MPI_Barrier(get_comm());
-  fflush(stdout);
-  ////MPI_Finalize();
-  qlat::end();
-  abort();
-}
-
-inline void abort_sum(double flag)
+inline void abort_sum(double flag, std::string stmp=std::string(""))
 {
   sum_all_size(&flag,1);
   if(flag > 0)
   {
-    abort_r("");
+    abort_r(stmp);
   }
 }
 
@@ -288,7 +285,7 @@ inline void reorder_civ(char* src,char* res,int biva,int civ,size_t sizeF,int fl
     }
 
     #pragma omp parallel for
-    for(int si=0;si<sizeF;si++)
+    for(LInt si=0;si<sizeF;si++)
     for(int ci=0;ci<civ;ci++)
     {
       if(flag==0){
@@ -302,6 +299,189 @@ inline void reorder_civ(char* src,char* res,int biva,int civ,size_t sizeF,int fl
  
   if(flag == 0){memcpy((char*)&res[0],(char*)&tmp[0],biva*sizeF*civ*size_inner);}
 }
+
+///flag = 1 --> biva * sizeF * civ * size_inner --> biva * civ * sizeF * size_inner
+#ifdef QLAT_USE_ACC
+template <typename Ty, bool flag, int Threads, int Biva>
+__global__ void move_index_global(Ty* src, Ty* res, long sizeF, int civ, int inner)
+{
+  __shared__ Ty buf[Threads*Biva];
+
+  int    tid = threadIdx.x;
+  long s0    = blockIdx.x*blockDim.x;
+
+  int Total = Threads*civ*inner;
+  if(s0 + Threads > sizeF){Total = (sizeF - s0) * civ*inner;}
+
+  int nB    = (Total + Threads-1)/Threads;
+  int nC    = (Total + Biva*Threads-1)/(Biva*Threads);
+
+  int ci, si, i0;
+  long z0 = 0;long off = 0;long off1 = 0;
+  for(int ni=0;ni < nC; ni++)
+  {
+    if(z0 >= Total){break;}
+    if(flag){
+    off = z0 + tid;
+    for(int xi=0;xi<Biva;xi++)
+    {
+      if(off < Total){buf[xi*Threads + tid] = src[s0*civ*inner + off];off += Threads;}
+    }
+    __syncthreads();
+    }
+
+    off = tid;
+    for(int xi=0;xi<nB;xi++)
+    {
+      ci = off/(Threads*inner);
+      si = (off/inner)%Threads;
+      i0 = off%inner;
+
+      off1 = (si*civ + ci)*inner + i0 - z0;
+      if(off1 >= 0)
+      if((off1 < Threads*Biva) and (off1 < (Total - z0)) )
+      {
+        if( flag){res[(ci*sizeF+s0+si)*inner + i0] = buf[off1];}
+        if(!flag){buf[off1] = src[(ci*sizeF+s0+si)*inner + i0];}
+      }
+      off += Threads;
+    }
+    __syncthreads();
+
+    if(!flag){
+    off = z0 + tid;
+    for(int xi=0;xi<Biva;xi++)
+    {
+      if(off < Total){res[s0*civ*inner + off] = buf[xi*Threads + tid];off += Threads;}
+    }
+    __syncthreads();
+    }
+
+    z0 += Threads*Biva;
+  }
+
+}
+#endif
+
+////TODO change into Ty*
+struct move_index
+{
+  //bool GPU;
+
+  vector_gpu<char > buf;
+  ////size_t buf_size;
+  //qlat::vector<char* > pciv;
+
+  //move_index(bool GPU_set=false){
+  //  #ifndef QLAT_USE_ACC
+  //  GPU = false;
+  //  #else
+  //  GPU = GPU_set;
+  //  #endif
+  //  buf = NULL;
+  //  buf_size = 0;
+  //}
+
+  //void set_mem(int civ, size_t Bsize)
+  //{
+  //  TIMERA("move_index set_mem");
+  //  if(buf_size != Bsize){
+  //    free_mem();
+  //    if(GPU){gpuMalloc(buf, Bsize, char);}
+  //    else{buf = (void *)aligned_alloc_no_acc(Bsize);}
+  //    buf_size = Bsize;
+  //  }
+  //  //////psrc.resize(civ);
+  //}
+
+
+  ////flag = 1 --> biva * sizeF * civ * size_inner --> biva * civ * sizeF * size_inner
+  template <typename Ty >
+  void dojob(Ty* src,Ty* res,int biva,int civ,long sizeF,int flag, int size_inner, bool GPU = false)
+  {
+  if(biva == 0 or civ == 0 or sizeF == 0 or size_inner == 0){return ;}
+  /////size_t sizeF = sizeF0;
+
+  ////size_t bufN = biva*civ*size_inner*sizeof(Ty)*sizeF;
+  size_t Off = civ*sizeF*size_inner;
+  #if PRINT_TIMER>5
+  TIMER_FLOPS("reorder index");
+  timer.flops += biva*Off*sizeof(Ty);
+  #endif
+
+  ////TIMERB("reorder index");
+  if(size_inner < 1){qlat::displayln_info(qlat::ssprintf("size_inner too small %d !\n", size_inner));
+    MPI_Barrier(get_comm());fflush(stdout);qassert(false);
+  }
+
+  if(src == res){buf.resize(Off*sizeof(Ty), GPU);}
+  //pciv.resize(civ);
+  Ty* s0;Ty *s1;
+  //#ifdef QLAT_USE_ACC
+  //if(GPU)
+  if(src == res)if((Off*sizeof(Ty)) % sizeof(qlat::ComplexF) != 0){
+    qlat::displayln_info(qlat::ssprintf("size not divided by 16, too small. \n"));qassert(false);}
+  ///#endif
+
+  for(int bi=0;bi<biva;bi++){
+    s0 = &src[bi*Off];
+    if(src == res){s1 = (Ty*)buf.data();}else{s1 = (Ty*) &res[bi*Off];}
+    #ifdef QLAT_USE_ACC
+    if(GPU){
+
+      {
+      const int Threads = 32;const int Biva =  (16*16+sizeof(Ty)-1)/sizeof(Ty);
+      long Nb = (sizeF + Threads -1)/Threads;
+      dim3 dimBlock(    Threads,    1, 1);
+      dim3 dimGrid(     Nb,    1, 1);
+      if(flag==0)move_index_global<Ty, false , Threads, Biva><<< dimGrid, dimBlock >>>(s0, s1, sizeF, civ, size_inner);
+      if(flag==1)move_index_global<Ty, true  , Threads, Biva><<< dimGrid, dimBlock >>>(s0, s1, sizeF, civ, size_inner);
+      qacc_barrier(dummy);
+      }
+
+      if(src == res){
+      long Nvol = long(Off*sizeof(Ty)/sizeof(qlat::ComplexF));
+      cpy_data_thread((qlat::ComplexF*) &res[bi*Off], (qlat::ComplexF*) s1, Nvol, 1);
+      }
+
+    continue ;}
+    #endif
+
+    #pragma omp parallel for
+    for(long   si=0;si<sizeF;si++)
+    for(int    ci=0;ci<civ;ci++)
+    {
+      Ty* p0=NULL;Ty* p1=NULL;
+      if(flag == 1){
+        p0 = (Ty*) &s0[(si*civ   + ci)*size_inner];
+        p1 = (Ty*) &s1[(ci*sizeF + si)*size_inner];
+      }
+      if(flag == 0){
+        p0 = (Ty*) &s0[(ci*sizeF + si)*size_inner];
+        p1 = (Ty*) &s1[(si*civ   + ci)*size_inner];
+      }
+      memcpy(p1, p0, sizeof(Ty)*size_inner);
+    }
+
+    if(src == res){
+      long Nvol = long(Off*sizeof(Ty)/sizeof(qlat::ComplexF));
+      cpy_data_thread((qlat::ComplexF*) &res[bi*Off], (qlat::ComplexF*) s1, Nvol, 0);
+    }
+
+  }
+
+
+  }
+
+  void free_mem(){
+    buf.resize(0);
+  }
+
+  ~move_index(){
+    free_mem();
+  }
+
+};
 
 
 inline void set_GPU(){
@@ -487,23 +667,21 @@ void p_vector(const qlat::vector<Ty> teml)
   std::cout << std::endl;
 };
 
-
-inline void ran_EigenM(Evector& a,int cpu=1, int seed = 0)
+template<typename Ty>
+inline void random_Ty(Ty* a, long N0,int GPU=0, int seed = 0)
 {
-  long N0 = a.size();
   if(N0 == 0)return;
-  timeval tm;gettimeofday(&tm, NULL);
-  qlat::RngState rs(qlat::get_id_node() + 1 +int(tm.tv_sec) + seed);
+  qlat::RngState rs(qlat::get_id_node() + 1 + seed);
 
   double ini = qlat::u_rand_gen(rs);
   #ifdef QLAT_USE_ACC
-  if(cpu == 0){
+  if(GPU == 1){
     size_t bfac = size_t(std::sqrt(N0));
     qacc_for(isp, long(N0/bfac + 1),{
      for(size_t i=0;i<size_t(bfac);i++){
       size_t off = isp*bfac + i;
       if(off < size_t(N0)){
-        a[off] = Complexq(std::cos((ini+isp)*0.5) , (5.0/(isp+1))*ini*0.1);
+        a[off] = Ty(std::cos((ini+isp)*0.5) , (5.0/(isp+1))*ini*0.1);
       }
     }
     });
@@ -514,101 +692,41 @@ inline void ran_EigenM(Evector& a,int cpu=1, int seed = 0)
   #pragma omp parallel for
   for(size_t isp=0;isp< size_t(N0);isp++)
   {
-     a[isp] = Complexq(std::cos((ini+isp)*0.5) , (5.0/(isp+1))*ini*0.1);
+     a[isp] = Ty(std::cos((ini+isp)*0.5) , (5.0/(isp+1))*ini*0.1);
   }
+
 }
 
-inline void ran_EigenM(EigenM& a, int cpu=1)
+inline void random_EigenM(Evector& a,int GPU=0, int seed = 0)
+{
+  Complexq* buf = a.data();
+  random_Ty(buf, a.size(), GPU, seed);
+}
+
+inline void random_EigenM(EigenM& a, int GPU=0, int seed = 0)
 {
   int N0 = a.size();if(N0 == 0)return ;
-
-  #pragma omp parallel for
-  for(size_t i=0;i < size_t(N0);i++)
-  {
-    ran_EigenM(a[i], cpu, i);
-  }
-
+  for(size_t i=0;i < size_t(N0);i++){random_EigenM(a[i], GPU,  seed + i);}
 }
 
-
-inline void zeroE(EigenM& a,int cpu=1, bool dummy=true)
+inline void zeroE(Evector& a,int GPU=0, bool dummy=true)
 {
-  int N0 = a.size();if(N0 == 0)return ;
-  int N1 = a[0].size();
-
-  #ifdef QLAT_USE_ACC
-  if(cpu == 0){
-    for(int i=0;i<N0;i++){
-      Complexq* a0 = (Complexq*) qlat::get_data(a[i]).data();
-      cudaMemsetAsync(a0, 0, a[i].size()*sizeof(Complexq));
-    }
-    if(dummy)qacc_barrier(dummy);
-    return ;
-  }
-  #endif
-
-  #pragma omp parallel for
-  for(long i=0;i < a.size();i++)
-  for(long j=0;j < a[i].size();j++)
-  {
-    a[i][j] = 0.0;
-  }
-
+  zero_Ty(a.data(), a.size(), GPU, dummy);
 }
 
-inline void zeroE(Evector& a,int cpu=1, bool dummy=true)
+inline void zeroE(EigenM& a,int GPU=0, bool dummy=true)
 {
-  #ifdef QLAT_USE_ACC
-  if(cpu == 0){
-    Complexq* a0 = (Complexq*) qlat::get_data(a).data();
-    cudaMemsetAsync(a0, 0, a.size()*sizeof(Complexq));
-    if(dummy)qacc_barrier(dummy);
-    return ;
-  }
-  #endif
-
-  #pragma omp parallel for
-  for(long isp=0;isp<a.size();isp++){  a[isp] = 0.0;}
-
+  for(LInt iv=0;iv<a.size();iv++){zeroE(a[iv], GPU, false);}
+  if(dummy)qacc_barrier(dummy);
 }
-
-template<typename Ty>
-inline void copy_data(Ty* res, Ty* src, size_t size, int cpu=1, bool dummy=true)
-{
-  #ifdef QLAT_USE_ACC
-  if(cpu == 0){
-    cudaMemcpyAsync(res, src, size*sizeof(Ty), cudaMemcpyDeviceToDevice);
-    if(dummy)qacc_barrier(dummy);
-    return ;
-  }
-  #endif
-
-  #pragma omp parallel for
-  for(size_t isp=0;isp<size;isp++){ res[isp] = src[isp];}
-}
-
-template<typename Ty>
-inline void zero_Ty(Ty* a, long size,int cpu=1, bool dummy=true)
-{
-  #ifdef QLAT_USE_ACC
-  if(cpu == 0){
-    cudaMemsetAsync(&a[0], 0, size*sizeof(Ty));
-    if(dummy)qacc_barrier(dummy);
-    return ;
-  }
-  #endif
-
-  #pragma omp parallel for
-  for(long isp=0;isp<size;isp++){  a[isp] = 0;}
-}
-
-
 
 template <class T>
-void random_link(GaugeFieldT<T >& g)
+void random_link(GaugeFieldT<T >& g, int seed = -1)
 {
   timeval tm;gettimeofday(&tm, NULL);
-  qlat::RngState rs(qlat::get_id_node() + 1 +int(tm.tv_sec));
+  int use_seed = 0;
+  if(seed == -1){use_seed= int(tm.tv_sec);}else{use_seed = seed;}
+  qlat::RngState rs(qlat::get_id_node() + 1 + use_seed);
   double ini = qlat::u_rand_gen(rs);
 
   int dir_limit = 4;
@@ -693,19 +811,19 @@ Coordinate spread_powT(const int n, const Coordinate& Lat, const std::vector<uns
   Coordinate re;
   for(int i=0;i<4;i++)re[i] = 1;
 
-  for(int i=0;i<Mpow.size();i++){
+  for(LInt i=0;i<Mpow.size();i++){
     int num = Mpow[i];
     if(num != 0){
       int suma = Lpow[0][i] + Lpow[1][i] + Lpow[2][i] + Lpow[3][i] ;
       assert(num < suma);
-      int tem = num;
-      for(int ni=0;ni<4;ni++){
+      unsigned int tem = num;
+      for(unsigned int ni=0;ni<4;ni++){
         if(tem >= Lpow[4-ni-1][i]){
           re[4-ni-1] *= int(std::pow(a[i], Lpow[4-ni-1][i]));
           tem = tem - Lpow[4-ni-1][i];
         }
         else{
-          re[4-ni-1] *= int(std::pow(a[i], tem));
+          re[4-ni-1] *= (unsigned int)(std::pow(a[i], tem));
           tem = 0;
         }
         ////if(tem >= Lpow[4-ni-1][i]){}
@@ -733,6 +851,7 @@ void add_nodeL(std::vector<Coordinate>& size_node_list)
   size_node_list.push_back(Coordinate(1, 1, 1,  1));
   size_node_list.push_back(Coordinate(1, 1, 1,  2));
   size_node_list.push_back(Coordinate(1, 1, 3,  1));
+  ////size_node_list.push_back(Coordinate(1, 1, 2,  2));
   size_node_list.push_back(Coordinate(1, 1, 1,  4));
   size_node_list.push_back(Coordinate(1, 1, 3,  2));
   size_node_list.push_back(Coordinate(1, 2, 3,  1));
@@ -757,6 +876,143 @@ inline void geo_to_nv(const qlat::Geometry& geo, std::vector<int >& nv, std::vec
   for(int i=0;i<4;i++){Nv[i]=geo.node_site[i];nv[i] = geo.node_site[i] * geo.geon.size_node[i];}
   for(int i=0;i<4;i++){mv[i] = nv[i]/Nv[i];}
 }
+inline void geo_to_nv(const qlat::Geometry& geo, qlat::vector_acc<int >& nv, qlat::vector_acc<int > &Nv, qlat::vector_acc<int > &mv)
+{
+  Nv.resize(4);nv.resize(4);mv.resize(4);
+  for(int i=0;i<4;i++){Nv[i]=geo.node_site[i];nv[i] = geo.node_site[i] * geo.geon.size_node[i];}
+  for(int i=0;i<4;i++){mv[i] = nv[i]/Nv[i];}
+}
+
+
+
+inline void begin_Lat(int* argc, char** argv[], inputpara& in, int mode_dis = -1)
+{
+  if(mode_dis == 0 or mode_dis == 1)
+  {
+    int n_node = init_mpi(argc, argv);
+    in.load_para(*argc, *argv);
+    Coordinate Lat(in.nx, in.ny, in.nz, in.nt);
+    Coordinate spreadT = guess_nodeL(n_node, Lat);
+    ///3D begin
+    ////begin_comm(MPI_COMM_WORLD , spreadT);
+
+    ///4D begin
+    int id_node, n;
+    MPI_Comm_size(MPI_COMM_WORLD, &n);
+    MPI_Comm_rank(MPI_COMM_WORLD, &id_node);
+    int t =  id_node/(spreadT[0]*spreadT[1]*spreadT[2]);
+    int z = (id_node/(spreadT[0]*spreadT[1]))%(spreadT[2]);
+    int y = (id_node/(spreadT[0]))%(spreadT[1]);
+    int x = (id_node%(spreadT[0]));
+    ///int new_id = ((z*spreadT[1] + y)*spreadT[0] + x)*spreadT[3] + t;
+    int new_id = ((x*spreadT[1] + y)*spreadT[2] + z)*spreadT[3] + t;
+    if(mode_dis == 0)begin(id_node, spreadT);
+    if(mode_dis == 1)begin(new_id, spreadT);
+  }
+
+  if(mode_dis == -1)
+  {
+    std::vector<Coordinate> size_node_list;
+    add_nodeL(size_node_list);
+    begin(argc, argv, size_node_list);
+    in.load_para(*argc, *argv);
+  }
+
+  set_GPU();
+
+  omp_set_num_threads(omp_get_max_threads());
+  print0("===nthreads %8d %8d, max %8d \n",qlat::qacc_num_threads(),omp_get_num_threads(),omp_get_max_threads());
+
+  fflush_MPI();
+  print_mem_info();
+
+
+}
+
+std::vector<long > job_create(long total, long each)
+{
+  if(total < 1 or each < 1){
+    print0("Give me valid job types total %ld, each %ld \n", total, each);
+    abort_r();}
+  /////std::vector<long > a = job_create(total, each);
+  std::vector<long > a;a.resize(0);
+  long jobN  = (total + each - 1)/each;
+  int i0 = 0; int dj = each;
+  for(int ji = 0; ji < jobN ; ji++)
+  {
+    if(i0 >= total){break;}
+    if(i0 + dj > total){dj = total - i0;}
+    a.push_back(i0);
+    a.push_back(dj);
+    i0 += dj;
+  }
+
+  return a;
+}
+
+inline void allocate_buf(std::vector<qlat::vector_gpu<Complexq > > & buf, size_t n0, size_t n1)
+{
+  TIMERA("CUDA Buf mem allocation");
+  buf.resize(n0);
+  for(LInt i=0;i<buf.size();i++){
+    buf[i].resize(n1);
+    /////gpuMalloc(buf[i], n1, Complexq);
+  }
+}
+
+inline void allocate_buf(std::vector<qlat::vector_acc<Complexq > > & buf, size_t n0, size_t n1)
+{
+  TIMERA("CUDA Buf mem allocation");
+  buf.resize(0);
+  buf.resize(n0);
+  for(LInt i=0;i<buf.size();i++){
+    buf[i].resize(0);
+    buf[i].resize(n1);
+  }
+}
+
+inline void allocate_buf(std::vector<Complexq* >& buf, size_t n0, size_t n1)
+{
+  TIMERA("CUDA Buf mem allocation");
+  buf.resize(n0);
+  for(LInt i=0;i<buf.size();i++){
+    gpuMalloc(buf[i], n1, Complexq);
+  }
+}
+
+qacc Complexq inv_self(const Complexq& lam, double m, double rho,int one_minus_halfD=1)
+{
+  //Complexq tem = (one_minus_halfD>0)?(1-lam/2)/(rho*lam+m*(1-lam/2)):1.0/(rho*lam+m*(1-lam/2));
+  std::complex<double > tem(lam.real(),lam.imag());
+  std::complex<double > v0 = (one_minus_halfD>0)?(1.0-tem/2.0)/(rho*tem+m*(1.0-tem/2.0)):1.0/(rho*tem+m*(1.0-tem/2.0));
+  Complexq res(v0.real(),v0.imag());
+  return res;
+}
+
+template<typename Ty>
+qlat::vector_acc<Ty* > EigenM_to_pointers(std::vector<qlat::vector_gpu<Ty > >& src)
+{
+  qlat::vector_acc< Ty* >  res;
+  res.resize(src.size());
+  for(LInt iv=0;iv<src.size();iv++)
+  {
+    res[iv] = src[iv].data();
+  }
+  return res;
+}
+
+template<typename Ty>
+qlat::vector_acc<Ty* > EigenM_to_pointers(std::vector<qlat::vector_acc<Ty > >& src)
+{
+  qlat::vector_acc<Ty* >  res;
+  res.resize(src.size());
+  for(LInt iv=0;iv<src.size();iv++)
+  {
+    res[iv] = src[iv].data();
+  }
+  return res;
+}
+
 
 
 }

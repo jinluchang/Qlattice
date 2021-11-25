@@ -23,7 +23,7 @@ struct fft_desc_basic
   int Nx,Ny,Nz,Nt;
   int mx,my,mz,mt;
 
-  std::vector<int> iniv,Nv,nv,mv;
+  qlat::vector_acc<int> iniv,Nv,nv,mv;
 
   std::vector<std::vector<int> > Pos0;
   std::vector<std::vector<int>  > mi_list;
@@ -31,7 +31,9 @@ struct fft_desc_basic
   int variable_set;
 
   int order_ch;
-  std::vector<int > orderN;
+  qlat::vector_acc<int > orderN;
+
+  move_index mv_civ;
 
   fft_desc_basic(int order_ch_or=0)
   {
@@ -81,10 +83,28 @@ struct fft_desc_basic
   void print_info();
   long get_mi_curr(int dir=3);
   void check_mem();
-  std::vector<int > coordinate_l_from_index(LInt isp);
-  std::vector<int > coordinate_g_from_g_index(LInt isp);
+  Coordinate coordinate_l_from_index(LInt isp);
+  Coordinate coordinate_g_from_g_index(LInt isp);
+  Coordinate coordinate_g_from_index(LInt isp, int rank_set = -1);
   LInt index_g_from_local(LInt isp, int rank_set = -1);
-  std::vector<int > coordinate_g_from_index(LInt isp, int rank_set = -1);
+  //////LInt index_g_from_g_coordinate(std::vector<int > pos);
+  LInt index_g_from_g_coordinate(int t, int z, int y, int x);
+  LInt index_g_from_g_coordinate(const Coordinate& g0);
+  bool coordinate_g_is_local(const Coordinate& g0);
+
+  LInt index_l_from_g_coordinate(const Coordinate& pos, int rank_set = -1);
+
+  void get_geo(Geometry& geo ){
+    Coordinate total_site = Coordinate(nx, ny, nz, nt);
+    geo.init(total_site, 1);
+  }
+
+  size_t get_prop_size(){
+    size_t Nsize = 1;
+    Nsize = noden;
+    Nsize = 12*12*Nsize;
+    return Nsize;
+  }
 
   ~fft_desc_basic()
   {
@@ -121,11 +141,12 @@ long fft_desc_basic::get_mi_curr(int dir)
   return re;
 }
 
-std::vector<int > fft_desc_basic::coordinate_l_from_index(LInt isp)
+Coordinate fft_desc_basic::coordinate_l_from_index(LInt isp)
 {
   if(variable_set == -1){abort_r("fft_desc not set! \n");}
 
-  std::vector<int > g0;g0.resize(4);for(int i=0;i<4;i++){g0[i] = 0;}
+  ////std::vector<int > g0;g0.resize(4);for(int i=0;i<4;i++){g0[i] = 0;}
+  Coordinate g0;for(int i=0;i<4;i++){g0[i] = 0;}
   g0[3] += isp/(Nv[0]*Nv[1]*Nv[2]);long tem = isp%(Nv[0]*Nv[1]*Nv[2]);
   g0[orderN[0]] += tem/(Nv[orderN[1]]*Nv[orderN[2]]);tem = tem%(Nv[orderN[1]]*Nv[orderN[2]]);
   g0[orderN[1]] += tem/(Nv[orderN[2]]);
@@ -134,11 +155,12 @@ std::vector<int > fft_desc_basic::coordinate_l_from_index(LInt isp)
   return g0;
 }
 
-std::vector<int > fft_desc_basic::coordinate_g_from_g_index(LInt isp)
+Coordinate fft_desc_basic::coordinate_g_from_g_index(LInt isp)
 {
   if(variable_set == -1){abort_r("fft_desc not set! \n");}
 
-  std::vector<int > g0;g0.resize(4);for(int i=0;i<4;i++){g0[i] = 0;}
+  ////std::vector<int > g0;g0.resize(4);
+  Coordinate g0;for(int i=0;i<4;i++){g0[i] = 0;}
   g0[3] += isp/(nv[0]*nv[1]*nv[2]);long tem = isp%(nv[0]*nv[1]*nv[2]);
   g0[orderN[0]] += tem/(nv[orderN[1]]*nv[orderN[2]]);tem = tem%(nv[orderN[1]]*nv[orderN[2]]);
   g0[orderN[1]] += tem/(nv[orderN[2]]);
@@ -147,12 +169,43 @@ std::vector<int > fft_desc_basic::coordinate_g_from_g_index(LInt isp)
 }
 
 
-std::vector<int > fft_desc_basic::coordinate_g_from_index(LInt isp, int rank_set)
+LInt fft_desc_basic::index_g_from_g_coordinate(const Coordinate& g0) 
+{
+  if(variable_set == -1){abort_r("fft_desc not set! \n");}
+  /////if(g0.size() != 4){abort_r("input pos wrong! \n");}
+
+  LInt index = ((g0[3]*Nv[orderN[0]] + g0[orderN[0]])*Nv[orderN[1]] + g0[orderN[1]])*Nv[orderN[2]] + g0[orderN[2]];
+  return index;
+}
+
+bool fft_desc_basic::coordinate_g_is_local(const Coordinate& g0)
+{
+  /////if(g0.size() != 4){abort_r("input pos wrong! \n");}
+  bool is_local = true;
+  for(int i=0;i<4;i++)
+  {
+    if(g0[i] < Pos0[rank][i] or g0[i] >= (Pos0[rank][i]+Nv[i])){is_local = false;}
+  }
+  return is_local;
+}
+
+
+LInt fft_desc_basic::index_g_from_g_coordinate(int t, int z, int y, int x)
+{
+  if(variable_set == -1){abort_r("fft_desc not set! \n");}
+  /////std::vector<int > g0;g0.resize(4);
+  Coordinate g0;
+  g0[0] = x;g0[1] = y;g0[2] = z;g0[3] = t;
+  return index_g_from_g_coordinate(g0);
+}
+
+Coordinate fft_desc_basic::coordinate_g_from_index(LInt isp, int rank_set)
 {
   if(variable_set == -1){abort_r("fft_desc not set! \n");}
 
   int rank_cur = rank;if(rank_set != -1){rank_cur = rank_set;}
-  std::vector<int > g0;g0.resize(4);
+  ////std::vector<int > g0;g0.resize(4);
+  Coordinate g0;/////for(int i=0;i<4;i++){g0[i] = 0;}
   for(int i=0;i<4;i++){g0[i] = Pos0[rank_cur][i];}
 
   g0[3] += isp/(Nv[0]*Nv[1]*Nv[2]);long tem = isp%(Nv[0]*Nv[1]*Nv[2]);
@@ -163,10 +216,26 @@ std::vector<int > fft_desc_basic::coordinate_g_from_index(LInt isp, int rank_set
   return g0;
 }
 
+LInt fft_desc_basic::index_l_from_g_coordinate(const Coordinate& pos, int rank_set)
+{
+  if(variable_set == -1){abort_r("fft_desc not set! \n");}
+
+  int rank_cur = rank;if(rank_set != -1){rank_cur = rank_set;}
+  std::vector<int > p;p.resize(4);
+  for(int i=0;i<4;i++){
+    p[i] = pos[i] - Pos0[rank_cur][i];
+    if(p[i] < 0 or p[i] >= Nv[i]){abort_r("pos not local!\n");}
+  }
+
+  LInt index = ((p[3]*Nv[orderN[0]]+p[orderN[0]])*Nv[orderN[1]]+p[orderN[1]])*Nv[orderN[2]]+p[orderN[2]];
+
+  return index;
+}
+
 LInt fft_desc_basic::index_g_from_local(LInt isp, int rank_set)
 {
   if(variable_set == -1){abort_r("fft_desc not set! \n");}
-  std::vector<int > p = coordinate_g_from_index(isp, rank_set);
+  Coordinate p = coordinate_g_from_index(isp, rank_set);
   LInt newi = ((p[3]*nv[orderN[0]]+p[orderN[0]])*nv[orderN[1]]+p[orderN[1]])*nv[orderN[2]]+p[orderN[2]];
   return newi;
 }
@@ -258,7 +327,7 @@ void fft_desc_basic::set_variable()
   for(int tmi=0;tmi<mt;tmi++)
   {
     mi_list[tmi].resize(mz*my*mx);
-    for(int off=0;off<mi_list[tmi].size();off++){
+    for(LInt off=0;off<mi_list[tmi].size();off++){
       mi_list[tmi][off] = mi_list_tem[tmi*mz*my*mx + off];
     }
   }
@@ -274,7 +343,7 @@ void fft_desc_basic::check_mem()
   ranged.resize(4);
   for(size_t isp= 0; isp < size_t(noden); isp++)
   {
-    std::vector<int > g0 = coordinate_g_from_index(isp);
+    Coordinate g0 = coordinate_g_from_index(isp);
     for(int i=0;i<4;i++){ranged[i].push_back(g0[i]);}
   }
 
@@ -303,7 +372,7 @@ void fft_desc_basic::check_mem()
   }
 
   for(size_t isp=0;isp<size_t(noden);isp++){
-    std::vector<int > g0 = coordinate_g_from_index(isp);
+    Coordinate g0 = coordinate_g_from_index(isp);
     LInt offv = ((g0[3]*nz+g0[2])*ny+g0[1])*nx+g0[0];
     map_Nitoi[rank][isp] = offv;
   }

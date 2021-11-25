@@ -141,12 +141,12 @@ void smear_propagator4(T* prop, const T* gf,
   int dirL = 3;
 
   int nt  = 3*3*9;
-  if(bfac*d0 <= 12){ nt =       32;}
-  if(bfac*d0 <=  6){ nt =3*bfac*d0;}
+  if(bfac*d0 <= 12){ nt =        32;}
+  if(bfac*d0 <=  6){ nt = 3*bfac*d0;}
   //int nt = 32;
   dim3 dimBlock(nt, 1, 1);
   long sn = Nvol;
-  dim3 dimGrid( sn,  1, 1);
+  dim3 dimGrid( sn, 1, 1);
 
   for (int i = 0; i < step; ++i) {
     TIMER("Matrix multiply");
@@ -234,8 +234,8 @@ void rotate_Vec_prop(Propagator4dT<T>& prop, qlat::vector_acc<T > &propT, unsign
       //LInt off = (c0*3+c1)*16+d0*4 + d1;
       //long offP = n0*Nvol*groupP*12 + index*groupP*12 + n1*12 + off0;
       long offP = ((n0*Nvol + index)*groupP + n1)*12 + off0;
-      if(dir == 0)propT[offP] = v0(d0*3+c0, d1*3+c1);
-      if(dir == 1)v0(d0*3+c0, d1*3+c1) = propT[offP];
+      if(dir == 0){propT[offP] = v0(d0*3+c0, d1*3+c1);}
+      if(dir == 1){v0(d0*3+c0, d1*3+c1) = propT[offP];}
     }
   });
 

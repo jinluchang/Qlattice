@@ -1,5 +1,5 @@
 #include "io_vec.h"
-#include "reduce_V_dev.h"
+#include "utils_reduce_vec.h"
 
 ////#define Complexq qlat::ComplexF
 

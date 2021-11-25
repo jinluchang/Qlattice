@@ -44,6 +44,7 @@ int main(int argc, char* argv[])
   begin(&argc, &argv, size_node_list);
   in.load_para("input.txt");
   }
+  //begin_Lat(&argc, &argv, "input.txt", in, mode_dis);
 
 
   fflush_MPI();

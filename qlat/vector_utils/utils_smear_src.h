@@ -1057,7 +1057,6 @@ struct smear_fun{
 
   int fft_copy;
 
-
   smear_fun(){
     send_bufferV = NULL;
     recv_bufferV = NULL;
@@ -1243,11 +1242,8 @@ void refresh_expanded_GPU(T* f, smear_fun& smf)
     //sync_node();
   }
   shift_copy(f, recv_buffer , smf.mapvq_recv, smf.bfac);
+
 }
-
-
-
-
 
 
 

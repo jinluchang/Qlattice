@@ -5,14 +5,16 @@
 
 //#include <qlat/reduce_V.h>
 ///#include "cach_reduce.h"
-#include "reduce_V_dev.h"
+#include "utils_reduce_vec.h"
 #include "gammas.h"
 #include "utils_Matrix_prod.h"
 #include "fft_desc.h"
 
 #define EigenVq Eigen::Matrix< Complexq, 1, Eigen::Dynamic ,Eigen::RowMajor>
-#define EigenAq Eigen::Array< Complexq, Eigen::Dynamic , 1>
+//////#define EigenAq Eigen::Array< Complexq, Eigen::Dynamic , 1>
 #define Aoper  16
+
+namespace qlat{
 
 #ifdef QLAT_USE_ACC
 //__device__ __constant__  signed char  Gmap0C[32];
@@ -155,13 +157,12 @@ __global__ void prodab_global(const Complexq *a,const Complexq *b, Complexq *fd,
 }
 #endif
 
-namespace qlat{
 
-inline void prodab(Complexq* a0,Complexq* b0, const qlat::Geometry &geo, Complexq *fM, int mode_reduce=1)
+void prodab(Complexq* a0,Complexq* b0, const qlat::Geometry &geo, Complexq *fM, int mode_reduce=1)
 {
   ////const qlat::Geometry &geo = a0.geo();
-  const Coordinate vg = geo.total_site();
-  int nt = vg[3];
+  ////const Coordinate vg = geo.total_site();
+  ////int nt = vg[3];
 
   unsigned long Nvol = geo.local_volume();
   int Nt = geo.node_site[3];
@@ -205,11 +206,11 @@ inline void prodab(Complexq* a0,Complexq* b0, const qlat::Geometry &geo, Complex
   }
 }
 
-inline void reducefM(qlat::vector<Complexq > &fd,Complexq* NabL, long bufN,qlat::vector<ga_M > &gL,const Geometry &geo,const int nvec,const Ftype facvol, unsigned long bufi, int mode_reduce=1)
+inline void reducefM(qlat::vector_acc<Complexq > &fd,Complexq* NabL, long bufN, std::vector<ga_M > &gL,const Geometry &geo,const int nvec,const Ftype facvol, unsigned long bufi, int mode_reduce=1)
 {
   /////const qlat::Geometry &geo = a0.geo();
-  const Coordinate vg = geo.total_site();
-  int nt = vg[3];
+  ////const Coordinate vg = geo.total_site();
+  ////int nt = vg[3];
 
   unsigned long Nvol = geo.local_volume();
   int Nt = geo.node_site[3];
@@ -225,20 +226,45 @@ inline void reducefM(qlat::vector<Complexq > &fd,Complexq* NabL, long bufN,qlat:
 
     int bSum = 256/nvec;
     int cutN  = 32;
-    reduce_gpu2d_6(&fd[0],&reduce_sum[0],Nsum,nvec*Nt*16,  1, bSum, cutN);
+    reduce_gpu2d_6(fd.data(),&reduce_sum[0],Nsum,nvec*Nt*16,  1, bSum, cutN);
   }
   if(mode_reduce == 0)
   {
     #pragma omp parallel for
     for(int i=0;i<reduce_sum.size();i++){reduce_sum[i] = fd[i];}
   }
+  
+
+  ///TODO correct the reduce_gamma to GPU
+  //qlat::vector_acc<Complexq > NabL_tem;NabL_tem.resize(nvec*Nt*16);
+  //qthread_for(op0, nvec*Nt*16, {
+  //  int ivec = op0/(Nt*16);int op = op0%(Nt*16);
+  //  int it = op/16; int gi = op%16;
+  //  NabL_tem[ivec*Nt*16 + it*16 + gi] = reduce_gamma(&reduce_sum[ivec*Nt*16 + it*16+0], gL[gi])/facvol;
+  //});
+
+  //qacc_for(op0, nvec*Nt*16, {
+  //  int ivec = op0/(Nt*16);int op = op0%(Nt*16);
+  //  int it = op/16; int gi = op%16;
+  //  NabL[ivec*Nt*bufN*16 + it*bufN*16 + bufi*16 + gi] += NabL_tem[ivec*Nt*16 + it*16 + gi];
+  //});
+
+  qlat::vector_acc<Complexq* > gP; qlat::vector_acc<int* > iP;get_g_pointer(gL, gP, iP);
+  /////qacc_for(i0, 1,{
+  /////  NabL[0] = gP[0][0];
+  /////});
 
   qacc_for(op0, nvec*Nt*16, {
     int ivec = op0/(Nt*16);int op = op0%(Nt*16);
     int it = op/16; int gi = op%16;
-    ////Nab[ivec*Nt*16 + it*16 + gi] += reduce_gamma(&reduce_sum[ivec*Nt*16 + it*16+0],gL[gi])/facvol;
-    NabL[ivec*Nt*bufN*16 + it*bufN*16 + bufi*16 + gi] += reduce_gamma(&reduce_sum[ivec*Nt*16 + it*16+0],gL[gi])/facvol;
+    NabL[ivec*Nt*bufN*16 + it*bufN*16 + bufi*16 + gi] += reduce_gamma(&reduce_sum[ivec*Nt*16 + it*16+0], gP[gi], iP[gi])/facvol;
   });
+  /////============================
+
+
+  //qacc_for(op0, nvec*Nt*16, {
+  //  NabL[op0] = NabL_tem[op0];
+  //});
 
   //if(mode_nt == 1)
   //{
@@ -282,7 +308,7 @@ inline void reducefM(qlat::vector<Complexq > &fd,Complexq* NabL, long bufN,qlat:
 
 }
 
-inline void multiplyNab_Global(const Complexq* Nab, qlat::vector<Ftype > &Mres,std::vector<int > avL, std::vector<int > bvL,const qlat::vector<Complexq > &values, qlat::vector<signed char> &GmapM,const int &nmass,const int &nt,const int nzero,const unsigned long bufN0, int mode_reduce=1)
+inline void multiplyNab_Global(const Complexq* Nab, qlat::vector_acc<Ftype > &Mres,std::vector<int > avL, std::vector<int > bvL,const qlat::vector_acc<Complexq > &values, qlat::vector_acc<signed char> &GmapM,const int &nmass,const int &nt,const int nzero,const unsigned long bufN0, int mode_reduce=1)
 {
   unsigned long bufN = avL.size();
   if(bufN == 0)return;
@@ -291,7 +317,9 @@ inline void multiplyNab_Global(const Complexq* Nab, qlat::vector<Ftype > &Mres,s
   /////int nt = Nab.size()/(Aoper);
 
   /////Set up Mvalues
-  qlat::vector_acc<Ftype > Mvalues;Mvalues.resize(bufN*nmass*2);
+  qlat::vector_acc<Ftype > MvaluesV;MvaluesV.resize(bufN*nmass*2);
+  Ftype* Mvalues = MvaluesV.data();
+  Ftype* MresP   = Mres.data();
   #pragma omp parallel for
   for(unsigned long bmi=0;bmi<bufN*nmass;bmi++){
     unsigned long bi = bmi/nmass;
@@ -346,7 +374,7 @@ inline void multiplyNab_Global(const Complexq* Nab, qlat::vector<Ftype > &Mres,s
     int sizeB = largeB*sizeof(Complexq);
     /////Sum over time
     /////if(nt < 16){print0("time too short for production. \n");qassert(false);}
-    multiplyNab_global<<< nB, nthreads, sizeB >>>(&Nab[offNab],&Mres[0],&Mvalues[0],nt,nmass,bufN0, &GmapM[0]);
+    multiplyNab_global<<< nB, nthreads, sizeB >>>(&Nab[offNab],MresP,&Mvalues[0],nt,nmass,bufN0, GmapM.data());
     /////multiplyNab_global<<< nB, nthreads, sizeB >>>(Nab, 0,&Mres[0],&Mvalues[0],nt,nmass,bufN0, &GmapM[0]);
     qacc_barrier(dummy);
     return ;
@@ -371,7 +399,7 @@ inline void multiplyNab_Global(const Complexq* Nab, qlat::vector<Ftype > &Mres,s
     /////Each rank do one multiply
     ////long offNab = 0;
     #pragma omp parallel for
-    for(int bi=0; bi<bufN; bi++)
+    for(LInt bi=0; bi<bufN; bi++)
     {
       std::vector<Complexq > Mv; Mv.resize(nt*16);
       /////Copy original data
@@ -392,7 +420,7 @@ inline void multiplyNab_Global(const Complexq* Nab, qlat::vector<Ftype > &Mres,s
       /////Buffer for prods
       Complexq v0[16];Complexq v1[16];
 
-      unsigned long shiftM = bufN0*nt*nt;
+      /////unsigned long shiftM = bufN0*nt*nt;
       ////Do calculations
       for(int t0=0;t0<nt;t0++)
       for(int t1=0;t1<nt;t1++)
@@ -408,7 +436,7 @@ inline void multiplyNab_Global(const Complexq* Nab, qlat::vector<Ftype > &Mres,s
         }
 
         //offAB = (((0*nmass+0)*bufN0 + bi)*nt+t0)*nt + t1;
-        Ftype *res = (Ftype*) &Mres[((bi*nt+t0)*nt+t1)*16*nmass];
+        Ftype *res = (Ftype*) &MresP[((bi*nt+t0)*nt+t1)*16*nmass];
 
         for(int ipr=0;ipr<16;ipr++)
         {
@@ -450,7 +478,7 @@ inline std::vector<unsigned long > get_loop_cut(int Nx,int Ny, int Nycut, int Nx
   return jobL;
 }
 
-inline void get_map_gammaL(qlat::vector<ga_M > &g0,qlat::vector<ga_M > &gL,qlat::vector<signed char > &Gmap){
+inline void get_map_gammaL(std::vector<ga_M > &g0,std::vector<ga_M > &gL,qlat::vector_acc<signed char > &Gmap){
   Gmap.resize(32);
   for(int i=0;i<16;i++){
     unsigned long r0;unsigned long r1;
@@ -482,8 +510,9 @@ struct Nab_distribute{
   int mxyz;
   int NabL_size;
   int bufN;
-  Complexq* NabN;
+  ////Complexq* NabN;
   //qlat::vector<Complexq > NabN;
+  qlat::vector_gpu<Complexq > NabN;
   MPI_Comm xyz_comm;
   MPI_Comm t_comm;
   std::vector<int > rank_map;
@@ -510,7 +539,7 @@ struct Nab_distribute{
     }
     sum_all_size(&rank_map[0], rank_map.size() , 0, &t_comm);
 
-    NabN = NULL;
+    ////NabN = NULL;
     set_bufN(fd, bufN_or);
   
   }
@@ -533,30 +562,33 @@ struct Nab_distribute{
       rpls[ri] = size_c*ri;
     }
 
-    gpuFree(NabN);gpuMalloc(NabN, bufN*NabL_size, Complexq);
+    NabN.resize(bufN*NabL_size);
+    /////gpuFree(NabN);gpuMalloc(NabN, bufN*NabL_size, Complexq);
     //NabN.resize(bufN*NabL_size);
   }
 
   void communicate(Complexq* NabL)
   {
     TIMER("Reduce Nab");
-    if(mxyz!=1){sum_all_size(reinterpret_cast<Ftype* > (&NabL[0]),reinterpret_cast<Ftype* > (&NabN[0]), 2*bufN*NabL_size , 1, &xyz_comm);}
+    if(mxyz!=1){sum_all_size(&NabL[0], NabN.data(), bufN*NabL_size , 1, &xyz_comm);}
     else{
-      #ifdef QLAT_USE_ACC
-      cudaMemcpy(&NabN[0], &NabL[0], bufN*NabL_size*sizeof(Complexq), cudaMemcpyDeviceToDevice);
-      #else
-      memcpy(&NabN[0], &NabL[0], bufN*NabL_size*sizeof(Complexq));
-      #endif
+      cpy_data_thread(NabN.data(), &NabL[0], bufN*NabL_size, 1);
+      ///#ifdef QLAT_USE_ACC
+      ///cudaMemcpy(&NabN[0], &NabL[0], bufN*NabL_size*sizeof(Complexq), cudaMemcpyDeviceToDevice);
+      ///#else
+      ///memcpy(&NabN[0], &NabL[0], bufN*NabL_size*sizeof(Complexq));
+      ///#endif
     }
 
-    MPI_Alltoallv(&NabN[0],(int*) &send[0],(int*) &spls[0], MPI_CHAR,
-                  &NabL[0],(int*) &recv[0],(int*) &rpls[0], MPI_CHAR, t_comm);
+    MPI_Alltoallv(NabN.data(),(int*) &send[0],(int*) &spls[0], MPI_CHAR,
+                  &NabL[0]   ,(int*) &recv[0],(int*) &rpls[0], MPI_CHAR, t_comm);
 
   }
 
-  ~Nab_distribute(){
-    gpuFree(NabN);NabN=NULL;
-  }
+  //~Nab_distribute(){
+  //  NabN.resize(0);
+  //  /////gpuFree(NabN);NabN=NULL;
+  //}
 
 };
 
@@ -599,7 +631,7 @@ struct Nab_distribute{
 //
 //}
 
-inline void get_low_rho(std::vector<qlat::FermionField4dT<Complexq > > &eigen,const qlat::vector<Complexq > &values,const int &nzero,qlat::vector<Ftype > &Mres,const qlat::Geometry &geo, int GPUFM=1)
+inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const qlat::vector_acc<Complexq > &values,const int &nzero,qlat::vector_acc<Ftype > &Mres,const qlat::Geometry &geo, int GPUFM=1)
 {
   ////Input must be chiral vectors, eigen_chi, n_vec --> chi --> d/2 --> t,y,z,x --> c --> complex
   ////values --> n_vec --> massi
@@ -628,16 +660,16 @@ inline void get_low_rho(std::vector<qlat::FermionField4dT<Complexq > > &eigen,co
   /////Get map list
   unsigned short Nt = geo.node_site[3];
 
-  qlat::vector_acc<ga_M > gL;gL.resize(Aoper);
+  std::vector<ga_M > gL;gL.resize(Aoper);
   qlat::vector_acc<signed char> GmapM;GmapM.resize(32*4);
 
   {
   TIMER("Copy gammas");
   ga_matrices_cps   ga_cps;
-  qlat::vector_acc<ga_M > g0;g0.resize(Aoper);
-  qlat::vector_acc<ga_M > g05;g05.resize(Aoper);
-  qlat::vector_acc<ga_M > g1;g1.resize(Aoper);
-  qlat::vector_acc<ga_M > g15;g15.resize(Aoper);
+  std::vector<ga_M > g0;g0.resize(Aoper);
+  std::vector<ga_M > g05;g05.resize(Aoper);
+  std::vector<ga_M > g1;g1.resize(Aoper);
+  std::vector<ga_M > g15;g15.resize(Aoper);
   //////0 , 1, 2, 3, 4, 5, 6
   //////1-2, 1-3, 1-4, 1-5
   //////2-3, 2-4, 2-5
@@ -649,14 +681,21 @@ inline void get_low_rho(std::vector<qlat::FermionField4dT<Complexq > > &eigen,co
   for(int i=3;i<6;i++){gL[o] = ga_cps.ga[2][i];o+=1;}
   for(int i=4;i<6;i++){gL[o] = ga_cps.ga[3][i];o+=1;}
   for(int i=5;i<6;i++){gL[o] = ga_cps.ga[4][i];o+=1;}}
-  
+
+  ga_M g5;
+  g5 = ga_cps.ga[0][5];
+  for(int o=0;o<16;o++){
+    ////gL[o] = ga_cps.ga[0][5] * gL[o];
+    gL[o] = gL[o] * g5;
+    //gL[o] = g5 * gL[o];
+  }
   ////GL
 
   for(int i=0;i<Aoper;i++){
      g0[i] = gL[i];
-    g05[i] = (gL[5]*gL[i])*gL[5];
-     g1[i] = gL[i]*gL[5];
-    g15[i] = gL[5]*gL[i];
+    g05[i] = (g5*gL[i])*g5;
+     g1[i] = gL[i]*g5;
+    g15[i] = g5*gL[i];
   }
 
   ///std::vector<std::vector<int > > Gmap;Gmap.resize(4);
@@ -699,21 +738,18 @@ inline void get_low_rho(std::vector<qlat::FermionField4dT<Complexq > > &eigen,co
   print0("==total Eigen %.3e Gb \n", vGb_vec*Nmpi*(sizeof(Complexq)/2.0)*n_vec);
 
   ////double length = (geo.local_volume()*pow(0.5,30))*12*sizeof(Complexq);
-  int bufa0 = -1;int bufa1 = -1;
-  int bufb0 = -1;int bufb1 = -1;
   int modeCopy = 0;
 
   ///int N_bound = (n_vec+Ncut-1)/Ncut;
   ///Ncut = n_vec;
-  //qlat::FermionField4dT<Complexq > *a0p;
-  //qlat::FermionField4dT<Complexq > *b0p;
   Complexq* a0p;Complexq* b0p;
 
-  qlat::vector_acc<Complexq > prodFM;
-  if(mode_reduce == 0)prodFM.resize(Nmpi*Nt*16);
-  if(mode_reduce == 1)prodFM.resize(Nmpi*geo.local_volume()*16/32);
+  qlat::vector_acc<Complexq > prodFMV;
+  if(mode_reduce == 0)prodFMV.resize(Nmpi*Nt*16);
+  if(mode_reduce == 1)prodFMV.resize(Nmpi*geo.local_volume()*16/32);
+  Complexq* prodFM = prodFMV.data();
 
-  int facbufN = 1;
+  ////int facbufN = 1;
   long NabL_size  = 16*Nt*Nmpi;
   long MresL_size = nmass*16*nt*nt;
 
@@ -729,6 +765,9 @@ inline void get_low_rho(std::vector<qlat::FermionField4dT<Complexq > > &eigen,co
   unsigned long bufN = 1;
   /////Get Ncut
   #ifdef QLAT_USE_ACC
+  int bufa0 = -1;int bufa1 = -1;
+  int bufb0 = -1;int bufb1 = -1;
+
   size_t freeM = 0;size_t totalM = 0;double extra = 0.2;
   modeCopy = 1;
 
@@ -762,7 +801,6 @@ inline void get_low_rho(std::vector<qlat::FermionField4dT<Complexq > > &eigen,co
   print0("===job start 1 \n");
   fflush_MPI();
 
-  //std::vector<qlat::FermionField4dT<Complexq > > bufE;
   std::vector<Complexq* > bufE;
   if(modeCopy == 1){
     TIMER("CUDA mem allocate");
@@ -783,28 +821,30 @@ inline void get_low_rho(std::vector<qlat::FermionField4dT<Complexq > > &eigen,co
 
   Nab_distribute dis(fd, bufN);
 
-  Complexq* NabL;
-  {TIMER("CUDA mem allocate");gpuMalloc(NabL, bufN*NabL_size, Complexq);}
+  qlat::vector_gpu<Complexq > NabV;NabV.resize( bufN*NabL_size);
+  NabV.set_zero();
+
+  Complexq* NabL = NabV.data();
+  ///{TIMER("CUDA mem allocate");gpuMalloc(NabL, bufN*NabL_size, Complexq);}
   //gpuErrchk(cudaMalloc(&NabL, bufN*NabL_size*sizeof(Complexq)))
   //qlat::vector<Complexq > NabL;NabL.resize(bufN*NabL_size);
   //NabL.resize(bufN*16*nt);
   //set_zero(NabL);
-  #ifdef QLAT_USE_ACC
-  cudaMemset(NabL, 0, bufN*NabL_size*sizeof(Complexq));
-  #else
-  qacc_for(i, bufN*NabL_size, {NabL[i] = 0.0;});
-  #endif
+  //#ifdef QLAT_USE_ACC
+  //cudaMemset(NabL, 0, bufN*NabL_size*sizeof(Complexq));
+  //#else
+  //qacc_for(i, bufN*NabL_size, {NabL[i] = 0.0;});
+  //#endif
 
   print0("===job start 3 \n");
   fflush_MPI();
-
 
 
   std::vector<unsigned long > jobL = get_loop_cut(n_vec,n_vec,Ncut,Ncut);
   int countrun = 0;int totrun =  0;timeval tm0,tm1,tm2;
   gettimeofday(&tm0, NULL);gettimeofday(&tm1, NULL);gettimeofday(&tm2, NULL);
   int eachrun  = 0;
-  for(int jobi=0;jobi<jobL.size();jobi++){
+  for(LInt jobi=0;jobi<jobL.size();jobi++){
     int avi = jobL[jobi];
     int av = avi/n_vec;
     int bv = avi%n_vec;
@@ -827,7 +867,7 @@ inline void get_low_rho(std::vector<qlat::FermionField4dT<Complexq > > &eigen,co
 
   ////Buffer index for av,bv
   //////#pragma omp parallel for
-  for(int jobi=0;jobi<jobL.size();jobi++)
+  for(LInt jobi=0;jobi<jobL.size();jobi++)
   {
     TIMER("Kernel jobs");
     int avi = jobL[jobi];
@@ -839,8 +879,8 @@ inline void get_low_rho(std::vector<qlat::FermionField4dT<Complexq > > &eigen,co
     bvL.push_back(bv);
 
     if(modeCopy == 0){
-      a0p = (Complexq* ) &(eigen[av].get_elem(0));
-      b0p = (Complexq* ) &(eigen[bv].get_elem(0));
+      a0p = (Complexq* ) qlat::get_data(eigen[av]).data();
+      b0p = (Complexq* ) qlat::get_data(eigen[bv]).data();
     }
 
     //Buffer for bv
@@ -852,7 +892,7 @@ inline void get_low_rho(std::vector<qlat::FermionField4dT<Complexq > > &eigen,co
     if(bv >= bufb0 and bv < bufb1){b0p = bufE[bv%Ncut];}else{
       if(bv % Ncut == 0){
         for(int iv=0;iv<Ncut;iv++){
-          if(bv + iv < n_vec)cudaMemcpyAsync(bufE[iv], &eigen[bv+iv].get_elem(0),
+          if(bv + iv < n_vec)cudaMemcpyAsync(bufE[iv], qlat::get_data(eigen[bv+iv]).data(),
             npoints*sizeof(Complexq), cudaMemcpyHostToDevice);
         }
         qacc_barrier(dummy);
@@ -865,7 +905,7 @@ inline void get_low_rho(std::vector<qlat::FermionField4dT<Complexq > > &eigen,co
     if(av >= bufa0 and av < bufa1){a0p = bufE[Ncut+av%Ncut];}else{
       if(av % Ncut == 0){
         for(int iv=0;iv<Ncut;iv++){
-          if(av + iv < n_vec)cudaMemcpyAsync(bufE[Ncut + iv],&eigen[av + iv].get_elem(0),
+          if(av + iv < n_vec)cudaMemcpyAsync(bufE[Ncut + iv], qlat::get_data(eigen[av+iv]).data(),
             npoints*sizeof(Complexq), cudaMemcpyHostToDevice);
         }
         qacc_barrier(dummy);
@@ -892,7 +932,7 @@ inline void get_low_rho(std::vector<qlat::FermionField4dT<Complexq > > &eigen,co
     if((countrun%Nmpi == 0) or countrun == totrun)
     {
       int nvec = Nmpi;if(countrun%Nmpi != 0)nvec = countrun%Nmpi;
-      {TIMER("Reduce prodFM");reducefM(prodFM, NabL, bufN,gL,geo,nvec,facvol, bufi, mode_reduce);}
+      {TIMER("Reduce prodFM");reducefM(prodFMV, NabL, bufN,gL,geo,nvec,facvol, bufi, mode_reduce);}
       ////bufi += nvec;
       bufi += 1;
 
@@ -913,16 +953,18 @@ inline void get_low_rho(std::vector<qlat::FermionField4dT<Complexq > > &eigen,co
         multiplyNab_Global(NabL,MresL,avL_local,bvL_local,values, GmapM, nmass, nt, nzero, bufN, mode_reduce);}
 
         avL_local.resize(0);bvL_local.resize(0);
+
+        NabV.set_zero();
         /////qacc_for(i, bufN*NabL_size, {NabL[i] = 0.0;});
         /////set_zero(NabL);
-        {
-        TIMER("Set zero Nab")
-        #ifdef QLAT_USE_ACC
-        cudaMemset(NabL, 0, bufN*NabL_size*sizeof(Complexq));
-        #else
-        qacc_for(i, bufN*NabL_size, {NabL[i] = 0.0;});
-        #endif
-        }
+        //{
+        //TIMER("Set zero Nab")
+        //#ifdef QLAT_USE_ACC
+        //cudaMemset(NabL, 0, bufN*NabL_size*sizeof(Complexq));
+        //#else
+        //qacc_for(i, bufN*NabL_size, {NabL[i] = 0.0;});
+        //#endif
+        //}
         bufi = 0;
       }
       avL.resize(0);bvL.resize(0);
@@ -943,7 +985,7 @@ inline void get_low_rho(std::vector<qlat::FermionField4dT<Complexq > > &eigen,co
       double flops_pers = vGb*countrun/(1.0*time0);
       double flops_pers_round = vGb*eachrun/(1.0*time1);eachrun=0;gettimeofday(&tm2, NULL);
       print0("==jobi %10d, ai %5d , bi %5d , per %.3f, use %.3e sec, %.3f Gflops, %.3f Gflops/r . \n",
-        jobi,av,bv, perc, time0,flops_pers,flops_pers_round);
+        int(jobi),av,bv, perc, time0,flops_pers,flops_pers_round);
     }
   }
 
@@ -1010,14 +1052,14 @@ inline void get_low_rho(std::vector<qlat::FermionField4dT<Complexq > > &eigen,co
   //}
   }
 
-  {TIMER("Final sum Mres");sum_all_size(reinterpret_cast<Ftype* > (&Mres[0]),Mres.size());}
+  {TIMER("Final sum Mres");sum_all_size(Mres.data(),Mres.size());}
 
   {TIMER("Free memory");
   if(modeCopy == 1){
     for(unsigned long iv=0;iv<bufE.size();iv++){gpuFree(bufE[iv]);}
     bufE.resize(0);
   }
-  gpuFree(NabL);
+  ////gpuFree(NabL);NabL = NULL;
   }
 
 
