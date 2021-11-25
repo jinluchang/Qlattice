@@ -1,5 +1,9 @@
-#ifndef reduce_V_h
-#define reduce_V_h
+// utils_reduce_vec.h
+// Gen Wang
+// Apr. 2021
+
+#ifndef UTILS_REDUCE_VEC_H
+#define UTILS_REDUCE_VEC_H
 #pragma once
 
 /////Reference https://developer.download.nvidia.com/assets/cuda/files/reduction.pdf
@@ -217,6 +221,12 @@ inline unsigned long reduce_T(const Ty *src,Ty *res,const unsigned long n,const 
 }
 
 template<typename Ty>
+void reduce_cpu(const Ty* src,Ty* res,long n, int nv)
+{
+  for(long i=0;i<nv;i++){reduce_cpu(&src[i*n], res[i],n);}
+}
+
+template<typename Ty>
 inline void reduce_gpu(const Ty *src,Ty *res,const long n,const int nv=1,
   const int Ld=128,const int Ld0=8,const int fac=16)
 {
@@ -250,12 +260,6 @@ inline void reduce_gpu(const Ty *src,Ty *res,const long n,const int nv=1,
   for(int i=0;i<nv;i++)reduce_cpu(&src[i*n],res[i],n);
   return;
   #endif
-}
-
-template<typename Ty>
-void reduce_cpu(const Ty* src,Ty* res,long n, int nv)
-{
-  for(int i=0;i<nv;i++)reduce_cpu(&src[i*n], res[i],n);
 }
 
 
