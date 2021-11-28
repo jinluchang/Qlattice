@@ -13,11 +13,14 @@ mkdir -p $src_dir
 cd $src_dir
 tar xaf $distfiles/$name-*
 
-cd $name-*
-cmake \
-  -DCMAKE_INSTALL_PREFIX:PATH=$prefix \
-  -DLAPACKE:BOOL=ON \
-  -DLAPACKE_WITH_TMG:BOOL=ON \
+rm -rf $build_dir || true
+mkdir -p $build_dir || true
+cd $build_dir
+
+cmake $src_dir/$name-* \
+  -DCMAKE_INSTALL_PREFIX=$prefix \
+  -DLAPACKE=ON \
+  -DLAPACKE_WITH_TMG=ON \
   .
 make -j$num_proc
 make install

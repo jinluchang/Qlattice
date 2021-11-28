@@ -18,6 +18,7 @@ set -e
 ./scripts/cmake.sh
 ./scripts/libffi.sh
 ./scripts/zlib.sh
+./scripts/openblas.sh
 ./scripts/python.sh
 ./scripts/python-packages.sh
 ./scripts/re2c.sh

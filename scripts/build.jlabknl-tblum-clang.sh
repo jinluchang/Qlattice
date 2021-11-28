@@ -21,6 +21,7 @@ export CXX=g++
 ./scripts/openssl.sh
 ./scripts/libffi.sh
 ./scripts/zlib.sh
+./scripts/openblas.sh
 ./scripts/python.sh
 ./scripts/python-packages.sh
 ./scripts/re2c.sh

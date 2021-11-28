@@ -13,6 +13,7 @@ pip3 install --verbose --no-index -f $distfiles/python-packages wheel
 pip3 install --verbose --no-index -f $distfiles/python-packages numpy
 pip3 install --verbose --no-index -f $distfiles/python-packages mpmath
 pip3 install --verbose --no-index -f $distfiles/python-packages sympy
+pip3 install --verbose --no-index -f $distfiles/python-packages scipy
 
 echo "!!!! $name build !!!!"
 

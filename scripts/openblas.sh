@@ -2,7 +2,7 @@
 
 . conf.sh
 
-name=Python
+name=OpenBLAS
 
 {
 
@@ -13,18 +13,10 @@ mkdir -p $src_dir || true
 cd $src_dir
 tar xaf $distfiles/$name-*
 
-rm -rf $build_dir || true
-mkdir -p $build_dir || true
-cd $build_dir
+cd $src_dir/$name-*
 
-export LDFLAGS="-L$prefix/lib64 -L$prefix/lib"
-export LIBS="-lffi"
-
-$src_dir/$name-*/configure \
-    --prefix=$prefix \
-    --with-openssl=$prefix
 make -j$num_proc
-make install
+make install PREFIX=$prefix
 
 cd $wd
 echo "!!!! $name build !!!!"

@@ -23,6 +23,7 @@ export CXX=g++
 ./scripts/openssl.sh
 ./scripts/libffi.sh
 ./scripts/zlib.sh
+./scripts/openblas.sh
 ./scripts/python.sh
 ./scripts/python-packages.sh
 ./scripts/re2c.sh
@@ -35,7 +36,6 @@ export CXX=
 ./scripts/fftw.sh
 ./scripts/fftwf.sh
 ./scripts/cuba.sh
-./scripts/zlib.sh
 ./scripts/eigen.sh
 ./scripts/autoconf.sh
 ./scripts/automake.sh

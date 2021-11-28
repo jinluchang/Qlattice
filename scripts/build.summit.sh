@@ -15,6 +15,7 @@ set -e
 ./scripts/openssl.sh
 ./scripts/libffi.sh
 ./scripts/zlib.sh
+./scripts/openblas.sh
 ./scripts/python.sh
 ./scripts/python-packages.sh
 
