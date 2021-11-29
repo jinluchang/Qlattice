@@ -63,7 +63,7 @@ int main(int argc, char* argv[])
   }
   #endif
 
-  char ename[500],enamev[500];
+  char ename[500],enamev[510];
 
   sprintf(ename,in.Ename.c_str(), icfg);
   sprintf(enamev,"%s.eigvals",ename);
@@ -109,7 +109,7 @@ int main(int argc, char* argv[])
   size_t Nvol = geo.local_volume();
   int Nt = geo.node_site[3];
   qlat::FermionField4dT<Complexq > tmp;tmp.init(geo);
-  for(int iv=0;iv<eigen.size();iv++){
+  for(LInt iv=0;iv<eigen.size();iv++){
     Complexq* src = (Complexq* ) qlat::get_data(eigen[iv]).data();
     Complexq* buf = (Complexq* ) qlat::get_data(tmp).data();
     memcpy(buf,src, Nvol*12*sizeof(Complexq));

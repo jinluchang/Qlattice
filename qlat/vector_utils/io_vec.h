@@ -334,7 +334,8 @@ inline void read_kentucky_vector(FILE *file,char* props,int Nvec,io_vec& io,bool
   char res[ionum*noden*gN*dsize];
   size_t sizec = vol*dsize;
 
-  size_t off_file = 0;size_t sem=0;
+  size_t off_file = 0;////size_t sem=0;
+  std::vector<size_t > semL;semL.resize(io.threadio);for(LInt i=0;i<semL.size();i++){semL[i]=0;}
   if(node_ioL[rank]>=0){off_file = ftell(file);}
 
   int curr_v = 0;
@@ -388,9 +389,9 @@ inline void read_kentucky_vector(FILE *file,char* props,int Nvec,io_vec& io,bool
         if(curr_threadio==1){
           //if(read==true ) fread(&buf[0], 1, rN*sizec, file);
           //if(read==false)fwrite(&buf[0], 1, rN*sizec, file);
-          if(read==true ){sem =  fread(&buf[0], rN*sizec, 1, file);}
-          if(read==false){sem = fwrite(&buf[0], rN*sizec, 1, file);}
-          if(sem != 1){printf("Reading/Writing error %zu %zu \n", sem, size_t(1) );}
+          if(read==true ){semL[0] =  fread(&buf[0], rN*sizec, 1, file);}
+          if(read==false){semL[0] = fwrite(&buf[0], rN*sizec, 1, file);}
+          if(semL[0] != 1){printf("Reading/Writing error %zu 1 \n", semL[0] );}
         }
 
 
@@ -413,11 +414,11 @@ inline void read_kentucky_vector(FILE *file,char* props,int Nvec,io_vec& io,bool
               //if(read==true ) fread(&buf[iniN], 1, currN, io.file_omp[tid]);
               //if(read==false)fwrite(&buf[iniN], 1, currN, io.file_omp[tid]);
 
-              if(read==true ){sem =  fread(&buf[iniN], currN, 1, io.file_omp[tid]);}
-              if(read==false){sem = fwrite(&buf[iniN], currN, 1, io.file_omp[tid]);}
-              if(sem != 1){printf("Reading/Writing error %zu %zu \n", sem, size_t(1) );}
+              if(read==true ){semL[tid] =  fread(&buf[iniN], currN, 1, io.file_omp[tid]);}
+              if(read==false){semL[tid] = fwrite(&buf[iniN], currN, 1, io.file_omp[tid]);}
             }
           }
+          for(int tid=0;tid<curr_threadio;tid++){if(semL[tid] != 1){printf("Reading/Writing error %zu 1 \n", semL[tid] );}}
           //fseek(file , rN*sizec , SEEK_CUR );
           fseek(file , off_file_local + rN*sizec , SEEK_SET );
         }

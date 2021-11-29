@@ -188,12 +188,14 @@ void vec_corrE(EigenV &resE, EigenV &res,qlat::fft_desc_basic &fd,int clear=0,in
 
     Evector phaseE;phaseE.resize(0);phaseE.resize(Nxyz);
 
+    qlat::vector_gpu<int > pos_tem;pos_tem.copy_from(fd.Pos0[fd.rank]);int* posP = pos_tem.data();
+
     qacc_for(xi, long(Nxyz),{
       int pi[3];
       pi[fd.orderN[0]] = xi/(fd.Nv[fd.orderN[1]]*fd.Nv[fd.orderN[2]]);
       pi[fd.orderN[1]] = (xi%(fd.Nv[fd.orderN[1]]*fd.Nv[fd.orderN[2]]))/fd.Nv[fd.orderN[2]];
       pi[fd.orderN[2]] = xi%fd.Nv[fd.orderN[2]];
-      for(int ptem=0;ptem<3;ptem++){pi[ptem] = pi[ptem] + fd.Pos0[fd.rank][ptem];}
+      for(int ptem=0;ptem<3;ptem++){pi[ptem] = pi[ptem] + posP[ptem];}
 
       double theta=mom[0]*p0[0]*pi[0]+mom[1]*p0[1]*pi[1]+mom[2]*p0[2]*pi[2];
       phaseE[xi] = Complexq(cos(theta),sin(theta));

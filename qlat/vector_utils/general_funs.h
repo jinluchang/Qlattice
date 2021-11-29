@@ -103,8 +103,31 @@ void sum_all_size(Ty *src,Ty *sav,long size, int GPU=0, MPI_Comm* commp=NULL)
   get_MPI_type(atem, curr, M_size, 2);
   qassert(sizeof(Ty)%M_size == 0);int fac = sizeof(Ty)/M_size;
 
-  if(commp == NULL){MPI_Allreduce(src,res.data(), size * fac, curr, MPI_SUM, get_comm());}
-  else{MPI_Allreduce(src,res.data(), size * fac, curr, MPI_SUM, *commp);}
+  Ty* tem_src = NULL; Ty* tem_res = NULL;
+  std::vector<Ty > tem_sHIP,tem_rHIP;
+  bool do_copy = false;
+
+  #ifdef __NO_GPU_DIRECT__
+  #ifdef QLAT_USE_ACC
+  if(GPU == 1){do_copy = true;}
+  #endif
+  #endif
+
+  if(do_copy == false){tem_src = src;tem_res = res.data();}
+  if(do_copy == true ){
+    tem_sHIP.resize(size);tem_rHIP.resize(size);
+
+    cpy_data_thread(&tem_sHIP[0], src, size, 3, true);
+    tem_src = &tem_sHIP[0];tem_res = &tem_rHIP[0];
+  }
+  
+  if(commp == NULL){MPI_Allreduce(tem_src,tem_res, size * fac, curr, MPI_SUM, get_comm());}
+  else{MPI_Allreduce(tem_src,tem_res, size * fac, curr, MPI_SUM, *commp);}
+
+  if(do_copy == true){
+    cpy_data_thread(res.data(), &tem_rHIP[0], size, 2, true);
+  }
+
 
   if(src == sav)
   {
@@ -261,6 +284,64 @@ inline void abort_sum(double flag, std::string stmp=std::string(""))
 inline void fflush_MPI(){
   MPI_Barrier(get_comm());
   fflush(stdout);
+}
+
+template<typename Ty>
+void MPI_Alltoallv_mode(Ty* src0, int* send, int* spls, Ty* res0, int* recv, int* rpls, MPI_Comm& comm, int mode=0, int GPU = 0)
+{
+  Ty* src = NULL;Ty* res = NULL;
+
+  std::vector<Ty > tem_src,tem_res;
+  bool do_copy = false;
+  #ifdef __NO_GPU_DIRECT__
+  #ifdef QLAT_USE_ACC
+  if(GPU == 1){do_copy = true;}
+  #endif
+  #endif
+
+  if(do_copy == false){src = src0; res = res0;}
+
+  ////resize buffers
+  long max_src = 0;
+  long max_res = 0;
+  if(do_copy == true){
+    int num_node;MPI_Comm_size(comm, &num_node);
+    for(int n = 0; n < num_node; n++){
+      long cur_size = spls[n]/sizeof(Ty) + send[n]/sizeof(Ty);
+      if(cur_size > max_src){max_src = cur_size;}
+      cur_size = rpls[n]/sizeof(Ty) + recv[n]/sizeof(Ty);
+      if(cur_size > max_res){max_res = cur_size;}
+    }
+
+    tem_src.resize(max_src);tem_res.resize(max_res);
+    cpy_data_thread(&tem_src[0], src0, max_src, 3);
+    cpy_data_thread(&tem_res[0], res0, max_res, 3);
+    src = &tem_src[0]; res = &tem_res[0];
+  }
+
+  if(mode == 0){
+    MPI_Alltoallv(src, send, spls, MPI_CHAR,
+                  res, recv, rpls, MPI_CHAR, comm);
+  }
+  if(mode == 1){
+    int num_node;MPI_Comm_size(comm, &num_node);
+    int id_node;MPI_Comm_rank(comm, &id_node);
+    std::vector<MPI_Request> send_reqs(num_node);
+    int mpi_tag = id_node;
+    int c1 = 0;
+    for(int n = 0; n < num_node; n++){
+      if(send[n]!=0){MPI_Isend(&src[spls[n]/sizeof(Ty)], send[n], MPI_CHAR, n, mpi_tag + n, comm, &send_reqs[c1]);c1 += 1;}
+    }
+
+    for(int n = 0; n < num_node; n++){
+      if(recv[n]!=0){MPI_Recv( &res[rpls[n]/sizeof(Ty)], recv[n], MPI_CHAR, n, mpi_tag + n, comm, MPI_STATUS_IGNORE);}
+    }
+    if(c1!=0){MPI_Waitall(c1, send_reqs.data(), MPI_STATUS_IGNORE);}
+  }
+
+
+  if(do_copy == true){cpy_data_thread(res0, &tem_res[0], max_res, 2);}
+
 }
 
 ////Only cpu verstion
@@ -980,7 +1061,7 @@ inline void allocate_buf(std::vector<Complexq* >& buf, size_t n0, size_t n1)
   }
 }
 
-qacc Complexq inv_self(const Complexq& lam, double m, double rho,int one_minus_halfD=1)
+inline Complexq inv_self(const Complexq& lam, double m, double rho,int one_minus_halfD=1)
 {
   //Complexq tem = (one_minus_halfD>0)?(1-lam/2)/(rho*lam+m*(1-lam/2)):1.0/(rho*lam+m*(1-lam/2));
   std::complex<double > tem(lam.real(),lam.imag());

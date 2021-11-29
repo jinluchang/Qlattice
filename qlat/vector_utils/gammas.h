@@ -312,7 +312,8 @@ qacc Ty reduce_gamma(const Ty *src,const ga_M &ga){
 inline void vecE_gamma(Complexq* src, ga_M& ga, long noden)
 {
   qacc_for(isp, long(noden),{
-    Evector tmp;tmp.resize(12);
+    ////Evector tmp;tmp.resize(12);
+    Complexq tmp[12];
     for(unsigned int d=0;d<12;d++){tmp[d] = src[d*noden+ isp];}
 
     for(unsigned int d = 0; d < 4; d++)

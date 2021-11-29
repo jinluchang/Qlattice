@@ -235,12 +235,12 @@ struct SelectedField {
   //
   SelectedField() { init(); }
   //
-  M& get_elem(const long& idx)
+  qacc M& get_elem(const long& idx)
   {
     qassert(1 == geo().multiplicity);
     return field[idx];
   }
-  const M& get_elem(const long& idx) const
+  qacc const M& get_elem(const long& idx) const
   {
     qassert(1 == geo().multiplicity);
     return field[idx];
@@ -677,3 +677,4 @@ void set_field_selected_slow(Field<M>& f, const SelectedField<M>& sf,
 }
 
 }  // namespace qlat
+

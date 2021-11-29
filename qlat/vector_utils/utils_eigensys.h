@@ -106,7 +106,7 @@ struct eigen_ov {
   void load_eigen(int icfg, std::string &ov_evecname, io_vec &io,
     int checknorm = 1, double kappa=0.2,double eigenerror=EIGENERROR, int nini=0);
 
-  void random_eigen(int sm = 0);
+  void random_eigen(int sm = 0, int seed = 1234);
 
   void print_info()
   {
@@ -586,21 +586,21 @@ void eigen_ov::load_eigen(int icfg, std::string &ov_evecname,io_vec  &io,
 
 }
 
-void eigen_ov::random_eigen(int sm)
+void eigen_ov::random_eigen(int sm, int seed)
 {
   TIMERB("=====Loading random Eigen=====");
-  eval_self.resize(n_vec);random_EigenM(eval_self);
+  eval_self.resize(n_vec);random_EigenM(eval_self, 0, seed + 10);
   
   long La = 2*bfac/BFAC_GROUP_CPU;
   long Lb = BFAC_GROUP_CPU*n_vec*long(b_size);
   print_mem_info("Before Eigen Memory Allocate");
   if(sm == 0){
     resize_EigenM(Mvec    , La, Lb);
-    for(long iv=0;iv<La;iv++)random_Ty(Mvec[iv].data()   , Lb, 0, 1234 + iv);
+    for(long iv=0;iv<La;iv++)random_Ty(Mvec[iv].data()   , Lb, 0, seed + 20 + iv);
   }
   if(sm == 1){
     resize_EigenM(Mvec_Sm , La, Lb);
-    for(long iv=0;iv<La;iv++)random_Ty(Mvec_Sm[iv].data(), Lb, 0, 4321 + iv);
+    for(long iv=0;iv<La;iv++)random_Ty(Mvec_Sm[iv].data(), Lb, 0, seed + 30 + iv);
     enable_smearE = true;
   }
 

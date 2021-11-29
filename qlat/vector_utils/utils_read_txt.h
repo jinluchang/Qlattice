@@ -88,7 +88,7 @@ inline int stringtonum(std::string &tem_string)
 inline unsigned long get_file_size_o(const char *filename)
 {
   std::ifstream File(filename);
-  if(!File.is_open()){if(qlat::get_id_node() == 0) printf("file is not exist\n");return 0;}
+  if(!File.is_open()){if(qlat::get_id_node() == 0){printf("file is not exist\n");}return 0;}
   unsigned long Begin = File.tellg();
   File.seekg(0, std::ios_base::end);
   unsigned long End = File.tellg();
@@ -101,7 +101,7 @@ inline size_t get_file_size_MPI(const char *filename)
   size_t sizen = 0;
   if(qlat::get_id_node()==0){
     std::ifstream File(filename);
-    if(!File.is_open()){if(qlat::get_id_node() == 0) printf("file is not exist\n");sizen = 0;}
+    if(!File.is_open()){if(qlat::get_id_node() == 0){printf("file is not exist\n");}sizen = 0;}
     else{
       unsigned long Begin = File.tellg();
       File.seekg(0, std::ios_base::end);
@@ -279,6 +279,7 @@ struct inputpara{
   int nsave;
   int bfac;
   int ionum;
+  int seed;
 
   int lms;
 
@@ -482,6 +483,7 @@ struct inputpara{
     if(find_para(std::string("Eerr"),Eerr)==0)Eerr  = 1e-11;
     if(find_para(std::string("nsave"),nsave)==0)nsave  = 0;
     if(find_para(std::string("bfac"),bfac)==0)bfac  = 0;
+    if(find_para(std::string("seed"),seed)==0)seed  = 0;
     if(find_para(std::string("ionum"),ionum)==0)ionum  = 0;
     if(find_para(std::string("Link_name"),Link_name)==0)Link_name  = std::string("NONE");
     if(find_para(std::string("Ename"),Ename)==0)Ename  = std::string("NONE");

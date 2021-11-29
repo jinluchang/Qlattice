@@ -51,8 +51,15 @@ __global__ void multiplyNab_global(const Complexq* Nab, Ftype *Mres,const Ftype 
   //off = tid;unsigned long offAB = bi*nt*16;
   //while(off < nt*16){NMv_values[off] = Nab[offAB + off];off += blockDim.x;}
   ////off = tid;
-  unsigned long offAB = bufN0*16;off = bi*16;
-  if(tid < 16){for(int ti=0;ti<nt;ti++)NMv_values[ti*16 + tid] = Nab[ti*offAB + off + tid];}
+  unsigned long offAB = bufN0*16;/////off = bi*16;
+  /////if(tid < 16){for(int ti=0;ti<nt;ti++)NMv_values[ti*16 + tid] = Nab[ti*offAB + off + tid];}
+  off = tid;
+  while(off < nt*16){
+    int ti = off/16;
+    int op = off%16;
+    NMv_values[ti*16 + op] = Nab[ti*offAB + bi*16 + op];
+    off += blockDim.x;
+  }
   ///off = tid;int offT = nt*16;
   ///while(off<nmass*2){NMv_values[offT + off] = Mvalues[off];off += blockDim.x;}
   __syncthreads();
@@ -123,9 +130,14 @@ __global__ void prodab_global(const Complexq *a,const Complexq *b, Complexq *fd,
       for(int ai=0;ai<4;ai++)
       {
 
+        #ifndef __HIP_PLATFORM_HCC__
         Eigen::Map<const EigenVq > aM(&as[ai*3+0],3);
         Eigen::Map<const EigenVq > bM(&bs[bi*3+0],3);
         resab[tid*16 + iv] =  bM.dot(aM);
+        #else
+        resab[tid*16 + iv] = 0; 
+        for(int doti=0;doti<3;doti++){resab[tid*16 + iv] += qlat::qconj(bs[bi*3+doti]) * as[ai*3+doti];}
+        #endif
         iv += 1;
       }
     }
@@ -510,6 +522,7 @@ struct Nab_distribute{
   int mxyz;
   int NabL_size;
   int bufN;
+  int rank;
   ////Complexq* NabN;
   //qlat::vector<Complexq > NabN;
   qlat::vector_gpu<Complexq > NabN;
@@ -523,6 +536,7 @@ struct Nab_distribute{
 
     NabL_size = 16*fd.Nt*fd.Nmpi;
     mxyz = fd.mx*fd.my*fd.mz;
+    rank = fd.rank;
 
     int color_xyz = fd.init;
     MPI_Comm_split(get_comm(), color_xyz, fd.rank, &xyz_comm);
@@ -580,9 +594,12 @@ struct Nab_distribute{
       ///#endif
     }
 
-    MPI_Alltoallv(NabN.data(),(int*) &send[0],(int*) &spls[0], MPI_CHAR,
-                  &NabL[0]   ,(int*) &recv[0],(int*) &rpls[0], MPI_CHAR, t_comm);
+    //MPI_Alltoallv(NabN.data(),(int*) &send[0],(int*) &spls[0], MPI_CHAR,
+    //              &NabL[0]   ,(int*) &recv[0],(int*) &rpls[0], MPI_CHAR, t_comm);
 
+    int GPU = 1;
+    MPI_Alltoallv_mode(NabN.data(),(int*) &send[0],(int*) &spls[0],
+                       &NabL[0]   ,(int*) &recv[0],(int*) &rpls[0], t_comm, 1, GPU);
   }
 
   //~Nab_distribute(){
@@ -684,10 +701,11 @@ inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const q
 
   ga_M g5;
   g5 = ga_cps.ga[0][5];
+  ////match gammas with twopt functions
   for(int o=0;o<16;o++){
     ////gL[o] = ga_cps.ga[0][5] * gL[o];
     gL[o] = gL[o] * g5;
-    //gL[o] = g5 * gL[o];
+    /////gL[o] = g5 * gL[o];
   }
   ////GL
 
@@ -749,7 +767,6 @@ inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const q
   if(mode_reduce == 1)prodFMV.resize(Nmpi*geo.local_volume()*16/32);
   Complexq* prodFM = prodFMV.data();
 
-  ////int facbufN = 1;
   long NabL_size  = 16*Nt*Nmpi;
   long MresL_size = nmass*16*nt*nt;
 
@@ -767,6 +784,7 @@ inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const q
   #ifdef QLAT_USE_ACC
   int bufa0 = -1;int bufa1 = -1;
   int bufb0 = -1;int bufb1 = -1;
+  int facbufN = 1;
 
   size_t freeM = 0;size_t totalM = 0;double extra = 0.2;
   modeCopy = 1;
@@ -791,6 +809,9 @@ inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const q
   else{Ncut = Nfull/(3.0);Ncutbuf = 2*Ncut;}///(or 2.5)
   print0("==rank %d, n_vec %8d, Ncut %5d/%5d , Fac %.3e , free %.3e GB, total %.3e GB \n",
       qlat::get_id_node(), n_vec,Ncut,Nfull,n_vec*1.0/Ncut,freeD, totalD);
+  #ifdef  __HIP_PLATFORM_HCC__
+  if(Ncut != n_vec){abort_r("Something wrong with the memory of HIPCC!\n");}
+  #endif
   #endif
 
   unsigned long bufi = 0;

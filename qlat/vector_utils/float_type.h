@@ -18,7 +18,17 @@
 
 namespace qlat{
 
+
+#ifdef __ENABLE_DOUBLE__
+#define Enablefloat 0
+#else
 #define Enablefloat 1
+#endif
+
+//#define __NO_GPU_DIRECT__
+//#ifdef  __HIP_PLATFORM_HCC__
+//#define __NO_GPU_DIRECT__
+//#endif
 
 #define PRINT_TIMER 10
 //#define PRINT_TIMER 100
