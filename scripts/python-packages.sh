@@ -8,10 +8,9 @@ name=python-packages
 
 echo "!!!! build $name !!!!"
 
-pip3 install --verbose --no-index -f $distfiles/python-packages Cython
+pip3 install --verbose --no-index -f $distfiles/python-packages --upgrade pip
 pip3 install --verbose --no-index -f $distfiles/python-packages wheel
 pip3 install --verbose --no-index -f $distfiles/python-packages numpy
-pip3 install --verbose --no-index -f $distfiles/python-packages mpmath
 pip3 install --verbose --no-index -f $distfiles/python-packages sympy
 pip3 install --verbose --no-index -f $distfiles/python-packages scipy
 

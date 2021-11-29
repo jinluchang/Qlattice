@@ -10,6 +10,7 @@ import math
 import rbc_ukqcd_params as rup
 import rbc_ukqcd as ru
 import numpy as np
+import scipy as sp
 
 import os
 
@@ -457,11 +458,11 @@ qg.begin_with_gpt()
 q.check_time_limit()
 
 job_tag_list = [
-        "24D",
-        "32D",
-        "24DH",
-        "32Dfine",
-        "48I",
+        # "24D",
+        # "32D",
+        # "24DH",
+        # "32Dfine",
+        # "48I",
         "64I",
         ]
 
