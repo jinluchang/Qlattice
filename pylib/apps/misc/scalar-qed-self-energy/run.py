@@ -120,6 +120,7 @@ def mk_four_point_func_table_ff(total_site, m_pi, ainv_gev, ff_tag = ""):
         q.glb_sum(ld)
         q.mk_file_dirs_info(fn)
         ld.save(fn)
+    renormalize_xx(ld)
     return ld
 
 def check_traj(job_tag, traj):
@@ -179,12 +180,22 @@ def get_four_point_em(job_tag, traj):
     ld[(1,)] *= 1 / space_volume
     return ld
 
+def renormalize_xx(ld):
+    r_max = ld.dim_size(2) - 1
+    n_dtype = ld.dim_size(0)
+    for dtype in range(n_dtype):
+        for t in range(ld.dim_size(1)):
+            for ri in range(1, r_max + 1):
+                em = 3 # for "xx"
+                ld[(dtype, t, ri, em)] /= np.square(ri / r_scaling_factor)
+
 @q.timer
 def normalize_four_point_em(ld):
     ld = ld.copy()
-    ld_sum = partial_sum_r_four_point_func_em(ld)
+    renormalize_xx(ld)
     r_max = ld.dim_size(2) - 1
     n_dtype = ld.dim_size(0)
+    ld_sum = partial_sum_r_four_point_func_em(ld)
     assert n_dtype >= 2
     for t in range(ld.dim_size(1)):
         fac = -ld_sum[(1, t, r_max, 1,)]
@@ -277,6 +288,7 @@ def partial_sum_with_r4(arr):
 
 @q.timer
 def get_curve(ld, dtype, t_s, a_fm, curve_tag):
+    # return 1-D np array
     r_range_tag, em_tag = curve_tag
     # t_s may be L / 2
     v = interpolate_t(ld, dtype, t_s)
@@ -294,19 +306,29 @@ def get_curve(ld, dtype, t_s, a_fm, curve_tag):
     else:
         r_cut_i = float(r_range_tag) / a_fm * r_scaling_factor
         r_list = [ r_cut_i, ]
-    if em_tag == "tt":
-        em = 1
-    elif em_tag == "ii":
-        em = 2
-    elif em_tag == "xx":
-        em = 3
-    else:
-        raise Exception("get_curve tag='{tag}'")
-    return np.array([ interpolate(v, r)[em].real for v in v_list for r in r_list ])
+    def em(v):
+        if em_tag == "tt":
+            return v[1]
+        elif em_tag == "ii":
+            return v[2]
+        elif em_tag == "xx":
+            return v[3]
+        elif em_tag == "mm":
+            return v[0]
+        elif em_tag == "tt+ii":
+            return v[1] + v[2]
+        elif em_tag == "tt-ii":
+            return v[1] - v[2] / 3.0
+        else:
+            raise Exception("get_curve tag='{tag}'")
+    return np.array([ em(interpolate(v, r)).real for v in v_list for r in r_list ])
 
 @q.timer
 def get_curves(ld, t_s, a_fm, curve_tag):
+    # return a list of 1-D np array
+    # get a curve for each dtype (usually corresponds to different r_pi_fm)
     dtype_len = ld.dim_size(0)
+    assert dtype_len == len(r_pi_fm_list)
     return [ get_curve(ld, dtype, t_s, a_fm, curve_tag) for dtype in range(dtype_len) ]
 
 def interpolate_curves(curve_ff_list, i):
@@ -316,15 +338,24 @@ def interpolate_curves(curve_ff_list, i):
     return interpolate(curve_ff_list, i)
 
 @q.timer
-def match_curve(curve, curve_ff_list_list, *, eps = 1e-4, n_divide = 10):
+def match_curve(curve, curve_ff_list_list, *, eps = 1e-5, n_divide = 10):
     # return best i so that \sum_k a_k curve_ff_list_list[k][i] (where \sum_k a_k = 1) approximate curve
     # curve_ff_list_list = [ curve_ff_list_for_one_ff_tag, ... ]
     # curve_ff_list_for_one_ff_tag = [ curve_for_one_r_pi, ... ]
-    # curve_for_one_r_pi = [ curve_value_at_one_r, ... ]
+    # curve_for_one_r_pi = np.array([ curve_value_at_one_r, ... ])
     def fcn(i):
         curve_i_list = [ interpolate_curves(curve_ff_list, i) for curve_ff_list in curve_ff_list_list ]
         curve_i = curve_i_list[0]
-        return np.linalg.norm(curve - curve_i)
+        if len(curve_i_list) == 1:
+            return np.linalg.norm(curve - curve_i)
+        curve_i_corrections = np.array([ curve_i_c - curve_i for curve_i_c in curve_i_list[1:] ])
+        fit = np.linalg.lstsq(curve_i_corrections.transpose(), curve - curve_i, rcond=None)
+        # q.displayln_info(curve_i_corrections.transpose(), curve - curve_i, fit)
+        if fit[1].shape == (0,):
+            return np.square(np.linalg.norm(curve - curve_i))
+        else:
+            assert fit[1].shape == (1,)
+            return fit[1].item()
     val_min = fcn(0)
     i_min = 0
     def find(i0, i1):
@@ -384,12 +415,16 @@ def fit_r_pi_fm(job_tag, jk_list_four_point_em, pion_type, ff_tag_list, curve_ta
         curve_ff_list_list.append(get_curves(ld_ff, t_s, a_fm, curve_tag))
     ld = q.jk_avg(jk_list)
     jk_list_r_pi_fm = []
+    jk_list_r2_pi_fm2 = []
     for ld in jk_list:
         curve = get_curve(ld, 0, t_s, a_fm, curve_tag)
         i_best = match_curve(curve, curve_ff_list_list)
         r_pi_fm = interpolate_r_pi_fm(i_best)
         jk_list_r_pi_fm.append(r_pi_fm)
-    result_str = f"r_pi_fm = {q.jk_avg(jk_list_r_pi_fm)} +/- {q.jk_err(jk_list_r_pi_fm)} t_s={t_s} job_tag={job_tag} pion_type={pion_type} ff_tag_list={ff_tag_list} curve_tag={curve_tag} t_s_fm={t_s_fm}"
+        jk_list_r2_pi_fm2.append(np.square(r_pi_fm))
+    def show_ve(jk_v):
+        return f"{q.jk_avg(jk_v)} +/- {q.jk_err(jk_v)}"
+    result_str = f"r_pi_fm = {show_ve(jk_list_r_pi_fm)} r2_pi_fm = {show_ve(jk_list_r2_pi_fm2)} t_s={t_s} job_tag={job_tag} pion_type={pion_type} ff_tag_list={ff_tag_list} curve_tag={curve_tag} t_s_fm={t_s_fm}"
     q.displayln_info(result_str)
     # avg plot
     curve = get_curve(jk_list[0], 0, t_s, a_fm, curve_tag)
@@ -413,40 +448,49 @@ def run_job(job_tag):
     # ADJUST ME
     pion_type_list = [
             "type2",
-            "pion-diff",
+            # "pion-diff",
             # "charged-pion",
             ]
     ff_tag_list_list = [
-            [ "pole", ],
-            [ "pole_p", ],
-            [ "linear", ],
+            # [ "pole", ],
+            # [ "linear", ],
+            [ "pole", "pole_p", ],
+            # [ "pole", "linear", ],
             ]
     curve_tag_list = [
-            ("all", "tt",),
-            (1.0, "tt",),
-            (1.5, "tt",),
-            (2.0, "tt",),
-            (2.5, "tt",),
-            (10.0, "tt",),
+            # ("all", "tt",),
+            # (1.0, "tt",),
+            # (1.5, "tt-ii",),
+            # (1.5, "tt",),
+            # (1.5, "ii",),
+            (1.5, "xx",),
+            # (1.5, "tt+ii",),
+            # (1.5, "mm",),
+            # (2.0, "tt",),
+            # (2.5, "tt",),
+            # (10.0, "tt",),
             ]
-    t_s_fm_list = [ 0.5, 1.0, 1.5, 2.0, 2.5, ]
+    t_s_fm_list = [ 0.8, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0, ]
     #
-    # for pion_type in pion_type_list:
-    #     for ff_tag_list in ff_tag_list_list:
-    #         for curve_tag in curve_tag_list:
-    #             for t_s_fm in t_s_fm_list:
-    #                 fit_r_pi_fm(job_tag, jk_list_four_point_em, pion_type, ff_tag_list, curve_tag, t_s_fm)
-    pion_type = "pion-diff"
-    ff_tag_list = [ "pole", ]
-    curve_tag = ("all", "tt",)
-    t_s_fm_list = list(np.arange(0.0, 2.6, 0.1))
-    table = []
-    for t_s_fm in t_s_fm_list:
-        jks = fit_r_pi_fm(job_tag, jk_list_four_point_em, pion_type, ff_tag_list, curve_tag, t_s_fm)
-        v = [ t_s_fm, q.jk_avg(jks), q.jk_err(jks), ]
-        table.append(v)
-    content = "\n".join([ " ".join(map(str, v)) for v in table ] + [ "", ])
-    q.qtouch_info(get_save_path(f"curve-fits/{job_tag}/curve.txt"), content)
+    for pion_type in pion_type_list:
+        for ff_tag_list in ff_tag_list_list:
+            for t_s_fm in t_s_fm_list:
+                for curve_tag in curve_tag_list:
+                    continue
+                    fit_r_pi_fm(job_tag, jk_list_four_point_em, pion_type, ff_tag_list, curve_tag, t_s_fm)
+    def make_curve():
+        pion_type = "pion-diff"
+        ff_tag_list = [ "pole", "pole_p", ]
+        curve_tag = (1.5, "tt",)
+        t_s_fm_list = list(np.arange(0.0, 2.6, 0.1))
+        table = []
+        for t_s_fm in t_s_fm_list:
+            jks = fit_r_pi_fm(job_tag, jk_list_four_point_em, pion_type, ff_tag_list, curve_tag, t_s_fm)
+            v = [ t_s_fm, q.jk_avg(jks), q.jk_err(jks), ]
+            table.append(v)
+        content = "\n".join([ " ".join(map(str, v)) for v in table ] + [ "", ])
+        q.qtouch_info(get_save_path(f"curve-fits/{job_tag}/curve.txt"), content)
+    make_curve()
     #
     q.clean_cache()
     q.timer_display()
@@ -458,11 +502,11 @@ qg.begin_with_gpt()
 q.check_time_limit()
 
 job_tag_list = [
-        # "24D",
-        # "32D",
-        # "24DH",
-        # "32Dfine",
-        # "48I",
+        "24D",
+        "32D",
+        "24DH",
+        "32Dfine",
+        "48I",
         "64I",
         ]
 

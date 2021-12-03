@@ -250,6 +250,46 @@ inline void clf_topology_field_5(FieldM<double, 1>& topf, const GaugeField& gf)
   clf_topology_field_5(topf, clf1, clf2, clf3, clf4, clf5);
 }
 
+inline void clf_topology_field_5_terms(FieldM<double, 5>& topf,
+                                       const CloverLeafField& clf1,
+                                       const CloverLeafField& clf2,
+                                       const CloverLeafField& clf3,
+                                       const CloverLeafField& clf4,
+                                       const CloverLeafField& clf5)
+{
+  TIMER("clf_topology_field_5");
+  const Geometry& geo = clf1.geo();
+  topf.init(geo);
+  qassert(is_matching_geo(topf.geo(), geo));
+  qassert(is_matching_geo(geo, clf2.geo()));
+  qassert(is_matching_geo(geo, clf3.geo()));
+  qassert(is_matching_geo(geo, clf4.geo()));
+  qassert(is_matching_geo(geo, clf5.geo()));
+  const double c5 = 1.0 / 20.0;
+  const double c1 = (19.0 - 55.0 * c5) / 9.0;
+  const double c2 = (1.0 - 64.0 * c5) / 9.0;
+  const double c3 = (-64.0 + 640.0 * c5) / 45.0;
+  const double c4 = 1.0 / 5.0 - 2.0 * c5;
+  qacc_for(index, geo.local_volume(), {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    Vector<double> v = topf.get_elems(xl);
+    v[0] = c1 * clf_topology_density(clf1, xl);
+    v[1] = c2 / 16.0 * clf_topology_density(clf2, xl);
+    v[2] = c3 / 4.0 * clf_topology_density(clf3, xl);
+    v[3] = c4 / 9.0 * clf_topology_density(clf4, xl);
+    v[4] = c5 / 81.0 * clf_topology_density(clf5, xl);
+  });
+}
+
+inline void clf_topology_field_5_terms(FieldM<double, 5>& topf, const GaugeField& gf)
+// https://arxiv.org/pdf/hep-lat/9701012v2.pdf
+{
+  TIMER("clf_topology_field_5(topf,gf)");
+  CloverLeafField clf1, clf2, clf3, clf4, clf5;
+  gf_clover_leaf_field_5(clf1, clf2, clf3, clf4, clf5, gf);
+  clf_topology_field_5_terms(topf, clf1, clf2, clf3, clf4, clf5);
+}
+
 inline double topology_charge_5(const GaugeField& gf)
 {
   TIMER("topology_charge_5(gf)");
