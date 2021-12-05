@@ -21,15 +21,22 @@ qg.begin_with_gpt()
 q.qremove_all_info("results")
 q.qmkdir_info("results")
 
-total_site = [ 4, 4, 4, 8, ]
-geo = q.Geometry(total_site, 1)
-q.displayln_info("geo.show() =", geo.show())
 rs = q.RngState("seed")
 
-gf = q.GaugeField(geo)
-gf.set_rand(rs.split("gf-init"), 0.5, 10)
-# gf = qg.load_gauge_field("results/ckpoint.topo1.4nt8.lat")
+path = "results/ckpoint.topo1.4nt8.lat"
+is_load_config = True
+if is_load_config and q.does_file_exist_sync_node(path):
+    gf = qg.load_gauge_field(path)
+    geo = q.geo_reform(gf.geo())
+    total_site = geo.total_site()
+else:
+    total_site = [ 4, 4, 4, 8, ]
+    geo = q.Geometry(total_site, 1)
+    gf = q.GaugeField(geo)
+    gf.set_rand(rs.split("gf-init"), 0.5, 10)
 
+q.displayln_info(f"total_site = {total_site}")
+q.displayln_info("geo.show() =", geo.show())
 gf.show_info()
 
 gf_f = gf.copy()
@@ -44,7 +51,9 @@ def measure():
     topo_field = q.gf_topology_field(gf_f)
     t_sum = topo_field.glb_sum_tslice()
     t_sum = [ str((t, t_sum.get_elem(t).item(),)) for t in range(t_sum.n_points()) ]
-    q.displayln_info(f"t={t} topo={topo} {sum(topo_terms)} {topo_terms}")
+    q.displayln_info(f"t={t} topo={topo} {sum(topo_terms)}")
+    topo_terms_str = ',\n '.join([ str(x) for x in topo_terms ])
+    q.displayln_info(f"[ {topo_terms_str},\n]")
     q.displayln_info("\n".join(t_sum))
 
 def wilson_flow_force(gf, c1 = 0.0):
