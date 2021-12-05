@@ -28,6 +28,10 @@ from qlat.qcd import *
 
 from qlat.wilson_flow import *
 
+from qlat.topology import *
+
+from qlat.smear import *
+
 from qlat.propagator import *
 
 from qlat.gauge_action import *

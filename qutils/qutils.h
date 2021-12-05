@@ -165,7 +165,11 @@ qacc float& operator*=(float& x, const Complex& factor) { assert(false); }
 
 qacc char& operator*=(char& x, const Complex& factor) { assert(false); }
 
+qacc char& operator*=(int8_t& x, const Complex& factor) { assert(false); }
+
 qacc void set_zero(char& x) { x = 0; }
+
+qacc void set_zero(int8_t& x) { x = 0; }
 
 qacc void set_zero(int32_t& x) { x = 0; }
 
@@ -192,6 +196,10 @@ void set_zero(std::vector<M>& vec)
 qacc void set_unit(char& x, const long& coef = 1) { x = coef; }
 
 qacc void set_unit(char& x, const Complex& coef = 1) { x = coef.real(); }
+
+qacc void set_unit(int8_t& x, const long& coef = 1) { x = coef; }
+
+qacc void set_unit(int8_t& x, const Complex& coef = 1) { x = coef.real(); }
 
 qacc void set_unit(int32_t& x, const long& coef = 1) { x = coef; }
 

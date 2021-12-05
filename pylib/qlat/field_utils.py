@@ -48,3 +48,43 @@ def mk_fft(is_forward, *, is_only_spatial = False, is_normalizing = False):
                 (3, is_forward,),
                 ]
         return FastFourierTransform(fft_infos, is_normalizing = is_normalizing)
+
+class FieldExpandCommPlan:
+
+    def __init__(self):
+        self.cdata = c.mk_field_expand_comm_plan()
+
+    def __del__(self):
+        c.free_field_expand_comm_plan(self)
+
+    def __imatmul__(self, v1):
+        assert isinstance(v1, FieldExpandCommPlan)
+        c.set_field_expand_comm_plan(self, v1)
+        return self
+
+    def copy(self, is_copying_data = True):
+        x = FieldExpandCommPlan()
+        if is_copying_data:
+            x @= self
+        return x
+
+    def __copy__(self):
+        return self.copy()
+
+    def __deepcopy__(self, memo):
+        return self.copy()
+
+def make_field_expand_comm_plan(comm_marks):
+    # comm_marks is of type Field("int8_t")
+    cp = FieldExpandCommPlan()
+    c.make_field_expand_comm_plan(cp, comm_marks)
+    return cp
+
+def refresh_expanded(field, comm_plan = None):
+    if comm_plan is None:
+        return c.refresh_expanded_field(field)
+    else:
+        return c.refresh_expanded_field(field, comm_plan)
+
+def refresh_expanded_1(field):
+    return c.refresh_expanded_1_field(field)
