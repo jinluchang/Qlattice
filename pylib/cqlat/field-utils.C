@@ -4,6 +4,27 @@ namespace qlat
 {  //
 
 template <class M>
+PyObject* refresh_expanded_field_ctype(PyField& pf, PyObject* p_comm_plan)
+{
+  Field<M>& f = *(Field<M>*)pf.cdata;
+  if (NULL == p_comm_plan) {
+    refresh_expanded(f);
+  } else {
+    const CommPlan& cp = py_convert_type<CommPlan>(p_comm_plan);
+    refresh_expanded(f, cp);
+  }
+  Py_RETURN_NONE;
+}
+
+template <class M>
+PyObject* refresh_expanded_1_field_ctype(PyField& pf)
+{
+  Field<M>& f = *(Field<M>*)pf.cdata;
+  refresh_expanded_1(f);
+  Py_RETURN_NONE;
+}
+
+template <class M>
 PyObject* assign_as_complex_field_ctype(PyField& pf, PyField& pf1)
 {
   Field<Complex>& f = *(Field<Complex>*)pf.cdata;
@@ -37,27 +58,6 @@ PyObject* get_elem_field_ctype(PyField& pf, const Coordinate& xg, const int m)
   } else {
     return py_convert(field_get_elem(f, xg));
   }
-}
-
-template <class M>
-PyObject* refresh_expanded_field_ctype(PyField& pf, PyObject* p_comm_plan)
-{
-  Field<M>& f = *(Field<M>*)pf.cdata;
-  if (NULL == p_comm_plan) {
-    refresh_expanded(f);
-  } else {
-    const CommPlan& cp = py_convert_type<CommPlan>(p_comm_plan);
-    refresh_expanded(f, cp);
-  }
-  Py_RETURN_NONE;
-}
-
-template <class M>
-PyObject* refresh_expanded_1_field_ctype(PyField& pf)
-{
-  Field<M>& f = *(Field<M>*)pf.cdata;
-  refresh_expanded_1(f);
-  Py_RETURN_NONE;
 }
 
 template <class M>
@@ -103,6 +103,75 @@ PyObject* fft_dir_complex_field_ctype(PyField& pf1, PyField& pf, const int fft_d
 
 }  // namespace qlat
 
+EXPORT(mk_field_expand_comm_plan, {
+  using namespace qlat;
+  CommPlan* pcp = new CommPlan();
+  return py_convert((void*)pcp);
+});
+
+EXPORT(free_field_expand_comm_plan, {
+  using namespace qlat;
+  return free_obj<CommPlan>(args);
+});
+
+EXPORT(set_field_expand_comm_plan, {
+  using namespace qlat;
+  return set_obj<CommPlan>(args);
+});
+
+EXPORT(make_field_expand_comm_plan, {
+  using namespace qlat;
+  PyObject* p_comm_plan = NULL;
+  PyObject* p_comm_marks = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_comm_plan, &p_comm_marks)) {
+    return NULL;
+  }
+  CommPlan& cp = py_convert_type<CommPlan>(p_comm_plan);
+  const CommMarks& marks = py_convert_type<CommMarks>(p_comm_marks);
+  cp = make_comm_plan(marks);
+  Py_RETURN_NONE;
+});
+
+EXPORT(set_marks_field_all, {
+  using namespace qlat;
+  PyObject* p_comm_marks = NULL;
+  PyObject* p_geo = NULL;
+  PyObject* p_tag = NULL;
+  if (!PyArg_ParseTuple(args, "OOO", &p_comm_marks, &p_geo, &p_tag)) {
+    return NULL;
+  }
+  CommMarks& marks = py_convert_type<CommMarks>(p_comm_marks);
+  const Geometry& geo = py_convert_type<Geometry>(p_geo);
+  std::string tag = py_convert_data<std::string>(p_tag);
+  set_marks_field_all(marks, geo, tag);
+  Py_RETURN_NONE;
+});
+
+EXPORT(refresh_expanded_field, {
+  using namespace qlat;
+  PyObject* p_field = NULL;
+  PyObject* p_comm_plan = NULL;
+  if (!PyArg_ParseTuple(args, "O|O", &p_field, &p_comm_plan)) {
+    return NULL;
+  }
+  PyField pf = py_convert_field(p_field);
+  PyObject* p_ret = NULL;
+  FIELD_DISPATCH(p_ret, refresh_expanded_field_ctype, pf.ctype, pf, p_comm_plan);
+  return p_ret;
+});
+
+EXPORT(refresh_expanded_1_field, {
+  using namespace qlat;
+  PyObject* p_field = NULL;
+  if (!PyArg_ParseTuple(args, "O", &p_field)) {
+    return NULL;
+  }
+  PyField pf = py_convert_field(p_field);
+  PyObject* p_ret = NULL;
+  FIELD_DISPATCH(p_ret, refresh_expanded_1_field_ctype, pf.ctype, pf);
+  return p_ret;
+});
+
 EXPORT(set_phase_field, {
   using namespace qlat;
   PyObject* p_field = NULL;
@@ -112,8 +181,8 @@ EXPORT(set_phase_field, {
   }
   CoordinateD lmom;
   py_convert(lmom, p_lmom);
-  pqassert(py_get_ctype(p_field) == "Complex");
-  FieldM<Complex, 1>& f = py_convert_type<FieldM<Complex, 1> >(p_field);
+  pqassert(py_convert_data<std::string>(p_field, "ctype") == "Complex");
+  FieldM<Complex, 1>& f = py_convert_type_field<Complex, 1>(p_field);
   pqassert(f.geo().multiplicity == 1);
   set_phase_field(f, lmom);
   Py_RETURN_NONE;
@@ -177,63 +246,6 @@ EXPORT(get_elem_field, {
   py_convert(xg, p_xg);
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, get_elem_field_ctype, pf.ctype, pf, xg, m);
-  return p_ret;
-});
-
-EXPORT(mk_field_expand_comm_plan, {
-  using namespace qlat;
-  CommPlan* pcp = new CommPlan();
-  return py_convert((void*)pcp);
-});
-
-EXPORT(free_field_expand_comm_plan, {
-  using namespace qlat;
-  return free_obj<CommPlan>(args);
-});
-
-EXPORT(set_field_expand_comm_plan, {
-  using namespace qlat;
-  return set_obj<CommPlan>(args);
-});
-
-EXPORT(make_field_expand_comm_plan, {
-  using namespace qlat;
-  PyObject* p_comm_plan = NULL;
-  PyObject* p_comm_marks = NULL;
-  if (!PyArg_ParseTuple(args, "OO", &p_comm_plan, &p_comm_marks)) {
-    return NULL;
-  }
-  CommPlan& cp = py_convert_type<CommPlan>(p_comm_plan);
-  PyField pf = py_convert_field(p_comm_marks);
-  pqassert(pf.ctype == "int8_t");
-  Field<int8_t>& f = *(Field<int8_t>*)pf.cdata;
-  const CommMarks& marks = static_cast<const CommMarks&>(f);
-  cp = make_comm_plan(marks);
-  Py_RETURN_NONE;
-});
-
-EXPORT(refresh_expanded_field, {
-  using namespace qlat;
-  PyObject* p_field = NULL;
-  PyObject* p_comm_plan = NULL;
-  if (!PyArg_ParseTuple(args, "O|O", &p_field, &p_comm_plan)) {
-    return NULL;
-  }
-  PyField pf = py_convert_field(p_field);
-  PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, refresh_expanded_field_ctype, pf.ctype, pf, p_comm_plan);
-  return p_ret;
-});
-
-EXPORT(refresh_expanded_1_field, {
-  using namespace qlat;
-  PyObject* p_field = NULL;
-  if (!PyArg_ParseTuple(args, "O", &p_field)) {
-    return NULL;
-  }
-  PyField pf = py_convert_field(p_field);
-  PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, refresh_expanded_1_field_ctype, pf.ctype, pf);
   return p_ret;
 });
 

@@ -10,7 +10,7 @@ EXPORT(gf_topology_field, {
     return NULL;
   }
   const GaugeField& gf = py_convert_type<GaugeField>(p_gf);
-  pqassert(py_get_ctype(p_topf) == "double");
+  pqassert(py_convert_data<std::string>(p_topf, "ctype") == "double");
   FieldM<double, 1>& topf = py_convert_type<FieldM<double, 1> >(p_topf);
   pqassert(topf.geo().multiplicity == 1);
   clf_topology_field_5(topf, gf);
@@ -27,7 +27,7 @@ EXPORT(gf_topology_terms_field, {
     return NULL;
   }
   const GaugeField& gf = py_convert_type<GaugeField>(p_gf);
-  pqassert(py_get_ctype(p_topf) == "double");
+  pqassert(py_convert_data<std::string>(p_topf, "ctype") == "double");
   FieldM<double, 5>& topf = py_convert_type<FieldM<double, 5> >(p_topf);
   pqassert(topf.geo().multiplicity == 5);
   clf_topology_field_5_terms(topf, gf);

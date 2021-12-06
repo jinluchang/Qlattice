@@ -6,8 +6,8 @@ namespace qlat
 template <class M>
 PyObject* mk_field_ctype(PyObject* p_geo, const int multiplicity)
 {
-  Field<M>* pf = new Field<M>();
-  Field<M>& f = *pf;
+  Field<M>* p_field = new Field<M>();
+  Field<M>& f = *p_field;
   if (p_geo != NULL) {
     const Geometry& geo = py_convert_type<Geometry>(p_geo);
     if (multiplicity == 0) {
@@ -17,137 +17,137 @@ PyObject* mk_field_ctype(PyObject* p_geo, const int multiplicity)
       f.init(geo, multiplicity);
     }
   }
-  return py_convert((void*)pf);
+  return py_convert((void*)p_field);
 }
 
 template <class M>
-PyObject* free_field_ctype(PyField& pf)
+PyObject* free_field_ctype(PyObject* p_field)
 {
-  Field<M>& f = *(Field<M>*)pf.cdata;
+  Field<M>& f = py_convert_type_field<M>(p_field);
   delete &f;
   Py_RETURN_NONE;
 }
 
 template <class M>
-PyObject* set_field_ctype(PyField& pf_new, PyField& pf)
+PyObject* set_field_ctype(PyObject* p_field_new, PyObject* p_field)
 {
-  Field<M>& f_new = *(Field<M>*)pf_new.cdata;
-  const Field<M>& f = *(Field<M>*)pf.cdata;
+  Field<M>& f_new = py_convert_type_field<M>(p_field_new);
+  const Field<M>& f = py_convert_type_field<M>(p_field);
   f_new = f;
   Py_RETURN_NONE;
 }
 
 template <class M>
-PyObject* set_add_field_ctype(PyField& pf_new, PyField& pf)
+PyObject* set_add_field_ctype(PyObject* p_field_new, PyObject* p_field)
 {
-  Field<M>& f_new = *(Field<M>*)pf_new.cdata;
-  Field<M>& f = *(Field<M>*)pf.cdata;
+  Field<M>& f_new = py_convert_type_field<M>(p_field_new);
+  const Field<M>& f = py_convert_type_field<M>(p_field);
   f_new += f;
   Py_RETURN_NONE;
 }
 
 template <class M>
-PyObject* set_sub_field_ctype(PyField& pf_new, PyField& pf)
+PyObject* set_sub_field_ctype(PyObject* p_field_new, PyObject* p_field)
 {
-  Field<M>& f_new = *(Field<M>*)pf_new.cdata;
-  Field<M>& f = *(Field<M>*)pf.cdata;
+  Field<M>& f_new = py_convert_type_field<M>(p_field_new);
+  const Field<M>& f = py_convert_type_field<M>(p_field);
   f_new -= f;
   Py_RETURN_NONE;
 }
 
 template <class M>
-PyObject* set_mul_field_ctype(PyField& pf, const double& factor)
+PyObject* set_mul_field_ctype(PyObject* p_field, const double& factor)
 {
-  Field<M>& f = *(Field<M>*)pf.cdata;
+  Field<M>& f = py_convert_type_field<M>(p_field);
   f *= factor;
   Py_RETURN_NONE;
 }
 
 template <class M>
-PyObject* set_mul_field_ctype(PyField& pf, const Complex& factor)
+PyObject* set_mul_field_ctype(PyObject* p_field, const Complex& factor)
 {
-  Field<M>& f = *(Field<M>*)pf.cdata;
+  Field<M>& f = py_convert_type_field<M>(p_field);
   f *= factor;
   Py_RETURN_NONE;
 }
 
 template <class M>
-PyObject* set_mul_field_ctype(PyField& pf, const FieldM<Complex, 1>& f_factor)
+PyObject* set_mul_field_ctype(PyObject* p_field, const FieldM<Complex, 1>& f_factor)
 {
-  Field<M>& f = *(Field<M>*)pf.cdata;
+  Field<M>& f = py_convert_type_field<M>(p_field);
   f *= f_factor;
   Py_RETURN_NONE;
 }
 
 template <class M>
-PyObject* set_zero_field_ctype(PyField& pf)
+PyObject* set_zero_field_ctype(PyObject* p_field)
 {
-  Field<M>& f = *(Field<M>*)pf.cdata;
+  Field<M>& f = py_convert_type_field<M>(p_field);
   set_zero(f);
   Py_RETURN_NONE;
 }
 
 template <class M>
-PyObject* set_unit_field_ctype(PyField& pf, const Complex& coef)
+PyObject* set_unit_field_ctype(PyObject* p_field, const Complex& coef)
 {
-  Field<M>& f = *(Field<M>*)pf.cdata;
+  Field<M>& f = py_convert_type_field<M>(p_field);
   set_unit(f, coef);
   Py_RETURN_NONE;
 }
 
 template <class M>
-PyObject* set_u_rand_double_field_ctype(PyField& pf, const RngState& rs,
+PyObject* set_u_rand_double_field_ctype(PyObject* p_field, const RngState& rs,
                                         const double upper, const double lower)
 {
-  Field<M>& f = *(Field<M>*)pf.cdata;
+  Field<M>& f = py_convert_type_field<M>(p_field);
   set_u_rand_double(f, rs, upper, lower);
   Py_RETURN_NONE;
 }
 
 template <class M>
-PyObject* get_total_site_field_ctype(PyField& pf)
+PyObject* get_total_site_field_ctype(PyObject* p_field)
 {
-  Field<M>& f = *(Field<M>*)pf.cdata;
+  Field<M>& f = py_convert_type_field<M>(p_field);
   const Coordinate ret = f.geo().total_site();
   return py_convert(ret);
 }
 
 template <class M>
-PyObject* get_multiplicity_field_ctype(PyField& pf)
+PyObject* get_multiplicity_field_ctype(PyObject* p_field)
 {
-  Field<M>& f = *(Field<M>*)pf.cdata;
+  Field<M>& f = py_convert_type_field<M>(p_field);
   const long ret = f.geo().multiplicity;
   return py_convert(ret);
 }
 
 template <class M>
-PyObject* set_geo_field_ctype(Geometry& geo, PyField& pf)
+PyObject* set_geo_field_ctype(Geometry& geo, PyObject* p_field)
 {
-  const Field<M>& f = *(Field<M>*)pf.cdata;
+  Field<M>& f = py_convert_type_field<M>(p_field);
   geo = f.geo();
   Py_RETURN_NONE;
 }
 
 template <class M>
-PyObject* qnorm_field_ctype(PyField& pf)
+PyObject* qnorm_field_ctype(PyObject* p_field)
 {
-  Field<M>& f = *(Field<M>*)pf.cdata;
+  Field<M>& f = py_convert_type_field<M>(p_field);
   const double ret = qnorm(f);
   return py_convert(ret);
 }
 
 template <class M>
-PyObject* crc32_field_ctype(PyField& pf)
+PyObject* crc32_field_ctype(PyObject* p_field)
 {
-  const Field<M>& f = *(Field<M>*)pf.cdata;
+  Field<M>& f = py_convert_type_field<M>(p_field);
   const crc32_t ret = field_crc32(f);
   return py_convert((long)ret);
 }
 
 template <class M>
-PyObject* get_mview_field_ctype(PyField& pf, PyObject* p_field)
+PyObject* get_mview_field_ctype(PyObject* p_field)
 {
-  Field<M>& f = *(Field<M>*)pf.cdata;
+  Field<M>& f = py_convert_type_field<M>(p_field);
   Vector<M> fv = get_data(f);
   PyObject* p_mview = py_convert_mview(fv);
   pqassert(p_field != NULL);
@@ -167,8 +167,7 @@ EXPORT(mk_field, {
   if (!PyArg_ParseTuple(args, "O|Oi", &p_ctype, &p_geo, &multiplicity)) {
     return NULL;
   }
-  std::string ctype;
-  py_convert(ctype, p_ctype);
+  const std::string ctype = py_convert_data<std::string>(p_ctype);
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, mk_field_ctype, ctype, p_geo, multiplicity);
   return p_ret;
@@ -180,9 +179,9 @@ EXPORT(free_field, {
   if (!PyArg_ParseTuple(args, "O", &p_field)) {
     return NULL;
   }
-  PyField pf = py_convert_field(p_field);
+  const std::string ctype = py_get_ctype(p_field);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, free_field_ctype, pf.ctype, pf);
+  FIELD_DISPATCH(p_ret, free_field_ctype, ctype, p_field);
   return p_ret;
 });
 
@@ -193,11 +192,10 @@ EXPORT(set_field, {
   if (!PyArg_ParseTuple(args, "OO", &p_field_new, &p_field)) {
     return NULL;
   }
-  PyField pf_new = py_convert_field(p_field_new);
-  PyField pf = py_convert_field(p_field);
-  pqassert(pf_new.ctype == pf.ctype);
+  const std::string ctype = py_get_ctype(p_field);
+  pqassert(py_get_ctype(p_field_new) == ctype);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, set_field_ctype, pf.ctype, pf_new, pf);
+  FIELD_DISPATCH(p_ret, set_field_ctype, ctype, p_field_new, p_field);
   return p_ret;
 });
 
@@ -208,11 +206,10 @@ EXPORT(set_add_field, {
   if (!PyArg_ParseTuple(args, "OO", &p_field_new, &p_field)) {
     return NULL;
   }
-  PyField pf_new = py_convert_field(p_field_new);
-  PyField pf = py_convert_field(p_field);
-  pqassert(pf_new.ctype == pf.ctype);
+  const std::string ctype = py_get_ctype(p_field);
+  pqassert(py_get_ctype(p_field_new) == ctype);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, set_add_field_ctype, pf.ctype, pf_new, pf);
+  FIELD_DISPATCH(p_ret, set_add_field_ctype, ctype, p_field_new, p_field);
   return p_ret;
 });
 
@@ -223,11 +220,10 @@ EXPORT(set_sub_field, {
   if (!PyArg_ParseTuple(args, "OO", &p_field_new, &p_field)) {
     return NULL;
   }
-  PyField pf_new = py_convert_field(p_field_new);
-  PyField pf = py_convert_field(p_field);
-  pqassert(pf_new.ctype == pf.ctype);
+  const std::string ctype = py_get_ctype(p_field);
+  pqassert(py_get_ctype(p_field_new) == ctype);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, set_sub_field_ctype, pf.ctype, pf_new, pf);
+  FIELD_DISPATCH(p_ret, set_sub_field_ctype, ctype, p_field_new, p_field);
   return p_ret;
 });
 
@@ -238,9 +234,9 @@ EXPORT(set_mul_double_field, {
   if (!PyArg_ParseTuple(args, "Od", &p_field, &factor)) {
     return NULL;
   }
-  PyField pf = py_convert_field(p_field);
+  const std::string ctype = py_get_ctype(p_field);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, set_mul_field_ctype, pf.ctype, pf, factor);
+  FIELD_DISPATCH(p_ret, set_mul_field_ctype, ctype, p_field, factor);
   return p_ret;
 });
 
@@ -251,9 +247,9 @@ EXPORT(set_mul_complex_field, {
   if (!PyArg_ParseTuple(args, "OD", &p_field, &factor)) {
     return NULL;
   }
-  PyField pf = py_convert_field(p_field);
+  const std::string ctype = py_get_ctype(p_field);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, set_mul_field_ctype, pf.ctype, pf, factor);
+  FIELD_DISPATCH(p_ret, set_mul_field_ctype, ctype, p_field, factor);
   return p_ret;
 });
 
@@ -264,13 +260,11 @@ EXPORT(set_mul_cfield_field, {
   if (!PyArg_ParseTuple(args, "OO", &p_field, &p_cfield)) {
     return NULL;
   }
-  PyField pf = py_convert_field(p_field);
-  PyField pcf = py_convert_field(p_cfield);
-  pqassert(pcf.ctype == "Complex");
-  FieldM<Complex, 1>& f_factor = *(FieldM<Complex, 1>*)pcf.cdata;
+  const std::string ctype = py_get_ctype(p_field);
+  FieldM<Complex, 1>& f_factor = py_convert_type_field<Complex, 1>(p_cfield);
   pqassert(f_factor.geo().multiplicity == 1);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, set_mul_field_ctype, pf.ctype, pf, f_factor);
+  FIELD_DISPATCH(p_ret, set_mul_field_ctype, ctype, p_field, f_factor);
   return p_ret;
 });
 
@@ -280,9 +274,9 @@ EXPORT(set_zero_field, {
   if (!PyArg_ParseTuple(args, "O", &p_field)) {
     return NULL;
   }
-  PyField pf = py_convert_field(p_field);
+  const std::string ctype = py_get_ctype(p_field);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, set_zero_field_ctype, pf.ctype, pf);
+  FIELD_DISPATCH(p_ret, set_zero_field_ctype, ctype, p_field);
   return p_ret;
 });
 
@@ -293,9 +287,9 @@ EXPORT(set_unit_field, {
   if (!PyArg_ParseTuple(args, "O|D", &p_field, &coef)) {
     return NULL;
   }
-  PyField pf = py_convert_field(p_field);
+  const std::string ctype = py_get_ctype(p_field);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, set_unit_field_ctype, pf.ctype, pf, coef);
+  FIELD_DISPATCH(p_ret, set_unit_field_ctype, ctype, p_field, coef);
   return p_ret;
 });
 
@@ -308,11 +302,11 @@ EXPORT(set_u_rand_double_field, {
   if (!PyArg_ParseTuple(args, "OO|dd", &p_field, &p_rng, &upper, &lower)) {
     return NULL;
   }
-  PyField pf = py_convert_field(p_field);
+  const std::string ctype = py_get_ctype(p_field);
   const RngState& rng = py_convert_type<RngState>(p_rng);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, set_u_rand_double_field_ctype, pf.ctype, pf, rng, upper,
-                 lower);
+  FIELD_DISPATCH(p_ret, set_u_rand_double_field_ctype, ctype, p_field, rng,
+                 upper, lower);
   return p_ret;
 });
 
@@ -322,9 +316,9 @@ EXPORT(get_total_site_field, {
   if (!PyArg_ParseTuple(args, "O", &p_field)) {
     return NULL;
   }
-  PyField pf = py_convert_field(p_field);
+  const std::string ctype = py_get_ctype(p_field);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, get_total_site_field_ctype, pf.ctype, pf);
+  FIELD_DISPATCH(p_ret, get_total_site_field_ctype, ctype, p_field);
   return p_ret;
 });
 
@@ -334,9 +328,9 @@ EXPORT(get_multiplicity_field, {
   if (!PyArg_ParseTuple(args, "O", &p_field)) {
     return NULL;
   }
-  PyField pf = py_convert_field(p_field);
+  const std::string ctype = py_get_ctype(p_field);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, get_multiplicity_field_ctype, pf.ctype, pf);
+  FIELD_DISPATCH(p_ret, get_multiplicity_field_ctype, ctype, p_field);
   return p_ret;
 });
 
@@ -347,10 +341,10 @@ EXPORT(set_geo_field, {
   if (!PyArg_ParseTuple(args, "OO", &p_geo, &p_field)) {
     return NULL;
   }
+  const std::string ctype = py_get_ctype(p_field);
   Geometry& geo = py_convert_type<Geometry>(p_geo);
-  PyField pf = py_convert_field(p_field);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, set_geo_field_ctype, pf.ctype, geo, pf);
+  FIELD_DISPATCH(p_ret, set_geo_field_ctype, ctype, geo, p_field);
   return p_ret;
 });
 
@@ -360,9 +354,9 @@ EXPORT(qnorm_field, {
   if (!PyArg_ParseTuple(args, "O", &p_field)) {
     return NULL;
   }
-  PyField pf = py_convert_field(p_field);
+  const std::string ctype = py_get_ctype(p_field);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, qnorm_field_ctype, pf.ctype, pf);
+  FIELD_DISPATCH(p_ret, qnorm_field_ctype, ctype, p_field);
   return p_ret;
 });
 
@@ -372,9 +366,9 @@ EXPORT(crc32_field, {
   if (!PyArg_ParseTuple(args, "O", &p_field)) {
     return NULL;
   }
-  PyField pf = py_convert_field(p_field);
+  const std::string ctype = py_get_ctype(p_field);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, crc32_field_ctype, pf.ctype, pf);
+  FIELD_DISPATCH(p_ret, crc32_field_ctype, ctype, p_field);
   return p_ret;
 });
 
@@ -384,8 +378,8 @@ EXPORT(get_mview_field, {
   if (!PyArg_ParseTuple(args, "O", &p_field)) {
     return NULL;
   }
-  PyField pf = py_convert_field(p_field);
+  const std::string ctype = py_get_ctype(p_field);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, get_mview_field_ctype, pf.ctype, pf, p_field);
+  FIELD_DISPATCH(p_ret, get_mview_field_ctype, ctype, p_field);
   return p_ret;
 });

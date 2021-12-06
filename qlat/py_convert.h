@@ -6,6 +6,78 @@
 namespace qlat
 {  //
 
+template <class M>
+std::string get_ctype_name()
+{
+  return "M";
+}
+
+template <>
+inline std::string get_ctype_name<ColorMatrix>()
+{
+  return "ColorMatrix";
+}
+
+template <>
+inline std::string get_ctype_name<WilsonMatrix>()
+{
+  return "WilsonMatrix";
+}
+
+template <>
+inline std::string get_ctype_name<NonRelWilsonMatrix>()
+{
+  return "NonRelWilsonMatrix";
+}
+
+template <>
+inline std::string get_ctype_name<SpinMatrix>()
+{
+  return "SpinMatrix";
+}
+
+template <>
+inline std::string get_ctype_name<WilsonVector>()
+{
+  return "WilsonVector";
+}
+
+template <>
+inline std::string get_ctype_name<Complex>()
+{
+  return "Complex";
+}
+
+template <>
+inline std::string get_ctype_name<double>()
+{
+  return "double";
+}
+
+template <>
+inline std::string get_ctype_name<float>()
+{
+  return "float";
+}
+
+template <>
+inline std::string get_ctype_name<int64_t>()
+{
+  return "int64_t";
+}
+
+template <>
+inline std::string get_ctype_name<char>()
+{
+  return "char";
+}
+
+template <>
+inline std::string get_ctype_name<int8_t>()
+{
+  return "int8_t";
+}
+
 inline void py_convert(int& out, PyObject* in)
 {
   pqassert(PyLong_Check(in));
@@ -147,29 +219,89 @@ inline void py_convert(PyField& out, PyObject* in)
   py_convert((long&)out.cdata, p_cdata);
 }
 
-inline PyField py_convert_field(PyObject* in)
+template <class T>
+T py_convert_data(PyObject* in)
+// examples:
+// py_convert_data<int>(in)
+// py_convert_data<long>(in)
+// py_convert_data<double>(in)
+// py_convert_data<Complex>(in)
+// py_convert_data<bool>(in)
+// py_convert_data<std::string>(in)
+// py_convert_data<Coordinate>(in)
+// py_convert_data<CoordinateD>(in)
+// py_convert_data<std::vector<M> >(in)
+// py_convert_data<PyField>(in)
 {
-  PyField out;
-  py_convert(out, in);
-  return out;
+  T x;
+  py_convert(x, in);
+  return x;
+}
+
+template <class T>
+T py_convert_data(PyObject* in, const std::string& attr)
+// py_convert_data<std::string>(in, "ctype")
+{
+  return py_convert_data<T>(PyObject_GetAttrString(in, attr.c_str()));
 }
 
 inline std::string py_get_ctype(PyObject* in)
 {
-  PyObject* p_ctype = PyObject_GetAttrString(in, "ctype");
-  std::string ctype;
-  py_convert(ctype, p_ctype);
-  return ctype;
+  return py_convert_data<std::string>(in, "ctype");
+}
+
+inline PyField py_convert_field(PyObject* in)
+{
+  return py_convert_data<PyField>(in);
 }
 
 template <class T>
 T& py_convert_type(PyObject* in)
+// use cdata property of PyObject* in as pointer
+// examples:
+// py_convert_type<Geometry>(in);
+// py_convert_type<LatData>(in);
+// py_convert_type<RngState>(in);
+// py_convert_type<CommPlan>(in);
+// specifications:
+// py_convert_type<CommMarks>(in);
 {
   PyObject* p_cdata = PyObject_GetAttrString(in, "cdata");
   T* out;
   py_convert((long&)out, p_cdata);
   return *out;
 }
+
+template <class M>
+Field<M>& py_convert_type_field(PyObject* in)
+// py_convert_ftype<Field<M> >(in);
+{
+  PyField pf = py_convert_field(in);
+  pqassert(pf.ctype == get_ctype_name<M>());
+  Field<M>& f = *(Field<M>*)pf.cdata;
+  return f;
+}
+
+template <class M, int multiplicity>
+FieldM<M, multiplicity>& py_convert_type_field(PyObject* in)
+// py_convert_ftype<FieldM<M, multiplicity> >(in);
+{
+  PyField pf = py_convert_field(in);
+  pqassert(pf.ctype == get_ctype_name<M>());
+  FieldM<M, multiplicity>& f = *(FieldM<M, multiplicity>*)pf.cdata;
+  pqassert(multiplicity == f.geo().multiplicity);
+  return f;
+}
+
+template <>
+inline CommMarks& py_convert_type<CommMarks>(PyObject* in)
+{
+  Field<int8_t>& f = py_convert_type_field<int8_t>(in);
+  CommMarks& marks = static_cast<CommMarks&>(f);
+  return marks;
+}
+
+// -------------------------------------------------------------
 
 inline PyObject* py_convert(const char& x) { return PyLong_FromLong((long)x); }
 
