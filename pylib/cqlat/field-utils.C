@@ -4,9 +4,9 @@ namespace qlat
 {  //
 
 template <class M>
-PyObject* refresh_expanded_field_ctype(PyField& pf, PyObject* p_comm_plan)
+PyObject* refresh_expanded_field_ctype(PyObject* p_field, PyObject* p_comm_plan)
 {
-  Field<M>& f = *(Field<M>*)pf.cdata;
+  Field<M>& f = py_convert_type_field<M>(p_field);
   if (NULL == p_comm_plan) {
     refresh_expanded(f);
   } else {
@@ -17,27 +17,25 @@ PyObject* refresh_expanded_field_ctype(PyField& pf, PyObject* p_comm_plan)
 }
 
 template <class M>
-PyObject* refresh_expanded_1_field_ctype(PyField& pf)
+PyObject* refresh_expanded_1_field_ctype(PyObject* p_field)
 {
-  Field<M>& f = *(Field<M>*)pf.cdata;
+  Field<M>& f = py_convert_type_field<M>(p_field);
   refresh_expanded_1(f);
   Py_RETURN_NONE;
 }
 
 template <class M>
-PyObject* assign_as_complex_field_ctype(PyField& pf, PyField& pf1)
+PyObject* assign_as_complex_field_ctype(Field<Complex>& f, PyObject* p_field1)
 {
-  Field<Complex>& f = *(Field<Complex>*)pf.cdata;
-  const Field<M>& f1 = *(Field<M>*)pf1.cdata;
+  const Field<M>& f1 = py_convert_type_field<M>(p_field1);
   assign(f, f1);
   Py_RETURN_NONE;
 }
 
 template <class M>
-PyObject* assign_from_complex_field_ctype(PyField& pf, PyField& pf1)
+PyObject* assign_from_complex_field_ctype(PyObject* p_field, const Field<Complex>& f1)
 {
-  Field<M>& f = *(Field<M>*)pf.cdata;
-  const Field<Complex>& f1 = *(Field<Complex>*)pf1.cdata;
+  Field<M>& f = py_convert_type_field<M>(p_field);
   assign(f, f1);
   Py_RETURN_NONE;
 }
@@ -154,9 +152,9 @@ EXPORT(refresh_expanded_field, {
   if (!PyArg_ParseTuple(args, "O|O", &p_field, &p_comm_plan)) {
     return NULL;
   }
-  PyField pf = py_convert_field(p_field);
+  const std::string ctype = py_get_ctype(p_field);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, refresh_expanded_field_ctype, pf.ctype, pf, p_comm_plan);
+  FIELD_DISPATCH(p_ret, refresh_expanded_field_ctype, ctype, p_field, p_comm_plan);
   return p_ret;
 });
 
@@ -166,9 +164,9 @@ EXPORT(refresh_expanded_1_field, {
   if (!PyArg_ParseTuple(args, "O", &p_field)) {
     return NULL;
   }
-  PyField pf = py_convert_field(p_field);
+  const std::string ctype = py_get_ctype(p_field);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, refresh_expanded_1_field_ctype, pf.ctype, pf);
+  FIELD_DISPATCH(p_ret, refresh_expanded_1_field_ctype, ctype, p_field);
   return p_ret;
 });
 
@@ -179,11 +177,8 @@ EXPORT(set_phase_field, {
   if (!PyArg_ParseTuple(args, "OO", &p_field, &p_lmom)) {
     return NULL;
   }
-  CoordinateD lmom;
-  py_convert(lmom, p_lmom);
-  pqassert(py_convert_data<std::string>(p_field, "ctype") == "Complex");
+  const CoordinateD lmom = py_convert_data<CoordinateD>(p_lmom);
   FieldM<Complex, 1>& f = py_convert_type_field<Complex, 1>(p_field);
-  pqassert(f.geo().multiplicity == 1);
   set_phase_field(f, lmom);
   Py_RETURN_NONE;
 });
@@ -195,11 +190,10 @@ EXPORT(assign_as_complex_field, {
   if (!PyArg_ParseTuple(args, "OO", &p_field, &p_field1)) {
     return NULL;
   }
-  PyField pf = py_convert_field(p_field);
-  pqassert(pf.ctype == "Complex");
-  PyField pf1 = py_convert_field(p_field1);
+  Field<Complex>& f = py_convert_type_field<Complex>(p_field);
+  const std::string ctype = py_get_ctype(p_field1);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, assign_as_complex_field_ctype, pf1.ctype, pf, pf1);
+  FIELD_DISPATCH(p_ret, assign_as_complex_field_ctype, ctype, f, p_field1);
   return p_ret;
 });
 
@@ -210,11 +204,10 @@ EXPORT(assign_from_complex_field, {
   if (!PyArg_ParseTuple(args, "OO", &p_field, &p_field1)) {
     return NULL;
   }
-  PyField pf = py_convert_field(p_field);
-  PyField pf1 = py_convert_field(p_field1);
-  pqassert(pf1.ctype == "Complex");
+  const std::string ctype = py_get_ctype(p_field);
+  const Field<Complex>& f1 = py_convert_type_field<Complex>(p_field1);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, assign_from_complex_field_ctype, pf.ctype, pf, pf1);
+  FIELD_DISPATCH(p_ret, assign_from_complex_field_ctype, ctype, p_field, f1);
   return p_ret;
 });
 

@@ -3,79 +3,111 @@
 #include <Python.h>
 #include <qlat/qlat.h>
 
+#define FIELD_DISPATCH(p_ret, fname, ctype, ...)                            \
+  {                                                                         \
+    if ("ColorMatrix" == (ctype)) {                                         \
+      (p_ret) = fname<ColorMatrix>(__VA_ARGS__);                            \
+    } else if ("WilsonMatrix" == (ctype)) {                                 \
+      (p_ret) = fname<WilsonMatrix>(__VA_ARGS__);                           \
+    } else if ("NonRelWilsonMatrix" == (ctype)) {                           \
+      (p_ret) = fname<NonRelWilsonMatrix>(__VA_ARGS__);                     \
+    } else if ("SpinMatrix" == (ctype)) {                                   \
+      (p_ret) = fname<SpinMatrix>(__VA_ARGS__);                             \
+    } else if ("WilsonVector" == (ctype)) {                                 \
+      (p_ret) = fname<WilsonVector>(__VA_ARGS__);                           \
+    } else if ("Complex" == (ctype)) {                                      \
+      (p_ret) = fname<Complex>(__VA_ARGS__);                                \
+    } else if ("double" == (ctype)) {                                       \
+      (p_ret) = fname<double>(__VA_ARGS__);                                 \
+    } else if ("float" == (ctype)) {                                        \
+      (p_ret) = fname<float>(__VA_ARGS__);                                  \
+    } else if ("long" == (ctype)) {                                         \
+      (p_ret) = fname<long>(__VA_ARGS__);                                   \
+    } else if ("int64_t" == (ctype)) {                                      \
+      (p_ret) = fname<int64_t>(__VA_ARGS__);                                \
+    } else if ("char" == (ctype)) {                                         \
+      (p_ret) = fname<char>(__VA_ARGS__);                                   \
+    } else if ("int8_t" == (ctype)) {                                       \
+      (p_ret) = fname<int8_t>(__VA_ARGS__);                                 \
+    } else {                                                                \
+      pqerr("%s %s='%s' does not exist.", #fname, #ctype, (ctype).c_str()); \
+      (p_ret) = NULL;                                                       \
+    }                                                                       \
+  }
+
 namespace qlat
 {  //
 
 template <class M>
-std::string get_ctype_name()
+bool check_ctype_name(const std::string& ctype)
 {
-  return "M";
+  return false;
 }
 
 template <>
-inline std::string get_ctype_name<ColorMatrix>()
+inline bool check_ctype_name<ColorMatrix>(const std::string& ctype)
 {
-  return "ColorMatrix";
+  return "ColorMatrix" == ctype;
 }
 
 template <>
-inline std::string get_ctype_name<WilsonMatrix>()
+inline bool check_ctype_name<WilsonMatrix>(const std::string& ctype)
 {
-  return "WilsonMatrix";
+  return "WilsonMatrix" == ctype;
 }
 
 template <>
-inline std::string get_ctype_name<NonRelWilsonMatrix>()
+inline bool check_ctype_name<NonRelWilsonMatrix>(const std::string& ctype)
 {
-  return "NonRelWilsonMatrix";
+  return "NonRelWilsonMatrix" == ctype;
 }
 
 template <>
-inline std::string get_ctype_name<SpinMatrix>()
+inline bool check_ctype_name<SpinMatrix>(const std::string& ctype)
 {
-  return "SpinMatrix";
+  return "SpinMatrix" == ctype;
 }
 
 template <>
-inline std::string get_ctype_name<WilsonVector>()
+inline bool check_ctype_name<WilsonVector>(const std::string& ctype)
 {
-  return "WilsonVector";
+  return "WilsonVector" == ctype;
 }
 
 template <>
-inline std::string get_ctype_name<Complex>()
+inline bool check_ctype_name<Complex>(const std::string& ctype)
 {
-  return "Complex";
+  return "Complex" == ctype;
 }
 
 template <>
-inline std::string get_ctype_name<double>()
+inline bool check_ctype_name<double>(const std::string& ctype)
 {
-  return "double";
+  return "double" == ctype;
 }
 
 template <>
-inline std::string get_ctype_name<float>()
+inline bool check_ctype_name<float>(const std::string& ctype)
 {
-  return "float";
+  return "float" == ctype;
 }
 
 template <>
-inline std::string get_ctype_name<int64_t>()
+inline bool check_ctype_name<int64_t>(const std::string& ctype)
 {
-  return "int64_t";
+  return "int64_t" == ctype or "long" == ctype;
 }
 
 template <>
-inline std::string get_ctype_name<char>()
+inline bool check_ctype_name<char>(const std::string& ctype)
 {
-  return "char";
+  return "char" == ctype;
 }
 
 template <>
-inline std::string get_ctype_name<int8_t>()
+inline bool check_ctype_name<int8_t>(const std::string& ctype)
 {
-  return "int8_t";
+  return "int8_t" == ctype;
 }
 
 inline void py_convert(int& out, PyObject* in)
@@ -206,19 +238,6 @@ void py_convert(Vector<M> out, PyObject* in)
   }
 }
 
-struct PyField {
-  std::string ctype;
-  void* cdata;
-};
-
-inline void py_convert(PyField& out, PyObject* in)
-{
-  PyObject* p_ctype = PyObject_GetAttrString(in, "ctype");
-  PyObject* p_cdata = PyObject_GetAttrString(in, "cdata");
-  py_convert(out.ctype, p_ctype);
-  py_convert((long&)out.cdata, p_cdata);
-}
-
 template <class T>
 T py_convert_data(PyObject* in)
 // examples:
@@ -231,7 +250,6 @@ T py_convert_data(PyObject* in)
 // py_convert_data<Coordinate>(in)
 // py_convert_data<CoordinateD>(in)
 // py_convert_data<std::vector<M> >(in)
-// py_convert_data<PyField>(in)
 {
   T x;
   py_convert(x, in);
@@ -248,6 +266,19 @@ T py_convert_data(PyObject* in, const std::string& attr)
 inline std::string py_get_ctype(PyObject* in)
 {
   return py_convert_data<std::string>(in, "ctype");
+}
+
+struct PyField {
+  std::string ctype;
+  void* cdata;
+};
+
+inline void py_convert(PyField& out, PyObject* in)
+{
+  PyObject* p_ctype = PyObject_GetAttrString(in, "ctype");
+  PyObject* p_cdata = PyObject_GetAttrString(in, "cdata");
+  py_convert(out.ctype, p_ctype);
+  py_convert((long&)out.cdata, p_cdata);
 }
 
 inline PyField py_convert_field(PyObject* in)
@@ -276,9 +307,9 @@ template <class M>
 Field<M>& py_convert_type_field(PyObject* in)
 // py_convert_ftype<Field<M> >(in);
 {
-  PyField pf = py_convert_field(in);
-  pqassert(pf.ctype == get_ctype_name<M>());
-  Field<M>& f = *(Field<M>*)pf.cdata;
+  const std::string ctype = py_get_ctype(in);
+  pqassert(check_ctype_name<M>(ctype));
+  Field<M>& f = py_convert_type<Field<M> >(in);
   return f;
 }
 
@@ -286,9 +317,9 @@ template <class M, int multiplicity>
 FieldM<M, multiplicity>& py_convert_type_field(PyObject* in)
 // py_convert_ftype<FieldM<M, multiplicity> >(in);
 {
-  PyField pf = py_convert_field(in);
-  pqassert(pf.ctype == get_ctype_name<M>());
-  FieldM<M, multiplicity>& f = *(FieldM<M, multiplicity>*)pf.cdata;
+  const std::string ctype = py_get_ctype(in);
+  pqassert(check_ctype_name<M>(ctype));
+  FieldM<M, multiplicity>& f = py_convert_type<FieldM<M, multiplicity> >(in);
   pqassert(multiplicity == f.geo().multiplicity);
   return f;
 }

@@ -7,7 +7,6 @@
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
 #include <qlat/py_convert.h>
-#include "dispatch.h"
 
 #define EXPORT(name, ...)                                \
   PyObject* cqlat_##name(PyObject* self, PyObject* args) \
