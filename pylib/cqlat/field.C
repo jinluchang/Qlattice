@@ -105,6 +105,15 @@ PyObject* set_u_rand_double_field_ctype(PyField& pf, const RngState& rs,
 }
 
 template <class M>
+PyObject* set_g_rand_double_field_ctype(PyField& pf, const RngState& rs,
+                                        const double center, const double sigma)
+{
+  Field<M>& f = *(Field<M>*)pf.cdata;
+  set_g_rand_double(f, rs, center, sigma);
+  Py_RETURN_NONE;
+}
+
+template <class M>
 PyObject* get_total_site_field_ctype(PyField& pf)
 {
   Field<M>& f = *(Field<M>*)pf.cdata;
@@ -313,6 +322,23 @@ EXPORT(set_u_rand_double_field, {
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, set_u_rand_double_field_ctype, pf.ctype, pf, rng, upper,
                  lower);
+  return p_ret;
+});
+
+EXPORT(set_g_rand_double_field, {
+  using namespace qlat;
+  PyObject* p_field = NULL;
+  PyObject* p_rng = NULL;
+  double center = 0.0;
+  double sigma = 1.0;
+  if (!PyArg_ParseTuple(args, "OO|dd", &p_field, &p_rng, &center, &sigma)) {
+    return NULL;
+  }
+  PyField pf = py_convert_field(p_field);
+  const RngState& rng = py_convert_type<RngState>(p_rng);
+  PyObject* p_ret = NULL;
+  FIELD_DISPATCH(p_ret, set_g_rand_double_field_ctype, pf.ctype, pf, rng, center,
+                 sigma);
   return p_ret;
 });
 

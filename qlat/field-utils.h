@@ -569,4 +569,24 @@ void set_u_rand_float(Field<M>& f, const RngState& rs, const double upper = 1.0,
   }
 }
 
+template <class M>
+void set_g_rand_double(Field<M>& f, const RngState& rs,
+                       const double center = 0.0, const double sigma = 1.0)
+{
+  TIMER("set_g_rand_double");
+  const Geometry& geo = f.geo();
+#pragma omp parallel for
+  for (long index = 0; index < geo.local_volume(); ++index) {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Coordinate xg = geo.coordinate_g_from_l(xl);
+    const long gindex = geo.g_index_from_g_coordinate(xg);
+    RngState rsi = rs.newtype(gindex);
+    Vector<M> v = f.get_elems(xl);
+    Vector<double> dv((double*)v.data(), v.data_size() / sizeof(double));
+    for (int m = 0; m < dv.size(); ++m) {
+      dv[m] = g_rand_gen(rsi, center, sigma);
+    }
+  }
+}
+
 }  // namespace qlat

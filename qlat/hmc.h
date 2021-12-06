@@ -1,6 +1,7 @@
 #pragma once
 
 #include <qlat/gauge-action.h>
+#include <qlat/scalar-action.h>
 #include <qlat/qcd-smear.h>
 #include <qlat/qcd-topology.h>
 #include <qlat/qcd-utils.h>
@@ -303,6 +304,161 @@ inline void set_gm_force(GaugeMomentum& gm_force, const GaugeField& gf,
       get_comm_plan(set_marks_field_gm_force, tag_comm, gf_ext.geo());
   refresh_expanded(gf_ext, plan);
   set_gm_force_no_comm(gm_force, gf_ext, ga);
+}
+
+inline void set_sm_force_no_comm(Field<double>&  sm_force, const Field<double>&  sf,
+								 const ScalarAction& sa)
+{
+  TIMER("set_sm_force_no_comm");
+  const double m_sq = sa.m_sq;
+  const double lmbd = sa.lmbd;
+  const Geometry geo = sf.geo();
+  sm_force.init(geo);
+  qacc_for(index, geo.local_volume(), {
+    Coordinate xl = geo.coordinate_from_index(index);
+    Vector<double> sm_force_v = sm_force.get_elems(xl);
+	
+    unsigned int M = sm_force_v.size();
+    
+    double sum_mult_sq = 0.0;
+    for (int m = 0; m < M; ++m) {
+      sum_mult_sq += pow(sf.get_elem(xl,m),2);
+	}
+    
+    for (int m = 0; m < M; ++m) {
+	  sm_force_v[m] = (2*4 + m_sq + lmbd*sum_mult_sq)*sf.get_elem(xl,m);
+	  for (int dir = 0; dir < 4; ++dir) {
+		xl[dir] += 1;
+		sm_force_v[m] -= sf.get_elem(xl,m);
+		xl[dir] -= 2;
+		sm_force_v[m] -= sf.get_elem(xl,m);
+		xl[dir] += 1;
+	  }
+    }
+  });
+}
+
+inline void set_sm_force(Field<double>&  sm_force, const Field<double>&  sf,
+                         const ScalarAction& sa)
+{
+  TIMER("set_sm_force");
+  Coordinate expand_left(1, 1, 1, 1);
+  Coordinate expand_right(1, 1, 1, 1);
+  const Geometry geo_ext = geo_resize(sf.geo(), expand_left, expand_right);
+  Field<double> sf_ext;
+  sf_ext.init(geo_ext);
+  sf_ext = sf;
+  // TODO: Figure out communication
+  // const std::string tag_comm = ga.c1 == 0.0 ? "plaq" : "plaq+rect";
+  // const CommPlan& plan =
+  //    get_comm_plan(set_marks_field_gm_force, tag_comm, gf_ext.geo());
+  refresh_expanded(sf_ext); //, plan);
+  set_sm_force_no_comm(sm_force, sf_ext, sa);
+}
+
+inline double sf_sum_sq_der_no_comm(const Field<double>& sf)
+{
+  TIMER("sf_sum_sq_der_no_comm");
+  const Geometry geo = sf.geo();
+  const Geometry geo_r = geo_reform(geo);
+  FieldM<double, 1> fd;
+  fd.init(geo_r);
+  qacc_for(index, geo_r.local_volume(), {
+    Coordinate xl = geo_r.coordinate_from_index(index);
+    double s = 0.0;
+    for (int m = 0; m < geo.multiplicity; ++m) {
+	  for (int dir = 0; dir < 4; ++dir) {
+	    double d=0;
+        d -= sf.get_elem(xl,m);
+	    xl[dir]+=1;
+        d += sf.get_elem(xl,m);
+        xl[dir]-=1;
+        s+=d*d;
+      }
+    }
+    fd.get_elem(index) = s;
+  });
+  double sum = 0.0;
+  for (long index = 0; index < geo_r.local_volume(); ++index) {
+    sum += fd.get_elem(index);
+  }
+  return sum;
+}
+
+inline double* sf_sum_sq(const Field<double>& sf)
+{
+  TIMER("sf_sum_sq");
+  const Geometry geo = sf.geo();
+  const Geometry geo_r = geo_reform(geo);
+  FieldM<double, 1> fd;
+  fd.init(geo_r);
+  qacc_for(index, geo_r.local_volume(), {
+    Coordinate xl = geo_r.coordinate_from_index(index);
+    double s = 0.0;
+    for (int m = 0; m < geo.multiplicity; ++m) {
+	  double d = sf.get_elem(xl,m);
+      s+=d*d;
+    }
+    fd.get_elem(index) = s;
+  });
+  static double sum[2];
+  sum[0] = 0.0;
+  sum[1] = 0.0;
+  for (long index = 0; index < geo_r.local_volume(); ++index) {
+	double d = fd.get_elem(index);
+    sum[0] += d;
+    sum[1] += d*d;
+  }
+  return sum;
+}
+
+inline double sf_hamilton_node_no_comm(const Field<double>& sf,
+                                       const ScalarAction& sa)
+{
+  TIMER("sf_hamilton_node_no_comm");
+  const double m_sq = sa.m_sq;
+  const double lmbd = sa.lmbd;
+  const double sum_sq_der = sf_sum_sq_der_no_comm(sf);
+  const double* sum_sq = sf_sum_sq(sf);
+  return sum_sq_der/2.0 + m_sq*sum_sq[0]/2.0 + lmbd*sum_sq[1]/4.0;
+}
+
+inline double sf_hamilton_node(const Field<double>& sf, const ScalarAction& sa)
+{
+  TIMER("sf_hamilton_node");
+  const Coordinate expand_left(0, 0, 0, 0);
+  const Coordinate expand_right(1, 1, 1, 1);
+  const Geometry geo_ext = geo_resize(sf.geo(), expand_left, expand_right);
+  Field<double> sf_ext;
+  sf_ext.init(geo_ext);
+  sf_ext = sf;
+  // TODO: Figure out communication
+  //const CommPlan& plan =
+  //    get_comm_plan(set_marks_field_gf_hamilton, tag_comm, gf_ext.geo());
+  refresh_expanded(sf_ext); //, plan);
+  return sf_hamilton_node_no_comm(sf_ext, sa);
+}
+
+inline double sm_hamilton_node(const Field<double>& sm)
+{
+  TIMER("sm_hamilton_node");
+  return sf_sum_sq(sm)[0]/2.0;
+}
+
+inline void sf_evolve(Field<double>& sf, const Field<double>& sm,
+                      const double step_size)
+{
+  TIMER("sf_evolve");
+  const Geometry& geo = sf.geo();
+  qacc_for(index, geo.local_volume(), {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    Vector<double> sf_v = sf.get_elems(xl);
+    const Vector<double> sm_v = sm.get_elems_const(xl);
+    qassert(sf_v.size() == sm_v.size());
+    for (int m = 0; m < sf_v.size(); ++m) {
+      sf_v[m] = sf_v[m] + sm_v[m]*step_size;
+    }
+  });
 }
 
 }  // namespace qlat

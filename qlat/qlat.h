@@ -72,6 +72,8 @@
 
 #include <qlat/gauge-action.h>
 
+#include <qlat/scalar-action.h>
+
 #include <qlat/hmc.h>
 
 #include <qlat/hmc-stats.h>
