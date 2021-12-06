@@ -293,8 +293,10 @@ T& py_convert_type(PyObject* in)
 // py_convert_type<Geometry>(in);
 // py_convert_type<LatData>(in);
 // py_convert_type<RngState>(in);
+// py_convert_type<PointSelection>(in);
 // py_convert_type<CommPlan>(in);
 // specifications:
+// py_convert_type<Propagator4d>(in);
 // py_convert_type<CommMarks>(in);
 {
   PyObject* p_cdata = PyObject_GetAttrString(in, "cdata");
@@ -325,11 +327,19 @@ FieldM<M, multiplicity>& py_convert_type_field(PyObject* in)
 }
 
 template <>
-inline CommMarks& py_convert_type<CommMarks>(PyObject* in)
+inline CommMarks& py_convert_type(PyObject* in)
 {
   Field<int8_t>& f = py_convert_type_field<int8_t>(in);
-  CommMarks& marks = static_cast<CommMarks&>(f);
-  return marks;
+  CommMarks& ret = static_cast<CommMarks&>(f);
+  return ret;
+}
+
+template <>
+inline Propagator4d& py_convert_type(PyObject* in)
+{
+  FieldM<WilsonMatrix, 1>& f = py_convert_type_field<WilsonMatrix, 1>(in);
+  Propagator4d& ret = static_cast<Propagator4d&>(f);
+  return ret;
 }
 
 // -------------------------------------------------------------

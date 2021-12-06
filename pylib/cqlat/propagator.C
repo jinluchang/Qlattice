@@ -46,7 +46,7 @@ EXPORT(set_rand_u1_src_psel, {
   }
   Propagator4d& prop = py_convert_type<Propagator4d>(p_prop);
   prop.init();
-  FieldM<Complex, 1>& fu1 = py_convert_type<FieldM<Complex, 1> >(p_fu1);
+  FieldM<Complex, 1>& fu1 = py_convert_type_field<Complex, 1>(p_fu1);
   fu1.init();
   const Geometry& geo = py_convert_type<Geometry>(p_geo);
   const PointSelection& psel = py_convert_type<PointSelection>(p_psel);
@@ -67,7 +67,7 @@ EXPORT(set_rand_u1_sol_psel, {
   SelectedPoints<WilsonMatrix>& sp_prop =
       py_convert_type<SelectedPoints<WilsonMatrix> >(p_sp_prop);
   const Propagator4d& prop = py_convert_type<Propagator4d>(p_prop);
-  const FieldM<Complex, 1>& fu1 = py_convert_type<FieldM<Complex, 1> >(p_fu1);
+  const FieldM<Complex, 1>& fu1 = py_convert_type_field<Complex, 1>(p_fu1);
   pqassert(fu1.geo().multiplicity == 1);
   const PointSelection& psel = py_convert_type<PointSelection>(p_psel);
   set_rand_u1_sol_psel(sp_prop, prop, fu1, psel);
