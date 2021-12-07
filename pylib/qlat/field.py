@@ -115,6 +115,10 @@ class Field:
     def set_rand(self, rng, upper = 1.0, lower = 0.0):
         assert isinstance(rng, RngState)
         c.set_u_rand_double_field(self, rng, upper, lower)
+        
+    def set_rand_g(self, rng, center = 0.0, sigma = 1.0):
+        assert isinstance(rng, RngState)
+        c.set_g_rand_double_field(self, rng, center, sigma)
 
     def qnorm(self):
         return c.qnorm_field(self)
