@@ -88,5 +88,3 @@ def mk_fft(is_forward, *, is_only_spatial = False, is_normalizing = False):
                 (3, is_forward,),
                 ]
         return FastFourierTransform(fft_infos, is_normalizing = is_normalizing)
-
-

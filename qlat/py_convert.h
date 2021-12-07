@@ -322,7 +322,9 @@ FieldM<M, multiplicity>& py_convert_type_field(PyObject* in)
   const std::string ctype = py_get_ctype(in);
   pqassert(check_ctype_name<M>(ctype));
   FieldM<M, multiplicity>& f = py_convert_type<FieldM<M, multiplicity> >(in);
-  pqassert(multiplicity == f.geo().multiplicity);
+  if (is_initialized(f)) {
+    pqassert(multiplicity == f.geo().multiplicity);
+  }
   return f;
 }
 
@@ -339,6 +341,14 @@ inline Propagator4d& py_convert_type(PyObject* in)
 {
   FieldM<WilsonMatrix, 1>& f = py_convert_type_field<WilsonMatrix, 1>(in);
   Propagator4d& ret = static_cast<Propagator4d&>(f);
+  return ret;
+}
+
+template <>
+inline GaugeField& py_convert_type(PyObject* in)
+{
+  FieldM<ColorMatrix, 4>& f = py_convert_type_field<ColorMatrix, 4>(in);
+  GaugeField& ret = static_cast<GaugeField&>(f);
   return ret;
 }
 

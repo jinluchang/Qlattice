@@ -46,7 +46,10 @@ qlat::begin(): GeometryNode =
 , id_node     = 0
 , size_node   = 1x1x1x2
 , coor_node   = 0x0x0x0 }
-q_verbose=0 (default)
+q_verbose=1
+q_timer_mini_auto_show=1 (default)
+q_timer_max_always_show=10 (default)
+q_timer_max_func_name_len=50 (default)
 qremove: 'results'
 geo.show() = Geometry([4, 4, 4, 8], 1)
 g.qcd.gauge.plaquette = 0.94517601648581551
@@ -111,7 +114,6 @@ src info 12.0 2788420690
 sol info 1.1956162833238206 1160651071
 sol1 info 5.8031596349094485 2546554408
 tag=inv_qm_madwf diff src 0.0 sol 1.5124888841901922e-13 sol1 2.3302756374948188e-12
-q_timer_max_func_name_len=50 (default)
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 1.
 qlat::end(): Switch to old comm (foreign).

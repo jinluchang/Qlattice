@@ -9,7 +9,10 @@ qlat::begin(): GeometryNode =
 , id_node     = 0
 , size_node   = 1x1x1x2
 , coor_node   = 0x0x0x0 }
-q_verbose=0 (default)
+q_verbose=1
+q_timer_mini_auto_show=1 (default)
+q_timer_max_always_show=10 (default)
+q_timer_max_func_name_len=50 (default)
 qremove: 'results'
 q_field_init=fast (default)
 set q_field_init=fast.
@@ -1264,7 +1267,6 @@ gf_wilson_flow: t =  2.00000000000000011E-01 ; E =  6.88420696925417852E-01 ; t^
            2 tot(topo_density) -1.01901695994393859E-02
            2 avg(topo_density^2)  9.95445717431649219E-06
 mk_file_dirs_info: 'results/gm_force_info/traj=4.lat'.
-q_timer_max_func_name_len=50 (default)
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 0.
 qlat::end(): Finalize MPI.

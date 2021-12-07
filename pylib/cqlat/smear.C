@@ -49,3 +49,31 @@ EXPORT(gf_hyp_smear, {
   gf_hyp_smear(gf, gf0, alpha1, alpha2, alpha3);
   Py_RETURN_NONE;
 });
+
+EXPORT(prop_smear, {
+  using namespace qlat;
+  // prop is of normal size
+  PyObject* p_prop = NULL;
+  // gf1 is left_expanded and refreshed
+  // set_left_expanded_gauge_field(gf1, gf)
+  PyObject* p_gf1 = NULL;
+  // smear params:
+  // 24D: coef = 0.9375, step = 10
+  // 48I: coef = 0.9375, step = 29
+  // mom ratio = 0.5
+  double coef = 0;
+  int step = 0;
+  // momentum in lattice unit 1/a (not unit of lattice momentum 2 pi / L / a)
+  PyObject* p_mom = NULL;
+  bool smear_in_time_dir = false;
+  if (!PyArg_ParseTuple(args, "OOdi|Ob", &p_prop, &p_gf1, &coef, &step, &p_mom,
+                        &smear_in_time_dir)) {
+    return NULL;
+  }
+  Propagator4d& prop = py_convert_type<Propagator4d>(p_prop);
+  const GaugeField& gf1 = py_convert_type<GaugeField>(p_gf1);
+  const CoordinateD mom =
+      NULL == p_mom ? CoordinateD() : py_convert_data<CoordinateD>(p_mom);
+  smear_propagator(prop, gf1, coef, step, mom, smear_in_time_dir);
+  Py_RETURN_NONE;
+});

@@ -1,6 +1,7 @@
 import cqlat as c
 
 from qlat.field import *
+from qlat.field_utils import *
 from qlat.rng_state import *
 from qlat.utils_io import *
 from qlat.timer import *
@@ -16,10 +17,12 @@ class GaugeField(Field):
             f @= self
         return f
 
+    @timer
     def save(self, path):
         mk_file_dirs_info(path)
         return c.save_gauge_field(self, path)
 
+    @timer
     def load(self, path):
         return c.load_gauge_field(self, path)
 
@@ -118,3 +121,14 @@ def set_g_rand_color_matrix_field(fc, rng, sigma, n_steps = 1):
 def gf_twist_boundary_at_boundary(gf : GaugeField, lmom : float = -0.5, mu : int = 3):
     # modify gf in place
     c.gf_twist_boundary_at_boundary(gf, lmom, mu)
+
+def mk_left_expanded_gauge_field(gf):
+    geo = gf.geo()
+    multiplicity = geo.multiplicity
+    expansion_left = [ 1, 1, 1, 1, ]
+    expansion_right = [ 0, 0, 0, 0, ]
+    geo1 = geo_reform(geo, expansion_left = expansion_left, expansion_right = expansion_right)
+    gf1 = GaugeField(geo1)
+    gf1 @= gf
+    refresh_expanded_1(gf1)
+    return gf1

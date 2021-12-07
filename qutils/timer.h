@@ -583,6 +583,7 @@ struct Timer {
   //
   static void display_stack_always()
   {
+    displayln("display_stack start");
     const std::vector<TimerInfo>& tdb = get_timer_database();
     const std::vector<long>& t_stack = get_timer_stack();
     for (long i = (long)t_stack.size() - 1; i >= 0; --i) {
@@ -590,6 +591,7 @@ struct Timer {
       tdb[info_index].show_avg_always(ssprintf("stack[%3ld]", i),
                                       max_function_name_length_shown());
     }
+    displayln("display_stack end");
   }
   static void display_stack()
   {
