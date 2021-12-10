@@ -118,6 +118,43 @@ qacc ColorMatrix gf_wilson_line_no_comm(const GaugeField& gf,
   return ret;
 }
 
+template <class Vec>
+inline void gf_wilson_line_no_comm(Field<ColorMatrix>& wilson_line_field,
+                                   const int wilson_line_field_m,
+                                   const GaugeField& gf_ext, const Vec& path)
+// wilson_line_field needs to be initialized before hand
+// 0 <= wilson_line_field_m < wilson_line_field.geo().multiplicity
+{
+  TIMER("gf_wilson_line_no_comm")
+  const Geometry& geo = wilson_line_field.geo();
+  check_matching_geo(geo, gf_ext.geo());
+  qassert(0 <= wilson_line_field_m and wilson_line_field_m < geo.multiplicity);
+  qacc_for(index, geo.local_volume(), {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    Vector<ColorMatrix> v = wilson_line_field.get_elems(xl);
+    v[wilson_line_field_m] = gf_wilson_line_no_comm(gf_ext, xl, path);
+  });
+}
+
+template <class Vec>
+inline void gf_wilson_line_no_comm(Field<ColorMatrix>& wilson_line_field,
+                                   const int wilson_line_field_m,
+                                   const GaugeField& gf_ext, const Vec& path,
+                                   const Vec& path_n)
+// wilson_line_field needs to be initialized before hand
+// 0 <= wilson_line_field_m < wilson_line_field.geo().multiplicity
+{
+  TIMER("gf_wilson_line_no_comm")
+  const Geometry& geo = wilson_line_field.geo();
+  check_matching_geo(geo, gf_ext.geo());
+  qassert(0 <= wilson_line_field_m and wilson_line_field_m < geo.multiplicity);
+  qacc_for(index, geo.local_volume(), {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    Vector<ColorMatrix> v = wilson_line_field.get_elems(xl);
+    v[wilson_line_field_m] = gf_wilson_line_no_comm(gf_ext, xl, path, path_n);
+  });
+}
+
 qacc ColorMatrix gf_staple_no_comm_v1(const GaugeField& gf,
                                       const Coordinate& xl, const int mu)
 {
@@ -569,7 +606,7 @@ inline ColorMatrix gf_avg_wilson_loop(const GaugeField& gf, const Coordinate& l,
   set_zero(m);
   std::vector<Coordinate> cs = spatial_permute_direction(l);
   for (int i = 0; i < (int)cs.size(); ++i) {
-    m += gf_avg_wilson_line(gf, make_wilson_loop_path(l, t));
+    m += gf_avg_wilson_line(gf, make_wilson_loop_path(cs[i], t));
   }
   return m;
 }

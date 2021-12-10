@@ -8,7 +8,7 @@ from qlat.timer import *
 
 class GaugeField(Field):
 
-    def __init__(self, geo = None):
+    def __init__(self, geo = None, *, ctype = None, multiplicity = None):
         Field.__init__(self, "ColorMatrix", geo, 4)
 
     def copy(self, is_copying_data = True):
@@ -47,7 +47,7 @@ class GaugeField(Field):
 
 class GaugeTransform(Field):
 
-    def __init__(self, geo = None):
+    def __init__(self, geo = None, *, ctype = None, multiplicity = None):
         Field.__init__(self, "ColorMatrix", geo, 1)
 
     def copy(self, is_copying_data = True):
@@ -107,6 +107,25 @@ def gf_avg_link_trace(gf):
     assert isinstance(gf, GaugeField)
     return c.gf_avg_link_trace(gf)
 
+def gf_wilson_line_no_comm(wlf, m, gf_ext, path, path_n = None):
+    if path_n is None:
+        c.gf_wilson_line_no_comm(wlf, m, gf_ext, path)
+    else:
+        c.gf_wilson_line_no_comm(wlf, m, gf_ext, path, path_n)
+
+def gf_wilson_lines_no_comm(gf_ext, path_list):
+    multiplicity = len(path_list)
+    geo = geo_reform(gf_ext.geo(), multiplicity)
+    wlf = Field("ColorMatrix", geo)
+    for m, p in enumerate(path_list):
+        if isinstance(p, tuple) and len(p) == 2:
+            path, path_n = p
+            gf_wilson_line_no_comm(wlf, m, gf_ext, path, path_n)
+        else:
+            path = p
+            gf_wilson_line_no_comm(wlf, m, gf_ext, path)
+    return wlf
+
 def gf_avg_wilson_loop_normalized_tr(gf, l, t):
     assert isinstance(gf, GaugeField)
     assert isinstance(l, int)
@@ -123,12 +142,6 @@ def gf_twist_boundary_at_boundary(gf : GaugeField, lmom : float = -0.5, mu : int
     c.gf_twist_boundary_at_boundary(gf, lmom, mu)
 
 def mk_left_expanded_gauge_field(gf):
-    geo = gf.geo()
-    multiplicity = geo.multiplicity
-    expansion_left = [ 1, 1, 1, 1, ]
-    expansion_right = [ 0, 0, 0, 0, ]
-    geo1 = geo_reform(geo, expansion_left = expansion_left, expansion_right = expansion_right)
-    gf1 = GaugeField(geo1)
-    gf1 @= gf
+    gf1 = field_expanded(gf, 1, 0)
     refresh_expanded_1(gf1)
     return gf1

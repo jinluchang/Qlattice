@@ -9,7 +9,7 @@ from qlat.selected_points import *
 
 class Prop(Field):
 
-    def __init__(self, geo = None):
+    def __init__(self, geo = None, *, ctype = None, multiplicity = None):
         Field.__init__(self, "WilsonMatrix", geo, 1)
 
     def copy(self, is_copying_data = True):
@@ -35,7 +35,7 @@ class Prop(Field):
 
 class SelProp(SelectedField):
 
-    def __init__(self, fsel):
+    def __init__(self, fsel, *, ctype = None, multiplicity = None):
         SelectedField.__init__(self, "WilsonMatrix", fsel, 1)
 
     def copy(self, is_copying_data = True):
@@ -61,7 +61,7 @@ class SelProp(SelectedField):
 
 class PselProp(SelectedPoints):
 
-    def __init__(self, psel):
+    def __init__(self, psel, *, ctype = None, multiplicity = None):
         SelectedPoints.__init__(self, "WilsonMatrix", psel, 1)
 
     def copy(self, is_copying_data = True):
@@ -173,7 +173,7 @@ def free_scalar_invert_cfield(src, mass):
 
 class FermionField4d(Field):
 
-    def __init__(self, geo = None):
+    def __init__(self, geo = None, *, ctype = None, multiplicity = None):
         Field.__init__(self, "WilsonVector", geo, 1)
 
     def copy(self, is_copying_data = True):

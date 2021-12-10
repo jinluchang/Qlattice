@@ -46,6 +46,33 @@ EXPORT(gf_avg_wilson_loop_normalized_tr, {
   return py_convert(ret);
 });
 
+EXPORT(gf_wilson_line_no_comm, {
+  using namespace qlat;
+  PyObject* p_wilson_line_field = NULL;
+  int wilson_line_field_m = 0;
+  PyObject* p_gf_ext = NULL;
+  PyObject* p_path = NULL;
+  PyObject* p_path_n = NULL;
+  if (!PyArg_ParseTuple(args, "OiOO|O", &p_wilson_line_field,
+                        &wilson_line_field_m, &p_gf_ext, &p_path, &p_path_n)) {
+    return NULL;
+  }
+  Field<ColorMatrix>& wilson_line_field =
+      py_convert_type_field<ColorMatrix>(p_wilson_line_field);
+  const GaugeField& gf_ext = py_convert_type<GaugeField>(p_gf_ext);
+  const std::vector<int> path = py_convert_data<std::vector<int> >(p_path);
+  if (p_path_n != NULL) {
+    const std::vector<int> path_n =
+        py_convert_data<std::vector<int> >(p_path_n);
+    gf_wilson_line_no_comm(wilson_line_field, wilson_line_field_m, gf_ext, path,
+                           path_n);
+  } else {
+    gf_wilson_line_no_comm(wilson_line_field, wilson_line_field_m, gf_ext,
+                           path);
+  }
+  Py_RETURN_NONE;
+});
+
 EXPORT(set_g_rand_color_matrix_field, {
   using namespace qlat;
   PyObject* p_field = NULL;

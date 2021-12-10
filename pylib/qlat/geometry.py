@@ -84,8 +84,14 @@ def geo_reform(geo, multiplicity = 1, expansion_left = None, expansion_right = N
     assert isinstance(geo, Geometry)
     if expansion_left is None:
         expansion_left = [ 0, 0, 0, 0, ]
+    elif isinstance(expansion_left, int):
+        e = expansion_left
+        expansion_left = [ e, e, e, e, ]
     if expansion_right is None:
         expansion_right = [ 0, 0, 0, 0, ]
+    elif isinstance(expansion_right, int):
+        e = expansion_right
+        expansion_right = [ e, e, e, e, ]
     geo_new = Geometry([ 0, 0, 0, 0, ])
     c.set_geo_reform(geo_new, geo, multiplicity, expansion_left, expansion_right)
     return geo_new
