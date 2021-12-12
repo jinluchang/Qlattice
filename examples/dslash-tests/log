@@ -32,8 +32,8 @@ plaq 3x1 :  9.00130741296361059E-01
 plaq 2x3 :  8.79795304171444692E-01
 plaq 3x2 :  8.75518924731070847E-01
 plaq 3x3 :  8.55309122171914793E-01
-plaq (1,1,0,0)x2 :  4.32818150209259542E+01
-plaq (2,1,0,0)x1 :  4.43219409117222654E+01
+plaq (1,1,0,0)x2 :  4.32532616020453915E+01
+plaq (2,1,0,0)x1 :  4.43553870002865196E+01
 testing multiply_m_full and multiply_m
 CommPlanCache: to add 5 / 32.
 1.524000E+01, 1.524000E+01 qnorm(diff) = 0.000000E+00
@@ -91,8 +91,8 @@ plaq 3x1 :  8.98668059022398880E-01
 plaq 2x3 :  8.76551322949157274E-01
 plaq 3x2 :  8.74369361641947784E-01
 plaq 3x3 :  8.51511991520023326E-01
-plaq (1,1,0,0)x2 :  4.30307014237564829E+01
-plaq (2,1,0,0)x1 :  4.42348501419445554E+01
+plaq (1,1,0,0)x2 :  4.31210259594704794E+01
+plaq (2,1,0,0)x1 :  4.42790577388240933E+01
 CommPlanCache: to add 6 / 32.
 CommPlanCache: to add 7 / 32.
 find_max_eigen_value_hermop_sym2:     1: sqrt_qnorm_ratio = 1.79007997920204631E+00. (max eigen value of hermop_sym2)
