@@ -834,11 +834,10 @@ void shuffle_field_back(Field<M>& f, const std::vector<Field<M> >& fs,
 {
   sync_node();
   TIMER_FLOPS("shuffle_field_back");
-  const Geometry& geo = f.geo();
-  const ShufflePlan& sp = get_shuffle_plan(geo.total_site(), new_size_node);
+  const ShufflePlan& sp = get_shuffle_plan(f.geo().total_site(), new_size_node);
   shuffle_field_back(f, fs, sp);
   const long total_bytes =
-      sp.scp.global_comm_size * geo.multiplicity * sizeof(M);
+      sp.scp.global_comm_size * f.geo().multiplicity * sizeof(M);
   timer.flops += total_bytes;
 }
 
@@ -868,12 +867,11 @@ void shuffle_field_back(SelectedField<M>& f,
 {
   sync_node();
   TIMER_FLOPS("shuffle_field_back");
-  const Geometry& geo = f.geo();
   std::vector<FieldSelection> fsels;
   const ShufflePlan sp = make_shuffle_plan(fsels, fsel, new_size_node);
   shuffle_field_back(f, fs, sp);
   const long total_bytes =
-      sp.scp.global_comm_size * geo.multiplicity * sizeof(M);
+      sp.scp.global_comm_size * f.geo().multiplicity * sizeof(M);
   timer.flops += total_bytes;
 }
 
