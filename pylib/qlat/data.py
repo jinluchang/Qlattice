@@ -92,13 +92,17 @@ def average(data_list):
     return 1/n * v
 
 def jackknife(data_list, eps = 1):
-    # normal jackknife uses eps = 1 / sqrt(len(data_list))
-    n = len(data_list)
-    fac = eps / math.sqrt(n)
-    avg = average(data_list)
+    # normal jackknife uses eps = 1
+    data_list_real = [ d for d in data_list if d is not None ]
+    n = len(data_list_real)
+    fac = eps / n
+    avg = average(data_list_real)
     jks = [ avg, ]
     for data in data_list:
-        jks.append(avg + fac * (data - avg))
+        if data is None:
+            jks.append(avg)
+        else:
+            jks.append(avg + fac * (data - avg))
     return jks
 
 def fsqr(data):
@@ -146,4 +150,4 @@ def jk_err(jk_list, eps = 1):
     # same eps as the eps used in the 'jackknife' function
     avg = jk_avg(jk_list)
     diff_sqr = average([ fsqr(jk - avg) for jk in jk_list[1:] ])
-    return (1/eps) * fsqrt(diff_sqr)
+    return (math.sqrt(len(jk_list) - 1) / eps) * fsqrt(diff_sqr)
