@@ -39,7 +39,8 @@ def mk_dirs_info(path):
 @timer
 def mk_file_dirs(fn):
     path = os.path.dirname(fn)
-    os.makedirs(path, exist_ok=True)
+    if path != "":
+        os.makedirs(path, exist_ok=True)
 
 @timer
 def mk_file_dirs_info(path):

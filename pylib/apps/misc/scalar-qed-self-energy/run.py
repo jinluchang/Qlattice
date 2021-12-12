@@ -136,34 +136,32 @@ def find_trajs(job_tag):
             trajs.append(traj)
     return trajs
 
-rup.dict_params["48I"]["data_path_em"] = get_load_path("lat-four-point-em/48I-0.00078")
 rup.dict_params["48I"]["ainv/gev"] = 1.73
-rup.dict_params["48I"]["m_pi"] = 0.135 / rup.dict_params["48I"]["ainv/gev"]
-rup.dict_params["48I"]["trajs"] = find_trajs("48I")
-
-rup.dict_params["64I"]["data_path_em"] = get_load_path("lat-four-point-em/64I-0.000678")
 rup.dict_params["64I"]["ainv/gev"] = 2.359
-rup.dict_params["64I"]["m_pi"] = 0.135 / rup.dict_params["64I"]["ainv/gev"]
-rup.dict_params["64I"]["trajs"] = find_trajs("64I")
-
-rup.dict_params["24D"]["data_path_em"] = get_load_path("lat-four-point-emw/24D-0.00107")
 rup.dict_params["24D"]["ainv/gev"] = 1.0158
-rup.dict_params["24D"]["m_pi"] = 0.13975
-rup.dict_params["24D"]["trajs"] = find_trajs("24D")
-
-rup.dict_params["24DH"]["data_path_em"] = get_load_path("lat-four-point-emw/24D-0.0174")
 rup.dict_params["24DH"]["ainv/gev"] = 1.0158
-rup.dict_params["24DH"]["m_pi"] = 0.3357
-rup.dict_params["24DH"]["trajs"] = find_trajs("24DH")
-
-rup.dict_params["32D"]["data_path_em"] = get_load_path("lat-four-point-emw/32D-0.00107")
 rup.dict_params["32D"]["ainv/gev"] = 1.0158
-rup.dict_params["32D"]["m_pi"] = 0.139474
-rup.dict_params["32D"]["trajs"] = find_trajs("32D")
-
-rup.dict_params["32Dfine"]["data_path_em"] = get_load_path("lat-four-point-emw/32Dfine-0.0001")
 rup.dict_params["32Dfine"]["ainv/gev"] = 1.378
+
+rup.dict_params["48I"]["m_pi"] = 0.135 / rup.dict_params["48I"]["ainv/gev"]
+rup.dict_params["64I"]["m_pi"] = 0.135 / rup.dict_params["64I"]["ainv/gev"]
+rup.dict_params["24D"]["m_pi"] = 0.13975
+rup.dict_params["24DH"]["m_pi"] = 0.3357
+rup.dict_params["32D"]["m_pi"] = 0.139474
 rup.dict_params["32Dfine"]["m_pi"] = 0.10468
+
+rup.dict_params["48I"]["data_path_em"] = get_load_path("lat-four-point-em/48I-0.00078")
+rup.dict_params["64I"]["data_path_em"] = get_load_path("lat-four-point-em/64I-0.000678")
+rup.dict_params["24D"]["data_path_em"] = get_load_path("lat-four-point-emw/24D-0.00107")
+rup.dict_params["24DH"]["data_path_em"] = get_load_path("lat-four-point-emw/24D-0.0174")
+rup.dict_params["32D"]["data_path_em"] = get_load_path("lat-four-point-emw/32D-0.00107")
+rup.dict_params["32Dfine"]["data_path_em"] = get_load_path("lat-four-point-emw/32Dfine-0.0001")
+
+rup.dict_params["48I"]["trajs"] = find_trajs("48I")
+rup.dict_params["64I"]["trajs"] = find_trajs("64I")
+rup.dict_params["24D"]["trajs"] = find_trajs("24D")
+rup.dict_params["24DH"]["trajs"] = find_trajs("24DH")
+rup.dict_params["32D"]["trajs"] = find_trajs("32D")
 rup.dict_params["32Dfine"]["trajs"] = find_trajs("32Dfine")
 
 @q.timer

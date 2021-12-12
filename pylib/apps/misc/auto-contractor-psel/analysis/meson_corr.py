@@ -55,6 +55,7 @@ def get_data(job_tag, traj):
     ld_pw = q.load_lat_data(get_load_path(f"auto-contractor-psel/{job_tag}/traj={traj}/meson_corr_with_env/psnk_wsrc.lat"))
     return [ ld_ww, ld_pw, ]
 
+@q.timer_verbose
 def get_all_data(job_tag, trajs):
     # lds_all = [ lds_ww, lds_pw, ]
     # lds_ww = [ ld_ww, ... ]
@@ -131,9 +132,12 @@ def divide_norm(job_tag, ld_ww, ld_pw):
     for i_outer in [ 1, 2, 3, ]:
         for i_inner in [ 0, 1, 2, 3, ]:
             for tsep in range(t_size):
+                # divide environment pi corr
+                # ATW effects not corrected at all
                 t_env = (tsep + 2 * tsep_env) % t_size
                 ld_ww[i_outer * n_inner + i_inner][tsep] /= ld_ww[i_inner_pipi][t_env]
                 ld_pw[i_outer * n_inner + i_inner][tsep] /= ld_ww[i_inner_pipi][t_env]
+                # divide two point
                 ld_ww[i_outer * n_inner + i_inner][tsep] /= ld_ww[i_inner][tsep]
                 ld_pw[i_outer * n_inner + i_inner][tsep] /= ld_pw[i_inner][tsep]
 
@@ -147,7 +151,6 @@ def analysis(job_tag):
     for ld_ww, ld_pw in zip(lds_ww, lds_pw):
         subtract_discon(job_tag, ld_ww.val, ld_pw.val)
         divide_norm(job_tag, ld_ww.val, ld_pw.val)
-        pass
     data = []
     i_inner = 1
     for ld_ww, ld_pw in zip(lds_ww, lds_pw):
