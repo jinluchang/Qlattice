@@ -42,7 +42,6 @@ cd build
     --enable-accelerator=cuda \
     --enable-accelerator-cshift \
     --enable-gparity=no \
-    --enable-setdevice \
     --disable-fermion-reps \
     --with-lime="$prefix" \
     --with-fftw="$prefix" \
@@ -52,6 +51,7 @@ cd build
     --with-openssl="$prefix" \
     --prefix=$prefix
 
+    # --enable-setdevice \
     # --enable-shm=shmopen \
 
 make -j$num_proc
