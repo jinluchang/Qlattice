@@ -19,7 +19,7 @@ if [ -z "\$num_proc" ] ; then
 fi
 export PYTHONPATH=
 module purge
-module add gcc-7.2.0
+module add gcc-7.1.0
 # load intel libraries
 source /dist/intel/parallel_studio_xe/parallel_studio_xe/psxevars.sh intel64
 module list
