@@ -114,7 +114,7 @@ else
 fi
 
 if [ -d gpt ] ; then
-    ( cd gpt ; git pull )
+    ( cd gpt ; git pull ; git pull https://github.com/waterret/gpt.git )
 else
     git clone https://github.com/lehner/gpt.git
 fi
