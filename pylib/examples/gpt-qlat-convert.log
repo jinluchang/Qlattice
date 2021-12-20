@@ -1,0 +1,120 @@
+SharedMemoryMpi:  World communicator of size 2
+SharedMemoryMpi:  Node  communicator of size 1
+SharedMemoryMpi: SharedMemoryAllocate 1073741824 MMAP anonymous implementation 
+
+__|__|__|__|__|__|__|__|__|__|__|__|__|__|__
+__|__|__|__|__|__|__|__|__|__|__|__|__|__|__
+__|_ |  |  |  |  |  |  |  |  |  |  |  | _|__
+__|_                                    _|__
+__|_   GGGG    RRRR    III    DDDD      _|__
+__|_  G        R   R    I     D   D     _|__
+__|_  G        R   R    I     D    D    _|__
+__|_  G  GG    RRRR     I     D    D    _|__
+__|_  G   G    R  R     I     D   D     _|__
+__|_   GGGG    R   R   III    DDDD      _|__
+__|_                                    _|__
+__|__|__|__|__|__|__|__|__|__|__|__|__|__|__
+__|__|__|__|__|__|__|__|__|__|__|__|__|__|__
+  |  |  |  |  |  |  |  |  |  |  |  |  |  |  
+
+
+Copyright (C) 2015 Peter Boyle, Azusa Yamaguchi, Guido Cossu, Antonin Portelli and other authors
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+Current Grid git commit hash=ede8faea7436d927ec867a190195dd61aeab4f3c: (HEAD, origin/feature/gpt, origin/HEAD, feature/gpt) clean
+
+
+=============================================
+              Initialized GPT                
+     Copyright (C) 2020 Christoph Lehner     
+=============================================
+qlat::begin_comm(comm,size_node): get_comm_list().push_back()
+qlat::begin_comm(comm,size_node): get_comm_list().size() = 2.
+q_num_threads=2 (default)
+qlat::begin(): q_num_threads = 2
+qlat::begin(): GeometryNode =
+{ initialized = true
+, num_node    = 2
+, id_node     = 0
+, size_node   = 1x1x1x2
+, coor_node   = 0x0x0x0 }
+q_verbose=1
+q_timer_mini_auto_show=1 (default)
+q_timer_max_always_show=10 (default)
+q_timer_max_func_name_len=50 (default)
+geo.show() = Geometry([4, 4, 4, 8], 1)
+q_field_init=fast (default)
+set q_field_init=fast.
+q_mem_cache_max_size=512 (default)
+q_mem_cache_acc_max_size=512 (default)
+CommPlanCache: to add 1 / 32.
+gf_show_info: plaq = 0.6530770929880311 ; link_trace = 0.8973818884500859.
+test_gf
+qlat geo created
+gpt field made
+qlat field made
+gpt coordinates collected
+qlat mview made
+gpt_from_qlat
+plan initialized
+plan source added
+plan destination added
+plan created
+gf.plaq()=0.6530770929880311 ; g.qcd.gauge.plaquette(gpt_gf) = 0.65307709298803107
+test_src: xg=[0, 2, 2, 1]
+qlat geo created
+gpt field made
+qlat field made
+gpt coordinates collected
+qlat mview made
+qlat_from_gpt
+plan initialized
+plan destination added
+plan source added
+plan created
+12.0 12.0 0.0
+test_src: xg=[0, 3, 1, 6]
+12.0 12.0 0.0
+test_src: xg=[2, 1, 3, 3]
+12.0 12.0 0.0
+test_src: xg=[2, 3, 2, 3]
+12.0 12.0 0.0
+test_src: xg=[3, 1, 1, 0]
+12.0 12.0 0.0
+test_src: xg=[3, 3, 2, 4]
+12.0 12.0 0.0
+test_src: xg=[0, 3, 3, 3]
+12.0 12.0 0.0
+test_src: xg=[2, 0, 3, 1]
+12.0 12.0 0.0
+test_src: xg=[3, 1, 0, 7]
+12.0 12.0 0.0
+test_src: xg=[3, 3, 0, 1]
+12.0 12.0 0.0
+test_src: xg=[0, 0, 3, 7]
+12.0 12.0 0.0
+test_src: xg=[3, 3, 3, 5]
+12.0 12.0 0.0
+test_src: xg=[1, 2, 2, 1]
+12.0 12.0 0.0
+test_src: xg=[3, 2, 2, 6]
+12.0 12.0 0.0
+test_src: xg=[0, 0, 0, 2]
+12.0 12.0 0.0
+test_src: xg=[0, 3, 3, 6]
+12.0 12.0 0.0
+qlat::end(): get_comm_list().pop_back()
+qlat::end(): get_comm_list().size() = 1.
+qlat::end(): Switch to old comm (foreign).
+qlat::end(): MPI_Comm_free ended comm.
+=============================================
+               Finalized GPT                 
+=============================================
