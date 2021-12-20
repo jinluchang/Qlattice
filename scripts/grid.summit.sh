@@ -37,7 +37,6 @@ cd build
     --enable-gen-simd-width=32 \
     --enable-alloc-align=4k \
     --enable-comms=mpi \
-    --enable-shm=nvlink \
     --enable-unified=no \
     --enable-accelerator=cuda \
     --enable-accelerator-cshift \
@@ -51,7 +50,9 @@ cd build
     --with-openssl="$prefix" \
     --prefix=$prefix
 
+    # --enable-shm=nvlink \
     # --enable-setdevice \
+
     # --enable-shm=shmopen \
 
 make -j$num_proc
