@@ -490,6 +490,7 @@ inline void contract_meson_vv_meson_acc(
 inline void contract_chvp(SelectedField<Complex>& chvp,
                           const SelProp& prop1_x_y, const SelProp& prop2_x_y,
                           const FieldSelection& fsel)
+// fsel.prob is NOT accounted.
 {
   TIMER_VERBOSE("contract_chvp");
   const array<SpinMatrix, 8>& va_ms = get_va_matrices();

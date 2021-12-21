@@ -306,7 +306,7 @@ def mk_j_mu(p : str, mu, is_dagger = False):
 
 def mk_jl_mu(p : str, mu, is_dagger = False):
     # jl = sqrt(2)/6 * (j0 + 3 * j10) if no s quark
-    return sympy.simplify(1)*2/3 * mk_vec_mu("u", "u", p, mu, is_dagger) - sympy.simplify(1)*1/3 * mk_vec_mu("d", "d", p, mu, is_dagger)
+    return sympy.simplify(1)*2/3 * mk_vec_mu("u", "u", p, mu, is_dagger) - sympy.simplify(1)*1/3 * mk_vec_mu("d", "d", p, mu, is_dagger) + f"jl_mu({p},{mu}){show_dagger(is_dagger)}"
 
 def mk_j0_mu(p : str, mu, is_dagger = False):
     return sympy.simplify(1)*1/sympy.sqrt(2) * (mk_vec_mu("u", "u", p, mu, is_dagger) + mk_vec_mu("d", "d", p, mu, is_dagger))
@@ -844,6 +844,7 @@ if __name__ == "__main__":
             - mk_pi_0("x1", True) * mk_j_mu("xj_1", "mu") * mk_j_mu("xj_2", "nu") * mk_pi_0("x2")
             )
     print(display_cexpr(contract_simplify_compile(expr)))
+    print()
     print("< pi+(x2)^dag dm(xj_1) dm(xj_2) pi+(x1) / 2 + pi-(x2)^dag dm(xj_1) dm(xj_2) pi-(x1) / 2 - pi0(x2)^dag dm(xj_1) dm(xj_2) pi0(x1) >:")
     expr_dm1 = mk_scalar("d", "d", "xj_1") - mk_scalar("u", "u", "xj_1")
     expr_dm2 = mk_scalar("d", "d", "xj_2") - mk_scalar("u", "u", "xj_2")
@@ -854,6 +855,19 @@ if __name__ == "__main__":
             - mk_pi_0("x1", True) * expr_dm * mk_pi_0("x2")
             )
     print(display_cexpr(contract_simplify_compile(expr)))
+    print()
+    print("< pi+(x_2)^dag j_mu(xj_1) j_nu(xj_2) pi+(x_1) + pi-(x_2)^dag j_mu(xj_1) j_nu(xj_2) pi-(x_1) + pi0(x_2)^dag j_mu(xj_1) j_nu(xj_2) pi0(x_1) >:")
+    expr = (
+             sympy.simplify(1)/2 * mk_pi_p("x_2", True) * mk_jl_mu("xj_1", "nu") * mk_jl_mu("xj_2", "nu") * mk_pi_p("x_1")
+            + sympy.simplify(1)/2 * mk_pi_m("x_2", True) * mk_jl_mu("xj_1", "nu") * mk_jl_mu("xj_2", "nu") * mk_pi_m("x_1")
+            + 0 * mk_pi_0("x_1", True) * mk_jl_mu("xj_1", "nu") * mk_jl_mu("xj_2", "nu") * mk_pi_0("x_2")
+            )
+    diagram_type_dict = dict()
+    diagram_type_dict[((('x_1', 'xj_1'), 1), (('x_2', 'xj_2'), 1), (('xj_1', 'x_1'), 1), (('xj_2', 'x_2'), 1))] = "Type1"
+    diagram_type_dict[((('x_1', 'xj_1'), 1), (('x_2', 'xj_2'), 1), (('xj_1', 'x_2'), 1), (('xj_2', 'x_1'), 1))] = "Type2"
+    diagram_type_dict[((('x_1', 'x_2'), 1), (('x_2', 'xj_1'), 1), (('xj_1', 'xj_2'), 1), (('xj_2', 'x_1'), 1))] = "Type3"
+    diagram_type_dict[((('x_1', 'x_2'), 1), (('x_2', 'x_1'), 1), (('xj_1', 'xj_2'), 1), (('xj_2', 'xj_1'), 1))] = "Type4"
+    print(display_cexpr(contract_simplify_compile(expr, diagram_type_dict = diagram_type_dict)))
     exit()
     #
     print()
