@@ -54,4 +54,10 @@ from qlat.fields_io import *
 
 from qlat.inverter import *
 
-from qlat.plot import show_datatable, read_datatable, save_datatable, load_datatable, azip, plot_save, plot_view, gnuplot_png_density
+from qlat.plot import \
+        show_datatable, read_datatable, \
+        save_datatable, load_datatable, \
+        azip, \
+        plot_save, plot_view, \
+        gnuplot_png_density, \
+        display_img
