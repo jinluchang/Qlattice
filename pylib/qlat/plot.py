@@ -76,6 +76,14 @@ def load_datatable(fn):
     with open(fn) as f:
         return read_datatable(f)
 
+def azip(vec, *vecs):
+    size_list = map(len, vecs)
+    size_min = len(vec)
+    for size in size_list:
+        if size < size_min:
+            size_min = size
+    return np.array([ v[:size_min] for v in [ vec, ] + vecs ]).transpose()
+
 gnuplot_png_density = 500
 
 def mk_tmp_dir():
@@ -110,34 +118,19 @@ def check_fn(fn):
     return False
 
 def get_plot_name(fn):
+    assert fn[-4:] == ".png"
     assert check_fn(fn)
-    if fn[-8:] in [ ".png.pdf", ".pdf.png", ]:
-        name = fn[:-8]
-    elif fn[-4:] in [ ".png" ]:
-        name = fn[:-4]
-    elif fn[-4:] in [ ".pdf" ]:
-        name = fn[:-4]
-    else:
-        assert False
+    name = fn[:-4]
     return name
 
 def mk_makefile(fn = None):
     # fn is the target file name, e.g. plot.pdf or plot.png
     if fn is not None:
-        assert fn[-4:] in [ ".png", ".pdf", ]
-        assert check_fn(fn)
-        if fn[-8:] in [ ".png.pdf", ".pdf.png", ]:
-            target = "install"
-        elif fn[-4:] in [ ".png" ]:
-            target = "install-png"
-        elif fn[-4:] in [ ".pdf" ]:
-            target = "install-pdf"
-        else:
-            assert False
         name = get_plot_name(fn)
+        target = "install-png"
     else:
-        target = "png"
         name = "plot-0"
+        target = "png"
     return "\n".join([
         f"all: {target}",
         "",
@@ -231,14 +224,20 @@ def plot_save(fn = None,
     if is_run_make:
         status = subprocess.run([ "make", "-C", path, ])
         assert status.returncode == 0
-    return path
+        if target is None:
+            path_img = os.path.join(path, "plot-0.png")
+        else:
+            path_img = target
+    return path_img
+
+def display_png(fn):
+    from IPython.display import Image, display
+    display(Image(filename = fn))
 
 def plot_view(dts = None,
               cmds = None,
               lines = None,
              ):
-    path = plot_save(fn = None, dts = dts, cmds = cmds, lines = lines)
-    path_img = os.path.join(path, "plot-0.png")
-    from IPython.display import Image, display
-    display(Image(filename = path_img))
-    return path
+    path_img = plot_save(fn = None, dts = dts, cmds = cmds, lines = lines)
+    display_png(path_img)
+    return path_img
