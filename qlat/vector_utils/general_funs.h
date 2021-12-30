@@ -24,6 +24,19 @@
 namespace qlat
 {
 
+template<typename Iy>
+void reduce_MPI_type(Iy num, MPI_Datatype& curr, unsigned int& size)
+{
+  if(num <= 0){curr = MPI_BYTE; size = 1;return;}
+  //if(num%(sizeof(std::complex<double>)) == 0){curr = MPI::DOUBLE_COMPLEX ; size=sizeof( std::complex<double> );return;}
+  //if(num%(sizeof(std::complex<float >)) == 0){curr = MPI::COMPLEX        ; size=sizeof( std::complex<float > );return;}
+
+  if(num%(sizeof(std::int64_t )) == 0){curr = MPI_INT64_T ; size=sizeof(std::int64_t );return;}
+  if(num%(sizeof(std::int32_t )) == 0){curr = MPI_INT32_T ; size=sizeof(std::int32_t );return;}
+  if(num%(sizeof(std::int16_t )) == 0){curr = MPI_INT16_T ; size=sizeof(std::int16_t );return;}
+  if(num%(sizeof(std::int8_t  )) == 0){curr = MPI_INT8_T  ; size=sizeof(std::int8_t  );return;}
+}
+
 template<typename Ty>
 void get_MPI_type(Ty& a, MPI_Datatype& curr, unsigned int& size, int mode = 1)
 {
@@ -286,6 +299,40 @@ inline void fflush_MPI(){
   fflush(stdout);
 }
 
+//////"INT_MAX"
+//////offset by number of char
+template<typename Iy0, typename Iy1>
+void MPI_Alltoallv_Send_Recv(char* src, Iy0* send, Iy1* spls, char* res, Iy0* recv, Iy1* rpls, MPI_Comm& comm)
+{
+  int num_node;MPI_Comm_size(comm, &num_node);
+  int id_node;MPI_Comm_rank(comm, &id_node);
+  std::vector<MPI_Request> send_reqs(num_node);
+  int mpi_tag = id_node;
+  int c1 = 0;
+
+  /////===get proper M_size
+  MPI_Datatype curr = MPI_BYTE;unsigned int M_size = 1;unsigned int M_tem = 1;
+  for(int n = 0; n < num_node; n++){
+    if(send[n]!= 0){
+      reduce_MPI_type(send[n], curr, M_tem);
+      if(M_size == 1){M_size = M_tem;}
+      else{if(M_tem != M_size){curr = MPI_BYTE;M_size = 1;break;}}
+    }
+  }
+  /////
+
+  for(int n = 0; n < num_node; n++){
+    if(send[n]!=0){MPI_Isend(&src[spls[n]], int(send[n]/M_size), curr, n, mpi_tag + n, comm, &send_reqs[c1]);c1 += 1;}
+  }
+
+  for(int n = 0; n < num_node; n++){
+    if(recv[n]!=0){MPI_Recv( &res[rpls[n]], int(recv[n]/M_size), curr, n, mpi_tag + n, comm, MPI_STATUS_IGNORE);}
+  }
+  if(c1!=0){MPI_Waitall(c1, send_reqs.data(), MPI_STATUS_IGNORE);}
+}
+
+
+
 template<typename Ty>
 void MPI_Alltoallv_mode(Ty* src0, int* send, int* spls, Ty* res0, int* recv, int* rpls, MPI_Comm& comm, int mode=0, int GPU = 0)
 {
@@ -324,19 +371,21 @@ void MPI_Alltoallv_mode(Ty* src0, int* send, int* spls, Ty* res0, int* recv, int
                   res, recv, rpls, MPI_CHAR, comm);
   }
   if(mode == 1){
-    int num_node;MPI_Comm_size(comm, &num_node);
-    int id_node;MPI_Comm_rank(comm, &id_node);
-    std::vector<MPI_Request> send_reqs(num_node);
-    int mpi_tag = id_node;
-    int c1 = 0;
-    for(int n = 0; n < num_node; n++){
-      if(send[n]!=0){MPI_Isend(&src[spls[n]/sizeof(Ty)], send[n], MPI_CHAR, n, mpi_tag + n, comm, &send_reqs[c1]);c1 += 1;}
-    }
+    MPI_Alltoallv_Send_Recv((char*) src, send, spls, (char*) res, recv, rpls, comm);
 
-    for(int n = 0; n < num_node; n++){
-      if(recv[n]!=0){MPI_Recv( &res[rpls[n]/sizeof(Ty)], recv[n], MPI_CHAR, n, mpi_tag + n, comm, MPI_STATUS_IGNORE);}
-    }
-    if(c1!=0){MPI_Waitall(c1, send_reqs.data(), MPI_STATUS_IGNORE);}
+    //int num_node;MPI_Comm_size(comm, &num_node);
+    //int id_node;MPI_Comm_rank(comm, &id_node);
+    //std::vector<MPI_Request> send_reqs(num_node);
+    //int mpi_tag = id_node;
+    //int c1 = 0;
+    //for(int n = 0; n < num_node; n++){
+    //  if(send[n]!=0){MPI_Isend(&src[spls[n]/sizeof(Ty)], send[n], MPI_CHAR, n, mpi_tag + n, comm, &send_reqs[c1]);c1 += 1;}
+    //}
+
+    //for(int n = 0; n < num_node; n++){
+    //  if(recv[n]!=0){MPI_Recv( &res[rpls[n]/sizeof(Ty)], recv[n], MPI_CHAR, n, mpi_tag + n, comm, MPI_STATUS_IGNORE);}
+    //}
+    //if(c1!=0){MPI_Waitall(c1, send_reqs.data(), MPI_STATUS_IGNORE);}
   }
 
 
@@ -1094,6 +1143,35 @@ qlat::vector_acc<Ty* > EigenM_to_pointers(std::vector<qlat::vector_acc<Ty > >& s
   return res;
 }
 
+/////Ty should have size(), resize(), and data()
+template<class Ty>
+Ty sum_local_to_global_vector(Ty src, MPI_Comm* commp=NULL)
+{
+  ////int Nt = geo.node_site[3];
+  int Nmpi  = qlat::get_num_node();
+  int rank  = qlat::get_id_node();
+  if(commp != NULL){MPI_Comm_size(*commp, &Nmpi);MPI_Comm_rank(*commp, &rank);}
+
+  std::vector<long > size_global;size_global.resize(Nmpi);for(unsigned long i=0;i<size_global.size();i++){size_global[i]=0;}
+
+  size_global[rank] = src.size();
+
+  sum_all_size(size_global.data(), size_global.size(), 0, commp);
+
+  long total = 0;long current = 0;
+  for(int i=0;i<Nmpi;i++){total += size_global[i];if(i < rank){current += size_global[i];}}
+
+  /////for(unsigned int i=0;i<size_global.size();i++){printf("rank %d, size %ld \n", rank, size_global[i]);}
+  /////printf("rank %d, Total %ld, current %ld \n", rank, total, current);
+
+  Ty res;res.resize(total);
+  for(unsigned long pos=current;pos<src.size();pos++){res[pos] = src[pos - current];}
+
+  sum_all_size(res.data(), res.size(), 0, commp);
+
+  return res;
+
+}
 
 
 }

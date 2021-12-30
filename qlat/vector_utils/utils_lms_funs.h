@@ -134,7 +134,7 @@ void prop_to_corr(EigenM& Eprop, EigenV& Eres, fft_desc_basic& fd, int clear = 1
 /////propH , pi --> 12*12 --> Nt*Nxyz
 template<typename Ty>
 void point_corr(std::vector<qnoiT >& src, std::vector<qpropT >& propH,
-    std::vector<double >& massL, eigen_ov& ei, fft_desc_basic& fd, corr_dat& res, int mode_sm = 0, int shift_t = 1, int lms = 0)
+    std::vector<double >& massL, eigen_ov& ei, fft_desc_basic& fd, corr_dat& res, int mode_sm = 0, int shift_t = 1, int lms = 0, int SRC_PROP_WITH_LOW = 0)
 {
   if(propH.size() != src.size()*massL.size()){abort_r("prop size, mass size not match!\n");}
   int Ns = src.size();
@@ -171,10 +171,23 @@ void point_corr(std::vector<qnoiT >& src, std::vector<qpropT >& propH,
 
   copy_eigen_src_to_FeildM(high_prop, propH, ei.b_size, fd, 1, GPU, rotate);
   copy_eigen_prop_to_EigenM(high_prop.data(), Eprop, ei.b_size, nmass, fd, 0, GPU);
+  low_prop.resize(high_prop.size());
+
+  /////reduce the high prop
+  if(SRC_PROP_WITH_LOW == 1){
+    stmp.set_zero();
+    low_prop.set_zero();
+    std::vector<qlat::FieldM<Ty , 12*12> > src_prop;
+    FieldM_src_to_FieldM_prop(src, src_prop, GPU);
+    copy_eigen_src_to_FeildM(stmp, src_prop, ei.b_size, fd, 1, GPU, rotate);
+    prop_L_device(ei, stmp.data(), low_prop.data(), 12*Ns, massL, mode_sm);
+    high_prop -= low_prop;
+  }
+  /////reduce the high prop
+
   prop_to_corr(Eprop, EresH, fd, 0);  
 
   /////set memory for low_prop
-  low_prop.resize(high_prop.size());
   int Nlms = 1;
   if(lms == -1){Nlms = Ngrid[0].size();}
   if(lms == 0 ){Nlms = 1;}

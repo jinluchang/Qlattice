@@ -115,7 +115,7 @@ int main(int argc, char* argv[])
     }
     /////===load noise and prop
 
-    point_corr(noi, FpropV, massL, ei, fd, res, mode_sm, 1, in.lms);
+    point_corr(noi, FpropV, massL, ei, fd, res, mode_sm, 1, in.lms, in.SRC_PROP_WITH_LOW);
   }
 
   sprintf(names, in.output.c_str(),icfg);

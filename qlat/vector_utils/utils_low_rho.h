@@ -236,7 +236,7 @@ inline void reducefM(qlat::vector_acc<Complexq > &fd,Complexq* NabL, long bufN, 
 
     set_zero(reduce_sum);
 
-    int bSum = 256/nvec;
+    int bSum = 256/4;
     int cutN  = 32;
     reduce_gpu2d_6(fd.data(),&reduce_sum[0],Nsum,nvec*Nt*16,  1, bSum, cutN);
   }
@@ -786,7 +786,11 @@ inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const q
   int bufb0 = -1;int bufb1 = -1;
   int facbufN = 1;
 
-  size_t freeM = 0;size_t totalM = 0;double extra = 0.2;
+  size_t freeM = 0;size_t totalM = 0;double extra = 0.2;double fac_extra=1.5;
+  #ifdef __HIP_PLATFORM_HCC__
+  extra = 0.1;fac_extra = 1.1; 
+  #endif
+
   modeCopy = 1;
 
   long total_vol = Nmpi*geo.local_volume();
@@ -801,17 +805,24 @@ inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const q
   freeD = freeD - membufN * bufN;
 
   int Nfull = (freeD/(vGb_vec*sizeof(Complexq)/2.0));
-  if(n_vec < Nfull/(1.5)){
+  if(n_vec < Nfull/(fac_extra)){
     //Ncut = (n_vec-1)/2 + 1;
     Ncut = n_vec;
     Ncutbuf = Ncut;
   }
-  else{Ncut = Nfull/(3.0);Ncutbuf = 2*Ncut;}///(or 2.5)
+  else{Ncut = Nfull/(2.5);Ncutbuf = 2*Ncut;}///(or 2.5)
+
+  ////==propagate setups
+  {if(fd.rank != 0){Ncutbuf = 0;Ncut = 0;}
+  sum_all_size(&Ncutbuf, 1);sum_all_size(&Ncut   , 1);}
   print0("==rank %d, n_vec %8d, Ncut %5d/%5d , Fac %.3e , free %.3e GB, total %.3e GB \n",
       qlat::get_id_node(), n_vec,Ncut,Nfull,n_vec*1.0/Ncut,freeD, totalD);
-  #ifdef  __HIP_PLATFORM_HCC__
-  if(Ncut != n_vec){abort_r("Something wrong with the memory of HIPCC!\n");}
+  ////==propagate setups
+
+  #ifdef __HIP_PLATFORM_HCC__
+  if(n_vec != Ncut ){abort_r("HIPCC has propblem with memory move!\n");}
   #endif
+
   #endif
 
   unsigned long bufi = 0;

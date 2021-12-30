@@ -10,6 +10,7 @@
 #include "float_type.h"
 #include "gammas.h"
 #include "utils_momentum.h"
+#include "fft_desc.h"
 
 namespace qlat{
 
@@ -146,6 +147,7 @@ void check_noise_pos(qlat::FieldM<Ty, 1>& noise, Coordinate& pos,qlat::vector_ac
 
 }
 
+
 inline void grid_list_pos(qlat::vector_acc<int >& off_L,qlat::vector_acc<int > &Ngrid)
 {
   TIMERA("===grid_list_pos===")
@@ -250,6 +252,104 @@ void write_grid_point_to_src(Ty* res, const qnoiT& src, const Coordinate& pos, i
 
 }
 
+void print_psel(PointSelection& psel)
+{
+  for(unsigned long i=0;i<psel.size();i++){
+    Coordinate& xg0 = psel[i];
+    print0("x %d, y %d, z %d, t %d\n", xg0[0], xg0[1], xg0[2], xg0[3]);
+  }
+}
+
+void add_psel(PointSelection& p0, const PointSelection& p1)
+{
+  for(unsigned int i=0;i<p1.size();i++){p0.push_back(p1[i]);}
+}
+
+void vector_to_Coordinate(qlat::vector_acc<int >& nv, Coordinate& pos, int dir = 1)
+{
+  if(dir == 1){qassert(nv.size() != 4);}
+  if(dir == 0){nv.resize(4);}
+  if(dir == 1){for(int i=0;i<4;i++){pos[i] = nv[i] ;}}
+  if(dir == 0){for(int i=0;i<4;i++){nv[i]  = pos[i];}}
+}
+
+void get_grid_psel(PointSelection& psel, Coordinate& nv, Coordinate& grid, int t0 = -1, int seed = 123)
+{
+  /////put seed to all the same as rank 0
+  if(qlat::get_id_node() != 0){seed = 0;}
+  sum_all_size(&seed, 1 );
+
+  qlat::RngState rs(seed);
+  long total = 1;
+  for(int i=0;i<4;i++){
+   if(nv[i] < 0 or grid[i] < 0 or nv[i]%grid[i] != 0){print0("Grid offset wrong nv[i] %d, grid[i] %d !\n", nv[i], grid[i]);}
+   total *= grid[i];
+  }
+
+  Coordinate ini;
+  for(int i=0;i<4;i++){ini[i] = int(qlat::u_rand_gen(rs)*(nv[i]/grid[i]));}
+  if(t0 != -1){ini[3] = t0;}
+
+  psel.resize(0);
+
+  for(int xi=0;xi<grid[0];xi++)
+  for(int yi=0;yi<grid[1];yi++)
+  for(int zi=0;zi<grid[2];zi++)
+  for(int ti=0;ti<grid[2];ti++)
+  {
+    Coordinate xg;
+    Coordinate ci;
+    ci[0] = xi;  ci[1] = yi; ci[2] = zi; ci[3] = ti;
+
+    for(int i=0;i<4;i++){xg[i] = ini[i] + ci[i]*(nv[i]/grid[i]);}
+
+    psel.push_back(xg);
+  }
+
+
+}
+
+template <typename Ty>
+void get_noises_Coordinate(const qlat::FieldM<Ty, 1>& noise, PointSelection& psel, int printv = 0)
+{
+  const qlat::Geometry& geo = noise.geo();
+  qlat::vector_acc<int > nv,Nv,mv;
+  geo_to_nv(geo, nv, Nv, mv);
+  //int nx,ny,nz,nt;
+  LInt Nsite = Nv[0]*Nv[1]*Nv[2]*Nv[3];
+
+  ////PointSelection local_tem;
+  std::vector<int > grid_pos;const int DIM = 4;
+
+  for(LInt isp=0; isp< Nsite; isp++)
+  {
+    if(qnorm(noise.get_elem(isp)) > 0.01)
+    {
+      Coordinate xl0 = geo.coordinate_from_index(isp);
+      Coordinate xg0 = geo.coordinate_g_from_l(xl0);
+      for(int i=0;i<DIM;i++){grid_pos.push_back(xg0[i]);}
+      if(printv == 2){
+        Ty tem = noise.get_elem(isp);
+        printf("rank %d, x %d, y %d, z %d, t %d, value %.3e %.3e \n",
+            qlat::get_id_node() , xg0[0], xg0[1], xg0[2], xg0[3], tem.real(), tem.imag());
+     }
+    }
+  }
+
+  std::vector<int > grid_pos_global = sum_local_to_global_vector(grid_pos);
+  /////for(unsigned int i=0;i< grid_pos_global.size();i++){print0("i %d %d \n",i ,grid_pos_global[i]);}
+
+  long total = grid_pos_global.size()/DIM;
+
+  psel.resize(total);Coordinate tem;
+  for(long p =0;p < total;p++){
+    for(int i=0;i < DIM; i++ ){tem[i] = grid_pos_global[p*4 + i];}
+    psel[p] = tem;
+  }
+
+  if(printv >= 1){printf("rank %d, number of non-zeros %ld \n", qlat::get_id_node(), total);}
+
+}
 
 
 }

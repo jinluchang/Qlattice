@@ -124,7 +124,8 @@ void write_data(Ty* dat, FILE* file, size_t size, bool read=false, bool single_f
     int bsize = sizeof(double);
     if(single_file == true){bsize = sizeof(float);}
 
-    bool Rendian = false;
+    ///////data for analysis is small endian
+    bool Rendian = true;
 
     //int size = 0;
     //if(read==false)size = dat.size();
@@ -146,6 +147,7 @@ void write_data(Ty* dat, FILE* file, size_t size, bool read=false, bool single_f
       if(single_file == false)cpy_data_thread((double*)(&buf[0]), &dat[0], size, 0);
       if(single_file == true )cpy_data_thread((float* )(&buf[0]), &dat[0], size, 0);
       /////memcpy(&buf[0],&dat[0],size*sizeof(double));
+      if(Rendian == false)if(!is_big_endian_gwu())switchendian((char*)&buf[0], size, bsize);
       if(Rendian == true )if( is_big_endian_gwu())switchendian((char*)&buf[0], size, bsize);
     }
 
@@ -155,6 +157,7 @@ void write_data(Ty* dat, FILE* file, size_t size, bool read=false, bool single_f
 
     /////Switch endian of the file write
     if(read==true ){
+      if(Rendian == false)if(!is_big_endian_gwu())switchendian((char*)&buf[0], size, bsize);
       if(Rendian == true )if( is_big_endian_gwu())switchendian((char*)&buf[0], size, bsize);
       ////memcpy(&dat[0],&buf[0],size*sizeof(double));
       if(single_file == false)cpy_data_thread(&dat[0], (double*)&buf[0], size, 0);
@@ -280,10 +283,12 @@ struct inputpara{
   int bfac;
   int ionum;
   int seed;
+  int sparsefactor;
 
   int lms;
 
   double Eerr;
+  int SRC_PROP_WITH_LOW;
 
   std::string Link_name;
   std::string Ename;
@@ -479,6 +484,7 @@ struct inputpara{
 
     if(find_para(std::string("nini"),nini)==0)nini  = 0;
     if(find_para(std::string("nvec"),nvec)==0)nvec  = 0;
+    if(find_para(std::string("sparsefactor"),sparsefactor)==0)sparsefactor  = 16;
     if(find_para(std::string("lms"),lms)==0)lms  = 0;
     if(find_para(std::string("Eerr"),Eerr)==0)Eerr  = 1e-11;
     if(find_para(std::string("nsave"),nsave)==0)nsave  = 0;
@@ -501,6 +507,9 @@ struct inputpara{
     if(find_para(std::string("sink_smear_para"),sink_smear_para)==0)sink_smear_para  = std::string("NONE");
     if(find_para(std::string("save_type"),save_type)==0)save_type  = std::string("NONE");
     if(find_para(std::string("total_size"),total_size)==0)total_size  = std::string("NONE");
+
+    ////temp variables for prop settings
+    if(find_para(std::string("SRC_PROP_WITH_LOW"),SRC_PROP_WITH_LOW)==0)SRC_PROP_WITH_LOW  = 0;
 
     if(find_para(std::string("key_T"),key_T)==0)key_T  = std::string("NONE");
     if(find_para(std::string("dim_name"),dim_name)==0)dim_name  = std::string("NONE");
@@ -889,7 +898,8 @@ struct corr_dat{
     /////print0("total_size %s \n", in.total_size.c_str());
 
     in.checksum = 0;
-    in.FILE_ENDIAN = std::string("BIGENDIAN");
+    ///////data for analysis is small endian
+    in.FILE_ENDIAN = std::string("LITTLEENDIAN");
     in.INFO_LIST = INFO_LIST;
     in.corr_name = corr_name;
 

@@ -269,6 +269,7 @@ void eigen_ov::setup_gpufac(int nprop)
 
   int vfac = ncutgpu;int vini = 8 * vfac;
   int vres = int((totalD*extra_mem_factor*sm_factor - mem_prop )/memV); 
+  if(fdp->rank != 0){vres=0;};sum_all_size(&vres, 1);
   /////TODO Need global sum and average the final result?
   /////TODO need to test the continuous memory less thant 8GB
 

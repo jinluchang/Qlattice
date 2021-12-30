@@ -30,13 +30,13 @@ struct io_vec
   int ionum;
   int nx,ny,nz,nt;
   int Nx,Ny,Nz,Nt;
-  size_t vol;
-  int rank,noden,Nmpi;
+  size_t vol,noden;
+  int rank,Nmpi;
   std::vector<int > nv,Nv;
   qlat::Geometry geop;
   int threadio;
   std::vector<FILE* > file_omp;
-  std::vector<int > currsend,currrecv,currspls,currrpls;
+  std::vector<size_t > currsend,currrecv,currspls,currrpls;
   int MPI_size_c;
   char* tmp;
   bool do_checksum;
@@ -100,7 +100,7 @@ struct io_vec
   {
     if(MPI_size_c == size_c0)return;
     MPI_size_c = size_c0;
-    int size_c = size_c0 * noden;
+    size_t size_c = size_c0 * noden;
     if(node_ioL[rank]>=0){
       ////if(tmp != NULL){delete []tmp;tmp=NULL;}
       ////tmp = new char[size_c0 * vol];
@@ -126,7 +126,6 @@ struct io_vec
     }
     for(int n=0;n<Nmpi;n++){
       if(node_ioL[n]>=0){
-        ////if(rank == n)for(int ni=0;ni<Nmpi;ni++)currsend[ni] = size_c;
         currrecv[n] = size_c;
         currrpls[n] = size_c*node_ioL[n];
       }
@@ -234,7 +233,7 @@ struct io_vec
 inline void send_vec_kentucky(char* src,char* res,int dsize,int gN, io_vec& io, bool read=true)
 {
   const std::vector<int >& node_ioL = io.node_ioL;
-  int rank = io.rank;size_t vol = io.vol;int noden = io.noden;
+  int rank = io.rank;size_t vol = io.vol;size_t noden = io.noden;
   ///int Nmpi=io.Nmpi;
 
   int Nx = io.Nx;
@@ -244,6 +243,7 @@ inline void send_vec_kentucky(char* src,char* res,int dsize,int gN, io_vec& io, 
 
   ////char* tmp=NULL;
   io.ini_MPI(size_c0);
+  MPI_Barrier(get_comm());
 
   ///position p;
   if(read==true)
@@ -272,12 +272,24 @@ inline void send_vec_kentucky(char* src,char* res,int dsize,int gN, io_vec& io, 
 
   //if(qlat::get_num_node() != 1)
   //{
+  //if(read==true)
+  //{MPI_Alltoallv(io.tmp,(int*) &io.currsend[0],(int*) &io.currspls[0], MPI_CHAR,
+  //                  res,(int*) &io.currrecv[0],(int*) &io.currrpls[0], MPI_CHAR, get_comm());}
+  //if(read==false)
+  //{MPI_Alltoallv(   res,(int*) &io.currrecv[0],(int*) &io.currrpls[0], MPI_CHAR,
+  //               io.tmp,(int*) &io.currsend[0],(int*) &io.currspls[0], MPI_CHAR, get_comm());}
+
+  MPI_Comm tem_comm = get_comm();
   if(read==true)
-  {MPI_Alltoallv(io.tmp,(int*) &io.currsend[0],(int*) &io.currspls[0], MPI_CHAR,
-                    res,(int*) &io.currrecv[0],(int*) &io.currrpls[0], MPI_CHAR, get_comm());}
+  {MPI_Alltoallv_Send_Recv(
+     (char*) io.tmp, &io.currsend[0], &io.currspls[0], 
+     (char*)    res, &io.currrecv[0], &io.currrpls[0], tem_comm);}
+
   if(read==false)
-  {MPI_Alltoallv(   res,(int*) &io.currrecv[0],(int*) &io.currrpls[0], MPI_CHAR,
-                 io.tmp,(int*) &io.currsend[0],(int*) &io.currspls[0], MPI_CHAR, get_comm());}
+  {MPI_Alltoallv_Send_Recv(
+     (char*)    res, &io.currrecv[0], &io.currrpls[0],
+     (char*) io.tmp, &io.currsend[0], &io.currspls[0], tem_comm);}
+
   //}
   //else{
   //  //memcpy(res,tmp, size_c);
@@ -319,7 +331,7 @@ inline void read_kentucky_vector(FILE *file,char* props,int Nvec,io_vec& io,bool
   double mpi_t = 0.0;
 
   const std::vector<int >& node_ioL = io.node_ioL;
-  int rank = io.rank;size_t vol = io.vol;int ionum=io.ionum;int noden=io.noden;
+  int rank = io.rank;size_t vol = io.vol;int ionum=io.ionum;size_t noden=io.noden;
 
   if(io.do_checksum){if(io.end_of_file == 0){abort_r("io_vec need end of file for check sum! \n ");}}
 
@@ -1173,6 +1185,13 @@ void prop4d_to_Fermion(Propagator4dT<T>& prop,std::vector<qlat::FermionField4dT<
 
 }
 
+template<class T, typename Ty>
+void Fermion_to_prop4d(Propagator4dT<T>& prop, std::vector<qlat::FermionField4dT<Ty > > &buf){
+  qassert(buf.size() == 12);
+  prop4d_to_Fermion(prop, buf, 0);
+}
+
+
 template <class T>
 void save_gwu_prop(const char *filename,Propagator4dT<T>& prop){
   io_vec io_use(prop.geo(),IO_DEFAULT);
@@ -1618,6 +1637,10 @@ void load_qlat_noisesT(const char *filename, std::vector<qlat::FieldM<Ty, bfac> 
   FILE* file=NULL;
   if(read==true )file = io_use.io_read(in.filename.c_str(),"rb");
   if(read==false)file = io_use.io_read(in.filename.c_str(),"wb");
+  //size_t off_file = in.off_file + n0*Vsize*bsize;
+  /////print0(" ionum off %zu, n0 %zu, n1 %zu, Vsize %zu, bsize %zu \n", off_file, size_t(n0), size_t(n1), Vsize, size_t(bsize));
+
+  io_use.io_off(file, in.off_file, true);  ////shift file for the head
   load_qlat_noisesT(file, noises, io_use, in, n0, n1);
 
   close_file_qlat_noisesT(file, io_use, in);
@@ -1878,12 +1901,12 @@ void save_qlat_noise(const char *filename, qlat::FieldM<T, bfac> &noise, bool si
 
 //////Assume memory allocated already
 template<class T, typename Ty>
-void copy_noises_to_prop(std::vector<qlat::FieldM<T, 12*12> >& noises, Propagator4dT<Ty>& prop, int dir=1)
+void copy_noise_to_prop(qlat::FieldM<T, 12*12> & noise, Propagator4dT<Ty>& prop, int dir=1)
 {
-  TIMERB("copy_noises_to_prop");
-  if(dir == 1){prop.init(noises[0].geo());}
-  if(dir == 0){noises.resize(0);noises.resize(1);noises[0].init(prop.geo());}
-  T* noi = (T*) qlat::get_data(noises[0]).data();
+  TIMERB("copy_noise_to_prop");
+  if(dir == 1){prop.init(noise.geo());}
+  if(dir == 0){noise.init(prop.geo());}
+  T* noi = (T*) qlat::get_data(noise).data();
   #pragma omp parallel for 
   for (long index = 0; index < prop.geo().local_volume(); ++index)
   {
@@ -1904,6 +1927,38 @@ void copy_noises_to_prop(std::vector<qlat::FieldM<T, 12*12> >& noises, Propagato
 
     }
   }
+}
+
+//////Assume memory allocated already
+template<class T, typename Ty>
+void copy_noises_to_prop(std::vector<qlat::FieldM<T, 12*12> >& noises, Propagator4dT<Ty>& prop, int dir=1)
+{
+  TIMERB("copy_noises_to_prop");
+  if(dir == 1){prop.init(noises[0].geo());}
+  if(dir == 0){noises.resize(0);noises.resize(1);noises[0].init(prop.geo());}
+  copy_noise_to_prop(noises[0], prop, dir);
+
+  //T* noi = (T*) qlat::get_data(noises[0]).data();
+  //#pragma omp parallel for 
+  //for (long index = 0; index < prop.geo().local_volume(); ++index)
+  //{
+  //  ///qlat::WilsonMatrixT<T>& src =  prop.get_elem(index);
+  //  T* src   = (T*) &noi[index*12*12];
+  //  Ty* res  = &prop.get_elem(index)(0,0);
+  //  
+  //  for(int d0=0;d0<12;d0++)
+  //  {
+  //    for(int d1=0;d1<12;d1++)
+  //    {
+  //      //////copy to prop
+  //      if(dir==0){src[d1*12+d0] = res[d0*12+d1];}
+  //      //////copy to buf
+  //      if(dir==1){res[d0*12+d1] = src[d1*12+d0];}
+
+  //    }
+
+  //  }
+  //}
 }
 
 template <class Ty>

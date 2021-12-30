@@ -283,7 +283,8 @@ void ini_propE(EigenM &prop,int nmass, qlat::fft_desc_basic &fd, bool clear = tr
   if(clear){zeroE(prop);}
 }
 
-void copy_propE(Propagator4d &pV1,EigenM &prop, qlat::fft_desc_basic &fd, int dir=0)
+template<typename Ty>
+void copy_propE(Propagator4dT<Ty > &pV1,EigenM &prop, qlat::fft_desc_basic &fd, int dir=0)
 {
   TIMER("Copy prop");
   qassert(fd.order_ch == 0);
@@ -301,13 +302,13 @@ void copy_propE(Propagator4d &pV1,EigenM &prop, qlat::fft_desc_basic &fd, int di
 
   for(int mi = 0;mi < nmass;mi++)
   {
-    Propagator4d& pv = pV1;
+    Propagator4dT<Ty >& pv = pV1;
     qlat::vector_acc<Complexq* > propP = EigenM_to_pointers(prop);
     qacc_for(isp, long(NTt*Nxyz),{ 
       int ti = isp/Nxyz;
       int xi = isp%Nxyz;
 
-        qlat::WilsonMatrix& v0 =  pv.get_elem(isp);
+        qlat::WilsonMatrixT<Ty>& v0 =  pv.get_elem(isp);
 
         for(int c0 = 0;c0 < 3; c0++)
         for(int d0 = 0;d0 < 4; d0++)
@@ -324,7 +325,8 @@ void copy_propE(Propagator4d &pV1,EigenM &prop, qlat::fft_desc_basic &fd, int di
 }
 
 
-void copy_propE(std::vector<Propagator4d > &pV1,EigenM &prop, qlat::fft_desc_basic &fd, int dir=0)
+template<typename Ty>
+void copy_propE(std::vector<Propagator4dT<Ty > > &pV1,EigenM &prop, qlat::fft_desc_basic &fd, int dir=0)
 {
   TIMER("Copy prop");
   qassert(fd.order_ch == 0);
@@ -343,13 +345,14 @@ void copy_propE(std::vector<Propagator4d > &pV1,EigenM &prop, qlat::fft_desc_bas
 
   for(int mi = 0;mi < nmass;mi++)
   {
-    Propagator4d& pv = pV1[mi];
+    Propagator4dT<Ty >& pv = pV1[mi];
     qlat::vector_acc<Complexq* > ps = EigenM_to_pointers(prop);
     qacc_for(isp, long(NTt*Nxyz),{ 
       int ti = isp/Nxyz;
       int xi = isp%Nxyz;
 
-        qlat::WilsonMatrix& v0 =  pv.get_elem(isp);
+        //qlat::WilsonMatrix& v0 =  pv.get_elem(isp);
+        qlat::WilsonMatrixT<Ty>& v0 =  pv.get_elem(isp);
 
         for(int c0 = 0;c0 < 3; c0++)
         for(int d0 = 0;d0 < 4; d0++)
@@ -1962,6 +1965,34 @@ Coordinate get_src_pos(std::string src_n, qlat::vector_acc<int > &off_L, const G
   check_noise_pos(noi, pos,off_L);
 
   return pos;
+}
+
+template<typename Ty>
+void print_pion(qlat::FieldM<Ty, 12*12 > propM)
+{
+  Geometry geo = propM.geo();
+  fft_desc_basic fd(geo);
+
+  Propagator4dT<Ty > prop4d;prop4d.init(geo);
+  EigenM propE;
+
+  copy_noise_to_prop(propM, prop4d, 1);
+  copy_propE(prop4d, propE, fd);
+
+  ga_matrices_cps   ga_cps;
+  EigenV res;
+  meson_vectorE(propE, propE, ga_cps.ga[0][0], ga_cps.ga[0][0],res, fd);
+
+  int nv = res.size()/fd.nt;
+  for(int iv=0;iv<nv;iv++)
+  for(int t=0;t<res.size();t++)
+  {
+    Ty v = res[iv*fd.nt + t];
+    print0("iv %d, t %d, v %.6e %.6e \n", iv, t, v.real(), v.imag());
+  }
+
+
+
 }
 
 }
