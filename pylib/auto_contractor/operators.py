@@ -309,16 +309,20 @@ def mk_jl_mu(p : str, mu, is_dagger = False):
     return sympy.simplify(1)*2/3 * mk_vec_mu("u", "u", p, mu, is_dagger) - sympy.simplify(1)*1/3 * mk_vec_mu("d", "d", p, mu, is_dagger) + f"jl_mu({p},{mu}){show_dagger(is_dagger)}"
 
 def mk_j0_mu(p : str, mu, is_dagger = False):
-    return sympy.simplify(1)*1/sympy.sqrt(2) * (mk_vec_mu("u", "u", p, mu, is_dagger) + mk_vec_mu("d", "d", p, mu, is_dagger))
+    # I=0 Gparity -
+    return sympy.simplify(1)*1/sympy.sqrt(2) * (mk_vec_mu("u", "u", p, mu, is_dagger) + mk_vec_mu("d", "d", p, mu, is_dagger)) + f"j0_mu({p},{mu}){show_dagger(is_dagger)}"
 
 def mk_j10_mu(p : str, mu, is_dagger = False):
-    return sympy.simplify(1)*1/sympy.sqrt(2) * (mk_vec_mu("u", "u", p, mu, is_dagger) - mk_vec_mu("d", "d", p, mu, is_dagger))
+    # I=1 Gparity +
+    return sympy.simplify(1)*1/sympy.sqrt(2) * (mk_vec_mu("u", "u", p, mu, is_dagger) - mk_vec_mu("d", "d", p, mu, is_dagger)) + f"j10_mu({p},{mu}){show_dagger(is_dagger)}"
 
 def mk_j11_mu(p : str, mu, is_dagger = False):
-    return mk_vec_mu("u", "d", p, mu, is_dagger)
+    # I=1 Gparity +
+    return mk_vec_mu("u", "d", p, mu, is_dagger) + f"j11_mu({p},{mu}){show_dagger(is_dagger)}"
 
 def mk_j1n1_mu(p : str, mu, is_dagger = False):
-    return -mk_vec_mu("d", "u", p, mu, is_dagger)
+    # I=1 Gparity +
+    return -mk_vec_mu("d", "u", p, mu, is_dagger) + f"j1n1_mu({p},{mu}){show_dagger(is_dagger)}"
 
 def mk_4qOp_VV(f1 : str, f2 : str, f3 : str, f4 : str, p, is_scalar = False, parity = None):
     if parity == "odd":
@@ -645,51 +649,95 @@ def test():
 
 def test1():
     def A(j_p, pi_p, is_dagger = False):
+        # I=21 Gparity +
         return (mk_j10_mu(j_p, 0, is_dagger) * mk_pi_p(pi_p, is_dagger)
                 + mk_j11_mu(j_p, 0, is_dagger) * mk_pi_0(pi_p, is_dagger))
     def B(j_p, pi_p, is_dagger = False):
+        # I=20 Gparity +
         return (2 * mk_j10_mu(j_p, 0, is_dagger) * mk_pi_0(pi_p, is_dagger)
                 + mk_j1n1_mu(j_p, 0, is_dagger) * mk_pi_p(pi_p, is_dagger)
                 + mk_j11_mu(j_p, 0, is_dagger) * mk_pi_m(pi_p, is_dagger))
     def C(j_p, pi_p, is_dagger = False):
+        # I=11 Gparity +
         return (mk_j10_mu(j_p, 0, is_dagger) * mk_pi_p(pi_p, is_dagger)
                 - mk_j11_mu(j_p, 0, is_dagger) * mk_pi_0(pi_p, is_dagger))
     def D(j_p, pi_p, is_dagger = False):
+        # I=10 Gparity +
         return (mk_j1n1_mu(j_p, 0, is_dagger) * mk_pi_p(pi_p, is_dagger)
                 - mk_j11_mu(j_p, 0, is_dagger) * mk_pi_m(pi_p, is_dagger))
     def E(j_p, pi_p, is_dagger = False):
+        # I=0 Gparity +
         return (-mk_j10_mu(j_p, 0, is_dagger) * mk_pi_0(pi_p, is_dagger)
                 + mk_j1n1_mu(j_p, 0, is_dagger) * mk_pi_p(pi_p, is_dagger)
                 + mk_j11_mu(j_p, 0, is_dagger) * mk_pi_m(pi_p, is_dagger))
     def F(j_p, pi_p, is_dagger = False):
+        # I=11 Gparity -
         return mk_j0_mu(j_p, 0, is_dagger) * mk_pi_p(pi_p, is_dagger)
-    def G(j_p, pi_p, is_dagger = False):
+    def Gf(j_p, pi_p, is_dagger = False):
+        # I=10 Gparity -
         return mk_j0_mu(j_p, 0, is_dagger) * mk_pi_0(pi_p, is_dagger)
     def jpi_p(j_p, pi_p, is_dagger = False):
+        # charged
         return mk_jl_mu(j_p, 0, is_dagger) * mk_pi_p(pi_p, is_dagger)
     def jpi_0(j_p, pi_p, is_dagger = False):
+        # neutral
         return mk_jl_mu(j_p, 0, is_dagger) * mk_pi_0(pi_p, is_dagger)
-    expr1 = sympy.simplify(1)*1/4 * (A("x2_j", "x2_p", True) * A("x1_j", "x1_p") + A("x2_j", "x2_p") * A("x1_j", "x1_p", True))
-    expr2 = sympy.simplify(1)*1/12 * (B("x2_j", "x2_p", True) * B("x1_j", "x1_p") + B("x2_j", "x2_p") * B("x1_j", "x1_p", True))
-    expr3 = sympy.simplify(1)*1/4 * (C("x2_j", "x2_p", True) * C("x1_j", "x1_p") + C("x2_j", "x2_p") * C("x1_j", "x1_p", True))
-    expr4 = sympy.simplify(1)*1/4 * (D("x2_j", "x2_p", True) * D("x1_j", "x1_p") + D("x2_j", "x2_p") * D("x1_j", "x1_p", True))
-    expr5 = sympy.simplify(1)*1/6 * (E("x2_j", "x2_p", True) * E("x1_j", "x1_p") + E("x2_j", "x2_p") * E("x1_j", "x1_p", True))
-    expr6 = sympy.simplify(1)*1/2 * (F("x2_j", "x2_p", True) * F("x1_j", "x1_p") + F("x2_j", "x2_p") * F("x1_j", "x1_p", True))
-    expr7 = sympy.simplify(1)*1/2 * (G("x2_j", "x2_p", True) * G("x1_j", "x1_p") + G("x2_j", "x2_p") * G("x1_j", "x1_p", True))
-    expr8 = sympy.simplify(1)*1/(4*sympy.sqrt(2)) * (C("x2_j", "x2_p", True) * F("x1_j", "x1_p") + F("x2_j", "x2_p", True) * C("x1_j", "x1_p")
-            + C("x2_j", "x2_p") * F("x1_j", "x1_p", True) + F("x2_j", "x2_p") * C("x1_j", "x1_p", True))
-    expr9 = sympy.simplify(1)*1/(4*sympy.sqrt(2)) * (D("x2_j", "x2_p", True) * G("x1_j", "x1_p") + G("x2_j", "x2_p", True) * D("x1_j", "x1_p")
-            + D("x2_j", "x2_p") * G("x1_j", "x1_p", True) + G("x2_j", "x2_p") * D("x1_j", "x1_p", True))
-    expr_p = sympy.simplify(1)*1/2*(jpi_p("x2_j", "x2_p", True) * jpi_p("x1_j", "x1_p") + jpi_p("x2_j", "x2_p") * jpi_p("x1_j", "x1_p", True))
-    expr_0 = sympy.simplify(1)*1/2*(jpi_0("x2_j", "x2_p", True) * jpi_0("x1_j", "x1_p") + jpi_0("x2_j", "x2_p") * jpi_0("x1_j", "x1_p", True))
+    expr1 = sympy.simplify(1)*1/4  * (A("xj_2", "x_2", True) * A("xj_1", "x_1") + A("xj_2", "x_2") * A("xj_1", "x_1", True))
+    expr2 = sympy.simplify(1)*1/12 * (B("xj_2", "x_2", True) * B("xj_1", "x_1") + B("xj_2", "x_2") * B("xj_1", "x_1", True))
+    expr3 = sympy.simplify(1)*1/4  * (C("xj_2", "x_2", True) * C("xj_1", "x_1") + C("xj_2", "x_2") * C("xj_1", "x_1", True))
+    expr4 = sympy.simplify(1)*1/4  * (D("xj_2", "x_2", True) * D("xj_1", "x_1") + D("xj_2", "x_2") * D("xj_1", "x_1", True))
+    expr5 = sympy.simplify(1)*1/6  * (E("xj_2", "x_2", True) * E("xj_1", "x_1") + E("xj_2", "x_2") * E("xj_1", "x_1", True))
+    expr6 = sympy.simplify(1)*1/2  * (F("xj_2", "x_2", True) * F("xj_1", "x_1") + F("xj_2", "x_2") * F("xj_1", "x_1", True))
+    expr7 = sympy.simplify(1)*1/2  * (Gf("xj_2", "x_2", True) * Gf("xj_1", "x_1") + Gf("xj_2", "x_2") * Gf("xj_1", "x_1", True))
+    expr8 = sympy.simplify(1)*1/(4*sympy.sqrt(2)) * (
+            C("xj_2", "x_2", True) * F("xj_1", "x_1") + F("xj_2", "x_2", True) * C("xj_1", "x_1")
+            + C("xj_2", "x_2") * F("xj_1", "x_1", True) + F("xj_2", "x_2") * C("xj_1", "x_1", True))
+    expr9 = sympy.simplify(1)*1/(4*sympy.sqrt(2)) * (
+            D("xj_2", "x_2", True) * Gf("xj_1", "x_1") + Gf("xj_2", "x_2", True) * D("xj_1", "x_1")
+            + D("xj_2", "x_2") * Gf("xj_1", "x_1", True) + Gf("xj_2", "x_2") * D("xj_1", "x_1", True))
+    expr_p = -sympy.simplify(1)*1/2*(
+            jpi_p("xj_2", "x_2", True) * jpi_p("xj_1", "x_1")
+            + jpi_p("xj_2", "x_2") * jpi_p("xj_1", "x_1", True))
+    expr_0 = -sympy.simplify(1)*1/2*(
+            jpi_0("xj_2", "x_2", True) * jpi_0("xj_1", "x_1")
+            + jpi_0("xj_2", "x_2") * jpi_0("xj_1", "x_1", True))
     exprs = [expr1, expr1 - expr2, expr3, expr3 - expr4, expr5, expr6, expr6 - expr7, expr8, expr8 - expr9,]
-    print(display_cexpr(contract_simplify_compile(*exprs)))
+    diagram_type_dict = dict()
+    diagram_type_dict[((('x_1', 'xj_1'), 1), (('x_2', 'xj_2'), 1), (('xj_1', 'x_1'), 1), (('xj_2', 'x_2'), 1))] = "Type1"
+    diagram_type_dict[((('x_1', 'xj_1'), 1), (('x_2', 'xj_2'), 1), (('xj_1', 'x_2'), 1), (('xj_2', 'x_1'), 1))] = "Type2"
+    diagram_type_dict[((('x_1', 'x_2'), 1), (('x_2', 'xj_1'), 1), (('xj_1', 'xj_2'), 1), (('xj_2', 'x_1'), 1))] = "Type3"
+    diagram_type_dict[((('x_1', 'x_2'), 1), (('x_2', 'x_1'), 1), (('xj_1', 'xj_2'), 1), (('xj_2', 'xj_1'), 1))] = "Type4"
+    print(display_cexpr(contract_simplify_compile(*exprs, diagram_type_dict = diagram_type_dict)))
+    expr_i2_gm = expr1
+    expr_i1_gm = expr3
+    expr_i0_gm = expr5
+    expr_i1_gp = expr6
     exprs1 = [
-            expr_p - sympy.simplify(1)*1/18*(9/2*expr1 + 9/2*expr3 + expr6 + 3*sympy.sqrt(2)*expr8),
-            expr_0 - sympy.simplify(1)*1/18*(6*expr2 + 3*expr5 + expr7),
-            (expr_p - expr_0),
+            # expr_p + sympy.simplify(1)*1/18*(sympy.simplify(1)*9/2*expr1 + sympy.simplify(1)*9/2*expr3 + expr6 + 3*sympy.sqrt(2)*expr8),
+            expr_p + sympy.simplify(1)*1/18*(sympy.simplify(1)*9/2*expr_i2_gm + sympy.simplify(1)*9/2*expr_i1_gm + expr_i1_gp),
+            expr_0 + sympy.simplify(1)*1/18*(6*expr_i2_gm + 3*expr_i0_gm + expr_i1_gp),
+            # (expr_p - expr_0),
             ]
-    print(display_cexpr(contract_simplify_compile(*exprs1)))
+    print(display_cexpr(contract_simplify_compile(*exprs1, diagram_type_dict = diagram_type_dict)))
+    etype1n = Term([Tr([G(0), S('l','xj_1','x_1'), G(5), S('l','x_1','xj_1')],'sc'), Tr([G(0), S('l','xj_2','x_2'), G(5), S('l','x_2','xj_2')],'sc')],[],1)
+    etype1r = Term([Tr([G(0), S('l','xj_1','x_2'), G(5), S('l','x_2','xj_1')],'sc'), Tr([G(0), S('l','xj_2','x_1'), G(5), S('l','x_1','xj_2')],'sc')],[],1)
+    etype2 = sympy.simplify(1)/2 * (
+            Term([Tr([G(0), S('l','xj_1','x_1'), G(5), S('l','x_1','xj_2'), G(0), S('l','xj_2','x_2'), G(5), S('l','x_2','xj_1')],'sc')],[],1)
+            + Term([Tr([G(0), S('l','xj_1','x_2'), G(5), S('l','x_2','xj_2'), G(0), S('l','xj_2','x_1'), G(5), S('l','x_1','xj_1')],'sc')],[],1))
+    etype3n = sympy.simplify(1)/2 * (
+            Term([Tr([G(0), S('l','xj_1','x_1'), G(5), S('l','x_1','x_2'), G(5), S('l','x_2','xj_2'), G(0), S('l','xj_2','xj_1')],'sc')],[],1)
+            + Term([Tr([G(0), S('l','xj_1','xj_2'), G(0), S('l','xj_2','x_2'), G(5), S('l','x_2','x_1'), G(5), S('l','x_1','xj_1')],'sc')],[],1))
+    etype3r = sympy.simplify(1)/2 * (
+            Term([Tr([G(0), S('l','xj_1','x_2'), G(5), S('l','x_2','x_1'), G(5), S('l','x_1','xj_2'), G(0), S('l','xj_2','xj_1')],'sc')],[],1)
+            + Term([Tr([G(0), S('l','xj_1','xj_2'), G(0), S('l','xj_2','x_1'), G(5), S('l','x_1','x_2'), G(5), S('l','x_2','xj_1')],'sc')],[],1))
+    etype4 = Term([Tr([G(0), S('l','xj_1','xj_2'), G(0), S('l','xj_2','xj_1')],'sc'), Tr([G(5), S('l','x_1','x_2'), G(5), S('l','x_2','x_1')],'sc')],[],1)
+    exprs2 = [
+            expr_i2_gm - (etype1r - 2*etype3r + etype4), # I=2 Gparity +
+            expr_i1_gm - (- etype1r + 2*etype2 - 2*etype3n + etype4), # I=1 Gparity +
+            expr_i0_gm - (3*etype1n + etype1r - 3*etype2 - 3*etype3n + etype3r + etype4), # I=0 Gparity +
+            expr_i1_gp - (- etype2 - etype3n - etype3r + etype4), # I=1 Gparity -
+            ]
+    print(display_cexpr(contract_simplify_compile(*exprs2, diagram_type_dict = diagram_type_dict)))
 
 def test_kk():
     expr1 = mk_kk_i0("x2_1", "x2_2", True) * mk_kk_i0("x1_1", "x1_2")
@@ -858,7 +906,7 @@ if __name__ == "__main__":
     print()
     print("< pi+(x_2)^dag j_mu(xj_1) j_nu(xj_2) pi+(x_1) + pi-(x_2)^dag j_mu(xj_1) j_nu(xj_2) pi-(x_1) + pi0(x_2)^dag j_mu(xj_1) j_nu(xj_2) pi0(x_1) >:")
     expr = (
-             sympy.simplify(1)/2 * mk_pi_p("x_2", True) * mk_jl_mu("xj_1", "mu") * mk_jl_mu("xj_2", "nu") * mk_pi_p("x_1")
+            sympy.simplify(1)/2 * mk_pi_p("x_2", True) * mk_jl_mu("xj_1", "mu") * mk_jl_mu("xj_2", "nu") * mk_pi_p("x_1")
             + sympy.simplify(1)/2 * mk_pi_m("x_2", True) * mk_jl_mu("xj_1", "mu") * mk_jl_mu("xj_2", "nu") * mk_pi_m("x_1")
             + mk_pi_0("x_1", True) * mk_jl_mu("xj_1", "mu") * mk_jl_mu("xj_2", "nu") * mk_pi_0("x_2")
             )

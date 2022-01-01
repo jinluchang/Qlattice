@@ -106,7 +106,7 @@ def mk_convert_sh():
 valid_fn_chars = ("abcdefghijklmnopqrstuvwxyz"
         + "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
         + "0123456789"
-        + " ,.+-=;:[]?{}"
+        + " ,.+-_=;:[]?{}"
         )
 
 def check_fn(fn):
