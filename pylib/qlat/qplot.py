@@ -188,13 +188,16 @@ def populate_pyplot_folder(
         assert check_fn(key)
         save_datatable(dt, os.path.join(path, key))
 
-def mk_pyplot_foler(path = None):
+def remove_folder(path):
+    return shutil.rmtree(path, ignore_errors = True)
+
+def mk_pyplot_folder(path = None):
     if path is None:
         path = mk_tmp_dir()
     else:
         assert isinstance(path, str)
         assert path.endswith(".pyplot.dir")
-        shutil.rmtree(path, ignore_errors = True)
+        remove_folder(path)
         os.makedirs(path)
     return path
 
@@ -222,7 +225,7 @@ def plot_save(
         target_fn = os.path.basename(target)
         path = os.path.join(os.path.dirname(target),
                 get_plot_name(target_fn) + ".pyplot.dir")
-    path = mk_pyplot_foler(path)
+    path = mk_pyplot_folder(path)
     populate_pyplot_folder(path, fn = target_fn,
             dict_datatable = dts,
             plot_cmds = cmds,
