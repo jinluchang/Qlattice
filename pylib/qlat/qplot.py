@@ -188,7 +188,7 @@ def populate_pyplot_folder(
         assert check_fn(key)
         save_datatable(dt, os.path.join(path, key))
 
-def remove_folder(path):
+def qremove_all(path):
     return shutil.rmtree(path, ignore_errors = True)
 
 def mk_pyplot_folder(path = None):
@@ -197,7 +197,7 @@ def mk_pyplot_folder(path = None):
     else:
         assert isinstance(path, str)
         assert path.endswith(".pyplot.dir")
-        remove_folder(path)
+        qremove_all(path)
         os.makedirs(path)
     return path
 
