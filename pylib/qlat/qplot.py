@@ -226,7 +226,34 @@ def plot_save(
         path = os.path.join(os.path.dirname(target),
                 get_plot_name(target_fn) + ".pyplot.dir")
     path = mk_pyplot_folder(path)
-    populate_pyplot_folder(path, fn = target_fn,
+    if dts is None:
+        x = np.arange(31) * (6 / 30) - 3
+        y = np.cos(x)
+        yerr = 0.1 / (1 + x**2)
+        dts = {
+                "table.txt" : azip(x, y, yerr),
+                }
+        print(f"dts={dts}")
+    if cmds is None:
+        cmds = [
+                "set size 0.8, 1.0",
+                "set key tm",
+                "set xlabel '$x$'",
+                "set ylabel '$y$'",
+                ]
+        print(f"cmds={cmds}")
+    if lines is None:
+        lines = [
+                "plot [-3:3] [-1.5:1.5]",
+                "0 not",
+                "sin(x) w l t '$y = \\sin(x)$'",
+                ]
+        if "table.txt" in dts:
+            lines.append("'table.txt' w yerrorb t '$y = \\cos(x)$'")
+        print(f"lines={lines}")
+    populate_pyplot_folder(
+            path,
+            fn = target_fn,
             dict_datatable = dts,
             plot_cmds = cmds,
             plot_lines = lines,
