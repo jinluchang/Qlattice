@@ -906,8 +906,8 @@ if __name__ == "__main__":
     print()
     print("< pi+(x_2)^dag j_mu(xj_1) j_nu(xj_2) pi+(x_1) + pi-(x_2)^dag j_mu(xj_1) j_nu(xj_2) pi-(x_1) + pi0(x_2)^dag j_mu(xj_1) j_nu(xj_2) pi0(x_1) >:")
     expr = (
-            sympy.simplify(1)/2 * mk_pi_p("x_2", True) * mk_jl_mu("xj_1", "mu") * mk_jl_mu("xj_2", "nu") * mk_pi_p("x_1")
-            + sympy.simplify(1)/2 * mk_pi_m("x_2", True) * mk_jl_mu("xj_1", "mu") * mk_jl_mu("xj_2", "nu") * mk_pi_m("x_1")
+            sympy.simplify(1) * mk_pi_p("x_2", True) * mk_jl_mu("xj_1", "mu") * mk_jl_mu("xj_2", "nu") * mk_pi_p("x_1")
+            + sympy.simplify(1) * mk_pi_m("x_2", True) * mk_jl_mu("xj_1", "mu") * mk_jl_mu("xj_2", "nu") * mk_pi_m("x_1")
             + mk_pi_0("x_1", True) * mk_jl_mu("xj_1", "mu") * mk_jl_mu("xj_2", "nu") * mk_pi_0("x_2")
             )
     diagram_type_dict = dict()
@@ -916,7 +916,6 @@ if __name__ == "__main__":
     diagram_type_dict[((('x_1', 'x_2'), 1), (('x_2', 'xj_1'), 1), (('xj_1', 'xj_2'), 1), (('xj_2', 'x_1'), 1))] = "Type3"
     diagram_type_dict[((('x_1', 'x_2'), 1), (('x_2', 'x_1'), 1), (('xj_1', 'xj_2'), 1), (('xj_2', 'xj_1'), 1))] = "Type4"
     print(display_cexpr(contract_simplify_compile(expr, diagram_type_dict = diagram_type_dict)))
-    exit()
     #
     print()
     test_kk()

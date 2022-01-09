@@ -151,3 +151,6 @@ def jk_err(jk_list, eps = 1):
     avg = jk_avg(jk_list)
     diff_sqr = average([ fsqr(jk - avg) for jk in jk_list[1:] ])
     return (math.sqrt(len(jk_list) - 1) / eps) * fsqrt(diff_sqr)
+
+def jk_avg_err(jk_list, eps = 1):
+    return jk_avg(jk_list), jk_err(jk_list, eps)
