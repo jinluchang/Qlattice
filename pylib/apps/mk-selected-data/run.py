@@ -2,32 +2,15 @@
 
 # Need --mpi X.X.X.X --mpi X.X.X runtime option
 
-import qlat as q
-import gpt as g
-import qlat_gpt as qg
-import rbc_ukqcd as ru
-import rbc_ukqcd_params as rup
-import pprint
+import jobs
+from jobs import *
 
-import os
-
-def get_save_path(fn):
-    return os.path.join("results", fn)
-
-def get_load_path(fn):
-    if fn is None:
-        return None
-    path_list = [
-            "results",
-            "../mk-gf-gt/results",
-            "../mk-lanc/results",
-            "/gpfs/alpine/lgt116/proj-shared/ljin",
-            ]
-    for path in path_list:
-        p = os.path.join(path, fn)
-        if q.does_file_exist_sync_node(p):
-            return p
-    return None
+jobs.load_path_list = [
+        "results",
+        "../mk-gf-gt/results",
+        "../mk-lanc/results",
+        "/gpfs/alpine/lgt116/proj-shared/ljin",
+        ]
 
 @q.timer_verbose
 def check_job(job_tag, traj):
@@ -68,129 +51,6 @@ def check_job(job_tag, traj):
     q.qmkdir_info(get_save_path(f""))
     #
     return False
-
-@q.timer
-def compute_eig(gf, job_tag, inv_type = 0, inv_acc = 0, *, path = None):
-    # return a function ``get_eig''
-    # ``get_eig()'' return the ``eig''
-    load_eig = ru.load_eig_lazy(get_load_path(path), job_tag)
-    if load_eig is not None:
-        return load_eig
-    # evec, evals = ru.mk_eig(gf, job_tag, inv_type, inv_acc)
-    basis, cevec, smoothed_evals = ru.mk_ceig(gf, job_tag, inv_type, inv_acc)
-    eig = [ basis, cevec, smoothed_evals ]
-    ru.save_ceig(get_save_path(path + ".partial"), eig, job_tag, inv_type, inv_acc);
-    q.qrename_info(get_save_path(path + ".partial"), get_save_path(path))
-    test_eig(gf, eig, job_tag, inv_type)
-    def get_eig():
-        return eig
-    return get_eig
-
-@q.timer
-def test_eig(gf, eig, job_tag, inv_type):
-    geo = gf.geo()
-    src = q.FermionField4d(geo)
-    q.displayln_info(f"src norm {src.qnorm()}")
-    src.set_rand(q.RngState("test_eig:{id(inv)}"))
-    sol_ref = ru.get_inv(gf, job_tag, inv_type, inv_acc = 2, eig = eig, eps = 1e-10, mpi_split = False, timer = False) * src
-    q.displayln_info(f"sol_ref norm {sol_ref.qnorm()} with eig")
-    for inv_acc in [0, 1, 2]:
-        sol = ru.get_inv(gf, job_tag, inv_type, inv_acc, eig = eig, mpi_split = False, timer = False) * src
-        sol -= sol_ref
-        q.displayln_info(f"sol diff norm {sol.qnorm()} inv_acc={inv_acc} with eig")
-        sol = ru.get_inv(gf, job_tag, inv_type, inv_acc, mpi_split = False, timer = False) * src
-        sol -= sol_ref
-        q.displayln_info(f"sol diff norm {sol.qnorm()} inv_acc={inv_acc} without eig")
-
-def get_n_points(job_tag, traj, inv_type, inv_acc):
-    assert job_tag in rup.dict_params
-    assert "n_points" in rup.dict_params[job_tag]
-    return rup.dict_params[job_tag]["n_points"][inv_type][inv_acc]
-
-@q.timer
-def mk_rand_psel(job_tag, traj):
-    rs = q.RngState(f"seed {job_tag} {traj}").split("mk_rand_psel")
-    total_site = ru.get_total_site(job_tag)
-    n_points = get_n_points(job_tag, traj, 0, 0)
-    psel = q.PointSelection()
-    psel.set_rand(rs, total_site, n_points)
-    return psel
-
-@q.timer
-def mk_rand_fsel(job_tag, traj, n_per_tslice):
-    rs = q.RngState(f"seed {job_tag} {traj}").split("mk_rand_fsel")
-    total_site = ru.get_total_site(job_tag)
-    fsel = q.FieldSelection()
-    fsel.set_rand(rs, total_site, n_per_tslice)
-    return fsel
-
-@q.timer
-def mk_fselc(fsel, psel):
-    fselc = fsel.copy()
-    fselc.add_psel(psel)
-    return fselc
-
-@q.timer
-def mk_rand_wall_src_info(job_tag, traj, inv_type):
-    # wi is a list of [ idx tslice inv_type inv_acc ]
-    rs = q.RngState(f"seed {job_tag} {traj}").split("mk_rand_wall_src_info")
-    inv_acc_s = 1
-    inv_acc_e = 2
-    total_site = ru.get_total_site(job_tag)
-    t_size = total_site[3]
-    wi_s = [ [ t, inv_type, inv_acc_s ] for t in range(t_size) ]
-    n_exact = 2
-    mask = [ False ] * t_size
-    for i in range(n_exact):
-        t_e = rs.rand_gen() % t_size
-        mask[t_e] = True
-    wi_e = []
-    for t in range(t_size):
-        if mask[t]:
-            wi_e.append([ t, inv_type, inv_acc_e ])
-    wi = wi_e + wi_s
-    for i in range(len(wi)):
-        wi[i] = [ i, ] + wi[i]
-    return wi
-
-@q.timer
-def save_wall_src_info(wi, path):
-    # wi is a list of  [ idx tslice inv_type inv_acc ]
-    if 0 != q.get_id_node():
-        return None
-    lines = [ " ".join([ f"{v:5d}" for v in l ]) for l in wi ]
-    content = "\n".join(lines + [ "" ])
-    q.qtouch(get_save_path(path), content)
-
-@q.timer
-def mk_rand_point_src_info(job_tag, traj, psel):
-    # pi is a list of [ idx xg inv_type inv_acc ]
-    rs = q.RngState(f"seed {job_tag} {traj}").split("mk_rand_point_src_info")
-    xg_list = psel.to_list()
-    assert len(xg_list) == get_n_points(job_tag, traj, 0, 0)
-    g_pi = [ [] for _ in xg_list ]
-    for inv_type in [ 0, 1, ]:
-        for inv_acc in [ 0, 1, 2, ]:
-            for i in range(get_n_points(job_tag, traj, inv_type, inv_acc)):
-                g_pi[i].append([ xg_list[i], inv_type, inv_acc ])
-    pi = []
-    for g in g_pi:
-        pi += g
-    for i in range(len(pi)):
-        pi[i] = [ i ] + pi[i]
-    return pi
-
-@q.timer
-def save_point_src_info(pi, path):
-    # pi is a list of [ idx xg inv_type inv_acc ]
-    if 0 != q.get_id_node():
-        return None
-    def mk_line(l):
-        [ idx, xg, inv_type, inv_acc ] = l
-        return f"{idx:5d}    {xg[0]:3d} {xg[1]:3d} {xg[2]:3d} {xg[3]:3d}    {inv_type:3d} {inv_acc:3d}"
-    lines = list(map(mk_line, pi))
-    content = "\n".join([ f"{len(lines)}" ] + lines + [ "" ])
-    q.qtouch(get_save_path(path), content)
 
 @q.timer_verbose
 def compute_prop(inv, src, *, tag, sfw, fn_sp, psel, fsel, fselc):
@@ -304,103 +164,6 @@ def compute_prop_psrc_all(gf, gt, pi, job_tag, inv_type, *,
     q.qtouch_info(get_save_path(os.path.join(path_sp, "checkpoint.txt")))
     q.qrename_info(get_save_path(path_hvp + ".acc"), get_save_path(path_hvp))
     q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
-
-@q.timer_verbose
-def run_gf(job_tag, traj):
-    path_gf = get_load_path(f"configs/{job_tag}/ckpoint_lat.{traj}")
-    if path_gf is None:
-        if job_tag[:5] == "test-":
-            gf = ru.mk_sample_gauge_field(job_tag, f"{traj}")
-            q.qmkdir_info(get_save_path(f"configs"))
-            q.qmkdir_info(get_save_path(f"configs/{job_tag}"))
-            path_gf = get_save_path(f"configs/{job_tag}/ckpoint_lat.{traj}")
-            # gf.save(path_gf)
-            qg.save_gauge_field(gf, path_gf)
-        else:
-            assert False
-    get_gf = ru.load_config_lazy(job_tag, path_gf)
-    return get_gf
-
-@q.timer_verbose
-def run_eig(job_tag, traj, get_gf):
-    if None in [ get_gf, ]:
-        return None
-    get_eig = ru.load_eig_lazy(get_load_path(f"eig/{job_tag}/traj={traj}"), job_tag)
-    if get_eig is None and get_gf is not None:
-        if q.obtain_lock(f"locks/{job_tag}-{traj}-run-eig"):
-            q.qmkdir_info(get_save_path(f"eig"))
-            q.qmkdir_info(get_save_path(f"eig/{job_tag}"))
-            get_eig = compute_eig(get_gf(), job_tag, inv_type = 0, path = f"eig/{job_tag}/traj={traj}")
-            q.release_lock()
-    return get_eig
-
-@q.timer_verbose
-def run_gt(job_tag, traj, get_gf):
-    if None in [ get_gf, ]:
-        return None
-    path_gt = get_load_path(f"gauge-transform/{job_tag}/traj={traj}.field")
-    if path_gt is None:
-        if q.obtain_lock(f"locks/{job_tag}-{traj}-gauge_fix_coulomb"):
-            gf = get_gf()
-            q.qmkdir_info(get_save_path(f"gauge-transform"))
-            q.qmkdir_info(get_save_path(f"gauge-transform/{job_tag}"))
-            gt = qg.gauge_fix_coulomb(gf)
-            gt.save_double(get_save_path(f"gauge-transform/{job_tag}/traj={traj}.field"))
-            q.release_lock()
-            return lambda : gt
-        else:
-            return None
-    else:
-        @q.timer_verbose
-        def load_gt():
-            gt = q.GaugeTransform()
-            gt.load_double(path_gt)
-            # ADJUST ME
-            # qg.check_gauge_fix_coulomb(get_gf(), gt)
-            #
-            return gt
-        get_gt = q.lazy_call(load_gt)
-    return get_gt
-
-@q.timer_verbose
-def run_psel(job_tag, traj):
-    path_psel = get_load_path(f"point-selection/{job_tag}/traj={traj}.txt")
-    if path_psel is None:
-        q.qmkdir_info(get_save_path(f"point-selection"))
-        q.qmkdir_info(get_save_path(f"point-selection/{job_tag}"))
-        psel = mk_rand_psel(job_tag, traj)
-        psel.save(get_save_path(f"point-selection/{job_tag}/traj={traj}.txt"))
-        return lambda : psel
-    else:
-        @q.timer_verbose
-        def load_psel():
-            psel = q.PointSelection()
-            psel.load(path_psel)
-            return psel
-        return q.lazy_call(load_psel)
-
-@q.timer_verbose
-def run_fsel(job_tag, traj, get_psel):
-    if get_psel is None:
-        return None
-    path_fsel = get_load_path(f"field-selection/{job_tag}/traj={traj}.field")
-    total_site = ru.get_total_site(job_tag)
-    n_per_tslice = total_site[0] * total_site[1] * total_site[2] // 16
-    if path_fsel is None:
-        q.qmkdir_info(get_save_path(f"field-selection"))
-        q.qmkdir_info(get_save_path(f"field-selection/{job_tag}"))
-        fsel = mk_rand_fsel(job_tag, traj, n_per_tslice)
-        fsel.save(get_save_path(f"field-selection/{job_tag}/traj={traj}.field"))
-        fselc = mk_fselc(fsel, get_psel())
-        return lambda : ( fsel, fselc, )
-    else:
-        @q.timer_verbose
-        def load_fsel():
-            fsel = q.FieldSelection()
-            fsel.load(path_fsel, n_per_tslice)
-            fselc = mk_fselc(fsel, get_psel())
-            return fsel, fselc
-        return q.lazy_call(load_fsel)
 
 @q.timer
 def run_prop_wsrc_light(job_tag, traj, get_gf, get_eig, get_gt, get_psel, get_fsel):
