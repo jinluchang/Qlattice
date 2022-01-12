@@ -4,6 +4,51 @@ import math
 import copy
 import numpy as np
 
+alpha_qed = 1.0 / 137.035999084
+fminv_gev = 0.197326979
+
+def interpolate_list(v, i):
+    size = len(v)
+    i1 = math.floor(i)
+    assert i1 >= 0
+    i2 = i1 + 1
+    if i2 >= size:
+        return v[size - 1]
+    elif i1 < 0:
+        return v[0]
+    v1 = v[i1]
+    v2 = v[i2]
+    a1 = i2 - i
+    a2 = i - i1
+    return a1 * v1 + a2 * v2
+
+def interpolate(v_arr, i_arr):
+    vt = v_arr.transpose()
+    return np.array([ interpolate_list(vt, i) for i in i_arr ]).transpose()
+
+def partial_sum_list(x, *, is_half_last = False):
+    """Modify in-place"""
+    s = 0
+    for i, v in enumerate(x):
+        sp = s
+        s += v
+        if is_half_last:
+            x[i] = (s + sp) / 2
+        else:
+            x[i] = s
+
+def partial_sum(x, *, is_half_last = False):
+    shape = x.shape
+    if len(shape) == 0:
+        return
+    elif len(shape) == 1:
+        partial_sum_list(x, is_half_last = is_half_last)
+    elif len(shape) == 2:
+        for v in x:
+            partial_sum_list(v, is_half_last = is_half_last)
+    else:
+        assert False
+
 def check_zero(x):
     if isinstance(x, (int, float, complex)) and 0 == x:
         return True
@@ -154,3 +199,29 @@ def jk_err(jk_list, eps = 1):
 
 def jk_avg_err(jk_list, eps = 1):
     return jk_avg(jk_list), jk_err(jk_list, eps)
+
+def merge_jk_idx(*jk_idx_list):
+    for jk_idx in jk_idx_list:
+        assert jk_idx[0] == "avg"
+    return [ "avg", ] + [ idx for jk_idx in jk_idx_list for idx in jk_idx[1:] ]
+
+def rejk_list(jk_list, jk_idx, jk_idx_new):
+    assert jk_idx[0] == "avg"
+    assert jk_idx_new[0] == "avg"
+    jk_avg = jk_list[0]
+    size_new = len(jk_idx_new)
+    i_new = 0
+    jk_list_new = []
+    for i, idx in enumerate(jk_idx):
+        while jk_idx_new[i_new] != idx:
+            jk_list_new.append(jk_avg)
+            i_new += 1
+            assert i_new < size_new
+        jk_list_new.append(jk_list[i])
+        i_new += 1
+    while i_new < size_new:
+        jk_list_new.append(jk_avg)
+        i_new += 1
+    assert i_new == size_new
+    assert size_new == len(jk_list_new)
+    return np.array(jk_list_new)
