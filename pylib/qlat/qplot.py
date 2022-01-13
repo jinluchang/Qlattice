@@ -251,6 +251,9 @@ def plot_save(
         if "table.txt" in dts:
             lines.append("'table.txt' w yerrorb t '$y = \\cos(x)$'")
         print(f"lines={lines}")
+    if fn is None:
+        print(f"is_run_make={is_run_make}")
+        print(f"is_display={is_display}")
     populate_pyplot_folder(
             path,
             fn = target_fn,
