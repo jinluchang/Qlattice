@@ -7,6 +7,21 @@ import numpy as np
 alpha_qed = 1.0 / 137.035999084
 fminv_gev = 0.197326979
 
+class use_kwargs:
+
+    def __init__(self, kwargs):
+        self.default_kwargs = kwargs
+
+    def __call__(self, func):
+        @functools.wraps(func)
+        def f(*args, **kwargs):
+            if "is_default_kwargs_applied" not in kwargs:
+                kwargs = self.default_kwargs | kwargs
+            return func(*args, **kwargs)
+        return f
+
+# ----------
+
 def interpolate_list(v, i):
     size = len(v)
     i1 = math.floor(i)
@@ -130,6 +145,8 @@ class Data:
             return None
         else:
             return Data(other) - self
+
+# ----------
 
 def average(data_list):
     n = len(data_list)
