@@ -14,3 +14,4 @@ import rbc_ukqcd_params.p_24IH2
 
 import rbc_ukqcd_params.p_48I
 import rbc_ukqcd_params.p_64I
+import rbc_ukqcd_params.p_96I
