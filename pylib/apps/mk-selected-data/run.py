@@ -47,9 +47,6 @@ def check_job(job_tag, traj):
     q.check_stop()
     q.check_time_limit()
     #
-    q.qmkdir_info(f"locks")
-    q.qmkdir_info(get_save_path(f""))
-    #
     return False
 
 @q.timer_verbose
@@ -61,6 +58,7 @@ def compute_prop(inv, src, *, tag, sfw, fn_sp, psel, fsel, fselc):
     sp_sol = q.PselProp(psel)
     sp_sol @= s_sol
     sp_sol.save(get_save_path(fn_sp))
+    sfw.flush()
     return sol
 
 @q.timer
@@ -176,15 +174,8 @@ def run_prop_wsrc_light(job_tag, traj, get_gf, get_eig, get_gt, get_psel, get_fs
         gt = get_gt()
         eig = get_eig()
         fsel, fselc = get_fsel()
-        q.qmkdir_info(get_save_path(f"wall-src-info-light"))
-        q.qmkdir_info(get_save_path(f"wall-src-info-light/{job_tag}"))
-        q.qmkdir_info(get_save_path(f"prop-wsrc-light"))
-        q.qmkdir_info(get_save_path(f"prop-wsrc-light/{job_tag}"))
-        q.qmkdir_info(get_save_path(f"psel-prop-wsrc-light"))
-        q.qmkdir_info(get_save_path(f"psel-prop-wsrc-light/{job_tag}"))
-        q.qmkdir_info(get_save_path(f"psel-prop-wsrc-light/{job_tag}/traj={traj}"))
         wi_light = mk_rand_wall_src_info(job_tag, traj, inv_type = 0)
-        save_wall_src_info(wi_light, f"wall-src-info-light/{job_tag}/traj={traj}.txt");
+        save_wall_src_info(wi_light, get_save_path(f"wall-src-info-light/{job_tag}/traj={traj}.txt"));
         compute_prop_wsrc_all(gf, gt, wi_light, job_tag, inv_type = 0,
                 path_s = f"prop-wsrc-light/{job_tag}/traj={traj}",
                 path_sp = f"psel-prop-wsrc-light/{job_tag}/traj={traj}",
@@ -202,17 +193,8 @@ def run_prop_psrc_light(job_tag, traj, get_gf, get_eig, get_gt, get_psel, get_fs
         gt = get_gt()
         eig = get_eig()
         fsel, fselc = get_fsel()
-        q.qmkdir_info(get_save_path(f"point-src-info"))
-        q.qmkdir_info(get_save_path(f"point-src-info/{job_tag}"))
-        q.qmkdir_info(get_save_path(f"prop-psrc-light"))
-        q.qmkdir_info(get_save_path(f"prop-psrc-light/{job_tag}"))
-        q.qmkdir_info(get_save_path(f"psel-prop-psrc-light"))
-        q.qmkdir_info(get_save_path(f"psel-prop-psrc-light/{job_tag}"))
-        q.qmkdir_info(get_save_path(f"psel-prop-psrc-light/{job_tag}/traj={traj}"))
-        q.qmkdir_info(get_save_path(f"hvp-psrc-light/"))
-        q.qmkdir_info(get_save_path(f"hvp-psrc-light/{job_tag}"))
         pi = mk_rand_point_src_info(job_tag, traj, get_psel())
-        save_point_src_info(pi, f"point-src-info/{job_tag}/traj={traj}.txt");
+        save_point_src_info(pi, get_save_path(f"point-src-info/{job_tag}/traj={traj}.txt"));
         compute_prop_psrc_all(gf, gt, pi, job_tag, inv_type = 0,
                 path_s = f"prop-psrc-light/{job_tag}/traj={traj}",
                 path_hvp = f"hvp-psrc-light/{job_tag}/traj={traj}",
@@ -230,15 +212,8 @@ def run_prop_wsrc_strange(job_tag, traj, get_gf, get_gt, get_psel, get_fsel):
         gf = get_gf()
         gt = get_gt()
         fsel, fselc = get_fsel()
-        q.qmkdir_info(get_save_path(f"wall-src-info-strange"))
-        q.qmkdir_info(get_save_path(f"wall-src-info-strange/{job_tag}"))
-        q.qmkdir_info(get_save_path(f"prop-wsrc-strange"))
-        q.qmkdir_info(get_save_path(f"prop-wsrc-strange/{job_tag}"))
-        q.qmkdir_info(get_save_path(f"psel-prop-wsrc-strange"))
-        q.qmkdir_info(get_save_path(f"psel-prop-wsrc-strange/{job_tag}"))
-        q.qmkdir_info(get_save_path(f"psel-prop-wsrc-strange/{job_tag}/traj={traj}"))
         wi_strange = mk_rand_wall_src_info(job_tag, traj, inv_type = 1)
-        save_wall_src_info(wi_strange, f"wall-src-info-strange/{job_tag}/traj={traj}.txt");
+        save_wall_src_info(wi_strange, get_save_path(f"wall-src-info-strange/{job_tag}/traj={traj}.txt"));
         compute_prop_wsrc_all(gf, gt, wi_strange, job_tag, inv_type = 1,
                 path_s = f"prop-wsrc-strange/{job_tag}/traj={traj}",
                 path_sp = f"psel-prop-wsrc-strange/{job_tag}/traj={traj}",
@@ -255,17 +230,8 @@ def run_prop_psrc_strange(job_tag, traj, get_gf, get_gt, get_psel, get_fsel):
         gf = get_gf()
         gt = get_gt()
         fsel, fselc = get_fsel()
-        q.qmkdir_info(get_save_path(f"point-src-info"))
-        q.qmkdir_info(get_save_path(f"point-src-info/{job_tag}"))
-        q.qmkdir_info(get_save_path(f"prop-psrc-strange"))
-        q.qmkdir_info(get_save_path(f"prop-psrc-strange/{job_tag}"))
-        q.qmkdir_info(get_save_path(f"psel-prop-psrc-strange"))
-        q.qmkdir_info(get_save_path(f"psel-prop-psrc-strange/{job_tag}"))
-        q.qmkdir_info(get_save_path(f"psel-prop-psrc-strange/{job_tag}/traj={traj}"))
-        q.qmkdir_info(get_save_path(f"hvp-psrc-strange/"))
-        q.qmkdir_info(get_save_path(f"hvp-psrc-strange/{job_tag}"))
         pi = mk_rand_point_src_info(job_tag, traj, get_psel())
-        save_point_src_info(pi, f"point-src-info/{job_tag}/traj={traj}.txt");
+        save_point_src_info(pi, get_save_path(f"point-src-info/{job_tag}/traj={traj}.txt"));
         compute_prop_psrc_all(gf, gt, pi, job_tag, inv_type = 1,
                 path_s = f"prop-psrc-strange/{job_tag}/traj={traj}",
                 path_hvp = f"hvp-psrc-strange/{job_tag}/traj={traj}",
