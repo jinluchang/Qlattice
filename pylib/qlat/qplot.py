@@ -213,6 +213,7 @@ def plot_save(
         *,
         is_run_make = True,
         is_display = False,
+        is_verbose = False,
         ):
     # fn is full name of the plot or None
     # dts is dict_datatable, e.g. { "table.txt" : [ [ 0, 1, ], [ 1, 2, ], ], }
@@ -263,7 +264,12 @@ def plot_save(
             plot_lines = lines,
             )
     if is_run_make:
-        status = subprocess.run([ "make", "-C", path, ])
+        status = subprocess.run([ "make", "-C", path, ], capture_output = True, text = True)
+        if is_verbose or status.returncode != 0:
+            print("stdout:")
+            print(status.stdout)
+            print("stderr:")
+            print(status.stderr)
         assert status.returncode == 0
         if target is None:
             path_img = os.path.join(path, "plot-0.png")
