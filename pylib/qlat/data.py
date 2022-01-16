@@ -148,6 +148,25 @@ class Data:
 
 # ----------
 
+def jk_transpose(arr):
+    # arr: jk index is the 0th axis
+    # return: jk index is the last axis
+    shape = arr.shape
+    ndim = len(shape)
+    if ndim <= 1:
+        return arr
+    axes = list(range(1, ndim)) + [ 0, ]
+    return arr.transpose(axes)
+
+def jk_transpose_back(arr):
+    # jk_transpose_back(jk_transpose(arr)) == arr
+    shape = arr.shape
+    ndim = len(shape)
+    if ndim <= 1:
+        return arr
+    axes = [ ndim - 1, ] + list(range(0, ndim - 1))
+    return arr.transpose(axes)
+
 def average(data_list):
     n = len(data_list)
     v = sum(data_list)
