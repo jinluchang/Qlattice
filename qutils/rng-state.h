@@ -18,7 +18,6 @@
 
 #pragma once
 
-#include <endian.h>
 #include <qutils/sha256.h>
 #include <qutils/show.h>
 #include <stdint.h>

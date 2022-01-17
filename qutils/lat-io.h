@@ -1,6 +1,5 @@
 #pragma once
 
-#include <endian.h>
 #include <omp.h>
 #include <qutils/crc32.h>
 #include <qutils/qutils-io.h>

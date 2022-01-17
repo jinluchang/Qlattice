@@ -4,8 +4,6 @@
 
 #include <cstring>
 
-#include <endian.h>
-
 #include <zlib.h>
 
 #include <qutils/show.h>
