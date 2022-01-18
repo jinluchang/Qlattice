@@ -249,6 +249,8 @@ def merge_jk_idx(*jk_idx_list):
 def rejk_list(jk_list, jk_idx, jk_idx_new):
     assert jk_idx[0] == "avg"
     assert jk_idx_new[0] == "avg"
+    assert len(jk_idx) == len(jk_list)
+    assert len(jk_idx) <= len(jk_idx_new)
     jk_avg = jk_list[0]
     size_new = len(jk_idx_new)
     i_new = 0
