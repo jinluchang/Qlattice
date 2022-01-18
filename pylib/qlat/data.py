@@ -269,7 +269,7 @@ def rejk_list(jk_list, jk_idx, all_jk_idx):
         i_new += 1
     assert i_new == size_new
     assert size_new == len(jk_list_new)
-    return np.array(jk_list_new)
+    return jk_list_new
 
 # ----------
 
