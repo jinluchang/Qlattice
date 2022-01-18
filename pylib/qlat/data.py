@@ -148,6 +148,11 @@ class Data:
 
 # ----------
 
+def add_jk_idx(arr):
+    # arr: no jk index
+    # return: add trivial jk index in the LAST axis
+    return arr.reshape(arr.shape + (1,))
+
 def jk_transpose(arr):
     # arr: jk index is the 0th axis
     # return: jk index is the last axis
@@ -261,3 +266,7 @@ def rejk_list(jk_list, jk_idx, jk_idx_new):
     assert i_new == size_new
     assert size_new == len(jk_list_new)
     return np.array(jk_list_new)
+
+# ----------
+
+
