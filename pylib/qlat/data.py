@@ -1,4 +1,5 @@
 from qlat.lat_io import *
+from qlat.rng_state import *
 
 import math
 import copy
@@ -271,4 +272,42 @@ def rejk_list(jk_list, jk_idx, jk_idx_new):
 
 # ----------
 
+def rjk_jk_list(jk_list, jk_idx, n_sample, rng_state = None, *, eps = 1):
+    # return rjk_list
+    # len(rjk_list) == 1 + n_sample 
+    # distribution of rjk_list should be similar as the distribution of avg
+    # r_{i,j} ~ N(0, 1)
+    # avg = jk_avg(jk_list)
+    # n = len(jk_list)
+    # rjk_list[i] = avg + \sum_{j=1}^{n-1} r_{i,j} (jk_list[j] - avg)
+    assert jk_idx[0] == "avg"
+    assert isinstance(n_sample, int)
+    assert n_sample >= 0
+    if rng_state is None:
+        rng_state = RngState("rjk_list")
+    else:
+        assert isinstance(rng_state, RngState)
+    rs = rng_state
+    avg = jk_avg(jk_list)
+    n = len(jk_list) - 1
+    jk_diff = [ jk_list[j] - avg for j in range(1, n) ]
+    rjk_list = [ avg, ]
+    for i in range(n_sample):
+        rsi = rs.split(i)
+        r = [ rsi.split(idx).g_rand_gen(0, eps) for idx in jk_idx[1:] ]
+        rjk_list.append(avg + sum([ r[j] * jk_diff[j] for j in range(n - 1) ]))
+    return rjk_list
+
+def rjackknife(data_list, jk_idx, n_sample, rng_state = None, *, eps = 1):
+    jk_list = jackknife(data_list)
+    return rjk_jk_list(jk_list, jk_idx, n_sample, rng_state, eps = eps)
+
+def rjk_avg(rjk_list):
+    return jk_avg(rjk_list)
+
+def rjk_err(rjk_list, eps = 1):
+    return jk_err(rjk_list, eps * np.sqrt(len(rjk_list)))
+
+def rjk_avg_err(rjk_list, eps = 1):
+    return rjk_avg(rjk_list), rjk_err(rjk_list, eps)
 
