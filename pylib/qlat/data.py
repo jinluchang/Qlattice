@@ -273,7 +273,7 @@ def rejk_list(jk_list, jk_idx, all_jk_idx):
 
 # ----------
 
-def rjk_jk_list(jk_list, jk_idx, n_rand_sample, rng_state = None):
+def rjk_jk_list(jk_list, jk_idx, n_rand_sample, rng_state):
     # return rjk_list
     # len(rjk_list) == 1 + n_rand_sample
     # distribution of rjk_list should be similar as the distribution of avg
@@ -284,10 +284,7 @@ def rjk_jk_list(jk_list, jk_idx, n_rand_sample, rng_state = None):
     assert jk_idx[0] == "avg"
     assert isinstance(n_rand_sample, int)
     assert n_rand_sample >= 0
-    if rng_state is None:
-        rng_state = RngState("rjk_list")
-    else:
-        assert isinstance(rng_state, RngState)
+    assert isinstance(rng_state, RngState)
     rs = rng_state
     avg = jk_avg(jk_list)
     n = len(jk_list) - 1
@@ -299,7 +296,7 @@ def rjk_jk_list(jk_list, jk_idx, n_rand_sample, rng_state = None):
         rjk_list.append(avg + sum([ r[j] * jk_diff[j] for j in range(n - 1) ]))
     return rjk_list
 
-def rjackknife(data_list, jk_idx, n_rand_sample, rng_state = None, *, eps = 1):
+def rjackknife(data_list, jk_idx, n_rand_sample, rng_state, *, eps = 1):
     jk_list = jackknife(data_list, eps)
     return rjk_jk_list(jk_list, jk_idx, n_rand_sample, rng_state)
 
@@ -317,7 +314,7 @@ def rjk_avg_err(rjk_list, eps = 1):
 default_g_jk_kwargs = {}
 default_g_jk_kwargs["jk_type"] = "super"  # choices: "rjk", "super"
 default_g_jk_kwargs["n_rand_sample"] = 1024
-default_g_jk_kwargs["rng_state"] = None
+default_g_jk_kwargs["rng_state"] = RngState("rejk")
 default_g_jk_kwargs["eps"] = 1
 
 @use_kwargs(default_g_jk_kwargs)
