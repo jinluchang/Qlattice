@@ -328,7 +328,12 @@ def g_jk(data_list, *, eps, **kwargs):
 def g_rejk(jk_list, jk_idx, *, jk_type, **kwargs):
     # jk_type in [ "rjk", "super", ]
     if jk_type == "super":
-        all_jk_idx = kwargs["all_jk_idx"]
+        if "all_jk_idx" in kwargs:
+            all_jk_idx = kwargs["all_jk_idx"]
+        elif "get_all_jk_idx" in kwargs:
+            all_jk_idx = kwargs["get_all_jk_idx"]()
+        else:
+            assert False
         return rejk_list(jk_list, jk_idx, all_jk_idx)
     elif jk_type == "rjk":
         n_rand_sample = kwargs["n_rand_sample"]
