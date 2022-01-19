@@ -13,7 +13,7 @@ export CXX=g++
 # ./scripts/perl.sh
 # ./scripts/openssl.sh
 ./scripts/libffi.sh
-# ./scripts/openblas.sh
+./scripts/openblas.sh
 ./scripts/python.sh
 ./scripts/python-packages.sh
 
