@@ -22,12 +22,15 @@ export PYTHONPATH=
 CC_OLD="\$CC"
 CXX_OLD="\$CXX"
 module purge
-module add intel/2019.5.281
 module add impi/2019.5.281
-# module add gcc/7.5.0
+if [ "\$CXX_OLD" = g++ ] ; then
+    module add gcc/7.5.0
+else
+    module add intel/2019.5.281
+    module add hdf5/1.10.5
+    module add gsl/2.5
+fi
 module add cmake/3.14.5
-module add hdf5/1.10.5
-module add gsl/2.5
 module list
 export CC="\$CC_OLD"
 export CXX="\$CXX_OLD"
