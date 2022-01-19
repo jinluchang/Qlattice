@@ -24,7 +24,7 @@ CXX_OLD="\$CXX"
 module purge
 module add intel/2019.5.281
 module add impi/2019.5.281
-module add gcc/7.5.0
+# module add gcc/7.5.0
 module add cmake/3.14.5
 module add hdf5/1.10.5
 module add gsl/2.5

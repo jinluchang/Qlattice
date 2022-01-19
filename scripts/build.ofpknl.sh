@@ -6,14 +6,14 @@ set -e
 
 ./scripts/setenv.ofpknl.sh
 
-export CC=gcc
-export CXX=g++
+# export CC=gcc
+# export CXX=g++
 
 ./scripts/zlib.sh
-./scripts/perl.sh
-./scripts/openssl.sh
+# ./scripts/perl.sh
+# ./scripts/openssl.sh
 ./scripts/libffi.sh
-./scripts/openblas.sh
+# ./scripts/openblas.sh
 ./scripts/python.sh
 ./scripts/python-packages.sh
 
@@ -23,8 +23,8 @@ export CXX=g++
 ./scripts/eigen.sh
 ./scripts/c-lime.sh
 
-export CC=
-export CXX=
+# export CC=
+# export CXX=
 
 ./scripts/qlat.sh
 ./scripts/grid.knl.sh
