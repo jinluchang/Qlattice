@@ -8,11 +8,15 @@ name=python-packages
 
 echo "!!!! build $name !!!!"
 
-pip3 install --verbose --no-index -f $distfiles/python-packages --upgrade pip
-pip3 install --verbose --no-index -f $distfiles/python-packages wheel
-pip3 install --verbose --no-index -f $distfiles/python-packages numpy
-pip3 install --verbose --no-index -f $distfiles/python-packages sympy
-pip3 install --verbose --no-index -f $distfiles/python-packages scipy
+# rm -rfv ~/.cache/pip/wheels || true
+
+opts="--verbose --no-index --no-cache-dir -f $distfiles/python-packages"
+
+pip3 install $opts --upgrade pip
+pip3 install $opts wheel
+pip3 install $opts numpy
+pip3 install $opts sympy
+pip3 install $opts scipy
 
 echo "!!!! $name build !!!!"
 

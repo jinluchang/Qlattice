@@ -22,7 +22,6 @@ export PYTHONPATH=
 CC_OLD="\$CC"
 CXX_OLD="\$CXX"
 module purge
-module add impi/2019.5.281
 if [ "\$CXX_OLD" = g++ ] ; then
     module add gcc/7.5.0
 else
