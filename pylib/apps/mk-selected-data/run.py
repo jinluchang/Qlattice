@@ -118,6 +118,7 @@ def compute_prop_psrc(gf, gt, xg, job_tag, inv_type, inv_acc, *,
     if sfw_hvp is not None:
         chvp_16 = q.contract_chvp_16(prop, prop)
         chvp_16.save_float_from_double(sfw_hvp, tag)
+        sfw_hvp.flush()
     prop_gt = gt * prop
     fn_spw = os.path.join(path_sp, f"{tag} ; wsnk.lat")
     prop_gt.glb_sum_tslice().save(get_save_path(fn_spw))
