@@ -103,12 +103,8 @@ PyObject* set_u_rand_double_field_ctype(PyObject* p_field, const RngState& rs,
   set_u_rand_double(f, rs, upper, lower);
   Py_RETURN_NONE;
 }
-
-template <class M>
-<<<<<<< HEAD
-PyObject* get_total_site_field_ctype(PyObject* p_field)
-=======
-PyObject* set_g_rand_double_field_ctype(PyField& p_field, const RngState& rs,
+  
+PyObject* set_g_rand_double_field_ctype(PyField* p_field, const RngState& rs,
                                         const double center, const double sigma)
 {
   Field<M>& f = *(Field<M>*)p_field.cdata;
@@ -117,8 +113,7 @@ PyObject* set_g_rand_double_field_ctype(PyField& p_field, const RngState& rs,
 }
 
 template <class M>
-PyObject* get_total_site_field_ctype(PyField& p_field)
->>>>>>> pion_eff_theory
+PyObject* get_total_site_field_ctype(PyField* p_field)
 {
   Field<M>& f = py_convert_type_field<M>(p_field);
   const Coordinate ret = f.geo().total_site();
