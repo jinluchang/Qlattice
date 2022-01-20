@@ -4,6 +4,7 @@ from qlat.field import *
 from qlat.qcd import *
 from qlat.rng_state import *
 from qlat.gauge_action import *
+from qlat.scalar_action import *
 
 class GaugeMomentum(Field):
 
@@ -37,4 +38,24 @@ def set_gm_force(gm_force, gf, ga):
     assert isinstance(gf, GaugeField)
     assert isinstance(ga, GaugeAction)
     return c.set_gm_force(gm_force, gf, ga)
+
+def sm_hamilton_node(sm):
+    assert isinstance(sm, Field)
+    return c.sm_hamilton_node(sm)
+
+def sf_hamilton_node(sf, sa):
+    assert isinstance(sf, Field)
+    assert isinstance(sa, ScalarAction)
+    return c.sf_hamilton_node(sf, sa)
+    
+def sf_evolve(sf, sm, step_size):
+    assert isinstance(sf, Field)
+    assert isinstance(sm, Field)
+    return c.sf_evolve(sf, sm, step_size)
+
+def set_sm_force(sm_force, sf, sa):
+    assert isinstance(sm_force, Field)
+    assert isinstance(sf, Field)
+    assert isinstance(sa, ScalarAction)
+    return c.set_sm_force(sm_force, sf, sa)
 

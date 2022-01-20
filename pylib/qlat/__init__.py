@@ -36,6 +36,8 @@ from qlat.propagator import *
 
 from qlat.gauge_action import *
 
+from qlat.scalar_action import *
+
 from qlat.hmc import *
 
 from qlat.hmc_stats import *
