@@ -6,13 +6,17 @@ import numpy as np
 
 import qlat as q
 
+def phi_squared(field):
+	geo = field.geo()
+	return q.sm_hamilton_node(field)*2/geo.total_volume()/geo.multiplicity()
+
 @q.timer_verbose
 def sm_evolve_fg(momentum, field_init, action, fg_dt, dt):
     geo = field_init.geo()
-    field = q.Field("double",geo,4)
+    field = q.Field("double",geo)
     field @= field_init
     #
-    force = q.Field("double",geo,4)
+    force = q.Field("double",geo)
     #
     q.set_sm_force(force, field, action)
     #
@@ -81,10 +85,10 @@ def run_hmc(field, action, traj, rs):
     geo = field.geo()
     f0 = field.copy()
     #
-    momentum = q.Field("double",geo,4)
+    momentum = q.Field("double",geo)
     momentum.set_rand_g(rs.split("set_rand_momentum"), 0.0, 1.0)
     #
-    steps = 6
+    steps = 100
     md_time = 1.0
     #
     delta_h = run_hmc_evolve(momentum, f0, action, rs, steps, md_time)
@@ -109,18 +113,32 @@ def run_hmc(field, action, traj, rs):
 def test_hmc(total_site, action):
     geo = q.Geometry(total_site, 1)
     rs = q.RngState("test_hmc_pions-{}x{}x{}x{}".format(total_site[0], total_site[1], total_site[2], total_site[3]))
-    field = q.Field("double",geo,4)
+    field = q.Field("double",geo,1)
     q.set_unit(field);
     traj = 0
     for i in range(100):
         traj += 1
         run_hmc(field, action, traj, rs.split("hmc-{}".format(traj)))
+        print("Average phi^2:")
+        psq = phi_squared(field)
+        print(psq)
+        a.append(psq)
 
 @q.timer_verbose
 def main():
-    total_site = [12, 12, 12, 12]
-    action = q.ScalarAction(-1.0, 0.1)
+	# Set the lattice dimensions
+    total_site = [8, 8, 8, 8]
+    
+    # Use action for a Euclidean scalar field. The Lagrangian will be: 
+    # (1/2)*[sum fields]|dphi|^2 + (1/2)*m_sq*[sum fields]|phi|^2 
+    #     + (1/24)*lmbd*([sum fields]|phi|^2)^2
+    m_sq = -5.0
+    lmbd = 1.0
+    action = q.ScalarAction(m_sq, lmb)
+    
     test_hmc(total_site, action)
+
+a=[]
 
 size_node_list = [
         [1, 1, 1, 1],
@@ -139,5 +157,7 @@ q.qremove_all_info("results")
 main()
 
 q.timer_display()
+
+print(a)
 
 q.end()
