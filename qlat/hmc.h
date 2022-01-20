@@ -420,7 +420,7 @@ inline double sf_hamilton_node_no_comm(const Field<double>& sf,
   const double lmbd = sa.lmbd;
   const double sum_sq_der = sf_sum_sq_der_no_comm(sf);
   const double* sum_sq = sf_sum_sq(sf);
-  return sum_sq_der/2.0 + m_sq*sum_sq[0]/2.0 + lmbd*sum_sq[1]/4.0;
+  return sum_sq_der/2.0 + m_sq*sum_sq[0]/2.0 + lmbd*sum_sq[1]/24.0;
 }
 
 inline double sf_hamilton_node(const Field<double>& sf, const ScalarAction& sa)
