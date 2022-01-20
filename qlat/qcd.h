@@ -335,12 +335,12 @@ long save_gauge_field(const GaugeFieldT<T>& gf, const std::string& path,
       vt[m][4] = v[m](1, 1);
       vt[m][5] = v[m](1, 2);
     }
-    to_from_big_endian_64(get_data(vt));
   }
   GaugeFieldInfo gfi = gfi_;
+  gfi.simple_checksum = field_simple_checksum(gft);
+  to_from_big_endian_64(get_data(gft));
   gfi.plaq = gf_avg_plaq(gf);
   gfi.trace = gf_avg_link_trace(gf);
-  gfi.simple_checksum = field_simple_checksum(gft);
   gfi.crc32 = field_crc32(gft);
   gfi.total_site = gf.geo().total_site();
   qtouch_info(path + ".partial", make_gauge_field_header(gfi));
@@ -382,6 +382,12 @@ long load_gauge_field(GaugeFieldT<T>& gf, const std::string& path)
     to_from_little_endian_64(get_data(gft));
   } else {
     qassert(false);
+  }
+  crc32_t simple_checksum = field_simple_checksum(gft);
+  if (simple_checksum != gfi.simple_checksum) {
+    qwarn(fname +
+          ssprintf(": WARNING: fn='%s' CHECKSUM= %08X (calc) %08X (read)",
+                   path.c_str(), simple_checksum, gfi.simple_checksum));
   }
   gf.init(geo);
 #pragma omp parallel for
