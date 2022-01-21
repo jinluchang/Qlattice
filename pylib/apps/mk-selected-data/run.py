@@ -2,6 +2,9 @@
 
 # Need --mpi X.X.X.X --mpi X.X.X runtime option
 
+import qlat_gpt as qg
+import rbc_ukqcd as ru
+
 import jobs
 from jobs import *
 

@@ -385,9 +385,11 @@ long load_gauge_field(GaugeFieldT<T>& gf, const std::string& path)
   }
   crc32_t simple_checksum = field_simple_checksum(gft);
   if (simple_checksum != gfi.simple_checksum) {
-    qwarn(fname +
-          ssprintf(": WARNING: fn='%s' CHECKSUM= %08X (calc) %08X (read)",
-                   path.c_str(), simple_checksum, gfi.simple_checksum));
+    if (get_id_node() == 0) {
+      qwarn(fname +
+            ssprintf(": WARNING: fn='%s' CHECKSUM= %08X (calc) %08X (read)",
+                     path.c_str(), simple_checksum, gfi.simple_checksum));
+    }
   }
   gf.init(geo);
 #pragma omp parallel for

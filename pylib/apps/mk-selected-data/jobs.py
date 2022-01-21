@@ -1,10 +1,8 @@
 import qlat as q
-import gpt as g
-import qlat_gpt as qg
-import rbc_ukqcd as ru
 import rbc_ukqcd_params as rup
-import pprint
 
+import pprint
+import functools
 import os
 
 save_path_default = "results"
@@ -28,6 +26,8 @@ def get_load_path(fn):
 
 @q.timer_verbose
 def run_gf(job_tag, traj):
+    import qlat_gpt as qg
+    import rbc_ukqcd as ru
     path_gf = get_load_path(f"configs/{job_tag}/ckpoint_lat.{traj}")
     if path_gf is None:
         if job_tag[:5] == "test-":
@@ -45,6 +45,7 @@ def run_gf(job_tag, traj):
 
 @q.timer_verbose
 def run_gt(job_tag, traj, get_gf):
+    import qlat_gpt as qg
     if None in [ get_gf, ]:
         return None
     tfn = f"gauge-transform/{job_tag}/traj={traj}.field"
@@ -75,6 +76,7 @@ def run_gt(job_tag, traj, get_gf):
 
 @q.timer
 def mk_rand_wall_src_info(job_tag, traj, inv_type):
+    import rbc_ukqcd as ru
     # wi is a list of [ idx tslice inv_type inv_acc ]
     rs = q.RngState(f"seed {job_tag} {traj}").split("mk_rand_wall_src_info")
     inv_acc_s = 1
@@ -150,6 +152,7 @@ def get_n_points(job_tag, traj, inv_type, inv_acc):
 
 @q.timer
 def mk_rand_psel(job_tag, traj):
+    import rbc_ukqcd as ru
     rs = q.RngState(f"seed {job_tag} {traj}").split("mk_rand_psel")
     total_site = ru.get_total_site(job_tag)
     n_points = get_n_points(job_tag, traj, 0, 0)
@@ -241,6 +244,7 @@ def run_pi(job_tag, traj, get_psel):
 
 @q.timer
 def mk_rand_fsel(job_tag, traj, n_per_tslice):
+    import rbc_ukqcd as ru
     rs = q.RngState(f"seed {job_tag} {traj}").split("mk_rand_fsel")
     total_site = ru.get_total_site(job_tag)
     fsel = q.FieldSelection()
@@ -257,6 +261,7 @@ def mk_fselc(fsel, psel):
 def run_fsel(job_tag, traj, get_psel):
     if get_psel is None:
         return None
+    import rbc_ukqcd as ru
     tfn = f"field-selection/{job_tag}/traj={traj}.field"
     path_fsel = get_load_path(tfn)
     total_site = ru.get_total_site(job_tag)
@@ -287,6 +292,7 @@ def run_fsel(job_tag, traj, get_psel):
 def compute_eig(gf, job_tag, inv_type = 0, inv_acc = 0, *, path = None):
     # return a function ``get_eig''
     # ``get_eig()'' return the ``eig''
+    import rbc_ukqcd as ru
     load_eig = ru.load_eig_lazy(get_load_path(path), job_tag)
     if load_eig is not None:
         return load_eig
@@ -302,6 +308,7 @@ def compute_eig(gf, job_tag, inv_type = 0, inv_acc = 0, *, path = None):
 
 @q.timer
 def test_eig(gf, eig, job_tag, inv_type):
+    import rbc_ukqcd as ru
     geo = gf.geo()
     src = q.FermionField4d(geo)
     q.displayln_info(f"src norm {src.qnorm()}")
@@ -320,6 +327,7 @@ def test_eig(gf, eig, job_tag, inv_type):
 def run_eig(job_tag, traj, get_gf):
     if None in [ get_gf, ]:
         return None
+    import rbc_ukqcd as ru
     get_eig = ru.load_eig_lazy(get_load_path(f"eig/{job_tag}/traj={traj}"), job_tag)
     if get_eig is None and get_gf is not None:
         if q.obtain_lock(f"locks/{job_tag}-{traj}-run-eig"):

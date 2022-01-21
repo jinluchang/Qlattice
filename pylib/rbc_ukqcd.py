@@ -88,7 +88,7 @@ def mk_eig(gf, job_tag, inv_type, inv_acc = 0):
     cheby = g.algorithms.polynomial.chebyshev(params["cheby_params"])
     irl = g.algorithms.eigen.irl(params["irl_params"])
     evec, ev = irl(cheby(w.Mpc), make_src(g.random("lanc")))
-    evals = g.algorithms.eigen.evals(w.Mpc, evec, check_eps2=1e-6, real=True)
+    evals, eps2 = g.algorithms.eigen.evals(w.Mpc, evec, real=True)
     g.mem_report()
     #
     qtimer.stop()
@@ -122,7 +122,7 @@ def mk_ceig(gf, job_tag, inv_type, inv_acc = 0):
     cheby = g.algorithms.polynomial.chebyshev(params["cheby_params"])
     irl = g.algorithms.eigen.irl(params["irl_params"])
     evec, ev = irl(cheby(w.Mpc), make_src(g.random("lanc")))
-    evals = g.algorithms.eigen.evals(w.Mpc, evec, check_eps2=1e-6, real=True)
+    evals, eps2 = g.algorithms.eigen.evals(w.Mpc, evec, real=True)
     g.mem_report()
     #
     inv = g.algorithms.inverter
@@ -154,9 +154,10 @@ def mk_ceig(gf, job_tag, inv_type, inv_acc = 0):
     tmpf = g.lattice(basis[0])
     for i, cv in enumerate(cevec):
         tmpf @= smoother * b.promote * cv
-        smoothed_evals = smoothed_evals + g.algorithms.eigen.evals(
-            w.Mpc, [tmpf], check_eps2=1e10, real=True
+        evals = g.algorithms.eigen.evals(
+            w.Mpc, [tmpf], calculate_eps2 = False, real=True
         )
+        smoothed_evals = smoothed_evals + evals
     g.mem_report()
     #
     qtimer.stop()

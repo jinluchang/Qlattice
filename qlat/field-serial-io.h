@@ -220,7 +220,9 @@ crc32_t field_simple_checksum(const Field<M>& f)
   for (long i = 0; i < vc.size(); ++i) {
     ret += vc[i];
   }
-  glb_sum_byte(ret);
+  long sum = ret;
+  glb_sum(sum);
+  ret = (crc32_t)sum;
   return ret;
 }
 
