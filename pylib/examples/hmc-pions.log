@@ -1,0 +1,67 @@
+qlat::begin(): MPI Initialized. num_node = 2
+qlat::begin_comm(comm,size_node): get_comm_list().push_back()
+qlat::begin_comm(comm,size_node): get_comm_list().size() = 1.
+q_num_threads=2 (default)
+qlat::begin(): q_num_threads = 2
+qlat::begin(): GeometryNode =
+{ initialized = true
+, num_node    = 2
+, id_node     = 0
+, size_node   = 1x1x1x2
+, coor_node   = 0x0x0x0 }
+q_verbose=1
+q_timer_mini_auto_show=1 (default)
+q_timer_max_always_show=10 (default)
+q_timer_max_func_name_len=50 (default)
+qremove: 'results'
+q_field_init=fast (default)
+set q_field_init=fast.
+q_mem_cache_max_size=512 (default)
+q_mem_cache_acc_max_size=512 (default)
+CommPlanCache: to add 1 / 32.
+CommPlanCache: to add 2 / 32.
+metropolis_accept: flag=1 with accept_prob=100.0% delta_h=-44540.2520582012075465 traj=1
+run_hmc: update field (traj=1)
+Average phi^2:
+3.6258723354962665
+metropolis_accept: flag=0 with accept_prob=0.0% delta_h=38988.0263342220860068 traj=2
+run_hmc: update field (traj=2)
+Average phi^2:
+1.3122338828313285
+metropolis_accept: flag=1 with accept_prob=100.0% delta_h=-36682.6735935170872835 traj=3
+run_hmc: update field (traj=3)
+Average phi^2:
+3.501343811342953
+metropolis_accept: flag=0 with accept_prob=0.0% delta_h=35748.0064765416755108 traj=4
+run_hmc: update field (traj=4)
+Average phi^2:
+1.4075289926660162
+metropolis_accept: flag=1 with accept_prob=100.0% delta_h=-33758.3162094978906680 traj=5
+run_hmc: update field (traj=5)
+Average phi^2:
+3.412969369728087
+metropolis_accept: flag=0 with accept_prob=0.0% delta_h=32911.0285887121790438 traj=6
+run_hmc: update field (traj=6)
+Average phi^2:
+1.4896173169852545
+metropolis_accept: flag=1 with accept_prob=100.0% delta_h=-31588.0643260205251863 traj=7
+run_hmc: update field (traj=7)
+Average phi^2:
+3.3577935540133894
+metropolis_accept: flag=0 with accept_prob=0.0% delta_h=30977.3860230139544001 traj=8
+run_hmc: update field (traj=8)
+Average phi^2:
+1.5381301863538015
+metropolis_accept: flag=1 with accept_prob=100.0% delta_h=-29603.4786461880794377 traj=9
+run_hmc: update field (traj=9)
+Average phi^2:
+3.302083046486939
+metropolis_accept: flag=0 with accept_prob=0.0% delta_h=28942.3241033304439043 traj=10
+run_hmc: update field (traj=10)
+Average phi^2:
+1.5978117219368178
+[3.6258723354962665, 1.3122338828313285, 3.501343811342953, 1.4075289926660162, 3.412969369728087, 1.4896173169852545, 3.3577935540133894, 1.5381301863538015, 3.302083046486939, 1.5978117219368178]
+qlat::end(): get_comm_list().pop_back()
+qlat::end(): get_comm_list().size() = 0.
+qlat::end(): Finalize MPI.
+qlat::end(): MPI Finalized.
