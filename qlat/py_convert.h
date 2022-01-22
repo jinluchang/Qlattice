@@ -260,7 +260,10 @@ template <class T>
 T py_convert_data(PyObject* in, const std::string& attr)
 // py_convert_data<std::string>(in, "ctype")
 {
-  return py_convert_data<T>(PyObject_GetAttrString(in, attr.c_str()));
+  PyObject* p_obj = PyObject_GetAttrString(in, attr.c_str());
+  T x = py_convert_data<T>(p_obj);
+  Py_DECREF(p_obj);
+  return x;
 }
 
 inline std::string py_get_ctype(PyObject* in)
@@ -279,6 +282,8 @@ inline void py_convert(PyField& out, PyObject* in)
   PyObject* p_cdata = PyObject_GetAttrString(in, "cdata");
   py_convert(out.ctype, p_ctype);
   py_convert((long&)out.cdata, p_cdata);
+  Py_DECREF(p_ctype);
+  Py_DECREF(p_cdata);
 }
 
 inline PyField py_convert_field(PyObject* in)
@@ -302,6 +307,7 @@ T& py_convert_type(PyObject* in)
   PyObject* p_cdata = PyObject_GetAttrString(in, "cdata");
   T* out;
   py_convert((long&)out, p_cdata);
+  Py_DECREF(p_cdata);
   return *out;
 }
 

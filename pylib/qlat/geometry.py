@@ -3,7 +3,7 @@ import cqlat as c
 class Geometry:
 
     def __init__(self, total_site, multiplicity = None):
-        if multiplicity == None:
+        if multiplicity is None:
             self.cdata = c.mk_geo(total_site)
         else:
             self.cdata = c.mk_geo(total_site, multiplicity)

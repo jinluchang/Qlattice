@@ -15,8 +15,7 @@ EXPORT(mk_rng, {
     if (p_seed == NULL) {
       prng_new = new RngState(rng);
     } else {
-      std::string seed;
-      py_convert(seed, p_seed);
+      const std::string seed = py_convert_data<std::string>(p_seed);
       prng_new = new RngState(rng, seed);
     }
   }
