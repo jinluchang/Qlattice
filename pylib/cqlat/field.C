@@ -103,11 +103,12 @@ PyObject* set_u_rand_double_field_ctype(PyObject* p_field, const RngState& rs,
   set_u_rand_double(f, rs, upper, lower);
   Py_RETURN_NONE;
 }
-  
+
+template <class M>
 PyObject* set_g_rand_double_field_ctype(PyObject* p_field, const RngState& rs,
                                         const double center, const double sigma)
 {
-  Field<M>& f = *(Field<M>*)p_field.cdata;
+  Field<M>& f = py_convert_type_field<M>(p_field);
   set_g_rand_double(f, rs, center, sigma);
   Py_RETURN_NONE;
 }
@@ -327,11 +328,11 @@ EXPORT(set_g_rand_double_field, {
   if (!PyArg_ParseTuple(args, "OO|dd", &p_field, &p_rng, &center, &sigma)) {
     return NULL;
   }
-  PyField pf = py_convert_field(p_field);
+  const std::string ctype = py_get_ctype(p_field);
   const RngState& rng = py_convert_type<RngState>(p_rng);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, set_g_rand_double_field_ctype, pf.ctype, pf, rng, center,
-                 sigma);
+  FIELD_DISPATCH(p_ret, set_g_rand_double_field_ctype, ctype, p_field, rng,
+                 center, sigma);
   return p_ret;
 });
 

@@ -116,12 +116,12 @@ def test_hmc(total_site, action):
     field = q.Field("double",geo,1)
     q.set_unit(field);
     traj = 0
-    for i in range(100):
+    for i in range(10):
         traj += 1
         run_hmc(field, action, traj, rs.split("hmc-{}".format(traj)))
-        print("Average phi^2:")
+        q.displayln_info("Average phi^2:")
         psq = phi_squared(field)
-        print(psq)
+        q.displayln_info(psq)
         a.append(psq)
 
 @q.timer_verbose
@@ -156,8 +156,8 @@ q.qremove_all_info("results")
 
 main()
 
-q.timer_display()
+q.displayln_info(a)
 
-print(a)
+q.timer_display()
 
 q.end()
