@@ -164,6 +164,32 @@ def mk_ceig(gf, job_tag, inv_type, inv_acc = 0):
     return basis, cevec, smoothed_evals
 
 @q.timer_verbose
+def get_smoothed_evals(basis, cevec, gf, job_tag, inv_type, inv_acc = 0):
+    gpt_gf = g.convert(qg.gpt_from_qlat(gf), g.single)
+    parity = g.odd
+    params = get_lanc_params(job_tag, inv_type, inv_acc)
+    fermion_params = params["fermion_params"]
+    if "omega" in fermion_params:
+        qm = g.qcd.fermion.zmobius(gpt_gf, fermion_params)
+    else:
+        qm = g.qcd.fermion.mobius(gpt_gf, fermion_params)
+    w = g.qcd.fermion.preconditioner.eo2_ne(parity=parity)(qm)
+    inv = g.algorithms.inverter
+    cparams = get_clanc_params(job_tag, inv_type, inv_acc)
+    grid_coarse = g.block.grid(qm.F_grid_eo, [ get_ls_from_fermion_params(fermion_params) ] + cparams["block"])
+    b = g.block.map(grid_coarse, basis)
+    smoother = inv.cg(cparams["smoother_params"])(w.Mpc)
+    smoothed_evals = []
+    tmpf = g.lattice(basis[0])
+    for i, cv in enumerate(cevec):
+        tmpf @= smoother * b.promote * cv
+        evals = g.algorithms.eigen.evals(
+            w.Mpc, [tmpf], calculate_eps2 = False, real=True
+        )
+        smoothed_evals = smoothed_evals + evals
+    return smoothed_evals
+
+@q.timer_verbose
 def save_ceig(path, eig, job_tag, inv_type = 0, inv_acc = 0):
     if path is None:
         return
