@@ -298,7 +298,7 @@ def compute_eig(gf, job_tag, inv_type = 0, inv_acc = 0, *, path = None):
         return load_eig
     # evec, evals = ru.mk_eig(gf, job_tag, inv_type, inv_acc)
     basis, cevec, smoothed_evals = ru.mk_ceig(gf, job_tag, inv_type, inv_acc)
-    eig = [ basis, cevec, smoothed_evals ]
+    eig = [ basis, cevec, smoothed_evals, ]
     ru.save_ceig(get_save_path(path + ".partial"), eig, job_tag, inv_type, inv_acc);
     q.qrename_info(get_save_path(path + ".partial"), get_save_path(path))
     test_eig(gf, eig, job_tag, inv_type)
@@ -313,13 +313,13 @@ def test_eig(gf, eig, job_tag, inv_type):
     src = q.FermionField4d(geo)
     q.displayln_info(f"src norm {src.qnorm()}")
     src.set_rand(q.RngState("test_eig:{id(inv)}"))
-    sol_ref = ru.get_inv(gf, job_tag, inv_type, inv_acc = 2, eig = eig, eps = 1e-10, mpi_split = False, timer = False) * src
+    sol_ref = ru.get_inv(gf, job_tag, inv_type, inv_acc = 2, eig = eig, eps = 1e-10, mpi_split = False, qtimer = False) * src
     q.displayln_info(f"sol_ref norm {sol_ref.qnorm()} with eig")
-    for inv_acc in [0, 1, 2]:
-        sol = ru.get_inv(gf, job_tag, inv_type, inv_acc, eig = eig, mpi_split = False, timer = False) * src
+    for inv_acc in [ 0, 1, 2, ]:
+        sol = ru.get_inv(gf, job_tag, inv_type, inv_acc, eig = eig, mpi_split = False, qtimer = False) * src
         sol -= sol_ref
         q.displayln_info(f"sol diff norm {sol.qnorm()} inv_acc={inv_acc} with eig")
-        sol = ru.get_inv(gf, job_tag, inv_type, inv_acc, mpi_split = False, timer = False) * src
+        sol = ru.get_inv(gf, job_tag, inv_type, inv_acc, mpi_split = False, qtimer = False) * src
         sol -= sol_ref
         q.displayln_info(f"sol diff norm {sol.qnorm()} inv_acc={inv_acc} without eig")
 
