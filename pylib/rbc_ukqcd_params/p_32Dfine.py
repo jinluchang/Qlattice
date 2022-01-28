@@ -24,12 +24,9 @@ def mk_fermion_params(inv_type, inv_acc):
         params["mass"] = 0.045
     else:
         assert False
-    if inv_acc == 0 or inv_acc == 1:
-        params["b"] = 1.0 + 32/12/2
-        params["c"] = 0.0 + 32/12/2
-        params["Ls"] = 12
-    else:
-        params["Ls"] = 32
+    params["b"] = 1.0 + 32/12/2
+    params["c"] = 0.0 + 32/12/2
+    params["Ls"] = 12
     return params
 
 def mk_dict_fermion_params():
@@ -41,3 +38,57 @@ def mk_dict_fermion_params():
     return params
 
 dict_params["fermion_params"] = mk_dict_fermion_params()
+
+def mk_lanc_params(inv_type, inv_acc):
+    assert inv_type == 0
+    assert inv_acc == 0
+    fermion_params = mk_dict_fermion_params()[inv_type][inv_acc]
+    pit_params = { "eps": 0.01, "maxiter": 500, "real": True }
+    cheby_params = { "low": 7e-5, "high": 5.5, "order": 400 }
+    irl_params = {
+            "Nstop": 250,
+            "Nk": 270,
+            "Nm": 350,
+            "resid": 1e-8,
+            "betastp": 0.0,
+            "maxiter": 20,
+            "Nminres": 1,
+            # "maxapply": 100
+            }
+    return {
+            "fermion_params": fermion_params,
+            "pit_params": pit_params,
+            "cheby_params": cheby_params,
+            "irl_params": irl_params,
+            }
+
+dict_params["lanc_params"] = { 0:{ 0:mk_lanc_params(0, 0) } }
+
+def mk_clanc_params(inv_type, inv_acc):
+    assert inv_type == 0
+    assert inv_acc == 0
+    block = [ 2, 2, 2, 2, ]
+    nbasis = 1000
+    cheby_params = {"low": 0.0018, "high": 5.5, "order": 100}
+    irl_params = {
+            "Nstop": 2000,
+            "Nk": 2100,
+            "Nm": 2600,
+            "resid": 1e-8,
+            "betastp": 0.0,
+            "maxiter": 20,
+            "Nminres": 0,
+            # "maxapply": 100
+            }
+    smoother_params = { "eps": 1e-8, "maxiter": 100 }
+    save_params = {"nsingle": 100, "mpi": [ 1, 1, 1, 8, ]}
+    return {
+            "block": block,
+            "nbasis": nbasis,
+            "cheby_params": cheby_params,
+            "irl_params": irl_params,
+            "smoother_params": smoother_params,
+            "save_params": save_params,
+            }
+
+dict_params["clanc_params"] = { 0:{ 0:mk_clanc_params(0, 0) } }
