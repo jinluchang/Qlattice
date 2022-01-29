@@ -15,6 +15,7 @@ from jobs import *
 
 load_path_list[:] = [
         "results",
+        "../qcddata",
         "../mk-gf-gt/results",
         os.path.join(os.getenv("HOME"), "qcddata"),
         os.path.join(os.getenv("HOME"), "Qlat-sample-data/mk-gf-gt/results"),
@@ -41,6 +42,7 @@ rup.dict_params["test-4nt8"]["trajs"] = list(range(1000, 1400, 100))
 rup.dict_params["test-4nt16"]["trajs"] = list(range(1000, 1400, 100))
 rup.dict_params["32Dfine"]["trajs"] = list(range(500, 3000, 10))
 rup.dict_params["16IH2"]["trajs"] = list(range(500, 10000, 100))
+rup.dict_params["32IfineH"]["trajs"] = list(range(500, 10000, 50))
 
 qg.begin_with_gpt()
 
