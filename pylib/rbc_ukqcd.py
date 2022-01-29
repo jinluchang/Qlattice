@@ -197,6 +197,7 @@ def save_ceig(path, eig, job_tag, inv_type = 0, inv_acc = 0):
     nsingle = save_params["nsingle"]
     mpi = save_params["mpi"]
     fmt = g.format.cevec({"nsingle": nsingle, "mpi": [ 1 ] + mpi, "max_read_blocks": 8})
+    q.mk_file_dirs_info(path)
     g.save(path, eig, fmt);
 
 @q.timer_verbose

@@ -16,42 +16,18 @@ from jobs import *
 load_path_list[:] = [
         "results",
         "../mk-gf-gt/results",
+        os.path.join(os.getenv("HOME"), "Qlat-sample-data/mk-gf-gt/results"),
         ]
 
 @q.timer
-def check_job(job_tag, traj):
-    # return True if config is finished or unavailable
-    fns_produce = [
-            get_load_path(f"eig/{job_tag}/traj={traj}"),
-            ]
-    is_job_done = True
-    for fn in fns_produce:
-        if fn is None:
-            q.displayln_info(f"check_job: {job_tag} {traj} to do as some file does not exist.")
-            is_job_done = False
-            break
-    if is_job_done:
-        return True
-    #
-    fns_need = [
-            get_load_path(f"configs/{job_tag}/ckpoint_lat.{traj}"),
-            ]
-    for fn in fns_need:
-        if fn is None:
-            q.displayln_info(f"check_job: {job_tag} {traj} unavailable as {fn} does not exist.")
-            return True
-    #
-    q.check_stop()
-    q.check_time_limit()
-    #
-    q.qmkdir_info(f"locks")
-    q.qmkdir_info(get_save_path(f""))
-    #
-    return False
-
-@q.timer
 def run_job(job_tag, traj):
-    if check_job(job_tag, traj):
+    fns_produce = [
+            f"eig/{job_tag}/traj={traj}",
+            ]
+    fns_need = [
+            (f"configs/{job_tag}/ckpoint_lat.{traj}", f"configs/{job_tag}/ckpoint_lat.IEEE64BIG.{traj}"),
+            ]
+    if not check_job(job_tag, traj, fns_produce, fns_need):
         return
     #
     get_gf = run_gf(job_tag, traj)

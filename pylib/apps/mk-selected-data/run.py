@@ -13,44 +13,9 @@ jobs.load_path_list = [
         "../mk-gf-gt/results",
         "../mk-lanc/results",
         "/gpfs/alpine/lgt116/proj-shared/ljin",
+        os.path.join(os.getenv("HOME"), "Qlat-sample-data/mk-gf-gt/results"),
+        os.path.join(os.getenv("HOME"), "Qlat-sample-data/mk-lanc/results"),
         ]
-
-@q.timer_verbose
-def check_job(job_tag, traj):
-    # return True if config is finished or unavailable
-    fns_produce = [
-            get_load_path(f"point-selection/{job_tag}/traj={traj}.txt"),
-            get_load_path(f"field-selection/{job_tag}/traj={traj}.field"),
-            get_load_path(f"prop-wsrc-strange/{job_tag}/traj={traj}"),
-            get_load_path(f"prop-wsrc-light/{job_tag}/traj={traj}"),
-            get_load_path(f"prop-psrc-strange/{job_tag}/traj={traj}"),
-            get_load_path(f"prop-psrc-light/{job_tag}/traj={traj}"),
-            ]
-    is_job_done = True
-    for fn in fns_produce:
-        if fn is None:
-            q.displayln_info(f"check_job: {job_tag} {traj} to do as some file does not exist.")
-            is_job_done = False
-            break
-    if is_job_done:
-        return True
-    #
-    fns_need = [
-            get_load_path(f"configs/{job_tag}/ckpoint_lat.{traj}"),
-            get_load_path(f"gauge-transform/{job_tag}/traj={traj}.field"),
-            get_load_path(f"eig/{job_tag}/traj={traj}"),
-            get_load_path(f"eig/{job_tag}/traj={traj}/metadata.txt"),
-            get_load_path(f"eig/{job_tag}/traj={traj}/eigen-values.txt"),
-            ]
-    for fn in fns_need:
-        if fn is None:
-            q.displayln_info(f"check_job: {job_tag} {traj} unavailable as {fn} does not exist.")
-            return True
-    #
-    q.check_stop()
-    q.check_time_limit()
-    #
-    return False
 
 @q.timer_verbose
 def compute_prop(inv, src, *, tag, sfw, fn_sp, psel, fsel, fselc):
@@ -245,7 +210,22 @@ def run_prop_psrc_strange(job_tag, traj, get_gf, get_gt, get_psel, get_fsel):
 
 @q.timer
 def run_job(job_tag, traj):
-    if check_job(job_tag, traj):
+    fns_produce = [
+            f"point-selection/{job_tag}/traj={traj}.txt",
+            f"field-selection/{job_tag}/traj={traj}.field",
+            f"prop-wsrc-strange/{job_tag}/traj={traj}",
+            f"prop-wsrc-light/{job_tag}/traj={traj}",
+            f"prop-psrc-strange/{job_tag}/traj={traj}",
+            f"prop-psrc-light/{job_tag}/traj={traj}",
+            ]
+    fns_need = [
+            (f"configs/{job_tag}/ckpoint_lat.{traj}", f"configs/{job_tag}/ckpoint_lat.IEEE64BIG.{traj}",),
+            f"gauge-transform/{job_tag}/traj={traj}.field",
+            f"eig/{job_tag}/traj={traj}",
+            f"eig/{job_tag}/traj={traj}/metadata.txt",
+            f"eig/{job_tag}/traj={traj}/eigen-values.txt",
+            ]
+    if not check_job(job_tag, traj, fns_produce, fns_need):
         return
     #
     traj_gf = traj

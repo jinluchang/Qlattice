@@ -369,8 +369,6 @@ def run_eig(job_tag, traj, get_gf):
     get_eig = ru.load_eig_lazy(get_load_path(f"eig/{job_tag}/traj={traj}"), job_tag)
     if get_eig is None and get_gf is not None:
         if q.obtain_lock(f"locks/{job_tag}-{traj}-run-eig"):
-            q.qmkdir_info(get_save_path(f"eig"))
-            q.qmkdir_info(get_save_path(f"eig/{job_tag}"))
             get_eig = compute_eig(get_gf(), job_tag, inv_type = 0, path = f"eig/{job_tag}/traj={traj}")
             q.release_lock()
             return get_eig
