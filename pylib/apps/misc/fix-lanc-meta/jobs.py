@@ -12,15 +12,50 @@ load_path_list = [ "results", ]
 def get_save_path(fn):
     return os.path.join(save_path_default, fn)
 
-def get_load_path(fn):
-    if fn is None:
+def get_load_path(*fns):
+    def get(fn):
+        if fn is None:
+            return None
+        elif isinstance(fn, (tuple, list)):
+            for f in fn:
+                p = get(f)
+                if p is not None:
+                    return p
+        else:
+            for path in load_path_list:
+                p = os.path.join(path, fn)
+                if q.does_file_exist_sync_node(p):
+                    return p
         return None
-    path_list = load_path_list
-    for path in path_list:
-        p = os.path.join(path, fn)
-        if q.does_file_exist_sync_node(p):
-            return p
-    return None
+    return get(fns)
+
+# ----------
+
+@q.timer_verbose
+def check_job(job_tag, traj, fns_produce, fns_need):
+    # return False if config is finished or unavailable
+    is_job_done = True
+    for fn in fns_produce:
+        if get_load_path(fn) is None:
+            q.displayln_info(f"check_job: {job_tag} {traj} to do as '{fn}' does not exist.")
+            is_job_done = False
+    if is_job_done:
+        return False
+    #
+    is_job_avail = True
+    for fn in fns_need:
+        if get_load_path(fn) is None:
+            q.displayln_info(f"check_job: {job_tag} {traj} unavailable as '{fn}' does not exist.")
+            is_job_avail = False
+    if not is_job_avail:
+        return False
+    #
+    q.check_stop()
+    q.check_time_limit()
+    #
+    assert not is_job_done and is_job_avail
+    #
+    return True
 
 # ----------
 
@@ -28,7 +63,10 @@ def get_load_path(fn):
 def run_gf(job_tag, traj):
     import qlat_gpt as qg
     import rbc_ukqcd as ru
-    path_gf = get_load_path(f"configs/{job_tag}/ckpoint_lat.{traj}")
+    path_gf = get_load_path(
+            f"configs/{job_tag}/ckpoint_lat.{traj}",
+            f"configs/{job_tag}/ckpoint_lat.IEEE64BIG.{traj}",
+            )
     if path_gf is None:
         if job_tag[:5] == "test-":
             gf = ru.mk_sample_gauge_field(job_tag, f"{traj}")
@@ -331,8 +369,6 @@ def run_eig(job_tag, traj, get_gf):
     get_eig = ru.load_eig_lazy(get_load_path(f"eig/{job_tag}/traj={traj}"), job_tag)
     if get_eig is None and get_gf is not None:
         if q.obtain_lock(f"locks/{job_tag}-{traj}-run-eig"):
-            q.qmkdir_info(get_save_path(f"eig"))
-            q.qmkdir_info(get_save_path(f"eig/{job_tag}"))
             get_eig = compute_eig(get_gf(), job_tag, inv_type = 0, path = f"eig/{job_tag}/traj={traj}")
             q.release_lock()
             return get_eig

@@ -20,42 +20,9 @@ from jobs import *
 load_path_list[:] = [
         "results",
         "../mk-gf-gt/results",
-        "/home/luchang/Qlat-sample-data/mk-gf-gt/results",
-        "/home/luchang/Qlat-sample-data/mk-lanc-v1/results-no-meta",
+        os.path.join(os.getenv("HOME"), "Qlat-sample-data/mk-gf-gt/results"),
+        os.path.join(os.getenv("HOME"), "Qlat-sample-data/mk-lanc-no-meta/results"),
         ]
-
-@q.timer
-def check_job(job_tag, traj):
-    # return True if config is finished or unavailable
-    fns_produce = [
-            f"eig/{job_tag}/traj={traj}/eigen-values.txt",
-            f"eig/{job_tag}/traj={traj}/metadata.txt",
-            ]
-    is_job_done = True
-    for fn in fns_produce:
-        if get_load_path(fn) is None:
-            q.displayln_info(f"check_job: {job_tag} {traj} to do as some file '{fn}' does not exist.")
-            is_job_done = False
-            break
-    if is_job_done:
-        return True
-    #
-    fns_need = [
-            get_load_path(f"configs/{job_tag}/ckpoint_lat.{traj}"),
-            get_load_path(f"eig/{job_tag}/traj={traj}"),
-            ]
-    for fn in fns_need:
-        if fn is None:
-            q.displayln_info(f"check_job: {job_tag} {traj} unavailable as {fn} does not exist.")
-            return True
-    #
-    q.check_stop()
-    q.check_time_limit()
-    #
-    q.qmkdir_info(f"locks")
-    q.qmkdir_info(get_save_path(f""))
-    #
-    return False
 
 @q.timer_verbose
 def load_eig(path, job_tag, inv_type = 0, inv_acc = 0):
@@ -126,9 +93,17 @@ def run_fix_eig_meta(job_tag, traj, get_gf, inv_type = 0, inv_acc = 0):
     eig = basis, cevec, smoothed_evals
     save_ceig(path_eig, eig, job_tag, inv_type, inv_acc, crc32 = crc32)
 
-@q.timer
+@q.timer_verbose
 def run_job(job_tag, traj):
-    if check_job(job_tag, traj):
+    fns_produce = [
+            f"eig/{job_tag}/traj={traj}/eigen-values.txt",
+            f"eig/{job_tag}/traj={traj}/metadata.txt",
+            ]
+    fns_need = [
+            f"configs/{job_tag}/ckpoint_lat.{traj}",
+            f"eig/{job_tag}/traj={traj}",
+            ]
+    if not check_job(job_tag, traj, fns_produce, fns_need):
         return
     #
     get_gf = run_gf(job_tag, traj)
