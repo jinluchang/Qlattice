@@ -9,7 +9,7 @@ mpi_options=--bind-to none -mca btl_openib_allow_ib true
 mpi_options=
 
 run:
-	q_verbose=1 mpirun --np 2 $(mpi_options) ./run.py --mpi 1.1.1.2 --mpi 1.1.2 $(grid_options) |& tee log.txt
+	. ~/qlat-build/default/setenv.sh ; q_verbose=1 mpirun --np 2 $(mpi_options) ./run.py --mpi 1.1.1.2 --mpi 1.1.2 $(grid_options) |& tee log.txt
 	find results -type f | sort | xargs -d '\n' md5sum > md5sum.txt
 
 diff:
