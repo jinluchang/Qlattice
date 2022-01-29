@@ -101,9 +101,11 @@ def mk_ceig(gf, job_tag, inv_type, inv_acc = 0):
     gpt_gf = g.convert(qg.gpt_from_qlat(gf), g.single)
     parity = g.odd
     params = get_lanc_params(job_tag, inv_type, inv_acc)
+    cparams = get_clanc_params(job_tag, inv_type, inv_acc)
+    assert cparams["nbasis"] <= params["irl_params"]["Nstop"]
+    fermion_params = params["fermion_params"]
     q.displayln_info(f"mk_ceig: job_tag={job_tag} inv_type={inv_type} inv_acc={inv_acc}")
     q.displayln_info(f"mk_ceig: params=\n{pprint.pformat(params)}")
-    fermion_params = params["fermion_params"]
     if "omega" in fermion_params:
         qm = g.qcd.fermion.zmobius(gpt_gf, fermion_params)
     else:
@@ -127,7 +129,6 @@ def mk_ceig(gf, job_tag, inv_type, inv_acc = 0):
     #
     inv = g.algorithms.inverter
     #
-    cparams = get_clanc_params(job_tag, inv_type, inv_acc)
     q.displayln_info(f"mk_ceig: cparams=\n{pprint.pformat(cparams)}")
     #
     grid_coarse = g.block.grid(qm.F_grid_eo, [ get_ls_from_fermion_params(fermion_params) ] + cparams["block"])
@@ -168,6 +169,8 @@ def get_smoothed_evals(basis, cevec, gf, job_tag, inv_type, inv_acc = 0):
     gpt_gf = g.convert(qg.gpt_from_qlat(gf), g.single)
     parity = g.odd
     params = get_lanc_params(job_tag, inv_type, inv_acc)
+    cparams = get_clanc_params(job_tag, inv_type, inv_acc)
+    assert cparams["nbasis"] <= params["irl_params"]["Nstop"]
     fermion_params = params["fermion_params"]
     if "omega" in fermion_params:
         qm = g.qcd.fermion.zmobius(gpt_gf, fermion_params)
@@ -175,7 +178,6 @@ def get_smoothed_evals(basis, cevec, gf, job_tag, inv_type, inv_acc = 0):
         qm = g.qcd.fermion.mobius(gpt_gf, fermion_params)
     w = g.qcd.fermion.preconditioner.eo2_ne(parity=parity)(qm)
     inv = g.algorithms.inverter
-    cparams = get_clanc_params(job_tag, inv_type, inv_acc)
     grid_coarse = g.block.grid(qm.F_grid_eo, [ get_ls_from_fermion_params(fermion_params) ] + cparams["block"])
     b = g.block.map(grid_coarse, basis)
     smoother = inv.cg(cparams["smoother_params"])(w.Mpc)
