@@ -39,6 +39,8 @@ def run_job(job_tag, traj):
 
 rup.dict_params["test-4nt8"]["trajs"] = list(range(1000, 1400, 100))
 rup.dict_params["test-4nt16"]["trajs"] = list(range(1000, 1400, 100))
+rup.dict_params["32Dfine"]["trajs"] = list(range(500, 3000, 10))
+rup.dict_params["16IH2"]["trajs"] = list(range(500, 10000, 100))
 
 qg.begin_with_gpt()
 
@@ -52,7 +54,10 @@ job_tags = [
         # "test-64nt128",
         # "test-96nt192",
         # "test-128nt256",
+        # "16IH2",
         # "24D",
+        # "32Dfine",
+        # "32IfineH",
         ]
 
 q.check_time_limit()
