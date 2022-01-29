@@ -12,13 +12,19 @@ load_path_list = [ "results", ]
 def get_save_path(fn):
     return os.path.join(save_path_default, fn)
 
-def get_load_path(fn):
-    if fn is None:
-        return None
+def get_load_path(*fns):
     path_list = load_path_list
-    for path in path_list:
-        p = os.path.join(path, fn)
-        if q.does_file_exist_sync_node(p):
+    def get(fn):
+        if fn is None:
+            return None
+        for path in path_list:
+            p = os.path.join(path, fn)
+            if q.does_file_exist_sync_node(p):
+                return p
+        return None
+    for fn in fns:
+        p = get(fn)
+        if p is not None:
             return p
     return None
 
@@ -28,7 +34,10 @@ def get_load_path(fn):
 def run_gf(job_tag, traj):
     import qlat_gpt as qg
     import rbc_ukqcd as ru
-    path_gf = get_load_path(f"configs/{job_tag}/ckpoint_lat.{traj}")
+    path_gf = get_load_path(
+            f"configs/{job_tag}/ckpoint_lat.{traj}",
+            f"configs/{job_tag}/ckpoint_lat.IEEE64BIG.{traj}",
+            )
     if path_gf is None:
         if job_tag[:5] == "test-":
             gf = ru.mk_sample_gauge_field(job_tag, f"{traj}")
