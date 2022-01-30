@@ -357,9 +357,10 @@ def test_eig(gf, eig, job_tag, inv_type):
         sol = ru.get_inv(gf, job_tag, inv_type, inv_acc, eig = eig, mpi_split = False, qtimer = False) * src
         sol -= sol_ref
         q.displayln_info(f"sol diff norm {sol.qnorm()} inv_acc={inv_acc} with eig")
-        sol = ru.get_inv(gf, job_tag, inv_type, inv_acc, mpi_split = False, qtimer = False) * src
-        sol -= sol_ref
-        q.displayln_info(f"sol diff norm {sol.qnorm()} inv_acc={inv_acc} without eig")
+        if inv_acc in [ 0, 1, ]:
+            sol = ru.get_inv(gf, job_tag, inv_type, inv_acc, mpi_split = False, qtimer = False) * src
+            sol -= sol_ref
+            q.displayln_info(f"sol diff norm {sol.qnorm()} inv_acc={inv_acc} without eig")
 
 @q.timer_verbose
 def run_eig(job_tag, traj, get_gf):
