@@ -369,7 +369,7 @@ def load_gauge_field(path):
     gpt_gf = g.load(path)
     return qlat_from_gpt(gpt_gf)
 
-def line_search_quadratic(s, x, dx, dv0, df, step):
+def line_search_quadratic(s, x, dx, dv0, df, step, *, max_c = 3):
     x = g.util.to_list(x)
     xp = g.copy(x)
     # ansatz: f(x) = a + b*(x-c)^2, then solve for c from dv1 and dv0
@@ -413,7 +413,7 @@ def line_search_quadratic(s, x, dx, dv0, df, step):
         else:
             c += 1
             sv0 = sv1
-        if c > 4:
+        if c > max_c:
             g.message(f"line_search_quadratic: rank={g.rank()} {sv_list}")
             return sign * c
 
@@ -426,6 +426,7 @@ class non_linear_cg(g.algorithms.base_iterative):
         log_functional_every = 10,
         line_search = line_search_quadratic,
         beta = g.algorithms.optimize.fletcher_reeves,
+        max_c = 3,
     )
     def __init__(self, params):
         super().__init__()
@@ -435,6 +436,7 @@ class non_linear_cg(g.algorithms.base_iterative):
         self.nf = params["log_functional_every"]
         self.line_search = params["line_search"]
         self.beta = params["beta"]
+        self.max_c = params["max_c"]
 
     def __call__(self, f):
         @self.timed_function
@@ -459,7 +461,7 @@ class non_linear_cg(g.algorithms.base_iterative):
                         if hasattr(s[nu].otype, "project"):
                             s[nu] = g.project(s[nu], "defect")
                 #
-                c = self.line_search(s, x, dx, d, f.gradient, -self.step)
+                c = self.line_search(s, x, dx, d, f.gradient, -self.step, max_c = self.max_c)
                 #
                 rs = (
                     sum(g.norm2(d)) / sum([s.grid.gsites * s.otype.nfloats for s in d])
@@ -468,8 +470,6 @@ class non_linear_cg(g.algorithms.base_iterative):
                 if c is None or math.isnan(c):
                     self.log(f"non_linear_cg: rank={g.rank()} c={c} reset s. iteration {i}: f(x) = {f(x):.15e}, |df|/sqrt(dof) = {rs:e}, beta = {beta}")
                     return False
-                elif abs(c) > 4:
-                    beta = 0
                 #
                 for nu, x_mu in enumerate(dx):
                     x_mu @= g.group.compose(-self.step * c * s[nu], x_mu)
@@ -488,6 +488,10 @@ class non_linear_cg(g.algorithms.base_iterative):
                     )
                     return True
                 #
+                if abs(c) > self.max_c:
+                    d_last = None
+                    s_last = None
+                    continue
                 # keep last search direction
                 d_last = d
                 s_last = s
