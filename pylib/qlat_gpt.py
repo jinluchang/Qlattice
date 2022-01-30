@@ -459,6 +459,11 @@ class non_linear_cg(g.algorithms.base_iterative):
                             s[nu] = g.project(s[nu], "defect")
                 #
                 c = self.line_search(s, x, dx, d, f.gradient, -self.step)
+                factor = 1
+                while abs(c) < 0.2:
+                    factor *= 0.2
+                    c = self.line_search(s, x, dx, d, f.gradient, -self.step * factor)
+                c = c * factor
                 #
                 rs = (
                     sum(g.norm2(d)) / sum([s.grid.gsites * s.otype.nfloats for s in d])
