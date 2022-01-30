@@ -468,7 +468,6 @@ class non_linear_cg(g.algorithms.base_iterative):
                 if c is None or math.isnan(c):
                     self.log(f"non_linear_cg: rank={g.rank()} c={c} reset s. iteration {i}: f(x) = {f(x):.15e}, |df|/sqrt(dof) = {rs:e}, beta = {beta}")
                     return False
-                assert -1 <= c and c <= 1
                 #
                 for nu, x_mu in enumerate(dx):
                     x_mu @= g.group.compose(-self.step * c * s[nu], x_mu)
