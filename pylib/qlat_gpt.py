@@ -382,39 +382,25 @@ def line_search_quadratic(s, x, dx, dv0, df, step):
     elif sv0 < 0:
         sign = -1
     c = 0.0
-    sv_list = [ sv0, ]
-    while True:
-        dxp = []
-        for dx_mu, s_mu in g.util.to_list(dx, s):
-            mu = x.index(dx_mu)
-            xp[mu] @= g(g.group.compose(sign * step * s_mu, xp[mu]))
-            xp_mu = g.copy(xp[mu])
-            g.project(xp[mu], "defect")
-            project_diff2 = g.norm2(xp[mu] - xp_mu)
-            if not (project_diff2 < 1e-8):
-                g.message(f"line_search_quadratic: rank={g.rank()} project_diff={math.sqrt(project_diff2)} {sv_list}")
-                if c == 0.0:
-                    return math.nan
-                else:
-                    return sign * c
-            dxp.append(xp[mu])
-        dv1 = df(xp, dxp)
-        assert isinstance(dv1, list)
-        sv1 = g.group.inner_product(s, dv1)
-        sv_list.append(sv1)
-        if len(sv_list) > 10:
-            g.message(f"line_search_quadratic: rank={g.rank()} {sv_list}")
-        if math.isnan(sv1):
-            g.message(f"line_search_quadratic: rank={g.rank()} {sv_list}")
-            return math.nan
-        if sv0 > 0 and sv1 <= 0 or sv0 < 0 and sv1 >= 0:
-            c += sv0 / (sv0 - sv1)
-            return sign * c
-        elif sv0 == 0.0:
-            return sign * c
-        else:
-            c += 1
-            sv0 = sv1
+    dxp = []
+    for dx_mu, s_mu in g.util.to_list(dx, s):
+        mu = x.index(dx_mu)
+        xp[mu] @= g(g.group.compose(sign * step * s_mu, xp[mu]))
+        xp_mu = g.copy(xp[mu])
+        g.project(xp[mu], "defect")
+        project_diff2 = g.norm2(xp[mu] - xp_mu)
+        if not (project_diff2 < 1e-8):
+            return None
+        dxp.append(xp[mu])
+    dv1 = df(xp, dxp)
+    assert isinstance(dv1, list)
+    sv1 = g.group.inner_product(s, dv1)
+    if math.isnan(sv1):
+        return None
+    if sv0 > 0 and sv1 <= 0 or sv0 < 0 and sv1 >= 0:
+        return sign * sv0 / (sv0 - sv1)
+    else:
+        return None
 
 class non_linear_cg(g.algorithms.base_iterative):
 
@@ -459,36 +445,19 @@ class non_linear_cg(g.algorithms.base_iterative):
                             s[nu] = g.project(s[nu], "defect")
                 #
                 c = self.line_search(s, x, dx, d, f.gradient, -self.step)
-                factor = 1
-                while abs(c) < 0.2:
-                    factor *= 0.2
-                    c = self.line_search(s, x, dx, d, f.gradient, -self.step * factor)
-                c = c * factor
                 #
                 rs = (
                     sum(g.norm2(d)) / sum([s.grid.gsites * s.otype.nfloats for s in d])
                 ) ** 0.5
                 #
-                if math.isnan(c):
+                if c is None or math.isnan(c):
                     self.log(f"non_linear_cg: rank={g.rank()} c={c} reset s. iteration {i}: f(x) = {f(x):.15e}, |df|/sqrt(dof) = {rs:e}, beta = {beta}")
-                    s_last = None
-                    continue
+                    return False
+                assert -1 <= c and c <= 1
                 #
-                if c >= 0:
-                    sign = 1
-                else:
-                    sign = -1
-                c_acc = c
-                while abs(c_acc) > 0:
-                    if abs(c_acc) > 1:
-                        dec = sign
-                        c_acc -= dec
-                    else:
-                        dec = c_acc
-                        c_acc = 0
-                    for nu, x_mu in enumerate(dx):
-                        x_mu @= g.group.compose(-self.step * dec * s[nu], x_mu)
-                        x_mu @= g.project(x_mu, "defect")
+                for nu, x_mu in enumerate(dx):
+                    x_mu @= g.group.compose(-self.step * c * s[nu], x_mu)
+                    x_mu @= g.project(x_mu, "defect")
                 #
                 self.log_convergence(i, rs, self.eps)
                 #
