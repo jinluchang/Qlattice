@@ -42,7 +42,7 @@ def run_job(job_tag, traj):
 rup.dict_params["test-4nt8"]["trajs"] = list(range(1000, 1400, 100))
 rup.dict_params["test-4nt16"]["trajs"] = list(range(1000, 1400, 100))
 rup.dict_params["48I"]["trajs"] = list(range(500, 3000, 5))
-rup.dict_params["16IH2"]["trajs"] = list(range(500, 5000, 50))
+rup.dict_params["16IH2"]["trajs"] = list(range(500, 5000, 10))
 rup.dict_params["32IfineH"]["trajs"] = list(range(1000, 10000, 50))
 
 qg.begin_with_gpt()
