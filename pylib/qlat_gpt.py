@@ -474,9 +474,21 @@ class non_linear_cg(g.algorithms.base_iterative):
                     s_last = None
                     continue
                 #
-                for nu, x_mu in enumerate(dx):
-                    x_mu @= g.group.compose(-self.step * c * s[nu], x_mu)
-                    x_mu @= g.project(x_mu, "defect")
+                if c >= 0:
+                    sign = 1
+                else:
+                    sign = -1
+                c_acc = c
+                while abs(c_acc) > 0:
+                    if abs(c_acc) > 1:
+                        dec = sign
+                        c_acc -= dec
+                    else:
+                        dec = c_acc
+                        c_acc = 0
+                    for nu, x_mu in enumerate(dx):
+                        x_mu @= g.group.compose(-self.step * dec * s[nu], x_mu)
+                        x_mu @= g.project(x_mu, "defect")
                 #
                 self.log_convergence(i, rs, self.eps)
                 #
