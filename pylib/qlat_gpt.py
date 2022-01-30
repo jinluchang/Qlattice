@@ -391,10 +391,10 @@ def line_search_quadratic(s, x, dx, dv0, df, step):
             xp_mu = g.copy(xp[mu])
             g.project(xp[mu], "defect")
             project_diff2 = g.norm2(xp[mu] - xp_mu)
-            if not (project_diff2 < 1e-4):
+            if not (project_diff2 < 1e-8):
                 g.message(f"line_search_quadratic: rank={g.rank()} project_diff={math.sqrt(project_diff2)} {sv_list}")
                 if c == 0.0:
-                    assert False
+                    return math.nan
                 else:
                     return sign * c
             dxp.append(xp[mu])
@@ -406,10 +406,7 @@ def line_search_quadratic(s, x, dx, dv0, df, step):
             g.message(f"line_search_quadratic: rank={g.rank()} {sv_list}")
         if math.isnan(sv1):
             g.message(f"line_search_quadratic: rank={g.rank()} {sv_list}")
-            if c == 0.0:
-                assert False
-            else:
-                return sign * c
+            return math.nan
         if sv0 > 0 and sv1 <= 0 or sv0 < 0 and sv1 >= 0:
             c += sv0 / (sv0 - sv1)
             return sign * c
@@ -418,6 +415,87 @@ def line_search_quadratic(s, x, dx, dv0, df, step):
         else:
             c += 1
             sv0 = sv1
+
+class non_linear_cg(g.algorithms.base_iterative):
+
+    @g.params_convention(
+        eps = 1e-8,
+        maxiter = 1000,
+        step = 1e-3,
+        log_functional_every = 10,
+        line_search = line_search_quadratic,
+        beta = g.algorithms.optimize.fletcher_reeves,
+    )
+    def __init__(self, params):
+        super().__init__()
+        self.eps = params["eps"]
+        self.maxiter = params["maxiter"]
+        self.step = params["step"]
+        self.nf = params["log_functional_every"]
+        self.line_search = params["line_search"]
+        self.beta = params["beta"]
+
+    def __call__(self, f):
+        @self.timed_function
+        def opt(x, dx, t):
+            if self.maxiter <= 0:
+                return False
+            x = g.util.to_list(x)
+            dx = g.util.to_list(dx)
+            d_last = None
+            s_last = None
+            for i in range(self.maxiter):
+                d = f.gradient(x, dx)
+                assert isinstance(d, list)
+                #
+                if s_last is None:
+                    beta = 0
+                    s = d
+                else:
+                    beta = self.beta(d, d_last)
+                    for nu in range(len(s)):
+                        s[nu] = g(d[nu] + beta * s_last[nu])
+                        if hasattr(s[nu].otype, "project"):
+                            s[nu] = g.project(s[nu], "defect")
+                #
+                c = self.line_search(s, x, dx, d, f.gradient, -self.step)
+                #
+                rs = (
+                    sum(g.norm2(d)) / sum([s.grid.gsites * s.otype.nfloats for s in d])
+                ) ** 0.5
+                #
+                if math.isnan(c):
+                    self.log(f"non_linear_cg: rank={g.rank()} c={c} reset s. iteration {i}: f(x) = {f(x):.15e}, |df|/sqrt(dof) = {rs:e}, beta = {beta}")
+                    s_last = None
+                    continue
+                #
+                for nu, x_mu in enumerate(dx):
+                    x_mu @= g.group.compose(-self.step * c * s[nu], x_mu)
+                    x_mu @= g.project(x_mu, "defect")
+                #
+                self.log_convergence(i, rs, self.eps)
+                #
+                if i % self.nf == 0:
+                    self.log(
+                        f"iteration {i}: f(x) = {f(x):.15e}, |df|/sqrt(dof) = {rs:e}, beta = {beta}, step = {c*self.step}"
+                    )
+                #
+                if rs <= self.eps:
+                    self.log(
+                        f"converged in {i+1} iterations: f(x) = {f(x):.15e}, |df|/sqrt(dof) = {rs:e}"
+                    )
+                    return True
+                #
+                # keep last search direction
+                d_last = d
+                s_last = s
+                #
+            self.log(
+                f"NOT converged in {i+1} iterations;  |df|/sqrt(dof) = {rs:e} / {self.eps:e}"
+            )
+            return False
+            #
+        return opt
 
 @q.timer_verbose
 def gauge_fix_coulomb(
@@ -465,20 +543,19 @@ def gauge_fix_coulomb(
     #
     # optimizer
     opt = g.algorithms.optimize
-    cg = opt.non_linear_cg(
-            maxiter=maxiter_cg,
-            eps=eps,
-            step=step,
-            line_search=line_search_quadratic,
-            log_functional_every=log_every,
-            beta=opt.polak_ribiere,
-            max_abs_step = 1e2,
+    cg = non_linear_cg(
+            maxiter = maxiter_cg,
+            eps = eps,
+            step = step,
+            line_search = line_search_quadratic,
+            log_functional_every = log_every,
+            beta = opt.polak_ribiere,
             )
     gd = opt.gradient_descent(
-            maxiter=maxiter_gd,
-            eps=eps,
-            step=step_gd,
-            log_functional_every=log_every,
+            maxiter = maxiter_gd,
+            eps = eps,
+            step = step_gd,
+            log_functional_every = log_every,
             )
     #
     # Coulomb functional on each time-slice
@@ -494,9 +571,10 @@ def gauge_fix_coulomb(
             rng.element(Vt_split[t])
         else:
             Vt_split[t] @= g.identity(Vt_split[t])
-        if not gd(fa)(Vt_split[t], Vt_split[t]):
-            for i in range(maxcycle_cg):
-                Vt_split[t] = g.project(Vt_split[t], "defect")
+        for i in range(maxcycle_cg):
+            q.displayln(f"Running cg_cycle={i} local time slice {t} / {Nt_split} id_node={q.get_id_node()}")
+            Vt_split[t] = g.project(Vt_split[t], "defect")
+            if not gd(fa)(Vt_split[t], Vt_split[t]):
                 if cg(fa)(Vt_split[t], Vt_split[t]):
                     break
         q.displayln(f"Finish local time slice {t} / {Nt_split} id_node={q.get_id_node()}")
