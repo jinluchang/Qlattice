@@ -13,7 +13,15 @@ import os
 
 from jobs import *
 
-@q.timer
+load_path_list[:] = [
+        "results",
+        "../qcddata",
+        "../mk-gf-gt/results",
+        os.path.join(os.getenv("HOME"), "qcddata"),
+        os.path.join(os.getenv("HOME"), "Qlat-sample-data/mk-gf-gt/results"),
+        ]
+
+@q.timer_verbose
 def run_job(job_tag, traj):
     fns_produce = [
             f"configs/{job_tag}/ckpoint_lat.{traj}",
