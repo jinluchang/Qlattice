@@ -574,9 +574,10 @@ def gauge_fix_coulomb(
         for i in range(maxcycle_cg):
             q.displayln(f"Running cg_cycle={i} local time slice {t} / {Nt_split} id_node={q.get_id_node()}")
             Vt_split[t] = g.project(Vt_split[t], "defect")
-            if not gd(fa)(Vt_split[t], Vt_split[t]):
-                if cg(fa)(Vt_split[t], Vt_split[t]):
-                    break
+            if gd(fa)(Vt_split[t], Vt_split[t]):
+                break
+            if cg(fa)(Vt_split[t], Vt_split[t]):
+                break
         q.displayln(f"Finish local time slice {t} / {Nt_split} id_node={q.get_id_node()}")
     #
     for t in range(Nt_split):
