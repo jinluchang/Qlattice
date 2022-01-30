@@ -490,7 +490,7 @@ def gauge_fix_coulomb(
         mpi_split = [ 1, 1, 1, ],
         maxiter_gd = 10,
         maxiter_cg = 200,
-        maxcycle_cg = 50,
+        maxcycle_cg = 50000,
         log_every = 1,
         eps = 1e-12,
         step = 0.3,
