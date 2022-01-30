@@ -402,9 +402,6 @@ def line_search_quadratic(s, x, dx, dv0, df, step):
         assert isinstance(dv1, list)
         sv1 = g.group.inner_product(s, dv1)
         sv_list.append(sv1)
-        if len(sv_list) > 4:
-            g.message(f"line_search_quadratic: rank={g.rank()} {sv_list}")
-            return None
         if math.isnan(sv1):
             g.message(f"line_search_quadratic: rank={g.rank()} {sv_list}")
             return None
@@ -416,6 +413,9 @@ def line_search_quadratic(s, x, dx, dv0, df, step):
         else:
             c += 1
             sv0 = sv1
+        if c > 4:
+            g.message(f"line_search_quadratic: rank={g.rank()} {sv_list}")
+            return sign * c
 
 class non_linear_cg(g.algorithms.base_iterative):
 
@@ -468,6 +468,8 @@ class non_linear_cg(g.algorithms.base_iterative):
                 if c is None or math.isnan(c):
                     self.log(f"non_linear_cg: rank={g.rank()} c={c} reset s. iteration {i}: f(x) = {f(x):.15e}, |df|/sqrt(dof) = {rs:e}, beta = {beta}")
                     return False
+                elif abs(c) > 4:
+                    beta = 0
                 #
                 for nu, x_mu in enumerate(dx):
                     x_mu @= g.group.compose(-self.step * c * s[nu], x_mu)
