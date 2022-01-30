@@ -507,7 +507,7 @@ class non_linear_cg(g.algorithms.base_iterative):
 def gauge_fix_coulomb(
         gf,
         *,
-        mpi_split = [ 1, 1, 1, ],
+        mpi_split = None,
         maxiter_gd = 10,
         maxiter_cg = 200,
         maxcycle_cg = 50000,
@@ -541,6 +541,8 @@ def gauge_fix_coulomb(
     Usep = [g.separate(u, 3) for u in U[0:3]]
     Vt = [g.mcolor(Usep[0][0].grid) for t in range(Nt)]
     cache = {}
+    if mpi_split is None:
+        mpi_split = g.default.get_ivec("--mpi_split", [ 1, 1, 1, ], 3)
     split_grid = Usep[0][0].grid.split(mpi_split, Usep[0][0].grid.fdimensions)
     #
     g.message("Split grid")
