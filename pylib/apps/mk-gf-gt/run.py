@@ -16,9 +16,7 @@ from jobs import *
 load_path_list[:] = [
         "results",
         "../qcddata",
-        "../mk-gf-gt/results",
         os.path.join(os.getenv("HOME"), "qcddata"),
-        os.path.join(os.getenv("HOME"), "Qlat-sample-data/mk-gf-gt/results"),
         ]
 
 @q.timer_verbose

@@ -1,5 +1,6 @@
 import gpt as g
 import qlat as q
+import math
 
 import textwrap
 
@@ -368,6 +369,56 @@ def load_gauge_field(path):
     gpt_gf = g.load(path)
     return qlat_from_gpt(gpt_gf)
 
+def line_search_quadratic(s, x, dx, dv0, df, step):
+    x = g.util.to_list(x)
+    xp = g.copy(x)
+    # ansatz: f(x) = a + b*(x-c)^2, then solve for c from dv1 and dv0
+    # assume b > 0
+    sv0 = g.group.inner_product(s, dv0)
+    assert not math.isnan(sv0)
+    sign = 1
+    if sv0 == 0.0:
+        return 0.0
+    elif sv0 < 0:
+        sign = -1
+    c = 0.0
+    sv_list = [ sv0, ]
+    while True:
+        dxp = []
+        for dx_mu, s_mu in g.util.to_list(dx, s):
+            mu = x.index(dx_mu)
+            xp[mu] @= g(g.group.compose(sign * step * s_mu, xp[mu]))
+            xp_mu = g.copy(xp[mu])
+            g.project(xp[mu], "defect")
+            project_diff2 = g.norm2(xp[mu] - xp_mu)
+            if not (project_diff2 < 1e-4):
+                g.message(f"line_search_quadratic: rank={g.rank()} project_diff={math.sqrt(project_diff2)} {sv_list}")
+                if c == 0.0:
+                    assert False
+                else:
+                    return sign * c
+            dxp.append(xp[mu])
+        dv1 = df(xp, dxp)
+        assert isinstance(dv1, list)
+        sv1 = g.group.inner_product(s, dv1)
+        sv_list.append(sv1)
+        if len(sv_list) > 10:
+            g.message(f"line_search_quadratic: rank={g.rank()} {sv_list}")
+        if math.isnan(sv1):
+            g.message(f"line_search_quadratic: rank={g.rank()} {sv_list}")
+            if c == 0.0:
+                assert False
+            else:
+                return sign * c
+        if sv0 > 0 and sv1 <= 0 or sv0 < 0 and sv1 >= 0:
+            c += sv0 / (sv0 - sv1)
+            return sign * c
+        elif sv0 == 0.0:
+            return sign * c
+        else:
+            c += 1
+            sv0 = sv1
+
 @q.timer_verbose
 def gauge_fix_coulomb(
         gf,
@@ -415,19 +466,20 @@ def gauge_fix_coulomb(
     # optimizer
     opt = g.algorithms.optimize
     cg = opt.non_linear_cg(
-        maxiter=maxiter_cg,
-        eps=eps,
-        step=step,
-        line_search=opt.line_search_quadratic,
-        log_functional_every=log_every,
-        beta=opt.polak_ribiere,
-    )
+            maxiter=maxiter_cg,
+            eps=eps,
+            step=step,
+            line_search=line_search_quadratic,
+            log_functional_every=log_every,
+            beta=opt.polak_ribiere,
+            max_abs_step = 1e2,
+            )
     gd = opt.gradient_descent(
-        maxiter=maxiter_gd,
-        eps=eps,
-        step=step_gd,
-        log_functional_every=log_every,
-    )
+            maxiter=maxiter_gd,
+            eps=eps,
+            step=step_gd,
+            log_functional_every=log_every,
+            )
     #
     # Coulomb functional on each time-slice
     Nt_split = len(Vt_split)
