@@ -22,7 +22,7 @@ load_path_list[:] = [
 @q.timer_verbose
 def run_job(job_tag, traj):
     fns_produce = [
-            f"configs/{job_tag}/ckpoint_lat.{traj}",
+            (f"configs/{job_tag}/ckpoint_lat.{traj}", f"configs/{job_tag}/ckpoint_lat.IEEE64BIG.{traj}",),
             f"gauge-transform/{job_tag}/traj={traj}.field",
             ]
     fns_need = [
