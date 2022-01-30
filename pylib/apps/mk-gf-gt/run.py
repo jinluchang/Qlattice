@@ -61,7 +61,7 @@ job_tags = [
         # "test-128nt256",
         # "24D",
         # "16IH2",
-        # "32Ifine",
+        # "32IfineH",
         # "48I",
         ]
 
