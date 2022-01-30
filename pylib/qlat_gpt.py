@@ -382,25 +382,40 @@ def line_search_quadratic(s, x, dx, dv0, df, step):
     elif sv0 < 0:
         sign = -1
     c = 0.0
-    dxp = []
-    for dx_mu, s_mu in g.util.to_list(dx, s):
-        mu = x.index(dx_mu)
-        xp[mu] @= g(g.group.compose(sign * step * s_mu, xp[mu]))
-        xp_mu = g.copy(xp[mu])
-        g.project(xp[mu], "defect")
-        project_diff2 = g.norm2(xp[mu] - xp_mu)
-        if not (project_diff2 < 1e-8):
+    sv_list = [ sv0, ]
+    while True:
+        dxp = []
+        for dx_mu, s_mu in g.util.to_list(dx, s):
+            mu = x.index(dx_mu)
+            xp[mu] @= g(g.group.compose(sign * step * s_mu, xp[mu]))
+            xp_mu = g.copy(xp[mu])
+            g.project(xp[mu], "defect")
+            project_diff2 = g.norm2(xp[mu] - xp_mu)
+            if not (project_diff2 < 1e-8):
+                g.message(f"line_search_quadratic: rank={g.rank()} project_diff={math.sqrt(project_diff2)} {sv_list}")
+                if c == 0.0:
+                    return None
+                else:
+                    return sign * c
+            dxp.append(xp[mu])
+        dv1 = df(xp, dxp)
+        assert isinstance(dv1, list)
+        sv1 = g.group.inner_product(s, dv1)
+        sv_list.append(sv1)
+        if len(sv_list) > 4:
+            g.message(f"line_search_quadratic: rank={g.rank()} {sv_list}")
             return None
-        dxp.append(xp[mu])
-    dv1 = df(xp, dxp)
-    assert isinstance(dv1, list)
-    sv1 = g.group.inner_product(s, dv1)
-    if math.isnan(sv1):
-        return None
-    if sv0 > 0 and sv1 <= 0 or sv0 < 0 and sv1 >= 0:
-        return sign * sv0 / (sv0 - sv1)
-    else:
-        return None
+        if math.isnan(sv1):
+            g.message(f"line_search_quadratic: rank={g.rank()} {sv_list}")
+            return None
+        if sv0 > 0 and sv1 <= 0 or sv0 < 0 and sv1 >= 0:
+            c += sv0 / (sv0 - sv1)
+            return sign * c
+        elif sv0 == 0.0:
+            return sign * c
+        else:
+            c += 1
+            sv0 = sv1
 
 class non_linear_cg(g.algorithms.base_iterative):
 
