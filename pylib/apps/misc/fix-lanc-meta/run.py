@@ -86,7 +86,8 @@ def save_metadata(path, params, inv_type, inv_acc, *, mpi = None):
             fmeta.write("crc32[%d] = %X\n" % (i, crc32[i]))
         fmeta.close()
 
-def run_fix_eig_meta(job_tag, traj, get_gf, inv_type = 0, inv_acc = 0):
+@q.timer_verbose
+def run_eig_fix_meta(job_tag, traj, get_gf, inv_type = 0, inv_acc = 0):
     assert get_gf is not None
     gf = get_gf()
     path_eig = get_load_path(f"eig/{job_tag}/traj={traj}")
@@ -100,7 +101,8 @@ def run_fix_eig_meta(job_tag, traj, get_gf, inv_type = 0, inv_acc = 0):
     eig = basis, cevec, smoothed_evals
     save_ceig(path_eig, eig, job_tag, inv_type, inv_acc, crc32 = crc32)
 
-def run_fix_eig_reshape(job_tag, traj, get_gf, inv_type = 0, inv_acc = 0, *, mpi_original = None):
+@q.timer_verbose
+def run_eig_fix_reshape(job_tag, traj, get_gf, inv_type = 0, inv_acc = 0, *, mpi_original = None):
     assert get_gf is not None
     gf = get_gf()
     path = f"eig/{job_tag}/traj={traj}"
@@ -115,6 +117,12 @@ def run_fix_eig_reshape(job_tag, traj, get_gf, inv_type = 0, inv_acc = 0, *, mpi
     q.qrename_info(get_save_path(path + ".partial"), get_save_path(path))
     test_eig(gf, eig, job_tag, inv_type)
 
+def run_eig_fix(job_tag, traj, get_gf, inv_type = 0, inv_acc = 0):
+    if q.obtain_lock(f"locks/{job_tag}-{traj}-run-eig-fix"):
+        # run_eig_fix_meta(job_tag, traj, get_gf, inv_type, inv_acc)
+        run_eig_fix_reshape(job_tag, traj, get_gf, inv_type, inv_acc, mpi_original = rup.dict_params[job_tag]["lanc-mpi-original"])
+        q.release_lock()
+
 @q.timer_verbose
 def run_job(job_tag, traj):
     fns_produce = [
@@ -122,7 +130,7 @@ def run_job(job_tag, traj):
             f"eig/{job_tag}/traj={traj}/metadata.txt",
             ]
     fns_need = [
-            f"configs/{job_tag}/ckpoint_lat.{traj}",
+            (f"configs/{job_tag}/ckpoint_lat.{traj}", f"configs/{job_tag}/ckpoint_lat.IEEE64BIG.{traj}",),
             f"eig/{job_tag}/traj={traj}",
             ]
     if not check_job(job_tag, traj, fns_produce, fns_need):
@@ -130,8 +138,7 @@ def run_job(job_tag, traj):
     #
     get_gf = run_gf(job_tag, traj)
     #
-    # run_fix_eig_meta(job_tag, traj, get_gf)
-    run_fix_eig_reshape(job_tag, traj, get_gf, mpi_original = rup.dict_params[job_tag]["lanc-mpi-original"])
+    run_eig_fix(job_tag, traj, get_gf)
     #
     q.clean_cache()
     q.timer_display()
@@ -143,6 +150,8 @@ rup.dict_params["32Dfine"]["trajs"] = list(range(500, 5000, 10))
 rup.dict_params["test-4nt8"]["lanc-mpi-original"] = [ 1, 1, 1, 4, ]
 rup.dict_params["test-4nt16"]["lanc-mpi-original"] = [ 1, 1, 1, 4, ]
 rup.dict_params["32Dfine"]["lanc-mpi-original"] = [ 1, 1, 1, 8, ]
+
+# rup.dict_params["32Dfine"]["clanc_params"][0][0]["smoother_params"]["maxiter"] = 10
 
 qg.begin_with_gpt()
 
