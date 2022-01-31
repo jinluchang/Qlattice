@@ -589,4 +589,23 @@ void set_g_rand_double(Field<M>& f, const RngState& rs,
   }
 }
 
+template <class M>
+inline void set_checkers_double(Field<M>& f)
+{
+  TIMER("set_checkers");
+  const Geometry& geo = f.geo();
+#pragma omp parallel for
+  for (long index = 0; index < geo.local_volume(); ++index) {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Coordinate xg = geo.coordinate_g_from_l(xl);
+    const long gindex = geo.g_index_from_g_coordinate(xg);
+    Vector<M> v = f.get_elems(xl);
+    Vector<double> dv((double*)v.data(), v.data_size() / sizeof(double));
+    for (int m = 0; m < dv.size(); ++m) {
+      if((xg[0]+xg[1]+xg[2]+xg[3])%2==0) dv[m] = 1.0;
+      else dv[m] = -1.0;
+    }
+  }
+}
+
 }  // namespace qlat

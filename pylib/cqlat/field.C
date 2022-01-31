@@ -114,6 +114,14 @@ PyObject* set_g_rand_double_field_ctype(PyObject* p_field, const RngState& rs,
 }
 
 template <class M>
+PyObject* set_checkers_double_field_ctype(PyObject* p_field)
+{
+  Field<M>& f = py_convert_type_field<M>(p_field);
+  set_checkers_double(f);
+  Py_RETURN_NONE;
+}
+
+template <class M>
 PyObject* get_total_site_field_ctype(PyObject* p_field)
 {
   Field<M>& f = py_convert_type_field<M>(p_field);
@@ -333,6 +341,18 @@ EXPORT(set_g_rand_double_field, {
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, set_g_rand_double_field_ctype, ctype, p_field, rng,
                  center, sigma);
+  return p_ret;
+});
+
+EXPORT(set_checkers_double_field, {
+  using namespace qlat;
+  PyObject* p_field = NULL;
+  if (!PyArg_ParseTuple(args, "O", &p_field)) {
+    return NULL;
+  }
+  const std::string ctype = py_get_ctype(p_field);
+  PyObject* p_ret = NULL;
+  FIELD_DISPATCH(p_ret, set_checkers_double_field_ctype, ctype, p_field);
   return p_ret;
 });
 

@@ -119,6 +119,9 @@ class Field:
     def set_rand_g(self, rng, center = 0.0, sigma = 1.0):
         assert isinstance(rng, RngState)
         c.set_g_rand_double_field(self, rng, center, sigma)
+        
+    def set_checkers(self):
+        c.set_checkers_double_field(self)
 
     def qnorm(self):
         return c.qnorm_field(self)
