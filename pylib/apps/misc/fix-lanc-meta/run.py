@@ -9,20 +9,26 @@ import rbc_ukqcd as ru
 import rbc_ukqcd_params as rup
 import pprint
 
-
 import cevec_io_meta
 
 import os
-from math import prod
 
 from jobs import *
 
 load_path_list[:] = [
         "results",
         "../mk-gf-gt/results",
+        os.path.join(os.getenv("HOME"), "qcddata"),
         os.path.join(os.getenv("HOME"), "Qlat-sample-data/mk-gf-gt/results"),
         os.path.join(os.getenv("HOME"), "Qlat-sample-data/mk-lanc-no-meta/results"),
+        "/sdcc/u/jluchang/qcdqedta/luchang/data-gen/lanc/32Dfine/results-no-meta",
         ]
+
+def prod(l):
+    p = 1
+    for x in l:
+        p *= x
+    return p
 
 @q.timer_verbose
 def load_eig(path, job_tag, inv_type = 0, inv_acc = 0):
@@ -105,7 +111,6 @@ def run_fix_eig_reshape(job_tag, traj, get_gf, inv_type = 0, inv_acc = 0, *, mpi
     smoothed_evals = ru.get_smoothed_evals(basis, cevec, gf, job_tag, inv_type, inv_acc)
     q.displayln_info(smoothed_evals)
     eig = basis, cevec, smoothed_evals
-    save_ceig(path_eig, eig, job_tag, inv_type, inv_acc, crc32 = crc32)
     ru.save_ceig(get_save_path(path + ".partial"), eig, job_tag, inv_type, inv_acc);
     q.qrename_info(get_save_path(path + ".partial"), get_save_path(path))
     test_eig(gf, eig, job_tag, inv_type)
@@ -126,13 +131,18 @@ def run_job(job_tag, traj):
     get_gf = run_gf(job_tag, traj)
     #
     # run_fix_eig_meta(job_tag, traj, get_gf)
-    run_fix_eig_reshape(job_tag, traj, get_gf, mpi_original = [ 1, 1, 1, 4, ])
+    run_fix_eig_reshape(job_tag, traj, get_gf, mpi_original = rup.dict_params[job_tag]["lanc-mpi-original"])
     #
     q.clean_cache()
     q.timer_display()
 
 rup.dict_params["test-4nt8"]["trajs"] = list(range(1000, 1400, 100))
 rup.dict_params["test-4nt16"]["trajs"] = list(range(1000, 1400, 100))
+rup.dict_params["32Dfine"]["trajs"] = list(range(500, 5000, 10))
+
+rup.dict_params["test-4nt8"]["lanc-mpi-original"] = [ 1, 1, 1, 4, ]
+rup.dict_params["test-4nt16"]["lanc-mpi-original"] = [ 1, 1, 1, 4, ]
+rup.dict_params["32Dfine"]["lanc-mpi-original"] = [ 1, 1, 1, 8, ]
 
 qg.begin_with_gpt()
 
@@ -151,12 +161,6 @@ job_tags = [
         ]
 
 q.check_time_limit()
-
-job_tag = "test-4nt8"
-
-traj = 1000
-
-run_job(job_tag, traj)
 
 for job_tag in job_tags:
     q.displayln_info(pprint.pformat(rup.dict_params[job_tag]))
