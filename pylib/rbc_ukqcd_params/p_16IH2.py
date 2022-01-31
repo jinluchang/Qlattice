@@ -78,7 +78,7 @@ def mk_clanc_params(inv_type, inv_acc):
             "Nminres": 1,
             # "maxapply": 100
             }
-    smoother_params = { "eps": 1e-6, "maxiter": 10, }
+    smoother_params = { "eps": 1e-6, "maxiter": 25, }
     save_params = {"nsingle": 50, "mpi": [ 1, 1, 1, 4, ]}
     return {
             "block": block,

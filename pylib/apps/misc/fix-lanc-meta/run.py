@@ -42,7 +42,7 @@ def save_ceig(path, eig, job_tag, inv_type = 0, inv_acc = 0, *, crc32 = None):
     fmt = g.format.cevec({"nsingle": nsingle, "mpi": [ 1 ] + mpi, "max_read_blocks": 8})
     cevec_io_meta.save_meta(path, eig, fmt.params, crc32 = crc32);
 
-def save_metadata(path, params, inv_type, inv_acc):
+def save_metadata(path, params, inv_type, inv_acc, *, mpi = None):
     filename = path
     fermion_params = params["fermion_params"][inv_type][inv_acc]
     ls = ru.get_ls_from_fermion_params(fermion_params)
@@ -51,7 +51,8 @@ def save_metadata(path, params, inv_type, inv_acc):
     neigen = cparams["irl_params"]["Nstop"]
     nbasis = cparams["nbasis"]
     nsingle = cparams["save_params"]["nsingle"]
-    mpi = cparams["save_params"]["mpi"]
+    if mpi is None:
+        mpi = cparams["save_params"]["mpi"]
     block = cparams["block"]
     s = [ total_site[i] // mpi[i] for i in range(4) ] + [ ls, ]
     b = block + [ ls, ]
@@ -84,7 +85,7 @@ def run_fix_eig_meta(job_tag, traj, get_gf, inv_type = 0, inv_acc = 0):
     gf = get_gf()
     path_eig = get_load_path(f"eig/{job_tag}/traj={traj}")
     assert path_eig is not None
-    save_metadata(path_eig, rup.dict_params[job_tag], inv_type, inv_acc)
+    save_metadata(path_eig, rup.dict_params[job_tag], inv_type, inv_acc, mpi = None)
     basis, cevec, crc32 = load_eig(path_eig, job_tag, inv_type, inv_acc)
     for i in range(len(crc32)):
         crc32[i] = q.glb_sum(crc32[i])
@@ -92,6 +93,22 @@ def run_fix_eig_meta(job_tag, traj, get_gf, inv_type = 0, inv_acc = 0):
     q.displayln_info(smoothed_evals)
     eig = basis, cevec, smoothed_evals
     save_ceig(path_eig, eig, job_tag, inv_type, inv_acc, crc32 = crc32)
+
+def run_fix_eig_reshape(job_tag, traj, get_gf, inv_type = 0, inv_acc = 0, *, mpi_original = None):
+    assert get_gf is not None
+    gf = get_gf()
+    path = f"eig/{job_tag}/traj={traj}"
+    path_eig = get_load_path(path)
+    assert path_eig is not None
+    save_metadata(path_eig, rup.dict_params[job_tag], inv_type, inv_acc, mpi = mpi_original)
+    basis, cevec, crc32 = load_eig(path_eig, job_tag, inv_type, inv_acc)
+    smoothed_evals = ru.get_smoothed_evals(basis, cevec, gf, job_tag, inv_type, inv_acc)
+    q.displayln_info(smoothed_evals)
+    eig = basis, cevec, smoothed_evals
+    save_ceig(path_eig, eig, job_tag, inv_type, inv_acc, crc32 = crc32)
+    ru.save_ceig(get_save_path(path + ".partial"), eig, job_tag, inv_type, inv_acc);
+    q.qrename_info(get_save_path(path + ".partial"), get_save_path(path))
+    test_eig(gf, eig, job_tag, inv_type)
 
 @q.timer_verbose
 def run_job(job_tag, traj):
@@ -108,7 +125,8 @@ def run_job(job_tag, traj):
     #
     get_gf = run_gf(job_tag, traj)
     #
-    run_fix_eig_meta(job_tag, traj, get_gf)
+    # run_fix_eig_meta(job_tag, traj, get_gf)
+    run_fix_eig_reshape(job_tag, traj, get_gf, mpi_original = [ 1, 1, 1, 4, ])
     #
     q.clean_cache()
     q.timer_display()
@@ -129,6 +147,7 @@ job_tags = [
         # "test-96nt192",
         # "test-128nt256",
         # "24D",
+        # "32Dfine",
         ]
 
 q.check_time_limit()
