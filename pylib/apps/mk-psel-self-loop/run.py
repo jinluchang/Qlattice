@@ -11,47 +11,14 @@ import pprint
 
 import os
 
-import jobs
 from jobs import *
 
-jobs.save_path_default = "results"
-
-jobs.load_path_list = [
+load_path_list[:] = [
         "results",
         "../mk-gf-gt/results",
         "../mk-selected-data/results",
         "/sdcc/u/jluchang/qcdqedta/hlbl-data-with-cache",
         ]
-
-@q.timer_verbose
-def check_job(job_tag, traj):
-    # return True if config is finished or unavailable
-    fns_produce = [
-            f"psel-prop-rand-u1/{job_tag}/traj={traj}/checkpoint ; type=1.txt",
-            f"psel-prop-rand-u1/{job_tag}/traj={traj}/checkpoint ; type=2.txt",
-            ]
-    is_job_done = True
-    for fn in fns_produce:
-        if get_load_path(fn) is None:
-            q.displayln_info(f"check_job: {job_tag} {traj} to do as file '{fn}' does not exist.")
-            is_job_done = False
-            break
-    if is_job_done:
-        return True
-    #
-    fns_need = [
-            f"configs/{job_tag}/ckpoint_lat.{traj}",
-            f"point-selection/{job_tag}/traj={traj}.txt",
-            ]
-    for fn in fns_need:
-        if get_load_path(fn) is None:
-            q.displayln_info(f"check_job: {job_tag} {traj} unavailable as {fn} does not exist.")
-            return True
-    #
-    q.check_stop()
-    q.check_time_limit()
-    #
-    return False
 
 @q.timer_verbose
 def compute_prop_rand_u1(*, job_tag, traj, gf, inv_type, path_sp, psel):
@@ -102,8 +69,31 @@ def run_prop_rand_u1_strange(job_tag, traj, get_gf, get_psel):
         q.release_lock()
 
 @q.timer_verbose
+def run_prop_rand_u1_light(job_tag, traj, get_gf, get_psel):
+    inv_type = 0
+    if None in [ get_gf, get_psel, ]:
+        return
+    if get_load_path(f"psel-prop-rand-u1-light/{job_tag}/traj={traj}/checkpoint ; type={inv_type}.txt") is not None:
+        return
+    if q.obtain_lock(f"locks/{job_tag}-{traj}-rand-u1-light"):
+        compute_prop_rand_u1(job_tag = job_tag, traj = traj,
+                gf = get_gf(), inv_type = inv_type,
+                path_sp = f"psel-prop-rand-u1/{job_tag}/traj={traj}",
+                psel = get_psel())
+        q.release_lock()
+
+@q.timer_verbose
 def run_job(job_tag, traj):
-    if check_job(job_tag, traj):
+    fns_produce = [
+            f"psel-prop-rand-u1/{job_tag}/traj={traj}/checkpoint ; type=0.txt",
+            f"psel-prop-rand-u1/{job_tag}/traj={traj}/checkpoint ; type=1.txt",
+            f"psel-prop-rand-u1/{job_tag}/traj={traj}/checkpoint ; type=2.txt",
+            ]
+    fns_need = [
+            (f"configs/{job_tag}/ckpoint_lat.{traj}", f"configs/{job_tag}/ckpoint_lat.IEEE64BIG.{traj}",),
+            f"point-selection/{job_tag}/traj={traj}.txt",
+            ]
+    if not check_job(job_tag, traj, fns_produce, fns_need):
         return
     #
     traj_gf = traj
@@ -118,6 +108,7 @@ def run_job(job_tag, traj):
     #
     run_prop_rand_u1_charm(job_tag, traj, get_gf, get_psel)
     run_prop_rand_u1_strange(job_tag, traj, get_gf, get_psel)
+    run_prop_rand_u1_light(job_tag, traj, get_gf, get_psel)
     #
     q.clean_cache()
     q.timer_display()
@@ -136,6 +127,9 @@ rup.dict_params["test-4nt16"]["trajs"] = list(range(1000, 1400, 100))
 
 rup.dict_params["48I"]["n_rand_u1"] = 2
 rup.dict_params["64I"]["n_rand_u1"] = 2
+
+rup.dict_params["16IH2"]["n_rand_u1"] = 2
+rup.dict_params["32IfineH"]["n_rand_u1"] = 2
 
 for inv_acc in [ 0, 1, 2, ]:
     rup.dict_params["64I"]["fermion_params"][0][inv_acc]["mass"] = 0.0006203
@@ -156,6 +150,8 @@ job_tags = [
         # "64I",
         # "48I",
         # "24D",
+        # "16IH2",
+        # "32IfineH",
         ]
 
 q.check_time_limit()
