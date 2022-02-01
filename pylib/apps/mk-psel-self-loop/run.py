@@ -66,7 +66,7 @@ def run_prop_rand_u1_strange(job_tag, traj, get_gf, get_psel):
     inv_type = 1
     if None in [ get_gf, get_psel, ]:
         return
-    if get_load_path(f"psel-prop-rand-u1-strange/{job_tag}/traj={traj}/checkpoint ; type={inv_type}.txt") is not None:
+    if get_load_path(f"psel-prop-rand-u1/{job_tag}/traj={traj}/checkpoint ; type={inv_type}.txt") is not None:
         return
     if q.obtain_lock(f"locks/{job_tag}-{traj}-rand-u1-strange"):
         compute_prop_rand_u1(job_tag = job_tag, traj = traj,
@@ -80,7 +80,7 @@ def run_prop_rand_u1_light(job_tag, traj, get_gf, get_eig, get_psel):
     inv_type = 0
     if None in [ get_gf, get_eig, get_psel, ]:
         return
-    if get_load_path(f"psel-prop-rand-u1-light/{job_tag}/traj={traj}/checkpoint ; type={inv_type}.txt") is not None:
+    if get_load_path(f"psel-prop-rand-u1/{job_tag}/traj={traj}/checkpoint ; type={inv_type}.txt") is not None:
         return
     if q.obtain_lock(f"locks/{job_tag}-{traj}-rand-u1-light"):
         gf = get_gf()
