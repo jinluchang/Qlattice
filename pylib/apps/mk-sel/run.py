@@ -5,10 +5,9 @@
 import qlat_gpt as qg
 import rbc_ukqcd as ru
 
-import jobs
 from jobs import *
 
-jobs.load_path_list = [
+load_path_list[:] = [
         "results",
         "../mk-gf-gt/results",
         "../qcddata",

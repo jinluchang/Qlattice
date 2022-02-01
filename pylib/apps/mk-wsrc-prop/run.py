@@ -5,10 +5,9 @@
 import qlat_gpt as qg
 import rbc_ukqcd as ru
 
-import jobs
 from jobs import *
 
-jobs.load_path_list = [
+load_path_list[:] = [
         "results",
         "../mk-gf-gt/results",
         "../mk-sel/results",
@@ -111,8 +110,8 @@ def run_job(job_tag, traj):
     fns_produce = [
             f"wall-src-info-light/{job_tag}/traj={traj}.txt",
             f"wall-src-info-strange/{job_tag}/traj={traj}.txt",
-            f"prop-wsrc-light/{job_tag}/traj={traj}",
             f"prop-wsrc-strange/{job_tag}/traj={traj}",
+            f"prop-wsrc-light/{job_tag}/traj={traj}",
             ]
     fns_need = [
             (f"configs/{job_tag}/ckpoint_lat.{traj}", f"configs/{job_tag}/ckpoint_lat.IEEE64BIG.{traj}",),

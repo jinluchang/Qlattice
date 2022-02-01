@@ -5,18 +5,19 @@
 import qlat_gpt as qg
 import rbc_ukqcd as ru
 
-import jobs
 from jobs import *
 
-jobs.load_path_list = [
+load_path_list[:] = [
         "results",
+        "/gpfs/alpine/lgt116/proj-shared/ljin",
         "../mk-gf-gt/results",
+        "../mk-sel/results",
         "../mk-lanc/results",
         "../qcddata",
-        "/gpfs/alpine/lgt116/proj-shared/ljin",
-        os.path.join(os.getenv("HOME"), "qcddata"),
         os.path.join(os.getenv("HOME"), "Qlat-sample-data/mk-gf-gt/results"),
+        os.path.join(os.getenv("HOME"), "Qlat-sample-data/mk-sel/results"),
         os.path.join(os.getenv("HOME"), "Qlat-sample-data/mk-lanc/results"),
+        os.path.join(os.getenv("HOME"), "qcddata"),
         ]
 
 @q.timer_verbose
@@ -135,25 +136,6 @@ def compute_prop_psrc_all(gf, gt, pi, job_tag, inv_type, *,
     q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
 
 @q.timer
-def run_prop_wsrc_light(job_tag, traj, get_gf, get_eig, get_gt, get_psel, get_fsel):
-    if None in [ get_gf, get_eig, get_gt, get_psel, get_fsel, ]:
-        return
-    if get_load_path(f"prop-wsrc-light/{job_tag}/traj={traj}") is not None:
-        return
-    if q.obtain_lock(f"locks/{job_tag}-{traj}-wsrc-light"):
-        gf = get_gf()
-        gt = get_gt()
-        eig = get_eig()
-        fsel, fselc = get_fsel()
-        wi_light = mk_rand_wall_src_info(job_tag, traj, inv_type = 0)
-        save_wall_src_info(wi_light, get_save_path(f"wall-src-info-light/{job_tag}/traj={traj}.txt"));
-        compute_prop_wsrc_all(gf, gt, wi_light, job_tag, inv_type = 0,
-                path_s = f"prop-wsrc-light/{job_tag}/traj={traj}",
-                path_sp = f"psel-prop-wsrc-light/{job_tag}/traj={traj}",
-                psel = get_psel(), fsel = fsel, fselc = fselc, eig = eig)
-        q.release_lock()
-
-@q.timer
 def run_prop_psrc_light(job_tag, traj, get_gf, get_eig, get_gt, get_psel, get_fsel):
     if None in [ get_gf, get_eig, get_gt, get_psel, get_fsel, ]:
         return
@@ -171,24 +153,6 @@ def run_prop_psrc_light(job_tag, traj, get_gf, get_eig, get_gt, get_psel, get_fs
                 path_hvp = f"hvp-psrc-light/{job_tag}/traj={traj}",
                 path_sp = f"psel-prop-psrc-light/{job_tag}/traj={traj}",
                 psel = get_psel(), fsel = fsel, fselc = fselc, eig = eig)
-        q.release_lock()
-
-@q.timer
-def run_prop_wsrc_strange(job_tag, traj, get_gf, get_gt, get_psel, get_fsel):
-    if None in [ get_gf, get_gt, get_psel, get_fsel, ]:
-        return
-    if get_load_path(f"prop-wsrc-strange/{job_tag}/traj={traj}") is not None:
-        return
-    if q.obtain_lock(f"locks/{job_tag}-{traj}-wsrc-strange"):
-        gf = get_gf()
-        gt = get_gt()
-        fsel, fselc = get_fsel()
-        wi_strange = mk_rand_wall_src_info(job_tag, traj, inv_type = 1)
-        save_wall_src_info(wi_strange, get_save_path(f"wall-src-info-strange/{job_tag}/traj={traj}.txt"));
-        compute_prop_wsrc_all(gf, gt, wi_strange, job_tag, inv_type = 1,
-                path_s = f"prop-wsrc-strange/{job_tag}/traj={traj}",
-                path_sp = f"psel-prop-wsrc-strange/{job_tag}/traj={traj}",
-                psel = get_psel(), fsel = fsel, fselc = fselc, eig = None)
         q.release_lock()
 
 @q.timer
@@ -211,10 +175,47 @@ def run_prop_psrc_strange(job_tag, traj, get_gf, get_gt, get_psel, get_fsel):
         q.release_lock()
 
 @q.timer
+def run_prop_wsrc_light(job_tag, traj, get_gf, get_eig, get_gt, get_psel, get_fsel, get_wi):
+    if None in [ get_gf, get_eig, get_gt, get_psel, get_fsel, ]:
+        return
+    if get_load_path(f"prop-wsrc-light/{job_tag}/traj={traj}") is not None:
+        return
+    if q.obtain_lock(f"locks/{job_tag}-{traj}-wsrc-light"):
+        gf = get_gf()
+        gt = get_gt()
+        eig = get_eig()
+        fsel, fselc = get_fsel()
+        wi = get_wi()
+        compute_prop_wsrc_all(gf, gt, wi, job_tag, inv_type = 0,
+                path_s = f"prop-wsrc-light/{job_tag}/traj={traj}",
+                path_sp = f"psel-prop-wsrc-light/{job_tag}/traj={traj}",
+                psel = get_psel(), fsel = fsel, fselc = fselc, eig = eig)
+        q.release_lock()
+
+@q.timer
+def run_prop_wsrc_strange(job_tag, traj, get_gf, get_gt, get_psel, get_fsel, get_wi):
+    if None in [ get_gf, get_gt, get_psel, get_fsel, ]:
+        return
+    if get_load_path(f"prop-wsrc-strange/{job_tag}/traj={traj}") is not None:
+        return
+    if q.obtain_lock(f"locks/{job_tag}-{traj}-wsrc-strange"):
+        gf = get_gf()
+        gt = get_gt()
+        fsel, fselc = get_fsel()
+        wi = get_wi()
+        compute_prop_wsrc_all(gf, gt, wi, job_tag, inv_type = 1,
+                path_s = f"prop-wsrc-strange/{job_tag}/traj={traj}",
+                path_sp = f"psel-prop-wsrc-strange/{job_tag}/traj={traj}",
+                psel = get_psel(), fsel = fsel, fselc = fselc, eig = None)
+        q.release_lock()
+
+@q.timer
 def run_job(job_tag, traj):
     fns_produce = [
             f"point-selection/{job_tag}/traj={traj}.txt",
             f"field-selection/{job_tag}/traj={traj}.field",
+            f"wall-src-info-light/{job_tag}/traj={traj}.txt",
+            f"wall-src-info-strange/{job_tag}/traj={traj}.txt",
             f"prop-wsrc-strange/{job_tag}/traj={traj}",
             f"prop-wsrc-light/{job_tag}/traj={traj}",
             f"prop-psrc-strange/{job_tag}/traj={traj}",
@@ -244,13 +245,16 @@ def run_job(job_tag, traj):
     assert get_psel is not None
     assert get_fsel is not None
     #
+    get_wi = run_wi(job_tag, traj)
+    #
     def run_with_eig():
         get_eig = run_eig(job_tag, traj_gf, get_gf)
-        run_prop_wsrc_light(job_tag, traj, get_gf, get_eig, get_gt, get_psel, get_fsel)
+        run_prop_wsrc_light(job_tag, traj, get_gf, get_eig, get_gt, get_psel, get_fsel, get_wi)
         run_prop_psrc_light(job_tag, traj, get_gf, get_eig, get_gt, get_psel, get_fsel)
+    #
     run_with_eig()
     #
-    run_prop_wsrc_strange(job_tag, traj, get_gf, get_gt, get_psel, get_fsel)
+    run_prop_wsrc_strange(job_tag, traj, get_gf, get_gt, get_psel, get_fsel, get_wi)
     run_prop_psrc_strange(job_tag, traj, get_gf, get_gt, get_psel, get_fsel)
     #
     q.clean_cache()
@@ -282,6 +286,13 @@ rup.dict_params["test-4nt8"]["fermion_params"][2][2]["Ls"] = 10
 # rup.dict_params["test-4nt16"]["fermion_params"][0][2]["Ls"] = 10
 # rup.dict_params["test-4nt16"]["fermion_params"][1][2]["Ls"] = 10
 # rup.dict_params["test-4nt16"]["fermion_params"][2][2]["Ls"] = 10
+
+rup.dict_params["test-4nt8"]["n_exact_wsrc"] = 2
+rup.dict_params["48I"]["n_exact_wsrc"] = 2
+
+rup.dict_params["test-4nt16"]["prob_exact_wsrc"] = 1/8
+rup.dict_params["16IH2"]["prob_exact_wsrc"] = 1/16
+rup.dict_params["32IfineH"]["prob_exact_wsrc"] = 1/32
 
 qg.begin_with_gpt()
 

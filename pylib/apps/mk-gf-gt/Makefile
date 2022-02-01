@@ -13,12 +13,10 @@ run:
 src_path=~/Qlattice-cc/pylib/apps/mk-gf-gt
 
 diff:
-	diff $(src_path)/run.py run.py
-	diff $(src_path)/Makefile Makefile
+	for fn in * */* ; do if [ -f $(src_path)/$$fn ] ; then echo $$fn ; diff $(src_path)/$$fn $$fn ; fi ; done
 
 sync:
-	cp -v $(src_path)/run.py .
-	cp -v $(src_path)/Makefile .
+	rsync -av --exclude=".*" $(src_path)/ ./
 
 clean:
 	-rm -rf locks
