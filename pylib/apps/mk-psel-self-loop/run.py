@@ -101,6 +101,9 @@ def run_job(job_tag, traj):
     fns_need = [
             (f"configs/{job_tag}/ckpoint_lat.{traj}", f"configs/{job_tag}/ckpoint_lat.IEEE64BIG.{traj}",),
             f"point-selection/{job_tag}/traj={traj}.txt",
+            f"eig/{job_tag}/traj={traj}",
+            f"eig/{job_tag}/traj={traj}/metadata.txt",
+            f"eig/{job_tag}/traj={traj}/eigen-values.txt",
             ]
     if not check_job(job_tag, traj, fns_produce, fns_need):
         return
@@ -152,6 +155,10 @@ for inv_acc in [ 0, 1, 2, ]:
 for inv_acc in [ 0, 1, 2, ]:
     rup.dict_params["48I"]["fermion_params"][0][inv_acc]["mass"] = 0.0006979
     rup.dict_params["48I"]["fermion_params"][1][inv_acc]["mass"] = 0.03580
+
+rup.dict_params["32Dfine"]["trajs"] = list(range(500, 3000, 10))
+rup.dict_params["16IH2"]["trajs"] = list(range(500, 10000, 50))
+rup.dict_params["32IfineH"]["trajs"] = list(range(500, 10000, 50))
 
 rup.dict_params["48I"]["trajs"] = list(range(3000, 500, -5))
 rup.dict_params["64I"]["trajs"] = list(range(3000, 500, -5))
