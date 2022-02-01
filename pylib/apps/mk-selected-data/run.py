@@ -12,7 +12,9 @@ jobs.load_path_list = [
         "results",
         "../mk-gf-gt/results",
         "../mk-lanc/results",
+        "../qcddata",
         "/gpfs/alpine/lgt116/proj-shared/ljin",
+        os.path.join(os.getenv("HOME"), "qcddata"),
         os.path.join(os.getenv("HOME"), "Qlat-sample-data/mk-gf-gt/results"),
         os.path.join(os.getenv("HOME"), "Qlat-sample-data/mk-lanc/results"),
         ]
