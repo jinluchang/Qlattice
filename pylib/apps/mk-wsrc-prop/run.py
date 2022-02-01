@@ -140,6 +140,7 @@ def run_job(job_tag, traj):
     assert get_fsel is not None
     #
     get_wi = run_wi(job_tag, traj)
+    assert get_wi is not None
     #
     def run_with_eig():
         get_eig = run_eig(job_tag, traj_gf, get_gf)
