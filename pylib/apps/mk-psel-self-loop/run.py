@@ -16,12 +16,19 @@ from jobs import *
 load_path_list[:] = [
         "results",
         "../mk-gf-gt/results",
+        "../mk-sel/results",
+        "../mk-lanc/results",
+        "../qcddata",
+        os.path.join(os.getenv("HOME"), "Qlat-sample-data/mk-gf-gt/results"),
+        os.path.join(os.getenv("HOME"), "Qlat-sample-data/mk-sel/results"),
+        os.path.join(os.getenv("HOME"), "Qlat-sample-data/mk-lanc/results"),
+        os.path.join(os.getenv("HOME"), "qcddata"),
         "../mk-selected-data/results",
         "/sdcc/u/jluchang/qcdqedta/hlbl-data-with-cache",
         ]
 
 @q.timer_verbose
-def compute_prop_rand_u1(*, job_tag, traj, gf, inv_type, path_sp, psel):
+def compute_prop_rand_u1(*, job_tag, traj, gf, inv_type, path_sp, psel, eig = None):
     n_rand_u1 = rup.dict_params[job_tag]["n_rand_u1"]
     inv_acc = 2
     total_site = rup.dict_params[job_tag]["total_site"]
@@ -33,7 +40,7 @@ def compute_prop_rand_u1(*, job_tag, traj, gf, inv_type, path_sp, psel):
         if get_load_path(fn_sp) is None:
             q.check_stop()
             q.check_time_limit()
-            inv = ru.get_inv(gf, job_tag, inv_type, inv_acc)
+            inv = ru.get_inv(gf, job_tag, inv_type, inv_acc, eig = eig)
             sp_prop = q.mk_rand_u1_prop(inv, geo, psel, rs.split(idx_rand_u1))
             sp_prop.save(get_save_path(fn_sp))
     q.qtouch(get_save_path(os.path.join(path_sp, f"checkpoint ; type={inv_type}.txt")))
@@ -69,17 +76,19 @@ def run_prop_rand_u1_strange(job_tag, traj, get_gf, get_psel):
         q.release_lock()
 
 @q.timer_verbose
-def run_prop_rand_u1_light(job_tag, traj, get_gf, get_psel):
+def run_prop_rand_u1_light(job_tag, traj, get_gf, get_eig, get_psel):
     inv_type = 0
-    if None in [ get_gf, get_psel, ]:
+    if None in [ get_gf, get_eig, get_psel, ]:
         return
     if get_load_path(f"psel-prop-rand-u1-light/{job_tag}/traj={traj}/checkpoint ; type={inv_type}.txt") is not None:
         return
     if q.obtain_lock(f"locks/{job_tag}-{traj}-rand-u1-light"):
+        gf = get_gf()
+        eig = get_eig()
         compute_prop_rand_u1(job_tag = job_tag, traj = traj,
-                gf = get_gf(), inv_type = inv_type,
+                gf = gf, inv_type = inv_type,
                 path_sp = f"psel-prop-rand-u1/{job_tag}/traj={traj}",
-                psel = get_psel())
+                psel = get_psel(), eig = eig)
         q.release_lock()
 
 @q.timer_verbose
@@ -106,9 +115,14 @@ def run_job(job_tag, traj):
     #
     get_psel = run_psel(job_tag, traj)
     #
-    run_prop_rand_u1_charm(job_tag, traj, get_gf, get_psel)
+    def run_with_eig():
+        get_eig = run_eig(job_tag, traj_gf, get_gf)
+        run_prop_rand_u1_light(job_tag, traj, get_gf, get_eig, get_psel)
+    #
+    run_with_eig()
+    #
     run_prop_rand_u1_strange(job_tag, traj, get_gf, get_psel)
-    run_prop_rand_u1_light(job_tag, traj, get_gf, get_psel)
+    run_prop_rand_u1_charm(job_tag, traj, get_gf, get_psel)
     #
     q.clean_cache()
     q.timer_display()
