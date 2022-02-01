@@ -115,13 +115,14 @@ def run_gt(job_tag, traj, get_gf):
 @q.timer
 def mk_rand_wall_src_info_n_exact(job_tag, traj, inv_type):
     import rbc_ukqcd as ru
+    params = rup.dict_params[job_tag]
+    n_exact = params["n_exact_wsrc"]
     rs = q.RngState(f"seed {job_tag} {traj}").split("mk_rand_wall_src_info")
     inv_acc_s = 1
     inv_acc_e = 2
     total_site = ru.get_total_site(job_tag)
     t_size = total_site[3]
     wi_s = [ [ t, inv_type, inv_acc_s, ] for t in range(t_size) ]
-    n_exact = 2
     mask = [ False, ] * t_size
     for i in range(n_exact):
         t_e = rs.rand_gen() % t_size
