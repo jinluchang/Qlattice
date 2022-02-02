@@ -1,8 +1,8 @@
 #include "lib.h"
 
 EXPORT(gf_topology_field_clf, {
-  // NOT using 5 loop improved definition
   // Use the basic gf_clover_leaf_field
+  // NOT using 5 loop improved definition
   using namespace qlat;
   PyObject* p_topf = NULL;
   PyObject* p_gf = NULL;
