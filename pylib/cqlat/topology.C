@@ -1,5 +1,22 @@
 #include "lib.h"
 
+EXPORT(gf_topology_field_clf, {
+  // NOT using 5 loop improved definition
+  // Use the basic gf_clover_leaf_field
+  using namespace qlat;
+  PyObject* p_topf = NULL;
+  PyObject* p_gf = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_topf, &p_gf)) {
+    return NULL;
+  }
+  const GaugeField& gf = py_convert_type<GaugeField>(p_gf);
+  pqassert(py_convert_data<std::string>(p_topf, "ctype") == "double");
+  FieldM<double, 1>& topf = py_convert_type<FieldM<double, 1> >(p_topf);
+  pqassert(topf.geo().multiplicity == 1);
+  clf_topology_field(topf, gf);
+  Py_RETURN_NONE;
+});
+
 EXPORT(gf_topology_field, {
   // using the 5 loop improved definition
   // https://arxiv.org/pdf/hep-lat/9701012v2.pdf

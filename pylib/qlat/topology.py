@@ -2,6 +2,16 @@ import cqlat as c
 
 from qlat.qcd import *
 
+def gf_topology_field_clf(gf : GaugeField):
+    geo = gf.geo()
+    topf = Field("double", geo, 1)
+    c.gf_topology_field_clf(topf, gf)
+    return topf
+
+@timer
+def gf_topology_clf(gf : GaugeField):
+    return gf_topology_field_clf(gf).glb_sum()[0]
+
 def gf_topology_field(gf : GaugeField):
     geo = gf.geo()
     topf = Field("double", geo, 1)
