@@ -7,6 +7,9 @@ from qlat.utils_io import *
 
 class PointSelection:
 
+    # self.geo
+    # self.cdata
+
     def __init__(self, coordinate_list = None, geo = None):
         if None == coordinate_list:
             self.cdata = c.mk_psel()
@@ -62,6 +65,8 @@ def get_psel_tslice(total_site):
     return cache_point_selection[total_site_tuple]
 
 class FieldSelection:
+
+    # self.cdata
 
     def __init__(self, total_site = None, n_per_tslice = -1, rs = None, psel = None):
         self.cdata = c.mk_fsel()
