@@ -7,12 +7,13 @@ import numpy as np
 import qlat_gpt as qg
 
 size_node_list = [
-    [1, 1, 1, 1],
-    [1, 1, 1, 2],
-    [1, 1, 1, 4],
-    [1, 1, 1, 8],
-    [2, 2, 2, 2],
-    [2, 2, 2, 4]]
+        [1, 1, 1, 1],
+        [1, 1, 1, 2],
+        [1, 1, 1, 4],
+        [1, 1, 1, 8],
+        [2, 2, 2, 2],
+        [2, 2, 2, 4],
+        ]
 
 # q.begin(sys.argv, size_node_list)
 
@@ -46,12 +47,14 @@ t = 0
 
 def measure():
     gf_f.show_info()
+    topo_clf = q.gf_topology_clf(gf_f)
+    q.displayln_info(f"t={t} topo_clf={topo_clf}")
     topo = q.gf_topology(gf_f)
     topo_terms = q.gf_topology_terms(gf_f)
     topo_field = q.gf_topology_field(gf_f)
     t_sum = topo_field.glb_sum_tslice()
     t_sum = [ str((t, t_sum.get_elem(t).item(),)) for t in range(t_sum.n_points()) ]
-    q.displayln_info(f"t={t} topo={topo} {sum(topo_terms)}")
+    q.displayln_info(f"t={t} topo_5li={topo} {sum(topo_terms)}")
     topo_terms_str = ',\n '.join([ str(x) for x in topo_terms ])
     q.displayln_info(f"[ {topo_terms_str},\n]")
     q.displayln_info("\n".join(t_sum))
