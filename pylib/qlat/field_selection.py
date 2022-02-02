@@ -7,11 +7,12 @@ from qlat.utils_io import *
 
 class PointSelection:
 
-    def __init__(self, coordinate_list = None):
+    def __init__(self, coordinate_list = None, geo = None):
         if None == coordinate_list:
             self.cdata = c.mk_psel()
         else:
             self.cdata = c.mk_psel(coordinate_list)
+        self.geo = geo
 
     def __del__(self):
         c.free_psel(self)
@@ -19,6 +20,7 @@ class PointSelection:
     def __imatmul__(self, v1):
         assert isinstance(v1, PointSelection)
         c.set_psel(self, v1)
+        self.geo = v1.geo
         return self
 
     def copy(self):
@@ -28,19 +30,22 @@ class PointSelection:
 
     def set_rand(self, rs, total_site, n_points):
         c.set_rand_psel(self, rs, total_site, n_points)
+        self.geo = Geometry(total_site)
 
     def save(self, path):
         mk_file_dirs_info(path)
         c.save_psel(self, path)
 
-    def load(self, path):
+    def load(self, path, geo = None):
         c.load_psel(self, path)
+        self.geo = geo
 
     def to_list(self):
         return c.mk_list_psel(self)
 
-    def from_list(self, coordinate_list):
+    def from_list(self, coordinate_list, geo = None):
         c.set_list_psel(self, coordinate_list)
+        self.geo = geo
         return self
 
 cache_point_selection = mk_cache("point_selection")
@@ -52,6 +57,7 @@ def get_psel_tslice(total_site):
     if total_site_tuple not in cache_point_selection:
         psel = PointSelection()
         c.set_tslice_psel(psel, total_site)
+        psel.geo = Geometry(total_site)
         cache_point_selection[total_site_tuple] = psel
     return cache_point_selection[total_site_tuple]
 

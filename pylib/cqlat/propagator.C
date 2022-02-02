@@ -38,20 +38,20 @@ EXPORT(set_rand_u1_src_psel, {
   using namespace qlat;
   PyObject* p_prop = NULL;
   PyObject* p_fu1 = NULL;
-  PyObject* p_geo = NULL;
   PyObject* p_psel = NULL;
+  PyObject* p_geo = NULL;
   PyObject* p_rs = NULL;
-  if (!PyArg_ParseTuple(args, "OOOOO", &p_prop, &p_fu1, &p_geo, &p_psel, &p_rs)) {
+  if (!PyArg_ParseTuple(args, "OOOOO", &p_prop, &p_fu1, &p_psel, &p_geo, &p_rs)) {
     return NULL;
   }
   Propagator4d& prop = py_convert_type<Propagator4d>(p_prop);
   prop.init();
   FieldM<Complex, 1>& fu1 = py_convert_type_field<Complex, 1>(p_fu1);
   fu1.init();
-  const Geometry& geo = py_convert_type<Geometry>(p_geo);
   const PointSelection& psel = py_convert_type<PointSelection>(p_psel);
+  const Geometry& geo = py_convert_type<Geometry>(p_geo);
   const RngState& rs = py_convert_type<RngState>(p_rs);
-  set_rand_u1_src_psel(prop, fu1, geo, psel, rs);
+  set_rand_u1_src_psel(prop, fu1, psel, geo, rs);
   Py_RETURN_NONE;
 });
 
@@ -71,6 +71,44 @@ EXPORT(set_rand_u1_sol_psel, {
   pqassert(fu1.geo().multiplicity == 1);
   const PointSelection& psel = py_convert_type<PointSelection>(p_psel);
   set_rand_u1_sol_psel(sp_prop, prop, fu1, psel);
+  Py_RETURN_NONE;
+});
+
+EXPORT(set_rand_u1_src_fsel, {
+  using namespace qlat;
+  PyObject* p_prop = NULL;
+  PyObject* p_fu1 = NULL;
+  PyObject* p_fsel = NULL;
+  PyObject* p_rs = NULL;
+  if (!PyArg_ParseTuple(args, "OOOOO", &p_prop, &p_fu1, &p_fsel, &p_rs)) {
+    return NULL;
+  }
+  Propagator4d& prop = py_convert_type<Propagator4d>(p_prop);
+  prop.init();
+  FieldM<Complex, 1>& fu1 = py_convert_type_field<Complex, 1>(p_fu1);
+  fu1.init();
+  const FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
+  const RngState& rs = py_convert_type<RngState>(p_rs);
+  set_rand_u1_src_fsel(prop, fu1, fsel, rs);
+  Py_RETURN_NONE;
+});
+
+EXPORT(set_rand_u1_sol_fsel, {
+  using namespace qlat;
+  PyObject* p_sf_prop = NULL;
+  PyObject* p_prop = NULL;
+  PyObject* p_fu1 = NULL;
+  PyObject* p_fsel = NULL;
+  if (!PyArg_ParseTuple(args, "OOOO", &p_sf_prop, &p_prop, &p_fu1, &p_fsel)) {
+    return NULL;
+  }
+  SelectedField<WilsonMatrix>& sf_prop =
+      py_convert_type<SelectedField<WilsonMatrix> >(p_sf_prop);
+  const Propagator4d& prop = py_convert_type<Propagator4d>(p_prop);
+  const FieldM<Complex, 1>& fu1 = py_convert_type_field<Complex, 1>(p_fu1);
+  pqassert(fu1.geo().multiplicity == 1);
+  const FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
+  set_rand_u1_sol_fsel(sf_prop, prop, fu1, fsel);
   Py_RETURN_NONE;
 });
 

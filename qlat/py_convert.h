@@ -302,6 +302,7 @@ T& py_convert_type(PyObject* in)
 // py_convert_type<CommPlan>(in);
 // specifications:
 // py_convert_type<Propagator4d>(in);
+// py_convert_type<GaugeField>(in);
 // py_convert_type<CommMarks>(in);
 {
   PyObject* p_cdata = PyObject_GetAttrString(in, "cdata");

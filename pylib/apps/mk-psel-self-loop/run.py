@@ -41,7 +41,7 @@ def compute_prop_rand_u1(*, job_tag, traj, gf, inv_type, path_sp, psel, eig = No
             q.check_stop()
             q.check_time_limit()
             inv = ru.get_inv(gf, job_tag, inv_type, inv_acc, eig = eig)
-            sp_prop = q.mk_rand_u1_prop(inv, geo, psel, rs.split(idx_rand_u1))
+            sp_prop = q.mk_rand_u1_prop(inv, psel, rs.split(idx_rand_u1))
             sp_prop.save(get_save_path(fn_sp))
     q.qtouch(get_save_path(os.path.join(path_sp, f"checkpoint ; type={inv_type}.txt")))
 
