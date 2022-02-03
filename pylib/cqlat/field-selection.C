@@ -187,12 +187,13 @@ EXPORT(add_psel_fsel, {
   using namespace qlat;
   PyObject* p_fsel = NULL;
   PyObject* p_psel = NULL;
-  if (!PyArg_ParseTuple(args, "OO", &p_fsel, &p_psel)) {
+  long rank_psel = 1024L * 1024L * 1024L * 1024L * 1024L;
+  if (!PyArg_ParseTuple(args, "OO|l", &p_fsel, &p_psel, &rank_psel)) {
     return NULL;
   }
   FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
   PointSelection& psel = py_convert_type<PointSelection>(p_psel);
-  add_field_selection(fsel.f_rank, psel);
+  add_field_selection(fsel.f_rank, psel, rank_psel);
   Py_RETURN_NONE;
 });
 

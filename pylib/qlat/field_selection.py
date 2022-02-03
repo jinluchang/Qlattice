@@ -104,13 +104,15 @@ class FieldSelection:
         self.update()
         self.update(n_per_tslice)
 
-    def add_psel(self, psel):
-        c.add_psel_fsel(self, psel)
+    def add_psel(self, psel, rank_psel = 1024 * 1024 * 1024 * 1024 * 1024):
+        # Add psel points to the selection, with the rank specified as rank_psel.
+        # If the point is already selected with lower rank, the rank is unchanged.
+        c.add_psel_fsel(self, psel, rank_psel)
         self.update()
 
     def update(self, n_per_tslice = -1):
         # if n_per_tslice < 0: only update various indices
-        # if n_per_tslice >= 0: only update parameters
+        # if n_per_tslice >= 0: only update parameters (n_per_tslice and prob)
         c.update_fsel(self, n_per_tslice)
 
     def save(self, path):

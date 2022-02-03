@@ -15,7 +15,7 @@ dict_params["load_config_params"] = { "twist_boundary_at_boundary":[ 0.0, 0.0, 0
 def mk_fermion_params(inv_type, inv_acc):
     params = {}
     params["M5"] = 1.8
-    params["boundary_phases"] = [1.0, 1.0, 1.0, 1.0] # twist boundary after loading configuration
+    params["boundary_phases"] = [ 1.0, 1.0, 1.0, 1.0, ] # twist boundary after loading configuration
     params["b"] = 2.5
     params["c"] = 1.5
     if inv_type == 0:

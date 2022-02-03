@@ -10,6 +10,7 @@ inline void add_field_selection(FieldM<int64_t, 1>& f_rank,
                                 const PointSelection& psel,
                                 const long rank_psel = 1024L * 1024L * 1024L *
                                                        1024L * 1024L)
+// add psel points to f_rank. (only lower rank if already selected)
 {
   TIMER_VERBOSE("add_field_selection(psel)");
   const Geometry& geo = f_rank.geo();
@@ -18,7 +19,7 @@ inline void add_field_selection(FieldM<int64_t, 1>& f_rank,
     const Coordinate xl = geo.coordinate_l_from_g(psel[i]);
     if (geo.is_local(xl)) {
       int64_t& rank = f_rank.get_elem(xl);
-      if (rank < 0) {
+      if (rank < 0 or rank > rank_psel) {
         rank = rank_psel;
       }
     }
@@ -56,35 +57,53 @@ inline void mk_field_selection(FieldM<int64_t, 1>& f_rank,
   add_field_selection(f_rank, xgs, rank_xgs);
 }
 
+inline void select_rank_range(FieldM<int64_t, 1>& f_rank, const long rank_start = 0, const long rank_stop = -1)
+// keep rank info if rank_start <= rank and (rank < rank_stop or rank_stop == -1)
+// otherwise rank = -1
+// default parameter does not change selection
+// but will erase the rank information for points not selected (rank = -1)
+{
+  TIMER_VERBOSE("select_rank_range");
+  const Geometry& geo = f_rank.geo();
+  qassert(geo.is_only_local());
+  const Coordinate total_site = geo.total_site();
+  qacc_for(index, geo.local_volume(), {
+    int64_t& rank = f_rank.get_elem(index);
+    if (not(rank_start <= rank and (rank < rank_stop or rank_stop == -1))) {
+      rank = -1;
+    }
+  });
+}
+
 inline void set_n_per_tslice(FieldM<int64_t, 1>& f_rank,
-                             const long n_per_tslice_)
-// will erase the rank information for points not selected
+                             const long n_per_tslice)
+// will erase the rank information for points not selected (rank = -1)
 //
-// if n_per_tslice_ == -1 then n_per_tslice = spatial_vol
+// if n_per_tslice == -1 then all points are selected regardless of rank
+// (if a point was not selected before (rank < 0), then rank will be set to be
+// rank = spatial_vol).
 //
-// if n_per_tslice == spatial_vol than all points are selected regardless
-// of rank.
-//
-// n_per_tslice is not enforced but only serve as an limit for f_rank
+// otherwise: n_per_tslice is not enforced but only serve as an limit for f_rank
 //
 // 0 <= rank < n_per_tslice
+//
+// if point is not selected, rank = -1
 {
   TIMER_VERBOSE("set_n_per_tslice");
   const Geometry& geo = f_rank.geo();
   qassert(geo.is_only_local());
   const Coordinate total_site = geo.total_site();
   const long spatial_vol = total_site[0] * total_site[1] * total_site[2];
-  qassert(n_per_tslice_ == -1 or
-          (0 <= n_per_tslice_ and n_per_tslice_ <= spatial_vol));
-  const long n_per_tslice = n_per_tslice_ == -1 ? spatial_vol : n_per_tslice_;
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  qassert(n_per_tslice == -1 or
+          (0 <= n_per_tslice and n_per_tslice <= spatial_vol));
+  qacc_for(index, geo.local_volume(), {
     int64_t& rank = f_rank.get_elem(index);
-    if (n_per_tslice == spatial_vol and rank < 0) {
-      rank = spatial_vol - 1;
+    if (n_per_tslice == -1 and rank < 0) {
+      rank = spatial_vol;
     } else if (not(0 <= rank and rank < n_per_tslice)) {
       rank = -1;
     }
-  }
+  });
 }
 
 struct FieldSelection {
@@ -168,8 +187,8 @@ inline void set_field_selection(FieldSelection& fsel,
                                 const FieldM<int64_t, 1>& f_rank,
                                 const long n_per_tslice_ = 0,
                                 const bool is_limit_on_rank = false)
-// call set_n_per_tslice if is_limit_on_rank=true
-// otherwise will strictly follow f_rank without constaint of n_per_tslice
+// call set_n_per_tslice if is_limit_on_rank = true
+// otherwise will strictly follow f_rank without constraint of n_per_tslice
 {
   TIMER_VERBOSE("set_field_selection(fsel,f_rank,n_per_tslice)");
   fsel.init();
@@ -432,6 +451,7 @@ void set_selected_field(SelectedField<M>& sf, const Field<M>& f,
 template <class M>
 void set_selected_field(SelectedField<M>& sf, const SelectedField<M>& sf0,
                         const FieldSelection& fsel, const FieldSelection& fsel0)
+// Does not clear sf's original value if not assigned
 {
   TIMER("set_selected_field(sf,sf0,fsel,fsel0)");
   qassert(sf0.geo().is_only_local());
@@ -446,11 +466,12 @@ void set_selected_field(SelectedField<M>& sf, const SelectedField<M>& sf0,
   for (long idx = 0; idx < fsel.n_elems; ++idx) {
     const long index = fsel.indices[idx];
     const long idx0 = fsel0.f_local_idx.get_elem(index);
-    Vector<M> sfv = sf.get_elems(idx);
-    qassert(idx0 >= 0);
-    const Vector<M> fv = sf0.get_elems_const(idx0);
-    for (int m = 0; m < multiplicity; ++m) {
-      sfv[m] = fv[m];
+    if (idx0 >= 0) {
+      Vector<M> sfv = sf.get_elems(idx);
+      const Vector<M> fv = sf0.get_elems_const(idx0);
+      for (int m = 0; m < multiplicity; ++m) {
+        sfv[m] = fv[m];
+      }
     }
   }
 }
@@ -487,7 +508,7 @@ void set_field_selected(Field<M>& f, const SelectedField<M>& sf,
                         const FieldSelection& fsel,
                         const bool is_keeping_data = false)
 {
-  TIMER("set_field_selected");
+  TIMER("set_field_selected(f,sf,fsel)");
   qassert(sf.geo().is_only_local());
   qassert(fsel.f_local_idx.geo().is_only_local());
   qassert(geo_remult(sf.geo()) == fsel.f_local_idx.geo());

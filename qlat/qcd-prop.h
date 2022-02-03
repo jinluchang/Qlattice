@@ -337,14 +337,13 @@ inline void set_rand_u1_src_fsel(Propagator4d& prop, FieldM<Complex, 1>& fu1,
     const long index = fsel.indices[idx];
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
-    if (geo.is_local(xl)) {
-      const long gindex = index_from_coordinate(xg, total_site);
-      RngState rst = rs.newtype(gindex);
-      const double phase = u_rand_gen(rst, PI, -PI);
-      const Complex u1 = std::polar(1.0, phase);
-      set_unit(prop.get_elem(xl), u1);
-      fu1.get_elem(xl) = u1;
-    }
+    qassert(geo.is_local(xl));
+    const long gindex = index_from_coordinate(xg, total_site);
+    RngState rst = rs.newtype(gindex);
+    const double phase = u_rand_gen(rst, PI, -PI);
+    const Complex u1 = std::polar(1.0, phase);
+    set_unit(prop.get_elem(xl), u1);
+    fu1.get_elem(xl) = u1;
   });
 }
 
