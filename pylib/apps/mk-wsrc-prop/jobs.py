@@ -224,6 +224,7 @@ def mk_rand_psel(job_tag, traj):
     n_points = get_n_points(job_tag, traj, 0, 0)
     psel = q.PointSelection()
     psel.set_rand(rs, total_site, n_points)
+    psel.geo = q.Geometry(total_site)
     return psel
 
 @q.timer_verbose
@@ -240,10 +241,13 @@ def run_psel(job_tag, traj):
             return None
     @q.timer_verbose
     def load_psel():
+        import rbc_ukqcd as ru
         path_psel = get_load_path(tfn)
         assert path_psel is not None
         psel = q.PointSelection()
         psel.load(path_psel)
+        total_site = ru.get_total_site(job_tag)
+        psel.geo = q.Geometry(total_site)
         return psel
     return q.lazy_call(load_psel)
 
