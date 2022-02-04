@@ -117,21 +117,29 @@ class FieldSelection:
 
     def select_rank_range(self, rank_start = 0, rank_stop = -1):
         # return new fsel with selected points that
-        # rank_start <= rank < rank_stop (rank_stop = -1 implies unlimited)
+        # rank_start <= rank and (rank < rank_stop or rank_stop == -1)
+        # Does NOT change the n_per_tslice parameter for the new fsel
         fsel = FieldSelection()
         c.select_rank_range_fsel(fsel, self, rank_start, rank_stop)
         fsel.update()
-        n_per_tslice = self.n_per_tslice()
-        if rank_stop == -1 or rank_stop >= n_per_tslice:
-            if rank_start <= n_per_tslice:
-                fsel.update(n_per_tslice - rank_start)
-            else:
-                fsel.update(0)
-        elif rank_start <= rank_stop:
-            fsel.update(rank_stop - rank_start)
-        else:
-            fsel.update(0)
+        fsel.update(self.n_per_tslice())
         return fsel
+
+    def select_t_range(self, rank_start = 0, rank_stop = -1):
+        # return new fsel with selected points that
+        # t_start <= t and (t < t_stop or t_stop == -1)
+        # rank_start <= rank < rank_stop (rank_stop = -1 implies unlimited)
+        # Does NOT change the n_per_tslice parameter for the new fsel
+        fsel = FieldSelection()
+        c.select_rank_range_fsel(fsel, self, rank_start, rank_stop)
+        fsel.update()
+        fsel.update(self.n_per_tslice())
+        return fsel
+
+    def to_psel(self):
+        psel = PointSelection(None, self.geo())
+        c.set_psel_fsel(psel, self)
+        return psel
 
     def save(self, path):
         mk_file_dirs_info(path)
