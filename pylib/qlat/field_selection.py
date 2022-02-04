@@ -115,6 +115,24 @@ class FieldSelection:
         # if n_per_tslice >= 0: only update parameters (n_per_tslice and prob)
         c.update_fsel(self, n_per_tslice)
 
+    def select_rank_range(self, rank_start = 0, rank_stop = -1):
+        # return new fsel with selected points that
+        # rank_start <= rank < rank_stop (rank_stop = -1 implies unlimited)
+        fsel = FieldSelection()
+        c.select_rank_range_fsel(fsel, self, rank_start, rank_stop)
+        fsel.update()
+        n_per_tslice = self.n_per_tslice()
+        if rank_stop == -1 or rank_stop >= n_per_tslice:
+            if rank_start <= n_per_tslice:
+                fsel.update(n_per_tslice - rank_start)
+            else:
+                fsel.update(0)
+        elif rank_start <= rank_stop:
+            fsel.update(rank_stop - rank_start)
+        else:
+            fsel.update(0)
+        return fsel
+
     def save(self, path):
         mk_file_dirs_info(path)
         return c.save_fsel(self, path)

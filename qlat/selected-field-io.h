@@ -120,6 +120,7 @@ inline void mk_grid_field_selection(FieldM<int64_t, 1>& f_rank,
 inline void mk_field_selection(FieldM<int64_t, 1>& f_rank,
                                const Coordinate& total_site,
                                const long n_per_tslice, const RngState& rs)
+// interface function
 // not selected points has value = -1;
 // random select n_per_tslice points based on ranks from mk_grid_field_selection
 {

@@ -10,6 +10,7 @@ inline void add_field_selection(FieldM<int64_t, 1>& f_rank,
                                 const PointSelection& psel,
                                 const long rank_psel = 1024L * 1024L * 1024L *
                                                        1024L * 1024L)
+// interface function
 // add psel points to f_rank. (only lower rank if already selected)
 {
   TIMER_VERBOSE("add_field_selection(psel)");
@@ -29,6 +30,7 @@ inline void add_field_selection(FieldM<int64_t, 1>& f_rank,
 inline void mk_field_selection(FieldM<int64_t, 1>& f_rank,
                                const Coordinate& total_site,
                                const int64_t val = 0)
+// interface function
 // select everything with val
 // default val = 0 ; means selection everything
 // val = -1 deselection everything
@@ -136,6 +138,7 @@ struct FieldSelection {
 };
 
 inline void update_field_selection(FieldSelection& fsel)
+// interface function
 // update fsel based only on f_rank
 // do not touch n_per_tslice and prob at all
 {
@@ -171,6 +174,7 @@ inline void update_field_selection(FieldSelection& fsel)
 
 inline void update_field_selection(FieldSelection& fsel,
                                    const long n_per_tslice_)
+// interface function
 // only adjust parameter, do not change contents
 {
   const Geometry& geo = fsel.f_rank.geo();

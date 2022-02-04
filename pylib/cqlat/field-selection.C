@@ -215,6 +215,23 @@ EXPORT(update_fsel, {
   Py_RETURN_NONE;
 });
 
+EXPORT(select_rank_range_fsel, {
+  using namespace qlat;
+  PyObject* p_fsel = NULL;
+  PyObject* p_fsel0 = NULL;
+  long rank_start = 0;
+  long rank_stop = -1;
+  if (!PyArg_ParseTuple(args, "OO|ll", &p_fsel, &p_fsel0, &rank_start,
+                        &rank_stop)) {
+    return NULL;
+  }
+  FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
+  const FieldSelection& fsel0 = py_convert_type<FieldSelection>(p_fsel0);
+  fsel.f_rank = fsel0.f_rank;
+  select_rank_range(fsel.f_rank, rank_start, rank_stop);
+  Py_RETURN_NONE;
+});
+
 EXPORT(set_geo_fsel, {
   using namespace qlat;
   PyObject* p_geo = NULL;
