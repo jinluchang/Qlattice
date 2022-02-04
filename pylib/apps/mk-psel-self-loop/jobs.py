@@ -224,6 +224,7 @@ def mk_rand_psel(job_tag, traj):
     n_points = get_n_points(job_tag, traj, 0, 0)
     psel = q.PointSelection()
     psel.set_rand(rs, total_site, n_points)
+    psel.geo = q.Geometry(total_site)
     return psel
 
 @q.timer_verbose
