@@ -29,7 +29,8 @@ namespace qlat
 
 struct BitSet {
   std::vector<unsigned char> bytes;
-  size_t N, cN;
+  size_t N; // number of uncompressed elements
+  size_t cN; // number of compressed elements
   //
   BitSet()
   {
@@ -72,6 +73,44 @@ struct BitSet {
   {
     qassert(idx < N);
     return (bytes[idx / 8] & (1 << (idx % 8))) != 0;
+  }
+  //
+  void set_fsel(FieldSelection& fsel, const int64_t rank = 0)
+  {
+    FieldM<int64_t, 1>& f_rank = fsel.f_rank;
+    const Geometry& geo = f_rank.geo();
+    qassert(geo.local_volume() == N);
+    qassert(geo.is_only_local());
+    qassert(geo.multiplicity == 1);
+    for (size_t i = 0; i < N; i++) {
+      if (get(i)) {
+        f_rank.get_elem(i) == rank;
+      } else {
+        f_rank.get_elem(i) == -1;
+      }
+    }
+  }
+  bool check_fsel(const FieldSelection& fsel)
+  {
+    const FieldM<int64_t, 1>& f_rank = fsel.f_rank;
+    const Geometry& geo = f_rank.geo();
+    qassert(geo.is_only_local());
+    qassert(geo.multiplicity == 1);
+    if (not(geo.local_volume() == N)) {
+      return false;
+    }
+    for (size_t i = 0; i < N; i++) {
+      if (get(i)) {
+        if (not(f_rank.get_elem(i) >= 0)) {
+          return false;
+        }
+      } else {
+        if (not(f_rank.get_elem(i) == -1)) {
+          return false;
+        }
+      }
+    }
+    return true;
   }
   //
   void compress(const void* src, void* dst, size_t block_size) const
@@ -742,7 +781,7 @@ long write(FieldsWriter& fw, const std::string& fn, const Field<M>& field,
 template <class M>
 long write(FieldsWriter& fw, const std::string& fn, const SelectedField<M>& sf,
            const BitSet& bs)
-// field already have endianess converted correctly
+// field already have endianness converted correctly
 {
   TIMER_FLOPS("write(fw,fn,sf,bs)");
   const Geometry& geo = sf.geo();
@@ -815,15 +854,18 @@ void set_field_from_data_fsel(SelectedField<M>& sf,
 {
   TIMER("set_field_from_data_fsel");
   const Geometry& geo = fsel.f_rank.geo();
+  const Coordinate& node_site = geo.node_site;
+  const long local_volume = product(node_site);
+  const size_t N = local_volume;
+  const size_t nbytes = 1 + (N - 1) / 8;
+  BitSet bs(N);
+  bs.set(&data[0], nbytes);
+  qassert(bs.check_fsel(fsel));
   const long n_elems = fsel.n_elems;
   if (n_elems == 0) {
     sf.init();
     return;
   }
-  const Coordinate& node_site = geo.node_site;
-  const long local_volume = product(node_site);
-  const size_t N = local_volume;
-  const size_t nbytes = 1 + (N - 1) / 8;
   const size_t sz_compressed = data.size() - nbytes;
   qassert(sz_compressed % n_elems == 0);
   const size_t sz_block = sz_compressed / n_elems;

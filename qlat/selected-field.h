@@ -133,7 +133,7 @@ struct FieldSelection {
   FieldM<int64_t, 1>
       f_rank;  // rank when the points being selected (-1 if not selected)
   //
-  long n_per_tslice;  // num points per time slice (not enfored and should work
+  long n_per_tslice;  // num points per time slice (not enforced and should work
                       // properly if not true)
   double prob;        // (double)n_per_tslice / (double)spatial_vol
   //
