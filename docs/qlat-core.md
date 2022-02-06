@@ -183,6 +183,16 @@ struct SelectedField {
 ```c++
 template <class M>
 qacc Vector<M> get_data(const Field<M>& f);
+
+template <class M>
+Vector<M> get_data(const SelectedField<M>& sf);
+```
+
+### Set zero
+
+```c++
+template <class M>
+void set_zero(SelectedField<M>& sf);
 ```
 
 ### Qnorm
@@ -190,6 +200,9 @@ qacc Vector<M> get_data(const Field<M>& f);
 ```c++
 template <class M>
 double qnorm(const Field<M>& f);
+
+template <class M>
+double qnorm(const SelectedField<M>& sf);
 ```
 
 ```c++
@@ -202,6 +215,132 @@ double qnorm_double(const Field<M>& f1, const Field<M>& f2);
 ```c++
 template <class M>
 void qswap(Field<M>& f1, Field<M>& f2);
+
+template <class M>
+void qswap(SelectedField<M>& f1, SelectedField<M>& f2);
+```
+
+### Field Selection
+
+```c++
+inline void add_field_selection(FieldM<int64_t, 1>& f_rank,
+                                const PointSelection& psel,
+                                const long rank_psel = 1024L * 1024L * 1024L *
+                                                       1024L * 1024L);
+// add psel points to f_rank. (only lower rank if already selected)
+
+inline void mk_field_selection(FieldM<int64_t, 1>& f_rank,
+                               const Coordinate& total_site,
+                               const int64_t val = 0);
+// select everything with val
+// default val = 0 ; means selection everything
+// val = -1 deselection everything
+
+inline void mk_field_selection(FieldM<int64_t, 1>& f_rank,
+                               const Coordinate& total_site,
+                               const std::vector<Coordinate>& xgs,
+                               const long rank_xgs = 1024L * 1024L * 1024L *
+                                                     1024L * 1024L);
+
+inline void select_rank_range(FieldM<int64_t, 1>& f_rank,
+                              const long rank_start = 0,
+                              const long rank_stop = -1);
+// keep rank info if rank_start <= rank and (rank < rank_stop or rank_stop == -1)
+// otherwise rank = -1
+// default parameter does not change selection
+// but will erase the rank information for points not selected (rank = -1)
+
+inline void select_t_range(FieldM<int64_t, 1>& f_rank, const long t_start = 0,
+                           const long t_stop = -1);
+// keep rank info if t_start <= t and (t < t_stop or t_stop == -1)
+// otherwise rank = -1
+// default parameter does not change selection
+// but will erase the rank information for points not selected (rank = -1)
+
+inline void set_n_per_tslice(FieldM<int64_t, 1>& f_rank,
+                             const long n_per_tslice);
+// will erase the rank information for points not selected (rank = -1)
+//
+// if n_per_tslice == -1 then all points are selected regardless of rank
+// (if a point was not selected before (rank < 0), then rank will be set to be
+// rank = spatial_vol).
+//
+// otherwise: n_per_tslice is not enforced but only serve as an limit for f_rank
+//
+// 0 <= rank < n_per_tslice
+//
+// if point is not selected, rank = -1
+
+inline void update_field_selection(FieldSelection& fsel);
+// update fsel based only on f_rank
+// do not touch n_per_tslice and prob at all
+
+inline void update_field_selection(FieldSelection& fsel,
+                                   const long n_per_tslice_);
+// only adjust parameter, do not change contents
+
+inline void set_field_selection(FieldSelection& fsel,
+                                const FieldM<int64_t, 1>& f_rank,
+                                const long n_per_tslice_ = 0,
+                                const bool is_limit_on_rank = false);
+// call set_n_per_tslice if is_limit_on_rank = true
+// otherwise will strictly follow f_rank without constraint of n_per_tslice
+
+inline void set_field_selection(FieldSelection& fsel,
+                                const Coordinate& total_site);
+// select everything with rank = 0
+
+inline PointSelection psel_from_fsel(const FieldSelection& fsel);
+```
+
+### Selected Field
+
+```c++
+template <class M>
+bool is_consistent(const SelectedField<M>& sf, const FieldSelection& fsel);
+
+inline void set_selected_gindex(SelectedField<long>& sfgi,
+                                const FieldSelection& fsel);
+
+template <class M>
+void only_keep_selected_points(Field<M>& f, const FieldSelection& fsel);
+
+template <class M>
+void set_selected_field(SelectedField<M>& sf, const Field<M>& f,
+                        const FieldSelection& fsel);
+
+template <class M>
+void set_selected_field(SelectedField<M>& sf, const SelectedField<M>& sf0,
+                        const FieldSelection& fsel, const FieldSelection& fsel0);
+// Does not clear sf's original value if not assigned
+
+template <class M>
+void set_selected_points(SelectedPoints<M>& sp, const SelectedField<M>& sf,
+                         const PointSelection& psel, const FieldSelection& fsel);
+
+template <class M>
+void set_field_selected(Field<M>& f, const SelectedField<M>& sf,
+                        const FieldSelection& fsel,
+                        const bool is_keeping_data = false);
+
+template <class M>
+void acc_field(Field<M>& f, const Complex coef, const SelectedField<M>& sf,
+               const FieldSelection& fsel);
+
+template <class M>
+std::vector<M> field_sum_tslice(const SelectedField<M>& sf,
+                                const FieldSelection& fsel);
+// length = t_size * multiplicity
+
+template <class M>
+void field_glb_sum_tslice_double(SelectedPoints<M>& sp,
+                                 const SelectedField<M>& sf,
+                                 const FieldSelection& fsel);
+
+template <class M>
+void field_glb_sum_tslice_long(SelectedPoints<M>& sp,
+                               const SelectedField<M>& sf,
+                               const FieldSelection& fsel);
 ```
 
 ### Fields IO

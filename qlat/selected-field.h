@@ -59,7 +59,9 @@ inline void mk_field_selection(FieldM<int64_t, 1>& f_rank,
   add_field_selection(f_rank, xgs, rank_xgs);
 }
 
-inline void select_rank_range(FieldM<int64_t, 1>& f_rank, const long rank_start = 0, const long rank_stop = -1)
+inline void select_rank_range(FieldM<int64_t, 1>& f_rank,
+                              const long rank_start = 0,
+                              const long rank_stop = -1)
 // keep rank info if rank_start <= rank and (rank < rank_stop or rank_stop == -1)
 // otherwise rank = -1
 // default parameter does not change selection
@@ -77,7 +79,8 @@ inline void select_rank_range(FieldM<int64_t, 1>& f_rank, const long rank_start 
   });
 }
 
-inline void select_t_range(FieldM<int64_t, 1>& f_rank, const long t_start = 0, const long t_stop = -1)
+inline void select_t_range(FieldM<int64_t, 1>& f_rank, const long t_start = 0,
+                           const long t_stop = -1)
 // keep rank info if t_start <= t and (t < t_stop or t_stop == -1)
 // otherwise rank = -1
 // default parameter does not change selection
@@ -227,6 +230,7 @@ inline void set_field_selection(FieldSelection& fsel,
 
 inline void set_field_selection(FieldSelection& fsel,
                                 const Coordinate& total_site)
+// select everything with rank = 0
 {
   TIMER_VERBOSE("set_field_selection(fsel,total_site)");
   fsel.init();
