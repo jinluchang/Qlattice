@@ -126,6 +126,7 @@ class SelectedField:
         # possible way to call:
         # f.load(path)
         # f.load(sfr, fn)
+        # if self.fsel is None, self.fsel will be set during f.load(sfr, fn)
         from qlat.fields_io import ShuffledFieldsReader
         if isinstance(path, str):
             return c.load_sfield(self, path)

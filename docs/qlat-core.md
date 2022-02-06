@@ -290,6 +290,10 @@ inline void set_field_selection(FieldSelection& fsel,
                                 const Coordinate& total_site);
 // select everything with rank = 0
 
+inline bool is_matching_fsel(const FieldSelection& fsel1,
+                             const FieldSelection& fsel2);
+// only check selection, does not check rank or parameter
+
 inline PointSelection psel_from_fsel(const FieldSelection& fsel);
 ```
 
@@ -386,9 +390,16 @@ template <class M>
 long read(ShuffledFieldsReader& sfr, const std::string& fn, Field<M>& field);
 
 template <class M>
-long read(ShuffledFieldsReader& sfr, const std::string& fn, const ShuffledBitSet& sbs, SelectedField<M>& sf);
+long read(ShuffledFieldsReader& sfr, const std::string& fn,
+          SelectedField<M>& sf, FieldSelection& fsel);
+
+template <class M>
+long read(ShuffledFieldsReader& sfr, const std::string& fn,
+          const ShuffledBitSet& sbs, SelectedField<M>& sf);
+// interface function
 // sbs must match the actual data
 // (code will verify & will fail if not match)
+
 
 template <class M>
 long read_field(Field<M>& field, const std::string& path, const std::string& fn);
@@ -407,6 +418,10 @@ long write_float_from_double(ShuffledFieldsWriter& sfw, const std::string& fn,
 template <class M>
 long read_double_from_float(ShuffledFieldsReader& sfr, const std::string& fn,
                             Field<M>& field);
+
+template <class M>
+long read_double_from_float(ShuffledFieldsReader& sfr, const std::string& fn,
+                            SelectedField<M>& sf, FieldSelection& fsel);
 
 template <class M>
 long read_double_from_float(ShuffledFieldsReader& sfr, const std::string& fn,

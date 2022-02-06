@@ -248,6 +248,19 @@ EXPORT(select_t_range_fsel, {
   Py_RETURN_NONE;
 });
 
+EXPORT(is_matching_fsel, {
+  using namespace qlat;
+  PyObject* p_fsel1 = NULL;
+  PyObject* p_fsel2 = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_fsel1, &p_fsel2)) {
+    return NULL;
+  }
+  const FieldSelection& fsel1 = py_convert_type<FieldSelection>(p_fsel1);
+  const FieldSelection& fsel2 = py_convert_type<FieldSelection>(p_fsel2);
+  const bool b = is_matching_fsel(fsel1, fsel2);
+  return py_convert(b);
+});
+
 EXPORT(set_psel_fsel, {
   using namespace qlat;
   PyObject* p_psel = NULL;

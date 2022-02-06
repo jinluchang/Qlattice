@@ -166,3 +166,6 @@ class FieldSelection:
         # return fsel.prob
         # n_per_tslice / spatial_volume
         return c.get_prob_fsel(self)
+
+def is_matching_fsel(fsel1, fsel2):
+    return c.is_matching_fsel(fsel1, fsel2)

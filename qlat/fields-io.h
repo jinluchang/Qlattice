@@ -908,6 +908,7 @@ template <class M>
 long read(FieldsReader& fr, const std::string& fn, SelectedField<M>& sf,
           FieldM<int64_t, 1>& f_rank)
 // field endianess not converted at all
+// f_rank does not need to be initialized
 {
   TIMER_FLOPS("read(fr,fn,sf,f_rank)");
   Coordinate total_site;
@@ -1605,7 +1606,8 @@ long read(ShuffledFieldsReader& sfr, const std::string& fn,
   std::vector<Field<int64_t> > f_rank_s(sfr.frs.size());
   long zero_size_count = 0;
   for (int i = 0; i < (int)sfs.size(); ++i) {
-    const long bytes = read(sfr.frs[i], fn, sfs[i], f_rank_s[i]);
+    FieldM<int64_t, 1>& f_rank = static_cast<FieldM<int64_t, 1>&>(f_rank_s[i]);
+    const long bytes = read(sfr.frs[i], fn, sfs[i], f_rank);
     if (0 == bytes) {
       zero_size_count += 1;
       qassert(0 == total_bytes);
@@ -1634,9 +1636,11 @@ long read(ShuffledFieldsReader& sfr, const std::string& fn,
 }
 
 template <class M>
-long read(ShuffledFieldsReader& sfr, const std::string& fn, const ShuffledBitSet& sbs, SelectedField<M>& sf)
+long read(ShuffledFieldsReader& sfr, const std::string& fn,
+          const ShuffledBitSet& sbs, SelectedField<M>& sf)
 // interface function
 // sbs must match the actual data
+// (code will verify & will fail if not match)
 {
   TIMER_VERBOSE_FLOPS("read(sfr,fn,sbs,sf)");
   sf.init();

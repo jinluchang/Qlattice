@@ -33,12 +33,23 @@ PyObject* write_sfw_sfield_ctype(ShuffledFieldsWriter& sfw,
 
 template <class M>
 PyObject* read_sfr_sfield_ctype(ShuffledFieldsReader& sfr,
-                                const std::string& fn,
-                                const ShuffledBitSet& sbs, PyField& pf)
+                                const std::string& fn, PyObject* p_sbs,
+                                PyObject* p_sfield, PyObject* p_fsel)
 {
-  SelectedField<M>& f = *(SelectedField<M>*)pf.cdata;
-  const long ret = read(sfr, fn, sbs, f);
-  return py_convert(ret);
+  SelectedField<M>& f = py_convert_type_sfield<M>(p_sfield);
+  if (p_sbs != Py_None) {
+    pqassert(p_fsel == NULL)
+    const ShuffledBitSet& sbs = py_convert_type<ShuffledBitSet>(p_sbs);
+    const long ret = read(sfr, fn, sbs, f);
+    return py_convert(ret);
+  } else {
+    pqassert(p_fsel != NULL)
+    FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
+    const long ret = read(sfr, fn, f, fsel);
+    return py_convert(ret);
+  }
+  pqassert(false);
+  Py_RETURN_NONE;
 }
 
 }  // namespace qlat
@@ -187,17 +198,18 @@ EXPORT(read_sfr_sfield, {
   PyObject* p_sfr = NULL;
   PyObject* p_fn = NULL;
   PyObject* p_sbs = NULL;
-  PyObject* p_field = NULL;
-  if (!PyArg_ParseTuple(args, "OOOO", &p_sfr, &p_fn, &p_sbs, &p_field)) {
+  PyObject* p_sfield = NULL;
+  PyObject* p_fsel = NULL;
+  if (!PyArg_ParseTuple(args, "OOOO|O", &p_sfr, &p_fn, &p_sbs, &p_sfield,
+                        &p_fsel)) {
     return NULL;
   }
   ShuffledFieldsReader& sfr = py_convert_type<ShuffledFieldsReader>(p_sfr);
-  std::string fn;
-  py_convert(fn, p_fn);
-  const ShuffledBitSet& sbs = py_convert_type<ShuffledBitSet>(p_sbs);
-  PyField pf = py_convert_field(p_field);
+  const std::string fn = py_convert_data<std::string>(p_fn);
+  const std::string ctype = py_get_ctype(p_sfield);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, read_sfr_sfield_ctype, pf.ctype, sfr, fn, sbs, pf);
+  FIELD_DISPATCH(p_ret, read_sfr_sfield_ctype, ctype, sfr, fn, p_sbs, p_sfield,
+                 p_fsel);
   return p_ret;
 });
 

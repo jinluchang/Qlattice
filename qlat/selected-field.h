@@ -239,6 +239,27 @@ inline void set_field_selection(FieldSelection& fsel,
   update_field_selection(fsel, -1);  // select all points
 }
 
+inline bool is_matching_fsel(const FieldSelection& fsel1,
+                             const FieldSelection& fsel2)
+// only check selection, does not check rank or parameter
+{
+  const long n_elems = fsel1.n_elems;
+  if (n_elems != fsel2.n_elems) {
+    return false;
+  }
+  bool is_same = true;
+  const vector_acc<long>& indices1 = fsel1.indices;
+  const vector_acc<long>& indices2 = fsel2.indices;
+  qassert(indices1.size() == n_elems);
+  qassert(indices2.size() == n_elems);
+  qthread_for(idx, n_elems, {
+    if (indices1[idx] != indices2[idx]) {
+      is_same = false;
+    }
+  });
+  return is_same;
+}
+
 inline PointSelection psel_from_fsel(const FieldSelection& fsel)
 {
   const Geometry& geo = fsel.f_rank.geo();
