@@ -309,11 +309,14 @@ def mk_gpt_inverter(gf, job_tag, inv_type, inv_acc, *,
             maxiter = 200
         else:
             raise Exception("mk_gpt_inverter")
+        q.sync_node()
+        q.displayln_info(f"mk_gpt_inverter: eps={eps} max_cycle={maxiter}")
         slv_qm = qm.propagator(
                 inv.defect_correcting(
                     inv.mixed_precision(
                         slv_5d, g.single, g.double),
                     eps=eps, maxiter=maxiter)).grouped(n_grouped)
+        q.displayln_info(f"mk_gpt_inverter: make inv_qm")
         if qtimer is True:
             qtimer = q.Timer(f"py:inv({job_tag},{inv_type},{inv_acc})", True)
         elif qtimer is False:
@@ -372,7 +375,7 @@ def mk_inverter(*args, **kwargs):
 
 @q.timer
 def get_inv(gf, job_tag, inv_type, inv_acc, *, gt = None, mpi_split = None, n_grouped = 1, eig = None, eps = 1e-8, qtimer = True):
-    tag = f"rbc_ukqcd.get_inv gf={id(gf)} {job_tag} {inv_type} {inv_acc} gt={id(gt)} {mpi_split} {n_grouped} eig={id(eig)} {eps} qtimer={id(qtimer)}"
+    tag = f"rbc_ukqcd.get_inv gf={id(gf)} {job_tag} inv_type={inv_type} inv_acc={inv_acc} gt={id(gt)} mpi_split={mpi_split} n_grouped={n_grouped} eig={id(eig)} eps={eps} qtimer={id(qtimer)}"
     if tag in q.cache_inv:
         return q.cache_inv[tag]["inv"]
     inv = mk_inverter(gf, job_tag, inv_type, inv_acc,

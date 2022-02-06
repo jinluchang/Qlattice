@@ -117,6 +117,7 @@ def get_rand_u1_sol(prop_sol, fu1, sel):
         fsel = sel
         s_prop = SelProp(fsel)
         c.set_rand_u1_sol_fsel(s_prop, prop_sol, fu1, fsel)
+        return s_prop
     elif isinstance(sel, PointSelection):
         psel = sel
         sp_prop = PselProp(psel)

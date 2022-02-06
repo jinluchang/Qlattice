@@ -80,7 +80,7 @@ EXPORT(set_rand_u1_src_fsel, {
   PyObject* p_fu1 = NULL;
   PyObject* p_fsel = NULL;
   PyObject* p_rs = NULL;
-  if (!PyArg_ParseTuple(args, "OOOOO", &p_prop, &p_fu1, &p_fsel, &p_rs)) {
+  if (!PyArg_ParseTuple(args, "OOOO", &p_prop, &p_fu1, &p_fsel, &p_rs)) {
     return NULL;
   }
   Propagator4d& prop = py_convert_type<Propagator4d>(p_prop);
