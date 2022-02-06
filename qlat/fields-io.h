@@ -627,6 +627,7 @@ inline bool read_tag(FieldsReader& fr, std::string& fn, Coordinate& total_site,
 
 inline long read_data(FieldsReader& fr, std::vector<char>& data,
                       const int64_t data_len, const crc32_t crc)
+// return data_len (if not successful then return 0)
 {
   TIMER_FLOPS("read_data(fr,fn,geo,data)");
   clear(data);
@@ -830,29 +831,39 @@ void set_field_from_data(Field<M>& field, const GeometryNode& geon,
 }
 
 template <class M>
-long read(FieldsReader& fr, const std::string& fn, Field<M>& field)
-// field endianess not converted at all
+void set_field_from_data(SelectedField<M>& sf, FieldM<int64_t, 1>& f_rank,
+                         const std::vector<char>& data)
 {
-  TIMER_FLOPS("read(fr,fn,field)");
-  Coordinate total_site;
-  std::vector<char> data;
-  bool is_sparse_field = false;
-  const long total_bytes = read(fr, fn, total_site, data, is_sparse_field);
-  if (0 == total_bytes) {
-    return 0;
+  TIMER("set_field_from_data");
+  const Geometry& geo = f_rank.geo();
+  const Coordinate& node_site = geo.node_site;
+  const long local_volume = product(node_site);
+  const size_t N = local_volume;
+  const size_t nbytes = 1 + (N - 1) / 8;
+  BitSet bs(N);
+  bs.set(&data[0], nbytes);
+  bs.set_f_rank(f_rank);
+  const long n_elems = bs.cN;
+  if (n_elems == 0) {
+    sf.init();
+    return;
   }
-  set_field_from_data(field, fr.geon, total_site, data, is_sparse_field);
-  timer.flops += total_bytes;
-  return total_bytes;
+  const size_t sz_compressed = data.size() - nbytes;
+  qassert(sz_compressed % n_elems == 0);
+  const size_t sz_block = sz_compressed / n_elems;
+  qassert(sz_block % sizeof(M) == 0);
+  const int multiplicity = sz_block / sizeof(M);
+  const Vector<M> fdata((const M*)&data[nbytes], n_elems * multiplicity);
+  sf.init(geo, n_elems, multiplicity);
+  assign(get_data(sf), fdata);
 }
 
 template <class M>
-void set_field_from_data_fsel(SelectedField<M>& sf,
-                              const std::vector<char>& data,
-                              const FieldSelection& fsel)
+void set_field_from_data(SelectedField<M>& sf, const std::vector<char>& data,
+                         const FieldSelection& fsel)
 // fsel must match the actual data
 {
-  TIMER("set_field_from_data_fsel");
+  TIMER("set_field_from_data");
   const Geometry& geo = fsel.f_rank.geo();
   const Coordinate& node_site = geo.node_site;
   const long local_volume = product(node_site);
@@ -877,6 +888,45 @@ void set_field_from_data_fsel(SelectedField<M>& sf,
 }
 
 template <class M>
+long read(FieldsReader& fr, const std::string& fn, Field<M>& field)
+// field endianess not converted at all
+{
+  TIMER_FLOPS("read(fr,fn,field)");
+  Coordinate total_site;
+  std::vector<char> data;
+  bool is_sparse_field = false;
+  const long total_bytes = read(fr, fn, total_site, data, is_sparse_field);
+  if (0 == total_bytes) {
+    return 0;
+  }
+  set_field_from_data(field, fr.geon, total_site, data, is_sparse_field);
+  timer.flops += total_bytes;
+  return total_bytes;
+}
+
+template <class M>
+long read(FieldsReader& fr, const std::string& fn, SelectedField<M>& sf,
+          FieldM<int64_t, 1>& f_rank)
+// field endianess not converted at all
+{
+  TIMER_FLOPS("read(fr,fn,sf,f_rank)");
+  Coordinate total_site;
+  std::vector<char> data;
+  bool is_sparse_field = false;
+  const long total_bytes = read(fr, fn, total_site, data, is_sparse_field);
+  if (0 == total_bytes) {
+    return 0;
+  }
+  qassert(is_sparse_field);
+  const Geometry geo(total_site, 1);
+  f_rank.init(geo);
+  qassert(f_rank.geo().is_only_local());
+  set_field_from_data(sf, f_rank, data);
+  timer.flops += total_bytes;
+  return total_bytes;
+}
+
+template <class M>
 long read(FieldsReader& fr, const std::string& fn, const FieldSelection& fsel,
           SelectedField<M>& sf)
 // field endianess not converted at all
@@ -893,7 +943,7 @@ long read(FieldsReader& fr, const std::string& fn, const FieldSelection& fsel,
   }
   qassert(is_sparse_field);
   qassert(total_site == fsel.f_rank.geo().total_site());
-  set_field_from_data_fsel(sf, data, fsel);
+  set_field_from_data(sf, data, fsel);
   timer.flops += total_bytes;
   return total_bytes;
 }
@@ -1543,6 +1593,47 @@ long read(ShuffledFieldsReader& sfr, const std::string& fn, Field<M>& field)
 }
 
 template <class M>
+long read(ShuffledFieldsReader& sfr, const std::string& fn,
+          SelectedField<M>& sf, FieldSelection& fsel)
+// interface function
+{
+  TIMER_VERBOSE_FLOPS("read(sfr,fn,sf,fsel)")
+  long total_bytes = 0;
+  displayln_info(fname + ssprintf(": reading field with fn='%s' from '%s'.",
+                                  fn.c_str(), sfr.path.c_str()));
+  std::vector<SelectedField<M> > sfs(sfr.frs.size());
+  std::vector<Field<int64_t> > f_rank_s(sfr.frs.size());
+  long zero_size_count = 0;
+  for (int i = 0; i < (int)sfs.size(); ++i) {
+    const long bytes = read(sfr.frs[i], fn, sfs[i], f_rank_s[i]);
+    if (0 == bytes) {
+      zero_size_count += 1;
+      qassert(0 == total_bytes);
+    } else {
+      total_bytes += bytes;
+    }
+  }
+  glb_sum(total_bytes);
+  if (0 != zero_size_count) {
+    qassert(0 == total_bytes);
+  }
+  if (0 == total_bytes) {
+    return 0;
+  }
+  Coordinate total_site;
+  int multiplicity = 0;
+  set_field_info_from_fields(total_site, multiplicity, sfs, sfr);
+  const Geometry geo(total_site, multiplicity);
+  fsel.f_rank.init(geo);
+  shuffle_field_back(fsel.f_rank, f_rank_s, sfr.new_size_node);
+  update_field_selection(fsel);
+  sf.init(fsel, multiplicity);
+  shuffle_field_back(sf, sfs, sfr.new_size_node, fsel);
+  timer.flops += total_bytes;
+  return total_bytes;
+}
+
+template <class M>
 long read(ShuffledFieldsReader& sfr, const std::string& fn, const ShuffledBitSet& sbs, SelectedField<M>& sf)
 // interface function
 // sbs must match the actual data
@@ -1636,6 +1727,25 @@ long read_double_from_float(ShuffledFieldsReader& sfr, const std::string& fn,
   } else {
     to_from_little_endian_32(get_data(ff));
     convert_field_double_from_float(field, ff);
+    timer.flops += total_bytes;
+    return total_bytes;
+  }
+}
+
+template <class M>
+long read_double_from_float(ShuffledFieldsReader& sfr, const std::string& fn,
+                            SelectedField<M>& sf, FieldSelection& fsel)
+// interface function
+{
+  TIMER_VERBOSE_FLOPS("read_double_from_float(sfr,fn,sf,fsel)");
+  sf.init();
+  SelectedField<float> sff;
+  const long total_bytes = read(sfr, fn, sff, fsel);
+  if (total_bytes == 0) {
+    return 0;
+  } else {
+    to_from_little_endian_32(get_data(sff));
+    convert_field_double_from_float(sf, sff);
     timer.flops += total_bytes;
     return total_bytes;
   }
