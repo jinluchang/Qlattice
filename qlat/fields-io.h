@@ -84,9 +84,9 @@ struct BitSet {
     qassert(geo.multiplicity == 1);
     for (size_t i = 0; i < N; i++) {
       if (get(i)) {
-        f_rank.get_elem(i) == rank;
+        f_rank.get_elem(i) = rank;
       } else {
-        f_rank.get_elem(i) == -1;
+        f_rank.get_elem(i) = -1;
       }
     }
   }
@@ -873,6 +873,7 @@ void set_field_from_data(SelectedField<M>& sf, const std::vector<char>& data,
   bs.set(&data[0], nbytes);
   qassert(bs.check_f_rank(fsel.f_rank));
   const long n_elems = fsel.n_elems;
+  qassert(n_elems == bs.cN);
   if (n_elems == 0) {
     sf.init();
     return;
@@ -919,7 +920,8 @@ long read(FieldsReader& fr, const std::string& fn, SelectedField<M>& sf,
     return 0;
   }
   qassert(is_sparse_field);
-  const Geometry geo(total_site, 1);
+  Geometry geo;
+  geo.init(fr.geon, total_site / fr.geon.size_node, 1);
   f_rank.init(geo);
   qassert(f_rank.geo().is_only_local());
   set_field_from_data(sf, f_rank, data);
@@ -1625,7 +1627,7 @@ long read(ShuffledFieldsReader& sfr, const std::string& fn,
   Coordinate total_site;
   int multiplicity = 0;
   set_field_info_from_fields(total_site, multiplicity, sfs, sfr);
-  const Geometry geo(total_site, multiplicity);
+  const Geometry geo(total_site, 1);
   fsel.f_rank.init(geo);
   shuffle_field_back(fsel.f_rank, f_rank_s, sfr.new_size_node);
   update_field_selection(fsel);

@@ -14,10 +14,10 @@ class SelectedField:
 
     def __init__(self, ctype, fsel, multiplicity = None):
         assert isinstance(ctype, str)
-        assert isinstance(fsel, FieldSelection)
+        assert fsel is None or isinstance(fsel, FieldSelection)
         self.ctype = ctype
         self.fsel = fsel
-        if multiplicity is None:
+        if fsel is None or multiplicity is None:
             self.cdata = c.mk_sfield(ctype)
         else:
             assert isinstance(multiplicity, int)
@@ -187,11 +187,13 @@ class SelectedField:
     def float_from_double(self, f):
         assert isinstance(f, SelectedField)
         assert self.ctype == "float"
+        self.fsel = f.fsel
         c.convert_float_from_double_sfield(self, f)
 
     def double_from_float(self, ff):
         assert isinstance(ff, SelectedField)
         assert ff.ctype == "float"
+        self.fsel = ff.fsel
         c.convert_double_from_float_sfield(self, ff)
 
     def to_from_endianness(self, tag):

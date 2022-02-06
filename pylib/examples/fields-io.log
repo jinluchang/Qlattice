@@ -112,6 +112,21 @@ read_tag(fr,fn,geo): 'prop1' from 'results/prop.fields'.
 shuffle_field_back(sel_f,sel_fs,sp): 1x1x1x8 -> 1x1x1x2 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.000 GB)
 prop1_f 12473.61033144344
 prop1_f -= prop1 6.319120089073607e-12
+read(sfr,fn,sf,fsel): reading field with fn='prop1' from 'results/prop.fields'.
+read_tag(fr,fn,geo): 'prop1' from 'results/prop.fields'.
+shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x1x1x2 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
+make_shuffle_plan_generic: num_send_packs =          3
+make_shuffle_plan_generic: num_recv_packs =          4
+make_shuffle_plan_generic: num_send_msgs  =          1
+make_shuffle_plan_generic: num_recv_msgs  =          1
+make_shuffle_plan_generic: total num_send_packs =          5
+make_shuffle_plan_generic: total num_recv_packs =          8
+make_shuffle_plan_generic: total num_send_msgs  =          2
+make_shuffle_plan_generic: total num_recv_msgs  =          2
+make_shuffle_plan_generic: global_comm_size =        130
+shuffle_field_back(sel_f,sel_fs,sp): 1x1x1x8 -> 1x1x1x2 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.000 GB)
+prop1_ff 12473.61033144344
+prop1_ff -= prop1 6.319120089073607e-12
 FieldsReader: close 'results/prop.fields'.
 FieldsReader: open 'results/prop.fields'.
 read_tag(fr,fn,geo): 'prop.d' from 'results/prop.fields'.

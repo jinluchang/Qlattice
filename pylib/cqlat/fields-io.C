@@ -36,16 +36,16 @@ PyObject* read_sfr_sfield_ctype(ShuffledFieldsReader& sfr,
                                 const std::string& fn, PyObject* p_sbs,
                                 PyObject* p_sfield, PyObject* p_fsel)
 {
-  SelectedField<M>& f = py_convert_type_sfield<M>(p_sfield);
+  SelectedField<M>& sf = py_convert_type_sfield<M>(p_sfield);
   if (p_sbs != Py_None) {
     pqassert(p_fsel == NULL)
     const ShuffledBitSet& sbs = py_convert_type<ShuffledBitSet>(p_sbs);
-    const long ret = read(sfr, fn, sbs, f);
+    const long ret = read(sfr, fn, sbs, sf);
     return py_convert(ret);
   } else {
     pqassert(p_fsel != NULL)
     FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
-    const long ret = read(sfr, fn, f, fsel);
+    const long ret = read(sfr, fn, sf, fsel);
     return py_convert(ret);
   }
   pqassert(false);
