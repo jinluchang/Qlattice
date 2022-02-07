@@ -22,7 +22,7 @@
     if (not(x)) {                        \
       qwarn("qassert: " #x);             \
       usleep((useconds_t)(0.1 * 1.0e6)); \
-      throw "qassert";                   \
+      throw std::string("qassert");      \
     }                                    \
   }
 

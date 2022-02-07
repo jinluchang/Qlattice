@@ -35,7 +35,7 @@
   {                                                              \
     if (!(x))                                                    \
       throw std::string("Assert " #x " failed in file " __FILE__ \
-                        ":" PSTR(__LINE__));                      \
+                        ":" PSTR(__LINE__));                     \
   };
 
 #define pqerr(...)                                                    \
