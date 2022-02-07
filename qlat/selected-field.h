@@ -262,6 +262,7 @@ inline bool is_matching_fsel(const FieldSelection& fsel1,
 
 inline PointSelection psel_from_fsel(const FieldSelection& fsel)
 {
+  TIMER("psel_from_fsel")
   const Geometry& geo = fsel.f_rank.geo();
   const Coordinate total_site = geo.total_site();
   long n_elems = fsel.n_elems;
@@ -289,6 +290,22 @@ inline PointSelection psel_from_fsel(const FieldSelection& fsel)
   qthread_for(idx, psel.size(), {
     long gindex = vec_gindex[idx];
     psel[idx] = coordinate_from_index(gindex, total_site);
+  });
+  return psel;
+}
+
+inline PointSelection psel_from_fsel_local(const FieldSelection& fsel)
+{
+  TIMER("psel_from_fsel_local")
+  const Geometry& geo = fsel.f_rank.geo();
+  const Coordinate total_site = geo.total_site();
+  long n_elems = fsel.n_elems;
+  PointSelection psel(n_elems);
+  qthread_for(idx, psel.size(), {
+    const long index = fsel.indices[idx];
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Coordinate xg = geo.coordinate_g_from_l(xl);
+    psel[idx] = xg;
   });
   return psel;
 }
@@ -337,26 +354,40 @@ struct SelectedField {
   //
   SelectedField() { init(); }
   //
-  qacc M& get_elem(const long& idx)
+  qacc M& get_elem(const long idx)
   {
     qassert(1 == geo().multiplicity);
     return field[idx];
   }
-  qacc const M& get_elem(const long& idx) const
+  qacc const M& get_elem(const long idx) const
   {
     qassert(1 == geo().multiplicity);
     return field[idx];
+  }
+  qacc M& get_elem(const long idx, const int m)
+  {
+    const int multiplicity = geo().multiplicity;
+    qassert(0 <= m and m < multiplicity);
+    return field[idx * multiplicity + m];
+  }
+  qacc const M& get_elem(const long idx, const int m) const
+  {
+    const int multiplicity = geo().multiplicity;
+    qassert(0 <= m and m < multiplicity);
+    return field[idx * multiplicity + m];
   }
   //
   Vector<M> get_elems(const long idx)
   {
-    return Vector<M>(&field[idx * geo().multiplicity], geo().multiplicity);
+    const int multiplicity = geo().multiplicity;
+    return Vector<M>(&field[idx * multiplicity], multiplicity);
   }
   Vector<M> get_elems_const(const long idx) const
   // Be cautious about the const property
   // 改不改靠自觉
   {
-    return Vector<M>(&field[idx * geo().multiplicity], geo().multiplicity);
+    const int multiplicity = geo().multiplicity;
+    return Vector<M>(&field[idx * multiplicity], multiplicity);
   }
 };
 

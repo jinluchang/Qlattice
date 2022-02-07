@@ -141,6 +141,11 @@ class FieldSelection:
         c.set_psel_fsel(psel, self)
         return psel
 
+    def to_psel_local(self):
+        psel = PointSelection(None, self.geo())
+        c.set_psel_fsel_local(psel, self)
+        return psel
+
     def save(self, path):
         mk_file_dirs_info(path)
         return c.save_fsel(self, path)

@@ -89,6 +89,15 @@ class SelectedField:
     def qnorm(self):
         return c.qnorm_sfield(self)
 
+    def get_elems(self, idx):
+        return np.array(c.get_elems_sfield(self, idx))
+
+    def get_elem(self, idx, m = None):
+        if m is None:
+            return np.array(c.get_elem_sfield(self, idx))
+        else:
+            return np.array(c.get_elem_sfield(self, idx, m))
+
     def sparse(self, sel):
         # deprecated
         if isinstance(sel, PointSelection):

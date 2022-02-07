@@ -274,6 +274,19 @@ EXPORT(set_psel_fsel, {
   Py_RETURN_NONE;
 });
 
+EXPORT(set_psel_fsel_local, {
+  using namespace qlat;
+  PyObject* p_psel = NULL;
+  PyObject* p_fsel = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_psel, &p_fsel)) {
+    return NULL;
+  }
+  PointSelection& psel = py_convert_type<PointSelection>(p_psel);
+  const FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
+  psel = psel_from_fsel_local(fsel);
+  Py_RETURN_NONE;
+});
+
 EXPORT(set_geo_fsel, {
   using namespace qlat;
   PyObject* p_geo = NULL;

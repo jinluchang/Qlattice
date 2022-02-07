@@ -183,10 +183,12 @@ struct SelectedPoints {
   //
   qacc M& get_elem(const long& idx, const int m)
   {
+    qassert(0 <= m and m < multiplicity);
     return points[idx * multiplicity + m];
   }
   qacc const M& get_elem(const long& idx, const int m) const
   {
+    qassert(0 <= m and m < multiplicity);
     return points[idx * multiplicity + m];
   }
   //
