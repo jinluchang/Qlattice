@@ -127,7 +127,7 @@ inline void gf_wilson_line_no_comm(Field<ColorMatrix>& wilson_line_field,
 {
   TIMER("gf_wilson_line_no_comm")
   const Geometry& geo = wilson_line_field.geo();
-  check_matching_geo(geo, gf_ext.geo());
+  qassert(check_matching_geo(geo, gf_ext.geo()));
   qassert(0 <= wilson_line_field_m and wilson_line_field_m < geo.multiplicity);
   qacc_for(index, geo.local_volume(), {
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -146,7 +146,7 @@ inline void gf_wilson_line_no_comm(Field<ColorMatrix>& wilson_line_field,
 {
   TIMER("gf_wilson_line_no_comm")
   const Geometry& geo = wilson_line_field.geo();
-  check_matching_geo(geo, gf_ext.geo());
+  qassert(check_matching_geo(geo, gf_ext.geo()));
   qassert(0 <= wilson_line_field_m and wilson_line_field_m < geo.multiplicity);
   qacc_for(index, geo.local_volume(), {
     const Coordinate xl = geo.coordinate_from_index(index);

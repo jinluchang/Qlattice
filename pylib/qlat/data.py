@@ -6,7 +6,7 @@ import copy
 import numpy as np
 
 alpha_qed = 1.0 / 137.035999084
-fminv_gev = 0.197326979
+fminv_gev = 0.197326979 # hbar * c / (1e-15 m * 1e9 electron charge * 1 volt)
 
 class use_kwargs:
 
@@ -312,29 +312,35 @@ def rjk_avg_err(rjk_list, eps = 1):
 # ----------
 
 default_g_jk_kwargs = {}
+
 default_g_jk_kwargs["jk_type"] = "super"  # choices: "rjk", "super"
-default_g_jk_kwargs["n_rand_sample"] = 1024
-default_g_jk_kwargs["rng_state"] = RngState("rejk")
 default_g_jk_kwargs["eps"] = 1
 
+default_g_jk_kwargs["all_jk_idx"] = None # for jk_type = "super"
+default_g_jk_kwargs["get_all_jk_idx"] = None # for jk_type = "super"
+
+default_g_jk_kwargs["n_rand_sample"] = 1024 # for jk_type = "rjk"
+default_g_jk_kwargs["rng_state"] = RngState("rejk")  # for jk_type = "rjk"
+
 @use_kwargs(default_g_jk_kwargs)
-def g_jk(data_list, *, eps, **kwargs):
+def g_jk(data_list, *, eps, **_kwargs):
     return jackknife(data_list, eps)
 
 @use_kwargs(default_g_jk_kwargs)
-def g_rejk(jk_list, jk_idx, *, jk_type, **kwargs):
+def g_rejk(jk_list, jk_idx, *,
+        jk_type,
+        all_jk_idx,
+        get_all_jk_idx,
+        n_rand_sample,
+        rng_state,
+        **_kwargs,):
     # jk_type in [ "rjk", "super", ]
     if jk_type == "super":
-        if "all_jk_idx" in kwargs:
-            all_jk_idx = kwargs["all_jk_idx"]
-        elif "get_all_jk_idx" in kwargs:
-            all_jk_idx = kwargs["get_all_jk_idx"]()
-        else:
-            assert False
+        if all_jk_idx is None:
+            assert get_all_jk_idx is not None
+            all_jk_idx = get_all_jk_idx()
         return rejk_list(jk_list, jk_idx, all_jk_idx)
     elif jk_type == "rjk":
-        n_rand_sample = kwargs["n_rand_sample"]
-        rng_state = kwargs["rng_state"]
         return rjk_jk_list(jk_list, jk_idx, n_rand_sample, rng_state)
     else:
         assert False
@@ -344,7 +350,7 @@ def g_jk_avg(jk_list):
     return jk_avg(jk_list)
 
 @use_kwargs(default_g_jk_kwargs)
-def g_jk_err(jk_list, *, eps, jk_type, **kwargs):
+def g_jk_err(jk_list, *, eps, jk_type, **_kwargs):
     if jk_type == "super":
         return jk_err(jk_list, eps)
     elif jk_type == "rjk":

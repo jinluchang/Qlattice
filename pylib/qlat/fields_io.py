@@ -84,7 +84,12 @@ class ShuffledFieldsReader:
         if isinstance(obj, Field):
             return c.read_sfr_field(self, fn, obj)
         elif isinstance(obj, SelectedField):
-            return c.read_sfr_sfield(self, fn, self.get_cache_sbs(obj.fsel), obj)
+            fsel = obj.fsel
+            if fsel is None:
+                obj.fsel = FieldSelection()
+                return c.read_sfr_sfield(self, fn, None, obj, obj.fsel)
+            else:
+                return c.read_sfr_sfield(self, fn, self.get_cache_sbs(obj.fsel), obj)
         else:
             raise Exception("ShuffledFieldsReader.load")
 

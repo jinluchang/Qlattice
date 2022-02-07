@@ -16,7 +16,7 @@ if [ -z "\$prefix" ] ; then
     prefix="$prefix"
 fi
 if [ -z "\$num_proc" ] ; then
-    num_proc=4
+    num_proc=8
 fi
 export PYTHONPATH=
 CC_OLD="\$CC"
@@ -33,6 +33,7 @@ module add cmake/3.14.5
 module list
 export CC="\$CC_OLD"
 export CXX="\$CXX_OLD"
+export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:/work/opt/local/cores/gcc/7.5.0/lib64
 EOF
 
 ./scripts/compiler-wrappers.sh

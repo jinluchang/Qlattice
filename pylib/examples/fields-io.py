@@ -77,6 +77,13 @@ q.displayln_info("prop1_f", prop1_f.qnorm())
 prop1_f -= prop1
 q.displayln_info("prop1_f -= prop1", prop1_f.qnorm())
 
+prop1_ff = q.SelProp(None)
+prop1_ff.load_double_from_float(sfr, "prop1")
+q.displayln_info("prop1_ff", prop1_ff.qnorm())
+assert q.is_matching_fsel(prop1_ff.fsel, fselc)
+prop1_ff -= prop1
+q.displayln_info("prop1_ff -= prop1", prop1_f.qnorm())
+
 sfr.close()
 
 q.displayln_info(q.list_fields("results/prop.fields"))

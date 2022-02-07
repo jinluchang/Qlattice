@@ -1,12 +1,12 @@
 SHELL=/bin/bash
 
-src_path=~/Qlattice-cc/pylib/apps/mk-selected-data
+src_path=~/Qlattice-cc/pylib/apps/mk-psel-self-loop
 
 grid_options=--dslash-asm --shm-hugepages --shm 4050 --mpi_split 1.1.1.1 --grouped 2
 grid_options=
 
-mpi_options=--bind-to none -mca btl_openib_allow_ib true
 mpi_options=
+mpi_options=--bind-to none -mca btl_openib_allow_ib true
 
 run:
 	. ~/qlat-build/default/setenv.sh ; q_verbose=1 mpirun --np 2 $(mpi_options) ./run.py --mpi 1.1.1.2 --mpi 1.1.2 $(grid_options) |& tee log.txt

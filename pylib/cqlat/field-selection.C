@@ -187,12 +187,13 @@ EXPORT(add_psel_fsel, {
   using namespace qlat;
   PyObject* p_fsel = NULL;
   PyObject* p_psel = NULL;
-  if (!PyArg_ParseTuple(args, "OO", &p_fsel, &p_psel)) {
+  long rank_psel = 1024L * 1024L * 1024L * 1024L * 1024L;
+  if (!PyArg_ParseTuple(args, "OO|l", &p_fsel, &p_psel, &rank_psel)) {
     return NULL;
   }
   FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
   PointSelection& psel = py_convert_type<PointSelection>(p_psel);
-  add_field_selection(fsel.f_rank, psel);
+  add_field_selection(fsel.f_rank, psel, rank_psel);
   Py_RETURN_NONE;
 });
 
@@ -211,6 +212,65 @@ EXPORT(update_fsel, {
     // only update parameters
     update_field_selection(fsel, n_per_tslice);
   }
+  Py_RETURN_NONE;
+});
+
+EXPORT(select_rank_range_fsel, {
+  using namespace qlat;
+  PyObject* p_fsel = NULL;
+  PyObject* p_fsel0 = NULL;
+  long rank_start = 0;
+  long rank_stop = -1;
+  if (!PyArg_ParseTuple(args, "OO|ll", &p_fsel, &p_fsel0, &rank_start,
+                        &rank_stop)) {
+    return NULL;
+  }
+  FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
+  const FieldSelection& fsel0 = py_convert_type<FieldSelection>(p_fsel0);
+  fsel.f_rank = fsel0.f_rank;
+  select_rank_range(fsel.f_rank, rank_start, rank_stop);
+  Py_RETURN_NONE;
+});
+
+EXPORT(select_t_range_fsel, {
+  using namespace qlat;
+  PyObject* p_fsel = NULL;
+  PyObject* p_fsel0 = NULL;
+  long t_start = 0;
+  long t_stop = -1;
+  if (!PyArg_ParseTuple(args, "OO|ll", &p_fsel, &p_fsel0, &t_start, &t_stop)) {
+    return NULL;
+  }
+  FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
+  const FieldSelection& fsel0 = py_convert_type<FieldSelection>(p_fsel0);
+  fsel.f_rank = fsel0.f_rank;
+  select_t_range(fsel.f_rank, t_start, t_stop);
+  Py_RETURN_NONE;
+});
+
+EXPORT(is_matching_fsel, {
+  using namespace qlat;
+  PyObject* p_fsel1 = NULL;
+  PyObject* p_fsel2 = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_fsel1, &p_fsel2)) {
+    return NULL;
+  }
+  const FieldSelection& fsel1 = py_convert_type<FieldSelection>(p_fsel1);
+  const FieldSelection& fsel2 = py_convert_type<FieldSelection>(p_fsel2);
+  const bool b = is_matching_fsel(fsel1, fsel2);
+  return py_convert(b);
+});
+
+EXPORT(set_psel_fsel, {
+  using namespace qlat;
+  PyObject* p_psel = NULL;
+  PyObject* p_fsel = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_psel, &p_fsel)) {
+    return NULL;
+  }
+  PointSelection& psel = py_convert_type<PointSelection>(p_psel);
+  const FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
+  psel = psel_from_fsel(fsel);
   Py_RETURN_NONE;
 });
 

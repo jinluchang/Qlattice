@@ -91,14 +91,20 @@ def mk_wall_src(geo, tslice, lmom = None):
     return prop_src
 
 @timer
-def mk_rand_u1_src(geo, sel, rs):
+def mk_rand_u1_src(sel, rs):
     # return (prop_src, fu1,) where prop_src = Prop() and fu1 = Field("Complex")
     # fu1 stores the random u1 numbers (fu1.multiplicity() == 1)
+    # sel can be psel or fsel
     prop_src = Prop()
     fu1 = Field("Complex")
-    if isinstance(sel, PointSelection):
+    if isinstance(sel, FieldSelection):
+        fsel = sel
+        c.set_rand_u1_src_fsel(prop_src, fu1, fsel, rs)
+    elif isinstance(sel, PointSelection):
         psel = sel
-        c.set_rand_u1_src_psel(prop_src, fu1, geo, psel, rs)
+        geo = psel.geo
+        assert isinstance(geo, Geometry)
+        c.set_rand_u1_src_psel(prop_src, fu1, psel, geo, rs)
     else:
         raise Exception(f"mk_rand_u1_src {type(sel)}")
     return (prop_src, fu1,)
@@ -107,7 +113,12 @@ def mk_rand_u1_src(geo, sel, rs):
 def get_rand_u1_sol(prop_sol, fu1, sel):
     assert isinstance(prop_sol, Prop)
     assert isinstance(fu1, Field) and fu1.ctype == "Complex"
-    if isinstance(sel, PointSelection):
+    if isinstance(sel, FieldSelection):
+        fsel = sel
+        s_prop = SelProp(fsel)
+        c.set_rand_u1_sol_fsel(s_prop, prop_sol, fu1, fsel)
+        return s_prop
+    elif isinstance(sel, PointSelection):
         psel = sel
         sp_prop = PselProp(psel)
         c.set_rand_u1_sol_psel(sp_prop, prop_sol, fu1, psel)
@@ -116,10 +127,11 @@ def get_rand_u1_sol(prop_sol, fu1, sel):
         raise Exception(f"get_rand_u1_sol {type(sel)}")
 
 @timer_verbose
-def mk_rand_u1_prop(inv, geo, sel, rs):
+def mk_rand_u1_prop(inv, sel, rs):
     # interface function
     # return s_prop
-    prop_src, fu1 = mk_rand_u1_src(geo, sel, rs)
+    # sel can be psel or fsel
+    prop_src, fu1 = mk_rand_u1_src(sel, rs)
     prop_sol = inv * prop_src
     return get_rand_u1_sol(prop_sol, fu1, sel)
 

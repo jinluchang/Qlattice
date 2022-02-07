@@ -302,6 +302,7 @@ T& py_convert_type(PyObject* in)
 // py_convert_type<CommPlan>(in);
 // specifications:
 // py_convert_type<Propagator4d>(in);
+// py_convert_type<GaugeField>(in);
 // py_convert_type<CommMarks>(in);
 {
   PyObject* p_cdata = PyObject_GetAttrString(in, "cdata");
@@ -313,7 +314,7 @@ T& py_convert_type(PyObject* in)
 
 template <class M>
 Field<M>& py_convert_type_field(PyObject* in)
-// py_convert_ftype<Field<M> >(in);
+// py_convert_type<Field<M> >(in);
 {
   const std::string ctype = py_get_ctype(in);
   pqassert(check_ctype_name<M>(ctype));
@@ -323,7 +324,7 @@ Field<M>& py_convert_type_field(PyObject* in)
 
 template <class M, int multiplicity>
 FieldM<M, multiplicity>& py_convert_type_field(PyObject* in)
-// py_convert_ftype<FieldM<M, multiplicity> >(in);
+// py_convert_type<FieldM<M, multiplicity> >(in);
 {
   const std::string ctype = py_get_ctype(in);
   pqassert(check_ctype_name<M>(ctype));
@@ -331,6 +332,26 @@ FieldM<M, multiplicity>& py_convert_type_field(PyObject* in)
   if (is_initialized(f)) {
     pqassert(multiplicity == f.geo().multiplicity);
   }
+  return f;
+}
+
+template <class M>
+SelectedField<M>& py_convert_type_sfield(PyObject* in)
+// py_convert_type<SelectedField<M> >(in);
+{
+  const std::string ctype = py_get_ctype(in);
+  pqassert(check_ctype_name<M>(ctype));
+  SelectedField<M>& f = py_convert_type<SelectedField<M> >(in);
+  return f;
+}
+
+template <class M>
+SelectedPoints<M>& py_convert_type_spoints(PyObject* in)
+// py_convert_type<SelectedPoints<M> >(in);
+{
+  const std::string ctype = py_get_ctype(in);
+  pqassert(check_ctype_name<M>(ctype));
+  SelectedPoints<M>& f = py_convert_type<SelectedPoints<M> >(in);
   return f;
 }
 

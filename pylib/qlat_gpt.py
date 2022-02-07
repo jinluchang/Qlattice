@@ -1,5 +1,6 @@
 import gpt as g
 import qlat as q
+import math
 
 import textwrap
 
@@ -40,40 +41,40 @@ def mk_gpt_field(ctype, geo):
 @q.timer_verbose
 def mk_qlat_gpt_copy_plan(ctype, total_site, multiplicity, tag):
     geo = q.Geometry(total_site, multiplicity)
-    q.displayln_info("qlat geo created")
+    # q.displayln_info("qlat geo created")
     f_gpt = mk_gpt_field(ctype, geo)
-    q.displayln_info("gpt field made")
+    # q.displayln_info("gpt field made")
     f_qlat = q.Field(ctype, geo)
-    q.displayln_info("qlat field made")
+    # q.displayln_info("qlat field made")
     lexicographic_coordinates = g.coordinates(f_gpt)
-    q.displayln_info("gpt coordinates collected")
+    # q.displayln_info("gpt coordinates collected")
     buf = f_qlat.mview()
-    q.displayln_info("qlat mview made")
+    # q.displayln_info("qlat mview made")
     if tag == "qlat_from_gpt":
-        q.displayln_info("qlat_from_gpt")
+        # q.displayln_info("qlat_from_gpt")
         qlat_from_gpt = g.copy_plan(buf, f_gpt)
-        q.displayln_info("plan initialized")
+        # q.displayln_info("plan initialized")
         qlat_from_gpt.destination += g.global_memory_view(
             f_gpt.grid,
             [[f_gpt.grid.processor, buf, 0, buf.nbytes]])
-        q.displayln_info("plan destination added")
+        # q.displayln_info("plan destination added")
         qlat_from_gpt.source += f_gpt.view[lexicographic_coordinates]
-        q.displayln_info("plan source added")
+        # q.displayln_info("plan source added")
         qlat_from_gpt = qlat_from_gpt(local_only = True)
-        q.displayln_info("plan created")
+        # q.displayln_info("plan created")
         return qlat_from_gpt
     elif tag == "gpt_from_qlat":
-        q.displayln_info("gpt_from_qlat")
+        # q.displayln_info("gpt_from_qlat")
         gpt_from_qlat = g.copy_plan(f_gpt, buf)
-        q.displayln_info("plan initialized")
+        # q.displayln_info("plan initialized")
         gpt_from_qlat.source += g.global_memory_view(
             f_gpt.grid,
             [[f_gpt.grid.processor, buf, 0, buf.nbytes]])
-        q.displayln_info("plan source added")
+        # q.displayln_info("plan source added")
         gpt_from_qlat.destination += f_gpt.view[lexicographic_coordinates]
-        q.displayln_info("plan destination added")
+        # q.displayln_info("plan destination added")
         gpt_from_qlat = gpt_from_qlat(local_only = True)
-        q.displayln_info("plan created")
+        # q.displayln_info("plan created")
         return gpt_from_qlat
     else:
         q.displayln_info(tag)
@@ -368,14 +369,148 @@ def load_gauge_field(path):
     gpt_gf = g.load(path)
     return qlat_from_gpt(gpt_gf)
 
+def line_search_quadratic(s, x, dx, dv0, df, step, *, max_c = 3):
+    x = g.util.to_list(x)
+    xp = g.copy(x)
+    # ansatz: f(x) = a + b*(x-c)^2, then solve for c from dv1 and dv0
+    # assume b > 0
+    sv0 = g.group.inner_product(s, dv0)
+    assert not math.isnan(sv0)
+    sign = 1
+    if sv0 == 0.0:
+        return 0.0
+    elif sv0 < 0:
+        sign = -1
+    c = 0.0
+    sv_list = [ sv0, ]
+    while True:
+        dxp = []
+        for dx_mu, s_mu in g.util.to_list(dx, s):
+            mu = x.index(dx_mu)
+            xp[mu] @= g(g.group.compose(sign * step * s_mu, xp[mu]))
+            xp_mu = g.copy(xp[mu])
+            g.project(xp[mu], "defect")
+            project_diff2 = g.norm2(xp[mu] - xp_mu)
+            if not (project_diff2 < 1e-8):
+                g.message(f"line_search_quadratic: rank={g.rank()} project_diff={math.sqrt(project_diff2)} {sv_list}")
+                if c == 0.0:
+                    return None
+                else:
+                    return sign * c
+            dxp.append(xp[mu])
+        dv1 = df(xp, dxp)
+        assert isinstance(dv1, list)
+        sv1 = g.group.inner_product(s, dv1)
+        sv_list.append(sv1)
+        if math.isnan(sv1):
+            g.message(f"line_search_quadratic: rank={g.rank()} {sv_list}")
+            return None
+        if sv0 > 0 and sv1 <= 0 or sv0 < 0 and sv1 >= 0:
+            c += sv0 / (sv0 - sv1)
+            return sign * c
+        elif sv0 == 0.0:
+            return sign * c
+        else:
+            c += 1
+            sv0 = sv1
+        if c > max_c:
+            g.message(f"line_search_quadratic: rank={g.rank()} {sv_list}")
+            return sign * c
+
+class non_linear_cg(g.algorithms.base_iterative):
+
+    @g.params_convention(
+        eps = 1e-8,
+        maxiter = 1000,
+        step = 1e-3,
+        log_functional_every = 10,
+        line_search = line_search_quadratic,
+        beta = g.algorithms.optimize.fletcher_reeves,
+        max_c = 3,
+    )
+    def __init__(self, params):
+        super().__init__()
+        self.eps = params["eps"]
+        self.maxiter = params["maxiter"]
+        self.step = params["step"]
+        self.nf = params["log_functional_every"]
+        self.line_search = params["line_search"]
+        self.beta = params["beta"]
+        self.max_c = params["max_c"]
+
+    def __call__(self, f):
+        @self.timed_function
+        def opt(x, dx, t):
+            if self.maxiter <= 0:
+                return False
+            x = g.util.to_list(x)
+            dx = g.util.to_list(dx)
+            d_last = None
+            s_last = None
+            for i in range(self.maxiter):
+                d = f.gradient(x, dx)
+                assert isinstance(d, list)
+                #
+                if s_last is None:
+                    beta = 0
+                    s = d
+                else:
+                    beta = self.beta(d, d_last)
+                    for nu in range(len(s)):
+                        s[nu] = g(d[nu] + beta * s_last[nu])
+                        if hasattr(s[nu].otype, "project"):
+                            s[nu] = g.project(s[nu], "defect")
+                #
+                c = self.line_search(s, x, dx, d, f.gradient, -self.step, max_c = self.max_c)
+                #
+                rs = (
+                    sum(g.norm2(d)) / sum([s.grid.gsites * s.otype.nfloats for s in d])
+                ) ** 0.5
+                #
+                if c is None or math.isnan(c):
+                    self.log(f"non_linear_cg: rank={g.rank()} c={c} reset s. iteration {i}: f(x) = {f(x):.15e}, |df|/sqrt(dof) = {rs:e}, beta = {beta}")
+                    return False
+                #
+                for nu, x_mu in enumerate(dx):
+                    x_mu @= g.group.compose(-self.step * c * s[nu], x_mu)
+                    x_mu @= g.project(x_mu, "defect")
+                #
+                self.log_convergence(i, rs, self.eps)
+                #
+                if i % self.nf == 0:
+                    self.log(
+                        f"iteration {i}: f(x) = {f(x):.15e}, |df|/sqrt(dof) = {rs:e}, beta = {beta}, step = {c*self.step}"
+                    )
+                #
+                if rs <= self.eps:
+                    self.log(
+                        f"converged in {i+1} iterations: f(x) = {f(x):.15e}, |df|/sqrt(dof) = {rs:e}"
+                    )
+                    return True
+                #
+                if abs(c) > self.max_c:
+                    d_last = None
+                    s_last = None
+                    continue
+                # keep last search direction
+                d_last = d
+                s_last = s
+                #
+            self.log(
+                f"NOT converged in {i+1} iterations;  |df|/sqrt(dof) = {rs:e} / {self.eps:e}"
+            )
+            return False
+            #
+        return opt
+
 @q.timer_verbose
 def gauge_fix_coulomb(
         gf,
         *,
-        mpi_split = [ 1, 1, 1, ],
+        mpi_split = None,
         maxiter_gd = 10,
         maxiter_cg = 200,
-        maxcycle_cg = 50,
+        maxcycle_cg = 50000,
         log_every = 1,
         eps = 1e-12,
         step = 0.3,
@@ -406,6 +541,8 @@ def gauge_fix_coulomb(
     Usep = [g.separate(u, 3) for u in U[0:3]]
     Vt = [g.mcolor(Usep[0][0].grid) for t in range(Nt)]
     cache = {}
+    if mpi_split is None:
+        mpi_split = g.default.get_ivec("--mpi_split", [ 1, 1, 1, ], 3)
     split_grid = Usep[0][0].grid.split(mpi_split, Usep[0][0].grid.fdimensions)
     #
     g.message("Split grid")
@@ -414,20 +551,20 @@ def gauge_fix_coulomb(
     #
     # optimizer
     opt = g.algorithms.optimize
-    cg = opt.non_linear_cg(
-        maxiter=maxiter_cg,
-        eps=eps,
-        step=step,
-        line_search=opt.line_search_quadratic,
-        log_functional_every=log_every,
-        beta=opt.polak_ribiere,
-    )
+    cg = non_linear_cg(
+            maxiter = maxiter_cg,
+            eps = eps,
+            step = step,
+            line_search = line_search_quadratic,
+            log_functional_every = log_every,
+            beta = opt.polak_ribiere,
+            )
     gd = opt.gradient_descent(
-        maxiter=maxiter_gd,
-        eps=eps,
-        step=step_gd,
-        log_functional_every=log_every,
-    )
+            maxiter = maxiter_gd,
+            eps = eps,
+            step = step_gd,
+            log_functional_every = log_every,
+            )
     #
     # Coulomb functional on each time-slice
     Nt_split = len(Vt_split)
@@ -442,11 +579,13 @@ def gauge_fix_coulomb(
             rng.element(Vt_split[t])
         else:
             Vt_split[t] @= g.identity(Vt_split[t])
-        if not gd(fa)(Vt_split[t], Vt_split[t]):
-            for i in range(maxcycle_cg):
-                Vt_split[t] = g.project(Vt_split[t], "defect")
-                if cg(fa)(Vt_split[t], Vt_split[t]):
-                    break
+        for i in range(maxcycle_cg):
+            q.displayln(f"Running cg_cycle={i} local time slice {t} / {Nt_split} id_node={q.get_id_node()}")
+            Vt_split[t] = g.project(Vt_split[t], "defect")
+            if gd(fa)(Vt_split[t], Vt_split[t]):
+                break
+            if cg(fa)(Vt_split[t], Vt_split[t]):
+                break
         q.displayln(f"Finish local time slice {t} / {Nt_split} id_node={q.get_id_node()}")
     #
     for t in range(Nt_split):

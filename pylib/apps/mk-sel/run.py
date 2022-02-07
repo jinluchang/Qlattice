@@ -2,48 +2,69 @@
 
 # Need --mpi X.X.X.X --mpi X.X.X runtime option
 
-import qlat as q
-import gpt as g
 import qlat_gpt as qg
 import rbc_ukqcd as ru
-import rbc_ukqcd_params as rup
-import pprint
-
-import os
 
 from jobs import *
 
 load_path_list[:] = [
         "results",
+        "../mk-gf-gt/results",
         "../qcddata",
         os.path.join(os.getenv("HOME"), "qcddata"),
+        os.path.join(os.getenv("HOME"), "Qlat-sample-data/mk-gf-gt/results"),
         ]
 
 @q.timer_verbose
 def run_job(job_tag, traj):
     fns_produce = [
-            (f"configs/{job_tag}/ckpoint_lat.{traj}", f"configs/{job_tag}/ckpoint_lat.IEEE64BIG.{traj}",),
-            f"gauge-transform/{job_tag}/traj={traj}.field",
+            f"point-selection/{job_tag}/traj={traj}.txt",
+            f"field-selection/{job_tag}/traj={traj}.field",
             ]
     fns_need = [
             (f"configs/{job_tag}/ckpoint_lat.{traj}", f"configs/{job_tag}/ckpoint_lat.IEEE64BIG.{traj}",),
             ]
-    if job_tag[:5] == "test-":
-        fns_need = []
     if not check_job(job_tag, traj, fns_produce, fns_need):
         return
     #
-    get_gf = run_gf(job_tag, traj)
-    get_gt = run_gt(job_tag, traj, get_gf)
+    get_psel = run_psel(job_tag, traj)
+    get_fsel = run_fsel(job_tag, traj, get_psel)
+    assert get_psel is not None
+    assert get_fsel is not None
     #
     q.clean_cache()
     q.timer_display()
 
 rup.dict_params["test-4nt8"]["trajs"] = list(range(1000, 1400, 100))
 rup.dict_params["test-4nt16"]["trajs"] = list(range(1000, 1400, 100))
-rup.dict_params["48I"]["trajs"] = list(range(500, 3000, 5))
-rup.dict_params["16IH2"]["trajs"] = list(range(500, 5000, 10))
+rup.dict_params["48I"]["trajs"] = list(range(3000, 500, -5))
+rup.dict_params["16IH2"]["trajs"] = list(range(1000, 5000, 10))
 rup.dict_params["32IfineH"]["trajs"] = list(range(1000, 10000, 50))
+
+rup.dict_params["test-4nt8"]["n_points"] = [
+        [ 6, 2, 1, ],
+        [ 3, 2, 1, ],
+        ]
+
+rup.dict_params["test-4nt16"]["n_points"] = [
+        [ 32, 4, 2, ],
+        [ 16, 4, 2, ],
+        ]
+
+rup.dict_params["48I"]["n_points"] = [
+        [ 2048, 64, 16, ],
+        [ 1024, 64, 16, ],
+        ]
+
+rup.dict_params["16IH2"]["n_points"] = [
+        [ 256, 8, 2, ],
+        [ 128, 8, 2, ],
+        ]
+
+rup.dict_params["32IfineH"]["n_points"] = [
+        [ 512, 16, 4, ],
+        [ 256, 16, 4, ],
+        ]
 
 qg.begin_with_gpt()
 

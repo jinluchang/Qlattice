@@ -113,16 +113,16 @@ def run_gt(job_tag, traj, get_gf):
 # ----------
 
 @q.timer
-def mk_rand_wall_src_info_n_exact(job_tag, traj, inv_type):
+def mk_rand_wall_src_info(job_tag, traj, inv_type):
     import rbc_ukqcd as ru
-    params = rup.dict_params[job_tag]
-    n_exact = params["n_exact_wsrc"]
+    # wi is a list of [ idx tslice inv_type inv_acc ]
     rs = q.RngState(f"seed {job_tag} {traj}").split("mk_rand_wall_src_info")
     inv_acc_s = 1
     inv_acc_e = 2
     total_site = ru.get_total_site(job_tag)
     t_size = total_site[3]
-    wi_s = [ [ t, inv_type, inv_acc_s, ] for t in range(t_size) ]
+    wi_s = [ [ t, inv_type, inv_acc_s ] for t in range(t_size) ]
+    n_exact = 2
     mask = [ False, ] * t_size
     for i in range(n_exact):
         t_e = rs.rand_gen() % t_size
@@ -130,39 +130,11 @@ def mk_rand_wall_src_info_n_exact(job_tag, traj, inv_type):
     wi_e = []
     for t in range(t_size):
         if mask[t]:
-            wi_e.append([ t, inv_type, inv_acc_e, ])
+            wi_e.append([ t, inv_type, inv_acc_e ])
     wi = wi_e + wi_s
     for i in range(len(wi)):
         wi[i] = [ i, ] + wi[i]
     return wi
-
-@q.timer
-def mk_rand_wall_src_info_prob(job_tag, traj, inv_type):
-    import rbc_ukqcd as ru
-    params = rup.dict_params[job_tag]
-    prob = params["prob_exact_wsrc"]
-    rs = q.RngState(f"seed {job_tag} {traj}").split("mk_rand_wall_src_info_prob")
-    inv_acc_s = 1
-    inv_acc_e = 2
-    total_site = ru.get_total_site(job_tag)
-    t_size = total_site[3]
-    wi_s = [ [ t, inv_type, inv_acc_s, ] for t in range(t_size) ]
-    wi_e = []
-    for t in range(t_size):
-        if rs.u_rand_gen() < prob:
-            wi_e.append([ t, inv_type, inv_acc_e, ])
-    wi = wi_e + wi_s
-    for i in range(len(wi)):
-        wi[i] = [ i, ] + wi[i]
-    return wi
-
-@q.timer
-def mk_rand_wall_src_info(job_tag, traj, inv_type):
-    # wi is a list of [ idx tslice inv_type inv_acc ]
-    params = rup.dict_params[job_tag]
-    if "prob_exact_wsrc" not in params:
-        return mk_rand_wall_src_info_n_exact(job_tag, traj, inv_type)
-    return mk_rand_wall_src_info_prob(job_tag, traj, inv_type)
 
 @q.timer
 def save_wall_src_info(wi, path):
@@ -224,7 +196,6 @@ def mk_rand_psel(job_tag, traj):
     n_points = get_n_points(job_tag, traj, 0, 0)
     psel = q.PointSelection()
     psel.set_rand(rs, total_site, n_points)
-    psel.geo = q.Geometry(total_site)
     return psel
 
 @q.timer_verbose
@@ -241,13 +212,10 @@ def run_psel(job_tag, traj):
             return None
     @q.timer_verbose
     def load_psel():
-        import rbc_ukqcd as ru
         path_psel = get_load_path(tfn)
         assert path_psel is not None
         psel = q.PointSelection()
         psel.load(path_psel)
-        total_site = ru.get_total_site(job_tag)
-        psel.geo = q.Geometry(total_site)
         return psel
     return q.lazy_call(load_psel)
 

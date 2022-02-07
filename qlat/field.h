@@ -31,6 +31,10 @@ struct Field {
     field.init();
   }
   void init(const Geometry& geo_)
+  // only initialize if uninitilized
+  // if initialized already, then check for matching geo (including
+  // multiplicity)
+  // can have different geo expansion
   {
     if (!initialized) {
       TIMER("Field::init(geo)");
@@ -54,6 +58,10 @@ struct Field {
     }
   }
   void init(const Geometry& geo_, const int multiplicity_)
+  // only initialize if uninitilized
+  // if initialized already, then check for matching geo (including
+  // multiplicity)
+  // can have different geo expansion
   {
     if (!initialized) {
       TIMER("Field::init(geo,mult)");
@@ -77,6 +85,8 @@ struct Field {
     }
   }
   void init(const Field<M>& f)
+  // initialize to be identical to f if uninitilized
+  // otherwise use assignment operator
   {
     if (!initialized) {
       TIMER("Field::init(f)");
@@ -93,11 +103,17 @@ struct Field {
   Field(Field<M>&&) noexcept = default;
   //
   const Field<M>& operator=(const Field<M>& f)
+  // skip if same object
+  // otherwise:
+  // 1. assert f is initialized
+  // 2. init with geo_resize(f.geo())
+  // 3. copy content
   {
     if (this == &f) {
       return *this;
     }
     TIMER_FLOPS("Field::operator=");
+    qassert(f.initialized);
     init(geo_resize(f.geo()));
     const Geometry& geo_v = geo();
     const int multiplicity = geo_v.multiplicity;

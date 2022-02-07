@@ -7,11 +7,15 @@ from qlat.utils_io import *
 
 class PointSelection:
 
-    def __init__(self, coordinate_list = None):
+    # self.geo
+    # self.cdata
+
+    def __init__(self, coordinate_list = None, geo = None):
         if None == coordinate_list:
             self.cdata = c.mk_psel()
         else:
             self.cdata = c.mk_psel(coordinate_list)
+        self.geo = geo
 
     def __del__(self):
         c.free_psel(self)
@@ -19,6 +23,7 @@ class PointSelection:
     def __imatmul__(self, v1):
         assert isinstance(v1, PointSelection)
         c.set_psel(self, v1)
+        self.geo = v1.geo
         return self
 
     def copy(self):
@@ -28,19 +33,22 @@ class PointSelection:
 
     def set_rand(self, rs, total_site, n_points):
         c.set_rand_psel(self, rs, total_site, n_points)
+        self.geo = Geometry(total_site)
 
     def save(self, path):
         mk_file_dirs_info(path)
         c.save_psel(self, path)
 
-    def load(self, path):
+    def load(self, path, geo = None):
         c.load_psel(self, path)
+        self.geo = geo
 
     def to_list(self):
         return c.mk_list_psel(self)
 
-    def from_list(self, coordinate_list):
+    def from_list(self, coordinate_list, geo = None):
         c.set_list_psel(self, coordinate_list)
+        self.geo = geo
         return self
 
 cache_point_selection = mk_cache("point_selection")
@@ -52,10 +60,13 @@ def get_psel_tslice(total_site):
     if total_site_tuple not in cache_point_selection:
         psel = PointSelection()
         c.set_tslice_psel(psel, total_site)
+        psel.geo = Geometry(total_site)
         cache_point_selection[total_site_tuple] = psel
     return cache_point_selection[total_site_tuple]
 
 class FieldSelection:
+
+    # self.cdata
 
     def __init__(self, total_site = None, n_per_tslice = -1, rs = None, psel = None):
         self.cdata = c.mk_fsel()
@@ -93,14 +104,42 @@ class FieldSelection:
         self.update()
         self.update(n_per_tslice)
 
-    def add_psel(self, psel):
-        c.add_psel_fsel(self, psel)
+    def add_psel(self, psel, rank_psel = 1024 * 1024 * 1024 * 1024 * 1024):
+        # Add psel points to the selection, with the rank specified as rank_psel.
+        # If the point is already selected with lower rank, the rank is unchanged.
+        c.add_psel_fsel(self, psel, rank_psel)
         self.update()
 
     def update(self, n_per_tslice = -1):
         # if n_per_tslice < 0: only update various indices
-        # if n_per_tslice >= 0: only update parameters
+        # if n_per_tslice >= 0: only update parameters (n_per_tslice and prob)
         c.update_fsel(self, n_per_tslice)
+
+    def select_rank_range(self, rank_start = 0, rank_stop = -1):
+        # return new fsel with selected points that
+        # rank_start <= rank and (rank < rank_stop or rank_stop == -1)
+        # Does NOT change the n_per_tslice parameter for the new fsel
+        fsel = FieldSelection()
+        c.select_rank_range_fsel(fsel, self, rank_start, rank_stop)
+        fsel.update()
+        fsel.update(self.n_per_tslice())
+        return fsel
+
+    def select_t_range(self, rank_start = 0, rank_stop = -1):
+        # return new fsel with selected points that
+        # t_start <= t and (t < t_stop or t_stop == -1)
+        # rank_start <= rank < rank_stop (rank_stop = -1 implies unlimited)
+        # Does NOT change the n_per_tslice parameter for the new fsel
+        fsel = FieldSelection()
+        c.select_rank_range_fsel(fsel, self, rank_start, rank_stop)
+        fsel.update()
+        fsel.update(self.n_per_tslice())
+        return fsel
+
+    def to_psel(self):
+        psel = PointSelection(None, self.geo())
+        c.set_psel_fsel(psel, self)
+        return psel
 
     def save(self, path):
         mk_file_dirs_info(path)
@@ -127,3 +166,6 @@ class FieldSelection:
         # return fsel.prob
         # n_per_tslice / spatial_volume
         return c.get_prob_fsel(self)
+
+def is_matching_fsel(fsel1, fsel2):
+    return c.is_matching_fsel(fsel1, fsel2)

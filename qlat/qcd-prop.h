@@ -282,8 +282,8 @@ inline void set_wall_src_propagator(Propagator4d& prop, const Inverter& inv,
 }
 
 inline void set_rand_u1_src_psel(Propagator4d& prop, FieldM<Complex, 1>& fu1,
-                                 const Geometry& geo_,
-                                 const PointSelection& psel, const RngState& rs)
+                                 const PointSelection& psel,
+                                 const Geometry& geo_, const RngState& rs)
 {
   TIMER_VERBOSE("set_rand_u1_src_psel");
   const Geometry geo = geo_reform(geo_);
@@ -319,6 +319,47 @@ inline void set_rand_u1_sol_psel(SelectedPoints<WilsonMatrix>& sp_prop,
   qthread_for(idx, (long)psel.size(), {
     const Complex& u1 = sp_fu1.get_elem(idx);
     WilsonMatrix& wm = sp_prop.get_elem(idx);
+    wm *= qlat::qconj(u1);
+  });
+}
+
+inline void set_rand_u1_src_fsel(Propagator4d& prop, FieldM<Complex, 1>& fu1,
+                                 const FieldSelection& fsel, const RngState& rs)
+{
+  TIMER_VERBOSE("set_rand_u1_src_fsel");
+  const Geometry& geo = fsel.f_rank.geo();
+  const Coordinate total_site = geo.total_site();
+  prop.init(geo);
+  fu1.init(geo);
+  set_zero(prop);
+  set_zero(fu1);
+  qthread_for(idx, fsel.n_elems, {
+    const long index = fsel.indices[idx];
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Coordinate xg = geo.coordinate_g_from_l(xl);
+    qassert(geo.is_local(xl));
+    const long gindex = index_from_coordinate(xg, total_site);
+    RngState rst = rs.newtype(gindex);
+    const double phase = u_rand_gen(rst, PI, -PI);
+    const Complex u1 = std::polar(1.0, phase);
+    set_unit(prop.get_elem(xl), u1);
+    fu1.get_elem(xl) = u1;
+  });
+}
+
+inline void set_rand_u1_sol_fsel(SelectedField<WilsonMatrix>& sf_prop,
+                                 const Propagator4d& prop,
+                                 const FieldM<Complex, 1>& fu1,
+                                 const FieldSelection& fsel)
+// calculate self loop at fsel locations
+{
+  TIMER_VERBOSE("set_rand_u1_sol_fsel")
+  SelectedField<Complex> sf_fu1;
+  set_selected_field(sf_prop, prop, fsel);
+  set_selected_field(sf_fu1, fu1, fsel);
+  qthread_for(idx, fsel.n_elems, {
+    const Complex& u1 = sf_fu1.get_elem(idx);
+    WilsonMatrix& wm = sf_prop.get_elem(idx);
     wm *= qlat::qconj(u1);
   });
 }

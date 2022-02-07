@@ -101,9 +101,11 @@ def mk_ceig(gf, job_tag, inv_type, inv_acc = 0):
     gpt_gf = g.convert(qg.gpt_from_qlat(gf), g.single)
     parity = g.odd
     params = get_lanc_params(job_tag, inv_type, inv_acc)
+    cparams = get_clanc_params(job_tag, inv_type, inv_acc)
+    assert cparams["nbasis"] <= params["irl_params"]["Nstop"]
+    fermion_params = params["fermion_params"]
     q.displayln_info(f"mk_ceig: job_tag={job_tag} inv_type={inv_type} inv_acc={inv_acc}")
     q.displayln_info(f"mk_ceig: params=\n{pprint.pformat(params)}")
-    fermion_params = params["fermion_params"]
     if "omega" in fermion_params:
         qm = g.qcd.fermion.zmobius(gpt_gf, fermion_params)
     else:
@@ -127,7 +129,6 @@ def mk_ceig(gf, job_tag, inv_type, inv_acc = 0):
     #
     inv = g.algorithms.inverter
     #
-    cparams = get_clanc_params(job_tag, inv_type, inv_acc)
     q.displayln_info(f"mk_ceig: cparams=\n{pprint.pformat(cparams)}")
     #
     grid_coarse = g.block.grid(qm.F_grid_eo, [ get_ls_from_fermion_params(fermion_params) ] + cparams["block"])
@@ -164,6 +165,33 @@ def mk_ceig(gf, job_tag, inv_type, inv_acc = 0):
     return basis, cevec, smoothed_evals
 
 @q.timer_verbose
+def get_smoothed_evals(basis, cevec, gf, job_tag, inv_type, inv_acc = 0):
+    gpt_gf = g.convert(qg.gpt_from_qlat(gf), g.single)
+    parity = g.odd
+    params = get_lanc_params(job_tag, inv_type, inv_acc)
+    cparams = get_clanc_params(job_tag, inv_type, inv_acc)
+    assert cparams["nbasis"] <= params["irl_params"]["Nstop"]
+    fermion_params = params["fermion_params"]
+    if "omega" in fermion_params:
+        qm = g.qcd.fermion.zmobius(gpt_gf, fermion_params)
+    else:
+        qm = g.qcd.fermion.mobius(gpt_gf, fermion_params)
+    w = g.qcd.fermion.preconditioner.eo2_ne(parity=parity)(qm)
+    inv = g.algorithms.inverter
+    grid_coarse = g.block.grid(qm.F_grid_eo, [ get_ls_from_fermion_params(fermion_params) ] + cparams["block"])
+    b = g.block.map(grid_coarse, basis)
+    smoother = inv.cg(cparams["smoother_params"])(w.Mpc)
+    smoothed_evals = []
+    tmpf = g.lattice(basis[0])
+    for i, cv in enumerate(cevec):
+        tmpf @= smoother * b.promote * cv
+        evals = g.algorithms.eigen.evals(
+            w.Mpc, [tmpf], calculate_eps2 = False, real=True
+        )
+        smoothed_evals = smoothed_evals + evals
+    return smoothed_evals
+
+@q.timer_verbose
 def save_ceig(path, eig, job_tag, inv_type = 0, inv_acc = 0):
     if path is None:
         return
@@ -171,6 +199,7 @@ def save_ceig(path, eig, job_tag, inv_type = 0, inv_acc = 0):
     nsingle = save_params["nsingle"]
     mpi = save_params["mpi"]
     fmt = g.format.cevec({"nsingle": nsingle, "mpi": [ 1 ] + mpi, "max_read_blocks": 8})
+    q.mk_file_dirs_info(path)
     g.save(path, eig, fmt);
 
 @q.timer_verbose
@@ -280,11 +309,14 @@ def mk_gpt_inverter(gf, job_tag, inv_type, inv_acc, *,
             maxiter = 200
         else:
             raise Exception("mk_gpt_inverter")
+        q.sync_node()
+        q.displayln_info(f"mk_gpt_inverter: eps={eps} max_cycle={maxiter}")
         slv_qm = qm.propagator(
                 inv.defect_correcting(
                     inv.mixed_precision(
                         slv_5d, g.single, g.double),
                     eps=eps, maxiter=maxiter)).grouped(n_grouped)
+        q.displayln_info(f"mk_gpt_inverter: make inv_qm")
         if qtimer is True:
             qtimer = q.Timer(f"py:inv({job_tag},{inv_type},{inv_acc})", True)
         elif qtimer is False:
@@ -343,7 +375,7 @@ def mk_inverter(*args, **kwargs):
 
 @q.timer
 def get_inv(gf, job_tag, inv_type, inv_acc, *, gt = None, mpi_split = None, n_grouped = 1, eig = None, eps = 1e-8, qtimer = True):
-    tag = f"rbc_ukqcd.get_inv gf={id(gf)} {job_tag} {inv_type} {inv_acc} gt={id(gt)} {mpi_split} {n_grouped} eig={id(eig)} {eps} qtimer={id(qtimer)}"
+    tag = f"rbc_ukqcd.get_inv gf={id(gf)} {job_tag} inv_type={inv_type} inv_acc={inv_acc} gt={id(gt)} mpi_split={mpi_split} n_grouped={n_grouped} eig={id(eig)} eps={eps} qtimer={id(qtimer)}"
     if tag in q.cache_inv:
         return q.cache_inv[tag]["inv"]
     inv = mk_inverter(gf, job_tag, inv_type, inv_acc,

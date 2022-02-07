@@ -211,6 +211,14 @@ inline void clf_topology_field(FieldM<double, 1>& topf,
   });
 }
 
+inline void clf_topology_field(FieldM<double, 1>& topf, const GaugeField& gf)
+{
+  TIMER("clf_topology_field");
+  CloverLeafField clf;
+  gf_clover_leaf_field(clf, gf);
+  clf_topology_field(topf, clf);
+}
+
 inline void clf_topology_field_5(FieldM<double, 1>& topf,
                                  const CloverLeafField& clf1,
                                  const CloverLeafField& clf2,

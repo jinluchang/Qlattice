@@ -2,8 +2,8 @@ import rbc_ukqcd_params as rup
 
 def mk_test_l_t_list():
     lt_list = []
-    for l in [4, 8, 12, 16, 24, 32, 48, 64, 96, 128,]:
-        for t in [4, 8, 12, 16, 24, 32, 48, 64, 96, 128, 192, 256,]:
+    for l in [ 4, 8, 12, 16, 24, 32, 48, 64, 96, 128, ]:
+        for t in [ 4, 8, 12, 16, 24, 32, 48, 64, 96, 128, 192, 256, ]:
             lt_list.append([l, t,])
     return lt_list
 
@@ -68,7 +68,7 @@ def mk_clanc_params(job_tag, inv_type, inv_acc):
     assert inv_acc == 0
     block = [ 2, 2, 2, 2 ]
     nbasis = 20
-    cheby_params = {"low": 0.20, "high": 5.5, "order": 50}
+    cheby_params = { "low": 0.20, "high": 5.5, "order": 50, }
     irl_params = {
             "Nstop": 30,
             "Nk": 35,
@@ -79,8 +79,8 @@ def mk_clanc_params(job_tag, inv_type, inv_acc):
             "Nminres": 1,
             # "maxapply": 100
             }
-    smoother_params = {"eps": 1e-8, "maxiter": 100}
-    save_params = {"nsingle": 10, "mpi": [ 1, 1, 1, 4, ]}
+    smoother_params = { "eps": 1e-8, "maxiter": 10, }
+    save_params = { "nsingle": 10, "mpi": [ 1, 1, 1, 4, ], }
     return {
             "block": block,
             "nbasis": nbasis,
@@ -97,10 +97,10 @@ def setup_params():
         rup.dict_params[job_tag] = dict_params
         dict_params["job_tag"] = job_tag
         dict_params["total_site"] = [ l, l, l, t, ]
-        dict_params["load_config_params"] = { "twist_boundary_at_boundary" : [ 0.0, 0.0, 0.0, -0.5, ] }
+        dict_params["load_config_params"] = { "twist_boundary_at_boundary" : [ 0.0, 0.0, 0.0, -0.5, ], }
         dict_params["fermion_params"] = mk_dict_fermion_params()
-        dict_lanc_params = { 0:{ 0:mk_lanc_params(job_tag, 0, 0) } }
-        dict_clanc_params = { 0:{ 0:mk_clanc_params(job_tag, 0, 0) } }
+        dict_lanc_params = { 0: { 0: mk_lanc_params(job_tag, 0, 0), }, }
+        dict_clanc_params = { 0: { 0: mk_clanc_params(job_tag, 0, 0), }, }
         dict_params["lanc_params"] = dict_lanc_params
         dict_params["clanc_params"] = dict_clanc_params
 

@@ -831,6 +831,7 @@ void shuffle_field(std::vector<Field<M> >& fs, const Field<M>& f,
 template <class M>
 void shuffle_field_back(Field<M>& f, const std::vector<Field<M> >& fs,
                         const Coordinate& new_size_node)
+// f needs to have correct size
 {
   sync_node();
   TIMER_FLOPS("shuffle_field_back");
@@ -845,7 +846,7 @@ void shuffle_field_back(Field<M>& f, const std::vector<Field<M> >& fs,
 
 template <class M>
 void shuffle_field(std::vector<SelectedField<M> >& fs,
-                   std::vector<SelectedField<M> >& fsels,
+                   std::vector<FieldSelection>& fsels,
                    const SelectedField<M>& f, const Coordinate& new_size_node,
                    const FieldSelection& fsel)
 {
@@ -864,6 +865,7 @@ void shuffle_field_back(SelectedField<M>& f,
                         const std::vector<SelectedField<M> >& fs,
                         const Coordinate& new_size_node,
                         const FieldSelection& fsel)
+// f needs to have correct size
 {
   sync_node();
   TIMER_FLOPS("shuffle_field_back");
