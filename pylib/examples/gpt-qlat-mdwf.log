@@ -58,50 +58,10 @@ q_mem_cache_max_size=512 (default)
 q_mem_cache_acc_max_size=512 (default)
 CommPlanCache: to add 1 / 32.
 gf_show_info: plaq = 0.9745055472546029 ; link_trace = 0.9934624069374576.
-qlat geo created
-gpt field made
-qlat field made
-gpt coordinates collected
-qlat mview made
-gpt_from_qlat
-plan initialized
-plan source added
-plan destination added
-plan created
 g.qcd.gauge.plaquette = 0.97450554725460303
-qlat geo created
-gpt field made
-qlat field made
-gpt coordinates collected
-qlat mview made
-qlat_from_gpt
-plan initialized
-plan destination added
-plan source added
-plan created
 gf_show_info: plaq = 0.9745055472546029 ; link_trace = 0.9934624069374576.
-qlat geo created
-gpt field made
-qlat field made
-gpt coordinates collected
-qlat mview made
-qlat_from_gpt
-plan initialized
-plan destination added
-plan source added
-plan created
 ShufflePlanCache: to add 1 / 16.
 src info 12.0 2788420690
-qlat geo created
-gpt field made
-qlat field made
-gpt coordinates collected
-qlat mview made
-gpt_from_qlat
-plan initialized
-plan source added
-plan destination added
-plan created
 sol info 2.6831554203321275 537630835
 sol1 info 230.62344040022285 4013380050
 q.contract_pion_field(sol) #       tsep                 RE-VALUE                 IM-VALUE

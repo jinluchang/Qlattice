@@ -153,16 +153,6 @@ set q_field_init=fast.
 q_mem_cache_max_size=512 (default)
 q_mem_cache_acc_max_size=512 (default)
 CommPlanCache: to add 1 / 32.
-qlat geo created
-gpt field made
-qlat field made
-gpt coordinates collected
-qlat mview made
-gpt_from_qlat
-plan initialized
-plan source added
-plan destination added
-plan created
 mk_file_dirs_info: 'results/configs/test-4nt16/ckpoint_lat.1000'.
 load_gauge_field: 'results/configs/test-4nt16/ckpoint_lat.1000'.
 q_read_par_limit=16 (default)
@@ -209,56 +199,50 @@ mk_gpt_inverter: job_tag=test-4nt16 inv_type=0 inv_acc=2 mpi_split=False n_group
 mk_gpt_inverter: set qm params={'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 8, 'mass': 0.01}
 mk_gpt_inverter: mpi_split=None n_grouped=1
 mk_gpt_inverter: deal with is_madwf=False
-qlat geo created
-gpt field made
-qlat field made
-gpt coordinates collected
-qlat mview made
-gpt_from_qlat
-plan initialized
-plan source added
-plan destination added
-plan created
-qlat geo created
-gpt field made
-qlat field made
-gpt coordinates collected
-qlat mview made
-qlat_from_gpt
-plan initialized
-plan destination added
-plan source added
-plan created
+mk_gpt_inverter: eps=1e-10 max_cycle=200
+mk_gpt_inverter: make inv_qm
 sol_ref norm 861.3802017882396 with eig
 mk_gpt_inverter: job_tag=test-4nt16 inv_type=0 inv_acc=0 mpi_split=False n_grouped=1
 mk_gpt_inverter: set qm params={'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 8, 'mass': 0.01}
 mk_gpt_inverter: mpi_split=None n_grouped=1
 mk_gpt_inverter: deal with is_madwf=False
+mk_gpt_inverter: eps=1e-08 max_cycle=1
+mk_gpt_inverter: make inv_qm
 sol diff norm 0.0007183587501873392 inv_acc=0 with eig
 mk_gpt_inverter: job_tag=test-4nt16 inv_type=0 inv_acc=0 mpi_split=False n_grouped=1
 mk_gpt_inverter: set qm params={'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 8, 'mass': 0.01}
 mk_gpt_inverter: mpi_split=None n_grouped=1
 mk_gpt_inverter: deal with is_madwf=False
+mk_gpt_inverter: eps=1e-08 max_cycle=1
+mk_gpt_inverter: make inv_qm
 sol diff norm 3.221866691304143 inv_acc=0 without eig
 mk_gpt_inverter: job_tag=test-4nt16 inv_type=0 inv_acc=1 mpi_split=False n_grouped=1
 mk_gpt_inverter: set qm params={'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 8, 'mass': 0.01}
 mk_gpt_inverter: mpi_split=None n_grouped=1
 mk_gpt_inverter: deal with is_madwf=False
+mk_gpt_inverter: eps=1e-08 max_cycle=2
+mk_gpt_inverter: make inv_qm
 sol diff norm 1.9228375575870995e-10 inv_acc=1 with eig
 mk_gpt_inverter: job_tag=test-4nt16 inv_type=0 inv_acc=1 mpi_split=False n_grouped=1
 mk_gpt_inverter: set qm params={'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 8, 'mass': 0.01}
 mk_gpt_inverter: mpi_split=None n_grouped=1
 mk_gpt_inverter: deal with is_madwf=False
+mk_gpt_inverter: eps=1e-08 max_cycle=2
+mk_gpt_inverter: make inv_qm
 sol diff norm 0.023478380768015096 inv_acc=1 without eig
 mk_gpt_inverter: job_tag=test-4nt16 inv_type=0 inv_acc=2 mpi_split=False n_grouped=1
 mk_gpt_inverter: set qm params={'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 8, 'mass': 0.01}
 mk_gpt_inverter: mpi_split=None n_grouped=1
 mk_gpt_inverter: deal with is_madwf=False
+mk_gpt_inverter: eps=1e-08 max_cycle=200
+mk_gpt_inverter: make inv_qm
 sol diff norm 0.0 inv_acc=2 with eig
 mk_gpt_inverter: job_tag=test-4nt16 inv_type=0 inv_acc=2 mpi_split=False n_grouped=1
 mk_gpt_inverter: set qm params={'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 8, 'mass': 0.01}
 mk_gpt_inverter: mpi_split=None n_grouped=1
 mk_gpt_inverter: deal with is_madwf=False
+mk_gpt_inverter: eps=1e-08 max_cycle=200
+mk_gpt_inverter: make inv_qm
 sol diff norm 1.8627073662059613e-13 inv_acc=2 without eig
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 1.

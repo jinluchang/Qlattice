@@ -54,44 +54,14 @@ qremove: 'results'
 geo.show() = Geometry([4, 4, 4, 8], 1)
 g.qcd.gauge.plaquette = 0.94517601648581551
 g.qcd.gauge.plaquette = 0.94517599211798775 single precision
-qlat geo created
-gpt field made
 q_field_init=fast (default)
 set q_field_init=fast.
-qlat field made
-gpt coordinates collected
-qlat mview made
-qlat_from_gpt
-plan initialized
-plan destination added
-plan source added
-plan created
 q_mem_cache_max_size=512 (default)
 q_mem_cache_acc_max_size=512 (default)
 CommPlanCache: to add 1 / 32.
 gf_show_info: plaq = 0.9451760164858156 ; link_trace = 0.9861007789909704.
-qlat geo created
-gpt field made
-qlat field made
-gpt coordinates collected
-qlat mview made
-qlat_from_gpt
-plan initialized
-plan destination added
-plan source added
-plan created
 ShufflePlanCache: to add 1 / 16.
 src info 12.0 2788420690
-qlat geo created
-gpt field made
-qlat field made
-gpt coordinates collected
-qlat mview made
-gpt_from_qlat
-plan initialized
-plan source added
-plan destination added
-plan created
 sol info 1.195616283925891 1974843651
 sol1 info 5.803159633046483 2628055279
 src info 12.0 2788420690

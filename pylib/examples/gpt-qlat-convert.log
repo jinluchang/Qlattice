@@ -58,28 +58,8 @@ q_mem_cache_acc_max_size=512 (default)
 CommPlanCache: to add 1 / 32.
 gf_show_info: plaq = 0.6530770929880311 ; link_trace = 0.8973818884500859.
 test_gf
-qlat geo created
-gpt field made
-qlat field made
-gpt coordinates collected
-qlat mview made
-gpt_from_qlat
-plan initialized
-plan source added
-plan destination added
-plan created
 gf.plaq()=0.6530770929880311 ; g.qcd.gauge.plaquette(gpt_gf) = 0.65307709298803107
 test_src: xg=[0, 2, 2, 1]
-qlat geo created
-gpt field made
-qlat field made
-gpt coordinates collected
-qlat mview made
-qlat_from_gpt
-plan initialized
-plan destination added
-plan source added
-plan created
 12.0 12.0 0.0
 test_src: xg=[0, 3, 1, 6]
 12.0 12.0 0.0
