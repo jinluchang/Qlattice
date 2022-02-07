@@ -312,6 +312,7 @@ inline void set_sm_force_no_comm(Field<double>&  sm_force, const Field<double>& 
   TIMER("set_sm_force_no_comm");
   const double m_sq = sa.m_sq;
   const double lmbd = sa.lmbd;
+  const double alpha = sa.alpha;
   const Geometry geo = sf.geo();
   sm_force.init(geo);
   qacc_for(index, geo.local_volume(), {
@@ -327,6 +328,7 @@ inline void set_sm_force_no_comm(Field<double>&  sm_force, const Field<double>& 
     
     for (int m = 0; m < M; ++m) {
 	  sm_force_v[m] = (2*4 + m_sq + lmbd/6*sum_mult_sq)*sf.get_elem(xl,m);
+	  if (m==0) sm_force_v[m] += alpha;
 	  for (int dir = 0; dir < 4; ++dir) {
 		xl[dir] += 1;
 		sm_force_v[m] -= sf.get_elem(xl,m);
@@ -354,6 +356,25 @@ inline void set_sm_force(Field<double>&  sm_force, const Field<double>&  sf,
   //    get_comm_plan(set_marks_field_gm_force, tag_comm, gf_ext.geo());
   refresh_expanded(sf_ext); //, plan);
   set_sm_force_no_comm(sm_force, sf_ext, sa);
+}
+
+inline double sf_sum_phi1_no_comm(const Field<double>& sf)
+{
+  TIMER("sf_sum_phi1_no_comm");
+  const Geometry geo = sf.geo();
+  const Geometry geo_r = geo_reform(geo);
+  FieldM<double, 1> fd;
+  fd.init(geo_r);
+  qacc_for(index, geo_r.local_volume(), {
+    Coordinate xl = geo_r.coordinate_from_index(index);
+    // Get just the first scalar field (phi_1)
+    fd.get_elem(index) = sf.get_elem(xl,0);
+  });
+  double sum = 0.0;
+  for (long index = 0; index < geo_r.local_volume(); ++index) {
+    sum += fd.get_elem(index);
+  }
+  return sum;
 }
 
 inline double sf_sum_sq_der_no_comm(const Field<double>& sf)
@@ -428,9 +449,12 @@ inline double sf_hamilton_node_no_comm(const Field<double>& sf,
   TIMER("sf_hamilton_node_no_comm");
   const double m_sq = sa.m_sq;
   const double lmbd = sa.lmbd;
+  const double alpha = sa.alpha;
+  const double sum_phi1 = sf_sum_phi1_no_comm(sf);
   const double sum_sq_der = sf_sum_sq_der_no_comm(sf);
   const double* sum_sq = sf_sum_sq(sf);
-  return sum_sq_der/2.0 + m_sq*sum_sq[0]/2.0 + lmbd*sum_sq[1]/24.0;
+  return sum_sq_der/2.0 + m_sq*sum_sq[0]/2.0 + lmbd*sum_sq[1]/24.0 + 
+      alpha*sum_phi1;
 }
 
 inline double sf_hamilton_node(const Field<double>& sf, const ScalarAction& sa)

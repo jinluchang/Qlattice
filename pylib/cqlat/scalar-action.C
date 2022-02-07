@@ -2,12 +2,13 @@
 
 EXPORT(mk_scalar_action, {
   using namespace qlat;
-  double m_sq = 0.0;
-  double lmbd = 0.0;
-  if (!PyArg_ParseTuple(args, "d|d", &m_sq, &lmbd)) {
+  double m_sq = 1.0;
+  double lmbd = 1.0;
+  double alpha = 0.0;
+  if (!PyArg_ParseTuple(args, "d|d|d", &m_sq, &lmbd, &alpha)) {
     return NULL;
   }
-  ScalarAction* psa = new ScalarAction(m_sq, lmbd);
+  ScalarAction* psa = new ScalarAction(m_sq, lmbd, alpha);
   return py_convert((void*)psa);
 });
 
@@ -39,4 +40,14 @@ EXPORT(get_lmbd_scalar_action, {
   }
   const ScalarAction& sa = py_convert_type<ScalarAction>(p_sa);
   return py_convert(sa.lmbd);
+});
+
+EXPORT(get_alpha_scalar_action, {
+  using namespace qlat;
+  PyObject* p_sa = NULL;
+  if (!PyArg_ParseTuple(args, "O", &p_sa)) {
+    return NULL;
+  }
+  const ScalarAction& sa = py_convert_type<ScalarAction>(p_sa);
+  return py_convert(sa.alpha);
 });

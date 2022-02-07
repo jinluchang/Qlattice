@@ -2,8 +2,8 @@ import cqlat as c
 
 class ScalarAction:
 
-    def __init__(self, m_sq, lmbd):
-        self.cdata = c.mk_scalar_action(m_sq, lmbd)
+    def __init__(self, m_sq, lmbd, alpha):
+        self.cdata = c.mk_scalar_action(m_sq, lmbd, alpha)
 
     def __del__(self):
         c.free_scalar_action(self)
@@ -18,4 +18,7 @@ class ScalarAction:
 
     def lmbd(self):
         return c.get_lmbd_scalar_action(self)
+
+    def lmbd(self):
+        return c.get_alpha_scalar_action(self)
 

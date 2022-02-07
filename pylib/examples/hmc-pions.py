@@ -214,7 +214,8 @@ def main():
     #     + (1/24)*lmbd*([sum fields]|phi|^2)^2
     m_sq = -5.0
     lmbd = 24.0/16.0
-    action = q.ScalarAction(m_sq, lmbd)
+    alpha = 0.1
+    action = q.ScalarAction(m_sq, lmbd, alpha)
     
     test_hmc(total_site, action, mult, n_traj)
 

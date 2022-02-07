@@ -43,9 +43,9 @@ def main():
     q.displayln_info(sum(rand_field.glb_sum())/rand_geo.total_volume()/rand_geo.multiplicity())
     
     # Creates some actions to use for tests
-    action0 = q.ScalarAction(0.0, 0.0)
-    action1 = q.ScalarAction(1.0, 0.0)
-    action2 = q.ScalarAction(1.0, 24.0)
+    action0 = q.ScalarAction(0.0, 0.0, 0.0)
+    action1 = q.ScalarAction(1.0, 0.0, 0.0)
+    action2 = q.ScalarAction(1.0, 24.0, 0.0)
     
     q.displayln_info("Average derivative squared term for unit field (should be 0): ")
     h = q.sf_hamilton_node(unit_field, action0)
