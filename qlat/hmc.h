@@ -326,7 +326,7 @@ inline void set_sm_force_no_comm(Field<double>&  sm_force, const Field<double>& 
 	}
     
     for (int m = 0; m < M; ++m) {
-	  sm_force_v[m] = (2*4 + m_sq + lmbd*sum_mult_sq)*sf.get_elem(xl,m);
+	  sm_force_v[m] = (2*4 + m_sq + lmbd/6*sum_mult_sq)*sf.get_elem(xl,m);
 	  for (int dir = 0; dir < 4; ++dir) {
 		xl[dir] += 1;
 		sm_force_v[m] -= sf.get_elem(xl,m);
@@ -368,7 +368,7 @@ inline double sf_sum_sq_der_no_comm(const Field<double>& sf)
     double s = 0.0;
     for (int m = 0; m < geo.multiplicity; ++m) {
 	  for (int dir = 0; dir < 4; ++dir) {
-	    double d=0;
+	    double d=0.0;
         d -= sf.get_elem(xl,m);
 	    xl[dir]+=1;
         d += sf.get_elem(xl,m);
@@ -387,9 +387,16 @@ inline double sf_sum_sq_der_no_comm(const Field<double>& sf)
 
 inline double* sf_sum_sq(const Field<double>& sf)
 {
+  // Returns an array. The first element is a simple sum of squares, and
+  // the second element is the squares summed over multiplicity and then
+  // squared again (to give a quartic term)
+  
   TIMER("sf_sum_sq");
   const Geometry geo = sf.geo();
   const Geometry geo_r = geo_reform(geo);
+  
+  // Creates a field with multiplicity 1 to store the sum (over 
+  // multiplicity) of the squares of the field values
   FieldM<double, 1> fd;
   fd.init(geo_r);
   qacc_for(index, geo_r.local_volume(), {
@@ -401,6 +408,8 @@ inline double* sf_sum_sq(const Field<double>& sf)
     }
     fd.get_elem(index) = s;
   });
+  
+  // Sums the squares over the lattice volume
   static double sum[2];
   sum[0] = 0.0;
   sum[1] = 0.0;
@@ -409,6 +418,7 @@ inline double* sf_sum_sq(const Field<double>& sf)
     sum[0] += d;
     sum[1] += d*d;
   }
+  
   return sum;
 }
 
