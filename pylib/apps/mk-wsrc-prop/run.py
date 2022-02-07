@@ -170,9 +170,10 @@ rup.dict_params["test-4nt8"]["fermion_params"][2][2]["Ls"] = 10
 rup.dict_params["test-4nt8"]["n_exact_wsrc"] = 2
 rup.dict_params["48I"]["n_exact_wsrc"] = 2
 
-rup.dict_params["test-4nt16"]["prob_exact_wsrc"] = 1/8
-rup.dict_params["16IH2"]["prob_exact_wsrc"] = 1/16
-rup.dict_params["32IfineH"]["prob_exact_wsrc"] = 1/32
+tag = "prob_exact_wsrc"
+rup.dict_params["test-4nt16"][tag] = 1/8
+rup.dict_params["16IH2"][tag] = 1/16
+rup.dict_params["32IfineH"][tag] = 1/32
 
 qg.begin_with_gpt()
 
