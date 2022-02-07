@@ -147,6 +147,7 @@ def get_cexpr_3f4f_matching():
     return cexpr
 
 if __name__ == "__main__":
-    get_cexpr_meson_corr_wsnk_wsrc()
+    get_cexpr_meson_corr()
+    get_cexpr_meson_corr_with_env()
     get_cexpr_vev()
     get_cexpr_3f4f_matching()
