@@ -337,7 +337,7 @@ def auto_contractor_meson_corr_wsnk_wsrc(job_tag, traj, get_prop, get_fsel, get_
         results_list = eval_cexpr_simulation(
                 cexpr,
                 positions_dict_maker = positions_dict_maker,
-                trial_indices = trial_indices,
+                trial_indices = get_mpi_chunk(trial_indices),
                 get_prop = get_prop,
                 is_only_total = "total"
                 )
@@ -365,8 +365,8 @@ def auto_contractor_meson_corr_psnk_wsrc(job_tag, traj, get_prop, get_fsel, get_
     fsel, fselc = get_fsel()
     for tsep in range(total_site[3]):
         trial_indices = []
-        for t1 in range(total_site[3]):
-            for x2 in fsel.to_psel_local().to_list():
+        for x2 in fsel.to_psel_local().to_list():
+            for t1 in range(total_site[3]):
                 t2 = x2[3]
                 if tsep == (t2 - t1) % total_site[3]:
                     pd = {
