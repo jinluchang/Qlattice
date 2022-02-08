@@ -317,6 +317,10 @@ inline void evolution(const Coordinate& total_site, const CorrParams& cp,
   if (does_file_exist_sync_node(fn)) {
     return;
   }
+  qmkdir_info(ssprintf("results"));
+  qmkdir_info(ssprintf("results/total_site=%s", show(total_site).c_str()));
+  qmkdir_info(ssprintf("results/total_site=%s/lambda=%.10lf",
+                       show(total_site).c_str(), lambda));
   if (not obtain_lock(fn + "-lock")) {
     return;
   }
@@ -373,8 +377,6 @@ inline void compute_several_mass(const Coordinate& total_site,
                                  const double mass_sqr_step,
                                  const double lambda)
 {
-  qmkdir_info(ssprintf("results/total_site=%s/lambda=%.10lf",
-                       show(total_site).c_str(), lambda));
   // ADJUST ME
   for (int i = 0; i < 2; ++i) {
     evolution(total_site, cp, mass_sqr_start + mass_sqr_step * i, lambda);
@@ -385,8 +387,6 @@ inline void compute_several_mass(const Coordinate& total_site,
 inline void compute(const Coordinate& total_site,
                     const CorrParams& cp)
 {
-  qmkdir_info("results");
-  qmkdir_info(ssprintf("results/total_site=%s", show(total_site).c_str()));
   // ADJUST ME
   // compute_several_mass(total_site, cp, +0.01, 0.01, 0.0);
   // compute_several_mass(total_site, cp, -0.01, 0.01, 0.1);
@@ -424,6 +424,13 @@ int main(int argc, char* argv[])
   begin(&argc, &argv, size_node_list);
   setup();
   // ADJUST ME
+  {
+    evolution(Coordinate(8, 8, 8, 32), CorrParams(2, 4, 1), 0.01, 0.0);
+    evolution(Coordinate(8, 8, 8, 32), CorrParams(2, 4, 1), 0.00, 0.1);
+    evolution(Coordinate(8, 8, 8, 32), CorrParams(2, 4, 1), 0.01, 0.1);
+    evolution(Coordinate(16, 16, 16, 64), CorrParams(2, 4, 1), 0.01, 0.1);
+    evolution(Coordinate(16, 16, 16, 64), CorrParams(2, 4, 1), -0.1, 0.5);
+  }
   {
     const Coordinate total_site = Coordinate(4, 4, 4, 256);
     const int t1 = 2;

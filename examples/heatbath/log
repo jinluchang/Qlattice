@@ -18,13 +18,372 @@ q_read_par_limit=16 (default)
 dist_read_par_limit()=16
 q_write_par_limit=16 (default)
 dist_write_par_limit()=16
-obtain_lock: Trying to obtain lock 'results/total_site=4x4x4x256/lambda=24.0000000000/mass_sqr=-1.8600000000.txt-lock'.
-obtain_lock: Lock obtained 'results/total_site=4x4x4x256/lambda=24.0000000000/mass_sqr=-1.8600000000.txt-lock'.
+obtain_lock: Trying to obtain lock 'results/total_site=8x8x8x32/lambda=0.0000000000/mass_sqr=0.0100000000.txt-lock'.
+obtain_lock: Lock obtained 'results/total_site=8x8x8x32/lambda=0.0000000000/mass_sqr=0.0100000000.txt-lock'.
 q_field_init=fast (default)
 set q_field_init=fast.
 q_mem_cache_max_size=512 (default)
 q_mem_cache_acc_max_size=512 (default)
 CommPlanCache: to add 1 / 32.
+((total-site (8 8 8 32))
+ (mass-sqr 0.0100000000)
+ (lambda   0.0000000000)
+ (n-traj      1)
+ (n-traj-used 1)
+ (n-block-1048576
+  (phi2  0.109171313536395 0.000000000000000)
+  (m_eff nan nan)
+  (v_eff 4.158654861714481 0.000000000000000))
+ (n-block-128
+  (phi2  0.109171313536395 0.000000000000000)
+  (m_eff nan nan)
+  (v_eff 4.158654861714481 0.000000000000000))
+ (n-block-64
+  (phi2  0.109171313536395 0.000000000000000)
+  (m_eff nan nan)
+  (v_eff 4.158654861714481 0.000000000000000))
+ (n-block-32
+  (phi2  0.109171313536395 0.000000000000000)
+  (m_eff nan nan)
+  (v_eff 4.158654861714481 0.000000000000000)))
+q_timer_mini_auto_display=300 (default)
+evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
+((total-site (8 8 8 32))
+ (mass-sqr 0.0100000000)
+ (lambda   0.0000000000)
+ (n-traj      2)
+ (n-traj-used 2)
+ (n-block-1048576
+  (phi2  0.125551089696894 0.023164501594813)
+  (m_eff nan nan)
+  (v_eff nan nan))
+ (n-block-128
+  (phi2  0.125551089696894 0.023164501594813)
+  (m_eff nan nan)
+  (v_eff nan nan))
+ (n-block-64
+  (phi2  0.125551089696894 0.023164501594813)
+  (m_eff nan nan)
+  (v_eff nan nan))
+ (n-block-32
+  (phi2  0.125551089696894 0.023164501594813)
+  (m_eff nan nan)
+  (v_eff nan nan)))
+evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
+((total-site (8 8 8 32))
+ (mass-sqr 0.0100000000)
+ (lambda   0.0000000000)
+ (n-traj      3)
+ (n-traj-used 2)
+ (n-block-1048576
+  (phi2  0.146170631750512 0.005995934427336)
+  (m_eff 0.921098460247846 0.525692353058252)
+  (v_eff -2.489570793698784 nan))
+ (n-block-128
+  (phi2  0.146170631750512 0.005995934427336)
+  (m_eff 0.921098460247846 0.525692353058252)
+  (v_eff -2.489570793698784 nan))
+ (n-block-64
+  (phi2  0.146170631750512 0.005995934427336)
+  (m_eff 0.921098460247846 0.525692353058252)
+  (v_eff -2.489570793698784 nan))
+ (n-block-32
+  (phi2  0.146170631750512 0.005995934427336)
+  (m_eff 0.921098460247846 0.525692353058252)
+  (v_eff -2.489570793698784 nan)))
+evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
+release_lock: Release lock 'results/total_site=8x8x8x32/lambda=0.0000000000/mass_sqr=0.0100000000.txt-lock'
+qremove: 'results/total_site=8x8x8x32/lambda=0.0000000000/mass_sqr=0.0100000000.txt-lock/time.txt'
+q_timer_max_func_name_len=50 (default)
+check_time_limit: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.25 ) / 12.00 hours.
+obtain_lock: Trying to obtain lock 'results/total_site=8x8x8x32/lambda=0.1000000000/mass_sqr=0.0000000000.txt-lock'.
+obtain_lock: Lock obtained 'results/total_site=8x8x8x32/lambda=0.1000000000/mass_sqr=0.0000000000.txt-lock'.
+((total-site (8 8 8 32))
+ (mass-sqr 0.0000000000)
+ (lambda   0.1000000000)
+ (n-traj      1)
+ (n-traj-used 1)
+ (n-block-1048576
+  (phi2  0.109208607588914 0.000000000000000)
+  (m_eff nan nan)
+  (v_eff 4.025465815603584 0.000000000000000))
+ (n-block-128
+  (phi2  0.109208607588914 0.000000000000000)
+  (m_eff nan nan)
+  (v_eff 4.025465815603584 0.000000000000000))
+ (n-block-64
+  (phi2  0.109208607588914 0.000000000000000)
+  (m_eff nan nan)
+  (v_eff 4.025465815603584 0.000000000000000))
+ (n-block-32
+  (phi2  0.109208607588914 0.000000000000000)
+  (m_eff nan nan)
+  (v_eff 4.025465815603584 0.000000000000000)))
+evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
+((total-site (8 8 8 32))
+ (mass-sqr 0.0000000000)
+ (lambda   0.1000000000)
+ (n-traj      2)
+ (n-traj-used 2)
+ (n-block-1048576
+  (phi2  0.125671417690402 0.023281929320297)
+  (m_eff nan nan)
+  (v_eff nan nan))
+ (n-block-128
+  (phi2  0.125671417690402 0.023281929320297)
+  (m_eff nan nan)
+  (v_eff nan nan))
+ (n-block-64
+  (phi2  0.125671417690402 0.023281929320297)
+  (m_eff nan nan)
+  (v_eff nan nan))
+ (n-block-32
+  (phi2  0.125671417690402 0.023281929320297)
+  (m_eff nan nan)
+  (v_eff nan nan)))
+evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
+((total-site (8 8 8 32))
+ (mass-sqr 0.0000000000)
+ (lambda   0.1000000000)
+ (n-traj      3)
+ (n-traj-used 2)
+ (n-block-1048576
+  (phi2  0.146059778608728 0.005551567204956)
+  (m_eff 0.818164665576890 0.914299498914712)
+  (v_eff -2.111594706874786 nan))
+ (n-block-128
+  (phi2  0.146059778608728 0.005551567204956)
+  (m_eff 0.818164665576890 0.914299498914712)
+  (v_eff -2.111594706874786 nan))
+ (n-block-64
+  (phi2  0.146059778608728 0.005551567204956)
+  (m_eff 0.818164665576890 0.914299498914712)
+  (v_eff -2.111594706874786 nan))
+ (n-block-32
+  (phi2  0.146059778608728 0.005551567204956)
+  (m_eff 0.818164665576890 0.914299498914712)
+  (v_eff -2.111594706874786 nan)))
+evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
+release_lock: Release lock 'results/total_site=8x8x8x32/lambda=0.1000000000/mass_sqr=0.0000000000.txt-lock'
+qremove: 'results/total_site=8x8x8x32/lambda=0.1000000000/mass_sqr=0.0000000000.txt-lock/time.txt'
+check_time_limit: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.25 ) / 12.00 hours.
+obtain_lock: Trying to obtain lock 'results/total_site=8x8x8x32/lambda=0.1000000000/mass_sqr=0.0100000000.txt-lock'.
+obtain_lock: Lock obtained 'results/total_site=8x8x8x32/lambda=0.1000000000/mass_sqr=0.0100000000.txt-lock'.
+((total-site (8 8 8 32))
+ (mass-sqr 0.0100000000)
+ (lambda   0.1000000000)
+ (n-traj      1)
+ (n-traj-used 1)
+ (n-block-1048576
+  (phi2  0.108986341515895 0.000000000000000)
+  (m_eff -2.838081117763505 0.000000000000000)
+  (v_eff 5.868034734082583 0.000000000000000))
+ (n-block-128
+  (phi2  0.108986341515895 0.000000000000000)
+  (m_eff -2.838081117763505 0.000000000000000)
+  (v_eff 5.868034734082583 0.000000000000000))
+ (n-block-64
+  (phi2  0.108986341515895 0.000000000000000)
+  (m_eff -2.838081117763505 0.000000000000000)
+  (v_eff 5.868034734082583 0.000000000000000))
+ (n-block-32
+  (phi2  0.108986341515895 0.000000000000000)
+  (m_eff -2.838081117763505 0.000000000000000)
+  (v_eff 5.868034734082583 0.000000000000000)))
+evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
+((total-site (8 8 8 32))
+ (mass-sqr 0.0100000000)
+ (lambda   0.1000000000)
+ (n-traj      2)
+ (n-traj-used 2)
+ (n-block-1048576
+  (phi2  0.125412066186030 0.023229482600312)
+  (m_eff nan nan)
+  (v_eff nan nan))
+ (n-block-128
+  (phi2  0.125412066186030 0.023229482600312)
+  (m_eff nan nan)
+  (v_eff nan nan))
+ (n-block-64
+  (phi2  0.125412066186030 0.023229482600312)
+  (m_eff nan nan)
+  (v_eff nan nan))
+ (n-block-32
+  (phi2  0.125412066186030 0.023229482600312)
+  (m_eff nan nan)
+  (v_eff nan nan)))
+evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
+((total-site (8 8 8 32))
+ (mass-sqr 0.0100000000)
+ (lambda   0.1000000000)
+ (n-traj      3)
+ (n-traj-used 2)
+ (n-block-1048576
+  (phi2  0.145591089832389 0.005307966315817)
+  (m_eff 0.926123144615655 0.031238983690884)
+  (v_eff nan nan))
+ (n-block-128
+  (phi2  0.145591089832389 0.005307966315817)
+  (m_eff 0.926123144615655 0.031238983690884)
+  (v_eff nan nan))
+ (n-block-64
+  (phi2  0.145591089832389 0.005307966315817)
+  (m_eff 0.926123144615655 0.031238983690884)
+  (v_eff nan nan))
+ (n-block-32
+  (phi2  0.145591089832389 0.005307966315817)
+  (m_eff 0.926123144615655 0.031238983690884)
+  (v_eff nan nan)))
+evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
+release_lock: Release lock 'results/total_site=8x8x8x32/lambda=0.1000000000/mass_sqr=0.0100000000.txt-lock'
+qremove: 'results/total_site=8x8x8x32/lambda=0.1000000000/mass_sqr=0.0100000000.txt-lock/time.txt'
+check_time_limit: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.25 ) / 12.00 hours.
+obtain_lock: Trying to obtain lock 'results/total_site=16x16x16x64/lambda=0.1000000000/mass_sqr=0.0100000000.txt-lock'.
+obtain_lock: Lock obtained 'results/total_site=16x16x16x64/lambda=0.1000000000/mass_sqr=0.0100000000.txt-lock'.
+CommPlanCache: to add 2 / 32.
+((total-site (16 16 16 64))
+ (mass-sqr 0.0100000000)
+ (lambda   0.1000000000)
+ (n-traj      1)
+ (n-traj-used 1)
+ (n-block-1048576
+  (phi2  0.109486356730421 0.000000000000000)
+  (m_eff nan nan)
+  (v_eff nan nan))
+ (n-block-128
+  (phi2  0.109486356730421 0.000000000000000)
+  (m_eff nan nan)
+  (v_eff nan nan))
+ (n-block-64
+  (phi2  0.109486356730421 0.000000000000000)
+  (m_eff nan nan)
+  (v_eff nan nan))
+ (n-block-32
+  (phi2  0.109486356730421 0.000000000000000)
+  (m_eff nan nan)
+  (v_eff nan nan)))
+evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
+((total-site (16 16 16 64))
+ (mass-sqr 0.0100000000)
+ (lambda   0.1000000000)
+ (n-traj      2)
+ (n-traj-used 2)
+ (n-block-1048576
+  (phi2  0.124117556129823 0.020691640624420)
+  (m_eff nan nan)
+  (v_eff nan nan))
+ (n-block-128
+  (phi2  0.124117556129823 0.020691640624420)
+  (m_eff nan nan)
+  (v_eff nan nan))
+ (n-block-64
+  (phi2  0.124117556129823 0.020691640624420)
+  (m_eff nan nan)
+  (v_eff nan nan))
+ (n-block-32
+  (phi2  0.124117556129823 0.020691640624420)
+  (m_eff nan nan)
+  (v_eff nan nan)))
+evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
+((total-site (16 16 16 64))
+ (mass-sqr 0.0100000000)
+ (lambda   0.1000000000)
+ (n-traj      3)
+ (n-traj-used 2)
+ (n-block-1048576
+  (phi2  0.143044034289219 0.006074441476556)
+  (m_eff nan nan)
+  (v_eff -0.496068998401075 0.395353405334769))
+ (n-block-128
+  (phi2  0.143044034289219 0.006074441476556)
+  (m_eff nan nan)
+  (v_eff -0.496068998401075 0.395353405334769))
+ (n-block-64
+  (phi2  0.143044034289219 0.006074441476556)
+  (m_eff nan nan)
+  (v_eff -0.496068998401075 0.395353405334769))
+ (n-block-32
+  (phi2  0.143044034289219 0.006074441476556)
+  (m_eff nan nan)
+  (v_eff -0.496068998401075 0.395353405334769)))
+evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
+release_lock: Release lock 'results/total_site=16x16x16x64/lambda=0.1000000000/mass_sqr=0.0100000000.txt-lock'
+qremove: 'results/total_site=16x16x16x64/lambda=0.1000000000/mass_sqr=0.0100000000.txt-lock/time.txt'
+check_time_limit: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.25 ) / 12.00 hours.
+obtain_lock: Trying to obtain lock 'results/total_site=16x16x16x64/lambda=0.5000000000/mass_sqr=-0.1000000000.txt-lock'.
+obtain_lock: Lock obtained 'results/total_site=16x16x16x64/lambda=0.5000000000/mass_sqr=-0.1000000000.txt-lock'.
+((total-site (16 16 16 64))
+ (mass-sqr -0.1000000000)
+ (lambda   0.5000000000)
+ (n-traj      1)
+ (n-traj-used 1)
+ (n-block-1048576
+  (phi2  0.110977518456321 0.000000000000000)
+  (m_eff nan nan)
+  (v_eff nan nan))
+ (n-block-128
+  (phi2  0.110977518456321 0.000000000000000)
+  (m_eff nan nan)
+  (v_eff nan nan))
+ (n-block-64
+  (phi2  0.110977518456321 0.000000000000000)
+  (m_eff nan nan)
+  (v_eff nan nan))
+ (n-block-32
+  (phi2  0.110977518456321 0.000000000000000)
+  (m_eff nan nan)
+  (v_eff nan nan)))
+evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
+((total-site (16 16 16 64))
+ (mass-sqr -0.1000000000)
+ (lambda   0.5000000000)
+ (n-traj      2)
+ (n-traj-used 2)
+ (n-block-1048576
+  (phi2  0.125813688114345 0.020981512344045)
+  (m_eff 0.081511271879626 nan)
+  (v_eff nan nan))
+ (n-block-128
+  (phi2  0.125813688114345 0.020981512344045)
+  (m_eff 0.081511271879626 nan)
+  (v_eff nan nan))
+ (n-block-64
+  (phi2  0.125813688114345 0.020981512344045)
+  (m_eff 0.081511271879626 nan)
+  (v_eff nan nan))
+ (n-block-32
+  (phi2  0.125813688114345 0.020981512344045)
+  (m_eff 0.081511271879626 nan)
+  (v_eff nan nan)))
+evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
+((total-site (16 16 16 64))
+ (mass-sqr -0.1000000000)
+ (lambda   0.5000000000)
+ (n-traj      3)
+ (n-traj-used 2)
+ (n-block-1048576
+  (phi2  0.144920788663927 0.006040008390802)
+  (m_eff 0.782532082326965 0.899685745353966)
+  (v_eff -1.802470997067627 nan))
+ (n-block-128
+  (phi2  0.144920788663927 0.006040008390802)
+  (m_eff 0.782532082326965 0.899685745353966)
+  (v_eff -1.802470997067627 nan))
+ (n-block-64
+  (phi2  0.144920788663927 0.006040008390802)
+  (m_eff 0.782532082326965 0.899685745353966)
+  (v_eff -1.802470997067627 nan))
+ (n-block-32
+  (phi2  0.144920788663927 0.006040008390802)
+  (m_eff 0.782532082326965 0.899685745353966)
+  (v_eff -1.802470997067627 nan)))
+evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
+release_lock: Release lock 'results/total_site=16x16x16x64/lambda=0.5000000000/mass_sqr=-0.1000000000.txt-lock'
+qremove: 'results/total_site=16x16x16x64/lambda=0.5000000000/mass_sqr=-0.1000000000.txt-lock/time.txt'
+check_time_limit: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.25 ) / 12.00 hours.
+obtain_lock: Trying to obtain lock 'results/total_site=4x4x4x256/lambda=24.0000000000/mass_sqr=-1.8600000000.txt-lock'.
+obtain_lock: Lock obtained 'results/total_site=4x4x4x256/lambda=24.0000000000/mass_sqr=-1.8600000000.txt-lock'.
+CommPlanCache: to add 3 / 32.
 ((total-site (4 4 4 256))
  (mass-sqr -1.8600000000)
  (lambda   24.0000000000)
@@ -46,7 +405,6 @@ CommPlanCache: to add 1 / 32.
   (phi2  0.118124969952768 0.000000000000000)
   (m_eff 0.899951437145340 0.000000000000000)
   (v_eff nan nan)))
-q_timer_mini_auto_display=300 (default)
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
 ((total-site (4 4 4 256))
  (mass-sqr -1.8600000000)
@@ -94,7 +452,6 @@ evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
 release_lock: Release lock 'results/total_site=4x4x4x256/lambda=24.0000000000/mass_sqr=-1.8600000000.txt-lock'
 qremove: 'results/total_site=4x4x4x256/lambda=24.0000000000/mass_sqr=-1.8600000000.txt-lock/time.txt'
-q_timer_max_func_name_len=50 (default)
 check_time_limit: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.25 ) / 12.00 hours.
 obtain_lock: Trying to obtain lock 'results/total_site=4x4x4x256/lambda=24.0000000000/mass_sqr=-1.8200000000.txt-lock'.
 obtain_lock: Lock obtained 'results/total_site=4x4x4x256/lambda=24.0000000000/mass_sqr=-1.8200000000.txt-lock'.
@@ -311,7 +668,7 @@ qremove: 'results/total_site=4x4x4x256/lambda=32.0000000000/mass_sqr=-2.32000000
 check_time_limit: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.25 ) / 12.00 hours.
 obtain_lock: Trying to obtain lock 'results/total_site=8x8x8x512/lambda=24.0000000000/mass_sqr=-1.6900000000.txt-lock'.
 obtain_lock: Lock obtained 'results/total_site=8x8x8x512/lambda=24.0000000000/mass_sqr=-1.6900000000.txt-lock'.
-CommPlanCache: to add 2 / 32.
+CommPlanCache: to add 4 / 32.
 ((total-site (8 8 8 512))
  (mass-sqr -1.6900000000)
  (lambda   24.0000000000)
