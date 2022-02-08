@@ -179,7 +179,7 @@ def get_prop_wsrc(prop_cache, inv_type, t_src, tag_snk_type):
 
 @q.timer
 def get_prop_wsrc_fsel(prop_cache, inv_type, t_src):
-    return get_prop_wsrc(prop_cache, inv_type, t_src, "fsel")
+    return get_prop_wsrc(prop_cache, inv_type, t_src, "wsrc ; fsel")
 
 @q.timer
 def get_prop_wsnk_wsrc(prop_cache, inv_type, t_snk, t_src):
@@ -346,6 +346,52 @@ def auto_contractor_meson_corr_wsnk_wsrc(job_tag, traj, get_prop, get_fsel, get_
     ld.save(get_save_path(fn))
 
 @q.timer_verbose
+def auto_contractor_meson_corr_psnk_wsrc(job_tag, traj, get_prop, get_fsel, get_pi, get_wi):
+    fn = f"auto-contractor-fsel/{job_tag}/traj={traj}/meson_corr/psnk_wsrc.lat"
+    if get_load_path(fn) is not None:
+        return
+    total_site = ru.get_total_site(job_tag)
+    cexpr = get_cexpr_meson_corr()
+    names_expr = get_cexpr_names(cexpr)
+    names_fac = [ "rest", ]
+    ld = q.mk_lat_data([
+        [ "name_fac", len(names_fac), names_fac, ],
+        [ "expr_name", len(names_expr), names_expr, ],
+        [ "tsep", total_site[3], ],
+        [ "val-err-n", 3, [ "val", "err", "n-trails", ] ],
+        ])
+    fsel, fselc = get_fsel()
+    for tsep in range(total_site[3]):
+        trial_indices = []
+        for t1 in range(total_site[3]):
+            for x2 in fsel.to_psel_local().to_list():
+                t2 = x2[3]
+                if tsep == (t2 - t1) % total_site[3]:
+                    pd = {
+                            "x1" : ("wall", t1,),
+                            "x2" : ("point-snk", x2,),
+                            }
+                    trial_indices.append(pd)
+        if len(trial_indices) == 0:
+            continue
+        def positions_dict_maker(idx):
+            pd = idx
+            facs = [ 1.0, ]
+            return pd, facs
+        results_list = eval_cexpr_simulation(
+                cexpr,
+                positions_dict_maker = positions_dict_maker,
+                trial_indices = trial_indices,
+                get_prop = get_prop,
+                is_only_total = "total"
+                )
+        for idx_name_fac, (name_fac, results,) in enumerate(zip(names_fac, results_list)):
+            for i_k, (k, v,) in enumerate(results.items()):
+                ld[(idx_name_fac, i_k, tsep,)] = v + [ complex(len(trial_indices)), ]
+    q.displayln_info(ld.show())
+    ld.save(get_save_path(fn))
+
+@q.timer_verbose
 def auto_contractor_vev(job_tag, traj, get_prop, get_fsel, get_pi, get_wi):
     fn = f"auto-contractor-fsel/{job_tag}/traj={traj}/vev.lat"
     if get_load_path(fn) is not None:
@@ -430,6 +476,7 @@ def run_job(job_tag, traj):
             # ADJUST ME
             auto_contractor_vev(job_tag, traj, get_prop, get_fsel, get_pi, get_wi)
             auto_contractor_meson_corr_wsnk_wsrc(job_tag, traj, get_prop, get_fsel, get_pi, get_wi)
+            auto_contractor_meson_corr_psnk_wsrc(job_tag, traj, get_prop, get_fsel, get_pi, get_wi)
             #
             q.qtouch_info(get_save_path(fn_checkpoint))
             q.release_lock()
