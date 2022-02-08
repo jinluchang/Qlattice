@@ -20,47 +20,127 @@ q_mem_cache_max_size=512 (default)
 q_mem_cache_acc_max_size=512 (default)
 CommPlanCache: to add 1 / 32.
 CommPlanCache: to add 2 / 32.
-metropolis_accept: flag=1 with accept_prob=100.0% delta_h=-44540.2520582012075465 traj=1
+metropolis_accept: flag=1 with accept_prob=100.0% delta_h=-0.1478880588565517 traj=1
 run_hmc: update field (traj=1)
 Average phi^2:
-3.6258723354962665
-metropolis_accept: flag=0 with accept_prob=0.0% delta_h=38988.0263342220860068 traj=2
+15.368362925899453
+Average phi:
+3.8976893017552703
+metropolis_accept: flag=1 with accept_prob=100.0% delta_h=-0.3230506800173316 traj=2
 run_hmc: update field (traj=2)
 Average phi^2:
-1.3122338828313285
-metropolis_accept: flag=1 with accept_prob=100.0% delta_h=-36682.6735935170872835 traj=3
-run_hmc: update field (traj=3)
+24.155320384780673
+Average phi:
+4.902810534766083
+metropolis_accept: flag=0 with accept_prob=71.3% delta_h=0.3378992753423518 traj=3
 Average phi^2:
-3.501343811342953
-metropolis_accept: flag=0 with accept_prob=0.0% delta_h=35748.0064765416755108 traj=4
-run_hmc: update field (traj=4)
+24.155320384780673
+Average phi:
+4.902810534766083
+metropolis_accept: flag=0 with accept_prob=71.3% delta_h=0.3378692626429256 traj=4
 Average phi^2:
-1.4075289926660162
-metropolis_accept: flag=1 with accept_prob=100.0% delta_h=-33758.3162094978906680 traj=5
-run_hmc: update field (traj=5)
+24.155320384780673
+Average phi:
+4.902810534766083
+metropolis_accept: flag=0 with accept_prob=71.7% delta_h=0.3328711866270169 traj=5
 Average phi^2:
-3.412969369728087
-metropolis_accept: flag=0 with accept_prob=0.0% delta_h=32911.0285887121790438 traj=6
+24.155320384780673
+Average phi:
+4.902810534766083
+metropolis_accept: flag=1 with accept_prob=71.4% delta_h=0.3363629101149854 traj=6
 run_hmc: update field (traj=6)
 Average phi^2:
-1.4896173169852545
-metropolis_accept: flag=1 with accept_prob=100.0% delta_h=-31588.0643260205251863 traj=7
+15.391880138200435
+Average phi:
+3.9060017923659354
+metropolis_accept: flag=1 with accept_prob=100.0% delta_h=-0.2578003512098803 traj=7
 run_hmc: update field (traj=7)
 Average phi^2:
-3.3577935540133894
-metropolis_accept: flag=0 with accept_prob=0.0% delta_h=30977.3860230139544001 traj=8
+24.146065454247054
+Average phi:
+4.904201332318539
+metropolis_accept: flag=1 with accept_prob=75.9% delta_h=0.2752820564637659 traj=8
 run_hmc: update field (traj=8)
 Average phi^2:
-1.5381301863538015
-metropolis_accept: flag=1 with accept_prob=100.0% delta_h=-29603.4786461880794377 traj=9
+15.420803612180457
+Average phi:
+3.9126762490531344
+metropolis_accept: flag=1 with accept_prob=100.0% delta_h=-0.2425356741150608 traj=9
 run_hmc: update field (traj=9)
 Average phi^2:
-3.302083046486939
-metropolis_accept: flag=0 with accept_prob=0.0% delta_h=28942.3241033304439043 traj=10
+24.117573339267175
+Average phi:
+4.9021587032770615
+metropolis_accept: flag=1 with accept_prob=77.4% delta_h=0.2561778860108461 traj=10
 run_hmc: update field (traj=10)
 Average phi^2:
-1.5978117219368178
-[3.6258723354962665, 1.3122338828313285, 3.501343811342953, 1.4075289926660162, 3.412969369728087, 1.4896173169852545, 3.3577935540133894, 1.5381301863538015, 3.302083046486939, 1.5978117219368178]
+15.464027089918504
+Average phi:
+3.9196693962138514
+metropolis_accept: flag=1 with accept_prob=100.0% delta_h=-0.2295355086243944 traj=11
+run_hmc: update field (traj=11)
+Average phi^2:
+24.088937334884434
+Average phi:
+4.899932101124337
+metropolis_accept: flag=1 with accept_prob=79.1% delta_h=0.2350619162752992 traj=12
+run_hmc: update field (traj=12)
+Average phi^2:
+15.493288651433314
+Average phi:
+3.9242645198114827
+metropolis_accept: flag=1 with accept_prob=100.0% delta_h=-0.2163350849004928 traj=13
+run_hmc: update field (traj=13)
+Average phi^2:
+24.06809523740145
+Average phi:
+4.898453199096723
+metropolis_accept: flag=1 with accept_prob=80.3% delta_h=0.2189315874566091 traj=14
+run_hmc: update field (traj=14)
+Average phi^2:
+15.52073410111655
+Average phi:
+3.928109803071891
+metropolis_accept: flag=1 with accept_prob=100.0% delta_h=-0.2079475870705210 traj=15
+run_hmc: update field (traj=15)
+Average phi^2:
+24.0290631673843
+Average phi:
+4.894669868005092
+metropolis_accept: flag=1 with accept_prob=80.9% delta_h=0.2125657596552628 traj=16
+run_hmc: update field (traj=16)
+Average phi^2:
+15.565944157215469
+Average phi:
+3.9343672143386144
+metropolis_accept: flag=1 with accept_prob=100.0% delta_h=-0.2011949614025070 traj=17
+run_hmc: update field (traj=17)
+Average phi^2:
+24.004974799351274
+Average phi:
+4.89242551140548
+metropolis_accept: flag=1 with accept_prob=81.5% delta_h=0.2051399286065134 traj=18
+run_hmc: update field (traj=18)
+Average phi^2:
+15.59226895245166
+Average phi:
+3.9382064711957803
+metropolis_accept: flag=1 with accept_prob=100.0% delta_h=-0.2026668193429941 traj=19
+run_hmc: update field (traj=19)
+Average phi^2:
+23.97073960699136
+Average phi:
+4.888954145965613
+metropolis_accept: flag=1 with accept_prob=81.5% delta_h=0.2039936984365340 traj=20
+run_hmc: update field (traj=20)
+Average phi^2:
+15.62102675020492
+Average phi:
+3.9420783991920003
+Expectation value of phi^2 on all trajectories:
+[15.368362925899453, 24.155320384780673, 24.155320384780673, 24.155320384780673, 24.155320384780673, 15.391880138200435, 24.146065454247054, 15.420803612180457, 24.117573339267175, 15.464027089918504, 24.088937334884434, 15.493288651433314, 24.06809523740145, 15.52073410111655, 24.0290631673843, 15.565944157215469, 24.004974799351274, 15.59226895245166, 23.97073960699136, 15.62102675020492]
+Expectation value of phi on all trajectories:
+[3.8976893017552703, 4.902810534766083, 4.902810534766083, 4.902810534766083, 4.902810534766083, 3.9060017923659354, 4.904201332318539, 3.9126762490531344, 4.9021587032770615, 3.9196693962138514, 4.899932101124337, 3.9242645198114827, 4.898453199096723, 3.928109803071891, 4.894669868005092, 3.9343672143386144, 4.89242551140548, 3.9382064711957803, 4.888954145965613, 3.9420783991920003]
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 0.
 qlat::end(): Finalize MPI.
