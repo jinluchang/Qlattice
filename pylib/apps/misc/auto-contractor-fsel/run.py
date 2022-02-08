@@ -30,6 +30,8 @@ load_path_list[:] = [
         os.path.join(os.getenv("HOME"), "Qlat-sample-data/mk-fsel-self-loop/results"),
         os.path.join(os.getenv("HOME"), "Qlat-sample-data/mk-wsrc-prop/results"),
         os.path.join(os.getenv("HOME"), "qcddata"),
+        "/work/2/gu19/share/ljin/data-gen/mk-fsel-self-loop/16IH2/results",
+        "/work/2/gu19/share/ljin/data-gen/mk-wsrc-prop/16IH2/results",
         ]
 
 @q.timer
@@ -529,6 +531,8 @@ job_tags = [
         # "64I",
         # "48I",
         # "24D", "32D", "32Dfine","24DH",
+        # "16IH2",
+        # "32IfineH",
         ]
 
 q.check_time_limit()
