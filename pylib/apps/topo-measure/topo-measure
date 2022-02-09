@@ -21,56 +21,31 @@ size_node_list = [
 qg.begin_with_gpt()
 
 p_source = g.default.get("--source", None)
+p_output = g.default.get("--output", None)
 
 def load():
     if p_source is None:
-        g.message("Need to provide source file, use a sample gauge field")
+        g.message("Need to provide source file with '--source filename'. Use a sample gauge field for now.")
         total_site = [ 4, 4, 4, 8, ]
         geo = q.Geometry(total_site, 1)
         gf = q.GaugeField(geo)
         rs = q.RngState("seed")
         gf.set_rand(rs.split("gf-init"), 0.5, 10)
     else:
-        gf = qg.load_gauge_field(p_source)
+        gf = q.GaugeField()
+        gf.load(p_source)
+        # gf = qg.load_gauge_field(p_source)
     return gf
 
 gf = load()
 
-gf.show_info()
+topo_list = q.smear_measure_topo(gf)
 
-t = 0
-
-def measure():
-    gf_f.show_info()
-    topo_clf = q.gf_topology_clf(gf_f)
-    q.displayln_info(f"t={t} topo_clf={topo_clf}")
-    topo = q.gf_topology(gf_f)
-    topo_field = q.gf_topology_field(gf_f)
-    t_sum = topo_field.glb_sum_tslice()
-    t_sum = [ str((t, t_sum.get_elem(t).item(),)) for t in range(t_sum.n_points()) ]
-    q.displayln_info(f"t={t} topo_5li={topo}")
-    q.displayln_info("\n".join(t_sum))
-    topo_terms = q.gf_topology_terms(gf_f)
-    topo_terms_str = ',\n '.join([ str(x) for x in topo_terms ])
-    q.displayln_info(f"t={t} {sum(topo_terms)} [ {topo_terms_str},\n]")
-
-gf_f = gf.copy()
-
-flow_time = 1.0
-
-def wilson_flow_force(gf, c1 = 0.0):
-    ga = q.GaugeAction(3.0, c1)
-    gm_force = q.GaugeMomentum()
-    q.set_gm_force(gm_force, gf, ga)
-    return gm_force
-
-measure()
-
-# for i in range(5):
-#     c1 = -0.331
-#     q.gf_wilson_flow(gf_f, flow_time, 50, existing_flow_time = t, c1 = c1)
-#     t += flow_time
-#     measure()
+if p_output is not None:
+    q.save_pickle_obj(topo_list, p_output)
+else:
+    g.message("To save the result, use '--output filename.pickle'. Print to screen for now.")
+    q.displayln_info(q.pformat(topo_list))
 
 q.timer_display()
 

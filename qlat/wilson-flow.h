@@ -15,6 +15,8 @@ inline void set_wilson_flow_z(GaugeMomentum& z, const GaugeField& gf,
 
 inline void gf_wilson_flow_step(GaugeField& gf, const double epsilon,
                                 const double c1 = 0.0)
+// Runge–Kutta scheme
+// http://arxiv.org/abs/1006.4518v3
 {
   TIMER("gf_wilson_flow_step");
   GaugeField& w = gf;
