@@ -32,6 +32,8 @@ load_path_list[:] = [
         os.path.join(os.getenv("HOME"), "qcddata"),
         "/work/2/gu19/share/ljin/data-gen/mk-fsel-self-loop/16IH2/results",
         "/work/2/gu19/share/ljin/data-gen/mk-wsrc-prop/16IH2/results",
+        "/work/2/gu19/share/ljin/data-gen/mk-fsel-self-loop/32IfineH/results",
+        "/work/2/gu19/share/ljin/data-gen/mk-wsrc-prop/32IfineH/results",
         ]
 
 @q.timer
