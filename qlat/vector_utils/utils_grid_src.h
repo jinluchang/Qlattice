@@ -295,7 +295,7 @@ void get_grid_psel(PointSelection& psel, Coordinate& nv, Coordinate& grid, int t
   for(int xi=0;xi<grid[0];xi++)
   for(int yi=0;yi<grid[1];yi++)
   for(int zi=0;zi<grid[2];zi++)
-  for(int ti=0;ti<grid[2];ti++)
+  for(int ti=0;ti<grid[3];ti++)
   {
     Coordinate xg;
     Coordinate ci;

@@ -14,7 +14,8 @@ int main(int argc, char* argv[])
 
   inputpara in;
   //int mode_dis = 0;
-  int mode_dis = -1;
+  //int mode_dis = -1;
+  int mode_dis =  0;
   begin_Lat(&argc, &argv, in, mode_dis);
 
   int nx,ny,nz,nt;

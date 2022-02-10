@@ -9,7 +9,7 @@
 #include "general_funs.h"
 #define IO_DEFAULT  0
 #define IO_ENDIAN false
-#define IO_GN 6
+#define IO_GN 2
 #define IO_THREAD -1
 
 ////Target, read double prop, double eigensystem
@@ -1163,8 +1163,8 @@ template<class T, typename Ty>
 void prop4d_to_Fermion(Propagator4dT<T>& prop,std::vector<qlat::FermionField4dT<Ty > > &buf, int dir=1){
 
   ////if(sizeof(Ty) != 2*sizeof(double ) and sizeof(Ty) != 2*sizeof(float )){abort_r("Cannot understand the input format! \n");}
-  if(dir==1){buf.resize(0);buf.resize(12);for(int iv=0;iv<12;iv++){buf[iv].init(prop.geo());qlat::set_zero(buf[iv]);}}
-  if(dir==0){prop.init(buf[0].geo());}
+  if(dir==1){buf.resize(0);buf.resize(12);for(int iv=0;iv<12;iv++){buf[iv].init(prop.geo());}}
+  if(dir==0){qassert(buf.size() == 12);prop.init(buf[0].geo());}
 
   #pragma omp parallel for
   for (long index = 0; index < prop.geo().local_volume(); ++index)
@@ -1901,7 +1901,7 @@ void save_qlat_noise(const char *filename, qlat::FieldM<T, bfac> &noise, bool si
 
 //////Assume memory allocated already
 template<class T, typename Ty>
-void copy_noise_to_prop(qlat::FieldM<T, 12*12> & noise, Propagator4dT<Ty>& prop, int dir=1)
+void copy_noise_to_prop(qlat::FieldM<T, 12*12>& noise, Propagator4dT<Ty>& prop, int dir=1)
 {
   TIMERB("copy_noise_to_prop");
   if(dir == 1){prop.init(noise.geo());}

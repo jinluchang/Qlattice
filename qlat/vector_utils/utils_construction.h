@@ -43,12 +43,13 @@ void clear_qv(qlat::vector_acc<Ty > &G)
 //  }
 //}
 
-void prop4d_src_gamma(Propagator4d& prop, ga_M& ga,int dir = 0)
+template<typename Ty>
+void prop4d_src_gamma(Propagator4dT<Ty >& prop, ga_M& ga,int dir = 0)
 {
   ////Rowmajor (a,b), b is continues in memory
   qacc_for(isp, long(prop.geo().local_volume()),{ 
-    qlat::WilsonMatrix& v0 =  prop.get_elem(isp);
-    qlat::WilsonMatrix  v1 = v0;
+    qlat::WilsonMatrixT<Ty>& v0 =  prop.get_elem(isp);
+    qlat::WilsonMatrixT<Ty>  v1 = v0;
 
     for (int s = 0; s < 4; ++s)
     for(int c0 = 0;c0< 3 ; c0++)
@@ -67,12 +68,14 @@ void prop4d_src_gamma(Propagator4d& prop, ga_M& ga,int dir = 0)
   });
 }
 
-void prop4d_sink_gamma(Propagator4d& prop, ga_M& ga)
+template<typename Ty>
+void prop4d_sink_gamma(Propagator4dT<Ty >& prop, ga_M& ga)
 {
   prop4d_src_gamma(prop, ga ,1);
 }
 
-void prop4d_cps_to_ps(Propagator4d& prop, int dir=0)
+template<typename Ty>
+void prop4d_cps_to_ps(Propagator4dT<Ty >& prop, int dir=0)
 {
   /////sn is -1 for default
   double sn =-1;if(dir == 1){sn= 1;}
@@ -80,8 +83,8 @@ void prop4d_cps_to_ps(Propagator4d& prop, int dir=0)
 
   ////Rowmajor (a,b), b is continues in memory
   qacc_for(isp, prop.geo().local_volume(),{ 
-    qlat::WilsonMatrix  v0 = prop.get_elem(isp);
-    qlat::WilsonMatrix  v1 = prop.get_elem(isp);
+    qlat::WilsonMatrixT<Ty>  v0 = prop.get_elem(isp);
+    qlat::WilsonMatrixT<Ty>  v1 = prop.get_elem(isp);
 
     int dr,d0,d1;
     /////Src rotation
@@ -118,12 +121,14 @@ void prop4d_cps_to_ps(Propagator4d& prop, int dir=0)
   });
 }
 
-void prop4d_ps_to_cps(Propagator4d& prop)
+template<typename Ty>
+void prop4d_ps_to_cps(Propagator4dT<Ty >& prop)
 {
   prop4d_cps_to_ps(prop, 1);
 }
 
-void get_corr_pion(std::vector<qlat::FermionField4dT<qlat::Complex> > &prop,const Coordinate &x_ini, std::vector<double > &write ){
+template<typename Ty>
+void get_corr_pion(std::vector<qlat::FermionField4dT<Ty > > &prop,const Coordinate &x_ini, std::vector<double > &write ){
 
   const qlat::Geometry &geo = prop[0].geo();
 
@@ -132,13 +137,13 @@ void get_corr_pion(std::vector<qlat::FermionField4dT<qlat::Complex> > &prop,cons
   ///long Nsum = Nvol/Nt;
   int tini = x_ini[3];
 
-  qlat::vector_acc<qlat::Complex > res;res.resize(Nvol);
+  qlat::vector_acc<Ty > res;res.resize(Nvol);
 
   qacc_for(isp, long(Nvol),{
-    qlat::Complex buf(0.0,0.0);
+    Ty buf(0.0,0.0);
 
     for(int dc2=0;dc2<12;dc2++){
-      qlat::Complex* a = (qlat::Complex* ) &(prop[dc2].get_elem(isp));
+      Ty* a = (Ty* ) &(prop[dc2].get_elem(isp));
       for(int dc1=0;dc1<12;dc1++)
       {
         buf+=a[dc1]*qlat::qconj(a[dc1]);
@@ -461,7 +466,7 @@ void meson_vectorE(EigenM &prop1, EigenM &prop2, ga_M &ga1,ga_M &ga2,
   for(int d1=0;d1<4;d1++)
   for(int c1=0;c1<3;c1++)
   {
-  #pragma omp parallel for
+  //#pragma omp parallel for
   for(int ji=0;ji<nmass*NTt;ji++)
   {
     int massi = ji/NTt;
@@ -1949,6 +1954,25 @@ void meson_corr_write(std::string prop_a, std::string prop_b, std::string src_n,
 
 }
 
+void print_meson(Propagator4d &propVa, Propagator4d &propVb, std::string tag=std::string(""), int a=0, int b=0, int c=0 , int d=0)
+{
+  fft_desc_basic fd(propVa.geo());
+  int nt = fd.nt;
+
+  EigenM propa,propb;
+  copy_propE(propVa, propa, fd );
+  copy_propE(propVb, propb, fd );
+
+  EigenV res;ga_matrices_cps   ga_cps;
+  meson_corrE(propa, propb, ga_cps.ga[a][b],ga_cps.ga[c][d],  res, fd);
+  for(int ti=0;ti<nt;ti++)
+  {
+    double v0 = res[ti].real();
+    double v1 = res[ti].imag();
+    print0("%s ti %5d , v  %.8e   %.8e \n", tag.c_str(), ti, v0, v1);
+  }
+}
+
 Coordinate get_src_pos(std::string src_n, qlat::vector_acc<int > &off_L, const Geometry &geo)
 {
   io_vec io_use(geo, 16);
@@ -1968,9 +1992,9 @@ Coordinate get_src_pos(std::string src_n, qlat::vector_acc<int > &off_L, const G
 }
 
 template<typename Ty>
-void print_pion(qlat::FieldM<Ty, 12*12 > propM)
+void print_pion(qlat::FieldM<Ty, 12*12 >& propM, const std::string& tag=std::string(""), double factor = 1.0)
 {
-  Geometry geo = propM.geo();
+  const Geometry& geo = propM.geo();
   fft_desc_basic fd(geo);
 
   Propagator4dT<Ty > prop4d;prop4d.init(geo);
@@ -1980,17 +2004,25 @@ void print_pion(qlat::FieldM<Ty, 12*12 > propM)
   copy_propE(prop4d, propE, fd);
 
   ga_matrices_cps   ga_cps;
-  EigenV res;
+  EigenV res;EigenV corr;
   meson_vectorE(propE, propE, ga_cps.ga[0][0], ga_cps.ga[0][0],res, fd);
 
-  int nv = res.size()/fd.nt;
+  vec_corrE(res, corr, fd, 1, 505050);
+
+  int nv = corr.size()/fd.nt;
   for(int iv=0;iv<nv;iv++)
-  for(int t=0;t<res.size();t++)
+  for(int t=0;t<fd.nt;t++)
   {
-    Ty v = res[iv*fd.nt + t];
-    print0("iv %d, t %d, v %.6e %.6e \n", iv, t, v.real(), v.imag());
+    Ty v = corr[iv*fd.nt + t] * Ty(factor, 0.0);
+    print0("%s iv %d, t %d, v %.6e %.6e \n", tag.c_str(), iv, t, v.real(), v.imag());
   }
 
+  //LatData pion = contract_pion(qlat_prop, 0);
+  //Vector<qlat::Complex> ldv = lat_data_cget(pion);
+  //for(int ti=0;ti<in.nt;ti++)
+  //{ 
+  //  print0("quda ti %5d , v  %.8e   %.8e \n", ti, ldv[ti].real(), ldv[ti].imag());
+  //} 
 
 
 }

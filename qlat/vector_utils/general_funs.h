@@ -875,14 +875,17 @@ void random_link(GaugeFieldT<T >& g, int seed = -1)
 }
 
 template <class T>
-void random_prop(Propagator4dT<T >& prop)
+void random_prop(Propagator4dT<T >& prop, int seed = -1)
 {
-  timeval tm;gettimeofday(&tm, NULL);
+  
   ////print0("print time %.3f\n", tm.tv_sec);
-  qlat::RngState rs(qlat::get_id_node() + 1 +int(tm.tv_sec));
+  int rand_seed = qlat::get_id_node() + 1;
+  if(seed == -1){timeval tm;gettimeofday(&tm, NULL);rand_seed += int(tm.tv_sec);}else{rand_seed += seed;}
+
+  qlat::RngState rs(rand_seed);
   double ini = qlat::u_rand_gen(rs);
 
-  int dir_limit = 4;
+  /////int dir_limit = 4;
   const Geometry& geo = prop.geo();
 
   qacc_for(isp,  geo.local_volume(),{
@@ -1171,6 +1174,17 @@ Ty sum_local_to_global_vector(Ty src, MPI_Comm* commp=NULL)
 
   return res;
 
+}
+
+Coordinate string_to_Coordinate(const std::string& paraI = std::string("None"))
+{
+  Coordinate sp;for(int i=0;i<4;i++){sp[i] = 0;}
+  if(paraI != "None"){
+    std::vector<std::string > Li = stringtolist(paraI);
+    qassert(Li.size() == 4);
+    for(int i=0;i<4;i++){sp[i] = stringtonum(Li[i]);}
+  }
+  return sp;
 }
 
 

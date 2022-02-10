@@ -92,7 +92,10 @@ namespace qlat{
 //////dim 12*12 --> Nt --> Nxyz
 #define qpropT  qlat::FieldM<Ty, 12*12>
 
-
+/////Fields for staggered fermion
+#define colorFD qlat::FieldM<qlat::Complex , 3>
+#define colorFF qlat::FieldM<qlat::ComplexF, 3>
+#define colorFT qlat::FieldM<Ty, 3>
 
 void print_NONE(const char *filename){return ;}
 

@@ -284,6 +284,7 @@ struct inputpara{
   int ionum;
   int seed;
   int sparsefactor;
+  int gridtem;
 
   int lms;
 
@@ -310,6 +311,11 @@ struct inputpara{
   int nmass;
   std::vector<double > masses;
 
+  ////single inversion mass
+  double fermion_mass;
+  int solver_type;
+  int inv_deflate;
+
   int nsource;
   std::vector<std::string > propN;
   std::vector<std::string > srcN;
@@ -334,6 +340,11 @@ struct inputpara{
 
   size_t off_file;
   crc32_t checksum;
+
+  ////===clover paras
+  double kappa;
+  double clover_csw;
+  ////===clover paras
 
   ////===private usage, not loaded from file head
   int    bsize;
@@ -484,6 +495,7 @@ struct inputpara{
 
     if(find_para(std::string("nini"),nini)==0)nini  = 0;
     if(find_para(std::string("nvec"),nvec)==0)nvec  = 0;
+    if(find_para(std::string("gridtem"),gridtem)==0)gridtem  = 1;
     if(find_para(std::string("sparsefactor"),sparsefactor)==0)sparsefactor  = 16;
     if(find_para(std::string("lms"),lms)==0)lms  = 0;
     if(find_para(std::string("Eerr"),Eerr)==0)Eerr  = 1e-11;
@@ -502,11 +514,18 @@ struct inputpara{
     if(find_para(std::string("Srcname"),Srcname)==0)Srcname  = std::string("NONE");
 
     if(find_para(std::string("paraI"),paraI)==0)paraI  = std::string("NONE");
+    if(find_para(std::string("fermion_mass"),fermion_mass)==0)fermion_mass  = 0.11;
+    if(find_para(std::string("solver_type"),solver_type)==0)solver_type  = 0;
+    if(find_para(std::string("inv_deflate"),inv_deflate)==0)inv_deflate  = 0;
+
     if(find_para(std::string("job_tag"),job_tag)==0)job_tag  = std::string("NONE");
     if(find_para(std::string("src_smear_para"),src_smear_para)==0)src_smear_para  = std::string("NONE");
     if(find_para(std::string("sink_smear_para"),sink_smear_para)==0)sink_smear_para  = std::string("NONE");
     if(find_para(std::string("save_type"),save_type)==0)save_type  = std::string("NONE");
     if(find_para(std::string("total_size"),total_size)==0)total_size  = std::string("NONE");
+
+    if(find_para(std::string("kappa"),kappa)==0)kappa  = 0.15;
+    if(find_para(std::string("clover_csw"),clover_csw)==0)clover_csw  = 1.1;
 
     ////temp variables for prop settings
     if(find_para(std::string("SRC_PROP_WITH_LOW"),SRC_PROP_WITH_LOW)==0)SRC_PROP_WITH_LOW  = 0;

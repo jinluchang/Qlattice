@@ -1,5 +1,6 @@
 #include <sys/sysinfo.h>
-#include <qlat/qcd.h>
+//////#include <qlat/qcd.h>
+#include <qlat/qlat.h>
 #include <qlat/selected-field-io.h>
 
 int main(int argc, char* argv[])
@@ -56,6 +57,8 @@ int main(int argc, char* argv[])
   ////===save point selection info
 
   qlat::FieldM<Complex, 12*12 > propM;propM.init(geo);
+  //Propagator4dT<Complex > propM;propM.init(geo);
+  //Complex* data = (Complex*) &propM.get_elem(0);
   Complex* data = qlat::get_data(propM).data();
   for(long isp=0;isp<geo.local_volume();isp++)
   {
@@ -64,12 +67,44 @@ int main(int argc, char* argv[])
   }
 
   qlat::SelectedField<Complex > sf;sf.init(fsel, 12*12);
-
   set_selected_field(sf, propM, fsel);
+  Coordinate new_size_node = Coordinate(1, 1, 2, 4);
+  const ShuffledBitSet sbs = mk_shuffled_bitset(fsel, new_size_node);
 
-  namew = std::string("res/test.selfield");
-  write_selected_field(sf, namew, fsel );
-  read_selected_field(sf, namew, fsel);
+
+  {
+  ShuffledFieldsWriter sfw("res/test.selfield", new_size_node);
+  /////write_float_from_double(sfw, "fa.float.field", sf);
+
+
+  write_float_from_double(sfw, "f.float.sfield", sf, sbs);
+  //write_float_from_double(sfw, "f.float.sfield", propM, sbs);
+  //write(sfw, "f.float.field", propM);
+  //write(sfw, "f.float.sfield", propM, sbs);
+
+  {
+    const std::string path = "res/test.selfield";
+    const std::vector<std::string> fns = list_fields(path);
+    for (long i = 0; i < (long)fns.size(); ++i) {
+      displayln_info(ssprintf(": %5d : '%s' from '%s'.", i, fns[i].c_str(), path.c_str()));
+    }
+  }
+
+
+  }
+
+  {
+  ShuffledFieldsReader sfr("res/test.selfield");
+  //read_double_from_float(sfr, "f.float.sfield", propM);
+  sf.init();
+  read_double_from_float(sfr, "f.float.sfield", sbs, sf);
+
+  //read(sfr, "f.float.sfield", propM);
+  }
+
+  //////namew = std::string("res/test.selfield");
+  ////write_selected_field(sf, namew, fsel );
+  ////read_selected_field(sf, namew, fsel);
 
 
   qlat::Timer::display();
