@@ -46,6 +46,8 @@ class FieldExpandCommPlan:
     def __deepcopy__(self, memo):
         return self.copy()
 
+###
+
 def make_field_expand_comm_plan(comm_marks):
     # comm_marks is of type Field("int8_t")
     cp = FieldExpandCommPlan()
@@ -79,6 +81,8 @@ class FastFourierTransform:
             scale_factor = 1.0 / math.sqrt(scale_factor)
             field *= scale_factor
         return field
+
+###
 
 def mk_fft(is_forward, *, is_only_spatial = False, is_normalizing = False):
     if is_only_spatial:

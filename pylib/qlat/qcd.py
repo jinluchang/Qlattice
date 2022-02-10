@@ -45,6 +45,8 @@ class GaugeField(Field):
     def show_info(self):
         gf_show_info(self)
 
+###
+
 class GaugeTransform(Field):
 
     def __init__(self, geo = None, *, ctype = None, multiplicity = None):
@@ -93,6 +95,8 @@ class GaugeTransform(Field):
         gt = GaugeTransform()
         c.gt_invert(gt, self)
         return gt
+
+###
 
 @timer_verbose
 def gf_show_info(gf):

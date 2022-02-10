@@ -3,7 +3,6 @@ import cqlat as c
 from qlat.geometry import *
 from qlat.rng_state import *
 from qlat.utils_io import *
-
 import numpy as np
 
 field_ctypes_double = [
@@ -283,6 +282,8 @@ class Field:
         else:
             assert False
             return None
+
+###
 
 def split_fields(fs, f):
     nf = len(fs)

@@ -80,6 +80,8 @@ class Geometry:
     def is_local(self, xl):
         return c.is_local_geo(self, xl)
 
+###
+
 def geo_reform(geo, multiplicity = 1, expansion_left = None, expansion_right = None):
     assert isinstance(geo, Geometry)
     if expansion_left is None:

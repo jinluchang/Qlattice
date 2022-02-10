@@ -502,19 +502,19 @@ rup.dict_params["test-4nt16"][tag] = 16
 rup.dict_params["48I"][tag] = 16
 rup.dict_params["64I"][tag] = 16
 rup.dict_params["16IH2"][tag] = 16
-rup.dict_params["32IfineH"][tag] = 16
+rup.dict_params["32IfineH"][tag] = 64
 
 tag = "prob_acc_1_rand_u1"
 rup.dict_params["test-4nt8"][tag] = 1/4
 rup.dict_params["test-4nt16"][tag] = 1/4
 rup.dict_params["16IH2"][tag] = 1/16
-rup.dict_params["32IfineH"][tag] = 1/16
+rup.dict_params["32IfineH"][tag] = 1/32
 
 tag = "prob_acc_2_rand_u1"
 rup.dict_params["test-4nt8"][tag] = 1/16
 rup.dict_params["test-4nt16"][tag] = 1/16
 rup.dict_params["16IH2"][tag] = 1/64
-rup.dict_params["32IfineH"][tag] = 1/64
+rup.dict_params["32IfineH"][tag] = 1/128
 
 tag = "trajs"
 rup.dict_params["test-4nt8"][tag] = list(range(1000, 1400, 100))

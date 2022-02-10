@@ -22,7 +22,7 @@ def prop_smear(prop : Prop, gf1 : GaugeField, coef : float, step : int, mom = No
     # smear params:
     # 24D: coef = 0.9375, step = 10
     # 48I: coef = 0.9375, step = 29
-    # mom ratio = 0.5
+    # mom = 0.5 * mom of the corresponding hadron
     if mom is None:
         mom = [ 0.0, 0.0, 0.0, 0.0, ]
     return c.prop_smear(prop, gf1, coef, step, mom, smear_in_time_dir)
