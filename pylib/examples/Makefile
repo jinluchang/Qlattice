@@ -7,6 +7,7 @@ run: cqlat-example py-examples
 tests = make-sample-gauge-field.log \
 		field-utils.log \
 		hmc-pions.log \
+		hmc-pions-unit-tests.log \
 		qcd-utils.log \
 		hmc-pure-gauge.log \
 		field-selection.log \
@@ -15,7 +16,7 @@ tests = make-sample-gauge-field.log \
 		fields-io.log \
 		free-invert.log \
 		gpt-qlat-convert.log \
-		gpt-qlat-smear.py \
+		gpt-qlat-smear.log \
 		gpt-qlat-sample-gauge-field.log \
 		gpt-qlat-lanc.log \
 		gpt-qlat-free-invert.log \
