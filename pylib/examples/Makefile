@@ -15,6 +15,7 @@ tests = make-sample-gauge-field.log \
 		fields-io.log \
 		free-invert.log \
 		gpt-qlat-convert.log \
+		gpt-qlat-smear.py \
 		gpt-qlat-sample-gauge-field.log \
 		gpt-qlat-lanc.log \
 		gpt-qlat-free-invert.log \
