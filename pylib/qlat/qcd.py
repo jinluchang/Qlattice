@@ -112,6 +112,10 @@ def gf_avg_link_trace(gf):
     return c.gf_avg_link_trace(gf)
 
 def gf_wilson_line_no_comm(wlf, m, gf_ext, path, path_n = None):
+    # wlf = Field("ColorMatrix", geo)
+    # will only modify the m'th component
+    # e.g. path = [ mu, mu, nu, -mu-1, -mu-1, ]
+    # e.g. path = [ mu, nu, -mu-1, ], path_n = [ 2, 1, 2, ]
     if path_n is None:
         c.gf_wilson_line_no_comm(wlf, m, gf_ext, path)
     else:
