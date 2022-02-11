@@ -302,3 +302,29 @@ def merge_fields(f, fs):
     assert isinstance(f, Field)
     assert f.ctype == fs[0].ctype
     c.merge_fields_field(f, fs)
+
+def merge_fields_ms(f, fms):
+    # fms = [ (f0, m0,), (f1, m1,), ... ]
+    # f.get_elem(x, m) = fms[m][0].get_elem(x, fms[m][1])
+    multiplicity = len(fms)
+    assert multiplicity >= 1
+    assert isinstance(f, Field)
+    assert f.ctype == fs[0].ctype
+    fs, ms = zip(*fms)
+    c.merge_fields_ms_field(f, fs, ms)
+
+def mk_merged_fields_ms(fms):
+    # fms = [ (f0, m0,), (f1, m1,), ... ]
+    # f.get_elem(x, m) = fms[m][0].get_elem(x, fms[m][1])
+    # return f
+    multiplicity = len(fms)
+    assert multiplicity >= 1
+    for m in range(multiplicity):
+        assert isinstance(fms[m][0], Field)
+        assert isinstance(fms[m][1], int)
+    ctype = fms[0][0].ctype
+    for m in range(multiplicity):
+        assert ctype == fms[m][0].ctype
+    f = Field(ctype)
+    merge_fields_ms(f, fms)
+    return f

@@ -261,6 +261,35 @@ M field_get_elem(const Field<M>& f, const Coordinate& xg)
 }
 
 template <class M>
+void split_fields(std::vector<Handle<Field<M> > >& vec, const Field<M>& f)
+// fields in vector will be reinitialized to have the same geo and multiplicity
+{
+  TIMER("split_fields");
+  qassert(vec.size() >= 1);
+  qassert(is_initialized(f));
+  const long nf = vec.size();
+  const Geometry& geo = f.geo();
+  qassert(geo.is_only_local());
+  const int multiplicity = geo.multiplicity;
+  const int multiplicity_v = multiplicity / nf;
+  qassert(multiplicity_v * nf == multiplicity);
+  const Geometry geo_v = geo_reform(geo, multiplicity_v);
+  for (long i = 0; i < nf; ++i) {
+    Field<M>& f1 = vec[i]();
+    f1.init();
+    f1.init(geo_v);
+    const int m_offset = i * multiplicity_v;
+    qacc_for(index, geo.local_volume(), {
+      const Vector<M> fv = f.get_elems_const(index);
+      Vector<M> f1v = f1.get_elems(index);
+      for (int m = 0; m < multiplicity_v; ++m) {
+        f1v[m] = fv[m + m_offset];
+      }
+    });
+  }
+}
+
+template <class M>
 void merge_fields(Field<M>& f, const std::vector<ConstHandle<Field<M> > >& vec)
 // fields in vector should have the same geo and multiplicity
 {
@@ -292,32 +321,30 @@ void merge_fields(Field<M>& f, const std::vector<ConstHandle<Field<M> > >& vec)
 }
 
 template <class M>
-void split_fields(std::vector<Handle<Field<M> > >& vec, const Field<M>& f)
-// fields in vector will be reinitialized to have the same geo and multiplicity
+void merge_fields_ms(Field<M>& f, const std::vector<ConstHandle<Field<M> > >& vec, const std::vector<int> m_vec)
+// f.get_elem(x, m) = vec[m].get_elem(x, m_vec[m])
 {
-  TIMER("split_fields");
+  TIMER("merge_fields_ms");
   qassert(vec.size() >= 1);
-  qassert(is_initialized(f));
-  const long nf = vec.size();
-  const Geometry& geo = f.geo();
-  qassert(geo.is_only_local());
-  const int multiplicity = geo.multiplicity;
-  const int multiplicity_v = multiplicity / nf;
-  qassert(multiplicity_v * nf == multiplicity);
-  const Geometry geo_v = geo_reform(geo, multiplicity_v);
-  for (long i = 0; i < nf; ++i) {
-    Field<M>& f1 = vec[i]();
-    f1.init();
-    f1.init(geo_v);
-    const int m_offset = i * multiplicity_v;
-    qacc_for(index, geo.local_volume(), {
-      const Vector<M> fv = f.get_elems_const(index);
-      Vector<M> f1v = f1.get_elems(index);
-      for (int m = 0; m < multiplicity_v; ++m) {
-        f1v[m] = fv[m + m_offset];
-      }
-    });
+  qassert(not vec[0].null());
+  qassert(is_initialized(vec[0]()));
+  const long multiplicity = vec.size();
+  qassert(multiplicity == m_vec.size());
+  const Geometry geo = geo_reform(vec[0]().geo(), multiplicity);
+  f.init(geo);
+  for (long m = 0; m < multiplicity; ++m) {
+    const Field<M>& f1 = vec[m]();
+    const Geometry& geo_v = vec[m]().geo();
+    qassert(geo_v.is_only_local());
+    check_matching_geo(geo_v, geo);
   }
+  qthread_for(index, geo.local_volume(), {
+    Vector<M> fv = f.get_elems(index);
+    for (int m = 0; m < multiplicity; ++m) {
+      const Vector<M> f1v = vec[m]().get_elems_const(index);
+      fv[m] = f1v[m_vec[m]];
+    }
+  });
 }
 
 template <class M>

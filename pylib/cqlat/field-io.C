@@ -59,35 +59,6 @@ PyObject* to_from_endianness_field_ctype(PyField& pf,
   Py_RETURN_NONE;
 }
 
-template <class M>
-PyObject* split_fields_field_ctype(std::vector<PyField>& pf_vec, PyField& pf)
-{
-  Field<M>& f = *(Field<M>*)pf.cdata;
-  const int nf = pf_vec.size();
-  std::vector<Handle<Field<M> > > vec(nf);
-  for (int i = 0; i < nf; ++i) {
-    pqassert(pf_vec[i].ctype == pf.ctype);
-    vec[i].init(*(Field<M>*)pf_vec[i].cdata);
-  }
-  split_fields(vec, f);
-  Py_RETURN_NONE;
-}
-
-template <class M>
-PyObject* merge_fields_field_ctype(PyField& pf,
-                                   const std::vector<PyField>& pf_vec)
-{
-  Field<M>& f = *(Field<M>*)pf.cdata;
-  const int nf = pf_vec.size();
-  std::vector<ConstHandle<Field<M> > > vec(nf);
-  for (int i = 0; i < nf; ++i) {
-    pqassert(pf_vec[i].ctype == pf.ctype);
-    vec[i].init(*(Field<M>*)pf_vec[i].cdata);
-  }
-  merge_fields(f, vec);
-  Py_RETURN_NONE;
-}
-
 }  // namespace qlat
 
 EXPORT(save_field, {
@@ -168,35 +139,5 @@ EXPORT(to_from_endianness_field, {
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, to_from_endianness_field_ctype, pf.ctype, pf,
                  endianness_tag);
-  return p_ret;
-});
-
-EXPORT(split_fields_field, {
-  using namespace qlat;
-  PyObject* p_field_vec = NULL;
-  PyObject* p_field = NULL;
-  if (!PyArg_ParseTuple(args, "OO", &p_field_vec, &p_field)) {
-    return NULL;
-  }
-  std::vector<PyField> pf_vec;
-  py_convert(pf_vec, p_field_vec);
-  PyField pf = py_convert_field(p_field);
-  PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, split_fields_field_ctype, pf.ctype, pf_vec, pf);
-  return p_ret;
-});
-
-EXPORT(merge_fields_field, {
-  using namespace qlat;
-  PyObject* p_field = NULL;
-  PyObject* p_field_vec = NULL;
-  if (!PyArg_ParseTuple(args, "OO", &p_field, &p_field_vec)) {
-    return NULL;
-  }
-  PyField pf = py_convert_field(p_field);
-  std::vector<PyField> pf_vec;
-  py_convert(pf_vec, p_field_vec);
-  PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, merge_fields_field_ctype, pf.ctype, pf, pf_vec);
   return p_ret;
 });
