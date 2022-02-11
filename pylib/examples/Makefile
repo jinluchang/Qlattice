@@ -25,10 +25,15 @@ tests = make-sample-gauge-field.log \
 		gpt-qlat-gfix-mdwf.log \
 		gpt-qlat-rbc-ukqcd-invert.log
 
-py-examples : $(tests)
+py-examples: $(tests)
 
-%.log : %.py
-	mpirun --np 2 ./"$<" --mpi 1.1.1.2 --mpi_split 1.1.1.1 | tee "$@".full
+hmc-pions-unit-tests.log: hmc-pions-unit-tests.py
+	mpirun --np 1 ./"$<" --mpi 1.1.1.1 --mpi_split 1.1.1.1 | tee "$@".full
+	-rm -rfv results
+	-grep -v "^Timer\|^GPT\|^Grid\|timing: \|Timing: " "$@".full > "$@"
+
+%.log: %.py
+	mpirun --np 2 ./"$<" --mpi 1.1.1.2 --mpi_split 1.1.1.1 --mpi 1.1.2 --mpi_split 1.1.1 | tee "$@".full
 	-rm -rfv results
 	-grep -v "^Timer\|^GPT\|^Grid\|timing: \|Timing: " "$@".full > "$@"
 
