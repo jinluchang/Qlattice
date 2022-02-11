@@ -86,6 +86,20 @@ sum_tslice -= sum_tslice2
 
 q.displayln_info(f"{sum_tslice1.qnorm()} {sum_tslice2.qnorm()} {sum_tslice.qnorm()}")
 
+gf_vec = [ q.mk_merged_fields_ms([ (gf, m,), ]) for m in range(4) ]
+
+gf1 = q.GaugeField()
+
+gf1 @= q.mk_merged_fields_ms([ (gf_vec[m], 0) for m in range(4) ])
+
+gf1.show_info()
+
+gf2 = q.GaugeField()
+
+gf2 @= q.mk_merged_fields_ms([ (gf, m) for m in range(4) ])
+
+gf2.show_info()
+
 q.timer_display()
 
 q.end()

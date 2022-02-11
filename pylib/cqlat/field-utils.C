@@ -130,15 +130,15 @@ PyObject* merge_fields_field_ctype(PyField& pf,
 
 template <class M>
 PyObject* merge_fields_ms_ctype(PyObject* p_field,
-                                      const std::vector<PyObject*>& p_f_vec,
-                                      const std::vector<int> m_vec)
+                                const std::vector<PyObject*>& p_f_vec,
+                                const std::vector<int> m_vec)
 {
   Field<M>& f = py_convert_type_field<M>(p_field);
+  const std::string ctype = py_get_ctype(p_field);
   const int multiplicity = p_f_vec.size();
   std::vector<ConstHandle<Field<M> > > vec(multiplicity);
   for (int m = 0; m < multiplicity; ++m) {
-    const std::string ctype = py_get_ctype(p_f_vec[m]);
-    pqassert(check_ctype_name<M>(ctype));
+    pqassert(ctype == py_get_ctype(p_f_vec[m]));
     vec[m].init(py_convert_type_field<M>(p_f_vec[m]));
   }
   merge_fields_ms(f, vec, m_vec);

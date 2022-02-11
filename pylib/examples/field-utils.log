@@ -181,6 +181,8 @@ gf_show_info: plaq = 0.3067038575531761 ; link_trace = 0.0005769961056065.
 diff norm 0.0
 ShufflePlanCache: to add 1 / 16.
 12345.83670174641 12345.83670174641 0.0
+gf_show_info: plaq = 0.3067038575531761 ; link_trace = 0.0005769961056065.
+gf_show_info: plaq = 0.3067038575531761 ; link_trace = 0.0005769961056065.
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 0.
 qlat::end(): Finalize MPI.

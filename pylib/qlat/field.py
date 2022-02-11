@@ -309,7 +309,7 @@ def merge_fields_ms(f, fms):
     multiplicity = len(fms)
     assert multiplicity >= 1
     assert isinstance(f, Field)
-    assert f.ctype == fs[0].ctype
+    assert f.ctype == fms[0][0].ctype
     fs, ms = zip(*fms)
     c.merge_fields_ms_field(f, fs, ms)
 

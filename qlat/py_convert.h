@@ -110,7 +110,7 @@ inline bool check_ctype_name<int8_t>(const std::string& ctype)
   return "int8_t" == ctype;
 }
 
-inline void py_convert(PyObject* out, PyObject* in) { out = in; }
+inline void py_convert(PyObject*& out, PyObject* in) { out = in; }
 
 inline void py_convert(int& out, PyObject* in)
 {
