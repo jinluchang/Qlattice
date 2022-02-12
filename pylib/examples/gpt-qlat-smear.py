@@ -52,7 +52,7 @@ inv = ru.mk_inverter(gf, job_tag, inv_type, inv_acc, n_grouped = q.get_num_node(
 
 xg = psel_smear.to_list()[0]
 
-tag = f"smear ; xg={xg} ; type={inv_type} ; accuracy={inv_acc}"
+tag = f"smear ; xg={tuple(xg)} ; type={inv_type} ; accuracy={inv_acc}"
 
 q.displayln_info(tag)
 src = q.mk_point_src(geo, xg)
