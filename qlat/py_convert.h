@@ -54,19 +54,19 @@ int get_ctype_precision()
 }
 
 template <>
-int get_ctype_precision<ComplexF>()
+inline int get_ctype_precision<ComplexF>()
 {
   return 2;
 }
 
 template <>
-int get_ctype_precision<double>()
+inline int get_ctype_precision<double>()
 {
   return 1;
 }
 
 template <>
-int get_ctype_precision<float>()
+inline int get_ctype_precision<float>()
 {
   return 3;
 }
