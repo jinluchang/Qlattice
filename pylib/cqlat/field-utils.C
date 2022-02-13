@@ -91,11 +91,24 @@ PyObject* glb_sum_tslice_long_field_ctype(PyField& pspf, PyField& pf)
 }
 
 template <class M>
-PyObject* fft_dir_complex_field_ctype(PyField& pf1, PyField& pf, const int fft_dir, const bool is_forward)
+PyObject* fft_fields_ctype(const std::vector<PyObject*> p_field_vec,
+                           const std::vector<int> fft_dirs,
+                           const std::vector<bool> fft_is_forwards)
 {
-  Field<M>& f1 = *(Field<M>*)pf1.cdata;
-  const Field<M>& f = *(Field<M>*)pf.cdata;
-  fft_complex_field_dir(f1, f, fft_dir, is_forward);
+  const long n_field = p_field_vec.size();
+  std::vector<Handle<Field<M> > > vec(n_field);
+  for (long i = 0; i < n_field; ++i) {
+    vec[i].init(py_convert_type_field<M>(p_field_vec[i]));
+  }
+  for (long i = 0; i < n_field; ++i) {
+    Field<M> ft;
+    for (long k = 0; k < (long)fft_dirs.size(); ++k) {
+      ft = vec[i]();
+      const int fft_dir = fft_dirs[k];
+      const bool is_forward = fft_is_forwards[k];
+      fft_complex_field_dir(vec[i](), ft, fft_dir, is_forward);
+    }
+  }
   Py_RETURN_NONE;
 }
 
@@ -340,23 +353,32 @@ EXPORT(glb_sum_tslice_long_field, {
   return p_ret;
 });
 
-EXPORT(fft_dir_complex_field, {
+EXPORT(fft_fields, {
   // forward compute
-  // field1(k) <- \sum_{x} exp( - ii * 2 pi * k * x ) field(x)
+  // field(k) <- \sum_{x} exp( - ii * 2 pi * k * x ) field(x)
   // backwards compute
-  // field1(x) <- \sum_{k} exp( + ii * 2 pi * k * x ) field(k)
+  // field(x) <- \sum_{k} exp( + ii * 2 pi * k * x ) field(k)
   using namespace qlat;
-  PyObject* p_field1 = NULL;
-  PyObject* p_field = NULL;
-  int fft_dir = 0;
-  bool is_forward = true;
-  if (!PyArg_ParseTuple(args, "OOib", &p_field1, &p_field, &fft_dir, &is_forward)) {
+  PyObject* p_fields = NULL;
+  PyObject* p_fft_dirs = NULL;
+  PyObject* p_fft_is_forwards = NULL;
+  if (!PyArg_ParseTuple(args, "OOO", &p_fields, &p_fft_dirs, &p_fft_is_forwards)) {
     return NULL;
   }
-  PyField pf1 = py_convert_field(p_field1);
-  PyField pf = py_convert_field(p_field);
+  const std::vector<PyObject*> p_field_vec =
+      py_convert_data<std::vector<PyObject*> >(p_fields);
+  pqassert(p_field_vec.size() >= 1);
+  const std::string ctype = py_get_ctype(p_field_vec[0]);
+  for (long i = 0; i < (long)p_field_vec.size(); ++i) {
+    pqassert(ctype == py_get_ctype(p_field_vec[i]));
+  }
+  const std::vector<int> fft_dirs =
+      py_convert_data<std::vector<int> >(p_fft_dirs);
+  const std::vector<bool> fft_is_forwards =
+      py_convert_data<std::vector<bool> >(p_fft_is_forwards);
+  pqassert(fft_dirs.size() == fft_is_forwards.size());
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, fft_dir_complex_field_ctype, pf.ctype, pf1, pf, fft_dir, is_forward);
+  FIELD_DISPATCH(p_ret, fft_fields_ctype, ctype, p_field_vec, fft_dirs, fft_is_forwards);
   return p_ret;
 });
 

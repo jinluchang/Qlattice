@@ -222,6 +222,28 @@ void py_convert(std::vector<M>& out, PyObject* in)
   }
 }
 
+template <>
+inline void py_convert<bool>(std::vector<bool>& out, PyObject* in)
+{
+  if (PyList_Check(in)) {
+    out.resize(PyList_Size(in));
+    for (size_t i = 0; i < out.size(); i++) {
+      bool v;
+      py_convert(v, PyList_GetItem(in, i));
+      out[i] = v;
+    }
+  } else if (PyTuple_Check(in)) {
+    out.resize(PyTuple_Size(in));
+    for (size_t i = 0; i < out.size(); i++) {
+      bool v;
+      py_convert(v, PyTuple_GetItem(in, i));
+      out[i] = v;
+    }
+  } else {
+    pqassert(false);
+  }
+}
+
 template <class M>
 void py_convert(Vector<M> out, PyObject* in)
 {

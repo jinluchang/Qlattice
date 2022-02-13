@@ -68,19 +68,24 @@ class FastFourierTransform:
         self.fft_infos = fft_infos
         self.is_normalizing = is_normalizing
 
-    def __mul__(self, field):
-        for fft_dir, is_forward in self.fft_infos:
-            f = field.copy(False)
-            c.fft_dir_complex_field(f, field, fft_dir, is_forward)
-            field = f
+    def __mul__(self, fields):
+        if isinstance(fields, Field):
+            return (self * [ fields, ])[0]
+        assert isinstance(fields, list)
+        for f in fields:
+            assert isinstance(f, Field)
+        fields = [ f.copy() for f in fields ]
+        fft_dirs, fft_is_forwards = zip(*self.fft_infos)
+        c.fft_fields(fields, fft_dirs, fft_is_forwards)
         if self.is_normalizing and self.fft_infos:
-            total_site = field.total_site()
-            scale_factor = 1
-            for fft_dir, is_forward in self.fft_infos:
-                scale_factor *= total_site[fft_dir]
-            scale_factor = 1.0 / math.sqrt(scale_factor)
-            field *= scale_factor
-        return field
+            for field in fields:
+                total_site = field.total_site()
+                scale_factor = 1
+                for fft_dir, is_forward in self.fft_infos:
+                    scale_factor *= total_site[fft_dir]
+                scale_factor = 1.0 / math.sqrt(scale_factor)
+                field *= scale_factor
+        return fields
 
 ###
 

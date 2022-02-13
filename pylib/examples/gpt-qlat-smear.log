@@ -73,24 +73,24 @@ Run local time slice 0 / 4 id_node=1
 Run local time slice 0 / 4 id_node=0
 Running cg_cycle=0 local time slice 0 / 4 id_node=1
 Running cg_cycle=0 local time slice 0 / 4 id_node=0
-Finish local time slice 0 / 4 id_node=1
-Run local time slice 1 / 4 id_node=1
-Running cg_cycle=0 local time slice 1 / 4 id_node=1
 Finish local time slice 0 / 4 id_node=0
 Run local time slice 1 / 4 id_node=0
+Finish local time slice 0 / 4 id_node=1
+Run local time slice 1 / 4 id_node=1
 Running cg_cycle=0 local time slice 1 / 4 id_node=0
+Running cg_cycle=0 local time slice 1 / 4 id_node=1
 Finish local time slice 1 / 4 id_node=1
 Run local time slice 2 / 4 id_node=1
-Running cg_cycle=0 local time slice 2 / 4 id_node=1
 Finish local time slice 1 / 4 id_node=0
 Run local time slice 2 / 4 id_node=0
+Running cg_cycle=0 local time slice 2 / 4 id_node=1
 Running cg_cycle=0 local time slice 2 / 4 id_node=0
 Finish local time slice 2 / 4 id_node=1
-Run local time slice 3 / 4 id_node=1
-Running cg_cycle=0 local time slice 3 / 4 id_node=1
 Finish local time slice 2 / 4 id_node=0
+Run local time slice 3 / 4 id_node=1
 Run local time slice 3 / 4 id_node=0
 Running cg_cycle=0 local time slice 3 / 4 id_node=0
+Running cg_cycle=0 local time slice 3 / 4 id_node=1
 Finish local time slice 3 / 4 id_node=1
 Finish local time slice 3 / 4 id_node=0
 ShufflePlanCache: to add 1 / 16.
@@ -102,12 +102,12 @@ mk_gpt_inverter: mpi_split=[1, 1, 1, 1] n_grouped=4
 mk_gpt_inverter: deal with is_madwf=False
 mk_gpt_inverter: eps=1e-08 max_cycle=1
 mk_gpt_inverter: make inv_qm
-smear ; xg=[3, 1, 0, 0] ; type=1 ; accuracy=0
+smear ; xg=(3, 1, 0, 0) ; type=1 ; accuracy=0
 qnorm(src) = 12.0
 CommPlanCache: to add 4 / 32.
 qnorm(src) = 0.20071192043188596 after smear
 qnorm(sol) = 0.2888235133524948
-mk_file_dirs_info: 'results/smear ; xg=[3, 1, 0, 0] ; type=1 ; accuracy=0 ; psnk.lat'.
+mk_file_dirs_info: 'results/smear ; xg=(3, 1, 0, 0) ; type=1 ; accuracy=0 ; psnk.lat'.
 qnorm(sol_psel) = 0.13636305213224031
 mk_file_dirs_info: 'results/prop-smear'.
 FieldsWriter: open 'results/prop-smear'.
@@ -132,26 +132,26 @@ make_shuffle_plan_generic: total num_recv_packs =         16
 make_shuffle_plan_generic: total num_send_msgs  =          2
 make_shuffle_plan_generic: total num_recv_msgs  =          2
 make_shuffle_plan_generic: global_comm_size =        325
-write(sfw,fn,sf,sbs): writing sparse field with fn='smear ; xg=[3, 1, 0, 0] ; type=1 ; accuracy=0' from 'results/prop-smear'.
+write(sfw,fn,sf,sbs): writing sparse field with fn='smear ; xg=(3, 1, 0, 0) ; type=1 ; accuracy=0' from 'results/prop-smear'.
 shuffle_field(sel_fs,sel_f,sp): 1x1x1x2 -> 1x1x2x4 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.000 GB)
 FieldsWriter: close 'results/prop-smear'.
-mk_file_dirs_info: 'results/smear ; xg=[3, 1, 0, 0] ; type=1 ; accuracy=0 ; wsnk.lat'.
+mk_file_dirs_info: 'results/smear ; xg=(3, 1, 0, 0) ; type=1 ; accuracy=0 ; wsnk.lat'.
 qnorm(sol_ws) = 18.412776032327635
 qnorm(sol_smear) = 0.28713534775858585
-mk_file_dirs_info: 'results/smear ; xg=[3, 1, 0, 0] ; type=1 ; accuracy=0 ; smear-snk.lat'.
+mk_file_dirs_info: 'results/smear ; xg=(3, 1, 0, 0) ; type=1 ; accuracy=0 ; smear-snk.lat'.
 qnorm(sol_smear_psel) = 0.03587979969885853
-62237347fcadf351547b952a7c5bc06d  results/prop-smear/00/0000000000
-bf2bda65e59dbd1109f121af35c4fe4c  results/prop-smear/01/0000000001
-248a844b423edad6e5b3dfd1d5607aae  results/prop-smear/02/0000000002
-13b5377b4e4982b739c83b135d5496df  results/prop-smear/03/0000000003
-1ef1c7009510305efd173a3c1b169d04  results/prop-smear/04/0000000004
-c4f44de048663695492fe8f0fbc85b02  results/prop-smear/05/0000000005
-eca178b68068701ccdf865252ded847d  results/prop-smear/06/0000000006
-595dcc13ca70b32db6ff7a43a125b4a0  results/prop-smear/07/0000000007
+c27b84efb1126c8128ffeb8f5e038451  results/prop-smear/00/0000000000
+a04fbaf76ca0bb78abe034558714fada  results/prop-smear/01/0000000001
+5b7fa36b7779307b06cf8d58546d3245  results/prop-smear/02/0000000002
+80cd128c356c93601323abf4ed95fade  results/prop-smear/03/0000000003
+a37143f47b41b46d26d3f05e9f3522da  results/prop-smear/04/0000000004
+dcb60f4453a01b93777ea842700f6859  results/prop-smear/05/0000000005
+83261964dc076f539d8a605e4d9622f3  results/prop-smear/06/0000000006
+b22e11cd5e8eb228e6632c90a395a810  results/prop-smear/07/0000000007
 55c0ede25af1905c5c62de7702ac0ffc  results/prop-smear/geon-info.txt
-4af22543871af24e6be9bd1a32017d23  results/smear ; xg=[3, 1, 0, 0] ; type=1 ; accuracy=0 ; psnk.lat
-848b120c8c5b428f147a253b1ff648de  results/smear ; xg=[3, 1, 0, 0] ; type=1 ; accuracy=0 ; smear-snk.lat
-35c85d44f0ecbae0f81c1fea768df24d  results/smear ; xg=[3, 1, 0, 0] ; type=1 ; accuracy=0 ; wsnk.lat
+4af22543871af24e6be9bd1a32017d23  results/smear ; xg=(3, 1, 0, 0) ; type=1 ; accuracy=0 ; psnk.lat
+848b120c8c5b428f147a253b1ff648de  results/smear ; xg=(3, 1, 0, 0) ; type=1 ; accuracy=0 ; smear-snk.lat
+35c85d44f0ecbae0f81c1fea768df24d  results/smear ; xg=(3, 1, 0, 0) ; type=1 ; accuracy=0 ; wsnk.lat
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 1.
 qlat::end(): Switch to old comm (foreign).
