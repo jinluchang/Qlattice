@@ -41,37 +41,6 @@ namespace qlat
 {  //
 
 template <class M>
-int get_type_precision()
-// 0: Complex
-// 1: double
-// 2: ComplexF
-// 3: float
-// 4: long
-// 5: int
-// 6: char
-{
-  return 0;
-}
-
-template <>
-inline int get_type_precision<ComplexF>()
-{
-  return 2;
-}
-
-template <>
-inline int get_type_precision<double>()
-{
-  return 1;
-}
-
-template <>
-inline int get_type_precision<float>()
-{
-  return 3;
-}
-
-template <class M>
 bool check_ctype_name(const std::string& ctype)
 {
   return false;

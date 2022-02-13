@@ -167,6 +167,37 @@ qacc char& operator*=(char& x, const Complex& factor) { assert(false); }
 
 qacc char& operator*=(int8_t& x, const Complex& factor) { assert(false); }
 
+template <class M>
+int get_type_precision()
+// 0: Complex
+// 1: double
+// 2: ComplexF
+// 3: float
+// 4: long
+// 5: int
+// 6: char
+{
+  return 0;
+}
+
+template <>
+inline int get_type_precision<ComplexF>()
+{
+  return 2;
+}
+
+template <>
+inline int get_type_precision<double>()
+{
+  return 1;
+}
+
+template <>
+inline int get_type_precision<float>()
+{
+  return 3;
+}
+
 qacc void set_zero(char& x) { x = 0; }
 
 qacc void set_zero(int8_t& x) { x = 0; }
