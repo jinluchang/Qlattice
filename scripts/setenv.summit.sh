@@ -25,7 +25,7 @@ module add gcc/7.5.0
 module list
 export QLAT_MPICXX="nvcc -w -std=c++14 -O3 -ccbin mpicxx -Xcompiler -fopenmp -Xcompiler -fno-strict-aliasing --expt-extended-lambda --expt-relaxed-constexpr -gencode arch=compute_70,code=sm_70"
 export QLAT_CXXFLAGS="-x cu -Xcompiler -fPIC "
-export QLAT_LDFLAGS="-link --shared"
+export QLAT_LDFLAGS="-link --shared -lcudart -lcufft"
 EOF
 
 ./scripts/compiler-wrappers.sh
