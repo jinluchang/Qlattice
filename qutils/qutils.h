@@ -219,6 +219,8 @@ qacc void set_unit(double& x, const Complex& coef) { x = coef.real(); }
 
 qacc void set_unit(Complex& x, const Complex& coef = 1.0) { x = coef; }
 
+qacc void set_unit(ComplexF& x, const Complex& coef = 1.0) { x = coef; }
+
 qacc double qnorm(const double& x) { return x * x; }
 
 qacc double qnorm(const double& x, const double& y) { return x * y; }

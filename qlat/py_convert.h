@@ -17,6 +17,8 @@
       (p_ret) = fname<WilsonVector>(__VA_ARGS__);                           \
     } else if ("Complex" == (ctype)) {                                      \
       (p_ret) = fname<Complex>(__VA_ARGS__);                                \
+    } else if ("ComplexF" == (ctype)) {                                     \
+      (p_ret) = fname<ComplexF>(__VA_ARGS__);                               \
     } else if ("double" == (ctype)) {                                       \
       (p_ret) = fname<double>(__VA_ARGS__);                                 \
     } else if ("float" == (ctype)) {                                        \
