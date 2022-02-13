@@ -41,7 +41,7 @@ namespace qlat
 {  //
 
 template <class M>
-int get_ctype_precision()
+int get_type_precision()
 // 0: Complex
 // 1: double
 // 2: ComplexF
@@ -54,19 +54,19 @@ int get_ctype_precision()
 }
 
 template <>
-inline int get_ctype_precision<ComplexF>()
+inline int get_type_precision<ComplexF>()
 {
   return 2;
 }
 
 template <>
-inline int get_ctype_precision<double>()
+inline int get_type_precision<double>()
 {
   return 1;
 }
 
 template <>
-inline int get_ctype_precision<float>()
+inline int get_type_precision<float>()
 {
   return 3;
 }
