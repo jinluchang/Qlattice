@@ -8,13 +8,14 @@
 #include <cassert>
 #include <vector>
 
-#define qwarn(str)                                                            \
-  {                                                                           \
-    std::string msg = qlat::ssprintf(                                         \
-        "qwarn: %s from '%s' line %d. (id_node=%d thread_num=%d)",            \
-        get_c_str(str), __FILE__, __LINE__, get_id_node(), get_thread_num()); \
-    qlat::displayln(msg);                                                     \
-    qlat::Timer::display_stack_always();                                      \
+#define qwarn(str)                                                     \
+  {                                                                    \
+    std::string msg = qlat::ssprintf(                                  \
+        "qwarn: %s from '%s' line %d. (id_node=%d thread_num=%d)",     \
+        qlat::get_c_str(str), __FILE__, __LINE__, qlat::get_id_node(), \
+        qlat::get_thread_num());                                       \
+    qlat::displayln(msg);                                              \
+    qlat::Timer::display_stack_always();                               \
   }
 
 #define qqassert(x)                      \

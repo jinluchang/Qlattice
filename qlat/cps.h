@@ -318,7 +318,7 @@ inline long read_low_modes_compressed(LowModesCPS& lm, const std::string& path)
   TIMER_VERBOSE_FLOPS("read_low_modes_compressed");
   cps::LanczosDefault& lanc = lm.lanc;
   lanc.free_evecs();
-  std::vector<double> vals;
+  vector<double> vals;
   std::vector<HalfVector> hvs;
   {
     CompressedEigenSystemInfo cesi;
@@ -410,7 +410,7 @@ inline void load_or_compute_low_modes(LowModesCPS& lm, const std::string& path,
 }
 
 struct InverterDomainWallCPS {
-  Geometry geo;
+  box<Geometry> geo;
   FermionAction fa;
   GaugeField gf;
   //
@@ -435,7 +435,7 @@ struct InverterDomainWallCPS {
     cps::FermionActionDomainWall cfa = fa_convert(fa);
     cps::GaugeField cgf;
     field_convert(cgf, gf);
-    inverter.geo().initialized = false;
+    inverter.geo.initialized = false;
     inverter.init(cgf, cfa);
   }
   //

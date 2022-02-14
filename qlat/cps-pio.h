@@ -223,7 +223,7 @@ inline long dataWriteParNode(const std::vector<DataSizeNmemb>& dsns,
       }
       sumArray(&bytes, 1);
       total_bytes += bytes;
-      qlat::DisplayInfo(cname, fname,
+      qlat::DisplayInfo(cname, fname.c_str(),
                   "cycle / n_cycle = %d / %d ; total_bytes = %ld\n", i + 1,
                   n_cycle, total_bytes);
       timer.flops += bytes;
@@ -300,7 +300,7 @@ inline long dataReadParNode(const std::vector<DataSizeNmemb>& dsns,
       }
       sumArray(&bytes, 1);
       total_bytes += bytes;
-      qlat::DisplayInfo(cname, fname,
+      qlat::DisplayInfo(cname, fname.c_str(),
                   "cycle / n_cycle = %d / %d ; total_bytes = %ld\n", i + 1,
                   n_cycle, total_bytes);
       timer.flops += bytes;

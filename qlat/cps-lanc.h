@@ -24,7 +24,7 @@ long lanczosWriteParNode(const Lanczos& lanc, const std::string& path)
     dsns[k].size = lanc.vec_size;
     dsns[k].nmemb = 1;
   }
-  qlat::DisplayInfo(cname, fname, "Writing %d vectors.\n", lanc.size);
+  qlat::DisplayInfo(cname, fname.c_str(), "Writing %d vectors.\n", lanc.size);
   long total_bytes = dataWriteParNode(dsns, path);
   saveString(path + "/checkpoint", "");
   return total_bytes;
@@ -51,7 +51,7 @@ long lanczosReadParNode(Lanczos& lanc, const std::string& path)
   timer.flops += lanc.size * lanc.vec_size * getNumNode();
   double vals[lanc.size];
   memset(vals, 0, sizeof(vals));
-  qlat::DisplayInfo(cname, fname, "Reading %d eigen-values.\n", lanc.size);
+  qlat::DisplayInfo(cname, fname.c_str(), "Reading %d eigen-values.\n", lanc.size);
   if (0 == getIdNode()) {
     const std::string filename = path + "/eigen-values.txt";
     FILE* file = fopen(filename.c_str(), "r");
@@ -80,7 +80,7 @@ long lanczosReadParNode(Lanczos& lanc, const std::string& path)
     dsns[k].size = lanc.vec_size;
     dsns[k].nmemb = 1;
   }
-  qlat::DisplayInfo(cname, fname, "Reading %d vectors.\n", lanc.size);
+  qlat::DisplayInfo(cname, fname.c_str(), "Reading %d vectors.\n", lanc.size);
   long total_bytes = dataReadParNode(dsns, path);
   return total_bytes;
 }
