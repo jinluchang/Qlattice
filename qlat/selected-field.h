@@ -70,7 +70,7 @@ inline void select_rank_range(FieldM<int64_t, 1>& f_rank,
   TIMER_VERBOSE("select_rank_range");
   const Geometry& geo = f_rank.geo();
   qassert(geo.is_only_local());
-  const Coordinate total_site = geo.total_site();
+  //const Coordinate total_site = geo.total_site();
   qacc_for(index, geo.local_volume(), {
     int64_t& rank = f_rank.get_elem(index);
     if (not(rank_start <= rank and (rank < rank_stop or rank_stop == -1))) {
@@ -89,7 +89,7 @@ inline void select_t_range(FieldM<int64_t, 1>& f_rank, const long t_start = 0,
   TIMER_VERBOSE("select_t_range");
   const Geometry& geo = f_rank.geo();
   qassert(geo.is_only_local());
-  const Coordinate total_site = geo.total_site();
+  //const Coordinate total_site = geo.total_site();
   qacc_for(index, geo.local_volume(), {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
@@ -268,7 +268,7 @@ inline PointSelection psel_from_fsel(const FieldSelection& fsel)
   long n_elems = fsel.n_elems;
   long total_n_elems = n_elems;
   glb_sum(total_n_elems);
-  const int num_node = geo.geon.num_node;
+  //const int num_node = geo.geon.num_node;
   const int id_node = geo.geon.id_node;
   vector<long> vec(geo.geon.num_node, 0);
   all_gather(get_data(vec), get_data_one_elem(n_elems));
@@ -287,7 +287,7 @@ inline PointSelection psel_from_fsel(const FieldSelection& fsel)
   });
   glb_sum(get_data(vec_gindex));
   PointSelection psel(total_n_elems);
-  qthread_for(idx, psel.size(), {
+  qthread_for(idx, (long) psel.size(), {
     long gindex = vec_gindex[idx];
     psel[idx] = coordinate_from_index(gindex, total_site);
   });
@@ -298,10 +298,10 @@ inline PointSelection psel_from_fsel_local(const FieldSelection& fsel)
 {
   TIMER("psel_from_fsel_local")
   const Geometry& geo = fsel.f_rank.geo();
-  const Coordinate total_site = geo.total_site();
+  //const Coordinate total_site = geo.total_site();
   long n_elems = fsel.n_elems;
   PointSelection psel(n_elems);
-  qthread_for(idx, psel.size(), {
+  qthread_for(idx, (long) psel.size(), {
     const long index = fsel.indices[idx];
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);

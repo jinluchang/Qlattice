@@ -574,11 +574,11 @@ template <class M>
 void all_gather(Vector<M> recv, const Vector<M>& send)
 {
   qassert(recv.size() == send.size() * get_num_node());
-  const long sendsize = send.size() * sizeof(M);
 #ifdef USE_MULTI_NODE
   MPI_Allgather((void*)send.data(), send.data_size(), MPI_BYTE,
                 (void*)recv.data(), send.data_size(), MPI_BYTE, get_comm());
 #else
+  const long sendsize = send.size() * sizeof(M);
   memmove(recv, send, sendsize);
 #endif
 }
