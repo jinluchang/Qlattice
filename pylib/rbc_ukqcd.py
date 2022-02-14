@@ -229,6 +229,25 @@ def load_eig_lazy(path, job_tag, inv_type = 0, inv_acc = 0):
     #
     return q.lazy_call(load_eig)
 
+def get_cg_mp_maxiter(job_tag, inv_type, inv_acc):
+    cg_params = rup.dict_params[job_tag].get(f"cg_params-{inv_type}-{inv_acc}")
+    if cg_params is not None:
+        maxiter = cg_params.get("maxiter")
+        if maxiter is not None:
+            return maxiter
+    if job_tag[:5] == "test-":
+        maxiter = 50
+    elif inv_acc == 2:
+        maxiter = 500
+    elif inv_type == 0:
+        maxiter = 200
+    elif inv_type in [ 1, 2, ]:
+        maxiter = 300
+    else:
+        maxiter = 100
+        raise Exception("get_cg_mp_maxiter")
+    return maxiter
+
 @q.timer_verbose
 def mk_gpt_inverter(gf, job_tag, inv_type, inv_acc, *,
         gt = None,
@@ -258,16 +277,7 @@ def mk_gpt_inverter(gf, job_tag, inv_type, inv_acc, *,
         else:
             qm = g.qcd.fermion.mobius(gpt_gf, params)
         inv = g.algorithms.inverter
-        if job_tag[:5] == "test-":
-            cg_mp = inv.cg({"eps": eps, "maxiter": 50})
-        elif inv_acc == 2:
-            cg_mp = inv.cg({"eps": eps, "maxiter": 500})
-        elif inv_type == 0:
-            cg_mp = inv.cg({"eps": eps, "maxiter": 200})
-        elif inv_type in [ 1, 2, ]:
-            cg_mp = inv.cg({"eps": eps, "maxiter": 300})
-        else:
-            raise Exception("mk_gpt_inverter")
+        cg_mp = inv.cg({"eps": eps, "maxiter": get_cg_mp_maxiter(job_tag, inv_type, inv_acc)})
         cg_pv_f = inv.cg({"eps": eps, "maxiter": 150})
         if mpi_split is None or mpi_split == False:
             cg_split = cg_mp

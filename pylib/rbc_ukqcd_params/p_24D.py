@@ -55,6 +55,9 @@ def mk_dict_fermion_params():
 
 dict_params["fermion_params"] = mk_dict_fermion_params()
 
+dict_params[f"cg_params-0-2"] = {}
+dict_params[f"cg_params-0-2"]["maxiter"] = 300
+
 def mk_lanc_params(inv_type, inv_acc):
     assert inv_type == 0
     assert inv_acc == 0
