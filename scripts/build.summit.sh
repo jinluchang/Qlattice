@@ -8,6 +8,7 @@ set -e
 
 ./scripts/xz.sh
 ./scripts/tar.sh
+./scripts/gsl.sh
 ./scripts/gmp.sh
 ./scripts/mpfr.sh
 

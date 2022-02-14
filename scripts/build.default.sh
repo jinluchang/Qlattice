@@ -8,6 +8,7 @@ set -e
 
 ./scripts/setenv.default.sh
 
+./scripts/gsl.sh
 ./scripts/fftw.sh
 ./scripts/fftwf.sh
 ./scripts/cuba.sh
