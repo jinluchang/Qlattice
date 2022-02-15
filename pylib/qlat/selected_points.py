@@ -119,6 +119,10 @@ class SelectedPoints:
         assert isinstance(ld, LatData)
         c.complex_spfield_from_lat_data(self, ld)
 
+    def to_numpy(self):
+        n_points = self.n_points()
+        return np.array([ self.get_elems(idx) for idx in range(n_points) ])
+
 @timer
 def set_selected_points(sp, f):
     # deprecated use @=
