@@ -79,7 +79,7 @@ struct BitSet {
   {
     TIMER("BitSet::set_f_rank")
     const Geometry& geo = f_rank.geo();
-    qassert(geo.local_volume() == N);
+    qassert(geo.local_volume() == (long)N);
     qassert(geo.is_only_local());
     qassert(geo.multiplicity == 1);
     for (size_t i = 0; i < N; i++) {
@@ -96,7 +96,7 @@ struct BitSet {
     const Geometry& geo = f_rank.geo();
     qassert(geo.is_only_local());
     qassert(geo.multiplicity == 1);
-    if (not(geo.local_volume() == N)) {
+    if (not(geo.local_volume() == (long)N)) {
       return false;
     }
     for (size_t i = 0; i < N; i++) {

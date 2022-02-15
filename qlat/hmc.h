@@ -306,8 +306,9 @@ inline void set_gm_force(GaugeMomentum& gm_force, const GaugeField& gf,
   set_gm_force_no_comm(gm_force, gf_ext, ga);
 }
 
-inline void set_sm_force_no_comm(Field<double>&  sm_force, const Field<double>&  sf,
-								 const ScalarAction& sa)
+inline void set_sm_force_no_comm(Field<double>& sm_force,
+                                 const Field<double>& sf,
+                                 const ScalarAction& sa)
 {
   TIMER("set_sm_force_no_comm");
   const double m_sq = sa.m_sq;
@@ -318,24 +319,22 @@ inline void set_sm_force_no_comm(Field<double>&  sm_force, const Field<double>& 
   qacc_for(index, geo.local_volume(), {
     Coordinate xl = geo.coordinate_from_index(index);
     Vector<double> sm_force_v = sm_force.get_elems(xl);
-	
-    unsigned int M = sm_force_v.size();
-    
+    int M = sm_force_v.size();
     double sum_mult_sq = 0.0;
     for (int m = 0; m < M; ++m) {
-      sum_mult_sq += pow(sf.get_elem(xl,m),2);
-	}
-    
+      sum_mult_sq += pow(sf.get_elem(xl, m), 2);
+    }
     for (int m = 0; m < M; ++m) {
-	  sm_force_v[m] = (2*4 + m_sq + lmbd/6*sum_mult_sq)*sf.get_elem(xl,m);
-	  if (m==0) sm_force_v[m] += alpha;
-	  for (int dir = 0; dir < 4; ++dir) {
-		xl[dir] += 1;
-		sm_force_v[m] -= sf.get_elem(xl,m);
-		xl[dir] -= 2;
-		sm_force_v[m] -= sf.get_elem(xl,m);
-		xl[dir] += 1;
-	  }
+      sm_force_v[m] =
+          (2 * 4 + m_sq + lmbd / 6 * sum_mult_sq) * sf.get_elem(xl, m);
+      if (m == 0) sm_force_v[m] += alpha;
+      for (int dir = 0; dir < 4; ++dir) {
+        xl[dir] += 1;
+        sm_force_v[m] -= sf.get_elem(xl, m);
+        xl[dir] -= 2;
+        sm_force_v[m] -= sf.get_elem(xl, m);
+        xl[dir] += 1;
+      }
     }
   });
 }
