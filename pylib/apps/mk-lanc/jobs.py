@@ -156,6 +156,15 @@ def mk_rand_wall_src_info_prob(job_tag, traj, inv_type):
         wi[i] = [ i, ] + wi[i]
     return wi
 
+def get_prob_exact_wsrc(job_tag):
+    import rbc_ukqcd as ru
+    params = rup.dict_params[job_tag]
+    if "prob_exact_wsrc" in params:
+        return params["prob_exact_wsrc"]
+    n_exact = params["n_exact_wsrc"]
+    total_site = ru.get_total_site(job_tag)
+    return 1 - (1 - 1 / total_site[3])**n_exact
+
 @q.timer
 def mk_rand_wall_src_info(job_tag, traj, inv_type):
     # wi is a list of [ idx tslice inv_type inv_acc ]
@@ -236,9 +245,9 @@ def run_psel(job_tag, traj):
             psel = mk_rand_psel(job_tag, traj)
             psel.save(get_save_path(tfn))
             q.release_lock()
-            return lambda : psel
         else:
             return None
+    #
     @q.timer_verbose
     def load_psel():
         import rbc_ukqcd as ru
@@ -355,6 +364,64 @@ def run_fsel(job_tag, traj, get_psel):
         fselc = mk_fselc(fsel, get_psel())
         return fsel, fselc
     return q.lazy_call(load_fsel)
+
+# ----------
+
+@q.timer
+def mk_rand_fsel_smear(job_tag, traj, n_per_tslice_smear):
+    import rbc_ukqcd as ru
+    rs = q.RngState(f"seed {job_tag} {traj}").split("mk_rand_fsel_smear")
+    total_site = ru.get_total_site(job_tag)
+    fsel = q.FieldSelection()
+    fsel.set_rand(rs, total_site, n_per_tslice_smear)
+    return fsel
+
+@q.timer_verbose
+def run_psel_smear(job_tag, traj):
+    # return lambda : psel_smear
+    # psel_smear should randomly select same number of point on each tslice
+    import rbc_ukqcd as ru
+    tfn = f"point-selection-smear/{job_tag}/traj={traj}.txt"
+    path_psel = get_load_path(tfn)
+    total_site = ru.get_total_site(job_tag)
+    n_per_tslice_smear = rup.dict_params[job_tag]["n_per_tslice_smear"]
+    if path_psel is None:
+        if q.obtain_lock(f"locks/{job_tag}-{traj}-psel-smear"):
+            fsel = mk_rand_fsel_smear(job_tag, traj, n_per_tslice_smear)
+            psel = fsel.to_psel()
+            psel.save(get_save_path(tfn))
+            q.release_lock()
+        else:
+            return None
+    #
+    @q.timer_verbose
+    def load_psel():
+        path_psel = get_load_path(tfn)
+        assert path_psel is not None
+        psel = q.PointSelection()
+        psel.load(path_psel)
+        total_site = ru.get_total_site(job_tag)
+        psel.geo = q.Geometry(total_site)
+        return psel
+    return q.lazy_call(load_psel)
+
+# ----------
+
+@q.timer
+def run_gf_ape(job_tag, get_gf):
+    if get_gf is None:
+        return None
+    coef = rup.dict_params[job_tag]["gf_ape_smear_coef"]
+    step = rup.dict_params[job_tag]["gf_ape_smear_step"]
+    #
+    @q.timer_verbose
+    def run():
+        gf = get_gf()
+        gf_ape = gf.copy()
+        q.gf_spatial_ape_smear(gf_ape, coef, step)
+        gf_ape = q.mk_left_expanded_gauge_field(gf_ape)
+        return gf_ape
+    return q.lazy_call(run)
 
 # ----------
 

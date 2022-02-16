@@ -156,6 +156,15 @@ def mk_rand_wall_src_info_prob(job_tag, traj, inv_type):
         wi[i] = [ i, ] + wi[i]
     return wi
 
+def get_prob_exact_wsrc(job_tag):
+    import rbc_ukqcd as ru
+    params = rup.dict_params[job_tag]
+    if "prob_exact_wsrc" in params:
+        return params["prob_exact_wsrc"]
+    n_exact = params["n_exact_wsrc"]
+    total_site = ru.get_total_site(job_tag)
+    return 1 - (1 - 1 / total_site[3])**n_exact
+
 @q.timer
 def mk_rand_wall_src_info(job_tag, traj, inv_type):
     # wi is a list of [ idx tslice inv_type inv_acc ]
