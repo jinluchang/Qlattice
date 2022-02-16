@@ -122,6 +122,7 @@ def run_job(job_tag, traj):
             f"eig/{job_tag}/traj={traj}",
             f"eig/{job_tag}/traj={traj}/metadata.txt",
             f"eig/{job_tag}/traj={traj}/eigen-values.txt",
+            f"eig-strange/{job_tag}/traj={traj}",
             ]
     if not check_job(job_tag, traj, fns_produce, fns_need):
         return
