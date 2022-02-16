@@ -39,6 +39,12 @@ def mk_dict_fermion_params():
 
 dict_params["fermion_params"] = mk_dict_fermion_params()
 
+dict_params[f"cg_params-1-0"] = {}
+dict_params[f"cg_params-1-0"]["maxiter"] = 250
+
+dict_params[f"cg_params-1-1"] = {}
+dict_params[f"cg_params-1-1"]["maxiter"] = 250
+
 def mk_lanc_params(inv_type, inv_acc):
     assert inv_acc == 0
     if inv_type == 0:
@@ -47,8 +53,8 @@ def mk_lanc_params(inv_type, inv_acc):
         n_keep = n_stop + 10
         n_max = n_stop + 50
     elif inv_type == 1:
-        c_low = 0.01
-        n_stop = 100
+        c_low = 0.0011
+        n_stop = 150
         n_keep = n_stop + 10
         n_max = n_stop + 50
     else:
@@ -85,9 +91,9 @@ def mk_clanc_params(inv_type, inv_acc):
         n_max = n_stop + 200
         n_single = 100
     elif inv_type == 1:
-        nbasis = 100
-        c_low = 0.02
-        n_stop = 300
+        nbasis = 150
+        c_low = 0.0034
+        n_stop = 500
         n_keep = n_stop + 20
         n_max = n_stop + 100
         n_single = 50
