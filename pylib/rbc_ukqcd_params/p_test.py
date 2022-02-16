@@ -36,7 +36,7 @@ def mk_dict_fermion_params():
     return params
 
 def mk_lanc_params(job_tag, inv_type, inv_acc):
-    assert inv_type == 0
+    assert inv_type in [ 0, 1, ]
     assert inv_acc == 0
     fermion_params = mk_dict_fermion_params()[inv_type][inv_acc]
     pit_params = { "eps": 0.01, "maxiter": 500, "real": True }
@@ -64,11 +64,16 @@ def mk_lanc_params(job_tag, inv_type, inv_acc):
             }
 
 def mk_clanc_params(job_tag, inv_type, inv_acc):
-    assert inv_type == 0
+    assert inv_type in [ 0, 1, ]
     assert inv_acc == 0
     block = [ 2, 2, 2, 2 ]
     nbasis = 20
-    cheby_params = { "low": 0.20, "high": 5.5, "order": 50, }
+    if inv_type == 0:
+        cheby_params = { "low": 0.20, "high": 5.5, "order": 50, }
+    elif inv_type == 1:
+        cheby_params = { "low": 0.30, "high": 5.5, "order": 50, }
+    else:
+        assert False
     irl_params = {
             "Nstop": 30,
             "Nk": 35,
@@ -99,8 +104,8 @@ def setup_params():
         dict_params["total_site"] = [ l, l, l, t, ]
         dict_params["load_config_params"] = { "twist_boundary_at_boundary" : [ 0.0, 0.0, 0.0, -0.5, ], }
         dict_params["fermion_params"] = mk_dict_fermion_params()
-        dict_lanc_params = { 0: { 0: mk_lanc_params(job_tag, 0, 0), }, }
-        dict_clanc_params = { 0: { 0: mk_clanc_params(job_tag, 0, 0), }, }
+        dict_lanc_params = { 0: { 0: mk_lanc_params(job_tag, 0, 0), }, 1: { 0: mk_lanc_params(job_tag, 1, 0), }, }
+        dict_clanc_params = { 0: { 0: mk_clanc_params(job_tag, 0, 0), }, 1: { 0: mk_clanc_params(job_tag, 1, 0), }, }
         dict_params["lanc_params"] = dict_lanc_params
         dict_params["clanc_params"] = dict_clanc_params
 

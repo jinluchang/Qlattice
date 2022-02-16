@@ -40,15 +40,26 @@ def mk_dict_fermion_params():
 dict_params["fermion_params"] = mk_dict_fermion_params()
 
 def mk_lanc_params(inv_type, inv_acc):
-    assert inv_type == 0
     assert inv_acc == 0
+    if inv_type == 0:
+        c_low = 0.0017
+        n_stop = 250
+        n_keep = n_stop + 10
+        n_max = n_stop + 50
+    elif inv_type == 1:
+        c_low = 0.01
+        n_stop = 100
+        n_keep = n_stop + 10
+        n_max = n_stop + 50
+    else:
+        assert False
     fermion_params = mk_dict_fermion_params()[inv_type][inv_acc]
     pit_params = { "eps": 0.01, "maxiter": 500, "real": True }
-    cheby_params = {"low": 0.0017, "high": 5.5, "order": 200}
+    cheby_params = {"low": c_low, "high": 5.5, "order": 200}
     irl_params = {
-            "Nstop": 250,
-            "Nk": 260,
-            "Nm": 300,
+            "Nstop": n_stop,
+            "Nk": n_keep,
+            "Nm": n_max,
             "resid": 1e-8,
             "betastp": 0.0,
             "maxiter": 20,
@@ -62,18 +73,32 @@ def mk_lanc_params(inv_type, inv_acc):
             "irl_params": irl_params,
             }
 
-dict_params["lanc_params"] = { 0: { 0: mk_lanc_params(0, 0), }, }
+dict_params["lanc_params"] = { 0: { 0: mk_lanc_params(0, 0), }, 1: { 0: mk_lanc_params(1, 0), }, }
 
 def mk_clanc_params(inv_type, inv_acc):
-    assert inv_type == 0
     assert inv_acc == 0
+    if inv_type == 0:
+        nbasis = 250
+        c_low = 0.007
+        n_stop = 1000
+        n_keep = n_stop + 50
+        n_max = n_stop + 200
+        n_single = 100
+    elif inv_type == 1:
+        nbasis = 100
+        c_low = 0.02
+        n_stop = 300
+        n_keep = n_stop + 20
+        n_max = n_stop + 100
+        n_single = 50
+    else:
+        assert False
     block = [ 4, 4, 4, 4, ]
-    nbasis = 250
-    cheby_params = { "low": 0.007, "high": 5.5, "order": 100, }
+    cheby_params = { "low": c_low, "high": 5.5, "order": 100, }
     irl_params = {
-            "Nstop": 1000,
-            "Nk": 1050,
-            "Nm": 1200,
+            "Nstop": n_stop,
+            "Nk": n_keep,
+            "Nm": n_max,
             "resid": 1e-8,
             "betastp": 0.0,
             "maxiter": 20,
@@ -81,7 +106,7 @@ def mk_clanc_params(inv_type, inv_acc):
             #    "maxapply" : 100
             }
     smoother_params = { "eps": 1e-6, "maxiter": 25, }
-    save_params = { "nsingle": 100, "mpi": [ 1, 1, 1, 8, ], }
+    save_params = { "nsingle": n_single, "mpi": [ 1, 1, 1, 8, ], }
     return {
             "block": block,
             "nbasis": nbasis,
@@ -91,4 +116,4 @@ def mk_clanc_params(inv_type, inv_acc):
             "save_params": save_params,
             }
 
-dict_params["clanc_params"] = { 0: { 0: mk_clanc_params(0, 0), }, }
+dict_params["clanc_params"] = { 0: { 0: mk_clanc_params(0, 0), }, 1: { 0: mk_clanc_params(1, 0), }, }

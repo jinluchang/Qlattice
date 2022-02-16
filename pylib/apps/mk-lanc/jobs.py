@@ -477,4 +477,24 @@ def run_eig(job_tag, traj, get_gf):
     else:
         return get_eig
 
+@q.timer_verbose
+def run_eig_strange(job_tag, traj, get_gf):
+    # if failed, return None
+    # if no parameter, return lambda : None
+    if None in [ get_gf, ]:
+        return None
+    if 1 not in rup.dict_params[job_tag]["clanc_params"]:
+        return lambda : None
+    import rbc_ukqcd as ru
+    get_eig = ru.load_eig_lazy(get_load_path(f"eig-strange/{job_tag}/traj={traj}"), job_tag)
+    if get_eig is None and get_gf is not None:
+        if q.obtain_lock(f"locks/{job_tag}-{traj}-run-eig-strange"):
+            get_eig = compute_eig(get_gf(), job_tag, inv_type = 1, path = f"eig-strange/{job_tag}/traj={traj}")
+            q.release_lock()
+            return get_eig
+        else:
+            return None
+    else:
+        return get_eig
+
 # ----------

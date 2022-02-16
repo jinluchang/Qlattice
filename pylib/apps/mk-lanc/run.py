@@ -34,6 +34,7 @@ def run_job(job_tag, traj):
     #
     get_gf = run_gf(job_tag, traj)
     get_eig = run_eig(job_tag, traj, get_gf)
+    get_eig_strange = run_eig_strange(job_tag, traj, get_gf)
     #
     q.clean_cache()
     q.timer_display()

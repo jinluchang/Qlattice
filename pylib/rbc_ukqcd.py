@@ -269,6 +269,10 @@ def mk_gpt_inverter(gf, job_tag, inv_type, inv_acc, *,
             # may need madwf
             params0 = get_fermion_params(job_tag, inv_type, inv_acc = 0)
             is_madwf = get_ls_from_fermion_params(params) != get_ls_from_fermion_params(params0)
+            if is_madwf and inv_type == 1:
+                # do not use madwf for strange even when eig is available (do not use eig for exact solve)
+                is_madwf = False
+                eig = None
         else:
             is_madwf = False
         q.displayln_info(f"mk_gpt_inverter: set qm params={params}")
