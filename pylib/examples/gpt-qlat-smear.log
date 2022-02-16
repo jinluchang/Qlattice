@@ -69,30 +69,6 @@ gf_show_info: plaq = 0.9735277456680520 ; link_trace = 0.9932265337772574.
                        :   random      = None
                        : Note: convergence is only guaranteed for sufficiently small step parameter.
                        : 
-Run local time slice 0 / 4 id_node=1
-Run local time slice 0 / 4 id_node=0
-Running cg_cycle=0 local time slice 0 / 4 id_node=1
-Running cg_cycle=0 local time slice 0 / 4 id_node=0
-Finish local time slice 0 / 4 id_node=0
-Run local time slice 1 / 4 id_node=0
-Finish local time slice 0 / 4 id_node=1
-Run local time slice 1 / 4 id_node=1
-Running cg_cycle=0 local time slice 1 / 4 id_node=0
-Running cg_cycle=0 local time slice 1 / 4 id_node=1
-Finish local time slice 1 / 4 id_node=0
-Run local time slice 2 / 4 id_node=0
-Finish local time slice 1 / 4 id_node=1
-Run local time slice 2 / 4 id_node=1
-Running cg_cycle=0 local time slice 2 / 4 id_node=0
-Running cg_cycle=0 local time slice 2 / 4 id_node=1
-Finish local time slice 2 / 4 id_node=0
-Run local time slice 3 / 4 id_node=0
-Finish local time slice 2 / 4 id_node=1
-Run local time slice 3 / 4 id_node=1
-Running cg_cycle=0 local time slice 3 / 4 id_node=0
-Running cg_cycle=0 local time slice 3 / 4 id_node=1
-Finish local time slice 3 / 4 id_node=1
-Finish local time slice 3 / 4 id_node=0
 ShufflePlanCache: to add 1 / 16.
 CommPlanCache: to add 2 / 32.
 CommPlanCache: to add 3 / 32.

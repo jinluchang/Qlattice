@@ -484,6 +484,7 @@ def run_eig_strange(job_tag, traj, get_gf):
     if None in [ get_gf, ]:
         return None
     if 1 not in rup.dict_params[job_tag]["clanc_params"]:
+        q.qtouch_info(get_save_path(f"eig-strange/{job_tag}/traj={traj}/no-eig-parameters.txt"))
         return lambda : None
     import rbc_ukqcd as ru
     get_eig = ru.load_eig_lazy(get_load_path(f"eig-strange/{job_tag}/traj={traj}"), job_tag)

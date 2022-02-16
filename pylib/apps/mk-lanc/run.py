@@ -25,6 +25,7 @@ load_path_list[:] = [
 def run_job(job_tag, traj):
     fns_produce = [
             f"eig/{job_tag}/traj={traj}",
+            f"eig-strange/{job_tag}/traj={traj}",
             ]
     fns_need = [
             (f"configs/{job_tag}/ckpoint_lat.{traj}", f"configs/{job_tag}/ckpoint_lat.IEEE64BIG.{traj}"),

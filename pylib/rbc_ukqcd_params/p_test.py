@@ -104,8 +104,12 @@ def setup_params():
         dict_params["total_site"] = [ l, l, l, t, ]
         dict_params["load_config_params"] = { "twist_boundary_at_boundary" : [ 0.0, 0.0, 0.0, -0.5, ], }
         dict_params["fermion_params"] = mk_dict_fermion_params()
-        dict_lanc_params = { 0: { 0: mk_lanc_params(job_tag, 0, 0), }, 1: { 0: mk_lanc_params(job_tag, 1, 0), }, }
-        dict_clanc_params = { 0: { 0: mk_clanc_params(job_tag, 0, 0), }, 1: { 0: mk_clanc_params(job_tag, 1, 0), }, }
+        if job_tag == "test-4nt8":
+            dict_lanc_params = { 0: { 0: mk_lanc_params(job_tag, 0, 0), }, }
+            dict_clanc_params = { 0: { 0: mk_clanc_params(job_tag, 0, 0), }, }
+        else:
+            dict_lanc_params = { 0: { 0: mk_lanc_params(job_tag, 0, 0), }, 1: { 0: mk_lanc_params(job_tag, 1, 0), }, }
+            dict_clanc_params = { 0: { 0: mk_clanc_params(job_tag, 0, 0), }, 1: { 0: mk_clanc_params(job_tag, 1, 0), }, }
         dict_params["lanc_params"] = dict_lanc_params
         dict_params["clanc_params"] = dict_clanc_params
 
