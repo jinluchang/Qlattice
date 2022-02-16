@@ -89,20 +89,21 @@ def run_prop_wsrc_light(job_tag, traj, get_gf, get_eig, get_gt, get_psel, get_fs
         q.release_lock()
 
 @q.timer
-def run_prop_wsrc_strange(job_tag, traj, get_gf, get_gt, get_psel, get_fsel, get_wi):
-    if None in [ get_gf, get_gt, get_psel, get_fsel, ]:
+def run_prop_wsrc_strange(job_tag, traj, get_gf, get_eig, get_gt, get_psel, get_fsel, get_wi):
+    if None in [ get_gf, get_eig, get_gt, get_psel, get_fsel, ]:
         return
     if get_load_path(f"prop-wsrc-strange/{job_tag}/traj={traj}") is not None:
         return
     if q.obtain_lock(f"locks/{job_tag}-{traj}-wsrc-strange"):
         gf = get_gf()
         gt = get_gt()
+        eig = get_eig()
         fsel, fselc = get_fsel()
         wi = get_wi()
         compute_prop_wsrc_all(gf, gt, wi, job_tag, inv_type = 1,
                 path_s = f"prop-wsrc-strange/{job_tag}/traj={traj}",
                 path_sp = f"psel-prop-wsrc-strange/{job_tag}/traj={traj}",
-                psel = get_psel(), fsel = fsel, fselc = fselc, eig = None)
+                psel = get_psel(), fsel = fsel, fselc = fselc, eig = eig)
         q.release_lock()
 
 @q.timer_verbose
@@ -148,7 +149,11 @@ def run_job(job_tag, traj):
     #
     run_with_eig()
     #
-    run_prop_wsrc_strange(job_tag, traj, get_gf, get_gt, get_psel, get_fsel, get_wi)
+    def run_with_eig_strange():
+        get_eig_strange = run_eig_strange(job_tag, traj_gf, get_gf)
+        run_prop_wsrc_strange(job_tag, traj, get_gf, get_eig_strange, get_gt, get_psel, get_fsel, get_wi)
+    #
+    run_with_eig_strange()
     #
     q.clean_cache()
     q.timer_display()
