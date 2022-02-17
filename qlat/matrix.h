@@ -834,6 +834,11 @@ qacc DATA_TYPE get_data_type<unsigned long long>()
 {
   return ULONGL_TYPE;
 }
+template <>
+qacc DATA_TYPE get_data_type<std::int8_t>()
+{
+  return INT8_TYPE;
+}
 // template<> qacc DATA_TYPE get_data_type<std::int8_t         >(){return
 // INT8_TYPE          ; } template<> qacc DATA_TYPE get_data_type<std::uint8_t
 // >(){return  UINT8_TYPE          ; } template<> qacc DATA_TYPE
@@ -922,7 +927,7 @@ qacc bool get_data_type_is_double()
   DATA_TYPE cur = get_data_type<M>();
   if (cur < FLOATIND or cur == INVALID_TYPE) {
     if (get_id_node() == 0) {
-      printf("Given tyep not float/double %d \n", cur);
+      printf("Given type not float/double %d \n", cur);
     }
     qassert("false");
   }
