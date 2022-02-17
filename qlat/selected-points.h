@@ -204,6 +204,25 @@ struct SelectedPoints {
   }
 };
 
+template <class M, class N>
+SelectedPoints<M>& qcast(SelectedPoints<N>& x)
+// IMPORTANT: will modify the multiplicity of x, need to cast back after finish.
+{
+  if (x.initialized) {
+    const int size = x.multiplicity * sizeof(N);
+    x.multiplicity = size / sizeof(M);
+    qassert(x.multiplicity * sizeof(M) == size);
+  }
+  return (SelectedPoints<M>&)x;
+}
+
+template <class M, class N>
+const SelectedPoints<M>& qcast_const(const SelectedPoints<N>& x)
+// IMPORTANT: will modify the multiplicity of x, need to cast back after finish.
+{
+  return qcast((SelectedPoints<N>&)x);
+}
+
 template <class M>
 bool is_initialized(const SelectedPoints<M>& sp)
 {

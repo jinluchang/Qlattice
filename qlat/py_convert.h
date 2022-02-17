@@ -272,6 +272,7 @@ void py_convert(Vector<M> out, PyObject* in)
 
 template <class T>
 T py_convert_data(PyObject* in)
+// interface
 // examples:
 // py_convert_data<int>(in)
 // py_convert_data<long>(in)
@@ -290,6 +291,7 @@ T py_convert_data(PyObject* in)
 
 template <class T>
 T py_convert_data(PyObject* in, const std::string& attr)
+// interface
 // py_convert_data<std::string>(in, "ctype")
 {
   PyObject* p_obj = PyObject_GetAttrString(in, attr.c_str());
@@ -299,6 +301,7 @@ T py_convert_data(PyObject* in, const std::string& attr)
 }
 
 inline std::string py_get_ctype(PyObject* in)
+// interface
 {
   return py_convert_data<std::string>(in, "ctype");
 }
@@ -325,6 +328,7 @@ inline PyField py_convert_field(PyObject* in)
 
 template <class T>
 T& py_convert_type(PyObject* in)
+// interface
 // use cdata property of PyObject* in as pointer
 // examples:
 // py_convert_type<Geometry>(in);
@@ -332,6 +336,7 @@ T& py_convert_type(PyObject* in)
 // py_convert_type<RngState>(in);
 // py_convert_type<PointSelection>(in);
 // py_convert_type<CommPlan>(in);
+// py_convert_type<FieldSelection>(in);
 // specifications:
 // py_convert_type<Propagator4d>(in);
 // py_convert_type<GaugeField>(in);
@@ -369,6 +374,7 @@ FieldM<M, multiplicity>& py_convert_type_field(PyObject* in)
 
 template <class M>
 SelectedField<M>& py_convert_type_sfield(PyObject* in)
+// interface
 // py_convert_type<SelectedField<M> >(in);
 {
   const std::string ctype = py_get_ctype(in);
@@ -379,6 +385,7 @@ SelectedField<M>& py_convert_type_sfield(PyObject* in)
 
 template <class M>
 SelectedPoints<M>& py_convert_type_spoints(PyObject* in)
+// interface
 // py_convert_type<SelectedPoints<M> >(in);
 {
   const std::string ctype = py_get_ctype(in);
@@ -412,6 +419,8 @@ inline GaugeField& py_convert_type(PyObject* in)
 }
 
 // -------------------------------------------------------------
+
+inline PyObject* py_convert(PyObject* x) { return x; }
 
 inline PyObject* py_convert(const char& x) { return PyLong_FromLong((long)x); }
 
