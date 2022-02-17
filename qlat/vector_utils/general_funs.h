@@ -37,6 +37,56 @@ void reduce_MPI_type(Iy num, MPI_Datatype& curr, unsigned int& size)
   if(num%(sizeof(std::int8_t  )) == 0){curr = MPI_INT8_T  ; size=sizeof(std::int8_t  );return;}
 }
 
+
+template<class M>
+unsigned int get_MPI_type(MPI_Datatype& curr)
+{
+  curr = MPI_BYTE;unsigned int size = 1;
+  DATA_TYPE typenum = get_data_type<M >();
+  if(typenum == INVALID_TYPE){
+    if(get_id_node()== 0){printf("Type not found !!!! \n");}qassert(false); return 0;
+  }
+
+  int dtype = typenum % MAXTYPE;
+  if(dtype <= FLOATIND + 3){
+
+    size = typenum/MAXTYPE;
+
+    if(dtype == 0){curr =  MPI_CHAR                 ; return size ;}
+    if(dtype == 1){curr =  MPI_UNSIGNED_CHAR        ; return size ;}
+    if(dtype == 2){curr =  MPI_SHORT                ; return size ;}
+    if(dtype == 3){curr =  MPI_UNSIGNED_SHORT       ; return size ;}
+    if(dtype == 4){curr =  MPI_INT                  ; return size ;}
+    if(dtype == 5){curr =  MPI_UNSIGNED             ; return size ;}
+    if(dtype == 6){curr =  MPI_LONG                 ; return size ;}
+    if(dtype == 7){curr =  MPI_UNSIGNED_LONG        ; return size ;}
+    if(dtype == 8){curr =  MPI_LONG_LONG            ; return size ;}
+    if(dtype == 9){curr =  MPI_UNSIGNED_LONG_LONG   ; return size ;}
+    if(dtype ==10){curr =  MPI_INT8_T               ; return size ;}
+    if(dtype ==11){curr =  MPI_UINT8_T              ; return size ;}
+    if(dtype ==12){curr =  MPI_INT16_T              ; return size ;}
+    if(dtype ==13){curr =  MPI_UINT16_T             ; return size ;}
+    if(dtype ==14){curr =  MPI_INT32_T              ; return size ;}
+    if(dtype ==15){curr =  MPI_UINT32_T             ; return size ;}
+    if(dtype ==16){curr =  MPI_INT64_T              ; return size ;}
+    if(dtype ==17){curr =  MPI_UINT64_T             ; return size ;}
+
+    if(dtype ==FLOATIND+0){curr =  MPI_DOUBLE               ; return size ;}
+    if(dtype ==FLOATIND+1){curr =  MPI_FLOAT                ; return size ;}
+    if(dtype ==FLOATIND+2){curr =  MPI_C_DOUBLE_COMPLEX     ; return size ;}
+    if(dtype ==FLOATIND+3){curr =  MPI_C_FLOAT_COMPLEX      ; return size ;}
+  }
+  else{
+    if( get_data_type_is_double<M >()){curr = MPI_C_DOUBLE_COMPLEX; size = Complex_TYPE/MAXTYPE ;return size ;}
+    if(!get_data_type_is_double<M >()){curr = MPI_C_FLOAT_COMPLEX ; size = ComplexF_TYPE/MAXTYPE;return size ;}
+  }
+
+  if(get_id_node()== 0){printf("Type not found !!!! \n");}qassert(false);
+  return 0;
+
+}
+
+
 template<typename Ty>
 void get_MPI_type(Ty& a, MPI_Datatype& curr, unsigned int& size, int mode = 1)
 {
@@ -111,9 +161,11 @@ void sum_all_size(Ty *src,Ty *sav,long size, int GPU=0, MPI_Comm* commp=NULL)
     return;}
   }
 
-  MPI_Datatype curr = MPI_DOUBLE;unsigned int M_size = sizeof(double);Ty atem;//Ty atem=0;
+  //MPI_Datatype curr = MPI_DOUBLE;unsigned int M_size = sizeof(double);Ty atem;//Ty atem=0;
   ////get_MPI_type(atem, curr, M_size, 1);
-  get_MPI_type(atem, curr, M_size, 2);
+  //get_MPI_type(atem, curr, M_size, 2);
+  MPI_Datatype curr = MPI_DOUBLE;unsigned int M_size = sizeof(double);
+  M_size = get_MPI_type<Ty >(curr);
   qassert(sizeof(Ty)%M_size == 0);int fac = sizeof(Ty)/M_size;
 
   Ty* tem_src = NULL; Ty* tem_res = NULL;
