@@ -312,6 +312,7 @@ void applyGaugeFieldScaling_long(Ty *gauge, long Vh, QudaGaugeParam *param, Quda
 
   // rescale long links by the appropriate coefficient
   if (dslash_type == QUDA_ASQTAD_DSLASH) {
+    #pragma omp parallel for
     for(long isp=0;isp < V; isp ++)
     for (int d = 0; d < 4 * 9; d++) {
       {
@@ -324,6 +325,7 @@ void applyGaugeFieldScaling_long(Ty *gauge, long Vh, QudaGaugeParam *param, Quda
   for (int d = 0; d < 3; d++) {
 
     // even
+    #pragma omp parallel for
     for (int i = 0; i < Vh; i++) {
 
       int index = fullLatticeIndex(i, 0, param->X);
@@ -348,6 +350,7 @@ void applyGaugeFieldScaling_long(Ty *gauge, long Vh, QudaGaugeParam *param, Quda
       for (int j = 0; j < 9; j++) { gauge[indexe + j] *= sign; }
     }
     // odd
+    #pragma omp parallel for
     for (int i = 0; i < Vh; i++) {
       int index = fullLatticeIndex(i, 1, param->X);
       int i4 = index / (X3 * X2 * X1);
@@ -375,6 +378,7 @@ void applyGaugeFieldScaling_long(Ty *gauge, long Vh, QudaGaugeParam *param, Quda
 
   // Apply boundary conditions to temporal links
   if (param->t_boundary == QUDA_ANTI_PERIODIC_T && last_node_in_t()) {
+    #pragma omp parallel for
     for (int j = 0; j < Vh; j++) {
       int sign = 1;
       if (dslash_type == QUDA_ASQTAD_DSLASH) {

@@ -628,8 +628,8 @@ struct Nab_distribute{
 //  //  //int color_xyz = tini;
 //  //  //MPI_Comm_split(get_comm() ,color_xyz, fd.rank,&vec_comm);
 //
-//  //  //MPI_Datatype curr = MPI_DOUBLE;unsigned int M_size = sizeof(double);Ftype atem=0;
-//  //  //get_MPI_type(atem, curr, M_size, 1);
+//  //  //MPI_Datatype curr = MPI_DOUBLE;unsigned int M_size = sizeof(double);
+//  //  //M_size = get_MPI_type<Ftype >(curr );qassert(M_size <= FLOATIND+3);
 //
 //  //  //Ftype* src = reinterpret_cast<Ftype* > (&NabL[0]);
 //  //  //long size_sum = fd.Nt*fd.Nmpi*16 * 2;

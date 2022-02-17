@@ -37,7 +37,6 @@ void reduce_MPI_type(Iy num, MPI_Datatype& curr, unsigned int& size)
   if(num%(sizeof(std::int8_t  )) == 0){curr = MPI_INT8_T  ; size=sizeof(std::int8_t  );return;}
 }
 
-
 template<class M>
 unsigned int get_MPI_type(MPI_Datatype& curr)
 {
@@ -70,7 +69,7 @@ unsigned int get_MPI_type(MPI_Datatype& curr)
     if(dtype ==15){curr =  MPI_UINT32_T             ; return size ;}
     if(dtype ==16){curr =  MPI_INT64_T              ; return size ;}
     if(dtype ==17){curr =  MPI_UINT64_T             ; return size ;}
-
+    
     if(dtype ==FLOATIND+0){curr =  MPI_DOUBLE               ; return size ;}
     if(dtype ==FLOATIND+1){curr =  MPI_FLOAT                ; return size ;}
     if(dtype ==FLOATIND+2){curr =  MPI_C_DOUBLE_COMPLEX     ; return size ;}
@@ -83,57 +82,6 @@ unsigned int get_MPI_type(MPI_Datatype& curr)
 
   if(get_id_node()== 0){printf("Type not found !!!! \n");}qassert(false);
   return 0;
-
-}
-
-
-template<typename Ty>
-void get_MPI_type(Ty& a, MPI_Datatype& curr, unsigned int& size, int mode = 1)
-{
-  curr = MPI_BYTE; size = 1;
-  bool is_same_v = false;
-
-  is_same_v = std::is_same< Ty , int>::value;
-  if(is_same_v){curr = MPI_INT;size=sizeof(int);return ;}
-
-  is_same_v = std::is_same< Ty , uint32_t>::value;
-  if(is_same_v){curr = MPI_UNSIGNED;size=sizeof(uint32_t);return ;}
-
-  is_same_v = std::is_same< Ty , unsigned int>::value;
-  if(is_same_v){curr = MPI_UNSIGNED;size=sizeof(unsigned int);return ;}
-
-  is_same_v = std::is_same< Ty , long>::value;
-  if(is_same_v){curr = MPI_LONG;size=sizeof(long);return ;}
-
-  is_same_v = std::is_same< Ty , unsigned long>::value;
-  if(is_same_v){curr = MPI_UNSIGNED_LONG;size=sizeof(unsigned long);return ;}
-
-  is_same_v = std::is_same< Ty , float>::value;
-  if(is_same_v){curr = MPI_FLOAT;size=sizeof(float);return ;}
-
-  is_same_v = std::is_same< Ty , double>::value;
-  if(is_same_v){curr = MPI_DOUBLE;size=sizeof(double);return ;}
-
-  is_same_v = std::is_same< Ty , std::int8_t>::value;
-  if(is_same_v){curr = MPI_INT8_T;size=sizeof(std::int8_t);return ;}
-
-  is_same_v = std::is_same< Ty , std::int16_t>::value;
-  if(is_same_v){curr = MPI_INT16_T;size=sizeof(std::int16_t);return ;}
-
-  is_same_v = std::is_same< Ty , std::int32_t>::value;
-  if(is_same_v){curr = MPI_INT32_T;size=sizeof(std::int32_t);return ;}
-
-  is_same_v = std::is_same< Ty , std::int64_t>::value;
-  if(is_same_v){curr = MPI_INT64_T;size=sizeof(std::int64_t);return ;}
-
-  if(mode == 1){print0("Type not found 1 !!!! \n");MPI_Barrier(get_comm());fflush(stdout);qassert(false);}
-  
-  /////Complex types sum and equal
-  if(mode == 2){
-  if(sizeof(Ty) == sizeof(qlat::ComplexF)){curr = MPI_FLOAT  ;size = sizeof( float) ;return ;}
-  if(sizeof(Ty) == sizeof(qlat::Complex )){curr = MPI_DOUBLE ;size = sizeof(double) ;return ;}}
-   
-  print0("Type not found 2 !!!! \n");MPI_Barrier(get_comm());fflush(stdout);qassert(false);
 
 }
 
@@ -161,12 +109,11 @@ void sum_all_size(Ty *src,Ty *sav,long size, int GPU=0, MPI_Comm* commp=NULL)
     return;}
   }
 
-  //MPI_Datatype curr = MPI_DOUBLE;unsigned int M_size = sizeof(double);Ty atem;//Ty atem=0;
-  ////get_MPI_type(atem, curr, M_size, 1);
-  //get_MPI_type(atem, curr, M_size, 2);
   MPI_Datatype curr = MPI_DOUBLE;unsigned int M_size = sizeof(double);
   M_size = get_MPI_type<Ty >(curr);
+
   qassert(sizeof(Ty)%M_size == 0);int fac = sizeof(Ty)/M_size;
+
 
   Ty* tem_src = NULL; Ty* tem_res = NULL;
   std::vector<Ty > tem_sHIP,tem_rHIP;

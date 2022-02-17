@@ -42,21 +42,27 @@ int main(int argc, char* argv[])
     print0("spatial plaquette %.8e , plaquette %.8e \n", splaq, gplaq);
   }
 
+  const long Dim = 3;
+  const int  Nsrc = Dim;
+  std::vector<colorFD > qlat_cf;qlat_cf.resize(Nsrc);
+  for(int i=0;i<qlat_cf.size();i++){qlat_cf[i].init(geo);}
+
+  //{
+  //EigenV corr;fft_desc_basic fd(geo);
+  //cf_simple_pion(qlat_cf, qlat_cf, corr, fd, 1, true, 4.0);
+  //}
+
   quda_begin(mpi_layout);
 
   long V = geo.local_volume();
   qlat::vector<qlat::Complex > quda_gf;quda_gf.resize(V * 4 * 3*3);
   quda_convert_gauge(quda_gf, gf);
 
-  const long Dim = 3;
-  const int  Nsrc = Dim;
-  std::vector<colorFD > qlat_cf;qlat_cf.resize(Nsrc);
-  for(int i=0;i<qlat_cf.size();i++){qlat_cf[i].init(geo);}
+  quda_inverter qinv(geo, QUDA_PERIODIC_T);
 
-  quda_inverter qinv(geo, quda_gf, 1);
-
-  qinv.setup_stagger(in.fermion_mass, 1e-15);
-  qinv.setup_eigen(in.nvec, 1e-15);
+  qinv.setup_link(quda_gf, 1);
+  qinv.setup_stagger(in.fermion_mass, 1e-10);
+  qinv.setup_eigen(in.nvec, 1e-13);
   qinv.check_residue = 1;
 
   ////int setup_stagger = 1;
@@ -96,8 +102,6 @@ int main(int argc, char* argv[])
 
     qinv.do_inv(qinv.cres->V(), qinv.csrc->V());
 
-    printfQuda("Done: %i iter / %g secs = %g Gflops\n\n", qinv.inv_param.iter, qinv.inv_param.secs,
-               qinv.inv_param.gflops / qinv.inv_param.secs);
 
     quda_cf_to_qlat_cf(qlat_cf[i], (qlat::Complex*) qinv.cres->V());
   }
@@ -106,6 +110,7 @@ int main(int argc, char* argv[])
 
   EigenV corr;fft_desc_basic fd(geo);
   cf_simple_pion(qlat_cf, qlat_cf, corr, fd, 1, true, 4.0);
+
   //Propagator4d qlat_prop;
   //Fermion_to_prop4d(qlat_prop, qlat_ff);
   ////qlat_prop.init(geo);

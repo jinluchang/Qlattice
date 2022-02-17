@@ -288,9 +288,8 @@ void Vec_redistribute::call_MPI(int flag)
   if(flag == 0){res = (Ty*) recvV; src = (Ty*) sendV;}
   if(flag == 1){res = (Ty*) sendV; src = (Ty*) recvV;}
 
-  unsigned int off = sizeof(Ty);Ty atem = 0;
-  MPI_Datatype curr = MPI_BYTE;unsigned int M_size = 1;
-  get_MPI_type(atem, curr, M_size, 2);
+  unsigned int off = sizeof(Ty);MPI_Datatype curr = MPI_BYTE;
+  unsigned int M_size = get_MPI_type<Ty >(curr );
   qassert(off%M_size == 0);off = off/M_size;
 
   if(tem_off != off){

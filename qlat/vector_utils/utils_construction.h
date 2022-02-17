@@ -174,6 +174,7 @@ void get_corr_pion(std::vector<qlat::FermionField4dT<Ty > > &prop,const Coordina
 
 void vec_corrE(EigenV &resE, EigenV &res,qlat::fft_desc_basic &fd,int clear=0,int imom=505050)
 {
+  TIMER("Reduce vec_corrE");
   int NTt  = fd.Nv[3];
   LInt Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
   int nmass = resE.size()/(NTt*Nxyz);
@@ -229,6 +230,7 @@ void vec_corrE(EigenV &resE, EigenV &res,qlat::fft_desc_basic &fd,int clear=0,in
   reduce_vec(resE.data(), tmp.data(), Nxyz, nmass*NTt);
 
   qlat::vector_gpu<Complexq > RES;RES.resize(nmass*nt );RES.set_zero();
+  //qlat::vector_acc<Complexq > RES;RES.resize(nmass*nt );qlat::set_zero(RES);
   Complexq* s1 = RES.data();Complexq* s0 = tmp.data();
   long Ntotal = nmass*NTt;
   qacc_for(mti, Ntotal, {
@@ -237,7 +239,7 @@ void vec_corrE(EigenV &resE, EigenV &res,qlat::fft_desc_basic &fd,int clear=0,in
     s1[mi*nt + t_rank + ti ] = s0[mi*NTt + ti];
   });
 
-  ////sum_all_size((Ftype*) (RES.data()), 2*RES.size(), 1);
+  //////sum_all_size((Ftype*) (RES.data()), 2*RES.size(), 1);
   sum_all_size(RES.data(), RES.size(), 1);
 
   cpy_data_thread(res.data(), RES.data(), RES.size(), 1, true, 1.0);
