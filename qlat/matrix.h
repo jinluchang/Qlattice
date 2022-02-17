@@ -736,6 +736,97 @@ typedef SpinMatrixConstantsT<> SpinMatrixConstants;
 
 #endif
 
+#define MAXTYPE  128
+#define FLOATIND 30
+
+enum DATA_TYPE {
+   CHAR_TYPE  =   0 + MAXTYPE * sizeof(char),
+  UCHAR_TYPE  =   1 + MAXTYPE * sizeof(unsigned char),
+  SHORT_TYPE  =   2 + MAXTYPE * sizeof(short),
+ USHORT_TYPE  =   3 + MAXTYPE * sizeof(unsigned short),
+
+   INT_TYPE   =   4 + MAXTYPE * sizeof(int),
+  UINT_TYPE   =   5 + MAXTYPE * sizeof(unsigned int ),
+   LONG_TYPE  =   6 + MAXTYPE * sizeof(long ),
+  ULONG_TYPE  =   7 + MAXTYPE * sizeof(unsigned long ),
+   LONGL_TYPE =   8 + MAXTYPE * sizeof(long long ),
+  ULONGL_TYPE =   9 + MAXTYPE * sizeof(unsigned long long ),
+   INT8_TYPE  =  10 + MAXTYPE * sizeof(  std::int8_t),
+  UINT8_TYPE  =  11 + MAXTYPE * sizeof( std::uint8_t),
+   INT16_TYPE =  12 + MAXTYPE * sizeof( std::int16_t),
+  UINT16_TYPE =  13 + MAXTYPE * sizeof(std::uint16_t),
+   INT32_TYPE =  14 + MAXTYPE * sizeof( std::int32_t),
+  UINT32_TYPE =  15 + MAXTYPE * sizeof(std::uint32_t),
+   INT64_TYPE =  16 + MAXTYPE * sizeof( std::int64_t),
+  UINT64_TYPE =  17 + MAXTYPE * sizeof(std::uint64_t),
+
+  DOUBLE_TYPE         =  FLOATIND + 0 + MAXTYPE * sizeof(double),
+  FLOAT_TYPE          =  FLOATIND + 1 + MAXTYPE * sizeof(float),
+  Complex_TYPE        =  FLOATIND + 2 + MAXTYPE * sizeof(Complex ),
+  ComplexF_TYPE       =  FLOATIND + 3 + MAXTYPE * sizeof(ComplexF),
+
+  ColorMatrix_TYPE    =  FLOATIND +  4 + MAXTYPE * sizeof(ColorMatrixT<Complex>          ),
+  ColorMatrixF_TYPE   =  FLOATIND +  5 + MAXTYPE * sizeof(ColorMatrixT<ComplexF>         ),
+  WilsonMatrix_TYPE   =  FLOATIND +  6 + MAXTYPE * sizeof(WilsonMatrixT<Complex>         ),
+  WilsonMatrixF_TYPE  =  FLOATIND +  7 + MAXTYPE * sizeof(WilsonMatrixT<ComplexF>        ),
+  SpinMatrix_TYPE     =  FLOATIND +  8 + MAXTYPE * sizeof(SpinMatrixT<Complex>           ),
+  SpinMatrixF_TYPE    =  FLOATIND +  9 + MAXTYPE * sizeof(SpinMatrixT<ComplexF>          ),
+  WilsonVector_TYPE   =  FLOATIND + 10 + MAXTYPE * sizeof(WilsonVectorT<Complex>         ),
+  WilsonVectorF_TYPE  =  FLOATIND + 11 + MAXTYPE * sizeof(WilsonVectorT<ComplexF>        ),
+
+  NonRelWilsonMatrix_TYPE   =   FLOATIND + 12 + MAXTYPE * sizeof(NonRelWilsonMatrixT<Complex>   ),
+  NonRelWilsonMatrixF_TYPE  =   FLOATIND + 13 + MAXTYPE * sizeof(NonRelWilsonMatrixT<ComplexF>  ),
+  INVALID_TYPE = 9999999
+};
+
+template<class M> qacc DATA_TYPE get_data_type(){return   INVALID_TYPE          ; }
+template<> qacc DATA_TYPE get_data_type<char                >(){return   CHAR_TYPE          ; }
+template<> qacc DATA_TYPE get_data_type<unsigned char       >(){return  UCHAR_TYPE          ; }
+template<> qacc DATA_TYPE get_data_type<short               >(){return  SHORT_TYPE          ; }
+template<> qacc DATA_TYPE get_data_type<unsigned short      >(){return  USHORT_TYPE         ; }
+template<> qacc DATA_TYPE get_data_type<int                 >(){return   INT_TYPE           ; }
+template<> qacc DATA_TYPE get_data_type<unsigned int        >(){return  UINT_TYPE           ; }
+template<> qacc DATA_TYPE get_data_type<long                >(){return   LONG_TYPE          ; }
+template<> qacc DATA_TYPE get_data_type<unsigned long       >(){return  ULONG_TYPE          ; }
+template<> qacc DATA_TYPE get_data_type<long long           >(){return  LONGL_TYPE          ; }
+template<> qacc DATA_TYPE get_data_type<unsigned long long  >(){return  ULONGL_TYPE         ; }
+//template<> qacc DATA_TYPE get_data_type<std::int8_t         >(){return   INT8_TYPE          ; }
+//template<> qacc DATA_TYPE get_data_type<std::uint8_t        >(){return  UINT8_TYPE          ; }
+//template<> qacc DATA_TYPE get_data_type<std::int16_t        >(){return   INT16_TYPE         ; }
+//template<> qacc DATA_TYPE get_data_type<std::uint16_t       >(){return  UINT16_TYPE         ; }
+//template<> qacc DATA_TYPE get_data_type<std::int32_t        >(){return   INT32_TYPE         ; }
+//template<> qacc DATA_TYPE get_data_type<std::uint32_t       >(){return  UINT32_TYPE         ; }
+//template<> qacc DATA_TYPE get_data_type<std::int64_t        >(){return   INT64_TYPE         ; }
+//template<> qacc DATA_TYPE get_data_type<std::uint64_t       >(){return  UINT64_TYPE         ; }
+template<> qacc DATA_TYPE get_data_type<double              >(){return  DOUBLE_TYPE         ; }
+template<> qacc DATA_TYPE get_data_type<float               >(){return  FLOAT_TYPE          ; }
+template<> qacc DATA_TYPE get_data_type<Complex             >(){return  Complex_TYPE        ; }
+template<> qacc DATA_TYPE get_data_type<ComplexF            >(){return  ComplexF_TYPE       ; }
+template<> qacc DATA_TYPE get_data_type<ColorMatrixT<Complex>         >(){return  ColorMatrix_TYPE    ; }
+template<> qacc DATA_TYPE get_data_type<ColorMatrixT<ComplexF>        >(){return  ColorMatrixF_TYPE   ; }
+template<> qacc DATA_TYPE get_data_type<WilsonMatrixT<Complex>        >(){return  WilsonMatrix_TYPE   ; }
+template<> qacc DATA_TYPE get_data_type<WilsonMatrixT<ComplexF>       >(){return  WilsonMatrixF_TYPE  ; }
+template<> qacc DATA_TYPE get_data_type<SpinMatrixT<Complex>          >(){return  SpinMatrix_TYPE     ; }
+template<> qacc DATA_TYPE get_data_type<SpinMatrixT<ComplexF>         >(){return  SpinMatrixF_TYPE    ; }
+template<> qacc DATA_TYPE get_data_type<WilsonVectorT<Complex>        >(){return  WilsonVector_TYPE   ; }
+template<> qacc DATA_TYPE get_data_type<WilsonVectorT<ComplexF>       >(){return  WilsonVectorF_TYPE  ; }
+template<> qacc DATA_TYPE get_data_type<NonRelWilsonMatrixT<Complex>  >(){return  NonRelWilsonMatrix_TYPE; }
+template<> qacc DATA_TYPE get_data_type<NonRelWilsonMatrixT<ComplexF> >(){return  NonRelWilsonMatrixF_TYPE; }
+
+template<class M >
+qacc bool get_data_type_is_double()
+{
+  DATA_TYPE cur = get_data_type<M >();
+  if(cur <  FLOATIND or cur == INVALID_TYPE){
+    if(get_id_node()== 0){printf("Given tyep not float/double %d \n", cur);}qassert("false");
+  }
+  if(cur % 2 == 0 ){return true ; }
+  if(cur % 2 == 1 ){return false; }
+
+  return true;
+}
+
+
 template <int DIMN, class T>
 std::string show(const MatrixT<DIMN, T>& m)
 {
