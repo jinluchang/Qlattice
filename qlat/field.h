@@ -232,6 +232,25 @@ inline int& get_field_init()
   return t;
 }
 
+template <class M, class N>
+Field<M>& qcast(Field<N>& x)
+// IMPORTANT: will modify the multiplicity of x, need to cast back after finish.
+{
+  if (x.initialized) {
+    const int size = x.geo().multiplicity * sizeof(N);
+    x.geo().multiplicity = size / sizeof(M);
+    qassert(x.geo().multiplicity * sizeof(M) == size);
+  }
+  return (Field<M>&)x;
+}
+
+template <class M, class N>
+const Field<M>& qcast_const(const Field<N>& x)
+// IMPORTANT: will modify the multiplicity of x, need to cast back after finish.
+{
+  return qcast((Field<N>&)x);
+}
+
 template <class M>
 bool is_initialized(const Field<M>& f)
 {
