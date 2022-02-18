@@ -51,7 +51,7 @@ struct Vec_redistribute
   std::vector<int > secT;
 
   /////void set_mem(int b0_or,int civa_or, qlat::vector<int > secT_or);
-  void set_mem(int b0_or,int civa_or);
+  inline void set_mem(int b0_or,int civa_or);
 
   template<typename Ty>
   void call_MPI(int flag);
@@ -83,7 +83,7 @@ struct Vec_redistribute
 
 };
 
-Vec_redistribute::Vec_redistribute(fft_desc_basic &fds, bool GPU_set)
+inline Vec_redistribute::Vec_redistribute(fft_desc_basic &fds, bool GPU_set)
 {
   TIMERA("Construct Vec_redistribute");
   fd = &fds;
@@ -167,7 +167,7 @@ Vec_redistribute::Vec_redistribute(fft_desc_basic &fds, bool GPU_set)
 
 }
 
-void Vec_redistribute::set_mem(int b0_or,int civa_or)
+inline void Vec_redistribute::set_mem(int b0_or,int civa_or)
 {
   TIMERA("Vec redistribute set mem");
 
@@ -278,13 +278,13 @@ void Vec_redistribute::call_MPI(int flag)
   #if PRINT_TIMER>4
   TIMER_FLOPS("==Vec redistribute MPI reorder");
   double Total = 0.0;
-  for(int i=0;i<currsend.size();i++){Total += double(currsend[i]);}
+  for(long i=0;i<long(currsend.size());i++){Total += double(currsend[i]);}
   timer.flops  += Total*sizeof(Ty);
   #endif
 
   if(flag_set_mem==0){print0("Buf not set. \n");qassert(false);}
 
-  Ty* src;Ty* res;
+  Ty* src = NULL;Ty* res = NULL;
   if(flag == 0){res = (Ty*) recvV; src = (Ty*) sendV;}
   if(flag == 1){res = (Ty*) sendV; src = (Ty*) recvV;}
 
@@ -292,7 +292,7 @@ void Vec_redistribute::call_MPI(int flag)
   unsigned int M_size = get_MPI_type<Ty >(curr );
   qassert(off%M_size == 0);off = off/M_size;
 
-  if(tem_off != off){
+  if(tem_off != int(off)){
     ///if(findN && sizeof(Ty)== 8){curr = MPI_FLOAT ;off = off/sizeof(float)  ;findN=false;}
     ///if(findN && sizeof(Ty)==16){curr = MPI_DOUBLE;off = off/sizeof(double) ;findN=false;}
     ///////print0("Check int %d, long %d \n",sizeof(int), sizeof(long));
@@ -389,7 +389,7 @@ void Vec_redistribute::reorder(Ty *sendbuf,Ty *recvbuf,int b0_or,int civa_or,int
   //Ty* send = (Ty*) sendV;
   ///////int Nt = fd->Nt;
   ////size_t svol = fd->nx*fd->ny*fd->nz;
-  int Nts = secT[fd->rank];
+  //int Nts = secT[fd->rank];
 
   if(flag > -2 and flag < 2 )
   {
@@ -417,7 +417,7 @@ void Vec_redistribute::reorder(Ty *sendbuf,Ty *recvbuf,int b0_or,int civa_or,int
   ///send = NULL;recv = NULL;
 }
 
-Vec_redistribute::~Vec_redistribute(){
+inline Vec_redistribute::~Vec_redistribute(){
 
   /////vec_comm_list.resize(0);
 

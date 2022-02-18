@@ -942,7 +942,7 @@ void load_gwu_eigen(FILE* file,std::vector<Ty* > resp,io_vec &io_use,int n0,int 
 //  load_gwu_eigen(file, resp, io_use,n0,n1,check, read, read_single);
 //}
 
-FILE* open_gwu_eigen(const char *filename,io_vec &io_use, bool read=true)
+inline FILE* open_gwu_eigen(const char *filename,io_vec &io_use, bool read=true)
 {
   if(read==true ){return io_use.io_read(filename,"rb");}
   if(read==false){return io_use.io_read(filename,"wb");}
@@ -1433,7 +1433,7 @@ void copy_noise_to_vec(qlat::FieldM<T, bfac>& noi, Ty* buf, int dir=1)
   }
 }
 
-void open_file_qlat_noisesT(const char *filename, int bfac, inputpara& in, bool read=true, bool single_file=true, int N_noi=-1, const std::string& VECS_TYPE = std::string("NONE"), const std::string& INFO_LIST = std::string("NONE"), bool rotate_bfac = true)
+inline void open_file_qlat_noisesT(const char *filename, int bfac, inputpara& in, bool read=true, bool single_file=true, int N_noi=-1, const std::string& VECS_TYPE = std::string("NONE"), const std::string& INFO_LIST = std::string("NONE"), bool rotate_bfac = true)
 {
   in.bsize = sizeof(float );
   in.rotate_bfac = rotate_bfac;
@@ -1501,7 +1501,7 @@ void open_file_qlat_noisesT(const char *filename, int bfac, inputpara& in, bool 
   if(in.bfac_write == bfac){in.rotate_bfac = false;}
 }
 
-void close_file_qlat_noisesT(FILE* file, io_vec& io_use, inputpara& in)
+inline void close_file_qlat_noisesT(FILE* file, io_vec& io_use, inputpara& in)
 {
   io_use.io_close(file);
   if(in.read==false){
@@ -1978,7 +1978,7 @@ void save_qlat_prop(const char *filename,Propagator4dT<Ty >& prop, bool single_f
 }
 
 /////nvec needed for checksum
-FILE* open_eigensystem_file(const char *filename, int nini, int nvec, bool read, io_vec& io_use, inputpara& in, int save_type = 3)
+inline FILE* open_eigensystem_file(const char *filename, int nini, int nvec, bool read, io_vec& io_use, inputpara& in, int save_type = 3)
 {
   in.single_file = true;
   in.read = read;
@@ -2068,7 +2068,7 @@ void load_eigensystem_vecs(FILE* file, std::vector<qlat::FieldM<Ty, 12> > &noise
 }
 
 
-void close_eigensystem_file(FILE* file, io_vec& io_use, inputpara& in){
+inline void close_eigensystem_file(FILE* file, io_vec& io_use, inputpara& in){
 
   if(in.file_type == 0 or in.file_type == 1){io_use.io_close(file);}
 

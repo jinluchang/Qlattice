@@ -79,27 +79,27 @@ struct fft_desc_basic
     ////check_mem();
   }
 
-  void set_variable();
-  void print_info();
-  long get_mi_curr(int dir=3);
-  void check_mem();
-  Coordinate coordinate_l_from_index(LInt isp);
-  Coordinate coordinate_g_from_g_index(LInt isp);
-  Coordinate coordinate_g_from_index(LInt isp, int rank_set = -1);
-  LInt index_g_from_local(LInt isp, int rank_set = -1);
+  inline void set_variable();
+  inline void print_info();
+  inline long get_mi_curr(int dir=3);
+  inline void check_mem();
+  inline Coordinate coordinate_l_from_index(LInt isp);
+  inline Coordinate coordinate_g_from_g_index(LInt isp);
+  inline Coordinate coordinate_g_from_index(LInt isp, int rank_set = -1);
+  inline LInt index_g_from_local(LInt isp, int rank_set = -1);
   //////LInt index_g_from_g_coordinate(std::vector<int > pos);
-  LInt index_g_from_g_coordinate(int t, int z, int y, int x);
-  LInt index_g_from_g_coordinate(const Coordinate& g0);
-  bool coordinate_g_is_local(const Coordinate& g0);
+  inline LInt index_g_from_g_coordinate(int t, int z, int y, int x);
+  inline LInt index_g_from_g_coordinate(const Coordinate& g0);
+  inline bool coordinate_g_is_local(const Coordinate& g0);
 
-  LInt index_l_from_g_coordinate(const Coordinate& pos, int rank_set = -1);
+  inline LInt index_l_from_g_coordinate(const Coordinate& pos, int rank_set = -1);
 
-  void get_geo(Geometry& geo ){
+  inline void get_geo(Geometry& geo ){
     Coordinate total_site = Coordinate(nx, ny, nz, nt);
     geo.init(total_site, 1);
   }
 
-  size_t get_prop_size(){
+  inline size_t get_prop_size(){
     size_t Nsize = 1;
     Nsize = noden;
     Nsize = 12*12*Nsize;
@@ -117,7 +117,7 @@ struct fft_desc_basic
   }
 };
 
-void copy_fft_desc(fft_desc_basic& fd1, const fft_desc_basic& fd0)
+inline void copy_fft_desc(fft_desc_basic& fd1, const fft_desc_basic& fd0)
 {
   fd1.nv = fd0.nv;fd1.Nv = fd0.Nv;fd1.iniv = fd0.iniv;
   fd1.set_variable();
@@ -125,7 +125,7 @@ void copy_fft_desc(fft_desc_basic& fd1, const fft_desc_basic& fd0)
 
 /////Get the index for current node in 3D or 4D
 /////fft redistribution needed
-long fft_desc_basic::get_mi_curr(int dir)
+inline long fft_desc_basic::get_mi_curr(int dir)
 {
   int tmi = Pos0[rank][3]/Nt;
   int zmi = Pos0[rank][2]/Nz;
@@ -141,7 +141,7 @@ long fft_desc_basic::get_mi_curr(int dir)
   return re;
 }
 
-Coordinate fft_desc_basic::coordinate_l_from_index(LInt isp)
+inline Coordinate fft_desc_basic::coordinate_l_from_index(LInt isp)
 {
   if(variable_set == -1){abort_r("fft_desc not set! \n");}
 
@@ -155,7 +155,7 @@ Coordinate fft_desc_basic::coordinate_l_from_index(LInt isp)
   return g0;
 }
 
-Coordinate fft_desc_basic::coordinate_g_from_g_index(LInt isp)
+inline Coordinate fft_desc_basic::coordinate_g_from_g_index(LInt isp)
 {
   if(variable_set == -1){abort_r("fft_desc not set! \n");}
 
@@ -169,7 +169,7 @@ Coordinate fft_desc_basic::coordinate_g_from_g_index(LInt isp)
 }
 
 
-LInt fft_desc_basic::index_g_from_g_coordinate(const Coordinate& g0) 
+inline LInt fft_desc_basic::index_g_from_g_coordinate(const Coordinate& g0) 
 {
   if(variable_set == -1){abort_r("fft_desc not set! \n");}
   /////if(g0.size() != 4){abort_r("input pos wrong! \n");}
@@ -178,7 +178,7 @@ LInt fft_desc_basic::index_g_from_g_coordinate(const Coordinate& g0)
   return index;
 }
 
-bool fft_desc_basic::coordinate_g_is_local(const Coordinate& g0)
+inline bool fft_desc_basic::coordinate_g_is_local(const Coordinate& g0)
 {
   /////if(g0.size() != 4){abort_r("input pos wrong! \n");}
   bool is_local = true;
@@ -190,7 +190,7 @@ bool fft_desc_basic::coordinate_g_is_local(const Coordinate& g0)
 }
 
 
-LInt fft_desc_basic::index_g_from_g_coordinate(int t, int z, int y, int x)
+inline LInt fft_desc_basic::index_g_from_g_coordinate(int t, int z, int y, int x)
 {
   if(variable_set == -1){abort_r("fft_desc not set! \n");}
   /////std::vector<int > g0;g0.resize(4);
@@ -199,7 +199,7 @@ LInt fft_desc_basic::index_g_from_g_coordinate(int t, int z, int y, int x)
   return index_g_from_g_coordinate(g0);
 }
 
-Coordinate fft_desc_basic::coordinate_g_from_index(LInt isp, int rank_set)
+inline Coordinate fft_desc_basic::coordinate_g_from_index(LInt isp, int rank_set)
 {
   if(variable_set == -1){abort_r("fft_desc not set! \n");}
 
@@ -216,7 +216,7 @@ Coordinate fft_desc_basic::coordinate_g_from_index(LInt isp, int rank_set)
   return g0;
 }
 
-LInt fft_desc_basic::index_l_from_g_coordinate(const Coordinate& pos, int rank_set)
+inline LInt fft_desc_basic::index_l_from_g_coordinate(const Coordinate& pos, int rank_set)
 {
   if(variable_set == -1){abort_r("fft_desc not set! \n");}
 
@@ -232,7 +232,7 @@ LInt fft_desc_basic::index_l_from_g_coordinate(const Coordinate& pos, int rank_s
   return index;
 }
 
-LInt fft_desc_basic::index_g_from_local(LInt isp, int rank_set)
+inline LInt fft_desc_basic::index_g_from_local(LInt isp, int rank_set)
 {
   if(variable_set == -1){abort_r("fft_desc not set! \n");}
   Coordinate p = coordinate_g_from_index(isp, rank_set);
@@ -240,7 +240,7 @@ LInt fft_desc_basic::index_g_from_local(LInt isp, int rank_set)
   return newi;
 }
 
-void fft_desc_basic::print_info(){
+inline void fft_desc_basic::print_info(){
   if(variable_set == -1){abort_r("fft_desc not set! \n");}
   print0("=Need=====Size of dim,   x %10d  y %10d  z %10d  t %10d nvol %ld \n",nx,ny,nz,nt,vol*nt);
   print0("=Need=====Size of dim,  Nx %10d Ny %10d Nz %10d Nt %10d Nvol %ld \n",Nx,Ny,Nz,Nt,Nvol);
@@ -251,7 +251,7 @@ void fft_desc_basic::print_info(){
 }
 
 /////mi_list, same t0 rank list
-void fft_desc_basic::set_variable()
+inline void fft_desc_basic::set_variable()
 {
   TIMERA("fft_desc_basic::set_variable");
   mv.resize(4);for(int i=0;i<4;i++){mv[i] = nv[i]/Nv[i];qassert(mv[i] > 0);}
@@ -334,7 +334,7 @@ void fft_desc_basic::set_variable()
   variable_set = 1;
 }
 
-void fft_desc_basic::check_mem()
+inline void fft_desc_basic::check_mem()
 {
   if(variable_set == -1){abort_r("fft_desc not set! \n");}
 

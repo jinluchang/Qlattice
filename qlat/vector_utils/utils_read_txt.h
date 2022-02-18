@@ -695,7 +695,7 @@ inline size_t corr_head_write(inputpara &in, const char* filename, bool clear=tr
   return vec_head_write(in, filename,  1, clear);
 }
 
-int get_save_type(const std::string save_type){
+inline int get_save_type(const std::string save_type){
   if(save_type.c_str() == std::string("double")){return 0;}
   if(save_type.c_str() == std::string("Double")){return 0;}
   if(save_type.c_str() == std::string("float") ){return 1;}

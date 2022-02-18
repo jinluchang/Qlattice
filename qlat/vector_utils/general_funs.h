@@ -895,7 +895,7 @@ void random_prop(Propagator4dT<T >& prop, int seed = -1)
   }); 
 }
 
-size_t get_threads(size_t thread, size_t Total, int def=1)
+inline size_t get_threads(size_t thread, size_t Total, int def=1)
 {
   for(size_t temb=thread;temb<Total;temb++)
   {
@@ -907,7 +907,7 @@ size_t get_threads(size_t thread, size_t Total, int def=1)
   return def;
 }
 
-std::vector<unsigned int > get_num_power(const size_t x,const std::vector<unsigned int >& a)
+inline std::vector<unsigned int > get_num_power(const size_t x,const std::vector<unsigned int >& a)
 {
   std::vector<unsigned int > re; re.resize(a.size());
   for(unsigned int ai=0;ai<a.size();ai++)
@@ -935,7 +935,7 @@ std::vector<unsigned int > get_num_power(const size_t x,const std::vector<unsign
 }
 
 //////Most power in T direction
-Coordinate spread_powT(const int n, const Coordinate& Lat, const std::vector<unsigned int >& a)
+inline Coordinate spread_powT(const int n, const Coordinate& Lat, const std::vector<unsigned int >& a)
 {
   std::vector<unsigned int > Mpow = get_num_power(n, a);
   std::vector<std::vector<unsigned int > > Lpow;
@@ -969,7 +969,7 @@ Coordinate spread_powT(const int n, const Coordinate& Lat, const std::vector<uns
 
 }
 
-Coordinate guess_nodeL(int n, const Coordinate& Lat, const int mode = 0)
+inline Coordinate guess_nodeL(int n, const Coordinate& Lat, const int mode = 0)
 {
 
   std::vector<unsigned int > a;a.resize(8);
@@ -978,7 +978,7 @@ Coordinate guess_nodeL(int n, const Coordinate& Lat, const int mode = 0)
   return re;
 }
 
-void add_nodeL(std::vector<Coordinate>& size_node_list)
+inline void add_nodeL(std::vector<Coordinate>& size_node_list)
 {
   size_node_list.push_back(Coordinate(1, 1, 1,  1));
   size_node_list.push_back(Coordinate(1, 1, 1,  2));
@@ -1061,7 +1061,7 @@ inline void begin_Lat(int* argc, char** argv[], inputpara& in, int mode_dis = -1
 
 }
 
-std::vector<long > job_create(long total, long each)
+inline std::vector<long > job_create(long total, long each)
 {
   if(total < 1 or each < 1){
     print0("Give me valid job types total %ld, each %ld \n", total, each);
@@ -1175,7 +1175,7 @@ Ty sum_local_to_global_vector(Ty src, MPI_Comm* commp=NULL)
 
 }
 
-Coordinate string_to_Coordinate(const std::string& paraI = std::string("None"))
+inline Coordinate string_to_Coordinate(const std::string& paraI = std::string("None"))
 {
   Coordinate sp;for(int i=0;i<4;i++){sp[i] = 0;}
   if(paraI != "None"){

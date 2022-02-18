@@ -11,39 +11,40 @@ int main(int argc, char* argv[])
 {
   using namespace qlat;
 
-  int mode_dis = 0;
+  ///int mode_dis = 0;
+  inputpara in;int mode_dis = 0;
+  begin_Lat(&argc, &argv, in, mode_dis);
 
-  inputpara in;
-  if(mode_dis == 0)
-  {
-  int n_node = init_mpi(&argc, &argv);
-  in.load_para("input.txt");
-  Coordinate Lat(in.nx, in.ny, in.nz, in.nt);
-  Coordinate spreadT = guess_nodeL(n_node, Lat);
-  ///3D begin
-  ////begin_comm(MPI_COMM_WORLD , spreadT);
+  //if(mode_dis == 0)
+  //{
+  //int n_node = init_mpi(&argc, &argv);
+  //in.load_para("input.txt");
+  //Coordinate Lat(in.nx, in.ny, in.nz, in.nt);
+  //Coordinate spreadT = guess_nodeL(n_node, Lat);
+  /////3D begin
+  //////begin_comm(MPI_COMM_WORLD , spreadT);
 
-  ///4D begin
-  int id_node, n;
-  MPI_Comm_size(MPI_COMM_WORLD, &n);
-  MPI_Comm_rank(MPI_COMM_WORLD, &id_node);
-  int t =  id_node/(spreadT[0]*spreadT[1]*spreadT[2]);
-  int z = (id_node/(spreadT[0]*spreadT[1]))%(spreadT[2]);
-  int y = (id_node/(spreadT[0]))%(spreadT[1]);
-  int x = (id_node%(spreadT[0]));
-  ///int new_id = ((z*spreadT[1] + y)*spreadT[0] + x)*spreadT[3] + t;
-  int new_id = ((x*spreadT[1] + y)*spreadT[2] + z)*spreadT[3] + t;
-  //begin(new_id, spreadT);
-  begin(id_node, spreadT);
-  }
+  /////4D begin
+  //int id_node, n;
+  //MPI_Comm_size(MPI_COMM_WORLD, &n);
+  //MPI_Comm_rank(MPI_COMM_WORLD, &id_node);
+  //int t =  id_node/(spreadT[0]*spreadT[1]*spreadT[2]);
+  //int z = (id_node/(spreadT[0]*spreadT[1]))%(spreadT[2]);
+  //int y = (id_node/(spreadT[0]))%(spreadT[1]);
+  //int x = (id_node%(spreadT[0]));
+  /////int new_id = ((z*spreadT[1] + y)*spreadT[0] + x)*spreadT[3] + t;
+  ////int new_id = ((x*spreadT[1] + y)*spreadT[2] + z)*spreadT[3] + t;
+  ////begin(new_id, spreadT);
+  //begin(id_node, spreadT);
+  //}
 
-  if(mode_dis == 1)
-  {
-  std::vector<Coordinate> size_node_list;
-  add_nodeL(size_node_list);
-  begin(&argc, &argv, size_node_list);
-  in.load_para("input.txt");
-  }
+  //if(mode_dis == 1)
+  //{
+  //std::vector<Coordinate> size_node_list;
+  //add_nodeL(size_node_list);
+  //begin(&argc, &argv, size_node_list);
+  //in.load_para("input.txt");
+  //}
   //begin_Lat(&argc, &argv, "input.txt", in, mode_dis);
 
 
@@ -57,11 +58,6 @@ int main(int argc, char* argv[])
   nz = in.nz;
   nt = in.nt;
 
-  int icfg  = in.icfg;
-  int ionum = in.ionum;
-
-  int n_vec = in.nvec;
-
   omp_set_num_threads(omp_get_max_threads());
   print0("===nthreads %8d %8d, max %8d \n",qlat::qacc_num_threads(),omp_get_num_threads(),omp_get_max_threads());
   fflush_MPI();
@@ -70,7 +66,8 @@ int main(int argc, char* argv[])
   Coordinate total_site = Coordinate(nx, ny, nz, nt);
   Geometry geo;
   geo.init(total_site, 1); 
-  char nameP0[500],nameP1[500];
+  //char nameP0[500]
+  //char nameP1[500];
 
   bool check_fft_with_qlat   = 1;
 
@@ -80,7 +77,7 @@ int main(int argc, char* argv[])
   const int Nvec =    3;
   if(in.debuga == 3){ft4D = false;}
   if(sizeof(TyF) == sizeof(ComplexF)){checkdiff = false;}
-  if(in.nvec >= 2){checkdiff = false;}
+  //if(in.nvec >= 2){checkdiff = false;}
 
   /////==========test correct
   if(check_fft_with_qlat){
@@ -93,7 +90,7 @@ int main(int argc, char* argv[])
   std::vector<qlat::FieldM<TyF, Nvec> > src;src.resize(in.nvec);
   for(int iv=0;iv<in.nvec;iv++)src[iv].init(geo);
   TyF* P0 = (TyF*) (qlat::get_data(src[0]).data());
-  TyF* P1;
+
 
   qlat::RngState rs(qlat::get_id_node() + 134 );
   double ini = qlat::u_rand_gen(rs);
@@ -135,8 +132,36 @@ int main(int argc, char* argv[])
   {TIMER("new fft ");fft_fieldM(fft4D, src, false);}}
 
   if(!ft4D){
-  if(checkdiff){TIMER("qlat fft");qlat::fft_complex_field_spatial(srcF, false);}
-  {TIMER("new fft ");fft_fieldM(fft3D, src, false);}}
+  if(checkdiff){
+    TIMER("qlat fft");
+    qlat::fft_complex_field_spatial(srcF, false);
+  }
+  {
+    TIMER("new fft ");
+    //fft_fieldM(fft3D, src, false);
+    //FFTGPUPlanKey fkey = get_fft_gpu_plan_key(src, ft4D);
+    //////fft_fieldM(*((fft_schedule*) get_fft_gpu_plan(fkey).fftP), src, false);
+    ////get_fft_gpu_plan(fkey).fftP->print_info();
+    ////fft_gpu_copy ft = make_fft_gpu_plan(fkey);
+    ////ft.set();
+    ////ft.fftP->print_info();
+    //fft_fieldM(*(get_fft_gpu_plan(fkey).fftP), src, false);
+    //fft_fieldM(*(get_fft_gpu_plan(fkey).fftP), src, true );
+    //fft_fieldM(*(get_fft_gpu_plan(fkey).fftP), src, false);
+
+    fft_fieldM(src, false, ft4D);
+
+    //for(int iv=0;iv<in.nvec;iv++)
+    //{
+    //P0 = (TyF*) (qlat::get_data(src[iv]).data());
+    //qacc_for(isp, geo.local_volume(),{
+    //for(int di=0;di<Nvec;di++){
+    //    P0[isp*Nvec + di ] /= (nx*ny*nz);
+    //  }
+    //});}
+
+
+  }}
 
   double fftdiff = 0.0;
   P0 = (TyF*) (qlat::get_data(src[0]).data());
@@ -161,11 +186,11 @@ int main(int argc, char* argv[])
   if(checkdiff){
   double diff[2];
   diff[0] = 0.0;diff[1] = 0.0;
-  for(int di=0;di<dat0.size();di++){
+  for(long di=0;di<long(dat0.size());di++){
     diff[0] += qlat::qnorm(dat0[di] - dat1[di]);
     diff[1] += qlat::qnorm(dat0[di] - dat2[di]);
     if(qlat::qnorm(dat0[di] - dat1[di]) > 1e-5 or qlat::qnorm(dat0[di] - dat2[di]) > 1e-5)
-    print0("diff di %5d, expect %.3e %.3e, new %.3e %.3e, qlat %.3e %.3e \n",
+    print0("diff di %5ld, expect %.3e %.3e, new %.3e %.3e, qlat %.3e %.3e \n",
       di, dat0[di].real(), dat0[di].imag(),
           dat1[di].real(), dat1[di].imag(),
           dat2[di].real(), dat2[di].imag() );
@@ -173,7 +198,7 @@ int main(int argc, char* argv[])
   print0("===diff 0 %.3e , 1 %.3e \n", diff[0], diff[1]);
   }
 
-  for(int i=0;i<300;i++){
+  for(unsigned int i=0;i<300;i++){
     TIMER("Test runs");
     if( ft4D)fft_fieldM(fft4D, src, false);
     if(!ft4D)fft_fieldM(fft3D, src, false);

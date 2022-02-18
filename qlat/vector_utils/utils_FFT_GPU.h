@@ -58,7 +58,7 @@ struct FFT_Vecs{
   template<typename Ty>
   void set_plan(std::vector<int>& nv_set, int civ_set=2, std::vector<size_t > MPI_para_set = std::vector<size_t>());
 
-  void clear_plan();
+  inline void clear_plan();
 
   template<typename Ty>
   void do_fft(Ty* inputD, bool fftdir = true, bool dummy = true);
@@ -87,11 +87,13 @@ struct FFT_Vecs{
     nrank = new ptrdiff_t[10];
     istride_fac_default = 1;
     idist_default = 1;
+    fftw_mpi_init();
   }
 
   ~FFT_Vecs()
   {
     clear_plan();
+    fftw_mpi_cleanup();
     delete [] nrank;
   }
 
@@ -167,7 +169,7 @@ void FFT_Vecs::set_plan(std::vector<int>& nv_set, int civ_set, std::vector<size_
   if(MPI_para.size() == 3)
   {
     MPI_Comm_split(get_comm(), color_xyz, ranku, &fft_comm);
-    for(int i=0;i<nv.size();i++){nrank[i] = nv[i];}
+    for(int i=0;i<int(nv.size());i++){nrank[i] = nv[i];}
 
     if(single_type == 0){
     alloc_local = fftw_mpi_local_size_many(dim, nrank, howmany, block0, fft_comm, &local_n0, &local_0_start);
@@ -225,7 +227,7 @@ void FFT_Vecs::set_plan(std::vector<int>& nv_set, int civ_set, std::vector<size_
 
 }
 
-void FFT_Vecs::clear_plan()
+inline void FFT_Vecs::clear_plan()
 {
   TIMERB("FFT_Vecs clear plan");
   if(flag_mem_set == false){
@@ -339,7 +341,7 @@ struct {
 } customLess;
 
 
-std::vector<int > get_factor_jobs(int nvec, int civ, int N0=-1, int N1=-1, int maxN0 = 16, int dataB=1)
+inline std::vector<int > get_factor_jobs(int nvec, int civ, int N0=-1, int N1=-1, int maxN0 = 16, int dataB=1)
 {
   if(nvec < 0 or civ < 0 or maxN0 <= 0){abort_r("Vectors wrong. \n");}
   if(N1 != -1){if(N0 < N1 or N0%N1 != 0){abort_r("Vectors wrong. \n");}}
@@ -436,7 +438,7 @@ struct fft_schedule{
 
     civ = civ_set;nvec = nvec_set;default_MPI= default_MPI_set;
     if(!(default_MPI >= -3 and default_MPI < 2)){abort_r("Wrong default_MPI ! \n");};
-    long total  = nvec*civ;
+    ////long total  = nvec*civ;
     N_extra = -1;int N0 = -1;int N1 = -1;
 
     /////default vector options
@@ -711,7 +713,213 @@ void fft_fieldM(fft_schedule& fft, std::vector<qlat::FieldM<Ty, civ> >& src, boo
   fft.dojob(data, fftdir);
 }
 
+///Failed with pair
+struct FFTGPUPlanKey {
+  Geometry geo;
+  bool GPU;
+  bool fft4D;
+  int nvec ;
+  int civ;
+  DATA_TYPE prec;
+};
 
+struct fft_gpu_copy{
+  //void* fftP;
+  //fft_gpu_copy(){fftP = NULL;}
+  //~fft_gpu_copy(){if(fftP != NULL){delete ((fft_schedule*) fftP); fftP = NULL;}}
+  fft_schedule* fftP;
+  DATA_TYPE prec;
+  bool is_copy;  // do not free memory if is_copy=true
+
+  fft_gpu_copy(){fftP = NULL;is_copy = false;prec = Complex_TYPE;}
+  fft_gpu_copy(const fft_gpu_copy& fft) 
+  {
+    #ifndef QLAT_USE_ACC
+    qassert(false);
+    #endif
+    is_copy = true;
+    fftP = fft.fftP;
+    prec = fft.prec;
+  }
+  fft_gpu_copy(fft_gpu_copy&& fft) noexcept
+  {
+    is_copy = fft.is_copy;
+    fftP = fft.fftP;
+    prec = fft.prec;
+    fft.is_copy = true;
+  }
+
+  qacc void swap(fft_gpu_copy& x)
+  {
+    qassert(not is_copy);
+    qassert(not x.is_copy);
+    fft_schedule* tmp = fftP;
+    fftP   = x.fftP;
+    x.fftP = tmp;
+    DATA_TYPE tmp_prec = prec;
+    prec   = x.prec;
+    x.prec = tmp_prec;
+  }
+  //
+  const fft_gpu_copy& operator=(const fft_gpu_copy& fft)
+  {
+    qassert(not is_copy);
+    if(fftP != NULL){delete (fftP); fftP = NULL;}
+
+    prec = fft.prec;
+    fftP = new fft_schedule(fft.fftP->fd, fft.fftP->GPU);
+    int nvec = fft.fftP->nvec;
+    int civ  = fft.fftP->civ;
+    std::vector<int > dimN = fft.fftP->dimN;
+
+    if(prec == Complex_TYPE ){     fftP->set_mem<Complex  >(nvec, civ, dimN, -1 );}
+    else if(prec == ComplexF_TYPE){fftP->set_mem<ComplexF >(nvec, civ, dimN, -1 );}
+    else{print0("Only Complex and ComplexF supported for fft on GPU! \n");qassert(false);}
+
+    return *this;
+  }
+
+  ~fft_gpu_copy(){if(fftP != NULL and is_copy == false){delete (fftP); fftP = NULL;}}
+};
+
+inline bool operator<(const FFTGPUPlanKey& x, const FFTGPUPlanKey& y)
+{
+  unsigned int small = 0;
+  if(x.GPU   < y.GPU  ){small += 1;}
+  if(x.fft4D < y.fft4D){small += 1;}
+  if(x.nvec  < y.nvec ){small += 1;}
+  if(x.civ   < y.civ  ){small += 1;}
+  if(x.prec  < y.prec ){small += 1;}
+  if(small < 3){return false;}else{return true;}
+}
+
+
+inline fft_gpu_copy make_fft_gpu_plan(const Geometry& geo, int nvec, int civ , bool GPU, bool fft4D , const DATA_TYPE prec)
+{
+  TIMER_VERBOSE("make_fft_gpu_plan");
+
+  fft_desc_basic fd(geo);
+
+  std::vector<int > nv,Nv,mv;
+  geo_to_nv(geo, nv,Nv,mv);
+
+  std::vector<int > dimN;
+  /////3D
+  if(!fft4D){dimN.resize(3);dimN[0] = nv[2];dimN[1] = nv[1];dimN[2] = nv[0];}
+  if( fft4D){dimN.resize(4);dimN[0] = nv[3];dimN[1] = nv[2];dimN[2] = nv[1];dimN[3] = nv[0];}
+
+  fft_gpu_copy ft;
+  ft.fftP = new fft_schedule(fd, GPU);
+
+  if(prec == Complex_TYPE ){     ft.fftP->set_mem<Complex  >(nvec, civ, dimN, -1 );}
+  else if(prec == ComplexF_TYPE){ft.fftP->set_mem<ComplexF >(nvec, civ, dimN, -1 );}
+  else{print0("Only Complex and ComplexF supported for fft on GPU! \n");qassert(false);}
+  ft.fftP->print_info();
+
+  ///int nvec = src.size();
+  //std::vector<Ty* > data;data.resize(nvec);
+  //for(int si=0;si<nvec;si++){data[si] = (Ty*) qlat::get_data(src[si]).data();}
+  //fft.dojob(data, fftdir);
+
+  return ft;
+}
+
+inline fft_gpu_copy make_fft_gpu_plan(const FFTGPUPlanKey& fkey)
+{
+  return make_fft_gpu_plan(fkey.geo, fkey.nvec, fkey.civ, fkey.GPU, fkey.fft4D, fkey.prec);
+}
+
+inline Cache<FFTGPUPlanKey, fft_gpu_copy >& get_fft_gpu_plan_cache()
+{
+  static Cache<FFTGPUPlanKey, fft_gpu_copy > cache("FFTGPUPlanCache", 16);
+  return cache;
+}
+
+inline const fft_gpu_copy& get_fft_gpu_plan(const FFTGPUPlanKey& fkey)
+{
+  if (!get_fft_gpu_plan_cache().has(fkey)) {
+    get_fft_gpu_plan_cache()[fkey] = make_fft_gpu_plan(fkey);
+  }
+  //get_fft_gpu_plan_cache()[fkey].set();
+  //get_fft_gpu_plan_cache()[fkey].fftP->print_info();
+  return get_fft_gpu_plan_cache()[fkey];
+}
+
+
+template<typename Ty, int civ>
+inline FFTGPUPlanKey get_fft_gpu_plan_key(std::vector<qlat::FieldM<Ty, civ> >& src, bool fft4d=false)
+{
+  qassert(src.size() > 0);
+  FFTGPUPlanKey fkey;
+  fkey.geo = src[0].geo();
+  fkey.GPU = true;
+  fkey.nvec = src.size();
+  fkey.civ = civ;
+  fkey.prec = get_data_type<Ty >();
+
+  fkey.fft4D = fft4d;
+  return fkey;
+}
+
+template <class Ty, int civ>
+void fft_fieldM(std::vector<qlat::FieldM<Ty, civ> >& src, bool fftdir=true, bool fft4d = false)
+{
+  #if PRINT_TIMER>4
+  TIMER_FLOPS("fft fieldM");
+  timer.flops += src.size() * get_data(src[0]).data_size()/(sizeof(Ty)) * 64;
+  #endif
+
+  if(src.size() < 1)return;
+
+  FFTGPUPlanKey fkey;
+  fkey.geo = src[0].geo();
+  fkey.GPU = true;
+  fkey.nvec = src.size();
+  fkey.civ = civ;
+  fkey.prec = get_data_type<Ty >();
+  fkey.fft4D = fft4d;
+
+  int nvec = src.size();
+  std::vector<Ty* > data;data.resize(nvec);
+  for(int si=0;si<nvec;si++){data[si] = (Ty*) qlat::get_data(src[si]).data();}
+  get_fft_gpu_plan(fkey).fftP->dojob(data, fftdir);
+}
+
+
+template<class M>
+void fft_fieldM(std::vector<Handle<qlat::Field<M> > >& src, bool fftdir=true, bool fft4d = false)
+{
+  #if PRINT_TIMER>4
+  TIMER_FLOPS("fft fieldM");
+  timer.flops += src.size() * get_data(src[0]).data_size()/(sizeof(M)) * 64;
+  #endif
+
+  if(src.size() < 1)return;
+  bool is_double     = get_data_type_is_double<M >();
+  DATA_TYPE prec = Complex_TYPE;int civ = 1;
+  if( is_double){prec = Complex_TYPE ; civ = src[0]().geo().multiplicity * sizeof(M)/sizeof(Complex ); }
+  if(!is_double){prec = ComplexF_TYPE; civ = src[0]().geo().multiplicity * sizeof(M)/sizeof(ComplexF); }
+
+  FFTGPUPlanKey fkey;
+  fkey.geo = src[0]().geo();
+  fkey.GPU = true;
+  fkey.nvec = src.size();
+  fkey.civ = civ;
+  fkey.prec = prec;
+  fkey.fft4D = fft4d;
+
+  int nvec = src.size();
+  if( is_double){
+    std::vector<Complex* > data;data.resize(nvec);
+    for(int si=0;si<nvec;si++){data[si] = (Complex*) qlat::get_data(src[si]()).data();}
+    get_fft_gpu_plan(fkey).fftP->dojob(data, fftdir);}
+
+  if(!is_double){
+    std::vector<Complex* > data;data.resize(nvec);
+    for(int si=0;si<nvec;si++){data[si] = (Complex*) qlat::get_data(src[si]()).data();}
+    get_fft_gpu_plan(fkey).fftP->dojob(data, fftdir);}
+
+}
 
 
 

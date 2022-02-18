@@ -97,7 +97,7 @@ namespace qlat{
 #define colorFF qlat::FieldM<qlat::ComplexF, 3>
 #define colorFT qlat::FieldM<Ty, 3>
 
-void print_NONE(const char *filename){return ;}
+inline void print_NONE(const char *filename){return ;}
 
 #define TIMERA(name) print_NONE(name);
 #define TIMERB(name) print_NONE(name);

@@ -154,7 +154,7 @@ void get_mom_apply(qlat::FieldM<Ty0, civ> &src, std::vector<int >& mom, std::vec
   Ty0* P0 = (Ty0*) (qlat::get_data(src).data());int psum = 3;
   if( ft4D){dat.resize(civ);psum = 4;}
   if(!ft4D){dat.resize(nv[3]*civ);psum = 3;}
-  for(int di=0;di<dat.size();di++){dat[di] = 0.0;}
+  for(long di=0;di<long(dat.size());di++){dat[di] = 0.0;}
 
   double pi = 3.14159265358979323846;
   for(long isp = 0; isp < geo.local_volume(); isp++)
@@ -188,7 +188,7 @@ void get_mom_fft(qlat::FieldM<Ty0, civ> &src, std::vector<int >& mom, std::vecto
   Ty0* P0 = (Ty0*) (qlat::get_data(src).data());
   if( ft4D){dat.resize(civ);}
   if(!ft4D){dat.resize(nv[3]*civ);}
-  for(int di=0;di<dat.size();di++){dat[di] = 0.0;}
+  for(long di=0;di<long(dat.size());di++){dat[di] = 0.0;}
 
   for(long isp = 0; isp < geo.local_volume(); isp++)
   {
