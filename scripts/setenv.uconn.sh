@@ -18,6 +18,10 @@ fi
 if [ -z "\$num_proc" ] ; then
     num_proc=2
 fi
+module ()
+{
+    eval \$(/apps2/Modules/\$MODULE_VERSION/bin/modulecmd bash \$*)
+}
 module purge
 module add modules
 module add pre-module
@@ -31,6 +35,7 @@ module add tcl/8.6.6.8606
 module add bzip2/1.0.6
 module add lzma/4.32.7
 module add python/3.9.1-sqlite3-rhel7.7-vmaf
+module list
 EOF
 
 ./scripts/compiler-wrappers.sh

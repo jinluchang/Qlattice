@@ -17,7 +17,7 @@ set -e
 ./scripts/qlat.sh
 
 ./scripts/c-lime.sh
-./scripts/grid.avx2.sh
+./scripts/grid.avx512.sh
 ./scripts/gpt.sh
 
 } |& tee $prefix/log.build.txt
