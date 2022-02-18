@@ -28,7 +28,7 @@ On some systems, one may need to specify the system type:
 
 `$ ./build.sh TARGET`
 
-`TARGET` can be `default`, `qcdserver`, `bnlknl`, `summit`, ... This script will call `./scripts/build.TARGET.sh` to perform relevant builds.
+`TARGET` can be `default`, `uconn`, `qcdserver`, `bnlknl`, `summit`, ... This script will call `./scripts/build.TARGET.sh` to perform relevant builds.
 
 The environment variables needed to use the library can be set with the following command:
 
