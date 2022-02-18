@@ -31,8 +31,10 @@ def process_remove_arg(argv):
             argv.remove(x)
 argv = sys.argv.copy()
 process_remove_arg(argv)
-status = p.run(argv[1:])
-sys.exit(status.returncode)
+# status = p.run(argv[1:])
+# sys.exit(status.returncode)
+status = p.call(argv[1:])
+sys.exit(status)
 EOF
 chmod +x "$prefix/bin/compiler-options.py"
 
