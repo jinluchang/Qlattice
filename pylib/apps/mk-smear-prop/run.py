@@ -179,7 +179,11 @@ def run_job(job_tag, traj):
     #
     run_with_eig()
     #
-    # run_prop(inv_type = 1, get_eig = None)
+    def run_with_eig_strange():
+        get_eig_strange = run_eig_strange(job_tag, traj_gf, get_gf)
+        run_prop(inv_type = 1, get_eig = get_eig_strange)
+    #
+    run_with_eig_strange()
     #
     q.clean_cache()
     q.timer_display()
