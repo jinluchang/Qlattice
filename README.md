@@ -52,6 +52,24 @@ It is also possible to build `Grid` and `gpt`. For examples:
 
 It may be convenient to create a symbolic link `$HOME/qlat-build/default`, which points to the actual directory `DEST_DIRECTORY`. The `prefix` environment variable can be empty if the symbolic link is created.
 
+### Install on UCONN HPC
+
+First obtain an interactive session:
+
+`$ fisbatch -n 2 -p generalsky`
+
+The default build and installation directory is `$HOME/qlat-build/default`. If a different directory is needed:
+
+`$ export prefix=DEST_DIRECTORY`
+
+Run the build script:
+
+`$ ./build.sh uconn`
+
+End the interactive session.
+
+`$ exit`
+
 ## Install on new machines
 
 If there is no existing `./scripts/build.TARGET.sh` for the machine. You may need to create a new one. Also, you may need to create a `./scripts/setenv.TARGET.sh` script.
