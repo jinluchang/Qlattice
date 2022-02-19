@@ -157,8 +157,8 @@ def run_job(job_tag, traj):
 # rup.dict_params["test-4nt16"]["fermion_params"][1][2]["Ls"] = 10
 
 tag = "n_rand_u1_fsel"
-rup.dict_params["test-4nt8"][tag] = 16
-rup.dict_params["test-4nt16"][tag] = 16
+rup.dict_params["test-4nt8"][tag] = 4
+rup.dict_params["test-4nt16"][tag] = 4
 rup.dict_params["48I"][tag] = 16
 rup.dict_params["64I"][tag] = 16
 rup.dict_params["16IH2"][tag] = 16
