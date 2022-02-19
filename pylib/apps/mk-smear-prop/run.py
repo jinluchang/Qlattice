@@ -98,9 +98,7 @@ def compute_prop_smear_all(job_tag, traj, *,
 
 @q.timer
 def run_prop_smear(job_tag, traj, *, inv_type, get_gf, get_gf_ape, get_eig, get_gt, get_psel, get_fsel, get_psel_smear):
-    if None in [ get_gf, get_gt, get_gf_ape, get_psel, get_fsel, ]:
-        return
-    if inv_type == 0 and get_eig is None:
+    if None in [ get_gf, get_gt, get_gf_ape, get_eig, get_psel, get_fsel, ]:
         return
     inv_type_names = [ "light", "strange", ]
     inv_type_name = inv_type_names[inv_type]
@@ -109,10 +107,7 @@ def run_prop_smear(job_tag, traj, *, inv_type, get_gf, get_gf_ape, get_eig, get_
     if q.obtain_lock(f"locks/{job_tag}-{traj}-smear-{inv_type_name}"):
         gf = get_gf()
         gt = get_gt()
-        if get_eig is None:
-            eig = None
-        else:
-            eig = get_eig()
+        eig = get_eig()
         psel = get_psel()
         fsel, fselc = get_fsel()
         psel_smear = get_psel_smear()
@@ -125,10 +120,11 @@ def run_prop_smear(job_tag, traj, *, inv_type, get_gf, get_gf_ape, get_eig, get_
 @q.timer_verbose
 def run_job(job_tag, traj):
     fns_produce = [
+            f"point-selection-smear/{job_tag}/traj={traj}.txt",
             f"prop-smear-light/{job_tag}/traj={traj}",
             f"psel-prop-smear-light/{job_tag}/traj={traj}/checkpoint.txt",
-            # f"prop-smear-strange/{job_tag}/traj={traj}",
-            # f"psel-prop-smear-strange/{job_tag}/traj={traj}/checkpoint.txt",
+            f"prop-smear-strange/{job_tag}/traj={traj}",
+            f"psel-prop-smear-strange/{job_tag}/traj={traj}/checkpoint.txt",
             ]
     fns_need = [
             (f"configs/{job_tag}/ckpoint_lat.{traj}", f"configs/{job_tag}/ckpoint_lat.IEEE64BIG.{traj}",),
@@ -138,6 +134,7 @@ def run_job(job_tag, traj):
             f"eig/{job_tag}/traj={traj}",
             f"eig/{job_tag}/traj={traj}/metadata.txt",
             f"eig/{job_tag}/traj={traj}/eigen-values.txt",
+            f"eig-strange/{job_tag}/traj={traj}",
             ]
     if not check_job(job_tag, traj, fns_produce, fns_need):
         return
@@ -188,12 +185,13 @@ def run_job(job_tag, traj):
     q.clean_cache()
     q.timer_display()
 
-rup.dict_params["test-4nt8"]["trajs"] = list(range(1000, 1400, 100))
-rup.dict_params["test-4nt16"]["trajs"] = list(range(1000, 1400, 100))
-rup.dict_params["48I"]["trajs"] = list(range(3000, 500, -5))
-rup.dict_params["24D"]["trajs"] = list(range(1000, 10000, 10))
-rup.dict_params["16IH2"]["trajs"] = list(range(1000, 10000, 50))
-rup.dict_params["32IfineH"]["trajs"] = list(range(1000, 10000, 50))
+tag = "trajs"
+rup.dict_params["test-4nt8"][tag] = list(range(1000, 1400, 100))
+rup.dict_params["test-4nt16"][tag] = list(range(1000, 1400, 100))
+rup.dict_params["48I"][tag] = list(range(3000, 500, -5))
+rup.dict_params["24D"][tag] = list(range(1000, 10000, 10))
+rup.dict_params["16IH2"][tag] = list(range(1000, 10000, 50))
+rup.dict_params["32IfineH"][tag] = list(range(1000, 10000, 50))
 
 rup.dict_params["test-4nt8"]["fermion_params"][0][2]["Ls"] = 10
 rup.dict_params["test-4nt8"]["fermion_params"][1][2]["Ls"] = 10
@@ -203,8 +201,9 @@ rup.dict_params["test-4nt8"]["fermion_params"][2][2]["Ls"] = 10
 # rup.dict_params["test-4nt16"]["fermion_params"][1][2]["Ls"] = 10
 # rup.dict_params["test-4nt16"]["fermion_params"][2][2]["Ls"] = 10
 
-rup.dict_params["test-4nt8"]["n_exact_wsrc"] = 2
-rup.dict_params["48I"]["n_exact_wsrc"] = 2
+tag = "n_exact_wsrc"
+rup.dict_params["test-4nt8"][tag] = 2
+rup.dict_params["48I"][tag] = 2
 
 tag = "prob_exact_wsrc"
 rup.dict_params["test-4nt16"][tag] = 1/8
