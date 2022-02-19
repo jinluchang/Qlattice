@@ -15,16 +15,14 @@ from jobs import *
 
 load_path_list[:] = [
         "results",
+        "../qcddata",
+        os.path.join(os.getenv("HOME"), "qcddata"),
         "../mk-gf-gt/results",
         "../mk-sel/results",
         "../mk-lanc/results",
-        "../qcddata",
         os.path.join(os.getenv("HOME"), "Qlat-sample-data/mk-gf-gt/results"),
         os.path.join(os.getenv("HOME"), "Qlat-sample-data/mk-sel/results"),
         os.path.join(os.getenv("HOME"), "Qlat-sample-data/mk-lanc/results"),
-        os.path.join(os.getenv("HOME"), "qcddata"),
-        "../mk-selected-data/results",
-        "/sdcc/u/jluchang/qcdqedta/hlbl-data-with-cache",
         ]
 
 @q.timer_verbose

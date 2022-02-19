@@ -15,16 +15,14 @@ from jobs import *
 
 load_path_list[:] = [
         "results",
+        "../qcddata",
+        os.path.join(os.getenv("HOME"), "qcddata"),
         "../mk-gf-gt/results",
         "../mk-sel/results",
         "../mk-lanc/results",
-        "../qcddata",
         os.path.join(os.getenv("HOME"), "Qlat-sample-data/mk-gf-gt/results"),
         os.path.join(os.getenv("HOME"), "Qlat-sample-data/mk-sel/results"),
         os.path.join(os.getenv("HOME"), "Qlat-sample-data/mk-lanc/results"),
-        os.path.join(os.getenv("HOME"), "qcddata"),
-        "../mk-selected-data/results",
-        "/sdcc/u/jluchang/qcdqedta/hlbl-data-with-cache",
         ]
 
 @q.timer_verbose
@@ -150,11 +148,14 @@ def run_job(job_tag, traj):
     q.clean_cache()
     q.timer_display()
 
-# rup.dict_params["test-4nt8"]["fermion_params"][0][2]["Ls"] = 10
-# rup.dict_params["test-4nt8"]["fermion_params"][1][2]["Ls"] = 10
-
-# rup.dict_params["test-4nt16"]["fermion_params"][0][2]["Ls"] = 10
-# rup.dict_params["test-4nt16"]["fermion_params"][1][2]["Ls"] = 10
+tag = "trajs"
+rup.dict_params["test-4nt8"][tag] = list(range(1000, 1400, 100))
+rup.dict_params["test-4nt16"][tag] = list(range(1000, 1400, 100))
+rup.dict_params["32Dfine"][tag] = list(range(500, 3000, 10))
+rup.dict_params["16IH2"][tag] = list(range(500, 10000, 50))
+rup.dict_params["32IfineH"][tag] = list(range(500, 10000, 50))
+rup.dict_params["48I"][tag] = list(range(3000, 500, -5))
+rup.dict_params["64I"][tag] = list(range(3000, 500, -5))
 
 tag = "n_rand_u1_fsel"
 rup.dict_params["test-4nt8"][tag] = 4
@@ -184,14 +185,13 @@ for inv_acc in [ 0, 1, 2, ]:
     rup.dict_params["48I"][tag][0][inv_acc]["mass"] = 0.0006979
     rup.dict_params["48I"][tag][1][inv_acc]["mass"] = 0.03580
 
-tag = "trajs"
-rup.dict_params["test-4nt8"][tag] = list(range(1000, 1400, 100))
-rup.dict_params["test-4nt16"][tag] = list(range(1000, 1400, 100))
-rup.dict_params["32Dfine"][tag] = list(range(500, 3000, 10))
-rup.dict_params["16IH2"][tag] = list(range(500, 10000, 50))
-rup.dict_params["32IfineH"][tag] = list(range(500, 10000, 50))
-rup.dict_params["48I"][tag] = list(range(3000, 500, -5))
-rup.dict_params["64I"][tag] = list(range(3000, 500, -5))
+rup.dict_params["test-4nt8"]["fermion_params"][0][2]["Ls"] = 10
+rup.dict_params["test-4nt8"]["fermion_params"][1][2]["Ls"] = 10
+rup.dict_params["test-4nt8"]["fermion_params"][2][2]["Ls"] = 10
+
+# rup.dict_params["test-4nt16"]["fermion_params"][0][2]["Ls"] = 10
+# rup.dict_params["test-4nt16"]["fermion_params"][1][2]["Ls"] = 10
+# rup.dict_params["test-4nt16"]["fermion_params"][2][2]["Ls"] = 10
 
 qg.begin_with_gpt()
 

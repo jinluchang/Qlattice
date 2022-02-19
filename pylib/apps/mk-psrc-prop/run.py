@@ -9,15 +9,14 @@ from jobs import *
 
 load_path_list[:] = [
         "results",
-        "/gpfs/alpine/lgt116/proj-shared/ljin",
+        "../qcddata",
+        os.path.join(os.getenv("HOME"), "qcddata"),
         "../mk-gf-gt/results",
         "../mk-sel/results",
         "../mk-lanc/results",
-        "../qcddata",
         os.path.join(os.getenv("HOME"), "Qlat-sample-data/mk-gf-gt/results"),
         os.path.join(os.getenv("HOME"), "Qlat-sample-data/mk-sel/results"),
         os.path.join(os.getenv("HOME"), "Qlat-sample-data/mk-lanc/results"),
-        os.path.join(os.getenv("HOME"), "qcddata"),
         ]
 
 @q.timer_verbose
@@ -163,14 +162,6 @@ def run_job(job_tag, traj):
     q.clean_cache()
     q.timer_display()
 
-rup.dict_params["test-4nt8"]["fermion_params"][0][2]["Ls"] = 10
-rup.dict_params["test-4nt8"]["fermion_params"][1][2]["Ls"] = 10
-rup.dict_params["test-4nt8"]["fermion_params"][2][2]["Ls"] = 10
-
-# rup.dict_params["test-4nt16"]["fermion_params"][0][2]["Ls"] = 10
-# rup.dict_params["test-4nt16"]["fermion_params"][1][2]["Ls"] = 10
-# rup.dict_params["test-4nt16"]["fermion_params"][2][2]["Ls"] = 10
-
 tag = "trajs"
 rup.dict_params["test-4nt8"][tag] = list(range(1000, 1400, 100))
 rup.dict_params["test-4nt16"][tag] = list(range(1000, 1400, 100))
@@ -198,18 +189,21 @@ rup.dict_params["test-4nt16"][tag] = 1/16
 rup.dict_params["24D"][tag] = 1/128
 rup.dict_params["32IfineH"][tag] = 1/128
 
+rup.dict_params["test-4nt8"]["fermion_params"][0][2]["Ls"] = 10
+rup.dict_params["test-4nt8"]["fermion_params"][1][2]["Ls"] = 10
+rup.dict_params["test-4nt8"]["fermion_params"][2][2]["Ls"] = 10
+
+# rup.dict_params["test-4nt16"]["fermion_params"][0][2]["Ls"] = 10
+# rup.dict_params["test-4nt16"]["fermion_params"][1][2]["Ls"] = 10
+# rup.dict_params["test-4nt16"]["fermion_params"][2][2]["Ls"] = 10
+
 qg.begin_with_gpt()
 
 # ADJUST ME
 job_tags = [
         "test-4nt8", "test-4nt16",
-        # "test-8nt16",
-        # "test-16nt32",
-        # "test-32nt64",
-        # "test-48nt96",
-        # "test-64nt128",
-        # "test-96nt192",
-        # "test-128nt256",
+        # "32IfineH",
+        # "16IH2",
         # "24D",
         # "48I",
         ]
