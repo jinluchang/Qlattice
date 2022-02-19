@@ -35,11 +35,20 @@ def run_job(job_tag, traj):
     q.clean_cache()
     q.timer_display()
 
-rup.dict_params["test-4nt8"]["trajs"] = list(range(1000, 1400, 100))
-rup.dict_params["test-4nt16"]["trajs"] = list(range(1000, 1400, 100))
-rup.dict_params["48I"]["trajs"] = list(range(3000, 500, -5))
-rup.dict_params["16IH2"]["trajs"] = list(range(1000, 5000, 10))
-rup.dict_params["32IfineH"]["trajs"] = list(range(1000, 10000, 50))
+tag = "trajs"
+rup.dict_params["test-4nt8"][tag] = list(range(1000, 1400, 100))
+rup.dict_params["test-4nt16"][tag] = list(range(1000, 1400, 100))
+rup.dict_params["48I"][tag] = list(range(3000, 500, -5))
+rup.dict_params["24D"][tag] = list(range(1000, 10000, 10))
+rup.dict_params["16IH2"][tag] = list(range(1000, 10000, 50))
+rup.dict_params["32IfineH"][tag] = list(range(1000, 10000, 50))
+
+tag = "n_points_psel"
+rup.dict_params["test-4nt8"][tag] = 6
+rup.dict_params["test-4nt16"][tag] = 32
+rup.dict_params["48I"][tag] = 2048
+rup.dict_params["24D"][tag] = 1024
+rup.dict_params["32IfineH"][tag] = 512
 
 rup.dict_params["test-4nt8"]["n_points"] = [
         [ 6, 2, 1, ],

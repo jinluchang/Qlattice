@@ -193,23 +193,6 @@ rup.dict_params["24D"][tag] = list(range(1000, 10000, 10))
 rup.dict_params["16IH2"][tag] = list(range(1000, 10000, 50))
 rup.dict_params["32IfineH"][tag] = list(range(1000, 10000, 50))
 
-rup.dict_params["test-4nt8"]["fermion_params"][0][2]["Ls"] = 10
-rup.dict_params["test-4nt8"]["fermion_params"][1][2]["Ls"] = 10
-rup.dict_params["test-4nt8"]["fermion_params"][2][2]["Ls"] = 10
-
-# rup.dict_params["test-4nt16"]["fermion_params"][0][2]["Ls"] = 10
-# rup.dict_params["test-4nt16"]["fermion_params"][1][2]["Ls"] = 10
-# rup.dict_params["test-4nt16"]["fermion_params"][2][2]["Ls"] = 10
-
-tag = "n_exact_wsrc"
-rup.dict_params["test-4nt8"][tag] = 2
-rup.dict_params["48I"][tag] = 2
-
-tag = "prob_exact_wsrc"
-rup.dict_params["test-4nt16"][tag] = 1/8
-rup.dict_params["16IH2"][tag] = 1/16
-rup.dict_params["32IfineH"][tag] = 1/32
-
 tag = "n_per_tslice_smear"
 rup.dict_params["test-4nt8"][tag] = 2
 rup.dict_params["test-4nt16"][tag] = 2
@@ -252,6 +235,14 @@ rup.dict_params["test-4nt8"][tag] = 30
 rup.dict_params["test-4nt16"][tag] = 30
 rup.dict_params["24D"][tag] = 30
 rup.dict_params["32IfineH"][tag] = 30
+
+rup.dict_params["test-4nt8"]["fermion_params"][0][2]["Ls"] = 10
+rup.dict_params["test-4nt8"]["fermion_params"][1][2]["Ls"] = 10
+rup.dict_params["test-4nt8"]["fermion_params"][2][2]["Ls"] = 10
+
+# rup.dict_params["test-4nt16"]["fermion_params"][0][2]["Ls"] = 10
+# rup.dict_params["test-4nt16"]["fermion_params"][1][2]["Ls"] = 10
+# rup.dict_params["test-4nt16"]["fermion_params"][2][2]["Ls"] = 10
 
 qg.begin_with_gpt()
 

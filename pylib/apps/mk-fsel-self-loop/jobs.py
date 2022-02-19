@@ -220,17 +220,17 @@ def run_wi(job_tag, traj):
 
 # ----------
 
-def get_n_points(job_tag, traj, inv_type, inv_acc):
+def get_n_points_psel(job_tag, traj):
     assert job_tag in rup.dict_params
-    assert "n_points" in rup.dict_params[job_tag]
-    return rup.dict_params[job_tag]["n_points"][inv_type][inv_acc]
+    assert "n_points_psel" in rup.dict_params[job_tag]
+    return rup.dict_params[job_tag]["n_points_psel"]
 
 @q.timer
 def mk_rand_psel(job_tag, traj):
     import rbc_ukqcd as ru
     rs = q.RngState(f"seed {job_tag} {traj}").split("mk_rand_psel")
     total_site = ru.get_total_site(job_tag)
-    n_points = get_n_points(job_tag, traj, 0, 0)
+    n_points = get_n_points_psel(job_tag, traj)
     psel = q.PointSelection()
     psel.set_rand(rs, total_site, n_points)
     psel.geo = q.Geometry(total_site)
@@ -262,16 +262,21 @@ def run_psel(job_tag, traj):
 
 # ----------
 
+def get_n_points_pi(job_tag, traj, inv_type, inv_acc):
+    assert job_tag in rup.dict_params
+    assert "n_points" in rup.dict_params[job_tag]
+    return rup.dict_params[job_tag]["n_points"][inv_type][inv_acc]
+
 @q.timer
 def mk_rand_point_src_info(job_tag, traj, psel):
     # pi is a list of [ idx xg inv_type inv_acc ]
     rs = q.RngState(f"seed {job_tag} {traj}").split("mk_rand_point_src_info")
     xg_list = psel.to_list()
-    assert len(xg_list) == get_n_points(job_tag, traj, 0, 0)
+    assert len(xg_list) == get_n_points_pi(job_tag, traj, 0, 0)
     g_pi = [ [] for _ in xg_list ]
     for inv_type in [ 0, 1, ]:
         for inv_acc in [ 0, 1, 2, ]:
-            for i in range(get_n_points(job_tag, traj, inv_type, inv_acc)):
+            for i in range(get_n_points_pi(job_tag, traj, inv_type, inv_acc)):
                 g_pi[i].append([ xg_list[i], inv_type, inv_acc ])
     pi = []
     for g in g_pi:

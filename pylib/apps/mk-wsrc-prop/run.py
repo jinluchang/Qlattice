@@ -165,6 +165,15 @@ rup.dict_params["48I"]["trajs"] = list(range(3000, 500, -5))
 rup.dict_params["16IH2"]["trajs"] = list(range(1000, 10000, 50))
 rup.dict_params["32IfineH"]["trajs"] = list(range(1000, 10000, 50))
 
+tag = "n_exact_wsrc"
+rup.dict_params["test-4nt8"][tag] = 2
+rup.dict_params["48I"][tag] = 2
+
+tag = "prob_exact_wsrc"
+rup.dict_params["test-4nt16"][tag] = 1/8
+rup.dict_params["16IH2"][tag] = 1/16
+rup.dict_params["32IfineH"][tag] = 1/32
+
 rup.dict_params["test-4nt8"]["fermion_params"][0][2]["Ls"] = 10
 rup.dict_params["test-4nt8"]["fermion_params"][1][2]["Ls"] = 10
 rup.dict_params["test-4nt8"]["fermion_params"][2][2]["Ls"] = 10
@@ -172,14 +181,6 @@ rup.dict_params["test-4nt8"]["fermion_params"][2][2]["Ls"] = 10
 # rup.dict_params["test-4nt16"]["fermion_params"][0][2]["Ls"] = 10
 # rup.dict_params["test-4nt16"]["fermion_params"][1][2]["Ls"] = 10
 # rup.dict_params["test-4nt16"]["fermion_params"][2][2]["Ls"] = 10
-
-rup.dict_params["test-4nt8"]["n_exact_wsrc"] = 2
-rup.dict_params["48I"]["n_exact_wsrc"] = 2
-
-tag = "prob_exact_wsrc"
-rup.dict_params["test-4nt16"][tag] = 1/8
-rup.dict_params["16IH2"][tag] = 1/16
-rup.dict_params["32IfineH"][tag] = 1/32
 
 qg.begin_with_gpt()
 
