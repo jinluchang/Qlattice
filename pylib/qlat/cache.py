@@ -1,5 +1,14 @@
 from qlat.timer import *
 
+# Usage:
+# cache_x = q.mk_cache("xx")
+# q.clean_cache(cache_x)
+# cache_x[key] = value
+# val = cache_x[key]
+# key in cache_x
+# val = cache_x.get(key)
+# val = cache_x.pop(key, None)
+
 class Cache(dict):
 
     def __init__(self, *keys):

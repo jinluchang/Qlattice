@@ -136,8 +136,8 @@ def compute_prop_psrc_all(gf, gt, pi, job_tag, inv_type, *,
     q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
 
 @q.timer
-def run_prop_psrc_light(job_tag, traj, get_gf, get_eig, get_gt, get_psel, get_fsel):
-    if None in [ get_gf, get_eig, get_gt, get_psel, get_fsel, ]:
+def run_prop_psrc_light(job_tag, traj, get_gf, get_eig, get_gt, get_psel, get_fsel, get_pi):
+    if None in [ get_gf, get_eig, get_gt, get_psel, get_fsel, get_pi, ]:
         return
     if get_load_path(f"prop-psrc-light/{job_tag}/traj={traj}") is not None:
         return
@@ -146,8 +146,7 @@ def run_prop_psrc_light(job_tag, traj, get_gf, get_eig, get_gt, get_psel, get_fs
         gt = get_gt()
         eig = get_eig()
         fsel, fselc = get_fsel()
-        pi = mk_rand_point_src_info(job_tag, traj, get_psel())
-        save_point_src_info(pi, get_save_path(f"point-src-info/{job_tag}/traj={traj}.txt"));
+        pi = get_pi()
         compute_prop_psrc_all(gf, gt, pi, job_tag, inv_type = 0,
                 path_s = f"prop-psrc-light/{job_tag}/traj={traj}",
                 path_hvp = f"hvp-psrc-light/{job_tag}/traj={traj}",
@@ -156,8 +155,8 @@ def run_prop_psrc_light(job_tag, traj, get_gf, get_eig, get_gt, get_psel, get_fs
         q.release_lock()
 
 @q.timer
-def run_prop_psrc_strange(job_tag, traj, get_gf, get_gt, get_psel, get_fsel):
-    if None in [ get_gf, get_gt, get_psel, get_fsel, ]:
+def run_prop_psrc_strange(job_tag, traj, get_gf, get_gt, get_psel, get_fsel, get_pi):
+    if None in [ get_gf, get_gt, get_psel, get_fsel, get_pi, ]:
         return
     if get_load_path(f"prop-psrc-strange/{job_tag}/traj={traj}") is not None:
         return
@@ -165,8 +164,7 @@ def run_prop_psrc_strange(job_tag, traj, get_gf, get_gt, get_psel, get_fsel):
         gf = get_gf()
         gt = get_gt()
         fsel, fselc = get_fsel()
-        pi = mk_rand_point_src_info(job_tag, traj, get_psel())
-        save_point_src_info(pi, get_save_path(f"point-src-info/{job_tag}/traj={traj}.txt"));
+        pi = get_pi()
         compute_prop_psrc_all(gf, gt, pi, job_tag, inv_type = 1,
                 path_s = f"prop-psrc-strange/{job_tag}/traj={traj}",
                 path_hvp = f"hvp-psrc-strange/{job_tag}/traj={traj}",
@@ -246,16 +244,17 @@ def run_job(job_tag, traj):
     assert get_fsel is not None
     #
     get_wi = run_wi(job_tag, traj)
+    get_pi = run_pi(job_tag, traj, get_psel)
     #
     def run_with_eig():
         get_eig = run_eig(job_tag, traj_gf, get_gf)
         run_prop_wsrc_light(job_tag, traj, get_gf, get_eig, get_gt, get_psel, get_fsel, get_wi)
-        run_prop_psrc_light(job_tag, traj, get_gf, get_eig, get_gt, get_psel, get_fsel)
+        run_prop_psrc_light(job_tag, traj, get_gf, get_eig, get_gt, get_psel, get_fsel, get_pi)
     #
     run_with_eig()
     #
     run_prop_wsrc_strange(job_tag, traj, get_gf, get_gt, get_psel, get_fsel, get_wi)
-    run_prop_psrc_strange(job_tag, traj, get_gf, get_gt, get_psel, get_fsel)
+    run_prop_psrc_strange(job_tag, traj, get_gf, get_gt, get_psel, get_fsel, get_pi)
     #
     q.clean_cache()
     q.timer_display()
