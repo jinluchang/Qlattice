@@ -35,5 +35,6 @@ LDFLAGS += -L$(QLAT_LIB)
 
 LIBS += -lfftw3 -lfftw3f
 LIBS += -lcuba
+LIBS += -lgsl -lgslcblas
 LIBS += -lz
 LIBS += -lm
