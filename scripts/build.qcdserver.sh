@@ -16,7 +16,6 @@ set -e
 ./scripts/binutils.sh
 ./scripts/perl.sh
 ./scripts/openssl.sh
-# ./scripts/cmake.sh
 ./scripts/libffi.sh
 ./scripts/zlib.sh
 ./scripts/openblas.sh

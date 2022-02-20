@@ -8,6 +8,7 @@ set -e
 
 ./scripts/xz.sh
 ./scripts/tar.sh
+./scripts/gsl.sh
 ./scripts/gmp.sh
 ./scripts/mpfr.sh
 ./scripts/mpc.sh
@@ -15,15 +16,11 @@ set -e
 ./scripts/binutils.sh
 ./scripts/perl.sh
 ./scripts/openssl.sh
-./scripts/cmake.sh
 ./scripts/libffi.sh
 ./scripts/zlib.sh
 ./scripts/openblas.sh
 ./scripts/python.sh
 ./scripts/python-packages.sh
-./scripts/re2c.sh
-./scripts/ninja.sh
-./scripts/llvm-project.sh
 
 ./scripts/openmpi.sh
 
