@@ -139,7 +139,7 @@ def run_job(job_tag, traj):
     #
     def run_prop(inv_type, get_eig):
         run_prop_psrc(job_tag, traj,
-                inv_type = 0,
+                inv_type = inv_type,
                 get_gf = get_gf,
                 get_eig = get_eig,
                 get_gt = get_gt,
