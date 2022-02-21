@@ -190,50 +190,61 @@ rup.dict_params["test-4nt8"][tag] = list(range(1000, 1400, 100))
 rup.dict_params["test-4nt16"][tag] = list(range(1000, 1400, 100))
 rup.dict_params["48I"][tag] = list(range(3000, 500, -5))
 rup.dict_params["24D"][tag] = list(range(1000, 10000, 10))
-rup.dict_params["16IH2"][tag] = list(range(1000, 10000, 50))
+rup.dict_params["16IH2"][tag] = list(range(1000, 10000, 10))
 rup.dict_params["32IfineH"][tag] = list(range(1000, 10000, 50))
 
 tag = "n_per_tslice_smear"
 rup.dict_params["test-4nt8"][tag] = 2
 rup.dict_params["test-4nt16"][tag] = 2
 rup.dict_params["24D"][tag] = 16
+rup.dict_params["16IH2"][tag] = 8
 rup.dict_params["32IfineH"][tag] = 8
 
 tag = "prob_acc_1_smear"
 rup.dict_params["test-4nt8"][tag] = 1/4
 rup.dict_params["test-4nt16"][tag] = 1/4
 rup.dict_params["24D"][tag] = 1/32
+rup.dict_params["16IH2"][tag] = 1/16
 rup.dict_params["32IfineH"][tag] = 1/32
 
 tag = "prob_acc_2_smear"
 rup.dict_params["test-4nt8"][tag] = 1/16
 rup.dict_params["test-4nt16"][tag] = 1/16
 rup.dict_params["24D"][tag] = 1/128
+rup.dict_params["16IH2"][tag] = 1/64
 rup.dict_params["32IfineH"][tag] = 1/128
 
 tag = "prop_smear_coef"
 rup.dict_params["test-4nt8"][tag] = 0.9375
 rup.dict_params["test-4nt16"][tag] = 0.9375
 rup.dict_params["24D"][tag] = 0.9375
+rup.dict_params["16IH2"][tag] = 0.9375
 rup.dict_params["32IfineH"][tag] = 0.9375
 
 tag = "prop_smear_step"
 rup.dict_params["test-4nt8"][tag] = 10
 rup.dict_params["test-4nt16"][tag] = 10
 rup.dict_params["24D"][tag] = 10
+rup.dict_params["32Dfine"][tag] = 18
 rup.dict_params["48I"][tag] = 29
+rup.dict_params["64I"][tag] = 54
+rup.dict_params["16IH2"][tag] = 31
+rup.dict_params["24IH2"][tag] = 31
+rup.dict_params["32IH2"][tag] = 55
 rup.dict_params["32IfineH"][tag] = 96
 
 tag = "gf_ape_smear_coef"
 rup.dict_params["test-4nt8"][tag] = 0.5
 rup.dict_params["test-4nt16"][tag] = 0.5
 rup.dict_params["24D"][tag] = 0.5
+rup.dict_params["16IH2"][tag] = 0.5
 rup.dict_params["32IfineH"][tag] = 0.5
 
 tag = "gf_ape_smear_step"
 rup.dict_params["test-4nt8"][tag] = 30
 rup.dict_params["test-4nt16"][tag] = 30
 rup.dict_params["24D"][tag] = 30
+rup.dict_params["16IH2"][tag] = 30
 rup.dict_params["32IfineH"][tag] = 30
 
 rup.dict_params["test-4nt8"]["fermion_params"][0][2]["Ls"] = 10
@@ -249,16 +260,9 @@ qg.begin_with_gpt()
 # ADJUST ME
 job_tags = [
         "test-4nt8", "test-4nt16",
-        # "test-8nt16",
-        # "test-16nt32",
-        # "test-32nt64",
-        # "test-48nt96",
-        # "test-64nt128",
-        # "test-96nt192",
-        # "test-128nt256",
-        # "24D",
-        # "16IH2",
         # "32IfineH",
+        # "16IH2",
+        # "24D",
         # "48I",
         ]
 
