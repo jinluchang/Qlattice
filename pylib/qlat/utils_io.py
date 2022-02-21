@@ -88,8 +88,9 @@ def save_pickle_obj(obj, path):
     # only save from node 0
     mk_file_dirs_info(path)
     if get_id_node() == 0:
-        with open(path, "wb") as f:
+        with open(path + ".partial", "wb") as f:
             pickle.dump(obj, f)
+        qrename(path + ".partial", path)
 
 @timer
 def load_pickle_obj(path, default_value = None):
