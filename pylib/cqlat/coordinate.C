@@ -24,3 +24,27 @@ EXPORT(coordinate_from_index, {
   py_convert(size, p_size);
   return py_convert(coordinate_from_index(index, size));
 });
+
+EXPORT(mod_coordinate, {
+  using namespace qlat;
+  PyObject* p_xg = NULL;
+  PyObject* p_size = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_xg, &p_size)) {
+    return NULL;
+  }
+  const Coordinate xg = py_convert_data<Coordinate>(p_xg);
+  const Coordinate size = py_convert_data<Coordinate>(p_size);
+  return py_convert(mod(xg, size));
+});
+
+EXPORT(smod_coordinate, {
+  using namespace qlat;
+  PyObject* p_xg = NULL;
+  PyObject* p_size = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_xg, &p_size)) {
+    return NULL;
+  }
+  const Coordinate xg = py_convert_data<Coordinate>(p_xg);
+  const Coordinate size = py_convert_data<Coordinate>(p_size);
+  return py_convert(smod(xg, size));
+});

@@ -3,8 +3,7 @@ import cqlat as c
 from qlat.field import *
 from qlat.lat_io import *
 from qlat.rng_state import *
-
-from cqlat import index_from_coordinate, coordinate_from_index
+from qlat.coordinate import *
 
 def lazy_call(f, *args, **kwargs):
     is_thunk = True
