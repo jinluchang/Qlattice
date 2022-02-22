@@ -2,14 +2,7 @@
 
 EXPORT(mk_geo, {
   using namespace qlat;
-  PyObject* p_total_site = NULL;
-  int multiplicity = 1;
-  if (!PyArg_ParseTuple(args, "O|i", &p_total_site, &multiplicity)) {
-    return NULL;
-  }
-  Coordinate total_site;
-  py_convert(total_site, p_total_site);
-  Geometry* pgeo = new Geometry(total_site, multiplicity);
+  Geometry* pgeo = new Geometry();
   return py_convert((void*)pgeo);
 });
 
@@ -23,19 +16,31 @@ EXPORT(set_geo, {
   return set_obj<Geometry>(args);
 });
 
+EXPORT(set_geo_total_site, {
+  using namespace qlat;
+  PyObject* p_geo = NULL;
+  PyObject* p_total_site = NULL;
+  int multiplicity = 1;
+  if (!PyArg_ParseTuple(args, "OO|i", &p_geo, &p_total_site, &multiplicity)) {
+    return NULL;
+  }
+  Geometry& geo = py_convert_type<Geometry>(p_geo);
+  const Coordinate total_site = py_convert_data<Coordinate>(p_total_site);
+  geo.init(total_site, multiplicity);
+  Py_RETURN_NONE;
+});
+
 EXPORT(set_geo_reform, {
   using namespace qlat;
-  PyObject* p_geo_new = NULL;
   PyObject* p_geo = NULL;
   int multiplicity = 1;
   PyObject* p_expansion_left = NULL;
   PyObject* p_expansion_right = NULL;
-  if (!PyArg_ParseTuple(args, "OO|iOO", &p_geo_new, &p_geo, &multiplicity,
-                        &p_expansion_left, &p_expansion_right)) {
+  if (!PyArg_ParseTuple(args, "O|iOO", &p_geo, &multiplicity, &p_expansion_left,
+                        &p_expansion_right)) {
     return NULL;
   }
-  Geometry& geo_new = py_convert_type<Geometry>(p_geo_new);
-  const Geometry& geo = py_convert_type<Geometry>(p_geo);
+  Geometry& geo = py_convert_type<Geometry>(p_geo);
   Coordinate expansion_left, expansion_right;
   if (NULL != p_expansion_left) {
     py_convert(expansion_left, p_expansion_left);
@@ -43,21 +48,20 @@ EXPORT(set_geo_reform, {
   if (NULL != p_expansion_right) {
     py_convert(expansion_right, p_expansion_right);
   }
-  geo_new = geo_reform(geo, multiplicity, expansion_left, expansion_right);
+  geo.remult(multiplicity);
+  geo.resize(expansion_left, expansion_right);
   Py_RETURN_NONE;
 });
 
 EXPORT(set_geo_eo, {
   using namespace qlat;
-  PyObject* p_geo_new = NULL;
   PyObject* p_geo = NULL;
   int eo = 0;
-  if (!PyArg_ParseTuple(args, "OO|i", &p_geo_new, &p_geo, &eo)) {
+  if (!PyArg_ParseTuple(args, "O|i", &p_geo, &eo)) {
     return NULL;
   }
-  Geometry& geo_new = py_convert_type<Geometry>(p_geo_new);
-  const Geometry& geo = py_convert_type<Geometry>(p_geo);
-  geo_new = geo_eo(geo, eo);
+  Geometry& geo = py_convert_type<Geometry>(p_geo);
+  geo.eo = eo;
   Py_RETURN_NONE;
 });
 
@@ -218,4 +222,21 @@ EXPORT(is_local_geo, {
   Coordinate xl;
   py_convert(xl, p_xl);
   return py_convert(geo.is_local(xl));
+});
+
+EXPORT(get_xg_list, {
+  // return xg for all local sites
+  using namespace qlat;
+  PyObject* p_geo = NULL;
+  if (!PyArg_ParseTuple(args, "O", &p_geo)) {
+    return NULL;
+  }
+  const Geometry& geo = py_convert_type<Geometry>(p_geo);
+  vector<Coordinate> xgs(geo.local_volume());
+  qthread_for(index, geo.local_volume(), {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Coordinate xg = geo.coordinate_g_from_l(xl);
+    xgs[index] = xg;
+  });
+  return py_convert(get_data(xgs));
 });

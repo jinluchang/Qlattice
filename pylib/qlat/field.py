@@ -76,6 +76,9 @@ class Field:
     def multiplicity(self):
         return c.get_multiplicity_field(self)
 
+    def sizeof_m(self):
+        return c.get_sizeof_m_field(self)
+
     def geo(self):
         geo = Geometry((0, 0, 0, 0))
         c.set_geo_field(geo, self)
@@ -258,6 +261,28 @@ class Field:
             return np.array(c.get_elem_field(self, xg))
         else:
             return np.array(c.get_elem_field(self, xg, m))
+
+    def set_elems(self, xg, val):
+        # val should be bytes. e.g. np.array([1, 2, 3], dtype = complex).tobytes()
+        if isinstance(val, bytes):
+            return c.set_elems_field(self, xg, val)
+        elif isinstance(val, np.ndarray):
+            return self.set_elems(self, xg, val.tobytes())
+        else:
+            assert False
+
+    def set_elem(self, xg, m, val):
+        # val should be bytes. e.g. np.array([1, 2, 3], dtype = complex).tobytes()
+        if isinstance(val, bytes):
+            return c.set_elem_field(self, xg, m, val)
+        elif isinstance(val, np.ndarray):
+            return self.set_elem(self, xg, m, val.tobytes())
+        else:
+            assert False
+
+    def xg_list(self):
+        # return xg for all local sites
+        return self.geo().xg_list()
 
     def glb_sum(self):
         if self.ctype in field_ctypes_double:

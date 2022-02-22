@@ -261,6 +261,28 @@ M field_get_elem(const Field<M>& f, const Coordinate& xg)
 }
 
 template <class M>
+void field_set_elems(Field<M>& f, const Coordinate& xg, const Vector<M> val)
+// xg do not need to be the same on all the nodes
+{
+  const Geometry& geo = f.geo();
+  const Coordinate xl = geo.coordinate_l_from_g(xg);
+  if (geo.is_local(xl)) {
+    assign(f.get_elems(xl), val);
+  }
+}
+
+template <class M>
+void field_set_elem(Field<M>& f, const Coordinate& xg, const int m, const M& val)
+// xg do not need to be the same on all the nodes
+{
+  const Geometry& geo = f.geo();
+  const Coordinate xl = geo.coordinate_l_from_g(xg);
+  if (geo.is_local(xl)) {
+    f.get_elem(xl, m) = val;
+  }
+}
+
+template <class M>
 void split_fields(std::vector<Handle<Field<M> > >& vec, const Field<M>& f)
 // fields in vector will be reinitialized to have the same geo and multiplicity
 {

@@ -2,11 +2,13 @@ import cqlat as c
 
 class Geometry:
 
-    def __init__(self, total_site, multiplicity = None):
-        if multiplicity is None:
-            self.cdata = c.mk_geo(total_site)
-        else:
-            self.cdata = c.mk_geo(total_site, multiplicity)
+    def __init__(self, total_site = None, multiplicity = None):
+        self.cdata = c.mk_geo()
+        if total_site is not None:
+            if multiplicity is None:
+                c.set_geo_total_site(self, total_site)
+            else:
+                c.set_geo_total_site(self, total_site, multiplicity)
 
     def __del__(self):
         c.free_geo(self)
@@ -17,7 +19,7 @@ class Geometry:
         return self
 
     def copy(self, is_copying_data = True):
-        x = Geometry([ 0, 0, 0, 0, ])
+        x = Geometry()
         if is_copying_data:
             x @= self
         return x
@@ -80,6 +82,10 @@ class Geometry:
     def is_local(self, xl):
         return c.is_local_geo(self, xl)
 
+    def xg_list(self):
+        # return xg for all local sites
+        return c.get_xg_list(self)
+
 ###
 
 def geo_reform(geo, multiplicity = 1, expansion_left = None, expansion_right = None):
@@ -94,12 +100,13 @@ def geo_reform(geo, multiplicity = 1, expansion_left = None, expansion_right = N
     elif isinstance(expansion_right, int):
         e = expansion_right
         expansion_right = [ e, e, e, e, ]
-    geo_new = Geometry([ 0, 0, 0, 0, ])
-    c.set_geo_reform(geo_new, geo, multiplicity, expansion_left, expansion_right)
+    geo_new = geo.copy()
+    c.set_geo_reform(geo_new, multiplicity, expansion_left, expansion_right)
     return geo_new
 
 def geo_eo(geo, eo = 0):
     assert isinstance(geo, Geometry)
     geo_new = Geometry([ 0, 0, 0, 0, ])
-    c.set_geo_eo(geo_new, geo, eo)
+    geo_new = geo.copy()
+    c.set_geo_eo(geo_new, eo)
     return geo_new
