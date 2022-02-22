@@ -263,7 +263,7 @@ class Field:
             return np.array(c.get_elem_field(self, xg, m))
 
     def set_elems(self, xg, val):
-        # val should be bytes. e.g. np.array([1, 2, 3], dtype = complex).tobytes()
+        # val should be np.ndarray or bytes. e.g. np.array([1, 2, 3], dtype = complex).tobytes()
         if isinstance(val, bytes):
             return c.set_elems_field(self, xg, val)
         elif isinstance(val, np.ndarray):
@@ -272,13 +272,38 @@ class Field:
             assert False
 
     def set_elem(self, xg, m, val):
-        # val should be bytes. e.g. np.array([1, 2, 3], dtype = complex).tobytes()
+        # val should be np.ndarray or bytes. e.g. np.array([1, 2, 3], dtype = complex).tobytes()
         if isinstance(val, bytes):
             return c.set_elem_field(self, xg, m, val)
         elif isinstance(val, np.ndarray):
             return self.set_elem(self, xg, m, val.tobytes())
         else:
             assert False
+
+    def __getitem__(self, idx):
+        # idx can be (xg, m,) or xg
+        if isinstance(idx, tuple) and len(idx) == 2 and isinstance(idx[0], (list, tuple)):
+            xg, m = idx
+            return self.get_elem(xg, m)
+        elif isinstance(idx, (list, tuple)):
+            xg = idx
+            return self.get_elems(xg)
+        else:
+            assert False
+            return None
+
+    def __setitem__(self, idx, val):
+        # idx can be (xg, m,) or xg
+        # val should be np.ndarray or bytes. e.g. np.array([1, 2, 3], dtype = complex).tobytes()
+        if isinstance(idx, tuple) and len(idx) == 2 and isinstance(idx[0], (list, tuple)):
+            xg, m = idx
+            return self.set_elem(xg, m, val)
+        elif isinstance(idx, (list, tuple)):
+            xg = idx
+            return self.set_elems(xg, val)
+        else:
+            assert False
+            return None
 
     def xg_list(self):
         # return xg for all local sites
