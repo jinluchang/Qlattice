@@ -439,8 +439,12 @@ def auto_contractor_3f4f_matching(job_tag, traj, get_prop, get_fsel, get_pi, get
     cexpr = get_cexpr_3f4f_matching()
     names_expr = get_cexpr_names(cexpr)
     src_snk_seps = [2,4,6,8]
-    tsep_src = -4
-    tsep_snk = 4
+    tsep_src2 = -2
+    tsep_snk2 = 2
+    tsep_src3 = -4
+    tsep_snk3 = 4
+    tsep_src4 = -6
+    tsep_snk4 = 6
     q.mk_dirs_info(get_save_path(f"auto-contractor-fsel/{job_tag}/traj={traj}/3f4f_b81"))
     fsel, fselc = get_fsel()
     for tsnk_tsrc in src_snk_seps:
@@ -449,21 +453,33 @@ def auto_contractor_3f4f_matching(job_tag, traj, get_prop, get_fsel, get_pi, get
         #
         for top_tsrc in range(min_top_tsrc,max_top_tsrc+1):
             tsrc1_top = - top_tsrc
-            tsrc2_top = tsep_src  + tsrc1_top
+            tsrc2_top = tsep_src2  + tsrc1_top
+            tsrc3_top = tsep_src3  + tsrc1_top
+            tsrc4_top = tsep_src4  + tsrc1_top
             tsnk1_top = tsnk_tsrc + tsrc1_top
-            tsnk2_top = tsep_snk  + tsnk1_top
+            tsnk2_top = tsep_snk2  + tsnk1_top
+            tsnk3_top = tsep_snk3  + tsnk1_top
+            tsnk4_top = tsep_snk4  + tsnk1_top
             trial_indices = []
             for x in fsel.to_psel_local().to_list():
                 t2_1 = ( tsrc1_top + x[3] + total_site[3] ) % total_site[3]
                 t2_2 = ( tsrc2_top + x[3] + total_site[3] ) % total_site[3]
+                t2_3 = ( tsrc3_top + x[3] + total_site[3] ) % total_site[3]
+                t2_4 = ( tsrc4_top + x[3] + total_site[3] ) % total_site[3]
                 t1_1 = ( tsnk1_top + x[3] + total_site[3] ) % total_site[3]
                 t1_2 = ( tsnk2_top + x[3] + total_site[3] ) % total_site[3]
+                t1_3 = ( tsnk3_top + x[3] + total_site[3] ) % total_site[3]
+                t1_4 = ( tsnk4_top + x[3] + total_site[3] ) % total_site[3]
                 pd = {
                     "t1_1" : ("wall", t1_1,),
                     "t1_2" : ("wall", t1_2,),
+                    "t1_3" : ("wall", t1_3,),
+                    "t1_4" : ("wall", t1_4,),
                     "x" : ("point-snk", x,),
                     "t2_1" : ("wall", t2_1,),
                     "t2_2" : ("wall", t2_2,),
+                    "t2_3" : ("wall", t2_3,),
+                    "t2_4" : ("wall", t2_4,),
                 }
                 trial_indices.append(pd)
             def positions_dict_maker(idx):
