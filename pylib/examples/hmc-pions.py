@@ -6,9 +6,9 @@ import numpy as np
 
 import qlat as q
 
-def phi_squared(field):
+def phi_squared(field,action):
     # Calculate the average value of phi^2
-    phi_sq = q.sm_hamilton_node(field) # Returns sum of field^2/2
+    phi_sq = action.hmc_m_hamilton_node(field) # Returns sum of field^2/2
     phi_sq = q.glb_sum(phi_sq) # Sums over all nodes
     geo = field.geo()
     return phi_sq*2/geo.total_volume()/geo.multiplicity()
@@ -23,11 +23,11 @@ def sm_evolve_fg(momentum, field_init, action, fg_dt, dt):
     #
     force = q.Field("double",geo)
     #
-    q.set_sm_force(force, field, action)
+    action.hmc_set_force(force, field)
     #
-    q.sf_evolve(field, force, fg_dt)
+    action.hmc_sf_evolve(field, force, fg_dt)
     #
-    q.set_sm_force(force, field, action)
+    action.hmc_set_force(force, field)
     #
     # q.display_gm_force_magnitudes(gm_force, 5)
     # q.displayln_info(q.get_gm_force_magnitudes(gm_force, 5))
@@ -43,7 +43,7 @@ def sm_evolve(momentum, field, action, dt):
     #
     force = q.Field("double",geo)
     #
-    q.set_sm_force(force, field, action)
+    action.hmc_set_force(force, field)
     #
     # q.display_gm_force_magnitudes(gm_force, 5)
     # q.displayln_info(q.get_gm_force_magnitudes(gm_force, 5))
@@ -59,16 +59,16 @@ def hmc_evolve(momentum, field, action, steps, dt):
     theta = (2.0 - m.sqrt(3.0)) / 48.0;
     ttheta = theta * dt * dt * dt;
     #
-    q.sf_evolve(field, momentum, lam * dt)
+    action.hmc_sf_evolve(field, momentum, lam * dt)
     #
     for i in range(steps):
         sm_evolve_fg(momentum, field, action, 4.0 * ttheta / dt, 0.5 * dt);
-        q.sf_evolve(field, momentum, (1.0 - 2.0 * lam) * dt);
+        action.hmc_sf_evolve(field, momentum, (1.0 - 2.0 * lam) * dt);
         sm_evolve_fg(momentum, field, action, 4.0 * ttheta / dt, 0.5 * dt);
         if i < steps - 1:
-            q.sf_evolve(field, momentum, 2.0 * lam * dt);
+            action.hmc_sf_evolve(field, momentum, 2.0 * lam * dt);
         else:
-            q.sf_evolve(field, momentum, lam * dt);
+            action.hmc_sf_evolve(field, momentum, lam * dt);
     return momentum
 
 @q.timer_verbose
@@ -77,7 +77,7 @@ def hmc_evolve_leapfrog(momentum, field, action, steps, dt):
     # algorithm
     for i in range(steps):
         sm_evolve(momentum, field, action, 0.5 * dt)
-        q.sf_evolve(field, momentum, dt)
+        action.hmc_sf_evolve(field, momentum, dt)
         sm_evolve(momentum, field, action, 0.5 * dt)
     return momentum
 
@@ -85,7 +85,7 @@ def hmc_evolve_leapfrog(momentum, field, action, steps, dt):
 def run_hmc_evolve(momentum, field, action, rs, steps, md_time = 1.0):
     # Calculate the value of the molecular dynamics Hamiltonian for the 
     # initial field and momentum configuration
-    energy = q.sm_hamilton_node(momentum) + q.sf_hamilton_node(field, action)
+    energy = action.hmc_m_hamilton_node(momentum) + action.action_node(field)
     
     # Evolve the field forward in molecular dynamics time using the 
     # given momenta and the Hamiltonian appropriate for the action
@@ -94,7 +94,7 @@ def run_hmc_evolve(momentum, field, action, rs, steps, md_time = 1.0):
     
     # Calculate the change in the value of the molecular dynamics 
     # Hamilton after the evolution 
-    delta_h = q.sm_hamilton_node(momentum) + q.sf_hamilton_node(field, action) - energy;
+    delta_h = action.hmc_m_hamilton_node(momentum) + action.action_node(field) - energy;
     
     # Sum over delta_h for every parallel node (each node handles part 
     # of the lattice)
@@ -189,7 +189,7 @@ def test_hmc(total_site, action, mult, n_traj):
         
         # Calculate the expectation values of phi and phi^2
         q.displayln_info("Average phi^2:")
-        psq = phi_squared(field)
+        psq = phi_squared(field, action)
         q.displayln_info(psq)
         q.displayln_info("Average phi:")
         phi = sum(field.glb_sum())/geo.total_volume()/geo.multiplicity()
@@ -212,9 +212,9 @@ def main():
     # Use action for a Euclidean scalar field. The Lagrangian will be: 
     # (1/2)*[sum fields]|dphi|^2 + (1/2)*m_sq*[sum fields]|phi|^2 
     #     + (1/24)*lmbd*([sum fields]|phi|^2)^2
-    m_sq = -5.0
+    m_sq = -1.0
     lmbd = 24.0/16.0
-    alpha = 0.1
+    alpha = 0.0
     action = q.ScalarAction(m_sq, lmbd, alpha)
     
     test_hmc(total_site, action, mult, n_traj)

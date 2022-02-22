@@ -51,3 +51,60 @@ EXPORT(get_alpha_scalar_action, {
   const ScalarAction& sa = py_convert_type<ScalarAction>(p_sa);
   return py_convert(sa.alpha);
 });
+
+EXPORT(action_node_scalar_action, {
+  using namespace qlat;
+  PyObject* p_sa = NULL;
+  PyObject* p_sf = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_sa, &p_sf)) {
+    return NULL;
+  }
+  ScalarAction& sa = py_convert_type<ScalarAction>(p_sa);
+  const Field<double>& sf = py_convert_type<Field<double>>(p_sf);
+  const double ret = sa.action_node(sf);
+  return py_convert(ret);
+});
+
+EXPORT(hmc_m_hamilton_node_scalar_action, {
+  using namespace qlat;
+  PyObject* p_sa = NULL;
+  PyObject* p_sm = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_sa, &p_sm)) {
+    return NULL;
+  }
+  ScalarAction& sa = py_convert_type<ScalarAction>(p_sa);
+  const Field<double>& sm = py_convert_type<Field<double>>(p_sm);
+  const double ret = sa.hmc_m_hamilton_node(sm);
+  return py_convert(ret);
+});
+
+EXPORT(hmc_set_force_scalar_action, {
+  using namespace qlat;
+  PyObject* p_sa = NULL;
+  PyObject* p_sm_force = NULL;
+  PyObject* p_sf = NULL;
+  if (!PyArg_ParseTuple(args, "OOO", &p_sa, &p_sm_force, &p_sf)) {
+    return NULL;
+  }
+  ScalarAction& sa = py_convert_type<ScalarAction>(p_sa);
+  Field<double>& sm_force = py_convert_type<Field<double>>(p_sm_force);
+  const Field<double>& sf = py_convert_type<Field<double>>(p_sf);
+  sa.hmc_set_force(sm_force, sf);
+  Py_RETURN_NONE;
+});
+
+EXPORT(hmc_sf_evolve_scalar_action, {
+  using namespace qlat;
+  PyObject* p_sa = NULL;
+  PyObject* p_sf = NULL;
+  PyObject* p_sm = NULL;
+  double step_size = 0.0;
+  if (!PyArg_ParseTuple(args, "OOOd", &p_sa, &p_sf, &p_sm, &step_size)) {
+    return NULL;
+  }
+  ScalarAction& sa = py_convert_type<ScalarAction>(p_sa);
+  Field<double>& sf = py_convert_type<Field<double>>(p_sf);
+  const Field<double>& sm = py_convert_type<Field<double>>(p_sm);
+  sa.hmc_sf_evolve(sf, sm, step_size);
+  Py_RETURN_NONE;
+});
