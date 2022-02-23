@@ -13,6 +13,9 @@ def phi_squared(field,action):
     geo = field.geo()
     return phi_sq*2/geo.total_volume()/geo.multiplicity()
 
+def correlator(tslices,delta_t,m):
+    return tslices.get_elem(0,m)*tslices.get_elem(delta_t,m)
+
 @q.timer_verbose
 def sm_evolve_fg(momentum, field_init, action, fg_dt, dt):
     # Evolve the momentum field according to the given action using the  
@@ -194,9 +197,18 @@ def test_hmc(total_site, action, mult, n_traj):
         q.displayln_info("Average phi:")
         phi = sum(field.glb_sum())/geo.total_volume()/geo.multiplicity()
         q.displayln_info(phi)
+        q.displayln_info("Correlators:")
+        timeslices = field.glb_sum_tslice()
+        c = [correlator(timeslices,dt,0) for dt in range(1,8)]
+        if i>100:
+            corrs.append(c)
+        q.displayln_info(c)
         if i % 1 == 0:
             psq_list.append(psq)
             phi_list.append(phi)
+        q.displayln_info("Correlator means and error of means:")
+        q.displayln_info([np.mean([corrs[l][j] for l in range(i-100)]) for j in range(7)])
+        q.displayln_info([np.std([corrs[l][j] for l in range(i-100)])/len(corrs)**0.5 for j in range(7)])
 
 @q.timer_verbose
 def main():
@@ -207,13 +219,13 @@ def main():
     mult = 1
     
     # The number of trajectories to calculate
-    n_traj = 20
+    n_traj = 500
     
     # Use action for a Euclidean scalar field. The Lagrangian will be: 
     # (1/2)*[sum fields]|dphi|^2 + (1/2)*m_sq*[sum fields]|phi|^2 
     #     + (1/24)*lmbd*([sum fields]|phi|^2)^2
-    m_sq = -1.0
-    lmbd = 24.0/16.0
+    m_sq = 5.0
+    lmbd = 0.0
     alpha = 0.0
     action = q.ScalarAction(m_sq, lmbd, alpha)
     
@@ -221,6 +233,7 @@ def main():
 
 psq_list=[]
 phi_list=[]
+corrs=[]
 
 size_node_list = [
         [1, 1, 1, 1],
@@ -238,10 +251,14 @@ q.qremove_all_info("results")
 
 main()
 
-q.displayln_info("Expectation value of phi^2 on all trajectories:")
-q.displayln_info(psq_list)
-q.displayln_info("Expectation value of phi on all trajectories:")
-q.displayln_info(phi_list)
+#q.displayln_info("Expectation value of phi^2 on all trajectories:")
+#q.displayln_info(psq_list)
+#q.displayln_info("Expectation value of phi on all trajectories:")
+#q.displayln_info(phi_list)
+q.displayln_info(corrs)
+q.displayln_info("Correlator means and error of means:")
+q.displayln_info([np.mean([corrs[i][j] for i in range(len(corrs))]) for j in range(len(corrs[0]))])
+q.displayln_info([np.std([corrs[i][j] for i in range(len(corrs))])/len(corrs)**0.5 for j in range(len(corrs[0]))])
 
 #q.timer_display()
 
