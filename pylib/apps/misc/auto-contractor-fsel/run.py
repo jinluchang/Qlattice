@@ -686,7 +686,8 @@ def run_job(job_tag, traj):
             auto_contractor_vev(job_tag, traj, get_prop, get_fsel, get_pi, get_wi)
             auto_contractor_meson_corr_wsnk_wsrc(job_tag, traj, get_prop, get_fsel, get_pi, get_wi)
             auto_contractor_meson_corr_psnk_wsrc(job_tag, traj, get_prop, get_fsel, get_pi, get_wi)
-            auto_contractor_3f4f_matching(job_tag, traj, get_prop, get_fsel, get_pi, get_wi)
+            auto_contractor_3f4f_matching_tslice(job_tag, traj, get_prop, get_fsel, get_pi, get_wi)
+            # auto_contractor_3f4f_matching(job_tag, traj, get_prop, get_fsel, get_pi, get_wi)
             #
             q.qtouch_info(get_save_path(fn_checkpoint))
             q.release_lock()
