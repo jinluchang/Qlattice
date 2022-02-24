@@ -30,6 +30,7 @@ cp -pv pylib/Makefile.inc $prefix/pylib/
 cp pylib/apps/lat-io-glimpse/lat-io-glimpse $prefix/bin/
 cp pylib/apps/pickle-glimpse/pickle-glimpse $prefix/bin/
 cp pylib/apps/gauge-fix-coulomb/gauge-fix-coulomb $prefix/bin/
+cp pylib/apps/qlat-convert/qlat-convert $prefix/bin/
 cp pylib/apps/topo-measure/topo-measure $prefix/bin/
 
 ( cd ./pylib/cqlat ; ./update.sh )

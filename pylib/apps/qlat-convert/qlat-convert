@@ -1,0 +1,75 @@
+#!/usr/bin/env python3
+#
+# Author: Christoph Lehner 2021
+# Author: Luchang Jin 2021
+
+import gpt as g
+import qlat as q
+import qlat_gpt as qg
+import sys
+
+qg.begin_with_gpt()
+
+
+format_list = [
+        "gpt-nersc-gf",
+        "qlat-nersc-gf",
+        ]
+
+# Parameters
+
+p_source = g.default.get("--source", None)
+p_source_fmt = g.default.get("--source-fmt", None)
+p_output = g.default.get("--output", None)
+p_output_fmt = g.default.get("--output-fmt", None)
+
+if p_source is None:
+    g.message("Need to provide source file via --source 'source-filename'")
+    sys.exit(1)
+
+if not q.does_file_exist_sync_node(p_source):
+    g.message("Source file does not exist.")
+    sys.exit(1)
+
+if p_output is None:
+    g.message("Need to provide output file via --output 'output-filename'")
+    sys.exit(1)
+
+if q.does_file_exist_sync_node(p_output):
+    g.message("Output file already exists.")
+    sys.exit(1)
+
+if p_source_fmt is None:
+    g.message(f"Need to provide source format via --source-fmt format (format can be {format_list})")
+    sys.exit(1)
+
+if p_source_fmt not in format_list:
+    g.message(f"Source format not known (format can be {format_list})")
+    sys.exit(1)
+
+if p_output_fmt is None:
+    g.message(f"Need to provide source format via --output-fmt format (format can be {format_list})")
+    sys.exit(1)
+
+if p_output_fmt not in format_list:
+    g.message(f"Output format not known (format can be {format_list})")
+    sys.exit(1)
+
+if p_source_fmt == "gpt-nersc-gf":
+    obj = qg.load_gauge_field(p_source)
+elif p_source_fmt == "qlat-nersc-gf":
+    obj = q.GaugeField()
+    obj.load(p_source)
+else:
+    assert False
+
+if p_output_fmt == "gpt-nersc-gf":
+    qg.save_gauge_field(obj, p_output)
+elif p_output_fmt == "qlat-nersc-gf":
+    obj.save(p_output)
+else:
+    assert False
+
+q.timer_display()
+
+qg.end_with_gpt()
