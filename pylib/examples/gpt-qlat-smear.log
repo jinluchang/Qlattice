@@ -127,7 +127,7 @@ b22e11cd5e8eb228e6632c90a395a810  results/prop-smear/07/0000000007
 55c0ede25af1905c5c62de7702ac0ffc  results/prop-smear/geon-info.txt
 4af22543871af24e6be9bd1a32017d23  results/smear ; xg=(3, 1, 0, 0) ; type=1 ; accuracy=0 ; psnk.lat
 848b120c8c5b428f147a253b1ff648de  results/smear ; xg=(3, 1, 0, 0) ; type=1 ; accuracy=0 ; smear-snk.lat
-35c85d44f0ecbae0f81c1fea768df24d  results/smear ; xg=(3, 1, 0, 0) ; type=1 ; accuracy=0 ; wsnk.lat
+1743d846e02e3c0dc9af5e737ba51000  results/smear ; xg=(3, 1, 0, 0) ; type=1 ; accuracy=0 ; wsnk.lat
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 1.
 qlat::end(): Switch to old comm (foreign).

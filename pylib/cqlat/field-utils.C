@@ -59,6 +59,29 @@ PyObject* get_elem_field_ctype(PyField& pf, const Coordinate& xg, const int m)
 }
 
 template <class M>
+PyObject* set_elems_field_ctype(PyObject* p_field, const Coordinate& xg,
+                                PyObject* p_val)
+{
+  Field<M>& f = py_convert_type_field<M>(p_field);
+  const int multiplicity = f.geo().multiplicity;
+  pqassert((long)PyBytes_Size(p_val) == (long)multiplicity * (long)sizeof(M));
+  const Vector<M> val((M*)PyBytes_AsString(p_val), multiplicity);
+  field_set_elems(f, xg, val);
+  Py_RETURN_NONE;
+}
+
+template <class M>
+PyObject* set_elem_field_ctype(PyObject* p_field, const Coordinate& xg,
+                               const int m, PyObject* p_val)
+{
+  Field<M>& f = py_convert_type_field<M>(p_field);
+  pqassert(PyBytes_Size(p_val) == sizeof(M));
+  const M& val = *(M*)PyBytes_AsString(p_val);
+  field_set_elem(f, xg, m, val);
+  Py_RETURN_NONE;
+}
+
+template <class M>
 PyObject* glb_sum_double_field_ctype(PyField& pf)
 {
   const Field<M>& f = *(Field<M>*)pf.cdata;
@@ -298,6 +321,37 @@ EXPORT(get_elem_field, {
   py_convert(xg, p_xg);
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, get_elem_field_ctype, pf.ctype, pf, xg, m);
+  return p_ret;
+});
+
+EXPORT(set_elems_field, {
+  using namespace qlat;
+  PyObject* p_field = NULL;
+  PyObject* p_xg = NULL;
+  PyObject* p_val = NULL;
+  if (!PyArg_ParseTuple(args, "OOO", &p_field, &p_xg, &p_val)) {
+    return NULL;
+  }
+  const std::string ctype = py_get_ctype(p_field);
+  const Coordinate xg = py_convert_data<Coordinate>(p_xg);
+  PyObject* p_ret = NULL;
+  FIELD_DISPATCH(p_ret, set_elems_field_ctype, ctype, p_field, xg, p_val);
+  return p_ret;
+});
+
+EXPORT(set_elem_field, {
+  using namespace qlat;
+  PyObject* p_field = NULL;
+  PyObject* p_xg = NULL;
+  long m = 0;
+  PyObject* p_val = NULL;
+  if (!PyArg_ParseTuple(args, "OOlO", &p_field, &p_xg, &m, &p_val)) {
+    return NULL;
+  }
+  const std::string ctype = py_get_ctype(p_field);
+  const Coordinate xg = py_convert_data<Coordinate>(p_xg);
+  PyObject* p_ret = NULL;
+  FIELD_DISPATCH(p_ret, set_elem_field_ctype, ctype, p_field, xg, m, p_val);
   return p_ret;
 });
 

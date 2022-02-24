@@ -507,6 +507,7 @@ class non_linear_cg(g.algorithms.base_iterative):
 def gauge_fix_coulomb(
         gf,
         *,
+        gt = None,
         mpi_split = None,
         maxiter_gd = 10,
         maxiter_cg = 200,
@@ -533,13 +534,20 @@ def gauge_fix_coulomb(
             ))
     # create rng if needed
     rng = None if rng_seed is None else g.random(rng_seed)
+    #
+    if gt is None:
+        gtu = q.GaugeTransform(gf.geo())
+        gtu.set_unit()
+        V = gpt_from_qlat(gtu)
+    else:
+        V = gpt_from_qlat(gt)
     # load source
     U = gpt_from_qlat(gf)
     # split in time
     Nt = U[0].grid.gdimensions[3]
     g.message(f"Separate {Nt} time slices")
     Usep = [g.separate(u, 3) for u in U[0:3]]
-    Vt = [g.mcolor(Usep[0][0].grid) for t in range(Nt)]
+    Vt = g.separate(V, 3)
     cache = {}
     if mpi_split is None:
         mpi_split = g.default.get_ivec("--mpi_split", [ 1, 1, 1, ], 3)
@@ -575,10 +583,8 @@ def gauge_fix_coulomb(
         q.displayln(f"Run local time slice {t} / {Nt_split} id_node={q.get_id_node()}")
         f = g.qcd.gauge.fix.landau([Usep_split[mu][t] for mu in range(3)])
         fa = opt.fourier_accelerate.inverse_phat_square(Vt_split[t].grid, f)
-        if rng is not None:
+        if (rng is not None) and (gt is not None):
             rng.element(Vt_split[t])
-        else:
-            Vt_split[t] @= g.identity(Vt_split[t])
         for i in range(maxcycle_cg):
             q.displayln(f"Running cg_cycle={i} local time slice {t} / {Nt_split} id_node={q.get_id_node()}")
             Vt_split[t] = g.project(Vt_split[t], "defect")

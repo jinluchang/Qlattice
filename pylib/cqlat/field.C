@@ -138,6 +138,12 @@ PyObject* get_multiplicity_field_ctype(PyObject* p_field)
 }
 
 template <class M>
+PyObject* get_sizeof_m_field_ctype(PyObject* p_field)
+{
+  return py_convert(sizeof(M));
+}
+
+template <class M>
 PyObject* set_geo_field_ctype(Geometry& geo, PyObject* p_field)
 {
   Field<M>& f = py_convert_type_field<M>(p_field);
@@ -377,6 +383,18 @@ EXPORT(get_multiplicity_field, {
   const std::string ctype = py_get_ctype(p_field);
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, get_multiplicity_field_ctype, ctype, p_field);
+  return p_ret;
+});
+
+EXPORT(get_sizeof_m_field, {
+  using namespace qlat;
+  PyObject* p_field = NULL;
+  if (!PyArg_ParseTuple(args, "O", &p_field)) {
+    return NULL;
+  }
+  const std::string ctype = py_get_ctype(p_field);
+  PyObject* p_ret = NULL;
+  FIELD_DISPATCH(p_ret, get_sizeof_m_field_ctype, ctype, p_field);
   return p_ret;
 });
 

@@ -20,6 +20,7 @@ p_eps = g.default.get_float("--eps", 1e-12)
 p_step = g.default.get_float("--step", 0.3)
 p_step_gd = g.default.get_float("--step_gd", 0.1)
 p_source = g.default.get("--source", None)
+p_guess = g.default.get("--guess", None)
 p_output = g.default.get("--output", "gt.field")
 p_check = g.default.get("--check", None)
 p_rng_seed = g.default.get("--random", None)
@@ -29,12 +30,18 @@ if p_source is None:
     sys.exit(1)
 
 gf = None
+gt = None
+
+if (p_guess is not None) and q.does_file_exist_sync_node(p_guess):
+    gt = q.GaugeTransform()
+    gt.load_double(p_guess)
 
 if not q.does_file_exist_sync_node(p_output):
     if gf is None:
         gf = qg.load_gauge_field(p_source)
     gt = qg.gauge_fix_coulomb(
             gf,
+            gt = gt,
             mpi_split = p_mpi_split,
             maxiter_gd = p_maxiter_gd,
             maxiter_cg = p_maxiter_cg,

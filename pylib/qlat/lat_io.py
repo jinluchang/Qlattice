@@ -134,6 +134,11 @@ class LatData:
             indices = []
         return c.set_dim_name_lat_data(self, dim, name, indices)
 
+    def dim_names(self, *, is_complex = True):
+        # by default, return list can be used as the input argument for ld.from_numpy
+        ndim = self.ndim(is_complex = is_complex)
+        return [ self.dim_name(dim) for dim in range(ndim) ]
+
     def to_list(self, *, is_complex = True):
         is_always_double = not is_complex
         return c.peek_lat_data(self, [], is_always_double)
@@ -151,10 +156,15 @@ class LatData:
         v = np.array(c.peek_lat_data(self, [], is_always_double))
         return v.reshape(self.dim_sizes(is_complex = is_complex))
 
-    def from_numpy(self, val, *, is_complex = True):
+    def from_numpy(self, val, dim_names = None, *, is_complex = True):
+        # only set LatData shape if it is initially empty
+        # otherwise only set data and ignore shape completely
+        # dim_names should be a list of names for each dimension
         if self.ndim() == 0:
+            if dim_names is None:
+                dim_names = "ijklmnopqrstuvwxyz"
             self.set_dim_sizes(list(val.shape), is_complex = is_complex)
-            for dim, (dummy_size, name) in enumerate(zip(val.shape, "ijklmnopqrstuvwxyz")):
+            for dim, (dummy_size, name) in enumerate(zip(val.shape, dim_names)):
                 self.set_dim_name(dim, name)
         is_always_double = not is_complex
         c.poke_lat_data(self, [], list(val.flatten()), is_always_double)
@@ -162,12 +172,18 @@ class LatData:
 
     def __setitem__(self, idx, val):
         # use list with correct length as val
+        # idx should be tuple or list of int
+        if isinstance(idx, int):
+            idx = [ idx, ]
         if isinstance(val, np.ndarray):
             val = val.flatten()
         return c.poke_lat_data(self, idx, list(val))
 
     def __getitem__(self, idx):
         # return a new list every call
+        # idx should be tuple or list of int
+        if isinstance(idx, int):
+            idx = [ idx, ]
         shape = self.dim_sizes()[len(idx):]
         return np.array(c.peek_lat_data(self, idx)).reshape(shape)
 
