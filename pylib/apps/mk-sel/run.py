@@ -84,6 +84,9 @@ rup.dict_params["test-4nt16"][tag] = 2
 rup.dict_params["24D"][tag] = 16
 rup.dict_params["16IH2"][tag] = 8
 rup.dict_params["32IfineH"][tag] = 8
+rup.dict_params["24IH1"][tag] = 8
+rup.dict_params["24IH2"][tag] = 8
+rup.dict_params["32IH2"][tag] = 8
 
 tag = "prob_acc_1_smear"
 rup.dict_params["test-4nt8"][tag] = 1/4
@@ -91,6 +94,9 @@ rup.dict_params["test-4nt16"][tag] = 1/4
 rup.dict_params["24D"][tag] = 1/32
 rup.dict_params["16IH2"][tag] = 1/16
 rup.dict_params["32IfineH"][tag] = 1/32
+rup.dict_params["24IH1"][tag] = 1/32
+rup.dict_params["24IH2"][tag] = 1/32
+rup.dict_params["32IH2"][tag] = 1/32
 
 tag = "prob_acc_2_smear"
 rup.dict_params["test-4nt8"][tag] = 1/16
@@ -98,6 +104,9 @@ rup.dict_params["test-4nt16"][tag] = 1/16
 rup.dict_params["24D"][tag] = 1/128
 rup.dict_params["16IH2"][tag] = 1/64
 rup.dict_params["32IfineH"][tag] = 1/128
+rup.dict_params["24IH1"][tag] = 1/128
+rup.dict_params["24IH2"][tag] = 1/128
+rup.dict_params["32IH2"][tag] = 1/128
 
 qg.begin_with_gpt()
 
