@@ -20,6 +20,9 @@ def run_job(job_tag, traj):
     fns_produce = [
             f"point-selection/{job_tag}/traj={traj}.txt",
             f"field-selection/{job_tag}/traj={traj}.field",
+            f"point-selection-smear/{job_tag}/traj={traj}.txt",
+            f"wall-src-info-light/{job_tag}/traj={traj}.txt",
+            f"wall-src-info-strange/{job_tag}/traj={traj}.txt",
             ]
     fns_need = [
             (f"configs/{job_tag}/ckpoint_lat.{traj}", f"configs/{job_tag}/ckpoint_lat.IEEE64BIG.{traj}",),
@@ -31,6 +34,12 @@ def run_job(job_tag, traj):
     get_fsel = run_fsel(job_tag, traj, get_psel)
     assert get_psel is not None
     assert get_fsel is not None
+    #
+    get_wi = run_wi(job_tag, traj)
+    assert get_wi is not None
+    #
+    get_psel_smear = run_psel_smear(job_tag, traj)
+    assert get_psel_smear is not None
     #
     q.clean_cache()
     q.timer_display()
@@ -56,6 +65,39 @@ rup.dict_params["16IH2"][tag] = 256
 rup.dict_params["24IH2"][tag] = 512
 rup.dict_params["24IH1"][tag] = 512
 rup.dict_params["32IH2"][tag] = 512
+
+tag = "n_exact_wsrc"
+rup.dict_params["test-4nt8"][tag] = 2
+rup.dict_params["48I"][tag] = 2
+
+tag = "prob_exact_wsrc"
+rup.dict_params["test-4nt16"][tag] = 1/8
+rup.dict_params["16IH2"][tag] = 1/16
+rup.dict_params["32IfineH"][tag] = 1/32
+rup.dict_params["24IH1"][tag] = 1/32
+rup.dict_params["24IH2"][tag] = 1/32
+rup.dict_params["32IH2"][tag] = 1/32
+
+tag = "n_per_tslice_smear"
+rup.dict_params["test-4nt8"][tag] = 2
+rup.dict_params["test-4nt16"][tag] = 2
+rup.dict_params["24D"][tag] = 16
+rup.dict_params["16IH2"][tag] = 8
+rup.dict_params["32IfineH"][tag] = 8
+
+tag = "prob_acc_1_smear"
+rup.dict_params["test-4nt8"][tag] = 1/4
+rup.dict_params["test-4nt16"][tag] = 1/4
+rup.dict_params["24D"][tag] = 1/32
+rup.dict_params["16IH2"][tag] = 1/16
+rup.dict_params["32IfineH"][tag] = 1/32
+
+tag = "prob_acc_2_smear"
+rup.dict_params["test-4nt8"][tag] = 1/16
+rup.dict_params["test-4nt16"][tag] = 1/16
+rup.dict_params["24D"][tag] = 1/128
+rup.dict_params["16IH2"][tag] = 1/64
+rup.dict_params["32IfineH"][tag] = 1/128
 
 qg.begin_with_gpt()
 

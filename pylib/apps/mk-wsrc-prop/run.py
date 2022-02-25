@@ -52,8 +52,6 @@ def compute_prop_wsrc(gf, gt, tslice, job_tag, inv_type, inv_acc, *,
 @q.timer_verbose
 def compute_prop_wsrc_all(gf, gt, wi, job_tag, inv_type, *,
         path_s, path_sp, psel, fsel, fselc, eig):
-    if q.does_file_exist_sync_node(get_save_path(path_s + ".acc.partial")):
-        q.qrename_info(get_save_path(path_s + ".acc.partial"), get_save_path(path_s + ".acc"))
     finished_tags = q.properly_truncate_fields(get_save_path(path_s + ".acc"))
     sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", [ 1, 1, 1, 4, ])
     for inv_acc in [ 2, 1 ]:
@@ -109,16 +107,18 @@ def run_prop_wsrc_strange(job_tag, traj, get_gf, get_eig, get_gt, get_psel, get_
 @q.timer_verbose
 def run_job(job_tag, traj):
     fns_produce = [
-            f"wall-src-info-light/{job_tag}/traj={traj}.txt",
-            f"wall-src-info-strange/{job_tag}/traj={traj}.txt",
             f"prop-wsrc-strange/{job_tag}/traj={traj}",
+            f"psel-prop-wsrc-strange/{job_tag}/traj={traj}/checkpoint.txt",
             f"prop-wsrc-light/{job_tag}/traj={traj}",
+            f"psel-prop-wsrc-light/{job_tag}/traj={traj}/checkpoint.txt",
             ]
     fns_need = [
             (f"configs/{job_tag}/ckpoint_lat.{traj}", f"configs/{job_tag}/ckpoint_lat.IEEE64BIG.{traj}",),
             f"gauge-transform/{job_tag}/traj={traj}.field",
             f"point-selection/{job_tag}/traj={traj}.txt",
             f"field-selection/{job_tag}/traj={traj}.field",
+            f"wall-src-info-light/{job_tag}/traj={traj}.txt",
+            f"wall-src-info-strange/{job_tag}/traj={traj}.txt",
             f"eig/{job_tag}/traj={traj}",
             f"eig/{job_tag}/traj={traj}/metadata.txt",
             f"eig/{job_tag}/traj={traj}/eigen-values.txt",
@@ -148,12 +148,11 @@ def run_job(job_tag, traj):
         get_eig = run_eig(job_tag, traj_gf, get_gf)
         run_prop_wsrc_light(job_tag, traj, get_gf, get_eig, get_gt, get_psel, get_fsel, get_wi)
     #
-    run_with_eig()
-    #
     def run_with_eig_strange():
         get_eig_strange = run_eig_strange(job_tag, traj_gf, get_gf)
         run_prop_wsrc_strange(job_tag, traj, get_gf, get_eig_strange, get_gt, get_psel, get_fsel, get_wi)
     #
+    run_with_eig()
     run_with_eig_strange()
     #
     q.clean_cache()

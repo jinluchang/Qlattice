@@ -105,7 +105,6 @@ def run_prop_psrc(job_tag, traj, *, inv_type, get_gf, get_eig, get_gt, get_psel,
 @q.timer
 def run_job(job_tag, traj):
     fns_produce = [
-            f"point-selection/{job_tag}/traj={traj}.txt",
             f"prop-psrc-light/{job_tag}/traj={traj}",
             f"psel-prop-psrc-light/{job_tag}/traj={traj}/checkpoint.txt",
             f"prop-psrc-strange/{job_tag}/traj={traj}",
@@ -115,6 +114,7 @@ def run_job(job_tag, traj):
             (f"configs/{job_tag}/ckpoint_lat.{traj}", f"configs/{job_tag}/ckpoint_lat.IEEE64BIG.{traj}",),
             f"gauge-transform/{job_tag}/traj={traj}.field",
             f"field-selection/{job_tag}/traj={traj}.field",
+            f"point-selection/{job_tag}/traj={traj}.txt",
             f"eig/{job_tag}/traj={traj}",
             f"eig/{job_tag}/traj={traj}/metadata.txt",
             f"eig/{job_tag}/traj={traj}/eigen-values.txt",
@@ -151,12 +151,11 @@ def run_job(job_tag, traj):
         get_eig = run_eig(job_tag, traj_gf, get_gf)
         run_prop(inv_type = 0, get_eig = get_eig)
     #
-    run_with_eig()
-    #
     def run_with_eig_strange():
         get_eig_strange = run_eig_strange(job_tag, traj_gf, get_gf)
         run_prop(inv_type = 1, get_eig = get_eig_strange)
     #
+    run_with_eig()
     run_with_eig_strange()
     #
     q.clean_cache()

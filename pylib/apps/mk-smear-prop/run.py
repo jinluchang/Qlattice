@@ -120,7 +120,6 @@ def run_prop_smear(job_tag, traj, *, inv_type, get_gf, get_gf_ape, get_eig, get_
 @q.timer_verbose
 def run_job(job_tag, traj):
     fns_produce = [
-            f"point-selection-smear/{job_tag}/traj={traj}.txt",
             f"prop-smear-light/{job_tag}/traj={traj}",
             f"psel-prop-smear-light/{job_tag}/traj={traj}/checkpoint.txt",
             f"prop-smear-strange/{job_tag}/traj={traj}",
@@ -131,6 +130,7 @@ def run_job(job_tag, traj):
             f"gauge-transform/{job_tag}/traj={traj}.field",
             f"point-selection/{job_tag}/traj={traj}.txt",
             f"field-selection/{job_tag}/traj={traj}.field",
+            f"point-selection-smear/{job_tag}/traj={traj}.txt",
             f"eig/{job_tag}/traj={traj}",
             f"eig/{job_tag}/traj={traj}/metadata.txt",
             f"eig/{job_tag}/traj={traj}/eigen-values.txt",
@@ -174,12 +174,11 @@ def run_job(job_tag, traj):
         get_eig = run_eig(job_tag, traj_gf, get_gf)
         run_prop(inv_type = 0, get_eig = get_eig)
     #
-    run_with_eig()
-    #
     def run_with_eig_strange():
         get_eig_strange = run_eig_strange(job_tag, traj_gf, get_gf)
         run_prop(inv_type = 1, get_eig = get_eig_strange)
     #
+    run_with_eig()
     run_with_eig_strange()
     #
     q.clean_cache()
