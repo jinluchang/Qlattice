@@ -19,39 +19,3 @@ set q_field_init=fast.
 Average phi^2 of the unit field (should be 1): 
 q_mem_cache_max_size=512 (default)
 q_mem_cache_acc_max_size=512 (default)
-1.0
-Average phi^2 of the checkers field (should be 1): 
-1.0
-Average phi^2 of the random field (should be 4): 
-4.020850287066016
-Average phi of the unit field (should be 1): 
-1.0
-Average phi of the checkers field (should be 0): 
-0.0
-Average phi of the random field (should be 0): 
--0.0015163017957424544
-Average derivative squared term for unit field (should be 0): 
-CommPlanCache: to add 1 / 32.
-0.0
-Average derivative squared term for checkers field (should be dim*dim/2=8: 
-CommPlanCache: to add 2 / 32.
-8.0
-Average derivative squared term for random field (should be dim*sigma^2=16): 
-CommPlanCache: to add 3 / 32.
-16.042486140503694
-Average free Hamiltonian for unit field (should be 0+1/2): 
-0.5
-Average free Hamiltonian for checkers field (should be 8+1/2: 
-8.5
-Average free Hamiltonian for random field (should be 16+sigma^2/2=18): 
-18.0529112840367
-Average Hamiltonian for unit field (should be 0+1/2+1): 
-1.5
-Average Hamiltonian for checkers field (should be 8+1/2+1: 
-9.5
-Average Hamiltonian for random field (should be 16+2+3*sigma^4=66): 
-66.49181246034456
-qlat::end(): get_comm_list().pop_back()
-qlat::end(): get_comm_list().size() = 0.
-qlat::end(): Finalize MPI.
-qlat::end(): MPI Finalized.

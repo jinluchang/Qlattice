@@ -200,7 +200,7 @@ def test_hmc(total_site, action, mult, n_traj):
         q.displayln_info("Correlators:")
         timeslices = field.glb_sum_tslice()
         c = [correlator(timeslices,dt,0) for dt in range(1,8)]
-        if i>100:
+        if i>5:
             corrs.append(c)
         q.displayln_info(c)
         if i % 1 == 0:
@@ -219,7 +219,7 @@ def main():
     mult = 1
     
     # The number of trajectories to calculate
-    n_traj = 500
+    n_traj = 10
     
     # Use action for a Euclidean scalar field. The Lagrangian will be: 
     # (1/2)*[sum fields]|dphi|^2 + (1/2)*m_sq*[sum fields]|phi|^2 
