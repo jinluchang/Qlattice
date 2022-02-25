@@ -62,12 +62,10 @@ def mk_lanc_params(inv_type, inv_acc):
             "irl_params": irl_params,
             }
 
-dict_params["lanc_params"] = { 0: { 0: mk_lanc_params(0, 0), }, }
-
 def mk_clanc_params(inv_type, inv_acc):
     assert inv_type == 0
     assert inv_acc == 0
-    block = [ 2, 2, 2, 2 ]
+    block = [ 2, 2, 2, 2, ]
     nbasis = 100
     cheby_params = {"low": 0.015, "high": 5.5, "order": 100}
     irl_params = {
@@ -90,5 +88,7 @@ def mk_clanc_params(inv_type, inv_acc):
             "smoother_params": smoother_params,
             "save_params": save_params,
             }
+
+dict_params["lanc_params"] = { 0: { 0: mk_lanc_params(0, 0), }, }
 
 dict_params["clanc_params"] = { 0: { 0: mk_clanc_params(0, 0), }, }

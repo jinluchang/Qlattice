@@ -42,6 +42,9 @@ rup.dict_params["48I"][tag] = list(range(3000, 500, -5))
 rup.dict_params["24D"][tag] = list(range(1000, 10000, 10))
 rup.dict_params["16IH2"][tag] = list(range(1000, 10000, 10))
 rup.dict_params["32IfineH"][tag] = list(range(1000, 10000, 50))
+rup.dict_params["24IH2"][tag] = list(range(1000, 10000, 10))
+rup.dict_params["24IH1"][tag] = list(range(1000, 10000, 10))
+rup.dict_params["32IH2"][tag] = list(range(1000, 10000, 10))
 
 tag = "n_points_psel"
 rup.dict_params["test-4nt8"][tag] = 6
@@ -50,47 +53,21 @@ rup.dict_params["48I"][tag] = 2048
 rup.dict_params["24D"][tag] = 1024
 rup.dict_params["32IfineH"][tag] = 512
 rup.dict_params["16IH2"][tag] = 256
-
-rup.dict_params["test-4nt8"]["n_points"] = [
-        [ 6, 2, 1, ],
-        [ 3, 2, 1, ],
-        ]
-
-rup.dict_params["test-4nt16"]["n_points"] = [
-        [ 32, 4, 2, ],
-        [ 16, 4, 2, ],
-        ]
-
-rup.dict_params["48I"]["n_points"] = [
-        [ 2048, 64, 16, ],
-        [ 1024, 64, 16, ],
-        ]
-
-rup.dict_params["16IH2"]["n_points"] = [
-        [ 256, 8, 2, ],
-        [ 128, 8, 2, ],
-        ]
-
-rup.dict_params["32IfineH"]["n_points"] = [
-        [ 512, 16, 4, ],
-        [ 256, 16, 4, ],
-        ]
+rup.dict_params["24IH2"][tag] = 512
+rup.dict_params["24IH1"][tag] = 512
+rup.dict_params["32IH2"][tag] = 512
 
 qg.begin_with_gpt()
 
 # ADJUST ME
 job_tags = [
         "test-4nt8", "test-4nt16",
-        # "test-8nt16",
-        # "test-16nt32",
-        # "test-32nt64",
-        # "test-48nt96",
-        # "test-64nt128",
-        # "test-96nt192",
-        # "test-128nt256",
-        # "24D",
+        # "24IH1",
+        # "24IH2",
+        # "32IH2",
         # "16IH2",
         # "32IfineH",
+        # "24D",
         # "48I",
         ]
 
