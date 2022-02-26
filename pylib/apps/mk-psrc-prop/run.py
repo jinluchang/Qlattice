@@ -205,6 +205,9 @@ qg.begin_with_gpt()
 # ADJUST ME
 job_tags = [
         "test-4nt8", "test-4nt16",
+        # "24IH1",
+        # "24IH2",
+        # "32IH2",
         # "32IfineH",
         # "16IH2",
         # "24D",
