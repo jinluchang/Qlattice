@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. conf.sh
+. scripts/conf.sh
 
 name=qlat-header
 
@@ -13,7 +13,6 @@ rm -rfv $prefix/include/qutils
 rm -rfv $prefix/include/qlat
 cp -rpv qutils $prefix/include/
 cp -rpv qlat $prefix/include/
-cp -pv qlat-setup.h $prefix/include
 
 mkdir -pv $prefix/pylib
 rm -rfv $prefix/pylib/qlat

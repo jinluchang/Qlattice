@@ -152,4 +152,6 @@ def check_fields(path, is_check_all = True, new_size_node = None):
 
 def check_compressed_eigen_vectors(path):
     # return bool value suggest whether the data can be read successfully
+    # return True is the data has problem
+    # return False if the data is ok
     return c.check_compressed_eigen_vectors(path)
