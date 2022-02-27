@@ -233,9 +233,10 @@ rup.dict_params["32Dfine"][tag] = 18
 rup.dict_params["48I"][tag] = 29
 rup.dict_params["64I"][tag] = 54
 rup.dict_params["16IH2"][tag] = 31
+rup.dict_params["32IfineH"][tag] = 96
+rup.dict_params["24IH1"][tag] = 31
 rup.dict_params["24IH2"][tag] = 31
 rup.dict_params["32IH2"][tag] = 55
-rup.dict_params["32IfineH"][tag] = 96
 
 tag = "gf_ape_smear_coef"
 rup.dict_params["test-4nt8"][tag] = 0.5
