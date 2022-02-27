@@ -83,8 +83,8 @@ def mk_clanc_params(inv_type, inv_acc):
     assert inv_acc == 0
     if inv_type == 0:
         nbasis = 250
-        c_low = 0.0020
-        n_stop = 500
+        c_low = 0.0024
+        n_stop = 600
         n_keep = n_stop + 20
         n_max = n_stop + 150
         n_single = 100
