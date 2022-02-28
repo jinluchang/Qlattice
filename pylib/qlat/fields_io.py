@@ -155,3 +155,6 @@ def check_compressed_eigen_vectors(path):
     # return True is the data has problem
     # return False if the data is ok
     return c.check_compressed_eigen_vectors(path)
+
+def eigen_system_repartition(new_size_node, path, path_new = ""):
+    return c.eigen_system_repartition(new_size_node, path, path_new)

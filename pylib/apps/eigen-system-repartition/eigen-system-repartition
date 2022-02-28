@@ -1,0 +1,29 @@
+#!/usr/bin/env python3
+#
+# Author: Christoph Lehner 2021
+# Author: Luchang Jin 2021
+
+import gpt as g
+import qlat as q
+import qlat_gpt as qg
+import sys
+
+qg.begin_with_gpt()
+
+# Parameters
+p_new_size_node = g.default.get_ivec("--new_size_node", [ 1, 1, 1, 8, ], 4)
+p_path = g.default.get("--path", None)
+p_path_new = g.default.get("--path_new", None)
+
+if p_path is None:
+    g.message("Need to provide path via --path path")
+    sys.exit(1)
+
+if p_path_new is None:
+    p_path_new = ""
+
+q.eigen_system_repartition(new_size_node, p_path, p_path_new)
+
+q.timer_display()
+
+qg.end_with_gpt()
