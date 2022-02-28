@@ -6,7 +6,7 @@ import textwrap
 
 def mk_grid(geo = None):
     if geo is None:
-        l_size = 8 * 3 * 5
+        l_size = 32 * 9 * 5
         t_size = l_size * 2
         total_site = [ l_size, l_size, l_size, t_size, ]
     else:
