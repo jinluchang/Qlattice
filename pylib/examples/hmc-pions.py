@@ -3,6 +3,7 @@
 import sys
 import math as m
 import numpy as np
+import pickle
 
 import qlat as q
 
@@ -146,18 +147,6 @@ def run_hmc(field, action, traj, rs):
     # the Hamiltonian appropriate for the given action
     delta_h = run_hmc_evolve(momentum, f0, action, rs, steps, md_time)
     
-    # Test reversibility
-    #if traj < 3:
-    #    gm_r = q.GaugeMomentum(geo)
-    #    gm_r @= gm
-    #    gf0_r = q.GaugeField(geo)
-    #    gf0_r @= gf0
-    #    delta_h_rev = run_hmc_evolve(gm_r, gf0_r, ga, rs, steps, -md_time)
-    #    gf0_r -= gf;
-    #    q.displayln_info("run_hmc_evolve reversed delta_diff: {} / {}".format(delta_h + delta_h_rev, delta_h))
-    #    q.displayln_info("run_hmc_evolve reversed gf_diff: {} / {}".format(q.qnorm(gf0_r), q.qnorm(gf0)))
-    #
-    
     # Decide whether to accept or reject the field update using the 
     # metropolis algorithm
     flag, accept_prob = metropolis_accept(delta_h, traj, rs.split("metropolis_accept"))
@@ -181,8 +170,10 @@ def test_hmc(total_site, action, mult, n_traj):
     # Create the scalar field and set all field values to 1
     field = q.Field("double",geo,mult)
     q.set_unit(field);
+    #field.load_double("hmc-pions-sigma-pi-corrs.field")
     
     traj = 0
+    start_measurements = 0;
     for i in range(n_traj):
         traj += 1
         
@@ -195,45 +186,62 @@ def test_hmc(total_site, action, mult, n_traj):
         psq = phi_squared(field, action)
         q.displayln_info(psq)
         q.displayln_info("Average phi:")
-        phi = sum(field.glb_sum())/geo.total_volume()/geo.multiplicity()
+        field_sum = field.glb_sum()
+        V = geo.total_volume()
+        phi=[field_sum[i]/V for i in range(4)]
         q.displayln_info(phi)
-        q.displayln_info("Correlators:")
+        #q.displayln_info("Sigma correlator:")
         timeslices = field.glb_sum_tslice()
-        c = [correlator(timeslices,dt,0) for dt in range(1,8)]
-        if i>100:
-            corrs.append(c)
-        q.displayln_info(c)
-        if i % 1 == 0:
+        sc = [correlator(timeslices,dt,0) for dt in range(total_site[3])]
+        #q.displayln_info(sc)
+        #q.displayln_info("Pion correlators:")
+        pc = [np.mean([correlator(timeslices,dt,1),correlator(timeslices,dt,2),correlator(timeslices,dt,3)]) for dt in range(total_site[3])]
+        #q.displayln_info(pc)
+        if i>start_measurements:
+            s_corrs.append(sc)
+            pi_corrs.append(pc)
             psq_list.append(psq)
             phi_list.append(phi)
-        q.displayln_info("Correlator means and error of means:")
-        q.displayln_info([np.mean([corrs[l][j] for l in range(i-100)]) for j in range(7)])
-        q.displayln_info([np.std([corrs[l][j] for l in range(i-100)])/len(corrs)**0.5 for j in range(7)])
+        q.displayln_info("Sigma correlator means and error of means:")
+        s_means=[np.mean([s_corrs[l][j] for l in range(i-start_measurements)]) for j in range(total_site[3])]
+        s_errs=[np.std([s_corrs[l][j] for l in range(i-start_measurements)])/len(s_corrs)**0.5 for j in range(total_site[3])]
+        q.displayln_info(s_means)
+        q.displayln_info(s_errs)
+        q.displayln_info("Pion correlator means and error of means:")
+        p_means=[np.mean([pi_corrs[l][j] for l in range(i-start_measurements)]) for j in range(total_site[3])]
+        p_errs=[np.std([pi_corrs[l][j] for l in range(i-start_measurements)])/len(pi_corrs)**0.5 for j in range(total_site[3])]
+        q.displayln_info(p_means)
+        q.displayln_info(p_errs)
+        with open("output_data/sigma_pion_corrs.bin", "wb") as output:
+            pickle.dump([s_means,s_errs,p_means,p_errs],output)
+        
+    field.save_double("hmc-pions-sigma-pi-corrs.field")
 
 @q.timer_verbose
 def main():
 	# The lattice dimensions
-    total_site = [8, 8, 8, 8]
+    total_site = [16, 16, 16, 32]
     
     # The multiplicity of the scalar field
-    mult = 1
+    mult = 4
     
     # The number of trajectories to calculate
-    n_traj = 500
+    n_traj = 3000
     
     # Use action for a Euclidean scalar field. The Lagrangian will be: 
     # (1/2)*[sum fields]|dphi|^2 + (1/2)*m_sq*[sum fields]|phi|^2 
     #     + (1/24)*lmbd*([sum fields]|phi|^2)^2
-    m_sq = 5.0
-    lmbd = 0.0
-    alpha = 0.0
+    m_sq = -1.0
+    lmbd = 1.0
+    alpha = 0.1
     action = q.ScalarAction(m_sq, lmbd, alpha)
     
     test_hmc(total_site, action, mult, n_traj)
 
 psq_list=[]
 phi_list=[]
-corrs=[]
+s_corrs=[]
+pi_corrs=[]
 
 size_node_list = [
         [1, 1, 1, 1],
@@ -251,14 +259,8 @@ q.qremove_all_info("results")
 
 main()
 
-#q.displayln_info("Expectation value of phi^2 on all trajectories:")
-#q.displayln_info(psq_list)
-#q.displayln_info("Expectation value of phi on all trajectories:")
-#q.displayln_info(phi_list)
-q.displayln_info(corrs)
-q.displayln_info("Correlator means and error of means:")
-q.displayln_info([np.mean([corrs[i][j] for i in range(len(corrs))]) for j in range(len(corrs[0]))])
-q.displayln_info([np.std([corrs[i][j] for i in range(len(corrs))])/len(corrs)**0.5 for j in range(len(corrs[0]))])
+with open("output_data/sigma_pion_corrs_16x32_msq_-1_lmbd_1_alph_0.1.bin", "wb") as output:
+    pickle.dump([psq_list,phi_list,s_corrs,pi_corrs],output)
 
 #q.timer_display()
 
