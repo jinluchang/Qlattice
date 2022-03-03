@@ -14,8 +14,11 @@ def phi_squared(field,action):
     geo = field.geo()
     return phi_sq*2/geo.total_volume()/geo.multiplicity()
 
-def correlator(tslices,delta_t,m):
-    return tslices.get_elem(0,m)*tslices.get_elem(delta_t,m)
+def correlator(tslices,Vx,Nt,delta_t,m):
+    rtn = 0
+    for t0 in range(Nt):
+        rtn += tslices.get_elem(t0%Nt,m)*tslices.get_elem((t0+delta_t)%Nt,m)
+    return rtn/(Nt)/Vx**2
 
 @q.timer_verbose
 def sm_evolve_fg(momentum, field_init, action, fg_dt, dt):
@@ -162,6 +165,7 @@ def run_hmc(field, action, traj, rs):
 def test_hmc(total_site, action, mult, n_traj):
     # Create the geometry for the field
     geo = q.Geometry(total_site, mult)
+    Vx = total_site[0]*total_site[1]*total_site[2]
     
     # Create a random number generator that can be split between 
     # different portions of the lattice
@@ -192,10 +196,10 @@ def test_hmc(total_site, action, mult, n_traj):
         q.displayln_info(phi)
         #q.displayln_info("Sigma correlator:")
         timeslices = field.glb_sum_tslice()
-        sc = [correlator(timeslices,dt,0) for dt in range(total_site[3])]
+        sc = [correlator(timeslices,Vx,total_site[3],dt,0) for dt in range(total_site[3])]
         #q.displayln_info(sc)
         #q.displayln_info("Pion correlators:")
-        pc = [np.mean([correlator(timeslices,dt,1),correlator(timeslices,dt,2),correlator(timeslices,dt,3)]) for dt in range(total_site[3])]
+        pc = [np.mean([correlator(timeslices,Vx,total_site[3],dt,1),correlator(timeslices,Vx,total_site[3],dt,2),correlator(timeslices,Vx,total_site[3],dt,3)]) for dt in range(total_site[3])]
         #q.displayln_info(pc)
         if i>start_measurements:
             s_corrs.append(sc)
@@ -226,7 +230,7 @@ def main():
     mult = 4
     
     # The number of trajectories to calculate
-    n_traj = 3000
+    n_traj = 100
     
     # Use action for a Euclidean scalar field. The Lagrangian will be: 
     # (1/2)*[sum fields]|dphi|^2 + (1/2)*m_sq*[sum fields]|phi|^2 
