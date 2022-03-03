@@ -282,3 +282,17 @@ EXPORT(check_compressed_eigen_vectors, {
   py_convert(path, p_path);
   return py_convert(qlat::check_compressed_eigen_vectors(path));
 });
+
+EXPORT(eigen_system_repartition, {
+  using namespace qlat;
+  PyObject* p_new_size_node = NULL;
+  PyObject* p_path = NULL;
+  PyObject* p_path_new = NULL;
+  if (!PyArg_ParseTuple(args, "OOO", &p_new_size_node, &p_path, &p_path_new)) {
+    return NULL;
+  }
+  const Coordinate new_size_node = py_convert_data<Coordinate>(p_new_size_node);
+  const std::string path = py_convert_data<std::string>(p_path);
+  const std::string path_new = py_convert_data<std::string>(p_path_new);
+  return py_convert(eigen_system_repartition(new_size_node, path, path_new));
+});

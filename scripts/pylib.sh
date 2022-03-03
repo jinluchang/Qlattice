@@ -2,7 +2,7 @@
 
 ./scripts/qlat-header.sh
 
-. conf.sh
+. scripts/conf.sh
 
 name=pylib
 

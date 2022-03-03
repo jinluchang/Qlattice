@@ -105,7 +105,6 @@ def run_prop_psrc(job_tag, traj, *, inv_type, get_gf, get_eig, get_gt, get_psel,
 @q.timer
 def run_job(job_tag, traj):
     fns_produce = [
-            f"point-selection/{job_tag}/traj={traj}.txt",
             f"prop-psrc-light/{job_tag}/traj={traj}",
             f"psel-prop-psrc-light/{job_tag}/traj={traj}/checkpoint.txt",
             f"prop-psrc-strange/{job_tag}/traj={traj}",
@@ -115,6 +114,7 @@ def run_job(job_tag, traj):
             (f"configs/{job_tag}/ckpoint_lat.{traj}", f"configs/{job_tag}/ckpoint_lat.IEEE64BIG.{traj}",),
             f"gauge-transform/{job_tag}/traj={traj}.field",
             f"field-selection/{job_tag}/traj={traj}.field",
+            f"point-selection/{job_tag}/traj={traj}.txt",
             f"eig/{job_tag}/traj={traj}",
             f"eig/{job_tag}/traj={traj}/metadata.txt",
             f"eig/{job_tag}/traj={traj}/eigen-values.txt",
@@ -151,12 +151,11 @@ def run_job(job_tag, traj):
         get_eig = run_eig(job_tag, traj_gf, get_gf)
         run_prop(inv_type = 0, get_eig = get_eig)
     #
-    run_with_eig()
-    #
     def run_with_eig_strange():
         get_eig_strange = run_eig_strange(job_tag, traj_gf, get_gf)
         run_prop(inv_type = 1, get_eig = get_eig_strange)
     #
+    run_with_eig()
     run_with_eig_strange()
     #
     q.clean_cache()
@@ -169,14 +168,9 @@ rup.dict_params["48I"][tag] = list(range(3000, 500, -5))
 rup.dict_params["24D"][tag] = list(range(1000, 10000, 10))
 rup.dict_params["16IH2"][tag] = list(range(1000, 10000, 10))
 rup.dict_params["32IfineH"][tag] = list(range(1000, 10000, 50))
-
-tag = "n_points_psel"
-rup.dict_params["test-4nt8"][tag] = 6
-rup.dict_params["test-4nt16"][tag] = 32
-rup.dict_params["48I"][tag] = 2048
-rup.dict_params["24D"][tag] = 1024
-rup.dict_params["16IH2"][tag] = 256
-rup.dict_params["32IfineH"][tag] = 512
+rup.dict_params["24IH2"][tag] = list(range(1000, 10000, 10))
+rup.dict_params["24IH1"][tag] = list(range(1000, 10000, 10))
+rup.dict_params["32IH2"][tag] = list(range(1000, 10000, 10))
 
 tag = "prob_acc_1_psrc"
 rup.dict_params["test-4nt8"][tag] = 1/4
@@ -184,6 +178,9 @@ rup.dict_params["test-4nt16"][tag] = 1/4
 rup.dict_params["24D"][tag] = 1/32
 rup.dict_params["16IH2"][tag] = 1/16
 rup.dict_params["32IfineH"][tag] = 1/32
+rup.dict_params["24IH1"][tag] = 1/32
+rup.dict_params["24IH2"][tag] = 1/32
+rup.dict_params["32IH2"][tag] = 1/32
 
 tag = "prob_acc_2_psrc"
 rup.dict_params["test-4nt8"][tag] = 1/16
@@ -191,6 +188,9 @@ rup.dict_params["test-4nt16"][tag] = 1/16
 rup.dict_params["24D"][tag] = 1/128
 rup.dict_params["16IH2"][tag] = 1/64
 rup.dict_params["32IfineH"][tag] = 1/128
+rup.dict_params["24IH1"][tag] = 1/128
+rup.dict_params["24IH2"][tag] = 1/128
+rup.dict_params["32IH2"][tag] = 1/128
 
 rup.dict_params["test-4nt8"]["fermion_params"][0][2]["Ls"] = 10
 rup.dict_params["test-4nt8"]["fermion_params"][1][2]["Ls"] = 10
@@ -205,6 +205,9 @@ qg.begin_with_gpt()
 # ADJUST ME
 job_tags = [
         "test-4nt8", "test-4nt16",
+        # "24IH1",
+        # "24IH2",
+        # "32IH2",
         # "32IfineH",
         # "16IH2",
         # "24D",

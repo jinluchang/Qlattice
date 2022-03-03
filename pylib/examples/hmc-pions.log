@@ -20,127 +20,120 @@ q_mem_cache_max_size=512 (default)
 q_mem_cache_acc_max_size=512 (default)
 CommPlanCache: to add 1 / 32.
 CommPlanCache: to add 2 / 32.
-metropolis_accept: flag=1 with accept_prob=100.0% delta_h=-0.1478880588565517 traj=1
+metropolis_accept: flag=1 with accept_prob=90.2% delta_h=0.1035237751148088 traj=1
 run_hmc: update field (traj=1)
 Average phi^2:
-15.368362925899453
+0.4020059590064532
 Average phi:
-3.8976893017552703
-metropolis_accept: flag=1 with accept_prob=100.0% delta_h=-0.3230506800173316 traj=2
+-0.6191915958775382
+Correlators:
+[98970.57928080791, 98537.65543600741, 98670.6724475717, 99930.79181529117, 99842.00554239114, 98661.860193994, 97310.69146532528]
+Correlator means and error of means:
+[nan, nan, nan, nan, nan, nan, nan]
+[nan, nan, nan, nan, nan, nan, nan]
+metropolis_accept: flag=1 with accept_prob=96.5% delta_h=0.0353594371717918 traj=2
 run_hmc: update field (traj=2)
 Average phi^2:
-24.155320384780673
+0.1782366089095077
 Average phi:
-4.902810534766083
-metropolis_accept: flag=0 with accept_prob=71.3% delta_h=0.3378992753423518 traj=3
+0.3864773304656861
+Correlators:
+[38617.713117847015, 38564.82803143127, 39874.492643138175, 40636.824536285894, 38163.76256098705, 37764.1158201193, 38747.228927215016]
+Correlator means and error of means:
+[nan, nan, nan, nan, nan, nan, nan]
+[nan, nan, nan, nan, nan, nan, nan]
+metropolis_accept: flag=1 with accept_prob=98.9% delta_h=0.0110877715637798 traj=3
+run_hmc: update field (traj=3)
 Average phi^2:
-24.155320384780673
+0.09128299408969318
 Average phi:
-4.902810534766083
-metropolis_accept: flag=0 with accept_prob=71.3% delta_h=0.3378692626429256 traj=4
+-0.2360917355394142
+Correlators:
+[15884.170402176762, 15383.98154655833, 15745.789010704995, 15667.107483522626, 14139.500391110285, 13581.345680746146, 14965.243763308825]
+Correlator means and error of means:
+[nan, nan, nan, nan, nan, nan, nan]
+[nan, nan, nan, nan, nan, nan, nan]
+metropolis_accept: flag=1 with accept_prob=99.8% delta_h=0.0017896359108818 traj=4
+run_hmc: update field (traj=4)
 Average phi^2:
-24.155320384780673
+0.058764571075847476
 Average phi:
-4.902810534766083
-metropolis_accept: flag=0 with accept_prob=71.7% delta_h=0.3328711866270169 traj=5
+0.13972506571359178
+Correlators:
+[5467.313392514363, 5059.258724395568, 5607.224277659422, 6110.617853864622, 5232.616310993849, 4638.023826362319, 5398.092983199115]
+Correlator means and error of means:
+[nan, nan, nan, nan, nan, nan, nan]
+[nan, nan, nan, nan, nan, nan, nan]
+metropolis_accept: flag=1 with accept_prob=100.0% delta_h=-0.0051779470256861 traj=5
+run_hmc: update field (traj=5)
 Average phi^2:
-24.155320384780673
+0.05439065119286292
 Average phi:
-4.902810534766083
-metropolis_accept: flag=1 with accept_prob=71.4% delta_h=0.3363629101149854 traj=6
+-0.09771488102802792
+Correlators:
+[2527.040404901568, 2397.0444969169534, 2636.980945319105, 3099.582053257178, 2799.2071639763026, 2700.3913193258504, 3235.4478139705743]
+Correlator means and error of means:
+[nan, nan, nan, nan, nan, nan, nan]
+[nan, nan, nan, nan, nan, nan, nan]
+metropolis_accept: flag=1 with accept_prob=100.0% delta_h=-0.0019290239715701 traj=6
 run_hmc: update field (traj=6)
 Average phi^2:
-15.391880138200435
+0.05077526316763996
 Average phi:
-3.9060017923659354
-metropolis_accept: flag=1 with accept_prob=100.0% delta_h=-0.2578003512098803 traj=7
+0.06216575698504781
+Correlators:
+[772.2311966963962, 911.8599463122429, 901.1154807089132, 1340.5413431256895, 1115.3316383298456, 1049.2539457004737, 1389.81307093917]
+Correlator means and error of means:
+[nan, nan, nan, nan, nan, nan, nan]
+[nan, nan, nan, nan, nan, nan, nan]
+metropolis_accept: flag=1 with accept_prob=100.0% delta_h=-0.0012936577843448 traj=7
 run_hmc: update field (traj=7)
 Average phi^2:
-24.146065454247054
+0.04940270979084531
 Average phi:
-4.904201332318539
-metropolis_accept: flag=1 with accept_prob=75.9% delta_h=0.2752820564637659 traj=8
+-0.031804473980666714
+Correlators:
+[296.9162421965593, 271.71253788673664, 259.2948567545107, 465.18856443642466, 332.18734386781614, 321.4828652502263, 464.930986929788]
+Correlator means and error of means:
+[nan, nan, nan, nan, nan, nan, nan]
+[nan, nan, nan, nan, nan, nan, nan]
+metropolis_accept: flag=1 with accept_prob=100.0% delta_h=-0.0039102079292661 traj=8
 run_hmc: update field (traj=8)
 Average phi^2:
-15.420803612180457
+0.05098342603989192
 Average phi:
-3.9126762490531344
-metropolis_accept: flag=1 with accept_prob=100.0% delta_h=-0.2425356741150608 traj=9
+0.01895732607596002
+Correlators:
+[136.67889968271527, 61.956867736665885, 120.8195403436353, 303.99583536508976, 100.09894732372759, 114.7895722381419, 164.28286147628148]
+Correlator means and error of means:
+[nan, nan, nan, nan, nan, nan, nan]
+[nan, nan, nan, nan, nan, nan, nan]
+metropolis_accept: flag=1 with accept_prob=100.0% delta_h=-0.0009799941722122 traj=9
 run_hmc: update field (traj=9)
 Average phi^2:
-24.117573339267175
+0.05253329554907865
 Average phi:
-4.9021587032770615
-metropolis_accept: flag=1 with accept_prob=77.4% delta_h=0.2561778860108461 traj=10
+-0.012649116030128757
+Correlators:
+[-2.0887814457155898, 12.425890266870457, 44.72602106118176, 74.10285870347819, 35.44715441591576, 32.63620143117358, 18.92763600311467]
+Correlator means and error of means:
+[nan, nan, nan, nan, nan, nan, nan]
+[nan, nan, nan, nan, nan, nan, nan]
+metropolis_accept: flag=1 with accept_prob=100.0% delta_h=-0.0004729206473257 traj=10
 run_hmc: update field (traj=10)
 Average phi^2:
-15.464027089918504
+0.05362110711400303
 Average phi:
-3.9196693962138514
-metropolis_accept: flag=1 with accept_prob=100.0% delta_h=-0.2295355086243944 traj=11
-run_hmc: update field (traj=11)
-Average phi^2:
-24.088937334884434
-Average phi:
-4.899932101124337
-metropolis_accept: flag=1 with accept_prob=79.1% delta_h=0.2350619162752992 traj=12
-run_hmc: update field (traj=12)
-Average phi^2:
-15.493288651433314
-Average phi:
-3.9242645198114827
-metropolis_accept: flag=1 with accept_prob=100.0% delta_h=-0.2163350849004928 traj=13
-run_hmc: update field (traj=13)
-Average phi^2:
-24.06809523740145
-Average phi:
-4.898453199096723
-metropolis_accept: flag=1 with accept_prob=80.3% delta_h=0.2189315874566091 traj=14
-run_hmc: update field (traj=14)
-Average phi^2:
-15.52073410111655
-Average phi:
-3.928109803071891
-metropolis_accept: flag=1 with accept_prob=100.0% delta_h=-0.2079475870705210 traj=15
-run_hmc: update field (traj=15)
-Average phi^2:
-24.0290631673843
-Average phi:
-4.894669868005092
-metropolis_accept: flag=1 with accept_prob=80.9% delta_h=0.2125657596552628 traj=16
-run_hmc: update field (traj=16)
-Average phi^2:
-15.565944157215469
-Average phi:
-3.9343672143386144
-metropolis_accept: flag=1 with accept_prob=100.0% delta_h=-0.2011949614025070 traj=17
-run_hmc: update field (traj=17)
-Average phi^2:
-24.004974799351274
-Average phi:
-4.89242551140548
-metropolis_accept: flag=1 with accept_prob=81.5% delta_h=0.2051399286065134 traj=18
-run_hmc: update field (traj=18)
-Average phi^2:
-15.59226895245166
-Average phi:
-3.9382064711957803
-metropolis_accept: flag=1 with accept_prob=100.0% delta_h=-0.2026668193429941 traj=19
-run_hmc: update field (traj=19)
-Average phi^2:
-23.97073960699136
-Average phi:
-4.888954145965613
-metropolis_accept: flag=1 with accept_prob=81.5% delta_h=0.2039936984365340 traj=20
-run_hmc: update field (traj=20)
-Average phi^2:
-15.62102675020492
-Average phi:
-3.9420783991920003
-Expectation value of phi^2 on all trajectories:
-[15.368362925899453, 24.155320384780673, 24.155320384780673, 24.155320384780673, 24.155320384780673, 15.391880138200435, 24.146065454247054, 15.420803612180457, 24.117573339267175, 15.464027089918504, 24.088937334884434, 15.493288651433314, 24.06809523740145, 15.52073410111655, 24.0290631673843, 15.565944157215469, 24.004974799351274, 15.59226895245166, 23.97073960699136, 15.62102675020492]
-Expectation value of phi on all trajectories:
-[3.8976893017552703, 4.902810534766083, 4.902810534766083, 4.902810534766083, 4.902810534766083, 3.9060017923659354, 4.904201332318539, 3.9126762490531344, 4.9021587032770615, 3.9196693962138514, 4.899932101124337, 3.9242645198114827, 4.898453199096723, 3.928109803071891, 4.894669868005092, 3.9343672143386144, 4.89242551140548, 3.9382064711957803, 4.888954145965613, 3.9420783991920003]
+0.013742072931231896
+Correlators:
+[29.240767536851582, -7.694896398904094, 29.493101170652782, 154.99872963427376, 77.96344438137456, 53.30375263516205, 24.810620890909867]
+Correlator means and error of means:
+[nan, nan, nan, nan, nan, nan, nan]
+[nan, nan, nan, nan, nan, nan, nan]
+[[296.9162421965593, 271.71253788673664, 259.2948567545107, 465.18856443642466, 332.18734386781614, 321.4828652502263, 464.930986929788], [136.67889968271527, 61.956867736665885, 120.8195403436353, 303.99583536508976, 100.09894732372759, 114.7895722381419, 164.28286147628148], [-2.0887814457155898, 12.425890266870457, 44.72602106118176, 74.10285870347819, 35.44715441591576, 32.63620143117358, 18.92763600311467], [29.240767536851582, -7.694896398904094, 29.493101170652782, 154.99872963427376, 77.96344438137456, 53.30375263516205, 24.810620890909867]]
+Correlator means and error of means:
+[115.18678199260265, 84.60009987284222, 113.58337983249514, 249.57149703481662, 136.42422249720852, 130.55309788867595, 168.2380263250235]
+[58.43146787553256, 55.481564105861246, 45.48125118395335, 74.6600544674028, 57.69356341991018, 57.14993698576831, 90.45280865216522]
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 0.
 qlat::end(): Finalize MPI.

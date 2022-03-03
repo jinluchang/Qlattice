@@ -20,6 +20,9 @@ def run_job(job_tag, traj):
     fns_produce = [
             f"point-selection/{job_tag}/traj={traj}.txt",
             f"field-selection/{job_tag}/traj={traj}.field",
+            f"point-selection-smear/{job_tag}/traj={traj}.txt",
+            f"wall-src-info-light/{job_tag}/traj={traj}.txt",
+            f"wall-src-info-strange/{job_tag}/traj={traj}.txt",
             ]
     fns_need = [
             (f"configs/{job_tag}/ckpoint_lat.{traj}", f"configs/{job_tag}/ckpoint_lat.IEEE64BIG.{traj}",),
@@ -32,6 +35,12 @@ def run_job(job_tag, traj):
     assert get_psel is not None
     assert get_fsel is not None
     #
+    get_wi = run_wi(job_tag, traj)
+    assert get_wi is not None
+    #
+    get_psel_smear = run_psel_smear(job_tag, traj)
+    assert get_psel_smear is not None
+    #
     q.clean_cache()
     q.timer_display()
 
@@ -42,6 +51,9 @@ rup.dict_params["48I"][tag] = list(range(3000, 500, -5))
 rup.dict_params["24D"][tag] = list(range(1000, 10000, 10))
 rup.dict_params["16IH2"][tag] = list(range(1000, 10000, 10))
 rup.dict_params["32IfineH"][tag] = list(range(1000, 10000, 50))
+rup.dict_params["24IH2"][tag] = list(range(1000, 10000, 10))
+rup.dict_params["24IH1"][tag] = list(range(1000, 10000, 10))
+rup.dict_params["32IH2"][tag] = list(range(1000, 10000, 10))
 
 tag = "n_points_psel"
 rup.dict_params["test-4nt8"][tag] = 6
@@ -50,47 +62,63 @@ rup.dict_params["48I"][tag] = 2048
 rup.dict_params["24D"][tag] = 1024
 rup.dict_params["32IfineH"][tag] = 512
 rup.dict_params["16IH2"][tag] = 256
+rup.dict_params["24IH2"][tag] = 512
+rup.dict_params["24IH1"][tag] = 512
+rup.dict_params["32IH2"][tag] = 512
 
-rup.dict_params["test-4nt8"]["n_points"] = [
-        [ 6, 2, 1, ],
-        [ 3, 2, 1, ],
-        ]
+tag = "n_exact_wsrc"
+rup.dict_params["test-4nt8"][tag] = 2
+rup.dict_params["48I"][tag] = 2
 
-rup.dict_params["test-4nt16"]["n_points"] = [
-        [ 32, 4, 2, ],
-        [ 16, 4, 2, ],
-        ]
+tag = "prob_exact_wsrc"
+rup.dict_params["test-4nt16"][tag] = 1/8
+rup.dict_params["16IH2"][tag] = 1/16
+rup.dict_params["32IfineH"][tag] = 1/32
+rup.dict_params["24IH1"][tag] = 1/32
+rup.dict_params["24IH2"][tag] = 1/32
+rup.dict_params["32IH2"][tag] = 1/32
 
-rup.dict_params["48I"]["n_points"] = [
-        [ 2048, 64, 16, ],
-        [ 1024, 64, 16, ],
-        ]
+tag = "n_per_tslice_smear"
+rup.dict_params["test-4nt8"][tag] = 2
+rup.dict_params["test-4nt16"][tag] = 2
+rup.dict_params["24D"][tag] = 16
+rup.dict_params["16IH2"][tag] = 8
+rup.dict_params["32IfineH"][tag] = 8
+rup.dict_params["24IH1"][tag] = 8
+rup.dict_params["24IH2"][tag] = 8
+rup.dict_params["32IH2"][tag] = 8
 
-rup.dict_params["16IH2"]["n_points"] = [
-        [ 256, 8, 2, ],
-        [ 128, 8, 2, ],
-        ]
+tag = "prob_acc_1_smear"
+rup.dict_params["test-4nt8"][tag] = 1/4
+rup.dict_params["test-4nt16"][tag] = 1/4
+rup.dict_params["24D"][tag] = 1/32
+rup.dict_params["16IH2"][tag] = 1/16
+rup.dict_params["32IfineH"][tag] = 1/32
+rup.dict_params["24IH1"][tag] = 1/32
+rup.dict_params["24IH2"][tag] = 1/32
+rup.dict_params["32IH2"][tag] = 1/32
 
-rup.dict_params["32IfineH"]["n_points"] = [
-        [ 512, 16, 4, ],
-        [ 256, 16, 4, ],
-        ]
+tag = "prob_acc_2_smear"
+rup.dict_params["test-4nt8"][tag] = 1/16
+rup.dict_params["test-4nt16"][tag] = 1/16
+rup.dict_params["24D"][tag] = 1/128
+rup.dict_params["16IH2"][tag] = 1/64
+rup.dict_params["32IfineH"][tag] = 1/128
+rup.dict_params["24IH1"][tag] = 1/128
+rup.dict_params["24IH2"][tag] = 1/128
+rup.dict_params["32IH2"][tag] = 1/128
 
 qg.begin_with_gpt()
 
 # ADJUST ME
 job_tags = [
         "test-4nt8", "test-4nt16",
-        # "test-8nt16",
-        # "test-16nt32",
-        # "test-32nt64",
-        # "test-48nt96",
-        # "test-64nt128",
-        # "test-96nt192",
-        # "test-128nt256",
-        # "24D",
+        # "24IH1",
+        # "24IH2",
+        # "32IH2",
         # "16IH2",
         # "32IfineH",
+        # "24D",
         # "48I",
         ]
 

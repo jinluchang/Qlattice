@@ -52,8 +52,6 @@ def compute_prop_wsrc(gf, gt, tslice, job_tag, inv_type, inv_acc, *,
 @q.timer_verbose
 def compute_prop_wsrc_all(gf, gt, wi, job_tag, inv_type, *,
         path_s, path_sp, psel, fsel, fselc, eig):
-    if q.does_file_exist_sync_node(get_save_path(path_s + ".acc.partial")):
-        q.qrename_info(get_save_path(path_s + ".acc.partial"), get_save_path(path_s + ".acc"))
     finished_tags = q.properly_truncate_fields(get_save_path(path_s + ".acc"))
     sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", [ 1, 1, 1, 4, ])
     for inv_acc in [ 2, 1 ]:
@@ -109,16 +107,18 @@ def run_prop_wsrc_strange(job_tag, traj, get_gf, get_eig, get_gt, get_psel, get_
 @q.timer_verbose
 def run_job(job_tag, traj):
     fns_produce = [
-            f"wall-src-info-light/{job_tag}/traj={traj}.txt",
-            f"wall-src-info-strange/{job_tag}/traj={traj}.txt",
             f"prop-wsrc-strange/{job_tag}/traj={traj}",
+            f"psel-prop-wsrc-strange/{job_tag}/traj={traj}/checkpoint.txt",
             f"prop-wsrc-light/{job_tag}/traj={traj}",
+            f"psel-prop-wsrc-light/{job_tag}/traj={traj}/checkpoint.txt",
             ]
     fns_need = [
             (f"configs/{job_tag}/ckpoint_lat.{traj}", f"configs/{job_tag}/ckpoint_lat.IEEE64BIG.{traj}",),
             f"gauge-transform/{job_tag}/traj={traj}.field",
             f"point-selection/{job_tag}/traj={traj}.txt",
             f"field-selection/{job_tag}/traj={traj}.field",
+            f"wall-src-info-light/{job_tag}/traj={traj}.txt",
+            f"wall-src-info-strange/{job_tag}/traj={traj}.txt",
             f"eig/{job_tag}/traj={traj}",
             f"eig/{job_tag}/traj={traj}/metadata.txt",
             f"eig/{job_tag}/traj={traj}/eigen-values.txt",
@@ -148,12 +148,11 @@ def run_job(job_tag, traj):
         get_eig = run_eig(job_tag, traj_gf, get_gf)
         run_prop_wsrc_light(job_tag, traj, get_gf, get_eig, get_gt, get_psel, get_fsel, get_wi)
     #
-    run_with_eig()
-    #
     def run_with_eig_strange():
         get_eig_strange = run_eig_strange(job_tag, traj_gf, get_gf)
         run_prop_wsrc_strange(job_tag, traj, get_gf, get_eig_strange, get_gt, get_psel, get_fsel, get_wi)
     #
+    run_with_eig()
     run_with_eig_strange()
     #
     q.clean_cache()
@@ -162,20 +161,13 @@ def run_job(job_tag, traj):
 tag = "trajs"
 rup.dict_params["test-4nt8"][tag] = list(range(1000, 1400, 100))
 rup.dict_params["test-4nt16"][tag] = list(range(1000, 1400, 100))
-rup.dict_params["32Dfine"][tag] = list(range(500, 3000, 10))
-rup.dict_params["16IH2"][tag] = list(range(500, 10000, 10))
-rup.dict_params["32IfineH"][tag] = list(range(500, 10000, 50))
 rup.dict_params["48I"][tag] = list(range(3000, 500, -5))
-rup.dict_params["64I"][tag] = list(range(3000, 500, -5))
-
-tag = "n_exact_wsrc"
-rup.dict_params["test-4nt8"][tag] = 2
-rup.dict_params["48I"][tag] = 2
-
-tag = "prob_exact_wsrc"
-rup.dict_params["test-4nt16"][tag] = 1/8
-rup.dict_params["16IH2"][tag] = 1/16
-rup.dict_params["32IfineH"][tag] = 1/32
+rup.dict_params["24D"][tag] = list(range(1000, 10000, 10))
+rup.dict_params["16IH2"][tag] = list(range(1000, 10000, 10))
+rup.dict_params["32IfineH"][tag] = list(range(1000, 10000, 50))
+rup.dict_params["24IH2"][tag] = list(range(1000, 10000, 10))
+rup.dict_params["24IH1"][tag] = list(range(1000, 10000, 10))
+rup.dict_params["32IH2"][tag] = list(range(1000, 10000, 10))
 
 rup.dict_params["test-4nt8"]["fermion_params"][0][2]["Ls"] = 10
 rup.dict_params["test-4nt8"]["fermion_params"][1][2]["Ls"] = 10
@@ -190,6 +182,9 @@ qg.begin_with_gpt()
 # ADJUST ME
 job_tags = [
         "test-4nt8", "test-4nt16",
+        # "24IH1",
+        # "24IH2",
+        # "32IH2",
         # "32IfineH",
         # "16IH2",
         # "24D",

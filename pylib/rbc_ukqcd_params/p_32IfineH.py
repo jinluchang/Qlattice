@@ -79,8 +79,6 @@ def mk_lanc_params(inv_type, inv_acc):
             "irl_params": irl_params,
             }
 
-dict_params["lanc_params"] = { 0: { 0: mk_lanc_params(0, 0), }, 1: { 0: mk_lanc_params(1, 0), }, }
-
 def mk_clanc_params(inv_type, inv_acc):
     assert inv_acc == 0
     if inv_type == 0:
@@ -121,5 +119,7 @@ def mk_clanc_params(inv_type, inv_acc):
             "smoother_params": smoother_params,
             "save_params": save_params,
             }
+
+dict_params["lanc_params"] = { 0: { 0: mk_lanc_params(0, 0), }, 1: { 0: mk_lanc_params(1, 0), }, }
 
 dict_params["clanc_params"] = { 0: { 0: mk_clanc_params(0, 0), }, 1: { 0: mk_clanc_params(1, 0), }, }

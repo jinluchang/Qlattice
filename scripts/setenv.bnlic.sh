@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. conf.sh
+. scripts/conf.sh
 
 name=setenv
 
@@ -10,7 +10,7 @@ echo "!!!! build $name !!!!"
 
 mkdir -p "$prefix/bin"
 
-cat - setenv.sh >"$prefix/setenv.sh" << EOF
+cat - scripts/setenv.sh >"$prefix/setenv.sh" << EOF
 echo "Sourcing '$prefix/setenv.sh'"
 if [ -z "\$prefix" ] ; then
     prefix="$prefix"

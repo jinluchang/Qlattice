@@ -4,7 +4,7 @@
 # 1) select compiler based on availability
 # 2) support --wrapper-remove-arg=XXX option to remove unwanted flags
 
-. conf.sh
+. scripts/conf.sh
 
 name=compiler-wrappers
 

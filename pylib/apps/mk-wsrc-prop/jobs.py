@@ -389,9 +389,9 @@ def run_psel_smear(job_tag, traj):
     tfn = f"point-selection-smear/{job_tag}/traj={traj}.txt"
     path_psel = get_load_path(tfn)
     total_site = ru.get_total_site(job_tag)
-    n_per_tslice_smear = rup.dict_params[job_tag]["n_per_tslice_smear"]
     if path_psel is None:
         if q.obtain_lock(f"locks/{job_tag}-{traj}-psel-smear"):
+            n_per_tslice_smear = rup.dict_params[job_tag]["n_per_tslice_smear"]
             fsel = mk_rand_fsel_smear(job_tag, traj, n_per_tslice_smear)
             psel = fsel.to_psel()
             psel.save(get_save_path(tfn))
@@ -489,7 +489,9 @@ def run_eig_strange(job_tag, traj, get_gf):
     if None in [ get_gf, ]:
         return None
     if 1 not in rup.dict_params[job_tag]["clanc_params"]:
-        q.qtouch_info(get_save_path(f"eig-strange/{job_tag}/traj={traj}/no-eig-parameters.txt"))
+        fn = f"eig-strange/{job_tag}/traj={traj}/no-eig-parameters.txt"
+        if get_load_path(fn) is None:
+            q.qtouch_info(get_save_path(fn))
         return lambda : None
     import rbc_ukqcd as ru
     get_eig = ru.load_eig_lazy(get_load_path(f"eig-strange/{job_tag}/traj={traj}"), job_tag)

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. conf.sh
+. scripts/conf.sh
 
 name=python-packages
 

@@ -1,6 +1,6 @@
 import rbc_ukqcd_params as rup
 
-job_tag = "24IH2"
+job_tag = "24IH1"
 
 dict_params = {}
 
@@ -20,7 +20,7 @@ def mk_fermion_params(inv_type, inv_acc):
     params["c"] = 0.0
     params["Ls"] = 16
     if inv_type == 0:
-        params["mass"] = 0.01
+        params["mass"] = 0.005
     elif inv_type == 1:
         params["mass"] = 0.04
     elif inv_type == 2:

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. conf.sh
+. scripts/conf.sh
 
 name=qlat-header
 
@@ -13,7 +13,6 @@ rm -rfv $prefix/include/qutils
 rm -rfv $prefix/include/qlat
 cp -rpv qutils $prefix/include/
 cp -rpv qlat $prefix/include/
-cp -pv qlat-setup.h $prefix/include
 
 mkdir -pv $prefix/pylib
 rm -rfv $prefix/pylib/qlat
@@ -32,6 +31,7 @@ cp pylib/apps/pickle-glimpse/pickle-glimpse $prefix/bin/
 cp pylib/apps/gauge-fix-coulomb/gauge-fix-coulomb $prefix/bin/
 cp pylib/apps/qlat-convert/qlat-convert $prefix/bin/
 cp pylib/apps/topo-measure/topo-measure $prefix/bin/
+cp pylib/apps/eigen-system-repartition/eigen-system-repartition $prefix/bin/
 
 ( cd ./pylib/cqlat ; ./update.sh )
 

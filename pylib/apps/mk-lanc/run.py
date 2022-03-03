@@ -40,24 +40,24 @@ def run_job(job_tag, traj):
     q.clean_cache()
     q.timer_display()
 
-rup.dict_params["test-4nt8"]["trajs"] = list(range(1000, 1400, 100))
-rup.dict_params["test-4nt16"]["trajs"] = list(range(1000, 1400, 100))
+tag = "trajs"
+rup.dict_params["test-4nt8"][tag] = list(range(1000, 1400, 100))
+rup.dict_params["test-4nt16"][tag] = list(range(1000, 1400, 100))
+rup.dict_params["48I"][tag] = list(range(3000, 500, -5))
+rup.dict_params["24D"][tag] = list(range(1000, 10000, 10))
 rup.dict_params["32Dfine"]["trajs"] = list(range(500, 3000, 10))
-rup.dict_params["16IH2"]["trajs"] = list(range(500, 10000, 10))
-rup.dict_params["32IfineH"]["trajs"] = list(range(500, 10000, 50))
+rup.dict_params["16IH2"][tag] = list(range(1000, 10000, 10))
+rup.dict_params["32IfineH"][tag] = list(range(1000, 10000, 50))
+rup.dict_params["24IH2"][tag] = list(range(1000, 10000, 100))
+rup.dict_params["24IH1"][tag] = list(range(1000, 10000, 100))
+rup.dict_params["32IH2"][tag] = list(range(1000, 10000, 10))
 
 qg.begin_with_gpt()
 
 # ADJUST ME
 job_tags = [
         "test-4nt8", "test-4nt16",
-        # "test-8nt16",
-        # "test-16nt32",
-        # "test-32nt64",
-        # "test-48nt96",
-        # "test-64nt128",
-        # "test-96nt192",
-        # "test-128nt256",
+        # "24IH2", "24IH1", "32IH2",
         # "16IH2",
         # "24D",
         # "32Dfine",
