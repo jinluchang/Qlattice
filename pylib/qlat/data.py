@@ -179,14 +179,39 @@ def average(data_list):
     v = sum(data_list)
     return 1/n * v
 
-def avg_err(data_list):
+def block_data(data_list, block_size, is_overlapping = True):
+    # return the list of block averages
+    # the blocks may overlap if is_overlapping == True
+    assert block_size >= 1
+    size = len(data_list)
+    if block_size >= size:
+        return [ average(data_list), ]
+    elif block_size == 1:
+        return data_list
+    blocks = []
+    start = 0
+    stop = block_size
+    while stop <= size:
+        b = average(data_list[start:stop])
+        blocks.append(b)
+        if is_overlapping:
+            start += 1
+            stop += 1
+        else:
+            start += block_size
+            stop += block_size
+    return blocks
+
+def avg_err(data_list, eps = 1, *, block_size = 1):
     avg = average(data_list)
-    diff_sqr = average([ fsqr(d - avg) for d in data_list ])
-    err = math.sqrt(1 / (len(data_list) - 1)) * fsqrt(diff_sqr)
+    blocks = block_data(data_list, block_size)
+    diff_sqr = average([ fsqr(d - avg) for d in blocks ])
+    fac = eps * math.sqrt(block_size / (len(data_list) - 1))
+    err = fac * fsqrt(diff_sqr)
     return (avg, err,)
 
 def jackknife(data_list, eps = 1):
-    # normal jackknife uses eps = 1
+    # normal jackknife uses eps = 1, scale the fluctuation by eps
     data_list_real = [ d for d in data_list if d is not None ]
     n = len(data_list_real)
     fac = eps / n
@@ -240,14 +265,16 @@ def fsqrt(data):
 def jk_avg(jk_list):
     return jk_list[0]
 
-def jk_err(jk_list, eps = 1):
+def jk_err(jk_list, eps = 1, *, block_size = 1):
     # same eps as the eps used in the 'jackknife' function
     avg = jk_avg(jk_list)
-    diff_sqr = average([ fsqr(jk - avg) for jk in jk_list[1:] ])
-    return (math.sqrt(len(jk_list) - 1) / eps) * fsqrt(diff_sqr)
+    blocks = block_data(jk_list[1:], block_size)
+    diff_sqr = average([ fsqr(jk - avg) for jk in blocks ])
+    fac = math.sqrt(block_size * (len(jk_list) - 1)) / eps
+    return fac * fsqrt(diff_sqr)
 
-def jk_avg_err(jk_list, eps = 1):
-    return jk_avg(jk_list), jk_err(jk_list, eps)
+def jk_avg_err(jk_list, eps = 1, *, block_size = 1):
+    return jk_avg(jk_list), jk_err(jk_list, eps, block_size = block_size)
 
 def merge_jk_idx(*jk_idx_list):
     for jk_idx in jk_idx_list:
