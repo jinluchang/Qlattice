@@ -60,10 +60,14 @@ rup.dict_params["test-4nt16"][tag] = list(range(1000, 1400, 100))
 rup.dict_params["48I"][tag] = list(range(3000, 500, -5))
 rup.dict_params["24D"][tag] = list(range(1000, 10000, 10))
 rup.dict_params["16IH2"][tag] = list(range(1000, 10000, 10))
-rup.dict_params["32IfineH"][tag] = list(range(1000, 10000, 50))
-rup.dict_params["24IH2"][tag] = list(range(1000, 10000, 10))
+rup.dict_params["32IfineH"][tag] = list(range(1000, 10000, 10))
 rup.dict_params["24IH1"][tag] = list(range(1000, 10000, 10))
-rup.dict_params["32IH2"][tag] = list(range(1000, 10000, 10))
+rup.dict_params["24IH2"][tag] = list(range(1000, 10000, 10))
+rup.dict_params["24IH3"][tag] = list(range(1000, 10000, 10))
+rup.dict_params["24IH4"][tag] = list(range(1000, 10000, 10))
+rup.dict_params["32IH1"][tag] = list(range(1000, 10000, 10))
+rup.dict_params["32IH2"][tag] = list(range(1000, 10000, 10)) + list(range(1002, 10000, 10))
+rup.dict_params["32IH3"][tag] = list(range(1000, 10000, 10))
 
 qg.begin_with_gpt()
 
@@ -72,7 +76,11 @@ job_tags = [
         "test-4nt8", "test-4nt16",
         # "24IH1",
         # "24IH2",
+        # "24IH3",
+        # "24IH4",
+        # "32IH1",
         # "32IH2",
+        # "32IH3",
         # "32IfineH",
         # "16IH2",
         # "24D",
