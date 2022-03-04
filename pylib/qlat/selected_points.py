@@ -31,11 +31,13 @@ class SelectedPoints:
         from qlat.selected_field import SelectedField
         assert f1.ctype == self.ctype
         if isinstance(f1, SelectedPoints):
+            # two psel must be the same object
             if self.psel is f1.psel:
                 c.set_spfield(self, f1)
             else:
                 raise Exception("SelectedPoints @= psel not match")
         elif isinstance(f1, SelectedField):
+            # psel must be subset of fsel
             c.set_spfield_sfield(self, f1)
         elif isinstance(f1, Field):
             c.set_spfield_field(self, f1)

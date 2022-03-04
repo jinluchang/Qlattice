@@ -30,12 +30,18 @@ class SelectedField:
         # won't change self.fsel
         assert f1.ctype == self.ctype
         if isinstance(f1, SelectedField):
+            # two fsel do not need to match
             if self.fsel is f1.fsel:
                 c.set_sfield(self, f1)
             else:
                 c.set_sfield_sfield(self, f1)
         elif isinstance(f1, Field):
             c.set_sfield_field(self, f1)
+        elif isinstance(f1, SelectedPoints):
+            # psel must be subset of fsel
+            c.set_sfield_spfield(self, f1)
+        else:
+            assert False
         return self
 
     def copy(self, is_copying_data = True):
