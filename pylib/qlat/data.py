@@ -43,7 +43,7 @@ def interpolate(v_arr, i_arr):
     return np.array([ interpolate_list(vt, i) for i in i_arr ]).transpose()
 
 def partial_sum_list(x, *, is_half_last = False):
-    """Modify in-place"""
+    """Modify in-place, preserve length"""
     s = 0
     for i, v in enumerate(x):
         sp = s
@@ -54,6 +54,7 @@ def partial_sum_list(x, *, is_half_last = False):
             x[i] = s
 
 def partial_sum(x, *, is_half_last = False):
+    """Modify in-place, preserve length"""
     shape = x.shape
     if len(shape) == 0:
         return
@@ -177,6 +178,12 @@ def average(data_list):
     n = len(data_list)
     v = sum(data_list)
     return 1/n * v
+
+def avg_err(data_list):
+    avg = average(data_list)
+    diff_sqr = average([ fsqr(d - avg) for d in data_list ])
+    err = math.sqrt(1 / (len(data_list) - 1)) * fsqrt(diff_sqr)
+    return (avg, err,)
 
 def jackknife(data_list, eps = 1):
     # normal jackknife uses eps = 1
