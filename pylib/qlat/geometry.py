@@ -83,6 +83,10 @@ class Geometry:
     def is_local(self, xl):
         return c.is_local_geo(self, xl)
 
+    def is_local_xg(self, xg):
+        # return a global coordinate is inside the local volume or not
+        return c.is_local_xg_geo(self, xg)
+
     def xg_list(self):
         # return xg for all local sites
         return c.get_xg_list(self)
