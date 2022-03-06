@@ -7,12 +7,17 @@ namespace qlat
 
 typedef std::vector<Coordinate> PointSelection;
 
-inline PointSelection mk_tslice_point_selection(const Coordinate& total_site)
+inline PointSelection mk_tslice_point_selection(const int t_size)
 {
   PointSelection psel;
-  psel.resize(total_site[3]);
-  qthread_for(idx, total_site[3], { psel[idx] = Coordinate(0, 0, 0, idx); });
+  psel.resize(t_size);
+  qthread_for(idx, t_size, { psel[idx] = Coordinate(0, 0, 0, idx); });
   return psel;
+}
+
+inline PointSelection mk_tslice_point_selection(const Coordinate& total_site)
+{
+  return mk_tslice_point_selection(total_site[3]);
 }
 
 inline PointSelection mk_random_point_selection(const Coordinate& total_site,

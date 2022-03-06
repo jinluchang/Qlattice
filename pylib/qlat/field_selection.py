@@ -56,11 +56,12 @@ cache_point_selection = mk_cache("point_selection")
 
 def get_psel_tslice(total_site):
     # [ [0,0,0,0], [0,0,0,1], ..., [0,0,0,total_site[3]-1], ]
+    # need total_site to set the psel.geo property
     assert isinstance(total_site, list)
     total_site_tuple = tuple(total_site)
     if total_site_tuple not in cache_point_selection:
         psel = PointSelection()
-        c.set_tslice_psel(psel, total_site)
+        c.set_tslice_psel(psel, total_site[3])
         psel.geo = Geometry(total_site)
         cache_point_selection[total_site_tuple] = psel
     return cache_point_selection[total_site_tuple]
@@ -173,6 +174,14 @@ class FieldSelection:
         # return fsel.prob
         # n_per_tslice / spatial_volume
         return c.get_prob_fsel(self)
+
+    def idx_from_coordinate(xg):
+        return c.get_idx_from_coordinate_fsel(self, xg)
+
+    def coordinate_from_idx(idx):
+        return c.get_coordinate_from_idx_fsel(self, idx)
+
+###
 
 def is_matching_fsel(fsel1, fsel2):
     return c.is_matching_fsel(fsel1, fsel2)

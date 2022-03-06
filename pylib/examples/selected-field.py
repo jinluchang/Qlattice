@@ -36,7 +36,12 @@ prop.load_double_from_float("results/prop-float.field")
 
 q.displayln_info(f"prop.crc32() = {prop.crc32()} ; prop.qnorm() = {prop.qnorm()}")
 
-psel = q.PointSelection([[0,0,0,0], [0,1,2,0]])
+psel = q.PointSelection([
+    [ 0, 0, 0, 0, ],
+    [ 0, 1, 2, 0, ],
+    ],
+    geo = geo,
+    )
 n_per_tslice = 16
 fsel = q.FieldSelection(geo.total_site(), n_per_tslice, rs.split("fsel"))
 
@@ -45,12 +50,15 @@ fselc.add_psel(psel)
 
 sp_prop = q.PselProp(psel)
 sp_prop @= prop
+
+q.displayln_info("sp_prop", sp_prop.qnorm())
+
 sp_prop.save("results/prop.lat")
 sp_prop1 = q.PselProp(psel)
 sp_prop1.load("results/prop.lat")
 sp_prop1 -= sp_prop
 
-q.displayln_info("sp_prop", sp_prop.qnorm(), sp_prop1.qnorm())
+q.displayln_info("sp_prop", sp_prop.qnorm(), sp_prop1.qnorm(), "save load")
 
 ld = sp_prop.to_lat_data()
 sp_prop1 = q.PselProp(psel)
