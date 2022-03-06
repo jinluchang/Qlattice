@@ -277,7 +277,7 @@ class Field:
         if isinstance(val, bytes):
             return c.set_elems_field(self, xg, val)
         elif isinstance(val, np.ndarray):
-            return self.set_elems(self, xg, val.tobytes())
+            return self.set_elems(xg, val.tobytes())
         else:
             assert False
 
@@ -286,7 +286,7 @@ class Field:
         if isinstance(val, bytes):
             return c.set_elem_field(self, xg, m, val)
         elif isinstance(val, np.ndarray):
-            return self.set_elem(self, xg, m, val.tobytes())
+            return self.set_elem(xg, m, val.tobytes())
         else:
             assert False
 

@@ -110,7 +110,7 @@ class SelectedField:
         if isinstance(val, bytes):
             return c.set_elems_sfield(self, idx, val)
         elif isinstance(val, np.ndarray):
-            return self.set_elems(self, idx, val.tobytes())
+            return self.set_elems(idx, val.tobytes())
         else:
             assert False
 
@@ -119,7 +119,7 @@ class SelectedField:
         if isinstance(val, bytes):
             return c.set_elem_sfield(self, idx, m, val)
         elif isinstance(val, np.ndarray):
-            return self.set_elem(self, idx, m, val.tobytes())
+            return self.set_elem(idx, m, val.tobytes())
         else:
             assert False
 
