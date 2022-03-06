@@ -48,8 +48,8 @@ PyObject* set_spfield_field_ctype(PyField& pspf, PyField& pf,
 
 template <class M>
 PyObject* set_spfield_sfield_ctype(PyField& pspf, PyField& psf,
-                                  const PointSelection& psel,
-                                  const FieldSelection& fsel)
+                                   const PointSelection& psel,
+                                   const FieldSelection& fsel)
 {
   SelectedPoints<M>& sp = *(SelectedPoints<M>*)pspf.cdata;
   const SelectedField<M>& sf = *(SelectedField<M>*)psf.cdata;
@@ -72,7 +72,7 @@ PyObject* set_sfield_spfield_ctype(PyObject* p_sfield, PyObject* p_spfield,
                                    const FieldSelection& fsel,
                                    const PointSelection& psel)
 {
-  SelectedField<M>& sf = py_convert_type_sfield<M>(p_spfield);
+  SelectedField<M>& sf = py_convert_type_sfield<M>(p_sfield);
   const SelectedPoints<M>& sp = py_convert_type_spoints<M>(p_spfield);
   set_selected_field(sf, sp, fsel, psel);
   Py_RETURN_NONE;
@@ -160,6 +160,29 @@ PyObject* get_elem_spfield_ctype(PyField& pf, const long idx, const int m)
   } else {
     return py_convert(f.get_elem(idx));
   }
+}
+
+template <class M>
+PyObject* set_elems_spfield_ctype(PyObject* p_field, const long idx,
+                                  PyObject* p_val)
+{
+  SelectedPoints<M>& f = py_convert_type_spoints<M>(p_field);
+  const int multiplicity = f.multiplicity;
+  pqassert((long)PyBytes_Size(p_val) == (long)multiplicity * (long)sizeof(M));
+  const Vector<M> val((M*)PyBytes_AsString(p_val), multiplicity);
+  assign(f.get_elems(idx), val);
+  Py_RETURN_NONE;
+}
+
+template <class M>
+PyObject* set_elem_spfield_ctype(PyObject* p_field, const long idx,
+                                const int m, PyObject* p_val)
+{
+  SelectedPoints<M>& f = py_convert_type_spoints<M>(p_field);
+  pqassert(PyBytes_Size(p_val) == sizeof(M));
+  const M& val = *(M*)PyBytes_AsString(p_val);
+  f.get_elem(idx, m) = val;
+  Py_RETURN_NONE;
 }
 
 template <class M>
@@ -436,6 +459,35 @@ EXPORT(get_elem_spfield, {
   PyField pf = py_convert_field(p_field);
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, get_elem_spfield_ctype, pf.ctype, pf, idx, m);
+  return p_ret;
+});
+
+EXPORT(set_elems_spfield, {
+  using namespace qlat;
+  PyObject* p_field = NULL;
+  long idx = -1;
+  PyObject* p_val = NULL;
+  if (!PyArg_ParseTuple(args, "OlO", &p_field, &idx, &p_val)) {
+    return NULL;
+  }
+  const std::string ctype = py_get_ctype(p_field);
+  PyObject* p_ret = NULL;
+  FIELD_DISPATCH(p_ret, set_elems_spfield_ctype, ctype, p_field, idx, p_val);
+  return p_ret;
+});
+
+EXPORT(set_elem_spfield, {
+  using namespace qlat;
+  PyObject* p_field = NULL;
+  long idx = -1;
+  long m = -1;
+  PyObject* p_val = NULL;
+  if (!PyArg_ParseTuple(args, "OllO", &p_field, &idx, &m, &p_val)) {
+    return NULL;
+  }
+  const std::string ctype = py_get_ctype(p_field);
+  PyObject* p_ret = NULL;
+  FIELD_DISPATCH(p_ret, set_elem_spfield_ctype, ctype, p_field, idx, m, p_val);
   return p_ret;
 });
 

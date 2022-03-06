@@ -270,6 +270,8 @@ class SelectedField:
             assert False
         return sp
 
+###
+
 @timer
 def set_selected_field(sf, f):
     # deprecated use @=

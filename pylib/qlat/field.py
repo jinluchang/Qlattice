@@ -5,6 +5,15 @@ from qlat.rng_state import *
 from qlat.utils_io import *
 import numpy as np
 
+field_ctypes_complex = [
+        "ColorMatrix",
+        "WilsonMatrix",
+        "NonRelWilsonMatrix",
+        "SpinMatrix",
+        "WilsonVector",
+        "Complex",
+        ]
+
 field_ctypes_double = [
         "ColorMatrix",
         "WilsonMatrix",
@@ -42,7 +51,7 @@ class Field:
         c.free_field(self)
 
     def __imatmul__(self, f1):
-        # field geo does not change
+        # field geo does not change if already initialized
         assert f1.ctype == self.ctype
         if isinstance(f1, Field):
             c.set_field(self, f1)
@@ -280,26 +289,26 @@ class Field:
         else:
             assert False
 
-    def __getitem__(self, idx):
-        # idx can be (xg, m,) or xg
-        if isinstance(idx, tuple) and len(idx) == 2 and isinstance(idx[0], (list, tuple)):
-            xg, m = idx
+    def __getitem__(self, i):
+        # i can be (xg, m,) or xg
+        if isinstance(i, tuple) and len(i) == 2 and isinstance(i[0], (list, tuple)):
+            xg, m = i
             return self.get_elem(xg, m)
-        elif isinstance(idx, (list, tuple)):
-            xg = idx
+        elif isinstance(i, (list, tuple)):
+            xg = i
             return self.get_elems(xg)
         else:
             assert False
             return None
 
-    def __setitem__(self, idx, val):
-        # idx can be (xg, m,) or xg
+    def __setitem__(self, i, val):
+        # i can be (xg, m,) or xg
         # val should be np.ndarray or bytes. e.g. np.array([1, 2, 3], dtype = complex).tobytes()
-        if isinstance(idx, tuple) and len(idx) == 2 and isinstance(idx[0], (list, tuple)):
-            xg, m = idx
+        if isinstance(i, tuple) and len(i) == 2 and isinstance(i[0], (list, tuple)):
+            xg, m = i
             return self.set_elem(xg, m, val)
-        elif isinstance(idx, (list, tuple)):
-            xg = idx
+        elif isinstance(i, (list, tuple)):
+            xg = i
             return self.set_elems(xg, val)
         else:
             assert False
