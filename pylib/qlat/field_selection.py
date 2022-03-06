@@ -18,6 +18,7 @@ class PointSelection:
         self.geo = geo
 
     def __del__(self):
+        assert isinstance(self.cdata, int)
         c.free_psel(self)
 
     def __imatmul__(self, v1):
@@ -80,6 +81,7 @@ class FieldSelection:
             self.update(n_per_tslice)
 
     def __del__(self):
+        assert isinstance(self.cdata, int)
         c.free_fsel(self)
 
     def __imatmul__(self, v1):

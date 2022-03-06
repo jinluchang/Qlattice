@@ -48,6 +48,7 @@ class Field:
             self.cdata = c.mk_field(ctype, geo, multiplicity)
 
     def __del__(self):
+        assert isinstance(self.cdata, int)
         c.free_field(self)
 
     def __imatmul__(self, f1):

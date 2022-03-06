@@ -103,6 +103,7 @@ class ShuffledBitSet:
         self.cdata = c.mk_sbs(fsel, new_size_node)
 
     def __del__(self):
+        assert isinstance(self.cdata, int)
         c.free_sbs(self)
 
 def open_fields(path, mode, new_size_node = None):

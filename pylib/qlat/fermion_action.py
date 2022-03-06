@@ -14,6 +14,7 @@ class FermionAction:
             self.cdata = c.mk_fermion_action_zmobius(mass, m5, omega)
 
     def __del__(self):
+        assert isinstance(self.cdata, int)
         c.free_fermion_action(self)
 
     def __imatmul__(self, v1):

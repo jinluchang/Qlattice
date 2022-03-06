@@ -9,6 +9,7 @@ class LatData:
         self.cdata = c.mk_lat_data()
 
     def __del__(self):
+        assert isinstance(self.cdata, int)
         c.free_lat_data(self)
 
     def __imatmul__(self, v1):

@@ -24,6 +24,7 @@ class SelectedPoints:
             self.cdata = c.mk_spfield_psel(ctype, psel, multiplicity)
 
     def __del__(self):
+        assert isinstance(self.cdata, int)
         c.free_spfield(self)
 
     def __imatmul__(self, f1):

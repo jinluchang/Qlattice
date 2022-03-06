@@ -8,6 +8,7 @@ class ScalarAction:
         self.cdata = c.mk_scalar_action(m_sq, lmbd, alpha)
 
     def __del__(self):
+        assert isinstance(self.cdata, int)
         c.free_scalar_action(self)
 
     def __imatmul__(self, v1):

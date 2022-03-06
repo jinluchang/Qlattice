@@ -24,6 +24,7 @@ class SelectedField:
             self.cdata = c.mk_sfield_fsel(ctype, fsel, multiplicity)
 
     def __del__(self):
+        assert isinstance(self.cdata, int)
         c.free_sfield(self)
 
     def __imatmul__(self, f1):

@@ -11,6 +11,7 @@ class Geometry:
                 c.set_geo_total_site(self, total_site, multiplicity)
 
     def __del__(self):
+        assert isinstance(self.cdata, int)
         c.free_geo(self)
 
     def __imatmul__(self, v1):
