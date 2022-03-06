@@ -103,6 +103,18 @@ EXPORT(set_tslice_psel, {
   Py_RETURN_NONE;
 });
 
+EXPORT(get_coordinate_from_idx_psel, {
+  // return global coordinate
+  using namespace qlat;
+  PyObject* p_psel = NULL;
+  long idx = -1;
+  if (!PyArg_ParseTuple(args, "Ol", &p_psel, &idx)) {
+    return NULL;
+  }
+  const PointSelection& psel = py_convert_type<PointSelection>(p_psel);
+  return py_convert(psel[idx]);
+});
+
 EXPORT(mk_fsel, {
   using namespace qlat;
   FieldSelection* pfsel = new FieldSelection();

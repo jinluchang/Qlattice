@@ -52,6 +52,9 @@ class PointSelection:
         self.geo = geo
         return self
 
+    def coordinate_from_idx(self, idx):
+        return c.get_coordinate_from_idx_psel(self, idx)
+
 cache_point_selection = mk_cache("point_selection")
 
 def get_psel_tslice(total_site):
