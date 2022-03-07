@@ -28,6 +28,7 @@ class Timer:
     def __del__(self):
         if self.cdata is None:
             return
+        assert isinstance(self.cdata, int)
         c.free_timer(self)
 
     def start(self, is_verbose = None):

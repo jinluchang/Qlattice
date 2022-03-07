@@ -169,6 +169,29 @@ PyObject* get_elem_sfield_ctype(PyObject* p_sfield, const long idx, const int m)
 }
 
 template <class M>
+PyObject* set_elems_sfield_ctype(PyObject* p_field, const long idx,
+                                 PyObject* p_val)
+{
+  SelectedField<M>& f = py_convert_type_sfield<M>(p_field);
+  const int multiplicity = f.geo().multiplicity;
+  pqassert((long)PyBytes_Size(p_val) == (long)multiplicity * (long)sizeof(M));
+  const Vector<M> val((M*)PyBytes_AsString(p_val), multiplicity);
+  assign(f.get_elems(idx), val);
+  Py_RETURN_NONE;
+}
+
+template <class M>
+PyObject* set_elem_sfield_ctype(PyObject* p_field, const long idx,
+                                const int m, PyObject* p_val)
+{
+  SelectedField<M>& f = py_convert_type_sfield<M>(p_field);
+  pqassert(PyBytes_Size(p_val) == sizeof(M));
+  const M& val = *(M*)PyBytes_AsString(p_val);
+  f.get_elem(idx, m) = val;
+  Py_RETURN_NONE;
+}
+
+template <class M>
 PyObject* glb_sum_tslice_double_sfield_ctype(PyField& pspf, PyField& pf,
                                              const FieldSelection& fsel)
 {
@@ -497,6 +520,35 @@ EXPORT(get_elem_sfield, {
   const std::string ctype = py_get_ctype(p_field);
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, get_elem_sfield_ctype, ctype, p_field, idx, m);
+  return p_ret;
+});
+
+EXPORT(set_elems_sfield, {
+  using namespace qlat;
+  PyObject* p_field = NULL;
+  long idx = -1;
+  PyObject* p_val = NULL;
+  if (!PyArg_ParseTuple(args, "OlO", &p_field, &idx, &p_val)) {
+    return NULL;
+  }
+  const std::string ctype = py_get_ctype(p_field);
+  PyObject* p_ret = NULL;
+  FIELD_DISPATCH(p_ret, set_elems_sfield_ctype, ctype, p_field, idx, p_val);
+  return p_ret;
+});
+
+EXPORT(set_elem_sfield, {
+  using namespace qlat;
+  PyObject* p_field = NULL;
+  long idx = -1;
+  long m = -1;
+  PyObject* p_val = NULL;
+  if (!PyArg_ParseTuple(args, "OllO", &p_field, &idx, &m, &p_val)) {
+    return NULL;
+  }
+  const std::string ctype = py_get_ctype(p_field);
+  PyObject* p_ret = NULL;
+  FIELD_DISPATCH(p_ret, set_elem_sfield_ctype, ctype, p_field, idx, m, p_val);
   return p_ret;
 });
 

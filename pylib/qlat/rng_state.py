@@ -19,6 +19,7 @@ class RngState:
             self.cdata = c.mk_rng(rng_state_root, seed)
 
     def __del__(self):
+        assert isinstance(self.cdata, int)
         c.free_rng(self)
 
     def __imatmul__(self, v1):

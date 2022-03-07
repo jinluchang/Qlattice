@@ -10,6 +10,8 @@ cache_fields_io = mk_cache("fields_io")
 
 class ShuffledFieldsWriter:
 
+    # self.cdata
+
     def __init__(self, path, new_size_node, is_append = False):
         assert isinstance(path, str)
         assert isinstance(is_append , bool)
@@ -51,17 +53,22 @@ class ShuffledFieldsWriter:
 
 class ShuffledFieldsReader:
 
+    # self.cdata
+    # self.tags
+
     def __init__(self, path, new_size_node = None):
         assert isinstance(path, str)
         if new_size_node is None:
             self.cdata = c.mk_sfr(path)
         else:
             self.cdata = c.mk_sfr(path, new_size_node)
+        self.tags = None
 
     def close(self):
         if self.cdata is not None:
             c.free_sfr(self)
         self.cdata = None
+        self.tags = None
         cache_fields_io.pop(id(self), None)
 
     def __del__(self):
@@ -96,6 +103,14 @@ class ShuffledFieldsReader:
     def list(self):
         return c.list_sfr(self)
 
+    def has_sync_node(self, fn):
+        return c.does_file_exist_sync_node_sfr(self, fn)
+
+    def has(self, fn):
+        if self.tags is None:
+            self.tags = set(self.list())
+        return fn in self.tags
+
 class ShuffledBitSet:
 
     def __init__(self, fsel, new_size_node):
@@ -103,6 +118,7 @@ class ShuffledBitSet:
         self.cdata = c.mk_sbs(fsel, new_size_node)
 
     def __del__(self):
+        assert isinstance(self.cdata, int)
         c.free_sbs(self)
 
 def open_fields(path, mode, new_size_node = None):

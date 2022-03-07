@@ -94,15 +94,25 @@ EXPORT(set_rand_psel, {
 EXPORT(set_tslice_psel, {
   using namespace qlat;
   PyObject* p_psel = NULL;
-  PyObject* p_total_site = NULL;
-  if (!PyArg_ParseTuple(args, "OO", &p_psel, &p_total_site)) {
+  long t_size = -1;
+  if (!PyArg_ParseTuple(args, "Ol", &p_psel, &t_size)) {
     return NULL;
   }
   PointSelection& psel = py_convert_type<PointSelection>(p_psel);
-  Coordinate total_site;
-  py_convert(total_site, p_total_site);
-  psel = mk_tslice_point_selection(total_site);
+  psel = mk_tslice_point_selection(t_size);
   Py_RETURN_NONE;
+});
+
+EXPORT(get_coordinate_from_idx_psel, {
+  // return global coordinate
+  using namespace qlat;
+  PyObject* p_psel = NULL;
+  long idx = -1;
+  if (!PyArg_ParseTuple(args, "Ol", &p_psel, &idx)) {
+    return NULL;
+  }
+  const PointSelection& psel = py_convert_type<PointSelection>(p_psel);
+  return py_convert(psel[idx]);
 });
 
 EXPORT(mk_fsel, {
@@ -341,4 +351,36 @@ EXPORT(get_prob_fsel, {
   const FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
   const double prob = fsel.prob;
   return py_convert(prob);
+});
+
+EXPORT(get_coordinate_from_idx_fsel, {
+  // return global coordinate
+  using namespace qlat;
+  PyObject* p_fsel = NULL;
+  long idx = -1;
+  if (!PyArg_ParseTuple(args, "Ol", &p_fsel, &idx)) {
+    return NULL;
+  }
+  const FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
+  const Geometry& geo = fsel.f_rank.geo();
+  const long index = fsel.indices[idx];
+  const Coordinate xl = geo.coordinate_from_index(index);
+  const Coordinate xg = geo.coordinate_g_from_l(xl);
+  return py_convert(xg);
+});
+
+EXPORT(get_idx_from_coordinate_fsel, {
+  // need global coordinate
+  using namespace qlat;
+  PyObject* p_fsel = NULL;
+  PyObject* p_xg = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_fsel, &p_xg)) {
+    return NULL;
+  }
+  const FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
+  const Geometry& geo = fsel.f_rank.geo();
+  const Coordinate xg = py_convert_data<Coordinate>(p_xg);
+  const Coordinate xl = geo.coordinate_l_from_g(xg);
+  const long idx = fsel.f_local_idx.get_elem(xl);
+  return py_convert(idx);
 });

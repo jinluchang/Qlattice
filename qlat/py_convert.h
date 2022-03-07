@@ -307,11 +307,13 @@ inline std::string py_get_ctype(PyObject* in)
 }
 
 struct PyField {
+  // deprecated
   std::string ctype;
   void* cdata;
 };
 
 inline void py_convert(PyField& out, PyObject* in)
+// deprecated
 {
   PyObject* p_ctype = PyObject_GetAttrString(in, "ctype");
   PyObject* p_cdata = PyObject_GetAttrString(in, "cdata");
@@ -322,6 +324,7 @@ inline void py_convert(PyField& out, PyObject* in)
 }
 
 inline PyField py_convert_field(PyObject* in)
+// deprecated
 {
   return py_convert_data<PyField>(in);
 }
@@ -347,6 +350,18 @@ T& py_convert_type(PyObject* in)
   py_convert((long&)out, p_cdata);
   Py_DECREF(p_cdata);
   return *out;
+}
+
+template <class T>
+T& py_convert_type(PyObject* in, const std::string& attr)
+// interface
+// py_convert_type<PointSelection>(in, "psel")
+// py_convert_type<FieldSelection>(in, "fsel")
+{
+  PyObject* p_obj = PyObject_GetAttrString(in, attr.c_str());
+  T& x = py_convert_type<T>(p_obj);
+  Py_DECREF(p_obj);
+  return x;
 }
 
 template <class M>

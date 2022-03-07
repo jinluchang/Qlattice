@@ -29,9 +29,9 @@ struct ScalarAction {
     alpha = alpha_;
   }
   
-  inline double action_point(const Field<double>& sf, const int multiplicity, Coordinate xl)
+  qacc double action_point(const Field<double>& sf, const int multiplicity, Coordinate xl)
   {
-    TIMER("ScalarAction.action_point");
+    // TIMER("ScalarAction.action_point");
     double dphi_sq=0;
     double phi_sq=0;
     double phi_0=0;

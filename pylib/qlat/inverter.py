@@ -47,6 +47,7 @@ class InverterDomainWall(Inverter):
         self.timer = qtimer
 
     def __del__(self):
+        assert isinstance(self.cdata, int)
         c.free_inverter_domain_wall(self)
 
     def __mul__(self, prop_src):

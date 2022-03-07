@@ -11,6 +11,7 @@ class Geometry:
                 c.set_geo_total_site(self, total_site, multiplicity)
 
     def __del__(self):
+        assert isinstance(self.cdata, int)
         c.free_geo(self)
 
     def __imatmul__(self, v1):
@@ -81,6 +82,10 @@ class Geometry:
 
     def is_local(self, xl):
         return c.is_local_geo(self, xl)
+
+    def is_local_xg(self, xg):
+        # return a global coordinate is inside the local volume or not
+        return c.is_local_xg_geo(self, xg)
 
     def xg_list(self):
         # return xg for all local sites

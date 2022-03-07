@@ -219,8 +219,20 @@ EXPORT(is_local_geo, {
     return NULL;
   }
   const Geometry& geo = py_convert_type<Geometry>(p_geo);
-  Coordinate xl;
-  py_convert(xl, p_xl);
+  const Coordinate xl = py_convert_data<Coordinate>(p_xl);
+  return py_convert(geo.is_local(xl));
+});
+
+EXPORT(is_local_xg_geo, {
+  using namespace qlat;
+  PyObject* p_geo = NULL;
+  PyObject* p_xg = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_geo, &p_xg)) {
+    return NULL;
+  }
+  const Geometry& geo = py_convert_type<Geometry>(p_geo);
+  const Coordinate xg = py_convert_data<Coordinate>(p_xg);
+  const Coordinate xl = geo.coordinate_l_from_g(xg);
   return py_convert(geo.is_local(xl));
 });
 

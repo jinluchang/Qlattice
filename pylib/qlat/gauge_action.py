@@ -6,6 +6,7 @@ class GaugeAction:
         self.cdata = c.mk_gauge_action(beta, c1)
 
     def __del__(self):
+        assert isinstance(self.cdata, int)
         c.free_gauge_action(self)
 
     def __imatmul__(self, v1):

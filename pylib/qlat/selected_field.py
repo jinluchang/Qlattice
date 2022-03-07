@@ -24,18 +24,25 @@ class SelectedField:
             self.cdata = c.mk_sfield_fsel(ctype, fsel, multiplicity)
 
     def __del__(self):
+        assert isinstance(self.cdata, int)
         c.free_sfield(self)
 
     def __imatmul__(self, f1):
         # won't change self.fsel
         assert f1.ctype == self.ctype
         if isinstance(f1, SelectedField):
+            # two fsel do not need to match
             if self.fsel is f1.fsel:
                 c.set_sfield(self, f1)
             else:
                 c.set_sfield_sfield(self, f1)
         elif isinstance(f1, Field):
             c.set_sfield_field(self, f1)
+        elif isinstance(f1, SelectedPoints):
+            # psel must be subset of fsel
+            c.set_sfield_spfield(self, f1)
+        else:
+            assert False
         return self
 
     def copy(self, is_copying_data = True):
@@ -97,6 +104,49 @@ class SelectedField:
             return np.array(c.get_elem_sfield(self, idx))
         else:
             return np.array(c.get_elem_sfield(self, idx, m))
+
+    def set_elems(self, idx, val):
+        # val should be np.ndarray or bytes. e.g. np.array([1, 2, 3], dtype = complex).tobytes()
+        if isinstance(val, bytes):
+            return c.set_elems_sfield(self, idx, val)
+        elif isinstance(val, np.ndarray):
+            return self.set_elems(idx, val.tobytes())
+        else:
+            assert False
+
+    def set_elem(self, idx, m, val):
+        # val should be np.ndarray or bytes. e.g. np.array([1, 2, 3], dtype = complex).tobytes()
+        if isinstance(val, bytes):
+            return c.set_elem_sfield(self, idx, m, val)
+        elif isinstance(val, np.ndarray):
+            return self.set_elem(idx, m, val.tobytes())
+        else:
+            assert False
+
+    def __getitem__(self, i):
+        # i can be (idx, m,) or idx
+        if isinstance(i, tuple) and len(i) == 2 and isinstance(i[0], int):
+            idx, m = i
+            return self.get_elem(idx, m)
+        elif isinstance(i, int):
+            idx = i
+            return self.get_elems(idx)
+        else:
+            assert False
+            return None
+
+    def __setitem__(self, i, val):
+        # i can be (idx, m,) or idx
+        # val should be np.ndarray or bytes. e.g. np.array([1, 2, 3], dtype = complex).tobytes()
+        if isinstance(i, tuple) and len(i) == 2 and isinstance(i[0], int):
+            idx, m = i
+            return self.set_elem(idx, m, val)
+        elif isinstance(i, int):
+            idx = i
+            return self.set_elems(idx, val)
+        else:
+            assert False
+            return None
 
     def sparse(self, sel):
         # deprecated
@@ -220,6 +270,8 @@ class SelectedField:
         else:
             assert False
         return sp
+
+###
 
 @timer
 def set_selected_field(sf, f):

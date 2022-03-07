@@ -35,8 +35,9 @@ mk_file_dirs_info: 'results/prop-float.field'.
 write_field: fn='results/prop-float.field'.
 read_field: fn='results/prop-float.field'.
 prop.crc32() = 1892650077 ; prop.qnorm() = 49123.69044826866
+sp_prop 188.73394748572775
 mk_file_dirs_info: 'results/prop.lat'.
-sp_prop 188.73394748572775 0.0
+sp_prop 188.73394748572775 0.0 save load
 sp_prop 188.73394748572775 0.0 lat_data conversion
 mk_file_dirs_info: 'results/prop.sfield'.
 write_selected_field: fn='results/prop.sfield'.

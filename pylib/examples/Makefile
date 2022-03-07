@@ -37,7 +37,9 @@ hmc-pions-unit-tests.log: hmc-pions-unit-tests.py
 	-rm -rfv results
 	-grep -v "^Timer\|^GPT\|^Grid\|timing: \|Timing: \|local time slice" "$@".full > "$@"
 
-cqlat-example:
+cqlat-example: cqlat.log
+
+cqlat.log:
 	-make -C cqlat -j 2
 	python3 -c "import cqlat ; cqlat.hello_world()" > cqlat.log
 

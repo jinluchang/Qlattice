@@ -24,6 +24,7 @@ class SelectedPoints:
             self.cdata = c.mk_spfield_psel(ctype, psel, multiplicity)
 
     def __del__(self):
+        assert isinstance(self.cdata, int)
         c.free_spfield(self)
 
     def __imatmul__(self, f1):
@@ -31,11 +32,13 @@ class SelectedPoints:
         from qlat.selected_field import SelectedField
         assert f1.ctype == self.ctype
         if isinstance(f1, SelectedPoints):
+            # two psel must be the same object
             if self.psel is f1.psel:
                 c.set_spfield(self, f1)
             else:
                 raise Exception("SelectedPoints @= psel not match")
         elif isinstance(f1, SelectedField):
+            # psel must be subset of fsel
             c.set_spfield_sfield(self, f1)
         elif isinstance(f1, Field):
             c.set_spfield_field(self, f1)
@@ -93,6 +96,49 @@ class SelectedPoints:
         else:
             return np.array(c.get_elem_spfield(self, idx, m))
 
+    def set_elems(self, idx, val):
+        # val should be np.ndarray or bytes. e.g. np.array([1, 2, 3], dtype = complex).tobytes()
+        if isinstance(val, bytes):
+            return c.set_elems_spfield(self, idx, val)
+        elif isinstance(val, np.ndarray):
+            return self.set_elems(idx, val.tobytes())
+        else:
+            assert False
+
+    def set_elem(self, idx, m, val):
+        # val should be np.ndarray or bytes. e.g. np.array([1, 2, 3], dtype = complex).tobytes()
+        if isinstance(val, bytes):
+            return c.set_elem_spfield(self, idx, m, val)
+        elif isinstance(val, np.ndarray):
+            return self.set_elem(idx, m, val.tobytes())
+        else:
+            assert False
+
+    def __getitem__(self, i):
+        # i can be (idx, m,) or idx
+        if isinstance(i, tuple) and len(i) == 2 and isinstance(i[0], int):
+            idx, m = i
+            return self.get_elem(idx, m)
+        elif isinstance(i, int):
+            idx = i
+            return self.get_elems(idx)
+        else:
+            assert False
+            return None
+
+    def __setitem__(self, i, val):
+        # i can be (idx, m,) or idx
+        # val should be np.ndarray or bytes. e.g. np.array([1, 2, 3], dtype = complex).tobytes()
+        if isinstance(i, tuple) and len(i) == 2 and isinstance(i[0], int):
+            idx, m = i
+            return self.set_elem(idx, m, val)
+        elif isinstance(i, int):
+            idx = i
+            return self.set_elems(idx, val)
+        else:
+            assert False
+            return None
+
     def save(self, path):
         assert isinstance(path, str)
         return self.save_complex(path)
@@ -111,17 +157,28 @@ class SelectedPoints:
         return c.load_complex_spfield(self, path)
 
     def to_lat_data(self):
+        assert self.ctype in field_ctypes_complex
         ld = LatData()
         c.lat_data_from_complex_spfield(ld, self)
         return ld
 
     def from_lat_data(self, ld):
+        assert self.ctype in field_ctypes_complex
         assert isinstance(ld, LatData)
         c.complex_spfield_from_lat_data(self, ld)
 
     def to_numpy(self):
         n_points = self.n_points()
         return np.array([ self.get_elems(idx) for idx in range(n_points) ])
+
+    def from_numpy(self, arr):
+        # need to be already initialized with ctype and psel
+        n_points = self.n_points()
+        assert arr.shape[0] == n_points
+        for idx in range(n_points):
+            self.set_elems(idx, arr[idx])
+
+###
 
 @timer
 def set_selected_points(sp, f):

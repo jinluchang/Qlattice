@@ -27,6 +27,7 @@ class FieldExpandCommPlan:
         self.cdata = c.mk_field_expand_comm_plan()
 
     def __del__(self):
+        assert isinstance(self.cdata, int)
         c.free_field_expand_comm_plan(self)
 
     def __imatmul__(self, v1):

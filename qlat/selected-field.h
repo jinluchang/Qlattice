@@ -567,15 +567,14 @@ void set_selected_field(SelectedField<M>& sf, const Field<M>& f,
   const Geometry& geo = f.geo();
   const int multiplicity = geo.multiplicity;
   sf.init(fsel, multiplicity);
-#pragma omp parallel for
-  for (long idx = 0; idx < fsel.n_elems; ++idx) {
+  qacc_for(idx, fsel.n_elems, {
     const long index = fsel.indices[idx];
     const Vector<M> fv = f.get_elems_const(index);
     Vector<M> sfv = sf.get_elems(idx);
     for (int m = 0; m < multiplicity; ++m) {
       sfv[m] = fv[m];
     }
-  }
+  });
 }
 
 template <class M>
@@ -592,8 +591,7 @@ void set_selected_field(SelectedField<M>& sf, const SelectedField<M>& sf0,
   const Geometry& geo = sf0.geo();
   const int multiplicity = geo.multiplicity;
   sf.init(fsel, multiplicity);
-#pragma omp parallel for
-  for (long idx = 0; idx < fsel.n_elems; ++idx) {
+  qacc_for(idx, fsel.n_elems, {
     const long index = fsel.indices[idx];
     const long idx0 = fsel0.f_local_idx.get_elem(index);
     if (idx0 >= 0) {
@@ -603,12 +601,39 @@ void set_selected_field(SelectedField<M>& sf, const SelectedField<M>& sf0,
         sfv[m] = fv[m];
       }
     }
-  }
+  });
+}
+
+template <class M>
+void set_selected_field(SelectedField<M>& sf, const SelectedPoints<M>& sp,
+                        const FieldSelection& fsel, const PointSelection& psel)
+// all psel points must be selected
+{
+  TIMER("set_selected_field(sf,sp,fsel,psel)");
+  const long n_points = sp.n_points;
+  qassert(n_points == (long)psel.size());
+  const Geometry& geo = fsel.f_rank.geo();
+  const int multiplicity = sp.multiplicity;
+  sf.init(fsel, multiplicity);
+  qacc_for(idx, n_points, {
+    const Coordinate& xg = psel[idx];
+    const Coordinate xl = geo.coordinate_l_from_g(xg);
+    if (geo.is_local(xl)) {
+      const long sf_idx = fsel.f_local_idx.get_elem(xl);
+      qassert(0 <= sf_idx and sf_idx < sf.n_elems);
+      const Vector<M> spv = sp.get_elems_const(idx);
+      Vector<M> fv = sf.get_elems(sf_idx);
+      for (int m = 0; m < geo.multiplicity; ++m) {
+        fv[m] = spv[m];
+      }
+    }
+  });
 }
 
 template <class M>
 void set_selected_points(SelectedPoints<M>& sp, const SelectedField<M>& sf,
                          const PointSelection& psel, const FieldSelection& fsel)
+// all psel points must be selected
 {
   TIMER("set_selected_points(sp,sf,psel,fsel)");
   const Geometry& geo = sf.geo();
@@ -616,8 +641,7 @@ void set_selected_points(SelectedPoints<M>& sp, const SelectedField<M>& sf,
   const long n_points = psel.size();
   sp.init(psel, geo.multiplicity);
   set_zero(sp.points);
-#pragma omp parallel for
-  for (long idx = 0; idx < n_points; ++idx) {
+  qacc_for(idx, n_points, {
     const Coordinate& xg = psel[idx];
     const Coordinate xl = geo.coordinate_l_from_g(xg);
     if (geo.is_local(xl)) {
@@ -629,7 +653,7 @@ void set_selected_points(SelectedPoints<M>& sp, const SelectedField<M>& sf,
         spv[m] = fv[m];
       }
     }
-  }
+  });
   glb_sum_byte_vec(get_data(sp.points));
 }
 
