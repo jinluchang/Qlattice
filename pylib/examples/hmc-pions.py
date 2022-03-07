@@ -4,6 +4,7 @@ import sys
 import math as m
 import numpy as np
 import pickle
+import datetime
 
 import qlat as q
 
@@ -195,17 +196,18 @@ def test_hmc(total_site, action, mult, n_traj):
         phi=[field_sum[i]/V for i in range(4)]
         q.displayln_info(phi)
         #q.displayln_info("Sigma correlator:")
-        timeslices = field.glb_sum_tslice()
-        sc = [correlator(timeslices,Vx,total_site[3],dt,0) for dt in range(total_site[3])]
+        tslices = field.glb_sum_tslice()
+        sc = [correlator(tslices,Vx,total_site[3],dt,0) for dt in range(total_site[3])]
         #q.displayln_info(sc)
         #q.displayln_info("Pion correlators:")
-        pc = [np.mean([correlator(timeslices,Vx,total_site[3],dt,1),correlator(timeslices,Vx,total_site[3],dt,2),correlator(timeslices,Vx,total_site[3],dt,3)]) for dt in range(total_site[3])]
+        pc = [np.mean([correlator(tslices,Vx,total_site[3],dt,1),correlator(tslices,Vx,total_site[3],dt,2),correlator(tslices,Vx,total_site[3],dt,3)]) for dt in range(total_site[3])]
         #q.displayln_info(pc)
         if i>start_measurements:
             s_corrs.append(sc)
             pi_corrs.append(pc)
             psq_list.append(psq)
             phi_list.append(phi)
+            timeslices.append(tslices.to_numpy())
         q.displayln_info("Sigma correlator means and error of means:")
         s_means=[np.mean([s_corrs[l][j] for l in range(i-start_measurements)]) for j in range(total_site[3])]
         s_errs=[np.std([s_corrs[l][j] for l in range(i-start_measurements)])/len(s_corrs)**0.5 for j in range(total_site[3])]
@@ -216,28 +218,11 @@ def test_hmc(total_site, action, mult, n_traj):
         p_errs=[np.std([pi_corrs[l][j] for l in range(i-start_measurements)])/len(pi_corrs)**0.5 for j in range(total_site[3])]
         q.displayln_info(p_means)
         q.displayln_info(p_errs)
-        with open("output_data/sigma_pion_corrs.bin", "wb") as output:
-            pickle.dump([s_means,s_errs,p_means,p_errs],output)
         
     field.save_double("hmc-pions-sigma-pi-corrs.field")
 
 @q.timer_verbose
 def main():
-	# The lattice dimensions
-    total_site = [16, 16, 16, 32]
-    
-    # The multiplicity of the scalar field
-    mult = 4
-    
-    # The number of trajectories to calculate
-    n_traj = 100
-    
-    # Use action for a Euclidean scalar field. The Lagrangian will be: 
-    # (1/2)*[sum fields]|dphi|^2 + (1/2)*m_sq*[sum fields]|phi|^2 
-    #     + (1/24)*lmbd*([sum fields]|phi|^2)^2
-    m_sq = -1.0
-    lmbd = 1.0
-    alpha = 0.1
     action = q.ScalarAction(m_sq, lmbd, alpha)
     
     test_hmc(total_site, action, mult, n_traj)
@@ -246,6 +231,23 @@ psq_list=[]
 phi_list=[]
 s_corrs=[]
 pi_corrs=[]
+timeslices=[]
+
+# The lattice dimensions
+total_site = [16, 16, 16, 32]
+
+# The multiplicity of the scalar field
+mult = 4
+
+# The number of trajectories to calculate
+n_traj = 5000
+
+# Use action for a Euclidean scalar field. The Lagrangian will be:
+# (1/2)*[sum fields]|dphi|^2 + (1/2)*m_sq*[sum fields]|phi|^2
+#     + (1/24)*lmbd*([sum fields]|phi|^2)^2
+m_sq = -1.0
+lmbd = 1.0
+alpha = 0.1
 
 size_node_list = [
         [1, 1, 1, 1],
@@ -263,8 +265,8 @@ q.qremove_all_info("results")
 
 main()
 
-with open("output_data/sigma_pion_corrs_16x32_msq_-1_lmbd_1_alph_0.1.bin", "wb") as output:
-    pickle.dump([psq_list,phi_list,s_corrs,pi_corrs],output)
+with open(f"output_data/sigma_pion_corrs_{total_site[0]}x{total_site[3]}_msq_{m_sq}_lmbd_{lmbd}_alph_{alpha}_{datetime.datetime.now().date()}.bin", "wb") as output:
+    pickle.dump([psq_list,phi_list,s_corrs,pi_corrs,timeslices],output)
 
 #q.timer_display()
 
