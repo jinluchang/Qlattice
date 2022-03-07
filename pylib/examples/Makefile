@@ -6,8 +6,6 @@ run: cqlat-example py-examples
 
 tests = make-sample-gauge-field.log \
 		field-utils.log \
-		hmc-pions.log \
-		hmc-pions-unit-tests.log \
 		qcd-utils.log \
 		hmc-pure-gauge.log \
 		field-selection.log \
@@ -26,11 +24,6 @@ tests = make-sample-gauge-field.log \
 		gpt-qlat-rbc-ukqcd-invert.log
 
 py-examples: $(tests)
-
-hmc-pions-unit-tests.log: hmc-pions-unit-tests.py
-	mpirun --np 1 ./"$<" --mpi 1.1.1.1 --mpi_split 1.1.1.1 | tee "$@".full
-	-rm -rfv results
-	-grep -v "^Timer\|^GPT\|^Grid\|timing: \|Timing: " "$@".full > "$@"
 
 %.log: %.py
 	mpirun --np 2 ./"$<" --mpi 1.1.1.2 --mpi_split 1.1.1.1 --mpi 1.1.2 --mpi_split 1.1.1 | tee "$@".full
