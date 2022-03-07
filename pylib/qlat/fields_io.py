@@ -109,7 +109,7 @@ class ShuffledFieldsReader:
     def has(self, fn):
         if self.tags is None:
             self.tags = set(self.list())
-        return fn in tags
+        return fn in self.tags
 
 class ShuffledBitSet:
 
