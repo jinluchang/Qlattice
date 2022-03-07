@@ -223,6 +223,18 @@ EXPORT(list_sfr, {
   return py_convert(list_fields(sfr));
 });
 
+EXPORT(does_file_exist_sync_node_sfr, {
+  using namespace qlat;
+  PyObject* p_sfr = NULL;
+  PyObject* p_fn = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_sfr, &p_fn)) {
+    return NULL;
+  }
+  ShuffledFieldsReader& sfr = py_convert_type<ShuffledFieldsReader>(p_sfr);
+  const std::string fn = py_convert_data<std::string>(p_fn);
+  return py_convert(does_file_exist_sync_node(sfr, fn));
+});
+
 EXPORT(properly_truncate_fields_sync_node, {
   using namespace qlat;
   PyObject* p_path = NULL;
