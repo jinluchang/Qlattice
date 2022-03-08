@@ -29,7 +29,7 @@ This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
-Current Grid git commit hash=ede8faea7436d927ec867a190195dd61aeab4f3c: (HEAD, origin/feature/gpt, origin/HEAD, feature/gpt) clean
+Current Grid git commit hash=9616811c3d2aab506b7858a250e2d0b1711c597f: (HEAD, origin/feature/gpt, origin/HEAD, feature/gpt) clean
 
 
 =============================================
@@ -60,26 +60,32 @@ q_mem_cache_max_size=512 (default)
 q_mem_cache_acc_max_size=512 (default)
 CommPlanCache: to add 1 / 32.
 gf_show_info: plaq = 0.9451760164858156 ; link_trace = 0.9861007789909704.
+tag=qm start
 ShufflePlanCache: to add 1 / 16.
 src info 12.0 2788420690
 sol info 1.195616283925891 1974843651
 sol1 info 5.803159633046483 2628055279
+tag=qz_f start
 src info 12.0 2788420690
 sol info 1.1593942320448907 4283257928
 sol1 info 4.7663038559428 3036802905
 tag=qz_f diff src 0.0 sol 0.0010577192494466369 sol1 0.062195494406739354
+tag=qm_mp start
 src info 12.0 2788420690
 sol info 1.195616283417512 1514983079
 sol1 info 5.803159618352916 2829397300
 tag=qm_mp diff src 0.0 sol 1.5054846020419845e-13 sol1 2.313115425888109e-12
+tag=qm_split start
 src info 12.0 2788420690
 sol info 1.195616283417512 1514983079
 sol1 info 5.803159618352916 2829397300
 tag=qm_split diff src 0.0 sol 1.5054846020419845e-13 sol1 2.313115425888109e-12
+tag=qm_split_sloppy start
 src info 12.0 2788420690
 sol info 1.1956122489860164 3535872830
 sol1 info 5.803075901337386 2100532221
 tag=qm_split_sloppy diff src 0.0 sol 9.198541738249442e-09 sol1 3.859309322051284e-07
+tag=inv_qm_madwf start
 src info 12.0 2788420690
 sol info 1.1956162833238206 1160651071
 sol1 info 5.8031596349094485 2546554408
