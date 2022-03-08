@@ -108,11 +108,13 @@ def ama_apply2(f, x, y):
     else:
         assert False
 
-def ama_extract(x):
+def ama_extract(x, *, is_sloppy = False):
     if not isinstance(x, AmaVal):
         return x
     elif isinstance(x, AmaVal):
-        val = x.val
+        if is_sloppy:
+            val = x.val
+            return val
         corrections = x.corrections
         assert isinstance(corrections, list)
         assert corrections
