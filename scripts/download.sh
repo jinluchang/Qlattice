@@ -104,9 +104,9 @@ else
 fi
 
 if [ -d Grid-lehner ] ; then
-    ( cd Grid-lehner ; git pull )
+    ( cd Grid-lehner ; git pull https://github.com/waterret/Grid.git )
 else
-    git clone https://github.com/lehner/Grid.git Grid-lehner
+    git clone https://github.com/waterret/Grid.git Grid-lehner
 fi
 
 if [ -e Grid-lehner/configure ] ; then
@@ -116,9 +116,9 @@ else
 fi
 
 if [ -d gpt ] ; then
-    ( cd gpt ; git pull )
+    ( cd gpt ; git pull https://github.com/waterret/gpt.git )
 else
-    git clone https://github.com/lehner/gpt.git
+    git clone https://github.com/waterret/gpt.git
 fi
 
 if [ -d Grid-tblum ] ; then
