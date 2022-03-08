@@ -23,6 +23,6 @@ export CXX=
 
 ./scripts/qlat.sh
 ./scripts/grid.knl.sh
-./scripts/gpt.sh
+./scripts/gpt.knl.sh
 
 } |& tee $prefix/log.build.txt
