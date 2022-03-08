@@ -8,6 +8,8 @@ name=python-packages
 
 echo "!!!! build $name !!!!"
 
+find ~/.cache/pip/wheels -type f || true
+
 # rm -rfv ~/.cache/pip/wheels || true
 
 opts="--verbose --no-index --no-cache-dir -f $distfiles/python-packages"
