@@ -54,6 +54,7 @@ rup.dict_params["32IfineH"][tag] = list(range(1000, 10000, 50))
 rup.dict_params["24IH2"][tag] = list(range(1000, 10000, 10))
 rup.dict_params["24IH1"][tag] = list(range(1000, 10000, 10))
 rup.dict_params["32IH2"][tag] = list(range(1000, 10000, 10))
+rup.dict_params["32IH1"][tag] = list(range(1000, 10000, 10))
 
 tag = "n_points_psel"
 rup.dict_params["test-4nt8"][tag] = 6
@@ -65,6 +66,7 @@ rup.dict_params["16IH2"][tag] = 256
 rup.dict_params["24IH2"][tag] = 512
 rup.dict_params["24IH1"][tag] = 512
 rup.dict_params["32IH2"][tag] = 512
+rup.dict_params["32IH1"][tag] = 512
 
 tag = "n_exact_wsrc"
 rup.dict_params["test-4nt8"][tag] = 2
@@ -77,6 +79,7 @@ rup.dict_params["32IfineH"][tag] = 1/32
 rup.dict_params["24IH1"][tag] = 1/32
 rup.dict_params["24IH2"][tag] = 1/32
 rup.dict_params["32IH2"][tag] = 1/32
+rup.dict_params["32IH1"][tag] = 1/32
 
 tag = "n_per_tslice_smear"
 rup.dict_params["test-4nt8"][tag] = 2
@@ -87,6 +90,7 @@ rup.dict_params["32IfineH"][tag] = 8
 rup.dict_params["24IH1"][tag] = 8
 rup.dict_params["24IH2"][tag] = 8
 rup.dict_params["32IH2"][tag] = 8
+rup.dict_params["32IH1"][tag] = 8
 
 tag = "prob_acc_1_smear"
 rup.dict_params["test-4nt8"][tag] = 1/4
@@ -97,6 +101,7 @@ rup.dict_params["32IfineH"][tag] = 1/32
 rup.dict_params["24IH1"][tag] = 1/32
 rup.dict_params["24IH2"][tag] = 1/32
 rup.dict_params["32IH2"][tag] = 1/32
+rup.dict_params["32IH1"][tag] = 1/32
 
 tag = "prob_acc_2_smear"
 rup.dict_params["test-4nt8"][tag] = 1/16
@@ -107,12 +112,14 @@ rup.dict_params["32IfineH"][tag] = 1/128
 rup.dict_params["24IH1"][tag] = 1/128
 rup.dict_params["24IH2"][tag] = 1/128
 rup.dict_params["32IH2"][tag] = 1/128
+rup.dict_params["32IH1"][tag] = 1/128
 
 qg.begin_with_gpt()
 
 # ADJUST ME
 job_tags = [
         "test-4nt8", "test-4nt16",
+        # "32IH1",
         # "24IH1",
         # "24IH2",
         # "32IH2",

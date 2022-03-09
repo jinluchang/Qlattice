@@ -51,12 +51,15 @@ rup.dict_params["32IfineH"][tag] = list(range(1000, 10000, 50))
 rup.dict_params["24IH2"][tag] = list(range(1000, 10000, 100))
 rup.dict_params["24IH1"][tag] = list(range(1000, 10000, 100))
 rup.dict_params["32IH2"][tag] = list(range(1000, 10000, 10))
+rup.dict_params["32IH2"][tag] = list(range(1000, 10000, 100)) + list(range(1040, 10000, 100))
+rup.dict_params["32IH1"][tag] = list(range(1000, 10000, 50))
 
 qg.begin_with_gpt()
 
 # ADJUST ME
 job_tags = [
         "test-4nt8", "test-4nt16",
+        # "32IH1"
         # "24IH2", "24IH1", "32IH2",
         # "16IH2",
         # "24D",
