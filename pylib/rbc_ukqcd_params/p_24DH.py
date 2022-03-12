@@ -72,7 +72,7 @@ dict_params[f"cg_params-1-2"]["maxiter"] = 300
 def mk_lanc_params(inv_type, inv_acc):
     assert inv_acc == 0
     if inv_type == 0:
-        c_low = 0.9e-4
+        c_low = 1e-4
         n_stop = 500
         n_keep = n_stop + 40
         n_max = n_stop + 200
@@ -107,14 +107,14 @@ def mk_clanc_params(inv_type, inv_acc):
     assert inv_acc == 0
     if inv_type == 0:
         nbasis = 500
-        c_low = 2.5e-4
+        c_low = 2.6e-4
         n_stop = 1000
         n_keep = n_stop + 50
         n_max = n_stop + 300
         n_single = 150
     elif inv_type == 1:
         nbasis = 500
-        c_low = 2.1e-4
+        c_low = 2.2e-4
         n_stop = 1000
         n_keep = n_stop + 50
         n_max = n_stop + 300
