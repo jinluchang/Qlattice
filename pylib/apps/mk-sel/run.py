@@ -44,7 +44,6 @@ def run_job(job_tag, traj):
     q.clean_cache()
     q.timer_display()
 
-
 tag = "trajs"
 rup.dict_params["test-4nt8"][tag] = list(range(1000, 1400, 100))
 rup.dict_params["test-4nt16"][tag] = list(range(1000, 1400, 100))
