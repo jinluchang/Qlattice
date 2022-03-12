@@ -63,6 +63,7 @@ rup.dict_params["24DH"][tag] = list(range(200, 1000, 10))
 rup.dict_params["32Dfine"][tag] = list(range(1000, 10000, 10))
 rup.dict_params["16IH2"][tag] = list(range(1000, 10000, 10))
 rup.dict_params["32IfineH"][tag] = list(range(1000, 10000, 10))
+rup.dict_params["32IcoarseH1"][tag] = list(range(300, 2000, 10))
 rup.dict_params["24IH1"][tag] = list(range(1000, 10000, 10))
 rup.dict_params["24IH2"][tag] = list(range(1000, 10000, 10))
 rup.dict_params["24IH3"][tag] = list(range(1000, 10000, 10))
@@ -84,6 +85,7 @@ job_tags = [
         # "32IH2",
         # "32IH3",
         # "32IfineH",
+        # "32IcoarseH1",
         # "16IH2",
         # "24D",
         # "24DH",

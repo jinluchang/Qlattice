@@ -43,28 +43,34 @@ def run_job(job_tag, traj):
 tag = "trajs"
 rup.dict_params["test-4nt8"][tag] = list(range(1000, 1400, 100))
 rup.dict_params["test-4nt16"][tag] = list(range(1000, 1400, 100))
-rup.dict_params["48I"][tag] = list(range(3000, 500, -5))
+rup.dict_params["48I"][tag] = list(range(1000, 3000, 5))
 rup.dict_params["24D"][tag] = list(range(1000, 10000, 10))
-rup.dict_params["32Dfine"]["trajs"] = list(range(500, 3000, 10))
+rup.dict_params["24DH"][tag] = list(range(200, 1000, 10))
+rup.dict_params["32Dfine"][tag] = list(range(1000, 10000, 10))
 rup.dict_params["16IH2"][tag] = list(range(1000, 10000, 10))
-rup.dict_params["32IfineH"][tag] = list(range(1000, 10000, 50))
-rup.dict_params["24IH2"][tag] = list(range(1000, 10000, 100))
+rup.dict_params["32IfineH"][tag] = list(range(1000, 10000, 10))
+rup.dict_params["32IcoarseH1"][tag] = list(range(300, 2000, 50))
 rup.dict_params["24IH1"][tag] = list(range(1000, 10000, 100))
-rup.dict_params["32IH2"][tag] = list(range(1000, 10000, 10))
-rup.dict_params["32IH2"][tag] = list(range(1000, 10000, 100)) + list(range(1040, 10000, 100))
+rup.dict_params["24IH2"][tag] = list(range(1000, 10000, 100))
+rup.dict_params["24IH3"][tag] = list(range(1000, 10000, 100))
+rup.dict_params["24IH4"][tag] = list(range(1000, 10000, 100))
 rup.dict_params["32IH1"][tag] = list(range(1000, 10000, 50))
+rup.dict_params["32IH2"][tag] = list(range(1000, 10000, 100)) + list(range(1040, 10000, 100))
+rup.dict_params["32IH3"][tag] = list(range(1000, 10000, 50))
 
 qg.begin_with_gpt()
 
 # ADJUST ME
 job_tags = [
         "test-4nt8", "test-4nt16",
-        # "32IH1",
-        # "24IH2", "24IH1", "32IH2",
+        # "32IH1", "32IH2",
+        # "24IH1", "24IH2",,
         # "16IH2",
         # "24D",
+        # "24DH",
         # "32Dfine",
         # "32IfineH",
+        # "32IcoarseH1",
         ]
 
 q.check_time_limit()
