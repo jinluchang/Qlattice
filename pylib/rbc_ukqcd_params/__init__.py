@@ -20,6 +20,8 @@ import rbc_ukqcd_params.p_32IH1
 import rbc_ukqcd_params.p_32IH2
 import rbc_ukqcd_params.p_32IH3
 
+import rbc_ukqcd_params.p_32IcoarseH1
+
 import rbc_ukqcd_params.p_32IfineH
 
 import rbc_ukqcd_params.p_48I

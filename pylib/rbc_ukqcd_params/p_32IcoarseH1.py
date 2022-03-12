@@ -1,6 +1,6 @@
 import rbc_ukqcd_params as rup
 
-job_tag = "24D"
+job_tag = "32IcoarseH1"
 
 dict_params = {}
 
@@ -8,43 +8,25 @@ rup.dict_params[job_tag] = dict_params
 
 dict_params["job_tag"] = job_tag
 
-dict_params["total_site"] = [ 24, 24, 24, 64, ]
+dict_params["total_site"] = [ 32, 32, 32, 64, ]
 
-dict_params["load_config_params"] = { "twist_boundary_at_boundary":[ 0.0, 0.0, 0.0, -0.5, ] }
+dict_params["load_config_params"] = { "twist_boundary_at_boundary": [ 0.0, 0.0, 0.0, -0.5, ] }
 
 def mk_fermion_params(inv_type, inv_acc):
     params = {}
     params["M5"] = 1.8
     params["boundary_phases"] = [ 1.0, 1.0, 1.0, 1.0, ] # twist boundary after loading configuration
-    params["b"] = 2.5
-    params["c"] = 1.5
+    params["b"] = 1.0
+    params["c"] = 0.0
+    params["Ls"] = 16
     if inv_type == 0:
-        params["mass"] = 0.00107
+        params["mass"] = 0.005
     elif inv_type == 1:
-        params["mass"] = 0.0850
+        params["mass"] = 0.04
     elif inv_type == 2:
-        params["mass"] = 0.25
+        params["mass"] = 0.3
     else:
         assert False
-    if inv_acc == 0 or inv_acc == 1:
-        params["b"] = 1.0
-        params["c"] = 0.0
-        params["omega"] = [
-                1.0903256131299373,
-                0.9570283702230611,
-                0.7048886040934104,
-                0.48979921782791747,
-                0.328608311201356,
-                0.21664245377015995,
-                0.14121112711957107,
-                0.0907785101745156,
-                0.05608303440064219 - 0.007537158177840385j,
-                0.05608303440064219 + 0.007537158177840385j,
-                0.0365221637144842 - 0.03343945161367745j,
-                0.0365221637144842 + 0.03343945161367745j,
-                ]
-    else:
-        params["Ls"] = 24
     return params
 
 def mk_dict_fermion_params():
@@ -57,30 +39,24 @@ def mk_dict_fermion_params():
 
 dict_params["fermion_params"] = mk_dict_fermion_params()
 
-dict_params[f"cg_params-0-2"] = {}
-dict_params[f"cg_params-0-2"]["maxiter"] = 300
-
 dict_params[f"cg_params-1-0"] = {}
 dict_params[f"cg_params-1-0"]["maxiter"] = 250
 
 dict_params[f"cg_params-1-1"] = {}
 dict_params[f"cg_params-1-1"]["maxiter"] = 250
 
-dict_params[f"cg_params-1-2"] = {}
-dict_params[f"cg_params-1-2"]["maxiter"] = 300
-
 def mk_lanc_params(inv_type, inv_acc):
     assert inv_acc == 0
     if inv_type == 0:
-        c_low = 2.3e-4
-        n_stop = 1000
-        n_keep = n_stop + 40
-        n_max = n_stop + 200
+        c_low = 0.0009
+        n_stop = 250
+        n_keep = n_stop + 10
+        n_max = n_stop + 50
     elif inv_type == 1:
-        c_low = 1e-4
-        n_stop = 500
-        n_keep = n_stop + 40
-        n_max = n_stop + 200
+        c_low = 0.001
+        n_stop = 150
+        n_keep = n_stop + 10
+        n_max = n_stop + 50
     else:
         assert False
     fermion_params = mk_dict_fermion_params()[inv_type][inv_acc]
@@ -106,22 +82,22 @@ def mk_lanc_params(inv_type, inv_acc):
 def mk_clanc_params(inv_type, inv_acc):
     assert inv_acc == 0
     if inv_type == 0:
-        nbasis = 1000
-        c_low = 6.3e-4
-        n_stop = 2000
-        n_keep = n_stop + 100
-        n_max = n_stop + 600
-        n_single = 150
-    elif inv_type == 1:
-        nbasis = 500
-        c_low = 2.9e-4
+        nbasis = 250
+        c_low = 0.0023
         n_stop = 1000
-        n_keep = n_stop + 50
-        n_max = n_stop + 300
+        n_keep = n_stop + 20
+        n_max = n_stop + 100
         n_single = 100
+    elif inv_type == 1:
+        nbasis = 150
+        c_low = 0.0017
+        n_stop = 600
+        n_keep = n_stop + 20
+        n_max = n_stop + 100
+        n_single = 50
     else:
         assert False
-    block = [ 2, 2, 2, 2, ]
+    block = [ 2, 2, 2, 4, ]
     cheby_params = { "low": c_low, "high": 5.5, "order": 100, }
     irl_params = {
             "Nstop": n_stop,
@@ -134,7 +110,7 @@ def mk_clanc_params(inv_type, inv_acc):
             #    "maxapply" : 100
             }
     smoother_params = { "eps": 1e-6, "maxiter": 25, }
-    save_params = { "nsingle": n_single, "mpi": [ 1, 1, 1, 8, ], }
+    save_params = { "nsingle": n_single, "mpi": [ 1, 1, 1, 16, ], }
     return {
             "block": block,
             "nbasis": nbasis,
