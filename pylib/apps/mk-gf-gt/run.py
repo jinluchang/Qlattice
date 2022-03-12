@@ -63,7 +63,10 @@ qg.begin_with_gpt()
 job_tags = [
         "test-4nt8", "test-4nt16",
         # "32IH1",
-        # "24IH1", "24IH2", "32IH2",
+        # "32IH2",
+        # "24IH1",
+        # "24IH2",
+        # "24IH3",
         # "24D",
         # "24DH",
         # "16IH2",

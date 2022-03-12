@@ -86,8 +86,8 @@ rup.dict_params["48I"][tag] = 2
 tag = "prob_exact_wsrc"
 rup.dict_params["test-4nt16"][tag] = 1/8
 rup.dict_params["16IH2"][tag] = 1/16
-rup.dict_params["24D"][tag] = 1/16
-rup.dict_params["24DH"][tag] = 1/16
+rup.dict_params["24D"][tag] = 1/32
+rup.dict_params["24DH"][tag] = 1/32
 rup.dict_params["32IfineH"][tag] = 1/32
 rup.dict_params["32IcoarseH1"][tag] = 1/32
 rup.dict_params["24IH1"][tag] = 1/32
@@ -144,9 +144,10 @@ qg.begin_with_gpt()
 job_tags = [
         "test-4nt8", "test-4nt16",
         # "32IH1",
+        # "32IH2",
         # "24IH1",
         # "24IH2",
-        # "32IH2",
+        # "24IH3",
         # "16IH2",
         # "32IfineH",
         # "32IcoarseH1",
