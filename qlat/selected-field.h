@@ -377,12 +377,12 @@ struct SelectedField {
     return field[idx * multiplicity + m];
   }
   //
-  Vector<M> get_elems(const long idx)
+  qacc Vector<M> get_elems(const long idx)
   {
     const int multiplicity = geo().multiplicity;
     return Vector<M>(&field[idx * multiplicity], multiplicity);
   }
-  Vector<M> get_elems_const(const long idx) const
+  qacc Vector<M> get_elems_const(const long idx) const
   // Be cautious about the const property
   // 改不改靠自觉
   {
