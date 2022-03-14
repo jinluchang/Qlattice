@@ -281,17 +281,17 @@ def merge_jk_idx(*jk_idx_list):
         assert jk_idx[0] == "avg"
     return [ "avg", ] + [ idx for jk_idx in jk_idx_list for idx in jk_idx[1:] ]
 
-def rejk_list(jk_list, jk_idx, all_jk_idx):
+def rejk_list(jk_list, jk_idx_list, all_jk_idx):
     # super jackknife
-    assert jk_idx[0] == "avg"
+    assert jk_idx_list[0] == "avg"
     assert all_jk_idx[0] == "avg"
-    assert len(jk_idx) == len(jk_list)
-    assert len(jk_idx) <= len(all_jk_idx)
+    assert len(jk_idx_list) == len(jk_list)
+    assert len(jk_idx_list) <= len(all_jk_idx)
     jk_avg = jk_list[0]
     size_new = len(all_jk_idx)
     i_new = 0
     jk_list_new = []
-    for i, idx in enumerate(jk_idx):
+    for i, idx in enumerate(jk_idx_list):
         while all_jk_idx[i_new] != idx:
             jk_list_new.append(jk_avg)
             i_new += 1
@@ -307,7 +307,7 @@ def rejk_list(jk_list, jk_idx, all_jk_idx):
 
 # ----------
 
-def rjk_jk_list(jk_list, jk_idx, n_rand_sample, rng_state):
+def rjk_jk_list(jk_list, jk_idx_list, n_rand_sample, rng_state):
     # return rjk_list
     # len(rjk_list) == 1 + n_rand_sample
     # distribution of rjk_list should be similar as the distribution of avg
@@ -315,7 +315,7 @@ def rjk_jk_list(jk_list, jk_idx, n_rand_sample, rng_state):
     # avg = jk_avg(jk_list)
     # n = len(jk_list)
     # rjk_list[i] = avg + \sum_{j=1}^{n-1} r_{i,j} (jk_list[j] - avg)
-    assert jk_idx[0] == "avg"
+    assert jk_idx_list[0] == "avg"
     assert isinstance(n_rand_sample, int)
     assert n_rand_sample >= 0
     assert isinstance(rng_state, RngState)
@@ -326,13 +326,13 @@ def rjk_jk_list(jk_list, jk_idx, n_rand_sample, rng_state):
     rjk_list = [ avg, ]
     for i in range(n_rand_sample):
         rsi = rs.split(i)
-        r = [ rsi.split(idx).g_rand_gen() for idx in jk_idx[1:] ]
+        r = [ rsi.split(idx).g_rand_gen() for idx in jk_idx_list[1:] ]
         rjk_list.append(avg + sum([ r[j] * jk_diff[j] for j in range(n - 1) ]))
     return rjk_list
 
-def rjackknife(data_list, jk_idx, n_rand_sample, rng_state, *, eps = 1):
+def rjackknife(data_list, jk_idx_list, n_rand_sample, rng_state, *, eps = 1):
     jk_list = jackknife(data_list, eps)
-    return rjk_jk_list(jk_list, jk_idx, n_rand_sample, rng_state)
+    return rjk_jk_list(jk_list, jk_idx_list, n_rand_sample, rng_state)
 
 def rjk_avg(rjk_list):
     return jk_avg(rjk_list)
@@ -361,7 +361,7 @@ def g_jk(data_list, *, eps, **_kwargs):
     return jackknife(data_list, eps)
 
 @use_kwargs(default_g_jk_kwargs)
-def g_rejk(jk_list, jk_idx, *,
+def g_rejk(jk_list, jk_idx_list, *,
         jk_type,
         all_jk_idx,
         get_all_jk_idx,
@@ -373,9 +373,9 @@ def g_rejk(jk_list, jk_idx, *,
         if all_jk_idx is None:
             assert get_all_jk_idx is not None
             all_jk_idx = get_all_jk_idx()
-        return rejk_list(jk_list, jk_idx, all_jk_idx)
+        return rejk_list(jk_list, jk_idx_list, all_jk_idx)
     elif jk_type == "rjk":
-        return rjk_jk_list(jk_list, jk_idx, n_rand_sample, rng_state)
+        return rjk_jk_list(jk_list, jk_idx_list, n_rand_sample, rng_state)
     else:
         assert False
     return None
