@@ -131,13 +131,22 @@ def eval_cexpr(cexpr : CExpr, *, positions_dict, get_prop, is_only_total):
     tvals = { name : ama_extract(eval_op_term_expr(term, variable_dict, positions_dict, get_prop)) for name, term in cexpr.named_terms }
     evals = { name : sum([ tvals[tname] for tname in expr ]) for name, expr in cexpr.named_exprs }
     if is_only_total in [ True, "total", ]:
-        return np.array([ evals[name] for name, expr in cexpr.named_exprs])
+        return np.array(
+                [ evals[name] for name, expr in cexpr.named_exprs]
+                )
     elif is_only_total in [ "typed_total", ]:
         tevals = { name : sum([ tvals[tname] for tname in expr ]) for name, expr in cexpr.named_typed_exprs }
-        return np.array([ tevals[name] for name, expr in cexpr.named_typed_exprs ] + [ evals[name] for name, expr in cexpr.named_exprs])
+        return np.array(
+                [ tevals[name] for name, expr in cexpr.named_typed_exprs ]
+                + [ evals[name] for name, expr in cexpr.named_exprs]
+                )
     elif is_only_total in [ False, "term", ]:
         tevals = { name : sum([ tvals[tname] for tname in expr ]) for name, expr in cexpr.named_typed_exprs }
-        return np.array([ tvals[name] for name, term in cexpr.named_terms ] + [ tevals[name] for name, expr in cexpr.named_typed_exprs ] + [ evals[name] for name, expr in cexpr.named_exprs])
+        return np.array(
+                [ tvals[name] for name, term in cexpr.named_terms ]
+                + [ tevals[name] for name, expr in cexpr.named_typed_exprs ]
+                + [ evals[name] for name, expr in cexpr.named_exprs]
+                )
     else:
         assert False
 
@@ -184,6 +193,12 @@ def get_mpi_chunk(total_list, *, rng_state = None):
 @q.timer
 def eval_cexpr_simulation(cexpr : CExpr, *, positions_dict_maker, trial_indices, get_prop, is_only_total = "total"):
     # interface function
+    # 1. positions_dict_maker(idx) = positions_dict
+    # 2. positions_dict_maker(idx) = (positions_dict, facs)
+    # positions_dict[pos] = xg
+    # get_prop(flavor, xg1, xg2) = prop
+    # facs = [ fac1, fac2, ... ]
+    # trial_indices = [ idx1, idx2, ... ]
     assert isinstance(trial_indices, list)
     total_num_trials = q.glb_sum(len(trial_indices))
     if total_num_trials == 0:
@@ -198,7 +213,12 @@ def eval_cexpr_simulation(cexpr : CExpr, *, positions_dict_maker, trial_indices,
     num_fac = None
     results = None
     for idx in trial_indices:
-        positions_dict, facs = positions_dict_maker(idx)
+        pdi = positions_dict_maker(idx)
+        if isinstance(pdi, dict):
+            positions_dict = pdi
+            facs = [ 1.0, ]
+        else:
+            positions_dict, facs = pdi
         if num_fac is None:
             num_fac = len(facs)
             results = [ [] for i in range(num_fac) ]
