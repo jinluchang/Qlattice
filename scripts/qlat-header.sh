@@ -33,6 +33,7 @@ cp pylib/apps/qlat-convert/qlat-convert $prefix/bin/
 cp pylib/apps/topo-measure/topo-measure $prefix/bin/
 cp pylib/apps/eigen-system-repartition/eigen-system-repartition $prefix/bin/
 cp pylib/apps/eigen-system-checksum/eigen-system-checksum $prefix/bin/
+cp pylib/apps/fields-checksum/fields-checksum $prefix/bin/
 
 ( cd ./pylib/cqlat ; ./update.sh )
 
