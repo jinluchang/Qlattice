@@ -32,6 +32,7 @@ cp pylib/apps/gauge-fix-coulomb/gauge-fix-coulomb $prefix/bin/
 cp pylib/apps/qlat-convert/qlat-convert $prefix/bin/
 cp pylib/apps/topo-measure/topo-measure $prefix/bin/
 cp pylib/apps/eigen-system-repartition/eigen-system-repartition $prefix/bin/
+cp pylib/apps/eigen-system-checksum/eigen-system-checksum $prefix/bin/
 
 ( cd ./pylib/cqlat ; ./update.sh )
 
