@@ -326,6 +326,20 @@ qacc int epsilon_tensor_acc(const int i, const int j, const int k)
   return 0;
 }
 
+qacc int epsilon_tensor_acc(const int a, const int b, const int c, const int d)
+{
+  if (d == 3) {
+    return epsilon_tensor_acc(a, b, c);
+  } else if (c == 3) {
+    return -epsilon_tensor_acc(a, b, d);
+  } else if (b == 3) {
+    return epsilon_tensor_acc(a, c, d);
+  } else if (a == 3) {
+    return -epsilon_tensor_acc(b, c, d);
+  }
+  return 0;
+}
+
 inline Coordinate read_coordinate(const std::string& str)
 {
   long x = 0;
