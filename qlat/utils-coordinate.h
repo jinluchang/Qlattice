@@ -308,6 +308,24 @@ inline int epsilon_tensor(const int i, const int j, const int k)
   return epsilon_tensor(i, j, k, 3);
 }
 
+qacc int epsilon_tensor_acc(const int i, const int j, const int k)
+{
+  if (i == 0 and j == 1 and k == 2) {
+    return 1;
+  } else if (i == 1 and j == 2 and k == 0) {
+    return 1;
+  } else if (i == 2 and j == 0 and k == 1) {
+    return 1;
+  } else if (i == 2 and j == 1 and k == 0) {
+    return -1;
+  } else if (i == 1 and j == 0 and k == 2) {
+    return -1;
+  } else if (i == 0 and j == 2 and k == 1) {
+    return -1;
+  }
+  return 0;
+}
+
 inline Coordinate read_coordinate(const std::string& str)
 {
   long x = 0;
