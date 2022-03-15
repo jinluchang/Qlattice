@@ -567,6 +567,11 @@ struct SpinMatrixConstantsT {
   }
 };
 
+inline const box<SpinMatrixConstantsT<> >& get_spin_matrix_constants()
+{
+  return SpinMatrixConstantsT<>::get_instance_box();
+}
+
 template <class T>
 qacc WilsonMatrixT<T> operator*(const ColorMatrixT<T>& cm,
                                 const WilsonMatrixT<T>& m)
