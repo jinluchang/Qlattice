@@ -270,10 +270,10 @@ struct ColorMatrixConstants {
     }
   }
   //
-  static const box<ColorMatrixConstants>& get_instance_box()
+  static const box_acc<ColorMatrixConstants>& get_instance_box()
   {
-    static box<ColorMatrixConstants> cmcs =
-        box<ColorMatrixConstants>(ColorMatrixConstants());
+    static box_acc<ColorMatrixConstants> cmcs =
+        box_acc<ColorMatrixConstants>(ColorMatrixConstants());
     return cmcs;
   }
   //

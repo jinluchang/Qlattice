@@ -421,7 +421,7 @@ struct InverterParams {
 };
 
 struct InverterDomainWall {
-  box<Geometry> geo;
+  box_acc<Geometry> geo;
   FermionAction fa;
   GaugeField gf;
   InverterParams ip;

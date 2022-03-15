@@ -512,10 +512,10 @@ struct SpinMatrixConstantsT {
     }
   }
   //
-  static const box<SpinMatrixConstantsT<T> >& get_instance_box()
+  static const box_acc<SpinMatrixConstantsT<T> >& get_instance_box()
   {
-    static box<SpinMatrixConstantsT<T> > smcs =
-        box<SpinMatrixConstantsT<T> >(SpinMatrixConstantsT<T>());
+    static box_acc<SpinMatrixConstantsT<T> > smcs =
+        box_acc<SpinMatrixConstantsT<T> >(SpinMatrixConstantsT<T>());
     return smcs;
   }
   //
@@ -567,7 +567,7 @@ struct SpinMatrixConstantsT {
   }
 };
 
-inline const box<SpinMatrixConstantsT<> >& get_spin_matrix_constants()
+inline const box_acc<SpinMatrixConstantsT<> >& get_spin_matrix_constants()
 {
   return SpinMatrixConstantsT<>::get_instance_box();
 }
