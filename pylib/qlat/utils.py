@@ -4,6 +4,7 @@ from qlat.field import *
 from qlat.lat_io import *
 from qlat.rng_state import *
 from qlat.coordinate import *
+import numpy as np
 
 def lazy_call(f, *args, **kwargs):
     is_thunk = True
@@ -26,7 +27,12 @@ def set_unit(x, coef = 1.0):
     x.set_unit(coef)
 
 def qnorm(x):
-    return x.qnorm()
+    # qnorm(2) == 4
+    if isinstance(x, np.ndarray):
+        return np.abs(np.vdot(x, x))
+    else:
+        return x.qnorm()
+    assert False
 
 def show(x):
     return x.show()
