@@ -53,7 +53,7 @@ def mk_lanc_params(inv_type, inv_acc):
         n_keep = n_stop + 10
         n_max = n_stop + 50
     elif inv_type == 1:
-        c_low = 7.0e-4
+        c_low = 6.5e-4
         n_stop = 150
         n_keep = n_stop + 10
         n_max = n_stop + 50
@@ -61,7 +61,7 @@ def mk_lanc_params(inv_type, inv_acc):
         assert False
     fermion_params = mk_dict_fermion_params()[inv_type][inv_acc]
     pit_params = { "eps": 0.01, "maxiter": 500, "real": True }
-    cheby_params = {"low": c_low, "high": 5.5, "order": 200}
+    cheby_params = {"low": c_low, "high": 5.5, "order": 300}
     irl_params = {
             "Nstop": n_stop,
             "Nk": n_keep,
@@ -90,7 +90,7 @@ def mk_clanc_params(inv_type, inv_acc):
         n_single = 100
     elif inv_type == 1:
         nbasis = 150
-        c_low = 0.0016
+        c_low = 0.0015
         n_stop = 600
         n_keep = n_stop + 20
         n_max = n_stop + 100
@@ -98,7 +98,7 @@ def mk_clanc_params(inv_type, inv_acc):
     else:
         assert False
     block = [ 2, 2, 2, 4, ]
-    cheby_params = { "low": c_low, "high": 5.5, "order": 100, }
+    cheby_params = { "low": c_low, "high": 5.5, "order": 200, }
     irl_params = {
             "Nstop": n_stop,
             "Nk": n_keep,

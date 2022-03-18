@@ -114,7 +114,7 @@ def mk_clanc_params(inv_type, inv_acc):
         n_single = 150
     elif inv_type == 1:
         nbasis = 500
-        c_low = 2.2e-4
+        c_low = 2.3e-4
         n_stop = 1000
         n_keep = n_stop + 50
         n_max = n_stop + 300
