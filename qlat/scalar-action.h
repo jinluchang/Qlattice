@@ -177,6 +177,42 @@ struct ScalarAction {
     });
   }
   
+  inline void axial_current_node_no_comm(Field<double>&  axial_current, const Field<double>& sf)
+  {
+    TIMER("ScalarAction.axial_current_node_no_comm");
+    const Geometry geo = sf.geo();
+    const Geometry geo_r = geo_reform(geo, geo.multiplicity-1);
+    axial_current.init(geo_r);
+    qacc_for(index, geo.local_volume(), {
+      Coordinate xl = geo.coordinate_from_index(index);
+      Vector<double> ac_v = axial_current.get_elems(xl);
+      int M = ac_v.size();
+      qassert(M == geo.multiplicity-1);
+      for (int m = 0; m < M; ++m) {
+        Coordinate xl_mu = xl;
+        xl_mu[4]+=1;
+        ac_v[m] = sf.get_elem(xl, 0)*sf.get_elem(xl_mu, m+1);
+        ac_v[m] -= sf.get_elem(xl_mu, 0)*sf.get_elem(xl, m+1);
+      }
+    });
+  }
+  
+  inline void axial_current_node(Field<double>&  axial_current, const Field<double>& sf)
+  {
+	// Sets the axial_current field based on the provided field 
+	// configuration sf. axial_current.get_elem(x,i) will give the time
+	// component of the ith axial current vector at position x+a/2.
+    TIMER("ScalarAction.axial_current_node");
+    const Coordinate expand_left(0, 0, 0, 0);
+    const Coordinate expand_right(1, 1, 1, 1);
+    const Geometry geo_ext = geo_resize(sf.geo(), expand_left, expand_right);
+    Field<double> sf_ext;
+    sf_ext.init(geo_ext);
+    sf_ext = sf;
+    refresh_expanded(sf_ext);
+    axial_current_node_no_comm(axial_current, sf_ext);
+  }
+  
 };
 
 }  // namespace qlat

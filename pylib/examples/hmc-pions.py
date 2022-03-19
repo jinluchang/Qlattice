@@ -177,6 +177,9 @@ def test_hmc(total_site, action, mult, n_traj):
     q.set_unit(field);
     #field.load_double("hmc-pions-sigma-pi-corrs.field")
     
+    geo_cur = q.Geometry(total_site, mult-1)
+    axial_current = q.Field("double",geo_cur)
+    
     traj = 0
     start_measurements = 0;
     for i in range(n_traj):
@@ -193,21 +196,24 @@ def test_hmc(total_site, action, mult, n_traj):
         q.displayln_info("Average phi:")
         field_sum = field.glb_sum()
         V = geo.total_volume()
-        phi=[field_sum[i]/V for i in range(4)]
+        phi=[field_sum[i]/V for i in range(mult)]
         q.displayln_info(phi)
-        #q.displayln_info("Sigma correlator:")
+        q.displayln_info("Sigma correlator:")
         tslices = field.glb_sum_tslice()
         sc = [correlator(tslices,Vx,total_site[3],dt,0) for dt in range(total_site[3])]
         #q.displayln_info(sc)
         #q.displayln_info("Pion correlators:")
         pc = [np.mean([correlator(tslices,Vx,total_site[3],dt,1),correlator(tslices,Vx,total_site[3],dt,2),correlator(tslices,Vx,total_site[3],dt,3)]) for dt in range(total_site[3])]
         #q.displayln_info(pc)
+        action.axial_current_node(axial_current, field)
+        tslices_ax_cur = axial_current.glb_sum_tslice()
         if i>start_measurements:
             s_corrs.append(sc)
             pi_corrs.append(pc)
             psq_list.append(psq)
             phi_list.append(phi)
             timeslices.append(tslices.to_numpy())
+            ax_cur_timeslices.append(tslices_ax_cur.to_numpy())
         q.displayln_info("Sigma correlator means and error of means:")
         s_means=[np.mean([s_corrs[l][j] for l in range(i-start_measurements)]) for j in range(total_site[3])]
         s_errs=[np.std([s_corrs[l][j] for l in range(i-start_measurements)])/len(s_corrs)**0.5 for j in range(total_site[3])]
@@ -232,6 +238,7 @@ phi_list=[]
 s_corrs=[]
 pi_corrs=[]
 timeslices=[]
+ax_cur_timeslices=[]
 
 # The lattice dimensions
 total_site = [16, 16, 16, 32]
@@ -266,7 +273,7 @@ q.qremove_all_info("results")
 main()
 
 with open(f"output_data/sigma_pion_corrs_{total_site[0]}x{total_site[3]}_msq_{m_sq}_lmbd_{lmbd}_alph_{alpha}_{datetime.datetime.now().date()}.bin", "wb") as output:
-    pickle.dump([psq_list,phi_list,s_corrs,pi_corrs,timeslices],output)
+    pickle.dump([psq_list,phi_list,s_corrs,pi_corrs,timeslices,ax_cur_timeslices],output)
 
 #q.timer_display()
 

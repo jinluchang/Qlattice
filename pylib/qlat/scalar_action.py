@@ -42,3 +42,8 @@ class ScalarAction:
         assert isinstance(sf, Field)
         assert isinstance(sm, Field)
         return c.hmc_sf_evolve_scalar_action(self, sf, sm, step_size)
+    
+    def axial_current_node(self, axial_current, sf):
+        assert isinstance(sf, Field)
+        assert isinstance(axial_current, Field)
+        return c.axial_current_node_scalar_action(self, axial_current, sf)

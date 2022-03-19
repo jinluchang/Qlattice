@@ -108,3 +108,18 @@ EXPORT(hmc_sf_evolve_scalar_action, {
   sa.hmc_sf_evolve(sf, sm, step_size);
   Py_RETURN_NONE;
 });
+
+EXPORT(axial_current_node_scalar_action, {
+  using namespace qlat;
+  PyObject* p_sa = NULL;
+  PyObject* p_axial_cur = NULL;
+  PyObject* p_sf = NULL;
+  if (!PyArg_ParseTuple(args, "OOO", &p_sa, &p_axial_cur, &p_sf)) {
+    return NULL;
+  }
+  ScalarAction& sa = py_convert_type<ScalarAction>(p_sa);
+  Field<double>& axial_cur = py_convert_type<Field<double>>(p_axial_cur);
+  const Field<double>& sf = py_convert_type<Field<double>>(p_sf);
+  sa.axial_current_node(axial_cur, sf);
+  Py_RETURN_NONE;
+});
