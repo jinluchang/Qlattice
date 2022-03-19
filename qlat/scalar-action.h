@@ -188,11 +188,13 @@ struct ScalarAction {
       Vector<double> ac_v = axial_current.get_elems(xl);
       int M = ac_v.size();
       qassert(M == geo.multiplicity-1);
+      double p0;
+      double pi;
       for (int m = 0; m < M; ++m) {
-        Coordinate xl_mu = xl;
-        xl_mu[4]+=1;
-        ac_v[m] = sf.get_elem(xl, 0)*sf.get_elem(xl_mu, m+1);
-        ac_v[m] -= sf.get_elem(xl_mu, 0)*sf.get_elem(xl, m+1);
+        p0 = sf.get_elem(xl, 0);
+        pi = sf.get_elem(xl, m+1);
+        xl[3]+=1;
+        ac_v[m] = p0*sf.get_elem(xl, m+1) - sf.get_elem(xl, 0)*pi;
       }
     });
   }

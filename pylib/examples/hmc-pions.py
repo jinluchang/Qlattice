@@ -198,7 +198,7 @@ def test_hmc(total_site, action, mult, n_traj):
         V = geo.total_volume()
         phi=[field_sum[i]/V for i in range(mult)]
         q.displayln_info(phi)
-        q.displayln_info("Sigma correlator:")
+        #q.displayln_info("Sigma correlator:")
         tslices = field.glb_sum_tslice()
         sc = [correlator(tslices,Vx,total_site[3],dt,0) for dt in range(total_site[3])]
         #q.displayln_info(sc)
