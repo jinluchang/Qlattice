@@ -332,9 +332,11 @@ inline void test_selected_points(const std::string& tag, const long n_points)
     const RngState rs_psel = rs.split("psel");
     for (int i = 0; i < n_points; ++i) {
       RngState rsi = rs_psel.split(i);
-      const Coordinate xg = mod(Coordinate(rand_gen(rsi), rand_gen(rsi),
-                                           rand_gen(rsi), rand_gen(rsi)),
-                                total_site);
+      Coordinate xgr;
+      for (int m = 0; m < 4; ++m) {
+        xgr[m] = rand_gen(rsi);
+      }
+      const Coordinate xg = mod(xgr, total_site);
       psel.push_back(xg);
     }
   }
