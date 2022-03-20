@@ -483,6 +483,10 @@ ShufflePlan make_shuffle_plan_generic(std::vector<FieldSelection>& fsels,
                                       const FieldSelection& fsel,
                                       const Coordinate& new_size_node,
                                       const Func& func)
+// gindex_s = func(gindex)
+// return sp
+// shuffle_field(fs, f0, sp)
+// fs{gindex_s} == f0{gindex}
 {
   TIMER_VERBOSE("make_shuffle_plan_generic");
   fsels.clear();
@@ -575,7 +579,7 @@ ShufflePlan make_shuffle_plan_generic(std::vector<FieldSelection>& fsels,
       last_buffer_idx += 1;
     }
   }
-  // communicate to determin recv msg size from each node
+  // communicate to determine recv msg size from each node
   std::map<int, long> recv_id_node_size;
   {
     vector<long> send_size(num_node, 0), recv_size(num_node, -1);
@@ -1238,6 +1242,26 @@ struct ShiftShufflePlan {
   ShufflePlan sp;
 };
 
+inline ShufflePlan make_shuffle_plan_shift(FieldSelection& fsel_shift,
+                                           const FieldSelection& fsel,
+                                           const Coordinate& shift,
+                                           const bool is_reflect = false)
+{
+  TIMER_VERBOSE("make_shuffle_plan_shift");
+  const Geometry& geo = fsel.f_rank.geo();
+  const Coordinate& new_size_node = geo.geon.size_node;
+  ShuffleShiftGIndexMap func;
+  func.total_site = geo.total_site();
+  func.shift = shift;
+  func.is_reflect = is_reflect;
+  std::vector<FieldSelection> fsels;
+  const ShufflePlan sp =
+      make_shuffle_plan_generic(fsels, fsel, new_size_node, func);
+  qassert(fsels.size() == 1);
+  fsel_shift = fsels[0];
+  return sp;
+}
+
 inline ShiftShufflePlan make_shift_shuffle_plan(const FieldSelection& fsel,
                                                 const Coordinate& shift,
                                                 const bool is_reflect = false)
@@ -1246,31 +1270,48 @@ inline ShiftShufflePlan make_shift_shuffle_plan(const FieldSelection& fsel,
   ShiftShufflePlan ssp;
   ssp.shift = shift;
   ssp.is_reflect = is_reflect;
-  const Geometry& geo = fsel.f_rank.geo();
-  const Coordinate& new_size_node = geo.geon.size_node;
-  ShuffleShiftGIndexMap func;
-  func.total_site = geo.total_site();
-  func.shift = shift;
-  func.is_reflect = is_reflect;
-  std::vector<FieldSelection> fsels;
-  ssp.sp = make_shuffle_plan_generic(fsels, fsel, new_size_node, func);
-  qassert(fsels.size() == 1);
-  ssp.fsel = fsels[0];
+  ssp.sp = make_shuffle_plan_shift(ssp.fsel, fsel, shift, is_reflect);
   return ssp;
+}
+
+template <class M>
+void field_shift(SelectedField<M>& sf, const SelectedField<M>& sf0,
+                 const ShufflePlan& sp)
+// sf{gindex_s} = sf0(gindex)
+// xg_s <=> gindex_s
+// xg <=> gindex
+// xg_s = mod(xg + shift, total_site)
+{
+  TIMER_VERBOSE_FLOPS("field_shift(sf,sf0,sp)");
+  qassert(sp.geos_recv.size() == 1);
+  const Geometry& geo = sf0.geo();
+  timer.flops += sp.scp.global_comm_size * geo.multiplicity * sizeof(M);
+  std::vector<SelectedField<M> > sfs;
+  shuffle_field(sfs, sf0, sp);
+  qassert(sfs.size() == 1);
+  qswap(sf, sfs[0]);
 }
 
 template <class M>
 void field_shift(SelectedField<M>& sf, const SelectedField<M>& sf0,
                  const ShiftShufflePlan& ssp)
 {
-  TIMER_VERBOSE_FLOPS("field_shift(sf,sf0,ssp)");
-  const Geometry& geo = sf0.geo();
+  field_shift(sf, sf0, ssp.sp);
+}
+
+template <class M>
+void field_shift(SelectedField<M>& sf, FieldSelection& fsel,
+                 const SelectedField<M>& sf0, const FieldSelection& fsel0,
+                 const Coordinate& shift, const bool is_reflect = false)
+{
+  TIMER_VERBOSE_FLOPS("field_shift(sf,fsel,sf0,fsel0,shift)");
+  const ShiftShufflePlan ssp =
+      make_shift_shuffle_plan(fsel0, shift, is_reflect);
   const ShufflePlan& sp = ssp.sp;
+  const Geometry& geo = sf0.geo();
   timer.flops += sp.scp.global_comm_size * geo.multiplicity * sizeof(M);
-  std::vector<SelectedField<M> > sfs;
-  shuffle_field(sfs, sf0, sp);
-  qassert(sfs.size() == 1);
-  qswap(sf, sfs[0]);
+  fsel = ssp.fsel;
+  field_shift(sf, sf0, ssp);
 }
 
 // old code
