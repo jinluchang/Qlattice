@@ -1,6 +1,6 @@
 #include "lib.h"
 
-#include "qlat-setup.h"
+#include "qlat/qlat-setup.h"
 #include "data-load.h"
 
 EXPORT(setup, {

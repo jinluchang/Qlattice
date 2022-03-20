@@ -2,7 +2,7 @@
 
 #include <qlat/qlat.h>
 
-#include "qlat-setup.h"
+#include "qlat/qlat-setup.h"
 
 namespace qlat
 {  //

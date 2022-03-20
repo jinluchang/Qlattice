@@ -6,7 +6,6 @@
 #include "data-paths.h"
 #include "psrc-distribution.h"
 #include "psrc-sample.h"
-#include "qlat-setup.h"
 
 namespace qlat
 {  //
