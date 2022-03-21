@@ -373,11 +373,9 @@ inline long load_prop(PselProp& ps_prop, SelProp& s_prop,
   SelProp sprop;
   const long total_bytes = read_field_double_from_float(sprop, path, fn, sbs);
   if (total_bytes > 0) {
+    flip_tpbc_with_tslice(sprop, sbs.fsel, tslice_flip_tpbc);
     set_selected_points(ps_prop, sprop, psel, sbs.fsel);
     set_selected_field(s_prop, sprop, fsel, sbs.fsel);
-    const int t_size = fsel.f_rank.geo().total_site()[3];
-    flip_tpbc_with_tslice(ps_prop, psel, tslice_flip_tpbc, t_size);
-    flip_tpbc_with_tslice(s_prop, fsel, tslice_flip_tpbc);
   } else {
     qassert(false);
   }
