@@ -281,27 +281,88 @@ inline void display_fields_wsrc(const std::string& job_tag, const int traj,
   display_info(show_list(fns));
 }
 
-inline long load_prop(PselProp& ps_prop, SelProp& s_prop,
-                      const std::string& path, const std::string& fn,
-                      const PointSelection& psel, const FieldSelection& fsel)
+// inline long load_prop(PselProp& ps_prop, SelProp& s_prop,
+//                       const std::string& path, const std::string& fn,
+//                       const PointSelection& psel, const FieldSelection& fsel)
+// {
+//   TIMER_VERBOSE("load_prop(ps_prop,s_prop,path,fn,psel,fsel)");
+//   displayln_info(
+//       fname +
+//       ssprintf(": WARNING: obsolete. Try to use the sbs version instead."));
+//   Propagator4d prop;
+//   const long total_bytes = read_field_double_from_float(prop, path, fn);
+//   if (total_bytes > 0) {
+//     set_selected_points(ps_prop, prop, psel);
+//     set_selected_field(s_prop, prop, fsel);
+//   }
+//   return total_bytes;
+// }
+
+inline void set_t_range_flip_tpbc_with_tslice(int& t_start, int& t_stop, const int tslice_flip_tpbc, const int t_size)
+// flip range t_start <= t < t_stop
+// tslice_flip_tpbc - t_size_half ... tslice_flip_tpbc ... tslice_flip_tpbc + t_size_half - 1
 {
-  TIMER_VERBOSE("load_prop(ps_prop,s_prop,path,fn,psel,fsel)");
-  displayln_info(
-      fname +
-      ssprintf(": WARNING: obsolete. Try to use the sbs version instead."));
-  Propagator4d prop;
-  const long total_bytes = read_field_double_from_float(prop, path, fn);
-  if (total_bytes > 0) {
-    set_selected_points(ps_prop, prop, psel);
-    set_selected_field(s_prop, prop, fsel);
+  const int t_size_half = t_size / 2;
+  qassert(t_size == t_size_half * 2);
+  if (tslice_flip_tpbc + t_size_half < t_size) {
+    t_start = tslice_flip_tpbc + t_size_half;
+    t_stop = t_size;
+  } else if (tslice_flip_tpbc - t_size_half >= 0) {
+    t_start = 0;
+    t_stop = tslice_flip_tpbc - t_size_half;
+  } else {
+    qassert(false);
   }
-  return total_bytes;
+}
+
+inline void flip_tpbc_with_tslice(PselProp& ps_prop, const PointSelection& psel, const int tslice_flip_tpbc, const int t_size)
+{
+  if (tslice_flip_tpbc < 0) {
+    return;
+  }
+  TIMER_VERBOSE("flip_tpbc_with_tslice(psel)");
+  qassert(t_size > 0);
+  qassert(t_size > tslice_flip_tpbc);
+  qassert(ps_prop.n_points == (long)psel.size());
+  int t_start, t_stop;
+  set_t_range_flip_tpbc_with_tslice(t_start, t_stop, tslice_flip_tpbc, t_size);
+  qacc_for(idx, ps_prop.n_points, {
+    const Coordinate xg = psel[idx];
+    const int t = xg[3];
+    qassert(t_size > t);
+    if (t_start <= t and t < t_stop) {
+      ps_prop.get_elem(idx) *= -1;
+    }
+  });
+}
+
+inline void flip_tpbc_with_tslice(SelProp& s_prop, const FieldSelection& fsel, const int tslice_flip_tpbc)
+{
+  if (tslice_flip_tpbc < 0) {
+    return;
+  }
+  TIMER_VERBOSE("flip_tpbc_with_tslice(fsel)");
+  qassert(s_prop.n_elems == (long)fsel.n_elems);
+  const Geometry& geo = fsel.f_rank.geo();
+  const int t_size = geo.total_site()[3];
+  int t_start, t_stop;
+  set_t_range_flip_tpbc_with_tslice(t_start, t_stop, tslice_flip_tpbc, t_size);
+  qacc_for(idx, fsel.n_elems, {
+    const long index = fsel.indices[idx];
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Coordinate xg = geo.coordinate_g_from_l(xl);
+    const int t = xg[3];
+    if (t_start <= t and t < t_stop) {
+      s_prop.get_elem(idx) *= -1;
+    }
+  });
 }
 
 inline long load_prop(PselProp& ps_prop, SelProp& s_prop,
                       const std::string& path, const std::string& fn,
                       const PointSelection& psel, const FieldSelection& fsel,
-                      const ShuffledBitSet& sbs)
+                      const ShuffledBitSet& sbs,
+                      const int tslice_flip_tpbc = -1)
 {
   TIMER_VERBOSE("load_prop(ps_prop,s_prop,path,fn,psel,fsel,sbs)");
   SelProp sprop;
@@ -309,6 +370,9 @@ inline long load_prop(PselProp& ps_prop, SelProp& s_prop,
   if (total_bytes > 0) {
     set_selected_points(ps_prop, sprop, psel, sbs.fsel);
     set_selected_field(s_prop, sprop, fsel, sbs.fsel);
+    const int t_size = fsel.f_rank.geo().total_site()[3];
+    flip_tpbc_with_tslice(ps_prop, psel, tslice_flip_tpbc, t_size);
+    flip_tpbc_with_tslice(s_prop, fsel, tslice_flip_tpbc);
   } else {
     qassert(false);
   }
@@ -316,12 +380,15 @@ inline long load_prop(PselProp& ps_prop, SelProp& s_prop,
 }
 
 inline void load_prop(PselProp& ps_prop, const std::string& path_psel,
-                      const std::string& fn)
+                      const std::string& fn, const int tslice_flip_tpbc = -1,
+                      const int t_size = -1,
+                      const PointSelection& psel = PointSelection())
 {
   TIMER_VERBOSE("load_prop(ps_prop,path,fn)");
   const std::string path_full = path_psel + "/" + fn + ".lat";
   if (get_does_file_exist(path_full)) {
     load_selected_points_complex(ps_prop, path_full);
+    flip_tpbc_with_tslice(ps_prop, psel, tslice_flip_tpbc, t_size);
   } else {
     ps_prop.init();
     qassert(false);
@@ -414,7 +481,15 @@ inline const PselProp& get_psel_prop_wsrc(const std::string& job_tag,
     PselProp& ps_prop = ps_cache[key];
     const std::string path_psel = get_psel_prop_wsrc_path(job_tag, traj, type);
     const std::string fn = get_wsrc_tag(tslice, type, accuracy);
-    load_prop(ps_prop, path_psel, fn);
+    int tslice_flip_tpbc = -1;
+    if (job_tag == "48I" and type == 1) {
+      // 48I strange quark wsrc boundary condition is anti-periodic, different
+      // from other 48I props
+      tslice_flip_tpbc = tslice;
+    }
+    const Coordinate total_site = get_total_site(job_tag);
+    const PointSelection& psel = get_point_selection(job_tag, traj);
+    load_prop(ps_prop, path_psel, fn, tslice_flip_tpbc, total_site[3], psel);
   }
   return ps_cache[key];
 }
@@ -436,13 +511,20 @@ inline const SelProp& get_prop_wsrc(const std::string& job_tag, const int traj,
     const PointSelection& psel = get_point_selection(job_tag, traj);
     const FieldSelection& fsel = get_field_selection(job_tag, traj);
     const ShuffledBitSet& sbs = get_shuffled_bit_set(job_tag, traj, path);
-    load_prop(ps_prop, s_prop, path, fn, psel, fsel, sbs);
+    int tslice_flip_tpbc = -1;
+    if (job_tag == "48I" and type == 1) {
+      // 48I strange quark wsrc boundary condition is anti-periodic, different
+      // from other 48I props
+      tslice_flip_tpbc = tslice;
+    }
+    load_prop(ps_prop, s_prop, path, fn, psel, fsel, sbs, tslice_flip_tpbc);
     if (is_check_prop_consistency()) {
       TIMER_VERBOSE("check_prop_consistency");
       const std::string path_psel =
           get_psel_prop_wsrc_path(job_tag, traj, type);
       PselProp ps_prop_load;
-      load_prop(ps_prop_load, path_psel, fn);
+      const Coordinate total_site = get_total_site(job_tag);
+      load_prop(ps_prop_load, path_psel, fn, tslice_flip_tpbc, total_site[3]);
       const double qnorm_ps_prop = qnorm(ps_prop_load);
       ps_prop_load -= ps_prop;
       const double qnorm_ps_prop_diff = qnorm(ps_prop_load);
