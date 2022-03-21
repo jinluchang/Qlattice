@@ -298,9 +298,12 @@ inline void display_fields_wsrc(const std::string& job_tag, const int traj,
 //   return total_bytes;
 // }
 
-inline void set_t_range_flip_tpbc_with_tslice(int& t_start, int& t_stop, const int tslice_flip_tpbc, const int t_size)
+inline void set_t_range_flip_tpbc_with_tslice(int& t_start, int& t_stop,
+                                              const int tslice_flip_tpbc,
+                                              const int t_size)
 // flip range t_start <= t < t_stop
-// tslice_flip_tpbc - t_size_half ... tslice_flip_tpbc ... tslice_flip_tpbc + t_size_half - 1
+// tslice_flip_tpbc - t_size_half ... tslice_flip_tpbc ... tslice_flip_tpbc +
+// t_size_half - 1
 {
   const int t_size_half = t_size / 2;
   qassert(t_size == t_size_half * 2);
@@ -315,7 +318,8 @@ inline void set_t_range_flip_tpbc_with_tslice(int& t_start, int& t_stop, const i
   }
 }
 
-inline void flip_tpbc_with_tslice(PselProp& ps_prop, const PointSelection& psel, const int tslice_flip_tpbc, const int t_size)
+inline void flip_tpbc_with_tslice(PselProp& ps_prop, const PointSelection& psel,
+                                  const int tslice_flip_tpbc, const int t_size)
 {
   if (tslice_flip_tpbc < 0) {
     return;
@@ -336,7 +340,8 @@ inline void flip_tpbc_with_tslice(PselProp& ps_prop, const PointSelection& psel,
   });
 }
 
-inline void flip_tpbc_with_tslice(SelProp& s_prop, const FieldSelection& fsel, const int tslice_flip_tpbc)
+inline void flip_tpbc_with_tslice(SelProp& s_prop, const FieldSelection& fsel,
+                                  const int tslice_flip_tpbc)
 {
   if (tslice_flip_tpbc < 0) {
     return;
@@ -524,7 +529,7 @@ inline const SelProp& get_prop_wsrc(const std::string& job_tag, const int traj,
           get_psel_prop_wsrc_path(job_tag, traj, type);
       PselProp ps_prop_load;
       const Coordinate total_site = get_total_site(job_tag);
-      load_prop(ps_prop_load, path_psel, fn, tslice_flip_tpbc, total_site[3]);
+      load_prop(ps_prop_load, path_psel, fn, tslice_flip_tpbc, total_site[3], psel);
       const double qnorm_ps_prop = qnorm(ps_prop_load);
       ps_prop_load -= ps_prop;
       const double qnorm_ps_prop_diff = qnorm(ps_prop_load);
