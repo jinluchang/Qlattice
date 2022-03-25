@@ -121,7 +121,7 @@ def mk_clanc_params(inv_type, inv_acc):
         n_single = 100
     else:
         assert False
-    block = [ 2, 2, 2, 2, ]
+    block = [ 2, 3, 3, 2, ]
     cheby_params = { "low": c_low, "high": 5.5, "order": 100, }
     irl_params = {
             "Nstop": n_stop,
