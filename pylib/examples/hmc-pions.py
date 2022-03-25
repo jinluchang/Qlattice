@@ -175,7 +175,7 @@ def test_hmc(total_site, action, mult, n_traj):
     # Create the scalar field and set all field values to 1
     field = q.Field("double",geo,mult)
     q.set_unit(field);
-    #field.load_double("hmc-pions-sigma-pi-corrs.field")
+    #field.load_double(f"hmc-pions-sigma-pi-corrs_{total_site[0]}x{total_site[3]}_msq_{m_sq}_lmbd_{lmbd}_alph_{alpha}.field")
     
     geo_cur = q.Geometry(total_site, mult-1)
     axial_current = q.Field("double",geo_cur)
@@ -225,7 +225,7 @@ def test_hmc(total_site, action, mult, n_traj):
         q.displayln_info(p_means)
         q.displayln_info(p_errs)
         
-    field.save_double("hmc-pions-sigma-pi-corrs.field")
+    field.save_double(f"hmc-pions-sigma-pi-corrs_{total_site[0]}x{total_site[3]}_msq_{m_sq}_lmbd_{lmbd}_alph_{alpha}.field")
 
 @q.timer_verbose
 def main():
@@ -241,7 +241,7 @@ timeslices=[]
 ax_cur_timeslices=[]
 
 # The lattice dimensions
-total_site = [16, 16, 16, 32]
+total_site = [8, 8, 8, 8]
 
 # The multiplicity of the scalar field
 mult = 4

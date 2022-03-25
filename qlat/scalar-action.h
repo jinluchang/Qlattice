@@ -195,6 +195,7 @@ struct ScalarAction {
         pi = sf.get_elem(xl, m+1);
         xl[3]+=1;
         ac_v[m] = p0*sf.get_elem(xl, m+1) - sf.get_elem(xl, 0)*pi;
+        xl[3]-=1;
       }
     });
   }
