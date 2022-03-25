@@ -408,7 +408,6 @@ shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=60386CDD.
 FieldsReader: close 'huge-data/t0/demo.lfs'.
-60AA0806  fn='huge-data/t0/fsel.field'
 4B7F2131  fn='huge-data/t0/demo.lfs/00/0000000000'
 57314C95  fn='huge-data/t0/demo.lfs/00/0000000001'
 7A835AD7  fn='huge-data/t0/demo.lfs/01/0000000002'
@@ -474,6 +473,7 @@ FF7A1888  fn='huge-data/t0/demo.lfs/30/0000000061'
 79E82458  fn='huge-data/t0/demo.lfs/31/0000000062'
 A11848CD  fn='huge-data/t0/demo.lfs/31/0000000063'
 9AE9A27B  fn='huge-data/t0/demo.lfs/geon-info.txt'
+60AA0806  fn='huge-data/t0/fsel.field'
 demo: create splittable random number generator 'rs'
 demo: random select 4 points on entire lattice
 demo: random select points on each time slice

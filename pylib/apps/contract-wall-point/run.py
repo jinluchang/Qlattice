@@ -10,9 +10,8 @@ def get_load_path(fn):
         return None
     path_list = [
             "data",
-            "../mk-sample-selected-data/results",
-            "/home/luchang/application/Public/Qlat-Grid-cc/sample-data/mk-sample-selected-data/results",
             "/hpcgpfs01/work/lqcd/qcdqedta/hlbl-data-with-cache",
+            os.path.join(os.getenv("HOME"), "Qlat-sample-data/mk-selected-data-sample/results"),
             ]
     for path in path_list:
         if fn == "":

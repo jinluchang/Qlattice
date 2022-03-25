@@ -725,8 +725,7 @@ void acc_field(Field<M>& f, const Complex coef, const SelectedField<M>& sf,
   }
   qassert(multiplicity == f.geo().multiplicity);
   qassert(sf.n_elems == fsel.n_elems);
-#pragma omp parallel for
-  for (long idx = 0; idx < fsel.n_elems; ++idx) {
+  qacc_for(idx, fsel.n_elems, {
     const long index = fsel.indices[idx];
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<M> fv = f.get_elems(xl);
@@ -734,7 +733,7 @@ void acc_field(Field<M>& f, const Complex coef, const SelectedField<M>& sf,
     for (int m = 0; m < multiplicity; ++m) {
       fv[m] += coef * sfv[m];
     }
-  }
+  });
 }
 
 template <class M>
