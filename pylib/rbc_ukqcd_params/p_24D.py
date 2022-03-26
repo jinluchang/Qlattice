@@ -77,7 +77,7 @@ def mk_lanc_params(inv_type, inv_acc):
         n_keep = n_stop + 40
         n_max = n_stop + 200
     elif inv_type == 1:
-        c_low = 1.2e-4
+        c_low = 1.3e-4
         n_stop = 500
         n_keep = n_stop + 40
         n_max = n_stop + 200
