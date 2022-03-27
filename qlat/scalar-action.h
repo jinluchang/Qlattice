@@ -191,11 +191,11 @@ struct ScalarAction {
       double p0;
       double pi;
       for (int m = 0; m < M; ++m) {
+        xl[3]-=1;
         p0 = sf.get_elem(xl, 0);
         pi = sf.get_elem(xl, m+1);
         xl[3]+=1;
         ac_v[m] = p0*sf.get_elem(xl, m+1) - sf.get_elem(xl, 0)*pi;
-        xl[3]-=1;
       }
     });
   }
@@ -204,7 +204,7 @@ struct ScalarAction {
   {
 	// Sets the axial_current field based on the provided field 
 	// configuration sf. axial_current.get_elem(x,i) will give the time
-	// component of the ith axial current vector at position x+a/2.
+	// component of the ith axial current vector at position x-a/2.
     TIMER("ScalarAction.axial_current_node");
     const Coordinate expand_left(0, 0, 0, 0);
     const Coordinate expand_right(1, 1, 1, 1);
