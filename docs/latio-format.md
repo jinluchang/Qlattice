@@ -13,7 +13,7 @@ BINARY-DATA
 
 ### FILE-HEADER
 
-example:
+Example:
 
 ```
 #!/usr/bin/env lat-io-glimpse
