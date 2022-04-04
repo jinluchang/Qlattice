@@ -15,18 +15,22 @@ jobs:
 
     - name: Show info
       run: |
+        cd ..
         whoami
         pwd
         ls
         export
 
+    - name: make
+      run: |
+        cd ..
+        pwd
+        ls
+        ./scripts/cuba.sh
+        ./scripts/eigen.sh
+        ./scripts/qlat.sh
+
     - name: Install Ubuntu packages
       run: |
         sudo apt-get update
         sudo apt-get install -y libssl-dev libopenmpi-dev libfftw3-dev libgsl-dev
-
-    - name: make
-      run: |
-        ./scripts/cuba.sh
-        ./scripts/eigen.sh
-        ./scripts/qlat.sh
