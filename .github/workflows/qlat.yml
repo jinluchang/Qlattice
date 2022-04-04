@@ -1,0 +1,29 @@
+name: C/C++ CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+env:
+  CC: mpicc
+  CXX: mpic++
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Install Ubuntu packages
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libssl-dev libopenmpi-dev libfftw3-dev libgsl-dev
+
+    - name: make
+      run: |
+        ./scripts/cuba.sh
+        ./scripts/eigen.sh
+        ./scripts/qlat.sh
