@@ -31,19 +31,26 @@ struct ScalarAction {
   
   qacc double action_point(const Field<double>& sf, const int multiplicity, Coordinate xl)
   {
-    // TIMER("ScalarAction.action_point");
+    // Returns the contribution to the total action from a single lattice
+    // point (including the relavent neighbor interactions)
+    TIMER("ScalarAction.action_point");
+    
+    // Stores [sum i, mu] [phi_i(x+mu)-phi_i(x)]^2
     double dphi_sq=0;
+    // Stores [sum i] phi_i(x)^2
     double phi_sq=0;
+    // Stores phi_0(x)
     double phi_0=0;
+    
     for (int m = 0; m < multiplicity; ++m) {
       double phi = sf.get_elem(xl,m);
       phi_sq += phi*phi;
-      if (m==0) phi_0 += phi;
-      for (int dir = 0; dir < 4; ++dir) {
-        xl[dir]+=1;
-        double phi_n = sf.get_elem(xl,m);
-        dphi_sq += (phi_n-phi)*(phi_n-phi);
-        xl[dir]-=1;
+      if (m==0) phi_0 = phi;
+      for (int mu = 0; mu < 4; ++mu) {
+        xl[mu]+=1;
+        double phi_mu = sf.get_elem(xl,m);
+        dphi_sq += (phi_mu-phi)*(phi_mu-phi);
+        xl[mu]-=1;
       }
     }
     return dphi_sq/2.0 + m_sq*phi_sq/2.0 + lmbd*phi_sq*phi_sq/24.0 + alpha*phi_0;
@@ -51,14 +58,25 @@ struct ScalarAction {
     
   inline double action_node_no_comm(const Field<double>& sf)
   {
+	// Returns the total action of the portion of the lattice on the 
+	// current node (assuming the necessary communication has already 
+	// been done)
     TIMER("ScalarAction.action_node_no_comm");
     const Geometry geo = sf.geo();
+    // Creates a geometry that is the same as the field geometry, except
+    // with multiplicity 1
     const Geometry geo_r = geo_reform(geo);
+    // Creates a field to save the contribution to the total action from
+    // each point
     FieldM<double, 1> fd;
     fd.init(geo_r);
+    // Loops over every lattice point in the current node
     qacc_for(index, geo_r.local_volume(), {
       fd.get_elem(index) = action_point(sf,geo.multiplicity,geo_r.coordinate_from_index(index));
     });
+    // Sums over the contributions to the total action from each point
+    // (this cannot be done in the previous loops because the previous
+    // loop runs in parallel)
     double sum = 0.0;
     for (long index = 0; index < geo_r.local_volume(); ++index) {
       sum += fd.get_elem(index);
@@ -86,11 +104,15 @@ struct ScalarAction {
 
   inline double sum_sq(const Field<double>& sf)
   {
-	// Return the sum over lattice sites (x) and multiplicity (m) of 
-	// phi_m(x)^2
+	// Returns the sum of phi_m(x)^2 over lattice sites (on the current 
+	// node) and multiplicity
     TIMER("ScalarAction.sum_sq");
     const Geometry geo = sf.geo();
+    // Creates a geometry that is the same as the field geometry, except
+    // with multiplicity 1
     const Geometry geo_r = geo_reform(geo);
+    // Creates a field to save the contribution to the sum of squares 
+    // from each point
     FieldM<double, 1> fd;
     fd.init(geo_r);
     qacc_for(index, geo_r.local_volume(), {
@@ -102,6 +124,9 @@ struct ScalarAction {
       }
       fd.get_elem(index) = s;
     });
+    // Sums over the contributions to the sum of squares from each point
+    // (this cannot be done in the previous loops because the previous
+    // loop runs in parallel)
     double sum = 0.0;
     for (long index = 0; index < geo_r.local_volume(); ++index) {
       sum += fd.get_elem(index);
@@ -206,8 +231,8 @@ struct ScalarAction {
 	// configuration sf. axial_current.get_elem(x,i) will give the time
 	// component of the ith axial current vector at position x-a/2.
     TIMER("ScalarAction.axial_current_node");
-    const Coordinate expand_left(0, 0, 0, 0);
-    const Coordinate expand_right(1, 1, 1, 1);
+    const Coordinate expand_left(0, 0, 0, 1);
+    const Coordinate expand_right(0, 0, 0, 0);
     const Geometry geo_ext = geo_resize(sf.geo(), expand_left, expand_right);
     Field<double> sf_ext;
     sf_ext.init(geo_ext);

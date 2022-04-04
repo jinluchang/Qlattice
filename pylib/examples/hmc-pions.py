@@ -15,12 +15,6 @@ def phi_squared(field,action):
     geo = field.geo()
     return phi_sq*2/geo.total_volume()/geo.multiplicity()
 
-def correlator(tslices,Vx,Nt,delta_t,m):
-    rtn = 0
-    for t0 in range(Nt):
-        rtn += tslices.get_elem(t0%Nt,m)*tslices.get_elem((t0+delta_t)%Nt,m)
-    return rtn/(Nt)/Vx**2
-
 @q.timer_verbose
 def sm_evolve_fg(momentum, field_init, action, fg_dt, dt):
     # Evolve the momentum field according to the given action using the  
@@ -112,8 +106,14 @@ def run_hmc_evolve(momentum, field, action, rs, steps, md_time = 1.0):
 
 @q.timer_verbose
 def metropolis_accept(delta_h, traj, rs):
+	# This variable will store whether or not we've decided to accept 
+	# the trajectory
     flag_d = 0.0
+    # This variable will store the acceptance probability
     accept_prob = 0.0
+    # Since we only want to decide once whether or not to accept, we 
+    # only run this code on node 0 (delta_h has already been summed over
+    # all nodes)
     if q.get_id_node() == 0:
         if delta_h <= 0.0:
             accept_prob = 1.0
@@ -125,15 +125,15 @@ def metropolis_accept(delta_h, traj, rs):
                 flag_d = 1.0
     flag_d = q.glb_sum(flag_d)
     accept_prob = q.glb_sum(accept_prob)
+    # If we decided to accept, flag_d should be 1.0. Therefore, flag is
+    # true if we decided to accept.
     flag = flag_d > 0.5
     q.displayln_info("metropolis_accept: flag={:d} with accept_prob={:.1f}% delta_h={:.16f} traj={:d}".format(
         flag, accept_prob * 100.0, delta_h, traj))
     return flag, accept_prob
 
 @q.timer_verbose
-def run_hmc(field, action, traj, rs):
-    # Get the field geometry
-    geo = field.geo()
+def run_hmc(field, geo, action, traj, rs):
     # Create a copy of the scalar field
     f0 = field.copy()
     
@@ -157,7 +157,7 @@ def run_hmc(field, action, traj, rs):
     
     # If the field update is accepted or we are within the first few 
     # trajectories, save the field update
-    init_len = 0
+    init_len = 20
     if flag or traj <= init_len:
         q.displayln_info("run_hmc: update field (traj={:d})".format(traj))
         field @= f0
@@ -166,7 +166,10 @@ def run_hmc(field, action, traj, rs):
 def test_hmc(total_site, action, mult, n_traj):
     # Create the geometry for the field
     geo = q.Geometry(total_site, mult)
+    # Save the spacial volume and the total volume of the lattice for 
+    # future use
     Vx = total_site[0]*total_site[1]*total_site[2]
+    V = Vx*total_site[3]
     
     # Create a random number generator that can be split between 
     # different portions of the lattice
@@ -175,57 +178,50 @@ def test_hmc(total_site, action, mult, n_traj):
     # Create the scalar field and set all field values to 1
     field = q.Field("double",geo,mult)
     q.set_unit(field);
-    #field.load_double(f"hmc-pions-sigma-pi-corrs_{total_site[0]}x{total_site[3]}_msq_{m_sq}_lmbd_{lmbd}_alph_{alpha}.field")
+    #field.load_double(f"output_data/hmc-pions-sigma-pi-corrs_{total_site[0]}x{total_site[3]}_msq_{m_sq}_lmbd_{lmbd}_alph_{alpha}.field")
     
+    # Create the geometry for the axial current field
     geo_cur = q.Geometry(total_site, mult-1)
+    # This field will store the calculated axial currents
     axial_current = q.Field("double",geo_cur)
     
+    # Stores the index of the current trajectory
     traj = 0
+    # The number of trajectories to calculate before taking measurements
     start_measurements = 0;
+    
     for i in range(n_traj):
         traj += 1
         
         # Run the HMC algorithm to update the field configuration
-        #momentum @= run_hmc(field, momentum, action, traj, rs.split("hmc-{}".format(traj)))
-        run_hmc(field, action, traj, rs.split("hmc-{}".format(traj)))
+        run_hmc(field, geo, action, traj, rs.split("hmc-{}".format(traj)))
         
         # Calculate the expectation values of phi and phi^2
         q.displayln_info("Average phi^2:")
         psq = phi_squared(field, action)
         q.displayln_info(psq)
+        
         q.displayln_info("Average phi:")
         field_sum = field.glb_sum()
-        V = geo.total_volume()
         phi=[field_sum[i]/V for i in range(mult)]
         q.displayln_info(phi)
-        #q.displayln_info("Sigma correlator:")
+        
         tslices = field.glb_sum_tslice()
-        sc = [correlator(tslices,Vx,total_site[3],dt,0) for dt in range(total_site[3])]
-        #q.displayln_info(sc)
-        #q.displayln_info("Pion correlators:")
-        pc = [np.mean([correlator(tslices,Vx,total_site[3],dt,1),correlator(tslices,Vx,total_site[3],dt,2),correlator(tslices,Vx,total_site[3],dt,3)]) for dt in range(total_site[3])]
-        #q.displayln_info(pc)
+        
+        # Calculate the axial current of the current field configuration
+        # and save it in axial_current
         action.axial_current_node(axial_current, field)
         tslices_ax_cur = axial_current.glb_sum_tslice()
+        
         if i>start_measurements:
-            s_corrs.append(sc)
-            pi_corrs.append(pc)
             psq_list.append(psq)
             phi_list.append(phi)
             timeslices.append(tslices.to_numpy())
             ax_cur_timeslices.append(tslices_ax_cur.to_numpy())
-        q.displayln_info("Sigma correlator means and error of means:")
-        s_means=[np.mean([s_corrs[l][j] for l in range(i-start_measurements)]) for j in range(total_site[3])]
-        s_errs=[np.std([s_corrs[l][j] for l in range(i-start_measurements)])/len(s_corrs)**0.5 for j in range(total_site[3])]
-        q.displayln_info(s_means)
-        q.displayln_info(s_errs)
-        q.displayln_info("Pion correlator means and error of means:")
-        p_means=[np.mean([pi_corrs[l][j] for l in range(i-start_measurements)]) for j in range(total_site[3])]
-        p_errs=[np.std([pi_corrs[l][j] for l in range(i-start_measurements)])/len(pi_corrs)**0.5 for j in range(total_site[3])]
-        q.displayln_info(p_means)
-        q.displayln_info(p_errs)
-        
-    field.save_double(f"hmc-pions-sigma-pi-corrs_{total_site[0]}x{total_site[3]}_msq_{m_sq}_lmbd_{lmbd}_alph_{alpha}.field")
+    
+    # Saves the final field configuration so that the next run can be 
+    # started where this one left off
+    field.save_double(f"output_data/hmc-pions-sigma-pi-corrs_{total_site[0]}x{total_site[3]}_msq_{m_sq}_lmbd_{lmbd}_alph_{alpha}.field")
 
 @q.timer_verbose
 def main():
@@ -233,15 +229,18 @@ def main():
     
     test_hmc(total_site, action, mult, n_traj)
 
+# Stores the average phi^2 for each trajectory
 psq_list=[]
+# Stores the average values of each phi_i for each trajectory
 phi_list=[]
-s_corrs=[]
-pi_corrs=[]
+# Stores the timeslice sums of each phi_i for each trajectory
 timeslices=[]
+# Stores the timeslice sums of the time component of each of the three
+# axial currents for each trajectory
 ax_cur_timeslices=[]
 
 # The lattice dimensions
-total_site = [8, 8, 8, 8]
+total_site = [16, 16, 16, 32]
 
 # The multiplicity of the scalar field
 mult = 4
@@ -250,8 +249,8 @@ mult = 4
 n_traj = 5000
 
 # Use action for a Euclidean scalar field. The Lagrangian will be:
-# (1/2)*[sum fields]|dphi|^2 + (1/2)*m_sq*[sum fields]|phi|^2
-#     + (1/24)*lmbd*([sum fields]|phi|^2)^2
+# (1/2)*[sum i]|dphi_i|^2 + (1/2)*m_sq*[sum i]|phi_i|^2
+#     + (1/24)*lmbd*([sum i]|phi_i|^2)^2
 m_sq = -1.0
 lmbd = 1.0
 alpha = 0.1
@@ -273,7 +272,7 @@ q.qremove_all_info("results")
 main()
 
 with open(f"output_data/sigma_pion_corrs_{total_site[0]}x{total_site[3]}_msq_{m_sq}_lmbd_{lmbd}_alph_{alpha}_{datetime.datetime.now().date()}.bin", "wb") as output:
-    pickle.dump([psq_list,phi_list,s_corrs,pi_corrs,timeslices,ax_cur_timeslices],output)
+    pickle.dump([psq_list,phi_list,timeslices,ax_cur_timeslices],output)
 
 #q.timer_display()
 
