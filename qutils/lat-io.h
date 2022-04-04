@@ -5,6 +5,7 @@
 #include <qutils/qutils-io.h>
 #include <qutils/qutils.h>
 #include <qutils/show.h>
+#include <qutils/qar.h>
 #include <stdint.h>
 #include <zlib.h>
 
@@ -38,8 +39,20 @@ struct LatData {
   //
   LatData(){};
   //
-  void load(const std::string& fn);
-  void save(const std::string& fn) const;
+  void load(QFile& qfile);
+  void load(const std::string& fn)
+  {
+    QFile qfile(fn, "r");
+    load(qfile);
+  }
+  //
+  void save(QFile& qfile) const;
+  void save(const std::string& fn) const
+  {
+    QFile qfile(fn + ".partial", "w");
+    save(qfile);
+    qrename(fn + ".partial", fn);
+  };
 };
 
 inline bool is_initialized(const LatData& ld) { return ld.res.size() > 0; }
@@ -124,19 +137,18 @@ inline LatInfo read_lat_info(const std::string& str)
   return info;
 }
 
-inline void LatData::load(const std::string& fn)
+inline void LatData::load(QFile& qfile)
 {
-  FILE* fp = fopen(fn.c_str(), "r");
-  qassert(fp != NULL);
+  qassert(qfile.fp != NULL);
   std::vector<char> check_line(lat_data_header.size(), 0);
   const long fread_check_len =
-      fread(check_line.data(), lat_data_header.size(), 1, fp);
+      qfread(check_line.data(), lat_data_header.size(), 1, qfile);
   qassert(fread_check_len == 1);
   qassert(std::string(check_line.data(), check_line.size()) == lat_data_header);
   std::vector<std::string> infos;
   infos.push_back(lat_data_header);
   while (infos.back() != "END_HEADER\n" && infos.back() != "") {
-    infos.push_back(qgetline(fp));
+    infos.push_back(qgetline(qfile));
   }
   std::ostringstream out;
   for (int i = 3; i < (int)infos.size() - 2; ++i) {
@@ -151,24 +163,23 @@ inline void LatData::load(const std::string& fn)
   lat_data_alloc(*this);
   qassert((long)res.size() == lat_data_size(info));
   qassert((long)res.size() * (long)sizeof(double) == read_long(infos[2]));
-  const long fread_res_len = fread(res.data(), sizeof(double), res.size(), fp);
+  const long fread_res_len =
+      qfread(res.data(), sizeof(double), res.size(), qfile);
   qassert(fread_res_len == (long)res.size());
   const crc32_t crc_computed =
       crc32_par(res.data(), res.size() * sizeof(double));
   if (crc != crc_computed) {
     displayln(
-        ssprintf("ERROR: crc do not match: file=%08X computed=%08X fn='%s'.",
-                 crc, crc_computed, fn.c_str()));
+        ssprintf("ERROR: crc do not match: file=%08X computed=%08X path='%s'.",
+                 crc, crc_computed, qfile.path.c_str()));
     qassert(false);
   }
   to_from_little_endian_64(res.data(), res.size() * sizeof(double));
-  fclose(fp);
 }
 
-inline void LatData::save(const std::string& fn) const
+inline void LatData::save(QFile& qfile) const
 {
-  FILE* fp = fopen((fn + ".partial").c_str(), "w");
-  qassert(fp != NULL);
+  qassert(qfile.fp != NULL);
   std::vector<double> res_copy;
   if (!is_little_endian()) {
     res_copy = res;
@@ -183,15 +194,13 @@ inline void LatData::save(const std::string& fn) const
                crc32_par(is_little_endian() ? res.data() : res_copy.data(),
                          res.size() * sizeof(double)));
   const std::string end_header = "END_HEADER\n";
-  fwrite(lat_data_header.data(), lat_data_header.size(), 1, fp);
-  fwrite(data_size.data(), data_size.size(), 1, fp);
-  fwrite(info_str.data(), info_str.size(), 1, fp);
-  fwrite(checksum_str.data(), checksum_str.size(), 1, fp);
-  fwrite(end_header.data(), end_header.size(), 1, fp);
-  fwrite(is_little_endian() ? res.data() : res_copy.data(), sizeof(double),
-         res.size(), fp);
-  fclose(fp);
-  rename((fn + ".partial").c_str(), fn.c_str());
+  qfwrite(lat_data_header.data(), lat_data_header.size(), 1, qfile);
+  qfwrite(data_size.data(), data_size.size(), 1, qfile);
+  qfwrite(info_str.data(), info_str.size(), 1, qfile);
+  qfwrite(checksum_str.data(), checksum_str.size(), 1, qfile);
+  qfwrite(end_header.data(), end_header.size(), 1, qfile);
+  qfwrite(is_little_endian() ? res.data() : res_copy.data(), sizeof(double),
+          res.size(), qfile);
 }
 
 inline void clear(LatData& ld)

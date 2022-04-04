@@ -17,6 +17,7 @@ struct QFile {
   // offset_start and offset_end.
   // The view can be nested.
   //
+  std::string path;
   std::string mode;  // can be "r", "a", "w"
   FILE* fp;
   //
@@ -42,7 +43,7 @@ struct QFile {
     number_of_child = 0;
     init();
   }
-  QFile(const std::string& path, const std::string& mode_)
+  QFile(const std::string& path_, const std::string& mode_)
   {
     fp = NULL;
     parent = NULL;
@@ -73,16 +74,20 @@ struct QFile {
   void init()
   {
     close();
+    path = "";
     mode = "";
     is_eof = false;
     pos = 0;
     offset_start = 0;
     offset_end = -1;
   }
-  void init(const std::string& path, const std::string& mode_)
+  void init(const std::string& path_, const std::string& mode_)
   {
     close();
+    path = path_;
     mode = mode_;
+    displayln(
+        ssprintf("QFile: open '%s' with '%s'.", path.c_str(), mode.c_str()));
     fp = qopen(path, mode);
     qassert(NULL != fp);
     is_eof = false;
@@ -99,6 +104,7 @@ struct QFile {
   {
     close();
     qfile.number_of_child += 1;
+    path = qfile.path;
     mode = qfile.mode;
     fp = qfile.fp;
     parent = &qfile;
@@ -122,6 +128,8 @@ struct QFile {
     // to close the file, it cannot have any child
     qassert(number_of_child == 0);
     if (NULL == parent) {
+      displayln(
+          ssprintf("QFile: close '%s' with '%s'.", path.c_str(), mode.c_str()));
       qclose(fp);
     } else {
       fp = NULL;
@@ -137,6 +145,7 @@ struct QFile {
     // cannot swap if has child
     qassert(number_of_child == 0);
     qassert(qfile.number_of_child == 0);
+    std::swap(path, qfile.path);
     std::swap(mode, qfile.mode);
     std::swap(fp, qfile.fp);
     std::swap(parent, qfile.parent);
@@ -227,7 +236,7 @@ inline long qfwrite(const void* ptr, const long size, const long nmemb,
   const int code = qfseek(qfile, qfile.pos, SEEK_SET);
   qassert(code == 0);
   if (qfile.offset_end != -1) {
-    const long remaining_size = qfile.offset_end - qfile.offset_start - pos;
+    const long remaining_size = qfile.offset_end - qfile.offset_start - qfile.pos;
     qassert(remaining_size >= size * nmemb);
   }
   const long actual_nmemb = std::fwrite(ptr, size, nmemb, qfile.fp);
@@ -242,19 +251,26 @@ inline long qfwrite(const void* ptr, const long size, const long nmemb,
 
 inline std::string qgetline(QFile& qfile)
 {
+  const int code = qfseek(qfile, qfile.pos, SEEK_SET);
+  qassert(code == 0);
   char* lineptr = NULL;
   size_t n = 0;
-  const long size = getline(&lineptr, &n, fp);
+  const long size = getline(&lineptr, &n, qfile.fp);
+  qfile.is_eof = feof(qfile.fp) != 0;
   if (size > 0) {
     std::string ret;
-    const long pos = qftell(qfile);
-    if (qfile.offset_end != -1 and pos > qfile.offset_end) {
+    const long pos = ftell(qfile.fp) - qfile.offset_start;
+    qassert(pos >= 0);
+    if (qfile.offset_end != -1 and
+        qfile.offset_start + pos > qfile.offset_end) {
       qfseek(qfile, 0, SEEK_END);
-      const long size_truncate = size - (pos - qfile.offset_end);
+      qfile.is_eof = true;
+      const long size_truncate = size - (qfile.offset_start + pos - qfile.offset_end);
       qassert(size_truncate >= 0);
       ret = std::string(lineptr, size_truncate);
     } else {
-      ret = std::string(lineptr, size)
+      qfile.pos = pos;
+      ret = std::string(lineptr, size);
     }
     std::free(lineptr);
     return ret;
@@ -277,7 +293,6 @@ const std::string qar_header = "#!/usr/bin/env qar-glimpse\n\n";
 
 struct QarFile {
   QFile qfile;
-  std::string path;
   //
   bool is_read_through;
   std::vector<std::string> fn_list;
@@ -292,29 +307,23 @@ struct QarFile {
   void init()
   {
     qfile.init();
-    path = "";
     is_read_through = false;
     fn_list.clear();
     offsets_map.clear();
     max_offset = 0;
   }
-  void init(const std::string& path_, const std::string& mode_)
+  void init(const std::string& path, const std::string& mode)
   {
-    path = path_;
-    mode = mode_;
-    displayln(
-        ssprintf("QarFile: open '%s' with '%s'.", path.c_str(), mode.c_str()));
     qfile.init(path, mode);
     if (mode == "w") {
       qfwrite(qar_header.data(), qar_header.size(), 1, qfile);
     } else if (mode == "r") {
       std::vector<char> check_line(qar_header.size(), 0);
       const long qfread_check_len =
-          qfread(check_line.data(), qar_header.size(), 1, fp);
+          qfread(check_line.data(), qar_header.size(), 1, qfile);
       qassert(qfread_check_len == 1);
       qassert(std::string(check_line.data(), check_line.size()) == qar_header);
     }
-    qassert(NULL != fp);
   }
 };
 
