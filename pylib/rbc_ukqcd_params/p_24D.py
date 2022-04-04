@@ -77,7 +77,7 @@ def mk_lanc_params(inv_type, inv_acc):
         n_keep = n_stop + 40
         n_max = n_stop + 200
     elif inv_type == 1:
-        c_low = 1.2e-4
+        c_low = 1.3e-4
         n_stop = 500
         n_keep = n_stop + 40
         n_max = n_stop + 200
@@ -134,7 +134,7 @@ def mk_clanc_params(inv_type, inv_acc):
             #    "maxapply" : 100
             }
     smoother_params = { "eps": 1e-6, "maxiter": 25, }
-    save_params = { "nsingle": n_single, "mpi": [ 1, 1, 1, 8, ], }
+    save_params = { "nsingle": n_single, "mpi": [ 1, 1, 1, 16, ], }
     return {
             "block": block,
             "nbasis": nbasis,

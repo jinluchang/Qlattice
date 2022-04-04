@@ -227,14 +227,6 @@ def plot_save(
         path = os.path.join(os.path.dirname(target),
                 get_plot_name(target_fn) + ".pyplot.dir")
     path = mk_pyplot_folder(path)
-    if dts is None:
-        x = np.arange(31) * (6 / 30) - 3
-        y = np.cos(x)
-        yerr = 0.1 / (1 + x**2)
-        dts = {
-                "table.txt" : azip(x, y, yerr),
-                }
-        print(f"dts={dts}")
     if cmds is None:
         cmds = [
                 "set size 0.8, 1.0",
@@ -243,14 +235,34 @@ def plot_save(
                 "set ylabel '$y$'",
                 ]
         print(f"cmds={cmds}")
-    if lines is None:
+    if dts is None:
+        x = np.arange(31) * (6 / 30) - 3
+        y = np.cos(x)
+        yerr = 0.1 / (1 + x**2)
+        dts = {
+                "table.txt" : azip(x, y, yerr),
+                }
+        print(f"dts={dts}")
+        if lines is None:
+            lines = [
+                    "plot [-3:3] [-1.5:1.5]",
+                    "0 not",
+                    "sin(x) w l t '$y = \\sin(x)$'",
+                    ]
+            if "table.txt" in dts:
+                lines.append("'table.txt' w yerrorb t '$y = \\cos(x)$'")
+            print(f"lines={lines}")
+    elif lines is None:
         lines = [
-                "plot [-3:3] [-1.5:1.5]",
-                "0 not",
-                "sin(x) w l t '$y = \\sin(x)$'",
+                "plot [:] [:]",
                 ]
-        if "table.txt" in dts:
-            lines.append("'table.txt' w yerrorb t '$y = \\cos(x)$'")
+        for key, val in dts.items():
+            if len(val[0]) >= 3:
+                lines.append(f"'{key}' u 1:2:3 w yerrorb t '{key}'")
+            elif len(val[0]) == 2:
+                lines.append(f"'{key}' u 1:2 w p t '{key}'")
+            else:
+                lines.append(f"'{key}' t '{key}'")
         print(f"lines={lines}")
     if fn is None:
         print(f"fn={fn}")

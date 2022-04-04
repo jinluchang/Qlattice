@@ -2,10 +2,8 @@
 
 #pragma once
 
-#include <dirent.h>
 #include <qlat/config.h>
 #include <qlat/mpi.h>
-#include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
 
@@ -13,8 +11,6 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <fstream>
-#include <iostream>
 #include <vector>
 
 namespace qlat
@@ -23,11 +19,6 @@ namespace qlat
 inline void close_all_all_shuffled_fields_writer();
 
 inline void release_lock();
-
-inline int ssleep(const double seconds)
-{
-  return usleep((useconds_t)(seconds * 1.0e6));
-}
 
 inline double get_time_limit_default()
 {
@@ -122,12 +113,6 @@ inline void check_sigterm()
   }
 }
 
-inline bool does_file_exist(const std::string& fn)
-{
-  struct stat sb;
-  return 0 == stat(fn.c_str(), &sb);
-}
-
 inline bool does_file_exist_sync_node(const std::string& fn)
 {
   long nfile = 0;
@@ -138,15 +123,6 @@ inline bool does_file_exist_sync_node(const std::string& fn)
   }
   glb_sum(nfile);
   return 0 != nfile;
-}
-
-inline bool is_directory(const std::string& fn)
-{
-  struct stat sb;
-  if (0 != stat(fn.c_str(), &sb)) {
-    return false;
-  }
-  return S_ISDIR(sb.st_mode);
 }
 
 inline bool is_directory_sync_node(const std::string& fn)
@@ -190,50 +166,6 @@ inline bool check_status()
     return true;
   }
   return false;
-}
-
-inline bool qtruncate(const std::string& evilFile)
-{
-  std::ofstream evil;
-  evil.open(evilFile.c_str());
-  bool does_exist = evil.good();
-  if (does_exist) {
-    evil.close();
-  }
-  return does_exist;
-}
-
-inline bool qtruncate(const std::string& path, const long offset)
-{
-  const int ret = truncate(path.c_str(), offset);
-  return ret == 0;
-}
-
-inline mode_t& default_dir_mode()
-// qlat parameter
-{
-  static mode_t mode = 0775;
-  return mode;
-}
-
-inline int check_dir(const std::string& path,
-                     const mode_t mode = default_dir_mode())
-{
-  TIMER("check_dir");
-  int ret = 0;
-  while (!does_file_exist(path)) {
-    ret = mkdir(path.c_str(), mode);
-    ssleep(0.001);
-  }
-  return ret;
-}
-
-inline int qmkdir(const std::string& path,
-                  const mode_t mode = default_dir_mode())
-{
-  TIMER("qmkdir");
-  mkdir(path.c_str(), mode);
-  return check_dir(path, mode);
 }
 
 inline int qmkdir_info(const std::string& path,
@@ -294,38 +226,6 @@ inline int rmdir_lock_all_node(const std::string& path)
   return rmdir(path.c_str());
 }
 
-inline std::string remove_trailing_slashes(const std::string& fn)
-{
-  long cur = fn.size() - 1;
-  while (cur > 0 and fn[cur] == '/') {
-    cur -= 1;
-  }
-  return std::string(fn, 0, cur + 1);
-}
-
-inline std::vector<std::string> qls_aux(const std::string& path)
-{
-  std::vector<std::string> contents;
-  DIR* dir = opendir(path.c_str());
-  if (dir == NULL) {
-    return contents;
-  }
-  struct dirent* d;
-  while ((d = readdir(dir)) != NULL) {
-    if (!strcmp(d->d_name, ".") || !strcmp(d->d_name, "..")) {
-      continue;
-    }
-    contents.push_back(path + "/" + d->d_name);
-  }
-  closedir(dir);
-  return contents;
-}
-
-inline std::vector<std::string> qls(const std::string& path)
-{
-  return qls_aux(remove_trailing_slashes(path));
-}
-
 inline std::vector<std::string> qls_sync_node(const std::string& path)
 {
   std::vector<std::string> ret;
@@ -334,31 +234,6 @@ inline std::vector<std::string> qls_sync_node(const std::string& path)
   }
   bcast(ret);
   return ret;
-}
-
-inline int qremove(const std::string& path)
-{
-  displayln(ssprintf("qremove: '%s'", path.c_str()));
-  return std::remove(path.c_str());
-}
-
-inline int qremove_all_aux(const std::string& path)
-{
-  if (not is_directory(path)) {
-    return qremove(path);
-  } else {
-    int ret = 0;
-    const std::vector<std::string> paths = qls_aux(path);
-    for (long i = 0; i < (long)paths.size(); ++i) {
-      ret += qremove_all_aux(paths[i]);
-    }
-    return ret + qremove(path);
-  }
-}
-
-inline int qremove_all(const std::string& path)
-{
-  return qremove_all_aux(remove_trailing_slashes(path));
 }
 
 inline int qremove_info(const std::string& path)
