@@ -6,30 +6,56 @@ File format is
 
 ```
 FILE-FORMAT-LINE
-[File1 name size in bytes stored as int64_t in little endian]
-[File1 info size in bytes stored as int64_t in little endian]
-[File1 data size in bytes stored as int64_t in little endian]
-FILE1-NAME
-FILE1-INFO
-FILE1-DATA
-[File2 name size in bytes stored as int64_t in little endian]
-[File2 info size in bytes stored as int64_t in little endian]
-[File2 data size in bytes stored as int64_t in little endian]
-FILE2-NAME
-FILE2-INFO
-FILE2-DATA
+
+FILE-HEADER
+[newline charactor]
+FILE-NAME
+[newline charactor]
+FILE-INFO
+[newline charactor]
+FILE-DATA
+[newline character]
+[newline character]
+
+FILE-HEADER
+[newline character]
+FILE-NAME
+[newline character]
+FILE-INFO
+[newline character]
+FILE-DATA
+[newline character]
+[newline character]
+
 ...
+
 ```
 
 ### FILE-FORMAT-LINE
 
 ```
-#!/usr/bin/env qar-glimpse
+"#!/usr/bin/env qar-glimpse\n\n"
 ```
 
-Note that there is no newline character between the data segments.
+NOTE: There are two newline characters in the end of the FILE-FORMAT-LINE.
+Quote is not part of the FILE-FORMAT-LINE.
 
+### FILE-HEADER
+
+```
+[FILE-NAME size in bytes stored in ASCII]
+[space character]
+[FILE-INFO size in bytes stored in ASCII]
+[space character]
+[FILE-DATA size in bytes stored in ASCII]
+```
 
 # FILE-INFO
 
 Can store some metadata information about the file. Can be simply empty.
+
+# Segment size
+
+```
+[FILE-HEADER size] + [FILE-NAME size] + [File info size] + [File info size] + 5
+```

@@ -219,8 +219,9 @@ inline std::string qgetline(FILE* fp)
 {
   char* lineptr = NULL;
   size_t n = 0;
-  if (getline(&lineptr, &n, fp) > 0) {
-    std::string ret(lineptr);
+  const long size = getline(&lineptr, &n, fp);
+  if (size > 0) {
+    std::string ret(lineptr, size);
     std::free(lineptr);
     return ret;
   } else {
