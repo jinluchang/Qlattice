@@ -86,8 +86,10 @@ struct QFile {
     close();
     path = path_;
     mode = mode_;
-    displayln(
-        ssprintf("QFile: open '%s' with '%s'.", path.c_str(), mode.c_str()));
+    if (verbose_level() > 0) {
+      displayln(
+          ssprintf("QFile: open '%s' with '%s'.", path.c_str(), mode.c_str()));
+    }
     fp = qopen(path, mode);
     qassert(NULL != fp);
     is_eof = false;
@@ -128,9 +130,13 @@ struct QFile {
     // to close the file, it cannot have any child
     qassert(number_of_child == 0);
     if (NULL == parent) {
-      displayln(
-          ssprintf("QFile: close '%s' with '%s'.", path.c_str(), mode.c_str()));
-      qclose(fp);
+      if (fp != NULL) {
+        if (verbose_level() > 0) {
+          displayln(ssprintf("QFile: close '%s' with '%s'.", path.c_str(),
+                             mode.c_str()));
+        }
+        qclose(fp);
+      }
     } else {
       fp = NULL;
       (*parent).number_of_child -= 1;
@@ -210,14 +216,14 @@ inline long qfread(void* ptr, const long size, const long nmemb, QFile& qfile)
     if (target_nmemb == 0) {
       return 0;
     }
-    long actual_nmemb = std::fread(ptr, size, target_nmemb, qfile.fp);
+    actual_nmemb = std::fread(ptr, size, target_nmemb, qfile.fp);
     if (target_nmemb < nmemb) {
       qfseek(qfile, 0, SEEK_END);
       qfile.is_eof = true;
     }
     qassert(actual_nmemb == target_nmemb);
   } else {
-    long actual_nmemb = std::fread(ptr, size, nmemb, qfile.fp);
+    actual_nmemb = std::fread(ptr, size, nmemb, qfile.fp);
     qfile.pos = ftell(qfile.fp) - qfile.offset_start;
     qfile.is_eof = feof(qfile.fp) != 0;
   }

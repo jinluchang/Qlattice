@@ -215,6 +215,13 @@ inline long long get_total_flops()
   return flops;
 }
 
+inline long& verbose_level()
+// qlat parameter
+{
+  static long level = get_env_long_default("q_verbose", 0);
+  return level;
+}
+
 inline void initialize_papi()
 {
 #ifdef USE_PAPI
@@ -368,13 +375,6 @@ struct Timer {
   static double& minimum_duration_for_show_start_info()
   {
     return minimum_duration_for_show_info();
-  }
-  //
-  static long& verbose_level()
-  // qlat parameter
-  {
-    static long level = get_env_long_default("q_verbose", 0);
-    return level;
   }
   //
   static long& max_call_times_for_always_show_info()
