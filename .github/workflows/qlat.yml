@@ -43,4 +43,5 @@ jobs:
         ./scripts/eigen.sh
         
     - name: Build
+      run: |
         ./scripts/qlat.sh
