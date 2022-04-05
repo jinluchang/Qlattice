@@ -38,10 +38,12 @@ jobs:
 
     - name: Install dependencies
       run: |
+        export prefix=../build
         ./scripts/download-core.sh
         ./scripts/cuba.sh
         ./scripts/eigen.sh
         
     - name: Build
       run: |
+        export prefix=../build
         ./scripts/qlat.sh
