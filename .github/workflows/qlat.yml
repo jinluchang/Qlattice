@@ -38,13 +38,9 @@ jobs:
 
     - name: Install dependencies
       run: |
-        export prefix=../build
-        ./scripts/clean-prefix.sh
-        ./scripts/download-core.sh
-        ./scripts/cuba.sh
-        ./scripts/eigen.sh
+        ./scripts/download-core.sh || true
+        ./build.sh github
         
     - name: Build
       run: |
-        export prefix=../build
         ./scripts/qlat.sh
