@@ -38,7 +38,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        ./scripts/download.sh
+        ./scripts/download-core.sh
         ./scripts/cuba.sh
         ./scripts/eigen.sh
         
