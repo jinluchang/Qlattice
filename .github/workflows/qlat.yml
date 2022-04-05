@@ -36,11 +36,15 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y libssl-dev libopenmpi-dev libfftw3-dev libgsl-dev
 
-    - name: Install dependencies
+    - name: Download dependencies
       run: |
         ./scripts/download-core.sh || true
-        ./build.sh github
-        
-    - name: Build
+
+    - name: Build everything
       run: |
-        ./scripts/qlat.sh
+        export num_proc=4
+        ./build.sh github || true
+
+    - name: Testing
+      run: |
+        make -C examples run
