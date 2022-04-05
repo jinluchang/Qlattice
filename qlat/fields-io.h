@@ -877,7 +877,7 @@ void set_field_from_data(SelectedField<M>& sf, const std::vector<char>& data,
   bs.set(&data[0], nbytes);
   qassert(bs.check_f_rank(fsel.f_rank));
   const long n_elems = fsel.n_elems;
-  qassert(n_elems == bs.cN);
+  qassert(n_elems == (long)bs.cN);
   if (n_elems == 0) {
     sf.init();
     return;
