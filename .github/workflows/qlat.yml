@@ -38,13 +38,13 @@ jobs:
 
     - name: Download dependencies
       run: |
-        ./scripts/download-core.sh || true
+        ./scripts/download-core.sh || echo Failed
 
     - name: Build everything
       run: |
         export num_proc=4
-        ./build.sh github || true
+        ./build.sh github || echo Failed
 
     - name: Testing qlat
       run: |
-        make -C examples run || true
+        make -C examples run || echo Failed
