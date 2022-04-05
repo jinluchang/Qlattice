@@ -90,7 +90,6 @@ dget "gast-0.5.0.tar.gz" "https://files.pythonhosted.org/packages/a6/fb/7ff6a4ee
 dget "beniget-0.4.0.tar.gz" "https://files.pythonhosted.org/packages/36/09/a4a6a967ca5bcfc0bd6162df4ee93017301fa7d9671483c849300bdba0db/beniget-0.4.0.tar.gz"
 )
 
-
 if [ -d Grid ] ; then
     ( cd Grid ; git pull )
 else
