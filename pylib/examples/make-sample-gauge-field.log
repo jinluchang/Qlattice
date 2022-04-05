@@ -25,7 +25,9 @@ gf_show_info: plaq = 1.0000000000000000 ; link_trace = 1.0000000000000000.
 gf_show_info: plaq = 0.6147333258459872 ; link_trace = 0.8844956937132934.
 mk_file_dirs_info: 'results/ckpoint_lat.0'.
 ShufflePlanCache: to add 1 / 16.
+qrename: 'results/ckpoint_lat.0.partial.partial' 'results/ckpoint_lat.0.partial'
 q_write_par_limit=16 (default)
+qrename: 'results/ckpoint_lat.0.partial' 'results/ckpoint_lat.0'
 load_gauge_field: 'results/ckpoint_lat.0'.
 q_read_par_limit=16 (default)
 gf_show_info: plaq = 0.6147333258459872 ; link_trace = 0.8844956937132934.

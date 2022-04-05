@@ -160,6 +160,10 @@ inline int qclose(FILE*& file)
 inline int qrename(const std::string& old_path, const std::string& new_path)
 {
   TIMER("qrename");
+  if (verbose_level() > 0) {
+    displayln(
+        ssprintf("qrename: '%s' '%s'", old_path.c_str(), new_path.c_str()));
+  }
   return rename(old_path.c_str(), new_path.c_str());
 }
 

@@ -161,6 +161,8 @@ struct QFile {
     std::swap(offset_start, qfile.offset_start);
     std::swap(offset_end, qfile.offset_end);
   }
+  //
+  bool null() { return fp == NULL; }
 };
 
 inline void qswap(QFile& qfile1, QFile& qfile2) { qfile1.swap(qfile2); }
@@ -172,6 +174,7 @@ inline long qftell(const QFile& qfile) { return qfile.pos; }
 inline int qfseek(QFile& qfile, const long q_offset, const int whence)
 // Always call fseek and adjust qfile.is_eof and qfile.pos
 // qfile.pos will be set to the actual QFile position after qfseek.
+// return 0 if successful
 {
   qfile.is_eof = false;
   int ret = 0;
@@ -303,12 +306,9 @@ struct QarFile {
   bool is_read_through;
   std::vector<std::string> fn_list;
   std::map<std::string, long> offsets_map;
-  long max_offset; // maximum offset reached so far
+  long max_offset;  // maximum offset reached so far
   //
-  QarWriter()
-  {
-    init();
-  }
+  QarWriter() { init(); }
   //
   void init()
   {
@@ -332,5 +332,50 @@ struct QarFile {
     }
   }
 };
+
+inline bool read_tag(QarFile& qar, long& offset_initial, long& fn_len, long& info_len, long& data_len)
+// initial pos: beginning of the segment, just before FILE-HEADER
+// final pos: after FILE-HEADER [newline character], just before FILE-NAME
+{
+  offset_initial = 0;
+  fn_len = 0;
+  info_len = 0;
+  data_len = 0;
+  if (qar.qfile.null()) {
+    qwarn(ssprintf("read_tag: fn='%s' pos=%ld.", qar.qfile.path.c_str(),
+                   qftell(qar.qfile)));
+    return false;
+  }
+  offset_initial = qftell(qar.qfile);
+  const std::string header = qgetline(qar.qfile);
+  if (header.size() == 0) {
+    qar.is_read_through = true;
+    return false;
+  }
+  const std::vector<long> len_vec = read_longs(header);
+  if (len_vec.size() != 3) {
+    qwarn(ssprintf("read_tag: fn='%s' pos=%ld.", qar.qfile.path.c_str(),
+                   qftell(qar.qfile)));
+    qar.is_read_through = true;
+    return false;
+  }
+  fn_len = len_vec[0];
+  info_len = len_vec[1];
+  data_len = len_vec[2];
+  return true;
+}
+
+inline bool read_fn(QarFile& qar, std::string& fn, const long offset_initial, const long fn_len)
+// initial pos: after FILE-HEADER [newline character], just before FILE-NAME
+// final pos: after FILE-NAME [newline character], just before FILE-INFO
+{
+  std::vector<char> fnv(fn_len);
+  if (1 != qfread(fnv.data(), fn_len, 1, qar.qfile)) {
+    qwarn(ssprintf("read_tag: fn='%s' pos=%ld.", qar.qfile.path.c_str(),
+                   qftell(qar.qfile)));
+    return false;
+  }
+  fn = std::string(fnv.data(), fn_len - 1);
+}
 
 }  // namespace qlat

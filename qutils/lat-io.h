@@ -139,7 +139,7 @@ inline LatInfo read_lat_info(const std::string& str)
 
 inline void LatData::load(QFile& qfile)
 {
-  qassert(qfile.fp != NULL);
+  qassert(not qfile.null());
   std::vector<char> check_line(lat_data_header.size(), 0);
   const long fread_check_len =
       qfread(check_line.data(), lat_data_header.size(), 1, qfile);
@@ -179,7 +179,7 @@ inline void LatData::load(QFile& qfile)
 
 inline void LatData::save(QFile& qfile) const
 {
-  qassert(qfile.fp != NULL);
+  qassert(not qfile.null());
   std::vector<double> res_copy;
   if (!is_little_endian()) {
     res_copy = res;

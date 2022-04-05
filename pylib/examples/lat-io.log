@@ -53,6 +53,7 @@ qnorm = 24248485087240.0
  [1.000300e+06+0.j 1.000301e+06+0.j 1.000302e+06+0.j]]
 [1010200.+0.j 1010201.+0.j 1010202.+0.j]
 QFile: open 'results/test.lat.partial' with 'w'.
+qrename: 'results/test.lat.partial' 'results/test.lat'
 QFile: close 'results/test.lat.partial' with 'w'.
 QFile: open 'results/test.lat' with 'r'.
 QFile: close 'results/test.lat' with 'r'.

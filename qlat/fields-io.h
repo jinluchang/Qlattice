@@ -516,7 +516,7 @@ inline long fread_convert_endian(void* ptr, const size_t size,
 inline bool read_tag(FieldsReader& fr, std::string& fn, Coordinate& total_site,
                      crc32_t& crc, int64_t& data_len, bool& is_sparse_field)
 {
-  TIMER("read_tag(fr,fn,geo)");
+  TIMER("read_tag(fr,fn,total_site,crc,data_len,is_sparse_field)");
   fn = "";
   total_site = Coordinate();
   crc = 0;
@@ -549,8 +549,12 @@ inline bool read_tag(FieldsReader& fr, std::string& fn, Coordinate& total_site,
   }
   fn = std::string(fnv.data(), tag_len - 1);
   //
-  fr.fn_list.push_back(fn);
-  fr.offsets_map[fn] = offset_initial;
+  if (has(fr.offsets_map, fn)) {
+    qassert(fr.offsets_map[fn] == offset_initial);
+  } else {
+    fr.fn_list.push_back(fn);
+    fr.offsets_map[fn] = offset_initial;
+  }
   //
   // then read crc
   if (1 != fread_convert_endian(&crc, 4, 1, fr.fp, fr.is_little_endian)) {

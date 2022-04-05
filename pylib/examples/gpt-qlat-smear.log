@@ -84,6 +84,9 @@ CommPlanCache: to add 4 / 32.
 qnorm(src) = 0.20071192043188596 after smear
 qnorm(sol) = 0.2888235133524948
 mk_file_dirs_info: 'results/smear ; xg=(3, 1, 0, 0) ; type=1 ; accuracy=0 ; psnk.lat'.
+QFile: open 'results/smear ; xg=(3, 1, 0, 0) ; type=1 ; accuracy=0 ; psnk.lat.partial' with 'w'.
+qrename: 'results/smear ; xg=(3, 1, 0, 0) ; type=1 ; accuracy=0 ; psnk.lat.partial' 'results/smear ; xg=(3, 1, 0, 0) ; type=1 ; accuracy=0 ; psnk.lat'
+QFile: close 'results/smear ; xg=(3, 1, 0, 0) ; type=1 ; accuracy=0 ; psnk.lat.partial' with 'w'.
 qnorm(sol_psel) = 0.13636305213224031
 mk_file_dirs_info: 'results/prop-smear'.
 FieldsWriter: open 'results/prop-smear'.
@@ -112,9 +115,15 @@ write(sfw,fn,sf,sbs): writing sparse field with fn='smear ; xg=(3, 1, 0, 0) ; ty
 shuffle_field(sel_fs,sel_f,sp): 1x1x1x2 -> 1x1x2x4 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.000 GB)
 FieldsWriter: close 'results/prop-smear'.
 mk_file_dirs_info: 'results/smear ; xg=(3, 1, 0, 0) ; type=1 ; accuracy=0 ; wsnk.lat'.
+QFile: open 'results/smear ; xg=(3, 1, 0, 0) ; type=1 ; accuracy=0 ; wsnk.lat.partial' with 'w'.
+qrename: 'results/smear ; xg=(3, 1, 0, 0) ; type=1 ; accuracy=0 ; wsnk.lat.partial' 'results/smear ; xg=(3, 1, 0, 0) ; type=1 ; accuracy=0 ; wsnk.lat'
+QFile: close 'results/smear ; xg=(3, 1, 0, 0) ; type=1 ; accuracy=0 ; wsnk.lat.partial' with 'w'.
 qnorm(sol_ws) = 18.412776032327635
 qnorm(sol_smear) = 0.28713534775858585
 mk_file_dirs_info: 'results/smear ; xg=(3, 1, 0, 0) ; type=1 ; accuracy=0 ; smear-snk.lat'.
+QFile: open 'results/smear ; xg=(3, 1, 0, 0) ; type=1 ; accuracy=0 ; smear-snk.lat.partial' with 'w'.
+qrename: 'results/smear ; xg=(3, 1, 0, 0) ; type=1 ; accuracy=0 ; smear-snk.lat.partial' 'results/smear ; xg=(3, 1, 0, 0) ; type=1 ; accuracy=0 ; smear-snk.lat'
+QFile: close 'results/smear ; xg=(3, 1, 0, 0) ; type=1 ; accuracy=0 ; smear-snk.lat.partial' with 'w'.
 qnorm(sol_smear_psel) = 0.03587979969885853
 c27b84efb1126c8128ffeb8f5e038451  results/prop-smear/00/0000000000
 a04fbaf76ca0bb78abe034558714fada  results/prop-smear/01/0000000001

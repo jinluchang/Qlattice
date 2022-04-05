@@ -5,8 +5,9 @@
 #include <qutils/show.h>
 #include <qutils/timer.h>
 
-#include <cassert>
 #include <vector>
+#include <map>
+#include <cassert>
 
 #define qwarn(str)                                                     \
   {                                                                    \
@@ -53,6 +54,13 @@ void clear(std::vector<M>& vec)
 {
   std::vector<M> empty;
   swap(empty, vec);
+}
+
+template <class K, class M>
+bool has(const std::map<K, M>& m, const K& key)
+{
+  typename std::map<K, M>::const_iterator it = m.find(key);
+  return it != m.end();
 }
 
 qacc uint16_t flip_endian_16(uint16_t x) { return ((x >> 8)) | ((x << 8)); }

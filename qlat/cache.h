@@ -11,13 +11,6 @@ namespace qlat
 {  //
 
 template <class K, class M>
-bool has(const std::map<K, M>& m, const K& key)
-{
-  typename std::map<K, M>::const_iterator it = m.find(key);
-  return it != m.end();
-}
-
-template <class K, class M>
 struct Cache {
   std::string name;
   std::map<K, std::pair<long, M> > m;

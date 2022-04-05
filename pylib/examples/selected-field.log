@@ -23,24 +23,37 @@ ShufflePlanCache: to add 1 / 16.
 prop.crc32() = 870829356 ; prop.qnorm() = 49123.69045958381
 mk_file_dirs_info: 'results/prop.field'.
 write_field: fn='results/prop.field'.
+qrename: 'results/prop.field.partial.partial' 'results/prop.field.partial'
 q_write_par_limit=16 (default)
+qrename: 'results/prop.field.partial' 'results/prop.field'
 read_field: fn='results/prop.field'.
 q_read_par_limit=16 (default)
 prop.crc32() = 870829356 ; prop.qnorm() = 49123.69045958381
 mk_file_dirs_info: 'results/prop-double.field'.
 write_field: fn='results/prop-double.field'.
+qrename: 'results/prop-double.field.partial.partial' 'results/prop-double.field.partial'
+qrename: 'results/prop-double.field.partial' 'results/prop-double.field'
 read_field: fn='results/prop-double.field'.
 prop.crc32() = 870829356 ; prop.qnorm() = 49123.69045958381
 mk_file_dirs_info: 'results/prop-float.field'.
 write_field: fn='results/prop-float.field'.
+qrename: 'results/prop-float.field.partial.partial' 'results/prop-float.field.partial'
+qrename: 'results/prop-float.field.partial' 'results/prop-float.field'
 read_field: fn='results/prop-float.field'.
 prop.crc32() = 1892650077 ; prop.qnorm() = 49123.69044826866
 sp_prop 188.73394748572775
 mk_file_dirs_info: 'results/prop.lat'.
+QFile: open 'results/prop.lat.partial' with 'w'.
+qrename: 'results/prop.lat.partial' 'results/prop.lat'
+QFile: close 'results/prop.lat.partial' with 'w'.
+QFile: open 'results/prop.lat' with 'r'.
+QFile: close 'results/prop.lat' with 'r'.
 sp_prop 188.73394748572775 0.0 save load
 sp_prop 188.73394748572775 0.0 lat_data conversion
 mk_file_dirs_info: 'results/prop.sfield'.
 write_selected_field: fn='results/prop.sfield'.
+qrename: 'results/prop.sfield.partial.partial' 'results/prop.sfield.partial'
+qrename: 'results/prop.sfield.partial' 'results/prop.sfield'
 read_selected_field: fn='results/prop.sfield'.
 s_prop 12284.876383957711 0.0
 prop1 12473.61033144344
