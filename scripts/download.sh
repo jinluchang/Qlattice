@@ -145,5 +145,3 @@ else
 fi
 
 cd $wd
-
-./scripts/dist-update-hash.sh

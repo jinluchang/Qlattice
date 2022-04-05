@@ -308,7 +308,7 @@ struct QarFile {
   std::map<std::string, long> offsets_map;
   long max_offset;  // maximum offset reached so far
   //
-  QarWriter() { init(); }
+  QarFile() { init(); }
   //
   void init()
   {
