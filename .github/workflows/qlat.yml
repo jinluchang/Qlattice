@@ -22,19 +22,13 @@ jobs:
         ls
         export
 
-    - name: Set up Python 3.x
-      uses: actions/setup-python@v3
-      with:
-        python-version: '3.10'
-        architecture: 'x64'
-
-    - name: Display Python version
-      run: python -c "import sys; print(sys.version)"
-
     - name: Install Ubuntu packages
       run: |
         sudo apt-get update
         sudo apt-get install -y libssl-dev libopenmpi-dev python3-sympy python3-numpy python3-scipy libmpfr-dev
+
+    - name: Display Python version
+      run: python -c "import sys; print(sys.version)"
 
     - name: Download dependencies
       run: |

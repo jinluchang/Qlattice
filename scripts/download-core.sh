@@ -37,7 +37,7 @@ fi
 if [ -e Grid-lehner/configure ] ; then
     echo "Grid-lehner bootstrapped."
 else
-    ( cd Grid-lehner ; git clean -f ; ./bootstrap.sh )
+    ( cd Grid-lehner ; git clean -f ; ./bootstrap.sh ; ls -l Eigen )
 fi
 
 if [ -d gpt ] ; then
