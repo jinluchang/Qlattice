@@ -91,7 +91,10 @@ struct QFile {
           ssprintf("QFile: open '%s' with '%s'.", path.c_str(), mode.c_str()));
     }
     fp = qopen(path, mode);
-    qassert(NULL != fp);
+    if (fp == NULL) {
+      qwarn(
+          ssprintf("QFile: open '%s' with '%s'.", path.c_str(), mode.c_str()));
+    }
     is_eof = false;
     pos = ftell(fp);
     offset_start = 0;
@@ -105,6 +108,9 @@ struct QFile {
   // NOTE: Initial position set to be 0. Does not perform fseek to appropriate position.
   {
     close();
+    if (qfile.null()) {
+      return;
+    }
     qfile.number_of_child += 1;
     path = qfile.path;
     mode = qfile.mode;
@@ -121,6 +127,14 @@ struct QFile {
       offset_end = qfile.offset_start + q_offset_end;
       if (qfile.offset_end != -1) {
         qassert(offset_end <= qfile.offset_end);
+      }
+    }
+    if (mode == "r" and offset_end != -1) {
+      const int code = fseek(fp, offset_end, SEEK_SET);
+      if (code != 0) {
+        qwarn(ssprintf("QFile: '%s' with '%s' offset=%ld,%ld failed.",
+                       path.c_str(), mode.c_str(), offset_start, offset_end));
+        close();
       }
     }
   }
@@ -321,6 +335,9 @@ struct QarFile {
   void init(const std::string& path, const std::string& mode)
   {
     qfile.init(path, mode);
+    if (qfile.null()) {
+      return;
+    }
     if (mode == "w") {
       qfwrite(qar_header.data(), qar_header.size(), 1, qfile);
     } else if (mode == "r") {
@@ -369,10 +386,16 @@ inline bool read_fn(QarFile& qar, std::string& fn, const long offset_initial, co
 // initial pos: after FILE-HEADER [newline character], just before FILE-NAME
 // final pos: after FILE-NAME [newline character], just before FILE-INFO
 {
+  if (qar.qfile.null()) {
+    qwarn(ssprintf("read_tag: fn='%s' pos=%ld.", qar.qfile.path.c_str(),
+                   qftell(qar.qfile)));
+    return false;
+  }
   std::vector<char> fnv(fn_len);
   if (1 != qfread(fnv.data(), fn_len, 1, qar.qfile)) {
     qwarn(ssprintf("read_tag: fn='%s' pos=%ld.", qar.qfile.path.c_str(),
                    qftell(qar.qfile)));
+    qar.is_read_through = true;
     return false;
   }
   fn = std::string(fnv.data(), fn_len - 1);
