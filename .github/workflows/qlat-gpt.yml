@@ -1,4 +1,4 @@
-name: Ubuntu build
+name: Ubuntu with GPT build
 
 on:
   push:
@@ -43,13 +43,13 @@ jobs:
     - name: Build everything
       run: |
         export num_proc=4
-        ./build.sh default || echo Failed
+        ./build.sh default-gpt || echo Failed
 
     - name: Testing qlat
       run: |
         make -C examples run || echo Failed
 
-    - name: Testing pylib qlat
+    - name: Testing pylib qlat-gpt
       run: |
-        make -C pylib/examples clean-logs || echo Failed
+        make -C pylib/examples clean-logs-gpt || echo Failed
         make -C pylib/examples || echo Failed
