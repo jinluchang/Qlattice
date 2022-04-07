@@ -34,7 +34,7 @@ jobs:
     - name: Install Ubuntu packages
       run: |
         sudo apt-get update
-        sudo apt-get install -y libssl-dev libopenmpi-dev python3-sympy python3-numpy python3-scipy
+        sudo apt-get install -y libssl-dev libopenmpi-dev python3-sympy python3-numpy python3-scipy libmpfr-dev
 
     - name: Download dependencies
       run: |
@@ -47,9 +47,11 @@ jobs:
 
     - name: Testing qlat
       run: |
+        source $HOME/qlat-build/default/setenv.sh
         make -C examples run || echo Failed
 
     - name: Testing pylib qlat
       run: |
+        source $HOME/qlat-build/default/setenv.sh
         make -C pylib/examples clean-logs || echo Failed
         make -C pylib/examples || echo Failed
