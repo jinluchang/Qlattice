@@ -33,7 +33,7 @@ clean:
 run-test: qlat.x
 	echo > log
 	time mpirun --oversubscribe -x OMP_NUM_THREADS=2 --np 8 ./qlat.x | tee log.full
-	cat log.full | egrep -v '^Timer' > log
+	cat log.full | grep -v '^Timer\|^check_status:\|^display_geo_node : id_node =' > log
 	make diff | cat
 	# make clean
 

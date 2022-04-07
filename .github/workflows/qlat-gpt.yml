@@ -49,3 +49,7 @@ jobs:
         source $HOME/qlat-build/default/setenv.sh
         make -C pylib/examples clean-logs-gpt || echo Failed
         make -C pylib/examples || echo Failed
+
+    - name: Show git diff
+      run: |
+        git diff

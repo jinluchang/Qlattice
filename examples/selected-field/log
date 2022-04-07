@@ -560,8 +560,8 @@ shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x1x2x4 (total_site: 4x4x4x8 ; site_s
 FieldsWriter: close 'huge-data/points-1024/fields'.
 FieldsReader: open 'huge-data/points-1024/fields'.
 read(sfr,fn,field): reading field with fn='f.psel' from 'huge-data/points-1024/fields'.
-read_tag(fr,fn,geo): 'f.psel' from 'huge-data/points-1024/fields'.
-read_tag(fr,fn,geo): 'f.psel' from 'huge-data/points-1024/fields'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.psel' from 'huge-data/points-1024/fields'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.psel' from 'huge-data/points-1024/fields'.
 shuffle_field_back(f,fs,sp): 1x1x2x4 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 FieldsReader: close 'huge-data/points-1024/fields'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)

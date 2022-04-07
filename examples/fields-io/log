@@ -122,22 +122,22 @@ shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_s
 FieldsWriter: close 'huge-data/t0/demo.lfs'.
 ShuffledFieldsReaderCache: to add 1 / 4.
 FieldsReader: open 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'f.field' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'f.sfield' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'f.float.field' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'f.float.sfield' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.field' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.sfield' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.float.field' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.float.sfield' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.field' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.sfield' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.float.field' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.float.sfield' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'sfa.field' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'sfa.sfield' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'sfa.float.field' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'sfa.float.sfield' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.field' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.sfield' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.float.field' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.float.sfield' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.field' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.sfield' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.float.field' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.float.sfield' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.field' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.sfield' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.float.field' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.float.sfield' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.field' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.sfield' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.float.field' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.float.sfield' from 'huge-data/t0/demo.lfs'.
 demo:     0 : 'f.field' from 'huge-data/t0/demo.lfs'.
 demo:     1 : 'f.sfield' from 'huge-data/t0/demo.lfs'.
 demo:     2 : 'f.float.field' from 'huge-data/t0/demo.lfs'.
@@ -165,245 +165,245 @@ make_shuffle_plan_generic: total num_send_msgs  =         32
 make_shuffle_plan_generic: total num_recv_msgs  =         32
 make_shuffle_plan_generic: global_comm_size =        128
 read(sfr,fn,field): reading field with fn='f.float.field' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'f.float.field' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.float.field' from 'huge-data/t0/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read: compute crc32=1E530CB4 for fn='f.float.field' from path 'huge-data/t0/demo.lfs'.
 read(sfr,fn,field): reading field with fn='f.float.sfield' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'f.float.sfield' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.float.sfield' from 'huge-data/t0/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read_sbs: compute crc32=B98B28E0 for fn='f.float.sfield' from path 'huge-data/t0/demo.lfs'.
 read(sfr,fn,sbs,sf): reading sparse field with fn='f.float.sfield' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'f.float.sfield' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.float.sfield' from 'huge-data/t0/demo.lfs'.
 shuffle_field_back(sel_f,sel_fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read_sbs: compute crc32=B98B28E0 for fn='f.float.sfield' from path 'huge-data/t0/demo.lfs' with sbs.
 read(sfr,fn,field): reading field with fn='sf.float.field' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.float.field' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.float.field' from 'huge-data/t0/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read: compute crc32=B98B28E0 for fn='sf.float.field' from path 'huge-data/t0/demo.lfs'.
 read(sfr,fn,field): reading field with fn='sf.float.sfield' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.float.sfield' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.float.sfield' from 'huge-data/t0/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read_sbs: compute crc32=B98B28E0 for fn='sf.float.sfield' from path 'huge-data/t0/demo.lfs'.
 read(sfr,fn,sbs,sf): reading sparse field with fn='sf.float.sfield' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.float.sfield' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.float.sfield' from 'huge-data/t0/demo.lfs'.
 shuffle_field_back(sel_f,sel_fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read_sbs: compute crc32=B98B28E0 for fn='sf.float.sfield' from path 'huge-data/t0/demo.lfs' with sbs.
 read(sfr,fn,field): reading field with fn='fa.float.field' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.float.field' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.float.field' from 'huge-data/t0/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read: compute crc32=1E530CB4 for fn='fa.float.field' from path 'huge-data/t0/demo.lfs'.
 read(sfr,fn,field): reading field with fn='fa.float.sfield' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.float.sfield' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.float.sfield' from 'huge-data/t0/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read_sbs: compute crc32=B98B28E0 for fn='fa.float.sfield' from path 'huge-data/t0/demo.lfs'.
 read(sfr,fn,sbs,sf): reading sparse field with fn='fa.float.sfield' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.float.sfield' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.float.sfield' from 'huge-data/t0/demo.lfs'.
 shuffle_field_back(sel_f,sel_fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read_sbs: compute crc32=B98B28E0 for fn='fa.float.sfield' from path 'huge-data/t0/demo.lfs' with sbs.
 read(sfr,fn,field): reading field with fn='sfa.float.field' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'sfa.float.field' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.float.field' from 'huge-data/t0/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read: compute crc32=B98B28E0 for fn='sfa.float.field' from path 'huge-data/t0/demo.lfs'.
 read(sfr,fn,field): reading field with fn='sfa.float.sfield' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'sfa.float.sfield' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.float.sfield' from 'huge-data/t0/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read_sbs: compute crc32=B98B28E0 for fn='sfa.float.sfield' from path 'huge-data/t0/demo.lfs'.
 read(sfr,fn,sbs,sf): reading sparse field with fn='sfa.float.sfield' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'sfa.float.sfield' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.float.sfield' from 'huge-data/t0/demo.lfs'.
 shuffle_field_back(sel_f,sel_fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read_sbs: compute crc32=B98B28E0 for fn='sfa.float.sfield' from path 'huge-data/t0/demo.lfs' with sbs.
 FieldsReader: open 'huge-data/t0/demo.lfs'.
 demo: read from disk 'f.field'
 read(sfr,fn,field): reading field with fn='f.field' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'f.field' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'f.field' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.field' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.field' from 'huge-data/t0/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=85D04C78.
 demo: read from disk 'sf.field'
 read(sfr,fn,field): reading field with fn='sf.field' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'f.sfield' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'f.float.field' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'f.float.sfield' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.field' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.field' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.sfield' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.float.field' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.float.sfield' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.field' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.field' from 'huge-data/t0/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=60386CDD.
 read(sfr,fn,field): reading field with fn='f.sfield' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'f.sfield' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.sfield' from 'huge-data/t0/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=60386CDD.
 read(sfr,fn,field): reading field with fn='sf.sfield' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.sfield' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.sfield' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.sfield' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.sfield' from 'huge-data/t0/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=60386CDD.
 read(sfr,fn,field): reading field with fn='fa.field' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.float.field' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.float.sfield' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.field' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.field' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.float.field' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.float.sfield' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.field' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.field' from 'huge-data/t0/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=85D04C78.
 read(sfr,fn,field): reading field with fn='sfa.field' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.sfield' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.float.field' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.float.sfield' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'sfa.field' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'sfa.field' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.sfield' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.float.field' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.float.sfield' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.field' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.field' from 'huge-data/t0/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=60386CDD.
 read(sfr,fn,field): reading field with fn='fa.sfield' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.sfield' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.sfield' from 'huge-data/t0/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=60386CDD.
 read(sfr,fn,field): reading field with fn='sfa.sfield' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'sfa.sfield' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'sfa.sfield' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.sfield' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.sfield' from 'huge-data/t0/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=60386CDD.
 demo: read from disk 'f.field'
 read(sfr,fn,field): reading field with fn='f.field' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'f.field' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.field' from 'huge-data/t0/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=85D04C78.
 demo: read from disk 'sf.field'
 read(sfr,fn,field): reading field with fn='sf.field' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.field' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.field' from 'huge-data/t0/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=60386CDD.
 read(sfr,fn,field): reading field with fn='f.sfield' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'f.sfield' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.sfield' from 'huge-data/t0/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=60386CDD.
 read(sfr,fn,field): reading field with fn='sf.sfield' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.sfield' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.sfield' from 'huge-data/t0/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=60386CDD.
 read(sfr,fn,field): reading field with fn='fa.field' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.field' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.field' from 'huge-data/t0/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=85D04C78.
 read(sfr,fn,field): reading field with fn='sfa.field' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'sfa.field' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.field' from 'huge-data/t0/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=60386CDD.
 read(sfr,fn,field): reading field with fn='fa.sfield' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.sfield' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.sfield' from 'huge-data/t0/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=60386CDD.
 read(sfr,fn,field): reading field with fn='sfa.sfield' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'sfa.sfield' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.sfield' from 'huge-data/t0/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=60386CDD.
 demo: read from disk 'f.field'
 read(sfr,fn,field): reading field with fn='f.field' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'f.field' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.field' from 'huge-data/t0/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=85D04C78.
 demo: read from disk 'sf.field'
 read(sfr,fn,field): reading field with fn='sf.field' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.field' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.field' from 'huge-data/t0/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=60386CDD.
 read(sfr,fn,field): reading field with fn='f.sfield' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'f.sfield' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.sfield' from 'huge-data/t0/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=60386CDD.
 read(sfr,fn,field): reading field with fn='sf.sfield' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.sfield' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.sfield' from 'huge-data/t0/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=60386CDD.
 read(sfr,fn,field): reading field with fn='fa.field' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.field' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.field' from 'huge-data/t0/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=85D04C78.
 read(sfr,fn,field): reading field with fn='sfa.field' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'sfa.field' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.field' from 'huge-data/t0/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=60386CDD.
 read(sfr,fn,field): reading field with fn='fa.sfield' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.sfield' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.sfield' from 'huge-data/t0/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=60386CDD.
 read(sfr,fn,field): reading field with fn='sfa.sfield' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'sfa.sfield' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.sfield' from 'huge-data/t0/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=60386CDD.
 demo: read from disk 'f.field'
 read(sfr,fn,field): reading field with fn='f.field' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'f.field' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.field' from 'huge-data/t0/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=85D04C78.
 demo: read from disk 'sf.field'
 read(sfr,fn,field): reading field with fn='sf.field' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.field' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.field' from 'huge-data/t0/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=60386CDD.
 read(sfr,fn,field): reading field with fn='f.sfield' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'f.sfield' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.sfield' from 'huge-data/t0/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=60386CDD.
 read(sfr,fn,field): reading field with fn='sf.sfield' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.sfield' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.sfield' from 'huge-data/t0/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=60386CDD.
 read(sfr,fn,field): reading field with fn='fa.field' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.field' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.field' from 'huge-data/t0/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=85D04C78.
 read(sfr,fn,field): reading field with fn='sfa.field' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'sfa.field' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.field' from 'huge-data/t0/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=60386CDD.
 read(sfr,fn,field): reading field with fn='fa.sfield' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.sfield' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.sfield' from 'huge-data/t0/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=60386CDD.
 read(sfr,fn,field): reading field with fn='sfa.sfield' from 'huge-data/t0/demo.lfs'.
-read_tag(fr,fn,geo): 'sfa.sfield' from 'huge-data/t0/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.sfield' from 'huge-data/t0/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=60386CDD.
@@ -561,22 +561,22 @@ shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_s
 FieldsWriter: close 'huge-data/t1/demo.lfs'.
 ShuffledFieldsReaderCache: to add 2 / 4.
 FieldsReader: open 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'f.field' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'f.sfield' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'f.float.field' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'f.float.sfield' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.field' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.sfield' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.float.field' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.float.sfield' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.field' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.sfield' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.float.field' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.float.sfield' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'sfa.field' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'sfa.sfield' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'sfa.float.field' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'sfa.float.sfield' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.field' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.sfield' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.float.field' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.float.sfield' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.field' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.sfield' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.float.field' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.float.sfield' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.field' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.sfield' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.float.field' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.float.sfield' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.field' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.sfield' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.float.field' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.float.sfield' from 'huge-data/t1/demo.lfs'.
 demo:     0 : 'f.field' from 'huge-data/t1/demo.lfs'.
 demo:     1 : 'f.sfield' from 'huge-data/t1/demo.lfs'.
 demo:     2 : 'f.float.field' from 'huge-data/t1/demo.lfs'.
@@ -604,245 +604,245 @@ make_shuffle_plan_generic: total num_send_msgs  =         17
 make_shuffle_plan_generic: total num_recv_msgs  =         17
 make_shuffle_plan_generic: global_comm_size =         20
 read(sfr,fn,field): reading field with fn='f.float.field' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'f.float.field' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.float.field' from 'huge-data/t1/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read: compute crc32=1E530CB4 for fn='f.float.field' from path 'huge-data/t1/demo.lfs'.
 read(sfr,fn,field): reading field with fn='f.float.sfield' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'f.float.sfield' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.float.sfield' from 'huge-data/t1/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read_sbs: compute crc32=A3049D06 for fn='f.float.sfield' from path 'huge-data/t1/demo.lfs'.
 read(sfr,fn,sbs,sf): reading sparse field with fn='f.float.sfield' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'f.float.sfield' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.float.sfield' from 'huge-data/t1/demo.lfs'.
 shuffle_field_back(sel_f,sel_fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read_sbs: compute crc32=A3049D06 for fn='f.float.sfield' from path 'huge-data/t1/demo.lfs' with sbs.
 read(sfr,fn,field): reading field with fn='sf.float.field' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.float.field' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.float.field' from 'huge-data/t1/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read: compute crc32=A3049D06 for fn='sf.float.field' from path 'huge-data/t1/demo.lfs'.
 read(sfr,fn,field): reading field with fn='sf.float.sfield' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.float.sfield' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.float.sfield' from 'huge-data/t1/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read_sbs: compute crc32=A3049D06 for fn='sf.float.sfield' from path 'huge-data/t1/demo.lfs'.
 read(sfr,fn,sbs,sf): reading sparse field with fn='sf.float.sfield' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.float.sfield' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.float.sfield' from 'huge-data/t1/demo.lfs'.
 shuffle_field_back(sel_f,sel_fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read_sbs: compute crc32=A3049D06 for fn='sf.float.sfield' from path 'huge-data/t1/demo.lfs' with sbs.
 read(sfr,fn,field): reading field with fn='fa.float.field' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.float.field' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.float.field' from 'huge-data/t1/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read: compute crc32=1E530CB4 for fn='fa.float.field' from path 'huge-data/t1/demo.lfs'.
 read(sfr,fn,field): reading field with fn='fa.float.sfield' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.float.sfield' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.float.sfield' from 'huge-data/t1/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read_sbs: compute crc32=A3049D06 for fn='fa.float.sfield' from path 'huge-data/t1/demo.lfs'.
 read(sfr,fn,sbs,sf): reading sparse field with fn='fa.float.sfield' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.float.sfield' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.float.sfield' from 'huge-data/t1/demo.lfs'.
 shuffle_field_back(sel_f,sel_fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read_sbs: compute crc32=A3049D06 for fn='fa.float.sfield' from path 'huge-data/t1/demo.lfs' with sbs.
 read(sfr,fn,field): reading field with fn='sfa.float.field' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'sfa.float.field' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.float.field' from 'huge-data/t1/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read: compute crc32=A3049D06 for fn='sfa.float.field' from path 'huge-data/t1/demo.lfs'.
 read(sfr,fn,field): reading field with fn='sfa.float.sfield' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'sfa.float.sfield' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.float.sfield' from 'huge-data/t1/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read_sbs: compute crc32=A3049D06 for fn='sfa.float.sfield' from path 'huge-data/t1/demo.lfs'.
 read(sfr,fn,sbs,sf): reading sparse field with fn='sfa.float.sfield' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'sfa.float.sfield' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.float.sfield' from 'huge-data/t1/demo.lfs'.
 shuffle_field_back(sel_f,sel_fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read_sbs: compute crc32=A3049D06 for fn='sfa.float.sfield' from path 'huge-data/t1/demo.lfs' with sbs.
 FieldsReader: open 'huge-data/t1/demo.lfs'.
 demo: read from disk 'f.field'
 read(sfr,fn,field): reading field with fn='f.field' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'f.field' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'f.field' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.field' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.field' from 'huge-data/t1/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=85D04C78.
 demo: read from disk 'sf.field'
 read(sfr,fn,field): reading field with fn='sf.field' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'f.sfield' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'f.float.field' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'f.float.sfield' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.field' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.field' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.sfield' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.float.field' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.float.sfield' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.field' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.field' from 'huge-data/t1/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=E6136941.
 read(sfr,fn,field): reading field with fn='f.sfield' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'f.sfield' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.sfield' from 'huge-data/t1/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=E6136941.
 read(sfr,fn,field): reading field with fn='sf.sfield' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.sfield' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.sfield' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.sfield' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.sfield' from 'huge-data/t1/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=E6136941.
 read(sfr,fn,field): reading field with fn='fa.field' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.float.field' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.float.sfield' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.field' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.field' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.float.field' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.float.sfield' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.field' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.field' from 'huge-data/t1/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=85D04C78.
 read(sfr,fn,field): reading field with fn='sfa.field' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.sfield' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.float.field' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.float.sfield' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'sfa.field' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'sfa.field' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.sfield' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.float.field' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.float.sfield' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.field' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.field' from 'huge-data/t1/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=E6136941.
 read(sfr,fn,field): reading field with fn='fa.sfield' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.sfield' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.sfield' from 'huge-data/t1/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=E6136941.
 read(sfr,fn,field): reading field with fn='sfa.sfield' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'sfa.sfield' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'sfa.sfield' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.sfield' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.sfield' from 'huge-data/t1/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=E6136941.
 demo: read from disk 'f.field'
 read(sfr,fn,field): reading field with fn='f.field' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'f.field' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.field' from 'huge-data/t1/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=85D04C78.
 demo: read from disk 'sf.field'
 read(sfr,fn,field): reading field with fn='sf.field' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.field' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.field' from 'huge-data/t1/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=E6136941.
 read(sfr,fn,field): reading field with fn='f.sfield' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'f.sfield' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.sfield' from 'huge-data/t1/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=E6136941.
 read(sfr,fn,field): reading field with fn='sf.sfield' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.sfield' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.sfield' from 'huge-data/t1/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=E6136941.
 read(sfr,fn,field): reading field with fn='fa.field' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.field' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.field' from 'huge-data/t1/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=85D04C78.
 read(sfr,fn,field): reading field with fn='sfa.field' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'sfa.field' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.field' from 'huge-data/t1/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=E6136941.
 read(sfr,fn,field): reading field with fn='fa.sfield' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.sfield' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.sfield' from 'huge-data/t1/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=E6136941.
 read(sfr,fn,field): reading field with fn='sfa.sfield' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'sfa.sfield' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.sfield' from 'huge-data/t1/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=E6136941.
 demo: read from disk 'f.field'
 read(sfr,fn,field): reading field with fn='f.field' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'f.field' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.field' from 'huge-data/t1/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=85D04C78.
 demo: read from disk 'sf.field'
 read(sfr,fn,field): reading field with fn='sf.field' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.field' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.field' from 'huge-data/t1/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=E6136941.
 read(sfr,fn,field): reading field with fn='f.sfield' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'f.sfield' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.sfield' from 'huge-data/t1/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=E6136941.
 read(sfr,fn,field): reading field with fn='sf.sfield' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.sfield' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.sfield' from 'huge-data/t1/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=E6136941.
 read(sfr,fn,field): reading field with fn='fa.field' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.field' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.field' from 'huge-data/t1/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=85D04C78.
 read(sfr,fn,field): reading field with fn='sfa.field' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'sfa.field' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.field' from 'huge-data/t1/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=E6136941.
 read(sfr,fn,field): reading field with fn='fa.sfield' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.sfield' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.sfield' from 'huge-data/t1/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=E6136941.
 read(sfr,fn,field): reading field with fn='sfa.sfield' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'sfa.sfield' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.sfield' from 'huge-data/t1/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=E6136941.
 demo: read from disk 'f.field'
 read(sfr,fn,field): reading field with fn='f.field' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'f.field' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.field' from 'huge-data/t1/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=85D04C78.
 demo: read from disk 'sf.field'
 read(sfr,fn,field): reading field with fn='sf.field' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.field' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.field' from 'huge-data/t1/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=E6136941.
 read(sfr,fn,field): reading field with fn='f.sfield' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'f.sfield' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.sfield' from 'huge-data/t1/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=E6136941.
 read(sfr,fn,field): reading field with fn='sf.sfield' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.sfield' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.sfield' from 'huge-data/t1/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=E6136941.
 read(sfr,fn,field): reading field with fn='fa.field' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.field' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.field' from 'huge-data/t1/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=85D04C78.
 read(sfr,fn,field): reading field with fn='sfa.field' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'sfa.field' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.field' from 'huge-data/t1/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=E6136941.
 read(sfr,fn,field): reading field with fn='fa.sfield' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.sfield' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.sfield' from 'huge-data/t1/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=E6136941.
 read(sfr,fn,field): reading field with fn='sfa.sfield' from 'huge-data/t1/demo.lfs'.
-read_tag(fr,fn,geo): 'sfa.sfield' from 'huge-data/t1/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.sfield' from 'huge-data/t1/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=E6136941.
@@ -1000,22 +1000,22 @@ shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_s
 FieldsWriter: close 'huge-data/t2/demo.lfs'.
 ShuffledFieldsReaderCache: to add 3 / 4.
 FieldsReader: open 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'f.field' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'f.sfield' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'f.float.field' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'f.float.sfield' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.field' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.sfield' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.float.field' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.float.sfield' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.field' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.sfield' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.float.field' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.float.sfield' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'sfa.field' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'sfa.sfield' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'sfa.float.field' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'sfa.float.sfield' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.field' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.sfield' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.float.field' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.float.sfield' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.field' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.sfield' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.float.field' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.float.sfield' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.field' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.sfield' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.float.field' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.float.sfield' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.field' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.sfield' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.float.field' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.float.sfield' from 'huge-data/t2/demo.lfs'.
 demo:     0 : 'f.field' from 'huge-data/t2/demo.lfs'.
 demo:     1 : 'f.sfield' from 'huge-data/t2/demo.lfs'.
 demo:     2 : 'f.float.field' from 'huge-data/t2/demo.lfs'.
@@ -1043,245 +1043,245 @@ make_shuffle_plan_generic: total num_send_msgs  =          7
 make_shuffle_plan_generic: total num_recv_msgs  =          7
 make_shuffle_plan_generic: global_comm_size =          8
 read(sfr,fn,field): reading field with fn='f.float.field' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'f.float.field' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.float.field' from 'huge-data/t2/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read: compute crc32=1E530CB4 for fn='f.float.field' from path 'huge-data/t2/demo.lfs'.
 read(sfr,fn,field): reading field with fn='f.float.sfield' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'f.float.sfield' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.float.sfield' from 'huge-data/t2/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read_sbs: compute crc32=B9C5079C for fn='f.float.sfield' from path 'huge-data/t2/demo.lfs'.
 read(sfr,fn,sbs,sf): reading sparse field with fn='f.float.sfield' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'f.float.sfield' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.float.sfield' from 'huge-data/t2/demo.lfs'.
 shuffle_field_back(sel_f,sel_fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read_sbs: compute crc32=B9C5079C for fn='f.float.sfield' from path 'huge-data/t2/demo.lfs' with sbs.
 read(sfr,fn,field): reading field with fn='sf.float.field' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.float.field' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.float.field' from 'huge-data/t2/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read: compute crc32=B9C5079C for fn='sf.float.field' from path 'huge-data/t2/demo.lfs'.
 read(sfr,fn,field): reading field with fn='sf.float.sfield' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.float.sfield' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.float.sfield' from 'huge-data/t2/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read_sbs: compute crc32=B9C5079C for fn='sf.float.sfield' from path 'huge-data/t2/demo.lfs'.
 read(sfr,fn,sbs,sf): reading sparse field with fn='sf.float.sfield' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.float.sfield' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.float.sfield' from 'huge-data/t2/demo.lfs'.
 shuffle_field_back(sel_f,sel_fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read_sbs: compute crc32=B9C5079C for fn='sf.float.sfield' from path 'huge-data/t2/demo.lfs' with sbs.
 read(sfr,fn,field): reading field with fn='fa.float.field' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.float.field' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.float.field' from 'huge-data/t2/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read: compute crc32=1E530CB4 for fn='fa.float.field' from path 'huge-data/t2/demo.lfs'.
 read(sfr,fn,field): reading field with fn='fa.float.sfield' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.float.sfield' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.float.sfield' from 'huge-data/t2/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read_sbs: compute crc32=B9C5079C for fn='fa.float.sfield' from path 'huge-data/t2/demo.lfs'.
 read(sfr,fn,sbs,sf): reading sparse field with fn='fa.float.sfield' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.float.sfield' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.float.sfield' from 'huge-data/t2/demo.lfs'.
 shuffle_field_back(sel_f,sel_fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read_sbs: compute crc32=B9C5079C for fn='fa.float.sfield' from path 'huge-data/t2/demo.lfs' with sbs.
 read(sfr,fn,field): reading field with fn='sfa.float.field' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'sfa.float.field' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.float.field' from 'huge-data/t2/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read: compute crc32=B9C5079C for fn='sfa.float.field' from path 'huge-data/t2/demo.lfs'.
 read(sfr,fn,field): reading field with fn='sfa.float.sfield' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'sfa.float.sfield' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.float.sfield' from 'huge-data/t2/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read_sbs: compute crc32=B9C5079C for fn='sfa.float.sfield' from path 'huge-data/t2/demo.lfs'.
 read(sfr,fn,sbs,sf): reading sparse field with fn='sfa.float.sfield' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'sfa.float.sfield' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.float.sfield' from 'huge-data/t2/demo.lfs'.
 shuffle_field_back(sel_f,sel_fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read_sbs: compute crc32=B9C5079C for fn='sfa.float.sfield' from path 'huge-data/t2/demo.lfs' with sbs.
 FieldsReader: open 'huge-data/t2/demo.lfs'.
 demo: read from disk 'f.field'
 read(sfr,fn,field): reading field with fn='f.field' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'f.field' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'f.field' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.field' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.field' from 'huge-data/t2/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=85D04C78.
 demo: read from disk 'sf.field'
 read(sfr,fn,field): reading field with fn='sf.field' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'f.sfield' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'f.float.field' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'f.float.sfield' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.field' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.field' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.sfield' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.float.field' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.float.sfield' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.field' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.field' from 'huge-data/t2/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=F7F47FEE.
 read(sfr,fn,field): reading field with fn='f.sfield' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'f.sfield' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.sfield' from 'huge-data/t2/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=F7F47FEE.
 read(sfr,fn,field): reading field with fn='sf.sfield' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.sfield' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.sfield' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.sfield' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.sfield' from 'huge-data/t2/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=F7F47FEE.
 read(sfr,fn,field): reading field with fn='fa.field' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.float.field' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.float.sfield' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.field' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.field' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.float.field' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.float.sfield' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.field' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.field' from 'huge-data/t2/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=85D04C78.
 read(sfr,fn,field): reading field with fn='sfa.field' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.sfield' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.float.field' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.float.sfield' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'sfa.field' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'sfa.field' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.sfield' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.float.field' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.float.sfield' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.field' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.field' from 'huge-data/t2/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=F7F47FEE.
 read(sfr,fn,field): reading field with fn='fa.sfield' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.sfield' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.sfield' from 'huge-data/t2/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=F7F47FEE.
 read(sfr,fn,field): reading field with fn='sfa.sfield' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'sfa.sfield' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'sfa.sfield' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.sfield' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.sfield' from 'huge-data/t2/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=F7F47FEE.
 demo: read from disk 'f.field'
 read(sfr,fn,field): reading field with fn='f.field' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'f.field' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.field' from 'huge-data/t2/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=85D04C78.
 demo: read from disk 'sf.field'
 read(sfr,fn,field): reading field with fn='sf.field' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.field' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.field' from 'huge-data/t2/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=F7F47FEE.
 read(sfr,fn,field): reading field with fn='f.sfield' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'f.sfield' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.sfield' from 'huge-data/t2/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=F7F47FEE.
 read(sfr,fn,field): reading field with fn='sf.sfield' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.sfield' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.sfield' from 'huge-data/t2/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=F7F47FEE.
 read(sfr,fn,field): reading field with fn='fa.field' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.field' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.field' from 'huge-data/t2/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=85D04C78.
 read(sfr,fn,field): reading field with fn='sfa.field' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'sfa.field' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.field' from 'huge-data/t2/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=F7F47FEE.
 read(sfr,fn,field): reading field with fn='fa.sfield' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.sfield' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.sfield' from 'huge-data/t2/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=F7F47FEE.
 read(sfr,fn,field): reading field with fn='sfa.sfield' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'sfa.sfield' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.sfield' from 'huge-data/t2/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=F7F47FEE.
 demo: read from disk 'f.field'
 read(sfr,fn,field): reading field with fn='f.field' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'f.field' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.field' from 'huge-data/t2/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=85D04C78.
 demo: read from disk 'sf.field'
 read(sfr,fn,field): reading field with fn='sf.field' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.field' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.field' from 'huge-data/t2/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=F7F47FEE.
 read(sfr,fn,field): reading field with fn='f.sfield' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'f.sfield' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.sfield' from 'huge-data/t2/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=F7F47FEE.
 read(sfr,fn,field): reading field with fn='sf.sfield' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.sfield' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.sfield' from 'huge-data/t2/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=F7F47FEE.
 read(sfr,fn,field): reading field with fn='fa.field' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.field' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.field' from 'huge-data/t2/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=85D04C78.
 read(sfr,fn,field): reading field with fn='sfa.field' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'sfa.field' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.field' from 'huge-data/t2/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=F7F47FEE.
 read(sfr,fn,field): reading field with fn='fa.sfield' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.sfield' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.sfield' from 'huge-data/t2/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=F7F47FEE.
 read(sfr,fn,field): reading field with fn='sfa.sfield' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'sfa.sfield' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.sfield' from 'huge-data/t2/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=F7F47FEE.
 demo: read from disk 'f.field'
 read(sfr,fn,field): reading field with fn='f.field' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'f.field' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.field' from 'huge-data/t2/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=85D04C78.
 demo: read from disk 'sf.field'
 read(sfr,fn,field): reading field with fn='sf.field' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.field' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.field' from 'huge-data/t2/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=F7F47FEE.
 read(sfr,fn,field): reading field with fn='f.sfield' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'f.sfield' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.sfield' from 'huge-data/t2/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=F7F47FEE.
 read(sfr,fn,field): reading field with fn='sf.sfield' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'sf.sfield' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sf.sfield' from 'huge-data/t2/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=F7F47FEE.
 read(sfr,fn,field): reading field with fn='fa.field' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.field' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.field' from 'huge-data/t2/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=85D04C78.
 read(sfr,fn,field): reading field with fn='sfa.field' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'sfa.field' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.field' from 'huge-data/t2/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=F7F47FEE.
 read(sfr,fn,field): reading field with fn='fa.sfield' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'fa.sfield' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'fa.sfield' from 'huge-data/t2/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=F7F47FEE.
 read(sfr,fn,field): reading field with fn='sfa.sfield' from 'huge-data/t2/demo.lfs'.
-read_tag(fr,fn,geo): 'sfa.sfield' from 'huge-data/t2/demo.lfs'.
+read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.sfield' from 'huge-data/t2/demo.lfs'.
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=F7F47FEE.
