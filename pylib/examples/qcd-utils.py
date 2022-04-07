@@ -4,8 +4,6 @@ import sys
 import qlat as q
 import numpy as np
 
-import qlat_gpt as qg
-
 size_node_list = [
         [1, 1, 1, 1],
         [1, 1, 1, 2],
@@ -15,9 +13,7 @@ size_node_list = [
         [2, 2, 2, 4],
         ]
 
-# q.begin(sys.argv, size_node_list)
-
-qg.begin_with_gpt()
+q.begin(sys.argv, size_node_list)
 
 q.qremove_all_info("results")
 q.qmkdir_info("results")
@@ -27,7 +23,7 @@ rs = q.RngState("seed")
 path = "results/ckpoint.topo1.4nt8.lat"
 is_load_config = True
 if is_load_config and q.does_file_exist_sync_node(path):
-    gf = qg.load_gauge_field(path)
+    gf.load(path)
     geo = q.geo_reform(gf.geo())
     total_site = geo.total_site()
 else:
@@ -80,8 +76,7 @@ if False:
         q.gf_wilson_flow(gf_f, flow_time, 50, existing_flow_time = t, c1 = c1)
         t += flow_time
         measure()
-    qg.save_gauge_field(gf_f, "results/ckpoint.topo1.4nt8.lat")
+    gf_f.save("results/ckpoint.topo1.4nt8.lat")
 
 q.timer_display()
-
-qg.end_with_gpt()
+q.end()
