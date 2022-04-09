@@ -40,6 +40,7 @@ inline bool qtruncate(const std::string& evilFile)
 }
 
 inline bool qtruncate(const std::string& path, const long offset)
+// return true if successful.
 {
   const int ret = truncate(path.c_str(), offset);
   return ret == 0;

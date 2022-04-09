@@ -298,6 +298,15 @@ qacc Vector<M> get_data(Vector<M> vec)
   return vec;
 }
 
+template <class M>
+qacc Vector<M> get_data(Vector<M> vec, const long size)
+// only get a portion of the vec
+// vec should be at least size long
+{
+  qassert(vec.size() >= size);
+  return Vector<M>(vec.data(), size);
+}
+
 template <class M, unsigned long N>
 qacc Vector<M> get_data(const array<M, N>& vec)
 {

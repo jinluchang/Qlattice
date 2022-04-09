@@ -24,7 +24,7 @@ dget "fftw-3.3.10.tar.gz" "http://www.fftw.org/fftw-3.3.10.tar.gz"
 
 dget "Cuba-4.2.1.tar.gz"  "http://www.feynarts.de/cuba/Cuba-4.2.1.tar.gz"
 
-dget "zlib-1.2.12.tar.gz" "https://zlib.net/zlib-1.2.12.tar.gz"
+dget "zlib-1.2.11.tar.gz" "https://versaweb.dl.sourceforge.net/project/libpng/zlib/1.2.11/zlib-1.2.11.tar.gz"
 
 dget "gsl-2.7.1.tar.gz" "https://gnu.askapache.com/gsl/gsl-2.7.1.tar.gz"
 

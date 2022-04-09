@@ -43,10 +43,11 @@ Quote is not part of the FILE-FORMAT-LINE.
 ### FILE-HEADER
 
 ```
+[zero or more space characters]
 [FILE-NAME size in bytes stored in ASCII]
-[space character]
+[one or more space characters]
 [FILE-INFO size in bytes stored in ASCII]
-[space character]
+[one or more space characters]
 [FILE-DATA size in bytes stored in ASCII]
 ```
 
@@ -57,5 +58,5 @@ Can store some metadata information about the file. Can be simply empty.
 # Segment size
 
 ```
-[FILE-HEADER size] + [FILE-NAME size] + [File info size] + [File info size] + 5
+[FILE-HEADER size] + 1 + [FILE-NAME size] + 1 + [FILE-INFO size] + 1 + [FILE-DATA size] + 2
 ```
