@@ -516,12 +516,25 @@ inline bool read_qar_segment_info(QarFile& qar, QarSegmentInfo& qsinfo)
     return false;
   }
   qsinfo.offset = qftell(qar.qfile);
+  const std::string header_prefix = "QAR-FILE ";
   const std::string header = qgetline(qar.qfile);
   if (header.size() == 0) {
     qar.is_read_through = true;
     return false;
   }
-  const std::vector<long> len_vec = read_longs(header);
+  if (header.size() <= header_prefix.size()) {
+    qwarn(ssprintf("read_tag: fn='%s' pos=%ld.", qar.qfile.path.c_str(),
+                   qftell(qar.qfile)));
+    qar.is_read_through = true;
+    return false;
+  }
+  if (header.substr(0, header_prefix.size()) != header_prefix) {
+    qwarn(ssprintf("read_tag: fn='%s' pos=%ld.", qar.qfile.path.c_str(),
+                   qftell(qar.qfile)));
+    qar.is_read_through = true;
+    return false;
+  }
+  const std::vector<long> len_vec = read_longs(header.substr(header_prefix.size()));
   if (len_vec.size() != 3) {
     qwarn(ssprintf("read_tag: fn='%s' pos=%ld.", qar.qfile.path.c_str(),
                    qftell(qar.qfile)));
@@ -734,11 +747,11 @@ inline std::vector<std::string> properly_truncate_qar_file(const std::string& pa
 
 inline void write_start(QarFile& qar, const std::string& fn,
                         const std::string& info, QFile& qfile_out,
-                        const long data_len = -1, const long header_size = 60)
+                        const long data_len = -1, const long header_len = 60)
 // interface function
 // Initial pos should be the end of the qar
 // Set the qfile_out to be a writable QFile to qar.
-// When the final size of qfile_out is unknow (data_len == -1), header_size is
+// When the final size of qfile_out is unknow (data_len == -1), header_len is
 // reserved for header.
 // Should call write_end(qar) after writing to qfile_out is finished.
 {
@@ -746,13 +759,17 @@ inline void write_start(QarFile& qar, const std::string& fn,
   qar.current_write_segment_offset = qftell(qar.qfile);
   qfseek(qar.qfile, 0, SEEK_END);
   qassert(qftell(qar.qfile) == qar.current_write_segment_offset);
+  const std::string header_prefix = "QAR-FILE ";
   std::string header;
   header = ssprintf("%ld %ld %ld", fn.size(), info.size(), data_len);
   if (data_len < 0) {
     qassert(data_len == -1);
-    qassert(header_size >= (long)header.size());
-    header = std::string(header_size - header.size(), ' ') + header;
+    qassert(header_len - (long)header_prefix.size() >= (long)header.size());
+    const std::string header_pad(
+        header_len - header_prefix.size() - header.size(), ' ');
+    header = header_pad + header;
   }
+  header = header_prefix + header;
   std::string meta;
   meta += header;
   meta += "\n";
@@ -795,9 +812,12 @@ inline void write_end(QarFile& qar)
     const long info_len = qar.current_write_segment_offset_info_len;
     data_len = offset_end - qar.current_write_segment_offset_data;
     qassert(data_len >= 0);
+    const std::string header_prefix = "QAR-FILE ";
     std::string header = ssprintf("%ld %ld %ld", fn_len, info_len, data_len);
-    qassert(header.size() < header_len);
-    header = std::string(header_len - header.size(), ' ') + header;
+    qassert(header_len - (long)header_prefix.size() >= (long)header.size());
+    const std::string header_pad(
+        header_len - header_prefix.size() - header.size(), ' ');
+    header = header_prefix + header_pad + header;
     qassert(header.size() == header_len);
     qfseek(qar.qfile, qar.current_write_segment_offset, SEEK_SET);
     qwrite_data(header, qar.qfile);

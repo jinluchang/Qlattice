@@ -8,11 +8,11 @@ File format is
 FILE-FORMAT-LINE
 
 FILE-HEADER
-[newline charactor]
+[newline character]
 FILE-NAME
-[newline charactor]
+[newline character]
 FILE-INFO
-[newline charactor]
+[newline character]
 FILE-DATA
 [newline character]
 [newline character]
@@ -43,7 +43,8 @@ Quote is not part of the FILE-FORMAT-LINE.
 ### FILE-HEADER
 
 ```
-[zero or more space characters]
+QAR-FILE
+[one or more space characters]
 [FILE-NAME size in bytes stored in ASCII]
 [one or more space characters]
 [FILE-INFO size in bytes stored in ASCII]
