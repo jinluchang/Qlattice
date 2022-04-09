@@ -279,6 +279,13 @@ inline int qremove_all_info(const std::string& path)
   }
 }
 
+inline int qar_folder_info(const std::string& path_qar,
+                           const std::string& path_folder_,
+                           const bool is_remove_folder_after = false)
+{
+  return qar_folder(path_qar, path_folder_, is_remove_folder_after);
+}
+
 inline std::string show_file_crc32(const std::pair<std::string, crc32_t>& fcrc)
 {
   return ssprintf("%08X  fn='%s'", fcrc.second, fcrc.first.c_str());

@@ -116,3 +116,7 @@ def pickle_cache_call(func, path):
 @timer
 def qar_folder(path_qar, path_folder, is_remove_folder_after = False):
     return c.qar_folder(path_qar, path_folder, is_remove_folder_after)
+
+@timer
+def qar_folder_info(path_qar, path_folder, is_remove_folder_after = False):
+    return c.qar_folder_info(path_qar, path_folder, is_remove_folder_after)

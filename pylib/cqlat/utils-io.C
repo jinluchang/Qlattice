@@ -361,6 +361,20 @@ EXPORT(qar_folder, {
   return py_convert(ret);
 });
 
+EXPORT(qar_folder_info, {
+  using namespace qlat;
+  PyObject* p_path_qar = NULL;
+  PyObject* p_path_folder = NULL;
+  bool is_remove_folder_after = false;
+  if (!PyArg_ParseTuple(args, "OO|b", &p_path_qar, &p_path_folder, &is_remove_folder_after)) {
+    return NULL;
+  }
+  const std::string path_qar = py_convert_data<std::string>(p_path_qar);
+  const std::string path_folder = py_convert_data<std::string>(p_path_folder);
+  const int ret = qar_folder_info(path_qar, path_folder, is_remove_folder_after);
+  return py_convert(ret);
+});
+
 EXPORT(qload_datatable, {
   using namespace qlat;
   PyObject* p_path = NULL;
