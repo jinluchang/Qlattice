@@ -28,6 +28,15 @@ inline bool is_directory(const std::string& fn)
   return S_ISDIR(sb.st_mode);
 }
 
+inline bool is_regular_file(const std::string& fn)
+{
+  struct stat sb;
+  if (0 != stat(fn.c_str(), &sb)) {
+    return false;
+  }
+  return S_ISREG(sb.st_mode);
+}
+
 inline bool qtruncate(const std::string& evilFile)
 {
   std::ofstream evil;
@@ -108,6 +117,42 @@ inline std::vector<std::string> qls_aux(const std::string& path)
 inline std::vector<std::string> qls(const std::string& path)
 {
   return qls_aux(remove_trailing_slashes(path));
+}
+
+inline std::vector<std::string> qls_all_aux(
+    const std::string& path, const bool is_folder_before_files = false)
+// list all files and folder in path (not including it self)
+{
+  std::vector<std::string> all_contents;
+  if (not is_directory(path)) {
+    return all_contents;
+  }
+  const std::vector<std::string> contents = qls_aux(path);
+  for (long i = 0; i < (long)contents.size(); ++i) {
+    const std::string& path_i = contents[i];
+    if (not is_directory(path_i)) {
+      all_contents.push_back(path_i);
+    } else {
+      if (is_folder_before_files) {
+        all_contents.push_back(path_i);
+        vector_append(all_contents,
+                      qls_all_aux(path_i, is_folder_before_files));
+      } else {
+        // default behaviour
+        vector_append(all_contents,
+                      qls_all_aux(path_i, is_folder_before_files));
+        all_contents.push_back(path_i);
+      }
+    }
+  }
+  return all_contents;
+}
+
+inline std::vector<std::string> qls_all(
+    const std::string& path, const bool is_folder_before_files = false)
+// list files before its folder
+{
+  return qls_all_aux(remove_trailing_slashes(path), is_folder_before_files);
 }
 
 inline int qremove(const std::string& path)
@@ -269,9 +314,9 @@ inline void qhandler_sig(const int signum)
 {
   if (signum == SIGTERM) {
     is_sigterm_received() += 1;
-    displayln(ssprintf(
-        "qhandler_sig: sigterm triggered, current count is: %d / 10.",
-        is_sigterm_received()));
+    displayln(
+        ssprintf("qhandler_sig: sigterm triggered, current count is: %d / 10.",
+                 is_sigterm_received()));
     Timer::display();
     Timer::display_stack();
     ssleep(3.0);
@@ -284,14 +329,15 @@ inline void qhandler_sig(const int signum)
     Timer::display_stack();
     const double time = get_total_time();
     if (time - get_last_sigint_time() <= 3.0) {
-      displayln(ssprintf("qhandler_sig: sigint triggered interval = %.2f <= 3.0. Quit.", time - get_last_sigint_time()));
+      displayln(ssprintf(
+          "qhandler_sig: sigint triggered interval = %.2f <= 3.0. Quit.",
+          time - get_last_sigint_time()));
       qassert(false);
     } else {
       get_last_sigint_time() = time;
     }
   } else {
-    displayln(
-        ssprintf("qhandler_sig: cannot handle this signal: %d.", signum));
+    displayln(ssprintf("qhandler_sig: cannot handle this signal: %d.", signum));
     Timer::display();
     Timer::display_stack();
   }

@@ -396,7 +396,7 @@ inline long& write_from_qfile_chunk_size()
 // qlat parameter
 // size in bytes
 {
-  static long size = 16;
+  static long size = 512 * 1024;
   return size;
 }
 
@@ -824,6 +824,66 @@ inline void write_from_qfile(QarFile& qar, const std::string& fn,
   write_start(qar, fn, info, qfile_out, data_len);
   write_from_qfile(qfile_out, qfile_in);
   write_end(qar);
+}
+
+inline int qar_folder(const std::string& path_qar,
+                      const std::string& path_folder_,
+                      const bool is_remove_folder_after = false)
+// interface function
+// return 0 if successful.
+{
+  TIMER_VERBOSE_FLOPS("qar_folder");
+  const std::string path_folder = remove_trailing_slashes(path_folder_);
+  if (not is_directory(path_folder)) {
+    qwarn(fname + ssprintf(": '%s' '%s' no folder.", path_qar.c_str(),
+                           path_folder.c_str()));
+    return 1;
+  }
+  if (does_file_exist(path_qar)) {
+    qwarn(fname + ssprintf(": '%s' '%s' qar already exist.", path_qar.c_str(),
+                           path_folder.c_str()));
+    return 2;
+  }
+  if (does_file_exist(path_qar + ".acc")) {
+    qwarn(fname + ssprintf(": '%s' '%s' qar.acc already exist.",
+                           path_qar.c_str(), path_folder.c_str()));
+    return 3;
+  }
+  const std::string path_prefix = path_folder + "/";
+  const long path_prefix_len = path_prefix.size();  // including the final "/"
+  const std::vector<std::string> contents = qls_all(path_folder);
+  std::vector<std::string> reg_files;
+  for (long i = 0; i < (long)contents.size(); ++i) {
+    const std::string path = contents[i];
+    qassert(path.substr(0, path_prefix_len) == path_prefix);
+    if (not is_directory(path)) {
+      if (not is_regular_file(path)) {
+        qwarn(fname + ssprintf(": '%s' '%s' '%s' not regular file.",
+                               path_qar.c_str(), path_folder.c_str(),
+                               path.c_str()));
+        return 4;
+      }
+      reg_files.push_back(path);
+    }
+  }
+  QarFile qar(path_qar + ".acc", "w");
+  for (long i = 0; i < (long)reg_files.size(); ++i) {
+    const std::string path = reg_files[i];
+    const std::string fn = path.substr(path_prefix_len);
+    if (verbose_level() > 0) {
+      displayln(fname + ssprintf(": '%s' '%s'/'%s' %ld/%ld.", path_qar.c_str(),
+                                 path_prefix.c_str(), fn.c_str(), i + 1,
+                                 reg_files.size()));
+    }
+    QFile qfile_in(path, "r");
+    write_from_qfile(qar, fn, "", qfile_in);
+  }
+  qar.close();
+  qrename(path_qar + ".acc", path_qar);
+  if (is_remove_folder_after) {
+    qremove_all(path_folder);
+  }
+  return 0;
 }
 
 }  // namespace qlat

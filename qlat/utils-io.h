@@ -137,6 +137,18 @@ inline bool is_directory_sync_node(const std::string& fn)
   return 0 != nfile;
 }
 
+inline bool is_regular_file_sync_node(const std::string& fn)
+{
+  long nfile = 0;
+  if (0 == get_id_node()) {
+    if (is_regular_file(fn)) {
+      nfile = 1;
+    }
+  }
+  glb_sum(nfile);
+  return 0 != nfile;
+}
+
 inline void check_stop()
 {
   if (does_file_exist_sync_node("stop.txt")) {
@@ -231,6 +243,17 @@ inline std::vector<std::string> qls_sync_node(const std::string& path)
   std::vector<std::string> ret;
   if (0 == get_id_node()) {
     ret = qls(path);
+  }
+  bcast(ret);
+  return ret;
+}
+
+inline std::vector<std::string> qls_all_sync_node(
+    const std::string& path, const bool is_folder_before_files = false)
+{
+  std::vector<std::string> ret;
+  if (0 == get_id_node()) {
+    ret = qls_all(path, is_folder_before_files);
   }
   bcast(ret);
   return ret;
