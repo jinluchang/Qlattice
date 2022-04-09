@@ -38,12 +38,12 @@ FILE-DATA
 ```
 
 NOTE: There are two newline characters in the end of the FILE-FORMAT-LINE.
-Quote is not part of the FILE-FORMAT-LINE.
+Quote symbols are not part of the FILE-FORMAT-LINE.
 
 ### FILE-HEADER
 
 ```
-QAR-FILE
+"QAR-FILE"
 [one or more space characters]
 [FILE-NAME size in bytes stored in ASCII]
 [one or more space characters]
@@ -51,6 +51,8 @@ QAR-FILE
 [one or more space characters]
 [FILE-DATA size in bytes stored in ASCII]
 ```
+
+Quote symbols are not part of the FILE-HEADER.
 
 # FILE-INFO
 
