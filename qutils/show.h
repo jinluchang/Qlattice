@@ -322,27 +322,6 @@ inline void displayln(const std::string& str, FILE* fp = NULL)
   }
 }
 
-inline long& verbose_level()
-// qlat parameter
-{
-  static long level = get_env_long_default("q_verbose", 0);
-  return level;
-}
-
-inline void display(const long minimum_verbose_level, const std::string& str)
-{
-  if (verbose_level() >= minimum_verbose_level) {
-    display(str);
-  }
-}
-
-inline void displayln(const long minimum_verbose_level, const std::string& str)
-{
-  if (verbose_level() >= minimum_verbose_level) {
-    displayln(str);
-  }
-}
-
 inline const char* get_c_str(const std::string& str) { return str.c_str(); }
 
 //////////////////////////////////////////////////////////////////

@@ -69,6 +69,8 @@
 namespace qlat
 {  //
 
+inline long& verbose_level();
+
 inline double get_time()
 {
   struct timeval tp;
@@ -143,6 +145,20 @@ inline void displayln_info(const std::string& str, FILE* fp = NULL)
   }
 }
 
+inline void display(const long minimum_verbose_level, const std::string& str)
+{
+  if (verbose_level() >= minimum_verbose_level) {
+    display(str);
+  }
+}
+
+inline void displayln(const long minimum_verbose_level, const std::string& str)
+{
+  if (verbose_level() >= minimum_verbose_level) {
+    displayln(str);
+  }
+}
+
 inline void display_info(const long minimum_verbose_level, const std::string& str)
 {
   if (0 == get_id_node() && 0 == get_thread_num()) {
@@ -208,6 +224,13 @@ inline long get_env_long_default(const std::string& var_name, const long x0)
     displayln_info(0, ssprintf("%s=%ld", var_name.c_str(), x));
   }
   return x;
+}
+
+inline long& verbose_level()
+// qlat parameter
+{
+  static long level = get_env_long_default("q_verbose", 0);
+  return level;
 }
 
 inline long long get_total_flops()
