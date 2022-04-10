@@ -234,7 +234,7 @@ inline long get_verbose_level()
   long x;
   if (val == "") {
     x = x0;
-    displayln_info(ssprintf("%s=%ld", var_name.c_str(), x));
+    displayln_info(ssprintf("%s=%ld (default)", var_name.c_str(), x));
   } else {
     x = read_long(val);
     if (x >= 0) {

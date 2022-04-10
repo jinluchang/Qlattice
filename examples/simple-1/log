@@ -30,8 +30,10 @@ make_shuffle_plan_generic: total num_recv_msgs  =         32
 make_shuffle_plan_generic: global_comm_size =        512
 ShufflePlanCache: to add 1 / 16.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 384 ; total_size: 0.000 GB)
+qrename: 'results/ckpoint.0.partial.partial' 'results/ckpoint.0.partial'
 q_write_par_limit=16 (default)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 384 ; total_size: 0.000 GB)
+qrename: 'results/ckpoint.0.partial' 'results/ckpoint.0'
 load_gauge_field: 'results/ckpoint.0'.
 q_read_par_limit=16 (default)
 shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 384 ; total_size: 0.000 GB)

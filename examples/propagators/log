@@ -24,6 +24,7 @@ dist_read_par_limit()=16
 dist_write_par_limit()=16
 compute_traj: Checking 'results/test-4nt8/results=1000'.
 obtain_lock: Trying to obtain lock 'results/test-4nt8/results=1000-lock'.
+qrename: 'results/test-4nt8/results=1000-lock/time.txt.partial' 'results/test-4nt8/results=1000-lock/time.txt'
 obtain_lock: Lock obtained 'results/test-4nt8/results=1000-lock'.
 compute_traj: Start computing 'results/test-4nt8/results=1000'.
 compute_traj_do: job_tag='test-4nt8' ; traj=1000
@@ -45,7 +46,9 @@ shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ;
 shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
 write_field: fn='results/test-4nt8/results=1000/f-rank.field'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
+qrename: 'results/test-4nt8/results=1000/f-rank.field.partial.partial' 'results/test-4nt8/results=1000/f-rank.field.partial'
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
+qrename: 'results/test-4nt8/results=1000/f-rank.field.partial' 'results/test-4nt8/results=1000/f-rank.field'
 read_field: fn='results/test-4nt8/results=1000/f-rank.field'.
 shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
@@ -121,7 +124,9 @@ invert_with_cg(5d,5d,inv,cg): total_iter=60 cycle=1 stop_rsd=1.000E-08
 invert_with_cg(5d,5d,inv,cg): checking 9.112725E-09 from 1.000000E+00
 write_field: fn='results/test-4nt8/results=1000/psrc-prop-0.field'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.001 GB)
+qrename: 'results/test-4nt8/results=1000/psrc-prop-0.field.partial.partial' 'results/test-4nt8/results=1000/psrc-prop-0.field.partial'
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.001 GB)
+qrename: 'results/test-4nt8/results=1000/psrc-prop-0.field.partial' 'results/test-4nt8/results=1000/psrc-prop-0.field'
 dist_write_field: fn='results/test-4nt8/results=1000/psrc-prop-0'.
 make_shuffle_plan_generic: num_send_packs =          2
 make_shuffle_plan_generic: num_recv_packs =         32
@@ -136,6 +141,7 @@ ShufflePlanCache: to add 2 / 16.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x4 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.001 GB)
 dist_write_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =         16 ; total_bytes =          294912
 dist_write_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         32 ; total_bytes =          589824
+qrename: 'results/test-4nt8/results=1000/psrc-prop-0.partial' 'results/test-4nt8/results=1000/psrc-prop-0'
 write_selected_field: fn='results/test-4nt8/results=1000/psrc-prop-0.sfield'.
 make_shuffle_plan_generic: num_send_packs =          1
 make_shuffle_plan_generic: num_recv_packs =          1
@@ -147,6 +153,10 @@ make_shuffle_plan_generic: total num_send_msgs  =         21
 make_shuffle_plan_generic: total num_recv_msgs  =         21
 make_shuffle_plan_generic: global_comm_size =         32
 shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.000 GB)
+qrename: 'results/test-4nt8/results=1000/psrc-prop-0.sfield.partial.partial' 'results/test-4nt8/results=1000/psrc-prop-0.sfield.partial'
+qrename: 'results/test-4nt8/results=1000/psrc-prop-0.sfield.partial' 'results/test-4nt8/results=1000/psrc-prop-0.sfield'
+qrename: 'results/test-4nt8/results=1000/pion-corr.lat.partial' 'results/test-4nt8/results=1000/pion-corr.lat'
+qrename: 'results/test-4nt8/results=1000/pion-corr.txt.partial' 'results/test-4nt8/results=1000/pion-corr.txt'
 ndim: 2
 "tsep"[8]:
 "re-im"[2]: "re" "im"
@@ -177,6 +187,7 @@ dist_read_par_limit()=16
 dist_write_par_limit()=16
 compute_traj: Checking 'results/test-4nt8/results=1010'.
 obtain_lock: Trying to obtain lock 'results/test-4nt8/results=1010-lock'.
+qrename: 'results/test-4nt8/results=1010-lock/time.txt.partial' 'results/test-4nt8/results=1010-lock/time.txt'
 obtain_lock: Lock obtained 'results/test-4nt8/results=1010-lock'.
 compute_traj: Start computing 'results/test-4nt8/results=1010'.
 compute_traj_do: job_tag='test-4nt8' ; traj=1010
@@ -184,7 +195,9 @@ shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ;
 shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
 write_field: fn='results/test-4nt8/results=1010/f-rank.field'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
+qrename: 'results/test-4nt8/results=1010/f-rank.field.partial.partial' 'results/test-4nt8/results=1010/f-rank.field.partial'
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
+qrename: 'results/test-4nt8/results=1010/f-rank.field.partial' 'results/test-4nt8/results=1010/f-rank.field'
 read_field: fn='results/test-4nt8/results=1010/f-rank.field'.
 shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
@@ -253,11 +266,14 @@ invert_with_cg(5d,5d,inv,cg): total_iter=57 cycle=1 stop_rsd=1.000E-08
 invert_with_cg(5d,5d,inv,cg): checking 7.403972E-09 from 1.000000E+00
 write_field: fn='results/test-4nt8/results=1010/psrc-prop-0.field'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.001 GB)
+qrename: 'results/test-4nt8/results=1010/psrc-prop-0.field.partial.partial' 'results/test-4nt8/results=1010/psrc-prop-0.field.partial'
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.001 GB)
+qrename: 'results/test-4nt8/results=1010/psrc-prop-0.field.partial' 'results/test-4nt8/results=1010/psrc-prop-0.field'
 dist_write_field: fn='results/test-4nt8/results=1010/psrc-prop-0'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x4 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.001 GB)
 dist_write_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =         16 ; total_bytes =          294912
 dist_write_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         32 ; total_bytes =          589824
+qrename: 'results/test-4nt8/results=1010/psrc-prop-0.partial' 'results/test-4nt8/results=1010/psrc-prop-0'
 write_selected_field: fn='results/test-4nt8/results=1010/psrc-prop-0.sfield'.
 make_shuffle_plan_generic: num_send_packs =          1
 make_shuffle_plan_generic: num_recv_packs =          1
@@ -269,6 +285,10 @@ make_shuffle_plan_generic: total num_send_msgs  =         23
 make_shuffle_plan_generic: total num_recv_msgs  =         23
 make_shuffle_plan_generic: global_comm_size =         32
 shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.000 GB)
+qrename: 'results/test-4nt8/results=1010/psrc-prop-0.sfield.partial.partial' 'results/test-4nt8/results=1010/psrc-prop-0.sfield.partial'
+qrename: 'results/test-4nt8/results=1010/psrc-prop-0.sfield.partial' 'results/test-4nt8/results=1010/psrc-prop-0.sfield'
+qrename: 'results/test-4nt8/results=1010/pion-corr.lat.partial' 'results/test-4nt8/results=1010/pion-corr.lat'
+qrename: 'results/test-4nt8/results=1010/pion-corr.txt.partial' 'results/test-4nt8/results=1010/pion-corr.txt'
 ndim: 2
 "tsep"[8]:
 "re-im"[2]: "re" "im"
@@ -299,6 +319,7 @@ dist_read_par_limit()=16
 dist_write_par_limit()=16
 compute_traj: Checking 'results/free-4nt8/results=1000'.
 obtain_lock: Trying to obtain lock 'results/free-4nt8/results=1000-lock'.
+qrename: 'results/free-4nt8/results=1000-lock/time.txt.partial' 'results/free-4nt8/results=1000-lock/time.txt'
 obtain_lock: Lock obtained 'results/free-4nt8/results=1000-lock'.
 compute_traj: Start computing 'results/free-4nt8/results=1000'.
 compute_traj_do: job_tag='free-4nt8' ; traj=1000
@@ -306,7 +327,9 @@ shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ;
 shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
 write_field: fn='results/free-4nt8/results=1000/f-rank.field'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
+qrename: 'results/free-4nt8/results=1000/f-rank.field.partial.partial' 'results/free-4nt8/results=1000/f-rank.field.partial'
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
+qrename: 'results/free-4nt8/results=1000/f-rank.field.partial' 'results/free-4nt8/results=1000/f-rank.field'
 read_field: fn='results/free-4nt8/results=1000/f-rank.field'.
 shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
@@ -375,11 +398,14 @@ invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
 invert_with_cg(5d,5d,inv,cg): checking 3.759165E-09 from 1.000000E+00
 write_field: fn='results/free-4nt8/results=1000/psrc-prop-0.field'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.001 GB)
+qrename: 'results/free-4nt8/results=1000/psrc-prop-0.field.partial.partial' 'results/free-4nt8/results=1000/psrc-prop-0.field.partial'
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.001 GB)
+qrename: 'results/free-4nt8/results=1000/psrc-prop-0.field.partial' 'results/free-4nt8/results=1000/psrc-prop-0.field'
 dist_write_field: fn='results/free-4nt8/results=1000/psrc-prop-0'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x4 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.001 GB)
 dist_write_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =         16 ; total_bytes =          294912
 dist_write_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         32 ; total_bytes =          589824
+qrename: 'results/free-4nt8/results=1000/psrc-prop-0.partial' 'results/free-4nt8/results=1000/psrc-prop-0'
 write_selected_field: fn='results/free-4nt8/results=1000/psrc-prop-0.sfield'.
 make_shuffle_plan_generic: num_send_packs =          1
 make_shuffle_plan_generic: num_recv_packs =          1
@@ -391,6 +417,10 @@ make_shuffle_plan_generic: total num_send_msgs  =         24
 make_shuffle_plan_generic: total num_recv_msgs  =         24
 make_shuffle_plan_generic: global_comm_size =         32
 shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.000 GB)
+qrename: 'results/free-4nt8/results=1000/psrc-prop-0.sfield.partial.partial' 'results/free-4nt8/results=1000/psrc-prop-0.sfield.partial'
+qrename: 'results/free-4nt8/results=1000/psrc-prop-0.sfield.partial' 'results/free-4nt8/results=1000/psrc-prop-0.sfield'
+qrename: 'results/free-4nt8/results=1000/pion-corr.lat.partial' 'results/free-4nt8/results=1000/pion-corr.lat'
+qrename: 'results/free-4nt8/results=1000/pion-corr.txt.partial' 'results/free-4nt8/results=1000/pion-corr.txt'
 ndim: 2
 "tsep"[8]:
 "re-im"[2]: "re" "im"
@@ -420,6 +450,7 @@ dist_read_par_limit()=16
 dist_write_par_limit()=16
 compute_traj: Checking 'results/free-4nt8/results=1010'.
 obtain_lock: Trying to obtain lock 'results/free-4nt8/results=1010-lock'.
+qrename: 'results/free-4nt8/results=1010-lock/time.txt.partial' 'results/free-4nt8/results=1010-lock/time.txt'
 obtain_lock: Lock obtained 'results/free-4nt8/results=1010-lock'.
 compute_traj: Start computing 'results/free-4nt8/results=1010'.
 compute_traj_do: job_tag='free-4nt8' ; traj=1010
@@ -427,7 +458,9 @@ shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ;
 shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
 write_field: fn='results/free-4nt8/results=1010/f-rank.field'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
+qrename: 'results/free-4nt8/results=1010/f-rank.field.partial.partial' 'results/free-4nt8/results=1010/f-rank.field.partial'
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
+qrename: 'results/free-4nt8/results=1010/f-rank.field.partial' 'results/free-4nt8/results=1010/f-rank.field'
 read_field: fn='results/free-4nt8/results=1010/f-rank.field'.
 shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
@@ -496,11 +529,14 @@ invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
 invert_with_cg(5d,5d,inv,cg): checking 3.759165E-09 from 1.000000E+00
 write_field: fn='results/free-4nt8/results=1010/psrc-prop-0.field'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.001 GB)
+qrename: 'results/free-4nt8/results=1010/psrc-prop-0.field.partial.partial' 'results/free-4nt8/results=1010/psrc-prop-0.field.partial'
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.001 GB)
+qrename: 'results/free-4nt8/results=1010/psrc-prop-0.field.partial' 'results/free-4nt8/results=1010/psrc-prop-0.field'
 dist_write_field: fn='results/free-4nt8/results=1010/psrc-prop-0'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x4 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.001 GB)
 dist_write_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =         16 ; total_bytes =          294912
 dist_write_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         32 ; total_bytes =          589824
+qrename: 'results/free-4nt8/results=1010/psrc-prop-0.partial' 'results/free-4nt8/results=1010/psrc-prop-0'
 write_selected_field: fn='results/free-4nt8/results=1010/psrc-prop-0.sfield'.
 make_shuffle_plan_generic: num_send_packs =          1
 make_shuffle_plan_generic: num_recv_packs =          3
@@ -512,6 +548,10 @@ make_shuffle_plan_generic: total num_send_msgs  =         24
 make_shuffle_plan_generic: total num_recv_msgs  =         24
 make_shuffle_plan_generic: global_comm_size =         32
 shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.000 GB)
+qrename: 'results/free-4nt8/results=1010/psrc-prop-0.sfield.partial.partial' 'results/free-4nt8/results=1010/psrc-prop-0.sfield.partial'
+qrename: 'results/free-4nt8/results=1010/psrc-prop-0.sfield.partial' 'results/free-4nt8/results=1010/psrc-prop-0.sfield'
+qrename: 'results/free-4nt8/results=1010/pion-corr.lat.partial' 'results/free-4nt8/results=1010/pion-corr.lat'
+qrename: 'results/free-4nt8/results=1010/pion-corr.txt.partial' 'results/free-4nt8/results=1010/pion-corr.txt'
 ndim: 2
 "tsep"[8]:
 "re-im"[2]: "re" "im"

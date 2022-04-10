@@ -24,6 +24,7 @@ dist_read_par_limit()=16
 dist_write_par_limit()=16
 compute_traj: Checking 'results/free-4nt8/results=1000'.
 obtain_lock: Trying to obtain lock 'results/free-4nt8/results=1000-lock'.
+qrename: 'results/free-4nt8/results=1000-lock/time.txt.partial' 'results/free-4nt8/results=1000-lock/time.txt'
 obtain_lock: Lock obtained 'results/free-4nt8/results=1000-lock'.
 compute_traj: Start computing 'results/free-4nt8/results=1000'.
 get_time_limit()=12.000000 hours
@@ -78,6 +79,13 @@ tsep[       6] re-im[      re]  6.00000000000000000E+00
 tsep[       6] re-im[      im]  0.00000000000000000E+00
 tsep[       7] re-im[      re]  7.00000000000000000E+00
 tsep[       7] re-im[      im]  0.00000000000000000E+00
+qrename: 'results/free-4nt8/results=1000/data.lat.partial' 'results/free-4nt8/results=1000/data.lat'
+qrename: 'results/free-4nt8/results=1000/data.lat.partial' 'results/free-4nt8/results=1000/data.lat'
+qrename: 'results/free-4nt8/results=1000/data.lat.partial' 'results/free-4nt8/results=1000/data.lat'
+qrename: 'results/free-4nt8/results=1000/data.lat.partial' 'results/free-4nt8/results=1000/data.lat'
+qrename: 'results/free-4nt8/results=1000/data.lat.partial' 'results/free-4nt8/results=1000/data.lat'
+qrename: 'results/free-4nt8/results=1000/data.lat.partial' 'results/free-4nt8/results=1000/data.lat'
+qrename: 'results/free-4nt8/results=1000/data.lat.partial' 'results/free-4nt8/results=1000/data.lat'
 geo = { initialized   = true
 , eo            = 0
 , geon          =
@@ -93,6 +101,7 @@ geo = { initialized   = true
 , node_site_exp = 4x2x2x4 }
 block_site = 2x2x2x2
 ls = 8, neig = 100, nkeep = 50
+qrename: 'results/free-4nt8/results=1000/data.lat.partial' 'results/free-4nt8/results=1000/data.lat'
 CommPlanCache: to add 3 / 32.
 CommPlanCache: to add 4 / 32.
 invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00
@@ -173,6 +182,7 @@ dist_read_par_limit()=16
 dist_write_par_limit()=16
 compute_traj: Checking 'results/free-4nt8/results=1010'.
 obtain_lock: Trying to obtain lock 'results/free-4nt8/results=1010-lock'.
+qrename: 'results/free-4nt8/results=1010-lock/time.txt.partial' 'results/free-4nt8/results=1010-lock/time.txt'
 obtain_lock: Lock obtained 'results/free-4nt8/results=1010-lock'.
 compute_traj: Start computing 'results/free-4nt8/results=1010'.
 get_time_limit()=12.000000 hours
@@ -192,16 +202,23 @@ tsep[       1] re-im[      re]  1.00000000000000000E+00
 tsep[       1] re-im[      im]  0.00000000000000000E+00
 tsep[       2] re-im[      re]  2.00000000000000000E+00
 tsep[       2] re-im[      im]  0.00000000000000000E+00
+qrename: 'results/free-4nt8/results=1010/data.lat.partial' 'results/free-4nt8/results=1010/data.lat'
 tsep[       3] re-im[      re]  3.00000000000000000E+00
+qrename: 'results/free-4nt8/results=1010/data.lat.partial' 'results/free-4nt8/results=1010/data.lat'
+qrename: 'results/free-4nt8/results=1010/data.lat.partial' 'results/free-4nt8/results=1010/data.lat'
+qrename: 'results/free-4nt8/results=1010/data.lat.partial' 'results/free-4nt8/results=1010/data.lat'
 tsep[       3] re-im[      im]  0.00000000000000000E+00
 tsep[       4] re-im[      re]  4.00000000000000000E+00
 tsep[       4] re-im[      im]  0.00000000000000000E+00
+qrename: 'results/free-4nt8/results=1010/data.lat.partial' 'results/free-4nt8/results=1010/data.lat'
+qrename: 'results/free-4nt8/results=1010/data.lat.partial' 'results/free-4nt8/results=1010/data.lat'
 tsep[       5] re-im[      re]  5.00000000000000000E+00
 tsep[       5] re-im[      im]  0.00000000000000000E+00
 tsep[       6] re-im[      re]  6.00000000000000000E+00
 tsep[       6] re-im[      im]  0.00000000000000000E+00
 tsep[       7] re-im[      re]  7.00000000000000000E+00
 tsep[       7] re-im[      im]  0.00000000000000000E+00
+qrename: 'results/free-4nt8/results=1010/data.lat.partial' 'results/free-4nt8/results=1010/data.lat'
 ndim: 2
 "tsep"[8]:
 "re-im"[2]: "re" "im"
@@ -221,6 +238,7 @@ tsep[       6] re-im[      re]  6.00000000000000000E+00
 tsep[       6] re-im[      im]  0.00000000000000000E+00
 tsep[       7] re-im[      re]  7.00000000000000000E+00
 tsep[       7] re-im[      im]  0.00000000000000000E+00
+qrename: 'results/free-4nt8/results=1010/data.lat.partial' 'results/free-4nt8/results=1010/data.lat'
 geo = { initialized   = true
 , eo            = 0
 , geon          =
