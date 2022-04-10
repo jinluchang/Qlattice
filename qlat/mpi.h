@@ -921,19 +921,21 @@ inline void begin(
 inline void end()
 {
   if (get_comm_list().empty()) {
-    clear_all_caches();
-    exit(0);
+    qassert(false);
   } else {
     qassert(get_comm_list().back().comm == get_comm());
     if (get_comm() == MPI_COMM_WORLD) {
+      clear_all_caches();
       displayln_info(ssprintf("qlat::end(): get_comm_list().pop_back()"));
       get_comm_list().pop_back();
       displayln_info(ssprintf("qlat::end(): get_comm_list().size() = %d.",
                               (int)get_comm_list().size()));
       qassert(get_comm_list().size() == 0);
       displayln_info("qlat::end(): Finalize MPI.");
+      sync_node();
       if (is_MPI_initialized()) MPI_Finalize();
       displayln_info("qlat::end(): MPI Finalized.");
+      exit(0);
     } else {
       displayln_info(ssprintf("qlat::end(): get_comm_list().pop_back()"));
       MPI_Comm comm = get_comm();
