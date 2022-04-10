@@ -46,3 +46,9 @@ def random_permute(l, rs):
     assert isinstance(l, list)
     assert isinstance(rs, RngState)
     return c.random_permute(l, rs)
+
+def get_all_caches_info():
+    return c.get_all_caches_info()
+
+def clear_all_caches():
+    return c.clear_all_caches();

@@ -3,6 +3,7 @@
 #include <qlat/config.h>
 #include <qlat/utils-coordinate.h>
 #include <qlat/utils.h>
+#include <qutils/cache.h>
 
 #ifdef USE_MULTI_NODE
 #include <mpi.h>
@@ -920,7 +921,8 @@ inline void begin(
 inline void end()
 {
   if (get_comm_list().empty()) {
-    qassert(false);
+    clear_all_caches();
+    exit(0);
   } else {
     qassert(get_comm_list().back().comm == get_comm());
     if (get_comm() == MPI_COMM_WORLD) {
