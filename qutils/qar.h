@@ -642,19 +642,19 @@ inline void read_through(QarFile& qar)
   }
 }
 
-inline bool read(QarFile& qar, const std::string& fn, QFile& qfile)
+inline bool read(QarFile& qar, const std::string& fn, QFile& qfile_in)
 // interface function
 {
   qassert(qar.qfile.mode == "r");
   qassert(fn != "");
   if (has(qar.qsinfo_map, fn)) {
     const QarSegmentInfo& qsinfo = qar.qsinfo_map[fn];
-    get_qfile_of_data(qar, qfile, qsinfo);
+    get_qfile_of_data(qar, qfile_in, qsinfo);
     return true;
   }
   std::string fn_read;
   while (true) {
-    const bool b = read_next(qar, fn_read, qfile);
+    const bool b = read_next(qar, fn_read, qfile_in);
     if (not b) {
       return false;
     }
@@ -667,6 +667,9 @@ inline bool read(QarFile& qar, const std::string& fn, QFile& qfile)
 inline std::vector<std::string> list(QarFile& qar)
 // interface function
 {
+  if (qar.null()) {
+    return std::vector<std::string>();
+  }
   qassert(qar.qfile.mode == "r");
   read_through(qar);
   return qar.fn_list;
@@ -827,7 +830,7 @@ inline void write_end(QarFile& qar)
   qar.current_write_segment_offset = -1;
 }
 
-inline void write_from_qfile(QarFile& qar, const std::string& fn,
+inline long write_from_qfile(QarFile& qar, const std::string& fn,
                              const std::string& info, QFile& qfile_in)
 // interface function
 // Write content (start from the current position) of qfile_in to qar.
@@ -842,17 +845,19 @@ inline void write_from_qfile(QarFile& qar, const std::string& fn,
   qassert(data_len >= 0);
   QFile qfile_out;
   write_start(qar, fn, info, qfile_out, data_len);
-  write_from_qfile(qfile_out, qfile_in);
+  const long total_bytes = write_from_qfile(qfile_out, qfile_in);
   write_end(qar);
+  timer.flops += total_bytes;
+  return total_bytes;
 }
 
-inline int qar_folder(const std::string& path_qar,
+inline int qar_create(const std::string& path_qar,
                       const std::string& path_folder_,
                       const bool is_remove_folder_after = false)
 // interface function
 // return 0 if successful.
 {
-  TIMER_VERBOSE_FLOPS("qar_folder");
+  TIMER_VERBOSE_FLOPS("qar_create");
   const std::string path_folder = remove_trailing_slashes(path_folder_);
   if (not is_directory(path_folder)) {
     qwarn(fname + ssprintf(": '%s' '%s' no folder.", path_qar.c_str(),
@@ -896,12 +901,61 @@ inline int qar_folder(const std::string& path_qar,
                                  reg_files.size()));
     }
     QFile qfile_in(path, "r");
-    write_from_qfile(qar, fn, "", qfile_in);
+    timer.flops += write_from_qfile(qar, fn, "", qfile_in);
   }
   qar.close();
   qrename(path_qar + ".acc", path_qar);
   if (is_remove_folder_after) {
     qremove_all(path_folder);
+  }
+  return 0;
+}
+
+inline int qar_extract(const std::string& path_qar,
+                       const std::string& path_folder_,
+                       const bool is_remove_qar_after = false)
+// interface function
+// return 0 if successful.
+{
+  TIMER_VERBOSE_FLOPS("qar_extract");
+  const std::string path_folder = remove_trailing_slashes(path_folder_);
+  if (not does_file_exist(path_qar)) {
+    qwarn(fname + ssprintf(": '%s' '%s' qar does not exist.", path_qar.c_str(),
+                           path_folder.c_str()));
+    return 1;
+  }
+  if (does_file_exist(path_folder)) {
+    qwarn(fname + ssprintf(": '%s' '%s' folder exist.", path_qar.c_str(),
+                           path_folder.c_str()));
+    return 2;
+  }
+  if (does_file_exist(path_folder + ".acc")) {
+    qwarn(fname + ssprintf(": '%s' '%s' qar.acc already exist.",
+                           path_qar.c_str(), path_folder.c_str()));
+    return 3;
+  }
+  QarFile qar(path_qar, "r");
+  const std::vector<std::string> contents = list(qar);
+  std::set<std::string> dirs;
+  for (long i = 0; i < (long)contents.size(); ++i) {
+    const std::string& fn = contents[i];
+    const std::string dn = dirname(fn);
+    if (not has(dirs, dn)) {
+      const int code = qmkdir_p(path_folder + "/" + dn);
+      qassert(code == 0);
+      dirs.insert(dn);
+    }
+    QFile qfile_in;
+    const bool b = read(qar, fn, qfile_in);
+    qassert(b);
+    QFile qfile_out(path_folder + "/" + fn, "w");
+    qassert(not qfile_out.null());
+    timer.flops += write_from_qfile(qfile_out, qfile_in);
+  }
+  qar.close();
+  qrename(path_qar + ".acc", path_qar);
+  if (is_remove_qar_after) {
+    qremove(path_qar);
   }
   return 0;
 }

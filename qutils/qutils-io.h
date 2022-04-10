@@ -79,14 +79,6 @@ inline int check_dir(const std::string& path,
   return ret;
 }
 
-inline int qmkdir(const std::string& path,
-                  const mode_t mode = default_dir_mode())
-{
-  TIMER("qmkdir");
-  mkdir(path.c_str(), mode);
-  return check_dir(path, mode);
-}
-
 inline std::string remove_trailing_slashes(const std::string& fn)
 {
   long cur = fn.size() - 1;
@@ -96,7 +88,109 @@ inline std::string remove_trailing_slashes(const std::string& fn)
   return std::string(fn, 0, cur + 1);
 }
 
-inline std::vector<std::string> qls_aux(const std::string& path)
+inline std::string dirname(const std::string& fn)
+// try to follow libgen.h version see man 3 dirname
+{
+  long cur = fn.size() - 1;
+  // remove trailing '/'
+  while (cur > 0 and fn[cur] == '/') {
+    cur -= 1;
+  }
+  if (cur < 0) {
+    return ".";
+  } else if (cur == 0) {
+    if (fn[cur] == '/') {
+      return "/";
+    } else {
+      return ".";
+    }
+  } else {
+    // remove last component
+    while (cur >= 0 and fn[cur] != '/') {
+      cur -= 1;
+    }
+    if (cur < 0) {
+      return ".";
+    } else {
+      // remove trailing '/'
+      while (cur > 0 and fn[cur] == '/') {
+        cur -= 1;
+      }
+      return std::string(fn, 0, cur + 1);
+    }
+  }
+  qassert(false);
+  return std::string();
+}
+
+inline std::string basename(const std::string& fn)
+// try to follow libgen.h version see man 3 basename
+{
+  long cur = fn.size() - 1;
+  // remove trailing '/'
+  while (cur > 0 and fn[cur] == '/') {
+    cur -= 1;
+  }
+  if (cur < 0) {
+    return "";
+  } else if (cur == 0) {
+    if (fn[cur] == '/') {
+      return "/";
+    } else {
+      return std::string(fn, 0, cur + 1);
+    }
+  } else {
+    const long pos_stop = cur + 1;
+    // skip last component
+    while (cur >= 0 and fn[cur] != '/') {
+      cur -= 1;
+    }
+    return std::string(fn, cur + 1, pos_stop);
+  }
+  qassert(false);
+  return std::string();
+}
+
+inline int qmkdir(const std::string& path,
+                  const mode_t mode = default_dir_mode())
+{
+  TIMER("qmkdir");
+  mkdir(path.c_str(), mode);
+  return check_dir(path, mode);
+}
+
+inline int qmkdir_p(const std::string& path_,
+                    const mode_t mode = default_dir_mode())
+// return 0 if successful
+// may try repeatedly in case of failure.
+{
+  TIMER("qmkdir_p");
+  std::string path = remove_trailing_slashes(path_);
+  std::vector<std::string> paths;
+  int ret = 0;
+  while (true) {
+    if (0 == mkdir(path.c_str(), mode)) {
+      break;
+    } else {
+      paths.push_back(path);
+      path = dirname(path);
+      if (does_file_exist(path)) {
+        qwarn(fname + ssprintf(": '%s' failed.", path_.c_str()));
+        return 1;
+      }
+    }
+  }
+  for (long i = paths.size() - 1; i >= 0; i -= 1) {
+    if (not(0 == mkdir(paths[i].c_str(), mode))) {
+      qwarn(fname + ssprintf(": '%s' failed.", path_.c_str()));
+      return 2;
+    }
+  }
+  return check_dir(path_, mode);
+}
+
+inline std::vector<std::string> qls_aux(const std::string& path,
+                                        const bool is_sort = true)
 {
   std::vector<std::string> contents;
   DIR* dir = opendir(path.c_str());
@@ -111,23 +205,28 @@ inline std::vector<std::string> qls_aux(const std::string& path)
     contents.push_back(path + "/" + d->d_name);
   }
   closedir(dir);
+  if (is_sort) {
+    std::sort(contents.begin(), contents.end());
+  }
   return contents;
 }
 
-inline std::vector<std::string> qls(const std::string& path)
+inline std::vector<std::string> qls(const std::string& path,
+                                    const bool is_sort = true)
 {
-  return qls_aux(remove_trailing_slashes(path));
+  return qls_aux(remove_trailing_slashes(path), is_sort);
 }
 
 inline std::vector<std::string> qls_all_aux(
-    const std::string& path, const bool is_folder_before_files = false)
+    const std::string& path, const bool is_folder_before_files = false,
+    const bool is_sort = true)
 // list all files and folder in path (not including it self)
 {
   std::vector<std::string> all_contents;
   if (not is_directory(path)) {
     return all_contents;
   }
-  const std::vector<std::string> contents = qls_aux(path);
+  const std::vector<std::string> contents = qls_aux(path, is_sort);
   for (long i = 0; i < (long)contents.size(); ++i) {
     const std::string& path_i = contents[i];
     if (not is_directory(path_i)) {
@@ -138,7 +237,7 @@ inline std::vector<std::string> qls_all_aux(
         vector_append(all_contents,
                       qls_all_aux(path_i, is_folder_before_files));
       } else {
-        // default behaviour
+        // default behavior
         vector_append(all_contents,
                       qls_all_aux(path_i, is_folder_before_files));
         all_contents.push_back(path_i);
@@ -149,10 +248,12 @@ inline std::vector<std::string> qls_all_aux(
 }
 
 inline std::vector<std::string> qls_all(
-    const std::string& path, const bool is_folder_before_files = false)
+    const std::string& path, const bool is_folder_before_files = false,
+    const bool is_sort = true)
 // list files before its folder
 {
-  return qls_all_aux(remove_trailing_slashes(path), is_folder_before_files);
+  return qls_all_aux(remove_trailing_slashes(path), is_folder_before_files,
+                     is_sort);
 }
 
 inline int qremove(const std::string& path)

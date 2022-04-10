@@ -347,7 +347,7 @@ EXPORT(qcat_sync_node, {
   return py_convert(ret);
 });
 
-EXPORT(qar_folder, {
+EXPORT(qar_create, {
   using namespace qlat;
   PyObject* p_path_qar = NULL;
   PyObject* p_path_folder = NULL;
@@ -357,11 +357,11 @@ EXPORT(qar_folder, {
   }
   const std::string path_qar = py_convert_data<std::string>(p_path_qar);
   const std::string path_folder = py_convert_data<std::string>(p_path_folder);
-  const int ret = qar_folder(path_qar, path_folder, is_remove_folder_after);
+  const int ret = qar_create(path_qar, path_folder, is_remove_folder_after);
   return py_convert(ret);
 });
 
-EXPORT(qar_folder_info, {
+EXPORT(qar_create_info, {
   using namespace qlat;
   PyObject* p_path_qar = NULL;
   PyObject* p_path_folder = NULL;
@@ -371,7 +371,37 @@ EXPORT(qar_folder_info, {
   }
   const std::string path_qar = py_convert_data<std::string>(p_path_qar);
   const std::string path_folder = py_convert_data<std::string>(p_path_folder);
-  const int ret = qar_folder_info(path_qar, path_folder, is_remove_folder_after);
+  const int ret = qar_create_info(path_qar, path_folder, is_remove_folder_after);
+  return py_convert(ret);
+});
+
+EXPORT(qar_extract, {
+  using namespace qlat;
+  PyObject* p_path_qar = NULL;
+  PyObject* p_path_folder = NULL;
+  bool is_remove_qar_after = false;
+  if (!PyArg_ParseTuple(args, "OO|b", &p_path_qar, &p_path_folder,
+                        &is_remove_qar_after)) {
+    return NULL;
+  }
+  const std::string path_qar = py_convert_data<std::string>(p_path_qar);
+  const std::string path_folder = py_convert_data<std::string>(p_path_folder);
+  const int ret = qar_extract(path_qar, path_folder, is_remove_qar_after);
+  return py_convert(ret);
+});
+
+EXPORT(qar_extract_info, {
+  using namespace qlat;
+  PyObject* p_path_qar = NULL;
+  PyObject* p_path_folder = NULL;
+  bool is_remove_qar_after = false;
+  if (!PyArg_ParseTuple(args, "OO|b", &p_path_qar, &p_path_folder,
+                        &is_remove_qar_after)) {
+    return NULL;
+  }
+  const std::string path_qar = py_convert_data<std::string>(p_path_qar);
+  const std::string path_folder = py_convert_data<std::string>(p_path_folder);
+  const int ret = qar_extract_info(path_qar, path_folder, is_remove_qar_after);
   return py_convert(ret);
 });
 
