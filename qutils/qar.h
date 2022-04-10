@@ -943,6 +943,7 @@ inline int qar_extract(const std::string& path_qar,
   QarFile qar(path_qar, "r");
   const std::vector<std::string> contents = list(qar);
   std::set<std::string> dirs;
+  dirs.insert(".");
   for (long i = 0; i < (long)contents.size(); ++i) {
     const std::string& fn = contents[i];
     const std::string dn = dirname(fn);
