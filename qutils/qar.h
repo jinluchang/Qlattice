@@ -615,7 +615,6 @@ inline bool read_next(QarFile& qar, std::string& fn, QFile& qfile)
   if (not read_qar_segment_info(qar, qsinfo)) {
     return false;
   }
-  read_qar_segment_info(qar, qsinfo);
   read_fn(qar, fn, qsinfo);
   if (not has(qar.qsinfo_map, fn)) {
     qar.fn_list.push_back(fn);
