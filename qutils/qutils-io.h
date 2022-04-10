@@ -166,6 +166,9 @@ inline int qmkdir_p(const std::string& path_,
 {
   TIMER("qmkdir_p");
   std::string path = remove_trailing_slashes(path_);
+  if (is_directory(path)) {
+    return 0;
+  }
   std::vector<std::string> paths;
   int ret = 0;
   while (true) {
