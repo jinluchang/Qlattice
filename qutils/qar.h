@@ -246,9 +246,6 @@ inline long qfread(void* ptr, const long size, const long nmemb, QFile& qfile)
         qfile.offset_end - qfile.offset_start - qfile.pos;
     qassert(remaining_size >= 0);
     const long target_nmemb = std::min(remaining_size / size, nmemb);
-    if (target_nmemb == 0) {
-      return 0;
-    }
     actual_nmemb = std::fread(ptr, size, target_nmemb, qfile.fp);
     if (target_nmemb < nmemb) {
       qfseek(qfile, 0, SEEK_END);
