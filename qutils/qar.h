@@ -247,11 +247,15 @@ inline long qfread(void* ptr, const long size, const long nmemb, QFile& qfile)
     qassert(remaining_size >= 0);
     const long target_nmemb = std::min(remaining_size / size, nmemb);
     actual_nmemb = std::fread(ptr, size, target_nmemb, qfile.fp);
-    if (target_nmemb < nmemb) {
-      qfseek(qfile, 0, SEEK_END);
-      qfile.is_eof = true;
-    }
     qassert(actual_nmemb == target_nmemb);
+    qfile.pos += target_nmemb * size;
+    qassert(qfile.pos == ftell(qfile.fp) - qfile.offset_start);
+    if (target_nmemb < nmemb) {
+      qfile.is_eof = true;
+    } else {
+      qassert(target_nmemb == nmemb);
+      qfile.is_eof = false;
+    }
   } else {
     actual_nmemb = std::fread(ptr, size, nmemb, qfile.fp);
     qfile.pos = ftell(qfile.fp) - qfile.offset_start;
