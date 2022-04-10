@@ -143,6 +143,20 @@ inline void displayln_info(const std::string& str, FILE* fp = NULL)
   }
 }
 
+inline void display_info(const long minimum_verbose_level, const std::string& str)
+{
+  if (0 == get_id_node() && 0 == get_thread_num()) {
+    display(minimum_verbose_level, str);
+  }
+}
+
+inline void displayln_info(const long minimum_verbose_level, const std::string& str)
+{
+  if (0 == get_id_node() && 0 == get_thread_num()) {
+    displayln(minimum_verbose_level, str);
+  }
+}
+
 inline std::string get_env(const std::string& var_name)
 {
   const char* value = getenv(var_name.c_str());
@@ -158,10 +172,11 @@ inline std::string get_env_default(const std::string& var_name,
 {
   const std::string val = get_env(var_name);
   if (val == "") {
-    displayln_info(ssprintf("%s=%s (default)", var_name.c_str(), x0.c_str()));
+    displayln_info(0,
+                   ssprintf("%s=%s (default)", var_name.c_str(), x0.c_str()));
     return x0;
   } else {
-    displayln_info(ssprintf("%s=%s", var_name.c_str(), val.c_str()));
+    displayln_info(0, ssprintf("%s=%s", var_name.c_str(), val.c_str()));
     return val;
   }
 }
@@ -173,10 +188,10 @@ inline double get_env_double_default(const std::string& var_name,
   double x;
   if (val == "") {
     x = x0;
-    displayln_info(ssprintf("%s=%lG (default)", var_name.c_str(), x));
+    displayln_info(0, ssprintf("%s=%lG (default)", var_name.c_str(), x));
   } else {
     x = read_double(val);
-    displayln_info(ssprintf("%s=%lG", var_name.c_str(), x));
+    displayln_info(0, ssprintf("%s=%lG", var_name.c_str(), x));
   }
   return x;
 }
@@ -187,10 +202,10 @@ inline long get_env_long_default(const std::string& var_name, const long x0)
   long x;
   if (val == "") {
     x = x0;
-    displayln_info(ssprintf("%s=%ld (default)", var_name.c_str(), x));
+    displayln_info(0, ssprintf("%s=%ld (default)", var_name.c_str(), x));
   } else {
     x = read_long(val);
-    displayln_info(ssprintf("%s=%ld", var_name.c_str(), x));
+    displayln_info(0, ssprintf("%s=%ld", var_name.c_str(), x));
   }
   return x;
 }
@@ -215,13 +230,6 @@ inline long long get_total_flops()
   return flops;
 }
 
-inline long& verbose_level()
-// qlat parameter
-{
-  static long level = get_env_long_default("q_verbose", 0);
-  return level;
-}
-
 inline void initialize_papi()
 {
 #ifdef USE_PAPI
@@ -229,11 +237,11 @@ inline void initialize_papi()
   if (initialized) {
     return;
   }
-  displayln_info("PAPI::initialize_papi Start.");
+  displayln_info(0, "PAPI::initialize_papi Start.");
   PAPI_library_init(PAPI_VER_CURRENT);
   PAPI_thread_init((unsigned long (*)(void))(omp_get_thread_num));
   initialized = true;
-  displayln_info("PAPI::initialize_papi Finish.");
+  displayln_info(0, "PAPI::initialize_papi Finish.");
 #endif
 }
 
@@ -344,7 +352,7 @@ struct Timer {
   //
   static void reset()
   {
-    displayln_info("Timer::reset(): Reset all timers!");
+    displayln_info(0, "Timer::reset(): Reset all timers!");
     std::vector<TimerInfo>& tdb = get_timer_database();
     for (long i = 0; i < (long)tdb.size(); ++i) {
       tdb[i].reset();
@@ -481,7 +489,7 @@ struct Timer {
     std::vector<long>& t_stack = get_timer_stack();
     pqassert(not t_stack.empty());
     if (not (t_stack.back() == info_index)) {
-      displayln(ssprintf("%s::%s ERROR: stack is currupted", cname,
+      displayln(ssprintf("%s::%s ERROR: stack is corrupted", cname,
                          info.fname.c_str()));
       Timer::display_stack();
       pqassert(false);

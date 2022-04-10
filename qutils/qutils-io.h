@@ -261,7 +261,7 @@ inline std::vector<std::string> qls_all(
 
 inline int qremove(const std::string& path)
 {
-  displayln(ssprintf("qremove: '%s'", path.c_str()));
+  displayln(0, ssprintf("qremove: '%s'", path.c_str()));
   return std::remove(path.c_str());
 }
 
@@ -310,10 +310,8 @@ inline int qclose(FILE*& file)
 inline int qrename(const std::string& old_path, const std::string& new_path)
 {
   TIMER("qrename");
-  if (verbose_level() > 0) {
-    displayln(
-        ssprintf("qrename: '%s' '%s'", old_path.c_str(), new_path.c_str()));
-  }
+  displayln(0,
+            ssprintf("qrename: '%s' '%s'", old_path.c_str(), new_path.c_str()));
   return rename(old_path.c_str(), new_path.c_str());
 }
 

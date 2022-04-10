@@ -86,10 +86,8 @@ struct QFile {
     close();
     path = path_;
     mode = mode_;
-    if (verbose_level() > 0) {
-      displayln(
-          ssprintf("QFile: open '%s' with '%s'.", path.c_str(), mode.c_str()));
-    }
+    displayln(
+        1, ssprintf("QFile: open '%s' with '%s'.", path.c_str(), mode.c_str()));
     fp = qopen(path, mode);
     if (fp == NULL) {
       qwarn(
@@ -146,10 +144,8 @@ struct QFile {
     qassert(number_of_child == 0);
     if (NULL == parent) {
       if (fp != NULL) {
-        if (verbose_level() > 0) {
-          displayln(ssprintf("QFile: close '%s' with '%s'.", path.c_str(),
-                             mode.c_str()));
-        }
+        displayln(1, ssprintf("QFile: close '%s' with '%s'.", path.c_str(),
+                              mode.c_str()));
         qclose(fp);
       }
     } else {
@@ -902,11 +898,9 @@ inline int qar_create(const std::string& path_qar,
   for (long i = 0; i < (long)reg_files.size(); ++i) {
     const std::string path = reg_files[i];
     const std::string fn = path.substr(path_prefix_len);
-    if (verbose_level() > 0) {
-      displayln(fname + ssprintf(": '%s' '%s'/'%s' %ld/%ld.", path_qar.c_str(),
-                                 path_prefix.c_str(), fn.c_str(), i + 1,
-                                 reg_files.size()));
-    }
+    displayln(1, fname + ssprintf(": '%s' '%s'/'%s' %ld/%ld.", path_qar.c_str(),
+                                  path_prefix.c_str(), fn.c_str(), i + 1,
+                                  reg_files.size()));
     QFile qfile_in(path, "r");
     timer.flops += write_from_qfile(qar, fn, "", qfile_in);
   }
