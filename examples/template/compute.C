@@ -45,7 +45,7 @@ bool compute_traj_do(const std::string& job_tag, const int traj)
   }
   qassert(is_matching(ld, ld1));
   qassert(ld.res == ld1.res);
-  ld.save(job_path + "/data.lat");
+  lat_data_save_info(job_path + "/data.lat", ld);
   //
   benchmark_deflate(geo, 8, Coordinate(2, 2, 2, 2), 100, 50,
                     rs.split("benchmark_deflate"));
