@@ -47,20 +47,21 @@ qlat::begin(): GeometryNode =
 , id_node     = 0
 , size_node   = 1x1x1x2
 , coor_node   = 0x0x0x0 }
+q_timer_max_func_name_len=50 (default)
+clear_mem_cache: 0 bytes (0.000 GB) freed.
 q_timer_mini_auto_show=1 (default)
 q_timer_max_always_show=10 (default)
-q_timer_max_func_name_len=50 (default)
 qremove: 'results'
 geo.show() = Geometry([4, 4, 4, 8], 1)
 q_field_init=fast (default)
 set q_field_init=fast.
 q_mem_cache_max_size=512 (default)
 q_mem_cache_acc_max_size=512 (default)
-CommPlanCache: to add 1 / 32.
+Cache: 'CommPlanCache': 0 / 32 [16] to add
 gf_show_info: plaq = 1.0000000000000000 ; link_trace = 1.0000000000000000.
-fft_complex_field_plan::get_plan: start to make a new fft plan with id = 0
-fft_complex_field_plan::init: malloc 589824
-fft_complex_field_plan::init: free 589824
+Cache: 'FftComplexFieldPlanCache': 0 / 32 [16] to add
+FftComplexFieldPlan::init: malloc 589824
+FftComplexFieldPlan::init: free 589824
 make_shuffle_plan_fft: num_send_packs =        256
 make_shuffle_plan_fft: num_recv_packs =          8
 make_shuffle_plan_fft: num_send_msgs  =          1
@@ -70,9 +71,9 @@ make_shuffle_plan_fft: total num_recv_packs =         16
 make_shuffle_plan_fft: total num_send_msgs  =          2
 make_shuffle_plan_fft: total num_recv_msgs  =          2
 make_shuffle_plan_fft: global_comm_size =        512
-fft_complex_field_plan::get_plan: start to make a new fft plan with id = 1
-fft_complex_field_plan::init: malloc 589824
-fft_complex_field_plan::init: free 589824
+Cache: 'FftComplexFieldPlanCache': 1 / 32 [16] to add
+FftComplexFieldPlan::init: malloc 589824
+FftComplexFieldPlan::init: free 589824
 make_shuffle_plan_fft: num_send_packs =         64
 make_shuffle_plan_fft: num_recv_packs =          8
 make_shuffle_plan_fft: num_send_msgs  =          1
@@ -82,9 +83,9 @@ make_shuffle_plan_fft: total num_recv_packs =         16
 make_shuffle_plan_fft: total num_send_msgs  =          2
 make_shuffle_plan_fft: total num_recv_msgs  =          2
 make_shuffle_plan_fft: global_comm_size =        512
-fft_complex_field_plan::get_plan: start to make a new fft plan with id = 2
-fft_complex_field_plan::init: malloc 589824
-fft_complex_field_plan::init: free 589824
+Cache: 'FftComplexFieldPlanCache': 2 / 32 [16] to add
+FftComplexFieldPlan::init: malloc 589824
+FftComplexFieldPlan::init: free 589824
 make_shuffle_plan_fft: num_send_packs =         16
 make_shuffle_plan_fft: num_recv_packs =          8
 make_shuffle_plan_fft: num_send_msgs  =          1
@@ -94,9 +95,9 @@ make_shuffle_plan_fft: total num_recv_packs =         16
 make_shuffle_plan_fft: total num_send_msgs  =          2
 make_shuffle_plan_fft: total num_recv_msgs  =          2
 make_shuffle_plan_fft: global_comm_size =        512
-fft_complex_field_plan::get_plan: start to make a new fft plan with id = 3
-fft_complex_field_plan::init: malloc 589824
-fft_complex_field_plan::init: free 589824
+Cache: 'FftComplexFieldPlanCache': 3 / 32 [16] to add
+FftComplexFieldPlan::init: malloc 589824
+FftComplexFieldPlan::init: free 589824
 make_shuffle_plan_fft: num_send_packs =          8
 make_shuffle_plan_fft: num_recv_packs =          8
 make_shuffle_plan_fft: num_send_msgs  =          2
@@ -106,9 +107,9 @@ make_shuffle_plan_fft: total num_recv_packs =         16
 make_shuffle_plan_fft: total num_send_msgs  =          4
 make_shuffle_plan_fft: total num_recv_msgs  =          4
 make_shuffle_plan_fft: global_comm_size =        512
-fft_complex_field_plan::get_plan: start to make a new fft plan with id = 4
-fft_complex_field_plan::init: malloc 589824
-fft_complex_field_plan::init: free 589824
+Cache: 'FftComplexFieldPlanCache': 4 / 32 [16] to add
+FftComplexFieldPlan::init: malloc 589824
+FftComplexFieldPlan::init: free 589824
 make_shuffle_plan_fft: num_send_packs =        256
 make_shuffle_plan_fft: num_recv_packs =          8
 make_shuffle_plan_fft: num_send_msgs  =          1
@@ -118,9 +119,9 @@ make_shuffle_plan_fft: total num_recv_packs =         16
 make_shuffle_plan_fft: total num_send_msgs  =          2
 make_shuffle_plan_fft: total num_recv_msgs  =          2
 make_shuffle_plan_fft: global_comm_size =        512
-fft_complex_field_plan::get_plan: start to make a new fft plan with id = 5
-fft_complex_field_plan::init: malloc 589824
-fft_complex_field_plan::init: free 589824
+Cache: 'FftComplexFieldPlanCache': 5 / 32 [16] to add
+FftComplexFieldPlan::init: malloc 589824
+FftComplexFieldPlan::init: free 589824
 make_shuffle_plan_fft: num_send_packs =         64
 make_shuffle_plan_fft: num_recv_packs =          8
 make_shuffle_plan_fft: num_send_msgs  =          1
@@ -130,9 +131,9 @@ make_shuffle_plan_fft: total num_recv_packs =         16
 make_shuffle_plan_fft: total num_send_msgs  =          2
 make_shuffle_plan_fft: total num_recv_msgs  =          2
 make_shuffle_plan_fft: global_comm_size =        512
-fft_complex_field_plan::get_plan: start to make a new fft plan with id = 6
-fft_complex_field_plan::init: malloc 589824
-fft_complex_field_plan::init: free 589824
+Cache: 'FftComplexFieldPlanCache': 6 / 32 [16] to add
+FftComplexFieldPlan::init: malloc 589824
+FftComplexFieldPlan::init: free 589824
 make_shuffle_plan_fft: num_send_packs =         16
 make_shuffle_plan_fft: num_recv_packs =          8
 make_shuffle_plan_fft: num_send_msgs  =          1
@@ -142,9 +143,9 @@ make_shuffle_plan_fft: total num_recv_packs =         16
 make_shuffle_plan_fft: total num_send_msgs  =          2
 make_shuffle_plan_fft: total num_recv_msgs  =          2
 make_shuffle_plan_fft: global_comm_size =        512
-fft_complex_field_plan::get_plan: start to make a new fft plan with id = 7
-fft_complex_field_plan::init: malloc 589824
-fft_complex_field_plan::init: free 589824
+Cache: 'FftComplexFieldPlanCache': 7 / 32 [16] to add
+FftComplexFieldPlan::init: malloc 589824
+FftComplexFieldPlan::init: free 589824
 make_shuffle_plan_fft: num_send_packs =          8
 make_shuffle_plan_fft: num_recv_packs =          8
 make_shuffle_plan_fft: num_send_msgs  =          2
@@ -163,11 +164,11 @@ qlat::end(): MPI_Comm_free ended comm.
 =============================================
                Finalized GPT                 
 =============================================
-fft_complex_field_plan::end(): free a plan.
-fft_complex_field_plan::end(): free a plan.
-fft_complex_field_plan::end(): free a plan.
-fft_complex_field_plan::end(): free a plan.
-fft_complex_field_plan::end(): free a plan.
-fft_complex_field_plan::end(): free a plan.
-fft_complex_field_plan::end(): free a plan.
-fft_complex_field_plan::end(): free a plan.
+FftComplexFieldPlan::end(): free a plan.
+FftComplexFieldPlan::end(): free a plan.
+FftComplexFieldPlan::end(): free a plan.
+FftComplexFieldPlan::end(): free a plan.
+FftComplexFieldPlan::end(): free a plan.
+FftComplexFieldPlan::end(): free a plan.
+FftComplexFieldPlan::end(): free a plan.
+FftComplexFieldPlan::end(): free a plan.

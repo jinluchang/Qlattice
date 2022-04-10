@@ -8,7 +8,11 @@ qlat::begin(): GeometryNode =
 , id_node     = 0
 , size_node   = 1x2x2x2
 , coor_node   = 0x0x0x0 }
-q_verbose=0 (default)
+q_verbose=10
+q_timer_max_func_name_len=50 (default)
+clear_mem_cache: 0 bytes (0.000 GB) freed.
+q_timer_mini_auto_show=1 (default)
+q_timer_max_always_show=10 (default)
 demo: create splittable random number generator 'rs'
 demo: init field 'f'
 q_field_init=fast (default)
@@ -24,7 +28,7 @@ make_shuffle_plan_generic: total num_recv_packs =         56
 make_shuffle_plan_generic: total num_send_msgs  =         32
 make_shuffle_plan_generic: total num_recv_msgs  =         32
 make_shuffle_plan_generic: global_comm_size =        512
-ShufflePlanCache: to add 1 / 16.
+Cache: 'ShufflePlanCache': 0 / 16 [8] to add
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=AB54D286.
 demo: fill with random numbers
@@ -581,7 +585,11 @@ shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 
 : 79A1C7E2 <- f-init
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 : 96AFBBCB <- f1 only selected
+QFile: open 'huge-data/points-1024/f.lat.partial' with 'w'.
 qrename: 'huge-data/points-1024/f.lat.partial' 'huge-data/points-1024/f.lat'
+QFile: close 'huge-data/points-1024/f.lat.partial' with 'w'.
+QFile: open 'huge-data/points-1024/f.lat' with 'r'.
+QFile: close 'huge-data/points-1024/f.lat' with 'r'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 : 96AFBBCB <- f2 set and set
 make_shuffle_plan_generic: num_send_packs =          2
@@ -593,7 +601,7 @@ make_shuffle_plan_generic: total num_recv_packs =         64
 make_shuffle_plan_generic: total num_send_msgs  =         16
 make_shuffle_plan_generic: total num_recv_msgs  =         16
 make_shuffle_plan_generic: global_comm_size =        512
-ShufflePlanCache: to add 2 / 16.
+Cache: 'ShufflePlanCache': 1 / 16 [8] to add
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x2x4 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
 make_shuffle_plan_generic: num_send_packs =          2
 make_shuffle_plan_generic: num_recv_packs =          8
@@ -826,7 +834,8 @@ make_shuffle_plan_generic: global_comm_size =         16
 shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_shift: f (from shifted sparse field) crc32 = 6F31A6C2 ; shift=0x2x2x0
-q_timer_max_func_name_len=50 (default)
+Cache: 'ShufflePlanCache': 2 / 16 [8] clear
+clear_mem_cache: 106752 bytes (0.000 GB) freed.
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 0.
 qlat::end(): Finalize MPI.

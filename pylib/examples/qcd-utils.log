@@ -10,9 +10,10 @@ qlat::begin(): GeometryNode =
 , id_node     = 0
 , size_node   = 1x1x1x2
 , coor_node   = 0x0x0x0 }
+q_timer_max_func_name_len=50 (default)
+clear_mem_cache: 0 bytes (0.000 GB) freed.
 q_timer_mini_auto_show=1 (default)
 q_timer_max_always_show=10 (default)
-q_timer_max_func_name_len=50 (default)
 qremove: 'results'
 q_field_init=fast (default)
 set q_field_init=fast.
@@ -20,12 +21,12 @@ total_site = [4, 4, 4, 8]
 geo.show() = Geometry([4, 4, 4, 8], 1)
 q_mem_cache_max_size=512 (default)
 q_mem_cache_acc_max_size=512 (default)
-CommPlanCache: to add 1 / 32.
+Cache: 'CommPlanCache': 0 / 32 [16] to add
 gf_show_info: plaq = -0.0039877839996615 ; link_trace = 0.0224277381552869.
 gf_show_info: plaq = -0.0039877839996615 ; link_trace = 0.0224277381552869.
-CommPlanCache: to add 2 / 32.
+Cache: 'CommPlanCache': 1 / 32 [16] to add
 t=0 topo_clf=-0.006125019999933201
-CommPlanCache: to add 3 / 32.
+Cache: 'CommPlanCache': 2 / 32 [16] to add
 t=0 topo_5li=-0.00891086053584983 -0.00891086053584932
 [ -0.011059063888768539,
  0.0005095402459510871,
@@ -41,7 +42,7 @@ t=0 topo_5li=-0.00891086053584983 -0.00891086053584932
 (5, -0.09750693736194987)
 (6, -0.012436123814720874)
 (7, 0.04683627319539147)
-CommPlanCache: to add 4 / 32.
+Cache: 'CommPlanCache': 3 / 32 [16] to add
 gf_wilson_flow: t=0.02 ; E=2.416775687395237 ; t^2 E=0.0009667102749580949
 gf_wilson_flow: t=0.04 ; E=2.7674681271748818 ; t^2 E=0.004427949003479811
 gf_wilson_flow: t=0.06 ; E=3.0034076701815193 ; t^2 E=0.01081226761265347
@@ -377,6 +378,8 @@ t=5.0 topo_5li=0.9922002436710559 0.9922002436710552
 (5, 0.015710819003535947)
 (6, 0.00667432770176351)
 (7, 0.013130398593625603)
+Cache: 'CommPlanCache': 4 / 32 [16] clear
+clear_mem_cache: 3208704 bytes (0.003 GB) freed.
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 0.
 qlat::end(): Finalize MPI.

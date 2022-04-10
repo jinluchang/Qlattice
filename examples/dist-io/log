@@ -8,7 +8,11 @@ qlat::begin(): GeometryNode =
 , id_node     = 0
 , size_node   = 1x2x2x2
 , coor_node   = 0x0x0x0 }
-q_verbose=0 (default)
+q_verbose=10
+q_timer_max_func_name_len=50 (default)
+clear_mem_cache: 0 bytes (0.000 GB) freed.
+q_timer_mini_auto_show=1 (default)
+q_timer_max_always_show=10 (default)
 The check value for the CRC32 standard is 0xCBF43926
 The crc32() of "123456789" is 0xCBF43926
 The crc32() of "123456789" is 0xCBF43926 (concat)
@@ -28,12 +32,12 @@ dist_read_field: fn='huge-data/gauge_field_rgf-0.1'.
 dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         2359296
 q_mem_cache_max_size=512 (default)
 q_mem_cache_acc_max_size=512 (default)
-ShufflePlanCache: to add 1 / 16.
+Cache: 'ShufflePlanCache': 0 / 16 [8] to add
 dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         2359296
 qrename: 'huge-data/gauge_field_rgf-0.1_2.partial' 'huge-data/gauge_field_rgf-0.1_2'
-CommPlanCache: to add 1 / 32.
+Cache: 'CommPlanCache': 0 / 32 [16] to add
 plaq :  9.47925703162884714E-01
-CommPlanCache: to add 2 / 32.
+Cache: 'CommPlanCache': 1 / 32 [16] to add
 spatial plaq :  9.47619593969194485E-01
 trace:  9.86703685472810399E-01
 dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         1179648
@@ -58,7 +62,7 @@ make_shuffle_plan_generic: total num_recv_packs =        128
 make_shuffle_plan_generic: total num_send_msgs  =         32
 make_shuffle_plan_generic: total num_recv_msgs  =         32
 make_shuffle_plan_generic: global_comm_size =       4096
-ShufflePlanCache: to add 2 / 16.
+Cache: 'ShufflePlanCache': 1 / 16 [8] to add
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 crc32 = 000E8458
 make_shuffle_plan_generic: num_send_packs =         16
@@ -70,7 +74,7 @@ make_shuffle_plan_generic: total num_recv_packs =        128
 make_shuffle_plan_generic: total num_send_msgs  =          8
 make_shuffle_plan_generic: total num_recv_msgs  =          8
 make_shuffle_plan_generic: global_comm_size =       4096
-ShufflePlanCache: to add 3 / 16.
+Cache: 'ShufflePlanCache': 2 / 16 [8] to add
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x1 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 shuffle_field_back(f,fs,sp): 1x1x1x1 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 dist_crc32 = 2007B831
@@ -85,7 +89,7 @@ make_shuffle_plan_generic: total num_recv_packs =       1024
 make_shuffle_plan_generic: total num_send_msgs  =          8
 make_shuffle_plan_generic: total num_recv_msgs  =          8
 make_shuffle_plan_generic: global_comm_size =       4096
-ShufflePlanCache: to add 4 / 16.
+Cache: 'ShufflePlanCache': 3 / 16 [8] to add
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 shuffle_field_back(f,fs,sp): 2x2x2x2 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 dist_crc32 = 2007B831
@@ -105,7 +109,7 @@ make_shuffle_plan_generic: total num_recv_packs =        128
 make_shuffle_plan_generic: total num_send_msgs  =         16
 make_shuffle_plan_generic: total num_recv_msgs  =         16
 make_shuffle_plan_generic: global_comm_size =       4096
-ShufflePlanCache: to add 5 / 16.
+Cache: 'ShufflePlanCache': 4 / 16 [8] to add
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x2x4x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 shuffle_field_back(f,fs,sp): 1x2x4x2 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 dist_crc32 = 2007B831
@@ -120,7 +124,7 @@ make_shuffle_plan_generic: total num_recv_packs =        128
 make_shuffle_plan_generic: total num_send_msgs  =         16
 make_shuffle_plan_generic: total num_recv_msgs  =         16
 make_shuffle_plan_generic: global_comm_size =       4096
-ShufflePlanCache: to add 6 / 16.
+Cache: 'ShufflePlanCache': 5 / 16 [8] to add
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x1x1 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 shuffle_field_back(f,fs,sp): 2x2x1x1 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 dist_crc32 = 2007B831
@@ -135,7 +139,7 @@ make_shuffle_plan_generic: total num_recv_packs =       2048
 make_shuffle_plan_generic: total num_send_msgs  =         16
 make_shuffle_plan_generic: total num_recv_msgs  =         16
 make_shuffle_plan_generic: global_comm_size =       4096
-ShufflePlanCache: to add 7 / 16.
+Cache: 'ShufflePlanCache': 6 / 16 [8] to add
 shuffle_field(fs,f,sp): 1x2x2x2 -> 4x4x4x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 shuffle_field_back(f,fs,sp): 4x4x4x4 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 dist_crc32 = 2007B831
@@ -646,9 +650,9 @@ shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576
 crc32 = 0BAC0612 after shift 1x1x1x1
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 crc32 = 83E8BA4C after shift -1x-1x-1x-1
-fft_complex_field_plan::get_plan: start to make a new fft plan with id = 0
-fft_complex_field_plan::init: malloc 294912
-fft_complex_field_plan::init: free 294912
+Cache: 'FftComplexFieldPlanCache': 0 / 32 [16] to add
+FftComplexFieldPlan::init: malloc 294912
+FftComplexFieldPlan::init: free 294912
 make_shuffle_plan_fft: num_send_packs =        512
 make_shuffle_plan_fft: num_recv_packs =         16
 make_shuffle_plan_fft: num_send_msgs  =          1
@@ -658,9 +662,9 @@ make_shuffle_plan_fft: total num_recv_packs =        128
 make_shuffle_plan_fft: total num_send_msgs  =          8
 make_shuffle_plan_fft: total num_recv_msgs  =          8
 make_shuffle_plan_fft: global_comm_size =       4096
-fft_complex_field_plan::get_plan: start to make a new fft plan with id = 1
-fft_complex_field_plan::init: malloc 294912
-fft_complex_field_plan::init: free 294912
+Cache: 'FftComplexFieldPlanCache': 1 / 32 [16] to add
+FftComplexFieldPlan::init: malloc 294912
+FftComplexFieldPlan::init: free 294912
 make_shuffle_plan_fft: num_send_packs =         63
 make_shuffle_plan_fft: num_recv_packs =         16
 make_shuffle_plan_fft: num_send_msgs  =          2
@@ -670,9 +674,9 @@ make_shuffle_plan_fft: total num_recv_packs =        128
 make_shuffle_plan_fft: total num_send_msgs  =         16
 make_shuffle_plan_fft: total num_recv_msgs  =         16
 make_shuffle_plan_fft: global_comm_size =       4096
-fft_complex_field_plan::get_plan: start to make a new fft plan with id = 2
-fft_complex_field_plan::init: malloc 294912
-fft_complex_field_plan::init: free 294912
+Cache: 'FftComplexFieldPlanCache': 2 / 32 [16] to add
+FftComplexFieldPlan::init: malloc 294912
+FftComplexFieldPlan::init: free 294912
 make_shuffle_plan_fft: num_send_packs =         16
 make_shuffle_plan_fft: num_recv_packs =         16
 make_shuffle_plan_fft: num_send_msgs  =          2
@@ -682,9 +686,9 @@ make_shuffle_plan_fft: total num_recv_packs =        128
 make_shuffle_plan_fft: total num_send_msgs  =         16
 make_shuffle_plan_fft: total num_recv_msgs  =         16
 make_shuffle_plan_fft: global_comm_size =       4096
-fft_complex_field_plan::get_plan: start to make a new fft plan with id = 3
-fft_complex_field_plan::init: malloc 294912
-fft_complex_field_plan::init: free 294912
+Cache: 'FftComplexFieldPlanCache': 3 / 32 [16] to add
+FftComplexFieldPlan::init: malloc 294912
+FftComplexFieldPlan::init: free 294912
 make_shuffle_plan_fft: num_send_packs =         16
 make_shuffle_plan_fft: num_recv_packs =         16
 make_shuffle_plan_fft: num_send_msgs  =          2
@@ -697,9 +701,9 @@ make_shuffle_plan_fft: global_comm_size =       4096
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 crc32 = A43B6207 after fft forward
 qnorm =  2.01326591999999642E+08 after fft forward
-fft_complex_field_plan::get_plan: start to make a new fft plan with id = 4
-fft_complex_field_plan::init: malloc 294912
-fft_complex_field_plan::init: free 294912
+Cache: 'FftComplexFieldPlanCache': 4 / 32 [16] to add
+FftComplexFieldPlan::init: malloc 294912
+FftComplexFieldPlan::init: free 294912
 make_shuffle_plan_fft: num_send_packs =        512
 make_shuffle_plan_fft: num_recv_packs =         16
 make_shuffle_plan_fft: num_send_msgs  =          1
@@ -709,9 +713,9 @@ make_shuffle_plan_fft: total num_recv_packs =        128
 make_shuffle_plan_fft: total num_send_msgs  =          8
 make_shuffle_plan_fft: total num_recv_msgs  =          8
 make_shuffle_plan_fft: global_comm_size =       4096
-fft_complex_field_plan::get_plan: start to make a new fft plan with id = 5
-fft_complex_field_plan::init: malloc 294912
-fft_complex_field_plan::init: free 294912
+Cache: 'FftComplexFieldPlanCache': 5 / 32 [16] to add
+FftComplexFieldPlan::init: malloc 294912
+FftComplexFieldPlan::init: free 294912
 make_shuffle_plan_fft: num_send_packs =         63
 make_shuffle_plan_fft: num_recv_packs =         16
 make_shuffle_plan_fft: num_send_msgs  =          2
@@ -721,9 +725,9 @@ make_shuffle_plan_fft: total num_recv_packs =        128
 make_shuffle_plan_fft: total num_send_msgs  =         16
 make_shuffle_plan_fft: total num_recv_msgs  =         16
 make_shuffle_plan_fft: global_comm_size =       4096
-fft_complex_field_plan::get_plan: start to make a new fft plan with id = 6
-fft_complex_field_plan::init: malloc 294912
-fft_complex_field_plan::init: free 294912
+Cache: 'FftComplexFieldPlanCache': 6 / 32 [16] to add
+FftComplexFieldPlan::init: malloc 294912
+FftComplexFieldPlan::init: free 294912
 make_shuffle_plan_fft: num_send_packs =         16
 make_shuffle_plan_fft: num_recv_packs =         16
 make_shuffle_plan_fft: num_send_msgs  =          2
@@ -733,9 +737,9 @@ make_shuffle_plan_fft: total num_recv_packs =        128
 make_shuffle_plan_fft: total num_send_msgs  =         16
 make_shuffle_plan_fft: total num_recv_msgs  =         16
 make_shuffle_plan_fft: global_comm_size =       4096
-fft_complex_field_plan::get_plan: start to make a new fft plan with id = 7
-fft_complex_field_plan::init: malloc 294912
-fft_complex_field_plan::init: free 294912
+Cache: 'FftComplexFieldPlanCache': 7 / 32 [16] to add
+FftComplexFieldPlan::init: malloc 294912
+FftComplexFieldPlan::init: free 294912
 make_shuffle_plan_fft: num_send_packs =         16
 make_shuffle_plan_fft: num_recv_packs =         16
 make_shuffle_plan_fft: num_send_msgs  =          2
@@ -778,16 +782,19 @@ make_shuffle_plan_generic: global_comm_size =       4096
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 crc32 = 83E8BA4C after reflect twice
-q_timer_max_func_name_len=50 (default)
+Cache: 'CommPlanCache': 2 / 32 [16] clear
+Cache: 'FftComplexFieldPlanCache': 8 / 32 [16] clear
+FftComplexFieldPlan::end(): free a plan.
+FftComplexFieldPlan::end(): free a plan.
+FftComplexFieldPlan::end(): free a plan.
+FftComplexFieldPlan::end(): free a plan.
+FftComplexFieldPlan::end(): free a plan.
+FftComplexFieldPlan::end(): free a plan.
+FftComplexFieldPlan::end(): free a plan.
+FftComplexFieldPlan::end(): free a plan.
+Cache: 'ShufflePlanCache': 7 / 16 [8] clear
+clear_mem_cache: 15300608 bytes (0.014 GB) freed.
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 0.
 qlat::end(): Finalize MPI.
 qlat::end(): MPI Finalized.
-fft_complex_field_plan::end(): free a plan.
-fft_complex_field_plan::end(): free a plan.
-fft_complex_field_plan::end(): free a plan.
-fft_complex_field_plan::end(): free a plan.
-fft_complex_field_plan::end(): free a plan.
-fft_complex_field_plan::end(): free a plan.
-fft_complex_field_plan::end(): free a plan.
-fft_complex_field_plan::end(): free a plan.

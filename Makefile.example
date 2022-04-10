@@ -9,7 +9,7 @@ include $(QLAT_PREFIX)/include/qlat/Makefile.inc
 all: qlat.x
 
 run: qlat.x
-	time mpirun --oversubscribe -x OMP_NUM_THREADS=2 --np 8 ./qlat.x | tee log
+	time mpirun -x OMP_NUM_THREADS=2 --np 8 ./qlat.x | tee log
 
 qlat.x: *.C
 	time make build
@@ -32,7 +32,7 @@ clean:
 
 run-test: qlat.x
 	echo > log
-	time mpirun --oversubscribe -x OMP_NUM_THREADS=2 --np 8 ./qlat.x | tee log.full
+	q_verbose=10 time mpirun --oversubscribe -x OMP_NUM_THREADS=2 --np 8 ./qlat.x | tee log.full
 	cat log.full | grep -v '^Timer\|^check_status:\|^display_geo_node : id_node =' > log
 	make diff | cat
 	# make clean

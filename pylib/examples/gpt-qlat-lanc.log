@@ -47,9 +47,10 @@ qlat::begin(): GeometryNode =
 , id_node     = 0
 , size_node   = 1x1x1x2
 , coor_node   = 0x0x0x0 }
+q_timer_max_func_name_len=50 (default)
+clear_mem_cache: 0 bytes (0.000 GB) freed.
 q_timer_mini_auto_show=1 (default)
 q_timer_max_always_show=10 (default)
-q_timer_max_func_name_len=50 (default)
 qremove: 'results'
 {'clanc_params': {0: {0: {'block': [2, 2, 2, 2],
                           'cheby_params': {'high': 5.5,
@@ -188,13 +189,13 @@ q_field_init=fast (default)
 set q_field_init=fast.
 q_mem_cache_max_size=512 (default)
 q_mem_cache_acc_max_size=512 (default)
-CommPlanCache: to add 1 / 32.
+Cache: 'CommPlanCache': 0 / 32 [16] to add
 mk_file_dirs_info: 'results/configs/test-4nt16/ckpoint_lat.1000'.
 load_gauge_field: 'results/configs/test-4nt16/ckpoint_lat.1000'.
 q_read_par_limit=16 (default)
-ShufflePlanCache: to add 1 / 16.
+Cache: 'ShufflePlanCache': 0 / 16 [8] to add
 load_config fn='results/configs/test-4nt16/ckpoint_lat.1000' twist_boundary_at_boundary lmom=-0.5 mu=3
-CommPlanCache: to add 2 / 32.
+Cache: 'CommPlanCache': 1 / 32 [16] to add
 gf_show_info: plaq = 0.8226030400153159 ; link_trace = 0.8249728897339413.
 gf_show_info: plaq = 0.8226030400153159 ; link_trace = 0.8249728897339413.
 load_eig_lazy: path is 'None'

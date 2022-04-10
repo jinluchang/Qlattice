@@ -53,6 +53,10 @@ EXPORT(begin, {
 
 EXPORT(end, {
   using namespace qlat;
-  end();
+  bool is_preserving_cache = false;
+  if (!PyArg_ParseTuple(args, "|b", &is_preserving_cache)) {
+    return NULL;
+  }
+  end(is_preserving_cache);
   Py_RETURN_NONE;
 });

@@ -867,7 +867,7 @@ inline void begin_comm(const MPI_Comm comm, const Coordinate& size_node)
                           Timer::get_timer_database().size()));
   displayln_info(ssprintf("Timer::get_timer_stack().size() = %ld",
                           Timer::get_timer_stack().size()));
-  get_mem_cache().gc();  // initialize mem_cache
+  clear_all_caches();
   sync_node();
   // display_geometry_node();
   // install_qhandle_sig();
@@ -918,25 +918,30 @@ inline void begin(
   begin_comm(MPI_COMM_WORLD, size_node);
 }
 
-inline void end()
+inline void end(const bool is_preserving_cache = false)
 {
   if (get_comm_list().empty()) {
     qassert(false);
   } else {
     qassert(get_comm_list().back().comm == get_comm());
     if (get_comm() == MPI_COMM_WORLD) {
-      clear_all_caches();
+      if (not is_preserving_cache) {
+        clear_all_caches();
+      }
+      sync_node();
       displayln_info(ssprintf("qlat::end(): get_comm_list().pop_back()"));
       get_comm_list().pop_back();
       displayln_info(ssprintf("qlat::end(): get_comm_list().size() = %d.",
                               (int)get_comm_list().size()));
       qassert(get_comm_list().size() == 0);
       displayln_info("qlat::end(): Finalize MPI.");
-      sync_node();
       if (is_MPI_initialized()) MPI_Finalize();
       displayln_info("qlat::end(): MPI Finalized.");
-      exit(0);
     } else {
+      if (not is_preserving_cache) {
+        clear_all_caches();
+      }
+      sync_node();
       displayln_info(ssprintf("qlat::end(): get_comm_list().pop_back()"));
       MPI_Comm comm = get_comm();
       get_comm_list().pop_back();
@@ -950,7 +955,6 @@ inline void end()
       } else {
         displayln_info(ssprintf("qlat::end(): Switch to old comm (foreign)."));
       }
-      sync_node();
       displayln_info(ssprintf("qlat::end(): MPI_Comm_free ended comm."));
       MPI_Comm_free(&comm);
       sync_node();

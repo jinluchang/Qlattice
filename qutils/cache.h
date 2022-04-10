@@ -7,6 +7,7 @@
 #include <utility>
 
 #include <qutils/timer.h>
+#include <qutils/vector.h>
 
 namespace qlat
 {  //
@@ -20,6 +21,31 @@ struct CacheBase {
   //
   virtual long size() = 0;
   virtual void clear() = 0;
+  //
+  void init(const long limit_, const long buffer_size_ = 0)
+  // If buffer_size_ == 0, then buffer_size = limit - limit / 2, which is also
+  // the maximally allowed value
+  {
+    if (limit_ <= 0) {
+      qassert(limit_ == 0);
+      limit = 0;
+      buffer_size = 1;
+    } else {
+      qassert(limit_ >= 1);
+      limit = limit_;
+      buffer_size = limit - limit / 2;
+      if (buffer_size_ > 0) {
+        qassert(buffer_size_ <= buffer_size);
+        buffer_size = buffer_size_;
+      }
+      qassert(buffer_size >= 1);
+    }
+  }
+  //
+  virtual void resize(const long limit_, const long buffer_size_ = 0)
+  {
+    init(limit_, buffer_size_);
+  }
   //
   virtual std::string show_info()
   {
@@ -52,6 +78,7 @@ inline void clear_all_caches()
        ++it) {
     (*it)->clear();
   }
+  clear_mem_cache();
 }
 
 template <class K, class M>
@@ -60,7 +87,7 @@ struct Cache : CacheBase {
   long idx;
   //
   Cache(const std::string& name_ = "Cache", const long limit_ = 16,
-        const long buffer_size_ = 8)
+        const long buffer_size_ = 0)
   {
     init(name_, limit_, buffer_size_);
   }
@@ -72,17 +99,10 @@ struct Cache : CacheBase {
   }
   //
   void init(const std::string& name_, const long limit_,
-            const long buffer_size_)
+            const long buffer_size_ = 0)
   {
     name = name_;
-    if (limit_ <= 0) {
-      limit = 0;
-      buffer_size = 1;
-    } else {
-      limit = std::max(limit_, (long)1);
-      buffer_size = std::min(buffer_size_, limit - limit / 2);
-      qassert(buffer_size >= 1);
-    }
+    CacheBase::init(limit_, buffer_size_);
     clear();
     if (not qlat::has(get_all_caches(), (CacheBase*)this)) {
       get_all_caches().insert(this);
@@ -104,8 +124,7 @@ struct Cache : CacheBase {
       return (it->second).second;
     } else {
       gc();
-      displayln_info(
-          ssprintf("%s: to add %d / %d.", name.c_str(), m.size() + 1, limit));
+      displayln_info(0, show_info() + " to add");
       std::pair<long, M>& v = m[key];
       v.first = idx;
       idx += 1;
@@ -151,7 +170,7 @@ struct Cache : CacheBase {
     TIMER_VERBOSE("Cache::clear");
     idx = 0;
     if (m.size() > 0) {
-      displayln_info(0, show_info());
+      displayln_info(0, show_info() + " clear");
       m.clear();
     }
   }

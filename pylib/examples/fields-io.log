@@ -10,16 +10,17 @@ qlat::begin(): GeometryNode =
 , id_node     = 0
 , size_node   = 1x1x1x2
 , coor_node   = 0x0x0x0 }
+q_timer_max_func_name_len=50 (default)
+clear_mem_cache: 0 bytes (0.000 GB) freed.
 q_timer_mini_auto_show=1 (default)
 q_timer_max_always_show=10 (default)
-q_timer_max_func_name_len=50 (default)
 qremove: 'results'
 geo.show() = Geometry([4, 4, 4, 8], 1)
 q_field_init=fast (default)
 set q_field_init=fast.
 q_mem_cache_max_size=512 (default)
 q_mem_cache_acc_max_size=512 (default)
-ShufflePlanCache: to add 1 / 16.
+Cache: 'ShufflePlanCache': 0 / 16 [8] to add
 prop 870829356 49123.69045958381
 mk_file_dirs_info: 'results/prop.fields'.
 FieldsWriter: open 'results/prop.fields'.
@@ -34,7 +35,7 @@ make_shuffle_plan_generic: total num_recv_packs =         16
 make_shuffle_plan_generic: total num_send_msgs  =          2
 make_shuffle_plan_generic: total num_recv_msgs  =          2
 make_shuffle_plan_generic: global_comm_size =        512
-ShufflePlanCache: to add 2 / 16.
+Cache: 'ShufflePlanCache': 1 / 16 [8] to add
 shuffle_field(fs,f,sp): 1x1x1x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 2304 ; total_size: 0.001 GB)
 write(sfw,fn,field): writing field with fn='prop' from 'results/prop.fields'.
 shuffle_field(fs,f,sp): 1x1x1x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.001 GB)
@@ -204,6 +205,8 @@ FieldsReader: open 'results/prop.fields'.
 FieldsReader: close 'results/prop.fields'.
 []
 ['prop.fields']
+Cache: 'ShufflePlanCache': 2 / 16 [8] clear
+clear_mem_cache: 3910656 bytes (0.004 GB) freed.
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 0.
 qlat::end(): Finalize MPI.

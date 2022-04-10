@@ -8,8 +8,11 @@ qlat::begin(): GeometryNode =
 , id_node     = 0
 , size_node   = 1x2x2x2
 , coor_node   = 0x0x0x0 }
-q_verbose=0 (default)
+q_verbose=10
+q_timer_max_func_name_len=50 (default)
+clear_mem_cache: 0 bytes (0.000 GB) freed.
 q_timer_mini_auto_show=1 (default)
+q_timer_max_always_show=10 (default)
 q_time_limit=43200 (default)
 get_time_limit()=12.000000 hours
 q_budget=900 (default)
@@ -41,7 +44,7 @@ make_shuffle_plan_generic: total num_recv_packs =         56
 make_shuffle_plan_generic: total num_send_msgs  =         32
 make_shuffle_plan_generic: total num_recv_msgs  =         32
 make_shuffle_plan_generic: global_comm_size =        512
-ShufflePlanCache: to add 1 / 16.
+Cache: 'ShufflePlanCache': 0 / 16 [8] to add
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
 shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
 write_field: fn='results/test-4nt8/results=1000/f-rank.field'.
@@ -52,17 +55,17 @@ qrename: 'results/test-4nt8/results=1000/f-rank.field.partial' 'results/test-4nt
 read_field: fn='results/test-4nt8/results=1000/f-rank.field'.
 shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
-CommPlanCache: to add 1 / 32.
-CommPlanCache: to add 2 / 32.
+Cache: 'CommPlanCache': 0 / 32 [16] to add
+Cache: 'CommPlanCache': 1 / 32 [16] to add
 plaq :  6.83965231794668060E-01
-CommPlanCache: to add 3 / 32.
+Cache: 'CommPlanCache': 2 / 32 [16] to add
 spatial plaq :  6.83106449306319696E-01
 trace:  9.28858590458645078E-02
-CommPlanCache: to add 4 / 32.
-CommPlanCache: to add 5 / 32.
+Cache: 'CommPlanCache': 3 / 32 [16] to add
+Cache: 'CommPlanCache': 4 / 32 [16] to add
 invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 1.000000E+00
-CommPlanCache: to add 6 / 32.
-CommPlanCache: to add 7 / 32.
+Cache: 'CommPlanCache': 5 / 32 [16] to add
+Cache: 'CommPlanCache': 6 / 32 [16] to add
 cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=5.294E-01 stop_rsd=1.000E-08 
 cg_with_f: final iter=  60 sqrt(qnorm_r/qnorm_in)=7.979E-09 stop_rsd=1.000E-08
 invert_with_cg(5d,5d,inv,cg): total_iter=60 cycle=1 stop_rsd=1.000E-08
@@ -137,7 +140,7 @@ make_shuffle_plan_generic: total num_recv_packs =        256
 make_shuffle_plan_generic: total num_send_msgs  =         16
 make_shuffle_plan_generic: total num_recv_msgs  =         16
 make_shuffle_plan_generic: global_comm_size =        512
-ShufflePlanCache: to add 2 / 16.
+Cache: 'ShufflePlanCache': 1 / 16 [8] to add
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x4 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.001 GB)
 dist_write_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =         16 ; total_bytes =          294912
 dist_write_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         32 ; total_bytes =          589824
@@ -155,7 +158,9 @@ make_shuffle_plan_generic: global_comm_size =         32
 shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.000 GB)
 qrename: 'results/test-4nt8/results=1000/psrc-prop-0.sfield.partial.partial' 'results/test-4nt8/results=1000/psrc-prop-0.sfield.partial'
 qrename: 'results/test-4nt8/results=1000/psrc-prop-0.sfield.partial' 'results/test-4nt8/results=1000/psrc-prop-0.sfield'
+QFile: open 'results/test-4nt8/results=1000/pion-corr.lat.partial' with 'w'.
 qrename: 'results/test-4nt8/results=1000/pion-corr.lat.partial' 'results/test-4nt8/results=1000/pion-corr.lat'
+QFile: close 'results/test-4nt8/results=1000/pion-corr.lat.partial' with 'w'.
 qrename: 'results/test-4nt8/results=1000/pion-corr.txt.partial' 'results/test-4nt8/results=1000/pion-corr.txt'
 ndim: 2
 "tsep"[8]:
@@ -178,7 +183,6 @@ tsep[       7] re-im[      re]  4.09021726415145989E-02
 tsep[       7] re-im[      im]  0.00000000000000000E+00
 prop qnorm =  2.39843434767638614E-01
 prop[0] qnorm =  2.46214937797465685E-04
-q_timer_max_func_name_len=50 (default)
 release_lock: Release lock 'results/test-4nt8/results=1000-lock'
 qremove: 'results/test-4nt8/results=1000-lock/time.txt'
 get_time_limit()=12.000000 hours
@@ -287,7 +291,9 @@ make_shuffle_plan_generic: global_comm_size =         32
 shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.000 GB)
 qrename: 'results/test-4nt8/results=1010/psrc-prop-0.sfield.partial.partial' 'results/test-4nt8/results=1010/psrc-prop-0.sfield.partial'
 qrename: 'results/test-4nt8/results=1010/psrc-prop-0.sfield.partial' 'results/test-4nt8/results=1010/psrc-prop-0.sfield'
+QFile: open 'results/test-4nt8/results=1010/pion-corr.lat.partial' with 'w'.
 qrename: 'results/test-4nt8/results=1010/pion-corr.lat.partial' 'results/test-4nt8/results=1010/pion-corr.lat'
+QFile: close 'results/test-4nt8/results=1010/pion-corr.lat.partial' with 'w'.
 qrename: 'results/test-4nt8/results=1010/pion-corr.txt.partial' 'results/test-4nt8/results=1010/pion-corr.txt'
 ndim: 2
 "tsep"[8]:
@@ -419,7 +425,9 @@ make_shuffle_plan_generic: global_comm_size =         32
 shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.000 GB)
 qrename: 'results/free-4nt8/results=1000/psrc-prop-0.sfield.partial.partial' 'results/free-4nt8/results=1000/psrc-prop-0.sfield.partial'
 qrename: 'results/free-4nt8/results=1000/psrc-prop-0.sfield.partial' 'results/free-4nt8/results=1000/psrc-prop-0.sfield'
+QFile: open 'results/free-4nt8/results=1000/pion-corr.lat.partial' with 'w'.
 qrename: 'results/free-4nt8/results=1000/pion-corr.lat.partial' 'results/free-4nt8/results=1000/pion-corr.lat'
+QFile: close 'results/free-4nt8/results=1000/pion-corr.lat.partial' with 'w'.
 qrename: 'results/free-4nt8/results=1000/pion-corr.txt.partial' 'results/free-4nt8/results=1000/pion-corr.txt'
 ndim: 2
 "tsep"[8]:
@@ -550,7 +558,9 @@ make_shuffle_plan_generic: global_comm_size =         32
 shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.000 GB)
 qrename: 'results/free-4nt8/results=1010/psrc-prop-0.sfield.partial.partial' 'results/free-4nt8/results=1010/psrc-prop-0.sfield.partial'
 qrename: 'results/free-4nt8/results=1010/psrc-prop-0.sfield.partial' 'results/free-4nt8/results=1010/psrc-prop-0.sfield'
+QFile: open 'results/free-4nt8/results=1010/pion-corr.lat.partial' with 'w'.
 qrename: 'results/free-4nt8/results=1010/pion-corr.lat.partial' 'results/free-4nt8/results=1010/pion-corr.lat'
+QFile: close 'results/free-4nt8/results=1010/pion-corr.lat.partial' with 'w'.
 qrename: 'results/free-4nt8/results=1010/pion-corr.txt.partial' 'results/free-4nt8/results=1010/pion-corr.txt'
 ndim: 2
 "tsep"[8]:
@@ -576,6 +586,9 @@ prop[0] qnorm =  6.13619597511778740E-03
 release_lock: Release lock 'results/free-4nt8/results=1010-lock'
 qremove: 'results/free-4nt8/results=1010-lock/time.txt'
 program finished successfully for 'free-4nt8'.
+Cache: 'CommPlanCache': 7 / 32 [16] clear
+Cache: 'ShufflePlanCache': 2 / 16 [8] clear
+clear_mem_cache: 4291328 bytes (0.004 GB) freed.
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 0.
 qlat::end(): Finalize MPI.

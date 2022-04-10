@@ -8,13 +8,17 @@ qlat::begin(): GeometryNode =
 , id_node     = 0
 , size_node   = 1x2x2x2
 , coor_node   = 0x0x0x0 }
-q_verbose=0 (default)
+q_verbose=10
+q_timer_max_func_name_len=50 (default)
+clear_mem_cache: 0 bytes (0.000 GB) freed.
+q_timer_mini_auto_show=1 (default)
+q_timer_max_always_show=10 (default)
 q_field_init=fast (default)
 set q_field_init=fast.
 q_mem_cache_max_size=512 (default)
 q_mem_cache_acc_max_size=512 (default)
-CommPlanCache: to add 1 / 32.
-CommPlanCache: to add 2 / 32.
+Cache: 'CommPlanCache': 0 / 32 [16] to add
+Cache: 'CommPlanCache': 1 / 32 [16] to add
 # norm_idx gm_force_magnitude
     0  1.40641333336177543E+00
     1  1.44926019513507121E+00
@@ -163,7 +167,7 @@ run_hmc_evolve reversed delta_diff:  1.25055521493777633E-12 /  4.42813330450803
 run_hmc_evolve reversed gf_diff:  1.25738194316156986E-27 /  6.14400000000000000E+03
 metropolis_accept: accept flag = 0 with prob accept = 1.2% deltaH = 4.4281333045080373 traj = 1
 run_hmc: update gf (traj=1).
-CommPlanCache: to add 3 / 32.
+Cache: 'CommPlanCache': 2 / 32 [16] to add
 test_hmc: traj=1 ; plaq_avg= 8.12143046289839021E-01 ; plaq_sum= 5.77096561797614527E+02.
 # norm_idx gm_force_magnitude
     0  6.07014276901974181E+00
@@ -314,10 +318,10 @@ run_hmc_evolve reversed gf_diff:  2.07497551062055778E-27 /  6.14400000000000000
 metropolis_accept: accept flag = 0 with prob accept = 34.5% deltaH = 1.0651127354112759 traj = 2
 run_hmc: update gf (traj=2).
 test_hmc: traj=2 ; plaq_avg= 7.42706563292743871E-01 ; plaq_sum= 7.90405437564690828E+02.
-CommPlanCache: to add 4 / 32.
+Cache: 'CommPlanCache': 3 / 32 [16] to add
     0  1.54376062024353766E+00  2.41289146050876369E+00  1.10049439803660692E-01  5.60386433476744989E-05
-CommPlanCache: to add 5 / 32.
-CommPlanCache: to add 6 / 32.
+Cache: 'CommPlanCache': 4 / 32 [16] to add
+Cache: 'CommPlanCache': 5 / 32 [16] to add
 gf_wilson_flow: t =  2.00000000000000004E-02 ; E =  1.52632704382557183E+00 ; t^2 E =  6.10530817530228814E-04.
 gf_wilson_flow: t =  4.00000000000000008E-02 ; E =  1.39395545719992686E+00 ; t^2 E =  2.23032873151988303E-03.
 gf_wilson_flow: t =  5.99999999999999978E-02 ; E =  1.26444517283845226E+00 ; t^2 E =  4.55200262221842813E-03.
@@ -364,9 +368,15 @@ gf_wilson_flow: t =  2.00000000000000011E-01 ; E =  5.99912986704202011E-01 ; t^
            2 avg(plaq_action^2)  6.75678798621573984E-02
            2 tot(topo_density) -2.42619314743069969E-03
            2 avg(topo_density^2)  8.32407678087997205E-06
+QFile: open 'results/gf_info/traj=2.lat.partial' with 'w'.
 qrename: 'results/gf_info/traj=2.lat.partial' 'results/gf_info/traj=2.lat'
+QFile: close 'results/gf_info/traj=2.lat.partial' with 'w'.
+QFile: open 'results/wilson_flow_energy_info/traj=2.lat.partial' with 'w'.
 qrename: 'results/wilson_flow_energy_info/traj=2.lat.partial' 'results/wilson_flow_energy_info/traj=2.lat'
+QFile: close 'results/wilson_flow_energy_info/traj=2.lat.partial' with 'w'.
+QFile: open 'results/gm_force_info/traj=2.lat.partial' with 'w'.
 qrename: 'results/gm_force_info/traj=2.lat.partial' 'results/gm_force_info/traj=2.lat'
+QFile: close 'results/gm_force_info/traj=2.lat.partial' with 'w'.
 # norm_idx gm_force_magnitude
     0  6.77462752209160612E+00
     1  6.95591453514394420E+00
@@ -564,10 +574,16 @@ gf_wilson_flow: t =  2.00000000000000011E-01 ; E =  9.25517311948635402E-01 ; t^
            2 avg(plaq_action^2)  1.81074204574794784E-01
            2 tot(topo_density) -8.81752088717166205E-02
            2 avg(topo_density^2)  2.07302000828757671E-05
+QFile: open 'results/gf_info/traj=4.lat.partial' with 'w'.
 qrename: 'results/gf_info/traj=4.lat.partial' 'results/gf_info/traj=4.lat'
+QFile: close 'results/gf_info/traj=4.lat.partial' with 'w'.
+QFile: open 'results/wilson_flow_energy_info/traj=4.lat.partial' with 'w'.
 qrename: 'results/wilson_flow_energy_info/traj=4.lat.partial' 'results/wilson_flow_energy_info/traj=4.lat'
+QFile: close 'results/wilson_flow_energy_info/traj=4.lat.partial' with 'w'.
+QFile: open 'results/gm_force_info/traj=4.lat.partial' with 'w'.
 qrename: 'results/gm_force_info/traj=4.lat.partial' 'results/gm_force_info/traj=4.lat'
-CommPlanCache: to add 7 / 32.
+QFile: close 'results/gm_force_info/traj=4.lat.partial' with 'w'.
+Cache: 'CommPlanCache': 6 / 32 [16] to add
 # norm_idx gm_force_magnitude
     0  1.29647900205106770E+00
     1  1.33595673953873639E+00
@@ -913,9 +929,15 @@ gf_wilson_flow: t =  2.00000000000000011E-01 ; E =  3.98698494370809120E-01 ; t^
            2 avg(plaq_action^2)  3.36993704826570664E-02
            2 tot(topo_density)  1.00440400891764481E-03
            2 avg(topo_density^2)  3.66486957180791284E-06
+QFile: open 'results/gf_info/traj=2.lat.partial' with 'w'.
 qrename: 'results/gf_info/traj=2.lat.partial' 'results/gf_info/traj=2.lat'
+QFile: close 'results/gf_info/traj=2.lat.partial' with 'w'.
+QFile: open 'results/wilson_flow_energy_info/traj=2.lat.partial' with 'w'.
 qrename: 'results/wilson_flow_energy_info/traj=2.lat.partial' 'results/wilson_flow_energy_info/traj=2.lat'
+QFile: close 'results/wilson_flow_energy_info/traj=2.lat.partial' with 'w'.
+QFile: open 'results/gm_force_info/traj=2.lat.partial' with 'w'.
 qrename: 'results/gm_force_info/traj=2.lat.partial' 'results/gm_force_info/traj=2.lat'
+QFile: close 'results/gm_force_info/traj=2.lat.partial' with 'w'.
 # norm_idx gm_force_magnitude
     0  6.00841709489937958E+00
     1  6.16336780426232878E+00
@@ -1113,10 +1135,17 @@ gf_wilson_flow: t =  2.00000000000000011E-01 ; E =  6.88420696925417741E-01 ; t^
            2 avg(plaq_action^2)  1.11978570072380185E-01
            2 tot(topo_density) -9.91061294477023347E-03
            2 avg(topo_density^2)  9.92182642088927378E-06
+QFile: open 'results/gf_info/traj=4.lat.partial' with 'w'.
 qrename: 'results/gf_info/traj=4.lat.partial' 'results/gf_info/traj=4.lat'
+QFile: close 'results/gf_info/traj=4.lat.partial' with 'w'.
+QFile: open 'results/wilson_flow_energy_info/traj=4.lat.partial' with 'w'.
 qrename: 'results/wilson_flow_energy_info/traj=4.lat.partial' 'results/wilson_flow_energy_info/traj=4.lat'
+QFile: close 'results/wilson_flow_energy_info/traj=4.lat.partial' with 'w'.
+QFile: open 'results/gm_force_info/traj=4.lat.partial' with 'w'.
 qrename: 'results/gm_force_info/traj=4.lat.partial' 'results/gm_force_info/traj=4.lat'
-q_timer_max_func_name_len=50 (default)
+QFile: close 'results/gm_force_info/traj=4.lat.partial' with 'w'.
+Cache: 'CommPlanCache': 7 / 32 [16] clear
+clear_mem_cache: 6882048 bytes (0.006 GB) freed.
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 0.
 qlat::end(): Finalize MPI.

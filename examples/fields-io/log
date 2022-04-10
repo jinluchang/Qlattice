@@ -8,7 +8,11 @@ qlat::begin(): GeometryNode =
 , id_node     = 0
 , size_node   = 1x2x2x2
 , coor_node   = 0x0x0x0 }
-q_verbose=0 (default)
+q_verbose=10
+q_timer_max_func_name_len=50 (default)
+clear_mem_cache: 0 bytes (0.000 GB) freed.
+q_timer_mini_auto_show=1 (default)
+q_timer_max_always_show=10 (default)
 demo: create splittable random number generator 'rs'
 demo: random select 0 points on entire lattice
 demo: random select points on each time slice
@@ -27,7 +31,7 @@ make_shuffle_plan_generic: total num_recv_packs =         96
 make_shuffle_plan_generic: total num_send_msgs  =         32
 make_shuffle_plan_generic: total num_recv_msgs  =         32
 make_shuffle_plan_generic: global_comm_size =       1728
-ShufflePlanCache: to add 1 / 16.
+Cache: 'ShufflePlanCache': 0 / 16 [8] to add
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
 shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
 demo: save selection 'fsel' to disk as a field
@@ -62,7 +66,7 @@ make_shuffle_plan_generic: total num_recv_packs =        576
 make_shuffle_plan_generic: total num_send_msgs  =         32
 make_shuffle_plan_generic: total num_recv_msgs  =         32
 make_shuffle_plan_generic: global_comm_size =       1728
-ShufflePlanCache: to add 2 / 16.
+Cache: 'ShufflePlanCache': 1 / 16 [8] to add
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
 make_shuffle_plan_generic: num_send_packs =          4
 make_shuffle_plan_generic: num_recv_packs =         12
@@ -122,7 +126,7 @@ shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 
 write(sfw,fn,sf,sbs): writing sparse field with fn='sfa.float.sfield' from 'huge-data/t0/demo.lfs'.
 shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 FieldsWriter: close 'huge-data/t0/demo.lfs'.
-ShuffledFieldsReaderCache: to add 1 / 4.
+Cache: 'ShuffledFieldsReaderCache': 0 / 4 [1] to add
 FieldsReader: open 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.field' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.sfield' from 'huge-data/t0/demo.lfs'.
@@ -563,7 +567,7 @@ shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 
 write(sfw,fn,sf,sbs): writing sparse field with fn='sfa.float.sfield' from 'huge-data/t1/demo.lfs'.
 shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 FieldsWriter: close 'huge-data/t1/demo.lfs'.
-ShuffledFieldsReaderCache: to add 2 / 4.
+Cache: 'ShuffledFieldsReaderCache': 1 / 4 [1] to add
 FieldsReader: open 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.field' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.sfield' from 'huge-data/t1/demo.lfs'.
@@ -1004,7 +1008,7 @@ shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 
 write(sfw,fn,sf,sbs): writing sparse field with fn='sfa.float.sfield' from 'huge-data/t2/demo.lfs'.
 shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 FieldsWriter: close 'huge-data/t2/demo.lfs'.
-ShuffledFieldsReaderCache: to add 3 / 4.
+Cache: 'ShuffledFieldsReaderCache': 2 / 4 [1] to add
 FieldsReader: open 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.field' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.sfield' from 'huge-data/t2/demo.lfs'.
@@ -1358,11 +1362,13 @@ FBC09573  fn='huge-data/t2/demo.lfs/27/0000000054'
 A64F7018  fn='huge-data/t2/demo.lfs/31/0000000063'
 9AE9A27B  fn='huge-data/t2/demo.lfs/geon-info.txt'
 1A9F434A  fn='huge-data/t2/fsel.field'
-q_timer_max_func_name_len=50 (default)
+Cache: 'ShuffledFieldsReaderCache': 3 / 4 [1] clear
+FieldsReader: close 'huge-data/t2/demo.lfs'.
+FieldsReader: close 'huge-data/t1/demo.lfs'.
+FieldsReader: close 'huge-data/t0/demo.lfs'.
+Cache: 'ShufflePlanCache': 2 / 16 [8] clear
+clear_mem_cache: 119552 bytes (0.000 GB) freed.
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 0.
 qlat::end(): Finalize MPI.
 qlat::end(): MPI Finalized.
-FieldsReader: close 'huge-data/t2/demo.lfs'.
-FieldsReader: close 'huge-data/t1/demo.lfs'.
-FieldsReader: close 'huge-data/t0/demo.lfs'.

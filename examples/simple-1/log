@@ -8,15 +8,19 @@ qlat::begin(): GeometryNode =
 , id_node     = 0
 , size_node   = 1x2x2x2
 , coor_node   = 0x0x0x0 }
-q_verbose=0 (default)
+q_verbose=10
+q_timer_max_func_name_len=50 (default)
+clear_mem_cache: 0 bytes (0.000 GB) freed.
+q_timer_mini_auto_show=1 (default)
+q_timer_max_always_show=10 (default)
 sizeof(ColorMatrix) = 144
 q_field_init=fast (default)
 set q_field_init=fast.
 q_mem_cache_max_size=512 (default)
 q_mem_cache_acc_max_size=512 (default)
-CommPlanCache: to add 1 / 32.
+Cache: 'CommPlanCache': 0 / 32 [16] to add
 plaq :  9.48400361131393477E-01
-CommPlanCache: to add 2 / 32.
+Cache: 'CommPlanCache': 1 / 32 [16] to add
 spatial plaq :  9.48253412870626700E-01
 trace:  9.86826590890407918E-01
 make_shuffle_plan_generic: num_send_packs =          2
@@ -28,7 +32,7 @@ make_shuffle_plan_generic: total num_recv_packs =         56
 make_shuffle_plan_generic: total num_send_msgs  =         32
 make_shuffle_plan_generic: total num_recv_msgs  =         32
 make_shuffle_plan_generic: global_comm_size =        512
-ShufflePlanCache: to add 1 / 16.
+Cache: 'ShufflePlanCache': 0 / 16 [8] to add
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 384 ; total_size: 0.000 GB)
 qrename: 'results/ckpoint.0.partial.partial' 'results/ckpoint.0.partial'
 q_write_par_limit=16 (default)
@@ -43,6 +47,9 @@ trace:  9.86826590890407918E-01
 INFO: gf_trace_sum =  6.06306257443066625E+03
 INFO: gf_trace_avg =  9.86826590890407918E-01
 INFO: gf_avg_plaq =  9.48400361131393588E-01
+Cache: 'CommPlanCache': 2 / 32 [16] clear
+Cache: 'ShufflePlanCache': 1 / 16 [8] clear
+clear_mem_cache: 583424 bytes (0.001 GB) freed.
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 0.
 qlat::end(): Finalize MPI.

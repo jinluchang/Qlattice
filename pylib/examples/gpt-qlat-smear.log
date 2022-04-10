@@ -47,16 +47,17 @@ qlat::begin(): GeometryNode =
 , id_node     = 0
 , size_node   = 1x1x1x2
 , coor_node   = 0x0x0x0 }
+q_timer_max_func_name_len=50 (default)
+clear_mem_cache: 0 bytes (0.000 GB) freed.
 q_timer_mini_auto_show=1 (default)
 q_timer_max_always_show=10 (default)
-q_timer_max_func_name_len=50 (default)
 qremove: 'results'
 geo.show() = Geometry([4, 4, 4, 8], 1)
 q_field_init=fast (default)
 set q_field_init=fast.
 q_mem_cache_max_size=512 (default)
 q_mem_cache_acc_max_size=512 (default)
-CommPlanCache: to add 1 / 32.
+Cache: 'CommPlanCache': 0 / 32 [16] to add
 gf_show_info: plaq = 0.9735277456680520 ; link_trace = 0.9932265337772574.
                        :   mpi_split   = None
                        :   maxiter_cg  = 200
@@ -69,9 +70,9 @@ gf_show_info: plaq = 0.9735277456680520 ; link_trace = 0.9932265337772574.
                        :   random      = None
                        : Note: convergence is only guaranteed for sufficiently small step parameter.
                        : 
-ShufflePlanCache: to add 1 / 16.
-CommPlanCache: to add 2 / 32.
-CommPlanCache: to add 3 / 32.
+Cache: 'ShufflePlanCache': 0 / 16 [8] to add
+Cache: 'CommPlanCache': 1 / 32 [16] to add
+Cache: 'CommPlanCache': 2 / 32 [16] to add
 mk_gpt_inverter: job_tag=test-4nt8 inv_type=1 inv_acc=0 mpi_split=[1, 1, 1, 1] n_grouped=4
 mk_gpt_inverter: set qm params={'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 8, 'mass': 0.04}
 mk_gpt_inverter: mpi_split=[1, 1, 1, 1] n_grouped=4
@@ -80,7 +81,7 @@ mk_gpt_inverter: eps=1e-08 max_cycle=1
 mk_gpt_inverter: make inv_qm
 smear ; xg=(3, 1, 0, 0) ; type=1 ; accuracy=0
 qnorm(src) = 12.0
-CommPlanCache: to add 4 / 32.
+Cache: 'CommPlanCache': 3 / 32 [16] to add
 qnorm(src) = 0.20071192043188596 after smear
 qnorm(sol) = 0.2888235133524948
 mk_file_dirs_info: 'results/smear ; xg=(3, 1, 0, 0) ; type=1 ; accuracy=0 ; psnk.lat'.
@@ -100,7 +101,7 @@ make_shuffle_plan_generic: total num_recv_packs =         16
 make_shuffle_plan_generic: total num_send_msgs  =          2
 make_shuffle_plan_generic: total num_recv_msgs  =          2
 make_shuffle_plan_generic: global_comm_size =        512
-ShufflePlanCache: to add 2 / 16.
+Cache: 'ShufflePlanCache': 1 / 16 [8] to add
 shuffle_field(fs,f,sp): 1x1x1x2 -> 1x1x2x4 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
 make_shuffle_plan_generic: num_send_packs =          5
 make_shuffle_plan_generic: num_recv_packs =          8

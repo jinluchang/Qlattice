@@ -10,9 +10,10 @@ qlat::begin(): GeometryNode =
 , id_node     = 0
 , size_node   = 1x1x1x2
 , coor_node   = 0x0x0x0 }
+q_timer_max_func_name_len=50 (default)
+clear_mem_cache: 0 bytes (0.000 GB) freed.
 q_timer_mini_auto_show=1 (default)
 q_timer_max_always_show=10 (default)
-q_timer_max_func_name_len=50 (default)
 qremove: 'results'
 geo.show() = Geometry([4, 4, 4, 8], 1)
 mk_file_dirs_info: 'results/psel.txt'.
@@ -22,7 +23,7 @@ q_field_init=fast (default)
 set q_field_init=fast.
 q_mem_cache_max_size=512 (default)
 q_mem_cache_acc_max_size=512 (default)
-ShufflePlanCache: to add 1 / 16.
+Cache: 'ShufflePlanCache': 0 / 16 [8] to add
 fsel info = Geometry([4, 4, 4, 8], 1) 16 0.25
 mk_file_dirs_info: 'results/fsel.field'.
 write_field: fn='results/fsel.field'.
@@ -38,6 +39,8 @@ qrename: 'results/fsel-1.field.partial' 'results/fsel-1.field'
 fsel info = Geometry([4, 4, 4, 8], 1) 16 0.25
 fsel info = Geometry([4, 4, 4, 8], 1) 16 0.25
 ['psel.txt', 'fsel.field', 'fsel-1.field']
+Cache: 'ShufflePlanCache': 1 / 16 [8] clear
+clear_mem_cache: 16128 bytes (0.000 GB) freed.
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 0.
 qlat::end(): Finalize MPI.
