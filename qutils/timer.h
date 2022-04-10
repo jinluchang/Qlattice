@@ -226,10 +226,28 @@ inline long get_env_long_default(const std::string& var_name, const long x0)
   return x;
 }
 
+inline long get_verbose_level()
+{
+  const long x0 = 0;
+  const std::string var_name = "q_verbose";
+  const std::string val = get_env(var_name);
+  long x;
+  if (val == "") {
+    x = x0;
+    displayln_info(ssprintf("%s=%ld", var_name.c_str(), x));
+  } else {
+    x = read_long(val);
+    if (x >= 0) {
+      displayln_info(ssprintf("%s=%ld", var_name.c_str(), x));
+    }
+  }
+  return x;
+}
+
 inline long& verbose_level()
 // qlat parameter
 {
-  static long level = get_env_long_default("q_verbose", 0);
+  static long level = get_verbose_level();
   return level;
 }
 

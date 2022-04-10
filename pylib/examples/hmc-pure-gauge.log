@@ -1,6 +1,7 @@
 qlat::begin(): MPI Initialized. num_node = 2
 qlat::begin_comm(comm,size_node): get_comm_list().push_back()
 qlat::begin_comm(comm,size_node): get_comm_list().size() = 1.
+q_verbose=1
 q_num_threads=2 (default)
 qlat::begin(): q_num_threads = 2
 qlat::begin(): GeometryNode =
@@ -9,7 +10,6 @@ qlat::begin(): GeometryNode =
 , id_node     = 0
 , size_node   = 1x1x1x2
 , coor_node   = 0x0x0x0 }
-q_verbose=1
 q_timer_mini_auto_show=1 (default)
 q_timer_max_always_show=10 (default)
 q_timer_max_func_name_len=50 (default)
