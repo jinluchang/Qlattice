@@ -675,6 +675,13 @@ inline std::vector<std::string> list(QarFile& qar)
   return qar.fn_list;
 }
 
+inline std::vector<std::string> list_qar(const std::string& path)
+{
+  TIMER_VERBOSE("list_qar");
+  QarFile qar(path, "r");
+  return list(qar);
+}
+
 inline int truncate_qar_file(const std::string& path,
                              const std::vector<std::string>& fns_keep)
 // interface function

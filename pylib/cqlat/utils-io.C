@@ -405,6 +405,16 @@ EXPORT(qar_extract_info, {
   return py_convert(ret);
 });
 
+EXPORT(list_qar, {
+  using namespace qlat;
+  PyObject* p_path_qar = NULL;
+  if (!PyArg_ParseTuple(args, "O", &p_path_qar)) {
+    return NULL;
+  }
+  const std::string path_qar = py_convert_data<std::string>(p_path_qar);
+  return py_convert(list_qar(path_qar));
+});
+
 EXPORT(qload_datatable, {
   using namespace qlat;
   PyObject* p_path = NULL;

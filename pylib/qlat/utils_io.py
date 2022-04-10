@@ -128,3 +128,7 @@ def qar_extract(path_qar, path_folder, is_remove_folder_after = False):
 @timer
 def qar_extract_info(path_qar, path_folder, is_remove_qar_after = False):
     return c.qar_extract_info(path_qar, path_folder, is_remove_qar_after)
+
+@timer
+def list_qar(path_qar):
+    return c.list_qar(path_qar)
