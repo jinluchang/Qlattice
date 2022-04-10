@@ -281,6 +281,9 @@ mk_gpt_inverter: deal with is_madwf=False
 mk_gpt_inverter: eps=1e-08 max_cycle=200
 mk_gpt_inverter: make inv_qm
 sol diff norm 1.8627073662059613e-13 inv_acc=2 without eig
+Cache: 'ShufflePlanCache': 1 / 16 [8] clear
+Cache: 'CommPlanCache': 2 / 32 [16] clear
+clear_mem_cache: 2221056 bytes (0.002 GB) freed.
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 1.
 qlat::end(): Switch to old comm (foreign).

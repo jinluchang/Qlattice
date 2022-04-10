@@ -85,6 +85,9 @@ q.contract_pion_field(sol1) #       tsep                 RE-VALUE               
            6  2.92115333475072028E+01  0.00000000000000000E+00
            7  2.75455845362092795E+01  0.00000000000000000E+00
 
+Cache: 'ShufflePlanCache': 1 / 16 [8] clear
+Cache: 'CommPlanCache': 1 / 32 [16] clear
+clear_mem_cache: 1063168 bytes (0.001 GB) freed.
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 1.
 qlat::end(): Switch to old comm (foreign).

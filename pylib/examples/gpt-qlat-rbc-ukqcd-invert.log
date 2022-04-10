@@ -70,6 +70,9 @@ prop src 0 qnorm = 786613.9719512658 crc32 = 1313177195
 prop src 1 qnorm = 786828.5160106713 crc32 = 1984585503
 prop sol 0 qnorm = 53021.74800753512 crc32 = 3978281835
 prop sol 1 qnorm = 53340.600523485235 crc32 = 834584212
+Cache: 'ShufflePlanCache': 1 / 16 [8] clear
+Cache: 'CommPlanCache': 1 / 32 [16] clear
+clear_mem_cache: 15321856 bytes (0.014 GB) freed.
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 1.
 qlat::end(): Switch to old comm (foreign).

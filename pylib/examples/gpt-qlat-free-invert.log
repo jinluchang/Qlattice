@@ -157,6 +157,17 @@ make_shuffle_plan_fft: total num_recv_msgs  =          4
 make_shuffle_plan_fft: global_comm_size =        512
 9.736817294647487 9.736817294647567 5.21799724578331e-21
 38988.29486921299 38988.29486921171 2.1821150638438617e-17
+Cache: 'CommPlanCache': 1 / 32 [16] clear
+Cache: 'FftComplexFieldPlanCache': 8 / 32 [16] clear
+FftComplexFieldPlan::end(): free a plan.
+FftComplexFieldPlan::end(): free a plan.
+FftComplexFieldPlan::end(): free a plan.
+FftComplexFieldPlan::end(): free a plan.
+FftComplexFieldPlan::end(): free a plan.
+FftComplexFieldPlan::end(): free a plan.
+FftComplexFieldPlan::end(): free a plan.
+FftComplexFieldPlan::end(): free a plan.
+clear_mem_cache: 3999232 bytes (0.004 GB) freed.
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 1.
 qlat::end(): Switch to old comm (foreign).
@@ -164,11 +175,3 @@ qlat::end(): MPI_Comm_free ended comm.
 =============================================
                Finalized GPT                 
 =============================================
-FftComplexFieldPlan::end(): free a plan.
-FftComplexFieldPlan::end(): free a plan.
-FftComplexFieldPlan::end(): free a plan.
-FftComplexFieldPlan::end(): free a plan.
-FftComplexFieldPlan::end(): free a plan.
-FftComplexFieldPlan::end(): free a plan.
-FftComplexFieldPlan::end(): free a plan.
-FftComplexFieldPlan::end(): free a plan.
