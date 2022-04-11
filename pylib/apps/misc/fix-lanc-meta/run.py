@@ -117,10 +117,32 @@ def run_eig_fix_reshape(job_tag, traj, get_gf, inv_type = 0, inv_acc = 0, *, mpi
     q.qrename_info(get_save_path(path + ".partial"), get_save_path(path))
     test_eig(gf, eig, job_tag, inv_type)
 
+def guess_eig_mpi(job_tag, traj):
+    if job_tag != "32Dfine":
+        return rup.dict_params[job_tag]["lanc-mpi-original"]
+    assert job_tag == "32Dfine"
+    path_eig = get_load_path(f"eig/{job_tag}/traj={traj}")
+    if path_eig is None:
+        return rup.dict_params[job_tag]["lanc-mpi-original"]
+    if q.does_file_exist_sync_node(os.path.join(path_eig, "31/0000000511.compressed")):
+        num_node = 512
+        return [ 4, 4, 4, 8, ]
+    elif q.does_file_exist_sync_node(os.path.join(path_eig, "31/0000000255.compressed")):
+        num_node = 256
+        return [ 4, 4, 4, 4, ]
+    elif q.does_file_exist_sync_node(os.path.join(path_eig, "31/0000000127.compressed")):
+        num_node = 128
+        return [ 2, 4, 4, 4, ]
+    elif q.does_file_exist_sync_node(os.path.join(path_eig, "31/0000000063.compressed")):
+        num_node = 64
+        return [ 2, 2, 4, 4, ]
+    else:
+        assert False
+
 def run_eig_fix(job_tag, traj, get_gf, inv_type = 0, inv_acc = 0):
     if q.obtain_lock(f"locks/{job_tag}-{traj}-run-eig-fix"):
         # run_eig_fix_meta(job_tag, traj, get_gf, inv_type, inv_acc)
-        run_eig_fix_reshape(job_tag, traj, get_gf, inv_type, inv_acc, mpi_original = rup.dict_params[job_tag]["lanc-mpi-original"])
+        run_eig_fix_reshape(job_tag, traj, get_gf, inv_type, inv_acc, mpi_original = guess_eig_mpi(job_tag, traj))
         q.release_lock()
 
 @q.timer_verbose
@@ -145,11 +167,11 @@ def run_job(job_tag, traj):
 
 rup.dict_params["test-4nt8"]["trajs"] = list(range(1000, 1400, 100))
 rup.dict_params["test-4nt16"]["trajs"] = list(range(1000, 1400, 100))
-rup.dict_params["32Dfine"]["trajs"] = list(range(500, 5000, 10))
+rup.dict_params["32Dfine"]["trajs"] = list(range(200, 5000, 10))
 
 rup.dict_params["test-4nt8"]["lanc-mpi-original"] = [ 1, 1, 1, 4, ]
 rup.dict_params["test-4nt16"]["lanc-mpi-original"] = [ 1, 1, 1, 4, ]
-rup.dict_params["32Dfine"]["lanc-mpi-original"] = [ 1, 1, 1, 8, ]
+rup.dict_params["32Dfine"]["lanc-mpi-original"] = [ 2, 4, 4, 4, ]
 
 # rup.dict_params["32Dfine"]["clanc_params"][0][0]["smoother_params"]["maxiter"] = 10
 
