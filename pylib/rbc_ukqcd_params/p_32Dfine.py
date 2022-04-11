@@ -24,8 +24,8 @@ def mk_fermion_params(inv_type, inv_acc):
         params["mass"] = 0.045
     else:
         assert False
-    params["b"] = 1.0 + 32/12/2
-    params["c"] = 0.0 + 32/12/2
+    params["b"] = 0.5 + 32/12/2
+    params["c"] = -0.5 + 32/12/2
     params["Ls"] = 12
     return params
 
