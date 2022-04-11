@@ -97,9 +97,10 @@ def run_eig_fix_meta(job_tag, traj, get_gf, inv_type = 0, inv_acc = 0, *, mpi_or
     for i in range(len(crc32)):
         crc32[i] = q.glb_sum(crc32[i])
     smoothed_evals = ru.get_smoothed_evals(basis, cevec, gf, job_tag, inv_type, inv_acc)
-    q.displayln_info(smoothed_evals)
+    q.displayln_info("smoothed_evals=", smoothed_evals)
     eig = basis, cevec, smoothed_evals
     save_ceig(path_eig, eig, job_tag, inv_type, inv_acc, crc32 = crc32)
+    test_eig(gf, eig, job_tag, inv_type)
 
 @q.timer_verbose
 def run_eig_fix_reshape(job_tag, traj, get_gf, inv_type = 0, inv_acc = 0, *, mpi_original = None):
@@ -111,7 +112,7 @@ def run_eig_fix_reshape(job_tag, traj, get_gf, inv_type = 0, inv_acc = 0, *, mpi
     save_metadata(path_eig, rup.dict_params[job_tag], inv_type, inv_acc, mpi = mpi_original)
     basis, cevec, crc32 = load_eig(path_eig, job_tag, inv_type, inv_acc)
     smoothed_evals = ru.get_smoothed_evals(basis, cevec, gf, job_tag, inv_type, inv_acc)
-    q.displayln_info(smoothed_evals)
+    q.displayln_info("smoothed_evals=", smoothed_evals)
     eig = basis, cevec, smoothed_evals
     ru.save_ceig(get_save_path(path + ".partial"), eig, job_tag, inv_type, inv_acc);
     q.qrename_info(get_save_path(path + ".partial"), get_save_path(path))
@@ -119,25 +120,28 @@ def run_eig_fix_reshape(job_tag, traj, get_gf, inv_type = 0, inv_acc = 0, *, mpi
 
 def guess_eig_mpi(job_tag, traj):
     if job_tag != "32Dfine":
-        return rup.dict_params[job_tag]["lanc-mpi-original"]
-    assert job_tag == "32Dfine"
-    path_eig = get_load_path(f"eig/{job_tag}/traj={traj}")
-    if path_eig is None:
-        return rup.dict_params[job_tag]["lanc-mpi-original"]
-    if q.does_file_exist_sync_node(os.path.join(path_eig, "31/0000000511.compressed")):
-        num_node = 512
-        return [ 4, 4, 4, 8, ]
-    elif q.does_file_exist_sync_node(os.path.join(path_eig, "31/0000000255.compressed")):
-        num_node = 256
-        return [ 4, 4, 4, 4, ]
-    elif q.does_file_exist_sync_node(os.path.join(path_eig, "31/0000000127.compressed")):
-        num_node = 128
-        return [ 2, 4, 4, 4, ]
-    elif q.does_file_exist_sync_node(os.path.join(path_eig, "31/0000000063.compressed")):
-        num_node = 64
-        return [ 2, 2, 4, 4, ]
+        mpi = rup.dict_params[job_tag]["lanc-mpi-original"]
     else:
-        assert False
+        assert job_tag == "32Dfine"
+        path_eig = get_load_path(f"eig/{job_tag}/traj={traj}")
+        if path_eig is None:
+            mpi = rup.dict_params[job_tag]["lanc-mpi-original"]
+        elif q.does_file_exist_sync_node(os.path.join(path_eig, "31/0000000511.compressed")):
+            num_node = 512
+            mpi = [ 4, 4, 4, 8, ]
+        elif q.does_file_exist_sync_node(os.path.join(path_eig, "31/0000000255.compressed")):
+            num_node = 256
+            mpi = [ 4, 4, 4, 4, ]
+        elif q.does_file_exist_sync_node(os.path.join(path_eig, "31/0000000127.compressed")):
+            num_node = 128
+            mpi = [ 2, 4, 4, 4, ]
+        elif q.does_file_exist_sync_node(os.path.join(path_eig, "31/0000000063.compressed")):
+            num_node = 64
+            mpi = [ 2, 2, 4, 4, ]
+        else:
+            assert False
+    q.displayln_info(f"guess_eig_mpi: {job_tag} {traj} mpi={mpi}")
+    return mpi
 
 def run_eig_fix(job_tag, traj, get_gf, inv_type = 0, inv_acc = 0):
     if q.obtain_lock(f"locks/{job_tag}-{traj}-run-eig-fix"):
