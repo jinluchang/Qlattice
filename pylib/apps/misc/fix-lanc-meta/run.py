@@ -21,7 +21,7 @@ load_path_list[:] = [
         os.path.join(os.getenv("HOME"), "qcddata"),
         os.path.join(os.getenv("HOME"), "Qlat-sample-data/mk-gf-gt/results"),
         os.path.join(os.getenv("HOME"), "Qlat-sample-data/mk-lanc-no-meta/results"),
-        "/sdcc/u/jluchang/qcdqedta/luchang/data-gen/lanc/32Dfine/results-no-meta",
+        "/sdcc/u/jluchang/qcdqedta/luchang/data-gen/lanc/32Dfine-metadata/results-no-meta/",
         ]
 
 def prod(l):
@@ -87,12 +87,12 @@ def save_metadata(path, params, inv_type, inv_acc, *, mpi = None):
         fmeta.close()
 
 @q.timer_verbose
-def run_eig_fix_meta(job_tag, traj, get_gf, inv_type = 0, inv_acc = 0):
+def run_eig_fix_meta(job_tag, traj, get_gf, inv_type = 0, inv_acc = 0, *, mpi_original = None):
     assert get_gf is not None
     gf = get_gf()
     path_eig = get_load_path(f"eig/{job_tag}/traj={traj}")
     assert path_eig is not None
-    save_metadata(path_eig, rup.dict_params[job_tag], inv_type, inv_acc, mpi = None)
+    save_metadata(path_eig, rup.dict_params[job_tag], inv_type, inv_acc, mpi = mpi_original)
     basis, cevec, crc32 = load_eig(path_eig, job_tag, inv_type, inv_acc)
     for i in range(len(crc32)):
         crc32[i] = q.glb_sum(crc32[i])
@@ -141,8 +141,8 @@ def guess_eig_mpi(job_tag, traj):
 
 def run_eig_fix(job_tag, traj, get_gf, inv_type = 0, inv_acc = 0):
     if q.obtain_lock(f"locks/{job_tag}-{traj}-run-eig-fix"):
-        # run_eig_fix_meta(job_tag, traj, get_gf, inv_type, inv_acc)
-        run_eig_fix_reshape(job_tag, traj, get_gf, inv_type, inv_acc, mpi_original = guess_eig_mpi(job_tag, traj))
+        run_eig_fix_meta(job_tag, traj, get_gf, inv_type, inv_acc, mpi_original = guess_eig_mpi(job_tag, traj))
+        # run_eig_fix_reshape(job_tag, traj, get_gf, inv_type, inv_acc, mpi_original = guess_eig_mpi(job_tag, traj))
         q.release_lock()
 
 @q.timer_verbose
