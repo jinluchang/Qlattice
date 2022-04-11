@@ -134,10 +134,10 @@ def guess_eig_mpi(job_tag, traj):
             mpi = [ 4, 4, 4, 4, ]
         elif q.does_file_exist_sync_node(os.path.join(path_eig, "31/0000000127.compressed")):
             num_node = 128
-            mpi = [ 2, 4, 4, 4, ]
+            mpi = [ 4, 4, 4, 2, ]
         elif q.does_file_exist_sync_node(os.path.join(path_eig, "31/0000000063.compressed")):
             num_node = 64
-            mpi = [ 2, 2, 4, 4, ]
+            mpi = [ 2, 2, 2, 8, ]
         else:
             assert False
     q.displayln_info(f"guess_eig_mpi: {job_tag} {traj} mpi={mpi}")
