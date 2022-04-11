@@ -1,6 +1,7 @@
 #pragma once
 
 #include <qlat/config.h>
+#include <qlat/field-fft.h>
 
 namespace qlat
 {  //
@@ -186,10 +187,10 @@ struct ScalarAction {
     hmc_set_force_no_comm(sm_force, sf_ext);
   }
   
-  inline void hmc_sf_evolve(Field<double>& sf, const Field<double>& sm,
+  inline void hmc_field_evolve(Field<double>& sf, const Field<double>& sm,
                             const double step_size)
   {
-    TIMER("hmc_sf_evolve");
+    TIMER("hmc_field_evolve");
     const Geometry& geo = sf.geo();
     qacc_for(index, geo.local_volume(), {
       const Coordinate xl = geo.coordinate_from_index(index);

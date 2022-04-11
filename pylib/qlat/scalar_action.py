@@ -29,6 +29,10 @@ class ScalarAction:
         assert isinstance(sm, Field)
         return c.action_node_scalar_action(self, sm)
     
+    def sum_sq(self, sf):
+        assert isinstance(sf, Field)
+        return c.sum_sq_scalar_action(self, sf)
+    
     def hmc_m_hamilton_node(self, sf):
         assert isinstance(sf, Field)
         return c.hmc_m_hamilton_node_scalar_action(self, sf)
@@ -38,10 +42,10 @@ class ScalarAction:
         assert isinstance(sf, Field)
         return c.hmc_set_force_scalar_action(self, sm_force, sf)
     
-    def hmc_sf_evolve(self, sf, sm, step_size):
+    def hmc_field_evolve(self, sf, sm, step_size):
         assert isinstance(sf, Field)
         assert isinstance(sm, Field)
-        return c.hmc_sf_evolve_scalar_action(self, sf, sm, step_size)
+        return c.hmc_field_evolve_scalar_action(self, sf, sm, step_size)
     
     def axial_current_node(self, axial_current, sf):
         assert isinstance(sf, Field)

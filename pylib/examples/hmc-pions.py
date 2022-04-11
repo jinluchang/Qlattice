@@ -10,10 +10,10 @@ import qlat as q
 
 def phi_squared(field,action):
     # Calculate the average value of phi^2
-    phi_sq = action.hmc_m_hamilton_node(field) # Returns sum of field^2/2
+    phi_sq = action.sum_sq(field) # Returns sum of field^2/2
     phi_sq = q.glb_sum(phi_sq) # Sums over all nodes
     geo = field.geo()
-    return phi_sq*2/geo.total_volume()/geo.multiplicity()
+    return phi_sq/geo.total_volume()/geo.multiplicity()
 
 @q.timer_verbose
 def sm_evolve_fg(momentum, field_init, action, fg_dt, dt):
@@ -27,18 +27,17 @@ def sm_evolve_fg(momentum, field_init, action, fg_dt, dt):
     #
     action.hmc_set_force(force, field)
     #
-    action.hmc_sf_evolve(field, force, fg_dt)
+    action.hmc_field_evolve(field, force, fg_dt)
     #
     action.hmc_set_force(force, field)
     #
     # q.display_gm_force_magnitudes(gm_force, 5)
     # q.displayln_info(q.get_gm_force_magnitudes(gm_force, 5))
     #
-    force *= dt
-    momentum -= force
+    action.hmc_field_evolve(momentum, force, -dt)
 
 @q.timer_verbose
-def sm_evolve(momentum, field, action, dt):
+def sm_evolve_leapfrog(momentum, field, action, dt):
     # Evolve the momentum field according to the given action using the  
     # leapfrog algorithm
     geo = field.geo()
@@ -50,8 +49,7 @@ def sm_evolve(momentum, field, action, dt):
     # q.display_gm_force_magnitudes(gm_force, 5)
     # q.displayln_info(q.get_gm_force_magnitudes(gm_force, 5))
     #
-    force *= dt
-    momentum -= force
+    action.hmc_field_evolve(momentum, force, -dt)
 
 @q.timer_verbose
 def hmc_evolve(momentum, field, action, steps, dt):
@@ -61,16 +59,16 @@ def hmc_evolve(momentum, field, action, steps, dt):
     theta = (2.0 - m.sqrt(3.0)) / 48.0;
     ttheta = theta * dt * dt * dt;
     #
-    action.hmc_sf_evolve(field, momentum, lam * dt)
+    action.hmc_field_evolve(field, momentum, lam * dt)
     #
     for i in range(steps):
         sm_evolve_fg(momentum, field, action, 4.0 * ttheta / dt, 0.5 * dt);
-        action.hmc_sf_evolve(field, momentum, (1.0 - 2.0 * lam) * dt);
+        action.hmc_field_evolve(field, momentum, (1.0 - 2.0 * lam) * dt);
         sm_evolve_fg(momentum, field, action, 4.0 * ttheta / dt, 0.5 * dt);
         if i < steps - 1:
-            action.hmc_sf_evolve(field, momentum, 2.0 * lam * dt);
+            action.hmc_field_evolve(field, momentum, 2.0 * lam * dt);
         else:
-            action.hmc_sf_evolve(field, momentum, lam * dt);
+            action.hmc_field_evolve(field, momentum, lam * dt);
     return momentum
 
 @q.timer_verbose
@@ -78,9 +76,9 @@ def hmc_evolve_leapfrog(momentum, field, action, steps, dt):
     # Evolve the field according to the given action using the leapfrog 
     # algorithm
     for i in range(steps):
-        sm_evolve(momentum, field, action, 0.5 * dt)
-        action.hmc_sf_evolve(field, momentum, dt)
-        sm_evolve(momentum, field, action, 0.5 * dt)
+        sm_evolve_leapfrog(momentum, field, action, 0.5 * dt)
+        action.hmc_field_evolve(field, momentum, dt)
+        sm_evolve_leapfrog(momentum, field, action, 0.5 * dt)
     return momentum
 
 @q.timer_verbose
