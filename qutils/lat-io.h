@@ -6,6 +6,7 @@
 #include <qutils/qutils.h>
 #include <qutils/show.h>
 #include <qutils/qar.h>
+#include <qutils/qar-cache.h>
 #include <stdint.h>
 #include <zlib.h>
 

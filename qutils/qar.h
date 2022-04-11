@@ -629,6 +629,8 @@ inline void read_through(QarFile& qar)
 {
   qassert(qar.qfile.mode == "r");
   std::string fn;
+  const int code = qfseek(qar.qfile, qar.max_offset, SEEK_SET);
+  qassert(code == 0);
   QFile qfile;
   while (true) {
     const bool b = read_next(qar, fn, qfile);
@@ -641,6 +643,7 @@ inline void read_through(QarFile& qar)
 inline bool read(QarFile& qar, const std::string& fn, QFile& qfile_in)
 // interface function
 {
+  qfile_in.init();
   qassert(qar.qfile.mode == "r");
   qassert(fn != "");
   if (has(qar.qsinfo_map, fn)) {
@@ -648,6 +651,11 @@ inline bool read(QarFile& qar, const std::string& fn, QFile& qfile_in)
     get_qfile_of_data(qar, qfile_in, qsinfo);
     return true;
   }
+  if (qar.is_read_through) {
+    return false;
+  }
+  const int code = qfseek(qar.qfile, qar.max_offset, SEEK_SET);
+  qassert(code == 0);
   std::string fn_read;
   while (true) {
     const bool b = read_next(qar, fn_read, qfile_in);
@@ -658,6 +666,13 @@ inline bool read(QarFile& qar, const std::string& fn, QFile& qfile_in)
       return true;
     }
   }
+}
+
+inline bool has(QarFile& qar, const std::string& fn)
+// interface function
+{
+  QFile qfile;
+  return read(qar, fn, qfile);
 }
 
 inline std::vector<std::string> list(QarFile& qar)
