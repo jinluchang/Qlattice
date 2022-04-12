@@ -80,6 +80,21 @@ EXPORT(set_complex_from_double_scalar_action, {
   Py_RETURN_NONE;
 });
 
+EXPORT(set_double_from_complex_scalar_action, {
+  using namespace qlat;
+  PyObject* p_sa = NULL;
+  PyObject* p_cf = NULL;
+  PyObject* p_sf = NULL;
+  if (!PyArg_ParseTuple(args, "OOO", &p_sa, &p_sf, &p_cf)) {
+    return NULL;
+  }
+  ScalarAction& sa = py_convert_type<ScalarAction>(p_sa);
+  const Field<Complex>& cf = py_convert_type<Field<Complex>>(p_cf);
+  Field<double>& sf = py_convert_type<Field<double>>(p_sf);
+  sa.set_double_from_complex(sf, cf);
+  Py_RETURN_NONE;
+});
+
 EXPORT(sum_sq_scalar_action, {
   using namespace qlat;
   PyObject* p_sa = NULL;
@@ -131,8 +146,8 @@ EXPORT(hmc_field_evolve_scalar_action, {
     return NULL;
   }
   ScalarAction& sa = py_convert_type<ScalarAction>(p_sa);
-  Field<double>& sf = py_convert_type<Field<double>>(p_sf);
-  const Field<double>& sm = py_convert_type<Field<double>>(p_sm);
+  Field<Complex>& sf = py_convert_type<Field<Complex>>(p_sf);
+  const Field<Complex>& sm = py_convert_type<Field<Complex>>(p_sm);
   sa.hmc_field_evolve(sf, sm, step_size);
   Py_RETURN_NONE;
 });

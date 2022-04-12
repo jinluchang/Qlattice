@@ -27,14 +27,17 @@ def sm_evolve_fg(momentum, field_init, action, fg_dt, dt):
     #
     action.hmc_set_force(force, field)
     #
-    action.hmc_field_evolve(field, force, fg_dt)
+    force*=fg_dt
+    field+=force
+    force*=1/fg_dt
     #
     action.hmc_set_force(force, field)
     #
     # q.display_gm_force_magnitudes(gm_force, 5)
     # q.displayln_info(q.get_gm_force_magnitudes(gm_force, 5))
     #
-    action.hmc_field_evolve(momentum, force, -dt)
+    force*=-dt
+    momentum+=force
 
 @q.timer_verbose
 def sm_evolve_leapfrog(momentum, field, action, dt):
@@ -49,26 +52,27 @@ def sm_evolve_leapfrog(momentum, field, action, dt):
     # q.display_gm_force_magnitudes(gm_force, 5)
     # q.displayln_info(q.get_gm_force_magnitudes(gm_force, 5))
     #
-    action.hmc_field_evolve(momentum, force, -dt)
+    force*=-dt
+    momentum+=force
 
 @q.timer_verbose
-def hmc_evolve(momentum, field, action, steps, dt):
+def hmc_evolve(momentum, field, sf_complex, sm_complex, action, steps, dt):
     # Evolve the field according to the given action using the force 
     # gradient algorithm
     lam = 0.5 * (1.0 - 1.0 / m.sqrt(3.0));
     theta = (2.0 - m.sqrt(3.0)) / 48.0;
     ttheta = theta * dt * dt * dt;
     #
-    action.hmc_field_evolve(field, momentum, lam * dt)
+    action.hmc_field_evolve(field, momentum, sf_complex, sm_complex, lam * dt)
     #
     for i in range(steps):
         sm_evolve_fg(momentum, field, action, 4.0 * ttheta / dt, 0.5 * dt);
-        action.hmc_field_evolve(field, momentum, (1.0 - 2.0 * lam) * dt);
+        action.hmc_field_evolve(field, momentum, sf_complex, sm_complex, (1.0 - 2.0 * lam) * dt);
         sm_evolve_fg(momentum, field, action, 4.0 * ttheta / dt, 0.5 * dt);
         if i < steps - 1:
-            action.hmc_field_evolve(field, momentum, 2.0 * lam * dt);
+            action.hmc_field_evolve(field, momentum, sf_complex, sm_complex, 2.0 * lam * dt);
         else:
-            action.hmc_field_evolve(field, momentum, lam * dt);
+            action.hmc_field_evolve(field, momentum, sf_complex, sm_complex, lam * dt);
     return momentum
 
 @q.timer_verbose
@@ -82,7 +86,7 @@ def hmc_evolve_leapfrog(momentum, field, action, steps, dt):
     return momentum
 
 @q.timer_verbose
-def run_hmc_evolve(momentum, field, action, rs, steps, md_time = 1.0):
+def run_hmc_evolve(momentum, field, sf_complex, sm_complex, action, rs, steps, md_time = 1.0):
     # Calculate the value of the molecular dynamics Hamiltonian for the 
     # initial field and momentum configuration
     energy = action.hmc_m_hamilton_node(momentum) + action.action_node(field)
@@ -90,7 +94,7 @@ def run_hmc_evolve(momentum, field, action, rs, steps, md_time = 1.0):
     # Evolve the field forward in molecular dynamics time using the 
     # given momenta and the Hamiltonian appropriate for the action
     dt = float(md_time) / float(steps)
-    momentum = hmc_evolve(momentum, field, action, steps, dt)
+    momentum = hmc_evolve(momentum, field, sf_complex, sm_complex, action, steps, dt)
     
     # Calculate the change in the value of the molecular dynamics 
     # Hamilton after the evolution 
@@ -140,6 +144,9 @@ def run_hmc(field, geo, action, traj, rs):
     momentum = q.Field("double",geo)
     momentum.set_rand_g(rs.split("set_rand_momentum"), 0.0, 1.0)
     
+    sf_complex = q.Field("Complex",geo,mult)
+    sm_complex = q.Field("Complex",geo,mult)
+    
     # The number of steps to take in a single trajectory
     steps = 100
     # The length of a single trajectory in molecular dynamics time
@@ -147,7 +154,7 @@ def run_hmc(field, geo, action, traj, rs):
     
     # Evolve the field over time md_time using the given momenta and 
     # the Hamiltonian appropriate for the given action
-    delta_h = run_hmc_evolve(momentum, f0, action, rs, steps, md_time)
+    delta_h = run_hmc_evolve(momentum, f0, sf_complex, sm_complex, action, rs, steps, md_time)
     
     # Decide whether to accept or reject the field update using the 
     # metropolis algorithm

@@ -1,6 +1,7 @@
 import cqlat as c
 
 from qlat.field import *
+from qlat.field_utils import *
 
 class ScalarAction:
 
@@ -34,6 +35,11 @@ class ScalarAction:
         assert isinstance(sf, Field)
         return c.set_complex_from_double_scalar_action(self, cf, sf)
     
+    def set_double_from_complex(self, sf, cf):
+        assert isinstance(cf, Field)
+        assert isinstance(sf, Field)
+        return c.set_double_from_complex_scalar_action(self, sf, cf)
+    
     def sum_sq(self, sf):
         assert isinstance(sf, Field)
         return c.sum_sq_scalar_action(self, sf)
@@ -47,10 +53,21 @@ class ScalarAction:
         assert isinstance(sf, Field)
         return c.hmc_set_force_scalar_action(self, sm_force, sf)
     
-    def hmc_field_evolve(self, sf, sm, step_size):
+    def hmc_field_evolve(self, sf, sm, sf_complex, sm_complex, step_size, V):
         assert isinstance(sf, Field)
         assert isinstance(sm, Field)
-        return c.hmc_field_evolve_scalar_action(self, sf, sm, step_size)
+        self.set_complex_from_double(sf_complex, sf)
+        self.set_complex_from_double(sm_complex, sm)
+        fft = mk_fft(True)
+        sf_complex=fft*sf_complex
+        sf_complex*=1/V**0.5
+        sm_complex=fft*sm_complex
+        sm_complex*=1/V**0.5
+        c.hmc_field_evolve_scalar_action(self, sf_complex, sm_complex, step_size)
+        ifft = mk_fft(False)
+        sf_complex=ifft*sf_complex
+        sf_complex*=1/V**0.5
+        self.set_double_from_complex(sf, sf_complex)
     
     def axial_current_node(self, axial_current, sf):
         assert isinstance(sf, Field)

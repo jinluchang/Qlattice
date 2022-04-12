@@ -118,6 +118,22 @@ struct ScalarAction {
       }
     });
   }
+  
+  inline void set_double_from_complex(Field<double>& sf, const Field<Complex>& cf)
+  {
+    TIMER("ScalarAction.set_complex_from_double");
+    const Geometry geo = cf.geo();
+    sf.init(geo);
+    qacc_for(index, geo.local_volume(), {
+      Coordinate xl = geo.coordinate_from_index(index);
+      Vector<double> sf_v = sf.get_elems(xl);
+      int M = sf_v.size();
+      qassert(M == geo.multiplicity);
+      for (int m = 0; m < M; ++m) {
+        sf_v[m] = cf.get_elem(xl,m).real();
+      }
+    });
+  }
 
   inline double sum_sq(const Field<double>& sf)
   {
@@ -150,6 +166,17 @@ struct ScalarAction {
     }
     return sum;
   }
+  
+  qacc double hmc_mass_p(const Coordinate& L, const Coordinate& pg)
+  {
+    // Returns the momentum-dependent mass factor for HMC Fourier 
+    // acceleration
+    TIMER("ScalarAction.hmc_mass_p");
+    return 4/(PI*PI)*(m_sq + 8 - 2*(std::cos(2*PI*pg[0]/L[0]) +
+									std::cos(2*PI*pg[1]/L[1]) + 
+									std::cos(2*PI*pg[2]/L[2]) + 
+									std::cos(2*PI*pg[3]/L[3])));
+  }
 
   inline double hmc_m_hamilton_node(const Field<double>& sm)
   {
@@ -172,12 +199,13 @@ struct ScalarAction {
     FieldM<double, 1> fd;
     fd.init(geo_r);
     long V = geo.total_volume();
+    const Coordinate L = geo.total_site();
     qacc_for(index, geo_r.local_volume(), {
       Coordinate xl = geo_r.coordinate_from_index(index);
       double s=0;
       for (int m = 0; m < geo.multiplicity; ++m) {
         Complex c = sm_complex.get_elem(xl,m);
-        s += (c.real()*c.real()+c.imag()*c.imag())/V/2;
+        s += (c.real()*c.real()+c.imag()*c.imag())/V/2/hmc_mass_p(L,geo.coordinate_g_from_l(xl));
       }
       fd.get_elem(index) = s;
     });
@@ -235,20 +263,34 @@ struct ScalarAction {
     hmc_set_force_no_comm(sm_force, sf_ext);
   }
   
-  inline void hmc_field_evolve(Field<double>& sf, const Field<double>& sm,
+  inline void hmc_field_evolve(Field<Complex>& sf_complex, const Field<Complex>& sm_complex,
                             const double step_size)
   {
     TIMER("hmc_field_evolve");
-    const Geometry& geo = sf.geo();
+    //Field<Complex> sf_complex;
+    //Field<Complex> sm_complex;
+    //set_complex_from_double(sf_complex, sf);
+    //set_complex_from_double(sm_complex, sm);
+    // Computes the Fourier transform of the fields
+    const Geometry& geo = sf_complex.geo();
+    long rt_V = std::pow(geo.total_volume(),0.5);
+    //fft_complex_field(sf_complex,true);
+    //sf_complex*=1/rt_V;
+    //fft_complex_field(sm_complex,true);
+    //sm_complex*=1/rt_V;
+    const Coordinate L = geo.total_site();
     qacc_for(index, geo.local_volume(), {
       const Coordinate xl = geo.coordinate_from_index(index);
-      Vector<double> sf_v = sf.get_elems(xl);
-      const Vector<double> sm_v = sm.get_elems_const(xl);
+      Vector<Complex> sf_v = sf_complex.get_elems(xl);
+      const Vector<Complex> sm_v = sm_complex.get_elems_const(xl);
       qassert(sf_v.size() == sm_v.size());
       for (int m = 0; m < sf_v.size(); ++m) {
-        sf_v[m] = sf_v[m] + sm_v[m]*step_size;
+        sf_v[m] = sf_v[m] + sm_v[m]*step_size/hmc_mass_p(L,geo.coordinate_g_from_l(xl));
       }
     });
+    //fft_complex_field(sf_complex, false);
+    //sf_complex*=1/rt_V;
+    //set_double_from_complex(sf, sf_complex);
   }
   
   inline void axial_current_node_no_comm(Field<double>&  axial_current, const Field<double>& sf)
