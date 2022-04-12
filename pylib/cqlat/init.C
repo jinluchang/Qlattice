@@ -2,7 +2,7 @@
 
 EXPORT(begin, {
   // id_node, size_node, color = 0
-  // sys.argv, node_size_list
+  // sys.argv, node_size_list = []
   using namespace qlat;
   PyObject* p_v1 = NULL;
   PyObject* p_v2 = NULL;
