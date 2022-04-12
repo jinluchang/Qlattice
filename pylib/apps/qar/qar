@@ -1,0 +1,78 @@
+#!/usr/bin/env python3
+
+# Author: Luchang Jin 2022
+
+import qlat as q
+import sys
+
+if len(sys.argv) < 2:
+    q.displayln_info("Usage: qar list path.qar")
+    q.displayln_info("Usage: qar create path.qar path")
+    q.displayln_info("Usage: qar extract path.qar path")
+    q.displayln_info("Usage: qar l path1.qar path2.qar ...")
+    q.displayln_info("Usage: qar c path1 path2 ...")
+    q.displayln_info("Usage: qar x path1.qar path2.qar ...")
+    q.displayln_info("Usage: qar cr path1 path2 ...")
+    q.displayln_info("       Remove folders after qar files created")
+    q.displayln_info("Usage: qar xr path1.qar path2.qar ...")
+    q.displayln_info("       Remove qar files after folder extracted")
+    exit(1)
+
+assert len(sys.argv) >= 2
+
+action = sys.argv[1]
+
+if action == "list":
+    assert len(sys.argv) == 3
+    path_qar = sys.argv[2]
+    fns = q.list_qar(path_qar)
+    for idx, fn in enumerate(fns):
+        q.displayln_info(f"{idx:8} '{path_qar}' '{fn}'")
+elif action == "create":
+    assert len(sys.argv) == 4
+    path_qar = sys.argv[2]
+    path = sys.argv[3]
+    assert not q.does_file_exist(path_qar)
+    assert q.is_directory(path)
+    q.qar_create_info(path_qar, path)
+elif action == "extract":
+    assert len(sys.argv) == 4
+    path_qar = sys.argv[2]
+    path = sys.argv[3]
+    assert q.is_regular_file(path_qar)
+    assert not q.does_file_exist(path)
+    q.qar_extract_info(path_qar, path)
+elif action == "l":
+    fns = []
+    for path_qar in sys.argv[2:]:
+        fns += q.list_qar(path_qar)
+    for idx, fn in enumerate(fns):
+        q.displayln_info(f"{idx:8} '{path_qar}' '{fn}'")
+elif action in [ "c", "cr" ]:
+    path_list = sys.argv[2:]
+    for path in path_list:
+        path_qar = path + ".qar"
+        assert not q.does_file_exist(path_qar)
+        assert q.is_directory(path)
+    for path in path_list:
+        path_qar = path + ".qar"
+        if action == "c":
+            q.qar_create_info(path_qar, path)
+        elif action == "cr":
+            q.qar_create_info(path_qar, path, is_remove_folder_after = True)
+elif action in [ "x", "xr" ]:
+    path_qar_list = sys.argv[2:]
+    for path_qar in path_qar_list:
+        assert path_qar[-4:] == ".qar"
+        path = path_qar[:-4]
+        assert path != ""
+        assert q.is_regular_file(path_qar)
+        assert not q.does_file_exist(path)
+    for path_qar in path_qar_list:
+        path = path_qar[:-4]
+        if action == "x":
+            q.qar_extract_info(path_qar, path)
+        elif action == "xr":
+            q.qar_extract_info(path_qar, path, is_remove_qar_after = True)
+else:
+    assert False
