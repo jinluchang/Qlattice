@@ -29,6 +29,11 @@ class ScalarAction:
         assert isinstance(sm, Field)
         return c.action_node_scalar_action(self, sm)
     
+    def set_complex_from_double(self, cf, sf):
+        assert isinstance(cf, Field)
+        assert isinstance(sf, Field)
+        return c.set_complex_from_double_scalar_action(self, cf, sf)
+    
     def sum_sq(self, sf):
         assert isinstance(sf, Field)
         return c.sum_sq_scalar_action(self, sf)

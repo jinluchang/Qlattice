@@ -102,6 +102,22 @@ struct ScalarAction {
     // Calculate the energy of the scalar field
     return action_node_no_comm(sf_ext);
   }
+  
+  inline void set_complex_from_double(Field<Complex>& cf, const Field<double>& sf)
+  {
+    TIMER("ScalarAction.set_complex_from_double");
+    const Geometry geo = sf.geo();
+    cf.init(geo);
+    qacc_for(index, geo.local_volume(), {
+      Coordinate xl = geo.coordinate_from_index(index);
+      Vector<Complex> cf_v = cf.get_elems(xl);
+      int M = cf_v.size();
+      qassert(M == geo.multiplicity);
+      for (int m = 0; m < M; ++m) {
+        cf_v[m] = Complex(sf.get_elem(xl,m));
+      }
+    });
+  }
 
   inline double sum_sq(const Field<double>& sf)
   {
@@ -140,7 +156,39 @@ struct ScalarAction {
     // Return the part of an HMC Hamiltonian due to the given momentum 
     // field (on the current node).
     TIMER("ScalarAction.hmc_m_hamilton_node");
-    return sum_sq(sm)/2.0;
+    // Creates a complex copy of the real field so that we can compute 
+    // the Fourier transform
+    static Field<Complex> sm_complex;
+    set_complex_from_double(sm_complex, sm);
+    // Computes the Fourier transform of the field
+    fft_complex_field(sm_complex);
+    // Saves the field geometry
+    const Geometry geo = sm_complex.geo();
+    // Creates a geometry that is the same as the field geometry, except
+    // with multiplicity 1
+    const Geometry geo_r = geo_reform(geo);
+    // Creates a field to save the contribution to the sum 
+    // from each point
+    FieldM<double, 1> fd;
+    fd.init(geo_r);
+    long V = geo.total_volume();
+    qacc_for(index, geo_r.local_volume(), {
+      Coordinate xl = geo_r.coordinate_from_index(index);
+      double s=0;
+      for (int m = 0; m < geo.multiplicity; ++m) {
+        Complex c = sm_complex.get_elem(xl,m);
+        s += (c.real()*c.real()+c.imag()*c.imag())/V/2;
+      }
+      fd.get_elem(index) = s;
+    });
+    // Sums over the contributions to the sum from each point
+    // (this cannot be done in the previous loops because the previous
+    // loop runs in parallel)
+    double sum = 0.0;
+    for (long index = 0; index < geo_r.local_volume(); ++index) {
+      sum += fd.get_elem(index);
+    }
+    return sum;
   }
   
   inline void hmc_set_force_no_comm(Field<double>& sm_force, const Field<double>& sf)

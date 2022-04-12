@@ -65,6 +65,21 @@ EXPORT(action_node_scalar_action, {
   return py_convert(ret);
 });
 
+EXPORT(set_complex_from_double_scalar_action, {
+  using namespace qlat;
+  PyObject* p_sa = NULL;
+  PyObject* p_cf = NULL;
+  PyObject* p_sf = NULL;
+  if (!PyArg_ParseTuple(args, "OOO", &p_sa, &p_cf, &p_sf)) {
+    return NULL;
+  }
+  ScalarAction& sa = py_convert_type<ScalarAction>(p_sa);
+  Field<Complex>& cf = py_convert_type<Field<Complex>>(p_cf);
+  const Field<double>& sf = py_convert_type<Field<double>>(p_sf);
+  sa.set_complex_from_double(cf, sf);
+  Py_RETURN_NONE;
+});
+
 EXPORT(sum_sq_scalar_action, {
   using namespace qlat;
   PyObject* p_sa = NULL;

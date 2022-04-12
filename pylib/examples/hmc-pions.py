@@ -238,7 +238,7 @@ timeslices=[]
 ax_cur_timeslices=[]
 
 # The lattice dimensions
-total_site = [16, 16, 16, 32]
+total_site = [4,4,4,4]
 
 # The multiplicity of the scalar field
 mult = 4
