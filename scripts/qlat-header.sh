@@ -35,6 +35,7 @@ cp pylib/apps/topo-measure/topo-measure $prefix/bin/
 cp pylib/apps/eigen-system-repartition/eigen-system-repartition $prefix/bin/
 cp pylib/apps/eigen-system-checksum/eigen-system-checksum $prefix/bin/
 cp pylib/apps/fields-checksum/fields-checksum $prefix/bin/
+cp pylib/apps/crc32/crc32 $prefix/bin/
 
 ( cd ./pylib/cqlat ; ./update.sh )
 

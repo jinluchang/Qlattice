@@ -177,7 +177,7 @@ rup.dict_params["test-4nt8"]["lanc-mpi-original"] = [ 1, 1, 1, 4, ]
 rup.dict_params["test-4nt16"]["lanc-mpi-original"] = [ 1, 1, 1, 4, ]
 rup.dict_params["32Dfine"]["lanc-mpi-original"] = [ 2, 4, 4, 4, ]
 
-rup.dict_params["32Dfine"]["load_config_params"]["twist_boundary_at_boundary"] = [ 0.0, 0.0, 0.0, 0.0, ]
+# rup.dict_params["32Dfine"]["load_config_params"]["twist_boundary_at_boundary"] = [ 0.0, 0.0, 0.0, 0.0, ]
 
 # rup.dict_params["32Dfine"]["clanc_params"][0][0]["smoother_params"]["maxiter"] = 10
 
