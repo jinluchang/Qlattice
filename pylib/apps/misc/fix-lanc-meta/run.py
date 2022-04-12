@@ -39,12 +39,13 @@ def load_eig(path, job_tag, inv_type = 0, inv_acc = 0):
     return eig
 
 @q.timer_verbose
-def save_ceig(path, eig, job_tag, inv_type = 0, inv_acc = 0, *, crc32 = None):
+def save_ceig(path, eig, job_tag, inv_type = 0, inv_acc = 0, *, crc32 = None, mpi = None):
     if path is None:
         return
     save_params = ru.get_clanc_params(job_tag, inv_type, inv_acc)["save_params"]
     nsingle = save_params["nsingle"]
-    mpi = save_params["mpi"]
+    if mpi is None:
+        mpi = save_params["mpi"]
     fmt = g.format.cevec({"nsingle": nsingle, "mpi": [ 1 ] + mpi, "max_read_blocks": 8})
     cevec_io_meta.save_meta(path, eig, fmt.params, crc32 = crc32);
 
@@ -99,7 +100,7 @@ def run_eig_fix_meta(job_tag, traj, get_gf, inv_type = 0, inv_acc = 0, *, mpi_or
     smoothed_evals = ru.get_smoothed_evals(basis, cevec, gf, job_tag, inv_type, inv_acc)
     q.displayln_info("smoothed_evals=", smoothed_evals)
     eig = basis, cevec, smoothed_evals
-    save_ceig(path_eig, eig, job_tag, inv_type, inv_acc, crc32 = crc32)
+    save_ceig(path_eig, eig, job_tag, inv_type, inv_acc, crc32 = crc32, mpi = mpi_original)
     test_eig(gf, eig, job_tag, inv_type)
 
 @q.timer_verbose
