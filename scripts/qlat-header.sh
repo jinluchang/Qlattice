@@ -13,6 +13,7 @@ rm -rfv $prefix/include/qutils
 rm -rfv $prefix/include/qlat
 cp -rpv qutils $prefix/include/
 cp -rpv qlat $prefix/include/
+cp -rpv qlat/qlat-setup.h $prefix/include/
 
 mkdir -pv $prefix/pylib
 rm -rfv $prefix/pylib/qlat
@@ -34,6 +35,8 @@ cp pylib/apps/topo-measure/topo-measure $prefix/bin/
 cp pylib/apps/eigen-system-repartition/eigen-system-repartition $prefix/bin/
 cp pylib/apps/eigen-system-checksum/eigen-system-checksum $prefix/bin/
 cp pylib/apps/fields-checksum/fields-checksum $prefix/bin/
+cp pylib/apps/crc32/crc32 $prefix/bin/
+cp pylib/apps/qar/qar $prefix/bin/
 
 ( cd ./pylib/cqlat ; ./update.sh )
 

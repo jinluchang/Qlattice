@@ -2,8 +2,6 @@ SHELL=/bin/bash
 
 all: run
 
-run: cqlat-example py-examples
-
 tests = make-sample-gauge-field.log \
 		field-utils.log \
 		qcd-utils.log \
@@ -12,18 +10,19 @@ tests = make-sample-gauge-field.log \
 		selected-field.log \
 		lat-io.log \
 		fields-io.log \
-		free-invert.log \
-		gpt-qlat-convert.log \
-		gpt-qlat-smear.log \
-		gpt-qlat-sample-gauge-field.log \
-		gpt-qlat-lanc.log \
-		gpt-qlat-free-invert.log \
-		gpt-qlat-mdwf.log \
-		gpt-qlat-madwf.log \
-		gpt-qlat-gfix-mdwf.log \
-		gpt-qlat-rbc-ukqcd-invert.log
+		free-invert.log
 
-py-examples: $(tests)
+tests_gpt = gpt-qlat-convert.log \
+			gpt-qlat-smear.log \
+			gpt-qlat-sample-gauge-field.log \
+			gpt-qlat-lanc.log \
+			gpt-qlat-free-invert.log \
+			gpt-qlat-mdwf.log \
+			gpt-qlat-madwf.log \
+			gpt-qlat-gfix-mdwf.log \
+			gpt-qlat-rbc-ukqcd-invert.log
+
+run: cqlat-example $(tests) $(tests_gpt)
 
 %.log: %.py
 	mpirun --np 2 ./"$<" --mpi 1.1.1.2 --mpi_split 1.1.1.1 --mpi 1.1.2 --mpi_split 1.1.1 | tee "$@".full
@@ -41,5 +40,8 @@ clean:
 	-make -C cqlat clean
 	-rm -v cqlat.so
 
-clean-logs:
-	-rm -v *.log
+clean-logs: clean
+	-rm -v cqlat.log $(tests)
+
+clean-logs-gpt: clean-logs
+	-rm -v $(tests_gpt)

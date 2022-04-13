@@ -8,7 +8,11 @@ qlat::begin(): GeometryNode =
 , id_node     = 0
 , size_node   = 1x2x2x2
 , coor_node   = 0x0x0x0 }
-q_verbose=0 (default)
+q_verbose=10
+q_timer_max_func_name_len=50 (default)
+clear_mem_cache: 0 bytes (0.000 GB) freed.
+q_timer_mini_auto_show=1 (default)
+q_timer_max_always_show=10 (default)
 cps_gms[0] =
 (1,0) (0,0) (0,0) (0,0)
 (0,0) (1,0) (0,0) (0,0)
@@ -103,16 +107,16 @@ q_field_init=fast (default)
 set q_field_init=fast.
 q_mem_cache_max_size=512 (default)
 q_mem_cache_acc_max_size=512 (default)
-CommPlanCache: to add 1 / 32.
+Cache: 'CommPlanCache': 0 / 32 [16] to add
 plaq :  1.00000000000000000E+00
-CommPlanCache: to add 2 / 32.
+Cache: 'CommPlanCache': 1 / 32 [16] to add
 spatial plaq :  1.00000000000000000E+00
 trace:  1.00000000000000000E+00
 plaq :  9.48013133008751563E-01
 spatial plaq :  9.48361111693226233E-01
 trace:  9.86668447688210715E-01
-CommPlanCache: to add 3 / 32.
-CommPlanCache: to add 4 / 32.
+Cache: 'CommPlanCache': 2 / 32 [16] to add
+Cache: 'CommPlanCache': 3 / 32 [16] to add
 plaq 1x1 :  9.47665154324276671E-01
 plaq 1x2 :  9.22564303303687772E-01
 plaq 2x1 :  9.23198723801185062E-01
@@ -138,7 +142,7 @@ plaq 3x2 :  3.11250316704778374E-01
 plaq 3x3 :  2.34546669019702531E-01
 plaq (1,1,0,0)x2 :  1.82223131650272414E+01
 plaq (2,1,0,0)x1 :  2.29057320688310391E+01
-CommPlanCache: to add 5 / 32.
+Cache: 'CommPlanCache': 4 / 32 [16] to add
 plaq :  6.08900051877457660E-01
 spatial plaq :  6.05702143690381334E-01
 trace:  7.15210355847424768E-03
@@ -170,18 +174,18 @@ plaq 3x2 :  3.11250316704778318E-01
 plaq 3x3 :  2.34546669019702475E-01
 plaq (1,1,0,0)x2 :  1.82223131650272414E+01
 plaq (2,1,0,0)x1 :  2.29057320688310426E+01
-CommPlanCache: to add 6 / 32.
-CommPlanCache: to add 7 / 32.
-CommPlanCache: to add 8 / 32.
-CommPlanCache: to add 9 / 32.
-CommPlanCache: to add 10 / 32.
-CommPlanCache: to add 11 / 32.
-CommPlanCache: to add 12 / 32.
-CommPlanCache: to add 13 / 32.
+Cache: 'CommPlanCache': 5 / 32 [16] to add
+Cache: 'CommPlanCache': 6 / 32 [16] to add
+Cache: 'CommPlanCache': 7 / 32 [16] to add
+Cache: 'CommPlanCache': 8 / 32 [16] to add
+Cache: 'CommPlanCache': 9 / 32 [16] to add
+Cache: 'CommPlanCache': 10 / 32 [16] to add
+Cache: 'CommPlanCache': 11 / 32 [16] to add
+Cache: 'CommPlanCache': 12 / 32 [16] to add
 plaq :  6.08900051877520720E-01
 spatial plaq :  6.05702143690444283E-01
 trace:  4.43930001982102973E-01
-CommPlanCache: to add 14 / 32.
+Cache: 'CommPlanCache': 13 / 32 [16] to add
 plaq :  6.77998131258531256E-01
 spatial plaq :  6.74993161284736298E-01
 trace:  4.48283590939191234E-01
@@ -213,13 +217,14 @@ plaq 3x2 :  9.30125328718346078E-01
 plaq 3x3 :  9.13838859884687493E-01
 plaq (1,1,0,0)x2 :  4.54145277291344698E+01
 plaq (2,1,0,0)x1 :  4.55982926384696796E+01
-CommPlanCache: to add 15 / 32.
-CommPlanCache: to add 16 / 32.
+Cache: 'CommPlanCache': 14 / 32 [16] to add
+Cache: 'CommPlanCache': 15 / 32 [16] to add
 Consistency: orig qnorm: 6.144000E+03 ; shift qnorm 6.144000E+03 ; diff qnorm: 0.000000E+00
 Reference (field_shift_direct): orig qnorm: 6.144000E+03 ; shift qnorm 6.144000E+03 ; diff qnorm: 0.000000E+00
 Reference (field_shift_steps): orig qnorm: 6.144000E+03 ; shift qnorm 6.144000E+03 ; diff qnorm: 0.000000E+00
+Cache: 'CommPlanCache': 16 / 32 [16] clear
+clear_mem_cache: 3132416 bytes (0.003 GB) freed.
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 0.
 qlat::end(): Finalize MPI.
 qlat::end(): MPI Finalized.
-q_timer_max_func_name_len=50 (default)

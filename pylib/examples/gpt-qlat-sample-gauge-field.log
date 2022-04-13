@@ -29,7 +29,7 @@ This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
-Current Grid git commit hash=9616811c3d2aab506b7858a250e2d0b1711c597f: (HEAD, origin/feature/gpt, origin/HEAD, feature/gpt) clean
+Current Grid git commit hash=785263203ce6c7ae136ac6d9ea5feb5bdbe4e26d: (HEAD, origin/feature/gpt, origin/HEAD, feature/gpt) clean
 
 
 =============================================
@@ -38,6 +38,7 @@ Current Grid git commit hash=9616811c3d2aab506b7858a250e2d0b1711c597f: (HEAD, or
 =============================================
 qlat::begin_comm(comm,size_node): get_comm_list().push_back()
 qlat::begin_comm(comm,size_node): get_comm_list().size() = 2.
+q_verbose=1
 q_num_threads=2 (default)
 qlat::begin(): q_num_threads = 2
 qlat::begin(): GeometryNode =
@@ -46,10 +47,10 @@ qlat::begin(): GeometryNode =
 , id_node     = 0
 , size_node   = 1x1x1x2
 , coor_node   = 0x0x0x0 }
-q_verbose=1
+q_timer_max_func_name_len=50 (default)
+clear_mem_cache: 0 bytes (0.000 GB) freed.
 q_timer_mini_auto_show=1 (default)
 q_timer_max_always_show=10 (default)
-q_timer_max_func_name_len=50 (default)
 qremove: 'results'
 geo.show() = Geometry([4, 4, 4, 8], 1)
 q_field_init=fast (default)
@@ -57,17 +58,22 @@ set q_field_init=fast.
 Geometry([4, 4, 4, 8], 4, expansion_left=[0, 0, 0, 0], expansion_right=[0, 0, 0, 0], eo=0)
 q_mem_cache_max_size=512 (default)
 q_mem_cache_acc_max_size=512 (default)
-CommPlanCache: to add 1 / 32.
+Cache: 'CommPlanCache': 0 / 32 [16] to add
 gf_show_info: plaq = 1.0000000000000000 ; link_trace = 1.0000000000000000.
 gf_show_info: plaq = 0.6147333258459872 ; link_trace = 0.8844956937132934.
 mk_file_dirs_info: 'results/ckpoint_lat.0'.
 mk_file_dirs_info: 'results/ckpoint_lat.1'.
-ShufflePlanCache: to add 1 / 16.
+Cache: 'ShufflePlanCache': 0 / 16 [8] to add
+qrename: 'results/ckpoint_lat.1.partial.partial' 'results/ckpoint_lat.1.partial'
 q_write_par_limit=16 (default)
+qrename: 'results/ckpoint_lat.1.partial' 'results/ckpoint_lat.1'
 load_gauge_field: 'results/ckpoint_lat.0'.
 q_read_par_limit=16 (default)
 gf_show_info: plaq = 0.6147333258459872 ; link_trace = 0.8844956937132934.
 gf_show_info: plaq = 0.6147333258459872 ; link_trace = 0.8844956937132934.
+Cache: 'ShufflePlanCache': 1 / 16 [8] clear
+Cache: 'CommPlanCache': 1 / 32 [16] clear
+clear_mem_cache: 867328 bytes (0.001 GB) freed.
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 1.
 qlat::end(): Switch to old comm (foreign).

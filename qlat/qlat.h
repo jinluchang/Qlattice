@@ -6,8 +6,6 @@
 
 #include <qlat/utils-coordinate.h>
 
-#include <qlat/cache.h>
-
 #include <qlat/mvector.h>
 
 #include <qlat/matrix.h>

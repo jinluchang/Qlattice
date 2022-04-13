@@ -21,7 +21,7 @@ load_path_list[:] = [
         os.path.join(os.getenv("HOME"), "qcddata"),
         os.path.join(os.getenv("HOME"), "Qlat-sample-data/mk-gf-gt/results"),
         os.path.join(os.getenv("HOME"), "Qlat-sample-data/mk-lanc-no-meta/results"),
-        "/sdcc/u/jluchang/qcdqedta/luchang/data-gen/lanc/32Dfine/results-no-meta",
+        "/sdcc/u/jluchang/qcdqedta/luchang/data-gen/lanc/32Dfine-metadata/results-no-meta/",
         ]
 
 def prod(l):
@@ -39,12 +39,13 @@ def load_eig(path, job_tag, inv_type = 0, inv_acc = 0):
     return eig
 
 @q.timer_verbose
-def save_ceig(path, eig, job_tag, inv_type = 0, inv_acc = 0, *, crc32 = None):
+def save_ceig(path, eig, job_tag, inv_type = 0, inv_acc = 0, *, crc32 = None, mpi = None):
     if path is None:
         return
     save_params = ru.get_clanc_params(job_tag, inv_type, inv_acc)["save_params"]
     nsingle = save_params["nsingle"]
-    mpi = save_params["mpi"]
+    if mpi is None:
+        mpi = save_params["mpi"]
     fmt = g.format.cevec({"nsingle": nsingle, "mpi": [ 1 ] + mpi, "max_read_blocks": 8})
     cevec_io_meta.save_meta(path, eig, fmt.params, crc32 = crc32);
 
@@ -87,19 +88,20 @@ def save_metadata(path, params, inv_type, inv_acc, *, mpi = None):
         fmeta.close()
 
 @q.timer_verbose
-def run_eig_fix_meta(job_tag, traj, get_gf, inv_type = 0, inv_acc = 0):
+def run_eig_fix_meta(job_tag, traj, get_gf, inv_type = 0, inv_acc = 0, *, mpi_original = None):
     assert get_gf is not None
     gf = get_gf()
     path_eig = get_load_path(f"eig/{job_tag}/traj={traj}")
     assert path_eig is not None
-    save_metadata(path_eig, rup.dict_params[job_tag], inv_type, inv_acc, mpi = None)
+    save_metadata(path_eig, rup.dict_params[job_tag], inv_type, inv_acc, mpi = mpi_original)
     basis, cevec, crc32 = load_eig(path_eig, job_tag, inv_type, inv_acc)
     for i in range(len(crc32)):
         crc32[i] = q.glb_sum(crc32[i])
     smoothed_evals = ru.get_smoothed_evals(basis, cevec, gf, job_tag, inv_type, inv_acc)
-    q.displayln_info(smoothed_evals)
+    q.displayln_info("smoothed_evals=", smoothed_evals)
     eig = basis, cevec, smoothed_evals
-    save_ceig(path_eig, eig, job_tag, inv_type, inv_acc, crc32 = crc32)
+    save_ceig(path_eig, eig, job_tag, inv_type, inv_acc, crc32 = crc32, mpi = mpi_original)
+    test_eig(gf, eig, job_tag, inv_type)
 
 @q.timer_verbose
 def run_eig_fix_reshape(job_tag, traj, get_gf, inv_type = 0, inv_acc = 0, *, mpi_original = None):
@@ -111,16 +113,41 @@ def run_eig_fix_reshape(job_tag, traj, get_gf, inv_type = 0, inv_acc = 0, *, mpi
     save_metadata(path_eig, rup.dict_params[job_tag], inv_type, inv_acc, mpi = mpi_original)
     basis, cevec, crc32 = load_eig(path_eig, job_tag, inv_type, inv_acc)
     smoothed_evals = ru.get_smoothed_evals(basis, cevec, gf, job_tag, inv_type, inv_acc)
-    q.displayln_info(smoothed_evals)
+    q.displayln_info("smoothed_evals=", smoothed_evals)
     eig = basis, cevec, smoothed_evals
     ru.save_ceig(get_save_path(path + ".partial"), eig, job_tag, inv_type, inv_acc);
     q.qrename_info(get_save_path(path + ".partial"), get_save_path(path))
     test_eig(gf, eig, job_tag, inv_type)
 
+def guess_eig_mpi(job_tag, traj):
+    if job_tag != "32Dfine":
+        mpi = rup.dict_params[job_tag]["lanc-mpi-original"]
+    else:
+        assert job_tag == "32Dfine"
+        path_eig = get_load_path(f"eig/{job_tag}/traj={traj}")
+        if path_eig is None:
+            mpi = rup.dict_params[job_tag]["lanc-mpi-original"]
+        elif q.does_file_exist_sync_node(os.path.join(path_eig, "31/0000000511.compressed")):
+            num_node = 512
+            mpi = [ 4, 4, 4, 8, ]
+        elif q.does_file_exist_sync_node(os.path.join(path_eig, "31/0000000255.compressed")):
+            num_node = 256
+            mpi = [ 4, 4, 4, 4, ]
+        elif q.does_file_exist_sync_node(os.path.join(path_eig, "31/0000000127.compressed")):
+            num_node = 128
+            mpi = [ 4, 4, 4, 2, ]
+        elif q.does_file_exist_sync_node(os.path.join(path_eig, "31/0000000063.compressed")):
+            num_node = 64
+            mpi = [ 2, 2, 2, 8, ]
+        else:
+            assert False
+    q.displayln_info(f"guess_eig_mpi: {job_tag} {traj} mpi={mpi}")
+    return mpi
+
 def run_eig_fix(job_tag, traj, get_gf, inv_type = 0, inv_acc = 0):
     if q.obtain_lock(f"locks/{job_tag}-{traj}-run-eig-fix"):
-        # run_eig_fix_meta(job_tag, traj, get_gf, inv_type, inv_acc)
-        run_eig_fix_reshape(job_tag, traj, get_gf, inv_type, inv_acc, mpi_original = rup.dict_params[job_tag]["lanc-mpi-original"])
+        run_eig_fix_meta(job_tag, traj, get_gf, inv_type, inv_acc, mpi_original = guess_eig_mpi(job_tag, traj))
+        # run_eig_fix_reshape(job_tag, traj, get_gf, inv_type, inv_acc, mpi_original = guess_eig_mpi(job_tag, traj))
         q.release_lock()
 
 @q.timer_verbose
@@ -145,11 +172,13 @@ def run_job(job_tag, traj):
 
 rup.dict_params["test-4nt8"]["trajs"] = list(range(1000, 1400, 100))
 rup.dict_params["test-4nt16"]["trajs"] = list(range(1000, 1400, 100))
-rup.dict_params["32Dfine"]["trajs"] = list(range(500, 5000, 10))
+rup.dict_params["32Dfine"]["trajs"] = list(range(200, 5000, 10))
 
 rup.dict_params["test-4nt8"]["lanc-mpi-original"] = [ 1, 1, 1, 4, ]
 rup.dict_params["test-4nt16"]["lanc-mpi-original"] = [ 1, 1, 1, 4, ]
-rup.dict_params["32Dfine"]["lanc-mpi-original"] = [ 1, 1, 1, 8, ]
+rup.dict_params["32Dfine"]["lanc-mpi-original"] = [ 2, 4, 4, 4, ]
+
+# rup.dict_params["32Dfine"]["load_config_params"]["twist_boundary_at_boundary"] = [ 0.0, 0.0, 0.0, 0.0, ]
 
 # rup.dict_params["32Dfine"]["clanc_params"][0][0]["smoother_params"]["maxiter"] = 10
 

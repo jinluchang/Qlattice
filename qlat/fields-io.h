@@ -516,7 +516,7 @@ inline long fread_convert_endian(void* ptr, const size_t size,
 inline bool read_tag(FieldsReader& fr, std::string& fn, Coordinate& total_site,
                      crc32_t& crc, int64_t& data_len, bool& is_sparse_field)
 {
-  TIMER("read_tag(fr,fn,geo)");
+  TIMER("read_tag(fr,fn,total_site,crc,data_len,is_sparse_field)");
   fn = "";
   total_site = Coordinate();
   crc = 0;
@@ -549,8 +549,12 @@ inline bool read_tag(FieldsReader& fr, std::string& fn, Coordinate& total_site,
   }
   fn = std::string(fnv.data(), tag_len - 1);
   //
-  fr.fn_list.push_back(fn);
-  fr.offsets_map[fn] = offset_initial;
+  if (has(fr.offsets_map, fn)) {
+    qassert(fr.offsets_map[fn] == offset_initial);
+  } else {
+    fr.fn_list.push_back(fn);
+    fr.offsets_map[fn] = offset_initial;
+  }
   //
   // then read crc
   if (1 != fread_convert_endian(&crc, 4, 1, fr.fp, fr.is_little_endian)) {
@@ -873,7 +877,7 @@ void set_field_from_data(SelectedField<M>& sf, const std::vector<char>& data,
   bs.set(&data[0], nbytes);
   qassert(bs.check_f_rank(fsel.f_rank));
   const long n_elems = fsel.n_elems;
-  qassert(n_elems == bs.cN);
+  qassert(n_elems == (long)bs.cN);
   if (n_elems == 0) {
     sf.init();
     return;

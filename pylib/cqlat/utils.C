@@ -23,3 +23,15 @@ EXPORT(random_permute, {
   }
   return ret;
 });
+
+EXPORT(get_all_caches_info, {
+  using namespace qlat;
+  const std::vector<std::string> ret = get_all_caches_info();
+  return py_convert(ret);
+});
+
+EXPORT(clear_all_caches, {
+  using namespace qlat;
+  clear_all_caches();
+  Py_RETURN_NONE;
+});

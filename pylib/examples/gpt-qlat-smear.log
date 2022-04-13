@@ -29,7 +29,7 @@ This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
-Current Grid git commit hash=9616811c3d2aab506b7858a250e2d0b1711c597f: (HEAD, origin/feature/gpt, origin/HEAD, feature/gpt) clean
+Current Grid git commit hash=785263203ce6c7ae136ac6d9ea5feb5bdbe4e26d: (HEAD, origin/feature/gpt, origin/HEAD, feature/gpt) clean
 
 
 =============================================
@@ -38,6 +38,7 @@ Current Grid git commit hash=9616811c3d2aab506b7858a250e2d0b1711c597f: (HEAD, or
 =============================================
 qlat::begin_comm(comm,size_node): get_comm_list().push_back()
 qlat::begin_comm(comm,size_node): get_comm_list().size() = 2.
+q_verbose=1
 q_num_threads=2 (default)
 qlat::begin(): q_num_threads = 2
 qlat::begin(): GeometryNode =
@@ -46,17 +47,17 @@ qlat::begin(): GeometryNode =
 , id_node     = 0
 , size_node   = 1x1x1x2
 , coor_node   = 0x0x0x0 }
-q_verbose=1
+q_timer_max_func_name_len=50 (default)
+clear_mem_cache: 0 bytes (0.000 GB) freed.
 q_timer_mini_auto_show=1 (default)
 q_timer_max_always_show=10 (default)
-q_timer_max_func_name_len=50 (default)
 qremove: 'results'
 geo.show() = Geometry([4, 4, 4, 8], 1)
 q_field_init=fast (default)
 set q_field_init=fast.
 q_mem_cache_max_size=512 (default)
 q_mem_cache_acc_max_size=512 (default)
-CommPlanCache: to add 1 / 32.
+Cache: 'CommPlanCache': 0 / 32 [16] to add
 gf_show_info: plaq = 0.9735277456680520 ; link_trace = 0.9932265337772574.
                        :   mpi_split   = None
                        :   maxiter_cg  = 200
@@ -69,9 +70,9 @@ gf_show_info: plaq = 0.9735277456680520 ; link_trace = 0.9932265337772574.
                        :   random      = None
                        : Note: convergence is only guaranteed for sufficiently small step parameter.
                        : 
-ShufflePlanCache: to add 1 / 16.
-CommPlanCache: to add 2 / 32.
-CommPlanCache: to add 3 / 32.
+Cache: 'ShufflePlanCache': 0 / 16 [8] to add
+Cache: 'CommPlanCache': 1 / 32 [16] to add
+Cache: 'CommPlanCache': 2 / 32 [16] to add
 mk_gpt_inverter: job_tag=test-4nt8 inv_type=1 inv_acc=0 mpi_split=[1, 1, 1, 1] n_grouped=4
 mk_gpt_inverter: set qm params={'M5': 1.8, 'boundary_phases': [1.0, 1.0, 1.0, 1.0], 'b': 1.5, 'c': 0.5, 'Ls': 8, 'mass': 0.04}
 mk_gpt_inverter: mpi_split=[1, 1, 1, 1] n_grouped=4
@@ -80,10 +81,13 @@ mk_gpt_inverter: eps=1e-08 max_cycle=1
 mk_gpt_inverter: make inv_qm
 smear ; xg=(3, 1, 0, 0) ; type=1 ; accuracy=0
 qnorm(src) = 12.0
-CommPlanCache: to add 4 / 32.
+Cache: 'CommPlanCache': 3 / 32 [16] to add
 qnorm(src) = 0.20071192043188596 after smear
 qnorm(sol) = 0.2888235133524948
 mk_file_dirs_info: 'results/smear ; xg=(3, 1, 0, 0) ; type=1 ; accuracy=0 ; psnk.lat'.
+QFile: open 'results/smear ; xg=(3, 1, 0, 0) ; type=1 ; accuracy=0 ; psnk.lat.partial' with 'w'.
+qrename: 'results/smear ; xg=(3, 1, 0, 0) ; type=1 ; accuracy=0 ; psnk.lat.partial' 'results/smear ; xg=(3, 1, 0, 0) ; type=1 ; accuracy=0 ; psnk.lat'
+QFile: close 'results/smear ; xg=(3, 1, 0, 0) ; type=1 ; accuracy=0 ; psnk.lat.partial' with 'w'.
 qnorm(sol_psel) = 0.13636305213224031
 mk_file_dirs_info: 'results/prop-smear'.
 FieldsWriter: open 'results/prop-smear'.
@@ -97,7 +101,7 @@ make_shuffle_plan_generic: total num_recv_packs =         16
 make_shuffle_plan_generic: total num_send_msgs  =          2
 make_shuffle_plan_generic: total num_recv_msgs  =          2
 make_shuffle_plan_generic: global_comm_size =        512
-ShufflePlanCache: to add 2 / 16.
+Cache: 'ShufflePlanCache': 1 / 16 [8] to add
 shuffle_field(fs,f,sp): 1x1x1x2 -> 1x1x2x4 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
 make_shuffle_plan_generic: num_send_packs =          5
 make_shuffle_plan_generic: num_recv_packs =          8
@@ -112,9 +116,15 @@ write(sfw,fn,sf,sbs): writing sparse field with fn='smear ; xg=(3, 1, 0, 0) ; ty
 shuffle_field(sel_fs,sel_f,sp): 1x1x1x2 -> 1x1x2x4 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.000 GB)
 FieldsWriter: close 'results/prop-smear'.
 mk_file_dirs_info: 'results/smear ; xg=(3, 1, 0, 0) ; type=1 ; accuracy=0 ; wsnk.lat'.
+QFile: open 'results/smear ; xg=(3, 1, 0, 0) ; type=1 ; accuracy=0 ; wsnk.lat.partial' with 'w'.
+qrename: 'results/smear ; xg=(3, 1, 0, 0) ; type=1 ; accuracy=0 ; wsnk.lat.partial' 'results/smear ; xg=(3, 1, 0, 0) ; type=1 ; accuracy=0 ; wsnk.lat'
+QFile: close 'results/smear ; xg=(3, 1, 0, 0) ; type=1 ; accuracy=0 ; wsnk.lat.partial' with 'w'.
 qnorm(sol_ws) = 18.412776032327635
 qnorm(sol_smear) = 0.28713534775858585
 mk_file_dirs_info: 'results/smear ; xg=(3, 1, 0, 0) ; type=1 ; accuracy=0 ; smear-snk.lat'.
+QFile: open 'results/smear ; xg=(3, 1, 0, 0) ; type=1 ; accuracy=0 ; smear-snk.lat.partial' with 'w'.
+qrename: 'results/smear ; xg=(3, 1, 0, 0) ; type=1 ; accuracy=0 ; smear-snk.lat.partial' 'results/smear ; xg=(3, 1, 0, 0) ; type=1 ; accuracy=0 ; smear-snk.lat'
+QFile: close 'results/smear ; xg=(3, 1, 0, 0) ; type=1 ; accuracy=0 ; smear-snk.lat.partial' with 'w'.
 qnorm(sol_smear_psel) = 0.03587979969885853
 c27b84efb1126c8128ffeb8f5e038451  results/prop-smear/00/0000000000
 a04fbaf76ca0bb78abe034558714fada  results/prop-smear/01/0000000001
@@ -128,6 +138,9 @@ b22e11cd5e8eb228e6632c90a395a810  results/prop-smear/07/0000000007
 4af22543871af24e6be9bd1a32017d23  results/smear ; xg=(3, 1, 0, 0) ; type=1 ; accuracy=0 ; psnk.lat
 848b120c8c5b428f147a253b1ff648de  results/smear ; xg=(3, 1, 0, 0) ; type=1 ; accuracy=0 ; smear-snk.lat
 1743d846e02e3c0dc9af5e737ba51000  results/smear ; xg=(3, 1, 0, 0) ; type=1 ; accuracy=0 ; wsnk.lat
+Cache: 'ShufflePlanCache': 2 / 16 [8] clear
+Cache: 'CommPlanCache': 4 / 32 [16] clear
+clear_mem_cache: 1765120 bytes (0.002 GB) freed.
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 1.
 qlat::end(): Switch to old comm (foreign).

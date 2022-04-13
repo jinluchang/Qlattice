@@ -1,0 +1,55 @@
+name: Ubuntu with GPT build
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - uses: actions/checkout@v3
+
+    - name: Show info
+      run: |
+        whoami
+        pwd
+        ls
+        export
+
+    - name: Install Ubuntu packages
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libssl-dev libopenmpi-dev python3-sympy python3-numpy python3-scipy libmpfr-dev
+
+    - name: Display Python version
+      run: python -c "import sys; print(sys.version)"
+
+    - name: Download dependencies
+      run: |
+        ./scripts/download-core.sh || echo Failed
+
+    - name: Build everything
+      run: |
+        export num_proc=4
+        ./build.sh default-gpt || echo Failed
+
+    - name: Testing qlat
+      run: |
+        source $HOME/qlat-build/default/setenv.sh
+        make -C examples run || echo Failed
+
+    - name: Testing pylib qlat-gpt
+      run: |
+        source $HOME/qlat-build/default/setenv.sh
+        make -C pylib/examples clean-logs-gpt || echo Failed
+        make -C pylib/examples || echo Failed
+
+    - name: Show git diff
+      run: |
+        git diff

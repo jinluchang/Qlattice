@@ -15,7 +15,20 @@
 namespace qlat
 {  //
 
-struct fft_complex_field_plan {
+inline bool check_fft_plan_key(const Geometry& geo, const int mc, const int dir,
+                               const bool is_forward)
+{
+  qassert(0 < geo.multiplicity);
+  bool b = true;
+  b = b && geo.eo == 0;
+  b = b && geo.is_only_local();
+  b = b && mc % geo.multiplicity == 0;
+  b = b && 0 <= dir and dir < 4;
+  b = b && (is_forward == true or is_forward == false);
+  return b;
+}
+
+struct FftComplexFieldPlan {
   Geometry geo;     // geo.is_only_local == true
   int mc;           // geo.multiplicity * sizeof(M) / sizeof(Complex)
   int dir;          // direction of the fft
@@ -24,56 +37,14 @@ struct fft_complex_field_plan {
   fftw_plan fftplan;
   ShufflePlan sp;
   //
-  bool is_match(const Geometry& geo_, const int mc_, const int dir_,
-                const bool is_forward_)
-  {
-    return geo_ == geo && mc_ == mc && dir_ == dir && is_forward_ == is_forward;
-  }
+  FftComplexFieldPlan() {}
   //
-  static bool check(const Geometry& geo_, const int mc_, const int dir_,
-                    const bool is_forward_)
-  {
-    qassert(0 < geo_.multiplicity);
-    bool b = true;
-    b = b && geo_.is_only_local();
-    b = b && mc_ % geo_.multiplicity == 0;
-    b = b && 0 <= dir_ and dir_ < 4;
-    b = b && (is_forward_ == true or is_forward_ == false);
-    return b;
-  }
-  //
-  static fft_complex_field_plan& get_plan(const Geometry& geo_, const int mc_,
-                                          const int dir_,
-                                          const bool is_forward_)
-  {
-    TIMER("fft_complex_field_plan::get_plan");
-    qassert(check(geo_, mc_, dir_, is_forward_));
-    static std::vector<fft_complex_field_plan> planV(100);
-    static int next_plan_index = 0;
-    for (int i = 0; i < (int)planV.size(); i++) {
-      if (planV[i].is_match(geo_, mc_, dir_, is_forward_)) {
-        return planV[i];
-      }
-    }
-    displayln_info(fname +
-                   ssprintf(": start to make a new fft plan with id = %d",
-                            next_plan_index));
-    fft_complex_field_plan& plan = planV[next_plan_index];
-    next_plan_index++;
-    next_plan_index %= planV.size();
-    plan.end();
-    plan.init(geo_, mc_, dir_, is_forward_);
-    return plan;
-  }
-  //
-  fft_complex_field_plan() {}
-  //
-  ~fft_complex_field_plan() { end(); }
+  ~FftComplexFieldPlan() { end(); }
   //
   void end()
   {
     if (geo.initialized) {
-      displayln_info("fft_complex_field_plan::end(): free a plan.");
+      displayln_info("FftComplexFieldPlan::end(): free a plan.");
       fftw_destroy_plan(fftplan);
       geo.initialized = false;
     }
@@ -82,8 +53,8 @@ struct fft_complex_field_plan {
   void init(const Geometry& geo_, const int mc_, const int dir_,
             const bool is_forward_)
   {
-    TIMER_VERBOSE("fft_complex_field_plan::init");
-    qassert(check(geo_, mc_, dir_, is_forward_));
+    TIMER_VERBOSE("FftComplexFieldPlan::init");
+    qassert(check_fft_plan_key(geo_, mc_, dir_, is_forward_));
     geo = geo_;
     mc = mc_;
     dir = dir_;
@@ -96,7 +67,7 @@ struct fft_complex_field_plan {
     const long nc_size = nc_stop - nc_start;
     // fftw_init_threads();
     // fftw_plan_with_nthreads(omp_get_max_threads());
-    displayln_info(ssprintf("fft_complex_field_plan::init: malloc %ld",
+    displayln_info(ssprintf("FftComplexFieldPlan::init: malloc %ld",
                             nc_size * sizec * sizeof(Complex)));
     Complex* fftdatac =
         (Complex*)fftw_malloc(nc_size * sizec * sizeof(Complex));
@@ -110,11 +81,35 @@ struct fft_complex_field_plan {
         (fftw_complex*)fftdatac, n, stride, dist,
         is_forward ? FFTW_FORWARD : FFTW_BACKWARD, FFTW_ESTIMATE);
     fftw_free(fftdatac);
-    displayln_info(ssprintf("fft_complex_field_plan::init: free %ld",
+    displayln_info(ssprintf("FftComplexFieldPlan::init: free %ld",
                             nc_size * sizec * sizeof(Complex)));
     sp = make_shuffle_plan_fft(geo.total_site(), dir);
   }
 };
+
+inline Cache<std::string, FftComplexFieldPlan>& get_fft_plan_cache()
+{
+  static Cache<std::string, FftComplexFieldPlan> cache("FftComplexFieldPlanCache", 32);
+  return cache;
+}
+
+inline FftComplexFieldPlan& get_fft_plan(const Geometry& geo, const int mc,
+                                         const int dir, const bool is_forward)
+{
+  TIMER("get_fft_plan");
+  qassert(check_fft_plan_key(geo, mc, dir, is_forward));
+  Cache<std::string, FftComplexFieldPlan>& cache = get_fft_plan_cache();
+  const std::string key =
+      ssprintf("%s %s %d %d %d %d %d", show(geo.node_site).c_str(),
+               show(geo.geon.size_node).c_str(), geo.geon.id_node,
+               geo.multiplicity, mc, dir, is_forward ? 1 : 0);
+  if (cache.has(key)) {
+    return cache[key];
+  }
+  FftComplexFieldPlan& plan = cache[key];
+  plan.init(geo, mc, dir, is_forward);
+  return plan;
+}
 
 template <class M>
 void fft_complex_field_dir(Field<M>& field1, const Field<M>& field, const int dir,
@@ -124,8 +119,7 @@ void fft_complex_field_dir(Field<M>& field1, const Field<M>& field, const int di
   Geometry geo = field.geo();
   geo.resize(0);
   const int mc = geo.multiplicity * sizeof(M) / sizeof(Complex);
-  fft_complex_field_plan& plan =
-      fft_complex_field_plan::get_plan(geo, mc, dir, is_forward);
+  FftComplexFieldPlan& plan = get_fft_plan(geo, mc, dir, is_forward);
   fftw_plan& fftplan = plan.fftplan;
   const int sizec = geo.total_site()[dir];
   const long nc = geo.local_volume() / geo.node_site[dir] * mc;

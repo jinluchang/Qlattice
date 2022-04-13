@@ -137,6 +137,18 @@ inline bool is_directory_sync_node(const std::string& fn)
   return 0 != nfile;
 }
 
+inline bool is_regular_file_sync_node(const std::string& fn)
+{
+  long nfile = 0;
+  if (0 == get_id_node()) {
+    if (is_regular_file(fn)) {
+      nfile = 1;
+    }
+  }
+  glb_sum(nfile);
+  return 0 != nfile;
+}
+
 inline void check_stop()
 {
   if (does_file_exist_sync_node("stop.txt")) {
@@ -236,24 +248,61 @@ inline std::vector<std::string> qls_sync_node(const std::string& path)
   return ret;
 }
 
+inline std::vector<std::string> qls_all_sync_node(
+    const std::string& path, const bool is_folder_before_files = false)
+{
+  std::vector<std::string> ret;
+  if (0 == get_id_node()) {
+    ret = qls_all(path, is_folder_before_files);
+  }
+  bcast(ret);
+  return ret;
+}
+
 inline int qremove_info(const std::string& path)
 {
   TIMER_VERBOSE("qremove_info");
+  long ret = 0;
   if (0 == get_id_node()) {
-    return qremove(path);
-  } else {
-    return 0;
+    ret = qremove(path);
   }
+  glb_sum(ret);
+  return ret;
 }
 
 inline int qremove_all_info(const std::string& path)
 {
   TIMER_VERBOSE("qremove_all_info");
+  long ret = 0;
   if (0 == get_id_node()) {
-    return qremove_all(path);
-  } else {
-    return 0;
+    ret = qremove_all(path);
   }
+  glb_sum(ret);
+  return ret;
+}
+
+inline int qar_create_info(const std::string& path_qar,
+                           const std::string& path_folder_,
+                           const bool is_remove_folder_after = false)
+{
+  long ret = 0;
+  if (0 == get_id_node()) {
+    ret = qar_create(path_qar, path_folder_, is_remove_folder_after);
+  }
+  glb_sum(ret);
+  return ret;
+}
+
+inline int qar_extract_info(const std::string& path_qar,
+                            const std::string& path_folder_,
+                            const bool is_remove_qar_after = false)
+{
+  long ret = 0;
+  if (0 == get_id_node()) {
+    ret = qar_extract(path_qar, path_folder_, is_remove_qar_after);
+  }
+  glb_sum(ret);
+  return ret;
 }
 
 inline std::string show_file_crc32(const std::pair<std::string, crc32_t>& fcrc)
@@ -304,6 +353,7 @@ inline std::vector<std::pair<std::string, crc32_t> > check_all_files_crc32(
 }
 
 inline void check_all_files_crc32_info(const std::string& path)
+// interface function
 {
   TIMER_VERBOSE("check_all_files_crc32_info");
   if (0 == get_id_node()) {

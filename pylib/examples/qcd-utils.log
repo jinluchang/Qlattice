@@ -1,43 +1,7 @@
-SharedMemoryMpi:  World communicator of size 2
-SharedMemoryMpi:  Node  communicator of size 1
-SharedMemoryMpi: SharedMemoryAllocate 1073741824 MMAP anonymous implementation 
-
-__|__|__|__|__|__|__|__|__|__|__|__|__|__|__
-__|__|__|__|__|__|__|__|__|__|__|__|__|__|__
-__|_ |  |  |  |  |  |  |  |  |  |  |  | _|__
-__|_                                    _|__
-__|_   GGGG    RRRR    III    DDDD      _|__
-__|_  G        R   R    I     D   D     _|__
-__|_  G        R   R    I     D    D    _|__
-__|_  G  GG    RRRR     I     D    D    _|__
-__|_  G   G    R  R     I     D   D     _|__
-__|_   GGGG    R   R   III    DDDD      _|__
-__|_                                    _|__
-__|__|__|__|__|__|__|__|__|__|__|__|__|__|__
-__|__|__|__|__|__|__|__|__|__|__|__|__|__|__
-  |  |  |  |  |  |  |  |  |  |  |  |  |  |  
-
-
-Copyright (C) 2015 Peter Boyle, Azusa Yamaguchi, Guido Cossu, Antonin Portelli and other authors
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-Current Grid git commit hash=9616811c3d2aab506b7858a250e2d0b1711c597f: (HEAD, origin/feature/gpt, origin/HEAD, feature/gpt) clean
-
-
-=============================================
-              Initialized GPT                
-     Copyright (C) 2020 Christoph Lehner     
-=============================================
+qlat::begin(): MPI Initialized. num_node = 2
 qlat::begin_comm(comm,size_node): get_comm_list().push_back()
-qlat::begin_comm(comm,size_node): get_comm_list().size() = 2.
+qlat::begin_comm(comm,size_node): get_comm_list().size() = 1.
+q_verbose=1
 q_num_threads=2 (default)
 qlat::begin(): q_num_threads = 2
 qlat::begin(): GeometryNode =
@@ -46,10 +10,10 @@ qlat::begin(): GeometryNode =
 , id_node     = 0
 , size_node   = 1x1x1x2
 , coor_node   = 0x0x0x0 }
-q_verbose=1
+q_timer_max_func_name_len=50 (default)
+clear_mem_cache: 0 bytes (0.000 GB) freed.
 q_timer_mini_auto_show=1 (default)
 q_timer_max_always_show=10 (default)
-q_timer_max_func_name_len=50 (default)
 qremove: 'results'
 q_field_init=fast (default)
 set q_field_init=fast.
@@ -57,12 +21,12 @@ total_site = [4, 4, 4, 8]
 geo.show() = Geometry([4, 4, 4, 8], 1)
 q_mem_cache_max_size=512 (default)
 q_mem_cache_acc_max_size=512 (default)
-CommPlanCache: to add 1 / 32.
+Cache: 'CommPlanCache': 0 / 32 [16] to add
 gf_show_info: plaq = -0.0039877839996615 ; link_trace = 0.0224277381552869.
 gf_show_info: plaq = -0.0039877839996615 ; link_trace = 0.0224277381552869.
-CommPlanCache: to add 2 / 32.
+Cache: 'CommPlanCache': 1 / 32 [16] to add
 t=0 topo_clf=-0.006125019999933201
-CommPlanCache: to add 3 / 32.
+Cache: 'CommPlanCache': 2 / 32 [16] to add
 t=0 topo_5li=-0.00891086053584983 -0.00891086053584932
 [ -0.011059063888768539,
  0.0005095402459510871,
@@ -78,7 +42,7 @@ t=0 topo_5li=-0.00891086053584983 -0.00891086053584932
 (5, -0.09750693736194987)
 (6, -0.012436123814720874)
 (7, 0.04683627319539147)
-CommPlanCache: to add 4 / 32.
+Cache: 'CommPlanCache': 3 / 32 [16] to add
 gf_wilson_flow: t=0.02 ; E=2.416775687395237 ; t^2 E=0.0009667102749580949
 gf_wilson_flow: t=0.04 ; E=2.7674681271748818 ; t^2 E=0.004427949003479811
 gf_wilson_flow: t=0.06 ; E=3.0034076701815193 ; t^2 E=0.01081226761265347
@@ -414,10 +378,9 @@ t=5.0 topo_5li=0.9922002436710559 0.9922002436710552
 (5, 0.015710819003535947)
 (6, 0.00667432770176351)
 (7, 0.013130398593625603)
+Cache: 'CommPlanCache': 4 / 32 [16] clear
+clear_mem_cache: 3208704 bytes (0.003 GB) freed.
 qlat::end(): get_comm_list().pop_back()
-qlat::end(): get_comm_list().size() = 1.
-qlat::end(): Switch to old comm (foreign).
-qlat::end(): MPI_Comm_free ended comm.
-=============================================
-               Finalized GPT                 
-=============================================
+qlat::end(): get_comm_list().size() = 0.
+qlat::end(): Finalize MPI.
+qlat::end(): MPI Finalized.

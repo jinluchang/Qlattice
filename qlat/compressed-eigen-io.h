@@ -12,7 +12,7 @@
  *
  */
 
-#include <qlat/cache.h>
+#include <qutils/cache.h>
 #include <qlat/config.h>
 #include <qlat/fermion-action.h>
 #include <qlat/field-comm.h>
@@ -1489,7 +1489,6 @@ inline void decompress_eigen_vectors(
   displayln_info(fname + ssprintf(": old_path: '") + old_path + "'");
   displayln_info(fname + ssprintf(": new_path: '") + new_path + "'");
   qmkdir_info(new_path);
-  set_lock_expiration_time_limit();
   CompressedEigenSystemInfo cesi;
   cesi = read_compressed_eigen_system_info(old_path);
   Coordinate size_node = new_size_node;
@@ -1605,14 +1604,14 @@ inline bool resize_compressed_eigen_vectors(const std::string& old_path,
                                             const Coordinate& size_node)
 // interface
 {
-  if (does_file_exist_sync_node(new_path + "/metadata.txt")) {
-    return false;
-  }
   TIMER_VERBOSE("resize_compressed_eigen_vectors");
   displayln_info(fname + ssprintf(": old_path: '") + old_path + "'");
   displayln_info(fname + ssprintf(": new_path: '") + new_path + "'");
+  if (does_file_exist_sync_node(new_path)) {
+    displayln_info(fname + ssprintf(": new_path: '%s' exists.", new_path.c_str()));
+    return false;
+  }
   qmkdir_info(new_path);
-  set_lock_expiration_time_limit();
   CompressedEigenSystemInfo cesi;
   cesi = read_compressed_eigen_system_info(old_path);
   long idx_size = product(size_node);
@@ -1663,7 +1662,6 @@ inline void decompressed_eigen_vectors_check_crc32(const std::string& path)
   }
   displayln_info(fname + ": " + path);
   qassert(does_file_exist_sync_node(path + "/checksums.txt"));
-  set_lock_expiration_time_limit();
   long idx_size = 0;
   std::vector<crc32_t> crcs_load;
   if (get_id_node() == 0) {

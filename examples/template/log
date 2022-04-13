@@ -8,16 +8,11 @@ qlat::begin(): GeometryNode =
 , id_node     = 0
 , size_node   = 1x2x2x2
 , coor_node   = 0x0x0x0 }
-q_verbose=0 (default)
-display_geo_node : id_node =     0 ; coor_node = 0x0x0x0 ; id_node_in_shuffle =     0 ; hostname = qcdserver16
-display_geo_node : id_node =     1 ; coor_node = 0x1x0x0 ; id_node_in_shuffle =     2 ; hostname = qcdserver16
-display_geo_node : id_node =     2 ; coor_node = 0x0x1x0 ; id_node_in_shuffle =     4 ; hostname = qcdserver16
-display_geo_node : id_node =     3 ; coor_node = 0x1x1x0 ; id_node_in_shuffle =     6 ; hostname = qcdserver16
-display_geo_node : id_node =     4 ; coor_node = 0x0x0x1 ; id_node_in_shuffle =     1 ; hostname = qcdserver16
-display_geo_node : id_node =     5 ; coor_node = 0x1x0x1 ; id_node_in_shuffle =     3 ; hostname = qcdserver16
-display_geo_node : id_node =     6 ; coor_node = 0x0x1x1 ; id_node_in_shuffle =     5 ; hostname = qcdserver16
-display_geo_node : id_node =     7 ; coor_node = 0x1x1x1 ; id_node_in_shuffle =     7 ; hostname = qcdserver16
+q_verbose=10
+q_timer_max_func_name_len=50 (default)
+clear_mem_cache: 0 bytes (0.000 GB) freed.
 q_timer_mini_auto_show=1 (default)
+q_timer_max_always_show=10 (default)
 q_time_limit=43200 (default)
 get_time_limit()=12.000000 hours
 q_budget=900 (default)
@@ -30,24 +25,23 @@ get_time_limit()=12.000000 hours
 get_default_budget()=0.250000 hours
 dist_read_par_limit()=16
 dist_write_par_limit()=16
-check_status: ( get_actual_total_time() + get_default_budget() ) / get_time_limit() = ( 0.00 + 0.25 ) / 12.00 hours.
 compute_traj: Checking 'results/free-4nt8/results=1000'.
 obtain_lock: Trying to obtain lock 'results/free-4nt8/results=1000-lock'.
+qrename: 'results/free-4nt8/results=1000-lock/time.txt.partial' 'results/free-4nt8/results=1000-lock/time.txt'
 obtain_lock: Lock obtained 'results/free-4nt8/results=1000-lock'.
 compute_traj: Start computing 'results/free-4nt8/results=1000'.
 get_time_limit()=12.000000 hours
 get_default_budget()=0.250000 hours
 dist_read_par_limit()=16
 dist_write_par_limit()=16
-check_status: ( get_actual_total_time() + get_default_budget() ) / get_time_limit() = ( 0.00 + 0.25 ) / 12.00 hours.
 compute_traj_do: job_tag='free-4nt8' ; traj=1000
 q_field_init=fast (default)
 set q_field_init=fast.
 q_mem_cache_max_size=512 (default)
 q_mem_cache_acc_max_size=512 (default)
-CommPlanCache: to add 1 / 32.
+Cache: 'CommPlanCache': 0 / 32 [16] to add
 plaq :  1.00000000000000000E+00
-CommPlanCache: to add 2 / 32.
+Cache: 'CommPlanCache': 1 / 32 [16] to add
 spatial plaq :  1.00000000000000000E+00
 trace:  1.00000000000000000E+00
 ndim: 2
@@ -88,6 +82,9 @@ tsep[       6] re-im[      re]  6.00000000000000000E+00
 tsep[       6] re-im[      im]  0.00000000000000000E+00
 tsep[       7] re-im[      re]  7.00000000000000000E+00
 tsep[       7] re-im[      im]  0.00000000000000000E+00
+QFile: open 'results/free-4nt8/results=1000/data.lat.partial' with 'w'.
+qrename: 'results/free-4nt8/results=1000/data.lat.partial' 'results/free-4nt8/results=1000/data.lat'
+QFile: close 'results/free-4nt8/results=1000/data.lat.partial' with 'w'.
 geo = { initialized   = true
 , eo            = 0
 , geon          =
@@ -103,11 +100,11 @@ geo = { initialized   = true
 , node_site_exp = 4x2x2x4 }
 block_site = 2x2x2x2
 ls = 8, neig = 100, nkeep = 50
-CommPlanCache: to add 3 / 32.
-CommPlanCache: to add 4 / 32.
+Cache: 'CommPlanCache': 2 / 32 [16] to add
+Cache: 'CommPlanCache': 3 / 32 [16] to add
 invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00
-CommPlanCache: to add 5 / 32.
-CommPlanCache: to add 6 / 32.
+Cache: 'CommPlanCache': 4 / 32 [16] to add
+Cache: 'CommPlanCache': 5 / 32 [16] to add
 cg_with_f: start max_num_iter= 200        sqrt(qnorm_in)=6.598E+00 stop_rsd=1.000E-08 
 cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=5.548E-09 stop_rsd=1.000E-08
 invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
@@ -176,21 +173,19 @@ find_max_eigen_value_hermop_sym2:     4: sqrt_qnorm_ratio = 1.48877146814636507E
 find_max_eigen_value_hermop_sym2:     5: sqrt_qnorm_ratio = 1.58623325176833019E+00. (max eigen value of hermop_sym2)
 release_lock: Release lock 'results/free-4nt8/results=1000-lock'
 qremove: 'results/free-4nt8/results=1000-lock/time.txt'
-q_timer_max_func_name_len=50 (default)
 get_time_limit()=12.000000 hours
 get_default_budget()=0.250000 hours
 dist_read_par_limit()=16
 dist_write_par_limit()=16
-check_status: ( get_actual_total_time() + get_default_budget() ) / get_time_limit() = ( 0.00 + 0.25 ) / 12.00 hours.
 compute_traj: Checking 'results/free-4nt8/results=1010'.
 obtain_lock: Trying to obtain lock 'results/free-4nt8/results=1010-lock'.
+qrename: 'results/free-4nt8/results=1010-lock/time.txt.partial' 'results/free-4nt8/results=1010-lock/time.txt'
 obtain_lock: Lock obtained 'results/free-4nt8/results=1010-lock'.
 compute_traj: Start computing 'results/free-4nt8/results=1010'.
 get_time_limit()=12.000000 hours
 get_default_budget()=0.250000 hours
 dist_read_par_limit()=16
 dist_write_par_limit()=16
-check_status: ( get_actual_total_time() + get_default_budget() ) / get_time_limit() = ( 0.00 + 0.25 ) / 12.00 hours.
 compute_traj_do: job_tag='free-4nt8' ; traj=1010
 plaq :  1.00000000000000000E+00
 spatial plaq :  1.00000000000000000E+00
@@ -233,6 +228,9 @@ tsep[       6] re-im[      re]  6.00000000000000000E+00
 tsep[       6] re-im[      im]  0.00000000000000000E+00
 tsep[       7] re-im[      re]  7.00000000000000000E+00
 tsep[       7] re-im[      im]  0.00000000000000000E+00
+QFile: open 'results/free-4nt8/results=1010/data.lat.partial' with 'w'.
+qrename: 'results/free-4nt8/results=1010/data.lat.partial' 'results/free-4nt8/results=1010/data.lat'
+QFile: close 'results/free-4nt8/results=1010/data.lat.partial' with 'w'.
 geo = { initialized   = true
 , eo            = 0
 , geon          =
@@ -318,6 +316,8 @@ find_max_eigen_value_hermop_sym2:     5: sqrt_qnorm_ratio = 1.58659082254578254E
 release_lock: Release lock 'results/free-4nt8/results=1010-lock'
 qremove: 'results/free-4nt8/results=1010-lock/time.txt'
 program finished successfully for 'free-4nt8'.
+Cache: 'CommPlanCache': 6 / 32 [16] clear
+clear_mem_cache: 4715520 bytes (0.004 GB) freed.
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 0.
 qlat::end(): Finalize MPI.

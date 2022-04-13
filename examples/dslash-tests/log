@@ -8,21 +8,25 @@ qlat::begin(): GeometryNode =
 , id_node     = 0
 , size_node   = 1x2x2x2
 , coor_node   = 0x0x0x0 }
-q_verbose=0 (default)
+q_verbose=10
+q_timer_max_func_name_len=50 (default)
+clear_mem_cache: 0 bytes (0.000 GB) freed.
+q_timer_mini_auto_show=1 (default)
+q_timer_max_always_show=10 (default)
 q_field_init=fast (default)
 set q_field_init=fast.
 q_mem_cache_max_size=512 (default)
 q_mem_cache_acc_max_size=512 (default)
-CommPlanCache: to add 1 / 32.
+Cache: 'CommPlanCache': 0 / 32 [16] to add
 plaq :  1.00000000000000000E+00
-CommPlanCache: to add 2 / 32.
+Cache: 'CommPlanCache': 1 / 32 [16] to add
 spatial plaq :  1.00000000000000000E+00
 trace:  1.00000000000000000E+00
 plaq :  9.48525556759219013E-01
 spatial plaq :  9.48399549357766269E-01
 trace:  9.86912011041233272E-01
-CommPlanCache: to add 3 / 32.
-CommPlanCache: to add 4 / 32.
+Cache: 'CommPlanCache': 2 / 32 [16] to add
+Cache: 'CommPlanCache': 3 / 32 [16] to add
 plaq 1x1 :  9.48651564160671867E-01
 plaq 1x2 :  9.25212586145467419E-01
 plaq 2x1 :  9.24250174916469658E-01
@@ -35,7 +39,7 @@ plaq 3x3 :  8.55309122171914793E-01
 plaq (1,1,0,0)x2 :  4.32532616020453915E+01
 plaq (2,1,0,0)x1 :  4.43553870002865196E+01
 testing multiply_m_full and multiply_m
-CommPlanCache: to add 5 / 32.
+Cache: 'CommPlanCache': 4 / 32 [16] to add
 1.524000E+01, 1.524000E+01 qnorm(diff) = 0.000000E+00
 qnorm(diff after qnormalization) = 0.000000E+00
 2.246065E+01, 2.246065E+01 qnorm(diff) = 5.056177E-32
@@ -93,8 +97,8 @@ plaq 3x2 :  8.74369361641947784E-01
 plaq 3x3 :  8.51511991520023326E-01
 plaq (1,1,0,0)x2 :  4.31210259594704794E+01
 plaq (2,1,0,0)x1 :  4.42790577388240933E+01
-CommPlanCache: to add 6 / 32.
-CommPlanCache: to add 7 / 32.
+Cache: 'CommPlanCache': 5 / 32 [16] to add
+Cache: 'CommPlanCache': 6 / 32 [16] to add
 find_max_eigen_value_hermop_sym2:     1: sqrt_qnorm_ratio = 1.79007997920204631E+00. (max eigen value of hermop_sym2)
 find_max_eigen_value_hermop_sym2:     2: sqrt_qnorm_ratio = 2.38308414192340035E+00. (max eigen value of hermop_sym2)
 find_max_eigen_value_hermop_sym2:     3: sqrt_qnorm_ratio = 3.08637021159097191E+00. (max eigen value of hermop_sym2)
@@ -302,8 +306,9 @@ cg_with_f: final iter= 122 sqrt(qnorm_r/qnorm_in)=6.635E-04 stop_rsd=7.733E-04
 invert_with_cg(5d,5d,inv,cg): total_iter=323 cycle=2 stop_rsd=1.000E-12
 invert_with_cg(5d,5d,inv,cg): checking 3.862175E-09 from 3.803129E+03
 invert diff qnorm = 1.491640E-17
+Cache: 'CommPlanCache': 7 / 32 [16] clear
+clear_mem_cache: 5398528 bytes (0.005 GB) freed.
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 0.
 qlat::end(): Finalize MPI.
 qlat::end(): MPI Finalized.
-q_timer_max_func_name_len=50 (default)

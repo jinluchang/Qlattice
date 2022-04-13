@@ -150,6 +150,30 @@ EXPORT(is_directory_sync_node, {
   return py_convert(ret);
 });
 
+EXPORT(is_regular_file, {
+  using namespace qlat;
+  PyObject* p_path = NULL;
+  if (!PyArg_ParseTuple(args, "O", &p_path)) {
+    return NULL;
+  }
+  std::string path;
+  py_convert(path, p_path);
+  const bool ret = is_regular_file(path);
+  return py_convert(ret);
+});
+
+EXPORT(is_regular_file_sync_node, {
+  using namespace qlat;
+  PyObject* p_path = NULL;
+  if (!PyArg_ParseTuple(args, "O", &p_path)) {
+    return NULL;
+  }
+  std::string path;
+  py_convert(path, p_path);
+  const bool ret = is_regular_file_sync_node(path);
+  return py_convert(ret);
+});
+
 EXPORT(qtouch, {
   using namespace qlat;
   PyObject* p_path = NULL;
@@ -272,6 +296,33 @@ EXPORT(qls_sync_node, {
   return py_convert(ret);
 });
 
+EXPORT(qls_all, {
+  using namespace qlat;
+  PyObject* p_path = NULL;
+  bool is_folder_before_files = false;
+  if (!PyArg_ParseTuple(args, "O|b", &p_path, &is_folder_before_files)) {
+    return NULL;
+  }
+  std::string path;
+  py_convert(path, p_path);
+  const std::vector<std::string> ret = qls_all(path, is_folder_before_files);
+  return py_convert(ret);
+});
+
+EXPORT(qls_all_sync_node, {
+  using namespace qlat;
+  PyObject* p_path = NULL;
+  bool is_folder_before_files = false;
+  if (!PyArg_ParseTuple(args, "O|b", &p_path, &is_folder_before_files)) {
+    return NULL;
+  }
+  std::string path;
+  py_convert(path, p_path);
+  const std::vector<std::string> ret =
+      qls_all_sync_node(path, is_folder_before_files);
+  return py_convert(ret);
+});
+
 EXPORT(qcat, {
   using namespace qlat;
   PyObject* p_path = NULL;
@@ -294,6 +345,74 @@ EXPORT(qcat_sync_node, {
   py_convert(path, p_path);
   const std::string ret = qcat_sync_node(path);
   return py_convert(ret);
+});
+
+EXPORT(qar_create, {
+  using namespace qlat;
+  PyObject* p_path_qar = NULL;
+  PyObject* p_path_folder = NULL;
+  bool is_remove_folder_after = false;
+  if (!PyArg_ParseTuple(args, "OO|b", &p_path_qar, &p_path_folder, &is_remove_folder_after)) {
+    return NULL;
+  }
+  const std::string path_qar = py_convert_data<std::string>(p_path_qar);
+  const std::string path_folder = py_convert_data<std::string>(p_path_folder);
+  const int ret = qar_create(path_qar, path_folder, is_remove_folder_after);
+  return py_convert(ret);
+});
+
+EXPORT(qar_create_info, {
+  using namespace qlat;
+  PyObject* p_path_qar = NULL;
+  PyObject* p_path_folder = NULL;
+  bool is_remove_folder_after = false;
+  if (!PyArg_ParseTuple(args, "OO|b", &p_path_qar, &p_path_folder, &is_remove_folder_after)) {
+    return NULL;
+  }
+  const std::string path_qar = py_convert_data<std::string>(p_path_qar);
+  const std::string path_folder = py_convert_data<std::string>(p_path_folder);
+  const int ret = qar_create_info(path_qar, path_folder, is_remove_folder_after);
+  return py_convert(ret);
+});
+
+EXPORT(qar_extract, {
+  using namespace qlat;
+  PyObject* p_path_qar = NULL;
+  PyObject* p_path_folder = NULL;
+  bool is_remove_qar_after = false;
+  if (!PyArg_ParseTuple(args, "OO|b", &p_path_qar, &p_path_folder,
+                        &is_remove_qar_after)) {
+    return NULL;
+  }
+  const std::string path_qar = py_convert_data<std::string>(p_path_qar);
+  const std::string path_folder = py_convert_data<std::string>(p_path_folder);
+  const int ret = qar_extract(path_qar, path_folder, is_remove_qar_after);
+  return py_convert(ret);
+});
+
+EXPORT(qar_extract_info, {
+  using namespace qlat;
+  PyObject* p_path_qar = NULL;
+  PyObject* p_path_folder = NULL;
+  bool is_remove_qar_after = false;
+  if (!PyArg_ParseTuple(args, "OO|b", &p_path_qar, &p_path_folder,
+                        &is_remove_qar_after)) {
+    return NULL;
+  }
+  const std::string path_qar = py_convert_data<std::string>(p_path_qar);
+  const std::string path_folder = py_convert_data<std::string>(p_path_folder);
+  const int ret = qar_extract_info(path_qar, path_folder, is_remove_qar_after);
+  return py_convert(ret);
+});
+
+EXPORT(list_qar, {
+  using namespace qlat;
+  PyObject* p_path_qar = NULL;
+  if (!PyArg_ParseTuple(args, "O", &p_path_qar)) {
+    return NULL;
+  }
+  const std::string path_qar = py_convert_data<std::string>(p_path_qar);
+  return py_convert(list_qar(path_qar));
 });
 
 EXPORT(qload_datatable, {

@@ -8,9 +8,11 @@ from cqlat import qremove_all, qremove_all_info
 from cqlat import qmkdir, qmkdir_info, qmkdir_sync_node
 from cqlat import does_file_exist, does_file_exist_sync_node
 from cqlat import is_directory, is_directory_sync_node
+from cqlat import is_regular_file, is_regular_file_sync_node
 from cqlat import qrename, qrename_info
 from cqlat import qcat, qcat_sync_node
 from cqlat import qls, qls_sync_node
+from cqlat import qls_all, qls_all_sync_node
 from cqlat import qload_datatable, qload_datatable_sync_node
 from cqlat import check_time_limit, check_stop
 
@@ -110,3 +112,23 @@ def pickle_cache_call(func, path):
     else:
         obj = load_pickle_obj(path)
     return obj
+
+@timer
+def qar_create(path_qar, path_folder, *, is_remove_folder_after = False):
+    return c.qar_create(path_qar, path_folder, is_remove_folder_after)
+
+@timer
+def qar_create_info(path_qar, path_folder, *, is_remove_folder_after = False):
+    return c.qar_create_info(path_qar, path_folder, is_remove_folder_after)
+
+@timer
+def qar_extract(path_qar, path_folder, *, is_remove_folder_after = False):
+    return c.qar_extract(path_qar, path_folder, is_remove_folder_after)
+
+@timer
+def qar_extract_info(path_qar, path_folder, *, is_remove_qar_after = False):
+    return c.qar_extract_info(path_qar, path_folder, is_remove_qar_after)
+
+@timer
+def list_qar(path_qar):
+    return c.list_qar(path_qar)
