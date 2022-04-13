@@ -270,8 +270,8 @@ inline CompressedEigenSystemInfo read_compressed_eigen_system_info(
         cesdi.total_site = cesdi.node_site;
         cesdi.total_site[3] *= crcs.size();
       }
-      displayln_info(fname + ssprintf(": using guessed total_site=%s",
-                                      show(cesdi.total_site).c_str()));
+      displayln_info(0, fname + ssprintf(": using guessed total_site=%s",
+                                         show(cesdi.total_site).c_str()));
     }
     qassert(product(cesdi.total_site) == global_volume);
     const std::string str_gs5 = info_get_prop(lines, ssprintf("gs[4] = "));
@@ -890,6 +890,7 @@ inline std::vector<crc32_t> load_node_data(
   TIMER_VERBOSE_FLOPS("load_node_data");
   if (not cesd.initialized) {
     displayln_info(
+        0,
         "initialize compressed eigen system data with current machine layout");
     init_compressed_eigen_system_data(cesd, cesi, get_id_node(),
                                       get_size_node());
@@ -910,9 +911,9 @@ inline std::vector<crc32_t> load_node_data(
     const int idx =
         index_from_coordinate(xg / cesi.node_block, cesi.total_node);
     qassert(0 <= idx && idx < idx_size);
-    displayln_info("load: fn='" + fps[idx].fn + "' ; index=" + show(index) +
-                   "/" + show(geo.local_volume()) + " ; xl=" + show(xl) + "/" +
-                   show(geo.node_site));
+    displayln_info(2, "load: fn='" + fps[idx].fn + "' ; index=" + show(index) +
+                          "/" + show(geo.local_volume()) + " ; xl=" + show(xl) +
+                          "/" + show(geo.node_site));
     load_block_data(cesd, xl, cesi, fps[idx], xl_file);
   }
   for (int idx = 0; idx < idx_size; ++idx) {
@@ -965,9 +966,9 @@ inline crc32_t save_node_data(const CompressedEigenSystemData& cesd,
       vopen(path + ssprintf("/%02d/%010d.compressed", dir_idx, idx), "w");
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
-    displayln_info("save: fn='" + fp.fn + "' ; index=" + show(index) + "/" +
-                   show(geo.local_volume()) + " ; xl=" + show(xl) + "/" +
-                   show(geo.node_site));
+    displayln_info(0, "save: fn='" + fp.fn + "' ; index=" + show(index) + "/" +
+                          show(geo.local_volume()) + " ; xl=" + show(xl) + "/" +
+                          show(geo.node_site));
     save_block_data(cesd, xl, cesi, fp);
   }
   vclose(fp);
@@ -1053,6 +1054,7 @@ inline std::vector<crc32_t> load_node(CompressedEigenSystemBases& cesb,
   std::vector<crc32_t> crcs = load_node_data(cesd, cesi, path);
   if (not cesb.initialized) {
     displayln_info(
+        0,
         "initialize compressed eigen system bases and coefs with current "
         "machine layout");
     init_compressed_eigen_system_bases(cesb, cesi, get_id_node(),
@@ -1259,7 +1261,8 @@ inline long load_compressed_eigen_vectors(vector<double>& eigen_values,
 // geometry will be same as machine geometry
 {
   if (!does_file_exist_sync_node(path + "/metadata.txt")) {
-    displayln_info(ssprintf("load_compressed_eigen_vectors: '%s' do not exist.",
+    displayln_info(0,
+                   ssprintf("load_compressed_eigen_vectors: '%s' do not exist.",
                             path.c_str()));
     return 0;
   }
@@ -1282,8 +1285,8 @@ inline long load_compressed_eigen_vectors(vector<double>& eigen_values,
         bytes = 0;
       }
       glb_sum(bytes);
-      displayln_info(fname +
-                     ssprintf(": cycle / n_cycle = %4d / %4d", i + 1, n_cycle));
+      displayln_info(
+          0, fname + ssprintf(": cycle / n_cycle = %4d / %4d", i + 1, n_cycle));
       timer.flops += bytes;
       total_bytes += bytes;
     }
@@ -1292,7 +1295,7 @@ inline long load_compressed_eigen_vectors(vector<double>& eigen_values,
   glb_sum_byte_vec(get_data(crcs));
   for (int j = 0; j < (int)crcs.size(); ++j) {
     if (crcs[j] != cesi.crcs[j]) {
-      displayln_info(ssprintf("file-idx=%d loaded=%08X metadata=%08X", j,
+      qwarn(ssprintf("file-idx=%d loaded=%08X metadata=%08X", j,
                               crcs[j], cesi.crcs[j]));
       qassert(false);
     }
@@ -1486,8 +1489,8 @@ inline void decompress_eigen_vectors(
     return;
   }
   TIMER_VERBOSE("decompress_eigen_vectors");
-  displayln_info(fname + ssprintf(": old_path: '") + old_path + "'");
-  displayln_info(fname + ssprintf(": new_path: '") + new_path + "'");
+  displayln_info(0, fname + ssprintf(": old_path: '") + old_path + "'");
+  displayln_info(0, fname + ssprintf(": new_path: '") + new_path + "'");
   qmkdir_info(new_path);
   CompressedEigenSystemInfo cesi;
   cesi = read_compressed_eigen_system_info(old_path);
@@ -1500,7 +1503,7 @@ inline void decompress_eigen_vectors(
     const std::string eigen_values = qcat(old_path + "/eigen-values.txt");
     qtouch(new_path + "/eigen-values.txt", eigen_values);
   }
-  displayln_info(fname + ssprintf(": idx_size=%d", idx_size));
+  displayln_info(0, fname + ssprintf(": idx_size=%d", idx_size));
   std::vector<int> avails(idx_size, 0);
   if (0 == get_id_node()) {
     for (int idx = 0; idx < idx_size; ++idx) {
@@ -1517,7 +1520,7 @@ inline void decompress_eigen_vectors(
       n_avails += 1;
     }
   }
-  displayln_info(fname + ssprintf(": n_avails=%d", n_avails));
+  displayln_info(0, fname + ssprintf(": n_avails=%d", n_avails));
   if (n_avails == 0) {
     if (obtain_lock(new_path + "/lock")) {
       combine_crc32(new_path, idx_size, cesi);
@@ -1605,10 +1608,11 @@ inline bool resize_compressed_eigen_vectors(const std::string& old_path,
 // interface
 {
   TIMER_VERBOSE("resize_compressed_eigen_vectors");
-  displayln_info(fname + ssprintf(": old_path: '") + old_path + "'");
-  displayln_info(fname + ssprintf(": new_path: '") + new_path + "'");
+  displayln_info(0, fname + ssprintf(": old_path: '") + old_path + "'");
+  displayln_info(0, fname + ssprintf(": new_path: '") + new_path + "'");
   if (does_file_exist_sync_node(new_path)) {
-    displayln_info(fname + ssprintf(": new_path: '%s' exists.", new_path.c_str()));
+    displayln_info(
+        0, fname + ssprintf(": new_path: '%s' exists.", new_path.c_str()));
     return false;
   }
   qmkdir_info(new_path);
@@ -1619,7 +1623,7 @@ inline bool resize_compressed_eigen_vectors(const std::string& old_path,
     const std::string eigen_values = qcat(old_path + "/eigen-values.txt");
     qtouch(new_path + "/eigen-values.txt", eigen_values);
   }
-  displayln_info(fname + ssprintf(": idx_size=%d", idx_size));
+  displayln_info(0, fname + ssprintf(": idx_size=%d", idx_size));
   const CompressedEigenSystemInfo cesi_old =
       read_compressed_eigen_system_info(old_path);
   CompressedEigenSystemInfo cesi_new =
@@ -1638,14 +1642,14 @@ inline bool resize_compressed_eigen_vectors(const std::string& old_path,
   qassert(crcs_acc.size() == cesi_old.crcs.size());
   for (int j = 0; j < (int)cesi_old.crcs.size(); ++j) {
     if (crcs_acc[j] != cesi_old.crcs[j]) {
-      displayln_info(ssprintf("file-idx=%d loaded=%08X metadata=%08X", j,
-                              crcs_acc[j], cesi.crcs[j]));
+      qwarn(ssprintf("file-idx=%d loaded=%08X metadata=%08X", j, crcs_acc[j],
+                     cesi.crcs[j]));
       qassert(false);
     }
   }
-  displayln_info(fname + ssprintf(": loaded data checksum matched."));
+  displayln_info(0, fname + ssprintf(": loaded data checksum matched."));
   write_compressed_eigen_system_info(cesi_new, new_path);
-  displayln_info(fname + ssprintf(": checking saved data checksum"));
+  displayln_info(0, fname + ssprintf(": checking saved data checksum"));
   return check_compressed_eigen_vectors(new_path);
 }
 
@@ -1660,7 +1664,7 @@ inline void decompressed_eigen_vectors_check_crc32(const std::string& path)
   if (not obtain_lock(path + "/lock")) {
     return;
   }
-  displayln_info(fname + ": " + path);
+  displayln_info(0, fname + ": " + path);
   qassert(does_file_exist_sync_node(path + "/checksums.txt"));
   long idx_size = 0;
   std::vector<crc32_t> crcs_load;
@@ -1737,16 +1741,16 @@ inline bool eigen_system_repartition(const Coordinate& new_size_node,
   const std::string new_npath = remove_trailing_slashes(new_path);
   if (not does_file_exist_sync_node(npath + "/metadata.txt")) {
     displayln_info(
-        ssprintf("repartition: WARNING: not a folder to partition: '%s'.",
-                 npath.c_str()));
+        0, ssprintf("repartition: WARNING: not a folder to partition: '%s'.",
+                    npath.c_str()));
     return true;
   }
   CompressedEigenSystemInfo cesi;
   cesi = read_compressed_eigen_system_info(npath);
   if (cesi.total_node == new_size_node and
       (new_npath == "" or new_npath == npath)) {
-    displayln_info(fname +
-                   ssprintf(": size_node=%s ; no need to repartition '%s'.",
+    displayln_info(
+        0, fname + ssprintf(": size_node=%s ; no need to repartition '%s'.",
                             show(cesi.total_node).c_str(), npath.c_str()));
     return true;
   } else if (new_npath == npath or new_npath == "") {
