@@ -134,6 +134,14 @@ class Field:
         
     def set_checkers(self):
         c.set_checkers_double_field(self)
+    
+    def set_complex_from_double(self, sf):
+        assert isinstance(sf, Field)
+        c.set_checkers_double_field(self,sf)
+    
+    def set_double_from_complex(self, cf):
+        assert isinstance(cf, Field)
+        c.set_checkers_double_field(self,cf)
 
     def qnorm(self):
         return c.qnorm_field(self)
@@ -318,6 +326,9 @@ class Field:
     def xg_list(self):
         # return xg for all local sites
         return self.geo().xg_list()
+
+    def sum_sq(self):
+        return c.field_sum_sq_field(self)
 
     def glb_sum(self):
         if self.ctype in field_ctypes_double:
