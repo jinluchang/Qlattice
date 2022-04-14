@@ -37,6 +37,7 @@ inline std::string get_qar_read_cache_key(const std::string& path)
       qassert(not cache.has(key));
       QarFile& qar = cache[key];
       qar.init(path_dir + ".qar", "r");
+      qassert(not qar.null());
       return key;
     }
     path_dir = dirname(path_dir);
@@ -60,7 +61,7 @@ inline bool does_file_exist_qar(const std::string& path)
   return has(qar, fn);
 }
 
-inline void qopen(const std::string& path, const std::string mode, QFile& qfile)
+inline void qopen(QFile& qfile, const std::string& path, const std::string& mode)
 // interface function
 // qfile.null() == true if qopen failed.
 {

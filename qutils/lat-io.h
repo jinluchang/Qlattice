@@ -43,7 +43,8 @@ struct LatData {
   void load(QFile& qfile);
   void load(const std::string& fn)
   {
-    QFile qfile(fn, "r");
+    QFile qfile;
+    qopen(qfile, fn, "r");
     load(qfile);
   }
   //
