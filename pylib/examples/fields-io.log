@@ -24,6 +24,12 @@ Cache: 'ShufflePlanCache': 0 / 16 [8] to add
 prop 870829356 49123.69045958381
 mk_file_dirs_info: 'results/prop.fields'.
 FieldsWriter: open 'results/prop.fields'.
+QFile: open 'results/prop.fields/geon-info.txt' with 'w'.
+QFile: close 'results/prop.fields/geon-info.txt' with 'w'.
+QFile: open 'results/prop.fields/00/0000000000' with 'w'.
+QFile: open 'results/prop.fields/01/0000000001' with 'w'.
+QFile: open 'results/prop.fields/02/0000000002' with 'w'.
+QFile: open 'results/prop.fields/03/0000000003' with 'w'.
 sfw.new_size_node() [1, 1, 1, 8]
 write(sfw,fn,field): writing field with fn='prop.d' from 'results/prop.fields'.
 make_shuffle_plan_generic: num_send_packs =          8
@@ -65,8 +71,17 @@ make_shuffle_plan_generic: total num_recv_msgs  =          2
 make_shuffle_plan_generic: global_comm_size =        130
 write(sfw,fn,sf,sbs): writing sparse field with fn='prop1' from 'results/prop.fields'.
 shuffle_field(sel_fs,sel_f,sp): 1x1x1x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.000 GB)
-FieldsWriter: close 'results/prop.fields'.
+QFile: close 'results/prop.fields/00/0000000000' with 'w'.
+QFile: close 'results/prop.fields/01/0000000001' with 'w'.
+QFile: close 'results/prop.fields/02/0000000002' with 'w'.
+QFile: close 'results/prop.fields/03/0000000003' with 'w'.
+QFile: open 'results/prop.fields/geon-info.txt' with 'r'.
+QFile: close 'results/prop.fields/geon-info.txt' with 'r'.
 FieldsReader: open 'results/prop.fields'.
+QFile: open 'results/prop.fields/00/0000000000' with 'r'.
+QFile: open 'results/prop.fields/01/0000000001' with 'r'.
+QFile: open 'results/prop.fields/02/0000000002' with 'r'.
+QFile: open 'results/prop.fields/03/0000000003' with 'r'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'prop.d' from 'results/prop.fields'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'prop' from 'results/prop.fields'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 's_prop' from 'results/prop.fields'.
@@ -128,15 +143,33 @@ make_shuffle_plan_generic: global_comm_size =        130
 shuffle_field_back(sel_f,sel_fs,sp): 1x1x1x8 -> 1x1x1x2 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.000 GB)
 prop1_ff 12473.61033144344
 prop1_ff -= prop1 6.319120089073607e-12
-FieldsReader: close 'results/prop.fields'.
+QFile: close 'results/prop.fields/00/0000000000' with 'r'.
+QFile: close 'results/prop.fields/01/0000000001' with 'r'.
+QFile: close 'results/prop.fields/02/0000000002' with 'r'.
+QFile: close 'results/prop.fields/03/0000000003' with 'r'.
+QFile: open 'results/prop.fields/geon-info.txt' with 'r'.
+QFile: close 'results/prop.fields/geon-info.txt' with 'r'.
 FieldsReader: open 'results/prop.fields'.
+QFile: open 'results/prop.fields/00/0000000000' with 'r'.
+QFile: open 'results/prop.fields/01/0000000001' with 'r'.
+QFile: open 'results/prop.fields/02/0000000002' with 'r'.
+QFile: open 'results/prop.fields/03/0000000003' with 'r'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'prop.d' from 'results/prop.fields'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'prop' from 'results/prop.fields'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 's_prop' from 'results/prop.fields'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'prop1' from 'results/prop.fields'.
-FieldsReader: close 'results/prop.fields'.
+QFile: close 'results/prop.fields/00/0000000000' with 'r'.
+QFile: close 'results/prop.fields/01/0000000001' with 'r'.
+QFile: close 'results/prop.fields/02/0000000002' with 'r'.
+QFile: close 'results/prop.fields/03/0000000003' with 'r'.
 ['prop.d', 'prop', 's_prop', 'prop1']
+QFile: open 'results/prop.fields/geon-info.txt' with 'r'.
+QFile: close 'results/prop.fields/geon-info.txt' with 'r'.
 FieldsReader: open 'results/prop.fields'.
+QFile: open 'results/prop.fields/00/0000000000' with 'r'.
+QFile: open 'results/prop.fields/01/0000000001' with 'r'.
+QFile: open 'results/prop.fields/02/0000000002' with 'r'.
+QFile: open 'results/prop.fields/03/0000000003' with 'r'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'prop.d' from 'results/prop.fields'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'prop' from 'results/prop.fields'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 's_prop' from 'results/prop.fields'.
@@ -144,20 +177,38 @@ read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'prop1' from 'results/p
 check_file_sync_node(sfr,fn): reading field with fn='prop1' from 'results/prop.fields'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'prop1' from 'results/prop.fields'.
 check_file_sync_node(sfr,fn): check=true field fn='prop1' from 'results/prop.fields'.
-FieldsReader: close 'results/prop.fields'.
+QFile: close 'results/prop.fields/00/0000000000' with 'r'.
+QFile: close 'results/prop.fields/01/0000000001' with 'r'.
+QFile: close 'results/prop.fields/02/0000000002' with 'r'.
+QFile: close 'results/prop.fields/03/0000000003' with 'r'.
 properly_truncate_fields_sync_node: i=    0 fn='prop.d'
 properly_truncate_fields_sync_node: i=    1 fn='prop'
 properly_truncate_fields_sync_node: i=    2 fn='s_prop'
 properly_truncate_fields_sync_node: i=    3 fn='prop1'
 properly_truncate_fields_sync_node: fns.size()=    4 'results/prop.fields'
+QFile: open 'results/prop.fields/geon-info.txt' with 'r'.
+QFile: close 'results/prop.fields/geon-info.txt' with 'r'.
 FieldsReader: open 'results/prop.fields'.
+QFile: open 'results/prop.fields/00/0000000000' with 'r'.
+QFile: open 'results/prop.fields/01/0000000001' with 'r'.
+QFile: open 'results/prop.fields/02/0000000002' with 'r'.
+QFile: open 'results/prop.fields/03/0000000003' with 'r'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'prop.d' from 'results/prop.fields'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'prop' from 'results/prop.fields'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 's_prop' from 'results/prop.fields'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'prop1' from 'results/prop.fields'.
-FieldsReader: close 'results/prop.fields'.
+QFile: close 'results/prop.fields/00/0000000000' with 'r'.
+QFile: close 'results/prop.fields/01/0000000001' with 'r'.
+QFile: close 'results/prop.fields/02/0000000002' with 'r'.
+QFile: close 'results/prop.fields/03/0000000003' with 'r'.
 ['prop.d', 'prop', 's_prop', 'prop1']
+QFile: open 'results/prop.fields/geon-info.txt' with 'r'.
+QFile: close 'results/prop.fields/geon-info.txt' with 'r'.
 FieldsReader: open 'results/prop.fields'.
+QFile: open 'results/prop.fields/00/0000000000' with 'r'.
+QFile: open 'results/prop.fields/01/0000000001' with 'r'.
+QFile: open 'results/prop.fields/02/0000000002' with 'r'.
+QFile: open 'results/prop.fields/03/0000000003' with 'r'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'prop.d' from 'results/prop.fields'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'prop' from 'results/prop.fields'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 's_prop' from 'results/prop.fields'.
@@ -165,15 +216,33 @@ read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'prop1' from 'results/p
 check_file_sync_node(sfr,fn): reading field with fn='prop1' from 'results/prop.fields'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'prop1' from 'results/prop.fields'.
 check_file_sync_node(sfr,fn): check=true field fn='prop1' from 'results/prop.fields'.
-FieldsReader: close 'results/prop.fields'.
+QFile: close 'results/prop.fields/00/0000000000' with 'r'.
+QFile: close 'results/prop.fields/01/0000000001' with 'r'.
+QFile: close 'results/prop.fields/02/0000000002' with 'r'.
+QFile: close 'results/prop.fields/03/0000000003' with 'r'.
+QFile: open 'results/prop.fields/geon-info.txt' with 'r'.
+QFile: close 'results/prop.fields/geon-info.txt' with 'r'.
 FieldsReader: open 'results/prop.fields'.
+QFile: open 'results/prop.fields/00/0000000000' with 'r'.
+QFile: open 'results/prop.fields/01/0000000001' with 'r'.
+QFile: open 'results/prop.fields/02/0000000002' with 'r'.
+QFile: open 'results/prop.fields/03/0000000003' with 'r'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'prop.d' from 'results/prop.fields'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'prop' from 'results/prop.fields'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 's_prop' from 'results/prop.fields'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'prop1' from 'results/prop.fields'.
-FieldsReader: close 'results/prop.fields'.
+QFile: close 'results/prop.fields/00/0000000000' with 'r'.
+QFile: close 'results/prop.fields/01/0000000001' with 'r'.
+QFile: close 'results/prop.fields/02/0000000002' with 'r'.
+QFile: close 'results/prop.fields/03/0000000003' with 'r'.
 ['prop.d', 'prop', 's_prop', 'prop1']
+QFile: open 'results/prop.fields/geon-info.txt' with 'r'.
+QFile: close 'results/prop.fields/geon-info.txt' with 'r'.
 FieldsReader: open 'results/prop.fields'.
+QFile: open 'results/prop.fields/00/0000000000' with 'r'.
+QFile: open 'results/prop.fields/01/0000000001' with 'r'.
+QFile: open 'results/prop.fields/02/0000000002' with 'r'.
+QFile: open 'results/prop.fields/03/0000000003' with 'r'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'prop.d' from 'results/prop.fields'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'prop' from 'results/prop.fields'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 's_prop' from 'results/prop.fields'.
@@ -181,28 +250,58 @@ read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'prop1' from 'results/p
 check_file_sync_node(sfr,fn): reading field with fn='s_prop' from 'results/prop.fields'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 's_prop' from 'results/prop.fields'.
 check_file_sync_node(sfr,fn): check=true field fn='s_prop' from 'results/prop.fields'.
-FieldsReader: close 'results/prop.fields'.
+QFile: close 'results/prop.fields/00/0000000000' with 'r'.
 truncate_fields_sync_node: Truncate 'results/prop.fields/00/0000000000': final_offset=239799, original file_size=260601.
+QFile: close 'results/prop.fields/01/0000000001' with 'r'.
 truncate_fields_sync_node: Truncate 'results/prop.fields/01/0000000001': final_offset=239799, original file_size=258297.
+QFile: close 'results/prop.fields/02/0000000002' with 'r'.
 truncate_fields_sync_node: Truncate 'results/prop.fields/02/0000000002': final_offset=239799, original file_size=258297.
+QFile: close 'results/prop.fields/03/0000000003' with 'r'.
 truncate_fields_sync_node: Truncate 'results/prop.fields/03/0000000003': final_offset=239799, original file_size=258297.
+QFile: open 'results/prop.fields/geon-info.txt' with 'r'.
+QFile: close 'results/prop.fields/geon-info.txt' with 'r'.
 FieldsReader: open 'results/prop.fields'.
+QFile: open 'results/prop.fields/00/0000000000' with 'r'.
+QFile: open 'results/prop.fields/01/0000000001' with 'r'.
+QFile: open 'results/prop.fields/02/0000000002' with 'r'.
+QFile: open 'results/prop.fields/03/0000000003' with 'r'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'prop.d' from 'results/prop.fields'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'prop' from 'results/prop.fields'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 's_prop' from 'results/prop.fields'.
-FieldsReader: close 'results/prop.fields'.
+QFile: close 'results/prop.fields/00/0000000000' with 'r'.
+QFile: close 'results/prop.fields/01/0000000001' with 'r'.
+QFile: close 'results/prop.fields/02/0000000002' with 'r'.
+QFile: close 'results/prop.fields/03/0000000003' with 'r'.
 ['prop.d', 'prop', 's_prop']
+QFile: open 'results/prop.fields/geon-info.txt' with 'r'.
+QFile: close 'results/prop.fields/geon-info.txt' with 'r'.
 FieldsReader: open 'results/prop.fields'.
+QFile: open 'results/prop.fields/00/0000000000' with 'r'.
+QFile: open 'results/prop.fields/01/0000000001' with 'r'.
+QFile: open 'results/prop.fields/02/0000000002' with 'r'.
+QFile: open 'results/prop.fields/03/0000000003' with 'r'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'prop.d' from 'results/prop.fields'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'prop' from 'results/prop.fields'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 's_prop' from 'results/prop.fields'.
-FieldsReader: close 'results/prop.fields'.
+QFile: close 'results/prop.fields/00/0000000000' with 'r'.
 truncate_fields_sync_node: Truncate 'results/prop.fields/00/0000000000': final_offset=0, original file_size=239799.
+QFile: close 'results/prop.fields/01/0000000001' with 'r'.
 truncate_fields_sync_node: Truncate 'results/prop.fields/01/0000000001': final_offset=0, original file_size=239799.
+QFile: close 'results/prop.fields/02/0000000002' with 'r'.
 truncate_fields_sync_node: Truncate 'results/prop.fields/02/0000000002': final_offset=0, original file_size=239799.
+QFile: close 'results/prop.fields/03/0000000003' with 'r'.
 truncate_fields_sync_node: Truncate 'results/prop.fields/03/0000000003': final_offset=0, original file_size=239799.
+QFile: open 'results/prop.fields/geon-info.txt' with 'r'.
+QFile: close 'results/prop.fields/geon-info.txt' with 'r'.
 FieldsReader: open 'results/prop.fields'.
-FieldsReader: close 'results/prop.fields'.
+QFile: open 'results/prop.fields/00/0000000000' with 'r'.
+QFile: open 'results/prop.fields/01/0000000001' with 'r'.
+QFile: open 'results/prop.fields/02/0000000002' with 'r'.
+QFile: open 'results/prop.fields/03/0000000003' with 'r'.
+QFile: close 'results/prop.fields/00/0000000000' with 'r'.
+QFile: close 'results/prop.fields/01/0000000001' with 'r'.
+QFile: close 'results/prop.fields/02/0000000002' with 'r'.
+QFile: close 'results/prop.fields/03/0000000003' with 'r'.
 []
 ['prop.fields']
 Cache: 'ShufflePlanCache': 2 / 16 [8] clear

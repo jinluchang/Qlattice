@@ -133,3 +133,11 @@ def qar_extract_info(path_qar, path_folder, *, is_remove_qar_after = False):
 @timer
 def list_qar(path_qar):
     return c.list_qar(path_qar)
+
+@timer
+def compute_crc32(path):
+    return c.compute_crc32(path)
+
+@timer
+def check_all_files_crc32_info(path):
+    return c.check_all_files_crc32_info(path)

@@ -57,6 +57,7 @@ struct MemCache {
   //
   void add(void* ptr, const size_t size)
   {
+    qassert(size > 0);
     mem_cache_size += size;
     std::pair<size_t, void*> p(size, ptr);
     db.insert(p);
@@ -80,6 +81,9 @@ struct MemCache {
   //
   void gc()
   {
+    if (mem_cache_size == 0) {
+      return;
+    }
     TIMER_FLOPS("MemCache::gc()");
     timer.flops += mem_cache_size;
     for (auto iter = db.cbegin(); iter != db.cend(); ++iter) {
@@ -122,11 +126,11 @@ inline void clear_mem_cache()
   long total_bytes = 0;
   total_bytes += get_mem_cache(false).mem_cache_size;
   total_bytes += get_mem_cache(true).mem_cache_size;
+  get_mem_cache(false).gc();
+  get_mem_cache(true).gc();
   displayln_info(
       0, fname + ssprintf(": %ld bytes (%.3f GB) freed.", total_bytes,
                           (double)total_bytes / (1024.0 * 1024.0 * 1024.0)));
-  get_mem_cache(false).gc();
-  get_mem_cache(true).gc();
 }
 
 inline void* alloc_mem_alloc_no_acc(const long size)

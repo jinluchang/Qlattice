@@ -437,6 +437,28 @@ EXPORT(list_qar, {
   return py_convert(list_qar(path_qar));
 });
 
+EXPORT(compute_crc32, {
+  using namespace qlat;
+  PyObject* p_path = NULL;
+  if (!PyArg_ParseTuple(args, "O", &p_path)) {
+    return NULL;
+  }
+  const std::string path = py_convert_data<std::string>(p_path);
+  const long ret = compute_crc32(path);
+  return py_convert(ret);
+});
+
+EXPORT(check_all_files_crc32_info, {
+  using namespace qlat;
+  PyObject* p_path = NULL;
+  if (!PyArg_ParseTuple(args, "O", &p_path)) {
+    return NULL;
+  }
+  const std::string path = py_convert_data<std::string>(p_path);
+  check_all_files_crc32_info(path);
+  Py_RETURN_NONE;
+});
+
 EXPORT(qload_datatable, {
   using namespace qlat;
   PyObject* p_path = NULL;

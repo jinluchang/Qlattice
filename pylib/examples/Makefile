@@ -3,12 +3,13 @@ SHELL=/bin/bash
 all: run
 
 tests = make-sample-gauge-field.log \
+		qar.log \
+		lat-io.log \
 		field-utils.log \
 		qcd-utils.log \
 		hmc-pure-gauge.log \
 		field-selection.log \
 		selected-field.log \
-		lat-io.log \
 		fields-io.log \
 		free-invert.log
 

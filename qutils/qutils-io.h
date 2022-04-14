@@ -162,7 +162,6 @@ inline int qmkdir(const std::string& path,
 inline int qmkdir_p(const std::string& path_,
                     const mode_t mode = default_dir_mode())
 // return 0 if successful
-// may try repeatedly in case of failure.
 {
   TIMER("qmkdir_p");
   std::string path = remove_trailing_slashes(path_);
@@ -189,7 +188,11 @@ inline int qmkdir_p(const std::string& path_,
       return 2;
     }
   }
-  return check_dir(path_, mode);
+  if (not is_directory(path)) {
+    qwarn(fname + ssprintf(": '%s' failed.", path_.c_str()));
+    return 3;
+  }
+  return 0;
 }
 
 inline std::vector<std::string> qls_aux(const std::string& path,
@@ -391,15 +394,6 @@ inline std::vector<std::string> qgetlines(FILE* fp)
   return ret;
 }
 
-inline std::vector<std::string> qgetlines(const std::string& fn)
-{
-  FILE* fp = qopen(fn, "r");
-  qassert(fp != NULL);
-  std::vector<std::string> lines = qgetlines(fp);
-  qclose(fp);
-  return lines;
-}
-
 inline int& is_sigterm_received()
 {
   static int n = 0;
@@ -467,26 +461,6 @@ long qread_data(const Vector<M>& v, FILE* fp)
   TIMER_FLOPS("qread_data");
   timer.flops += v.data_size();
   return sizeof(M) * std::fread((void*)v.p, sizeof(M), v.n, fp);
-}
-
-inline crc32_t compute_crc32(const std::string& path)
-{
-  TIMER_VERBOSE_FLOPS("compute_crc32");
-  const size_t chunk_size = 16 * 1024 * 1024;
-  std::vector<char> data(chunk_size);
-  crc32_t crc = 0;
-  FILE* fp = qopen(path, "r");
-  qassert(fp != NULL);
-  while (true) {
-    const long size = qread_data(get_data(data), fp);
-    timer.flops += size;
-    if (size == 0) {
-      break;
-    }
-    crc = crc32_par(crc, Vector<char>(data.data(), size));
-  }
-  qclose(fp);
-  return crc;
 }
 
 }  // namespace qlat

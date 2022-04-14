@@ -86,7 +86,7 @@ struct QFile {
     close();
     path = path_;
     mode = mode_;
-    displayln(
+    displayln_info(
         1, ssprintf("QFile: open '%s' with '%s'.", path.c_str(), mode.c_str()));
     fp = qopen(path, mode);
     if (fp == NULL) {
@@ -144,8 +144,8 @@ struct QFile {
     qassert(number_of_child == 0);
     if (NULL == parent) {
       if (fp != NULL) {
-        displayln(1, ssprintf("QFile: close '%s' with '%s'.", path.c_str(),
-                              mode.c_str()));
+        displayln_info(1, ssprintf("QFile: close '%s' with '%s'.", path.c_str(),
+                                   mode.c_str()));
         qclose(fp);
       }
     } else {
@@ -192,6 +192,12 @@ inline long qftell(const QFile& qfile)
 // interface function
 {
   return qfile.pos;
+}
+
+inline int qfflush(QFile& qfile)
+// interface function
+{
+  return fflush(qfile.fp);
 }
 
 inline int qfseek(QFile& qfile, const long q_offset, const int whence)
@@ -413,6 +419,8 @@ inline long write_from_qfile(QFile& qfile_out, QFile& qfile_in)
   timer.flops += total_bytes;
   return total_bytes;
 }
+
+// -------------------
 
 const std::string qar_header = "#!/usr/bin/env qar-glimpse\n\n";
 
@@ -686,86 +694,6 @@ inline std::vector<std::string> list(QarFile& qar)
   return qar.fn_list;
 }
 
-inline std::vector<std::string> list_qar(const std::string& path)
-{
-  TIMER_VERBOSE("list_qar");
-  QarFile qar(path, "r");
-  return list(qar);
-}
-
-inline int truncate_qar_file(const std::string& path,
-                             const std::vector<std::string>& fns_keep)
-// interface function
-// return nonzero if failed.
-// return 0 if truncated successfully.
-// if fns_keep is empty, the resulting qar file should have and only have qar_header.
-{
-  TIMER_VERBOSE("truncate_qar_file");
-  QarFile qar(path, "r");
-  if (qar.null()) {
-    if (fns_keep.size() == 0) {
-      qar.init(path, "w");
-      return 0;
-    } else {
-      qwarn(fname + ssprintf(": fns_keep.size()=%ld", fns_keep.size()));
-      return 1;
-    }
-  }
-  const std::vector<std::string> fns = list(qar);
-  if (fns.size() < fns_keep.size()) {
-    qwarn(fname + ssprintf(": fns.size()=%ld fns_keep.size()=%ld", fns.size(),
-                           fns_keep.size()));
-    return 1;
-  }
-  for (long i = 0; i < (long)fns_keep.size(); ++i) {
-    if (fns[i] != fns_keep[i]) {
-      qwarn(fname + ssprintf(": fns[i]='%s' fns_keep[i]='%s'", fns[i].c_str(),
-                             fns_keep[i].c_str()));
-      return 2;
-    }
-  }
-  if (fns_keep.size() > 0) {
-  }
-  std::string fn_last = "";
-  if (fns_keep.size() > 0) {
-    fn_last = fns_keep.back();
-  }
-  const long offset_final = qar.qsinfo_map[fn_last].offset_end;
-  qar.close();
-  const bool b = qtruncate(path, offset_final);
-  if (not b) {
-    qwarn(fname +
-          ssprintf(": fns.size()=%ld fns_keep.size()=%ld offset_final=%ld",
-                   fns.size(), fns_keep.size(), offset_final));
-    return 3;
-  }
-  return 0;
-}
-
-inline std::vector<std::string> properly_truncate_qar_file(const std::string& path)
-// interface function
-// The resulting qar file should at least have qar_header.
-// Should call this function before append.
-{
-  std::vector<std::string> fns_keep;
-  QarFile qar(path, "r");
-  if (qar.null()) {
-    qar.init(path, "w");
-    qar.close();
-    return fns_keep;
-  }
-  fns_keep = list(qar);
-  std::string fn_last = "";
-  if (fns_keep.size() > 0) {
-    fn_last = fns_keep.back();
-  }
-  const long offset_final = qar.qsinfo_map[fn_last].offset_end;
-  qar.close();
-  const bool b = qtruncate(path, offset_final);
-  qassert(b);
-  return fns_keep;
-}
-
 inline void write_start(QarFile& qar, const std::string& fn,
                         const std::string& info, QFile& qfile_out,
                         const long data_len = -1, const long header_len = 60)
@@ -867,6 +795,88 @@ inline long write_from_qfile(QarFile& qar, const std::string& fn,
   write_end(qar);
   timer.flops += total_bytes;
   return total_bytes;
+}
+
+// -------------------
+
+inline int truncate_qar_file(const std::string& path,
+                             const std::vector<std::string>& fns_keep)
+// interface function
+// return nonzero if failed.
+// return 0 if truncated successfully.
+// if fns_keep is empty, the resulting qar file should have and only have qar_header.
+{
+  TIMER_VERBOSE("truncate_qar_file");
+  QarFile qar(path, "r");
+  if (qar.null()) {
+    if (fns_keep.size() == 0) {
+      qar.init(path, "w");
+      return 0;
+    } else {
+      qwarn(fname + ssprintf(": fns_keep.size()=%ld", fns_keep.size()));
+      return 1;
+    }
+  }
+  const std::vector<std::string> fns = list(qar);
+  if (fns.size() < fns_keep.size()) {
+    qwarn(fname + ssprintf(": fns.size()=%ld fns_keep.size()=%ld", fns.size(),
+                           fns_keep.size()));
+    return 1;
+  }
+  for (long i = 0; i < (long)fns_keep.size(); ++i) {
+    if (fns[i] != fns_keep[i]) {
+      qwarn(fname + ssprintf(": fns[i]='%s' fns_keep[i]='%s'", fns[i].c_str(),
+                             fns_keep[i].c_str()));
+      return 2;
+    }
+  }
+  if (fns_keep.size() > 0) {
+  }
+  std::string fn_last = "";
+  if (fns_keep.size() > 0) {
+    fn_last = fns_keep.back();
+  }
+  const long offset_final = qar.qsinfo_map[fn_last].offset_end;
+  qar.close();
+  const bool b = qtruncate(path, offset_final);
+  if (not b) {
+    qwarn(fname +
+          ssprintf(": fns.size()=%ld fns_keep.size()=%ld offset_final=%ld",
+                   fns.size(), fns_keep.size(), offset_final));
+    return 3;
+  }
+  return 0;
+}
+
+inline std::vector<std::string> properly_truncate_qar_file(const std::string& path)
+// interface function
+// The resulting qar file should at least have qar_header.
+// Should call this function before append.
+{
+  std::vector<std::string> fns_keep;
+  QarFile qar(path, "r");
+  if (qar.null()) {
+    qar.init(path, "w");
+    qar.close();
+    return fns_keep;
+  }
+  fns_keep = list(qar);
+  std::string fn_last = "";
+  if (fns_keep.size() > 0) {
+    fn_last = fns_keep.back();
+  }
+  const long offset_final = qar.qsinfo_map[fn_last].offset_end;
+  qar.close();
+  const bool b = qtruncate(path, offset_final);
+  qassert(b);
+  return fns_keep;
+}
+
+inline std::vector<std::string> list_qar(const std::string& path)
+{
+  TIMER_VERBOSE("list_qar");
+  QarFile qar(path, "r");
+  return list(qar);
 }
 
 inline int qar_create(const std::string& path_qar,

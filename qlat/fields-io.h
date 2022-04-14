@@ -23,6 +23,7 @@
 #include <errno.h>
 #include <qlat/selected-field.h>
 #include <qlat/selected-points.h>
+#include <qutils/qar-cache.h>
 
 namespace qlat
 {  //
@@ -217,13 +218,13 @@ inline void fields_writer_dirs_geon_info(const GeometryNode& geon,
   TIMER("fields_writer_dirs_geon_info");
   dist_mkdir(path, geon.num_node, mode);
   const std::string fn = path + "/geon-info.txt";
-  FILE* fp = qopen(fn, "w");
-  displayln(ssprintf("geon.num_node = %d", geon.num_node), fp);
-  displayln(ssprintf("geon.size_node[0] = %d", geon.size_node[0]), fp);
-  displayln(ssprintf("geon.size_node[1] = %d", geon.size_node[1]), fp);
-  displayln(ssprintf("geon.size_node[2] = %d", geon.size_node[2]), fp);
-  displayln(ssprintf("geon.size_node[3] = %d", geon.size_node[3]), fp);
-  qclose(fp);
+  QFile qfile;
+  qopen(qfile, fn, "w");
+  qwrite_data(ssprintf("geon.num_node = %d\n", geon.num_node), qfile);
+  qwrite_data(ssprintf("geon.size_node[0] = %d\n", geon.size_node[0]), qfile);
+  qwrite_data(ssprintf("geon.size_node[1] = %d\n", geon.size_node[1]), qfile);
+  qwrite_data(ssprintf("geon.size_node[2] = %d\n", geon.size_node[2]), qfile);
+  qwrite_data(ssprintf("geon.size_node[3] = %d\n", geon.size_node[3]), qfile);
 }
 
 inline Coordinate shuffled_fields_reader_size_node_info(const std::string& path)
@@ -252,32 +253,27 @@ struct FieldsWriter {
   //
   std::string path;
   GeometryNode geon;
-  FILE* fp;
+  QFile qfile;
   bool is_little_endian;  // should be true
   //
   FieldsWriter()
   {
-    fp = NULL;
     init();
   }
   //
-  ~FieldsWriter() { close(); }
-  //
   void init()
   {
-    close();
     path = "";
     geon.init();
-    qassert(fp == NULL);
+    qfile.init();
     is_little_endian = true;
   }
   void init(const std::string& path_, const GeometryNode& geon_,
             const bool is_append = false)
   {
-    close();
     path = path_;
     geon = geon_;
-    qassert(fp == NULL);
+    qfile.init();
     if (geon.id_node == 0) {
       if (does_file_exist(path + ".partial")) {
         if (is_append) {
@@ -293,19 +289,11 @@ struct FieldsWriter {
         fields_writer_dirs_geon_info(geon, path);
       }
     }
-    fp = dist_open(path, geon.id_node, geon.num_node, is_append ? "a" : "w");
-    qassert(NULL != fp);
+    qopen(qfile, dist_file_name(path, geon.id_node, geon.num_node), is_append ? "a" : "w");
+    qassert(not qfile.null());
   }
   //
-  void close()
-  {
-    const bool is_need_close = fp != NULL;
-    if (is_need_close and geon.id_node == 0) {
-      displayln("FieldsWriter: close '" + path + "'.");
-    }
-    dist_close(fp);
-    qassert(fp == NULL);
-  }
+  void close() { qfile.close(); }
 };
 
 struct FieldsReader {
@@ -314,7 +302,7 @@ struct FieldsReader {
   //
   std::string path;
   GeometryNode geon;
-  FILE* fp;
+  QFile qfile;
   bool is_little_endian;  // should be true
   //
   bool is_read_through;
@@ -324,18 +312,14 @@ struct FieldsReader {
   //
   FieldsReader()
   {
-    fp = NULL;
     init();
   }
   //
-  ~FieldsReader() { close(); }
-  //
   void init()
   {
-    close();
     path = "";
     geon.init();
-    qassert(fp == NULL);
+    qfile.init();
     is_little_endian = true;
     is_read_through = false;
     fn_list.clear();
@@ -344,15 +328,14 @@ struct FieldsReader {
   }
   void init(const std::string& path_, const GeometryNode& geon_)
   {
-    close();
     path = path_;
     geon = geon_;
-    qassert(fp == NULL);
+    qfile.init();
     if (geon.id_node == 0) {
       displayln("FieldsReader: open '" + path + "'.");
     }
-    fp = dist_open(path, geon.id_node, geon.num_node, "r");
-    if (NULL == fp) {
+    qopen(qfile, dist_file_name(path, geon.id_node, geon.num_node), "r");
+    if (qfile.null()) {
       is_read_through = true;
     } else {
       is_read_through = false;
@@ -362,24 +345,17 @@ struct FieldsReader {
     max_offset = 0;
   }
   //
-  void close()
-  {
-    if (fp != NULL and geon.id_node == 0) {
-      displayln("FieldsReader: close '" + path + "'.");
-    }
-    dist_close(fp);
-    qassert(fp == NULL);
-  }
+  void close() { qfile.close(); }
 };
 
 inline void mkfile(FieldsReader& fr, const mode_t mode = default_dir_mode())
 // create the file (open with appending)
 // does not open the file
 {
-  if (fr.fp == NULL and fr.path != "") {
-    fr.fp = dist_open(fr.path, fr.geon.id_node, fr.geon.num_node, "a");
-    dist_close(fr.fp);
-    qassert(fr.fp == NULL);
+  if (fr.qfile.null() and fr.path != "") {
+    qopen(fr.qfile, dist_file_name(fr.path, fr.geon.id_node, fr.geon.num_node),
+          "a");
+    fr.qfile.close();
   }
 }
 
@@ -395,11 +371,11 @@ inline long get_file_size(FieldsReader& fr)
 // the file must be opened for reading
 // will restore the position.
 {
-  if (fr.fp != NULL) {
-    const long pos = ftell(fr.fp);
-    fseek(fr.fp, 0L, SEEK_END);
-    const long sz = ftell(fr.fp);
-    fseek(fr.fp, pos, SEEK_SET);
+  if (not fr.qfile.null()) {
+    const long pos = qftell(fr.qfile);
+    qfseek(fr.qfile, 0L, SEEK_END);
+    const long sz = qftell(fr.qfile);
+    qfseek(fr.qfile, pos, SEEK_SET);
     return sz;
   } else {
     return -1;
@@ -426,8 +402,8 @@ void convert_endian_64(Vector<M> data, const bool is_little_endian)
   }
 }
 
-inline void fwrite_convert_endian(void* ptr, const size_t size,
-                                  const size_t nmemb, FILE* fp,
+inline void qfwrite_convert_endian(void* ptr, const size_t size,
+                                  const size_t nmemb, QFile& qfile,
                                   const bool is_little_endian)
 {
   if (size == 4) {
@@ -437,7 +413,7 @@ inline void fwrite_convert_endian(void* ptr, const size_t size,
   } else {
     qassert(false);
   }
-  fwrite(ptr, size, nmemb, fp);
+  qfwrite(ptr, size, nmemb, qfile);
   if (size == 4) {
     convert_endian_32(Vector<int32_t>((int32_t*)ptr, nmemb), is_little_endian);
   } else if (size == 8) {
@@ -453,16 +429,16 @@ inline long write(FieldsWriter& fw, const std::string& fn, const Geometry& geo,
   TIMER("write(fw,fn,geo,data)");
   // first write tag
   int32_t tag_len = fn.size() + 1;  // fn is the name of the field (say prop1)
-  fwrite_convert_endian(&tag_len, 4, 1, fw.fp, fw.is_little_endian);
-  fwrite(fn.c_str(), tag_len, 1, fw.fp);
+  qfwrite_convert_endian(&tag_len, 4, 1, fw.qfile, fw.is_little_endian);
+  qfwrite(fn.c_str(), tag_len, 1, fw.qfile);
   //
   // then write crc
   crc32_t crc = crc32_par(data);
-  fwrite_convert_endian(&crc, 4, 1, fw.fp, fw.is_little_endian);
+  qfwrite_convert_endian(&crc, 4, 1, fw.qfile, fw.is_little_endian);
   //
   // then write geometry info
   int32_t nd = 4;  // <- number of dimensions of field, typically 4
-  fwrite_convert_endian(&nd, 4, 1, fw.fp, fw.is_little_endian);
+  qfwrite_convert_endian(&nd, 4, 1, fw.qfile, fw.is_little_endian);
   //
   std::vector<int32_t> gd(4, 0);
   std::vector<int32_t> num_procs(4, 0);
@@ -482,27 +458,27 @@ inline long write(FieldsWriter& fw, const std::string& fn, const Geometry& geo,
     // with my old one
   }
   //
-  fwrite_convert_endian(&gd[0], 4, nd, fw.fp, fw.is_little_endian);
-  fwrite_convert_endian(&num_procs[0], 4, nd, fw.fp, fw.is_little_endian);
+  qfwrite_convert_endian(&gd[0], 4, nd, fw.qfile, fw.is_little_endian);
+  qfwrite_convert_endian(&num_procs[0], 4, nd, fw.qfile, fw.is_little_endian);
   //
   // then data size
   int64_t data_len = data.size();
-  fwrite_convert_endian(&data_len, 8, 1, fw.fp, fw.is_little_endian);
+  qfwrite_convert_endian(&data_len, 8, 1, fw.qfile, fw.is_little_endian);
   //
   // then write data
-  fwrite(&data[0], data_len, 1, fw.fp);
+  qfwrite(&data[0], data_len, 1, fw.qfile);
   //
   return data_len;
 }
 
-inline long fread_convert_endian(void* ptr, const size_t size,
-                                 const size_t nmemb, FILE* fp,
+inline long qfread_convert_endian(void* ptr, const size_t size,
+                                 const size_t nmemb, QFile& qfile,
                                  const bool is_little_endian)
 {
-  if (NULL == fp) {
+  if (qfile.null()) {
     return 0;
   }
-  const long total_nmemb = fread(ptr, size, nmemb, fp);
+  const long total_nmemb = qfread(ptr, size, nmemb, qfile);
   if (size == 4) {
     convert_endian_32(Vector<int32_t>((int32_t*)ptr, nmemb), is_little_endian);
   } else if (size == 8) {
@@ -523,16 +499,16 @@ inline bool read_tag(FieldsReader& fr, std::string& fn, Coordinate& total_site,
   data_len = 0;
   is_sparse_field = false;
   //
-  if (NULL == fr.fp) {
-    qwarn(ssprintf("read_tag: fr.fp == NULL fn='%s'", get_file_path(fr).c_str()));
+  if (fr.qfile.null()) {
+    qwarn(ssprintf("read_tag: fr.qfile.null()==true fn='%s'", get_file_path(fr).c_str()));
     return false;
   }
   //
-  const long offset_initial = ftell(fr.fp);
+  const long offset_initial = qftell(fr.qfile);
   //
   // first read tag
   int32_t tag_len = 0;
-  if (1 != fread_convert_endian(&tag_len, 4, 1, fr.fp, fr.is_little_endian)) {
+  if (1 != qfread_convert_endian(&tag_len, 4, 1, fr.qfile, fr.is_little_endian)) {
     fr.is_read_through = true;
     return false;
   }
@@ -542,7 +518,7 @@ inline bool read_tag(FieldsReader& fr, std::string& fn, Coordinate& total_site,
     return false;
   }
   std::vector<char> fnv(tag_len);
-  if (1 != fread(fnv.data(), tag_len, 1, fr.fp)) {
+  if (1 != qfread(fnv.data(), tag_len, 1, fr.qfile)) {
     qwarn(ssprintf("read_tag: fn='%s'", get_file_path(fr).c_str()));
     fr.is_read_through = true;
     return false;
@@ -557,7 +533,7 @@ inline bool read_tag(FieldsReader& fr, std::string& fn, Coordinate& total_site,
   }
   //
   // then read crc
-  if (1 != fread_convert_endian(&crc, 4, 1, fr.fp, fr.is_little_endian)) {
+  if (1 != qfread_convert_endian(&crc, 4, 1, fr.qfile, fr.is_little_endian)) {
     qwarn(ssprintf("read_tag: fn='%s'", get_file_path(fr).c_str()));
     fr.is_read_through = true;
     return false;
@@ -565,7 +541,7 @@ inline bool read_tag(FieldsReader& fr, std::string& fn, Coordinate& total_site,
   //
   // then read geometry info
   int32_t nd = 0;
-  if (1 != fread_convert_endian(&nd, 4, 1, fr.fp, fr.is_little_endian)) {
+  if (1 != qfread_convert_endian(&nd, 4, 1, fr.qfile, fr.is_little_endian)) {
     qwarn(ssprintf("read_tag: fn='%s'", get_file_path(fr).c_str()));
     fr.is_read_through = true;
     return false;
@@ -578,13 +554,13 @@ inline bool read_tag(FieldsReader& fr, std::string& fn, Coordinate& total_site,
   //
   std::vector<int32_t> gd(4, 0);
   std::vector<int32_t> num_procs(4, 0);
-  if (4 != fread_convert_endian(&gd[0], 4, 4, fr.fp, fr.is_little_endian)) {
+  if (4 != qfread_convert_endian(&gd[0], 4, 4, fr.qfile, fr.is_little_endian)) {
     qwarn(ssprintf("read_tag: fn='%s'", get_file_path(fr).c_str()));
     fr.is_read_through = true;
     return false;
   }
   if (4 !=
-      fread_convert_endian(&num_procs[0], 4, 4, fr.fp, fr.is_little_endian)) {
+      qfread_convert_endian(&num_procs[0], 4, 4, fr.qfile, fr.is_little_endian)) {
     qwarn(ssprintf("read_tag: fn='%s'", get_file_path(fr).c_str()));
     fr.is_read_through = true;
     return false;
@@ -606,7 +582,7 @@ inline bool read_tag(FieldsReader& fr, std::string& fn, Coordinate& total_site,
   }
   //
   // then read data size
-  if (1 != fread_convert_endian(&data_len, 8, 1, fr.fp, fr.is_little_endian)) {
+  if (1 != qfread_convert_endian(&data_len, 8, 1, fr.qfile, fr.is_little_endian)) {
     qwarn(ssprintf("read_tag: fn='%s'", get_file_path(fr).c_str()));
     fr.is_read_through = true;
     return false;
@@ -617,7 +593,7 @@ inline bool read_tag(FieldsReader& fr, std::string& fn, Coordinate& total_site,
     return false;
   }
   //
-  const long final_offset = ftell(fr.fp) + data_len;
+  const long final_offset = qftell(fr.qfile) + data_len;
   if (final_offset > fr.max_offset) {
     fr.max_offset = final_offset;
   }
@@ -636,11 +612,11 @@ inline long read_data(FieldsReader& fr, std::vector<char>& data,
   TIMER_FLOPS("read_data(fr,fn,geo,data)");
   clear(data);
   data.resize(data_len, 0);
-  if (NULL == fr.fp) {
+  if (fr.qfile.null()) {
     qwarn(ssprintf("read_data: file does not exist fn='%s'", get_file_path(fr).c_str()));
     return 0;
   }
-  const long read_data_all = fread(&data[0], data_len, 1, fr.fp);
+  const long read_data_all = qfread(&data[0], data_len, 1, fr.qfile);
   if (not (1 == read_data_all)) {
     qwarn(ssprintf("read_data: data not complete fn='%s'", get_file_path(fr).c_str()));
     fr.is_read_through = true;
@@ -679,7 +655,7 @@ inline void read_through(FieldsReader& fr)
     const bool is_ok =
         read_tag(fr, fn_read, total_site, crc, data_len, is_sparse_field);
     if (is_ok) {
-      fseek(fr.fp, data_len, SEEK_CUR);
+      qfseek(fr.qfile, data_len, SEEK_CUR);
     } else {
       errno = 0;
       return;
@@ -694,10 +670,10 @@ inline bool does_file_exist(FieldsReader& fr, const std::string& fn)
     return true;
   } else if (fr.is_read_through) {
     return false;
-  } else if (NULL == fr.fp) {
+  } else if (fr.qfile.null()) {
     return false;
   } else {
-    const int ret = fseek(fr.fp, fr.max_offset, SEEK_SET);
+    const int ret = qfseek(fr.qfile, fr.max_offset, SEEK_SET);
     if (ret != 0) {
       return false;
     }
@@ -714,7 +690,7 @@ inline bool does_file_exist(FieldsReader& fr, const std::string& fn)
       if (fn == fn_read) {
         return true;
       } else {
-        fseek(fr.fp, data_len, SEEK_CUR);
+        qfseek(fr.qfile, data_len, SEEK_CUR);
       }
     } else {
       return false;
@@ -731,7 +707,7 @@ inline long read(FieldsReader& fr, const std::string& fn,
     return 0;
   }
   qassert(fr.offsets_map.count(fn) == 1);
-  fseek(fr.fp, fr.offsets_map[fn], SEEK_SET);
+  qfseek(fr.qfile, fr.offsets_map[fn], SEEK_SET);
   std::string fn_r;
   const long total_bytes =
       read_next(fr, fn_r, total_site, data, is_sparse_field);
@@ -749,7 +725,7 @@ inline long check_file(FieldsReader& fr, const std::string& fn)
   bool is_sparse_field;
   const long total_bytes = read(fr, fn, total_site, data, is_sparse_field);
   if (total_bytes > 0) {
-    return ftell(fr.fp);
+    return qftell(fr.qfile);
   } else {
     return 0;
   }
@@ -799,7 +775,7 @@ long write(FieldsWriter& fw, const std::string& fn, const SelectedField<M>& sf,
 inline int flush(FieldsWriter& fw)
 {
   TIMER("flush(fw)");
-  return fflush(fw.fp);
+  return qfflush(fw.qfile);
 }
 
 template <class M>
@@ -1100,16 +1076,9 @@ struct ShuffledFieldsWriter {
     std::vector<GeometryNode> geons = make_dist_io_geons(new_size_node);
     fws.resize(geons.size());
     for (int i = 0; i < (int)geons.size(); ++i) {
-      if (geons[i].id_node == 0) {
         fws[i].init(path, geons[i], is_append);
-      }
     }
     sync_node();
-    for (int i = 0; i < (int)geons.size(); ++i) {
-      if (geons[i].id_node != 0) {
-        fws[i].init(path, geons[i], is_append);
-      }
-    }
     add_shuffled_fields_writer(*this);
   }
   //
@@ -1118,19 +1087,8 @@ struct ShuffledFieldsWriter {
   {
     TIMER_VERBOSE("ShuffledFieldsWriter::close")
     remove_shuffled_fields_writer(*this);
-    std::vector<GeometryNode> geons = make_dist_io_geons(new_size_node);
-    for (int i = 0; i < (int)fws.size(); ++i) {
-      if (geons[i].id_node != 0) {
-        fws[i].close();
-      }
-    }
-    sync_node();
-    for (int i = 0; i < (int)fws.size(); ++i) {
-      if (geons[i].id_node == 0) {
-        fws[i].close();
-      }
-    }
     clear(fws);
+    sync_node();
   }
 };
 

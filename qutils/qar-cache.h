@@ -61,9 +61,12 @@ inline bool does_file_exist_qar(const std::string& path)
   return has(qar, fn);
 }
 
-inline void qopen(QFile& qfile, const std::string& path, const std::string& mode)
+inline void qopen(QFile& qfile, const std::string& path,
+                  const std::string& mode)
 // interface function
 // qfile.null() == true if qopen failed.
+// Will open files in qar for read
+// Will create directories needed for write / append
 {
   TIMER("qopen(path,mode,qfile)");
   if (mode == "r") {
@@ -77,9 +80,51 @@ inline void qopen(QFile& qfile, const std::string& path, const std::string& mode
       QarFile& qar = get_qar_read_cache()[key];
       read(qar, fn, qfile);
     }
-  } else {
+  } else if (mode == "w" or mode == "a") {
+    const std::string path_dir = dirname(path);
+    qmkdir_p(path_dir);
     qfile.init(path, mode);
+  } else {
+    qassert(false);
   }
+}
+
+// -------------------
+
+inline crc32_t compute_crc32(QFile& qfile)
+// interface function
+// compute_crc32 for all the remaining data.
+{
+  TIMER_VERBOSE_FLOPS("compute_crc32");
+  qassert(not qfile.null());
+  const size_t chunk_size = 16 * 1024 * 1024;
+  std::vector<char> data(chunk_size);
+  crc32_t crc = 0;
+  while (true) {
+    const long size = qread_data(get_data(data), qfile);
+    timer.flops += size;
+    if (size == 0) {
+      break;
+    }
+    crc = crc32_par(crc, Vector<char>(data.data(), size));
+  }
+  return crc;
+}
+
+inline crc32_t compute_crc32(const std::string& path)
+{
+  QFile qfile;
+  qopen(qfile, path, "r");
+  return compute_crc32(qfile);
+}
+
+inline std::vector<std::string> qgetlines(const std::string& fn)
+{
+  QFile qfile;
+  qopen(qfile, fn, "r");
+  qassert(not qfile.null());
+  std::vector<std::string> lines = qgetlines(qfile);
+  return lines;
 }
 
 }  // namespace qlat
