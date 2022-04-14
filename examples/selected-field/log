@@ -291,14 +291,32 @@ shuffle_field_back(sel_f,sel_fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; s
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 95D6027F selected read float
 check_all_files_crc32_info: start checking path='huge-data/16'
+QFile: open 'huge-data/16/f-init.64.field' with 'r'.
+QFile: close 'huge-data/16/f-init.64.field' with 'r'.
 865C4222  fn='huge-data/16/f-init.64.field'
+QFile: open 'huge-data/16/f-init.double.field' with 'r'.
+QFile: close 'huge-data/16/f-init.double.field' with 'r'.
 865C4222  fn='huge-data/16/f-init.double.field'
+QFile: open 'huge-data/16/f-init.float.field' with 'r'.
+QFile: close 'huge-data/16/f-init.float.field' with 'r'.
 A9D51B7F  fn='huge-data/16/f-init.float.field'
+QFile: open 'huge-data/16/free-4nt8-init.field' with 'r'.
+QFile: close 'huge-data/16/free-4nt8-init.field' with 'r'.
 31164131  fn='huge-data/16/free-4nt8-init.field'
+QFile: open 'huge-data/16/free-4nt8-init.sfield' with 'r'.
+QFile: close 'huge-data/16/free-4nt8-init.sfield' with 'r'.
 38D195D7  fn='huge-data/16/free-4nt8-init.sfield'
+QFile: open 'huge-data/16/fsel.field' with 'r'.
+QFile: close 'huge-data/16/fsel.field' with 'r'.
 E8ACD943  fn='huge-data/16/fsel.field'
+QFile: open 'huge-data/16/sf-init.64.field' with 'r'.
+QFile: close 'huge-data/16/sf-init.64.field' with 'r'.
 265DD08B  fn='huge-data/16/sf-init.64.field'
+QFile: open 'huge-data/16/sf-init.double.field' with 'r'.
+QFile: close 'huge-data/16/sf-init.double.field' with 'r'.
 265DD08B  fn='huge-data/16/sf-init.double.field'
+QFile: open 'huge-data/16/sf-init.float.field' with 'r'.
+QFile: close 'huge-data/16/sf-init.float.field' with 'r'.
 4964C8BA  fn='huge-data/16/sf-init.float.field'
 check_all_files_crc32_info: summary for path='huge-data/16'
     0 865C4222  fn='huge-data/16/f-init.64.field'
@@ -488,14 +506,32 @@ shuffle_field_back(sel_f,sel_fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; s
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 E5EBEF7E selected read float
 check_all_files_crc32_info: start checking path='huge-data/all'
+QFile: open 'huge-data/all/f-init.64.field' with 'r'.
+QFile: close 'huge-data/all/f-init.64.field' with 'r'.
 865C4222  fn='huge-data/all/f-init.64.field'
+QFile: open 'huge-data/all/f-init.double.field' with 'r'.
+QFile: close 'huge-data/all/f-init.double.field' with 'r'.
 865C4222  fn='huge-data/all/f-init.double.field'
+QFile: open 'huge-data/all/f-init.float.field' with 'r'.
+QFile: close 'huge-data/all/f-init.float.field' with 'r'.
 A9D51B7F  fn='huge-data/all/f-init.float.field'
+QFile: open 'huge-data/all/free-4nt8-init.field' with 'r'.
+QFile: close 'huge-data/all/free-4nt8-init.field' with 'r'.
 31164131  fn='huge-data/all/free-4nt8-init.field'
+QFile: open 'huge-data/all/free-4nt8-init.sfield' with 'r'.
+QFile: close 'huge-data/all/free-4nt8-init.sfield' with 'r'.
 A666AC6E  fn='huge-data/all/free-4nt8-init.sfield'
+QFile: open 'huge-data/all/fsel.field' with 'r'.
+QFile: close 'huge-data/all/fsel.field' with 'r'.
 A8DA5C42  fn='huge-data/all/fsel.field'
+QFile: open 'huge-data/all/sf-init.64.field' with 'r'.
+QFile: close 'huge-data/all/sf-init.64.field' with 'r'.
 112CAF7D  fn='huge-data/all/sf-init.64.field'
+QFile: open 'huge-data/all/sf-init.double.field' with 'r'.
+QFile: close 'huge-data/all/sf-init.double.field' with 'r'.
 112CAF7D  fn='huge-data/all/sf-init.double.field'
+QFile: open 'huge-data/all/sf-init.float.field' with 'r'.
+QFile: close 'huge-data/all/sf-init.float.field' with 'r'.
 5999B49E  fn='huge-data/all/sf-init.float.field'
 check_all_files_crc32_info: summary for path='huge-data/all'
     0 865C4222  fn='huge-data/all/f-init.64.field'
@@ -573,14 +609,22 @@ shuffle_field_back(sel_f,sel_fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; s
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 C8EB73C4 <- write and read back
 check_all_files_crc32_info: start checking path='huge-data/grid-16'
+QFile: open 'huge-data/grid-16/free-4nt8-init.field' with 'r'.
+QFile: close 'huge-data/grid-16/free-4nt8-init.field' with 'r'.
 31164131  fn='huge-data/grid-16/free-4nt8-init.field'
+QFile: open 'huge-data/grid-16/free-4nt8-init.sfield' with 'r'.
+QFile: close 'huge-data/grid-16/free-4nt8-init.sfield' with 'r'.
 6B4448A0  fn='huge-data/grid-16/free-4nt8-init.sfield'
+QFile: open 'huge-data/grid-16/fsel.field' with 'r'.
+QFile: close 'huge-data/grid-16/fsel.field' with 'r'.
 67D787A2  fn='huge-data/grid-16/fsel.field'
 check_all_files_crc32_info: summary for path='huge-data/grid-16'
     0 31164131  fn='huge-data/grid-16/free-4nt8-init.field'
     1 6B4448A0  fn='huge-data/grid-16/free-4nt8-init.sfield'
     2 67D787A2  fn='huge-data/grid-16/fsel.field'
 qrename: 'huge-data/points-1024/point-selection.txt.partial' 'huge-data/points-1024/point-selection.txt'
+QFile: open 'huge-data/points-1024/point-selection.txt' with 'r'.
+QFile: close 'huge-data/points-1024/point-selection.txt' with 'r'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 : 79A1C7E2 <- f-init
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
@@ -613,28 +657,56 @@ make_shuffle_plan_generic: total num_send_msgs  =         16
 make_shuffle_plan_generic: total num_recv_msgs  =         16
 make_shuffle_plan_generic: global_comm_size =        437
 FieldsWriter: open 'huge-data/points-1024/fields'.
+QFile: open 'huge-data/points-1024/fields/geon-info.txt' with 'w'.
+QFile: close 'huge-data/points-1024/fields/geon-info.txt' with 'w'.
+QFile: open 'huge-data/points-1024/fields/00/0000000000' with 'w'.
 write(sfw,fn,sf,sbs): writing sparse field with fn='f.psel' from 'huge-data/points-1024/fields'.
 shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x1x2x4 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
-FieldsWriter: close 'huge-data/points-1024/fields'.
+QFile: close 'huge-data/points-1024/fields/00/0000000000' with 'w'.
+QFile: open 'huge-data/points-1024/fields/geon-info.txt' with 'r'.
+QFile: close 'huge-data/points-1024/fields/geon-info.txt' with 'r'.
 FieldsReader: open 'huge-data/points-1024/fields'.
+QFile: open 'huge-data/points-1024/fields/00/0000000000' with 'r'.
 read(sfr,fn,field): reading field with fn='f.psel' from 'huge-data/points-1024/fields'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.psel' from 'huge-data/points-1024/fields'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.psel' from 'huge-data/points-1024/fields'.
 shuffle_field_back(f,fs,sp): 1x1x2x4 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
-FieldsReader: close 'huge-data/points-1024/fields'.
+QFile: close 'huge-data/points-1024/fields/00/0000000000' with 'r'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 : 96AFBBCB <- f3 write and read
 check_all_files_crc32_info: start checking path='huge-data/points-1024'
+QFile: open 'huge-data/points-1024/f.lat' with 'r'.
+QFile: close 'huge-data/points-1024/f.lat' with 'r'.
 0C0510F3  fn='huge-data/points-1024/f.lat'
+QFile: open 'huge-data/points-1024/fields/00/0000000000' with 'r'.
+QFile: close 'huge-data/points-1024/fields/00/0000000000' with 'r'.
 B638AB78  fn='huge-data/points-1024/fields/00/0000000000'
+QFile: open 'huge-data/points-1024/fields/01/0000000001' with 'r'.
+QFile: close 'huge-data/points-1024/fields/01/0000000001' with 'r'.
 157E9519  fn='huge-data/points-1024/fields/01/0000000001'
+QFile: open 'huge-data/points-1024/fields/02/0000000002' with 'r'.
+QFile: close 'huge-data/points-1024/fields/02/0000000002' with 'r'.
 34F3D331  fn='huge-data/points-1024/fields/02/0000000002'
+QFile: open 'huge-data/points-1024/fields/03/0000000003' with 'r'.
+QFile: close 'huge-data/points-1024/fields/03/0000000003' with 'r'.
 8EECF977  fn='huge-data/points-1024/fields/03/0000000003'
+QFile: open 'huge-data/points-1024/fields/04/0000000004' with 'r'.
+QFile: close 'huge-data/points-1024/fields/04/0000000004' with 'r'.
 6A0B878B  fn='huge-data/points-1024/fields/04/0000000004'
+QFile: open 'huge-data/points-1024/fields/05/0000000005' with 'r'.
+QFile: close 'huge-data/points-1024/fields/05/0000000005' with 'r'.
 4CCBA03C  fn='huge-data/points-1024/fields/05/0000000005'
+QFile: open 'huge-data/points-1024/fields/06/0000000006' with 'r'.
+QFile: close 'huge-data/points-1024/fields/06/0000000006' with 'r'.
 F53358F7  fn='huge-data/points-1024/fields/06/0000000006'
+QFile: open 'huge-data/points-1024/fields/07/0000000007' with 'r'.
+QFile: close 'huge-data/points-1024/fields/07/0000000007' with 'r'.
 ADD8CC75  fn='huge-data/points-1024/fields/07/0000000007'
+QFile: open 'huge-data/points-1024/fields/geon-info.txt' with 'r'.
+QFile: close 'huge-data/points-1024/fields/geon-info.txt' with 'r'.
 9BFC07C9  fn='huge-data/points-1024/fields/geon-info.txt'
+QFile: open 'huge-data/points-1024/point-selection.txt' with 'r'.
+QFile: close 'huge-data/points-1024/point-selection.txt' with 'r'.
 F29EE06E  fn='huge-data/points-1024/point-selection.txt'
 check_all_files_crc32_info: summary for path='huge-data/points-1024'
     0 0C0510F3  fn='huge-data/points-1024/f.lat'

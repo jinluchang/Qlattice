@@ -57,6 +57,16 @@ demo: (DOES NOT CHANGE THE SIZE IN MOMEORY)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=60386CDD.
 FieldsWriter: open 'huge-data/t0/demo.lfs'.
+QFile: open 'huge-data/t0/demo.lfs/geon-info.txt' with 'w'.
+QFile: close 'huge-data/t0/demo.lfs/geon-info.txt' with 'w'.
+QFile: open 'huge-data/t0/demo.lfs/00/0000000000' with 'w'.
+QFile: open 'huge-data/t0/demo.lfs/00/0000000001' with 'w'.
+QFile: open 'huge-data/t0/demo.lfs/01/0000000002' with 'w'.
+QFile: open 'huge-data/t0/demo.lfs/01/0000000003' with 'w'.
+QFile: open 'huge-data/t0/demo.lfs/02/0000000004' with 'w'.
+QFile: open 'huge-data/t0/demo.lfs/02/0000000005' with 'w'.
+QFile: open 'huge-data/t0/demo.lfs/03/0000000006' with 'w'.
+QFile: open 'huge-data/t0/demo.lfs/03/0000000007' with 'w'.
 make_shuffle_plan_generic: num_send_packs =          8
 make_shuffle_plan_generic: num_recv_packs =         72
 make_shuffle_plan_generic: num_send_msgs  =          4
@@ -95,8 +105,25 @@ write(sfw,fn,field): writing field with fn='sf.float.field' from 'huge-data/t0/d
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 write(sfw,fn,sf,sbs): writing sparse field with fn='sf.float.sfield' from 'huge-data/t0/demo.lfs'.
 shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
-FieldsWriter: close 'huge-data/t0/demo.lfs'.
+QFile: close 'huge-data/t0/demo.lfs/00/0000000000' with 'w'.
+QFile: close 'huge-data/t0/demo.lfs/00/0000000001' with 'w'.
+QFile: close 'huge-data/t0/demo.lfs/01/0000000002' with 'w'.
+QFile: close 'huge-data/t0/demo.lfs/01/0000000003' with 'w'.
+QFile: close 'huge-data/t0/demo.lfs/02/0000000004' with 'w'.
+QFile: close 'huge-data/t0/demo.lfs/02/0000000005' with 'w'.
+QFile: close 'huge-data/t0/demo.lfs/03/0000000006' with 'w'.
+QFile: close 'huge-data/t0/demo.lfs/03/0000000007' with 'w'.
+QFile: open 'huge-data/t0/demo.lfs/geon-info.txt' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/geon-info.txt' with 'r'.
 FieldsWriter: open 'huge-data/t0/demo.lfs'.
+QFile: open 'huge-data/t0/demo.lfs/00/0000000000' with 'a'.
+QFile: open 'huge-data/t0/demo.lfs/00/0000000001' with 'a'.
+QFile: open 'huge-data/t0/demo.lfs/01/0000000002' with 'a'.
+QFile: open 'huge-data/t0/demo.lfs/01/0000000003' with 'a'.
+QFile: open 'huge-data/t0/demo.lfs/02/0000000004' with 'a'.
+QFile: open 'huge-data/t0/demo.lfs/02/0000000005' with 'a'.
+QFile: open 'huge-data/t0/demo.lfs/03/0000000006' with 'a'.
+QFile: open 'huge-data/t0/demo.lfs/03/0000000007' with 'a'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
 make_shuffle_plan_generic: num_send_packs =          4
 make_shuffle_plan_generic: num_recv_packs =         12
@@ -125,9 +152,26 @@ write(sfw,fn,field): writing field with fn='sfa.float.field' from 'huge-data/t0/
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 write(sfw,fn,sf,sbs): writing sparse field with fn='sfa.float.sfield' from 'huge-data/t0/demo.lfs'.
 shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
-FieldsWriter: close 'huge-data/t0/demo.lfs'.
+QFile: close 'huge-data/t0/demo.lfs/00/0000000000' with 'a'.
+QFile: close 'huge-data/t0/demo.lfs/00/0000000001' with 'a'.
+QFile: close 'huge-data/t0/demo.lfs/01/0000000002' with 'a'.
+QFile: close 'huge-data/t0/demo.lfs/01/0000000003' with 'a'.
+QFile: close 'huge-data/t0/demo.lfs/02/0000000004' with 'a'.
+QFile: close 'huge-data/t0/demo.lfs/02/0000000005' with 'a'.
+QFile: close 'huge-data/t0/demo.lfs/03/0000000006' with 'a'.
+QFile: close 'huge-data/t0/demo.lfs/03/0000000007' with 'a'.
 Cache: 'ShuffledFieldsReaderCache': 0 / 4 [1] to add
+QFile: open 'huge-data/t0/demo.lfs/geon-info.txt' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/geon-info.txt' with 'r'.
 FieldsReader: open 'huge-data/t0/demo.lfs'.
+QFile: open 'huge-data/t0/demo.lfs/00/0000000000' with 'r'.
+QFile: open 'huge-data/t0/demo.lfs/00/0000000001' with 'r'.
+QFile: open 'huge-data/t0/demo.lfs/01/0000000002' with 'r'.
+QFile: open 'huge-data/t0/demo.lfs/01/0000000003' with 'r'.
+QFile: open 'huge-data/t0/demo.lfs/02/0000000004' with 'r'.
+QFile: open 'huge-data/t0/demo.lfs/02/0000000005' with 'r'.
+QFile: open 'huge-data/t0/demo.lfs/03/0000000006' with 'r'.
+QFile: open 'huge-data/t0/demo.lfs/03/0000000007' with 'r'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.field' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.sfield' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.float.field' from 'huge-data/t0/demo.lfs'.
@@ -230,7 +274,17 @@ read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.float.sfield' from
 shuffle_field_back(sel_f,sel_fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read_sbs: compute crc32=B98B28E0 for fn='sfa.float.sfield' from path 'huge-data/t0/demo.lfs' with sbs.
+QFile: open 'huge-data/t0/demo.lfs/geon-info.txt' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/geon-info.txt' with 'r'.
 FieldsReader: open 'huge-data/t0/demo.lfs'.
+QFile: open 'huge-data/t0/demo.lfs/00/0000000000' with 'r'.
+QFile: open 'huge-data/t0/demo.lfs/00/0000000001' with 'r'.
+QFile: open 'huge-data/t0/demo.lfs/01/0000000002' with 'r'.
+QFile: open 'huge-data/t0/demo.lfs/01/0000000003' with 'r'.
+QFile: open 'huge-data/t0/demo.lfs/02/0000000004' with 'r'.
+QFile: open 'huge-data/t0/demo.lfs/02/0000000005' with 'r'.
+QFile: open 'huge-data/t0/demo.lfs/03/0000000006' with 'r'.
+QFile: open 'huge-data/t0/demo.lfs/03/0000000007' with 'r'.
 demo: read from disk 'f.field'
 read(sfr,fn,field): reading field with fn='f.field' from 'huge-data/t0/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.field' from 'huge-data/t0/demo.lfs'.
@@ -413,72 +467,211 @@ read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.sfield' from 'huge
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=60386CDD.
-FieldsReader: close 'huge-data/t0/demo.lfs'.
+QFile: close 'huge-data/t0/demo.lfs/00/0000000000' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/00/0000000001' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/01/0000000002' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/01/0000000003' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/02/0000000004' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/02/0000000005' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/03/0000000006' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/03/0000000007' with 'r'.
+QFile: open 'huge-data/t0/demo.lfs/00/0000000000' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/00/0000000000' with 'r'.
 4B7F2131  fn='huge-data/t0/demo.lfs/00/0000000000'
+QFile: open 'huge-data/t0/demo.lfs/00/0000000001' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/00/0000000001' with 'r'.
 57314C95  fn='huge-data/t0/demo.lfs/00/0000000001'
+QFile: open 'huge-data/t0/demo.lfs/01/0000000002' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/01/0000000002' with 'r'.
 7A835AD7  fn='huge-data/t0/demo.lfs/01/0000000002'
+QFile: open 'huge-data/t0/demo.lfs/01/0000000003' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/01/0000000003' with 'r'.
 E607B991  fn='huge-data/t0/demo.lfs/01/0000000003'
+QFile: open 'huge-data/t0/demo.lfs/02/0000000004' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/02/0000000004' with 'r'.
 C1A09AB0  fn='huge-data/t0/demo.lfs/02/0000000004'
+QFile: open 'huge-data/t0/demo.lfs/02/0000000005' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/02/0000000005' with 'r'.
 F840C887  fn='huge-data/t0/demo.lfs/02/0000000005'
+QFile: open 'huge-data/t0/demo.lfs/03/0000000006' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/03/0000000006' with 'r'.
 1EE4A1C0  fn='huge-data/t0/demo.lfs/03/0000000006'
+QFile: open 'huge-data/t0/demo.lfs/03/0000000007' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/03/0000000007' with 'r'.
 E546593C  fn='huge-data/t0/demo.lfs/03/0000000007'
+QFile: open 'huge-data/t0/demo.lfs/04/0000000008' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/04/0000000008' with 'r'.
 93701BB0  fn='huge-data/t0/demo.lfs/04/0000000008'
+QFile: open 'huge-data/t0/demo.lfs/04/0000000009' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/04/0000000009' with 'r'.
 3DA42A76  fn='huge-data/t0/demo.lfs/04/0000000009'
+QFile: open 'huge-data/t0/demo.lfs/05/0000000010' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/05/0000000010' with 'r'.
 A0BE68DB  fn='huge-data/t0/demo.lfs/05/0000000010'
+QFile: open 'huge-data/t0/demo.lfs/05/0000000011' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/05/0000000011' with 'r'.
 2A5C2A99  fn='huge-data/t0/demo.lfs/05/0000000011'
+QFile: open 'huge-data/t0/demo.lfs/06/0000000012' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/06/0000000012' with 'r'.
 0EC78BDE  fn='huge-data/t0/demo.lfs/06/0000000012'
+QFile: open 'huge-data/t0/demo.lfs/06/0000000013' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/06/0000000013' with 'r'.
 B85F90E8  fn='huge-data/t0/demo.lfs/06/0000000013'
+QFile: open 'huge-data/t0/demo.lfs/07/0000000014' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/07/0000000014' with 'r'.
 1D3F079D  fn='huge-data/t0/demo.lfs/07/0000000014'
+QFile: open 'huge-data/t0/demo.lfs/07/0000000015' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/07/0000000015' with 'r'.
 D1369EC9  fn='huge-data/t0/demo.lfs/07/0000000015'
+QFile: open 'huge-data/t0/demo.lfs/08/0000000016' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/08/0000000016' with 'r'.
 69E57577  fn='huge-data/t0/demo.lfs/08/0000000016'
+QFile: open 'huge-data/t0/demo.lfs/08/0000000017' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/08/0000000017' with 'r'.
 569DEAF6  fn='huge-data/t0/demo.lfs/08/0000000017'
+QFile: open 'huge-data/t0/demo.lfs/09/0000000018' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/09/0000000018' with 'r'.
 A321917B  fn='huge-data/t0/demo.lfs/09/0000000018'
+QFile: open 'huge-data/t0/demo.lfs/09/0000000019' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/09/0000000019' with 'r'.
 9D7EB5CD  fn='huge-data/t0/demo.lfs/09/0000000019'
+QFile: open 'huge-data/t0/demo.lfs/10/0000000020' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/10/0000000020' with 'r'.
 8790E3B5  fn='huge-data/t0/demo.lfs/10/0000000020'
+QFile: open 'huge-data/t0/demo.lfs/10/0000000021' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/10/0000000021' with 'r'.
 2627D858  fn='huge-data/t0/demo.lfs/10/0000000021'
+QFile: open 'huge-data/t0/demo.lfs/11/0000000022' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/11/0000000022' with 'r'.
 7E9063CE  fn='huge-data/t0/demo.lfs/11/0000000022'
+QFile: open 'huge-data/t0/demo.lfs/11/0000000023' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/11/0000000023' with 'r'.
 7AC97371  fn='huge-data/t0/demo.lfs/11/0000000023'
+QFile: open 'huge-data/t0/demo.lfs/12/0000000024' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/12/0000000024' with 'r'.
 82E5D8C3  fn='huge-data/t0/demo.lfs/12/0000000024'
+QFile: open 'huge-data/t0/demo.lfs/12/0000000025' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/12/0000000025' with 'r'.
 CA9142F3  fn='huge-data/t0/demo.lfs/12/0000000025'
+QFile: open 'huge-data/t0/demo.lfs/13/0000000026' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/13/0000000026' with 'r'.
 E10A5700  fn='huge-data/t0/demo.lfs/13/0000000026'
+QFile: open 'huge-data/t0/demo.lfs/13/0000000027' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/13/0000000027' with 'r'.
 386CDD10  fn='huge-data/t0/demo.lfs/13/0000000027'
+QFile: open 'huge-data/t0/demo.lfs/14/0000000028' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/14/0000000028' with 'r'.
 92085390  fn='huge-data/t0/demo.lfs/14/0000000028'
+QFile: open 'huge-data/t0/demo.lfs/14/0000000029' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/14/0000000029' with 'r'.
 5B2572AD  fn='huge-data/t0/demo.lfs/14/0000000029'
+QFile: open 'huge-data/t0/demo.lfs/15/0000000030' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/15/0000000030' with 'r'.
 51E2105C  fn='huge-data/t0/demo.lfs/15/0000000030'
+QFile: open 'huge-data/t0/demo.lfs/15/0000000031' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/15/0000000031' with 'r'.
 271CE449  fn='huge-data/t0/demo.lfs/15/0000000031'
+QFile: open 'huge-data/t0/demo.lfs/16/0000000032' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/16/0000000032' with 'r'.
 5CB71CC7  fn='huge-data/t0/demo.lfs/16/0000000032'
+QFile: open 'huge-data/t0/demo.lfs/16/0000000033' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/16/0000000033' with 'r'.
 CE00CBC3  fn='huge-data/t0/demo.lfs/16/0000000033'
+QFile: open 'huge-data/t0/demo.lfs/17/0000000034' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/17/0000000034' with 'r'.
 8884C930  fn='huge-data/t0/demo.lfs/17/0000000034'
+QFile: open 'huge-data/t0/demo.lfs/17/0000000035' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/17/0000000035' with 'r'.
 23C1A30B  fn='huge-data/t0/demo.lfs/17/0000000035'
+QFile: open 'huge-data/t0/demo.lfs/18/0000000036' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/18/0000000036' with 'r'.
 7E3C1EDA  fn='huge-data/t0/demo.lfs/18/0000000036'
+QFile: open 'huge-data/t0/demo.lfs/18/0000000037' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/18/0000000037' with 'r'.
 F258685E  fn='huge-data/t0/demo.lfs/18/0000000037'
+QFile: open 'huge-data/t0/demo.lfs/19/0000000038' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/19/0000000038' with 'r'.
 73949E0D  fn='huge-data/t0/demo.lfs/19/0000000038'
+QFile: open 'huge-data/t0/demo.lfs/19/0000000039' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/19/0000000039' with 'r'.
 60A9D7B8  fn='huge-data/t0/demo.lfs/19/0000000039'
+QFile: open 'huge-data/t0/demo.lfs/20/0000000040' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/20/0000000040' with 'r'.
 188E9403  fn='huge-data/t0/demo.lfs/20/0000000040'
+QFile: open 'huge-data/t0/demo.lfs/20/0000000041' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/20/0000000041' with 'r'.
 3D78F5F7  fn='huge-data/t0/demo.lfs/20/0000000041'
+QFile: open 'huge-data/t0/demo.lfs/21/0000000042' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/21/0000000042' with 'r'.
 10C86A18  fn='huge-data/t0/demo.lfs/21/0000000042'
+QFile: open 'huge-data/t0/demo.lfs/21/0000000043' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/21/0000000043' with 'r'.
 0B74A1FD  fn='huge-data/t0/demo.lfs/21/0000000043'
+QFile: open 'huge-data/t0/demo.lfs/22/0000000044' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/22/0000000044' with 'r'.
 4936F72F  fn='huge-data/t0/demo.lfs/22/0000000044'
+QFile: open 'huge-data/t0/demo.lfs/22/0000000045' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/22/0000000045' with 'r'.
 C750595E  fn='huge-data/t0/demo.lfs/22/0000000045'
+QFile: open 'huge-data/t0/demo.lfs/23/0000000046' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/23/0000000046' with 'r'.
 06C6854D  fn='huge-data/t0/demo.lfs/23/0000000046'
+QFile: open 'huge-data/t0/demo.lfs/23/0000000047' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/23/0000000047' with 'r'.
 24221CE0  fn='huge-data/t0/demo.lfs/23/0000000047'
+QFile: open 'huge-data/t0/demo.lfs/24/0000000048' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/24/0000000048' with 'r'.
 79C117FF  fn='huge-data/t0/demo.lfs/24/0000000048'
+QFile: open 'huge-data/t0/demo.lfs/24/0000000049' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/24/0000000049' with 'r'.
 47EFCB77  fn='huge-data/t0/demo.lfs/24/0000000049'
+QFile: open 'huge-data/t0/demo.lfs/25/0000000050' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/25/0000000050' with 'r'.
 25BC50F5  fn='huge-data/t0/demo.lfs/25/0000000050'
+QFile: open 'huge-data/t0/demo.lfs/25/0000000051' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/25/0000000051' with 'r'.
 26E4BC8D  fn='huge-data/t0/demo.lfs/25/0000000051'
+QFile: open 'huge-data/t0/demo.lfs/26/0000000052' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/26/0000000052' with 'r'.
 352AABAC  fn='huge-data/t0/demo.lfs/26/0000000052'
+QFile: open 'huge-data/t0/demo.lfs/26/0000000053' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/26/0000000053' with 'r'.
 F21397AD  fn='huge-data/t0/demo.lfs/26/0000000053'
+QFile: open 'huge-data/t0/demo.lfs/27/0000000054' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/27/0000000054' with 'r'.
 624FD523  fn='huge-data/t0/demo.lfs/27/0000000054'
+QFile: open 'huge-data/t0/demo.lfs/27/0000000055' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/27/0000000055' with 'r'.
 F4DABAED  fn='huge-data/t0/demo.lfs/27/0000000055'
+QFile: open 'huge-data/t0/demo.lfs/28/0000000056' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/28/0000000056' with 'r'.
 7855AF24  fn='huge-data/t0/demo.lfs/28/0000000056'
+QFile: open 'huge-data/t0/demo.lfs/28/0000000057' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/28/0000000057' with 'r'.
 B0BB289A  fn='huge-data/t0/demo.lfs/28/0000000057'
+QFile: open 'huge-data/t0/demo.lfs/29/0000000058' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/29/0000000058' with 'r'.
 B7B48AC1  fn='huge-data/t0/demo.lfs/29/0000000058'
+QFile: open 'huge-data/t0/demo.lfs/29/0000000059' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/29/0000000059' with 'r'.
 AFB46F81  fn='huge-data/t0/demo.lfs/29/0000000059'
+QFile: open 'huge-data/t0/demo.lfs/30/0000000060' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/30/0000000060' with 'r'.
 97DB9422  fn='huge-data/t0/demo.lfs/30/0000000060'
+QFile: open 'huge-data/t0/demo.lfs/30/0000000061' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/30/0000000061' with 'r'.
 FF7A1888  fn='huge-data/t0/demo.lfs/30/0000000061'
+QFile: open 'huge-data/t0/demo.lfs/31/0000000062' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/31/0000000062' with 'r'.
 79E82458  fn='huge-data/t0/demo.lfs/31/0000000062'
+QFile: open 'huge-data/t0/demo.lfs/31/0000000063' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/31/0000000063' with 'r'.
 A11848CD  fn='huge-data/t0/demo.lfs/31/0000000063'
+QFile: open 'huge-data/t0/demo.lfs/geon-info.txt' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/geon-info.txt' with 'r'.
 9AE9A27B  fn='huge-data/t0/demo.lfs/geon-info.txt'
+QFile: open 'huge-data/t0/fsel.field' with 'r'.
+QFile: close 'huge-data/t0/fsel.field' with 'r'.
 60AA0806  fn='huge-data/t0/fsel.field'
 demo: create splittable random number generator 'rs'
 demo: random select 4 points on entire lattice
@@ -508,6 +701,16 @@ demo: (DOES NOT CHANGE THE SIZE IN MOMEORY)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=E6136941.
 FieldsWriter: open 'huge-data/t1/demo.lfs'.
+QFile: open 'huge-data/t1/demo.lfs/geon-info.txt' with 'w'.
+QFile: close 'huge-data/t1/demo.lfs/geon-info.txt' with 'w'.
+QFile: open 'huge-data/t1/demo.lfs/00/0000000000' with 'w'.
+QFile: open 'huge-data/t1/demo.lfs/00/0000000001' with 'w'.
+QFile: open 'huge-data/t1/demo.lfs/01/0000000002' with 'w'.
+QFile: open 'huge-data/t1/demo.lfs/01/0000000003' with 'w'.
+QFile: open 'huge-data/t1/demo.lfs/02/0000000004' with 'w'.
+QFile: open 'huge-data/t1/demo.lfs/02/0000000005' with 'w'.
+QFile: open 'huge-data/t1/demo.lfs/03/0000000006' with 'w'.
+QFile: open 'huge-data/t1/demo.lfs/03/0000000007' with 'w'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
 make_shuffle_plan_generic: num_send_packs =          1
 make_shuffle_plan_generic: num_recv_packs =          2
@@ -536,8 +739,25 @@ write(sfw,fn,field): writing field with fn='sf.float.field' from 'huge-data/t1/d
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 write(sfw,fn,sf,sbs): writing sparse field with fn='sf.float.sfield' from 'huge-data/t1/demo.lfs'.
 shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
-FieldsWriter: close 'huge-data/t1/demo.lfs'.
+QFile: close 'huge-data/t1/demo.lfs/00/0000000000' with 'w'.
+QFile: close 'huge-data/t1/demo.lfs/00/0000000001' with 'w'.
+QFile: close 'huge-data/t1/demo.lfs/01/0000000002' with 'w'.
+QFile: close 'huge-data/t1/demo.lfs/01/0000000003' with 'w'.
+QFile: close 'huge-data/t1/demo.lfs/02/0000000004' with 'w'.
+QFile: close 'huge-data/t1/demo.lfs/02/0000000005' with 'w'.
+QFile: close 'huge-data/t1/demo.lfs/03/0000000006' with 'w'.
+QFile: close 'huge-data/t1/demo.lfs/03/0000000007' with 'w'.
+QFile: open 'huge-data/t1/demo.lfs/geon-info.txt' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/geon-info.txt' with 'r'.
 FieldsWriter: open 'huge-data/t1/demo.lfs'.
+QFile: open 'huge-data/t1/demo.lfs/00/0000000000' with 'a'.
+QFile: open 'huge-data/t1/demo.lfs/00/0000000001' with 'a'.
+QFile: open 'huge-data/t1/demo.lfs/01/0000000002' with 'a'.
+QFile: open 'huge-data/t1/demo.lfs/01/0000000003' with 'a'.
+QFile: open 'huge-data/t1/demo.lfs/02/0000000004' with 'a'.
+QFile: open 'huge-data/t1/demo.lfs/02/0000000005' with 'a'.
+QFile: open 'huge-data/t1/demo.lfs/03/0000000006' with 'a'.
+QFile: open 'huge-data/t1/demo.lfs/03/0000000007' with 'a'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
 make_shuffle_plan_generic: num_send_packs =          1
 make_shuffle_plan_generic: num_recv_packs =          2
@@ -566,9 +786,26 @@ write(sfw,fn,field): writing field with fn='sfa.float.field' from 'huge-data/t1/
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 write(sfw,fn,sf,sbs): writing sparse field with fn='sfa.float.sfield' from 'huge-data/t1/demo.lfs'.
 shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
-FieldsWriter: close 'huge-data/t1/demo.lfs'.
+QFile: close 'huge-data/t1/demo.lfs/00/0000000000' with 'a'.
+QFile: close 'huge-data/t1/demo.lfs/00/0000000001' with 'a'.
+QFile: close 'huge-data/t1/demo.lfs/01/0000000002' with 'a'.
+QFile: close 'huge-data/t1/demo.lfs/01/0000000003' with 'a'.
+QFile: close 'huge-data/t1/demo.lfs/02/0000000004' with 'a'.
+QFile: close 'huge-data/t1/demo.lfs/02/0000000005' with 'a'.
+QFile: close 'huge-data/t1/demo.lfs/03/0000000006' with 'a'.
+QFile: close 'huge-data/t1/demo.lfs/03/0000000007' with 'a'.
 Cache: 'ShuffledFieldsReaderCache': 1 / 4 [1] to add
+QFile: open 'huge-data/t1/demo.lfs/geon-info.txt' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/geon-info.txt' with 'r'.
 FieldsReader: open 'huge-data/t1/demo.lfs'.
+QFile: open 'huge-data/t1/demo.lfs/00/0000000000' with 'r'.
+QFile: open 'huge-data/t1/demo.lfs/00/0000000001' with 'r'.
+QFile: open 'huge-data/t1/demo.lfs/01/0000000002' with 'r'.
+QFile: open 'huge-data/t1/demo.lfs/01/0000000003' with 'r'.
+QFile: open 'huge-data/t1/demo.lfs/02/0000000004' with 'r'.
+QFile: open 'huge-data/t1/demo.lfs/02/0000000005' with 'r'.
+QFile: open 'huge-data/t1/demo.lfs/03/0000000006' with 'r'.
+QFile: open 'huge-data/t1/demo.lfs/03/0000000007' with 'r'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.field' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.sfield' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.float.field' from 'huge-data/t1/demo.lfs'.
@@ -671,7 +908,17 @@ read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.float.sfield' from
 shuffle_field_back(sel_f,sel_fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read_sbs: compute crc32=A3049D06 for fn='sfa.float.sfield' from path 'huge-data/t1/demo.lfs' with sbs.
+QFile: open 'huge-data/t1/demo.lfs/geon-info.txt' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/geon-info.txt' with 'r'.
 FieldsReader: open 'huge-data/t1/demo.lfs'.
+QFile: open 'huge-data/t1/demo.lfs/00/0000000000' with 'r'.
+QFile: open 'huge-data/t1/demo.lfs/00/0000000001' with 'r'.
+QFile: open 'huge-data/t1/demo.lfs/01/0000000002' with 'r'.
+QFile: open 'huge-data/t1/demo.lfs/01/0000000003' with 'r'.
+QFile: open 'huge-data/t1/demo.lfs/02/0000000004' with 'r'.
+QFile: open 'huge-data/t1/demo.lfs/02/0000000005' with 'r'.
+QFile: open 'huge-data/t1/demo.lfs/03/0000000006' with 'r'.
+QFile: open 'huge-data/t1/demo.lfs/03/0000000007' with 'r'.
 demo: read from disk 'f.field'
 read(sfr,fn,field): reading field with fn='f.field' from 'huge-data/t1/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.field' from 'huge-data/t1/demo.lfs'.
@@ -854,72 +1101,211 @@ read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.sfield' from 'huge
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=E6136941.
-FieldsReader: close 'huge-data/t1/demo.lfs'.
+QFile: close 'huge-data/t1/demo.lfs/00/0000000000' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/00/0000000001' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/01/0000000002' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/01/0000000003' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/02/0000000004' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/02/0000000005' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/03/0000000006' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/03/0000000007' with 'r'.
+QFile: open 'huge-data/t1/demo.lfs/00/0000000000' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/00/0000000000' with 'r'.
 6D301127  fn='huge-data/t1/demo.lfs/00/0000000000'
+QFile: open 'huge-data/t1/demo.lfs/00/0000000001' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/00/0000000001' with 'r'.
 E03D2BFE  fn='huge-data/t1/demo.lfs/00/0000000001'
+QFile: open 'huge-data/t1/demo.lfs/01/0000000002' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/01/0000000002' with 'r'.
 58FA235B  fn='huge-data/t1/demo.lfs/01/0000000002'
+QFile: open 'huge-data/t1/demo.lfs/01/0000000003' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/01/0000000003' with 'r'.
 CF8DDFBF  fn='huge-data/t1/demo.lfs/01/0000000003'
+QFile: open 'huge-data/t1/demo.lfs/02/0000000004' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/02/0000000004' with 'r'.
 BBA8E4BB  fn='huge-data/t1/demo.lfs/02/0000000004'
+QFile: open 'huge-data/t1/demo.lfs/02/0000000005' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/02/0000000005' with 'r'.
 F840C887  fn='huge-data/t1/demo.lfs/02/0000000005'
+QFile: open 'huge-data/t1/demo.lfs/03/0000000006' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/03/0000000006' with 'r'.
 672ABBC2  fn='huge-data/t1/demo.lfs/03/0000000006'
+QFile: open 'huge-data/t1/demo.lfs/03/0000000007' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/03/0000000007' with 'r'.
 0A893D33  fn='huge-data/t1/demo.lfs/03/0000000007'
+QFile: open 'huge-data/t1/demo.lfs/04/0000000008' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/04/0000000008' with 'r'.
 93701BB0  fn='huge-data/t1/demo.lfs/04/0000000008'
+QFile: open 'huge-data/t1/demo.lfs/04/0000000009' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/04/0000000009' with 'r'.
 59A0AE5F  fn='huge-data/t1/demo.lfs/04/0000000009'
+QFile: open 'huge-data/t1/demo.lfs/05/0000000010' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/05/0000000010' with 'r'.
 25BB32B8  fn='huge-data/t1/demo.lfs/05/0000000010'
+QFile: open 'huge-data/t1/demo.lfs/05/0000000011' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/05/0000000011' with 'r'.
 A6B19E02  fn='huge-data/t1/demo.lfs/05/0000000011'
+QFile: open 'huge-data/t1/demo.lfs/06/0000000012' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/06/0000000012' with 'r'.
 FDA3AC5C  fn='huge-data/t1/demo.lfs/06/0000000012'
+QFile: open 'huge-data/t1/demo.lfs/06/0000000013' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/06/0000000013' with 'r'.
 B85F90E8  fn='huge-data/t1/demo.lfs/06/0000000013'
+QFile: open 'huge-data/t1/demo.lfs/07/0000000014' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/07/0000000014' with 'r'.
 71D91B03  fn='huge-data/t1/demo.lfs/07/0000000014'
+QFile: open 'huge-data/t1/demo.lfs/07/0000000015' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/07/0000000015' with 'r'.
 52050674  fn='huge-data/t1/demo.lfs/07/0000000015'
+QFile: open 'huge-data/t1/demo.lfs/08/0000000016' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/08/0000000016' with 'r'.
 59E8E1CF  fn='huge-data/t1/demo.lfs/08/0000000016'
+QFile: open 'huge-data/t1/demo.lfs/08/0000000017' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/08/0000000017' with 'r'.
 2CE74E6C  fn='huge-data/t1/demo.lfs/08/0000000017'
+QFile: open 'huge-data/t1/demo.lfs/09/0000000018' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/09/0000000018' with 'r'.
 A321917B  fn='huge-data/t1/demo.lfs/09/0000000018'
+QFile: open 'huge-data/t1/demo.lfs/09/0000000019' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/09/0000000019' with 'r'.
 5500BD7C  fn='huge-data/t1/demo.lfs/09/0000000019'
+QFile: open 'huge-data/t1/demo.lfs/10/0000000020' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/10/0000000020' with 'r'.
 604831B7  fn='huge-data/t1/demo.lfs/10/0000000020'
+QFile: open 'huge-data/t1/demo.lfs/10/0000000021' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/10/0000000021' with 'r'.
 3A1A4927  fn='huge-data/t1/demo.lfs/10/0000000021'
+QFile: open 'huge-data/t1/demo.lfs/11/0000000022' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/11/0000000022' with 'r'.
 46B9030C  fn='huge-data/t1/demo.lfs/11/0000000022'
+QFile: open 'huge-data/t1/demo.lfs/11/0000000023' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/11/0000000023' with 'r'.
 F8682594  fn='huge-data/t1/demo.lfs/11/0000000023'
+QFile: open 'huge-data/t1/demo.lfs/12/0000000024' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/12/0000000024' with 'r'.
 85925455  fn='huge-data/t1/demo.lfs/12/0000000024'
+QFile: open 'huge-data/t1/demo.lfs/12/0000000025' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/12/0000000025' with 'r'.
 C6237D09  fn='huge-data/t1/demo.lfs/12/0000000025'
+QFile: open 'huge-data/t1/demo.lfs/13/0000000026' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/13/0000000026' with 'r'.
 C1D3D8B5  fn='huge-data/t1/demo.lfs/13/0000000026'
+QFile: open 'huge-data/t1/demo.lfs/13/0000000027' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/13/0000000027' with 'r'.
 BE57237F  fn='huge-data/t1/demo.lfs/13/0000000027'
+QFile: open 'huge-data/t1/demo.lfs/14/0000000028' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/14/0000000028' with 'r'.
 50BF8143  fn='huge-data/t1/demo.lfs/14/0000000028'
+QFile: open 'huge-data/t1/demo.lfs/14/0000000029' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/14/0000000029' with 'r'.
 05086BA8  fn='huge-data/t1/demo.lfs/14/0000000029'
+QFile: open 'huge-data/t1/demo.lfs/15/0000000030' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/15/0000000030' with 'r'.
 64C60B07  fn='huge-data/t1/demo.lfs/15/0000000030'
+QFile: open 'huge-data/t1/demo.lfs/15/0000000031' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/15/0000000031' with 'r'.
 7FFDA264  fn='huge-data/t1/demo.lfs/15/0000000031'
+QFile: open 'huge-data/t1/demo.lfs/16/0000000032' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/16/0000000032' with 'r'.
 E8EC2EAE  fn='huge-data/t1/demo.lfs/16/0000000032'
+QFile: open 'huge-data/t1/demo.lfs/16/0000000033' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/16/0000000033' with 'r'.
 87EDB132  fn='huge-data/t1/demo.lfs/16/0000000033'
+QFile: open 'huge-data/t1/demo.lfs/17/0000000034' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/17/0000000034' with 'r'.
 829032D4  fn='huge-data/t1/demo.lfs/17/0000000034'
+QFile: open 'huge-data/t1/demo.lfs/17/0000000035' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/17/0000000035' with 'r'.
 131707F8  fn='huge-data/t1/demo.lfs/17/0000000035'
+QFile: open 'huge-data/t1/demo.lfs/18/0000000036' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/18/0000000036' with 'r'.
 772CC22C  fn='huge-data/t1/demo.lfs/18/0000000036'
+QFile: open 'huge-data/t1/demo.lfs/18/0000000037' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/18/0000000037' with 'r'.
 B955AD00  fn='huge-data/t1/demo.lfs/18/0000000037'
+QFile: open 'huge-data/t1/demo.lfs/19/0000000038' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/19/0000000038' with 'r'.
 73949E0D  fn='huge-data/t1/demo.lfs/19/0000000038'
+QFile: open 'huge-data/t1/demo.lfs/19/0000000039' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/19/0000000039' with 'r'.
 0DEE2251  fn='huge-data/t1/demo.lfs/19/0000000039'
+QFile: open 'huge-data/t1/demo.lfs/20/0000000040' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/20/0000000040' with 'r'.
 017970F5  fn='huge-data/t1/demo.lfs/20/0000000040'
+QFile: open 'huge-data/t1/demo.lfs/20/0000000041' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/20/0000000041' with 'r'.
 CE82E0EA  fn='huge-data/t1/demo.lfs/20/0000000041'
+QFile: open 'huge-data/t1/demo.lfs/21/0000000042' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/21/0000000042' with 'r'.
 8986CDF0  fn='huge-data/t1/demo.lfs/21/0000000042'
+QFile: open 'huge-data/t1/demo.lfs/21/0000000043' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/21/0000000043' with 'r'.
 86D0FCEC  fn='huge-data/t1/demo.lfs/21/0000000043'
+QFile: open 'huge-data/t1/demo.lfs/22/0000000044' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/22/0000000044' with 'r'.
 9AACBA49  fn='huge-data/t1/demo.lfs/22/0000000044'
+QFile: open 'huge-data/t1/demo.lfs/22/0000000045' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/22/0000000045' with 'r'.
 C750595E  fn='huge-data/t1/demo.lfs/22/0000000045'
+QFile: open 'huge-data/t1/demo.lfs/23/0000000046' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/23/0000000046' with 'r'.
 973E554D  fn='huge-data/t1/demo.lfs/23/0000000046'
+QFile: open 'huge-data/t1/demo.lfs/23/0000000047' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/23/0000000047' with 'r'.
 30626390  fn='huge-data/t1/demo.lfs/23/0000000047'
+QFile: open 'huge-data/t1/demo.lfs/24/0000000048' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/24/0000000048' with 'r'.
 79C117FF  fn='huge-data/t1/demo.lfs/24/0000000048'
+QFile: open 'huge-data/t1/demo.lfs/24/0000000049' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/24/0000000049' with 'r'.
 19DD1FA2  fn='huge-data/t1/demo.lfs/24/0000000049'
+QFile: open 'huge-data/t1/demo.lfs/25/0000000050' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/25/0000000050' with 'r'.
 CA934D0D  fn='huge-data/t1/demo.lfs/25/0000000050'
+QFile: open 'huge-data/t1/demo.lfs/25/0000000051' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/25/0000000051' with 'r'.
 525A32B4  fn='huge-data/t1/demo.lfs/25/0000000051'
+QFile: open 'huge-data/t1/demo.lfs/26/0000000052' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/26/0000000052' with 'r'.
 6FF5518A  fn='huge-data/t1/demo.lfs/26/0000000052'
+QFile: open 'huge-data/t1/demo.lfs/26/0000000053' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/26/0000000053' with 'r'.
 4CCEC02D  fn='huge-data/t1/demo.lfs/26/0000000053'
+QFile: open 'huge-data/t1/demo.lfs/27/0000000054' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/27/0000000054' with 'r'.
 F5AE644B  fn='huge-data/t1/demo.lfs/27/0000000054'
+QFile: open 'huge-data/t1/demo.lfs/27/0000000055' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/27/0000000055' with 'r'.
 2625150D  fn='huge-data/t1/demo.lfs/27/0000000055'
+QFile: open 'huge-data/t1/demo.lfs/28/0000000056' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/28/0000000056' with 'r'.
 42EDF019  fn='huge-data/t1/demo.lfs/28/0000000056'
+QFile: open 'huge-data/t1/demo.lfs/28/0000000057' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/28/0000000057' with 'r'.
 767CEDBA  fn='huge-data/t1/demo.lfs/28/0000000057'
+QFile: open 'huge-data/t1/demo.lfs/29/0000000058' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/29/0000000058' with 'r'.
 2EB51601  fn='huge-data/t1/demo.lfs/29/0000000058'
+QFile: open 'huge-data/t1/demo.lfs/29/0000000059' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/29/0000000059' with 'r'.
 D6F6485F  fn='huge-data/t1/demo.lfs/29/0000000059'
+QFile: open 'huge-data/t1/demo.lfs/30/0000000060' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/30/0000000060' with 'r'.
 97DB9422  fn='huge-data/t1/demo.lfs/30/0000000060'
+QFile: open 'huge-data/t1/demo.lfs/30/0000000061' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/30/0000000061' with 'r'.
 39CEA293  fn='huge-data/t1/demo.lfs/30/0000000061'
+QFile: open 'huge-data/t1/demo.lfs/31/0000000062' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/31/0000000062' with 'r'.
 79E82458  fn='huge-data/t1/demo.lfs/31/0000000062'
+QFile: open 'huge-data/t1/demo.lfs/31/0000000063' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/31/0000000063' with 'r'.
 A64F7018  fn='huge-data/t1/demo.lfs/31/0000000063'
+QFile: open 'huge-data/t1/demo.lfs/geon-info.txt' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/geon-info.txt' with 'r'.
 9AE9A27B  fn='huge-data/t1/demo.lfs/geon-info.txt'
+QFile: open 'huge-data/t1/fsel.field' with 'r'.
+QFile: close 'huge-data/t1/fsel.field' with 'r'.
 BECD8B55  fn='huge-data/t1/fsel.field'
 demo: create splittable random number generator 'rs'
 demo: random select 8 points on entire lattice
@@ -949,6 +1335,16 @@ demo: (DOES NOT CHANGE THE SIZE IN MOMEORY)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=F7F47FEE.
 FieldsWriter: open 'huge-data/t2/demo.lfs'.
+QFile: open 'huge-data/t2/demo.lfs/geon-info.txt' with 'w'.
+QFile: close 'huge-data/t2/demo.lfs/geon-info.txt' with 'w'.
+QFile: open 'huge-data/t2/demo.lfs/00/0000000000' with 'w'.
+QFile: open 'huge-data/t2/demo.lfs/00/0000000001' with 'w'.
+QFile: open 'huge-data/t2/demo.lfs/01/0000000002' with 'w'.
+QFile: open 'huge-data/t2/demo.lfs/01/0000000003' with 'w'.
+QFile: open 'huge-data/t2/demo.lfs/02/0000000004' with 'w'.
+QFile: open 'huge-data/t2/demo.lfs/02/0000000005' with 'w'.
+QFile: open 'huge-data/t2/demo.lfs/03/0000000006' with 'w'.
+QFile: open 'huge-data/t2/demo.lfs/03/0000000007' with 'w'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
 make_shuffle_plan_generic: num_send_packs =          0
 make_shuffle_plan_generic: num_recv_packs =          1
@@ -977,8 +1373,25 @@ write(sfw,fn,field): writing field with fn='sf.float.field' from 'huge-data/t2/d
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 write(sfw,fn,sf,sbs): writing sparse field with fn='sf.float.sfield' from 'huge-data/t2/demo.lfs'.
 shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
-FieldsWriter: close 'huge-data/t2/demo.lfs'.
+QFile: close 'huge-data/t2/demo.lfs/00/0000000000' with 'w'.
+QFile: close 'huge-data/t2/demo.lfs/00/0000000001' with 'w'.
+QFile: close 'huge-data/t2/demo.lfs/01/0000000002' with 'w'.
+QFile: close 'huge-data/t2/demo.lfs/01/0000000003' with 'w'.
+QFile: close 'huge-data/t2/demo.lfs/02/0000000004' with 'w'.
+QFile: close 'huge-data/t2/demo.lfs/02/0000000005' with 'w'.
+QFile: close 'huge-data/t2/demo.lfs/03/0000000006' with 'w'.
+QFile: close 'huge-data/t2/demo.lfs/03/0000000007' with 'w'.
+QFile: open 'huge-data/t2/demo.lfs/geon-info.txt' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/geon-info.txt' with 'r'.
 FieldsWriter: open 'huge-data/t2/demo.lfs'.
+QFile: open 'huge-data/t2/demo.lfs/00/0000000000' with 'a'.
+QFile: open 'huge-data/t2/demo.lfs/00/0000000001' with 'a'.
+QFile: open 'huge-data/t2/demo.lfs/01/0000000002' with 'a'.
+QFile: open 'huge-data/t2/demo.lfs/01/0000000003' with 'a'.
+QFile: open 'huge-data/t2/demo.lfs/02/0000000004' with 'a'.
+QFile: open 'huge-data/t2/demo.lfs/02/0000000005' with 'a'.
+QFile: open 'huge-data/t2/demo.lfs/03/0000000006' with 'a'.
+QFile: open 'huge-data/t2/demo.lfs/03/0000000007' with 'a'.
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 8 ; total_size: 0.000 GB)
 make_shuffle_plan_generic: num_send_packs =          0
 make_shuffle_plan_generic: num_recv_packs =          1
@@ -1007,9 +1420,26 @@ write(sfw,fn,field): writing field with fn='sfa.float.field' from 'huge-data/t2/
 shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 write(sfw,fn,sf,sbs): writing sparse field with fn='sfa.float.sfield' from 'huge-data/t2/demo.lfs'.
 shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 2x2x2x8 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
-FieldsWriter: close 'huge-data/t2/demo.lfs'.
+QFile: close 'huge-data/t2/demo.lfs/00/0000000000' with 'a'.
+QFile: close 'huge-data/t2/demo.lfs/00/0000000001' with 'a'.
+QFile: close 'huge-data/t2/demo.lfs/01/0000000002' with 'a'.
+QFile: close 'huge-data/t2/demo.lfs/01/0000000003' with 'a'.
+QFile: close 'huge-data/t2/demo.lfs/02/0000000004' with 'a'.
+QFile: close 'huge-data/t2/demo.lfs/02/0000000005' with 'a'.
+QFile: close 'huge-data/t2/demo.lfs/03/0000000006' with 'a'.
+QFile: close 'huge-data/t2/demo.lfs/03/0000000007' with 'a'.
 Cache: 'ShuffledFieldsReaderCache': 2 / 4 [1] to add
+QFile: open 'huge-data/t2/demo.lfs/geon-info.txt' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/geon-info.txt' with 'r'.
 FieldsReader: open 'huge-data/t2/demo.lfs'.
+QFile: open 'huge-data/t2/demo.lfs/00/0000000000' with 'r'.
+QFile: open 'huge-data/t2/demo.lfs/00/0000000001' with 'r'.
+QFile: open 'huge-data/t2/demo.lfs/01/0000000002' with 'r'.
+QFile: open 'huge-data/t2/demo.lfs/01/0000000003' with 'r'.
+QFile: open 'huge-data/t2/demo.lfs/02/0000000004' with 'r'.
+QFile: open 'huge-data/t2/demo.lfs/02/0000000005' with 'r'.
+QFile: open 'huge-data/t2/demo.lfs/03/0000000006' with 'r'.
+QFile: open 'huge-data/t2/demo.lfs/03/0000000007' with 'r'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.field' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.sfield' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.float.field' from 'huge-data/t2/demo.lfs'.
@@ -1112,7 +1542,17 @@ read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.float.sfield' from
 shuffle_field_back(sel_f,sel_fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 16 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_read_sbs: compute crc32=B9C5079C for fn='sfa.float.sfield' from path 'huge-data/t2/demo.lfs' with sbs.
+QFile: open 'huge-data/t2/demo.lfs/geon-info.txt' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/geon-info.txt' with 'r'.
 FieldsReader: open 'huge-data/t2/demo.lfs'.
+QFile: open 'huge-data/t2/demo.lfs/00/0000000000' with 'r'.
+QFile: open 'huge-data/t2/demo.lfs/00/0000000001' with 'r'.
+QFile: open 'huge-data/t2/demo.lfs/01/0000000002' with 'r'.
+QFile: open 'huge-data/t2/demo.lfs/01/0000000003' with 'r'.
+QFile: open 'huge-data/t2/demo.lfs/02/0000000004' with 'r'.
+QFile: open 'huge-data/t2/demo.lfs/02/0000000005' with 'r'.
+QFile: open 'huge-data/t2/demo.lfs/03/0000000006' with 'r'.
+QFile: open 'huge-data/t2/demo.lfs/03/0000000007' with 'r'.
 demo: read from disk 'f.field'
 read(sfr,fn,field): reading field with fn='f.field' from 'huge-data/t2/demo.lfs'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.field' from 'huge-data/t2/demo.lfs'.
@@ -1295,77 +1735,237 @@ read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'sfa.sfield' from 'huge
 shuffle_field_back(f,fs,sp): 2x2x2x8 -> 1x2x2x2 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 6x6x6x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=F7F47FEE.
-FieldsReader: close 'huge-data/t2/demo.lfs'.
+QFile: close 'huge-data/t2/demo.lfs/00/0000000000' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/00/0000000001' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/01/0000000002' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/01/0000000003' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/02/0000000004' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/02/0000000005' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/03/0000000006' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/03/0000000007' with 'r'.
+QFile: open 'huge-data/t2/demo.lfs/00/0000000000' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/00/0000000000' with 'r'.
 7452B80A  fn='huge-data/t2/demo.lfs/00/0000000000'
+QFile: open 'huge-data/t2/demo.lfs/00/0000000001' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/00/0000000001' with 'r'.
 E03D2BFE  fn='huge-data/t2/demo.lfs/00/0000000001'
+QFile: open 'huge-data/t2/demo.lfs/01/0000000002' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/01/0000000002' with 'r'.
 58FA235B  fn='huge-data/t2/demo.lfs/01/0000000002'
+QFile: open 'huge-data/t2/demo.lfs/01/0000000003' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/01/0000000003' with 'r'.
 CC17E6B1  fn='huge-data/t2/demo.lfs/01/0000000003'
+QFile: open 'huge-data/t2/demo.lfs/02/0000000004' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/02/0000000004' with 'r'.
 BBA8E4BB  fn='huge-data/t2/demo.lfs/02/0000000004'
+QFile: open 'huge-data/t2/demo.lfs/02/0000000005' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/02/0000000005' with 'r'.
 F840C887  fn='huge-data/t2/demo.lfs/02/0000000005'
+QFile: open 'huge-data/t2/demo.lfs/03/0000000006' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/03/0000000006' with 'r'.
 8EB8EFFE  fn='huge-data/t2/demo.lfs/03/0000000006'
+QFile: open 'huge-data/t2/demo.lfs/03/0000000007' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/03/0000000007' with 'r'.
 0A893D33  fn='huge-data/t2/demo.lfs/03/0000000007'
+QFile: open 'huge-data/t2/demo.lfs/04/0000000008' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/04/0000000008' with 'r'.
 93701BB0  fn='huge-data/t2/demo.lfs/04/0000000008'
+QFile: open 'huge-data/t2/demo.lfs/04/0000000009' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/04/0000000009' with 'r'.
 59A0AE5F  fn='huge-data/t2/demo.lfs/04/0000000009'
+QFile: open 'huge-data/t2/demo.lfs/05/0000000010' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/05/0000000010' with 'r'.
 25BB32B8  fn='huge-data/t2/demo.lfs/05/0000000010'
+QFile: open 'huge-data/t2/demo.lfs/05/0000000011' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/05/0000000011' with 'r'.
 88B1B63C  fn='huge-data/t2/demo.lfs/05/0000000011'
+QFile: open 'huge-data/t2/demo.lfs/06/0000000012' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/06/0000000012' with 'r'.
 FDA3AC5C  fn='huge-data/t2/demo.lfs/06/0000000012'
+QFile: open 'huge-data/t2/demo.lfs/06/0000000013' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/06/0000000013' with 'r'.
 CE7D97BB  fn='huge-data/t2/demo.lfs/06/0000000013'
+QFile: open 'huge-data/t2/demo.lfs/07/0000000014' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/07/0000000014' with 'r'.
 71D91B03  fn='huge-data/t2/demo.lfs/07/0000000014'
+QFile: open 'huge-data/t2/demo.lfs/07/0000000015' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/07/0000000015' with 'r'.
 52050674  fn='huge-data/t2/demo.lfs/07/0000000015'
+QFile: open 'huge-data/t2/demo.lfs/08/0000000016' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/08/0000000016' with 'r'.
 59E8E1CF  fn='huge-data/t2/demo.lfs/08/0000000016'
+QFile: open 'huge-data/t2/demo.lfs/08/0000000017' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/08/0000000017' with 'r'.
 68D941E6  fn='huge-data/t2/demo.lfs/08/0000000017'
+QFile: open 'huge-data/t2/demo.lfs/09/0000000018' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/09/0000000018' with 'r'.
 A321917B  fn='huge-data/t2/demo.lfs/09/0000000018'
+QFile: open 'huge-data/t2/demo.lfs/09/0000000019' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/09/0000000019' with 'r'.
 F7BADA66  fn='huge-data/t2/demo.lfs/09/0000000019'
+QFile: open 'huge-data/t2/demo.lfs/10/0000000020' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/10/0000000020' with 'r'.
 604831B7  fn='huge-data/t2/demo.lfs/10/0000000020'
+QFile: open 'huge-data/t2/demo.lfs/10/0000000021' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/10/0000000021' with 'r'.
 3A1A4927  fn='huge-data/t2/demo.lfs/10/0000000021'
+QFile: open 'huge-data/t2/demo.lfs/11/0000000022' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/11/0000000022' with 'r'.
 46B9030C  fn='huge-data/t2/demo.lfs/11/0000000022'
+QFile: open 'huge-data/t2/demo.lfs/11/0000000023' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/11/0000000023' with 'r'.
 F8682594  fn='huge-data/t2/demo.lfs/11/0000000023'
+QFile: open 'huge-data/t2/demo.lfs/12/0000000024' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/12/0000000024' with 'r'.
 85925455  fn='huge-data/t2/demo.lfs/12/0000000024'
+QFile: open 'huge-data/t2/demo.lfs/12/0000000025' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/12/0000000025' with 'r'.
 C6237D09  fn='huge-data/t2/demo.lfs/12/0000000025'
+QFile: open 'huge-data/t2/demo.lfs/13/0000000026' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/13/0000000026' with 'r'.
 C49E3F05  fn='huge-data/t2/demo.lfs/13/0000000026'
+QFile: open 'huge-data/t2/demo.lfs/13/0000000027' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/13/0000000027' with 'r'.
 BE57237F  fn='huge-data/t2/demo.lfs/13/0000000027'
+QFile: open 'huge-data/t2/demo.lfs/14/0000000028' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/14/0000000028' with 'r'.
 50BF8143  fn='huge-data/t2/demo.lfs/14/0000000028'
+QFile: open 'huge-data/t2/demo.lfs/14/0000000029' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/14/0000000029' with 'r'.
 05086BA8  fn='huge-data/t2/demo.lfs/14/0000000029'
+QFile: open 'huge-data/t2/demo.lfs/15/0000000030' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/15/0000000030' with 'r'.
 C9557551  fn='huge-data/t2/demo.lfs/15/0000000030'
+QFile: open 'huge-data/t2/demo.lfs/15/0000000031' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/15/0000000031' with 'r'.
 FA24B93A  fn='huge-data/t2/demo.lfs/15/0000000031'
+QFile: open 'huge-data/t2/demo.lfs/16/0000000032' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/16/0000000032' with 'r'.
 E8EC2EAE  fn='huge-data/t2/demo.lfs/16/0000000032'
+QFile: open 'huge-data/t2/demo.lfs/16/0000000033' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/16/0000000033' with 'r'.
 87EDB132  fn='huge-data/t2/demo.lfs/16/0000000033'
+QFile: open 'huge-data/t2/demo.lfs/17/0000000034' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/17/0000000034' with 'r'.
 829032D4  fn='huge-data/t2/demo.lfs/17/0000000034'
+QFile: open 'huge-data/t2/demo.lfs/17/0000000035' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/17/0000000035' with 'r'.
 131707F8  fn='huge-data/t2/demo.lfs/17/0000000035'
+QFile: open 'huge-data/t2/demo.lfs/18/0000000036' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/18/0000000036' with 'r'.
 F17F387A  fn='huge-data/t2/demo.lfs/18/0000000036'
+QFile: open 'huge-data/t2/demo.lfs/18/0000000037' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/18/0000000037' with 'r'.
 F67015E3  fn='huge-data/t2/demo.lfs/18/0000000037'
+QFile: open 'huge-data/t2/demo.lfs/19/0000000038' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/19/0000000038' with 'r'.
 71BEA8E1  fn='huge-data/t2/demo.lfs/19/0000000038'
+QFile: open 'huge-data/t2/demo.lfs/19/0000000039' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/19/0000000039' with 'r'.
 0DEE2251  fn='huge-data/t2/demo.lfs/19/0000000039'
+QFile: open 'huge-data/t2/demo.lfs/20/0000000040' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/20/0000000040' with 'r'.
 017970F5  fn='huge-data/t2/demo.lfs/20/0000000040'
+QFile: open 'huge-data/t2/demo.lfs/20/0000000041' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/20/0000000041' with 'r'.
 88BB2417  fn='huge-data/t2/demo.lfs/20/0000000041'
+QFile: open 'huge-data/t2/demo.lfs/21/0000000042' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/21/0000000042' with 'r'.
 8986CDF0  fn='huge-data/t2/demo.lfs/21/0000000042'
+QFile: open 'huge-data/t2/demo.lfs/21/0000000043' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/21/0000000043' with 'r'.
 86D0FCEC  fn='huge-data/t2/demo.lfs/21/0000000043'
+QFile: open 'huge-data/t2/demo.lfs/22/0000000044' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/22/0000000044' with 'r'.
 9AACBA49  fn='huge-data/t2/demo.lfs/22/0000000044'
+QFile: open 'huge-data/t2/demo.lfs/22/0000000045' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/22/0000000045' with 'r'.
 E1E25A1D  fn='huge-data/t2/demo.lfs/22/0000000045'
+QFile: open 'huge-data/t2/demo.lfs/23/0000000046' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/23/0000000046' with 'r'.
 973E554D  fn='huge-data/t2/demo.lfs/23/0000000046'
+QFile: open 'huge-data/t2/demo.lfs/23/0000000047' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/23/0000000047' with 'r'.
 30626390  fn='huge-data/t2/demo.lfs/23/0000000047'
+QFile: open 'huge-data/t2/demo.lfs/24/0000000048' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/24/0000000048' with 'r'.
 79C117FF  fn='huge-data/t2/demo.lfs/24/0000000048'
+QFile: open 'huge-data/t2/demo.lfs/24/0000000049' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/24/0000000049' with 'r'.
 19DD1FA2  fn='huge-data/t2/demo.lfs/24/0000000049'
+QFile: open 'huge-data/t2/demo.lfs/25/0000000050' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/25/0000000050' with 'r'.
 CA934D0D  fn='huge-data/t2/demo.lfs/25/0000000050'
+QFile: open 'huge-data/t2/demo.lfs/25/0000000051' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/25/0000000051' with 'r'.
 525A32B4  fn='huge-data/t2/demo.lfs/25/0000000051'
+QFile: open 'huge-data/t2/demo.lfs/26/0000000052' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/26/0000000052' with 'r'.
 6FF5518A  fn='huge-data/t2/demo.lfs/26/0000000052'
+QFile: open 'huge-data/t2/demo.lfs/26/0000000053' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/26/0000000053' with 'r'.
 BA55DF88  fn='huge-data/t2/demo.lfs/26/0000000053'
+QFile: open 'huge-data/t2/demo.lfs/27/0000000054' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/27/0000000054' with 'r'.
 FBC09573  fn='huge-data/t2/demo.lfs/27/0000000054'
+QFile: open 'huge-data/t2/demo.lfs/27/0000000055' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/27/0000000055' with 'r'.
 2625150D  fn='huge-data/t2/demo.lfs/27/0000000055'
+QFile: open 'huge-data/t2/demo.lfs/28/0000000056' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/28/0000000056' with 'r'.
 42EDF019  fn='huge-data/t2/demo.lfs/28/0000000056'
+QFile: open 'huge-data/t2/demo.lfs/28/0000000057' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/28/0000000057' with 'r'.
 767CEDBA  fn='huge-data/t2/demo.lfs/28/0000000057'
+QFile: open 'huge-data/t2/demo.lfs/29/0000000058' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/29/0000000058' with 'r'.
 2EB51601  fn='huge-data/t2/demo.lfs/29/0000000058'
+QFile: open 'huge-data/t2/demo.lfs/29/0000000059' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/29/0000000059' with 'r'.
 9F303A8C  fn='huge-data/t2/demo.lfs/29/0000000059'
+QFile: open 'huge-data/t2/demo.lfs/30/0000000060' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/30/0000000060' with 'r'.
 63409610  fn='huge-data/t2/demo.lfs/30/0000000060'
+QFile: open 'huge-data/t2/demo.lfs/30/0000000061' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/30/0000000061' with 'r'.
 39CEA293  fn='huge-data/t2/demo.lfs/30/0000000061'
+QFile: open 'huge-data/t2/demo.lfs/31/0000000062' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/31/0000000062' with 'r'.
 79E82458  fn='huge-data/t2/demo.lfs/31/0000000062'
+QFile: open 'huge-data/t2/demo.lfs/31/0000000063' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/31/0000000063' with 'r'.
 A64F7018  fn='huge-data/t2/demo.lfs/31/0000000063'
+QFile: open 'huge-data/t2/demo.lfs/geon-info.txt' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/geon-info.txt' with 'r'.
 9AE9A27B  fn='huge-data/t2/demo.lfs/geon-info.txt'
+QFile: open 'huge-data/t2/fsel.field' with 'r'.
+QFile: close 'huge-data/t2/fsel.field' with 'r'.
 1A9F434A  fn='huge-data/t2/fsel.field'
 Cache: 'ShuffledFieldsReaderCache': 3 / 4 [1] clear
-FieldsReader: close 'huge-data/t2/demo.lfs'.
-FieldsReader: close 'huge-data/t1/demo.lfs'.
-FieldsReader: close 'huge-data/t0/demo.lfs'.
+QFile: close 'huge-data/t2/demo.lfs/00/0000000000' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/00/0000000001' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/01/0000000002' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/01/0000000003' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/02/0000000004' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/02/0000000005' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/03/0000000006' with 'r'.
+QFile: close 'huge-data/t2/demo.lfs/03/0000000007' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/00/0000000000' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/00/0000000001' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/01/0000000002' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/01/0000000003' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/02/0000000004' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/02/0000000005' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/03/0000000006' with 'r'.
+QFile: close 'huge-data/t1/demo.lfs/03/0000000007' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/00/0000000000' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/00/0000000001' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/01/0000000002' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/01/0000000003' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/02/0000000004' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/02/0000000005' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/03/0000000006' with 'r'.
+QFile: close 'huge-data/t0/demo.lfs/03/0000000007' with 'r'.
 Cache: 'ShufflePlanCache': 2 / 16 [8] clear
 clear_mem_cache: 119552 bytes (0.000 GB) freed.
 qlat::end(): get_comm_list().pop_back()

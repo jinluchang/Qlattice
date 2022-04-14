@@ -177,20 +177,20 @@ inline int qmkdir_p(const std::string& path_,
       paths.push_back(path);
       path = dirname(path);
       if (does_file_exist(path)) {
-        qwarn(fname + ssprintf(": '%s' failed.", path_.c_str()));
-        return 1;
+        // qwarn(fname + ssprintf(": '%s' failed.", path_.c_str()));
+        break;
       }
     }
   }
   for (long i = paths.size() - 1; i >= 0; i -= 1) {
     if (not(0 == mkdir(paths[i].c_str(), mode))) {
-      qwarn(fname + ssprintf(": '%s' failed.", path_.c_str()));
-      return 2;
+      // qwarn(fname + ssprintf(": '%s' failed.", path_.c_str()));
+      continue;
     }
   }
   if (not is_directory(path)) {
     qwarn(fname + ssprintf(": '%s' failed.", path_.c_str()));
-    return 3;
+    return 1;
   }
   return 0;
 }

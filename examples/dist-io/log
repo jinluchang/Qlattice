@@ -29,7 +29,11 @@ qrename: 'huge-data/gauge_field_rgf-0.1.partial' 'huge-data/gauge_field_rgf-0.1'
 dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         2359296
 qrename: 'huge-data/gauge_field_unit_2.partial' 'huge-data/gauge_field_unit_2'
 dist_read_field: fn='huge-data/gauge_field_rgf-0.1'.
+QFile: open 'huge-data/gauge_field_rgf-0.1/geo-info.txt' with 'r'.
+QFile: close 'huge-data/gauge_field_rgf-0.1/geo-info.txt' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         2359296
+QFile: open 'huge-data/gauge_field_rgf-0.1/checksums.txt' with 'r'.
+QFile: close 'huge-data/gauge_field_rgf-0.1/checksums.txt' with 'r'.
 q_mem_cache_max_size=512 (default)
 q_mem_cache_acc_max_size=512 (default)
 Cache: 'ShufflePlanCache': 0 / 16 [8] to add
@@ -43,7 +47,11 @@ trace:  9.86703685472810399E-01
 dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         1179648
 qrename: 'huge-data/gauge_field_rgf-0.1_f.partial' 'huge-data/gauge_field_rgf-0.1_f'
 dist_read_field: fn='huge-data/gauge_field_rgf-0.1_f'.
+QFile: open 'huge-data/gauge_field_rgf-0.1_f/geo-info.txt' with 'r'.
+QFile: close 'huge-data/gauge_field_rgf-0.1_f/geo-info.txt' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         1179648
+QFile: open 'huge-data/gauge_field_rgf-0.1_f/checksums.txt' with 'r'.
+QFile: close 'huge-data/gauge_field_rgf-0.1_f/checksums.txt' with 'r'.
 dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         1179648
 qrename: 'huge-data/gauge_field_rgf-0.1_f_2.partial' 'huge-data/gauge_field_rgf-0.1_f_2'
 plaq :  9.47925703323386659E-01
@@ -153,7 +161,11 @@ shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x1 (total_site: 8x8x8x8 ; site_size: 576
 dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          1 ; total_bytes =         2359296
 qrename: 'huge-data/gauge_field ; 1x1x1x1.partial' 'huge-data/gauge_field ; 1x1x1x1'
 dist_read_field: fn='huge-data/gauge_field ; 1x1x1x1'.
+QFile: open 'huge-data/gauge_field ; 1x1x1x1/geo-info.txt' with 'r'.
+QFile: close 'huge-data/gauge_field ; 1x1x1x1/geo-info.txt' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          1 ; total_bytes =         2359296
+QFile: open 'huge-data/gauge_field ; 1x1x1x1/checksums.txt' with 'r'.
+QFile: close 'huge-data/gauge_field ; 1x1x1x1/checksums.txt' with 'r'.
 shuffle_field_back(f,fs,sp): 1x1x1x1 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 dist_crc32 = 2007B831
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
@@ -167,8 +179,12 @@ dist_write_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =          8 ; t
 dist_write_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         16 ; total_bytes =         2359296
 qrename: 'huge-data/gauge_field ; 2x2x2x2.partial' 'huge-data/gauge_field ; 2x2x2x2'
 dist_read_field: fn='huge-data/gauge_field ; 2x2x2x2'.
+QFile: open 'huge-data/gauge_field ; 2x2x2x2/geo-info.txt' with 'r'.
+QFile: close 'huge-data/gauge_field ; 2x2x2x2/geo-info.txt' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =          8 ; total_bytes =         1179648
 dist_read_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         16 ; total_bytes =         2359296
+QFile: open 'huge-data/gauge_field ; 2x2x2x2/checksums.txt' with 'r'.
+QFile: close 'huge-data/gauge_field ; 2x2x2x2/checksums.txt' with 'r'.
 shuffle_field_back(f,fs,sp): 2x2x2x2 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 dist_crc32 = 2007B831
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
@@ -181,7 +197,11 @@ shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576
 dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         2359296
 qrename: 'huge-data/gauge_field ; 1x1x1x8.partial' 'huge-data/gauge_field ; 1x1x1x8'
 dist_read_field: fn='huge-data/gauge_field ; 1x1x1x8'.
+QFile: open 'huge-data/gauge_field ; 1x1x1x8/geo-info.txt' with 'r'.
+QFile: close 'huge-data/gauge_field ; 1x1x1x8/geo-info.txt' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         2359296
+QFile: open 'huge-data/gauge_field ; 1x1x1x8/checksums.txt' with 'r'.
+QFile: close 'huge-data/gauge_field ; 1x1x1x8/checksums.txt' with 'r'.
 shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 dist_crc32 = 2007B831
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
@@ -195,8 +215,12 @@ dist_write_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =          8 ; t
 dist_write_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         16 ; total_bytes =         2359296
 qrename: 'huge-data/gauge_field ; 1x2x4x2.partial' 'huge-data/gauge_field ; 1x2x4x2'
 dist_read_field: fn='huge-data/gauge_field ; 1x2x4x2'.
+QFile: open 'huge-data/gauge_field ; 1x2x4x2/geo-info.txt' with 'r'.
+QFile: close 'huge-data/gauge_field ; 1x2x4x2/geo-info.txt' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =          8 ; total_bytes =         1179648
 dist_read_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         16 ; total_bytes =         2359296
+QFile: open 'huge-data/gauge_field ; 1x2x4x2/checksums.txt' with 'r'.
+QFile: close 'huge-data/gauge_field ; 1x2x4x2/checksums.txt' with 'r'.
 shuffle_field_back(f,fs,sp): 1x2x4x2 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 dist_crc32 = 2007B831
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
@@ -209,7 +233,11 @@ shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x1x1 (total_site: 8x8x8x8 ; site_size: 576
 dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          4 ; total_bytes =         2359296
 qrename: 'huge-data/gauge_field ; 2x2x1x1.partial' 'huge-data/gauge_field ; 2x2x1x1'
 dist_read_field: fn='huge-data/gauge_field ; 2x2x1x1'.
+QFile: open 'huge-data/gauge_field ; 2x2x1x1/geo-info.txt' with 'r'.
+QFile: close 'huge-data/gauge_field ; 2x2x1x1/geo-info.txt' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          4 ; total_bytes =         2359296
+QFile: open 'huge-data/gauge_field ; 2x2x1x1/checksums.txt' with 'r'.
+QFile: close 'huge-data/gauge_field ; 2x2x1x1/checksums.txt' with 'r'.
 shuffle_field_back(f,fs,sp): 2x2x1x1 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 dist_crc32 = 2007B831
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
@@ -253,6 +281,8 @@ dist_write_dist_data: cycle / n_cycle =   31 /   32 ; total_ops =        248 ; t
 dist_write_dist_data: cycle / n_cycle =   32 /   32 ; total_ops =        256 ; total_bytes =         2359296
 qrename: 'huge-data/gauge_field ; 4x4x4x4.partial' 'huge-data/gauge_field ; 4x4x4x4'
 dist_read_field: fn='huge-data/gauge_field ; 4x4x4x4'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/geo-info.txt' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/geo-info.txt' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    1 /   32 ; total_ops =          8 ; total_bytes =           73728
 dist_read_dist_data: cycle / n_cycle =    2 /   32 ; total_ops =         16 ; total_bytes =          147456
 dist_read_dist_data: cycle / n_cycle =    3 /   32 ; total_ops =         24 ; total_bytes =          221184
@@ -285,6 +315,8 @@ dist_read_dist_data: cycle / n_cycle =   29 /   32 ; total_ops =        232 ; to
 dist_read_dist_data: cycle / n_cycle =   30 /   32 ; total_ops =        240 ; total_bytes =         2211840
 dist_read_dist_data: cycle / n_cycle =   31 /   32 ; total_ops =        248 ; total_bytes =         2285568
 dist_read_dist_data: cycle / n_cycle =   32 /   32 ; total_ops =        256 ; total_bytes =         2359296
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/checksums.txt' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/checksums.txt' with 'r'.
 shuffle_field_back(f,fs,sp): 4x4x4x4 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 dist_crc32 = 2007B831
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
@@ -297,7 +329,11 @@ shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x1 (total_site: 8x8x8x8 ; site_size: 576
 dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          1 ; total_bytes =         2359296
 qrename: 'huge-data/gauge_field ; 1x1x1x1_2.partial' 'huge-data/gauge_field ; 1x1x1x1_2'
 dist_read_field: fn='huge-data/gauge_field ; 1x1x1x1_2'.
+QFile: open 'huge-data/gauge_field ; 1x1x1x1_2/geo-info.txt' with 'r'.
+QFile: close 'huge-data/gauge_field ; 1x1x1x1_2/geo-info.txt' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          1 ; total_bytes =         2359296
+QFile: open 'huge-data/gauge_field ; 1x1x1x1_2/checksums.txt' with 'r'.
+QFile: close 'huge-data/gauge_field ; 1x1x1x1_2/checksums.txt' with 'r'.
 shuffle_field_back(f,fs,sp): 1x1x1x1 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 dist_crc32 = 2007B831
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
@@ -311,8 +347,12 @@ dist_write_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =          8 ; t
 dist_write_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         16 ; total_bytes =         2359296
 qrename: 'huge-data/gauge_field ; 2x2x2x2_2.partial' 'huge-data/gauge_field ; 2x2x2x2_2'
 dist_read_field: fn='huge-data/gauge_field ; 2x2x2x2_2'.
+QFile: open 'huge-data/gauge_field ; 2x2x2x2_2/geo-info.txt' with 'r'.
+QFile: close 'huge-data/gauge_field ; 2x2x2x2_2/geo-info.txt' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =          8 ; total_bytes =         1179648
 dist_read_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         16 ; total_bytes =         2359296
+QFile: open 'huge-data/gauge_field ; 2x2x2x2_2/checksums.txt' with 'r'.
+QFile: close 'huge-data/gauge_field ; 2x2x2x2_2/checksums.txt' with 'r'.
 shuffle_field_back(f,fs,sp): 2x2x2x2 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 dist_crc32 = 2007B831
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
@@ -325,7 +365,11 @@ shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576
 dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         2359296
 qrename: 'huge-data/gauge_field ; 1x1x1x8_2.partial' 'huge-data/gauge_field ; 1x1x1x8_2'
 dist_read_field: fn='huge-data/gauge_field ; 1x1x1x8_2'.
+QFile: open 'huge-data/gauge_field ; 1x1x1x8_2/geo-info.txt' with 'r'.
+QFile: close 'huge-data/gauge_field ; 1x1x1x8_2/geo-info.txt' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         2359296
+QFile: open 'huge-data/gauge_field ; 1x1x1x8_2/checksums.txt' with 'r'.
+QFile: close 'huge-data/gauge_field ; 1x1x1x8_2/checksums.txt' with 'r'.
 shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 dist_crc32 = 2007B831
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
@@ -339,8 +383,12 @@ dist_write_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =          8 ; t
 dist_write_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         16 ; total_bytes =         2359296
 qrename: 'huge-data/gauge_field ; 1x2x4x2_2.partial' 'huge-data/gauge_field ; 1x2x4x2_2'
 dist_read_field: fn='huge-data/gauge_field ; 1x2x4x2_2'.
+QFile: open 'huge-data/gauge_field ; 1x2x4x2_2/geo-info.txt' with 'r'.
+QFile: close 'huge-data/gauge_field ; 1x2x4x2_2/geo-info.txt' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =          8 ; total_bytes =         1179648
 dist_read_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         16 ; total_bytes =         2359296
+QFile: open 'huge-data/gauge_field ; 1x2x4x2_2/checksums.txt' with 'r'.
+QFile: close 'huge-data/gauge_field ; 1x2x4x2_2/checksums.txt' with 'r'.
 shuffle_field_back(f,fs,sp): 1x2x4x2 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 dist_crc32 = 2007B831
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
@@ -353,7 +401,11 @@ shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x1x1 (total_site: 8x8x8x8 ; site_size: 576
 dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          4 ; total_bytes =         2359296
 qrename: 'huge-data/gauge_field ; 2x2x1x1_2.partial' 'huge-data/gauge_field ; 2x2x1x1_2'
 dist_read_field: fn='huge-data/gauge_field ; 2x2x1x1_2'.
+QFile: open 'huge-data/gauge_field ; 2x2x1x1_2/geo-info.txt' with 'r'.
+QFile: close 'huge-data/gauge_field ; 2x2x1x1_2/geo-info.txt' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          4 ; total_bytes =         2359296
+QFile: open 'huge-data/gauge_field ; 2x2x1x1_2/checksums.txt' with 'r'.
+QFile: close 'huge-data/gauge_field ; 2x2x1x1_2/checksums.txt' with 'r'.
 shuffle_field_back(f,fs,sp): 2x2x1x1 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 dist_crc32 = 2007B831
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
@@ -397,6 +449,8 @@ dist_write_dist_data: cycle / n_cycle =   31 /   32 ; total_ops =        248 ; t
 dist_write_dist_data: cycle / n_cycle =   32 /   32 ; total_ops =        256 ; total_bytes =         2359296
 qrename: 'huge-data/gauge_field ; 4x4x4x4_2.partial' 'huge-data/gauge_field ; 4x4x4x4_2'
 dist_read_field: fn='huge-data/gauge_field ; 4x4x4x4_2'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/geo-info.txt' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/geo-info.txt' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    1 /   32 ; total_ops =          8 ; total_bytes =           73728
 dist_read_dist_data: cycle / n_cycle =    2 /   32 ; total_ops =         16 ; total_bytes =          147456
 dist_read_dist_data: cycle / n_cycle =    3 /   32 ; total_ops =         24 ; total_bytes =          221184
@@ -429,6 +483,8 @@ dist_read_dist_data: cycle / n_cycle =   29 /   32 ; total_ops =        232 ; to
 dist_read_dist_data: cycle / n_cycle =   30 /   32 ; total_ops =        240 ; total_bytes =         2211840
 dist_read_dist_data: cycle / n_cycle =   31 /   32 ; total_ops =        248 ; total_bytes =         2285568
 dist_read_dist_data: cycle / n_cycle =   32 /   32 ; total_ops =        256 ; total_bytes =         2359296
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/checksums.txt' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/checksums.txt' with 'r'.
 shuffle_field_back(f,fs,sp): 4x4x4x4 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 dist_crc32 = 2007B831
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
@@ -441,7 +497,11 @@ shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x1 (total_site: 8x8x8x8 ; site_size: 288
 dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          1 ; total_bytes =         1179648
 qrename: 'huge-data/gauge_field ; 1x1x1x1_f.partial' 'huge-data/gauge_field ; 1x1x1x1_f'
 dist_read_field: fn='huge-data/gauge_field ; 1x1x1x1_f'.
+QFile: open 'huge-data/gauge_field ; 1x1x1x1_f/geo-info.txt' with 'r'.
+QFile: close 'huge-data/gauge_field ; 1x1x1x1_f/geo-info.txt' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          1 ; total_bytes =         1179648
+QFile: open 'huge-data/gauge_field ; 1x1x1x1_f/checksums.txt' with 'r'.
+QFile: close 'huge-data/gauge_field ; 1x1x1x1_f/checksums.txt' with 'r'.
 shuffle_field_back(f,fs,sp): 1x1x1x1 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 288 ; total_size: 0.001 GB)
 dist_crc32 = CB48E01D
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
@@ -455,8 +515,12 @@ dist_write_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =          8 ; t
 dist_write_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         16 ; total_bytes =         1179648
 qrename: 'huge-data/gauge_field ; 2x2x2x2_f.partial' 'huge-data/gauge_field ; 2x2x2x2_f'
 dist_read_field: fn='huge-data/gauge_field ; 2x2x2x2_f'.
+QFile: open 'huge-data/gauge_field ; 2x2x2x2_f/geo-info.txt' with 'r'.
+QFile: close 'huge-data/gauge_field ; 2x2x2x2_f/geo-info.txt' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =          8 ; total_bytes =          589824
 dist_read_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         16 ; total_bytes =         1179648
+QFile: open 'huge-data/gauge_field ; 2x2x2x2_f/checksums.txt' with 'r'.
+QFile: close 'huge-data/gauge_field ; 2x2x2x2_f/checksums.txt' with 'r'.
 shuffle_field_back(f,fs,sp): 2x2x2x2 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 288 ; total_size: 0.001 GB)
 dist_crc32 = CB48E01D
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
@@ -469,7 +533,11 @@ shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 288
 dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         1179648
 qrename: 'huge-data/gauge_field ; 1x1x1x8_f.partial' 'huge-data/gauge_field ; 1x1x1x8_f'
 dist_read_field: fn='huge-data/gauge_field ; 1x1x1x8_f'.
+QFile: open 'huge-data/gauge_field ; 1x1x1x8_f/geo-info.txt' with 'r'.
+QFile: close 'huge-data/gauge_field ; 1x1x1x8_f/geo-info.txt' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         1179648
+QFile: open 'huge-data/gauge_field ; 1x1x1x8_f/checksums.txt' with 'r'.
+QFile: close 'huge-data/gauge_field ; 1x1x1x8_f/checksums.txt' with 'r'.
 shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 288 ; total_size: 0.001 GB)
 dist_crc32 = CB48E01D
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
@@ -483,8 +551,12 @@ dist_write_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =          8 ; t
 dist_write_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         16 ; total_bytes =         1179648
 qrename: 'huge-data/gauge_field ; 1x2x4x2_f.partial' 'huge-data/gauge_field ; 1x2x4x2_f'
 dist_read_field: fn='huge-data/gauge_field ; 1x2x4x2_f'.
+QFile: open 'huge-data/gauge_field ; 1x2x4x2_f/geo-info.txt' with 'r'.
+QFile: close 'huge-data/gauge_field ; 1x2x4x2_f/geo-info.txt' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =          8 ; total_bytes =          589824
 dist_read_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         16 ; total_bytes =         1179648
+QFile: open 'huge-data/gauge_field ; 1x2x4x2_f/checksums.txt' with 'r'.
+QFile: close 'huge-data/gauge_field ; 1x2x4x2_f/checksums.txt' with 'r'.
 shuffle_field_back(f,fs,sp): 1x2x4x2 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 288 ; total_size: 0.001 GB)
 dist_crc32 = CB48E01D
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
@@ -497,7 +569,11 @@ shuffle_field(fs,f,sp): 1x2x2x2 -> 2x2x1x1 (total_site: 8x8x8x8 ; site_size: 288
 dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          4 ; total_bytes =         1179648
 qrename: 'huge-data/gauge_field ; 2x2x1x1_f.partial' 'huge-data/gauge_field ; 2x2x1x1_f'
 dist_read_field: fn='huge-data/gauge_field ; 2x2x1x1_f'.
+QFile: open 'huge-data/gauge_field ; 2x2x1x1_f/geo-info.txt' with 'r'.
+QFile: close 'huge-data/gauge_field ; 2x2x1x1_f/geo-info.txt' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          4 ; total_bytes =         1179648
+QFile: open 'huge-data/gauge_field ; 2x2x1x1_f/checksums.txt' with 'r'.
+QFile: close 'huge-data/gauge_field ; 2x2x1x1_f/checksums.txt' with 'r'.
 shuffle_field_back(f,fs,sp): 2x2x1x1 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 288 ; total_size: 0.001 GB)
 dist_crc32 = CB48E01D
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
@@ -541,6 +617,8 @@ dist_write_dist_data: cycle / n_cycle =   31 /   32 ; total_ops =        248 ; t
 dist_write_dist_data: cycle / n_cycle =   32 /   32 ; total_ops =        256 ; total_bytes =         1179648
 qrename: 'huge-data/gauge_field ; 4x4x4x4_f.partial' 'huge-data/gauge_field ; 4x4x4x4_f'
 dist_read_field: fn='huge-data/gauge_field ; 4x4x4x4_f'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/geo-info.txt' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/geo-info.txt' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    1 /   32 ; total_ops =          8 ; total_bytes =           36864
 dist_read_dist_data: cycle / n_cycle =    2 /   32 ; total_ops =         16 ; total_bytes =           73728
 dist_read_dist_data: cycle / n_cycle =    3 /   32 ; total_ops =         24 ; total_bytes =          110592
@@ -573,6 +651,8 @@ dist_read_dist_data: cycle / n_cycle =   29 /   32 ; total_ops =        232 ; to
 dist_read_dist_data: cycle / n_cycle =   30 /   32 ; total_ops =        240 ; total_bytes =         1105920
 dist_read_dist_data: cycle / n_cycle =   31 /   32 ; total_ops =        248 ; total_bytes =         1142784
 dist_read_dist_data: cycle / n_cycle =   32 /   32 ; total_ops =        256 ; total_bytes =         1179648
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/checksums.txt' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/checksums.txt' with 'r'.
 shuffle_field_back(f,fs,sp): 4x4x4x4 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 288 ; total_size: 0.001 GB)
 dist_crc32 = CB48E01D
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
