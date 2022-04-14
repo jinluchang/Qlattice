@@ -3,7 +3,15 @@ import cqlat as c
 from cqlat import get_id_node, get_num_node, get_size_node, get_coor_node
 from cqlat import sync_node
 
+from qlat.cache import *
 from qlat.timer import *
+
+def begin(*args):
+    c.begin(*args)
+
+def end():
+    q.clean_cache()
+    c.end()
 
 @timer
 def glb_sum(x):
