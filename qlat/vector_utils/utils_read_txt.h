@@ -290,6 +290,7 @@ struct inputpara{
   int split_save;
 
   int lms;
+  int mode_FFT_MPI;
 
   double Eerr;
   int SRC_PROP_WITH_LOW;
@@ -515,6 +516,7 @@ struct inputpara{
     if(find_para(std::string("gridtem"),gridtem)==0)gridtem  = 1;
     if(find_para(std::string("sparsefactor"),sparsefactor)==0)sparsefactor  = 16;
     if(find_para(std::string("lms"),lms)==0)lms  = 0;
+    if(find_para(std::string("mode_FFT_MPI"),mode_FFT_MPI)==0)mode_FFT_MPI  = -1;
     if(find_para(std::string("Eerr"),Eerr)==0)Eerr  = 1e-11;
     if(find_para(std::string("nsave"),nsave)==0)nsave  = 0;
     if(find_para(std::string("bfac"),bfac)==0)bfac  = 0;

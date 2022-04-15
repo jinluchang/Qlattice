@@ -80,7 +80,8 @@ int main(int argc, char* argv[])
   if(in.debuga == 3){ft4D = false;}
   if(sizeof(TyF) == sizeof(ComplexF)){checkdiff = false;}
   //if(in.nvec >= 2){checkdiff = false;}
-  if(checkdiff){bfac = 1;}
+  //if(checkdiff){bfac = 1;}
+  if(bfac != 1){checkdiff = false;}
 
   /////==========test correct
   if(check_fft_with_qlat){
@@ -138,6 +139,7 @@ int main(int argc, char* argv[])
   if(checkdiff){
     TIMER("qlat fft");
     qlat::fft_complex_field_spatial(srcF, false);
+    //if(int iv=0;iv<in.nvec;iv++){qlat::fft_complex_field_spatial(srcF, false);}
   }
   {
     TIMER("new fft ");
