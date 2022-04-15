@@ -10,7 +10,7 @@ def begin(*args):
     c.begin(*args)
 
 def end():
-    q.clean_cache()
+    clean_cache()
     c.end()
 
 @timer

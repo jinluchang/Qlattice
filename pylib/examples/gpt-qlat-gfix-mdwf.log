@@ -62,6 +62,14 @@ gf_show_info: plaq = 0.9745055472546029 ; link_trace = 0.9934624069374576.
 Cache: 'CommPlanCache': 1 / 32 [16] to add
 gf_show_info: plaq = 0.9745055472546036 ; link_trace = 0.9663933399982101.
 10928.575557253569 10928.575557253575 0.0
+clean_cache: cache:
+clean_cache: cache['point_selection']:
+clean_cache: cache['fields_io']:
+clean_cache: cache['inv']:
+clean_cache: cache['qlat_gpt_copy_plan']:
+clean_cache: cache['qlat_gpt_copy_plan']['ColorMatrix,[4, 4, 4, 8],1,gpt_from_qlat']
+clean_cache: cache['qlat_gpt_copy_plan']['WilsonMatrix,[4, 4, 4, 8],1,gpt_from_qlat']
+clean_cache: cache['qlat_gpt_copy_plan']['WilsonMatrix,[4, 4, 4, 8],1,qlat_from_gpt']
 Cache: 'CommPlanCache': 2 / 32 [16] clear
 clear_mem_cache: 1053184 bytes (0.001 GB) freed.
 qlat::end(): get_comm_list().pop_back()

@@ -71,6 +71,13 @@ load_gauge_field: 'results/ckpoint_lat.0'.
 q_read_par_limit=16 (default)
 gf_show_info: plaq = 0.6147333258459872 ; link_trace = 0.8844956937132934.
 gf_show_info: plaq = 0.6147333258459872 ; link_trace = 0.8844956937132934.
+clean_cache: cache:
+clean_cache: cache['point_selection']:
+clean_cache: cache['fields_io']:
+clean_cache: cache['inv']:
+clean_cache: cache['qlat_gpt_copy_plan']:
+clean_cache: cache['qlat_gpt_copy_plan']['ColorMatrix,[4, 4, 4, 8],1,gpt_from_qlat']
+clean_cache: cache['qlat_gpt_copy_plan']['ColorMatrix,[4, 4, 4, 8],1,qlat_from_gpt']
 Cache: 'ShufflePlanCache': 1 / 16 [8] clear
 Cache: 'CommPlanCache': 1 / 32 [16] clear
 clear_mem_cache: 867328 bytes (0.001 GB) freed.

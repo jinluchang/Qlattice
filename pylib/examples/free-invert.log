@@ -244,6 +244,10 @@ cg_with_f: final iter=  43 sqrt(qnorm_r/qnorm_in)=5.403E-09 stop_rsd=1.000E-08
 invert_with_cg(5d,5d,inv,cg): total_iter=43 cycle=1 stop_rsd=1.000E-08
 invert_with_cg(5d,5d,inv,cg): checking 4.085757E-07 from 6.391824E+01
 38988.29486921299 38988.29483563632 9.99378827380561e-08
+clean_cache: cache:
+clean_cache: cache['point_selection']:
+clean_cache: cache['fields_io']:
+clean_cache: cache['inv']:
 Cache: 'CommPlanCache': 5 / 32 [16] clear
 Cache: 'FftComplexFieldPlanCache': 8 / 32 [16] clear
 FftComplexFieldPlan::end(): free a plan.

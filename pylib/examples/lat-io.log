@@ -115,6 +115,10 @@ qnorm = 0.0
 
 qnorm = 21247879056685.0
 ['test.lat']
+clean_cache: cache:
+clean_cache: cache['point_selection']:
+clean_cache: cache['fields_io']:
+clean_cache: cache['inv']:
 clear_mem_cache: 0 bytes (0.000 GB) freed.
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 0.
