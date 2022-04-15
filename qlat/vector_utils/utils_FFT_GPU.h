@@ -87,13 +87,13 @@ struct FFT_Vecs{
     nrank = new ptrdiff_t[10];
     istride_fac_default = 1;
     idist_default = 1;
-    fftw_mpi_init();
+    //fftw_mpi_init();
   }
 
   ~FFT_Vecs()
   {
     clear_plan();
-    fftw_mpi_cleanup();
+    //fftw_mpi_cleanup();
     delete [] nrank;
   }
 
@@ -325,8 +325,8 @@ void FFT_Vecs::do_fft(Ty* inputD, bool fftdir, bool dummy)
 }
 
 
-struct {
-    bool operator()(std::vector<int > a, std::vector<int > b) const {
+struct customLess{
+    inline bool operator()(std::vector<int > a, std::vector<int > b) const {
     bool flag = false;
     if(a[3] < b[3]){flag = true;}
     ////c0 to be large
@@ -338,7 +338,7 @@ struct {
     //if(a[3] == b[3] and a[4] == b[4] and a[2] > b[2]){flag = true;} 
     //if(a[3] == b[3] and a[4] == b[4] and a[2] == b[2] and a[0] < b[0]){flag = true;} 
     return flag;}
-} customLess;
+};
 
 
 inline std::vector<int > get_factor_jobs(int nvec, int civ, int N0=-1, int N1=-1, int maxN0 = 16, int dataB=1)
@@ -377,7 +377,7 @@ inline std::vector<int > get_factor_jobs(int nvec, int civ, int N0=-1, int N1=-1
   }
   if(jobL.size() == 0){abort_r("input errors for schedule! \n");}
 
-  std::sort(jobL.begin(), jobL.end(), customLess);
+  std::sort(jobL.begin(), jobL.end(), customLess());
   ///int cost = jobL0[0][2];
   ///for(int i=0;i<jobL0.size();i++){if(jobL0[i][2] == cost)}
   return jobL[0];
@@ -421,6 +421,7 @@ struct fft_schedule{
     bsize = -1;
   }
 
+  ////-1 auto choose MPI and civ
   ////-2, nvec, civ with MPI, -3 nvec, civ without MPI 
   template<typename Ty>
   void set_mem(const int nvec_set, const int civ_set, const std::vector<int >& dimN_set=std::vector<int >(), int default_MPI_set = -1 , int maxN_set=16, int dataB_set=1)

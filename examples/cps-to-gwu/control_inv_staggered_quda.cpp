@@ -8,6 +8,7 @@
 #include "utils_stagger_contractions.h"
 #include "quda_para.h"
 #include "utils_quda_inverter.h"
+#include "utils_gaugefield.h"
 
 int main(int argc, char* argv[])
 {
@@ -32,9 +33,14 @@ int main(int argc, char* argv[])
 
   qlat::GaugeField gf;gf.init(geo);
 
-  char rbc_conf[500];
-  sprintf(rbc_conf,in.Link_name.c_str(), in.icfg);
-  qlat::load_gwu_link(rbc_conf, gf);
+  if(in.Link_name != "NONE"){
+    char rbc_conf[500];
+    sprintf(rbc_conf,in.Link_name.c_str(), in.icfg);
+    qlat::load_gwu_link(rbc_conf, gf);
+  }else{
+    set_rand_link(gf, in.seed);
+    qlat::gf_ape_smear(gf, gf, 0.125, in.hyp);
+  }
 
   {
     double splaq = gf_avg_spatial_plaq(gf);
@@ -61,8 +67,9 @@ int main(int argc, char* argv[])
   quda_inverter qinv(geo, QUDA_PERIODIC_T);
 
   qinv.setup_link(quda_gf, 1);
-  qinv.setup_stagger(in.fermion_mass, 1e-10);
-  qinv.setup_eigen(in.nvec, 1e-13);
+  //qinv.setup_stagger(in.fermion_mass, 1e-10);
+  qinv.setup_stagger();
+  qinv.setup_eigen(in.fermion_mass, in.nvec, 1e-13);
   qinv.check_residue = 1;
 
   ////int setup_stagger = 1;
@@ -100,7 +107,7 @@ int main(int argc, char* argv[])
     }
     //////set point src at zero
 
-    qinv.do_inv(qinv.cres->V(), qinv.csrc->V());
+    qinv.do_inv(qinv.cres->V(), qinv.csrc->V(), in.fermion_mass, in.cg_err, in.niter);
 
 
     quda_cf_to_qlat_cf(qlat_cf[i], (qlat::Complex*) qinv.cres->V());

@@ -50,8 +50,8 @@ inline void quda_begin(int mpi_layout[4], bool t = false)
                       reinterpret_cast<void*>(mpi_layout));
   }
   // comm_set_gridsize(mpi_layout);
-  //initQuda(-1000);
-  initQuda(-1);
+  initQuda(-1000);
+  //initQuda(-1);
   printf(
       "initialized on quda rank #%03d (%03d,%03d,%03d,%03d), qlat rank #%03d "
       "(%03d,%03d,%03d,%03d).\n",
@@ -252,6 +252,7 @@ void constructWilsonTestSpinorParam(quda::ColorSpinorParam *cs_param, const Quda
 
 bool last_node_in_t()
 {
+  using namespace quda;
   // only apply T-boundary at edge nodes
   return commCoords(3) == commDim(3) - 1; 
 }

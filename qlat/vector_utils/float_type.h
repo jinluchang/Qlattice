@@ -30,17 +30,11 @@ namespace qlat{
 //#define __NO_GPU_DIRECT__
 //#endif
 
+#ifdef __DEBUG_VECUTILS__
 #define PRINT_TIMER 10
-//#define PRINT_TIMER 100
-
-#define DEBUGM 0
-
-#define __NO_MEMCACHE_LOG__
-
-#if DEBUGM==1
-#undef __NO_MEMCACHE_LOG__
+#else
+#define PRINT_TIMER  0
 #endif
-
 
 ////#include <cuda_runtime.h>
 //
@@ -49,7 +43,6 @@ namespace qlat{
 ////#include "fftw3-mpi.h"
 
 #define LInt unsigned long
-
 
 #define large_vuse Elarge_vector
 #if Enablefloat==0
