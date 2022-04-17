@@ -2,6 +2,8 @@ import cqlat as c
 
 class RngState:
 
+	# self.cdata
+
     def __init__(self, x = None, y = None):
         if x is None:
             self.cdata = c.mk_rng()

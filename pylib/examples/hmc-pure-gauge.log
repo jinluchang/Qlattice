@@ -1304,10 +1304,6 @@ mk_file_dirs_info: 'results/gm_force_info/traj=4.lat'.
 QFile: open 'results/gm_force_info/traj=4.lat.partial' with 'w'.
 qrename: 'results/gm_force_info/traj=4.lat.partial' 'results/gm_force_info/traj=4.lat'
 QFile: close 'results/gm_force_info/traj=4.lat.partial' with 'w'.
-clean_cache: cache:
-clean_cache: cache['point_selection']:
-clean_cache: cache['fields_io']:
-clean_cache: cache['inv']:
 Cache: 'CommPlanCache': 9 / 32 [16] clear
 clear_mem_cache: 4260352 bytes (0.004 GB) freed.
 qlat::end(): get_comm_list().pop_back()

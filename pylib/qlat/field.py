@@ -108,6 +108,7 @@ class Field:
         return self
 
     def __imul__(self, factor):
+		# factor can be float, complex, FieldM<Complex,1>
         if isinstance(factor, float):
             c.set_mul_double_field(self, factor)
         elif isinstance(factor, complex):
@@ -255,6 +256,7 @@ class Field:
         c.to_from_endianness_field(self, tag)
 
     def as_complex_field(self):
+		# return new Field("Complex") with the same content
         f = Field("Complex")
         c.assign_as_complex_field(f, self)
         return f

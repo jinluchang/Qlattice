@@ -64,10 +64,6 @@ prop : 870829356
 prop_msc : 1691244877
 prop_wm : 870829356
 ['prop.field', 'prop-double.field', 'prop-float.field', 'prop.lat', 'prop.sfield']
-clean_cache: cache:
-clean_cache: cache['point_selection']:
-clean_cache: cache['fields_io']:
-clean_cache: cache['inv']:
 Cache: 'ShufflePlanCache': 1 / 16 [8] clear
 clear_mem_cache: 1483776 bytes (0.001 GB) freed.
 qlat::end(): get_comm_list().pop_back()

@@ -2,6 +2,8 @@ import cqlat as c
 
 class Geometry:
 
+    # self.cdata
+
     def __init__(self, total_site = None, multiplicity = None):
         self.cdata = c.mk_geo()
         if total_site is not None:

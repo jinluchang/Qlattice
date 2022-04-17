@@ -5,6 +5,8 @@ from qlat.utils_io import *
 
 class LatData:
 
+    # self.cdata
+
     def __init__(self):
         self.cdata = c.mk_lat_data()
 

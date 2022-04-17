@@ -378,11 +378,6 @@ t=5.0 topo_5li=0.9922002436710559 0.9922002436710552
 (5, 0.015710819003535947)
 (6, 0.00667432770176351)
 (7, 0.013130398593625603)
-clean_cache: cache:
-clean_cache: cache['point_selection']:
-clean_cache: cache['point_selection']['(4, 4, 4, 8)']
-clean_cache: cache['fields_io']:
-clean_cache: cache['inv']:
 Cache: 'CommPlanCache': 4 / 32 [16] clear
 clear_mem_cache: 3208704 bytes (0.003 GB) freed.
 qlat::end(): get_comm_list().pop_back()

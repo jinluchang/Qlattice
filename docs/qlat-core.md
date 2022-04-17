@@ -1,7 +1,5 @@
 # Qlat Core
 
-
-
 [TOC]
 
 ## Structure
@@ -495,4 +493,3 @@ void shuffle_field_back(SelectedField<M>& f,
                         const std::vector<SelectedField<M> >& fs,
                         const ShufflePlan& sp);
 ```
-

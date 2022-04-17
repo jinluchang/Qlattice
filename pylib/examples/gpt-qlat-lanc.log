@@ -281,21 +281,6 @@ mk_gpt_inverter: deal with is_madwf=False
 mk_gpt_inverter: eps=1e-08 max_cycle=200
 mk_gpt_inverter: make inv_qm
 sol diff norm 1.8627073662059613e-13 inv_acc=2 without eig
-clean_cache: cache:
-clean_cache: cache['point_selection']:
-clean_cache: cache['fields_io']:
-clean_cache: cache['inv']:
-clean_cache: cache['inv']['rbc_ukqcd.get_inv gf=139630363154784 test-4nt16 inv_type=0 inv_acc=2 gt=7618400 mpi_split=False n_grouped=1 eig=139630363356032 eps=1e-10 qtimer=7568224']
-clean_cache: cache['inv']['rbc_ukqcd.get_inv gf=139630363154784 test-4nt16 inv_type=0 inv_acc=0 gt=7618400 mpi_split=False n_grouped=1 eig=139630363356032 eps=1e-08 qtimer=7568224']
-clean_cache: cache['inv']['rbc_ukqcd.get_inv gf=139630363154784 test-4nt16 inv_type=0 inv_acc=0 gt=7618400 mpi_split=False n_grouped=1 eig=7618400 eps=1e-08 qtimer=7568224']
-clean_cache: cache['inv']['rbc_ukqcd.get_inv gf=139630363154784 test-4nt16 inv_type=0 inv_acc=1 gt=7618400 mpi_split=False n_grouped=1 eig=139630363356032 eps=1e-08 qtimer=7568224']
-clean_cache: cache['inv']['rbc_ukqcd.get_inv gf=139630363154784 test-4nt16 inv_type=0 inv_acc=1 gt=7618400 mpi_split=False n_grouped=1 eig=7618400 eps=1e-08 qtimer=7568224']
-clean_cache: cache['inv']['rbc_ukqcd.get_inv gf=139630363154784 test-4nt16 inv_type=0 inv_acc=2 gt=7618400 mpi_split=False n_grouped=1 eig=139630363356032 eps=1e-08 qtimer=7568224']
-clean_cache: cache['inv']['rbc_ukqcd.get_inv gf=139630363154784 test-4nt16 inv_type=0 inv_acc=2 gt=7618400 mpi_split=False n_grouped=1 eig=7618400 eps=1e-08 qtimer=7568224']
-clean_cache: cache['qlat_gpt_copy_plan']:
-clean_cache: cache['qlat_gpt_copy_plan']['ColorMatrix,[4, 4, 4, 16],1,gpt_from_qlat']
-clean_cache: cache['qlat_gpt_copy_plan']['WilsonVector,[4, 4, 4, 16],1,gpt_from_qlat']
-clean_cache: cache['qlat_gpt_copy_plan']['WilsonVector,[4, 4, 4, 16],1,qlat_from_gpt']
 Cache: 'ShufflePlanCache': 1 / 16 [8] clear
 Cache: 'CommPlanCache': 2 / 32 [16] clear
 clear_mem_cache: 2516224 bytes (0.002 GB) freed.

@@ -304,10 +304,6 @@ QFile: close 'results/prop.fields/02/0000000002' with 'r'.
 QFile: close 'results/prop.fields/03/0000000003' with 'r'.
 []
 ['prop.fields']
-clean_cache: cache:
-clean_cache: cache['point_selection']:
-clean_cache: cache['fields_io']:
-clean_cache: cache['inv']:
 Cache: 'ShufflePlanCache': 2 / 16 [8] clear
 clear_mem_cache: 3910656 bytes (0.004 GB) freed.
 qlat::end(): get_comm_list().pop_back()
