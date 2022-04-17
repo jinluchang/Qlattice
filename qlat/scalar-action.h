@@ -33,7 +33,7 @@ struct ScalarAction {
   {
     // Returns the contribution to the total action from a single lattice
     // point (including the relavent neighbor interactions)
-    TIMER("ScalarAction.action_point");
+    // TIMER("ScalarAction.action_point");
     
     // Stores [sum i, mu] [phi_i(x+mu)-phi_i(x)]^2
     double dphi_sq=0;

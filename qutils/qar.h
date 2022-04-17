@@ -704,7 +704,7 @@ inline void write_start(QarFile& qar, const std::string& fn,
 // reserved for header.
 // Should call write_end(qar) after writing to qfile_out is finished.
 {
-  qassert(qar.current_write_segment_offset = -1);
+  qassert(qar.current_write_segment_offset == -1);
   qar.current_write_segment_offset = qftell(qar.qfile);
   qfseek(qar.qfile, 0, SEEK_END);
   qassert(qftell(qar.qfile) == qar.current_write_segment_offset);
