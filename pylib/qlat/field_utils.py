@@ -91,7 +91,7 @@ class FastFourierTransform:
 
 ###
 
-def mk_fft(is_forward, *, is_only_spatial = False, is_normalizing = False, mode_fft = 0):
+def mk_fft(is_forward, *, is_only_spatial = False, is_normalizing = False, mode_fft = 1):
     if is_only_spatial:
         fft_infos = [
                 (0, is_forward,),
