@@ -13,10 +13,12 @@ class Inverter:
 
 class InverterDwfFreeField(Inverter):
 
-    def __init__(self, *, mass,
-            m5 = 1.0,
-            momtwist = None,
-            qtimer = TimerNone()):
+    # self.mass
+    # self.m5
+    # self.momtwist
+    # self.timer
+
+    def __init__(self, *, mass, m5 = 1.0, momtwist = None, qtimer = TimerNone()):
         if momtwist is None:
             momtwist = [ 0.0, 0.0, 0.0, 0.0, ]
         self.mass = mass
@@ -29,6 +31,7 @@ class InverterDwfFreeField(Inverter):
         assert isinstance(self.timer, Timer)
 
     def __mul__(self, prop_src):
+        # prop_src: prop or [ prop, ... ]
         if isinstance(prop_src, Prop):
             self.timer.start()
             prop_sol = free_invert(prop_src, self.mass, self.m5, self.momtwist)
@@ -41,8 +44,10 @@ class InverterDwfFreeField(Inverter):
 
 class InverterDomainWall(Inverter):
 
-    def __init__(self, *, gf, fa,
-            qtimer = TimerNone()):
+	# self.cdata
+	# self.timer
+
+    def __init__(self, *, gf, fa, qtimer = TimerNone()):
         self.cdata = c.mk_inverter_domain_wall(gf, fa)
         self.timer = qtimer
 
@@ -51,6 +56,7 @@ class InverterDomainWall(Inverter):
         c.free_inverter_domain_wall(self)
 
     def __mul__(self, prop_src):
+        # prop_src: prop or [ prop, ... ]
         if isinstance(prop_src, Prop):
             self.timer.start()
             prop_sol = Prop()
@@ -81,6 +87,11 @@ class InverterDomainWall(Inverter):
         return c.set_max_mixed_precision_cycle_inverter_domain_wall(self, max_mixed_precision_cycle)
 
 class InverterGaugeTransform(Inverter):
+
+    # self.inverter
+    # self.gt
+    # self.gt_inv
+    # self.timer
 
     def __init__(self, *, inverter, gt,
             qtimer = TimerNone()):
