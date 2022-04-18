@@ -11,6 +11,8 @@ set -e
 ./scripts/gsl.sh
 ./scripts/fftw.sh
 ./scripts/fftwf.sh
+./scripts/fftw_mpi.sh
+./scripts/fftwf_mpi.sh
 ./scripts/cuba.sh
 ./scripts/zlib.sh
 ./scripts/eigen.sh

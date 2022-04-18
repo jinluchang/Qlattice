@@ -92,7 +92,7 @@ struct Cache : CacheBase {
     init(name_, limit_, buffer_size_);
   }
   //
-  ~Cache()
+  ~Cache() noexcept
   {
     qassert(qlat::has(get_all_caches(), (CacheBase*)this));
     get_all_caches().erase(this);

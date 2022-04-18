@@ -33,7 +33,7 @@ CXXFLAGS += -I$(QLAT_INCLUDE)
 
 LDFLAGS += -L$(QLAT_LIB)
 
-LIBS += -lfftw3 -lfftw3f
+LIBS += -lfftw3 -lfftw3f -lfftw3_mpi -lfftw3f_mpi
 LIBS += -lcuba
 LIBS += -lgsl -lgslcblas
 LIBS += -lz
