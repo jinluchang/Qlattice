@@ -767,7 +767,7 @@ inline void write_end(QarFile& qar)
     const std::string header_pad(
         header_len - header_prefix.size() - header.size(), ' ');
     header = header_prefix + header_pad + header;
-    qassert(header.size() == header_len);
+    qassert((long)header.size() == header_len);
     qfseek(qar.qfile, qar.current_write_segment_offset, SEEK_SET);
     qwrite_data(header, qar.qfile);
   }

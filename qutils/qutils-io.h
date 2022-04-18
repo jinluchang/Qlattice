@@ -169,7 +169,6 @@ inline int qmkdir_p(const std::string& path_,
     return 0;
   }
   std::vector<std::string> paths;
-  int ret = 0;
   while (true) {
     if (0 == mkdir(path.c_str(), mode)) {
       break;
