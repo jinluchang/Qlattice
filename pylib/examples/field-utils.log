@@ -22,102 +22,9 @@ q_mem_cache_max_size=512 (default)
 q_mem_cache_acc_max_size=512 (default)
 Cache: 'CommPlanCache': 0 / 32 [16] to add
 gf_show_info: plaq = 0.6147333258459872 ; link_trace = 0.8844956937132934.
-Cache: 'FftComplexFieldPlanCache': 0 / 32 [16] to add
-FftComplexFieldPlan::init: malloc 147456
-FftComplexFieldPlan::init: free 147456
-make_shuffle_plan_fft: num_send_packs =        256
-make_shuffle_plan_fft: num_recv_packs =          8
-make_shuffle_plan_fft: num_send_msgs  =          1
-make_shuffle_plan_fft: num_recv_msgs  =          1
-make_shuffle_plan_fft: total num_send_packs =        512
-make_shuffle_plan_fft: total num_recv_packs =         16
-make_shuffle_plan_fft: total num_send_msgs  =          2
-make_shuffle_plan_fft: total num_recv_msgs  =          2
-make_shuffle_plan_fft: global_comm_size =        512
-Cache: 'FftComplexFieldPlanCache': 1 / 32 [16] to add
-FftComplexFieldPlan::init: malloc 147456
-FftComplexFieldPlan::init: free 147456
-make_shuffle_plan_fft: num_send_packs =         64
-make_shuffle_plan_fft: num_recv_packs =          8
-make_shuffle_plan_fft: num_send_msgs  =          1
-make_shuffle_plan_fft: num_recv_msgs  =          1
-make_shuffle_plan_fft: total num_send_packs =        128
-make_shuffle_plan_fft: total num_recv_packs =         16
-make_shuffle_plan_fft: total num_send_msgs  =          2
-make_shuffle_plan_fft: total num_recv_msgs  =          2
-make_shuffle_plan_fft: global_comm_size =        512
-Cache: 'FftComplexFieldPlanCache': 2 / 32 [16] to add
-FftComplexFieldPlan::init: malloc 147456
-FftComplexFieldPlan::init: free 147456
-make_shuffle_plan_fft: num_send_packs =         16
-make_shuffle_plan_fft: num_recv_packs =          8
-make_shuffle_plan_fft: num_send_msgs  =          1
-make_shuffle_plan_fft: num_recv_msgs  =          1
-make_shuffle_plan_fft: total num_send_packs =         32
-make_shuffle_plan_fft: total num_recv_packs =         16
-make_shuffle_plan_fft: total num_send_msgs  =          2
-make_shuffle_plan_fft: total num_recv_msgs  =          2
-make_shuffle_plan_fft: global_comm_size =        512
-Cache: 'FftComplexFieldPlanCache': 3 / 32 [16] to add
-FftComplexFieldPlan::init: malloc 147456
-FftComplexFieldPlan::init: free 147456
-make_shuffle_plan_fft: num_send_packs =          8
-make_shuffle_plan_fft: num_recv_packs =          8
-make_shuffle_plan_fft: num_send_msgs  =          2
-make_shuffle_plan_fft: num_recv_msgs  =          2
-make_shuffle_plan_fft: total num_send_packs =         16
-make_shuffle_plan_fft: total num_recv_packs =         16
-make_shuffle_plan_fft: total num_send_msgs  =          4
-make_shuffle_plan_fft: total num_recv_msgs  =          4
-make_shuffle_plan_fft: global_comm_size =        512
-Cache: 'FftComplexFieldPlanCache': 4 / 32 [16] to add
-FftComplexFieldPlan::init: malloc 147456
-FftComplexFieldPlan::init: free 147456
-make_shuffle_plan_fft: num_send_packs =        256
-make_shuffle_plan_fft: num_recv_packs =          8
-make_shuffle_plan_fft: num_send_msgs  =          1
-make_shuffle_plan_fft: num_recv_msgs  =          1
-make_shuffle_plan_fft: total num_send_packs =        512
-make_shuffle_plan_fft: total num_recv_packs =         16
-make_shuffle_plan_fft: total num_send_msgs  =          2
-make_shuffle_plan_fft: total num_recv_msgs  =          2
-make_shuffle_plan_fft: global_comm_size =        512
-Cache: 'FftComplexFieldPlanCache': 5 / 32 [16] to add
-FftComplexFieldPlan::init: malloc 147456
-FftComplexFieldPlan::init: free 147456
-make_shuffle_plan_fft: num_send_packs =         64
-make_shuffle_plan_fft: num_recv_packs =          8
-make_shuffle_plan_fft: num_send_msgs  =          1
-make_shuffle_plan_fft: num_recv_msgs  =          1
-make_shuffle_plan_fft: total num_send_packs =        128
-make_shuffle_plan_fft: total num_recv_packs =         16
-make_shuffle_plan_fft: total num_send_msgs  =          2
-make_shuffle_plan_fft: total num_recv_msgs  =          2
-make_shuffle_plan_fft: global_comm_size =        512
-Cache: 'FftComplexFieldPlanCache': 6 / 32 [16] to add
-FftComplexFieldPlan::init: malloc 147456
-FftComplexFieldPlan::init: free 147456
-make_shuffle_plan_fft: num_send_packs =         16
-make_shuffle_plan_fft: num_recv_packs =          8
-make_shuffle_plan_fft: num_send_msgs  =          1
-make_shuffle_plan_fft: num_recv_msgs  =          1
-make_shuffle_plan_fft: total num_send_packs =         32
-make_shuffle_plan_fft: total num_recv_packs =         16
-make_shuffle_plan_fft: total num_send_msgs  =          2
-make_shuffle_plan_fft: total num_recv_msgs  =          2
-make_shuffle_plan_fft: global_comm_size =        512
-Cache: 'FftComplexFieldPlanCache': 7 / 32 [16] to add
-FftComplexFieldPlan::init: malloc 147456
-FftComplexFieldPlan::init: free 147456
-make_shuffle_plan_fft: num_send_packs =          8
-make_shuffle_plan_fft: num_recv_packs =          8
-make_shuffle_plan_fft: num_send_msgs  =          2
-make_shuffle_plan_fft: num_recv_msgs  =          2
-make_shuffle_plan_fft: total num_send_packs =         16
-make_shuffle_plan_fft: total num_recv_packs =         16
-make_shuffle_plan_fft: total num_send_msgs  =          4
-make_shuffle_plan_fft: total num_recv_msgs  =          4
-make_shuffle_plan_fft: global_comm_size =        512
+==Jobs dim 4, 8 4 4 4 , nvec 1, civ 36, bsize 16. 
+==N_extra 1, enable_MPI 1, GPU 0, b0 1, c0 12, mode_rot 0, need copy 0. 
+Cache: 'FFTGPUPlanCache': 0 / 16 [8] to add
 gf_show_info: plaq = 0.6147333258459868 ; link_trace = 0.8844956937132933.
 gf_show_info: plaq = 0.3067038575531761 ; link_trace = 0.0005769961056065.
 [[ 9.08746570e-01-0.02443602j -2.54749081e-02-0.40818897j
@@ -185,17 +92,9 @@ Cache: 'ShufflePlanCache': 0 / 16 [8] to add
 gf_show_info: plaq = 0.3067038575531761 ; link_trace = 0.0005769961056065.
 gf_show_info: plaq = 0.3067038575531761 ; link_trace = 0.0005769961056065.
 Cache: 'ShufflePlanCache': 1 / 16 [8] clear
+Cache: 'FFTGPUPlanCache': 1 / 16 [8] clear
 Cache: 'CommPlanCache': 1 / 32 [16] clear
-Cache: 'FftComplexFieldPlanCache': 8 / 32 [16] clear
-FftComplexFieldPlan::end(): free a plan.
-FftComplexFieldPlan::end(): free a plan.
-FftComplexFieldPlan::end(): free a plan.
-FftComplexFieldPlan::end(): free a plan.
-FftComplexFieldPlan::end(): free a plan.
-FftComplexFieldPlan::end(): free a plan.
-FftComplexFieldPlan::end(): free a plan.
-FftComplexFieldPlan::end(): free a plan.
-clear_mem_cache: 810496 bytes (0.001 GB) freed.
+clear_mem_cache: 427776 bytes (0.000 GB) freed.
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 0.
 qlat::end(): Finalize MPI.
