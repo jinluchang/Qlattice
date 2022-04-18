@@ -141,39 +141,6 @@ std::vector<std::vector<M> > field_glb_sum_tslice_long(const Field<M>& f)
 }
 
 template <class M>
-inline M field_sum_sq(const Field<M>& f)
-{
-  // Returns the sum of f(x)^2 over lattice sites (on the current 
-  // node) and multiplicity
-  TIMER("field_sum_sq");
-  const Geometry geo = f.geo();
-  // Creates a geometry that is the same as the field geometry, except
-  // with multiplicity 1
-  const Geometry geo_r = geo_reform(geo);
-  // Creates a field to save the contribution to the sum of squares 
-  // from each point
-  FieldM<M, 1> fd;
-  fd.init(geo_r);
-  qacc_for(index, geo_r.local_volume(), {
-    Coordinate xl = geo_r.coordinate_from_index(index);
-    M s=0;
-    for (int m = 0; m < geo.multiplicity; ++m) {
-      M d = f.get_elem(xl,m);
-      s += d*d;
-    }
-    fd.get_elem(index) = s;
-  });
-  // Sums over the contributions to the sum of squares from each point
-  // (this cannot be done in the previous loops because the previous
-   // loop runs in parallel)
-  M sum = 0;
-  for (long index = 0; index < geo_r.local_volume(); ++index) {
-    sum += fd.get_elem(index);
-  }
-  return sum;
-}
-
-template <class M>
 std::vector<M> field_project_mom(const Field<M>& f, const CoordinateD& mom)
 // mom is in lattice unit (1/a)
 // project to component with momentum 'mom'
@@ -698,10 +665,11 @@ inline void set_complex_from_double(Field<M>& cf, const Field<double>& sf)
   cf.init(geo);
   qacc_for(index, geo.local_volume(), {
     Coordinate xl = geo.coordinate_from_index(index);
-    Vector<Complex> cf_v = cf.get_elems(xl);
-    int M = cf_v.size();
-    qassert(M == geo.multiplicity);
-    for (int m = 0; m < M; ++m) {
+    Vector<M> v = cf.get_elems(xl);
+    Vector<Complex> cf_v((Complex*)v.data(), v.data_size() / sizeof(Complex));
+    int N = cf_v.size();
+    qassert(N == geo.multiplicity);
+    for (int m = 0; m < N; ++m) {
       cf_v[m] = Complex(sf.get_elem(xl,m));
     }
   });
@@ -715,10 +683,11 @@ inline void set_double_from_complex(Field<M>& sf, const Field<Complex>& cf)
   sf.init(geo);
   qacc_for(index, geo.local_volume(), {
     Coordinate xl = geo.coordinate_from_index(index);
-    Vector<double> sf_v = sf.get_elems(xl);
-    int M = sf_v.size();
-    qassert(M == geo.multiplicity);
-    for (int m = 0; m < M; ++m) {
+    Vector<M> v = sf.get_elems(xl);
+    Vector<double> sf_v((double*)v.data(), v.data_size() / sizeof(double));
+    int N = sf_v.size();
+    qassert(N == geo.multiplicity);
+    for (int m = 0; m < N; ++m) {
       sf_v[m] = cf.get_elem(xl,m).real();
     }
   });

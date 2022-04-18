@@ -114,17 +114,17 @@ struct ScalarAction {
 									std::cos(2*PI*pg[3]/L[3])));
   }
 
-  inline double hmc_m_hamilton_node(const Field<double>& sm)
+  inline double hmc_m_hamilton_node(const Field<Complex>& sm_complex)
   {
     // Return the part of an HMC Hamiltonian due to the given momentum 
     // field (on the current node).
     TIMER("ScalarAction.hmc_m_hamilton_node");
     // Creates a complex copy of the real field so that we can compute 
     // the Fourier transform
-    static Field<Complex> sm_complex;
-    set_complex_from_double(sm_complex, sm);
+    // static Field<Complex> sm_complex;
+    // set_complex_from_double(sm_complex, sm);
     // Computes the Fourier transform of the field
-    fft_complex_field(sm_complex);
+    // fft_complex_field(sm_complex);
     // Saves the field geometry
     const Geometry geo = sm_complex.geo();
     // Creates a geometry that is the same as the field geometry, except
@@ -141,7 +141,7 @@ struct ScalarAction {
       double s=0;
       for (int m = 0; m < geo.multiplicity; ++m) {
         Complex c = sm_complex.get_elem(xl,m);
-        s += (c.real()*c.real()+c.imag()*c.imag())/V/2/hmc_mass_p(L,geo.coordinate_g_from_l(xl));
+        s += (c.real()*c.real()+c.imag()*c.imag())/2/hmc_mass_p(L,geo.coordinate_g_from_l(xl));
       }
       fd.get_elem(index) = s;
     });
@@ -252,6 +252,38 @@ struct ScalarAction {
     });
   }
   
+  inline double sum_sq(const Field<double>& f)
+  {
+    // Returns the sum of f(x)^2 over lattice sites (on the current 
+    // node) and multiplicity
+    TIMER("field_sum_sq");
+    const Geometry geo = f.geo();
+    // Creates a geometry that is the same as the field geometry, except
+    // with multiplicity 1
+    const Geometry geo_r = geo_reform(geo);
+    // Creates a field to save the contribution to the sum of squares 
+    // from each point
+    FieldM<double, 1> fd;
+    fd.init(geo_r);
+    qacc_for(index, geo_r.local_volume(), {
+      Coordinate xl = geo_r.coordinate_from_index(index);
+      double s=0;
+      for (int m = 0; m < geo.multiplicity; ++m) {
+        double d = f.get_elem(xl,m);
+        s += d*d;
+      }
+      fd.get_elem(index) = s;
+    });
+    // Sums over the contributions to the sum of squares from each point
+    // (this cannot be done in the previous loops because the previous
+     // loop runs in parallel)
+    double sum = 0;
+    for (long index = 0; index < geo_r.local_volume(); ++index) {
+      sum += fd.get_elem(index);
+    }
+    return sum;
+  }
+  
   inline void axial_current_node(Field<double>&  axial_current, const Field<double>& sf)
   {
 	// Sets the axial_current field based on the provided field 
@@ -268,6 +300,24 @@ struct ScalarAction {
     axial_current_node_no_comm(axial_current, sf_ext);
   }
   
+  inline void hmc_set_rand_momentum(Field<Complex>& sm_complex, const RngState& rs)
+  {
+    TIMER("set_rand_momentum");
+    const Geometry& geo = sm_complex.geo();
+    const Coordinate L = geo.total_site();
+    qacc_for(index, geo.local_volume(), {
+      const Coordinate xl = geo.coordinate_from_index(index);
+      const Coordinate xg = geo.coordinate_g_from_l(xl);
+      const long gindex = geo.g_index_from_g_coordinate(xg);
+      RngState rsi = rs.newtype(gindex);
+      Vector<Complex> v = sm_complex.get_elems(xl);
+      double sigma = std::pow(hmc_mass_p(L, xg), 0.5);
+      for (int m = 0; m < v.size(); ++m) {
+        v[m] = Complex(g_rand_gen(rsi, 0, sigma), g_rand_gen(rsi, 0, sigma));
+      }
+    });
+  }
+   
 };
 
 }  // namespace qlat

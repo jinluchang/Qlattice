@@ -131,7 +131,7 @@ PyObject* set_complex_from_double_field_ctype(PyObject* p_field, PyObject* p_sf)
 }
 
 template <class M>
-PyObject* set_double_from_complex_field_ctype(PyObject* p_field)
+PyObject* set_double_from_complex_field_ctype(PyObject* p_field, PyObject* p_cf)
 {
   Field<M>& f = py_convert_type_field<M>(p_field);
   Field<Complex>& cf = py_convert_type_field<Complex>(p_cf);
@@ -198,14 +198,7 @@ PyObject* get_mview_field_ctype(PyObject* p_field)
   return p_mview;
 }
 
-template <class M>
-PyObject* field_sum_sq_field_ctype(PyObject* p_field)
-{
-  Field<M>& f = py_convert_type_field<M>(p_field);
-  return py_convert(field_sum_sq(f));
-}
-
-}  // namespace qlat
+} // namespace qlat
 
 EXPORT(mk_field, {
   using namespace qlat;
@@ -230,18 +223,6 @@ EXPORT(free_field, {
   const std::string ctype = py_get_ctype(p_field);
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, free_field_ctype, ctype, p_field);
-  return p_ret;
-});
-
-EXPORT(field_sum_sq_field, {
-  using namespace qlat;
-  PyObject* p_field = NULL;
-  if (!PyArg_ParseTuple(args, "O", &p_field)) {
-    return NULL;
-  }
-  const std::string ctype = py_get_ctype(p_field);
-  PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, field_sum_sq, ctype, p_field);
   return p_ret;
 });
 
@@ -408,7 +389,7 @@ EXPORT(set_complex_from_double_field, {
   }
   const std::string ctype = py_get_ctype(p_field);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, set_complex_from_double_ctype, ctype, p_field, p_sf);
+  FIELD_DISPATCH(p_ret, set_complex_from_double_field_ctype, ctype, p_field, p_sf);
   return p_ret;
 });
 
@@ -421,7 +402,7 @@ EXPORT(set_double_from_complex_field, {
   }
   const std::string ctype = py_get_ctype(p_field);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, set_double_from_complex_ctype, ctype, p_field, p_cf);
+  FIELD_DISPATCH(p_ret, set_double_from_complex_field_ctype, ctype, p_field, p_cf);
   return p_ret;
 });
 

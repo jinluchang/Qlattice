@@ -53,23 +53,17 @@ class ScalarAction:
         assert isinstance(sf, Field)
         return c.hmc_set_force_scalar_action(self, sm_force, sf)
     
-    def hmc_field_evolve(self, sf, sm, sf_complex, sm_complex, step_size, V):
-        assert isinstance(sf, Field)
-        assert isinstance(sm, Field)
-        self.set_complex_from_double(sf_complex, sf)
-        self.set_complex_from_double(sm_complex, sm)
-        fft = mk_fft(True)
-        sf_complex=fft*sf_complex
-        sf_complex*=1/V**0.5
-        sm_complex=fft*sm_complex
-        sm_complex*=1/V**0.5
-        c.hmc_field_evolve_scalar_action(self, sf_complex, sm_complex, step_size)
-        ifft = mk_fft(False)
-        sf_complex=ifft*sf_complex
-        sf_complex*=1/V**0.5
-        self.set_double_from_complex(sf, sf_complex)
+    def hmc_field_evolve(self, sf_ft, sm_ft, step_size):
+        assert isinstance(sf_ft, Field)
+        assert isinstance(sm_ft, Field)
+        c.hmc_field_evolve_scalar_action(self, sf_ft, sm_ft, step_size)
     
     def axial_current_node(self, axial_current, sf):
         assert isinstance(sf, Field)
         assert isinstance(axial_current, Field)
         return c.axial_current_node_scalar_action(self, axial_current, sf)
+    
+    def hmc_set_rand_momentum(self, sm_complex, rs):
+        assert isinstance(sm_complex, Field)
+        assert isinstance(rs, RngState)
+        return c.hmc_set_rand_momentum_scalar_action(self, sm_complex, rs)

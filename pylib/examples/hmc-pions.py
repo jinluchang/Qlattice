@@ -16,12 +16,16 @@ def phi_squared(field,action):
     return phi_sq/geo.total_volume()/geo.multiplicity()
 
 @q.timer_verbose
-def sm_evolve_fg(momentum, field_init, action, fg_dt, dt):
+def sm_evolve(momentum_ft, field_init, action, fg_dt, dt, fft, ifft):
     # Evolve the momentum field according to the given action using the  
     # force gradient algorithm
     geo = field_init.geo()
+    V = geo.total_volume()
     field = q.Field("double",geo)
     field @= field_init
+    momentum = q.Field("double",geo)
+    momentum.set_double_from_complex(ifft*momentum_ft)
+    momentum*=1/V**0.5
     #
     force = q.Field("double",geo)
     #
@@ -33,72 +37,56 @@ def sm_evolve_fg(momentum, field_init, action, fg_dt, dt):
     #
     action.hmc_set_force(force, field)
     #
-    # q.display_gm_force_magnitudes(gm_force, 5)
-    # q.displayln_info(q.get_gm_force_magnitudes(gm_force, 5))
-    #
     force*=-dt
     momentum+=force
+    # Save the Fourier transform of the new momentum
+    momentum_ft.set_complex_from_double(momentum)
+    momentum_ft *= 1/V**0.5
+    momentum_ft @= fft*momentum_ft
 
 @q.timer_verbose
-def sm_evolve_leapfrog(momentum, field, action, dt):
-    # Evolve the momentum field according to the given action using the  
-    # leapfrog algorithm
-    geo = field.geo()
-    #
-    force = q.Field("double",geo)
-    #
-    action.hmc_set_force(force, field)
-    #
-    # q.display_gm_force_magnitudes(gm_force, 5)
-    # q.displayln_info(q.get_gm_force_magnitudes(gm_force, 5))
-    #
-    force*=-dt
-    momentum+=force
-
-@q.timer_verbose
-def hmc_evolve(momentum, field, sf_complex, sm_complex, action, steps, dt):
+def hmc_evolve(field, momentum_ft, field_ft, action, steps, dt, V, fft, ifft):
     # Evolve the field according to the given action using the force 
     # gradient algorithm
     lam = 0.5 * (1.0 - 1.0 / m.sqrt(3.0));
     theta = (2.0 - m.sqrt(3.0)) / 48.0;
     ttheta = theta * dt * dt * dt;
-    #
-    action.hmc_field_evolve(field, momentum, sf_complex, sm_complex, lam * dt)
+    # The Fourier transformed field is updated, and then the field is 
+    # updated based on the new Fourier transformed field
+    action.hmc_field_evolve(field_ft, momentum_ft, lam * dt)
+    # Perform the inverse Fourier transform
+    field.set_double_from_complex(ifft*field_ft)
+    field*=1/V**0.5
     #
     for i in range(steps):
-        sm_evolve_fg(momentum, field, action, 4.0 * ttheta / dt, 0.5 * dt);
-        action.hmc_field_evolve(field, momentum, sf_complex, sm_complex, (1.0 - 2.0 * lam) * dt);
-        sm_evolve_fg(momentum, field, action, 4.0 * ttheta / dt, 0.5 * dt);
+        sm_evolve(momentum_ft, field, action, 4.0 * ttheta / dt, 0.5 * dt, fft, ifft);
+        action.hmc_field_evolve(field_ft, momentum_ft, (1.0 - 2.0 * lam) * dt);
+        field.set_double_from_complex(ifft*field_ft)
+        field*=1/V**0.5
+        sm_evolve(momentum_ft, field, action, 4.0 * ttheta / dt, 0.5 * dt, fft, ifft);
         if i < steps - 1:
-            action.hmc_field_evolve(field, momentum, sf_complex, sm_complex, 2.0 * lam * dt);
+            action.hmc_field_evolve(field_ft, momentum_ft, 2.0 * lam * dt);
+            field.set_double_from_complex(ifft*field_ft)
+            field*=1/V**0.5
         else:
-            action.hmc_field_evolve(field, momentum, sf_complex, sm_complex, lam * dt);
-    return momentum
+            action.hmc_field_evolve(field_ft, momentum_ft, lam * dt);
+            field.set_double_from_complex(ifft*field_ft)
+            field*=1/V**0.5
 
 @q.timer_verbose
-def hmc_evolve_leapfrog(momentum, field, action, steps, dt):
-    # Evolve the field according to the given action using the leapfrog 
-    # algorithm
-    for i in range(steps):
-        sm_evolve_leapfrog(momentum, field, action, 0.5 * dt)
-        action.hmc_field_evolve(field, momentum, dt)
-        sm_evolve_leapfrog(momentum, field, action, 0.5 * dt)
-    return momentum
-
-@q.timer_verbose
-def run_hmc_evolve(momentum, field, sf_complex, sm_complex, action, rs, steps, md_time = 1.0):
+def run_hmc_evolve(field, momentum_ft, field_ft, action, rs, steps, md_time, V, fft, ifft):
     # Calculate the value of the molecular dynamics Hamiltonian for the 
     # initial field and momentum configuration
-    energy = action.hmc_m_hamilton_node(momentum) + action.action_node(field)
+    energy = action.hmc_m_hamilton_node(momentum_ft) + action.action_node(field)
     
     # Evolve the field forward in molecular dynamics time using the 
     # given momenta and the Hamiltonian appropriate for the action
     dt = float(md_time) / float(steps)
-    momentum = hmc_evolve(momentum, field, sf_complex, sm_complex, action, steps, dt)
+    hmc_evolve(field, momentum_ft, field_ft, action, steps, dt, V, fft, ifft)
     
     # Calculate the change in the value of the molecular dynamics 
     # Hamilton after the evolution 
-    delta_h = action.hmc_m_hamilton_node(momentum) + action.action_node(field) - energy;
+    delta_h = action.hmc_m_hamilton_node(momentum_ft) + action.action_node(field) - energy;
     
     # Sum over delta_h for every parallel node (each node handles part 
     # of the lattice)
@@ -135,17 +123,36 @@ def metropolis_accept(delta_h, traj, rs):
     return flag, accept_prob
 
 @q.timer_verbose
-def run_hmc(field, geo, action, traj, rs):
+def run_hmc(field, geo, action, traj, rs, fft, ifft):
     # Create a copy of the scalar field
     f0 = field.copy()
     
-    # Create a random momentum field, distributed according to a 
-    # gaussian distribution centered at 0.0 with sigma=1.0
-    momentum = q.Field("double",geo)
-    momentum.set_rand_g(rs.split("set_rand_momentum"), 0.0, 1.0)
+    # Creates axillary complex fields to store the Fourier 
+    # transformations of the scalar field and the momentum field
+    field_ft = q.Field("Complex",geo,mult)
+    field_ft.set_complex_from_double(field)
+    field_ft = fft*field_ft
+    field_ft*=1/geo.total_volume()**0.5
+    momentum_ft = q.Field("Complex",geo,mult)
     
-    sf_complex = q.Field("Complex",geo,mult)
-    sm_complex = q.Field("Complex",geo,mult)
+    # Create a random momentum field, distributed according to a 
+    # special distribution that is Gaussian for any given point in
+    # the lattice momentum space, but varries in width from point to 
+    # point because of the momentum-dependent mass term used for Fourier
+    # acceleration
+    #momentum = q.Field("double",geo,mult)
+    #momentum.set_rand_g(rs.split("set_rand_momentum"), 0.0, 1.0)
+    #momentum_ft.set_complex_from_double(momentum)
+    #momentum_ft = fft*momentum_ft
+    #momentum_ft*=1/geo.total_volume()**0.5
+    action.hmc_set_rand_momentum(momentum_ft, rs.split("set_rand_momentum"))
+    momentum_ft = ifft*momentum_ft
+    momentum_ft*=1/geo.total_volume()**0.5
+    momentum = q.Field("double",geo,mult)
+    momentum.set_double_from_complex(momentum_ft)
+    momentum_ft.set_complex_from_double(momentum)
+    momentum_ft = fft*momentum_ft
+    momentum_ft*=1/geo.total_volume()**0.5
     
     # The number of steps to take in a single trajectory
     steps = 100
@@ -154,7 +161,7 @@ def run_hmc(field, geo, action, traj, rs):
     
     # Evolve the field over time md_time using the given momenta and 
     # the Hamiltonian appropriate for the given action
-    delta_h = run_hmc_evolve(momentum, f0, sf_complex, sm_complex, action, rs, steps, md_time)
+    delta_h = run_hmc_evolve(f0, momentum_ft, field_ft, action, rs, steps, md_time, geo.total_volume(), fft, ifft)
     
     # Decide whether to accept or reject the field update using the 
     # metropolis algorithm
@@ -171,6 +178,9 @@ def run_hmc(field, geo, action, traj, rs):
 def test_hmc(total_site, action, mult, n_traj):
     # Create the geometry for the field
     geo = q.Geometry(total_site, mult)
+    # Create objects to perform Fourier and inverse Fourier transformations
+    fft = q.mk_fft(True)
+    ifft = q.mk_fft(False)
     # Save the spacial volume and the total volume of the lattice for 
     # future use
     Vx = total_site[0]*total_site[1]*total_site[2]
@@ -199,7 +209,7 @@ def test_hmc(total_site, action, mult, n_traj):
         traj += 1
         
         # Run the HMC algorithm to update the field configuration
-        run_hmc(field, geo, action, traj, rs.split("hmc-{}".format(traj)))
+        run_hmc(field, geo, action, traj, rs.split("hmc-{}".format(traj)), fft, ifft)
         
         # Calculate the expectation values of phi and phi^2
         q.displayln_info("Average phi^2:")
@@ -215,14 +225,14 @@ def test_hmc(total_site, action, mult, n_traj):
         
         # Calculate the axial current of the current field configuration
         # and save it in axial_current
-        action.axial_current_node(axial_current, field)
-        tslices_ax_cur = axial_current.glb_sum_tslice()
+        #action.axial_current_node(axial_current, field)
+        #tslices_ax_cur = axial_current.glb_sum_tslice()
         
         if i>start_measurements:
             psq_list.append(psq)
             phi_list.append(phi)
             timeslices.append(tslices.to_numpy())
-            ax_cur_timeslices.append(tslices_ax_cur.to_numpy())
+            #ax_cur_timeslices.append(tslices_ax_cur.to_numpy())
     
     # Saves the final field configuration so that the next run can be 
     # started where this one left off
@@ -245,20 +255,20 @@ timeslices=[]
 ax_cur_timeslices=[]
 
 # The lattice dimensions
-total_site = [4,4,4,4]
+total_site = [8,8,8,8]
 
 # The multiplicity of the scalar field
-mult = 4
+mult = 1
 
 # The number of trajectories to calculate
-n_traj = 5000
+n_traj = 100
 
 # Use action for a Euclidean scalar field. The Lagrangian will be:
 # (1/2)*[sum i]|dphi_i|^2 + (1/2)*m_sq*[sum i]|phi_i|^2
 #     + (1/24)*lmbd*([sum i]|phi_i|^2)^2
-m_sq = -1.0
-lmbd = 1.0
-alpha = 0.1
+m_sq = 0.1
+lmbd = 0.0
+alpha = 0.0
 
 size_node_list = [
         [1, 1, 1, 1],
@@ -276,7 +286,7 @@ q.qremove_all_info("results")
 
 main()
 
-with open(f"output_data/sigma_pion_corrs_{total_site[0]}x{total_site[3]}_msq_{m_sq}_lmbd_{lmbd}_alph_{alpha}_{datetime.datetime.now().date()}.bin", "wb") as output:
+with open(f"output_data/sigma_pion_corrs_{total_site[0]}x{total_site[3]}_msq_{m_sq}_lmbd_{lmbd}_alph_{alpha}_{datetime.datetime.now().date()}_w_fa.bin", "wb") as output:
     pickle.dump([psq_list,phi_list,timeslices,ax_cur_timeslices],output)
 
 #q.timer_display()
