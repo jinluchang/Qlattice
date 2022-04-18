@@ -389,6 +389,45 @@ void shuffle_field_back(SelectedField<M>& f,
   sync_node();
 }
 
+template <class M>
+void shuffle_field(SelectedField<M>& sf, const SelectedField<M>& sf0,
+                   const ShufflePlan& sp)
+{
+  qassert(is_initialized(sp));
+  if (is_no_shuffle(sp)) {
+    sf = sf0;
+    return;
+  }
+  TIMER_VERBOSE_FLOPS("shuffle_field(sf,sf0,sp)");
+  qassert(sp.geos_recv.size() == 1);
+  const Geometry& geo = sf0.geo();
+  timer.flops += sp.scp.global_comm_size * geo.multiplicity * sizeof(M);
+  std::vector<SelectedField<M> > sfs;
+  shuffle_field(sfs, sf0, sp);
+  qassert(sfs.size() == 1);
+  qswap(sf, sfs[0]);
+}
+
+template <class M>
+void shuffle_field_back(SelectedField<M>& sf, const SelectedField<M>& sf0,
+                        const ShufflePlan& sp)
+// sf can be empty
+{
+  qassert(is_initialized(sp));
+  if (is_no_shuffle(sp)) {
+    sf = sf0;
+    return;
+  }
+  TIMER_VERBOSE_FLOPS("shuffle_field_back(sf,sf0,sp)");
+  qassert(sp.geos_recv.size() == 1);
+  const Geometry& geo = sf0.geo();
+  timer.flops += sp.scp.global_comm_size * geo.multiplicity * sizeof(M);
+  std::vector<SelectedField<M> > sfs(1);
+  sfs[0] = sf0;
+  sf.init(geo, sp.n_elems_send, geo.multiplicity);
+  shuffle_field_back(sf, sfs, sp);
+}
+
 // making shuffle plan generic
 
 inline long& get_shuffle_max_msg_size()
@@ -1276,33 +1315,23 @@ inline ShiftShufflePlan make_shift_shuffle_plan(const FieldSelection& fsel,
 
 template <class M>
 void field_shift(SelectedField<M>& sf, const SelectedField<M>& sf0,
-                 const ShufflePlan& sp)
-// sf{gindex_s} = sf0(gindex)
+                 const ShiftShufflePlan& ssp)
+// sf{gindex_s} = sf0{gindex}
 // xg_s <=> gindex_s
 // xg <=> gindex
 // xg_s = mod(xg + shift, total_site)
 {
-  TIMER_VERBOSE_FLOPS("field_shift(sf,sf0,sp)");
-  qassert(sp.geos_recv.size() == 1);
-  const Geometry& geo = sf0.geo();
-  timer.flops += sp.scp.global_comm_size * geo.multiplicity * sizeof(M);
-  std::vector<SelectedField<M> > sfs;
-  shuffle_field(sfs, sf0, sp);
-  qassert(sfs.size() == 1);
-  qswap(sf, sfs[0]);
-}
-
-template <class M>
-void field_shift(SelectedField<M>& sf, const SelectedField<M>& sf0,
-                 const ShiftShufflePlan& ssp)
-{
-  field_shift(sf, sf0, ssp.sp);
+  shuffle_field(sf, sf0, ssp.sp);
 }
 
 template <class M>
 void field_shift(SelectedField<M>& sf, FieldSelection& fsel,
                  const SelectedField<M>& sf0, const FieldSelection& fsel0,
                  const Coordinate& shift, const bool is_reflect = false)
+// sf{gindex_s} = sf0{gindex}
+// xg_s <=> gindex_s
+// xg <=> gindex
+// xg_s = mod(xg + shift, total_site)
 {
   TIMER_VERBOSE_FLOPS("field_shift(sf,fsel,sf0,fsel0,shift)");
   const ShiftShufflePlan ssp =
@@ -1311,7 +1340,7 @@ void field_shift(SelectedField<M>& sf, FieldSelection& fsel,
   const Geometry& geo = sf0.geo();
   timer.flops += sp.scp.global_comm_size * geo.multiplicity * sizeof(M);
   fsel = ssp.fsel;
-  field_shift(sf, sf0, ssp);
+  shuffle_field(sf, sf0, ssp.sp);
 }
 
 // old code

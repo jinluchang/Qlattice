@@ -111,6 +111,16 @@ PyObject* set_zero_sfield_ctype(PyField& pf)
 }
 
 template <class M>
+PyObject* acc_field_sfield_ctype(PyObject* p_field, const Complex& coef, PyObject* p_sfield,
+                                 const FieldSelection& fsel)
+{
+  Field<M>& f = py_convert_type_field<M>(p_field);
+  const SelectedField<M>& sf = py_convert_type_sfield<M>(p_sfield);
+  acc_field(f, coef, sf, fsel);
+  Py_RETURN_NONE;
+}
+
+template <class M>
 PyObject* get_n_elems_sfield_ctype(PyField& pf)
 {
   SelectedField<M>& sf = *(SelectedField<M>*)pf.cdata;
@@ -334,8 +344,7 @@ EXPORT(set_sfield_field, {
     return NULL;
   }
   PyField psf = py_convert_field(p_sfield);
-  PyObject* p_fsel = PyObject_GetAttrString(p_sfield, "fsel");
-  const FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
+  const FieldSelection& fsel = py_convert_type<FieldSelection>(p_sfield, "fsel");
   PyField pf = py_convert_field(p_field);
   pqassert(psf.ctype == pf.ctype);
   PyObject* p_ret = NULL;
@@ -352,8 +361,7 @@ EXPORT(set_field_sfield, {
   }
   PyField pf = py_convert_field(p_field);
   PyField psf = py_convert_field(p_sfield);
-  PyObject* p_fsel = PyObject_GetAttrString(p_sfield, "fsel");
-  const FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
+  const FieldSelection& fsel = py_convert_type<FieldSelection>(p_sfield, "fsel");
   pqassert(psf.ctype == pf.ctype);
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, set_field_sfield_ctype, pf.ctype, pf, psf, fsel);
@@ -368,11 +376,9 @@ EXPORT(set_sfield_sfield, {
     return NULL;
   }
   PyField psf = py_convert_field(p_sfield);
-  PyObject* p_fsel = PyObject_GetAttrString(p_sfield, "fsel");
-  const FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
+  const FieldSelection& fsel = py_convert_type<FieldSelection>(p_sfield, "fsel");
   PyField psf0 = py_convert_field(p_sfield0);
-  PyObject* p_fsel0 = PyObject_GetAttrString(p_sfield0, "fsel");
-  const FieldSelection& fsel0 = py_convert_type<FieldSelection>(p_fsel0);
+  const FieldSelection& fsel0 = py_convert_type<FieldSelection>(p_sfield0, "fsel");
   pqassert(psf.ctype == psf0.ctype);
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, set_sfield_sfield_ctype, psf0.ctype, psf, psf0, fsel, fsel0);
@@ -431,6 +437,21 @@ EXPORT(set_zero_sfield, {
   PyField pf = py_convert_field(p_field);
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, set_zero_sfield_ctype, pf.ctype, pf);
+  return p_ret;
+});
+
+EXPORT(acc_field_sfield, {
+  using namespace qlat;
+  PyObject* p_field = NULL;
+  Complex coef = 1.0;
+  PyObject* p_sfield = NULL;
+  if (!PyArg_ParseTuple(args, "ODO", &p_field, &p_sfield)) {
+    return NULL;
+  }
+  const std::string ctype = py_get_ctype(p_sfield);
+  const FieldSelection& fsel = py_convert_type<FieldSelection>(p_sfield, "fsel");
+  PyObject* p_ret = NULL;
+  FIELD_DISPATCH(p_ret, acc_field_sfield_ctype, ctype, p_field, coef, p_sfield, fsel);
   return p_ret;
 });
 
@@ -561,8 +582,7 @@ EXPORT(glb_sum_tslice_double_sfield, {
   }
   PyField pspf = py_convert_field(p_spfield);
   PyField pf = py_convert_field(p_field);
-  PyObject* p_fsel = PyObject_GetAttrString(p_field, "fsel");
-  const FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
+  const FieldSelection& fsel = py_convert_type<FieldSelection>(p_field, "fsel");
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, glb_sum_tslice_double_sfield_ctype, pf.ctype, pspf, pf, fsel);
   return p_ret;
@@ -577,8 +597,7 @@ EXPORT(glb_sum_tslice_long_sfield, {
   }
   PyField pspf = py_convert_field(p_spfield);
   PyField pf = py_convert_field(p_field);
-  PyObject* p_fsel = PyObject_GetAttrString(p_field, "fsel");
-  const FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
+  const FieldSelection& fsel = py_convert_type<FieldSelection>(p_field, "fsel");
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, glb_sum_tslice_long_sfield_ctype, pf.ctype, pspf, pf, fsel);
   return p_ret;
@@ -592,8 +611,7 @@ EXPORT(save_sfield, {
     return NULL;
   }
   PyField pf = py_convert_field(p_field);
-  PyObject* p_fsel = PyObject_GetAttrString(p_field, "fsel");
-  const FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
+  const FieldSelection& fsel = py_convert_type<FieldSelection>(p_field, "fsel");
   std::string path;
   py_convert(path, p_path);
   PyObject* p_ret = NULL;
@@ -609,8 +627,7 @@ EXPORT(load_sfield, {
     return NULL;
   }
   PyField pf = py_convert_field(p_field);
-  PyObject* p_fsel = PyObject_GetAttrString(p_field, "fsel");
-  const FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
+  const FieldSelection& fsel = py_convert_type<FieldSelection>(p_field, "fsel");
   std::string path;
   py_convert(path, p_path);
   PyObject* p_ret = NULL;

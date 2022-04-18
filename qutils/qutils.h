@@ -182,7 +182,7 @@ qacc float& operator*=(float& x, const Complex& factor) { assert(false); }
 
 qacc char& operator*=(char& x, const Complex& factor) { assert(false); }
 
-qacc char& operator*=(int8_t& x, const Complex& factor) { assert(false); }
+qacc int8_t& operator*=(int8_t& x, const Complex& factor) { assert(false); }
 
 template <class M>
 int get_type_precision()

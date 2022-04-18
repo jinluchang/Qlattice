@@ -713,8 +713,9 @@ bool is_consistent(const SelectedPoints<M>& sp, const SelectedField<M>& sf,
 }
 
 template <class M>
-void acc_field(Field<M>& f, const Complex coef, const SelectedField<M>& sf,
+void acc_field(Field<M>& f, const Complex& coef, const SelectedField<M>& sf,
                const FieldSelection& fsel)
+// f can be empty
 {
   TIMER("acc_field(f,coef,sf,fsel)");
   const Geometry& geo = fsel.f_rank.geo();
@@ -731,7 +732,9 @@ void acc_field(Field<M>& f, const Complex coef, const SelectedField<M>& sf,
     Vector<M> fv = f.get_elems(xl);
     const Vector<M> sfv = sf.get_elems_const(idx);
     for (int m = 0; m < multiplicity; ++m) {
-      fv[m] += coef * sfv[m];
+      M x = sfv[m];
+      x *= coef;
+      fv[m] += x;
     }
   });
 }

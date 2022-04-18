@@ -12,9 +12,8 @@ EXPORT(contract_chvp3_sfield, {
   LatData& ld = py_convert_type<LatData>(p_ld);
   const SelProp& prop1 = py_convert_type<SelProp>(p_prop1);
   const SelProp& prop2 = py_convert_type<SelProp>(p_prop2);
-  PyObject* p_fsel = PyObject_GetAttrString(p_prop1, "fsel");
-  pqassert(p_fsel == PyObject_GetAttrString(p_prop2, "fsel"));
-  const FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
+  const FieldSelection& fsel = py_convert_type<FieldSelection>(p_prop1, "fsel");
+  pqassert(&fsel == &(py_convert_type<FieldSelection>(p_prop2, "fsel")));
   ld = contract_chvp3(prop1, prop2, tslice_src, fsel);
   Py_RETURN_NONE;
 });

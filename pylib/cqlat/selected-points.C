@@ -283,8 +283,7 @@ EXPORT(set_spfield_field, {
     return NULL;
   }
   PyField pspf = py_convert_field(p_spfield);
-  PyObject* p_psel = PyObject_GetAttrString(p_spfield, "psel");
-  const PointSelection& psel = py_convert_type<PointSelection>(p_psel);
+  const PointSelection& psel = py_convert_type<PointSelection>(p_spfield, "psel");
   PyField pf = py_convert_field(p_field);
   pqassert(pspf.ctype == pf.ctype);
   PyObject* p_ret = NULL;
@@ -300,11 +299,9 @@ EXPORT(set_spfield_sfield, {
     return NULL;
   }
   PyField pspf = py_convert_field(p_spfield);
-  PyObject* p_psel = PyObject_GetAttrString(p_spfield, "psel");
-  const PointSelection& psel = py_convert_type<PointSelection>(p_psel);
+  const PointSelection& psel = py_convert_type<PointSelection>(p_spfield, "psel");
   PyField psf = py_convert_field(p_sfield);
-  PyObject* p_fsel = PyObject_GetAttrString(p_sfield, "fsel");
-  const FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
+  const FieldSelection& fsel = py_convert_type<FieldSelection>(p_sfield, "fsel");
   pqassert(pspf.ctype == psf.ctype);
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, set_spfield_sfield_ctype, psf.ctype, pspf, psf, psel, fsel);
@@ -320,8 +317,7 @@ EXPORT(set_field_spfield, {
   }
   PyField pf = py_convert_field(p_field);
   PyField pspf = py_convert_field(p_spfield);
-  PyObject* p_psel = PyObject_GetAttrString(p_spfield, "psel");
-  const PointSelection& psel = py_convert_type<PointSelection>(p_psel);
+  const PointSelection& psel = py_convert_type<PointSelection>(p_spfield, "psel");
   pqassert(pspf.ctype == pf.ctype);
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, set_field_spfield_ctype, pf.ctype, pf, pspf, psel);
