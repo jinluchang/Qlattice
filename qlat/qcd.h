@@ -11,6 +11,7 @@
 #endif
 
 #include <qlat/field-expand.h>
+#include <qlat/fields-io.h>
 
 #include <cmath>
 #include <sstream>
