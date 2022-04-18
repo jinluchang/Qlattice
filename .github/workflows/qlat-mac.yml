@@ -38,7 +38,7 @@ jobs:
     - name: Build everything
       run: |
         export num_proc=4
-        ./build.sh github || echo Failed
+        ./build.sh default || echo Failed
 
     - name: Testing qlat
       run: |
