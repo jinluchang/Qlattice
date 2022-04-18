@@ -384,7 +384,7 @@ inline void read_kentucky_vector(FILE *file,char* props,int Nvec,io_vec& io,bool
       fseek ( file , off_file + offv*sizec , SEEK_SET );
       size_t pos_file_cur = off_file + offv*sizec;
 
-      int rN = gN;if(offv+rN>=Nvec){rN = Nvec-offv;}
+      int rN = gN;if(offv+rN>=size_t(Nvec)){rN = Nvec-offv;}
 
       /////Switch endian of the file write
       if(read==false){
