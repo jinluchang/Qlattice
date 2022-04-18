@@ -119,6 +119,68 @@ class RngState:
 rng_state_root = RngState()
 ```
 
+## QAR
+
+```python
+def qar_create(path_qar, path_folder, *, is_remove_folder_after = False):
+def qar_create_info(path_qar, path_folder, *, is_remove_folder_after = False):
+def qar_extract(path_qar, path_folder, *, is_remove_folder_after = False):
+def qar_extract_info(path_qar, path_folder, *, is_remove_qar_after = False):
+def list_qar(path_qar):
+```
+
+## Utils
+
+```python
+def lazy_call(f, *args, **kwargs):
+def sqr(x):
+def set_zero(x):
+def set_unit(x, coef = 1.0):
+def qnorm(x):
+    # qnorm(2) == 4
+def show(x):
+def unitarize(x):
+def random_permute(l, rs):
+    # Do not change ``l''.
+    # Return a new permuted list.
+def get_all_caches_info():
+def clear_all_caches():
+```
+
+## Utils-IO
+
+```python
+qremove, qremove_info
+qremove_all, qremove_all_info
+qmkdir, qmkdir_info, qmkdir_sync_node
+does_file_exist, does_file_exist_sync_node
+does_file_exist_qar, does_file_exist_qar_sync_node
+is_directory, is_directory_sync_node
+is_regular_file, is_regular_file_sync_node
+qrename, qrename_info
+qcat, qcat_sync_node
+qls, qls_sync_node
+qls_all, qls_all_sync_node
+qload_datatable, qload_datatable_sync_node
+check_time_limit, check_stop
+```
+
+```python
+def qtouch(path, content = None):
+def qtouch_info(path, content = None):
+def qappend(path, content = None):
+def qappend_info(path, content = None):
+def obtain_lock(path):
+def release_lock():
+def save_pickle_obj(obj, path):
+    # only save from node 0
+def load_pickle_obj(path, default_value = None):
+    # all the nodes read the same data
+def pickle_cache_call(func, path):
+def compute_crc32(path):
+def check_all_files_crc32_info(path):
+```
+
 ## PointSelection
 
 ```python
@@ -342,7 +404,10 @@ class SelectedPoints:
         # need to be already initialized with ctype and psel
 ```
 
-## Prop SelProp PselProp
+## Prop
+
+### SelProp
+### PselProp
 
 ```python
 class Prop(Field):
@@ -419,7 +484,11 @@ class GaugeTransform(Field):
     def inv(self):
 ```
 
-## Inverter InverterDwfFreeField InverterDomainWall InverterGaugeTransform
+## Inverter
+
+### InverterDwfFreeField
+### InverterDomainWall
+### InverterGaugeTransform
 
 ```python
 class Inverter:
@@ -454,4 +523,3 @@ class InverterGaugeTransform(Inverter):
     def __init__(self, *, inverter, gt, qtimer = TimerNone()):
     def __mul__(self, prop_src):
 ```
-

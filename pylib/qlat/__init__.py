@@ -22,6 +22,8 @@ from qlat.utils import *
 
 from qlat.utils_io import *
 
+from qlat.qar import *
+
 from qlat.qcd import *
 
 from qlat.wilson_flow import *

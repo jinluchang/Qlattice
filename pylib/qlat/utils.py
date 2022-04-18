@@ -42,7 +42,7 @@ def unitarize(x):
 
 def random_permute(l, rs):
     # Do not change ``l''.
-    # Return a new permutated list.
+    # Return a new permuted list.
     assert isinstance(l, list)
     assert isinstance(rs, RngState)
     return c.random_permute(l, rs)
