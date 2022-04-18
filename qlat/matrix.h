@@ -934,7 +934,7 @@ qacc bool get_data_type_is_double()
     if (get_id_node() == 0) {
       printf("Given type not float/double %d \n", cur);
     }
-    qassert("false");
+    qassert(false);
   }
   if (cur % 2 == 0) {
     return true;

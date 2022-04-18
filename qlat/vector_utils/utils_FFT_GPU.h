@@ -705,6 +705,8 @@ void fft_fieldM(fft_schedule& fft, std::vector<qlat::FieldM<Ty, civ> >& src, boo
   #if PRINT_TIMER>4
   TIMER_FLOPS("fft fieldM");
   timer.flops += src.size() * get_data(src[0]).data_size()/(sizeof(Ty)) * 64;
+  #else
+  TIMER("fft fieldM");
   #endif
 
   if(src.size() < 1)return;
@@ -865,12 +867,36 @@ inline FFTGPUPlanKey get_fft_gpu_plan_key(std::vector<qlat::FieldM<Ty, civ> >& s
 template <class Ty, int civ>
 void fft_fieldM(std::vector<qlat::FieldM<Ty, civ> >& src, bool fftdir=true, bool fft4d = false)
 {
+  if(src.size() < 1)return;
+
+  int nfft = src.size() * civ;
+  Geometry& geo = src[0].geo();
+  int minfft = geo.node_site[0] * geo.node_site[1];
+  #ifndef QLAT_USE_ACC
+  minfft = nfft;
+  #endif
+  if(minfft < nfft)
+  {
+    TIMER("fft_complex_field_dir fieldM");
+    for(unsigned int i=0;i<src.size();i++)
+    {
+      qlat::FieldM<Ty, civ> ft;
+      int ndir = 3;if(fft4d){ndir = 4;}
+      for (int k = 0; k < ndir; k++) {
+        ft = src[i];
+        fft_complex_field_dir(src[i], ft, k, fftdir);
+      }
+    }
+    return ;
+  }
+
+  {
   #if PRINT_TIMER>4
   TIMER_FLOPS("fft fieldM");
   timer.flops += src.size() * get_data(src[0]).data_size()/(sizeof(Ty)) * 64;
+  #else
+  TIMER("fft fieldM");
   #endif
-
-  if(src.size() < 1)return;
 
   FFTGPUPlanKey fkey;
   fkey.geo = src[0].geo();
@@ -884,24 +910,47 @@ void fft_fieldM(std::vector<qlat::FieldM<Ty, civ> >& src, bool fftdir=true, bool
   std::vector<Ty* > data;data.resize(nvec);
   for(int si=0;si<nvec;si++){data[si] = (Ty*) qlat::get_data(src[si]).data();}
   get_fft_gpu_plan(fkey).fftP->dojob(data, fftdir);
+  }
 }
 
 
 template<class M>
 void fft_fieldM(std::vector<Handle<qlat::Field<M> > >& src, bool fftdir=true, bool fft4d = false)
 {
+  if(src.size() < 1)return;
+  bool is_double     = get_data_type_is_double<M >();
+  DATA_TYPE prec = Complex_TYPE;int civ = 1;
+  if( is_double){prec = Complex_TYPE ; civ = src[0]().geo().multiplicity * sizeof(M)/sizeof(Complex ); }
+  if(!is_double){prec = ComplexF_TYPE; civ = src[0]().geo().multiplicity * sizeof(M)/sizeof(ComplexF); }
+
+  int nfft = src.size() * civ;
+  Geometry& geo = src[0]().geo();
+  int minfft = geo.node_site[0] * geo.node_site[1];
+  #ifndef QLAT_USE_ACC
+  minfft = nfft;
+  #endif
+  if(minfft < nfft)
+  {
+    TIMER("fft_complex_field_dir fieldM");
+    for(unsigned int i=0;i<src.size();i++)
+    {
+      qlat::Field<M > ft;
+      int ndir = 3;if(fft4d){ndir = 4;}
+      for (int k = 0; k < ndir; k++) {
+        ft = src[i]();
+        fft_complex_field_dir(src[i](), ft, k, fftdir);
+      }
+    }
+    return ;
+  }
+
+  {
   #if PRINT_TIMER>4
   TIMER_FLOPS("fft fieldM");
   timer.flops += src.size() * get_data(src[0]).data_size()/(sizeof(M)) * 64;
   #else
   TIMER("fft fieldM");
   #endif
-
-  if(src.size() < 1)return;
-  bool is_double     = get_data_type_is_double<M >();
-  DATA_TYPE prec = Complex_TYPE;int civ = 1;
-  if( is_double){prec = Complex_TYPE ; civ = src[0]().geo().multiplicity * sizeof(M)/sizeof(Complex ); }
-  if(!is_double){prec = ComplexF_TYPE; civ = src[0]().geo().multiplicity * sizeof(M)/sizeof(ComplexF); }
 
   FFTGPUPlanKey fkey;
   fkey.geo = src[0]().geo();
@@ -921,6 +970,8 @@ void fft_fieldM(std::vector<Handle<qlat::Field<M> > >& src, bool fftdir=true, bo
     std::vector<Complex* > data;data.resize(nvec);
     for(int si=0;si<nvec;si++){data[si] = (Complex*) qlat::get_data(src[si]()).data();}
     get_fft_gpu_plan(fkey).fftP->dojob(data, fftdir);}
+
+  }
 
 }
 

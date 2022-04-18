@@ -15,20 +15,20 @@ if [ -z "\$prefix" ] ; then
     prefix="$prefix"
 fi
 if [ -z "\$num_proc" ] ; then
-    num_proc=4
+    num_proc=16
 fi
 export PYTHONPATH=
+module purge
 module load  craype-network-ofi
 module load  PrgEnv-gnu
 module load  cudatoolkit
 export CRAY_ACCEL_TARGET=nvidia80
 export CRAY_CPU_TARGET=x86-64
 module load  cmake
-module load python/3.9-anaconda-2021.11
 module list
-export QLAT_MPICXX="nvcc -w -std=c++14 -O3 -ccbin mpicxx -Xcompiler -fopenmp -Xcompiler -fno-strict-aliasing --expt-extended-lambda --expt-relaxed-constexpr -gencode arch=compute_80,code=sm_80"
+export QLAT_MPICXX="nvcc -w -std=c++14 -O3 -ccbin CC -Xcompiler -fopenmp -Xcompiler -fno-strict-aliasing --expt-extended-lambda --expt-relaxed-constexpr -gencode arch=compute_80,code=sm_80"
 export QLAT_CXXFLAGS="-x cu -Xcompiler -fPIC "
-export QLAT_LDFLAGS="-link --shared -lcudart -lcufft -lfftw3_mpi -lfftw3f_mpi"
+export QLAT_LDFLAGS="-link --shared -lcudart -lcufft "
 EOF
 
 ./scripts/compiler-wrappers.sh
