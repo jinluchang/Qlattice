@@ -380,11 +380,11 @@ inline void read_kentucky_vector(FILE *file,char* props,int Nvec,io_vec& io,bool
     if(node_ioL[rank]>=0)
     if(curr_v + node_ioL[rank]*gN < Nvec)
     {
-      int offv = curr_v + node_ioL[rank]*gN;
+      size_t offv = curr_v + node_ioL[rank]*gN;
       fseek ( file , off_file + offv*sizec , SEEK_SET );
       size_t pos_file_cur = off_file + offv*sizec;
 
-      int rN = gN;if(offv+rN>=Nvec){rN = Nvec-offv;}
+      int rN = gN;if(offv+rN>=size_t(Nvec)){rN = Nvec-offv;}
 
       /////Switch endian of the file write
       if(read==false){
@@ -1224,12 +1224,10 @@ void load_gwu_prop(std::string &filename,Propagator4dT<T>& prop){
   load_gwu_prop(tem,prop);
 }
 
-////void save_gwu_link(const char *filename,GaugeField &gf,io_vec &io_use,bool read=true){
-////  load_gwu_link(filename,gf,io_use,false);
-////}
+
 
 template <class T>
-void load_gwu_link(const char *filename,GaugeFieldT<T> &gf){
+void load_gwu_link(const char *filename,GaugeFieldT<T> &gf, bool read = true){
   io_vec io_use(gf.geo(),8);
   //if(sizeof(Ty) != 2*sizeof(double ) and sizeof(Ty) != 2*sizeof(float ))
   //{abort_r("Cannot understand the input format! \n");}
@@ -1237,19 +1235,40 @@ void load_gwu_link(const char *filename,GaugeFieldT<T> &gf){
   size_t noden = io_use.noden;
   size_t Fsize = io_use.Nmpi*(4*9*noden*2)*sizeof(double);
 
-  FILE* file;
-  //if(read==true)
-  {
-  size_t sizen = get_file_size_MPI(filename);
-  if(sizen != Fsize){abort_r("Link size wrong! \n");}
-  /////gf.init(*io_use.geop);
-  }
-
   std::vector<double > link_qlat;
   link_qlat.resize(4*9*noden*2);
 
-  file = io_use.io_read(filename,"rb");
-  read_kentucky_vector(file,(char*) &link_qlat[0], 4*9*2,io_use, false, sizeof(double), false,9*2);
+  if(read==true)
+  {
+    size_t sizen = get_file_size_MPI(filename);
+    if(sizen != Fsize){abort_r("Link size wrong! \n");}
+    /////gf.init(*io_use.geop);
+  }
+
+
+  if(read == false)
+  for (size_t index = 0; index < noden; ++index)
+  {
+    ColorMatrixT<T>& res = gf.get_elem(index*gf.geo().multiplicity+0);
+
+    for(int dir=0;dir<4;dir++)
+    {
+      for(int c0=0;c0<3;c0++)
+      for(int c1=0;c1<3;c1++)
+      {
+        int dir0  = ((dir*3+c0)*3+c1)    ;
+        int dir1R = ((dir*3+c1)*3+c0)*2+0;
+        int dir1I = ((dir*3+c1)*3+c0)*2+1;
+        link_qlat[dir1R*noden + index] = res.p[dir0].real();
+        link_qlat[dir1I*noden + index] = res.p[dir0].imag();
+      }
+    }
+  }
+
+  FILE* file;
+  if(read==true )file = io_use.io_read(filename,"rb");
+  if(read==false)file = io_use.io_read(filename,"wb");
+  read_kentucky_vector(file,(char*) &link_qlat[0], 4*9*2,io_use, false, sizeof(double), false,9*2, read);
   io_use.io_close(file);
     
   //////double precision eigen vector in ps base
@@ -1258,33 +1277,28 @@ void load_gwu_link(const char *filename,GaugeFieldT<T> &gf){
   ///gwu_to_cps_rotation_vec(&link_qlat[0], 12,noden, true, true,true);
   ///4 dire --> c0 -- > c1
 
-  ////Geometry &geo = *io_use.geop;
-  ////May need to check gf is double prec
+  if(read == true)
   for (size_t index = 0; index < noden; ++index)
   {
-    //double* res = (double*) qlat::get_data(gf.get_elems(index)).data();
-    //T* res = (T*) qlat::get_data(gf.get_elems(index)).data();
     ColorMatrixT<T>& res = gf.get_elem(index*gf.geo().multiplicity+0);
 
-    //for(int dir=0;dir<4*9*2;dir++)res[dir] = link_qlat[dir*noden + index];
     for(int dir=0;dir<4;dir++)
     {
       for(int c0=0;c0<3;c0++)
       for(int c1=0;c1<3;c1++)
       {
         int dir0  = ((dir*3+c0)*3+c1)    ;
-        //int dir0  = (c0*3+c1)    ;
         int dir1R = ((dir*3+c1)*3+c0)*2+0;
         int dir1I = ((dir*3+c1)*3+c0)*2+1;
         res.p[dir0] = T(link_qlat[dir1R*noden + index], link_qlat[dir1I*noden + index]);
-        //for(int im=0;im<2;im++){
-        //  int dir0  = ((dir*3+c0)*3+c1)*2+im ;
-        //  int dir1 = ((dir*3+c1)*3+c0)*2+im;
-        //  res[dir0] = link_qlat[dir1*noden + index];
-        //}
       }
     }
   }
+}
+
+template <class T>
+void save_gwu_link(const char *filename,GaugeFieldT<T> &gf){
+  load_gwu_link(filename, gf, false);
 }
 
 template <class T>
@@ -1463,9 +1477,11 @@ inline void open_file_qlat_noisesT(const char *filename, int bfac, inputpara& in
 
     //////Check file sizes
     size_t sizen = get_file_size_MPI(filename) - in.off_file;  //qassert(sizen == string_to_size(in.total_size));
-    if(sizen != string_to_size(in.total_size)){abort_r("FILE size not match with head !\n");}
+    if(sizen != string_to_size(in.total_size)){
+      print0("size  %zu %zu .", sizen, string_to_size(in.total_size));
+      abort_r("FILE size not match with head !\n");}
 
-    size_t Vsize = in.nx*in.ny*in.nz*in.nt*size_t(bfac*2);
+    size_t Vsize = size_t(in.nx)*in.ny*in.nz*in.nt*size_t(bfac*2);
     in.N_noi = in.nvec/(bfac/in.bfac_write);
     size_t Fsize = (in.N_noi + 0)*Vsize*in.bsize;  //qassert(Fsize <= string_to_size(in.total_size));
     if(Fsize > string_to_size(in.total_size)){abort_r("FILE size too small for vectors read !\n");}
@@ -1490,7 +1506,7 @@ inline void open_file_qlat_noisesT(const char *filename, int bfac, inputpara& in
     if(in.single_file==false){in.bsize=sizeof(double);in.save_type = std::string("Double");}
     if(in.single_file==true ){in.bsize=sizeof(float) ;in.save_type = std::string("Single");}
 
-    size_t Fsize = in.N_noi* in.nx*in.ny*in.nz*in.nt* size_t(bfac*2);
+    size_t Fsize = size_t(in.N_noi) * in.nx*in.ny*in.nz*in.nt* size_t(bfac*2);
     Fsize = Fsize*in.bsize;in.total_size = print_size(Fsize);
     ////print0("size of file %zu \n", Fsize);
     vecs_head_write(in, filename, true);
@@ -1551,9 +1567,9 @@ void load_qlat_noisesT(FILE* file, std::vector<qlat::FieldM<Ty, bfac> > &noises,
   }
 
   /////if(read == false){geo = noises[0].geo();}
-  size_t Vsize = in.nx*in.ny*in.nz*in.nt*size_t(bfac*2);
+  size_t Vsize = size_t(in.nx)*in.ny*in.nz*in.nt*size_t(bfac*2);
   //size_t off_file = in.off_file + n0*Vsize*bsize;
-  size_t off_file = n0*Vsize*bsize;
+  size_t off_file = size_t(n0)*Vsize*bsize;
   /////print0(" ionum off %zu, n0 %zu, n1 %zu, Vsize %zu, bsize %zu \n", off_file, size_t(n0), size_t(n1), Vsize, size_t(bsize));
   io_use.io_off(file, off_file, true);
 
@@ -1841,8 +1857,8 @@ inline int check_eigen_qlat(const char *filename, int n1, inputpara& in)
     size_t sizen = get_file_size_MPI(filename) - in.off_file;  //qassert(sizen == string_to_size(in.total_size));
     if(sizen != string_to_size(in.total_size)){abort_r("FILE size not match with head !\n");}
 
-    in.Vsize = in.nx*in.ny*in.nz*size_t(in.bfac*2);
-    size_t Fsize = n1*(12)*in.Vsize*in.bsize;  //qassert(Fsize <= string_to_size(in.total_size));
+    in.Vsize = size_t(in.nx)*in.ny*in.nz*size_t(in.bfac*2);
+    size_t Fsize = size_t(n1)*(12)*in.Vsize*in.bsize;  //qassert(Fsize <= string_to_size(in.total_size));
     if(Fsize  > string_to_size(in.total_size)){abort_r("FILE size too small for vectors read !\n");}
 
     ////string_to_size(in.total_size) + in.off_file;
@@ -2016,8 +2032,8 @@ inline FILE* open_eigensystem_file(const char *filename, int nini, int nvec, boo
     size_t bsize = sizeof(double);int bfac = 12;
     if(!in.single_file){bsize=sizeof(float) ;}
     if( in.single_file){bsize=sizeof(double);}
-    size_t Vsize = in.nx*in.ny*in.nz*in.nt*size_t(bfac*2);
-    size_t off_file = nini*Vsize*bsize;
+    size_t Vsize = size_t(in.nx)*in.ny*in.nz*in.nt*size_t(bfac*2);
+    size_t off_file = size_t(nini)*Vsize*bsize;
     if(in.file_type == 2 or in.file_type == 3){off_file += in.off_file;}
     io_use.io_off(file, off_file, false);
   }

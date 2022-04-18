@@ -203,8 +203,7 @@ EXPORT(apply_gt_sprop, {
   const GaugeTransform& gt = py_convert_type<GaugeTransform>(p_gt);
   const SelectedField<WilsonMatrix>& prop0 =
       py_convert_type<SelectedField<WilsonMatrix> >(p_prop0);
-  PyObject* p_fsel = PyObject_GetAttrString(p_prop0, "fsel");
-  const FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
+  const FieldSelection& fsel = py_convert_type<FieldSelection>(p_prop0, "fsel");
   prop_apply_gauge_transformation(prop, prop0, gt, fsel);
   Py_RETURN_NONE;
 });
@@ -223,8 +222,7 @@ EXPORT(apply_gt_psprop, {
   const GaugeTransform& gt = py_convert_type<GaugeTransform>(p_gt);
   const SelectedPoints<WilsonMatrix>& prop0 =
       py_convert_type<SelectedPoints<WilsonMatrix> >(p_prop0);
-  PyObject* p_psel = PyObject_GetAttrString(p_prop0, "psel");
-  const PointSelection& psel = py_convert_type<PointSelection>(p_psel);
+  const PointSelection& psel = py_convert_type<PointSelection>(p_prop0, "psel");
   prop_apply_gauge_transformation(prop, prop0, gt, psel);
   Py_RETURN_NONE;
 });

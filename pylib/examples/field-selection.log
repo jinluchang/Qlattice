@@ -18,6 +18,8 @@ qremove: 'results'
 geo.show() = Geometry([4, 4, 4, 8], 1)
 mk_file_dirs_info: 'results/psel.txt'.
 qrename: 'results/psel.txt.partial' 'results/psel.txt'
+QFile: open 'results/psel.txt' with 'r'.
+QFile: close 'results/psel.txt' with 'r'.
 psel.to_list() = [[0, 0, 0, 0], [0, 1, 2, 0]]
 q_field_init=fast (default)
 set q_field_init=fast.

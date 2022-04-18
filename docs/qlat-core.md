@@ -1,7 +1,5 @@
 # Qlat Core
 
-
-
 [TOC]
 
 ## Structure
@@ -328,8 +326,9 @@ void set_field_selected(Field<M>& f, const SelectedField<M>& sf,
                         const bool is_keeping_data = false);
 
 template <class M>
-void acc_field(Field<M>& f, const Complex coef, const SelectedField<M>& sf,
+void acc_field(Field<M>& f, const Complex& coef, const SelectedField<M>& sf,
                const FieldSelection& fsel);
+// f can be empty
 
 template <class M>
 std::vector<M> field_sum_tslice(const SelectedField<M>& sf,
@@ -399,7 +398,6 @@ long read(ShuffledFieldsReader& sfr, const std::string& fn,
 // interface function
 // sbs must match the actual data
 // (code will verify & will fail if not match)
-
 
 template <class M>
 long read_field(Field<M>& field, const std::string& path, const std::string& fn);
@@ -485,6 +483,7 @@ void shuffle_field(std::vector<Field<M> >& fs, const Field<M>& f,
 template <class M>
 void shuffle_field_back(Field<M>& f, const std::vector<Field<M> >& fs,
                         const ShufflePlan& sp);
+// f needs to have correct size
 
 template <class M>
 void shuffle_field(std::vector<SelectedField<M> >& fs,
@@ -494,5 +493,25 @@ template <class M>
 void shuffle_field_back(SelectedField<M>& f,
                         const std::vector<SelectedField<M> >& fs,
                         const ShufflePlan& sp);
+// f needs to have correct size
+
+template <class M>
+void shuffle_field(SelectedField<M>& sf, const SelectedField<M>& sf0,
+                   const ShufflePlan& sp)
+
+template <class M>
+void shuffle_field_back(SelectedField<M>& sf, const SelectedField<M>& sf0,
+                        const ShufflePlan& sp)
+// sf can be empty
 ```
 
+```c++
+template <class M>
+void field_shift(SelectedField<M>& sf, FieldSelection& fsel,
+                 const SelectedField<M>& sf0, const FieldSelection& fsel0,
+                 const Coordinate& shift, const bool is_reflect = false)
+// sf{gindex_s} = sf0{gindex}
+// xg_s <=> gindex_s
+// xg <=> gindex
+// xg_s = mod(xg + shift, total_site)
+```

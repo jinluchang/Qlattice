@@ -138,6 +138,7 @@ void cpy_data_thread(T0* Pres, const T1* Psrc, const TInt Nvol, int GPU=1, bool 
 {
   TIMERA("cpy_data_thread");
   ////if(Pres == Psrc){return ;}
+  ////0--> host to host, 1 device to device
   if(GPU == 0 or GPU == 1){CPY_data_thread_basic(Pres, Psrc, Nvol, GPU, dummy, ADD);return ;}
   /////if(GPU == 2 or GPU == 3){if(ADD != 0){qassert(false);}}
 

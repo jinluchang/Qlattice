@@ -125,6 +125,18 @@ inline bool does_file_exist_sync_node(const std::string& fn)
   return 0 != nfile;
 }
 
+inline bool does_file_exist_qar_sync_node(const std::string& fn)
+{
+  long nfile = 0;
+  if (0 == get_id_node()) {
+    if (does_file_exist_qar(fn)) {
+      nfile = 1;
+    }
+  }
+  glb_sum(nfile);
+  return 0 != nfile;
+}
+
 inline bool is_directory_sync_node(const std::string& fn)
 {
   long nfile = 0;

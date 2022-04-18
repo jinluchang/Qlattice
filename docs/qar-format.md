@@ -54,17 +54,32 @@ Quote symbols are not part of the `FILE-FORMAT-LINE`.
 
 Quote symbols are not part of the `FILE-HEADER`.
 
-# FILE-INFO
+### FILE-INFO
 
 Can store some metadata information about the file. The default is simply empty.
 
-# Segment size
+### Segment size
 
 ```
 [FILE-HEADER size] + 1 + [FILE-NAME size] + 1 + [FILE-INFO size] + 1 + [FILE-DATA size] + 2
 ```
 
-# Note
+## Utilities
+
+```
+Usage: qar list path.qar
+Usage: qar create path.qar path
+Usage: qar extract path.qar path
+Usage: qar l path1.qar path2.qar ...
+Usage: qar c path1 path2 ...
+Usage: qar x path1.qar path2.qar ...
+Usage: qar cr path1 path2 ...
+       Remove folders after qar files created
+Usage: qar xr path1.qar path2.qar ...
+       Remove qar files after folder extracted
+```
+
+## Note
 
 1. Only store file names and content of files (allow record some info about the file in FILE-INFO).
 2. '/' is allowed in `FILE-NAME`, and represent directory structure after extraction.

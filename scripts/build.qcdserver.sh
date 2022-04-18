@@ -26,6 +26,8 @@ set -e
 
 ./scripts/fftw.sh
 ./scripts/fftwf.sh
+./scripts/fftw_mpi.sh
+./scripts/fftwf_mpi.sh
 ./scripts/cuba.sh
 ./scripts/eigen.sh
 ./scripts/qlat.sh

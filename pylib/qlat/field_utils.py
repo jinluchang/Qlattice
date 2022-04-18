@@ -64,10 +64,11 @@ def mk_phase_field(geo: Geometry, lmom):
 
 class FastFourierTransform:
 
-    def __init__(self, fft_infos, *, is_normalizing = False):
+    def __init__(self, fft_infos, *, is_normalizing = False, mode_fft = 0):
         # fft_infos = [ ( fft_dir, is_forward, ), ... ]
         self.fft_infos = fft_infos
         self.is_normalizing = is_normalizing
+        self.mode_fft = mode_fft
 
     def __mul__(self, fields):
         if isinstance(fields, Field):
@@ -77,7 +78,7 @@ class FastFourierTransform:
             assert isinstance(f, Field)
         fields = [ f.copy() for f in fields ]
         fft_dirs, fft_is_forwards = zip(*self.fft_infos)
-        c.fft_fields(fields, fft_dirs, fft_is_forwards)
+        c.fft_fields(fields, fft_dirs, fft_is_forwards, self.mode_fft)
         if self.is_normalizing and self.fft_infos:
             for field in fields:
                 total_site = field.total_site()
@@ -90,14 +91,14 @@ class FastFourierTransform:
 
 ###
 
-def mk_fft(is_forward, *, is_only_spatial = False, is_normalizing = False):
+def mk_fft(is_forward, *, is_only_spatial = False, is_normalizing = False, mode_fft = 1):
     if is_only_spatial:
         fft_infos = [
                 (0, is_forward,),
                 (1, is_forward,),
                 (2, is_forward,),
                 ]
-        return FastFourierTransform(fft_infos, is_normalizing = is_normalizing)
+        return FastFourierTransform(fft_infos, is_normalizing = is_normalizing, mode_fft = mode_fft)
     else:
         fft_infos = [
                 (0, is_forward,),
@@ -105,4 +106,4 @@ def mk_fft(is_forward, *, is_only_spatial = False, is_normalizing = False):
                 (2, is_forward,),
                 (3, is_forward,),
                 ]
-        return FastFourierTransform(fft_infos, is_normalizing = is_normalizing)
+        return FastFourierTransform(fft_infos, is_normalizing = is_normalizing, mode_fft = mode_fft)

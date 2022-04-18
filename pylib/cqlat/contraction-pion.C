@@ -24,8 +24,7 @@ EXPORT(contract_pion_sfield, {
   }
   LatData& ld = py_convert_type<LatData>(p_ld);
   const SelProp& prop = py_convert_type<SelProp>(p_prop);
-  PyObject* p_fsel = PyObject_GetAttrString(p_prop, "fsel");
-  const FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
+  const FieldSelection& fsel = py_convert_type<FieldSelection>(p_prop, "fsel");
   ld = contract_pion(prop, tslice_src, fsel);
   Py_RETURN_NONE;
 });

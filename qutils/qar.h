@@ -86,7 +86,7 @@ struct QFile {
     close();
     path = path_;
     mode = mode_;
-    displayln(
+    displayln_info(
         1, ssprintf("QFile: open '%s' with '%s'.", path.c_str(), mode.c_str()));
     fp = qopen(path, mode);
     if (fp == NULL) {
@@ -144,8 +144,8 @@ struct QFile {
     qassert(number_of_child == 0);
     if (NULL == parent) {
       if (fp != NULL) {
-        displayln(1, ssprintf("QFile: close '%s' with '%s'.", path.c_str(),
-                              mode.c_str()));
+        displayln_info(1, ssprintf("QFile: close '%s' with '%s'.", path.c_str(),
+                                   mode.c_str()));
         qclose(fp);
       }
     } else {
@@ -192,6 +192,12 @@ inline long qftell(const QFile& qfile)
 // interface function
 {
   return qfile.pos;
+}
+
+inline int qfflush(QFile& qfile)
+// interface function
+{
+  return fflush(qfile.fp);
 }
 
 inline int qfseek(QFile& qfile, const long q_offset, const int whence)
@@ -413,6 +419,8 @@ inline long write_from_qfile(QFile& qfile_out, QFile& qfile_in)
   timer.flops += total_bytes;
   return total_bytes;
 }
+
+// -------------------
 
 const std::string qar_header = "#!/usr/bin/env qar-glimpse\n\n";
 
@@ -686,12 +694,110 @@ inline std::vector<std::string> list(QarFile& qar)
   return qar.fn_list;
 }
 
-inline std::vector<std::string> list_qar(const std::string& path)
+inline void write_start(QarFile& qar, const std::string& fn,
+                        const std::string& info, QFile& qfile_out,
+                        const long data_len = -1, const long header_len = 60)
+// interface function
+// Initial pos should be the end of the qar
+// Set the qfile_out to be a writable QFile to qar.
+// When the final size of qfile_out is unknow (data_len == -1), header_len is
+// reserved for header.
+// Should call write_end(qar) after writing to qfile_out is finished.
 {
-  TIMER_VERBOSE("list_qar");
-  QarFile qar(path, "r");
-  return list(qar);
+  qassert(qar.current_write_segment_offset == -1);
+  qar.current_write_segment_offset = qftell(qar.qfile);
+  qfseek(qar.qfile, 0, SEEK_END);
+  qassert(qftell(qar.qfile) == qar.current_write_segment_offset);
+  const std::string header_prefix = "QAR-FILE ";
+  std::string header;
+  header = ssprintf("%ld %ld %ld", fn.size(), info.size(), data_len);
+  if (data_len < 0) {
+    qassert(data_len == -1);
+    qassert(header_len - (long)header_prefix.size() >= (long)header.size());
+    const std::string header_pad(
+        header_len - header_prefix.size() - header.size(), ' ');
+    header = header_pad + header;
+  }
+  header = header_prefix + header;
+  std::string meta;
+  meta += header;
+  meta += "\n";
+  meta += fn;
+  meta += "\n";
+  meta += info;
+  meta += "\n";
+  qwrite_data(meta, qar.qfile);
+  qar.current_write_segment_offset_data = qftell(qar.qfile);
+  qar.current_write_segment_offset_header_len = header.size();
+  qar.current_write_segment_offset_fn_len = fn.size();
+  qar.current_write_segment_offset_info_len = info.size();
+  qar.current_write_segment_offset_data_len = data_len;
+  const long offset_start = qar.current_write_segment_offset_data;
+  const long offset_end = data_len == -1 ? -1 : offset_start + data_len;
+  qfile_out.init(qar.qfile, offset_start, offset_end);
 }
+
+inline void write_end(QarFile& qar)
+// interface function
+// Call after finish writing to a qfile set by write_start (qfile should be
+// closed already).
+// Use the end of file as the end of the data.
+// Will check / add data_len information in header.
+// Finally, will write "\n\n" after the end of file.
+{
+  qfseek(qar.qfile, 0, SEEK_END);
+  const long offset_end = qftell(qar.qfile);
+  qassert(qar.current_write_segment_offset >= 0);
+  qassert(qar.current_write_segment_offset_data >=
+          qar.current_write_segment_offset);
+  qfseek(qar.qfile, qar.current_write_segment_offset, SEEK_SET);
+  long data_len = qar.current_write_segment_offset_data_len;
+  if (data_len >= 0) {
+    qassert(qar.current_write_segment_offset_data + data_len == offset_end);
+  } else {
+    qassert(data_len == -1);
+    const long header_len = qar.current_write_segment_offset_header_len;
+    const long fn_len = qar.current_write_segment_offset_fn_len;
+    const long info_len = qar.current_write_segment_offset_info_len;
+    data_len = offset_end - qar.current_write_segment_offset_data;
+    qassert(data_len >= 0);
+    const std::string header_prefix = "QAR-FILE ";
+    std::string header = ssprintf("%ld %ld %ld", fn_len, info_len, data_len);
+    qassert(header_len - (long)header_prefix.size() >= (long)header.size());
+    const std::string header_pad(
+        header_len - header_prefix.size() - header.size(), ' ');
+    header = header_prefix + header_pad + header;
+    qassert((long)header.size() == header_len);
+    qfseek(qar.qfile, qar.current_write_segment_offset, SEEK_SET);
+    qwrite_data(header, qar.qfile);
+  }
+  qfseek(qar.qfile, 0, SEEK_END);
+  qwrite_data("\n\n", qar.qfile);
+  qar.current_write_segment_offset = -1;
+}
+
+inline long write_from_qfile(QarFile& qar, const std::string& fn,
+                             const std::string& info, QFile& qfile_in)
+// interface function
+// Write content (start from the current position) of qfile_in to qar.
+// NOTE: different from write_start and write_end functions!
+{
+  TIMER_FLOPS("write_from_qfile");
+  const long offset_start = qftell(qfile_in);
+  qfseek(qfile_in, 0, SEEK_END);
+  const long offset_end = qftell(qfile_in);
+  qfseek(qfile_in, offset_start, SEEK_SET);
+  const long data_len = offset_end - offset_start;
+  qassert(data_len >= 0);
+  QFile qfile_out;
+  write_start(qar, fn, info, qfile_out, data_len);
+  const long total_bytes = write_from_qfile(qfile_out, qfile_in);
+  write_end(qar);
+  timer.flops += total_bytes;
+  return total_bytes;
+}
+
+// -------------------
 
 inline int truncate_qar_file(const std::string& path,
                              const std::vector<std::string>& fns_keep)
@@ -766,107 +872,11 @@ inline std::vector<std::string> properly_truncate_qar_file(const std::string& pa
   return fns_keep;
 }
 
-inline void write_start(QarFile& qar, const std::string& fn,
-                        const std::string& info, QFile& qfile_out,
-                        const long data_len = -1, const long header_len = 60)
-// interface function
-// Initial pos should be the end of the qar
-// Set the qfile_out to be a writable QFile to qar.
-// When the final size of qfile_out is unknow (data_len == -1), header_len is
-// reserved for header.
-// Should call write_end(qar) after writing to qfile_out is finished.
+inline std::vector<std::string> list_qar(const std::string& path)
 {
-  qassert(qar.current_write_segment_offset = -1);
-  qar.current_write_segment_offset = qftell(qar.qfile);
-  qfseek(qar.qfile, 0, SEEK_END);
-  qassert(qftell(qar.qfile) == qar.current_write_segment_offset);
-  const std::string header_prefix = "QAR-FILE ";
-  std::string header;
-  header = ssprintf("%ld %ld %ld", fn.size(), info.size(), data_len);
-  if (data_len < 0) {
-    qassert(data_len == -1);
-    qassert(header_len - (long)header_prefix.size() >= (long)header.size());
-    const std::string header_pad(
-        header_len - header_prefix.size() - header.size(), ' ');
-    header = header_pad + header;
-  }
-  header = header_prefix + header;
-  std::string meta;
-  meta += header;
-  meta += "\n";
-  meta += fn;
-  meta += "\n";
-  meta += info;
-  meta += "\n";
-  qwrite_data(meta, qar.qfile);
-  qar.current_write_segment_offset_data = qftell(qar.qfile);
-  qar.current_write_segment_offset_header_len = header.size();
-  qar.current_write_segment_offset_fn_len = fn.size();
-  qar.current_write_segment_offset_info_len = info.size();
-  qar.current_write_segment_offset_data_len = data_len;
-  const long offset_start = qar.current_write_segment_offset_data;
-  const long offset_end = data_len == -1 ? -1 : offset_start + data_len;
-  qfile_out.init(qar.qfile, offset_start, offset_end);
-}
-
-inline void write_end(QarFile& qar)
-// interface function
-// Call after finish writing to a qfile set by write_start (qfile should be
-// closed already).
-// Use the end of file as the end of the data.
-// Will check / add data_len information in header.
-// Finally, will write "\n\n" after the end of file.
-{
-  qfseek(qar.qfile, 0, SEEK_END);
-  const long offset_end = qftell(qar.qfile);
-  qassert(qar.current_write_segment_offset >= 0);
-  qassert(qar.current_write_segment_offset_data >=
-          qar.current_write_segment_offset);
-  qfseek(qar.qfile, qar.current_write_segment_offset, SEEK_SET);
-  long data_len = qar.current_write_segment_offset_data_len;
-  if (data_len >= 0) {
-    qassert(qar.current_write_segment_offset_data + data_len == offset_end);
-  } else {
-    qassert(data_len == -1);
-    const long header_len = qar.current_write_segment_offset_header_len;
-    const long fn_len = qar.current_write_segment_offset_fn_len;
-    const long info_len = qar.current_write_segment_offset_info_len;
-    data_len = offset_end - qar.current_write_segment_offset_data;
-    qassert(data_len >= 0);
-    const std::string header_prefix = "QAR-FILE ";
-    std::string header = ssprintf("%ld %ld %ld", fn_len, info_len, data_len);
-    qassert(header_len - (long)header_prefix.size() >= (long)header.size());
-    const std::string header_pad(
-        header_len - header_prefix.size() - header.size(), ' ');
-    header = header_prefix + header_pad + header;
-    qassert(header.size() == header_len);
-    qfseek(qar.qfile, qar.current_write_segment_offset, SEEK_SET);
-    qwrite_data(header, qar.qfile);
-  }
-  qfseek(qar.qfile, 0, SEEK_END);
-  qwrite_data("\n\n", qar.qfile);
-  qar.current_write_segment_offset = -1;
-}
-
-inline long write_from_qfile(QarFile& qar, const std::string& fn,
-                             const std::string& info, QFile& qfile_in)
-// interface function
-// Write content (start from the current position) of qfile_in to qar.
-// NOTE: different from write_start and write_end functions!
-{
-  TIMER_FLOPS("write_from_qfile");
-  const long offset_start = qftell(qfile_in);
-  qfseek(qfile_in, 0, SEEK_END);
-  const long offset_end = qftell(qfile_in);
-  qfseek(qfile_in, offset_start, SEEK_SET);
-  const long data_len = offset_end - offset_start;
-  qassert(data_len >= 0);
-  QFile qfile_out;
-  write_start(qar, fn, info, qfile_out, data_len);
-  const long total_bytes = write_from_qfile(qfile_out, qfile_in);
-  write_end(qar);
-  timer.flops += total_bytes;
-  return total_bytes;
+  TIMER_VERBOSE("list_qar");
+  QarFile qar(path, "r");
+  return list(qar);
 }
 
 inline int qar_create(const std::string& path_qar,

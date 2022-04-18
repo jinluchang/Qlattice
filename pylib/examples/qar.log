@@ -1,35 +1,29 @@
-qlat::begin(): MPI Initialized. num_node = 8
+qlat::begin(): MPI Initialized. num_node = 2
 qlat::begin_comm(comm,size_node): get_comm_list().push_back()
 qlat::begin_comm(comm,size_node): get_comm_list().size() = 1.
+q_verbose=1
+q_num_threads=2 (default)
 qlat::begin(): q_num_threads = 2
 qlat::begin(): GeometryNode =
 { initialized = true
-, num_node    = 8
+, num_node    = 2
 , id_node     = 0
-, size_node   = 1x2x2x2
+, size_node   = 1x1x1x2
 , coor_node   = 0x0x0x0 }
-q_verbose=10
 q_timer_max_func_name_len=50 (default)
 clear_mem_cache: 0 bytes (0.000 GB) freed.
-sizeof RngState = 96
 q_timer_mini_auto_show=1 (default)
 q_timer_max_always_show=10 (default)
-expected: -0.231435
--0.231915
-expected: 0.682689
-0.682062
-expected: 0.682689
-0.682062
-Expected : 64
-Mean     : 57.8898
-Var      : 4.72104
-Expected : 64
-Mean     : 67.4007
-Var      : 5.68897
-sum: 524173
-avg: 0.499891
-sum: 499983
-avg: 0.499983
+qremove: 'results'
+QFile: open 'results/ld.lat.partial' with 'w'.
+qrename: 'results/ld.lat.partial' 'results/ld.lat'
+QFile: close 'results/ld.lat.partial' with 'w'.
+check_all_files_crc32_info: start checking path='results'
+QFile: open 'results/ld.lat' with 'r'.
+QFile: close 'results/ld.lat' with 'r'.
+88874F56  fn='results/ld.lat'
+check_all_files_crc32_info: summary for path='results'
+    0 88874F56  fn='results/ld.lat'
 clear_mem_cache: 0 bytes (0.000 GB) freed.
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 0.

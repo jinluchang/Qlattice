@@ -91,6 +91,12 @@ QFile: close 'results/smear ; xg=(3, 1, 0, 0) ; type=1 ; accuracy=0 ; psnk.lat.p
 qnorm(sol_psel) = 0.13636305213224031
 mk_file_dirs_info: 'results/prop-smear'.
 FieldsWriter: open 'results/prop-smear'.
+QFile: open 'results/prop-smear/geon-info.txt' with 'w'.
+QFile: close 'results/prop-smear/geon-info.txt' with 'w'.
+QFile: open 'results/prop-smear/00/0000000000' with 'w'.
+QFile: open 'results/prop-smear/01/0000000001' with 'w'.
+QFile: open 'results/prop-smear/02/0000000002' with 'w'.
+QFile: open 'results/prop-smear/03/0000000003' with 'w'.
 qnorm(sol_s) = 0.17729588487002698
 make_shuffle_plan_generic: num_send_packs =          8
 make_shuffle_plan_generic: num_recv_packs =          8
@@ -114,7 +120,10 @@ make_shuffle_plan_generic: total num_recv_msgs  =          2
 make_shuffle_plan_generic: global_comm_size =        325
 write(sfw,fn,sf,sbs): writing sparse field with fn='smear ; xg=(3, 1, 0, 0) ; type=1 ; accuracy=0' from 'results/prop-smear'.
 shuffle_field(sel_fs,sel_f,sp): 1x1x1x2 -> 1x1x2x4 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.000 GB)
-FieldsWriter: close 'results/prop-smear'.
+QFile: close 'results/prop-smear/00/0000000000' with 'w'.
+QFile: close 'results/prop-smear/01/0000000001' with 'w'.
+QFile: close 'results/prop-smear/02/0000000002' with 'w'.
+QFile: close 'results/prop-smear/03/0000000003' with 'w'.
 mk_file_dirs_info: 'results/smear ; xg=(3, 1, 0, 0) ; type=1 ; accuracy=0 ; wsnk.lat'.
 QFile: open 'results/smear ; xg=(3, 1, 0, 0) ; type=1 ; accuracy=0 ; wsnk.lat.partial' with 'w'.
 qrename: 'results/smear ; xg=(3, 1, 0, 0) ; type=1 ; accuracy=0 ; wsnk.lat.partial' 'results/smear ; xg=(3, 1, 0, 0) ; type=1 ; accuracy=0 ; wsnk.lat'
@@ -145,3 +154,6 @@ qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 1.
 qlat::end(): Switch to old comm (foreign).
 qlat::end(): MPI_Comm_free ended comm.
+=============================================
+               Finalized GPT                 
+=============================================

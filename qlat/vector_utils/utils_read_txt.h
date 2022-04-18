@@ -279,14 +279,18 @@ struct inputpara{
   int nt;
   int nini;
   int nvec;
+  int ndouble;
   int nsave;
   int bfac;
   int ionum;
   int seed;
+  int hyp;
   int sparsefactor;
   int gridtem;
+  int split_save;
 
   int lms;
+  int mode_FFT_MPI;
 
   double Eerr;
   int SRC_PROP_WITH_LOW;
@@ -298,6 +302,9 @@ struct inputpara{
   std::string Pname;
 
   std::string paraI;
+  std::string paraIA;
+  std::string paraIB;
+  std::string paraIC;
   std::string src_smear_para;
   std::string sink_smear_para;
 
@@ -313,8 +320,15 @@ struct inputpara{
 
   ////single inversion mass
   double fermion_mass;
+  int niter;
+  double cg_err;
   int solver_type;
   int inv_deflate;
+  int fermion_type;
+
+  int eig_poly_deg;
+  double eig_amin;
+  double eig_err;
 
   int nsource;
   std::vector<std::string > propN;
@@ -389,11 +403,12 @@ struct inputpara{
   //  return 0;
   //}
 
+  //////TODO Check found == 0 correct for all cases
   int find_para(const std::string &str2, int &res){
     for(unsigned int is=0;is<read_f.size();is++){
       ////std::string str2("bSize");
       std::size_t found = read_f[is][0].find(str2);
-      if(found != std::string::npos and read_f[is].size() >= 2){
+      if(found != std::string::npos and found==0 and read_f[is].size() >= 2){
         res = stringtonum(read_f[is][1]);
         if(printlog)if(get_node_rank_funs0() == 0)
           printf("  %20s %10d \n",str2.c_str(), res);
@@ -407,7 +422,7 @@ struct inputpara{
     for(unsigned int is=0;is<read_f.size();is++){
       ////std::string str2("bSize");
       std::size_t found = read_f[is][0].find(str2);
-      if(found != std::string::npos and read_f[is].size() >= 2){
+      if(found != std::string::npos and found==0 and read_f[is].size() >= 2){
         res = stringtodouble(read_f[is][1]);
         if(printlog)if(get_node_rank_funs0() == 0){
           if(res >= 1e-6){printf("  %20s %.6f \n", str2.c_str(), res);}
@@ -431,7 +446,7 @@ struct inputpara{
     for(unsigned int is=0;is<read_f.size();is++){
       ////std::string str2("bSize");
       std::size_t found = read_f[is][0].find(str2);
-      if(found != std::string::npos and read_f[is].size() >= 2){
+      if(found != std::string::npos and found==0 and read_f[is].size() >= 2){
         if(read_f[is].size()==2){res = read_f[is][1];}else{
           res = "";
           for(unsigned int temi=1;temi<read_f[is].size();temi++){
@@ -495,13 +510,18 @@ struct inputpara{
 
     if(find_para(std::string("nini"),nini)==0)nini  = 0;
     if(find_para(std::string("nvec"),nvec)==0)nvec  = 0;
+    if(find_para(std::string("split_save"),split_save)==0)split_save  = 0;
+    if(find_para(std::string("ndouble"),ndouble)==0)ndouble  = 200;
+    if(find_para(std::string("fermion_type"),fermion_type)==0)fermion_type  = 0;
     if(find_para(std::string("gridtem"),gridtem)==0)gridtem  = 1;
     if(find_para(std::string("sparsefactor"),sparsefactor)==0)sparsefactor  = 16;
     if(find_para(std::string("lms"),lms)==0)lms  = 0;
+    if(find_para(std::string("mode_FFT_MPI"),mode_FFT_MPI)==0)mode_FFT_MPI  = -1;
     if(find_para(std::string("Eerr"),Eerr)==0)Eerr  = 1e-11;
     if(find_para(std::string("nsave"),nsave)==0)nsave  = 0;
     if(find_para(std::string("bfac"),bfac)==0)bfac  = 0;
     if(find_para(std::string("seed"),seed)==0)seed  = 0;
+    if(find_para(std::string("hyp"),hyp)==0)hyp  = 0;
     if(find_para(std::string("ionum"),ionum)==0)ionum  = 0;
     if(find_para(std::string("Link_name"),Link_name)==0)Link_name  = std::string("NONE");
     if(find_para(std::string("Ename"),Ename)==0)Ename  = std::string("NONE");
@@ -510,11 +530,19 @@ struct inputpara{
     if(find_para(std::string("Pname"),Pname)==0)Pname  = std::string("NONE");
     if(find_para(std::string("output"),output)==0)output  = std::string("NONE");
 
+    if(find_para(std::string("eig_err"),eig_err)==0)eig_err  = 0;
+    if(find_para(std::string("eig_poly_deg"),eig_poly_deg)==0)eig_poly_deg  = 0;
+    if(find_para(std::string("eig_amin"),eig_amin)==0)eig_amin  = 0;
+
     if(find_para(std::string("Propname"),Propname)==0)Propname  = std::string("NONE");
     if(find_para(std::string("Srcname"),Srcname)==0)Srcname  = std::string("NONE");
 
     if(find_para(std::string("paraI"),paraI)==0)paraI  = std::string("NONE");
+    if(find_para(std::string("paraIA"),paraIA)==0)paraIA = std::string("NONE");
+    if(find_para(std::string("paraIB"),paraIB)==0)paraIB = std::string("NONE");
     if(find_para(std::string("fermion_mass"),fermion_mass)==0)fermion_mass  = 0.11;
+    if(find_para(std::string("niter"),niter )==0)niter  = 100000;
+    if(find_para(std::string("cg_err"),cg_err)==0)cg_err  = 1e-8;
     if(find_para(std::string("solver_type"),solver_type)==0)solver_type  = 0;
     if(find_para(std::string("inv_deflate"),inv_deflate)==0)inv_deflate  = 0;
 

@@ -65,6 +65,7 @@ class GaugeTransform(Field):
         c.unitarize_color_matrix_field(self)
 
     def __mul__(self, other):
+        # other can be GaugeTransform, GaugeField, Prop, SelProp, PselProp, list
         from qlat.propagator import Prop, SelProp, PselProp
         if isinstance(other, GaugeTransform):
             gt = GaugeTransform()
@@ -122,6 +123,10 @@ def gf_wilson_line_no_comm(wlf, m, gf_ext, path, path_n = None):
         c.gf_wilson_line_no_comm(wlf, m, gf_ext, path, path_n)
 
 def gf_wilson_lines_no_comm(gf_ext, path_list):
+    # path_list = [ path_spec, ... ]
+    # e.g. path_spec = [ mu, mu, nu, -mu-1, -mu-1, ]
+    # e.g. path_spec = ([ mu, nu, -mu-1, ], [ 2, 1, 2, ],)
+    # return wlf
     multiplicity = len(path_list)
     geo = geo_reform(gf_ext.geo(), multiplicity)
     wlf = Field("ColorMatrix", geo)

@@ -797,7 +797,7 @@ void p_vector(const qlat::vector<Ty> teml)
 };
 
 template<typename Ty>
-inline void random_Ty(Ty* a, long N0,int GPU=0, int seed = 0)
+inline void random_Ty(Ty* a, long N0,int GPU=0, int seed = 0, const int mode = 0)
 {
   if(N0 == 0)return;
   qlat::RngState rs(qlat::get_id_node() + 1 + seed);
@@ -810,7 +810,8 @@ inline void random_Ty(Ty* a, long N0,int GPU=0, int seed = 0)
      for(size_t i=0;i<size_t(bfac);i++){
       size_t off = isp*bfac + i;
       if(off < size_t(N0)){
-        a[off] = Ty(std::cos((ini+isp)*0.5) , (5.0/(isp+1))*ini*0.1);
+        if(mode==0){a[off] = Ty(std::cos((ini+isp)*0.5) , (5.0/(isp+1))*ini*0.1);}
+        if(mode==1){a[off] = Ty(std::cos((ini+isp)*0.5) , sin(5.0*(isp+1))*ini*0.1);}
       }
     }
     });
@@ -821,7 +822,8 @@ inline void random_Ty(Ty* a, long N0,int GPU=0, int seed = 0)
   #pragma omp parallel for
   for(size_t isp=0;isp< size_t(N0);isp++)
   {
-     a[isp] = Ty(std::cos((ini+isp)*0.5) , (5.0/(isp+1))*ini*0.1);
+     if(mode==0){a[isp] = Ty(std::cos((ini+isp)*0.5) , (5.0/(isp+1))*ini*0.1);}
+     if(mode==1){a[isp] = Ty(std::cos((ini+isp)*0.5) , sin(5.0*(isp+1))*ini*0.1);}
   }
 
 }
@@ -981,7 +983,12 @@ inline Coordinate guess_nodeL(int n, const Coordinate& Lat, const int mode = 0)
 inline void add_nodeL(std::vector<Coordinate>& size_node_list)
 {
   size_node_list.push_back(Coordinate(1, 1, 1,  1));
-  size_node_list.push_back(Coordinate(1, 1, 1,  2));
+  size_node_list.push_back(Coordinate(1, 2, 1,  1));
+  //size_node_list.push_back(Coordinate(1, 1, 1,  2));
+  //size_node_list.push_back(Coordinate(1, 2, 2,  1));
+  size_node_list.push_back(Coordinate(1, 2, 1,  2));
+  size_node_list.push_back(Coordinate(2, 2, 2,  1));
+  size_node_list.push_back(Coordinate(2, 2, 2,  2));
   size_node_list.push_back(Coordinate(1, 1, 3,  1));
   ////size_node_list.push_back(Coordinate(1, 1, 2,  2));
   size_node_list.push_back(Coordinate(1, 1, 1,  4));
@@ -1172,6 +1179,45 @@ Ty sum_local_to_global_vector(Ty src, MPI_Comm* commp=NULL)
   sum_all_size(res.data(), res.size(), 0, commp);
 
   return res;
+
+}
+
+inline std::vector<int > num_to_site(const long num, const std::vector<int > key_T)
+{
+  qassert(key_T.size() > 0);
+  int dim = key_T.size();
+  std::vector<int > site;site.resize(dim);
+  for(int iv=0;iv<dim;iv++){site[iv] = 0;}
+
+  long tem_i = num;
+  for(int Ni=0; Ni < dim; Ni++)
+  {
+    long N_T = 1;
+    for(int numi = Ni+1;numi < dim;numi++)
+    {
+      N_T = N_T*key_T[numi];
+    }
+    site[Ni] = tem_i/N_T;
+    tem_i = tem_i%N_T;
+  }
+  return site;
+}
+
+inline std::vector<long > random_list(const long n, const long m, const int seed)
+{
+  std::vector<long > r;
+  std::vector<long > b;
+  qlat::RngState rs(13021 + seed);
+  for(long ri = 0; ri < n; ri++){r.push_back(ri);}
+  if(m >= n or m <  0){return r;}
+  if(m == 0){r.resize(0);return r;}
+
+  for(long ri=0;ri<m;ri++){
+    long u = int(qlat::u_rand_gen(rs) * r.size());
+    b.push_back(r[u]);
+    r.erase(r.begin()+ u);
+  }
+  return b;
 
 }
 

@@ -74,10 +74,14 @@ int main(int argc, char* argv[])
   bool GPU = true;
   bool ft4D = true;
   bool checkdiff = true;
-  const int Nvec =    3;
+  const int Nvec =    10;
+  int bfac = in.bfac;
+  int mode_FFT_MPI = in.mode_FFT_MPI;
   if(in.debuga == 3){ft4D = false;}
   if(sizeof(TyF) == sizeof(ComplexF)){checkdiff = false;}
   //if(in.nvec >= 2){checkdiff = false;}
+  //if(checkdiff){bfac = 1;}
+  if(bfac != 1){checkdiff = false;}
 
   /////==========test correct
   if(check_fft_with_qlat){
@@ -105,16 +109,16 @@ int main(int argc, char* argv[])
   fft_schedule fft3D(fd, GPU);
   dimN.resize(3);dimN[0] = nv[2];dimN[1] = nv[1];dimN[2] = nv[0];
   if(!ft4D){
-  fft3D.set_mem<TyF >(src.size(), Nvec, dimN, -1,  Nvec);
+  fft3D.set_mem<TyF >(src.size(), Nvec, dimN, mode_FFT_MPI,  Nvec);
+  //fft3D.set_mem<TyF >(src.size(), Nvec, dimN, -3,  Nvec);
   fft3D.print_info();}
 
 
   fft_schedule fft4D(fd, GPU);
   dimN.resize(4);dimN[0] = nv[3];dimN[1] = nv[2];dimN[2] = nv[1];dimN[3] = nv[0];
   if( ft4D){
-  fft4D.set_mem<TyF >(src.size(), Nvec, dimN, -1,   Nvec);
+  fft4D.set_mem<TyF >(src.size(), Nvec, dimN, mode_FFT_MPI,   Nvec);
   fft4D.print_info();}
-
 
   qlat::FieldM<TyD, Nvec> srcF;srcF.init(geo);
   qlat::FieldM<TyF, Nvec> srcT;srcT.init(geo);
@@ -135,10 +139,17 @@ int main(int argc, char* argv[])
   if(checkdiff){
     TIMER("qlat fft");
     qlat::fft_complex_field_spatial(srcF, false);
+    //if(int iv=0;iv<in.nvec;iv++){qlat::fft_complex_field_spatial(srcF, false);}
   }
   {
     TIMER("new fft ");
+    for(int iv=0;iv<bfac;iv++){
+      fft_fieldM(fft3D, src, false);
+    }
     //fft_fieldM(fft3D, src, false);
+
+    //fft_fieldM(src, false, ft4D);
+
     //FFTGPUPlanKey fkey = get_fft_gpu_plan_key(src, ft4D);
     //////fft_fieldM(*((fft_schedule*) get_fft_gpu_plan(fkey).fftP), src, false);
     ////get_fft_gpu_plan(fkey).fftP->print_info();
@@ -149,7 +160,6 @@ int main(int argc, char* argv[])
     //fft_fieldM(*(get_fft_gpu_plan(fkey).fftP), src, true );
     //fft_fieldM(*(get_fft_gpu_plan(fkey).fftP), src, false);
 
-    fft_fieldM(src, false, ft4D);
 
     //for(int iv=0;iv<in.nvec;iv++)
     //{
@@ -198,11 +208,11 @@ int main(int argc, char* argv[])
   print0("===diff 0 %.3e , 1 %.3e \n", diff[0], diff[1]);
   }
 
-  for(unsigned int i=0;i<300;i++){
-    TIMER("Test runs");
-    if( ft4D)fft_fieldM(fft4D, src, false);
-    if(!ft4D)fft_fieldM(fft3D, src, false);
-  }
+  //for(unsigned int i=0;i<nvec;i++){
+  //  TIMER("Test runs");
+  //  if( ft4D)fft_fieldM(fft4D, src, false);
+  //  if(!ft4D)fft_fieldM(fft3D, src, false);
+  //}
 
   }
   /////==========test correct
