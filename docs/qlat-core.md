@@ -331,6 +331,11 @@ void acc_field(Field<M>& f, const Complex& coef, const SelectedField<M>& sf,
 // f can be empty
 
 template <class M>
+void acc_field(Field<M>& f, const SelectedField<M>& sf,
+               const FieldSelection& fsel)
+// f can be empty
+
+template <class M>
 std::vector<M> field_sum_tslice(const SelectedField<M>& sf,
                                 const FieldSelection& fsel);
 // length = t_size * multiplicity
@@ -344,6 +349,14 @@ template <class M>
 void field_glb_sum_tslice_long(SelectedPoints<M>& sp,
                                const SelectedField<M>& sf,
                                const FieldSelection& fsel);
+```
+
+### SelectedPoints
+
+```c++
+template <class M>
+void acc_field(Field<M>& f, const SelectedPoints<M>& sp, const Geometry& geo_,
+               const PointSelection& psel)
 ```
 
 ### Fields IO
@@ -514,4 +527,70 @@ void field_shift(SelectedField<M>& sf, FieldSelection& fsel,
 // xg_s <=> gindex_s
 // xg <=> gindex
 // xg_s = mod(xg + shift, total_site)
+```
+
+## PyConvert
+
+```c++
+template <class T>
+T py_convert_data(PyObject* in)
+// interface
+// examples:
+// py_convert_data<int>(in)
+// py_convert_data<long>(in)
+// py_convert_data<double>(in)
+// py_convert_data<Complex>(in)
+// py_convert_data<bool>(in)
+// py_convert_data<std::string>(in)
+// py_convert_data<Coordinate>(in)
+// py_convert_data<CoordinateD>(in)
+// py_convert_data<std::vector<M> >(in)
+
+template <class T>
+T py_convert_data(PyObject* in, const std::string& attr)
+// interface
+// py_convert_data<std::string>(in, "ctype")
+
+inline std::string py_get_ctype(PyObject* in)
+// interface
+
+template <class T>
+T& py_convert_type(PyObject* in)
+// interface
+// use cdata property of PyObject* in as pointer
+// examples:
+// py_convert_type<Geometry>(in);
+// py_convert_type<LatData>(in);
+// py_convert_type<RngState>(in);
+// py_convert_type<PointSelection>(in);
+// py_convert_type<CommPlan>(in);
+// py_convert_type<FieldSelection>(in);
+// specifications:
+// py_convert_type<Propagator4d>(in);
+// py_convert_type<GaugeField>(in);
+// py_convert_type<CommMarks>(in);
+
+template <class T>
+T& py_convert_type(PyObject* in, const std::string& attr)
+// interface
+// py_convert_type<PointSelection>(in, "psel")
+// py_convert_type<FieldSelection>(in, "fsel")
+
+template <class M>
+Field<M>& py_convert_type_field(PyObject* in)
+// py_convert_type<Field<M> >(in);
+
+template <class M, int multiplicity>
+FieldM<M, multiplicity>& py_convert_type_field(PyObject* in)
+// py_convert_type<FieldM<M, multiplicity> >(in);
+
+template <class M>
+SelectedField<M>& py_convert_type_sfield(PyObject* in)
+// interface
+// py_convert_type<SelectedField<M> >(in);
+
+template <class M>
+SelectedPoints<M>& py_convert_type_spoints(PyObject* in)
+// interface
+// py_convert_type<SelectedPoints<M> >(in);
 ```

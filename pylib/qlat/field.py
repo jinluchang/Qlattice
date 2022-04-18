@@ -52,6 +52,7 @@ class Field:
         c.free_field(self)
 
     def __imatmul__(self, f1):
+        # f1 can be Field, SelectedField, SelectedPoints
         # field geo does not change if already initialized
         assert f1.ctype == self.ctype
         if isinstance(f1, Field):
@@ -98,13 +99,44 @@ class Field:
         return c.get_mview_field(self)
 
     def __iadd__(self, f1):
-        assert isinstance(f1, Field) and f1.ctype == self.ctype
-        c.set_add_field(self, f1)
+        # f1 can be Field, SelectedField, SelectedPoints
+        if isinstance(f1, Field):
+            assert f1.ctype == self.ctype
+            c.set_add_field(self, f1)
+        else:
+            from qlat.selected_field import SelectedField
+            from qlat.selected_points import SelectedPoints
+            if isinstance(f1, SelectedField):
+                c.acc_field_sfield(self, f1)
+            elif isinstance(f1, SelectedPoints):
+                assert f1.ctype == self.ctype
+                c.acc_field_spfield(self, f1)
+            else:
+                raise Exception(f"Field += type mismatch {type(self)} {type(f1)}")
+            assert False
         return self
 
     def __isub__(self, f1):
-        assert isinstance(f1, Field) and f1.ctype == self.ctype
-        c.set_sub_field(self, f1)
+        # f1 can be Field, SelectedField, SelectedPoints
+        if isinstance(f1, Field):
+            assert f1.ctype == self.ctype
+            c.set_sub_field(self, f1)
+        else:
+            from qlat.selected_field import SelectedField
+            from qlat.selected_points import SelectedPoints
+            if isinstance(f1, SelectedField):
+                assert f1.ctype == self.ctype
+                f1n = f1.copy()
+                f1n *= -1
+                c.acc_field_sfield(self, f1n)
+            elif isinstance(f1, SelectedPoints):
+                assert f1.ctype == self.ctype
+                f1n = f1.copy()
+                f1n *= -1
+                c.acc_field_spfield(self, f1n)
+            else:
+                raise Exception(f"Field += type mismatch {type(self)} {type(f1)}")
+            assert False
         return self
 
     def __imul__(self, factor):
@@ -114,6 +146,8 @@ class Field:
         elif isinstance(factor, complex):
             c.set_mul_complex_field(self, factor)
         elif isinstance(factor, Field):
+            assert factor.ctype == "Complex"
+            assert factor.multiplicity() == 1
             c.set_mul_cfield_field(self, factor)
         else:
             assert False

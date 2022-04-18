@@ -255,6 +255,8 @@ class Field:
     # self.cdata
     def __init__(self, ctype, geo = None, multiplicity = None):
     def __imatmul__(self, f1):
+        # f1 can be Field, SelectedField, SelectedPoints
+        # field geo does not change if already initialized
     def copy(self, is_copying_data = True):
     def swap(self, x):
     def total_site(self):
@@ -262,7 +264,9 @@ class Field:
     def sizeof_m(self):
     def geo(self):
     def __iadd__(self, f1):
+        # f1 can be Field, SelectedField, SelectedPoints
     def __isub__(self, f1):
+        # f1 can be Field, SelectedField, SelectedPoints
     def __imul__(self, factor):
 		# factor can be float, complex, FieldM<Complex,1>
     def set_zero(self):
@@ -360,6 +364,10 @@ class SelectedField:
     def load_64(self, path, *args):
     def load_double(self, path, *args):
     def load_double_from_float(self, path, *args):
+	def field_shift(self, shift, is_reflect = False):
+		# return new shifted SelectedField
+		# shift is the coordinate to shift
+		# is_reflect determine whether to negate coordinate after shift
     def glb_sum_tslice(self):
 ```
 
