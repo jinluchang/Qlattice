@@ -53,3 +53,8 @@ jobs:
     - name: Show git diff
       run: |
         git diff
+
+    - name: check error
+      run: |
+        ! git diff | grep 'CHECK: '
+
