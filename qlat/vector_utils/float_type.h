@@ -283,8 +283,9 @@ inline unsigned int get_node_rank_funs0()
 
 inline void abort_r(std::string stmp=std::string(""))
 {
-  print0("%s\n",stmp.c_str());
-  MPI_Barrier(get_comm());
+  if(stmp!=std::string(""))print0("%s\n",stmp.c_str());
+  //MPI_Barrier(get_comm());
+  MPI_Barrier(MPI_COMM_WORLD);
   fflush(stdout);
   ////MPI_Finalize();
   qlat::end();

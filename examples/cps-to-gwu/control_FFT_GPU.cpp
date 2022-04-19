@@ -12,8 +12,9 @@ int main(int argc, char* argv[])
   using namespace qlat;
 
   ///int mode_dis = 0;
-  inputpara in;int mode_dis = 0;
-  begin_Lat(&argc, &argv, in, mode_dis);
+  //inputpara in;int mode_dis = 0;
+  //begin_Lat(&argc, &argv, in, mode_dis);
+  inputpara in;begin_Lat(&argc, &argv, in);
 
   //if(mode_dis == 0)
   //{
