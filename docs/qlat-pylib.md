@@ -292,6 +292,11 @@ class Field:
         # i can be (xg, m,) or xg
         # val should be np.ndarray or bytes. e.g. np.array([1, 2, 3], dtype = complex).tobytes()
     def xg_list(self):
+    def field_shift(self, shift):
+        # return new shifted Field
+        # shift is the coordinate to shift the field
+    def reflect(self):
+        # reflect the field, return None
     def glb_sum(self):
     def glb_sum_tslice(self):
 
@@ -366,7 +371,7 @@ class SelectedField:
     def load_double_from_float(self, path, *args):
 	def field_shift(self, shift, is_reflect = False):
 		# return new shifted SelectedField
-		# shift is the coordinate to shift
+        # shift is the coordinate to shift the field
 		# is_reflect determine whether to negate coordinate after shift
     def glb_sum_tslice(self):
 ```

@@ -472,7 +472,8 @@ EXPORT(field_shift_sfield, {
   PyObject* p_sfield = NULL;
   PyObject* p_shift = NULL;
   bool is_reflect = false;
-  if (!PyArg_ParseTuple(args, "OOO|b", &p_sfield_new, &p_sfield, &p_shift)) {
+  if (!PyArg_ParseTuple(args, "OOO|b", &p_sfield_new, &p_sfield, &p_shift,
+                        &is_reflect)) {
     return NULL;
   }
   const std::string ctype = py_get_ctype(p_sfield);

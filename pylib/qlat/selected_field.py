@@ -261,7 +261,7 @@ class SelectedField:
 
     def field_shift(self, shift, is_reflect = False):
         # return new shifted SelectedField
-        # shift is the coordinate to shift
+        # shift is the coordinate to shift the field
         # is_reflect determine whether to negate coordinate after shift
         f1 = self.copy(is_copying_data = False)
         f1.fsel = q.FieldSelection()

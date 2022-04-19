@@ -355,6 +355,17 @@ class Field:
         # return xg for all local sites
         return self.geo().xg_list()
 
+    def field_shift(self, shift):
+        # return new shifted Field
+        # shift is the coordinate to shift the field
+        f1 = self.copy(is_copying_data = False)
+        c.field_shift_field(f1, self, shift)
+        return f1
+
+    def reflect(self):
+        # reflect the field, return None
+        return c.reflect_field(self)
+
     def glb_sum(self):
         if self.ctype in field_ctypes_double:
             return np.array(c.glb_sum_double_field(self))

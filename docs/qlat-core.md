@@ -520,6 +520,12 @@ void shuffle_field_back(SelectedField<M>& sf, const SelectedField<M>& sf0,
 
 ```c++
 template <class M>
+void reflect_field(Field<M>& f)
+
+template <class M>
+void field_shift(Field<M>& f, const Field<M>& f1, const Coordinate& shift)
+
+template <class M>
 void field_shift(SelectedField<M>& sf, FieldSelection& fsel,
                  const SelectedField<M>& sf0, const FieldSelection& fsel0,
                  const Coordinate& shift, const bool is_reflect = false)
