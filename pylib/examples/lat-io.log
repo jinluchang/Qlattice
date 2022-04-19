@@ -15,11 +15,11 @@ clear_mem_cache: 0 bytes (0.000 GB) freed.
 q_timer_mini_auto_show=1 (default)
 q_timer_max_always_show=10 (default)
 qremove: 'results'
-ld: ndim 3
-ld: dim_sizes [2, 4, 3]
-ld: dim_name 0 index0 ['u', 'd']
-ld: dim_name 1 index1 []
-ld: dim_name 2 index2 []
+CHECK: ld: ndim 3
+CHECK: ld: dim_sizes [2, 4, 3]
+CHECK: ld: dim_name 0 index0 ['u', 'd']
+CHECK: ld: dim_name 1 index1 []
+CHECK: ld: dim_name 2 index2 []
 ld:
 #     index0       index1       index2                 RE-VALUE                 IM-VALUE
            u            0            0  1.00000000000000000E+06  0.00000000000000000E+00
@@ -47,7 +47,7 @@ ld:
            d            3            1  1.01030100000000000E+06  0.00000000000000000E+00
            d            3            2  1.01030200000000000E+06  0.00000000000000000E+00
 
-qnorm = 24248485087240.0
+CHECK: qnorm = 24248485087240.0
 [[1.000000e+06+0.j 1.000001e+06+0.j 1.000002e+06+0.j]
  [0.000000e+00+0.j 3.000000e+00+1.j 6.000000e+00+2.j]
  [1.000200e+06+0.j 1.000201e+06+0.j 1.000202e+06+0.j]
@@ -85,7 +85,7 @@ QFile: close 'results/test.lat' with 'r'.
            d            3            1  0.00000000000000000E+00  0.00000000000000000E+00
            d            3            2  0.00000000000000000E+00  0.00000000000000000E+00
 
-qnorm = 0.0
+CHECK: qnorm = 0.0
 [(1000000+0j), (1000001+0j), (1000002+0j), 0j, (3+1j), (6+2j), (1000200+0j), (1000201+0j), (1000202+0j), (1000300+0j), (1000301+0j), (1000302+0j), (1010000+0j), (1010001+0j), (1010002+0j), (1010100+0j), (1010101+0j), (1010102+0j), (1010200+0j), (1010201+0j), (1010202+0j), (1010300+0j), (1010301+0j), (1010302+0j)]
 #     index0       index1       index2                 RE-VALUE                 IM-VALUE
            u            0            0  1.00000000000000000E+06  0.00000000000000000E+00
@@ -113,8 +113,9 @@ qnorm = 0.0
            d            3            1  1.01030100000000000E+06  0.00000000000000000E+00
            d            3            2  1.01030200000000000E+06  0.00000000000000000E+00
 
-qnorm = 21247879056685.0
+CHECK: qnorm = 21247879056685.0
 ['test.lat']
+CHECK: finished successfully.
 clear_mem_cache: 0 bytes (0.000 GB) freed.
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 0.
