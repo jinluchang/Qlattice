@@ -12,10 +12,8 @@ load_path_list[:] = [
         "../qcddata",
         os.path.join(os.getenv("HOME"), "qcddata"),
         "../mk-gf-gt/results",
-        "../mk-sel/results",
         "../mk-lanc/results",
         os.path.join(os.getenv("HOME"), "Qlat-sample-data/mk-gf-gt/results"),
-        os.path.join(os.getenv("HOME"), "Qlat-sample-data/mk-sel/results"),
         os.path.join(os.getenv("HOME"), "Qlat-sample-data/mk-lanc/results"),
         "/gpfs/alpine/lgt116/proj-shared/ljin",
         ]
