@@ -66,4 +66,6 @@ q.displayln_info(sol.qnorm(), sol1.qnorm(), sol_diff.qnorm())
 
 q.timer_display()
 
+q.displayln_info(f"CHECK: finished successfully.")
+
 qg.end_with_gpt()

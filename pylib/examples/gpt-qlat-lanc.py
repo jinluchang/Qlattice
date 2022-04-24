@@ -96,4 +96,6 @@ run(job_tag, traj)
 
 q.timer_display()
 
+q.displayln_info(f"CHECK: finished successfully.")
+
 qg.end_with_gpt()

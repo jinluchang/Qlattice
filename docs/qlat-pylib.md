@@ -29,7 +29,9 @@ class Geometry:
     def is_local(self, xl):
     def is_local_xg(self, xg):
     def xg_list(self):
+```
 
+```python
 def geo_reform(geo, multiplicity = 1, expansion_left = None, expansion_right = None):
 def geo_eo(geo, eo = 0):
 ```
@@ -95,7 +97,9 @@ class LatData:
         # info_list format:
         # [ [ dim_name, dim_size, dim_indices, ], ... ]
         # dim_indices can be optional
+```
 
+```python
 def mk_lat_data(info_list, *, is_complex = True):
 def load_lat_data(path):
 ```
@@ -115,7 +119,9 @@ class RngState:
     def c_rand_gen(self, size):
         # size can be total_site of the lattice
     def select(self, l):
+```
 
+```python
 rng_state_root = RngState()
 ```
 
@@ -197,7 +203,9 @@ class PointSelection:
     def from_list(self, coordinate_list, geo = None):
     def coordinate_from_idx(self, idx):
         return c.get_coordinate_from_idx_psel(self, idx)
+```
 
+```python
 def get_psel_tslice(total_site):
     # [ [0,0,0,0], [0,0,0,1], ..., [0,0,0,total_site[3]-1], ]
     # need total_site to set the psel.geo property
@@ -243,7 +251,9 @@ class FieldSelection:
         # n_per_tslice / spatial_volume
     def idx_from_coordinate(xg):
     def coordinate_from_idx(idx):
+```
 
+```python
 def is_matching_fsel(fsel1, fsel2):
 ```
 
@@ -299,7 +309,9 @@ class Field:
         # reflect the field, return None
     def glb_sum(self):
     def glb_sum_tslice(self):
+```
 
+```python
 def split_fields(fs, f):
 def merge_fields(f, fs):
 def merge_fields_ms(f, fms):
@@ -309,7 +321,6 @@ def mk_merged_fields_ms(fms):
     # fms = [ (f0, m0,), (f1, m1,), ... ]
     # f.get_elem(x, m) = fms[m][0].get_elem(x, fms[m][1])
     # return f
-
 def field_expanded(f, expansion_left, expansion_right):
 def refresh_expanded(field, comm_plan = None):
 def refresh_expanded_1(field):
@@ -426,15 +437,21 @@ class SelectedPoints:
 class Prop(Field):
     def __init__(self, geo = None, *, ctype = None, multiplicity = None):
     def copy(self, is_copying_data = True):
+```
 
+```python
 class SelProp(SelectedField):
     def __init__(self, fsel, *, ctype = None, multiplicity = None):
     def copy(self, is_copying_data = True):
+```
 
+```python
 class PselProp(SelectedPoints):
     def __init__(self, psel, *, ctype = None, multiplicity = None):
     def copy(self, is_copying_data = True):
+```
 
+```python
 def mk_point_src(geo, xg, value = 1.0):
 def mk_wall_src(geo, tslice, lmom = None):
 def mk_rand_u1_src(sel, rs):
@@ -443,7 +460,6 @@ def mk_rand_u1_src(sel, rs):
     # sel can be psel or fsel
 def get_rand_u1_sol(prop_sol, fu1, sel):
 def mk_rand_u1_prop(inv, sel, rs):
-    # interface function
     # return s_prop
     # sel can be psel or fsel
 ```
@@ -463,7 +479,9 @@ class GaugeField(Field):
     def twist_boundary_at_boundary(self, lmom : float = -0.5, mu : int = 3):
         # modify in place
     def show_info(self):
+```
 
+```python
 def gf_show_info(gf):
 def gf_avg_plaq(gf):
 def gf_avg_link_trace(gf):
@@ -505,7 +523,9 @@ class GaugeTransform(Field):
 
 ```python
 class Inverter:
+```
 
+```python
 class InverterDwfFreeField(Inverter):
     # self.mass
     # self.m5
@@ -514,7 +534,9 @@ class InverterDwfFreeField(Inverter):
     def __init__(self, *, mass, m5 = 1.0, momtwist = None, qtimer = TimerNone()):
     def __mul__(self, prop_src):
         # prop_src: prop or [ prop, ... ]
+```
 
+```python
 class InverterDomainWall(Inverter):
 	# self.cdata
 	# self.timer
@@ -527,7 +549,9 @@ class InverterDomainWall(Inverter):
     def set_max_num_iter(self, max_num_iter):
     def max_mixed_precision_cycle(self):
     def set_max_mixed_precision_cycle(self, max_mixed_precision_cycle):
+```
 
+```python
 class InverterGaugeTransform(Inverter):
     # self.inverter
     # self.gt
@@ -535,4 +559,37 @@ class InverterGaugeTransform(Inverter):
     # self.timer
     def __init__(self, *, inverter, gt, qtimer = TimerNone()):
     def __mul__(self, prop_src):
+```
+
+## Auto Contractor
+
+```python
+class CExpr:
+    def __init__(self, diagram_types, variables, named_terms, named_typed_exprs, named_exprs, positions = None):
+    def __repr__(self) -> str:
+    def collect_op(self):
+        # Performing common sub-expression elimination
+        # Should be called after contract_simplify_compile(*exprs) or mk_cexpr(*exprs)
+```
+
+```python
+def mk_cexpr(*exprs, diagram_type_dict = None):
+    # exprs already finished wick contraction,
+    # otherwise use contract_simplify_compile(*exprs, is_isospin_symmetric_limit, diagram_type_dict)
+def contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True, diagram_type_dict = None):
+    # e.g. exprs = [ Qb("u", "x", s, c) * Qv("u", "x", s, c) + "u_bar*u", Qb("s", "x", s, c) * Qv("s", "x", s, c) + "s_bar*s", Qb("c", "x", s, c) * Qv("c", "x", s, c) + "c_bar*c", ]
+    # e.g. exprs = [ mk_pi_p("x2", True) * mk_pi_p("x1") + "(pi   * pi)", mk_j5pi_mu("x2", 3) * mk_pi_p("x1") + "(a_pi * pi)", mk_k_p("x2", True)  * mk_k_p("x1")  + "(k    * k )", mk_j5k_mu("x2", 3)  * mk_k_p("x1")  + "(a_k  * k )", ]
+    # After this function, call cexpr.collect_op() to perform CSE
+def display_cexpr_raw(cexpr : CExpr):
+    # return a string
+def display_cexpr(cexpr : CExpr):
+    # return a string
+def eval_cexpr(cexpr : CExpr, *, positions_dict, get_prop, is_only_total):
+    # return 1 dimensional np.array (one number for each expr)
+    # xg = positions_dict[position]
+    # mat_mspincolor = get_prop(flavor, xg_snk, xg_src)
+    # is_only_total = "total", "typed_total", "term"
+    # e.g. ("point-snk", [ 1, 2, 3, 4, ]) = positions_dict["x_1"]
+    # e.g. flavor = "l", "s"
+    # e.g. xg_snk = ("point-snk", [ 1, 2, 3, 4, ])
 ```

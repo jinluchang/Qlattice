@@ -55,4 +55,6 @@ for i in range(16):
 
 q.timer_display()
 
+q.displayln_info(f"CHECK: finished successfully.")
+
 qg.end_with_gpt()

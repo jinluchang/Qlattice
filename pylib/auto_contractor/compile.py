@@ -38,6 +38,8 @@ class Var(Op):
     def __eq__(self, other) -> bool:
         return self.list() == other.list()
 
+###
+
 def add_positions(s, x):
     if isinstance(x, Term):
         for op in x.c_ops:
@@ -262,6 +264,8 @@ class CExpr:
         return f"CExpr({self.diagram_types},{self.variables},{self.named_terms},{self.named_typed_exprs},{self.named_exprs},{self.positions})"
 
     def collect_op(self):
+        # Performing common sub-expression elimination
+        # Should be called after contract_simplify_compile(*exprs) or mk_cexpr(*exprs)
         # interface function
         # eval term factor
         for name, term in self.named_terms:
@@ -270,6 +274,8 @@ class CExpr:
         collect_op_in_cexpr(self.variables, self.named_terms)
         # collect common subexpr into variables
         collect_subexpr_in_cexpr(self.variables, self.named_terms)
+
+###
 
 def inc(type_dict, key):
     if key in type_dict:
@@ -355,6 +361,8 @@ def eval_term_factor(term):
     term.coef = complex(term.coef)
 
 def mk_cexpr(*exprs, diagram_type_dict = None):
+    # exprs already finished wick contraction,
+    # otherwise use contract_simplify_compile(*exprs, is_isospin_symmetric_limit, diagram_type_dict)
     # interface function
     if diagram_type_dict is None:
         diagram_type_dict = dict()
@@ -393,6 +401,9 @@ def mk_cexpr(*exprs, diagram_type_dict = None):
     return CExpr(diagram_types, [], named_terms, named_typed_exprs, named_exprs)
 
 def contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True, diagram_type_dict = None):
+    # e.g. exprs = [ Qb("u", "x", s, c) * Qv("u", "x", s, c) + "u_bar*u", Qb("s", "x", s, c) * Qv("s", "x", s, c) + "s_bar*s", Qb("c", "x", s, c) * Qv("c", "x", s, c) + "c_bar*c", ]
+    # e.g. exprs = [ mk_pi_p("x2", True) * mk_pi_p("x1") + "(pi   * pi)", mk_j5pi_mu("x2", 3) * mk_pi_p("x1") + "(a_pi * pi)", mk_k_p("x2", True)  * mk_k_p("x1")  + "(k    * k )", mk_j5k_mu("x2", 3)  * mk_k_p("x1")  + "(a_k  * k )", ]
+    # After this function, call cexpr.collect_op() to perform CSE
     # interface function
     if diagram_type_dict is None:
         diagram_type_dict = dict()
@@ -424,8 +435,8 @@ def show_variable_value(value):
         return f"{value}"
 
 def display_cexpr_raw(cexpr : CExpr):
-    # interface function
     # return a string
+    # interface function
     lines = []
     lines.append(f"Begin CExpr")
     lines.append(f"{'Positions':>10} : {cexpr.positions}")
@@ -443,8 +454,8 @@ def display_cexpr_raw(cexpr : CExpr):
     return "\n".join(lines)
 
 def display_cexpr(cexpr : CExpr):
-    # interface function
     # return a string
+    # interface function
     lines = []
     lines.append(f"Begin CExpr")
     lines.append(f"{'Positions':>10} : {cexpr.positions}")

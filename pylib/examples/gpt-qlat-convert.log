@@ -92,6 +92,7 @@ test_src: xg=[0, 0, 0, 2]
 12.0 12.0 0.0
 test_src: xg=[0, 3, 3, 6]
 12.0 12.0 0.0
+CHECK: finished successfully.
 Cache: 'CommPlanCache': 1 / 32 [16] clear
 clear_mem_cache: 2226944 bytes (0.002 GB) freed.
 qlat::end(): get_comm_list().pop_back()

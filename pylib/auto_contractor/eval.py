@@ -123,6 +123,12 @@ def eval_op_term_expr(expr, variable_dict, positions_dict, get_prop):
 def eval_cexpr(cexpr : CExpr, *, positions_dict, get_prop, is_only_total):
     # interface function
     # return 1 dimensional np.array
+    # xg = positions_dict[position]
+    # mat_mspincolor = get_prop(flavor, xg_snk, xg_src)
+    # is_only_total = "total", "typed_total", "term"
+    # e.g. ("point-snk", [ 1, 2, 3, 4, ]) = positions_dict["x_1"]
+    # e.g. flavor = "l", "s"
+    # e.g. xg_snk = ("point-snk", [ 1, 2, 3, 4, ])
     for pos in cexpr.positions:
         assert pos in positions_dict
     variable_dict = {}

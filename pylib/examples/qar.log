@@ -24,6 +24,7 @@ QFile: close 'results/ld.lat' with 'r'.
 88874F56  fn='results/ld.lat'
 check_all_files_crc32_info: summary for path='results'
     0 88874F56  fn='results/ld.lat'
+CHECK: finished successfully.
 clear_mem_cache: 0 bytes (0.000 GB) freed.
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 0.

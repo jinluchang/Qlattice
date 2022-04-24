@@ -75,4 +75,6 @@ q.displayln_info("q.contract_pion_field(sol1)", q.show(ld1))
 
 q.timer_display()
 
+q.displayln_info(f"CHECK: finished successfully.")
+
 qg.end_with_gpt()
