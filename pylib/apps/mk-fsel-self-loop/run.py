@@ -73,6 +73,7 @@ def compute_prop_rand_u1(*, job_tag, traj, inv_type, gf, path_s, fsel, eig = Non
     q.clean_cache(q.cache_inv)
     sfw.close()
     q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
+    q.qar_create_info(get_save_path(path_s + ".qar"), get_save_path(path_s), is_remove_folder_after = True)
 
 @q.timer_verbose
 def run_prop_rand_u1(job_tag, traj, *, inv_type, get_gf, get_fsel, get_eig = None):
