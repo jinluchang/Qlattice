@@ -13,35 +13,7 @@
 //#include "mpi-ext.h" /* Needed for CUDA-aware check */
  
 namespace qlat{
-template <class T>
-void rotate_prop(Propagator4dT<T>& prop, int dir = 0)
-{
-  TIMER("Rotate color prop");
-  const Geometry& geo = prop.geo();
-  long long Nvol =  geo.local_volume();
 
-  qacc_for(isp, long(Nvol), {
-    qlat::WilsonMatrixT<T>& v0 =  prop.get_elem(isp);
-    qlat::WilsonMatrixT<T>  v1 =  prop.get_elem(isp);
-
-    for(int c0 = 0;c0 < 3; c0++)
-    for(int d0 = 0;d0 < 4; d0++)
-    for(int c1 = 0;c1 < 3; c1++)
-    for(int d1 = 0;d1 < 4; d1++)
-    {
-      //int a0 = (d0*3+c0)*12+ d1*3+c1;
-      //LInt off = ((d0*4+d1)*3 + c0)*3 + c1;
-      LInt off = (c0*3+c1)*16+d0*4 + d1;
-      int a0 = off/12;
-      int a1 = off%12;
-      if(dir == 0)v0(a0, a1) = v1(d0*3+c0, d1*3+c1);
-      if(dir == 1)v0(d0*3+c0, d1*3+c1) = v1(a0, a1);
-
-      //if(dir==0)pE[off*Nvol + isp] = v0(d0*3 + c0, d1*3 + c1);
-      //if(dir==1)v0(d0*3 + c0, d1*3 + c1) = pE[off*Nvol + isp];
-    }
-  });
-}
 
 template <class T>
 __global__ void smear_global3(T* pres, T* psrc, const T* gf, double bw, double norm, long Nvol, const Geometry& geo,const Geometry& geo_v)
@@ -693,70 +665,6 @@ void smear_propagator2(Propagator4dT<T>& prop, const qlat::vector_acc<T >& gf,
   rotate_prop(prop,1);
 }
 
-
-template <class T >
-void smear_propagator1(Propagator4dT<T>& prop, const qlat::vector_acc<T >& gf,
-                      const double width, const int step)
-{
-
-  const double aw   = 3.0*width*width/(2*step);
-  const double bw = width*width/(4.0*step - 6.0*width*width);
-
-  const Geometry& geo = prop.geo();
-  long Nvol = geo.local_volume();
-  const Geometry geo1 = geo_resize(geo, Coordinate(1, 1, 1, 0), Coordinate(1, 1, 1, 0));
-  const int dir_limit = 3;
-  rotate_prop(prop);
-
-  Propagator4dT<T> prop1;
-  prop1.init(geo1);
-  //prop1 = prop;
-  //refresh_expanded_1(prop1);
-  for (int i = 0; i < step; ++i) {
-    print0("step %d \n",i);
-    TIMER("Matrix multiply");
-    fflush_MPI();
-    prop1 = prop;
-    refresh_expanded_1(prop1);
-
-    qacc_for(index,  geo.local_volume(),{
-      const Coordinate xl = geo.coordinate_from_index(index);
-      WilsonMatrixT<T>& wm = prop.get_elem(xl);
-      Eigen::Matrix<T, 3, 3*16, Eigen::RowMajor>& wmE = *((Eigen::Matrix<T, 3, 3*16, Eigen::RowMajor>*)  wm.p);
-
-      for (int dir = -dir_limit; dir < dir_limit; ++dir) {
-      //WilsonMatrixT<T>& wm = prop.get_elem(index);
-      //WilsonMatrixT<T>& wm1 = prop1.get_elem(index);
-
-      const Coordinate xl1 = coordinate_shifts(xl, dir);
-      WilsonMatrixT<T>& wm1 = prop1.get_elem(xl1);
-
-      const T* lp = &gf[(dir+3)*Nvol*9 + index*9 + 0];
-      Eigen::Matrix<T, 3, 3, Eigen::RowMajor>&  lE = *((Eigen::Matrix<T, 3, 3, Eigen::RowMajor>*) lp);
-      Eigen::Matrix<T, 3, 3*16, Eigen::RowMajor>&  pE = *((Eigen::Matrix<T, 3, 3*16, Eigen::RowMajor>*) wm1.p);
-      wmE += bw * (lE * pE);
-      }
-    });
-  }
-
-  qacc_for(index,  geo.local_volume(),{
-    const Coordinate xl = geo.coordinate_from_index(index);
-    WilsonMatrixT<T>& wm = prop.get_elem(xl);
-    wm *= std::pow(1-aw, step);
-  });
-
-  rotate_prop(prop,1);
-
-  //prop[x+-1,y+-1,z+-1]
-  //pxp1 + lxp1
-  //pxm1 + lxm1
-  //pyp1 + lxp1
-  //pym1 + lym1
-  //pzp1 + lzp1
-  //pzm1 = lzm1
-
-}
-
 template <class T>
 void smear_propagator_gpu(Propagator4dT<T>& prop, const qlat::vector_acc<T >& gf, const double width, const int step, int mode=1)
 {
@@ -859,41 +767,40 @@ void prop_to_EigenV(Propagator4dT<T>& prop, EigenV &pE, int dir=0)
 }
 
 
-template <class T>
-void links_to_EigenV(EigenV &link, GaugeFieldT<T>& gf, int dir = 0)
-{
-  const Geometry& geo = gf.geo();
-  long long Nvol =  geo.local_volume();
-  if(dir == 0){link.resize(4*9* Nvol);}
-
-  qacc_for(index,  geo.local_volume(),{
-    for(int dir=0;dir<4;dir++){
-      ColorMatrixT<T>  cm = gf.get_elem(index, dir);
-      for (int c1 = 0; c1 < NUM_COLOR; ++c1) 
-      for (int c2 = 0; c2 < NUM_COLOR; ++c2) 
-      {
-         long long off = (dir*9 + c1*3 + c2)*Nvol + index;
-         if(dir == 0)link[ off] = cm(c1, c2);
-         if(dir == 1)cm(c1, c2) = link[ off];
-      }
-    }
-  });
-
-  //  for (int s1 = 0; s1 < 4; ++s1) {
-  //    for (int s2 = 0; s2 < 4; ++s2) {
-  //      for (int c1 = 0; c1 < NUM_COLOR; ++c1) {
-  //        for (int c2 = 0; c2 < NUM_COLOR; ++c2) {
-  //          for (int c3 = 0; c3 < NUM_COLOR; ++c3) {
-  //            ret(s1 * NUM_COLOR + c1, s2 * NUM_COLOR + c2) +=
-  //                cm(c1, c3) * m(s1 * NUM_COLOR + c3, s2 * NUM_COLOR + c2);
-  //          }
-  //        }
-  //      }
-  //    }
-  //  }
-
-}
-
+//template <class T>
+//void links_to_EigenV(EigenV &link, GaugeFieldT<T>& gf, int dir = 0)
+//{
+//  const Geometry& geo = gf.geo();
+//  long long Nvol =  geo.local_volume();
+//  if(dir == 0){link.resize(4*9* Nvol);}
+//
+//  qacc_for(index,  geo.local_volume(),{
+//    for(int dir=0;dir<4;dir++){
+//      ColorMatrixT<T>  cm = gf.get_elem(index, dir);
+//      for (int c1 = 0; c1 < NUM_COLOR; ++c1) 
+//      for (int c2 = 0; c2 < NUM_COLOR; ++c2) 
+//      {
+//         long long off = (dir*9 + c1*3 + c2)*Nvol + index;
+//         if(dir == 0)link[ off] = cm(c1, c2);
+//         if(dir == 1)cm(c1, c2) = link[ off];
+//      }
+//    }
+//  });
+//
+//  //  for (int s1 = 0; s1 < 4; ++s1) {
+//  //    for (int s2 = 0; s2 < 4; ++s2) {
+//  //      for (int c1 = 0; c1 < NUM_COLOR; ++c1) {
+//  //        for (int c2 = 0; c2 < NUM_COLOR; ++c2) {
+//  //          for (int c3 = 0; c3 < NUM_COLOR; ++c3) {
+//  //            ret(s1 * NUM_COLOR + c1, s2 * NUM_COLOR + c2) +=
+//  //                cm(c1, c3) * m(s1 * NUM_COLOR + c3, s2 * NUM_COLOR + c2);
+//  //          }
+//  //        }
+//  //      }
+//  //    }
+//  //  }
+//
+//}
 
 //template <class M>
 //void refresh_expanded_GPU1(Field<M>& f, const CommPlan& plan, M* send_buffer, M* recv_buffer)
@@ -1105,6 +1012,7 @@ struct smear_fun{
     /////WilsonMatrixT<T> * send_buffer;WilsonMatrixT<T> * recv_buffer;
   }
 
+  /////define the redistributed smearing kernels
   void init_distribute(const Geometry& geo_a)
   {
     fft_copy = 1;
@@ -1199,6 +1107,7 @@ void shift_copy(T* res, T* src,qlat::vector_acc<long >& mapvq, unsigned int bfac
 }
 
 
+/////expand will be ignored with redistributed smearings 
 template <class T>
 void refresh_expanded_GPU(T* f, smear_fun& smf)
 //(const CommPlan& plan, M* send_buffer, M* recv_buffer, qlat::vector<long > &mapvq_send, qlat::vector<long > &mapvq_recv)

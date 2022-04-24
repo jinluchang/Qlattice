@@ -7,6 +7,7 @@
 #pragma once
 
 #include "general_funs.h"
+#include "fft_desc.h"
 #include "utils_copy_data.h"
 
 //////TODO
@@ -16,8 +17,11 @@ namespace qlat
 {
 
 struct shift_vec{
-  int noden;int rank;int Nmpi;
-  int nx,ny,nz,nt,vol,Nvol;
+  int rank;int Nmpi;
+  int nx,ny,nz,nt;
+  LInt noden;
+  LInt vol;
+  LInt Nvol;
   int Nx,Ny,Nz;
 
   int N0,N1,N2,Nt;
@@ -81,6 +85,9 @@ struct shift_vec{
   //std::vector<int > currrecv;
   //std::vector<int > currrpls;
 
+  void* gauge;
+  int gbfac;int gd0;
+
   shift_vec(fft_desc_basic &fds, bool GPU_set = true);
   void print_info();
   ~shift_vec();
@@ -95,6 +102,9 @@ struct shift_vec{
   template<typename Ty, int flag>
   void write_send_recv(Ty* src, Ty* res);
 
+  template<typename Cy, int gs, int cs>
+  void multiply_gauge(Cy *src, int dir_or);
+
   template<typename Ty>
   void call_MPI(Ty *src, Ty *res,int dir_or);
 
@@ -103,6 +113,9 @@ struct shift_vec{
 
   template<typename Ty>
   void shift_vecs(std::vector<Ty* > &src,std::vector<Ty* > &res,std::vector<int >& iDir ,int civ_or);
+
+  void set_gauge(void* gauge_, int gbfac_, int gd0_)
+  {gauge = gauge_;gbfac = gbfac_;gd0 = gd0_;}
 
   void clear_mem_dir(int dir);
   ////void clear_mem();
@@ -154,12 +167,8 @@ shift_vec::shift_vec(fft_desc_basic &fds, bool GPU_set)
   zeroP = NULL;bufsP = NULL;bufrP = NULL;
   zeroP_Size = 0;bufsP_Size = 0;bufrP_Size = 0;
 
-  //flag_set_MPI_size = 0;
-  //flag_shift_set = false; bisze = 0;
-  //dir_cur = 0;
-  //civ = -1;
-  //biva = -1;
-
+  gauge = NULL;
+  gbfac = 1; gd0 = 1;
 
 }
 
@@ -337,14 +346,14 @@ void shift_vec::set_MPI_size(int biva_or, int civ_or, int dir_or )
 
   if(sizeof(Ty) != bsize){
     bsize = sizeof(Ty);
-    unsigned int MPI_off = sizeof(Ty);MPI_Datatype curr = MPI_BYTE;
-    unsigned int M_size = get_MPI_type<Ty >(curr );
-    qassert(MPI_off%M_size == 0);MPI_off = MPI_off/M_size;
+    MPI_off = sizeof(Ty);////MPI_Datatype curr = MPI_BYTE;
+    unsigned int M_size = get_MPI_type<Ty >(MPI_curr );
+    qassert(MPI_off%M_size == 0);MPI_off = MPI_off/M_size;qassert(MPI_off != 0);
   }
 
   ////===assign biva and civ
-  biva    = biva_or;
-  civ     = civ_or;
+  biva = biva_or;
+  civ  = civ_or;
   ////===assign biva and civ
 
   MPI_size[dir_cur] = biva*civ*(sendoffa[dir_cur].size())*CON_SEND[dir_cur];
@@ -357,16 +366,8 @@ void shift_vec::set_MPI_size(int biva_or, int civ_or, int dir_or )
     if(GPU){gpuMalloc(recvbufP[dir_cur], MPI_size[dir_cur], Ty);}
     else{recvbufP[dir_cur] = aligned_alloc_no_acc(MPI_size[dir_cur] * sizeof(Ty));}
 
-    //sendbufP[dir_cur] = aligned_alloc_no_acc(MPI_size * sizeof(Ty));
-    //recvbufP[dir_cur] = aligned_alloc_no_acc(MPI_size * sizeof(Ty));
-    //alloc_buf((Ty*) sendbufP[dir_cur], MPI_size, GPU);
-    //alloc_buf((Ty*) recvbufP[dir_cur], MPI_size, GPU);
-    //sendbuf.resize(MPI_size);
-    //recvbuf.resize(MPI_size);
-
     bufP_Size[dir_cur] = MPI_size[dir_cur];
   }
-  //print0("=====MPI_size %8d \n",MPI_size);
 }
 
 template<typename Ty>
@@ -398,8 +399,6 @@ void shift_vec::write_send_recv(Ty* src, Ty* res)
 {
   TIMERA("shift_vec::write_send_recv");
   if(sendoffa[dir_cur].size() != 0 and bufP_Size[dir_cur] == 0){print0("Memeory not set for dir %d", dir_cur);abort_r();}
-  ///Ty* src   = (Ty* )srcP;
-  ///Ty* res   = (Ty* )resP;
   Ty* s_tem = (Ty*) (sendbufP[dir_cur]);
   Ty* r_tem = (Ty*) (recvbufP[dir_cur]);
   LInt writeN = sendoffa[dir_cur].size();
@@ -409,21 +408,9 @@ void shift_vec::write_send_recv(Ty* src, Ty* res)
   /////TODO need update for GPU
   if(flag == 0)
   {
-  //#pragma omp parallel for
-  //for(LInt ix=0;ix<writeN;ix++)
-  //{
-  //  LInt off0 = sendoffa[dir_cur][ix];
-  //  LInt off1 = sendoffx[dir_cur][ix];
-  //  for(LInt bi=0;bi<biva;bi++)
-  //  {
-  //    memcpy(&s_tem[bi*civ*writeN + off1*civ + 0],&src[bi*Length*civ + off0*civ + 0], sizeof(Ty)*civ);
-  //  }
-  //}
   for(int bi=0;bi<biva;bi++){
   LInt* s0 = (LInt*) qlat::get_data(sendoffa[dir_cur]).data();
   LInt* s1 = (LInt*) qlat::get_data(sendoffx[dir_cur]).data();
-  //cpy_data_from_index( &s_tem[bi*writeN*civ], &src[bi*writeN*civ], 
-  //      &sendoffx[dir_cur][0], &sendoffa[dir_cur][0], sendoffa[dir_cur].size(), civ, !GPU, false);
   cpy_data_from_index( &s_tem[bi*writeN*civ], &src[bi*Length*civ], 
        s1, s0, sendoffa[dir_cur].size(), CON_SEND[dir_cur]*civ, !GPU, false);
   }
@@ -437,8 +424,6 @@ void shift_vec::write_send_recv(Ty* src, Ty* res)
   for(int bi=0;bi<biva;bi++){
   LInt* s1 = (LInt*) qlat::get_data(sendoffb[dir_cur]).data();
   LInt* s0 = (LInt*) qlat::get_data(sendoffx[dir_cur]).data();
-  //cpy_data_from_index( &res[bi*writeN*civ], &r_tem[bi*writeN*civ], 
-  //      &sendoffb[dir_cur][0], &sendoffx[dir_cur][0], sendoffb[dir_cur].size(), civ, !GPU, false);
   cpy_data_from_index( &res[bi*Length*civ], &r_tem[bi*writeN*civ], 
         s1, s0, sendoffb[dir_cur].size(), CON_SEND[dir_cur]*civ, !GPU, false);
   }
@@ -451,8 +436,6 @@ void shift_vec::write_send_recv(Ty* src, Ty* res)
   for(int bi=0;bi<biva;bi++){
   LInt* s1 = (LInt*) qlat::get_data(buffoffb[dir_cur]).data();
   LInt* s0 = (LInt*) qlat::get_data(buffoffa[dir_cur]).data();
-  //cpy_data_from_index( &res[bi*Length*civ], &src[bi*Length*civ], 
-  //      &buffoffb[dir_cur][0], &buffoffa[dir_cur][0], buffoffa[dir_cur].size(), civ, !GPU, false);
   cpy_data_from_index( &res[bi*Length*civ], &src[bi*Length*civ], 
        s1, s0, buffoffa[dir_cur].size(), CON_BUFF[dir_cur]*civ, !GPU, false);
   }
@@ -461,6 +444,61 @@ void shift_vec::write_send_recv(Ty* src, Ty* res)
 
   s_tem = NULL; r_tem = NULL;
 }
+
+template<typename Cy, int gs, int cs>
+void shift_vec::multiply_gauge(Cy *src, int dir_or)
+{
+  const int dir_limit = 4;
+  if(cs != -1){qassert(gd0 == gs);}
+  ////convention not the same as Qlattice
+  ////current x, y, z,t ,-x,-y,-z,-t; 
+  //////Qlat -t,-z,-y,-x, x, y, z, t
+  ///to gwu convention of shift with \psi
+  ////shift vec direction opposite to gwu code
+
+  std::vector<int > map_dir = {3,2,1,0,  4,5,6,7};
+  const int dir_gauge = map_dir[dir_or];
+
+  //////std::vector<int > map_dir = {4,5,6,7,  3,2,1,0};
+  //////const int dir_gauge = map_dir[dir_or];
+  if(cs != -1)
+  qacc_for(index,  long(Length), {
+    Cy buf[9];
+    for(int ci=0;ci<9;ci++){buf[ci] = ((Cy*) gauge)[(index*dir_limit*2 + dir_gauge)*9 +  ci];}
+    Eigen::Matrix<Cy, 3   , 3, Eigen::RowMajor>&     lE = *((Eigen::Matrix<Cy, 3   , 3, Eigen::RowMajor>*) buf);
+
+    for(int bi=0;bi<biva;bi++)
+    for(int g1=0;g1<gbfac;g1++)
+    {
+      Cy* d0 = &src[((bi*Length + index)*gbfac + g1)*3*gs];
+      Eigen::Matrix<Cy, gs, 3, Eigen::ColMajor>&     dE = *((Eigen::Matrix<Cy, gs, 3, Eigen::ColMajor>*) d0);
+      dE *= lE;
+    }
+  });
+  if(cs == -1){
+  qacc_for(index,  long(Length), {
+    Cy buf[9];
+    qassert(gd0 <= 128);
+    Cy res[128*3];
+    for(int ci=0;ci<9;ci++){buf[ci] = ((Cy*) gauge)[(index*dir_limit*2 + dir_gauge)*9 +  ci];}
+    for(int bi=0;bi<biva;bi++)
+    for(int g1=0;g1<gbfac;g1++)
+    {
+      Cy* d0 = &src[((bi*Length + index)*gbfac + g1)*3*gd0];
+      for(int g0=0;g0<3*gd0;g0++){res[g0] = 0;}
+      for(int c0=0;c0<3;c0++)
+      {
+        for(int c1=0;c1<3;c1++){
+          Cy tem = buf[c1*3 + c0];
+          for(int g0=0;g0<gd0;g0++){res[c0*gd0 + g0] += d0[c1*gd0 + g0] * tem;}
+        }
+      }
+      for(int g0=0;g0<3*gd0;g0++){d0[g0] = res[g0];}
+    }
+  });}
+
+}
+
 
 template<typename Ty>
 void shift_vec::call_MPI(Ty *src, Ty *res,int dir_or)
@@ -476,6 +514,19 @@ void shift_vec::call_MPI(Ty *src, Ty *res,int dir_or)
   /////===set src pointer for MPI
   //resP = (void*) res_or;
   //srcP = (void*) src_or;
+
+  ////multiply link shift
+  /////gauge should be V * dir_limit(4) * 2(-+) * 9 (c3x3)
+
+  //if(gauge != NULL)
+  //{
+  //  TIMER("Gauge multiplication");
+  //  bool is_double = get_data_type_is_double<Ty >();
+  //  if( is_double){qassert(long(civ*sizeof(Ty)/16) == gbfac * 3 * gd0);}
+  //  if(!is_double){qassert(long(civ*sizeof(Ty)/8 ) == gbfac * 3 * gd0);}
+  //  if( is_double){multiply_gauge((qlat::Complex* ) src, dir_or);}
+  //  if(!is_double){multiply_gauge((qlat::ComplexF*) src, dir_or);}
+  //}
 
   Ty* s_tem= (Ty*) sendbufP[dir_cur]; Ty* r_tem= (Ty*) recvbufP[dir_cur];
 
@@ -494,12 +545,47 @@ void shift_vec::call_MPI(Ty *src, Ty *res,int dir_or)
     write_send_recv<Ty, 2 >(src, res);//Write same node
 
     MPI_Wait(&request, MPI_STATUS_IGNORE);
+    ////print0("SIZE! MPI_off %d, MPI_size %d \n", int(MPI_off), int(M_size));
 
     //MPI_Wait(&request, &status);
     //if(omp_get_thread_num()==0)MPI_Wait(&request, MPI_STATUS_IGNORE);
     //synchronize();
     write_send_recv<Ty, 1 >(src, res);//Write from recv
+
   }
+
+  if(gauge != NULL)
+  {
+    TIMER("Gauge multiplication");
+    bool id = get_data_type_is_double<Ty >();
+    if( id){qassert(long(civ*sizeof(Ty)/16) == gbfac * 3 * gd0);}
+    if(!id){qassert(long(civ*sizeof(Ty)/8 ) == gbfac * 3 * gd0);}
+    //if( id){multiply_gauge<qlat::Complex , 3>((qlat::Complex* ) res, dir_or);}
+    //if(!id){multiply_gauge<qlat::ComplexF, 3>((qlat::ComplexF*) res, dir_or);}
+    bool cfind = false;
+    #define shift_macros(bf) if(bf == gd0){cfind = true; \
+      if( id)multiply_gauge<qlat::Complex , bf, 1>((qlat::Complex *) res, dir_or); \
+      if(!id)multiply_gauge<qlat::ComplexF, bf, 1>((qlat::ComplexF*) res, dir_or);}
+    shift_macros(1);
+    shift_macros(2);
+    shift_macros(3);
+    shift_macros(4);
+    shift_macros(6);
+    shift_macros(8);
+    shift_macros(16);
+    shift_macros(12);
+    shift_macros(4*12);
+    shift_macros(4*16);
+    shift_macros(12*12);
+
+    if(!cfind){cfind = true;
+      if( id)multiply_gauge<qlat::Complex , 1, -1>((qlat::Complex *) res, dir_or);
+      if(!id)multiply_gauge<qlat::ComplexF, 1, -1>((qlat::ComplexF*) res, dir_or);}
+
+    #undef shift_macros
+    qassert(cfind);
+  }
+
 
   s_tem = NULL; r_tem = NULL;
 }
@@ -572,7 +658,9 @@ void shift_vec::shift_vecs(std::vector<Ty* > &src,std::vector<Ty* > &res,std::ve
   int size_vec = biva_or*civ_or;
   Ty* zero = (Ty*) zeroP;
 
-  if(flag_shift_set == false){if(civ_or==1)set_MPI_size<Ty >(1,12);if(civ_or != 1)set_MPI_size<Ty >(1, civ_or);}
+  //print0("Flag %d, civ %d %d , biva %d \n",int(flag_shift_set),civ_or,civ, biva);
+  //if(flag_shift_set == false){if(civ_or==1)set_MPI_size<Ty >(1,12);if(civ_or != 1)set_MPI_size<Ty >(1, civ_or);}
+  if(civ == -1 or biva == -1){if(civ_or==1){set_MPI_size<Ty >(1,12);}if(civ_or != 1){set_MPI_size<Ty >(1, civ_or);}}
   if(civ_or != 1){if(civ_or != civ ){abort_r("Configuration not equal \n");}}
 
   std::vector<Ty *> ptem0;ptem0.resize(civ );
@@ -763,6 +851,39 @@ void shift_fieldM(shift_vec& svec, std::vector<qlat::FieldM<Ty, civ> >& src, std
   }
 
   svec.shift_vecs(srcP, resP, iDir , civ);
+}
+
+template <class Ty>
+void shift_fieldM(shift_vec& svec, std::vector<Propagator4dT<Ty >* >& src, std::vector<Propagator4dT<Ty >* >& res, std::vector<int >& iDir)
+{
+  if(src.size() < 1)return;
+  int biva_or = src.size();
+
+  std::vector<Ty* > srcP;std::vector<Ty* > resP;
+  srcP.resize(biva_or);resP.resize(biva_or);
+  for(int bi=0;bi<biva_or;bi++){
+    srcP[bi] = (Ty*) qlat::get_data(*src[bi]).data();
+    resP[bi] = (Ty*) qlat::get_data(*res[bi]).data();
+  }
+  svec.shift_vecs(srcP, resP, iDir , 12*12);
+}
+
+template <class Ty>
+void shift_fieldM(shift_vec& svec, Propagator4dT<Ty > & src, Propagator4dT<Ty >& res, std::vector<int >& iDir)
+{
+  std::vector<Propagator4dT<Ty >* >srcP(1);srcP[0] = &src;
+  std::vector<Propagator4dT<Ty >* >resP(1);resP[0] = &res;
+  shift_fieldM(svec, srcP, resP, iDir);
+}
+
+template <class Ty>
+void shift_fieldM(shift_vec& svec, std::vector<Propagator4dT<Ty > > & src, std::vector< Propagator4dT<Ty > >& res, std::vector<int >& iDir)
+{
+  std::vector<Propagator4dT<Ty >* >srcP(0);srcP.resize(src.size());
+  std::vector<Propagator4dT<Ty >* >resP(0);resP.resize(res.size());
+  for(int i=0;i<src.size();i++){srcP[i] = &src[i];}
+  for(int i=0;i<res.size();i++){resP[i] = &res[i];}
+  shift_fieldM(svec, srcP, resP, iDir);
 }
 
 }
