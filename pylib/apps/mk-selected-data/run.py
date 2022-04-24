@@ -136,7 +136,7 @@ def compute_prop_psrc_all(gf, gt, pi, job_tag, inv_type, *,
     q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
     q.qar_create_info(get_save_path(path_sp + ".qar"), get_save_path(path_sp), is_remove_folder_after = True)
     q.qar_create_info(get_save_path(path_s + ".qar"), get_save_path(path_s), is_remove_folder_after = True)
-    q.qar_create_info(get_save_path(path_hvp + ".qar"), get_save_path(path_sp), is_remove_folder_after = True)
+    q.qar_create_info(get_save_path(path_hvp + ".qar"), get_save_path(path_hvp), is_remove_folder_after = True)
 
 @q.timer
 def run_prop_psrc_light(job_tag, traj, get_gf, get_eig, get_gt, get_psel, get_fsel, get_pi):
