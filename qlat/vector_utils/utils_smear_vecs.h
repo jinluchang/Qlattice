@@ -354,20 +354,30 @@ void smear_propagator_gwu_convension(Propagator4dT<T>& prop, const GaugeFieldT<T
   // prop is of qnormal size
   ////For complex numbers addition and subtraction require two flops, and multiplication and division require six flops
   ///complex multi 6 + plus 2
+  #if PRINT_TIMER>4
   TIMER_FLOPS("==smear propagator");
   long long Tfloat = 0;
-  double mem       = 0.0;
+  ///double mem       = 0.0;
 
-  {long long Lat = prop.geo().local_volume();
-  int nsrc = 12;
-  long long vGb = Lat *nsrc*4;
-  int Fcount = 3*(3*6 + 2*2); 
-  int direction   = 6;
-  Tfloat = step*direction*vGb*Fcount;
-  mem = (Lat*nsrc*12 + Lat*4*9)*8.0;}
+  {
+    long long Lat = prop.geo().local_volume();
+    int nsrc = 12;
+    long long vGb = Lat *nsrc*4;
+    int Fcount = 3*(3*6 + 2*2); 
+    if(step >= 0){
+    int direction   = 6;
+    Tfloat = step*direction*vGb*Fcount;
+    }else{
+    Tfloat = 12*2*int(width)*vGb*Fcount;
+    }
+    //mem = (Lat*nsrc*12 + Lat*4*9)*8.0;
+  }
   timer.flops += Tfloat;
-  print0("Memory size %.3e GB, %.3e Gflop \n", 
-    mem/(1024.0*1024*1024), Tfloat/(1024.0*1024*1024));
+  //print0("Memory size %.3e GB, %.3e Gflop \n", 
+  //  mem/(1024.0*1024*1024), Tfloat/(1024.0*1024*1024));
+  #else
+  TIMER("==smear propagator")
+  #endif
 
   if (0 == step) {
     return;

@@ -102,8 +102,8 @@ struct shift_vec{
   template<typename Ty, int flag>
   void write_send_recv(Ty* src, Ty* res);
 
-  template<typename Cy, int gs, int cs>
-  void multiply_gauge(Cy *src, int dir_or);
+  //template<typename Cy, int gs, int cs>
+  //void multiply_gauge(Cy *src, int dir_or);
 
   template<typename Ty>
   void call_MPI(Ty *src, Ty *res,int dir_or);
@@ -446,7 +446,7 @@ void shift_vec::write_send_recv(Ty* src, Ty* res)
 }
 
 template<typename Cy, int gs, int cs>
-void shift_vec::multiply_gauge(Cy *src, int dir_or)
+void multiply_gauge(void *src, void* gauge, const int dir_or,const int biva,const long Length, const int gbfac, const int gd0)
 {
   const int dir_limit = 4;
   if(cs != -1){qassert(gd0 == gs);}
@@ -459,32 +459,38 @@ void shift_vec::multiply_gauge(Cy *src, int dir_or)
   std::vector<int > map_dir = {3,2,1,0,  4,5,6,7};
   const int dir_gauge = map_dir[dir_or];
 
-  //////std::vector<int > map_dir = {4,5,6,7,  3,2,1,0};
-  //////const int dir_gauge = map_dir[dir_or];
+  ////std::vector<int > map_dir = {4,5,6,7,  3,2,1,0};
+  ////const int dir_gauge = map_dir[dir_or];
+  ///qacc cannot accept struct elements
   if(cs != -1)
   qacc_for(index,  long(Length), {
     Cy buf[9];
+    //Cy res[128*3];
     for(int ci=0;ci<9;ci++){buf[ci] = ((Cy*) gauge)[(index*dir_limit*2 + dir_gauge)*9 +  ci];}
     Eigen::Matrix<Cy, 3   , 3, Eigen::RowMajor>&     lE = *((Eigen::Matrix<Cy, 3   , 3, Eigen::RowMajor>*) buf);
 
+    /////Cy* res = &tmp[((0*Length + index)*gbfac + 0)*3*gs];
+    //Eigen::Matrix<Cy, gs, 3, Eigen::ColMajor>&     rE = *((Eigen::Matrix<Cy, gs, 3, Eigen::ColMajor>*) res);
     for(int bi=0;bi<biva;bi++)
     for(int g1=0;g1<gbfac;g1++)
     {
-      Cy* d0 = &src[((bi*Length + index)*gbfac + g1)*3*gs];
+      Cy* d0 = &((Cy*)src)[((bi*Length + index)*gbfac + g1)*3*gs];
       Eigen::Matrix<Cy, gs, 3, Eigen::ColMajor>&     dE = *((Eigen::Matrix<Cy, gs, 3, Eigen::ColMajor>*) d0);
       dE *= lE;
+      //rE = dE * lE;
+      //dE = rE;
     }
   });
   if(cs == -1){
+  qassert(gd0 <= 128);
   qacc_for(index,  long(Length), {
     Cy buf[9];
-    qassert(gd0 <= 128);
     Cy res[128*3];
     for(int ci=0;ci<9;ci++){buf[ci] = ((Cy*) gauge)[(index*dir_limit*2 + dir_gauge)*9 +  ci];}
     for(int bi=0;bi<biva;bi++)
     for(int g1=0;g1<gbfac;g1++)
     {
-      Cy* d0 = &src[((bi*Length + index)*gbfac + g1)*3*gd0];
+      Cy* d0 = &((Cy*)src)[((bi*Length + index)*gbfac + g1)*3*gd0];
       for(int g0=0;g0<3*gd0;g0++){res[g0] = 0;}
       for(int c0=0;c0<3;c0++)
       {
@@ -564,8 +570,8 @@ void shift_vec::call_MPI(Ty *src, Ty *res,int dir_or)
     //if(!id){multiply_gauge<qlat::ComplexF, 3>((qlat::ComplexF*) res, dir_or);}
     bool cfind = false;
     #define shift_macros(bf) if(bf == gd0){cfind = true; \
-      if( id)multiply_gauge<qlat::Complex , bf, 1>((qlat::Complex *) res, dir_or); \
-      if(!id)multiply_gauge<qlat::ComplexF, bf, 1>((qlat::ComplexF*) res, dir_or);}
+      if( id)multiply_gauge<qlat::Complex , bf, 1>((void*) res, gauge, dir_or, biva,Length,gbfac,gd0); \
+      if(!id)multiply_gauge<qlat::ComplexF, bf, 1>((void*) res, gauge, dir_or, biva,Length,gbfac,gd0);}
     shift_macros(1);
     shift_macros(2);
     shift_macros(3);
@@ -578,11 +584,11 @@ void shift_vec::call_MPI(Ty *src, Ty *res,int dir_or)
     shift_macros(4*16);
     shift_macros(12*12);
 
+    ////void multiply_gauge(Cy *src, Cy* gauge, const int dir_or,const int biva, const int gbfac, const int gd0)
     if(!cfind){cfind = true;
-      if( id)multiply_gauge<qlat::Complex , 1, -1>((qlat::Complex *) res, dir_or);
-      if(!id)multiply_gauge<qlat::ComplexF, 1, -1>((qlat::ComplexF*) res, dir_or);}
-
-    #undef shift_macros
+      if( id)multiply_gauge<qlat::Complex , 1, -1>((void*)res, gauge, dir_or, biva,Length,gbfac,gd0);
+      if(!id)multiply_gauge<qlat::ComplexF, 1, -1>((void*)res, gauge, dir_or, biva,Length,gbfac,gd0);}
+    //#undef shift_macros
     qassert(cfind);
   }
 
