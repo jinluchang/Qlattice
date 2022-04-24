@@ -1941,6 +1941,7 @@ QFile: close 'huge-data/t2/demo.lfs/geon-info.txt' with 'r'.
 QFile: open 'huge-data/t2/fsel.field' with 'r'.
 QFile: close 'huge-data/t2/fsel.field' with 'r'.
 1A9F434A  fn='huge-data/t2/fsel.field'
+CHECK: finished successfully.
 Cache: 'ShuffledFieldsReaderCache': 3 / 4 [1] clear
 QFile: close 'huge-data/t2/demo.lfs/00/0000000000' with 'r'.
 QFile: close 'huge-data/t2/demo.lfs/00/0000000001' with 'r'.

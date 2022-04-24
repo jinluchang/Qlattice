@@ -169,6 +169,7 @@ int main(int argc, char* argv[])
   test_fft<16>();
   test_fft<20>();
   test_fft<32>();
+  displayln_info("CHECK: finished successfully.");
   Timer::display();
   end();
   return 0;

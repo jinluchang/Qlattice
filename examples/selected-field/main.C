@@ -451,6 +451,7 @@ int main(int argc, char* argv[])
   test_shift("shift-16-1024", 2, 8);
   test_shift("shift-0-1024", 0, 8);
   test_shift("shift-16-0", 2, 0);
+  displayln_info("CHECK: finished successfully.");
   Timer::display();
   end();
   return 0;

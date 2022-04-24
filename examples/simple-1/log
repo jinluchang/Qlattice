@@ -47,6 +47,7 @@ trace:  9.86826590890407918E-01
 INFO: gf_trace_sum =  6.06306257443066625E+03
 INFO: gf_trace_avg =  9.86826590890407918E-01
 INFO: gf_avg_plaq =  9.48400361131393588E-01
+CHECK: finished successfully.
 Cache: 'CommPlanCache': 2 / 32 [16] clear
 Cache: 'ShufflePlanCache': 1 / 16 [8] clear
 clear_mem_cache: 583424 bytes (0.001 GB) freed.

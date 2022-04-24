@@ -51,6 +51,7 @@ int main(int argc, char** argv)
   using namespace qlat;
   begin(&argc, &argv);
   test();
+  displayln_info("CHECK: finished successfully.");
   end();
   return 0;
 }

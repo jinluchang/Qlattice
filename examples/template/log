@@ -316,6 +316,7 @@ find_max_eigen_value_hermop_sym2:     5: sqrt_qnorm_ratio = 1.58659082254578254E
 release_lock: Release lock 'results/free-4nt8/results=1010-lock'
 qremove: 'results/free-4nt8/results=1010-lock/time.txt'
 program finished successfully for 'free-4nt8'.
+CHECK: finished successfully.
 Cache: 'CommPlanCache': 6 / 32 [16] clear
 clear_mem_cache: 4715520 bytes (0.004 GB) freed.
 qlat::end(): get_comm_list().pop_back()

@@ -325,6 +325,7 @@ int main(int argc, char* argv[])
   displaySpinPropagator4d();
   qlat::Timer::display();
   lblMuonPart();
+  qlat::displayln_info("CHECK: finished successfully.");
   qlat::Timer::display();
   qlat::end();
   return 0;

@@ -222,6 +222,7 @@ Cache: 'CommPlanCache': 15 / 32 [16] to add
 Consistency: orig qnorm: 6.144000E+03 ; shift qnorm 6.144000E+03 ; diff qnorm: 0.000000E+00
 Reference (field_shift_direct): orig qnorm: 6.144000E+03 ; shift qnorm 6.144000E+03 ; diff qnorm: 0.000000E+00
 Reference (field_shift_steps): orig qnorm: 6.144000E+03 ; shift qnorm 6.144000E+03 ; diff qnorm: 0.000000E+00
+CHECK: finished successfully.
 Cache: 'CommPlanCache': 16 / 32 [16] clear
 clear_mem_cache: 3132416 bytes (0.003 GB) freed.
 qlat::end(): get_comm_list().pop_back()

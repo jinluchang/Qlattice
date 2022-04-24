@@ -91,7 +91,8 @@ int main(int argc, char* argv[])
   get_global_rng_state() = RngState(get_global_rng_state(), "qcd-utils-tests");
   show_matrix();
   simple_tests();
-  end();
+  displayln_info("CHECK: finished successfully.");
   Timer::display();
+  end();
   return 0;
 }
