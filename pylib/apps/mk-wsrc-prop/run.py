@@ -74,7 +74,7 @@ def compute_prop_wsrc_all(gf, gt, wi, job_tag, inv_type, *,
 def run_prop_wsrc_light(job_tag, traj, get_gf, get_eig, get_gt, get_psel, get_fsel, get_wi):
     if None in [ get_gf, get_eig, get_gt, get_psel, get_fsel, ]:
         return
-    if get_load_path(f"prop-wsrc-light/{job_tag}/traj={traj}") is not None:
+    if get_load_path(f"prop-wsrc-light/{job_tag}/traj={traj}/geon-info.txt") is not None:
         return
     if q.obtain_lock(f"locks/{job_tag}-{traj}-wsrc-light"):
         gf = get_gf()
@@ -92,7 +92,7 @@ def run_prop_wsrc_light(job_tag, traj, get_gf, get_eig, get_gt, get_psel, get_fs
 def run_prop_wsrc_strange(job_tag, traj, get_gf, get_eig, get_gt, get_psel, get_fsel, get_wi):
     if None in [ get_gf, get_eig, get_gt, get_psel, get_fsel, ]:
         return
-    if get_load_path(f"prop-wsrc-strange/{job_tag}/traj={traj}") is not None:
+    if get_load_path(f"prop-wsrc-strange/{job_tag}/traj={traj}/geon-info.txt") is not None:
         return
     if q.obtain_lock(f"locks/{job_tag}-{traj}-wsrc-strange"):
         gf = get_gf()
@@ -109,9 +109,9 @@ def run_prop_wsrc_strange(job_tag, traj, get_gf, get_eig, get_gt, get_psel, get_
 @q.timer_verbose
 def run_job(job_tag, traj):
     fns_produce = [
-            f"prop-wsrc-strange/{job_tag}/traj={traj}",
+            f"prop-wsrc-strange/{job_tag}/traj={traj}/geon-info.txt",
             f"psel-prop-wsrc-strange/{job_tag}/traj={traj}/checkpoint.txt",
-            f"prop-wsrc-light/{job_tag}/traj={traj}",
+            f"prop-wsrc-light/{job_tag}/traj={traj}/geon-info.txt",
             f"psel-prop-wsrc-light/{job_tag}/traj={traj}/checkpoint.txt",
             ]
     fns_need = [

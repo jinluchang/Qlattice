@@ -104,7 +104,7 @@ def run_prop_smear(job_tag, traj, *, inv_type, get_gf, get_gf_ape, get_eig, get_
         return
     inv_type_names = [ "light", "strange", ]
     inv_type_name = inv_type_names[inv_type]
-    if get_load_path(f"prop-smear-{inv_type_name}/{job_tag}/traj={traj}") is not None:
+    if get_load_path(f"prop-smear-{inv_type_name}/{job_tag}/traj={traj}/geon-info.txt") is not None:
         return
     if q.obtain_lock(f"locks/{job_tag}-{traj}-smear-{inv_type_name}"):
         gf = get_gf()
@@ -122,9 +122,9 @@ def run_prop_smear(job_tag, traj, *, inv_type, get_gf, get_gf_ape, get_eig, get_
 @q.timer_verbose
 def run_job(job_tag, traj):
     fns_produce = [
-            f"prop-smear-light/{job_tag}/traj={traj}",
+            f"prop-smear-light/{job_tag}/traj={traj}/geon-info.txt",
             f"psel-prop-smear-light/{job_tag}/traj={traj}/checkpoint.txt",
-            f"prop-smear-strange/{job_tag}/traj={traj}",
+            f"prop-smear-strange/{job_tag}/traj={traj}/geon-info.txt",
             f"psel-prop-smear-strange/{job_tag}/traj={traj}/checkpoint.txt",
             ]
     fns_need = [
