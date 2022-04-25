@@ -50,7 +50,7 @@ struct Field {
       }
       initialized = true;
     } else {
-      if (not is_matching_geo_mult(geo_, geo())) {
+      if (not is_matching_geo_included(geo_, geo())) {
         displayln("old geo = " + show(geo()));
         displayln("new geo = " + show(geo_));
         qassert(false);
@@ -77,7 +77,7 @@ struct Field {
       }
       initialized = true;
     } else {
-      if (not is_matching_geo_mult(geo_remult(geo_, multiplicity_), geo())) {
+      if (not is_matching_geo_included(geo_remult(geo_, multiplicity_), geo())) {
         displayln("old geo = " + show(geo()));
         displayln("new geo = " + show(geo_remult(geo_, multiplicity_)));
         qassert(false);
