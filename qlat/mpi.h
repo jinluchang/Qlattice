@@ -921,7 +921,10 @@ inline void begin(
 inline void end(const bool is_preserving_cache = false)
 {
   if (get_comm_list().empty()) {
-    qassert(false);
+    displayln_info(ssprintf("qlat::end(): get_comm_list().empty() = true."));
+    if (not is_preserving_cache) {
+      clear_all_caches();
+    }
   } else {
     qassert(get_comm_list().back().comm == get_comm());
     if (get_comm() == MPI_COMM_WORLD) {
