@@ -319,7 +319,7 @@ void smear_propagator(Propagator4dT<T>& prop, const GaugeFieldT<T>& gf1,
     prop1 = prop;
     refresh_expanded_1(prop1);
     qacc_for(index, geo.local_volume(), {
-      const Coordinate xl = geo.coordinate_from_index(index);
+      const Coordinate xl = prop.geo().coordinate_from_index(index);
       WilsonMatrixT<T>& wm = prop.get_elem(xl);
       wm *= 1 - coef;
       for (int dir = -dir_limit; dir < dir_limit; ++dir) {
