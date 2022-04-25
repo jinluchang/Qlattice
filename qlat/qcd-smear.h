@@ -296,7 +296,11 @@ void smear_propagator(Propagator4dT<T>& prop, const GaugeFieldT<T>& gf1,
 // set_left_expanded_gauge_field(gf1, gf)
 // prop is of normal size
 {
-  TIMER_VERBOSE("smear_propagator");
+  //TIMER_VERBOSE("==smear propagator");
+  TIMER_FLOPS("smear_propagator");
+  const int n_avg = smear_in_time_dir ? 8 : 6;
+  const long long vGb = prop.geo().local_volume()*12*4;
+  timer.flops += vGb * step * n_avg * (3*(3*6 + 2*2));
   if (0 == step) {
     return;
   }
@@ -305,7 +309,6 @@ void smear_propagator(Propagator4dT<T>& prop, const GaugeFieldT<T>& gf1,
       smear_in_time_dir
           ? geo_resize(geo, 1)
           : geo_resize(geo, Coordinate(1, 1, 1, 0), Coordinate(1, 1, 1, 0));
-  const int n_avg = smear_in_time_dir ? 8 : 6;
   const int dir_limit = smear_in_time_dir ? 4 : 3;
   array<Complex, 8> mom_factors_v;
   box_acc<array<Complex, 8> > mom_factors(mom_factors_v); // (array<Complex, 8>());
