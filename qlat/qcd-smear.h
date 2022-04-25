@@ -307,11 +307,12 @@ void smear_propagator(Propagator4dT<T>& prop, const GaugeFieldT<T>& gf1,
           : geo_resize(geo, Coordinate(1, 1, 1, 0), Coordinate(1, 1, 1, 0));
   const int n_avg = smear_in_time_dir ? 8 : 6;
   const int dir_limit = smear_in_time_dir ? 4 : 3;
-  array<Complex, 8> mom_factors;
+  array<Complex, 8> mom_factors_v;
+  box_acc<array<Complex, 8> > mom_factors(mom_factors_v); // (array<Complex, 8>());
   for (int i = 0; i < 8; ++i) {
     const int dir = i - 4;
     const double phase = dir >= 0 ? mom[dir] : -mom[-dir - 1];
-    mom_factors[i] = std::polar(coef / n_avg, -phase);
+    mom_factors()[i] = std::polar(coef / n_avg, -phase);
   }
   Propagator4dT<T> prop1;
   prop1.init(geo1);
@@ -324,11 +325,12 @@ void smear_propagator(Propagator4dT<T>& prop, const GaugeFieldT<T>& gf1,
       wm *= 1 - coef;
       for (int dir = -dir_limit; dir < dir_limit; ++dir) {
         const Coordinate xl1 = coordinate_shifts(xl, dir);
-        const ColorMatrixT<T> link =
+        ColorMatrixT<T> link =
             dir >= 0
                 ? gf1.get_elem(xl, dir)
                 : (ColorMatrixT<T>)matrix_adjoint(gf1.get_elem(xl1, -dir - 1));
-        wm += mom_factors[dir + 4] * (link * prop1.get_elem(xl1));
+        link *= mom_factors()[dir + 4];
+        wm += link * prop1.get_elem(xl1);
       }
     });
   }
