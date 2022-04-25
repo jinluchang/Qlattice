@@ -608,7 +608,9 @@ struct Timer {
                  str.c_str()));
     const long dbsize = db.size();
     for (long i = 0; i < dbsize; i++) {
-      db[i]->show_avg("display", max_function_name_length_shown());
+      if (db[i]->call_times > 0) {
+        db[i]->show_avg("display", max_function_name_length_shown());
+      }
     }
     displayln_info(
         ssprintf("Timer::display-end:   %s --------------------- total %.4E "
