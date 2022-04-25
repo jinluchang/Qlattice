@@ -1136,7 +1136,7 @@ struct ShuffledFieldsReader {
   {
     init();
     path = path_;
-    if (does_file_exist_sync_node(path + "/geon-info.txt")) {
+    if (does_file_exist_qar_sync_node(path + "/geon-info.txt")) {
       new_size_node = shuffled_fields_reader_size_node_info(path);
     } else {
       qassert(new_size_node_ != Coordinate());
