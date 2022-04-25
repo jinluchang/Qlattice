@@ -91,3 +91,7 @@ EXPORT(timer_display_stack, {
   Py_RETURN_NONE;
 });
 
+EXPORT(verbose_level, {
+  using namespace qlat;
+  return py_convert(verbose_level());
+});
