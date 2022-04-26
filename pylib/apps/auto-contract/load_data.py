@@ -18,6 +18,8 @@ def mk_ama_val(val, source_specification, val_list, rel_acc_list, prob_list):
             corrections.append((val_i, { source_specification: (rel_acc_i, prob_i), },))
     return AmaVal(val, corrections)
 
+### -------
+
 @q.timer
 def get_prop_wsrc(prop_cache, inv_type, t_src, tag_snk_type):
     cache_type_dict = {
@@ -26,23 +28,25 @@ def get_prop_wsrc(prop_cache, inv_type, t_src, tag_snk_type):
             "wsrc ; psel": "psel",
             }
     cache_type = cache_type_dict[tag_snk_type]
+    prop_cache_prob = prop_cache["prob"]
+    prop_cache_type = prop_cache[cache_type]
     tslice = t_src
     def mk_tag(inv_acc):
         return f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc} ; {tag_snk_type}"
     tag = mk_tag(inv_acc = 1)
     tag1 = mk_tag(inv_acc = 2)
-    prob = prop_cache["prob"][f"type={inv_type} ; accuracy=1 ; wsrc ; prob"]
+    prob = prop_cache_prob[f"type={inv_type} ; accuracy=1 ; wsrc ; prob"]
     # level light_accuracy strange_accuracy
     # 0     inv_acc=1      inv_acc=1
     # 3     inv_acc=2      inv_acc=2
     assert prob == 1
-    val = prop_cache[cache_type].get(tag)
-    if tag1 not in prop_cache[cache_type]:
+    val = prop_cache_type.get(tag)
+    if tag1 not in prop_cache_type:
         return val
     source_specification = ("wall", t_src,)
-    val_list = [ val, prop_cache[cache_type].get(tag1), ]
+    val_list = [ val, prop_cache_type.get(tag1), ]
     rel_acc_list = [ 0, 3, ]
-    prob_list = [ 1, prop_cache["prob"][f"type={inv_type} ; accuracy=2 ; wsrc ; prob"], ]
+    prob_list = [ 1, prop_cache_prob[f"type={inv_type} ; accuracy=2 ; wsrc ; prob"], ]
     return mk_ama_val(val, source_specification, val_list, rel_acc_list, prob_list)
 
 @q.timer
@@ -68,6 +72,87 @@ def get_prop_psnk_wsrc_psel(prop_cache, inv_type, xg_snk, t_src, psel_pos_dict):
         return x.get_elem(idx_snk)
     return ama_apply1(f, get_prop_wsrc(prop_cache, inv_type, t_src, "wsrc ; psel"))
 
+### -------
+
+@q.timer
+def get_prop_psrc(prop_cache, inv_type, xg_src, tag_snk_type):
+    cache_type_dict = {
+            "psrc_wsnk ; psel_ts": "psel_ts",
+            "psrc ; fsel": "fsel",
+            "psrc ; psel": "psel",
+            }
+    cache_type = cache_type_dict[tag_snk_type]
+    prop_cache_prob = prop_cache["prob"]
+    prop_cache_type = prop_cache[cache_type]
+    xg = xg_src
+    xg_str = f"({xg[0]},{xg[1]},{xg[2]},{xg[3]})"
+    def mk_tag(inv_acc):
+        return f"xg={xg_str} ; type={inv_type} ; accuracy={inv_acc} ; {tag_snk_type}"
+    tag = mk_tag(inv_acc = 0)
+    tag1 = mk_tag(inv_acc = 1)
+    tag2 = mk_tag(inv_acc = 2)
+    prob = prop_cache_prob[f"type={inv_type} ; accuracy=0 ; psrc ; prob"]
+    # level light_accuracy strange_accuracy
+    # 0     inv_acc=0      inv_acc=0/zero_prop
+    # 1     inv_acc=0      inv_acc=0
+    # 2     inv_acc=1      inv_acc=1
+    # 3     inv_acc=2      inv_acc=2
+    if prob == 1.0:
+        val = prop_cache_type.get(tag)
+        assert val is not None
+        if tag1 not in prop_cache_type:
+            return val
+    else:
+        assert prob < 1
+        assert inv_type == 1
+        val = prop_cache_type.get(f"zero ; {cache_type}")
+        assert val is not None
+        if tag not in prop_cache_type:
+            return val
+    source_specification = ("point", tuple(xg_src),)
+    val_list = [
+            val,
+            prop_cache_type.get(tag),
+            prop_cache_type.get(tag1),
+            prop_cache_type.get(tag2),
+            ]
+    rel_acc_list = [ 0, 1, 2, 3, ]
+    prob_list = [
+            1.0,
+            prop_cache_prob[f"type={inv_type} ; accuracy=0 ; psrc ; prob"],
+            prop_cache_prob[f"type={inv_type} ; accuracy=1 ; psrc ; prob"],
+            prop_cache_prob[f"type={inv_type} ; accuracy=2 ; psrc ; prob"],
+            ]
+    return mk_ama_val(val, source_specification, val_list, rel_acc_list, prob_list)
+
+@q.timer
+def get_prop_wsnk_psrc(prop_cache, inv_type, t_snk, xg_src):
+    assert isinstance(xg_src, tuple) and len(xg_src) == 4
+    sp_prop = get_prop_psrc(prop_cache, inv_type, xg_src, "psrc_wsnk ; psel_ts")
+    def f(x):
+        return x.get_elem(t_snk)
+    return ama_apply1(f, sp_prop)
+
+@q.timer
+def get_prop_psnk_psrc_fsel(prop_cache, inv_type, xg_snk, xg_src, fsel_pos_dict):
+    assert isinstance(xg_src, tuple) and len(xg_src) == 4
+    assert isinstance(xg_snk, tuple) and len(xg_snk) == 4
+    idx_snk = fsel_pos_dict[xg_snk]
+    def f(x):
+        return x.get_elem(idx_snk)
+    return ama_apply1(f, get_prop_psrc(prop_cache, inv_type, xg_src, "psrc ; fsel"))
+
+@q.timer
+def get_prop_psnk_psrc_psel(prop_cache, inv_type, xg_snk, xg_src, psel_pos_dict):
+    assert isinstance(xg_src, tuple) and len(xg_src) == 4
+    assert isinstance(xg_snk, tuple) and len(xg_snk) == 4
+    idx_snk = psel_pos_dict[xg_snk]
+    def f(x):
+        return x.get_elem(idx_snk)
+    return ama_apply1(f, get_prop_psrc(prop_cache, inv_type, xg_src, "psrc ; psel"))
+
+### -------
+
 @q.timer
 def get_prop_rand_u1_fsel(prop_cache, inv_type):
     inv_acc = 2
@@ -81,6 +166,8 @@ def get_prop_psnk_rand_u1_fsel(prop_cache, inv_type, xg_snk, fsel_pos_dict):
     def f(x):
         return x.get_elem(idx_snk)
     return ama_apply1(f, get_prop_rand_u1_fsel(prop_cache, inv_type))
+
+### -------
 
 @q.timer
 def get_prop_snk_src(prop_cache, flavor, p_snk, p_src, *, psel_pos_dict, fsel_pos_dict):
@@ -137,17 +224,18 @@ def get_prop_snk_src(prop_cache, flavor, p_snk, p_src, *, psel_pos_dict, fsel_po
             # means we use point source at the source location and psel psnk at sink location
             assert pos_src in psel_pos_dict
             assert pos_snk in psel_pos_dict
-            assert False
+            msc = get_prop_psnk_psrc_psel(prop_cache, inv_type, pos_snk, pos_src, psel_pos_dict)
         elif type_src == "point":
             # means we use point source at the source location
             assert pos_src in psel_pos_dict
             assert pos_snk in fsel_pos_dict
-            assert False
+            msc = get_prop_psnk_psrc_fsel(prop_cache, inv_type, pos_snk, pos_src, fsel_pos_dict)
         elif type_snk == "point":
             # means we use point source at the sink location
             assert pos_snk in psel_pos_dict
             assert pos_src in fsel_pos_dict
-            assert False
+            msc = get_prop_psnk_psrc_fsel(prop_cache, inv_type, pos_src, pos_snk, fsel_pos_dict)
+            msc = ama_apply1(g5_herm, msc)
         elif pos_snk == pos_src and flavor in rand_u1_flavors:
             # use the rand_u1 source
             assert pos_snk in fsel_pos_dict
@@ -157,7 +245,10 @@ def get_prop_snk_src(prop_cache, flavor, p_snk, p_src, *, psel_pos_dict, fsel_po
             assert False
     else:
         raise Exception("get_prop_snk_src unknown p_snk={p_snk} p_src={p_src}")
-    return ama_apply1(as_mspincolor, msc)
+    msc = ama_apply1(as_mspincolor, msc)
+    return msc
+
+### -------
 
 @q.timer
 def load_prop_wsrc_all(job_tag, traj, flavor, *, wi, psel, fsel, fselc, gt):
@@ -284,6 +375,23 @@ def load_prop_psrc_all(job_tag, traj, flavor, *, psel, fsel, fselc):
     cache_prob[f"type={flavor_inv_type} ; accuracy=2 ; psrc ; prob"] = rup.dict_params[job_tag]["prob_acc_2_psrc"]
 
 @q.timer
+def load_prop_zero(job_tag, traj, *, psel, fsel, fselc):
+    cache_fsel = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}", f"fsel")
+    cache_psel = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}", f"psel")
+    cache_psel_ts = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}", f"psel_ts")
+    total_site = ru.get_total_site(job_tag)
+    psel_ts = q.get_psel_tslice(total_site)
+    s_prop = q.SelProp(fsel)
+    sp_prop = q.PselProp(psel)
+    spw_prop = q.PselProp(psel_ts)
+    q.set_zero(s_prop)
+    q.set_zero(sp_prop)
+    q.set_zero(spw_prop)
+    cache_fsel[f"zero ; fsel"] = s_prop
+    cache_psel[f"zero ; psel"] = sp_prop
+    cache_psel_ts[f"zero ; psel_ts"] = spw_prop
+
+@q.timer
 def load_prop_rand_u1_all(job_tag, traj, flavor, *, fsel):
     # cache_fsel[f"type={inv_type} ; accuracy={inv_acc} ; rand_u1 ; fsel"]
     cache_fsel = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}", f"fsel")
@@ -354,6 +462,7 @@ def run_get_prop(job_tag, traj, *, get_gt, get_psel, get_fsel, get_psel_smear, g
         load_prop_rand_u1_all(job_tag, traj, "l", fsel = fsel)
         load_prop_rand_u1_all(job_tag, traj, "s", fsel = fsel)
         load_prop_rand_u1_all(job_tag, traj, "c", fsel = fsel)
+        load_prop_zero(job_tag, traj, psel = psel, fsel = fsel, fselc = fselc)
         prop_cache = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}")
         psel_pos_dict = dict([ (tuple(pos), i) for i, pos in enumerate(psel.to_list()) ])
         fsel_pos_dict = dict([ (tuple(pos), i) for i, pos in enumerate(fsel.to_psel_local().to_list()) ])

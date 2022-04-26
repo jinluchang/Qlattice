@@ -49,9 +49,6 @@ def parallel_map(n_processes, func, iterable):
     pool_function = None
     return res
 
-###
-
-
 ### ------
 
 @q.timer
@@ -87,7 +84,7 @@ def auto_contractor_vev(job_tag, traj, get_prop, get_psel, get_fsel):
                 }
         res = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop, is_only_total = "total")
         return res
-    res_list = list(map(feval, xg_fsel_list))
+    res_list = parallel_map(0, feval, xg_fsel_list)
     res_sum = q.glb_sum(sum(res_list))
     res_count = q.glb_sum(len(res_list))
     res_avg = res_sum / res_count
@@ -135,10 +132,66 @@ def auto_contractor_meson_corr(job_tag, traj, get_prop, get_psel, get_fsel):
             res = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop, is_only_total = "total")
             l.append(res)
         return np.array(l).transpose()
-    # res_list = list(map(feval, xg_fsel_list))
     res_list = parallel_map(0, feval, xg_fsel_list)
     res_sum = q.glb_sum(sum(res_list))
     res_count = q.glb_sum(len(res_list))
+    res_avg = res_sum / res_count
+    names_expr = get_cexpr_names(cexpr)
+    ld = q.mk_lat_data([
+        [ "expr_name", len(names_expr), names_expr, ],
+        [ "t_sep", total_site[3], ],
+        ])
+    ld.from_numpy(res_avg)
+    q.displayln_info(ld.show())
+    ld.save(get_save_path(fn))
+
+@q.timer
+def get_cexpr_hvp():
+    def calc_cexpr():
+        exprs = [
+                mk_jl_mu("x2", 0) * mk_jl_mu("x1", 0) + "(jl_0 * jl_0)",
+                mk_jl_mu("x2", 1) * mk_jl_mu("x1", 1) + "(jl_1 * jl_1)",
+                mk_jl_mu("x2", 2) * mk_jl_mu("x1", 2) + "(jl_2 * jl_2)",
+                mk_jl_mu("x2", 3) * mk_jl_mu("x1", 3) + "(jl_3 * jl_3)",
+                mk_jl_mu("x2", 5) * mk_jl_mu("x1", 5) + "(jl_5 * jl_5)",
+                ]
+        cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
+        q.displayln_info(display_cexpr(cexpr))
+        cexpr.collect_op()
+        return cexpr
+    cexpr = q.pickle_cache_call(calc_cexpr, f"cache/auto_contractor_cexpr/hvp-cexpr.pickle")
+    q.displayln_info(display_cexpr_raw(cexpr))
+    return cexpr
+
+@q.timer_verbose
+def auto_contractor_hvp(job_tag, traj, get_prop, get_psel, get_fsel):
+    fn = f"auto-contractor-fsel/{job_tag}/traj={traj}/hvp.lat"
+    if get_load_path(fn) is not None:
+        return
+    cexpr = get_cexpr_hvp()
+    total_site = ru.get_total_site(job_tag)
+    psel = get_psel()
+    fsel, fselc = get_fsel()
+    xg_fsel_list = fsel.to_psel_local().to_list()
+    xg_psel_list = psel.to_list()
+    def feval(xg_src):
+        values = [ 0 for i in range(total_site[3]) ]
+        counts = [ 0 for i in range(total_site[3]) ]
+        for xg_snk in xg_fsel_list:
+            pd = {
+                    "x2" : ("point-snk", xg_snk,),
+                    "x1" : ("point", xg_src,),
+                    }
+            res = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop, is_only_total = "total")
+            tsep = (xg_snk[3] - xg_src[3]) % total_site[3]
+            counts[tsep] += 1
+            values[tsep] += res
+        counts = np.array(counts) # counts[tsep]
+        values = np.array(values).transpose() # values[expr_idx, tsep]
+        return counts, values
+    counts_list, values_list = zip(*parallel_map(0, feval, xg_psel_list))
+    res_count = q.glb_sum(sum(counts_list))
+    res_sum = q.glb_sum(sum(values_list))
     res_avg = res_sum / res_count
     names_expr = get_cexpr_names(cexpr)
     ld = q.mk_lat_data([
@@ -189,7 +242,7 @@ def run_job(job_tag, traj):
     get_fsel = run_fsel(job_tag, traj, get_psel)
     #
     get_wi = run_wi(job_tag, traj)
-    get_psel_smear = run_psel_smear(job_tag, traj) 
+    get_psel_smear = run_psel_smear(job_tag, traj)
     #
     get_get_prop = run_get_prop(job_tag, traj,
             get_gt = get_gt,
@@ -204,8 +257,9 @@ def run_job(job_tag, traj):
         if q.obtain_lock(f"locks/{job_tag}-{traj}-auto-contractor"):
             get_prop = get_get_prop()
             # ADJUST ME
-            # auto_contractor_vev(job_tag, traj, get_prop, get_psel, get_fsel)
+            auto_contractor_vev(job_tag, traj, get_prop, get_psel, get_fsel)
             auto_contractor_meson_corr(job_tag, traj, get_prop, get_psel, get_fsel)
+            auto_contractor_hvp(job_tag, traj, get_prop, get_psel, get_fsel)
             #
             q.qtouch_info(get_save_path(fn_checkpoint))
             q.release_lock()

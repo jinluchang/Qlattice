@@ -25,9 +25,12 @@ def glb_sum_np(x):
     ld = LatData()
     if dtype == np.dtype('float64'):
         ld.from_list(l, is_complex = False)
+    elif dtype == np.dtype('int64'):
+        ld.from_list(list(map(float, l)), is_complex = False)
     elif dtype == np.dtype('complex128'):
         ld.from_list(l, is_complex = True)
     else:
+        displayln(dtype)
         assert False
     ld.glb_sum()
     return np.array(ld.to_list(), dtype = dtype).reshape(shape)
