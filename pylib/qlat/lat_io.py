@@ -241,6 +241,8 @@ class LatData:
                 raise Exception(f"LatData setinfo info_list={info_list} is_complex={is_complex}")
         self.set_zero()
 
+###
+
 def mk_lat_data(info_list, *, is_complex = True):
     ld = LatData()
     ld.set_info(info_list, is_complex = is_complex)
