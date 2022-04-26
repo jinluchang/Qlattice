@@ -76,6 +76,7 @@ def auto_contractor_vev(job_tag, traj, get_prop, get_psel, get_fsel):
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_vev()
+    names_expr = get_cexpr_names(cexpr)
     fsel, fselc = get_fsel()
     xg_fsel_list = fsel.to_psel_local().to_list()
     def feval(x):
@@ -88,7 +89,6 @@ def auto_contractor_vev(job_tag, traj, get_prop, get_psel, get_fsel):
     res_sum = q.glb_sum(sum(res_list))
     res_count = q.glb_sum(len(res_list))
     res_avg = res_sum / res_count
-    names_expr = get_cexpr_names(cexpr)
     ld = q.mk_lat_data([
         [ "expr_name", len(names_expr), names_expr, ],
         ])
@@ -119,6 +119,7 @@ def auto_contractor_meson_corr(job_tag, traj, get_prop, get_psel, get_fsel):
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_meson_corr()
+    names_expr = get_cexpr_names(cexpr)
     total_site = ru.get_total_site(job_tag)
     fsel, fselc = get_fsel()
     xg_fsel_list = fsel.to_psel_local().to_list()
@@ -136,7 +137,6 @@ def auto_contractor_meson_corr(job_tag, traj, get_prop, get_psel, get_fsel):
     res_sum = q.glb_sum(sum(res_list))
     res_count = q.glb_sum(len(res_list))
     res_avg = res_sum / res_count
-    names_expr = get_cexpr_names(cexpr)
     ld = q.mk_lat_data([
         [ "expr_name", len(names_expr), names_expr, ],
         [ "t_sep", total_site[3], ],
@@ -169,14 +169,15 @@ def auto_contractor_hvp(job_tag, traj, get_prop, get_psel, get_fsel):
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_hvp()
+    names_expr = get_cexpr_names(cexpr)
     total_site = ru.get_total_site(job_tag)
     psel = get_psel()
     fsel, fselc = get_fsel()
     xg_fsel_list = fsel.to_psel_local().to_list()
     xg_psel_list = psel.to_list()
     def feval(xg_src):
-        values = [ 0 for i in range(total_site[3]) ]
-        counts = [ 0 for i in range(total_site[3]) ]
+        counts = np.zeros(total_site[3], dtype = int)
+        values = np.zeros((total_site[3], len(names_expr)), dtype = complex)
         for xg_snk in xg_fsel_list:
             pd = {
                     "x2" : ("point-snk", xg_snk,),
@@ -186,14 +187,13 @@ def auto_contractor_hvp(job_tag, traj, get_prop, get_psel, get_fsel):
             tsep = (xg_snk[3] - xg_src[3]) % total_site[3]
             counts[tsep] += 1
             values[tsep] += res
-        counts = np.array(counts) # counts[tsep]
-        values = np.array(values).transpose() # values[expr_idx, tsep]
+        counts = counts # counts[tsep]
+        values = values.transpose() # values[expr_idx, tsep]
         return counts, values
     counts_list, values_list = zip(*parallel_map(0, feval, xg_psel_list))
     res_count = q.glb_sum(sum(counts_list))
     res_sum = q.glb_sum(sum(values_list))
     res_avg = res_sum / res_count
-    names_expr = get_cexpr_names(cexpr)
     ld = q.mk_lat_data([
         [ "expr_name", len(names_expr), names_expr, ],
         [ "t_sep", total_site[3], ],
