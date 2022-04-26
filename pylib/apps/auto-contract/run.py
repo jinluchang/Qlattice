@@ -149,11 +149,11 @@ def auto_contractor_meson_corr(job_tag, traj, get_prop, get_psel, get_fsel):
 def get_cexpr_hvp():
     def calc_cexpr():
         exprs = [
-                mk_jl_mu("x2", 0) * mk_jl_mu("x1", 0) + "(jl_0 * jl_0)",
-                mk_jl_mu("x2", 1) * mk_jl_mu("x1", 1) + "(jl_1 * jl_1)",
-                mk_jl_mu("x2", 2) * mk_jl_mu("x1", 2) + "(jl_2 * jl_2)",
-                mk_jl_mu("x2", 3) * mk_jl_mu("x1", 3) + "(jl_3 * jl_3)",
-                mk_jl_mu("x2", 5) * mk_jl_mu("x1", 5) + "(jl_5 * jl_5)",
+                -mk_jl_mu("x2", 0) * mk_jl_mu("x1", 0) + "(-jl_0 * jl_0)",
+                -mk_jl_mu("x2", 1) * mk_jl_mu("x1", 1) + "(-jl_1 * jl_1)",
+                -mk_jl_mu("x2", 2) * mk_jl_mu("x1", 2) + "(-jl_2 * jl_2)",
+                -mk_jl_mu("x2", 3) * mk_jl_mu("x1", 3) + "(-jl_3 * jl_3)",
+                -mk_jl_mu("x2", 5) * mk_jl_mu("x1", 5) + "(-jl_5 * jl_5)",
                 ]
         cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
         q.displayln_info(display_cexpr(cexpr))
