@@ -43,9 +43,10 @@ def sm_evolve(momentum_ft, field_init, action, fg_dt, dt, fft, ifft):
     momentum_ft.set_complex_from_double(momentum)
     momentum_ft *= 1/V**0.5
     momentum_ft @= fft*momentum_ft
+    return force
 
 @q.timer_verbose
-def hmc_evolve(field, momentum_ft, field_ft, action, steps, dt, V, fft, ifft):
+def hmc_evolve(field, momentum_ft, field_ft, action, masses, steps, dt, V, fft, ifft):
     # Evolve the field according to the given action using the force 
     # gradient algorithm
     lam = 0.5 * (1.0 - 1.0 / m.sqrt(3.0));
@@ -58,12 +59,13 @@ def hmc_evolve(field, momentum_ft, field_ft, action, steps, dt, V, fft, ifft):
     field.set_double_from_complex(ifft*field_ft)
     field*=1/V**0.5
     #
+    force_ft = q.Field("Complex", field.geo())
     for i in range(steps):
         sm_evolve(momentum_ft, field, action, 4.0 * ttheta / dt, 0.5 * dt, fft, ifft);
         action.hmc_field_evolve(field_ft, momentum_ft, (1.0 - 2.0 * lam) * dt);
         field.set_double_from_complex(ifft*field_ft)
         field*=1/V**0.5
-        sm_evolve(momentum_ft, field, action, 4.0 * ttheta / dt, 0.5 * dt, fft, ifft);
+        force = sm_evolve(momentum_ft, field, action, 4.0 * ttheta / dt, 0.5 * dt, fft, ifft);
         if i < steps - 1:
             action.hmc_field_evolve(field_ft, momentum_ft, 2.0 * lam * dt);
             field.set_double_from_complex(ifft*field_ft)
@@ -72,9 +74,13 @@ def hmc_evolve(field, momentum_ft, field_ft, action, steps, dt, V, fft, ifft):
             action.hmc_field_evolve(field_ft, momentum_ft, lam * dt);
             field.set_double_from_complex(ifft*field_ft)
             field*=1/V**0.5
+    force_ft.set_complex_from_double(force)
+    force_ft=fft*force_ft
+    force_ft*=1/V**0.5
+    action.hmc_estimate_mass(masses, field_ft, force_ft, 0.0)
 
 @q.timer_verbose
-def run_hmc_evolve(field, momentum_ft, field_ft, action, rs, steps, md_time, V, fft, ifft):
+def run_hmc_evolve(field, momentum_ft, field_ft, action, masses, rs, steps, md_time, V, fft, ifft):
     # Calculate the value of the molecular dynamics Hamiltonian for the 
     # initial field and momentum configuration
     energy = action.hmc_m_hamilton_node(momentum_ft) + action.action_node(field)
@@ -82,7 +88,7 @@ def run_hmc_evolve(field, momentum_ft, field_ft, action, rs, steps, md_time, V, 
     # Evolve the field forward in molecular dynamics time using the 
     # given momenta and the Hamiltonian appropriate for the action
     dt = float(md_time) / float(steps)
-    hmc_evolve(field, momentum_ft, field_ft, action, steps, dt, V, fft, ifft)
+    hmc_evolve(field, momentum_ft, field_ft, action, masses, steps, dt, V, fft, ifft)
     
     # Calculate the change in the value of the molecular dynamics 
     # Hamilton after the evolution 
@@ -123,7 +129,7 @@ def metropolis_accept(delta_h, traj, rs):
     return flag, accept_prob
 
 @q.timer_verbose
-def run_hmc(field, geo, action, traj, rs, fft, ifft):
+def run_hmc(field, geo, action, masses, traj, rs, fft, ifft):
     # Create a copy of the scalar field
     f0 = field.copy()
     
@@ -161,7 +167,7 @@ def run_hmc(field, geo, action, traj, rs, fft, ifft):
     
     # Evolve the field over time md_time using the given momenta and 
     # the Hamiltonian appropriate for the given action
-    delta_h = run_hmc_evolve(f0, momentum_ft, field_ft, action, rs, steps, md_time, geo.total_volume(), fft, ifft)
+    delta_h = run_hmc_evolve(f0, momentum_ft, field_ft, action, masses, rs, steps, md_time, geo.total_volume(), fft, ifft)
     
     # Decide whether to accept or reject the field update using the 
     # metropolis algorithm
@@ -195,6 +201,10 @@ def test_hmc(total_site, action, mult, n_traj):
     q.set_unit(field);
     #field.load_double(f"output_data/hmc-pions-sigma-pi-corrs_{total_site[0]}x{total_site[3]}_msq_{m_sq}_lmbd_{lmbd}_alph_{alpha}.field")
     
+    # Create a field to store the masses used for Fourier acceleration
+    masses = q.Field("double",geo,mult)
+    q.set_unit(masses);
+    
     # Create the geometry for the axial current field
     geo_cur = q.Geometry(total_site, mult-1)
     # This field will store the calculated axial currents
@@ -209,7 +219,7 @@ def test_hmc(total_site, action, mult, n_traj):
         traj += 1
         
         # Run the HMC algorithm to update the field configuration
-        run_hmc(field, geo, action, traj, rs.split("hmc-{}".format(traj)), fft, ifft)
+        run_hmc(field, geo, action, masses, traj, rs.split("hmc-{}".format(traj)), fft, ifft)
         
         # Calculate the expectation values of phi and phi^2
         q.displayln_info("Average phi^2:")
@@ -220,6 +230,10 @@ def test_hmc(total_site, action, mult, n_traj):
         field_sum = field.glb_sum()
         phi=[field_sum[i]/V for i in range(mult)]
         q.displayln_info(phi)
+        
+        q.displayln_info("Estmiated masses:")
+        ms=[masses.get_elem([0,0,0,0],0),masses.get_elem([1,0,0,0],0),masses.get_elem([2,0,0,0],0),masses.get_elem([3,0,0,0],0),masses.get_elem([4,0,0,0],0),masses.get_elem([5,0,0,0],0)]
+        q.displayln_info(ms)
         
         tslices = field.glb_sum_tslice()
         
@@ -255,7 +269,7 @@ timeslices=[]
 ax_cur_timeslices=[]
 
 # The lattice dimensions
-total_site = [8,8,8,8]
+total_site = [4,2,2,2]
 
 # The multiplicity of the scalar field
 mult = 1
@@ -286,7 +300,7 @@ q.qremove_all_info("results")
 
 main()
 
-with open(f"output_data/sigma_pion_corrs_{total_site[0]}x{total_site[3]}_msq_{m_sq}_lmbd_{lmbd}_alph_{alpha}_{datetime.datetime.now().date()}_w_fa.bin", "wb") as output:
+with open(f"output_data/sigma_pion_corrs_{total_site[0]}x{total_site[3]}_msq_{m_sq}_lmbd_{lmbd}_alph_{alpha}_{datetime.datetime.now().date()}.bin", "wb") as output:
     pickle.dump([psq_list,phi_list,timeslices,ax_cur_timeslices],output)
 
 #q.timer_display()

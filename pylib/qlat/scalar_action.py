@@ -30,6 +30,12 @@ class ScalarAction:
         assert isinstance(sm, Field)
         return c.action_node_scalar_action(self, sm)
     
+    def hmc_estimate_mass(self, masses, field_ft, force_ft, phi0):
+        assert isinstance(masses, Field)
+        assert isinstance(field_ft, Field)
+        assert isinstance(force_ft, Field)
+        return c.hmc_estimate_mass_scalar_action(self, masses, field_ft, force_ft, phi0)
+    
     def set_complex_from_double(self, cf, sf):
         assert isinstance(cf, Field)
         assert isinstance(sf, Field)

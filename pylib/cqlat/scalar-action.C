@@ -65,6 +65,24 @@ EXPORT(action_node_scalar_action, {
   return py_convert(ret);
 });
 
+EXPORT(hmc_estimate_mass_scalar_action, {
+  using namespace qlat;
+  PyObject* p_sa = NULL;
+  PyObject* p_masses = NULL;
+  PyObject* p_field_ft = NULL;
+  PyObject* p_force_ft = NULL;
+  double phi0 = 0.0;
+  if (!PyArg_ParseTuple(args, "OOOOd", &p_sa, &p_masses, &p_field_ft, &p_force_ft, &phi0)) {
+    return NULL;
+  }
+  ScalarAction& sa = py_convert_type<ScalarAction>(p_sa);
+  Field<double>& masses = py_convert_type<Field<double>>(p_masses);
+  const Field<Complex>& field_ft = py_convert_type<Field<Complex>>(p_field_ft);
+  const Field<Complex>& force_ft = py_convert_type<Field<Complex>>(p_force_ft);
+  sa.hmc_estimate_mass(masses, field_ft, force_ft, phi0);
+  Py_RETURN_NONE;
+});
+
 EXPORT(hmc_m_hamilton_node_scalar_action, {
   using namespace qlat;
   PyObject* p_sa = NULL;
