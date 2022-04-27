@@ -175,6 +175,7 @@ def auto_contractor_hvp(job_tag, traj, get_prop, get_psel, get_fsel):
     fsel, fselc = get_fsel()
     xg_fsel_list = fsel.to_psel_local().to_list()
     xg_psel_list = psel.to_list()
+    vol = total_site[0] * total_site[1] * total_site[2]
     def feval(xg_src):
         counts = np.zeros(total_site[3], dtype = int)
         values = np.zeros((total_site[3], len(names_expr)), dtype = complex)
@@ -193,7 +194,7 @@ def auto_contractor_hvp(job_tag, traj, get_prop, get_psel, get_fsel):
     counts_list, values_list = zip(*parallel_map(0, feval, xg_psel_list))
     res_count = q.glb_sum(sum(counts_list))
     res_sum = q.glb_sum(sum(values_list))
-    res_avg = res_sum / res_count
+    res_avg = res_sum * (vol / res_count)
     ld = q.mk_lat_data([
         [ "expr_name", len(names_expr), names_expr, ],
         [ "t_sep", total_site[3], ],
@@ -201,6 +202,44 @@ def auto_contractor_hvp(job_tag, traj, get_prop, get_psel, get_fsel):
     ld.from_numpy(res_avg)
     q.displayln_info(ld.show())
     ld.save(get_save_path(fn))
+
+@q.timer_verbose
+def auto_contractor_hvp_field(job_tag, traj, get_prop, get_psel, get_fsel):
+    fn = f"auto-contractor-fsel/{job_tag}/traj={traj}/hvp.field"
+    if get_load_path(fn) is not None:
+        return
+    cexpr = get_cexpr_hvp()
+    names_expr = get_cexpr_names(cexpr)
+    total_site = ru.get_total_site(job_tag)
+    psel = get_psel()
+    fsel, fselc = get_fsel()
+    xg_fsel_list = fsel.to_psel_local().to_list()
+    xg_psel_list = psel.to_list()
+    geo = q.Geometry(total_site, 1)
+    field = q.Field("Complex", geo, len(names_expr))
+    field.set_zero()
+    for idx, xg_src in enumerate(xg_psel_list):
+        def feval(xg_snk):
+            pd = {
+                    "x2" : ("point-snk", xg_snk,),
+                    "x1" : ("point", xg_src,),
+                    }
+            res = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop, is_only_total = "total")
+            return res
+        values_list = parallel_map(0, feval, xg_fsel_list)
+        assert len(values_list) == fsel.n_elems()
+        values = q.SelectedField("Complex", fsel, len(names_expr))
+        for idx, v in enumerate(values_list):
+            values[idx] = v.tobytes()
+        shift = [ -x for x in xg_src ]
+        values_shifted = values.field_shift(shift)
+        field += values_shifted
+    # scale the value appropriately
+    field *= 1.0 / (len(xg_psel_list) * fsel.prob())
+    field.save_float_from_double(get_save_path(fn))
+    q.displayln_info(field.glb_sum_tslice().to_numpy())
+
+### ------
 
 @q.timer_verbose
 def run_job(job_tag, traj):
@@ -260,6 +299,7 @@ def run_job(job_tag, traj):
             auto_contractor_vev(job_tag, traj, get_prop, get_psel, get_fsel)
             auto_contractor_meson_corr(job_tag, traj, get_prop, get_psel, get_fsel)
             auto_contractor_hvp(job_tag, traj, get_prop, get_psel, get_fsel)
+            auto_contractor_hvp_field(job_tag, traj, get_prop, get_psel, get_fsel)
             #
             q.qtouch_info(get_save_path(fn_checkpoint))
             q.release_lock()

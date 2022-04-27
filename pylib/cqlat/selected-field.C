@@ -456,7 +456,7 @@ EXPORT(acc_field_sfield, {
   using namespace qlat;
   PyObject* p_field = NULL;
   PyObject* p_sfield = NULL;
-  if (!PyArg_ParseTuple(args, "ODO", &p_field, &p_sfield)) {
+  if (!PyArg_ParseTuple(args, "OO", &p_field, &p_sfield)) {
     return NULL;
   }
   const std::string ctype = py_get_ctype(p_sfield);

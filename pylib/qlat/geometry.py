@@ -5,6 +5,8 @@ class Geometry:
     # self.cdata
 
     def __init__(self, total_site = None, multiplicity = None):
+        # if total_site is None: create geo uninitialized
+        # elif multiplicity is None: create geo with multiplicity = 1
         self.cdata = c.mk_geo()
         if total_site is not None:
             if multiplicity is None:

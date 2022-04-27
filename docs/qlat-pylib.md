@@ -8,6 +8,8 @@
 class Geometry:
     # self.cdata
     def __init__(self, total_site = None, multiplicity = None):
+        # if total_site is None: create geo uninitialized
+        # elif multiplicity is None: create geo with multiplicity = 1
     def __imatmul__(self, v1):
     def copy(self, is_copying_data = True):
     def total_site(self):
@@ -309,6 +311,7 @@ class Field:
         # reflect the field, return None
     def glb_sum(self):
     def glb_sum_tslice(self):
+        # return SelectedPoints(self.ctype, get_psel_tslice(self.total_site()))
 ```
 
 ```python
@@ -426,6 +429,7 @@ class SelectedPoints:
     def to_numpy(self):
     def from_numpy(self, arr):
         # need to be already initialized with ctype and psel
+        # arr.shape[0] == n_points
 ```
 
 ## Prop

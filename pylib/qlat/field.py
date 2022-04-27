@@ -113,7 +113,6 @@ class Field:
                 c.acc_field_spfield(self, f1)
             else:
                 raise Exception(f"Field += type mismatch {type(self)} {type(f1)}")
-            assert False
         return self
 
     def __isub__(self, f1):
@@ -376,6 +375,7 @@ class Field:
             return None
 
     def glb_sum_tslice(self):
+        # return SelectedPoints(self.ctype, get_psel_tslice(self.total_site()))
         from qlat.field_selection import get_psel_tslice
         from qlat.selected_points import SelectedPoints
         psel = get_psel_tslice(self.total_site())
