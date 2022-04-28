@@ -86,6 +86,7 @@ int main(int argc, char* argv[])
 {
   begin(&argc, &argv);
   test1();
+  displayln_info("CHECK: finished successfully.");
   Timer::display();
   end();
   return 0;

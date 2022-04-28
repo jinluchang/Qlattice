@@ -864,19 +864,34 @@ inline FFTGPUPlanKey get_fft_gpu_plan_key(std::vector<qlat::FieldM<Ty, civ> >& s
   return fkey;
 }
 
+bool check_fft_mode(const int nfft, const Geometry& geo, const bool fft4d)
+{
+  bool use_qlat = false;
+  std::vector<int > nv, Nv, mv;
+  geo_to_nv(geo, nv, Nv, mv);
+  if(fft4d == true ){
+    if(mv[0] * mv[1] * mv[2] > nfft)
+    {use_qlat = true;}
+  }
+  if(fft4d == false){
+    if(mv[0] * mv[1] != 1 and (mv[0] * mv[1] * mv[2] > nfft))
+    {use_qlat = true;}
+  }
+
+  #ifdef QLAT_USE_ACC
+  use_qlat = false;
+  #endif
+  return use_qlat;
+}
+
 template <class Ty, int civ>
 void fft_fieldM(std::vector<qlat::FieldM<Ty, civ> >& src, bool fftdir=true, bool fft4d = false)
 {
   if(src.size() < 1)return;
 
-  int nfft = src.size() * civ;
-  Geometry& geo = src[0].geo();
-  int minfft = geo.node_site[0] * geo.node_site[1];
-  #ifndef QLAT_USE_ACC
-  minfft = nfft;
-  #endif
-  if(minfft < nfft)
-  {
+  int nfft = src.size() * civ;Geometry& geo = src[0]().geo();
+  bool use_qlat = check_fft_mode(nfft, geo, fft4d);
+  if(use_qlat){
     TIMER("fft_complex_field_dir fieldM");
     for(unsigned int i=0;i<src.size();i++)
     {
@@ -913,7 +928,6 @@ void fft_fieldM(std::vector<qlat::FieldM<Ty, civ> >& src, bool fftdir=true, bool
   }
 }
 
-
 template<class M>
 void fft_fieldM(std::vector<Handle<qlat::Field<M> > >& src, bool fftdir=true, bool fft4d = false)
 {
@@ -923,14 +937,9 @@ void fft_fieldM(std::vector<Handle<qlat::Field<M> > >& src, bool fftdir=true, bo
   if( is_double){prec = Complex_TYPE ; civ = src[0]().geo().multiplicity * sizeof(M)/sizeof(Complex ); }
   if(!is_double){prec = ComplexF_TYPE; civ = src[0]().geo().multiplicity * sizeof(M)/sizeof(ComplexF); }
 
-  int nfft = src.size() * civ;
-  Geometry& geo = src[0]().geo();
-  int minfft = geo.node_site[0] * geo.node_site[1];
-  #ifndef QLAT_USE_ACC
-  minfft = nfft;
-  #endif
-  if(minfft < nfft)
-  {
+  int nfft = src.size() * civ;Geometry& geo = src[0]().geo();
+  bool use_qlat = check_fft_mode(nfft, geo, fft4d);
+  if(use_qlat){
     TIMER("fft_complex_field_dir fieldM");
     for(unsigned int i=0;i<src.size();i++)
     {

@@ -386,6 +386,22 @@ qacc bool is_matching_geo_mult(const Geometry& geo1, const Geometry& geo2)
          geo1.multiplicity == geo2.multiplicity;
 }
 
+qacc bool is_matching_geo_included(const Geometry& geo1, const Geometry& geo2)
+{
+  bool include = is_matching_geo_mult(geo1, geo2);
+  for(int i=0;i<4;i++) {
+    if(geo2.expansion_left[i] < geo1.expansion_left[i]) {
+      include = false;
+    }
+  }
+  for(int i=0;i<4;i++) {
+    if(geo2.expansion_right[i] < geo1.expansion_right[i]) {
+      include = false;
+    }
+  }
+  return include;
+}
+
 inline bool check_matching_geo(const Geometry& geo1, const Geometry& geo2)
 {
   if (is_matching_geo(geo1, geo2)) {

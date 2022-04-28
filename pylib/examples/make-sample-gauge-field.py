@@ -45,8 +45,12 @@ gf.show_info()
 
 plaq1 = gf.plaq()
 
+q.displayln_info(f"CHECK: plaq: {plaq:.14E} {plaq1:.14E}")
+
 assert abs(plaq - plaq1) < 1e-12
 
 q.timer_display()
+
+q.displayln_info(f"CHECK: finished successfully.")
 
 q.end()

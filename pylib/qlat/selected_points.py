@@ -173,6 +173,7 @@ class SelectedPoints:
 
     def from_numpy(self, arr):
         # need to be already initialized with ctype and psel
+        # arr.shape[0] == n_points
         n_points = self.n_points()
         assert arr.shape[0] == n_points
         for idx in range(n_points):

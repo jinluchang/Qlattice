@@ -160,6 +160,8 @@ int main(int argc, char* argv[])
     compute(i, 0.07, ts_limit, x_vec_sq_limit);
     compute(i, 0.035, ts_limit, x_vec_sq_limit);
   }
+  displayln_info("CHECK: finished successfully.");
+  Timer::display();
   end();
   return 0;
 }

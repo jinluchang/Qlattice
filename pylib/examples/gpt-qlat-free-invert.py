@@ -58,4 +58,6 @@ for src in [src_p, src_r]:
 
 q.timer_display()
 
+q.displayln_info(f"CHECK: finished successfully.")
+
 qg.end_with_gpt()

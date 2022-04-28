@@ -306,6 +306,7 @@ cg_with_f: final iter= 122 sqrt(qnorm_r/qnorm_in)=6.635E-04 stop_rsd=7.733E-04
 invert_with_cg(5d,5d,inv,cg): total_iter=323 cycle=2 stop_rsd=1.000E-12
 invert_with_cg(5d,5d,inv,cg): checking 3.862175E-09 from 3.803129E+03
 invert diff qnorm = 1.491640E-17
+CHECK: finished successfully.
 Cache: 'CommPlanCache': 7 / 32 [16] clear
 clear_mem_cache: 5398528 bytes (0.005 GB) freed.
 qlat::end(): get_comm_list().pop_back()

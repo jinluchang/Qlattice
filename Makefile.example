@@ -12,11 +12,8 @@ run: qlat.x
 	time mpirun -x OMP_NUM_THREADS=2 --np 8 ./qlat.x | tee log
 
 qlat.x: *.C
-	time make build
-	[ -f $@ ]
-
-build:
 	-time $(MPICXX) $(CXXFLAGS) $(LDFLAGS) -o qlat.x *.C $(LIBS) 2>&1 | grep --color=always 'error:\|'
+	[ -f $@ ]
 
 show-info:
 	@echo MPICXX: $(MPICXX)
@@ -33,9 +30,8 @@ clean:
 run-test: qlat.x
 	echo > log
 	q_verbose=10 time mpirun --oversubscribe -x OMP_NUM_THREADS=2 --np 8 ./qlat.x | tee log.full
-	cat log.full | grep -v '^Timer\|^check_status:\|^display_geo_node : id_node =' > log
-	make diff | cat
-	# make clean
+	-cat log.full | grep -v '^Timer\|^check_status:\|^display_geo_node : id_node =' > log
+	-git diff log | cat
 
 diff:
 	-git diff log

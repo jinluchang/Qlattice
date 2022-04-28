@@ -862,6 +862,7 @@ make_shuffle_plan_generic: global_comm_size =       4096
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
 crc32 = 83E8BA4C after reflect twice
+CHECK: finished successfully.
 Cache: 'CommPlanCache': 2 / 32 [16] clear
 Cache: 'FftComplexFieldPlanCache': 8 / 32 [16] clear
 FftComplexFieldPlan::end(): free a plan.

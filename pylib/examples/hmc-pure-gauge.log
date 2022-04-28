@@ -194,10 +194,10 @@ run_hmc_evolve reversed gf_diff: 1.2573819431615697e-27 / 6144.0
 metropolis_accept: flag=0 with accept_prob=1.2% delta_h=4.4281333045064457 traj=1
 run_hmc: update gf (traj=1)
 Cache: 'CommPlanCache': 2 / 32 [16] to add
-test_hmc: traj=1 ; plaq_avg=0.812143046289839
+CHECK: traj=1 ; plaq_avg=8.12143046289839E-01
 Cache: 'CommPlanCache': 3 / 32 [16] to add
 Cache: 'CommPlanCache': 4 / 32 [16] to add
-test_hmc: wilson_loop 0.808707840668113
+CHECK: wilson_loop 8.08707840668113E-01
 # norm_idx gm_force_magnitude
     0  6.07014276901974092E+00
     1  6.24893294108425046E+00
@@ -370,8 +370,8 @@ run_hmc_evolve reversed delta_diff: -9.094947017729282e-13 / 1.065112735413095
 run_hmc_evolve reversed gf_diff: 2.0749755106205578e-27 / 6144.0
 metropolis_accept: flag=1 with accept_prob=34.5% delta_h=1.0651127354130949 traj=2
 run_hmc: update gf (traj=2)
-test_hmc: traj=2 ; plaq_avg=0.7427065632927438
-test_hmc: wilson_loop 0.7378948061308904
+CHECK: traj=2 ; plaq_avg=7.42706563292744E-01
+CHECK: wilson_loop 7.37894806130890E-01
 Cache: 'CommPlanCache': 5 / 32 [16] to add
     0  1.54376062024353722E+00  2.41289146050876280E+00  1.09453106640150399E-01  5.60965428553758988E-05
 Cache: 'CommPlanCache': 6 / 32 [16] to add
@@ -518,8 +518,8 @@ QFile: close 'results/gm_force_info/traj=2.lat.partial' with 'w'.
 [7.114052683253933, 7.315447107624205, 7.672567927035274, 8.248393941889473, 12.122366923817635]
 metropolis_accept: flag=0 with accept_prob=51.7% delta_h=0.6596611557906726 traj=3
 run_hmc: update gf (traj=3)
-test_hmc: traj=3 ; plaq_avg=0.6875147205799068
-test_hmc: wilson_loop 0.6839381422595826
+CHECK: traj=3 ; plaq_avg=6.87514720579907E-01
+CHECK: wilson_loop 6.83938142259583E-01
 # norm_idx gm_force_magnitude
     0  7.13396832431895866E+00
     1  7.33607833988560731E+00
@@ -606,8 +606,8 @@ test_hmc: wilson_loop 0.6839381422595826
 [7.2944074594571955, 7.4901873834272275, 7.843689453833833, 8.434627059712838, 12.143613993953434]
 metropolis_accept: flag=1 with accept_prob=76.5% delta_h=0.2684873632342715 traj=4
 run_hmc: update gf (traj=4)
-test_hmc: traj=4 ; plaq_avg=0.6565132923388937
-test_hmc: wilson_loop 0.6520477974200537
+CHECK: traj=4 ; plaq_avg=6.56513292338894E-01
+CHECK: wilson_loop 6.52047797420054E-01
     0  2.06092024596663670E+00  4.30033804233253036E+00  4.57980927397923093E-02  9.31981582610314749E-05
 gf_wilson_flow: t =  2.00000000000000004E-02 ; E =  1.98953813906126209E+00 ; t^2 E =  7.95815255624504917E-04.
 gf_wilson_flow: t =  4.00000000000000008E-02 ; E =  1.86794474306226310E+00 ; t^2 E =  2.98871158889962114E-03.
@@ -838,8 +838,8 @@ run_hmc_evolve reversed delta_diff: 0.0 / 3.9198068174700893
 run_hmc_evolve reversed gf_diff: 1.1967035516992973e-27 / 6144.0
 metropolis_accept: flag=0 with accept_prob=2.0% delta_h=3.9198068174700893 traj=1
 run_hmc: update gf (traj=1)
-test_hmc: traj=1 ; plaq_avg=0.8471717980458033
-test_hmc: wilson_loop 0.8445062616631045
+CHECK: traj=1 ; plaq_avg=8.47171798045803E-01
+CHECK: wilson_loop 8.44506261663104E-01
 # norm_idx gm_force_magnitude
     0  5.35050857919329292E+00
     1  5.50491083393063807E+00
@@ -1012,8 +1012,8 @@ run_hmc_evolve reversed delta_diff: 0.0 / 1.0060782075424868
 run_hmc_evolve reversed gf_diff: 1.785105487214733e-27 / 6144.0
 metropolis_accept: flag=1 with accept_prob=36.6% delta_h=1.0060782075424868 traj=2
 run_hmc: update gf (traj=2)
-test_hmc: traj=2 ; plaq_avg=0.7777482122060552
-test_hmc: wilson_loop 0.7738665046956744
+CHECK: traj=2 ; plaq_avg=7.77748212206055E-01
+CHECK: wilson_loop 7.73866504695674E-01
     0  1.33351072676366744E+00  1.80399945673817363E+00  7.76498348631161350E-02  3.29520205108148811E-05
 gf_wilson_flow: t =  2.00000000000000004E-02 ; E =  1.15981359511352577E+00 ; t^2 E =  4.63925438045410343E-04.
 gf_wilson_flow: t =  4.00000000000000008E-02 ; E =  1.03768128543816607E+00 ; t^2 E =  1.66029005670106575E-03.
@@ -1157,8 +1157,8 @@ QFile: close 'results/gm_force_info/traj=2.lat.partial' with 'w'.
 [6.307721259841997, 6.468192721864513, 6.760983683641344, 7.253120294598168, 10.883445135771474]
 metropolis_accept: flag=0 with accept_prob=49.7% delta_h=0.6983008384058849 traj=3
 run_hmc: update gf (traj=3)
-test_hmc: traj=3 ; plaq_avg=0.7136148801210028
-test_hmc: wilson_loop 0.7100150940624782
+CHECK: traj=3 ; plaq_avg=7.13614880121003E-01
+CHECK: wilson_loop 7.10015094062478E-01
 # norm_idx gm_force_magnitude
     0  6.34663550059950321E+00
     1  6.51308017858140698E+00
@@ -1245,8 +1245,8 @@ test_hmc: wilson_loop 0.7100150940624782
 [6.524378334610181, 6.687339758282459, 6.983600094184474, 7.48229039335686, 11.170327176984737]
 metropolis_accept: flag=1 with accept_prob=69.9% delta_h=0.3585174500412904 traj=4
 run_hmc: update gf (traj=4)
-test_hmc: traj=4 ; plaq_avg=0.6719471126029463
-test_hmc: wilson_loop 0.6694463651489501
+CHECK: traj=4 ; plaq_avg=6.71947112602946E-01
+CHECK: wilson_loop 6.69446365148950E-01
     0  1.96831732438232243E+00  3.92439926383498250E+00  3.96450524153750816E-02  6.45578592049421375E-05
 gf_wilson_flow: t =  2.00000000000000004E-02 ; E =  1.67312585481513842E+00 ; t^2 E =  6.69250341926055426E-04.
 gf_wilson_flow: t =  4.00000000000000008E-02 ; E =  1.54957254494734809E+00 ; t^2 E =  2.47931607191575684E-03.
@@ -1304,6 +1304,7 @@ mk_file_dirs_info: 'results/gm_force_info/traj=4.lat'.
 QFile: open 'results/gm_force_info/traj=4.lat.partial' with 'w'.
 qrename: 'results/gm_force_info/traj=4.lat.partial' 'results/gm_force_info/traj=4.lat'
 QFile: close 'results/gm_force_info/traj=4.lat.partial' with 'w'.
+CHECK: finished successfully.
 Cache: 'CommPlanCache': 9 / 32 [16] clear
 clear_mem_cache: 4260352 bytes (0.004 GB) freed.
 qlat::end(): get_comm_list().pop_back()

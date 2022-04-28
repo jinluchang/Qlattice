@@ -12,10 +12,8 @@ load_path_list[:] = [
         "../qcddata",
         os.path.join(os.getenv("HOME"), "qcddata"),
         "../mk-gf-gt/results",
-        "../mk-sel/results",
         "../mk-lanc/results",
         os.path.join(os.getenv("HOME"), "Qlat-sample-data/mk-gf-gt/results"),
-        os.path.join(os.getenv("HOME"), "Qlat-sample-data/mk-sel/results"),
         os.path.join(os.getenv("HOME"), "Qlat-sample-data/mk-lanc/results"),
         "/gpfs/alpine/lgt116/proj-shared/ljin",
         ]
@@ -70,6 +68,8 @@ def compute_prop_wsrc_all(gf, gt, wi, job_tag, inv_type, *,
     q.qtouch_info(get_save_path(os.path.join(path_sp, "checkpoint.txt")))
     q.qtouch_info(get_save_path(os.path.join(path_sp, "checkpoint ; wsnk.txt")))
     q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
+    q.qar_create_info(get_save_path(path_sp + ".qar"), get_save_path(path_sp), is_remove_folder_after = True)
+    q.qar_create_info(get_save_path(path_s + ".qar"), get_save_path(path_s), is_remove_folder_after = True)
 
 @q.timer
 def compute_prop_psrc(gf, gt, xg, job_tag, inv_type, inv_acc, *,
@@ -134,12 +134,15 @@ def compute_prop_psrc_all(gf, gt, pi, job_tag, inv_type, *,
     q.qtouch_info(get_save_path(os.path.join(path_sp, "checkpoint.txt")))
     q.qrename_info(get_save_path(path_hvp + ".acc"), get_save_path(path_hvp))
     q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
+    q.qar_create_info(get_save_path(path_sp + ".qar"), get_save_path(path_sp), is_remove_folder_after = True)
+    q.qar_create_info(get_save_path(path_s + ".qar"), get_save_path(path_s), is_remove_folder_after = True)
+    q.qar_create_info(get_save_path(path_hvp + ".qar"), get_save_path(path_hvp), is_remove_folder_after = True)
 
 @q.timer
 def run_prop_psrc_light(job_tag, traj, get_gf, get_eig, get_gt, get_psel, get_fsel, get_pi):
     if None in [ get_gf, get_eig, get_gt, get_psel, get_fsel, get_pi, ]:
         return
-    if get_load_path(f"prop-psrc-light/{job_tag}/traj={traj}") is not None:
+    if get_load_path(f"prop-psrc-light/{job_tag}/traj={traj}/geon-info.txt") is not None:
         return
     if q.obtain_lock(f"locks/{job_tag}-{traj}-psrc-light"):
         gf = get_gf()
@@ -158,7 +161,7 @@ def run_prop_psrc_light(job_tag, traj, get_gf, get_eig, get_gt, get_psel, get_fs
 def run_prop_psrc_strange(job_tag, traj, get_gf, get_gt, get_psel, get_fsel, get_pi):
     if None in [ get_gf, get_gt, get_psel, get_fsel, get_pi, ]:
         return
-    if get_load_path(f"prop-psrc-strange/{job_tag}/traj={traj}") is not None:
+    if get_load_path(f"prop-psrc-strange/{job_tag}/traj={traj}/geon-info.txt") is not None:
         return
     if q.obtain_lock(f"locks/{job_tag}-{traj}-psrc-strange"):
         gf = get_gf()
@@ -176,7 +179,7 @@ def run_prop_psrc_strange(job_tag, traj, get_gf, get_gt, get_psel, get_fsel, get
 def run_prop_wsrc_light(job_tag, traj, get_gf, get_eig, get_gt, get_psel, get_fsel, get_wi):
     if None in [ get_gf, get_eig, get_gt, get_psel, get_fsel, ]:
         return
-    if get_load_path(f"prop-wsrc-light/{job_tag}/traj={traj}") is not None:
+    if get_load_path(f"prop-wsrc-light/{job_tag}/traj={traj}/geon-info.txt") is not None:
         return
     if q.obtain_lock(f"locks/{job_tag}-{traj}-wsrc-light"):
         gf = get_gf()
@@ -194,7 +197,7 @@ def run_prop_wsrc_light(job_tag, traj, get_gf, get_eig, get_gt, get_psel, get_fs
 def run_prop_wsrc_strange(job_tag, traj, get_gf, get_gt, get_psel, get_fsel, get_wi):
     if None in [ get_gf, get_gt, get_psel, get_fsel, ]:
         return
-    if get_load_path(f"prop-wsrc-strange/{job_tag}/traj={traj}") is not None:
+    if get_load_path(f"prop-wsrc-strange/{job_tag}/traj={traj}/geon-info.txt") is not None:
         return
     if q.obtain_lock(f"locks/{job_tag}-{traj}-wsrc-strange"):
         gf = get_gf()
@@ -214,10 +217,10 @@ def run_job(job_tag, traj):
             f"field-selection/{job_tag}/traj={traj}.field",
             f"wall-src-info-light/{job_tag}/traj={traj}.txt",
             f"wall-src-info-strange/{job_tag}/traj={traj}.txt",
-            f"prop-wsrc-strange/{job_tag}/traj={traj}",
-            f"prop-wsrc-light/{job_tag}/traj={traj}",
-            f"prop-psrc-strange/{job_tag}/traj={traj}",
-            f"prop-psrc-light/{job_tag}/traj={traj}",
+            f"prop-wsrc-strange/{job_tag}/traj={traj}/geon-info.txt",
+            f"prop-wsrc-light/{job_tag}/traj={traj}/geon-info.txt",
+            f"prop-psrc-strange/{job_tag}/traj={traj}/geon-info.txt",
+            f"prop-psrc-light/{job_tag}/traj={traj}/geon-info.txt",
             ]
     fns_need = [
             (f"configs/{job_tag}/ckpoint_lat.{traj}", f"configs/{job_tag}/ckpoint_lat.IEEE64BIG.{traj}",),

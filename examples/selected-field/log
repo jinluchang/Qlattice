@@ -906,6 +906,7 @@ make_shuffle_plan_generic: global_comm_size =         16
 shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_shift: f (from shifted sparse field) crc32 = 6F31A6C2 ; shift=0x2x2x0
+CHECK: finished successfully.
 Cache: 'ShufflePlanCache': 2 / 16 [8] clear
 clear_mem_cache: 106752 bytes (0.000 GB) freed.
 qlat::end(): get_comm_list().pop_back()

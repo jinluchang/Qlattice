@@ -1018,6 +1018,7 @@ test_fft: total_site=4x4x4x8 N=32 fft-z
 test_fft: total_site=4x4x4x8 N=32 fft-t
 test_fft: qnorm(f) =  3.27996466397265103E+04 ; qnorm(diff) =  5.96225019221474319E-26
 test_fft: crc32 of fft(f) = B2C0240F.
+CHECK: finished successfully.
 Cache: 'FftComplexFieldPlanCache': 21 / 32 [16] clear
 FftComplexFieldPlan::end(): free a plan.
 FftComplexFieldPlan::end(): free a plan.

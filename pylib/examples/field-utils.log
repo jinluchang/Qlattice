@@ -91,6 +91,7 @@ Cache: 'ShufflePlanCache': 0 / 16 [8] to add
 12345.83670174641 12345.83670174641 0.0
 gf_show_info: plaq = 0.3067038575531761 ; link_trace = 0.0005769961056065.
 gf_show_info: plaq = 0.3067038575531761 ; link_trace = 0.0005769961056065.
+CHECK: finished successfully.
 Cache: 'ShufflePlanCache': 1 / 16 [8] clear
 Cache: 'FFTGPUPlanCache': 1 / 16 [8] clear
 Cache: 'CommPlanCache': 1 / 32 [16] clear

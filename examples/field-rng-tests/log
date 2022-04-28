@@ -85,6 +85,7 @@ Mean     : 16.8758
 Var      : 0.489169
 q_mem_cache_max_size=512 (default)
 q_mem_cache_acc_max_size=512 (default)
+CHECK: finished successfully.
 clear_mem_cache: 7936 bytes (0.000 GB) freed.
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 0.

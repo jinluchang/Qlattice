@@ -31,6 +31,7 @@ __global__ void smear_global4(T* pres, const T* psrc, const T* gf, double bw, do
   if(index < Nvol){
 
   ///////(2*dirL) --> c0 , c1
+  ///////TODO need to check dirL is not 3
   unsigned int off = tid;
   {
     const T* gf_t = &gf[index*(2*dirL)*9];
@@ -41,6 +42,7 @@ __global__ void smear_global4(T* pres, const T* psrc, const T* gf, double bw, do
       int dir = off/9;
       int c0 = (off/3)%3;
       int c1 =  off%3;
+      //ls[c0*(2*dirL)*3 + dir*3 + c1 ] = gf_t[(dir + (dirL/4))*9 + c0*3 + c1];
       ls[c0*(2*dirL)*3 + dir*3 + c1 ] = gf_t[off];
       //ls[(c0*(2*dirL)+dir)*3 + c1 ] = gf_t[off];
       //ls[c0][dir*3+c1] = gf_t[off];
@@ -263,7 +265,7 @@ void smear_propagator_gpu4(Propagator4dT<T>& prop, const GaugeFieldT<Tg >& gf, c
   // set_left_expanded_gauge_field(gf1, gf)
   // prop is of qnormal size
   long Nvol = geo.local_volume();
-qlat::vector_acc<T > gfE;gfE.resize(6*Nvol*9);
+  qlat::vector_acc<T > gfE;gfE.resize(6*Nvol*9);
   const int dir_limit = 3;
   qacc_for(index,  geo.local_volume(),{
     for (int dir = -dir_limit; dir < dir_limit; ++dir) {

@@ -740,6 +740,31 @@ void acc_field(Field<M>& f, const Complex& coef, const SelectedField<M>& sf,
 }
 
 template <class M>
+void acc_field(Field<M>& f, const SelectedField<M>& sf,
+               const FieldSelection& fsel)
+// f can be empty
+{
+  TIMER("acc_field(f,sf,fsel)");
+  const Geometry& geo = fsel.f_rank.geo();
+  const int multiplicity = sf.geo().multiplicity;
+  if (not is_initialized(f)) {
+    f.init(geo_remult(geo, multiplicity));
+    set_zero(f);
+  }
+  qassert(multiplicity == f.geo().multiplicity);
+  qassert(sf.n_elems == fsel.n_elems);
+  qacc_for(idx, fsel.n_elems, {
+    const long index = fsel.indices[idx];
+    const Coordinate xl = geo.coordinate_from_index(index);
+    Vector<M> fv = f.get_elems(xl);
+    const Vector<M> sfv = sf.get_elems_const(idx);
+    for (int m = 0; m < multiplicity; ++m) {
+      fv[m] += sfv[m];
+    }
+  });
+}
+
+template <class M>
 std::vector<M> field_sum_tslice(const SelectedField<M>& sf,
                                 const FieldSelection& fsel)
 // length = t_size * multiplicity

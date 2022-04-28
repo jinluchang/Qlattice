@@ -296,7 +296,11 @@ void smear_propagator(Propagator4dT<T>& prop, const GaugeFieldT<T>& gf1,
 // set_left_expanded_gauge_field(gf1, gf)
 // prop is of normal size
 {
-  TIMER_VERBOSE("smear_propagator");
+  //TIMER_VERBOSE("==smear propagator");
+  TIMER_FLOPS("smear_propagator");
+  const int n_avg = smear_in_time_dir ? 8 : 6;
+  const long long vGb = prop.geo().local_volume()*12*4;
+  timer.flops += vGb * step * n_avg * (3*(3*6 + 2*2));
   if (0 == step) {
     return;
   }
@@ -305,13 +309,13 @@ void smear_propagator(Propagator4dT<T>& prop, const GaugeFieldT<T>& gf1,
       smear_in_time_dir
           ? geo_resize(geo, 1)
           : geo_resize(geo, Coordinate(1, 1, 1, 0), Coordinate(1, 1, 1, 0));
-  const int n_avg = smear_in_time_dir ? 8 : 6;
   const int dir_limit = smear_in_time_dir ? 4 : 3;
-  array<Complex, 8> mom_factors;
+  array<Complex, 8> mom_factors_v;
+  box_acc<array<Complex, 8> > mom_factors(mom_factors_v); // (array<Complex, 8>());
   for (int i = 0; i < 8; ++i) {
     const int dir = i - 4;
     const double phase = dir >= 0 ? mom[dir] : -mom[-dir - 1];
-    mom_factors[i] = std::polar(coef / n_avg, -phase);
+    mom_factors()[i] = std::polar(coef / n_avg, -phase);
   }
   Propagator4dT<T> prop1;
   prop1.init(geo1);
@@ -319,16 +323,17 @@ void smear_propagator(Propagator4dT<T>& prop, const GaugeFieldT<T>& gf1,
     prop1 = prop;
     refresh_expanded_1(prop1);
     qacc_for(index, geo.local_volume(), {
-      const Coordinate xl = geo.coordinate_from_index(index);
+      const Coordinate xl = prop.geo().coordinate_from_index(index);
       WilsonMatrixT<T>& wm = prop.get_elem(xl);
       wm *= 1 - coef;
       for (int dir = -dir_limit; dir < dir_limit; ++dir) {
         const Coordinate xl1 = coordinate_shifts(xl, dir);
-        const ColorMatrixT<T> link =
+        ColorMatrixT<T> link =
             dir >= 0
                 ? gf1.get_elem(xl, dir)
                 : (ColorMatrixT<T>)matrix_adjoint(gf1.get_elem(xl1, -dir - 1));
-        wm += mom_factors[dir + 4] * (link * prop1.get_elem(xl1));
+        link *= mom_factors()[dir + 4];
+        wm += link * prop1.get_elem(xl1);
       }
     });
   }

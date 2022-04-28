@@ -67,12 +67,14 @@ def compute_prop_wsrc_all(gf, gt, wi, job_tag, inv_type, *,
     q.qtouch_info(get_save_path(os.path.join(path_sp, "checkpoint.txt")))
     q.qtouch_info(get_save_path(os.path.join(path_sp, "checkpoint ; wsnk.txt")))
     q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
+    q.qar_create_info(get_save_path(path_sp + ".qar"), get_save_path(path_sp), is_remove_folder_after = True)
+    q.qar_create_info(get_save_path(path_s + ".qar"), get_save_path(path_s), is_remove_folder_after = True)
 
 @q.timer
 def run_prop_wsrc_light(job_tag, traj, get_gf, get_eig, get_gt, get_psel, get_fsel, get_wi):
     if None in [ get_gf, get_eig, get_gt, get_psel, get_fsel, ]:
         return
-    if get_load_path(f"prop-wsrc-light/{job_tag}/traj={traj}") is not None:
+    if get_load_path(f"prop-wsrc-light/{job_tag}/traj={traj}/geon-info.txt") is not None:
         return
     if q.obtain_lock(f"locks/{job_tag}-{traj}-wsrc-light"):
         gf = get_gf()
@@ -90,7 +92,7 @@ def run_prop_wsrc_light(job_tag, traj, get_gf, get_eig, get_gt, get_psel, get_fs
 def run_prop_wsrc_strange(job_tag, traj, get_gf, get_eig, get_gt, get_psel, get_fsel, get_wi):
     if None in [ get_gf, get_eig, get_gt, get_psel, get_fsel, ]:
         return
-    if get_load_path(f"prop-wsrc-strange/{job_tag}/traj={traj}") is not None:
+    if get_load_path(f"prop-wsrc-strange/{job_tag}/traj={traj}/geon-info.txt") is not None:
         return
     if q.obtain_lock(f"locks/{job_tag}-{traj}-wsrc-strange"):
         gf = get_gf()
@@ -107,9 +109,9 @@ def run_prop_wsrc_strange(job_tag, traj, get_gf, get_eig, get_gt, get_psel, get_
 @q.timer_verbose
 def run_job(job_tag, traj):
     fns_produce = [
-            f"prop-wsrc-strange/{job_tag}/traj={traj}",
+            f"prop-wsrc-strange/{job_tag}/traj={traj}/geon-info.txt",
             f"psel-prop-wsrc-strange/{job_tag}/traj={traj}/checkpoint.txt",
-            f"prop-wsrc-light/{job_tag}/traj={traj}",
+            f"prop-wsrc-light/{job_tag}/traj={traj}/geon-info.txt",
             f"psel-prop-wsrc-light/{job_tag}/traj={traj}/checkpoint.txt",
             ]
     fns_need = [

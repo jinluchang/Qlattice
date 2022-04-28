@@ -1,6 +1,7 @@
 import cqlat as c
 
 from cqlat import get_id_node
+from cqlat import verbose_level
 from cqlat import timer_display, timer_autodisplay
 from cqlat import timer_display_stack, timer_display_stack_always
 from cqlat import timer_reset
@@ -78,8 +79,12 @@ def timer_verbose(func):
         return ret
     return qtimer_func
 
-def displayln(*args):
-    print(*args, flush=True)
+def displayln(level, *args):
+    if isinstance(level, int):
+        if level <= verbose_level():
+            print(*args, flush=True)
+    else:
+        print(level, *args, flush=True)
 
 def displayln_info(*args):
     if get_id_node() == 0:

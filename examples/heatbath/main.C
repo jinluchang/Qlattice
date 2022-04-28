@@ -456,6 +456,7 @@ int main(int argc, char* argv[])
     compute(total_site, cp);
   }
   //
+  displayln_info("CHECK: finished successfully.");
   Timer::display();
   end();
   return 0;

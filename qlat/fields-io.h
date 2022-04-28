@@ -277,12 +277,12 @@ struct FieldsWriter {
     if (geon.id_node == 0) {
       if (does_file_exist(path + ".partial")) {
         if (is_append) {
-          displayln(ssprintf("FieldsWriter: Cannot append '%s.partial' exists.", path.c_str()));
+          qwarn(ssprintf("FieldsWriter: Cannot append '%s.partial' exists.", path.c_str()));
           qassert(false);
         }
         qremove_all(path + ".partial");
       }
-      displayln("FieldsWriter: open '" + path + "'.");
+      displayln(0, "FieldsWriter: open '" + path + "'.");
       if (is_append and does_file_exist(path)) {
         qassert(does_file_exist(path + "/geon-info.txt"));
       } else {
@@ -332,7 +332,7 @@ struct FieldsReader {
     geon = geon_;
     qfile.init();
     if (geon.id_node == 0) {
-      displayln("FieldsReader: open '" + path + "'.");
+      displayln(0, "FieldsReader: open '" + path + "'.");
     }
     qopen(qfile, dist_file_name(path, geon.id_node, geon.num_node), "r");
     if (qfile.null()) {
@@ -599,8 +599,8 @@ inline bool read_tag(FieldsReader& fr, std::string& fn, Coordinate& total_site,
   }
   //
   if (fr.geon.id_node == 0) {
-    displayln(fname +
-              ssprintf(": '%s' from '%s'.", fn.c_str(), fr.path.c_str()));
+    displayln(
+        0, fname + ssprintf(": '%s' from '%s'.", fn.c_str(), fr.path.c_str()));
   }
   return true;
 }
@@ -1055,16 +1055,15 @@ struct ShuffledFieldsWriter {
     init();
     path = path_;
     if (is_append and does_file_exist_sync_node(path + ".partial")) {
-      displayln_info(
-          ssprintf("ShuffledFieldsWriter: Cannot append '%s.partial' exists.",
-                   path.c_str()));
+      qwarn(ssprintf("ShuffledFieldsWriter: Cannot append '%s.partial' exists.",
+                     path.c_str()));
       qassert(false);
     }
     if (is_append and does_file_exist_sync_node(path)) {
       qassert(does_file_exist_sync_node(path + "/geon-info.txt"));
       new_size_node = shuffled_fields_reader_size_node_info(path);
       if (new_size_node_ != Coordinate() and new_size_node_ != new_size_node) {
-        displayln_info(ssprintf(
+        qwarn(ssprintf(
             "ShuffledFieldsWriter::init(p,sn,app): WARNING: new_size_node do "
             "not match. file=%s argument=%s . Will use the new_size_node from "
             "the existing file.",
@@ -1136,7 +1135,7 @@ struct ShuffledFieldsReader {
   {
     init();
     path = path_;
-    if (does_file_exist_sync_node(path + "/geon-info.txt")) {
+    if (does_file_exist_qar_sync_node(path + "/geon-info.txt")) {
       new_size_node = shuffled_fields_reader_size_node_info(path);
     } else {
       qassert(new_size_node_ != Coordinate());
@@ -1156,8 +1155,8 @@ long write(ShuffledFieldsWriter& sfw, const std::string& fn,
 // interface function
 {
   TIMER_VERBOSE_FLOPS("write(sfw,fn,field)");
-  displayln_info(fname + ssprintf(": writing field with fn='%s' from '%s'.",
-                                  fn.c_str(), sfw.path.c_str()));
+  displayln_info(0, fname + ssprintf(": writing field with fn='%s' from '%s'.",
+                                     fn.c_str(), sfw.path.c_str()));
   std::vector<Field<M> > fs;
   shuffle_field(fs, field, sfw.new_size_node);
   qassert(fs.size() == sfw.fws.size());
@@ -1177,8 +1176,8 @@ long write(ShuffledFieldsWriter& sfw, const std::string& fn,
 // sbs must match the actual data
 {
   TIMER_VERBOSE_FLOPS("write(sfw,fn,sf,sbs)");
-  displayln_info(fname +
-                 ssprintf(": writing sparse field with fn='%s' from '%s'.",
+  displayln_info(
+      0, fname + ssprintf(": writing sparse field with fn='%s' from '%s'.",
                           fn.c_str(), sfw.path.c_str()));
   std::vector<SelectedField<M> > sfs;
   shuffle_field(sfs, sf, sbs.sp);
@@ -1231,8 +1230,8 @@ inline bool does_file_exist_sync_node(ShuffledFieldsReader& sfr,
 {
   TIMER_VERBOSE("does_file_exist_sync_node(sfr,fn)");
   long total_counts = 0;
-  displayln_info(fname + ssprintf(": check fn='%s' from '%s'.", fn.c_str(),
-                                  sfr.path.c_str()));
+  displayln_info(0, fname + ssprintf(": check fn='%s' from '%s'.", fn.c_str(),
+                                     sfr.path.c_str()));
   for (int i = 0; i < (int)sfr.frs.size(); ++i) {
     if (does_file_exist(sfr.frs[i], fn)) {
       total_counts += 1;
@@ -1255,8 +1254,8 @@ inline bool check_file_sync_node(ShuffledFieldsReader& sfr,
 // return if data is loaded successfully
 {
   TIMER_VERBOSE("check_file_sync_node(sfr,fn)");
-  displayln_info(fname + ssprintf(": reading field with fn='%s' from '%s'.",
-                                  fn.c_str(), sfr.path.c_str()));
+  displayln_info(0, fname + ssprintf(": reading field with fn='%s' from '%s'.",
+                                     fn.c_str(), sfr.path.c_str()));
   clear(final_offsets);
   final_offsets.resize(sfr.frs.size(), 0);
   long total_failed_counts = 0;
@@ -1268,9 +1267,9 @@ inline bool check_file_sync_node(ShuffledFieldsReader& sfr,
   }
   glb_sum(total_failed_counts);
   bool ret = total_failed_counts == 0;
-  displayln_info(fname + ssprintf(": check=%s field fn='%s' from '%s'.",
-                                  ret ? "true" : "false", fn.c_str(),
-                                  sfr.path.c_str()));
+  displayln_info(0, fname + ssprintf(": check=%s field fn='%s' from '%s'.",
+                                     ret ? "true" : "false", fn.c_str(),
+                                     sfr.path.c_str()));
   return ret;
 }
 
@@ -1328,9 +1327,11 @@ inline int truncate_fields_sync_node(
     const long final_offset = final_offsets[i];
     if (file_size != final_offset) {
       displayln_info(
+          0,
           fname +
-          ssprintf(": Truncate '%s': final_offset=%ld, original file_size=%ld.",
-                   path_file.c_str(), final_offset, file_size));
+              ssprintf(
+                  ": Truncate '%s': final_offset=%ld, original file_size=%ld.",
+                  path_file.c_str(), final_offset, file_size));
       if (file_size < 0) {
         mkfile(fr);
       }
@@ -1351,8 +1352,7 @@ inline std::vector<std::string> properly_truncate_fields_sync_node(
   TIMER_VERBOSE("properly_truncate_fields_sync_node");
   std::vector<std::string> fns;
   if (not does_file_exist_sync_node(path)) {
-    displayln_info(
-        fname + ssprintf(": '%s' does not exist.", path.c_str()));
+    displayln_info(0, fname + ssprintf(": '%s' does not exist.", path.c_str()));
     return fns;
   }
   ShuffledFieldsReader sfr;
@@ -1392,17 +1392,15 @@ inline std::vector<std::string> properly_truncate_fields_sync_node(
     const long final_offset = last_final_offsets[i];
     if (file_size != final_offset) {
       if (is_only_check) {
-        displayln(
-            fname +
-            ssprintf(
-                ": Error in '%s': final_offset=%ld, original file_size=%ld.",
-                path_file.c_str(), final_offset, file_size));
+        qwarn(fname +
+              ssprintf(
+                  ": Error in '%s': final_offset=%ld, original file_size=%ld.",
+                  path_file.c_str(), final_offset, file_size));
       } else {
-        displayln(
-            fname +
-            ssprintf(
-                ": Truncate '%s': final_offset=%ld, original file_size=%ld.",
-                path_file.c_str(), final_offset, file_size));
+        qwarn(fname +
+              ssprintf(
+                  ": Truncate '%s': final_offset=%ld, original file_size=%ld.",
+                  path_file.c_str(), final_offset, file_size));
         if (file_size < 0) {
           mkfile(fr);
         }
@@ -1415,10 +1413,10 @@ inline std::vector<std::string> properly_truncate_fields_sync_node(
   fns.resize(last_idx + 1);
   for (long i = 0; i < (long)fns.size(); ++i) {
     const std::string& fn = fns[i];
-    displayln_info(fname + ssprintf(": i=%5ld fn='%s'", i, fn.c_str()));
+    displayln_info(0, fname + ssprintf(": i=%5ld fn='%s'", i, fn.c_str()));
   }
-  displayln_info(fname +
-                 ssprintf(": fns.size()=%5ld '%s'", fns.size(), path.c_str()));
+  displayln_info(
+      0, fname + ssprintf(": fns.size()=%5ld '%s'", fns.size(), path.c_str()));
   sync_node();
   return fns;
 }
@@ -1526,8 +1524,8 @@ long read(ShuffledFieldsReader& sfr, const std::string& fn, Field<M>& field)
 {
   TIMER_VERBOSE_FLOPS("read(sfr,fn,field)");
   long total_bytes = 0;
-  displayln_info(fname + ssprintf(": reading field with fn='%s' from '%s'.",
-                                  fn.c_str(), sfr.path.c_str()));
+  displayln_info(0, fname + ssprintf(": reading field with fn='%s' from '%s'.",
+                                     fn.c_str(), sfr.path.c_str()));
   std::vector<Field<M> > fs(sfr.frs.size());
   long zero_size_count = 0;
   for (int i = 0; i < (int)fs.size(); ++i) {
@@ -1564,8 +1562,8 @@ long read(ShuffledFieldsReader& sfr, const std::string& fn,
 {
   TIMER_VERBOSE_FLOPS("read(sfr,fn,sf,fsel)")
   long total_bytes = 0;
-  displayln_info(fname + ssprintf(": reading field with fn='%s' from '%s'.",
-                                  fn.c_str(), sfr.path.c_str()));
+  displayln_info(0, fname + ssprintf(": reading field with fn='%s' from '%s'.",
+                                     fn.c_str(), sfr.path.c_str()));
   std::vector<SelectedField<M> > sfs(sfr.frs.size());
   std::vector<Field<int64_t> > f_rank_s(sfr.frs.size());
   long zero_size_count = 0;
@@ -1609,8 +1607,8 @@ long read(ShuffledFieldsReader& sfr, const std::string& fn,
   TIMER_VERBOSE_FLOPS("read(sfr,fn,sbs,sf)");
   sf.init();
   long total_bytes = 0;
-  displayln_info(fname +
-                 ssprintf(": reading sparse field with fn='%s' from '%s'.",
+  displayln_info(
+      0, fname + ssprintf(": reading sparse field with fn='%s' from '%s'.",
                           fn.c_str(), sfr.path.c_str()));
   std::vector<SelectedField<M> > sfs(sfr.frs.size());
   long zero_size_count = 0;
@@ -1864,7 +1862,7 @@ long read_next(ShuffledFieldsReader& sfr, std::string& fn, Field<M>& field)
     fn = "";
     return 0;
   }
-  displayln_info(fname +
+  displayln_info(0, fname +
                  ssprintf(": read the next field with fn='%s'.", fn.c_str()));
   Coordinate total_site;
   int multiplicity = 0;

@@ -427,6 +427,30 @@ void set_field_selected(Field<M>& f, const SelectedPoints<M>& sp,
 }
 
 template <class M>
+void acc_field(Field<M>& f, const SelectedPoints<M>& sp, const Geometry& geo_,
+               const PointSelection& psel)
+{
+  TIMER("acc_field");
+  const Geometry geo = geo_reform(geo_, sp.multiplicity, 0);
+  qassert(geo.is_only_local());
+  const long n_points = sp.n_points;
+  qassert(n_points == (long)psel.size());
+  f.init(geo);
+#pragma omp parallel for
+  for (long idx = 0; idx < n_points; ++idx) {
+    const Coordinate& xg = psel[idx];
+    const Coordinate xl = geo.coordinate_l_from_g(xg);
+    if (geo.is_local(xl)) {
+      const Vector<M> spv = sp.get_elems_const(idx);
+      Vector<M> fv = f.get_elems(xl);
+      for (int m = 0; m < geo.multiplicity; ++m) {
+        fv[m] += spv[m];
+      }
+    }
+  }
+}
+
+template <class M>
 void field_glb_sum_tslice_double(SelectedPoints<M>& sp, const Field<M>& f)
 {
   TIMER("field_glb_sum_tslice_double(sp,f)");

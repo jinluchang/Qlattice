@@ -56,5 +56,6 @@ int main(int argc, char* argv[])
 {
   demo_c();
   demo_r();
+  displayln_info("CHECK: finished successfully.");
   return 0;
 }

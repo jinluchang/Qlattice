@@ -347,6 +347,8 @@ int main(int argc, char* argv[])
   ff_sol_mixed -= ff_sol;
   displayln_info(ssprintf(": sol qnorm=%24.17E", qnorm(ff_sol)));
   displayln_info(ssprintf(": diff qnorm=%24.17E", qnorm(ff_sol_mixed)));
+  displayln_info("CHECK: finished successfully.");
+  Timer::display();
   end();
   return 0;
 }

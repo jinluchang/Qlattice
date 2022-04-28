@@ -979,6 +979,7 @@ qrename: 'results/total_site=8x8x8x512/lambda=32.0000000000/mass_sqr=-2.17000000
 release_lock: Release lock 'results/total_site=8x8x8x512/lambda=32.0000000000/mass_sqr=-2.1700000000.txt-lock'
 qremove: 'results/total_site=8x8x8x512/lambda=32.0000000000/mass_sqr=-2.1700000000.txt-lock/time.txt'
 check_time_limit: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.25 ) / 12.00 hours.
+CHECK: finished successfully.
 Cache: 'CommPlanCache': 4 / 32 [16] clear
 clear_mem_cache: 4213248 bytes (0.004 GB) freed.
 qlat::end(): get_comm_list().pop_back()

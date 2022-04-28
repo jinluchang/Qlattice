@@ -222,6 +222,7 @@ int main(int argc, char* argv[])
   demo("t0", Coordinate(6, 6, 6, 8), 0, 16, Coordinate(2, 2, 2, 8));
   demo("t1", Coordinate(6, 6, 6, 8), 4, 2, Coordinate(2, 2, 2, 8));
   demo("t2", Coordinate(6, 6, 6, 8), 8, 0, Coordinate(2, 2, 2, 8));
+  displayln_info("CHECK: finished successfully.");
   Timer::display();
   end();
   return 0;

@@ -128,8 +128,8 @@ def run_job(job_tag, traj):
     q.clean_cache()
     q.timer_display()
 
-# rup.dict_params["test-4nt8"]["fermion_params"][0][2]["Ls"] = 10
-# rup.dict_params["test-4nt8"]["fermion_params"][1][2]["Ls"] = 10
+rup.dict_params["test-4nt8"]["fermion_params"][0][2]["Ls"] = 10
+rup.dict_params["test-4nt8"]["fermion_params"][1][2]["Ls"] = 10
 
 # rup.dict_params["test-4nt16"]["fermion_params"][0][2]["Ls"] = 10
 # rup.dict_params["test-4nt16"]["fermion_params"][1][2]["Ls"] = 10

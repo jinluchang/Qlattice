@@ -279,6 +279,8 @@ struct inputpara{
   int nt;
   int nini;
   int nvec;
+  int mode_dis;
+  std::string layout;
   int ndouble;
   int nsave;
   int bfac;
@@ -510,6 +512,7 @@ struct inputpara{
 
     if(find_para(std::string("nini"),nini)==0)nini  = 0;
     if(find_para(std::string("nvec"),nvec)==0)nvec  = 0;
+    if(find_para(std::string("mode_dis"),mode_dis)==0)mode_dis  = 0;
     if(find_para(std::string("split_save"),split_save)==0)split_save  = 0;
     if(find_para(std::string("ndouble"),ndouble)==0)ndouble  = 200;
     if(find_para(std::string("fermion_type"),fermion_type)==0)fermion_type  = 0;
@@ -537,6 +540,7 @@ struct inputpara{
     if(find_para(std::string("Propname"),Propname)==0)Propname  = std::string("NONE");
     if(find_para(std::string("Srcname"),Srcname)==0)Srcname  = std::string("NONE");
 
+    if(find_para(std::string("layout"),layout)==0)layout = std::string("NONE");
     if(find_para(std::string("paraI"),paraI)==0)paraI  = std::string("NONE");
     if(find_para(std::string("paraIA"),paraIA)==0)paraIA = std::string("NONE");
     if(find_para(std::string("paraIB"),paraIB)==0)paraIB = std::string("NONE");

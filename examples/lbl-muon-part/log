@@ -314,6 +314,7 @@ Main::lblShowMuonPartPointSrc : linearFitUni = ( 2.11758236813575085E-22 +  3.58
 Main::lblShowMuonPartPointSrc : linearFit[0] * 1e9 =       1.37
 Main::lblShowMuonPartPointSrc : linearFit[1] * 1e9 =      75.52
 Main::lblShowMuonPartPointSrc : linearFit[2] * 1e9 =     -87.09
+CHECK: finished successfully.
 Cache: 'FftComplexFieldPlanCache': 16 / 32 [16] clear
 FftComplexFieldPlan::end(): free a plan.
 FftComplexFieldPlan::end(): free a plan.

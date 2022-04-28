@@ -936,6 +936,55 @@ inline std::vector<unsigned int > get_num_power(const size_t x,const std::vector
   return re;
 }
 
+inline Coordinate string_to_Coordinate(const std::string& paraI = std::string("None"))
+{
+  Coordinate sp;for(int i=0;i<4;i++){sp[i] = 0;}
+  if(paraI != "None"){
+    std::vector<std::string > Li = stringtolist(paraI);
+    qassert(Li.size() == 4);
+    for(int i=0;i<4;i++){sp[i] = stringtonum(Li[i]);}
+  }
+  return sp;
+}
+
+//////Even node in xyzT directions
+inline Coordinate spread_even(const int n, const Coordinate& Lat, const std::vector<unsigned int >& a)
+{
+  std::vector<unsigned int > Mpow = get_num_power(n, a);
+  std::vector<std::vector<unsigned int > > Lpow;
+  Lpow.resize(4);for(int i=0;i<4;i++){Lpow[i] =  get_num_power(Lat[i], a);}
+  Coordinate re;
+  for(int i=0;i<4;i++)re[i] = 1;
+
+  std::vector<int > nL(4);
+
+  for(LInt i=0;i<Mpow.size();i++){
+    int fac = a[i];
+    int num = Mpow[i];
+    if(num != 0){
+      int suma = Lpow[0][i] + Lpow[1][i] + Lpow[2][i] + Lpow[3][i] ;
+      assert(num <= suma);
+
+      for(int j=0;j<4;j++){nL[j] = Lpow[j][i];}
+      //std::vector<int>::iterator result = std::max_element(nL.begin(), nL.end());
+      //int pos_max = std::distance(nL.begin(), result);
+      for(int ni = 0; ni< num+1 ;ni++)
+      {
+        for(int j=3;j>=0;j--)
+        {
+          if(nL[j] > 0){num -= 1; nL[j] -= 1; re[j] *= fac;}
+          if(num == 0){break;}
+        }
+        if(num == 0){break;}
+      }
+    }
+  }
+
+  assert(re[0]*re[1]*re[2]*re[3] == n);
+  return re;
+}
+
+
 //////Most power in T direction
 inline Coordinate spread_powT(const int n, const Coordinate& Lat, const std::vector<unsigned int >& a)
 {
@@ -949,7 +998,7 @@ inline Coordinate spread_powT(const int n, const Coordinate& Lat, const std::vec
     int num = Mpow[i];
     if(num != 0){
       int suma = Lpow[0][i] + Lpow[1][i] + Lpow[2][i] + Lpow[3][i] ;
-      assert(num < suma);
+      assert(num <= suma);
       unsigned int tem = num;
       for(unsigned int ni=0;ni<4;ni++){
         if(tem >= Lpow[4-ni-1][i]){
@@ -976,7 +1025,9 @@ inline Coordinate guess_nodeL(int n, const Coordinate& Lat, const int mode = 0)
 
   std::vector<unsigned int > a;a.resize(8);
   a[0] = 2;a[1] = 3;a[2] = 5;a[3] = 7;a[4] =11;a[5] =13;a[6] =17;a[7] =19;
-  Coordinate re = spread_powT(n, Lat,a);
+  Coordinate re;
+  if(mode == 0){re = spread_powT(n, Lat,a);}
+  if(mode == 1){re = spread_even(n, Lat,a);}
   return re;
 }
 
@@ -1015,23 +1066,31 @@ inline void geo_to_nv(const qlat::Geometry& geo, std::vector<int >& nv, std::vec
   for(int i=0;i<4;i++){Nv[i]=geo.node_site[i];nv[i] = geo.node_site[i] * geo.geon.size_node[i];}
   for(int i=0;i<4;i++){mv[i] = nv[i]/Nv[i];}
 }
-inline void geo_to_nv(const qlat::Geometry& geo, qlat::vector_acc<int >& nv, qlat::vector_acc<int > &Nv, qlat::vector_acc<int > &mv)
-{
+inline void geo_to_nv(const qlat::Geometry& geo, qlat::vector_acc<int >& nv, qlat::vector_acc<int > &Nv, qlat::vector_acc<int > &mv){
   Nv.resize(4);nv.resize(4);mv.resize(4);
   for(int i=0;i<4;i++){Nv[i]=geo.node_site[i];nv[i] = geo.node_site[i] * geo.geon.size_node[i];}
   for(int i=0;i<4;i++){mv[i] = nv[i]/Nv[i];}
 }
 
 
-
-inline void begin_Lat(int* argc, char** argv[], inputpara& in, int mode_dis = -1)
-{
-  if(mode_dis == 0 or mode_dis == 1)
+////mode_dis % 1 == 0, t in diff node, mode_dis % 2 == 1, t in single node
+////mode_dis < 2, T, mode_dis >= 2 even
+inline void begin_Lat(int* argc, char** argv[], inputpara& in, int read_Lat = 0){
+  if(read_Lat >= 0)
   {
     int n_node = init_mpi(argc, argv);
     in.load_para(*argc, *argv);
     Coordinate Lat(in.nx, in.ny, in.nz, in.nt);
-    Coordinate spreadT = guess_nodeL(n_node, Lat);
+    Coordinate spreadT;
+    if(in.layout != std::string("NONE")){
+      spreadT = string_to_Coordinate(in.layout);
+      if(spreadT[0] * spreadT[1] * spreadT[2] * spreadT[3] != n_node)
+      {printf("Wrong input layout\n");abort_r();}
+    }
+    else{
+      if(in.mode_dis >= 0 and in.mode_dis < 2){spreadT = guess_nodeL(n_node, Lat, 0);}
+      if(in.mode_dis >= 2 and in.mode_dis < 4){spreadT = guess_nodeL(n_node, Lat, 1);}
+    }
     ///3D begin
     ////begin_comm(MPI_COMM_WORLD , spreadT);
 
@@ -1045,11 +1104,11 @@ inline void begin_Lat(int* argc, char** argv[], inputpara& in, int mode_dis = -1
     int x = (id_node%(spreadT[0]));
     ///int new_id = ((z*spreadT[1] + y)*spreadT[0] + x)*spreadT[3] + t;
     int new_id = ((x*spreadT[1] + y)*spreadT[2] + z)*spreadT[3] + t;
-    if(mode_dis == 0)begin(id_node, spreadT);
-    if(mode_dis == 1)begin(new_id, spreadT);
+    if(in.mode_dis % 2 == 0)begin(id_node, spreadT);
+    if(in.mode_dis % 2 == 1)begin(new_id, spreadT);
   }
 
-  if(mode_dis == -1)
+  if(read_Lat == -1)
   {
     std::vector<Coordinate> size_node_list;
     add_nodeL(size_node_list);
@@ -1221,16 +1280,7 @@ inline std::vector<long > random_list(const long n, const long m, const int seed
 
 }
 
-inline Coordinate string_to_Coordinate(const std::string& paraI = std::string("None"))
-{
-  Coordinate sp;for(int i=0;i<4;i++){sp[i] = 0;}
-  if(paraI != "None"){
-    std::vector<std::string > Li = stringtolist(paraI);
-    qassert(Li.size() == 4);
-    for(int i=0;i<4;i++){sp[i] = stringtonum(Li[i]);}
-  }
-  return sp;
-}
+
 
 
 }

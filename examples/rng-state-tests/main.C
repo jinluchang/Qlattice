@@ -170,6 +170,7 @@ int main(int argc, char* argv[])
     profileOmp();
     profile();
   }
+  displayln_info("CHECK: finished successfully.");
   Timer::display();
   end();
   return 0;

@@ -250,6 +250,7 @@ int main(int argc, char* argv[])
   begin(&argc, &argv);
   test_io();
   test_shuffle();
+  displayln_info("CHECK: finished successfully.");
   Timer::display();
   end();
   return 0;

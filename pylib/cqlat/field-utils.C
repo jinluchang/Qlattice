@@ -168,6 +168,24 @@ PyObject* fft_fields_ctype(const std::vector<PyObject*> p_field_vec,
 }
 
 template <class M>
+PyObject* field_shift_field_ctype(PyObject* p_field_new, PyObject* p_field,
+                                   const Coordinate& shift)
+{
+  Field<M>& f_new = py_convert_type_field<M>(p_field_new);
+  const Field<M>& f = py_convert_type_field<M>(p_field);
+  field_shift(f_new, f, shift);
+  Py_RETURN_NONE;
+}
+
+template <class M>
+PyObject* reflect_field_ctype(PyObject* p_field)
+{
+  Field<M>& f = py_convert_type_field<M>(p_field);
+  reflect_field(f);
+  Py_RETURN_NONE;
+}
+
+template <class M>
 PyObject* split_fields_field_ctype(std::vector<PyField>& pf_vec, PyField& pf)
 {
   Field<M>& f = *(Field<M>*)pf.cdata;
@@ -468,6 +486,35 @@ EXPORT(fft_fields, {
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, fft_fields_ctype, ctype, p_field_vec, fft_dirs,
                  fft_is_forwards, mode_fft);
+  return p_ret;
+});
+
+EXPORT(field_shift_field, {
+  using namespace qlat;
+  PyObject* p_field_new = NULL;
+  PyObject* p_field = NULL;
+  PyObject* p_shift = NULL;
+  if (!PyArg_ParseTuple(args, "OOO", &p_field_new, &p_field, &p_shift)) {
+    return NULL;
+  }
+  const std::string ctype = py_get_ctype(p_field);
+  pqassert(py_get_ctype(p_field_new) == py_get_ctype(p_field));
+  const Coordinate shift = py_convert_data<Coordinate>(p_shift);
+  PyObject* p_ret = NULL;
+  FIELD_DISPATCH(p_ret, field_shift_field_ctype, ctype, p_field_new, p_field,
+                 shift);
+  return p_ret;
+});
+
+EXPORT(reflect_field, {
+  using namespace qlat;
+  PyObject* p_field = NULL;
+  if (!PyArg_ParseTuple(args, "O", &p_field)) {
+    return NULL;
+  }
+  const std::string ctype = py_get_ctype(p_field);
+  PyObject* p_ret = NULL;
+  FIELD_DISPATCH(p_ret, reflect_field_ctype, ctype, p_field);
   return p_ret;
 });
 

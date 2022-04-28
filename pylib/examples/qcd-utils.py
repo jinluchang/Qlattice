@@ -79,4 +79,7 @@ if False:
     gf_f.save("results/ckpoint.topo1.4nt8.lat")
 
 q.timer_display()
+
+q.displayln_info(f"CHECK: finished successfully.")
+
 q.end()

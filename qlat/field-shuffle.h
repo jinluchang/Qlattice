@@ -211,6 +211,7 @@ void shuffle_field(std::vector<Field<M> >& fs, const Field<M>& f,
   const Geometry& geo = f.geo();
   if (sp.new_size_node != Coordinate()) {
     displayln_info(
+        0,
         fname + ssprintf(": %s -> %s (total_site: %s ; site_size: %d ; "
                          "total_size: %.3lf GB)",
                          show(geo.geon.size_node).c_str(),
@@ -266,6 +267,7 @@ void shuffle_field_back(Field<M>& f, const std::vector<Field<M> >& fs,
   const Geometry& geo = f.geo();
   if (sp.new_size_node != Coordinate()) {
     displayln_info(
+        0,
         fname + ssprintf(": %s -> %s (total_site: %s ; site_size: %d ; "
                          "total_size: %.3lf GB)",
                          show(sp.new_size_node).c_str(),
@@ -309,13 +311,14 @@ void shuffle_field(std::vector<SelectedField<M> >& fs,
   TIMER_VERBOSE_FLOPS("shuffle_field(sel_fs,sel_f,sp)");
   const Geometry& geo = f.geo();
   displayln_info(
-      fname +
-      ssprintf(
-          ": %s -> %s (total_site: %s ; site_size: %d ; total_size: %.3lf GB)",
-          show(geo.geon.size_node).c_str(), show(sp.new_size_node).c_str(),
-          show(geo.total_site()).c_str(), geo.multiplicity * (int)sizeof(M),
-          (double)(sp.scp.global_comm_size * geo.multiplicity * sizeof(M) *
-                   std::pow(0.5, 30))));
+      0, fname + ssprintf(": %s -> %s (total_site: %s ; site_size: %d ; "
+                          "total_size: %.3lf GB)",
+                          show(geo.geon.size_node).c_str(),
+                          show(sp.new_size_node).c_str(),
+                          show(geo.total_site()).c_str(),
+                          geo.multiplicity * (int)sizeof(M),
+                          (double)(sp.scp.global_comm_size * geo.multiplicity *
+                                   sizeof(M) * std::pow(0.5, 30))));
   qassert(sp.geo_send == geo_reform(geo, 1, 0));
   clear(fs);
   const long total_bytes =
@@ -363,13 +366,14 @@ void shuffle_field_back(SelectedField<M>& f,
   qassert(is_initialized(f));
   const Geometry& geo = f.geo();
   displayln_info(
-      fname +
-      ssprintf(
-          ": %s -> %s (total_site: %s ; site_size: %d ; total_size: %.3lf GB)",
-          show(sp.new_size_node).c_str(), show(geo.geon.size_node).c_str(),
-          show(geo.total_site()).c_str(), geo.multiplicity * (int)sizeof(M),
-          (double)(sp.scp.global_comm_size * geo.multiplicity * sizeof(M) *
-                   std::pow(0.5, 30))));
+      0, fname + ssprintf(": %s -> %s (total_site: %s ; site_size: %d ; "
+                          "total_size: %.3lf GB)",
+                          show(sp.new_size_node).c_str(),
+                          show(geo.geon.size_node).c_str(),
+                          show(geo.total_site()).c_str(),
+                          geo.multiplicity * (int)sizeof(M),
+                          (double)(sp.scp.global_comm_size * geo.multiplicity *
+                                   sizeof(M) * std::pow(0.5, 30))));
   const long total_bytes =
       sp.scp.global_comm_size * geo.multiplicity * sizeof(M);
   timer.flops += total_bytes;
@@ -644,9 +648,9 @@ ShufflePlan make_shuffle_plan_generic(std::vector<FieldSelection>& fsels,
       neg_count = 0;
       for (int i = 0; i < num_node; ++i) {
         if (recv_size[i] < 0) {
-          displayln(fname +
-                    ssprintf(": id_node=%d i=%d recv_size[i]=%ld neg_count=%ld",
-                             get_id_node(), i, recv_size[i], neg_count));
+          qwarn(fname +
+                ssprintf(": id_node=%d i=%d recv_size[i]=%ld neg_count=%ld",
+                         get_id_node(), i, recv_size[i], neg_count));
           neg_count += 1;
         } else if (recv_size[i] > 0) {
           recv_id_node_size[i] = recv_size[i];
@@ -654,7 +658,12 @@ ShufflePlan make_shuffle_plan_generic(std::vector<FieldSelection>& fsels,
       }
       glb_sum(neg_count);
       if (neg_count > 0) {
-        displayln_info(fname + ssprintf(": WARNING: total neg_count=%ld but should be 0. Retrying.", neg_count));
+        if (get_id_node() == 0) {
+          qwarn(fname +
+                ssprintf(
+                    ": WARNING: total neg_count=%ld but should be 0. Retrying.",
+                    neg_count));
+        }
       }
     } while (neg_count > 0);
   }
@@ -768,24 +777,28 @@ ShufflePlan make_shuffle_plan_generic(std::vector<FieldSelection>& fsels,
   long num_recv_packs = sp.recv_pack_infos.size();
   long num_send_msgs = sp.scp.send_msg_infos.size();
   long num_recv_msgs = sp.scp.recv_msg_infos.size();
-  displayln_info(fname + ssprintf(": num_send_packs = %10ld", num_send_packs));
-  displayln_info(fname + ssprintf(": num_recv_packs = %10ld", num_recv_packs));
-  displayln_info(fname + ssprintf(": num_send_msgs  = %10ld", num_send_msgs));
-  displayln_info(fname + ssprintf(": num_recv_msgs  = %10ld", num_recv_msgs));
+  displayln_info(0,
+                 fname + ssprintf(": num_send_packs = %10ld", num_send_packs));
+  displayln_info(0,
+                 fname + ssprintf(": num_recv_packs = %10ld", num_recv_packs));
+  displayln_info(0,
+                 fname + ssprintf(": num_send_msgs  = %10ld", num_send_msgs));
+  displayln_info(0,
+                 fname + ssprintf(": num_recv_msgs  = %10ld", num_recv_msgs));
   glb_sum(num_send_packs);
   glb_sum(num_recv_packs);
   glb_sum(num_send_msgs);
   glb_sum(num_recv_msgs);
-  displayln_info(fname +
-                 ssprintf(": total num_send_packs = %10ld", num_send_packs));
-  displayln_info(fname +
-                 ssprintf(": total num_recv_packs = %10ld", num_recv_packs));
-  displayln_info(fname +
-                 ssprintf(": total num_send_msgs  = %10ld", num_send_msgs));
-  displayln_info(fname +
-                 ssprintf(": total num_recv_msgs  = %10ld", num_recv_msgs));
   displayln_info(
-      fname + ssprintf(": global_comm_size = %10ld", sp.scp.global_comm_size));
+      0, fname + ssprintf(": total num_send_packs = %10ld", num_send_packs));
+  displayln_info(
+      0, fname + ssprintf(": total num_recv_packs = %10ld", num_recv_packs));
+  displayln_info(
+      0, fname + ssprintf(": total num_send_msgs  = %10ld", num_send_msgs));
+  displayln_info(
+      0, fname + ssprintf(": total num_recv_msgs  = %10ld", num_recv_msgs));
+  displayln_info(0, fname + ssprintf(": global_comm_size = %10ld",
+                                     sp.scp.global_comm_size));
   return sp;
 }
 
@@ -1125,9 +1138,9 @@ inline ShufflePlan make_shuffle_plan_fft(const Coordinate& total_site,
       }
     }
     if (count != ret.scp.total_recv_size) {
-      displayln(fname + ssprintf(": count = %ld", count));
-      displayln(fname + ssprintf(": ret.scp.total_recv_size = %ld",
-                                 ret.scp.total_recv_size));
+      qwarn(fname + ssprintf(": count = %ld", count));
+      qwarn(fname + ssprintf(": ret.scp.total_recv_size = %ld",
+                             ret.scp.total_recv_size));
     }
     qassert(count == ret.scp.total_recv_size);
   }
@@ -1179,26 +1192,30 @@ inline ShufflePlan make_shuffle_plan_fft(const Coordinate& total_site,
   long num_recv_packs = ret.recv_pack_infos.size();
   long num_send_msgs = ret.scp.send_msg_infos.size();
   long num_recv_msgs = ret.scp.recv_msg_infos.size();
-  displayln_info(fname + ssprintf(": num_send_packs = %10ld", num_send_packs));
-  displayln_info(fname + ssprintf(": num_recv_packs = %10ld", num_recv_packs));
-  displayln_info(fname + ssprintf(": num_send_msgs  = %10ld", num_send_msgs));
-  displayln_info(fname + ssprintf(": num_recv_msgs  = %10ld", num_recv_msgs));
+  displayln_info(0,
+                 fname + ssprintf(": num_send_packs = %10ld", num_send_packs));
+  displayln_info(0,
+                 fname + ssprintf(": num_recv_packs = %10ld", num_recv_packs));
+  displayln_info(0,
+                 fname + ssprintf(": num_send_msgs  = %10ld", num_send_msgs));
+  displayln_info(0,
+                 fname + ssprintf(": num_recv_msgs  = %10ld", num_recv_msgs));
   glb_sum(num_send_packs);
   glb_sum(num_recv_packs);
   glb_sum(num_send_msgs);
   glb_sum(num_recv_msgs);
-  displayln_info(fname +
-                 ssprintf(": total num_send_packs = %10ld", num_send_packs));
-  displayln_info(fname +
-                 ssprintf(": total num_recv_packs = %10ld", num_recv_packs));
-  displayln_info(fname +
-                 ssprintf(": total num_send_msgs  = %10ld", num_send_msgs));
-  displayln_info(fname +
-                 ssprintf(": total num_recv_msgs  = %10ld", num_recv_msgs));
+  displayln_info(
+      0, fname + ssprintf(": total num_send_packs = %10ld", num_send_packs));
+  displayln_info(
+      0, fname + ssprintf(": total num_recv_packs = %10ld", num_recv_packs));
+  displayln_info(
+      0, fname + ssprintf(": total num_send_msgs  = %10ld", num_send_msgs));
+  displayln_info(
+      0, fname + ssprintf(": total num_recv_msgs  = %10ld", num_recv_msgs));
   ret.scp.global_comm_size = ret.scp.total_send_size;
   glb_sum(ret.scp.global_comm_size);
-  displayln_info(
-      fname + ssprintf(": global_comm_size = %10ld", ret.scp.global_comm_size));
+  displayln_info(0, fname + ssprintf(": global_comm_size = %10ld",
+                                     ret.scp.global_comm_size));
   return ret;
 }
 
@@ -1534,26 +1551,30 @@ inline ShufflePlan make_shuffle_plan_nofsel_nofunc(const ShufflePlanKey& spk)
   long num_recv_packs = sp.recv_pack_infos.size();
   long num_send_msgs = sp.scp.send_msg_infos.size();
   long num_recv_msgs = sp.scp.recv_msg_infos.size();
-  displayln_info(fname + ssprintf(": num_send_packs = %10ld", num_send_packs));
-  displayln_info(fname + ssprintf(": num_recv_packs = %10ld", num_recv_packs));
-  displayln_info(fname + ssprintf(": num_send_msgs  = %10ld", num_send_msgs));
-  displayln_info(fname + ssprintf(": num_recv_msgs  = %10ld", num_recv_msgs));
+  displayln_info(0,
+                 fname + ssprintf(": num_send_packs = %10ld", num_send_packs));
+  displayln_info(0,
+                 fname + ssprintf(": num_recv_packs = %10ld", num_recv_packs));
+  displayln_info(0,
+                 fname + ssprintf(": num_send_msgs  = %10ld", num_send_msgs));
+  displayln_info(0,
+                 fname + ssprintf(": num_recv_msgs  = %10ld", num_recv_msgs));
   glb_sum(num_send_packs);
   glb_sum(num_recv_packs);
   glb_sum(num_send_msgs);
   glb_sum(num_recv_msgs);
-  displayln_info(fname +
-                 ssprintf(": total num_send_packs = %10ld", num_send_packs));
-  displayln_info(fname +
-                 ssprintf(": total num_recv_packs = %10ld", num_recv_packs));
-  displayln_info(fname +
-                 ssprintf(": total num_send_msgs  = %10ld", num_send_msgs));
-  displayln_info(fname +
-                 ssprintf(": total num_recv_msgs  = %10ld", num_recv_msgs));
+  displayln_info(
+      0, fname + ssprintf(": total num_send_packs = %10ld", num_send_packs));
+  displayln_info(
+      0, fname + ssprintf(": total num_recv_packs = %10ld", num_recv_packs));
+  displayln_info(
+      0, fname + ssprintf(": total num_send_msgs  = %10ld", num_send_msgs));
+  displayln_info(
+      0, fname + ssprintf(": total num_recv_msgs  = %10ld", num_recv_msgs));
   sp.scp.global_comm_size = sp.scp.total_send_size;
   glb_sum(sp.scp.global_comm_size);
-  displayln_info(
-      fname + ssprintf(": global_comm_size = %10ld", sp.scp.global_comm_size));
+  displayln_info(0, fname + ssprintf(": global_comm_size = %10ld",
+                                     sp.scp.global_comm_size));
   return sp;
 }
 

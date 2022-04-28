@@ -259,6 +259,15 @@ class SelectedField:
         assert isinstance(tag, str)
         c.to_from_endianness_sfield(self, tag)
 
+    def field_shift(self, shift, is_reflect = False):
+        # return new shifted SelectedField
+        # shift is the coordinate to shift the field
+        # is_reflect determine whether to negate coordinate after shift
+        f1 = self.copy(is_copying_data = False)
+        f1.fsel = FieldSelection()
+        c.field_shift_sfield(f1, self, shift, is_reflect)
+        return f1
+
     def glb_sum_tslice(self):
         from qlat.selected_points import SelectedPoints
         psel = get_psel_tslice(self.total_site())

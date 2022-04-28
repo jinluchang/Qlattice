@@ -586,6 +586,7 @@ prop[0] qnorm =  6.13619597511778740E-03
 release_lock: Release lock 'results/free-4nt8/results=1010-lock'
 qremove: 'results/free-4nt8/results=1010-lock/time.txt'
 program finished successfully for 'free-4nt8'.
+CHECK: finished successfully.
 Cache: 'CommPlanCache': 7 / 32 [16] clear
 Cache: 'ShufflePlanCache': 2 / 16 [8] clear
 clear_mem_cache: 4291328 bytes (0.004 GB) freed.

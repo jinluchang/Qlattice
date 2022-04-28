@@ -19,10 +19,10 @@ ld.set_dim_name(2, "index2")
 
 ld.set_zero()
 
-q.displayln_info(f"ld: ndim {ld.ndim()}")
-q.displayln_info(f"ld: dim_sizes {ld.dim_sizes()}")
+q.displayln_info(f"CHECK: ld: ndim {ld.ndim()}")
+q.displayln_info(f"CHECK: ld: dim_sizes {ld.dim_sizes()}")
 for dim in range(ld.ndim()):
-    q.displayln_info(f"ld: dim_name {dim} {ld.dim_name(dim)} {ld.dim_indices(dim)}")
+    q.displayln_info(f"CHECK: ld: dim_name {dim} {ld.dim_name(dim)} {ld.dim_indices(dim)}")
 
 for i0 in range(dim_sizes[0]):
     for i1 in range(dim_sizes[1]):
@@ -31,7 +31,7 @@ for i0 in range(dim_sizes[0]):
 
 q.displayln_info("ld:")
 q.displayln_info(ld.show())
-q.displayln_info(f"qnorm = {ld.qnorm()}")
+q.displayln_info(f"CHECK: qnorm = {ld.qnorm()}")
 
 ld[(0, 1,)] = [ i * 3 + i * 1j for i in range(3) ]
 
@@ -49,18 +49,20 @@ ld1 += ld1
 ld1 *= 0.5
 ld1 -= ld
 q.displayln_info(ld1.show())
-q.displayln_info(f"qnorm = {ld1.qnorm()}")
+q.displayln_info(f"CHECK: qnorm = {ld1.qnorm()}")
 
 q.displayln_info(ld.to_list())
 
 ld1.from_list(ld.to_list())
 
 q.displayln_info(ld1.show())
-q.displayln_info(f"qnorm = {ld1.qnorm()}")
+q.displayln_info(f"CHECK: qnorm = {ld1.qnorm()}")
 
 if q.get_id_node() == 0:
     q.displayln(os.listdir("results"))
 
 q.timer_display()
+
+q.displayln_info(f"CHECK: finished successfully.")
 
 q.end()

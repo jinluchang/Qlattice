@@ -122,8 +122,11 @@ class ShuffledBitSet:
         c.free_sbs(self)
 
 def open_fields(path, mode, new_size_node = None):
+    # path can be the folder path or the 'geon-info.txt' path
     assert isinstance(path, str)
     assert isinstance(mode, str)
+    if path[-14:] == "/geon-info.txt":
+        path = path[:-14]
     if mode == "r":
         return ShuffledFieldsReader(path, new_size_node)
     elif mode == "w":
@@ -138,12 +141,15 @@ def open_fields(path, mode, new_size_node = None):
         raise Exception("open_fields")
 
 def list_fields(path, new_size_node = None):
+    assert isinstance(path, str)
     sfr = open_fields(path, "r", new_size_node)
     fns = sfr.list()
     sfr.close()
     return fns
 
 def properly_truncate_fields(path, is_check_all = False, is_only_check = False, new_size_node = None):
+    if path[-14:] == "/geon-info.txt":
+        path = path[:-14]
     if new_size_node is None:
         return c.properly_truncate_fields_sync_node(path, is_check_all, is_only_check)
     else:
@@ -154,6 +160,8 @@ def truncate_fields(path, fns_keep, new_size_node = None):
     # fns_keep needs to be in the same order as the data is stored in path
     # all fns_keep must be already in the path
     # fns_keep can be empty list
+    if path[-14:] == "/geon-info.txt":
+        path = path[:-14]
     if new_size_node is None:
         ret = c.truncate_fields_sync_node(path, fns_keep)
     else:
@@ -163,6 +171,8 @@ def truncate_fields(path, fns_keep, new_size_node = None):
 
 def check_fields(path, is_check_all = True, new_size_node = None):
     # return list of field that is stored successful
+    if path[-14:] == "/geon-info.txt":
+        path = path[:-14]
     is_only_check = True
     return properly_truncate_fields(path, is_check_all, is_only_check, new_size_node)
 
@@ -170,7 +180,13 @@ def check_compressed_eigen_vectors(path):
     # return bool value suggest whether the data can be read successfully
     # return True is the data has problem
     # return False if the data is ok
+    if path[-14:] == "/geon-info.txt":
+        path = path[:-14]
     return c.check_compressed_eigen_vectors(path)
 
 def eigen_system_repartition(new_size_node, path, path_new = ""):
+    if path[-14:] == "/geon-info.txt":
+        path = path[:-14]
+    if path_new[-14:] == "/geon-info.txt":
+        path_new = path_new[:-14]
     return c.eigen_system_repartition(new_size_node, path, path_new)

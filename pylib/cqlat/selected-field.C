@@ -111,12 +111,24 @@ PyObject* set_zero_sfield_ctype(PyField& pf)
 }
 
 template <class M>
-PyObject* acc_field_sfield_ctype(PyObject* p_field, const Complex& coef, PyObject* p_sfield,
+PyObject* acc_field_sfield_ctype(PyObject* p_field, PyObject* p_sfield,
                                  const FieldSelection& fsel)
 {
   Field<M>& f = py_convert_type_field<M>(p_field);
   const SelectedField<M>& sf = py_convert_type_sfield<M>(p_sfield);
-  acc_field(f, coef, sf, fsel);
+  acc_field(f, sf, fsel);
+  Py_RETURN_NONE;
+}
+
+template <class M>
+PyObject* field_shift_sfield_ctype(PyObject* p_sfield_new, PyObject* p_sfield,
+                                   const Coordinate& shift, const bool is_reflect)
+{
+  FieldSelection& fsel_new = py_convert_type<FieldSelection>(p_sfield_new, "fsel");
+  SelectedField<M>& sf_new = py_convert_type_sfield<M>(p_sfield_new);
+  const FieldSelection& fsel = py_convert_type<FieldSelection>(p_sfield, "fsel");
+  const SelectedField<M>& sf = py_convert_type_sfield<M>(p_sfield);
+  field_shift(sf_new, fsel_new, sf, fsel, shift, is_reflect);
   Py_RETURN_NONE;
 }
 
@@ -443,15 +455,33 @@ EXPORT(set_zero_sfield, {
 EXPORT(acc_field_sfield, {
   using namespace qlat;
   PyObject* p_field = NULL;
-  Complex coef = 1.0;
   PyObject* p_sfield = NULL;
-  if (!PyArg_ParseTuple(args, "ODO", &p_field, &p_sfield)) {
+  if (!PyArg_ParseTuple(args, "OO", &p_field, &p_sfield)) {
     return NULL;
   }
   const std::string ctype = py_get_ctype(p_sfield);
   const FieldSelection& fsel = py_convert_type<FieldSelection>(p_sfield, "fsel");
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, acc_field_sfield_ctype, ctype, p_field, coef, p_sfield, fsel);
+  FIELD_DISPATCH(p_ret, acc_field_sfield_ctype, ctype, p_field, p_sfield, fsel);
+  return p_ret;
+});
+
+EXPORT(field_shift_sfield, {
+  using namespace qlat;
+  PyObject* p_sfield_new = NULL;
+  PyObject* p_sfield = NULL;
+  PyObject* p_shift = NULL;
+  bool is_reflect = false;
+  if (!PyArg_ParseTuple(args, "OOO|b", &p_sfield_new, &p_sfield, &p_shift,
+                        &is_reflect)) {
+    return NULL;
+  }
+  const std::string ctype = py_get_ctype(p_sfield);
+  pqassert(py_get_ctype(p_sfield_new) == py_get_ctype(p_sfield));
+  const Coordinate shift = py_convert_data<Coordinate>(p_shift);
+  PyObject* p_ret = NULL;
+  FIELD_DISPATCH(p_ret, field_shift_sfield_ctype, ctype, p_sfield_new, p_sfield,
+                 shift, is_reflect);
   return p_ret;
 });
 

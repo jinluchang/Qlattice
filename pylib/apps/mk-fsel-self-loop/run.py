@@ -73,6 +73,7 @@ def compute_prop_rand_u1(*, job_tag, traj, inv_type, gf, path_s, fsel, eig = Non
     q.clean_cache(q.cache_inv)
     sfw.close()
     q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
+    q.qar_create_info(get_save_path(path_s + ".qar"), get_save_path(path_s), is_remove_folder_after = True)
 
 @q.timer_verbose
 def run_prop_rand_u1(job_tag, traj, *, inv_type, get_gf, get_fsel, get_eig = None):
@@ -83,7 +84,7 @@ def run_prop_rand_u1(job_tag, traj, *, inv_type, get_gf, get_fsel, get_eig = Non
     inv_type_names = [ "light", "strange", "charm", ]
     inv_type_name = inv_type_names[inv_type]
     path_s = f"prop-rand-u1-{inv_type_name}/{job_tag}/traj={traj}"
-    if get_load_path(path_s) is not None:
+    if get_load_path(path_s + "/geon-info.txt") is not None:
         return
     if q.obtain_lock(f"locks/{job_tag}-{traj}-rand-u1-{inv_type_name}"):
         gf = get_gf()
@@ -104,9 +105,9 @@ def run_prop_rand_u1(job_tag, traj, *, inv_type, get_gf, get_fsel, get_eig = Non
 @q.timer_verbose
 def run_job(job_tag, traj):
     fns_produce = [
-            f"prop-rand-u1-light/{job_tag}/traj={traj}",
-            f"prop-rand-u1-strange/{job_tag}/traj={traj}",
-            f"prop-rand-u1-charm/{job_tag}/traj={traj}",
+            f"prop-rand-u1-light/{job_tag}/traj={traj}/geon-info.txt",
+            f"prop-rand-u1-strange/{job_tag}/traj={traj}/geon-info.txt",
+            f"prop-rand-u1-charm/{job_tag}/traj={traj}/geon-info.txt",
             ]
     fns_need = [
             (f"configs/{job_tag}/ckpoint_lat.{traj}", f"configs/{job_tag}/ckpoint_lat.IEEE64BIG.{traj}",),

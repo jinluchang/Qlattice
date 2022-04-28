@@ -91,6 +91,7 @@ src info 12.0 2788420690
 sol info 1.1956162833238206 1160651071
 sol1 info 5.8031596349094485 2546554408
 tag=inv_qm_madwf diff src 0.0 sol 1.5124888841901922e-13 sol1 2.3302756374948188e-12
+CHECK: finished successfully.
 Cache: 'ShufflePlanCache': 1 / 16 [8] clear
 Cache: 'CommPlanCache': 1 / 32 [16] clear
 clear_mem_cache: 2833152 bytes (0.003 GB) freed.

@@ -9,13 +9,7 @@
 int main(int argc, char* argv[])
 {
   using namespace qlat;
-  int n_node = init_mpi(&argc, &argv);
-
-  inputpara in; 
-  in.load_para("input.txt");
-  Coordinate Lat(in.nx, in.ny, in.nz, in.nt);
-  Coordinate spreadT = guess_nodeL(n_node, Lat);
-  begin_comm(MPI_COMM_WORLD , spreadT);
+  inputpara in;begin_Lat(&argc, &argv, in);
 
   set_GPU();
 
@@ -24,11 +18,6 @@ int main(int argc, char* argv[])
   ny = in.ny;
   nz = in.nz;
   nt = in.nt;
-
-  int icfg  = in.icfg;
-  int ionum = in.ionum;
-
-  int n_vec = in.nvec;
 
   omp_set_num_threads(omp_get_max_threads());
   print0("===nthreads %8d %8d, max %8d \n",qlat::qacc_num_threads(),omp_get_num_threads(),omp_get_max_threads());

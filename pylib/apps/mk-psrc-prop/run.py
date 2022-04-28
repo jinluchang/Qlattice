@@ -78,9 +78,12 @@ def compute_prop_psrc_all(job_tag, traj, *,
             comp(idx, xg_src, inv_acc = 1)
         if r <= prob2:
             comp(idx, xg_src, inv_acc = 2)
+    q.clean_cache(q.cache_inv)
     sfw.close()
     q.qtouch_info(get_save_path(os.path.join(path_sp, "checkpoint.txt")))
     q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
+    q.qar_create_info(get_save_path(path_sp + ".qar"), get_save_path(path_sp), is_remove_folder_after = True)
+    q.qar_create_info(get_save_path(path_s + ".qar"), get_save_path(path_s), is_remove_folder_after = True)
 
 @q.timer
 def run_prop_psrc(job_tag, traj, *, inv_type, get_gf, get_eig, get_gt, get_psel, get_fsel):
@@ -90,7 +93,7 @@ def run_prop_psrc(job_tag, traj, *, inv_type, get_gf, get_eig, get_gt, get_psel,
         return
     inv_type_names = [ "light", "strange", ]
     inv_type_name = inv_type_names[inv_type]
-    if get_load_path(f"prop-psrc-{inv_type_name}/{job_tag}/traj={traj}") is not None:
+    if get_load_path(f"prop-psrc-{inv_type_name}/{job_tag}/traj={traj}/geon-info.txt") is not None:
         return
     if q.obtain_lock(f"locks/{job_tag}-{traj}-psrc-{inv_type_name}"):
         gf = get_gf()
@@ -105,9 +108,9 @@ def run_prop_psrc(job_tag, traj, *, inv_type, get_gf, get_eig, get_gt, get_psel,
 @q.timer
 def run_job(job_tag, traj):
     fns_produce = [
-            f"prop-psrc-light/{job_tag}/traj={traj}",
+            f"prop-psrc-light/{job_tag}/traj={traj}/geon-info.txt",
             f"psel-prop-psrc-light/{job_tag}/traj={traj}/checkpoint.txt",
-            f"prop-psrc-strange/{job_tag}/traj={traj}",
+            f"prop-psrc-strange/{job_tag}/traj={traj}/geon-info.txt",
             f"psel-prop-psrc-strange/{job_tag}/traj={traj}/checkpoint.txt",
             ]
     fns_need = [
