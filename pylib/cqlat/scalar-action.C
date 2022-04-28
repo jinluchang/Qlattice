@@ -65,16 +65,36 @@ EXPORT(action_node_scalar_action, {
   return py_convert(ret);
 });
 
+EXPORT(hmc_estimate_mass_scalar_action, {
+  using namespace qlat;
+  PyObject* p_sa = NULL;
+  PyObject* p_masses = NULL;
+  PyObject* p_field_ft = NULL;
+  PyObject* p_force_ft = NULL;
+  double phi0 = 0.0;
+  if (!PyArg_ParseTuple(args, "OOOOd", &p_sa, &p_masses, &p_field_ft, &p_force_ft, &phi0)) {
+    return NULL;
+  }
+  ScalarAction& sa = py_convert_type<ScalarAction>(p_sa);
+  Field<double>& masses = py_convert_type<Field<double>>(p_masses);
+  const Field<Complex>& field_ft = py_convert_type<Field<Complex>>(p_field_ft);
+  const Field<Complex>& force_ft = py_convert_type<Field<Complex>>(p_force_ft);
+  sa.hmc_estimate_mass(masses, field_ft, force_ft, phi0);
+  Py_RETURN_NONE;
+});
+
 EXPORT(hmc_m_hamilton_node_scalar_action, {
   using namespace qlat;
   PyObject* p_sa = NULL;
   PyObject* p_sm = NULL;
-  if (!PyArg_ParseTuple(args, "OO", &p_sa, &p_sm)) {
+  PyObject* p_masses = NULL;
+  if (!PyArg_ParseTuple(args, "OOO", &p_sa, &p_sm, &p_masses)) {
     return NULL;
   }
   ScalarAction& sa = py_convert_type<ScalarAction>(p_sa);
   const Field<Complex>& sm = py_convert_type<Field<Complex>>(p_sm);
-  const double ret = sa.hmc_m_hamilton_node(sm);
+  const Field<double>& masses = py_convert_type<Field<double>>(p_masses);
+  const double ret = sa.hmc_m_hamilton_node(sm, masses);
   return py_convert(ret);
 });
 
@@ -98,14 +118,16 @@ EXPORT(hmc_field_evolve_scalar_action, {
   PyObject* p_sa = NULL;
   PyObject* p_sf = NULL;
   PyObject* p_sm = NULL;
+  PyObject* p_masses = NULL;
   double step_size = 0.0;
-  if (!PyArg_ParseTuple(args, "OOOd", &p_sa, &p_sf, &p_sm, &step_size)) {
+  if (!PyArg_ParseTuple(args, "OOOOd", &p_sa, &p_sf, &p_sm, &p_masses, &step_size)) {
     return NULL;
   }
   ScalarAction& sa = py_convert_type<ScalarAction>(p_sa);
   Field<Complex>& sf = py_convert_type<Field<Complex>>(p_sf);
   const Field<Complex>& sm = py_convert_type<Field<Complex>>(p_sm);
-  sa.hmc_field_evolve(sf, sm, step_size);
+  const Field<double>& masses = py_convert_type<Field<double>>(p_masses);
+  sa.hmc_field_evolve(sf, sm, masses, step_size);
   Py_RETURN_NONE;
 });
 
@@ -141,13 +163,15 @@ EXPORT(hmc_set_rand_momentum_scalar_action, {
   using namespace qlat;
   PyObject* p_sa = NULL;
   PyObject* p_sm = NULL;
+  PyObject* p_masses = NULL;
   PyObject* p_rs = NULL;
-  if (!PyArg_ParseTuple(args, "OOO", &p_sa, &p_sm, &p_rs)) {
+  if (!PyArg_ParseTuple(args, "OOOO", &p_sa, &p_sm, &p_masses, &p_rs)) {
     return NULL;
   }
   ScalarAction& sa = py_convert_type<ScalarAction>(p_sa);
   Field<Complex>& sm = py_convert_type<Field<Complex>>(p_sm);
+  Field<double>& masses = py_convert_type<Field<double>>(p_masses);
   const RngState& rs = py_convert_type<RngState>(p_rs);
-  sa.hmc_set_rand_momentum(sm, rs);
+  sa.hmc_set_rand_momentum(sm, masses, rs);
   Py_RETURN_NONE;
 });
