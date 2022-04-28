@@ -114,29 +114,22 @@ struct ScalarAction {
 									std::cos(2*PI*pg[3]/L[3])));
   }
   
-  qacc double hmc_estimate_mass(Field<double>& masses, const Field<Complex>& field_ft, const Field<Complex>& force_ft, const double phi0)
+  inline void hmc_estimate_mass(Field<double>& masses, const Field<Complex>& field_ft, const Field<Complex>& force_ft, const double phi0)
   {
     TIMER("ScalarAction.hmc_estimate_mass");
     const Geometry geo = field_ft.geo();
     masses.init(geo);
     qacc_for(index, geo.local_volume(), {
-      displayln_info(show(index));
       Coordinate xl = geo.coordinate_from_index(index);
       Vector<double> masses_v = masses.get_elems(xl);
-      displayln_info(show(xl));
       int M = masses_v.size();
-      displayln_info("A");
       qassert(M == geo.multiplicity);
       for (int m = 0; m < M; ++m) {
-        displayln_info("B");
 		Complex fld = field_ft.get_elem(xl,m);
 		Complex frc = force_ft.get_elem(xl,m);
-        displayln_info("C");
         masses_v[m] = 4/(PI*PI)*std::pow((frc.real()*frc.real()+frc.imag()*frc.imag())/((fld.real()-phi0)*(fld.real()-phi0)+fld.imag()*fld.imag()), 0.5);
-        displayln_info("D");
       }
     });
-    
   }
 
   inline double hmc_m_hamilton_node(const Field<Complex>& sm_complex)

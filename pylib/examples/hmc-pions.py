@@ -15,6 +15,12 @@ def phi_squared(field,action):
     geo = field.geo()
     return phi_sq/geo.total_volume()/geo.multiplicity()
 
+def calc_mass(pg):
+	return 4/np.pi**2*(m_sq + 8 - 2*(np.cos(2*np.pi*pg[0]/total_site[0]) +
+									np.cos(2*np.pi*pg[1]/total_site[1]) + 
+									np.cos(2*np.pi*pg[2]/total_site[2]) + 
+									np.cos(2*np.pi*pg[3]/total_site[3])))
+
 @q.timer_verbose
 def sm_evolve(momentum_ft, field_init, action, fg_dt, dt, fft, ifft):
     # Evolve the momentum field according to the given action using the  
@@ -39,6 +45,7 @@ def sm_evolve(momentum_ft, field_init, action, fg_dt, dt, fft, ifft):
     #
     force*=-dt
     momentum+=force
+    force*=-1/dt
     # Save the Fourier transform of the new momentum
     momentum_ft.set_complex_from_double(momentum)
     momentum_ft *= 1/V**0.5
@@ -231,6 +238,10 @@ def test_hmc(total_site, action, mult, n_traj):
         phi=[field_sum[i]/V for i in range(mult)]
         q.displayln_info(phi)
         
+        q.displayln_info("Analytic masses (free case):")
+        ms=[calc_mass([0,0,0,0]),calc_mass([1,0,0,0]),calc_mass([2,0,0,0]),calc_mass([3,0,0,0]),calc_mass([4,0,0,0]),calc_mass([5,0,0,0])]
+        q.displayln_info(ms)
+        
         q.displayln_info("Estmiated masses:")
         ms=[masses.get_elem([0,0,0,0],0),masses.get_elem([1,0,0,0],0),masses.get_elem([2,0,0,0],0),masses.get_elem([3,0,0,0],0),masses.get_elem([4,0,0,0],0),masses.get_elem([5,0,0,0],0)]
         q.displayln_info(ms)
@@ -269,7 +280,7 @@ timeslices=[]
 ax_cur_timeslices=[]
 
 # The lattice dimensions
-total_site = [4,2,2,2]
+total_site = [8,8,8,8]
 
 # The multiplicity of the scalar field
 mult = 1
