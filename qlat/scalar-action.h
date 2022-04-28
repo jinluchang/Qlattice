@@ -132,7 +132,7 @@ struct ScalarAction {
     });
   }
 
-  inline double hmc_m_hamilton_node(const Field<Complex>& sm_complex)
+  inline double hmc_m_hamilton_node(const Field<Complex>& sm_complex, const Field<double>& masses)
   {
     // Return the part of an HMC Hamiltonian due to the given momentum 
     // field (on the current node).
@@ -153,13 +153,12 @@ struct ScalarAction {
     FieldM<double, 1> fd;
     fd.init(geo_r);
     long V = geo.total_volume();
-    const Coordinate L = geo.total_site();
     qacc_for(index, geo_r.local_volume(), {
       Coordinate xl = geo_r.coordinate_from_index(index);
       double s=0;
       for (int m = 0; m < geo.multiplicity; ++m) {
         Complex c = sm_complex.get_elem(xl,m);
-        s += (c.real()*c.real()+c.imag()*c.imag())/2/hmc_mass_p(L,geo.coordinate_g_from_l(xl));
+        s += (c.real()*c.real()+c.imag()*c.imag())/2/masses.get_elem(xl,m); // /hmc_mass_p(L,geo.coordinate_g_from_l(xl));
       }
       fd.get_elem(index) = s;
     });
@@ -218,7 +217,7 @@ struct ScalarAction {
   }
   
   inline void hmc_field_evolve(Field<Complex>& sf_complex, const Field<Complex>& sm_complex,
-                            const double step_size)
+                               const Field<double>& masses, const double step_size)
   {
     TIMER("hmc_field_evolve");
     //Field<Complex> sf_complex;
@@ -232,14 +231,13 @@ struct ScalarAction {
     //sf_complex*=1/rt_V;
     //fft_complex_field(sm_complex,true);
     //sm_complex*=1/rt_V;
-    const Coordinate L = geo.total_site();
     qacc_for(index, geo.local_volume(), {
       const Coordinate xl = geo.coordinate_from_index(index);
       Vector<Complex> sf_v = sf_complex.get_elems(xl);
       const Vector<Complex> sm_v = sm_complex.get_elems_const(xl);
       qassert(sf_v.size() == sm_v.size());
       for (int m = 0; m < sf_v.size(); ++m) {
-        sf_v[m] = sf_v[m] + sm_v[m]*step_size/hmc_mass_p(L,geo.coordinate_g_from_l(xl));
+        sf_v[m] = sf_v[m] + sm_v[m]*step_size/masses.get_elem(xl,m);
       }
     });
     //fft_complex_field(sf_complex, false);
@@ -318,19 +316,18 @@ struct ScalarAction {
     axial_current_node_no_comm(axial_current, sf_ext);
   }
   
-  inline void hmc_set_rand_momentum(Field<Complex>& sm_complex, const RngState& rs)
+  inline void hmc_set_rand_momentum(Field<Complex>& sm_complex, const Field<double>& masses, const RngState& rs)
   {
     TIMER("set_rand_momentum");
     const Geometry& geo = sm_complex.geo();
-    const Coordinate L = geo.total_site();
     qacc_for(index, geo.local_volume(), {
       const Coordinate xl = geo.coordinate_from_index(index);
       const Coordinate xg = geo.coordinate_g_from_l(xl);
       const long gindex = geo.g_index_from_g_coordinate(xg);
       RngState rsi = rs.newtype(gindex);
       Vector<Complex> v = sm_complex.get_elems(xl);
-      double sigma = std::pow(hmc_mass_p(L, xg), 0.5);
       for (int m = 0; m < v.size(); ++m) {
+        double sigma = std::pow(masses.get_elem(xl,m), 0.5);
         v[m] = Complex(g_rand_gen(rsi, 0, sigma), g_rand_gen(rsi, 0, sigma));
       }
     });

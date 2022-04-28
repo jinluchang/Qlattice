@@ -61,7 +61,7 @@ def hmc_evolve(field, momentum_ft, field_ft, action, masses, steps, dt, V, fft, 
     ttheta = theta * dt * dt * dt;
     # The Fourier transformed field is updated, and then the field is 
     # updated based on the new Fourier transformed field
-    action.hmc_field_evolve(field_ft, momentum_ft, lam * dt)
+    action.hmc_field_evolve(field_ft, momentum_ft, masses, lam * dt)
     # Perform the inverse Fourier transform
     field.set_double_from_complex(ifft*field_ft)
     field*=1/V**0.5
@@ -69,37 +69,43 @@ def hmc_evolve(field, momentum_ft, field_ft, action, masses, steps, dt, V, fft, 
     force_ft = q.Field("Complex", field.geo())
     for i in range(steps):
         sm_evolve(momentum_ft, field, action, 4.0 * ttheta / dt, 0.5 * dt, fft, ifft);
-        action.hmc_field_evolve(field_ft, momentum_ft, (1.0 - 2.0 * lam) * dt);
+        action.hmc_field_evolve(field_ft, momentum_ft, masses, (1.0 - 2.0 * lam) * dt);
         field.set_double_from_complex(ifft*field_ft)
         field*=1/V**0.5
         force = sm_evolve(momentum_ft, field, action, 4.0 * ttheta / dt, 0.5 * dt, fft, ifft);
         if i < steps - 1:
-            action.hmc_field_evolve(field_ft, momentum_ft, 2.0 * lam * dt);
+            action.hmc_field_evolve(field_ft, momentum_ft, masses, 2.0 * lam * dt);
             field.set_double_from_complex(ifft*field_ft)
             field*=1/V**0.5
         else:
-            action.hmc_field_evolve(field_ft, momentum_ft, lam * dt);
+            action.hmc_field_evolve(field_ft, momentum_ft, masses, lam * dt);
             field.set_double_from_complex(ifft*field_ft)
             field*=1/V**0.5
     force_ft.set_complex_from_double(force)
     force_ft=fft*force_ft
     force_ft*=1/V**0.5
-    action.hmc_estimate_mass(masses, field_ft, force_ft, 0.0)
+    geo = field_ft.geo()
+    masses_new = q.Field("double",geo,geo.multiplicity())
+    action.hmc_estimate_mass(masses_new, field_ft, force_ft, 0.0)
+    return masses_new
 
 @q.timer_verbose
 def run_hmc_evolve(field, momentum_ft, field_ft, action, masses, rs, steps, md_time, V, fft, ifft):
     # Calculate the value of the molecular dynamics Hamiltonian for the 
     # initial field and momentum configuration
-    energy = action.hmc_m_hamilton_node(momentum_ft) + action.action_node(field)
+    energy = action.hmc_m_hamilton_node(momentum_ft, masses) + action.action_node(field)
     
     # Evolve the field forward in molecular dynamics time using the 
     # given momenta and the Hamiltonian appropriate for the action
     dt = float(md_time) / float(steps)
-    hmc_evolve(field, momentum_ft, field_ft, action, masses, steps, dt, V, fft, ifft)
+    masses_new = hmc_evolve(field, momentum_ft, field_ft, action, masses, steps, dt, V, fft, ifft)
     
     # Calculate the change in the value of the molecular dynamics 
     # Hamilton after the evolution 
-    delta_h = action.hmc_m_hamilton_node(momentum_ft) + action.action_node(field) - energy;
+    delta_h = action.hmc_m_hamilton_node(momentum_ft, masses) + action.action_node(field) - energy;
+    
+    # Save the new estimated masses
+    masses@=masses_new
     
     # Sum over delta_h for every parallel node (each node handles part 
     # of the lattice)
@@ -158,7 +164,7 @@ def run_hmc(field, geo, action, masses, traj, rs, fft, ifft):
     #momentum_ft.set_complex_from_double(momentum)
     #momentum_ft = fft*momentum_ft
     #momentum_ft*=1/geo.total_volume()**0.5
-    action.hmc_set_rand_momentum(momentum_ft, rs.split("set_rand_momentum"))
+    action.hmc_set_rand_momentum(momentum_ft, masses, rs.split("set_rand_momentum"))
     momentum_ft = ifft*momentum_ft
     momentum_ft*=1/geo.total_volume()**0.5
     momentum = q.Field("double",geo,mult)
@@ -292,7 +298,7 @@ n_traj = 100
 # (1/2)*[sum i]|dphi_i|^2 + (1/2)*m_sq*[sum i]|phi_i|^2
 #     + (1/24)*lmbd*([sum i]|phi_i|^2)^2
 m_sq = 0.1
-lmbd = 0.0
+lmbd = 0.5
 alpha = 0.0
 
 size_node_list = [
