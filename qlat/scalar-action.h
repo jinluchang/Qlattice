@@ -120,14 +120,21 @@ struct ScalarAction {
     const Geometry geo = field_ft.geo();
     masses.init(geo);
     qacc_for(index, geo.local_volume(), {
-      Coordinate xl = geo.coordinate_from_index(index);
+      const Coordinate xl = geo.coordinate_from_index(index);
+      const Coordinate xg = geo.coordinate_g_from_l(xl);
+      const long gindex = geo.g_index_from_g_coordinate(xg);
       Vector<double> masses_v = masses.get_elems(xl);
       int M = masses_v.size();
       qassert(M == geo.multiplicity);
       for (int m = 0; m < M; ++m) {
 		Complex fld = field_ft.get_elem(xl,m);
 		Complex frc = force_ft.get_elem(xl,m);
-        masses_v[m] = 4/(PI*PI)*std::pow((frc.real()*frc.real()+frc.imag()*frc.imag())/((fld.real()-phi0)*(fld.real()-phi0)+fld.imag()*fld.imag()), 0.5);
+        if(gindex==0 && m==0){
+          masses_v[m] = 4/(PI*PI)*std::pow((frc.real()*frc.real()+frc.imag()*frc.imag())/((fld.real()-phi0)*(fld.real()-phi0)+fld.imag()*fld.imag()), 0.5);
+	    }
+	    else {
+          masses_v[m] = 4/(PI*PI)*std::pow((frc.real()*frc.real()+frc.imag()*frc.imag())/(fld.real()*fld.real()+fld.imag()*fld.imag()), 0.5);
+		}
       }
     });
   }

@@ -84,9 +84,12 @@ def hmc_evolve(field, momentum_ft, field_ft, action, masses, steps, dt, V, fft, 
     force_ft.set_complex_from_double(force)
     force_ft=fft*force_ft
     force_ft*=1/V**0.5
+    # Estimate the masses we should use in order to evolve each field 
+    # mode by half of its period
     geo = field_ft.geo()
     masses_new = q.Field("double",geo,geo.multiplicity())
-    action.hmc_estimate_mass(masses_new, field_ft, force_ft, 0.0)
+    action.hmc_estimate_mass(masses_new, field_ft, force_ft, vev)
+    #masses_new.set_elem([0,0,0,0],0,np.array([masses_new.get_elem([1,0,0,0],0)], dtype='float').tobytes())
     return masses_new
 
 @q.timer_verbose
@@ -244,26 +247,28 @@ def test_hmc(total_site, action, mult, n_traj):
         phi=[field_sum[i]/V for i in range(mult)]
         q.displayln_info(phi)
         
-        q.displayln_info("Analytic masses (free case):")
-        ms=[calc_mass([0,0,0,0]),calc_mass([1,0,0,0]),calc_mass([2,0,0,0]),calc_mass([3,0,0,0]),calc_mass([4,0,0,0]),calc_mass([5,0,0,0])]
-        q.displayln_info(ms)
+        #q.displayln_info("Analytic masses (free case):")
+        #ms=[calc_mass([0,0,0,0]),calc_mass([1,0,0,0]),calc_mass([2,0,0,0]),calc_mass([3,0,0,0]),calc_mass([4,0,0,0]),calc_mass([5,0,0,0])]
+        #q.displayln_info(ms)
         
         q.displayln_info("Estmiated masses:")
         ms=[masses.get_elem([0,0,0,0],0),masses.get_elem([1,0,0,0],0),masses.get_elem([2,0,0,0],0),masses.get_elem([3,0,0,0],0),masses.get_elem([4,0,0,0],0),masses.get_elem([5,0,0,0],0)]
+        q.displayln_info(ms)
+        ms=[masses.get_elem([0,0,0,0],1),masses.get_elem([1,0,0,0],1),masses.get_elem([2,0,0,0],1),masses.get_elem([3,0,0,0],1),masses.get_elem([4,0,0,0],1),masses.get_elem([5,0,0,0],1)]
         q.displayln_info(ms)
         
         tslices = field.glb_sum_tslice()
         
         # Calculate the axial current of the current field configuration
         # and save it in axial_current
-        #action.axial_current_node(axial_current, field)
-        #tslices_ax_cur = axial_current.glb_sum_tslice()
+        action.axial_current_node(axial_current, field)
+        tslices_ax_cur = axial_current.glb_sum_tslice()
         
         if i>start_measurements:
             psq_list.append(psq)
             phi_list.append(phi)
             timeslices.append(tslices.to_numpy())
-            #ax_cur_timeslices.append(tslices_ax_cur.to_numpy())
+            ax_cur_timeslices.append(tslices_ax_cur.to_numpy())
     
     # Saves the final field configuration so that the next run can be 
     # started where this one left off
@@ -289,17 +294,18 @@ ax_cur_timeslices=[]
 total_site = [8,8,8,8]
 
 # The multiplicity of the scalar field
-mult = 1
+mult = 4
 
 # The number of trajectories to calculate
-n_traj = 100
+n_traj = 500
 
 # Use action for a Euclidean scalar field. The Lagrangian will be:
 # (1/2)*[sum i]|dphi_i|^2 + (1/2)*m_sq*[sum i]|phi_i|^2
 #     + (1/24)*lmbd*([sum i]|phi_i|^2)^2
-m_sq = 0.1
-lmbd = 0.5
-alpha = 0.0
+m_sq = -1.0
+lmbd = 1.0
+alpha = 0.1
+vev = -2.336
 
 size_node_list = [
         [1, 1, 1, 1],
@@ -317,7 +323,7 @@ q.qremove_all_info("results")
 
 main()
 
-with open(f"output_data/sigma_pion_corrs_{total_site[0]}x{total_site[3]}_msq_{m_sq}_lmbd_{lmbd}_alph_{alpha}_{datetime.datetime.now().date()}.bin", "wb") as output:
+with open(f"output_data/sigma_pion_corrs_{total_site[0]}x{total_site[3]}_msq_{m_sq}_lmbd_{lmbd}_alph_{alpha}_{datetime.datetime.now().date()}_wvs.bin", "wb") as output:
     pickle.dump([psq_list,phi_list,timeslices,ax_cur_timeslices],output)
 
 #q.timer_display()
