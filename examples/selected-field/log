@@ -1,12 +1,12 @@
-qlat::begin(): MPI Initialized. num_node = 8
+qlat::begin(): MPI Initialized. num_node = 2
 qlat::begin_comm(comm,size_node): get_comm_list().push_back()
 qlat::begin_comm(comm,size_node): get_comm_list().size() = 1.
 qlat::begin(): q_num_threads = 2
 qlat::begin(): GeometryNode =
 { initialized = true
-, num_node    = 8
+, num_node    = 2
 , id_node     = 0
-, size_node   = 1x2x2x2
+, size_node   = 1x1x1x2
 , coor_node   = 0x0x0x0 }
 q_verbose=10
 q_timer_max_func_name_len=50 (default)
@@ -19,276 +19,117 @@ q_field_init=fast (default)
 set q_field_init=fast.
 q_mem_cache_max_size=512 (default)
 q_mem_cache_acc_max_size=512 (default)
-make_shuffle_plan_generic: num_send_packs =          2
-make_shuffle_plan_generic: num_recv_packs =          7
-make_shuffle_plan_generic: num_send_msgs  =          4
-make_shuffle_plan_generic: num_recv_msgs  =          4
-make_shuffle_plan_generic: total num_send_packs =         16
-make_shuffle_plan_generic: total num_recv_packs =         56
-make_shuffle_plan_generic: total num_send_msgs  =         32
-make_shuffle_plan_generic: total num_recv_msgs  =         32
-make_shuffle_plan_generic: global_comm_size =        512
 Cache: 'ShufflePlanCache': 0 / 16 [8] to add
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=AB54D286.
 demo: fill with random numbers
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=8B5110BA.
 demo: save to disk
 write_field: fn='huge-data/f.field'.
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 qrename: 'huge-data/f.field.partial.partial' 'huge-data/f.field.partial'
 q_write_par_limit=16 (default)
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 qrename: 'huge-data/f.field.partial' 'huge-data/f.field'
 demo: clear field 'f' in memory
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=AB54D286.
 demo: read from disk
 read_field: fn='huge-data/f.field'.
 q_read_par_limit=16 (default)
-shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=8B5110BA.
 demo: random select points on each time slice
 demo: select 16 points per time slice
 demo: selection is stored in 'fsel' of type 'FieldSelection'
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
-shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
 demo: save selection 'fsel' to disk as a field
 write_field: fn='huge-data/fsel.field'.
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
 qrename: 'huge-data/fsel.field.partial.partial' 'huge-data/fsel.field.partial'
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
 qrename: 'huge-data/fsel.field.partial' 'huge-data/fsel.field'
 demo: read selection 'fsel' from disk as a field
 read_field: fn='huge-data/fsel.field'.
-shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
 demo: possible to only keep selected points non-zero for field 'f'.
 demo: (DOES NOT CHANGE THE SIZE IN MOMEORY)
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=9B5AE427.
 demo: declare 'sf' or type 'SelectedField<Complex>'
 demo: 'sf' only store the selected points' data of 'f'
 demo: clear field 'f' in memory
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=AB54D286.
 demo: restore the selected points data to 'f' from 'sf'
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=9B5AE427.
 demo: only save the selected points data of 'f' to disk
 write_selected_field: fn='huge-data/f.sfield'.
-make_shuffle_plan_generic: num_send_packs =          1
-make_shuffle_plan_generic: num_recv_packs =          7
-make_shuffle_plan_generic: num_send_msgs  =          4
-make_shuffle_plan_generic: num_recv_msgs  =          4
-make_shuffle_plan_generic: total num_send_packs =          8
-make_shuffle_plan_generic: total num_recv_packs =         53
-make_shuffle_plan_generic: total num_send_msgs  =         32
-make_shuffle_plan_generic: total num_recv_msgs  =         32
-make_shuffle_plan_generic: global_comm_size =        128
-shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 qrename: 'huge-data/f.sfield.partial.partial' 'huge-data/f.sfield.partial'
 qrename: 'huge-data/f.sfield.partial' 'huge-data/f.sfield'
 demo: clear field 'f' in memory
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=AB54D286.
 demo: only read the selected points data of 'f' from disk
 read_selected_field: fn='huge-data/f.sfield'.
-make_shuffle_plan_generic: num_send_packs =          1
-make_shuffle_plan_generic: num_recv_packs =          7
-make_shuffle_plan_generic: num_send_msgs  =          4
-make_shuffle_plan_generic: num_recv_msgs  =          4
-make_shuffle_plan_generic: total num_send_packs =          8
-make_shuffle_plan_generic: total num_recv_packs =         53
-make_shuffle_plan_generic: total num_send_msgs  =         32
-make_shuffle_plan_generic: total num_recv_msgs  =         32
-make_shuffle_plan_generic: global_comm_size =        128
-shuffle_field_back(sel_f,sel_fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 demo: compute crc32=9B5AE427.
 demo: compute the sum of all the selected points in 'f'
-demo: v1 sum is (-2.26029772183723932E+00 + -3.93777103987270660E+00 j)
-demo: v2 sum is (-2.26029772183723932E+00 + -3.93777103987270660E+00 j)
-demo: v3 sum is (-2.26029772183723932E+00 + -3.93777103987270660E+00 j)
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
-shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+demo: v1 sum is ( 1.51214340115006340E-01 + -1.18642227559993838E+01 j)
+demo: v2 sum is ( 1.51214340115006340E-01 + -1.18642227559993838E+01 j)
+demo: v3 sum is ( 1.51214340115006340E-01 + -1.18642227559993838E+01 j)
 : 8B5110BA <- f-init
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 9B5AE427 <- only_keep_selected_points
 write_field: fn='huge-data/16/fsel.field'.
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
 qrename: 'huge-data/16/fsel.field.partial.partial' 'huge-data/16/fsel.field.partial'
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
 qrename: 'huge-data/16/fsel.field.partial' 'huge-data/16/fsel.field'
 read_field: fn='huge-data/16/fsel.field'.
-shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 : 8B5110BA <- f-init
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 9B5AE427 <- only_keep_selected_points
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 : 8B5110BA <- f-init
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 : 67F565CB <- f-init-1
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 9B5AE427 <- set_field_selected
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 : 8B5110BA <- f-init
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 : A9CE10A1 <- f-init-2
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 9B5AE427 <- set_field_selected_slow
 write_field: fn='huge-data/16/free-4nt8-init.field'.
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 qrename: 'huge-data/16/free-4nt8-init.field.partial.partial' 'huge-data/16/free-4nt8-init.field.partial'
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 qrename: 'huge-data/16/free-4nt8-init.field.partial' 'huge-data/16/free-4nt8-init.field'
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 : 8B5110BA <- f-init
 write_selected_field: fn='huge-data/16/free-4nt8-init.sfield'.
-make_shuffle_plan_generic: num_send_packs =          1
-make_shuffle_plan_generic: num_recv_packs =          7
-make_shuffle_plan_generic: num_send_msgs  =          4
-make_shuffle_plan_generic: num_recv_msgs  =          4
-make_shuffle_plan_generic: total num_send_packs =          8
-make_shuffle_plan_generic: total num_recv_packs =         53
-make_shuffle_plan_generic: total num_send_msgs  =         32
-make_shuffle_plan_generic: total num_recv_msgs  =         32
-make_shuffle_plan_generic: global_comm_size =        128
-shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 qrename: 'huge-data/16/free-4nt8-init.sfield.partial.partial' 'huge-data/16/free-4nt8-init.sfield.partial'
 qrename: 'huge-data/16/free-4nt8-init.sfield.partial' 'huge-data/16/free-4nt8-init.sfield'
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 : 4CB6850D <- f-init-3
 read_selected_field: fn='huge-data/16/free-4nt8-init.sfield'.
-make_shuffle_plan_generic: num_send_packs =          1
-make_shuffle_plan_generic: num_recv_packs =          7
-make_shuffle_plan_generic: num_send_msgs  =          4
-make_shuffle_plan_generic: num_recv_msgs  =          4
-make_shuffle_plan_generic: total num_send_packs =          8
-make_shuffle_plan_generic: total num_recv_packs =         53
-make_shuffle_plan_generic: total num_send_msgs  =         32
-make_shuffle_plan_generic: total num_recv_msgs  =         32
+make_shuffle_plan_generic: num_send_packs =          2
+make_shuffle_plan_generic: num_recv_packs =          4
+make_shuffle_plan_generic: num_send_msgs  =          1
+make_shuffle_plan_generic: num_recv_msgs  =          1
+make_shuffle_plan_generic: total num_send_packs =          4
+make_shuffle_plan_generic: total num_recv_packs =          8
+make_shuffle_plan_generic: total num_send_msgs  =          2
+make_shuffle_plan_generic: total num_recv_msgs  =          2
 make_shuffle_plan_generic: global_comm_size =        128
-shuffle_field_back(sel_f,sel_fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(sel_f,sel_fs,sp): 1x1x1x8 -> 1x1x1x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 9B5AE427 <- write and read back
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 8B5110BA full
 write_field: fn='huge-data/16/f-init.64.field'.
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 qrename: 'huge-data/16/f-init.64.field.partial.partial' 'huge-data/16/f-init.64.field.partial'
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 qrename: 'huge-data/16/f-init.64.field.partial' 'huge-data/16/f-init.64.field'
 write_field: fn='huge-data/16/f-init.double.field'.
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 qrename: 'huge-data/16/f-init.double.field.partial.partial' 'huge-data/16/f-init.double.field.partial'
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 qrename: 'huge-data/16/f-init.double.field.partial' 'huge-data/16/f-init.double.field'
 write_field: fn='huge-data/16/f-init.float.field'.
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 16 ; total_size: 0.000 GB)
 qrename: 'huge-data/16/f-init.float.field.partial.partial' 'huge-data/16/f-init.float.field.partial'
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 16 ; total_size: 0.000 GB)
 qrename: 'huge-data/16/f-init.float.field.partial' 'huge-data/16/f-init.float.field'
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 9B5AE427 selected
 write_selected_field: fn='huge-data/16/sf-init.64.field'.
-make_shuffle_plan_generic: num_send_packs =          1
-make_shuffle_plan_generic: num_recv_packs =          7
-make_shuffle_plan_generic: num_send_msgs  =          4
-make_shuffle_plan_generic: num_recv_msgs  =          4
-make_shuffle_plan_generic: total num_send_packs =          8
-make_shuffle_plan_generic: total num_recv_packs =         53
-make_shuffle_plan_generic: total num_send_msgs  =         32
-make_shuffle_plan_generic: total num_recv_msgs  =         32
-make_shuffle_plan_generic: global_comm_size =        128
-shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 qrename: 'huge-data/16/sf-init.64.field.partial.partial' 'huge-data/16/sf-init.64.field.partial'
 qrename: 'huge-data/16/sf-init.64.field.partial' 'huge-data/16/sf-init.64.field'
 write_selected_field: fn='huge-data/16/sf-init.double.field'.
-make_shuffle_plan_generic: num_send_packs =          1
-make_shuffle_plan_generic: num_recv_packs =          7
-make_shuffle_plan_generic: num_send_msgs  =          4
-make_shuffle_plan_generic: num_recv_msgs  =          4
-make_shuffle_plan_generic: total num_send_packs =          8
-make_shuffle_plan_generic: total num_recv_packs =         53
-make_shuffle_plan_generic: total num_send_msgs  =         32
-make_shuffle_plan_generic: total num_recv_msgs  =         32
-make_shuffle_plan_generic: global_comm_size =        128
-shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 qrename: 'huge-data/16/sf-init.double.field.partial.partial' 'huge-data/16/sf-init.double.field.partial'
 qrename: 'huge-data/16/sf-init.double.field.partial' 'huge-data/16/sf-init.double.field'
 write_selected_field: fn='huge-data/16/sf-init.float.field'.
-make_shuffle_plan_generic: num_send_packs =          1
-make_shuffle_plan_generic: num_recv_packs =          7
-make_shuffle_plan_generic: num_send_msgs  =          4
-make_shuffle_plan_generic: num_recv_msgs  =          4
-make_shuffle_plan_generic: total num_send_packs =          8
-make_shuffle_plan_generic: total num_recv_packs =         53
-make_shuffle_plan_generic: total num_send_msgs  =         32
-make_shuffle_plan_generic: total num_recv_msgs  =         32
-make_shuffle_plan_generic: global_comm_size =        128
-shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 16 ; total_size: 0.000 GB)
 qrename: 'huge-data/16/sf-init.float.field.partial.partial' 'huge-data/16/sf-init.float.field.partial'
 qrename: 'huge-data/16/sf-init.float.field.partial' 'huge-data/16/sf-init.float.field'
 read_field: fn='huge-data/16/f-init.64.field'.
-shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 8B5110BA full read 64
 read_field: fn='huge-data/16/f-init.double.field'.
-shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 8B5110BA full read double
 read_field: fn='huge-data/16/f-init.float.field'.
-shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 16 ; total_size: 0.000 GB)
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 16 ; total_size: 0.000 GB)
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 E5EBEF7E full read float
 read_selected_field: fn='huge-data/16/sf-init.64.field'.
-make_shuffle_plan_generic: num_send_packs =          1
-make_shuffle_plan_generic: num_recv_packs =          7
-make_shuffle_plan_generic: num_send_msgs  =          4
-make_shuffle_plan_generic: num_recv_msgs  =          4
-make_shuffle_plan_generic: total num_send_packs =          8
-make_shuffle_plan_generic: total num_recv_packs =         53
-make_shuffle_plan_generic: total num_send_msgs  =         32
-make_shuffle_plan_generic: total num_recv_msgs  =         32
-make_shuffle_plan_generic: global_comm_size =        128
-shuffle_field_back(sel_f,sel_fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 9B5AE427 selected read 64
 read_selected_field: fn='huge-data/16/sf-init.double.field'.
-make_shuffle_plan_generic: num_send_packs =          1
-make_shuffle_plan_generic: num_recv_packs =          7
-make_shuffle_plan_generic: num_send_msgs  =          4
-make_shuffle_plan_generic: num_recv_msgs  =          4
-make_shuffle_plan_generic: total num_send_packs =          8
-make_shuffle_plan_generic: total num_recv_packs =         53
-make_shuffle_plan_generic: total num_send_msgs  =         32
-make_shuffle_plan_generic: total num_recv_msgs  =         32
-make_shuffle_plan_generic: global_comm_size =        128
-shuffle_field_back(sel_f,sel_fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 9B5AE427 selected read double
 read_selected_field: fn='huge-data/16/sf-init.float.field'.
-make_shuffle_plan_generic: num_send_packs =          1
-make_shuffle_plan_generic: num_recv_packs =          7
-make_shuffle_plan_generic: num_send_msgs  =          4
-make_shuffle_plan_generic: num_recv_msgs  =          4
-make_shuffle_plan_generic: total num_send_packs =          8
-make_shuffle_plan_generic: total num_recv_packs =         53
-make_shuffle_plan_generic: total num_send_msgs  =         32
-make_shuffle_plan_generic: total num_recv_msgs  =         32
-make_shuffle_plan_generic: global_comm_size =        128
-shuffle_field_back(sel_f,sel_fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 16 ; total_size: 0.000 GB)
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 95D6027F selected read float
 check_all_files_crc32_info: start checking path='huge-data/16'
 QFile: open 'huge-data/16/f-init.64.field' with 'r'.
@@ -328,182 +169,71 @@ check_all_files_crc32_info: summary for path='huge-data/16'
     6 265DD08B  fn='huge-data/16/sf-init.64.field'
     7 265DD08B  fn='huge-data/16/sf-init.double.field'
     8 4964C8BA  fn='huge-data/16/sf-init.float.field'
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
-shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 : 8B5110BA <- f-init
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 8B5110BA <- only_keep_selected_points
 write_field: fn='huge-data/all/fsel.field'.
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
 qrename: 'huge-data/all/fsel.field.partial.partial' 'huge-data/all/fsel.field.partial'
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
 qrename: 'huge-data/all/fsel.field.partial' 'huge-data/all/fsel.field'
 read_field: fn='huge-data/all/fsel.field'.
-shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 : 8B5110BA <- f-init
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 8B5110BA <- only_keep_selected_points
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 : 8B5110BA <- f-init
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 : 67F565CB <- f-init-1
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 8B5110BA <- set_field_selected
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 : 8B5110BA <- f-init
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 : A9CE10A1 <- f-init-2
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 8B5110BA <- set_field_selected_slow
 write_field: fn='huge-data/all/free-4nt8-init.field'.
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 qrename: 'huge-data/all/free-4nt8-init.field.partial.partial' 'huge-data/all/free-4nt8-init.field.partial'
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 qrename: 'huge-data/all/free-4nt8-init.field.partial' 'huge-data/all/free-4nt8-init.field'
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 : 8B5110BA <- f-init
 write_selected_field: fn='huge-data/all/free-4nt8-init.sfield'.
-make_shuffle_plan_generic: num_send_packs =          2
-make_shuffle_plan_generic: num_recv_packs =          7
-make_shuffle_plan_generic: num_send_msgs  =          4
-make_shuffle_plan_generic: num_recv_msgs  =          4
-make_shuffle_plan_generic: total num_send_packs =         16
-make_shuffle_plan_generic: total num_recv_packs =         56
-make_shuffle_plan_generic: total num_send_msgs  =         32
-make_shuffle_plan_generic: total num_recv_msgs  =         32
-make_shuffle_plan_generic: global_comm_size =        512
-shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 qrename: 'huge-data/all/free-4nt8-init.sfield.partial.partial' 'huge-data/all/free-4nt8-init.sfield.partial'
 qrename: 'huge-data/all/free-4nt8-init.sfield.partial' 'huge-data/all/free-4nt8-init.sfield'
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 : 4CB6850D <- f-init-3
 read_selected_field: fn='huge-data/all/free-4nt8-init.sfield'.
-make_shuffle_plan_generic: num_send_packs =          2
-make_shuffle_plan_generic: num_recv_packs =          7
-make_shuffle_plan_generic: num_send_msgs  =          4
-make_shuffle_plan_generic: num_recv_msgs  =          4
+make_shuffle_plan_generic: num_send_packs =          8
+make_shuffle_plan_generic: num_recv_packs =          8
+make_shuffle_plan_generic: num_send_msgs  =          1
+make_shuffle_plan_generic: num_recv_msgs  =          1
 make_shuffle_plan_generic: total num_send_packs =         16
-make_shuffle_plan_generic: total num_recv_packs =         56
-make_shuffle_plan_generic: total num_send_msgs  =         32
-make_shuffle_plan_generic: total num_recv_msgs  =         32
+make_shuffle_plan_generic: total num_recv_packs =         16
+make_shuffle_plan_generic: total num_send_msgs  =          2
+make_shuffle_plan_generic: total num_recv_msgs  =          2
 make_shuffle_plan_generic: global_comm_size =        512
-shuffle_field_back(sel_f,sel_fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(sel_f,sel_fs,sp): 1x1x1x8 -> 1x1x1x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 8B5110BA <- write and read back
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 8B5110BA full
 write_field: fn='huge-data/all/f-init.64.field'.
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 qrename: 'huge-data/all/f-init.64.field.partial.partial' 'huge-data/all/f-init.64.field.partial'
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 qrename: 'huge-data/all/f-init.64.field.partial' 'huge-data/all/f-init.64.field'
 write_field: fn='huge-data/all/f-init.double.field'.
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 qrename: 'huge-data/all/f-init.double.field.partial.partial' 'huge-data/all/f-init.double.field.partial'
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 qrename: 'huge-data/all/f-init.double.field.partial' 'huge-data/all/f-init.double.field'
 write_field: fn='huge-data/all/f-init.float.field'.
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 16 ; total_size: 0.000 GB)
 qrename: 'huge-data/all/f-init.float.field.partial.partial' 'huge-data/all/f-init.float.field.partial'
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 16 ; total_size: 0.000 GB)
 qrename: 'huge-data/all/f-init.float.field.partial' 'huge-data/all/f-init.float.field'
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 8B5110BA selected
 write_selected_field: fn='huge-data/all/sf-init.64.field'.
-make_shuffle_plan_generic: num_send_packs =          2
-make_shuffle_plan_generic: num_recv_packs =          7
-make_shuffle_plan_generic: num_send_msgs  =          4
-make_shuffle_plan_generic: num_recv_msgs  =          4
-make_shuffle_plan_generic: total num_send_packs =         16
-make_shuffle_plan_generic: total num_recv_packs =         56
-make_shuffle_plan_generic: total num_send_msgs  =         32
-make_shuffle_plan_generic: total num_recv_msgs  =         32
-make_shuffle_plan_generic: global_comm_size =        512
-shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 qrename: 'huge-data/all/sf-init.64.field.partial.partial' 'huge-data/all/sf-init.64.field.partial'
 qrename: 'huge-data/all/sf-init.64.field.partial' 'huge-data/all/sf-init.64.field'
 write_selected_field: fn='huge-data/all/sf-init.double.field'.
-make_shuffle_plan_generic: num_send_packs =          2
-make_shuffle_plan_generic: num_recv_packs =          7
-make_shuffle_plan_generic: num_send_msgs  =          4
-make_shuffle_plan_generic: num_recv_msgs  =          4
-make_shuffle_plan_generic: total num_send_packs =         16
-make_shuffle_plan_generic: total num_recv_packs =         56
-make_shuffle_plan_generic: total num_send_msgs  =         32
-make_shuffle_plan_generic: total num_recv_msgs  =         32
-make_shuffle_plan_generic: global_comm_size =        512
-shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 qrename: 'huge-data/all/sf-init.double.field.partial.partial' 'huge-data/all/sf-init.double.field.partial'
 qrename: 'huge-data/all/sf-init.double.field.partial' 'huge-data/all/sf-init.double.field'
 write_selected_field: fn='huge-data/all/sf-init.float.field'.
-make_shuffle_plan_generic: num_send_packs =          2
-make_shuffle_plan_generic: num_recv_packs =          7
-make_shuffle_plan_generic: num_send_msgs  =          4
-make_shuffle_plan_generic: num_recv_msgs  =          4
-make_shuffle_plan_generic: total num_send_packs =         16
-make_shuffle_plan_generic: total num_recv_packs =         56
-make_shuffle_plan_generic: total num_send_msgs  =         32
-make_shuffle_plan_generic: total num_recv_msgs  =         32
-make_shuffle_plan_generic: global_comm_size =        512
-shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 16 ; total_size: 0.000 GB)
 qrename: 'huge-data/all/sf-init.float.field.partial.partial' 'huge-data/all/sf-init.float.field.partial'
 qrename: 'huge-data/all/sf-init.float.field.partial' 'huge-data/all/sf-init.float.field'
 read_field: fn='huge-data/all/f-init.64.field'.
-shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 8B5110BA full read 64
 read_field: fn='huge-data/all/f-init.double.field'.
-shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 8B5110BA full read double
 read_field: fn='huge-data/all/f-init.float.field'.
-shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 16 ; total_size: 0.000 GB)
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 16 ; total_size: 0.000 GB)
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 E5EBEF7E full read float
 read_selected_field: fn='huge-data/all/sf-init.64.field'.
-make_shuffle_plan_generic: num_send_packs =          2
-make_shuffle_plan_generic: num_recv_packs =          7
-make_shuffle_plan_generic: num_send_msgs  =          4
-make_shuffle_plan_generic: num_recv_msgs  =          4
-make_shuffle_plan_generic: total num_send_packs =         16
-make_shuffle_plan_generic: total num_recv_packs =         56
-make_shuffle_plan_generic: total num_send_msgs  =         32
-make_shuffle_plan_generic: total num_recv_msgs  =         32
-make_shuffle_plan_generic: global_comm_size =        512
-shuffle_field_back(sel_f,sel_fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 8B5110BA selected read 64
 read_selected_field: fn='huge-data/all/sf-init.double.field'.
-make_shuffle_plan_generic: num_send_packs =          2
-make_shuffle_plan_generic: num_recv_packs =          7
-make_shuffle_plan_generic: num_send_msgs  =          4
-make_shuffle_plan_generic: num_recv_msgs  =          4
-make_shuffle_plan_generic: total num_send_packs =         16
-make_shuffle_plan_generic: total num_recv_packs =         56
-make_shuffle_plan_generic: total num_send_msgs  =         32
-make_shuffle_plan_generic: total num_recv_msgs  =         32
-make_shuffle_plan_generic: global_comm_size =        512
-shuffle_field_back(sel_f,sel_fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 8B5110BA selected read double
 read_selected_field: fn='huge-data/all/sf-init.float.field'.
-make_shuffle_plan_generic: num_send_packs =          2
-make_shuffle_plan_generic: num_recv_packs =          7
-make_shuffle_plan_generic: num_send_msgs  =          4
-make_shuffle_plan_generic: num_recv_msgs  =          4
-make_shuffle_plan_generic: total num_send_packs =         16
-make_shuffle_plan_generic: total num_recv_packs =         56
-make_shuffle_plan_generic: total num_send_msgs  =         32
-make_shuffle_plan_generic: total num_recv_msgs  =         32
-make_shuffle_plan_generic: global_comm_size =        512
-shuffle_field_back(sel_f,sel_fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 16 ; total_size: 0.000 GB)
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 E5EBEF7E selected read float
 check_all_files_crc32_info: start checking path='huge-data/all'
 QFile: open 'huge-data/all/f-init.64.field' with 'r'.
@@ -543,70 +273,39 @@ check_all_files_crc32_info: summary for path='huge-data/all'
     6 112CAF7D  fn='huge-data/all/sf-init.64.field'
     7 112CAF7D  fn='huge-data/all/sf-init.double.field'
     8 5999B49E  fn='huge-data/all/sf-init.float.field'
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
-shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 : 8B5110BA <- f-init
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 C8EB73C4 <- only_keep_selected_points
 write_field: fn='huge-data/grid-16/fsel.field'.
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
 qrename: 'huge-data/grid-16/fsel.field.partial.partial' 'huge-data/grid-16/fsel.field.partial'
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
 qrename: 'huge-data/grid-16/fsel.field.partial' 'huge-data/grid-16/fsel.field'
 read_field: fn='huge-data/grid-16/fsel.field'.
-shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 : 8B5110BA <- f-init
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 C8EB73C4 <- only_keep_selected_points
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 : 8B5110BA <- f-init
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 : 67F565CB <- f-init-1
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 C8EB73C4 <- set_field_selected
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 : 8B5110BA <- f-init
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 : A9CE10A1 <- f-init-2
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 C8EB73C4 <- set_field_selected_slow
 write_field: fn='huge-data/grid-16/free-4nt8-init.field'.
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 qrename: 'huge-data/grid-16/free-4nt8-init.field.partial.partial' 'huge-data/grid-16/free-4nt8-init.field.partial'
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 qrename: 'huge-data/grid-16/free-4nt8-init.field.partial' 'huge-data/grid-16/free-4nt8-init.field'
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 : 8B5110BA <- f-init
 write_selected_field: fn='huge-data/grid-16/free-4nt8-init.sfield'.
-make_shuffle_plan_generic: num_send_packs =          1
-make_shuffle_plan_generic: num_recv_packs =          7
-make_shuffle_plan_generic: num_send_msgs  =          4
-make_shuffle_plan_generic: num_recv_msgs  =          4
-make_shuffle_plan_generic: total num_send_packs =          8
-make_shuffle_plan_generic: total num_recv_packs =         56
-make_shuffle_plan_generic: total num_send_msgs  =         32
-make_shuffle_plan_generic: total num_recv_msgs  =         32
-make_shuffle_plan_generic: global_comm_size =        128
-shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 qrename: 'huge-data/grid-16/free-4nt8-init.sfield.partial.partial' 'huge-data/grid-16/free-4nt8-init.sfield.partial'
 qrename: 'huge-data/grid-16/free-4nt8-init.sfield.partial' 'huge-data/grid-16/free-4nt8-init.sfield'
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 : 4CB6850D <- f-init-3
 read_selected_field: fn='huge-data/grid-16/free-4nt8-init.sfield'.
-make_shuffle_plan_generic: num_send_packs =          1
-make_shuffle_plan_generic: num_recv_packs =          7
-make_shuffle_plan_generic: num_send_msgs  =          4
-make_shuffle_plan_generic: num_recv_msgs  =          4
-make_shuffle_plan_generic: total num_send_packs =          8
-make_shuffle_plan_generic: total num_recv_packs =         56
-make_shuffle_plan_generic: total num_send_msgs  =         32
-make_shuffle_plan_generic: total num_recv_msgs  =         32
+make_shuffle_plan_generic: num_send_packs =          2
+make_shuffle_plan_generic: num_recv_packs =          4
+make_shuffle_plan_generic: num_send_msgs  =          1
+make_shuffle_plan_generic: num_recv_msgs  =          1
+make_shuffle_plan_generic: total num_send_packs =          4
+make_shuffle_plan_generic: total num_recv_packs =          8
+make_shuffle_plan_generic: total num_send_msgs  =          2
+make_shuffle_plan_generic: total num_recv_msgs  =          2
 make_shuffle_plan_generic: global_comm_size =        128
-shuffle_field_back(sel_f,sel_fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(sel_f,sel_fs,sp): 1x1x1x8 -> 1x1x1x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 C8EB73C4 <- write and read back
 check_all_files_crc32_info: start checking path='huge-data/grid-16'
 QFile: open 'huge-data/grid-16/free-4nt8-init.field' with 'r'.
@@ -625,54 +324,62 @@ check_all_files_crc32_info: summary for path='huge-data/grid-16'
 qrename: 'huge-data/points-1024/point-selection.txt.partial' 'huge-data/points-1024/point-selection.txt'
 QFile: open 'huge-data/points-1024/point-selection.txt' with 'r'.
 QFile: close 'huge-data/points-1024/point-selection.txt' with 'r'.
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 : 79A1C7E2 <- f-init
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 : 96AFBBCB <- f1 only selected
 QFile: open 'huge-data/points-1024/f.lat.partial' with 'w'.
 qrename: 'huge-data/points-1024/f.lat.partial' 'huge-data/points-1024/f.lat'
 QFile: close 'huge-data/points-1024/f.lat.partial' with 'w'.
 QFile: open 'huge-data/points-1024/f.lat' with 'r'.
 QFile: close 'huge-data/points-1024/f.lat' with 'r'.
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 : 96AFBBCB <- f2 set and set
-make_shuffle_plan_generic: num_send_packs =          2
+make_shuffle_plan_generic: num_send_packs =          8
 make_shuffle_plan_generic: num_recv_packs =          8
-make_shuffle_plan_generic: num_send_msgs  =          2
-make_shuffle_plan_generic: num_recv_msgs  =          2
+make_shuffle_plan_generic: num_send_msgs  =          1
+make_shuffle_plan_generic: num_recv_msgs  =          1
 make_shuffle_plan_generic: total num_send_packs =         16
-make_shuffle_plan_generic: total num_recv_packs =         64
-make_shuffle_plan_generic: total num_send_msgs  =         16
-make_shuffle_plan_generic: total num_recv_msgs  =         16
+make_shuffle_plan_generic: total num_recv_packs =         16
+make_shuffle_plan_generic: total num_send_msgs  =          2
+make_shuffle_plan_generic: total num_recv_msgs  =          2
 make_shuffle_plan_generic: global_comm_size =        512
 Cache: 'ShufflePlanCache': 1 / 16 [8] to add
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x2x4 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
-make_shuffle_plan_generic: num_send_packs =          2
+shuffle_field(fs,f,sp): 1x1x1x2 -> 1x1x2x4 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
+make_shuffle_plan_generic: num_send_packs =          7
 make_shuffle_plan_generic: num_recv_packs =          8
-make_shuffle_plan_generic: num_send_msgs  =          2
-make_shuffle_plan_generic: num_recv_msgs  =          2
-make_shuffle_plan_generic: total num_send_packs =         16
-make_shuffle_plan_generic: total num_recv_packs =         64
-make_shuffle_plan_generic: total num_send_msgs  =         16
-make_shuffle_plan_generic: total num_recv_msgs  =         16
+make_shuffle_plan_generic: num_send_msgs  =          1
+make_shuffle_plan_generic: num_recv_msgs  =          1
+make_shuffle_plan_generic: total num_send_packs =         14
+make_shuffle_plan_generic: total num_recv_packs =         16
+make_shuffle_plan_generic: total num_send_msgs  =          2
+make_shuffle_plan_generic: total num_recv_msgs  =          2
 make_shuffle_plan_generic: global_comm_size =        437
 FieldsWriter: open 'huge-data/points-1024/fields'.
 QFile: open 'huge-data/points-1024/fields/geon-info.txt' with 'w'.
 QFile: close 'huge-data/points-1024/fields/geon-info.txt' with 'w'.
 QFile: open 'huge-data/points-1024/fields/00/0000000000' with 'w'.
+QFile: open 'huge-data/points-1024/fields/01/0000000001' with 'w'.
+QFile: open 'huge-data/points-1024/fields/02/0000000002' with 'w'.
+QFile: open 'huge-data/points-1024/fields/03/0000000003' with 'w'.
 write(sfw,fn,sf,sbs): writing sparse field with fn='f.psel' from 'huge-data/points-1024/fields'.
-shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x1x2x4 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(sel_fs,sel_f,sp): 1x1x1x2 -> 1x1x2x4 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 QFile: close 'huge-data/points-1024/fields/00/0000000000' with 'w'.
+QFile: close 'huge-data/points-1024/fields/01/0000000001' with 'w'.
+QFile: close 'huge-data/points-1024/fields/02/0000000002' with 'w'.
+QFile: close 'huge-data/points-1024/fields/03/0000000003' with 'w'.
 QFile: open 'huge-data/points-1024/fields/geon-info.txt' with 'r'.
 QFile: close 'huge-data/points-1024/fields/geon-info.txt' with 'r'.
 FieldsReader: open 'huge-data/points-1024/fields'.
 QFile: open 'huge-data/points-1024/fields/00/0000000000' with 'r'.
+QFile: open 'huge-data/points-1024/fields/01/0000000001' with 'r'.
+QFile: open 'huge-data/points-1024/fields/02/0000000002' with 'r'.
+QFile: open 'huge-data/points-1024/fields/03/0000000003' with 'r'.
 read(sfr,fn,field): reading field with fn='f.psel' from 'huge-data/points-1024/fields'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.psel' from 'huge-data/points-1024/fields'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'f.psel' from 'huge-data/points-1024/fields'.
-shuffle_field_back(f,fs,sp): 1x1x2x4 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field_back(f,fs,sp): 1x1x2x4 -> 1x1x1x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 QFile: close 'huge-data/points-1024/fields/00/0000000000' with 'r'.
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+QFile: close 'huge-data/points-1024/fields/01/0000000001' with 'r'.
+QFile: close 'huge-data/points-1024/fields/02/0000000002' with 'r'.
+QFile: close 'huge-data/points-1024/fields/03/0000000003' with 'r'.
 : 96AFBBCB <- f3 write and read
 check_all_files_crc32_info: start checking path='huge-data/points-1024'
 QFile: open 'huge-data/points-1024/f.lat' with 'r'.
@@ -720,195 +427,159 @@ check_all_files_crc32_info: summary for path='huge-data/points-1024'
     8 ADD8CC75  fn='huge-data/points-1024/fields/07/0000000007'
     9 9BFC07C9  fn='huge-data/points-1024/fields/geon-info.txt'
    10 F29EE06E  fn='huge-data/points-1024/point-selection.txt'
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_shift: f crc32 = 21C87191
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
-shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_shift: f0 (with sparse) crc32 = C2CBA1B2
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_shift: f (with sparse and shift) crc32 = C2CBA1B2 ; shift=0x0x0x0
 make_shuffle_plan_generic: num_send_packs =          1
 make_shuffle_plan_generic: num_recv_packs =          1
 make_shuffle_plan_generic: num_send_msgs  =          1
 make_shuffle_plan_generic: num_recv_msgs  =          1
-make_shuffle_plan_generic: total num_send_packs =          8
-make_shuffle_plan_generic: total num_recv_packs =          8
-make_shuffle_plan_generic: total num_send_msgs  =          8
-make_shuffle_plan_generic: total num_recv_msgs  =          8
+make_shuffle_plan_generic: total num_send_packs =          2
+make_shuffle_plan_generic: total num_recv_packs =          2
+make_shuffle_plan_generic: total num_send_msgs  =          2
+make_shuffle_plan_generic: total num_recv_msgs  =          2
 make_shuffle_plan_generic: global_comm_size =         24
-shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(sel_fs,sel_f,sp): 1x1x1x2 -> 1x1x1x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_shift: f (from shifted sparse field) crc32 = C2CBA1B2 ; shift=0x0x0x0
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_shift: f (with sparse and shift) crc32 = 16A01272 ; shift=12x32x22x-123
 make_shuffle_plan_generic: num_send_packs =          2
-make_shuffle_plan_generic: num_recv_packs =          1
+make_shuffle_plan_generic: num_recv_packs =          6
 make_shuffle_plan_generic: num_send_msgs  =          2
-make_shuffle_plan_generic: num_recv_msgs  =          1
-make_shuffle_plan_generic: total num_send_packs =         10
-make_shuffle_plan_generic: total num_recv_packs =         10
-make_shuffle_plan_generic: total num_send_msgs  =         12
-make_shuffle_plan_generic: total num_recv_msgs  =         12
+make_shuffle_plan_generic: num_recv_msgs  =          2
+make_shuffle_plan_generic: total num_send_packs =          3
+make_shuffle_plan_generic: total num_recv_packs =         13
+make_shuffle_plan_generic: total num_send_msgs  =          4
+make_shuffle_plan_generic: total num_recv_msgs  =          4
 make_shuffle_plan_generic: global_comm_size =         24
-shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(sel_fs,sel_f,sp): 1x1x1x2 -> 1x1x1x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_shift: f (from shifted sparse field) crc32 = 16A01272 ; shift=12x32x22x-123
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_shift: f (with sparse and shift) crc32 = 995988CE ; shift=0x0x0x-123
 make_shuffle_plan_generic: num_send_packs =          2
 make_shuffle_plan_generic: num_recv_packs =          1
 make_shuffle_plan_generic: num_send_msgs  =          2
 make_shuffle_plan_generic: num_recv_msgs  =          2
-make_shuffle_plan_generic: total num_send_packs =         10
-make_shuffle_plan_generic: total num_recv_packs =         10
-make_shuffle_plan_generic: total num_send_msgs  =         12
-make_shuffle_plan_generic: total num_recv_msgs  =         12
+make_shuffle_plan_generic: total num_send_packs =          3
+make_shuffle_plan_generic: total num_recv_packs =          3
+make_shuffle_plan_generic: total num_send_msgs  =          4
+make_shuffle_plan_generic: total num_recv_msgs  =          4
 make_shuffle_plan_generic: global_comm_size =         24
-shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(sel_fs,sel_f,sp): 1x1x1x2 -> 1x1x1x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_shift: f (from shifted sparse field) crc32 = 995988CE ; shift=0x0x0x-123
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_shift: f (with sparse and shift) crc32 = A46B502F ; shift=0x2x2x0
 make_shuffle_plan_generic: num_send_packs =          1
-make_shuffle_plan_generic: num_recv_packs =          1
+make_shuffle_plan_generic: num_recv_packs =         10
 make_shuffle_plan_generic: num_send_msgs  =          1
 make_shuffle_plan_generic: num_recv_msgs  =          1
-make_shuffle_plan_generic: total num_send_packs =          8
-make_shuffle_plan_generic: total num_recv_packs =          8
-make_shuffle_plan_generic: total num_send_msgs  =          8
-make_shuffle_plan_generic: total num_recv_msgs  =          8
+make_shuffle_plan_generic: total num_send_packs =          2
+make_shuffle_plan_generic: total num_recv_packs =         20
+make_shuffle_plan_generic: total num_send_msgs  =          2
+make_shuffle_plan_generic: total num_recv_msgs  =          2
 make_shuffle_plan_generic: global_comm_size =         24
-shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(sel_fs,sel_f,sp): 1x1x1x2 -> 1x1x1x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_shift: f (from shifted sparse field) crc32 = A46B502F ; shift=0x2x2x0
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_shift: f crc32 = 21C87191
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
-shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_shift: f0 (with sparse) crc32 = 0C8E086C
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_shift: f (with sparse and shift) crc32 = 0C8E086C ; shift=0x0x0x0
 make_shuffle_plan_generic: num_send_packs =          1
 make_shuffle_plan_generic: num_recv_packs =          1
 make_shuffle_plan_generic: num_send_msgs  =          1
 make_shuffle_plan_generic: num_recv_msgs  =          1
-make_shuffle_plan_generic: total num_send_packs =          6
-make_shuffle_plan_generic: total num_recv_packs =          6
-make_shuffle_plan_generic: total num_send_msgs  =          6
-make_shuffle_plan_generic: total num_recv_msgs  =          6
+make_shuffle_plan_generic: total num_send_packs =          2
+make_shuffle_plan_generic: total num_recv_packs =          2
+make_shuffle_plan_generic: total num_send_msgs  =          2
+make_shuffle_plan_generic: total num_recv_msgs  =          2
 make_shuffle_plan_generic: global_comm_size =          8
-shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(sel_fs,sel_f,sp): 1x1x1x2 -> 1x1x1x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_shift: f (from shifted sparse field) crc32 = 0C8E086C ; shift=0x0x0x0
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_shift: f (with sparse and shift) crc32 = 8CBE4D53 ; shift=12x32x22x-123
 make_shuffle_plan_generic: num_send_packs =          1
 make_shuffle_plan_generic: num_recv_packs =          1
 make_shuffle_plan_generic: num_send_msgs  =          1
 make_shuffle_plan_generic: num_recv_msgs  =          1
-make_shuffle_plan_generic: total num_send_packs =          6
+make_shuffle_plan_generic: total num_send_packs =          2
 make_shuffle_plan_generic: total num_recv_packs =          6
-make_shuffle_plan_generic: total num_send_msgs  =          6
-make_shuffle_plan_generic: total num_recv_msgs  =          6
+make_shuffle_plan_generic: total num_send_msgs  =          3
+make_shuffle_plan_generic: total num_recv_msgs  =          3
 make_shuffle_plan_generic: global_comm_size =          8
-shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(sel_fs,sel_f,sp): 1x1x1x2 -> 1x1x1x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_shift: f (from shifted sparse field) crc32 = 8CBE4D53 ; shift=12x32x22x-123
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_shift: f (with sparse and shift) crc32 = AB699029 ; shift=0x0x0x-123
 make_shuffle_plan_generic: num_send_packs =          1
 make_shuffle_plan_generic: num_recv_packs =          1
 make_shuffle_plan_generic: num_send_msgs  =          1
 make_shuffle_plan_generic: num_recv_msgs  =          1
-make_shuffle_plan_generic: total num_send_packs =          6
-make_shuffle_plan_generic: total num_recv_packs =          6
-make_shuffle_plan_generic: total num_send_msgs  =          6
-make_shuffle_plan_generic: total num_recv_msgs  =          6
+make_shuffle_plan_generic: total num_send_packs =          2
+make_shuffle_plan_generic: total num_recv_packs =          3
+make_shuffle_plan_generic: total num_send_msgs  =          3
+make_shuffle_plan_generic: total num_recv_msgs  =          3
 make_shuffle_plan_generic: global_comm_size =          8
-shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(sel_fs,sel_f,sp): 1x1x1x2 -> 1x1x1x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_shift: f (from shifted sparse field) crc32 = AB699029 ; shift=0x0x0x-123
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_shift: f (with sparse and shift) crc32 = 600E246B ; shift=0x2x2x0
 make_shuffle_plan_generic: num_send_packs =          1
-make_shuffle_plan_generic: num_recv_packs =          1
+make_shuffle_plan_generic: num_recv_packs =          4
 make_shuffle_plan_generic: num_send_msgs  =          1
 make_shuffle_plan_generic: num_recv_msgs  =          1
-make_shuffle_plan_generic: total num_send_packs =          6
-make_shuffle_plan_generic: total num_recv_packs =          6
-make_shuffle_plan_generic: total num_send_msgs  =          6
-make_shuffle_plan_generic: total num_recv_msgs  =          6
+make_shuffle_plan_generic: total num_send_packs =          2
+make_shuffle_plan_generic: total num_recv_packs =          5
+make_shuffle_plan_generic: total num_send_msgs  =          2
+make_shuffle_plan_generic: total num_recv_msgs  =          2
 make_shuffle_plan_generic: global_comm_size =          8
-shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(sel_fs,sel_f,sp): 1x1x1x2 -> 1x1x1x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_shift: f (from shifted sparse field) crc32 = 600E246B ; shift=0x2x2x0
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_shift: f crc32 = 21C87191
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
-shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_shift: f0 (with sparse) crc32 = 65117B58
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_shift: f (with sparse and shift) crc32 = 65117B58 ; shift=0x0x0x0
 make_shuffle_plan_generic: num_send_packs =          1
 make_shuffle_plan_generic: num_recv_packs =          1
 make_shuffle_plan_generic: num_send_msgs  =          1
 make_shuffle_plan_generic: num_recv_msgs  =          1
-make_shuffle_plan_generic: total num_send_packs =          8
-make_shuffle_plan_generic: total num_recv_packs =          8
-make_shuffle_plan_generic: total num_send_msgs  =          8
-make_shuffle_plan_generic: total num_recv_msgs  =          8
+make_shuffle_plan_generic: total num_send_packs =          2
+make_shuffle_plan_generic: total num_recv_packs =          2
+make_shuffle_plan_generic: total num_send_msgs  =          2
+make_shuffle_plan_generic: total num_recv_msgs  =          2
 make_shuffle_plan_generic: global_comm_size =         16
-shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(sel_fs,sel_f,sp): 1x1x1x2 -> 1x1x1x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_shift: f (from shifted sparse field) crc32 = 65117B58 ; shift=0x0x0x0
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_shift: f (with sparse and shift) crc32 = 314A8DA7 ; shift=12x32x22x-123
-make_shuffle_plan_generic: num_send_packs =          1
-make_shuffle_plan_generic: num_recv_packs =          1
-make_shuffle_plan_generic: num_send_msgs  =          1
-make_shuffle_plan_generic: num_recv_msgs  =          1
-make_shuffle_plan_generic: total num_send_packs =          9
-make_shuffle_plan_generic: total num_recv_packs =          9
-make_shuffle_plan_generic: total num_send_msgs  =         11
-make_shuffle_plan_generic: total num_recv_msgs  =         11
-make_shuffle_plan_generic: global_comm_size =         16
-shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
-test_shift: f (from shifted sparse field) crc32 = 314A8DA7 ; shift=12x32x22x-123
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
-test_shift: f (with sparse and shift) crc32 = 9964CA61 ; shift=0x0x0x-123
-make_shuffle_plan_generic: num_send_packs =          1
-make_shuffle_plan_generic: num_recv_packs =          1
-make_shuffle_plan_generic: num_send_msgs  =          1
+make_shuffle_plan_generic: num_send_packs =          2
+make_shuffle_plan_generic: num_recv_packs =          6
+make_shuffle_plan_generic: num_send_msgs  =          2
 make_shuffle_plan_generic: num_recv_msgs  =          2
-make_shuffle_plan_generic: total num_send_packs =          9
-make_shuffle_plan_generic: total num_recv_packs =          9
-make_shuffle_plan_generic: total num_send_msgs  =         11
-make_shuffle_plan_generic: total num_recv_msgs  =         11
+make_shuffle_plan_generic: total num_send_packs =          3
+make_shuffle_plan_generic: total num_recv_packs =         11
+make_shuffle_plan_generic: total num_send_msgs  =          4
+make_shuffle_plan_generic: total num_recv_msgs  =          4
 make_shuffle_plan_generic: global_comm_size =         16
-shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(sel_fs,sel_f,sp): 1x1x1x2 -> 1x1x1x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+test_shift: f (from shifted sparse field) crc32 = 314A8DA7 ; shift=12x32x22x-123
+test_shift: f (with sparse and shift) crc32 = 9964CA61 ; shift=0x0x0x-123
+make_shuffle_plan_generic: num_send_packs =          2
+make_shuffle_plan_generic: num_recv_packs =          1
+make_shuffle_plan_generic: num_send_msgs  =          2
+make_shuffle_plan_generic: num_recv_msgs  =          2
+make_shuffle_plan_generic: total num_send_packs =          3
+make_shuffle_plan_generic: total num_recv_packs =          3
+make_shuffle_plan_generic: total num_send_msgs  =          4
+make_shuffle_plan_generic: total num_recv_msgs  =          4
+make_shuffle_plan_generic: global_comm_size =         16
+shuffle_field(sel_fs,sel_f,sp): 1x1x1x2 -> 1x1x1x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_shift: f (from shifted sparse field) crc32 = 9964CA61 ; shift=0x0x0x-123
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_shift: f (with sparse and shift) crc32 = 6F31A6C2 ; shift=0x2x2x0
 make_shuffle_plan_generic: num_send_packs =          1
-make_shuffle_plan_generic: num_recv_packs =          1
+make_shuffle_plan_generic: num_recv_packs =          4
 make_shuffle_plan_generic: num_send_msgs  =          1
 make_shuffle_plan_generic: num_recv_msgs  =          1
-make_shuffle_plan_generic: total num_send_packs =          8
-make_shuffle_plan_generic: total num_recv_packs =          8
-make_shuffle_plan_generic: total num_send_msgs  =          8
-make_shuffle_plan_generic: total num_recv_msgs  =          8
+make_shuffle_plan_generic: total num_send_packs =          2
+make_shuffle_plan_generic: total num_recv_packs =         11
+make_shuffle_plan_generic: total num_send_msgs  =          2
+make_shuffle_plan_generic: total num_recv_msgs  =          2
 make_shuffle_plan_generic: global_comm_size =         16
-shuffle_field(sel_fs,sel_f,sp): 1x2x2x2 -> 1x2x2x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
-shuffle_field(fs,f,sp): 1x2x2x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
+shuffle_field(sel_fs,sel_f,sp): 1x1x1x2 -> 1x1x1x2 (total_site: 4x4x4x8 ; site_size: 32 ; total_size: 0.000 GB)
 test_shift: f (from shifted sparse field) crc32 = 6F31A6C2 ; shift=0x2x2x0
 CHECK: finished successfully.
 Cache: 'ShufflePlanCache': 2 / 16 [8] clear
-clear_mem_cache: 106752 bytes (0.000 GB) freed.
+clear_mem_cache: 215808 bytes (0.000 GB) freed.
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 0.
 qlat::end(): Finalize MPI.
