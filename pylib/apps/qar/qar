@@ -11,6 +11,8 @@ def remove_trailing_slashes(path):
             return ""
         if path[-1] == "/":
             path = path[:-1]
+        else:
+            break
     return path
 
 if len(sys.argv) < 2:
