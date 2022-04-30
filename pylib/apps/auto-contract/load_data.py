@@ -206,7 +206,7 @@ def get_prop_snk_src(prop_cache, flavor, p_snk, p_src, *, psel_pos_dict, fsel_po
             msc = get_prop_psnk_wsrc_fsel(prop_cache, inv_type, pos_snk, pos_src, fsel_pos_dict)
     elif type_snk == "wall" and type_src[:5] == "point":
         assert isinstance(pos_snk, int)
-        if type_snk == "point":
+        if type_src == "point":
             assert pos_src in psel_pos_dict
             msc = get_prop_psnk_wsrc_psel(prop_cache, inv_type, pos_src, pos_snk, psel_pos_dict)
         else:

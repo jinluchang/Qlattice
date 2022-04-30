@@ -24,6 +24,8 @@ import sympy
 
 class Op:
 
+    # self.otype
+
     def __init__(self, otype : str):
         self.otype = otype
 
@@ -65,7 +67,14 @@ class Op:
     def isospin_symmetric_limit(self) -> None:
         pass
 
+### ------
+
 class Qfield(Op):
+
+    # self.f
+    # self.p
+    # self.s
+    # self.c
 
     def __init__(self, otype : str, flavor : str, position : str, spin : str, color : str):
         Op.__init__(self, otype)
@@ -89,6 +98,8 @@ class Qfield(Op):
     def __eq__(self, other) -> bool:
         return self.list() == other.list()
 
+### ------
+
 class Qv(Qfield):
 
     # act as d / d Hb
@@ -96,6 +107,8 @@ class Qv(Qfield):
     def __init__(self, f, p, s, c):
         # interface function
         Qfield.__init__(self, "Qv", f, p, s, c)
+
+### ------
 
 class Qb(Qfield):
 
@@ -105,29 +118,47 @@ class Qb(Qfield):
         # interface function
         Qfield.__init__(self, "Qb", f, p, s, c)
 
+### ------
+
 class Hv(Qfield):
 
     def __init__(self, f, p, s, c):
         Qfield.__init__(self, "Hv", f, p, s, c)
+
+### ------
 
 class Hb(Qfield):
 
     def __init__(self, f, p, s, c):
         Qfield.__init__(self, "Hb", f, p, s, c)
 
+### ------
+
 class SHv(Qfield):
 
     def __init__(self, f, p, s, c):
         Qfield.__init__(self, "SHv", f, p, s, c)
+
+### ------
 
 class HbS(Qfield):
 
     def __init__(self, f, p, s, c):
         Qfield.__init__(self, "HbS", f, p, s, c)
 
+### ------
+
 class S(Op):
 
     # propagator
+
+    # self.f
+    # self.p1
+    # self.p2
+    # self.s1
+    # self.s2
+    # self.c1
+    # self.c2
 
     def __init__(self, flavor : str, p1 : str, p2 : str, s1 : str = "auto", s2 : str = "auto", c1 : str = "auto", c2 : str = "auto"):
         Op.__init__(self, "S")
@@ -153,14 +184,22 @@ class S(Op):
 
     def isospin_symmetric_limit(self) -> None:
         # can also use these fictitious quark field to remove some unwanted disconnected diagrams
-        if self.f in ["u", "d", "u'", "d'", "u''", "d''",]:
+        if self.f in [ "u", "d", "u'", "d'", "u''", "d''", "u'''", "d'''", ]:
             self.f = "l"
-        elif self.f in ["s", "s'", "s''",]:
+        elif self.f in [ "s", "s'", "s''", "s'''", ]:
             self.f = "s"
+        elif self.f in [ "c", "c'", "c''", "c'''", ]:
+            self.f = "c"
+
+### ------
 
 class G(Op):
 
     # spin matrix
+
+    # self.tag
+    # self.s1
+    # self.s2
 
     # tag = 0, 1, 2, 3, 5 for gamma matrices
 
@@ -182,6 +221,8 @@ class G(Op):
     def __eq__(self, other) -> bool:
         return self.list() == other.list()
 
+### ------
+
 def copy_op_index_auto(op : Op):
     if op.otype not in ["S", "G"]:
         return op
@@ -197,6 +238,9 @@ def copy_op_index_auto(op : Op):
 class Tr(Op):
 
     # a collection of ops taking the trace
+
+    # self.ops
+    # self.tag
 
     def __init__(self, ops : list, tag = None):
         Op.__init__(self, "Tr")
@@ -248,6 +292,8 @@ class Tr(Op):
     def isospin_symmetric_limit(self) -> None:
         for op in self.ops:
             op.isospin_symmetric_limit()
+
+### ------
 
 def pick_one(xs, i):
     return xs[i], xs[:i] + xs[i + 1:]
@@ -353,6 +399,10 @@ def collect_traces(ops : list) -> list:
 
 class Term:
 
+    # self.coef
+    # self.c_ops
+    # self.a_ops
+
     def __init__(self, c_ops, a_ops, coef = 1):
         self.coef = coef
         self.c_ops = c_ops
@@ -416,6 +466,8 @@ class Term:
         for op in self.c_ops:
             op.isospin_symmetric_limit()
 
+### ------
+
 def combine_two_terms(t1 : Term, t2 : Term):
     if t1.c_ops == t2.c_ops and t1.a_ops == t2.a_ops:
         coef = t1.coef + t2.coef
@@ -427,6 +479,9 @@ def combine_two_terms(t1 : Term, t2 : Term):
         return None
 
 class Expr:
+
+    # self.description
+    # self.terms
 
     def __init__(self, terms, description = None):
         self.description = description
@@ -527,6 +582,8 @@ class Expr:
         self.collect_traces()
         self.sort()
         self.combine_terms()
+
+### ------
 
 def simplified(expr : Expr, *, is_isospin_symmetric_limit : bool = True) -> Expr:
     # interface function
@@ -665,6 +722,51 @@ def contract_expr(expr: Expr) -> Expr:
     for term in expr.terms:
         all_terms += contract_term(term).terms
     return Expr(all_terms, f"< {expr.show()} >")
+
+### ------
+
+def S_l(p1, p2):
+    return mk_expr(S('l', p1, p2)) + f"S_l({p1},{p2})"
+
+def S_s(p1, p2):
+    return mk_expr(S('s', p1, p2)) + f"S_s({p1},{p2})"
+
+def S_c(p1, p2):
+    return mk_expr(S('c', p1, p2)) + f"S_c({p1},{p2})"
+
+def tr(expr):
+    if isinstance(expr, Term):
+        term = expr
+        assert term.a_ops == []
+        return Term([ Tr(term.c_ops), ], [], term.coef)
+    elif isinstance(expr, Expr):
+        return sum(map(tr, expr.terms)) + f"tr( {expr.show()} )"
+    else:
+        assert False
+
+gamma_x = mk_expr(G(0)) + f"gamma_x"
+
+gamma_y = mk_expr(G(1)) + f"gamma_y"
+
+gamma_z = mk_expr(G(2)) + f"gamma_z"
+
+gamma_t = mk_expr(G(3)) + f"gamma_t"
+
+gamma_5 = mk_expr(G(5)) + f"gamma_5"
+
+def gamma(tag):
+    return mk_expr(G(tag)) + f"gamma({tag})"
+
+def gamma_va(tag):
+    assert isinstance(tag, int)
+    if tag in [ 0, 1, 2, 3, ]:
+        return mk_expr(G(tag)) + f"gamma({tag})"
+    elif tag in [ 4, 5, 6, 7, ]:
+        return mk_expr(G(tag - 4)) * mk_expr(G(5)) + f"gamma({tag-4})*gamma_5"
+    else:
+        assert False
+
+### ------
 
 if __name__ == "__main__":
     expr = (1

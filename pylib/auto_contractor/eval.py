@@ -135,23 +135,23 @@ def eval_cexpr(cexpr : CExpr, *, positions_dict, get_prop, is_only_total):
     for name, op in cexpr.variables:
         variable_dict[name] = eval_op_term_expr(op, variable_dict, positions_dict, get_prop)
     tvals = { name : ama_extract(eval_op_term_expr(term, variable_dict, positions_dict, get_prop)) for name, term in cexpr.named_terms }
-    evals = { name : sum([ tvals[tname] for tname in expr ]) for name, expr in cexpr.named_exprs }
+    evals = { name : sum([ coef * tvals[tname] for coef, tname in expr ]) for name, expr in cexpr.named_exprs }
     if is_only_total in [ True, "total", ]:
         return np.array(
                 [ evals[name] for name, expr in cexpr.named_exprs]
                 )
     elif is_only_total in [ "typed_total", ]:
-        tevals = { name : sum([ tvals[tname] for tname in expr ]) for name, expr in cexpr.named_typed_exprs }
+        tevals = { name : sum([ coef * tvals[tname] for coef, tname in expr ]) for name, expr in cexpr.named_typed_exprs }
         return np.array(
-                [ tevals[name] for name, expr in cexpr.named_typed_exprs ]
-                + [ evals[name] for name, expr in cexpr.named_exprs]
+                [ evals[name] for name, expr in cexpr.named_exprs]
+                + [ tevals[name] for name, expr in cexpr.named_typed_exprs ]
                 )
     elif is_only_total in [ False, "term", ]:
-        tevals = { name : sum([ tvals[tname] for tname in expr ]) for name, expr in cexpr.named_typed_exprs }
+        tevals = { name : sum([ coef * tvals[tname] for coef, tname in expr ]) for name, expr in cexpr.named_typed_exprs }
         return np.array(
-                [ tvals[name] for name, term in cexpr.named_terms ]
+                [ evals[name] for name, expr in cexpr.named_exprs]
                 + [ tevals[name] for name, expr in cexpr.named_typed_exprs ]
-                + [ evals[name] for name, expr in cexpr.named_exprs]
+                + [ tvals[name] for name, term in cexpr.named_terms ]
                 )
     else:
         assert False
@@ -173,12 +173,16 @@ def get_cexpr_names(cexpr, is_only_total = "total"):
     if is_only_total in [ True, "total", ]:
         names = [ name for name, expr in cexpr.named_exprs ]
     elif is_only_total in [ "typed_total", ]:
-        names = ([ name for name, expr in cexpr.named_typed_exprs ]
-                + [ name for name, expr in cexpr.named_exprs ])
-    elif is_only_total in [ False, "term", ]:
-        names = ([ name for name, term in cexpr.named_terms ]
+        names = (
+                [ name for name, expr in cexpr.named_exprs ]
                 + [ name for name, expr in cexpr.named_typed_exprs ]
-                + [ name for name, expr in cexpr.named_exprs ])
+                )
+    elif is_only_total in [ False, "term", ]:
+        names = (
+                [ name for name, expr in cexpr.named_exprs ]
+                + [ name for name, expr in cexpr.named_typed_exprs ]
+                + [ name for name, term in cexpr.named_terms ]
+                )
     else:
         assert False
     return names

@@ -164,3 +164,12 @@ rup.dict_params["24IH2"][tag] = 1/128
 rup.dict_params["24IH3"][tag] = 1/128
 rup.dict_params["32IH1"][tag] = 1/128
 rup.dict_params["32IH2"][tag] = 1/128
+
+tag = "meson_tensor_tsep"
+rup.dict_params["test-4nt8"][tag] = 1
+rup.dict_params["test-4nt16"][tag] = 2
+rup.dict_params["24D"][tag] = 8
+rup.dict_params["24DH"][tag] = 8
+rup.dict_params["32Dfine"][tag] = 8
+rup.dict_params["48I"][tag] = 12
+rup.dict_params["64I"][tag] = 18

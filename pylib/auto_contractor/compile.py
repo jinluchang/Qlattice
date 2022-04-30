@@ -245,6 +245,13 @@ def collect_subexpr_in_cexpr(variables, named_terms):
 
 class CExpr:
 
+    # self.diagram_types
+    # self.variables
+    # self.named_terms
+    # self.named_typed_exprs
+    # self.named_exprs
+    # self.positions
+
     def __init__(self, diagram_types, variables, named_terms, named_typed_exprs, named_exprs, positions = None):
         self.diagram_types = diagram_types
         self.variables = variables
@@ -270,6 +277,9 @@ class CExpr:
         # eval term factor
         for name, term in self.named_terms:
             eval_term_factor(term)
+        for name, expr in self.named_typed_exprs + self.named_exprs:
+            for i in range(len(expr)):
+                expr[i] = (complex(expr[i][0]), expr[i][1],)
         # collect prop expr into variables
         collect_op_in_cexpr(self.variables, self.named_terms)
         # collect common subexpr into variables
@@ -363,42 +373,69 @@ def eval_term_factor(term):
 def mk_cexpr(*exprs, diagram_type_dict = None):
     # exprs already finished wick contraction,
     # otherwise use contract_simplify_compile(*exprs, is_isospin_symmetric_limit, diagram_type_dict)
+    # !!!if diagram_type_dict[diagram_type] == None: this diagram_type will not be included!!!
     # interface function
     if diagram_type_dict is None:
         diagram_type_dict = dict()
     descriptions = [ expr.show() for expr in exprs ]
-    # build diagram_types
+    # build diagram_types and term names
     diagram_type_counter = 0
-    diagram_type_term_dict = dict()
+    diagram_type_term_dict = dict() # diagram_type_term_dict[repr_term] = diagram_type_name
+    term_name_dict = dict() # term_name_dict[term_name] = term
+    term_dict = dict() # term_dict[repr(term)] = term_name
     for expr in exprs:
-        for term in expr.terms:
+        for term_coef in expr.terms:
+            term = Term(term_coef.c_ops, term_coef.a_ops, 1)
+            repr_term = repr(term)
+            if repr_term in diagram_type_term_dict:
+                continue
             diagram_type = get_term_diagram_type_info(term)
             if diagram_type not in diagram_type_dict:
                 diagram_type_counter += 1
-                diagram_type_name = f"ADT{diagram_type_counter}" # ADT is short for "auto diagram type"
+                diagram_type_name = f"ADT{diagram_type_counter:0>2}" # ADT is short for "auto diagram type"
                 diagram_type_dict[diagram_type] = diagram_type_name
-            diagram_type_term_dict[repr([ term.c_ops, term.a_ops, ])] = diagram_type_dict[diagram_type]
+            diagram_type_name = diagram_type_dict[diagram_type]
+            diagram_type_term_dict[repr_term] = diagram_type_name
+            if diagram_type_name is None:
+                continue
+            term_name_counter = 0
+            while True:
+                term_name_counter += 1
+                term_name = f"term_{diagram_type_name}_{term_name_counter:0>4}"
+                if term_name not in term_name_dict:
+                    break
+            term_name_dict[term_name] = term
+            term_dict[repr_term] = term_name
+    # name diagram_types
     diagram_types = []
     for diagram_type, diagram_type_name in diagram_type_dict.items():
         diagram_types.append((diagram_type_name, diagram_type,))
-    # name terms and exprs
+    # name terms
     named_terms = []
+    for term_name, term in sorted(term_name_dict.items()):
+        named_terms.append((term_name, term,))
+    # name exprs
     named_typed_exprs = []
     named_exprs = []
     for i, expr in enumerate(exprs):
         expr_list = []
         typed_expr_list_dict = { name : [] for name, diagram_type in diagram_types }
         for j, term in enumerate(expr.terms):
-            diagram_type_name = diagram_type_term_dict[repr([ term.c_ops, term.a_ops, ])]
-            name = f"T{i+1}_{j+1}_{diagram_type_name}"
-            named_terms.append((name, term,))
-            typed_expr_list_dict[diagram_type_name].append(name)
-            expr_list.append(name)
+            coef = term.coef
+            term.coef = 1
+            repr_term = repr(term)
+            diagram_type_name = diagram_type_term_dict[repr_term]
+            if diagram_type_name is None:
+                continue
+            term_name = term_dict[repr_term]
+            typed_expr_list_dict[diagram_type_name].append((coef, term_name,))
+            expr_list.append((coef, term_name,))
         for diagram_type_name, typed_expr_list in typed_expr_list_dict.items():
             if typed_expr_list:
-                named_typed_exprs.append((f"E{i+1}_{diagram_type_name} {descriptions[i]}", typed_expr_list,))
-        named_exprs.append((f"E{i+1} {descriptions[i]}", expr_list,))
-    return CExpr(diagram_types, [], named_terms, named_typed_exprs, named_exprs)
+                named_typed_exprs.append((f"typed_exprs[{i}]['{diagram_type_name}'] # {descriptions[i]}", typed_expr_list,))
+        named_exprs.append((f"exprs[{i}] # {descriptions[i]}", expr_list,))
+    variables = []
+    return CExpr(diagram_types, variables, named_terms, named_typed_exprs, named_exprs)
 
 def contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True, diagram_type_dict = None):
     # e.g. exprs = [ Qb("u", "x", s, c) * Qv("u", "x", s, c) + "u_bar*u", Qb("s", "x", s, c) * Qv("s", "x", s, c) + "s_bar*s", Qb("c", "x", s, c) * Qv("c", "x", s, c) + "c_bar*c", ]
@@ -424,13 +461,20 @@ def show_variable_value(value):
     elif isinstance(value, G) and value.tag in [0, 1, 2, 3, 5]:
         tag = { 0: "x", 1: "y", 2: "z", 3: "t", 5: "5", }[value.tag]
         return f"gamma_{tag}"
+    elif isinstance(value, G):
+        return f"gamma({value.tag})"
     elif isinstance(value, S):
         return f"S_{value.f}({value.p1},{value.p2})"
     elif isinstance(value, Tr):
         expr = "*".join(map(show_variable_value, value.ops))
-        return f"Tr({expr})"
+        return f"tr({expr})"
     elif isinstance(value, Term):
-        return "*".join(map(show_variable_value, [ f"({value.coef})", ] + value.c_ops + value.a_ops))
+        if value.coef == 1:
+            return "*".join(map(show_variable_value, value.c_ops + value.a_ops))
+        else:
+            return "*".join(map(show_variable_value, [ f"({value.coef})", ] + value.c_ops + value.a_ops))
+    elif isinstance(value, tuple) and len(value) == 2 and isinstance(value[1], str):
+        return f"({value[0]})*{value[1]}"
     else:
         return f"{value}"
 
@@ -439,9 +483,10 @@ def display_cexpr_raw(cexpr : CExpr):
     # interface function
     lines = []
     lines.append(f"Begin CExpr")
-    lines.append(f"{'Positions':>10} : {cexpr.positions}")
+    lines.append(f"diagram_type_dict = dict()")
     for name, diagram_type in cexpr.diagram_types:
-        lines.append(f"{name:>10} : {diagram_type}")
+        lines.append(f"diagram_type_dict[{diagram_type}] = \"{name}\"")
+    lines.append(f"Positions: {cexpr.positions}")
     for name, value in cexpr.variables:
         lines.append(f"{name:>20} : {value}")
     for name, term in cexpr.named_terms:
@@ -458,23 +503,32 @@ def display_cexpr(cexpr : CExpr):
     # interface function
     lines = []
     lines.append(f"Begin CExpr")
-    lines.append(f"{'Positions':>10} : {cexpr.positions}")
+    lines.append(f"diagram_type_dict = dict()")
     for name, diagram_type in cexpr.diagram_types:
-        lines.append(f"{name:>10} : {diagram_type}")
+        lines.append(f"diagram_type_dict[{diagram_type}] = {repr(name)}")
+    position_vars = ", ".join(cexpr.positions)
+    lines.append(f"Positions:\n{position_vars} = {cexpr.positions}")
     for name, value in cexpr.variables:
-        lines.append(f"{name:>20} = {show_variable_value(value)}")
+        lines.append(f"  {show_variable_value(value)} + '{name}',")
+        lines.append(f"{name:<20} = {show_variable_value(value)}")
+    lines.append(f"terms = [")
     for name, term in cexpr.named_terms:
-        lines.append(f"{name:>20} = {show_variable_value(term)}")
+        lines.append(f"  {show_variable_value(term)}, # {name}")
+    lines.append(f"]")
+    for idx, (name, term) in enumerate(cexpr.named_terms):
+        lines.append(f"{name} = terms[{idx}]")
+    lines.append(f"typed_exprs = [ dict() for i in range({len(cexpr.named_exprs)}) ]")
     for name, typed_expr in cexpr.named_typed_exprs:
         s = "+".join(map(show_variable_value, typed_expr))
         if s == "":
             s = 0
-        lines.append(f"{name} =\n  {s}")
+        lines.append(f"{name}\n  = {s}")
+    lines.append(f"exprs = np.zeros({len(cexpr.named_exprs)})")
     for name, expr, in cexpr.named_exprs:
         s = "+".join(map(show_variable_value, expr))
         if s == "":
             s = 0
-        lines.append(f"{name} =\n  {s}")
+        lines.append(f"{name}\n  = {s}")
     lines.append(f"End CExpr")
     return "\n".join(lines)
 
