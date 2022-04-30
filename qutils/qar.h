@@ -932,6 +932,7 @@ inline int qar_create(const std::string& path_qar,
   qar.close();
   qrename(path_qar + ".acc", path_qar);
   if (is_remove_folder_after) {
+    qassert(does_file_exist(path_qar));
     qremove_all(path_folder);
   }
   return 0;
@@ -956,33 +957,34 @@ inline int qar_extract(const std::string& path_qar,
     return 2;
   }
   if (does_file_exist(path_folder + ".acc")) {
-    qwarn(fname + ssprintf(": '%s' '%s' qar.acc already exist.",
+    qwarn(fname + ssprintf(": '%s' '%s' folder.acc already exist.",
                            path_qar.c_str(), path_folder.c_str()));
     return 3;
   }
   QarFile qar(path_qar, "r");
   const std::vector<std::string> contents = list(qar);
   std::set<std::string> dirs;
-  qmkdir_p(path_folder);
+  qmkdir_p(path_folder + ".acc");
   dirs.insert(".");
   for (long i = 0; i < (long)contents.size(); ++i) {
     const std::string& fn = contents[i];
     const std::string dn = dirname(fn);
     if (not has(dirs, dn)) {
-      const int code = qmkdir_p(path_folder + "/" + dn);
+      const int code = qmkdir_p(path_folder + ".acc/" + dn);
       qassert(code == 0);
       dirs.insert(dn);
     }
     QFile qfile_in;
     const bool b = read(qar, fn, qfile_in);
     qassert(b);
-    QFile qfile_out(path_folder + "/" + fn, "w");
+    QFile qfile_out(path_folder + ".acc/" + fn, "w");
     qassert(not qfile_out.null());
     timer.flops += write_from_qfile(qfile_out, qfile_in);
   }
   qar.close();
-  qrename(path_qar + ".acc", path_qar);
+  qrename(path_folder + ".acc", path_folder);
   if (is_remove_qar_after) {
+    qassert(is_directory(path_folder));
     qremove(path_qar);
   }
   return 0;
