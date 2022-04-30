@@ -34,15 +34,13 @@ struct ScalarAction {
   {
     // Returns the contribution to the total action from a single lattice
     // point (including the relavent neighbor interactions)
-    TIMER("ScalarAction.action_point");
-    
+    // TIMER("ScalarAction.action_point");
     // Stores [sum i, mu] [phi_i(x+mu)-phi_i(x)]^2
     double dphi_sq=0;
     // Stores [sum i] phi_i(x)^2
     double phi_sq=0;
     // Stores phi_0(x)
     double phi_0=0;
-    
     for (int m = 0; m < multiplicity; ++m) {
       double phi = sf.get_elem(xl,m);
       phi_sq += phi*phi;
@@ -107,7 +105,7 @@ struct ScalarAction {
   {
     // Returns the momentum-dependent mass factor for HMC Fourier 
     // acceleration
-    TIMER("ScalarAction.hmc_mass_p");
+    // TIMER("ScalarAction.hmc_mass_p");
     return 4/(PI*PI)*(m_sq + 8 - 2*(std::cos(2*PI*pg[0]/L[0]) +
 									std::cos(2*PI*pg[1]/L[1]) + 
 									std::cos(2*PI*pg[2]/L[2]) + 
