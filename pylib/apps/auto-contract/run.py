@@ -100,7 +100,7 @@ def auto_contractor_vev(job_tag, traj, get_prop, get_psel, get_fsel):
     ld.save(get_save_path(fn))
 
 @q.timer
-def get_cexpr_meson_corr():
+def get_cexpr_meson_f_corr():
     def calc_cexpr():
         exprs = [
                 mk_pi_p("x2", True) * mk_pi_p("x1") + "(pi     * pi)",
@@ -112,16 +112,16 @@ def get_cexpr_meson_corr():
         q.displayln_info(display_cexpr(cexpr))
         cexpr.collect_op()
         return cexpr
-    cexpr = q.pickle_cache_call(calc_cexpr, f"cache/auto_contractor_cexpr/meson_corr-cexpr.pickle")
+    cexpr = q.pickle_cache_call(calc_cexpr, f"cache/auto_contractor_cexpr/meson_f_corr-cexpr.pickle")
     q.displayln_info(display_cexpr_raw(cexpr))
     return cexpr
 
 @q.timer_verbose
-def auto_contractor_meson_corr(job_tag, traj, get_prop, get_psel, get_fsel):
-    fn = f"auto-contractor-fsel/{job_tag}/traj={traj}/meson_corr.lat"
+def auto_contractor_meson_f_corr(job_tag, traj, get_prop, get_psel, get_fsel):
+    fn = f"auto-contractor-fsel/{job_tag}/traj={traj}/meson_f_corr.lat"
     if get_load_path(fn) is not None:
         return
-    cexpr = get_cexpr_meson_corr()
+    cexpr = get_cexpr_meson_f_corr()
     expr_names = get_cexpr_names(cexpr)
     total_site = ru.get_total_site(job_tag)
     fsel, fselc = get_fsel()
@@ -364,6 +364,321 @@ def auto_contractor_meson_v_v_meson_field(job_tag, traj, get_prop, get_psel, get
     ld.from_list(field.glb_sum_tslice().to_lat_data().to_list())
     q.displayln_info(ld.show())
 
+# ----
+
+@q.timer
+def get_cexpr_meson_corr():
+    def calc_cexpr():
+        exprs = [
+                mk_pi_p("x_2", True) * mk_pi_p("x_1") + "pi * pi",
+                mk_k_p("x_2", True)  * mk_k_p("x_1")  + "k  * k ",
+                ]
+        cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
+        q.displayln_info(display_cexpr(cexpr))
+        cexpr.collect_op()
+        return cexpr
+    cexpr = q.pickle_cache_call(calc_cexpr, f"cache/auto_contractor_cexpr/meson_corr-cexpr.pickle")
+    q.displayln_info(display_cexpr_raw(cexpr))
+    return cexpr
+
+@q.timer_verbose
+def auto_contractor_meson_corr(job_tag, traj, get_prop, get_psel, get_fsel):
+    fn = f"auto-contractor-fsel/{job_tag}/traj={traj}/meson_corr.lat"
+    if get_load_path(fn) is not None:
+        return
+    cexpr = get_cexpr_meson_corr()
+    expr_names = get_cexpr_names(cexpr)
+    total_site = ru.get_total_site(job_tag)
+    fsel, fselc = get_fsel()
+    xg_fsel_list = fsel.to_psel_local().to_list()
+    geo = q.Geometry(total_site, 1)
+    total_volume = geo.total_volume()
+    def feval(t_snk):
+        res = np.zeros((total_site[3], len(expr_names),), dtype = complex)
+        for t_src in range(total_site[3]):
+            t = (t_snk - t_src) % total_site[3]
+            pd = {
+                    "x_2" : ("wall", t_snk,),
+                    "x_1" : ("wall", t_src,),
+                    }
+            res[t] += eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop, is_only_total = "total")
+        res = res.transpose() # res[expr_name, t_sep]
+        return 1.0, res
+    t_snk_list = get_mpi_chunk(list(range(total_site[3])))
+    counts_list, values_list = zip(*parallel_map(0, feval, t_snk_list))
+    res_count = q.glb_sum(sum(counts_list))
+    res_sum = q.glb_sum(sum(values_list))
+    res_count *= 1.0 / total_site[3]
+    res_sum *= 1.0 / total_site[3]
+    assert q.qnorm(res_count - 1.0) < 1e-10
+    ld = q.mk_lat_data([
+        [ "expr_name", len(expr_names), expr_names, ],
+        [ "t_sep", total_site[3], ],
+        ])
+    ld.from_numpy(res_sum)
+    q.displayln_info(ld.show())
+    ld.save(get_save_path(fn))
+
+@q.timer_verbose
+def auto_contractor_meson_corr_psnk(job_tag, traj, get_prop, get_psel, get_fsel):
+    fn = f"auto-contractor-fsel/{job_tag}/traj={traj}/meson_corr_psnk.lat"
+    if get_load_path(fn) is not None:
+        return
+    cexpr = get_cexpr_meson_corr()
+    expr_names = get_cexpr_names(cexpr)
+    total_site = ru.get_total_site(job_tag)
+    fsel, fselc = get_fsel()
+    xg_fsel_list = fsel.to_psel_local().to_list()
+    geo = q.Geometry(total_site, 1)
+    total_volume = geo.total_volume()
+    def feval(xg_snk):
+        res = np.zeros((total_site[3], len(expr_names),), dtype = complex)
+        for t_src in range(total_site[3]):
+            t = (xg_snk[3] - t_src) % total_site[3]
+            pd = {
+                    "x_2" : ("point-snk", xg_snk,),
+                    "x_1" : ("wall", t_src,),
+                    }
+            res[t] += eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop, is_only_total = "total")
+        res = res.transpose() # res[expr_name, t_sep]
+        return 1.0, res
+    counts_list, values_list = zip(*parallel_map(0, feval, xg_fsel_list))
+    res_count = q.glb_sum(sum(counts_list))
+    res_sum = q.glb_sum(sum(values_list))
+    res_count *= 1.0 / (total_volume * fsel.prob())
+    res_sum *= 1.0 / (total_volume * fsel.prob())
+    assert q.qnorm(res_count - 1.0) < 1e-10
+    ld = q.mk_lat_data([
+        [ "expr_name", len(expr_names), expr_names, ],
+        [ "t_sep", total_site[3], ],
+        ])
+    ld.from_numpy(res_sum)
+    q.displayln_info(ld.show())
+    ld.save(get_save_path(fn))
+
+@q.timer_verbose
+def auto_contractor_meson_corr_psrc(job_tag, traj, get_prop, get_psel, get_fsel):
+    fn = f"auto-contractor-fsel/{job_tag}/traj={traj}/meson_corr_psrc.lat"
+    if get_load_path(fn) is not None:
+        return
+    cexpr = get_cexpr_meson_corr()
+    expr_names = get_cexpr_names(cexpr)
+    total_site = ru.get_total_site(job_tag)
+    psel = get_psel()
+    fsel, fselc = get_fsel()
+    xg_fsel_list = fsel.to_psel_local().to_list()
+    xg_psel_list = psel.to_list()
+    geo = q.Geometry(total_site, 1)
+    total_volume = geo.total_volume()
+    def fempty():
+        values = np.zeros((len(expr_names), total_site[3],), dtype = complex)
+        return 0, values
+    def feval(xg_src):
+        counts, values = fempty()
+        counts += 1
+        values = values.transpose()
+        for t_snk in range(total_site[3]):
+            t = (t_snk - xg_src[3]) % total_site[3]
+            pd = {
+                    "x_2" : ("wall", t_snk,),
+                    "x_1" : ("point", xg_src,),
+                    }
+            values[t] += eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop, is_only_total = "total")
+        values = values.transpose() # values[expr_name, t_sep]
+        return counts, values
+    xg_src_list = get_mpi_chunk(xg_psel_list, rng_state = q.RngState("get_mpi_chunk"))
+    counts_list, values_list = zip(fempty(), *parallel_map(0, feval, xg_src_list))
+    res_count = q.glb_sum(sum(counts_list))
+    res_sum = q.glb_sum(sum(values_list))
+    res_count *= 1.0 / len(xg_psel_list)
+    res_sum *= 1.0 / len(xg_psel_list)
+    assert q.qnorm(res_count - 1.0) < 1e-10
+    ld = q.mk_lat_data([
+        [ "expr_name", len(expr_names), expr_names, ],
+        [ "t_sep", total_site[3], ],
+        ])
+    ld.from_numpy(res_sum)
+    q.displayln_info(ld.show())
+    ld.save(get_save_path(fn))
+
+@q.timer_verbose
+def auto_contractor_meson_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_fsel):
+    fn = f"auto-contractor-fsel/{job_tag}/traj={traj}/meson_corr_psnk_psrc.lat"
+    if get_load_path(fn) is not None:
+        return
+    cexpr = get_cexpr_meson_corr()
+    expr_names = get_cexpr_names(cexpr)
+    total_site = ru.get_total_site(job_tag)
+    psel = get_psel()
+    fsel, fselc = get_fsel()
+    xg_fsel_list = fsel.to_psel_local().to_list()
+    xg_psel_list = psel.to_list()
+    geo = q.Geometry(total_site, 1)
+    total_volume = geo.total_volume()
+    def feval(xg_src):
+        counts = np.zeros(total_site[3], dtype = complex)
+        values = np.zeros((total_site[3], len(expr_names),), dtype = complex)
+        for xg_snk in xg_fsel_list:
+            t = (xg_snk[3] - xg_src[3]) % total_site[3]
+            pd = {
+                    "x_2" : ("point-snk", xg_snk,),
+                    "x_1" : ("point", xg_src,),
+                    }
+            counts[t] += 1
+            values[t] += eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop, is_only_total = "total")
+        values = values.transpose() # values[expr_name, t_sep]
+        return counts, values
+    counts_list, values_list = zip(*parallel_map(0, feval, xg_psel_list))
+    res_count = q.glb_sum(sum(counts_list))
+    res_sum = q.glb_sum(sum(values_list))
+    res_count *= 1.0 / (len(xg_psel_list) * total_volume * fsel.prob() / total_site[3])
+    res_sum *= 1.0 / (len(xg_psel_list) * total_volume * fsel.prob() / total_site[3])
+    assert q.qnorm(res_count - 1.0) < 1e-10
+    ld = q.mk_lat_data([
+        [ "expr_name", len(expr_names), expr_names, ],
+        [ "t_sep", total_site[3], ],
+        ])
+    ld.from_numpy(res_sum)
+    q.displayln_info(ld.show())
+    ld.save(get_save_path(fn))
+
+# ----
+
+@q.timer
+def get_cexpr_meson_m():
+    def calc_cexpr():
+        t_1, t_2, x_1 = ['t_1', 't_2', 'x_1']
+        exprs = [
+                tr(gamma_5*S_l(t_1,t_2)*gamma_5*S_l(t_2,x_1)*S_l(x_1,t_1)), # term_Type1_0001
+                tr(gamma_5*S_l(t_1,x_1)*S_l(x_1,t_2)*gamma_5*S_l(t_2,t_1)), # term_Type1_0002
+                tr(gamma_5*S_l(t_1,x_1)*S_l(x_1,t_2)*gamma_5*S_s(t_2,t_1)), # term_Type1_0003
+                tr(gamma_5*S_l(t_1,t_2)*gamma_5*S_s(t_2,x_1)*S_s(x_1,t_1)), # term_Type1_0004
+                ]
+        cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
+        q.displayln_info(display_cexpr(cexpr))
+        cexpr.collect_op()
+        return cexpr
+    cexpr = q.pickle_cache_call(calc_cexpr, f"cache/auto_contractor_cexpr/meson_m-cexpr.pickle")
+    q.displayln_info(display_cexpr_raw(cexpr))
+    return cexpr
+
+@q.timer_verbose
+def auto_contractor_meson_m(job_tag, traj, get_prop, get_psel, get_fsel):
+    fn = f"auto-contractor-fsel/{job_tag}/traj={traj}/meson_m.lat"
+    if get_load_path(fn) is not None:
+        return
+    cexpr = get_cexpr_meson_m()
+    expr_names = get_cexpr_names(cexpr)
+    total_site = ru.get_total_site(job_tag)
+    psel = get_psel()
+    fsel, fselc = get_fsel()
+    xg_fsel_list = fsel.to_psel_local().to_list()
+    xg_psel_list = psel.to_list()
+    tsep = rup.dict_params[job_tag]["meson_tensor_tsep"]
+    geo = q.Geometry(total_site, 1)
+    total_volume = geo.total_volume()
+    def feval(xg_snk):
+        t = xg_snk[3]
+        t_1 = (t + tsep) % total_site[3]
+        t_2 = (t - tsep) % total_site[3]
+        pd = {
+                "x_1" : ("point-snk", xg_snk,),
+                "t_1" : ("wall", t_1),
+                "t_2" : ("wall", t_2),
+                }
+        values = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop, is_only_total = "total")
+        return 1.0, values
+    counts_list, values_list = zip(*parallel_map(0, feval, xg_fsel_list))
+    res_count = q.glb_sum(sum(counts_list))
+    res_sum = q.glb_sum(sum(values_list))
+    res_count *= 1.0 / (total_volume * fsel.prob())
+    res_sum *= 1.0 / (total_volume * fsel.prob())
+    assert q.qnorm(res_count - 1.0) < 1e-10
+    ld_sum = q.mk_lat_data([
+        [ "expr_name", len(expr_names), expr_names, ],
+        ])
+    ld_sum.from_numpy(res_sum)
+    ld_sum.save(get_save_path(fn))
+    q.displayln_info(ld_sum.show())
+
+# ----
+
+def r_scaling_factor():
+    return 5.0
+
+def get_r(x_rel):
+    fac = r_scaling_factor()
+    return fac * math.sqrt(x_rel[0] * x_rel[0] + x_rel[1] * x_rel[1] + x_rel[2] * x_rel[2])
+
+def get_r_limit(total_site):
+    return math.ceil(get_r([ total_site[i] // 2 for i in range(4) ])) + 1
+
+def jj_proj_mm(res_arr, x_rel):
+    # res_arr is 3-D np.array with n*4*4 elements
+    # res_arr[idx_tensor, mu, nu]
+    return np.array([ np.trace(res_arr[idx_tensor]) for idx_tensor in range(len(res_arr)) ])
+
+def jj_proj_tt(res_arr, x_rel):
+    # res_arr is 3-D np.array with n*4*4 elements
+    # res_arr[idx_tensor, mu, nu]
+    return np.array([ res_arr[idx_tensor, 3, 3] for idx_tensor in range(len(res_arr)) ])
+
+def jj_proj_ii(res_arr, x_rel):
+    # res_arr is 3-D np.array with n*4*4 elements
+    # res_arr[idx_tensor, mu, nu]
+    return np.array([ sum([ res_arr[idx_tensor, i, i] for i in range(3) ]) for idx_tensor in range(len(res_arr)) ])
+
+def jj_proj_xx(res_arr, x_rel):
+    # res_arr is 3-D np.array with n*4*4 elements
+    # res_arr[idx_tensor, mu, nu]
+    return np.array(
+            [ sum(
+                [ x_rel[i] * x_rel[j] * res_arr[idx_tensor, i, j]
+                    for i in range(3)
+                    for j in range(3) ])
+                for idx_tensor in range(len(res_arr)) ])
+
+all_jj_projections = [
+        jj_proj_mm,
+        jj_proj_tt,
+        jj_proj_ii,
+        jj_proj_xx,
+        ]
+
+all_jj_projection_names = [ "mm", "tt", "ii", "xx", ]
+
+@q.timer
+def accumulate_meson_jj(counts, values, res_arr, x_rel, total_site):
+    # counts[t, r_idx]
+    # values[idx_proj, idx_tensor, t, r_idx]
+    # 0 <= idx_proj < len(all_jj_projections): mm, tt, ii, xx
+    # 0 <= idx_tensor < n_tensor. ( n_tensor = 14 )
+    # 0 <= t < total_site[3]
+    # 0 <= r < r_limit (scale by factor of 5.0)
+    (n_proj, n_tensor, t_size, r_limit,) = values.shape
+    assert (t_size, r_limit,) == counts.shape
+    assert t_size == total_site[3]
+    assert r_limit == get_r_limit(total_site)
+    assert len(all_jj_projections) == n_proj
+    t = x_rel[3] % total_site[3]
+    r = get_r(x_rel)
+    r_idx_low = math.floor(r)
+    r_idx_high = math.ceil(r)
+    if r_idx_high == r_idx_low:
+        r_idx_high += 1
+    assert r_idx_high < r_limit
+    coef_low = r_idx_high - r
+    coef_high = r - r_idx_low
+    counts[t, r_idx_low] += coef_low
+    counts[t, r_idx_high] += coef_high
+    for idx_proj, proj in enumerate(all_jj_projections):
+        v = proj(res_arr, x_rel)
+        v_low = coef_low * v
+        v_high = coef_high * v
+        for idx_tensor in range(n_tensor):
+            values[idx_proj, idx_tensor, t, r_idx_low, ] += v_low[idx_tensor]
+            values[idx_proj, idx_tensor, t, r_idx_high, ] += v_high[idx_tensor]
+
 @q.timer
 def get_cexpr_meson_jj():
     def calc_cexpr():
@@ -390,89 +705,14 @@ def get_cexpr_meson_jj():
         for t_nu in terms_mu_nu:
             for t in t_nu:
                 assert n_tensor == len(t)
-        terms = [ terms_mu_nu[mu][nu][i] for i in range(n_tensor) for mu in range(4) for nu in range(4) ]
-        cexpr = contract_simplify_compile(*terms, is_isospin_symmetric_limit = True)
+        exprs = [ terms_mu_nu[mu][nu][i] for i in range(n_tensor) for mu in range(4) for nu in range(4) ]
+        cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
         q.displayln_info(display_cexpr(cexpr))
         cexpr.collect_op()
         return cexpr
     cexpr = q.pickle_cache_call(calc_cexpr, f"cache/auto_contractor_cexpr/meson_jj-cexpr.pickle")
     q.displayln_info(display_cexpr_raw(cexpr))
     return cexpr
-
-def r_scaling_factor():
-    return 5.0
-
-def get_r(x_rel):
-    fac = r_scaling_factor()
-    return fac * math.sqrt(x_rel[0] * x_rel[0] + x_rel[1] * x_rel[1] + x_rel[2] * x_rel[2])
-
-def get_r_limit(total_site):
-    return math.ceil(get_r([ total_site[i] // 2 for i in range(4) ])) + 1
-
-def jj_proj_feyn(res_arr, x_rel):
-    # res_arr is 3-D np.array with n*4*4 elements
-    # res_arr[idx_tensor, mu, nu]
-    return np.array([ np.trace(res_arr[idx_tensor]) for idx_tensor in range(len(res_arr)) ])
-
-def jj_proj_tt(res_arr, x_rel):
-    # res_arr is 3-D np.array with n*4*4 elements
-    # res_arr[idx_tensor, mu, nu]
-    return np.array([ res_arr[idx_tensor, 3, 3] for idx_tensor in range(len(res_arr)) ])
-
-def jj_proj_ii(res_arr, x_rel):
-    # res_arr is 3-D np.array with n*4*4 elements
-    # res_arr[idx_tensor, mu, nu]
-    return np.array([ sum([ res_arr[idx_tensor, i, i] for i in range(3) ]) for idx_tensor in range(len(res_arr)) ])
-
-def jj_proj_xx(res_arr, x_rel):
-    # res_arr is 3-D np.array with n*4*4 elements
-    # res_arr[idx_tensor, mu, nu]
-    return np.array(
-            [ sum(
-                [ x_rel[i] * x_rel[j] * res_arr[idx_tensor, i, j]
-                    for i in range(3)
-                    for j in range(3) ])
-                for idx_tensor in range(len(res_arr)) ])
-
-all_jj_projections = [
-        jj_proj_feyn,
-        jj_proj_tt,
-        jj_proj_ii,
-        jj_proj_xx,
-        ]
-
-all_jj_projection_names = [ "mm", "tt", "ii", "xx", ]
-
-def accumulate_meson_jj(tot_counts, tot_values, res_arr, x_rel, total_site):
-    # tot_counts[t, r_idx]
-    # tot_values[idx_proj, idx_tensor, t, r_idx]
-    # 0 <= idx_proj < len(all_jj_projections): feyn, tt, ii, xx
-    # 0 <= idx_tensor < n_tensor. ( n_tensor = 14 )
-    # 0 <= t < total_site[3]
-    # 0 <= r < r_limit (scale by factor of 5.0)
-    (n_proj, n_tensor, t_size, r_limit,) = tot_values.shape
-    assert (t_size, r_limit,) == tot_counts.shape
-    assert t_size == total_site[3]
-    assert r_limit == get_r_limit(total_site)
-    assert len(all_jj_projections) == n_proj
-    t = x_rel[3] % total_site[3]
-    r = get_r(x_rel)
-    r_idx_low = math.floor(r)
-    r_idx_high = math.ceil(r)
-    if r_idx_high == r_idx_low:
-        r_idx_high += 1
-    assert r_idx_high < r_limit
-    coef_low = r_idx_high - r
-    coef_high = r - r_idx_low
-    tot_counts[t, r_idx_low] += coef_low
-    tot_counts[t, r_idx_high] += coef_high
-    for idx_proj, proj in enumerate(all_jj_projections):
-        v = proj(res_arr, x_rel)
-        v_low = coef_low * v
-        v_high = coef_high * v
-        for idx_tensor in range(n_tensor):
-            tot_values[idx_proj, idx_tensor, t, r_idx_low, ] += v_low[idx_tensor]
-            tot_values[idx_proj, idx_tensor, t, r_idx_high, ] += v_high[idx_tensor]
 
 @q.timer_verbose
 def auto_contractor_meson_jj(job_tag, traj, get_prop, get_psel, get_fsel):
@@ -496,8 +736,8 @@ def auto_contractor_meson_jj(job_tag, traj, get_prop, get_psel, get_fsel):
     n_tensor = len(expr_names) // 16
     assert n_tensor * 16 == len(expr_names)
     def feval(xg_src):
-        tot_counts = np.zeros((t_size, r_limit,), dtype = complex)
-        tot_values = np.zeros((n_proj, n_tensor, t_size, r_limit,), dtype = complex)
+        counts = np.zeros((t_size, r_limit,), dtype = complex)
+        values = np.zeros((n_proj, n_tensor, t_size, r_limit,), dtype = complex)
         for xg_snk in xg_fsel_list:
             x_rel = [ rel_mod(xg_snk[mu] - xg_src[mu], total_site[mu]) for mu in range(4) ]
             x_rel_t = x_rel[3]
@@ -514,15 +754,13 @@ def auto_contractor_meson_jj(job_tag, traj, get_prop, get_psel, get_fsel):
             res = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop, is_only_total = "total")
             assert res.shape[0] == 16 * n_tensor
             res_arr = res.reshape((n_tensor, 4, 4))
-            accumulate_meson_jj(tot_counts, tot_values, res_arr, x_rel, total_site)
-        return tot_counts, tot_values
+            accumulate_meson_jj(counts, values, res_arr, x_rel, total_site)
+        return counts, values
     counts_list, values_list = zip(*parallel_map(0, feval, xg_psel_list))
     res_count = q.glb_sum(sum(counts_list))
     res_sum = q.glb_sum(sum(values_list))
     res_count *= 1.0 / (len(xg_psel_list) * fsel.prob())
     res_sum *= 1.0 / (len(xg_psel_list) * fsel.prob())
-    print(res_count.shape)
-    print(res_sum.shape)
     ld_count = q.mk_lat_data([
         [ "t", t_size, [ str(rel_mod(t, t_size)) for t in range(t_size) ], ],
         [ "r", r_limit, ],
@@ -598,10 +836,16 @@ def run_job(job_tag, traj):
             get_prop = get_get_prop()
             # ADJUST ME
             auto_contractor_vev(job_tag, traj, get_prop, get_psel, get_fsel)
-            auto_contractor_meson_corr(job_tag, traj, get_prop, get_psel, get_fsel)
+            auto_contractor_meson_f_corr(job_tag, traj, get_prop, get_psel, get_fsel)
             auto_contractor_hvp(job_tag, traj, get_prop, get_psel, get_fsel)
             auto_contractor_hvp_field(job_tag, traj, get_prop, get_psel, get_fsel)
             auto_contractor_meson_v_v_meson_field(job_tag, traj, get_prop, get_psel, get_fsel)
+            #
+            auto_contractor_meson_corr(job_tag, traj, get_prop, get_psel, get_fsel)
+            auto_contractor_meson_corr_psnk(job_tag, traj, get_prop, get_psel, get_fsel)
+            auto_contractor_meson_corr_psrc(job_tag, traj, get_prop, get_psel, get_fsel)
+            auto_contractor_meson_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_fsel)
+            auto_contractor_meson_m(job_tag, traj, get_prop, get_psel, get_fsel)
             auto_contractor_meson_jj(job_tag, traj, get_prop, get_psel, get_fsel)
             #
             q.qtouch_info(get_save_path(fn_checkpoint))

@@ -57,9 +57,9 @@ def get_prop_wsnk_wsrc(prop_cache, inv_type, t_snk, t_src):
     return ama_apply1(f, sp_prop)
 
 @q.timer
-def get_prop_psnk_wsrc_fsel(prop_cache, inv_type, xg_snk, t_src, fsel_pos_dict):
+def get_prop_psnk_wsrc_fsel(prop_cache, inv_type, xg_snk, t_src, fselc_pos_dict):
     assert isinstance(xg_snk, tuple) and len(xg_snk) == 4
-    idx_snk = fsel_pos_dict[xg_snk]
+    idx_snk = fselc_pos_dict[xg_snk]
     def f(x):
         return x.get_elem(idx_snk)
     return ama_apply1(f, get_prop_wsrc(prop_cache, inv_type, t_src, "wsrc ; fsel"))
@@ -134,10 +134,10 @@ def get_prop_wsnk_psrc(prop_cache, inv_type, t_snk, xg_src):
     return ama_apply1(f, sp_prop)
 
 @q.timer
-def get_prop_psnk_psrc_fsel(prop_cache, inv_type, xg_snk, xg_src, fsel_pos_dict):
+def get_prop_psnk_psrc_fsel(prop_cache, inv_type, xg_snk, xg_src, fselc_pos_dict):
     assert isinstance(xg_src, tuple) and len(xg_src) == 4
     assert isinstance(xg_snk, tuple) and len(xg_snk) == 4
-    idx_snk = fsel_pos_dict[xg_snk]
+    idx_snk = fselc_pos_dict[xg_snk]
     def f(x):
         return x.get_elem(idx_snk)
     return ama_apply1(f, get_prop_psrc(prop_cache, inv_type, xg_src, "psrc ; fsel"))
@@ -170,7 +170,7 @@ def get_prop_psnk_rand_u1_fsel(prop_cache, inv_type, xg_snk, fsel_pos_dict):
 ### -------
 
 @q.timer
-def get_prop_snk_src(prop_cache, flavor, p_snk, p_src, *, psel_pos_dict, fsel_pos_dict):
+def get_prop_snk_src(prop_cache, flavor, p_snk, p_src, *, psel_pos_dict, fsel_pos_dict, fselc_pos_dict):
     # psel_pos_dict[x] == idx
     # x == tuple(pos)
     # psel.to_list()[idx] == pos
@@ -203,7 +203,7 @@ def get_prop_snk_src(prop_cache, flavor, p_snk, p_src, *, psel_pos_dict, fsel_po
             msc = get_prop_psnk_wsrc_psel(prop_cache, inv_type, pos_snk, pos_src, psel_pos_dict)
         else:
             assert pos_snk in fsel_pos_dict
-            msc = get_prop_psnk_wsrc_fsel(prop_cache, inv_type, pos_snk, pos_src, fsel_pos_dict)
+            msc = get_prop_psnk_wsrc_fsel(prop_cache, inv_type, pos_snk, pos_src, fselc_pos_dict)
     elif type_snk == "wall" and type_src[:5] == "point":
         assert isinstance(pos_snk, int)
         if type_src == "point":
@@ -211,7 +211,7 @@ def get_prop_snk_src(prop_cache, flavor, p_snk, p_src, *, psel_pos_dict, fsel_po
             msc = get_prop_psnk_wsrc_psel(prop_cache, inv_type, pos_src, pos_snk, psel_pos_dict)
         else:
             assert pos_src in fsel_pos_dict
-            msc = get_prop_psnk_wsrc_fsel(prop_cache, inv_type, pos_src, pos_snk, fsel_pos_dict)
+            msc = get_prop_psnk_wsrc_fsel(prop_cache, inv_type, pos_src, pos_snk, fselc_pos_dict)
         msc = ama_apply1(g5_herm, msc)
     elif type_snk[:5] == "point" and type_src[:5] == "point":
         # type can be "point" or "point-snk"
@@ -229,12 +229,12 @@ def get_prop_snk_src(prop_cache, flavor, p_snk, p_src, *, psel_pos_dict, fsel_po
             # means we use point source at the source location
             assert pos_src in psel_pos_dict
             assert pos_snk in fsel_pos_dict
-            msc = get_prop_psnk_psrc_fsel(prop_cache, inv_type, pos_snk, pos_src, fsel_pos_dict)
+            msc = get_prop_psnk_psrc_fsel(prop_cache, inv_type, pos_snk, pos_src, fselc_pos_dict)
         elif type_snk == "point":
             # means we use point source at the sink location
             assert pos_snk in psel_pos_dict
             assert pos_src in fsel_pos_dict
-            msc = get_prop_psnk_psrc_fsel(prop_cache, inv_type, pos_src, pos_snk, fsel_pos_dict)
+            msc = get_prop_psnk_psrc_fsel(prop_cache, inv_type, pos_src, pos_snk, fselc_pos_dict)
             msc = ama_apply1(g5_herm, msc)
         elif pos_snk == pos_src and flavor in rand_u1_flavors:
             # use the rand_u1 source
@@ -287,7 +287,7 @@ def load_prop_wsrc_all(job_tag, traj, flavor, *, wi, psel, fsel, fselc, gt):
         s_prop = q.SelProp(fsel)
         s_prop @= sc_prop
         # convert to GPT/Grid prop mspincolor order
-        cache_fsel[f"{tag} ; wsrc ; fsel"] = q.convert_mspincolor_from_wm(s_prop)
+        cache_fsel[f"{tag} ; wsrc ; fsel"] = q.convert_mspincolor_from_wm(sc_prop)
         # load psel psnk prop
         fn_sp = os.path.join(path_sp, f"{tag}.lat")
         sp_prop = q.PselProp(psel)
@@ -351,7 +351,7 @@ def load_prop_psrc_all(job_tag, traj, flavor, *, psel, fsel, fselc):
         s_prop = q.SelProp(fsel)
         s_prop @= sc_prop
         # convert to GPT/Grid prop mspincolor order
-        cache_fsel[f"{tag} ; psrc ; fsel"] = q.convert_mspincolor_from_wm(s_prop)
+        cache_fsel[f"{tag} ; psrc ; fsel"] = q.convert_mspincolor_from_wm(sc_prop)
         # load psel psnk prop
         fn_sp = os.path.join(path_sp, f"{tag}.lat")
         sp_prop = q.PselProp(psel)
@@ -381,13 +381,13 @@ def load_prop_zero(job_tag, traj, *, psel, fsel, fselc):
     cache_psel_ts = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}", f"psel_ts")
     total_site = ru.get_total_site(job_tag)
     psel_ts = q.get_psel_tslice(total_site)
-    s_prop = q.SelProp(fsel)
+    sc_prop = q.SelProp(fselc)
     sp_prop = q.PselProp(psel)
     spw_prop = q.PselProp(psel_ts)
-    q.set_zero(s_prop)
+    q.set_zero(sc_prop)
     q.set_zero(sp_prop)
     q.set_zero(spw_prop)
-    cache_fsel[f"zero ; fsel"] = s_prop
+    cache_fsel[f"zero ; fsel"] = sc_prop
     cache_psel[f"zero ; psel"] = sp_prop
     cache_psel_ts[f"zero ; psel_ts"] = spw_prop
 
@@ -466,7 +466,11 @@ def run_get_prop(job_tag, traj, *, get_gt, get_psel, get_fsel, get_psel_smear, g
         prop_cache = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}")
         psel_pos_dict = dict([ (tuple(pos), i) for i, pos in enumerate(psel.to_list()) ])
         fsel_pos_dict = dict([ (tuple(pos), i) for i, pos in enumerate(fsel.to_psel_local().to_list()) ])
+        fselc_pos_dict = dict([ (tuple(pos), i) for i, pos in enumerate(fselc.to_psel_local().to_list()) ])
         def get_prop(flavor, p_snk, p_src):
-            return get_prop_snk_src(prop_cache, flavor, p_snk, p_src, psel_pos_dict = psel_pos_dict, fsel_pos_dict = fsel_pos_dict)
+            return get_prop_snk_src(prop_cache, flavor, p_snk, p_src,
+                    psel_pos_dict = psel_pos_dict,
+                    fsel_pos_dict = fsel_pos_dict,
+                    fselc_pos_dict = fselc_pos_dict)
         return get_prop
     return q.lazy_call(mk_get_prop)

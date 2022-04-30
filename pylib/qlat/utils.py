@@ -30,6 +30,10 @@ def qnorm(x):
     # qnorm(2) == 4
     if isinstance(x, np.ndarray):
         return np.abs(np.vdot(x, x))
+    elif isinstance(x, (int,float)):
+        return x * x
+    elif isinstance(x, complex):
+        return x.real * x.real + x.imag * x.imag
     else:
         return x.qnorm()
     assert False
