@@ -27,10 +27,16 @@ demo: save selection 'fsel' to disk as a field
 write_field: fn='huge-data/t0/fsel.field'.
 qrename: 'huge-data/t0/fsel.field.partial.partial' 'huge-data/t0/fsel.field.partial'
 q_write_par_limit=16 (default)
+QFile: open 'huge-data/t0/fsel.field.partial' with 'a'.
+QFile: close 'huge-data/t0/fsel.field.partial' with 'a'.
 qrename: 'huge-data/t0/fsel.field.partial' 'huge-data/t0/fsel.field'
 demo: read selection 'fsel' from disk as a field
 read_field: fn='huge-data/t0/fsel.field'.
+QFile: open 'huge-data/t0/fsel.field' with 'r'.
+QFile: close 'huge-data/t0/fsel.field' with 'r'.
 q_read_par_limit=16 (default)
+QFile: open 'huge-data/t0/fsel.field' with 'r'.
+QFile: close 'huge-data/t0/fsel.field' with 'r'.
 demo: init field 'f'
 demo: compute crc32=BA968301.
 demo: fill with random numbers
@@ -787,9 +793,15 @@ demo: selection is stored in 'fsel' of type 'FieldSelection'
 demo: save selection 'fsel' to disk as a field
 write_field: fn='huge-data/t1/fsel.field'.
 qrename: 'huge-data/t1/fsel.field.partial.partial' 'huge-data/t1/fsel.field.partial'
+QFile: open 'huge-data/t1/fsel.field.partial' with 'a'.
+QFile: close 'huge-data/t1/fsel.field.partial' with 'a'.
 qrename: 'huge-data/t1/fsel.field.partial' 'huge-data/t1/fsel.field'
 demo: read selection 'fsel' from disk as a field
 read_field: fn='huge-data/t1/fsel.field'.
+QFile: open 'huge-data/t1/fsel.field' with 'r'.
+QFile: close 'huge-data/t1/fsel.field' with 'r'.
+QFile: open 'huge-data/t1/fsel.field' with 'r'.
+QFile: close 'huge-data/t1/fsel.field' with 'r'.
 demo: init field 'f'
 demo: compute crc32=BA968301.
 demo: fill with random numbers
@@ -1536,9 +1548,15 @@ demo: selection is stored in 'fsel' of type 'FieldSelection'
 demo: save selection 'fsel' to disk as a field
 write_field: fn='huge-data/t2/fsel.field'.
 qrename: 'huge-data/t2/fsel.field.partial.partial' 'huge-data/t2/fsel.field.partial'
+QFile: open 'huge-data/t2/fsel.field.partial' with 'a'.
+QFile: close 'huge-data/t2/fsel.field.partial' with 'a'.
 qrename: 'huge-data/t2/fsel.field.partial' 'huge-data/t2/fsel.field'
 demo: read selection 'fsel' from disk as a field
 read_field: fn='huge-data/t2/fsel.field'.
+QFile: open 'huge-data/t2/fsel.field' with 'r'.
+QFile: close 'huge-data/t2/fsel.field' with 'r'.
+QFile: open 'huge-data/t2/fsel.field' with 'r'.
+QFile: close 'huge-data/t2/fsel.field' with 'r'.
 demo: init field 'f'
 demo: compute crc32=BA968301.
 demo: fill with random numbers

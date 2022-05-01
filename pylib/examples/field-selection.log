@@ -31,12 +31,20 @@ mk_file_dirs_info: 'results/fsel.field'.
 write_field: fn='results/fsel.field'.
 qrename: 'results/fsel.field.partial.partial' 'results/fsel.field.partial'
 q_write_par_limit=16 (default)
+QFile: open 'results/fsel.field.partial' with 'a'.
+QFile: close 'results/fsel.field.partial' with 'a'.
 qrename: 'results/fsel.field.partial' 'results/fsel.field'
 read_field: fn='results/fsel.field'.
+QFile: open 'results/fsel.field' with 'r'.
+QFile: close 'results/fsel.field' with 'r'.
 q_read_par_limit=16 (default)
+QFile: open 'results/fsel.field' with 'r'.
+QFile: close 'results/fsel.field' with 'r'.
 mk_file_dirs_info: 'results/fsel-1.field'.
 write_field: fn='results/fsel-1.field'.
 qrename: 'results/fsel-1.field.partial.partial' 'results/fsel-1.field.partial'
+QFile: open 'results/fsel-1.field.partial' with 'a'.
+QFile: close 'results/fsel-1.field.partial' with 'a'.
 qrename: 'results/fsel-1.field.partial' 'results/fsel-1.field'
 fsel info = Geometry([4, 4, 4, 8], 1) 16 0.25
 fsel info = Geometry([4, 4, 4, 8], 1) 16 0.25

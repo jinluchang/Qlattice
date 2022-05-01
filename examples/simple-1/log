@@ -26,9 +26,13 @@ trace:  9.86826590890408140E-01
 Cache: 'ShufflePlanCache': 0 / 16 [8] to add
 qrename: 'results/ckpoint.0.partial.partial' 'results/ckpoint.0.partial'
 q_write_par_limit=16 (default)
+QFile: open 'results/ckpoint.0.partial' with 'a'.
+QFile: close 'results/ckpoint.0.partial' with 'a'.
 qrename: 'results/ckpoint.0.partial' 'results/ckpoint.0'
 load_gauge_field: 'results/ckpoint.0'.
 q_read_par_limit=16 (default)
+QFile: open 'results/ckpoint.0' with 'r'.
+QFile: close 'results/ckpoint.0' with 'r'.
 plaq :  9.48400361131393588E-01
 spatial plaq :  9.48253412870626811E-01
 trace:  9.86826590890408140E-01

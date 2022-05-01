@@ -616,19 +616,35 @@ dist_crc32 = 350968E5
 crc32 = 373D0A62
 write_field: fn='huge-data/rgf-0.1.field.conf.0000000000'.
 qrename: 'huge-data/rgf-0.1.field.conf.0000000000.partial.partial' 'huge-data/rgf-0.1.field.conf.0000000000.partial'
+QFile: open 'huge-data/rgf-0.1.field.conf.0000000000.partial' with 'a'.
+QFile: close 'huge-data/rgf-0.1.field.conf.0000000000.partial' with 'a'.
 qrename: 'huge-data/rgf-0.1.field.conf.0000000000.partial' 'huge-data/rgf-0.1.field.conf.0000000000'
 read_field: fn='huge-data/rgf-0.1.field.conf.0000000000'.
+QFile: open 'huge-data/rgf-0.1.field.conf.0000000000' with 'r'.
+QFile: close 'huge-data/rgf-0.1.field.conf.0000000000' with 'r'.
+QFile: open 'huge-data/rgf-0.1.field.conf.0000000000' with 'r'.
+QFile: close 'huge-data/rgf-0.1.field.conf.0000000000' with 'r'.
 dist_crc32 = 51AE844C
 crc32 = 000E8458
 read_field: fn='huge-data/rgf-0.1.field.conf.0000000000'.
+QFile: open 'huge-data/rgf-0.1.field.conf.0000000000' with 'r'.
+QFile: close 'huge-data/rgf-0.1.field.conf.0000000000' with 'r'.
+QFile: open 'huge-data/rgf-0.1.field.conf.0000000000' with 'r'.
+QFile: close 'huge-data/rgf-0.1.field.conf.0000000000' with 'r'.
 dist_crc32 = 51AE844C
 crc32 = 000E8458
 qrename: 'huge-data/rgf-0.1.gf.conf.0000000000.partial.partial' 'huge-data/rgf-0.1.gf.conf.0000000000.partial'
+QFile: open 'huge-data/rgf-0.1.gf.conf.0000000000.partial' with 'a'.
+QFile: close 'huge-data/rgf-0.1.gf.conf.0000000000.partial' with 'a'.
 qrename: 'huge-data/rgf-0.1.gf.conf.0000000000.partial' 'huge-data/rgf-0.1.gf.conf.0000000000'
 load_gauge_field: 'huge-data/rgf-0.1.gf.conf.0000000000'.
+QFile: open 'huge-data/rgf-0.1.gf.conf.0000000000' with 'r'.
+QFile: close 'huge-data/rgf-0.1.gf.conf.0000000000' with 'r'.
 dist_crc32 = 2B5B10F3
 crc32 = 95B92D8C
 load_gauge_field: 'huge-data/rgf-0.1.gf.conf.0000000000'.
+QFile: open 'huge-data/rgf-0.1.gf.conf.0000000000' with 'r'.
+QFile: close 'huge-data/rgf-0.1.gf.conf.0000000000' with 'r'.
 dist_crc32 = 2B5B10F3
 crc32 = 95B92D8C
 crc32 = 83E8BA4C

@@ -38,8 +38,14 @@ q_mem_cache_acc_max_size=512 (default)
 Cache: 'ShufflePlanCache': 0 / 16 [8] to add
 write_field: fn='results/test-4nt8/results=1000/f-rank.field'.
 qrename: 'results/test-4nt8/results=1000/f-rank.field.partial.partial' 'results/test-4nt8/results=1000/f-rank.field.partial'
+QFile: open 'results/test-4nt8/results=1000/f-rank.field.partial' with 'a'.
+QFile: close 'results/test-4nt8/results=1000/f-rank.field.partial' with 'a'.
 qrename: 'results/test-4nt8/results=1000/f-rank.field.partial' 'results/test-4nt8/results=1000/f-rank.field'
 read_field: fn='results/test-4nt8/results=1000/f-rank.field'.
+QFile: open 'results/test-4nt8/results=1000/f-rank.field' with 'r'.
+QFile: close 'results/test-4nt8/results=1000/f-rank.field' with 'r'.
+QFile: open 'results/test-4nt8/results=1000/f-rank.field' with 'r'.
+QFile: close 'results/test-4nt8/results=1000/f-rank.field' with 'r'.
 Cache: 'CommPlanCache': 0 / 32 [16] to add
 Cache: 'CommPlanCache': 1 / 32 [16] to add
 plaq :  6.83965231794668060E-01
@@ -112,6 +118,8 @@ invert_with_cg(5d,5d,inv,cg): total_iter=60 cycle=1 stop_rsd=1.000E-08
 invert_with_cg(5d,5d,inv,cg): checking 9.112725E-09 from 1.000000E+00
 write_field: fn='results/test-4nt8/results=1000/psrc-prop-0.field'.
 qrename: 'results/test-4nt8/results=1000/psrc-prop-0.field.partial.partial' 'results/test-4nt8/results=1000/psrc-prop-0.field.partial'
+QFile: open 'results/test-4nt8/results=1000/psrc-prop-0.field.partial' with 'a'.
+QFile: close 'results/test-4nt8/results=1000/psrc-prop-0.field.partial' with 'a'.
 qrename: 'results/test-4nt8/results=1000/psrc-prop-0.field.partial' 'results/test-4nt8/results=1000/psrc-prop-0.field'
 dist_write_field: fn='results/test-4nt8/results=1000/psrc-prop-0'.
 make_shuffle_plan_generic: num_send_packs =          8
@@ -170,8 +178,14 @@ compute_traj: Start computing 'results/test-4nt8/results=1010'.
 compute_traj_do: job_tag='test-4nt8' ; traj=1010
 write_field: fn='results/test-4nt8/results=1010/f-rank.field'.
 qrename: 'results/test-4nt8/results=1010/f-rank.field.partial.partial' 'results/test-4nt8/results=1010/f-rank.field.partial'
+QFile: open 'results/test-4nt8/results=1010/f-rank.field.partial' with 'a'.
+QFile: close 'results/test-4nt8/results=1010/f-rank.field.partial' with 'a'.
 qrename: 'results/test-4nt8/results=1010/f-rank.field.partial' 'results/test-4nt8/results=1010/f-rank.field'
 read_field: fn='results/test-4nt8/results=1010/f-rank.field'.
+QFile: open 'results/test-4nt8/results=1010/f-rank.field' with 'r'.
+QFile: close 'results/test-4nt8/results=1010/f-rank.field' with 'r'.
+QFile: open 'results/test-4nt8/results=1010/f-rank.field' with 'r'.
+QFile: close 'results/test-4nt8/results=1010/f-rank.field' with 'r'.
 plaq :  6.81609579399775845E-01
 spatial plaq :  6.89426876328337768E-01
 trace:  9.43528341124005437E-02
@@ -237,6 +251,8 @@ invert_with_cg(5d,5d,inv,cg): total_iter=57 cycle=1 stop_rsd=1.000E-08
 invert_with_cg(5d,5d,inv,cg): checking 7.403972E-09 from 1.000000E+00
 write_field: fn='results/test-4nt8/results=1010/psrc-prop-0.field'.
 qrename: 'results/test-4nt8/results=1010/psrc-prop-0.field.partial.partial' 'results/test-4nt8/results=1010/psrc-prop-0.field.partial'
+QFile: open 'results/test-4nt8/results=1010/psrc-prop-0.field.partial' with 'a'.
+QFile: close 'results/test-4nt8/results=1010/psrc-prop-0.field.partial' with 'a'.
 qrename: 'results/test-4nt8/results=1010/psrc-prop-0.field.partial' 'results/test-4nt8/results=1010/psrc-prop-0.field'
 dist_write_field: fn='results/test-4nt8/results=1010/psrc-prop-0'.
 shuffle_field(fs,f,sp): 1x1x1x2 -> 2x2x2x4 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.001 GB)
@@ -286,8 +302,14 @@ compute_traj: Start computing 'results/free-4nt8/results=1000'.
 compute_traj_do: job_tag='free-4nt8' ; traj=1000
 write_field: fn='results/free-4nt8/results=1000/f-rank.field'.
 qrename: 'results/free-4nt8/results=1000/f-rank.field.partial.partial' 'results/free-4nt8/results=1000/f-rank.field.partial'
+QFile: open 'results/free-4nt8/results=1000/f-rank.field.partial' with 'a'.
+QFile: close 'results/free-4nt8/results=1000/f-rank.field.partial' with 'a'.
 qrename: 'results/free-4nt8/results=1000/f-rank.field.partial' 'results/free-4nt8/results=1000/f-rank.field'
 read_field: fn='results/free-4nt8/results=1000/f-rank.field'.
+QFile: open 'results/free-4nt8/results=1000/f-rank.field' with 'r'.
+QFile: close 'results/free-4nt8/results=1000/f-rank.field' with 'r'.
+QFile: open 'results/free-4nt8/results=1000/f-rank.field' with 'r'.
+QFile: close 'results/free-4nt8/results=1000/f-rank.field' with 'r'.
 plaq :  1.00000000000000000E+00
 spatial plaq :  1.00000000000000000E+00
 trace:  1.00000000000000000E+00
@@ -353,6 +375,8 @@ invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
 invert_with_cg(5d,5d,inv,cg): checking 3.759165E-09 from 1.000000E+00
 write_field: fn='results/free-4nt8/results=1000/psrc-prop-0.field'.
 qrename: 'results/free-4nt8/results=1000/psrc-prop-0.field.partial.partial' 'results/free-4nt8/results=1000/psrc-prop-0.field.partial'
+QFile: open 'results/free-4nt8/results=1000/psrc-prop-0.field.partial' with 'a'.
+QFile: close 'results/free-4nt8/results=1000/psrc-prop-0.field.partial' with 'a'.
 qrename: 'results/free-4nt8/results=1000/psrc-prop-0.field.partial' 'results/free-4nt8/results=1000/psrc-prop-0.field'
 dist_write_field: fn='results/free-4nt8/results=1000/psrc-prop-0'.
 shuffle_field(fs,f,sp): 1x1x1x2 -> 2x2x2x4 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.001 GB)
@@ -401,8 +425,14 @@ compute_traj: Start computing 'results/free-4nt8/results=1010'.
 compute_traj_do: job_tag='free-4nt8' ; traj=1010
 write_field: fn='results/free-4nt8/results=1010/f-rank.field'.
 qrename: 'results/free-4nt8/results=1010/f-rank.field.partial.partial' 'results/free-4nt8/results=1010/f-rank.field.partial'
+QFile: open 'results/free-4nt8/results=1010/f-rank.field.partial' with 'a'.
+QFile: close 'results/free-4nt8/results=1010/f-rank.field.partial' with 'a'.
 qrename: 'results/free-4nt8/results=1010/f-rank.field.partial' 'results/free-4nt8/results=1010/f-rank.field'
 read_field: fn='results/free-4nt8/results=1010/f-rank.field'.
+QFile: open 'results/free-4nt8/results=1010/f-rank.field' with 'r'.
+QFile: close 'results/free-4nt8/results=1010/f-rank.field' with 'r'.
+QFile: open 'results/free-4nt8/results=1010/f-rank.field' with 'r'.
+QFile: close 'results/free-4nt8/results=1010/f-rank.field' with 'r'.
 plaq :  1.00000000000000000E+00
 spatial plaq :  1.00000000000000000E+00
 trace:  1.00000000000000000E+00
@@ -468,6 +498,8 @@ invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
 invert_with_cg(5d,5d,inv,cg): checking 3.759165E-09 from 1.000000E+00
 write_field: fn='results/free-4nt8/results=1010/psrc-prop-0.field'.
 qrename: 'results/free-4nt8/results=1010/psrc-prop-0.field.partial.partial' 'results/free-4nt8/results=1010/psrc-prop-0.field.partial'
+QFile: open 'results/free-4nt8/results=1010/psrc-prop-0.field.partial' with 'a'.
+QFile: close 'results/free-4nt8/results=1010/psrc-prop-0.field.partial' with 'a'.
 qrename: 'results/free-4nt8/results=1010/psrc-prop-0.field.partial' 'results/free-4nt8/results=1010/psrc-prop-0.field'
 dist_write_field: fn='results/free-4nt8/results=1010/psrc-prop-0'.
 shuffle_field(fs,f,sp): 1x1x1x2 -> 2x2x2x4 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.001 GB)

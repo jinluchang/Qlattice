@@ -26,21 +26,39 @@ mk_file_dirs_info: 'results/prop.field'.
 write_field: fn='results/prop.field'.
 qrename: 'results/prop.field.partial.partial' 'results/prop.field.partial'
 q_write_par_limit=16 (default)
+QFile: open 'results/prop.field.partial' with 'a'.
+QFile: close 'results/prop.field.partial' with 'a'.
 qrename: 'results/prop.field.partial' 'results/prop.field'
 read_field: fn='results/prop.field'.
+QFile: open 'results/prop.field' with 'r'.
+QFile: close 'results/prop.field' with 'r'.
 q_read_par_limit=16 (default)
+QFile: open 'results/prop.field' with 'r'.
+QFile: close 'results/prop.field' with 'r'.
 prop.crc32() = 870829356 ; prop.qnorm() = 49123.69045958381
 mk_file_dirs_info: 'results/prop-double.field'.
 write_field: fn='results/prop-double.field'.
 qrename: 'results/prop-double.field.partial.partial' 'results/prop-double.field.partial'
+QFile: open 'results/prop-double.field.partial' with 'a'.
+QFile: close 'results/prop-double.field.partial' with 'a'.
 qrename: 'results/prop-double.field.partial' 'results/prop-double.field'
 read_field: fn='results/prop-double.field'.
+QFile: open 'results/prop-double.field' with 'r'.
+QFile: close 'results/prop-double.field' with 'r'.
+QFile: open 'results/prop-double.field' with 'r'.
+QFile: close 'results/prop-double.field' with 'r'.
 prop.crc32() = 870829356 ; prop.qnorm() = 49123.69045958381
 mk_file_dirs_info: 'results/prop-float.field'.
 write_field: fn='results/prop-float.field'.
 qrename: 'results/prop-float.field.partial.partial' 'results/prop-float.field.partial'
+QFile: open 'results/prop-float.field.partial' with 'a'.
+QFile: close 'results/prop-float.field.partial' with 'a'.
 qrename: 'results/prop-float.field.partial' 'results/prop-float.field'
 read_field: fn='results/prop-float.field'.
+QFile: open 'results/prop-float.field' with 'r'.
+QFile: close 'results/prop-float.field' with 'r'.
+QFile: open 'results/prop-float.field' with 'r'.
+QFile: close 'results/prop-float.field' with 'r'.
 prop.crc32() = 1892650077 ; prop.qnorm() = 49123.69044826866
 sp_prop 188.73394748572775
 mk_file_dirs_info: 'results/prop.lat'.
