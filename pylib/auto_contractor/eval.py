@@ -28,6 +28,54 @@ import copy
 import cmath
 import math
 
+gamma_matrix_list = [
+        # gamma_x
+        (-1) * (-1j) *
+        np.array([
+            0, 0, 0, 1,
+            0, 0, 1, 0,
+            0, -1, 0, 0,
+            -1, 0, 0, 0,
+            ],
+            dtype = complex),
+        # gamma_y
+        (-1j) *
+        np.array([
+            0, 0, 0, -1j,
+            0, 0, 1j, 0,
+            0, 1j, 0, 0,
+            -1j, 0, 0, 0,
+            ],
+            dtype = complex),
+        # gamma_z
+        (-1) * (-1j) *
+        np.array([
+            0, 0, 1, 0,
+            0, 0, 0, -1,
+            -1, 0, 0, 0,
+            0, 1, 0, 0,
+            ],
+            dtype = complex),
+        # gamma_t
+        np.array([
+            0, 0, 1, 0,
+            0, 0, 0, 1,
+            1, 0, 0, 0,
+            0, 1, 0, 0,
+            ],
+            dtype = complex),
+        # gamma(4)
+        None,
+        # gamma_5 = gamma_x * gamma_y * gamma_z * gamma_t;
+        np.array([
+            1, 0, 0, 0,
+            0, 1, 0, 0,
+            0, 0, -1, 0,
+            0, 0, 0, -1,
+            ],
+            dtype = complex),
+        ]
+
 def get_spin_matrix(op):
     assert op.otype == "G"
     assert op.s1 == "auto" and op.s2 == "auto"
