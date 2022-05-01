@@ -196,6 +196,7 @@ def get_prop_snk_src(prop_cache, flavor, p_snk, p_src, *, psel_pos_dict, fsel_po
         assert isinstance(pos_snk, int)
         assert isinstance(pos_src, int)
         msc = get_prop_wsnk_wsrc(prop_cache, inv_type, pos_snk, pos_src)
+        msc = ama_apply1(as_mspincolor, msc)
     elif type_snk[:5] == "point" and type_src == "wall":
         assert isinstance(pos_src, int)
         if type_snk == "point":
@@ -204,6 +205,7 @@ def get_prop_snk_src(prop_cache, flavor, p_snk, p_src, *, psel_pos_dict, fsel_po
         else:
             assert pos_snk in fsel_pos_dict
             msc = get_prop_psnk_wsrc_fsel(prop_cache, inv_type, pos_snk, pos_src, fselc_pos_dict)
+        msc = ama_apply1(as_mspincolor, msc)
     elif type_snk == "wall" and type_src[:5] == "point":
         assert isinstance(pos_snk, int)
         if type_src == "point":
@@ -212,6 +214,7 @@ def get_prop_snk_src(prop_cache, flavor, p_snk, p_src, *, psel_pos_dict, fsel_po
         else:
             assert pos_src in fsel_pos_dict
             msc = get_prop_psnk_wsrc_fsel(prop_cache, inv_type, pos_src, pos_snk, fselc_pos_dict)
+        msc = ama_apply1(as_mspincolor, msc)
         msc = ama_apply1(g5_herm, msc)
     elif type_snk[:5] == "point" and type_src[:5] == "point":
         # type can be "point" or "point-snk"
@@ -225,27 +228,30 @@ def get_prop_snk_src(prop_cache, flavor, p_snk, p_src, *, psel_pos_dict, fsel_po
             assert pos_src in psel_pos_dict
             assert pos_snk in psel_pos_dict
             msc = get_prop_psnk_psrc_psel(prop_cache, inv_type, pos_snk, pos_src, psel_pos_dict)
+            msc = ama_apply1(as_mspincolor, msc)
         elif type_src == "point":
             # means we use point source at the source location
             assert pos_src in psel_pos_dict
             assert pos_snk in fsel_pos_dict
             msc = get_prop_psnk_psrc_fsel(prop_cache, inv_type, pos_snk, pos_src, fselc_pos_dict)
+            msc = ama_apply1(as_mspincolor, msc)
         elif type_snk == "point":
             # means we use point source at the sink location
             assert pos_snk in psel_pos_dict
             assert pos_src in fsel_pos_dict
             msc = get_prop_psnk_psrc_fsel(prop_cache, inv_type, pos_src, pos_snk, fselc_pos_dict)
+            msc = ama_apply1(as_mspincolor, msc)
             msc = ama_apply1(g5_herm, msc)
         elif pos_snk == pos_src and flavor in rand_u1_flavors:
             # use the rand_u1 source
             assert pos_snk in fsel_pos_dict
             msc = get_prop_psnk_rand_u1_fsel(prop_cache, inv_type, pos_snk, fsel_pos_dict)
+            msc = ama_apply1(as_mspincolor, msc)
         else:
             # if nothing else work, try use point src propagator
             assert False
     else:
         raise Exception("get_prop_snk_src unknown p_snk={p_snk} p_src={p_src}")
-    msc = ama_apply1(as_mspincolor, msc)
     return msc
 
 ### -------
