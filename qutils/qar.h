@@ -887,6 +887,10 @@ inline int qar_create(const std::string& path_qar,
 {
   TIMER_VERBOSE_FLOPS("qar_create");
   const std::string path_folder = remove_trailing_slashes(path_folder_);
+  displayln(
+      0, fname + ssprintf(
+                     ": '%s' '%s' %s.", path_qar.c_str(), path_folder.c_str(),
+                     is_remove_folder_after ? "remove folder" : "keep folder"));
   if (not is_directory(path_folder)) {
     qwarn(fname + ssprintf(": '%s' '%s' no folder.", path_qar.c_str(),
                            path_folder.c_str()));
@@ -946,6 +950,10 @@ inline int qar_extract(const std::string& path_qar,
 {
   TIMER_VERBOSE_FLOPS("qar_extract");
   const std::string path_folder = remove_trailing_slashes(path_folder_);
+  displayln(
+      0,
+      fname + ssprintf(": '%s' '%s' %s.", path_qar.c_str(), path_folder.c_str(),
+                       is_remove_qar_after ? "remove qar " : "keep qar"));
   if (not does_file_exist(path_qar)) {
     qwarn(fname + ssprintf(": '%s' '%s' qar does not exist.", path_qar.c_str(),
                            path_folder.c_str()));
