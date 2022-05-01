@@ -455,13 +455,15 @@ def run_get_prop(job_tag, traj, *, get_gt, get_psel, get_fsel, get_psel_smear, g
         psel = get_psel()
         psel_smear = get_psel_smear()
         fsel, fselc = get_fsel()
+        # ADJUST ME
         load_prop_wsrc_all(job_tag, traj, "l", wi = wi, psel = psel, fsel = fsel, fselc = fselc, gt = gt)
         load_prop_wsrc_all(job_tag, traj, "s", wi = wi, psel = psel, fsel = fsel, fselc = fselc, gt = gt)
         load_prop_psrc_all(job_tag, traj, "l", psel = psel, fsel = fsel, fselc = fselc)
         load_prop_psrc_all(job_tag, traj, "s", psel = psel, fsel = fsel, fselc = fselc)
-        load_prop_rand_u1_all(job_tag, traj, "l", fsel = fsel)
-        load_prop_rand_u1_all(job_tag, traj, "s", fsel = fsel)
-        load_prop_rand_u1_all(job_tag, traj, "c", fsel = fsel)
+        # load_prop_rand_u1_all(job_tag, traj, "l", fsel = fsel)
+        # load_prop_rand_u1_all(job_tag, traj, "s", fsel = fsel)
+        # load_prop_rand_u1_all(job_tag, traj, "c", fsel = fsel)
+        #
         load_prop_zero(job_tag, traj, psel = psel, fsel = fsel, fselc = fselc)
         prop_cache = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}")
         psel_pos_dict = dict([ (tuple(pos), i) for i, pos in enumerate(psel.to_list()) ])

@@ -393,19 +393,25 @@ def auto_contractor_meson_corr(job_tag, traj, get_prop, get_psel, get_fsel):
     xg_fsel_list = fsel.to_psel_local().to_list()
     geo = q.Geometry(total_site, 1)
     total_volume = geo.total_volume()
+    def fempty():
+        values = np.zeros((len(expr_names), total_site[3],), dtype = complex)
+        return 0, values
+    @q.timer
     def feval(t_snk):
-        res = np.zeros((total_site[3], len(expr_names),), dtype = complex)
+        counts, values = fempty()
+        counts += 1
+        values = values.transpose()
         for t_src in range(total_site[3]):
             t = (t_snk - t_src) % total_site[3]
             pd = {
                     "x_2" : ("wall", t_snk,),
                     "x_1" : ("wall", t_src,),
                     }
-            res[t] += eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop, is_only_total = "total")
-        res = res.transpose() # res[expr_name, t_sep]
-        return 1.0, res
+            values[t] += eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop, is_only_total = "total")
+        values = values.transpose() # res[expr_name, t_sep]
+        return counts, values
     t_snk_list = get_mpi_chunk(list(range(total_site[3])))
-    counts_list, values_list = zip(*parallel_map(0, feval, t_snk_list))
+    counts_list, values_list = zip(fempty(), *parallel_map(0, feval, t_snk_list))
     res_count = q.glb_sum(sum(counts_list))
     res_sum = q.glb_sum(sum(values_list))
     res_count *= 1.0 / total_site[3]
@@ -431,6 +437,7 @@ def auto_contractor_meson_corr_psnk(job_tag, traj, get_prop, get_psel, get_fsel)
     xg_fsel_list = fsel.to_psel_local().to_list()
     geo = q.Geometry(total_site, 1)
     total_volume = geo.total_volume()
+    @q.timer
     def feval(xg_snk):
         res = np.zeros((total_site[3], len(expr_names),), dtype = complex)
         for t_src in range(total_site[3]):
@@ -473,6 +480,7 @@ def auto_contractor_meson_corr_psrc(job_tag, traj, get_prop, get_psel, get_fsel)
     def fempty():
         values = np.zeros((len(expr_names), total_site[3],), dtype = complex)
         return 0, values
+    @q.timer
     def feval(xg_src):
         counts, values = fempty()
         counts += 1
@@ -515,6 +523,7 @@ def auto_contractor_meson_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_
     xg_psel_list = psel.to_list()
     geo = q.Geometry(total_site, 1)
     total_volume = geo.total_volume()
+    @q.timer
     def feval(xg_src):
         counts = np.zeros(total_site[3], dtype = complex)
         values = np.zeros((total_site[3], len(expr_names),), dtype = complex)
@@ -577,6 +586,7 @@ def auto_contractor_meson_m(job_tag, traj, get_prop, get_psel, get_fsel):
     tsep = rup.dict_params[job_tag]["meson_tensor_tsep"]
     geo = q.Geometry(total_site, 1)
     total_volume = geo.total_volume()
+    @q.timer
     def feval(xg_snk):
         t = xg_snk[3]
         t_1 = (t + tsep) % total_site[3]
@@ -735,6 +745,7 @@ def auto_contractor_meson_jj(job_tag, traj, get_prop, get_psel, get_fsel):
     assert n_proj == len(all_jj_projection_names)
     n_tensor = len(expr_names) // 16
     assert n_tensor * 16 == len(expr_names)
+    @q.timer_verbose
     def feval(xg_src):
         counts = np.zeros((t_size, r_limit,), dtype = complex)
         values = np.zeros((n_proj, n_tensor, t_size, r_limit,), dtype = complex)
@@ -786,7 +797,7 @@ def run_job(job_tag, traj):
             f"auto-contractor-fsel/{job_tag}/traj={traj}/checkpoint.txt",
             ]
     fns_need = [
-            (f"configs/{job_tag}/ckpoint_lat.{traj}", f"configs/{job_tag}/ckpoint_lat.IEEE64BIG.{traj}",),
+            # (f"configs/{job_tag}/ckpoint_lat.{traj}", f"configs/{job_tag}/ckpoint_lat.IEEE64BIG.{traj}",),
             f"point-selection/{job_tag}/traj={traj}.txt",
             f"field-selection/{job_tag}/traj={traj}.field",
             f"gauge-transform/{job_tag}/traj={traj}.field",
@@ -835,11 +846,11 @@ def run_job(job_tag, traj):
         if q.obtain_lock(f"locks/{job_tag}-{traj}-auto-contractor"):
             get_prop = get_get_prop()
             # ADJUST ME
-            auto_contractor_vev(job_tag, traj, get_prop, get_psel, get_fsel)
-            auto_contractor_meson_f_corr(job_tag, traj, get_prop, get_psel, get_fsel)
-            auto_contractor_hvp(job_tag, traj, get_prop, get_psel, get_fsel)
-            auto_contractor_hvp_field(job_tag, traj, get_prop, get_psel, get_fsel)
-            auto_contractor_meson_v_v_meson_field(job_tag, traj, get_prop, get_psel, get_fsel)
+            # auto_contractor_vev(job_tag, traj, get_prop, get_psel, get_fsel)
+            # auto_contractor_meson_f_corr(job_tag, traj, get_prop, get_psel, get_fsel)
+            # auto_contractor_hvp(job_tag, traj, get_prop, get_psel, get_fsel)
+            # auto_contractor_hvp_field(job_tag, traj, get_prop, get_psel, get_fsel)
+            # auto_contractor_meson_v_v_meson_field(job_tag, traj, get_prop, get_psel, get_fsel)
             #
             auto_contractor_meson_corr(job_tag, traj, get_prop, get_psel, get_fsel)
             auto_contractor_meson_corr_psnk(job_tag, traj, get_prop, get_psel, get_fsel)
@@ -860,6 +871,7 @@ q.qremove_all_info("locks")
 q.qremove_all_info("results")
 q.qremove_all_info("cache")
 
+# run_job("16IH2", 1000)
 run_job("test-4nt8", 1000)
 
 qg.end_with_gpt()
