@@ -6,6 +6,7 @@ import qlat_gpt as qg
 
 import functools
 import math
+import os
 
 from jobs import *
 from load_data import *
@@ -31,28 +32,6 @@ def rel_mod(x, size):
         return x - size
     else:
         return x
-
-### ------
-
-import multiprocessing as mp
-
-pool_function = None
-
-def call_pool_function(*args, **kwargs):
-    assert pool_function is not None
-    return pool_function(*args, **kwargs)
-
-def parallel_map(n_processes, func, iterable):
-    if n_processes == 0:
-        return list(map(func, iterable))
-    global pool_function
-    pool_function = func
-    with mp.Pool(n_processes) as p:
-        res = p.map(call_pool_function, iterable)
-    pool_function = None
-    return res
-
-### ------
 
 @q.timer
 def get_cexpr_vev():
@@ -88,7 +67,7 @@ def auto_contractor_vev(job_tag, traj, get_prop, get_psel, get_fsel):
                 }
         res = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop, is_only_total = "total")
         return res
-    res_list = parallel_map(0, feval, xg_fsel_list)
+    res_list = q.parallel_map(q.get_n_processes(), feval, xg_fsel_list)
     res_sum = q.glb_sum(sum(res_list))
     res_count = q.glb_sum(len(res_list))
     res_avg = res_sum / res_count
@@ -136,7 +115,7 @@ def auto_contractor_meson_f_corr(job_tag, traj, get_prop, get_psel, get_fsel):
             res = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop, is_only_total = "total")
             l.append(res)
         return np.array(l).transpose()
-    res_list = parallel_map(0, feval, xg_fsel_list)
+    res_list = q.parallel_map(q.get_n_processes(), feval, xg_fsel_list)
     res_sum = q.glb_sum(sum(res_list))
     res_count = q.glb_sum(len(res_list))
     res_avg = res_sum / res_count
@@ -195,7 +174,7 @@ def auto_contractor_hvp(job_tag, traj, get_prop, get_psel, get_fsel):
         counts = counts # counts[tsep]
         values = values.transpose() # values[expr_idx, tsep]
         return counts, values
-    counts_list, values_list = zip(*parallel_map(0, feval, xg_psel_list))
+    counts_list, values_list = zip(*q.parallel_map(q.get_n_processes(), feval, xg_psel_list))
     res_count = q.glb_sum(sum(counts_list))
     res_sum = q.glb_sum(sum(values_list))
     res_avg = res_sum * (vol / res_count)
@@ -230,7 +209,7 @@ def auto_contractor_hvp_field(job_tag, traj, get_prop, get_psel, get_fsel):
                     }
             res = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop, is_only_total = "total")
             return res
-        values_list = parallel_map(0, feval, xg_fsel_list)
+        values_list = q.parallel_map(q.get_n_processes(), feval, xg_fsel_list)
         assert len(values_list) == fsel.n_elems()
         values = q.SelectedField("Complex", fsel, len(expr_names))
         for idx, v in enumerate(values_list):
@@ -316,7 +295,7 @@ def auto_contractor_meson_v_v_meson_field(job_tag, traj, get_prop, get_psel, get
                     }
             res = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop, is_only_total = "total")
             return res
-        values_list = parallel_map(0, feval, xg_fsel_list)
+        values_list = q.parallel_map(q.get_n_processes(), feval, xg_fsel_list)
         assert len(values_list) == fsel.n_elems()
         values = q.SelectedField("Complex", fsel, len(expr_names))
         for idx, v in enumerate(values_list):
@@ -343,7 +322,7 @@ def auto_contractor_meson_v_v_meson_field(job_tag, traj, get_prop, get_psel, get
                     }
             res = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop, is_only_total = "total")
             return res
-        values_list = parallel_map(0, feval, xg_fsel_list)
+        values_list = q.parallel_map(q.get_n_processes(), feval, xg_fsel_list)
         assert len(values_list) == fsel.n_elems()
         values = q.SelectedField("Complex", fsel, len(expr_names))
         for idx, v in enumerate(values_list):
@@ -411,7 +390,7 @@ def auto_contractor_meson_corr(job_tag, traj, get_prop, get_psel, get_fsel):
         values = values.transpose() # res[expr_name, t_sep]
         return counts, values
     t_snk_list = get_mpi_chunk(list(range(total_site[3])))
-    counts_list, values_list = zip(fempty(), *parallel_map(0, feval, t_snk_list))
+    counts_list, values_list = zip(fempty(), *q.parallel_map(q.get_n_processes(), feval, t_snk_list))
     res_count = q.glb_sum(sum(counts_list))
     res_sum = q.glb_sum(sum(values_list))
     res_count *= 1.0 / total_site[3]
@@ -449,7 +428,7 @@ def auto_contractor_meson_corr_psnk(job_tag, traj, get_prop, get_psel, get_fsel)
             res[t] += eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop, is_only_total = "total")
         res = res.transpose() # res[expr_name, t_sep]
         return 1.0, res
-    counts_list, values_list = zip(*parallel_map(0, feval, xg_fsel_list))
+    counts_list, values_list = zip(*q.parallel_map(q.get_n_processes(), feval, xg_fsel_list))
     res_count = q.glb_sum(sum(counts_list))
     res_sum = q.glb_sum(sum(values_list))
     res_count *= 1.0 / (total_volume * fsel.prob())
@@ -495,7 +474,7 @@ def auto_contractor_meson_corr_psrc(job_tag, traj, get_prop, get_psel, get_fsel)
         values = values.transpose() # values[expr_name, t_sep]
         return counts, values
     xg_src_list = get_mpi_chunk(xg_psel_list, rng_state = q.RngState("get_mpi_chunk"))
-    counts_list, values_list = zip(fempty(), *parallel_map(0, feval, xg_src_list))
+    counts_list, values_list = zip(fempty(), *q.parallel_map(q.get_n_processes(), feval, xg_src_list))
     res_count = q.glb_sum(sum(counts_list))
     res_sum = q.glb_sum(sum(values_list))
     res_count *= 1.0 / len(xg_psel_list)
@@ -537,7 +516,7 @@ def auto_contractor_meson_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_
             values[t] += eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop, is_only_total = "total")
         values = values.transpose() # values[expr_name, t_sep]
         return counts, values
-    counts_list, values_list = zip(*parallel_map(0, feval, xg_psel_list))
+    counts_list, values_list = zip(*q.parallel_map(q.get_n_processes(), feval, xg_psel_list))
     res_count = q.glb_sum(sum(counts_list))
     res_sum = q.glb_sum(sum(values_list))
     res_count *= 1.0 / (len(xg_psel_list) * total_volume * fsel.prob() / total_site[3])
@@ -598,7 +577,7 @@ def auto_contractor_meson_m(job_tag, traj, get_prop, get_psel, get_fsel):
                 }
         values = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop, is_only_total = "total")
         return 1.0, values
-    counts_list, values_list = zip(*parallel_map(0, feval, xg_fsel_list))
+    counts_list, values_list = zip(*q.parallel_map(q.get_n_processes(), feval, xg_fsel_list))
     res_count = q.glb_sum(sum(counts_list))
     res_sum = q.glb_sum(sum(values_list))
     res_count *= 1.0 / (total_volume * fsel.prob())
@@ -767,7 +746,7 @@ def auto_contractor_meson_jj(job_tag, traj, get_prop, get_psel, get_fsel):
             res_arr = res.reshape((n_tensor, 4, 4))
             accumulate_meson_jj(counts, values, res_arr, x_rel, total_site)
         return counts, values
-    counts_list, values_list = zip(*parallel_map(0, feval, xg_psel_list))
+    counts_list, values_list = zip(*q.parallel_map(q.get_n_processes(), feval, xg_psel_list))
     res_count = q.glb_sum(sum(counts_list))
     res_sum = q.glb_sum(sum(values_list))
     res_count *= 1.0 / (len(xg_psel_list) * fsel.prob())
