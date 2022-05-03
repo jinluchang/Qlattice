@@ -1,10 +1,8 @@
 #include <sys/sysinfo.h>
 #include "io_vec.h"
 #include "general_funs.h"
-#include "utils_smear_src.h"
+#include "utils_smear_vecs.h"
 #include "check_fun.h"
-////#include "utils_low_rho.h"
-#include "utils_smear_src_each.h"
 
 int main(int argc, char* argv[])
 {

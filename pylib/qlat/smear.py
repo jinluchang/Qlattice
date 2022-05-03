@@ -15,7 +15,7 @@ def gf_hyp_smear(gf : GaugeField, alpha1 : float, alpha2 : float, alpha3 : float
     # 10.1103/PhysRevD.64.034504 Eq(4)
     return c.gf_hyp_smear(gf, gf, alpha1, alpha2, alpha3)
 
-def prop_smear(prop : Prop, gf1 : GaugeField, coef : float, step : int, mom = None, smear_in_time_dir : bool = False):
+def prop_smear(prop : Prop, gf1 : GaugeField, coef : float, step : int, mom = None, smear_in_time_dir : bool = False, mode_smear : int = 0):
     # gf_ape = gf_spatial_ape_smear(gf, 0.5, 30)
     # gf1 = mk_left_expanded_gauge_field(gf_ape)
     # mom: momentum smearing in lattice unit 1/a (not unit of lattice momentum 2 pi / L / a)
@@ -25,4 +25,4 @@ def prop_smear(prop : Prop, gf1 : GaugeField, coef : float, step : int, mom = No
     # mom = 0.5 * mom of the corresponding hadron
     if mom is None:
         mom = [ 0.0, 0.0, 0.0, 0.0, ]
-    return c.prop_smear(prop, gf1, coef, step, mom, smear_in_time_dir)
+    return c.prop_smear(prop, gf1, coef, step, mom, smear_in_time_dir, mode_smear)

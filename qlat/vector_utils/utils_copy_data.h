@@ -30,12 +30,12 @@ __global__ void cpy_data_from_index_global(T* Pres, T* Psrc, const TInt* map_res
 
 //////Faster when T* is GPU memory without unified
 template <typename T, typename TInt, typename TI0, typename TI1>
-void cpy_data_from_index(T* Pres, T* Psrc, const TInt* map_res, const TInt* map_src, const TI0 Nvol, const TI1 bfac, int cpu=0, bool dummy=true)
+void cpy_data_from_index(T* Pres, T* Psrc, const TInt* map_res, const TInt* map_src, const TI0 Nvol, const TI1 bfac, int GPU=1, bool dummy=true)
 {
   TIMERB("copy data form index");
 
   #ifdef QLAT_USE_ACC
-  if(cpu == 0){
+  if(GPU == 1){
   long Mend = (bfac*sizeof(T));
   qassert(Mend%sizeof(float) == 0);
   long nt = 32;if(Mend < 12){nt = 12;}
@@ -60,7 +60,7 @@ void cpy_data_from_index(T* Pres, T* Psrc, const TInt* map_res, const TInt* map_
 
 
 template <typename T>
-void cpy_data_from_index(qlat::vector<T >& res, qlat::vector<T >& src, const qlat::vector<long >& map_res, const qlat::vector<long >& map_src, const long bfac, int cpu=0, bool dummy=true)
+void cpy_data_from_index(qlat::vector<T >& res, qlat::vector<T >& src, const qlat::vector<long >& map_res, const qlat::vector<long >& map_src, const long bfac, int GPU=1, bool dummy=true)
 {
   //qassert(map_res.size() ==     src.size());
   //qassert(map_res.size() ==     res.size());
@@ -70,7 +70,7 @@ void cpy_data_from_index(qlat::vector<T >& res, qlat::vector<T >& src, const qla
   T* s0 = (T*) qlat::get_data(src).data();
   long* m1 = (long*) qlat::get_data(map_res).data();
   long* m0 = (long*) qlat::get_data(map_src).data();
-  cpy_data_from_index(s1, s0, m1, m1, res.size(), bfac, cpu, dummy);
+  cpy_data_from_index(s1, s0, m1, m1, res.size(), bfac, GPU, dummy);
 }
 
 #ifdef QLAT_USE_ACC
@@ -136,6 +136,7 @@ void CPY_data_thread_basic(T0* Pres, const T1* Psrc, const TInt Nvol, int GPU=1,
 template <typename T0, typename T1,  typename TInt>
 void cpy_data_thread(T0* Pres, const T1* Psrc, const TInt Nvol, int GPU=1, bool dummy=true, const double ADD = 0)
 {
+  if((void*) Pres == (void*) Psrc){return ;}////return if points are the same
   TIMERA("cpy_data_thread");
   ////if(Pres == Psrc){return ;}
   ////0--> host to host, 1 device to device

@@ -1,4 +1,5 @@
 #include "lib.h"
+#include <qlat/vector_utils/utils_smear_vecs.h>
 
 EXPORT(gf_ape_smear, {
   using namespace qlat;
@@ -63,17 +64,22 @@ EXPORT(prop_smear, {
   // mom ratio = 0.5
   double coef = 0;
   int step = 0;
+  int mode_smear = 0;
   // momentum in lattice unit 1/a (not unit of lattice momentum 2 pi / L / a)
   PyObject* p_mom = NULL;
   bool smear_in_time_dir = false;
-  if (!PyArg_ParseTuple(args, "OOdi|Ob", &p_prop, &p_gf1, &coef, &step, &p_mom,
-                        &smear_in_time_dir)) {
+  if (!PyArg_ParseTuple(args, "OOdi|Obi", &p_prop, &p_gf1, &coef, &step, &p_mom,
+                        &smear_in_time_dir, &mode_smear)) {
     return NULL;
   }
   Propagator4d& prop = py_convert_type<Propagator4d>(p_prop);
   const GaugeField& gf1 = py_convert_type<GaugeField>(p_gf1);
   const CoordinateD mom =
       NULL == p_mom ? CoordinateD() : py_convert_data<CoordinateD>(p_mom);
-  smear_propagator(prop, gf1, coef, step, mom, smear_in_time_dir);
+  if(mode_smear == 0){
+    smear_propagator(prop, gf1, coef, step, mom, smear_in_time_dir);}
+  if(mode_smear >= 1){
+    smear_propagator_qlat_convension(prop, gf1, coef, step, mom, smear_in_time_dir, mode_smear);
+  }
   Py_RETURN_NONE;
 });

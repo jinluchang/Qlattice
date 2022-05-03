@@ -12,14 +12,17 @@ __global__ void eigen_test(Cy* va, Cy* vb, Cy* vc, const long m)
 {
   unsigned long index =  threadIdx.y*blockDim.x + threadIdx.x;
   if(index < m){
-    Cy buf[9];
-    for(int ci=0;ci<9;ci++){buf[ci] = va[index*9 +  ci];}
-    Eigen::Matrix<Cy, 3   , 3, Et>&   lE = *((Eigen::Matrix<Cy, 3   , 3, Et>*) buf);
+    //Cy buf[9];
+    //for(int ci=0;ci<9;ci++){buf[ci] = va[index*9 +  ci];}
+    //Eigen::Matrix<Cy, 3   , 3, Et>&   lE = *((Eigen::Matrix<Cy, 3   , 3, Et>*) &va[index*9 + 0]);
+    Eigen::Map< const Eigen::Matrix<Cy, 3   , 3, Et>> lE(&va[index*9 + 0]);
 
     Cy* bP = &vb[index*3*D];
-    Eigen::Matrix<Cy, D, 3, Et>&     bE = *((Eigen::Matrix<Cy, D, 3, Et>*) bP);
+    //Eigen::Matrix<Cy, D, 3, Et>&     bE = *((Eigen::Matrix<Cy, D, 3, Et>*) bP);
+    Eigen::Map< const Eigen::Matrix<Cy, D   , 3, Et>> bE(bP);
     Cy* cP = &vc[index*3*D];
-    Eigen::Matrix<Cy, D, 3, Et>&     cE = *((Eigen::Matrix<Cy, D, 3, Et>*) cP);
+    //Eigen::Matrix<Cy, D, 3, Et>&     cE = *((Eigen::Matrix<Cy, D, 3, Et>*) cP);
+    Eigen::Map< Eigen::Matrix<Cy, D   , 3, Et>> cE(cP);
 
     ////bE = bE * lE; 
     cE = bE * lE;
@@ -118,9 +121,9 @@ int main(int argc, char* argv[])
   //cudaMemcpy(vb, vbH, MAX*3*D*sizeof(Cy), cudaMemcpyHostToDevice);
 
   qacc_for(index, MAX, {
-    Cy buf[9];
-    for(int ci=0;ci<9;ci++){buf[ci] = va[index*9 +  ci];}
-    Eigen::Matrix<Cy, 3   , 3, Et>&   lE = *((Eigen::Matrix<Cy, 3   , 3, Et>*) buf);
+    //Cy buf[9];
+    //for(int ci=0;ci<9;ci++){buf[ci] = va[index*9 +  ci];}
+    Eigen::Matrix<Cy, 3   , 3, Et>&   lE = *((Eigen::Matrix<Cy, 3   , 3, Et>*) &va[index*9 + 0]);
 
     Cy* bP = &vb[index*3*D];
     Eigen::Matrix<Cy, D, 3, Et>&     bE = *((Eigen::Matrix<Cy, D, 3, Et>*) bP);
@@ -134,9 +137,9 @@ int main(int argc, char* argv[])
 
   for(long index=0;index<MAX;index++ )
   {
-    Cy buf[9];
-    for(int ci=0;ci<9;ci++){buf[ci] = vaH[index*9 +  ci];}
-    Eigen::Matrix<Cy, 3   , 3, Et>&   lE = *((Eigen::Matrix<Cy, 3   , 3, Et>*) buf);
+    //Cy buf[9];
+    //for(int ci=0;ci<9;ci++){buf[ci] = vaH[index*9 +  ci];}
+    Eigen::Matrix<Cy, 3   , 3, Et>&   lE = *((Eigen::Matrix<Cy, 3   , 3, Et>*) &vaH[index*9 + 0]);
 
     Cy* bP = &vcH[index*3*D];
     Eigen::Matrix<Cy, D, 3, Et>&     bE = *((Eigen::Matrix<Cy, D, 3, Et>*) bP);

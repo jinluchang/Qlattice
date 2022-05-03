@@ -122,6 +122,7 @@ struct quda_inverter {
   double inv_time;
   int    inv_iter;
   double inv_gflops;
+  int add_high;
 
   ///std::vector<std::vector<quda::Complex > > evecs;
 
@@ -164,6 +165,7 @@ struct quda_inverter {
   quda::ColorSpinorField *ctmp0, *ctmp1, *ctmp2;
   quda::ColorSpinorField *gtmp0, *gtmp1, *gtmp2;
   //quda::ColorSpinorField *gsrcF, *gresF;
+  quda::ColorSpinorField *gsrcF, *gresF;
   ///bool singleE;
 
   ////0 for wilson, clover, 1 for stagger
@@ -217,6 +219,9 @@ quda_inverter::quda_inverter(const Geometry& geo, QudaTboundary t_boundary)
   inv_param   = newQudaInvertParam();
 
   for (int mu = 0; mu < 4; mu++) {gauge_param.X[mu] = geo.node_site[mu];X[mu] = geo.node_site[mu];}
+
+  ////tuning flag for not high mode
+  add_high = 1;
 
   gauge_param.type = QUDA_WILSON_LINKS; //// or QUDA_SU3_LINKS
   // Slowest changing to fastest changing: even-odd, mu, x_cb_4d, row, column,
@@ -283,6 +288,7 @@ quda_inverter::quda_inverter(const Geometry& geo, QudaTboundary t_boundary)
   clover_alloc = false;
   csrc = NULL; cres = NULL;
   gsrc = NULL; gres = NULL;
+  gsrcF= NULL; gresF= NULL;
 
   ctmp0 = NULL; ctmp1 = NULL; ctmp2 = NULL;
   gtmp0 = NULL; gtmp1 = NULL; gtmp2 = NULL;
@@ -350,7 +356,7 @@ void quda_inverter::free_csfield()
 {
   if(csrc  != NULL){delete csrc;csrc=NULL;}if(cres != NULL){delete cres;cres=NULL;}
   if(gsrc  != NULL){delete gsrc ;gsrc =NULL;}if(gres != NULL){delete gres ;gres =NULL;}
-  //if(gsrcF != NULL){delete gsrcF;gsrcF=NULL;}if(gresF!= NULL){delete gresF;gresF=NULL;}
+  if(gsrcF != NULL){delete gsrcF;gsrcF=NULL;}if(gresF!= NULL){delete gresF;gresF=NULL;}
   if(ctmp0 != NULL){delete ctmp0;ctmp0=NULL;}
   if(ctmp1 != NULL){delete ctmp1;ctmp1=NULL;}
   if(ctmp2 != NULL){delete ctmp2;ctmp2=NULL;}
@@ -436,6 +442,10 @@ void quda_inverter::alloc_csfield()
   cs_gpuD= quda::ColorSpinorParam(gpuParam_tem);
   cs_gpuD.create = QUDA_ZERO_FIELD_CREATE;
   cs_gpuD.setPrecision(QUDA_DOUBLE_PRECISION, QUDA_DOUBLE_PRECISION, true);
+
+  quda::ColorSpinorParam cs_gpu_tem = cs_gpu;
+  cs_gpu_tem.setPrecision(QUDA_SINGLE_PRECISION, QUDA_SINGLE_PRECISION, true);
+  gsrcF = quda::ColorSpinorField::Create(cs_gpu_tem);
 
 }
 
@@ -1672,6 +1682,9 @@ void quda_inverter::do_inv(void* res, void* src, const double mass, const double
         //if(kSpace.size()!=0){eig_solveK->deflate(*sol0 , *src, kSpace, evalsK, false );}
         //if(fSpace.size()!=0){eig_solveF->deflate(*sol0 , *src, fSpace, evalsF, true  );}
 
+        /////preconditioning to single and back to double to match AMA prec
+        if(add_high == 0){*gsrcF = *gres;*gres = *gsrcF;}
+
       }
       *cres = *gres;
 
@@ -1688,7 +1701,7 @@ void quda_inverter::do_inv(void* res, void* src, const double mass, const double
     if(fermion_type == 0){invertQuda((void*)(cres->Even()).V(), (void*)(csrc->Even()).V(), &inv_param);}
     if(fermion_type == 1){
       inv_param.solution_type = QUDA_MATPC_SOLUTION;
-      invertQuda((void*)(cres->Even()).V(), (void*)(cres->Odd()).V(), &inv_param);
+      if(add_high == 1){invertQuda((void*)(cres->Even()).V(), (void*)(cres->Odd()).V(), &inv_param);}
       //invertQuda((void*)(cres->Even()).V(), (void*)(csrc->Even()).V(), &inv_param);
       *gres = *cres;
       dirac_pc->reconstruct((*gres), (*gsrc), QUDA_MAT_SOLUTION);

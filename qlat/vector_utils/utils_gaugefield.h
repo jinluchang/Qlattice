@@ -14,8 +14,6 @@
 namespace qlat
 {
 
-#define Ecm Eigen::Matrix<T, 3, 3, Eigen::RowMajor>
-
 template <class T>
 void set_rand_link(GaugeFieldT<T> &gf, const int seed = -1)
 {

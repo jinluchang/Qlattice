@@ -497,7 +497,7 @@ struct move_index
 {
   //bool GPU;
 
-  vector_gpu<char > buf;
+  qlat::vector_gpu<char > buf;
   ////size_t buf_size;
   //qlat::vector<char* > pciv;
 
@@ -598,7 +598,6 @@ struct move_index
     }
 
   }
-
 
   }
 
@@ -852,30 +851,6 @@ inline void zeroE(EigenM& a,int GPU=0, bool dummy=true)
 }
 
 template <class T>
-void random_link(GaugeFieldT<T >& g, int seed = -1)
-{
-  timeval tm;gettimeofday(&tm, NULL);
-  int use_seed = 0;
-  if(seed == -1){use_seed= int(tm.tv_sec);}else{use_seed = seed;}
-  qlat::RngState rs(qlat::get_id_node() + 1 + use_seed);
-  double ini = qlat::u_rand_gen(rs);
-
-  int dir_limit = 4;
-  const Geometry& geo = g.geo();
-
-  qacc_for(isp,  geo.local_volume(),{
-    for (int dir = 0; dir < dir_limit; ++dir) {
-      const Coordinate xl = geo.coordinate_from_index(isp);
-      ColorMatrixT<T >& link = g.get_elem(xl, dir);
-      for(int ci=0; ci<9; ci++){
-        link.p[ci] = T(std::cos((ini+isp)*0.5) , ((5.0+ci)/(isp+1))*ini*0.1);;
-      } 
-    }   
-  }); 
-
-}
-
-template <class T>
 void random_prop(Propagator4dT<T >& prop, int seed = -1)
 {
   
@@ -896,6 +871,31 @@ void random_prop(Propagator4dT<T >& prop, int seed = -1)
     }
   }); 
 }
+
+template <class T>
+void random_link(GaugeFieldT<T> &gf, const int seed = -1)
+{
+  if(seed == -1)
+  {
+    qacc_for(isp, gf.field.size(), { set_unit(gf.get_elem(isp), 1.0);});
+  }else{
+    //T* res = (T*) gf.get_elem(0).p;
+    const Geometry& geo = gf.geo();
+    T* res = (T*) qlat::get_data(gf).data();
+    random_Ty(res, geo.local_volume()*geo.multiplicity*sizeof(ColorMatrixT<T>)/sizeof(T), 1, seed);
+
+    //qacc_for(isp, gf.field.size(), { set_unit(gf.get_elem(isp), 1.0);});
+    ColorMatrixT<T> unit;set_unit(unit, 1.0);
+    /////TODO This function cannot be done on GPU
+    /////Eigen normalize/normalized problem
+    for(long isp=0;isp<gf.field.size();isp++)
+    {
+      gf.get_elem(isp) = gf.get_elem(isp) * (1/2.0) + unit;
+      unitarize(gf.get_elem(isp));
+    }
+  }
+}
+
 
 inline size_t get_threads(size_t thread, size_t Total, int def=1)
 {
@@ -961,14 +961,14 @@ inline Coordinate spread_even(const int n, const Coordinate& Lat, const std::vec
   for(LInt i=0;i<Mpow.size();i++){
     int fac = a[i];
     int num = Mpow[i];
-    if(num != 0){
+    if(Mpow[i] != 0){
       int suma = Lpow[0][i] + Lpow[1][i] + Lpow[2][i] + Lpow[3][i] ;
-      assert(num <= suma);
+      assert(int(Mpow[i]) <= suma);
 
       for(int j=0;j<4;j++){nL[j] = Lpow[j][i];}
       //std::vector<int>::iterator result = std::max_element(nL.begin(), nL.end());
       //int pos_max = std::distance(nL.begin(), result);
-      for(int ni = 0; ni< num+1 ;ni++)
+      for(unsigned int ni = 0; ni< Mpow[i] + 1 ;ni++)
       {
         for(int j=3;j>=0;j--)
         {
@@ -1123,7 +1123,6 @@ inline void begin_Lat(int* argc, char** argv[], inputpara& in, int read_Lat = 0)
 
   fflush_MPI();
   print_mem_info();
-
 
 }
 
