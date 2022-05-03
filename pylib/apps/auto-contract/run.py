@@ -54,7 +54,7 @@ def get_cexpr_vev():
 
 @q.timer_verbose
 def auto_contractor_vev(job_tag, traj, get_prop, get_psel, get_fsel):
-    fn = f"auto-contractor-fsel/{job_tag}/traj={traj}/vev.lat"
+    fn = f"auto-contract/{job_tag}/traj={traj}/vev.lat"
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_vev()
@@ -97,7 +97,7 @@ def get_cexpr_meson_f_corr():
 
 @q.timer_verbose
 def auto_contractor_meson_f_corr(job_tag, traj, get_prop, get_psel, get_fsel):
-    fn = f"auto-contractor-fsel/{job_tag}/traj={traj}/meson_f_corr.lat"
+    fn = f"auto-contract/{job_tag}/traj={traj}/meson_f_corr.lat"
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_meson_f_corr()
@@ -148,7 +148,7 @@ def get_cexpr_hvp():
 
 @q.timer_verbose
 def auto_contractor_hvp(job_tag, traj, get_prop, get_psel, get_fsel):
-    fn = f"auto-contractor-fsel/{job_tag}/traj={traj}/hvp.lat"
+    fn = f"auto-contract/{job_tag}/traj={traj}/hvp.lat"
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_hvp()
@@ -188,7 +188,7 @@ def auto_contractor_hvp(job_tag, traj, get_prop, get_psel, get_fsel):
 
 @q.timer_verbose
 def auto_contractor_hvp_field(job_tag, traj, get_prop, get_psel, get_fsel):
-    fn = f"auto-contractor-fsel/{job_tag}/traj={traj}/hvp.field"
+    fn = f"auto-contract/{job_tag}/traj={traj}/hvp.field"
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_hvp()
@@ -264,7 +264,7 @@ def get_cexpr_meson_v_v_meson():
 
 @q.timer_verbose
 def auto_contractor_meson_v_v_meson_field(job_tag, traj, get_prop, get_psel, get_fsel):
-    fn = f"auto-contractor-fsel/{job_tag}/traj={traj}/meson_v_v_meson.field"
+    fn = f"auto-contract/{job_tag}/traj={traj}/meson_v_v_meson.field"
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_meson_v_v_meson()
@@ -362,7 +362,7 @@ def get_cexpr_meson_corr():
 
 @q.timer_verbose
 def auto_contractor_meson_corr(job_tag, traj, get_prop, get_psel, get_fsel):
-    fn = f"auto-contractor-fsel/{job_tag}/traj={traj}/meson_corr.lat"
+    fn = f"auto-contract/{job_tag}/traj={traj}/meson_corr.lat"
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_meson_corr()
@@ -406,7 +406,7 @@ def auto_contractor_meson_corr(job_tag, traj, get_prop, get_psel, get_fsel):
 
 @q.timer_verbose
 def auto_contractor_meson_corr_psnk(job_tag, traj, get_prop, get_psel, get_fsel):
-    fn = f"auto-contractor-fsel/{job_tag}/traj={traj}/meson_corr_psnk.lat"
+    fn = f"auto-contract/{job_tag}/traj={traj}/meson_corr_psnk.lat"
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_meson_corr()
@@ -444,7 +444,7 @@ def auto_contractor_meson_corr_psnk(job_tag, traj, get_prop, get_psel, get_fsel)
 
 @q.timer_verbose
 def auto_contractor_meson_corr_psrc(job_tag, traj, get_prop, get_psel, get_fsel):
-    fn = f"auto-contractor-fsel/{job_tag}/traj={traj}/meson_corr_psrc.lat"
+    fn = f"auto-contract/{job_tag}/traj={traj}/meson_corr_psrc.lat"
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_meson_corr()
@@ -490,7 +490,7 @@ def auto_contractor_meson_corr_psrc(job_tag, traj, get_prop, get_psel, get_fsel)
 
 @q.timer_verbose
 def auto_contractor_meson_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_fsel):
-    fn = f"auto-contractor-fsel/{job_tag}/traj={traj}/meson_corr_psnk_psrc.lat"
+    fn = f"auto-contract/{job_tag}/traj={traj}/meson_corr_psnk_psrc.lat"
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_meson_corr()
@@ -552,7 +552,7 @@ def get_cexpr_meson_m():
 
 @q.timer_verbose
 def auto_contractor_meson_m(job_tag, traj, get_prop, get_psel, get_fsel):
-    fn = f"auto-contractor-fsel/{job_tag}/traj={traj}/meson_m.lat"
+    fn = f"auto-contract/{job_tag}/traj={traj}/meson_m.lat"
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_meson_m()
@@ -705,8 +705,8 @@ def get_cexpr_meson_jj():
 
 @q.timer_verbose
 def auto_contractor_meson_jj(job_tag, traj, get_prop, get_psel, get_fsel):
-    fn = f"auto-contractor-fsel/{job_tag}/traj={traj}/meson_jj.lat"
-    fn_counts = f"auto-contractor-fsel/{job_tag}/traj={traj}/meson_jj_counts.lat"
+    fn = f"auto-contract/{job_tag}/traj={traj}/meson_jj.lat"
+    fn_counts = f"auto-contract/{job_tag}/traj={traj}/meson_jj_counts.lat"
     if (get_load_path(fn_counts) is not None) and (get_load_path(fn) is not None):
         return
     cexpr = get_cexpr_meson_jj()
@@ -773,7 +773,7 @@ def auto_contractor_meson_jj(job_tag, traj, get_prop, get_psel, get_fsel):
 @q.timer_verbose
 def run_job(job_tag, traj):
     fns_produce = [
-            f"auto-contractor-fsel/{job_tag}/traj={traj}/checkpoint.txt",
+            f"auto-contract/{job_tag}/traj={traj}/checkpoint.txt",
             ]
     fns_need = [
             # (f"configs/{job_tag}/ckpoint_lat.{traj}", f"configs/{job_tag}/ckpoint_lat.IEEE64BIG.{traj}",),
@@ -820,9 +820,9 @@ def run_job(job_tag, traj):
             get_wi = get_wi,
             )
     #
-    fn_checkpoint = f"auto-contractor-fsel/{job_tag}/traj={traj}/checkpoint.txt"
+    fn_checkpoint = f"auto-contract/{job_tag}/traj={traj}/checkpoint.txt"
     if get_load_path(fn_checkpoint) is None:
-        if q.obtain_lock(f"locks/{job_tag}-{traj}-auto-contractor"):
+        if q.obtain_lock(f"locks/{job_tag}-{traj}-auto-contract"):
             get_prop = get_get_prop()
             # ADJUST ME
             # auto_contractor_vev(job_tag, traj, get_prop, get_psel, get_fsel)
