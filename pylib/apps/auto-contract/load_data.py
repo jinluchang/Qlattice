@@ -377,12 +377,9 @@ def load_prop_psrc_psel(job_tag, traj, flavor, *, psel, fsel, fselc):
         xg_str = f"({xg[0]},{xg[1]},{xg[2]},{xg[3]})"
         tag = f"xg={xg_str} ; type={inv_type} ; accuracy={inv_acc}"
         fn_sp = os.path.join(path_sp, f"{tag}.lat")
-        fn_spw = os.path.join(path_sp, f"{tag} ; wsnk.lat")
         fn_sp_load = get_load_path(fn_sp)
-        fn_spw_load = get_load_path(fn_spw)
         if fn_sp_load is None:
             continue
-        assert fn_spw_load is not None
         q.displayln_info(0, f"load_prop_psrc_psel: idx={idx} ; {tag} ; path_sp={path_sp}")
         idx += 1
         # load psel psnk prop
@@ -391,10 +388,13 @@ def load_prop_psrc_psel(job_tag, traj, flavor, *, psel, fsel, fselc):
         # convert to GPT/Grid prop mspincolor order
         cache_psel[f"{tag} ; psrc ; psel"] = q.convert_mspincolor_from_wm(sp_prop)
         # load wsnk prop
-        spw_prop = q.PselProp(psel_ts)
-        spw_prop.load(fn_spw_load)
-        # convert to GPT/Grid prop mspincolor order
-        cache_psel_ts[f"{tag} ; psrc_wsnk ; psel_ts"] = q.convert_mspincolor_from_wm(spw_prop)
+        fn_spw = os.path.join(path_sp, f"{tag} ; wsnk.lat")
+        fn_spw_load = get_load_path(fn_spw)
+        if fn_spw_load is not None:
+            spw_prop = q.PselProp(psel_ts)
+            spw_prop.load(fn_spw_load)
+            # convert to GPT/Grid prop mspincolor order
+            cache_psel_ts[f"{tag} ; psrc_wsnk ; psel_ts"] = q.convert_mspincolor_from_wm(spw_prop)
         count[inv_acc] += 1
     cache_prob[f"type={flavor_inv_type} ; accuracy=0 ; psrc ; prob"] = count[0] / len(xg_list)
     cache_prob[f"type={flavor_inv_type} ; accuracy=1 ; psrc ; prob"] = rup.dict_params[job_tag]["prob_acc_1_psrc"]
