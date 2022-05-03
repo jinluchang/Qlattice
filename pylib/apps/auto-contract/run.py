@@ -12,6 +12,8 @@ from jobs import *
 from load_data import *
 from params import *
 
+# ----
+
 load_path_list[:] = [
         "results",
         "../qcddata",
@@ -24,6 +26,8 @@ load_path_list[:] = [
         os.path.join(os.getenv("HOME"), "Qlat-sample-data/default/mk-psrc-prop/results"),
         # os.path.join(os.getenv("HOME"), "Qlat-sample-data/default/mk-smear-prop/results"),
         ]
+
+# ----
 
 def rel_mod(x, size):
     x = (x + 2 * size) % size
