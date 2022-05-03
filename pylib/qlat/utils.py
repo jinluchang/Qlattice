@@ -22,7 +22,7 @@ def parallel_map(q_mp_proc, func, iterable):
     global pool_function
     pool_function = func
     with mp.Pool(q_mp_proc) as p:
-        res = p.map(call_pool_function, iterable)
+        res = p.map(call_pool_function, iterable, chunksize = 1)
     pool_function = None
     return res
 
