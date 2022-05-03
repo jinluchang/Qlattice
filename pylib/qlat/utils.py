@@ -4,7 +4,31 @@ from qlat.field import *
 from qlat.lat_io import *
 from qlat.rng_state import *
 from qlat.coordinate import *
+
 import numpy as np
+import multiprocessing as mp
+
+pool_function = None
+
+def call_pool_function(*args, **kwargs):
+    assert pool_function is not None
+    return pool_function(*args, **kwargs)
+
+def parallel_map(n_processes, func, iterable):
+    if n_processes == 0:
+        return list(map(func, iterable))
+    global pool_function
+    pool_function = func
+    with mp.Pool(n_processes) as p:
+        res = p.map(call_pool_function, iterable)
+    pool_function = None
+    return res
+
+def get_n_processes():
+    v = os.getenv("q_mp_proc")
+    if v is None:
+        return 0
+    return int(v)
 
 def lazy_call(f, *args, **kwargs):
     is_thunk = True

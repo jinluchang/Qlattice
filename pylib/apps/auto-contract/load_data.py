@@ -257,7 +257,52 @@ def get_prop_snk_src(prop_cache, flavor, p_snk, p_src, *, psel_pos_dict, fsel_po
 ### -------
 
 @q.timer
-def load_prop_wsrc_all(job_tag, traj, flavor, *, wi, psel, fsel, fselc, gt):
+def load_prop_wsrc_psel(job_tag, traj, flavor, *, wi, psel, fsel, fselc, gt):
+    # cache_psel[f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc} ; wsrc ; psel"]
+    # cache_psel_ts[f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc} ; wsrc_wsnk ; psel_ts"]
+    # cache_prob[f"type={inv_type} ; accuracy={inv_acc} ; wsrc ; prob"]
+    cache_psel = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}", f"psel")
+    cache_psel_ts = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}", f"psel_ts")
+    cache_prob = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}", f"prob")
+    total_site = ru.get_total_site(job_tag)
+    psel_ts = q.get_psel_tslice(total_site)
+    if flavor in [ "l", "u", "d", ]:
+        flavor_inv_type = 0
+        flavor_tag = "light"
+    elif flavor in [ "s", ]:
+        flavor_inv_type = 1
+        flavor_tag = "strange"
+    else:
+        assert False
+    path_sp = f"psel-prop-wsrc-{flavor_tag}/{job_tag}/traj={traj}"
+    gt_inv = gt.inv()
+    count = { 1: 0, 2: 0, }
+    for idx, tslice, inv_type, inv_acc in wi:
+        if inv_type != flavor_inv_type:
+            continue
+        q.displayln_info(0, f"load_prop_wsrc_psel: idx={idx} tslice={tslice} inv_type={inv_type} path_sp={path_sp}")
+        tag = f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc}"
+        # load psel psnk prop
+        fn_sp = os.path.join(path_sp, f"{tag}.lat")
+        sp_prop = q.PselProp(psel)
+        sp_prop.load(get_load_path(fn_sp))
+        sp_prop = gt_inv * sp_prop
+        # convert to GPT/Grid prop mspincolor order
+        cache_psel[f"{tag} ; wsrc ; psel"] = q.convert_mspincolor_from_wm(sp_prop)
+        # load wsnk prop
+        fn_spw = os.path.join(path_sp, f"{tag} ; wsnk.lat")
+        spw_prop = q.PselProp(psel_ts)
+        spw_prop.load(get_load_path(fn_spw))
+        # convert to GPT/Grid prop mspincolor order
+        cache_psel_ts[f"{tag} ; wsrc_wsnk ; psel_ts"] = q.convert_mspincolor_from_wm(spw_prop)
+        count[inv_acc] += 1
+    assert count[1] == total_site[3]
+    cache_prob[f"type={flavor_inv_type} ; accuracy=1 ; wsrc ; prob"] = 1
+    cache_prob[f"type={flavor_inv_type} ; accuracy=2 ; wsrc ; prob"] = get_prob_exact_wsrc(job_tag)
+
+@q.timer
+def load_prop_wsrc_fsel(job_tag, traj, flavor, *, wi, psel, fsel, fselc, gt):
+    # need to load psel first
     # cache_fsel[f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc} ; wsrc ; fsel"]
     # cache_psel[f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc} ; wsrc ; psel"]
     # cache_psel_ts[f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc} ; wsrc_wsnk ; psel_ts"]
@@ -278,47 +323,86 @@ def load_prop_wsrc_all(job_tag, traj, flavor, *, wi, psel, fsel, fselc, gt):
         assert False
     path_s = f"prop-wsrc-{flavor_tag}/{job_tag}/traj={traj}/geon-info.txt"
     sfr = q.open_fields(get_load_path(path_s), "r")
-    path_sp = f"psel-prop-wsrc-{flavor_tag}/{job_tag}/traj={traj}"
     gt_inv = gt.inv()
     count = { 1: 0, 2: 0, }
     for idx, tslice, inv_type, inv_acc in wi:
         if inv_type != flavor_inv_type:
             continue
-        q.displayln_info(0, f"load_prop_wsrc_all: idx={idx} tslice={tslice} inv_type={inv_type} path_sp={path_sp}")
+        q.displayln_info(0, f"load_prop_wsrc_fsel: idx={idx} tslice={tslice} inv_type={inv_type} path_s={path_s}")
         tag = f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc}"
         # load fsel psnk prop
         sc_prop = q.SelProp(fselc)
         sc_prop.load_double_from_float(sfr, tag)
         sc_prop = gt_inv * sc_prop
-        s_prop = q.SelProp(fsel)
-        s_prop @= sc_prop
         # convert to GPT/Grid prop mspincolor order
         cache_fsel[f"{tag} ; wsrc ; fsel"] = q.convert_mspincolor_from_wm(sc_prop)
-        # load psel psnk prop
-        fn_sp = os.path.join(path_sp, f"{tag}.lat")
-        sp_prop = q.PselProp(psel)
-        sp_prop.load(get_load_path(fn_sp))
-        sp_prop = gt_inv * sp_prop
+        # check psel psnk prop
         sp_prop_diff = q.PselProp(psel)
-        sp_prop_diff @= sc_prop
-        sp_prop_diff -= sp_prop
-        assert sp_prop_diff.qnorm() <= 1e-14 * sp_prop.qnorm()
-        # convert to GPT/Grid prop mspincolor order
-        cache_psel[f"{tag} ; wsrc ; psel"] = q.convert_mspincolor_from_wm(sp_prop)
-        # load wsnk prop
-        fn_spw = os.path.join(path_sp, f"{tag} ; wsnk.lat")
-        spw_prop = q.PselProp(psel_ts)
-        spw_prop.load(get_load_path(fn_spw))
-        # convert to GPT/Grid prop mspincolor order
-        cache_psel_ts[f"{tag} ; wsrc_wsnk ; psel_ts"] = q.convert_mspincolor_from_wm(spw_prop)
+        sp_prop_diff @= cache_fsel[f"{tag} ; wsrc ; fsel"]
+        sp_prop_diff -= cache_psel[f"{tag} ; wsrc ; psel"]
+        assert sp_prop_diff.qnorm() <= 1e-14 * cache_psel[f"{tag} ; wsrc ; psel"].qnorm()
+        # increase count
         count[inv_acc] += 1
     sfr.close()
     assert count[1] == total_site[3]
-    cache_prob[f"type={flavor_inv_type} ; accuracy=1 ; wsrc ; prob"] = 1
-    cache_prob[f"type={flavor_inv_type} ; accuracy=2 ; wsrc ; prob"] = get_prob_exact_wsrc(job_tag)
+    assert cache_prob[f"type={flavor_inv_type} ; accuracy=1 ; wsrc ; prob"] == 1
+    assert cache_prob[f"type={flavor_inv_type} ; accuracy=2 ; wsrc ; prob"] == get_prob_exact_wsrc(job_tag)
 
 @q.timer
-def load_prop_psrc_all(job_tag, traj, flavor, *, psel, fsel, fselc):
+def load_prop_psrc_psel(job_tag, traj, flavor, *, psel, fsel, fselc):
+    # cache_fsel[f"xg=({xg[0]},{xg[1]},{xg[2]},{xg[3]}) ; type={inv_type} ; accuracy={inv_acc} ; psrc ; fsel"]
+    # cache_psel[f"xg=({xg[0]},{xg[1]},{xg[2]},{xg[3]}) ; type={inv_type} ; accuracy={inv_acc} ; psrc ; psel"]
+    # cache_psel_ts[f"xg=({xg[0]},{xg[1]},{xg[2]},{xg[3]}) ; type={inv_type} ; accuracy={inv_acc} ; psrc_wsnk ; psel_ts"]
+    # cache_prob[f"type={inv_type} ; accuracy={inv_acc} ; psrc ; prob"]
+    cache_fsel = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}", f"fsel")
+    cache_psel = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}", f"psel")
+    cache_psel_ts = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}", f"psel_ts")
+    cache_prob = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}", f"prob")
+    total_site = ru.get_total_site(job_tag)
+    psel_ts = q.get_psel_tslice(total_site)
+    if flavor in [ "l", "u", "d", ]:
+        flavor_inv_type = 0
+        flavor_tag = "light"
+    elif flavor in [ "s", ]:
+        flavor_inv_type = 1
+        flavor_tag = "strange"
+    else:
+        assert False
+    path_sp = f"psel-prop-psrc-{flavor_tag}/{job_tag}/traj={traj}"
+    count = { 0: 0, 1: 0, 2: 0, }
+    inv_type = flavor_inv_type
+    idx = 0
+    xg_list = psel.to_list()
+    for xg, inv_acc in [ (xg, inv_acc) for xg in xg_list for inv_acc in (0, 1, 2,) ]:
+        xg_str = f"({xg[0]},{xg[1]},{xg[2]},{xg[3]})"
+        tag = f"xg={xg_str} ; type={inv_type} ; accuracy={inv_acc}"
+        fn_sp = os.path.join(path_sp, f"{tag}.lat")
+        fn_spw = os.path.join(path_sp, f"{tag} ; wsnk.lat")
+        fn_sp_load = get_load_path(fn_sp)
+        fn_spw_load = get_load_path(fn_spw)
+        if fn_sp_load is None:
+            continue
+        assert fn_spw_load is not None
+        q.displayln_info(0, f"load_prop_psrc_psel: idx={idx} ; {tag} ; path_sp={path_sp}")
+        idx += 1
+        # load psel psnk prop
+        sp_prop = q.PselProp(psel)
+        sp_prop.load(fn_sp_load)
+        # convert to GPT/Grid prop mspincolor order
+        cache_psel[f"{tag} ; psrc ; psel"] = q.convert_mspincolor_from_wm(sp_prop)
+        # load wsnk prop
+        spw_prop = q.PselProp(psel_ts)
+        spw_prop.load(fn_spw_load)
+        # convert to GPT/Grid prop mspincolor order
+        cache_psel_ts[f"{tag} ; psrc_wsnk ; psel_ts"] = q.convert_mspincolor_from_wm(spw_prop)
+        count[inv_acc] += 1
+    cache_prob[f"type={flavor_inv_type} ; accuracy=0 ; psrc ; prob"] = count[0] / len(xg_list)
+    cache_prob[f"type={flavor_inv_type} ; accuracy=1 ; psrc ; prob"] = rup.dict_params[job_tag]["prob_acc_1_psrc"]
+    cache_prob[f"type={flavor_inv_type} ; accuracy=2 ; psrc ; prob"] = rup.dict_params[job_tag]["prob_acc_2_psrc"]
+
+@q.timer
+def load_prop_psrc_fsel(job_tag, traj, flavor, *, psel, fsel, fselc):
+    # need to load psel first
     # cache_fsel[f"xg=({xg[0]},{xg[1]},{xg[2]},{xg[3]}) ; type={inv_type} ; accuracy={inv_acc} ; psrc ; fsel"]
     # cache_psel[f"xg=({xg[0]},{xg[1]},{xg[2]},{xg[3]}) ; type={inv_type} ; accuracy={inv_acc} ; psrc ; psel"]
     # cache_psel_ts[f"xg=({xg[0]},{xg[1]},{xg[2]},{xg[3]}) ; type={inv_type} ; accuracy={inv_acc} ; psrc_wsnk ; psel_ts"]
@@ -339,7 +423,6 @@ def load_prop_psrc_all(job_tag, traj, flavor, *, psel, fsel, fselc):
         assert False
     path_s = f"prop-psrc-{flavor_tag}/{job_tag}/traj={traj}/geon-info.txt"
     sfr = q.open_fields(get_load_path(path_s), "r")
-    path_sp = f"psel-prop-psrc-{flavor_tag}/{job_tag}/traj={traj}"
     count = { 0: 0, 1: 0, 2: 0, }
     inv_type = flavor_inv_type
     idx = 0
@@ -349,56 +432,26 @@ def load_prop_psrc_all(job_tag, traj, flavor, *, psel, fsel, fselc):
         tag = f"xg={xg_str} ; type={inv_type} ; accuracy={inv_acc}"
         if not sfr.has(tag):
             continue
-        q.displayln_info(0, f"load_prop_psrc_all: idx={idx} ; {tag} ; path_sp={path_sp}")
+        q.displayln_info(0, f"load_prop_psrc_fsel: idx={idx} ; {tag} ; path_s={path_s}")
         idx += 1
         # load fsel psnk prop
         sc_prop = q.SelProp(fselc)
         sc_prop.load_double_from_float(sfr, tag)
-        s_prop = q.SelProp(fsel)
-        s_prop @= sc_prop
         # convert to GPT/Grid prop mspincolor order
         cache_fsel[f"{tag} ; psrc ; fsel"] = q.convert_mspincolor_from_wm(sc_prop)
-        # load psel psnk prop
-        fn_sp = os.path.join(path_sp, f"{tag}.lat")
-        sp_prop = q.PselProp(psel)
-        sp_prop.load(get_load_path(fn_sp))
+        # check psel psnk prop
         sp_prop_diff = q.PselProp(psel)
-        sp_prop_diff @= sc_prop
-        sp_prop_diff -= sp_prop
-        assert sp_prop_diff.qnorm() <= 1e-14 * sp_prop.qnorm()
-        # convert to GPT/Grid prop mspincolor order
-        cache_psel[f"{tag} ; psrc ; psel"] = q.convert_mspincolor_from_wm(sp_prop)
-        # load wsnk prop
-        fn_spw = os.path.join(path_sp, f"{tag} ; wsnk.lat")
-        spw_prop = q.PselProp(psel_ts)
-        spw_prop.load(get_load_path(fn_spw))
-        # convert to GPT/Grid prop mspincolor order
-        cache_psel_ts[f"{tag} ; psrc_wsnk ; psel_ts"] = q.convert_mspincolor_from_wm(spw_prop)
+        sp_prop_diff @= cache_fsel[f"{tag} ; psrc ; fsel"]
+        sp_prop_diff -= cache_psel[f"{tag} ; psrc ; psel"]
+        assert sp_prop_diff.qnorm() <= 1e-14 * cache_psel[f"{tag} ; psrc ; psel"].qnorm()
         count[inv_acc] += 1
     sfr.close()
-    cache_prob[f"type={flavor_inv_type} ; accuracy=0 ; psrc ; prob"] = count[0] / len(xg_list)
-    cache_prob[f"type={flavor_inv_type} ; accuracy=1 ; psrc ; prob"] = rup.dict_params[job_tag]["prob_acc_1_psrc"]
-    cache_prob[f"type={flavor_inv_type} ; accuracy=2 ; psrc ; prob"] = rup.dict_params[job_tag]["prob_acc_2_psrc"]
+    assert cache_prob[f"type={flavor_inv_type} ; accuracy=0 ; psrc ; prob"] == count[0] / len(xg_list)
+    assert cache_prob[f"type={flavor_inv_type} ; accuracy=1 ; psrc ; prob"] == rup.dict_params[job_tag]["prob_acc_1_psrc"]
+    assert cache_prob[f"type={flavor_inv_type} ; accuracy=2 ; psrc ; prob"] == rup.dict_params[job_tag]["prob_acc_2_psrc"]
 
 @q.timer
-def load_prop_zero(job_tag, traj, *, psel, fsel, fselc):
-    cache_fsel = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}", f"fsel")
-    cache_psel = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}", f"psel")
-    cache_psel_ts = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}", f"psel_ts")
-    total_site = ru.get_total_site(job_tag)
-    psel_ts = q.get_psel_tslice(total_site)
-    sc_prop = q.SelProp(fselc)
-    sp_prop = q.PselProp(psel)
-    spw_prop = q.PselProp(psel_ts)
-    q.set_zero(sc_prop)
-    q.set_zero(sp_prop)
-    q.set_zero(spw_prop)
-    cache_fsel[f"zero ; fsel"] = sc_prop
-    cache_psel[f"zero ; psel"] = sp_prop
-    cache_psel_ts[f"zero ; psel_ts"] = spw_prop
-
-@q.timer
-def load_prop_rand_u1_all(job_tag, traj, flavor, *, fsel):
+def load_prop_rand_u1_fsel(job_tag, traj, flavor, *, fsel):
     # cache_fsel[f"type={inv_type} ; accuracy={inv_acc} ; rand_u1 ; fsel"]
     cache_fsel = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}", f"fsel")
     total_site = ru.get_total_site(job_tag)
@@ -452,6 +505,25 @@ def load_prop_rand_u1_all(job_tag, traj, flavor, *, fsel):
     inv_acc = 2
     cache_fsel[f"type={inv_type} ; accuracy={inv_acc} ; rand_u1 ; fsel"] = q.convert_mspincolor_from_wm(s_prop_avg)
 
+### -------
+
+@q.timer
+def load_prop_zero(job_tag, traj, *, psel, fsel, fselc):
+    cache_fsel = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}", f"fsel")
+    cache_psel = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}", f"psel")
+    cache_psel_ts = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}", f"psel_ts")
+    total_site = ru.get_total_site(job_tag)
+    psel_ts = q.get_psel_tslice(total_site)
+    sc_prop = q.SelProp(fselc)
+    sp_prop = q.PselProp(psel)
+    spw_prop = q.PselProp(psel_ts)
+    q.set_zero(sc_prop)
+    q.set_zero(sp_prop)
+    q.set_zero(spw_prop)
+    cache_fsel[f"zero ; fsel"] = sc_prop
+    cache_psel[f"zero ; psel"] = sp_prop
+    cache_psel_ts[f"zero ; psel_ts"] = spw_prop
+
 @q.timer_verbose
 def run_get_prop(job_tag, traj, *, get_gt, get_psel, get_fsel, get_psel_smear, get_wi):
     @q.timer_verbose
@@ -462,13 +534,17 @@ def run_get_prop(job_tag, traj, *, get_gt, get_psel, get_fsel, get_psel_smear, g
         psel_smear = get_psel_smear()
         fsel, fselc = get_fsel()
         # ADJUST ME
-        load_prop_wsrc_all(job_tag, traj, "l", wi = wi, psel = psel, fsel = fsel, fselc = fselc, gt = gt)
-        load_prop_wsrc_all(job_tag, traj, "s", wi = wi, psel = psel, fsel = fsel, fselc = fselc, gt = gt)
-        load_prop_psrc_all(job_tag, traj, "l", psel = psel, fsel = fsel, fselc = fselc)
-        load_prop_psrc_all(job_tag, traj, "s", psel = psel, fsel = fsel, fselc = fselc)
-        # load_prop_rand_u1_all(job_tag, traj, "l", fsel = fsel)
-        # load_prop_rand_u1_all(job_tag, traj, "s", fsel = fsel)
-        # load_prop_rand_u1_all(job_tag, traj, "c", fsel = fsel)
+        load_prop_wsrc_psel(job_tag, traj, "l", wi = wi, psel = psel, fsel = fsel, fselc = fselc, gt = gt)
+        load_prop_wsrc_psel(job_tag, traj, "s", wi = wi, psel = psel, fsel = fsel, fselc = fselc, gt = gt)
+        load_prop_wsrc_fsel(job_tag, traj, "l", wi = wi, psel = psel, fsel = fsel, fselc = fselc, gt = gt)
+        load_prop_wsrc_fsel(job_tag, traj, "s", wi = wi, psel = psel, fsel = fsel, fselc = fselc, gt = gt)
+        load_prop_psrc_psel(job_tag, traj, "l", psel = psel, fsel = fsel, fselc = fselc)
+        load_prop_psrc_psel(job_tag, traj, "s", psel = psel, fsel = fsel, fselc = fselc)
+        load_prop_psrc_fsel(job_tag, traj, "l", psel = psel, fsel = fsel, fselc = fselc)
+        load_prop_psrc_fsel(job_tag, traj, "s", psel = psel, fsel = fsel, fselc = fselc)
+        load_prop_rand_u1_fsel(job_tag, traj, "l", fsel = fsel)
+        load_prop_rand_u1_fsel(job_tag, traj, "s", fsel = fsel)
+        load_prop_rand_u1_fsel(job_tag, traj, "c", fsel = fsel)
         #
         load_prop_zero(job_tag, traj, psel = psel, fsel = fsel, fselc = fselc)
         prop_cache = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}")

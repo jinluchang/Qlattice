@@ -21,97 +21,22 @@
 
 from auto_contractor.compile import *
 from auto_contractor.ama import *
-import gpt as g
+
+# from auto_contractor.eval_sc_gpt import *
+from auto_contractor.eval_sc_np import *
+
 import numpy as np
 import qlat as q
 import copy
 import cmath
 import math
 
-gamma_matrix_list = [
-        # gamma_x
-        (-1) * (-1j) *
-        np.array([
-            0, 0, 0, 1,
-            0, 0, 1, 0,
-            0, -1, 0, 0,
-            -1, 0, 0, 0,
-            ],
-            dtype = complex),
-        # gamma_y
-        (-1j) *
-        np.array([
-            0, 0, 0, -1j,
-            0, 0, 1j, 0,
-            0, 1j, 0, 0,
-            -1j, 0, 0, 0,
-            ],
-            dtype = complex),
-        # gamma_z
-        (-1) * (-1j) *
-        np.array([
-            0, 0, 1, 0,
-            0, 0, 0, -1,
-            -1, 0, 0, 0,
-            0, 1, 0, 0,
-            ],
-            dtype = complex),
-        # gamma_t
-        np.array([
-            0, 0, 1, 0,
-            0, 0, 0, 1,
-            1, 0, 0, 0,
-            0, 1, 0, 0,
-            ],
-            dtype = complex),
-        # gamma(4)
-        None,
-        # gamma_5 = gamma_x * gamma_y * gamma_z * gamma_t;
-        np.array([
-            1, 0, 0, 0,
-            0, 1, 0, 0,
-            0, 0, -1, 0,
-            0, 0, 0, -1,
-            ],
-            dtype = complex),
-        ]
-
-def get_spin_matrix(op):
-    assert op.otype == "G"
-    assert op.s1 == "auto" and op.s2 == "auto"
-    assert op.tag in [0, 1, 2, 3, 5]
-    return g.gamma[op.tag]
-
-def ascontiguoustensor(x):
-    # isinstance(x, g.core.tensor)
-    return g.tensor(np.ascontiguousarray(x.array), x.otype)
-
-def as_mspincolor(x):
-    if isinstance(x, g.core.tensor):
-        return ascontiguoustensor(x)
-    else:
-        return g.tensor(np.ascontiguousarray(np.array(x)), g.ot_matrix_spin_color(4, 3))
-
-def adj_msc(x):
-    # isinstance(x, g.core.tensor)
-    x = g.adj(x)
-    return ascontiguoustensor(x)
-
-def g5_herm(x):
-    x_h = ascontiguoustensor(
-            ascontiguoustensor(
-                g.gamma[5]
-                * adj_msc(
-                    as_mspincolor(x)))
-                * g.gamma[5])
-    return x_h
-
 def eval_op_term_expr(expr, variable_dict, positions_dict, get_prop):
     def l_eval(x):
         if isinstance(x, list):
             ans = l_eval(x[0])
             def f(x, y):
-                return ascontiguoustensor(x * y)
+                return as_msc(x * y)
             for op in x[1:]:
                 ans = ama_apply2(f, ans, l_eval(op))
             return ans
@@ -125,7 +50,7 @@ def eval_op_term_expr(expr, variable_dict, positions_dict, get_prop):
                 return get_spin_matrix(x)
             elif x.otype == "Tr" and len(x.ops) == 2:
                 def f(x, y):
-                    return g.trace(x * y)
+                    return msc_trace(x * y)
                 return ama_apply2(f, l_eval(x.ops[0]), l_eval(x.ops[1]))
             elif x.otype == "Tr":
                 if not x.ops:
@@ -138,10 +63,10 @@ def eval_op_term_expr(expr, variable_dict, positions_dict, get_prop):
                 assert start_idx is not None
                 ans = l_eval(x.ops[start_idx])
                 def f(x, y):
-                    return ascontiguoustensor(x * y)
+                    return as_msc(x * y)
                 for op in x.ops[start_idx + 1:] + x.ops[:start_idx]:
                     ans = ama_apply2(f, ans, l_eval(op))
-                return ama_apply1(g.trace, ans)
+                return ama_apply1(msc_trace, ans)
             elif x.otype == "Var":
                 return variable_dict[x.name]
             else:

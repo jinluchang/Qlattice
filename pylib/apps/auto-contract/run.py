@@ -6,6 +6,7 @@ import qlat_gpt as qg
 
 import functools
 import math
+import os
 
 from jobs import *
 from load_data import *
@@ -32,28 +33,6 @@ def rel_mod(x, size):
     else:
         return x
 
-### ------
-
-import multiprocessing as mp
-
-pool_function = None
-
-def call_pool_function(*args, **kwargs):
-    assert pool_function is not None
-    return pool_function(*args, **kwargs)
-
-def parallel_map(n_processes, func, iterable):
-    if n_processes == 0:
-        return list(map(func, iterable))
-    global pool_function
-    pool_function = func
-    with mp.Pool(n_processes) as p:
-        res = p.map(call_pool_function, iterable)
-    pool_function = None
-    return res
-
-### ------
-
 @q.timer
 def get_cexpr_vev():
     def calc_cexpr():
@@ -75,7 +54,7 @@ def get_cexpr_vev():
 
 @q.timer_verbose
 def auto_contractor_vev(job_tag, traj, get_prop, get_psel, get_fsel):
-    fn = f"auto-contractor-fsel/{job_tag}/traj={traj}/vev.lat"
+    fn = f"auto-contract/{job_tag}/traj={traj}/vev.lat"
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_vev()
@@ -88,7 +67,7 @@ def auto_contractor_vev(job_tag, traj, get_prop, get_psel, get_fsel):
                 }
         res = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop, is_only_total = "total")
         return res
-    res_list = parallel_map(0, feval, xg_fsel_list)
+    res_list = q.parallel_map(q.get_n_processes(), feval, xg_fsel_list)
     res_sum = q.glb_sum(sum(res_list))
     res_count = q.glb_sum(len(res_list))
     res_avg = res_sum / res_count
@@ -118,7 +97,7 @@ def get_cexpr_meson_f_corr():
 
 @q.timer_verbose
 def auto_contractor_meson_f_corr(job_tag, traj, get_prop, get_psel, get_fsel):
-    fn = f"auto-contractor-fsel/{job_tag}/traj={traj}/meson_f_corr.lat"
+    fn = f"auto-contract/{job_tag}/traj={traj}/meson_f_corr.lat"
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_meson_f_corr()
@@ -136,7 +115,7 @@ def auto_contractor_meson_f_corr(job_tag, traj, get_prop, get_psel, get_fsel):
             res = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop, is_only_total = "total")
             l.append(res)
         return np.array(l).transpose()
-    res_list = parallel_map(0, feval, xg_fsel_list)
+    res_list = q.parallel_map(q.get_n_processes(), feval, xg_fsel_list)
     res_sum = q.glb_sum(sum(res_list))
     res_count = q.glb_sum(len(res_list))
     res_avg = res_sum / res_count
@@ -169,7 +148,7 @@ def get_cexpr_hvp():
 
 @q.timer_verbose
 def auto_contractor_hvp(job_tag, traj, get_prop, get_psel, get_fsel):
-    fn = f"auto-contractor-fsel/{job_tag}/traj={traj}/hvp.lat"
+    fn = f"auto-contract/{job_tag}/traj={traj}/hvp.lat"
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_hvp()
@@ -195,7 +174,7 @@ def auto_contractor_hvp(job_tag, traj, get_prop, get_psel, get_fsel):
         counts = counts # counts[tsep]
         values = values.transpose() # values[expr_idx, tsep]
         return counts, values
-    counts_list, values_list = zip(*parallel_map(0, feval, xg_psel_list))
+    counts_list, values_list = zip(*q.parallel_map(q.get_n_processes(), feval, xg_psel_list))
     res_count = q.glb_sum(sum(counts_list))
     res_sum = q.glb_sum(sum(values_list))
     res_avg = res_sum * (vol / res_count)
@@ -209,7 +188,7 @@ def auto_contractor_hvp(job_tag, traj, get_prop, get_psel, get_fsel):
 
 @q.timer_verbose
 def auto_contractor_hvp_field(job_tag, traj, get_prop, get_psel, get_fsel):
-    fn = f"auto-contractor-fsel/{job_tag}/traj={traj}/hvp.field"
+    fn = f"auto-contract/{job_tag}/traj={traj}/hvp.field"
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_hvp()
@@ -230,7 +209,7 @@ def auto_contractor_hvp_field(job_tag, traj, get_prop, get_psel, get_fsel):
                     }
             res = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop, is_only_total = "total")
             return res
-        values_list = parallel_map(0, feval, xg_fsel_list)
+        values_list = q.parallel_map(q.get_n_processes(), feval, xg_fsel_list)
         assert len(values_list) == fsel.n_elems()
         values = q.SelectedField("Complex", fsel, len(expr_names))
         for idx, v in enumerate(values_list):
@@ -285,7 +264,7 @@ def get_cexpr_meson_v_v_meson():
 
 @q.timer_verbose
 def auto_contractor_meson_v_v_meson_field(job_tag, traj, get_prop, get_psel, get_fsel):
-    fn = f"auto-contractor-fsel/{job_tag}/traj={traj}/meson_v_v_meson.field"
+    fn = f"auto-contract/{job_tag}/traj={traj}/meson_v_v_meson.field"
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_meson_v_v_meson()
@@ -316,7 +295,7 @@ def auto_contractor_meson_v_v_meson_field(job_tag, traj, get_prop, get_psel, get
                     }
             res = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop, is_only_total = "total")
             return res
-        values_list = parallel_map(0, feval, xg_fsel_list)
+        values_list = q.parallel_map(q.get_n_processes(), feval, xg_fsel_list)
         assert len(values_list) == fsel.n_elems()
         values = q.SelectedField("Complex", fsel, len(expr_names))
         for idx, v in enumerate(values_list):
@@ -343,7 +322,7 @@ def auto_contractor_meson_v_v_meson_field(job_tag, traj, get_prop, get_psel, get
                     }
             res = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop, is_only_total = "total")
             return res
-        values_list = parallel_map(0, feval, xg_fsel_list)
+        values_list = q.parallel_map(q.get_n_processes(), feval, xg_fsel_list)
         assert len(values_list) == fsel.n_elems()
         values = q.SelectedField("Complex", fsel, len(expr_names))
         for idx, v in enumerate(values_list):
@@ -383,7 +362,7 @@ def get_cexpr_meson_corr():
 
 @q.timer_verbose
 def auto_contractor_meson_corr(job_tag, traj, get_prop, get_psel, get_fsel):
-    fn = f"auto-contractor-fsel/{job_tag}/traj={traj}/meson_corr.lat"
+    fn = f"auto-contract/{job_tag}/traj={traj}/meson_corr.lat"
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_meson_corr()
@@ -411,7 +390,7 @@ def auto_contractor_meson_corr(job_tag, traj, get_prop, get_psel, get_fsel):
         values = values.transpose() # res[expr_name, t_sep]
         return counts, values
     t_snk_list = get_mpi_chunk(list(range(total_site[3])))
-    counts_list, values_list = zip(fempty(), *parallel_map(0, feval, t_snk_list))
+    counts_list, values_list = zip(fempty(), *q.parallel_map(q.get_n_processes(), feval, t_snk_list))
     res_count = q.glb_sum(sum(counts_list))
     res_sum = q.glb_sum(sum(values_list))
     res_count *= 1.0 / total_site[3]
@@ -427,7 +406,7 @@ def auto_contractor_meson_corr(job_tag, traj, get_prop, get_psel, get_fsel):
 
 @q.timer_verbose
 def auto_contractor_meson_corr_psnk(job_tag, traj, get_prop, get_psel, get_fsel):
-    fn = f"auto-contractor-fsel/{job_tag}/traj={traj}/meson_corr_psnk.lat"
+    fn = f"auto-contract/{job_tag}/traj={traj}/meson_corr_psnk.lat"
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_meson_corr()
@@ -449,7 +428,7 @@ def auto_contractor_meson_corr_psnk(job_tag, traj, get_prop, get_psel, get_fsel)
             res[t] += eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop, is_only_total = "total")
         res = res.transpose() # res[expr_name, t_sep]
         return 1.0, res
-    counts_list, values_list = zip(*parallel_map(0, feval, xg_fsel_list))
+    counts_list, values_list = zip(*q.parallel_map(q.get_n_processes(), feval, xg_fsel_list))
     res_count = q.glb_sum(sum(counts_list))
     res_sum = q.glb_sum(sum(values_list))
     res_count *= 1.0 / (total_volume * fsel.prob())
@@ -465,7 +444,7 @@ def auto_contractor_meson_corr_psnk(job_tag, traj, get_prop, get_psel, get_fsel)
 
 @q.timer_verbose
 def auto_contractor_meson_corr_psrc(job_tag, traj, get_prop, get_psel, get_fsel):
-    fn = f"auto-contractor-fsel/{job_tag}/traj={traj}/meson_corr_psrc.lat"
+    fn = f"auto-contract/{job_tag}/traj={traj}/meson_corr_psrc.lat"
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_meson_corr()
@@ -495,7 +474,7 @@ def auto_contractor_meson_corr_psrc(job_tag, traj, get_prop, get_psel, get_fsel)
         values = values.transpose() # values[expr_name, t_sep]
         return counts, values
     xg_src_list = get_mpi_chunk(xg_psel_list, rng_state = q.RngState("get_mpi_chunk"))
-    counts_list, values_list = zip(fempty(), *parallel_map(0, feval, xg_src_list))
+    counts_list, values_list = zip(fempty(), *q.parallel_map(q.get_n_processes(), feval, xg_src_list))
     res_count = q.glb_sum(sum(counts_list))
     res_sum = q.glb_sum(sum(values_list))
     res_count *= 1.0 / len(xg_psel_list)
@@ -511,7 +490,7 @@ def auto_contractor_meson_corr_psrc(job_tag, traj, get_prop, get_psel, get_fsel)
 
 @q.timer_verbose
 def auto_contractor_meson_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_fsel):
-    fn = f"auto-contractor-fsel/{job_tag}/traj={traj}/meson_corr_psnk_psrc.lat"
+    fn = f"auto-contract/{job_tag}/traj={traj}/meson_corr_psnk_psrc.lat"
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_meson_corr()
@@ -537,7 +516,7 @@ def auto_contractor_meson_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_
             values[t] += eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop, is_only_total = "total")
         values = values.transpose() # values[expr_name, t_sep]
         return counts, values
-    counts_list, values_list = zip(*parallel_map(0, feval, xg_psel_list))
+    counts_list, values_list = zip(*q.parallel_map(q.get_n_processes(), feval, xg_psel_list))
     res_count = q.glb_sum(sum(counts_list))
     res_sum = q.glb_sum(sum(values_list))
     res_count *= 1.0 / (len(xg_psel_list) * total_volume * fsel.prob() / total_site[3])
@@ -573,7 +552,7 @@ def get_cexpr_meson_m():
 
 @q.timer_verbose
 def auto_contractor_meson_m(job_tag, traj, get_prop, get_psel, get_fsel):
-    fn = f"auto-contractor-fsel/{job_tag}/traj={traj}/meson_m.lat"
+    fn = f"auto-contract/{job_tag}/traj={traj}/meson_m.lat"
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_meson_m()
@@ -598,7 +577,7 @@ def auto_contractor_meson_m(job_tag, traj, get_prop, get_psel, get_fsel):
                 }
         values = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop, is_only_total = "total")
         return 1.0, values
-    counts_list, values_list = zip(*parallel_map(0, feval, xg_fsel_list))
+    counts_list, values_list = zip(*q.parallel_map(q.get_n_processes(), feval, xg_fsel_list))
     res_count = q.glb_sum(sum(counts_list))
     res_sum = q.glb_sum(sum(values_list))
     res_count *= 1.0 / (total_volume * fsel.prob())
@@ -726,8 +705,8 @@ def get_cexpr_meson_jj():
 
 @q.timer_verbose
 def auto_contractor_meson_jj(job_tag, traj, get_prop, get_psel, get_fsel):
-    fn = f"auto-contractor-fsel/{job_tag}/traj={traj}/meson_jj.lat"
-    fn_counts = f"auto-contractor-fsel/{job_tag}/traj={traj}/meson_jj_counts.lat"
+    fn = f"auto-contract/{job_tag}/traj={traj}/meson_jj.lat"
+    fn_counts = f"auto-contract/{job_tag}/traj={traj}/meson_jj_counts.lat"
     if (get_load_path(fn_counts) is not None) and (get_load_path(fn) is not None):
         return
     cexpr = get_cexpr_meson_jj()
@@ -767,7 +746,7 @@ def auto_contractor_meson_jj(job_tag, traj, get_prop, get_psel, get_fsel):
             res_arr = res.reshape((n_tensor, 4, 4))
             accumulate_meson_jj(counts, values, res_arr, x_rel, total_site)
         return counts, values
-    counts_list, values_list = zip(*parallel_map(0, feval, xg_psel_list))
+    counts_list, values_list = zip(*q.parallel_map(q.get_n_processes(), feval, xg_psel_list))
     res_count = q.glb_sum(sum(counts_list))
     res_sum = q.glb_sum(sum(values_list))
     res_count *= 1.0 / (len(xg_psel_list) * fsel.prob())
@@ -794,7 +773,7 @@ def auto_contractor_meson_jj(job_tag, traj, get_prop, get_psel, get_fsel):
 @q.timer_verbose
 def run_job(job_tag, traj):
     fns_produce = [
-            f"auto-contractor-fsel/{job_tag}/traj={traj}/checkpoint.txt",
+            f"auto-contract/{job_tag}/traj={traj}/checkpoint.txt",
             ]
     fns_need = [
             # (f"configs/{job_tag}/ckpoint_lat.{traj}", f"configs/{job_tag}/ckpoint_lat.IEEE64BIG.{traj}",),
@@ -803,14 +782,14 @@ def run_job(job_tag, traj):
             f"gauge-transform/{job_tag}/traj={traj}.field",
             f"wall-src-info-light/{job_tag}/traj={traj}.txt",
             f"wall-src-info-strange/{job_tag}/traj={traj}.txt",
-            f"prop-wsrc-strange/{job_tag}/traj={traj}/geon-info.txt",
-            f"psel-prop-wsrc-strange/{job_tag}/traj={traj}/checkpoint.txt",
-            f"prop-wsrc-light/{job_tag}/traj={traj}/geon-info.txt",
             f"psel-prop-wsrc-light/{job_tag}/traj={traj}/checkpoint.txt",
-            f"prop-psrc-strange/{job_tag}/traj={traj}/geon-info.txt",
-            f"psel-prop-psrc-strange/{job_tag}/traj={traj}/checkpoint.txt",
-            f"prop-psrc-light/{job_tag}/traj={traj}/geon-info.txt",
+            f"psel-prop-wsrc-strange/{job_tag}/traj={traj}/checkpoint.txt",
             f"psel-prop-psrc-light/{job_tag}/traj={traj}/checkpoint.txt",
+            f"psel-prop-psrc-strange/{job_tag}/traj={traj}/checkpoint.txt",
+            f"prop-wsrc-light/{job_tag}/traj={traj}/geon-info.txt",
+            f"prop-wsrc-strange/{job_tag}/traj={traj}/geon-info.txt",
+            f"prop-psrc-light/{job_tag}/traj={traj}/geon-info.txt",
+            f"prop-psrc-strange/{job_tag}/traj={traj}/geon-info.txt",
             f"prop-rand-u1-light/{job_tag}/traj={traj}/geon-info.txt",
             f"prop-rand-u1-strange/{job_tag}/traj={traj}/geon-info.txt",
             f"prop-rand-u1-charm/{job_tag}/traj={traj}/geon-info.txt",
@@ -841,9 +820,9 @@ def run_job(job_tag, traj):
             get_wi = get_wi,
             )
     #
-    fn_checkpoint = f"auto-contractor-fsel/{job_tag}/traj={traj}/checkpoint.txt"
+    fn_checkpoint = f"auto-contract/{job_tag}/traj={traj}/checkpoint.txt"
     if get_load_path(fn_checkpoint) is None:
-        if q.obtain_lock(f"locks/{job_tag}-{traj}-auto-contractor"):
+        if q.obtain_lock(f"locks/{job_tag}-{traj}-auto-contract"):
             get_prop = get_get_prop()
             # ADJUST ME
             # auto_contractor_vev(job_tag, traj, get_prop, get_psel, get_fsel)
