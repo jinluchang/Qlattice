@@ -14,17 +14,19 @@ def call_pool_function(*args, **kwargs):
     assert pool_function is not None
     return pool_function(*args, **kwargs)
 
-def parallel_map(n_processes, func, iterable):
-    if n_processes == 0:
+@timer
+def parallel_map(q_mp_proc, func, iterable):
+    displayln_info(f"parallel_map(q_mp_proc={q_mp_proc})")
+    if q_mp_proc == 0:
         return list(map(func, iterable))
     global pool_function
     pool_function = func
-    with mp.Pool(n_processes) as p:
+    with mp.Pool(q_mp_proc) as p:
         res = p.map(call_pool_function, iterable)
     pool_function = None
     return res
 
-def get_n_processes():
+def get_q_mp_proc():
     v = os.getenv("q_mp_proc")
     if v is None:
         return 0
