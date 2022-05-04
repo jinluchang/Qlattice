@@ -19,9 +19,11 @@ def parallel_map(q_mp_proc, func, iterable):
     displayln_info(f"parallel_map(q_mp_proc={q_mp_proc})")
     if q_mp_proc == 0:
         return list(map(func, iterable))
+    assert q_mp_proc >= 1
     global pool_function
     pool_function = func
     with mp.Pool(q_mp_proc) as p:
+        p.map(timer_reset, [ 0 for i in range(q_mp_proc) ], chunksize = 1)
         res = p.map(call_pool_function, iterable, chunksize = 1)
     pool_function = None
     return res

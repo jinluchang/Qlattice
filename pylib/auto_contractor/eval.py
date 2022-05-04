@@ -90,7 +90,26 @@ def eval_op_term_expr(expr, variable_dict, positions_dict, get_prop):
     return l_eval(expr)
 
 @q.timer
-def eval_cexpr(cexpr : CExpr, *, positions_dict, get_prop, is_only_total):
+def get_cexpr_names(cexpr, *, is_only_total = "total"):
+    if is_only_total in [ True, "total", ]:
+        names = [ name for name, expr in cexpr.named_exprs ]
+    elif is_only_total in [ "typed_total", ]:
+        names = (
+                [ name for name, expr in cexpr.named_exprs ]
+                + [ name for name, expr in cexpr.named_typed_exprs ]
+                )
+    elif is_only_total in [ False, "term", ]:
+        names = (
+                [ name for name, expr in cexpr.named_exprs ]
+                + [ name for name, expr in cexpr.named_typed_exprs ]
+                + [ name for name, term in cexpr.named_terms ]
+                )
+    else:
+        assert False
+    return names
+
+@q.timer
+def eval_cexpr(cexpr : CExpr, *, positions_dict, get_prop, is_only_total = "total"):
     # interface function
     # return 1 dimensional np.array
     # xg = positions_dict[position]
@@ -124,6 +143,31 @@ def eval_cexpr(cexpr : CExpr, *, positions_dict, get_prop, is_only_total):
     else:
         assert False
 
+def make_rand_spin_color_matrix(rng_state):
+    rs = rng_state
+    return SpinColorMatrix(np.array(
+        [ rs.u_rand_gen() + 1j * rs.u_rand_gen() for i in range(144) ],
+        dtype = complex))
+
+@q.timer
+def benchmark_eval_cexpr(cexpr : CExpr, *, is_only_total = "total", benchmark_size = 100, rng_state = None):
+    if rng_state is None:
+        rng_state = q.RngState("benchmark_eval_cexpr")
+    positions_dict = {}
+    prop_dict = {}
+    for pos in cexpr.positions:
+        positions_dict[pos] = pos
+    for pos in cexpr.positions:
+        prop_dict[(pos, pos,)] = make_rand_spin_color_matrix(rng_state.split(pos))
+    def get_prop(flavor, xg_snk, xg_src):
+        return prop_dict[(xg_src, xg_src)]
+    @q.timer_verbose
+    def benchmark_eval_cexpr_run():
+        for k in range(benchmark_size):
+            eval_cexpr(cexpr, positions_dict = positions_dict, get_prop = get_prop, is_only_total = is_only_total)
+    q.displayln_info(f"benchmark_eval_cexpr: benchmark_size={benchmark_size} is_only_total={is_only_total}")
+    benchmark_eval_cexpr_run()
+
 def sqr_component(x):
     return x.real * x.real + 1j * x.imag * x.imag
 
@@ -135,25 +179,6 @@ def sqr_component_array(arr):
 
 def sqrt_component_array(arr):
     return np.array([ sqrt_component(x) for x in arr ])
-
-@q.timer
-def get_cexpr_names(cexpr, is_only_total = "total"):
-    if is_only_total in [ True, "total", ]:
-        names = [ name for name, expr in cexpr.named_exprs ]
-    elif is_only_total in [ "typed_total", ]:
-        names = (
-                [ name for name, expr in cexpr.named_exprs ]
-                + [ name for name, expr in cexpr.named_typed_exprs ]
-                )
-    elif is_only_total in [ False, "term", ]:
-        names = (
-                [ name for name, expr in cexpr.named_exprs ]
-                + [ name for name, expr in cexpr.named_typed_exprs ]
-                + [ name for name, term in cexpr.named_terms ]
-                )
-    else:
-        assert False
-    return names
 
 def get_mpi_chunk(total_list, *, rng_state = None):
     # e.g. rng_state = q.RngState("get_mpi_chunk")
@@ -187,7 +212,7 @@ def eval_cexpr_simulation(cexpr : CExpr, *, positions_dict_maker, trial_indices,
     else:
         has_data = 0
     num_has_data = q.glb_sum(has_data)
-    names = get_cexpr_names(cexpr, is_only_total)
+    names = get_cexpr_names(cexpr, is_only_total = is_only_total)
     num_value = len(names)
     num_fac = None
     results = None

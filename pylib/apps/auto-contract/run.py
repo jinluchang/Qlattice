@@ -856,9 +856,9 @@ def run_job(job_tag, traj):
 
 
 def get_all_cexpr():
-    get_cexpr_meson_corr()
-    get_cexpr_meson_m()
-    get_cexpr_meson_jj()
+    benchmark_eval_cexpr(get_cexpr_meson_corr())
+    benchmark_eval_cexpr(get_cexpr_meson_m())
+    benchmark_eval_cexpr(get_cexpr_meson_jj())
 
 def test():
     q.qremove_all_info("locks")

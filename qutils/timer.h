@@ -391,14 +391,22 @@ struct Timer {
     return stack;
   }
   //
-  static void reset()
+  static void reset(const long max_call_times_for_always_show_info_ = -1)
+  // if max_call_times_for_always_show_info_ <= -1:
+  // then do not change the current value.
+  // else update the max_call_times_for_always_show_info.
   {
-    displayln_info(0, "Timer::reset(): Reset all timers!");
     std::vector<TimerInfo>& tdb = get_timer_database();
     for (long i = 0; i < (long)tdb.size(); ++i) {
       tdb[i].reset();
     }
     get_start_time() = get_time();
+    if (max_call_times_for_always_show_info_ >= 0) {
+      max_call_times_for_always_show_info() =
+          max_call_times_for_always_show_info_;
+    }
+    displayln_info(0, ssprintf("Timer::reset(%ld): Reset all timers!",
+                               max_call_times_for_always_show_info()));
   }
   //
   static double& minimum_autodisplay_interval()
@@ -560,7 +568,7 @@ struct Timer {
       if (verbose ||
           info.accumulated_time >=
               info.call_times * minimum_duration_for_show_info() ||
-          info.dtime >= 5.0 * minimum_duration_for_show_info() ||
+          info.dtime >= 2.0 * minimum_duration_for_show_info() ||
           info.call_times <= max_call_times_for_always_show_info()) {
         is_show = true;
       }

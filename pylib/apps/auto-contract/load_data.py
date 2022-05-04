@@ -43,7 +43,7 @@ def get_prop_wsrc(prop_cache, inv_type, t_src, tag_snk_type):
     val = prop_cache_type.get(tag)
     if tag1 not in prop_cache_type:
         return val
-    source_specification = ("wall", t_src,)
+    source_specification = repr(("wall", t_src,))
     val_list = [ val, prop_cache_type.get(tag1), ]
     rel_acc_list = [ 0, 3, ]
     prob_list = [ 1, prop_cache_prob[f"type={inv_type} ; accuracy=2 ; wsrc ; prob"], ]
@@ -109,7 +109,7 @@ def get_prop_psrc(prop_cache, inv_type, xg_src, tag_snk_type):
         assert val is not None
         if tag not in prop_cache_type:
             return val
-    source_specification = ("point", tuple(xg_src),)
+    source_specification = repr(("point", tuple(xg_src),))
     val_list = [
             val,
             prop_cache_type.get(tag),
