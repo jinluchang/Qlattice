@@ -857,11 +857,11 @@ def run_job(job_tag, traj):
 def test():
     q.qremove_all_info("locks")
     q.qremove_all_info("results")
-    q.qremove_all_info("cache")
     run_job("test-4nt8", 1000)
     # run_job("16IH2", 1000)
 
 def get_all_cexpr():
+    get_cexpr_meson_f_corr()
     get_cexpr_meson_corr()
     get_cexpr_meson_m()
     get_cexpr_meson_jj()
@@ -869,6 +869,7 @@ def get_all_cexpr():
 qg.begin_with_gpt()
 
 # ADJUST ME
+q.qremove_all_info("cache")
 get_all_cexpr()
 test()
 

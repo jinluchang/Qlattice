@@ -174,7 +174,7 @@ def g5_herm(x):
     return x_h
 
 def msc_trace(x):
-    return x.trace()
+    return as_msc(x).trace()
 
 def msc_trace2(x, y):
     if isinstance(x, SpinColorMatrix) and isinstance(y, SpinColorMatrix):
@@ -186,7 +186,7 @@ def msc_trace2(x, y):
     elif isinstance(x, SpinMatrix) and isinstance(y, SpinColorMatrix):
         v = np.tensordot(x.m, y.m, ((1, 0,), (0, 3,),)).trace()
         return v
-    return (x * y).trace()
+    return as_msc(x * y).trace()
 
 def as_msc(x):
     assert isinstance(x, SpinColorMatrix)

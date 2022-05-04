@@ -101,12 +101,12 @@ def collect_op_in_cexpr(variables, named_terms):
 
 def find_common_subexpr_in_tr(variables_trs):
     subexpr_count = {}
-    def add(x):
+    def add(x, count_added):
         op_repr = repr(x)
         if op_repr in subexpr_count:
             c, op = subexpr_count[op_repr]
             assert x == op
-            subexpr_count[op_repr] = (c + 1, x)
+            subexpr_count[op_repr] = (c + count_added, x)
         else:
             subexpr_count[op_repr] = (1, x)
     def find(x):
@@ -119,14 +119,14 @@ def find_common_subexpr_in_tr(variables_trs):
             for i, op in enumerate(x):
                 if isinstance(op, Op):
                     op1 = x[(i+1) % len(x)]
-                    if op.otype in ["Var", "S",]:
-                        if isinstance(op1, Op) and op1.otype in ["Var", "S", "G",]:
+                    if op.otype in [ "G", ]:
+                        if isinstance(op1, Op) and op1.otype in [ "G", ]:
                             prod = [op, op1]
-                            add(prod)
-                    elif op.otype in ["G",]:
-                        if isinstance(op1, Op) and op1.otype in ["Var", "S",]:
+                            add(prod, 4)
+                    elif op.otype in [ "Var", "S", "G", ]:
+                        if isinstance(op1, Op) and op1.otype in [ "Var", "S", "G", ]:
                             prod = [op, op1]
-                            add(prod)
+                            add(prod, 1)
         elif isinstance(x, Op) and x.otype == "Tr" and len(x.ops) >= 2:
             find(x.ops)
         elif isinstance(x, Term):

@@ -22,7 +22,6 @@
 from auto_contractor.compile import *
 from auto_contractor.ama import *
 
-# from auto_contractor.eval_sc_gpt import *
 from auto_contractor.eval_sc_np import *
 
 import numpy as np
@@ -36,7 +35,7 @@ def eval_op_term_expr(expr, variable_dict, positions_dict, get_prop):
         if isinstance(x, list):
             ans = l_eval(x[0])
             def f(x, y):
-                return as_msc(x * y)
+                return x * y
             for op in x[1:]:
                 ans = ama_apply2(f, ans, l_eval(op))
             return ans
@@ -58,18 +57,13 @@ def eval_op_term_expr(expr, variable_dict, positions_dict, get_prop):
                 elif len(x.ops) == 0:
                     return 1
                 else:
-                    start_idx = None
-                    for i in range(len(x.ops)):
-                        if x.ops[i].otype != "G":
-                            start_idx = i
-                            break
-                    assert start_idx is not None
-                    ans = l_eval(x.ops[start_idx])
+                    assert len(x.ops) > 2
                     def f(x, y):
-                        return as_msc(x * y)
-                    for op in x.ops[start_idx + 1:] + x.ops[:start_idx]:
+                        return x * y
+                    ans = l_eval(x.ops[0])
+                    for op in x.ops[1:-1]:
                         ans = ama_apply2(f, ans, l_eval(op))
-                    return ama_apply1(msc_trace, ans)
+                    return ama_apply2(msc_trace2, ans, l_eval(x.ops[-1]))
             elif x.otype == "Var":
                 return variable_dict[x.name]
             else:
