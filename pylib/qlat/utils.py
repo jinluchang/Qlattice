@@ -22,8 +22,7 @@ def parallel_map(q_mp_proc, func, iterable):
     assert q_mp_proc >= 1
     global pool_function
     pool_function = func
-    with mp.Pool(q_mp_proc) as p:
-        p.map(timer_reset, [ 0 for i in range(q_mp_proc) ], chunksize = 1)
+    with mp.Pool(q_mp_proc, timer_reset, [ 0, ]) as p:
         res = p.map(call_pool_function, iterable, chunksize = 1)
     pool_function = None
     return res

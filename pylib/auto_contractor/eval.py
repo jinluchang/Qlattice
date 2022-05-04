@@ -150,7 +150,7 @@ def make_rand_spin_color_matrix(rng_state):
         dtype = complex))
 
 @q.timer
-def benchmark_eval_cexpr(cexpr : CExpr, *, is_only_total = "total", benchmark_size = 100, rng_state = None):
+def benchmark_eval_cexpr(cexpr : CExpr, *, is_only_total = "total", benchmark_size = 100, benchmark_num = 3, rng_state = None):
     if rng_state is None:
         rng_state = q.RngState("benchmark_eval_cexpr")
     positions_dict = {}
@@ -166,7 +166,8 @@ def benchmark_eval_cexpr(cexpr : CExpr, *, is_only_total = "total", benchmark_si
         for k in range(benchmark_size):
             eval_cexpr(cexpr, positions_dict = positions_dict, get_prop = get_prop, is_only_total = is_only_total)
     q.displayln_info(f"benchmark_eval_cexpr: benchmark_size={benchmark_size} is_only_total={is_only_total}")
-    benchmark_eval_cexpr_run()
+    for i in range(benchmark_num):
+        benchmark_eval_cexpr_run()
 
 def sqr_component(x):
     return x.real * x.real + 1j * x.imag * x.imag
