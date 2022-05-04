@@ -20,6 +20,7 @@
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 import numpy as np
+import qlat as q
 
 class SpinMatrix:
 
@@ -176,6 +177,15 @@ def msc_trace(x):
     return x.trace()
 
 def msc_trace2(x, y):
+    if isinstance(x, SpinColorMatrix) and isinstance(y, SpinColorMatrix):
+        v = np.tensordot(x.m, y.m, ((3, 2, 1, 0,), (0, 1, 2, 3,),)).item()
+        return v
+    elif isinstance(x, SpinColorMatrix) and isinstance(y, SpinMatrix):
+        v = np.tensordot(x.m, y.m, ((3, 0,), (0, 1,),)).trace()
+        return v
+    elif isinstance(x, SpinMatrix) and isinstance(y, SpinColorMatrix):
+        v = np.tensordot(x.m, y.m, ((1, 0,), (0, 3,),)).trace()
+        return v
     return (x * y).trace()
 
 def as_msc(x):

@@ -65,6 +65,7 @@ def auto_contract_vev(job_tag, traj, get_prop, get_psel, get_fsel):
     expr_names = get_cexpr_names(cexpr)
     fsel, fselc = get_fsel()
     xg_fsel_list = fsel.to_psel_local().to_list()
+    @q.timer
     def feval(x):
         pd = {
                 "x" : ("point-snk", x,),
@@ -109,6 +110,7 @@ def auto_contract_meson_f_corr(job_tag, traj, get_prop, get_psel, get_fsel):
     total_site = ru.get_total_site(job_tag)
     fsel, fselc = get_fsel()
     xg_fsel_list = fsel.to_psel_local().to_list()
+    @q.timer
     def feval(x):
         l = []
         for t in range(total_site[3]):
@@ -163,6 +165,7 @@ def auto_contract_hvp(job_tag, traj, get_prop, get_psel, get_fsel):
     xg_fsel_list = fsel.to_psel_local().to_list()
     xg_psel_list = psel.to_list()
     vol = total_site[0] * total_site[1] * total_site[2]
+    @q.timer
     def feval(xg_src):
         counts = np.zeros(total_site[3], dtype = int)
         values = np.zeros((total_site[3], len(expr_names)), dtype = complex)
@@ -206,6 +209,7 @@ def auto_contract_hvp_field(job_tag, traj, get_prop, get_psel, get_fsel):
     field = q.Field("Complex", geo, len(expr_names))
     field.set_zero()
     for idx, xg_src in enumerate(xg_psel_list):
+        @q.timer
         def feval(xg_snk):
             pd = {
                     "x2" : ("point-snk", xg_snk,),
@@ -283,6 +287,7 @@ def auto_contract_meson_v_v_meson_field(job_tag, traj, get_prop, get_psel, get_f
     field = q.Field("Complex", geo, len(expr_names))
     field.set_zero()
     for idx, xg_src in enumerate(xg_psel_list):
+        @q.timer
         def feval(xg_snk):
             xj_1 = ("point-snk", xg_snk,)
             xj_2 = ("point", xg_src,)
@@ -310,6 +315,7 @@ def auto_contract_meson_v_v_meson_field(job_tag, traj, get_prop, get_psel, get_f
     field_r = q.Field("Complex", geo, len(expr_names))
     field_r.set_zero()
     for idx, xg_src in enumerate(xg_psel_list):
+        @q.timer
         def feval(xg_snk):
             xj_1 = ("point", xg_src,)
             xj_2 = ("point-snk", xg_snk,)
