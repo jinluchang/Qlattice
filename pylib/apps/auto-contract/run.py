@@ -854,17 +854,17 @@ def run_job(job_tag, traj):
     q.clean_cache()
     q.timer_display()
 
+
+def get_all_cexpr():
+    get_cexpr_meson_corr()
+    get_cexpr_meson_m()
+    get_cexpr_meson_jj()
+
 def test():
     q.qremove_all_info("locks")
     q.qremove_all_info("results")
     run_job("test-4nt8", 1000)
     # run_job("16IH2", 1000)
-
-def get_all_cexpr():
-    get_cexpr_meson_f_corr()
-    get_cexpr_meson_corr()
-    get_cexpr_meson_m()
-    get_cexpr_meson_jj()
 
 qg.begin_with_gpt()
 

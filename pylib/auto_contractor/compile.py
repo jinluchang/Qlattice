@@ -117,15 +117,15 @@ def find_common_subexpr_in_tr(variables_trs):
             if len(x) < 2:
                 return None
             for i, op in enumerate(x):
-                if isinstance(op, Op):
+                if isinstance(op, Op) and op.otype in [ "Var", "S", "G", ]:
                     op1 = x[(i+1) % len(x)]
-                    if op.otype in [ "G", ]:
-                        if isinstance(op1, Op) and op1.otype in [ "G", ]:
-                            prod = [op, op1]
-                            add(prod, 4)
-                    elif op.otype in [ "Var", "S", "G", ]:
-                        if isinstance(op1, Op) and op1.otype in [ "Var", "S", "G", ]:
-                            prod = [op, op1]
+                    if isinstance(op1, Op) and op1.otype in [ "Var", "S", "G", ]:
+                        prod = [op, op1]
+                        if op.otype == "G" and op1.otype == "G":
+                            add(prod, 1.02)
+                        elif op.otype == "G" or op1.otype == "G":
+                            add(prod, 1.01)
+                        else:
                             add(prod, 1)
         elif isinstance(x, Op) and x.otype == "Tr" and len(x.ops) >= 2:
             find(x.ops)
