@@ -175,6 +175,9 @@ def g5_herm(x):
 def msc_trace(x):
     return x.trace()
 
+def msc_trace2(x, y):
+    return (x * y).trace()
+
 def as_msc(x):
     assert isinstance(x, SpinColorMatrix)
     return x

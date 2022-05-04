@@ -48,25 +48,28 @@ def eval_op_term_expr(expr, variable_dict, positions_dict, get_prop):
                 return get_prop(flavor, xg_snk, xg_src)
             elif x.otype == "G":
                 return get_spin_matrix(x)
-            elif x.otype == "Tr" and len(x.ops) == 2:
-                def f(x, y):
-                    return msc_trace(x * y)
-                return ama_apply2(f, l_eval(x.ops[0]), l_eval(x.ops[1]))
             elif x.otype == "Tr":
-                if not x.ops:
+                if len(x.ops) == 2:
+                    def f(x, y):
+                        return msc_trace2(x, y)
+                    return ama_apply2(f, l_eval(x.ops[0]), l_eval(x.ops[1]))
+                elif len(x.ops) == 1:
+                    return ama_apply1(msc_trace, l_eval(x.ops[0]))
+                elif len(x.ops) == 0:
                     return 1
-                start_idx = None
-                for i in range(len(x.ops)):
-                    if x.ops[i].otype != "G":
-                        start_idx = i
-                        break
-                assert start_idx is not None
-                ans = l_eval(x.ops[start_idx])
-                def f(x, y):
-                    return as_msc(x * y)
-                for op in x.ops[start_idx + 1:] + x.ops[:start_idx]:
-                    ans = ama_apply2(f, ans, l_eval(op))
-                return ama_apply1(msc_trace, ans)
+                else:
+                    start_idx = None
+                    for i in range(len(x.ops)):
+                        if x.ops[i].otype != "G":
+                            start_idx = i
+                            break
+                    assert start_idx is not None
+                    ans = l_eval(x.ops[start_idx])
+                    def f(x, y):
+                        return as_msc(x * y)
+                    for op in x.ops[start_idx + 1:] + x.ops[:start_idx]:
+                        ans = ama_apply2(f, ans, l_eval(op))
+                    return ama_apply1(msc_trace, ans)
             elif x.otype == "Var":
                 return variable_dict[x.name]
             else:

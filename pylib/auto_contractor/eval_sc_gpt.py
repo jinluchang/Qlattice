@@ -56,3 +56,6 @@ def g5_herm(x):
 
 def msc_trace(x):
     return g.trace(x)
+
+def msc_trace2(x, y):
+    return msc_trace(x * y)
