@@ -30,12 +30,23 @@ load_path_list[:] = [
 # ----
 
 def rel_mod(x, size):
-    x = (x + 2 * size) % size
+    x = x % size
     assert x >= 0
     if 2 * x >= size:
         return x - size
     else:
         return x
+
+def rel_mod_sym(x, size):
+    x = x % size
+    assert x >= 0
+    if 2 * x > size:
+        return x - size
+    elif 2 * x < size:
+        return x
+    else:
+        assert 2 * x == size
+        return 0
 
 @q.timer
 def get_cexpr_vev():
@@ -612,27 +623,27 @@ def get_r(x_rel):
 def get_r_limit(total_site):
     return math.ceil(get_r([ total_site[i] // 2 for i in range(4) ])) + 1
 
-def jj_proj_mm(res_arr, x_rel):
+def jj_proj_mm(res_arr, x_rel_sym):
     # res_arr is 3-D np.array with n*4*4 elements
     # res_arr[idx_tensor, mu, nu]
     return np.array([ np.trace(res_arr[idx_tensor]) for idx_tensor in range(len(res_arr)) ])
 
-def jj_proj_tt(res_arr, x_rel):
+def jj_proj_tt(res_arr, x_rel_sym):
     # res_arr is 3-D np.array with n*4*4 elements
     # res_arr[idx_tensor, mu, nu]
     return np.array([ res_arr[idx_tensor, 3, 3] for idx_tensor in range(len(res_arr)) ])
 
-def jj_proj_ii(res_arr, x_rel):
+def jj_proj_ii(res_arr, x_rel_sym):
     # res_arr is 3-D np.array with n*4*4 elements
     # res_arr[idx_tensor, mu, nu]
     return np.array([ sum([ res_arr[idx_tensor, i, i] for i in range(3) ]) for idx_tensor in range(len(res_arr)) ])
 
-def jj_proj_xx(res_arr, x_rel):
+def jj_proj_xx(res_arr, x_rel_sym):
     # res_arr is 3-D np.array with n*4*4 elements
     # res_arr[idx_tensor, mu, nu]
     return np.array(
             [ sum(
-                [ x_rel[i] * x_rel[j] * res_arr[idx_tensor, i, j]
+                [ x_rel_sym[i] * x_rel_sym[j] * res_arr[idx_tensor, i, j]
                     for i in range(3)
                     for j in range(3) ])
                 for idx_tensor in range(len(res_arr)) ])
@@ -645,6 +656,18 @@ all_jj_projections = [
         ]
 
 all_jj_projection_names = [ "mm", "tt", "ii", "xx", ]
+
+def get_interp_idx_coef(x, limit = None):
+    # return x_idx_low, x_idx_high, coef_low, coef_high
+    x_idx_low = math.floor(x)
+    x_idx_high = math.ceil(x)
+    if x_idx_high == x_idx_low:
+        x_idx_high += 1
+    if limit is not None:
+        assert x_idx_high < limit
+    coef_low = x_idx_high - x
+    coef_high = x - x_idx_low
+    return x_idx_low, x_idx_high, coef_low, coef_high
 
 @q.timer
 def accumulate_meson_jj(counts, values, res_arr, x_rel, total_site):
@@ -661,17 +684,12 @@ def accumulate_meson_jj(counts, values, res_arr, x_rel, total_site):
     assert len(all_jj_projections) == n_proj
     t = x_rel[3] % total_site[3]
     r = get_r(x_rel)
-    r_idx_low = math.floor(r)
-    r_idx_high = math.ceil(r)
-    if r_idx_high == r_idx_low:
-        r_idx_high += 1
-    assert r_idx_high < r_limit
-    coef_low = r_idx_high - r
-    coef_high = r - r_idx_low
+    r_idx_low, r_idx_high, coef_low, coef_high = get_interp_idx_coef(r, r_limit)
     counts[t, r_idx_low] += coef_low
     counts[t, r_idx_high] += coef_high
+    x_rel_sym = [ rel_mod_sym(x_rel[mu], total_site[mu]) for mu in range(4) ]
     for idx_proj, proj in enumerate(all_jj_projections):
-        v = proj(res_arr, x_rel)
+        v = proj(res_arr, x_rel_sym)
         v_low = coef_low * v
         v_high = coef_high * v
         for idx_tensor in range(n_tensor):
