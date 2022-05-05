@@ -169,6 +169,7 @@ def as_mspincolor(x):
 def adj_msc(x):
     return SpinColorMatrix(x.m.conj().transpose())
 
+@q.timer
 def g5_herm(x):
     x_h = gamma_matrix_list[5] * adj_msc(x) * gamma_matrix_list[5]
     return x_h

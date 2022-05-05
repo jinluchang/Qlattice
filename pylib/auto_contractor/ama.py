@@ -64,15 +64,20 @@ def mk_ama_val(val, source_specification, val_list, rel_acc_list, prob_list):
         return val
     return AmaVal(val, corrections)
 
-def ama_apply1(f, x):
-    if not isinstance(x, AmaVal):
-        return f(x)
-    elif isinstance(x, AmaVal):
+@q.timer
+def ama_apply1_ama_val(f, x):
+    if isinstance(x, AmaVal):
         val = f(x.val)
         corrections = [ (f(v), d,) for v, d in x.corrections ]
         return AmaVal(val, corrections)
     else:
         assert False
+
+def ama_apply1(f, x):
+    if not isinstance(x, AmaVal):
+        return f(x)
+    else:
+        return ama_apply1_ama_val(f, x)
 
 def merge_description_dict(d1, d2):
     sd1 = set(d1)
@@ -87,10 +92,9 @@ def merge_description_dict(d1, d2):
         d[key] = d2[key]
     return d
 
-def ama_apply2(f, x, y):
-    if not isinstance(x, AmaVal) and not isinstance(y, AmaVal):
-        return f(x, y)
-    elif isinstance(x, AmaVal) and not isinstance(y, AmaVal):
+@q.timer
+def ama_apply2_ama_val(f, x, y):
+    if isinstance(x, AmaVal) and not isinstance(y, AmaVal):
         def f1(x1):
             return f(x1, y)
         return ama_apply1(f1, x)
@@ -109,6 +113,12 @@ def ama_apply2(f, x, y):
         return AmaVal(val, corrections)
     else:
         assert False
+
+def ama_apply2(f, x, y):
+    if not isinstance(x, AmaVal) and not isinstance(y, AmaVal):
+        return f(x, y)
+    else:
+        return ama_apply2_ama_val(f, x, y)
 
 @q.timer
 def ama_extract_ama_val(x):
