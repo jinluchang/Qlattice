@@ -121,27 +121,38 @@ def eval_cexpr(cexpr : CExpr, *, positions_dict, get_prop, is_only_total = "tota
     for pos in cexpr.positions:
         assert pos in positions_dict
     variable_dict = {}
-    for name, op in cexpr.variables:
-        variable_dict[name] = eval_op_term_expr(op, variable_dict, positions_dict, get_prop)
-    tvals = { name : ama_extract(eval_op_term_expr(term, variable_dict, positions_dict, get_prop)) for name, term in cexpr.named_terms }
-    if is_only_total in [ True, "total", ]:
-        return np.array(
-                [ sum([ coef * tvals[tname] for coef, tname in expr ]) for name, expr in cexpr.named_exprs ]
-                )
-    elif is_only_total in [ "typed_total", ]:
-        return np.array(
-                [ sum([ coef * tvals[tname] for coef, tname in expr ]) for name, expr in cexpr.named_exprs ]
-                + [ sum([ coef * tvals[tname] for coef, tname in expr ]) for name, expr in cexpr.named_typed_exprs ]
-                )
-    elif is_only_total in [ False, "term", ]:
-        tevals = { name : sum([ coef * tvals[tname] for coef, tname in expr ]) for name, expr in cexpr.named_typed_exprs }
-        return np.array(
-                [ sum([ coef * tvals[tname] for coef, tname in expr ]) for name, expr in cexpr.named_exprs ]
-                + [ sum([ coef * tvals[tname] for coef, tname in expr ]) for name, expr in cexpr.named_typed_exprs ]
-                + [ tvals[name] for name, term in cexpr.named_terms ]
-                )
-    else:
-        assert False
+    tvals = {}
+    @q.timer
+    def eval_cexpr_set_vars():
+        for name, op in cexpr.variables:
+            variable_dict[name] = eval_op_term_expr(op, variable_dict, positions_dict, get_prop)
+    @q.timer
+    def eval_cexpr_set_terms():
+        for name, term in cexpr.named_terms:
+            tvals[name] = ama_extract(eval_op_term_expr(term, variable_dict, positions_dict, get_prop))
+    @q.timer
+    def eval_cexpr_return_exprs():
+        if is_only_total in [ True, "total", ]:
+            return np.array(
+                    [ sum([ coef * tvals[tname] for coef, tname in expr ]) for name, expr in cexpr.named_exprs ]
+                    )
+        elif is_only_total in [ "typed_total", ]:
+            return np.array(
+                    [ sum([ coef * tvals[tname] for coef, tname in expr ]) for name, expr in cexpr.named_exprs ]
+                    + [ sum([ coef * tvals[tname] for coef, tname in expr ]) for name, expr in cexpr.named_typed_exprs ]
+                    )
+        elif is_only_total in [ False, "term", ]:
+            tevals = { name : sum([ coef * tvals[tname] for coef, tname in expr ]) for name, expr in cexpr.named_typed_exprs }
+            return np.array(
+                    [ sum([ coef * tvals[tname] for coef, tname in expr ]) for name, expr in cexpr.named_exprs ]
+                    + [ sum([ coef * tvals[tname] for coef, tname in expr ]) for name, expr in cexpr.named_typed_exprs ]
+                    + [ tvals[name] for name, term in cexpr.named_terms ]
+                    )
+        else:
+            assert False
+    eval_cexpr_set_vars()
+    eval_cexpr_set_terms()
+    return eval_cexpr_return_exprs()
 
 def make_rand_spin_color_matrix(rng_state):
     rs = rng_state
@@ -150,7 +161,7 @@ def make_rand_spin_color_matrix(rng_state):
         dtype = complex))
 
 @q.timer
-def benchmark_eval_cexpr(cexpr : CExpr, *, is_only_total = "total", benchmark_size = 100, benchmark_num = 3, rng_state = None):
+def benchmark_eval_cexpr(cexpr : CExpr, *, is_only_total = "total", benchmark_size = 10, benchmark_num = 10, rng_state = None):
     if rng_state is None:
         rng_state = q.RngState("benchmark_eval_cexpr")
     positions_dict = {}
@@ -159,6 +170,7 @@ def benchmark_eval_cexpr(cexpr : CExpr, *, is_only_total = "total", benchmark_si
         positions_dict[pos] = pos
     for pos in cexpr.positions:
         prop_dict[(pos, pos,)] = make_rand_spin_color_matrix(rng_state.split(pos))
+    @q.timer
     def get_prop(flavor, xg_snk, xg_src):
         return prop_dict[(xg_src, xg_src)]
     @q.timer_verbose
@@ -166,8 +178,10 @@ def benchmark_eval_cexpr(cexpr : CExpr, *, is_only_total = "total", benchmark_si
         for k in range(benchmark_size):
             eval_cexpr(cexpr, positions_dict = positions_dict, get_prop = get_prop, is_only_total = is_only_total)
     q.displayln_info(f"benchmark_eval_cexpr: benchmark_size={benchmark_size} is_only_total={is_only_total}")
-    for i in range(benchmark_num):
-        benchmark_eval_cexpr_run()
+    def run(*args):
+        for i in range(benchmark_num):
+            benchmark_eval_cexpr_run()
+    q.parallel_map(1, run, [ None, ])
 
 def sqr_component(x):
     return x.real * x.real + 1j * x.imag * x.imag

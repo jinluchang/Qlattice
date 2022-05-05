@@ -734,7 +734,7 @@ def auto_contract_meson_jj(job_tag, traj, get_prop, get_psel, get_fsel):
     assert n_proj == len(all_jj_projection_names)
     n_tensor = len(expr_names) // 16
     assert n_tensor * 16 == len(expr_names)
-    @q.timer_verbose
+    @q.timer
     def feval(xg_src):
         counts = np.zeros((t_size, r_limit,), dtype = complex)
         values = np.zeros((n_proj, n_tensor, t_size, r_limit,), dtype = complex)

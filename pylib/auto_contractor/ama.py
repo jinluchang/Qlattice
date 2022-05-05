@@ -20,6 +20,7 @@
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 import copy
+import qlat as q
 
 class AmaVal:
 
@@ -44,6 +45,7 @@ class AmaVal:
 
 ###
 
+@q.timer
 def mk_ama_val(val, source_specification, val_list, rel_acc_list, prob_list):
     # source_specification need to be unique for each propagator source to ensure proper AMA correction for final result
     # e.g. source_specification = ("point", (12, 2, 3, 4,),)
@@ -108,6 +110,40 @@ def ama_apply2(f, x, y):
     else:
         assert False
 
+@q.timer
+def ama_extract_ama_val(x):
+    corrections = x.corrections
+    assert isinstance(corrections, list)
+    assert corrections
+    # keys = [ source_specification, ... ]
+    keys = list(corrections[0][1].keys())
+    def get_level_prob(key):
+        s = set([ d[key] for v, d in corrections ])
+        return sorted(list(s))
+    dict_level_prob = { k: get_level_prob(k) for k in keys }
+    for k, v in dict_level_prob.items():
+        assert len(v) >= 2
+    # dict_level[key] = list of accuracy levels for this key (source_specification)
+    dict_level = { k: [ l for l, prob in v ] for k, v in dict_level_prob.items() }
+    # dict_prob[key] = list of probability_of_having_this_accuracy
+    dict_prob = { k: [ prob for l, prob in v ] for k, v in dict_level_prob.items() }
+    # dict_val[(level, ...)] = v
+    dict_val = { tuple([ d[k][0] for k in keys ]): v for v, d in corrections }
+    def ama_corr(fixed_levels, remaining_keys):
+        if not remaining_keys:
+            return dict_val[tuple(fixed_levels)]
+        else:
+            key = remaining_keys[0]
+            rest_keys = remaining_keys[1:]
+            levels = dict_level[key]
+            probs = dict_prob[key]
+            vals = [ ama_corr(fixed_levels + [ l, ], rest_keys) for l in levels ]
+            corr = vals[0]
+            for i in range(1, len(vals)):
+                corr += (vals[i] - vals[i - 1]) / probs[i]
+            return corr
+    return ama_corr([], keys)
+
 def ama_extract(x, *, is_sloppy = False):
     if not isinstance(x, AmaVal):
         return x
@@ -115,37 +151,7 @@ def ama_extract(x, *, is_sloppy = False):
         if is_sloppy:
             val = x.val
             return val
-        corrections = x.corrections
-        assert isinstance(corrections, list)
-        assert corrections
-        # keys = [ source_specification, ... ]
-        keys = list(corrections[0][1].keys())
-        def get_level_prob(key):
-            s = set([ d[key] for v, d in corrections ])
-            return sorted(list(s))
-        dict_level_prob = { k: get_level_prob(k) for k in keys }
-        for k, v in dict_level_prob.items():
-            assert len(v) >= 2
-        # dict_level[key] = list of accuracy levels for this key (source_specification)
-        dict_level = { k: [ l for l, prob in v ] for k, v in dict_level_prob.items() }
-        # dict_prob[key] = list of probability_of_having_this_accuracy
-        dict_prob = { k: [ prob for l, prob in v ] for k, v in dict_level_prob.items() }
-        # dict_val[(level, ...)] = v
-        dict_val = { tuple([ d[k][0] for k in keys ]): v for v, d in corrections }
-        def ama_corr(fixed_levels, remaining_keys):
-            if not remaining_keys:
-                return dict_val[tuple(fixed_levels)]
-            else:
-                key = remaining_keys[0]
-                rest_keys = remaining_keys[1:]
-                levels = dict_level[key]
-                probs = dict_prob[key]
-                vals = [ ama_corr(fixed_levels + [ l, ], rest_keys) for l in levels ]
-                corr = vals[0]
-                for i in range(1, len(vals)):
-                    corr += (vals[i] - vals[i - 1]) / probs[i]
-                return corr
-        return ama_corr([], keys)
+        return ama_extract_ama_val(x)
     else:
         assert False
 

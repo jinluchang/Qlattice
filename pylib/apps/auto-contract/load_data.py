@@ -8,18 +8,6 @@ import os
 
 from jobs import *
 
-def mk_ama_val(val, source_specification, val_list, rel_acc_list, prob_list):
-    # source_specification need to be unique for each propagator source to ensure proper AMA correction for final result
-    # e.g. source_specification = ("point", (12, 2, 3, 4,),)
-    assert len(val_list) == len(prob_list)
-    corrections = []
-    for val_i, rel_acc_i, prob_i in zip(val_list, rel_acc_list, prob_list):
-        if val_i is not None:
-            corrections.append((val_i, { source_specification: (rel_acc_i, prob_i), },))
-    return AmaVal(val, corrections)
-
-### -------
-
 @q.timer
 def get_prop_wsrc(prop_cache, inv_type, t_src, tag_snk_type):
     cache_type_dict = {
