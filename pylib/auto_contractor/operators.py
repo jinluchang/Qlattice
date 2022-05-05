@@ -913,8 +913,8 @@ def test_meson_fj():
     diagram_type_dict[((('t', 'x_1'), 1), (('x_1', 't'), 1), (('x_2', 'x_2'), 1))] = None
     exprs = [
             mk_j5pi_mu("x_1", "mu") * mk_j_mu("x_2", "nu") * mk_pi_p("t"),
-            mk_jpi_mu("x_1", "mu") * mk_j_mu("x_2", "nu") * mk_pi_p("t"),
             mk_j5k_mu("x_1", "mu") * mk_j_mu("x_2", "nu") * mk_k_p("t"),
+            mk_jpi_mu("x_1", "mu") * mk_j_mu("x_2", "nu") * mk_pi_p("t"),
             mk_jk_mu("x_1", "mu") * mk_j_mu("x_2", "nu") * mk_k_p("t"),
             ]
     cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True, diagram_type_dict = diagram_type_dict)
