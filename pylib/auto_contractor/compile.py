@@ -432,8 +432,8 @@ def mk_cexpr(*exprs, diagram_type_dict = None):
             expr_list.append((coef, term_name,))
         for diagram_type_name, typed_expr_list in typed_expr_list_dict.items():
             if typed_expr_list:
-                named_typed_exprs.append((f"typed_exprs[{i}]['{diagram_type_name}'] # {descriptions[i]}", typed_expr_list,))
-        named_exprs.append((f"exprs[{i}] # {descriptions[i]}", expr_list,))
+                named_typed_exprs.append((f"# {descriptions[i]}\ntyped_exprs[{i}]['{diagram_type_name}']", typed_expr_list,))
+        named_exprs.append((f"# {descriptions[i]}\nexprs[{i}]", expr_list,))
     variables = []
     return CExpr(diagram_types, variables, named_terms, named_typed_exprs, named_exprs)
 
@@ -522,13 +522,13 @@ def display_cexpr(cexpr : CExpr):
         s = "+".join(map(show_variable_value, typed_expr))
         if s == "":
             s = 0
-        lines.append(f"{name}\n  = {s}")
-    lines.append(f"exprs = np.zeros({len(cexpr.named_exprs)})")
+        lines.append(f"{name} = {s}")
+    lines.append(f"exprs = [ None for i in range({len(cexpr.named_exprs)}) ]")
     for name, expr, in cexpr.named_exprs:
         s = "+".join(map(show_variable_value, expr))
         if s == "":
             s = 0
-        lines.append(f"{name}\n  = {s}")
+        lines.append(f"{name} = {s}")
     lines.append(f"End CExpr")
     return "\n".join(lines)
 

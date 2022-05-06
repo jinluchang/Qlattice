@@ -11,15 +11,15 @@ terms = [
 term_Type1_0001 = terms[0]
 term_Type1_0002 = terms[1]
 typed_exprs = [ dict() for i in range(2) ]
-typed_exprs[0]['Type1'] # < pi0(t_1) * pi0(t_2) >
-  = (1)*term_Type1_0001
-typed_exprs[1]['Type1'] # < K0(t_1)^dag * K0(t_2) >
-  = (1)*term_Type1_0002
-exprs = np.zeros(2)
-exprs[0] # < pi0(t_1) * pi0(t_2) >
-  = (1)*term_Type1_0001
-exprs[1] # < K0(t_1)^dag * K0(t_2) >
-  = (1)*term_Type1_0002
+# < pi0(t_1) * pi0(t_2) >
+typed_exprs[0]['Type1'] = (1)*term_Type1_0001
+# < K0(t_1)^dag * K0(t_2) >
+typed_exprs[1]['Type1'] = (1)*term_Type1_0002
+exprs = [ None for i in range(2) ]
+# < pi0(t_1) * pi0(t_2) >
+exprs[0] = (1)*term_Type1_0001
+# < K0(t_1)^dag * K0(t_2) >
+exprs[1] = (1)*term_Type1_0002
 End CExpr
 
 meson_f_corr
@@ -35,15 +35,15 @@ terms = [
 term_Type1_0001 = terms[0]
 term_Type1_0002 = terms[1]
 typed_exprs = [ dict() for i in range(2) ]
-typed_exprs[0]['Type1'] # < (a_pi * pi) >
-  = (-I)*term_Type1_0001
-typed_exprs[1]['Type1'] # < (a_k  * k ) >
-  = (-I)*term_Type1_0002
-exprs = np.zeros(2)
-exprs[0] # < (a_pi * pi) >
-  = (-I)*term_Type1_0001
-exprs[1] # < (a_k  * k ) >
-  = (-I)*term_Type1_0002
+# < (a_pi * pi) >
+typed_exprs[0]['Type1'] = (-I)*term_Type1_0001
+# < (a_k  * k ) >
+typed_exprs[1]['Type1'] = (-I)*term_Type1_0002
+exprs = [ None for i in range(2) ]
+# < (a_pi * pi) >
+exprs[0] = (-I)*term_Type1_0001
+# < (a_k  * k ) >
+exprs[1] = (-I)*term_Type1_0002
 End CExpr
 
 meson_m
@@ -64,39 +64,39 @@ term_Type1_0002 = terms[1]
 term_Type1_0003 = terms[2]
 term_Type1_0004 = terms[3]
 typed_exprs = [ dict() for i in range(8) ]
-typed_exprs[0]['Type1'] # < pi0(t_1) * ubaru(x_1) * pi0(t_2) >
-  = (1/2)*term_Type1_0001+(1/2)*term_Type1_0002
-typed_exprs[1]['Type1'] # < pi0(t_1) * dbard(x_1) * pi0(t_2) >
-  = (1/2)*term_Type1_0001+(1/2)*term_Type1_0002
-typed_exprs[2]['Type1'] # < pi+(t_1)^dag * ubaru(x_1) * pi+(t_2) >
-  = (1)*term_Type1_0002
-typed_exprs[3]['Type1'] # < pi+(t_1)^dag * dbard(x_1) * pi+(t_2) >
-  = (1)*term_Type1_0001
-typed_exprs[4]['Type1'] # < K0(t_1)^dag * dbard(x_1) * K0(t_2) >
-  = (1)*term_Type1_0003
-typed_exprs[5]['Type1'] # < K0(t_1)^dag * sbars(x_1) * K0(t_2) >
-  = (1)*term_Type1_0004
-typed_exprs[6]['Type1'] # < K+(t_1)^dag * ubaru(x_1) * K+(t_2) >
-  = (1)*term_Type1_0003
-typed_exprs[7]['Type1'] # < K+(t_1)^dag * sbars(x_1) * K+(t_2) >
-  = (1)*term_Type1_0004
-exprs = np.zeros(8)
-exprs[0] # < pi0(t_1) * ubaru(x_1) * pi0(t_2) >
-  = (1/2)*term_Type1_0001+(1/2)*term_Type1_0002
-exprs[1] # < pi0(t_1) * dbard(x_1) * pi0(t_2) >
-  = (1/2)*term_Type1_0001+(1/2)*term_Type1_0002
-exprs[2] # < pi+(t_1)^dag * ubaru(x_1) * pi+(t_2) >
-  = (1)*term_Type1_0002
-exprs[3] # < pi+(t_1)^dag * dbard(x_1) * pi+(t_2) >
-  = (1)*term_Type1_0001
-exprs[4] # < K0(t_1)^dag * dbard(x_1) * K0(t_2) >
-  = (1)*term_Type1_0003
-exprs[5] # < K0(t_1)^dag * sbars(x_1) * K0(t_2) >
-  = (1)*term_Type1_0004
-exprs[6] # < K+(t_1)^dag * ubaru(x_1) * K+(t_2) >
-  = (1)*term_Type1_0003
-exprs[7] # < K+(t_1)^dag * sbars(x_1) * K+(t_2) >
-  = (1)*term_Type1_0004
+# < pi0(t_1) * ubaru(x_1) * pi0(t_2) >
+typed_exprs[0]['Type1'] = (1/2)*term_Type1_0001+(1/2)*term_Type1_0002
+# < pi0(t_1) * dbard(x_1) * pi0(t_2) >
+typed_exprs[1]['Type1'] = (1/2)*term_Type1_0001+(1/2)*term_Type1_0002
+# < pi+(t_1)^dag * ubaru(x_1) * pi+(t_2) >
+typed_exprs[2]['Type1'] = (1)*term_Type1_0002
+# < pi+(t_1)^dag * dbard(x_1) * pi+(t_2) >
+typed_exprs[3]['Type1'] = (1)*term_Type1_0001
+# < K0(t_1)^dag * dbard(x_1) * K0(t_2) >
+typed_exprs[4]['Type1'] = (1)*term_Type1_0003
+# < K0(t_1)^dag * sbars(x_1) * K0(t_2) >
+typed_exprs[5]['Type1'] = (1)*term_Type1_0004
+# < K+(t_1)^dag * ubaru(x_1) * K+(t_2) >
+typed_exprs[6]['Type1'] = (1)*term_Type1_0003
+# < K+(t_1)^dag * sbars(x_1) * K+(t_2) >
+typed_exprs[7]['Type1'] = (1)*term_Type1_0004
+exprs = [ None for i in range(8) ]
+# < pi0(t_1) * ubaru(x_1) * pi0(t_2) >
+exprs[0] = (1/2)*term_Type1_0001+(1/2)*term_Type1_0002
+# < pi0(t_1) * dbard(x_1) * pi0(t_2) >
+exprs[1] = (1/2)*term_Type1_0001+(1/2)*term_Type1_0002
+# < pi+(t_1)^dag * ubaru(x_1) * pi+(t_2) >
+exprs[2] = (1)*term_Type1_0002
+# < pi+(t_1)^dag * dbard(x_1) * pi+(t_2) >
+exprs[3] = (1)*term_Type1_0001
+# < K0(t_1)^dag * dbard(x_1) * K0(t_2) >
+exprs[4] = (1)*term_Type1_0003
+# < K0(t_1)^dag * sbars(x_1) * K0(t_2) >
+exprs[5] = (1)*term_Type1_0004
+# < K+(t_1)^dag * ubaru(x_1) * K+(t_2) >
+exprs[6] = (1)*term_Type1_0003
+# < K+(t_1)^dag * sbars(x_1) * K+(t_2) >
+exprs[7] = (1)*term_Type1_0004
 End CExpr
 
 meson_jt
@@ -123,31 +123,31 @@ term_Type2_0001 = terms[3]
 term_Type2_0002 = terms[4]
 term_Type2_0003 = terms[5]
 typed_exprs = [ dict() for i in range(6) ]
-typed_exprs[0]['Type1'] # < pi+(t_1)^dag * vec_mu(u,u,x_1,3) * pi+(t_2) >
-  = (1)*term_Type1_0001
-typed_exprs[1]['Type1'] # < K+(t_1)^dag * vec_mu(u,u,x_1,3) * K+(t_2) >
-  = (1)*term_Type1_0002
-typed_exprs[2]['Type1'] # < K-(t_1)^dag * vec_mu(s,s,x_1,3) * K-(t_2) >
-  = (1)*term_Type1_0003
-typed_exprs[3]['Type2'] # < pi+(t_1p)^dag * vec_mu(u,u,x_1,3) * pi+(t_2p) >
-  = (1)*term_Type2_0001
-typed_exprs[4]['Type2'] # < K+(t_1p)^dag * vec_mu(u,u,x_1,3) * K+(t_2p) >
-  = (1)*term_Type2_0002
-typed_exprs[5]['Type2'] # < K-(t_1p)^dag * vec_mu(s,s,x_1,3) * K-(t_2p) >
-  = (1)*term_Type2_0003
-exprs = np.zeros(6)
-exprs[0] # < pi+(t_1)^dag * vec_mu(u,u,x_1,3) * pi+(t_2) >
-  = (1)*term_Type1_0001
-exprs[1] # < K+(t_1)^dag * vec_mu(u,u,x_1,3) * K+(t_2) >
-  = (1)*term_Type1_0002
-exprs[2] # < K-(t_1)^dag * vec_mu(s,s,x_1,3) * K-(t_2) >
-  = (1)*term_Type1_0003
-exprs[3] # < pi+(t_1p)^dag * vec_mu(u,u,x_1,3) * pi+(t_2p) >
-  = (1)*term_Type2_0001
-exprs[4] # < K+(t_1p)^dag * vec_mu(u,u,x_1,3) * K+(t_2p) >
-  = (1)*term_Type2_0002
-exprs[5] # < K-(t_1p)^dag * vec_mu(s,s,x_1,3) * K-(t_2p) >
-  = (1)*term_Type2_0003
+# < pi+(t_1)^dag * vec_mu(u,u,x_1,3) * pi+(t_2) >
+typed_exprs[0]['Type1'] = (1)*term_Type1_0001
+# < K+(t_1)^dag * vec_mu(u,u,x_1,3) * K+(t_2) >
+typed_exprs[1]['Type1'] = (1)*term_Type1_0002
+# < K-(t_1)^dag * vec_mu(s,s,x_1,3) * K-(t_2) >
+typed_exprs[2]['Type1'] = (1)*term_Type1_0003
+# < pi+(t_1p)^dag * vec_mu(u,u,x_1,3) * pi+(t_2p) >
+typed_exprs[3]['Type2'] = (1)*term_Type2_0001
+# < K+(t_1p)^dag * vec_mu(u,u,x_1,3) * K+(t_2p) >
+typed_exprs[4]['Type2'] = (1)*term_Type2_0002
+# < K-(t_1p)^dag * vec_mu(s,s,x_1,3) * K-(t_2p) >
+typed_exprs[5]['Type2'] = (1)*term_Type2_0003
+exprs = [ None for i in range(6) ]
+# < pi+(t_1)^dag * vec_mu(u,u,x_1,3) * pi+(t_2) >
+exprs[0] = (1)*term_Type1_0001
+# < K+(t_1)^dag * vec_mu(u,u,x_1,3) * K+(t_2) >
+exprs[1] = (1)*term_Type1_0002
+# < K-(t_1)^dag * vec_mu(s,s,x_1,3) * K-(t_2) >
+exprs[2] = (1)*term_Type1_0003
+# < pi+(t_1p)^dag * vec_mu(u,u,x_1,3) * pi+(t_2p) >
+exprs[3] = (1)*term_Type2_0001
+# < K+(t_1p)^dag * vec_mu(u,u,x_1,3) * K+(t_2p) >
+exprs[4] = (1)*term_Type2_0002
+# < K-(t_1p)^dag * vec_mu(s,s,x_1,3) * K-(t_2p) >
+exprs[5] = (1)*term_Type2_0003
 End CExpr
 
 meson_jj
@@ -206,45 +206,45 @@ term_Type4_0002 = terms[17]
 term_Type4_0003 = terms[18]
 term_Type4_0004 = terms[19]
 typed_exprs = [ dict() for i in range(5) ]
-typed_exprs[0]['Type1'] # < pi0(t_1) * j_mu(x_1,mu) * j_mu(x_2,nu) * pi0(t_2) >
-  = (-1/2)*term_Type1_0001+(-1/2)*term_Type1_0002
-typed_exprs[0]['Type2'] # < pi0(t_1) * j_mu(x_1,mu) * j_mu(x_2,nu) * pi0(t_2) >
-  = (5/18)*term_Type2_0001+(5/18)*term_Type2_0002
-typed_exprs[0]['Type3'] # < pi0(t_1) * j_mu(x_1,mu) * j_mu(x_2,nu) * pi0(t_2) >
-  = (5/18)*term_Type3_0001+(5/18)*term_Type3_0002+(5/18)*term_Type3_0003+(5/18)*term_Type3_0004
-typed_exprs[0]['Type4'] # < pi0(t_1) * j_mu(x_1,mu) * j_mu(x_2,nu) * pi0(t_2) >
-  = (-5/9)*term_Type4_0001+(-1/9)*term_Type4_0002
-typed_exprs[1]['Type2'] # < pi+(t_1)^dag * j_mu(x_1,mu) * j_mu(x_2,nu) * pi+(t_2) >
-  = (-2/9)*term_Type2_0001+(-2/9)*term_Type2_0002
-typed_exprs[1]['Type3'] # < pi+(t_1)^dag * j_mu(x_1,mu) * j_mu(x_2,nu) * pi+(t_2) >
-  = (1/9)*term_Type3_0001+(4/9)*term_Type3_0002+(1/9)*term_Type3_0003+(4/9)*term_Type3_0004
-typed_exprs[1]['Type4'] # < pi+(t_1)^dag * j_mu(x_1,mu) * j_mu(x_2,nu) * pi+(t_2) >
-  = (-5/9)*term_Type4_0001+(-1/9)*term_Type4_0002
-typed_exprs[2]['Type2'] # < K0(t_1)^dag * j_mu(x_1,mu) * j_mu(x_2,nu) * K0(t_2) >
-  = (1/9)*term_Type2_0003+(1/9)*term_Type2_0004
-typed_exprs[2]['Type3'] # < K0(t_1)^dag * j_mu(x_1,mu) * j_mu(x_2,nu) * K0(t_2) >
-  = (1/9)*term_Type3_0005+(1/9)*term_Type3_0006+(1/9)*term_Type3_0007+(1/9)*term_Type3_0008
-typed_exprs[2]['Type4'] # < K0(t_1)^dag * j_mu(x_1,mu) * j_mu(x_2,nu) * K0(t_2) >
-  = (-5/9)*term_Type4_0003+(-1/9)*term_Type4_0004
-typed_exprs[3]['Type2'] # < K+(t_1)^dag * j_mu(x_1,mu) * j_mu(x_2,nu) * K+(t_2) >
-  = (-2/9)*term_Type2_0003+(-2/9)*term_Type2_0004
-typed_exprs[3]['Type3'] # < K+(t_1)^dag * j_mu(x_1,mu) * j_mu(x_2,nu) * K+(t_2) >
-  = (4/9)*term_Type3_0005+(4/9)*term_Type3_0006+(1/9)*term_Type3_0007+(1/9)*term_Type3_0008
-typed_exprs[3]['Type4'] # < K+(t_1)^dag * j_mu(x_1,mu) * j_mu(x_2,nu) * K+(t_2) >
-  = (-5/9)*term_Type4_0003+(-1/9)*term_Type4_0004
-typed_exprs[4]['Type0'] # < j_mu(x_1,mu) * j_mu(x_2,nu) >
-  = (-5/9)*term_Type0_0001+(-1/9)*term_Type0_0002
-exprs = np.zeros(5)
-exprs[0] # < pi0(t_1) * j_mu(x_1,mu) * j_mu(x_2,nu) * pi0(t_2) >
-  = (5/18)*term_Type3_0001+(-1/2)*term_Type1_0001+(5/18)*term_Type2_0001+(5/18)*term_Type3_0002+(-1/2)*term_Type1_0002+(5/18)*term_Type2_0002+(5/18)*term_Type3_0003+(5/18)*term_Type3_0004+(-5/9)*term_Type4_0001+(-1/9)*term_Type4_0002
-exprs[1] # < pi+(t_1)^dag * j_mu(x_1,mu) * j_mu(x_2,nu) * pi+(t_2) >
-  = (1/9)*term_Type3_0001+(-2/9)*term_Type2_0001+(4/9)*term_Type3_0002+(-2/9)*term_Type2_0002+(1/9)*term_Type3_0003+(4/9)*term_Type3_0004+(-5/9)*term_Type4_0001+(-1/9)*term_Type4_0002
-exprs[2] # < K0(t_1)^dag * j_mu(x_1,mu) * j_mu(x_2,nu) * K0(t_2) >
-  = (1/9)*term_Type3_0005+(1/9)*term_Type2_0003+(1/9)*term_Type3_0006+(-5/9)*term_Type4_0003+(1/9)*term_Type3_0007+(1/9)*term_Type2_0004+(1/9)*term_Type3_0008+(-1/9)*term_Type4_0004
-exprs[3] # < K+(t_1)^dag * j_mu(x_1,mu) * j_mu(x_2,nu) * K+(t_2) >
-  = (4/9)*term_Type3_0005+(-2/9)*term_Type2_0003+(4/9)*term_Type3_0006+(-5/9)*term_Type4_0003+(1/9)*term_Type3_0007+(-2/9)*term_Type2_0004+(1/9)*term_Type3_0008+(-1/9)*term_Type4_0004
-exprs[4] # < j_mu(x_1,mu) * j_mu(x_2,nu) >
-  = (-5/9)*term_Type0_0001+(-1/9)*term_Type0_0002
+# < pi0(t_1) * j_mu(x_1,mu) * j_mu(x_2,nu) * pi0(t_2) >
+typed_exprs[0]['Type1'] = (-1/2)*term_Type1_0001+(-1/2)*term_Type1_0002
+# < pi0(t_1) * j_mu(x_1,mu) * j_mu(x_2,nu) * pi0(t_2) >
+typed_exprs[0]['Type2'] = (5/18)*term_Type2_0001+(5/18)*term_Type2_0002
+# < pi0(t_1) * j_mu(x_1,mu) * j_mu(x_2,nu) * pi0(t_2) >
+typed_exprs[0]['Type3'] = (5/18)*term_Type3_0001+(5/18)*term_Type3_0002+(5/18)*term_Type3_0003+(5/18)*term_Type3_0004
+# < pi0(t_1) * j_mu(x_1,mu) * j_mu(x_2,nu) * pi0(t_2) >
+typed_exprs[0]['Type4'] = (-5/9)*term_Type4_0001+(-1/9)*term_Type4_0002
+# < pi+(t_1)^dag * j_mu(x_1,mu) * j_mu(x_2,nu) * pi+(t_2) >
+typed_exprs[1]['Type2'] = (-2/9)*term_Type2_0001+(-2/9)*term_Type2_0002
+# < pi+(t_1)^dag * j_mu(x_1,mu) * j_mu(x_2,nu) * pi+(t_2) >
+typed_exprs[1]['Type3'] = (1/9)*term_Type3_0001+(4/9)*term_Type3_0002+(1/9)*term_Type3_0003+(4/9)*term_Type3_0004
+# < pi+(t_1)^dag * j_mu(x_1,mu) * j_mu(x_2,nu) * pi+(t_2) >
+typed_exprs[1]['Type4'] = (-5/9)*term_Type4_0001+(-1/9)*term_Type4_0002
+# < K0(t_1)^dag * j_mu(x_1,mu) * j_mu(x_2,nu) * K0(t_2) >
+typed_exprs[2]['Type2'] = (1/9)*term_Type2_0003+(1/9)*term_Type2_0004
+# < K0(t_1)^dag * j_mu(x_1,mu) * j_mu(x_2,nu) * K0(t_2) >
+typed_exprs[2]['Type3'] = (1/9)*term_Type3_0005+(1/9)*term_Type3_0006+(1/9)*term_Type3_0007+(1/9)*term_Type3_0008
+# < K0(t_1)^dag * j_mu(x_1,mu) * j_mu(x_2,nu) * K0(t_2) >
+typed_exprs[2]['Type4'] = (-5/9)*term_Type4_0003+(-1/9)*term_Type4_0004
+# < K+(t_1)^dag * j_mu(x_1,mu) * j_mu(x_2,nu) * K+(t_2) >
+typed_exprs[3]['Type2'] = (-2/9)*term_Type2_0003+(-2/9)*term_Type2_0004
+# < K+(t_1)^dag * j_mu(x_1,mu) * j_mu(x_2,nu) * K+(t_2) >
+typed_exprs[3]['Type3'] = (4/9)*term_Type3_0005+(4/9)*term_Type3_0006+(1/9)*term_Type3_0007+(1/9)*term_Type3_0008
+# < K+(t_1)^dag * j_mu(x_1,mu) * j_mu(x_2,nu) * K+(t_2) >
+typed_exprs[3]['Type4'] = (-5/9)*term_Type4_0003+(-1/9)*term_Type4_0004
+# < j_mu(x_1,mu) * j_mu(x_2,nu) >
+typed_exprs[4]['Type0'] = (-5/9)*term_Type0_0001+(-1/9)*term_Type0_0002
+exprs = [ None for i in range(5) ]
+# < pi0(t_1) * j_mu(x_1,mu) * j_mu(x_2,nu) * pi0(t_2) >
+exprs[0] = (5/18)*term_Type3_0001+(-1/2)*term_Type1_0001+(5/18)*term_Type2_0001+(5/18)*term_Type3_0002+(-1/2)*term_Type1_0002+(5/18)*term_Type2_0002+(5/18)*term_Type3_0003+(5/18)*term_Type3_0004+(-5/9)*term_Type4_0001+(-1/9)*term_Type4_0002
+# < pi+(t_1)^dag * j_mu(x_1,mu) * j_mu(x_2,nu) * pi+(t_2) >
+exprs[1] = (1/9)*term_Type3_0001+(-2/9)*term_Type2_0001+(4/9)*term_Type3_0002+(-2/9)*term_Type2_0002+(1/9)*term_Type3_0003+(4/9)*term_Type3_0004+(-5/9)*term_Type4_0001+(-1/9)*term_Type4_0002
+# < K0(t_1)^dag * j_mu(x_1,mu) * j_mu(x_2,nu) * K0(t_2) >
+exprs[2] = (1/9)*term_Type3_0005+(1/9)*term_Type2_0003+(1/9)*term_Type3_0006+(-5/9)*term_Type4_0003+(1/9)*term_Type3_0007+(1/9)*term_Type2_0004+(1/9)*term_Type3_0008+(-1/9)*term_Type4_0004
+# < K+(t_1)^dag * j_mu(x_1,mu) * j_mu(x_2,nu) * K+(t_2) >
+exprs[3] = (4/9)*term_Type3_0005+(-2/9)*term_Type2_0003+(4/9)*term_Type3_0006+(-5/9)*term_Type4_0003+(1/9)*term_Type3_0007+(-2/9)*term_Type2_0004+(1/9)*term_Type3_0008+(-1/9)*term_Type4_0004
+# < j_mu(x_1,mu) * j_mu(x_2,nu) >
+exprs[4] = (-5/9)*term_Type0_0001+(-1/9)*term_Type0_0002
 End CExpr
 
 meson_fj
@@ -273,21 +273,21 @@ term_Type1_0006 = terms[5]
 term_Type1_0007 = terms[6]
 term_Type1_0008 = terms[7]
 typed_exprs = [ dict() for i in range(4) ]
-typed_exprs[0]['Type1'] # < j5pi_mu(x_1,mu) * j_mu(x_2,nu) * pi+(t) >
-  = (I/3)*term_Type1_0001+(-2*I/3)*term_Type1_0002
-typed_exprs[1]['Type1'] # < j5k_mu(x_1,mu) * j_mu(x_2,nu) * K+(t) >
-  = (I/3)*term_Type1_0003+(-2*I/3)*term_Type1_0004
-typed_exprs[2]['Type1'] # < jpi_mu(x_1,mu) * j_mu(x_2,nu) * pi+(t) >
-  = (I/3)*term_Type1_0005+(-2*I/3)*term_Type1_0006
-typed_exprs[3]['Type1'] # < jk_mu(x_1,mu) * j_mu(x_2,nu) * K+(t) >
-  = (I/3)*term_Type1_0007+(-2*I/3)*term_Type1_0008
-exprs = np.zeros(4)
-exprs[0] # < j5pi_mu(x_1,mu) * j_mu(x_2,nu) * pi+(t) >
-  = (I/3)*term_Type1_0001+(-2*I/3)*term_Type1_0002
-exprs[1] # < j5k_mu(x_1,mu) * j_mu(x_2,nu) * K+(t) >
-  = (I/3)*term_Type1_0003+(-2*I/3)*term_Type1_0004
-exprs[2] # < jpi_mu(x_1,mu) * j_mu(x_2,nu) * pi+(t) >
-  = (I/3)*term_Type1_0005+(-2*I/3)*term_Type1_0006
-exprs[3] # < jk_mu(x_1,mu) * j_mu(x_2,nu) * K+(t) >
-  = (I/3)*term_Type1_0007+(-2*I/3)*term_Type1_0008
+# < j5pi_mu(x_1,mu) * j_mu(x_2,nu) * pi+(t) >
+typed_exprs[0]['Type1'] = (I/3)*term_Type1_0001+(-2*I/3)*term_Type1_0002
+# < j5k_mu(x_1,mu) * j_mu(x_2,nu) * K+(t) >
+typed_exprs[1]['Type1'] = (I/3)*term_Type1_0003+(-2*I/3)*term_Type1_0004
+# < jpi_mu(x_1,mu) * j_mu(x_2,nu) * pi+(t) >
+typed_exprs[2]['Type1'] = (I/3)*term_Type1_0005+(-2*I/3)*term_Type1_0006
+# < jk_mu(x_1,mu) * j_mu(x_2,nu) * K+(t) >
+typed_exprs[3]['Type1'] = (I/3)*term_Type1_0007+(-2*I/3)*term_Type1_0008
+exprs = [ None for i in range(4) ]
+# < j5pi_mu(x_1,mu) * j_mu(x_2,nu) * pi+(t) >
+exprs[0] = (I/3)*term_Type1_0001+(-2*I/3)*term_Type1_0002
+# < j5k_mu(x_1,mu) * j_mu(x_2,nu) * K+(t) >
+exprs[1] = (I/3)*term_Type1_0003+(-2*I/3)*term_Type1_0004
+# < jpi_mu(x_1,mu) * j_mu(x_2,nu) * pi+(t) >
+exprs[2] = (I/3)*term_Type1_0005+(-2*I/3)*term_Type1_0006
+# < jk_mu(x_1,mu) * j_mu(x_2,nu) * K+(t) >
+exprs[3] = (I/3)*term_Type1_0007+(-2*I/3)*term_Type1_0008
 End CExpr
