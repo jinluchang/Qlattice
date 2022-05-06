@@ -99,6 +99,8 @@ def get_cexpr_3f4f_matching():
             [ mk_kpi_0_i3halves("t2_1", "t2_3") + "Kpi_0_I3halves_t2_3", 1, 1.5,],
             [ mk_kpi_0_i1half("t2_1", "t2_4") + "Kpi_0_I1half_t2_4", 1, 0.5,],
             [ mk_kpi_0_i3halves("t2_1", "t2_4") + "Kpi_0_I3halves_t2_4", 1, 1.5,],
+        ]
+        exprs_src_for2pt = [
             [ mk_Q0_b81("t2_1", "even", True) + "Q0_b81wsrc(e)", 1, 0.5,],
             [ mk_Q1_b81("t2_1", "even", True) + "Q1_b81wsrc(e)", 1, 0.5,],
             [ mk_Q2_b81("t2_1", "even", True) + "Q2_b81wsrc(e)", 1, 0.5,],
@@ -125,6 +127,9 @@ def get_cexpr_3f4f_matching():
             [ mk_kk_i0("t1_1", "t1_4", True) + "KK_I0_t1_4", 1, 0,],
             [ mk_sigma("t1_1", True) + "sigma", 1, 0,],
             [ mk_pi_0("t1_1", True) + "pi0", -1, 1,],
+            [ mk_expr(1) + "1", 1, 0,],
+        ]
+        exprs_snk_for2pt = [
             [ mk_expr(1) + "1", 1, 0,],
         ]
         exprs_vac = [
@@ -169,6 +174,16 @@ def get_cexpr_3f4f_matching():
                     exprs_ops = exprs_odd_ops
                 for expr_op in exprs_ops:
                     exprs.append(expr_snk[0] * expr_op * expr_src[0])
+        for expr_src in exprs_src_for2pt:
+            for expr_snk in exprs_snk_for2pt:
+                if abs(expr_snk[2]-expr_src[2]) != 0.5 and abs(expr_snk[2]+expr_src[2]) != 0.5:
+                    continue
+                parity = expr_snk[1] * expr_src[1]
+                exprs_ops = exprs_even_ops
+                if parity == -1:
+                    exprs_ops = exprs_odd_ops
+                for expr_op in exprs_ops:
+                    exprs.append(expr_snk[0] * expr_op * expr_src[0])
         for expr_src_vec in exprs_src_vec:
             for expr_snk_vec in exprs_snk_vec:
                 if abs(expr_snk_vec[4]-expr_src_vec[4]) != 0.5 and abs(expr_snk_vec[4]+expr_src_vec[4]) != 0.5:
@@ -191,7 +206,7 @@ def get_cexpr_3f4f_matching():
     return cexpr
 
 if __name__ == "__main__":
-    #get_cexpr_meson_corr()
-    #get_cexpr_meson_corr_with_env()
-    #get_cexpr_vev()
+    get_cexpr_meson_corr()
+    get_cexpr_meson_corr_with_env()
+    get_cexpr_vev()
     get_cexpr_3f4f_matching()
