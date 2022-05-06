@@ -189,6 +189,5 @@ rup.dict_params["24IH2"][tag] = 6
 rup.dict_params["24IH3"][tag] = 6
 rup.dict_params["32IH1"][tag] = 8
 rup.dict_params["32IH2"][tag] = 8
-rup.dict_params["32Dfine"][tag] = 10
 rup.dict_params["48I"][tag] = 12
 rup.dict_params["64I"][tag] = 18
