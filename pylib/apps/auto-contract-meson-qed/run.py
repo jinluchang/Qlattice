@@ -58,6 +58,7 @@ def get_cexpr_meson_corr():
         terms = [
                 tr(gamma_5*S_l(t_1,t_2)*gamma_5*S_l(t_2,t_1)), # term_Type1_0001
                 tr(gamma_5*S_l(t_1,t_2)*gamma_5*S_s(t_2,t_1)), # term_Type1_0002
+                tr(gamma_5*S_l(t_2,t_1)*gamma_5*S_s(t_1,t_2)), # term_Type1_0003
                 ]
         cexpr = contract_simplify_compile(*terms, is_isospin_symmetric_limit = True)
         q.displayln_info(display_cexpr(cexpr))
@@ -246,6 +247,7 @@ def get_cexpr_meson_f_corr():
         terms = [
                 tr(gamma_t*gamma_5*S_l(x_2,t_1)*gamma_5*S_l(t_1,x_2)), # term_Type1_0001
                 tr(gamma_t*gamma_5*S_l(x_2,t_1)*gamma_5*S_s(t_1,x_2)), # term_Type1_0002
+                tr(gamma_t*gamma_5*S_s(x_2,t_1)*gamma_5*S_l(t_1,x_2)), # term_Type1_0003
                 ]
         cexpr = contract_simplify_compile(*terms, is_isospin_symmetric_limit = True)
         q.displayln_info(display_cexpr(cexpr))
@@ -391,7 +393,9 @@ def get_cexpr_meson_m():
                 tr(gamma_5*S_l(t_1,t_2)*gamma_5*S_l(t_2,x_1)*S_l(x_1,t_1)), # term_Type1_0001
                 tr(gamma_5*S_l(t_1,x_1)*S_l(x_1,t_2)*gamma_5*S_l(t_2,t_1)), # term_Type1_0002
                 tr(gamma_5*S_l(t_1,x_1)*S_l(x_1,t_2)*gamma_5*S_s(t_2,t_1)), # term_Type1_0003
-                tr(gamma_5*S_l(t_1,t_2)*gamma_5*S_s(t_2,x_1)*S_s(x_1,t_1)), # term_Type1_0004
+                tr(gamma_5*S_l(t_2,x_1)*S_l(x_1,t_1)*gamma_5*S_s(t_1,t_2)), # term_Type1_0004
+                tr(gamma_5*S_l(t_1,t_2)*gamma_5*S_s(t_2,x_1)*S_s(x_1,t_1)), # term_Type1_0005
+                tr(gamma_5*S_l(t_2,t_1)*gamma_5*S_s(t_1,x_1)*S_s(x_1,t_2)), # term_Type1_0006
                 ]
         cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
         q.displayln_info(display_cexpr(cexpr))
@@ -448,13 +452,19 @@ def get_cexpr_meson_jt():
     def calc_cexpr():
         t_1, t_1p, t_2, t_2p, x_1 = ['t_1', 't_1p', 't_2', 't_2p', 'x_1']
         terms = [
-          tr(gamma_t*S_l(x_1,t_2)*gamma_5*S_l(t_2,t_1)*gamma_5*S_l(t_1,x_1)), # term_Type1_0001
-          tr(gamma_t*S_l(x_1,t_2)*gamma_5*S_s(t_2,t_1)*gamma_5*S_l(t_1,x_1)), # term_Type1_0002
-          tr(gamma_t*S_s(x_1,t_2)*gamma_5*S_l(t_2,t_1)*gamma_5*S_s(t_1,x_1)), # term_Type1_0003
-          tr(gamma_t*S_l(x_1,t_2p)*gamma_5*S_l(t_2p,t_1p)*gamma_5*S_l(t_1p,x_1)), # term_Type2_0001
-          tr(gamma_t*S_l(x_1,t_2p)*gamma_5*S_s(t_2p,t_1p)*gamma_5*S_l(t_1p,x_1)), # term_Type2_0002
-          tr(gamma_t*S_s(x_1,t_2p)*gamma_5*S_l(t_2p,t_1p)*gamma_5*S_s(t_1p,x_1)), # term_Type2_0003
-        ]
+                tr(gamma_t*S_l(x_1,t_1)*gamma_5*S_l(t_1,t_2)*gamma_5*S_l(t_2,x_1)), # term_Type1_0001
+                tr(gamma_t*S_l(x_1,t_2)*gamma_5*S_l(t_2,t_1)*gamma_5*S_l(t_1,x_1)), # term_Type1_0002
+                tr(gamma_t*S_l(x_1,t_1)*gamma_5*S_s(t_1,t_2)*gamma_5*S_l(t_2,x_1)), # term_Type1_0003
+                tr(gamma_t*S_l(x_1,t_2)*gamma_5*S_s(t_2,t_1)*gamma_5*S_l(t_1,x_1)), # term_Type1_0004
+                tr(gamma_t*S_s(x_1,t_1)*gamma_5*S_l(t_1,t_2)*gamma_5*S_s(t_2,x_1)), # term_Type1_0005
+                tr(gamma_t*S_s(x_1,t_2)*gamma_5*S_l(t_2,t_1)*gamma_5*S_s(t_1,x_1)), # term_Type1_0006
+                tr(gamma_t*S_l(x_1,t_1p)*gamma_5*S_l(t_1p,t_2p)*gamma_5*S_l(t_2p,x_1)), # term_Type2_0001
+                tr(gamma_t*S_l(x_1,t_2p)*gamma_5*S_l(t_2p,t_1p)*gamma_5*S_l(t_1p,x_1)), # term_Type2_0002
+                tr(gamma_t*S_l(x_1,t_1p)*gamma_5*S_s(t_1p,t_2p)*gamma_5*S_l(t_2p,x_1)), # term_Type2_0003
+                tr(gamma_t*S_l(x_1,t_2p)*gamma_5*S_s(t_2p,t_1p)*gamma_5*S_l(t_1p,x_1)), # term_Type2_0004
+                tr(gamma_t*S_s(x_1,t_1p)*gamma_5*S_l(t_1p,t_2p)*gamma_5*S_s(t_2p,x_1)), # term_Type2_0005
+                tr(gamma_t*S_s(x_1,t_2p)*gamma_5*S_l(t_2p,t_1p)*gamma_5*S_s(t_1p,x_1)), # term_Type2_0006
+                ]
         cexpr = contract_simplify_compile(*terms, is_isospin_symmetric_limit = True)
         q.displayln_info(display_cexpr(cexpr))
         cexpr.collect_op()
@@ -508,6 +518,62 @@ def auto_contract_meson_jt(job_tag, traj, get_prop, get_psel, get_fsel):
     q.displayln_info(ld_sum.show())
 
 # ----
+
+@q.timer
+def get_cexpr_meson_jj():
+    def calc_cexpr():
+        t_1, t_2, x_1, x_2 = ['t_1', 't_2', 'x_1', 'x_2']
+        def mk_terms(mu, nu):
+            return [
+                    tr(gamma(mu)*S_l(x_1,x_2)*gamma(nu)*S_l(x_2,x_1)), # term_Type0_0001
+                    tr(gamma(mu)*S_s(x_1,x_2)*gamma(nu)*S_s(x_2,x_1)), # term_Type0_0002
+                    tr(gamma(mu)*S_l(x_1,t_1)*gamma_5*S_l(t_1,x_1))*tr(gamma(nu)*S_l(x_2,t_2)*gamma_5*S_l(t_2,x_2)), # term_Type1_0001
+                    tr(gamma(mu)*S_l(x_1,t_2)*gamma_5*S_l(t_2,x_1))*tr(gamma(nu)*S_l(x_2,t_1)*gamma_5*S_l(t_1,x_2)), # term_Type1_0002
+                    tr(gamma(mu)*S_l(x_1,t_1)*gamma_5*S_l(t_1,x_2)*gamma(nu)*S_l(x_2,t_2)*gamma_5*S_l(t_2,x_1)), # term_Type2_0001
+                    tr(gamma(mu)*S_l(x_1,t_2)*gamma_5*S_l(t_2,x_2)*gamma(nu)*S_l(x_2,t_1)*gamma_5*S_l(t_1,x_1)), # term_Type2_0002
+                    tr(gamma(mu)*S_l(x_1,t_1)*gamma_5*S_s(t_1,x_2)*gamma(nu)*S_s(x_2,t_2)*gamma_5*S_l(t_2,x_1)), # term_Type2_0003
+                    tr(gamma(mu)*S_l(x_1,t_2)*gamma_5*S_s(t_2,x_2)*gamma(nu)*S_s(x_2,t_1)*gamma_5*S_l(t_1,x_1)), # term_Type2_0004
+                    tr(gamma(mu)*S_s(x_1,t_1)*gamma_5*S_l(t_1,x_2)*gamma(nu)*S_l(x_2,t_2)*gamma_5*S_s(t_2,x_1)), # term_Type2_0005
+                    tr(gamma(mu)*S_s(x_1,t_2)*gamma_5*S_l(t_2,x_2)*gamma(nu)*S_l(x_2,t_1)*gamma_5*S_s(t_1,x_1)), # term_Type2_0006
+                    tr(gamma(mu)*S_l(x_1,t_1)*gamma_5*S_l(t_1,t_2)*gamma_5*S_l(t_2,x_2)*gamma(nu)*S_l(x_2,x_1)), # term_Type3_0001
+                    tr(gamma(mu)*S_l(x_1,t_2)*gamma_5*S_l(t_2,t_1)*gamma_5*S_l(t_1,x_2)*gamma(nu)*S_l(x_2,x_1)), # term_Type3_0002
+                    tr(gamma(mu)*S_l(x_1,x_2)*gamma(nu)*S_l(x_2,t_1)*gamma_5*S_l(t_1,t_2)*gamma_5*S_l(t_2,x_1)), # term_Type3_0003
+                    tr(gamma(mu)*S_l(x_1,x_2)*gamma(nu)*S_l(x_2,t_2)*gamma_5*S_l(t_2,t_1)*gamma_5*S_l(t_1,x_1)), # term_Type3_0004
+                    tr(gamma(mu)*S_l(x_1,t_1)*gamma_5*S_s(t_1,t_2)*gamma_5*S_l(t_2,x_2)*gamma(nu)*S_l(x_2,x_1)), # term_Type3_0005
+                    tr(gamma(mu)*S_l(x_1,t_2)*gamma_5*S_s(t_2,t_1)*gamma_5*S_l(t_1,x_2)*gamma(nu)*S_l(x_2,x_1)), # term_Type3_0006
+                    tr(gamma(mu)*S_l(x_1,x_2)*gamma(nu)*S_l(x_2,t_1)*gamma_5*S_s(t_1,t_2)*gamma_5*S_l(t_2,x_1)), # term_Type3_0007
+                    tr(gamma(mu)*S_l(x_1,x_2)*gamma(nu)*S_l(x_2,t_2)*gamma_5*S_s(t_2,t_1)*gamma_5*S_l(t_1,x_1)), # term_Type3_0008
+                    tr(gamma(mu)*S_s(x_1,t_1)*gamma_5*S_l(t_1,t_2)*gamma_5*S_s(t_2,x_2)*gamma(nu)*S_s(x_2,x_1)), # term_Type3_0009
+                    tr(gamma(mu)*S_s(x_1,t_2)*gamma_5*S_l(t_2,t_1)*gamma_5*S_s(t_1,x_2)*gamma(nu)*S_s(x_2,x_1)), # term_Type3_0010
+                    tr(gamma(mu)*S_s(x_1,x_2)*gamma(nu)*S_s(x_2,t_1)*gamma_5*S_l(t_1,t_2)*gamma_5*S_s(t_2,x_1)), # term_Type3_0011
+                    tr(gamma(mu)*S_s(x_1,x_2)*gamma(nu)*S_s(x_2,t_2)*gamma_5*S_l(t_2,t_1)*gamma_5*S_s(t_1,x_1)), # term_Type3_0012
+                    tr(gamma(mu)*S_l(x_1,x_2)*gamma(nu)*S_l(x_2,x_1))*tr(gamma_5*S_l(t_1,t_2)*gamma_5*S_l(t_2,t_1)), # term_Type4_0001
+                    tr(gamma(mu)*S_s(x_1,x_2)*gamma(nu)*S_s(x_2,x_1))*tr(gamma_5*S_l(t_1,t_2)*gamma_5*S_l(t_2,t_1)), # term_Type4_0002
+                    tr(gamma(mu)*S_l(x_1,x_2)*gamma(nu)*S_l(x_2,x_1))*tr(gamma_5*S_l(t_1,t_2)*gamma_5*S_s(t_2,t_1)), # term_Type4_0003
+                    tr(gamma(mu)*S_l(x_1,x_2)*gamma(nu)*S_l(x_2,x_1))*tr(gamma_5*S_l(t_2,t_1)*gamma_5*S_s(t_1,t_2)), # term_Type4_0004
+                    tr(gamma(mu)*S_s(x_1,x_2)*gamma(nu)*S_s(x_2,x_1))*tr(gamma_5*S_l(t_1,t_2)*gamma_5*S_s(t_2,t_1)), # term_Type4_0005
+                    tr(gamma(mu)*S_s(x_1,x_2)*gamma(nu)*S_s(x_2,x_1))*tr(gamma_5*S_l(t_2,t_1)*gamma_5*S_s(t_1,t_2)), # term_Type4_0006
+                    ]
+        n_tensor = 28
+        terms_mu_nu = [ [ mk_terms(mu, nu) for nu in range(4) ] for mu in range(4) ]
+        for t_nu in terms_mu_nu:
+            for t in t_nu:
+                assert n_tensor == len(t)
+        terms = []
+        terms += [ terms_mu_nu[mu][nu][i] for i in range(n_tensor) for mu in range(4) for nu in range(4) ]
+        # Also calculate the meson corr
+        terms += [
+                tr(gamma_5*S_l(t_1,t_2)*gamma_5*S_l(t_2,t_1)), # term_Type1_0001
+                tr(gamma_5*S_l(t_1,t_2)*gamma_5*S_s(t_2,t_1)), # term_Type1_0002
+                tr(gamma_5*S_l(t_2,t_1)*gamma_5*S_s(t_1,t_2)), # term_Type1_0003
+                ]
+        cexpr = contract_simplify_compile(*terms, is_isospin_symmetric_limit = True)
+        q.displayln_info(display_cexpr(cexpr))
+        cexpr.collect_op()
+        return cexpr
+    cexpr = q.pickle_cache_call(calc_cexpr, f"cache/auto_contract_cexpr/meson_jj-cexpr.pickle")
+    q.displayln_info(display_cexpr_raw(cexpr))
+    return cexpr
 
 def r_scaling_factor():
     return 5.0
@@ -596,53 +662,6 @@ def accumulate_meson_jj(counts, values, values_meson_corr, res_arr, res_meson_co
     for idx_meson in range(2):
         values_meson_corr[idx_meson, t, r_idx_low] += res_meson_corr[idx_meson]
 
-@q.timer
-def get_cexpr_meson_jj():
-    def calc_cexpr():
-        t_1, t_2, x_1, x_2 = ['t_1', 't_2', 'x_1', 'x_2']
-        def mk_terms(mu, nu):
-            return [
-                    tr(gamma(mu)*S_l(x_1,x_2)*gamma(nu)*S_l(x_2,x_1)), # term_Type0_0001
-                    tr(gamma(mu)*S_s(x_1,x_2)*gamma(nu)*S_s(x_2,x_1)), # term_Type0_0002
-                    tr(gamma(mu)*S_l(x_1,t_1)*gamma_5*S_l(t_1,x_1))*tr(gamma(nu)*S_l(x_2,t_2)*gamma_5*S_l(t_2,x_2)), # term_Type1_0001
-                    tr(gamma(mu)*S_l(x_1,t_2)*gamma_5*S_l(t_2,x_1))*tr(gamma(nu)*S_l(x_2,t_1)*gamma_5*S_l(t_1,x_2)), # term_Type1_0002
-                    tr(gamma(mu)*S_l(x_1,t_1)*gamma_5*S_l(t_1,x_2)*gamma(nu)*S_l(x_2,t_2)*gamma_5*S_l(t_2,x_1)), # term_Type2_0001
-                    tr(gamma(mu)*S_l(x_1,t_2)*gamma_5*S_l(t_2,x_2)*gamma(nu)*S_l(x_2,t_1)*gamma_5*S_l(t_1,x_1)), # term_Type2_0002
-                    tr(gamma(mu)*S_l(x_1,t_2)*gamma_5*S_s(t_2,x_2)*gamma(nu)*S_s(x_2,t_1)*gamma_5*S_l(t_1,x_1)), # term_Type2_0003
-                    tr(gamma(mu)*S_s(x_1,t_1)*gamma_5*S_l(t_1,x_2)*gamma(nu)*S_l(x_2,t_2)*gamma_5*S_s(t_2,x_1)), # term_Type2_0004
-                    tr(gamma(mu)*S_l(x_1,t_1)*gamma_5*S_l(t_1,t_2)*gamma_5*S_l(t_2,x_2)*gamma(nu)*S_l(x_2,x_1)), # term_Type3_0001
-                    tr(gamma(mu)*S_l(x_1,t_2)*gamma_5*S_l(t_2,t_1)*gamma_5*S_l(t_1,x_2)*gamma(nu)*S_l(x_2,x_1)), # term_Type3_0002
-                    tr(gamma(mu)*S_l(x_1,x_2)*gamma(nu)*S_l(x_2,t_1)*gamma_5*S_l(t_1,t_2)*gamma_5*S_l(t_2,x_1)), # term_Type3_0003
-                    tr(gamma(mu)*S_l(x_1,x_2)*gamma(nu)*S_l(x_2,t_2)*gamma_5*S_l(t_2,t_1)*gamma_5*S_l(t_1,x_1)), # term_Type3_0004
-                    tr(gamma(mu)*S_l(x_1,t_2)*gamma_5*S_s(t_2,t_1)*gamma_5*S_l(t_1,x_2)*gamma(nu)*S_l(x_2,x_1)), # term_Type3_0005
-                    tr(gamma(mu)*S_l(x_1,x_2)*gamma(nu)*S_l(x_2,t_2)*gamma_5*S_s(t_2,t_1)*gamma_5*S_l(t_1,x_1)), # term_Type3_0006
-                    tr(gamma(mu)*S_s(x_1,t_1)*gamma_5*S_l(t_1,t_2)*gamma_5*S_s(t_2,x_2)*gamma(nu)*S_s(x_2,x_1)), # term_Type3_0007
-                    tr(gamma(mu)*S_s(x_1,x_2)*gamma(nu)*S_s(x_2,t_1)*gamma_5*S_l(t_1,t_2)*gamma_5*S_s(t_2,x_1)), # term_Type3_0008
-                    tr(gamma(mu)*S_l(x_1,x_2)*gamma(nu)*S_l(x_2,x_1))*tr(gamma_5*S_l(t_1,t_2)*gamma_5*S_l(t_2,t_1)), # term_Type4_0001
-                    tr(gamma(mu)*S_s(x_1,x_2)*gamma(nu)*S_s(x_2,x_1))*tr(gamma_5*S_l(t_1,t_2)*gamma_5*S_l(t_2,t_1)), # term_Type4_0002
-                    tr(gamma(mu)*S_l(x_1,x_2)*gamma(nu)*S_l(x_2,x_1))*tr(gamma_5*S_l(t_1,t_2)*gamma_5*S_s(t_2,t_1)), # term_Type4_0003
-                    tr(gamma(mu)*S_s(x_1,x_2)*gamma(nu)*S_s(x_2,x_1))*tr(gamma_5*S_l(t_1,t_2)*gamma_5*S_s(t_2,t_1)), # term_Type4_0004
-                    ]
-        terms_mu_nu = [ [ mk_terms(mu, nu) for nu in range(4) ] for mu in range(4) ]
-        n_tensor = 20
-        for t_nu in terms_mu_nu:
-            for t in t_nu:
-                assert n_tensor == len(t)
-        terms = []
-        terms += [ terms_mu_nu[mu][nu][i] for i in range(n_tensor) for mu in range(4) for nu in range(4) ]
-        # Also calculate the meson corr
-        terms += [
-                tr(gamma_5*S_l(t_1,t_2)*gamma_5*S_l(t_2,t_1)), # term_Type1_0001
-                tr(gamma_5*S_l(t_1,t_2)*gamma_5*S_s(t_2,t_1)), # term_Type1_0002
-                ]
-        cexpr = contract_simplify_compile(*terms, is_isospin_symmetric_limit = True)
-        q.displayln_info(display_cexpr(cexpr))
-        cexpr.collect_op()
-        return cexpr
-    cexpr = q.pickle_cache_call(calc_cexpr, f"cache/auto_contract_cexpr/meson_jj-cexpr.pickle")
-    q.displayln_info(display_cexpr_raw(cexpr))
-    return cexpr
-
 @q.timer_verbose
 def auto_contract_meson_jj(job_tag, traj, get_prop, get_psel, get_fsel):
     fn = f"auto-contract/{job_tag}/traj={traj}/meson_jj.lat"
@@ -665,13 +684,13 @@ def auto_contract_meson_jj(job_tag, traj, get_prop, get_psel, get_fsel):
     r_limit = get_r_limit(total_site)
     n_proj = len(all_jj_projections)
     assert n_proj == len(all_jj_projection_names)
-    n_tensor = (len(expr_names) - 2) // 16
-    assert n_tensor * 16 + 2 == len(expr_names)
+    n_tensor = (len(expr_names) - 3) // 16
+    assert n_tensor * 16 + 3 == len(expr_names)
     @q.timer
     def feval(xg_src):
         counts = np.zeros((t_size, r_limit,), dtype = complex)
         values = np.zeros((n_proj, n_tensor, t_size, r_limit,), dtype = complex)
-        values_meson_corr = np.zeros((2, t_size, r_limit), dtype = complex)
+        values_meson_corr = np.zeros((3, t_size, r_limit), dtype = complex)
         for xg_snk in xg_fsel_list:
             x_rel = [ rel_mod(xg_snk[mu] - xg_src[mu], total_site[mu]) for mu in range(4) ]
             x_rel_t = x_rel[3]
@@ -686,9 +705,9 @@ def auto_contract_meson_jj(job_tag, traj, get_prop, get_psel, get_fsel):
                     "t_2" : ("wall", t_2),
                     }
             res = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop, is_only_total = "total")
-            assert res.shape[0] == 16 * n_tensor + 2
-            res_arr = res[:-2].reshape((n_tensor, 4, 4))
-            res_meson_corr = res[-2:]
+            assert res.shape[0] == 16 * n_tensor + 3
+            res_arr = res[:-3].reshape((n_tensor, 4, 4))
+            res_meson_corr = res[-3:]
             accumulate_meson_jj(counts, values, values_meson_corr, res_arr, res_meson_corr, x_rel, total_site)
         return counts, values, values_meson_corr
     counts_list, values_list, values_meson_corr_list = zip(*q.parallel_map(q.get_q_mp_proc(), feval, xg_psel_list))
@@ -709,7 +728,7 @@ def auto_contract_meson_jj(job_tag, traj, get_prop, get_psel, get_fsel):
         [ "r", r_limit, ],
         ])
     ld_meson_corr_sum = q.mk_lat_data([
-        [ "idx_meson", 2, [ "pi", "k", ], ],
+        [ "idx_meson", 3, [ "pi", "kp", "km", ], ],
         [ "t", t_size, [ str(rel_mod(t, t_size)) for t in range(t_size) ], ],
         [ "r", r_limit, ],
         ])
