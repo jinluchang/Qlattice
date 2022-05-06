@@ -634,14 +634,14 @@ def get_interp_idx_coef(x, limit = None):
 @q.timer
 def accumulate_meson_jj(counts, values, values_meson_corr, res_arr, res_meson_corr, x_rel, total_site):
     # counts[t, r_idx]
-    # values[idx_proj, idx_tensor, t, r_idx]
+    # values[idx_tensor, t, r_idx, idx_proj,]
     # values_meson_corr[idx_meson, t, r_idx]
     # 0 <= idx_proj < len(all_jj_projections): mm, tt, ii, xx
-    # 0 <= idx_tensor < n_tensor. ( n_tensor = 14 )
-    # 0 <= idx_meson < 2
+    # 0 <= idx_tensor < n_tensor. ( n_tensor = 28 )
+    # 0 <= idx_meson < 3
     # 0 <= t < total_site[3]
     # 0 <= r < r_limit (scale by factor of 5.0)
-    (n_proj, n_tensor, t_size, r_limit,) = values.shape
+    (n_tensor, t_size, r_limit, n_proj,) = values.shape
     assert (t_size, r_limit,) == counts.shape
     assert t_size == total_site[3]
     assert r_limit == get_r_limit(total_site)
@@ -657,8 +657,8 @@ def accumulate_meson_jj(counts, values, values_meson_corr, res_arr, res_meson_co
         v_low = coef_low * v
         v_high = coef_high * v
         for idx_tensor in range(n_tensor):
-            values[idx_proj, idx_tensor, t, r_idx_low, ] += v_low[idx_tensor]
-            values[idx_proj, idx_tensor, t, r_idx_high, ] += v_high[idx_tensor]
+            values[idx_tensor, t, r_idx_low, idx_proj,] += v_low[idx_tensor]
+            values[idx_tensor, t, r_idx_high, idx_proj,] += v_high[idx_tensor]
     for idx_meson in range(2):
         values_meson_corr[idx_meson, t, r_idx_low] += res_meson_corr[idx_meson]
 
@@ -689,7 +689,7 @@ def auto_contract_meson_jj(job_tag, traj, get_prop, get_psel, get_fsel):
     @q.timer
     def feval(xg_src):
         counts = np.zeros((t_size, r_limit,), dtype = complex)
-        values = np.zeros((n_proj, n_tensor, t_size, r_limit,), dtype = complex)
+        values = np.zeros((n_tensor, t_size, r_limit, n_proj,), dtype = complex)
         values_meson_corr = np.zeros((3, t_size, r_limit), dtype = complex)
         for xg_snk in xg_fsel_list:
             x_rel = [ rel_mod(xg_snk[mu] - xg_src[mu], total_site[mu]) for mu in range(4) ]
@@ -722,10 +722,10 @@ def auto_contract_meson_jj(job_tag, traj, get_prop, get_psel, get_fsel):
         [ "r", r_limit, ],
         ])
     ld_sum = q.mk_lat_data([
-        [ "idx_proj", len(all_jj_projection_names), all_jj_projection_names, ],
         [ "idx_tensor", n_tensor, ],
         [ "t", t_size, [ str(rel_mod(t, t_size)) for t in range(t_size) ], ],
         [ "r", r_limit, ],
+        [ "idx_proj", len(all_jj_projection_names), all_jj_projection_names, ],
         ])
     ld_meson_corr_sum = q.mk_lat_data([
         [ "idx_meson", 3, [ "pi", "kp", "km", ], ],
@@ -844,8 +844,8 @@ job_tags = [
         # "24IH1",
         # "24IH2",
         # "24IH3",
-        # "32Dfine",
         # "24D",
+        # "32Dfine",
         # "24DH",
         # "16IH2",
         # "32IfineH",
