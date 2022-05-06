@@ -8,8 +8,9 @@ terms = [
   tr(gamma_5*S_l(t_1,t_2)*gamma_5*S_l(t_2,t_1)), # term_Type1_0001
   tr(gamma_5*S_l(t_1,t_2)*gamma_5*S_s(t_2,t_1)), # term_Type1_0002
 ]
-term_Type1_0001 = terms[0]
-term_Type1_0002 = terms[1]
+coef_Type1 = 1
+term_Type1_0001 = coef_Type1 * terms[0]
+term_Type1_0002 = coef_Type1 * terms[1]
 typed_exprs = [ dict() for i in range(2) ]
 # < pi0(t_1) * pi0(t_2) >
 typed_exprs[0]['Type1'] = (1)*term_Type1_0001
@@ -32,8 +33,9 @@ terms = [
   tr(gamma_t*gamma_5*S_l(x_2,t_1)*gamma_5*S_l(t_1,x_2)), # term_Type1_0001
   tr(gamma_t*gamma_5*S_l(x_2,t_1)*gamma_5*S_s(t_1,x_2)), # term_Type1_0002
 ]
-term_Type1_0001 = terms[0]
-term_Type1_0002 = terms[1]
+coef_Type1 = 1
+term_Type1_0001 = coef_Type1 * terms[0]
+term_Type1_0002 = coef_Type1 * terms[1]
 typed_exprs = [ dict() for i in range(2) ]
 # < (a_pi * pi) >
 typed_exprs[0]['Type1'] = (-I)*term_Type1_0001
@@ -59,10 +61,11 @@ terms = [
   tr(gamma_5*S_l(t_1,x_1)*S_l(x_1,t_2)*gamma_5*S_s(t_2,t_1)), # term_Type1_0003
   tr(gamma_5*S_l(t_1,t_2)*gamma_5*S_s(t_2,x_1)*S_s(x_1,t_1)), # term_Type1_0004
 ]
-term_Type1_0001 = terms[0]
-term_Type1_0002 = terms[1]
-term_Type1_0003 = terms[2]
-term_Type1_0004 = terms[3]
+coef_Type1 = 1
+term_Type1_0001 = coef_Type1 * terms[0]
+term_Type1_0002 = coef_Type1 * terms[1]
+term_Type1_0003 = coef_Type1 * terms[2]
+term_Type1_0004 = coef_Type1 * terms[3]
 typed_exprs = [ dict() for i in range(8) ]
 # < pi0(t_1) * ubaru(x_1) * pi0(t_2) >
 typed_exprs[0]['Type1'] = (1/2)*term_Type1_0001+(1/2)*term_Type1_0002
@@ -116,12 +119,14 @@ terms = [
   tr(gamma_t*S_l(x_1,t_2p)*gamma_5*S_s(t_2p,t_1p)*gamma_5*S_l(t_1p,x_1)), # term_Type2_0002
   tr(gamma_t*S_s(x_1,t_2p)*gamma_5*S_l(t_2p,t_1p)*gamma_5*S_s(t_1p,x_1)), # term_Type2_0003
 ]
-term_Type1_0001 = terms[0]
-term_Type1_0002 = terms[1]
-term_Type1_0003 = terms[2]
-term_Type2_0001 = terms[3]
-term_Type2_0002 = terms[4]
-term_Type2_0003 = terms[5]
+coef_Type1 = 1
+coef_Type2 = 1
+term_Type1_0001 = coef_Type1 * terms[0]
+term_Type1_0002 = coef_Type1 * terms[1]
+term_Type1_0003 = coef_Type1 * terms[2]
+term_Type2_0001 = coef_Type2 * terms[3]
+term_Type2_0002 = coef_Type2 * terms[4]
+term_Type2_0003 = coef_Type2 * terms[5]
 typed_exprs = [ dict() for i in range(6) ]
 # < pi+(t_1)^dag * vec_mu(u,u,x_1,3) * pi+(t_2) >
 typed_exprs[0]['Type1'] = (1)*term_Type1_0001
@@ -185,26 +190,31 @@ terms = [
   tr(gamma(mu)*S_l(x_1,x_2)*gamma(nu)*S_l(x_2,x_1))*tr(gamma_5*S_l(t_1,t_2)*gamma_5*S_s(t_2,t_1)), # term_Type4_0003
   tr(gamma(mu)*S_s(x_1,x_2)*gamma(nu)*S_s(x_2,x_1))*tr(gamma_5*S_l(t_1,t_2)*gamma_5*S_s(t_2,t_1)), # term_Type4_0004
 ]
-term_Type0_0001 = terms[0]
-term_Type0_0002 = terms[1]
-term_Type1_0001 = terms[2]
-term_Type1_0002 = terms[3]
-term_Type2_0001 = terms[4]
-term_Type2_0002 = terms[5]
-term_Type2_0003 = terms[6]
-term_Type2_0004 = terms[7]
-term_Type3_0001 = terms[8]
-term_Type3_0002 = terms[9]
-term_Type3_0003 = terms[10]
-term_Type3_0004 = terms[11]
-term_Type3_0005 = terms[12]
-term_Type3_0006 = terms[13]
-term_Type3_0007 = terms[14]
-term_Type3_0008 = terms[15]
-term_Type4_0001 = terms[16]
-term_Type4_0002 = terms[17]
-term_Type4_0003 = terms[18]
-term_Type4_0004 = terms[19]
+coef_Type0 = 1
+coef_Type1 = 1
+coef_Type2 = 1
+coef_Type3 = 1
+coef_Type4 = 1
+term_Type0_0001 = coef_Type0 * terms[0]
+term_Type0_0002 = coef_Type0 * terms[1]
+term_Type1_0001 = coef_Type1 * terms[2]
+term_Type1_0002 = coef_Type1 * terms[3]
+term_Type2_0001 = coef_Type2 * terms[4]
+term_Type2_0002 = coef_Type2 * terms[5]
+term_Type2_0003 = coef_Type2 * terms[6]
+term_Type2_0004 = coef_Type2 * terms[7]
+term_Type3_0001 = coef_Type3 * terms[8]
+term_Type3_0002 = coef_Type3 * terms[9]
+term_Type3_0003 = coef_Type3 * terms[10]
+term_Type3_0004 = coef_Type3 * terms[11]
+term_Type3_0005 = coef_Type3 * terms[12]
+term_Type3_0006 = coef_Type3 * terms[13]
+term_Type3_0007 = coef_Type3 * terms[14]
+term_Type3_0008 = coef_Type3 * terms[15]
+term_Type4_0001 = coef_Type4 * terms[16]
+term_Type4_0002 = coef_Type4 * terms[17]
+term_Type4_0003 = coef_Type4 * terms[18]
+term_Type4_0004 = coef_Type4 * terms[19]
 typed_exprs = [ dict() for i in range(5) ]
 # < pi0(t_1) * j_mu(x_1,mu) * j_mu(x_2,nu) * pi0(t_2) >
 typed_exprs[0]['Type1'] = (-1/2)*term_Type1_0001+(-1/2)*term_Type1_0002
@@ -264,14 +274,15 @@ terms = [
   tr(gamma(mu)*S_l(x_1,t)*gamma_5*S_s(t,x_2)*gamma(nu)*S_s(x_2,x_1)), # term_Type1_0007
   tr(gamma(mu)*S_l(x_1,x_2)*gamma(nu)*S_l(x_2,t)*gamma_5*S_s(t,x_1)), # term_Type1_0008
 ]
-term_Type1_0001 = terms[0]
-term_Type1_0002 = terms[1]
-term_Type1_0003 = terms[2]
-term_Type1_0004 = terms[3]
-term_Type1_0005 = terms[4]
-term_Type1_0006 = terms[5]
-term_Type1_0007 = terms[6]
-term_Type1_0008 = terms[7]
+coef_Type1 = 1
+term_Type1_0001 = coef_Type1 * terms[0]
+term_Type1_0002 = coef_Type1 * terms[1]
+term_Type1_0003 = coef_Type1 * terms[2]
+term_Type1_0004 = coef_Type1 * terms[3]
+term_Type1_0005 = coef_Type1 * terms[4]
+term_Type1_0006 = coef_Type1 * terms[5]
+term_Type1_0007 = coef_Type1 * terms[6]
+term_Type1_0008 = coef_Type1 * terms[7]
 typed_exprs = [ dict() for i in range(4) ]
 # < j5pi_mu(x_1,mu) * j_mu(x_2,nu) * pi+(t) >
 typed_exprs[0]['Type1'] = (I/3)*term_Type1_0001+(-2*I/3)*term_Type1_0002

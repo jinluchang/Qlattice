@@ -515,8 +515,12 @@ def display_cexpr(cexpr : CExpr):
     for name, term in cexpr.named_terms:
         lines.append(f"  {show_variable_value(term)}, # {name}")
     lines.append(f"]")
+    for name, diagram_type in cexpr.diagram_types:
+        if name is not None:
+            lines.append(f"coef_{name} = 1")
     for idx, (name, term) in enumerate(cexpr.named_terms):
-        lines.append(f"{name} = terms[{idx}]")
+        name_type = "_".join([ "coef", ] + name.split("_")[1:-1])
+        lines.append(f"{name} = {name_type} * terms[{idx}]")
     lines.append(f"typed_exprs = [ dict() for i in range({len(cexpr.named_exprs)}) ]")
     for name, typed_expr in cexpr.named_typed_exprs:
         s = "+".join(map(show_variable_value, typed_expr))
