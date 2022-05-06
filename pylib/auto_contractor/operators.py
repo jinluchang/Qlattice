@@ -875,10 +875,15 @@ def test_meson_jt():
     diagram_type_dict = dict()
     diagram_type_dict[((('t_1', 't_2'), 1), (('t_2', 'x_1'), 1), (('x_1', 't_1'), 1))] = 'Type1'
     diagram_type_dict[((('t_1', 't_2'), 1), (('t_2', 't_1'), 1), (('x_1', 'x_1'), 1))] = None
+    diagram_type_dict[((('t_1', 't_2'), 1), (('t_2', 'x_2'), 1), (('x_2', 't_1'), 1))] = 'Type2'
+    diagram_type_dict[((('t_1', 't_2'), 1), (('t_2', 't_1'), 1), (('x_2', 'x_2'), 1))] = None
     exprs = [
             mk_pi_p("t_1", True) * mk_vec_mu("u", "u", "x_1", 3) * mk_pi_p("t_2"),
             mk_k_p("t_1", True) * mk_vec_mu("u", "u", "x_1", 3) * mk_k_p("t_2"),
             mk_k_m("t_1", True) * mk_vec_mu("s", "s", "x_1", 3) * mk_k_m("t_2"),
+            mk_pi_p("t_1p", True) * mk_vec_mu("u", "u", "x_1", 3) * mk_pi_p("t_2p"),
+            mk_k_p("t_1p", True) * mk_vec_mu("u", "u", "x_1", 3) * mk_k_p("t_2p"),
+            mk_k_m("t_1p", True) * mk_vec_mu("s", "s", "x_1", 3) * mk_k_m("t_2p"),
             ]
     cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True, diagram_type_dict = diagram_type_dict)
     print()
