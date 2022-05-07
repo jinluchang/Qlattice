@@ -177,7 +177,7 @@ def as_mspincolor(x):
         assert False
 
 def adj_msc(x):
-    return SpinColorMatrix(x.m.conj().transpose())
+    return SpinColorMatrix(x.m.transpose().conj())
 
 @q.timer
 def g5_herm(x):
@@ -186,7 +186,9 @@ def g5_herm(x):
     elif isinstance(x, complex):
         return x.conjugate()
     else:
-        x_h = gamma_matrix_list[5] * adj_msc(x) * gamma_matrix_list[5]
+        x_h = adj_msc(x)
+        x_h.m[2:4, :, :, 0:2] *= -1
+        x_h.m[0:2, :, :, 2:4] *= -1
         return x_h
 
 def msc_trace(x):
