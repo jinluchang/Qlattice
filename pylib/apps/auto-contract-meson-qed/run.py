@@ -21,9 +21,9 @@ load_path_list[:] = [
         os.path.join(os.getenv("HOME"), "Qlat-sample-data/default/mk-gf-gt/results"),
         os.path.join(os.getenv("HOME"), "Qlat-sample-data/default/mk-sel/results"),
         # os.path.join(os.getenv("HOME"), "Qlat-sample-data/default/mk-fsel-self-loop/results"),
-        # os.path.join(os.getenv("HOME"), "Qlat-sample-data/default/mk-selected-data/results"),
-        os.path.join(os.getenv("HOME"), "Qlat-sample-data/default/mk-wsrc-prop/results"),
-        os.path.join(os.getenv("HOME"), "Qlat-sample-data/default/mk-psrc-prop/results"),
+        os.path.join(os.getenv("HOME"), "Qlat-sample-data/default/mk-selected-data/results"),
+        # os.path.join(os.getenv("HOME"), "Qlat-sample-data/default/mk-wsrc-prop/results"),
+        # os.path.join(os.getenv("HOME"), "Qlat-sample-data/default/mk-psrc-prop/results"),
         # os.path.join(os.getenv("HOME"), "Qlat-sample-data/default/mk-smear-prop/results"),
         "/sdcc/u/jluchang/qcdqedta/luchang/data-gen/fill-wsnk-prop/results",
         ]

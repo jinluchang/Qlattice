@@ -66,12 +66,10 @@ def mk_ama_val(val, source_specification, val_list, rel_acc_list, prob_list):
 
 @q.timer
 def ama_apply1_ama_val(f, x):
-    if isinstance(x, AmaVal):
-        val = f(x.val)
-        corrections = [ (f(v), d,) for v, d in x.corrections ]
-        return AmaVal(val, corrections)
-    else:
-        assert False
+    assert isinstance(x, AmaVal)
+    val = f(x.val)
+    corrections = [ (f(v), d,) for v, d in x.corrections ]
+    return AmaVal(val, corrections)
 
 def ama_apply1(f, x):
     if not isinstance(x, AmaVal):
@@ -86,37 +84,32 @@ def merge_description_dict(d1, d2):
     for key in common_keys:
         if d1[key] != d2[key]:
             return None
-    new_keys = sd2 - sd1
-    d = d1.copy()
-    for key in new_keys:
-        d[key] = d2[key]
-    return d
+    return d1 | d2
 
 @q.timer
 def ama_apply2_ama_val(f, x, y):
-    if isinstance(x, AmaVal) and not isinstance(y, AmaVal):
-        def f1(x1):
-            return f(x1, y)
-        return ama_apply1(f1, x)
-    elif not isinstance(x, AmaVal) and isinstance(y, AmaVal):
-        def f1(y1):
-            return f(x, y1)
-        return ama_apply1(f1, y)
-    elif isinstance(x, AmaVal) and isinstance(y, AmaVal):
-        val = f(x.val, y.val)
-        corrections = []
-        for v_x, d_x in x.corrections:
-            for v_y, d_y in y.corrections:
-                d = merge_description_dict(d_x, d_y)
-                if d is not None:
-                    corrections.append((f(v_x, v_y), d,))
-        return AmaVal(val, corrections)
-    else:
-        assert False
+    assert isinstance(x, AmaVal)
+    assert isinstance(y, AmaVal)
+    val = f(x.val, y.val)
+    corrections = []
+    for v_x, d_x in x.corrections:
+        for v_y, d_y in y.corrections:
+            d = merge_description_dict(d_x, d_y)
+            if d is not None:
+                corrections.append((f(v_x, v_y), d,))
+    return AmaVal(val, corrections)
 
 def ama_apply2(f, x, y):
     if not isinstance(x, AmaVal) and not isinstance(y, AmaVal):
         return f(x, y)
+    elif isinstance(x, AmaVal) and not isinstance(y, AmaVal):
+        def f1(x1):
+            return f(x1, y)
+        return ama_apply1_ama_val(f1, x)
+    elif not isinstance(x, AmaVal) and isinstance(y, AmaVal):
+        def f1(y1):
+            return f(x, y1)
+        return ama_apply1_ama_val(f1, y)
     else:
         return ama_apply2_ama_val(f, x, y)
 

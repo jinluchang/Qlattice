@@ -112,28 +112,30 @@ def get_cexpr_names(cexpr, *, is_only_total = "total"):
 def eval_cexpr_set_vars(variable_dict, cexpr, positions_dict, get_prop):
     for name, op in cexpr.variables:
         variable_dict[name] = eval_op_term_expr(op, variable_dict, positions_dict, get_prop)
+
 @q.timer
 def eval_cexpr_set_terms(tvals, cexpr, variable_dict, positions_dict, get_prop):
     for name, term in cexpr.named_terms:
         tvals[name] = ama_extract(eval_op_term_expr(term, variable_dict, positions_dict, get_prop))
+
 @q.timer
 def eval_cexpr_return_exprs(cexpr, tvals, is_only_total):
     if is_only_total in [ True, "total", ]:
         return np.array(
-                [ sum([ coef * tvals[tname] for coef, tname in expr ]) for name, expr in cexpr.named_exprs ]
-                )
+                [ sum([ coef * tvals[tname] for coef, tname in expr ]) for name, expr in cexpr.named_exprs ],
+                dtype = complex)
     elif is_only_total in [ "typed_total", ]:
         return np.array(
                 [ sum([ coef * tvals[tname] for coef, tname in expr ]) for name, expr in cexpr.named_exprs ]
-                + [ sum([ coef * tvals[tname] for coef, tname in expr ]) for name, expr in cexpr.named_typed_exprs ]
-                )
+                + [ sum([ coef * tvals[tname] for coef, tname in expr ]) for name, expr in cexpr.named_typed_exprs ],
+                dtype = complex)
     elif is_only_total in [ False, "term", ]:
         tevals = { name : sum([ coef * tvals[tname] for coef, tname in expr ]) for name, expr in cexpr.named_typed_exprs }
         return np.array(
                 [ sum([ coef * tvals[tname] for coef, tname in expr ]) for name, expr in cexpr.named_exprs ]
                 + [ sum([ coef * tvals[tname] for coef, tname in expr ]) for name, expr in cexpr.named_typed_exprs ]
-                + [ tvals[name] for name, term in cexpr.named_terms ]
-                )
+                + [ tvals[name] for name, term in cexpr.named_terms ],
+                dtype = complex)
     else:
         assert False
 
