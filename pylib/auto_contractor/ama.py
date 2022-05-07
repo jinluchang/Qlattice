@@ -84,7 +84,11 @@ def merge_description_dict(d1, d2):
     for key in common_keys:
         if d1[key] != d2[key]:
             return None
-    return d1 | d2
+    new_keys = sd2 - sd1
+    d = d1.copy()
+    for key in new_keys:
+        d[key] = d2[key]
+    return d
 
 @q.timer
 def ama_apply2_ama_val(f, x, y):
