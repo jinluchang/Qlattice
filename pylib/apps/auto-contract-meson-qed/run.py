@@ -738,9 +738,9 @@ def auto_contract_meson_jj(job_tag, traj, get_prop, get_psel, get_fsel):
     ld_count.save(get_save_path(fn_counts))
     ld_sum.save(get_save_path(fn))
     ld_meson_corr_sum.save(get_save_path(fn_meson_corr))
-    q.displayln_info(ld_count.show())
+    # q.displayln_info(ld_count.show())
     # q.displayln_info(ld_sum.show())
-    q.displayln_info(ld_meson_corr_sum.show())
+    # q.displayln_info(ld_meson_corr_sum.show())
 
 ### ------
 
