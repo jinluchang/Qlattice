@@ -70,10 +70,8 @@ class SpinColorMatrix:
         assert m.dtype == complex
         if m.shape == (4, 3, 3, 4,):
             self.m = m
-        elif m.shape == (4, 4, 3, 3,):
-            self.m = m.transpose(0, 2, 3, 1)
         elif m.shape == (144,):
-            self.m = m.reshape(4, 4, 3, 3).transpose(0, 2, 3, 1)
+            self.m = m.reshape(4, 3, 4, 3).transpose(0, 1, 3, 2)
         else:
             assert False
 
