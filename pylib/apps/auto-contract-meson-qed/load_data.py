@@ -85,32 +85,42 @@ def get_prop_psrc(prop_cache, inv_type, xg_src, tag_snk_type):
     # 1     inv_acc=0      inv_acc=0
     # 2     inv_acc=1      inv_acc=1
     # 3     inv_acc=2      inv_acc=2
+    source_specification = repr(("point", tuple(xg_src),))
     if prob == 1.0:
         val = prop_cache_type.get(tag)
         assert val is not None
         if tag1 not in prop_cache_type:
             return val
+        val_list = [
+                val,
+                prop_cache_type.get(tag1),
+                prop_cache_type.get(tag2),
+                ]
+        rel_acc_list = [ 0, 2, 3, ]
+        prob_list = [
+                1.0,
+                prop_cache_prob[f"type={inv_type} ; accuracy=1 ; psrc ; prob"],
+                prop_cache_prob[f"type={inv_type} ; accuracy=2 ; psrc ; prob"],
+                ]
     else:
         assert prob < 1
         assert inv_type == 1
-        val = prop_cache_type.get(f"zero ; {cache_type}")
-        assert val is not None
+        val = 0
         if tag not in prop_cache_type:
             return val
-    source_specification = repr(("point", tuple(xg_src),))
-    val_list = [
-            val,
-            prop_cache_type.get(tag),
-            prop_cache_type.get(tag1),
-            prop_cache_type.get(tag2),
-            ]
-    rel_acc_list = [ 0, 1, 2, 3, ]
-    prob_list = [
-            1.0,
-            prop_cache_prob[f"type={inv_type} ; accuracy=0 ; psrc ; prob"],
-            prop_cache_prob[f"type={inv_type} ; accuracy=1 ; psrc ; prob"],
-            prop_cache_prob[f"type={inv_type} ; accuracy=2 ; psrc ; prob"],
-            ]
+        val_list = [
+                val,
+                prop_cache_type.get(tag),
+                prop_cache_type.get(tag1),
+                prop_cache_type.get(tag2),
+                ]
+        rel_acc_list = [ 0, 1, 2, 3, ]
+        prob_list = [
+                1.0,
+                prob,
+                prop_cache_prob[f"type={inv_type} ; accuracy=1 ; psrc ; prob"],
+                prop_cache_prob[f"type={inv_type} ; accuracy=2 ; psrc ; prob"],
+                ]
     return mk_ama_val(val, source_specification, val_list, rel_acc_list, prob_list)
 
 @q.timer
@@ -118,6 +128,8 @@ def get_prop_wsnk_psrc(prop_cache, inv_type, t_snk, xg_src):
     assert isinstance(xg_src, tuple) and len(xg_src) == 4
     sp_prop = get_prop_psrc(prop_cache, inv_type, xg_src, "psrc_wsnk ; psel_ts")
     def f(x):
+        if isinstance(x, int) and x == 0:
+            return 0
         return x.get_elem(t_snk)
     return ama_apply1(f, sp_prop)
 
@@ -127,6 +139,8 @@ def get_prop_psnk_psrc_fsel(prop_cache, inv_type, xg_snk, xg_src, fselc_pos_dict
     assert isinstance(xg_snk, tuple) and len(xg_snk) == 4
     idx_snk = fselc_pos_dict[xg_snk]
     def f(x):
+        if isinstance(x, int) and x == 0:
+            return 0
         return x.get_elem(idx_snk)
     return ama_apply1(f, get_prop_psrc(prop_cache, inv_type, xg_src, "psrc ; fsel"))
 
@@ -136,6 +150,8 @@ def get_prop_psnk_psrc_psel(prop_cache, inv_type, xg_snk, xg_src, psel_pos_dict)
     assert isinstance(xg_snk, tuple) and len(xg_snk) == 4
     idx_snk = psel_pos_dict[xg_snk]
     def f(x):
+        if isinstance(x, int) and x == 0:
+            return 0
         return x.get_elem(idx_snk)
     return ama_apply1(f, get_prop_psrc(prop_cache, inv_type, xg_src, "psrc ; psel"))
 

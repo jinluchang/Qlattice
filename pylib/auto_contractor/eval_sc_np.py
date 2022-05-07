@@ -36,6 +36,8 @@ class SpinMatrix:
 
     def __mul__(self, other):
         if isinstance(other, (int, float, complex,)):
+            if other == 0:
+                return 0
             return SpinMatrix(self.m * other)
         elif isinstance(other, SpinMatrix):
             return SpinMatrix(np.tensordot(self.m, other.m, 1))
@@ -44,6 +46,8 @@ class SpinMatrix:
 
     def __rmul__(self, other):
         if isinstance(other, (int, float, complex,)):
+            if other == 0:
+                return 0
             return SpinMatrix(other * self.m)
         elif isinstance(other, SpinMatrix):
             return SpinMatrix(np.tensordot(other.m, self.m, 1))
@@ -75,6 +79,8 @@ class SpinColorMatrix:
 
     def __mul__(self, other):
         if isinstance(other, (int, float, complex,)):
+            if other == 0:
+                return 0
             return SpinColorMatrix(self.m * other)
         elif isinstance(other, SpinMatrix):
             return SpinColorMatrix(np.tensordot(self.m, other.m, 1))
@@ -85,6 +91,8 @@ class SpinColorMatrix:
 
     def __rmul__(self, other):
         if isinstance(other, (int, float, complex,)):
+            if other == 0:
+                return 0
             return SpinMatrix(other * self.m)
         elif isinstance(other, SpinMatrix):
             return SpinColorMatrix(np.tensordot(other.m, self.m, 1))
@@ -163,19 +171,37 @@ def get_spin_matrix(op):
     return gamma_matrix_list[op.tag]
 
 def as_mspincolor(x):
-    assert isinstance(x, np.ndarray)
-    return SpinColorMatrix(x)
+    if isinstance(x, np.ndarray):
+        return SpinColorMatrix(x)
+    elif isinstance(x, (int, float, complex)):
+        return x
+    else:
+        assert False
 
 def adj_msc(x):
     return SpinColorMatrix(x.m.conj().transpose())
 
 @q.timer
 def g5_herm(x):
-    x_h = gamma_matrix_list[5] * adj_msc(x) * gamma_matrix_list[5]
-    return x_h
+    if isinstance(x, (int, float)):
+        return x
+    elif isinstance(x, complex):
+        return x.conjugate()
+    else:
+        x_h = gamma_matrix_list[5] * adj_msc(x) * gamma_matrix_list[5]
+        return x_h
 
 def msc_trace(x):
-    return as_msc(x).trace()
+    if isinstance(x, SpinColorMatrix):
+        return x.trace()
+    elif isinstance(x, (int, float, complex)):
+        if x == 0:
+            return 0
+        else:
+            return x * 12
+    else:
+        assert False
+        return as_msc(x).trace()
 
 def msc_trace2(x, y):
     if isinstance(x, SpinColorMatrix) and isinstance(y, SpinColorMatrix):
@@ -187,7 +213,13 @@ def msc_trace2(x, y):
     elif isinstance(x, SpinMatrix) and isinstance(y, SpinColorMatrix):
         v = np.tensordot(x.m, y.m, ((1, 0,), (0, 3,),)).trace()
         return v
-    return as_msc(x * y).trace()
+    elif isinstance(x, (int, float, complex)):
+        return x * msc_trace(y)
+    elif isinstance(y, (int, float, complex)):
+        return y * msc_trace(x)
+    else:
+        assert False
+        return as_msc(x * y).trace()
 
 def as_msc(x):
     assert isinstance(x, SpinColorMatrix)
