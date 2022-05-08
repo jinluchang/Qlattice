@@ -64,6 +64,7 @@ def get_positions(term):
     return sorted(list(s))
 
 def get_var_name_type(x):
+    # types include: V_S (wilson matrix), V_G (spin matrix), V_Tr (AMA c-number), V_a (c-number)
     if x.startswith("V_S_"):
         return "V_S"
     elif x.startswith("V_prod_GG_"):
@@ -599,25 +600,67 @@ def cexpr_code_gen_py(cexpr : CExpr):
     # return a string
     # interface function
     def gen_expr(x):
+        # return code_str, type_str
+        if isinstance(x, (int, float, complex)):
+            return f"{x}", "V_a"
         assert isinstance(x, Op)
         if x.otype == "S":
-            return f"get_prop('{x.f}', {x.p1}, {x.p2})"
+            return f"get_prop('{x.f}', {x.p1}, {x.p2})", "V_S"
         elif x.otype == "G":
             assert x.s1 == "auto" and x.s2 == "auto"
             assert x.tag in [0, 1, 2, 3, 5]
-            return f"get_gamma_matrix({x.tag})"
+            return f"get_gamma_matrix({x.tag})", "V_G"
         elif x.otype == "Tr":
-            x_ops_exprs = [ gen_expr(o) for o in x.ops ]
             if len(x.ops) == 0:
-                return f"1"
+                assert False
             elif len(x.ops) == 1:
-                return f"ama_msc_trace({x_ops_exprs[0]})"
+                c, t = gen_expr(x.ops[0])
+                assert t == "V_S"
+                return f"ama_msc_trace({c})", "V_Tr"
             else:
-                v1 = " * ".join(x_ops_exprs[:-1])
-                v2 = x_ops_exprs[-1]
-                return f"ama_msc_trace2({v1}, {v2})"
+                c1, t1 = gen_expr_prod_list(x.ops[:-1])
+                c2, t2 = gen_expr(x.ops[-1])
+                return f"ama_msc_trace2({c1}, {c2})", "V_Tr"
         elif x.otype == "Var":
-            return f"{x.name}"
+            return f"{x.name}", get_var_name_type(x.name)
+    def gen_expr_prod(ct1, ct2):
+        c1, t1 = ct1
+        c2, t2 = ct2
+        if t1 == "V_S" and t2 == "V_S":
+            return f"ama_apply2(mat_mul_sc_sc, {c1}, {c2})", "V_S"
+        elif t1 == "V_S" and t2 == "V_G":
+            return f"ama_apply2_l(mat_mul_sc_s, {c1}, {c2})", "V_S"
+        elif t1 == "V_G" and t2 == "V_S":
+            return f"ama_apply2_r(mat_mul_s_sc, {c1}, {c2})", "V_S"
+        elif t1 == "V_G" and t2 == "V_G":
+            return f"mat_mul_s_s({c1}, {c2})", "V_G"
+        elif t1 == "V_G" and t2 == "V_a":
+            return f"mat_mul_a_s({c2}, {c1})", "V_G"
+        elif t1 == "V_a" and t2 == "V_G":
+            return f"mat_mul_a_s({c1}, {c2})", "V_G"
+        elif t1 == "V_S" and t2 == "V_a":
+            return f"ama_apply2_r(mat_mul_a_sc, {c2}, {c1})", "V_S"
+        elif t1 == "V_a" and t2 == "V_S":
+            return f"ama_apply2_r(mat_mul_a_sc, {c1}, {c2})", "V_S"
+        elif t1 == "V_a" and t2 == "V_a":
+            return f"{c1} * {c2}", "V_a"
+        elif t1 == "V_Tr" and t2 == "V_Tr":
+            return f"{c1} * {c2}", "V_Tr"
+        elif t1 == "V_a" and t2 == "V_Tr":
+            return f"{c2} * {c1}", "V_Tr"
+        elif t1 == "V_Tr" and t2 == "V_a":
+            return f"{c1} * {c2}", "V_Tr"
+        else:
+            print(ct1, ct2)
+            assert False
+    def gen_expr_prod_list(x_list):
+        if len(x_list) == 0:
+            return f"1", "V_a"
+        elif len(x_list) == 1:
+            return gen_expr(x_list[0])
+        else:
+            assert len(x_list) > 1
+            return gen_expr_prod(gen_expr_prod_list(x_list[:-1]), gen_expr(x_list[-1]))
     lines = []
     lines.append(f"from auto_contractor.eval import *")
     lines.append(f"")
@@ -633,15 +676,18 @@ def cexpr_code_gen_py(cexpr : CExpr):
             x = value
             assert isinstance(x, Op)
             assert x.otype == "S"
-            lines.append(f"    {name} = {gen_expr(x)}")
+            c, t = gen_expr(x)
+            assert t == "V_S"
+            lines.append(f"    {name} = {c}")
     lines.append(f"")
     lines.append(f"    # compute products")
     for name, value in cexpr.variables:
         if name.startswith("V_prod_"):
             x = value
             assert isinstance(x, list)
-            p = " * ".join([ gen_expr(v) for v in x ])
-            lines.append(f"    {name} = {p}")
+            c, t = gen_expr_prod_list(x)
+            assert t == get_var_name_type(name)
+            lines.append(f"    {name} = {c}")
     lines.append(f"")
     lines.append(f"    # compute traces")
     for name, value in cexpr.variables:
@@ -649,13 +695,16 @@ def cexpr_code_gen_py(cexpr : CExpr):
             x = value
             assert isinstance(x, Op)
             assert x.otype == "Tr"
-            lines.append(f"    {name} = {gen_expr(x)}")
+            c, t = gen_expr(x)
+            assert t == "V_Tr"
+            lines.append(f"    {name} = {c}")
     lines.append(f"")
     lines.append(f"    # set terms")
     for name, term in cexpr.named_terms:
         x = term
-        p = " * ".join([ f"{x.coef}", ] + [ gen_expr(v) for v in x.c_ops ])
-        lines.append(f"    {name} = ama_extract({p})")
+        c, t = gen_expr_prod_list([ x.coef, ] + x.c_ops)
+        assert t == "V_Tr"
+        lines.append(f"    {name} = ama_extract({c})")
     lines.append(f"")
     lines.append(f"    # return exprs")
     lines.append(f"    results = np.array([")

@@ -114,6 +114,9 @@ def mat_mul_s_sc(x, y):
         return 0
     return SpinColorMatrix((x.m @ y.m.reshape(4, 36)).reshape(12, 12).copy())
 
+def mat_mul_s_s(x, y):
+    return SpinMatrix(x.m @ y.m)
+
 def mat_mul_a_s(coef, x):
     return SpinMatrix(x.m * coef)
 
