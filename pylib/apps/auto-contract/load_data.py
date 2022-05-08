@@ -505,23 +505,6 @@ def load_prop_rand_u1_fsel(job_tag, traj, flavor, *, fsel):
 
 ### -------
 
-@q.timer
-def load_prop_zero(job_tag, traj, *, psel, fsel, fselc):
-    cache_fsel = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}", f"fsel")
-    cache_psel = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}", f"psel")
-    cache_psel_ts = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}", f"psel_ts")
-    total_site = ru.get_total_site(job_tag)
-    psel_ts = q.get_psel_tslice(total_site)
-    sc_prop = q.SelProp(fselc)
-    sp_prop = q.PselProp(psel)
-    spw_prop = q.PselProp(psel_ts)
-    q.set_zero(sc_prop)
-    q.set_zero(sp_prop)
-    q.set_zero(spw_prop)
-    cache_fsel[f"zero ; fsel"] = sc_prop
-    cache_psel[f"zero ; psel"] = sp_prop
-    cache_psel_ts[f"zero ; psel_ts"] = spw_prop
-
 @q.timer_verbose
 def run_get_prop(job_tag, traj, *, get_gt, get_psel, get_fsel, get_psel_smear, get_wi):
     @q.timer_verbose
@@ -544,7 +527,6 @@ def run_get_prop(job_tag, traj, *, get_gt, get_psel, get_fsel, get_psel_smear, g
         load_prop_rand_u1_fsel(job_tag, traj, "s", fsel = fsel)
         load_prop_rand_u1_fsel(job_tag, traj, "c", fsel = fsel)
         #
-        load_prop_zero(job_tag, traj, psel = psel, fsel = fsel, fselc = fselc)
         prop_cache = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}")
         psel_pos_dict = dict([ (tuple(pos), i) for i, pos in enumerate(psel.to_list()) ])
         fsel_pos_dict = dict([ (tuple(pos), i) for i, pos in enumerate(fsel.to_psel_local().to_list()) ])
