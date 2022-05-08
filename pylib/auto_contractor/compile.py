@@ -63,6 +63,34 @@ def get_positions(term):
     add_positions(s, term)
     return sorted(list(s))
 
+def get_op_type(x):
+    # x should be an Op
+    # return a string which indicate the type of the op
+    if not isinstance(x, Op):
+        return None
+    if x.otype == "S":
+        return "S"
+    elif x.otype == "G":
+        return "G"
+    elif x.otype == "Tr":
+        return "Tr"
+    elif x.otype == "Var":
+        if x.name.startswith("V_S_"):
+            return "V_S"
+        elif x.name.startswith("V_prod_GG_"):
+            return "V_G"
+        elif x.name.startswith("V_prod_GS_"):
+            return "V_S"
+        elif x.name.startswith("V_prod_SS_"):
+            return "V_S"
+        elif x.name.startswith("V_tr_"):
+            return "V_Tr"
+        else:
+            assert False
+    else:
+        assert False
+    return None
+
 def collect_op_in_cexpr(variables, named_terms):
     var_counter = 0
     var_dataset = {} # var_dataset[op_repr] = op_var
@@ -80,7 +108,7 @@ def collect_op_in_cexpr(variables, named_terms):
                     else:
                         while True:
                             var_counter += 1
-                            name = f"V0_{var_counter}"
+                            name = f"V_S_{var_counter}"
                             if name not in var_nameset:
                                 break
                         variables.append((name, op,))
@@ -100,6 +128,7 @@ def collect_op_in_cexpr(variables, named_terms):
         term.sort()
 
 def find_common_subexpr_in_tr(variables_trs):
+    # return None or [ op, op1, ]
     subexpr_count = {}
     def add(x, count_added):
         op_repr = repr(x)
@@ -117,16 +146,20 @@ def find_common_subexpr_in_tr(variables_trs):
             if len(x) < 2:
                 return None
             for i, op in enumerate(x):
-                if isinstance(op, Op) and op.otype in [ "Var", "S", "G", ]:
+                op_type = get_op_type(op)
+                if op_type in [ "V_S", "V_G", "S", "G", ]:
                     op1 = x[(i+1) % len(x)]
-                    if isinstance(op1, Op) and op1.otype in [ "Var", "S", "G", ]:
+                    op1_type = get_op_type(op1)
+                    if op1_type in [ "V_S", "V_G", "S", "G", ]:
                         prod = [op, op1]
-                        if op.otype == "G" and op1.otype == "G":
+                        if op_type in [ "V_G", "G", ] and op1_type in [ "V_G", "G", ]:
                             add(prod, 1.02)
-                        elif op.otype == "G" or op1.otype == "G":
+                        elif op_type in [ "V_G", "G", ] or op1_type in [ "V_G", "G", ]:
                             add(prod, 1.01)
-                        else:
+                        elif op_type in [ "V_S", "S", ] and op1_type in [ "V_S", "S", ]:
                             add(prod, 1)
+                        else:
+                            assert False
         elif isinstance(x, Op) and x.otype == "Tr" and len(x.ops) >= 2:
             find(x.ops)
         elif isinstance(x, Term):
@@ -217,7 +250,7 @@ def collect_subexpr_in_cexpr(variables, named_terms):
                     else:
                         while True:
                             var_counter_tr += 1
-                            name = f"V2_{var_counter_tr}"
+                            name = f"V_tr_{var_counter_tr}"
                             if name not in var_nameset:
                                 break
                         variables_trs.append((name, op,))
@@ -228,19 +261,35 @@ def collect_subexpr_in_cexpr(variables, named_terms):
     for name, term in named_terms:
         add_tr_varibles(term)
         term.sort()
-    var_counter = 0
+    var_counter_dict = {}
+    var_counter_dict["V_prod_GG_"] = 0
+    var_counter_dict["V_prod_GS_"] = 0
+    var_counter_dict["V_prod_SS_"] = 0
     while True:
-        op = find_common_subexpr_in_tr(variables_trs)
-        if op is None:
+        subexpr = find_common_subexpr_in_tr(variables_trs)
+        if subexpr is None:
             break
+        [ op, op1, ] = subexpr
+        op_type = get_op_type(op)
+        op1_type = get_op_type(op1)
+        assert op_type in [ "V_S", "V_G", "S", "G", ]
+        assert op1_type in [ "V_S", "V_G", "S", "G", ]
+        if op_type in [ "V_G", "G", ] and op1_type in [ "V_G", "G", ]:
+            name_prefix = "V_prod_GG_"
+        elif op_type in [ "V_G", "G", ] or op1_type in [ "V_G", "G", ]:
+            name_prefix = "V_prod_GS_"
+        elif op_type in [ "V_S", "S", ] and op1_type in [ "V_S", "S", ]:
+            name_prefix = "V_prod_SS_"
+        else:
+            assert False
         while True:
-            var_counter += 1
-            name = f"V1_{var_counter}"
+            var_counter_dict[name_prefix] += 1
+            name = f"{name_prefix}{var_counter_dict[name_prefix]}"
             if name not in var_nameset:
                 break
-        variables.append((name, op,))
+        variables.append((name, subexpr,))
         var = Var(name)
-        collect_common_subexpr_in_tr(variables_trs, op, var)
+        collect_common_subexpr_in_tr(variables_trs, subexpr, var)
     variables += variables_trs
 
 class CExpr:
