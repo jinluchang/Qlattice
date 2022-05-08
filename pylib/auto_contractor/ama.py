@@ -115,17 +115,39 @@ def ama_apply2_ama_val(f, x, y):
                 corrections.append((f(v_x, v_y), d,))
     return AmaVal(val, corrections)
 
+@q.timer
+def ama_apply2_r_ama_val(f, x, y):
+    assert isinstance(y, AmaVal)
+    val = f(x, y.val)
+    corrections = [ (f(x, v), d,) for v, d in y.corrections ]
+    return AmaVal(val, corrections)
+
+@q.timer
+def ama_apply2_l_ama_val(f, x, y):
+    assert isinstance(x, AmaVal)
+    val = f(x.val, y)
+    corrections = [ (f(v, y), d,) for v, d in x.corrections ]
+    return AmaVal(val, corrections)
+
+def ama_apply2_r(f, x, y):
+    if not isinstance(y, AmaVal):
+        return f(x, y)
+    else:
+        return ama_apply2_r_ama_val(f, x, y)
+
+def ama_apply2_l(f, x, y):
+    if not isinstance(x, AmaVal):
+        return f(x, y)
+    else:
+        return ama_apply2_l_ama_val(f, x, y)
+
 def ama_apply2(f, x, y):
     if not isinstance(x, AmaVal) and not isinstance(y, AmaVal):
         return f(x, y)
     elif isinstance(x, AmaVal) and not isinstance(y, AmaVal):
-        def f1(x1):
-            return f(x1, y)
-        return ama_apply1_ama_val(f1, x)
+        return ama_apply2_l_ama_val(f, x, y)
     elif not isinstance(x, AmaVal) and isinstance(y, AmaVal):
-        def f1(y1):
-            return f(x, y1)
-        return ama_apply1_ama_val(f1, y)
+        return ama_apply2_r_ama_val(f, x, y)
     else:
         return ama_apply2_ama_val(f, x, y)
 

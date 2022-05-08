@@ -160,7 +160,7 @@ def eval_cexpr(cexpr : CExpr, *, positions_dict, get_prop, is_only_total = "tota
 
 def make_rand_spin_color_matrix(rng_state):
     rs = rng_state
-    return SpinColorMatrix(np.array(
+    return as_mspincolor(np.array(
         [ rs.u_rand_gen() + 1j * rs.u_rand_gen() for i in range(144) ],
         dtype = complex))
 
