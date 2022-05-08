@@ -54,7 +54,7 @@ def rel_mod_sym(x, size):
 # ----
 
 @q.timer
-@functools.cache
+@functools.lru_cache()
 def get_cexpr_meson_corr():
     def calc_cexpr():
         t_1, t_2 = ['t_1', 't_2']
@@ -250,7 +250,7 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_fs
 # ----
 
 @q.timer
-@functools.cache
+@functools.lru_cache()
 def get_cexpr_meson_f_corr():
     def calc_cexpr():
         t_1, x_2 = ['t_1', 'x_2']
@@ -402,7 +402,7 @@ def auto_contract_meson_f_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_
 # ----
 
 @q.timer
-@functools.cache
+@functools.lru_cache()
 def get_cexpr_meson_m():
     def calc_cexpr():
         t_1, t_2, x_1 = ['t_1', 't_2', 'x_1']
@@ -471,7 +471,7 @@ def auto_contract_meson_m(job_tag, traj, get_prop, get_psel, get_fsel):
 # ----
 
 @q.timer
-@functools.cache
+@functools.lru_cache()
 def get_cexpr_meson_jt():
     def calc_cexpr():
         t_1, t_1p, t_2, t_2p, x_1 = ['t_1', 't_1p', 't_2', 't_2p', 'x_1']
@@ -550,7 +550,7 @@ def auto_contract_meson_jt(job_tag, traj, get_prop, get_psel, get_fsel):
 # ----
 
 @q.timer
-@functools.cache
+@functools.lru_cache()
 def get_cexpr_meson_jj():
     def calc_cexpr():
         t_1, t_2, x_1, x_2 = ['t_1', 't_2', 'x_1', 'x_2']
