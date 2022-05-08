@@ -69,10 +69,11 @@ def get_cexpr_meson_corr():
         return cexpr
     fn = "cache/auto_contract_cexpr/meson_corr_cexpr"
     cexpr = q.pickle_cache_call(calc_cexpr, fn + ".pickle")
-    q.qtouch_info(fn + ".py", cexpr_code_gen_py(cexpr))
-    q.displayln_info(display_cexpr_raw(cexpr))
-    time.sleep(1)
-    q.sync_node()
+    if not q.does_file_exist_sync_node(fn + ".py"):
+        q.qtouch_info(fn + ".py", cexpr_code_gen_py(cexpr))
+        q.displayln_info(display_cexpr_raw(cexpr))
+        time.sleep(1)
+        q.sync_node()
     module = importlib.import_module(fn.replace("/", "."))
     cexpr.function = module.eval_cexpr
     return cexpr
@@ -265,10 +266,11 @@ def get_cexpr_meson_f_corr():
         return cexpr
     fn = "cache/auto_contract_cexpr/meson_f_corr_cexpr"
     cexpr = q.pickle_cache_call(calc_cexpr, fn + ".pickle")
-    q.qtouch_info(fn + ".py", cexpr_code_gen_py(cexpr))
-    q.displayln_info(display_cexpr_raw(cexpr))
-    time.sleep(1)
-    q.sync_node()
+    if not q.does_file_exist_sync_node(fn + ".py"):
+        q.qtouch_info(fn + ".py", cexpr_code_gen_py(cexpr))
+        q.displayln_info(display_cexpr_raw(cexpr))
+        time.sleep(1)
+        q.sync_node()
     module = importlib.import_module(fn.replace("/", "."))
     cexpr.function = module.eval_cexpr
     return cexpr
@@ -420,10 +422,11 @@ def get_cexpr_meson_m():
         return cexpr
     fn = "cache/auto_contract_cexpr/meson_m_cexpr"
     cexpr = q.pickle_cache_call(calc_cexpr, fn + "cache/auto_contract_cexpr/meson_m_cexpr.pickle")
-    q.qtouch_info(fn + ".py", cexpr_code_gen_py(cexpr))
-    q.displayln_info(display_cexpr_raw(cexpr))
-    time.sleep(1)
-    q.sync_node()
+    if not q.does_file_exist_sync_node(fn + ".py"):
+        q.qtouch_info(fn + ".py", cexpr_code_gen_py(cexpr))
+        q.displayln_info(display_cexpr_raw(cexpr))
+        time.sleep(1)
+        q.sync_node()
     module = importlib.import_module(fn.replace("/", "."))
     cexpr.function = module.eval_cexpr
     return cexpr
@@ -495,10 +498,11 @@ def get_cexpr_meson_jt():
         return cexpr
     fn = "cache/auto_contract_cexpr/meson_jt_cexpr"
     cexpr = q.pickle_cache_call(calc_cexpr, fn + ".pickle")
-    q.qtouch_info(fn + ".py", cexpr_code_gen_py(cexpr))
-    q.displayln_info(display_cexpr_raw(cexpr))
-    time.sleep(1)
-    q.sync_node()
+    if not q.does_file_exist_sync_node(fn + ".py"):
+        q.qtouch_info(fn + ".py", cexpr_code_gen_py(cexpr))
+        q.displayln_info(display_cexpr_raw(cexpr))
+        time.sleep(1)
+        q.sync_node()
     module = importlib.import_module(fn.replace("/", "."))
     cexpr.function = module.eval_cexpr
     return cexpr
@@ -604,10 +608,11 @@ def get_cexpr_meson_jj():
         return cexpr
     fn = "cache/auto_contract_cexpr/meson_jj_cexpr"
     cexpr = q.pickle_cache_call(calc_cexpr, fn + ".pickle")
-    q.qtouch_info(fn + ".py", cexpr_code_gen_py(cexpr))
-    q.displayln_info(display_cexpr_raw(cexpr))
-    time.sleep(1)
-    q.sync_node()
+    if not q.does_file_exist_sync_node(fn + ".py"):
+        q.qtouch_info(fn + ".py", cexpr_code_gen_py(cexpr))
+        q.displayln_info(display_cexpr_raw(cexpr))
+        time.sleep(1)
+        q.sync_node()
     module = importlib.import_module(fn.replace("/", "."))
     cexpr.function = module.eval_cexpr
     return cexpr
