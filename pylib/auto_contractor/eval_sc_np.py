@@ -39,7 +39,7 @@ class SpinMatrix:
                 return 0
             return SpinMatrix(self.m * other)
         elif isinstance(other, SpinMatrix):
-            return SpinMatrix(np.tensordot(self.m, other.m, 1))
+            return SpinMatrix(self.m @ other.m)
         else:
             return NotImplemented
 
@@ -49,12 +49,12 @@ class SpinMatrix:
                 return 0
             return SpinMatrix(other * self.m)
         elif isinstance(other, SpinMatrix):
-            return SpinMatrix(np.tensordot(other.m, self.m, 1))
+            return SpinMatrix(other.m @ self.m)
         else:
             return NotImplemented
 
     def trace(self):
-        return np.trace(self.m)
+        return self.m.trace()
 
 ###
 
@@ -67,10 +67,10 @@ class SpinColorMatrix:
     def __init__(self, m):
         assert isinstance(m, np.ndarray)
         assert m.dtype == complex
-        if m.shape == (4, 3, 3, 4,):
+        if m.shape == (12, 12,):
             self.m = m
         elif m.shape == (144,):
-            self.m = m.reshape(4, 3, 4, 3).transpose(0, 1, 3, 2)
+            self.m = m.reshape(12, 12)
         else:
             assert False
 
@@ -80,9 +80,9 @@ class SpinColorMatrix:
                 return 0
             return SpinColorMatrix(self.m * other)
         elif isinstance(other, SpinMatrix):
-            return SpinColorMatrix(np.tensordot(self.m, other.m, 1))
+            return SpinColorMatrix((other.m.transpose() @ self.m.reshape(12, 4, 3)).reshape(12, 12).copy())
         elif isinstance(other, SpinColorMatrix):
-            return SpinColorMatrix(np.tensordot(self.m, other.m, ((3, 2,), (0, 1,),)))
+            return SpinColorMatrix(self.m @ other.m)
         else:
             return NotImplemented
 
@@ -92,14 +92,14 @@ class SpinColorMatrix:
                 return 0
             return SpinMatrix(other * self.m)
         elif isinstance(other, SpinMatrix):
-            return SpinColorMatrix(np.tensordot(other.m, self.m, 1))
+            return SpinColorMatrix((other.m @ self.m.reshape(4, 36)).reshape(12, 12).copy())
         elif isinstance(other, SpinColorMatrix):
-            return SpinColorMatrix(np.tensordot(other.m, self.m, ((3, 2,), (0, 1,),)))
+            return SpinColorMatrix(other.m @ self.m)
         else:
             return NotImplemented
 
     def trace(self):
-        return np.trace(self.m, axis1 = 0, axis2 = 3).trace()
+        return self.m.trace()
 
 ###
 
@@ -188,8 +188,10 @@ def g5_herm(x):
         return x.conjugate()
     else:
         x_h = adj_msc(x)
-        x_h.m[2:4, :, :, 0:2] *= -1
-        x_h.m[0:2, :, :, 2:4] *= -1
+        vm = x_h.m.reshape(4, 3, 4, 3)
+        assert vm.base is x_h.m
+        vm[2:4, :, 0:2, :] *= -1
+        vm[0:2, :, 2:4, :] *= -1
         return x_h
 
 def msc_trace(x):
@@ -206,13 +208,13 @@ def msc_trace(x):
 
 def msc_trace2(x, y):
     if isinstance(x, SpinColorMatrix) and isinstance(y, SpinColorMatrix):
-        v = np.tensordot(x.m, y.m, ((3, 2, 1, 0,), (0, 1, 2, 3,),)).item()
+        v = np.tensordot(x.m, y.m, ((1, 0,), (0, 1,),)).item()
         return v
     elif isinstance(x, SpinColorMatrix) and isinstance(y, SpinMatrix):
-        v = np.tensordot(x.m, y.m, ((3, 0,), (0, 1,),)).trace()
+        v = np.tensordot(x.m.reshape(4, 3, 4, 3,), y.m, ((2, 0,), (0, 1,),)).trace()
         return v
     elif isinstance(x, SpinMatrix) and isinstance(y, SpinColorMatrix):
-        v = np.tensordot(x.m, y.m, ((1, 0,), (0, 3,),)).trace()
+        v = np.tensordot(x.m, y.m.reshape(4, 3, 4, 3,), ((1, 0,), (0, 2,),)).trace()
         return v
     elif isinstance(x, (int, float, complex)):
         return x * msc_trace(y)
