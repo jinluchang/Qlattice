@@ -42,7 +42,8 @@ clean:
 	-rm -v cqlat.so
 
 clean-logs: clean
-	-rm -v cqlat.log $(tests)
+	-rm -v cqlat.log $(tests) $(tests_gpt)
 
 clean-logs-gpt: clean-logs
+	-touch $(tests)
 	-rm -v $(tests_gpt)
