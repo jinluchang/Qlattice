@@ -63,6 +63,22 @@ def get_positions(term):
     add_positions(s, term)
     return sorted(list(s))
 
+def get_var_name_type(x):
+    if x.startswith("V_S_"):
+        return "V_S"
+    elif x.startswith("V_prod_GG_"):
+        return "V_G"
+    elif x.startswith("V_prod_GS_"):
+        return "V_S"
+    elif x.startswith("V_prod_SG_"):
+        return "V_S"
+    elif x.startswith("V_prod_SS_"):
+        return "V_S"
+    elif x.startswith("V_tr_"):
+        return "V_Tr"
+    else:
+        assert False
+
 def get_op_type(x):
     # x should be an Op
     # return a string which indicate the type of the op
@@ -75,18 +91,7 @@ def get_op_type(x):
     elif x.otype == "Tr":
         return "Tr"
     elif x.otype == "Var":
-        if x.name.startswith("V_S_"):
-            return "V_S"
-        elif x.name.startswith("V_prod_GG_"):
-            return "V_G"
-        elif x.name.startswith("V_prod_GS_"):
-            return "V_S"
-        elif x.name.startswith("V_prod_SS_"):
-            return "V_S"
-        elif x.name.startswith("V_tr_"):
-            return "V_Tr"
-        else:
-            assert False
+        return get_var_name_type(x.name)
     else:
         assert False
     return None
@@ -264,6 +269,7 @@ def collect_subexpr_in_cexpr(variables, named_terms):
     var_counter_dict = {}
     var_counter_dict["V_prod_GG_"] = 0
     var_counter_dict["V_prod_GS_"] = 0
+    var_counter_dict["V_prod_SG_"] = 0
     var_counter_dict["V_prod_SS_"] = 0
     while True:
         subexpr = find_common_subexpr_in_tr(variables_trs)
@@ -276,8 +282,10 @@ def collect_subexpr_in_cexpr(variables, named_terms):
         assert op1_type in [ "V_S", "V_G", "S", "G", ]
         if op_type in [ "V_G", "G", ] and op1_type in [ "V_G", "G", ]:
             name_prefix = "V_prod_GG_"
-        elif op_type in [ "V_G", "G", ] or op1_type in [ "V_G", "G", ]:
+        elif op_type in [ "V_G", "G", ] and op1_type in [ "V_S", "S", ]:
             name_prefix = "V_prod_GS_"
+        elif op_type in [ "V_S", "S", ] and op1_type in [ "V_G", "G", ]:
+            name_prefix = "V_prod_SG_"
         elif op_type in [ "V_S", "S", ] and op1_type in [ "V_S", "S", ]:
             name_prefix = "V_prod_SS_"
         else:
@@ -300,6 +308,7 @@ class CExpr:
     # self.named_typed_exprs
     # self.named_exprs
     # self.positions
+    # self.function
 
     def __init__(self, diagram_types, variables, named_terms, named_typed_exprs, named_exprs, positions = None):
         self.diagram_types = diagram_types
@@ -315,6 +324,7 @@ class CExpr:
             for name, term in named_terms:
                 add_positions(s, term)
             self.positions = sorted(list(s))
+        self.function = None
 
     def __repr__(self) -> str:
         return f"CExpr({self.diagram_types},{self.variables},{self.named_terms},{self.named_typed_exprs},{self.named_exprs},{self.positions})"
@@ -585,19 +595,102 @@ def display_cexpr(cexpr : CExpr):
     lines.append(f"End CExpr")
     return "\n".join(lines)
 
+def cexpr_code_gen_py(cexpr : CExpr):
+    # return a string
+    # interface function
+    def gen_expr(x):
+        assert isinstance(x, Op)
+        if x.otype == "S":
+            return f"get_prop('{x.f}', {x.p1}, {x.p2})"
+        elif x.otype == "G":
+            assert x.s1 == "auto" and x.s2 == "auto"
+            assert x.tag in [0, 1, 2, 3, 5]
+            return f"get_gamma_matrix({x.tag})"
+        elif x.otype == "Tr":
+            x_ops_exprs = [ gen_expr(o) for o in x.ops ]
+            if len(x.ops) == 0:
+                return f"1"
+            elif len(x.ops) == 1:
+                return f"ama_msc_trace({x_ops_exprs[0]})"
+            else:
+                v1 = " * ".join(x_ops_exprs[:-1])
+                v2 = x_ops_exprs[-1]
+                return f"ama_msc_trace2({v1}, {v2})"
+        elif x.otype == "Var":
+            return f"{x.name}"
+    lines = []
+    lines.append(f"from auto_contractor.eval import *")
+    lines.append(f"")
+    lines.append(f"def eval_cexpr(*, positions_dict, get_prop, is_only_total = 'total'):")
+    lines.append(f"")
+    lines.append(f"    # set positions")
+    for position_var in cexpr.positions:
+        lines.append(f"    {position_var} = positions_dict['{position_var}']")
+    lines.append(f"")
+    lines.append(f"    # get_props")
+    for name, value in cexpr.variables:
+        if name.startswith("V_S_"):
+            x = value
+            assert isinstance(x, Op)
+            assert x.otype == "S"
+            lines.append(f"    {name} = {gen_expr(x)}")
+    lines.append(f"")
+    lines.append(f"    # compute products")
+    for name, value in cexpr.variables:
+        if name.startswith("V_prod_"):
+            x = value
+            assert isinstance(x, list)
+            p = " * ".join([ gen_expr(v) for v in x ])
+            lines.append(f"    {name} = {p}")
+    lines.append(f"")
+    lines.append(f"    # compute traces")
+    for name, value in cexpr.variables:
+        if name.startswith("V_tr_"):
+            x = value
+            assert isinstance(x, Op)
+            assert x.otype == "Tr"
+            lines.append(f"    {name} = {gen_expr(x)}")
+    lines.append(f"")
+    lines.append(f"    # set terms")
+    for name, term in cexpr.named_terms:
+        x = term
+        p = " * ".join([ f"{x.coef}", ] + [ gen_expr(v) for v in x.c_ops ])
+        lines.append(f"    {name} = ama_extract({p})")
+    lines.append(f"")
+    lines.append(f"    # return exprs")
+    lines.append(f"    results = np.array([")
+    for name, expr in cexpr.named_exprs:
+        lines.append(f"")
+        name = name.replace("\n", "  ")
+        lines.append(f"        # {name} ")
+        s = " + ".join([ f"{coef} * {tname}" for coef, tname in expr ])
+        lines.append(f"        {s},")
+    lines.append(f"")
+    lines.append(f"    ])")
+    lines.append(f"    return results")
+    lines.append(f"")
+    return "\n".join(lines)
+
 if __name__ == "__main__":
     expr = Qb("d", "x1", "s1", "c1") * G(5, "s1", "s2") * Qv("u", "x1", "s2", "c1") * Qb("u", "x2", "s3", "c2") * G(5, "s3", "s4") * Qv("d", "x2", "s4", "c2")
     print(expr)
+    print()
     expr = simplified(contract_expr(expr))
     print(expr)
-    cexpr = mk_cexpr(expr)
+    print()
+    cexpr = copy.deepcopy(mk_cexpr(expr))
     print(cexpr)
+    print()
     cexpr.collect_op()
     print(cexpr)
+    print()
     print(display_cexpr(cexpr))
-    print(CExpr([('S_1', S('d','x2','x1')), ('S_2', S('u','x1','x2'))],[('T_1', Term([Tr([G(5), Var('S_1'), G(5), Var('S_2')],'sc')],[],(-1+0j)))],['x1', 'x2']))
-    expr = Expr([Term([G(5,'a_s_203','a_s_204'), G(5,'a_s_207','a_s_208'), G(5,'a_s_219','a_s_220'), G(5,'a_s_223','a_s_224')],[Qb('u','x21','a_s_203','a_c_102'), Qv('u','x21','a_s_204','a_c_102'), Qb('u','x22','a_s_207','a_c_104'), Qv('u','x22','a_s_208','a_c_104'), Qb('u','x11','a_s_219','a_c_110'), Qv('u','x11','a_s_220','a_c_110'), Qb('u','x12','a_s_223','a_c_112'), Qv('u','x12','a_s_224','a_c_112')],(0.08333333333333333+0j)), Term([G(5,'a_s_203','a_s_204'), G(5,'a_s_207','a_s_208'), G(5,'a_s_219','a_s_220'), G(5,'a_s_225','a_s_226')],[Qb('u','x21','a_s_203','a_c_102'), Qv('u','x21','a_s_204','a_c_102'), Qb('u','x22','a_s_207','a_c_104'), Qv('u','x22','a_s_208','a_c_104'), Qb('u','x11','a_s_219','a_c_110'), Qv('u','x11','a_s_220','a_c_110'), Qb('d','x12','a_s_225','a_c_113'), Qv('d','x12','a_s_226','a_c_113')],(-0.08333333333333333+0j)), Term([G(5,'a_s_203','a_s_204'), G(5,'a_s_207','a_s_208'), G(5,'a_s_221','a_s_222'), G(5,'a_s_223','a_s_224')],[Qb('u','x21','a_s_203','a_c_102'), Qv('u','x21','a_s_204','a_c_102'), Qb('u','x22','a_s_207','a_c_104'), Qv('u','x22','a_s_208','a_c_104'), Qb('d','x11','a_s_221','a_c_111'), Qv('d','x11','a_s_222','a_c_111'), Qb('u','x12','a_s_223','a_c_112'), Qv('u','x12','a_s_224','a_c_112')],(-0.08333333333333333+0j)), Term([G(5,'a_s_203','a_s_204'), G(5,'a_s_207','a_s_208'), G(5,'a_s_221','a_s_222'), G(5,'a_s_225','a_s_226')],[Qb('u','x21','a_s_203','a_c_102'), Qv('u','x21','a_s_204','a_c_102'), Qb('u','x22','a_s_207','a_c_104'), Qv('u','x22','a_s_208','a_c_104'), Qb('d','x11','a_s_221','a_c_111'), Qv('d','x11','a_s_222','a_c_111'), Qb('d','x12','a_s_225','a_c_113'), Qv('d','x12','a_s_226','a_c_113')],(0.08333333333333333+0j)), Term([G(5,'a_s_203','a_s_204'), G(5,'a_s_207','a_s_208'), G(5,'a_s_227','a_s_228'), G(5,'a_s_229','a_s_230')],[Qb('u','x21','a_s_203','a_c_102'), Qv('u','x21','a_s_204','a_c_102'), Qb('u','x22','a_s_207','a_c_104'), Qv('u','x22','a_s_208','a_c_104'), Qb('d','x11','a_s_227','a_c_114'), Qv('u','x11','a_s_228','a_c_114'), Qb('u','x12','a_s_229','a_c_115'), Qv('d','x12','a_s_230','a_c_115')],(0.16666666666666669+0j)), Term([G(5,'a_s_203','a_s_204'), G(5,'a_s_207','a_s_208'), G(5,'a_s_231','a_s_232'), G(5,'a_s_233','a_s_234')],[Qb('u','x21','a_s_203','a_c_102'), Qv('u','x21','a_s_204','a_c_102'), Qb('u','x22','a_s_207','a_c_104'), Qv('u','x22','a_s_208','a_c_104'), Qb('u','x11','a_s_231','a_c_116'), Qv('d','x11','a_s_232','a_c_116'), Qb('d','x12','a_s_233','a_c_117'), Qv('u','x12','a_s_234','a_c_117')],(0.16666666666666669+0j)), Term([G(5,'a_s_203','a_s_204'), G(5,'a_s_209','a_s_210'), G(5,'a_s_219','a_s_220'), G(5,'a_s_223','a_s_224')],[Qb('u','x21','a_s_203','a_c_102'), Qv('u','x21','a_s_204','a_c_102'), Qb('d','x22','a_s_209','a_c_105'), Qv('d','x22','a_s_210','a_c_105'), Qb('u','x11','a_s_219','a_c_110'), Qv('u','x11','a_s_220','a_c_110'), Qb('u','x12','a_s_223','a_c_112'), Qv('u','x12','a_s_224','a_c_112')],(-0.08333333333333333+0j)), Term([G(5,'a_s_203','a_s_204'), G(5,'a_s_209','a_s_210'), G(5,'a_s_219','a_s_220'), G(5,'a_s_225','a_s_226')],[Qb('u','x21','a_s_203','a_c_102'), Qv('u','x21','a_s_204','a_c_102'), Qb('d','x22','a_s_209','a_c_105'), Qv('d','x22','a_s_210','a_c_105'), Qb('u','x11','a_s_219','a_c_110'), Qv('u','x11','a_s_220','a_c_110'), Qb('d','x12','a_s_225','a_c_113'), Qv('d','x12','a_s_226','a_c_113')],(0.08333333333333333-0j)), Term([G(5,'a_s_203','a_s_204'), G(5,'a_s_209','a_s_210'), G(5,'a_s_221','a_s_222'), G(5,'a_s_223','a_s_224')],[Qb('u','x21','a_s_203','a_c_102'), Qv('u','x21','a_s_204','a_c_102'), Qb('d','x22','a_s_209','a_c_105'), Qv('d','x22','a_s_210','a_c_105'), Qb('d','x11','a_s_221','a_c_111'), Qv('d','x11','a_s_222','a_c_111'), Qb('u','x12','a_s_223','a_c_112'), Qv('u','x12','a_s_224','a_c_112')],(0.08333333333333333-0j)), Term([G(5,'a_s_203','a_s_204'), G(5,'a_s_209','a_s_210'), G(5,'a_s_221','a_s_222'), G(5,'a_s_225','a_s_226')],[Qb('u','x21','a_s_203','a_c_102'), Qv('u','x21','a_s_204','a_c_102'), Qb('d','x22','a_s_209','a_c_105'), Qv('d','x22','a_s_210','a_c_105'), Qb('d','x11','a_s_221','a_c_111'), Qv('d','x11','a_s_222','a_c_111'), Qb('d','x12','a_s_225','a_c_113'), Qv('d','x12','a_s_226','a_c_113')],(-0.08333333333333333+0j)), Term([G(5,'a_s_203','a_s_204'), G(5,'a_s_209','a_s_210'), G(5,'a_s_227','a_s_228'), G(5,'a_s_229','a_s_230')],[Qb('u','x21','a_s_203','a_c_102'), Qv('u','x21','a_s_204','a_c_102'), Qb('d','x22','a_s_209','a_c_105'), Qv('d','x22','a_s_210','a_c_105'), Qb('d','x11','a_s_227','a_c_114'), Qv('u','x11','a_s_228','a_c_114'), Qb('u','x12','a_s_229','a_c_115'), Qv('d','x12','a_s_230','a_c_115')],(-0.16666666666666669+0j)), Term([G(5,'a_s_203','a_s_204'), G(5,'a_s_209','a_s_210'), G(5,'a_s_231','a_s_232'), G(5,'a_s_233','a_s_234')],[Qb('u','x21','a_s_203','a_c_102'), Qv('u','x21','a_s_204','a_c_102'), Qb('d','x22','a_s_209','a_c_105'), Qv('d','x22','a_s_210','a_c_105'), Qb('u','x11','a_s_231','a_c_116'), Qv('d','x11','a_s_232','a_c_116'), Qb('d','x12','a_s_233','a_c_117'), Qv('u','x12','a_s_234','a_c_117')],(-0.16666666666666669+0j)), Term([G(5,'a_s_205','a_s_206'), G(5,'a_s_207','a_s_208'), G(5,'a_s_219','a_s_220'), G(5,'a_s_223','a_s_224')],[Qb('d','x21','a_s_205','a_c_103'), Qv('d','x21','a_s_206','a_c_103'), Qb('u','x22','a_s_207','a_c_104'), Qv('u','x22','a_s_208','a_c_104'), Qb('u','x11','a_s_219','a_c_110'), Qv('u','x11','a_s_220','a_c_110'), Qb('u','x12','a_s_223','a_c_112'), Qv('u','x12','a_s_224','a_c_112')],(-0.08333333333333333+0j)), Term([G(5,'a_s_205','a_s_206'), G(5,'a_s_207','a_s_208'), G(5,'a_s_219','a_s_220'), G(5,'a_s_225','a_s_226')],[Qb('d','x21','a_s_205','a_c_103'), Qv('d','x21','a_s_206','a_c_103'), Qb('u','x22','a_s_207','a_c_104'), Qv('u','x22','a_s_208','a_c_104'), Qb('u','x11','a_s_219','a_c_110'), Qv('u','x11','a_s_220','a_c_110'), Qb('d','x12','a_s_225','a_c_113'), Qv('d','x12','a_s_226','a_c_113')],(0.08333333333333333-0j)), Term([G(5,'a_s_205','a_s_206'), G(5,'a_s_207','a_s_208'), G(5,'a_s_221','a_s_222'), G(5,'a_s_223','a_s_224')],[Qb('d','x21','a_s_205','a_c_103'), Qv('d','x21','a_s_206','a_c_103'), Qb('u','x22','a_s_207','a_c_104'), Qv('u','x22','a_s_208','a_c_104'), Qb('d','x11','a_s_221','a_c_111'), Qv('d','x11','a_s_222','a_c_111'), Qb('u','x12','a_s_223','a_c_112'), Qv('u','x12','a_s_224','a_c_112')],(0.08333333333333333-0j)), Term([G(5,'a_s_205','a_s_206'), G(5,'a_s_207','a_s_208'), G(5,'a_s_221','a_s_222'), G(5,'a_s_225','a_s_226')],[Qb('d','x21','a_s_205','a_c_103'), Qv('d','x21','a_s_206','a_c_103'), Qb('u','x22','a_s_207','a_c_104'), Qv('u','x22','a_s_208','a_c_104'), Qb('d','x11','a_s_221','a_c_111'), Qv('d','x11','a_s_222','a_c_111'), Qb('d','x12','a_s_225','a_c_113'), Qv('d','x12','a_s_226','a_c_113')],(-0.08333333333333333+0j)), Term([G(5,'a_s_205','a_s_206'), G(5,'a_s_207','a_s_208'), G(5,'a_s_227','a_s_228'), G(5,'a_s_229','a_s_230')],[Qb('d','x21','a_s_205','a_c_103'), Qv('d','x21','a_s_206','a_c_103'), Qb('u','x22','a_s_207','a_c_104'), Qv('u','x22','a_s_208','a_c_104'), Qb('d','x11','a_s_227','a_c_114'), Qv('u','x11','a_s_228','a_c_114'), Qb('u','x12','a_s_229','a_c_115'), Qv('d','x12','a_s_230','a_c_115')],(-0.16666666666666669+0j)), Term([G(5,'a_s_205','a_s_206'), G(5,'a_s_207','a_s_208'), G(5,'a_s_231','a_s_232'), G(5,'a_s_233','a_s_234')],[Qb('d','x21','a_s_205','a_c_103'), Qv('d','x21','a_s_206','a_c_103'), Qb('u','x22','a_s_207','a_c_104'), Qv('u','x22','a_s_208','a_c_104'), Qb('u','x11','a_s_231','a_c_116'), Qv('d','x11','a_s_232','a_c_116'), Qb('d','x12','a_s_233','a_c_117'), Qv('u','x12','a_s_234','a_c_117')],(-0.16666666666666669+0j)), Term([G(5,'a_s_205','a_s_206'), G(5,'a_s_209','a_s_210'), G(5,'a_s_219','a_s_220'), G(5,'a_s_223','a_s_224')],[Qb('d','x21','a_s_205','a_c_103'), Qv('d','x21','a_s_206','a_c_103'), Qb('d','x22','a_s_209','a_c_105'), Qv('d','x22','a_s_210','a_c_105'), Qb('u','x11','a_s_219','a_c_110'), Qv('u','x11','a_s_220','a_c_110'), Qb('u','x12','a_s_223','a_c_112'), Qv('u','x12','a_s_224','a_c_112')],(0.08333333333333333+0j)), Term([G(5,'a_s_205','a_s_206'), G(5,'a_s_209','a_s_210'), G(5,'a_s_219','a_s_220'), G(5,'a_s_225','a_s_226')],[Qb('d','x21','a_s_205','a_c_103'), Qv('d','x21','a_s_206','a_c_103'), Qb('d','x22','a_s_209','a_c_105'), Qv('d','x22','a_s_210','a_c_105'), Qb('u','x11','a_s_219','a_c_110'), Qv('u','x11','a_s_220','a_c_110'), Qb('d','x12','a_s_225','a_c_113'), Qv('d','x12','a_s_226','a_c_113')],(-0.08333333333333333+0j)), Term([G(5,'a_s_205','a_s_206'), G(5,'a_s_209','a_s_210'), G(5,'a_s_221','a_s_222'), G(5,'a_s_223','a_s_224')],[Qb('d','x21','a_s_205','a_c_103'), Qv('d','x21','a_s_206','a_c_103'), Qb('d','x22','a_s_209','a_c_105'), Qv('d','x22','a_s_210','a_c_105'), Qb('d','x11','a_s_221','a_c_111'), Qv('d','x11','a_s_222','a_c_111'), Qb('u','x12','a_s_223','a_c_112'), Qv('u','x12','a_s_224','a_c_112')],(-0.08333333333333333+0j)), Term([G(5,'a_s_205','a_s_206'), G(5,'a_s_209','a_s_210'), G(5,'a_s_221','a_s_222'), G(5,'a_s_225','a_s_226')],[Qb('d','x21','a_s_205','a_c_103'), Qv('d','x21','a_s_206','a_c_103'), Qb('d','x22','a_s_209','a_c_105'), Qv('d','x22','a_s_210','a_c_105'), Qb('d','x11','a_s_221','a_c_111'), Qv('d','x11','a_s_222','a_c_111'), Qb('d','x12','a_s_225','a_c_113'), Qv('d','x12','a_s_226','a_c_113')],(0.08333333333333333+0j)), Term([G(5,'a_s_205','a_s_206'), G(5,'a_s_209','a_s_210'), G(5,'a_s_227','a_s_228'), G(5,'a_s_229','a_s_230')],[Qb('d','x21','a_s_205','a_c_103'), Qv('d','x21','a_s_206','a_c_103'), Qb('d','x22','a_s_209','a_c_105'), Qv('d','x22','a_s_210','a_c_105'), Qb('d','x11','a_s_227','a_c_114'), Qv('u','x11','a_s_228','a_c_114'), Qb('u','x12','a_s_229','a_c_115'), Qv('d','x12','a_s_230','a_c_115')],(0.16666666666666669+0j)), Term([G(5,'a_s_205','a_s_206'), G(5,'a_s_209','a_s_210'), G(5,'a_s_231','a_s_232'), G(5,'a_s_233','a_s_234')],[Qb('d','x21','a_s_205','a_c_103'), Qv('d','x21','a_s_206','a_c_103'), Qb('d','x22','a_s_209','a_c_105'), Qv('d','x22','a_s_210','a_c_105'), Qb('u','x11','a_s_231','a_c_116'), Qv('d','x11','a_s_232','a_c_116'), Qb('d','x12','a_s_233','a_c_117'), Qv('u','x12','a_s_234','a_c_117')],(0.16666666666666669+0j)), Term([G(5,'a_s_211','a_s_212'), G(5,'a_s_213','a_s_214'), G(5,'a_s_219','a_s_220'), G(5,'a_s_223','a_s_224')],[Qb('u','x21','a_s_211','a_c_106'), Qv('d','x21','a_s_212','a_c_106'), Qb('d','x22','a_s_213','a_c_107'), Qv('u','x22','a_s_214','a_c_107'), Qb('u','x11','a_s_219','a_c_110'), Qv('u','x11','a_s_220','a_c_110'), Qb('u','x12','a_s_223','a_c_112'), Qv('u','x12','a_s_224','a_c_112')],(0.16666666666666669+0j)), Term([G(5,'a_s_211','a_s_212'), G(5,'a_s_213','a_s_214'), G(5,'a_s_219','a_s_220'), G(5,'a_s_225','a_s_226')],[Qb('u','x21','a_s_211','a_c_106'), Qv('d','x21','a_s_212','a_c_106'), Qb('d','x22','a_s_213','a_c_107'), Qv('u','x22','a_s_214','a_c_107'), Qb('u','x11','a_s_219','a_c_110'), Qv('u','x11','a_s_220','a_c_110'), Qb('d','x12','a_s_225','a_c_113'), Qv('d','x12','a_s_226','a_c_113')],(-0.16666666666666669+0j)), Term([G(5,'a_s_211','a_s_212'), G(5,'a_s_213','a_s_214'), G(5,'a_s_221','a_s_222'), G(5,'a_s_223','a_s_224')],[Qb('u','x21','a_s_211','a_c_106'), Qv('d','x21','a_s_212','a_c_106'), Qb('d','x22','a_s_213','a_c_107'), Qv('u','x22','a_s_214','a_c_107'), Qb('d','x11','a_s_221','a_c_111'), Qv('d','x11','a_s_222','a_c_111'), Qb('u','x12','a_s_223','a_c_112'), Qv('u','x12','a_s_224','a_c_112')],(-0.16666666666666669+0j)), Term([G(5,'a_s_211','a_s_212'), G(5,'a_s_213','a_s_214'), G(5,'a_s_221','a_s_222'), G(5,'a_s_225','a_s_226')],[Qb('u','x21','a_s_211','a_c_106'), Qv('d','x21','a_s_212','a_c_106'), Qb('d','x22','a_s_213','a_c_107'), Qv('u','x22','a_s_214','a_c_107'), Qb('d','x11','a_s_221','a_c_111'), Qv('d','x11','a_s_222','a_c_111'), Qb('d','x12','a_s_225','a_c_113'), Qv('d','x12','a_s_226','a_c_113')],(0.16666666666666669+0j)), Term([G(5,'a_s_211','a_s_212'), G(5,'a_s_213','a_s_214'), G(5,'a_s_227','a_s_228'), G(5,'a_s_229','a_s_230')],[Qb('u','x21','a_s_211','a_c_106'), Qv('d','x21','a_s_212','a_c_106'), Qb('d','x22','a_s_213','a_c_107'), Qv('u','x22','a_s_214','a_c_107'), Qb('d','x11','a_s_227','a_c_114'), Qv('u','x11','a_s_228','a_c_114'), Qb('u','x12','a_s_229','a_c_115'), Qv('d','x12','a_s_230','a_c_115')],(0.3333333333333334+0j)), Term([G(5,'a_s_211','a_s_212'), G(5,'a_s_213','a_s_214'), G(5,'a_s_231','a_s_232'), G(5,'a_s_233','a_s_234')],[Qb('u','x21','a_s_211','a_c_106'), Qv('d','x21','a_s_212','a_c_106'), Qb('d','x22','a_s_213','a_c_107'), Qv('u','x22','a_s_214','a_c_107'), Qb('u','x11','a_s_231','a_c_116'), Qv('d','x11','a_s_232','a_c_116'), Qb('d','x12','a_s_233','a_c_117'), Qv('u','x12','a_s_234','a_c_117')],(0.3333333333333334+0j)), Term([G(5,'a_s_215','a_s_216'), G(5,'a_s_217','a_s_218'), G(5,'a_s_219','a_s_220'), G(5,'a_s_223','a_s_224')],[Qb('d','x21','a_s_215','a_c_108'), Qv('u','x21','a_s_216','a_c_108'), Qb('u','x22','a_s_217','a_c_109'), Qv('d','x22','a_s_218','a_c_109'), Qb('u','x11','a_s_219','a_c_110'), Qv('u','x11','a_s_220','a_c_110'), Qb('u','x12','a_s_223','a_c_112'), Qv('u','x12','a_s_224','a_c_112')],(0.16666666666666669+0j)), Term([G(5,'a_s_215','a_s_216'), G(5,'a_s_217','a_s_218'), G(5,'a_s_219','a_s_220'), G(5,'a_s_225','a_s_226')],[Qb('d','x21','a_s_215','a_c_108'), Qv('u','x21','a_s_216','a_c_108'), Qb('u','x22','a_s_217','a_c_109'), Qv('d','x22','a_s_218','a_c_109'), Qb('u','x11','a_s_219','a_c_110'), Qv('u','x11','a_s_220','a_c_110'), Qb('d','x12','a_s_225','a_c_113'), Qv('d','x12','a_s_226','a_c_113')],(-0.16666666666666669+0j)), Term([G(5,'a_s_215','a_s_216'), G(5,'a_s_217','a_s_218'), G(5,'a_s_221','a_s_222'), G(5,'a_s_223','a_s_224')],[Qb('d','x21','a_s_215','a_c_108'), Qv('u','x21','a_s_216','a_c_108'), Qb('u','x22','a_s_217','a_c_109'), Qv('d','x22','a_s_218','a_c_109'), Qb('d','x11','a_s_221','a_c_111'), Qv('d','x11','a_s_222','a_c_111'), Qb('u','x12','a_s_223','a_c_112'), Qv('u','x12','a_s_224','a_c_112')],(-0.16666666666666669+0j)), Term([G(5,'a_s_215','a_s_216'), G(5,'a_s_217','a_s_218'), G(5,'a_s_221','a_s_222'), G(5,'a_s_225','a_s_226')],[Qb('d','x21','a_s_215','a_c_108'), Qv('u','x21','a_s_216','a_c_108'), Qb('u','x22','a_s_217','a_c_109'), Qv('d','x22','a_s_218','a_c_109'), Qb('d','x11','a_s_221','a_c_111'), Qv('d','x11','a_s_222','a_c_111'), Qb('d','x12','a_s_225','a_c_113'), Qv('d','x12','a_s_226','a_c_113')],(0.16666666666666669+0j)), Term([G(5,'a_s_215','a_s_216'), G(5,'a_s_217','a_s_218'), G(5,'a_s_227','a_s_228'), G(5,'a_s_229','a_s_230')],[Qb('d','x21','a_s_215','a_c_108'), Qv('u','x21','a_s_216','a_c_108'), Qb('u','x22','a_s_217','a_c_109'), Qv('d','x22','a_s_218','a_c_109'), Qb('d','x11','a_s_227','a_c_114'), Qv('u','x11','a_s_228','a_c_114'), Qb('u','x12','a_s_229','a_c_115'), Qv('d','x12','a_s_230','a_c_115')],(0.3333333333333334+0j)), Term([G(5,'a_s_215','a_s_216'), G(5,'a_s_217','a_s_218'), G(5,'a_s_231','a_s_232'), G(5,'a_s_233','a_s_234')],[Qb('d','x21','a_s_215','a_c_108'), Qv('u','x21','a_s_216','a_c_108'), Qb('u','x22','a_s_217','a_c_109'), Qv('d','x22','a_s_218','a_c_109'), Qb('u','x11','a_s_231','a_c_116'), Qv('d','x11','a_s_232','a_c_116'), Qb('d','x12','a_s_233','a_c_117'), Qv('u','x12','a_s_234','a_c_117')],(0.3333333333333334+0j))])
+    print()
+    print(expr)
+    print()
     cexpr = contract_simplify_compile(expr, is_isospin_symmetric_limit = True)
     print(display_cexpr(cexpr))
+    print()
     cexpr.collect_op()
     print(display_cexpr(cexpr))
+    print(cexpr_code_gen_py(cexpr))

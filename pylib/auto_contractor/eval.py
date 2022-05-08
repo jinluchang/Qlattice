@@ -30,14 +30,20 @@ import copy
 import cmath
 import math
 
+def ama_msc_trace(x):
+    return ama_apply1(msc_trace, x)
+
+def ama_msc_trace2(x, y):
+    def f(x, y):
+        return msc_trace2(x, y)
+    return ama_apply2(f, x, y)
+
 def eval_op_term_expr(expr, variable_dict, positions_dict, get_prop):
     def l_eval(x):
         if isinstance(x, list):
             ans = l_eval(x[0])
-            def f(x, y):
-                return x * y
             for op in x[1:]:
-                ans = ama_apply2(f, ans, l_eval(op))
+                ans = ans * l_eval(op)
             return ans
         elif isinstance(x, Op):
             if x.otype == "S":
@@ -49,21 +55,17 @@ def eval_op_term_expr(expr, variable_dict, positions_dict, get_prop):
                 return get_spin_matrix(x)
             elif x.otype == "Tr":
                 if len(x.ops) == 2:
-                    def f(x, y):
-                        return msc_trace2(x, y)
-                    return ama_apply2(f, l_eval(x.ops[0]), l_eval(x.ops[1]))
+                    return ama_msc_trace2(l_eval(x.ops[0]), l_eval(x.ops[1]))
                 elif len(x.ops) == 1:
-                    return ama_apply1(msc_trace, l_eval(x.ops[0]))
+                    return ama_msc_trace(l_eval(x.ops[0]))
                 elif len(x.ops) == 0:
                     return 1
                 else:
                     assert len(x.ops) > 2
-                    def f(x, y):
-                        return x * y
                     ans = l_eval(x.ops[0])
                     for op in x.ops[1:-1]:
-                        ans = ama_apply2(f, ans, l_eval(op))
-                    return ama_apply2(msc_trace2, ans, l_eval(x.ops[-1]))
+                        ans = ans * l_eval(op)
+                    return ama_msc_trace2(ans, l_eval(x.ops[-1]))
             elif x.otype == "Var":
                 return variable_dict[x.name]
             else:
@@ -72,17 +74,13 @@ def eval_op_term_expr(expr, variable_dict, positions_dict, get_prop):
         elif isinstance(x, Term):
             assert not x.a_ops
             ans = x.coef
-            def f(x, y):
-                return x * y
             for op in x.c_ops:
-                ans = ama_apply2(f, ans, l_eval(op))
+                ans = ans * l_eval(op)
             return ans
         elif isinstance(x, Expr):
             ans = 0
-            def f(x, y):
-                return x + y
             for term in x.terms:
-                ans = ama_apply2(f, ans, l_eval(term))
+                ans = ans + l_eval(term)
             return ans
         else:
             q.displayln_info(f"eval_op_term_expr: ERROR: l_eval({x})")
@@ -143,12 +141,15 @@ def eval_cexpr_return_exprs(cexpr, tvals, is_only_total):
 def eval_cexpr(cexpr : CExpr, *, positions_dict, get_prop, is_only_total = "total"):
     # interface function
     # return 1 dimensional np.array
+    # cexpr can be cexpr object or can be a compiled function
     # xg = positions_dict[position]
     # mat_mspincolor = get_prop(flavor, xg_snk, xg_src)
     # is_only_total = "total", "typed_total", "term"
     # e.g. ("point-snk", [ 1, 2, 3, 4, ]) = positions_dict["x_1"]
     # e.g. flavor = "l"
     # e.g. xg_snk = ("point-snk", [ 1, 2, 3, 4, ])
+    if cexpr.function is not None:
+        return cexpr.function(positions_dict = positions_dict, get_prop = get_prop, is_only_total = is_only_total)
     for pos in cexpr.positions:
         assert pos in positions_dict
     variable_dict = {}

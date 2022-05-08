@@ -43,6 +43,18 @@ class AmaVal:
     def __repr__(self):
         return f"AmaVal({self.val},{self.corrections})"
 
+    def __mul__(self, other):
+        return ama_msc_mult(self, other)
+
+    def __rmul__(self, other):
+        return ama_msc_mult(other, self)
+
+    def __add__(self, other):
+        return ama_msc_add(self, other)
+
+    def __radd__(self, other):
+        return ama_msc_add(other, self)
+
 ###
 
 @q.timer
@@ -161,6 +173,16 @@ def ama_extract(x, *, is_sloppy = False):
         return ama_extract_ama_val(x)
     else:
         assert False
+
+def ama_msc_mult(x, y):
+    def f(x, y):
+        return x * y
+    return ama_apply2(f, x, y)
+
+def ama_msc_add(x, y):
+    def f(x, y):
+        return x + y
+    return ama_apply2(f, x, y)
 
 if __name__ == "__main__":
     v1 = mk_ama_val(1.0, "x", [ 1.0, 1.01, 1.011, ], [ 0, 1, 2, ], [ 1.0, 0.1, 0.02, ])

@@ -7,6 +7,8 @@ import qlat_gpt as qg
 import functools
 import math
 import os
+import time
+import importlib
 
 from jobs import *
 from load_data import *
@@ -52,6 +54,7 @@ def rel_mod_sym(x, size):
 # ----
 
 @q.timer
+@functools.cache
 def get_cexpr_meson_corr():
     def calc_cexpr():
         t_1, t_2 = ['t_1', 't_2']
@@ -64,8 +67,14 @@ def get_cexpr_meson_corr():
         q.displayln_info(display_cexpr(cexpr))
         cexpr.collect_op()
         return cexpr
-    cexpr = q.pickle_cache_call(calc_cexpr, f"cache/auto_contract_cexpr/meson_corr-cexpr.pickle")
+    fn = "cache/auto_contract_cexpr/meson_corr_cexpr"
+    cexpr = q.pickle_cache_call(calc_cexpr, fn + ".pickle")
+    q.qtouch_info(fn + ".py", cexpr_code_gen_py(cexpr))
     q.displayln_info(display_cexpr_raw(cexpr))
+    time.sleep(1)
+    q.sync_node()
+    module = importlib.import_module(fn.replace("/", "."))
+    cexpr.function = module.eval_cexpr
     return cexpr
 
 @q.timer_verbose
@@ -241,6 +250,7 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_fs
 # ----
 
 @q.timer
+@functools.cache
 def get_cexpr_meson_f_corr():
     def calc_cexpr():
         t_1, x_2 = ['t_1', 'x_2']
@@ -253,8 +263,14 @@ def get_cexpr_meson_f_corr():
         q.displayln_info(display_cexpr(cexpr))
         cexpr.collect_op()
         return cexpr
-    cexpr = q.pickle_cache_call(calc_cexpr, f"cache/auto_contract_cexpr/meson_f_corr-cexpr.pickle")
+    fn = "cache/auto_contract_cexpr/meson_f_corr_cexpr"
+    cexpr = q.pickle_cache_call(calc_cexpr, fn + ".pickle")
+    q.qtouch_info(fn + ".py", cexpr_code_gen_py(cexpr))
     q.displayln_info(display_cexpr_raw(cexpr))
+    time.sleep(1)
+    q.sync_node()
+    module = importlib.import_module(fn.replace("/", "."))
+    cexpr.function = module.eval_cexpr
     return cexpr
 
 @q.timer_verbose
@@ -386,6 +402,7 @@ def auto_contract_meson_f_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_
 # ----
 
 @q.timer
+@functools.cache
 def get_cexpr_meson_m():
     def calc_cexpr():
         t_1, t_2, x_1 = ['t_1', 't_2', 'x_1']
@@ -401,8 +418,14 @@ def get_cexpr_meson_m():
         q.displayln_info(display_cexpr(cexpr))
         cexpr.collect_op()
         return cexpr
-    cexpr = q.pickle_cache_call(calc_cexpr, f"cache/auto_contract_cexpr/meson_m-cexpr.pickle")
+    fn = "cache/auto_contract_cexpr/meson_m_cexpr"
+    cexpr = q.pickle_cache_call(calc_cexpr, fn + "cache/auto_contract_cexpr/meson_m_cexpr.pickle")
+    q.qtouch_info(fn + ".py", cexpr_code_gen_py(cexpr))
     q.displayln_info(display_cexpr_raw(cexpr))
+    time.sleep(1)
+    q.sync_node()
+    module = importlib.import_module(fn.replace("/", "."))
+    cexpr.function = module.eval_cexpr
     return cexpr
 
 @q.timer_verbose
@@ -448,6 +471,7 @@ def auto_contract_meson_m(job_tag, traj, get_prop, get_psel, get_fsel):
 # ----
 
 @q.timer
+@functools.cache
 def get_cexpr_meson_jt():
     def calc_cexpr():
         t_1, t_1p, t_2, t_2p, x_1 = ['t_1', 't_1p', 't_2', 't_2p', 'x_1']
@@ -469,8 +493,14 @@ def get_cexpr_meson_jt():
         q.displayln_info(display_cexpr(cexpr))
         cexpr.collect_op()
         return cexpr
-    cexpr = q.pickle_cache_call(calc_cexpr, f"cache/auto_contract_cexpr/meson_jt-cexpr.pickle")
+    fn = "cache/auto_contract_cexpr/meson_jt_cexpr"
+    cexpr = q.pickle_cache_call(calc_cexpr, fn + ".pickle")
+    q.qtouch_info(fn + ".py", cexpr_code_gen_py(cexpr))
     q.displayln_info(display_cexpr_raw(cexpr))
+    time.sleep(1)
+    q.sync_node()
+    module = importlib.import_module(fn.replace("/", "."))
+    cexpr.function = module.eval_cexpr
     return cexpr
 
 @q.timer_verbose
@@ -520,6 +550,7 @@ def auto_contract_meson_jt(job_tag, traj, get_prop, get_psel, get_fsel):
 # ----
 
 @q.timer
+@functools.cache
 def get_cexpr_meson_jj():
     def calc_cexpr():
         t_1, t_2, x_1, x_2 = ['t_1', 't_2', 'x_1', 'x_2']
@@ -571,8 +602,14 @@ def get_cexpr_meson_jj():
         q.displayln_info(display_cexpr(cexpr))
         cexpr.collect_op()
         return cexpr
-    cexpr = q.pickle_cache_call(calc_cexpr, f"cache/auto_contract_cexpr/meson_jj-cexpr.pickle")
+    fn = "cache/auto_contract_cexpr/meson_jj_cexpr"
+    cexpr = q.pickle_cache_call(calc_cexpr, fn + ".pickle")
+    q.qtouch_info(fn + ".py", cexpr_code_gen_py(cexpr))
     q.displayln_info(display_cexpr_raw(cexpr))
+    time.sleep(1)
+    q.sync_node()
+    module = importlib.import_module(fn.replace("/", "."))
+    cexpr.function = module.eval_cexpr
     return cexpr
 
 def r_scaling_factor():

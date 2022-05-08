@@ -20,7 +20,6 @@
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 import numpy as np
-import qlat as q
 
 class SpinMatrix:
 
@@ -162,6 +161,9 @@ gamma_matrix_list = [
             ),
         ]
 
+def get_gamma_matrix(mu):
+    return gamma_matrix_list[mu]
+
 def get_spin_matrix(op):
     assert op.otype == "G"
     assert op.s1 == "auto" and op.s2 == "auto"
@@ -179,7 +181,6 @@ def as_mspincolor(x):
 def adj_msc(x):
     return SpinColorMatrix(x.m.transpose().conj())
 
-@q.timer
 def g5_herm(x):
     if isinstance(x, (int, float)):
         return x
