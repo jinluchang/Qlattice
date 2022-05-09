@@ -20,6 +20,7 @@
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 import numpy as np
+from numpy import ascontiguousarray as as_cont
 
 class SpinMatrix:
 
@@ -107,12 +108,12 @@ def mat_mul_sc_sc(x, y):
 def mat_mul_sc_s(x, y):
     if x == 0:
         return 0
-    return SpinColorMatrix((y.m.transpose() @ x.m.reshape(12, 4, 3)).reshape(12, 12).copy())
+    return SpinColorMatrix(as_cont((as_cont(y.m.transpose()) @ x.m.reshape(12, 4, 3)).reshape(12, 12)))
 
 def mat_mul_s_sc(x, y):
     if y == 0:
         return 0
-    return SpinColorMatrix((x.m @ y.m.reshape(4, 36)).reshape(12, 12).copy())
+    return SpinColorMatrix(as_cont((x.m @ y.m.reshape(4, 36)).reshape(12, 12)))
 
 def mat_mul_s_s(x, y):
     return SpinMatrix(x.m @ y.m)
@@ -194,7 +195,7 @@ def get_spin_matrix(op):
 
 def as_mspincolor(x):
     if isinstance(x, np.ndarray):
-        return SpinColorMatrix(x.reshape(12, 12).copy())
+        return SpinColorMatrix(as_cont(x.reshape(12, 12)))
     elif x == 0:
         return 0
     else:
@@ -230,8 +231,7 @@ def msc_trace(x):
 
 def msc_trace2(x, y):
     if isinstance(x, SpinColorMatrix) and isinstance(y, SpinColorMatrix):
-        v = np.tensordot(x.m, y.m, ((1, 0,), (0, 1,),)).item()
-        return v
+        return np.dot(x.m.ravel(), y.m.transpose().ravel()).item()
     elif isinstance(x, SpinColorMatrix) and isinstance(y, SpinMatrix):
         v = np.tensordot(x.m.reshape(4, 3, 4, 3,), y.m, ((2, 0,), (0, 1,),)).trace()
         return v
