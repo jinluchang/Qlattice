@@ -662,7 +662,7 @@ inline void set_complex_from_double(Field<M>& cf, const Field<double>& sf)
 {
   TIMER("set_complex_from_double");
   const Geometry geo = sf.geo();
-  cf.init(geo);
+  //cf.init(geo);
   qacc_for(index, geo.local_volume(), {
     Coordinate xl = geo.coordinate_from_index(index);
     Vector<M> v = cf.get_elems(xl);
@@ -680,7 +680,7 @@ inline void set_double_from_complex(Field<M>& sf, const Field<Complex>& cf)
 {
   TIMER("set_double_from_complex");
   const Geometry geo = cf.geo();
-  sf.init(geo);
+  //sf.init(geo);
   qacc_for(index, geo.local_volume(), {
     Coordinate xl = geo.coordinate_from_index(index);
     Vector<M> v = sf.get_elems(xl);

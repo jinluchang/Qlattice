@@ -116,7 +116,7 @@ struct ScalarAction {
   {
     TIMER("ScalarAction.hmc_estimate_mass");
     const Geometry geo = field_ft.geo();
-    masses.init(geo);
+    //masses.init(geo);
     qacc_for(index, geo.local_volume(), {
       const Coordinate xl = geo.coordinate_from_index(index);
       const Coordinate xg = geo.coordinate_g_from_l(xl);
@@ -181,7 +181,7 @@ struct ScalarAction {
   {
     TIMER("ScalarAction.hmc_set_sm_force_no_comm");
     const Geometry geo = sf.geo();
-    sm_force.init(geo);
+    //sm_force.init(geo);
     qacc_for(index, geo.local_volume(), {
       Coordinate xl = geo.coordinate_from_index(index);
       Vector<double> sm_force_v = sm_force.get_elems(xl);
@@ -255,7 +255,7 @@ struct ScalarAction {
     TIMER("ScalarAction.axial_current_node_no_comm");
     const Geometry geo = sf.geo();
     const Geometry geo_r = geo_reform(geo, geo.multiplicity-1);
-    axial_current.init(geo_r);
+    //axial_current.init(geo_r);
     qacc_for(index, geo.local_volume(), {
       Coordinate xl = geo.coordinate_from_index(index);
       Vector<double> ac_v = axial_current.get_elems(xl);

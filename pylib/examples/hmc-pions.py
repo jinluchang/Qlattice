@@ -299,7 +299,7 @@ ax_cur_timeslices=[]
 accept_rates=[]
 
 # The lattice dimensions
-total_site = [16,16,16,32]
+total_site = [8,8,8,8]
 
 # The multiplicity of the scalar field
 mult = 4
