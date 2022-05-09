@@ -161,6 +161,7 @@ def ama_extract_ama_val(x):
     def get_level_prob(key):
         s = set([ d[key] for v, d in corrections ])
         return sorted(list(s))
+    # dict_level_prob[key] = list of accuracy level and probability_of_having_this_accuracy pairs for this key (source_specification)
     dict_level_prob = { k: get_level_prob(k) for k in keys }
     for k, v in dict_level_prob.items():
         assert len(v) >= 2
