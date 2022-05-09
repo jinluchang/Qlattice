@@ -588,12 +588,12 @@ inline void release_lock_all_node()
 
 typedef std::vector<std::vector<double> > DataTable;
 
-inline DataTable qload_datatable(FILE* fp)
+inline DataTable qload_datatable(QFile& qfile)
 {
-  TIMER("qload_datatable(fp)");
+  TIMER("qload_datatable(qfile)");
   DataTable ret;
-  while (!feof(fp)) {
-    const std::string line = qgetline(fp);
+  while (not qfeof(qfile)) {
+    const std::string line = qgetline(qfile);
     if (line.length() > 0 && line[0] != '#') {
       const std::vector<double> xs = read_doubles(line);
       if (xs.size() > 0) {
@@ -604,18 +604,18 @@ inline DataTable qload_datatable(FILE* fp)
   return ret;
 }
 
-inline DataTable qload_datatable_par(FILE* fp)
+inline DataTable qload_datatable_par(QFile& qfile)
 {
-  TIMER("qload_datatable(fp)");
+  TIMER("qload_datatable(qfile)");
   const size_t line_buf_size = 1024;
   DataTable ret;
   std::vector<std::string> lines;
   DataTable xss;
-  while (!feof(fp)) {
+  while (not qfeof(qfile)) {
     lines.clear();
     for (size_t i = 0; i < line_buf_size; ++i) {
-      lines.push_back(qgetline(fp));
-      if (feof(fp)) {
+      lines.push_back(qgetline(qfile));
+      if (qfeof(qfile)) {
         break;
       }
     }
@@ -641,26 +641,28 @@ inline DataTable qload_datatable_par(FILE* fp)
 inline DataTable qload_datatable_serial(const std::string& path)
 {
   TIMER("qload_datatable_serial(path)");
-  if (!does_file_exist(path)) {
+  if (not does_file_exist_qar(path)) {
     return DataTable();
   }
-  FILE* fp = qopen(path, "r");
-  qassert(fp != NULL);
-  DataTable ret = qload_datatable(fp);
-  qclose(fp);
+  QFile qfile;
+  qopen(qfile, path, "r");
+  qassert(not qfile.null());
+  DataTable ret = qload_datatable(qfile);
+  qfile.close();
   return ret;
 }
 
 inline DataTable qload_datatable_par(const std::string& path)
 {
   TIMER("qload_datatable_par(path)");
-  if (!does_file_exist(path)) {
+  if (not does_file_exist_qar(path)) {
     return DataTable();
   }
-  FILE* fp = qopen(path, "r");
-  qassert(fp != NULL);
-  DataTable ret = qload_datatable_par(fp);
-  qclose(fp);
+  QFile qfile;
+  qopen(qfile, path, "r");
+  qassert(not qfile.null());
+  DataTable ret = qload_datatable_par(qfile);
+  qfile.close();
   return ret;
 }
 

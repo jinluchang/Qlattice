@@ -75,7 +75,11 @@ EXPORT(timer_autodisplay, {
 
 EXPORT(timer_reset, {
   using namespace qlat;
-  Timer::reset();
+  long max_call_times_for_always_show_info = -1;
+  if (!PyArg_ParseTuple(args, "|l", &max_call_times_for_always_show_info)) {
+    return NULL;
+  }
+  Timer::reset(max_call_times_for_always_show_info);
   Py_RETURN_NONE;
 });
 

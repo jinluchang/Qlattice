@@ -8,7 +8,6 @@ import os
 
 from jobs import *
 
-@q.timer
 def get_prop_wsrc(prop_cache, inv_type, t_src, tag_snk_type):
     cache_type_dict = {
             "wsrc_wsnk ; psel_ts": "psel_ts",
@@ -37,14 +36,12 @@ def get_prop_wsrc(prop_cache, inv_type, t_src, tag_snk_type):
     prob_list = [ 1, prop_cache_prob[f"type={inv_type} ; accuracy=2 ; wsrc ; prob"], ]
     return mk_ama_val(val, source_specification, val_list, rel_acc_list, prob_list)
 
-@q.timer
 def get_prop_wsnk_wsrc(prop_cache, inv_type, t_snk, t_src):
     sp_prop = get_prop_wsrc(prop_cache, inv_type, t_src, "wsrc_wsnk ; psel_ts")
     def f(x):
         return x.get_elem(t_snk)
     return ama_apply1(f, sp_prop)
 
-@q.timer
 def get_prop_psnk_wsrc_fsel(prop_cache, inv_type, xg_snk, t_src, fselc_pos_dict):
     assert isinstance(xg_snk, tuple) and len(xg_snk) == 4
     idx_snk = fselc_pos_dict[xg_snk]
@@ -52,7 +49,6 @@ def get_prop_psnk_wsrc_fsel(prop_cache, inv_type, xg_snk, t_src, fselc_pos_dict)
         return x.get_elem(idx_snk)
     return ama_apply1(f, get_prop_wsrc(prop_cache, inv_type, t_src, "wsrc ; fsel"))
 
-@q.timer
 def get_prop_psnk_wsrc_psel(prop_cache, inv_type, xg_snk, t_src, psel_pos_dict):
     assert isinstance(xg_snk, tuple) and len(xg_snk) == 4
     idx_snk = psel_pos_dict[xg_snk]
@@ -62,7 +58,6 @@ def get_prop_psnk_wsrc_psel(prop_cache, inv_type, xg_snk, t_src, psel_pos_dict):
 
 ### -------
 
-@q.timer
 def get_prop_psrc(prop_cache, inv_type, xg_src, tag_snk_type):
     cache_type_dict = {
             "psrc_wsnk ; psel_ts": "psel_ts",
@@ -123,7 +118,6 @@ def get_prop_psrc(prop_cache, inv_type, xg_src, tag_snk_type):
                 ]
     return mk_ama_val(val, source_specification, val_list, rel_acc_list, prob_list)
 
-@q.timer
 def get_prop_wsnk_psrc(prop_cache, inv_type, t_snk, xg_src):
     assert isinstance(xg_src, tuple) and len(xg_src) == 4
     sp_prop = get_prop_psrc(prop_cache, inv_type, xg_src, "psrc_wsnk ; psel_ts")
@@ -133,7 +127,6 @@ def get_prop_wsnk_psrc(prop_cache, inv_type, t_snk, xg_src):
         return x.get_elem(t_snk)
     return ama_apply1(f, sp_prop)
 
-@q.timer
 def get_prop_psnk_psrc_fsel(prop_cache, inv_type, xg_snk, xg_src, fselc_pos_dict):
     assert isinstance(xg_src, tuple) and len(xg_src) == 4
     assert isinstance(xg_snk, tuple) and len(xg_snk) == 4
@@ -144,7 +137,6 @@ def get_prop_psnk_psrc_fsel(prop_cache, inv_type, xg_snk, xg_src, fselc_pos_dict
         return x.get_elem(idx_snk)
     return ama_apply1(f, get_prop_psrc(prop_cache, inv_type, xg_src, "psrc ; fsel"))
 
-@q.timer
 def get_prop_psnk_psrc_psel(prop_cache, inv_type, xg_snk, xg_src, psel_pos_dict):
     assert isinstance(xg_src, tuple) and len(xg_src) == 4
     assert isinstance(xg_snk, tuple) and len(xg_snk) == 4
@@ -157,13 +149,11 @@ def get_prop_psnk_psrc_psel(prop_cache, inv_type, xg_snk, xg_src, psel_pos_dict)
 
 ### -------
 
-@q.timer
 def get_prop_rand_u1_fsel(prop_cache, inv_type):
     inv_acc = 2
     tag = f"type={inv_type} ; accuracy={inv_acc} ; rand_u1 ; fsel"
     return prop_cache["fsel"].get(tag)
 
-@q.timer
 def get_prop_psnk_rand_u1_fsel(prop_cache, inv_type, xg_snk, fsel_pos_dict):
     assert isinstance(xg_snk, tuple) and len(xg_snk) == 4
     idx_snk = fsel_pos_dict[xg_snk]
@@ -523,9 +513,9 @@ def run_get_prop(job_tag, traj, *, get_gt, get_psel, get_fsel, get_psel_smear, g
         load_prop_psrc_psel(job_tag, traj, "s", psel = psel, fsel = fsel, fselc = fselc)
         load_prop_psrc_fsel(job_tag, traj, "l", psel = psel, fsel = fsel, fselc = fselc)
         load_prop_psrc_fsel(job_tag, traj, "s", psel = psel, fsel = fsel, fselc = fselc)
-        load_prop_rand_u1_fsel(job_tag, traj, "l", fsel = fsel)
-        load_prop_rand_u1_fsel(job_tag, traj, "s", fsel = fsel)
-        load_prop_rand_u1_fsel(job_tag, traj, "c", fsel = fsel)
+        # load_prop_rand_u1_fsel(job_tag, traj, "l", fsel = fsel)
+        # load_prop_rand_u1_fsel(job_tag, traj, "s", fsel = fsel)
+        # load_prop_rand_u1_fsel(job_tag, traj, "c", fsel = fsel)
         #
         prop_cache = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}")
         psel_pos_dict = dict([ (tuple(pos), i) for i, pos in enumerate(psel.to_list()) ])

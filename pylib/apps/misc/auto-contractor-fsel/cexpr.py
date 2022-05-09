@@ -90,42 +90,47 @@ def get_cexpr_3f4f_matching():
             mk_Q7_b81("x", "even") + "Q7_b81(e)",
             mk_Q8_b81("x", "even") + "Q8_b81(e)",
         ]
-        exprs_ops = exprs_odd_ops + exprs_even_ops
+        #exprs_ops = exprs_odd_ops + exprs_even_ops
         exprs_src = [
-            mk_k_0("t2_1") + "K0",
-            mk_kpi_0_i1half("t2_1", "t2_2") + "Kpi_0_I1half_t2_2",
-            mk_kpi_0_i3halves("t2_1", "t2_2") + "Kpi_0_I3halves_t2_2",
-            mk_kpi_0_i1half("t2_1", "t2_3") + "Kpi_0_I1half_t2_3",
-            mk_kpi_0_i3halves("t2_1", "t2_3") + "Kpi_0_I3halves_t2_3",
-            mk_kpi_0_i1half("t2_1", "t2_4") + "Kpi_0_I1half_t2_4",
-            mk_kpi_0_i3halves("t2_1", "t2_4") + "Kpi_0_I3halves_t2_4",
-            mk_Q0_b81("t2_1", "even", True) + "Q0_b81wsrc(e)",
-            mk_Q1_b81("t2_1", "even", True) + "Q1_b81wsrc(e)",
-            mk_Q2_b81("t2_1", "even", True) + "Q2_b81wsrc(e)",
-            mk_Q3_b81("t2_1", "even", True) + "Q3_b81wsrc(e)",
-            mk_Q4_b81("t2_1", "even", True) + "Q4_b81wsrc(e)",
-            mk_Q0_b81("t2_1", "odd", True) + "Q0_b81wsrc(o)",
-            mk_Q1_b81("t2_1", "odd", True) + "Q1_b81wsrc(o)",
-            mk_Q2_b81("t2_1", "odd", True) + "Q2_b81wsrc(o)",
-            mk_Q3_b81("t2_1", "odd", True) + "Q3_b81wsrc(o)",
-            mk_Q4_b81("t2_1", "odd", True) + "Q4_b81wsrc(o)",
+            [ mk_k_0("t2_1") + "K0", -1, 0.5],
+            [ mk_kpi_0_i1half("t2_1", "t2_2") + "Kpi_0_I1half_t2_2", 1, 0.5,],
+            [ mk_kpi_0_i3halves("t2_1", "t2_2") + "Kpi_0_I3halves_t2_2", 1, 1.5,],
+            [ mk_kpi_0_i1half("t2_1", "t2_3") + "Kpi_0_I1half_t2_3", 1, 0.5,],
+            [ mk_kpi_0_i3halves("t2_1", "t2_3") + "Kpi_0_I3halves_t2_3", 1, 1.5,],
+            [ mk_kpi_0_i1half("t2_1", "t2_4") + "Kpi_0_I1half_t2_4", 1, 0.5,],
+            [ mk_kpi_0_i3halves("t2_1", "t2_4") + "Kpi_0_I3halves_t2_4", 1, 1.5,],
+        ]
+        exprs_src_for2pt = [
+            [ mk_Q0_b81("t2_1", "even", True) + "Q0_b81wsrc(e)", 1, 0.5,],
+            [ mk_Q1_b81("t2_1", "even", True) + "Q1_b81wsrc(e)", 1, 0.5,],
+            [ mk_Q2_b81("t2_1", "even", True) + "Q2_b81wsrc(e)", 1, 0.5,],
+            [ mk_Q3_b81("t2_1", "even", True) + "Q3_b81wsrc(e)", 1, 0.5,],
+            [ mk_Q4_b81("t2_1", "even", True) + "Q4_b81wsrc(e)", 1, 0.5,],
+            [ mk_Q0_b81("t2_1", "odd", True) + "Q0_b81wsrc(o)", -1, 0.5,],
+            [ mk_Q1_b81("t2_1", "odd", True) + "Q1_b81wsrc(o)", -1, 0.5,],
+            [ mk_Q2_b81("t2_1", "odd", True) + "Q2_b81wsrc(o)", -1, 0.5,],
+            [ mk_Q3_b81("t2_1", "odd", True) + "Q3_b81wsrc(o)", -1, 0.5,],
+            [ mk_Q4_b81("t2_1", "odd", True) + "Q4_b81wsrc(o)", -1, 0.5,],
         ]
         exprs_snk = [
-            mk_pipi_i20("t1_1", "t1_2", True) + "pipi_I2_t1_2",
-            mk_pipi_i0("t1_1", "t1_2", True) + "pipi_I0_t1_2",
-            mk_kk_i10("t1_1", "t1_2", True) + "KK_I1_t1_2",
-            mk_kk_i0("t1_1", "t1_2", True) + "KK_I0_t1_2",
-            mk_pipi_i20("t1_1", "t1_3", True) + "pipi_I2_t1_3",
-            mk_pipi_i0("t1_1", "t1_3", True) + "pipi_I0_t1_3",
-            mk_kk_i10("t1_1", "t1_3", True) + "KK_I1_t1_3",
-            mk_kk_i0("t1_1", "t1_3", True) + "KK_I0_t1_3",
-            mk_pipi_i20("t1_1", "t1_4", True) + "pipi_I2_t1_4",
-            mk_pipi_i0("t1_1", "t1_4", True) + "pipi_I0_t1_4",
-            mk_kk_i10("t1_1", "t1_4", True) + "KK_I1_t1_4",
-            mk_kk_i0("t1_1", "t1_4", True) + "KK_I0_t1_4",
-            mk_sigma("t1_1", True) + "sigma",
-            mk_pi_0("t1_1", True) + "pi0",
-            mk_expr(1) + "1",
+            [ mk_pipi_i20("t1_1", "t1_2", True) + "pipi_I2_t1_2", 1, 2,],
+            [ mk_pipi_i0("t1_1", "t1_2", True) + "pipi_I0_t1_2", 1, 0,],
+            [ mk_kk_i10("t1_1", "t1_2", True) + "KK_I1_t1_2", 1, 1,],
+            [ mk_kk_i0("t1_1", "t1_2", True) + "KK_I0_t1_2", 1, 0,],
+            [ mk_pipi_i20("t1_1", "t1_3", True) + "pipi_I2_t1_3", 1, 2,],
+            [ mk_pipi_i0("t1_1", "t1_3", True) + "pipi_I0_t1_3", 1, 0,],
+            [ mk_kk_i10("t1_1", "t1_3", True) + "KK_I1_t1_3", 1, 1,],
+            [ mk_kk_i0("t1_1", "t1_3", True) + "KK_I0_t1_3", 1, 0,],
+            [ mk_pipi_i20("t1_1", "t1_4", True) + "pipi_I2_t1_4", 1, 2,],
+            [ mk_pipi_i0("t1_1", "t1_4", True) + "pipi_I0_t1_4", 1, 0,],
+            [ mk_kk_i10("t1_1", "t1_4", True) + "KK_I1_t1_4", 1, 1,],
+            [ mk_kk_i0("t1_1", "t1_4", True) + "KK_I0_t1_4", 1, 0,],
+            [ mk_sigma("t1_1", True) + "sigma", 1, 0,],
+            [ mk_pi_0("t1_1", True) + "pi0", -1, 1,],
+            [ mk_expr(1) + "1", 1, 0,],
+        ]
+        exprs_snk_for2pt = [
+            [ mk_expr(1) + "1", 1, 0,],
         ]
         exprs_vac = [
             mk_pipi_i0("t1_1", "t1_2", True) + "pipi_I0_t1_2",
@@ -141,6 +146,7 @@ def get_cexpr_3f4f_matching():
                 mk_k_0_star_mu("t2_1",0) + "K0star0",
                 mk_k_0_star_mu("t2_1",1) + "K0star1",
                 mk_k_0_star_mu("t2_1",2) + "K0star2",
+                -1, 0.5,
             ],
         ]
         exprs_snk_vec = [
@@ -148,20 +154,44 @@ def get_cexpr_3f4f_matching():
                 mk_j10_mu("t1_1",0) + "rho0",
                 mk_j10_mu("t1_1",1) + "rho1",
                 mk_j10_mu("t1_1",2) + "rho2",
+                -1, 1,
             ],
             [
                 mk_j0_mu("t1_1",0) + "omega0",
                 mk_j0_mu("t1_1",1) + "omega1",
                 mk_j0_mu("t1_1",2) + "omega2",
+                -1, 0,
             ],
         ]
         exprs = []
         for expr_src in exprs_src:
             for expr_snk in exprs_snk:
+                if abs(expr_snk[2]-expr_src[2]) != 0.5 and abs(expr_snk[2]+expr_src[2]) != 0.5:
+                    continue
+                parity = expr_snk[1] * expr_src[1]
+                exprs_ops = exprs_even_ops
+                if parity == -1:
+                    exprs_ops = exprs_odd_ops
                 for expr_op in exprs_ops:
-                    exprs.append(expr_snk * expr_op * expr_src)
+                    exprs.append(expr_snk[0] * expr_op * expr_src[0])
+        for expr_src in exprs_src_for2pt:
+            for expr_snk in exprs_snk_for2pt:
+                if abs(expr_snk[2]-expr_src[2]) != 0.5 and abs(expr_snk[2]+expr_src[2]) != 0.5:
+                    continue
+                parity = expr_snk[1] * expr_src[1]
+                exprs_ops = exprs_even_ops
+                if parity == -1:
+                    exprs_ops = exprs_odd_ops
+                for expr_op in exprs_ops:
+                    exprs.append(expr_snk[0] * expr_op * expr_src[0])
         for expr_src_vec in exprs_src_vec:
             for expr_snk_vec in exprs_snk_vec:
+                if abs(expr_snk_vec[4]-expr_src_vec[4]) != 0.5 and abs(expr_snk_vec[4]+expr_src_vec[4]) != 0.5:
+                    continue
+                parity = expr_snk_vec[3] * expr_src_vec[3]
+                exprs_ops = exprs_even_ops
+                if parity == -1:
+                    exprs_ops = exprs_odd_ops
                 for expr_op in exprs_ops:
                     exprs.append(expr_snk_vec[0] * expr_op * expr_src_vec[0] + expr_snk_vec[1] * expr_op * expr_src_vec[1] + expr_snk_vec[2] * expr_op * expr_src_vec[2])
         for expr_vac in exprs_vac:

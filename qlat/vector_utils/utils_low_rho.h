@@ -129,15 +129,16 @@ __global__ void prodab_global(const Complexq *a,const Complexq *b, Complexq *fd,
       int iv = bi*4 + 0;
       for(int ai=0;ai<4;ai++)
       {
+        //#ifndef __HIP_PLATFORM_HCC__
+        //Eigen::Map<const EigenVq > aM(&as[ai*3+0],3);
+        //Eigen::Map<const EigenVq > bM(&bs[bi*3+0],3);
+        //resab[tid*16 + iv] =  bM.dot(aM);
+        //#else
 
-        #ifndef __HIP_PLATFORM_HCC__
-        Eigen::Map<const EigenVq > aM(&as[ai*3+0],3);
-        Eigen::Map<const EigenVq > bM(&bs[bi*3+0],3);
-        resab[tid*16 + iv] =  bM.dot(aM);
-        #else
         resab[tid*16 + iv] = 0; 
         for(int doti=0;doti<3;doti++){resab[tid*16 + iv] += qlat::qconj(bs[bi*3+doti]) * as[ai*3+doti];}
-        #endif
+
+        //#endif
         iv += 1;
       }
     }

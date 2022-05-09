@@ -21,51 +21,31 @@
 
 from auto_contractor.compile import *
 from auto_contractor.ama import *
-import gpt as g
+
+from auto_contractor.eval_sc_np import *
+
 import numpy as np
 import qlat as q
 import copy
 import cmath
 import math
+import importlib
+import time
 
-def get_spin_matrix(op):
-    assert op.otype == "G"
-    assert op.s1 == "auto" and op.s2 == "auto"
-    assert op.tag in [0, 1, 2, 3, 5]
-    return g.gamma[op.tag]
+def ama_msc_trace(x):
+    return ama_apply1(msc_trace, x)
 
-def ascontiguoustensor(x):
-    # isinstance(x, g.core.tensor)
-    return g.tensor(np.ascontiguousarray(x.array), x.otype)
-
-def as_mspincolor(x):
-    if isinstance(x, g.core.tensor):
-        return ascontiguoustensor(x)
-    else:
-        return g.tensor(np.ascontiguousarray(np.array(x)), g.ot_matrix_spin_color(4, 3))
-
-def adj_msc(x):
-    # isinstance(x, g.core.tensor)
-    x = g.adj(x)
-    return ascontiguoustensor(x)
-
-def g5_herm(x):
-    x_h = ascontiguoustensor(
-            ascontiguoustensor(
-                g.gamma[5]
-                * adj_msc(
-                    as_mspincolor(x)))
-                * g.gamma[5])
-    return x_h
+def ama_msc_trace2(x, y):
+    def f(x, y):
+        return msc_trace2(x, y)
+    return ama_apply2(f, x, y)
 
 def eval_op_term_expr(expr, variable_dict, positions_dict, get_prop):
     def l_eval(x):
         if isinstance(x, list):
             ans = l_eval(x[0])
-            def f(x, y):
-                return ascontiguoustensor(x * y)
             for op in x[1:]:
-                ans = ama_apply2(f, ans, l_eval(op))
+                ans = ans * l_eval(op)
             return ans
         elif isinstance(x, Op):
             if x.otype == "S":
@@ -75,25 +55,19 @@ def eval_op_term_expr(expr, variable_dict, positions_dict, get_prop):
                 return get_prop(flavor, xg_snk, xg_src)
             elif x.otype == "G":
                 return get_spin_matrix(x)
-            elif x.otype == "Tr" and len(x.ops) == 2:
-                def f(x, y):
-                    return g.trace(x * y)
-                return ama_apply2(f, l_eval(x.ops[0]), l_eval(x.ops[1]))
             elif x.otype == "Tr":
-                if not x.ops:
+                if len(x.ops) == 2:
+                    return ama_msc_trace2(l_eval(x.ops[0]), l_eval(x.ops[1]))
+                elif len(x.ops) == 1:
+                    return ama_msc_trace(l_eval(x.ops[0]))
+                elif len(x.ops) == 0:
                     return 1
-                start_idx = None
-                for i in range(len(x.ops)):
-                    if x.ops[i].otype != "G":
-                        start_idx = i
-                        break
-                assert start_idx is not None
-                ans = l_eval(x.ops[start_idx])
-                def f(x, y):
-                    return ascontiguoustensor(x * y)
-                for op in x.ops[start_idx + 1:] + x.ops[:start_idx]:
-                    ans = ama_apply2(f, ans, l_eval(op))
-                return ama_apply1(g.trace, ans)
+                else:
+                    assert len(x.ops) > 2
+                    ans = l_eval(x.ops[0])
+                    for op in x.ops[1:-1]:
+                        ans = ans * l_eval(op)
+                    return ama_msc_trace2(ans, l_eval(x.ops[-1]))
             elif x.otype == "Var":
                 return variable_dict[x.name]
             else:
@@ -102,17 +76,13 @@ def eval_op_term_expr(expr, variable_dict, positions_dict, get_prop):
         elif isinstance(x, Term):
             assert not x.a_ops
             ans = x.coef
-            def f(x, y):
-                return x * y
             for op in x.c_ops:
-                ans = ama_apply2(f, ans, l_eval(op))
+                ans = ans * l_eval(op)
             return ans
         elif isinstance(x, Expr):
             ans = 0
-            def f(x, y):
-                return x + y
             for term in x.terms:
-                ans = ama_apply2(f, ans, l_eval(term))
+                ans = ans + l_eval(term)
             return ans
         else:
             q.displayln_info(f"eval_op_term_expr: ERROR: l_eval({x})")
@@ -120,41 +90,125 @@ def eval_op_term_expr(expr, variable_dict, positions_dict, get_prop):
     return l_eval(expr)
 
 @q.timer
-def eval_cexpr(cexpr : CExpr, *, positions_dict, get_prop, is_only_total):
-    # interface function
+def get_cexpr_names(cexpr, *, is_only_total = "total"):
+    if is_only_total in [ True, "total", ]:
+        names = [ name for name, expr in cexpr.named_exprs ]
+    elif is_only_total in [ "typed_total", ]:
+        names = (
+                [ name for name, expr in cexpr.named_exprs ]
+                + [ name for name, expr in cexpr.named_typed_exprs ]
+                )
+    elif is_only_total in [ False, "term", ]:
+        names = (
+                [ name for name, expr in cexpr.named_exprs ]
+                + [ name for name, expr in cexpr.named_typed_exprs ]
+                + [ name for name, term in cexpr.named_terms ]
+                )
+    else:
+        assert False
+    return names
+
+@q.timer
+def eval_cexpr_set_vars(variable_dict, cexpr, positions_dict, get_prop):
+    for name, op in cexpr.variables:
+        variable_dict[name] = eval_op_term_expr(op, variable_dict, positions_dict, get_prop)
+
+@q.timer
+def eval_cexpr_set_terms(tvals, cexpr, variable_dict, positions_dict, get_prop):
+    for name, term in cexpr.named_terms:
+        tvals[name] = ama_extract(eval_op_term_expr(term, variable_dict, positions_dict, get_prop))
+
+@q.timer
+def eval_cexpr_return_exprs(cexpr, tvals, is_only_total):
+    if is_only_total in [ True, "total", ]:
+        return np.array(
+                [ sum([ coef * tvals[tname] for coef, tname in expr ]) for name, expr in cexpr.named_exprs ],
+                dtype = complex)
+    elif is_only_total in [ "typed_total", ]:
+        return np.array(
+                [ sum([ coef * tvals[tname] for coef, tname in expr ]) for name, expr in cexpr.named_exprs ]
+                + [ sum([ coef * tvals[tname] for coef, tname in expr ]) for name, expr in cexpr.named_typed_exprs ],
+                dtype = complex)
+    elif is_only_total in [ False, "term", ]:
+        tevals = { name : sum([ coef * tvals[tname] for coef, tname in expr ]) for name, expr in cexpr.named_typed_exprs }
+        return np.array(
+                [ sum([ coef * tvals[tname] for coef, tname in expr ]) for name, expr in cexpr.named_exprs ]
+                + [ sum([ coef * tvals[tname] for coef, tname in expr ]) for name, expr in cexpr.named_typed_exprs ]
+                + [ tvals[name] for name, term in cexpr.named_terms ],
+                dtype = complex)
+    else:
+        assert False
+
+@q.timer
+def eval_cexpr(cexpr : CExpr, *, positions_dict, get_prop, is_only_total = "total"):
     # return 1 dimensional np.array
+    # cexpr can be cexpr object or can be a compiled function
     # xg = positions_dict[position]
     # mat_mspincolor = get_prop(flavor, xg_snk, xg_src)
     # is_only_total = "total", "typed_total", "term"
     # e.g. ("point-snk", [ 1, 2, 3, 4, ]) = positions_dict["x_1"]
-    # e.g. flavor = "l", "s"
+    # e.g. flavor = "l"
     # e.g. xg_snk = ("point-snk", [ 1, 2, 3, 4, ])
+    # interface function
+    if cexpr.total_sloppy_flops is not None:
+        q.acc_timer_flops("py:eval_cexpr", cexpr.total_sloppy_flops)
+    if cexpr.function is not None:
+        return cexpr.function(positions_dict = positions_dict, get_prop = get_prop, is_only_total = is_only_total)
     for pos in cexpr.positions:
         assert pos in positions_dict
     variable_dict = {}
-    for name, op in cexpr.variables:
-        variable_dict[name] = eval_op_term_expr(op, variable_dict, positions_dict, get_prop)
-    tvals = { name : ama_extract(eval_op_term_expr(term, variable_dict, positions_dict, get_prop)) for name, term in cexpr.named_terms }
-    evals = { name : sum([ tvals[tname] for tname in expr ]) for name, expr in cexpr.named_exprs }
-    if is_only_total in [ True, "total", ]:
-        return np.array(
-                [ evals[name] for name, expr in cexpr.named_exprs]
-                )
-    elif is_only_total in [ "typed_total", ]:
-        tevals = { name : sum([ tvals[tname] for tname in expr ]) for name, expr in cexpr.named_typed_exprs }
-        return np.array(
-                [ tevals[name] for name, expr in cexpr.named_typed_exprs ]
-                + [ evals[name] for name, expr in cexpr.named_exprs]
-                )
-    elif is_only_total in [ False, "term", ]:
-        tevals = { name : sum([ tvals[tname] for tname in expr ]) for name, expr in cexpr.named_typed_exprs }
-        return np.array(
-                [ tvals[name] for name, term in cexpr.named_terms ]
-                + [ tevals[name] for name, expr in cexpr.named_typed_exprs ]
-                + [ evals[name] for name, expr in cexpr.named_exprs]
-                )
-    else:
-        assert False
+    tvals = {}
+    eval_cexpr_set_vars(variable_dict, cexpr, positions_dict, get_prop)
+    eval_cexpr_set_terms(tvals, cexpr, variable_dict, positions_dict, get_prop)
+    return eval_cexpr_return_exprs(cexpr, tvals, is_only_total)
+
+@q.timer
+def cache_compiled_cexpr(calc_cexpr, fn_base):
+    # Obtain: cexpr = calc_cexpr().
+    # Save cexpr object in pickle format for future reuse.
+    # Generate python code and save for future reuse
+    # Load the python module and assign function and total_sloppy_flops
+    # Return fully loaded cexpr
+    # interface function
+    cexpr = q.pickle_cache_call(calc_cexpr, fn_base + ".pickle")
+    if not q.does_file_exist_sync_node(fn_base + ".py"):
+        q.qtouch_info(fn_base + ".py", cexpr_code_gen_py(cexpr))
+        q.displayln_info(display_cexpr_raw(cexpr))
+        time.sleep(1)
+        q.sync_node()
+    module = importlib.import_module(fn_base.replace("/", "."))
+    cexpr.function = module.eval_cexpr
+    cexpr.total_sloppy_flops = module.total_sloppy_flops
+    return cexpr
+
+def make_rand_spin_color_matrix(rng_state):
+    rs = rng_state
+    return as_mspincolor(np.array(
+        [ rs.u_rand_gen() + 1j * rs.u_rand_gen() for i in range(144) ],
+        dtype = complex))
+
+@q.timer
+def benchmark_eval_cexpr(cexpr : CExpr, *, is_only_total = "total", benchmark_size = 10, benchmark_num = 10, rng_state = None):
+    if rng_state is None:
+        rng_state = q.RngState("benchmark_eval_cexpr")
+    positions_dict = {}
+    prop_dict = {}
+    for pos in cexpr.positions:
+        positions_dict[pos] = pos
+    for pos in cexpr.positions:
+        prop_dict[(pos, pos,)] = make_rand_spin_color_matrix(rng_state.split(pos))
+    @q.timer
+    def get_prop(flavor, xg_snk, xg_src):
+        return prop_dict[(xg_src, xg_src)]
+    @q.timer_verbose
+    def benchmark_eval_cexpr_run():
+        for k in range(benchmark_size):
+            eval_cexpr(cexpr, positions_dict = positions_dict, get_prop = get_prop, is_only_total = is_only_total)
+    q.displayln_info(f"benchmark_eval_cexpr: benchmark_size={benchmark_size} is_only_total={is_only_total}")
+    def run(*args):
+        for i in range(benchmark_num):
+            benchmark_eval_cexpr_run()
+    q.parallel_map(1, run, [ None, ])
 
 def sqr_component(x):
     return x.real * x.real + 1j * x.imag * x.imag
@@ -168,24 +222,8 @@ def sqr_component_array(arr):
 def sqrt_component_array(arr):
     return np.array([ sqrt_component(x) for x in arr ])
 
-@q.timer
-def get_cexpr_names(cexpr, is_only_total = "total"):
-    if is_only_total in [ True, "total", ]:
-        names = [ name for name, expr in cexpr.named_exprs ]
-    elif is_only_total in [ "typed_total", ]:
-        names = ([ name for name, expr in cexpr.named_typed_exprs ]
-                + [ name for name, expr in cexpr.named_exprs ])
-    elif is_only_total in [ False, "term", ]:
-        names = ([ name for name, term in cexpr.named_terms ]
-                + [ name for name, expr in cexpr.named_typed_exprs ]
-                + [ name for name, expr in cexpr.named_exprs ])
-    else:
-        assert False
-    return names
-
 def get_mpi_chunk(total_list, *, rng_state = None):
-    if rng_state is None:
-        rng_state = q.RngState("get_mpi_chunk")
+    # e.g. rng_state = q.RngState("get_mpi_chunk")
     total = len(total_list)
     id_worker = q.get_id_node()
     num_worker = q.get_num_node()
@@ -193,7 +231,9 @@ def get_mpi_chunk(total_list, *, rng_state = None):
     start = min(id_worker * size_max, total);
     stop = min(start + size_max, total);
     # size = stop - start;
-    total_list = q.random_permute(total_list, rng_state)
+    if rng_state is not None:
+        assert isinstance(rng_state, q.RngState)
+        total_list = q.random_permute(total_list, rng_state)
     return total_list[start:stop]
 
 @q.timer
@@ -214,7 +254,7 @@ def eval_cexpr_simulation(cexpr : CExpr, *, positions_dict_maker, trial_indices,
     else:
         has_data = 0
     num_has_data = q.glb_sum(has_data)
-    names = get_cexpr_names(cexpr, is_only_total)
+    names = get_cexpr_names(cexpr, is_only_total = is_only_total)
     num_value = len(names)
     num_fac = None
     results = None

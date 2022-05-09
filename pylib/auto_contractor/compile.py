@@ -63,6 +63,40 @@ def get_positions(term):
     add_positions(s, term)
     return sorted(list(s))
 
+def get_var_name_type(x):
+    # types include: V_S (wilson matrix), V_G (spin matrix), V_Tr (AMA c-number), V_a (c-number)
+    if x.startswith("V_S_"):
+        return "V_S"
+    elif x.startswith("V_prod_GG_"):
+        return "V_G"
+    elif x.startswith("V_prod_GS_"):
+        return "V_S"
+    elif x.startswith("V_prod_SG_"):
+        return "V_S"
+    elif x.startswith("V_prod_SS_"):
+        return "V_S"
+    elif x.startswith("V_tr_"):
+        return "V_Tr"
+    else:
+        assert False
+
+def get_op_type(x):
+    # x should be an Op
+    # return a string which indicate the type of the op
+    if not isinstance(x, Op):
+        return None
+    if x.otype == "S":
+        return "S"
+    elif x.otype == "G":
+        return "G"
+    elif x.otype == "Tr":
+        return "Tr"
+    elif x.otype == "Var":
+        return get_var_name_type(x.name)
+    else:
+        assert False
+    return None
+
 def collect_op_in_cexpr(variables, named_terms):
     var_counter = 0
     var_dataset = {} # var_dataset[op_repr] = op_var
@@ -80,7 +114,7 @@ def collect_op_in_cexpr(variables, named_terms):
                     else:
                         while True:
                             var_counter += 1
-                            name = f"V0_{var_counter}"
+                            name = f"V_S_{var_counter}"
                             if name not in var_nameset:
                                 break
                         variables.append((name, op,))
@@ -100,13 +134,14 @@ def collect_op_in_cexpr(variables, named_terms):
         term.sort()
 
 def find_common_subexpr_in_tr(variables_trs):
+    # return None or [ op, op1, ]
     subexpr_count = {}
-    def add(x):
+    def add(x, count_added):
         op_repr = repr(x)
         if op_repr in subexpr_count:
             c, op = subexpr_count[op_repr]
             assert x == op
-            subexpr_count[op_repr] = (c + 1, x)
+            subexpr_count[op_repr] = (c + count_added, x)
         else:
             subexpr_count[op_repr] = (1, x)
     def find(x):
@@ -117,16 +152,20 @@ def find_common_subexpr_in_tr(variables_trs):
             if len(x) < 2:
                 return None
             for i, op in enumerate(x):
-                if isinstance(op, Op):
+                op_type = get_op_type(op)
+                if op_type in [ "V_S", "V_G", "S", "G", ]:
                     op1 = x[(i+1) % len(x)]
-                    if op.otype in ["Var", "S",]:
-                        if isinstance(op1, Op) and op1.otype in ["Var", "S", "G",]:
-                            prod = [op, op1]
-                            add(prod)
-                    elif op.otype in ["G",]:
-                        if isinstance(op1, Op) and op1.otype in ["Var", "S",]:
-                            prod = [op, op1]
-                            add(prod)
+                    op1_type = get_op_type(op1)
+                    if op1_type in [ "V_S", "V_G", "S", "G", ]:
+                        prod = [op, op1]
+                        if op_type in [ "V_G", "G", ] and op1_type in [ "V_G", "G", ]:
+                            add(prod, 1.02)
+                        elif op_type in [ "V_G", "G", ] or op1_type in [ "V_G", "G", ]:
+                            add(prod, 1.01)
+                        elif op_type in [ "V_S", "S", ] and op1_type in [ "V_S", "S", ]:
+                            add(prod, 1)
+                        else:
+                            assert False
         elif isinstance(x, Op) and x.otype == "Tr" and len(x.ops) >= 2:
             find(x.ops)
         elif isinstance(x, Term):
@@ -217,7 +256,7 @@ def collect_subexpr_in_cexpr(variables, named_terms):
                     else:
                         while True:
                             var_counter_tr += 1
-                            name = f"V2_{var_counter_tr}"
+                            name = f"V_tr_{var_counter_tr}"
                             if name not in var_nameset:
                                 break
                         variables_trs.append((name, op,))
@@ -228,22 +267,50 @@ def collect_subexpr_in_cexpr(variables, named_terms):
     for name, term in named_terms:
         add_tr_varibles(term)
         term.sort()
-    var_counter = 0
+    var_counter_dict = {}
+    var_counter_dict["V_prod_GG_"] = 0
+    var_counter_dict["V_prod_GS_"] = 0
+    var_counter_dict["V_prod_SG_"] = 0
+    var_counter_dict["V_prod_SS_"] = 0
     while True:
-        op = find_common_subexpr_in_tr(variables_trs)
-        if op is None:
+        subexpr = find_common_subexpr_in_tr(variables_trs)
+        if subexpr is None:
             break
+        [ op, op1, ] = subexpr
+        op_type = get_op_type(op)
+        op1_type = get_op_type(op1)
+        assert op_type in [ "V_S", "V_G", "S", "G", ]
+        assert op1_type in [ "V_S", "V_G", "S", "G", ]
+        if op_type in [ "V_G", "G", ] and op1_type in [ "V_G", "G", ]:
+            name_prefix = "V_prod_GG_"
+        elif op_type in [ "V_G", "G", ] and op1_type in [ "V_S", "S", ]:
+            name_prefix = "V_prod_GS_"
+        elif op_type in [ "V_S", "S", ] and op1_type in [ "V_G", "G", ]:
+            name_prefix = "V_prod_SG_"
+        elif op_type in [ "V_S", "S", ] and op1_type in [ "V_S", "S", ]:
+            name_prefix = "V_prod_SS_"
+        else:
+            assert False
         while True:
-            var_counter += 1
-            name = f"V1_{var_counter}"
+            var_counter_dict[name_prefix] += 1
+            name = f"{name_prefix}{var_counter_dict[name_prefix]}"
             if name not in var_nameset:
                 break
-        variables.append((name, op,))
+        variables.append((name, subexpr,))
         var = Var(name)
-        collect_common_subexpr_in_tr(variables_trs, op, var)
+        collect_common_subexpr_in_tr(variables_trs, subexpr, var)
     variables += variables_trs
 
 class CExpr:
+
+    # self.diagram_types
+    # self.variables
+    # self.named_terms
+    # self.named_typed_exprs
+    # self.named_exprs
+    # self.positions
+    # self.function
+    # self.total_sloppy_flops
 
     def __init__(self, diagram_types, variables, named_terms, named_typed_exprs, named_exprs, positions = None):
         self.diagram_types = diagram_types
@@ -259,6 +326,8 @@ class CExpr:
             for name, term in named_terms:
                 add_positions(s, term)
             self.positions = sorted(list(s))
+        self.function = None
+        self.total_sloppy_flops = None
 
     def __repr__(self) -> str:
         return f"CExpr({self.diagram_types},{self.variables},{self.named_terms},{self.named_typed_exprs},{self.named_exprs},{self.positions})"
@@ -270,6 +339,9 @@ class CExpr:
         # eval term factor
         for name, term in self.named_terms:
             eval_term_factor(term)
+        for name, expr in self.named_typed_exprs + self.named_exprs:
+            for i in range(len(expr)):
+                expr[i] = (complex(expr[i][0]), expr[i][1],)
         # collect prop expr into variables
         collect_op_in_cexpr(self.variables, self.named_terms)
         # collect common subexpr into variables
@@ -363,42 +435,69 @@ def eval_term_factor(term):
 def mk_cexpr(*exprs, diagram_type_dict = None):
     # exprs already finished wick contraction,
     # otherwise use contract_simplify_compile(*exprs, is_isospin_symmetric_limit, diagram_type_dict)
+    # !!!if diagram_type_dict[diagram_type] == None: this diagram_type will not be included!!!
     # interface function
     if diagram_type_dict is None:
         diagram_type_dict = dict()
     descriptions = [ expr.show() for expr in exprs ]
-    # build diagram_types
+    # build diagram_types and term names
     diagram_type_counter = 0
-    diagram_type_term_dict = dict()
+    diagram_type_term_dict = dict() # diagram_type_term_dict[repr_term] = diagram_type_name
+    term_name_dict = dict() # term_name_dict[term_name] = term
+    term_dict = dict() # term_dict[repr(term)] = term_name
     for expr in exprs:
-        for term in expr.terms:
+        for term_coef in expr.terms:
+            term = Term(term_coef.c_ops, term_coef.a_ops, 1)
+            repr_term = repr(term)
+            if repr_term in diagram_type_term_dict:
+                continue
             diagram_type = get_term_diagram_type_info(term)
             if diagram_type not in diagram_type_dict:
                 diagram_type_counter += 1
-                diagram_type_name = f"ADT{diagram_type_counter}" # ADT is short for "auto diagram type"
+                diagram_type_name = f"ADT{diagram_type_counter:0>2}" # ADT is short for "auto diagram type"
                 diagram_type_dict[diagram_type] = diagram_type_name
-            diagram_type_term_dict[repr([ term.c_ops, term.a_ops, ])] = diagram_type_dict[diagram_type]
+            diagram_type_name = diagram_type_dict[diagram_type]
+            diagram_type_term_dict[repr_term] = diagram_type_name
+            if diagram_type_name is None:
+                continue
+            term_name_counter = 0
+            while True:
+                term_name_counter += 1
+                term_name = f"term_{diagram_type_name}_{term_name_counter:0>4}"
+                if term_name not in term_name_dict:
+                    break
+            term_name_dict[term_name] = term
+            term_dict[repr_term] = term_name
+    # name diagram_types
     diagram_types = []
     for diagram_type, diagram_type_name in diagram_type_dict.items():
         diagram_types.append((diagram_type_name, diagram_type,))
-    # name terms and exprs
+    # name terms
     named_terms = []
+    for term_name, term in sorted(term_name_dict.items()):
+        named_terms.append((term_name, term,))
+    # name exprs
     named_typed_exprs = []
     named_exprs = []
     for i, expr in enumerate(exprs):
         expr_list = []
         typed_expr_list_dict = { name : [] for name, diagram_type in diagram_types }
         for j, term in enumerate(expr.terms):
-            diagram_type_name = diagram_type_term_dict[repr([ term.c_ops, term.a_ops, ])]
-            name = f"T{i+1}_{j+1}_{diagram_type_name}"
-            named_terms.append((name, term,))
-            typed_expr_list_dict[diagram_type_name].append(name)
-            expr_list.append(name)
+            coef = term.coef
+            term.coef = 1
+            repr_term = repr(term)
+            diagram_type_name = diagram_type_term_dict[repr_term]
+            if diagram_type_name is None:
+                continue
+            term_name = term_dict[repr_term]
+            typed_expr_list_dict[diagram_type_name].append((coef, term_name,))
+            expr_list.append((coef, term_name,))
         for diagram_type_name, typed_expr_list in typed_expr_list_dict.items():
             if typed_expr_list:
-                named_typed_exprs.append((f"E{i+1}_{diagram_type_name} {descriptions[i]}", typed_expr_list,))
-        named_exprs.append((f"E{i+1} {descriptions[i]}", expr_list,))
-    return CExpr(diagram_types, [], named_terms, named_typed_exprs, named_exprs)
+                named_typed_exprs.append((f"# {descriptions[i]}\ntyped_exprs[{i}]['{diagram_type_name}']", typed_expr_list,))
+        named_exprs.append((f"# {descriptions[i]}\nexprs[{i}]", expr_list,))
+    variables = []
+    return CExpr(diagram_types, variables, named_terms, named_typed_exprs, named_exprs)
 
 def contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True, diagram_type_dict = None):
     # e.g. exprs = [ Qb("u", "x", s, c) * Qv("u", "x", s, c) + "u_bar*u", Qb("s", "x", s, c) * Qv("s", "x", s, c) + "s_bar*s", Qb("c", "x", s, c) * Qv("c", "x", s, c) + "c_bar*c", ]
@@ -424,13 +523,20 @@ def show_variable_value(value):
     elif isinstance(value, G) and value.tag in [0, 1, 2, 3, 5]:
         tag = { 0: "x", 1: "y", 2: "z", 3: "t", 5: "5", }[value.tag]
         return f"gamma_{tag}"
+    elif isinstance(value, G):
+        return f"gamma({value.tag})"
     elif isinstance(value, S):
         return f"S_{value.f}({value.p1},{value.p2})"
     elif isinstance(value, Tr):
         expr = "*".join(map(show_variable_value, value.ops))
-        return f"Tr({expr})"
+        return f"tr({expr})"
     elif isinstance(value, Term):
-        return "*".join(map(show_variable_value, [ f"({value.coef})", ] + value.c_ops + value.a_ops))
+        if value.coef == 1:
+            return "*".join(map(show_variable_value, value.c_ops + value.a_ops))
+        else:
+            return "*".join(map(show_variable_value, [ f"({value.coef})", ] + value.c_ops + value.a_ops))
+    elif isinstance(value, tuple) and len(value) == 2 and isinstance(value[1], str):
+        return f"({value[0]})*{value[1]}"
     else:
         return f"{value}"
 
@@ -439,9 +545,10 @@ def display_cexpr_raw(cexpr : CExpr):
     # interface function
     lines = []
     lines.append(f"Begin CExpr")
-    lines.append(f"{'Positions':>10} : {cexpr.positions}")
+    lines.append(f"diagram_type_dict = dict()")
     for name, diagram_type in cexpr.diagram_types:
-        lines.append(f"{name:>10} : {diagram_type}")
+        lines.append(f"diagram_type_dict[{diagram_type}] = \"{name}\"")
+    lines.append(f"Positions: {cexpr.positions}")
     for name, value in cexpr.variables:
         lines.append(f"{name:>20} : {value}")
     for name, term in cexpr.named_terms:
@@ -458,39 +565,200 @@ def display_cexpr(cexpr : CExpr):
     # interface function
     lines = []
     lines.append(f"Begin CExpr")
-    lines.append(f"{'Positions':>10} : {cexpr.positions}")
+    lines.append(f"diagram_type_dict = dict()")
     for name, diagram_type in cexpr.diagram_types:
-        lines.append(f"{name:>10} : {diagram_type}")
+        lines.append(f"diagram_type_dict[{diagram_type}] = {repr(name)}")
+    position_vars = ", ".join(cexpr.positions)
+    lines.append(f"Positions:\n{position_vars} = {cexpr.positions}")
     for name, value in cexpr.variables:
-        lines.append(f"{name:>20} = {show_variable_value(value)}")
+        lines.append(f"  {show_variable_value(value)} + '{name}',")
+        lines.append(f"{name:<20} = {show_variable_value(value)}")
+    lines.append(f"terms = [")
     for name, term in cexpr.named_terms:
-        lines.append(f"{name:>20} = {show_variable_value(term)}")
+        lines.append(f"  {show_variable_value(term)}, # {name}")
+    lines.append(f"]")
+    for name, diagram_type in cexpr.diagram_types:
+        if name is not None:
+            lines.append(f"coef_{name} = 1")
+    for idx, (name, term) in enumerate(cexpr.named_terms):
+        name_type = "_".join([ "coef", ] + name.split("_")[1:-1])
+        lines.append(f"{name} = {name_type} * terms[{idx}]")
+    lines.append(f"typed_exprs = [ dict() for i in range({len(cexpr.named_exprs)}) ]")
     for name, typed_expr in cexpr.named_typed_exprs:
         s = "+".join(map(show_variable_value, typed_expr))
         if s == "":
             s = 0
-        lines.append(f"{name} =\n  {s}")
+        lines.append(f"{name} = {s}")
+    lines.append(f"exprs = [ None for i in range({len(cexpr.named_exprs)}) ]")
     for name, expr, in cexpr.named_exprs:
         s = "+".join(map(show_variable_value, expr))
         if s == "":
             s = 0
-        lines.append(f"{name} =\n  {s}")
+        lines.append(f"{name} = {s}")
     lines.append(f"End CExpr")
+    return "\n".join(lines)
+
+def cexpr_code_gen_py(cexpr : CExpr):
+    # return a string
+    # interface function
+    total_sloppy_flops = 0
+    # flops per complex multiplication: 6
+    # flops per matrix multiplication: 6 M N L + 2 M L (N-1) ==> 13536 (sc * sc), 4320 (sc * s), 480 (s * s)
+    # flops per trace 2 (M-1) ==> 22
+    # flops per trace2 6 M N + 2 (M N - 1) ==> 1150
+    def gen_expr(x):
+        nonlocal total_sloppy_flops
+        # return code_str, type_str
+        if isinstance(x, (int, float, complex)):
+            return f"{x}", "V_a"
+        assert isinstance(x, Op)
+        if x.otype == "S":
+            return f"get_prop('{x.f}', {x.p1}, {x.p2})", "V_S"
+        elif x.otype == "G":
+            assert x.s1 == "auto" and x.s2 == "auto"
+            assert x.tag in [0, 1, 2, 3, 5]
+            return f"get_gamma_matrix({x.tag})", "V_G"
+        elif x.otype == "Tr":
+            if len(x.ops) == 0:
+                assert False
+            elif len(x.ops) == 1:
+                c, t = gen_expr(x.ops[0])
+                assert t == "V_S"
+                total_sloppy_flops += 22
+                return f"ama_msc_trace({c})", "V_Tr"
+            else:
+                c1, t1 = gen_expr_prod_list(x.ops[:-1])
+                c2, t2 = gen_expr(x.ops[-1])
+                if t1 == "V_S" and t2 == "V_S":
+                    total_sloppy_flops += 1150
+                return f"ama_msc_trace2({c1}, {c2})", "V_Tr"
+        elif x.otype == "Var":
+            return f"{x.name}", get_var_name_type(x.name)
+    def gen_expr_prod(ct1, ct2):
+        nonlocal total_sloppy_flops
+        c1, t1 = ct1
+        c2, t2 = ct2
+        if t1 == "V_S" and t2 == "V_S":
+            total_sloppy_flops += 13536
+            return f"ama_apply2(mat_mul_sc_sc, {c1}, {c2})", "V_S"
+        elif t1 == "V_S" and t2 == "V_G":
+            total_sloppy_flops += 4320
+            return f"ama_apply2_l(mat_mul_sc_s, {c1}, {c2})", "V_S"
+        elif t1 == "V_G" and t2 == "V_S":
+            total_sloppy_flops += 4320
+            return f"ama_apply2_r(mat_mul_s_sc, {c1}, {c2})", "V_S"
+        elif t1 == "V_G" and t2 == "V_G":
+            total_sloppy_flops += 480
+            return f"mat_mul_s_s({c1}, {c2})", "V_G"
+        elif t1 == "V_G" and t2 == "V_a":
+            return f"mat_mul_a_s({c2}, {c1})", "V_G"
+        elif t1 == "V_a" and t2 == "V_G":
+            return f"mat_mul_a_s({c1}, {c2})", "V_G"
+        elif t1 == "V_S" and t2 == "V_a":
+            return f"ama_apply2_r(mat_mul_a_sc, {c2}, {c1})", "V_S"
+        elif t1 == "V_a" and t2 == "V_S":
+            return f"ama_apply2_r(mat_mul_a_sc, {c1}, {c2})", "V_S"
+        elif t1 == "V_a" and t2 == "V_a":
+            return f"{c1} * {c2}", "V_a"
+        elif t1 == "V_Tr" and t2 == "V_Tr":
+            return f"{c1} * {c2}", "V_Tr"
+        elif t1 == "V_a" and t2 == "V_Tr":
+            return f"{c2} * {c1}", "V_Tr"
+        elif t1 == "V_Tr" and t2 == "V_a":
+            return f"{c1} * {c2}", "V_Tr"
+        else:
+            print(ct1, ct2)
+            assert False
+    def gen_expr_prod_list(x_list):
+        if len(x_list) == 0:
+            return f"1", "V_a"
+        elif len(x_list) == 1:
+            return gen_expr(x_list[0])
+        else:
+            assert len(x_list) > 1
+            return gen_expr_prod(gen_expr_prod_list(x_list[:-1]), gen_expr(x_list[-1]))
+    lines = []
+    lines.append(f"from auto_contractor.eval import *")
+    lines.append(f"")
+    lines.append(f"def eval_cexpr(*, positions_dict, get_prop, is_only_total = 'total'):")
+    lines.append(f"")
+    lines.append(f"    # set positions")
+    for position_var in cexpr.positions:
+        lines.append(f"    {position_var} = positions_dict['{position_var}']")
+    lines.append(f"")
+    lines.append(f"    # get_props")
+    for name, value in cexpr.variables:
+        if name.startswith("V_S_"):
+            x = value
+            assert isinstance(x, Op)
+            assert x.otype == "S"
+            c, t = gen_expr(x)
+            assert t == "V_S"
+            lines.append(f"    {name} = {c}")
+    lines.append(f"")
+    lines.append(f"    # compute products")
+    for name, value in cexpr.variables:
+        if name.startswith("V_prod_"):
+            x = value
+            assert isinstance(x, list)
+            c, t = gen_expr_prod_list(x)
+            assert t == get_var_name_type(name)
+            lines.append(f"    {name} = {c}")
+    lines.append(f"")
+    lines.append(f"    # compute traces")
+    for name, value in cexpr.variables:
+        if name.startswith("V_tr_"):
+            x = value
+            assert isinstance(x, Op)
+            assert x.otype == "Tr"
+            c, t = gen_expr(x)
+            assert t == "V_Tr"
+            lines.append(f"    {name} = {c}")
+    lines.append(f"")
+    lines.append(f"    # set terms")
+    for name, term in cexpr.named_terms:
+        x = term
+        c, t = gen_expr_prod_list([ x.coef, ] + x.c_ops)
+        assert t == "V_Tr"
+        lines.append(f"    {name} = ama_extract({c})")
+    lines.append(f"")
+    lines.append(f"    # return exprs")
+    lines.append(f"    results = np.array([")
+    for name, expr in cexpr.named_exprs:
+        lines.append(f"")
+        name = name.replace("\n", "  ")
+        lines.append(f"        # {name} ")
+        s = " + ".join([ f"{coef} * {tname}" for coef, tname in expr ])
+        lines.append(f"        {s},")
+    lines.append(f"")
+    lines.append(f"    ])")
+    lines.append(f"    return results")
+    lines.append(f"")
+    lines.append(f"# Total flops per sloppy call is: {total_sloppy_flops}")
+    lines.append(f"total_sloppy_flops = {total_sloppy_flops}")
+    lines.append(f"")
     return "\n".join(lines)
 
 if __name__ == "__main__":
     expr = Qb("d", "x1", "s1", "c1") * G(5, "s1", "s2") * Qv("u", "x1", "s2", "c1") * Qb("u", "x2", "s3", "c2") * G(5, "s3", "s4") * Qv("d", "x2", "s4", "c2")
     print(expr)
+    print()
     expr = simplified(contract_expr(expr))
     print(expr)
-    cexpr = mk_cexpr(expr)
+    print()
+    cexpr = copy.deepcopy(mk_cexpr(expr))
     print(cexpr)
+    print()
     cexpr.collect_op()
     print(cexpr)
+    print()
     print(display_cexpr(cexpr))
-    print(CExpr([('S_1', S('d','x2','x1')), ('S_2', S('u','x1','x2'))],[('T_1', Term([Tr([G(5), Var('S_1'), G(5), Var('S_2')],'sc')],[],(-1+0j)))],['x1', 'x2']))
-    expr = Expr([Term([G(5,'a_s_203','a_s_204'), G(5,'a_s_207','a_s_208'), G(5,'a_s_219','a_s_220'), G(5,'a_s_223','a_s_224')],[Qb('u','x21','a_s_203','a_c_102'), Qv('u','x21','a_s_204','a_c_102'), Qb('u','x22','a_s_207','a_c_104'), Qv('u','x22','a_s_208','a_c_104'), Qb('u','x11','a_s_219','a_c_110'), Qv('u','x11','a_s_220','a_c_110'), Qb('u','x12','a_s_223','a_c_112'), Qv('u','x12','a_s_224','a_c_112')],(0.08333333333333333+0j)), Term([G(5,'a_s_203','a_s_204'), G(5,'a_s_207','a_s_208'), G(5,'a_s_219','a_s_220'), G(5,'a_s_225','a_s_226')],[Qb('u','x21','a_s_203','a_c_102'), Qv('u','x21','a_s_204','a_c_102'), Qb('u','x22','a_s_207','a_c_104'), Qv('u','x22','a_s_208','a_c_104'), Qb('u','x11','a_s_219','a_c_110'), Qv('u','x11','a_s_220','a_c_110'), Qb('d','x12','a_s_225','a_c_113'), Qv('d','x12','a_s_226','a_c_113')],(-0.08333333333333333+0j)), Term([G(5,'a_s_203','a_s_204'), G(5,'a_s_207','a_s_208'), G(5,'a_s_221','a_s_222'), G(5,'a_s_223','a_s_224')],[Qb('u','x21','a_s_203','a_c_102'), Qv('u','x21','a_s_204','a_c_102'), Qb('u','x22','a_s_207','a_c_104'), Qv('u','x22','a_s_208','a_c_104'), Qb('d','x11','a_s_221','a_c_111'), Qv('d','x11','a_s_222','a_c_111'), Qb('u','x12','a_s_223','a_c_112'), Qv('u','x12','a_s_224','a_c_112')],(-0.08333333333333333+0j)), Term([G(5,'a_s_203','a_s_204'), G(5,'a_s_207','a_s_208'), G(5,'a_s_221','a_s_222'), G(5,'a_s_225','a_s_226')],[Qb('u','x21','a_s_203','a_c_102'), Qv('u','x21','a_s_204','a_c_102'), Qb('u','x22','a_s_207','a_c_104'), Qv('u','x22','a_s_208','a_c_104'), Qb('d','x11','a_s_221','a_c_111'), Qv('d','x11','a_s_222','a_c_111'), Qb('d','x12','a_s_225','a_c_113'), Qv('d','x12','a_s_226','a_c_113')],(0.08333333333333333+0j)), Term([G(5,'a_s_203','a_s_204'), G(5,'a_s_207','a_s_208'), G(5,'a_s_227','a_s_228'), G(5,'a_s_229','a_s_230')],[Qb('u','x21','a_s_203','a_c_102'), Qv('u','x21','a_s_204','a_c_102'), Qb('u','x22','a_s_207','a_c_104'), Qv('u','x22','a_s_208','a_c_104'), Qb('d','x11','a_s_227','a_c_114'), Qv('u','x11','a_s_228','a_c_114'), Qb('u','x12','a_s_229','a_c_115'), Qv('d','x12','a_s_230','a_c_115')],(0.16666666666666669+0j)), Term([G(5,'a_s_203','a_s_204'), G(5,'a_s_207','a_s_208'), G(5,'a_s_231','a_s_232'), G(5,'a_s_233','a_s_234')],[Qb('u','x21','a_s_203','a_c_102'), Qv('u','x21','a_s_204','a_c_102'), Qb('u','x22','a_s_207','a_c_104'), Qv('u','x22','a_s_208','a_c_104'), Qb('u','x11','a_s_231','a_c_116'), Qv('d','x11','a_s_232','a_c_116'), Qb('d','x12','a_s_233','a_c_117'), Qv('u','x12','a_s_234','a_c_117')],(0.16666666666666669+0j)), Term([G(5,'a_s_203','a_s_204'), G(5,'a_s_209','a_s_210'), G(5,'a_s_219','a_s_220'), G(5,'a_s_223','a_s_224')],[Qb('u','x21','a_s_203','a_c_102'), Qv('u','x21','a_s_204','a_c_102'), Qb('d','x22','a_s_209','a_c_105'), Qv('d','x22','a_s_210','a_c_105'), Qb('u','x11','a_s_219','a_c_110'), Qv('u','x11','a_s_220','a_c_110'), Qb('u','x12','a_s_223','a_c_112'), Qv('u','x12','a_s_224','a_c_112')],(-0.08333333333333333+0j)), Term([G(5,'a_s_203','a_s_204'), G(5,'a_s_209','a_s_210'), G(5,'a_s_219','a_s_220'), G(5,'a_s_225','a_s_226')],[Qb('u','x21','a_s_203','a_c_102'), Qv('u','x21','a_s_204','a_c_102'), Qb('d','x22','a_s_209','a_c_105'), Qv('d','x22','a_s_210','a_c_105'), Qb('u','x11','a_s_219','a_c_110'), Qv('u','x11','a_s_220','a_c_110'), Qb('d','x12','a_s_225','a_c_113'), Qv('d','x12','a_s_226','a_c_113')],(0.08333333333333333-0j)), Term([G(5,'a_s_203','a_s_204'), G(5,'a_s_209','a_s_210'), G(5,'a_s_221','a_s_222'), G(5,'a_s_223','a_s_224')],[Qb('u','x21','a_s_203','a_c_102'), Qv('u','x21','a_s_204','a_c_102'), Qb('d','x22','a_s_209','a_c_105'), Qv('d','x22','a_s_210','a_c_105'), Qb('d','x11','a_s_221','a_c_111'), Qv('d','x11','a_s_222','a_c_111'), Qb('u','x12','a_s_223','a_c_112'), Qv('u','x12','a_s_224','a_c_112')],(0.08333333333333333-0j)), Term([G(5,'a_s_203','a_s_204'), G(5,'a_s_209','a_s_210'), G(5,'a_s_221','a_s_222'), G(5,'a_s_225','a_s_226')],[Qb('u','x21','a_s_203','a_c_102'), Qv('u','x21','a_s_204','a_c_102'), Qb('d','x22','a_s_209','a_c_105'), Qv('d','x22','a_s_210','a_c_105'), Qb('d','x11','a_s_221','a_c_111'), Qv('d','x11','a_s_222','a_c_111'), Qb('d','x12','a_s_225','a_c_113'), Qv('d','x12','a_s_226','a_c_113')],(-0.08333333333333333+0j)), Term([G(5,'a_s_203','a_s_204'), G(5,'a_s_209','a_s_210'), G(5,'a_s_227','a_s_228'), G(5,'a_s_229','a_s_230')],[Qb('u','x21','a_s_203','a_c_102'), Qv('u','x21','a_s_204','a_c_102'), Qb('d','x22','a_s_209','a_c_105'), Qv('d','x22','a_s_210','a_c_105'), Qb('d','x11','a_s_227','a_c_114'), Qv('u','x11','a_s_228','a_c_114'), Qb('u','x12','a_s_229','a_c_115'), Qv('d','x12','a_s_230','a_c_115')],(-0.16666666666666669+0j)), Term([G(5,'a_s_203','a_s_204'), G(5,'a_s_209','a_s_210'), G(5,'a_s_231','a_s_232'), G(5,'a_s_233','a_s_234')],[Qb('u','x21','a_s_203','a_c_102'), Qv('u','x21','a_s_204','a_c_102'), Qb('d','x22','a_s_209','a_c_105'), Qv('d','x22','a_s_210','a_c_105'), Qb('u','x11','a_s_231','a_c_116'), Qv('d','x11','a_s_232','a_c_116'), Qb('d','x12','a_s_233','a_c_117'), Qv('u','x12','a_s_234','a_c_117')],(-0.16666666666666669+0j)), Term([G(5,'a_s_205','a_s_206'), G(5,'a_s_207','a_s_208'), G(5,'a_s_219','a_s_220'), G(5,'a_s_223','a_s_224')],[Qb('d','x21','a_s_205','a_c_103'), Qv('d','x21','a_s_206','a_c_103'), Qb('u','x22','a_s_207','a_c_104'), Qv('u','x22','a_s_208','a_c_104'), Qb('u','x11','a_s_219','a_c_110'), Qv('u','x11','a_s_220','a_c_110'), Qb('u','x12','a_s_223','a_c_112'), Qv('u','x12','a_s_224','a_c_112')],(-0.08333333333333333+0j)), Term([G(5,'a_s_205','a_s_206'), G(5,'a_s_207','a_s_208'), G(5,'a_s_219','a_s_220'), G(5,'a_s_225','a_s_226')],[Qb('d','x21','a_s_205','a_c_103'), Qv('d','x21','a_s_206','a_c_103'), Qb('u','x22','a_s_207','a_c_104'), Qv('u','x22','a_s_208','a_c_104'), Qb('u','x11','a_s_219','a_c_110'), Qv('u','x11','a_s_220','a_c_110'), Qb('d','x12','a_s_225','a_c_113'), Qv('d','x12','a_s_226','a_c_113')],(0.08333333333333333-0j)), Term([G(5,'a_s_205','a_s_206'), G(5,'a_s_207','a_s_208'), G(5,'a_s_221','a_s_222'), G(5,'a_s_223','a_s_224')],[Qb('d','x21','a_s_205','a_c_103'), Qv('d','x21','a_s_206','a_c_103'), Qb('u','x22','a_s_207','a_c_104'), Qv('u','x22','a_s_208','a_c_104'), Qb('d','x11','a_s_221','a_c_111'), Qv('d','x11','a_s_222','a_c_111'), Qb('u','x12','a_s_223','a_c_112'), Qv('u','x12','a_s_224','a_c_112')],(0.08333333333333333-0j)), Term([G(5,'a_s_205','a_s_206'), G(5,'a_s_207','a_s_208'), G(5,'a_s_221','a_s_222'), G(5,'a_s_225','a_s_226')],[Qb('d','x21','a_s_205','a_c_103'), Qv('d','x21','a_s_206','a_c_103'), Qb('u','x22','a_s_207','a_c_104'), Qv('u','x22','a_s_208','a_c_104'), Qb('d','x11','a_s_221','a_c_111'), Qv('d','x11','a_s_222','a_c_111'), Qb('d','x12','a_s_225','a_c_113'), Qv('d','x12','a_s_226','a_c_113')],(-0.08333333333333333+0j)), Term([G(5,'a_s_205','a_s_206'), G(5,'a_s_207','a_s_208'), G(5,'a_s_227','a_s_228'), G(5,'a_s_229','a_s_230')],[Qb('d','x21','a_s_205','a_c_103'), Qv('d','x21','a_s_206','a_c_103'), Qb('u','x22','a_s_207','a_c_104'), Qv('u','x22','a_s_208','a_c_104'), Qb('d','x11','a_s_227','a_c_114'), Qv('u','x11','a_s_228','a_c_114'), Qb('u','x12','a_s_229','a_c_115'), Qv('d','x12','a_s_230','a_c_115')],(-0.16666666666666669+0j)), Term([G(5,'a_s_205','a_s_206'), G(5,'a_s_207','a_s_208'), G(5,'a_s_231','a_s_232'), G(5,'a_s_233','a_s_234')],[Qb('d','x21','a_s_205','a_c_103'), Qv('d','x21','a_s_206','a_c_103'), Qb('u','x22','a_s_207','a_c_104'), Qv('u','x22','a_s_208','a_c_104'), Qb('u','x11','a_s_231','a_c_116'), Qv('d','x11','a_s_232','a_c_116'), Qb('d','x12','a_s_233','a_c_117'), Qv('u','x12','a_s_234','a_c_117')],(-0.16666666666666669+0j)), Term([G(5,'a_s_205','a_s_206'), G(5,'a_s_209','a_s_210'), G(5,'a_s_219','a_s_220'), G(5,'a_s_223','a_s_224')],[Qb('d','x21','a_s_205','a_c_103'), Qv('d','x21','a_s_206','a_c_103'), Qb('d','x22','a_s_209','a_c_105'), Qv('d','x22','a_s_210','a_c_105'), Qb('u','x11','a_s_219','a_c_110'), Qv('u','x11','a_s_220','a_c_110'), Qb('u','x12','a_s_223','a_c_112'), Qv('u','x12','a_s_224','a_c_112')],(0.08333333333333333+0j)), Term([G(5,'a_s_205','a_s_206'), G(5,'a_s_209','a_s_210'), G(5,'a_s_219','a_s_220'), G(5,'a_s_225','a_s_226')],[Qb('d','x21','a_s_205','a_c_103'), Qv('d','x21','a_s_206','a_c_103'), Qb('d','x22','a_s_209','a_c_105'), Qv('d','x22','a_s_210','a_c_105'), Qb('u','x11','a_s_219','a_c_110'), Qv('u','x11','a_s_220','a_c_110'), Qb('d','x12','a_s_225','a_c_113'), Qv('d','x12','a_s_226','a_c_113')],(-0.08333333333333333+0j)), Term([G(5,'a_s_205','a_s_206'), G(5,'a_s_209','a_s_210'), G(5,'a_s_221','a_s_222'), G(5,'a_s_223','a_s_224')],[Qb('d','x21','a_s_205','a_c_103'), Qv('d','x21','a_s_206','a_c_103'), Qb('d','x22','a_s_209','a_c_105'), Qv('d','x22','a_s_210','a_c_105'), Qb('d','x11','a_s_221','a_c_111'), Qv('d','x11','a_s_222','a_c_111'), Qb('u','x12','a_s_223','a_c_112'), Qv('u','x12','a_s_224','a_c_112')],(-0.08333333333333333+0j)), Term([G(5,'a_s_205','a_s_206'), G(5,'a_s_209','a_s_210'), G(5,'a_s_221','a_s_222'), G(5,'a_s_225','a_s_226')],[Qb('d','x21','a_s_205','a_c_103'), Qv('d','x21','a_s_206','a_c_103'), Qb('d','x22','a_s_209','a_c_105'), Qv('d','x22','a_s_210','a_c_105'), Qb('d','x11','a_s_221','a_c_111'), Qv('d','x11','a_s_222','a_c_111'), Qb('d','x12','a_s_225','a_c_113'), Qv('d','x12','a_s_226','a_c_113')],(0.08333333333333333+0j)), Term([G(5,'a_s_205','a_s_206'), G(5,'a_s_209','a_s_210'), G(5,'a_s_227','a_s_228'), G(5,'a_s_229','a_s_230')],[Qb('d','x21','a_s_205','a_c_103'), Qv('d','x21','a_s_206','a_c_103'), Qb('d','x22','a_s_209','a_c_105'), Qv('d','x22','a_s_210','a_c_105'), Qb('d','x11','a_s_227','a_c_114'), Qv('u','x11','a_s_228','a_c_114'), Qb('u','x12','a_s_229','a_c_115'), Qv('d','x12','a_s_230','a_c_115')],(0.16666666666666669+0j)), Term([G(5,'a_s_205','a_s_206'), G(5,'a_s_209','a_s_210'), G(5,'a_s_231','a_s_232'), G(5,'a_s_233','a_s_234')],[Qb('d','x21','a_s_205','a_c_103'), Qv('d','x21','a_s_206','a_c_103'), Qb('d','x22','a_s_209','a_c_105'), Qv('d','x22','a_s_210','a_c_105'), Qb('u','x11','a_s_231','a_c_116'), Qv('d','x11','a_s_232','a_c_116'), Qb('d','x12','a_s_233','a_c_117'), Qv('u','x12','a_s_234','a_c_117')],(0.16666666666666669+0j)), Term([G(5,'a_s_211','a_s_212'), G(5,'a_s_213','a_s_214'), G(5,'a_s_219','a_s_220'), G(5,'a_s_223','a_s_224')],[Qb('u','x21','a_s_211','a_c_106'), Qv('d','x21','a_s_212','a_c_106'), Qb('d','x22','a_s_213','a_c_107'), Qv('u','x22','a_s_214','a_c_107'), Qb('u','x11','a_s_219','a_c_110'), Qv('u','x11','a_s_220','a_c_110'), Qb('u','x12','a_s_223','a_c_112'), Qv('u','x12','a_s_224','a_c_112')],(0.16666666666666669+0j)), Term([G(5,'a_s_211','a_s_212'), G(5,'a_s_213','a_s_214'), G(5,'a_s_219','a_s_220'), G(5,'a_s_225','a_s_226')],[Qb('u','x21','a_s_211','a_c_106'), Qv('d','x21','a_s_212','a_c_106'), Qb('d','x22','a_s_213','a_c_107'), Qv('u','x22','a_s_214','a_c_107'), Qb('u','x11','a_s_219','a_c_110'), Qv('u','x11','a_s_220','a_c_110'), Qb('d','x12','a_s_225','a_c_113'), Qv('d','x12','a_s_226','a_c_113')],(-0.16666666666666669+0j)), Term([G(5,'a_s_211','a_s_212'), G(5,'a_s_213','a_s_214'), G(5,'a_s_221','a_s_222'), G(5,'a_s_223','a_s_224')],[Qb('u','x21','a_s_211','a_c_106'), Qv('d','x21','a_s_212','a_c_106'), Qb('d','x22','a_s_213','a_c_107'), Qv('u','x22','a_s_214','a_c_107'), Qb('d','x11','a_s_221','a_c_111'), Qv('d','x11','a_s_222','a_c_111'), Qb('u','x12','a_s_223','a_c_112'), Qv('u','x12','a_s_224','a_c_112')],(-0.16666666666666669+0j)), Term([G(5,'a_s_211','a_s_212'), G(5,'a_s_213','a_s_214'), G(5,'a_s_221','a_s_222'), G(5,'a_s_225','a_s_226')],[Qb('u','x21','a_s_211','a_c_106'), Qv('d','x21','a_s_212','a_c_106'), Qb('d','x22','a_s_213','a_c_107'), Qv('u','x22','a_s_214','a_c_107'), Qb('d','x11','a_s_221','a_c_111'), Qv('d','x11','a_s_222','a_c_111'), Qb('d','x12','a_s_225','a_c_113'), Qv('d','x12','a_s_226','a_c_113')],(0.16666666666666669+0j)), Term([G(5,'a_s_211','a_s_212'), G(5,'a_s_213','a_s_214'), G(5,'a_s_227','a_s_228'), G(5,'a_s_229','a_s_230')],[Qb('u','x21','a_s_211','a_c_106'), Qv('d','x21','a_s_212','a_c_106'), Qb('d','x22','a_s_213','a_c_107'), Qv('u','x22','a_s_214','a_c_107'), Qb('d','x11','a_s_227','a_c_114'), Qv('u','x11','a_s_228','a_c_114'), Qb('u','x12','a_s_229','a_c_115'), Qv('d','x12','a_s_230','a_c_115')],(0.3333333333333334+0j)), Term([G(5,'a_s_211','a_s_212'), G(5,'a_s_213','a_s_214'), G(5,'a_s_231','a_s_232'), G(5,'a_s_233','a_s_234')],[Qb('u','x21','a_s_211','a_c_106'), Qv('d','x21','a_s_212','a_c_106'), Qb('d','x22','a_s_213','a_c_107'), Qv('u','x22','a_s_214','a_c_107'), Qb('u','x11','a_s_231','a_c_116'), Qv('d','x11','a_s_232','a_c_116'), Qb('d','x12','a_s_233','a_c_117'), Qv('u','x12','a_s_234','a_c_117')],(0.3333333333333334+0j)), Term([G(5,'a_s_215','a_s_216'), G(5,'a_s_217','a_s_218'), G(5,'a_s_219','a_s_220'), G(5,'a_s_223','a_s_224')],[Qb('d','x21','a_s_215','a_c_108'), Qv('u','x21','a_s_216','a_c_108'), Qb('u','x22','a_s_217','a_c_109'), Qv('d','x22','a_s_218','a_c_109'), Qb('u','x11','a_s_219','a_c_110'), Qv('u','x11','a_s_220','a_c_110'), Qb('u','x12','a_s_223','a_c_112'), Qv('u','x12','a_s_224','a_c_112')],(0.16666666666666669+0j)), Term([G(5,'a_s_215','a_s_216'), G(5,'a_s_217','a_s_218'), G(5,'a_s_219','a_s_220'), G(5,'a_s_225','a_s_226')],[Qb('d','x21','a_s_215','a_c_108'), Qv('u','x21','a_s_216','a_c_108'), Qb('u','x22','a_s_217','a_c_109'), Qv('d','x22','a_s_218','a_c_109'), Qb('u','x11','a_s_219','a_c_110'), Qv('u','x11','a_s_220','a_c_110'), Qb('d','x12','a_s_225','a_c_113'), Qv('d','x12','a_s_226','a_c_113')],(-0.16666666666666669+0j)), Term([G(5,'a_s_215','a_s_216'), G(5,'a_s_217','a_s_218'), G(5,'a_s_221','a_s_222'), G(5,'a_s_223','a_s_224')],[Qb('d','x21','a_s_215','a_c_108'), Qv('u','x21','a_s_216','a_c_108'), Qb('u','x22','a_s_217','a_c_109'), Qv('d','x22','a_s_218','a_c_109'), Qb('d','x11','a_s_221','a_c_111'), Qv('d','x11','a_s_222','a_c_111'), Qb('u','x12','a_s_223','a_c_112'), Qv('u','x12','a_s_224','a_c_112')],(-0.16666666666666669+0j)), Term([G(5,'a_s_215','a_s_216'), G(5,'a_s_217','a_s_218'), G(5,'a_s_221','a_s_222'), G(5,'a_s_225','a_s_226')],[Qb('d','x21','a_s_215','a_c_108'), Qv('u','x21','a_s_216','a_c_108'), Qb('u','x22','a_s_217','a_c_109'), Qv('d','x22','a_s_218','a_c_109'), Qb('d','x11','a_s_221','a_c_111'), Qv('d','x11','a_s_222','a_c_111'), Qb('d','x12','a_s_225','a_c_113'), Qv('d','x12','a_s_226','a_c_113')],(0.16666666666666669+0j)), Term([G(5,'a_s_215','a_s_216'), G(5,'a_s_217','a_s_218'), G(5,'a_s_227','a_s_228'), G(5,'a_s_229','a_s_230')],[Qb('d','x21','a_s_215','a_c_108'), Qv('u','x21','a_s_216','a_c_108'), Qb('u','x22','a_s_217','a_c_109'), Qv('d','x22','a_s_218','a_c_109'), Qb('d','x11','a_s_227','a_c_114'), Qv('u','x11','a_s_228','a_c_114'), Qb('u','x12','a_s_229','a_c_115'), Qv('d','x12','a_s_230','a_c_115')],(0.3333333333333334+0j)), Term([G(5,'a_s_215','a_s_216'), G(5,'a_s_217','a_s_218'), G(5,'a_s_231','a_s_232'), G(5,'a_s_233','a_s_234')],[Qb('d','x21','a_s_215','a_c_108'), Qv('u','x21','a_s_216','a_c_108'), Qb('u','x22','a_s_217','a_c_109'), Qv('d','x22','a_s_218','a_c_109'), Qb('u','x11','a_s_231','a_c_116'), Qv('d','x11','a_s_232','a_c_116'), Qb('d','x12','a_s_233','a_c_117'), Qv('u','x12','a_s_234','a_c_117')],(0.3333333333333334+0j))])
+    print()
+    print(expr)
+    print()
     cexpr = contract_simplify_compile(expr, is_isospin_symmetric_limit = True)
     print(display_cexpr(cexpr))
+    print()
     cexpr.collect_op()
     print(display_cexpr(cexpr))
+    print(cexpr_code_gen_py(cexpr))

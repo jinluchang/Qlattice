@@ -71,8 +71,8 @@ def run_gf(job_tag, traj):
         if job_tag[:5] == "test-":
             gf = ru.mk_sample_gauge_field(job_tag, f"{traj}")
             path_gf = get_save_path(f"configs/{job_tag}/ckpoint_lat.{traj}")
-            # gf.save(path_gf)
-            qg.save_gauge_field(gf, path_gf)
+            gf.save(path_gf)
+            # qg.save_gauge_field(gf, path_gf)
         else:
             @q.timer_verbose
             def load_gf():

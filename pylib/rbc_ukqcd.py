@@ -23,7 +23,7 @@ def mk_sample_gauge_field(job_tag, fn):
 
 @q.timer_verbose
 def load_config(job_tag : str, fn : str):
-    if not q.does_file_exist_sync_node(fn):
+    if not q.does_file_exist_qar_sync_node(fn):
         raise Exception(f"load_config '{fn}' does not exist.")
     gf = q.GaugeField()
     gf.load(fn)
@@ -41,7 +41,7 @@ def load_config(job_tag : str, fn : str):
 
 @q.timer_verbose
 def load_config_lazy(job_tag : str, fn : str):
-    if not q.does_file_exist_sync_node(fn):
+    if not q.does_file_exist_qar_sync_node(fn):
         return None
     return q.lazy_call(load_config, job_tag, fn)
 

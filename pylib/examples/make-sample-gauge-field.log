@@ -28,9 +28,13 @@ mk_file_dirs_info: 'results/ckpoint_lat.0'.
 Cache: 'ShufflePlanCache': 0 / 16 [8] to add
 qrename: 'results/ckpoint_lat.0.partial.partial' 'results/ckpoint_lat.0.partial'
 q_write_par_limit=16 (default)
+QFile: open 'results/ckpoint_lat.0.partial' with 'a'.
+QFile: close 'results/ckpoint_lat.0.partial' with 'a'.
 qrename: 'results/ckpoint_lat.0.partial' 'results/ckpoint_lat.0'
 load_gauge_field: 'results/ckpoint_lat.0'.
 q_read_par_limit=16 (default)
+QFile: open 'results/ckpoint_lat.0' with 'r'.
+QFile: close 'results/ckpoint_lat.0' with 'r'.
 gf_show_info: plaq = 0.6147333258459872 ; link_trace = 0.8844956937132934.
 CHECK: plaq: 6.14733325845987E-01 6.14733325845987E-01
 CHECK: finished successfully.

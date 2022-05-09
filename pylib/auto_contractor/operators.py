@@ -86,12 +86,12 @@ def mk_vec_mu(f1 : str, f2 : str, p : str, mu, is_dagger = False):
     c = new_color_index()
     if is_dagger:
         if mu in [ 0, 1, 2, 5 ]:
-            return -Qb(f2, p, s1, c) * G(mu, s1, s2) * Qv(f1, p, s2, c)
+            return -Qb(f2, p, s1, c) * G(mu, s1, s2) * Qv(f1, p, s2, c) + f"vec_mu({f1},{f2},{p},{mu})^dag"
         else:
             assert mu in [ 3, ]
-            return Qb(f2, p, s1, c) * G(mu, s1, s2) * Qv(f1, p, s2, c)
+            return Qb(f2, p, s1, c) * G(mu, s1, s2) * Qv(f1, p, s2, c) + f"vec_mu({f1},{f2},{p},{mu})^dag"
     else:
-        return Qb(f1, p, s1, c) * G(mu, s1, s2) * Qv(f2, p, s2, c)
+        return Qb(f1, p, s1, c) * G(mu, s1, s2) * Qv(f2, p, s2, c) + f"vec_mu({f1},{f2},{p},{mu})"
 
 def mk_vec5_mu(f1 : str, f2 : str, p : str, mu, is_dagger = False):
     s1 = new_spin_index()
@@ -100,12 +100,12 @@ def mk_vec5_mu(f1 : str, f2 : str, p : str, mu, is_dagger = False):
     c = new_color_index()
     if is_dagger:
         if mu in [ 0, 1, 2, ]:
-            return -Qb(f2, p, s1, c) * G(mu, s1, s2) * G(5, s2, s3) * Qv(f1, p, s3, c)
+            return -Qb(f2, p, s1, c) * G(mu, s1, s2) * G(5, s2, s3) * Qv(f1, p, s3, c) + f"vec5_mu({f1},{f2},{p},{mu})^dag"
         else:
             assert mu in [ 3, 5, ]
-            return Qb(f2, p, s1, c) * G(mu, s1, s2) * G(5, s2, s3) * Qv(f1, p, s3, c)
+            return Qb(f2, p, s1, c) * G(mu, s1, s2) * G(5, s2, s3) * Qv(f1, p, s3, c) + f"vec5_mu({f1},{f2},{p},{mu})^dag"
     else:
-        return Qb(f1, p, s1, c) * G(mu, s1, s2) * G(5, s2, s3) * Qv(f2, p, s3, c)
+        return Qb(f1, p, s1, c) * G(mu, s1, s2) * G(5, s2, s3) * Qv(f2, p, s3, c) + f"vec5_mu({f1},{f2},{p},{mu})"
 
 def mk_meson(f1 : str, f2 : str, p : str, is_dagger = False):
     return mk_scalar5(f1, f2, p, is_dagger)
@@ -156,10 +156,19 @@ def mk_k_0_bar(p : str, is_dagger = False):
         return -mk_k_0(p) + f"K0b({p})^dag"
 
 def mk_j5pi_mu(p : str, mu, is_dagger = False):
-    return mk_vec5_mu("d", "u", p, mu, is_dagger)
+    return mk_vec5_mu("d", "u", p, mu, is_dagger) + f"j5pi_mu({p},{mu}){show_dagger(is_dagger)}"
 
 def mk_j5k_mu(p : str, mu, is_dagger = False):
-    return mk_vec5_mu("s", "u", p, mu, is_dagger)
+    return mk_vec5_mu("s", "u", p, mu, is_dagger) + f"j5k_mu({p},{mu}){show_dagger(is_dagger)}"
+
+def mk_j5km_mu(p : str, mu, is_dagger = False):
+    return mk_vec5_mu("u", "s", p, mu, is_dagger) + f"j5km_mu({p},{mu}){show_dagger(is_dagger)}"
+
+def mk_jpi_mu(p : str, mu, is_dagger = False):
+    return mk_vec_mu("d", "u", p, mu, is_dagger) + f"jpi_mu({p},{mu}){show_dagger(is_dagger)}"
+
+def mk_jk_mu(p : str, mu, is_dagger = False):
+    return mk_vec_mu("s", "u", p, mu, is_dagger) + f"jk_mu({p},{mu}){show_dagger(is_dagger)}"
 
 def mk_pipi_i22(p1 : str, p2 : str, is_dagger = False):
     return mk_pi_p(p1, is_dagger) * mk_pi_p(p2, is_dagger) + f"pipi_I22({p1},{p2}){show_dagger(is_dagger)}"
@@ -302,7 +311,13 @@ def mk_sigma(p : str, is_dagger = False):
     return 1 / sympy.sqrt(2) * (Qb("u", p, s, c) * Qv("u", p, s, c) + Qb("d", p, s, c) * Qv("d", p, s, c)) + f"sigma({p})"
 
 def mk_j_mu(p : str, mu, is_dagger = False):
-    return sympy.simplify(1)*2/3 * mk_vec_mu("u", "u", p, mu, is_dagger) - sympy.simplify(1)*1/3 * mk_vec_mu("d", "d", p, mu, is_dagger) - sympy.simplify(1)*1/3 * mk_vec_mu("s", "s", p, mu, is_dagger) + f"j_mu({p},{mu}){show_dagger(is_dagger)}"
+    return sympy.simplify(1)*2/3 * mk_vec_mu("u", "u", p, mu, is_dagger) \
+            - sympy.simplify(1)*1/3 * mk_vec_mu("d", "d", p, mu, is_dagger) \
+            - sympy.simplify(1)*1/3 * mk_vec_mu("s", "s", p, mu, is_dagger) \
+            + f"j_mu({p},{mu}){show_dagger(is_dagger)}"
+
+def mk_m(f : str, p : str, is_dagger = False):
+    return mk_scalar(f, f, p, is_dagger) + f"{f}bar{f}({p}){show_dagger(is_dagger)}"
 
 def mk_jl_mu(p : str, mu, is_dagger = False):
     # jl = sqrt(2)/6 * (j0 + 3 * j10) if no s quark
@@ -816,12 +831,120 @@ def test_pipi():
     print(expr)
     print(display_cexpr(contract_simplify_compile(expr, is_isospin_symmetric_limit = True)))
 
+def test_meson_corr():
+    diagram_type_dict = dict()
+    diagram_type_dict[((('t_1', 't_2'), 1), (('t_2', 't_1'), 1))] = 'Type1'
+    exprs = [
+            mk_pi_0("t_1", True) * mk_pi_0("t_2"),
+            mk_k_0("t_1", True) * mk_k_0("t_2"),
+            ]
+    cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True, diagram_type_dict = diagram_type_dict)
+    print()
+    print("meson_corr")
+    print(display_cexpr(cexpr))
+
+def test_meson_f_corr():
+    diagram_type_dict = dict()
+    diagram_type_dict[((('t_1', 'x_2'), 1), (('x_2', 't_1'), 1))] = 'Type1'
+    exprs = [
+            mk_j5pi_mu("x_2", 3) * mk_pi_p("t_1") + "(a_pi * pi)",
+            mk_j5k_mu("x_2", 3)  * mk_k_p("t_1")  + "(a_k  * k )",
+            ]
+    cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True, diagram_type_dict = diagram_type_dict)
+    print()
+    print("meson_f_corr")
+    print(display_cexpr(cexpr))
+
+def test_meson_m():
+    diagram_type_dict = dict()
+    diagram_type_dict[((('t_1', 't_2'), 1), (('t_2', 'x_1'), 1), (('x_1', 't_1'), 1))] = 'Type1'
+    diagram_type_dict[((('t_1', 't_2'), 1), (('t_2', 't_1'), 1), (('x_1', 'x_1'), 1))] = None
+    exprs = [
+            mk_pi_0("t_1", True) * mk_m("u", "x_1") * mk_pi_0("t_2"),
+            mk_pi_0("t_1", True) * mk_m("d", "x_1") * mk_pi_0("t_2"),
+            mk_pi_p("t_1", True) * mk_m("u", "x_1") * mk_pi_p("t_2"),
+            mk_pi_p("t_1", True) * mk_m("d", "x_1") * mk_pi_p("t_2"),
+            mk_k_0("t_1", True) * mk_m("d", "x_1") * mk_k_0("t_2"),
+            mk_k_0("t_1", True) * mk_m("s", "x_1") * mk_k_0("t_2"),
+            mk_k_p("t_1", True) * mk_m("u", "x_1") * mk_k_p("t_2"),
+            mk_k_p("t_1", True) * mk_m("s", "x_1") * mk_k_p("t_2"),
+            ]
+    cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True, diagram_type_dict = diagram_type_dict)
+    print()
+    print("meson_m")
+    print(display_cexpr(cexpr))
+
+def test_meson_jt():
+    diagram_type_dict = dict()
+    diagram_type_dict[((('t_1', 't_2'), 1), (('t_2', 'x_1'), 1), (('x_1', 't_1'), 1))] = 'Type1'
+    diagram_type_dict[((('t_1', 't_2'), 1), (('t_2', 't_1'), 1), (('x_1', 'x_1'), 1))] = None
+    diagram_type_dict[((('t_1', 't_2'), 1), (('t_2', 'x_2'), 1), (('x_2', 't_1'), 1))] = 'Type2'
+    diagram_type_dict[((('t_1', 't_2'), 1), (('t_2', 't_1'), 1), (('x_2', 'x_2'), 1))] = None
+    exprs = [
+            mk_pi_p("t_1", True) * mk_vec_mu("u", "u", "x_1", 3) * mk_pi_p("t_2"),
+            mk_k_p("t_1", True) * mk_vec_mu("u", "u", "x_1", 3) * mk_k_p("t_2"),
+            mk_k_m("t_1", True) * mk_vec_mu("s", "s", "x_1", 3) * mk_k_m("t_2"),
+            mk_pi_p("t_1p", True) * mk_vec_mu("u", "u", "x_1", 3) * mk_pi_p("t_2p"),
+            mk_k_p("t_1p", True) * mk_vec_mu("u", "u", "x_1", 3) * mk_k_p("t_2p"),
+            mk_k_m("t_1p", True) * mk_vec_mu("s", "s", "x_1", 3) * mk_k_m("t_2p"),
+            ]
+    cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True, diagram_type_dict = diagram_type_dict)
+    print()
+    print("meson_jt")
+    print(display_cexpr(cexpr))
+
+def test_meson_jj():
+    diagram_type_dict = dict()
+    diagram_type_dict[((('x_1', 'x_2'), 1), (('x_2', 'x_1'), 1))] = 'Type0'
+    diagram_type_dict[((('x_1', 'x_1'), 1), (('x_2', 'x_2'), 1))] = None
+    diagram_type_dict[((('t_1', 'x_1'), 1), (('t_2', 'x_2'), 1), (('x_1', 't_1'), 1), (('x_2', 't_2'), 1))] = 'Type1'
+    diagram_type_dict[((('t_1', 'x_1'), 1), (('t_2', 'x_2'), 1), (('x_1', 't_2'), 1), (('x_2', 't_1'), 1))] = 'Type2'
+    diagram_type_dict[((('t_1', 't_2'), 1), (('t_2', 'x_1'), 1), (('x_1', 'x_2'), 1), (('x_2', 't_1'), 1))] = 'Type3'
+    diagram_type_dict[((('t_1', 't_2'), 1), (('t_2', 't_1'), 1), (('x_1', 'x_2'), 1), (('x_2', 'x_1'), 1))] = 'Type4'
+    diagram_type_dict[((('t_1', 't_2'), 1), (('t_2', 'x_1'), 1), (('x_1', 't_1'), 1), (('x_2', 'x_2'), 1))] = None
+    diagram_type_dict[((('t_1', 't_2'), 1), (('t_2', 't_1'), 1), (('x_1', 'x_1'), 1), (('x_2', 'x_2'), 1))] = None
+    exprs = [
+            mk_pi_0("t_1", True) * mk_j_mu("x_1", "mu") * mk_j_mu("x_2", "nu") * mk_pi_0("t_2"),
+            mk_pi_p("t_1", True) * mk_j_mu("x_1", "mu") * mk_j_mu("x_2", "nu") * mk_pi_p("t_2"),
+            mk_k_0("t_1", True) * mk_j_mu("x_1", "mu") * mk_j_mu("x_2", "nu") * mk_k_0("t_2"),
+            mk_k_p("t_1", True) * mk_j_mu("x_1", "mu") * mk_j_mu("x_2", "nu") * mk_k_p("t_2"),
+            mk_j_mu("x_1", "mu") * mk_j_mu("x_2", "nu"),
+            ]
+    cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True, diagram_type_dict = diagram_type_dict)
+    print()
+    print("meson_jj")
+    print(display_cexpr(cexpr))
+
+def test_meson_fj():
+    diagram_type_dict = dict()
+    diagram_type_dict[((('t', 'x_1'), 1), (('x_1', 'x_2'), 1), (('x_2', 't'), 1))] = 'Type1'
+    diagram_type_dict[((('t', 'x_1'), 1), (('x_1', 't'), 1), (('x_2', 'x_2'), 1))] = None
+    exprs = [
+            mk_j5pi_mu("x_1", "mu") * mk_j_mu("x_2", "nu") * mk_pi_p("t"),
+            mk_j5k_mu("x_1", "mu") * mk_j_mu("x_2", "nu") * mk_k_p("t"),
+            mk_jpi_mu("x_1", "mu") * mk_j_mu("x_2", "nu") * mk_pi_p("t"),
+            mk_jk_mu("x_1", "mu") * mk_j_mu("x_2", "nu") * mk_k_p("t"),
+            ]
+    cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True, diagram_type_dict = diagram_type_dict)
+    print()
+    print("meson_fj")
+    print(display_cexpr(cexpr))
+
 if __name__ == "__main__":
+    # test()
+    # test1()
     # test_pipi()
     # test_prop()
     # test_kpipi()
-    # test1()
-    # exit()
+    # test_kk()
+    # test_kk_sym()
+    test_meson_corr()
+    test_meson_f_corr()
+    test_meson_m()
+    test_meson_jt()
+    test_meson_jj()
+    test_meson_fj()
+    exit()
     #
     print("pi+(x1):\n", mk_pi_p("x1"))
     print("pi+(x2)^dag pi+(x1):\n", mk_pi_p("x2", True) * mk_pi_p("x1"))
@@ -918,12 +1041,6 @@ if __name__ == "__main__":
     print(display_cexpr(contract_simplify_compile(expr, diagram_type_dict = diagram_type_dict)))
     #
     print()
-    test_kk()
-    print()
-    test_kk_sym()
-    #
-    print()
-    test()
     print("< KpiI3/2_Iz1/2(x2_1,x2_2)^dag KpiI1/2_Iz1/2(x1_1,x1_2) >:")
     expr = mk_kpi_0_i3halves("x2_1", "x2_2", True) * mk_kpi_0_i1half("x1_1", "x1_2")
     print(display_cexpr(contract_simplify_compile(expr)))
@@ -944,5 +1061,3 @@ if __name__ == "__main__":
     expr = mk_kpi_0_i1half("x2_1", "x2_2", True) * mk_kpi_0_i1half("x1_1", "x1_2") - mk_kpi_p_i1half("x2_1", "x2_2", True) * mk_kpi_p_i1half("x1_1", "x1_2")
     print(display_cexpr(contract_simplify_compile(expr)))
     print()
-
-

@@ -18,6 +18,7 @@
 
 namespace qlat{
 
+/////__CLEAR_SMEAR_MEM__ FLAG for smear memory clear
 
 #ifdef __ENABLE_DOUBLE__
 #define Enablefloat 0
@@ -289,6 +290,7 @@ inline void abort_r(std::string stmp=std::string(""))
   fflush(stdout);
   ////MPI_Finalize();
   qlat::end();
+  //qassert(false);
   abort();
 }
 

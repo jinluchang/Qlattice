@@ -135,6 +135,8 @@ class LatData:
     def set_dim_name(self, dim, name, indices = None):
         if indices is None:
             indices = []
+        else:
+            indices = [ idx.replace("\n", "  ") for idx in indices ]
         return c.set_dim_name_lat_data(self, dim, name, indices)
 
     def dim_names(self, *, is_complex = True):

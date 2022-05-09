@@ -31,6 +31,7 @@ struct Vec_redistribute
   int b0,civa;
   void* sendV; void* recvV;
   int tem_off;
+  bool update_off;
   /////void* bufV ;
 
   std::vector<int > currsend;
@@ -43,15 +44,14 @@ struct Vec_redistribute
   std::vector<int > recvM;
   std::vector<int > rplsM;
 
-  std::vector<long > mapcur_Vtoi;
   qlat::vector_acc<LInt > map_order;
   qlat::vector_acc<LInt > map_Dorder;
 
   /////May need to change?
   std::vector<int > secT;
 
-  /////void set_mem(int b0_or,int civa_or, qlat::vector<int > secT_or);
   inline void set_mem(int b0_or,int civa_or);
+  int flag_set_mem;
 
   template<typename Ty>
   void call_MPI(int flag);
@@ -71,7 +71,6 @@ struct Vec_redistribute
   MPI_Comm vec_comm;
   int mode_MPI;
 
-  int flag_set_mem;
   //int flag_set_fft;
 
   ////int flag_set_fft_force;
@@ -155,7 +154,6 @@ inline Vec_redistribute::Vec_redistribute(fft_desc_basic &fds, bool GPU_set)
     map_mpi_vec[fd->rank] = int_tem;
   }
   sum_all_size((int*) (&map_mpi_vec[0]),Nmpi);
-  ////vec_comm_list.push_back(vec_comm);
 
   flag_set_mem = 0;
   mode_MPI     = 1;
@@ -181,6 +179,7 @@ inline void Vec_redistribute::set_mem(int b0_or,int civa_or)
   //fd->set_up_map();
   ///map i --> nz*ny*nx   to recieve position
   /////2 is the fatest
+  std::vector<long > mapcur_Vtoi;
   mapcur_Vtoi.resize(nx*ny*nz/Nv[orderN[2]]);
   int Nts = secT[fd->rank];
   for(int tmi=0;tmi<mt;tmi++)
@@ -209,7 +208,6 @@ inline void Vec_redistribute::set_mem(int b0_or,int civa_or)
           LInt temVi = Vi%(nv[0]*nv[1]*nv[2]);
           mapcur_Vtoi[temVi/Nv[orderN[2]]]    = inode/Nv[orderN[2]];
         }
-
       }
     }
   }
@@ -269,6 +267,8 @@ inline void Vec_redistribute::set_mem(int b0_or,int civa_or)
     }
   }
 
+  //////update offset from data type and new ios
+  update_off   = true;
   flag_set_mem = 1;
 }
 
@@ -292,7 +292,7 @@ void Vec_redistribute::call_MPI(int flag)
   unsigned int M_size = get_MPI_type<Ty >(curr );
   qassert(off%M_size == 0);off = off/M_size;
 
-  if(tem_off != int(off)){
+  if(tem_off != int(off) or update_off == true){
     ///if(findN && sizeof(Ty)== 8){curr = MPI_FLOAT ;off = off/sizeof(float)  ;findN=false;}
     ///if(findN && sizeof(Ty)==16){curr = MPI_DOUBLE;off = off/sizeof(double) ;findN=false;}
     ///////print0("Check int %d, long %d \n",sizeof(int), sizeof(long));
@@ -305,6 +305,7 @@ void Vec_redistribute::call_MPI(int flag)
     #pragma omp parallel for
     for(int n=0;n<Nmpi/mt;n++)rplsM[n] = off*currrpls[n];
     tem_off = off;
+    update_off = false;
   }
 
   ////======Copy data
@@ -313,7 +314,6 @@ void Vec_redistribute::call_MPI(int flag)
   //int ranklocal = fd->rank;
   qassert(currsend[ranklocal] == currrecv[ranklocal]);
   if(currsend[ranklocal] != 0){
-    //////copy_data(&res[currrpls[ranklocal]], &src[currspls[ranklocal]], currsend[ranklocal], !GPU, true);
     cpy_data_thread(&res[currrpls[ranklocal]], &src[currspls[ranklocal]], currsend[ranklocal], GPU, false);
     sendM[ranklocal] = 0;
     recvM[ranklocal] = 0;
@@ -352,10 +352,8 @@ void Vec_redistribute::re_order_recv(int flag)
   long bfac = Nv[orderN[2]]*civa;
   LInt* m0 = (LInt*) qlat::get_data(map_order).data();
   LInt* m1 = (LInt*) qlat::get_data(map_Dorder).data();
-  if(flag==0){cpy_data_from_index(&send[0],&recv[0], m0, m1, map_order.size(), bfac, !GPU, true);}
-  if(flag==1){cpy_data_from_index(&recv[0],&send[0], m1, m0, map_order.size(), bfac, !GPU, true);}
-
-
+  if(flag==0){cpy_data_from_index(&send[0],&recv[0], m0, m1, map_order.size(), bfac, GPU, true);}
+  if(flag==1){cpy_data_from_index(&recv[0],&send[0], m1, m0, map_order.size(), bfac, GPU, true);}
 }
 
 //////buf size  --> b0 * Nt * (nx*ny*nz/(Nx*Ny*Nz)) * Nx*Ny*Nz * civa * sizeof(Ty)
@@ -366,66 +364,39 @@ void Vec_redistribute::reorder(Ty *sendbuf,Ty *recvbuf,int b0_or,int civa_or,int
 {
   TIMERB("Vec_redistribute::reorder");
 
-  if(flag_set_mem==0){set_mem(b0_or,civa_or);
-    //if(flag%2 != 0)set_fft();
-  }
+  if(flag_set_mem==0){set_mem(b0_or,civa_or);}
   if(flag_set_mem==1){if(b0 != b0_or or civa != civa_or){
-    set_mem(b0_or,civa_or);
-    //if(howmany != civa_or/2){if(flag%2 != 0)set_fft();}
-    }
+    set_mem(b0_or,civa_or);}
   }
 
-  if(fd->mz*fd->my*fd->mx == 1){
-    /////copy_data(recv, send, b0*Nts*svol*civa, GPU, true);
-    /////print0("=====Fast mode \n");
-    return ;
-  }
+  if(fd->mz*fd->my*fd->mx == 1){return ;}
 
   //if(flag%2 != 0)if(howmany != civa_or/2)set_fft();
 
   ////Set the size of civa, civa
   sendV = sendbuf;recvV = recvbuf;
-  //Ty* recv = (Ty*) recvV;
-  //Ty* send = (Ty*) sendV;
-  ///////int Nt = fd->Nt;
-  ////size_t svol = fd->nx*fd->ny*fd->nz;
-  //int Nts = secT[fd->rank];
 
   if(flag > -2 and flag < 2 )
   {
     call_MPI<Ty >(0);
     /////from recvbuf to sendbuf
     re_order_recv<Ty>(0);
-
-    /////copy_data(recv, send, b0*Nts*svol*civa, GPU, true);
   }
-
-  /////print0("Max in %d %d \n", b0*Nts*svol*civa, INT_MAX);
-
-  ///if(flag == 1){bool fftdir = true;do_fft(fftdir);}
-  ///if(fft_flag ==-1){bool fftdir = false;do_fft(fftdir);}
 
   //////From reorder to original
   if(flag == 100)
   {
     re_order_recv<Ty>(1);
     call_MPI<Ty >(1);
-    //memcpy(recv,send, sizeof(Ftype)*b0*Nts*svol*civa);
-    //////copy_data(recv, send, b0*Nts*svol*civa, GPU, true);
   }
-
-  ///send = NULL;recv = NULL;
 }
 
 inline Vec_redistribute::~Vec_redistribute(){
-
-  /////vec_comm_list.resize(0);
-
   currsend.resize(0);
   currrecv.resize(0);
   currspls.resize(0);
   currrpls.resize(0);
-  mapcur_Vtoi.resize(0);
+  //////mapcur_Vtoi.resize(0);
 }
 
 /////To T distribute or whole vectors on each node
@@ -433,7 +404,6 @@ struct Rotate_vecs{
 
   fft_desc_basic fd;
   fft_desc_basic fd0;
-  ///fft_desc_basic fd1;
   Vec_redistribute *vec_re0;
   Vec_redistribute *vec_re1;
   bool  GPU;
@@ -457,7 +427,7 @@ struct Rotate_vecs{
 
     copy_fft_desc(fd, fd_set);
     vec_re0 = NULL;vec_re1 = NULL;buf = NULL;src = NULL;
-    Bsize = 0;
+    vol_buf = 0; Bsize = 0;
     b0 = -1;civa = -1;bsize = -1;
     flag_mem_set = false;
   }
@@ -500,13 +470,15 @@ struct Rotate_vecs{
     }
 
 
-    Bsize = b0 * vol_buf * civa * sizeof(Ty);
-    ////print0("===Bsize %.2f .\n", double(Bsize));
+    size_t Bsize0 = vol_buf * b0 *  civa * sizeof(Ty);
+    if(Bsize != Bsize0){
+    Bsize = Bsize0;
+    free_buf(buf, GPU);free_buf(src, GPU);
     if(GPU){gpuMalloc(buf, Bsize/sizeof(Ty), Ty);gpuMalloc(src, Bsize/sizeof(Ty), Ty);}
     else{ 
       src = aligned_alloc_no_acc(Bsize);
       if(mode != -1)buf = aligned_alloc_no_acc(Bsize);
-    }
+    }}
     qassert(b0 > 0 and civa > 0 and vol_buf > 0);
 
     //map_vecs.resize( b0);
@@ -581,8 +553,6 @@ struct Rotate_vecs{
     ////if(fdp_new0 != NULL){delete fdp_new0;fdp_new0 = NULL;}
     ////if(fdp_new1 != NULL){delete fdp_new1;fdp_new1 = NULL;}
     free_buf(buf, GPU);free_buf(src, GPU);
-    ////if(buf != NULL){if(GPU){gpuFree(buf);}else{free(buf);} buf = NULL;}
-    ////if(src != NULL){if(GPU){gpuFree(src);}else{free(src);} src = NULL;}
     Bsize = 0;b0 = -1;civa = -1;bsize = -1;
     N_extra = -1;vol_buf =  0;mode = -2;
     flag_mem_set = false;

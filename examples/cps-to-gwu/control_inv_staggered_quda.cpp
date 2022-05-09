@@ -38,7 +38,7 @@ int main(int argc, char* argv[])
     sprintf(rbc_conf,in.Link_name.c_str(), in.icfg);
     qlat::load_gwu_link(rbc_conf, gf);
   }else{
-    set_rand_link(gf, in.seed);
+    random_link(gf, in.seed);
     qlat::gf_ape_smear(gf, gf, 0.125, in.hyp);
   }
 

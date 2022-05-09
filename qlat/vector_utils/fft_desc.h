@@ -254,6 +254,7 @@ inline void fft_desc_basic::print_info(){
 inline void fft_desc_basic::set_variable()
 {
   TIMERA("fft_desc_basic::set_variable");
+  for(int i=0;i<4;i++){qassert(iniv[i] >= 0);qassert(nv[i] > 0);qassert(Nv[i] > 0);}
   mv.resize(4);for(int i=0;i<4;i++){mv[i] = nv[i]/Nv[i];qassert(mv[i] > 0);}
 
   nx = nv[0];ny = nv[1];nz = nv[2];nt = nv[3];
@@ -388,6 +389,39 @@ inline void fft_desc_basic::check_mem()
   sum_all_size(&flag,1);
   if(flag>0){abort_r("Layout not continuous in x, B! \n");}
 
+}
+
+///mode 0, mxyz ->  Nt ; mode 1, Nt -> mxyz
+inline void desc_xyz_in_one(fft_desc_basic& fd, const Geometry& geo, int mode = 1){
+  qlat::vector_acc<int> Nv,nv,mv;
+  geo_to_nv(geo, nv, Nv, mv);
+  /////dim of lat
+  fd.nv[0] = nv[0];
+  fd.nv[1] = nv[1];
+  fd.nv[2] = nv[2];
+  fd.nv[3] = nv[3]*mv[2]*mv[1]*mv[0];
+  /////dim of lat on local
+  fd.Nv[0] = nv[0];
+  fd.Nv[1] = nv[1];
+  fd.Nv[2] = nv[2];
+  fd.Nv[3] = Nv[3];
+
+  qlat::Coordinate ts = geo.coordinate_from_index(0);
+  qlat::Coordinate gs = geo.coordinate_g_from_l(ts);
+
+  ///////dim of MPI lat
+  //fd.mv[0] = 1;
+  //fd.mv[1] = 1;
+  //fd.mv[2] = mv[2]*mv[1]*mv[0];
+  //fd.mv[3] = mv[3];
+  fd.iniv.resize(4);
+  //int t0 = fd.iniv[3];
+  for(unsigned int i=0;i<4;i++){fd.iniv[i] = 0;} 
+  Coordinate tnode = coor_node_from_id_node(qlat::get_id_node());
+  int tA = (tnode[2]*mv[1] + tnode[1])*mv[0] + tnode[0];
+  if(mode == 0){fd.iniv[3] = tA*nv[3] + gs[3]; }
+  if(mode == 1){fd.iniv[3] = gs[3] * (mv[2]*mv[1]*mv[0]) + tA * Nv[3]; }
+  fd.set_variable();
 }
 
 }

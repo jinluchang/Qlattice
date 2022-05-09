@@ -1,12 +1,12 @@
-qlat::begin(): MPI Initialized. num_node = 8
+qlat::begin(): MPI Initialized. num_node = 2
 qlat::begin_comm(comm,size_node): get_comm_list().push_back()
 qlat::begin_comm(comm,size_node): get_comm_list().size() = 1.
 qlat::begin(): q_num_threads = 2
 qlat::begin(): GeometryNode =
 { initialized = true
-, num_node    = 8
+, num_node    = 2
 , id_node     = 0
-, size_node   = 1x2x2x2
+, size_node   = 1x1x1x2
 , coor_node   = 0x0x0x0 }
 q_verbose=10
 q_timer_max_func_name_len=50 (default)
@@ -48,114 +48,114 @@ Main::displaySpinPropagator4d : geo =
 , eo            = 0
 , geon          =
 { initialized = true
-, num_node    = 8
+, num_node    = 2
 , id_node     = 0
-, size_node   = 1x2x2x2
+, size_node   = 1x1x1x2
 , coor_node   = 0x0x0x0 }
 , multiplicity  = 1
-, node_site     = 4x2x2x4
+, node_site     = 4x4x4x4
 , expan_left    = 0x0x0x0
 , expan_right   = 0x0x0x0
-, node_site_exp = 4x2x2x4 }
+, node_site_exp = 4x4x4x4 }
 q_field_init=fast (default)
 set q_field_init=fast.
 Cache: 'FftComplexFieldPlanCache': 0 / 32 [16] to add
-FftComplexFieldPlan::init: malloc 16384
-FftComplexFieldPlan::init: free 16384
-make_shuffle_plan_fft: num_send_packs =         64
-make_shuffle_plan_fft: num_recv_packs =          4
+FftComplexFieldPlan::init: malloc 65536
+FftComplexFieldPlan::init: free 65536
+make_shuffle_plan_fft: num_send_packs =        256
+make_shuffle_plan_fft: num_recv_packs =          8
 make_shuffle_plan_fft: num_send_msgs  =          1
 make_shuffle_plan_fft: num_recv_msgs  =          1
 make_shuffle_plan_fft: total num_send_packs =        512
-make_shuffle_plan_fft: total num_recv_packs =         32
-make_shuffle_plan_fft: total num_send_msgs  =          8
-make_shuffle_plan_fft: total num_recv_msgs  =          8
+make_shuffle_plan_fft: total num_recv_packs =         16
+make_shuffle_plan_fft: total num_send_msgs  =          2
+make_shuffle_plan_fft: total num_recv_msgs  =          2
 make_shuffle_plan_fft: global_comm_size =        512
 q_mem_cache_max_size=512 (default)
 q_mem_cache_acc_max_size=512 (default)
 Cache: 'FftComplexFieldPlanCache': 1 / 32 [16] to add
-FftComplexFieldPlan::init: malloc 16384
-FftComplexFieldPlan::init: free 16384
-make_shuffle_plan_fft: num_send_packs =         15
-make_shuffle_plan_fft: num_recv_packs =          4
-make_shuffle_plan_fft: num_send_msgs  =          2
-make_shuffle_plan_fft: num_recv_msgs  =          2
-make_shuffle_plan_fft: total num_send_packs =        120
-make_shuffle_plan_fft: total num_recv_packs =         32
-make_shuffle_plan_fft: total num_send_msgs  =         16
-make_shuffle_plan_fft: total num_recv_msgs  =         16
+FftComplexFieldPlan::init: malloc 65536
+FftComplexFieldPlan::init: free 65536
+make_shuffle_plan_fft: num_send_packs =         64
+make_shuffle_plan_fft: num_recv_packs =          8
+make_shuffle_plan_fft: num_send_msgs  =          1
+make_shuffle_plan_fft: num_recv_msgs  =          1
+make_shuffle_plan_fft: total num_send_packs =        128
+make_shuffle_plan_fft: total num_recv_packs =         16
+make_shuffle_plan_fft: total num_send_msgs  =          2
+make_shuffle_plan_fft: total num_recv_msgs  =          2
 make_shuffle_plan_fft: global_comm_size =        512
 Cache: 'FftComplexFieldPlanCache': 2 / 32 [16] to add
-FftComplexFieldPlan::init: malloc 16384
-FftComplexFieldPlan::init: free 16384
-make_shuffle_plan_fft: num_send_packs =          7
-make_shuffle_plan_fft: num_recv_packs =          4
-make_shuffle_plan_fft: num_send_msgs  =          2
-make_shuffle_plan_fft: num_recv_msgs  =          2
-make_shuffle_plan_fft: total num_send_packs =         56
-make_shuffle_plan_fft: total num_recv_packs =         32
-make_shuffle_plan_fft: total num_send_msgs  =         16
-make_shuffle_plan_fft: total num_recv_msgs  =         16
+FftComplexFieldPlan::init: malloc 65536
+FftComplexFieldPlan::init: free 65536
+make_shuffle_plan_fft: num_send_packs =         16
+make_shuffle_plan_fft: num_recv_packs =          8
+make_shuffle_plan_fft: num_send_msgs  =          1
+make_shuffle_plan_fft: num_recv_msgs  =          1
+make_shuffle_plan_fft: total num_send_packs =         32
+make_shuffle_plan_fft: total num_recv_packs =         16
+make_shuffle_plan_fft: total num_send_msgs  =          2
+make_shuffle_plan_fft: total num_recv_msgs  =          2
 make_shuffle_plan_fft: global_comm_size =        512
 Cache: 'FftComplexFieldPlanCache': 3 / 32 [16] to add
-FftComplexFieldPlan::init: malloc 16384
-FftComplexFieldPlan::init: free 16384
+FftComplexFieldPlan::init: malloc 65536
+FftComplexFieldPlan::init: free 65536
 make_shuffle_plan_fft: num_send_packs =          8
 make_shuffle_plan_fft: num_recv_packs =          8
 make_shuffle_plan_fft: num_send_msgs  =          2
 make_shuffle_plan_fft: num_recv_msgs  =          2
-make_shuffle_plan_fft: total num_send_packs =         64
-make_shuffle_plan_fft: total num_recv_packs =         64
-make_shuffle_plan_fft: total num_send_msgs  =         16
-make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: total num_send_packs =         16
+make_shuffle_plan_fft: total num_recv_packs =         16
+make_shuffle_plan_fft: total num_send_msgs  =          4
+make_shuffle_plan_fft: total num_recv_msgs  =          4
 make_shuffle_plan_fft: global_comm_size =        512
 Cache: 'FftComplexFieldPlanCache': 4 / 32 [16] to add
-FftComplexFieldPlan::init: malloc 16384
-FftComplexFieldPlan::init: free 16384
-make_shuffle_plan_fft: num_send_packs =         64
-make_shuffle_plan_fft: num_recv_packs =          4
+FftComplexFieldPlan::init: malloc 65536
+FftComplexFieldPlan::init: free 65536
+make_shuffle_plan_fft: num_send_packs =        256
+make_shuffle_plan_fft: num_recv_packs =          8
 make_shuffle_plan_fft: num_send_msgs  =          1
 make_shuffle_plan_fft: num_recv_msgs  =          1
 make_shuffle_plan_fft: total num_send_packs =        512
-make_shuffle_plan_fft: total num_recv_packs =         32
-make_shuffle_plan_fft: total num_send_msgs  =          8
-make_shuffle_plan_fft: total num_recv_msgs  =          8
+make_shuffle_plan_fft: total num_recv_packs =         16
+make_shuffle_plan_fft: total num_send_msgs  =          2
+make_shuffle_plan_fft: total num_recv_msgs  =          2
 make_shuffle_plan_fft: global_comm_size =        512
 Cache: 'FftComplexFieldPlanCache': 5 / 32 [16] to add
-FftComplexFieldPlan::init: malloc 16384
-FftComplexFieldPlan::init: free 16384
-make_shuffle_plan_fft: num_send_packs =         15
-make_shuffle_plan_fft: num_recv_packs =          4
-make_shuffle_plan_fft: num_send_msgs  =          2
-make_shuffle_plan_fft: num_recv_msgs  =          2
-make_shuffle_plan_fft: total num_send_packs =        120
-make_shuffle_plan_fft: total num_recv_packs =         32
-make_shuffle_plan_fft: total num_send_msgs  =         16
-make_shuffle_plan_fft: total num_recv_msgs  =         16
+FftComplexFieldPlan::init: malloc 65536
+FftComplexFieldPlan::init: free 65536
+make_shuffle_plan_fft: num_send_packs =         64
+make_shuffle_plan_fft: num_recv_packs =          8
+make_shuffle_plan_fft: num_send_msgs  =          1
+make_shuffle_plan_fft: num_recv_msgs  =          1
+make_shuffle_plan_fft: total num_send_packs =        128
+make_shuffle_plan_fft: total num_recv_packs =         16
+make_shuffle_plan_fft: total num_send_msgs  =          2
+make_shuffle_plan_fft: total num_recv_msgs  =          2
 make_shuffle_plan_fft: global_comm_size =        512
 Cache: 'FftComplexFieldPlanCache': 6 / 32 [16] to add
-FftComplexFieldPlan::init: malloc 16384
-FftComplexFieldPlan::init: free 16384
-make_shuffle_plan_fft: num_send_packs =          7
-make_shuffle_plan_fft: num_recv_packs =          4
-make_shuffle_plan_fft: num_send_msgs  =          2
-make_shuffle_plan_fft: num_recv_msgs  =          2
-make_shuffle_plan_fft: total num_send_packs =         56
-make_shuffle_plan_fft: total num_recv_packs =         32
-make_shuffle_plan_fft: total num_send_msgs  =         16
-make_shuffle_plan_fft: total num_recv_msgs  =         16
+FftComplexFieldPlan::init: malloc 65536
+FftComplexFieldPlan::init: free 65536
+make_shuffle_plan_fft: num_send_packs =         16
+make_shuffle_plan_fft: num_recv_packs =          8
+make_shuffle_plan_fft: num_send_msgs  =          1
+make_shuffle_plan_fft: num_recv_msgs  =          1
+make_shuffle_plan_fft: total num_send_packs =         32
+make_shuffle_plan_fft: total num_recv_packs =         16
+make_shuffle_plan_fft: total num_send_msgs  =          2
+make_shuffle_plan_fft: total num_recv_msgs  =          2
 make_shuffle_plan_fft: global_comm_size =        512
 Cache: 'FftComplexFieldPlanCache': 7 / 32 [16] to add
-FftComplexFieldPlan::init: malloc 16384
-FftComplexFieldPlan::init: free 16384
+FftComplexFieldPlan::init: malloc 65536
+FftComplexFieldPlan::init: free 65536
 make_shuffle_plan_fft: num_send_packs =          8
 make_shuffle_plan_fft: num_recv_packs =          8
 make_shuffle_plan_fft: num_send_msgs  =          2
 make_shuffle_plan_fft: num_recv_msgs  =          2
-make_shuffle_plan_fft: total num_send_packs =         64
-make_shuffle_plan_fft: total num_recv_packs =         64
-make_shuffle_plan_fft: total num_send_msgs  =         16
-make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: total num_send_packs =         16
+make_shuffle_plan_fft: total num_recv_packs =         16
+make_shuffle_plan_fft: total num_send_msgs  =          4
+make_shuffle_plan_fft: total num_recv_msgs  =          4
 make_shuffle_plan_fft: global_comm_size =        512
 Main::displaySpinPropagator4d : xgsnk = 0x0x0x0 .
 Main::displaySpinPropagator4d : prop[xgsnk] =
@@ -168,15 +168,15 @@ Main::lblMuonPart : geo =
 , eo            = 0
 , geon          =
 { initialized = true
-, num_node    = 8
+, num_node    = 2
 , id_node     = 0
-, size_node   = 1x2x2x2
+, size_node   = 1x1x1x2
 , coor_node   = 0x0x0x0 }
 , multiplicity  = 1
-, node_site     = 4x2x2x4
+, node_site     = 4x4x4x4
 , expan_left    = 0x0x0x0
 , expan_right   = 0x0x0x0
-, node_site_exp = 4x2x2x4 }
+, node_site_exp = 4x4x4x4 }
 Main::lblMagneticMomentSpinMatrix : src =
                 (9.96175,0)                       (0,0)              (-0.0050744,0) (-1.69353e-19,-1.83012e-19)
                       (0,0)                 (9.96175,0)  (-1.69353e-19,1.83012e-19)              (-0.0050744,0)
@@ -206,111 +206,111 @@ Main::lblShowMuonPartPointSrc : mass = 0.10
 Main::lblShowMuonPartPointSrc : xg1 = 1x1x1x6 ; xg2 = 2x3x1x3 ; xg3 = 2x2x2x4 .
 Main::lblShowMuonPartPointSrc : mu1 = 0 ; mu2 = 0 ; mu3 = 0 .
 Cache: 'FftComplexFieldPlanCache': 8 / 32 [16] to add
-FftComplexFieldPlan::init: malloc 4096
-FftComplexFieldPlan::init: free 4096
-make_shuffle_plan_fft: num_send_packs =         64
-make_shuffle_plan_fft: num_recv_packs =          4
+FftComplexFieldPlan::init: malloc 16384
+FftComplexFieldPlan::init: free 16384
+make_shuffle_plan_fft: num_send_packs =        256
+make_shuffle_plan_fft: num_recv_packs =          8
 make_shuffle_plan_fft: num_send_msgs  =          1
 make_shuffle_plan_fft: num_recv_msgs  =          1
 make_shuffle_plan_fft: total num_send_packs =        512
-make_shuffle_plan_fft: total num_recv_packs =         32
-make_shuffle_plan_fft: total num_send_msgs  =          8
-make_shuffle_plan_fft: total num_recv_msgs  =          8
+make_shuffle_plan_fft: total num_recv_packs =         16
+make_shuffle_plan_fft: total num_send_msgs  =          2
+make_shuffle_plan_fft: total num_recv_msgs  =          2
 make_shuffle_plan_fft: global_comm_size =        512
 Cache: 'FftComplexFieldPlanCache': 9 / 32 [16] to add
-FftComplexFieldPlan::init: malloc 4096
-FftComplexFieldPlan::init: free 4096
-make_shuffle_plan_fft: num_send_packs =         15
-make_shuffle_plan_fft: num_recv_packs =          4
-make_shuffle_plan_fft: num_send_msgs  =          2
-make_shuffle_plan_fft: num_recv_msgs  =          2
-make_shuffle_plan_fft: total num_send_packs =        120
-make_shuffle_plan_fft: total num_recv_packs =         32
-make_shuffle_plan_fft: total num_send_msgs  =         16
-make_shuffle_plan_fft: total num_recv_msgs  =         16
+FftComplexFieldPlan::init: malloc 16384
+FftComplexFieldPlan::init: free 16384
+make_shuffle_plan_fft: num_send_packs =         64
+make_shuffle_plan_fft: num_recv_packs =          8
+make_shuffle_plan_fft: num_send_msgs  =          1
+make_shuffle_plan_fft: num_recv_msgs  =          1
+make_shuffle_plan_fft: total num_send_packs =        128
+make_shuffle_plan_fft: total num_recv_packs =         16
+make_shuffle_plan_fft: total num_send_msgs  =          2
+make_shuffle_plan_fft: total num_recv_msgs  =          2
 make_shuffle_plan_fft: global_comm_size =        512
 Cache: 'FftComplexFieldPlanCache': 10 / 32 [16] to add
-FftComplexFieldPlan::init: malloc 4096
-FftComplexFieldPlan::init: free 4096
-make_shuffle_plan_fft: num_send_packs =          7
-make_shuffle_plan_fft: num_recv_packs =          4
-make_shuffle_plan_fft: num_send_msgs  =          2
-make_shuffle_plan_fft: num_recv_msgs  =          2
-make_shuffle_plan_fft: total num_send_packs =         56
-make_shuffle_plan_fft: total num_recv_packs =         32
-make_shuffle_plan_fft: total num_send_msgs  =         16
-make_shuffle_plan_fft: total num_recv_msgs  =         16
+FftComplexFieldPlan::init: malloc 16384
+FftComplexFieldPlan::init: free 16384
+make_shuffle_plan_fft: num_send_packs =         16
+make_shuffle_plan_fft: num_recv_packs =          8
+make_shuffle_plan_fft: num_send_msgs  =          1
+make_shuffle_plan_fft: num_recv_msgs  =          1
+make_shuffle_plan_fft: total num_send_packs =         32
+make_shuffle_plan_fft: total num_recv_packs =         16
+make_shuffle_plan_fft: total num_send_msgs  =          2
+make_shuffle_plan_fft: total num_recv_msgs  =          2
 make_shuffle_plan_fft: global_comm_size =        512
 Cache: 'FftComplexFieldPlanCache': 11 / 32 [16] to add
-FftComplexFieldPlan::init: malloc 4096
-FftComplexFieldPlan::init: free 4096
+FftComplexFieldPlan::init: malloc 16384
+FftComplexFieldPlan::init: free 16384
 make_shuffle_plan_fft: num_send_packs =          8
 make_shuffle_plan_fft: num_recv_packs =          8
 make_shuffle_plan_fft: num_send_msgs  =          2
 make_shuffle_plan_fft: num_recv_msgs  =          2
-make_shuffle_plan_fft: total num_send_packs =         64
-make_shuffle_plan_fft: total num_recv_packs =         64
-make_shuffle_plan_fft: total num_send_msgs  =         16
-make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: total num_send_packs =         16
+make_shuffle_plan_fft: total num_recv_packs =         16
+make_shuffle_plan_fft: total num_send_msgs  =          4
+make_shuffle_plan_fft: total num_recv_msgs  =          4
 make_shuffle_plan_fft: global_comm_size =        512
 Cache: 'FftComplexFieldPlanCache': 12 / 32 [16] to add
-FftComplexFieldPlan::init: malloc 4096
-FftComplexFieldPlan::init: free 4096
-make_shuffle_plan_fft: num_send_packs =         64
-make_shuffle_plan_fft: num_recv_packs =          4
+FftComplexFieldPlan::init: malloc 16384
+FftComplexFieldPlan::init: free 16384
+make_shuffle_plan_fft: num_send_packs =        256
+make_shuffle_plan_fft: num_recv_packs =          8
 make_shuffle_plan_fft: num_send_msgs  =          1
 make_shuffle_plan_fft: num_recv_msgs  =          1
 make_shuffle_plan_fft: total num_send_packs =        512
-make_shuffle_plan_fft: total num_recv_packs =         32
-make_shuffle_plan_fft: total num_send_msgs  =          8
-make_shuffle_plan_fft: total num_recv_msgs  =          8
+make_shuffle_plan_fft: total num_recv_packs =         16
+make_shuffle_plan_fft: total num_send_msgs  =          2
+make_shuffle_plan_fft: total num_recv_msgs  =          2
 make_shuffle_plan_fft: global_comm_size =        512
 Cache: 'FftComplexFieldPlanCache': 13 / 32 [16] to add
-FftComplexFieldPlan::init: malloc 4096
-FftComplexFieldPlan::init: free 4096
-make_shuffle_plan_fft: num_send_packs =         15
-make_shuffle_plan_fft: num_recv_packs =          4
-make_shuffle_plan_fft: num_send_msgs  =          2
-make_shuffle_plan_fft: num_recv_msgs  =          2
-make_shuffle_plan_fft: total num_send_packs =        120
-make_shuffle_plan_fft: total num_recv_packs =         32
-make_shuffle_plan_fft: total num_send_msgs  =         16
-make_shuffle_plan_fft: total num_recv_msgs  =         16
+FftComplexFieldPlan::init: malloc 16384
+FftComplexFieldPlan::init: free 16384
+make_shuffle_plan_fft: num_send_packs =         64
+make_shuffle_plan_fft: num_recv_packs =          8
+make_shuffle_plan_fft: num_send_msgs  =          1
+make_shuffle_plan_fft: num_recv_msgs  =          1
+make_shuffle_plan_fft: total num_send_packs =        128
+make_shuffle_plan_fft: total num_recv_packs =         16
+make_shuffle_plan_fft: total num_send_msgs  =          2
+make_shuffle_plan_fft: total num_recv_msgs  =          2
 make_shuffle_plan_fft: global_comm_size =        512
 Cache: 'FftComplexFieldPlanCache': 14 / 32 [16] to add
-FftComplexFieldPlan::init: malloc 4096
-FftComplexFieldPlan::init: free 4096
-make_shuffle_plan_fft: num_send_packs =          7
-make_shuffle_plan_fft: num_recv_packs =          4
-make_shuffle_plan_fft: num_send_msgs  =          2
-make_shuffle_plan_fft: num_recv_msgs  =          2
-make_shuffle_plan_fft: total num_send_packs =         56
-make_shuffle_plan_fft: total num_recv_packs =         32
-make_shuffle_plan_fft: total num_send_msgs  =         16
-make_shuffle_plan_fft: total num_recv_msgs  =         16
+FftComplexFieldPlan::init: malloc 16384
+FftComplexFieldPlan::init: free 16384
+make_shuffle_plan_fft: num_send_packs =         16
+make_shuffle_plan_fft: num_recv_packs =          8
+make_shuffle_plan_fft: num_send_msgs  =          1
+make_shuffle_plan_fft: num_recv_msgs  =          1
+make_shuffle_plan_fft: total num_send_packs =         32
+make_shuffle_plan_fft: total num_recv_packs =         16
+make_shuffle_plan_fft: total num_send_msgs  =          2
+make_shuffle_plan_fft: total num_recv_msgs  =          2
 make_shuffle_plan_fft: global_comm_size =        512
 Cache: 'FftComplexFieldPlanCache': 15 / 32 [16] to add
-FftComplexFieldPlan::init: malloc 4096
-FftComplexFieldPlan::init: free 4096
+FftComplexFieldPlan::init: malloc 16384
+FftComplexFieldPlan::init: free 16384
 make_shuffle_plan_fft: num_send_packs =          8
 make_shuffle_plan_fft: num_recv_packs =          8
 make_shuffle_plan_fft: num_send_msgs  =          2
 make_shuffle_plan_fft: num_recv_msgs  =          2
-make_shuffle_plan_fft: total num_send_packs =         64
-make_shuffle_plan_fft: total num_recv_packs =         64
-make_shuffle_plan_fft: total num_send_msgs  =         16
-make_shuffle_plan_fft: total num_recv_msgs  =         16
+make_shuffle_plan_fft: total num_send_packs =         16
+make_shuffle_plan_fft: total num_recv_packs =         16
+make_shuffle_plan_fft: total num_send_msgs  =          4
+make_shuffle_plan_fft: total num_recv_msgs  =          4
 make_shuffle_plan_fft: global_comm_size =        512
-Main::lblShowMuonPartPointSrc : qnorm(muonline) = 2.6392220172278684e-11
+Main::lblShowMuonPartPointSrc : qnorm(muonline) = 2.6392220172278607e-11
 Main::lblShowMuonPartPointSrc : muonline =
 (-2.14546e-07,1.79398e-06)  (3.37724e-09,-1.8606e-07) (-2.14546e-07,1.79398e-06)  (3.37724e-09,-1.8606e-07)
   (3.37724e-09,1.8606e-07)  (2.14546e-07,1.79398e-06)   (3.37724e-09,1.8606e-07)  (2.14546e-07,1.79398e-06)
 (-2.14546e-07,1.79398e-06)  (3.37724e-09,-1.8606e-07) (-2.14546e-07,1.79398e-06)  (3.37724e-09,-1.8606e-07)
   (3.37724e-09,1.8606e-07)  (2.14546e-07,1.79398e-06)   (3.37724e-09,1.8606e-07)  (2.14546e-07,1.79398e-06)
-Main::lblShowMuonPartPointSrc : linearFit[0] = ( 1.37086836249562312E-09 + -4.09964483746386653E-22 j)
-Main::lblShowMuonPartPointSrc : linearFit[1] = ( 7.55243410429587860E-08 + -1.71999726890937475E-22 j)
-Main::lblShowMuonPartPointSrc : linearFit[2] = (-8.70871880210499049E-08 +  0.00000000000000000E+00 j)
-Main::lblShowMuonPartPointSrc : linearFitUni = ( 2.11758236813575085E-22 +  3.58796201793978894E-06 j)
+Main::lblShowMuonPartPointSrc : linearFit[0] = ( 1.37086836249562312E-09 + -1.74452971806973025E-22 j)
+Main::lblShowMuonPartPointSrc : linearFit[1] = ( 7.55243410429580714E-08 + -2.79397337659605262E-22 j)
+Main::lblShowMuonPartPointSrc : linearFit[2] = (-8.70871880210491902E-08 +  2.79124754891156849E-22 j)
+Main::lblShowMuonPartPointSrc : linearFitUni = (-8.47032947254300339E-22 +  3.58796201793978513E-06 j)
 Main::lblShowMuonPartPointSrc : linearFit[0] * 1e9 =       1.37
 Main::lblShowMuonPartPointSrc : linearFit[1] * 1e9 =      75.52
 Main::lblShowMuonPartPointSrc : linearFit[2] * 1e9 =     -87.09
@@ -332,7 +332,7 @@ FftComplexFieldPlan::end(): free a plan.
 FftComplexFieldPlan::end(): free a plan.
 FftComplexFieldPlan::end(): free a plan.
 FftComplexFieldPlan::end(): free a plan.
-clear_mem_cache: 148480 bytes (0.000 GB) freed.
+clear_mem_cache: 578560 bytes (0.001 GB) freed.
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 0.
 qlat::end(): Finalize MPI.

@@ -43,7 +43,7 @@ template <class M>
 long serial_write_field(const Field<M>& f, const std::string& path,
                         const Coordinate& new_size_node)
 // will append to the file
-// assume new_size_node is properly choosen so that concatenate the new fields
+// assume new_size_node is properly chosen so that concatenate the new fields
 // would be correct. eg. new_size_node = Coordinate(1,1,1,2)
 {
   TIMER_VERBOSE_FLOPS("serial_write_field");
@@ -57,8 +57,9 @@ long serial_write_field(const Field<M>& f, const std::string& path,
     Vector<M> v = get_data(f);
     const int num_node = get_num_node();
     const int new_num_node = product(new_size_node);
-    FILE* fp = qopen(path, "a");
-    qassert(fp != NULL);
+    QFile qfile;
+    qopen(qfile, path, "a");
+    qassert(not qfile.null());
     for (int new_id_node = 0; new_id_node < new_num_node; ++new_id_node) {
       const int id_node =
           get_id_node_from_new_id_node(new_id_node, new_num_node, num_node);
@@ -68,9 +69,9 @@ long serial_write_field(const Field<M>& f, const std::string& path,
         mpi_recv(v.data(), v.data_size(), MPI_BYTE, id_node, mpi_tag,
                  get_comm(), MPI_STATUS_IGNORE);
       }
-      qwrite_data(v, fp);
+      qwrite_data(v, qfile);
     }
-    qclose(fp);
+    qfile.close();
   } else {
     for (size_t i = 0; i < fs.size(); ++i) {
       const Vector<M> v = get_data(fs[i]);
@@ -92,7 +93,7 @@ long serial_read_field(Field<M>& f, const std::string& path,
 // would be correct. eg. new_size_node = Coordinate(1,1,1,2)
 {
   TIMER_VERBOSE_FLOPS("serial_read_field");
-  if (not does_file_exist_sync_node(path)) {
+  if (not does_file_exist_qar_sync_node(path)) {
     displayln_info(fname +
                    ssprintf(": file does not exist: '%s'", path.c_str()));
     return 0;
@@ -113,13 +114,14 @@ long serial_read_field(Field<M>& f, const std::string& path,
     Vector<M> v = get_data(f);
     const int num_node = get_num_node();
     const int new_num_node = product(new_size_node);
-    FILE* fp = qopen(path, "r");
-    qassert(fp != NULL);
-    fseek(fp, offset, whence);
+    QFile qfile;
+    qopen(qfile, path, "r");
+    qassert(not qfile.null());
+    qfseek(qfile, offset, whence);
     for (int new_id_node = 0; new_id_node < new_num_node; ++new_id_node) {
       const int id_node =
           get_id_node_from_new_id_node(new_id_node, new_num_node, num_node);
-      qread_data(v, fp);
+      qread_data(v, qfile);
       if (0 == id_node) {
         assign(get_data(fs[new_id_node]), v);
       } else {
@@ -127,7 +129,7 @@ long serial_read_field(Field<M>& f, const std::string& path,
                  get_comm());
       }
     }
-    qclose(fp);
+    qfile.close();
   } else {
     for (size_t i = 0; i < fs.size(); ++i) {
       Vector<M> v = get_data(fs[i]);
@@ -150,7 +152,7 @@ long serial_read_field_par(Field<M>& f, const std::string& path,
 // would be correct. eg. new_size_node = Coordinate(1,1,1,2)
 {
   TIMER_VERBOSE_FLOPS("serial_read_field_par");
-  if (not does_file_exist_sync_node(path)) {
+  if (not does_file_exist_qar_sync_node(path)) {
     displayln_info(fname +
                    ssprintf(": file does not exist: '%s'", path.c_str()));
     return 0;
@@ -164,15 +166,17 @@ long serial_read_field_par(Field<M>& f, const std::string& path,
     fs[i].init(new_geos[i]);
   }
   if (fs.size() > 0) {
-    FILE* fp = qopen(path, "r");
-    qassert(fp != NULL);
-    fseek(fp, offset + fs[0].geo().geon.id_node * get_data(fs[0]).data_size(),
-          whence);
+    QFile qfile;
+    qopen(qfile, path, "r");
+    qassert(not qfile.null());
+    qfseek(qfile,
+           offset + fs[0].geo().geon.id_node * get_data(fs[0]).data_size(),
+           whence);
     for (size_t i = 0; i < fs.size(); ++i) {
       Vector<M> v = get_data(fs[i]);
-      qread_data(v, fp);
+      qread_data(v, qfile);
     }
-    qclose(fp);
+    qfile.close();
   }
   shuffle_field_back(f, fs, new_size_node);
   sync_node();
@@ -342,16 +346,17 @@ inline void read_geo_info(Coordinate& total_site, int& multiplicity, int& sizeof
 {
   TIMER("read_geo_info");
   if (get_id_node() == 0) {
-    FILE* fp = qopen(path, "r");
-    if (fp != NULL) {
+    QFile qfile;
+    qopen(qfile, path, "r");
+    if (not qfile.null()) {
       const std::string header = "BEGIN_FIELD_HEADER\n";
       std::vector<char> check_line(header.size(), 0);
-      if (1 == fread(check_line.data(), header.size(), 1, fp)) {
+      if (1 == qfread(check_line.data(), header.size(), 1, qfile)) {
         if (std::string(check_line.data(), check_line.size()) == header) {
           std::vector<std::string> infos;
           infos.push_back(header);
           while (infos.back() != "END_HEADER\n" && infos.back() != "") {
-            infos.push_back(qgetline(fp));
+            infos.push_back(qgetline(qfile));
           }
           for (int m = 0; m < 4; ++m) {
             reads(total_site[m],
@@ -363,7 +368,7 @@ inline void read_geo_info(Coordinate& total_site, int& multiplicity, int& sizeof
         }
       }
     }
-    qclose(fp);
+    qfile.close();
   }
   bcast(Vector<Coordinate>(&total_site, 1));
   bcast(Vector<int>(&multiplicity, 1));
@@ -377,7 +382,7 @@ long read_field(Field<M>& f, const std::string& path,
 // assume new_size_node is properly choosen so that concatenate the new fields
 // would be correct. eg. new_size_node = Coordinate(1,1,1,2)
 {
-  if (does_file_exist_sync_node(path + "/geo-info.txt")) {
+  if (does_file_exist_qar_sync_node(path + "/geo-info.txt")) {
     return dist_read_field(f, path);
   }
   TIMER_VERBOSE_FLOPS("read_field");
@@ -528,17 +533,18 @@ inline bool is_field(const std::string& path)
   TIMER("is_field");
   long nfile = 0;
   if (get_id_node() == 0) {
-    FILE* fp = qopen(path, "r");
-    if (fp != NULL) {
+    QFile qfile;
+    qopen(qfile, path, "r");
+    if (not qfile.null()) {
       const std::string header = "BEGIN_FIELD_HEADER\n";
       std::vector<char> check_line(header.size(), 0);
-      if (1 == fread(check_line.data(), header.size(), 1, fp)) {
+      if (1 == qfread(check_line.data(), header.size(), 1, qfile)) {
         if (std::string(check_line.data(), check_line.size()) == header) {
           nfile = 1;
         }
       }
     }
-    qclose(fp);
+    qfile.close();
   }
   bcast(get_data(nfile));
   return nfile > 0;

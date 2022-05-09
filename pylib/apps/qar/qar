@@ -5,6 +5,16 @@
 import qlat as q
 import sys
 
+def remove_trailing_slashes(path):
+    while True:
+        if path == "":
+            return ""
+        if path[-1] == "/":
+            path = path[:-1]
+        else:
+            break
+    return path
+
 if len(sys.argv) < 2:
     q.displayln_info("Usage: qar list path.qar")
     q.displayln_info("Usage: qar create path.qar path")
@@ -51,10 +61,12 @@ elif action == "l":
 elif action in [ "c", "cr" ]:
     path_list = sys.argv[2:]
     for path in path_list:
+        path = remove_trailing_slashes(path)
         path_qar = path + ".qar"
         assert not q.does_file_exist(path_qar)
         assert q.is_directory(path)
     for path in path_list:
+        path = remove_trailing_slashes(path)
         path_qar = path + ".qar"
         if action == "c":
             q.qar_create_info(path_qar, path)

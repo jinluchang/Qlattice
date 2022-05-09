@@ -20,6 +20,7 @@
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 import copy
+import qlat as q
 
 class AmaVal:
 
@@ -42,8 +43,21 @@ class AmaVal:
     def __repr__(self):
         return f"AmaVal({self.val},{self.corrections})"
 
+    def __mul__(self, other):
+        return ama_msc_mult(self, other)
+
+    def __rmul__(self, other):
+        return ama_msc_mult(other, self)
+
+    def __add__(self, other):
+        return ama_msc_add(self, other)
+
+    def __radd__(self, other):
+        return ama_msc_add(other, self)
+
 ###
 
+@q.timer
 def mk_ama_val(val, source_specification, val_list, rel_acc_list, prob_list):
     # source_specification need to be unique for each propagator source to ensure proper AMA correction for final result
     # e.g. source_specification = ("point", (12, 2, 3, 4,),)
@@ -62,15 +76,18 @@ def mk_ama_val(val, source_specification, val_list, rel_acc_list, prob_list):
         return val
     return AmaVal(val, corrections)
 
+@q.timer
+def ama_apply1_ama_val(f, x):
+    assert isinstance(x, AmaVal)
+    val = f(x.val)
+    corrections = [ (f(v), d,) for v, d in x.corrections ]
+    return AmaVal(val, corrections)
+
 def ama_apply1(f, x):
     if not isinstance(x, AmaVal):
         return f(x)
-    elif isinstance(x, AmaVal):
-        val = f(x.val)
-        corrections = [ (f(v), d,) for v, d in x.corrections ]
-        return AmaVal(val, corrections)
     else:
-        assert False
+        return ama_apply1_ama_val(f, x)
 
 def merge_description_dict(d1, d2):
     sd1 = set(d1)
@@ -85,28 +102,88 @@ def merge_description_dict(d1, d2):
         d[key] = d2[key]
     return d
 
+@q.timer
+def ama_apply2_ama_val(f, x, y):
+    assert isinstance(x, AmaVal)
+    assert isinstance(y, AmaVal)
+    val = f(x.val, y.val)
+    corrections = []
+    for v_x, d_x in x.corrections:
+        for v_y, d_y in y.corrections:
+            d = merge_description_dict(d_x, d_y)
+            if d is not None:
+                corrections.append((f(v_x, v_y), d,))
+    return AmaVal(val, corrections)
+
+@q.timer
+def ama_apply2_r_ama_val(f, x, y):
+    assert isinstance(y, AmaVal)
+    val = f(x, y.val)
+    corrections = [ (f(x, v), d,) for v, d in y.corrections ]
+    return AmaVal(val, corrections)
+
+@q.timer
+def ama_apply2_l_ama_val(f, x, y):
+    assert isinstance(x, AmaVal)
+    val = f(x.val, y)
+    corrections = [ (f(v, y), d,) for v, d in x.corrections ]
+    return AmaVal(val, corrections)
+
+def ama_apply2_r(f, x, y):
+    if not isinstance(y, AmaVal):
+        return f(x, y)
+    else:
+        return ama_apply2_r_ama_val(f, x, y)
+
+def ama_apply2_l(f, x, y):
+    if not isinstance(x, AmaVal):
+        return f(x, y)
+    else:
+        return ama_apply2_l_ama_val(f, x, y)
+
 def ama_apply2(f, x, y):
     if not isinstance(x, AmaVal) and not isinstance(y, AmaVal):
         return f(x, y)
     elif isinstance(x, AmaVal) and not isinstance(y, AmaVal):
-        def f1(x1):
-            return f(x1, y)
-        return ama_apply1(f1, x)
+        return ama_apply2_l_ama_val(f, x, y)
     elif not isinstance(x, AmaVal) and isinstance(y, AmaVal):
-        def f1(y1):
-            return f(x, y1)
-        return ama_apply1(f1, y)
-    elif isinstance(x, AmaVal) and isinstance(y, AmaVal):
-        val = f(x.val, y.val)
-        corrections = []
-        for v_x, d_x in x.corrections:
-            for v_y, d_y in y.corrections:
-                d = merge_description_dict(d_x, d_y)
-                if d is not None:
-                    corrections.append((f(v_x, v_y), d,))
-        return AmaVal(val, corrections)
+        return ama_apply2_r_ama_val(f, x, y)
     else:
-        assert False
+        return ama_apply2_ama_val(f, x, y)
+
+@q.timer
+def ama_extract_ama_val(x):
+    corrections = x.corrections
+    assert isinstance(corrections, list)
+    assert corrections
+    # keys = [ source_specification, ... ]
+    keys = list(corrections[0][1].keys())
+    def get_level_prob(key):
+        s = set([ d[key] for v, d in corrections ])
+        return sorted(list(s))
+    dict_level_prob = { k: get_level_prob(k) for k in keys }
+    for k, v in dict_level_prob.items():
+        assert len(v) >= 2
+    # dict_level[key] = list of accuracy levels for this key (source_specification)
+    dict_level = { k: [ l for l, prob in v ] for k, v in dict_level_prob.items() }
+    # dict_prob[key] = list of probability_of_having_this_accuracy
+    dict_prob = { k: [ prob for l, prob in v ] for k, v in dict_level_prob.items() }
+    # dict_val[(level, ...)] = v
+    dict_val = { tuple([ d[k][0] for k in keys ]): v for v, d in corrections }
+    def ama_corr(fixed_levels, remaining_keys):
+        if not remaining_keys:
+            return dict_val[tuple(fixed_levels)]
+        else:
+            key = remaining_keys[0]
+            rest_keys = remaining_keys[1:]
+            levels = dict_level[key]
+            probs = dict_prob[key]
+            vals = [ ama_corr(fixed_levels + [ l, ], rest_keys) for l in levels ]
+            corr = vals[0]
+            for i in range(1, len(vals)):
+                corr += (vals[i] - vals[i - 1]) / probs[i]
+            return corr
+    return ama_corr([], keys)
 
 def ama_extract(x, *, is_sloppy = False):
     if not isinstance(x, AmaVal):
@@ -115,39 +192,19 @@ def ama_extract(x, *, is_sloppy = False):
         if is_sloppy:
             val = x.val
             return val
-        corrections = x.corrections
-        assert isinstance(corrections, list)
-        assert corrections
-        # keys = [ source_specification, ... ]
-        keys = list(corrections[0][1].keys())
-        def get_level_prob(key):
-            s = set([ d[key] for v, d in corrections ])
-            return sorted(list(s))
-        dict_level_prob = { k: get_level_prob(k) for k in keys }
-        for k, v in dict_level_prob.items():
-            assert len(v) >= 2
-        # dict_level[key] = list of accuracy levels for this key (source_specification)
-        dict_level = { k: [ l for l, prob in v ] for k, v in dict_level_prob.items() }
-        # dict_prob[key] = list of probability_of_having_this_accuracy
-        dict_prob = { k: [ prob for l, prob in v ] for k, v in dict_level_prob.items() }
-        # dict_val[(level, ...)] = v
-        dict_val = { tuple([ d[k][0] for k in keys ]): v for v, d in corrections }
-        def ama_corr(fixed_levels, remaining_keys):
-            if not remaining_keys:
-                return dict_val[tuple(fixed_levels)]
-            else:
-                key = remaining_keys[0]
-                rest_keys = remaining_keys[1:]
-                levels = dict_level[key]
-                probs = dict_prob[key]
-                vals = [ ama_corr(fixed_levels + [ l, ], rest_keys) for l in levels ]
-                corr = vals[0]
-                for i in range(1, len(vals)):
-                    corr += (vals[i] - vals[i - 1]) / probs[i]
-                return corr
-        return ama_corr([], keys)
+        return ama_extract_ama_val(x)
     else:
         assert False
+
+def ama_msc_mult(x, y):
+    def f(x, y):
+        return x * y
+    return ama_apply2(f, x, y)
+
+def ama_msc_add(x, y):
+    def f(x, y):
+        return x + y
+    return ama_apply2(f, x, y)
 
 if __name__ == "__main__":
     v1 = mk_ama_val(1.0, "x", [ 1.0, 1.01, 1.011, ], [ 0, 1, 2, ], [ 1.0, 0.1, 0.02, ])

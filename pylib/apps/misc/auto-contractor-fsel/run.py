@@ -70,14 +70,12 @@ def load_prop_wsrc_all(job_tag, traj, flavor, *, wi, fsel, fselc, gt):
         s_prop = q.SelProp(fsel)
         s_prop @= sc_prop
         s_prop = gt_inv * s_prop
-        # convert to GPT/Grid prop mspincolor order
-        cache_fsel[f"{tag} ; wsrc ; fsel"] = q.convert_mspincolor_from_wm(s_prop)
+        cache_fsel[f"{tag} ; wsrc ; fsel"] = s_prop
         # load wsnk prop
         fn_spw = os.path.join(path_sp, f"{tag} ; wsnk.lat")
         spw_prop = q.PselProp(psel_ts)
         spw_prop.load(get_load_path(fn_spw))
-        # convert to GPT/Grid prop mspincolor order
-        cache_psel_ts[f"{tag} ; wsrc_wsnk ; psel_ts"] = q.convert_mspincolor_from_wm(spw_prop)
+        cache_psel_ts[f"{tag} ; wsrc_wsnk ; psel_ts"] = spw_prop
         count[inv_acc] += 1
     sfr.close()
     assert count[1] == total_site[3]
@@ -137,7 +135,7 @@ def load_prop_rand_u1_all(job_tag, traj, flavor, *, fsel):
         s_prop_avg += sp0
     s_prop_avg *= 1 / n_rand_u1_fsel
     inv_acc = 2
-    cache_fsel[f"type={inv_type} ; accuracy={inv_acc} ; rand_u1 ; fsel"] = q.convert_mspincolor_from_wm(s_prop_avg)
+    cache_fsel[f"type={inv_type} ; accuracy={inv_acc} ; rand_u1 ; fsel"] = s_prop_avg
 
 def mk_ama_val(val, source_specification, val_list, rel_acc_list, prob_list):
     # source_specification need to be unique for each propagator source to ensure proper AMA correction for final result
