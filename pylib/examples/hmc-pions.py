@@ -67,6 +67,9 @@ def hmc_evolve(field, momentum_ft, field_ft, action, masses, steps, dt, V, fft, 
     field*=1/V**0.5
     #
     force_ft = q.Field("Complex", field.geo())
+    # Save a list of the vacuum expectation value of sigma at each point
+    # on the trajectory
+    vev = []
     for i in range(steps):
         sm_evolve(momentum_ft, field, action, 4.0 * ttheta / dt, 0.5 * dt, fft, ifft);
         action.hmc_field_evolve(field_ft, momentum_ft, masses, (1.0 - 2.0 * lam) * dt);
@@ -81,6 +84,8 @@ def hmc_evolve(field, momentum_ft, field_ft, action, masses, steps, dt, V, fft, 
             action.hmc_field_evolve(field_ft, momentum_ft, masses, lam * dt);
             field.set_double_from_complex(ifft*field_ft)
             field*=1/V**0.5
+        field_sum = field.glb_sum()
+        vev.append(field_sum[0]/V)
     force_ft.set_complex_from_double(force)
     force_ft=fft*force_ft
     force_ft*=1/V**0.5
@@ -88,8 +93,8 @@ def hmc_evolve(field, momentum_ft, field_ft, action, masses, steps, dt, V, fft, 
     # mode by half of its period
     geo = field_ft.geo()
     masses_new = q.Field("double",geo,geo.multiplicity())
-    action.hmc_estimate_mass(masses_new, field_ft, force_ft, vev)
-    #masses_new.set_elem([0,0,0,0],0,np.array([masses_new.get_elem([1,0,0,0],0)], dtype='float').tobytes())
+    action.hmc_estimate_mass(masses_new, field_ft, force_ft, np.mean(vev))
+    print(f"Vev: {np.mean(vev)}")
     return masses_new
 
 @q.timer_verbose
@@ -297,7 +302,7 @@ total_site = [8,8,8,8]
 mult = 4
 
 # The number of trajectories to calculate
-n_traj = 500
+n_traj = 10
 
 # Use action for a Euclidean scalar field. The Lagrangian will be:
 # (1/2)*[sum i]|dphi_i|^2 + (1/2)*m_sq*[sum i]|phi_i|^2
@@ -305,7 +310,6 @@ n_traj = 500
 m_sq = -1.0
 lmbd = 1.0
 alpha = 0.1
-vev = -2.336
 
 size_node_list = [
         [1, 1, 1, 1],
@@ -323,9 +327,9 @@ q.qremove_all_info("results")
 
 main()
 
-with open(f"output_data/sigma_pion_corrs_{total_site[0]}x{total_site[3]}_msq_{m_sq}_lmbd_{lmbd}_alph_{alpha}_{datetime.datetime.now().date()}_wvs.bin", "wb") as output:
+with open(f"output_data/sigma_pion_corrs_{total_site[0]}x{total_site[3]}_msq_{m_sq}_lmbd_{lmbd}_alph_{alpha}_{datetime.datetime.now().date()}.bin", "wb") as output:
     pickle.dump([psq_list,phi_list,timeslices,ax_cur_timeslices],output)
 
-#q.timer_display()
+q.timer_display()
 
 q.end()
