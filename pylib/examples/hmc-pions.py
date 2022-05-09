@@ -193,6 +193,7 @@ def run_hmc(field, geo, action, masses, traj, rs, fft, ifft):
     # Decide whether to accept or reject the field update using the 
     # metropolis algorithm
     flag, accept_prob = metropolis_accept(delta_h, traj, rs.split("metropolis_accept"))
+    accept_rates.append(accept_prob)
     
     # If the field update is accepted or we are within the first few 
     # trajectories, save the field update
@@ -294,9 +295,11 @@ timeslices=[]
 # Stores the timeslice sums of the time component of each of the three
 # axial currents for each trajectory
 ax_cur_timeslices=[]
+# Save the acceptance rates
+accept_rates=[]
 
 # The lattice dimensions
-total_site = [8,8,8,8]
+total_site = [16,16,16,32]
 
 # The multiplicity of the scalar field
 mult = 4
@@ -328,7 +331,7 @@ q.qremove_all_info("results")
 main()
 
 with open(f"output_data/sigma_pion_corrs_{total_site[0]}x{total_site[3]}_msq_{m_sq}_lmbd_{lmbd}_alph_{alpha}_{datetime.datetime.now().date()}.bin", "wb") as output:
-    pickle.dump([psq_list,phi_list,timeslices,ax_cur_timeslices],output)
+    pickle.dump([accept_rates,psq_list,phi_list,timeslices,ax_cur_timeslices],output)
 
 q.timer_display()
 
