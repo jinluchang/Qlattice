@@ -629,6 +629,8 @@ def cexpr_code_gen_py(cexpr : CExpr):
             else:
                 c1, t1 = gen_expr_prod_list(x.ops[:-1])
                 c2, t2 = gen_expr(x.ops[-1])
+                if t1 == "V_S" and t2 == "V_S":
+                    total_sloppy_flops += 1150
                 return f"ama_msc_trace2({c1}, {c2})", "V_Tr"
         elif x.otype == "Var":
             return f"{x.name}", get_var_name_type(x.name)
