@@ -310,6 +310,7 @@ class CExpr:
     # self.named_exprs
     # self.positions
     # self.function
+    # self.total_sloppy_flops
 
     def __init__(self, diagram_types, variables, named_terms, named_typed_exprs, named_exprs, positions = None):
         self.diagram_types = diagram_types
@@ -326,6 +327,7 @@ class CExpr:
                 add_positions(s, term)
             self.positions = sorted(list(s))
         self.function = None
+        self.total_sloppy_flops = None
 
     def __repr__(self) -> str:
         return f"CExpr({self.diagram_types},{self.variables},{self.named_terms},{self.named_typed_exprs},{self.named_exprs},{self.positions})"
@@ -599,7 +601,13 @@ def display_cexpr(cexpr : CExpr):
 def cexpr_code_gen_py(cexpr : CExpr):
     # return a string
     # interface function
+    total_sloppy_flops = 0
+    # flops per complex multiplication: 6
+    # flops per matrix multiplication: 6 M N L + 2 M L (N-1) ==> 13536 (sc * sc), 4320 (sc * s), 480 (s * s)
+    # flops per trace 2 (M-1) ==> 22
+    # flops per trace2 6 M N + 2 (M N - 1) ==> 1150
     def gen_expr(x):
+        nonlocal total_sloppy_flops
         # return code_str, type_str
         if isinstance(x, (int, float, complex)):
             return f"{x}", "V_a"
@@ -616,6 +624,7 @@ def cexpr_code_gen_py(cexpr : CExpr):
             elif len(x.ops) == 1:
                 c, t = gen_expr(x.ops[0])
                 assert t == "V_S"
+                total_sloppy_flops += 22
                 return f"ama_msc_trace({c})", "V_Tr"
             else:
                 c1, t1 = gen_expr_prod_list(x.ops[:-1])
@@ -624,15 +633,20 @@ def cexpr_code_gen_py(cexpr : CExpr):
         elif x.otype == "Var":
             return f"{x.name}", get_var_name_type(x.name)
     def gen_expr_prod(ct1, ct2):
+        nonlocal total_sloppy_flops
         c1, t1 = ct1
         c2, t2 = ct2
         if t1 == "V_S" and t2 == "V_S":
+            total_sloppy_flops += 13536
             return f"ama_apply2(mat_mul_sc_sc, {c1}, {c2})", "V_S"
         elif t1 == "V_S" and t2 == "V_G":
+            total_sloppy_flops += 4320
             return f"ama_apply2_l(mat_mul_sc_s, {c1}, {c2})", "V_S"
         elif t1 == "V_G" and t2 == "V_S":
+            total_sloppy_flops += 4320
             return f"ama_apply2_r(mat_mul_s_sc, {c1}, {c2})", "V_S"
         elif t1 == "V_G" and t2 == "V_G":
+            total_sloppy_flops += 480
             return f"mat_mul_s_s({c1}, {c2})", "V_G"
         elif t1 == "V_G" and t2 == "V_a":
             return f"mat_mul_a_s({c2}, {c1})", "V_G"
@@ -717,6 +731,9 @@ def cexpr_code_gen_py(cexpr : CExpr):
     lines.append(f"")
     lines.append(f"    ])")
     lines.append(f"    return results")
+    lines.append(f"")
+    lines.append(f"# Total flops per sloppy call is: {total_sloppy_flops}")
+    lines.append(f"total_sloppy_flops = {total_sloppy_flops}")
     lines.append(f"")
     return "\n".join(lines)
 

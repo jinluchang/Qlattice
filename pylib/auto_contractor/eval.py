@@ -29,6 +29,8 @@ import qlat as q
 import copy
 import cmath
 import math
+import importlib
+import time
 
 def ama_msc_trace(x):
     return ama_apply1(msc_trace, x)
@@ -139,7 +141,6 @@ def eval_cexpr_return_exprs(cexpr, tvals, is_only_total):
 
 @q.timer
 def eval_cexpr(cexpr : CExpr, *, positions_dict, get_prop, is_only_total = "total"):
-    # interface function
     # return 1 dimensional np.array
     # cexpr can be cexpr object or can be a compiled function
     # xg = positions_dict[position]
@@ -148,6 +149,9 @@ def eval_cexpr(cexpr : CExpr, *, positions_dict, get_prop, is_only_total = "tota
     # e.g. ("point-snk", [ 1, 2, 3, 4, ]) = positions_dict["x_1"]
     # e.g. flavor = "l"
     # e.g. xg_snk = ("point-snk", [ 1, 2, 3, 4, ])
+    # interface function
+    if cexpr.total_sloppy_flops is not None:
+        q.acc_timer_flops("py:eval_cexpr", cexpr.total_sloppy_flops)
     if cexpr.function is not None:
         return cexpr.function(positions_dict = positions_dict, get_prop = get_prop, is_only_total = is_only_total)
     for pos in cexpr.positions:
@@ -157,6 +161,25 @@ def eval_cexpr(cexpr : CExpr, *, positions_dict, get_prop, is_only_total = "tota
     eval_cexpr_set_vars(variable_dict, cexpr, positions_dict, get_prop)
     eval_cexpr_set_terms(tvals, cexpr, variable_dict, positions_dict, get_prop)
     return eval_cexpr_return_exprs(cexpr, tvals, is_only_total)
+
+@q.timer
+def cache_compiled_cexpr(calc_cexpr, fn_base):
+    # Obtain: cexpr = calc_cexpr().
+    # Save cexpr object in pickle format for future reuse.
+    # Generate python code and save for future reuse
+    # Load the python module and assign function and total_sloppy_flops
+    # Return fully loaded cexpr
+    # interface function
+    cexpr = q.pickle_cache_call(calc_cexpr, fn_base + ".pickle")
+    if not q.does_file_exist_sync_node(fn_base + ".py"):
+        q.qtouch_info(fn_base + ".py", cexpr_code_gen_py(cexpr))
+        q.displayln_info(display_cexpr_raw(cexpr))
+        time.sleep(1)
+        q.sync_node()
+    module = importlib.import_module(fn_base.replace("/", "."))
+    cexpr.function = module.eval_cexpr
+    cexpr.total_sloppy_flops = module.total_sloppy_flops
+    return cexpr
 
 def make_rand_spin_color_matrix(rng_state):
     rs = rng_state

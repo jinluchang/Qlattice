@@ -66,16 +66,7 @@ def get_cexpr_meson_corr():
         q.displayln_info(display_cexpr(cexpr))
         cexpr.collect_op()
         return cexpr
-    fn = "cache/auto_contract_cexpr/meson_corr_cexpr"
-    cexpr = q.pickle_cache_call(calc_cexpr, fn + ".pickle")
-    if not q.does_file_exist_sync_node(fn + ".py"):
-        q.qtouch_info(fn + ".py", cexpr_code_gen_py(cexpr))
-        q.displayln_info(display_cexpr_raw(cexpr))
-        time.sleep(1)
-        q.sync_node()
-    module = importlib.import_module(fn.replace("/", "."))
-    cexpr.function = module.eval_cexpr
-    return cexpr
+    return cache_compiled_cexpr(calc_cexpr, "cache/auto_contract_cexpr/meson_corr_cexpr")
 
 @q.timer_verbose
 def auto_contract_meson_corr(job_tag, traj, get_prop, get_psel, get_fsel):
@@ -262,16 +253,7 @@ def get_cexpr_meson_f_corr():
         q.displayln_info(display_cexpr(cexpr))
         cexpr.collect_op()
         return cexpr
-    fn = "cache/auto_contract_cexpr/meson_f_corr_cexpr"
-    cexpr = q.pickle_cache_call(calc_cexpr, fn + ".pickle")
-    if not q.does_file_exist_sync_node(fn + ".py"):
-        q.qtouch_info(fn + ".py", cexpr_code_gen_py(cexpr))
-        q.displayln_info(display_cexpr_raw(cexpr))
-        time.sleep(1)
-        q.sync_node()
-    module = importlib.import_module(fn.replace("/", "."))
-    cexpr.function = module.eval_cexpr
-    return cexpr
+    return cache_compiled_cexpr(calc_cexpr, "cache/auto_contract_cexpr/meson_f_corr_cexpr")
 
 @q.timer_verbose
 def auto_contract_meson_f_corr_psnk(job_tag, traj, get_prop, get_psel, get_fsel):
@@ -417,16 +399,7 @@ def get_cexpr_meson_m():
         q.displayln_info(display_cexpr(cexpr))
         cexpr.collect_op()
         return cexpr
-    fn = "cache/auto_contract_cexpr/meson_m_cexpr"
-    cexpr = q.pickle_cache_call(calc_cexpr, fn + ".pickle")
-    if not q.does_file_exist_sync_node(fn + ".py"):
-        q.qtouch_info(fn + ".py", cexpr_code_gen_py(cexpr))
-        q.displayln_info(display_cexpr_raw(cexpr))
-        time.sleep(1)
-        q.sync_node()
-    module = importlib.import_module(fn.replace("/", "."))
-    cexpr.function = module.eval_cexpr
-    return cexpr
+    return cache_compiled_cexpr(calc_cexpr, "cache/auto_contract_cexpr/meson_m_cexpr")
 
 @q.timer_verbose
 def auto_contract_meson_m(job_tag, traj, get_prop, get_psel, get_fsel):
@@ -492,16 +465,7 @@ def get_cexpr_meson_jt():
         q.displayln_info(display_cexpr(cexpr))
         cexpr.collect_op()
         return cexpr
-    fn = "cache/auto_contract_cexpr/meson_jt_cexpr"
-    cexpr = q.pickle_cache_call(calc_cexpr, fn + ".pickle")
-    if not q.does_file_exist_sync_node(fn + ".py"):
-        q.qtouch_info(fn + ".py", cexpr_code_gen_py(cexpr))
-        q.displayln_info(display_cexpr_raw(cexpr))
-        time.sleep(1)
-        q.sync_node()
-    module = importlib.import_module(fn.replace("/", "."))
-    cexpr.function = module.eval_cexpr
-    return cexpr
+    return cache_compiled_cexpr(calc_cexpr, "cache/auto_contract_cexpr/meson_jt_cexpr")
 
 @q.timer_verbose
 def auto_contract_meson_jt(job_tag, traj, get_prop, get_psel, get_fsel):
@@ -601,16 +565,7 @@ def get_cexpr_meson_jj():
         q.displayln_info(display_cexpr(cexpr))
         cexpr.collect_op()
         return cexpr
-    fn = "cache/auto_contract_cexpr/meson_jj_cexpr"
-    cexpr = q.pickle_cache_call(calc_cexpr, fn + ".pickle")
-    if not q.does_file_exist_sync_node(fn + ".py"):
-        q.qtouch_info(fn + ".py", cexpr_code_gen_py(cexpr))
-        q.displayln_info(display_cexpr_raw(cexpr))
-        time.sleep(1)
-        q.sync_node()
-    module = importlib.import_module(fn.replace("/", "."))
-    cexpr.function = module.eval_cexpr
-    return cexpr
+    return cache_compiled_cexpr(calc_cexpr, "cache/auto_contract_cexpr/meson_jj_cexpr")
 
 def r_scaling_factor():
     return 5.0
