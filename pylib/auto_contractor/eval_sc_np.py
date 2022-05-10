@@ -197,7 +197,7 @@ def as_mspincolor(x):
     if isinstance(x, np.ndarray):
         return SpinColorMatrix(as_cont(x.reshape(12, 12)))
     elif x == 0:
-        return 0
+        return SpinColorMatrix(np.zeros((12, 12,), dtype = complex))
     else:
         assert False
 
@@ -218,16 +218,8 @@ def g5_herm(x):
         return x_h
 
 def msc_trace(x):
-    if isinstance(x, SpinColorMatrix):
-        return x.trace()
-    elif isinstance(x, (int, float, complex)):
-        if x == 0:
-            return 0
-        else:
-            return x * 12
-    else:
-        assert False
-        return as_msc(x).trace()
+    assert isinstance(x, SpinColorMatrix)
+    return x.trace()
 
 def msc_trace2(x, y):
     if isinstance(x, SpinColorMatrix) and isinstance(y, SpinColorMatrix):
@@ -238,10 +230,6 @@ def msc_trace2(x, y):
     elif isinstance(x, SpinMatrix) and isinstance(y, SpinColorMatrix):
         v = np.tensordot(x.m, y.m.reshape(4, 3, 4, 3,), ((1, 0,), (0, 2,),)).trace()
         return v
-    elif isinstance(x, (int, float, complex)):
-        return x * msc_trace(y)
-    elif isinstance(y, (int, float, complex)):
-        return y * msc_trace(x)
     else:
         assert False
         return as_msc(x * y).trace()

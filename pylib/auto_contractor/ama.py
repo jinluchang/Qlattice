@@ -89,6 +89,13 @@ def ama_apply1(f, x):
     else:
         return ama_apply1_ama_val(f, x)
 
+def ama_counts(x):
+    # counts how many times need to compute the val
+    if not isinstance(x, AmaVal):
+        return 1
+    else:
+        return 1 + len(x.corrections)
+
 def merge_description_dict(d1, d2):
     sd1 = set(d1)
     sd2 = set(d2)
@@ -150,6 +157,16 @@ def ama_apply2(f, x, y):
         return ama_apply2_r_ama_val(f, x, y)
     else:
         return ama_apply2_ama_val(f, x, y)
+
+def ama_apply(f, *args):
+    def f_add(x, rs):
+        return rs + [ x, ]
+    res = []
+    for x in args:
+        res = ama_apply2(f_add, x, res)
+    def f_list(xs):
+        return f(*xs)
+    return ama_apply1(f_list, res)
 
 @q.timer
 def ama_extract_ama_val(x):

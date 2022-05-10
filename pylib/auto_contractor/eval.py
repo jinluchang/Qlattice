@@ -150,8 +150,6 @@ def eval_cexpr(cexpr : CExpr, *, positions_dict, get_prop, is_only_total = "tota
     # e.g. flavor = "l"
     # e.g. xg_snk = ("point-snk", [ 1, 2, 3, 4, ])
     # interface function
-    if cexpr.total_sloppy_flops is not None:
-        q.acc_timer_flops("py:eval_cexpr", cexpr.total_sloppy_flops)
     if cexpr.function is not None:
         return cexpr.function(positions_dict = positions_dict, get_prop = get_prop, is_only_total = is_only_total)
     for pos in cexpr.positions:
@@ -177,7 +175,7 @@ def cache_compiled_cexpr(calc_cexpr, fn_base):
         time.sleep(1)
         q.sync_node()
     module = importlib.import_module(fn_base.replace("/", "."))
-    cexpr.function = module.eval_cexpr
+    cexpr.function = module.cexpr_function
     cexpr.total_sloppy_flops = module.total_sloppy_flops
     return cexpr
 
