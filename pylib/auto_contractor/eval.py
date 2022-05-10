@@ -185,16 +185,22 @@ def make_rand_spin_color_matrix(rng_state):
         [ rs.u_rand_gen() + 1j * rs.u_rand_gen() for i in range(144) ],
         dtype = complex))
 
+def make_rand_spin_matrix(rng_state):
+    rs = rng_state
+    return SpinMatrix(np.array(
+        [ rs.u_rand_gen() + 1j * rs.u_rand_gen() for i in range(16) ],
+        dtype = complex).reshape(4, 4))
+
 @q.timer
-def benchmark_eval_cexpr(cexpr : CExpr, *, is_only_total = "total", benchmark_size = 10, benchmark_num = 10, rng_state = None):
-    if rng_state is None:
-        rng_state = q.RngState("benchmark_eval_cexpr")
+def benchmark_eval_cexpr(cexpr : CExpr, *, is_only_total = "total", benchmark_size = 10, benchmark_num = 10, benchmark_rng_state = None):
+    if benchmark_rng_state is None:
+        benchmark_rng_state = q.RngState("benchmark_eval_cexpr")
     positions_dict = {}
     prop_dict = {}
     for pos in cexpr.positions:
         positions_dict[pos] = pos
     for pos in cexpr.positions:
-        prop_dict[(pos, pos,)] = make_rand_spin_color_matrix(rng_state.split(pos))
+        prop_dict[(pos, pos,)] = make_rand_spin_color_matrix(benchmark_rng_state.split(pos))
     @q.timer
     def get_prop(flavor, xg_snk, xg_src):
         return prop_dict[(xg_src, xg_src)]
@@ -206,6 +212,46 @@ def benchmark_eval_cexpr(cexpr : CExpr, *, is_only_total = "total", benchmark_si
     def run(*args):
         for i in range(benchmark_num):
             benchmark_eval_cexpr_run()
+    q.parallel_map(1, run, [ None, ])
+
+@q.timer
+def benchmark_function_1(f, arg, benchmark_size = 10, benchmark_num = 10):
+    @q.timer_verbose
+    def benchmark_run_10():
+        for k in range(benchmark_size):
+            f(arg)
+            f(arg)
+            f(arg)
+            f(arg)
+            f(arg)
+            f(arg)
+            f(arg)
+            f(arg)
+            f(arg)
+            f(arg)
+    def run(*args):
+        for i in range(benchmark_num):
+            benchmark_run_10()
+    q.parallel_map(1, run, [ None, ])
+
+@q.timer
+def benchmark_function_2(f, arg1, arg2, benchmark_size = 10, benchmark_num = 10):
+    @q.timer_verbose
+    def benchmark_run_10():
+        for k in range(benchmark_size):
+            f(arg1, arg2)
+            f(arg1, arg2)
+            f(arg1, arg2)
+            f(arg1, arg2)
+            f(arg1, arg2)
+            f(arg1, arg2)
+            f(arg1, arg2)
+            f(arg1, arg2)
+            f(arg1, arg2)
+            f(arg1, arg2)
+    def run(*args):
+        for i in range(benchmark_num):
+            benchmark_run_10()
     q.parallel_map(1, run, [ None, ])
 
 def sqr_component(x):
