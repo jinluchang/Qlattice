@@ -623,13 +623,13 @@ def cexpr_code_gen_py(cexpr : CExpr):
                 c, t = gen_expr(x.ops[0])
                 assert t == "V_S"
                 total_sloppy_flops += 22
-                return f"ama_msc_trace({c})", "V_Tr"
+                return f"msc_trace({c})", "V_Tr"
             else:
                 c1, t1 = gen_expr_prod_list(x.ops[:-1])
                 c2, t2 = gen_expr(x.ops[-1])
                 if t1 == "V_S" and t2 == "V_S":
                     total_sloppy_flops += 1150
-                return f"ama_msc_trace2({c1}, {c2})", "V_Tr"
+                return f"msc_trace2({c1}, {c2})", "V_Tr"
         elif x.otype == "Var":
             return f"{x.name}", get_var_name_type(x.name)
     def gen_expr_prod(ct1, ct2):
@@ -638,13 +638,13 @@ def cexpr_code_gen_py(cexpr : CExpr):
         c2, t2 = ct2
         if t1 == "V_S" and t2 == "V_S":
             total_sloppy_flops += 13536
-            return f"ama_apply2(mat_mul_sc_sc, {c1}, {c2})", "V_S"
+            return f"mat_mul_sc_sc({c1}, {c2})", "V_S"
         elif t1 == "V_S" and t2 == "V_G":
             total_sloppy_flops += 4320
-            return f"ama_apply2_l(mat_mul_sc_s, {c1}, {c2})", "V_S"
+            return f"mat_mul_sc_s({c1}, {c2})", "V_S"
         elif t1 == "V_G" and t2 == "V_S":
             total_sloppy_flops += 4320
-            return f"ama_apply2_r(mat_mul_s_sc, {c1}, {c2})", "V_S"
+            return f"mat_mul_s_sc({c1}, {c2})", "V_S"
         elif t1 == "V_G" and t2 == "V_G":
             total_sloppy_flops += 480
             return f"mat_mul_s_s({c1}, {c2})", "V_G"
@@ -653,9 +653,9 @@ def cexpr_code_gen_py(cexpr : CExpr):
         elif t1 == "V_a" and t2 == "V_G":
             return f"mat_mul_a_s({c1}, {c2})", "V_G"
         elif t1 == "V_S" and t2 == "V_a":
-            return f"ama_apply2_r(mat_mul_a_sc, {c2}, {c1})", "V_S"
+            return f"mat_mul_a_sc({c2}, {c1})", "V_S"
         elif t1 == "V_a" and t2 == "V_S":
-            return f"ama_apply2_r(mat_mul_a_sc, {c1}, {c2})", "V_S"
+            return f"mat_mul_a_sc({c1}, {c2})", "V_S"
         elif t1 == "V_a" and t2 == "V_a":
             return f"{c1} * {c2}", "V_a"
         elif t1 == "V_Tr" and t2 == "V_Tr":

@@ -101,18 +101,12 @@ class SpinColorMatrix:
 ###
 
 def mat_mul_sc_sc(x, y):
-    if x == 0 or y == 0:
-        return 0
     return SpinColorMatrix(x.m @ y.m)
 
 def mat_mul_sc_s(x, y):
-    if x == 0:
-        return 0
     return SpinColorMatrix(as_cont((as_cont(y.m.transpose()) @ x.m.reshape(12, 4, 3)).reshape(12, 12)))
 
 def mat_mul_s_sc(x, y):
-    if y == 0:
-        return 0
     return SpinColorMatrix(as_cont((x.m @ y.m.reshape(4, 36)).reshape(12, 12)))
 
 def mat_mul_s_s(x, y):
