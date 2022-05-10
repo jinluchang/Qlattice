@@ -38,9 +38,9 @@ class SpinMatrix:
         if isinstance(other, (int, float, complex,)):
             if other == 0:
                 return 0
-            return mat_mul_a_s(other, self)
+            return SpinMatrix(mat_mul_a_s(other, self.m))
         elif isinstance(other, SpinMatrix):
-            return SpinMatrix(self.m @ other.m)
+            return SpinMatrix(mat_mul_s_s(self.m, other.m))
         else:
             return NotImplemented
 
@@ -48,9 +48,9 @@ class SpinMatrix:
         if isinstance(other, (int, float, complex,)):
             if other == 0:
                 return 0
-            return mat_mul_a_s(other, self)
+            return SpinMatrix(mat_mul_a_s(other, self.m))
         elif isinstance(other, SpinMatrix):
-            return SpinMatrix(other.m @ self.m)
+            return SpinMatrix(mat_mul_s_s(other.m, self.m))
         else:
             return NotImplemented
 
@@ -77,9 +77,9 @@ class SpinColorMatrix:
                 return 0
             return mat_mul_a_sc(other, self)
         elif isinstance(other, SpinMatrix):
-            return mat_mul_sc_s(self, other)
+            return SpinColorMatrix(mat_mul_sc_s(self.m, other.m))
         elif isinstance(other, SpinColorMatrix):
-            return mat_mul_sc_sc(self, other)
+            return SpinColorMatrix(mat_mul_sc_sc(self.m, other.m))
         else:
             return NotImplemented
 
@@ -89,9 +89,9 @@ class SpinColorMatrix:
                 return 0
             return mat_mul_a_sc(other, self)
         elif isinstance(other, SpinMatrix):
-            return mat_mul_s_sc(other, self)
+            return SpinColorMatrix(mat_mul_s_sc(other.m, self.m))
         elif isinstance(other, SpinColorMatrix):
-            return mat_mul_sc_sc(other, self)
+            return SpinColorMatrix(mat_mul_sc_sc(other.m, self.m))
         else:
             return NotImplemented
 
@@ -100,23 +100,38 @@ class SpinColorMatrix:
 
 ###
 
+def get_mat(x):
+    return x.m
+
 def mat_mul_sc_sc(x, y):
-    return SpinColorMatrix(x.m @ y.m)
+    return x @ y
 
 def mat_mul_sc_s(x, y):
-    return SpinColorMatrix(as_cont((as_cont(y.m.transpose()) @ x.m.reshape(12, 4, 3)).reshape(12, 12)))
+    return as_cont((as_cont(y.transpose()) @ x.reshape(12, 4, 3)).reshape(12, 12))
 
 def mat_mul_s_sc(x, y):
-    return SpinColorMatrix(as_cont((x.m @ y.m.reshape(4, 36)).reshape(12, 12)))
+    return as_cont((x @ y.reshape(4, 36)).reshape(12, 12))
 
 def mat_mul_s_s(x, y):
-    return SpinMatrix(x.m @ y.m)
+    return x @ y
 
 def mat_mul_a_s(coef, x):
-    return SpinMatrix(x.m * coef)
+    return x * coef
 
 def mat_mul_a_sc(coef, x):
     return SpinColorMatrix(x.m * coef)
+
+def mat_sc_trace(x):
+    return x.trace()
+
+def mat_sc_sc_trace(x, y):
+    return np.dot(x.ravel(), y.transpose().ravel()).item()
+
+def mat_sc_s_trace(x, y):
+    return np.tensordot(x.reshape(4, 3, 4, 3,), y, ((2, 0,), (0, 1,),)).trace()
+
+def mat_s_sc_trace(x, y):
+    return np.tensordot(x, y.reshape(4, 3, 4, 3,), ((1, 0,), (0, 2,),)).trace()
 
 ###
 

@@ -611,11 +611,11 @@ def cexpr_code_gen_py(cexpr : CExpr):
             return f"{x}", "V_a"
         assert isinstance(x, Op)
         if x.otype == "S":
-            return f"get_prop('{x.f}', {x.p1}, {x.p2})", "V_S"
+            return f"ama_apply1(get_mat, get_prop('{x.f}', {x.p1}, {x.p2}))", "V_S"
         elif x.otype == "G":
             assert x.s1 == "auto" and x.s2 == "auto"
             assert x.tag in [0, 1, 2, 3, 5]
-            return f"get_gamma_matrix({x.tag})", "V_G"
+            return f"get_mat(get_gamma_matrix({x.tag}))", "V_G"
         elif x.otype == "Tr":
             if len(x.ops) == 0:
                 assert False
@@ -623,13 +623,19 @@ def cexpr_code_gen_py(cexpr : CExpr):
                 c, t = gen_expr(x.ops[0])
                 assert t == "V_S"
                 total_sloppy_flops += 22
-                return f"msc_trace({c})", "V_Tr"
+                return f"mat_sc_trace({c})", "V_Tr"
             else:
                 c1, t1 = gen_expr_prod_list(x.ops[:-1])
                 c2, t2 = gen_expr(x.ops[-1])
                 if t1 == "V_S" and t2 == "V_S":
                     total_sloppy_flops += 1150
-                return f"msc_trace2({c1}, {c2})", "V_Tr"
+                    return f"mat_sc_sc_trace({c1}, {c2})", "V_Tr"
+                elif t1 == "V_S" and t2 == "V_G":
+                    return f"mat_sc_s_trace({c1}, {c2})", "V_Tr"
+                elif t1 == "V_G" and t2 == "V_S":
+                    return f"mat_s_sc_trace({c1}, {c2})", "V_Tr"
+                else:
+                    assert False
         elif x.otype == "Var":
             return f"{x.name}", get_var_name_type(x.name)
     def gen_expr_prod(ct1, ct2):

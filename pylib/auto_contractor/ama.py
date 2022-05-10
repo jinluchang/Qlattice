@@ -77,17 +77,17 @@ def mk_ama_val(val, source_specification, val_list, rel_acc_list, prob_list):
     return AmaVal(val, corrections)
 
 @q.timer
-def ama_apply1_ama_val(f, x):
+def ama_apply1_corrections(f, x):
     assert isinstance(x, AmaVal)
-    val = f(x.val)
     corrections = [ (f(v), d,) for v, d in x.corrections ]
-    return AmaVal(val, corrections)
+    return corrections
 
 def ama_apply1(f, x):
     if not isinstance(x, AmaVal):
         return f(x)
     else:
-        return ama_apply1_ama_val(f, x)
+        val = f(x.val)
+        return AmaVal(val, ama_apply1_corrections(f, x))
 
 def ama_counts(x):
     # counts how many times need to compute the val
