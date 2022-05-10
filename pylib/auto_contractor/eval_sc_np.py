@@ -99,6 +99,7 @@ def mat_mul_sc_sc(x, y):
     return x @ y
 
 def mat_mul_sc_s(x, y):
+    # return as_cont((x.reshape(12, 4, 3).transpose(0, 2, 1) @ y).transpose(0, 2, 1).reshape(12, 12))
     return as_cont((as_cont(y.transpose()) @ x.reshape(12, 4, 3)).reshape(12, 12))
 
 def mat_mul_s_sc(x, y):

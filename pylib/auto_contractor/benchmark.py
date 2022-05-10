@@ -22,6 +22,7 @@
 from auto_contractor.eval import *
 
 import qlat as q
+import cqlat
 
 @q.timer
 def benchmark_function_1(f, arg, benchmark_size = 1000, benchmark_num = 10, total_flops = 0):
@@ -65,6 +66,27 @@ def benchmark_function_2(f, arg1, arg2, benchmark_size = 1000, benchmark_num = 1
             benchmark_run_10()
     q.parallel_map(1, run, [ None, ])
 
+@q.timer
+def benchmark_function_3(f, arg1, arg2, arg3, benchmark_size = 1000, benchmark_num = 10, total_flops = 0):
+    @q.timer_verbose
+    def benchmark_run_10():
+        q.acc_timer_flops("py:benchmark_run_10", total_flops * 10 * benchmark_size)
+        for k in range(benchmark_size):
+            f(arg1, arg2, arg3)
+            f(arg1, arg2, arg3)
+            f(arg1, arg2, arg3)
+            f(arg1, arg2, arg3)
+            f(arg1, arg2, arg3)
+            f(arg1, arg2, arg3)
+            f(arg1, arg2, arg3)
+            f(arg1, arg2, arg3)
+            f(arg1, arg2, arg3)
+            f(arg1, arg2, arg3)
+    def run(*args):
+        for i in range(benchmark_num):
+            benchmark_run_10()
+    q.parallel_map(1, run, [ None, ])
+
 if __name__ == "__main__":
     rng_state = q.RngState("seed")
     mat_sc_1 = make_rand_spin_color_matrix(rng_state)
@@ -85,3 +107,25 @@ if __name__ == "__main__":
     benchmark_function_2(mat_sc_sc_trace, mat_sc_1.m, mat_sc_2.m, total_flops = 480)
     print("tr(sc)")
     benchmark_function_1(mat_sc_trace, mat_sc_1.m, total_flops = 22)
+    wm1 = q.WilsonMatrix()
+    wm2 = q.WilsonMatrix()
+    wm3 = q.WilsonMatrix()
+    wm1.set_value(list(mat_sc_1.m.flat))
+    wm2.set_value(list(mat_sc_2.m.flat))
+    wm3.set_value(list(mat_sc_3.m.flat))
+    sm1 = q.SpinMatrix()
+    sm2 = q.SpinMatrix()
+    sm3 = q.SpinMatrix()
+    sm1.set_value(list(mat_s_1.m.flat))
+    sm2.set_value(list(mat_s_2.m.flat))
+    sm3.set_value(list(mat_s_3.m.flat))
+    print("wm = wm * wm")
+    benchmark_function_3(cqlat.set_wm_mul_wm_wm, wm1, wm2, wm3, total_flops = 13536)
+    print("wm = sm * wm")
+    benchmark_function_3(cqlat.set_wm_mul_sm_wm, wm1, sm2, wm3, total_flops = 4320)
+    print("wm = wm * sm")
+    benchmark_function_3(cqlat.set_wm_mul_wm_sm, wm1, wm2, sm2, total_flops = 4320)
+    print("tr(wm * wm)")
+    benchmark_function_2(cqlat.trace_wm_wm, wm1, wm2, total_flops = 480)
+    print("tr(wm)")
+    benchmark_function_1(cqlat.trace_wm, wm1, total_flops = 22)

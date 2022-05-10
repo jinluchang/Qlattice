@@ -642,7 +642,13 @@ def cexpr_code_gen_py(cexpr : CExpr):
         nonlocal total_sloppy_flops
         c1, t1 = ct1
         c2, t2 = ct2
-        if t1 == "V_S" and t2 == "V_S":
+        if c1 == "(1+0j)":
+            assert t1 == "V_a"
+            return ct2
+        elif c2 == "(1+0j)":
+            assert t2 == "V_a"
+            return ct1
+        elif t1 == "V_S" and t2 == "V_S":
             total_sloppy_flops += 13536
             return f"mat_mul_sc_sc({c1}, {c2})", "V_S"
         elif t1 == "V_S" and t2 == "V_G":
@@ -749,17 +755,26 @@ def cexpr_code_gen_py(cexpr : CExpr):
     lines.append(f"    # set terms")
     for name, term in cexpr.named_terms:
         x = term
-        c, t = gen_expr_prod_list([ x.coef, ] + x.c_ops)
+        if x.coef == 1:
+            c_ops = x.c_ops
+        else:
+            c_ops = [ x.coef, ] + x.c_ops
+        c, t = gen_expr_prod_list(c_ops)
         assert t == "V_Tr"
-        lines.append(f"    {name} = ama_extract({c})")
+        lines.append(f"    {name} = {c}")
     lines.append(f"")
     lines.append(f"    # set exprs for return")
     lines.append(f"    results = np.array([")
+    def show_coef_term(coef, tname):
+        if coef == 1:
+            return f"{tname}"
+        else:
+            return f"{coef} * {tname}"
     for name, expr in cexpr.named_exprs:
         lines.append(f"")
         name = name.replace("\n", "  ")
         lines.append(f"        # {name} ")
-        s = " + ".join([ f"{coef} * {tname}" for coef, tname in expr ])
+        s = " + ".join([ show_coef_term(coef, tname) for coef, tname in expr ])
         lines.append(f"        {s},")
     lines.append(f"")
     lines.append(f"    ])")
