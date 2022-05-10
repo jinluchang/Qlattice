@@ -36,8 +36,6 @@ class SpinMatrix:
 
     def __mul__(self, other):
         if isinstance(other, (int, float, complex,)):
-            if other == 0:
-                return 0
             return SpinMatrix(mat_mul_a_s(other, self.m))
         elif isinstance(other, SpinMatrix):
             return SpinMatrix(mat_mul_s_s(self.m, other.m))
@@ -46,8 +44,6 @@ class SpinMatrix:
 
     def __rmul__(self, other):
         if isinstance(other, (int, float, complex,)):
-            if other == 0:
-                return 0
             return SpinMatrix(mat_mul_a_s(other, self.m))
         elif isinstance(other, SpinMatrix):
             return SpinMatrix(mat_mul_s_s(other.m, self.m))
@@ -73,9 +69,7 @@ class SpinColorMatrix:
 
     def __mul__(self, other):
         if isinstance(other, (int, float, complex,)):
-            if other == 0:
-                return 0
-            return mat_mul_a_sc(other, self)
+            return SpinColorMatrix(mat_mul_a_sc(other, self.m))
         elif isinstance(other, SpinMatrix):
             return SpinColorMatrix(mat_mul_sc_s(self.m, other.m))
         elif isinstance(other, SpinColorMatrix):
@@ -85,9 +79,7 @@ class SpinColorMatrix:
 
     def __rmul__(self, other):
         if isinstance(other, (int, float, complex,)):
-            if other == 0:
-                return 0
-            return mat_mul_a_sc(other, self)
+            return SpinColorMatrix(mat_mul_a_sc(other, self.m))
         elif isinstance(other, SpinMatrix):
             return SpinColorMatrix(mat_mul_s_sc(other.m, self.m))
         elif isinstance(other, SpinColorMatrix):
@@ -119,7 +111,7 @@ def mat_mul_a_s(coef, x):
     return x * coef
 
 def mat_mul_a_sc(coef, x):
-    return SpinColorMatrix(x.m * coef)
+    return x * coef
 
 def mat_sc_trace(x):
     return x.trace()
