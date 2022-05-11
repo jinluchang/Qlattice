@@ -26,14 +26,14 @@ class AmaVal:
 
     def __init__(self, val = None, corrections = None):
         # should have the following:
-        # self.val: sloppy value
+        # self.val: sloppy value or None
         # self.corrections: list [ (val, description_dict,), ... ]
         # description_dict:
         # { source_specification:
         #   (accuracy_level_relative_to_the_basic_accuracy,
         #    probability_of_having_this_accuracy,),
         # }
-        # self.corrections should include the sloppy value in its first element.
+        # self.corrections should include the sloppy value and self.val is optional.
         self.val = val
         if corrections is None:
             self.corrections = []
@@ -86,15 +86,14 @@ def ama_apply1(f, x):
     if not isinstance(x, AmaVal):
         return f(x)
     else:
-        val = f(x.val)
-        return AmaVal(val, ama_apply1_corrections(f, x))
+        return AmaVal(None, ama_apply1_corrections(f, x))
 
 def ama_counts(x):
     # counts how many times need to compute the val
     if not isinstance(x, AmaVal):
         return 1
     else:
-        return 1 + len(x.corrections)
+        return len(x.corrections)
 
 def merge_description_dict(d1, d2):
     sd1 = set(d1)
@@ -113,28 +112,25 @@ def merge_description_dict(d1, d2):
 def ama_apply2_ama_val(f, x, y):
     assert isinstance(x, AmaVal)
     assert isinstance(y, AmaVal)
-    val = f(x.val, y.val)
     corrections = []
     for v_x, d_x in x.corrections:
         for v_y, d_y in y.corrections:
             d = merge_description_dict(d_x, d_y)
             if d is not None:
                 corrections.append((f(v_x, v_y), d,))
-    return AmaVal(val, corrections)
+    return AmaVal(None, corrections)
 
 @q.timer
 def ama_apply2_r_ama_val(f, x, y):
     assert isinstance(y, AmaVal)
-    val = f(x, y.val)
     corrections = [ (f(x, v), d,) for v, d in y.corrections ]
-    return AmaVal(val, corrections)
+    return AmaVal(None, corrections)
 
 @q.timer
 def ama_apply2_l_ama_val(f, x, y):
     assert isinstance(x, AmaVal)
-    val = f(x.val, y)
     corrections = [ (f(v, y), d,) for v, d in x.corrections ]
-    return AmaVal(val, corrections)
+    return AmaVal(None, corrections)
 
 def ama_apply2_r(f, x, y):
     if not isinstance(y, AmaVal):
@@ -169,7 +165,7 @@ def ama_apply(f, *args):
     return ama_apply1(f_list, res)
 
 @q.timer
-def ama_extract_ama_val(x):
+def ama_extract_ama_val(x, *, is_sloppy = False):
     corrections = x.corrections
     assert isinstance(corrections, list)
     assert corrections
@@ -188,6 +184,8 @@ def ama_extract_ama_val(x):
     dict_prob = { k: [ prob for l, prob in v ] for k, v in dict_level_prob.items() }
     # dict_val[(level, ...)] = v
     dict_val = { tuple([ d[k][0] for k in keys ]): v for v, d in corrections }
+    if is_sloppy:
+        return dict_val[tuple([ dict_level[key][0] for key in keys ])]
     def ama_corr(fixed_levels, remaining_keys):
         if not remaining_keys:
             return dict_val[tuple(fixed_levels)]
@@ -207,10 +205,7 @@ def ama_extract(x, *, is_sloppy = False):
     if not isinstance(x, AmaVal):
         return x
     elif isinstance(x, AmaVal):
-        if is_sloppy:
-            val = x.val
-            return val
-        return ama_extract_ama_val(x)
+        return ama_extract_ama_val(x, is_sloppy = is_sloppy)
     else:
         assert False
 
