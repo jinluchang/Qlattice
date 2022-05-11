@@ -188,7 +188,7 @@ def make_rand_spin_color_matrix(rng_state):
 
 def make_rand_spin_matrix(rng_state):
     rs = rng_state
-    return SpinMatrix(np.array(
+    return as_mspin(np.array(
         [ rs.u_rand_gen() + 1j * rs.u_rand_gen() for i in range(16) ],
         dtype = complex).reshape(4, 4))
 

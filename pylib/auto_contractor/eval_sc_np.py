@@ -203,6 +203,14 @@ def as_mspincolor(x):
     else:
         assert False
 
+def as_mspin(x):
+    if isinstance(x, np.ndarray):
+        return SpinMatrix(as_cont(x.reshape(4, 4)))
+    elif x == 0:
+        return SpinMatrix(np.zeros((4, 4,), dtype = complex))
+    else:
+        assert False
+
 def adj_msc(x):
     return SpinColorMatrix(x.m.transpose().conj())
 
