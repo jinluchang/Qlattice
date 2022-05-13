@@ -403,17 +403,17 @@ size_node_list = [
         [2, 2, 2, 2],
         [2, 2, 2, 4]]
 
-#q.begin(sys.argv, size_node_list)
+q.begin(sys.argv, size_node_list)
 
-# q.show_machine()
+q.show_machine()
 
-#q.qremove_all_info("results")
+q.qremove_all_info("results")
 
-#main()
+main()
 
-#with open(f"output_data/sigma_pion_corrs_{total_site[0]}x{total_site[3]}_msq_{m_sq}_lmbd_{lmbd}_alph_{alpha}_{datetime.datetime.now().date()}.bin", "wb") as output:
-#    pickle.dump([accept_rates,psq_list,phi_list,timeslices,ax_cur_timeslices],output)
+with open(f"output_data/sigma_pion_corrs_{total_site[0]}x{total_site[3]}_msq_{m_sq}_lmbd_{lmbd}_alph_{alpha}_{datetime.datetime.now().date()}.bin", "wb") as output:
+    pickle.dump([accept_rates,psq_list,phi_list,timeslices,ax_cur_timeslices],output)
 
-#q.timer_display()
+q.timer_display()
 
-#q.end()
+q.end()
