@@ -36,21 +36,17 @@ class SpinMatrix:
 
     def __mul__(self, other):
         if isinstance(other, (int, float, complex,)):
-            if other == 0:
-                return 0
-            return mat_mul_a_s(other, self)
+            return SpinMatrix(mat_mul_a_s(other, self.m))
         elif isinstance(other, SpinMatrix):
-            return SpinMatrix(self.m @ other.m)
+            return SpinMatrix(mat_mul_s_s(self.m, other.m))
         else:
             return NotImplemented
 
     def __rmul__(self, other):
         if isinstance(other, (int, float, complex,)):
-            if other == 0:
-                return 0
-            return mat_mul_a_s(other, self)
+            return SpinMatrix(mat_mul_a_s(other, self.m))
         elif isinstance(other, SpinMatrix):
-            return SpinMatrix(other.m @ self.m)
+            return SpinMatrix(mat_mul_s_s(other.m, self.m))
         else:
             return NotImplemented
 
@@ -73,25 +69,21 @@ class SpinColorMatrix:
 
     def __mul__(self, other):
         if isinstance(other, (int, float, complex,)):
-            if other == 0:
-                return 0
-            return mat_mul_a_sc(other, self)
+            return SpinColorMatrix(mat_mul_a_sc(other, self.m))
         elif isinstance(other, SpinMatrix):
-            return mat_mul_sc_s(self, other)
+            return SpinColorMatrix(mat_mul_sc_s(self.m, other.m))
         elif isinstance(other, SpinColorMatrix):
-            return mat_mul_sc_sc(self, other)
+            return SpinColorMatrix(mat_mul_sc_sc(self.m, other.m))
         else:
             return NotImplemented
 
     def __rmul__(self, other):
         if isinstance(other, (int, float, complex,)):
-            if other == 0:
-                return 0
-            return mat_mul_a_sc(other, self)
+            return SpinColorMatrix(mat_mul_a_sc(other, self.m))
         elif isinstance(other, SpinMatrix):
-            return mat_mul_s_sc(other, self)
+            return SpinColorMatrix(mat_mul_s_sc(other.m, self.m))
         elif isinstance(other, SpinColorMatrix):
-            return mat_mul_sc_sc(other, self)
+            return SpinColorMatrix(mat_mul_sc_sc(other.m, self.m))
         else:
             return NotImplemented
 
@@ -100,29 +92,39 @@ class SpinColorMatrix:
 
 ###
 
+def get_mat(x):
+    return x.m
+
 def mat_mul_sc_sc(x, y):
-    if x == 0 or y == 0:
-        return 0
-    return SpinColorMatrix(x.m @ y.m)
+    return x @ y
 
 def mat_mul_sc_s(x, y):
-    if x == 0:
-        return 0
-    return SpinColorMatrix(as_cont((as_cont(y.m.transpose()) @ x.m.reshape(12, 4, 3)).reshape(12, 12)))
+    # return as_cont((x.reshape(12, 4, 3).transpose(0, 2, 1) @ y).transpose(0, 2, 1).reshape(12, 12))
+    return as_cont((as_cont(y.transpose()) @ x.reshape(12, 4, 3)).reshape(12, 12))
 
 def mat_mul_s_sc(x, y):
-    if y == 0:
-        return 0
-    return SpinColorMatrix(as_cont((x.m @ y.m.reshape(4, 36)).reshape(12, 12)))
+    return as_cont((x @ y.reshape(4, 36)).reshape(12, 12))
 
 def mat_mul_s_s(x, y):
-    return SpinMatrix(x.m @ y.m)
+    return x @ y
 
 def mat_mul_a_s(coef, x):
-    return SpinMatrix(x.m * coef)
+    return x * coef
 
 def mat_mul_a_sc(coef, x):
-    return SpinColorMatrix(x.m * coef)
+    return x * coef
+
+def mat_sc_trace(x):
+    return x.trace()
+
+def mat_sc_sc_trace(x, y):
+    return np.dot(x.ravel(), y.transpose().ravel()).item()
+
+def mat_sc_s_trace(x, y):
+    return np.tensordot(x.reshape(4, 3, 4, 3,), y, ((2, 0,), (0, 1,),)).trace()
+
+def mat_s_sc_trace(x, y):
+    return np.tensordot(x, y.reshape(4, 3, 4, 3,), ((1, 0,), (0, 2,),)).trace()
 
 ###
 
@@ -197,7 +199,15 @@ def as_mspincolor(x):
     if isinstance(x, np.ndarray):
         return SpinColorMatrix(as_cont(x.reshape(12, 12)))
     elif x == 0:
-        return 0
+        return SpinColorMatrix(np.zeros((12, 12,), dtype = complex))
+    else:
+        assert False
+
+def as_mspin(x):
+    if isinstance(x, np.ndarray):
+        return SpinMatrix(as_cont(x.reshape(4, 4)))
+    elif x == 0:
+        return SpinMatrix(np.zeros((4, 4,), dtype = complex))
     else:
         assert False
 
@@ -218,16 +228,8 @@ def g5_herm(x):
         return x_h
 
 def msc_trace(x):
-    if isinstance(x, SpinColorMatrix):
-        return x.trace()
-    elif isinstance(x, (int, float, complex)):
-        if x == 0:
-            return 0
-        else:
-            return x * 12
-    else:
-        assert False
-        return as_msc(x).trace()
+    assert isinstance(x, SpinColorMatrix)
+    return x.trace()
 
 def msc_trace2(x, y):
     if isinstance(x, SpinColorMatrix) and isinstance(y, SpinColorMatrix):
@@ -238,10 +240,6 @@ def msc_trace2(x, y):
     elif isinstance(x, SpinMatrix) and isinstance(y, SpinColorMatrix):
         v = np.tensordot(x.m, y.m.reshape(4, 3, 4, 3,), ((1, 0,), (0, 2,),)).trace()
         return v
-    elif isinstance(x, (int, float, complex)):
-        return x * msc_trace(y)
-    elif isinstance(y, (int, float, complex)):
-        return y * msc_trace(x)
     else:
         assert False
         return as_msc(x * y).trace()

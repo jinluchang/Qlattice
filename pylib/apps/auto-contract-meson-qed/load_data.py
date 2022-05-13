@@ -86,36 +86,28 @@ def get_prop_psrc(prop_cache, inv_type, xg_src, tag_snk_type):
         assert val is not None
         if tag1 not in prop_cache_type:
             return val
-        val_list = [
-                val,
-                prop_cache_type.get(tag1),
-                prop_cache_type.get(tag2),
-                ]
-        rel_acc_list = [ 0, 2, 3, ]
-        prob_list = [
-                1.0,
-                prop_cache_prob[f"type={inv_type} ; accuracy=1 ; psrc ; prob"],
-                prop_cache_prob[f"type={inv_type} ; accuracy=2 ; psrc ; prob"],
-                ]
     else:
         assert prob < 1
         assert inv_type == 1
         val = 0
         if tag not in prop_cache_type:
             return val
-        val_list = [
-                val,
-                prop_cache_type.get(tag),
-                prop_cache_type.get(tag1),
-                prop_cache_type.get(tag2),
-                ]
-        rel_acc_list = [ 0, 1, 2, 3, ]
-        prob_list = [
-                1.0,
-                prob,
-                prop_cache_prob[f"type={inv_type} ; accuracy=1 ; psrc ; prob"],
-                prop_cache_prob[f"type={inv_type} ; accuracy=2 ; psrc ; prob"],
-                ]
+    val_list = [
+            val,
+            prop_cache_type.get(tag),
+            prop_cache_type.get(tag1),
+            prop_cache_type.get(tag2),
+            ]
+    rel_acc_list = [ 0, 1, 2, 3, ]
+    # Should use the same prob list for strange and light for correct AMA merge!!!
+    # It should be the same for accuracy=1,2
+    # At present, it is a hack for the accuracy=0 case, where number strange quark props may be less than the number of light quark props.
+    prob_list = [
+            1.0,
+            prop_cache_prob[f"type=1 ; accuracy=0 ; psrc ; prob"],
+            prop_cache_prob[f"type=1 ; accuracy=1 ; psrc ; prob"],
+            prop_cache_prob[f"type=1 ; accuracy=2 ; psrc ; prob"],
+            ]
     return mk_ama_val(val, source_specification, val_list, rel_acc_list, prob_list)
 
 def get_prop_wsnk_psrc(prop_cache, inv_type, t_snk, xg_src):

@@ -22,7 +22,8 @@
 from auto_contractor.compile import *
 from auto_contractor.ama import *
 
-from auto_contractor.eval_sc_np import *
+# from auto_contractor.eval_sc_np import *
+from auto_contractor.eval_sc_qlat import *
 
 import numpy as np
 import qlat as q
@@ -150,8 +151,6 @@ def eval_cexpr(cexpr : CExpr, *, positions_dict, get_prop, is_only_total = "tota
     # e.g. flavor = "l"
     # e.g. xg_snk = ("point-snk", [ 1, 2, 3, 4, ])
     # interface function
-    if cexpr.total_sloppy_flops is not None:
-        q.acc_timer_flops("py:eval_cexpr", cexpr.total_sloppy_flops)
     if cexpr.function is not None:
         return cexpr.function(positions_dict = positions_dict, get_prop = get_prop, is_only_total = is_only_total)
     for pos in cexpr.positions:
@@ -177,7 +176,7 @@ def cache_compiled_cexpr(calc_cexpr, fn_base):
         time.sleep(1)
         q.sync_node()
     module = importlib.import_module(fn_base.replace("/", "."))
-    cexpr.function = module.eval_cexpr
+    cexpr.function = module.cexpr_function
     cexpr.total_sloppy_flops = module.total_sloppy_flops
     return cexpr
 
@@ -187,16 +186,22 @@ def make_rand_spin_color_matrix(rng_state):
         [ rs.u_rand_gen() + 1j * rs.u_rand_gen() for i in range(144) ],
         dtype = complex))
 
+def make_rand_spin_matrix(rng_state):
+    rs = rng_state
+    return as_mspin(np.array(
+        [ rs.u_rand_gen() + 1j * rs.u_rand_gen() for i in range(16) ],
+        dtype = complex).reshape(4, 4))
+
 @q.timer
-def benchmark_eval_cexpr(cexpr : CExpr, *, is_only_total = "total", benchmark_size = 10, benchmark_num = 10, rng_state = None):
-    if rng_state is None:
-        rng_state = q.RngState("benchmark_eval_cexpr")
+def benchmark_eval_cexpr(cexpr : CExpr, *, is_only_total = "total", benchmark_size = 10, benchmark_num = 10, benchmark_rng_state = None):
+    if benchmark_rng_state is None:
+        benchmark_rng_state = q.RngState("benchmark_eval_cexpr")
     positions_dict = {}
     prop_dict = {}
     for pos in cexpr.positions:
         positions_dict[pos] = pos
     for pos in cexpr.positions:
-        prop_dict[(pos, pos,)] = make_rand_spin_color_matrix(rng_state.split(pos))
+        prop_dict[(pos, pos,)] = make_rand_spin_color_matrix(benchmark_rng_state.split(pos))
     @q.timer
     def get_prop(flavor, xg_snk, xg_src):
         return prop_dict[(xg_src, xg_src)]
@@ -208,6 +213,46 @@ def benchmark_eval_cexpr(cexpr : CExpr, *, is_only_total = "total", benchmark_si
     def run(*args):
         for i in range(benchmark_num):
             benchmark_eval_cexpr_run()
+    q.parallel_map(1, run, [ None, ])
+
+@q.timer
+def benchmark_function_1(f, arg, benchmark_size = 10, benchmark_num = 10):
+    @q.timer_verbose
+    def benchmark_run_10():
+        for k in range(benchmark_size):
+            f(arg)
+            f(arg)
+            f(arg)
+            f(arg)
+            f(arg)
+            f(arg)
+            f(arg)
+            f(arg)
+            f(arg)
+            f(arg)
+    def run(*args):
+        for i in range(benchmark_num):
+            benchmark_run_10()
+    q.parallel_map(1, run, [ None, ])
+
+@q.timer
+def benchmark_function_2(f, arg1, arg2, benchmark_size = 10, benchmark_num = 10):
+    @q.timer_verbose
+    def benchmark_run_10():
+        for k in range(benchmark_size):
+            f(arg1, arg2)
+            f(arg1, arg2)
+            f(arg1, arg2)
+            f(arg1, arg2)
+            f(arg1, arg2)
+            f(arg1, arg2)
+            f(arg1, arg2)
+            f(arg1, arg2)
+            f(arg1, arg2)
+            f(arg1, arg2)
+    def run(*args):
+        for i in range(benchmark_num):
+            benchmark_run_10()
     q.parallel_map(1, run, [ None, ])
 
 def sqr_component(x):

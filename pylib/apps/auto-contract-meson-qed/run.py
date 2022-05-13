@@ -98,9 +98,7 @@ def auto_contract_meson_corr(job_tag, traj, get_prop, get_psel, get_fsel):
         values = values.transpose() # res[expr_name, t_sep]
         return counts, values
     t_snk_list = get_mpi_chunk(list(range(total_site[3])))
-    counts_list, values_list = zip(fempty(), *q.parallel_map(q.get_q_mp_proc(), feval, t_snk_list))
-    res_count = q.glb_sum(sum(counts_list))
-    res_sum = q.glb_sum(sum(values_list))
+    res_count, res_sum = q.glb_sum_list(q.parallel_map_sum(q.get_q_mp_proc(), feval, t_snk_list, sum_initial = fempty()))
     res_count *= 1.0 / total_site[3]
     res_sum *= 1.0 / total_site[3]
     assert q.qnorm(res_count - 1.0) < 1e-10
@@ -136,9 +134,7 @@ def auto_contract_meson_corr_psnk(job_tag, traj, get_prop, get_psel, get_fsel):
             res[t] += eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop, is_only_total = "total")
         res = res.transpose() # res[expr_name, t_sep]
         return 1.0, res
-    counts_list, values_list = zip(*q.parallel_map(q.get_q_mp_proc(), feval, xg_fsel_list))
-    res_count = q.glb_sum(sum(counts_list))
-    res_sum = q.glb_sum(sum(values_list))
+    res_count, res_sum = q.glb_sum_list(q.parallel_map_sum(q.get_q_mp_proc(), feval, xg_fsel_list))
     res_count *= 1.0 / (total_volume * fsel.prob())
     res_sum *= 1.0 / (total_volume * fsel.prob())
     assert q.qnorm(res_count - 1.0) < 1e-10
@@ -182,9 +178,7 @@ def auto_contract_meson_corr_psrc(job_tag, traj, get_prop, get_psel, get_fsel):
         values = values.transpose() # values[expr_name, t_sep]
         return counts, values
     xg_src_list = get_mpi_chunk(xg_psel_list, rng_state = q.RngState("get_mpi_chunk"))
-    counts_list, values_list = zip(fempty(), *q.parallel_map(q.get_q_mp_proc(), feval, xg_src_list))
-    res_count = q.glb_sum(sum(counts_list))
-    res_sum = q.glb_sum(sum(values_list))
+    res_count, res_sum = q.glb_sum_list(q.parallel_map_sum(q.get_q_mp_proc(), feval, xg_src_list, sum_initial = fempty()))
     res_count *= 1.0 / len(xg_psel_list)
     res_sum *= 1.0 / len(xg_psel_list)
     assert q.qnorm(res_count - 1.0) < 1e-10
@@ -224,9 +218,7 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_fs
             values[t] += eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop, is_only_total = "total")
         values = values.transpose() # values[expr_name, t_sep]
         return counts, values
-    counts_list, values_list = zip(*q.parallel_map(q.get_q_mp_proc(), feval, xg_psel_list))
-    res_count = q.glb_sum(sum(counts_list))
-    res_sum = q.glb_sum(sum(values_list))
+    res_count, res_sum = q.glb_sum_list(q.parallel_map_sum(q.get_q_mp_proc(), feval, xg_psel_list))
     res_count *= 1.0 / (len(xg_psel_list) * total_volume * fsel.prob() / total_site[3])
     res_sum *= 1.0 / (len(xg_psel_list) * total_volume * fsel.prob() / total_site[3])
     assert q.qnorm(res_count - 1.0) < 1e-10
@@ -279,9 +271,7 @@ def auto_contract_meson_f_corr_psnk(job_tag, traj, get_prop, get_psel, get_fsel)
             res[t] += eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop, is_only_total = "total")
         res = res.transpose() # res[expr_name, t_sep]
         return 1.0, res
-    counts_list, values_list = zip(*q.parallel_map(q.get_q_mp_proc(), feval, xg_fsel_list))
-    res_count = q.glb_sum(sum(counts_list))
-    res_sum = q.glb_sum(sum(values_list))
+    res_count, res_sum = q.glb_sum_list(q.parallel_map_sum(q.get_q_mp_proc(), feval, xg_fsel_list))
     res_count *= 1.0 / (total_volume * fsel.prob())
     res_sum *= 1.0 / (total_volume * fsel.prob())
     assert q.qnorm(res_count - 1.0) < 1e-10
@@ -325,9 +315,7 @@ def auto_contract_meson_f_corr_psrc(job_tag, traj, get_prop, get_psel, get_fsel)
         values = values.transpose() # values[expr_name, t_sep]
         return counts, values
     xg_src_list = get_mpi_chunk(xg_psel_list, rng_state = q.RngState("get_mpi_chunk"))
-    counts_list, values_list = zip(fempty(), *q.parallel_map(q.get_q_mp_proc(), feval, xg_src_list))
-    res_count = q.glb_sum(sum(counts_list))
-    res_sum = q.glb_sum(sum(values_list))
+    res_count, res_sum = q.glb_sum_list(q.parallel_map_sum(q.get_q_mp_proc(), feval, xg_src_list, sum_initial = fempty()))
     res_count *= 1.0 / len(xg_psel_list)
     res_sum *= 1.0 / len(xg_psel_list)
     assert q.qnorm(res_count - 1.0) < 1e-10
@@ -367,9 +355,7 @@ def auto_contract_meson_f_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_
             values[t] += eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop, is_only_total = "total")
         values = values.transpose() # values[expr_name, t_sep]
         return counts, values
-    counts_list, values_list = zip(*q.parallel_map(q.get_q_mp_proc(), feval, xg_psel_list))
-    res_count = q.glb_sum(sum(counts_list))
-    res_sum = q.glb_sum(sum(values_list))
+    res_count, res_sum = q.glb_sum_list(q.parallel_map_sum(q.get_q_mp_proc(), feval, xg_psel_list))
     res_count *= 1.0 / (len(xg_psel_list) * total_volume * fsel.prob() / total_site[3])
     res_sum *= 1.0 / (len(xg_psel_list) * total_volume * fsel.prob() / total_site[3])
     assert q.qnorm(res_count - 1.0) < 1e-10
@@ -428,9 +414,7 @@ def auto_contract_meson_m(job_tag, traj, get_prop, get_psel, get_fsel):
                 }
         values = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop, is_only_total = "total")
         return 1.0, values
-    counts_list, values_list = zip(*q.parallel_map(q.get_q_mp_proc(), feval, xg_fsel_list))
-    res_count = q.glb_sum(sum(counts_list))
-    res_sum = q.glb_sum(sum(values_list))
+    res_count, res_sum = q.glb_sum_list(q.parallel_map_sum(q.get_q_mp_proc(), feval, xg_fsel_list))
     res_count *= 1.0 / (total_volume * fsel.prob())
     res_sum *= 1.0 / (total_volume * fsel.prob())
     assert q.qnorm(res_count - 1.0) < 1e-10
@@ -498,9 +482,7 @@ def auto_contract_meson_jt(job_tag, traj, get_prop, get_psel, get_fsel):
                 }
         values = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop, is_only_total = "total")
         return 1.0, values
-    counts_list, values_list = zip(*q.parallel_map(q.get_q_mp_proc(), feval, xg_fsel_list))
-    res_count = q.glb_sum(sum(counts_list))
-    res_sum = q.glb_sum(sum(values_list))
+    res_count, res_sum = q.glb_sum_list(q.parallel_map_sum(q.get_q_mp_proc(), feval, xg_fsel_list))
     res_count *= 1.0 / (total_volume * fsel.prob())
     res_sum *= 1.0 / (total_volume * fsel.prob())
     assert q.qnorm(res_count - 1.0) < 1e-10
@@ -702,10 +684,8 @@ def auto_contract_meson_jj(job_tag, traj, get_prop, get_psel, get_fsel):
             res_meson_corr = res[-3:]
             accumulate_meson_jj(counts, values, values_meson_corr, res_arr, res_meson_corr, x_rel, total_site)
         return counts, values, values_meson_corr
-    counts_list, values_list, values_meson_corr_list = zip(*q.parallel_map(q.get_q_mp_proc(), feval, xg_psel_list))
-    res_count = q.glb_sum(sum(counts_list))
-    res_sum = q.glb_sum(sum(values_list))
-    res_meson_corr_sum = q.glb_sum(sum(values_meson_corr_list))
+    res_count, res_sum, res_meson_corr_sum = q.glb_sum_list(
+            q.parallel_map_sum(q.get_q_mp_proc(), feval, xg_psel_list))
     res_count *= 1.0 / (len(xg_psel_list) * fsel.prob())
     res_sum *= 1.0 / (len(xg_psel_list) * fsel.prob())
     res_meson_corr_sum *= 1.0 / (len(xg_psel_list) * fsel.prob())
@@ -836,8 +816,9 @@ job_tags = [
         # "24IH1",
         # "24IH2",
         # "24IH3",
-        # "24D",
         # "32Dfine",
+        # "32D",
+        # "24D",
         # "24DH",
         # "16IH2",
         # "32IfineH",

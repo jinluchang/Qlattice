@@ -597,8 +597,21 @@ template <class T>
 qacc WilsonMatrixT<T> operator*(const WilsonMatrixT<T>& m,
                                 const ColorMatrixT<T>& cm)
 {
-  return matrix_adjoint((const ColorMatrixT<T>&)matrix_adjoint(cm) *
-                        (const WilsonMatrixT<T>&)matrix_adjoint(m));
+  WilsonMatrixT<T> ret;
+  set_zero(ret);
+  for (int s1 = 0; s1 < 4; ++s1) {
+    for (int s2 = 0; s2 < 4; ++s2) {
+      for (int c1 = 0; c1 < NUM_COLOR; ++c1) {
+        for (int c2 = 0; c2 < NUM_COLOR; ++c2) {
+          for (int c3 = 0; c3 < NUM_COLOR; ++c3) {
+            ret(s1 * NUM_COLOR + c1, s2 * NUM_COLOR + c2) +=
+                m(s1 * NUM_COLOR + c1, s2 * NUM_COLOR + c3) * cm(c3, c2);
+          }
+        }
+      }
+    }
+  }
+  return ret;
 }
 
 template <class T>
@@ -629,8 +642,24 @@ template <class T>
 qacc WilsonMatrixT<T> operator*(const WilsonMatrixT<T>& m,
                                 const SpinMatrixT<T>& sm)
 {
-  return matrix_adjoint((const SpinMatrixT<T>&)matrix_adjoint(sm) *
-                        (const WilsonMatrixT<T>&)matrix_adjoint(m));
+  WilsonMatrixT<T> ret;
+  set_zero(ret);
+  for (int s1 = 0; s1 < 4; ++s1) {
+    for (int s3 = 0; s3 < 4; ++s3) {
+      if (sm(s3, s1) == 0.0) {
+        continue;
+      }
+      for (int s2 = 0; s2 < 4; ++s2) {
+        for (int c1 = 0; c1 < NUM_COLOR; ++c1) {
+          for (int c2 = 0; c2 < NUM_COLOR; ++c2) {
+            ret(s2 * NUM_COLOR + c2, s1 * NUM_COLOR + c1) +=
+                m(s2 * NUM_COLOR + c2, s3 * NUM_COLOR + c1) * sm(s3, s1);
+          }
+        }
+      }
+    }
+  }
+  return ret;
 }
 
 template <class T>
