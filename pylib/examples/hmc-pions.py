@@ -207,10 +207,6 @@ def run_hmc(field, geo, action, masses, traj, rs, vev, estimate_masses, fft, iff
     momentum_ft = fft*momentum_ft
     momentum_ft*=1/geo.total_volume()**0.5
     
-    # The number of steps to take in a single trajectory
-    steps = 50
-    # The length of a single trajectory in molecular dynamics time
-    md_time = 1.0
     # The number of initial trajectories to perform without a Metropolis
     # accept step
     init_len = 20
@@ -362,13 +358,17 @@ fields=[]
 forces=[]
 
 # The lattice dimensions
-total_site = [16,16,16,32]
+total_site = [8,8,8,8]
 
 # The multiplicity of the scalar field
 mult = 4
 
 # The number of trajectories to calculate
-n_traj = 5000
+n_traj = 100
+# The number of steps to take in a single trajectory
+steps = 50
+# The length of a single trajectory in molecular dynamics time
+md_time = 1.0
 
 # Use action for a Euclidean scalar field. The Lagrangian will be:
 # (1/2)*[sum i]|dphi_i|^2 + (1/2)*m_sq*[sum i]|phi_i|^2
@@ -376,6 +376,24 @@ n_traj = 5000
 m_sq = -1.0
 lmbd = 1.0
 alpha = 0.1
+
+for i in range(1,len(sys.argv),2):
+    try:
+        if(sys.argv[i]=="-d"):
+            a = sys.argv[i+1].split("x")
+            total_site = [int(a[j]) for j in range(4)]
+        elif(sys.argv[i]=="-n"):
+            mult = int(sys.argv[i+1])
+        elif(sys.argv[i]=="-t"):
+            n_traj = int(sys.argv[i+1])
+        elif(sys.argv[i]=="-m"):
+            m_sq = float(sys.argv[i+1])
+        elif(sys.argv[i]=="-l"):
+            lmbd = float(sys.argv[i+1])
+        elif(sys.argv[i]=="-a"):
+            alpha = float(sys.argv[i+1])
+    except:
+        raise Exception("Invalid arguments: use -d for lattice dimensions, -n for multiplicity, -t for number of trajectories, -m for mass squared, -l for lambda, and -a for alpha. e.g. python hmc-pions.py -l 8x8x8x16 -n 4 -t 50 -m -1.0 -l 1.0 -a 0.1")
 
 size_node_list = [
         [1, 1, 1, 1],
@@ -385,17 +403,17 @@ size_node_list = [
         [2, 2, 2, 2],
         [2, 2, 2, 4]]
 
-q.begin(sys.argv, size_node_list)
+#q.begin(sys.argv, size_node_list)
 
 # q.show_machine()
 
-q.qremove_all_info("results")
+#q.qremove_all_info("results")
 
-main()
+#main()
 
-with open(f"output_data/sigma_pion_corrs_{total_site[0]}x{total_site[3]}_msq_{m_sq}_lmbd_{lmbd}_alph_{alpha}_{datetime.datetime.now().date()}.bin", "wb") as output:
-    pickle.dump([accept_rates,psq_list,phi_list,timeslices,ax_cur_timeslices],output)
+#with open(f"output_data/sigma_pion_corrs_{total_site[0]}x{total_site[3]}_msq_{m_sq}_lmbd_{lmbd}_alph_{alpha}_{datetime.datetime.now().date()}.bin", "wb") as output:
+#    pickle.dump([accept_rates,psq_list,phi_list,timeslices,ax_cur_timeslices],output)
 
-q.timer_display()
+#q.timer_display()
 
-q.end()
+#q.end()
