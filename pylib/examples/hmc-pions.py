@@ -15,12 +15,6 @@ def phi_squared(field,action):
     geo = field.geo()
     return phi_sq/geo.total_volume()/geo.multiplicity()
 
-def calc_mass(pg):
-	return 4/np.pi**2*(m_sq + 8 - 2*(np.cos(2*np.pi*pg[0]/total_site[0]) +
-									np.cos(2*np.pi*pg[1]/total_site[1]) + 
-									np.cos(2*np.pi*pg[2]/total_site[2]) + 
-									np.cos(2*np.pi*pg[3]/total_site[3])))
-
 @q.timer_verbose
 def sm_evolve(momentum_ft, field_init, action, fg_dt, dt, fft, ifft):
     # Evolve the momentum field according to the given action using the  
@@ -53,7 +47,7 @@ def sm_evolve(momentum_ft, field_init, action, fg_dt, dt, fft, ifft):
     return force
 
 @q.timer_verbose
-def hmc_evolve(field, momentum_ft, field_ft, action, masses, steps, dt, V, fft, ifft):
+def hmc_evolve(field, momentum_ft, field_ft, action, masses, steps, dt, V, vev, estimate_masses, fft, ifft):
     # Evolve the field according to the given action using the force 
     # gradient algorithm
     lam = 0.5 * (1.0 - 1.0 / m.sqrt(3.0));
@@ -65,11 +59,19 @@ def hmc_evolve(field, momentum_ft, field_ft, action, masses, steps, dt, V, fft, 
     # Perform the inverse Fourier transform
     field.set_double_from_complex(ifft*field_ft)
     field*=1/V**0.5
-    #
+    # Create a field to store the Fourier-transformed forces
     force_ft = q.Field("Complex", field.geo())
     # Save a list of the vacuum expectation value of sigma at each point
     # on the trajectory
-    vev = []
+    if(estimate_masses):
+        vevs=[]
+        geo = field_ft.geo()
+        field_sq_av = q.Field("double",geo,geo.multiplicity())
+        force_sq_av = q.Field("double",geo,geo.multiplicity())
+        field_sq = q.Field("double",geo,geo.multiplicity())
+        force_sq = q.Field("double",geo,geo.multiplicity())
+        field_sq_av.set_zero()
+        force_sq_av.set_zero()
     for i in range(steps):
         sm_evolve(momentum_ft, field, action, 4.0 * ttheta / dt, 0.5 * dt, fft, ifft);
         action.hmc_field_evolve(field_ft, momentum_ft, masses, (1.0 - 2.0 * lam) * dt);
@@ -84,21 +86,44 @@ def hmc_evolve(field, momentum_ft, field_ft, action, masses, steps, dt, V, fft, 
             action.hmc_field_evolve(field_ft, momentum_ft, masses, lam * dt);
             field.set_double_from_complex(ifft*field_ft)
             field*=1/V**0.5
-        field_sum = field.glb_sum()
-        vev.append(field_sum[0]/V)
-    force_ft.set_complex_from_double(force)
-    force_ft=fft*force_ft
-    force_ft*=1/V**0.5
-    # Estimate the masses we should use in order to evolve each field 
-    # mode by half of its period
-    geo = field_ft.geo()
-    masses_new = q.Field("double",geo,geo.multiplicity())
-    action.hmc_estimate_mass(masses_new, field_ft, force_ft, np.mean(vev))
-    print(f"Vev: {np.mean(vev)}")
-    return masses_new
+        if(estimate_masses):
+            force_ft.set_complex_from_double(force)
+            force_ft=fft*force_ft
+            force_ft*=1/V**0.5
+            field_ft.set_complex_from_double(field)
+            field_ft=fft*field_ft
+            field_ft*=1/V**0.5
+            # Add the mod squared of the current field configuration to the 
+            # average
+            #forces.append([force_ft.get_elem([0,0,0,0],0),force_ft.get_elem([4,1,0,0],0)])
+            #fields.append([field_ft.get_elem([0,0,0,0],0),field_ft.get_elem([4,1,0,0],0)])
+            field_ft.set_elem([0,0,0,0],0,np.array([field_ft.get_elem([0,0,0,0],0)-vev*V**0.5], dtype='c16').tobytes())
+            field_sq.set_abs_from_complex(field_ft)
+            field_ft.set_elem([0,0,0,0],0,np.array([field_ft.get_elem([0,0,0,0],0)+vev*V**0.5], dtype='c16').tobytes())
+            field_sq*=1/steps
+            field_sq_av+=field_sq
+            force_sq.set_abs_from_complex(force_ft)
+            force_sq*=1/steps
+            force_sq_av+=force_sq
+            field_sum = field.glb_sum()
+            vevs.append(field_sum[0]/V)
+    if(estimate_masses):
+        # Estimate the masses we should use in order to evolve each field 
+        # mode by half of its period
+        masses_new = q.Field("double",geo,geo.multiplicity())
+        #force_ft.set_complex_from_double(force)
+        #force_ft=fft*force_ft
+        #force_ft*=1/V**0.5
+        #action.hmc_estimate_mass(masses_new, field_ft, force_ft, np.mean(vev))
+        masses_new.set_ratio_double(force_sq_av, field_sq_av)
+        masses_new *= 4/np.pi**2
+        #q.displayln_info(f"Vev: {np.mean(vevs)}")
+        return masses_new, np.mean(vevs)
+    else:
+        return 0,0      
 
 @q.timer_verbose
-def run_hmc_evolve(field, momentum_ft, field_ft, action, masses, rs, steps, md_time, V, fft, ifft):
+def run_hmc_evolve(field, momentum_ft, field_ft, action, masses, rs, steps, md_time, V, vev, estimate_masses, fft, ifft):
     # Calculate the value of the molecular dynamics Hamiltonian for the 
     # initial field and momentum configuration
     energy = action.hmc_m_hamilton_node(momentum_ft, masses) + action.action_node(field)
@@ -106,20 +131,21 @@ def run_hmc_evolve(field, momentum_ft, field_ft, action, masses, rs, steps, md_t
     # Evolve the field forward in molecular dynamics time using the 
     # given momenta and the Hamiltonian appropriate for the action
     dt = float(md_time) / float(steps)
-    masses_new = hmc_evolve(field, momentum_ft, field_ft, action, masses, steps, dt, V, fft, ifft)
+    masses_new, vev_new = hmc_evolve(field, momentum_ft, field_ft, action, masses, steps, dt, V, vev, estimate_masses, fft, ifft)
     
     # Calculate the change in the value of the molecular dynamics 
     # Hamilton after the evolution 
     delta_h = action.hmc_m_hamilton_node(momentum_ft, masses) + action.action_node(field) - energy;
     
-    # Save the new estimated masses
-    masses@=masses_new
+    if(estimate_masses):
+        # Save the new estimated masses
+        masses@=masses_new
     
     # Sum over delta_h for every parallel node (each node handles part 
     # of the lattice)
     delta_h = q.glb_sum(delta_h)
     
-    return delta_h
+    return delta_h, vev_new
 
 @q.timer_verbose
 def metropolis_accept(delta_h, traj, rs):
@@ -150,7 +176,7 @@ def metropolis_accept(delta_h, traj, rs):
     return flag, accept_prob
 
 @q.timer_verbose
-def run_hmc(field, geo, action, masses, traj, rs, fft, ifft):
+def run_hmc(field, geo, action, masses, traj, rs, vev, estimate_masses, fft, ifft):
     # Create a copy of the scalar field
     f0 = field.copy()
     
@@ -182,13 +208,16 @@ def run_hmc(field, geo, action, masses, traj, rs, fft, ifft):
     momentum_ft*=1/geo.total_volume()**0.5
     
     # The number of steps to take in a single trajectory
-    steps = 100
+    steps = 50
     # The length of a single trajectory in molecular dynamics time
     md_time = 1.0
+    # The number of initial trajectories to perform without a Metropolis
+    # accept step
+    init_len = 20
     
     # Evolve the field over time md_time using the given momenta and 
     # the Hamiltonian appropriate for the given action
-    delta_h = run_hmc_evolve(f0, momentum_ft, field_ft, action, masses, rs, steps, md_time, geo.total_volume(), fft, ifft)
+    delta_h, vev_new = run_hmc_evolve(f0, momentum_ft, field_ft, action, masses, rs, steps, md_time, geo.total_volume(), vev, estimate_masses, fft, ifft)
     
     # Decide whether to accept or reject the field update using the 
     # metropolis algorithm
@@ -197,10 +226,11 @@ def run_hmc(field, geo, action, masses, traj, rs, fft, ifft):
     
     # If the field update is accepted or we are within the first few 
     # trajectories, save the field update
-    init_len = 20
     if flag or traj <= init_len:
         q.displayln_info("run_hmc: update field (traj={:d})".format(traj))
         field @= f0
+    
+    return vev_new
 
 @q.timer_verbose
 def test_hmc(total_site, action, mult, n_traj):
@@ -237,11 +267,41 @@ def test_hmc(total_site, action, mult, n_traj):
     # The number of trajectories to calculate before taking measurements
     start_measurements = 0;
     
+    # A variable to store the estimated vacuum expectation value of sigma
+    vev = 0
+    # True if the system is approximately thermalized (as estimated from
+    # the stability of the vacuum expectation value of sigma)
+    thermalized = False
+    
     for i in range(n_traj):
         traj += 1
         
         # Run the HMC algorithm to update the field configuration
-        run_hmc(field, geo, action, masses, traj, rs.split("hmc-{}".format(traj)), fft, ifft)
+        if(not thermalized):
+            vev_new = run_hmc(field, geo, action, masses, traj, rs.split("hmc-{}".format(traj)), vev, True, fft, ifft)
+        else:
+            run_hmc(field, geo, action, masses, traj, rs.split("hmc-{}".format(traj)), vev, False, fft, ifft)
+        
+        if(not thermalized and traj>20 and np.abs(vev/vev_new-1)<0.1):
+            thermalized = True
+            n_est = 20
+            masses_new = q.Field("double",geo,mult)
+            masses_new @= masses
+            q.set_zero(masses)
+            vevs=[vev_new]
+            for i in range(n_est):
+                run_hmc(field, geo, action, masses_new, traj, rs.split("hmc-est-mass{}".format(i)), np.mean(vevs), True, fft, ifft)
+                masses_new*=1/n_est
+                masses+=masses_new
+                masses_new*=float(n_est)
+                vevs.append(field.glb_sum()[0]/V)
+                q.displayln_info("Estmiated masses:")
+                ms=[masses_new.get_elem([0,0,0,0],0),masses_new.get_elem([1,0,0,0],0),masses_new.get_elem([5,0,0,0],0)]
+                q.displayln_info(ms)
+            vev = np.mean(vevs)
+            print(vev)
+        elif(not thermalized):
+            vev = vev_new
         
         # Calculate the expectation values of phi and phi^2
         q.displayln_info("Average phi^2:")
@@ -298,14 +358,17 @@ ax_cur_timeslices=[]
 # Save the acceptance rates
 accept_rates=[]
 
+fields=[]
+forces=[]
+
 # The lattice dimensions
-total_site = [8,8,8,8]
+total_site = [16,16,16,32]
 
 # The multiplicity of the scalar field
 mult = 4
 
 # The number of trajectories to calculate
-n_traj = 10
+n_traj = 5000
 
 # Use action for a Euclidean scalar field. The Lagrangian will be:
 # (1/2)*[sum i]|dphi_i|^2 + (1/2)*m_sq*[sum i]|phi_i|^2

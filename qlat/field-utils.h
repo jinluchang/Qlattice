@@ -693,4 +693,42 @@ inline void set_double_from_complex(Field<M>& sf, const Field<Complex>& cf)
   });
 }
 
+template <class M>
+inline void set_abs_from_complex(Field<M>& sf, const Field<Complex>& cf)
+{
+  TIMER("set_mod_sq_from_complex");
+  const Geometry geo = cf.geo();
+  //sf.init(geo);
+  qacc_for(index, geo.local_volume(), {
+    Coordinate xl = geo.coordinate_from_index(index);
+    Vector<M> v = sf.get_elems(xl);
+    Vector<double> sf_v((double*)v.data(), v.data_size() / sizeof(double));
+    int N = sf_v.size();
+    qassert(N == geo.multiplicity);
+    for (int m = 0; m < N; ++m) {
+      double r = cf.get_elem(xl,m).real();
+      double i = cf.get_elem(xl,m).imag();
+      sf_v[m] = std::pow(r*r+i*i,0.5);
+    }
+  });
+}
+
+template <class M>
+inline void set_ratio_double(Field<M>& sf, const Field<double>& sf1, const Field<double>& sf2)
+{
+  TIMER("set_ratio_double");
+  const Geometry geo = sf.geo();
+  //sf.init(geo);
+  qacc_for(index, geo.local_volume(), {
+    Coordinate xl = geo.coordinate_from_index(index);
+    Vector<M> v = sf.get_elems(xl);
+    Vector<double> sf_v((double*)v.data(), v.data_size() / sizeof(double));
+    int N = sf_v.size();
+    qassert(N == geo.multiplicity);
+    for (int m = 0; m < N; ++m) {
+      sf_v[m] = sf1.get_elem(xl,m)/sf2.get_elem(xl,m);
+    }
+  });
+}
+
 }  // namespace qlat

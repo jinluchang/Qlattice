@@ -176,7 +176,16 @@ class Field:
     def set_double_from_complex(self, cf):
         assert isinstance(cf, Field)
         c.set_double_from_complex_field(self,cf)
-
+    
+    def set_abs_from_complex(self, cf):
+        assert isinstance(cf, Field)
+        c.set_abs_from_complex_field(self,cf)
+    
+    def set_ratio_double(self, sf1, sf2):
+        assert isinstance(sf1, Field)
+        assert isinstance(sf2, Field)
+        c.set_ratio_double_field(self,sf1,sf2)
+    
     def qnorm(self):
         return c.qnorm_field(self)
 
