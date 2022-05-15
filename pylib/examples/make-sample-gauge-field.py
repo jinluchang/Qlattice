@@ -9,7 +9,8 @@ size_node_list = [
     [1, 1, 1, 4],
     [1, 1, 1, 8],
     [2, 2, 2, 2],
-    [2, 2, 2, 4]]
+    [2, 2, 2, 4],
+    ]
 
 q.begin(sys.argv, size_node_list)
 

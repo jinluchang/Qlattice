@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
 
 from auto_contractor.operators import *
-import rbc_ukqcd as ru
-import qlat_gpt as qg
 
 import functools
 import math
 import os
 import time
 import importlib
+import sys
 
 from jobs import *
 from load_data import *
@@ -75,7 +74,7 @@ def auto_contract_meson_corr(job_tag, traj, get_prop, get_psel, get_fsel):
         return
     cexpr = get_cexpr_meson_corr()
     expr_names = get_cexpr_names(cexpr)
-    total_site = ru.get_total_site(job_tag)
+    total_site = rup.get_total_site(job_tag)
     fsel, fselc = get_fsel()
     xg_fsel_list = fsel.to_psel_local().to_list()
     geo = q.Geometry(total_site, 1)
@@ -117,7 +116,7 @@ def auto_contract_meson_corr_psnk(job_tag, traj, get_prop, get_psel, get_fsel):
         return
     cexpr = get_cexpr_meson_corr()
     expr_names = get_cexpr_names(cexpr)
-    total_site = ru.get_total_site(job_tag)
+    total_site = rup.get_total_site(job_tag)
     fsel, fselc = get_fsel()
     xg_fsel_list = fsel.to_psel_local().to_list()
     geo = q.Geometry(total_site, 1)
@@ -153,7 +152,7 @@ def auto_contract_meson_corr_psrc(job_tag, traj, get_prop, get_psel, get_fsel):
         return
     cexpr = get_cexpr_meson_corr()
     expr_names = get_cexpr_names(cexpr)
-    total_site = ru.get_total_site(job_tag)
+    total_site = rup.get_total_site(job_tag)
     psel = get_psel()
     fsel, fselc = get_fsel()
     xg_fsel_list = fsel.to_psel_local().to_list()
@@ -197,7 +196,7 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_fs
         return
     cexpr = get_cexpr_meson_corr()
     expr_names = get_cexpr_names(cexpr)
-    total_site = ru.get_total_site(job_tag)
+    total_site = rup.get_total_site(job_tag)
     psel = get_psel()
     fsel, fselc = get_fsel()
     xg_fsel_list = fsel.to_psel_local().to_list()
@@ -254,7 +253,7 @@ def auto_contract_meson_f_corr_psnk(job_tag, traj, get_prop, get_psel, get_fsel)
         return
     cexpr = get_cexpr_meson_f_corr()
     expr_names = get_cexpr_names(cexpr)
-    total_site = ru.get_total_site(job_tag)
+    total_site = rup.get_total_site(job_tag)
     fsel, fselc = get_fsel()
     xg_fsel_list = fsel.to_psel_local().to_list()
     geo = q.Geometry(total_site, 1)
@@ -290,7 +289,7 @@ def auto_contract_meson_f_corr_psrc(job_tag, traj, get_prop, get_psel, get_fsel)
         return
     cexpr = get_cexpr_meson_f_corr()
     expr_names = get_cexpr_names(cexpr)
-    total_site = ru.get_total_site(job_tag)
+    total_site = rup.get_total_site(job_tag)
     psel = get_psel()
     fsel, fselc = get_fsel()
     xg_fsel_list = fsel.to_psel_local().to_list()
@@ -334,7 +333,7 @@ def auto_contract_meson_f_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_
         return
     cexpr = get_cexpr_meson_f_corr()
     expr_names = get_cexpr_names(cexpr)
-    total_site = ru.get_total_site(job_tag)
+    total_site = rup.get_total_site(job_tag)
     psel = get_psel()
     fsel, fselc = get_fsel()
     xg_fsel_list = fsel.to_psel_local().to_list()
@@ -394,7 +393,7 @@ def auto_contract_meson_m(job_tag, traj, get_prop, get_psel, get_fsel):
         return
     cexpr = get_cexpr_meson_m()
     expr_names = get_cexpr_names(cexpr)
-    total_site = ru.get_total_site(job_tag)
+    total_site = rup.get_total_site(job_tag)
     psel = get_psel()
     fsel, fselc = get_fsel()
     xg_fsel_list = fsel.to_psel_local().to_list()
@@ -458,7 +457,7 @@ def auto_contract_meson_jt(job_tag, traj, get_prop, get_psel, get_fsel):
         return
     cexpr = get_cexpr_meson_jt()
     expr_names = get_cexpr_names(cexpr)
-    total_site = ru.get_total_site(job_tag)
+    total_site = rup.get_total_site(job_tag)
     psel = get_psel()
     fsel, fselc = get_fsel()
     xg_fsel_list = fsel.to_psel_local().to_list()
@@ -647,7 +646,7 @@ def auto_contract_meson_jj(job_tag, traj, get_prop, get_psel, get_fsel):
         return
     cexpr = get_cexpr_meson_jj()
     expr_names = get_cexpr_names(cexpr)
-    total_site = ru.get_total_site(job_tag)
+    total_site = rup.get_total_site(job_tag)
     psel = get_psel()
     fsel, fselc = get_fsel()
     xg_fsel_list = fsel.to_psel_local().to_list()
@@ -801,7 +800,24 @@ def test():
     run_job("test-4nt8", 1000)
     # run_job("16IH2", 1000)
 
-qg.begin_with_gpt()
+size_node_list = [
+        [1, 1, 1, 1],
+        [1, 1, 1, 2],
+        [1, 1, 1, 4],
+        [1, 1, 1, 8],
+        [2, 2, 2, 2],
+        [2, 2, 2, 4],
+        [2, 2, 2, 8],
+        [2, 2, 4, 8],
+        [2, 4, 4, 8],
+        [4, 4, 4, 8],
+        [4, 4, 4, 16],
+        [4, 4, 8, 16],
+        [4, 8, 8, 16],
+        [8, 8, 8, 16],
+        ]
+
+q.begin(sys.argv, size_node_list)
 
 # ADJUST ME
 q.qremove_all_info("cache")
@@ -833,4 +849,4 @@ for job_tag in job_tags:
     for traj in rup.dict_params[job_tag]["trajs"]:
         run_job(job_tag, traj)
 
-qg.end_with_gpt()
+q.end()
