@@ -6,6 +6,7 @@ from qlat.field_utils import *
 from qlat.rng_state import *
 from qlat.selected_field import *
 from qlat.selected_points import *
+from qlat.mat import *
 
 class Prop(Field):
 
@@ -17,6 +18,11 @@ class Prop(Field):
         if is_copying_data:
             f @= self
         return f
+
+    def get_elem_wm(self, xg, m = 0):
+        wm = WilsonMatrix()
+        c.get_elem_wm_prop(wm, self, xg, m)
+        return wm
 
     def sparse(self, sel):
         # deprecated
@@ -44,6 +50,11 @@ class SelProp(SelectedField):
             f @= self
         return f
 
+    def get_elem_wm(self, idx, m = 0):
+        wm = WilsonMatrix()
+        c.get_elem_wm_sprop(wm, self, idx, m)
+        return wm
+
     def sparse(self, sel):
         # deprecated
         if isinstance(sel, PointSelection):
@@ -69,6 +80,11 @@ class PselProp(SelectedPoints):
         if is_copying_data:
             f @= self
         return f
+
+    def get_elem_wm(self, idx, m = 0):
+        wm = WilsonMatrix()
+        c.get_elem_wm_psprop(wm, self, idx, m)
+        return wm
 
 def set_point_src(prop_src, geo, xg, value = 1.0):
     c.set_point_src_prop(prop_src, geo, xg, value)

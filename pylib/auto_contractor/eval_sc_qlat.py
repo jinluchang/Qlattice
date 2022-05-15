@@ -26,11 +26,15 @@ import numpy as np
 ###
 
 def as_mspin(x):
+    if isinstance(x, q.SpinMatrix):
+        return x
     sm = q.SpinMatrix()
     sm.set_value(list(x.flat))
     return sm
 
 def as_mspincolor(x):
+    if isinstance(x, q.WilsonMatrix):
+        return x
     wm = q.WilsonMatrix()
     if isinstance(x, np.ndarray):
         wm.set_value(list(x.flat))

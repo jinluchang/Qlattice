@@ -224,3 +224,51 @@ EXPORT(trace_sm_wm, {
   const WilsonMatrix& obj1 = py_convert_type<WilsonMatrix>(p_obj1);
   return py_convert(matrix_trace(obj, obj1));
 });
+
+// -----------------------------------------
+
+EXPORT(get_elem_wm_prop, {
+  using namespace qlat;
+  PyObject* p_obj = NULL;
+  PyObject* p_obj1 = NULL;
+  PyObject* p_xg = NULL;
+  long m = 0;
+  if (!PyArg_ParseTuple(args, "OOO|l", &p_obj, &p_obj1, &p_xg, &m)) {
+    return NULL;
+  }
+  WilsonMatrix& obj = py_convert_type<WilsonMatrix>(p_obj);
+  const Field<WilsonMatrix>& obj1 = py_convert_type_field<WilsonMatrix>(p_obj1);
+  const Coordinate xg = py_convert_data<Coordinate>(p_xg);
+  obj = obj1.get_elem(xg, m);
+  Py_RETURN_NONE;
+});
+
+EXPORT(get_elem_wm_sprop, {
+  using namespace qlat;
+  PyObject* p_obj = NULL;
+  PyObject* p_obj1 = NULL;
+  long idx = 0;
+  long m = 0;
+  if (!PyArg_ParseTuple(args, "OOl|l", &p_obj, &p_obj1, &idx, &m)) {
+    return NULL;
+  }
+  WilsonMatrix& obj = py_convert_type<WilsonMatrix>(p_obj);
+  const SelectedField<WilsonMatrix>& obj1 = py_convert_type_sfield<WilsonMatrix>(p_obj1);
+  obj = obj1.get_elem(idx, m);
+  Py_RETURN_NONE;
+});
+
+EXPORT(get_elem_wm_psprop, {
+  using namespace qlat;
+  PyObject* p_obj = NULL;
+  PyObject* p_obj1 = NULL;
+  long idx = 0;
+  long m = 0;
+  if (!PyArg_ParseTuple(args, "OOl|l", &p_obj, &p_obj1, &idx, &m)) {
+    return NULL;
+  }
+  WilsonMatrix& obj = py_convert_type<WilsonMatrix>(p_obj);
+  const SelectedPoints<WilsonMatrix>& obj1 = py_convert_type_spoints<WilsonMatrix>(p_obj1);
+  obj = obj1.get_elem(idx, m);
+  Py_RETURN_NONE;
+});
