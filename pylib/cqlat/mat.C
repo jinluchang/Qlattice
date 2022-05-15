@@ -272,3 +272,30 @@ EXPORT(get_elem_wm_psprop, {
   obj = obj1.get_elem(idx, m);
   Py_RETURN_NONE;
 });
+
+// -----------------------------------------
+
+EXPORT(set_state_wm, {
+  using namespace qlat;
+  PyObject* p_obj = NULL;
+  PyObject* p_obj1 = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_obj, &p_obj1)) {
+    return NULL;
+  }
+  WilsonMatrix& obj = py_convert_type<WilsonMatrix>(p_obj);
+  const char* buffer = PyBytes_AsString(p_obj1);
+  const long len = PyBytes_Size(p_obj1);
+  pqassert(len == sizeof(WilsonMatrix));
+  std::memcpy((void*)&obj, (void*)buffer, len);
+  Py_RETURN_NONE;
+});
+
+EXPORT(get_state_wm, {
+  using namespace qlat;
+  PyObject* p_obj = NULL;
+  if (!PyArg_ParseTuple(args, "O", &p_obj)) {
+    return NULL;
+  }
+  WilsonMatrix& obj = py_convert_type<WilsonMatrix>(p_obj);
+  return PyBytes_FromStringAndSize((const char*)&obj, sizeof(WilsonMatrix));
+});

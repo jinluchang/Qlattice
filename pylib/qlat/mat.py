@@ -28,6 +28,14 @@ class WilsonMatrix:
     def __deepcopy__(self, memo):
         return self.copy()
 
+    def __getstate__(self):
+        # return a 12x12 2-D numpy array contain the data
+        arr = np.frombuffer(c.get_state_wm(self), dtype = complex).reshape(12, 12)
+        return arr
+
+    def __setstate__(self, arr):
+        c.set_state(self, arr.tobytes())
+
     def set_zero(self):
         return c.set_zero_wilson_matrix(self)
 
