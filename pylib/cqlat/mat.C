@@ -27,21 +27,6 @@ EXPORT(set_zero_wilson_matrix, {
   Py_RETURN_NONE;
 });
 
-EXPORT(set_value_wilson_matrix, {
-  using namespace qlat;
-  PyObject* p_obj = NULL;
-  PyObject* p_obj1 = NULL;
-  if (!PyArg_ParseTuple(args, "OO", &p_obj, &p_obj1)) {
-    return NULL;
-  }
-  WilsonMatrix& obj = py_convert_type<WilsonMatrix>(p_obj);
-  const std::vector<Complex>& obj1 =
-      py_convert_data<std::vector<Complex> >(p_obj1);
-  pqassert(obj1.size() * sizeof(Complex) == sizeof(WilsonMatrix));
-  std::memcpy((void*)&obj, (void*)obj1.data(), sizeof(WilsonMatrix));
-  Py_RETURN_NONE;
-});
-
 // -----------------------------------------
 
 EXPORT(mk_spin_matrix, {
@@ -68,21 +53,6 @@ EXPORT(set_zero_spin_matrix, {
   }
   SpinMatrix& obj = py_convert_type<SpinMatrix>(p_obj);
   set_zero(obj);
-  Py_RETURN_NONE;
-});
-
-EXPORT(set_value_spin_matrix, {
-  using namespace qlat;
-  PyObject* p_obj = NULL;
-  PyObject* p_obj1 = NULL;
-  if (!PyArg_ParseTuple(args, "OO", &p_obj, &p_obj1)) {
-    return NULL;
-  }
-  SpinMatrix& obj = py_convert_type<SpinMatrix>(p_obj);
-  const std::vector<Complex>& obj1 =
-      py_convert_data<std::vector<Complex> >(p_obj1);
-  pqassert(obj1.size() * sizeof(Complex) == sizeof(SpinMatrix));
-  std::memcpy((void*)&obj, (void*)obj1.data(), sizeof(SpinMatrix));
   Py_RETURN_NONE;
 });
 
@@ -298,4 +268,29 @@ EXPORT(get_state_wm, {
   }
   WilsonMatrix& obj = py_convert_type<WilsonMatrix>(p_obj);
   return PyBytes_FromStringAndSize((const char*)&obj, sizeof(WilsonMatrix));
+});
+
+EXPORT(set_state_sm, {
+  using namespace qlat;
+  PyObject* p_obj = NULL;
+  PyObject* p_obj1 = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_obj, &p_obj1)) {
+    return NULL;
+  }
+  SpinMatrix& obj = py_convert_type<SpinMatrix>(p_obj);
+  const char* buffer = PyBytes_AsString(p_obj1);
+  const long len = PyBytes_Size(p_obj1);
+  pqassert(len == sizeof(SpinMatrix));
+  std::memcpy((void*)&obj, (void*)buffer, len);
+  Py_RETURN_NONE;
+});
+
+EXPORT(get_state_sm, {
+  using namespace qlat;
+  PyObject* p_obj = NULL;
+  if (!PyArg_ParseTuple(args, "O", &p_obj)) {
+    return NULL;
+  }
+  SpinMatrix& obj = py_convert_type<SpinMatrix>(p_obj);
+  return PyBytes_FromStringAndSize((const char*)&obj, sizeof(SpinMatrix));
 });

@@ -97,17 +97,18 @@ def get_op_type(x):
         assert False
     return None
 
-def collect_op_in_cexpr(variables, named_terms):
+def collect_op_in_cexpr(named_terms):
+    # collect the propagators
+    # modify the named_terms in-place and return the prop variable definitions as variables
+    variables_prop = []
     var_counter = 0
     var_dataset = {} # var_dataset[op_repr] = op_var
     var_nameset = set()
-    for name, value in variables:
-        var_nameset.add(name)
     def add_prop_variables(x):
         nonlocal var_counter
         if isinstance(x, list):
             for i, op in enumerate(x):
-                if op.otype in ["S",]:
+                if op.otype in [ "S", ]:
                     op_repr = repr(op)
                     if op_repr in var_dataset:
                         x[i] = var_dataset[op_repr]
@@ -117,7 +118,7 @@ def collect_op_in_cexpr(variables, named_terms):
                             name = f"V_S_{var_counter}"
                             if name not in var_nameset:
                                 break
-                        variables.append((name, op,))
+                        variables_prop.append((name, op,))
                         var = Var(name)
                         x[i] = var
                         var_dataset[op_repr] = var
@@ -132,6 +133,7 @@ def collect_op_in_cexpr(variables, named_terms):
     for name, term in named_terms:
         add_prop_variables(term)
         term.sort()
+    return variables_prop
 
 def find_common_subexpr_in_tr(variables_trs):
     # return None or [ op, op1, ]
@@ -232,10 +234,10 @@ def collect_common_subexpr_in_tr(variables_trs, op_common, var):
         replace(tr)
         remove_none(tr)
 
-def collect_subexpr_in_cexpr(variables, named_terms):
+def collect_subexpr_in_cexpr(named_terms):
+    # collect common sub-expressions and traces
+    # modify named_terms in-place and return definitions as variables_expr
     var_nameset = set()
-    for name, value in variables:
-        var_nameset.add(name)
     variables_trs = []
     var_counter_tr = 0
     var_dataset_tr = {} # var_dataset[op_repr] = op_var
@@ -272,6 +274,7 @@ def collect_subexpr_in_cexpr(variables, named_terms):
     var_counter_dict["V_prod_GS_"] = 0
     var_counter_dict["V_prod_SG_"] = 0
     var_counter_dict["V_prod_SS_"] = 0
+    variables_prod = []
     while True:
         subexpr = find_common_subexpr_in_tr(variables_trs)
         if subexpr is None:
@@ -296,24 +299,27 @@ def collect_subexpr_in_cexpr(variables, named_terms):
             name = f"{name_prefix}{var_counter_dict[name_prefix]}"
             if name not in var_nameset:
                 break
-        variables.append((name, subexpr,))
+        variables_prod.append((name, subexpr,))
         var = Var(name)
         collect_common_subexpr_in_tr(variables_trs, subexpr, var)
-    variables += variables_trs
+    variables_expr = variables_prod + variables_trs
+    return variables_expr
 
 class CExpr:
 
     # self.diagram_types
-    # self.variables
+    # self.variables_prop
+    # self.variables_expr
     # self.named_terms
     # self.named_typed_exprs
     # self.named_exprs
     # self.positions
     # self.function
 
-    def __init__(self, diagram_types, variables, named_terms, named_typed_exprs, named_exprs, positions = None):
+    def __init__(self, diagram_types, variables_prop, variables_expr, named_terms, named_typed_exprs, named_exprs, positions = None):
         self.diagram_types = diagram_types
-        self.variables = variables
+        self.variables_prop = variables_prop
+        self.variables_expr = variables_expr
         self.named_terms = named_terms
         # typed_expr and expr are a collection of term names representing the sum of these terms
         self.named_typed_exprs = named_typed_exprs
@@ -328,11 +334,12 @@ class CExpr:
         self.function = None
 
     def __repr__(self) -> str:
-        return f"CExpr({self.diagram_types},{self.variables},{self.named_terms},{self.named_typed_exprs},{self.named_exprs},{self.positions})"
+        return f"CExpr({self.diagram_types},{self.variables_prop},{self.variables_expr},{self.named_terms},{self.named_typed_exprs},{self.named_exprs},{self.positions})"
 
     def collect_op(self):
         # Performing common sub-expression elimination
         # Should be called after contract_simplify_compile(*exprs) or mk_cexpr(*exprs)
+        # The cexpr cannot be evaluated before collect_op!!!
         # interface function
         # eval term factor
         for name, term in self.named_terms:
@@ -341,9 +348,9 @@ class CExpr:
             for i in range(len(expr)):
                 expr[i] = (complex(expr[i][0]), expr[i][1],)
         # collect prop expr into variables
-        collect_op_in_cexpr(self.variables, self.named_terms)
+        self.variables_prop = collect_op_in_cexpr(self.named_terms)
         # collect common subexpr into variables
-        collect_subexpr_in_cexpr(self.variables, self.named_terms)
+        self.variables_expr = collect_subexpr_in_cexpr(self.named_terms)
 
 ###
 
@@ -494,8 +501,8 @@ def mk_cexpr(*exprs, diagram_type_dict = None):
             if typed_expr_list:
                 named_typed_exprs.append((f"# {descriptions[i]}\ntyped_exprs[{i}]['{diagram_type_name}']", typed_expr_list,))
         named_exprs.append((f"# {descriptions[i]}\nexprs[{i}]", expr_list,))
-    variables = []
-    return CExpr(diagram_types, variables, named_terms, named_typed_exprs, named_exprs)
+    cexpr = CExpr(diagram_types, [], [], named_terms, named_typed_exprs, named_exprs)
+    return cexpr
 
 def contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True, diagram_type_dict = None):
     # e.g. exprs = [ Qb("u", "x", s, c) * Qv("u", "x", s, c) + "u_bar*u", Qb("s", "x", s, c) * Qv("s", "x", s, c) + "s_bar*s", Qb("c", "x", s, c) * Qv("c", "x", s, c) + "c_bar*c", ]
@@ -547,12 +554,21 @@ def display_cexpr_raw(cexpr : CExpr):
     for name, diagram_type in cexpr.diagram_types:
         lines.append(f"diagram_type_dict[{diagram_type}] = \"{name}\"")
     lines.append(f"Positions: {cexpr.positions}")
-    for name, value in cexpr.variables:
+    if cexpr.variables_prop:
+        lines.append(f"Variables prop:")
+    for name, value in cexpr.variables_prop:
         lines.append(f"{name:>20} : {value}")
+    if cexpr.variables_expr:
+        lines.append(f"Variables expr:")
+    for name, value in cexpr.variables_expr:
+        lines.append(f"{name:>20} : {value}")
+    lines.append(f"Named terms:")
     for name, term in cexpr.named_terms:
         lines.append(f"{name:>20} : {term}")
+    lines.append(f"Named typed exprs:")
     for name, typed_expr in cexpr.named_typed_exprs:
         lines.append(f"{name} :\n  {typed_expr}")
+    lines.append(f"Named exprs:")
     for name, expr in cexpr.named_exprs:
         lines.append(f"{name} :\n  {expr}")
     lines.append(f"End CExpr")
@@ -568,9 +584,14 @@ def display_cexpr(cexpr : CExpr):
         lines.append(f"diagram_type_dict[{diagram_type}] = {repr(name)}")
     position_vars = ", ".join(cexpr.positions)
     lines.append(f"Positions:\n{position_vars} = {cexpr.positions}")
-    for name, value in cexpr.variables:
-        lines.append(f"  {show_variable_value(value)} + '{name}',")
-        lines.append(f"{name:<20} = {show_variable_value(value)}")
+    if cexpr.variables_prop:
+        lines.append(f"Variables prop:")
+    for name, value in cexpr.variables_prop:
+        lines.append(f"{name:>20} = {show_variable_value(value)}")
+    if cexpr.variables_expr:
+        lines.append(f"Variables expr:")
+    for name, value in cexpr.variables_expr:
+        lines.append(f"{name:>20} = {show_variable_value(value)}")
     lines.append(f"terms = [")
     for name, term in cexpr.named_terms:
         lines.append(f"  {show_variable_value(term)}, # {name}")
@@ -693,27 +714,11 @@ def cexpr_code_gen_py(cexpr : CExpr):
     lines.append(f"@q.timer")
     lines.append(f"def cexpr_function(*, positions_dict, get_prop, is_only_total = 'total'):")
     lines.append(f"")
-    lines.append(f"    # set positions")
-    for position_var in cexpr.positions:
-        lines.append(f"    {position_var} = positions_dict['{position_var}']")
-    lines.append(f"")
     lines.append(f"    # get_props")
-    var_props = []
-    for name, value in cexpr.variables:
-        if name.startswith("V_S_"):
-            x = value
-            assert isinstance(x, Op)
-            assert x.otype == "S"
-            c, t = gen_expr(x)
-            assert t == "V_S"
-            lines.append(f"    {name} = {c}")
-            var_props.append(name)
+    lines.append(f"    props = cexpr_function_get_prop(positions_dict, get_prop)")
     lines.append(f"")
     lines.append(f"    # apply function to these AMA props")
-    lines.append(f"    ama_val = ama_apply(cexpr_function_with_prop,")
-    for name in var_props:
-        lines.append(f"        {name},")
-    lines.append(f"        )")
+    lines.append(f"    ama_val = ama_apply(cexpr_function_with_prop, *props)")
     lines.append(f"")
     lines.append(f"    # set flops")
     lines.append(f"    q.acc_timer_flops('py:cexpr_function', ama_counts(ama_val) * total_sloppy_flops)")
@@ -723,28 +728,45 @@ def cexpr_code_gen_py(cexpr : CExpr):
     lines.append(f"")
     lines.append(f"    return val")
     lines.append(f"")
+    lines.append(f"@q.timer")
+    lines.append(f"def cexpr_function_get_prop(positions_dict, get_prop):")
+    lines.append(f"    # set positions")
+    for position_var in cexpr.positions:
+        lines.append(f"    {position_var} = positions_dict['{position_var}']")
+    lines.append(f"")
+    lines.append(f"    # get_props")
+    for name, value in cexpr.variables_prop:
+        assert name.startswith("V_S_")
+        x = value
+        assert isinstance(x, Op)
+        assert x.otype == "S"
+        c, t = gen_expr(x)
+        assert t == "V_S"
+        lines.append(f"    {name} = {c}")
+    lines.append(f"")
+    lines.append(f"    return [")
+    for name, value in cexpr.variables_prop:
+        lines.append(f"        {name},")
+    lines.append(f"        ]")
     lines.append(f"")
     lines.append(f"@q.timer")
     lines.append(f"def cexpr_function_with_prop(")
-    for name in var_props:
+    for name, value in cexpr.variables_prop:
         lines.append(f"        {name},")
     lines.append(f"        ):")
     lines.append(f"")
     lines.append(f"    # set flops")
     lines.append(f"    q.acc_timer_flops('py:cexpr_function_with_prop', total_sloppy_flops)")
     lines.append(f"")
-    lines.append(f"    # compute products")
-    for name, value in cexpr.variables:
+    lines.append(f"    # compute products and traces")
+    for name, value in cexpr.variables_expr:
         if name.startswith("V_prod_"):
             x = value
             assert isinstance(x, list)
             c, t = gen_expr_prod_list(x)
             assert t == get_var_name_type(name)
             lines.append(f"    {name} = {c}")
-    lines.append(f"")
-    lines.append(f"    # compute traces")
-    for name, value in cexpr.variables:
-        if name.startswith("V_tr_"):
+        elif name.startswith("V_tr_"):
             x = value
             assert isinstance(x, Op)
             assert x.otype == "Tr"

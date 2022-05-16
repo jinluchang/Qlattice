@@ -32,6 +32,7 @@ import cmath
 import math
 import importlib
 import time
+import os
 
 def ama_msc_trace(x):
     return ama_apply1(msc_trace, x)
@@ -40,6 +41,12 @@ def ama_msc_trace2(x, y):
     def f(x, y):
         return msc_trace2(x, y)
     return ama_apply2(f, x, y)
+
+def get_spin_matrix(op):
+    assert op.otype == "G"
+    assert op.s1 == "auto" and op.s2 == "auto"
+    assert op.tag in [0, 1, 2, 3, 5]
+    return get_gamma_matrix(op.tag)
 
 def eval_op_term_expr(expr, variable_dict, positions_dict, get_prop):
     def l_eval(x):
@@ -111,7 +118,9 @@ def get_cexpr_names(cexpr, *, is_only_total = "total"):
 
 @q.timer
 def eval_cexpr_set_vars(variable_dict, cexpr, positions_dict, get_prop):
-    for name, op in cexpr.variables:
+    for name, op in cexpr.variables_prop:
+        variable_dict[name] = eval_op_term_expr(op, variable_dict, positions_dict, get_prop)
+    for name, op in cexpr.variables_expr:
         variable_dict[name] = eval_op_term_expr(op, variable_dict, positions_dict, get_prop)
 
 @q.timer
@@ -140,6 +149,8 @@ def eval_cexpr_return_exprs(cexpr, tvals, is_only_total):
     else:
         assert False
 
+is_use_compiled_cexpr = not (os.getenv("q_use_compiled_cexpr") == "False") # default to be True unless q_use_compiled_cexpr = "False"
+
 @q.timer
 def eval_cexpr(cexpr : CExpr, *, positions_dict, get_prop, is_only_total = "total"):
     # return 1 dimensional np.array
@@ -151,7 +162,7 @@ def eval_cexpr(cexpr : CExpr, *, positions_dict, get_prop, is_only_total = "tota
     # e.g. flavor = "l"
     # e.g. xg_snk = ("point-snk", [ 1, 2, 3, 4, ])
     # interface function
-    if cexpr.function is not None:
+    if is_use_compiled_cexpr and cexpr.function is not None:
         return cexpr.function(positions_dict = positions_dict, get_prop = get_prop, is_only_total = is_only_total)
     for pos in cexpr.positions:
         assert pos in positions_dict
@@ -172,7 +183,7 @@ def cache_compiled_cexpr(calc_cexpr, fn_base):
     cexpr = q.pickle_cache_call(calc_cexpr, fn_base + ".pickle")
     if not q.does_file_exist_sync_node(fn_base + ".py"):
         q.qtouch_info(fn_base + ".py", cexpr_code_gen_py(cexpr))
-        q.displayln_info(display_cexpr_raw(cexpr))
+        q.displayln_info(display_cexpr(cexpr))
         time.sleep(1)
         q.sync_node()
     module = importlib.import_module(fn_base.replace("/", "."))
@@ -184,7 +195,7 @@ def make_rand_spin_color_matrix(rng_state):
     rs = rng_state
     return as_mspincolor(np.array(
         [ rs.u_rand_gen() + 1j * rs.u_rand_gen() for i in range(144) ],
-        dtype = complex))
+        dtype = complex).reshape(12, 12))
 
 def make_rand_spin_matrix(rng_state):
     rs = rng_state

@@ -1,5 +1,7 @@
 import cqlat as c
 
+import numpy as np
+
 class WilsonMatrix:
 
     # self.cdata
@@ -29,23 +31,46 @@ class WilsonMatrix:
         return self.copy()
 
     def __getstate__(self):
-        # return a 12x12 2-D numpy array contain the data
-        arr = np.frombuffer(c.get_state_wm(self), dtype = complex).reshape(12, 12)
-        return arr
+        return self.get_value()
 
     def __setstate__(self, arr):
-        c.set_state(self, arr.tobytes())
+        return self.set_value(arr)
 
     def set_zero(self):
         return c.set_zero_wilson_matrix(self)
 
-    def set_value(self, value_as_list_of_complex):
-        return c.set_value_wilson_matrix(self, value_as_list_of_complex)
+    def set_value(self, value_as_numpy_array):
+        return c.set_state_wm(self, value_as_numpy_array.tobytes())
+
+    def get_value(self):
+        # return a 12x12 2-D numpy array contain the data
+        arr = np.frombuffer(c.get_state_wm(self), dtype = complex).reshape(12, 12)
+        return arr
 
     def g5_herm(self):
         wm = WilsonMatrix()
         c.set_g5_herm_wilson_matrix(wm, self)
         return wm
+
+    def __mul__(self, other):
+        if isinstance(other, (int, float, complex,)):
+            return mat_mul_a_sc(other, self)
+        elif isinstance(other, SpinMatrix):
+            return mat_mul_sc_s(self, other)
+        elif isinstance(other, WilsonMatrix):
+            return mat_mul_sc_sc(self, other)
+        else:
+            return NotImplemented
+
+    def __rmul__(self, other):
+        if isinstance(other, (int, float, complex,)):
+            return mat_mul_a_sc(other, self)
+        elif isinstance(other, SpinMatrix):
+            return mat_mul_s_sc(other, self)
+        elif isinstance(other, WilsonMatrix):
+            return mat_mul_sc_sc(other, self)
+        else:
+            return NotImplemented
 
 ###
 
@@ -80,7 +105,70 @@ class SpinMatrix:
     def set_zero(self):
         return c.set_zero_spin_matrix(self)
 
-    def set_value(self, value_as_list_of_complex):
-        return c.set_value_spin_matrix(self, value_as_list_of_complex)
+    def set_value(self, value_as_numpy_array):
+        return c.set_state_sm(self, value_as_numpy_array.tobytes())
+
+    def get_value(self):
+        # return a 4x4 2-D numpy array contain the data
+        arr = np.frombuffer(c.get_state_sm(self), dtype = complex).reshape(4, 4)
+        return arr
+
+    def __mul__(self, other):
+        if isinstance(other, (int, float, complex,)):
+            return mat_mul_a_s(other, self)
+        elif isinstance(other, SpinMatrix):
+            return mat_mul_s_s(self, other)
+        else:
+            return NotImplemented
+
+    def __rmul__(self, other):
+        if isinstance(other, (int, float, complex,)):
+            return mat_mul_a_s(other, self)
+        elif isinstance(other, SpinMatrix):
+            return mat_mul_s_s(other, self)
+        else:
+            return NotImplemented
 
 ###
+
+def mat_mul_sc_sc(x, y):
+    wm = WilsonMatrix()
+    c.set_wm_mul_wm_wm(wm, x, y)
+    return wm
+
+def mat_mul_sc_s(x, y):
+    wm = WilsonMatrix()
+    c.set_wm_mul_wm_sm(wm, x, y)
+    return wm
+
+def mat_mul_s_sc(x, y):
+    wm = WilsonMatrix()
+    c.set_wm_mul_sm_wm(wm, x, y)
+    return wm
+
+def mat_mul_s_s(x, y):
+    sm = SpinMatrix()
+    c.set_sm_mul_sm_sm(sm, x, y)
+    return sm
+
+def mat_mul_a_s(coef, x):
+    sm = SpinMatrix()
+    c.set_sm_mul_a_sm(sm, coef, x)
+    return sm
+
+def mat_mul_a_sc(coef, x):
+    wm = SpinMatrix()
+    c.set_wm_mul_a_wm(wm, coef, x)
+    return wm
+
+def mat_sc_trace(x):
+    return c.trace_wm(x)
+
+def mat_sc_sc_trace(x, y):
+    return c.trace_wm_wm(x, y)
+
+def mat_sc_s_trace(x, y):
+    return c.trace_sm_wm(y, x)
+
+def mat_s_sc_trace(x, y):
+    return c.trace_sm_wm(x, y)

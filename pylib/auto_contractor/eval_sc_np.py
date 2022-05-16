@@ -21,6 +21,7 @@
 
 import numpy as np
 from numpy import ascontiguousarray as as_cont
+import qlat as q
 
 class SpinMatrix:
 
@@ -189,17 +190,13 @@ gamma_matrix_list = [
 def get_gamma_matrix(mu):
     return gamma_matrix_list[mu]
 
-def get_spin_matrix(op):
-    assert op.otype == "G"
-    assert op.s1 == "auto" and op.s2 == "auto"
-    assert op.tag in [0, 1, 2, 3, 5]
-    return gamma_matrix_list[op.tag]
-
 def as_mspincolor(x):
     if isinstance(x, np.ndarray):
         return SpinColorMatrix(as_cont(x.reshape(12, 12)))
     elif x == 0:
         return SpinColorMatrix(np.zeros((12, 12,), dtype = complex))
+    elif isinstance(x, q.WilsonMatrix):
+        return SpinColorMatrix(as_cont(x.get_value()))
     else:
         assert False
 
