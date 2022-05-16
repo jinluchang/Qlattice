@@ -234,6 +234,11 @@ def get_prop_snk_src(prop_cache, flavor, p_snk, p_src, *, psel_pos_dict, fsel_po
 
 ### -------
 
+def check_cache_assign(cache, key, val):
+    if key in cache:
+        assert cache[key] == val
+    cache[key] = val
+
 @q.timer
 def load_prop_wsrc_psel(job_tag, traj, flavor, *, wi, psel, fsel, fselc, gt):
     # cache_psel[f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc} ; wsrc ; psel"]
@@ -273,8 +278,8 @@ def load_prop_wsrc_psel(job_tag, traj, flavor, *, wi, psel, fsel, fselc, gt):
         cache_psel_ts[f"{tag} ; wsrc_wsnk ; psel_ts"] = spw_prop
         count[inv_acc] += 1
     assert count[1] == total_site[3]
-    cache_prob[f"type={flavor_inv_type} ; accuracy=1 ; wsrc ; prob"] = 1
-    cache_prob[f"type={flavor_inv_type} ; accuracy=2 ; wsrc ; prob"] = get_prob_exact_wsrc(job_tag)
+    check_cache_assign(cache_prob, f"type={flavor_inv_type} ; accuracy=1 ; wsrc ; prob", 1)
+    check_cache_assign(cache_prob, f"type={flavor_inv_type} ; accuracy=2 ; wsrc ; prob", get_prob_exact_wsrc(job_tag))
 
 @q.timer
 def load_prop_wsrc_fsel(job_tag, traj, flavor, *, wi, psel, fsel, fselc, gt):
@@ -312,16 +317,17 @@ def load_prop_wsrc_fsel(job_tag, traj, flavor, *, wi, psel, fsel, fselc, gt):
         sc_prop = gt_inv * sc_prop
         cache_fsel[f"{tag} ; wsrc ; fsel"] = sc_prop
         # check psel psnk prop
-        sp_prop_diff = q.PselProp(psel)
-        sp_prop_diff @= cache_fsel[f"{tag} ; wsrc ; fsel"]
-        sp_prop_diff -= cache_psel[f"{tag} ; wsrc ; psel"]
-        assert sp_prop_diff.qnorm() <= 1e-14 * cache_psel[f"{tag} ; wsrc ; psel"].qnorm()
+        if f"{tag} ; wsrc ; psel" in cache_psel:
+            sp_prop_diff = q.PselProp(psel)
+            sp_prop_diff @= sc_prop
+            sp_prop_diff -= cache_psel[f"{tag} ; wsrc ; psel"]
+            assert sp_prop_diff.qnorm() <= 1e-14 * cache_psel[f"{tag} ; wsrc ; psel"].qnorm()
         # increase count
         count[inv_acc] += 1
     sfr.close()
     assert count[1] == total_site[3]
-    assert cache_prob[f"type={flavor_inv_type} ; accuracy=1 ; wsrc ; prob"] == 1
-    assert cache_prob[f"type={flavor_inv_type} ; accuracy=2 ; wsrc ; prob"] == get_prob_exact_wsrc(job_tag)
+    check_cache_assign(cache_prob, f"type={flavor_inv_type} ; accuracy=1 ; wsrc ; prob", 1)
+    check_cache_assign(cache_prob, f"type={flavor_inv_type} ; accuracy=2 ; wsrc ; prob", get_prob_exact_wsrc(job_tag))
 
 @q.timer
 def load_prop_psrc_psel(job_tag, traj, flavor, *, psel, fsel, fselc):
@@ -369,9 +375,9 @@ def load_prop_psrc_psel(job_tag, traj, flavor, *, psel, fsel, fselc):
             spw_prop.load(fn_spw_load)
             cache_psel_ts[f"{tag} ; psrc_wsnk ; psel_ts"] = spw_prop
         count[inv_acc] += 1
-    cache_prob[f"type={flavor_inv_type} ; accuracy=0 ; psrc ; prob"] = count[0] / len(xg_list)
-    cache_prob[f"type={flavor_inv_type} ; accuracy=1 ; psrc ; prob"] = rup.dict_params[job_tag]["prob_acc_1_psrc"]
-    cache_prob[f"type={flavor_inv_type} ; accuracy=2 ; psrc ; prob"] = rup.dict_params[job_tag]["prob_acc_2_psrc"]
+    check_cache_assign(cache_prob, f"type={flavor_inv_type} ; accuracy=0 ; psrc ; prob", count[0] / len(xg_list))
+    check_cache_assign(cache_prob, f"type={flavor_inv_type} ; accuracy=1 ; psrc ; prob", rup.dict_params[job_tag]["prob_acc_1_psrc"])
+    check_cache_assign(cache_prob, f"type={flavor_inv_type} ; accuracy=2 ; psrc ; prob", rup.dict_params[job_tag]["prob_acc_2_psrc"])
 
 @q.timer
 def load_prop_psrc_fsel(job_tag, traj, flavor, *, psel, fsel, fselc):
@@ -412,15 +418,16 @@ def load_prop_psrc_fsel(job_tag, traj, flavor, *, psel, fsel, fselc):
         sc_prop.load_double_from_float(sfr, tag)
         cache_fsel[f"{tag} ; psrc ; fsel"] = sc_prop
         # check psel psnk prop
-        sp_prop_diff = q.PselProp(psel)
-        sp_prop_diff @= cache_fsel[f"{tag} ; psrc ; fsel"]
-        sp_prop_diff -= cache_psel[f"{tag} ; psrc ; psel"]
-        assert sp_prop_diff.qnorm() <= 1e-14 * cache_psel[f"{tag} ; psrc ; psel"].qnorm()
+        if f"{tag} ; psrc ; psel" in cache_psel:
+            sp_prop_diff = q.PselProp(psel)
+            sp_prop_diff @= sc_prop
+            sp_prop_diff -= cache_psel[f"{tag} ; psrc ; psel"]
+            assert sp_prop_diff.qnorm() <= 1e-14 * cache_psel[f"{tag} ; psrc ; psel"].qnorm()
         count[inv_acc] += 1
     sfr.close()
-    assert cache_prob[f"type={flavor_inv_type} ; accuracy=0 ; psrc ; prob"] == count[0] / len(xg_list)
-    assert cache_prob[f"type={flavor_inv_type} ; accuracy=1 ; psrc ; prob"] == rup.dict_params[job_tag]["prob_acc_1_psrc"]
-    assert cache_prob[f"type={flavor_inv_type} ; accuracy=2 ; psrc ; prob"] == rup.dict_params[job_tag]["prob_acc_2_psrc"]
+    check_cache_assign(cache_prob, f"type={flavor_inv_type} ; accuracy=0 ; psrc ; prob", count[0] / len(xg_list))
+    check_cache_assign(cache_prob, f"type={flavor_inv_type} ; accuracy=1 ; psrc ; prob", rup.dict_params[job_tag]["prob_acc_1_psrc"])
+    check_cache_assign(cache_prob, f"type={flavor_inv_type} ; accuracy=2 ; psrc ; prob", rup.dict_params[job_tag]["prob_acc_2_psrc"])
 
 @q.timer
 def load_prop_rand_u1_fsel(job_tag, traj, flavor, *, fsel):
@@ -493,8 +500,8 @@ def run_get_prop(job_tag, traj, *, get_gt, get_psel, get_fsel, get_psel_smear, g
         load_prop_wsrc_psel(job_tag, traj, "s", wi = wi, psel = psel, fsel = fsel, fselc = fselc, gt = gt)
         load_prop_wsrc_fsel(job_tag, traj, "l", wi = wi, psel = psel, fsel = fsel, fselc = fselc, gt = gt)
         load_prop_wsrc_fsel(job_tag, traj, "s", wi = wi, psel = psel, fsel = fsel, fselc = fselc, gt = gt)
-        load_prop_psrc_psel(job_tag, traj, "l", psel = psel, fsel = fsel, fselc = fselc)
-        load_prop_psrc_psel(job_tag, traj, "s", psel = psel, fsel = fsel, fselc = fselc)
+        # load_prop_psrc_psel(job_tag, traj, "l", psel = psel, fsel = fsel, fselc = fselc)
+        # load_prop_psrc_psel(job_tag, traj, "s", psel = psel, fsel = fsel, fselc = fselc)
         load_prop_psrc_fsel(job_tag, traj, "l", psel = psel, fsel = fsel, fselc = fselc)
         load_prop_psrc_fsel(job_tag, traj, "s", psel = psel, fsel = fsel, fselc = fselc)
         # load_prop_rand_u1_fsel(job_tag, traj, "l", fsel = fsel)
