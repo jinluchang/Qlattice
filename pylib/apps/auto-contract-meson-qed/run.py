@@ -340,21 +340,29 @@ def auto_contract_meson_f_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_
     xg_psel_list = psel.to_list()
     geo = q.Geometry(total_site, 1)
     total_volume = geo.total_volume()
+    def load_data():
+        for xg_src in xg_psel_list:
+            for xg_snk in xg_fsel_list:
+                t = (xg_snk[3] - xg_src[3]) % total_site[3]
+                pd = {
+                        "x_2" : ("point-snk", xg_snk,),
+                        "t_1" : ("point", xg_src,),
+                        }
+                props = eval_cexpr_get_props(cexpr, positions_dict = pd, get_prop = get_prop)
+                yield (props, t,)
     @q.timer
-    def feval(xg_src):
+    def feval(args):
+        props, t = args
+        val = eval_cexpr_eval(cexpr, props = props)
+        return val, t
+    def sum_function(val_list):
         counts = np.zeros(total_site[3], dtype = complex)
-        values = np.zeros((total_site[3], len(expr_names),), dtype = complex)
-        for xg_snk in xg_fsel_list:
-            t = (xg_snk[3] - xg_src[3]) % total_site[3]
-            pd = {
-                    "x_2" : ("point-snk", xg_snk,),
-                    "t_1" : ("point", xg_src,),
-                    }
+        values = np.zeros((len(expr_names), total_site[3],), dtype = complex)
+        for val, t in val_list:
             counts[t] += 1
-            values[t] += eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop, is_only_total = "total")
-        values = values.transpose() # values[expr_name, t_sep]
+            values[:, t] += val
         return counts, values
-    res_count, res_sum = q.glb_sum_list(q.parallel_map_sum(q.get_q_mp_proc(), feval, xg_psel_list))
+    res_count, res_sum = q.glb_sum_list(q.parallel_map_sum(q.get_q_mp_proc(), feval, load_data(), sum_function = sum_function))
     res_count *= 1.0 / (len(xg_psel_list) * total_volume * fsel.prob() / total_site[3])
     res_sum *= 1.0 / (len(xg_psel_list) * total_volume * fsel.prob() / total_site[3])
     assert q.qnorm(res_count - 1.0) < 1e-10
@@ -401,19 +409,31 @@ def auto_contract_meson_m(job_tag, traj, get_prop, get_psel, get_fsel):
     tsep = rup.dict_params[job_tag]["meson_tensor_tsep"]
     geo = q.Geometry(total_site, 1)
     total_volume = geo.total_volume()
+    def load_data():
+        for xg_snk in xg_fsel_list:
+            t = xg_snk[3]
+            t_1 = (t + tsep) % total_site[3]
+            t_2 = (t - tsep) % total_site[3]
+            pd = {
+                    "x_1" : ("point-snk", xg_snk,),
+                    "t_1" : ("wall", t_1),
+                    "t_2" : ("wall", t_2),
+                    }
+            props = eval_cexpr_get_props(cexpr, positions_dict = pd, get_prop = get_prop)
+            yield props
     @q.timer
-    def feval(xg_snk):
-        t = xg_snk[3]
-        t_1 = (t + tsep) % total_site[3]
-        t_2 = (t - tsep) % total_site[3]
-        pd = {
-                "x_1" : ("point-snk", xg_snk,),
-                "t_1" : ("wall", t_1),
-                "t_2" : ("wall", t_2),
-                }
-        values = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop, is_only_total = "total")
-        return 1.0, values
-    res_count, res_sum = q.glb_sum_list(q.parallel_map_sum(q.get_q_mp_proc(), feval, xg_fsel_list))
+    def feval(args):
+        props = args
+        val = eval_cexpr_eval(cexpr, props = props)
+        return val
+    def sum_function(val_list):
+        counts = 0.0
+        values = np.zeros(len(expr_names), dtype = complex)
+        for val in val_list:
+            counts += 1.0
+            values += val
+        return counts, values
+    res_count, res_sum = q.glb_sum_list(q.parallel_map_sum(q.get_q_mp_proc(), feval, load_data(), sum_function = sum_function))
     res_count *= 1.0 / (total_volume * fsel.prob())
     res_sum *= 1.0 / (total_volume * fsel.prob())
     assert q.qnorm(res_count - 1.0) < 1e-10
@@ -465,23 +485,35 @@ def auto_contract_meson_jt(job_tag, traj, get_prop, get_psel, get_fsel):
     tsep = rup.dict_params[job_tag]["meson_tensor_tsep"]
     geo = q.Geometry(total_site, 1)
     total_volume = geo.total_volume()
+    def load_data():
+        for xg_snk in xg_fsel_list:
+            t = xg_snk[3]
+            t_1 = (t + tsep) % total_site[3]
+            t_2 = (t - tsep) % total_site[3]
+            t_1p = (t_1 + total_site[3] // 2) % total_site[3]
+            t_2p = (t_2 + total_site[3] // 2) % total_site[3]
+            pd = {
+                    "x_1" : ("point-snk", xg_snk,),
+                    "t_1" : ("wall", t_1),
+                    "t_2" : ("wall", t_2),
+                    "t_1p" : ("wall", t_1p),
+                    "t_2p" : ("wall", t_2p),
+                    }
+            props = eval_cexpr_get_props(cexpr, positions_dict = pd, get_prop = get_prop)
+            yield props
     @q.timer
-    def feval(xg_snk):
-        t = xg_snk[3]
-        t_1 = (t + tsep) % total_site[3]
-        t_2 = (t - tsep) % total_site[3]
-        t_1p = (t_1 + total_site[3] // 2) % total_site[3]
-        t_2p = (t_2 + total_site[3] // 2) % total_site[3]
-        pd = {
-                "x_1" : ("point-snk", xg_snk,),
-                "t_1" : ("wall", t_1),
-                "t_2" : ("wall", t_2),
-                "t_1p" : ("wall", t_1p),
-                "t_2p" : ("wall", t_2p),
-                }
-        values = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop, is_only_total = "total")
-        return 1.0, values
-    res_count, res_sum = q.glb_sum_list(q.parallel_map_sum(q.get_q_mp_proc(), feval, xg_fsel_list))
+    def feval(args):
+        props = args
+        val = eval_cexpr_eval(cexpr, props = props)
+        return val
+    def sum_function(val_list):
+        counts = 0.0
+        values = np.zeros(len(expr_names), dtype = complex)
+        for val in val_list:
+            counts += 1.0
+            values += val
+        return counts, values
+    res_count, res_sum = q.glb_sum_list(q.parallel_map_sum(q.get_q_mp_proc(), feval, load_data(), sum_function = sum_function))
     res_count *= 1.0 / (total_volume * fsel.prob())
     res_sum *= 1.0 / (total_volume * fsel.prob())
     assert q.qnorm(res_count - 1.0) < 1e-10
@@ -615,7 +647,6 @@ def proj_meson_jj(res_arr, res_meson_corr, x_rel, total_site):
     values_meson_corr = np.array([ coef_low * v, coef_high * v, ]).transpose(1, 0) # idx_meson, r
     return counts, values, values_meson_corr
 
-@q.timer
 def accumulate_proj_meson_jj(counts, values, values_meson_corr, proj_acc, x_rel, total_site):
     # counts[t, r_idx]
     # values[idx_tensor, t, r_idx, idx_proj,]
@@ -668,7 +699,8 @@ def auto_contract_meson_jj(job_tag, traj, get_prop, get_psel, get_fsel):
     n_tensor = (len(expr_names) - 3) // 16
     assert n_tensor * 16 + 3 == len(expr_names)
     def load_data():
-        for xg_src in xg_psel_list:
+        for idx, xg_src in enumerate(xg_psel_list):
+            q.displayln_info(f"auto_contract_meson_jj: {idx+1}/{len(xg_psel_list)} {xg_src}")
             for xg_snk in xg_fsel_list:
                 x_rel = [ rel_mod(xg_snk[mu] - xg_src[mu], total_site[mu]) for mu in range(4) ]
                 x_rel_t = x_rel[3]
@@ -700,8 +732,10 @@ def auto_contract_meson_jj(job_tag, traj, get_prop, get_psel, get_fsel):
         for proj_acc, x_rel in val_list:
             accumulate_proj_meson_jj(counts, values, values_meson_corr, proj_acc, x_rel, total_site)
         return counts, values, values_meson_corr
+    q.timer_reset(0)
     res_count, res_sum, res_meson_corr_sum = q.glb_sum_list(
-            q.parallel_map_sum(q.get_q_mp_proc(), feval, load_data(), sum_function = sum_function, chunksize = 2))
+            q.parallel_map_sum(q.get_q_mp_proc(), feval, load_data(), sum_function = sum_function, chunksize = 16))
+    q.timer_display()
     res_count *= 1.0 / (len(xg_psel_list) * fsel.prob())
     res_sum *= 1.0 / (len(xg_psel_list) * fsel.prob())
     res_meson_corr_sum *= 1.0 / (len(xg_psel_list) * fsel.prob())
