@@ -22,6 +22,7 @@
 import numpy as np
 from numpy import ascontiguousarray as as_cont
 import qlat as q
+from auto_contractor.ama import *
 
 class SpinMatrix:
 

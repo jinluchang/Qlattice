@@ -632,7 +632,7 @@ def cexpr_code_gen_py(cexpr : CExpr):
             return f"{x}", "V_a"
         assert isinstance(x, Op)
         if x.otype == "S":
-            return f"ama_apply1(get_mat, get_prop('{x.f}', {x.p1}, {x.p2}))", "V_S"
+            return f"get_prop('{x.f}', {x.p1}, {x.p2})", "V_S"
         elif x.otype == "G":
             assert x.s1 == "auto" and x.s2 == "auto"
             assert x.tag in [0, 1, 2, 3, 5]
@@ -717,14 +717,8 @@ def cexpr_code_gen_py(cexpr : CExpr):
     lines.append(f"    # get_props")
     lines.append(f"    props = cexpr_function_get_prop(positions_dict, get_prop)")
     lines.append(f"")
-    lines.append(f"    # apply function to these AMA props")
-    lines.append(f"    ama_val = ama_apply(cexpr_function_with_prop, *props)")
-    lines.append(f"")
-    lines.append(f"    # set flops")
-    lines.append(f"    q.acc_timer_flops('py:cexpr_function', ama_counts(ama_val) * total_sloppy_flops)")
-    lines.append(f"")
-    lines.append(f"    # extract AMA val")
-    lines.append(f"    val = ama_extract(ama_val)")
+    lines.append(f"    # eval")
+    lines.append(f"    val = cexpr_function_eval(props)")
     lines.append(f"")
     lines.append(f"    return val")
     lines.append(f"")
@@ -750,13 +744,30 @@ def cexpr_code_gen_py(cexpr : CExpr):
     lines.append(f"        ]")
     lines.append(f"")
     lines.append(f"@q.timer")
-    lines.append(f"def cexpr_function_with_prop(")
+    lines.append(f"def cexpr_function_eval(props):")
+    lines.append(f"")
+    lines.append(f"    # load AMA props with proper format")
+    lines.append(f"    props = [ ama_apply1(get_mat, load_prop(p)) for p in props ]")
+    lines.append(f"")
+    lines.append(f"    # apply function to these AMA props")
+    lines.append(f"    ama_val = ama_apply(cexpr_function_eval_with_props, *props)")
+    lines.append(f"")
+    lines.append(f"    # set flops")
+    lines.append(f"    q.acc_timer_flops('py:cexpr_function_eval', ama_counts(ama_val) * total_sloppy_flops)")
+    lines.append(f"")
+    lines.append(f"    # extract AMA val")
+    lines.append(f"    val = ama_extract(ama_val)")
+    lines.append(f"")
+    lines.append(f"    return val")
+    lines.append(f"")
+    lines.append(f"@q.timer")
+    lines.append(f"def cexpr_function_eval_with_props(")
     for name, value in cexpr.variables_prop:
         lines.append(f"        {name},")
     lines.append(f"        ):")
     lines.append(f"")
     lines.append(f"    # set flops")
-    lines.append(f"    q.acc_timer_flops('py:cexpr_function_with_prop', total_sloppy_flops)")
+    lines.append(f"    q.acc_timer_flops('py:cexpr_function_eval_with_props', total_sloppy_flops)")
     lines.append(f"")
     lines.append(f"    # compute products and traces")
     for name, value in cexpr.variables_expr:

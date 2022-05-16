@@ -48,6 +48,14 @@ def get_spin_matrix(op):
     assert op.tag in [0, 1, 2, 3, 5]
     return get_gamma_matrix(op.tag)
 
+def load_prop(x):
+    if isinstance(x, tuple) and len(x) == 2:
+        if x[0] == "g5_herm":
+            return ama_apply1(g5_herm, ama_apply1(as_mspincolor, x[1]))
+        else:
+            assert False
+    return ama_apply1(as_mspincolor, x)
+
 def eval_op_term_expr(expr, variable_dict, positions_dict, get_prop):
     def l_eval(x):
         if isinstance(x, list):
@@ -60,7 +68,7 @@ def eval_op_term_expr(expr, variable_dict, positions_dict, get_prop):
                 flavor = x.f
                 xg_snk = positions_dict[x.p1]
                 xg_src = positions_dict[x.p2]
-                return get_prop(flavor, xg_snk, xg_src)
+                return load_prop(get_prop(flavor, xg_snk, xg_src))
             elif x.otype == "G":
                 return get_spin_matrix(x)
             elif x.otype == "Tr":
