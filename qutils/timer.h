@@ -309,6 +309,17 @@ struct TimerInfo {
     call_times = 0;
   }
   //
+  void merge(const TimerInfo& x)
+  {
+    if (std::isnan(dtime)) {
+      dtime = x.dtime;
+      dflops = x.dflops;
+    }
+    accumulated_time += x.accumulated_time;
+    accumulated_flops += x.accumulated_flops;
+    call_times += x.call_times;
+  }
+  //
   void show_start(const int fname_len) const
   {
     double total_time = get_total_time();
@@ -385,6 +396,22 @@ struct Timer {
     return timer_database;
   }
   //
+  static std::vector<std::vector<TimerInfo> >& get_timer_database_history()
+  {
+    static std::vector<std::vector<TimerInfo> > timer_database_history;
+    return timer_database_history;
+  }
+  static std::vector<double>& get_start_time_history()
+  {
+    static std::vector<double> history;
+    return history;
+  }
+  static std::vector<long>& get_max_call_times_for_always_show_info_history()
+  {
+    static std::vector<long> history;
+    return history;
+  }
+  //
   static std::vector<long>& get_timer_stack()
   {
     static std::vector<long> stack;
@@ -405,8 +432,63 @@ struct Timer {
       max_call_times_for_always_show_info() =
           max_call_times_for_always_show_info_;
     }
-    displayln_info(0, ssprintf("Timer::reset(%ld): Reset all timers!",
-                               max_call_times_for_always_show_info()));
+    std::vector<std::vector<TimerInfo> >& tdb_history =
+        get_timer_database_history();
+    displayln_info(
+        0, ssprintf("Timer::reset(%ld): Reset all timers! (level = %ld)",
+                    max_call_times_for_always_show_info(),
+                    (long)tdb_history.size()));
+  }
+  //
+  static void fork(const long max_call_times_for_always_show_info_ = -1)
+  // if max_call_times_for_always_show_info_ <= -1:
+  // then do not change the current value.
+  // else update the max_call_times_for_always_show_info.
+  {
+    get_start_time_history().push_back(get_start_time());
+    get_start_time() = get_time();
+    get_max_call_times_for_always_show_info_history().push_back(
+        max_call_times_for_always_show_info());
+    if (max_call_times_for_always_show_info_ >= 0) {
+      max_call_times_for_always_show_info() =
+          max_call_times_for_always_show_info_;
+    }
+    std::vector<std::vector<TimerInfo> >& tdb_history =
+        get_timer_database_history();
+    std::vector<TimerInfo>& tdb = get_timer_database();
+    tdb_history.push_back(tdb);
+    for (long i = 0; i < (long)tdb.size(); ++i) {
+      tdb[i].reset();
+    }
+    displayln_info(0,
+                   ssprintf("Timer::fork(%ld): Fork all timers! (level = %ld)",
+                            max_call_times_for_always_show_info(),
+                            (long)tdb_history.size()));
+  }
+  //
+  static void merge()
+  // call merge only after fork
+  {
+    pqassert(get_start_time_history().size() >= 1);
+    get_start_time() = get_start_time_history().back();
+    get_start_time_history().pop_back();
+    pqassert(get_max_call_times_for_always_show_info_history().size() >= 1);
+    max_call_times_for_always_show_info() =
+        get_max_call_times_for_always_show_info_history().back();
+    get_max_call_times_for_always_show_info_history().pop_back();
+    std::vector<std::vector<TimerInfo> >& tdb_history =
+        get_timer_database_history();
+    std::vector<TimerInfo>& tdb = get_timer_database();
+    pqassert(tdb_history.size() >= 1);
+    pqassert(tdb.size() >= tdb_history.back().size());
+    for (long i = 0; i < (long)tdb_history.back().size(); ++i) {
+      tdb[i].merge(tdb_history.back()[i]);
+    }
+    tdb_history.pop_back();
+    displayln_info(0,
+                   ssprintf("Timer::merge(): Merge all timers! (level = %ld)",
+                            max_call_times_for_always_show_info(),
+                            (long)tdb_history.size()));
   }
   //
   static double& minimum_autodisplay_interval()
@@ -537,7 +619,7 @@ struct Timer {
     TimerInfo& info = get_timer_database()[info_index];
     std::vector<long>& t_stack = get_timer_stack();
     pqassert(not t_stack.empty());
-    if (not (t_stack.back() == info_index)) {
+    if (not(t_stack.back() == info_index)) {
       displayln(ssprintf("%s::%s ERROR: stack is corrupted", cname,
                          info.fname.c_str()));
       Timer::display_stack();
@@ -604,16 +686,19 @@ struct Timer {
   {
     double total_time = get_total_time();
     const std::vector<TimerInfo>& tdb = get_timer_database();
+    const std::vector<std::vector<TimerInfo> >& tdb_history =
+        get_timer_database_history();
     std::vector<const TimerInfo*> db;
     const long tdbsize = tdb.size();
     for (long i = 0; i < tdbsize; i++) {
       db.push_back(&tdb[i]);
     }
     std::sort(db.begin(), db.end(), compare_time_info_p);
+
     displayln_info(
-        ssprintf("Timer::display-start: %s fname : time%% number of calls; "
+        ssprintf("Timer::display-start: %s (level=%ld) fname : time%% number of calls; "
                  "Avg,Tot sec; Avg,Tot flops; Gflops",
-                 str.c_str()));
+                 str.c_str(), (long)tdb_history.size()));
     const long dbsize = db.size();
     for (long i = 0; i < dbsize; i++) {
       if (db[i]->call_times > 0) {
@@ -621,9 +706,9 @@ struct Timer {
       }
     }
     displayln_info(
-        ssprintf("Timer::display-end:   %s --------------------- total %.4E "
+        ssprintf("Timer::display-end:   %s (level=%ld) --------------------- total %.4E "
                  "sec ----------------------",
-                 str.c_str(), total_time));
+                 str.c_str(), (long)tdb_history.size(), total_time));
   }
   //
   static void autodisplay(const double time)

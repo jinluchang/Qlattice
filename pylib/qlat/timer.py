@@ -4,7 +4,7 @@ from cqlat import get_id_node
 from cqlat import verbose_level
 from cqlat import timer_display, timer_autodisplay
 from cqlat import timer_display_stack, timer_display_stack_always
-from cqlat import timer_reset
+from cqlat import timer_reset, timer_fork, timer_merge
 
 import functools
 
