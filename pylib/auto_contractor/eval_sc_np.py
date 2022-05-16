@@ -198,7 +198,10 @@ def as_mspincolor(x):
         return SpinColorMatrix(np.zeros((12, 12,), dtype = complex))
     elif isinstance(x, q.WilsonMatrix):
         return SpinColorMatrix(as_cont(x.get_value()))
+    elif isinstance(x, SpinColorMatrix):
+        return x
     else:
+        print("as_mspincolor:", x)
         assert False
 
 def as_mspin(x):

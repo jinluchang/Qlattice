@@ -21,6 +21,7 @@ def parallel_map(q_mp_proc, func, iterable):
         return list(map(func, iterable))
     assert q_mp_proc >= 1
     global pool_function
+    assert pool_function is None
     pool_function = func
     with mp.Pool(q_mp_proc, timer_reset, [ 0, ]) as p:
         res = p.map(call_pool_function, iterable, chunksize = 1)
@@ -49,19 +50,22 @@ def glb_sum_list(ret):
     return [ glb_sum(r) for r in ret ]
 
 @timer
-def parallel_map_sum(q_mp_proc, func, iterable, *, sum_initial = None):
+def parallel_map_sum(q_mp_proc, func, iterable, *, sum_function = None, sum_initial = None, chunksize = 1):
     # iterable = [ i1, i2, ... ]
     # va1, vb1, ... = func(i1)
     # return [ sum([va1, va2, ...]), sum([vb1, vb2, ...]), ... ]
     displayln_info(f"parallel_map(q_mp_proc={q_mp_proc})")
+    if sum_function is None:
+        sum_function = lambda x: sum_list(x, sum_initial = sum_initial)
     if q_mp_proc == 0:
-        return list(map(func, iterable))
+        return sum_function(map(func, iterable))
     assert q_mp_proc >= 1
     global pool_function
+    assert pool_function is None
     pool_function = func
     with mp.Pool(q_mp_proc, timer_reset, [ 0, ]) as p:
-        res = p.imap(call_pool_function, iterable, chunksize = 1)
-        ret = sum_list(res, sum_initial = sum_initial)
+        res = p.imap(call_pool_function, iterable, chunksize = chunksize)
+        ret = sum_function(res)
         p.apply(timer_display)
     pool_function = None
     return ret

@@ -659,32 +659,39 @@ def auto_contract_meson_jj(job_tag, traj, get_prop, get_psel, get_fsel):
     assert n_proj == len(all_jj_projection_names)
     n_tensor = (len(expr_names) - 3) // 16
     assert n_tensor * 16 + 3 == len(expr_names)
-    @q.timer
-    def feval(xg_src):
+    def load_data():
+        for xg_src in xg_psel_list:
+            for xg_snk in xg_fsel_list:
+                x_rel = [ rel_mod(xg_snk[mu] - xg_src[mu], total_site[mu]) for mu in range(4) ]
+                x_rel_t = x_rel[3]
+                x_2_t = xg_src[3]
+                x_1_t = x_2_t + x_rel_t
+                t_1 = (max(x_1_t, x_2_t) + tsep) % total_site[3]
+                t_2 = (min(x_1_t, x_2_t) - tsep) % total_site[3]
+                pd = {
+                        "x_1" : ("point-snk", xg_snk,),
+                        "x_2" : ("point", xg_src,),
+                        "t_1" : ("wall", t_1),
+                        "t_2" : ("wall", t_2),
+                        }
+                props = eval_cexpr_get_props(cexpr, positions_dict = pd, get_prop = get_prop)
+                yield (props, x_rel)
+    def feval(args):
+        props, x_rel = args
+        val = eval_cexpr_eval(cexpr, props = props)
+        return val, x_rel
+    def sum_function(val_list):
         counts = np.zeros((t_size, r_limit,), dtype = complex)
         values = np.zeros((n_tensor, t_size, r_limit, n_proj,), dtype = complex)
         values_meson_corr = np.zeros((3, t_size, r_limit), dtype = complex)
-        for xg_snk in xg_fsel_list:
-            x_rel = [ rel_mod(xg_snk[mu] - xg_src[mu], total_site[mu]) for mu in range(4) ]
-            x_rel_t = x_rel[3]
-            x_2_t = xg_src[3]
-            x_1_t = x_2_t + x_rel_t
-            t_1 = (max(x_1_t, x_2_t) + tsep) % total_site[3]
-            t_2 = (min(x_1_t, x_2_t) - tsep) % total_site[3]
-            pd = {
-                    "x_1" : ("point-snk", xg_snk,),
-                    "x_2" : ("point", xg_src,),
-                    "t_1" : ("wall", t_1),
-                    "t_2" : ("wall", t_2),
-                    }
-            res = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop, is_only_total = "total")
-            assert res.shape[0] == 16 * n_tensor + 3
-            res_arr = res[:-3].reshape((n_tensor, 4, 4))
-            res_meson_corr = res[-3:]
+        for val, x_rel in val_list:
+            assert val.shape[0] == 16 * n_tensor + 3
+            res_arr = val[:-3].reshape((n_tensor, 4, 4))
+            res_meson_corr = val[-3:]
             accumulate_meson_jj(counts, values, values_meson_corr, res_arr, res_meson_corr, x_rel, total_site)
         return counts, values, values_meson_corr
     res_count, res_sum, res_meson_corr_sum = q.glb_sum_list(
-            q.parallel_map_sum(q.get_q_mp_proc(), feval, xg_psel_list))
+            q.parallel_map_sum(q.get_q_mp_proc(), feval, load_data(), sum_function = sum_function, chunksize = 1))
     res_count *= 1.0 / (len(xg_psel_list) * fsel.prob())
     res_sum *= 1.0 / (len(xg_psel_list) * fsel.prob())
     res_meson_corr_sum *= 1.0 / (len(xg_psel_list) * fsel.prob())

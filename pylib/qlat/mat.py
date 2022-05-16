@@ -34,6 +34,7 @@ class WilsonMatrix:
         return self.get_value()
 
     def __setstate__(self, arr):
+        self.__init__()
         return self.set_value(arr)
 
     def set_zero(self):
