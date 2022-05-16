@@ -487,7 +487,6 @@ struct Timer {
     tdb_history.pop_back();
     displayln_info(0,
                    ssprintf("Timer::merge(): Merge all timers! (level = %ld)",
-                            max_call_times_for_always_show_info(),
                             (long)tdb_history.size()));
   }
   //

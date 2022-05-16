@@ -40,10 +40,11 @@ def benchmark_function_1(f, arg, benchmark_size = 1000, benchmark_num = 10, tota
             f(arg)
             f(arg)
             f(arg)
-    def run(*args):
-        for i in range(benchmark_num):
-            benchmark_run_10()
-    q.parallel_map(1, run, [ None, ])
+    q.timer_fork(0)
+    for i in range(benchmark_num):
+        benchmark_run_10()
+    q.timer_display()
+    q.timer_merge()
 
 @q.timer
 def benchmark_function_2(f, arg1, arg2, benchmark_size = 1000, benchmark_num = 10, total_flops = 0):
@@ -61,10 +62,11 @@ def benchmark_function_2(f, arg1, arg2, benchmark_size = 1000, benchmark_num = 1
             f(arg1, arg2)
             f(arg1, arg2)
             f(arg1, arg2)
-    def run(*args):
-        for i in range(benchmark_num):
-            benchmark_run_10()
-    q.parallel_map(1, run, [ None, ])
+    q.timer_fork(0)
+    for i in range(benchmark_num):
+        benchmark_run_10()
+    q.timer_display()
+    q.timer_merge()
 
 @q.timer
 def benchmark_function_3(f, arg1, arg2, arg3, benchmark_size = 1000, benchmark_num = 10, total_flops = 0):
@@ -82,10 +84,11 @@ def benchmark_function_3(f, arg1, arg2, arg3, benchmark_size = 1000, benchmark_n
             f(arg1, arg2, arg3)
             f(arg1, arg2, arg3)
             f(arg1, arg2, arg3)
-    def run(*args):
-        for i in range(benchmark_num):
-            benchmark_run_10()
-    q.parallel_map(1, run, [ None, ])
+    q.timer_fork(0)
+    for i in range(benchmark_num):
+        benchmark_run_10()
+    q.timer_display()
+    q.timer_merge()
 
 if __name__ == "__main__":
     rng_state = q.RngState("seed")

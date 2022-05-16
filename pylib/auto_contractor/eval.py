@@ -162,19 +162,16 @@ def eval_cexpr_return_exprs(cexpr, tvals, is_only_total):
 
 is_use_compiled_cexpr = not (os.getenv("q_use_compiled_cexpr") == "False") # default to be True unless q_use_compiled_cexpr = "False"
 
-@q.timer
 def eval_cexpr_get_props(cexpr : CExpr, *, positions_dict, get_prop):
     if is_use_compiled_cexpr and cexpr.function is not None:
         return cexpr.function["cexpr_function_get_prop"](positions_dict, get_prop)
     assert False
 
-@q.timer
 def eval_cexpr_eval(cexpr : CExpr, *, props):
     if is_use_compiled_cexpr and cexpr.function is not None:
         return cexpr.function["cexpr_function_eval"](props)
     assert False
 
-@q.timer
 def eval_cexpr(cexpr : CExpr, *, positions_dict, get_prop, is_only_total = "total"):
     # return 1 dimensional np.array
     # cexpr can be cexpr object or can be a compiled function
@@ -252,50 +249,11 @@ def benchmark_eval_cexpr(cexpr : CExpr, *, is_only_total = "total", benchmark_si
         for k in range(benchmark_size):
             eval_cexpr(cexpr, positions_dict = positions_dict, get_prop = get_prop, is_only_total = is_only_total)
     q.displayln_info(f"benchmark_eval_cexpr: benchmark_size={benchmark_size} is_only_total={is_only_total}")
-    def run(*args):
-        for i in range(benchmark_num):
-            benchmark_eval_cexpr_run()
-    q.parallel_map(1, run, [ None, ])
-
-@q.timer
-def benchmark_function_1(f, arg, benchmark_size = 10, benchmark_num = 10):
-    @q.timer_verbose
-    def benchmark_run_10():
-        for k in range(benchmark_size):
-            f(arg)
-            f(arg)
-            f(arg)
-            f(arg)
-            f(arg)
-            f(arg)
-            f(arg)
-            f(arg)
-            f(arg)
-            f(arg)
-    def run(*args):
-        for i in range(benchmark_num):
-            benchmark_run_10()
-    q.parallel_map(1, run, [ None, ])
-
-@q.timer
-def benchmark_function_2(f, arg1, arg2, benchmark_size = 10, benchmark_num = 10):
-    @q.timer_verbose
-    def benchmark_run_10():
-        for k in range(benchmark_size):
-            f(arg1, arg2)
-            f(arg1, arg2)
-            f(arg1, arg2)
-            f(arg1, arg2)
-            f(arg1, arg2)
-            f(arg1, arg2)
-            f(arg1, arg2)
-            f(arg1, arg2)
-            f(arg1, arg2)
-            f(arg1, arg2)
-    def run(*args):
-        for i in range(benchmark_num):
-            benchmark_run_10()
-    q.parallel_map(1, run, [ None, ])
+    q.timer_fork(0)
+    for i in range(benchmark_num):
+        benchmark_eval_cexpr_run()
+    q.timer_display()
+    q.timer_merge()
 
 def sqr_component(x):
     return x.real * x.real + 1j * x.imag * x.imag
