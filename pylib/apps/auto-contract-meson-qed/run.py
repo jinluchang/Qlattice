@@ -106,6 +106,7 @@ def auto_contract_meson_corr(job_tag, traj, get_prop, get_psel, get_fsel):
     q.timer_fork(0)
     res_count, res_sum = q.glb_sum_list(
             q.parallel_map_sum(q.get_q_mp_proc(), feval, load_data(), sum_function = sum_function, chunksize = 16))
+    q.displayln_info("timer_display for auto_contract_meson_corr")
     q.timer_display()
     q.timer_merge()
     res_count *= 1.0 / total_site[3]
@@ -156,6 +157,7 @@ def auto_contract_meson_corr_psnk(job_tag, traj, get_prop, get_psel, get_fsel):
     q.timer_fork(0)
     res_count, res_sum = q.glb_sum_list(
             q.parallel_map_sum(q.get_q_mp_proc(), feval, load_data(), sum_function = sum_function, chunksize = 16))
+    q.displayln_info("timer_display for auto_contract_meson_corr_psnk")
     q.timer_display()
     q.timer_merge()
     res_count *= 1.0 / (total_volume * fsel.prob())
@@ -210,6 +212,7 @@ def auto_contract_meson_corr_psrc(job_tag, traj, get_prop, get_psel, get_fsel):
     q.timer_fork(0)
     res_count, res_sum = q.glb_sum_list(
             q.parallel_map_sum(q.get_q_mp_proc(), feval, load_data(), sum_function = sum_function, chunksize = 16))
+    q.displayln_info("timer_display for auto_contract_meson_corr_psrc")
     q.timer_display()
     q.timer_merge()
     res_count *= 1.0 / len(xg_psel_list)
@@ -238,7 +241,8 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_fs
     geo = q.Geometry(total_site, 1)
     total_volume = geo.total_volume()
     def load_data():
-        for xg_src in xg_psel_list:
+        for idx, xg_src in enumerate(xg_psel_list):
+            q.displayln_info(f"auto_contract_meson_corr_psnk_psrc: {idx+1}/{len(xg_psel_list)} {xg_src}")
             for xg_snk in xg_fsel_list:
                 t = (xg_snk[3] - xg_src[3]) % total_site[3]
                 pd = {
@@ -262,6 +266,7 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_fs
     q.timer_fork(0)
     res_count, res_sum = q.glb_sum_list(
             q.parallel_map_sum(q.get_q_mp_proc(), feval, load_data(), sum_function = sum_function, chunksize = 16))
+    q.displayln_info("timer_display for auto_contract_meson_corr_psnk_psrc")
     q.timer_display()
     q.timer_merge()
     res_count *= 1.0 / (len(xg_psel_list) * total_volume * fsel.prob() / total_site[3])
@@ -329,6 +334,7 @@ def auto_contract_meson_f_corr_psnk(job_tag, traj, get_prop, get_psel, get_fsel)
     q.timer_fork(0)
     res_count, res_sum = q.glb_sum_list(
             q.parallel_map_sum(q.get_q_mp_proc(), feval, load_data(), sum_function = sum_function, chunksize = 16))
+    q.displayln_info("timer_display for auto_contract_meson_f_corr_psnk")
     q.timer_display()
     q.timer_merge()
     res_count *= 1.0 / (total_volume * fsel.prob())
@@ -383,6 +389,7 @@ def auto_contract_meson_f_corr_psrc(job_tag, traj, get_prop, get_psel, get_fsel)
     q.timer_fork(0)
     res_count, res_sum = q.glb_sum_list(
             q.parallel_map_sum(q.get_q_mp_proc(), feval, load_data(), sum_function = sum_function, chunksize = 16))
+    q.displayln_info("timer_display for auto_contract_meson_f_corr_psrc")
     q.timer_display()
     q.timer_merge()
     res_count *= 1.0 / len(xg_psel_list)
@@ -411,7 +418,8 @@ def auto_contract_meson_f_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_
     geo = q.Geometry(total_site, 1)
     total_volume = geo.total_volume()
     def load_data():
-        for xg_src in xg_psel_list:
+        for idx, xg_src in enumerate(xg_psel_list):
+            q.displayln_info(f"auto_contract_meson_f_corr_psnk_psrc: {idx+1}/{len(xg_psel_list)} {xg_src}")
             for xg_snk in xg_fsel_list:
                 t = (xg_snk[3] - xg_src[3]) % total_site[3]
                 pd = {
@@ -435,6 +443,7 @@ def auto_contract_meson_f_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_
     q.timer_fork(0)
     res_count, res_sum = q.glb_sum_list(
             q.parallel_map_sum(q.get_q_mp_proc(), feval, load_data(), sum_function = sum_function, chunksize = 16))
+    q.displayln_info("timer_display for auto_contract_meson_f_corr_psnk_psrc")
     q.timer_display()
     q.timer_merge()
     res_count *= 1.0 / (len(xg_psel_list) * total_volume * fsel.prob() / total_site[3])
@@ -510,6 +519,7 @@ def auto_contract_meson_m(job_tag, traj, get_prop, get_psel, get_fsel):
     q.timer_fork(0)
     res_count, res_sum = q.glb_sum_list(
             q.parallel_map_sum(q.get_q_mp_proc(), feval, load_data(), sum_function = sum_function, chunksize = 16))
+    q.displayln_info("timer_display for auto_contract_meson_m")
     q.timer_display()
     q.timer_merge()
     res_count *= 1.0 / (total_volume * fsel.prob())
@@ -594,6 +604,7 @@ def auto_contract_meson_jt(job_tag, traj, get_prop, get_psel, get_fsel):
     q.timer_fork(0)
     res_count, res_sum = q.glb_sum_list(
             q.parallel_map_sum(q.get_q_mp_proc(), feval, load_data(), sum_function = sum_function, chunksize = 16))
+    q.displayln_info("timer_display for auto_contract_meson_jt")
     q.timer_display()
     q.timer_merge()
     res_count *= 1.0 / (total_volume * fsel.prob())
@@ -817,6 +828,7 @@ def auto_contract_meson_jj(job_tag, traj, get_prop, get_psel, get_fsel):
     q.timer_fork(0)
     res_count, res_sum, res_meson_corr_sum = q.glb_sum_list(
             q.parallel_map_sum(q.get_q_mp_proc(), feval, load_data(), sum_function = sum_function, chunksize = 16))
+    q.displayln_info("timer_display for auto_contract_meson_jj")
     q.timer_display()
     q.timer_merge()
     res_count *= 1.0 / (len(xg_psel_list) * fsel.prob())
@@ -902,6 +914,7 @@ def run_job(job_tag, traj):
     fn_checkpoint = f"auto-contract/{job_tag}/traj={traj}/checkpoint.txt"
     if get_load_path(fn_checkpoint) is None:
         if q.obtain_lock(f"locks/{job_tag}-{traj}-auto-contract"):
+            q.timer_fork()
             get_prop = get_get_prop()
             # ADJUST ME
             auto_contract_meson_corr(job_tag, traj, get_prop, get_psel, get_fsel)
@@ -917,9 +930,11 @@ def run_job(job_tag, traj):
             #
             q.qtouch_info(get_save_path(fn_checkpoint))
             q.release_lock()
+            q.displayln_info("timer_display for runjob")
+            q.timer_display()
+            q.timer_merge()
     #
     q.clean_cache()
-    q.timer_display()
 
 def get_all_cexpr():
     benchmark_eval_cexpr(get_cexpr_meson_corr())
@@ -982,5 +997,7 @@ for job_tag in job_tags:
     q.displayln_info(pprint.pformat(rup.dict_params[job_tag]))
     for traj in rup.dict_params[job_tag]["trajs"]:
         run_job(job_tag, traj)
+
+q.timer_display()
 
 q.end()
