@@ -595,9 +595,7 @@ all_jj_projection_names = [ "mm", "tt", "ii", "xx", ]
 def get_interp_idx_coef(x, limit = None):
     # return x_idx_low, x_idx_high, coef_low, coef_high
     x_idx_low = math.floor(x)
-    x_idx_high = math.ceil(x)
-    if x_idx_high == x_idx_low:
-        x_idx_high += 1
+    x_idx_high = x_idx_low + 1
     if limit is not None:
         assert x_idx_high < limit
     coef_low = x_idx_high - x
@@ -605,7 +603,20 @@ def get_interp_idx_coef(x, limit = None):
     return x_idx_low, x_idx_high, coef_low, coef_high
 
 @q.timer
-def accumulate_meson_jj(counts, values, values_meson_corr, res_arr, res_meson_corr, x_rel, total_site):
+def proj_meson_jj(res_arr, res_meson_corr, x_rel, total_site):
+    r = get_r(x_rel)
+    r_limit = get_r_limit(total_site)
+    r_idx_low, r_idx_high, coef_low, coef_high = get_interp_idx_coef(r, r_limit)
+    x_rel_sym = [ rel_mod_sym(x_rel[mu], total_site[mu]) for mu in range(4) ]
+    counts = np.array([ coef_low, coef_high, ]) # r
+    v = np.array([ proj(res_arr, x_rel_sym) for proj in all_jj_projections ]) # idx_proj, idx_tensor
+    values = np.array([ coef_low * v, coef_high * v, ]).transpose(2, 0, 1) # idx_tensor, r, idx_proj
+    v = np.array([ res_meson_corr[idx_meson] for idx_meson in range(3) ]) # r, idx_meson
+    values_meson_corr = np.array([ coef_low * v, coef_high * v, ]).transpose(1, 0) # idx_meson, r
+    return counts, values, values_meson_corr
+
+@q.timer
+def accumulate_proj_meson_jj(counts, values, values_meson_corr, proj_acc, x_rel, total_site):
     # counts[t, r_idx]
     # values[idx_tensor, t, r_idx, idx_proj,]
     # values_meson_corr[idx_meson, t, r_idx]
@@ -619,21 +630,18 @@ def accumulate_meson_jj(counts, values, values_meson_corr, res_arr, res_meson_co
     assert t_size == total_site[3]
     assert r_limit == get_r_limit(total_site)
     assert len(all_jj_projections) == n_proj
-    t = x_rel[3] % total_site[3]
+    counts_acc, values_acc, values_meson_corr_acc = proj_acc
     r = get_r(x_rel)
     r_idx_low, r_idx_high, coef_low, coef_high = get_interp_idx_coef(r, r_limit)
-    counts[t, r_idx_low] += coef_low
-    counts[t, r_idx_high] += coef_high
-    x_rel_sym = [ rel_mod_sym(x_rel[mu], total_site[mu]) for mu in range(4) ]
-    for idx_proj, proj in enumerate(all_jj_projections):
-        v = proj(res_arr, x_rel_sym)
-        v_low = coef_low * v
-        v_high = coef_high * v
-        for idx_tensor in range(n_tensor):
-            values[idx_tensor, t, r_idx_low, idx_proj,] += v_low[idx_tensor]
-            values[idx_tensor, t, r_idx_high, idx_proj,] += v_high[idx_tensor]
-    for idx_meson in range(2):
-        values_meson_corr[idx_meson, t, r_idx_low] += res_meson_corr[idx_meson]
+    t = x_rel[3] % total_site[3]
+    counts[t, r_idx_low:r_idx_high + 1] += counts_acc
+    values[:, t, r_idx_low:r_idx_high + 1, :] += values_acc
+    values_meson_corr[:, t, r_idx_low:r_idx_high + 1] += values_meson_corr_acc
+
+@q.timer
+def accumulate_meson_jj(counts, values, values_meson_corr, res_arr, res_meson_corr, x_rel, total_site):
+    proj_acc = proj_meson_jj(res_arr, res_meson_corr, x_rel, total_site)
+    accumulate_proj_meson_jj(counts, values, values_meson_corr, proj_acc, x_rel, total_site)
 
 @q.timer_verbose
 def auto_contract_meson_jj(job_tag, traj, get_prop, get_psel, get_fsel):
@@ -675,23 +683,25 @@ def auto_contract_meson_jj(job_tag, traj, get_prop, get_psel, get_fsel):
                         "t_2" : ("wall", t_2),
                         }
                 props = eval_cexpr_get_props(cexpr, positions_dict = pd, get_prop = get_prop)
-                yield (props, x_rel)
+                yield (props, x_rel, total_site)
+    @q.timer
     def feval(args):
-        props, x_rel = args
+        props, x_rel, total_site = args
         val = eval_cexpr_eval(cexpr, props = props)
-        return val, x_rel
+        assert val.shape[0] == 16 * n_tensor + 3
+        res_arr = val[:-3].reshape((n_tensor, 4, 4))
+        res_meson_corr = val[-3:]
+        proj_acc = proj_meson_jj(res_arr, res_meson_corr, x_rel, total_site)
+        return proj_acc, x_rel
     def sum_function(val_list):
         counts = np.zeros((t_size, r_limit,), dtype = complex)
         values = np.zeros((n_tensor, t_size, r_limit, n_proj,), dtype = complex)
         values_meson_corr = np.zeros((3, t_size, r_limit), dtype = complex)
-        for val, x_rel in val_list:
-            assert val.shape[0] == 16 * n_tensor + 3
-            res_arr = val[:-3].reshape((n_tensor, 4, 4))
-            res_meson_corr = val[-3:]
-            accumulate_meson_jj(counts, values, values_meson_corr, res_arr, res_meson_corr, x_rel, total_site)
+        for proj_acc, x_rel in val_list:
+            accumulate_proj_meson_jj(counts, values, values_meson_corr, proj_acc, x_rel, total_site)
         return counts, values, values_meson_corr
     res_count, res_sum, res_meson_corr_sum = q.glb_sum_list(
-            q.parallel_map_sum(q.get_q_mp_proc(), feval, load_data(), sum_function = sum_function, chunksize = 1))
+            q.parallel_map_sum(q.get_q_mp_proc(), feval, load_data(), sum_function = sum_function, chunksize = 2))
     res_count *= 1.0 / (len(xg_psel_list) * fsel.prob())
     res_sum *= 1.0 / (len(xg_psel_list) * fsel.prob())
     res_meson_corr_sum *= 1.0 / (len(xg_psel_list) * fsel.prob())
