@@ -241,3 +241,9 @@ Relevant source files: `qutils/rng-state.h`
   Maximum length for a function name before truncation.
 
   Default is `50`.
+
+- `q_malloc_mmap_threshold`
+
+  In unit of bytes.
+
+  Default is empty. It does not alter the system setting.

@@ -5,6 +5,8 @@
 #include <qlat/utils.h>
 #include <qutils/cache.h>
 
+#include <malloc.h>
+
 #ifdef USE_MULTI_NODE
 #include <mpi.h>
 #endif
@@ -861,6 +863,10 @@ inline void begin_comm(const MPI_Comm comm, const Coordinate& size_node)
   }
   displayln_info("qlat::begin(): q_num_threads = " +
                  show(omp_get_max_threads()));
+  std::string q_malloc_mmap_threshold = get_env("q_malloc_mmap_threshold");
+  if (q_malloc_mmap_threshold != "") {
+    mallopt(M_MMAP_THRESHOLD, read_long(q_malloc_mmap_threshold));
+  }
   displayln_info("qlat::begin(): GeometryNode =\n" + show(geon));
   fflush(get_output_file());
   displayln_info(ssprintf("Timer::get_timer_database().size() = %ld",
