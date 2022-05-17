@@ -18,6 +18,7 @@ def call_pool_function(*args, **kwargs):
 def process_initialization():
     verbose_level(-1)
     timer_reset(0)
+    gc.unfreeze()
     clean_cache()
     gc.collect()
     gc.freeze()
@@ -32,9 +33,13 @@ def parallel_map(q_mp_proc, func, iterable):
     global pool_function
     assert pool_function is None
     pool_function = func
+    gc.collect()
+    gc.freeze()
     with mp.Pool(q_mp_proc, process_initialization, []) as p:
         res = p.map(call_pool_function, iterable, chunksize = 1)
         p.apply(timer_display)
+    gc.unfreeze()
+    gc.collect()
     pool_function = None
     return res
 
@@ -52,10 +57,14 @@ def parallel_map_sum(q_mp_proc, func, iterable, *, sum_function = None, sum_init
     global pool_function
     assert pool_function is None
     pool_function = func
+    gc.collect()
+    gc.freeze()
     with mp.Pool(q_mp_proc, process_initialization, []) as p:
         res = p.imap(call_pool_function, iterable, chunksize = chunksize)
         ret = sum_function(res)
         p.apply(timer_display)
+    gc.unfreeze()
+    gc.collect()
     pool_function = None
     return ret
 
