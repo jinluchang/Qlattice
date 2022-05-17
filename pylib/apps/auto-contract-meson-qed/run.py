@@ -945,6 +945,7 @@ def run_job(job_tag, traj):
             q.timer_merge()
     #
     q.clean_cache()
+    q.clear_all_caches()
 
 def get_all_cexpr():
     benchmark_eval_cexpr(get_cexpr_meson_corr())
