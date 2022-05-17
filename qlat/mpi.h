@@ -865,6 +865,8 @@ inline void begin_comm(const MPI_Comm comm, const Coordinate& size_node)
                  show(omp_get_max_threads()));
   std::string q_malloc_mmap_threshold = get_env("q_malloc_mmap_threshold");
   if (q_malloc_mmap_threshold != "") {
+    displayln_info(ssprintf("qlat::begin(): q_malloc_mmap_threshold = %s.",
+                            q_malloc_mmap_threshold.c_str()));
     mallopt(M_MMAP_THRESHOLD, read_long(q_malloc_mmap_threshold));
   }
   displayln_info("qlat::begin(): GeometryNode =\n" + show(geon));
