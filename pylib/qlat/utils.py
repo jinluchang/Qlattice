@@ -28,7 +28,7 @@ def process_initialization():
 def show_memory_usage():
     rss = psutil.Process().memory_info().rss / (1024 * 1024 * 1024)
     displayln_info(f"show_memory_usage: rss = {rss:.6f} GB")
-    malloc_stats()
+    malloc_stats_info()
 
 @timer
 def parallel_map(q_mp_proc, func, iterable):
@@ -157,3 +157,7 @@ def clear_all_caches():
 
 def malloc_stats():
     return c.malloc_stats()
+
+def malloc_stats_info():
+    if get_id_node() == 0:
+        return malloc_stats()
