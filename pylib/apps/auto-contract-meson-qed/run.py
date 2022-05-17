@@ -957,8 +957,8 @@ def get_all_cexpr():
 def test():
     q.qremove_all_info("locks")
     q.qremove_all_info("results")
-    # run_job("test-4nt8", 1000)
-    run_job("test-4nt16", 1000)
+    run_job("test-4nt8", 1000)
+    # run_job("test-4nt16", 1000)
     # run_job("16IH2", 1000)
 
 size_node_list = [
