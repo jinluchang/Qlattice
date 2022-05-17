@@ -8,6 +8,7 @@ import os
 import time
 import importlib
 import sys
+import gc
 
 from jobs import *
 from load_data import *
@@ -103,6 +104,7 @@ def auto_contract_meson_corr(job_tag, traj, get_prop, get_psel, get_fsel):
             counts[t] += 1
             values[:, t] += val
         return counts, values
+    gc.collect()
     q.timer_fork(0)
     res_count, res_sum = q.glb_sum_list(
             q.parallel_map_sum(q.get_q_mp_proc(), feval, load_data(), sum_function = sum_function, chunksize = 16))
@@ -154,6 +156,7 @@ def auto_contract_meson_corr_psnk(job_tag, traj, get_prop, get_psel, get_fsel):
             counts[t] += 1
             values[:, t] += val
         return counts, values
+    gc.collect()
     q.timer_fork(0)
     res_count, res_sum = q.glb_sum_list(
             q.parallel_map_sum(q.get_q_mp_proc(), feval, load_data(), sum_function = sum_function, chunksize = 16))
@@ -209,6 +212,7 @@ def auto_contract_meson_corr_psrc(job_tag, traj, get_prop, get_psel, get_fsel):
             counts[t] += 1
             values[:, t] += val
         return counts, values
+    gc.collect()
     q.timer_fork(0)
     res_count, res_sum = q.glb_sum_list(
             q.parallel_map_sum(q.get_q_mp_proc(), feval, load_data(), sum_function = sum_function, chunksize = 16))
@@ -263,6 +267,7 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_fs
             counts[t] += 1
             values[:, t] += val
         return counts, values
+    gc.collect()
     q.timer_fork(0)
     res_count, res_sum = q.glb_sum_list(
             q.parallel_map_sum(q.get_q_mp_proc(), feval, load_data(), sum_function = sum_function, chunksize = 16))
@@ -331,6 +336,7 @@ def auto_contract_meson_f_corr_psnk(job_tag, traj, get_prop, get_psel, get_fsel)
             counts[t] += 1
             values[:, t] += val
         return counts, values
+    gc.collect()
     q.timer_fork(0)
     res_count, res_sum = q.glb_sum_list(
             q.parallel_map_sum(q.get_q_mp_proc(), feval, load_data(), sum_function = sum_function, chunksize = 16))
@@ -386,6 +392,7 @@ def auto_contract_meson_f_corr_psrc(job_tag, traj, get_prop, get_psel, get_fsel)
             counts[t] += 1
             values[:, t] += val
         return counts, values
+    gc.collect()
     q.timer_fork(0)
     res_count, res_sum = q.glb_sum_list(
             q.parallel_map_sum(q.get_q_mp_proc(), feval, load_data(), sum_function = sum_function, chunksize = 16))
@@ -440,6 +447,7 @@ def auto_contract_meson_f_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_
             counts[t] += 1
             values[:, t] += val
         return counts, values
+    gc.collect()
     q.timer_fork(0)
     res_count, res_sum = q.glb_sum_list(
             q.parallel_map_sum(q.get_q_mp_proc(), feval, load_data(), sum_function = sum_function, chunksize = 16))
@@ -516,6 +524,7 @@ def auto_contract_meson_m(job_tag, traj, get_prop, get_psel, get_fsel):
             counts += 1.0
             values += val
         return counts, values
+    gc.collect()
     q.timer_fork(0)
     res_count, res_sum = q.glb_sum_list(
             q.parallel_map_sum(q.get_q_mp_proc(), feval, load_data(), sum_function = sum_function, chunksize = 16))
@@ -601,6 +610,7 @@ def auto_contract_meson_jt(job_tag, traj, get_prop, get_psel, get_fsel):
             counts += 1.0
             values += val
         return counts, values
+    gc.collect()
     q.timer_fork(0)
     res_count, res_sum = q.glb_sum_list(
             q.parallel_map_sum(q.get_q_mp_proc(), feval, load_data(), sum_function = sum_function, chunksize = 16))
@@ -825,6 +835,7 @@ def auto_contract_meson_jj(job_tag, traj, get_prop, get_psel, get_fsel):
         for proj_acc, x_rel in val_list:
             accumulate_proj_meson_jj(counts, values, values_meson_corr, proj_acc, x_rel, total_site)
         return counts, values, values_meson_corr
+    gc.collect()
     q.timer_fork(0)
     res_count, res_sum, res_meson_corr_sum = q.glb_sum_list(
             q.parallel_map_sum(q.get_q_mp_proc(), feval, load_data(), sum_function = sum_function, chunksize = 16))
