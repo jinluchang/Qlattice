@@ -115,3 +115,13 @@ EXPORT(verbose_level, {
   using namespace qlat;
   return py_convert(verbose_level());
 });
+
+EXPORT(set_verbose_level, {
+  using namespace qlat;
+  long level = 0;
+  if (!PyArg_ParseTuple(args, "|l", &level)) {
+    return NULL;
+  }
+  verbose_level() = level;
+  return py_convert(verbose_level());
+});
