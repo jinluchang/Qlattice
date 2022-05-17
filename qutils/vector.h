@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <cstring>
 #include <unordered_map>
+#include <malloc.h>
 
 namespace qlat
 {  //

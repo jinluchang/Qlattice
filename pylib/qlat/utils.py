@@ -36,7 +36,9 @@ def parallel_map(q_mp_proc, func, iterable):
     gc.collect()
     gc.freeze()
     with mp.Pool(q_mp_proc, process_initialization, []) as p:
+        p.apply(malloc_stats)
         res = p.map(call_pool_function, iterable, chunksize = 1)
+        p.apply(malloc_stats)
         p.apply(timer_display)
     gc.unfreeze()
     gc.collect()
@@ -60,8 +62,10 @@ def parallel_map_sum(q_mp_proc, func, iterable, *, sum_function = None, sum_init
     gc.collect()
     gc.freeze()
     with mp.Pool(q_mp_proc, process_initialization, []) as p:
+        p.apply(malloc_stats)
         res = p.imap(call_pool_function, iterable, chunksize = chunksize)
         ret = sum_function(res)
+        p.apply(malloc_stats)
         p.apply(timer_display)
     gc.unfreeze()
     gc.collect()
@@ -144,3 +148,6 @@ def get_all_caches_info():
 
 def clear_all_caches():
     return c.clear_all_caches();
+
+def malloc_stats():
+    return c.malloc_stats()
