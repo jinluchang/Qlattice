@@ -21,6 +21,7 @@ def process_initialization():
     clean_cache()
     clear_all_caches()
     gc.collect()
+    gc.freeze()
 
 @timer
 def parallel_map(q_mp_proc, func, iterable):
