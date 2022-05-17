@@ -8,6 +8,7 @@ from qlat.coordinate import *
 import numpy as np
 import multiprocessing as mp
 import gc
+import psutil
 
 pool_function = None
 
@@ -24,6 +25,11 @@ def process_initialization():
     gc.freeze()
     clear_all_caches()
 
+def show_memory_usage():
+    rss = psutil.Process().memory_info().rss / (1024 * 1024 * 1024)
+    displayln_info(f"show_memory_usage: rss = {rss:.6f} GB")
+    malloc_stats()
+
 @timer
 def parallel_map(q_mp_proc, func, iterable):
     displayln_info(f"parallel_map(q_mp_proc={q_mp_proc})")
@@ -36,9 +42,9 @@ def parallel_map(q_mp_proc, func, iterable):
     gc.collect()
     gc.freeze()
     with mp.Pool(q_mp_proc, process_initialization, []) as p:
-        p.apply(malloc_stats)
+        p.apply(show_memory_usage)
         res = p.map(call_pool_function, iterable, chunksize = 1)
-        p.apply(malloc_stats)
+        p.apply(show_memory_usage)
         p.apply(timer_display)
     gc.unfreeze()
     gc.collect()
@@ -62,10 +68,10 @@ def parallel_map_sum(q_mp_proc, func, iterable, *, sum_function = None, sum_init
     gc.collect()
     gc.freeze()
     with mp.Pool(q_mp_proc, process_initialization, []) as p:
-        p.apply(malloc_stats)
+        p.apply(show_memory_usage)
         res = p.imap(call_pool_function, iterable, chunksize = chunksize)
         ret = sum_function(res)
-        p.apply(malloc_stats)
+        p.apply(show_memory_usage)
         p.apply(timer_display)
     gc.unfreeze()
     gc.collect()

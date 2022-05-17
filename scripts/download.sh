@@ -88,6 +88,7 @@ dget "pythran-0.9.12.post1-py3-none-any.whl" "https://files.pythonhosted.org/pac
 dget "ply-3.11.tar.gz" "https://files.pythonhosted.org/packages/e5/69/882ee5c9d017149285cab114ebeab373308ef0f874fcdac9beb90e0ac4da/ply-3.11.tar.gz"
 dget "gast-0.5.0.tar.gz" "https://files.pythonhosted.org/packages/a6/fb/7ff6a4ee66673c5964d3cf515ae85ba2076bc64bc2dcbbbd0153718b005f/gast-0.5.0.tar.gz"
 dget "beniget-0.4.0.tar.gz" "https://files.pythonhosted.org/packages/36/09/a4a6a967ca5bcfc0bd6162df4ee93017301fa7d9671483c849300bdba0db/beniget-0.4.0.tar.gz"
+dget "psutil-5.9.0.tar.gz" "https://files.pythonhosted.org/packages/47/b6/ea8a7728f096a597f0032564e8013b705aa992a0990becd773dcc4d7b4a7/psutil-5.9.0.tar.gz"
 )
 
 if [ -d Grid ] ; then
