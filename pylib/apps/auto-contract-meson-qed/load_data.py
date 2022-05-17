@@ -155,7 +155,10 @@ def get_prop_psnk_rand_u1_fsel(prop_cache, inv_type, xg_snk, fsel_pos_dict):
 ### -------
 
 @q.timer
-def get_prop_snk_src(prop_cache, flavor, p_snk, p_src, *, psel_pos_dict, fsel_pos_dict, fselc_pos_dict):
+def get_prop_snk_src(prop_cache, flavor, p_snk, p_src):
+    psel_pos_dict = prop_cache["psel_pos_dict"]
+    fsel_pos_dict = prop_cache["fsel_pos_dict"]
+    fselc_pos_dict = prop_cache["fselc_pos_dict"]
     # psel_pos_dict[x] == idx
     # x == tuple(pos)
     # psel.to_list()[idx] == pos
@@ -509,13 +512,10 @@ def run_get_prop(job_tag, traj, *, get_gt, get_psel, get_fsel, get_psel_smear, g
         # load_prop_rand_u1_fsel(job_tag, traj, "c", fsel = fsel)
         #
         prop_cache = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}")
-        psel_pos_dict = dict([ (tuple(pos), i) for i, pos in enumerate(psel.to_list()) ])
-        fsel_pos_dict = dict([ (tuple(pos), i) for i, pos in enumerate(fsel.to_psel_local().to_list()) ])
-        fselc_pos_dict = dict([ (tuple(pos), i) for i, pos in enumerate(fselc.to_psel_local().to_list()) ])
+        prop_cache["psel_pos_dict"] = dict([ (tuple(pos), i) for i, pos in enumerate(psel.to_list()) ])
+        prop_cache["fsel_pos_dict"] = dict([ (tuple(pos), i) for i, pos in enumerate(fsel.to_psel_local().to_list()) ])
+        prop_cache["fselc_pos_dict"] = dict([ (tuple(pos), i) for i, pos in enumerate(fselc.to_psel_local().to_list()) ])
         def get_prop(flavor, p_snk, p_src):
-            return get_prop_snk_src(prop_cache, flavor, p_snk, p_src,
-                    psel_pos_dict = psel_pos_dict,
-                    fsel_pos_dict = fsel_pos_dict,
-                    fselc_pos_dict = fselc_pos_dict)
+            return get_prop_snk_src(prop_cache, flavor, p_snk, p_src)
         return get_prop
     return q.lazy_call(mk_get_prop)
