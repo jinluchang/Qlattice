@@ -19,9 +19,9 @@ def process_initialization():
     verbose_level(-1)
     timer_reset(0)
     clean_cache()
-    clear_all_caches()
     gc.collect()
     gc.freeze()
+    clear_all_caches()
 
 @timer
 def parallel_map(q_mp_proc, func, iterable):
