@@ -19,11 +19,11 @@ def call_pool_function(*args, **kwargs):
 def process_initialization():
     verbose_level(-1)
     timer_reset(0)
-    gc.unfreeze()
-    clean_cache()
-    gc.collect()
-    gc.freeze()
-    clear_all_caches()
+    # gc.unfreeze()
+    # clean_cache()
+    # gc.collect()
+    # gc.freeze()
+    # clear_all_caches()
 
 def show_memory_usage():
     rss = psutil.Process().memory_info().rss / (1024 * 1024 * 1024)
@@ -31,7 +31,7 @@ def show_memory_usage():
     malloc_stats_info()
 
 @timer
-def parallel_map(q_mp_proc, func, iterable):
+def parallel_map(q_mp_proc, func, iterable, *, chunksize = 1, process_initialization = process_initialization):
     displayln_info(f"parallel_map(q_mp_proc={q_mp_proc})")
     if q_mp_proc == 0:
         return list(map(func, iterable))
@@ -43,7 +43,7 @@ def parallel_map(q_mp_proc, func, iterable):
     gc.freeze()
     with mp.Pool(q_mp_proc, process_initialization, []) as p:
         p.apply(show_memory_usage)
-        res = p.map(call_pool_function, iterable, chunksize = 1)
+        res = p.map(call_pool_function, iterable, chunksize = chunksize)
         p.apply(show_memory_usage)
         p.apply(timer_display)
     gc.unfreeze()
@@ -52,7 +52,7 @@ def parallel_map(q_mp_proc, func, iterable):
     return res
 
 @timer
-def parallel_map_sum(q_mp_proc, func, iterable, *, sum_function = None, sum_initial = None, chunksize = 1):
+def parallel_map_sum(q_mp_proc, func, iterable, *, sum_function = None, sum_initial = None, chunksize = 1, process_initialization = process_initialization):
     # iterable = [ i1, i2, ... ]
     # va1, vb1, ... = func(i1)
     # return [ sum([va1, va2, ...]), sum([vb1, vb2, ...]), ... ]
