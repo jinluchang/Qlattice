@@ -20,8 +20,8 @@ class Prop(Field):
         return f
 
     def get_elem_wm(self, xg, m = 0):
-        wm = WilsonMatrix()
-        c.get_elem_wm_prop(wm, self, xg, m)
+        cdata = c.get_elem_wm_prop(self, xg, m)
+        wm = WilsonMatrix(cdata = cdata, base = self)
         return wm
 
     def sparse(self, sel):
@@ -51,8 +51,8 @@ class SelProp(SelectedField):
         return f
 
     def get_elem_wm(self, idx, m = 0):
-        wm = WilsonMatrix()
-        c.get_elem_wm_sprop(wm, self, idx, m)
+        cdata = c.get_elem_wm_sprop(self, idx, m)
+        wm = WilsonMatrix(cdata = cdata, base = self)
         return wm
 
     def sparse(self, sel):
@@ -82,8 +82,8 @@ class PselProp(SelectedPoints):
         return f
 
     def get_elem_wm(self, idx, m = 0):
-        wm = WilsonMatrix()
-        c.get_elem_wm_psprop(wm, self, idx, m)
+        cdata = c.get_elem_wm_psprop(self, idx, m)
+        wm = WilsonMatrix(cdata = cdata, base = self)
         return wm
 
 def set_point_src(prop_src, geo, xg, value = 1.0):

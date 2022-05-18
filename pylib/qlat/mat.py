@@ -5,13 +5,24 @@ import numpy as np
 class WilsonMatrix:
 
     # self.cdata
+    # self.base
 
-    def __init__(self):
-        self.cdata = c.mk_wilson_matrix()
+    def __init__(self, *, cdata = None, base = None):
+        # self.cdata will be newly allocated if not assigned
+        if cdata is None:
+            assert base is None
+            self.cdata = c.mk_wilson_matrix()
+            self.base = None
+        else:
+            assert base is not None
+            self.cdata = cdata
+            self.base = base
 
     def __del__(self):
+        # only free is base is None
         assert isinstance(self.cdata, int)
-        c.free_wilson_matrix(self)
+        if self.base is None:
+            c.free_wilson_matrix(self)
 
     def __imatmul__(self, v1):
         assert isinstance(v1, WilsonMatrix)
@@ -31,9 +42,15 @@ class WilsonMatrix:
         return self.copy()
 
     def __getstate__(self):
+        # will not pickle to file correct if base is not None:
+        if self.base is not None:
+            return self.cdata
         return self.get_value()
 
     def __setstate__(self, arr):
+        # will not pickle to file correct if base is not None:
+        if isinstance(arr, int):
+            return self.__init__(cdata = arr, base = "foreign")
         self.__init__()
         return self.set_value(arr)
 
