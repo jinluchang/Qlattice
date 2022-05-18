@@ -135,7 +135,7 @@ def auto_contract_meson_corr_psnk(job_tag, traj, get_prop, get_psel, get_fsel):
     def load_data():
         for t_src in range(total_site[3]):
             for xg_snk in xg_fsel_list:
-                xg_snk = xg_snk.tolist()
+                xg_snk = tuple(xg_snk.tolist())
                 t = (xg_snk[3] - t_src) % total_site[3]
                 pd = {
                         "t_2" : ("point-snk", xg_snk,),
@@ -188,7 +188,7 @@ def auto_contract_meson_corr_psrc(job_tag, traj, get_prop, get_psel, get_fsel):
     total_volume = geo.total_volume()
     def load_data():
         x_t_list = get_mpi_chunk(
-                [ (xg_src.tolist(), t_snk,) for t_snk in range(total_site[3]) for xg_src in xg_psel_list ],
+                [ (tuple(xg_src.tolist()), t_snk,) for t_snk in range(total_site[3]) for xg_src in xg_psel_list ],
                 rng_state = q.RngState("get_mpi_chunk"))
         for xg_src, t_snk in x_t_list:
             t = (xg_src[3] - t_snk) % total_site[3]
@@ -243,10 +243,10 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_fs
     total_volume = geo.total_volume()
     def load_data():
         for idx, xg_src in enumerate(xg_psel_list):
-            xg_src = xg_src.tolist()
+            xg_src = tuple(xg_src.tolist())
             q.displayln_info(f"auto_contract_meson_corr_psnk_psrc: {idx+1}/{len(xg_psel_list)} {xg_src}")
             for xg_snk in xg_fsel_list:
-                xg_snk = xg_snk.tolist()
+                xg_snk = tuple(xg_snk.tolist())
                 t = (xg_snk[3] - xg_src[3]) % total_site[3]
                 pd = {
                         "t_2" : ("point-snk", xg_snk,),
@@ -315,7 +315,7 @@ def auto_contract_meson_f_corr_psnk(job_tag, traj, get_prop, get_psel, get_fsel)
     def load_data():
         for t_src in range(total_site[3]):
             for xg_snk in xg_fsel_list:
-                xg_snk = xg_snk.tolist()
+                xg_snk = tuple(xg_snk.tolist())
                 t = (xg_snk[3] - t_src) % total_site[3]
                 pd = {
                         "x_2" : ("point-snk", xg_snk,),
@@ -368,7 +368,7 @@ def auto_contract_meson_f_corr_psrc(job_tag, traj, get_prop, get_psel, get_fsel)
     total_volume = geo.total_volume()
     def load_data():
         x_t_list = get_mpi_chunk(
-                [ (xg_src.tolist(), t_snk,) for t_snk in range(total_site[3]) for xg_src in xg_psel_list ],
+                [ (tuple(xg_src.tolist()), t_snk,) for t_snk in range(total_site[3]) for xg_src in xg_psel_list ],
                 rng_state = q.RngState("get_mpi_chunk"))
         for xg_src, t_snk in x_t_list:
             t = (xg_src[3] - t_snk) % total_site[3]
@@ -423,10 +423,10 @@ def auto_contract_meson_f_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_
     total_volume = geo.total_volume()
     def load_data():
         for idx, xg_src in enumerate(xg_psel_list):
-            xg_src = xg_src.tolist()
+            xg_src = tuple(xg_src.tolist())
             q.displayln_info(f"auto_contract_meson_f_corr_psnk_psrc: {idx+1}/{len(xg_psel_list)} {xg_src}")
             for xg_snk in xg_fsel_list:
-                xg_snk = xg_snk.tolist()
+                xg_snk = tuple(xg_snk.tolist())
                 t = (xg_snk[3] - xg_src[3]) % total_site[3]
                 pd = {
                         "x_2" : ("point-snk", xg_snk,),
@@ -500,7 +500,7 @@ def auto_contract_meson_m(job_tag, traj, get_prop, get_psel, get_fsel):
     total_volume = geo.total_volume()
     def load_data():
         for xg_snk in xg_fsel_list:
-            xg_snk = xg_snk.tolist()
+            xg_snk = tuple(xg_snk.tolist())
             t = xg_snk[3]
             t_1 = (t + tsep) % total_site[3]
             t_2 = (t - tsep) % total_site[3]
@@ -582,7 +582,7 @@ def auto_contract_meson_jt(job_tag, traj, get_prop, get_psel, get_fsel):
     total_volume = geo.total_volume()
     def load_data():
         for xg_snk in xg_fsel_list:
-            xg_snk = xg_snk.tolist()
+            xg_snk = tuple(xg_snk.tolist())
             t = xg_snk[3]
             t_1 = (t + tsep) % total_site[3]
             t_2 = (t - tsep) % total_site[3]
@@ -801,10 +801,10 @@ def auto_contract_meson_jj(job_tag, traj, get_prop, get_psel, get_fsel):
     assert n_tensor * 16 + 3 == len(expr_names)
     def load_data():
         for idx, xg_src in enumerate(xg_psel_list):
-            xg_src = xg_src.tolist()
+            xg_src = tuple(xg_src.tolist())
             q.displayln_info(f"auto_contract_meson_jj: {idx+1}/{len(xg_psel_list)} {xg_src}")
             for xg_snk in xg_fsel_list:
-                xg_snk = xg_snk.tolist()
+                xg_snk = tuple(xg_snk.tolist())
                 x_rel = [ rel_mod(xg_snk[mu] - xg_src[mu], total_site[mu]) for mu in range(4) ]
                 x_rel_t = x_rel[3]
                 x_2_t = xg_src[3]
