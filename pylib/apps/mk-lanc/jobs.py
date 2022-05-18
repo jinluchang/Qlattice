@@ -39,6 +39,7 @@ def check_job(job_tag, traj, fns_produce, fns_need):
         if get_load_path(fn) is None:
             q.displayln_info(f"check_job: {job_tag} {traj} to do as '{fn}' does not exist.")
             is_job_done = False
+            break
     if is_job_done:
         return False
     #
@@ -47,6 +48,7 @@ def check_job(job_tag, traj, fns_produce, fns_need):
         if get_load_path(fn) is None:
             q.displayln_info(f"check_job: {job_tag} {traj} unavailable as '{fn}' does not exist.")
             is_job_avail = False
+            break
     if not is_job_avail:
         return False
     #
