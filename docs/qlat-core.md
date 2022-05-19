@@ -581,6 +581,12 @@ T& py_convert_type(PyObject* in, const std::string& attr)
 // interface
 // py_convert_type<PointSelection>(in, "psel")
 // py_convert_type<FieldSelection>(in, "fsel")
+// py_convert_type<Geometry>(in, "geo")
+
+template <class T>
+T& py_convert_type(PyObject* in, const std::string& attr, const std::string& attr1)
+// interface
+// py_convert_type<Geometry>(in, "psel", "geo")
 
 template <class M>
 Field<M>& py_convert_type_field(PyObject* in)

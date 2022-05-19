@@ -39,6 +39,8 @@ class Prop(Field):
         else:
             raise Exception("Prop.sparse")
 
+###
+
 class SelProp(SelectedField):
 
     def __init__(self, fsel, *, ctype = None, multiplicity = None):
@@ -70,6 +72,8 @@ class SelProp(SelectedField):
         else:
             raise Exception("SelProp.sparse")
 
+###
+
 class PselProp(SelectedPoints):
 
     def __init__(self, psel, *, ctype = None, multiplicity = None):
@@ -85,6 +89,8 @@ class PselProp(SelectedPoints):
         cdata = c.get_elem_wm_psprop(self, idx, m)
         wm = WilsonMatrix(cdata = cdata, base = self)
         return wm
+
+###
 
 def set_point_src(prop_src, geo, xg, value = 1.0):
     c.set_point_src_prop(prop_src, geo, xg, value)
@@ -184,6 +190,15 @@ def convert_wm_from_mspincolor(prop_msc):
         raise Exception("prop type match failed")
     return prop_wm
 
+def flip_tpbc_with_tslice(prop, tslice_flip_tpbc):
+    if isinstance(prop, SelProp):
+        c.flip_tpbc_with_tslice_s_prop(prop, tslice_flip_tpbc)
+    elif isinstance(prop, PselProp):
+        c.flip_tpbc_with_tslice_sp_prop(prop, tslice_flip_tpbc)
+    else:
+        print(type(prop))
+        assert False
+
 @timer
 def free_scalar_invert_mom_cfield(f, mass):
     assert isinstance(f, Field)
@@ -209,3 +224,5 @@ class FermionField4d(Field):
         if is_copying_data:
             f @= self
         return f
+
+###

@@ -161,31 +161,32 @@ class Field:
     def set_rand(self, rng, upper = 1.0, lower = 0.0):
         assert isinstance(rng, RngState)
         c.set_u_rand_double_field(self, rng, upper, lower)
-        
+
     def set_rand_g(self, rng, center = 0.0, sigma = 1.0):
         assert isinstance(rng, RngState)
         c.set_g_rand_double_field(self, rng, center, sigma)
-        
+
     def set_checkers(self):
+        # no longer needed?
         c.set_checkers_double_field(self)
-    
+
     def set_complex_from_double(self, sf):
         assert isinstance(sf, Field)
         c.set_complex_from_double_field(self,sf)
-    
+
     def set_double_from_complex(self, cf):
         assert isinstance(cf, Field)
         c.set_double_from_complex_field(self,cf)
-    
+
     def set_abs_from_complex(self, cf):
         assert isinstance(cf, Field)
         c.set_abs_from_complex_field(self,cf)
-    
+
     def set_ratio_double(self, sf1, sf2):
         assert isinstance(sf1, Field)
         assert isinstance(sf2, Field)
         c.set_ratio_double_field(self,sf1,sf2)
-    
+
     def qnorm(self):
         return c.qnorm_field(self)
 
