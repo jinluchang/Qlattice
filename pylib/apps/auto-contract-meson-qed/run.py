@@ -993,7 +993,7 @@ job_tags = [
         # "24IH1",
         # "24IH2",
         # "24IH3",
-        # "48I"
+        # "48I",
         # "32D",
         # "32Dfine",
         # "24DH",
@@ -1001,7 +1001,6 @@ job_tags = [
         # "16IH2",
         # "32IfineH",
         # "32IcoarseH1",
-        # "48I",
         ]
 
 q.check_time_limit()
