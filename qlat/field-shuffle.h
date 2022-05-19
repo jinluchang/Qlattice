@@ -24,6 +24,13 @@ struct ShuffleCommPlan {
   long total_recv_size;  // total recv buffer size
   std::vector<ShufflePlanMsgInfo>
       recv_msg_infos;  // corresponds to every recv msg
+  //
+  ShuffleCommPlan()
+  {
+    global_comm_size = 0;
+    total_send_size = 0;
+    total_recv_size = 0;
+  }
 };
 
 struct ShufflePlanRecvPackInfo {
@@ -55,7 +62,11 @@ struct ShufflePlan {
                         // fields
   ShuffleCommPlan scp;  // plan for comm
   //
-  ShufflePlan() { is_no_shuffle = false; }
+  ShufflePlan()
+  {
+    is_no_shuffle = false;
+    n_elems_send = 0;
+  }
 };
 
 inline bool is_no_shuffle(const ShufflePlan& sp) { return sp.is_no_shuffle; }

@@ -91,10 +91,10 @@ struct QFile {
     fp = qopen(path, mode);
     if (fp == NULL) {
       qwarn(
-          ssprintf("QFile: open '%s' with '%s'.", path.c_str(), mode.c_str()));
+          ssprintf("QFile: open '%s' with '%s' failed.", path.c_str(), mode.c_str()));
     }
     is_eof = false;
-    pos = ftell(fp);
+    pos = 0;
     offset_start = 0;
     offset_end = -1;
   }

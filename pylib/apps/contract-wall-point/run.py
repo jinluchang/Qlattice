@@ -11,7 +11,7 @@ def get_load_path(fn):
     path_list = [
             "data",
             "/hpcgpfs01/work/lqcd/qcdqedta/hlbl-data-with-cache",
-            os.path.join(os.getenv("HOME"), "Qlat-sample-data/mk-selected-data-sample/results"),
+            os.path.join(os.getenv("HOME"), "Qlat-sample-data/default/mk-selected-data/results"),
             ]
     for path in path_list:
         if fn == "":
@@ -20,19 +20,21 @@ def get_load_path(fn):
             p = os.path.join(path, fn)
         if q.does_file_exist_sync_node(p):
             return p
+        if q.does_file_exist_qar_sync_node(p):
+            return p
     return None
 
 @q.timer
 def check_job(job_tag, traj):
     if get_load_path(f"gauge-transform/{job_tag}/traj={traj}.field") is None:
         return False
-    if get_load_path(f"prop-psrc-light/{job_tag}/traj={traj}") is None:
+    if get_load_path(f"prop-psrc-light/{job_tag}/traj={traj}/geon-info.txt") is None:
         return False
-    if get_load_path(f"prop-psrc-strange/{job_tag}/traj={traj}") is None:
+    if get_load_path(f"prop-psrc-strange/{job_tag}/traj={traj}/geon-info.txt") is None:
         return False
-    if get_load_path(f"prop-wsrc-light/{job_tag}/traj={traj}") is None:
+    if get_load_path(f"prop-wsrc-light/{job_tag}/traj={traj}/geon-info.txt") is None:
         return False
-    if get_load_path(f"prop-wsrc-strange/{job_tag}/traj={traj}") is None:
+    if get_load_path(f"prop-wsrc-strange/{job_tag}/traj={traj}/geon-info.txt") is None:
         return False
     return True
 
