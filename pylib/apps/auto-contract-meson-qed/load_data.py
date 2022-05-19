@@ -646,6 +646,7 @@ def load_prop_rand_u1_fsel(job_tag, traj, flavor, *, psel, fsel, fselc):
 def run_get_prop(job_tag, traj, *, get_gt, get_psel, get_fsel, get_psel_smear, get_wi):
     @q.timer_verbose
     def mk_get_prop():
+        q.timer_fork()
         total_site = rup.get_total_site(job_tag)
         wi = get_wi()
         gt = get_gt()
@@ -672,6 +673,8 @@ def run_get_prop(job_tag, traj, *, get_gt, get_psel, get_fsel, get_psel_smear, g
         #
         # prop_lookup_cache[(pos_src, type_src, type_snk,)] == get_prop_pos_snk where get_prop_pos_snk(pos_snk) ==> ama_prop
         prop_lookup_cache = q.mk_cache(f"prop_lookup_cache", f"{job_tag}", f"{traj}")
+        q.timer_display()
+        q.timer_merge()
         def get_prop(flavor, p_snk, p_src):
             return get_prop_lookup_snk_src(prop_lookup_cache, flavor, p_snk, p_src)
         return get_prop
