@@ -431,9 +431,9 @@ def load_prop_wsrc_psel(job_tag, traj, flavor, *, wi, psel, fsel, fselc, gt):
         if job_tag == "48I" and flavor == "s":
             # 48I strange quark wsrc boundary condition is anti-periodic, different from other 48I props
             q.displayln_info(f"flip_tpbc_with_tslice {job_tag} {flavor} {tag} ; wsrc ; psel")
-            flip_tpbc_with_tslice(cache_psel[f"{tag} ; wsrc ; psel"], tslice)
+            q.flip_tpbc_with_tslice(cache_psel[f"{tag} ; wsrc ; psel"], tslice)
             q.displayln_info(f"flip_tpbc_with_tslice {job_tag} {flavor} {tag} ; wsrc_wsnk ; psel_ts")
-            flip_tpbc_with_tslice(cache_psel_ts[f"{tag} ; wsrc_wsnk ; psel_ts"], tslice)
+            q.flip_tpbc_with_tslice(cache_psel_ts[f"{tag} ; wsrc_wsnk ; psel_ts"], tslice)
         #
         # increase count
         count[inv_acc] += 1
@@ -481,7 +481,7 @@ def load_prop_wsrc_fsel(job_tag, traj, flavor, *, wi, psel, fsel, fselc, gt):
         if job_tag == "48I" and flavor == "s":
             # 48I strange quark wsrc boundary condition is anti-periodic, different from other 48I props
             q.displayln_info(f"flip_tpbc_with_tslice {job_tag} {flavor} {tag} ; wsrc ; fselc")
-            flip_tpbc_with_tslice(cache_fselc[f"{tag} ; wsrc ; fselc"], tslice)
+            q.flip_tpbc_with_tslice(cache_fselc[f"{tag} ; wsrc ; fselc"], tslice)
         #
         # check psel psnk prop
         if f"{tag} ; wsrc ; psel" in cache_psel:
