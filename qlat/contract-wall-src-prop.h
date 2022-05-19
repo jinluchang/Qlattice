@@ -154,7 +154,7 @@ inline void refresh_prob(WallSrcProps& wsp, const Coordinate& total_site,
     }
   }
   qassert(wsp.num_sloppy == total_site[3]);
-  qassert(wsp.num_exact <= num_exact);
+  // qassert(wsp.num_exact <= num_exact);
   wsp.num_exact = num_exact;
   const double prob = 1.0 / (double)wsp.num_sloppy;
   const double prob_1 = 1.0 - std::pow(1.0 - prob, wsp.num_exact);
