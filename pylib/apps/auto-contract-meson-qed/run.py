@@ -963,19 +963,15 @@ def test():
 
 size_node_list = [
         [1, 1, 1, 1],
-        [1, 1, 1, 2],
-        [1, 1, 1, 4],
-        [1, 1, 1, 8],
-        [2, 2, 2, 2],
-        [2, 2, 2, 4],
-        [2, 2, 2, 8],
-        [2, 2, 4, 8],
-        [2, 4, 4, 8],
-        [4, 4, 4, 8],
-        [4, 4, 4, 16],
-        [4, 4, 8, 16],
-        [4, 8, 8, 16],
-        [8, 8, 8, 16],
+        [1, 1, 2, 1],
+        [1, 2, 2, 1],
+        [2, 2, 2, 1],
+        [2, 2, 4, 1],
+        [2, 4, 4, 1],
+        [4, 4, 4, 1],
+        [4, 4, 8, 1],
+        [4, 8, 8, 1],
+        [8, 8, 8, 1],
         ]
 
 q.begin(sys.argv, size_node_list)
@@ -1006,6 +1002,12 @@ job_tags = [
 q.check_time_limit()
 
 for job_tag in job_tags:
+    if job_tag == "48I" and q.get_num_node() != 8 * 32:
+        continue
+    elif job_tag == "64I" and q.get_num_node() != 8 * 64:
+        continue
+    elif q.get_num_node() > 8 * 16:
+        continue
     q.displayln_info(pprint.pformat(rup.dict_params[job_tag]))
     for traj in rup.dict_params[job_tag]["trajs"]:
         run_job(job_tag, traj)
