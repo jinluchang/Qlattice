@@ -175,3 +175,21 @@ EXPORT(hmc_set_rand_momentum_scalar_action, {
   sa.hmc_set_rand_momentum(sm, masses, rs);
   Py_RETURN_NONE;
 });
+
+EXPORT(hmc_predict_field_scalar_action, {
+  using namespace qlat;
+  PyObject* p_sa = NULL;
+  PyObject* p_sf_ft = NULL;
+  PyObject* p_sm_ft = NULL;
+  PyObject* p_masses = NULL;
+  double vev_sigma = 0.0;
+  if (!PyArg_ParseTuple(args, "OOOOd", &p_sa, &p_sf_ft, &p_sm_ft, &p_masses, &vev_sigma)) {
+    return NULL;
+  }
+  ScalarAction& sa = py_convert_type<ScalarAction>(p_sa);
+  Field<Complex>& sf_ft = py_convert_type<Field<Complex>>(p_sf_ft);
+  const Field<Complex>& sm_ft = py_convert_type<Field<Complex>>(p_sm_ft);
+  const Field<double>& masses = py_convert_type<Field<double>>(p_masses);
+  sa.hmc_predict_field(sf_ft, sm_ft, masses, vev_sigma);
+  Py_RETURN_NONE;
+});

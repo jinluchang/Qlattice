@@ -176,7 +176,7 @@ def metropolis_accept(delta_h, traj, rs):
     return flag, accept_prob
 
 @q.timer_verbose
-def run_hmc(field, geo, action, masses, traj, rs, vev, estimate_masses, fft, ifft):
+def run_hmc(field, field_predicted, geo, action, masses, traj, rs, vev, estimate_masses, fft, ifft):
     # Create a copy of the scalar field
     f0 = field.copy()
     
@@ -207,6 +207,17 @@ def run_hmc(field, geo, action, masses, traj, rs, vev, estimate_masses, fft, iff
     momentum_ft = fft*momentum_ft
     momentum_ft*=1/geo.total_volume()**0.5
     
+    momentums.append([[momentum_ft.get_elem([0,0,0,0],0),momentum_ft.get_elem([5,0,0,0],0),momentum_ft.get_elem([0,5,0,0],0),momentum_ft.get_elem([5,5,0,0],0)],
+                      [momentum_ft.get_elem([0,0,0,0],1),momentum_ft.get_elem([5,0,0,0],1),momentum_ft.get_elem([0,5,0,0],1),momentum_ft.get_elem([5,5,0,0],1)]])
+    
+    # Predicts the field value at the end of the trajectory based on the
+    # assumption that the evolution is a perfect harmonic oscillator
+    field_predicted_ft = q.Field("Complex",geo,mult)
+    action.hmc_predict_field(field_predicted_ft, momentum_ft, masses, vev)
+    
+    fields_pred.append([[field_predicted_ft.get_elem([0,0,0,0],0),field_predicted_ft.get_elem([5,0,0,0],0),field_predicted_ft.get_elem([0,5,0,0],0),field_predicted_ft.get_elem([5,5,0,0],0)],
+                        [field_predicted_ft.get_elem([0,0,0,0],1),field_predicted_ft.get_elem([5,0,0,0],1),field_predicted_ft.get_elem([0,5,0,0],1),field_predicted_ft.get_elem([5,5,0,0],1)]])
+    
     # The number of initial trajectories to perform without a Metropolis
     # accept step
     init_len = 20
@@ -220,11 +231,20 @@ def run_hmc(field, geo, action, masses, traj, rs, vev, estimate_masses, fft, iff
     flag, accept_prob = metropolis_accept(delta_h, traj, rs.split("metropolis_accept"))
     accept_rates.append(accept_prob)
     
+    field_ft.set_complex_from_double(f0)
+    field_ft = fft*field_ft
+    field_ft*=1/geo.total_volume()**0.5
+    fields.append([[field_ft.get_elem([0,0,0,0],0),field_ft.get_elem([5,0,0,0],0),field_ft.get_elem([0,5,0,0],0),field_ft.get_elem([5,5,0,0],0)],
+                   [field_ft.get_elem([0,0,0,0],1),field_ft.get_elem([5,0,0,0],1),field_ft.get_elem([0,5,0,0],1),field_ft.get_elem([5,5,0,0],1)]])
+    
     # If the field update is accepted or we are within the first few 
     # trajectories, save the field update
     if flag or traj <= init_len:
         q.displayln_info("run_hmc: update field (traj={:d})".format(traj))
         field @= f0
+        field_predicted_ft = ifft*field_predicted_ft
+        field_predicted_ft*=1/geo.total_volume()**0.5
+        field_predicted.set_double_from_complex(field_predicted_ft)
     
     return vev_new
 
@@ -248,6 +268,9 @@ def test_hmc(total_site, action, mult, n_traj):
     field = q.Field("double",geo,mult)
     q.set_unit(field);
     #field.load_double(f"output_data/hmc-pions-sigma-pi-corrs_{total_site[0]}x{total_site[3]}_msq_{m_sq}_lmbd_{lmbd}_alph_{alpha}.field")
+    
+    field_predicted = q.Field("double",geo,mult)
+    q.set_unit(field_predicted);
     
     # Create a field to store the masses used for Fourier acceleration
     masses = q.Field("double",geo,mult)
@@ -274,19 +297,19 @@ def test_hmc(total_site, action, mult, n_traj):
         
         # Run the HMC algorithm to update the field configuration
         if(not thermalized):
-            vev_new = run_hmc(field, geo, action, masses, traj, rs.split("hmc-{}".format(traj)), vev, True, fft, ifft)
+            vev_new = run_hmc(field, field_predicted, geo, action, masses, traj, rs.split("hmc-{}".format(traj)), vev, True, fft, ifft)
         else:
-            run_hmc(field, geo, action, masses, traj, rs.split("hmc-{}".format(traj)), vev, False, fft, ifft)
+            run_hmc(field, field_predicted, geo, action, masses, traj, rs.split("hmc-{}".format(traj)), vev, False, fft, ifft)
         
-        if(not thermalized and traj>20 and np.abs(vev/vev_new-1)<0.1):
+        if(not thermalized and traj>100 and np.abs(vev/vev_new-1)<0.1):
             thermalized = True
-            n_est = 20
+            n_est = 50
             masses_new = q.Field("double",geo,mult)
             masses_new @= masses
             q.set_zero(masses)
             vevs=[vev_new]
             for i in range(n_est):
-                run_hmc(field, geo, action, masses_new, traj, rs.split("hmc-est-mass{}".format(i)), np.mean(vevs), True, fft, ifft)
+                run_hmc(field, field_predicted, geo, action, masses_new, traj, rs.split("hmc-est-mass{}".format(i)), np.mean(vevs), True, fft, ifft)
                 masses_new*=1/n_est
                 masses+=masses_new
                 masses_new*=float(n_est)
@@ -296,6 +319,7 @@ def test_hmc(total_site, action, mult, n_traj):
                 q.displayln_info(ms)
             vev = np.mean(vevs)
             print(vev)
+            masses.save_double(f"output_data/masses_{total_site[0]}x{total_site[3]}_msq_{m_sq}_lmbd_{lmbd}_alph_{alpha}_{datetime.datetime.now().date()}.field")
         elif(not thermalized):
             vev = vev_new
         
@@ -303,11 +327,16 @@ def test_hmc(total_site, action, mult, n_traj):
         q.displayln_info("Average phi^2:")
         psq = phi_squared(field, action)
         q.displayln_info(psq)
+        q.displayln_info("Average phi^2 predicted:")
+        psq_predicted = phi_squared(field_predicted, action)
+        q.displayln_info(psq_predicted)
         
         q.displayln_info("Average phi:")
         field_sum = field.glb_sum()
         phi=[field_sum[i]/V for i in range(mult)]
         q.displayln_info(phi)
+        field_sum = field_predicted.glb_sum()
+        phi_predicted=[field_sum[i]/V for i in range(mult)]
         
         #q.displayln_info("Analytic masses (free case):")
         #ms=[calc_mass([0,0,0,0]),calc_mass([1,0,0,0]),calc_mass([2,0,0,0]),calc_mass([3,0,0,0]),calc_mass([4,0,0,0]),calc_mass([5,0,0,0])]
@@ -320,17 +349,24 @@ def test_hmc(total_site, action, mult, n_traj):
         q.displayln_info(ms)
         
         tslices = field.glb_sum_tslice()
+        tslices_predicted = field_predicted.glb_sum_tslice()
         
         # Calculate the axial current of the current field configuration
         # and save it in axial_current
         action.axial_current_node(axial_current, field)
         tslices_ax_cur = axial_current.glb_sum_tslice()
+        action.axial_current_node(axial_current, field_predicted)
+        tslices_ax_cur_predicted = axial_current.glb_sum_tslice()
         
         if i>start_measurements:
             psq_list.append(psq)
             phi_list.append(phi)
             timeslices.append(tslices.to_numpy())
             ax_cur_timeslices.append(tslices_ax_cur.to_numpy())
+            psq_pred_list.append(psq_predicted)
+            phi_pred_list.append(phi_predicted)
+            timeslices_pred.append(tslices_predicted.to_numpy())
+            ax_cur_timeslices_pred.append(tslices_ax_cur_predicted.to_numpy())
     
     # Saves the final field configuration so that the next run can be 
     # started where this one left off
@@ -344,27 +380,31 @@ def main():
 
 # Stores the average phi^2 for each trajectory
 psq_list=[]
+psq_pred_list=[]
 # Stores the average values of each phi_i for each trajectory
 phi_list=[]
+phi_pred_list=[]
 # Stores the timeslice sums of each phi_i for each trajectory
 timeslices=[]
+timeslices_pred=[]
 # Stores the timeslice sums of the time component of each of the three
 # axial currents for each trajectory
 ax_cur_timeslices=[]
+ax_cur_timeslices_pred=[]
 # Save the acceptance rates
 accept_rates=[]
-
 fields=[]
-forces=[]
+fields_pred=[]
+momentums=[]
 
 # The lattice dimensions
-total_site = [8,8,8,8]
+total_site = [8,8,8,16]
 
 # The multiplicity of the scalar field
 mult = 4
 
 # The number of trajectories to calculate
-n_traj = 100
+n_traj = 500
 # The number of steps to take in a single trajectory
 steps = 50
 # The length of a single trajectory in molecular dynamics time
@@ -412,7 +452,7 @@ q.qremove_all_info("results")
 main()
 
 with open(f"output_data/sigma_pion_corrs_{total_site[0]}x{total_site[3]}_msq_{m_sq}_lmbd_{lmbd}_alph_{alpha}_{datetime.datetime.now().date()}.bin", "wb") as output:
-    pickle.dump([accept_rates,psq_list,phi_list,timeslices,ax_cur_timeslices],output)
+    pickle.dump([accept_rates,psq_list,phi_list,timeslices,ax_cur_timeslices,psq_pred_list,phi_pred_list,timeslices_pred,ax_cur_timeslices_pred],output)
 
 q.timer_display()
 

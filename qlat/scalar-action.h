@@ -337,6 +337,33 @@ struct ScalarAction {
       }
     });
   }
+  
+  inline void hmc_predict_field(Field<Complex>& field_ft, const Field<Complex>& momentum_ft, const Field<double>& masses, const double vev_sigma)
+  {
+    TIMER("hmc_predict_field");
+    const Geometry& geo = momentum_ft.geo();
+    qacc_for(index, geo.local_volume(), {
+      const Coordinate xl = geo.coordinate_from_index(index);
+      const Coordinate xg = geo.coordinate_g_from_l(xl);
+      const long gindex = geo.g_index_from_g_coordinate(xg);
+      Vector<Complex> v = field_ft.get_elems(xl);
+      int M = v.size();
+      qassert(M == geo.multiplicity);
+      qassert(M == masses.geo().multiplicity);
+      for (int m = 0; m < M; ++m) {
+		Complex mom = momentum_ft.get_elem(xl,m);
+        if(gindex==0 && m==0) {
+          v[m] = Complex(mom.real()/masses.get_elem(xl,m)/PI*2 + 
+                         vev_sigma*std::pow(geo.total_volume(),0.5), 
+                         mom.imag()/masses.get_elem(xl,m)/PI*2);
+		}
+        else {
+          v[m] = Complex(mom.real()/masses.get_elem(xl,m)/PI*2,
+                         mom.imag()/masses.get_elem(xl,m)/PI*2);
+	    }
+      }
+    });
+  }
    
 };
 
