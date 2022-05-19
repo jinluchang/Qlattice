@@ -83,6 +83,22 @@ EXPORT(timer_reset, {
   Py_RETURN_NONE;
 });
 
+EXPORT(timer_fork, {
+  using namespace qlat;
+  long max_call_times_for_always_show_info = -1;
+  if (!PyArg_ParseTuple(args, "|l", &max_call_times_for_always_show_info)) {
+    return NULL;
+  }
+  Timer::fork(max_call_times_for_always_show_info);
+  Py_RETURN_NONE;
+});
+
+EXPORT(timer_merge, {
+  using namespace qlat;
+  Timer::merge();
+  Py_RETURN_NONE;
+});
+
 EXPORT(timer_display_stack_always, {
   using namespace qlat;
   Timer::display_stack_always();
@@ -97,5 +113,15 @@ EXPORT(timer_display_stack, {
 
 EXPORT(verbose_level, {
   using namespace qlat;
+  return py_convert(verbose_level());
+});
+
+EXPORT(set_verbose_level, {
+  using namespace qlat;
+  long level = 0;
+  if (!PyArg_ParseTuple(args, "|l", &level)) {
+    return NULL;
+  }
+  verbose_level() = level;
   return py_convert(verbose_level());
 });

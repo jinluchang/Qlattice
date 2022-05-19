@@ -39,6 +39,7 @@ def check_job(job_tag, traj, fns_produce, fns_need):
         if get_load_path(fn) is None:
             q.displayln_info(f"check_job: {job_tag} {traj} to do as '{fn}' does not exist.")
             is_job_done = False
+            break
     if is_job_done:
         return False
     #
@@ -47,6 +48,7 @@ def check_job(job_tag, traj, fns_produce, fns_need):
         if get_load_path(fn) is None:
             q.displayln_info(f"check_job: {job_tag} {traj} unavailable as '{fn}' does not exist.")
             is_job_avail = False
+            break
     if not is_job_avail:
         return False
     #
@@ -61,29 +63,25 @@ def check_job(job_tag, traj, fns_produce, fns_need):
 
 @q.timer_verbose
 def run_gf(job_tag, traj):
-    import qlat_gpt as qg
-    import rbc_ukqcd as ru
     path_gf = get_load_path(
             f"configs/{job_tag}/ckpoint_lat.{traj}",
             f"configs/{job_tag}/ckpoint_lat.IEEE64BIG.{traj}",
             )
     if path_gf is None:
         if job_tag[:5] == "test-":
-            gf = ru.mk_sample_gauge_field(job_tag, f"{traj}")
+            gf = rup.mk_sample_gauge_field(job_tag, f"{traj}")
             path_gf = get_save_path(f"configs/{job_tag}/ckpoint_lat.{traj}")
-            # gf.save(path_gf)
-            qg.save_gauge_field(gf, path_gf)
+            gf.save(path_gf)
         else:
             @q.timer_verbose
             def load_gf():
                 assert False
             return load_gf
-    get_gf = ru.load_config_lazy(job_tag, path_gf)
+    get_gf = rup.load_config_lazy(job_tag, path_gf)
     return get_gf
 
 @q.timer_verbose
 def run_gt(job_tag, traj, get_gf):
-    import qlat_gpt as qg
     if None in [ get_gf, ]:
         return None
     tfn = f"gauge-transform/{job_tag}/traj={traj}.field"
@@ -91,6 +89,7 @@ def run_gt(job_tag, traj, get_gf):
     if path_gt is None:
         if q.obtain_lock(f"locks/{job_tag}-{traj}-gauge_fix_coulomb"):
             gf = get_gf()
+            import qlat_gpt as qg
             gt = qg.gauge_fix_coulomb(gf)
             gt.save_double(get_save_path(tfn))
             q.release_lock()
@@ -104,6 +103,7 @@ def run_gt(job_tag, traj, get_gf):
         gt = q.GaugeTransform()
         gt.load_double(path_gt)
         # ADJUST ME
+        # import qlat_gpt as qg
         # qg.check_gauge_fix_coulomb(get_gf(), gt)
         #
         return gt
@@ -114,13 +114,12 @@ def run_gt(job_tag, traj, get_gf):
 
 @q.timer
 def mk_rand_wall_src_info_n_exact(job_tag, traj, inv_type):
-    import rbc_ukqcd as ru
     params = rup.dict_params[job_tag]
     n_exact = params["n_exact_wsrc"]
     rs = q.RngState(f"seed {job_tag} {traj}").split("mk_rand_wall_src_info")
     inv_acc_s = 1
     inv_acc_e = 2
-    total_site = ru.get_total_site(job_tag)
+    total_site = rup.get_total_site(job_tag)
     t_size = total_site[3]
     wi_s = [ [ t, inv_type, inv_acc_s, ] for t in range(t_size) ]
     mask = [ False, ] * t_size
@@ -138,13 +137,12 @@ def mk_rand_wall_src_info_n_exact(job_tag, traj, inv_type):
 
 @q.timer
 def mk_rand_wall_src_info_prob(job_tag, traj, inv_type):
-    import rbc_ukqcd as ru
     params = rup.dict_params[job_tag]
     prob = params["prob_exact_wsrc"]
     rs = q.RngState(f"seed {job_tag} {traj}").split("mk_rand_wall_src_info_prob")
     inv_acc_s = 1
     inv_acc_e = 2
-    total_site = ru.get_total_site(job_tag)
+    total_site = rup.get_total_site(job_tag)
     t_size = total_site[3]
     wi_s = [ [ t, inv_type, inv_acc_s, ] for t in range(t_size) ]
     wi_e = []
@@ -157,12 +155,11 @@ def mk_rand_wall_src_info_prob(job_tag, traj, inv_type):
     return wi
 
 def get_prob_exact_wsrc(job_tag):
-    import rbc_ukqcd as ru
     params = rup.dict_params[job_tag]
     if "prob_exact_wsrc" in params:
         return params["prob_exact_wsrc"]
     n_exact = params["n_exact_wsrc"]
-    total_site = ru.get_total_site(job_tag)
+    total_site = rup.get_total_site(job_tag)
     return 1 - (1 - 1 / total_site[3])**n_exact
 
 @q.timer
@@ -227,9 +224,8 @@ def get_n_points_psel(job_tag, traj):
 
 @q.timer
 def mk_rand_psel(job_tag, traj):
-    import rbc_ukqcd as ru
     rs = q.RngState(f"seed {job_tag} {traj}").split("mk_rand_psel")
-    total_site = ru.get_total_site(job_tag)
+    total_site = rup.get_total_site(job_tag)
     n_points = get_n_points_psel(job_tag, traj)
     psel = q.PointSelection()
     psel.set_rand(rs, total_site, n_points)
@@ -250,12 +246,11 @@ def run_psel(job_tag, traj):
     #
     @q.timer_verbose
     def load_psel():
-        import rbc_ukqcd as ru
         path_psel = get_load_path(tfn)
         assert path_psel is not None
         psel = q.PointSelection()
         psel.load(path_psel)
-        total_site = ru.get_total_site(job_tag)
+        total_site = rup.get_total_site(job_tag)
         psel.geo = q.Geometry(total_site)
         return psel
     return q.lazy_call(load_psel)
@@ -328,9 +323,8 @@ def run_pi(job_tag, traj, get_psel):
 
 @q.timer
 def mk_rand_fsel(job_tag, traj, n_per_tslice):
-    import rbc_ukqcd as ru
     rs = q.RngState(f"seed {job_tag} {traj}").split("mk_rand_fsel")
-    total_site = ru.get_total_site(job_tag)
+    total_site = rup.get_total_site(job_tag)
     fsel = q.FieldSelection()
     fsel.set_rand(rs, total_site, n_per_tslice)
     return fsel
@@ -345,10 +339,9 @@ def mk_fselc(fsel, psel):
 def run_fsel(job_tag, traj, get_psel):
     if get_psel is None:
         return None
-    import rbc_ukqcd as ru
     tfn = f"field-selection/{job_tag}/traj={traj}.field"
     path_fsel = get_load_path(tfn)
-    total_site = ru.get_total_site(job_tag)
+    total_site = rup.get_total_site(job_tag)
     n_per_tslice = total_site[0] * total_site[1] * total_site[2] // 16
     if path_fsel is None:
         if q.obtain_lock(f"locks/{job_tag}-{traj}-fsel"):
@@ -374,9 +367,8 @@ def run_fsel(job_tag, traj, get_psel):
 
 @q.timer
 def mk_rand_fsel_smear(job_tag, traj, n_per_tslice_smear):
-    import rbc_ukqcd as ru
     rs = q.RngState(f"seed {job_tag} {traj}").split("mk_rand_fsel_smear")
-    total_site = ru.get_total_site(job_tag)
+    total_site = rup.get_total_site(job_tag)
     fsel = q.FieldSelection()
     fsel.set_rand(rs, total_site, n_per_tslice_smear)
     return fsel
@@ -385,10 +377,9 @@ def mk_rand_fsel_smear(job_tag, traj, n_per_tslice_smear):
 def run_psel_smear(job_tag, traj):
     # return lambda : psel_smear
     # psel_smear should randomly select same number of point on each tslice
-    import rbc_ukqcd as ru
     tfn = f"point-selection-smear/{job_tag}/traj={traj}.txt"
     path_psel = get_load_path(tfn)
-    total_site = ru.get_total_site(job_tag)
+    total_site = rup.get_total_site(job_tag)
     if path_psel is None:
         if q.obtain_lock(f"locks/{job_tag}-{traj}-psel-smear"):
             n_per_tslice_smear = rup.dict_params[job_tag]["n_per_tslice_smear"]
@@ -405,7 +396,7 @@ def run_psel_smear(job_tag, traj):
         assert path_psel is not None
         psel = q.PointSelection()
         psel.load(path_psel)
-        total_site = ru.get_total_site(job_tag)
+        total_site = rup.get_total_site(job_tag)
         psel.geo = q.Geometry(total_site)
         return psel
     return q.lazy_call(load_psel)

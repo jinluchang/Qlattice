@@ -6,6 +6,7 @@ from qlat.field_utils import *
 from qlat.rng_state import *
 from qlat.selected_field import *
 from qlat.selected_points import *
+from qlat.mat import *
 
 class Prop(Field):
 
@@ -17,6 +18,11 @@ class Prop(Field):
         if is_copying_data:
             f @= self
         return f
+
+    def get_elem_wm(self, xg, m = 0):
+        cdata = c.get_elem_wm_prop(self, xg, m)
+        wm = WilsonMatrix(cdata = cdata, base = self)
+        return wm
 
     def sparse(self, sel):
         # deprecated
@@ -33,6 +39,8 @@ class Prop(Field):
         else:
             raise Exception("Prop.sparse")
 
+###
+
 class SelProp(SelectedField):
 
     def __init__(self, fsel, *, ctype = None, multiplicity = None):
@@ -43,6 +51,11 @@ class SelProp(SelectedField):
         if is_copying_data:
             f @= self
         return f
+
+    def get_elem_wm(self, idx, m = 0):
+        cdata = c.get_elem_wm_sprop(self, idx, m)
+        wm = WilsonMatrix(cdata = cdata, base = self)
+        return wm
 
     def sparse(self, sel):
         # deprecated
@@ -59,6 +72,8 @@ class SelProp(SelectedField):
         else:
             raise Exception("SelProp.sparse")
 
+###
+
 class PselProp(SelectedPoints):
 
     def __init__(self, psel, *, ctype = None, multiplicity = None):
@@ -69,6 +84,13 @@ class PselProp(SelectedPoints):
         if is_copying_data:
             f @= self
         return f
+
+    def get_elem_wm(self, idx, m = 0):
+        cdata = c.get_elem_wm_psprop(self, idx, m)
+        wm = WilsonMatrix(cdata = cdata, base = self)
+        return wm
+
+###
 
 def set_point_src(prop_src, geo, xg, value = 1.0):
     c.set_point_src_prop(prop_src, geo, xg, value)
@@ -169,6 +191,16 @@ def convert_wm_from_mspincolor(prop_msc):
     return prop_wm
 
 @timer
+def flip_tpbc_with_tslice(prop, tslice_flip_tpbc):
+    if isinstance(prop, SelProp):
+        c.flip_tpbc_with_tslice_s_prop(prop, tslice_flip_tpbc)
+    elif isinstance(prop, PselProp):
+        c.flip_tpbc_with_tslice_sp_prop(prop, tslice_flip_tpbc)
+    else:
+        print(type(prop))
+        assert False
+
+@timer
 def free_scalar_invert_mom_cfield(f, mass):
     assert isinstance(f, Field)
     assert f.ctype == "Complex"
@@ -193,3 +225,5 @@ class FermionField4d(Field):
         if is_copying_data:
             f @= self
         return f
+
+###

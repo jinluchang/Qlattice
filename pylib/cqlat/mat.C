@@ -27,21 +27,6 @@ EXPORT(set_zero_wilson_matrix, {
   Py_RETURN_NONE;
 });
 
-EXPORT(set_value_wilson_matrix, {
-  using namespace qlat;
-  PyObject* p_obj = NULL;
-  PyObject* p_obj1 = NULL;
-  if (!PyArg_ParseTuple(args, "OO", &p_obj, &p_obj1)) {
-    return NULL;
-  }
-  WilsonMatrix& obj = py_convert_type<WilsonMatrix>(p_obj);
-  const std::vector<Complex>& obj1 =
-      py_convert_data<std::vector<Complex> >(p_obj1);
-  pqassert(obj1.size() * sizeof(Complex) == sizeof(WilsonMatrix));
-  std::memcpy((void*)&obj, (void*)obj1.data(), sizeof(WilsonMatrix));
-  Py_RETURN_NONE;
-});
-
 // -----------------------------------------
 
 EXPORT(mk_spin_matrix, {
@@ -68,21 +53,6 @@ EXPORT(set_zero_spin_matrix, {
   }
   SpinMatrix& obj = py_convert_type<SpinMatrix>(p_obj);
   set_zero(obj);
-  Py_RETURN_NONE;
-});
-
-EXPORT(set_value_spin_matrix, {
-  using namespace qlat;
-  PyObject* p_obj = NULL;
-  PyObject* p_obj1 = NULL;
-  if (!PyArg_ParseTuple(args, "OO", &p_obj, &p_obj1)) {
-    return NULL;
-  }
-  SpinMatrix& obj = py_convert_type<SpinMatrix>(p_obj);
-  const std::vector<Complex>& obj1 =
-      py_convert_data<std::vector<Complex> >(p_obj1);
-  pqassert(obj1.size() * sizeof(Complex) == sizeof(SpinMatrix));
-  std::memcpy((void*)&obj, (void*)obj1.data(), sizeof(SpinMatrix));
   Py_RETURN_NONE;
 });
 
@@ -223,4 +193,103 @@ EXPORT(trace_sm_wm, {
   const SpinMatrix& obj = py_convert_type<SpinMatrix>(p_obj);
   const WilsonMatrix& obj1 = py_convert_type<WilsonMatrix>(p_obj1);
   return py_convert(matrix_trace(obj, obj1));
+});
+
+// -----------------------------------------
+
+EXPORT(get_elem_wm_prop, {
+  using namespace qlat;
+  PyObject* p_obj = NULL;
+  PyObject* p_xg = NULL;
+  long m = 0;
+  if (!PyArg_ParseTuple(args, "OO|l", &p_obj, &p_xg, &m)) {
+    return NULL;
+  }
+  const Field<WilsonMatrix>& obj = py_convert_type_field<WilsonMatrix>(p_obj);
+  const Coordinate xg = py_convert_data<Coordinate>(p_xg);
+  const WilsonMatrix& wm = obj.get_elem(xg, m);
+  const long cdata = (long)&wm;
+  return py_convert(cdata);
+});
+
+EXPORT(get_elem_wm_sprop, {
+  using namespace qlat;
+  PyObject* p_obj = NULL;
+  long idx = 0;
+  long m = 0;
+  if (!PyArg_ParseTuple(args, "Ol|l", &p_obj, &idx, &m)) {
+    return NULL;
+  }
+  const SelectedField<WilsonMatrix>& obj =
+      py_convert_type_sfield<WilsonMatrix>(p_obj);
+  const WilsonMatrix& wm = obj.get_elem(idx, m);
+  const long cdata = (long)&wm;
+  return py_convert(cdata);
+});
+
+EXPORT(get_elem_wm_psprop, {
+  using namespace qlat;
+  PyObject* p_obj = NULL;
+  long idx = 0;
+  long m = 0;
+  if (!PyArg_ParseTuple(args, "Ol|l", &p_obj, &idx, &m)) {
+    return NULL;
+  }
+  const SelectedPoints<WilsonMatrix>& obj =
+      py_convert_type_spoints<WilsonMatrix>(p_obj);
+  const WilsonMatrix& wm = obj.get_elem(idx, m);
+  const long cdata = (long)&wm;
+  return py_convert(cdata);
+});
+
+// -----------------------------------------
+
+EXPORT(set_state_wm, {
+  using namespace qlat;
+  PyObject* p_obj = NULL;
+  PyObject* p_obj1 = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_obj, &p_obj1)) {
+    return NULL;
+  }
+  WilsonMatrix& obj = py_convert_type<WilsonMatrix>(p_obj);
+  const char* buffer = PyBytes_AsString(p_obj1);
+  const long len = PyBytes_Size(p_obj1);
+  pqassert(len == sizeof(WilsonMatrix));
+  std::memcpy((void*)&obj, (void*)buffer, len);
+  Py_RETURN_NONE;
+});
+
+EXPORT(get_state_wm, {
+  using namespace qlat;
+  PyObject* p_obj = NULL;
+  if (!PyArg_ParseTuple(args, "O", &p_obj)) {
+    return NULL;
+  }
+  WilsonMatrix& obj = py_convert_type<WilsonMatrix>(p_obj);
+  return PyBytes_FromStringAndSize((const char*)&obj, sizeof(WilsonMatrix));
+});
+
+EXPORT(set_state_sm, {
+  using namespace qlat;
+  PyObject* p_obj = NULL;
+  PyObject* p_obj1 = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_obj, &p_obj1)) {
+    return NULL;
+  }
+  SpinMatrix& obj = py_convert_type<SpinMatrix>(p_obj);
+  const char* buffer = PyBytes_AsString(p_obj1);
+  const long len = PyBytes_Size(p_obj1);
+  pqassert(len == sizeof(SpinMatrix));
+  std::memcpy((void*)&obj, (void*)buffer, len);
+  Py_RETURN_NONE;
+});
+
+EXPORT(get_state_sm, {
+  using namespace qlat;
+  PyObject* p_obj = NULL;
+  if (!PyArg_ParseTuple(args, "O", &p_obj)) {
+    return NULL;
+  }
+  SpinMatrix& obj = py_convert_type<SpinMatrix>(p_obj);
+  return PyBytes_FromStringAndSize((const char*)&obj, sizeof(SpinMatrix));
 });

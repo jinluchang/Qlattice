@@ -1,6 +1,6 @@
 qlat::begin(): MPI Initialized. num_node = 2
 qlat::begin_comm(comm,size_node): get_comm_list().push_back()
-qlat::begin_comm(comm,size_node): get_comm_list().size() = 1.
+qlat::begin_comm(comm,size_node): get_comm_list().size() = 1
 q_verbose=1
 q_num_threads=2 (default)
 qlat::begin(): q_num_threads = 2

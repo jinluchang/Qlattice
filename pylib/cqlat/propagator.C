@@ -250,3 +250,35 @@ EXPORT(free_scalar_invert_mom_cfield, {
   });
   Py_RETURN_NONE;
 });
+
+EXPORT(flip_tpbc_with_tslice_sp_prop, {
+  using namespace qlat;
+  PyObject* p_sp_prop = NULL;
+  int tslice_flip_tpbc = -1;
+  if (!PyArg_ParseTuple(args, "Oi", &p_sp_prop, &tslice_flip_tpbc)) {
+    return NULL;
+  }
+  SelectedPoints<WilsonMatrix>& sp_prop =
+      py_convert_type_spoints<WilsonMatrix>(p_sp_prop);
+  const PointSelection& psel =
+      py_convert_type<PointSelection>(p_sp_prop, "psel");
+  const Geometry& geo = py_convert_type<Geometry>(p_sp_prop, "psel", "geo");
+  const int t_size = geo.total_site()[3];
+  flip_tpbc_with_tslice(sp_prop, psel, tslice_flip_tpbc, t_size);
+  Py_RETURN_NONE;
+});
+
+EXPORT(flip_tpbc_with_tslice_s_prop, {
+  using namespace qlat;
+  PyObject* p_s_prop = NULL;
+  int tslice_flip_tpbc = -1;
+  if (!PyArg_ParseTuple(args, "Oi", &p_s_prop, &tslice_flip_tpbc)) {
+    return NULL;
+  }
+  SelectedField<WilsonMatrix>& s_prop =
+      py_convert_type_sfield<WilsonMatrix>(p_s_prop);
+  const FieldSelection& fsel =
+      py_convert_type<FieldSelection>(p_s_prop, "fsel");
+  flip_tpbc_with_tslice(s_prop, fsel, tslice_flip_tpbc);
+  Py_RETURN_NONE;
+});

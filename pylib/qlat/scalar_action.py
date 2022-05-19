@@ -25,52 +25,52 @@ class ScalarAction:
 
     def lmbd(self):
         return c.get_alpha_scalar_action(self)
-    
+
     def action_node(self, sm):
         assert isinstance(sm, Field)
         return c.action_node_scalar_action(self, sm)
-    
+
     def hmc_estimate_mass(self, masses, field_ft, force_ft, phi0):
         assert isinstance(masses, Field)
         assert isinstance(field_ft, Field)
         assert isinstance(force_ft, Field)
         return c.hmc_estimate_mass_scalar_action(self, masses, field_ft, force_ft, phi0)
-    
+
     def set_complex_from_double(self, cf, sf):
         assert isinstance(cf, Field)
         assert isinstance(sf, Field)
         return c.set_complex_from_double_scalar_action(self, cf, sf)
-    
+
     def set_double_from_complex(self, sf, cf):
         assert isinstance(cf, Field)
         assert isinstance(sf, Field)
         return c.set_double_from_complex_scalar_action(self, sf, cf)
-    
+
     def sum_sq(self, sf):
         assert isinstance(sf, Field)
         return c.sum_sq_scalar_action(self, sf)
-    
+
     def hmc_m_hamilton_node(self, sf, masses):
         assert isinstance(sf, Field)
         assert isinstance(masses, Field)
         return c.hmc_m_hamilton_node_scalar_action(self, sf, masses)
-    
+
     def hmc_set_force(self, sm_force, sf):
         assert isinstance(sm_force, Field)
         assert isinstance(sf, Field)
         return c.hmc_set_force_scalar_action(self, sm_force, sf)
-    
+
     def hmc_field_evolve(self, sf_ft, sm_ft, masses, step_size):
         assert isinstance(sf_ft, Field)
         assert isinstance(sm_ft, Field)
         assert isinstance(masses, Field)
         c.hmc_field_evolve_scalar_action(self, sf_ft, sm_ft, masses, step_size)
-    
+
     def axial_current_node(self, axial_current, sf):
         assert isinstance(sf, Field)
         assert isinstance(axial_current, Field)
         return c.axial_current_node_scalar_action(self, axial_current, sf)
-    
+
     def hmc_set_rand_momentum(self, sm_complex, masses, rs):
         assert isinstance(sm_complex, Field)
         assert isinstance(masses, Field)

@@ -10,7 +10,7 @@ inline Cache<std::string, QarFile>& get_qar_read_cache()
 // key should be the path prefix of the contents of the qar file.
 // Note: key should end with '/'.
 {
-  static Cache<std::string, QarFile> cache("QarReadCache", 8, 1);
+  static Cache<std::string, QarFile> cache("QarReadCache", 16, 1);
   return cache;
 }
 
@@ -59,6 +59,32 @@ inline bool does_file_exist_qar(const std::string& path)
   const std::string fn = path.substr(key.size());
   QarFile& qar = get_qar_read_cache()[key];
   return has(qar, fn);
+}
+
+inline bool does_file_or_directory_exist_qar(const std::string& path)
+// interface function
+{
+  TIMER("does_file_or_directory_exist_qar");
+  if (does_file_exist_qar(path)) {
+    return true;
+  }
+  const std::string path_test = remove_trailing_slashes(path) + "/TEST-FILE";
+  const std::string key = get_qar_read_cache_key(path_test);
+  qassert(key == path_test.substr(0, key.size()));
+  const std::string fn =
+      (remove_trailing_slashes(path) + "/").substr(key.size());
+  if (fn == "") {
+    return true;
+  }
+  QarFile& qar = get_qar_read_cache()[key];
+  const std::vector<std::string> fn_list = list(qar);
+  for (long i = 0; i < (long)fn_list.size(); ++i) {
+    const std::string& fni = fn_list[i];
+    if (fni.compare(0, fn.size(), fn) == 0) {
+      return true;
+    }
+  }
+  return false;
 }
 
 inline void qopen(QFile& qfile, const std::string& path,

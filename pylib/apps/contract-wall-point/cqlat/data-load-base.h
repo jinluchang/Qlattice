@@ -24,7 +24,7 @@ inline bool get_does_file_exist(const std::string& fn)
   DoesFileExistCache& cache = get_does_file_exist_cache();
   if (not cache.has(key)) {
     TIMER_VERBOSE("get_does_file_exist");
-    cache[key] = does_file_exist_sync_node(fn);
+    cache[key] = does_file_or_directory_exist_qar_sync_node(fn);
   }
   return cache[key];
 }
@@ -297,71 +297,6 @@ inline void display_fields_wsrc(const std::string& job_tag, const int traj,
 //   }
 //   return total_bytes;
 // }
-
-inline void set_t_range_flip_tpbc_with_tslice(int& t_start, int& t_stop,
-                                              const int tslice_flip_tpbc,
-                                              const int t_size)
-// flip range t_start <= t < t_stop
-// tslice_flip_tpbc - t_size_half ... tslice_flip_tpbc ... tslice_flip_tpbc +
-// t_size_half - 1
-{
-  const int t_size_half = t_size / 2;
-  qassert(t_size == t_size_half * 2);
-  if (tslice_flip_tpbc + t_size_half < t_size) {
-    t_start = tslice_flip_tpbc + t_size_half;
-    t_stop = t_size;
-  } else if (tslice_flip_tpbc - t_size_half >= 0) {
-    t_start = 0;
-    t_stop = tslice_flip_tpbc - t_size_half;
-  } else {
-    qassert(false);
-  }
-}
-
-inline void flip_tpbc_with_tslice(PselProp& ps_prop, const PointSelection& psel,
-                                  const int tslice_flip_tpbc, const int t_size)
-{
-  if (tslice_flip_tpbc < 0) {
-    return;
-  }
-  TIMER_VERBOSE("flip_tpbc_with_tslice(psel)");
-  qassert(t_size > 0);
-  qassert(t_size > tslice_flip_tpbc);
-  qassert(ps_prop.n_points == (long)psel.size());
-  int t_start, t_stop;
-  set_t_range_flip_tpbc_with_tslice(t_start, t_stop, tslice_flip_tpbc, t_size);
-  qacc_for(idx, ps_prop.n_points, {
-    const Coordinate xg = psel[idx];
-    const int t = xg[3];
-    qassert(t_size > t);
-    if (t_start <= t and t < t_stop) {
-      ps_prop.get_elem(idx) *= -1;
-    }
-  });
-}
-
-inline void flip_tpbc_with_tslice(SelProp& s_prop, const FieldSelection& fsel,
-                                  const int tslice_flip_tpbc)
-{
-  if (tslice_flip_tpbc < 0) {
-    return;
-  }
-  TIMER_VERBOSE("flip_tpbc_with_tslice(fsel)");
-  qassert(s_prop.n_elems == (long)fsel.n_elems);
-  const Geometry& geo = fsel.f_rank.geo();
-  const int t_size = geo.total_site()[3];
-  int t_start, t_stop;
-  set_t_range_flip_tpbc_with_tslice(t_start, t_stop, tslice_flip_tpbc, t_size);
-  qacc_for(idx, fsel.n_elems, {
-    const long index = fsel.indices[idx];
-    const Coordinate xl = geo.coordinate_from_index(index);
-    const Coordinate xg = geo.coordinate_g_from_l(xl);
-    const int t = xg[3];
-    if (t_start <= t and t < t_stop) {
-      s_prop.get_elem(idx) *= -1;
-    }
-  });
-}
 
 inline long load_prop(PselProp& ps_prop, SelProp& s_prop,
                       const std::string& path, const std::string& fn,

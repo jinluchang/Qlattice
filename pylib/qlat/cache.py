@@ -38,12 +38,13 @@ def show_cache_keys(keys):
 @timer
 def clean_cache(ca = cache):
     info_str = show_cache_keys(ca.keys)
-    displayln_info(0, f"clean_cache: cache{info_str}:")
-    for key, val in list(ca.items()):
+    items = list(ca.items())
+    displayln_info(0, f"clean_cache: cache{info_str}: len={len(items)}")
+    for key, val in items:
         if isinstance(val, Cache):
             clean_cache(val)
         else:
-            displayln_info(1, f"clean_cache: cache{info_str}['{key}']")
+            # displayln_info(1, f"clean_cache: cache{info_str}['{key}']")
             ca.pop(key)
 
 def mk_cache(*keys, ca = cache):

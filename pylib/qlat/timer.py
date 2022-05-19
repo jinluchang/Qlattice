@@ -1,10 +1,9 @@
 import cqlat as c
 
 from cqlat import get_id_node
-from cqlat import verbose_level
 from cqlat import timer_display, timer_autodisplay
 from cqlat import timer_display_stack, timer_display_stack_always
-from cqlat import timer_reset
+from cqlat import timer_reset, timer_fork, timer_merge
 
 import functools
 
@@ -94,3 +93,10 @@ class TimerNone(Timer):
 
     def __init__(self):
         super().__init__(None)
+
+def verbose_level(level = None):
+    if level is None:
+        return c.verbose_level()
+    else:
+        assert isinstance(level, int)
+        return c.set_verbose_level(level)

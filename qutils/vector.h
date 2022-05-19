@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <cstring>
 #include <unordered_map>
+#include <malloc.h>
 
 namespace qlat
 {  //
@@ -122,7 +123,7 @@ inline MemCache& get_mem_cache(const bool is_acc = false)
 
 inline void clear_mem_cache()
 {
-  TIMER_VERBOSE("clear_mem_cache");
+  TIMER_VERBOSE_FLOPS("clear_mem_cache");
   long total_bytes = 0;
   total_bytes += get_mem_cache(false).mem_cache_size;
   total_bytes += get_mem_cache(true).mem_cache_size;
@@ -131,6 +132,7 @@ inline void clear_mem_cache()
   displayln_info(
       0, fname + ssprintf(": %ld bytes (%.3f GB) freed.", total_bytes,
                           (double)total_bytes / (1024.0 * 1024.0 * 1024.0)));
+  timer.flops += total_bytes;
 }
 
 inline void* alloc_mem_alloc_no_acc(const long size)

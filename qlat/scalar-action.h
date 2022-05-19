@@ -157,7 +157,7 @@ struct ScalarAction {
     // from each point
     FieldM<double, 1> fd;
     fd.init(geo_r);
-    long V = geo.total_volume();
+    // long V = geo.total_volume();
     qacc_for(index, geo_r.local_volume(), {
       Coordinate xl = geo_r.coordinate_from_index(index);
       double s=0;
@@ -231,7 +231,7 @@ struct ScalarAction {
     //set_complex_from_double(sm_complex, sm);
     // Computes the Fourier transform of the fields
     const Geometry& geo = sf_complex.geo();
-    long rt_V = std::pow(geo.total_volume(),0.5);
+    // long rt_V = std::pow(geo.total_volume(),0.5);
     //fft_complex_field(sf_complex,true);
     //sf_complex*=1/rt_V;
     //fft_complex_field(sm_complex,true);
@@ -254,7 +254,7 @@ struct ScalarAction {
   {
     TIMER("ScalarAction.axial_current_node_no_comm");
     const Geometry geo = sf.geo();
-    const Geometry geo_r = geo_reform(geo, geo.multiplicity-1);
+    // const Geometry geo_r = geo_reform(geo, geo.multiplicity-1);
     //axial_current.init(geo_r);
     qacc_for(index, geo.local_volume(), {
       Coordinate xl = geo.coordinate_from_index(index);

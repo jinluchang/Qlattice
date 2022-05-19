@@ -8,6 +8,7 @@ from cqlat import qremove_all, qremove_all_info
 from cqlat import qmkdir, qmkdir_info, qmkdir_sync_node
 from cqlat import does_file_exist, does_file_exist_sync_node
 from cqlat import does_file_exist_qar, does_file_exist_qar_sync_node
+from cqlat import does_file_or_directory_exist_qar, does_file_or_directory_exist_qar_sync_node
 from cqlat import is_directory, is_directory_sync_node
 from cqlat import is_regular_file, is_regular_file_sync_node
 from cqlat import qrename, qrename_info

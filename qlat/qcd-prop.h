@@ -562,6 +562,73 @@ inline void convert_mspincolor_from_wm(SelectedPoints<WilsonMatrix>& prop_msc, c
   });
 }
 
+inline void set_t_range_flip_tpbc_with_tslice(int& t_start, int& t_stop,
+                                              const int tslice_flip_tpbc,
+                                              const int t_size)
+// flip range t_start <= t < t_stop
+// tslice_flip_tpbc - t_size_half ... tslice_flip_tpbc ... tslice_flip_tpbc +
+// t_size_half - 1
+{
+  const int t_size_half = t_size / 2;
+  qassert(t_size == t_size_half * 2);
+  if (tslice_flip_tpbc + t_size_half < t_size) {
+    t_start = tslice_flip_tpbc + t_size_half;
+    t_stop = t_size;
+  } else if (tslice_flip_tpbc - t_size_half >= 0) {
+    t_start = 0;
+    t_stop = tslice_flip_tpbc - t_size_half;
+  } else {
+    qassert(false);
+  }
+}
+
+inline void flip_tpbc_with_tslice(SelectedPoints<WilsonMatrix>& ps_prop,
+                                  const PointSelection& psel,
+                                  const int tslice_flip_tpbc, const int t_size)
+{
+  if (tslice_flip_tpbc < 0) {
+    return;
+  }
+  TIMER_VERBOSE("flip_tpbc_with_tslice(psel)");
+  qassert(t_size > 0);
+  qassert(t_size > tslice_flip_tpbc);
+  qassert(ps_prop.n_points == (long)psel.size());
+  int t_start, t_stop;
+  set_t_range_flip_tpbc_with_tslice(t_start, t_stop, tslice_flip_tpbc, t_size);
+  qacc_for(idx, ps_prop.n_points, {
+    const Coordinate xg = psel[idx];
+    const int t = xg[3];
+    qassert(t_size > t);
+    if (t_start <= t and t < t_stop) {
+      ps_prop.get_elem(idx) *= -1;
+    }
+  });
+}
+
+inline void flip_tpbc_with_tslice(SelectedField<WilsonMatrix>& s_prop,
+                                  const FieldSelection& fsel,
+                                  const int tslice_flip_tpbc)
+{
+  if (tslice_flip_tpbc < 0) {
+    return;
+  }
+  TIMER_VERBOSE("flip_tpbc_with_tslice(fsel)");
+  qassert(s_prop.n_elems == (long)fsel.n_elems);
+  const Geometry& geo = fsel.f_rank.geo();
+  const int t_size = geo.total_site()[3];
+  int t_start, t_stop;
+  set_t_range_flip_tpbc_with_tslice(t_start, t_stop, tslice_flip_tpbc, t_size);
+  qacc_for(idx, fsel.n_elems, {
+    const long index = fsel.indices[idx];
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Coordinate xg = geo.coordinate_g_from_l(xl);
+    const int t = xg[3];
+    if (t_start <= t and t < t_stop) {
+      s_prop.get_elem(idx) *= -1;
+    }
+  });
+}
+
 // -------------------------------------------------------------------------
 
 inline void set_tslice_mom_src_fermion_field(FermionField4d& ff,

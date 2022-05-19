@@ -23,17 +23,21 @@ import cqlat as c
 import qlat as q
 import numpy as np
 
-###
+from qlat import mat_mul_sc_sc, mat_mul_sc_s, mat_mul_s_sc, mat_mul_s_s, mat_mul_a_s, mat_mul_a_sc, mat_sc_trace, mat_sc_sc_trace, mat_sc_s_trace, mat_s_sc_trace
 
 def as_mspin(x):
+    if isinstance(x, q.SpinMatrix):
+        return x
     sm = q.SpinMatrix()
-    sm.set_value(list(x.flat))
+    sm.set_value(x)
     return sm
 
 def as_mspincolor(x):
+    if isinstance(x, q.WilsonMatrix):
+        return x
     wm = q.WilsonMatrix()
     if isinstance(x, np.ndarray):
-        wm.set_value(list(x.flat))
+        wm.set_value(x)
     elif x == 0:
         wm.set_zero()
     else:
@@ -47,50 +51,6 @@ def g5_herm(x):
 
 def get_mat(x):
     return x
-
-def mat_mul_sc_sc(x, y):
-    wm = q.WilsonMatrix()
-    c.set_wm_mul_wm_wm(wm, x, y)
-    return wm
-
-def mat_mul_sc_s(x, y):
-    wm = q.WilsonMatrix()
-    c.set_wm_mul_wm_sm(wm, x, y)
-    return wm
-
-def mat_mul_s_sc(x, y):
-    wm = q.WilsonMatrix()
-    c.set_wm_mul_sm_wm(wm, x, y)
-    return wm
-
-def mat_mul_s_s(x, y):
-    sm = q.SpinMatrix()
-    c.set_sm_mul_sm_sm(sm, x, y)
-    return sm
-
-def mat_mul_a_s(coef, x):
-    sm = q.SpinMatrix()
-    c.set_sm_mul_a_sm(sm, coef, x)
-    return sm
-
-def mat_mul_a_sc(coef, x):
-    wm = q.SpinMatrix()
-    c.set_wm_mul_a_wm(wm, coef, x)
-    return wm
-
-def mat_sc_trace(x):
-    return c.trace_wm(x)
-
-def mat_sc_sc_trace(x, y):
-    return c.trace_wm_wm(x, y)
-
-def mat_sc_s_trace(x, y):
-    return c.trace_sm_wm(y, x)
-
-def mat_s_sc_trace(x, y):
-    return c.trace_sm_wm(x, y)
-
-###
 
 gamma_matrix_list = [
         # gamma_x
@@ -154,3 +114,17 @@ def get_gamma_matrix(mu):
     return gamma_matrix_list[mu]
 
 ###
+
+def msc_trace(x):
+    assert isinstance(x, q.WilsonMatrix)
+    return mat_sc_trace(x, y)
+
+def msc_trace2(x, y):
+    if isinstance(x, q.WilsonMatrix) and isinstance(y, q.WilsonMatrix):
+        return mat_sc_sc_trace(x, y)
+    elif isinstance(x, q.WilsonMatrix) and isinstance(y, q.SpinMatrix):
+        return mat_sc_s_trace(x, y)
+    elif isinstance(x, q.SpinMatrix) and isinstance(y, q.WilsonMatrix):
+        return mat_s_sc_trace(x, y)
+    else:
+        assert False

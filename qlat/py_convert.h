@@ -357,9 +357,21 @@ T& py_convert_type(PyObject* in, const std::string& attr)
 // interface
 // py_convert_type<PointSelection>(in, "psel")
 // py_convert_type<FieldSelection>(in, "fsel")
+// py_convert_type<Geometry>(in, "geo")
 {
   PyObject* p_obj = PyObject_GetAttrString(in, attr.c_str());
   T& x = py_convert_type<T>(p_obj);
+  Py_DECREF(p_obj);
+  return x;
+}
+
+template <class T>
+T& py_convert_type(PyObject* in, const std::string& attr, const std::string& attr1)
+// interface
+// py_convert_type<Geometry>(in, "psel", "geo")
+{
+  PyObject* p_obj = PyObject_GetAttrString(in, attr.c_str());
+  T& x = py_convert_type<T>(p_obj, attr1);
   Py_DECREF(p_obj);
   return x;
 }

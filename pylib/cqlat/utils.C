@@ -35,3 +35,9 @@ EXPORT(clear_all_caches, {
   clear_all_caches();
   Py_RETURN_NONE;
 });
+
+EXPORT(malloc_stats, {
+  using namespace qlat;
+  malloc_stats();
+  Py_RETURN_NONE;
+});
