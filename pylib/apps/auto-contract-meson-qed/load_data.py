@@ -427,6 +427,15 @@ def load_prop_wsrc_psel(job_tag, traj, flavor, *, wi, psel, fsel, fselc, gt):
         spw_prop = q.PselProp(psel_ts)
         spw_prop.load(get_load_path(fn_spw))
         cache_psel_ts[f"{tag} ; wsrc_wsnk ; psel_ts"] = spw_prop
+        # ADJUST ME
+        if job_tag == "48I" and flavor == "s":
+            # 48I strange quark wsrc boundary condition is anti-periodic, different from other 48I props
+            q.displayln_info(f"flip_tpbc_with_tslice {job_tag} {flavor} {tag} ; wsrc ; psel")
+            flip_tpbc_with_tslice(cache_psel[f"{tag} ; wsrc ; psel"], tslice)
+            q.displayln_info(f"flip_tpbc_with_tslice {job_tag} {flavor} {tag} ; wsrc_wsnk ; psel_ts")
+            flip_tpbc_with_tslice(cache_psel_ts[f"{tag} ; wsrc_wsnk ; psel_ts"], tslice)
+        #
+        # increase count
         count[inv_acc] += 1
     assert count[1] == total_site[3]
     check_cache_assign(cache_prob, f"type={flavor_inv_type} ; accuracy=1 ; wsrc ; prob", 1)
@@ -468,6 +477,12 @@ def load_prop_wsrc_fsel(job_tag, traj, flavor, *, wi, psel, fsel, fselc, gt):
         sc_prop.load_double_from_float(sfr, tag)
         sc_prop = gt_inv * sc_prop
         cache_fselc[f"{tag} ; wsrc ; fselc"] = sc_prop
+        # ADJUST ME
+        if job_tag == "48I" and flavor == "s":
+            # 48I strange quark wsrc boundary condition is anti-periodic, different from other 48I props
+            q.displayln_info(f"flip_tpbc_with_tslice {job_tag} {flavor} {tag} ; wsrc ; fselc")
+            flip_tpbc_with_tslice(cache_fselc[f"{tag} ; wsrc ; fselc"], tslice)
+        #
         # check psel psnk prop
         if f"{tag} ; wsrc ; psel" in cache_psel:
             sp_prop_diff = q.PselProp(psel)
@@ -659,6 +674,8 @@ def run_get_prop(job_tag, traj, *, get_gt, get_psel, get_fsel, get_psel_smear, g
         prop_cache["fsel_pos_dict"] = dict([ (tuple(pos), i) for i, pos in enumerate(fsel.to_psel_local().to_list()) ])
         prop_cache["fselc_pos_dict"] = dict([ (tuple(pos), i) for i, pos in enumerate(fselc.to_psel_local().to_list()) ])
         # ADJUST ME
+        # load psel before fsel if possible
+        # load strange quark before light quark if possible
         load_prop_wsrc_psel(job_tag, traj, "s", wi = wi, psel = psel, fsel = fsel, fselc = fselc, gt = gt)
         load_prop_wsrc_psel(job_tag, traj, "l", wi = wi, psel = psel, fsel = fsel, fselc = fselc, gt = gt)
         load_prop_wsrc_fsel(job_tag, traj, "s", wi = wi, psel = psel, fsel = fsel, fselc = fselc, gt = gt)

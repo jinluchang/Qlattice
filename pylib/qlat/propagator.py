@@ -190,6 +190,7 @@ def convert_wm_from_mspincolor(prop_msc):
         raise Exception("prop type match failed")
     return prop_wm
 
+@timer
 def flip_tpbc_with_tslice(prop, tslice_flip_tpbc):
     if isinstance(prop, SelProp):
         c.flip_tpbc_with_tslice_s_prop(prop, tslice_flip_tpbc)
