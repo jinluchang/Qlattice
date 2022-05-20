@@ -247,3 +247,9 @@ Relevant source files: `qutils/rng-state.h`
   In unit of bytes.
 
   Default is empty. It does not alter the system setting.
+
+- `q_mk_id_node_in_shuffle_seed`
+
+  Seed for initializing `id_node_in_shuffle`.
+
+  Default is `4`. If start with `"seed_"`, then will be random initialization. Otherwise will be viewed as an int and used as `step_size`.

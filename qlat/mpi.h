@@ -730,10 +730,28 @@ inline std::vector<int> mk_id_node_list_for_shuffle(const int step_size_)
   return list;
 }
 
+inline std::vector<int> mk_id_node_list_for_shuffle()
+// use env variable "q_mk_id_node_in_shuffle_seed"
+// if env variable start with "seed_", then the rest will be used as seed for random assignment
+// else env variable will be viewed as int for step_size
+{
+  const std::string seed = get_env("q_mk_id_node_in_shuffle_seed");
+  const std::string seed_prefix = "seed_";
+  if (seed == "") {
+    return mk_id_node_list_for_shuffle(4);
+  } else if (seed.compare(0, seed_prefix.size(), seed_prefix) == 0) {
+    RngState rs(seed.substr(seed_prefix.size()));
+    return mk_id_node_list_for_shuffle(rs);
+  } else {
+    const long step_size = read_long(seed);
+    return mk_id_node_list_for_shuffle(step_size);
+  }
+}
+
 inline std::vector<int>& get_id_node_list_for_shuffle()
 // qlat parameter
 {
-  static std::vector<int> list = mk_id_node_list_for_shuffle(4);
+  static std::vector<int> list = mk_id_node_list_for_shuffle();
   return list;
 }
 
