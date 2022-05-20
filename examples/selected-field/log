@@ -2,20 +2,21 @@ qlat::begin(): MPI Initialized. num_node = 2
 qlat::begin_comm(comm,size_node): get_comm_list().push_back()
 qlat::begin_comm(comm,size_node): get_comm_list().size() = 1
 qlat::begin(): q_num_threads = 2
+q_verbose=10
+q_malloc_mmap_threshold='' (default)
 qlat::begin(): GeometryNode =
 { initialized = true
 , num_node    = 2
 , id_node     = 0
 , size_node   = 1x1x1x2
 , coor_node   = 0x0x0x0 }
-q_verbose=10
 q_timer_max_func_name_len=50 (default)
 clear_mem_cache: 0 bytes (0.000 GB) freed.
 q_timer_mini_auto_show=1 (default)
 q_timer_max_always_show=10 (default)
 demo: create splittable random number generator 'rs'
 demo: init field 'f'
-q_field_init=fast (default)
+q_field_init='fast' (default)
 set q_field_init=fast.
 q_mem_cache_max_size=512 (default)
 q_mem_cache_acc_max_size=512 (default)
@@ -108,6 +109,7 @@ qrename: 'huge-data/16/free-4nt8-init.sfield.partial.partial' 'huge-data/16/free
 qrename: 'huge-data/16/free-4nt8-init.sfield.partial' 'huge-data/16/free-4nt8-init.sfield'
 : 4CB6850D <- f-init-3
 read_selected_field: fn='huge-data/16/free-4nt8-init.sfield'.
+q_mk_id_node_in_shuffle_seed='' (default)
 make_shuffle_plan_generic: num_send_packs =          2
 make_shuffle_plan_generic: num_recv_packs =          4
 make_shuffle_plan_generic: num_send_msgs  =          1

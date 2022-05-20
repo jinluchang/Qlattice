@@ -41,6 +41,7 @@ qlat::begin_comm(comm,size_node): get_comm_list().size() = 2
 q_verbose=1
 q_num_threads=2 (default)
 qlat::begin(): q_num_threads = 2
+q_malloc_mmap_threshold='' (default)
 qlat::begin(): GeometryNode =
 { initialized = true
 , num_node    = 2
@@ -53,7 +54,7 @@ q_timer_mini_auto_show=1 (default)
 q_timer_max_always_show=10 (default)
 qremove: 'results'
 geo.show() = Geometry([4, 4, 4, 8], 1)
-q_field_init=fast (default)
+q_field_init='fast' (default)
 set q_field_init=fast.
 q_mem_cache_max_size=512 (default)
 q_mem_cache_acc_max_size=512 (default)

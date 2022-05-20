@@ -2,13 +2,14 @@ qlat::begin(): MPI Initialized. num_node = 2
 qlat::begin_comm(comm,size_node): get_comm_list().push_back()
 qlat::begin_comm(comm,size_node): get_comm_list().size() = 1
 qlat::begin(): q_num_threads = 2
+q_verbose=10
+q_malloc_mmap_threshold='' (default)
 qlat::begin(): GeometryNode =
 { initialized = true
 , num_node    = 2
 , id_node     = 0
 , size_node   = 1x1x1x2
 , coor_node   = 0x0x0x0 }
-q_verbose=10
 q_timer_max_func_name_len=50 (default)
 clear_mem_cache: 0 bytes (0.000 GB) freed.
 q_timer_mini_auto_show=1 (default)
@@ -20,7 +21,7 @@ The crc32() of "123456789" is 0xCBF43926 (crc32_shift)
 nthreads=2
 q_write_par_limit=16 (default)
 q_read_par_limit=16 (default)
-q_field_init=fast (default)
+q_field_init='fast' (default)
 set q_field_init=fast.
 dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          2 ; total_bytes =         2359296
 qrename: 'huge-data/gauge_field_unit.partial' 'huge-data/gauge_field_unit'
@@ -62,6 +63,7 @@ spatial plaq :  9.47619593969193930E-01
 trace:  9.86703685472810177E-01
 dist_crc32 = 51AE844C
 crc32 = 000E8458
+q_mk_id_node_in_shuffle_seed='' (default)
 make_shuffle_plan_generic: num_send_packs =         64
 make_shuffle_plan_generic: num_recv_packs =        128
 make_shuffle_plan_generic: num_send_msgs  =          1

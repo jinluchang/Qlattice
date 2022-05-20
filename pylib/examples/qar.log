@@ -4,6 +4,7 @@ qlat::begin_comm(comm,size_node): get_comm_list().size() = 1
 q_verbose=1
 q_num_threads=2 (default)
 qlat::begin(): q_num_threads = 2
+q_malloc_mmap_threshold='' (default)
 qlat::begin(): GeometryNode =
 { initialized = true
 , num_node    = 2

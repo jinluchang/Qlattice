@@ -4,6 +4,7 @@ qlat::begin_comm(comm,size_node): get_comm_list().size() = 1
 q_verbose=1
 q_num_threads=2 (default)
 qlat::begin(): q_num_threads = 2
+q_malloc_mmap_threshold='' (default)
 qlat::begin(): GeometryNode =
 { initialized = true
 , num_node    = 2
@@ -21,7 +22,7 @@ qrename: 'results/psel.txt.partial' 'results/psel.txt'
 QFile: open 'results/psel.txt' with 'r'.
 QFile: close 'results/psel.txt' with 'r'.
 psel.to_list() = [[0, 0, 0, 0], [0, 1, 2, 0]]
-q_field_init=fast (default)
+q_field_init='fast' (default)
 set q_field_init=fast.
 q_mem_cache_max_size=512 (default)
 q_mem_cache_acc_max_size=512 (default)

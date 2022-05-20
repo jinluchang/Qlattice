@@ -2,17 +2,21 @@ qlat::begin(): MPI Initialized. num_node = 2
 qlat::begin_comm(comm,size_node): get_comm_list().push_back()
 qlat::begin_comm(comm,size_node): get_comm_list().size() = 1
 qlat::begin(): q_num_threads = 2
+q_verbose=10
+q_malloc_mmap_threshold='' (default)
 qlat::begin(): GeometryNode =
 { initialized = true
 , num_node    = 2
 , id_node     = 0
 , size_node   = 1x1x1x2
 , coor_node   = 0x0x0x0 }
-q_verbose=10
 q_timer_max_func_name_len=50 (default)
 clear_mem_cache: 0 bytes (0.000 GB) freed.
 q_timer_mini_auto_show=1 (default)
 q_timer_max_always_show=10 (default)
+q_mk_id_node_in_shuffle_seed='' (default)
+display_geometry_node : id_node =     0 ; coor_node = 0x0x0x0 ; id_node_in_shuffle =     0 ; hostname = qcdserver16
+display_geometry_node : id_node =     1 ; coor_node = 0x0x0x1 ; id_node_in_shuffle =     1 ; hostname = qcdserver16
 q_time_limit=43200 (default)
 get_time_limit()=12.000000 hours
 q_budget=900 (default)
@@ -31,7 +35,7 @@ qrename: 'results/test-4nt8/results=1000-lock/time.txt.partial' 'results/test-4n
 obtain_lock: Lock obtained 'results/test-4nt8/results=1000-lock'.
 compute_traj: Start computing 'results/test-4nt8/results=1000'.
 compute_traj_do: job_tag='test-4nt8' ; traj=1000
-q_field_init=fast (default)
+q_field_init='fast' (default)
 set q_field_init=fast.
 q_mem_cache_max_size=512 (default)
 q_mem_cache_acc_max_size=512 (default)

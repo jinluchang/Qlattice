@@ -806,6 +806,7 @@ inline std::vector<int> mk_id_node_list_for_shuffle_node()
     list[i] = list_long[i];
   }
   // checking
+  qassert(list[0] == 0);
   for (long i = 0; i < get_num_node(); ++i) {
     qassert(0 <= list[i]);
     qassert(list[i] <= get_num_node());
@@ -849,6 +850,7 @@ inline int get_id_node_in_shuffle(const int id_node, const int new_num_node,
     return id_node;
   } else {
     const std::vector<int>& list = get_id_node_list_for_shuffle();
+    qassert((long)list.size() == num_node);
     qassert(list[0] == 0);
     for (int i = 0; i < (int)list.size(); ++i) {
       if (list[i] == id_node) {
@@ -868,23 +870,33 @@ inline int get_id_node_from_id_node_in_shuffle(const int id_node_in_shuffle,
     return id_node_in_shuffle;
   } else {
     const std::vector<int>& list = get_id_node_list_for_shuffle();
+    qassert((long)list.size() == num_node);
     qassert(list[0] == 0);
     return list[id_node_in_shuffle];
   }
 }
 
+inline std::string get_hostname()
+{
+  char name[MPI_MAX_PROCESSOR_NAME];
+  int len;
+  MPI_Get_processor_name(name, &len);
+  return std::string(name, len);
+}
+
 inline void display_geometry_node()
 {
-  TIMER("display_geo_node");
+  TIMER("display_geometry_node");
   const GeometryNode& geon = get_geometry_node();
+  const int id_node_in_shuffle =
+      get_id_node_in_shuffle(geon.id_node, 0, geon.num_node);
   for (int i = 0; i < geon.num_node; ++i) {
     if (i == geon.id_node) {
       displayln(std::string(fname) + " : " +
                 ssprintf("id_node = %5d ; coor_node = %s ; id_node_in_shuffle "
                          "= %5d ; hostname = %s",
                          geon.id_node, show(geon.coor_node).c_str(),
-                         get_id_node_in_shuffle(geon.id_node, 0, geon.num_node),
-                         get_env("HOSTNAME").c_str()));
+                         id_node_in_shuffle, get_hostname().c_str()));
       fflush(get_output_file());
     }
     sync_node();
