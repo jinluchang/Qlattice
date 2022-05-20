@@ -989,6 +989,7 @@ job_tags = [
         # "24IH1",
         # "24IH2",
         # "24IH3",
+        # "64I",
         # "48I",
         # "32D",
         # "32Dfine",
@@ -1002,10 +1003,12 @@ job_tags = [
 q.check_time_limit()
 
 for job_tag in job_tags:
-    if job_tag == "48I" and q.get_num_node() != 8 * 32:
-        continue
-    elif job_tag == "64I" and q.get_num_node() != 8 * 64:
-        continue
+    if job_tag == "48I":
+        if q.get_num_node() != 8 * 32:
+            continue
+    elif job_tag == "64I":
+        if q.get_num_node() != 8 * 64:
+            continue
     elif q.get_num_node() > 8 * 16:
         continue
     q.displayln_info(pprint.pformat(rup.dict_params[job_tag]))
