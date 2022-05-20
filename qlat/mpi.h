@@ -697,8 +697,9 @@ inline void sync_node()
   qassert(s == v * get_num_node());
 }
 
-inline std::vector<int> mk_id_node_list_for_shuffle(const RngState& rs)
+inline std::vector<int> mk_id_node_list_for_shuffle_rs(const RngState& rs)
 {
+  TIMER_VERBOSE("mk_id_node_list_for_shuffle_rs");
   const int num_node = get_num_node();
   std::vector<int> list(num_node);
   for (int i = 0; i < num_node; ++i) {
@@ -715,8 +716,9 @@ inline std::vector<int> mk_id_node_list_for_shuffle(const RngState& rs)
   return list;
 }
 
-inline std::vector<int> mk_id_node_list_for_shuffle(const int step_size_)
+inline std::vector<int> mk_id_node_list_for_shuffle_step_size(const int step_size_)
 {
+  TIMER_VERBOSE("mk_id_node_list_for_shuffle_step_size");
   const int num_node = get_num_node();
   const int step_size =
       (step_size_ < num_node and num_node % step_size_ == 0) ? step_size_ : 1;
@@ -730,21 +732,105 @@ inline std::vector<int> mk_id_node_list_for_shuffle(const int step_size_)
   return list;
 }
 
+inline std::vector<int> mk_id_node_list_for_shuffle_node()
+// return list
+// list[id_node_in_shuffle] = id_node
+{
+  TIMER_VERBOSE("mk_id_node_list_for_shuffle_node");
+  // global id
+  int globalRank;
+  MPI_Comm_rank(get_comm(), &globalRank);
+  qassert(globalRank == get_id_node());
+  // node local comm
+  MPI_Comm nodeComm;
+  MPI_Comm_split_type(get_comm(), MPI_COMM_TYPE_SHARED, globalRank,
+                      MPI_INFO_NULL, &nodeComm);
+  // id within the node
+  int localRank;
+  MPI_Comm_rank(nodeComm, &localRank);
+  if (0 == get_id_node()) {
+    qassert(localRank == 0);
+  }
+  // number of process in this node
+  int localSize;
+  MPI_Comm_size(nodeComm, &localSize);
+  // comm across node (each node select one process with the same local rank)
+  MPI_Comm masterComm;
+  MPI_Comm_split(get_comm(), localRank, globalRank, &masterComm);
+  // id across node
+  int masterRank;
+  MPI_Comm_rank(masterComm, &masterRank);
+  // size of each master comm
+  int masterSize;
+  MPI_Comm_size(masterComm, &masterSize);
+  // calculate number of node
+  long num_of_node = masterSize;
+  MPI_Bcast(&num_of_node, 1, MPI_LONG, 0, nodeComm);
+  // calculate id of node (master rank of the 0 local rank process)
+  long id_of_node = masterRank;
+  MPI_Bcast(&id_of_node, 1, MPI_LONG, 0, nodeComm);
+  qassert(id_of_node < num_of_node);
+  // calculate number of processes for each node
+  std::vector<long> num_process_for_each_node(num_of_node, 0);
+  num_process_for_each_node[id_of_node] = 1;
+  glb_sum(get_data(num_process_for_each_node));
+  qassert(num_process_for_each_node[id_of_node] == localSize);
+  // calculate the number of master comm (the maximum in num_process_for_each_node)
+  long num_of_master_comm = 0;
+  long id_of_node_with_maximum_process = 0;
+  for (long i = 0; i < (long)num_process_for_each_node.size(); ++i) {
+    if (num_process_for_each_node[i] > num_of_master_comm) {
+      num_of_master_comm = num_process_for_each_node[i];
+      id_of_node_with_maximum_process = i;
+    }
+  }
+  // calculate the id of the master comm (same as local rank)
+  long id_of_master_comm = localRank;
+  qassert(id_of_master_comm < num_of_master_comm);
+  // calculate number of processes for each masterComm
+  std::vector<long> num_process_for_each_master_comm(num_of_master_comm, 0);
+  num_process_for_each_master_comm[id_of_master_comm] = 1;
+  glb_sum(get_data(num_process_for_each_master_comm));
+  qassert(num_process_for_each_master_comm[id_of_master_comm] == masterSize);
+  // calculate id_node_in_shuffle
+  long id_node_in_shuffle = masterRank;
+  for (long i = 0; i < id_of_master_comm; ++i) {
+    id_node_in_shuffle += num_process_for_each_master_comm[i];
+  }
+  // calculate the list of id_node for each id_node_in_shuffle
+  std::vector<long> list_long(get_num_node(), 0);
+  list_long[id_node_in_shuffle] = get_id_node();
+  glb_sum(get_data(list_long));
+  std::vector<int> list(get_num_node(), 0);
+  for (long i = 0; i < get_num_node(); ++i) {
+    list[i] = list_long[i];
+  }
+  // checking
+  for (long i = 0; i < get_num_node(); ++i) {
+    qassert(0 <= list[i]);
+    qassert(list[i] <= get_num_node());
+    for (long j = 0; j < i; ++j) {
+      qassert(list[i] != list[j]);
+    }
+  }
+  return list;
+}
+
 inline std::vector<int> mk_id_node_list_for_shuffle()
 // use env variable "q_mk_id_node_in_shuffle_seed"
 // if env variable start with "seed_", then the rest will be used as seed for random assignment
 // else env variable will be viewed as int for step_size
 {
-  const std::string seed = get_env("q_mk_id_node_in_shuffle_seed");
+  const std::string seed = get_env_default("q_mk_id_node_in_shuffle_seed", "");
   const std::string seed_prefix = "seed_";
   if (seed == "") {
-    return mk_id_node_list_for_shuffle(4);
+    return mk_id_node_list_for_shuffle_node();
   } else if (seed.compare(0, seed_prefix.size(), seed_prefix) == 0) {
     RngState rs(seed.substr(seed_prefix.size()));
-    return mk_id_node_list_for_shuffle(rs);
+    return mk_id_node_list_for_shuffle_rs(rs);
   } else {
     const long step_size = read_long(seed);
-    return mk_id_node_list_for_shuffle(step_size);
+    return mk_id_node_list_for_shuffle_step_size(step_size);
   }
 }
 
@@ -850,7 +936,7 @@ inline int init_mpi(int* argc, char** argv[])
 inline void set_global_geon(const Coordinate& size_node)
 {
   int num_node;
-  MPI_Comm_size(MPI_COMM_WORLD, &num_node);
+  MPI_Comm_size(get_comm(), &num_node);
   qassert(num_node == product(size_node));
   int id_node;
   MPI_Comm_rank(get_comm(), &id_node);
@@ -881,10 +967,8 @@ inline void begin_comm(const MPI_Comm comm, const Coordinate& size_node)
   }
   displayln_info("qlat::begin(): q_num_threads = " +
                  show(omp_get_max_threads()));
-  std::string q_malloc_mmap_threshold = get_env("q_malloc_mmap_threshold");
+  std::string q_malloc_mmap_threshold = get_env_default("q_malloc_mmap_threshold", "");
   if (q_malloc_mmap_threshold != "") {
-    displayln_info(ssprintf("qlat::begin(): q_malloc_mmap_threshold = %s",
-                            q_malloc_mmap_threshold.c_str()));
     mallopt(M_MMAP_THRESHOLD, read_long(q_malloc_mmap_threshold));
   }
   displayln_info("qlat::begin(): GeometryNode =\n" + show(geon));
@@ -901,7 +985,7 @@ inline void begin_comm(const MPI_Comm comm, const Coordinate& size_node)
 
 inline void begin(const int id_node, const Coordinate& size_node,
                   const int color = 0)
-// begin Qlat with existing id_node maping (assuming MPI already initialized)
+// begin Qlat with existing id_node mapping (assuming MPI already initialized)
 {
   if (get_comm_list().empty()) {
     get_comm_list().push_back(

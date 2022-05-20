@@ -189,10 +189,10 @@ inline std::string get_env_default(const std::string& var_name,
   const std::string val = get_env(var_name);
   if (val == "") {
     displayln_info(0,
-                   ssprintf("%s=%s (default)", var_name.c_str(), x0.c_str()));
+                   ssprintf("%s='%s' (default)", var_name.c_str(), x0.c_str()));
     return x0;
   } else {
-    displayln_info(0, ssprintf("%s=%s", var_name.c_str(), val.c_str()));
+    displayln_info(0, ssprintf("%s='%s'", var_name.c_str(), val.c_str()));
     return val;
   }
 }
