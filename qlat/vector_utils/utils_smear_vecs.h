@@ -45,10 +45,8 @@ __global__ void gauss_smear_global4(T* pres, const T* psrc, const T* gf, const T
       int dir = off/9;
       int c0 = (off/3)%3;
       int c1 =  off%3;
-      ls[c1*(2*dirL)*3 + dir*3 + c0 ] = gf_t[(dir + 1)*9 + c0*3 + c1];
-      //ls[c0*(2*dirL)*3 + dir*3 + c1 ] = gf_t[off];
-      //ls[(c0*(2*dirL)+dir)*3 + c1 ] = gf_t[off];
-      //ls[c0][dir*3+c1] = gf_t[off];
+      ls[c1*(2*dirL)*3 + dir*3 + c0 ] = gf_t[(dir + 1)*9 + c1*3 + c0];
+      ////ls[c1*(2*dirL)*3 + dir*3 + c0 ] = gf_t[(dir + 1)*9 + c0*3 + c1];
       off += ns;
     }
   }
@@ -187,8 +185,6 @@ struct smear_fun{
 
     ////Box smearing buffer size
     vL.resize(8);
-    //////shifter for box smearings
-    ////svec = NULL;
     vec_rot = NULL;
   }
 
@@ -451,7 +447,6 @@ struct smear_fun{
 
   ~smear_fun(){
     clear_mem();
-    ////if(svec != NULL){delete svec; svec = NULL;}
     if(vec_rot != NULL){delete vec_rot; vec_rot = NULL;}
   }
 
@@ -614,8 +609,11 @@ void extend_links_to_vecs(T* resE, const GaugeFieldT<Tg >& gf, const qlat::vecto
           dir >= 0 ? gf1.get_elem(xl, dir)
                    : (ColorMatrixT<Tg >)matrix_adjoint(
                          gf1.get_elem(coordinate_shifts(xl, dir), -dir - 1));
+      ////convention used in gauss_smear_kernel CPU and gauss_smear_global4
+      ////also in multiply_gauge of utils_shift_vecs.h
       for(int ci=0; ci<9; ci++){
-        resE[(index*dir_limit*2+ (dir+dir_limit))*9 + (ci%3)*3 + ci/3] = momF[dir + 4] * link.p[ci];
+        //resE[(index*dir_limit*2+ (dir+dir_limit))*9 + (ci%3)*3 + ci/3] = momF[dir + 4] * link.p[ci];
+        resE[(index*dir_limit*2+ (dir+dir_limit))*9 + ci] = momF[dir + 4] * link.p[ci];
       }
     }
   });
@@ -961,10 +959,6 @@ void gauss_smear_kernel(T* src, const double width, const int step, const T norm
     #ifdef QLAT_USE_ACC
     if(smf.dirL==3){gauss_smear_global4<T, bfac, civ, 3><<< dimGrid, dimBlock >>>(prop, prop_buf, gf, bw, norm, Nvol, Pdir1);}
     if(smf.dirL==4){gauss_smear_global4<T, bfac, civ, 4><<< dimGrid, dimBlock >>>(prop, prop_buf, gf, bw, norm, Nvol, Pdir1);}
-    //if(dirL==3){smear_global4<T, bfac, civ, 3 ><<< dimGrid, dimBlock >>>(prop, prop_buf, gf, bw, 1-aw, Nvol, &smf.map_bufD[0]);}
-    //if(dirL==4){smear_global4<T, bfac, civ, 4 ><<< dimGrid, dimBlock >>>(prop, prop_buf, gf, bw, 1-aw, Nvol, &smf.map_bufD[0]);}
-    ////#define smear_macros(ba,da) if(bfac == ba and civ ==  da){cfind = true; 
-    ////  smear_global4<T, ba, da, dirL ><<< dimGrid, dimBlock >>>(prop, prop_buf, gf, bw, 1-aw, Nvol, &smf.map_bufD[0]);}
     #else
 
     const int dir_max = 4;
@@ -976,10 +970,10 @@ void gauss_smear_kernel(T* src, const double width, const int step, const T norm
         const T* lp = &gf[(index*dir_max*2 + dir + dir_max)*9];
 
         for(int bi=0;bi<bfac;bi++){
-          Eigen::Matrix<T, 3, civ, Eigen::RowMajor>& wmE = *((Eigen::Matrix<T, 3, civ, Eigen::RowMajor>*)  &buf[bi*3*civ]);
           Eigen::Matrix<T, 3, 3, Eigen::ColMajor>&     lE = *((Eigen::Matrix<T, 3, 3, Eigen::ColMajor>*) lp);
-          Eigen::Matrix<T, 3, civ, Eigen::RowMajor>&  pE = *((Eigen::Matrix<T, 3, civ, Eigen::RowMajor>*) &wm1p[bi*3*civ]);
-          wmE += (lE * pE);
+          Eigen::Matrix<T, civ, 3, Eigen::ColMajor>& wmE = *((Eigen::Matrix<T, civ, 3, Eigen::ColMajor>*)  &buf[bi*3*civ]);
+          Eigen::Matrix<T, civ, 3, Eigen::ColMajor>&  pE = *((Eigen::Matrix<T, civ, 3, Eigen::ColMajor>*) &wm1p[bi*3*civ]);
+          wmE += ( pE * lE);////avoid mix of Col and Row when civ == 1
         }
       }
       T* wmp = &prop[index*nsites];

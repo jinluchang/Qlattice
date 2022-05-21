@@ -87,6 +87,7 @@ struct shift_vec{
 
   void* gauge;
   int gbfac;int gd0;
+  bool Conj;bool src_gauge;
 
   shift_vec(fft_desc_basic &fds, bool GPU_set = true);
   void print_info();
@@ -114,8 +115,10 @@ struct shift_vec{
   template<typename Ty>
   void shift_vecP(Ty* src,Ty* res,std::vector<int >& iDir ,int civ_or);
 
-  void set_gauge(void* gauge_, int gbfac_, int gd0_)
-  {gauge = gauge_;gbfac = gbfac_;gd0 = gd0_;}
+  void set_gauge(void* gauge_, int gbfac_, int gd0_, bool Conj_=false, bool src_gauge_ = false)
+  {gauge = gauge_;gbfac = gbfac_;gd0 = gd0_;Conj = Conj_;src_gauge = src_gauge_;}
+  template<typename Ty, bool Conj_>
+  void mult_gauge(void* pt, int dir_or);
 
   void clear_mem_dir(int dir);
   ////void clear_mem();
@@ -169,7 +172,7 @@ shift_vec::shift_vec(fft_desc_basic &fds, bool GPU_set)
   zeroP_Size = 0;bufsP_Size = 0;bufrP_Size = 0;
 
   gauge = NULL;
-  gbfac = 1; gd0 = 1;
+  gbfac = 1; gd0 = 1;Conj = false;src_gauge = false;
 
 }
 
@@ -447,7 +450,7 @@ void shift_vec::write_send_recv(Ty* src, Ty* res)
 }
 
 #ifdef QLAT_USE_ACC
-template <typename Ty, unsigned int gs>
+template <typename Ty, unsigned int gs, bool Conj>
 __global__ void multiply_gauge_global(Ty* a, Ty* b, const int dir_gauge, const int biva, const int gbfac)
 {
   __shared__ Ty ls[9];
@@ -458,7 +461,13 @@ __global__ void multiply_gauge_global(Ty* a, Ty* b, const int dir_gauge, const i
   const int dir_limit = 4;
 
   unsigned int off = tid;
-  while(off < 9){ls[(off%3)*3 + off/3] = a[(index*dir_limit*2 + dir_gauge)*9 + off]; off += nt;}
+  while(off < 9){
+    //if(!Conj)ls[(off%3)*3 + off/3] = a[(index*dir_limit*2 + dir_gauge)*9 + off];
+    //if( Conj)ls[(off%3)*3 + off/3] = qlat::qconj(a[(index*dir_limit*2 + dir_gauge)*9 + off]);
+    if(!Conj)ls[off] = a[(index*dir_limit*2 + dir_gauge)*9 + off];
+    if( Conj)ls[off] = qlat::qconj(a[(index*dir_limit*2 + dir_gauge)*9 + off]);
+    off += nt;
+  }
   __syncthreads();
   for(int bi=0;bi<biva;bi++)
   for(int g1=0;g1<gbfac;g1++)
@@ -475,8 +484,9 @@ __global__ void multiply_gauge_global(Ty* a, Ty* b, const int dir_gauge, const i
 }
 #endif
 
-template<typename Cy, int gs, int cs>
-void multiply_gauge(void *src, void* gauge, const int dir_or,const int biva,const long Length, const int gbfac, const int gd0, const bool GPU)
+/////gs will be ignored if cs == -1
+template<typename Cy, int gs, int cs, bool Conj>
+void multiply_gauge(void *src, void* gauge, const int dir_gauge,const int biva,const long Length, const int gbfac, const int gd0, const bool GPU)
 {
   const int dir_limit = 4;
   if(cs != -1){qassert(gd0 == gs);}
@@ -486,16 +496,17 @@ void multiply_gauge(void *src, void* gauge, const int dir_or,const int biva,cons
   ///to gwu convention of shift with \psi
   ////shift vec direction opposite to gwu code
 
-  std::vector<int > map_dir = {3,2,1,0,  4,5,6,7};
-  const int dir_gauge = map_dir[dir_or];
-  int slow_eigen = 0;
+  //std::vector<int > map_dir = {3,2,1,0,  4,5,6,7};
+  //const int dir_gauge = map_dir[dir_or];
+  int fast_eigen = 0;
 
   #ifdef QLAT_USE_ACC
-  if(GPU and cs != -1){slow_eigen = 2;}
+  if(GPU and cs != -1){fast_eigen = 2;}
   #else
-  if(cs != -1){        slow_eigen = 1;}
+  if(cs != -1){        fast_eigen = 1;}
   #endif
-  qassert( slow_eigen == 0 or slow_eigen == 1 or slow_eigen == 2);
+  qassert( fast_eigen == 0 or fast_eigen == 1 or fast_eigen == 2);
+  ////fast_eigen = 0;
 
   ////std::vector<int > map_dir = {4,5,6,7,  3,2,1,0};
   ////const int dir_gauge = map_dir[dir_or];
@@ -504,38 +515,50 @@ void multiply_gauge(void *src, void* gauge, const int dir_or,const int biva,cons
 
   ////gpu fast mode
   #ifdef QLAT_USE_ACC
-  if(slow_eigen == 2){
+  if(fast_eigen == 2){
     qassert(gs < 512);
     dim3 dimGrid( Length, 1, 1);
     dim3 dimBlock( gs, 3, 1);
-    multiply_gauge_global<Cy, gs><<< dimGrid, dimBlock >>>((Cy*) gauge, (Cy*) src, dir_gauge, biva, gbfac);
+    if(!Conj)multiply_gauge_global<Cy, gs, false><<< dimGrid, dimBlock >>>((Cy*) gauge, (Cy*) src, dir_gauge, biva, gbfac);
+    if( Conj)multiply_gauge_global<Cy, gs, true ><<< dimGrid, dimBlock >>>((Cy*) gauge, (Cy*) src, dir_gauge, biva, gbfac);
     qacc_barrier(dummy);
   }
   #endif
 
   ////cpu fast mode
-  if(slow_eigen == 1){
+  if(fast_eigen == 1){
   qthread_for(index,  long(Length), {
     Cy buf[9];
-    for(int ci=0;ci<9;ci++){buf[ci] = ((Cy*) gauge)[(index*dir_limit*2 + dir_gauge)*9 +  ci];}
-    Eigen::Matrix<Cy, 3   , 3, Eigen::RowMajor>&     lE = *((Eigen::Matrix<Cy, 3   , 3, Eigen::RowMajor>*) buf);
-
+    //if(!Conj)for(int ci=0;ci<9;ci++){buf[(ci%3)*3 + ci/3] = ((Cy*) gauge)[(index*dir_limit*2 + dir_gauge)*9 +  ci];}
+    //if( Conj)for(int ci=0;ci<9;ci++){buf[(ci%3)*3 + ci/3] = qlat::qconj(((Cy*) gauge)[(index*dir_limit*2 + dir_gauge)*9 +  ci]);}
+    if(!Conj)for(int ci=0;ci<9;ci++){buf[ci] = ((Cy*) gauge)[(index*dir_limit*2 + dir_gauge)*9 +  ci];}
+    if( Conj)for(int ci=0;ci<9;ci++){buf[ci] = qlat::qconj(((Cy*) gauge)[(index*dir_limit*2 + dir_gauge)*9 +  ci]);}
+    Eigen::Matrix<Cy, 3   , 3, Eigen::ColMajor>&     lE = *((Eigen::Matrix<Cy, 3   , 3, Eigen::ColMajor>*) buf);
+    /////lE * dE0 ???
     for(int bi=0;bi<biva;bi++)
     for(int g1=0;g1<gbfac;g1++)
     {
       Cy* d0 = &((Cy*)src)[((bi*Length + index)*gbfac + g1)*3*gs];
-      Eigen::Matrix<Cy, gs, 3, Eigen::ColMajor>&     dE = *((Eigen::Matrix<Cy, gs, 3, Eigen::ColMajor>*) d0);
-      dE *= lE;
+      if(gs != 1){
+      Eigen::Matrix<Cy, gs, 3, Eigen::ColMajor>&     dEC = *((Eigen::Matrix<Cy, gs, 3, Eigen::ColMajor>*) d0);
+      dEC *= lE;}
+      if(gs == 1){
+      Eigen::Matrix<Cy, gs, 3, Eigen::RowMajor>&     dER = *((Eigen::Matrix<Cy, gs, 3, Eigen::RowMajor>*) d0);
+      dER *= lE; }
+      /////something wrong with gs x 3 Col \times 3 x 3 Col with gs = 1
+      /////something wrong with mix of Row and Col with gs x 3 ColM \tims 3 x 3 RowM== 1 x 3
+      /////something may be good with mix of Row and Col with gs x 3 RowM \tims 3 x 3 ColwM == 1 x 3
     }
   });}
 
   //////gpu and cpu sloow mode
-  if(slow_eigen == 0){
+  if(fast_eigen == 0){
   qassert(gd0 <= 128);
   qacc_for(index,  long(Length), {
     Cy buf[9];
     Cy res[128*3];
-    for(int ci=0;ci<9;ci++){buf[ci] = ((Cy*) gauge)[(index*dir_limit*2 + dir_gauge)*9 +  ci];}
+    if(!Conj)for(int ci=0;ci<9;ci++){buf[ci] = ((Cy*) gauge)[(index*dir_limit*2 + dir_gauge)*9 +  ci];}
+    if( Conj)for(int ci=0;ci<9;ci++){buf[ci] = qlat::qconj(((Cy*) gauge)[(index*dir_limit*2 + dir_gauge)*9 +  ci]);}
     for(int bi=0;bi<biva;bi++)
     for(int g1=0;g1<gbfac;g1++)
     {
@@ -544,16 +567,44 @@ void multiply_gauge(void *src, void* gauge, const int dir_or,const int biva,cons
       for(int c0=0;c0<3;c0++)
       {
         for(int c1=0;c1<3;c1++){
-          Cy tem = buf[c1*3 + c0];
+          /////Cy tem = buf[c1*3 + c0];
+          Cy tem = buf[c0*3 + c1];
           for(int g0=0;g0<gd0;g0++){res[c0*gd0 + g0] += d0[c1*gd0 + g0] * tem;}
         }
       }
       for(int g0=0;g0<3*gd0;g0++){d0[g0] = res[g0];}
     }
   });}
-
 }
 
+template<typename Ty, bool Conj_>
+void shift_vec::mult_gauge(void* pt, int dir_gauge){
+  TIMER("Gauge multiplication");
+  bool id = get_data_type_is_double<Ty >();
+  if( id){qassert(long(civ*sizeof(Ty)/16) == gbfac * 3 * gd0);}
+  if(!id){qassert(long(civ*sizeof(Ty)/8 ) == gbfac * 3 * gd0);}
+  bool cfind = false;
+  #define shift_macros(bf) if(bf == gd0){cfind = true; \
+    if( id)multiply_gauge<qlat::Complex , bf, 1, Conj_>(pt, gauge, dir_gauge, biva,Length,gbfac,gd0,GPU); \
+    if(!id)multiply_gauge<qlat::ComplexF, bf, 1, Conj_>(pt, gauge, dir_gauge, biva,Length,gbfac,gd0,GPU);}
+  shift_macros(1);
+  shift_macros(2);
+  shift_macros(3);
+  shift_macros(4);
+  shift_macros(6);
+  shift_macros(8);
+  shift_macros(16);
+  shift_macros(12);
+  shift_macros(4*12);
+  shift_macros(4*16);
+  shift_macros(12*12);
+
+  if(!cfind){cfind = true;
+    if( id)multiply_gauge<qlat::Complex , 1, -1, Conj_>(pt, gauge, dir_gauge, biva,Length,gbfac,gd0,GPU);
+    if(!id)multiply_gauge<qlat::ComplexF, 1, -1, Conj_>(pt, gauge, dir_gauge, biva,Length,gbfac,gd0,GPU);}
+  #undef shift_macros
+  qassert(cfind);
+}
 
 template<typename Ty>
 void shift_vec::call_MPI(Ty *src, Ty *res,int dir_or)
@@ -563,8 +614,8 @@ void shift_vec::call_MPI(Ty *src, Ty *res,int dir_or)
   if(flag_shift_set == false){print0("Need to set up shifts. \n");abort_r();}
   //if(dir_or != -1)
   ////if(dir_or != dir_cur)set_MPI_size<Ty >(dir_or);
-  if(dir_cur < 0 or dir_cur > 8){print0("dir_cur size wrong %8d. \n",dir_cur);abort_r();}
   set_MPI_size<Ty >(dir_or);
+  if(dir_cur < 0 or dir_cur > 8){print0("dir_cur size wrong %8d. \n",dir_cur);abort_r();}
 
   /////===set src pointer for MPI
   //resP = (void*) res_or;
@@ -572,6 +623,14 @@ void shift_vec::call_MPI(Ty *src, Ty *res,int dir_or)
 
   ////multiply link shift
   /////gauge should be V * dir_limit(4) * 2(-+) * 9 (c3x3)
+  std::vector<int > map_dir0 = {3,2,1,0,  4,5,6,7};
+  std::vector<int > map_dir1 = {7,6,5,4,  0,1,2,3};
+  int dir_gauge = map_dir0[dir_cur];
+  if(src_gauge){dir_gauge = map_dir1[dir_cur];}
+
+  if(gauge != NULL and src_gauge == true){
+  if(!Conj)mult_gauge<Ty, false >((void*) src, dir_gauge);
+  if( Conj)mult_gauge<Ty, true  >((void*) src, dir_gauge);}
 
   Ty* s_tem= (Ty*) sendbufP[dir_cur]; Ty* r_tem= (Ty*) recvbufP[dir_cur];
 
@@ -596,38 +655,11 @@ void shift_vec::call_MPI(Ty *src, Ty *res,int dir_or)
     //if(omp_get_thread_num()==0)MPI_Wait(&request, MPI_STATUS_IGNORE);
     //synchronize();
     write_send_recv<Ty, 1 >(src, res);//Write from recv
-
   }
 
-  if(gauge != NULL)
-  {
-    TIMER("Gauge multiplication");
-    bool id = get_data_type_is_double<Ty >();
-    if( id){qassert(long(civ*sizeof(Ty)/16) == gbfac * 3 * gd0);}
-    if(!id){qassert(long(civ*sizeof(Ty)/8 ) == gbfac * 3 * gd0);}
-    bool cfind = false;
-    #define shift_macros(bf) if(bf == gd0){cfind = true; \
-      if( id)multiply_gauge<qlat::Complex , bf, 1>((void*) res, gauge, dir_or, biva,Length,gbfac,gd0,GPU); \
-      if(!id)multiply_gauge<qlat::ComplexF, bf, 1>((void*) res, gauge, dir_or, biva,Length,gbfac,gd0,GPU);}
-    shift_macros(1);
-    shift_macros(2);
-    shift_macros(3);
-    shift_macros(4);
-    shift_macros(6);
-    shift_macros(8);
-    shift_macros(16);
-    shift_macros(12);
-    shift_macros(4*12);
-    shift_macros(4*16);
-    shift_macros(12*12);
-
-    if(!cfind){cfind = true;
-      if( id)multiply_gauge<qlat::Complex , 1, -1>((void*)res, gauge, dir_or, biva,Length,gbfac,gd0,GPU);
-      if(!id)multiply_gauge<qlat::ComplexF, 1, -1>((void*)res, gauge, dir_or, biva,Length,gbfac,gd0,GPU);}
-    //#undef shift_macros
-    qassert(cfind);
-  }
-
+  if(gauge != NULL and src_gauge == false){
+  if(!Conj)mult_gauge<Ty, false >((void*) res, dir_gauge);
+  if( Conj)mult_gauge<Ty, true  >((void*) res, dir_gauge);}
 
   s_tem = NULL; r_tem = NULL;
 }
@@ -651,13 +683,13 @@ void shift_vec::shift_vecs(std::vector<Ty* > &src,std::vector<Ty* > &res,std::ve
   /////TODO change the use of biva, civa 
   /////dividable or change inner loop to 1
   LInt Ng = Nt*N0*N1*N2;
-  #if PRINT_TIMER>4
+  //#if PRINT_TIMER>4
   TIMER_FLOPS("shift_Evec");
   {
     int count = 1; for(LInt di=0;di<iDir.size();di++){count += int(std::abs(iDir[di]));}
     timer.flops += count * src.size() * Ng*civ_or*sizeof(Ty) ;
   }
-  #endif
+  //#endif
 
   int flag_abort=0;int biva_or = src.size();
   if(iDir.size()!=4){print0("shift directions wrong .");flag_abort=1;}
@@ -820,13 +852,13 @@ void shift_vec::shift_vecP(Ty* src, Ty* res, std::vector<int >& iDir, int civ_or
 template<typename Ty>
 void shift_vec::shift_Evec(std::vector<qlat::vector_acc<Ty > > &srcE,std::vector<qlat::vector_acc<Ty > > &srcEf,std::vector<int >& iDir,int civ_or)
 {
-  #if PRINT_TIMER>4
-  TIMER_FLOPS("shift_Evec");
-  {
-  int count = 1; for(int di=0;di<iDir.size();di++){count += int(std::abs(iDir[di]));}
-  timer.flops += count * srcE.size() * get_data(srcE[0]).data_size() ;
-  }
-  #endif
+  //////#if PRINT_TIMER>4
+  //TIMER_FLOPS("shift_Evec");
+  //{
+  //int count = 1; for(int di=0;di<iDir.size();di++){count += int(std::abs(iDir[di]));}
+  //timer.flops += count * srcE.size() * get_data(srcE[0]).data_size() ;
+  //}
+  //////#endif
 
   int flag_abort=0;
   if(srcE.size()==0){print0("Cannot do it with srcE.size()==0");flag_abort=1;}
@@ -886,6 +918,31 @@ shift_vec::~shift_vec(){
   sendoffx.resize(0);
 
 }
+
+//template <class Ty>
+//void shift_fieldM(shift_vec& svec, Ty* src, Ty* res, const int dir, const int civ)
+//{
+//  if(src.size() < 1)return;
+//  int biva_or = src.size();
+//  std::vector<int > iDir(4);
+//  for(int i=0;i<4;i++){iDir[i] = 0;}
+//  if(dir >= 0){iDir[  dir ] = 1;}
+//  if(dir <  0){iDir[-dir-1] = -1;}
+//
+//  long Nvol = svec.Nvol;
+//  qassert(src.size() == res.size());
+//  qassert(src.size()%Nvol == 0);
+//
+//  std::vector<Ty* > srcP;std::vector<Ty* > resP;
+//  srcP.resize(biva_or);resP.resize(biva_or);
+//  for(int bi=0;bi<biva_or;bi++){
+//    srcP[bi] = (Ty*) src.qlat::get_data(src[bi]).data();
+//    resP[bi] = (Ty*) src.qlat::get_data(res[bi]).data();
+//  }
+//
+//  svec.shift_vecs(srcP, resP, iDir , civ);
+//}
+
 
 template <class Ty, int civ>
 void shift_fieldM(shift_vec& svec, std::vector<qlat::FieldM<Ty, civ> >& src, std::vector<qlat::FieldM<Ty, civ> >& res, std::vector<int >& iDir)

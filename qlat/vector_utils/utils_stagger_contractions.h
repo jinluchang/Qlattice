@@ -1,6 +1,6 @@
 // utils_stagger_contractions.h
 // Gen Wang
-// Jul. 2021
+// Jan. 2022
 
 #ifndef UTILS_STAGGER_CONTRACTIONS_H
 #define UTILS_STAGGER_CONTRACTIONS_H

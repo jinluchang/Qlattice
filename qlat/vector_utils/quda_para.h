@@ -72,7 +72,7 @@ inline void quda_end()
 }
 
 template <class T>
-void quda_convert_gauge(qlat::vector<T>& qgf, const GaugeField& gf)
+void quda_convert_gauge(qlat::vector<T>& qgf, GaugeField& gf, int dir = 0)
 {
   TIMER("quda_convert_gauge(qgf,gf)");
   const Geometry& geo = gf.geo();
@@ -82,11 +82,14 @@ void quda_convert_gauge(qlat::vector<T>& qgf, const GaugeField& gf)
   long Vh = V / 2;
   for (long qlat_idx = 0; qlat_idx < V; qlat_idx++) {
     Coordinate xl = geo.coordinate_from_index(qlat_idx);
-    const Vector<ColorMatrix> ms = gf.get_elems_const(xl);
+    //const Vector<ColorMatrix> ms = gf.get_elems_const(xl);
+    //Vector<ColorMatrix> ms = gf.get_elems(xl);
     int eo = (xl[0] + xl[1] + xl[2] + xl[3]) % 2;
     for (int mu = 0; mu < 4; mu++) {
+      ColorMatrixT<T>& ms = gf.get_elem(qlat_idx*gf.geo().multiplicity+mu);
       long quda_idx = (qlat_idx / 2 + eo * Vh) * 4 + mu;
-      quda_pt[quda_idx] = ms[mu];
+      if(dir == 0){quda_pt[quda_idx] = ms;}
+      if(dir == 1){ms = quda_pt[quda_idx];}
     }
   }
 }

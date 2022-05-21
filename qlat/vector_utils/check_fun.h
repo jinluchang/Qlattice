@@ -66,7 +66,7 @@ void diff_prop(Propagator4dT<T>& p0, Propagator4dT<T>& p1, double err=1e-15)
       diffp += diff;
       if((diff > err or checknan) and countp < MAX_COUNT )
       {
-        printf("rank %5d, x %5d, y %5d, z %5d, t %5d, d %5d, value %.3e %.3e, %.3e %.3e, %.3e \n",
+        printf("rank %5d, x %5d, y %5d, z %5d, t %5d, d %5d, value %+.3e %+.3e, %+.3e %+.3e, %+.3e \n",
           rank ,xg0[0],xg0[1],xg0[2],xg0[3],d0*12+d1 ,p0.real(),p0.imag(),p1.real(),p1.imag(), diff);
         countp += 1;
       }
@@ -76,6 +76,48 @@ void diff_prop(Propagator4dT<T>& p0, Propagator4dT<T>& p1, double err=1e-15)
   sum_all_size(&diffp,1);
   MPI_Barrier(get_comm());fflush(stdout);
   print0("==prop diff %.5e \n",diffp/(p0.geo().local_volume()*12*24.0));
+  MPI_Barrier(get_comm());fflush(stdout);
+}
+
+template <class Ty, int civ>
+void diff_propT(qlat::FieldM<Ty , civ>& p0, qlat::FieldM<Ty , civ>& p1, double err=1e-15, long MAX_COUNT = 64)
+{
+  int rank = qlat::get_id_node();
+  /////long MAX_COUNT = 64;
+  double diffp = 0.0; long countp = 0;
+  Ty* s0 = (Ty*) qlat::get_data(p0).data();
+  Ty* s1 = (Ty*) qlat::get_data(p1).data();
+  for (long index = 0; index < p0.geo().local_volume(); ++index) {
+    Coordinate xl0 = p0.geo().coordinate_from_index(index);
+    Coordinate xg0 = p0.geo().coordinate_g_from_l(xl0);
+
+    for(int c0=0;c0<civ;c0++)
+    {
+      Ty& pa = s0[index*civ + c0];
+      Ty& pb = s1[index*civ + c0];
+
+      double diff = 0.0;
+      double n0 = qlat::qnorm(pa);
+      double n1 = qlat::qnorm(pb);
+      bool checknan = false;
+      if(std::isnan(pa.real()) or std::isnan(pa.imag())){checknan = true;}
+      if(std::isnan(pb.real()) or std::isnan(pb.imag())){checknan = true;}
+
+      if(n1 > 1e-18){diff = std::fabs(qlat::qnorm(pa-pb)/n1);}
+      else{
+      if(n0 > 1e-18){diff = std::fabs(qlat::qnorm(pa-pb)/n0);}}
+      diffp += diff;
+      if((diff > err or checknan) and countp < MAX_COUNT )
+      {
+        printf("rank %5d, x %5d, y %5d, z %5d, t %5d, d %5d, value %+.8e %+.8e, %+.3e %+.3e, %+.3e \n",
+          rank ,xg0[0],xg0[1],xg0[2],xg0[3], c0 ,pa.real(),pa.imag(),pb.real(),pb.imag(), diff);
+        countp += 1;
+      }
+    }
+  }
+  sum_all_size(&diffp,1);
+  MPI_Barrier(get_comm());fflush(stdout);
+  print0("==prop diff %.5e \n",diffp/(p0.geo().local_volume()*qlat::get_num_node()*civ));
   MPI_Barrier(get_comm());fflush(stdout);
 }
 

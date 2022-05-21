@@ -688,7 +688,7 @@ inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const q
   std::vector<ga_M > g05;g05.resize(Aoper);
   std::vector<ga_M > g1;g1.resize(Aoper);
   std::vector<ga_M > g15;g15.resize(Aoper);
-  //////0 , 1, 2, 3, 4, 5, 6
+  //////0 , 1, 2, 3, 4, 5
   //////1-2, 1-3, 1-4, 1-5
   //////2-3, 2-4, 2-5
   //////3-4, 3-5

@@ -936,17 +936,6 @@ inline std::vector<unsigned int > get_num_power(const size_t x,const std::vector
   return re;
 }
 
-inline Coordinate string_to_Coordinate(const std::string& paraI = std::string("None"))
-{
-  Coordinate sp;for(int i=0;i<4;i++){sp[i] = 0;}
-  if(paraI != "None"){
-    std::vector<std::string > Li = stringtolist(paraI);
-    qassert(Li.size() == 4);
-    for(int i=0;i<4;i++){sp[i] = stringtonum(Li[i]);}
-  }
-  return sp;
-}
-
 //////Even node in xyzT directions
 inline Coordinate spread_even(const int n, const Coordinate& Lat, const std::vector<unsigned int >& a)
 {

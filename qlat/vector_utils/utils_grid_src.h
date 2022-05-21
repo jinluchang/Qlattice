@@ -208,8 +208,11 @@ inline Coordinate get_grid_off(int i0, qlat::vector_acc<int >& off_L, Coordinate
 }
 
 //////assume res have been cleared
+
+
+//////assume res have been cleared
 template<typename Ty>
-void write_grid_point_to_src(Ty* res, const qnoiT& src, const Coordinate& pos, int b_size, qlat::fft_desc_basic& fd)
+void write_grid_point_to_src(Ty* res, const qnoiT& src, const PointSelection& posL, int b_size, qlat::fft_desc_basic& fd)
 {
   TIMERA("===write_grid_point_to_src===")
   /////if(pos.size() != 4){abort_r("dimension of positions wrong!\n ");}
@@ -225,6 +228,8 @@ void write_grid_point_to_src(Ty* res, const qnoiT& src, const Coordinate& pos, i
   ////Coordinate xg0 = geo.coordinate_g_from_l(xl0);
 
   Ty phase = 0.0;
+  for(int pi=0;pi<posL.size();pi++){
+  const Coordinate& pos = posL[pi];
   if(fd.coordinate_g_is_local(pos)){
     LInt isp = fd.index_l_from_g_coordinate(pos);
     phase = src.get_elem(isp);
@@ -244,12 +249,20 @@ void write_grid_point_to_src(Ty* res, const qnoiT& src, const Coordinate& pos, i
     }
     /////phaseN = qlat::qnorm(src[isp]);
   }
+  }
 
   //double flag = qlat::qnorm(phase);
   //sum_all_size(&flag, 1);
   ///////printf("rank %d, flag %.3f \n", fd.rank, flag);
   //if(flag < 1e-15){abort_r("src position phase equal zero!\n ");}
 
+}
+
+template<typename Ty>
+void write_grid_point_to_src(Ty* res, const qnoiT& src, const Coordinate& pos, int b_size, qlat::fft_desc_basic& fd)
+{
+  PointSelection posL;posL.resize(1);posL[0] = pos;
+  write_grid_point_to_src(res, src, posL, b_size, fd);
 }
 
 void print_psel(PointSelection& psel)
@@ -268,8 +281,9 @@ void add_psel(PointSelection& p0, const PointSelection& p1)
 void vector_to_Coordinate(qlat::vector_acc<int >& nv, Coordinate& pos, int dir = 1)
 {
   if(dir == 1){qassert(nv.size() != 4);}
-  if(dir == 0){nv.resize(4);}
   if(dir == 1){for(int i=0;i<4;i++){pos[i] = nv[i] ;}}
+
+  if(dir == 0){nv.resize(4);}
   if(dir == 0){for(int i=0;i<4;i++){nv[i]  = pos[i];}}
 }
 
