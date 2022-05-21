@@ -24,8 +24,6 @@ dget "fftw-3.3.10.tar.gz" "http://www.fftw.org/fftw-3.3.10.tar.gz"
 
 dget "Cuba-4.2.1.tar.gz"  "http://www.feynarts.de/cuba/Cuba-4.2.1.tar.gz"
 
-dget "zlib-1.2.11.tar.gz" "https://versaweb.dl.sourceforge.net/project/libpng/zlib/1.2.11/zlib-1.2.11.tar.gz"
-
 dget "gsl-2.7.1.tar.gz" "https://gnu.askapache.com/gsl/gsl-2.7.1.tar.gz"
 
 dget "eigen-3.3.9.tar.bz2" "https://gitlab.com/libeigen/eigen/-/archive/3.3.9/eigen-3.3.9.tar.bz2"
@@ -69,6 +67,10 @@ dget "ninja-1.10.2.tar.gz" "https://github.com/ninja-build/ninja/archive/refs/ta
 dget "OpenBLAS-0.3.18.tar.gz" "https://github.com/xianyi/OpenBLAS/releases/download/v0.3.18/OpenBLAS-0.3.18.tar.gz"
 
 dget "lapack-3.10.0.tar.gz" "https://github.com/Reference-LAPACK/lapack/archive/refs/tags/v3.10.0.tar.gz"
+
+dget "zlib-1.2.11.tar.gz" "https://versaweb.dl.sourceforge.net/project/libpng/zlib/1.2.11/zlib-1.2.11.tar.gz"
+
+dget "gnuplot-5.4.3.tar.gz" "https://versaweb.dl.sourceforge.net/project/gnuplot/gnuplot/5.4.3/gnuplot-5.4.3.tar.gz"
 
 (
 mkdir -p python-packages
