@@ -13,9 +13,10 @@
 #define qwarn(str)                                                     \
   {                                                                    \
     std::string msg = qlat::ssprintf(                                  \
-        "qwarn: %s from '%s' line %d. (id_node=%d thread_num=%d)",     \
+        "qwarn: %s from '%s' line %d. (id_node=%d thread_num=%d "      \
+        "id_node_in_shuffle=%d)",                                      \
         qlat::get_c_str(str), __FILE__, __LINE__, qlat::get_id_node(), \
-        qlat::get_thread_num());                                       \
+        qlat::get_thread_num(), qlat::get_id_node_in_shuffle());       \
     qlat::displayln(msg);                                              \
     qlat::Timer::display_stack_always();                               \
   }

@@ -11,6 +11,7 @@ qlat::begin(): GeometryNode =
 , size_node   = 1x1x1x2
 , coor_node   = 0x0x0x0 }
 q_timer_max_func_name_len=50 (default)
+q_mk_id_node_in_shuffle_seed='' (default)
 clear_mem_cache: 0 bytes (0.000 GB) freed.
 sizeof(ColorMatrix) = 144
 q_timer_mini_auto_show=1 (default)

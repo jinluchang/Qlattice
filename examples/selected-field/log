@@ -11,6 +11,7 @@ qlat::begin(): GeometryNode =
 , size_node   = 1x1x1x2
 , coor_node   = 0x0x0x0 }
 q_timer_max_func_name_len=50 (default)
+q_mk_id_node_in_shuffle_seed='' (default)
 clear_mem_cache: 0 bytes (0.000 GB) freed.
 q_timer_mini_auto_show=1 (default)
 q_timer_max_always_show=10 (default)
@@ -109,7 +110,6 @@ qrename: 'huge-data/16/free-4nt8-init.sfield.partial.partial' 'huge-data/16/free
 qrename: 'huge-data/16/free-4nt8-init.sfield.partial' 'huge-data/16/free-4nt8-init.sfield'
 : 4CB6850D <- f-init-3
 read_selected_field: fn='huge-data/16/free-4nt8-init.sfield'.
-q_mk_id_node_in_shuffle_seed='' (default)
 make_shuffle_plan_generic: num_send_packs =          2
 make_shuffle_plan_generic: num_recv_packs =          4
 make_shuffle_plan_generic: num_send_msgs  =          1

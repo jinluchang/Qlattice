@@ -809,7 +809,7 @@ inline std::vector<int> mk_id_node_list_for_shuffle_node()
   qassert(list[0] == 0);
   for (long i = 0; i < get_num_node(); ++i) {
     qassert(0 <= list[i]);
-    qassert(list[i] <= get_num_node());
+    qassert(list[i] < get_num_node());
     for (long j = 0; j < i; ++j) {
       qassert(list[i] != list[j]);
     }
@@ -822,6 +822,7 @@ inline std::vector<int> mk_id_node_list_for_shuffle()
 // if env variable start with "seed_", then the rest will be used as seed for random assignment
 // else env variable will be viewed as int for step_size
 {
+  TIMER_VERBOSE("mk_id_node_list_for_shuffle")
   const std::string seed = get_env_default("q_mk_id_node_in_shuffle_seed", "");
   const std::string seed_prefix = "seed_";
   if (seed == "") {
@@ -837,8 +838,42 @@ inline std::vector<int> mk_id_node_list_for_shuffle()
 
 inline std::vector<int>& get_id_node_list_for_shuffle()
 // qlat parameter
+// initialized in begin_comm with mk_id_node_list_for_shuffle()
+// return list
+// list[id_node_in_shuffle] = id_node
 {
-  static std::vector<int> list = mk_id_node_list_for_shuffle();
+  static std::vector<int> list;
+  return list;
+}
+
+inline std::vector<int> mk_id_node_in_shuffle_list()
+// return list_new
+// list_new[id_node] = id_node_in_shuffle
+{
+  TIMER_VERBOSE("mk_id_node_in_shuffle_list")
+  const std::vector<int>& list = get_id_node_list_for_shuffle();
+  const int num_node = list.size();
+  qassert(num_node == get_num_node());
+  std::vector<int> list_new(num_node, 0);
+  for (int i = 0; i < num_node; ++i) {
+    const int id_node_in_shuffle = i;
+    const int id_node = list[i];
+    qassert(0 <= id_node_in_shuffle);
+    qassert(id_node_in_shuffle < num_node);
+    qassert(0 <= id_node);
+    qassert(id_node < num_node);
+    list_new[id_node] = id_node_in_shuffle;
+  }
+  return list_new;
+}
+
+inline std::vector<int>& get_id_node_in_shuffle_list()
+// qlat parameter
+// initialized in begin_comm with mk_id_node_in_shuffle_list()
+// return list
+// list[id_node] = id_node_in_shuffle
+{
+  static std::vector<int> list;
   return list;
 }
 
@@ -846,19 +881,15 @@ inline int get_id_node_in_shuffle(const int id_node, const int new_num_node,
                                   const int num_node)
 // not called very often
 {
+  qassert(0 <= id_node);
+  qassert(id_node < num_node);
   if (new_num_node == num_node) {
     return id_node;
   } else {
-    const std::vector<int>& list = get_id_node_list_for_shuffle();
+    const std::vector<int>& list = get_id_node_in_shuffle_list();
     qassert((long)list.size() == num_node);
     qassert(list[0] == 0);
-    for (int i = 0; i < (int)list.size(); ++i) {
-      if (list[i] == id_node) {
-        return i;
-      }
-    }
-    qassert(false);
-    return 0;
+    return list[id_node];
   }
 }
 
@@ -866,6 +897,8 @@ inline int get_id_node_from_id_node_in_shuffle(const int id_node_in_shuffle,
                                                const int new_num_node,
                                                const int num_node)
 {
+  qassert(0 <= id_node_in_shuffle);
+  qassert(id_node_in_shuffle < num_node);
   if (new_num_node == num_node) {
     return id_node_in_shuffle;
   } else {
@@ -888,15 +921,13 @@ inline void display_geometry_node()
 {
   TIMER("display_geometry_node");
   const GeometryNode& geon = get_geometry_node();
-  const int id_node_in_shuffle =
-      get_id_node_in_shuffle(geon.id_node, 0, geon.num_node);
   for (int i = 0; i < geon.num_node; ++i) {
     if (i == geon.id_node) {
       displayln(std::string(fname) + " : " +
                 ssprintf("id_node = %5d ; coor_node = %s ; id_node_in_shuffle "
                          "= %5d ; hostname = %s",
                          geon.id_node, show(geon.coor_node).c_str(),
-                         id_node_in_shuffle, get_hostname().c_str()));
+                         get_id_node_in_shuffle(), get_hostname().c_str()));
       fflush(get_output_file());
     }
     sync_node();
@@ -979,7 +1010,8 @@ inline void begin_comm(const MPI_Comm comm, const Coordinate& size_node)
   }
   displayln_info("qlat::begin(): q_num_threads = " +
                  show(omp_get_max_threads()));
-  std::string q_malloc_mmap_threshold = get_env_default("q_malloc_mmap_threshold", "");
+  std::string q_malloc_mmap_threshold =
+      get_env_default("q_malloc_mmap_threshold", "");
   if (q_malloc_mmap_threshold != "") {
     mallopt(M_MMAP_THRESHOLD, read_long(q_malloc_mmap_threshold));
   }
@@ -989,10 +1021,14 @@ inline void begin_comm(const MPI_Comm comm, const Coordinate& size_node)
                           Timer::get_timer_database().size()));
   displayln_info(ssprintf("Timer::get_timer_stack().size() = %ld",
                           Timer::get_timer_stack().size()));
-  clear_all_caches();
-  sync_node();
+  get_id_node_list_for_shuffle() = mk_id_node_list_for_shuffle();
+  get_id_node_in_shuffle_list() = mk_id_node_in_shuffle_list();
+  get_id_node_in_shuffle_internal() =
+      get_id_node_in_shuffle(get_id_node(), 0, get_num_node());
   // display_geometry_node();
   // install_qhandle_sig();
+  clear_all_caches();
+  sync_node();
 }
 
 inline void begin(const int id_node, const Coordinate& size_node,

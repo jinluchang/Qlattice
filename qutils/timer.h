@@ -131,6 +131,18 @@ inline int get_thread_num()
 #endif
 }
 
+inline int& get_id_node_in_shuffle_internal()
+// initialized in begin_comm in qlat/mpi.h
+{
+  static int id_node_in_shuffle = 0;
+  return id_node_in_shuffle;
+}
+
+inline int get_id_node_in_shuffle()
+{
+  return get_id_node_in_shuffle_internal();
+}
+
 inline void display_info(const std::string& str, FILE* fp = NULL)
 {
   if (0 == get_id_node() && 0 == get_thread_num()) {
