@@ -89,11 +89,11 @@ def auto_contract_meson_corr(job_tag, traj, get_prop, get_psel, get_fsel):
                     "t_2" : ("wall", t_snk,),
                     "t_1" : ("wall", t_src,),
                     }
-            props = eval_cexpr_get_props(cexpr, positions_dict = pd, get_prop = get_prop)
-            yield props, t
+            yield pd, t
     @q.timer
     def feval(args):
-        props, t = args
+        pd, t = args
+        props = eval_cexpr_get_props(cexpr, positions_dict = pd, get_prop = get_prop)
         val = eval_cexpr_eval(cexpr, props = props)
         return val, t
     def sum_function(val_list):
@@ -141,11 +141,11 @@ def auto_contract_meson_corr_psnk(job_tag, traj, get_prop, get_psel, get_fsel):
                         "t_2" : ("point-snk", xg_snk,),
                         "t_1" : ("wall", t_src,),
                         }
-                props = eval_cexpr_get_props(cexpr, positions_dict = pd, get_prop = get_prop)
-                yield props, t
+                yield pd, t
     @q.timer
     def feval(args):
-        props, t = args
+        pd, t = args
+        props = eval_cexpr_get_props(cexpr, positions_dict = pd, get_prop = get_prop)
         val = eval_cexpr_eval(cexpr, props = props)
         return val, t
     def sum_function(val_list):
@@ -196,11 +196,11 @@ def auto_contract_meson_corr_psrc(job_tag, traj, get_prop, get_psel, get_fsel):
                     "t_2" : ("point", xg_src,),
                     "t_1" : ("wall", t_snk,),
                     }
-            props = eval_cexpr_get_props(cexpr, positions_dict = pd, get_prop = get_prop)
-            yield props, t
+            yield pd, t
     @q.timer
     def feval(args):
-        props, t = args
+        pd, t = args
+        props = eval_cexpr_get_props(cexpr, positions_dict = pd, get_prop = get_prop)
         val = eval_cexpr_eval(cexpr, props = props)
         return val, t
     def sum_function(val_list):
@@ -252,11 +252,11 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_fs
                         "t_2" : ("point-snk", xg_snk,),
                         "t_1" : ("point", xg_src,),
                         }
-                props = eval_cexpr_get_props(cexpr, positions_dict = pd, get_prop = get_prop)
-                yield props, t
+                yield pd, t
     @q.timer
     def feval(args):
-        props, t = args
+        pd, t = args
+        props = eval_cexpr_get_props(cexpr, positions_dict = pd, get_prop = get_prop)
         val = eval_cexpr_eval(cexpr, props = props)
         return val, t
     def sum_function(val_list):
@@ -321,11 +321,11 @@ def auto_contract_meson_f_corr_psnk(job_tag, traj, get_prop, get_psel, get_fsel)
                         "x_2" : ("point-snk", xg_snk,),
                         "t_1" : ("wall", t_src,),
                         }
-                props = eval_cexpr_get_props(cexpr, positions_dict = pd, get_prop = get_prop)
-                yield props, t
+                yield pd, t
     @q.timer
     def feval(args):
-        props, t = args
+        pd, t = args
+        props = eval_cexpr_get_props(cexpr, positions_dict = pd, get_prop = get_prop)
         val = eval_cexpr_eval(cexpr, props = props)
         return val, t
     def sum_function(val_list):
@@ -376,11 +376,11 @@ def auto_contract_meson_f_corr_psrc(job_tag, traj, get_prop, get_psel, get_fsel)
                     "x_2" : ("point", xg_src,),
                     "t_1" : ("wall", t_snk,),
                     }
-            props = eval_cexpr_get_props(cexpr, positions_dict = pd, get_prop = get_prop)
-            yield props, t
+            yield pd, t
     @q.timer
     def feval(args):
-        props, t = args
+        pd, t = args
+        props = eval_cexpr_get_props(cexpr, positions_dict = pd, get_prop = get_prop)
         val = eval_cexpr_eval(cexpr, props = props)
         return val, t
     def sum_function(val_list):
@@ -432,11 +432,11 @@ def auto_contract_meson_f_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_
                         "x_2" : ("point-snk", xg_snk,),
                         "t_1" : ("point", xg_src,),
                         }
-                props = eval_cexpr_get_props(cexpr, positions_dict = pd, get_prop = get_prop)
-                yield props, t
+                yield pd, t
     @q.timer
     def feval(args):
-        props, t = args
+        pd, t = args
+        props = eval_cexpr_get_props(cexpr, positions_dict = pd, get_prop = get_prop)
         val = eval_cexpr_eval(cexpr, props = props)
         return val, t
     def sum_function(val_list):
@@ -509,11 +509,11 @@ def auto_contract_meson_m(job_tag, traj, get_prop, get_psel, get_fsel):
                     "t_1" : ("wall", t_1),
                     "t_2" : ("wall", t_2),
                     }
-            props = eval_cexpr_get_props(cexpr, positions_dict = pd, get_prop = get_prop)
-            yield props
+            yield pd
     @q.timer
     def feval(args):
-        props = args
+        pd = args
+        props = eval_cexpr_get_props(cexpr, positions_dict = pd, get_prop = get_prop)
         val = eval_cexpr_eval(cexpr, props = props)
         return val
     def sum_function(val_list):
@@ -595,11 +595,11 @@ def auto_contract_meson_jt(job_tag, traj, get_prop, get_psel, get_fsel):
                     "t_1p" : ("wall", t_1p),
                     "t_2p" : ("wall", t_2p),
                     }
-            props = eval_cexpr_get_props(cexpr, positions_dict = pd, get_prop = get_prop)
-            yield props
+            yield pd
     @q.timer
     def feval(args):
-        props = args
+        pd = args
+        props = eval_cexpr_get_props(cexpr, positions_dict = pd, get_prop = get_prop)
         val = eval_cexpr_eval(cexpr, props = props)
         return val
     def sum_function(val_list):
@@ -817,11 +817,11 @@ def auto_contract_meson_jj(job_tag, traj, get_prop, get_psel, get_fsel):
                         "t_1" : ("wall", t_1),
                         "t_2" : ("wall", t_2),
                         }
-                props = eval_cexpr_get_props(cexpr, positions_dict = pd, get_prop = get_prop)
-                yield props, x_rel, total_site
+                yield pd, x_rel, total_site
     @q.timer
     def feval(args):
-        props, x_rel, total_site = args
+        pd, x_rel, total_site = args
+        props = eval_cexpr_get_props(cexpr, positions_dict = pd, get_prop = get_prop)
         val = eval_cexpr_eval(cexpr, props = props)
         assert val.shape[0] == 16 * n_tensor + 3
         res_arr = val[:-3].reshape((n_tensor, 4, 4))
