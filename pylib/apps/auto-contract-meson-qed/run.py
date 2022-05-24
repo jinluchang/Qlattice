@@ -1004,12 +1004,12 @@ q.check_time_limit()
 
 for job_tag in job_tags:
     if job_tag == "48I":
-        if q.get_num_node() != 8 * 32:
+        if q.get_num_node() != 4 * 32:
             continue
     elif job_tag == "64I":
-        if q.get_num_node() != 8 * 64:
+        if q.get_num_node() != 4 * 64:
             continue
-    elif q.get_num_node() > 8 * 16:
+    elif q.get_num_node() > 4 * 16:
         continue
     q.displayln_info(pprint.pformat(rup.dict_params[job_tag]))
     for traj in rup.dict_params[job_tag]["trajs"]:
