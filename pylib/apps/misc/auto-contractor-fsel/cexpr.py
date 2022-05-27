@@ -1,5 +1,7 @@
 from auto_contractor.operators import *
 
+from jobs import *
+
 @q.timer
 def get_cexpr_vev():
     def calc_cexpr():
