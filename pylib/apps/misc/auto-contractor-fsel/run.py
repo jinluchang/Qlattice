@@ -450,11 +450,10 @@ def run_job(job_tag, traj):
     q.timer_display()
 
 def get_all_cexpr():
+    benchmark_eval_cexpr(get_cexpr_vev())
     benchmark_eval_cexpr(get_cexpr_meson_corr())
-    benchmark_eval_cexpr(get_cexpr_meson_f_corr())
-    benchmark_eval_cexpr(get_cexpr_meson_m())
-    benchmark_eval_cexpr(get_cexpr_meson_jt())
-    benchmark_eval_cexpr(get_cexpr_meson_jj())
+    benchmark_eval_cexpr(get_cexpr_meson_corr_with_env())
+    benchmark_eval_cexpr(get_cexpr_3f4f_matchig())
 
 def test():
     q.qremove_all_info("locks")
