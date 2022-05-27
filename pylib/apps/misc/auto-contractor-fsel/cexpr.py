@@ -32,7 +32,7 @@ def get_cexpr_meson_corr():
         q.displayln_info(display_cexpr(cexpr))
         cexpr.collect_op()
         return cexpr
-    return cache_compiled_cexpr(calc_cexpr, f"cache/auto_contract_cexpr/meson_corr_cexpr")
+    return cache_compiled_cexpr(calc_cexpr, f"cache/auto_contractor_cexpr/meson_corr_cexpr")
     #cexpr = q.pickle_cache_call(calc_cexpr, f"cache/auto_contractor_cexpr/meson_corr-cexpr.pickle")
     #q.displayln_info(display_cexpr_raw(cexpr))
     #return cexpr
