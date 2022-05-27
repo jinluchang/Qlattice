@@ -3,7 +3,7 @@
 import qlat as q
 #import gpt as g
 #import qlat_gpt as qg
-import rbc_ukqcd as ru
+#import rbc_ukqcd as ru
 import rbc_ukqcd_params as rup
 import pprint
 
@@ -17,6 +17,8 @@ from load_data import *
 from params import *
 
 from cexpr import *
+
+get_pi = None
 
 load_path_list[:] = [
         "results",
@@ -52,7 +54,7 @@ def auto_contractor_meson_corr_wsnk_wsrc(job_tag, traj, get_prop, get_fsel, get_
     fn = f"auto-contractor-fsel/{job_tag}/traj={traj}/meson_corr/wsnk_wsrc.lat"
     if get_load_path(fn) is not None:
         return
-    total_site = ru.get_total_site(job_tag)
+    total_site = rup.get_total_site(job_tag)
     cexpr = get_cexpr_meson_corr()
     names_expr = get_cexpr_names(cexpr)
     names_fac = [ "rest", ]
@@ -96,7 +98,7 @@ def auto_contractor_meson_corr_psnk_wsrc(job_tag, traj, get_prop, get_fsel, get_
     fn = f"auto-contractor-fsel/{job_tag}/traj={traj}/meson_corr/psnk_wsrc.lat"
     if get_load_path(fn) is not None:
         return
-    total_site = ru.get_total_site(job_tag)
+    total_site = rup.get_total_site(job_tag)
     cexpr = get_cexpr_meson_corr()
     names_expr = get_cexpr_names(cexpr)
     names_fac = [ "rest", ]
@@ -115,7 +117,7 @@ def auto_contractor_meson_corr_psnk_wsrc(job_tag, traj, get_prop, get_fsel, get_
                 if tsep == (t2 - t1) % total_site[3]:
                     pd = {
                             "x1" : ("wall", t1,),
-                            "x2" : ("point-snk", x2,),
+                            "x2" : ("point-snk", tuple(x2),),
                             }
                     trial_indices.append(pd)
         if len(trial_indices) == 0:
@@ -154,7 +156,7 @@ def auto_contractor_vev(job_tag, traj, get_prop, get_fsel, get_pi, get_wi):
     fsel, fselc = get_fsel()
     for x in fsel.to_psel_local().to_list():
         pd = {
-                "x" : ("point-snk", x,),
+                "x" : ("point-snk", tuple(x),),
                 }
         trial_indices.append(pd)
     def positions_dict_maker(idx):
@@ -177,7 +179,7 @@ def auto_contractor_vev(job_tag, traj, get_prop, get_fsel, get_pi, get_wi):
 
 @q.timer_verbose
 def auto_contractor_3f4f_matching(job_tag, traj, get_prop, get_fsel, get_pi, get_wi):
-    total_site = ru.get_total_site(job_tag)
+    total_site = rup.get_total_site(job_tag)
     cexpr = get_cexpr_3f4f_matching()
     names_expr = get_cexpr_names(cexpr)
     src_snk_seps = [2,4,6,8]
@@ -217,7 +219,7 @@ def auto_contractor_3f4f_matching(job_tag, traj, get_prop, get_fsel, get_pi, get
                     "t1_2" : ("wall", t1_2,),
                     "t1_3" : ("wall", t1_3,),
                     "t1_4" : ("wall", t1_4,),
-                    "x" : ("point-snk", x,),
+                    "x" : ("point-snk", tuple(x),),
                     "t2_1" : ("wall", t2_1,),
                     "t2_2" : ("wall", t2_2,),
                     "t2_3" : ("wall", t2_3,),
@@ -278,7 +280,7 @@ def auto_contractor_3f4f_matching(job_tag, traj, get_prop, get_fsel, get_pi, get
 
 @q.timer_verbose
 def auto_contractor_3f4f_matching_tslice(job_tag, traj, get_prop, get_fsel, get_pi, get_wi):
-    total_site = ru.get_total_site(job_tag)
+    total_site = rup.get_total_site(job_tag)
     cexpr = get_cexpr_3f4f_matching()
     names_expr = get_cexpr_names(cexpr)
     src_snk_seps = [2,4,6,8]
@@ -321,7 +323,7 @@ def auto_contractor_3f4f_matching_tslice(job_tag, traj, get_prop, get_fsel, get_
                         "t1_2" : ("wall", t1_2,),
                         "t1_3" : ("wall", t1_3,),
                         "t1_4" : ("wall", t1_4,),
-                        "x" : ("point-snk", x,),
+                        "x" : ("point-snk", tuple(x),),
                         "t2_1" : ("wall", t2_1,),
                         "t2_2" : ("wall", t2_2,),
                         "t2_3" : ("wall", t2_3,),
@@ -392,13 +394,13 @@ def run_job(job_tag, traj):
             f"gauge-transform/{job_tag}/traj={traj}.field",
             f"wall-src-info-light/{job_tag}/traj={traj}.txt",
             f"wall-src-info-strange/{job_tag}/traj={traj}.txt",
-            f"prop-wsrc-strange/{job_tag}/traj={traj}",
+            f"prop-wsrc-strange/{job_tag}/traj={traj}/geon-info.txt",
             f"psel-prop-wsrc-strange/{job_tag}/traj={traj}/checkpoint.txt",
-            f"prop-wsrc-light/{job_tag}/traj={traj}",
+            f"prop-wsrc-light/{job_tag}/traj={traj}/geon-info.txt",
             f"psel-prop-wsrc-light/{job_tag}/traj={traj}/checkpoint.txt",
-            f"prop-rand-u1-light/{job_tag}/traj={traj}",
-            f"prop-rand-u1-strange/{job_tag}/traj={traj}",
-            f"prop-rand-u1-charm/{job_tag}/traj={traj}",
+            f"prop-rand-u1-light/{job_tag}/traj={traj}/geon-info.txt",
+            f"prop-rand-u1-strange/{job_tag}/traj={traj}/geon-info.txt",
+            f"prop-rand-u1-charm/{job_tag}/traj={traj}/geon-info.txt",
             ]
     if not check_job(job_tag, traj, fns_produce, fns_need):
         return
@@ -429,13 +431,14 @@ def run_job(job_tag, traj):
     fn_checkpoint = f"auto-contractor-fsel/{job_tag}/traj={traj}/checkpoint.txt"
     if get_load_path(fn_checkpoint) is None:
         if q.obtain_lock(f"locks/{job_tag}-{traj}-auto-contractor"):
-            get_prop = mk_get_prop(job_tag, traj,
-                    get_gt = get_gt,
-                    get_psel = get_psel,
-                    get_fsel = get_fsel,
-                    get_pi = get_pi,
-                    get_wi = get_wi,
-                    )
+            get_prop = get_get_prop()
+            #get_prop = mk_get_prop(job_tag, traj,
+            #        get_gt = get_gt,
+            #        get_psel = get_psel,
+            #        get_fsel = get_fsel,
+            #        get_pi = get_pi,
+            #        get_wi = get_wi,
+            #        )
             # ADJUST ME
             auto_contractor_vev(job_tag, traj, get_prop, get_fsel, get_pi, get_wi)
             auto_contractor_meson_corr_wsnk_wsrc(job_tag, traj, get_prop, get_fsel, get_pi, get_wi)
@@ -484,13 +487,13 @@ size_node_list = [
 q.begin()
 
 # ADJUST ME
-q.qremove_all_info("cache")
+#q.qremove_all_info("cache")
 get_all_cexpr()
-test()
+#test()
 
 # ADJUST ME
 job_tags = [
-        # "test-4nt8", "test-4nt16",
+        "test-4nt8", "test-4nt16",
         # "64I",
         # "48I",
         # "24D", "32D", "32Dfine","24DH",

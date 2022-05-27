@@ -682,11 +682,11 @@ def run_get_prop(job_tag, traj, *, get_gt, get_psel, get_fsel, get_psel_smear, g
         load_prop_wsrc_fsel(job_tag, traj, "l", wi = wi, psel = psel, fsel = fsel, fselc = fselc, gt = gt)
         # load_prop_psrc_psel(job_tag, traj, "s", psel = psel, fsel = fsel, fselc = fselc)
         # load_prop_psrc_psel(job_tag, traj, "l", psel = psel, fsel = fsel, fselc = fselc)
-        load_prop_psrc_fsel(job_tag, traj, "s", psel = psel, fsel = fsel, fselc = fselc)
-        load_prop_psrc_fsel(job_tag, traj, "l", psel = psel, fsel = fsel, fselc = fselc)
-        # load_prop_rand_u1_fsel(job_tag, traj, "l", psel = psel, fsel = fsel, fselc = fselc)
-        # load_prop_rand_u1_fsel(job_tag, traj, "s", psel = psel, fsel = fsel, fselc = fselc)
-        # load_prop_rand_u1_fsel(job_tag, traj, "c", psel = psel, fsel = fsel, fselc = fselc)
+        # load_prop_psrc_fsel(job_tag, traj, "s", psel = psel, fsel = fsel, fselc = fselc)
+        # load_prop_psrc_fsel(job_tag, traj, "l", psel = psel, fsel = fsel, fselc = fselc)
+        load_prop_rand_u1_fsel(job_tag, traj, "l", psel = psel, fsel = fsel, fselc = fselc)
+        load_prop_rand_u1_fsel(job_tag, traj, "s", psel = psel, fsel = fsel, fselc = fselc)
+        load_prop_rand_u1_fsel(job_tag, traj, "c", psel = psel, fsel = fsel, fselc = fselc)
         #
         # prop_lookup_cache[(pos_src, type_src, type_snk,)] == get_prop_pos_snk where get_prop_pos_snk(pos_snk) ==> ama_prop
         prop_lookup_cache = q.mk_cache(f"prop_lookup_cache", f"{job_tag}", f"{traj}")
