@@ -17,9 +17,7 @@ def get_cexpr_vev():
         q.displayln_info(display_cexpr(cexpr))
         cexpr.collect_op()
         return cexpr
-    cexpr = q.pickle_cache_call(calc_cexpr, f"cache/auto_contractor_cexpr/vev-cexpr.pickle")
-    q.displayln_info(display_cexpr_raw(cexpr))
-    return cexpr
+    return cache_compiled_cexpr(calc_cexpr, f"cache/auto_contractor_cexpr/vev-cexpr")
 
 @q.timer
 def get_cexpr_meson_corr():
@@ -62,9 +60,7 @@ def get_cexpr_meson_corr_with_env():
         q.displayln_info(display_cexpr(cexpr))
         cexpr.collect_op()
         return cexpr
-    cexpr = q.pickle_cache_call(calc_cexpr, f"cache/auto_contractor_cexpr/meson_corr_with_env-cexpr.pickle")
-    q.displayln_info(display_cexpr_raw(cexpr))
-    return cexpr
+    return cache_compiled_cexpr(calc_cexpr, f"cache/auto_contractor_cexpr/meson_corr_with_env-cexpr")
 
 @q.timer
 def get_cexpr_3f4f_matching():
@@ -203,7 +199,7 @@ def get_cexpr_3f4f_matching():
         q.displayln_info(display_cexpr(cexpr))
         cexpr.collect_op()
         return cexpr
-    cexpr = q.pickle_cache_call(calc_cexpr, f"cache/auto_contractor_cexpr/3f4f-cexpr.pickle")
+    return cache_compiled_cexpr(calc_cexpr, f"cache/auto_contractor_cexpr/3f4f-cexpr")
     q.displayln_info(display_cexpr(cexpr))
     return cexpr
 
