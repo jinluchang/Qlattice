@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
 
-# Need --mpi X.X.X.X --mpi X.X.X runtime option
-
 import qlat as q
-import gpt as g
-import qlat_gpt as qg
+#import gpt as g
+#import qlat_gpt as qg
 import rbc_ukqcd as ru
 import rbc_ukqcd_params as rup
 import pprint
@@ -451,6 +449,18 @@ def run_job(job_tag, traj):
     q.clean_cache()
     q.timer_display()
 
+def get_all_cexpr():
+    benchmark_eval_cexpr(get_cexpr_meson_corr())
+    benchmark_eval_cexpr(get_cexpr_meson_f_corr())
+    benchmark_eval_cexpr(get_cexpr_meson_m())
+    benchmark_eval_cexpr(get_cexpr_meson_jt())
+    benchmark_eval_cexpr(get_cexpr_meson_jj())
+
+def test():
+    q.qremove_all_info("locks")
+    q.qremove_all_info("results")
+    run_job("test-4nt8", 1000)
+
 def rel_mod(x, size):
     x = (x + 2 * size) % size
     assert x >= 0
@@ -459,12 +469,29 @@ def rel_mod(x, size):
     else:
         return x
 
-#qg.begin_with_gpt()
+size_node_list = [
+        [1, 1, 1, 1],
+        [1, 1, 2, 1],
+        [1, 2, 2, 1],
+        [2, 2, 2, 1],
+        [2, 2, 4, 1],
+        [2, 4, 4, 1],
+        [4, 4, 4, 1],
+        [4, 4, 8, 1],
+        [4, 8, 8, 1],
+        [8, 8, 8, 1],
+        ]
+
 q.begin()
 
 # ADJUST ME
+q.qremove_all_info("cache")
+get_all_cexpr()
+test()
+
+# ADJUST ME
 job_tags = [
-        "test-4nt8", "test-4nt16",
+        # "test-4nt8", "test-4nt16",
         # "64I",
         # "48I",
         # "24D", "32D", "32Dfine","24DH",
