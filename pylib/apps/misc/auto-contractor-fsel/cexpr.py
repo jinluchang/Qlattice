@@ -1,4 +1,3 @@
-from auto_contractor.eval import *
 from auto_contractor.operators import *
 
 @q.timer
