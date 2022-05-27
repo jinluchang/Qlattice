@@ -1,5 +1,5 @@
 from auto_contractor.operators import *
-
+from auto_contractor.eval import *
 from jobs import *
 
 @q.timer
