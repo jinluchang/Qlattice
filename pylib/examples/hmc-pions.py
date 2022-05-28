@@ -306,15 +306,16 @@ def test_hmc(total_site, action, mult, n_traj):
             masses_old @= masses_new
             run_hmc(field, field_predicted, geo, action, masses_new, traj, rs.split("hmc-est-mass{}".format(i)), vev, True, True, fft, ifft)
             # Take the average of all the estimated masses in this block
-            masses_new*=1/block_length
-            masses+=masses_new
-            # Keep using the same estimated masses for every trajectory 
-            # in this block
-            masses_new @= masses_old
-            vevs.append(field.glb_sum()[0]/V)
+            if((traj-init_length) % block_length >= init_length):
+                masses_new*=1/(block_length-init_length)
+                masses+=masses_new
+                vevs.append(field.glb_sum()[0]/V)
             q.displayln_info("Estmiated masses:")
             ms=[masses_new.get_elem([0,0,0,0],0),masses_new.get_elem([1,0,0,0],0),masses_new.get_elem([5,0,0,0],0)]
             q.displayln_info(ms)
+            # Keep using the same estimated masses for every trajectory 
+            # in this block
+            masses_new @= masses_old
         elif(traj<init_length+num_blocks*block_length+final_block_length):
             if(traj==init_length+num_blocks*block_length):
                 masses_new @= masses
@@ -324,15 +325,16 @@ def test_hmc(total_site, action, mult, n_traj):
             masses_old @= masses_new
             run_hmc(field, field_predicted, geo, action, masses_new, traj, rs.split("hmc-est-mass{}".format(i)), vev, True, True, fft, ifft)
             # Take the average of all the estimated masses in this block
-            masses_new*=1/final_block_length
-            masses+=masses_new
-            # Keep using the same estimated masses for every trajectory 
-            # in this block
-            masses_new @= masses_old
-            vevs.append(field.glb_sum()[0]/V)
+            if((traj-init_length-num_blocks*block_length) >= init_length):
+                masses_new*=1/(final_block_length-init_length)
+                masses+=masses_new
+                vevs.append(field.glb_sum()[0]/V)
             q.displayln_info("Estmiated masses:")
             ms=[masses_new.get_elem([0,0,0,0],0),masses_new.get_elem([1,0,0,0],0),masses_new.get_elem([5,0,0,0],0)]
             q.displayln_info(ms)
+            # Keep using the same estimated masses for every trajectory 
+            # in this block
+            masses_new @= masses_old
         else:
             if(traj==init_length+num_blocks*block_length+final_block_length):
                 vev=np.mean(vevs)
@@ -420,9 +422,9 @@ total_site = [8,8,8,16]
 mult = 4
 
 # The number of trajectories to calculate
-n_traj = 500
+n_traj = 1000
 # The number of steps to take in a single trajectory
-steps = 50
+steps = 30
 # The length of a single trajectory in molecular dynamics time
 md_time = 1.0
 
