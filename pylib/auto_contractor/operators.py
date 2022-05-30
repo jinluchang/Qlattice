@@ -162,7 +162,7 @@ def mk_j5k_mu(p : str, mu, is_dagger = False):
     return mk_vec5_mu("s", "u", p, mu, is_dagger) + f"j5k_mu({p},{mu}){show_dagger(is_dagger)}"
 
 def mk_j5km_mu(p : str, mu, is_dagger = False):
-    return mk_vec5_mu("u", "s", p, mu, is_dagger) + f"j5km_mu({p},{mu}){show_dagger(is_dagger)}"
+    return -mk_vec5_mu("u", "s", p, mu, is_dagger) + f"j5km_mu({p},{mu}){show_dagger(is_dagger)}"
 
 def mk_jpi_mu(p : str, mu, is_dagger = False):
     return mk_vec_mu("d", "u", p, mu, is_dagger) + f"jpi_mu({p},{mu}){show_dagger(is_dagger)}"

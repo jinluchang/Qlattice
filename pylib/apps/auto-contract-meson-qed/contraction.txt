@@ -44,12 +44,12 @@ typed_exprs = [ dict() for i in range(2) ]
 # < (a_pi * pi) >
 typed_exprs[0]['Type1'] = (-I)*term_Type1_0001
 # < (a_k  * k ) >
-typed_exprs[1]['Type1'] = (-I/2)*term_Type1_0002+(I/2)*term_Type1_0003
+typed_exprs[1]['Type1'] = (-I/2)*term_Type1_0002+(-I/2)*term_Type1_0003
 exprs = [ None for i in range(2) ]
 # < (a_pi * pi) >
 exprs[0] = (-I)*term_Type1_0001
 # < (a_k  * k ) >
-exprs[1] = (-I/2)*term_Type1_0002+(I/2)*term_Type1_0003
+exprs[1] = (-I/2)*term_Type1_0002+(-I/2)*term_Type1_0003
 End CExpr
 
 meson_m
