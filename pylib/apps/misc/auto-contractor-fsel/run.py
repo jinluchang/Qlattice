@@ -388,7 +388,7 @@ def run_job(job_tag, traj):
             f"auto-contractor-fsel/{job_tag}/traj={traj}/checkpoint.txt",
             ]
     fns_need = [
-            (f"configs/{job_tag}/ckpoint_lat.{traj}", f"configs/{job_tag}/ckpoint_lat.IEEE64BIG.{traj}",),
+            #(f"configs/{job_tag}/ckpoint_lat.{traj}", f"configs/{job_tag}/ckpoint_lat.IEEE64BIG.{traj}",),
             f"point-selection/{job_tag}/traj={traj}.txt",
             f"field-selection/{job_tag}/traj={traj}.field",
             f"gauge-transform/{job_tag}/traj={traj}.field",
