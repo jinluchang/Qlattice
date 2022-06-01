@@ -777,11 +777,9 @@ inline std::vector<int> mk_id_node_list_for_shuffle_node()
   qassert(num_process_for_each_node[id_of_node] == localSize);
   // calculate the number of master comm (the maximum in num_process_for_each_node)
   long num_of_master_comm = 0;
-  long id_of_node_with_maximum_process = 0;
   for (long i = 0; i < (long)num_process_for_each_node.size(); ++i) {
     if (num_process_for_each_node[i] > num_of_master_comm) {
       num_of_master_comm = num_process_for_each_node[i];
-      id_of_node_with_maximum_process = i;
     }
   }
   // calculate the id of the master comm (same as local rank)

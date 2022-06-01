@@ -398,7 +398,7 @@ SelectedField<M>& qcast(SelectedField<N>& x)
   if (x.initialized) {
     const int size = x.geo().multiplicity * sizeof(N);
     x.geo().multiplicity = size / sizeof(M);
-    qassert(x.geo().multiplicity * sizeof(M) == size);
+    qassert(x.geo().multiplicity * (int)sizeof(M) == size);
   }
   return (SelectedField<M>&)x;
 }
