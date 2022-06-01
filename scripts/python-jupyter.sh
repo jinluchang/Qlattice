@@ -17,6 +17,7 @@ find ~/.cache/pip/wheels -type f || true
 pip3 install $opts --upgrade pip
 pip3 install notebook
 pip3 install jupyterlab
+pip3 install matplotlib
 
 echo "!!!! $name build !!!!"
 
