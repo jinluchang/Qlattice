@@ -197,7 +197,7 @@ def ama_extract_ama_val(x, *, is_sloppy = False):
             vals = [ ama_corr(fixed_levels + [ l, ], rest_keys) for l in levels ]
             corr = vals[0]
             for i in range(1, len(vals)):
-                corr += (vals[i] - vals[i - 1]) / probs[i]
+                corr = corr + (vals[i] - vals[i - 1]) / probs[i]
             return corr
     return ama_corr([], keys)
 
