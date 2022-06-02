@@ -175,7 +175,7 @@ inline void prop_apply_gauge_transformation(
   vector<WilsonMatrix> tmp;
   tmp.resize(num_points);
   set_zero(tmp);
-  qacc_for(i, num_points, {
+  qthread_for(i, num_points, {
     const Coordinate& xg = pcs[i];
     const Coordinate xl = geo.coordinate_l_from_g(xg);
     if (geo.is_local(xl)) {
@@ -202,7 +202,7 @@ inline void prop_apply_gauge_transformation(
   SelectedPoints<WilsonMatrix> tmp;
   tmp.init(num_points, 1);
   set_zero(tmp.points);
-  qacc_for(i, num_points, {
+  qthread_for(i, num_points, {
     const Coordinate& xg = psel[i];
     const Coordinate xl = geo.coordinate_l_from_g(xg);
     if (geo.is_local(xl)) {

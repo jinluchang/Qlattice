@@ -287,7 +287,7 @@ inline PointSelection psel_from_fsel(const FieldSelection& fsel)
   });
   glb_sum(get_data(vec_gindex));
   PointSelection psel(total_n_elems);
-  qthread_for(idx, (long) psel.size(), {
+  qthread_for(idx, (long)psel.size(), {
     long gindex = vec_gindex[idx];
     psel[idx] = coordinate_from_index(gindex, total_site);
   });
@@ -301,7 +301,7 @@ inline PointSelection psel_from_fsel_local(const FieldSelection& fsel)
   //const Coordinate total_site = geo.total_site();
   long n_elems = fsel.n_elems;
   PointSelection psel(n_elems);
-  qthread_for(idx, (long) psel.size(), {
+  qthread_for(idx, (long)psel.size(), {
     const long index = fsel.indices[idx];
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
@@ -615,7 +615,7 @@ void set_selected_field(SelectedField<M>& sf, const SelectedPoints<M>& sp,
   const Geometry& geo = fsel.f_rank.geo();
   const int multiplicity = sp.multiplicity;
   sf.init(fsel, multiplicity);
-  qacc_for(idx, n_points, {
+  qthread_for(idx, n_points, {
     const Coordinate& xg = psel[idx];
     const Coordinate xl = geo.coordinate_l_from_g(xg);
     if (geo.is_local(xl)) {
@@ -641,7 +641,7 @@ void set_selected_points(SelectedPoints<M>& sp, const SelectedField<M>& sf,
   const long n_points = psel.size();
   sp.init(psel, geo.multiplicity);
   set_zero(sp.points);
-  qacc_for(idx, n_points, {
+  qthread_for(idx, n_points, {
     const Coordinate& xg = psel[idx];
     const Coordinate xl = geo.coordinate_l_from_g(xg);
     if (geo.is_local(xl)) {

@@ -595,7 +595,7 @@ inline void flip_tpbc_with_tslice(SelectedPoints<WilsonMatrix>& ps_prop,
   qassert(ps_prop.n_points == (long)psel.size());
   int t_start, t_stop;
   set_t_range_flip_tpbc_with_tslice(t_start, t_stop, tslice_flip_tpbc, t_size);
-  qacc_for(idx, ps_prop.n_points, {
+  qthread_for(idx, ps_prop.n_points, {
     const Coordinate xg = psel[idx];
     const int t = xg[3];
     qassert(t_size > t);
