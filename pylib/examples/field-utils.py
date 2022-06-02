@@ -54,6 +54,14 @@ gf_sum_tslice = gf.glb_sum_tslice()
 for t in range(total_site[3]):
     gf_sum -= np.array(gf_sum_tslice.get_elems(t))
 
+for t_dir in range(4):
+    gf_sum_tslice = gf.glb_sum_tslice(t_dir = t_dir)
+    n_points = gf_sum_tslice.n_points()
+    multiplicity = gf_sum_tslice.multiplicity()
+    psel_list = gf_sum_tslice.psel.to_list()
+    q.displayln_info(f"t_dir={t_dir} n_points={n_points} multiplicity={multiplicity} psel_list={psel_list}")
+    q.displayln_info(f"t_dir={t_dir} qnorm(gf_sum_tslice)=", q.qnorm(gf_sum_tslice.to_numpy()))
+
 q.displayln_info(np.linalg.norm(gf_sum))
 
 f = gf.as_complex_field()

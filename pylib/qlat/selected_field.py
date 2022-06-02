@@ -269,9 +269,9 @@ class SelectedField:
         return f1
 
     def glb_sum_tslice(self, *, t_dir = 3):
-        # return SelectedPoints(self.ctype, get_psel_tslice(self.total_site()))
+        # return SelectedPoints(self.ctype, get_psel_tslice(self.total_site(), t_dir = t_dir))
         from qlat.selected_points import SelectedPoints
-        psel = get_psel_tslice(self.total_site())
+        psel = get_psel_tslice(self.total_site(), t_dir = t_dir)
         sp = SelectedPoints(self.ctype, psel)
         if self.ctype in field_ctypes_double:
             c.glb_sum_tslice_double_sfield(sp, self, t_dir)

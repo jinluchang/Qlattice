@@ -57,14 +57,16 @@ class PointSelection:
 
 cache_point_selection = mk_cache("point_selection")
 
-def get_psel_tslice(total_site):
-    # [ [0,0,0,0], [0,0,0,1], ..., [0,0,0,total_site[3]-1], ]
+def get_psel_tslice(total_site, *, t_dir = 3):
+    # if t_dir = 3, then [ [0,0,0,0,], [0,0,0,1,], ..., [0,0,0,total_site[3]-1],]
+    # if t_dir = 2, then [ [0,0,0,0,], [0,0,1,0,], ..., [0,0,total_site[2]-1],0,]
     # need total_site to set the psel.geo property
+    assert 0 <= t_dir and t_dir < 4
     assert isinstance(total_site, list)
-    total_site_tuple = tuple(total_site)
+    total_site_tuple = tuple(total_site, t_dir)
     if total_site_tuple not in cache_point_selection:
         psel = PointSelection()
-        c.set_tslice_psel(psel, total_site[3])
+        c.set_tslice_psel(psel, total_site[t_dir], t_dir)
         psel.geo = Geometry(total_site)
         cache_point_selection[total_site_tuple] = psel
     return cache_point_selection[total_site_tuple]

@@ -95,11 +95,12 @@ EXPORT(set_tslice_psel, {
   using namespace qlat;
   PyObject* p_psel = NULL;
   long t_size = -1;
-  if (!PyArg_ParseTuple(args, "Ol", &p_psel, &t_size)) {
+  int t_dir = 3;
+  if (!PyArg_ParseTuple(args, "Ol|i", &p_psel, &t_size, &t_dir)) {
     return NULL;
   }
   PointSelection& psel = py_convert_type<PointSelection>(p_psel);
-  psel = mk_tslice_point_selection(t_size);
+  psel = mk_tslice_point_selection(t_size, t_dir);
   Py_RETURN_NONE;
 });
 
