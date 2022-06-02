@@ -63,13 +63,13 @@ def get_psel_tslice(total_site, *, t_dir = 3):
     # need total_site to set the psel.geo property
     assert 0 <= t_dir and t_dir < 4
     assert isinstance(total_site, list)
-    total_site_tuple = tuple(total_site, t_dir)
-    if total_site_tuple not in cache_point_selection:
+    param_tuple = (tuple(total_site), t_dir,)
+    if param_tuple not in cache_point_selection:
         psel = PointSelection()
         c.set_tslice_psel(psel, total_site[t_dir], t_dir)
         psel.geo = Geometry(total_site)
-        cache_point_selection[total_site_tuple] = psel
-    return cache_point_selection[total_site_tuple]
+        cache_point_selection[param_tuple] = psel
+    return cache_point_selection[param_tuple]
 
 class FieldSelection:
 

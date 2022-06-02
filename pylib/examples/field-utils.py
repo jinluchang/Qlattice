@@ -43,30 +43,43 @@ gf *= f_factor
 
 gf.show_info()
 
-q.displayln_info(np.array(gf.get_elems([0, 0, 0, 0,])))
+q.displayln_info(gf.get_elems([0, 0, 0, 0,]))
 
-gf_sum = np.array(gf.glb_sum())
+gf_sum_initial = gf.glb_sum()
+
+gf_sum = gf_sum_initial.copy()
 
 q.displayln_info(gf_sum)
 
 gf_sum_tslice = gf.glb_sum_tslice()
 
 for t in range(total_site[3]):
-    gf_sum -= np.array(gf_sum_tslice.get_elems(t))
+    gf_sum -= gf_sum_tslice.get_elems(t)
+
+q.displayln_info(q.qnorm(gf_sum))
+
+assert q.qnorm(gf_sum) <= 1e-16
+
+qnorm = q.qnorm(gf_sum_tslice.to_numpy())
+q.displayln_info(f"CHECK: t_dir=3 (default) qnorm(gf_sum_tslice)={qnorm:.14E}")
 
 for t_dir in range(4):
     gf_sum_tslice = gf.glb_sum_tslice(t_dir = t_dir)
     n_points = gf_sum_tslice.n_points()
     multiplicity = gf_sum_tslice.multiplicity()
     psel_list = gf_sum_tslice.psel.to_list()
-    q.displayln_info(f"t_dir={t_dir} n_points={n_points} multiplicity={multiplicity} psel_list={psel_list}")
-    q.displayln_info(f"t_dir={t_dir} qnorm(gf_sum_tslice)=", q.qnorm(gf_sum_tslice.to_numpy()))
-
-q.displayln_info(np.linalg.norm(gf_sum))
+    q.displayln_info(f"CHECK: t_dir={t_dir} n_points={n_points} multiplicity={multiplicity} psel_list={psel_list}")
+    qnorm = q.qnorm(gf_sum_tslice.to_numpy())
+    q.displayln_info(f"CHECK: t_dir={t_dir} qnorm(gf_sum_tslice)={qnorm:.14E}")
+    gf_sum = gf_sum_initial.copy()
+    for t in range(total_site[t_dir]):
+        gf_sum -= gf_sum_tslice.get_elems(t)
+    q.displayln_info(f"t_dir={t_dir} qnorm diff", q.qnorm(gf_sum))
+    assert q.qnorm(gf_sum) <= 1e-16
 
 f = gf.as_complex_field()
 
-q.displayln_info(np.array(f.get_elems([0, 0, 0, 0,])))
+q.displayln_info(f.get_elems([0, 0, 0, 0,]))
 
 gf1 = q.GaugeField()
 
