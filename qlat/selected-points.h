@@ -549,7 +549,10 @@ void load_selected_points_complex(SelectedPoints<M>& sp,
   if (get_id_node() != 0) {
     sp.init(n_points, multiplicity);
   }
-  bcast(get_data(sp.points));
+  vector<M> buffer(sp.points.size());
+  assign(get_data(buffer), get_data(sp.points));
+  bcast(get_data(buffer));
+  assign(get_data(sp.points), get_data(buffer));
 }
 
 }  // namespace qlat
