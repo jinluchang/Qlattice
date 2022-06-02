@@ -519,6 +519,12 @@ inline void contract_chvp(SelectedField<Complex>& chvp,
 inline void contract_chvp_16(FieldM<Complex, 16>& chvp,
                              const Propagator4d& prop1_x_y,
                              const Propagator4d& prop2_x_y)
+// chvp.get_elem(x, mu * 4 + nu) ==
+// tr(g5_herm(prop2_x_y.get_elem(x)) * gammas[mu]
+// * prop1_x_y.get_elem(x) * gammas[nu])
+//
+// mu: polarization at sink location x
+// nu: polarization at source location y
 {
   TIMER_VERBOSE("contract_chvp_16");
   const array<SpinMatrix, 4>& gammas = SpinMatrixConstants::get_cps_gammas();

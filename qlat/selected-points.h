@@ -451,28 +451,30 @@ void acc_field(Field<M>& f, const SelectedPoints<M>& sp, const Geometry& geo_,
 }
 
 template <class M>
-void field_glb_sum_tslice_double(SelectedPoints<M>& sp, const Field<M>& f)
+void field_glb_sum_tslice_double(SelectedPoints<M>& sp, const Field<M>& f,
+                                 const int t_dir = 3)
 {
   TIMER("field_glb_sum_tslice_double(sp,f)");
   sp.init();
   const Geometry& geo = f.geo();
-  const int t_size = geo.total_site()[3];
+  const int t_size = geo.total_site()[t_dir];
   const int multiplicity = geo.multiplicity;
-  std::vector<M> vec = field_sum_tslice(f);
+  std::vector<M> vec = field_sum_tslice(f, t_dir);
   glb_sum_double_vec(get_data(vec));
   sp.init(t_size, multiplicity);
   sp.points = vec;
 }
 
 template <class M>
-void field_glb_sum_tslice_long(SelectedPoints<M>& sp, const Field<M>& f)
+void field_glb_sum_tslice_long(SelectedPoints<M>& sp, const Field<M>& f,
+                               const int t_dir = 3)
 {
   TIMER("field_glb_sum_tslice_long(sp,f)");
   sp.init();
   const Geometry& geo = f.geo();
-  const int t_size = geo.total_site()[3];
+  const int t_size = geo.total_site()[t_dir];
   const int multiplicity = geo.multiplicity;
-  std::vector<M> vec = field_sum_tslice(f);
+  std::vector<M> vec = field_sum_tslice(f, t_dir);
   glb_sum_long_vec(get_data(vec));
   sp.init(t_size, multiplicity);
   sp.points = vec;
