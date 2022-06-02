@@ -310,7 +310,7 @@ class Field:
     def reflect(self):
         # reflect the field, return None
     def glb_sum(self):
-    def glb_sum_tslice(self):
+    def glb_sum_tslice(self, *, t_dir = 3):
         # return SelectedPoints(self.ctype, get_psel_tslice(self.total_site()))
 ```
 
@@ -387,7 +387,8 @@ class SelectedField:
 		# return new shifted SelectedField
         # shift is the coordinate to shift the field
 		# is_reflect determine whether to negate coordinate after shift
-    def glb_sum_tslice(self):
+    def glb_sum_tslice(self, *, t_dir = 3):
+        # return SelectedPoints(self.ctype, get_psel_tslice(self.total_site()))
 ```
 
 ## SelectedPoints
