@@ -86,7 +86,7 @@ prop_wm : 870829356
 ['prop.field', 'prop-double.field', 'prop-float.field', 'prop.lat', 'prop.sfield']
 CHECK: finished successfully.
 Cache: 'ShufflePlanCache': 1 / 16 [8] clear
-clear_mem_cache: 1483776 bytes (0.001 GB) freed.
+clear_mem_cache: 1488384 bytes (0.001 GB) freed.
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 0.
 qlat::end(): Finalize MPI.

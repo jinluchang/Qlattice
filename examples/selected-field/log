@@ -653,7 +653,7 @@ shuffle_field(sel_fs,sel_f,sp): 1x1x1x2 -> 1x1x1x2 (total_site: 4x4x4x8 ; site_s
 test_shift: f (from shifted sparse field) crc32 = 6F31A6C2 ; shift=0x2x2x0
 CHECK: finished successfully.
 Cache: 'ShufflePlanCache': 2 / 16 [8] clear
-clear_mem_cache: 215808 bytes (0.000 GB) freed.
+clear_mem_cache: 248576 bytes (0.000 GB) freed.
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 0.
 qlat::end(): Finalize MPI.
