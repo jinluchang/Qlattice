@@ -44,6 +44,9 @@ class PointSelection:
         c.load_psel(self, path)
         self.geo = geo
 
+    def n_points(self):
+        return c.get_n_points_psel(self)
+
     def to_list(self):
         return c.mk_list_psel(self)
 

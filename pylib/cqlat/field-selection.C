@@ -52,6 +52,17 @@ EXPORT(save_psel, {
   Py_RETURN_NONE;
 });
 
+EXPORT(get_n_points_psel, {
+  using namespace qlat;
+  PyObject* p_psel = NULL;
+  if (!PyArg_ParseTuple(args, "O", &p_psel)) {
+    return NULL;
+  }
+  const PointSelection& psel = py_convert_type<PointSelection>(p_psel);
+  const long n_points = psel.size();
+  return py_convert(n_points);
+});
+
 EXPORT(mk_list_psel, {
   using namespace qlat;
   PyObject* p_psel = NULL;
