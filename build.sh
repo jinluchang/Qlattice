@@ -25,8 +25,12 @@ else
     exit
 fi
 
-if [ -f "scripts/build.$target.sh" ] ; then
-    scripts/clean-prefix.sh
-    scripts/dist-update-hash.sh
-    "scripts/build.$target.sh"
-fi
+scripts/clean-prefix.sh
+
+. scripts/conf.sh
+
+mkdir -p "$prefix"
+touch "$prefix"/build-target="$target".txt
+
+scripts/dist-update-hash.sh
+scripts/build."$target".sh

@@ -11,7 +11,7 @@ prefix="$(readlink -m "$prefix")"
 if [ -f "$prefix/setenv.sh" ] ; then
     . "$prefix/setenv.sh"
 else
-    echo "'$prefix/setenv.sh' does not exist."
+    : echo "'$prefix/setenv.sh' does not exist yet."
 fi
 
 set -e
