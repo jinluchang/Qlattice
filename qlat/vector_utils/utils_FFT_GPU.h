@@ -272,7 +272,10 @@ template<typename Ty>
 void FFT_Vecs::do_fft(Ty* inputD, bool fftdir, bool dummy)
 {
   TIMERB("FFT excute");
-  if(flag_mem_set != true or sizeof(Ty) != bsize){abort_r("FFT_Vecs memory not set ! \n");}
+  if(flag_mem_set != true or sizeof(Ty) != bsize){
+    print0("%d %d \n", int(sizeof(Ty)), int(bsize));
+    abort_r("FFT_Vecs memory not set ! \n");
+  }
 
   if(MPI_para.size() == 0)fft_dat = (void*) &inputD[0];
 
@@ -326,7 +329,7 @@ void FFT_Vecs::do_fft(Ty* inputD, bool fftdir, bool dummy)
 
 
 struct customLess{
-    inline bool operator()(std::vector<int > a, std::vector<int > b) const {
+    inline bool operator()(std::vector<int >& a, std::vector<int >& b) const {
     bool flag = false;
     if(a[3] < b[3]){flag = true;}
     ////c0 to be large
@@ -778,6 +781,8 @@ struct fft_gpu_copy{
     if(prec == Complex_TYPE ){     fftP->set_mem<Complex  >(nvec, civ, dimN, -1 );}
     else if(prec == ComplexF_TYPE){fftP->set_mem<ComplexF >(nvec, civ, dimN, -1 );}
     else{print0("Only Complex and ComplexF supported for fft on GPU! \n");qassert(false);}
+    ///fft.fftP->print_info();
+    ///fftP->print_info();
 
     return *this;
   }
@@ -787,13 +792,22 @@ struct fft_gpu_copy{
 
 inline bool operator<(const FFTGPUPlanKey& x, const FFTGPUPlanKey& y)
 {
-  unsigned int small = 0;
-  if(x.GPU   < y.GPU  ){small += 1;}
-  if(x.fft4D < y.fft4D){small += 1;}
-  if(x.nvec  < y.nvec ){small += 1;}
-  if(x.civ   < y.civ  ){small += 1;}
-  if(x.prec  < y.prec ){small += 1;}
-  if(small < 3){return false;}else{return true;}
+  if(x.GPU   < y.GPU  ){return true;}
+  if(y.GPU   < x.GPU  ){return false;}
+
+  if(x.fft4D < y.fft4D){return true;}
+  if(y.fft4D < x.fft4D){return false;}
+
+  if(x.nvec  < y.nvec ){return true;}
+  if(y.nvec  < x.nvec ){return false;}
+
+  if(x.civ   < y.civ  ){return true;}
+  if(y.civ   < x.civ  ){return false;}
+
+  if(x.prec  < y.prec ){return true;}
+  if(y.prec  < x.prec ){return false;}
+
+  return false;
 }
 
 
@@ -813,6 +827,7 @@ inline fft_gpu_copy make_fft_gpu_plan(const Geometry& geo, int nvec, int civ , b
 
   fft_gpu_copy ft;
   ft.fftP = new fft_schedule(fd, GPU);
+  ft.prec = prec;
 
   if(prec == Complex_TYPE ){     ft.fftP->set_mem<Complex  >(nvec, civ, dimN, -1 );}
   else if(prec == ComplexF_TYPE){ft.fftP->set_mem<ComplexF >(nvec, civ, dimN, -1 );}
@@ -885,6 +900,40 @@ bool check_fft_mode(const int nfft, const Geometry& geo, const bool fft4d)
 }
 
 template <class Ty, int civ>
+void fft_fieldM(std::vector<Ty* >& data, const Geometry& geo, bool fftdir=true, bool fft4d = false)
+{
+  if(data.size() < 1)return;
+
+  #if PRINT_TIMER>4
+  TIMER_FLOPS("fft fieldM");
+  timer.flops += data.size() * geo.local_volume() * civ * 64;
+  #else
+  TIMER("fft fieldM");
+  #endif
+
+  FFTGPUPlanKey fkey;
+  fkey.geo  = geo;
+  fkey.GPU  = true;
+  fkey.nvec = data.size();
+  fkey.civ = civ;
+  fkey.prec = get_data_type<Ty >();
+  fkey.fft4D = fft4d;
+  ////std::vector<Ty* > data;data.resize(nvec);
+  ////for(int si=0;si<nvec;si++){data[si] = (Ty*) qlat::get_data(src[si]).data();}
+  /////int nvec = data.size();
+  get_fft_gpu_plan(fkey).fftP->dojob(data, fftdir);
+}
+
+template <class Ty, int civ>
+void fft_fieldM(Ty* src, int nvec, const Geometry& geo, bool fftdir=true, bool fft4d = false)
+{
+  std::vector<Ty* > data;data.resize(nvec);
+  const long offD = geo.local_volume() * civ;
+  for(int iv=0;iv<nvec;iv++){data[iv] = &src[iv*offD];}
+  fft_fieldM<Ty, civ>(data, geo, fftdir, fft4d);
+}
+
+template <class Ty, int civ>
 void fft_fieldM(std::vector<qlat::FieldM<Ty, civ> >& src, bool fftdir=true, bool fft4d = false)
 {
   if(src.size() < 1)return;
@@ -906,25 +955,9 @@ void fft_fieldM(std::vector<qlat::FieldM<Ty, civ> >& src, bool fftdir=true, bool
   }
 
   {
-  #if PRINT_TIMER>4
-  TIMER_FLOPS("fft fieldM");
-  timer.flops += src.size() * get_data(src[0]).data_size()/(sizeof(Ty)) * 64;
-  #else
-  TIMER("fft fieldM");
-  #endif
-
-  FFTGPUPlanKey fkey;
-  fkey.geo = src[0].geo();
-  fkey.GPU = true;
-  fkey.nvec = src.size();
-  fkey.civ = civ;
-  fkey.prec = get_data_type<Ty >();
-  fkey.fft4D = fft4d;
-
-  int nvec = src.size();
-  std::vector<Ty* > data;data.resize(nvec);
-  for(int si=0;si<nvec;si++){data[si] = (Ty*) qlat::get_data(src[si]).data();}
-  get_fft_gpu_plan(fkey).fftP->dojob(data, fftdir);
+  std::vector<Ty* > data;data.resize(src.size());
+  for(int si=0;si<src.size();si++){data[si] = (Ty*) qlat::get_data(src[si]).data();}
+  fft_fieldM<Ty, civ>(src, src.geo(), fftdir, fft4d);
   }
 }
 
@@ -976,14 +1009,29 @@ void fft_fieldM(std::vector<Handle<qlat::Field<M> > >& src, bool fftdir=true, bo
     get_fft_gpu_plan(fkey).fftP->dojob(data, fftdir);}
 
   if(!is_double){
-    std::vector<Complex* > data;data.resize(nvec);
-    for(int si=0;si<nvec;si++){data[si] = (Complex*) qlat::get_data(src[si]()).data();}
+    std::vector<ComplexF* > data;data.resize(nvec);
+    for(int si=0;si<nvec;si++){data[si] = (ComplexF*) qlat::get_data(src[si]()).data();}
     get_fft_gpu_plan(fkey).fftP->dojob(data, fftdir);}
-
   }
 
 }
 
+template<typename Ty>
+void FFT_vecs_corr(qlat::vector_gpu<Ty >& src, std::vector<qlat::FieldM<Ty, 1> >& FFT_data, int off=0)
+{
+  const Geometry& geo = FFT_data[0].geo();
+  const long volume = geo.local_volume();
+  const long Sdata = src.size();const int nvecs = Sdata/volume;
+
+  fft_fieldM<Ty, 1>(src.data(), nvecs, geo, true);
+  for(int iv=0;iv<nvecs;iv++)
+  {
+    qlat::FieldM<Ty, 1>& buf = FFT_data[off*nvecs + iv];qassert(buf.initialized);
+    Ty* s0 = &src[iv*volume];
+    Ty* r0 = (Ty*) qlat::get_data(buf).data();
+    cpy_data_thread(r0, s0, volume, 1, true);
+  }
+}
 
 
 }

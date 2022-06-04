@@ -628,6 +628,7 @@ void shift_vec::call_MPI(Ty *src, Ty *res,int dir_or)
   int dir_gauge = map_dir0[dir_cur];
   if(src_gauge){dir_gauge = map_dir1[dir_cur];}
 
+  /////src_gauge need test for cases, will need to change src vectors
   if(gauge != NULL and src_gauge == true){
   if(!Conj)mult_gauge<Ty, false >((void*) src, dir_gauge);
   if( Conj)mult_gauge<Ty, true  >((void*) src, dir_gauge);}

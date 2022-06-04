@@ -2191,6 +2191,26 @@ quda_inverter::~quda_inverter()
   free_mem();
 }
 
+template<typename Ty>
+void get_staggered_prop(quda_inverter& qinv, qlat::FieldM<Ty, 3> src, qlat::FieldM<Ty, 3> prop
+    , const double mass, const double err, const int niter, int low_only = 0)
+{
+  Ty* quda_src = (Ty*) qinv.csrc->V();
+  Ty* quda_res = (Ty*) qinv.cres->V();
+  qlat_cf_to_quda_cf(quda_src, src);
+
+  if(low_only == 1){
+    (*qinv.gsrc) = (*qinv.csrc);
+    qinv.prepare_low_prop();
+    (*qinv.cres) = (*qinv.gres);
+  }
+  else{
+    qinv.do_inv(qinv.cres->V(), qinv.csrc->V(), mass, err, niter);
+  }
+  quda_cf_to_qlat_cf(prop, quda_res);
+}
+
+
 }  // namespace qlat
 
 #endif

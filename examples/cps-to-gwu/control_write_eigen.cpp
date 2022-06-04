@@ -94,8 +94,7 @@ int main(int argc, char* argv[])
   double width = 0.0; int step = 0;
   get_smear_para(in0.src_smear_para, width, step);
   GaugeField gf;
-  GaugeField gfD;
-  GaugeFieldT<qlat::ComplexF > gfF;
+  //GaugeField gfD;
 
   if(step != 0){
     gf.init(geo);
@@ -103,13 +102,12 @@ int main(int argc, char* argv[])
     sprintf(rbc_conf,in0.Link_name.c_str(), icfg);
     load_gwu_link(rbc_conf, gf);
     ////random_link(gf, 0); 
-    set_left_expanded_gauge_field(gfD, gf);
-    gfF.init(gfD.geo());
+    //set_left_expanded_gauge_field(gfD, gf);
     /////GaugeFieldT<qlat::Complex  > gfD;gfD = gfa;
-    qlat::Complex*  tem0 = (qlat::Complex*  ) qlat::get_data(gfD).data();
-    qlat::ComplexF* tem1 = (qlat::ComplexF* ) qlat::get_data(gfF).data();
-    LInt cpy_size = (LInt)(qlat::get_data(gfD).data_size()/(sizeof(qlat::Complex)));
-    cpy_data_thread(tem1, tem0, cpy_size, 0);
+    //qlat::Complex*  tem0 = (qlat::Complex*  ) qlat::get_data(gfD).data();
+    //qlat::ComplexF* tem1 = (qlat::ComplexF* ) qlat::get_data(gfF).data();
+    //LInt cpy_size = (LInt)(qlat::get_data(gfD).data_size()/(sizeof(qlat::Complex)));
+    //cpy_data_thread(tem1, tem0, cpy_size, 0);
   }
 
   FILE* file_read  = open_eigensystem_file(ename, nini, nvec, true , io_read , in_read_eigen , 2);
@@ -127,8 +125,9 @@ int main(int argc, char* argv[])
 
     /////===smearing of eigen
     if(step != 0){
-      if(!F_single){smear_fieldM_gwu_convension(eigenD, gfD, width, step);}
-      if( F_single){smear_fieldM_gwu_convension(eigenF, gfF, width, step);}
+      for(int iv=0;iv<each;iv++){
+      if(!F_single){smear_propagator_gwu_convension(eigenD[iv], gf, width, step);}
+      if( F_single){smear_propagator_gwu_convension(eigenF[iv], gf, width, step);}}
     }
     /////===smearing of eigen
 

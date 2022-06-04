@@ -85,7 +85,6 @@ unsigned int get_MPI_type(MPI_Datatype& curr)
 
 }
 
-
 template<typename Ty>
 void sum_all_size(Ty *src,Ty *sav,long size, int GPU=0, MPI_Comm* commp=NULL)
 {
@@ -827,24 +826,28 @@ inline void random_Ty(Ty* a, long N0,int GPU=0, int seed = 0, const int mode = 0
 
 }
 
-inline void random_EigenM(Evector& a,int GPU=0, int seed = 0)
+template<typename Ty>
+inline void random_EigenM(qlat::vector_acc<Ty >& a,int GPU=0, int seed = 0)
 {
-  Complexq* buf = a.data();
+  Ty* buf = a.data();
   random_Ty(buf, a.size(), GPU, seed);
 }
 
-inline void random_EigenM(EigenM& a, int GPU=0, int seed = 0)
+template<typename Ty>
+inline void random_EigenM(std::vector<qlat::vector_acc<Ty > >& a, int GPU=0, int seed = 0)
 {
   int N0 = a.size();if(N0 == 0)return ;
   for(size_t i=0;i < size_t(N0);i++){random_EigenM(a[i], GPU,  seed + i);}
 }
 
-inline void zeroE(Evector& a,int GPU=0, bool dummy=true)
+template<typename Ty>
+inline void zeroE(qlat::vector_acc<Ty >& a,int GPU=0, bool dummy=true)
 {
   zero_Ty(a.data(), a.size(), GPU, dummy);
 }
 
-inline void zeroE(EigenM& a,int GPU=0, bool dummy=true)
+template<typename Ty>
+inline void zeroE(std::vector<qlat::vector_acc<Ty > >& a,int GPU=0, bool dummy=true)
 {
   for(LInt iv=0;iv<a.size();iv++){zeroE(a[iv], GPU, false);}
   if(dummy)qacc_barrier(dummy);
@@ -853,7 +856,7 @@ inline void zeroE(EigenM& a,int GPU=0, bool dummy=true)
 template <class T>
 void random_prop(Propagator4dT<T >& prop, int seed = -1)
 {
-  
+  qassert(prop.initialized);
   ////print0("print time %.3f\n", tm.tv_sec);
   int rand_seed = qlat::get_id_node() + 1;
   if(seed == -1){timeval tm;gettimeofday(&tm, NULL);rand_seed += int(tm.tv_sec);}else{rand_seed += seed;}
@@ -866,9 +869,14 @@ void random_prop(Propagator4dT<T >& prop, int seed = -1)
 
   qacc_for(isp,  geo.local_volume(),{
     qlat::WilsonMatrixT<T >& v0 =  prop.get_elem(isp);
+    //for(int ci=0;ci<12*12;ci++){
+    //  //v0.p[ci] = T(std::cos((ini+isp + ci*2)*0.5 + (isp+ ci%4)/5) , ((5.0+ci)/(isp+1))*ini*0.1 + (isp*2 + ci%3)/5); 
+    //  v0.p[ci] = T(std::cos((ini+isp + ci*2)*0.5 + ci) , ((5.0+ci)/(isp+1))*ini*0.1 + 0.2); 
+    //}
     for(int ci=0;ci<12*12;ci++){
-      v0.p[ci] = T(std::cos((ini+isp)*0.5) , ((5.0+ci)/(isp+1))*ini*0.1); 
+      v0.p[ci] = (ci/(12*12.0))*T(std::cos((ini+isp + ci*2)*0.5 + ci) , (ci+(5.0+ci)/(isp+1))*ini*0.1 + 0.2); 
     }
+
   }); 
 }
 
@@ -1136,17 +1144,18 @@ inline std::vector<long > job_create(long total, long each)
   return a;
 }
 
-inline void allocate_buf(std::vector<qlat::vector_gpu<Complexq > > & buf, size_t n0, size_t n1)
+template<typename Ty>
+inline void allocate_buf(std::vector<qlat::vector_gpu<Ty > > & buf, size_t n0, size_t n1)
 {
   TIMERA("CUDA Buf mem allocation");
   buf.resize(n0);
   for(LInt i=0;i<buf.size();i++){
     buf[i].resize(n1);
-    /////gpuMalloc(buf[i], n1, Complexq);
   }
 }
 
-inline void allocate_buf(std::vector<qlat::vector_acc<Complexq > > & buf, size_t n0, size_t n1)
+template<typename Ty>
+inline void allocate_buf(std::vector<qlat::vector_acc<Ty > > & buf, size_t n0, size_t n1)
 {
   TIMERA("CUDA Buf mem allocation");
   buf.resize(0);
@@ -1157,21 +1166,22 @@ inline void allocate_buf(std::vector<qlat::vector_acc<Complexq > > & buf, size_t
   }
 }
 
-inline void allocate_buf(std::vector<Complexq* >& buf, size_t n0, size_t n1)
+template<typename Ty>
+inline void allocate_buf(std::vector<Ty* >& buf, size_t n0, size_t n1)
 {
   TIMERA("CUDA Buf mem allocation");
   buf.resize(n0);
   for(LInt i=0;i<buf.size();i++){
-    gpuMalloc(buf[i], n1, Complexq);
+    gpuMalloc(buf[i], n1, Ty);
   }
 }
 
-inline Complexq inv_self(const Complexq& lam, double m, double rho,int one_minus_halfD=1)
+template<typename Ty>
+inline Ty inv_self(const Ty& lam, double m, double rho,int one_minus_halfD=1)
 {
-  //Complexq tem = (one_minus_halfD>0)?(1-lam/2)/(rho*lam+m*(1-lam/2)):1.0/(rho*lam+m*(1-lam/2));
   std::complex<double > tem(lam.real(),lam.imag());
   std::complex<double > v0 = (one_minus_halfD>0)?(1.0-tem/2.0)/(rho*tem+m*(1.0-tem/2.0)):1.0/(rho*tem+m*(1.0-tem/2.0));
-  Complexq res(v0.real(),v0.imag());
+  Ty res(v0.real(),v0.imag());
   return res;
 }
 

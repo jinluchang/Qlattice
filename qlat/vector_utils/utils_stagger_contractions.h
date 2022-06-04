@@ -9,7 +9,6 @@
 
 #include "float_type.h"
 #include "gammas.h"
-#include "utils_momentum.h"
 #include "fft_desc.h"
 #include "utils_reduce_vec.h"
 #include "utils_grid_src.h"
@@ -44,7 +43,7 @@ void cf_simple_pion(std::vector<colorFT >& cf0, std::vector<colorFT >& cf1, Eige
 
   });
 
-  vec_corrE(resV, corr, fd, clear, 505050);
+  vec_corrE(resV, corr, fd, clear);
   if(print )
   for(int ti=0;ti<fd.nt;ti++)
   {

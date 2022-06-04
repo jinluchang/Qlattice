@@ -11,6 +11,7 @@
 #include "utils_Matrix_prod.h"
 #include "utils_construction.h"
 #include "check_fun.h"
+#include "utils_smear_vecs.h"
 
 ///#define SUMMIT 0
 
@@ -90,20 +91,35 @@ struct eigen_ov {
 
   void copy_evec_to_GPU(int nini);
   template <typename Ty >
+  void copy_FieldM_to_Mvec(Ty* src, int ncur, int sm = 0, int dir = 1 );
+  template <typename Ty >
+  void copy_to_FieldM(Ty* src, int ncur, int sm = 0){
+    copy_FieldM_to_Mvec(src, ncur, sm, 0);
+  }
+
+
+  template <typename Ty >
   void copy_FieldM_to_Mvec(qlat::FieldM<Ty , 12>& src, int ncur, int sm = 0, int dir = 1 );
   template <typename Ty >
   void copy_to_FieldM(qlat::FieldM<Ty , 12>& src, int ncur, int sm = 0){
     copy_FieldM_to_Mvec(src, ncur, sm, 0);
-  };
-  void load_eigen_Mvec(int icfg, std::string &filename, io_vec  &io, int sm = 0, int nini=0, int checknorm = 1);
+  }
+  void load_eigen_Mvec(const std::string& ename, io_vec  &io, int sm = 0, int nini=0, int checknorm = 1);
+  void save_eigen_Mvec(const std::string& ename, io_vec  &io, int sm = 0);
+
+  template <typename Tg >
+  void smear_eigen(const std::string& Ename_Sm, io_vec  &io,
+    const GaugeFieldT<Tg >& gf, const double width, const int step,
+    const CoordinateD& mom = CoordinateD(), const bool smear_in_time_dir = false);
+
 
   Complexq* getEigenP(int ni, size_t xi, int sm = 0, int mode_initial = 0);
 
   void setup_bfac(long long bsize0=-1);
 
-  void load_eivals(char *enamev,double rho_or,double Eerr=EIGENERROR, int nini=0);
+  void load_eivals(const std::string& enamev,double rho_or,double Eerr=EIGENERROR, int nini=0);
   
-  void load_eigen(int icfg, std::string &ov_evecname, io_vec &io,
+  void load_eigen(const std::string& ov_evecname, io_vec &io,
     int checknorm = 1, double kappa=0.2,double eigenerror=EIGENERROR, int nini=0);
 
   void random_eigen(int sm = 0, int seed = 1234);
@@ -337,12 +353,12 @@ void eigen_ov::clear_GPU_mem()
   gpu_mem_set = false;
 }
 
-void eigen_ov::load_eivals(char *enamev,double rho_or,double Eerr, int nini)
+void eigen_ov::load_eivals(const std::string& enamev,double rho_or,double Eerr, int nini)
 {
   rho = rho_or;
 
   std::vector<double > v,e;
-  load_gwu_eigenvalues(v,e, enamev);
+  load_gwu_eigenvalues(v,e, enamev.c_str());
   if((nini+n_vec)*2 > int(v.size()))abort_r("Eigen value size too small! ");
   eval_self.resize(n_vec);
   for(int iv=0;iv<n_vec;iv++){
@@ -362,17 +378,13 @@ void eigen_ov::load_eivals(char *enamev,double rho_or,double Eerr, int nini)
 }
 
 template <typename Ty >
-void eigen_ov::copy_FieldM_to_Mvec(qlat::FieldM<Ty , 12>& src, int ncur, int sm, int dir )
+void eigen_ov::copy_FieldM_to_Mvec(Ty* src, int ncur, int sm, int dir )
 {
   TIMERA("COPY Eigen Vectors Mvec");
   if(ncur >= n_vec){abort_r("Cannot copy to position larger than n_vec ! \n");}
-  if(dir == 0){if(!src.initialized){
-    Geometry geo;fdp->get_geo(geo);
-    src.init(geo);
-  }}
   /////int nread = nb - ba;
   Complexq* s1 = NULL;Ty* s0 = NULL;
-  s0 = (Ty*) qlat::get_data(src).data();
+  s0 = src;
 
   //////move d,c to outter loop
   long sizeF = noden;
@@ -391,6 +403,20 @@ void eigen_ov::copy_FieldM_to_Mvec(qlat::FieldM<Ty , 12>& src, int ncur, int sm,
 
   if(dir == 0){fdp->mv_civ.dojob(s0, s0, 1, 12, sizeF, 0, 1, false);}
   s0 = NULL; s1 = NULL;
+}
+
+
+template <typename Ty >
+void eigen_ov::copy_FieldM_to_Mvec(qlat::FieldM<Ty , 12>& src, int ncur, int sm, int dir )
+{
+  TIMERA("COPY Eigen Vectors Mvec");
+  if(ncur >= n_vec){abort_r("Cannot copy to position larger than n_vec ! \n");}
+  if(dir == 0){if(!src.initialized){
+    Geometry geo;fdp->get_geo(geo);
+    src.init(geo);
+  }}
+  Ty* s0 = (Ty*) qlat::get_data(src).data();
+  copy_FieldM_to_Mvec(s0, ncur, sm, dir);
 }
 
 void eigen_ov::copy_evec_to_GPU(int nini)
@@ -521,10 +547,76 @@ inline void resize_EigenM(Elocal& a, size_t n0, size_t n1)
   }
 }
 
-void eigen_ov::load_eigen_Mvec(int icfg, std::string &filename, io_vec  &io, int sm, int nini, int checknorm)
+template <typename Tg >
+void eigen_ov::smear_eigen(const std::string& Ename_Sm, io_vec  &io,
+  const GaugeFieldT<Tg >& gf, const double width, const int step,
+  const CoordinateD& mom, const bool smear_in_time_dir)
 {
-  char ename[500];
-  sprintf(ename, filename.c_str(),icfg);
+  TIMER("smear eigen system");
+  ////load if exist
+  if(Ename_Sm != std::string("NONE") and get_file_size_MPI(Ename_Sm.c_str(), true) != 0){
+    load_eigen_Mvec(Ename_Sm, io, 1);
+    return ;
+  }
+
+  long La = 2*bfac/BFAC_GROUP_CPU;
+  long Lb = BFAC_GROUP_CPU*n_vec*long(b_size);
+  print_mem_info("Before Eigen Memory Allocate");
+  resize_EigenM(Mvec_Sm , La, Lb);enable_smearE = true;
+  print_mem_info("Eigen Memory Allocate Done");
+
+  const int each = 12;
+  long Ncopy = fdp->Nvol * 12;
+  qlat::vector_gpu<Complexq > buf;buf.resize(each * Ncopy);
+
+  move_index mv_idx;
+  std::vector<long > job =  job_create(n_vec, each);
+  for(LInt ji = 0; ji < job.size()/2 ; ji++)
+  {
+    int flag = 0;
+    ////copy to buf
+    for(int iv=0;iv<job[ji*2 + 1];iv++){copy_to_FieldM(&buf[iv*Ncopy], job[ji*2 + 0] + iv,  0);}
+    flag = 0;mv_idx.dojob(buf.data(), buf.data(), 1, each , fdp->Nvol*12, flag, 1, true);
+
+    smear_propagator_gwu_convension_inner<Complexq, 4,each  , Tg>(buf.data(), gf, width, step, mom, smear_in_time_dir);
+
+    flag = 1;mv_idx.dojob(buf.data(), buf.data(), 1, each , fdp->Nvol*12, flag, 1, true);
+    ////copy from buf
+    for(int iv=0;iv<job[ji*2 + 1];iv++){copy_FieldM_to_Mvec(&buf[iv*Ncopy], job[ji*2 + 0] + iv,  1);}
+  }
+
+  if(Ename_Sm != std::string("NONE")){
+    save_eigen_Mvec(Ename_Sm, io, 1);
+  }
+}
+
+void eigen_ov::save_eigen_Mvec(const std::string& ename, io_vec  &io, int sm)
+{
+  if(sm == 1 and enable_smearE == false){print0("Could not save smear eigen without set it up.");return ;}
+  const int nini = 0;
+  const int ntotal = nini + n_vec;
+  const bool read = false;
+  inputpara in_write_eigen;
+  FILE* file_write  = open_eigensystem_file(ename.c_str(), nini, ntotal, read , io , in_write_eigen , 2);
+
+  int each = io.ionum;
+  std::vector<qlat::FieldM<Complexq , 12> > buf;buf.resize(each);
+  for(int iv=0;iv<each;iv++){buf[iv].init(io.geop);}
+
+  std::vector<long > job =  job_create(n_vec, each);
+  for(LInt ji = 0; ji < job.size()/2 ; ji++)
+  {
+    for(int iv=0;iv<job[ji*2 + 1];iv++){copy_to_FieldM(buf[iv], job[ji*2 + 0] + iv, sm );}
+    /////write to file
+    load_eigensystem_vecs(file_write ,   buf, io , in_write_eigen , 0, job[ji*2 + 1]);
+  }
+
+  close_eigensystem_file(file_write , io , in_write_eigen );
+  print_mem_info("Eigen Memory Write Done");
+}
+
+void eigen_ov::load_eigen_Mvec(const std::string& ename, io_vec  &io, int sm, int nini, int checknorm)
+{
   int ntotal = nini + n_vec;
   Ftype norm_err  = 1e-3;
 
@@ -536,7 +628,7 @@ void eigen_ov::load_eigen_Mvec(int icfg, std::string &filename, io_vec  &io, int
   print_mem_info("Eigen Memory Allocate Done");
 
   inputpara in_read_eigen;
-  FILE* file_read  = open_eigensystem_file(ename, nini, ntotal, true , io , in_read_eigen , 2);
+  FILE* file_read  = open_eigensystem_file(ename.c_str(), nini, ntotal, true , io , in_read_eigen , 2);
 
   int each = io.ionum;
   std::vector<qlat::FieldM<Complexq , 12> > buf;buf.resize(each);
@@ -570,20 +662,20 @@ void eigen_ov::load_eigen_Mvec(int icfg, std::string &filename, io_vec  &io, int
   //////mv_civ.free_mem();
 }
 
-void eigen_ov::load_eigen(int icfg, std::string &ov_evecname,io_vec  &io,
+void eigen_ov::load_eigen(const std::string& ov_evecname, io_vec  &io,
   int checknorm, double kappa,double eigenerror, int nini)
 {
   TIMERB("=====Loading Eigen=====");
-  char ename[500], enamev[600];
-  sprintf(ename,ov_evecname.c_str(),icfg);
-  sprintf(enamev,"%s.eigvals", ename);
-  print0("Vector File name: %s \n", ename );
+  char enamev[600];
+  ////sprintf(ename, "%s", ov_evecname);
+  sprintf(enamev,"%s.eigvals", ov_evecname.c_str());
+  print0("Vector File name: %s \n", ov_evecname.c_str() );
   print0("Values File name: %s \n", enamev);
   //////Load eigen values
   double rho_tem = 4 - 1.0/(2*kappa);
-  load_eivals(enamev, rho_tem, eigenerror, nini);
+  load_eivals(std::string(enamev), rho_tem, eigenerror, nini);
 
-  load_eigen_Mvec(icfg, ov_evecname, io, 0 ,nini, checknorm);
+  load_eigen_Mvec(ov_evecname, io, 0 ,nini, checknorm);
 
 }
 
@@ -878,32 +970,63 @@ void copy_eigen_prop_to_EigenM(Ty* src, EigenM& res, LInt b_size, int nmass, qla
 
 /////res in format src 12* sink 12 --> Nt * Nxyz
 template <typename Ty >
-void FieldM_src_to_FieldM_prop(std::vector<qlat::FieldM<Ty , 1> >& src, std::vector<qlat::FieldM<Ty , 12*12> >& res, int GPU = true)
+void FieldM_src_to_FieldM_prop(qlat::FieldM<Ty , 1>& src, qlat::FieldM<Ty , 12*12>& res, int GPU = true, bool dummy = true)
 {
-  if(src.size() == 0){return ;}
-  qlat::Geometry& geo = src[0].geo();
-  long nV = src.size();
+  qlat::Geometry& geo = src.geo();
 
-  bool do_ini = true;if(res.size() == src.size())if(res[src.size()-1].initialized){do_ini = false;}
-  if(do_ini){res.resize(nV);for(int iv=0;iv<nV;iv++){res[iv].init(geo);}}
+  if(!res.initialized){res.init(geo);}
+
+  //bool do_ini = true;
+  //if(res.size() == src.size())if(res[src.size()-1].initialized){do_ini = false;}
+  //if(do_ini){res.resize(nV);for(int iv=0;iv<nV;iv++){res[iv].init(geo);}}
 
   //std::vector<int > nv, Nv, mv;
   //geo_to_nv(geo, nv, Nv,mv);
   long Ncopy = geo.local_volume();
 
   Ty* s0 = NULL; Ty* s1 = NULL;Ty* st = NULL;
-  for(int iv=0;iv<nV;iv++)
+  ///for(int iv=0;iv<nV;iv++)
+  s0 = (Ty*) qlat::get_data(src).data();
+  st = (Ty*) qlat::get_data(res).data();
+  for(unsigned int d0=0;d0<12;d0++)
   {
-    s0 = (Ty*) qlat::get_data(src[iv]).data();
-    st = (Ty*) qlat::get_data(res[iv]).data();
-    for(unsigned int d0=0;d0<12;d0++)
-    {
-      //////diagonal elements
-      s1 = &st[(d0*12+d0)*Ncopy + 0];
-      cpy_data_thread(s1, s0, Ncopy , GPU, false);
-    }
+    //////diagonal elements
+    s1 = &st[(d0*12+d0)*Ncopy + 0];
+    cpy_data_thread(s1, s0, Ncopy , GPU, false);
   }
+  if(dummy)qacc_barrier(dummy);
+}
+
+template <typename Ty >
+void FieldM_src_to_FieldM_prop(std::vector<qlat::FieldM<Ty , 1> >& src, std::vector<qlat::FieldM<Ty , 12*12> >& res, int GPU = true)
+{
+  if(src.size() == 0){return ;}
+  qlat::Geometry& geo = src[0].geo();
+  long nV = src.size();
+  if(res.size() != src.size()){res.resize(nV);}
+  for(int iv=0;iv<nV;iv++)FieldM_src_to_FieldM_prop(src[iv], res[iv], GPU, false);
   qacc_barrier(dummy);
+
+  //bool do_ini = true;if(res.size() == src.size())if(res[src.size()-1].initialized){do_ini = false;}
+  //if(do_ini){res.resize(nV);for(int iv=0;iv<nV;iv++){res[iv].init(geo);}}
+
+  ////std::vector<int > nv, Nv, mv;
+  ////geo_to_nv(geo, nv, Nv,mv);
+  //long Ncopy = geo.local_volume();
+
+  //Ty* s0 = NULL; Ty* s1 = NULL;Ty* st = NULL;
+  //for(int iv=0;iv<nV;iv++)
+  //{
+  //  s0 = (Ty*) qlat::get_data(src[iv]).data();
+  //  st = (Ty*) qlat::get_data(res[iv]).data();
+  //  for(unsigned int d0=0;d0<12;d0++)
+  //  {
+  //    //////diagonal elements
+  //    s1 = &st[(d0*12+d0)*Ncopy + 0];
+  //    cpy_data_thread(s1, s0, Ncopy , GPU, false);
+  //  }
+  //}
+  //qacc_barrier(dummy);
 
 }
 
@@ -939,7 +1062,7 @@ void copy_eigen_src_to_FeildM(qlat::vector_gpu<Ty >& src, std::vector<qlat::Fiel
     src.resize(nV * 2*total);
   }
 
-  /////rotate FieldM
+  /////rotate FieldM, from Vol->civ to civ->Vol
   if(dir == 1 and rotate == true){
     for(LInt iv=0;iv<res.size();iv++){
       Ty* s0 = (Ty*) qlat::get_data(res[iv]).data();

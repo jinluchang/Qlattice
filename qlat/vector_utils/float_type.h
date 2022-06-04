@@ -59,24 +59,13 @@ namespace qlat{
 #define BFACG_SHARED 8
 #endif
 
-////#define Evector qlat::vector<std::complex< Ftype > >
-////#define EA Eigen::Map<Eigen::Array<std::complex<Ftype >,Eigen::Dynamic,1 > >
-////#define EM Eigen::Map< Eigen::Matrix< std::complex<Ftype >, Eigen::Dynamic, Eigen::Dynamic ,Eigen::RowMajor> > 
-
 #define Evector qlat::vector_acc<Complexq >
-#define EigenV  qlat::vector_acc<Complexq >
-#define EA Eigen::Map<Eigen::Array<Complexq ,Eigen::Dynamic,1 > >
-#define EM Eigen::Map< Eigen::Matrix<Complexq , Eigen::Dynamic, Eigen::Dynamic ,Eigen::RowMajor> > 
-#define EMC Eigen::Map< Eigen::Matrix<Complexq , Eigen::Dynamic, Eigen::Dynamic ,Eigen::ColMajor> > 
-////#define EM Eigen::Map< Eigen::Matrix<std::complex<Ftype > , Eigen::Dynamic, Eigen::Dynamic ,Eigen::RowMajor> > 
-////#define EMC Eigen::Map< Eigen::Matrix<std::complex<Ftype > , Eigen::Dynamic, Eigen::Dynamic ,Eigen::ColMajor> > 
+#define EigenV   qlat::vector_acc<Complexq >
 
 /////May have some errors for python, mem buf, mem leak
 ////#define EigenM qlat::vector<Evector >
-#define EigenM std::vector<Evector >
-
-#define EG  Eigen::Matrix<Complexq , Eigen::Dynamic, Eigen::Dynamic ,Eigen::RowMajor>  
-#define EGC Eigen::Matrix<Complexq , Eigen::Dynamic, Eigen::Dynamic ,Eigen::ColMajor> 
+#define EigenM  std::vector<Evector >
+////
 
 #define qnoi qlat::FieldM<Complexq, 1>
 //////dim 12*12 --> Nt --> Nxyz
@@ -90,6 +79,11 @@ namespace qlat{
 #define colorFD qlat::FieldM<Complex , 3>
 #define colorFF qlat::FieldM<Complexq, 3>
 #define colorFT qlat::FieldM<Ty, 3>
+
+/////read input length of each line
+#define LINE_LIMIT 3000
+
+#define PI 3.1415926535898
 
 inline void print_NONE(const char *filename){return ;}
 
@@ -197,12 +191,6 @@ inline void gpuFree(void* res)
   }
 }
 
-#ifdef QLAT_USE_ACC
-#define gpuMalloc(bres,bsize, Ty) {gpuErrchk(cudaMalloc(&bres, bsize*sizeof(Ty)));}
-#else
-#define gpuMalloc(bres,bsize, Ty) {bres = (Ty *)malloc(bsize*sizeof(Ty));}
-#endif
-
 inline void* aligned_alloc_no_acc(const size_t size)
 {
   const size_t alignment = get_alignment();
@@ -213,6 +201,12 @@ inline void* aligned_alloc_no_acc(const size_t size)
 #endif
 }
 
+
+#ifdef QLAT_USE_ACC
+#define gpuMalloc(bres,bsize, Ty) {gpuErrchk(cudaMalloc(&bres, bsize*sizeof(Ty)));}
+#else
+#define gpuMalloc(bres,bsize, Ty) {bres = (Ty *)aligned_alloc_no_acc(bsize*sizeof(Ty));}
+#endif
 
 inline void free_buf(void* buf, bool GPU){
   if(buf != NULL){if(GPU){gpuFree(buf);}else{free(buf);}}

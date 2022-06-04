@@ -10,11 +10,13 @@
 #include "float_type.h"
 #include "utils_copy_data.h"
 
+////needed for norm calculation
+#include "utils_reduce_vec.h"
+
 namespace qlat{
 
 template <typename Ty >
-struct vector_gpu
-{
+struct vector_gpu{
   ///Vector<Ty > v;
   Ty*    p;
   size_t n;
@@ -47,7 +49,7 @@ struct vector_gpu
         p = (Ty*) aligned_alloc_no_acc( n*sizeof(Ty));
         #endif
       }
-      else{p = (Ty*) alloc_mem_alloc_no_acc(n*sizeof(Ty));}
+      else{p = (Ty*) aligned_alloc_no_acc(n*sizeof(Ty));}
 
       set_zero();
     }
@@ -259,6 +261,23 @@ struct vector_gpu
     //cpy_data_thread(vp.p, p, n, mode_cpu, true);
   }
 
+  inline Ty norm()
+  {
+    qlat::vector_acc<Ty > tmp;tmp.resize(1);
+    qlat::vector_gpu<Ty > copy;copy.resize(n, GPU);
+    Ty* res = copy.data();Ty* src = p;
+    if(GPU){
+      qacc_for(isp, long(n),    {res[isp] = qlat::qconj(src[isp]) * src[isp];});
+    }
+    else{
+      qthread_for(isp, long(n), {res[isp] = qlat::qconj(src[isp]) * src[isp];});
+    }
+    if(GPU == true ){reduce_vec(res, tmp.data(), n, 1);}
+    if(GPU == false){reduce_cpu(res, tmp.data(), n, 1);}
+    glb_sum(tmp[0]);
+    return tmp[0];
+  }
+
   template <class T >
   void copy_to(std::vector<T >& vp)
   {
@@ -301,6 +320,17 @@ struct vector_gpu
 
 };
 
+template <typename Ty >
+qacc Vector<Ty> get_data(vector_gpu<Ty> vec)
+{
+  return Vector<Ty>(vec.data(), vec.size());
+}
+
+template <typename Ty >
+qacc void set_zero(vector_gpu<Ty> vec)
+{
+  vec.set_zero();
+}
 
 }
 

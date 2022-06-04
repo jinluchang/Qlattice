@@ -10,6 +10,8 @@
 #define EML  Eigen::Map< Eigen::Matrix<Ty , Eigen::Dynamic, Eigen::Dynamic ,Eigen::RowMajor> >
 #define EMLC Eigen::Map< Eigen::Matrix<Ty , Eigen::Dynamic, Eigen::Dynamic ,Eigen::ColMajor> >
 
+//////  https://docs.nvidia.com/cuda/pdf/CUDA_C_Best_Practices_Guide.pdf
+
 namespace qlat{
 ////need Conjugate in first element
 

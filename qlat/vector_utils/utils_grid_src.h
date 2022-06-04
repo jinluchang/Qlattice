@@ -15,7 +15,7 @@
 namespace qlat{
 
 template <typename Ty>
-void check_noise_pos(qlat::FieldM<Ty, 1>& noise, Coordinate& pos,qlat::vector_acc<int > &off_L,int printS=0,int mod=0)
+void check_noise_pos(qlat::FieldM<Ty, 1>& noise, Coordinate& pos, Coordinate&off_L,int printS=0,int mod=0)
 {
   qlat::Geometry& geo = noise.geo();
   qlat::vector_acc<int > nv,Nv,mv;
@@ -59,7 +59,7 @@ void check_noise_pos(qlat::FieldM<Ty, 1>& noise, Coordinate& pos,qlat::vector_ac
   for(int iL=0;iL<4;iL++){sum_all_size(&grid[iL][0],NL[iL]);}
   sum_all_size(&grid_count,1);
   ////global_sum_all(&grid_count,1);
-  off_L.resize(4);
+  ////off_L.resize(4);
   for(int oi=0;oi<4;oi++){off_L[oi] = 0;}
   for(int iL=0;iL<4;iL++)for(int k=0;k<NL[iL];k++)if(grid[iL][k]>0.0)off_L[iL] += 1;
   //for(int x=0;x<nx;x++){if(grid[0][x]>0.0)off_L[0] += 1;}
@@ -148,7 +148,9 @@ void check_noise_pos(qlat::FieldM<Ty, 1>& noise, Coordinate& pos,qlat::vector_ac
 }
 
 
-inline void grid_list_pos(qlat::vector_acc<int >& off_L,qlat::vector_acc<int > &Ngrid)
+
+/////get positions by spatial setups
+inline void grid_list_pos(const Coordinate& off_L,qlat::vector_acc<long > &Ngrid)
 {
   TIMERA("===grid_list_pos===")
   if(off_L.size() != 4){abort_r("dimention of positions wrong!\n ");}
@@ -190,24 +192,61 @@ inline void grid_list_pos(qlat::vector_acc<int >& off_L,qlat::vector_acc<int > &
   }
 }
 
-inline Coordinate get_grid_off(int i0, qlat::vector_acc<int >& off_L, Coordinate& pos_ini, qlat::fft_desc_basic& fd)
+inline Coordinate get_grid_off(long j0, const Coordinate& off_L, const Coordinate& pos_ini, const Coordinate& Lat)
 {
   if(pos_ini.size() != 4 or off_L.size() != 4){abort_r("dimension of positions wrong!\n ");}
   //////std::vector<int > pos;pos.resize(4);
   Coordinate pos = pos_ini;
   ////for(int i=0;i<4;i++){pos[i] = pos_ini[i];}
 
-  int ix= i0/(off_L[1]*off_L[2]);
-  int iy= (i0%(off_L[1]*off_L[2]))/off_L[2];
-  int iz= i0%off_L[2];
+  Coordinate off_pos = qlat::coordinate_from_index(j0, off_L);
+  for(int i=0;i<4;i++){pos[i] += (Lat[i]/(off_L[i]))*off_pos[i];}
 
-  pos[0] += (fd.nx/(off_L[0]))*ix;
-  pos[1] += (fd.ny/(off_L[1]))*iy;
-  pos[2] += (fd.nz/(off_L[2]))*iz;
+  //int it  = j0/(off_L[0]*off_L[1]*off_L[2]);
+  //long i0 = j0%(off_L[0]*off_L[1]*off_L[2]);
+  //int ix= i0/(off_L[1]*off_L[2]);
+  //int iy= (i0%(off_L[1]*off_L[2]))/off_L[2];
+  //int iz= i0%off_L[2];
+  //pos[0] += (Lat[0]/(off_L[0]))*ix;
+  //pos[1] += (Lat[1]/(off_L[1]))*iy;
+  //pos[2] += (Lat[2]/(off_L[2]))*iz;
+  //pos[3] += (Lat[3]/(off_L[3]))*it;
   return pos;
 }
 
-//////assume res have been cleared
+/////get positions by spatial and time setups
+inline void grid_list_posT(std::vector<PointSelection > &LMS_points, const Coordinate& off_L, const Coordinate& pos, const int combineT, const Coordinate& Lat)
+{
+  TIMERA("===grid_list_posT===")
+  qlat::vector_acc<long > Nfull;
+  /////get positions by spatial setups
+  grid_list_pos(off_L, Nfull);
+
+  Coordinate cur_pos;
+  Coordinate cur_off;
+  for(long gi=0;gi<Nfull.size();gi++){
+    cur_pos = get_grid_off(Nfull[gi], off_L, pos, Lat);
+    if(combineT == 0){
+      for(int it = 0; it < off_L[3]; it++){
+        cur_off = cur_pos;
+        cur_off[3] += (Lat[3]/(off_L[3]))*it;
+        PointSelection lms_res;lms_res.push_back(cur_off);
+        LMS_points.push_back(lms_res);
+      }
+    }
+    if(combineT == 1){
+      PointSelection lms_res;
+      for(int it = 0; it < off_L[3]; it++){
+        cur_off = cur_pos;
+        cur_off[3] += (Lat[3]/(off_L[3]))*it;
+        lms_res.push_back(cur_off);
+      }
+      LMS_points.push_back(lms_res);
+    }
+  }
+  if(combineT == int(0)){qassert(long(LMS_points.size()) == long(Nfull.size()*off_L[3]));}
+  if(combineT == int(1)){qassert(long(LMS_points.size()) == long(Nfull.size()         ));}
+}
 
 
 //////assume res have been cleared
@@ -228,12 +267,11 @@ void write_grid_point_to_src(Ty* res, const qnoiT& src, const PointSelection& po
   ////Coordinate xg0 = geo.coordinate_g_from_l(xl0);
 
   Ty phase = 0.0;
-  for(int pi=0;pi<posL.size();pi++){
+  for(long pi=0;pi<long(posL.size());pi++){
   const Coordinate& pos = posL[pi];
   if(fd.coordinate_g_is_local(pos)){
     LInt isp = fd.index_l_from_g_coordinate(pos);
     phase = src.get_elem(isp);
-    ////print0("position %d %d %d %d !\n", cur_pos[0], cur_pos[1], cur_pos[2], cur_pos[3]);
     ////printf("src pos %d %d %d %d, real %.3f imag %.3f \n", pos[0], pos[1], pos[2], pos[3], phase.real(), phase.imag());
     for(int d0=0;d0<12;d0++){
       int d1 = d0;

@@ -325,7 +325,7 @@ inline void send_vec_kentucky(char* src,char* res,int dsize,int gN, io_vec& io, 
 ////gN number of vec read for each io rank, read read/write of file
 inline void read_kentucky_vector(FILE *file,char* props,int Nvec,io_vec& io,bool Rendian=false, int dsize=8, bool single_file=false,  int gN=1, bool read = true)
 {
-  TIMERA("new io load");
+  TIMER("IO VECS");
   timeval tm0,tm1,tm2,tm3;
   gettimeofday(&tm0, NULL);
   double mpi_t = 0.0;
@@ -1138,7 +1138,7 @@ void save_gwu_prop(const char *filename,std::vector<qlat::FermionField4dT<Ty> > 
 
 //////final result 12*12 --> Nt*Nxyz
 template<typename Ty>
-void load_gwu_prop(const char *filename, qlat::FieldM<Ty, 12*12>  &res,io_vec &io_use,bool read=true){
+void load_gwu_prop(const char *filename, qpropT& res,io_vec &io_use,bool read=true){
   if(read == true ){res.init(io_use.geop);}
   if(read == false){abort_r("Not supported! \n");}
 
@@ -1156,7 +1156,6 @@ void load_gwu_prop(const char *filename, qlat::FieldM<Ty, 12*12>  &res,io_vec &i
     p1 = (Ty*) &pt[iv*12*sizeF + 0];
     mv_civ.dojob(p0, p1, 1, 12, sizeF, 1, 1, false);
   }
-
 }
 
 template<class T, typename Ty>
