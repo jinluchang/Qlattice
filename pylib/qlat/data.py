@@ -78,6 +78,7 @@ class Data:
         # numeric
         # numpy.array
         # q.LatData
+        # list
         if isinstance(val, Data):
             self.val = val.val
             assert not isinstance(self.val)
@@ -102,6 +103,12 @@ class Data:
                 return other
             elif check_zero(other.val):
                 return self
+            elif isinstance(self.val, list) and isinstance(other.val, list):
+                return Data([ v1 + v2 for v1, v2 in zip(self.val, other.val) ])
+            elif isinstance(self.val, list):
+                return Data([ v + other.val for v in self.val ])
+            elif isinstance(other.val, list):
+                return Data([ self.val + v for v in other.val ])
             else:
                 return Data(self.val + other.val)
         else:
@@ -113,6 +120,12 @@ class Data:
         if isinstance(other, Data):
             if check_zero(self.val) or check_zero(other.val):
                 return Data(0)
+            elif isinstance(self.val, list) and isinstance(other.val, list):
+                return Data([ v1 * v2 for v1, v2 in zip(self.val, other.val) ])
+            elif isinstance(self.val, list):
+                return Data([ v * other.val for v in self.val ])
+            elif isinstance(other.val, list):
+                return Data([ self.val * v for v in other.val ])
             return Data(self.val * other.val)
         else:
             return self * Data(other)
@@ -125,7 +138,12 @@ class Data:
             return Data(other) * self
 
     def __neg__(self):
-        return Data(-self.val)
+        if check_zero(self.val):
+            return Data(0)
+        elif isinstance(self.val, list):
+            return Data([ -v for v in self.val ])
+        else:
+            return Data(-self.val)
 
     def __pos__(self):
         return self
@@ -136,6 +154,12 @@ class Data:
                 return Data(-other.val)
             elif check_zero(other.val):
                 return self
+            elif isinstance(self.val, list) and isinstance(other.val, list):
+                return Data([ v1 - v2 for v1, v2 in zip(self.val, other.val) ])
+            elif isinstance(self.val, list):
+                return Data([ v - other.val for v in self.val ])
+            elif isinstance(other.val, list):
+                return Data([ self.val - v for v in other.val ])
             else:
                 return Data(self.val - other.val)
         else:
