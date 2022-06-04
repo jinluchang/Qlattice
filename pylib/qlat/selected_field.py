@@ -51,6 +51,12 @@ class SelectedField:
             f @= self
         return f
 
+    def __copy__(self):
+        return self.copy()
+
+    def __deepcopy__(self, memo):
+        return self.copy()
+
     def swap(self, x):
         assert isinstance(x, SelectedField)
         assert x.ctype == self.ctype

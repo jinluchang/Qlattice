@@ -193,8 +193,9 @@ def ama_extract_ama_val(x, *, is_sloppy = False):
     dict_prob = { k: [ prob for l, prob in v ] for k, v in dict_level_prob.items() }
     # dict_val[(level, ...)] = v
     dict_val = { tuple([ d[k][0] for k in keys ]): v for v, d in corrections }
-    if is_sloppy:
-        return dict_val[tuple([ dict_level[key][0] for key in keys ])]
+    # initial val is sloppy only
+    if is_sloppy or (not keys):
+        return copy.copy(dict_val[tuple([ dict_level[key][0] for key in keys ])])
     def ama_corr(fixed_levels, remaining_keys):
         if not remaining_keys:
             return dict_val[tuple(fixed_levels)]
@@ -204,10 +205,13 @@ def ama_extract_ama_val(x, *, is_sloppy = False):
             levels = dict_level[key]
             probs = dict_prob[key]
             vals = [ ama_corr(fixed_levels + [ l, ], rest_keys) for l in levels ]
-            corr = vals[0]
+            val = copy.copy(vals[0])
             for i in range(1, len(vals)):
-                corr = corr + (vals[i] - vals[i - 1]) / probs[i]
-            return corr
+                diff = copy.copy(vals[i])
+                diff -= vals[i - 1]
+                diff *= 1 / probs[i]
+                val += diff
+            return val
     return ama_corr([], keys)
 
 def ama_extract(x, *, is_sloppy = False):

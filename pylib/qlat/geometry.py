@@ -29,6 +29,12 @@ class Geometry:
             x @= self
         return x
 
+    def __copy__(self):
+        return self.copy()
+
+    def __deepcopy__(self, memo):
+        return self.copy()
+
     def total_site(self):
         return c.get_total_site_geo(self)
 

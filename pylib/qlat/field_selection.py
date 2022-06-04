@@ -32,6 +32,12 @@ class PointSelection:
         x @= self
         return x
 
+    def __copy__(self):
+        return self.copy()
+
+    def __deepcopy__(self, memo):
+        return self.copy()
+
     def set_rand(self, rs, total_site, n_points):
         c.set_rand_psel(self, rs, total_site, n_points)
         self.geo = Geometry(total_site)
@@ -102,6 +108,12 @@ class FieldSelection:
         x = FieldSelection()
         x @= self
         return x
+
+    def __copy__(self):
+        return self.copy()
+
+    def __deepcopy__(self, memo):
+        return self.copy()
 
     def set_uniform(self, total_site, val = 0):
         # default (val = 0) select every sites

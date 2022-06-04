@@ -35,6 +35,12 @@ class RngState:
             x @= self
         return x
 
+    def __copy__(self):
+        return self.copy()
+
+    def __deepcopy__(self, memo):
+        return self.copy()
+
     def split(self, seed):
         rng = RngState(self, seed)
         return rng
