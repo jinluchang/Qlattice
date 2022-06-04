@@ -37,7 +37,7 @@ set -e
 ./scripts/grid.avx2.sh
 ./scripts/gpt.sh
 
-./scripts/python-jupyter.sh
 ./scripts/gnuplot.sh
+./scripts/python-jupyter.sh
 
 } |& tee $prefix/log.build.txt
