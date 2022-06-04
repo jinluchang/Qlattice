@@ -177,6 +177,14 @@ class Data:
         else:
             return Data(other) - self
 
+    def qnorm(self):
+        if check_zero(self.val):
+            return 0
+        elif isinstance(self.val, list):
+            return sum([ qnorm(v) for v in self.val ])
+        else:
+            return qnorm(self.val)
+
 # ----------
 
 def add_jk_idx(arr):
