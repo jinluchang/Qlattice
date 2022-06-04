@@ -114,7 +114,12 @@ class Data:
         else:
             return self + Data(other)
 
-    __radd__ = __add__
+    def __radd__(self, other):
+        if isinstance(other, Data):
+            assert False
+            return None
+        else:
+            return Data(other) + self
 
     def __mul__(self, other):
         if isinstance(other, Data):
