@@ -4,6 +4,7 @@ from qlat.field import *
 from qlat.lat_io import *
 from qlat.rng_state import *
 from qlat.coordinate import *
+from qlat.data import *
 
 import numpy as np
 import multiprocessing as mp
@@ -123,18 +124,6 @@ def set_zero(x):
 
 def set_unit(x, coef = 1.0):
     x.set_unit(coef)
-
-def qnorm(x):
-    # qnorm(2) == 4
-    if isinstance(x, np.ndarray):
-        return np.abs(np.vdot(x, x))
-    elif isinstance(x, (int, float,)):
-        return x * x
-    elif isinstance(x, complex):
-        return x.real * x.real + x.imag * x.imag
-    else:
-        return x.qnorm()
-    assert False
 
 def show(x):
     return x.show()
