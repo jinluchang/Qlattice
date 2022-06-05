@@ -270,6 +270,24 @@ void py_convert(Vector<M> out, PyObject* in)
   }
 }
 
+template <class M, unsigned long N>
+void py_convert(array<M, N> out, PyObject* in)
+{
+  if (PyList_Check(in)) {
+    pqassert(out.size() == PyList_Size(in));
+    for (long i = 0; i < out.size(); i++) {
+      py_convert(out[i], PyList_GetItem(in, i));
+    }
+  } else if (PyTuple_Check(in)) {
+    pqassert(out.size() == PyTuple_Size(in));
+    for (long i = 0; i < out.size(); i++) {
+      py_convert(out[i], PyTuple_GetItem(in, i));
+    }
+  } else {
+    pqassert(false);
+  }
+}
+
 template <class T>
 T py_convert_data(PyObject* in)
 // interface
