@@ -302,8 +302,6 @@ def test_hmc(total_site, action, mult, n_traj):
     # Create a field to store the divisors when taking averages
     divisors = q.Field("double",geo,mult)
     divisors.set_unit()
-    momentum_slopes = q.Field("Complex",geo,mult)
-    momentum_slopes.set_zero()
     
     # Create the geometry for the axial current field
     geo_cur = q.Geometry(total_site, mult-1)
@@ -312,12 +310,6 @@ def test_hmc(total_site, action, mult, n_traj):
     
     # Stores the index of the current trajectory
     traj = 0
-    # The number of trajectories to calculate before taking measurements
-    start_measurements = 0;
-    init_length = 20
-    block_length = 50
-    num_blocks = 3
-    num_blocks2 = 0
     
     # A variable to store the estimated vacuum expectation value of sigma
     vev = 0
@@ -355,43 +347,26 @@ def test_hmc(total_site, action, mult, n_traj):
             # Keep using the same estimated masses for every trajectory 
             # in this block
             masses_new @= masses_old
-        elif(traj<init_length+(num_blocks+num_blocks2)*block_length):
-            if((traj-init_length-num_blocks*block_length) % block_length == 0):
-                divisors.invert_double()
-                masses.multiply_double(divisors)
-                masses_new @= masses
-                masses.set_zero()
-                vev=np.mean(vevs)
-                vevs=[]
-            [vev, m] = run_hmc(field, field_predicted, geo, action, masses_new, mask, traj, rs.split("hmc-est-mass{}".format(traj)), vev, False, True, fft, ifft)
-            # Take the average of all the estimated masses in this block
-            if((traj-init_length-num_blocks*block_length)%block_length >= init_length):
-                m*=1/(block_length-init_length)
-                masses+=m
-                vevs.append(field.glb_sum()[0]/V)
-                q.displayln_info("Average momentum slope:")
-                ms=[masses.get_elem([0,0,0,0],0),masses.get_elem([0,0,0,0],1)]
-                q.displayln_info(np.multiply(ms,(block_length-init_length)/len(vevs)))
         else:
-            if(traj==init_length+(num_blocks+num_blocks2)*block_length):
+            if(traj==init_length+num_blocks*block_length):
                 divisors.invert_double()
                 masses.multiply_double(divisors)
                 vev=np.mean(vevs)
-                masses.save_double(f"output_data/masses_{total_site[0]}x{total_site[3]}_msq_{m_sq}_lmbd_{lmbd}_alph_{alpha}_{datetime.datetime.now().date()}.field")
+                # masses.save_double(f"output_data/masses_{total_site[0]}x{total_site[3]}_msq_{m_sq}_lmbd_{lmbd}_alph_{alpha}_{datetime.datetime.now().date()}.field")
             run_hmc(field, field_predicted, geo, action, masses, mask, traj, rs.split("hmc-{}".format(traj)), vev, False, True, fft, ifft)
         
         # Calculate the expectation values of phi and phi^2
-        #q.displayln_info("Average phi^2:")
+        q.displayln_info("Average phi^2:")
         psq = phi_squared(field, action)
-        #q.displayln_info(psq)
+        q.displayln_info(psq)
         #q.displayln_info("Average phi^2 predicted:")
         psq_predicted = phi_squared(field_predicted, action)
         #q.displayln_info(psq_predicted)
         
-        #q.displayln_info("Average phi:")
+        q.displayln_info("Average phi:")
         field_sum = field.glb_sum()
         phi=[field_sum[i]/V for i in range(mult)]
-        #q.displayln_info(phi)
+        q.displayln_info(phi)
         field_sum = field_predicted.glb_sum()
         phi_predicted=[field_sum[i]/V for i in range(mult)]
         
@@ -460,6 +435,15 @@ mult = 4
 
 # The number of trajectories to calculate
 n_traj = 300
+# The number of trajectories to calculate before taking measurements
+start_measurements = 0;
+# The number of initial trajectories during which to accept all updates
+init_length = 20
+# The number of trajectories to use for one estimation of the opitmal
+# masses
+block_length = 50
+# The number of iteractions to use to estimate the masses
+num_blocks = 3
 # The number of steps to take in a single trajectory
 steps = 10
 # The length of a single trajectory in molecular dynamics time
@@ -487,8 +471,10 @@ for i in range(1,len(sys.argv),2):
             lmbd = float(sys.argv[i+1])
         elif(sys.argv[i]=="-a"):
             alpha = float(sys.argv[i+1])
+        elif(sys.argv[i]=="-s"):
+            steps = float(sys.argv[i+1])
     except:
-        raise Exception("Invalid arguments: use -d for lattice dimensions, -n for multiplicity, -t for number of trajectories, -m for mass squared, -l for lambda, and -a for alpha. e.g. python hmc-pions.py -l 8x8x8x16 -n 4 -t 50 -m -1.0 -l 1.0 -a 0.1")
+        raise Exception("Invalid arguments: use -d for lattice dimensions, -n for multiplicity, -t for number of trajectories, -m for mass squared, -l for lambda, -a for alpha, and -s for the number of steps in a trajectory. e.g. python hmc-pions.py -l 8x8x8x16 -n 4 -t 50 -m -1.0 -l 1.0 -a 0.1")
 
 size_node_list = [
         [1, 1, 1, 1],
