@@ -131,6 +131,12 @@ def mk_pi_m(p : str, is_dagger = False):
     else:
         return -mk_pi_p(p) + f"pi-({p})^dag"
 
+def mk_a0_0(p : str, is_dagger = False):
+    if not is_dagger:
+        return 1 / sympy.sqrt(2) * (mk_scalar("u", "u", p) - mk_scalar("d", "d", p)) + f"a0_0({p})"
+    else:
+        return -mk_a0_0(p) + f"a0_0({p})^dag"
+
 def mk_k_p(p : str, is_dagger = False):
     if not is_dagger:
         return sympy.I * mk_meson("u", "s", p) + f"K+({p})"
@@ -154,6 +160,12 @@ def mk_k_0_bar(p : str, is_dagger = False):
         return -sympy.I * mk_meson("s", "d", p) + f"K0b({p})"
     else:
         return -mk_k_0(p) + f"K0b({p})^dag"
+
+def mk_kappa(p1 : str, is_dagger = False):
+    if not is_dagger:
+        return mk_scalar("d", "s", p) + f"kappa({p})"
+    else:
+        return -mk_scalar("s", "d", p) + f"kappa({p})^dag"
 
 def mk_j5pi_mu(p : str, mu, is_dagger = False):
     return mk_vec5_mu("d", "u", p, mu, is_dagger) + f"j5pi_mu({p},{mu}){show_dagger(is_dagger)}"
