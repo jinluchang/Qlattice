@@ -271,7 +271,7 @@ void py_convert(Vector<M> out, PyObject* in)
 }
 
 template <class M, unsigned long N>
-void py_convert(array<M, N> out, PyObject* in)
+void py_convert(array<M, N>& out, PyObject* in)
 {
   if (PyList_Check(in)) {
     pqassert(out.size() == PyList_Size(in));
