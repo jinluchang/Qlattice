@@ -595,7 +595,7 @@ void set_u_rand_double(Field<M>& f, const RngState& rs,
     Vector<M> v = f.get_elems(xl);
     Vector<double> dv((double*)v.data(), v.data_size() / sizeof(double));
     for (int m = 0; m < dv.size(); ++m) {
-      dv[m] = u_rand_gen(rsi, 1.0, -1.0);
+      dv[m] = u_rand_gen(rsi, upper, lower);
     }
   }
 }
@@ -615,7 +615,7 @@ void set_u_rand_float(Field<M>& f, const RngState& rs, const double upper = 1.0,
     Vector<M> v = f.get_elems(xl);
     Vector<float> dv((float*)v.data(), v.data_size() / sizeof(float));
     for (int m = 0; m < dv.size(); ++m) {
-      dv[m] = u_rand_gen(rsi, 1.0, -1.0);
+      dv[m] = u_rand_gen(rsi, upper, lower);
     }
   }
 }
