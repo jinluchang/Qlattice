@@ -167,7 +167,8 @@ inline void py_convert(std::string& s, PyObject* in)
   if (PyType_Check(in)) {
     s = ((PyTypeObject*)in)->tp_name;
   } else if (PyBytes_Check(in)) {
-    s = PyBytes_AsString(in);
+    const long size = PyBytes_Size(in);
+    s = std::string(PyBytes_AsString(in), size);
   } else if (PyUnicode_Check(in)) {
     PyObject* temp = PyUnicode_AsEncodedString(in, "UTF-8", "strict");
     pqassert(temp);
@@ -541,6 +542,12 @@ PyObject* py_convert(const Vector<M>& vec)
     PyList_SetItem(ret, i, py_convert(vec[i]));
   }
   return ret;
+}
+
+template <>
+inline PyObject* py_convert(const Vector<char>& vec)
+{
+  return PyBytes_FromStringAndSize(vec.data(), vec.size());
 }
 
 inline PyObject* py_convert(const ColorMatrix& x) {

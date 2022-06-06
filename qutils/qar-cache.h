@@ -153,4 +153,61 @@ inline std::vector<std::string> qgetlines(const std::string& fn)
   return lines;
 }
 
+inline std::string qcat(const std::string& path)
+{
+  TIMER("qcat");
+  QFile qfile;
+  qopen(qfile, path, "r");
+  if (qfile.null()) {
+    return "";
+  }
+  qfseek(qfile, 0, SEEK_END);
+  const long length = qftell(qfile);
+  qfseek(qfile, 0, SEEK_SET);
+  std::string ret(length, 0);
+  const long length_actual = qfread(&ret[0], 1, length, qfile);
+  qassert(length == length_actual);
+  return ret;
+}
+
+inline int qtouch(const std::string& path)
+// return 0 if success
+{
+  TIMER("qtouch");
+  QFile qfile;
+  qopen(qfile, path, "w");
+  if (qfile.null()) {
+    return 1;
+  }
+  return 0;
+}
+
+inline int qtouch(const std::string& path, const std::string& content)
+{
+  TIMER("qtouch");
+  QFile qfile;
+  qopen(qfile, path + ".partial", "w");
+  if (qfile.null()) {
+    return 1;
+  }
+  const long total_bytes = qwrite_data(content, qfile);
+  qassert(total_bytes == content.size());
+  qfile.close();
+  return qrename(path + ".partial", path);
+}
+
+inline int qappend(const std::string& path, const std::string& content)
+{
+  TIMER("qappend");
+  QFile qfile;
+  qopen(qfile, path, "a");
+  if (qfile.null()) {
+    return 1;
+  }
+  const long total_bytes = qwrite_data(content, qfile);
+  qassert(total_bytes == content.size());
+  qfile.close();
+  return 0;
+}
+
 }  // namespace qlat

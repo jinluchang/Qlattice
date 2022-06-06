@@ -13,6 +13,7 @@ from cqlat import is_directory, is_directory_sync_node
 from cqlat import is_regular_file, is_regular_file_sync_node
 from cqlat import qrename, qrename_info
 from cqlat import qcat, qcat_sync_node
+from cqlat import qcat_bytes, qcat_bytes_sync_node
 from cqlat import qls, qls_sync_node
 from cqlat import qls_all, qls_all_sync_node
 from cqlat import qload_datatable, qload_datatable_sync_node
@@ -53,28 +54,28 @@ def mk_file_dirs_info(path):
         mk_file_dirs(path)
 
 def qtouch(path, content = None):
-    mk_file_dirs(path)
+    # mk_file_dirs(path)
     if content is None:
         return c.qtouch(path)
     else:
         return c.qtouch(path, content)
 
 def qtouch_info(path, content = None):
-    mk_file_dirs_info(path)
+    # mk_file_dirs_info(path)
     if content is None:
         return c.qtouch_info(path)
     else:
         return c.qtouch_info(path, content)
 
 def qappend(path, content = None):
-    mk_file_dirs(path)
+    # mk_file_dirs(path)
     if content is None:
         return c.qappend(path)
     else:
         return c.qappend(path, content)
 
 def qappend_info(path, content = None):
-    mk_file_dirs_info(path)
+    # mk_file_dirs_info(path)
     if content is None:
         return c.qappend_info(path)
     else:
@@ -90,18 +91,15 @@ def release_lock():
 @timer
 def save_pickle_obj(obj, path):
     # only save from node 0
-    mk_file_dirs_info(path)
+    # mk_file_dirs_info(path)
     if get_id_node() == 0:
-        with open(path + ".partial", "wb") as f:
-            pickle.dump(obj, f)
-        qrename(path + ".partial", path)
+        qtouch(path, pickle.dumps(obj))
 
 @timer
 def load_pickle_obj(path, default_value = None):
     # all the nodes read the same data
-    if does_file_exist_sync_node(path):
-        with open(path, "rb") as f:
-            obj = pickle.load(f)
+    if does_file_exist_qar_sync_node(path):
+        obj = pickle.loads(qcat_bytes_sync_node(path))
         return obj
     else:
         return default_value
