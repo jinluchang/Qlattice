@@ -26,6 +26,8 @@ Cache: 'CommPlanCache': 1 / 32 [16] to add
 spatial plaq :  9.48253412870626811E-01
 trace:  9.86826590890408140E-01
 Cache: 'ShufflePlanCache': 0 / 16 [8] to add
+QFile: open 'results/ckpoint.0.partial.partial' with 'w'.
+QFile: close 'results/ckpoint.0.partial.partial' with 'w'.
 qrename: 'results/ckpoint.0.partial.partial' 'results/ckpoint.0.partial'
 q_write_par_limit=16 (default)
 QFile: open 'results/ckpoint.0.partial' with 'a'.

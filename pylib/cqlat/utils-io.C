@@ -225,8 +225,7 @@ EXPORT(qtouch, {
   if (!PyArg_ParseTuple(args, "O|O", &p_path, &p_content)) {
     return NULL;
   }
-  std::string path;
-  py_convert(path, p_path);
+  const std::string path = py_convert_data<std::string>(p_path);
   if (p_content == NULL) {
     const int ret = qtouch(path);
     return py_convert(ret);
@@ -245,8 +244,7 @@ EXPORT(qtouch_info, {
   if (!PyArg_ParseTuple(args, "O|O", &p_path, &p_content)) {
     return NULL;
   }
-  std::string path;
-  py_convert(path, p_path);
+  const std::string path = py_convert_data<std::string>(p_path);
   if (p_content == NULL) {
     const int ret = qtouch_info(path);
     return py_convert(ret);
@@ -265,8 +263,7 @@ EXPORT(qappend, {
   if (!PyArg_ParseTuple(args, "OO", &p_path, &p_content)) {
     return NULL;
   }
-  std::string path;
-  py_convert(path, p_path);
+  const std::string path = py_convert_data<std::string>(p_path);
   std::string content;
   py_convert(content, p_content);
   const int ret = qappend(path, content);
@@ -280,8 +277,7 @@ EXPORT(qappend_info, {
   if (!PyArg_ParseTuple(args, "OO", &p_path, &p_content)) {
     return NULL;
   }
-  std::string path;
-  py_convert(path, p_path);
+  const std::string path = py_convert_data<std::string>(p_path);
   std::string content;
   py_convert(content, p_content);
   const int ret = qappend_info(path, content);
@@ -322,8 +318,7 @@ EXPORT(qls, {
   if (!PyArg_ParseTuple(args, "O", &p_path)) {
     return NULL;
   }
-  std::string path;
-  py_convert(path, p_path);
+  const std::string path = py_convert_data<std::string>(p_path);
   const std::vector<std::string> ret = qls(path);
   return py_convert(ret);
 });
@@ -334,8 +329,7 @@ EXPORT(qls_sync_node, {
   if (!PyArg_ParseTuple(args, "O", &p_path)) {
     return NULL;
   }
-  std::string path;
-  py_convert(path, p_path);
+  const std::string path = py_convert_data<std::string>(p_path);
   const std::vector<std::string> ret = qls_sync_node(path);
   return py_convert(ret);
 });
@@ -347,8 +341,7 @@ EXPORT(qls_all, {
   if (!PyArg_ParseTuple(args, "O|b", &p_path, &is_folder_before_files)) {
     return NULL;
   }
-  std::string path;
-  py_convert(path, p_path);
+  const std::string path = py_convert_data<std::string>(p_path);
   const std::vector<std::string> ret = qls_all(path, is_folder_before_files);
   return py_convert(ret);
 });
@@ -360,8 +353,7 @@ EXPORT(qls_all_sync_node, {
   if (!PyArg_ParseTuple(args, "O|b", &p_path, &is_folder_before_files)) {
     return NULL;
   }
-  std::string path;
-  py_convert(path, p_path);
+  const std::string path = py_convert_data<std::string>(p_path);
   const std::vector<std::string> ret =
       qls_all_sync_node(path, is_folder_before_files);
   return py_convert(ret);
@@ -373,8 +365,7 @@ EXPORT(qcat, {
   if (!PyArg_ParseTuple(args, "O", &p_path)) {
     return NULL;
   }
-  std::string path;
-  py_convert(path, p_path);
+  const std::string path = py_convert_data<std::string>(p_path);
   const std::string ret = qcat(path);
   return py_convert(ret);
 });
@@ -385,10 +376,31 @@ EXPORT(qcat_sync_node, {
   if (!PyArg_ParseTuple(args, "O", &p_path)) {
     return NULL;
   }
-  std::string path;
-  py_convert(path, p_path);
+  const std::string path = py_convert_data<std::string>(p_path);
   const std::string ret = qcat_sync_node(path);
   return py_convert(ret);
+});
+
+EXPORT(qcat_bytes, {
+  using namespace qlat;
+  PyObject* p_path = NULL;
+  if (!PyArg_ParseTuple(args, "O", &p_path)) {
+    return NULL;
+  }
+  const std::string path = py_convert_data<std::string>(p_path);
+  const std::string ret = qcat(path);
+  return py_convert(get_data(ret));
+});
+
+EXPORT(qcat_bytes_sync_node, {
+  using namespace qlat;
+  PyObject* p_path = NULL;
+  if (!PyArg_ParseTuple(args, "O", &p_path)) {
+    return NULL;
+  }
+  const std::string path = py_convert_data<std::string>(p_path);
+  const std::string ret = qcat_sync_node(path);
+  return py_convert(get_data(ret));
 });
 
 EXPORT(qar_create, {

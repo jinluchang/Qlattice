@@ -317,51 +317,6 @@ inline int qrename(const std::string& old_path, const std::string& new_path)
   return rename(old_path.c_str(), new_path.c_str());
 }
 
-inline int qtouch(const std::string& path)
-{
-  TIMER("qtouch");
-  FILE* file = qopen(path, "w");
-  qassert(file != NULL);
-  return qclose(file);
-}
-
-inline int qtouch(const std::string& path, const std::string& content)
-{
-  TIMER("qtouch");
-  FILE* file = qopen(path + ".partial", "w");
-  qassert(file != NULL);
-  display(content, file);
-  qclose(file);
-  return qrename(path + ".partial", path);
-}
-
-inline int qappend(const std::string& path, const std::string& content)
-{
-  TIMER("qappend");
-  FILE* file = qopen(path, "a");
-  qassert(file != NULL);
-  display(content, file);
-  qclose(file);
-  return qrename(path, path);
-}
-
-inline std::string qcat(const std::string& path)
-{
-  TIMER("qcat");
-  FILE* fp = qopen(path, "r");
-  if (fp == NULL) {
-    return "";
-  }
-  fseek(fp, 0, SEEK_END);
-  const long length = ftell(fp);
-  fseek(fp, 0, SEEK_SET);
-  std::string ret(length, 0);
-  const long length_actual = fread(&ret[0], 1, length, fp);
-  qassert(length == length_actual);
-  qclose(fp);
-  return ret;
-}
-
 inline void switch_monitor_file(const std::string& path)
 {
   qclose(get_monitor_file());

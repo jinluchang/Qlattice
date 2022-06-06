@@ -66,6 +66,8 @@ gf_show_info: plaq = 0.6147333258459872 ; link_trace = 0.8844956937132934.
 mk_file_dirs_info: 'results/ckpoint_lat.0'.
 mk_file_dirs_info: 'results/ckpoint_lat.1'.
 Cache: 'ShufflePlanCache': 0 / 16 [8] to add
+QFile: open 'results/ckpoint_lat.1.partial.partial' with 'w'.
+QFile: close 'results/ckpoint_lat.1.partial.partial' with 'w'.
 qrename: 'results/ckpoint_lat.1.partial.partial' 'results/ckpoint_lat.1.partial'
 q_write_par_limit=16 (default)
 QFile: open 'results/ckpoint_lat.1.partial' with 'a'.

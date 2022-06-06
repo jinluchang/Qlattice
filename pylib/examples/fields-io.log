@@ -23,7 +23,7 @@ set q_field_init=fast.
 q_mem_cache_max_size=512 (default)
 q_mem_cache_acc_max_size=512 (default)
 Cache: 'ShufflePlanCache': 0 / 16 [8] to add
-prop 870829356 49123.69045958381
+prop 4021037301 49304.10827466952
 mk_file_dirs_info: 'results/prop.fields'.
 FieldsWriter: open 'results/prop.fields'.
 QFile: open 'results/prop.fields/geon-info.txt' with 'w'.
@@ -47,7 +47,7 @@ Cache: 'ShufflePlanCache': 1 / 16 [8] to add
 shuffle_field(fs,f,sp): 1x1x1x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 2304 ; total_size: 0.001 GB)
 write(sfw,fn,field): writing field with fn='prop' from 'results/prop.fields'.
 shuffle_field(fs,f,sp): 1x1x1x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.001 GB)
-s_prop = SelProp(fsel) and s_prop @= prop 12284.876386438671
+s_prop = SelProp(fsel) and s_prop @= prop 12391.820999045736
 shuffle_field(fs,f,sp): 1x1x1x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
 make_shuffle_plan_generic: num_send_packs =          2
 make_shuffle_plan_generic: num_recv_packs =          4
@@ -60,7 +60,7 @@ make_shuffle_plan_generic: total num_recv_msgs  =          2
 make_shuffle_plan_generic: global_comm_size =        128
 write(sfw,fn,sf,sbs): writing sparse field with fn='s_prop' from 'results/prop.fields'.
 shuffle_field(sel_fs,sel_f,sp): 1x1x1x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.000 GB)
-prop1 = SelProp(fselc) and prop1 @= prop 12473.61033385478
+prop1 = SelProp(fselc) and prop1 @= prop 12589.607155640306
 shuffle_field(fs,f,sp): 1x1x1x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
 make_shuffle_plan_generic: num_send_packs =          3
 make_shuffle_plan_generic: num_recv_packs =          4
@@ -93,13 +93,13 @@ sfr.new_size_node() [1, 1, 1, 8]
 read(sfr,fn,field): reading field with fn='prop.d' from 'results/prop.fields'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'prop.d' from 'results/prop.fields'.
 shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x1x1x2 (total_site: 4x4x4x8 ; site_size: 2304 ; total_size: 0.001 GB)
-prop_d 870829356 49123.69045958381
+prop_d 4021037301 49304.10827466952
 prop_d -= prop 4103169609 0.0
 read(sfr,fn,field): reading field with fn='prop' from 'results/prop.fields'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'prop' from 'results/prop.fields'.
 shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x1x1x2 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.001 GB)
-prop_f 1892650077 49123.69044826866
-prop_f -= prop 2597284097 2.49414274358721e-11
+prop_f 3862544378 49304.10827993393
+prop_f -= prop 412417133 2.4915300645954918e-11
 shuffle_field(fs,f,sp): 1x1x1x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
 make_shuffle_plan_generic: num_send_packs =          2
 make_shuffle_plan_generic: num_recv_packs =          4
@@ -113,8 +113,8 @@ make_shuffle_plan_generic: global_comm_size =        128
 read(sfr,fn,sbs,sf): reading sparse field with fn='s_prop' from 'results/prop.fields'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 's_prop' from 'results/prop.fields'.
 shuffle_field_back(sel_f,sel_fs,sp): 1x1x1x8 -> 1x1x1x2 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.000 GB)
-s_prop_f 12284.876383957711
-s_prop_f -= s_prop 6.230949178744703e-12
+s_prop_f 12391.820997493403
+s_prop_f -= s_prop 6.256200246927719e-12
 shuffle_field(fs,f,sp): 1x1x1x2 -> 1x1x1x8 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
 make_shuffle_plan_generic: num_send_packs =          3
 make_shuffle_plan_generic: num_recv_packs =          4
@@ -128,8 +128,8 @@ make_shuffle_plan_generic: global_comm_size =        130
 read(sfr,fn,sbs,sf): reading sparse field with fn='prop1' from 'results/prop.fields'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'prop1' from 'results/prop.fields'.
 shuffle_field_back(sel_f,sel_fs,sp): 1x1x1x8 -> 1x1x1x2 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.000 GB)
-prop1_f 12473.61033144344
-prop1_f -= prop1 6.319120089073607e-12
+prop1_f 12589.607153844107
+prop1_f -= prop1 6.356573470801079e-12
 read(sfr,fn,sf,fsel): reading field with fn='prop1' from 'results/prop.fields'.
 read_tag(fr,fn,total_site,crc,data_len,is_sparse_field): 'prop1' from 'results/prop.fields'.
 shuffle_field_back(f,fs,sp): 1x1x1x8 -> 1x1x1x2 (total_site: 4x4x4x8 ; site_size: 8 ; total_size: 0.000 GB)
@@ -143,8 +143,8 @@ make_shuffle_plan_generic: total num_send_msgs  =          2
 make_shuffle_plan_generic: total num_recv_msgs  =          2
 make_shuffle_plan_generic: global_comm_size =        130
 shuffle_field_back(sel_f,sel_fs,sp): 1x1x1x8 -> 1x1x1x2 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.000 GB)
-prop1_ff 12473.61033144344
-prop1_ff -= prop1 6.319120089073607e-12
+prop1_ff 12589.607153844107
+prop1_ff -= prop1 6.356573470801079e-12
 QFile: close 'results/prop.fields/00/0000000000' with 'r'.
 QFile: close 'results/prop.fields/01/0000000001' with 'r'.
 QFile: close 'results/prop.fields/02/0000000002' with 'r'.

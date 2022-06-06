@@ -158,7 +158,7 @@ make_shuffle_plan_fft: total num_send_msgs  =          4
 make_shuffle_plan_fft: total num_recv_msgs  =          4
 make_shuffle_plan_fft: global_comm_size =        512
 9.736817294647487 9.736817294647567 5.21799724578331e-21
-38988.29486921299 38988.29486921171 2.1821150638438617e-17
+14746353.2664898 14746353.266489591 5.397048842708105e-18
 CHECK: finished successfully.
 Cache: 'CommPlanCache': 1 / 32 [16] clear
 Cache: 'FftComplexFieldPlanCache': 8 / 32 [16] clear

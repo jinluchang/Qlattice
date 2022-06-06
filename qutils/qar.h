@@ -94,7 +94,7 @@ struct QFile {
           ssprintf("QFile: open '%s' with '%s' failed.", path.c_str(), mode.c_str()));
     }
     is_eof = false;
-    pos = 0;
+    pos = ftell(fp);
     offset_start = 0;
     offset_end = -1;
   }

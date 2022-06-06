@@ -21,8 +21,10 @@ def sm_evolve(momentum_ft, field_init, action, fg_dt, dt, fft, ifft):
     # force gradient algorithm
     geo = field_init.geo()
     V = geo.total_volume()
+    #
     field = q.Field("double",geo)
     field @= field_init
+    #
     momentum = q.Field("double",geo)
     momentum.set_double_from_complex(ifft*momentum_ft)
     momentum*=1/V**0.5
@@ -66,12 +68,19 @@ def hmc_evolve(field, momentum_ft, field_ft, action, masses, steps, dt, V, vev, 
     if(estimate_masses):
         vevs=[]
         geo = field_ft.geo()
-        field_sq_av = q.Field("double",geo,geo.multiplicity())
-        force_sq_av = q.Field("double",geo,geo.multiplicity())
-        field_sq = q.Field("double",geo,geo.multiplicity())
-        force_sq = q.Field("double",geo,geo.multiplicity())
-        field_sq_av.set_zero()
-        force_sq_av.set_zero()
+        # Fields to store the average of the modulus of the field
+        # and the forces over the course of the trajectory
+        field_mod_av = q.Field("double",geo,geo.multiplicity())
+        force_mod_av = q.Field("double",geo,geo.multiplicity())
+        field_mod_av.set_zero()
+        force_mod_av.set_zero()
+        # Fields to store the modulus of the field and the forces over 
+        # the course of the trajectory
+        field_mod = q.Field("double",geo,geo.multiplicity())
+        force_mod = q.Field("double",geo,geo.multiplicity())
+        # A field to keep track of which modes may have unreliable
+        # mass estimates
+        mask = q.Field("double",geo,geo.multiplicity())
     for i in range(steps):
         sm_evolve(momentum_ft, field, action, 4.0 * ttheta / dt, 0.5 * dt, fft, ifft);
         action.hmc_field_evolve(field_ft, momentum_ft, masses, (1.0 - 2.0 * lam) * dt);
@@ -93,37 +102,45 @@ def hmc_evolve(field, momentum_ft, field_ft, action, masses, steps, dt, V, vev, 
             field_ft.set_complex_from_double(field)
             field_ft=fft*field_ft
             field_ft*=1/V**0.5
-            # Add the mod squared of the current field configuration to the 
-            # average
-            #forces.append([force_ft.get_elem([0,0,0,0],0),force_ft.get_elem([4,1,0,0],0)])
-            #fields.append([field_ft.get_elem([0,0,0,0],0),field_ft.get_elem([4,1,0,0],0)])
+            # Add the modulus of the current field configuration to the 
+            # average (for the field, we subtract the vaccum expectation
+            # value of sigma from the zero mode)
             field_ft.set_elem([0,0,0,0],0,np.array([field_ft.get_elem([0,0,0,0],0)-vev*V**0.5], dtype='c16').tobytes())
-            field_sq.set_abs_from_complex(field_ft)
+            field_mod.set_abs_from_complex(field_ft)
+            # Add back the vacuum expectation value of sigma to the field
             field_ft.set_elem([0,0,0,0],0,np.array([field_ft.get_elem([0,0,0,0],0)+vev*V**0.5], dtype='c16').tobytes())
-            field_sq*=1/steps
-            field_sq_av+=field_sq
-            force_sq.set_abs_from_complex(force_ft)
-            force_sq*=1/steps
-            force_sq_av+=force_sq
+            field_mod*=1/steps
+            field_mod_av+=field_mod
+            force_mod.set_abs_from_complex(force_ft)
+            force_mod*=1/steps
+            force_mod_av+=force_mod
+            # Save data to estimate the v.e.v. of sigma
             field_sum = field.glb_sum()
             vevs.append(field_sum[0]/V)
     if(estimate_masses):
         # Estimate the masses we should use in order to evolve each field 
         # mode by half of its period
         masses_new = q.Field("double",geo,geo.multiplicity())
-        #force_ft.set_complex_from_double(force)
-        #force_ft=fft*force_ft
-        #force_ft*=1/V**0.5
-        #action.hmc_estimate_mass(masses_new, field_ft, force_ft, np.mean(vev))
-        masses_new.set_ratio_double(force_sq_av, field_sq_av)
+        masses_new.set_ratio_double(force_mod_av, field_mod_av)
+        # If any of the values of field_mod_av are small, the estimated
+        # mass may be unreliable. Using the inverse masses to set the 
+        # scale, we keep track of where the possibly unreliable masses
+        # are in the mask field (a value of 1 means reliable, and 0 means
+        # unreliable)
+        masses.invert_double()
+        masses*=0.1
+        masses.less_than_double(field_mod_av, mask)
+        masses*=10.0
+        masses.invert_double()
+        # After multiplying the ratio of force_mod_av/field_mod_av by
+        # (pi/2)**(-2), we have our estimated masses
         masses_new *= 4/np.pi**2
-        #q.displayln_info(f"Vev: {np.mean(vevs)}")
-        return masses_new, np.mean(vevs)
+        return masses_new, mask, np.mean(vevs)
     else:
-        return 0,0      
+        return 0,0,0
 
 @q.timer_verbose
-def run_hmc_evolve(field, momentum_ft, field_ft, action, masses, rs, steps, md_time, V, vev, estimate_masses, fft, ifft):
+def run_hmc_evolve(field, momentum_ft, field_ft, action, masses, mask, rs, steps, md_time, V, vev, estimate_masses, fft, ifft):
     # Calculate the value of the molecular dynamics Hamiltonian for the 
     # initial field and momentum configuration
     energy = action.hmc_m_hamilton_node(momentum_ft, masses) + action.action_node(field)
@@ -131,7 +148,7 @@ def run_hmc_evolve(field, momentum_ft, field_ft, action, masses, rs, steps, md_t
     # Evolve the field forward in molecular dynamics time using the 
     # given momenta and the Hamiltonian appropriate for the action
     dt = float(md_time) / float(steps)
-    masses_new, vev_new = hmc_evolve(field, momentum_ft, field_ft, action, masses, steps, dt, V, vev, estimate_masses, fft, ifft)
+    masses_new, mask_new, vev_new = hmc_evolve(field, momentum_ft, field_ft, action, masses, steps, dt, V, vev, estimate_masses, fft, ifft)
     
     # Calculate the change in the value of the molecular dynamics 
     # Hamilton after the evolution 
@@ -140,6 +157,7 @@ def run_hmc_evolve(field, momentum_ft, field_ft, action, masses, rs, steps, md_t
     if(estimate_masses):
         # Save the new estimated masses
         masses@=masses_new
+        mask@=mask_new
     
     # Sum over delta_h for every parallel node (each node handles part 
     # of the lattice)
@@ -176,7 +194,7 @@ def metropolis_accept(delta_h, traj, rs):
     return flag, accept_prob
 
 @q.timer_verbose
-def run_hmc(field, field_predicted, geo, action, masses, traj, rs, vev, estimate_masses, perform_metro, fft, ifft):
+def run_hmc(field, field_predicted, geo, action, masses, mask, traj, rs, vev, estimate_masses, perform_metro, fft, ifft):
     # Create a copy of the scalar field
     f0 = field.copy()
     
@@ -202,6 +220,9 @@ def run_hmc(field, field_predicted, geo, action, masses, traj, rs, vev, estimate
     momentum_ft = fft*momentum_ft
     momentum_ft*=1/geo.total_volume()**0.5
     
+    momentum_init = q.Field("double", geo, mult)
+    momentum_init.set_abs_from_complex(momentum_ft)
+    
     momentums.append([[momentum_ft.get_elem([0,0,0,0],0),momentum_ft.get_elem([1,0,0,0],0),momentum_ft.get_elem([0,2,0,0],0),momentum_ft.get_elem([3,0,0,0],0)],
                       [momentum_ft.get_elem([0,0,0,0],1),momentum_ft.get_elem([1,0,0,0],1),momentum_ft.get_elem([0,2,0,0],1),momentum_ft.get_elem([3,0,0,0],1)]])
     
@@ -215,7 +236,7 @@ def run_hmc(field, field_predicted, geo, action, masses, traj, rs, vev, estimate
     
     # Evolve the field over time md_time using the given momenta and 
     # the Hamiltonian appropriate for the given action
-    delta_h, vev_new = run_hmc_evolve(f0, momentum_ft, field_ft, action, masses, rs, steps, md_time, geo.total_volume(), vev, estimate_masses, fft, ifft)
+    delta_h, vev_new = run_hmc_evolve(f0, momentum_ft, field_ft, action, masses, mask, rs, steps, md_time, geo.total_volume(), vev, estimate_masses, fft, ifft)
     
     # Decide whether to accept or reject the field update using the 
     # metropolis algorithm
@@ -237,7 +258,13 @@ def run_hmc(field, field_predicted, geo, action, masses, traj, rs, vev, estimate
         field_predicted_ft*=1/geo.total_volume()**0.5
         field_predicted.set_double_from_complex(field_predicted_ft)
     
-    return vev_new
+    field_ft_r = q.Field("double", geo, mult)
+    field_ft_r.set_abs_from_complex(field_ft)
+    field_ft_r.set_elem([0,0,0,0],0,np.array([field_ft_r.get_elem([0,0,0,0],0)-vev*geo.total_volume()**0.5], dtype='double').tobytes())
+    momentum_ratio = q.Field("double", geo, mult)
+    momentum_ratio.set_ratio_double(momentum_init, field_ft_r)
+    momentum_ratio*=2/np.pi
+    return [vev_new,momentum_ratio]
 
 @q.timer_verbose
 def test_hmc(total_site, action, mult, n_traj):
@@ -269,6 +296,12 @@ def test_hmc(total_site, action, mult, n_traj):
     # Create axuillary fields to store mass estimates
     masses_new = q.Field("double",geo,mult)
     masses_old = q.Field("double",geo,mult)
+    # Create a field to keep track of which modes may have unreliable
+    # mass estimates
+    mask = q.Field("double",geo,mult)
+    # Create a field to store the divisors when taking averages
+    divisors = q.Field("double",geo,mult)
+    divisors.set_unit()
     
     # Create the geometry for the axial current field
     geo_cur = q.Geometry(total_site, mult-1)
@@ -277,12 +310,6 @@ def test_hmc(total_site, action, mult, n_traj):
     
     # Stores the index of the current trajectory
     traj = 0
-    # The number of trajectories to calculate before taking measurements
-    start_measurements = 0;
-    init_length = 20
-    block_length = 200
-    num_blocks = 1
-    final_block_length = 300
     
     # A variable to store the estimated vacuum expectation value of sigma
     vev = 0
@@ -295,57 +322,46 @@ def test_hmc(total_site, action, mult, n_traj):
         
         # Run the HMC algorithm to update the field configuration
         if(traj<init_length):
-            vev = run_hmc(field, field_predicted, geo, action, masses, traj, rs.split("hmc-{}".format(traj)), vev, True, False, fft, ifft)
+            [vev,m] = run_hmc(field, field_predicted, geo, action, masses, mask, traj, rs.split("hmc-{}".format(traj)), vev, True, False, fft, ifft)
             vevs = [vev]
         elif(traj<init_length+num_blocks*block_length):
             if((traj-init_length) % block_length == 0):
+                divisors.invert_double()
+                masses.multiply_double(divisors)
                 masses_new @= masses
                 q.set_zero(masses)
+                q.set_zero(divisors)
                 vev=np.mean(vevs)
                 vevs=[]
             masses_old @= masses_new
-            run_hmc(field, field_predicted, geo, action, masses_new, traj, rs.split("hmc-est-mass{}".format(i)), vev, True, True, fft, ifft)
+            run_hmc(field, field_predicted, geo, action, masses_new, mask, traj, rs.split("hmc-est-mass{}".format(traj)), vev, True, True, fft, ifft)
             # Take the average of all the estimated masses in this block
-            masses_new*=1/block_length
-            masses+=masses_new
+            if((traj-init_length) % block_length >= init_length):
+                masses_new.multiply_double(mask)
+                masses+=masses_new
+                divisors+=mask
+                vevs.append(field.glb_sum()[0]/V)
+            q.displayln_info("Estmiated masses:")
+            ms=[masses_new.get_elem([0,0,0,0],0),masses_new.get_elem([0,0,0,0],1)]
+            q.displayln_info(ms)
             # Keep using the same estimated masses for every trajectory 
             # in this block
             masses_new @= masses_old
-            vevs.append(field.glb_sum()[0]/V)
-            q.displayln_info("Estmiated masses:")
-            ms=[masses_new.get_elem([0,0,0,0],0),masses_new.get_elem([1,0,0,0],0),masses_new.get_elem([5,0,0,0],0)]
-            q.displayln_info(ms)
-        elif(traj<init_length+num_blocks*block_length+final_block_length):
-            if(traj==init_length+num_blocks*block_length):
-                masses_new @= masses
-                q.set_zero(masses)
-                vev=np.mean(vevs)
-                vevs=[]
-            masses_old @= masses_new
-            run_hmc(field, field_predicted, geo, action, masses_new, traj, rs.split("hmc-est-mass{}".format(i)), vev, True, True, fft, ifft)
-            # Take the average of all the estimated masses in this block
-            masses_new*=1/final_block_length
-            masses+=masses_new
-            # Keep using the same estimated masses for every trajectory 
-            # in this block
-            masses_new @= masses_old
-            vevs.append(field.glb_sum()[0]/V)
-            q.displayln_info("Estmiated masses:")
-            ms=[masses_new.get_elem([0,0,0,0],0),masses_new.get_elem([1,0,0,0],0),masses_new.get_elem([5,0,0,0],0)]
-            q.displayln_info(ms)
         else:
-            if(traj==init_length+num_blocks*block_length+final_block_length):
+            if(traj==init_length+num_blocks*block_length):
+                divisors.invert_double()
+                masses.multiply_double(divisors)
                 vev=np.mean(vevs)
-                masses.save_double(f"output_data/masses_{total_site[0]}x{total_site[3]}_msq_{m_sq}_lmbd_{lmbd}_alph_{alpha}_{datetime.datetime.now().date()}.field")
-            run_hmc(field, field_predicted, geo, action, masses, traj, rs.split("hmc-{}".format(traj)), vev, False, True, fft, ifft)
+                # masses.save_double(f"output_data/masses_{total_site[0]}x{total_site[3]}_msq_{m_sq}_lmbd_{lmbd}_alph_{alpha}_{datetime.datetime.now().date()}.field")
+            run_hmc(field, field_predicted, geo, action, masses, mask, traj, rs.split("hmc-{}".format(traj)), vev, False, True, fft, ifft)
         
         # Calculate the expectation values of phi and phi^2
         q.displayln_info("Average phi^2:")
         psq = phi_squared(field, action)
         q.displayln_info(psq)
-        q.displayln_info("Average phi^2 predicted:")
+        #q.displayln_info("Average phi^2 predicted:")
         psq_predicted = phi_squared(field_predicted, action)
-        q.displayln_info(psq_predicted)
+        #q.displayln_info(psq_predicted)
         
         q.displayln_info("Average phi:")
         field_sum = field.glb_sum()
@@ -358,11 +374,9 @@ def test_hmc(total_site, action, mult, n_traj):
         #ms=[calc_mass([0,0,0,0]),calc_mass([1,0,0,0]),calc_mass([2,0,0,0]),calc_mass([3,0,0,0]),calc_mass([4,0,0,0]),calc_mass([5,0,0,0])]
         #q.displayln_info(ms)
         
-        q.displayln_info("Estmiated masses:")
-        ms=[masses.get_elem([0,0,0,0],0),masses.get_elem([1,0,0,0],0),masses.get_elem([2,0,0,0],0),masses.get_elem([3,0,0,0],0),masses.get_elem([4,0,0,0],0),masses.get_elem([5,0,0,0],0)]
-        q.displayln_info(ms)
-        ms=[masses.get_elem([0,0,0,0],1),masses.get_elem([1,0,0,0],1),masses.get_elem([2,0,0,0],1),masses.get_elem([3,0,0,0],1),masses.get_elem([4,0,0,0],1),masses.get_elem([5,0,0,0],1)]
-        q.displayln_info(ms)
+        #q.displayln_info("Estmiated masses:")
+        #ms=[masses.get_elem([0,0,0,0],0),masses.get_elem([0,0,0,0],1)]
+        #q.displayln_info(ms)
         
         tslices = field.glb_sum_tslice()
         tslices_predicted = field_predicted.glb_sum_tslice()
@@ -414,15 +428,24 @@ fields_pred=[]
 momentums=[]
 
 # The lattice dimensions
-total_site = [8,8,8,16]
+total_site = [8,8,8,8]
 
 # The multiplicity of the scalar field
 mult = 4
 
 # The number of trajectories to calculate
-n_traj = 500
+n_traj = 300
+# The number of trajectories to calculate before taking measurements
+start_measurements = 0;
+# The number of initial trajectories during which to accept all updates
+init_length = 20
+# The number of trajectories to use for one estimation of the opitmal
+# masses
+block_length = 50
+# The number of iteractions to use to estimate the masses
+num_blocks = 3
 # The number of steps to take in a single trajectory
-steps = 50
+steps = 10
 # The length of a single trajectory in molecular dynamics time
 md_time = 1.0
 
@@ -448,8 +471,10 @@ for i in range(1,len(sys.argv),2):
             lmbd = float(sys.argv[i+1])
         elif(sys.argv[i]=="-a"):
             alpha = float(sys.argv[i+1])
+        elif(sys.argv[i]=="-s"):
+            steps = float(sys.argv[i+1])
     except:
-        raise Exception("Invalid arguments: use -d for lattice dimensions, -n for multiplicity, -t for number of trajectories, -m for mass squared, -l for lambda, and -a for alpha. e.g. python hmc-pions.py -l 8x8x8x16 -n 4 -t 50 -m -1.0 -l 1.0 -a 0.1")
+        raise Exception("Invalid arguments: use -d for lattice dimensions, -n for multiplicity, -t for number of trajectories, -m for mass squared, -l for lambda, -a for alpha, and -s for the number of steps in a trajectory. e.g. python hmc-pions.py -l 8x8x8x16 -n 4 -t 50 -m -1.0 -l 1.0 -a 0.1")
 
 size_node_list = [
         [1, 1, 1, 1],

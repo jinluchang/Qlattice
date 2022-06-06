@@ -23,9 +23,11 @@ set q_field_init=fast.
 q_mem_cache_max_size=512 (default)
 q_mem_cache_acc_max_size=512 (default)
 Cache: 'ShufflePlanCache': 0 / 16 [8] to add
-prop.crc32() = 870829356 ; prop.qnorm() = 49123.69045958381
+prop.crc32() = 4021037301 ; prop.qnorm() = 49304.10827466952
 mk_file_dirs_info: 'results/prop.field'.
 write_field: fn='results/prop.field'.
+QFile: open 'results/prop.field.partial.partial' with 'w'.
+QFile: close 'results/prop.field.partial.partial' with 'w'.
 qrename: 'results/prop.field.partial.partial' 'results/prop.field.partial'
 q_write_par_limit=16 (default)
 QFile: open 'results/prop.field.partial' with 'a'.
@@ -37,9 +39,11 @@ QFile: close 'results/prop.field' with 'r'.
 q_read_par_limit=16 (default)
 QFile: open 'results/prop.field' with 'r'.
 QFile: close 'results/prop.field' with 'r'.
-prop.crc32() = 870829356 ; prop.qnorm() = 49123.69045958381
+prop.crc32() = 4021037301 ; prop.qnorm() = 49304.10827466952
 mk_file_dirs_info: 'results/prop-double.field'.
 write_field: fn='results/prop-double.field'.
+QFile: open 'results/prop-double.field.partial.partial' with 'w'.
+QFile: close 'results/prop-double.field.partial.partial' with 'w'.
 qrename: 'results/prop-double.field.partial.partial' 'results/prop-double.field.partial'
 QFile: open 'results/prop-double.field.partial' with 'a'.
 QFile: close 'results/prop-double.field.partial' with 'a'.
@@ -49,9 +53,11 @@ QFile: open 'results/prop-double.field' with 'r'.
 QFile: close 'results/prop-double.field' with 'r'.
 QFile: open 'results/prop-double.field' with 'r'.
 QFile: close 'results/prop-double.field' with 'r'.
-prop.crc32() = 870829356 ; prop.qnorm() = 49123.69045958381
+prop.crc32() = 4021037301 ; prop.qnorm() = 49304.10827466952
 mk_file_dirs_info: 'results/prop-float.field'.
 write_field: fn='results/prop-float.field'.
+QFile: open 'results/prop-float.field.partial.partial' with 'w'.
+QFile: close 'results/prop-float.field.partial.partial' with 'w'.
 qrename: 'results/prop-float.field.partial.partial' 'results/prop-float.field.partial'
 QFile: open 'results/prop-float.field.partial' with 'a'.
 QFile: close 'results/prop-float.field.partial' with 'a'.
@@ -61,28 +67,30 @@ QFile: open 'results/prop-float.field' with 'r'.
 QFile: close 'results/prop-float.field' with 'r'.
 QFile: open 'results/prop-float.field' with 'r'.
 QFile: close 'results/prop-float.field' with 'r'.
-prop.crc32() = 1892650077 ; prop.qnorm() = 49123.69044826866
-sp_prop 188.73394748572775
+prop.crc32() = 3862544378 ; prop.qnorm() = 49304.10827993393
+sp_prop 197.78615635070122
 mk_file_dirs_info: 'results/prop.lat'.
 QFile: open 'results/prop.lat.partial' with 'w'.
 qrename: 'results/prop.lat.partial' 'results/prop.lat'
 QFile: close 'results/prop.lat.partial' with 'w'.
 QFile: open 'results/prop.lat' with 'r'.
 QFile: close 'results/prop.lat' with 'r'.
-sp_prop 188.73394748572775 0.0 save load
-sp_prop 188.73394748572775 0.0 lat_data conversion
+sp_prop 197.78615635070122 0.0 save load
+sp_prop 197.78615635070122 0.0 lat_data conversion
 mk_file_dirs_info: 'results/prop.sfield'.
 write_selected_field: fn='results/prop.sfield'.
+QFile: open 'results/prop.sfield.partial.partial' with 'w'.
+QFile: close 'results/prop.sfield.partial.partial' with 'w'.
 qrename: 'results/prop.sfield.partial.partial' 'results/prop.sfield.partial'
 qrename: 'results/prop.sfield.partial' 'results/prop.sfield'
 read_selected_field: fn='results/prop.sfield'.
-s_prop 12284.876383957711 0.0
-prop1 12473.61033144344
-sp_prop1 188.73394748572775 0.0
-s_prop1 12284.876383957711 0.0
-prop : 870829356
-prop_msc : 1691244877
-prop_wm : 870829356
+s_prop 12391.820997493403 0.0
+prop1 12589.607153844107
+sp_prop1 197.78615635070122 0.0
+s_prop1 12391.820997493403 0.0
+prop : 4021037301
+prop_msc : 2846833498
+prop_wm : 4021037301
 ['prop.field', 'prop-double.field', 'prop-float.field', 'prop.lat', 'prop.sfield']
 CHECK: finished successfully.
 Cache: 'ShufflePlanCache': 1 / 16 [8] clear

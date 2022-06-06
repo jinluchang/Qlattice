@@ -595,7 +595,7 @@ void set_u_rand_double(Field<M>& f, const RngState& rs,
     Vector<M> v = f.get_elems(xl);
     Vector<double> dv((double*)v.data(), v.data_size() / sizeof(double));
     for (int m = 0; m < dv.size(); ++m) {
-      dv[m] = u_rand_gen(rsi, 1.0, -1.0);
+      dv[m] = u_rand_gen(rsi, upper, lower);
     }
   }
 }
@@ -615,7 +615,7 @@ void set_u_rand_float(Field<M>& f, const RngState& rs, const double upper = 1.0,
     Vector<M> v = f.get_elems(xl);
     Vector<float> dv((float*)v.data(), v.data_size() / sizeof(float));
     for (int m = 0; m < dv.size(); ++m) {
-      dv[m] = u_rand_gen(rsi, 1.0, -1.0);
+      dv[m] = u_rand_gen(rsi, upper, lower);
     }
   }
 }
@@ -729,6 +729,59 @@ inline void set_ratio_double(Field<M>& sf, const Field<double>& sf1, const Field
     qassert(N == geo.multiplicity);
     for (int m = 0; m < N; ++m) {
       sf_v[m] = sf1.get_elem(xl,m)/sf2.get_elem(xl,m);
+    }
+  });
+}
+
+template <class M>
+inline void less_than_double(Field<M>& sf1, const Field<double>& sf2, Field<double>& mask)
+{
+  TIMER("less_than");
+  const Geometry geo = sf1.geo();
+  //sf.init(geo);
+  qacc_for(index, geo.local_volume(), {
+    Coordinate xl = geo.coordinate_from_index(index);
+    const Vector<M> v = sf1.get_elems(xl);
+    Vector<double> mask_v = mask.get_elems(xl);
+    const Vector<double> sf1_v((double*)v.data(), v.data_size() / sizeof(double));
+    int N = sf1_v.size();
+    qassert(N == geo.multiplicity);
+    for (int m = 0; m < N; ++m) {
+      mask_v[m] = sf1_v[m] < sf2.get_elem(xl,m);
+    }
+  });
+}
+
+template <class M>
+inline void invert_double(Field<M>& sf)
+{
+  TIMER("invert");
+  const Geometry geo = sf.geo();
+  //sf.init(geo);
+  qacc_for(index, geo.local_volume(), {
+    Coordinate xl = geo.coordinate_from_index(index);
+    Vector<M> v = sf.get_elems(xl);
+    Vector<double> sf_v((double*)v.data(), v.data_size() / sizeof(double));
+    for (int m = 0; m < geo.multiplicity; ++m) {
+      sf_v[m] = 1/sf_v[m];
+    }
+  });
+}
+
+template <class M>
+inline void multiply_double(Field<M>& sf, const Field<double>& factor)
+{
+  TIMER("invert");
+  const Geometry geo = factor.geo();
+  //sf.init(geo);
+  qacc_for(index, geo.local_volume(), {
+    Coordinate xl = geo.coordinate_from_index(index);
+    Vector<M> v = sf.get_elems(xl);
+    Vector<double> sf_v((double*)v.data(), v.data_size() / sizeof(double));
+    int N = sf_v.size();
+    qassert(N == geo.multiplicity);
+    for (int m = 0; m < geo.multiplicity; ++m) {
+      sf_v[m] *= factor.get_elem(xl, m);
     }
   });
 }

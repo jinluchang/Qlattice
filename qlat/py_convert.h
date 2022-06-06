@@ -167,7 +167,8 @@ inline void py_convert(std::string& s, PyObject* in)
   if (PyType_Check(in)) {
     s = ((PyTypeObject*)in)->tp_name;
   } else if (PyBytes_Check(in)) {
-    s = PyBytes_AsString(in);
+    const long size = PyBytes_Size(in);
+    s = std::string(PyBytes_AsString(in), size);
   } else if (PyUnicode_Check(in)) {
     PyObject* temp = PyUnicode_AsEncodedString(in, "UTF-8", "strict");
     pqassert(temp);
@@ -254,6 +255,24 @@ inline void py_convert<bool>(std::vector<bool>& out, PyObject* in)
 
 template <class M>
 void py_convert(Vector<M> out, PyObject* in)
+{
+  if (PyList_Check(in)) {
+    pqassert(out.size() == PyList_Size(in));
+    for (long i = 0; i < out.size(); i++) {
+      py_convert(out[i], PyList_GetItem(in, i));
+    }
+  } else if (PyTuple_Check(in)) {
+    pqassert(out.size() == PyTuple_Size(in));
+    for (long i = 0; i < out.size(); i++) {
+      py_convert(out[i], PyTuple_GetItem(in, i));
+    }
+  } else {
+    pqassert(false);
+  }
+}
+
+template <class M, unsigned long N>
+void py_convert(array<M, N>& out, PyObject* in)
 {
   if (PyList_Check(in)) {
     pqassert(out.size() == PyList_Size(in));
@@ -523,6 +542,12 @@ PyObject* py_convert(const Vector<M>& vec)
     PyList_SetItem(ret, i, py_convert(vec[i]));
   }
   return ret;
+}
+
+template <>
+inline PyObject* py_convert(const Vector<char>& vec)
+{
+  return PyBytes_FromStringAndSize(vec.data(), vec.size());
 }
 
 inline PyObject* py_convert(const ColorMatrix& x) {

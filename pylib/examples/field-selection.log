@@ -31,6 +31,8 @@ Cache: 'ShufflePlanCache': 0 / 16 [8] to add
 fsel info = Geometry([4, 4, 4, 8], 1) 16 0.25
 mk_file_dirs_info: 'results/fsel.field'.
 write_field: fn='results/fsel.field'.
+QFile: open 'results/fsel.field.partial.partial' with 'w'.
+QFile: close 'results/fsel.field.partial.partial' with 'w'.
 qrename: 'results/fsel.field.partial.partial' 'results/fsel.field.partial'
 q_write_par_limit=16 (default)
 QFile: open 'results/fsel.field.partial' with 'a'.
@@ -44,6 +46,8 @@ QFile: open 'results/fsel.field' with 'r'.
 QFile: close 'results/fsel.field' with 'r'.
 mk_file_dirs_info: 'results/fsel-1.field'.
 write_field: fn='results/fsel-1.field'.
+QFile: open 'results/fsel-1.field.partial.partial' with 'w'.
+QFile: close 'results/fsel-1.field.partial.partial' with 'w'.
 qrename: 'results/fsel-1.field.partial.partial' 'results/fsel-1.field.partial'
 QFile: open 'results/fsel-1.field.partial' with 'a'.
 QFile: close 'results/fsel-1.field.partial' with 'a'.
