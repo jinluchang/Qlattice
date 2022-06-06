@@ -94,6 +94,85 @@ def auto_contractor_meson_corr_wsnk_wsrc(job_tag, traj, get_prop, get_fsel, get_
     ld.save(get_save_path(fn))
 
 @q.timer_verbose
+def auto_contractor_corr_wsnk_wsrc(job_tag, traj, get_prop, get_fsel, get_pi, get_wi):
+    fn = f"auto-contractor-fsel/{job_tag}/traj={traj}/corr/wsnk_wsrc.lat"
+    if get_load_path(fn) is not None:
+        return
+    total_site = rup.get_total_site(job_tag)
+    cexpr = get_cexpr_various_corr()
+    names_expr = get_cexpr_names(cexpr)
+    names_fac = [ "rest", ]
+    ld = q.mk_lat_data([
+        [ "name_fac", len(names_fac), names_fac, ],
+        [ "expr_name", len(names_expr), names_expr, ],
+        [ "tsep", total_site[3], ],
+        [ "val-err-n", 3, [ "val", "err", "n-trails", ] ],
+        ])
+    for tsep in range(total_site[3]):
+        trial_indices = []
+        for t1 in range(total_site[3]):
+            for t2 in range(total_site[3]):
+                if tsep == (t2 - t1) % total_site[3]:
+                    pd = {
+                            "t1" : ("wall", t1,),
+                            "t2" : ("wall", t2,),
+                            }
+                    trial_indices.append(pd)
+        if len(trial_indices) == 0:
+            continue
+        def positions_dict_maker(idx):
+            pd = idx
+            facs = [ 1.0, ]
+            return pd, facs
+        results_list = eval_cexpr_simulation(
+                cexpr,
+                positions_dict_maker = positions_dict_maker,
+                trial_indices = get_mpi_chunk(trial_indices),
+                get_prop = get_prop,
+                is_only_total = "total"
+                )
+        results = results_list[0]
+        if q.get_id_node() == 0:
+            fn = get_save_path(f"auto-contractor-fsel/{job_tag}/traj={traj}/corr/tsep{tsep}.bin")
+            with open(fn, mode='wb') as f:
+                for k, v in results.items():
+                    if v[1].real == 0:
+                        ratio_real = None
+                    else:
+                        ratio_real = v[0].real / v[1].real
+                    if v[1].imag == 0:
+                        ratio_imag = None
+                    else:
+                        ratio_imag = v[0].imag / v[1].imag
+                    q.displayln_info(f"{k}:\n  {v}, ({ratio_real}, {ratio_imag})")
+                    ###
+                    f.write(v[0].real)
+                    f.write(v[0].imag)
+                    f.write(v[1].real)
+                    f.write(v[1].imag)
+    if q.get_id_node() == 0:
+        def mk_key(info):
+            def f(c):
+                if c in "()<>/* ":
+                    return "_"
+                else:
+                    return c
+            info = "".join(map(f, info))
+            while True:
+                fn = info.replace("__", "_")
+                if fn == info:
+                    break
+                info = fn
+            if fn[-1] == "_":
+                fn = fn[:-1]
+            return fn
+        metafn = get_save_path(f"auto-contractor-fsel/{job_tag}/traj={traj}/corr/meta.txt")
+        with open(metafn, mode='w') as metaf:
+            for k, v in results.items():
+                key = mk_key(f"{k}")
+                metaf.write(f"{key}\n")
+
+@q.timer_verbose
 def auto_contractor_meson_corr_psnk_wsrc(job_tag, traj, get_prop, get_fsel, get_pi, get_wi):
     fn = f"auto-contractor-fsel/{job_tag}/traj={traj}/meson_corr/psnk_wsrc.lat"
     if get_load_path(fn) is not None:

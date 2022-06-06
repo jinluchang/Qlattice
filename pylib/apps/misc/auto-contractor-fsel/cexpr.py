@@ -63,6 +63,41 @@ def get_cexpr_meson_corr_with_env():
     return cache_compiled_cexpr(calc_cexpr, f"cache/auto_contractor_cexpr/meson_corr_with_env-cexpr")
 
 @q.timer
+def get_cexpr_corr_ww():
+    def calc_cexpr():
+        exprs = [
+            mk_pi_p("t2", True) * mk_pi_p("t1") + "(pi   * pi)",
+            mk_j5pi_mu("t2", 3) * mk_pi_p("t1") + "(a_pi * pi)",
+            mk_k_p("t2", True)  * mk_k_p("t1")  + "(k    * k )",
+            mk_j5k_mu("t2", 3)  * mk_k_p("t1")  + "(a_k  * k )",
+            mk_k_0("t2", True)  * mk_k_0("t1")  + "(k  * k )",
+            mk_kappa("t2", True)  * mk_kappa("t1")  + "(kappa  * kappa )",
+            mk_Q0_b81("t2", "odd", True)  * mk_Q0_b81("t1", "odd")  + "(Q0o  * Q0o )",
+            mk_Q1_b81("t2", "odd", True)  * mk_Q1_b81("t1", "odd")  + "(Q1o  * Q1o )",
+            mk_Q2_b81("t2", "odd", True)  * mk_Q2_b81("t1", "odd")  + "(Q2o  * Q2o )",
+            mk_Q3_b81("t2", "odd", True)  * mk_Q3_b81("t1", "odd")  + "(Q3o  * Q3o )",
+            mk_Q4_b81("t2", "odd", True)  * mk_Q4_b81("t1", "odd")  + "(Q4o  * Q4o )",
+            mk_Q5_b81("t2", "odd", True)  * mk_Q5_b81("t1", "odd")  + "(Q5o  * Q5o )",
+            mk_Q6_b81("t2", "odd", True)  * mk_Q6_b81("t1", "odd")  + "(Q6o  * Q6o )",
+            mk_Q7_b81("t2", "odd", True)  * mk_Q7_b81("t1", "odd")  + "(Q7o  * Q7o )",
+            mk_Q8_b81("t2", "odd", True)  * mk_Q8_b81("t1", "odd")  + "(Q8o  * Q8o )",
+            mk_Q0_b81("t2", "even", True)  * mk_Q0_b81("t1", "even")  + "(Q0e  * Q0e )",
+            mk_Q1_b81("t2", "even", True)  * mk_Q1_b81("t1", "even")  + "(Q1e  * Q1e )",
+            mk_Q2_b81("t2", "even", True)  * mk_Q2_b81("t1", "even")  + "(Q2e  * Q2e )",
+            mk_Q3_b81("t2", "even", True)  * mk_Q3_b81("t1", "even")  + "(Q3e  * Q3e )",
+            mk_Q4_b81("t2", "even", True)  * mk_Q4_b81("t1", "even")  + "(Q4e  * Q4e )",
+            mk_Q5_b81("t2", "even", True)  * mk_Q5_b81("t1", "even")  + "(Q5e  * Q5e )",
+            mk_Q6_b81("t2", "even", True)  * mk_Q6_b81("t1", "even")  + "(Q6e  * Q6e )",
+            mk_Q7_b81("t2", "even", True)  * mk_Q7_b81("t1", "even")  + "(Q7e  * Q7e )",
+            mk_Q8_b81("t2", "even", True)  * mk_Q8_b81("t1", "even")  + "(Q8e  * Q8e )",
+        ]
+        cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
+        q.displayln_info(display_cexpr(cexpr))
+        cexpr.collect_op()
+        return cexpr
+    return cache_compiled_cexpr(calc_cexpr, f"cache/auto_contractor_cexpr/meson_corr_cexpr")
+
+@q.timer
 def get_cexpr_3f4f_matching():
     @q.timer
     def calc_cexpr():
@@ -97,6 +132,7 @@ def get_cexpr_3f4f_matching():
             [ mk_kpi_0_i3halves("t2_1", "t2_3") + "Kpi_0_I3halves_t2_3", 1, 1.5,],
             [ mk_kpi_0_i1half("t2_1", "t2_4") + "Kpi_0_I1half_t2_4", 1, 0.5,],
             [ mk_kpi_0_i3halves("t2_1", "t2_4") + "Kpi_0_I3halves_t2_4", 1, 1.5,],
+            [ mk_kappa("t2_1") + "kappa", 1, 0.5,],
         ]
         exprs_src_for2pt = [
             [ mk_Q0_b81("t2_1", "even", True) + "Q0_b81wsrc(e)", 1, 0.5,],
@@ -125,6 +161,7 @@ def get_cexpr_3f4f_matching():
             [ mk_kk_i0("t1_1", "t1_4", True) + "KK_I0_t1_4", 1, 0,],
             [ mk_sigma("t1_1", True) + "sigma", 1, 0,],
             [ mk_pi_0("t1_1", True) + "pi0", -1, 1,],
+            [ mk_a0_0("t1_1", True) + "a0_0", 1, 1,],
             [ mk_expr(1) + "1", 1, 0,],
         ]
         exprs_snk_for2pt = [
