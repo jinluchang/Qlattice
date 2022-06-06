@@ -161,7 +161,7 @@ def mk_k_0_bar(p : str, is_dagger = False):
     else:
         return -mk_k_0(p) + f"K0b({p})^dag"
 
-def mk_kappa(p1 : str, is_dagger = False):
+def mk_kappa(p : str, is_dagger = False):
     if not is_dagger:
         return mk_scalar("d", "s", p) + f"kappa({p})"
     else:
