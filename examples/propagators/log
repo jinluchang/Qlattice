@@ -31,6 +31,8 @@ dist_read_par_limit()=16
 dist_write_par_limit()=16
 compute_traj: Checking 'results/test-4nt8/results=1000'.
 obtain_lock: Trying to obtain lock 'results/test-4nt8/results=1000-lock'.
+QFile: open 'results/test-4nt8/results=1000-lock/time.txt.partial' with 'w'.
+QFile: close 'results/test-4nt8/results=1000-lock/time.txt.partial' with 'w'.
 qrename: 'results/test-4nt8/results=1000-lock/time.txt.partial' 'results/test-4nt8/results=1000-lock/time.txt'
 obtain_lock: Lock obtained 'results/test-4nt8/results=1000-lock'.
 compute_traj: Start computing 'results/test-4nt8/results=1000'.
@@ -41,6 +43,8 @@ q_mem_cache_max_size=512 (default)
 q_mem_cache_acc_max_size=512 (default)
 Cache: 'ShufflePlanCache': 0 / 16 [8] to add
 write_field: fn='results/test-4nt8/results=1000/f-rank.field'.
+QFile: open 'results/test-4nt8/results=1000/f-rank.field.partial.partial' with 'w'.
+QFile: close 'results/test-4nt8/results=1000/f-rank.field.partial.partial' with 'w'.
 qrename: 'results/test-4nt8/results=1000/f-rank.field.partial.partial' 'results/test-4nt8/results=1000/f-rank.field.partial'
 QFile: open 'results/test-4nt8/results=1000/f-rank.field.partial' with 'a'.
 QFile: close 'results/test-4nt8/results=1000/f-rank.field.partial' with 'a'.
@@ -121,6 +125,8 @@ cg_with_f: final iter=  60 sqrt(qnorm_r/qnorm_in)=9.178E-09 stop_rsd=1.000E-08
 invert_with_cg(5d,5d,inv,cg): total_iter=60 cycle=1 stop_rsd=1.000E-08
 invert_with_cg(5d,5d,inv,cg): checking 9.112725E-09 from 1.000000E+00
 write_field: fn='results/test-4nt8/results=1000/psrc-prop-0.field'.
+QFile: open 'results/test-4nt8/results=1000/psrc-prop-0.field.partial.partial' with 'w'.
+QFile: close 'results/test-4nt8/results=1000/psrc-prop-0.field.partial.partial' with 'w'.
 qrename: 'results/test-4nt8/results=1000/psrc-prop-0.field.partial.partial' 'results/test-4nt8/results=1000/psrc-prop-0.field.partial'
 QFile: open 'results/test-4nt8/results=1000/psrc-prop-0.field.partial' with 'a'.
 QFile: close 'results/test-4nt8/results=1000/psrc-prop-0.field.partial' with 'a'.
@@ -139,13 +145,19 @@ Cache: 'ShufflePlanCache': 1 / 16 [8] to add
 shuffle_field(fs,f,sp): 1x1x1x2 -> 2x2x2x4 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.001 GB)
 dist_write_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =         16 ; total_bytes =          294912
 dist_write_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         32 ; total_bytes =          589824
+QFile: open 'results/test-4nt8/results=1000/psrc-prop-0.partial/checkpoint' with 'w'.
+QFile: close 'results/test-4nt8/results=1000/psrc-prop-0.partial/checkpoint' with 'w'.
 qrename: 'results/test-4nt8/results=1000/psrc-prop-0.partial' 'results/test-4nt8/results=1000/psrc-prop-0'
 write_selected_field: fn='results/test-4nt8/results=1000/psrc-prop-0.sfield'.
+QFile: open 'results/test-4nt8/results=1000/psrc-prop-0.sfield.partial.partial' with 'w'.
+QFile: close 'results/test-4nt8/results=1000/psrc-prop-0.sfield.partial.partial' with 'w'.
 qrename: 'results/test-4nt8/results=1000/psrc-prop-0.sfield.partial.partial' 'results/test-4nt8/results=1000/psrc-prop-0.sfield.partial'
 qrename: 'results/test-4nt8/results=1000/psrc-prop-0.sfield.partial' 'results/test-4nt8/results=1000/psrc-prop-0.sfield'
 QFile: open 'results/test-4nt8/results=1000/pion-corr.lat.partial' with 'w'.
 qrename: 'results/test-4nt8/results=1000/pion-corr.lat.partial' 'results/test-4nt8/results=1000/pion-corr.lat'
 QFile: close 'results/test-4nt8/results=1000/pion-corr.lat.partial' with 'w'.
+QFile: open 'results/test-4nt8/results=1000/pion-corr.txt.partial' with 'w'.
+QFile: close 'results/test-4nt8/results=1000/pion-corr.txt.partial' with 'w'.
 qrename: 'results/test-4nt8/results=1000/pion-corr.txt.partial' 'results/test-4nt8/results=1000/pion-corr.txt'
 ndim: 2
 "tsep"[8]:
@@ -168,6 +180,8 @@ tsep[       7] re-im[      re]  4.09021726415146128E-02
 tsep[       7] re-im[      im]  0.00000000000000000E+00
 prop qnorm =  2.39843434767638641E-01
 prop[0] qnorm =  2.46214937797465739E-04
+QFile: open 'results/test-4nt8/results=1000/checkpoint.txt' with 'w'.
+QFile: close 'results/test-4nt8/results=1000/checkpoint.txt' with 'w'.
 release_lock: Release lock 'results/test-4nt8/results=1000-lock'
 qremove: 'results/test-4nt8/results=1000-lock/time.txt'
 get_time_limit()=12.000000 hours
@@ -176,11 +190,15 @@ dist_read_par_limit()=16
 dist_write_par_limit()=16
 compute_traj: Checking 'results/test-4nt8/results=1010'.
 obtain_lock: Trying to obtain lock 'results/test-4nt8/results=1010-lock'.
+QFile: open 'results/test-4nt8/results=1010-lock/time.txt.partial' with 'w'.
+QFile: close 'results/test-4nt8/results=1010-lock/time.txt.partial' with 'w'.
 qrename: 'results/test-4nt8/results=1010-lock/time.txt.partial' 'results/test-4nt8/results=1010-lock/time.txt'
 obtain_lock: Lock obtained 'results/test-4nt8/results=1010-lock'.
 compute_traj: Start computing 'results/test-4nt8/results=1010'.
 compute_traj_do: job_tag='test-4nt8' ; traj=1010
 write_field: fn='results/test-4nt8/results=1010/f-rank.field'.
+QFile: open 'results/test-4nt8/results=1010/f-rank.field.partial.partial' with 'w'.
+QFile: close 'results/test-4nt8/results=1010/f-rank.field.partial.partial' with 'w'.
 qrename: 'results/test-4nt8/results=1010/f-rank.field.partial.partial' 'results/test-4nt8/results=1010/f-rank.field.partial'
 QFile: open 'results/test-4nt8/results=1010/f-rank.field.partial' with 'a'.
 QFile: close 'results/test-4nt8/results=1010/f-rank.field.partial' with 'a'.
@@ -254,6 +272,8 @@ cg_with_f: final iter=  57 sqrt(qnorm_r/qnorm_in)=7.844E-09 stop_rsd=1.000E-08
 invert_with_cg(5d,5d,inv,cg): total_iter=57 cycle=1 stop_rsd=1.000E-08
 invert_with_cg(5d,5d,inv,cg): checking 7.403972E-09 from 1.000000E+00
 write_field: fn='results/test-4nt8/results=1010/psrc-prop-0.field'.
+QFile: open 'results/test-4nt8/results=1010/psrc-prop-0.field.partial.partial' with 'w'.
+QFile: close 'results/test-4nt8/results=1010/psrc-prop-0.field.partial.partial' with 'w'.
 qrename: 'results/test-4nt8/results=1010/psrc-prop-0.field.partial.partial' 'results/test-4nt8/results=1010/psrc-prop-0.field.partial'
 QFile: open 'results/test-4nt8/results=1010/psrc-prop-0.field.partial' with 'a'.
 QFile: close 'results/test-4nt8/results=1010/psrc-prop-0.field.partial' with 'a'.
@@ -262,13 +282,19 @@ dist_write_field: fn='results/test-4nt8/results=1010/psrc-prop-0'.
 shuffle_field(fs,f,sp): 1x1x1x2 -> 2x2x2x4 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.001 GB)
 dist_write_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =         16 ; total_bytes =          294912
 dist_write_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         32 ; total_bytes =          589824
+QFile: open 'results/test-4nt8/results=1010/psrc-prop-0.partial/checkpoint' with 'w'.
+QFile: close 'results/test-4nt8/results=1010/psrc-prop-0.partial/checkpoint' with 'w'.
 qrename: 'results/test-4nt8/results=1010/psrc-prop-0.partial' 'results/test-4nt8/results=1010/psrc-prop-0'
 write_selected_field: fn='results/test-4nt8/results=1010/psrc-prop-0.sfield'.
+QFile: open 'results/test-4nt8/results=1010/psrc-prop-0.sfield.partial.partial' with 'w'.
+QFile: close 'results/test-4nt8/results=1010/psrc-prop-0.sfield.partial.partial' with 'w'.
 qrename: 'results/test-4nt8/results=1010/psrc-prop-0.sfield.partial.partial' 'results/test-4nt8/results=1010/psrc-prop-0.sfield.partial'
 qrename: 'results/test-4nt8/results=1010/psrc-prop-0.sfield.partial' 'results/test-4nt8/results=1010/psrc-prop-0.sfield'
 QFile: open 'results/test-4nt8/results=1010/pion-corr.lat.partial' with 'w'.
 qrename: 'results/test-4nt8/results=1010/pion-corr.lat.partial' 'results/test-4nt8/results=1010/pion-corr.lat'
 QFile: close 'results/test-4nt8/results=1010/pion-corr.lat.partial' with 'w'.
+QFile: open 'results/test-4nt8/results=1010/pion-corr.txt.partial' with 'w'.
+QFile: close 'results/test-4nt8/results=1010/pion-corr.txt.partial' with 'w'.
 qrename: 'results/test-4nt8/results=1010/pion-corr.txt.partial' 'results/test-4nt8/results=1010/pion-corr.txt'
 ndim: 2
 "tsep"[8]:
@@ -291,6 +317,8 @@ tsep[       7] re-im[      re]  4.40040912693444169E-02
 tsep[       7] re-im[      im]  0.00000000000000000E+00
 prop qnorm =  2.48598853287964966E-01
 prop[0] qnorm =  3.58372799883653213E-04
+QFile: open 'results/test-4nt8/results=1010/checkpoint.txt' with 'w'.
+QFile: close 'results/test-4nt8/results=1010/checkpoint.txt' with 'w'.
 release_lock: Release lock 'results/test-4nt8/results=1010-lock'
 qremove: 'results/test-4nt8/results=1010-lock/time.txt'
 program finished successfully for 'test-4nt8'.
@@ -300,11 +328,15 @@ dist_read_par_limit()=16
 dist_write_par_limit()=16
 compute_traj: Checking 'results/free-4nt8/results=1000'.
 obtain_lock: Trying to obtain lock 'results/free-4nt8/results=1000-lock'.
+QFile: open 'results/free-4nt8/results=1000-lock/time.txt.partial' with 'w'.
+QFile: close 'results/free-4nt8/results=1000-lock/time.txt.partial' with 'w'.
 qrename: 'results/free-4nt8/results=1000-lock/time.txt.partial' 'results/free-4nt8/results=1000-lock/time.txt'
 obtain_lock: Lock obtained 'results/free-4nt8/results=1000-lock'.
 compute_traj: Start computing 'results/free-4nt8/results=1000'.
 compute_traj_do: job_tag='free-4nt8' ; traj=1000
 write_field: fn='results/free-4nt8/results=1000/f-rank.field'.
+QFile: open 'results/free-4nt8/results=1000/f-rank.field.partial.partial' with 'w'.
+QFile: close 'results/free-4nt8/results=1000/f-rank.field.partial.partial' with 'w'.
 qrename: 'results/free-4nt8/results=1000/f-rank.field.partial.partial' 'results/free-4nt8/results=1000/f-rank.field.partial'
 QFile: open 'results/free-4nt8/results=1000/f-rank.field.partial' with 'a'.
 QFile: close 'results/free-4nt8/results=1000/f-rank.field.partial' with 'a'.
@@ -378,6 +410,8 @@ cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=5.845E-09 stop_rsd=1.000E-08
 invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
 invert_with_cg(5d,5d,inv,cg): checking 3.759165E-09 from 1.000000E+00
 write_field: fn='results/free-4nt8/results=1000/psrc-prop-0.field'.
+QFile: open 'results/free-4nt8/results=1000/psrc-prop-0.field.partial.partial' with 'w'.
+QFile: close 'results/free-4nt8/results=1000/psrc-prop-0.field.partial.partial' with 'w'.
 qrename: 'results/free-4nt8/results=1000/psrc-prop-0.field.partial.partial' 'results/free-4nt8/results=1000/psrc-prop-0.field.partial'
 QFile: open 'results/free-4nt8/results=1000/psrc-prop-0.field.partial' with 'a'.
 QFile: close 'results/free-4nt8/results=1000/psrc-prop-0.field.partial' with 'a'.
@@ -386,13 +420,19 @@ dist_write_field: fn='results/free-4nt8/results=1000/psrc-prop-0'.
 shuffle_field(fs,f,sp): 1x1x1x2 -> 2x2x2x4 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.001 GB)
 dist_write_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =         16 ; total_bytes =          294912
 dist_write_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         32 ; total_bytes =          589824
+QFile: open 'results/free-4nt8/results=1000/psrc-prop-0.partial/checkpoint' with 'w'.
+QFile: close 'results/free-4nt8/results=1000/psrc-prop-0.partial/checkpoint' with 'w'.
 qrename: 'results/free-4nt8/results=1000/psrc-prop-0.partial' 'results/free-4nt8/results=1000/psrc-prop-0'
 write_selected_field: fn='results/free-4nt8/results=1000/psrc-prop-0.sfield'.
+QFile: open 'results/free-4nt8/results=1000/psrc-prop-0.sfield.partial.partial' with 'w'.
+QFile: close 'results/free-4nt8/results=1000/psrc-prop-0.sfield.partial.partial' with 'w'.
 qrename: 'results/free-4nt8/results=1000/psrc-prop-0.sfield.partial.partial' 'results/free-4nt8/results=1000/psrc-prop-0.sfield.partial'
 qrename: 'results/free-4nt8/results=1000/psrc-prop-0.sfield.partial' 'results/free-4nt8/results=1000/psrc-prop-0.sfield'
 QFile: open 'results/free-4nt8/results=1000/pion-corr.lat.partial' with 'w'.
 qrename: 'results/free-4nt8/results=1000/pion-corr.lat.partial' 'results/free-4nt8/results=1000/pion-corr.lat'
 QFile: close 'results/free-4nt8/results=1000/pion-corr.lat.partial' with 'w'.
+QFile: open 'results/free-4nt8/results=1000/pion-corr.txt.partial' with 'w'.
+QFile: close 'results/free-4nt8/results=1000/pion-corr.txt.partial' with 'w'.
 qrename: 'results/free-4nt8/results=1000/pion-corr.txt.partial' 'results/free-4nt8/results=1000/pion-corr.txt'
 ndim: 2
 "tsep"[8]:
@@ -415,6 +455,8 @@ tsep[       7] re-im[      re]  3.85018818852286060E-01
 tsep[       7] re-im[      im]  0.00000000000000000E+00
 prop qnorm =  2.70413041013969968E+00
 prop[0] qnorm =  6.13619597511000196E-03
+QFile: open 'results/free-4nt8/results=1000/checkpoint.txt' with 'w'.
+QFile: close 'results/free-4nt8/results=1000/checkpoint.txt' with 'w'.
 release_lock: Release lock 'results/free-4nt8/results=1000-lock'
 qremove: 'results/free-4nt8/results=1000-lock/time.txt'
 get_time_limit()=12.000000 hours
@@ -423,11 +465,15 @@ dist_read_par_limit()=16
 dist_write_par_limit()=16
 compute_traj: Checking 'results/free-4nt8/results=1010'.
 obtain_lock: Trying to obtain lock 'results/free-4nt8/results=1010-lock'.
+QFile: open 'results/free-4nt8/results=1010-lock/time.txt.partial' with 'w'.
+QFile: close 'results/free-4nt8/results=1010-lock/time.txt.partial' with 'w'.
 qrename: 'results/free-4nt8/results=1010-lock/time.txt.partial' 'results/free-4nt8/results=1010-lock/time.txt'
 obtain_lock: Lock obtained 'results/free-4nt8/results=1010-lock'.
 compute_traj: Start computing 'results/free-4nt8/results=1010'.
 compute_traj_do: job_tag='free-4nt8' ; traj=1010
 write_field: fn='results/free-4nt8/results=1010/f-rank.field'.
+QFile: open 'results/free-4nt8/results=1010/f-rank.field.partial.partial' with 'w'.
+QFile: close 'results/free-4nt8/results=1010/f-rank.field.partial.partial' with 'w'.
 qrename: 'results/free-4nt8/results=1010/f-rank.field.partial.partial' 'results/free-4nt8/results=1010/f-rank.field.partial'
 QFile: open 'results/free-4nt8/results=1010/f-rank.field.partial' with 'a'.
 QFile: close 'results/free-4nt8/results=1010/f-rank.field.partial' with 'a'.
@@ -501,6 +547,8 @@ cg_with_f: final iter=  38 sqrt(qnorm_r/qnorm_in)=5.845E-09 stop_rsd=1.000E-08
 invert_with_cg(5d,5d,inv,cg): total_iter=38 cycle=1 stop_rsd=1.000E-08
 invert_with_cg(5d,5d,inv,cg): checking 3.759165E-09 from 1.000000E+00
 write_field: fn='results/free-4nt8/results=1010/psrc-prop-0.field'.
+QFile: open 'results/free-4nt8/results=1010/psrc-prop-0.field.partial.partial' with 'w'.
+QFile: close 'results/free-4nt8/results=1010/psrc-prop-0.field.partial.partial' with 'w'.
 qrename: 'results/free-4nt8/results=1010/psrc-prop-0.field.partial.partial' 'results/free-4nt8/results=1010/psrc-prop-0.field.partial'
 QFile: open 'results/free-4nt8/results=1010/psrc-prop-0.field.partial' with 'a'.
 QFile: close 'results/free-4nt8/results=1010/psrc-prop-0.field.partial' with 'a'.
@@ -509,13 +557,19 @@ dist_write_field: fn='results/free-4nt8/results=1010/psrc-prop-0'.
 shuffle_field(fs,f,sp): 1x1x1x2 -> 2x2x2x4 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.001 GB)
 dist_write_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =         16 ; total_bytes =          294912
 dist_write_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         32 ; total_bytes =          589824
+QFile: open 'results/free-4nt8/results=1010/psrc-prop-0.partial/checkpoint' with 'w'.
+QFile: close 'results/free-4nt8/results=1010/psrc-prop-0.partial/checkpoint' with 'w'.
 qrename: 'results/free-4nt8/results=1010/psrc-prop-0.partial' 'results/free-4nt8/results=1010/psrc-prop-0'
 write_selected_field: fn='results/free-4nt8/results=1010/psrc-prop-0.sfield'.
+QFile: open 'results/free-4nt8/results=1010/psrc-prop-0.sfield.partial.partial' with 'w'.
+QFile: close 'results/free-4nt8/results=1010/psrc-prop-0.sfield.partial.partial' with 'w'.
 qrename: 'results/free-4nt8/results=1010/psrc-prop-0.sfield.partial.partial' 'results/free-4nt8/results=1010/psrc-prop-0.sfield.partial'
 qrename: 'results/free-4nt8/results=1010/psrc-prop-0.sfield.partial' 'results/free-4nt8/results=1010/psrc-prop-0.sfield'
 QFile: open 'results/free-4nt8/results=1010/pion-corr.lat.partial' with 'w'.
 qrename: 'results/free-4nt8/results=1010/pion-corr.lat.partial' 'results/free-4nt8/results=1010/pion-corr.lat'
 QFile: close 'results/free-4nt8/results=1010/pion-corr.lat.partial' with 'w'.
+QFile: open 'results/free-4nt8/results=1010/pion-corr.txt.partial' with 'w'.
+QFile: close 'results/free-4nt8/results=1010/pion-corr.txt.partial' with 'w'.
 qrename: 'results/free-4nt8/results=1010/pion-corr.txt.partial' 'results/free-4nt8/results=1010/pion-corr.txt'
 ndim: 2
 "tsep"[8]:
@@ -538,6 +592,8 @@ tsep[       7] re-im[      re]  3.85018818852286060E-01
 tsep[       7] re-im[      im]  0.00000000000000000E+00
 prop qnorm =  2.70413041013969968E+00
 prop[0] qnorm =  6.13619597511000196E-03
+QFile: open 'results/free-4nt8/results=1010/checkpoint.txt' with 'w'.
+QFile: close 'results/free-4nt8/results=1010/checkpoint.txt' with 'w'.
 release_lock: Release lock 'results/free-4nt8/results=1010-lock'
 qremove: 'results/free-4nt8/results=1010-lock/time.txt'
 program finished successfully for 'free-4nt8'.

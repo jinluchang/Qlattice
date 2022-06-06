@@ -27,6 +27,8 @@ q_mem_cache_acc_max_size=512 (default)
 Cache: 'ShufflePlanCache': 0 / 16 [8] to add
 demo: save selection 'fsel' to disk as a field
 write_field: fn='huge-data/t0/fsel.field'.
+QFile: open 'huge-data/t0/fsel.field.partial.partial' with 'w'.
+QFile: close 'huge-data/t0/fsel.field.partial.partial' with 'w'.
 qrename: 'huge-data/t0/fsel.field.partial.partial' 'huge-data/t0/fsel.field.partial'
 q_write_par_limit=16 (default)
 QFile: open 'huge-data/t0/fsel.field.partial' with 'a'.
@@ -794,6 +796,8 @@ demo: select 2 points per time slice
 demo: selection is stored in 'fsel' of type 'FieldSelection'
 demo: save selection 'fsel' to disk as a field
 write_field: fn='huge-data/t1/fsel.field'.
+QFile: open 'huge-data/t1/fsel.field.partial.partial' with 'w'.
+QFile: close 'huge-data/t1/fsel.field.partial.partial' with 'w'.
 qrename: 'huge-data/t1/fsel.field.partial.partial' 'huge-data/t1/fsel.field.partial'
 QFile: open 'huge-data/t1/fsel.field.partial' with 'a'.
 QFile: close 'huge-data/t1/fsel.field.partial' with 'a'.
@@ -1549,6 +1553,8 @@ demo: select 0 points per time slice
 demo: selection is stored in 'fsel' of type 'FieldSelection'
 demo: save selection 'fsel' to disk as a field
 write_field: fn='huge-data/t2/fsel.field'.
+QFile: open 'huge-data/t2/fsel.field.partial.partial' with 'w'.
+QFile: close 'huge-data/t2/fsel.field.partial.partial' with 'w'.
 qrename: 'huge-data/t2/fsel.field.partial.partial' 'huge-data/t2/fsel.field.partial'
 QFile: open 'huge-data/t2/fsel.field.partial' with 'a'.
 QFile: close 'huge-data/t2/fsel.field.partial' with 'a'.

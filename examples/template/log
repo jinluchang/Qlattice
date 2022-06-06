@@ -31,6 +31,8 @@ dist_read_par_limit()=16
 dist_write_par_limit()=16
 compute_traj: Checking 'results/free-4nt8/results=1000'.
 obtain_lock: Trying to obtain lock 'results/free-4nt8/results=1000-lock'.
+QFile: open 'results/free-4nt8/results=1000-lock/time.txt.partial' with 'w'.
+QFile: close 'results/free-4nt8/results=1000-lock/time.txt.partial' with 'w'.
 qrename: 'results/free-4nt8/results=1000-lock/time.txt.partial' 'results/free-4nt8/results=1000-lock/time.txt'
 obtain_lock: Lock obtained 'results/free-4nt8/results=1000-lock'.
 compute_traj: Start computing 'results/free-4nt8/results=1000'.
@@ -175,6 +177,8 @@ find_max_eigen_value_hermop_sym2:     2: sqrt_qnorm_ratio = 1.28174895744192630E
 find_max_eigen_value_hermop_sym2:     3: sqrt_qnorm_ratio = 1.38696569401745684E+00. (max eigen value of hermop_sym2)
 find_max_eigen_value_hermop_sym2:     4: sqrt_qnorm_ratio = 1.48877146814636552E+00. (max eigen value of hermop_sym2)
 find_max_eigen_value_hermop_sym2:     5: sqrt_qnorm_ratio = 1.58623325176833019E+00. (max eigen value of hermop_sym2)
+QFile: open 'results/free-4nt8/results=1000/checkpoint.txt' with 'w'.
+QFile: close 'results/free-4nt8/results=1000/checkpoint.txt' with 'w'.
 release_lock: Release lock 'results/free-4nt8/results=1000-lock'
 qremove: 'results/free-4nt8/results=1000-lock/time.txt'
 get_time_limit()=12.000000 hours
@@ -183,6 +187,8 @@ dist_read_par_limit()=16
 dist_write_par_limit()=16
 compute_traj: Checking 'results/free-4nt8/results=1010'.
 obtain_lock: Trying to obtain lock 'results/free-4nt8/results=1010-lock'.
+QFile: open 'results/free-4nt8/results=1010-lock/time.txt.partial' with 'w'.
+QFile: close 'results/free-4nt8/results=1010-lock/time.txt.partial' with 'w'.
 qrename: 'results/free-4nt8/results=1010-lock/time.txt.partial' 'results/free-4nt8/results=1010-lock/time.txt'
 obtain_lock: Lock obtained 'results/free-4nt8/results=1010-lock'.
 compute_traj: Start computing 'results/free-4nt8/results=1010'.
@@ -317,6 +323,8 @@ find_max_eigen_value_hermop_sym2:     2: sqrt_qnorm_ratio = 1.28254240720921020E
 find_max_eigen_value_hermop_sym2:     3: sqrt_qnorm_ratio = 1.38719889216406833E+00. (max eigen value of hermop_sym2)
 find_max_eigen_value_hermop_sym2:     4: sqrt_qnorm_ratio = 1.48902999500903155E+00. (max eigen value of hermop_sym2)
 find_max_eigen_value_hermop_sym2:     5: sqrt_qnorm_ratio = 1.58659082254578321E+00. (max eigen value of hermop_sym2)
+QFile: open 'results/free-4nt8/results=1010/checkpoint.txt' with 'w'.
+QFile: close 'results/free-4nt8/results=1010/checkpoint.txt' with 'w'.
 release_lock: Release lock 'results/free-4nt8/results=1010-lock'
 qremove: 'results/free-4nt8/results=1010-lock/time.txt'
 program finished successfully for 'free-4nt8'.

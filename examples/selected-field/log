@@ -27,6 +27,8 @@ demo: fill with random numbers
 demo: compute crc32=8B5110BA.
 demo: save to disk
 write_field: fn='huge-data/f.field'.
+QFile: open 'huge-data/f.field.partial.partial' with 'w'.
+QFile: close 'huge-data/f.field.partial.partial' with 'w'.
 qrename: 'huge-data/f.field.partial.partial' 'huge-data/f.field.partial'
 q_write_par_limit=16 (default)
 QFile: open 'huge-data/f.field.partial' with 'a'.
@@ -47,6 +49,8 @@ demo: select 16 points per time slice
 demo: selection is stored in 'fsel' of type 'FieldSelection'
 demo: save selection 'fsel' to disk as a field
 write_field: fn='huge-data/fsel.field'.
+QFile: open 'huge-data/fsel.field.partial.partial' with 'w'.
+QFile: close 'huge-data/fsel.field.partial.partial' with 'w'.
 qrename: 'huge-data/fsel.field.partial.partial' 'huge-data/fsel.field.partial'
 QFile: open 'huge-data/fsel.field.partial' with 'a'.
 QFile: close 'huge-data/fsel.field.partial' with 'a'.
@@ -68,6 +72,8 @@ demo: restore the selected points data to 'f' from 'sf'
 demo: compute crc32=9B5AE427.
 demo: only save the selected points data of 'f' to disk
 write_selected_field: fn='huge-data/f.sfield'.
+QFile: open 'huge-data/f.sfield.partial.partial' with 'w'.
+QFile: close 'huge-data/f.sfield.partial.partial' with 'w'.
 qrename: 'huge-data/f.sfield.partial.partial' 'huge-data/f.sfield.partial'
 qrename: 'huge-data/f.sfield.partial' 'huge-data/f.sfield'
 demo: clear field 'f' in memory
@@ -82,6 +88,8 @@ demo: v3 sum is ( 1.51214340115006340E-01 + -1.18642227559993838E+01 j)
 : 8B5110BA <- f-init
 9B5AE427 <- only_keep_selected_points
 write_field: fn='huge-data/16/fsel.field'.
+QFile: open 'huge-data/16/fsel.field.partial.partial' with 'w'.
+QFile: close 'huge-data/16/fsel.field.partial.partial' with 'w'.
 qrename: 'huge-data/16/fsel.field.partial.partial' 'huge-data/16/fsel.field.partial'
 QFile: open 'huge-data/16/fsel.field.partial' with 'a'.
 QFile: close 'huge-data/16/fsel.field.partial' with 'a'.
@@ -100,12 +108,16 @@ QFile: close 'huge-data/16/fsel.field' with 'r'.
 : A9CE10A1 <- f-init-2
 9B5AE427 <- set_field_selected_slow
 write_field: fn='huge-data/16/free-4nt8-init.field'.
+QFile: open 'huge-data/16/free-4nt8-init.field.partial.partial' with 'w'.
+QFile: close 'huge-data/16/free-4nt8-init.field.partial.partial' with 'w'.
 qrename: 'huge-data/16/free-4nt8-init.field.partial.partial' 'huge-data/16/free-4nt8-init.field.partial'
 QFile: open 'huge-data/16/free-4nt8-init.field.partial' with 'a'.
 QFile: close 'huge-data/16/free-4nt8-init.field.partial' with 'a'.
 qrename: 'huge-data/16/free-4nt8-init.field.partial' 'huge-data/16/free-4nt8-init.field'
 : 8B5110BA <- f-init
 write_selected_field: fn='huge-data/16/free-4nt8-init.sfield'.
+QFile: open 'huge-data/16/free-4nt8-init.sfield.partial.partial' with 'w'.
+QFile: close 'huge-data/16/free-4nt8-init.sfield.partial.partial' with 'w'.
 qrename: 'huge-data/16/free-4nt8-init.sfield.partial.partial' 'huge-data/16/free-4nt8-init.sfield.partial'
 qrename: 'huge-data/16/free-4nt8-init.sfield.partial' 'huge-data/16/free-4nt8-init.sfield'
 : 4CB6850D <- f-init-3
@@ -123,28 +135,40 @@ shuffle_field_back(sel_f,sel_fs,sp): 1x1x1x8 -> 1x1x1x2 (total_site: 4x4x4x8 ; s
 9B5AE427 <- write and read back
 8B5110BA full
 write_field: fn='huge-data/16/f-init.64.field'.
+QFile: open 'huge-data/16/f-init.64.field.partial.partial' with 'w'.
+QFile: close 'huge-data/16/f-init.64.field.partial.partial' with 'w'.
 qrename: 'huge-data/16/f-init.64.field.partial.partial' 'huge-data/16/f-init.64.field.partial'
 QFile: open 'huge-data/16/f-init.64.field.partial' with 'a'.
 QFile: close 'huge-data/16/f-init.64.field.partial' with 'a'.
 qrename: 'huge-data/16/f-init.64.field.partial' 'huge-data/16/f-init.64.field'
 write_field: fn='huge-data/16/f-init.double.field'.
+QFile: open 'huge-data/16/f-init.double.field.partial.partial' with 'w'.
+QFile: close 'huge-data/16/f-init.double.field.partial.partial' with 'w'.
 qrename: 'huge-data/16/f-init.double.field.partial.partial' 'huge-data/16/f-init.double.field.partial'
 QFile: open 'huge-data/16/f-init.double.field.partial' with 'a'.
 QFile: close 'huge-data/16/f-init.double.field.partial' with 'a'.
 qrename: 'huge-data/16/f-init.double.field.partial' 'huge-data/16/f-init.double.field'
 write_field: fn='huge-data/16/f-init.float.field'.
+QFile: open 'huge-data/16/f-init.float.field.partial.partial' with 'w'.
+QFile: close 'huge-data/16/f-init.float.field.partial.partial' with 'w'.
 qrename: 'huge-data/16/f-init.float.field.partial.partial' 'huge-data/16/f-init.float.field.partial'
 QFile: open 'huge-data/16/f-init.float.field.partial' with 'a'.
 QFile: close 'huge-data/16/f-init.float.field.partial' with 'a'.
 qrename: 'huge-data/16/f-init.float.field.partial' 'huge-data/16/f-init.float.field'
 9B5AE427 selected
 write_selected_field: fn='huge-data/16/sf-init.64.field'.
+QFile: open 'huge-data/16/sf-init.64.field.partial.partial' with 'w'.
+QFile: close 'huge-data/16/sf-init.64.field.partial.partial' with 'w'.
 qrename: 'huge-data/16/sf-init.64.field.partial.partial' 'huge-data/16/sf-init.64.field.partial'
 qrename: 'huge-data/16/sf-init.64.field.partial' 'huge-data/16/sf-init.64.field'
 write_selected_field: fn='huge-data/16/sf-init.double.field'.
+QFile: open 'huge-data/16/sf-init.double.field.partial.partial' with 'w'.
+QFile: close 'huge-data/16/sf-init.double.field.partial.partial' with 'w'.
 qrename: 'huge-data/16/sf-init.double.field.partial.partial' 'huge-data/16/sf-init.double.field.partial'
 qrename: 'huge-data/16/sf-init.double.field.partial' 'huge-data/16/sf-init.double.field'
 write_selected_field: fn='huge-data/16/sf-init.float.field'.
+QFile: open 'huge-data/16/sf-init.float.field.partial.partial' with 'w'.
+QFile: close 'huge-data/16/sf-init.float.field.partial.partial' with 'w'.
 qrename: 'huge-data/16/sf-init.float.field.partial.partial' 'huge-data/16/sf-init.float.field.partial'
 qrename: 'huge-data/16/sf-init.float.field.partial' 'huge-data/16/sf-init.float.field'
 read_field: fn='huge-data/16/f-init.64.field'.
@@ -212,6 +236,8 @@ check_all_files_crc32_info: summary for path='huge-data/16'
 : 8B5110BA <- f-init
 8B5110BA <- only_keep_selected_points
 write_field: fn='huge-data/all/fsel.field'.
+QFile: open 'huge-data/all/fsel.field.partial.partial' with 'w'.
+QFile: close 'huge-data/all/fsel.field.partial.partial' with 'w'.
 qrename: 'huge-data/all/fsel.field.partial.partial' 'huge-data/all/fsel.field.partial'
 QFile: open 'huge-data/all/fsel.field.partial' with 'a'.
 QFile: close 'huge-data/all/fsel.field.partial' with 'a'.
@@ -230,12 +256,16 @@ QFile: close 'huge-data/all/fsel.field' with 'r'.
 : A9CE10A1 <- f-init-2
 8B5110BA <- set_field_selected_slow
 write_field: fn='huge-data/all/free-4nt8-init.field'.
+QFile: open 'huge-data/all/free-4nt8-init.field.partial.partial' with 'w'.
+QFile: close 'huge-data/all/free-4nt8-init.field.partial.partial' with 'w'.
 qrename: 'huge-data/all/free-4nt8-init.field.partial.partial' 'huge-data/all/free-4nt8-init.field.partial'
 QFile: open 'huge-data/all/free-4nt8-init.field.partial' with 'a'.
 QFile: close 'huge-data/all/free-4nt8-init.field.partial' with 'a'.
 qrename: 'huge-data/all/free-4nt8-init.field.partial' 'huge-data/all/free-4nt8-init.field'
 : 8B5110BA <- f-init
 write_selected_field: fn='huge-data/all/free-4nt8-init.sfield'.
+QFile: open 'huge-data/all/free-4nt8-init.sfield.partial.partial' with 'w'.
+QFile: close 'huge-data/all/free-4nt8-init.sfield.partial.partial' with 'w'.
 qrename: 'huge-data/all/free-4nt8-init.sfield.partial.partial' 'huge-data/all/free-4nt8-init.sfield.partial'
 qrename: 'huge-data/all/free-4nt8-init.sfield.partial' 'huge-data/all/free-4nt8-init.sfield'
 : 4CB6850D <- f-init-3
@@ -253,28 +283,40 @@ shuffle_field_back(sel_f,sel_fs,sp): 1x1x1x8 -> 1x1x1x2 (total_site: 4x4x4x8 ; s
 8B5110BA <- write and read back
 8B5110BA full
 write_field: fn='huge-data/all/f-init.64.field'.
+QFile: open 'huge-data/all/f-init.64.field.partial.partial' with 'w'.
+QFile: close 'huge-data/all/f-init.64.field.partial.partial' with 'w'.
 qrename: 'huge-data/all/f-init.64.field.partial.partial' 'huge-data/all/f-init.64.field.partial'
 QFile: open 'huge-data/all/f-init.64.field.partial' with 'a'.
 QFile: close 'huge-data/all/f-init.64.field.partial' with 'a'.
 qrename: 'huge-data/all/f-init.64.field.partial' 'huge-data/all/f-init.64.field'
 write_field: fn='huge-data/all/f-init.double.field'.
+QFile: open 'huge-data/all/f-init.double.field.partial.partial' with 'w'.
+QFile: close 'huge-data/all/f-init.double.field.partial.partial' with 'w'.
 qrename: 'huge-data/all/f-init.double.field.partial.partial' 'huge-data/all/f-init.double.field.partial'
 QFile: open 'huge-data/all/f-init.double.field.partial' with 'a'.
 QFile: close 'huge-data/all/f-init.double.field.partial' with 'a'.
 qrename: 'huge-data/all/f-init.double.field.partial' 'huge-data/all/f-init.double.field'
 write_field: fn='huge-data/all/f-init.float.field'.
+QFile: open 'huge-data/all/f-init.float.field.partial.partial' with 'w'.
+QFile: close 'huge-data/all/f-init.float.field.partial.partial' with 'w'.
 qrename: 'huge-data/all/f-init.float.field.partial.partial' 'huge-data/all/f-init.float.field.partial'
 QFile: open 'huge-data/all/f-init.float.field.partial' with 'a'.
 QFile: close 'huge-data/all/f-init.float.field.partial' with 'a'.
 qrename: 'huge-data/all/f-init.float.field.partial' 'huge-data/all/f-init.float.field'
 8B5110BA selected
 write_selected_field: fn='huge-data/all/sf-init.64.field'.
+QFile: open 'huge-data/all/sf-init.64.field.partial.partial' with 'w'.
+QFile: close 'huge-data/all/sf-init.64.field.partial.partial' with 'w'.
 qrename: 'huge-data/all/sf-init.64.field.partial.partial' 'huge-data/all/sf-init.64.field.partial'
 qrename: 'huge-data/all/sf-init.64.field.partial' 'huge-data/all/sf-init.64.field'
 write_selected_field: fn='huge-data/all/sf-init.double.field'.
+QFile: open 'huge-data/all/sf-init.double.field.partial.partial' with 'w'.
+QFile: close 'huge-data/all/sf-init.double.field.partial.partial' with 'w'.
 qrename: 'huge-data/all/sf-init.double.field.partial.partial' 'huge-data/all/sf-init.double.field.partial'
 qrename: 'huge-data/all/sf-init.double.field.partial' 'huge-data/all/sf-init.double.field'
 write_selected_field: fn='huge-data/all/sf-init.float.field'.
+QFile: open 'huge-data/all/sf-init.float.field.partial.partial' with 'w'.
+QFile: close 'huge-data/all/sf-init.float.field.partial.partial' with 'w'.
 qrename: 'huge-data/all/sf-init.float.field.partial.partial' 'huge-data/all/sf-init.float.field.partial'
 qrename: 'huge-data/all/sf-init.float.field.partial' 'huge-data/all/sf-init.float.field'
 read_field: fn='huge-data/all/f-init.64.field'.
@@ -342,6 +384,8 @@ check_all_files_crc32_info: summary for path='huge-data/all'
 : 8B5110BA <- f-init
 C8EB73C4 <- only_keep_selected_points
 write_field: fn='huge-data/grid-16/fsel.field'.
+QFile: open 'huge-data/grid-16/fsel.field.partial.partial' with 'w'.
+QFile: close 'huge-data/grid-16/fsel.field.partial.partial' with 'w'.
 qrename: 'huge-data/grid-16/fsel.field.partial.partial' 'huge-data/grid-16/fsel.field.partial'
 QFile: open 'huge-data/grid-16/fsel.field.partial' with 'a'.
 QFile: close 'huge-data/grid-16/fsel.field.partial' with 'a'.
@@ -360,12 +404,16 @@ C8EB73C4 <- set_field_selected
 : A9CE10A1 <- f-init-2
 C8EB73C4 <- set_field_selected_slow
 write_field: fn='huge-data/grid-16/free-4nt8-init.field'.
+QFile: open 'huge-data/grid-16/free-4nt8-init.field.partial.partial' with 'w'.
+QFile: close 'huge-data/grid-16/free-4nt8-init.field.partial.partial' with 'w'.
 qrename: 'huge-data/grid-16/free-4nt8-init.field.partial.partial' 'huge-data/grid-16/free-4nt8-init.field.partial'
 QFile: open 'huge-data/grid-16/free-4nt8-init.field.partial' with 'a'.
 QFile: close 'huge-data/grid-16/free-4nt8-init.field.partial' with 'a'.
 qrename: 'huge-data/grid-16/free-4nt8-init.field.partial' 'huge-data/grid-16/free-4nt8-init.field'
 : 8B5110BA <- f-init
 write_selected_field: fn='huge-data/grid-16/free-4nt8-init.sfield'.
+QFile: open 'huge-data/grid-16/free-4nt8-init.sfield.partial.partial' with 'w'.
+QFile: close 'huge-data/grid-16/free-4nt8-init.sfield.partial.partial' with 'w'.
 qrename: 'huge-data/grid-16/free-4nt8-init.sfield.partial.partial' 'huge-data/grid-16/free-4nt8-init.sfield.partial'
 qrename: 'huge-data/grid-16/free-4nt8-init.sfield.partial' 'huge-data/grid-16/free-4nt8-init.sfield'
 : 4CB6850D <- f-init-3
