@@ -94,7 +94,7 @@ def auto_contractor_meson_corr_wsnk_wsrc(job_tag, traj, get_prop, get_fsel, get_
     ld.save(get_save_path(fn))
 
 @q.timer_verbose
-def auto_contractor_corr_wsnk_wsrc(job_tag, traj, get_prop, get_fsel, get_pi, get_wi):
+def auto_contractor_various_corr_wsnk_wsrc(job_tag, traj, get_prop, get_fsel, get_pi, get_wi):
     fn = f"auto-contractor-fsel/{job_tag}/traj={traj}/corr/wsnk_wsrc.lat"
     if get_load_path(fn) is not None:
         return
@@ -522,6 +522,7 @@ def run_job(job_tag, traj):
             auto_contractor_vev(job_tag, traj, get_prop, get_fsel, get_pi, get_wi)
             auto_contractor_meson_corr_wsnk_wsrc(job_tag, traj, get_prop, get_fsel, get_pi, get_wi)
             auto_contractor_meson_corr_psnk_wsrc(job_tag, traj, get_prop, get_fsel, get_pi, get_wi)
+            auto_contractor_various_corr_wsnk_wsrc(job_tag, traj, get_prop, get_fsel, get_pi, get_wi)
             auto_contractor_3f4f_matching_tslice(job_tag, traj, get_prop, get_fsel, get_pi, get_wi)
             # auto_contractor_3f4f_matching(job_tag, traj, get_prop, get_fsel, get_pi, get_wi)
             #
