@@ -63,7 +63,7 @@ def get_cexpr_meson_corr_with_env():
     return cache_compiled_cexpr(calc_cexpr, f"cache/auto_contractor_cexpr/meson_corr_with_env-cexpr")
 
 @q.timer
-def get_cexpr_corr_ww():
+def get_cexpr_various_corr():
     def calc_cexpr():
         exprs = [
             mk_pi_p("t2", True) * mk_pi_p("t1") + "(pi   * pi)",
