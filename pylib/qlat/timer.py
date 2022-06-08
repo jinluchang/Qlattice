@@ -95,3 +95,9 @@ class TimerNone(Timer):
 
     def __init__(self):
         super().__init__(None)
+
+def get_total_time():
+    return get_time() - get_start_time()
+
+def get_actual_total_time():
+    return get_time() - get_actual_total_time()

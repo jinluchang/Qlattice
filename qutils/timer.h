@@ -705,7 +705,6 @@ struct Timer {
       db.push_back(&tdb[i]);
     }
     std::sort(db.begin(), db.end(), compare_time_info_p);
-
     displayln_info(
         ssprintf("Timer::display-start: %s (level=%ld) fname : time%% number of calls; "
                  "Avg,Tot sec; Avg,Tot flops; Gflops",
