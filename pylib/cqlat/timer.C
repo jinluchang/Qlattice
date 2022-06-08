@@ -113,15 +113,13 @@ EXPORT(timer_display_stack, {
 
 EXPORT(verbose_level, {
   using namespace qlat;
-  return py_convert(verbose_level());
-});
-
-EXPORT(set_verbose_level, {
-  using namespace qlat;
-  long level = 0;
-  if (!PyArg_ParseTuple(args, "|l", &level)) {
+  PyObject* p_level = NULL;
+  if (!PyArg_ParseTuple(args, "|O", &p_level)) {
     return NULL;
   }
-  verbose_level() = level;
+  if (NULL != p_level) {
+    const long level = py_convert_data<long>(p_level);
+    verbose_level() = level;
+  }
   return py_convert(verbose_level());
 });

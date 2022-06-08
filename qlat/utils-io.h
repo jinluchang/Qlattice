@@ -173,9 +173,9 @@ inline bool is_regular_file_sync_node(const std::string& fn)
   return 0 != nfile;
 }
 
-inline void check_stop()
+inline void check_stop(const std::string& fn = "stop.txt")
 {
-  if (does_file_exist_sync_node("stop.txt")) {
+  if (does_file_exist_sync_node(fn)) {
     qquit("File 'stop.txt' detected.");
   }
 }
