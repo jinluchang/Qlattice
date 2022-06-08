@@ -142,7 +142,9 @@ def get_all_caches_info():
     return c.get_all_caches_info()
 
 def clear_all_caches():
-    return c.clear_all_caches();
+    # clean python level cache and then C++ level cache
+    clean_cache()
+    c.clear_all_caches()
 
 def malloc_stats():
     return c.malloc_stats()

@@ -21,6 +21,7 @@ from cqlat import check_time_limit, check_stop
 from cqlat import get_time_limit, get_default_budget
 
 from qlat.mpi import *
+from qlat.cache import *
 
 @timer
 def qmkdirs(path):
@@ -82,13 +83,6 @@ def qappend_info(path, content = None):
     else:
         return c.qappend_info(path, content)
 
-def obtain_lock(path):
-    mk_file_dirs_info(path)
-    return c.obtain_lock(path)
-
-def release_lock():
-    return c.release_lock()
-
 @timer
 def save_pickle_obj(obj, path):
     # only save from node 0
@@ -121,3 +115,15 @@ def compute_crc32(path):
 @timer
 def check_all_files_crc32_info(path):
     return c.check_all_files_crc32_info(path)
+
+def obtain_lock(path):
+    mk_file_dirs_info(path)
+    return c.obtain_lock(path)
+
+def release_lock():
+    return c.release_lock()
+
+def qquit(msg):
+    # clean python cache and then call c.qquit(msg) (which clear all the C++ level cache and then quit)
+    clean_cache()
+    return c.qquit(msg)

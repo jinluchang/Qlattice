@@ -5,6 +5,7 @@ from cqlat import timer_display, timer_autodisplay
 from cqlat import timer_display_stack, timer_display_stack_always
 from cqlat import timer_reset, timer_fork, timer_merge
 from cqlat import verbose_level
+from cqlat import get_actual_start_time, get_start_time, get_time
 
 import functools
 

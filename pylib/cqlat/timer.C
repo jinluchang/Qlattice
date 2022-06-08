@@ -123,3 +123,34 @@ EXPORT(verbose_level, {
   }
   return py_convert(verbose_level());
 });
+
+EXPORT(get_actual_start_time, {
+  using namespace qlat;
+  PyObject* p_time = NULL;
+  if (!PyArg_ParseTuple(args, "|O", &p_time)) {
+    return NULL;
+  }
+  if (NULL != p_time) {
+    const double time = py_convert_data<double>(p_time);
+    get_actual_start_time() = time;
+  }
+  return py_convert(get_actual_start_time());
+});
+
+EXPORT(get_start_time, {
+  using namespace qlat;
+  PyObject* p_time = NULL;
+  if (!PyArg_ParseTuple(args, "|O", &p_time)) {
+    return NULL;
+  }
+  if (NULL != p_time) {
+    const double time = py_convert_data<double>(p_time);
+    get_start_time() = time;
+  }
+  return py_convert(get_start_time());
+});
+
+EXPORT(get_time, {
+  using namespace qlat;
+  return py_convert(get_time());
+});

@@ -1092,6 +1092,8 @@ struct ShuffledFieldsWriter {
 };
 
 inline void close_all_all_shuffled_fields_writer()
+// Force close all the ShuffledFieldsWriter.
+// Only call this when quitting the program (e.g. in qquit(msg)).
 {
   TIMER_VERBOSE("close_all_all_shuffled_fields_writer");
   ShuffledFieldsWriterMap& sfwm = get_all_shuffled_fields_writer();

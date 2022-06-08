@@ -3,6 +3,7 @@ from qlat.rng_state import *
 
 import math
 import copy
+import functools
 import numpy as np
 
 alpha_qed = 1.0 / 137.035999084

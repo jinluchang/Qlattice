@@ -52,7 +52,9 @@ inline double get_remaining_time()
 }
 
 inline void qquit(const std::string& msg)
+// everything needed for gracefully quit and then quit.
 {
+  clear_all_caches();
   close_all_all_shuffled_fields_writer();
   release_lock();
   Timer::display();
