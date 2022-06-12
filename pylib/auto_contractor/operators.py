@@ -76,7 +76,7 @@ def mk_scalar5(f1 : str, f2 : str, p : str, is_dagger = False):
     s2 = new_spin_index()
     c = new_color_index()
     if is_dagger:
-        return Qb(f2, p, s1, c) * G(5, s1, s2) * Qv(f1, p, s2, c)
+        return -Qb(f2, p, s1, c) * G(5, s1, s2) * Qv(f1, p, s2, c)
     else:
         return Qb(f1, p, s1, c) * G(5, s1, s2) * Qv(f2, p, s2, c)
 
@@ -108,7 +108,10 @@ def mk_vec5_mu(f1 : str, f2 : str, p : str, mu, is_dagger = False):
         return Qb(f1, p, s1, c) * G(mu, s1, s2) * G(5, s2, s3) * Qv(f2, p, s3, c) + f"vec5_mu({f1},{f2},{p},{mu})"
 
 def mk_meson(f1 : str, f2 : str, p : str, is_dagger = False):
-    return mk_scalar5(f1, f2, p, is_dagger)
+    if not is_dagger:
+        return sympy.I * mk_scalar5(f1, f2, p, is_dagger)
+    else:
+        return -sympy.I * mk_scalar5(f1, f2, p, is_dagger)
 
 def show_dagger(is_dagger):
     if is_dagger:
@@ -117,55 +120,46 @@ def show_dagger(is_dagger):
         return ""
 
 def mk_pi_0(p : str, is_dagger = False):
-    return sympy.I / sympy.sqrt(2) * (mk_meson("u", "u", p) - mk_meson("d", "d", p)) + f"pi0({p})"
+    return 1 / sympy.sqrt(2) * (mk_meson("u", "u", p, is_dagger) - mk_meson("d", "d", p, is_dagger)) + f"pi0({p}){show_dagger(is_dagger)}"
 
 def mk_pi_p(p : str, is_dagger = False):
-    if not is_dagger:
-        return sympy.I * mk_meson("u", "d", p) + f"pi+({p})"
-    else:
-        return -mk_pi_m(p) + f"pi+({p})^dag"
+    return mk_meson("u", "d", p, is_dagger) + f"pi+({p}){show_dagger(is_dagger)}"
 
 def mk_pi_m(p : str, is_dagger = False):
-    if not is_dagger:
-        return -sympy.I * mk_meson("d", "u", p) + f"pi-({p})"
-    else:
-        return -mk_pi_p(p) + f"pi-({p})^dag"
+    return -mk_meson("d", "u", p, is_dagger) + f"pi-({p}){show_dagger(is_dagger)}"
 
 def mk_a0_0(p : str, is_dagger = False):
-    if not is_dagger:
-        return 1 / sympy.sqrt(2) * (mk_scalar("u", "u", p) - mk_scalar("d", "d", p)) + f"a0_0({p})"
-    else:
-        return -mk_a0_0(p) + f"a0_0({p})^dag"
+    return 1 / sympy.sqrt(2) * (mk_scalar("u", "u", p, is_dagger) - mk_scalar("d", "d", p, is_dagger)) + f"a0_0({p}){show_dagger(is_dagger)}"
+
+def mk_a0_p(p : str, is_dagger = False):
+    return mk_scalar("u", "d", p, is_dagger) + f"a0_+({p}){show_dagger(is_dagger)}"
+
+def mk_a0_m(p : str, is_dagger = False):
+    return mk_scalar("d", "u", p, is_dagger) + f"a0_-({p}){show_dagger(is_dagger)}"
 
 def mk_k_p(p : str, is_dagger = False):
-    if not is_dagger:
-        return sympy.I * mk_meson("u", "s", p) + f"K+({p})"
-    else:
-        return -mk_k_m(p) + f"K+({p})^dag"
+    return mk_meson("u", "s", p, is_dagger) + f"K+({p}){show_dagger(is_dagger)}"
 
 def mk_k_m(p : str, is_dagger = False):
-    if not is_dagger:
-        return -sympy.I * mk_meson("s", "u", p) + f"K-({p})"
-    else:
-        return -mk_k_p(p) + f"K-({p})^dag"
+    return -mk_meson("s", "u", p, is_dagger) + f"K-({p}){show_dagger(is_dagger)}"
 
 def mk_k_0(p : str, is_dagger = False):
-    if not is_dagger:
-        return sympy.I * mk_meson("d", "s", p) + f"K0({p})"
-    else:
-        return -mk_k_0_bar(p) + f"K0({p})^dag"
+    return mk_meson("d", "s", p, is_dagger) + f"K0({p}){show_dagger(is_dagger)}"
 
 def mk_k_0_bar(p : str, is_dagger = False):
-    if not is_dagger:
-        return -sympy.I * mk_meson("s", "d", p) + f"K0b({p})"
-    else:
-        return -mk_k_0(p) + f"K0b({p})^dag"
+    return -mk_meson("s", "d", p, is_dagger) + f"K0b({p}){show_dagger(is_dagger)}"
 
-def mk_kappa(p : str, is_dagger = False):
-    if not is_dagger:
-        return mk_scalar("d", "s", p) + f"kappa({p})"
-    else:
-        return -mk_scalar("s", "d", p) + f"kappa({p})^dag"
+def mk_kappa_p(p : str, is_dagger = False):
+    return mk_scalar("u", "s", p, is_dagger) + f"kappa+({p}){show_dagger(is_dagger)}"
+
+def mk_kappa_m(p : str, is_dagger = False):
+    return mk_scalar("s", "u", p, is_dagger) + f"kappa-({p}){show_dagger(is_dagger)}"
+
+def mk_kappa_0(p : str, is_dagger = False):
+    return mk_scalar("d", "s", p, is_dagger) + f"kappa0({p}){show_dagger(is_dagger)}"
+
+def mk_kappa_0_bar(p : str, is_dagger = False):
+    return mk_scalar("s", "u", p, is_dagger) + f"kappa0bar({p}){show_dagger(is_dagger)}"
 
 def mk_j5pi_mu(p : str, mu, is_dagger = False):
     return mk_vec5_mu("d", "u", p, mu, is_dagger) + f"j5pi_mu({p},{mu}){show_dagger(is_dagger)}"
