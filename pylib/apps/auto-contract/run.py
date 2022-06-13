@@ -624,6 +624,9 @@ def run_job(job_tag, traj):
 
 def get_all_cexpr():
     benchmark_eval_cexpr(get_cexpr_vev())
+    benchmark_eval_cexpr(get_cexpr_meson_f_corr())
+    benchmark_eval_cexpr(get_cexpr_hvp())
+    benchmark_eval_cexpr(get_cexpr_meson_v_v_meson())
     benchmark_eval_cexpr(get_cexpr_meson_corr())
 
 def test():
