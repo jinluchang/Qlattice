@@ -80,6 +80,8 @@ def qnorm(x):
         return x * x
     elif isinstance(x, complex):
         return x.real * x.real + x.imag * x.imag
+    elif isinstance(x, (list, tuple,)):
+        return sum([ qnorm(x_i) for x_i in x ])
     else:
         return x.qnorm()
     assert False
@@ -94,7 +96,7 @@ class Data:
         # list
         if isinstance(val, Data):
             self.val = val.val
-            assert not isinstance(self.val)
+            assert not isinstance(self.val, Data)
         else:
             self.val = val
 
@@ -117,6 +119,7 @@ class Data:
             elif check_zero(other.val):
                 return self
             elif isinstance(self.val, list) and isinstance(other.val, list):
+                assert len(self.val) == len(other.val)
                 return Data([ v1 + v2 for v1, v2 in zip(self.val, other.val) ])
             elif isinstance(self.val, list):
                 return Data([ v + other.val for v in self.val ])
@@ -191,12 +194,11 @@ class Data:
             return Data(other) - self
 
     def qnorm(self):
-        if check_zero(self.val):
-            return 0
-        elif isinstance(self.val, list):
-            return sum([ qnorm(v) for v in self.val ])
-        else:
-            return qnorm(self.val)
+        return qnorm(self.val)
+
+    def glb_sum(self):
+        from qlat.mpi import glb_sum
+        return Data(glb_sum(self.val))
 
 ###
 

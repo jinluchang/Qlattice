@@ -53,13 +53,13 @@ def parallel_map(q_mp_proc, func, iterable, *, chunksize = 1, process_initializa
     return res
 
 @timer
-def parallel_map_sum(q_mp_proc, func, iterable, *, sum_function = None, sum_initial = None, chunksize = 1, process_initialization = process_initialization):
+def parallel_map_sum(q_mp_proc, func, iterable, *, sum_function = None, sum_start = 0, chunksize = 1, process_initialization = process_initialization):
     # iterable = [ i1, i2, ... ]
     # va1, vb1, ... = func(i1)
     # return [ sum([va1, va2, ...]), sum([vb1, vb2, ...]), ... ]
-    displayln_info(f"parallel_map(q_mp_proc={q_mp_proc})")
+    displayln_info(f"parallel_map_sum(q_mp_proc={q_mp_proc})")
     if sum_function is None:
-        sum_function = lambda x: sum_list(x, sum_initial = sum_initial)
+        sum_function = sum
     if q_mp_proc == 0:
         return sum_function(map(func, iterable))
     assert q_mp_proc >= 1
@@ -71,7 +71,10 @@ def parallel_map_sum(q_mp_proc, func, iterable, *, sum_function = None, sum_init
     with mp.Pool(q_mp_proc, process_initialization, []) as p:
         p.apply(show_memory_usage)
         res = p.imap(call_pool_function, iterable, chunksize = chunksize)
-        ret = sum_function(res)
+        if sum_start == 0:
+            ret = sum_function(res)
+        else:
+            ret = sum_function(res, start = sum_start)
         p.apply(show_memory_usage)
         p.apply(timer_display)
     gc.unfreeze()
@@ -79,11 +82,11 @@ def parallel_map_sum(q_mp_proc, func, iterable, *, sum_function = None, sum_init
     pool_function = None
     return ret
 
-def sum_list(res, *, sum_initial = None):
+def sum_list(res, start = None):
     # res = [ [ va1, vb1, ... ], [ va2, vb2, ... ], ... ]
     # return [ sum([va1, va2, ...]), sum([vb1, vb2, ...]), ... ]
-    if sum_initial is not None:
-        ret = list(sum_initial)
+    if start is not None:
+        ret = list(start)
     else:
         ret = None
     for r in res:
@@ -95,9 +98,10 @@ def sum_list(res, *, sum_initial = None):
     return ret
 
 def glb_sum_list(ret):
+    # deprecated (use glb_sum instead)
     # ret = [ va, vb, ... ]
     # return [ glb_sum(va), glb_sum(vb), ... ]
-    return [ glb_sum(r) for r in ret ]
+    return glb_sum(ret)
 
 def get_q_mp_proc():
     v = os.getenv("q_mp_proc")

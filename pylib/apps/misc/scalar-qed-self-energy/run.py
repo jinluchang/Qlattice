@@ -117,7 +117,7 @@ def mk_four_point_func_table_ff(total_site, m_pi, ainv_gev, ff_tag = ""):
             q.displayln_info(f"mk_four_point_func_table_ff: fn='{fn}' dtype={dtype} r_pi={r_pi}")
             f = q.mk_pion_four_point_field(total_site, m_pi, ff_tag, r_pi)
             q.acc_four_point_func_em(ld, f, dtype, r_scaling_factor)
-        q.glb_sum(ld)
+        ld = q.glb_sum(ld)
         q.mk_file_dirs_info(fn)
         ld.save(fn)
     renormalize_xx(ld)

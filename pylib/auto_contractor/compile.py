@@ -793,7 +793,6 @@ def cexpr_code_gen_py(cexpr : CExpr):
         else:
             c_ops = [ x.coef, ] + x.c_ops
         c, t = gen_expr_prod_list(c_ops)
-        assert t == "V_Tr"
         lines.append(f"    {name} = {c}")
     lines.append(f"")
     lines.append(f"    # set exprs for return")

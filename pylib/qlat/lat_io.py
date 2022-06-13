@@ -42,9 +42,13 @@ class LatData:
         c.bcast_lat_data(self)
         return self
 
-    def glb_sum(self):
+    def glb_sum_in_place(self):
         c.glb_sum_lat_data(self)
         return self
+
+    def glb_sum(self):
+        ld = self.copy()
+        return ld.glb_sum_in_place()
 
     def save(self, path):
         if get_id_node() == 0:

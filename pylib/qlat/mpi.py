@@ -32,11 +32,12 @@ def glb_sum_np(x):
     else:
         displayln(dtype)
         assert False
-    ld.glb_sum()
+    ld.glb_sum_in_place()
     return np.array(ld.to_list(), dtype = dtype).reshape(shape)
 
 @timer
 def glb_sum(x):
+    # x does NOT change
     if isinstance(x, float):
         return c.glb_sum_double(x)
     elif isinstance(x, complex):
@@ -44,10 +45,13 @@ def glb_sum(x):
     elif isinstance(x, int):
         return c.glb_sum_long(x)
     elif isinstance(x, np.ndarray):
-        # x does NOT change
         return glb_sum_np(x)
+    elif isinstance(x, list):
+        return [ glb_sum(x_i) for x_i in x ]
+    elif isinstance(x, tuple):
+        return tuple([ glb_sum(x_i) for x_i in x ])
     else:
-        # x DOES change
+        # should not change x
         return x.glb_sum()
 
 @timer_verbose
