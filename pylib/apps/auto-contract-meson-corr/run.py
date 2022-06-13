@@ -54,10 +54,10 @@ def rel_mod_sym(x, size):
 def get_cexpr_meson_corr():
     def calc_cexpr():
         exprs = [
-                mk_pi_p("x_2", True) * mk_pi_p("x_1") + "pi * pi",
-                mk_k_p("x_2", True)  * mk_k_p("x_1")  + "k  * k ",
-                mk_a0_p("x_2", True) * mk_a0_p("x_1") + "a0 * a0",
-                mk_kappa_p("x_2", True)  * mk_kappa_p("x_1")  + "k  * k ",
+                mk_pi_p("x_2", True)    * mk_pi_p("x_1")    + "pi     * pi   ",
+                mk_k_p("x_2", True)     * mk_k_p("x_1")     + "k      * k    ",
+                mk_a0_p("x_2", True)    * mk_a0_p("x_1")    + "a0     * a0   ",
+                mk_kappa_p("x_2", True) * mk_kappa_p("x_1") + "kappa  * kappa",
                 ]
         cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
         q.displayln_info(display_cexpr(cexpr))

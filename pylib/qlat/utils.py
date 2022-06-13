@@ -74,7 +74,8 @@ def parallel_map_sum(q_mp_proc, func, iterable, *, sum_function = None, sum_star
         if sum_start == 0:
             ret = sum_function(res)
         else:
-            ret = sum_function(res, start = sum_start)
+            # ret = sum_function(res, start = sum_start)
+            ret = sum_function(res, sum_start)
         p.apply(show_memory_usage)
         p.apply(timer_display)
     gc.unfreeze()
