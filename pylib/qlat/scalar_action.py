@@ -26,9 +26,9 @@ class ScalarAction:
     def lmbd(self):
         return c.get_alpha_scalar_action(self)
 
-    def action_node(self, sm):
-        assert isinstance(sm, Field)
-        return c.action_node_scalar_action(self, sm)
+    def action_node(self, sf):
+        assert isinstance(sf, Field)
+        return c.action_node_scalar_action(self, sf)
 
     def hmc_estimate_mass(self, masses, field_ft, force_ft, phi0):
         assert isinstance(masses, Field)

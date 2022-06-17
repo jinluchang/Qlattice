@@ -324,6 +324,8 @@ struct ScalarAction {
   inline void hmc_set_rand_momentum(Field<Complex>& sm_complex, const Field<double>& masses, const RngState& rs)
   {
     TIMER("set_rand_momentum");
+    // Note that momentum fields produced with this function need to be
+    // projected to real momenta
     const Geometry& geo = sm_complex.geo();
     qacc_for(index, geo.local_volume(), {
       const Coordinate xl = geo.coordinate_from_index(index);
