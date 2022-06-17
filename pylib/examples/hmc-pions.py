@@ -554,7 +554,7 @@ for i in range(1,len(sys.argv),2):
         elif(sys.argv[i]=="-a"):
             alpha = float(sys.argv[i+1])
         elif(sys.argv[i]=="-s"):
-            steps = float(sys.argv[i+1])
+            steps = int(sys.argv[i+1])
     except:
         raise Exception("Invalid arguments: use -d for lattice dimensions, -n for multiplicity, -t for number of trajectories, -m for mass squared, -l for lambda, -a for alpha, and -s for the number of steps in a trajectory. e.g. python hmc-pions.py -l 8x8x8x16 -n 4 -t 50 -m -1.0 -l 1.0 -a 0.1")
 
