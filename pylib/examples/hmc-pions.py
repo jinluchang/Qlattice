@@ -160,9 +160,9 @@ class HMC:
         # The number of trajectories to calculate before taking measurements
         self.start_measurements = 0
         self.init_length = 20
-        self.block_length = 100
+        self.block_length = 140
         self.num_blocks = 2
-        self.final_block_length = 100
+        self.final_block_length = 200
         # A variable to store the estimated vacuum expectation value of sigma
         self.vev = 0
 
@@ -368,9 +368,9 @@ class HMC:
             # are in the mask field (a value of 1 means reliable, and 0 means
             # unreliable)
             masses.invert_double()
-            masses*=0.1
+            masses*=0.01
             masses.less_than_double(field_mod_av, mask)
-            masses*=10.0
+            masses*=100.0
             masses.invert_double()
             # After multiplying the ratio of force_mod_av/field_mod_av by
             # (pi/2)**(-2), we have our estimated masses
@@ -527,7 +527,7 @@ total_site = [8,8,8,16]
 mult = 4
 
 # The number of trajectories to calculate
-n_traj = 400
+n_traj = 700
 # The number of steps to take in a single trajectory
 steps = 10
 
