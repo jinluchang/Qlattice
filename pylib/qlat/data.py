@@ -284,9 +284,9 @@ def fsqr(data):
         i = data.imag
         return complex(r * r, i * i)
     elif isinstance(data, np.ndarray):
-        if data.dtype in [ np.float, np.int, ]:
+        if data.dtype in [ np.float64, np.float128, np.int64, ]:
             return np.square(data)
-        elif data.dtype in [ np.complex, ]:
+        elif data.dtype in [ np.complex128, np.complex256, ]:
             return np.square(data.real) + 1j * np.square(data.imag)
         else:
             raise Exception(f"fsqr data={data} type not supported")
@@ -303,9 +303,9 @@ def fsqrt(data):
         i = data.imag
         return complex(math.sqrt(r), math.sqrt(i))
     elif isinstance(data, np.ndarray):
-        if data.dtype in [ np.float, np.int, ]:
+        if data.dtype in [ np.float64, np.float128, np.int64, ]:
             return np.sqrt(data)
-        elif data.dtype in [ np.complex, ]:
+        elif data.dtype in [ np.complex128, np.complex256, ]:
             return np.sqrt(data.real) + 1j * np.sqrt(data.imag)
         else:
             raise Exception(f"fsqr data={data} type not supported")
