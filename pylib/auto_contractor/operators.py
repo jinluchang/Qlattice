@@ -937,6 +937,18 @@ def test_meson_fj():
     print(display_cexpr(cexpr))
 
 if __name__ == "__main__":
+    expr = mk_pi_p("x2", True) * mk_pi_p("x1") * mk_pi_p("x4", True) * mk_pi_p("x3")
+    # print(expr)
+    # print(display_cexpr(contract_simplify_compile(expr)))
+    x1, x2, x3, x4 = ['x1', 'x2', 'x3', 'x4']
+    terms = [
+      tr(gamma_5*S_l(x1,x2)*gamma_5*S_l(x2,x1))*tr(gamma_5*S_l(x3,x4)*gamma_5*S_l(x4,x3)), # term_ADT01_0001
+      tr(gamma_5*S_l(x1,x2)*gamma_5*S_l(x2,x3)*gamma_5*S_l(x3,x4)*gamma_5*S_l(x4,x1)), # term_ADT02_0001
+      tr(gamma_5*S_l(x1,x4)*gamma_5*S_l(x4,x1))*tr(gamma_5*S_l(x2,x3)*gamma_5*S_l(x3,x2)), # term_ADT03_0001
+      tr(gamma_5*S_l(x1,x4)*gamma_5*S_l(x4,x3)*gamma_5*S_l(x3,x2)*gamma_5*S_l(x2,x1)), # term_ADT04_0001
+    ]
+    print(display_cexpr(contract_simplify_compile(*terms)))
+    exit()
     # test()
     # test1()
     # test_pipi()

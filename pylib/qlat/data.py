@@ -277,9 +277,9 @@ def jackknife(data_list, eps = 1):
     return jks
 
 def fsqr(data):
-    if isinstance(data, (float, int,)):
+    if isinstance(data, (float, np.float128, int,)):
         return data * data
-    elif isinstance(data, complex):
+    elif isinstance(data, (complex, np.complex256,)):
         r = data.real
         i = data.imag
         return complex(r * r, i * i)
@@ -296,9 +296,9 @@ def fsqr(data):
         raise Exception(f"fsqr data={data} type not supported")
 
 def fsqrt(data):
-    if isinstance(data, (float, int,)):
+    if isinstance(data, (float, np.float128, int,)):
         return math.sqrt(data)
-    elif isinstance(data, complex):
+    elif isinstance(data, (complex, np.complex256,)):
         r = data.real
         i = data.imag
         return complex(math.sqrt(r), math.sqrt(i))
