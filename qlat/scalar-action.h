@@ -305,7 +305,7 @@ struct ScalarAction {
     return sum;
   }
   
-  inline void axial_current_node(Field<double>&  axial_current, const Field<double>& sf)
+  inline void axial_current_node(Field<double>& axial_current, const Field<double>& sf)
   {
 	// Sets the axial_current field based on the provided field 
 	// configuration sf. axial_current.get_elem(x,i) will give the time
@@ -319,6 +319,28 @@ struct ScalarAction {
     sf_ext = sf;
     refresh_expanded(sf_ext);
     axial_current_node_no_comm(axial_current, sf_ext);
+  }
+  
+  inline void get_sigma_pions(Field<double>& sigma_pions, const Field<double>& sf)
+  {
+	// Sets the sigma and pions field based on the provided field 
+    // configuration sf.
+    TIMER("ScalarAction.get_sigma_pions");
+    const Geometry geo = sf.geo();
+    qassert(geo.multiplicity == 4);
+    qacc_for(index, geo.local_volume(), {
+      Coordinate xl = geo.coordinate_from_index(index);
+      Vector<double> sp_v = sigma_pions.get_elems(xl);
+      qassert(sp_v.size()==4);
+      double w = sf.get_elem(xl,0);
+      double x = sf.get_elem(xl,1);
+      double y = sf.get_elem(xl,2);
+      double z = sf.get_elem(xl,3);
+      sp_v[0] = std::pow(w*w+x*x+y*y+z*z,0.5);
+      sp_v[1] = std::asin(x/sp_v[0]);
+      sp_v[2] = std::asin(y/std::pow(w*w+y*y+z*z,0.5));
+      sp_v[3] = std::asin(z/std::pow(w*w+z*z,0.5));
+    });
   }
   
   inline void hmc_set_rand_momentum(Field<Complex>& sm_complex, const Field<double>& masses, const RngState& rs)
