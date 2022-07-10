@@ -1,11 +1,10 @@
 import cqlat as c
 
 from cqlat import get_id_node
-from cqlat import timer_display, timer_autodisplay
-from cqlat import timer_display_stack, timer_display_stack_always
 from cqlat import timer_reset, timer_fork, timer_merge
 from cqlat import verbose_level
 from cqlat import get_actual_start_time, get_start_time, get_time
+from cqlat import flush
 
 import functools
 
@@ -101,3 +100,19 @@ def get_total_time():
 
 def get_actual_total_time():
     return get_time() - get_actual_start_time()
+
+def timer_display(tag):
+    c.timer_display(tag)
+    q.flush()
+
+def timer_autodisplay():
+    c.timer_autodisplay()
+    q.flush()
+
+def timer_display_stack():
+    c.timer_display_stack()
+    q.flush()
+
+def timer_display_stack_always():
+    c.timer_display_stack_always()
+    q.flush()

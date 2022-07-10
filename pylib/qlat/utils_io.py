@@ -19,8 +19,8 @@ from cqlat import qls_all, qls_all_sync_node
 from cqlat import qload_datatable, qload_datatable_sync_node
 from cqlat import check_time_limit, check_stop
 from cqlat import get_time_limit, get_default_budget
-from cqlat import flush
 
+from qlat.timer import *
 from qlat.mpi import *
 from qlat.cache import *
 
