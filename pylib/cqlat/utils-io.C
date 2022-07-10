@@ -567,3 +567,9 @@ EXPORT(qquit, {
   qquit(msg);
   Py_RETURN_NONE;
 });
+
+EXPORT(flush, {
+  using namespace qlat;
+  fflush(get_output_file());
+  Py_RETURN_NONE;
+});
