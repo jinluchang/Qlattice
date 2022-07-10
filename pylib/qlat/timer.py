@@ -101,18 +101,18 @@ def get_total_time():
 def get_actual_total_time():
     return get_time() - get_actual_start_time()
 
-def timer_display(tag):
-    c.timer_display(tag)
-    q.flush()
+def timer_display(*params):
+    c.timer_display(*params)
+    flush()
 
 def timer_autodisplay():
     c.timer_autodisplay()
-    q.flush()
+    flush()
 
 def timer_display_stack():
     c.timer_display_stack()
-    q.flush()
+    flush()
 
 def timer_display_stack_always():
     c.timer_display_stack_always()
-    q.flush()
+    flush()
