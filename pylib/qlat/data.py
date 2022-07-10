@@ -447,3 +447,21 @@ def g_jk_err(jk_list, *, eps, jk_type, **_kwargs):
 
 def g_jk_avg_err(jk_list, **kwargs):
     return g_jk_avg(jk_list), g_jk_err(jk_list, **kwargs)
+
+@use_kwargs(default_g_jk_kwargs)
+def g_jk_size(**kwargs):
+    jk_type = kwargs["jk_type"]
+    all_jk_idx = kwargs["all_jk_idx"]
+    get_all_jk_idx = kwargs["get_all_jk_idx"]
+    n_rand_sample = kwargs["n_rand_sample"]
+    # jk_type in [ "rjk", "super", ]
+    if jk_type == "super":
+        if all_jk_idx is None:
+            assert get_all_jk_idx is not None
+            all_jk_idx = get_all_jk_idx()
+        return len(all_jk_idx)
+    elif jk_type == "rjk":
+        return 1 + n_rand_sample
+    else:
+        assert False
+    return None
