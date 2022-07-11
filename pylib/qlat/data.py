@@ -11,14 +11,20 @@ fminv_gev = 0.197326979 # hbar * c / (1e-15 m * 1e9 electron charge * 1 volt)
 
 class use_kwargs:
 
-    def __init__(self, kwargs):
-        self.default_kwargs = kwargs
+    # self.default_kwargs
+    # self.keys
+
+    def __init__(self, default_kwargs, keys = None):
+        self.default_kwargs = default_kwargs
+        self.keys = None
 
     def __call__(self, func):
         @functools.wraps(func)
         def f(*args, **kwargs):
             if "is_default_kwargs_applied" not in kwargs:
                 kwargs = self.default_kwargs | kwargs
+            if self.keys is not None:
+                kwargs = { k: kwargs[k] for k in self.keys }
             return func(*args, **kwargs)
         return f
 
