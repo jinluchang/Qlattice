@@ -43,19 +43,21 @@ def parallel_map(q_mp_proc, func, iterable,
     assert q_mp_proc >= 1
     global pool_function
     assert pool_function is None
-    pool_function = func
-    gc.collect()
-    gc.freeze()
-    with mp.Pool(q_mp_proc, process_initialization, []) as p:
-        if is_verbose:
-            p.apply(show_memory_usage)
-        res = p.map(call_pool_function, iterable, chunksize = chunksize)
-        if is_verbose:
-            p.apply(show_memory_usage)
-            p.apply(timer_display)
-    gc.unfreeze()
-    gc.collect()
-    pool_function = None
+    try:
+        pool_function = func
+        gc.collect()
+        gc.freeze()
+        with mp.Pool(q_mp_proc, process_initialization, []) as p:
+            if is_verbose:
+                p.apply(show_memory_usage)
+            res = p.map(call_pool_function, iterable, chunksize = chunksize)
+            if is_verbose:
+                p.apply(show_memory_usage)
+                p.apply(timer_display)
+    finally:
+        gc.unfreeze()
+        gc.collect()
+        pool_function = None
     return res
 
 @timer
@@ -77,24 +79,26 @@ def parallel_map_sum(q_mp_proc, func, iterable,
     assert q_mp_proc >= 1
     global pool_function
     assert pool_function is None
-    pool_function = func
-    gc.collect()
-    gc.freeze()
-    with mp.Pool(q_mp_proc, process_initialization, []) as p:
-        if is_verbose:
-            p.apply(show_memory_usage)
-        res = p.imap(call_pool_function, iterable, chunksize = chunksize)
-        if sum_start == 0:
-            ret = sum_function(res)
-        else:
-            # ret = sum_function(res, start = sum_start)
-            ret = sum_function(res, sum_start)
-        if is_verbose:
-            p.apply(show_memory_usage)
-            p.apply(timer_display)
-    gc.unfreeze()
-    gc.collect()
-    pool_function = None
+    try:
+        pool_function = func
+        gc.collect()
+        gc.freeze()
+        with mp.Pool(q_mp_proc, process_initialization, []) as p:
+            if is_verbose:
+                p.apply(show_memory_usage)
+            res = p.imap(call_pool_function, iterable, chunksize = chunksize)
+            if sum_start == 0:
+                ret = sum_function(res)
+            else:
+                # ret = sum_function(res, start = sum_start)
+                ret = sum_function(res, sum_start)
+            if is_verbose:
+                p.apply(show_memory_usage)
+                p.apply(timer_display)
+    finally:
+        gc.unfreeze()
+        gc.collect()
+        pool_function = None
     return ret
 
 def sum_list(res, start = None):
