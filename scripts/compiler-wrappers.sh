@@ -51,6 +51,8 @@ elif [ -f "$prefix/bin/gcc" ] ; then
     \$run gcc "\$@"
 elif which icc >/dev/null 2>&1 ; then
     \$run icc "\$@"
+elif [ -f "/usr/bin/clang" ] ; then
+    \$run clang "\$@"
 else
     \$run gcc "\$@"
 fi
@@ -70,6 +72,8 @@ elif [ -f "$prefix/bin/g++" ] ; then
     \$run g++ "\$@"
 elif which icpc >/dev/null 2>&1 ; then
     \$run icpc "\$@"
+elif [ -f "/usr/bin/clang++" ] ; then
+    \$run clang++ "\$@"
 else
     \$run g++ "\$@"
 fi
@@ -87,6 +91,10 @@ if which mpiicc >/dev/null 2>&1 ; then
     if [ -f "$prefix/bin/clang" ] ; then
         \$run mpiicc -cc=clang "\$@"
     elif [ -f "$prefix/bin/gcc" ] ; then
+        \$run mpiicc -cc=gcc "\$@"
+    elif [ -f "/usr/bin/clang" ] ; then
+        \$run mpiicc -cc=clang "\$@"
+    elif [ -f "/usr/bin/gcc" ] ; then
         \$run mpiicc -cc=gcc "\$@"
     else
         \$run mpiicc "\$@"
@@ -108,6 +116,10 @@ if which mpiicpc >/dev/null 2>&1 ; then
     if [ -f "$prefix/bin/clang++" ] ; then
         \$run mpiicpc -cxx=clang++ "\$@"
     elif [ -f "$prefix/bin/g++" ] ; then
+        \$run mpiicpc -cxx=g++ "\$@"
+    elif [ -f "/usr/bin/clang++" ] ; then
+        \$run mpiicpc -cxx=clang++ "\$@"
+    elif [ -f "/usr/bin/g++" ] ; then
         \$run mpiicpc -cxx=g++ "\$@"
     else
         \$run mpiicpc "\$@"
