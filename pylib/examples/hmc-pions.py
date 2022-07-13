@@ -477,8 +477,6 @@ def main():
     geo_cur = q.Geometry(total_site, 3)
     # This field will store the calculated axial currents
     axial_current = q.Field("double",geo_cur)
-    # This field will store the calculated sigma and pion fields
-    sigma_pions = q.Field("double",hmc.field.geo())
     
     for traj in range(1,n_traj+1):
         # Run the HMC algorithm to update the field configuration
@@ -499,19 +497,6 @@ def main():
         #q.displayln_info(phi)
         field_sum = hmc.field_predicted.get_field().glb_sum()
         phi_predicted=[field_sum[i]/hmc.field.V for i in range(mult)]
-        
-        #
-        hmc.action.get_sigma_pions(sigma_pions, hmc.field.get_field())
-        tslices_sp = sigma_pions.glb_sum_tslice()
-        
-        q.displayln_info("Average sigma/pion:")
-        field_sum2 = sigma_pions.glb_sum()
-        phi2=[field_sum2[i]/hmc.field.V for i in range(mult)]
-        q.displayln_info([sigma_pions.get_elem([4,0,0,0],0),sigma_pions.get_elem([4,0,0,0],1),sigma_pions.get_elem([4,0,0,0],2),sigma_pions.get_elem([4,0,0,0],3)])
-        #q.displayln_info(phi2)
-        
-        hmc.action.get_sigma_pions(sigma_pions, hmc.field_predicted.get_field())
-        tslices_sp_predicted = sigma_pions.glb_sum_tslice()
         
         #q.displayln_info("Analytic masses (free case):")
         #ms=[calc_mass([0,0,0,0]),calc_mass([1,0,0,0]),calc_mass([2,0,0,0]),calc_mass([3,0,0,0]),calc_mass([4,0,0,0]),calc_mass([5,0,0,0])]
@@ -542,8 +527,6 @@ def main():
             phi_pred_list.append(phi_predicted)
             timeslices_pred.append(tslices_predicted.to_numpy())
             ax_cur_timeslices_pred.append(tslices_ax_cur_predicted.to_numpy())
-            sp_list.append(tslices_sp.to_numpy())
-            sp_pred_list.append(tslices_sp_predicted.to_numpy())
     
     # Saves the final field configuration so that the next run can be 
     # started where this one left off
@@ -562,9 +545,6 @@ timeslices_pred=[]
 # axial currents for each trajectory
 ax_cur_timeslices=[]
 ax_cur_timeslices_pred=[]
-# Sigma pion timeslices
-sp_list = []
-sp_pred_list = []
 # Save the acceptance rates
 accept_rates=[]
 fields=[]
@@ -580,14 +560,14 @@ mult = 4
 # The number of trajectories to calculate
 n_traj = 500
 # The number of steps to take in a single trajectory
-steps = 20
+steps = 15
 
 # Use action for a Euclidean scalar field. The Lagrangian will be:
 # (1/2)*[sum i]|dphi_i|^2 + (1/2)*m_sq*[sum i]|phi_i|^2
 #     + (1/24)*lmbd*([sum i]|phi_i|^2)^2
 m_sq = -1.0
-lmbd = 1.0
-alpha = 0.1
+lmbd = 10.0/2
+alpha = 0.01*2.0**0.5
 
 for i in range(1,len(sys.argv),2):
     try:
@@ -626,7 +606,7 @@ q.qremove_all_info("results")
 main()
 
 with open(f"output_data/sigma_pion_corrs_{total_site[0]}x{total_site[3]}_msq_{m_sq}_lmbd_{lmbd}_alph_{alpha}_{datetime.datetime.now().date()}.bin", "wb") as output:
-    pickle.dump([accept_rates,psq_list,phi_list,sp_list,timeslices,ax_cur_timeslices,psq_pred_list,phi_pred_list,sp_pred_list,timeslices_pred,ax_cur_timeslices_pred,fields,momentums,fields_pred],output)
+    pickle.dump([accept_rates,psq_list,phi_list,timeslices,ax_cur_timeslices,psq_pred_list,phi_pred_list,timeslices_pred,ax_cur_timeslices_pred,fields,momentums,fields_pred],output)
 
 q.timer_display()
 
