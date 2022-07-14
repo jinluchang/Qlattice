@@ -71,11 +71,6 @@ class ScalarAction:
         assert isinstance(axial_current, Field)
         return c.axial_current_node_scalar_action(self, axial_current, sf)
 
-    def get_sigma_pions(self, sigma_pions, sf):
-        assert isinstance(sf, Field)
-        assert isinstance(sigma_pions, Field)
-        return c.get_sigma_pions_scalar_action(self, sigma_pions, sf)
-
     def hmc_set_rand_momentum(self, sm_complex, masses, rs):
         assert isinstance(sm_complex, Field)
         assert isinstance(masses, Field)

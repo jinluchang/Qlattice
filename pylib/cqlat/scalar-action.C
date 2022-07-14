@@ -146,21 +146,6 @@ EXPORT(axial_current_node_scalar_action, {
   Py_RETURN_NONE;
 });
 
-EXPORT(get_sigma_pions_scalar_action, {
-  using namespace qlat;
-  PyObject* p_sa = NULL;
-  PyObject* p_sigma_pions = NULL;
-  PyObject* p_sf = NULL;
-  if (!PyArg_ParseTuple(args, "OOO", &p_sa, &p_sigma_pions, &p_sf)) {
-    return NULL;
-  }
-  ScalarAction& sa = py_convert_type<ScalarAction>(p_sa);
-  Field<double>& sigma_pions = py_convert_type<Field<double>>(p_sigma_pions);
-  const Field<double>& sf = py_convert_type<Field<double>>(p_sf);
-  sa.get_sigma_pions(sigma_pions, sf);
-  Py_RETURN_NONE;
-});
-
 EXPORT(sum_sq_scalar_action, {
   using namespace qlat;
   PyObject* p_sa = NULL;
