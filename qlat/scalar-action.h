@@ -136,6 +136,20 @@ struct ScalarAction {
       }
     });
   }
+  
+  inline void to_mass_factor(Field<double>& sin_domega)
+  {
+    TIMER("ScalarAction.to_mass_factor");
+    const Geometry geo = sin_domega.geo();
+    qacc_for(index, geo.local_volume(), {
+      const Coordinate xl = geo.coordinate_from_index(index);
+      Vector<double> v = sin_domega.get_elems(xl);
+      for (int m = 0; m < v.size(); ++m) {
+        v[m] = 1 + 2*std::asin(v[m])/PI;
+        v[m] = v[m]*v[m];
+      }
+    });
+  }
 
   inline double hmc_m_hamilton_node(const Field<Complex>& sm_complex, const Field<double>& masses)
   {

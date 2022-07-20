@@ -83,6 +83,19 @@ EXPORT(hmc_estimate_mass_scalar_action, {
   Py_RETURN_NONE;
 });
 
+EXPORT(to_mass_factor_scalar_action, {
+  using namespace qlat;
+  PyObject* p_sa = NULL;
+  PyObject* p_sin_domega = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_sa, &p_sin_domega)) {
+    return NULL;
+  }
+  ScalarAction& sa = py_convert_type<ScalarAction>(p_sa);
+  Field<double>& sin_domega = py_convert_type<Field<double>>(p_sin_domega);
+  sa.to_mass_factor(sin_domega);
+  Py_RETURN_NONE;
+});
+
 EXPORT(hmc_m_hamilton_node_scalar_action, {
   using namespace qlat;
   PyObject* p_sa = NULL;
