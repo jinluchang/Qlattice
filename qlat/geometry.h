@@ -257,19 +257,13 @@ struct Geometry {
   //
   qacc Coordinate coordinate_g_from_l(const Coordinate& xl) const
   {
-    Coordinate xg;
-    for (int mu = 0; mu < 4; mu++) {
-      xg[mu] = xl[mu] + geon.coor_node[mu] * node_site[mu];
-    }
+    const Coordinate xg = xl + geon.coor_node * node_site;
     return xg;
   }
   //
   qacc Coordinate coordinate_l_from_g(const Coordinate& xg) const
   {
-    Coordinate xl;
-    for (int mu = 0; mu < 4; mu++) {
-      xl[mu] = xg[mu] - geon.coor_node[mu] * node_site[mu];
-    }
+    const Coordinate xl = xg - geon.coor_node * node_site;
     return xl;
   }
   //

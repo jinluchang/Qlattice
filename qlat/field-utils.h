@@ -226,7 +226,8 @@ std::vector<M> field_get_elems(const Field<M>& f, const Coordinate& xg)
 // xg is same on all the nodes
 {
   const Geometry& geo = f.geo();
-  const Coordinate xl = geo.coordinate_l_from_g(xg);
+  const Coordinate xg_r = mod(xg, geo.total_site());
+  const Coordinate xl = geo.coordinate_l_from_g(xg_r);
   std::vector<M> ret(geo.multiplicity);
   if (geo.is_local(xl)) {
     assign(ret, f.get_elems_const(xl));
