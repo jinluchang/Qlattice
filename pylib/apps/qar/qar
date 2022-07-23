@@ -53,11 +53,12 @@ elif action == "extract":
     assert not q.does_file_exist(path)
     q.qar_extract_info(path_qar, path)
 elif action == "l":
-    fns = []
+    idx = 0
     for path_qar in sys.argv[2:]:
-        fns += q.list_qar(path_qar)
-    for idx, fn in enumerate(fns):
-        q.displayln_info(f"{idx:8} '{path_qar}' '{fn}'")
+        fns = q.list_qar(path_qar)
+        for fn in fns:
+            q.displayln_info(f"{idx:8} '{path_qar}' '{fn}'")
+            idx += 1
 elif action in [ "c", "cr" ]:
     path_list = sys.argv[2:]
     for path in path_list:
