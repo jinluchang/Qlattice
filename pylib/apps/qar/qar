@@ -56,8 +56,8 @@ elif action == "l":
     idx = 0
     for path_qar in sys.argv[2:]:
         fns = q.list_qar(path_qar)
-        for fn in fns:
-            q.displayln_info(f"{idx:8} '{path_qar}' '{fn}'")
+        for i, fn in enumerate(fns):
+            q.displayln_info(f"{idx:8} '{path_qar}' {i:8} '{fn}'")
             idx += 1
 elif action in [ "c", "cr" ]:
     path_list = sys.argv[2:]
