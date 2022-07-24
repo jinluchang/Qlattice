@@ -24,6 +24,7 @@ set -e
 ./scripts/qlat.sh
 
 ./scripts/c-lime.sh
+./scripts/hdf5.sh
 ./scripts/grid.avx512.sh
 ./scripts/gpt.sh
 
