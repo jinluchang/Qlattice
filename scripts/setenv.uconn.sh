@@ -27,13 +27,9 @@ module add modules
 module add pre-module
 module add post-module
 module add vim/8.1
+module add git/2.27.0
 module add gcc/9.2.0
 module add mpi/openmpi/4.0.3
-module add sqlite/3.30.1
-module add libffi/3.2.1
-module add tcl/8.6.6.8606
-module add bzip2/1.0.6
-module add lzma/4.32.7
 module list
 EOF
 
