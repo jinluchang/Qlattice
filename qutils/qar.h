@@ -1076,7 +1076,10 @@ inline int qar_create(const std::string& path_qar,
     qrename(path_qar_v + ".acc", path_qar_v);
   }
   if (is_remove_folder_after) {
-    qassert(does_file_exist(path_qar));
+    for (long iv = 0; iv < num_vol; ++iv) {
+      const std::string path_qar_v = path_qar + qar_file_multi_vol_suffix(iv);
+      qassert(does_file_exist(path_qar_v));
+    }
     qremove_all(path_folder);
   }
   return 0;
@@ -1129,11 +1132,15 @@ inline int qar_extract(const std::string& path_qar,
     qassert(not qfile_out.null());
     timer.flops += write_from_qfile(qfile_out, qfile_in);
   }
+  const long num_vol = qar.size();
   qar.close();
   qrename(path_folder + ".acc", path_folder);
   if (is_remove_qar_after) {
     qassert(is_directory(path_folder));
-    qremove(path_qar);
+    for (long iv = 0; iv < num_vol; ++iv) {
+      const std::string path_qar_v = path_qar + qar_file_multi_vol_suffix(iv);
+      qremove(path_qar_v);
+    }
   }
   return 0;
 }

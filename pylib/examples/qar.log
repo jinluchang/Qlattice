@@ -805,6 +805,26 @@ QFile: close 'results/data3.qar.v19' with 'r'.
 QFile: close 'results/data3.qar.v20' with 'r'.
 qrename: 'results/data3.acc' 'results/data3'
 qremove: 'results/data3.qar'
+qremove: 'results/data3.qar.v1'
+qremove: 'results/data3.qar.v2'
+qremove: 'results/data3.qar.v3'
+qremove: 'results/data3.qar.v4'
+qremove: 'results/data3.qar.v5'
+qremove: 'results/data3.qar.v6'
+qremove: 'results/data3.qar.v7'
+qremove: 'results/data3.qar.v8'
+qremove: 'results/data3.qar.v9'
+qremove: 'results/data3.qar.v10'
+qremove: 'results/data3.qar.v11'
+qremove: 'results/data3.qar.v12'
+qremove: 'results/data3.qar.v13'
+qremove: 'results/data3.qar.v14'
+qremove: 'results/data3.qar.v15'
+qremove: 'results/data3.qar.v16'
+qremove: 'results/data3.qar.v17'
+qremove: 'results/data3.qar.v18'
+qremove: 'results/data3.qar.v19'
+qremove: 'results/data3.qar.v20'
 check_all_files_crc32_info: start checking path='results'
 Cache: 'QarReadCache': 0 / 16 [1] to add
 QFile: open 'results/data.qar' with 'r'.
@@ -1006,66 +1026,6 @@ B5B9ADDC  fn='results/data3/ld-9-1000.lat'
 QFile: open 'results/data3/ld.lat' with 'r'.
 QFile: close 'results/data3/ld.lat' with 'r'.
 88874F56  fn='results/data3/ld.lat'
-QFile: open 'results/data3.qar.v1' with 'r'.
-QFile: close 'results/data3.qar.v1' with 'r'.
-584643F8  fn='results/data3.qar.v1'
-QFile: open 'results/data3.qar.v10' with 'r'.
-QFile: close 'results/data3.qar.v10' with 'r'.
-65699393  fn='results/data3.qar.v10'
-QFile: open 'results/data3.qar.v11' with 'r'.
-QFile: close 'results/data3.qar.v11' with 'r'.
-90E68BE4  fn='results/data3.qar.v11'
-QFile: open 'results/data3.qar.v12' with 'r'.
-QFile: close 'results/data3.qar.v12' with 'r'.
-C921880B  fn='results/data3.qar.v12'
-QFile: open 'results/data3.qar.v13' with 'r'.
-QFile: close 'results/data3.qar.v13' with 'r'.
-B20F47C9  fn='results/data3.qar.v13'
-QFile: open 'results/data3.qar.v14' with 'r'.
-QFile: close 'results/data3.qar.v14' with 'r'.
-EBC84426  fn='results/data3.qar.v14'
-QFile: open 'results/data3.qar.v15' with 'r'.
-QFile: close 'results/data3.qar.v15' with 'r'.
-BDEC49EA  fn='results/data3.qar.v15'
-QFile: open 'results/data3.qar.v16' with 'r'.
-QFile: close 'results/data3.qar.v16' with 'r'.
-E42B4A05  fn='results/data3.qar.v16'
-QFile: open 'results/data3.qar.v17' with 'r'.
-QFile: close 'results/data3.qar.v17' with 'r'.
-0E624E34  fn='results/data3.qar.v17'
-QFile: open 'results/data3.qar.v18' with 'r'.
-QFile: close 'results/data3.qar.v18' with 'r'.
-57A54DDB  fn='results/data3.qar.v18'
-QFile: open 'results/data3.qar.v19' with 'r'.
-QFile: close 'results/data3.qar.v19' with 'r'.
-A22A55AC  fn='results/data3.qar.v19'
-QFile: open 'results/data3.qar.v2' with 'r'.
-QFile: close 'results/data3.qar.v2' with 'r'.
-334D9E5F  fn='results/data3.qar.v2'
-QFile: open 'results/data3.qar.v20' with 'r'.
-QFile: close 'results/data3.qar.v20' with 'r'.
-477C2C62  fn='results/data3.qar.v20'
-QFile: open 'results/data3.qar.v3' with 'r'.
-QFile: close 'results/data3.qar.v3' with 'r'.
-84EADE8C  fn='results/data3.qar.v3'
-QFile: open 'results/data3.qar.v4' with 'r'.
-QFile: close 'results/data3.qar.v4' with 'r'.
-6A8A9DB0  fn='results/data3.qar.v4'
-QFile: open 'results/data3.qar.v5' with 'r'.
-QFile: close 'results/data3.qar.v5' with 'r'.
-80C39981  fn='results/data3.qar.v5'
-QFile: open 'results/data3.qar.v6' with 'r'.
-QFile: close 'results/data3.qar.v6' with 'r'.
-D9049A6E  fn='results/data3.qar.v6'
-QFile: open 'results/data3.qar.v7' with 'r'.
-QFile: close 'results/data3.qar.v7' with 'r'.
-8F2097A2  fn='results/data3.qar.v7'
-QFile: open 'results/data3.qar.v8' with 'r'.
-QFile: close 'results/data3.qar.v8' with 'r'.
-D6E7944D  fn='results/data3.qar.v8'
-QFile: open 'results/data3.qar.v9' with 'r'.
-QFile: close 'results/data3.qar.v9' with 'r'.
-3CAE907C  fn='results/data3.qar.v9'
 check_all_files_crc32_info: summary for path='results'
     0 B5B9ADDC  fn='results/data/ld-0-1000.lat'
     1 B5B9ADDC  fn='results/data/ld-1-1000.lat'
@@ -1155,26 +1115,6 @@ check_all_files_crc32_info: summary for path='results'
    85 B5B9ADDC  fn='results/data3/ld-8-1000.lat'
    86 B5B9ADDC  fn='results/data3/ld-9-1000.lat'
    87 88874F56  fn='results/data3/ld.lat'
-   88 584643F8  fn='results/data3.qar.v1'
-   89 65699393  fn='results/data3.qar.v10'
-   90 90E68BE4  fn='results/data3.qar.v11'
-   91 C921880B  fn='results/data3.qar.v12'
-   92 B20F47C9  fn='results/data3.qar.v13'
-   93 EBC84426  fn='results/data3.qar.v14'
-   94 BDEC49EA  fn='results/data3.qar.v15'
-   95 E42B4A05  fn='results/data3.qar.v16'
-   96 0E624E34  fn='results/data3.qar.v17'
-   97 57A54DDB  fn='results/data3.qar.v18'
-   98 A22A55AC  fn='results/data3.qar.v19'
-   99 334D9E5F  fn='results/data3.qar.v2'
-  100 477C2C62  fn='results/data3.qar.v20'
-  101 84EADE8C  fn='results/data3.qar.v3'
-  102 6A8A9DB0  fn='results/data3.qar.v4'
-  103 80C39981  fn='results/data3.qar.v5'
-  104 D9049A6E  fn='results/data3.qar.v6'
-  105 8F2097A2  fn='results/data3.qar.v7'
-  106 D6E7944D  fn='results/data3.qar.v8'
-  107 3CAE907C  fn='results/data3.qar.v9'
 CHECK: finished successfully.
 Cache: 'QarReadCache': 2 / 16 [1] clear
 QFile: close 'results/data2.qar' with 'r'.
