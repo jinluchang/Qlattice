@@ -991,7 +991,7 @@ inline long& get_qar_multi_vol_max_size()
 // qlat parameter
 // size in bytes
 {
-  static long size = get_env_long_default("q_qar_multi_vol_max_size", -1);
+  static long size = get_env_long_default("q_qar_multi_vol_max_size", 500L * 1000L * 1000L * 1000L);
   return size;
 }
 

@@ -253,3 +253,11 @@ Relevant source files: `qutils/rng-state.h`
   Seed for initializing `id_node_in_shuffle`.
 
   Default is `4`. If start with `"seed_"`, then will be random initialization. Otherwise will be viewed as an int and used as `step_size`.
+
+- `q_qar_multi_vol_max_size`
+
+  Maximum size of a `qar` file in bytes. If the total size of the folder is larger, a multi-volume `qar` file will be created.
+
+  Default is `500L * 1000L * 1000L * 1000L` (1000 GB). If `q_qar_multi_vol_max_size` is negative, the size is unlimited.
+
+  Will never split a single file into multiple `qar` volume. The limit may be exceeded due to the header size or a single file being too large.
