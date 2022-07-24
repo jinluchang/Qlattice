@@ -14,6 +14,8 @@ set -e
 ./scripts/cuba.sh
 ./scripts/zlib.sh
 ./scripts/eigen.sh
+./scripts/python.sh
+./scripts/python-packages.sh
 ./scripts/qlat.sh
 
 ./scripts/c-lime.sh

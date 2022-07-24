@@ -6,11 +6,11 @@
 namespace qlat
 {  //
 
-inline Cache<std::string, QarFile>& get_qar_read_cache()
+inline Cache<std::string, QarFileMultiVol>& get_qar_read_cache()
 // key should be the path prefix of the contents of the qar file.
 // Note: key should end with '/'.
 {
-  static Cache<std::string, QarFile> cache("QarReadCache", 16, 1);
+  static Cache<std::string, QarFileMultiVol> cache("QarReadCache", 16, 1);
   return cache;
 }
 
@@ -20,7 +20,7 @@ inline std::string get_qar_read_cache_key(const std::string& path)
 // Note: key should end with '/'.
 {
   TIMER("get_qar_read_cache_key");
-  Cache<std::string, QarFile>& cache = get_qar_read_cache();
+  Cache<std::string, QarFileMultiVol>& cache = get_qar_read_cache();
   for (auto it = cache.m.cbegin(); it != cache.m.cend(); ++it) {
     const std::string& key = it->first;
     if (key == path.substr(0, key.size())) {
@@ -35,7 +35,7 @@ inline std::string get_qar_read_cache_key(const std::string& path)
     if (does_file_exist(path_dir + ".qar")) {
       const std::string key = path_dir + "/";
       qassert(not cache.has(key));
-      QarFile& qar = cache[key];
+      QarFileMultiVol& qar = cache[key];
       qar.init(path_dir + ".qar", "r");
       qassert(not qar.null());
       return key;
@@ -57,7 +57,7 @@ inline bool does_file_exist_qar(const std::string& path)
   }
   qassert(key == path.substr(0, key.size()));
   const std::string fn = path.substr(key.size());
-  QarFile& qar = get_qar_read_cache()[key];
+  QarFileMultiVol& qar = get_qar_read_cache()[key];
   return has(qar, fn);
 }
 
@@ -76,7 +76,7 @@ inline bool does_file_or_directory_exist_qar(const std::string& path)
   if (fn == "") {
     return true;
   }
-  QarFile& qar = get_qar_read_cache()[key];
+  QarFileMultiVol& qar = get_qar_read_cache()[key];
   const std::vector<std::string> fn_list = list(qar);
   for (long i = 0; i < (long)fn_list.size(); ++i) {
     const std::string& fni = fn_list[i];
@@ -103,7 +103,7 @@ inline void qopen(QFile& qfile, const std::string& path,
     } else {
       qassert(key == path.substr(0, key.size()));
       const std::string fn = path.substr(key.size());
-      QarFile& qar = get_qar_read_cache()[key];
+      QarFileMultiVol& qar = get_qar_read_cache()[key];
       read(qar, fn, qfile);
     }
   } else if (mode == "w" or mode == "a") {

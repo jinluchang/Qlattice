@@ -1,5 +1,7 @@
 import cqlat as c
 
+from cqlat import get_qar_multi_vol_max_size
+
 from qlat.timer import *
 
 @timer

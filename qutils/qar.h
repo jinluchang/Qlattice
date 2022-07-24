@@ -338,6 +338,21 @@ inline std::vector<std::string> qgetlines(QFile& qfile)
   return ret;
 }
 
+inline long qfile_remaining_size(QFile& qfile_in)
+// interface function
+// qfile_in should have definite size.
+// return the remaining size of qfile_in (start from the current position).
+{
+  TIMER_FLOPS("qfile_remaining_size");
+  const long offset_start = qftell(qfile_in);
+  qfseek(qfile_in, 0, SEEK_END);
+  const long offset_end = qftell(qfile_in);
+  qfseek(qfile_in, offset_start, SEEK_SET);
+  const long data_len = offset_end - offset_start;
+  qassert(data_len >= 0);
+  return data_len;
+}
+
 template <class M>
 long qwrite_data(const Vector<M>& v, QFile& qfile)
 // interface function
@@ -701,7 +716,7 @@ inline void write_start(QarFile& qar, const std::string& fn,
 // interface function
 // Initial pos should be the end of the qar
 // Set the qfile_out to be a writable QFile to qar.
-// When the final size of qfile_out is unknow (data_len == -1), header_len is
+// When the final size of qfile_out is unknown (data_len == -1), header_len is
 // reserved for header.
 // Should call write_end(qar) after writing to qfile_out is finished.
 {
@@ -781,7 +796,8 @@ inline long write_from_qfile(QarFile& qar, const std::string& fn,
                              const std::string& info, QFile& qfile_in)
 // interface function
 // Write content (start from the current position) of qfile_in to qar.
-// NOTE: different from write_start and write_end functions!
+// qfile_in should have definite size.
+// NOTE: write_start and write_end can be used for more general usage
 {
   TIMER_FLOPS("write_from_qfile");
   const long offset_start = qftell(qfile_in);
@@ -873,11 +889,110 @@ inline std::vector<std::string> properly_truncate_qar_file(const std::string& pa
   return fns_keep;
 }
 
-inline std::vector<std::string> list_qar(const std::string& path)
+// -------------------
+
+inline std::string qar_file_multi_vol_suffix(const long i)
 {
-  TIMER_VERBOSE("list_qar");
-  QarFile qar(path, "r");
-  return list(qar);
+  if (i == 0) {
+    return "";
+  } else {
+    return ssprintf(".v%ld", i);
+  }
+  qassert(false);
+  return "";
+}
+
+struct QarFileMultiVol : std::vector<QarFile> {
+  // Only for reading
+  QarFileMultiVol() { init(); }
+  QarFileMultiVol(const std::string& path_qar, const std::string& mode)
+  {
+    init(path_qar, mode);
+  }
+  //
+  void init()
+  {
+    std::vector<QarFile>& v = *this;
+    qlat::clear(v);
+  }
+  void init(const std::string& path_qar, const std::string& mode)
+  {
+    init();
+    if (mode == "r") {
+      // maximally 1024 * 1024 * 1024 volumes
+      for (long iv = 0; iv < 1024 * 1024 * 1024; ++iv) {
+        const std::string path_qar_v = path_qar + qar_file_multi_vol_suffix(iv);
+        if (not does_file_exist(path_qar_v)) {
+          break;
+        }
+        emplace_back(path_qar_v, mode);
+        if (back().null()) {
+          pop_back();
+          break;
+        }
+      }
+    } else {
+      qassert(false);
+    }
+  }
+  //
+  void close() { init(); }
+  //
+  bool null() { return size() == 0; }
+};
+
+inline bool has(QarFileMultiVol& qar, const std::string& fn)
+// interface function
+{
+  for (long i = 0; i < qar.size(); ++i) {
+    QarFile& qar_v = qar[i];
+    qassert(not qar_v.null());
+    qassert(qar_v.qfile.mode == "r");
+    if (has(qar_v, fn)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+inline std::vector<std::string> list(QarFileMultiVol& qar)
+// interface function
+{
+  if (qar.null()) {
+    return std::vector<std::string>();
+  }
+  std::vector<std::string> fn_list;
+  for (long i = 0; i < qar.size(); ++i) {
+    QarFile& qar_v = qar[i];
+    qassert(not qar_v.null());
+    qassert(qar_v.qfile.mode == "r");
+    vector_append(fn_list, list(qar_v));
+  }
+  return fn_list;
+}
+
+inline bool read(QarFileMultiVol& qar, const std::string& fn, QFile& qfile_in)
+// interface function
+{
+  for (long i = 0; i < qar.size(); ++i) {
+    QarFile& qar_v = qar[i];
+    qassert(not qar_v.null());
+    qassert(qar_v.qfile.mode == "r");
+    if (read(qar_v, fn, qfile_in)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// -------------------
+
+inline long& get_qar_multi_vol_max_size()
+// qlat parameter
+// size in bytes
+{
+  static long size = get_env_long_default("q_qar_multi_vol_max_size", -1);
+  return size;
 }
 
 inline int qar_create(const std::string& path_qar,
@@ -924,18 +1039,42 @@ inline int qar_create(const std::string& path_qar,
       reg_files.push_back(path);
     }
   }
-  QarFile qar(path_qar + ".acc", "w");
-  for (long i = 0; i < (long)reg_files.size(); ++i) {
-    const std::string path = reg_files[i];
-    const std::string fn = path.substr(path_prefix_len);
-    displayln(1, fname + ssprintf(": '%s' '%s'/'%s' %ld/%ld.", path_qar.c_str(),
-                                  path_prefix.c_str(), fn.c_str(), i + 1,
-                                  reg_files.size()));
-    QFile qfile_in(path, "r");
-    timer.flops += write_from_qfile(qar, fn, "", qfile_in);
+  long num_vol;
+  {
+    long iv = 0;
+    QarFile qar;
+    for (long i = 0; i < (long)reg_files.size(); ++i) {
+      const std::string path = reg_files[i];
+      const std::string fn = path.substr(path_prefix_len);
+      QFile qfile_in(path, "r");
+      qassert(not qfile_in.null());
+      if (not qar.null()) {
+        const long total_size_of_current_vol = qftell(qar.qfile);
+        const long data_size = qfile_remaining_size(qfile_in);
+        if (get_qar_multi_vol_max_size() >= 0 and
+            total_size_of_current_vol + data_size >
+                get_qar_multi_vol_max_size()) {
+          qar.close();
+          iv += 1;
+        }
+      }
+      const std::string path_qar_v = path_qar + qar_file_multi_vol_suffix(iv);
+      displayln(1, fname + ssprintf(": '%s' '%s'/'%s' %ld/%ld.",
+                                    path_qar_v.c_str(), path_prefix.c_str(),
+                                    fn.c_str(), i + 1, reg_files.size()));
+      if (qar.null()) {
+        qar.init(path_qar_v + ".acc", "w");
+        qassert(not qar.null());
+      }
+      timer.flops += write_from_qfile(qar, fn, "", qfile_in);
+    }
+    qar.close();
+    num_vol = iv + 1;
   }
-  qar.close();
-  qrename(path_qar + ".acc", path_qar);
+  for (long iv = 0; iv < num_vol; ++iv) {
+    const std::string path_qar_v = path_qar + qar_file_multi_vol_suffix(iv);
+    qrename(path_qar_v + ".acc", path_qar_v);
+  }
   if (is_remove_folder_after) {
     qassert(does_file_exist(path_qar));
     qremove_all(path_folder);
@@ -970,7 +1109,7 @@ inline int qar_extract(const std::string& path_qar,
                            path_qar.c_str(), path_folder.c_str()));
     return 3;
   }
-  QarFile qar(path_qar, "r");
+  QarFileMultiVol qar(path_qar, "r");
   const std::vector<std::string> contents = list(qar);
   std::set<std::string> dirs;
   qmkdir_p(path_folder + ".acc");
@@ -997,6 +1136,13 @@ inline int qar_extract(const std::string& path_qar,
     qremove(path_qar);
   }
   return 0;
+}
+
+inline std::vector<std::string> list_qar(const std::string& path)
+{
+  TIMER_VERBOSE("list_qar");
+  QarFileMultiVol qar(path, "r");
+  return list(qar);
 }
 
 }  // namespace qlat

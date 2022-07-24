@@ -55,7 +55,7 @@ template <class M>
 void clear(std::vector<M>& vec)
 {
   std::vector<M> empty;
-  swap(empty, vec);
+  std::swap(empty, vec);
 }
 
 template <class K, class M>

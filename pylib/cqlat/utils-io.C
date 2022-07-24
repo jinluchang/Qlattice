@@ -387,6 +387,19 @@ EXPORT(qcat_bytes_sync_node, {
   return py_convert(get_data(ret));
 });
 
+EXPORT(get_qar_multi_vol_max_size, {
+  using namespace qlat;
+  PyObject* p_size = NULL;
+  if (!PyArg_ParseTuple(args, "|O", &p_size)) {
+    return NULL;
+  }
+  if (NULL != p_size) {
+    const long size = py_convert_data<long>(p_size);
+    get_qar_multi_vol_max_size() = size;
+  }
+  return py_convert(get_qar_multi_vol_max_size());
+});
+
 EXPORT(qar_create, {
   using namespace qlat;
   PyObject* p_path_qar = NULL;

@@ -17,16 +17,1188 @@ clear_mem_cache: 0 bytes (0.000 GB) freed.
 q_timer_mini_auto_show=1 (default)
 q_timer_max_always_show=10 (default)
 qremove: 'results'
-QFile: open 'results/ld.lat.partial' with 'w'.
-qrename: 'results/ld.lat.partial' 'results/ld.lat'
-QFile: close 'results/ld.lat.partial' with 'w'.
+QFile: open 'results/data/ld.lat.partial' with 'w'.
+qrename: 'results/data/ld.lat.partial' 'results/data/ld.lat'
+QFile: close 'results/data/ld.lat.partial' with 'w'.
+QFile: open 'results/data/ld-0-1000.lat.partial' with 'w'.
+qrename: 'results/data/ld-0-1000.lat.partial' 'results/data/ld-0-1000.lat'
+QFile: close 'results/data/ld-0-1000.lat.partial' with 'w'.
+QFile: open 'results/data/ld-1-1000.lat.partial' with 'w'.
+qrename: 'results/data/ld-1-1000.lat.partial' 'results/data/ld-1-1000.lat'
+QFile: close 'results/data/ld-1-1000.lat.partial' with 'w'.
+QFile: open 'results/data/ld-2-1000.lat.partial' with 'w'.
+qrename: 'results/data/ld-2-1000.lat.partial' 'results/data/ld-2-1000.lat'
+QFile: close 'results/data/ld-2-1000.lat.partial' with 'w'.
+QFile: open 'results/data/ld-3-1000.lat.partial' with 'w'.
+qrename: 'results/data/ld-3-1000.lat.partial' 'results/data/ld-3-1000.lat'
+QFile: close 'results/data/ld-3-1000.lat.partial' with 'w'.
+QFile: open 'results/data/ld-4-1000.lat.partial' with 'w'.
+qrename: 'results/data/ld-4-1000.lat.partial' 'results/data/ld-4-1000.lat'
+QFile: close 'results/data/ld-4-1000.lat.partial' with 'w'.
+QFile: open 'results/data/ld-5-1000.lat.partial' with 'w'.
+qrename: 'results/data/ld-5-1000.lat.partial' 'results/data/ld-5-1000.lat'
+QFile: close 'results/data/ld-5-1000.lat.partial' with 'w'.
+QFile: open 'results/data/ld-6-1000.lat.partial' with 'w'.
+qrename: 'results/data/ld-6-1000.lat.partial' 'results/data/ld-6-1000.lat'
+QFile: close 'results/data/ld-6-1000.lat.partial' with 'w'.
+QFile: open 'results/data/ld-7-1000.lat.partial' with 'w'.
+qrename: 'results/data/ld-7-1000.lat.partial' 'results/data/ld-7-1000.lat'
+QFile: close 'results/data/ld-7-1000.lat.partial' with 'w'.
+QFile: open 'results/data/ld-8-1000.lat.partial' with 'w'.
+qrename: 'results/data/ld-8-1000.lat.partial' 'results/data/ld-8-1000.lat'
+QFile: close 'results/data/ld-8-1000.lat.partial' with 'w'.
+QFile: open 'results/data/ld-9-1000.lat.partial' with 'w'.
+qrename: 'results/data/ld-9-1000.lat.partial' 'results/data/ld-9-1000.lat'
+QFile: close 'results/data/ld-9-1000.lat.partial' with 'w'.
+QFile: open 'results/data/ld-10-1000.lat.partial' with 'w'.
+qrename: 'results/data/ld-10-1000.lat.partial' 'results/data/ld-10-1000.lat'
+QFile: close 'results/data/ld-10-1000.lat.partial' with 'w'.
+QFile: open 'results/data/ld-11-1000.lat.partial' with 'w'.
+qrename: 'results/data/ld-11-1000.lat.partial' 'results/data/ld-11-1000.lat'
+QFile: close 'results/data/ld-11-1000.lat.partial' with 'w'.
+QFile: open 'results/data/ld-12-1000.lat.partial' with 'w'.
+qrename: 'results/data/ld-12-1000.lat.partial' 'results/data/ld-12-1000.lat'
+QFile: close 'results/data/ld-12-1000.lat.partial' with 'w'.
+QFile: open 'results/data/ld-13-1000.lat.partial' with 'w'.
+qrename: 'results/data/ld-13-1000.lat.partial' 'results/data/ld-13-1000.lat'
+QFile: close 'results/data/ld-13-1000.lat.partial' with 'w'.
+QFile: open 'results/data/ld-14-1000.lat.partial' with 'w'.
+qrename: 'results/data/ld-14-1000.lat.partial' 'results/data/ld-14-1000.lat'
+QFile: close 'results/data/ld-14-1000.lat.partial' with 'w'.
+QFile: open 'results/data/ld-15-1000.lat.partial' with 'w'.
+qrename: 'results/data/ld-15-1000.lat.partial' 'results/data/ld-15-1000.lat'
+QFile: close 'results/data/ld-15-1000.lat.partial' with 'w'.
+QFile: open 'results/data/ld-16-1000.lat.partial' with 'w'.
+qrename: 'results/data/ld-16-1000.lat.partial' 'results/data/ld-16-1000.lat'
+QFile: close 'results/data/ld-16-1000.lat.partial' with 'w'.
+QFile: open 'results/data/ld-17-1000.lat.partial' with 'w'.
+qrename: 'results/data/ld-17-1000.lat.partial' 'results/data/ld-17-1000.lat'
+QFile: close 'results/data/ld-17-1000.lat.partial' with 'w'.
+QFile: open 'results/data/ld-18-1000.lat.partial' with 'w'.
+qrename: 'results/data/ld-18-1000.lat.partial' 'results/data/ld-18-1000.lat'
+QFile: close 'results/data/ld-18-1000.lat.partial' with 'w'.
+QFile: open 'results/data/ld-19-1000.lat.partial' with 'w'.
+qrename: 'results/data/ld-19-1000.lat.partial' 'results/data/ld-19-1000.lat'
+QFile: close 'results/data/ld-19-1000.lat.partial' with 'w'.
+QFile: open 'results/data/ld-10000.lat.partial' with 'w'.
+qrename: 'results/data/ld-10000.lat.partial' 'results/data/ld-10000.lat'
+QFile: close 'results/data/ld-10000.lat.partial' with 'w'.
+qar_create: 'results/data.qar' 'results/data' keep folder.
+QFile: open 'results/data/ld-0-1000.lat' with 'r'.
+qar_create: 'results/data.qar' 'results/data/'/'ld-0-1000.lat' 1/22.
+QFile: open 'results/data.qar.acc' with 'w'.
+QFile: close 'results/data/ld-0-1000.lat' with 'r'.
+QFile: open 'results/data/ld-1-1000.lat' with 'r'.
+q_qar_multi_vol_max_size=-1 (default)
+qar_create: 'results/data.qar' 'results/data/'/'ld-1-1000.lat' 2/22.
+QFile: close 'results/data/ld-1-1000.lat' with 'r'.
+QFile: open 'results/data/ld-10-1000.lat' with 'r'.
+qar_create: 'results/data.qar' 'results/data/'/'ld-10-1000.lat' 3/22.
+QFile: close 'results/data/ld-10-1000.lat' with 'r'.
+QFile: open 'results/data/ld-10000.lat' with 'r'.
+qar_create: 'results/data.qar' 'results/data/'/'ld-10000.lat' 4/22.
+QFile: close 'results/data/ld-10000.lat' with 'r'.
+QFile: open 'results/data/ld-11-1000.lat' with 'r'.
+qar_create: 'results/data.qar' 'results/data/'/'ld-11-1000.lat' 5/22.
+QFile: close 'results/data/ld-11-1000.lat' with 'r'.
+QFile: open 'results/data/ld-12-1000.lat' with 'r'.
+qar_create: 'results/data.qar' 'results/data/'/'ld-12-1000.lat' 6/22.
+QFile: close 'results/data/ld-12-1000.lat' with 'r'.
+QFile: open 'results/data/ld-13-1000.lat' with 'r'.
+qar_create: 'results/data.qar' 'results/data/'/'ld-13-1000.lat' 7/22.
+QFile: close 'results/data/ld-13-1000.lat' with 'r'.
+QFile: open 'results/data/ld-14-1000.lat' with 'r'.
+qar_create: 'results/data.qar' 'results/data/'/'ld-14-1000.lat' 8/22.
+QFile: close 'results/data/ld-14-1000.lat' with 'r'.
+QFile: open 'results/data/ld-15-1000.lat' with 'r'.
+qar_create: 'results/data.qar' 'results/data/'/'ld-15-1000.lat' 9/22.
+QFile: close 'results/data/ld-15-1000.lat' with 'r'.
+QFile: open 'results/data/ld-16-1000.lat' with 'r'.
+qar_create: 'results/data.qar' 'results/data/'/'ld-16-1000.lat' 10/22.
+QFile: close 'results/data/ld-16-1000.lat' with 'r'.
+QFile: open 'results/data/ld-17-1000.lat' with 'r'.
+qar_create: 'results/data.qar' 'results/data/'/'ld-17-1000.lat' 11/22.
+QFile: close 'results/data/ld-17-1000.lat' with 'r'.
+QFile: open 'results/data/ld-18-1000.lat' with 'r'.
+qar_create: 'results/data.qar' 'results/data/'/'ld-18-1000.lat' 12/22.
+QFile: close 'results/data/ld-18-1000.lat' with 'r'.
+QFile: open 'results/data/ld-19-1000.lat' with 'r'.
+qar_create: 'results/data.qar' 'results/data/'/'ld-19-1000.lat' 13/22.
+QFile: close 'results/data/ld-19-1000.lat' with 'r'.
+QFile: open 'results/data/ld-2-1000.lat' with 'r'.
+qar_create: 'results/data.qar' 'results/data/'/'ld-2-1000.lat' 14/22.
+QFile: close 'results/data/ld-2-1000.lat' with 'r'.
+QFile: open 'results/data/ld-3-1000.lat' with 'r'.
+qar_create: 'results/data.qar' 'results/data/'/'ld-3-1000.lat' 15/22.
+QFile: close 'results/data/ld-3-1000.lat' with 'r'.
+QFile: open 'results/data/ld-4-1000.lat' with 'r'.
+qar_create: 'results/data.qar' 'results/data/'/'ld-4-1000.lat' 16/22.
+QFile: close 'results/data/ld-4-1000.lat' with 'r'.
+QFile: open 'results/data/ld-5-1000.lat' with 'r'.
+qar_create: 'results/data.qar' 'results/data/'/'ld-5-1000.lat' 17/22.
+QFile: close 'results/data/ld-5-1000.lat' with 'r'.
+QFile: open 'results/data/ld-6-1000.lat' with 'r'.
+qar_create: 'results/data.qar' 'results/data/'/'ld-6-1000.lat' 18/22.
+QFile: close 'results/data/ld-6-1000.lat' with 'r'.
+QFile: open 'results/data/ld-7-1000.lat' with 'r'.
+qar_create: 'results/data.qar' 'results/data/'/'ld-7-1000.lat' 19/22.
+QFile: close 'results/data/ld-7-1000.lat' with 'r'.
+QFile: open 'results/data/ld-8-1000.lat' with 'r'.
+qar_create: 'results/data.qar' 'results/data/'/'ld-8-1000.lat' 20/22.
+QFile: close 'results/data/ld-8-1000.lat' with 'r'.
+QFile: open 'results/data/ld-9-1000.lat' with 'r'.
+qar_create: 'results/data.qar' 'results/data/'/'ld-9-1000.lat' 21/22.
+QFile: close 'results/data/ld-9-1000.lat' with 'r'.
+QFile: open 'results/data/ld.lat' with 'r'.
+qar_create: 'results/data.qar' 'results/data/'/'ld.lat' 22/22.
+QFile: close 'results/data/ld.lat' with 'r'.
+QFile: close 'results/data.qar.acc' with 'w'.
+qrename: 'results/data.qar.acc' 'results/data.qar'
+qar_extract: 'results/data.qar' 'results/data2' keep qar.
+QFile: open 'results/data.qar' with 'r'.
+QFile: open 'results/data2.acc/ld-0-1000.lat' with 'w'.
+QFile: close 'results/data2.acc/ld-0-1000.lat' with 'w'.
+QFile: open 'results/data2.acc/ld-1-1000.lat' with 'w'.
+QFile: close 'results/data2.acc/ld-1-1000.lat' with 'w'.
+QFile: open 'results/data2.acc/ld-10-1000.lat' with 'w'.
+QFile: close 'results/data2.acc/ld-10-1000.lat' with 'w'.
+QFile: open 'results/data2.acc/ld-10000.lat' with 'w'.
+QFile: close 'results/data2.acc/ld-10000.lat' with 'w'.
+QFile: open 'results/data2.acc/ld-11-1000.lat' with 'w'.
+QFile: close 'results/data2.acc/ld-11-1000.lat' with 'w'.
+QFile: open 'results/data2.acc/ld-12-1000.lat' with 'w'.
+QFile: close 'results/data2.acc/ld-12-1000.lat' with 'w'.
+QFile: open 'results/data2.acc/ld-13-1000.lat' with 'w'.
+QFile: close 'results/data2.acc/ld-13-1000.lat' with 'w'.
+QFile: open 'results/data2.acc/ld-14-1000.lat' with 'w'.
+QFile: close 'results/data2.acc/ld-14-1000.lat' with 'w'.
+QFile: open 'results/data2.acc/ld-15-1000.lat' with 'w'.
+QFile: close 'results/data2.acc/ld-15-1000.lat' with 'w'.
+QFile: open 'results/data2.acc/ld-16-1000.lat' with 'w'.
+QFile: close 'results/data2.acc/ld-16-1000.lat' with 'w'.
+QFile: open 'results/data2.acc/ld-17-1000.lat' with 'w'.
+QFile: close 'results/data2.acc/ld-17-1000.lat' with 'w'.
+QFile: open 'results/data2.acc/ld-18-1000.lat' with 'w'.
+QFile: close 'results/data2.acc/ld-18-1000.lat' with 'w'.
+QFile: open 'results/data2.acc/ld-19-1000.lat' with 'w'.
+QFile: close 'results/data2.acc/ld-19-1000.lat' with 'w'.
+QFile: open 'results/data2.acc/ld-2-1000.lat' with 'w'.
+QFile: close 'results/data2.acc/ld-2-1000.lat' with 'w'.
+QFile: open 'results/data2.acc/ld-3-1000.lat' with 'w'.
+QFile: close 'results/data2.acc/ld-3-1000.lat' with 'w'.
+QFile: open 'results/data2.acc/ld-4-1000.lat' with 'w'.
+QFile: close 'results/data2.acc/ld-4-1000.lat' with 'w'.
+QFile: open 'results/data2.acc/ld-5-1000.lat' with 'w'.
+QFile: close 'results/data2.acc/ld-5-1000.lat' with 'w'.
+QFile: open 'results/data2.acc/ld-6-1000.lat' with 'w'.
+QFile: close 'results/data2.acc/ld-6-1000.lat' with 'w'.
+QFile: open 'results/data2.acc/ld-7-1000.lat' with 'w'.
+QFile: close 'results/data2.acc/ld-7-1000.lat' with 'w'.
+QFile: open 'results/data2.acc/ld-8-1000.lat' with 'w'.
+QFile: close 'results/data2.acc/ld-8-1000.lat' with 'w'.
+QFile: open 'results/data2.acc/ld-9-1000.lat' with 'w'.
+QFile: close 'results/data2.acc/ld-9-1000.lat' with 'w'.
+QFile: open 'results/data2.acc/ld.lat' with 'w'.
+QFile: close 'results/data2.acc/ld.lat' with 'w'.
+QFile: close 'results/data.qar' with 'r'.
+qrename: 'results/data2.acc' 'results/data2'
+qar_create: 'results/data2.qar' 'results/data2' remove folder.
+QFile: open 'results/data2/ld-0-1000.lat' with 'r'.
+qar_create: 'results/data2.qar' 'results/data2/'/'ld-0-1000.lat' 1/22.
+QFile: open 'results/data2.qar.acc' with 'w'.
+QFile: close 'results/data2/ld-0-1000.lat' with 'r'.
+QFile: open 'results/data2/ld-1-1000.lat' with 'r'.
+qar_create: 'results/data2.qar' 'results/data2/'/'ld-1-1000.lat' 2/22.
+QFile: close 'results/data2/ld-1-1000.lat' with 'r'.
+QFile: open 'results/data2/ld-10-1000.lat' with 'r'.
+qar_create: 'results/data2.qar' 'results/data2/'/'ld-10-1000.lat' 3/22.
+QFile: close 'results/data2/ld-10-1000.lat' with 'r'.
+QFile: open 'results/data2/ld-10000.lat' with 'r'.
+qar_create: 'results/data2.qar' 'results/data2/'/'ld-10000.lat' 4/22.
+QFile: close 'results/data2/ld-10000.lat' with 'r'.
+QFile: open 'results/data2/ld-11-1000.lat' with 'r'.
+qar_create: 'results/data2.qar' 'results/data2/'/'ld-11-1000.lat' 5/22.
+QFile: close 'results/data2/ld-11-1000.lat' with 'r'.
+QFile: open 'results/data2/ld-12-1000.lat' with 'r'.
+qar_create: 'results/data2.qar' 'results/data2/'/'ld-12-1000.lat' 6/22.
+QFile: close 'results/data2/ld-12-1000.lat' with 'r'.
+QFile: open 'results/data2/ld-13-1000.lat' with 'r'.
+qar_create: 'results/data2.qar' 'results/data2/'/'ld-13-1000.lat' 7/22.
+QFile: close 'results/data2/ld-13-1000.lat' with 'r'.
+QFile: open 'results/data2/ld-14-1000.lat' with 'r'.
+qar_create: 'results/data2.qar' 'results/data2/'/'ld-14-1000.lat' 8/22.
+QFile: close 'results/data2/ld-14-1000.lat' with 'r'.
+QFile: open 'results/data2/ld-15-1000.lat' with 'r'.
+qar_create: 'results/data2.qar' 'results/data2/'/'ld-15-1000.lat' 9/22.
+QFile: close 'results/data2/ld-15-1000.lat' with 'r'.
+QFile: open 'results/data2/ld-16-1000.lat' with 'r'.
+qar_create: 'results/data2.qar' 'results/data2/'/'ld-16-1000.lat' 10/22.
+QFile: close 'results/data2/ld-16-1000.lat' with 'r'.
+QFile: open 'results/data2/ld-17-1000.lat' with 'r'.
+qar_create: 'results/data2.qar' 'results/data2/'/'ld-17-1000.lat' 11/22.
+QFile: close 'results/data2/ld-17-1000.lat' with 'r'.
+QFile: open 'results/data2/ld-18-1000.lat' with 'r'.
+qar_create: 'results/data2.qar' 'results/data2/'/'ld-18-1000.lat' 12/22.
+QFile: close 'results/data2/ld-18-1000.lat' with 'r'.
+QFile: open 'results/data2/ld-19-1000.lat' with 'r'.
+qar_create: 'results/data2.qar' 'results/data2/'/'ld-19-1000.lat' 13/22.
+QFile: close 'results/data2/ld-19-1000.lat' with 'r'.
+QFile: open 'results/data2/ld-2-1000.lat' with 'r'.
+qar_create: 'results/data2.qar' 'results/data2/'/'ld-2-1000.lat' 14/22.
+QFile: close 'results/data2/ld-2-1000.lat' with 'r'.
+QFile: open 'results/data2/ld-3-1000.lat' with 'r'.
+qar_create: 'results/data2.qar' 'results/data2/'/'ld-3-1000.lat' 15/22.
+QFile: close 'results/data2/ld-3-1000.lat' with 'r'.
+QFile: open 'results/data2/ld-4-1000.lat' with 'r'.
+qar_create: 'results/data2.qar' 'results/data2/'/'ld-4-1000.lat' 16/22.
+QFile: close 'results/data2/ld-4-1000.lat' with 'r'.
+QFile: open 'results/data2/ld-5-1000.lat' with 'r'.
+qar_create: 'results/data2.qar' 'results/data2/'/'ld-5-1000.lat' 17/22.
+QFile: close 'results/data2/ld-5-1000.lat' with 'r'.
+QFile: open 'results/data2/ld-6-1000.lat' with 'r'.
+qar_create: 'results/data2.qar' 'results/data2/'/'ld-6-1000.lat' 18/22.
+QFile: close 'results/data2/ld-6-1000.lat' with 'r'.
+QFile: open 'results/data2/ld-7-1000.lat' with 'r'.
+qar_create: 'results/data2.qar' 'results/data2/'/'ld-7-1000.lat' 19/22.
+QFile: close 'results/data2/ld-7-1000.lat' with 'r'.
+QFile: open 'results/data2/ld-8-1000.lat' with 'r'.
+qar_create: 'results/data2.qar' 'results/data2/'/'ld-8-1000.lat' 20/22.
+QFile: close 'results/data2/ld-8-1000.lat' with 'r'.
+QFile: open 'results/data2/ld-9-1000.lat' with 'r'.
+qar_create: 'results/data2.qar' 'results/data2/'/'ld-9-1000.lat' 21/22.
+QFile: close 'results/data2/ld-9-1000.lat' with 'r'.
+QFile: open 'results/data2/ld.lat' with 'r'.
+qar_create: 'results/data2.qar' 'results/data2/'/'ld.lat' 22/22.
+QFile: close 'results/data2/ld.lat' with 'r'.
+QFile: close 'results/data2.qar.acc' with 'w'.
+qrename: 'results/data2.qar.acc' 'results/data2.qar'
+qremove: 'results/data2/ld-0-1000.lat'
+qremove: 'results/data2/ld-1-1000.lat'
+qremove: 'results/data2/ld-10-1000.lat'
+qremove: 'results/data2/ld-10000.lat'
+qremove: 'results/data2/ld-11-1000.lat'
+qremove: 'results/data2/ld-12-1000.lat'
+qremove: 'results/data2/ld-13-1000.lat'
+qremove: 'results/data2/ld-14-1000.lat'
+qremove: 'results/data2/ld-15-1000.lat'
+qremove: 'results/data2/ld-16-1000.lat'
+qremove: 'results/data2/ld-17-1000.lat'
+qremove: 'results/data2/ld-18-1000.lat'
+qremove: 'results/data2/ld-19-1000.lat'
+qremove: 'results/data2/ld-2-1000.lat'
+qremove: 'results/data2/ld-3-1000.lat'
+qremove: 'results/data2/ld-4-1000.lat'
+qremove: 'results/data2/ld-5-1000.lat'
+qremove: 'results/data2/ld-6-1000.lat'
+qremove: 'results/data2/ld-7-1000.lat'
+qremove: 'results/data2/ld-8-1000.lat'
+qremove: 'results/data2/ld-9-1000.lat'
+qremove: 'results/data2/ld.lat'
+qremove: 'results/data2'
+qar_extract: 'results/data2.qar' 'results/data2' remove qar .
+QFile: open 'results/data2.qar' with 'r'.
+QFile: open 'results/data2.acc/ld-0-1000.lat' with 'w'.
+QFile: close 'results/data2.acc/ld-0-1000.lat' with 'w'.
+QFile: open 'results/data2.acc/ld-1-1000.lat' with 'w'.
+QFile: close 'results/data2.acc/ld-1-1000.lat' with 'w'.
+QFile: open 'results/data2.acc/ld-10-1000.lat' with 'w'.
+QFile: close 'results/data2.acc/ld-10-1000.lat' with 'w'.
+QFile: open 'results/data2.acc/ld-10000.lat' with 'w'.
+QFile: close 'results/data2.acc/ld-10000.lat' with 'w'.
+QFile: open 'results/data2.acc/ld-11-1000.lat' with 'w'.
+QFile: close 'results/data2.acc/ld-11-1000.lat' with 'w'.
+QFile: open 'results/data2.acc/ld-12-1000.lat' with 'w'.
+QFile: close 'results/data2.acc/ld-12-1000.lat' with 'w'.
+QFile: open 'results/data2.acc/ld-13-1000.lat' with 'w'.
+QFile: close 'results/data2.acc/ld-13-1000.lat' with 'w'.
+QFile: open 'results/data2.acc/ld-14-1000.lat' with 'w'.
+QFile: close 'results/data2.acc/ld-14-1000.lat' with 'w'.
+QFile: open 'results/data2.acc/ld-15-1000.lat' with 'w'.
+QFile: close 'results/data2.acc/ld-15-1000.lat' with 'w'.
+QFile: open 'results/data2.acc/ld-16-1000.lat' with 'w'.
+QFile: close 'results/data2.acc/ld-16-1000.lat' with 'w'.
+QFile: open 'results/data2.acc/ld-17-1000.lat' with 'w'.
+QFile: close 'results/data2.acc/ld-17-1000.lat' with 'w'.
+QFile: open 'results/data2.acc/ld-18-1000.lat' with 'w'.
+QFile: close 'results/data2.acc/ld-18-1000.lat' with 'w'.
+QFile: open 'results/data2.acc/ld-19-1000.lat' with 'w'.
+QFile: close 'results/data2.acc/ld-19-1000.lat' with 'w'.
+QFile: open 'results/data2.acc/ld-2-1000.lat' with 'w'.
+QFile: close 'results/data2.acc/ld-2-1000.lat' with 'w'.
+QFile: open 'results/data2.acc/ld-3-1000.lat' with 'w'.
+QFile: close 'results/data2.acc/ld-3-1000.lat' with 'w'.
+QFile: open 'results/data2.acc/ld-4-1000.lat' with 'w'.
+QFile: close 'results/data2.acc/ld-4-1000.lat' with 'w'.
+QFile: open 'results/data2.acc/ld-5-1000.lat' with 'w'.
+QFile: close 'results/data2.acc/ld-5-1000.lat' with 'w'.
+QFile: open 'results/data2.acc/ld-6-1000.lat' with 'w'.
+QFile: close 'results/data2.acc/ld-6-1000.lat' with 'w'.
+QFile: open 'results/data2.acc/ld-7-1000.lat' with 'w'.
+QFile: close 'results/data2.acc/ld-7-1000.lat' with 'w'.
+QFile: open 'results/data2.acc/ld-8-1000.lat' with 'w'.
+QFile: close 'results/data2.acc/ld-8-1000.lat' with 'w'.
+QFile: open 'results/data2.acc/ld-9-1000.lat' with 'w'.
+QFile: close 'results/data2.acc/ld-9-1000.lat' with 'w'.
+QFile: open 'results/data2.acc/ld.lat' with 'w'.
+QFile: close 'results/data2.acc/ld.lat' with 'w'.
+QFile: close 'results/data2.qar' with 'r'.
+qrename: 'results/data2.acc' 'results/data2'
+qremove: 'results/data2.qar'
+qar_multi_vol_max_size=16384
+qar_create: 'results/data2.qar' 'results/data2' keep folder.
+QFile: open 'results/data2/ld-0-1000.lat' with 'r'.
+qar_create: 'results/data2.qar' 'results/data2/'/'ld-0-1000.lat' 1/22.
+QFile: open 'results/data2.qar.acc' with 'w'.
+QFile: close 'results/data2/ld-0-1000.lat' with 'r'.
+QFile: open 'results/data2/ld-1-1000.lat' with 'r'.
+QFile: close 'results/data2.qar.acc' with 'w'.
+qar_create: 'results/data2.qar.v1' 'results/data2/'/'ld-1-1000.lat' 2/22.
+QFile: open 'results/data2.qar.v1.acc' with 'w'.
+QFile: close 'results/data2/ld-1-1000.lat' with 'r'.
+QFile: open 'results/data2/ld-10-1000.lat' with 'r'.
+QFile: close 'results/data2.qar.v1.acc' with 'w'.
+qar_create: 'results/data2.qar.v2' 'results/data2/'/'ld-10-1000.lat' 3/22.
+QFile: open 'results/data2.qar.v2.acc' with 'w'.
+QFile: close 'results/data2/ld-10-1000.lat' with 'r'.
+QFile: open 'results/data2/ld-10000.lat' with 'r'.
+QFile: close 'results/data2.qar.v2.acc' with 'w'.
+qar_create: 'results/data2.qar.v3' 'results/data2/'/'ld-10000.lat' 4/22.
+QFile: open 'results/data2.qar.v3.acc' with 'w'.
+QFile: close 'results/data2/ld-10000.lat' with 'r'.
+QFile: open 'results/data2/ld-11-1000.lat' with 'r'.
+QFile: close 'results/data2.qar.v3.acc' with 'w'.
+qar_create: 'results/data2.qar.v4' 'results/data2/'/'ld-11-1000.lat' 5/22.
+QFile: open 'results/data2.qar.v4.acc' with 'w'.
+QFile: close 'results/data2/ld-11-1000.lat' with 'r'.
+QFile: open 'results/data2/ld-12-1000.lat' with 'r'.
+QFile: close 'results/data2.qar.v4.acc' with 'w'.
+qar_create: 'results/data2.qar.v5' 'results/data2/'/'ld-12-1000.lat' 6/22.
+QFile: open 'results/data2.qar.v5.acc' with 'w'.
+QFile: close 'results/data2/ld-12-1000.lat' with 'r'.
+QFile: open 'results/data2/ld-13-1000.lat' with 'r'.
+QFile: close 'results/data2.qar.v5.acc' with 'w'.
+qar_create: 'results/data2.qar.v6' 'results/data2/'/'ld-13-1000.lat' 7/22.
+QFile: open 'results/data2.qar.v6.acc' with 'w'.
+QFile: close 'results/data2/ld-13-1000.lat' with 'r'.
+QFile: open 'results/data2/ld-14-1000.lat' with 'r'.
+QFile: close 'results/data2.qar.v6.acc' with 'w'.
+qar_create: 'results/data2.qar.v7' 'results/data2/'/'ld-14-1000.lat' 8/22.
+QFile: open 'results/data2.qar.v7.acc' with 'w'.
+QFile: close 'results/data2/ld-14-1000.lat' with 'r'.
+QFile: open 'results/data2/ld-15-1000.lat' with 'r'.
+QFile: close 'results/data2.qar.v7.acc' with 'w'.
+qar_create: 'results/data2.qar.v8' 'results/data2/'/'ld-15-1000.lat' 9/22.
+QFile: open 'results/data2.qar.v8.acc' with 'w'.
+QFile: close 'results/data2/ld-15-1000.lat' with 'r'.
+QFile: open 'results/data2/ld-16-1000.lat' with 'r'.
+QFile: close 'results/data2.qar.v8.acc' with 'w'.
+qar_create: 'results/data2.qar.v9' 'results/data2/'/'ld-16-1000.lat' 10/22.
+QFile: open 'results/data2.qar.v9.acc' with 'w'.
+QFile: close 'results/data2/ld-16-1000.lat' with 'r'.
+QFile: open 'results/data2/ld-17-1000.lat' with 'r'.
+QFile: close 'results/data2.qar.v9.acc' with 'w'.
+qar_create: 'results/data2.qar.v10' 'results/data2/'/'ld-17-1000.lat' 11/22.
+QFile: open 'results/data2.qar.v10.acc' with 'w'.
+QFile: close 'results/data2/ld-17-1000.lat' with 'r'.
+QFile: open 'results/data2/ld-18-1000.lat' with 'r'.
+QFile: close 'results/data2.qar.v10.acc' with 'w'.
+qar_create: 'results/data2.qar.v11' 'results/data2/'/'ld-18-1000.lat' 12/22.
+QFile: open 'results/data2.qar.v11.acc' with 'w'.
+QFile: close 'results/data2/ld-18-1000.lat' with 'r'.
+QFile: open 'results/data2/ld-19-1000.lat' with 'r'.
+QFile: close 'results/data2.qar.v11.acc' with 'w'.
+qar_create: 'results/data2.qar.v12' 'results/data2/'/'ld-19-1000.lat' 13/22.
+QFile: open 'results/data2.qar.v12.acc' with 'w'.
+QFile: close 'results/data2/ld-19-1000.lat' with 'r'.
+QFile: open 'results/data2/ld-2-1000.lat' with 'r'.
+QFile: close 'results/data2.qar.v12.acc' with 'w'.
+qar_create: 'results/data2.qar.v13' 'results/data2/'/'ld-2-1000.lat' 14/22.
+QFile: open 'results/data2.qar.v13.acc' with 'w'.
+QFile: close 'results/data2/ld-2-1000.lat' with 'r'.
+QFile: open 'results/data2/ld-3-1000.lat' with 'r'.
+QFile: close 'results/data2.qar.v13.acc' with 'w'.
+qar_create: 'results/data2.qar.v14' 'results/data2/'/'ld-3-1000.lat' 15/22.
+QFile: open 'results/data2.qar.v14.acc' with 'w'.
+QFile: close 'results/data2/ld-3-1000.lat' with 'r'.
+QFile: open 'results/data2/ld-4-1000.lat' with 'r'.
+QFile: close 'results/data2.qar.v14.acc' with 'w'.
+qar_create: 'results/data2.qar.v15' 'results/data2/'/'ld-4-1000.lat' 16/22.
+QFile: open 'results/data2.qar.v15.acc' with 'w'.
+QFile: close 'results/data2/ld-4-1000.lat' with 'r'.
+QFile: open 'results/data2/ld-5-1000.lat' with 'r'.
+QFile: close 'results/data2.qar.v15.acc' with 'w'.
+qar_create: 'results/data2.qar.v16' 'results/data2/'/'ld-5-1000.lat' 17/22.
+QFile: open 'results/data2.qar.v16.acc' with 'w'.
+QFile: close 'results/data2/ld-5-1000.lat' with 'r'.
+QFile: open 'results/data2/ld-6-1000.lat' with 'r'.
+QFile: close 'results/data2.qar.v16.acc' with 'w'.
+qar_create: 'results/data2.qar.v17' 'results/data2/'/'ld-6-1000.lat' 18/22.
+QFile: open 'results/data2.qar.v17.acc' with 'w'.
+QFile: close 'results/data2/ld-6-1000.lat' with 'r'.
+QFile: open 'results/data2/ld-7-1000.lat' with 'r'.
+QFile: close 'results/data2.qar.v17.acc' with 'w'.
+qar_create: 'results/data2.qar.v18' 'results/data2/'/'ld-7-1000.lat' 19/22.
+QFile: open 'results/data2.qar.v18.acc' with 'w'.
+QFile: close 'results/data2/ld-7-1000.lat' with 'r'.
+QFile: open 'results/data2/ld-8-1000.lat' with 'r'.
+QFile: close 'results/data2.qar.v18.acc' with 'w'.
+qar_create: 'results/data2.qar.v19' 'results/data2/'/'ld-8-1000.lat' 20/22.
+QFile: open 'results/data2.qar.v19.acc' with 'w'.
+QFile: close 'results/data2/ld-8-1000.lat' with 'r'.
+QFile: open 'results/data2/ld-9-1000.lat' with 'r'.
+QFile: close 'results/data2.qar.v19.acc' with 'w'.
+qar_create: 'results/data2.qar.v20' 'results/data2/'/'ld-9-1000.lat' 21/22.
+QFile: open 'results/data2.qar.v20.acc' with 'w'.
+QFile: close 'results/data2/ld-9-1000.lat' with 'r'.
+QFile: open 'results/data2/ld.lat' with 'r'.
+qar_create: 'results/data2.qar.v20' 'results/data2/'/'ld.lat' 22/22.
+QFile: close 'results/data2/ld.lat' with 'r'.
+QFile: close 'results/data2.qar.v20.acc' with 'w'.
+qrename: 'results/data2.qar.acc' 'results/data2.qar'
+qrename: 'results/data2.qar.v1.acc' 'results/data2.qar.v1'
+qrename: 'results/data2.qar.v2.acc' 'results/data2.qar.v2'
+qrename: 'results/data2.qar.v3.acc' 'results/data2.qar.v3'
+qrename: 'results/data2.qar.v4.acc' 'results/data2.qar.v4'
+qrename: 'results/data2.qar.v5.acc' 'results/data2.qar.v5'
+qrename: 'results/data2.qar.v6.acc' 'results/data2.qar.v6'
+qrename: 'results/data2.qar.v7.acc' 'results/data2.qar.v7'
+qrename: 'results/data2.qar.v8.acc' 'results/data2.qar.v8'
+qrename: 'results/data2.qar.v9.acc' 'results/data2.qar.v9'
+qrename: 'results/data2.qar.v10.acc' 'results/data2.qar.v10'
+qrename: 'results/data2.qar.v11.acc' 'results/data2.qar.v11'
+qrename: 'results/data2.qar.v12.acc' 'results/data2.qar.v12'
+qrename: 'results/data2.qar.v13.acc' 'results/data2.qar.v13'
+qrename: 'results/data2.qar.v14.acc' 'results/data2.qar.v14'
+qrename: 'results/data2.qar.v15.acc' 'results/data2.qar.v15'
+qrename: 'results/data2.qar.v16.acc' 'results/data2.qar.v16'
+qrename: 'results/data2.qar.v17.acc' 'results/data2.qar.v17'
+qrename: 'results/data2.qar.v18.acc' 'results/data2.qar.v18'
+qrename: 'results/data2.qar.v19.acc' 'results/data2.qar.v19'
+qrename: 'results/data2.qar.v20.acc' 'results/data2.qar.v20'
+qar_extract: 'results/data2.qar' 'results/data3' keep qar.
+QFile: open 'results/data2.qar' with 'r'.
+QFile: open 'results/data2.qar.v1' with 'r'.
+QFile: open 'results/data2.qar.v2' with 'r'.
+QFile: open 'results/data2.qar.v3' with 'r'.
+QFile: open 'results/data2.qar.v4' with 'r'.
+QFile: open 'results/data2.qar.v5' with 'r'.
+QFile: open 'results/data2.qar.v6' with 'r'.
+QFile: open 'results/data2.qar.v7' with 'r'.
+QFile: open 'results/data2.qar.v8' with 'r'.
+QFile: open 'results/data2.qar.v9' with 'r'.
+QFile: open 'results/data2.qar.v10' with 'r'.
+QFile: open 'results/data2.qar.v11' with 'r'.
+QFile: open 'results/data2.qar.v12' with 'r'.
+QFile: open 'results/data2.qar.v13' with 'r'.
+QFile: open 'results/data2.qar.v14' with 'r'.
+QFile: open 'results/data2.qar.v15' with 'r'.
+QFile: open 'results/data2.qar.v16' with 'r'.
+QFile: open 'results/data2.qar.v17' with 'r'.
+QFile: open 'results/data2.qar.v18' with 'r'.
+QFile: open 'results/data2.qar.v19' with 'r'.
+QFile: open 'results/data2.qar.v20' with 'r'.
+QFile: open 'results/data3.acc/ld-0-1000.lat' with 'w'.
+QFile: close 'results/data3.acc/ld-0-1000.lat' with 'w'.
+QFile: open 'results/data3.acc/ld-1-1000.lat' with 'w'.
+QFile: close 'results/data3.acc/ld-1-1000.lat' with 'w'.
+QFile: open 'results/data3.acc/ld-10-1000.lat' with 'w'.
+QFile: close 'results/data3.acc/ld-10-1000.lat' with 'w'.
+QFile: open 'results/data3.acc/ld-10000.lat' with 'w'.
+QFile: close 'results/data3.acc/ld-10000.lat' with 'w'.
+QFile: open 'results/data3.acc/ld-11-1000.lat' with 'w'.
+QFile: close 'results/data3.acc/ld-11-1000.lat' with 'w'.
+QFile: open 'results/data3.acc/ld-12-1000.lat' with 'w'.
+QFile: close 'results/data3.acc/ld-12-1000.lat' with 'w'.
+QFile: open 'results/data3.acc/ld-13-1000.lat' with 'w'.
+QFile: close 'results/data3.acc/ld-13-1000.lat' with 'w'.
+QFile: open 'results/data3.acc/ld-14-1000.lat' with 'w'.
+QFile: close 'results/data3.acc/ld-14-1000.lat' with 'w'.
+QFile: open 'results/data3.acc/ld-15-1000.lat' with 'w'.
+QFile: close 'results/data3.acc/ld-15-1000.lat' with 'w'.
+QFile: open 'results/data3.acc/ld-16-1000.lat' with 'w'.
+QFile: close 'results/data3.acc/ld-16-1000.lat' with 'w'.
+QFile: open 'results/data3.acc/ld-17-1000.lat' with 'w'.
+QFile: close 'results/data3.acc/ld-17-1000.lat' with 'w'.
+QFile: open 'results/data3.acc/ld-18-1000.lat' with 'w'.
+QFile: close 'results/data3.acc/ld-18-1000.lat' with 'w'.
+QFile: open 'results/data3.acc/ld-19-1000.lat' with 'w'.
+QFile: close 'results/data3.acc/ld-19-1000.lat' with 'w'.
+QFile: open 'results/data3.acc/ld-2-1000.lat' with 'w'.
+QFile: close 'results/data3.acc/ld-2-1000.lat' with 'w'.
+QFile: open 'results/data3.acc/ld-3-1000.lat' with 'w'.
+QFile: close 'results/data3.acc/ld-3-1000.lat' with 'w'.
+QFile: open 'results/data3.acc/ld-4-1000.lat' with 'w'.
+QFile: close 'results/data3.acc/ld-4-1000.lat' with 'w'.
+QFile: open 'results/data3.acc/ld-5-1000.lat' with 'w'.
+QFile: close 'results/data3.acc/ld-5-1000.lat' with 'w'.
+QFile: open 'results/data3.acc/ld-6-1000.lat' with 'w'.
+QFile: close 'results/data3.acc/ld-6-1000.lat' with 'w'.
+QFile: open 'results/data3.acc/ld-7-1000.lat' with 'w'.
+QFile: close 'results/data3.acc/ld-7-1000.lat' with 'w'.
+QFile: open 'results/data3.acc/ld-8-1000.lat' with 'w'.
+QFile: close 'results/data3.acc/ld-8-1000.lat' with 'w'.
+QFile: open 'results/data3.acc/ld-9-1000.lat' with 'w'.
+QFile: close 'results/data3.acc/ld-9-1000.lat' with 'w'.
+QFile: open 'results/data3.acc/ld.lat' with 'w'.
+QFile: close 'results/data3.acc/ld.lat' with 'w'.
+QFile: close 'results/data2.qar' with 'r'.
+QFile: close 'results/data2.qar.v1' with 'r'.
+QFile: close 'results/data2.qar.v2' with 'r'.
+QFile: close 'results/data2.qar.v3' with 'r'.
+QFile: close 'results/data2.qar.v4' with 'r'.
+QFile: close 'results/data2.qar.v5' with 'r'.
+QFile: close 'results/data2.qar.v6' with 'r'.
+QFile: close 'results/data2.qar.v7' with 'r'.
+QFile: close 'results/data2.qar.v8' with 'r'.
+QFile: close 'results/data2.qar.v9' with 'r'.
+QFile: close 'results/data2.qar.v10' with 'r'.
+QFile: close 'results/data2.qar.v11' with 'r'.
+QFile: close 'results/data2.qar.v12' with 'r'.
+QFile: close 'results/data2.qar.v13' with 'r'.
+QFile: close 'results/data2.qar.v14' with 'r'.
+QFile: close 'results/data2.qar.v15' with 'r'.
+QFile: close 'results/data2.qar.v16' with 'r'.
+QFile: close 'results/data2.qar.v17' with 'r'.
+QFile: close 'results/data2.qar.v18' with 'r'.
+QFile: close 'results/data2.qar.v19' with 'r'.
+QFile: close 'results/data2.qar.v20' with 'r'.
+qrename: 'results/data3.acc' 'results/data3'
+qar_create: 'results/data3.qar' 'results/data3' remove folder.
+QFile: open 'results/data3/ld-0-1000.lat' with 'r'.
+qar_create: 'results/data3.qar' 'results/data3/'/'ld-0-1000.lat' 1/22.
+QFile: open 'results/data3.qar.acc' with 'w'.
+QFile: close 'results/data3/ld-0-1000.lat' with 'r'.
+QFile: open 'results/data3/ld-1-1000.lat' with 'r'.
+QFile: close 'results/data3.qar.acc' with 'w'.
+qar_create: 'results/data3.qar.v1' 'results/data3/'/'ld-1-1000.lat' 2/22.
+QFile: open 'results/data3.qar.v1.acc' with 'w'.
+QFile: close 'results/data3/ld-1-1000.lat' with 'r'.
+QFile: open 'results/data3/ld-10-1000.lat' with 'r'.
+QFile: close 'results/data3.qar.v1.acc' with 'w'.
+qar_create: 'results/data3.qar.v2' 'results/data3/'/'ld-10-1000.lat' 3/22.
+QFile: open 'results/data3.qar.v2.acc' with 'w'.
+QFile: close 'results/data3/ld-10-1000.lat' with 'r'.
+QFile: open 'results/data3/ld-10000.lat' with 'r'.
+QFile: close 'results/data3.qar.v2.acc' with 'w'.
+qar_create: 'results/data3.qar.v3' 'results/data3/'/'ld-10000.lat' 4/22.
+QFile: open 'results/data3.qar.v3.acc' with 'w'.
+QFile: close 'results/data3/ld-10000.lat' with 'r'.
+QFile: open 'results/data3/ld-11-1000.lat' with 'r'.
+QFile: close 'results/data3.qar.v3.acc' with 'w'.
+qar_create: 'results/data3.qar.v4' 'results/data3/'/'ld-11-1000.lat' 5/22.
+QFile: open 'results/data3.qar.v4.acc' with 'w'.
+QFile: close 'results/data3/ld-11-1000.lat' with 'r'.
+QFile: open 'results/data3/ld-12-1000.lat' with 'r'.
+QFile: close 'results/data3.qar.v4.acc' with 'w'.
+qar_create: 'results/data3.qar.v5' 'results/data3/'/'ld-12-1000.lat' 6/22.
+QFile: open 'results/data3.qar.v5.acc' with 'w'.
+QFile: close 'results/data3/ld-12-1000.lat' with 'r'.
+QFile: open 'results/data3/ld-13-1000.lat' with 'r'.
+QFile: close 'results/data3.qar.v5.acc' with 'w'.
+qar_create: 'results/data3.qar.v6' 'results/data3/'/'ld-13-1000.lat' 7/22.
+QFile: open 'results/data3.qar.v6.acc' with 'w'.
+QFile: close 'results/data3/ld-13-1000.lat' with 'r'.
+QFile: open 'results/data3/ld-14-1000.lat' with 'r'.
+QFile: close 'results/data3.qar.v6.acc' with 'w'.
+qar_create: 'results/data3.qar.v7' 'results/data3/'/'ld-14-1000.lat' 8/22.
+QFile: open 'results/data3.qar.v7.acc' with 'w'.
+QFile: close 'results/data3/ld-14-1000.lat' with 'r'.
+QFile: open 'results/data3/ld-15-1000.lat' with 'r'.
+QFile: close 'results/data3.qar.v7.acc' with 'w'.
+qar_create: 'results/data3.qar.v8' 'results/data3/'/'ld-15-1000.lat' 9/22.
+QFile: open 'results/data3.qar.v8.acc' with 'w'.
+QFile: close 'results/data3/ld-15-1000.lat' with 'r'.
+QFile: open 'results/data3/ld-16-1000.lat' with 'r'.
+QFile: close 'results/data3.qar.v8.acc' with 'w'.
+qar_create: 'results/data3.qar.v9' 'results/data3/'/'ld-16-1000.lat' 10/22.
+QFile: open 'results/data3.qar.v9.acc' with 'w'.
+QFile: close 'results/data3/ld-16-1000.lat' with 'r'.
+QFile: open 'results/data3/ld-17-1000.lat' with 'r'.
+QFile: close 'results/data3.qar.v9.acc' with 'w'.
+qar_create: 'results/data3.qar.v10' 'results/data3/'/'ld-17-1000.lat' 11/22.
+QFile: open 'results/data3.qar.v10.acc' with 'w'.
+QFile: close 'results/data3/ld-17-1000.lat' with 'r'.
+QFile: open 'results/data3/ld-18-1000.lat' with 'r'.
+QFile: close 'results/data3.qar.v10.acc' with 'w'.
+qar_create: 'results/data3.qar.v11' 'results/data3/'/'ld-18-1000.lat' 12/22.
+QFile: open 'results/data3.qar.v11.acc' with 'w'.
+QFile: close 'results/data3/ld-18-1000.lat' with 'r'.
+QFile: open 'results/data3/ld-19-1000.lat' with 'r'.
+QFile: close 'results/data3.qar.v11.acc' with 'w'.
+qar_create: 'results/data3.qar.v12' 'results/data3/'/'ld-19-1000.lat' 13/22.
+QFile: open 'results/data3.qar.v12.acc' with 'w'.
+QFile: close 'results/data3/ld-19-1000.lat' with 'r'.
+QFile: open 'results/data3/ld-2-1000.lat' with 'r'.
+QFile: close 'results/data3.qar.v12.acc' with 'w'.
+qar_create: 'results/data3.qar.v13' 'results/data3/'/'ld-2-1000.lat' 14/22.
+QFile: open 'results/data3.qar.v13.acc' with 'w'.
+QFile: close 'results/data3/ld-2-1000.lat' with 'r'.
+QFile: open 'results/data3/ld-3-1000.lat' with 'r'.
+QFile: close 'results/data3.qar.v13.acc' with 'w'.
+qar_create: 'results/data3.qar.v14' 'results/data3/'/'ld-3-1000.lat' 15/22.
+QFile: open 'results/data3.qar.v14.acc' with 'w'.
+QFile: close 'results/data3/ld-3-1000.lat' with 'r'.
+QFile: open 'results/data3/ld-4-1000.lat' with 'r'.
+QFile: close 'results/data3.qar.v14.acc' with 'w'.
+qar_create: 'results/data3.qar.v15' 'results/data3/'/'ld-4-1000.lat' 16/22.
+QFile: open 'results/data3.qar.v15.acc' with 'w'.
+QFile: close 'results/data3/ld-4-1000.lat' with 'r'.
+QFile: open 'results/data3/ld-5-1000.lat' with 'r'.
+QFile: close 'results/data3.qar.v15.acc' with 'w'.
+qar_create: 'results/data3.qar.v16' 'results/data3/'/'ld-5-1000.lat' 17/22.
+QFile: open 'results/data3.qar.v16.acc' with 'w'.
+QFile: close 'results/data3/ld-5-1000.lat' with 'r'.
+QFile: open 'results/data3/ld-6-1000.lat' with 'r'.
+QFile: close 'results/data3.qar.v16.acc' with 'w'.
+qar_create: 'results/data3.qar.v17' 'results/data3/'/'ld-6-1000.lat' 18/22.
+QFile: open 'results/data3.qar.v17.acc' with 'w'.
+QFile: close 'results/data3/ld-6-1000.lat' with 'r'.
+QFile: open 'results/data3/ld-7-1000.lat' with 'r'.
+QFile: close 'results/data3.qar.v17.acc' with 'w'.
+qar_create: 'results/data3.qar.v18' 'results/data3/'/'ld-7-1000.lat' 19/22.
+QFile: open 'results/data3.qar.v18.acc' with 'w'.
+QFile: close 'results/data3/ld-7-1000.lat' with 'r'.
+QFile: open 'results/data3/ld-8-1000.lat' with 'r'.
+QFile: close 'results/data3.qar.v18.acc' with 'w'.
+qar_create: 'results/data3.qar.v19' 'results/data3/'/'ld-8-1000.lat' 20/22.
+QFile: open 'results/data3.qar.v19.acc' with 'w'.
+QFile: close 'results/data3/ld-8-1000.lat' with 'r'.
+QFile: open 'results/data3/ld-9-1000.lat' with 'r'.
+QFile: close 'results/data3.qar.v19.acc' with 'w'.
+qar_create: 'results/data3.qar.v20' 'results/data3/'/'ld-9-1000.lat' 21/22.
+QFile: open 'results/data3.qar.v20.acc' with 'w'.
+QFile: close 'results/data3/ld-9-1000.lat' with 'r'.
+QFile: open 'results/data3/ld.lat' with 'r'.
+qar_create: 'results/data3.qar.v20' 'results/data3/'/'ld.lat' 22/22.
+QFile: close 'results/data3/ld.lat' with 'r'.
+QFile: close 'results/data3.qar.v20.acc' with 'w'.
+qrename: 'results/data3.qar.acc' 'results/data3.qar'
+qrename: 'results/data3.qar.v1.acc' 'results/data3.qar.v1'
+qrename: 'results/data3.qar.v2.acc' 'results/data3.qar.v2'
+qrename: 'results/data3.qar.v3.acc' 'results/data3.qar.v3'
+qrename: 'results/data3.qar.v4.acc' 'results/data3.qar.v4'
+qrename: 'results/data3.qar.v5.acc' 'results/data3.qar.v5'
+qrename: 'results/data3.qar.v6.acc' 'results/data3.qar.v6'
+qrename: 'results/data3.qar.v7.acc' 'results/data3.qar.v7'
+qrename: 'results/data3.qar.v8.acc' 'results/data3.qar.v8'
+qrename: 'results/data3.qar.v9.acc' 'results/data3.qar.v9'
+qrename: 'results/data3.qar.v10.acc' 'results/data3.qar.v10'
+qrename: 'results/data3.qar.v11.acc' 'results/data3.qar.v11'
+qrename: 'results/data3.qar.v12.acc' 'results/data3.qar.v12'
+qrename: 'results/data3.qar.v13.acc' 'results/data3.qar.v13'
+qrename: 'results/data3.qar.v14.acc' 'results/data3.qar.v14'
+qrename: 'results/data3.qar.v15.acc' 'results/data3.qar.v15'
+qrename: 'results/data3.qar.v16.acc' 'results/data3.qar.v16'
+qrename: 'results/data3.qar.v17.acc' 'results/data3.qar.v17'
+qrename: 'results/data3.qar.v18.acc' 'results/data3.qar.v18'
+qrename: 'results/data3.qar.v19.acc' 'results/data3.qar.v19'
+qrename: 'results/data3.qar.v20.acc' 'results/data3.qar.v20'
+qremove: 'results/data3/ld-0-1000.lat'
+qremove: 'results/data3/ld-1-1000.lat'
+qremove: 'results/data3/ld-10-1000.lat'
+qremove: 'results/data3/ld-10000.lat'
+qremove: 'results/data3/ld-11-1000.lat'
+qremove: 'results/data3/ld-12-1000.lat'
+qremove: 'results/data3/ld-13-1000.lat'
+qremove: 'results/data3/ld-14-1000.lat'
+qremove: 'results/data3/ld-15-1000.lat'
+qremove: 'results/data3/ld-16-1000.lat'
+qremove: 'results/data3/ld-17-1000.lat'
+qremove: 'results/data3/ld-18-1000.lat'
+qremove: 'results/data3/ld-19-1000.lat'
+qremove: 'results/data3/ld-2-1000.lat'
+qremove: 'results/data3/ld-3-1000.lat'
+qremove: 'results/data3/ld-4-1000.lat'
+qremove: 'results/data3/ld-5-1000.lat'
+qremove: 'results/data3/ld-6-1000.lat'
+qremove: 'results/data3/ld-7-1000.lat'
+qremove: 'results/data3/ld-8-1000.lat'
+qremove: 'results/data3/ld-9-1000.lat'
+qremove: 'results/data3/ld.lat'
+qremove: 'results/data3'
+qar_extract: 'results/data3.qar' 'results/data3' remove qar .
+QFile: open 'results/data3.qar' with 'r'.
+QFile: open 'results/data3.qar.v1' with 'r'.
+QFile: open 'results/data3.qar.v2' with 'r'.
+QFile: open 'results/data3.qar.v3' with 'r'.
+QFile: open 'results/data3.qar.v4' with 'r'.
+QFile: open 'results/data3.qar.v5' with 'r'.
+QFile: open 'results/data3.qar.v6' with 'r'.
+QFile: open 'results/data3.qar.v7' with 'r'.
+QFile: open 'results/data3.qar.v8' with 'r'.
+QFile: open 'results/data3.qar.v9' with 'r'.
+QFile: open 'results/data3.qar.v10' with 'r'.
+QFile: open 'results/data3.qar.v11' with 'r'.
+QFile: open 'results/data3.qar.v12' with 'r'.
+QFile: open 'results/data3.qar.v13' with 'r'.
+QFile: open 'results/data3.qar.v14' with 'r'.
+QFile: open 'results/data3.qar.v15' with 'r'.
+QFile: open 'results/data3.qar.v16' with 'r'.
+QFile: open 'results/data3.qar.v17' with 'r'.
+QFile: open 'results/data3.qar.v18' with 'r'.
+QFile: open 'results/data3.qar.v19' with 'r'.
+QFile: open 'results/data3.qar.v20' with 'r'.
+QFile: open 'results/data3.acc/ld-0-1000.lat' with 'w'.
+QFile: close 'results/data3.acc/ld-0-1000.lat' with 'w'.
+QFile: open 'results/data3.acc/ld-1-1000.lat' with 'w'.
+QFile: close 'results/data3.acc/ld-1-1000.lat' with 'w'.
+QFile: open 'results/data3.acc/ld-10-1000.lat' with 'w'.
+QFile: close 'results/data3.acc/ld-10-1000.lat' with 'w'.
+QFile: open 'results/data3.acc/ld-10000.lat' with 'w'.
+QFile: close 'results/data3.acc/ld-10000.lat' with 'w'.
+QFile: open 'results/data3.acc/ld-11-1000.lat' with 'w'.
+QFile: close 'results/data3.acc/ld-11-1000.lat' with 'w'.
+QFile: open 'results/data3.acc/ld-12-1000.lat' with 'w'.
+QFile: close 'results/data3.acc/ld-12-1000.lat' with 'w'.
+QFile: open 'results/data3.acc/ld-13-1000.lat' with 'w'.
+QFile: close 'results/data3.acc/ld-13-1000.lat' with 'w'.
+QFile: open 'results/data3.acc/ld-14-1000.lat' with 'w'.
+QFile: close 'results/data3.acc/ld-14-1000.lat' with 'w'.
+QFile: open 'results/data3.acc/ld-15-1000.lat' with 'w'.
+QFile: close 'results/data3.acc/ld-15-1000.lat' with 'w'.
+QFile: open 'results/data3.acc/ld-16-1000.lat' with 'w'.
+QFile: close 'results/data3.acc/ld-16-1000.lat' with 'w'.
+QFile: open 'results/data3.acc/ld-17-1000.lat' with 'w'.
+QFile: close 'results/data3.acc/ld-17-1000.lat' with 'w'.
+QFile: open 'results/data3.acc/ld-18-1000.lat' with 'w'.
+QFile: close 'results/data3.acc/ld-18-1000.lat' with 'w'.
+QFile: open 'results/data3.acc/ld-19-1000.lat' with 'w'.
+QFile: close 'results/data3.acc/ld-19-1000.lat' with 'w'.
+QFile: open 'results/data3.acc/ld-2-1000.lat' with 'w'.
+QFile: close 'results/data3.acc/ld-2-1000.lat' with 'w'.
+QFile: open 'results/data3.acc/ld-3-1000.lat' with 'w'.
+QFile: close 'results/data3.acc/ld-3-1000.lat' with 'w'.
+QFile: open 'results/data3.acc/ld-4-1000.lat' with 'w'.
+QFile: close 'results/data3.acc/ld-4-1000.lat' with 'w'.
+QFile: open 'results/data3.acc/ld-5-1000.lat' with 'w'.
+QFile: close 'results/data3.acc/ld-5-1000.lat' with 'w'.
+QFile: open 'results/data3.acc/ld-6-1000.lat' with 'w'.
+QFile: close 'results/data3.acc/ld-6-1000.lat' with 'w'.
+QFile: open 'results/data3.acc/ld-7-1000.lat' with 'w'.
+QFile: close 'results/data3.acc/ld-7-1000.lat' with 'w'.
+QFile: open 'results/data3.acc/ld-8-1000.lat' with 'w'.
+QFile: close 'results/data3.acc/ld-8-1000.lat' with 'w'.
+QFile: open 'results/data3.acc/ld-9-1000.lat' with 'w'.
+QFile: close 'results/data3.acc/ld-9-1000.lat' with 'w'.
+QFile: open 'results/data3.acc/ld.lat' with 'w'.
+QFile: close 'results/data3.acc/ld.lat' with 'w'.
+QFile: close 'results/data3.qar' with 'r'.
+QFile: close 'results/data3.qar.v1' with 'r'.
+QFile: close 'results/data3.qar.v2' with 'r'.
+QFile: close 'results/data3.qar.v3' with 'r'.
+QFile: close 'results/data3.qar.v4' with 'r'.
+QFile: close 'results/data3.qar.v5' with 'r'.
+QFile: close 'results/data3.qar.v6' with 'r'.
+QFile: close 'results/data3.qar.v7' with 'r'.
+QFile: close 'results/data3.qar.v8' with 'r'.
+QFile: close 'results/data3.qar.v9' with 'r'.
+QFile: close 'results/data3.qar.v10' with 'r'.
+QFile: close 'results/data3.qar.v11' with 'r'.
+QFile: close 'results/data3.qar.v12' with 'r'.
+QFile: close 'results/data3.qar.v13' with 'r'.
+QFile: close 'results/data3.qar.v14' with 'r'.
+QFile: close 'results/data3.qar.v15' with 'r'.
+QFile: close 'results/data3.qar.v16' with 'r'.
+QFile: close 'results/data3.qar.v17' with 'r'.
+QFile: close 'results/data3.qar.v18' with 'r'.
+QFile: close 'results/data3.qar.v19' with 'r'.
+QFile: close 'results/data3.qar.v20' with 'r'.
+qrename: 'results/data3.acc' 'results/data3'
+qremove: 'results/data3.qar'
 check_all_files_crc32_info: start checking path='results'
-QFile: open 'results/ld.lat' with 'r'.
-QFile: close 'results/ld.lat' with 'r'.
-88874F56  fn='results/ld.lat'
+Cache: 'QarReadCache': 0 / 16 [1] to add
+QFile: open 'results/data.qar' with 'r'.
+B5B9ADDC  fn='results/data/ld-0-1000.lat'
+B5B9ADDC  fn='results/data/ld-1-1000.lat'
+B5B9ADDC  fn='results/data/ld-10-1000.lat'
+3D91F296  fn='results/data/ld-10000.lat'
+B5B9ADDC  fn='results/data/ld-11-1000.lat'
+B5B9ADDC  fn='results/data/ld-12-1000.lat'
+B5B9ADDC  fn='results/data/ld-13-1000.lat'
+B5B9ADDC  fn='results/data/ld-14-1000.lat'
+B5B9ADDC  fn='results/data/ld-15-1000.lat'
+B5B9ADDC  fn='results/data/ld-16-1000.lat'
+B5B9ADDC  fn='results/data/ld-17-1000.lat'
+B5B9ADDC  fn='results/data/ld-18-1000.lat'
+B5B9ADDC  fn='results/data/ld-19-1000.lat'
+B5B9ADDC  fn='results/data/ld-2-1000.lat'
+B5B9ADDC  fn='results/data/ld-3-1000.lat'
+B5B9ADDC  fn='results/data/ld-4-1000.lat'
+B5B9ADDC  fn='results/data/ld-5-1000.lat'
+B5B9ADDC  fn='results/data/ld-6-1000.lat'
+B5B9ADDC  fn='results/data/ld-7-1000.lat'
+B5B9ADDC  fn='results/data/ld-8-1000.lat'
+B5B9ADDC  fn='results/data/ld-9-1000.lat'
+88874F56  fn='results/data/ld.lat'
+QFile: open 'results/data.qar' with 'r'.
+QFile: close 'results/data.qar' with 'r'.
+D14F41A7  fn='results/data.qar'
+Cache: 'QarReadCache': 1 / 16 [1] to add
+QFile: open 'results/data2.qar' with 'r'.
+QFile: open 'results/data2.qar.v1' with 'r'.
+QFile: open 'results/data2.qar.v2' with 'r'.
+QFile: open 'results/data2.qar.v3' with 'r'.
+QFile: open 'results/data2.qar.v4' with 'r'.
+QFile: open 'results/data2.qar.v5' with 'r'.
+QFile: open 'results/data2.qar.v6' with 'r'.
+QFile: open 'results/data2.qar.v7' with 'r'.
+QFile: open 'results/data2.qar.v8' with 'r'.
+QFile: open 'results/data2.qar.v9' with 'r'.
+QFile: open 'results/data2.qar.v10' with 'r'.
+QFile: open 'results/data2.qar.v11' with 'r'.
+QFile: open 'results/data2.qar.v12' with 'r'.
+QFile: open 'results/data2.qar.v13' with 'r'.
+QFile: open 'results/data2.qar.v14' with 'r'.
+QFile: open 'results/data2.qar.v15' with 'r'.
+QFile: open 'results/data2.qar.v16' with 'r'.
+QFile: open 'results/data2.qar.v17' with 'r'.
+QFile: open 'results/data2.qar.v18' with 'r'.
+QFile: open 'results/data2.qar.v19' with 'r'.
+QFile: open 'results/data2.qar.v20' with 'r'.
+B5B9ADDC  fn='results/data2/ld-0-1000.lat'
+B5B9ADDC  fn='results/data2/ld-1-1000.lat'
+B5B9ADDC  fn='results/data2/ld-10-1000.lat'
+3D91F296  fn='results/data2/ld-10000.lat'
+B5B9ADDC  fn='results/data2/ld-11-1000.lat'
+B5B9ADDC  fn='results/data2/ld-12-1000.lat'
+B5B9ADDC  fn='results/data2/ld-13-1000.lat'
+B5B9ADDC  fn='results/data2/ld-14-1000.lat'
+B5B9ADDC  fn='results/data2/ld-15-1000.lat'
+B5B9ADDC  fn='results/data2/ld-16-1000.lat'
+B5B9ADDC  fn='results/data2/ld-17-1000.lat'
+B5B9ADDC  fn='results/data2/ld-18-1000.lat'
+B5B9ADDC  fn='results/data2/ld-19-1000.lat'
+B5B9ADDC  fn='results/data2/ld-2-1000.lat'
+B5B9ADDC  fn='results/data2/ld-3-1000.lat'
+B5B9ADDC  fn='results/data2/ld-4-1000.lat'
+B5B9ADDC  fn='results/data2/ld-5-1000.lat'
+B5B9ADDC  fn='results/data2/ld-6-1000.lat'
+B5B9ADDC  fn='results/data2/ld-7-1000.lat'
+B5B9ADDC  fn='results/data2/ld-8-1000.lat'
+B5B9ADDC  fn='results/data2/ld-9-1000.lat'
+88874F56  fn='results/data2/ld.lat'
+QFile: open 'results/data2.qar' with 'r'.
+QFile: close 'results/data2.qar' with 'r'.
+01814017  fn='results/data2.qar'
+QFile: open 'results/data2.qar.v1' with 'r'.
+QFile: close 'results/data2.qar.v1' with 'r'.
+584643F8  fn='results/data2.qar.v1'
+QFile: open 'results/data2.qar.v10' with 'r'.
+QFile: close 'results/data2.qar.v10' with 'r'.
+65699393  fn='results/data2.qar.v10'
+QFile: open 'results/data2.qar.v11' with 'r'.
+QFile: close 'results/data2.qar.v11' with 'r'.
+90E68BE4  fn='results/data2.qar.v11'
+QFile: open 'results/data2.qar.v12' with 'r'.
+QFile: close 'results/data2.qar.v12' with 'r'.
+C921880B  fn='results/data2.qar.v12'
+QFile: open 'results/data2.qar.v13' with 'r'.
+QFile: close 'results/data2.qar.v13' with 'r'.
+B20F47C9  fn='results/data2.qar.v13'
+QFile: open 'results/data2.qar.v14' with 'r'.
+QFile: close 'results/data2.qar.v14' with 'r'.
+EBC84426  fn='results/data2.qar.v14'
+QFile: open 'results/data2.qar.v15' with 'r'.
+QFile: close 'results/data2.qar.v15' with 'r'.
+BDEC49EA  fn='results/data2.qar.v15'
+QFile: open 'results/data2.qar.v16' with 'r'.
+QFile: close 'results/data2.qar.v16' with 'r'.
+E42B4A05  fn='results/data2.qar.v16'
+QFile: open 'results/data2.qar.v17' with 'r'.
+QFile: close 'results/data2.qar.v17' with 'r'.
+0E624E34  fn='results/data2.qar.v17'
+QFile: open 'results/data2.qar.v18' with 'r'.
+QFile: close 'results/data2.qar.v18' with 'r'.
+57A54DDB  fn='results/data2.qar.v18'
+QFile: open 'results/data2.qar.v19' with 'r'.
+QFile: close 'results/data2.qar.v19' with 'r'.
+A22A55AC  fn='results/data2.qar.v19'
+QFile: open 'results/data2.qar.v2' with 'r'.
+QFile: close 'results/data2.qar.v2' with 'r'.
+334D9E5F  fn='results/data2.qar.v2'
+QFile: open 'results/data2.qar.v20' with 'r'.
+QFile: close 'results/data2.qar.v20' with 'r'.
+477C2C62  fn='results/data2.qar.v20'
+QFile: open 'results/data2.qar.v3' with 'r'.
+QFile: close 'results/data2.qar.v3' with 'r'.
+84EADE8C  fn='results/data2.qar.v3'
+QFile: open 'results/data2.qar.v4' with 'r'.
+QFile: close 'results/data2.qar.v4' with 'r'.
+6A8A9DB0  fn='results/data2.qar.v4'
+QFile: open 'results/data2.qar.v5' with 'r'.
+QFile: close 'results/data2.qar.v5' with 'r'.
+80C39981  fn='results/data2.qar.v5'
+QFile: open 'results/data2.qar.v6' with 'r'.
+QFile: close 'results/data2.qar.v6' with 'r'.
+D9049A6E  fn='results/data2.qar.v6'
+QFile: open 'results/data2.qar.v7' with 'r'.
+QFile: close 'results/data2.qar.v7' with 'r'.
+8F2097A2  fn='results/data2.qar.v7'
+QFile: open 'results/data2.qar.v8' with 'r'.
+QFile: close 'results/data2.qar.v8' with 'r'.
+D6E7944D  fn='results/data2.qar.v8'
+QFile: open 'results/data2.qar.v9' with 'r'.
+QFile: close 'results/data2.qar.v9' with 'r'.
+3CAE907C  fn='results/data2.qar.v9'
+QFile: open 'results/data3/ld-0-1000.lat' with 'r'.
+QFile: close 'results/data3/ld-0-1000.lat' with 'r'.
+B5B9ADDC  fn='results/data3/ld-0-1000.lat'
+QFile: open 'results/data3/ld-1-1000.lat' with 'r'.
+QFile: close 'results/data3/ld-1-1000.lat' with 'r'.
+B5B9ADDC  fn='results/data3/ld-1-1000.lat'
+QFile: open 'results/data3/ld-10-1000.lat' with 'r'.
+QFile: close 'results/data3/ld-10-1000.lat' with 'r'.
+B5B9ADDC  fn='results/data3/ld-10-1000.lat'
+QFile: open 'results/data3/ld-10000.lat' with 'r'.
+QFile: close 'results/data3/ld-10000.lat' with 'r'.
+3D91F296  fn='results/data3/ld-10000.lat'
+QFile: open 'results/data3/ld-11-1000.lat' with 'r'.
+QFile: close 'results/data3/ld-11-1000.lat' with 'r'.
+B5B9ADDC  fn='results/data3/ld-11-1000.lat'
+QFile: open 'results/data3/ld-12-1000.lat' with 'r'.
+QFile: close 'results/data3/ld-12-1000.lat' with 'r'.
+B5B9ADDC  fn='results/data3/ld-12-1000.lat'
+QFile: open 'results/data3/ld-13-1000.lat' with 'r'.
+QFile: close 'results/data3/ld-13-1000.lat' with 'r'.
+B5B9ADDC  fn='results/data3/ld-13-1000.lat'
+QFile: open 'results/data3/ld-14-1000.lat' with 'r'.
+QFile: close 'results/data3/ld-14-1000.lat' with 'r'.
+B5B9ADDC  fn='results/data3/ld-14-1000.lat'
+QFile: open 'results/data3/ld-15-1000.lat' with 'r'.
+QFile: close 'results/data3/ld-15-1000.lat' with 'r'.
+B5B9ADDC  fn='results/data3/ld-15-1000.lat'
+QFile: open 'results/data3/ld-16-1000.lat' with 'r'.
+QFile: close 'results/data3/ld-16-1000.lat' with 'r'.
+B5B9ADDC  fn='results/data3/ld-16-1000.lat'
+QFile: open 'results/data3/ld-17-1000.lat' with 'r'.
+QFile: close 'results/data3/ld-17-1000.lat' with 'r'.
+B5B9ADDC  fn='results/data3/ld-17-1000.lat'
+QFile: open 'results/data3/ld-18-1000.lat' with 'r'.
+QFile: close 'results/data3/ld-18-1000.lat' with 'r'.
+B5B9ADDC  fn='results/data3/ld-18-1000.lat'
+QFile: open 'results/data3/ld-19-1000.lat' with 'r'.
+QFile: close 'results/data3/ld-19-1000.lat' with 'r'.
+B5B9ADDC  fn='results/data3/ld-19-1000.lat'
+QFile: open 'results/data3/ld-2-1000.lat' with 'r'.
+QFile: close 'results/data3/ld-2-1000.lat' with 'r'.
+B5B9ADDC  fn='results/data3/ld-2-1000.lat'
+QFile: open 'results/data3/ld-3-1000.lat' with 'r'.
+QFile: close 'results/data3/ld-3-1000.lat' with 'r'.
+B5B9ADDC  fn='results/data3/ld-3-1000.lat'
+QFile: open 'results/data3/ld-4-1000.lat' with 'r'.
+QFile: close 'results/data3/ld-4-1000.lat' with 'r'.
+B5B9ADDC  fn='results/data3/ld-4-1000.lat'
+QFile: open 'results/data3/ld-5-1000.lat' with 'r'.
+QFile: close 'results/data3/ld-5-1000.lat' with 'r'.
+B5B9ADDC  fn='results/data3/ld-5-1000.lat'
+QFile: open 'results/data3/ld-6-1000.lat' with 'r'.
+QFile: close 'results/data3/ld-6-1000.lat' with 'r'.
+B5B9ADDC  fn='results/data3/ld-6-1000.lat'
+QFile: open 'results/data3/ld-7-1000.lat' with 'r'.
+QFile: close 'results/data3/ld-7-1000.lat' with 'r'.
+B5B9ADDC  fn='results/data3/ld-7-1000.lat'
+QFile: open 'results/data3/ld-8-1000.lat' with 'r'.
+QFile: close 'results/data3/ld-8-1000.lat' with 'r'.
+B5B9ADDC  fn='results/data3/ld-8-1000.lat'
+QFile: open 'results/data3/ld-9-1000.lat' with 'r'.
+QFile: close 'results/data3/ld-9-1000.lat' with 'r'.
+B5B9ADDC  fn='results/data3/ld-9-1000.lat'
+QFile: open 'results/data3/ld.lat' with 'r'.
+QFile: close 'results/data3/ld.lat' with 'r'.
+88874F56  fn='results/data3/ld.lat'
+QFile: open 'results/data3.qar.v1' with 'r'.
+QFile: close 'results/data3.qar.v1' with 'r'.
+584643F8  fn='results/data3.qar.v1'
+QFile: open 'results/data3.qar.v10' with 'r'.
+QFile: close 'results/data3.qar.v10' with 'r'.
+65699393  fn='results/data3.qar.v10'
+QFile: open 'results/data3.qar.v11' with 'r'.
+QFile: close 'results/data3.qar.v11' with 'r'.
+90E68BE4  fn='results/data3.qar.v11'
+QFile: open 'results/data3.qar.v12' with 'r'.
+QFile: close 'results/data3.qar.v12' with 'r'.
+C921880B  fn='results/data3.qar.v12'
+QFile: open 'results/data3.qar.v13' with 'r'.
+QFile: close 'results/data3.qar.v13' with 'r'.
+B20F47C9  fn='results/data3.qar.v13'
+QFile: open 'results/data3.qar.v14' with 'r'.
+QFile: close 'results/data3.qar.v14' with 'r'.
+EBC84426  fn='results/data3.qar.v14'
+QFile: open 'results/data3.qar.v15' with 'r'.
+QFile: close 'results/data3.qar.v15' with 'r'.
+BDEC49EA  fn='results/data3.qar.v15'
+QFile: open 'results/data3.qar.v16' with 'r'.
+QFile: close 'results/data3.qar.v16' with 'r'.
+E42B4A05  fn='results/data3.qar.v16'
+QFile: open 'results/data3.qar.v17' with 'r'.
+QFile: close 'results/data3.qar.v17' with 'r'.
+0E624E34  fn='results/data3.qar.v17'
+QFile: open 'results/data3.qar.v18' with 'r'.
+QFile: close 'results/data3.qar.v18' with 'r'.
+57A54DDB  fn='results/data3.qar.v18'
+QFile: open 'results/data3.qar.v19' with 'r'.
+QFile: close 'results/data3.qar.v19' with 'r'.
+A22A55AC  fn='results/data3.qar.v19'
+QFile: open 'results/data3.qar.v2' with 'r'.
+QFile: close 'results/data3.qar.v2' with 'r'.
+334D9E5F  fn='results/data3.qar.v2'
+QFile: open 'results/data3.qar.v20' with 'r'.
+QFile: close 'results/data3.qar.v20' with 'r'.
+477C2C62  fn='results/data3.qar.v20'
+QFile: open 'results/data3.qar.v3' with 'r'.
+QFile: close 'results/data3.qar.v3' with 'r'.
+84EADE8C  fn='results/data3.qar.v3'
+QFile: open 'results/data3.qar.v4' with 'r'.
+QFile: close 'results/data3.qar.v4' with 'r'.
+6A8A9DB0  fn='results/data3.qar.v4'
+QFile: open 'results/data3.qar.v5' with 'r'.
+QFile: close 'results/data3.qar.v5' with 'r'.
+80C39981  fn='results/data3.qar.v5'
+QFile: open 'results/data3.qar.v6' with 'r'.
+QFile: close 'results/data3.qar.v6' with 'r'.
+D9049A6E  fn='results/data3.qar.v6'
+QFile: open 'results/data3.qar.v7' with 'r'.
+QFile: close 'results/data3.qar.v7' with 'r'.
+8F2097A2  fn='results/data3.qar.v7'
+QFile: open 'results/data3.qar.v8' with 'r'.
+QFile: close 'results/data3.qar.v8' with 'r'.
+D6E7944D  fn='results/data3.qar.v8'
+QFile: open 'results/data3.qar.v9' with 'r'.
+QFile: close 'results/data3.qar.v9' with 'r'.
+3CAE907C  fn='results/data3.qar.v9'
 check_all_files_crc32_info: summary for path='results'
-    0 88874F56  fn='results/ld.lat'
+    0 B5B9ADDC  fn='results/data/ld-0-1000.lat'
+    1 B5B9ADDC  fn='results/data/ld-1-1000.lat'
+    2 B5B9ADDC  fn='results/data/ld-10-1000.lat'
+    3 3D91F296  fn='results/data/ld-10000.lat'
+    4 B5B9ADDC  fn='results/data/ld-11-1000.lat'
+    5 B5B9ADDC  fn='results/data/ld-12-1000.lat'
+    6 B5B9ADDC  fn='results/data/ld-13-1000.lat'
+    7 B5B9ADDC  fn='results/data/ld-14-1000.lat'
+    8 B5B9ADDC  fn='results/data/ld-15-1000.lat'
+    9 B5B9ADDC  fn='results/data/ld-16-1000.lat'
+   10 B5B9ADDC  fn='results/data/ld-17-1000.lat'
+   11 B5B9ADDC  fn='results/data/ld-18-1000.lat'
+   12 B5B9ADDC  fn='results/data/ld-19-1000.lat'
+   13 B5B9ADDC  fn='results/data/ld-2-1000.lat'
+   14 B5B9ADDC  fn='results/data/ld-3-1000.lat'
+   15 B5B9ADDC  fn='results/data/ld-4-1000.lat'
+   16 B5B9ADDC  fn='results/data/ld-5-1000.lat'
+   17 B5B9ADDC  fn='results/data/ld-6-1000.lat'
+   18 B5B9ADDC  fn='results/data/ld-7-1000.lat'
+   19 B5B9ADDC  fn='results/data/ld-8-1000.lat'
+   20 B5B9ADDC  fn='results/data/ld-9-1000.lat'
+   21 88874F56  fn='results/data/ld.lat'
+   22 D14F41A7  fn='results/data.qar'
+   23 B5B9ADDC  fn='results/data2/ld-0-1000.lat'
+   24 B5B9ADDC  fn='results/data2/ld-1-1000.lat'
+   25 B5B9ADDC  fn='results/data2/ld-10-1000.lat'
+   26 3D91F296  fn='results/data2/ld-10000.lat'
+   27 B5B9ADDC  fn='results/data2/ld-11-1000.lat'
+   28 B5B9ADDC  fn='results/data2/ld-12-1000.lat'
+   29 B5B9ADDC  fn='results/data2/ld-13-1000.lat'
+   30 B5B9ADDC  fn='results/data2/ld-14-1000.lat'
+   31 B5B9ADDC  fn='results/data2/ld-15-1000.lat'
+   32 B5B9ADDC  fn='results/data2/ld-16-1000.lat'
+   33 B5B9ADDC  fn='results/data2/ld-17-1000.lat'
+   34 B5B9ADDC  fn='results/data2/ld-18-1000.lat'
+   35 B5B9ADDC  fn='results/data2/ld-19-1000.lat'
+   36 B5B9ADDC  fn='results/data2/ld-2-1000.lat'
+   37 B5B9ADDC  fn='results/data2/ld-3-1000.lat'
+   38 B5B9ADDC  fn='results/data2/ld-4-1000.lat'
+   39 B5B9ADDC  fn='results/data2/ld-5-1000.lat'
+   40 B5B9ADDC  fn='results/data2/ld-6-1000.lat'
+   41 B5B9ADDC  fn='results/data2/ld-7-1000.lat'
+   42 B5B9ADDC  fn='results/data2/ld-8-1000.lat'
+   43 B5B9ADDC  fn='results/data2/ld-9-1000.lat'
+   44 88874F56  fn='results/data2/ld.lat'
+   45 01814017  fn='results/data2.qar'
+   46 584643F8  fn='results/data2.qar.v1'
+   47 65699393  fn='results/data2.qar.v10'
+   48 90E68BE4  fn='results/data2.qar.v11'
+   49 C921880B  fn='results/data2.qar.v12'
+   50 B20F47C9  fn='results/data2.qar.v13'
+   51 EBC84426  fn='results/data2.qar.v14'
+   52 BDEC49EA  fn='results/data2.qar.v15'
+   53 E42B4A05  fn='results/data2.qar.v16'
+   54 0E624E34  fn='results/data2.qar.v17'
+   55 57A54DDB  fn='results/data2.qar.v18'
+   56 A22A55AC  fn='results/data2.qar.v19'
+   57 334D9E5F  fn='results/data2.qar.v2'
+   58 477C2C62  fn='results/data2.qar.v20'
+   59 84EADE8C  fn='results/data2.qar.v3'
+   60 6A8A9DB0  fn='results/data2.qar.v4'
+   61 80C39981  fn='results/data2.qar.v5'
+   62 D9049A6E  fn='results/data2.qar.v6'
+   63 8F2097A2  fn='results/data2.qar.v7'
+   64 D6E7944D  fn='results/data2.qar.v8'
+   65 3CAE907C  fn='results/data2.qar.v9'
+   66 B5B9ADDC  fn='results/data3/ld-0-1000.lat'
+   67 B5B9ADDC  fn='results/data3/ld-1-1000.lat'
+   68 B5B9ADDC  fn='results/data3/ld-10-1000.lat'
+   69 3D91F296  fn='results/data3/ld-10000.lat'
+   70 B5B9ADDC  fn='results/data3/ld-11-1000.lat'
+   71 B5B9ADDC  fn='results/data3/ld-12-1000.lat'
+   72 B5B9ADDC  fn='results/data3/ld-13-1000.lat'
+   73 B5B9ADDC  fn='results/data3/ld-14-1000.lat'
+   74 B5B9ADDC  fn='results/data3/ld-15-1000.lat'
+   75 B5B9ADDC  fn='results/data3/ld-16-1000.lat'
+   76 B5B9ADDC  fn='results/data3/ld-17-1000.lat'
+   77 B5B9ADDC  fn='results/data3/ld-18-1000.lat'
+   78 B5B9ADDC  fn='results/data3/ld-19-1000.lat'
+   79 B5B9ADDC  fn='results/data3/ld-2-1000.lat'
+   80 B5B9ADDC  fn='results/data3/ld-3-1000.lat'
+   81 B5B9ADDC  fn='results/data3/ld-4-1000.lat'
+   82 B5B9ADDC  fn='results/data3/ld-5-1000.lat'
+   83 B5B9ADDC  fn='results/data3/ld-6-1000.lat'
+   84 B5B9ADDC  fn='results/data3/ld-7-1000.lat'
+   85 B5B9ADDC  fn='results/data3/ld-8-1000.lat'
+   86 B5B9ADDC  fn='results/data3/ld-9-1000.lat'
+   87 88874F56  fn='results/data3/ld.lat'
+   88 584643F8  fn='results/data3.qar.v1'
+   89 65699393  fn='results/data3.qar.v10'
+   90 90E68BE4  fn='results/data3.qar.v11'
+   91 C921880B  fn='results/data3.qar.v12'
+   92 B20F47C9  fn='results/data3.qar.v13'
+   93 EBC84426  fn='results/data3.qar.v14'
+   94 BDEC49EA  fn='results/data3.qar.v15'
+   95 E42B4A05  fn='results/data3.qar.v16'
+   96 0E624E34  fn='results/data3.qar.v17'
+   97 57A54DDB  fn='results/data3.qar.v18'
+   98 A22A55AC  fn='results/data3.qar.v19'
+   99 334D9E5F  fn='results/data3.qar.v2'
+  100 477C2C62  fn='results/data3.qar.v20'
+  101 84EADE8C  fn='results/data3.qar.v3'
+  102 6A8A9DB0  fn='results/data3.qar.v4'
+  103 80C39981  fn='results/data3.qar.v5'
+  104 D9049A6E  fn='results/data3.qar.v6'
+  105 8F2097A2  fn='results/data3.qar.v7'
+  106 D6E7944D  fn='results/data3.qar.v8'
+  107 3CAE907C  fn='results/data3.qar.v9'
 CHECK: finished successfully.
+Cache: 'QarReadCache': 2 / 16 [1] clear
+QFile: close 'results/data2.qar' with 'r'.
+QFile: close 'results/data2.qar.v1' with 'r'.
+QFile: close 'results/data2.qar.v2' with 'r'.
+QFile: close 'results/data2.qar.v3' with 'r'.
+QFile: close 'results/data2.qar.v4' with 'r'.
+QFile: close 'results/data2.qar.v5' with 'r'.
+QFile: close 'results/data2.qar.v6' with 'r'.
+QFile: close 'results/data2.qar.v7' with 'r'.
+QFile: close 'results/data2.qar.v8' with 'r'.
+QFile: close 'results/data2.qar.v9' with 'r'.
+QFile: close 'results/data2.qar.v10' with 'r'.
+QFile: close 'results/data2.qar.v11' with 'r'.
+QFile: close 'results/data2.qar.v12' with 'r'.
+QFile: close 'results/data2.qar.v13' with 'r'.
+QFile: close 'results/data2.qar.v14' with 'r'.
+QFile: close 'results/data2.qar.v15' with 'r'.
+QFile: close 'results/data2.qar.v16' with 'r'.
+QFile: close 'results/data2.qar.v17' with 'r'.
+QFile: close 'results/data2.qar.v18' with 'r'.
+QFile: close 'results/data2.qar.v19' with 'r'.
+QFile: close 'results/data2.qar.v20' with 'r'.
+QFile: close 'results/data.qar' with 'r'.
 clear_mem_cache: 0 bytes (0.000 GB) freed.
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 0.

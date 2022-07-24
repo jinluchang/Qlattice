@@ -64,6 +64,19 @@ Can store some metadata information about the file. The default is simply empty.
 [FILE-HEADER size] + 1 + [FILE-NAME size] + 1 + [FILE-INFO size] + 1 + [FILE-DATA size] + 2
 ```
 
+## Multiple volumes
+
+Can store the single folder in multiple `qar` archives. For example:
+
+```
+folder.qar
+folder.qar.v1
+folder.qar.v2
+folder.qar.v3
+```
+
+Each file is a valid `qar` file on its own, but only contains a portion of the content of the original folder.
+
 ## Utilities
 
 ```
