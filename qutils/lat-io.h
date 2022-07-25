@@ -174,7 +174,7 @@ inline void LatData::load(QFile& qfile)
   if (crc != crc_computed) {
     displayln(
         ssprintf("ERROR: crc do not match: file=%08X computed=%08X path='%s'.",
-                 crc, crc_computed, qfile.path.c_str()));
+                 crc, crc_computed, qfile.path().c_str()));
     qassert(false);
   }
   to_from_little_endian_64(res.data(), res.size() * sizeof(double));
