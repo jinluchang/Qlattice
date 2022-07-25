@@ -18,6 +18,10 @@ inline std::string get_qar_read_cache_key(const std::string& path)
 // return key of get_qar_read_cache() that may contain path
 // return empty string if no cached key is found.
 // Note: key should end with '/'.
+// Steps:
+// (1) Search in Cache. Return if found matching key.
+// (2) If not found, check if path exists. If exists, return empty key.
+// (3) If does not exist, try to find qar file yet to be in cache.
 {
   TIMER("get_qar_read_cache_key");
   Cache<std::string, QarFileMultiVol>& cache = get_qar_read_cache();
@@ -27,7 +31,10 @@ inline std::string get_qar_read_cache_key(const std::string& path)
       return key;
     }
   }
-  std::string path_dir = dirname(path);
+  if (does_file_exist(path)) {
+    return std::string();
+  }
+  std::string path_dir = remove_trailing_slashes(path);
   while (true) {
     if (path_dir == "/" or path_dir == ".") {
       return std::string();

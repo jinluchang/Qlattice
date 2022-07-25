@@ -40,6 +40,12 @@ q.qar_create_info(f"results/data3.qar", f"results/data3", is_remove_folder_after
 
 q.qar_extract_info(f"results/data3.qar", f"results/data3", is_remove_qar_after = True)
 
+q.qar_create_info(f"results/data4.qar", f"results/data3")
+
+ld = q.LatData()
+ld.load(f"results/data4/ld-10000.lat")
+assert q.qnorm(q.load_lat_data(f"results/data4/ld-10000.lat") - q.load_lat_data(f"results/data/ld-10000.lat")) == 0
+
 q.check_all_files_crc32_info("results")
 
 q.timer_display()

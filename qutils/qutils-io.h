@@ -80,6 +80,10 @@ inline int check_dir(const std::string& path,
 }
 
 inline std::string remove_trailing_slashes(const std::string& fn)
+// remove trailing slashes (but won't remove the first slash)
+// e.g.
+// remove_trailing_slashes("/home/") = "/home"
+// remove_trailing_slashes("//") = "/"
 {
   long cur = fn.size() - 1;
   while (cur > 0 and fn[cur] == '/') {
