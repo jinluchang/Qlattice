@@ -365,7 +365,25 @@ def rejk_list(jk_list, jk_idx_list, all_jk_idx):
 
 # ----------
 
-def rjk_jk_list(jk_list, jk_idx_list, n_rand_sample, rng_state):
+def mk_jk_blocking_func(block_size = 1, block_size_dict = None):
+    if block_size_dict is None:
+        block_size_dict = dict()
+    def f(idx):
+        if isinstance(idx, int):
+            traj = idx
+            bs = block_size
+            return traj // bs
+        elif isinstance(idx, tuple) and len(idx) == 2 and isinstance(idx[1], int):
+            job_tag, traj = idx
+            assert isinstance(traj, int)
+            bs = block_size_dict.get(job_tag, block_size)
+            assert isinstance(bs, int)
+            return (job_tag, traj // bs,)
+        else:
+            return idx
+    return f
+
+def rjk_jk_list(jk_list, jk_idx_list, n_rand_sample, rng_state, jk_blocking_func = None):
     # return rjk_list
     # len(rjk_list) == 1 + n_rand_sample
     # distribution of rjk_list should be similar as the distribution of avg
@@ -382,9 +400,13 @@ def rjk_jk_list(jk_list, jk_idx_list, n_rand_sample, rng_state):
     n = len(jk_list) - 1
     jk_diff = [ jk_list[j] - avg for j in range(1, n) ]
     rjk_list = [ avg, ]
+    if jk_blocking_func is None:
+        blocked_jk_idx_list = jk_idx_list
+    else:
+        blocked_jk_idx_list = [ jk_blocking_func(idx) for idx in jk_idx_list[:] ]
     for i in range(n_rand_sample):
         rsi = rs.split(i)
-        r = [ rsi.split(idx).g_rand_gen() for idx in jk_idx_list[1:] ]
+        r = [ rsi.split(idx).g_rand_gen() for idx in blocked_jk_idx_list[1:] ]
         rjk_list.append(avg + sum([ r[j] * jk_diff[j] for j in range(n - 1) ]))
     return rjk_list
 
@@ -413,10 +435,18 @@ default_g_jk_kwargs["get_all_jk_idx"] = None # for jk_type = "super"
 
 default_g_jk_kwargs["n_rand_sample"] = 1024 # for jk_type = "rjk"
 default_g_jk_kwargs["rng_state"] = RngState("rejk")  # for jk_type = "rjk"
+default_g_jk_kwargs["jk_blocking_func"] = None  # for jk_type = "rjk"
 
 @use_kwargs(default_g_jk_kwargs)
 def g_jk(data_list, *, eps, **_kwargs):
     return jackknife(data_list, eps)
+
+@use_kwargs(default_g_jk_kwargs)
+def g_jk_blocking_func(idx, *, jk_blocking_func, **_kwargs):
+    if jk_blocking_func is None:
+        return idx
+    else:
+        return jk_blocking_func(idx)
 
 @use_kwargs(default_g_jk_kwargs)
 def g_rejk(jk_list, jk_idx_list, *,
@@ -425,6 +455,7 @@ def g_rejk(jk_list, jk_idx_list, *,
         get_all_jk_idx,
         n_rand_sample,
         rng_state,
+        jk_blocking_func,
         **_kwargs,):
     # jk_type in [ "rjk", "super", ]
     if jk_type == "super":
@@ -433,7 +464,7 @@ def g_rejk(jk_list, jk_idx_list, *,
             all_jk_idx = get_all_jk_idx()
         return rejk_list(jk_list, jk_idx_list, all_jk_idx)
     elif jk_type == "rjk":
-        return rjk_jk_list(jk_list, jk_idx_list, n_rand_sample, rng_state)
+        return rjk_jk_list(jk_list, jk_idx_list, n_rand_sample, rng_state, jk_blocking_func)
     else:
         assert False
     return None
