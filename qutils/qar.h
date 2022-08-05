@@ -7,6 +7,7 @@
 #include <cassert>
 #include <string>
 #include <vector>
+#include <map>
 #include <utility>
 #include <memory>
 
@@ -14,6 +15,16 @@ namespace qlat
 {  //
 
 struct QFileInternal;
+
+typedef std::map<long, std::weak_ptr<QFileInternal> > QFileMap;
+
+inline QFileMap& get_all_qfile()
+// get_all_qfile()[key] -> std::weak_ptr<QFileInternal>
+// key = (long)&qfile_internal
+{
+  static QFileMap all_qfile;
+  return all_qfile;
+}
 
 struct QFile {
   // Interface to FILE* which allow a view of a portion of the file specified by
@@ -23,6 +34,7 @@ struct QFile {
   std::shared_ptr<QFileInternal> p;
   //
   QFile() { init(); }
+  QFile(const std::weak_ptr<QFileInternal>& wp) { init(wp); }
   QFile(const std::string& path, const std::string& mode) { init(path, mode); }
   QFile(const QFile& qfile, const long q_offset_start, const long q_offset_end)
   {
@@ -30,8 +42,10 @@ struct QFile {
   }
   //
   void init() { p = nullptr; }
+  void init(const std::weak_ptr<QFileInternal>& wp) { p = std::shared_ptr<QFileInternal>(wp); }
   void init(const std::string& path, const std::string& mode);
-  void init(const QFile& qfile, const long q_offset_start, const long q_offset_end);
+  void init(const QFile& qfile, const long q_offset_start,
+            const long q_offset_end);
   //
   void close();
   //
@@ -40,7 +54,33 @@ struct QFile {
   const std::string& path() const;
   //
   const std::string& mode() const;
+  //
+  FILE* get_fp() const;
 };
+
+inline void add_qfile(const QFile& qfile)
+{
+  QFileMap& qfile_map = get_all_qfile();
+  const long key = (long)qfile.p.get();
+  qassert(not has(qfile_map, key));
+  qfile_map[key] = qfile.p;
+}
+
+inline void remove_qfile(const QFileInternal& qfile_internal)
+{
+  QFileMap& qfile_map = get_all_qfile();
+  const long key = (long)&qfile_internal;
+  qassert(has(qfile_map, key));
+  qfile_map.erase(key);
+}
+
+inline QFile get_qfile(const QFileInternal& qfile_internal)
+{
+  QFileMap& qfile_map = get_all_qfile();
+  const long key = (long)&qfile_internal;
+  qassert(has(qfile_map, key));
+  return QFile(qfile_map[key]);
+}
 
 struct QFileInternal {
   // Interface to FILE* which allow a view of a portion of the file specified by
@@ -96,7 +136,11 @@ struct QFileInternal {
     swap(qfile);
   }
   //
-  ~QFileInternal() { close(); }
+  ~QFileInternal()
+  {
+    close();
+    remove_qfile(*this);
+  }
   //
   void init()
   {
@@ -208,6 +252,7 @@ inline void QFile::init(const std::string& path, const std::string& mode)
 {
   if (p == nullptr) {
     p = std::shared_ptr<QFileInternal>(new QFileInternal());
+    add_qfile(*this);
   }
   p->init(path, mode);
 }
@@ -217,6 +262,7 @@ inline void QFile::init(const QFile& qfile, const long q_offset_start,
 {
   if (p == nullptr) {
     p = std::shared_ptr<QFileInternal>(new QFileInternal());
+    add_qfile(*this);
   }
   p->init(qfile, q_offset_start, q_offset_end);
 }
@@ -232,6 +278,8 @@ inline void QFile::close()
 inline const std::string& QFile::path() const { return p->path; }
 
 inline const std::string& QFile::mode() const { return p->mode; }
+
+inline FILE* QFile::get_fp() const { return p->fp; }
 
 inline void qswap(QFile& qfile1, QFile& qfile2)
 // interface function
