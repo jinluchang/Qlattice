@@ -20,6 +20,8 @@ if len(sys.argv) < 2:
     q.displayln_info("Usage: qar create path.qar path")
     q.displayln_info("Usage: qar extract path.qar path")
     q.displayln_info("Usage: qar l path1.qar path2.qar ...")
+    q.displayln_info("Usage: qar cp path_src path_dst")
+    q.displayln_info("Usage: qar cat path1 path2 ...")
     q.displayln_info("Usage: qar c path1 path2 ...")
     q.displayln_info("Usage: qar x path1.qar path2.qar ...")
     q.displayln_info("Usage: qar cr path1 path2 ...")
@@ -66,6 +68,12 @@ elif action == "cp":
     assert q.does_file_exist_qar(path_src)
     assert not q.does_file_exist(path_dst)
     q.qcopy_file_info(path_src, path_dst)
+elif action == "cat":
+    assert len(sys.argv) >= 2
+    for path in sys.argv[2:]:
+        assert q.does_file_exist_qar(path)
+        content = q.qcat_bytes(path)
+        sys.stdout.write(content)
 elif action in [ "c", "cr" ]:
     path_list = sys.argv[2:]
     for path in path_list:

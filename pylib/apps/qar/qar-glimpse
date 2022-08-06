@@ -1,0 +1,36 @@
+#!/usr/bin/env python3
+
+# Author: Luchang Jin 2022
+
+import qlat as q
+import sys
+
+if len(sys.argv) < 2:
+    q.displayln_info("Usage: qar-glimpse path.qar")
+    q.displayln_info("Usage: qar-glimpse path.qar path1 path2 ...")
+    exit(1)
+
+assert len(sys.argv) >= 2
+
+def show_list_qar(path_qar, idx = 0):
+    assert path_qar[-4:] == ".qar"
+    fns = q.list_qar(path_qar)
+    for i, fn in enumerate(fns):
+        q.displayln_info(f"{idx:8} '{path_qar}' {i:8} '{fn}'")
+        idx += 1
+        if fn[-4:] == ".qar":
+            idx = show_list_qar(path_qar[:-4] + "/" + fn, idx)
+    return idx
+
+path_qar = sys.argv[1]
+assert q.does_file_exist_qar(path_qar)
+assert path_qar[-4:] == ".qar"
+
+if len(sys.argv) == 2:
+    show_list_qar(path_qar)
+else:
+    path_list = sys.argv[2:]
+    for path in path_list:
+        assert q.does_file_exist_qar(path_qar[:-4] + "/" + path)
+        content = q.qcat_bytes(path_qar[:-4] + "/" + path)
+        sys.stdout.write(content)
