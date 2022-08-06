@@ -152,9 +152,10 @@ inline std::string mk_new_qar_read_cache_key(const QarFileMultiVol& qar,
     if (has(qar, path_dir + ".qar")) {
       const std::string key_new = path_dir + "/";
       qassert(path.substr(0, key_new.size()) == key_new);
-      qassert(not cache.has(key + key_new));
       QarFileMultiVol& qar_new = cache[key + key_new];
-      qar_new.init(key + path_dir + ".qar", "r");
+      if (qar_new.null()) {
+        qar_new.init(key + path_dir + ".qar", "r");
+      }
       qassert(not qar_new.null());
       const std::string path_new = path.substr(key_new.size());
       if (has_file_or_directory(qar_new, path_new)) {
@@ -207,7 +208,8 @@ inline std::string get_qar_read_cache_key(const std::string& path)
 // return empty string if no cached key is found.
 // Note: key should end with '/'.
 // Steps:
-// (1) Search in Cache. Return if found matching key.
+// (1) Search in Cache. If found matching key, try to find within this qar file
+// recursively.
 // (2) If not found, check if path exists. If exists, return empty key.
 // (3) If does not exist, try to find qar file yet to be in cache recursively.
 {
@@ -216,7 +218,13 @@ inline std::string get_qar_read_cache_key(const std::string& path)
   for (auto it = cache.m.cbegin(); it != cache.m.cend(); ++it) {
     const std::string& key = it->first;
     if (key == path.substr(0, key.size())) {
-      return key;
+      const QarFileMultiVol& qar = cache[key];
+      const std::string path_new = path.substr(key.size());
+      if (has_file_or_directory(qar, path_new)) {
+        return key;
+      } else {
+        return mk_new_qar_read_cache_key(qar, key, path_new);
+      }
     }
   }
   if (does_file_exist(path)) {
@@ -395,7 +403,7 @@ inline int qar_extract(const std::string& path_qar,
       0,
       fname + ssprintf(": '%s' '%s' %s.", path_qar.c_str(), path_folder.c_str(),
                        is_remove_qar_after ? "remove qar " : "keep qar"));
-  if (not does_file_exist(path_qar)) {
+  if (not does_file_exist_qar(path_qar)) {
     qwarn(fname + ssprintf(": '%s' '%s' qar does not exist.", path_qar.c_str(),
                            path_folder.c_str()));
     return 1;
@@ -440,6 +448,37 @@ inline int qar_extract(const std::string& path_qar,
       qremove(path_qar_v);
     }
   }
+  return 0;
+}
+
+inline int qcopy_file(const std::string& path_src, const std::string& path_dst)
+// interface function
+// return 0 if successful.
+{
+  TIMER_VERBOSE_FLOPS("qcopy_file");
+  displayln(0,
+            fname + ssprintf(": '%s' %s.", path_src.c_str(), path_dst.c_str()));
+  if (not does_file_exist_qar(path_src)) {
+    qwarn(fname + ssprintf(": '%s' does not exist.", path_src.c_str()));
+    return 1;
+  }
+  if (does_file_exist(path_dst)) {
+    qwarn(fname + ssprintf(": '%s' already exist.", path_dst.c_str()));
+    return 2;
+  }
+  if (does_file_exist(path_dst + ".acc")) {
+    qwarn(fname +
+          ssprintf(": '%s' already exist.", (path_dst + ".acc").c_str()));
+    return 3;
+  }
+  QFile qfile_in = qfopen(path_src, "r");
+  qassert(not qfile_in.null());
+  QFile qfile_out = qfopen(path_dst + ".acc", "w");
+  qassert(not qfile_out.null());
+  timer.flops += write_from_qfile(qfile_out, qfile_in);
+  qfile_out.close();
+  qfile_in.close();
+  qrename(path_dst + ".acc", path_dst);
   return 0;
 }
 

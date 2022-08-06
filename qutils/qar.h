@@ -811,6 +811,7 @@ inline void register_file(const QarFile& qar, const std::string& fn)
       break;
     } else {
       qar.p->directories.insert(dir);
+      dir = dirname(dir);
     }
   }
 }

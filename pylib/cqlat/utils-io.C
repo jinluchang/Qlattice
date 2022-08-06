@@ -458,6 +458,32 @@ EXPORT(qar_extract_info, {
   return py_convert(ret);
 });
 
+EXPORT(qcopy_file, {
+  using namespace qlat;
+  PyObject* p_path_src = NULL;
+  PyObject* p_path_dst = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_path_src, &p_path_dst)) {
+    return NULL;
+  }
+  const std::string path_src = py_convert_data<std::string>(p_path_src);
+  const std::string path_dst = py_convert_data<std::string>(p_path_dst);
+  const int ret = qcopy_file(path_src, path_dst);
+  return py_convert(ret);
+});
+
+EXPORT(qcopy_file_info, {
+  using namespace qlat;
+  PyObject* p_path_src = NULL;
+  PyObject* p_path_dst = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_path_src, &p_path_dst)) {
+    return NULL;
+  }
+  const std::string path_src = py_convert_data<std::string>(p_path_src);
+  const std::string path_dst = py_convert_data<std::string>(p_path_dst);
+  const int ret = qcopy_file_info(path_src, path_dst);
+  return py_convert(ret);
+});
+
 EXPORT(list_qar, {
   using namespace qlat;
   PyObject* p_path_qar = NULL;

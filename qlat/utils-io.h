@@ -331,6 +331,16 @@ inline int qar_extract_info(const std::string& path_qar,
   return ret;
 }
 
+inline int qcopy_file_info(const std::string& path_src, const std::string& path_dst)
+{
+  long ret = 0;
+  if (0 == get_id_node()) {
+    ret = qcopy_file(path_src, path_dst);
+  }
+  glb_sum(ret);
+  return ret;
+}
+
 inline std::string show_file_crc32(const std::pair<std::string, crc32_t>& fcrc)
 {
   return ssprintf("%08X  fn='%s'", fcrc.second, fcrc.first.c_str());
