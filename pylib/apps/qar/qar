@@ -49,7 +49,7 @@ elif action == "extract":
     assert len(sys.argv) == 4
     path_qar = sys.argv[2]
     path = sys.argv[3]
-    assert q.is_regular_file(path_qar)
+    assert q.does_file_exist_qar(path_qar)
     assert not q.does_file_exist(path)
     q.qar_extract_info(path_qar, path)
 elif action == "l":
@@ -59,6 +59,13 @@ elif action == "l":
         for i, fn in enumerate(fns):
             q.displayln_info(f"{idx:8} '{path_qar}' {i:8} '{fn}'")
             idx += 1
+elif action == "cp":
+    assert len(sys.argv) == 4
+    path_src = sys.argv[2]
+    path_dst = sys.argv[3]
+    assert q.does_file_exist_qar(path_src)
+    assert not q.does_file_exist(path_dst)
+    q.qcopy_file_info(path_src, path_dst)
 elif action in [ "c", "cr" ]:
     path_list = sys.argv[2:]
     for path in path_list:
@@ -79,7 +86,7 @@ elif action in [ "x", "xr" ]:
         assert path_qar[-4:] == ".qar"
         path = path_qar[:-4]
         assert path != ""
-        assert q.is_regular_file(path_qar)
+        assert q.does_file_exist_qar(path_qar)
         assert not q.does_file_exist(path)
     for path_qar in path_qar_list:
         path = path_qar[:-4]
