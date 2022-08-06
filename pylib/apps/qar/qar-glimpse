@@ -33,4 +33,6 @@ else:
     for path in path_list:
         assert q.does_file_exist_qar(path_qar[:-4] + "/" + path)
         content = q.qcat_bytes(path_qar[:-4] + "/" + path)
-        sys.stdout.write(content)
+        sys.stdout.buffer.write(content)
+
+q.clear_all_caches()

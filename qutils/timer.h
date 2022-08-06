@@ -240,18 +240,17 @@ inline long get_env_long_default(const std::string& var_name, const long x0)
 
 inline long get_verbose_level()
 {
-  const long x0 = 0;
+  const long x0 = -1; // default verbose_level
   const std::string var_name = "q_verbose";
   const std::string val = get_env(var_name);
   long x;
   if (val == "") {
     x = x0;
-    displayln_info(ssprintf("%s=%ld (default)", var_name.c_str(), x));
   } else {
     x = read_long(val);
-    if (x >= 0) {
-      displayln_info(ssprintf("%s=%ld", var_name.c_str(), x));
-    }
+  }
+  if (x >= 0) {
+    displayln_info(ssprintf("%s=%ld", var_name.c_str(), x));
   }
   return x;
 }

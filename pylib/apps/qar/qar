@@ -73,7 +73,7 @@ elif action == "cat":
     for path in sys.argv[2:]:
         assert q.does_file_exist_qar(path)
         content = q.qcat_bytes(path)
-        sys.stdout.write(content)
+        sys.stdout.buffer.write(content)
 elif action in [ "c", "cr" ]:
     path_list = sys.argv[2:]
     for path in path_list:
@@ -104,3 +104,5 @@ elif action in [ "x", "xr" ]:
             q.qar_extract_info(path_qar, path, is_remove_qar_after = True)
 else:
     assert False
+
+q.clear_all_caches()

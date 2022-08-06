@@ -130,4 +130,4 @@ def qquit(msg):
     return c.qquit(msg)
 
 def get_remaining_time():
-  return get_time_limit() - get_actual_total_time()
+    return get_time_limit() - get_actual_total_time()

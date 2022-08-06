@@ -216,7 +216,7 @@ Relevant source files: `qutils/rng-state.h`
 
   Level of verbosity. Need to be more than `0` for the timing info to be shown automatically.
 
-  Default is `0`.
+  Default is `-1`.
 
 - `q_timer_mini_auto_display`
 
