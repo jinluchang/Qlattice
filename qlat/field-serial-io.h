@@ -57,8 +57,7 @@ long serial_write_field(const Field<M>& f, const std::string& path,
     Vector<M> v = get_data(f);
     const int num_node = get_num_node();
     const int new_num_node = product(new_size_node);
-    QFile qfile;
-    qopen(qfile, path, "a");
+    QFile qfile = qfopen(path, "a");
     qassert(not qfile.null());
     for (int new_id_node = 0; new_id_node < new_num_node; ++new_id_node) {
       const int id_node =
@@ -114,8 +113,7 @@ long serial_read_field(Field<M>& f, const std::string& path,
     Vector<M> v = get_data(f);
     const int num_node = get_num_node();
     const int new_num_node = product(new_size_node);
-    QFile qfile;
-    qopen(qfile, path, "r");
+    QFile qfile = qfopen(path, "r");
     qassert(not qfile.null());
     qfseek(qfile, offset, whence);
     for (int new_id_node = 0; new_id_node < new_num_node; ++new_id_node) {
@@ -166,8 +164,7 @@ long serial_read_field_par(Field<M>& f, const std::string& path,
     fs[i].init(new_geos[i]);
   }
   if (fs.size() > 0) {
-    QFile qfile;
-    qopen(qfile, path, "r");
+    QFile qfile = qfopen(path, "r");
     qassert(not qfile.null());
     qfseek(qfile,
            offset + fs[0].geo().geon.id_node * get_data(fs[0]).data_size(),
@@ -346,8 +343,7 @@ inline void read_geo_info(Coordinate& total_site, int& multiplicity, int& sizeof
 {
   TIMER("read_geo_info");
   if (get_id_node() == 0) {
-    QFile qfile;
-    qopen(qfile, path, "r");
+    QFile qfile = qfopen(path, "r");
     if (not qfile.null()) {
       const std::string header = "BEGIN_FIELD_HEADER\n";
       std::vector<char> check_line(header.size(), 0);
@@ -533,8 +529,7 @@ inline bool is_field(const std::string& path)
   TIMER("is_field");
   long nfile = 0;
   if (get_id_node() == 0) {
-    QFile qfile;
-    qopen(qfile, path, "r");
+    QFile qfile = qfopen(path, "r");
     if (not qfile.null()) {
       const std::string header = "BEGIN_FIELD_HEADER\n";
       std::vector<char> check_line(header.size(), 0);

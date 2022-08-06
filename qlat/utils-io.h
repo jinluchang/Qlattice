@@ -658,8 +658,7 @@ inline DataTable qload_datatable_serial(const std::string& path)
   if (not does_file_exist_qar(path)) {
     return DataTable();
   }
-  QFile qfile;
-  qopen(qfile, path, "r");
+  QFile qfile = qfopen(path, "r");
   qassert(not qfile.null());
   DataTable ret = qload_datatable(qfile);
   qfile.close();
@@ -672,8 +671,7 @@ inline DataTable qload_datatable_par(const std::string& path)
   if (not does_file_exist_qar(path)) {
     return DataTable();
   }
-  QFile qfile;
-  qopen(qfile, path, "r");
+  QFile qfile = qfopen(path, "r");
   qassert(not qfile.null());
   DataTable ret = qload_datatable_par(qfile);
   qfile.close();

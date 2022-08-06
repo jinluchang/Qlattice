@@ -218,8 +218,7 @@ inline void fields_writer_dirs_geon_info(const GeometryNode& geon,
   TIMER("fields_writer_dirs_geon_info");
   dist_mkdir(path, geon.num_node, mode);
   const std::string fn = path + "/geon-info.txt";
-  QFile qfile;
-  qopen(qfile, fn, "w");
+  QFile qfile = qfopen(fn, "w");
   qwrite_data(ssprintf("geon.num_node = %d\n", geon.num_node), qfile);
   qwrite_data(ssprintf("geon.size_node[0] = %d\n", geon.size_node[0]), qfile);
   qwrite_data(ssprintf("geon.size_node[1] = %d\n", geon.size_node[1]), qfile);
@@ -289,7 +288,7 @@ struct FieldsWriter {
         fields_writer_dirs_geon_info(geon, path);
       }
     }
-    qopen(qfile, dist_file_name(path, geon.id_node, geon.num_node), is_append ? "a" : "w");
+    qfile = qfopen(dist_file_name(path, geon.id_node, geon.num_node), is_append ? "a" : "w");
     qassert(not qfile.null());
   }
   //
@@ -334,7 +333,7 @@ struct FieldsReader {
     if (geon.id_node == 0) {
       displayln(0, "FieldsReader: open '" + path + "'.");
     }
-    qopen(qfile, dist_file_name(path, geon.id_node, geon.num_node), "r");
+    qfile = qfopen(dist_file_name(path, geon.id_node, geon.num_node), "r");
     if (qfile.null()) {
       is_read_through = true;
     } else {
@@ -353,8 +352,8 @@ inline void mkfile(FieldsReader& fr, const mode_t mode = default_dir_mode())
 // does not open the file
 {
   if (fr.qfile.null() and fr.path != "") {
-    qopen(fr.qfile, dist_file_name(fr.path, fr.geon.id_node, fr.geon.num_node),
-          "a");
+    fr.qfile =
+        qfopen(dist_file_name(fr.path, fr.geon.id_node, fr.geon.num_node), "a");
     fr.qfile.close();
   }
 }

@@ -43,16 +43,14 @@ struct LatData {
   void load(QFile& qfile);
   void load(const std::string& fn)
   {
-    QFile qfile;
-    qopen(qfile, fn, "r");
+    QFile qfile = qfopen(fn, "r");
     load(qfile);
   }
   //
   void save(QFile& qfile) const;
   void save(const std::string& fn) const
   {
-    QFile qfile;
-    qopen(qfile, fn + ".partial", "w");
+    QFile qfile = qfopen(fn + ".partial", "w");
     save(qfile);
     qrename(fn + ".partial", fn);
   };
