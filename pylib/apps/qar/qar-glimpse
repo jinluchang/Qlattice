@@ -5,6 +5,19 @@
 import qlat as q
 import sys
 
+def show_list_qar(path_qar, idx = 0, is_recursive = True, drop_prefix = ""):
+    assert path_qar[-4:] == ".qar"
+    fns = q.list_qar(path_qar)
+    for i, fn in enumerate(fns):
+        pfn = path_qar[:-4] + "/" + fn
+        assert pfn.startswith(drop_prefix)
+        pfn = pfn[len(drop_prefix):]
+        q.displayln_info(f"{idx:8} '{path_qar}' {i:8} '{pfn}'")
+        idx += 1
+        if is_recursive and fn[-4:] == ".qar":
+            idx = show_list_qar(path_qar[:-4] + "/" + fn, idx, is_recursive = is_recursive, drop_prefix = drop_prefix)
+    return idx
+
 if len(sys.argv) < 2:
     q.displayln_info("Usage: qar-glimpse path.qar")
     q.displayln_info("Usage: qar-glimpse path.qar path1 path2 ...")
@@ -12,23 +25,12 @@ if len(sys.argv) < 2:
 
 assert len(sys.argv) >= 2
 
-def show_list_qar(path_qar, idx = 0, is_recursive = True):
-    assert path_qar[-4:] == ".qar"
-    fns = q.list_qar(path_qar)
-    for i, fn in enumerate(fns):
-        pfn = path_qar[:-4] + "/" + fn
-        q.displayln_info(f"{idx:8} '{path_qar}' {i:8} '{pfn}'")
-        idx += 1
-        if is_recursive and fn[-4:] == ".qar":
-            idx = show_list_qar(path_qar[:-4] + "/" + fn, idx)
-    return idx
-
 path_qar = sys.argv[1]
 assert q.does_file_exist_qar(path_qar)
 assert path_qar[-4:] == ".qar"
 
 if len(sys.argv) == 2:
-    show_list_qar(path_qar)
+    show_list_qar(path_qar, 0, is_recursive = True, drop_prefix = path_qar[:-4] + "/")
 else:
     path_list = sys.argv[2:]
     for path in path_list:
