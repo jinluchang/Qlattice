@@ -893,6 +893,9 @@ inline bool has(const QarFile& qar, const std::string& fn)
 // interface function
 {
   qassert(not qar.null());
+  if (qar.p->is_read_through) {
+    return has(qar.p->qsinfo_map, fn);
+  }
   QFile qfile;
   return read(qar, fn, qfile);
 }

@@ -139,7 +139,7 @@ inline std::string mk_new_qar_read_cache_key(const QarFileMultiVol& qar,
                                              const std::string& path)
 // (1) Find the first new qar file in qar that match the prefix of path and
 // register the new qar file in qar_read_cache.
-// (2) If qar not found, return "".
+// (2) If qar not found, return key.
 // (3) If path exists in the qar, return the new key of the new qar.
 // (4) If not found, repeat the procedure for the new qar.
 {
@@ -147,7 +147,7 @@ inline std::string mk_new_qar_read_cache_key(const QarFileMultiVol& qar,
   std::string path_dir = remove_trailing_slashes(path);
   while (true) {
     if (path_dir == "/" or path_dir == ".") {
-      return std::string();
+      return key;
     }
     if (has(qar, path_dir + ".qar")) {
       const std::string key_new = path_dir + "/";
@@ -167,7 +167,7 @@ inline std::string mk_new_qar_read_cache_key(const QarFileMultiVol& qar,
     path_dir = dirname(path_dir);
   }
   qassert(false);
-  return std::string();
+  return "";
 }
 
 inline std::string mk_new_qar_read_cache_key(const std::string& path)
@@ -175,13 +175,14 @@ inline std::string mk_new_qar_read_cache_key(const std::string& path)
 // file in qar_read_cache.
 // (2) If qar not found, return "".
 // (2) If path exists in the qar, return the key of qar.
-// (4) If not found, find qar within qar recursively.
+// (4) If not found, find qar within qar recursively, return the key of the
+// closest qar.
 {
   Cache<std::string, QarFileMultiVol>& cache = get_qar_read_cache();
   std::string path_dir = remove_trailing_slashes(path);
   while (true) {
     if (path_dir == "/" or path_dir == ".") {
-      return std::string();
+      return "";
     }
     if (does_file_exist(path_dir + ".qar")) {
       const std::string key = path_dir + "/";
@@ -200,7 +201,7 @@ inline std::string mk_new_qar_read_cache_key(const std::string& path)
     path_dir = dirname(path_dir);
   }
   qassert(false);
-  return std::string();
+  return "";
 }
 
 inline std::string get_qar_read_cache_key(const std::string& path)
@@ -209,9 +210,13 @@ inline std::string get_qar_read_cache_key(const std::string& path)
 // Note: key should end with '/'.
 // Steps:
 // (1) Search in Cache. If found matching key, try to find within this qar file
-// recursively.
-// (2) If not found, check if path exists. If exists, return empty key.
+// recursively. Return the key of the closest match.
+// (2) If not found, check if path exists. If exists, return path.
 // (3) If does not exist, try to find qar file yet to be in cache recursively.
+// Return values:
+// valid key: valid key for a qar found. (qar may not actually contain path).
+// "": no key is found and path does not exist.
+// path: path exist.
 {
   TIMER("get_qar_read_cache_key");
   Cache<std::string, QarFileMultiVol>& cache = get_qar_read_cache();
@@ -228,7 +233,7 @@ inline std::string get_qar_read_cache_key(const std::string& path)
     }
   }
   if (does_file_exist(path)) {
-    return "";
+    return path;
   }
   return mk_new_qar_read_cache_key(path);
 }
@@ -239,8 +244,10 @@ inline bool does_file_exist_qar(const std::string& path)
 {
   TIMER("does_file_exist_qar");
   const std::string key = get_qar_read_cache_key(path);
-  if (key == "") {
-    return does_file_exist(path);
+  if (key == path) {
+    return true;
+  } else if (key == "") {
+    return false;
   }
   qassert(key == path.substr(0, key.size()));
   const std::string fn = path.substr(key.size());
@@ -253,8 +260,10 @@ inline bool does_file_or_directory_exist_qar(const std::string& path)
 {
   TIMER("does_file_or_directory_exist_qar");
   const std::string key = get_qar_read_cache_key(path);
-  if (key == "") {
-    return does_file_exist(path);
+  if (key == path) {
+    return true;
+  } else if (key == "") {
+    return false;
   }
   qassert(key == path.substr(0, key.size()));
   const std::string fn = path.substr(key.size());
@@ -269,25 +278,28 @@ inline QFile qfopen(const std::string& path, const std::string& mode)
 // Will create directories needed for write / append
 {
   TIMER("qfopen(path,mode)");
-  QFile qfile;
   if (mode == "r") {
     const std::string key = get_qar_read_cache_key(path);
     if (key == "") {
-      qfile.init(path, mode);
+      return QFile();
+    } else if (key == path) {
+      return QFile(path, mode);
     } else {
       qassert(key == path.substr(0, key.size()));
       const std::string fn = path.substr(key.size());
       QarFileMultiVol& qar = get_qar_read_cache()[key];
+      QFile qfile;
       read(qar, fn, qfile);
+      return qfile;
     }
   } else if (mode == "w" or mode == "a") {
     const std::string path_dir = dirname(path);
     qmkdir_p(path_dir);
-    qfile.init(path, mode);
+    return QFile(path, mode);
   } else {
     qassert(false);
   }
-  return qfile;
+  return QFile();
 }
 
 // -------------------
