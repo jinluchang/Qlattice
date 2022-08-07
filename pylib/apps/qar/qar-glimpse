@@ -12,13 +12,14 @@ if len(sys.argv) < 2:
 
 assert len(sys.argv) >= 2
 
-def show_list_qar(path_qar, idx = 0):
+def show_list_qar(path_qar, idx = 0, is_recursive = True):
     assert path_qar[-4:] == ".qar"
     fns = q.list_qar(path_qar)
     for i, fn in enumerate(fns):
-        q.displayln_info(f"{idx:8} '{path_qar}' {i:8} '{fn}'")
+        pfn = path_qar[:-4] + "/" + fn
+        q.displayln_info(f"{idx:8} '{path_qar}' {i:8} '{pfn}'")
         idx += 1
-        if fn[-4:] == ".qar":
+        if is_recursive and fn[-4:] == ".qar":
             idx = show_list_qar(path_qar[:-4] + "/" + fn, idx)
     return idx
 
