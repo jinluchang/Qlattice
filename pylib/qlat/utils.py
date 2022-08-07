@@ -37,7 +37,8 @@ def parallel_map(q_mp_proc, func, iterable,
         chunksize = 1,
         process_initialization = process_initialization,
         is_verbose = False):
-    displayln_info(f"parallel_map(q_mp_proc={q_mp_proc})")
+    if is_verbose:
+        displayln_info(f"parallel_map(q_mp_proc={q_mp_proc})")
     if q_mp_proc == 0:
         return list(map(func, iterable))
     assert q_mp_proc >= 1
@@ -71,7 +72,8 @@ def parallel_map_sum(q_mp_proc, func, iterable,
     # iterable = [ i1, i2, ... ]
     # va1, vb1, ... = func(i1)
     # return [ sum([va1, va2, ...]), sum([vb1, vb2, ...]), ... ]
-    displayln_info(f"parallel_map_sum(q_mp_proc={q_mp_proc})")
+    if is_verbose:
+        displayln_info(f"parallel_map_sum(q_mp_proc={q_mp_proc})")
     if sum_function is None:
         sum_function = sum
     if q_mp_proc == 0:
