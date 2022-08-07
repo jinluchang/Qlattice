@@ -15,6 +15,7 @@ namespace qlat
 
 inline bool does_file_exist(const std::string& fn)
 {
+  TIMER("does_file_exist")
   struct stat sb;
   return 0 == stat(fn.c_str(), &sb);
 }
