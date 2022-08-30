@@ -13,12 +13,6 @@ export CXXFLAGS=" "
 
 ./scripts/xz.sh
 ./scripts/tar.sh
-./scripts/gmp.sh
-./scripts/mpfr.sh
-./scripts/mpc.sh
-./scripts/gcc.sh
-./scripts/binutils.sh
-./scripts/cmake.sh
 ./scripts/perl.sh
 ./scripts/openssl.sh
 ./scripts/libffi.sh
@@ -33,19 +27,16 @@ export CXXFLAGS=" "
 export CC=
 export CXX=
 
-./scripts/fftw.sh
-./scripts/fftwf.sh
+./scripts/fftw_mpi.sh
+./scripts/fftwf_mpi.sh
 ./scripts/cuba.sh
 ./scripts/zlib.sh
 ./scripts/eigen.sh
 ./scripts/autoconf.sh
 ./scripts/automake.sh
 ./scripts/c-lime.sh
-./scripts/hdf5.sh
 
 ./scripts/qlat.sh
-./scripts/grid-tblum.knl.sh
-./scripts/hadrons-tblum.sh
 ./scripts/grid.knl.sh
 ./scripts/gpt.knl.sh
 
