@@ -420,6 +420,31 @@ def phi_squared(field,action):
     geo = field.geo()
     return phi_sq/geo.total_volume()/geo.multiplicity()
 
+def histogram_bin(val,midpoint,n):
+    j = 1
+    for i in range(n):
+        if(val<j*midpoint/2**i):
+            j = j*2 - 1
+        else:
+            j = j*2 + 1
+    return int((j-1)/2.0)
+
+def update_phi_sq_dist(elems,vev_sigma,norm_factor):
+    phi_sq = 0.0
+    for elem in elems:
+        phi_sq+=elem**2
+    phi_sq_dist[histogram_bin(phi_sq,(vev_sigma**2)*4,4)]+=1.0/norm_factor
+
+def update_phi_i_dist(phi,vev_sigma,norm_factor):
+    phi_i_dist[histogram_bin(np.abs(phi),np.abs(vev_sigma),4)]+=1.0/norm_factor
+
+def update_theta_dist(elems,norm_factor):
+    phi_sq = 0.0
+    for elem in elems:
+        phi_sq+=elem**2
+    for elem in elems[1:]:
+        theta_dist[histogram_bin(np.abs(np.arccos(np.abs(elems[0])/phi_sq**0.5)),np.pi/2,4)]+=1.0/norm_factor
+    
 @q.timer_verbose
 def main():
     hmc = HMC(m_sq,lmbd,alpha,total_site,mult,steps)
@@ -490,6 +515,19 @@ def main():
             ax_cur_timeslices_pred.append(tslices_ax_cur_predicted.to_numpy())
             hm_timeslices.append(hm_tslices.to_numpy())
             hm_timeslices_pred.append(hm_tslices_pred.to_numpy())
+        if traj>hmc.init_length+hmc.num_blocks*hmc.block_length+hmc.final_block_length:
+            field = hmc.field.get_field()
+            norm_factor = hmc.V*(n_traj+1-hmc.init_length-hmc.num_blocks*hmc.block_length-hmc.final_block_length)
+            for x in range(hmc.total_site[0]):
+                for y in range(hmc.total_site[1]):
+                    for z in range(hmc.total_site[2]):
+                        for t in range(hmc.total_site[3]):
+                            elems = field.get_elems([x,y,z,t])
+                            update_phi_sq_dist(elems,hmc.vev,norm_factor)
+                            update_phi_i_dist(elems[1],hmc.vev,norm_factor)
+                            update_phi_i_dist(elems[2],hmc.vev,norm_factor)
+                            update_phi_i_dist(elems[3],hmc.vev,norm_factor)
+                            update_theta_dist(elems,norm_factor)
     
     # Saves the final field configuration so that the next run can be 
     # started where this one left off
@@ -516,6 +554,9 @@ accept_rates=[]
 fields=[]
 fields_pred=[]
 momentums=[]
+phi_sq_dist=[0.0]*16
+phi_i_dist=[0.0]*16
+theta_dist=[0.0]*16
 
 # The lattice dimensions
 total_site = [8,8,8,16]
@@ -524,16 +565,16 @@ total_site = [8,8,8,16]
 mult = 4
 
 # The number of trajectories to calculate
-n_traj = 1000
+n_traj = 300
 # The number of steps to take in a single trajectory
 steps = 20
 
 # Use action for a Euclidean scalar field. The Lagrangian will be:
 # (1/2)*[sum i]|dphi_i|^2 + (1/2)*m_sq*[sum i]|phi_i|^2
 #     + (1/24)*lmbd*([sum i]|phi_i|^2)^2
-m_sq = -2.0
-lmbd = 5.0
-alpha = 0.1#*2.0**0.5
+m_sq = -0.4
+lmbd = 1.0
+alpha = 0.1
 
 for i in range(1,len(sys.argv),2):
     try:
@@ -572,7 +613,23 @@ q.qremove_all_info("results")
 main()
 
 with open(f"output_data/sigma_pion_corrs_{total_site[0]}x{total_site[3]}_msq_{m_sq}_lmbd_{lmbd}_alph_{alpha}_{datetime.datetime.now().date()}.bin", "wb") as output:
-    pickle.dump([accept_rates,psq_list,phi_list,timeslices,hm_timeslices,ax_cur_timeslices,psq_pred_list,phi_pred_list,timeslices_pred,hm_timeslices_pred,ax_cur_timeslices_pred,fields,momentums,fields_pred],output)
+    pickle.dump({"accept_rates": accept_rates, 
+                 "psq_list": psq_list, 
+                 "phi_list": phi_list, 
+                 "timeslices": timeslices, 
+                 "hm_timeslices": hm_timeslices,
+                 "ax_cur_timeslices": ax_cur_timeslices,
+                 "phi_sq_dist": phi_sq_dist, 
+                 "phi_i_dist": phi_i_dist,
+                 "theta_dist": theta_dist, 
+                 "psq_pred_list": psq_pred_list,
+                 "phi_pred_list": phi_pred_list, 
+                 "timeslices_pred": timeslices_pred,
+                 "hm_timeslices_pred": hm_timeslices_pred,
+                 "ax_cur_timeslices_pred": ax_cur_timeslices_pred,
+                 "fields": fields, 
+                 "momentums": momentums,
+                 "field_pred": fields_pred},output)
 
 q.timer_display()
 
