@@ -433,10 +433,10 @@ def update_phi_sq_dist(elems,vev_sigma,norm_factor):
     phi_sq = 0.0
     for elem in elems:
         phi_sq+=elem**2
-    phi_sq_dist[histogram_bin(phi_sq,(vev_sigma**2)*4,4)]+=1.0/norm_factor
+    phi_sq_dist[histogram_bin(phi_sq,np.abs(vev_sigma)*5,4)]+=1.0/norm_factor
 
 def update_phi_i_dist(phi,vev_sigma,norm_factor):
-    phi_i_dist[histogram_bin(np.abs(phi),np.abs(vev_sigma),4)]+=1.0/norm_factor
+    phi_i_dist[histogram_bin(np.abs(phi),np.abs(vev_sigma)*5,4)]+=1.0/norm_factor
 
 def update_theta_dist(elems,norm_factor):
     phi_sq = 0.0
