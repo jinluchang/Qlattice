@@ -15,7 +15,7 @@ if [ -z "\$prefix" ] ; then
     prefix="$prefix"
 fi
 if [ -z "\$num_proc" ] ; then
-    num_proc=6
+    num_proc=8
 fi
 export PYTHONPATH=
 module purge
@@ -23,7 +23,9 @@ module add gcc-7.1.0
 # load intel libraries
 source /dist/intel/parallel_studio_xe/parallel_studio_xe/psxevars.sh intel64
 module list
-export USE_COMPILER=intel
+if [ -z "\$USE_COMPILER" ] ; then
+    export USE_COMPILER=intel
+fi
 EOF
 
 ./scripts/compiler-wrappers.sh

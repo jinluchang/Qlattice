@@ -31,7 +31,9 @@ export INTEL_LICENSE_FILE=/hpcgpfs01/software/Intel/psxe2018.u1/licenses
 module list
 export CC="\$CC_OLD"
 export CXX="\$CXX_OLD"
-export USE_COMPILER=intel
+if [ -z "\$USE_COMPILER" ] ; then
+    export USE_COMPILER=intel
+fi
 EOF
 
 ./scripts/compiler-wrappers.sh

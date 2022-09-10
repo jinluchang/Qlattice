@@ -19,6 +19,7 @@ export USE_COMPILER=gcc
 ./scripts/python-packages.sh
 ./scripts/re2c.sh
 ./scripts/ninja.sh
+./scripts/cmake.sh
 ./scripts/llvm-project.sh
 
 export USE_COMPILER=clang
