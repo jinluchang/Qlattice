@@ -21,6 +21,8 @@ export USE_COMPILER=gcc
 ./scripts/ninja.sh
 ./scripts/llvm-project.sh
 
+export USE_COMPILER=clang
+
 ./scripts/fftw_mpi.sh
 ./scripts/fftwf_mpi.sh
 ./scripts/cuba.sh
