@@ -23,12 +23,7 @@ module add gcc-7.1.0
 # load intel libraries
 source /dist/intel/parallel_studio_xe/parallel_studio_xe/psxevars.sh intel64
 module list
-if [ -z "\$CFLAGS" ] ; then
-    export CFLAGS="--wrapper-remove-arg='-cc=gcc' --wrapper-remove-arg='-cc=clang'"
-fi
-if [ -z "\$CXXFLAGS" ] ; then
-    export CXXFLAGS="--wrapper-remove-arg='-cxx=g++' --wrapper-remove-arg='-cxx=clang++'"
-fi
+export USE_COMPILER=intel
 EOF
 
 ./scripts/compiler-wrappers.sh

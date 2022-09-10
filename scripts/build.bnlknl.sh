@@ -6,10 +6,7 @@ set -e
 
 ./scripts/setenv.bnlknl.sh
 
-export CC=gcc
-export CXX=g++
-export CFLAGS=" "
-export CXXFLAGS=" "
+export USE_COMPILER=gcc
 
 ./scripts/fftw_mpi.sh
 ./scripts/fftwf_mpi.sh
@@ -20,8 +17,7 @@ export CXXFLAGS=" "
 ./scripts/automake.sh
 ./scripts/c-lime.sh
 
-export CC=
-export CXX=
+export USE_COMPILER=intel
 
 ./scripts/qlat.sh
 ./scripts/grid.knl.sh

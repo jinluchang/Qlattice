@@ -45,7 +45,11 @@ if which python3 >/dev/null 2>&1 ; then
 else
     run=
 fi
-if [ -f "$prefix/bin/clang" ] ; then
+if [ intel = "$USE_COMPILER" ] ; then
+    \$run icc "\$@"
+elif [ gcc = "$USE_COMPILER" ] ; then
+    \$run gcc "\$@"
+elif [ -f "$prefix/bin/clang" ] ; then
     \$run clang "\$@"
 elif [ -f "$prefix/bin/gcc" ] ; then
     \$run gcc "\$@"
@@ -66,7 +70,11 @@ if which python3 >/dev/null 2>&1 ; then
 else
     run=
 fi
-if [ -f "$prefix/bin/clang++" ] ; then
+if [ intel = "$USE_COMPILER" ] ; then
+    \$run icpc "\$@"
+elif [ gcc = "$USE_COMPILER" ] ; then
+    \$run g++ "\$@"
+elif [ -f "$prefix/bin/clang++" ] ; then
     \$run clang++ "\$@"
 elif [ -f "$prefix/bin/g++" ] ; then
     \$run g++ "\$@"
@@ -87,8 +95,12 @@ if which python3 >/dev/null 2>&1 ; then
 else
     run=
 fi
-if which mpiicc >/dev/null 2>&1 ; then
-    if [ -f "$prefix/bin/clang" ] ; then
+if [ intel = "$USE_COMPILER" ] ; then
+    \$run mpiicc "\$@"
+elif which mpiicc >/dev/null 2>&1 ; then
+    if [ gcc = "$USE_COMPILER" ] ; then
+        \$run mpiicc -cc=gcc "\$@"
+    elif [ -f "$prefix/bin/clang" ] ; then
         \$run mpiicc -cc=clang "\$@"
     elif [ -f "$prefix/bin/gcc" ] ; then
         \$run mpiicc -cc=gcc "\$@"
@@ -112,8 +124,12 @@ if which python3 >/dev/null 2>&1 ; then
 else
     run=
 fi
-if which mpiicpc >/dev/null 2>&1 ; then
-    if [ -f "$prefix/bin/clang++" ] ; then
+if [ intel = "$USE_COMPILER" ] ; then
+    \$run mpiicpc "\$@"
+elif which mpiicpc >/dev/null 2>&1 ; then
+    if [ gcc = "$USE_COMPILER" ] ; then
+        \$run mpiicpc -cxx=g++ "\$@"
+    elif [ -f "$prefix/bin/clang++" ] ; then
         \$run mpiicpc -cxx=clang++ "\$@"
     elif [ -f "$prefix/bin/g++" ] ; then
         \$run mpiicpc -cxx=g++ "\$@"

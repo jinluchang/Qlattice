@@ -31,12 +31,7 @@ export INTEL_LICENSE_FILE=/hpcgpfs01/software/Intel/psxe2018.u1/licenses
 module list
 export CC="\$CC_OLD"
 export CXX="\$CXX_OLD"
-if [ -z "\$CFLAGS" ] ; then
-    export CFLAGS="--wrapper-remove-arg='-cc=gcc' --wrapper-remove-arg='-cc=clang'"
-fi
-if [ -z "\$CXXFLAGS" ] ; then
-    export CXXFLAGS="--wrapper-remove-arg='-cxx=g++' --wrapper-remove-arg='-cxx=clang++'"
-fi
+export USE_COMPILER=intel
 EOF
 
 ./scripts/compiler-wrappers.sh

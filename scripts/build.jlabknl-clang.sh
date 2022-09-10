@@ -6,10 +6,7 @@ set -e
 
 ./scripts/setenv.jlabknl.sh
 
-export CC=gcc
-export CXX=g++
-export CFLAGS=" "
-export CXXFLAGS=" "
+export USE_COMPILER=gcc
 
 ./scripts/xz.sh
 ./scripts/tar.sh
@@ -23,9 +20,6 @@ export CXXFLAGS=" "
 ./scripts/re2c.sh
 ./scripts/ninja.sh
 ./scripts/llvm-project.sh
-
-export CC=
-export CXX=
 
 ./scripts/fftw_mpi.sh
 ./scripts/fftwf_mpi.sh

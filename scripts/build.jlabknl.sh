@@ -6,10 +6,7 @@ set -e
 
 ./scripts/setenv.jlabknl.sh
 
-export CC=gcc
-export CXX=g++
-export CFLAGS=" "
-export CXXFLAGS=" "
+export USE_COMPILER=gcc
 
 ./scripts/xz.sh
 ./scripts/tar.sh
@@ -30,10 +27,7 @@ export CXXFLAGS=" "
 ./scripts/automake.sh
 ./scripts/c-lime.sh
 
-export CC=
-export CXX=
-export CFLAGS=
-export CXXFLAGS=
+export USE_COMPILER=intel
 
 ./scripts/qlat.sh
 ./scripts/grid.knl.sh
