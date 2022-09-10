@@ -14,12 +14,6 @@ rsync -av --delete $distfiles/$name-lehner/ "$prefix"/$name/
 
 cd "$prefix/$name"
 
-git checkout c50f27e68bd4b3e4fb6a1da00aebe224f0a0bc23
-echo '-- generating Make.inc files...'
-./scripts/filelist
-echo '-- generating configure script...'
-autoreconf -fvi
-
 INITDIR="$(pwd)"
 rm -rfv "${INITDIR}/Eigen/Eigen/unsupported"
 rm -rfv "${INITDIR}/Grid/Eigen"
@@ -34,7 +28,6 @@ cd build
     --enable-simd=KNL \
     --enable-alloc-align=4k \
     --enable-comms=mpi-auto \
-    --enable-mkl \
     --enable-shm=shmget \
     --enable-shmpath=/dev/hugepages \
     --enable-gparity=no \

@@ -6,7 +6,7 @@ set -e
 
 ./scripts/setenv.jlabknl.sh
 
-export USE_COMPILER=gcc
+# export USE_COMPILER=gcc
 
 ./scripts/xz.sh
 ./scripts/tar.sh
@@ -27,10 +27,10 @@ export USE_COMPILER=gcc
 ./scripts/automake.sh
 ./scripts/c-lime.sh
 
-export USE_COMPILER=intel
+# export USE_COMPILER=intel
 
 ./scripts/qlat.sh
 ./scripts/grid.knl.sh
-./scripts/gpt.knl.sh
+./scripts/gpt.sh
 
 } |& tee $prefix/log.build.txt
