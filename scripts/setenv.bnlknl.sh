@@ -22,9 +22,9 @@ export PYTHONPATH=
 CC_OLD="\$CC"
 CXX_OLD="\$CXX"
 module purge
-module add anaconda3/2019.03-py3.7
 module add gcc/9.3.0
 module add intel/psxe2020
+# module add anaconda3/2019.03-py3.7
 # module add openmpi/1.10.4-gcc
 # load intel libraries
 # source /hpcgpfs01/software/Intel/psxe2019/bin/compilervars.sh -arch intel64

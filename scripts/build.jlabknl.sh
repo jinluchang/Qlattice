@@ -10,6 +10,12 @@ set -e
 
 ./scripts/xz.sh
 ./scripts/tar.sh
+./scripts/gsl.sh
+./scripts/gmp.sh
+./scripts/mpfr.sh
+./scripts/mpc.sh
+./scripts/gcc.sh
+./scripts/binutils.sh
 ./scripts/perl.sh
 ./scripts/openssl.sh
 ./scripts/libffi.sh
