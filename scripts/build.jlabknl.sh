@@ -18,14 +18,17 @@ set -e
 ./scripts/python.sh
 ./scripts/python-packages.sh
 
-./scripts/fftw_mpi.sh
-./scripts/fftwf_mpi.sh
 ./scripts/cuba.sh
 ./scripts/zlib.sh
 ./scripts/eigen.sh
 ./scripts/autoconf.sh
 ./scripts/automake.sh
 ./scripts/c-lime.sh
+
+./scripts/openmpi.sh
+
+./scripts/fftw_mpi.sh
+./scripts/fftwf_mpi.sh
 
 # export USE_COMPILER=intel
 

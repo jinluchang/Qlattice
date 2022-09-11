@@ -8,8 +8,6 @@ set -e
 
 # export USE_COMPILER=gcc
 
-./scripts/fftw_mpi.sh
-./scripts/fftwf_mpi.sh
 ./scripts/cuba.sh
 ./scripts/zlib.sh
 ./scripts/eigen.sh
@@ -18,6 +16,11 @@ set -e
 ./scripts/c-lime.sh
 
 # export USE_COMPILER=intel
+
+./scripts/openmpi.sh
+
+./scripts/fftw_mpi.sh
+./scripts/fftwf_mpi.sh
 
 ./scripts/qlat.sh
 ./scripts/grid.knl.sh
