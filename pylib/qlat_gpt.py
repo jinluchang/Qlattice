@@ -1,5 +1,5 @@
-import gpt as g
 import qlat as q
+import gpt as g
 import math
 
 import textwrap
