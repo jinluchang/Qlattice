@@ -16,7 +16,7 @@ if [ -z "\$prefix" ] ; then
     prefix="$prefix"
 fi
 if [ -z "\$num_proc" ] ; then
-    num_proc=8
+    num_proc=12
 fi
 export PYTHONPATH=
 CC_OLD="\$CC"
