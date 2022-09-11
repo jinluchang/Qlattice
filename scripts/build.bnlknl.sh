@@ -17,7 +17,7 @@ set -e
 
 # export USE_COMPILER=intel
 
-./scripts/openmpi.sh
+# ./scripts/openmpi.sh
 
 ./scripts/fftw_mpi.sh
 ./scripts/fftwf_mpi.sh

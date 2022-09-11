@@ -20,9 +20,9 @@ fi
 export PYTHONPATH=
 module purge
 module add gcc-7.1.0
-module add openmpi
+# module add openmpi
 # load intel libraries
-# source /dist/intel/parallel_studio_xe/parallel_studio_xe/psxevars.sh intel64
+source /dist/intel/parallel_studio_xe/parallel_studio_xe/psxevars.sh intel64
 module list
 if [ -z "\$USE_COMPILER" ] ; then
     export USE_COMPILER=gcc

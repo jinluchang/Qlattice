@@ -25,7 +25,7 @@ set -e
 ./scripts/automake.sh
 ./scripts/c-lime.sh
 
-./scripts/openmpi.sh
+# ./scripts/openmpi.sh
 
 ./scripts/fftw_mpi.sh
 ./scripts/fftwf_mpi.sh
