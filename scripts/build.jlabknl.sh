@@ -6,8 +6,6 @@ set -e
 
 ./scripts/setenv.jlabknl.sh
 
-# export USE_COMPILER=gcc
-
 ./scripts/xz.sh
 ./scripts/tar.sh
 ./scripts/gsl.sh
@@ -32,12 +30,8 @@ set -e
 ./scripts/c-lime.sh
 ./scripts/hdf5.sh
 
-# ./scripts/openmpi.sh
-
 ./scripts/fftw_mpi.sh
 ./scripts/fftwf_mpi.sh
-
-# export USE_COMPILER=intel
 
 ./scripts/qlat.sh
 ./scripts/grid.knl.sh
