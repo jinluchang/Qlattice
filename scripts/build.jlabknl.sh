@@ -24,6 +24,7 @@ set -e
 ./scripts/autoconf.sh
 ./scripts/automake.sh
 ./scripts/c-lime.sh
+./scripts/hdf5.sh
 
 # ./scripts/openmpi.sh
 
