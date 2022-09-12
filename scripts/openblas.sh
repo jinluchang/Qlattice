@@ -15,7 +15,7 @@ tar xaf $distfiles/$name-*
 
 cd $src_dir/$name-*
 
-make -j$num_proc -l$num_proc
+make MAKE_NB_JOBS=$num_proc
 make install PREFIX=$prefix
 
 cd $wd
