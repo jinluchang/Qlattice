@@ -24,11 +24,11 @@ load_path_list[:] = [
 @q.timer
 def run_job(job_tag, traj):
     fns_produce = [
-            f"eig/{job_tag}/traj={traj}",
-            f"eig-strange/{job_tag}/traj={traj}",
+            f"{job_tag}/eig/traj-{traj}",
+            f"{job_tag}/eig-strange/traj-{traj}",
             ]
     fns_need = [
-            (f"configs/{job_tag}/ckpoint_lat.{traj}", f"configs/{job_tag}/ckpoint_lat.IEEE64BIG.{traj}"),
+            (f"{job_tag}/configs/ckpoint_lat.{traj}", f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj}"),
             ]
     if not check_job(job_tag, traj, fns_produce, fns_need):
         return
