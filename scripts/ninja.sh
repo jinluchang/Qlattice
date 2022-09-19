@@ -6,23 +6,27 @@ name=ninja
 
 {
 
-echo "!!!! build $name !!!!"
+    time {
 
-rm -rf $src_dir || true
-mkdir -p $src_dir || true
-cd $src_dir
-tar xaf $distfiles/$name-*
+    echo "!!!! build $name !!!!"
 
-cd $name-*
+    rm -rf $src_dir || true
+    mkdir -p $src_dir || true
+    cd $src_dir
+    tar xaf $distfiles/$name-*
 
-python3 configure.py --bootstrap
+    cd $name-*
 
-mkdir -p $prefix/bin
-cp -pv ninja $prefix/bin
+    python3 configure.py --bootstrap
 
-cd $wd
-echo "!!!! $name build !!!!"
+    mkdir -p $prefix/bin
+    cp -pv ninja $prefix/bin
 
-rm -rf $temp_dir || true
+    cd $wd
+    echo "!!!! $name build !!!!"
+
+    rm -rf $temp_dir || true
+
+}
 
 } |& tee $prefix/log.$name.txt

@@ -21,6 +21,7 @@ export CXXFLAGS="$CXXFLAGS -fPIC"
 ./configure \
     --prefix=$prefix \
     --enable-mpi \
+    --enable-shared
 #    MPICC=cc \
 #     --enable-openmp
 

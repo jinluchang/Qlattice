@@ -11,6 +11,7 @@ set -e
 ./scripts/libffi.sh
 ./scripts/openblas.sh
 ./scripts/python.sh
+./scripts/python-meson.sh
 ./scripts/python-packages.sh
 
 } |& tee $prefix/log.build.txt

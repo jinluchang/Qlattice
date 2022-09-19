@@ -14,8 +14,6 @@ find ~/.cache/pip/wheels -type f || true
 
 opts="--verbose --no-index --no-cache-dir -f $distfiles/python-packages"
 
-pip3 install $opts --upgrade pip
-pip3 install $opts wheel
 pip3 install $opts psutil
 pip3 install $opts numpy
 pip3 install $opts sympy

@@ -6,32 +6,36 @@ name=gpt
 
 {
 
-echo "!!!! build $name !!!!"
+    time {
 
-mkdir -p "$prefix"/$name || true
+    echo "!!!! build $name !!!!"
 
-rsync -av --delete $distfiles/$name/ "$prefix"/$name/
+    mkdir -p "$prefix"/$name || true
 
-cd "$prefix/$name"
+    rsync -av --delete $distfiles/$name/ "$prefix"/$name/
 
-cd lib/cgpt
+    cd "$prefix/$name"
 
-echo "BASIS_SIZE(4)" > lib/basis_size.h
-echo "BASIS_SIZE(10)" >> lib/basis_size.h
-echo "BASIS_SIZE(30)" >> lib/basis_size.h
-echo "BASIS_SIZE(50)" >> lib/basis_size.h
+    cd lib/cgpt
 
-echo "SPIN(4)" > lib/spin_color.h
-echo "COLOR(3)" >> lib/spin_color.h
-echo "SPIN_COLOR(4,3)" >> lib/spin_color.h
+    echo "BASIS_SIZE(4)" > lib/basis_size.h
+    echo "BASIS_SIZE(10)" >> lib/basis_size.h
+    echo "BASIS_SIZE(30)" >> lib/basis_size.h
+    echo "BASIS_SIZE(50)" >> lib/basis_size.h
 
-./clean
+    echo "SPIN(4)" > lib/spin_color.h
+    echo "COLOR(3)" >> lib/spin_color.h
+    echo "SPIN_COLOR(4,3)" >> lib/spin_color.h
 
-./make "$prefix"/Grid/build "$num_proc"
+    ./clean
 
-cd $wd
-echo "!!!! $name build !!!!"
+    ./make "$prefix"/Grid/build "$num_proc"
 
-rm -rf $temp_dir || true
+    cd $wd
+    echo "!!!! $name build !!!!"
+
+    rm -rf $temp_dir || true
+
+}
 
 } |& tee $prefix/log.$name.txt

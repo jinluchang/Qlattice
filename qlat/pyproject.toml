@@ -1,0 +1,12 @@
+[build-system]
+build-backend = 'mesonpy'
+requires = [ 'meson-python', ]
+
+[project]
+name = 'qlat'
+dynamic = [ 'version', ]
+description = 'Qlattice'
+readme = 'README.md'
+license = { text = 'GPL-3.0-or-later' }
+keyword = [ 'qar', 'Timer', 'RngState' ]
+authors = [ { name = 'Luchang Jin', email = 'ljin.luchang@gmail.com' } ]

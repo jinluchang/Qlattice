@@ -6,28 +6,33 @@ name=gcc
 
 {
 
-echo "!!!! build $name !!!!"
+    time {
 
-rm -rf $src_dir || true
-mkdir -p $src_dir || true
-cd $src_dir
-tar xaf $distfiles/$name-*
+    echo "!!!! build $name !!!!"
 
-rm -rf $build_dir || true
-mkdir -p $build_dir || true
-cd $build_dir
+    rm -rf $src_dir || true
+    mkdir -p $src_dir || true
+    cd $src_dir
+    tar xaf $distfiles/$name-*
 
-$src_dir/$name-*/configure \
-    --prefix=$prefix \
-    --with-gmp=$prefix \
-    --with-mpfr --with-mpc \
-    --disable-multilib
-make -j$num_proc
-make install
+    rm -rf $build_dir || true
+    mkdir -p $build_dir || true
+    cd $build_dir
 
-cd $wd
-echo "!!!! $name build !!!!"
+    $src_dir/$name-*/configure \
+        --prefix=$prefix \
+        --with-gmp=$prefix \
+        --with-mpfr --with-mpc \
+        --disable-multilib
 
-rm -rf $temp_dir || true
+    make -j$num_proc
+    make install
+
+    cd $wd
+    echo "!!!! $name build !!!!"
+
+    rm -rf $temp_dir || true
+
+}
 
 } |& tee $prefix/log.$name.txt

@@ -1,23 +1,28 @@
 #!/bin/bash
 
-./scripts/qlat-header.sh
-
 . scripts/conf.sh
 
 name=qlat
 
 {
 
-echo "!!!! build $name !!!!"
+    time {
 
-mkdir -pv $prefix/pylib
-rm -rfv $prefix/pylib/cqlat
-cp -rpv pylib/cqlat $prefix/pylib/
+    echo "!!!! build $name !!!!"
 
-time make -C $prefix/pylib/cqlat -j $num_proc
+    build="$prefix/build-qlat"
+    mkdir -p "$build"
 
-echo "!!!! $name build !!!!"
+    cd "$build"
 
-rm -rf $temp_dir || true
+    meson "$wd/qlat" --prefix="$prefix"
+    ninja -j$num_proc
+    ninja install
+
+    echo "!!!! $name build !!!!"
+
+    rm -rf $temp_dir || true
+
+}
 
 } |& tee $prefix/log.$name.txt

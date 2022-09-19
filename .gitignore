@@ -1,2 +1,5 @@
+/distfiles
+/projects
 .path
-distfiles
+.transfer
+cmd*

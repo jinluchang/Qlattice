@@ -21,9 +21,10 @@ set -e
 ./scripts/zlib.sh
 ./scripts/openblas.sh
 ./scripts/python.sh
+./scripts/python-meson.sh
 ./scripts/python-packages.sh
+
 ./scripts/re2c.sh
-./scripts/ninja.sh
 ./scripts/llvm-project.sh
 
 ./scripts/openmpi.sh

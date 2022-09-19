@@ -22,6 +22,7 @@ export CXXFLAGS="$CXXFLAGS -fPIC"
     --prefix=$prefix \
     --enable-float \
     --enable-mpi \
+    --enable-shared
 #    MPICC=cc
 #     --enable-openmp
 

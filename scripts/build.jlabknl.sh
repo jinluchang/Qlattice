@@ -19,21 +19,26 @@ set -e
 ./scripts/libffi.sh
 ./scripts/zlib.sh
 ./scripts/openblas.sh
+./scripts/cmake.sh
 ./scripts/python.sh
+./scripts/python-pip.sh
+./scripts/python-meson.sh
 ./scripts/python-packages.sh
 
 ./scripts/cuba.sh
 ./scripts/zlib.sh
 ./scripts/eigen.sh
-./scripts/autoconf.sh
-./scripts/automake.sh
-./scripts/c-lime.sh
-./scripts/hdf5.sh
 
 ./scripts/fftw_mpi.sh
 ./scripts/fftwf_mpi.sh
 
+./scripts/qlat-utils.sh
 ./scripts/qlat.sh
+
+./scripts/autoconf.sh
+./scripts/automake.sh
+./scripts/c-lime.sh
+./scripts/hdf5.sh
 ./scripts/grid.knl.sh
 ./scripts/gpt.sh
 

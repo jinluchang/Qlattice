@@ -20,6 +20,9 @@ set -e
 ./scripts/zlib.sh
 ./scripts/openblas.sh
 ./scripts/python.sh
+./scripts/python-pip.sh
+./scripts/ninja.sh
+./scripts/python-meson.sh
 ./scripts/python-packages.sh
 
 ./scripts/openmpi.sh
@@ -28,6 +31,7 @@ set -e
 ./scripts/fftwf_mpi.sh
 ./scripts/cuba.sh
 ./scripts/eigen.sh
+./scripts/qlat-utils.sh
 ./scripts/qlat.sh
 
 ./scripts/autoconf.sh

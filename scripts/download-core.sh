@@ -12,7 +12,7 @@ dget() {
     if [ -f "$name" ] ; then
         echo "$name is downloaded"
     else
-        wget -O "$name" -c "$url"
+        wget --no-check-certificate -O "$name" -c "$url"
     fi
 }
 

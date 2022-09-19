@@ -5,6 +5,10 @@ echo "num_proc=$num_proc"
 
 export QLAT_PREFIX="$prefix"
 
+if [ -z "$USE_COMPILER" ] ; then
+    export USE_COMPILER=gcc
+fi
+
 if [ -z "$CC" ] ; then
     export CC=CC.sh
 fi
@@ -74,7 +78,7 @@ organize-colon-list() {
 }
 
 add-to-colon-list PATH "$prefix/bin"
-add-to-colon-list PYTHONPATH "$prefix/pylib"
+add-to-colon-list PYTHONPATH "$prefix/lib/python3/dist-packages"
 add-to-colon-list PYTHONPATH "$prefix/gpt/lib"
 add-to-colon-list PYTHONPATH "$prefix/gpt/lib/cgpt/build"
 add-to-colon-list LD_LIBRARY_PATH "$prefix/lib"

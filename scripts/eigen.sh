@@ -16,6 +16,7 @@ tar xaf $distfiles/$name-*
 rm -rf $build_dir
 mkdir -p $build_dir
 cd $build_dir
+
 # cmake \
 #  -DCMAKE_INSTALL_PREFIX=$prefix \
 #  $src_dir/$name-*

@@ -6,61 +6,65 @@ name=Grid
 
 {
 
-echo "!!!! build $name !!!!"
+    time {
 
-mkdir -p "$prefix"/$name || true
+    echo "!!!! build $name !!!!"
 
-# rsync -av --delete $distfiles/$name/ "$prefix"/$name/
-rsync -av --delete $distfiles/$name-lehner/ "$prefix"/$name/
+    mkdir -p "$prefix"/$name || true
 
-cd "$prefix/$name"
+    # rsync -av --delete $distfiles/$name/ "$prefix"/$name/
+    rsync -av --delete $distfiles/$name-lehner/ "$prefix"/$name/
 
-INITDIR="$(pwd)"
-rm -rfv "${INITDIR}/Eigen/Eigen/unsupported"
-rm -rfv "${INITDIR}/Grid/Eigen"
-ln -vs "${INITDIR}/Eigen/Eigen" "${INITDIR}/Grid/Eigen"
-ln -vs "${INITDIR}/Eigen/unsupported/Eigen" "${INITDIR}/Grid/Eigen/unsupported"
+    cd "$prefix/$name"
 
-export CC=
-export CXX=nvcc
-export CFLAGS=
-export CXXFLAGS="-Xcompiler -fPIC -ccbin mpicxx -gencode arch=compute_70,code=sm_70 -std=c++14"
-export LDFLAGS="-Xcompiler -fopenmp"
-export LIBS=
-export MPICXX=
-export MPICC=
+    INITDIR="$(pwd)"
+    rm -rfv "${INITDIR}/Eigen/Eigen/unsupported"
+    rm -rfv "${INITDIR}/Grid/Eigen"
+    ln -vs "${INITDIR}/Eigen/Eigen" "${INITDIR}/Grid/Eigen"
+    ln -vs "${INITDIR}/Eigen/unsupported/Eigen" "${INITDIR}/Grid/Eigen/unsupported"
 
-mkdir build
-cd build
-../configure \
-    --enable-simd=GPU \
-    --enable-gen-simd-width=32 \
-    --enable-alloc-align=4k \
-    --enable-comms=mpi \
-    --enable-unified=no \
-    --enable-accelerator=cuda \
-    --enable-accelerator-cshift \
-    --enable-gparity=no \
-    --disable-fermion-reps \
-    --with-lime="$prefix" \
-    --with-fftw="$prefix" \
-    --with-gmp="$prefix" \
-    --with-mpfr="$prefix" \
-    --with-hdf5="$prefix" \
-    --with-openssl="$prefix" \
-    --prefix=$prefix
+    export CC=
+    export CXX=nvcc
+    export CFLAGS=
+    export CXXFLAGS="-Xcompiler -fPIC -ccbin mpicxx -gencode arch=compute_70,code=sm_70 -std=c++14"
+    export LDFLAGS="-Xcompiler -fopenmp"
+    export LIBS=
+    export MPICXX=
+    export MPICC=
+
+    mkdir build
+    cd build
+    ../configure \
+        --enable-simd=GPU \
+        --enable-gen-simd-width=32 \
+        --enable-alloc-align=4k \
+        --enable-comms=mpi \
+        --enable-unified=no \
+        --enable-accelerator=cuda \
+        --enable-accelerator-cshift \
+        --enable-gparity=no \
+        --disable-fermion-reps \
+        --with-lime="$prefix" \
+        --with-fftw="$prefix" \
+        --with-gmp="$prefix" \
+        --with-mpfr="$prefix" \
+        --with-hdf5="$prefix" \
+        --with-openssl="$prefix" \
+        --prefix=$prefix
 
     # --enable-shm=nvlink \
     # --enable-setdevice \
 
     # --enable-shm=shmopen \
 
-make -j$num_proc
-make install
+    make -j$num_proc
+    make install
 
-cd $wd
-echo "!!!! $name build !!!!"
+    cd $wd
+    echo "!!!! $name build !!!!"
 
-rm -rf $temp_dir || true
+    rm -rf $temp_dir || true
+
+}
 
 } |& tee $prefix/log.$name.txt

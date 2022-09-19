@@ -1,0 +1,4 @@
+Hello world!
+Timer::display-start:  (level=0) fname : time% number of calls; Avg,Tot sec; Avg,Tot flops; Gflops
+Timer::display                                        hello_world :  0.007%        1 calls; 1.22E-05,1.22E-05 sec; 0.00E+00,0.00E+00 flops;  0.00 Gflops
+Timer::display-end:    (level=0) --------------------- total 1.7339E-01 sec ----------------------
