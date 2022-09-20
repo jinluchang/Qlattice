@@ -35,7 +35,7 @@ eigen = dependency('eigen3', required: false)
 
 qutils = dependency('qlat-utils')
 
-deps = [ omp, eigen, qutils, fftw_mpi, fftwf_mpi, fftw, fftwf, mpic, zlib, math, ]
+deps = [ omp, py3.dependency(), eigen, qutils, fftw_mpi, fftwf_mpi, fftw, fftwf, mpic, zlib, math, ]
 
 c = run_command('bash', '-c', 'ls "$MESON_SOURCE_ROOT"/include/qlat/*.h', check: true)
 headers = c.stdout().strip().split('\n')

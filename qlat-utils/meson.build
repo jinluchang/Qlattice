@@ -21,7 +21,7 @@ message(py3.get_install_dir())
 
 omp = dependency('openmp')
 
-deps = [ omp ]
+deps = [ omp, py3.dependency() ]
 
 c = run_command('bash', '-c', 'ls $MESON_SOURCE_ROOT/include/qutils/*.h', check: true)
 headers = c.stdout().strip().split('\n')

@@ -24,7 +24,7 @@ mpic = dependency('mpi', language: 'cpp')
 
 qlat = dependency('qlat', method: 'pkg-config')
 
-deps = [ omp, mpic, qlat ]
+deps = [ omp, py3.dependency(), mpic, qlat ]
 
 c = run_command('bash', '-c', 'ls "$MESON_SOURCE_ROOT"/pylib/cqlat_ext/*.cpp', check: true)
 sources = c.stdout().strip().split('\n')
