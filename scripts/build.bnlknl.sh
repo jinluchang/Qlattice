@@ -19,9 +19,9 @@ set -e
 ./scripts/libffi.sh
 ./scripts/zlib.sh
 ./scripts/openblas.sh
-./scripts/cmake.sh
 ./scripts/python.sh
 ./scripts/python-pip.sh
+./scripts/ninja.sh
 ./scripts/python-meson.sh
 ./scripts/python-packages.sh
 

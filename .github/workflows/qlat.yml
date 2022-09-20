@@ -42,13 +42,14 @@ jobs:
     - name: Testing qlat
       run: |
         source $HOME/qlat-build/default/setenv.sh
+        make -C examples-cpp clean-logs || echo Failed
         make -C examples-cpp run || echo Failed
 
     - name: Testing pylib qlat
       run: |
         source $HOME/qlat-build/default/setenv.sh
-        make -C pylib/examples clean-logs || echo Failed
-        make -C pylib/examples || echo Failed
+        make -C examples-py clean-logs || echo Failed
+        make -C examples-py || echo Failed
 
     - name: Show git diff
       run: |

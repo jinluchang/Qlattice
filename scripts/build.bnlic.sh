@@ -13,6 +13,8 @@ set -e
 ./scripts/cuba.sh
 ./scripts/zlib.sh
 ./scripts/eigen.sh
+./scripts/ninja.sh
+./scripts/python-meson.sh
 
 ./scripts/qlat-utils.sh
 ./scripts/qlat.sh

@@ -42,6 +42,7 @@ jobs:
     - name: Testing qlat
       run: |
         source $HOME/qlat-build/default/setenv.sh
+        make -C examples-cpp clean-logs || echo Failed
         make -C examples-cpp run || echo Failed
 
     - name: Testing pylib qlat-gpt
