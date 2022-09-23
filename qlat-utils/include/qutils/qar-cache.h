@@ -590,4 +590,195 @@ inline int qappend(const std::string& path, const std::string& content)
   return 0;
 }
 
+// -------------------
+
+typedef std::vector<std::vector<double> > DataTable;
+
+inline DataTable qload_datatable(QFile& qfile)
+{
+  TIMER("qload_datatable(qfile)");
+  DataTable ret;
+  while (not qfeof(qfile)) {
+    const std::string line = qgetline(qfile);
+    if (line.length() > 0 && line[0] != '#') {
+      const std::vector<double> xs = read_doubles(line);
+      if (xs.size() > 0) {
+        ret.push_back(xs);
+      }
+    }
+  }
+  return ret;
+}
+
+inline DataTable qload_datatable_par(QFile& qfile)
+{
+  TIMER("qload_datatable(qfile)");
+  const size_t line_buf_size = 1024;
+  DataTable ret;
+  std::vector<std::string> lines;
+  DataTable xss;
+  while (not qfeof(qfile)) {
+    lines.clear();
+    for (size_t i = 0; i < line_buf_size; ++i) {
+      lines.push_back(qgetline(qfile));
+      if (qfeof(qfile)) {
+        break;
+      }
+    }
+    xss.resize(lines.size());
+#pragma omp parallel for
+    for (size_t i = 0; i < lines.size(); ++i) {
+      const std::string& line = lines[i];
+      if (line.length() > 0 && line[0] != '#') {
+        xss[i] = read_doubles(line);
+      } else {
+        clear(xss[i]);
+      }
+    }
+    for (size_t i = 0; i < xss.size(); ++i) {
+      if (xss[i].size() > 0) {
+        ret.push_back(xss[i]);
+      }
+    }
+  }
+  return ret;
+}
+
+inline DataTable qload_datatable_serial(const std::string& path)
+{
+  TIMER("qload_datatable_serial(path)");
+  if (not does_file_exist_qar(path)) {
+    return DataTable();
+  }
+  QFile qfile = qfopen(path, "r");
+  qassert(not qfile.null());
+  DataTable ret = qload_datatable(qfile);
+  qfile.close();
+  return ret;
+}
+
+inline DataTable qload_datatable_par(const std::string& path)
+{
+  TIMER("qload_datatable_par(path)");
+  if (not does_file_exist_qar(path)) {
+    return DataTable();
+  }
+  QFile qfile = qfopen(path, "r");
+  qassert(not qfile.null());
+  DataTable ret = qload_datatable_par(qfile);
+  qfile.close();
+  return ret;
+}
+
+inline DataTable qload_datatable(const std::string& path, const bool is_par = false)
+{
+  if (is_par) {
+    return qload_datatable_par(path);
+  } else {
+    return qload_datatable_serial(path);
+  }
+}
+
+// -------------------
+
+inline std::string qcat_info(const std::string& path)
+{
+  TIMER("qcat_info");
+  if (0 == get_id_node()) {
+    return qcat(path);
+  } else {
+    return std::string();
+  }
+}
+
+inline std::string show_file_crc32(const std::pair<std::string, crc32_t>& fcrc)
+{
+  return ssprintf("%08X  fn='%s'", fcrc.second, fcrc.first.c_str());
+}
+
+inline std::string show_files_crc32(
+    const std::vector<std::pair<std::string, crc32_t> >& fcrcs)
+{
+  std::ostringstream out;
+  for (long i = 0; i < (long)fcrcs.size(); ++i) {
+    out << ssprintf("%5ld ", i) << show_file_crc32(fcrcs[i]) << std::endl;
+  }
+  return out.str();
+}
+
+inline std::pair<std::string, crc32_t> check_file_crc32(const std::string& fn)
+{
+  TIMER_VERBOSE("check_file_crc32");
+  std::pair<std::string, crc32_t> p;
+  p.first = fn;
+  p.second = compute_crc32(fn);
+  displayln_info(show_file_crc32(p));
+  return p;
+}
+
+inline void check_all_files_crc32_aux(
+    std::vector<std::pair<std::string, crc32_t> >& acc, const std::string& path)
+{
+  if (not is_directory(path)) {
+    acc.push_back(check_file_crc32(path));
+  } else {
+    const std::vector<std::string> paths = qls_aux(path);
+    for (long i = 0; i < (long)paths.size(); ++i) {
+      check_all_files_crc32_aux(acc, paths[i]);
+    }
+  }
+}
+
+inline std::vector<std::pair<std::string, crc32_t> > check_all_files_crc32(
+    const std::string& path)
+{
+  TIMER_VERBOSE("check_all_files_crc32");
+  std::vector<std::pair<std::string, crc32_t> > ret;
+  check_all_files_crc32_aux(ret, remove_trailing_slashes(path));
+  return ret;
+}
+
+inline void check_all_files_crc32_info(const std::string& path)
+// interface function
+{
+  TIMER_VERBOSE("check_all_files_crc32_info");
+  if (0 == get_id_node()) {
+    displayln(fname + ssprintf(": start checking path='%s'", path.c_str()));
+    std::vector<std::pair<std::string, crc32_t> > fcrcs;
+    fcrcs = check_all_files_crc32(path);
+    displayln(fname + ssprintf(": summary for path='%s'", path.c_str()));
+    display(show_files_crc32(fcrcs));
+  }
+}
+
+inline int qtouch_info(const std::string& path)
+{
+  TIMER("qtouch_info");
+  if (0 == get_id_node()) {
+    return qtouch(path);
+  } else {
+    return 0;
+  }
+}
+
+inline int qtouch_info(const std::string& path, const std::string& content)
+{
+  TIMER("qtouch_info");
+  if (0 == get_id_node()) {
+    return qtouch(path, content);
+  } else {
+    return 0;
+  }
+}
+
+inline int qappend_info(const std::string& path, const std::string& content)
+{
+  TIMER("qappend_info");
+  if (0 == get_id_node()) {
+    return qappend(path, content);
+  } else {
+    return 0;
+  }
+}
+
 }  // namespace qlat

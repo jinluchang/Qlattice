@@ -613,6 +613,16 @@ inline void print(const LatData& ld)
   }
 }
 
+// -------------------
+
+inline void lat_data_save_info(const std::string& path, const LatData& ld)
+{
+  TIMER("lat_data_save_info");
+  if (get_id_node() == 0) {
+    ld.save(path);
+  }
+}
+
 }  // namespace qlat
 
 #ifndef USE_NAMESPACE

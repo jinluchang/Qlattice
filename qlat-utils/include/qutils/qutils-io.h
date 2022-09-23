@@ -422,4 +422,58 @@ long qread_data(const Vector<M>& v, FILE* fp)
   return sizeof(M) * std::fread((void*)v.p, sizeof(M), v.n, fp);
 }
 
+inline int qmkdir_info(const std::string& path,
+                       const mode_t mode = default_dir_mode())
+{
+  TIMER("qmkdir_info");
+  if (0 == get_id_node()) {
+    return qmkdir(path, mode);
+  } else {
+    return 0;
+  }
+}
+
+inline void switch_monitor_file_info(const std::string& path)
+{
+  if (0 == get_id_node()) {
+    switch_monitor_file(path);
+  }
+}
+
+inline void qset_fully_buf(FILE* f)
+{
+  TIMER("qset_fully_buf");
+  std::setvbuf(f, NULL, _IOFBF, BUFSIZ);
+}
+
+inline FILE* qopen_info(const std::string& path, const std::string& mode)
+{
+  TIMER("qopen_info");
+  if (0 == get_id_node()) {
+    FILE* f = qopen(path, mode);
+    qassert(f != NULL);
+    qset_line_buf(f);
+    return f;
+  } else {
+    return NULL;
+  }
+}
+
+inline int qclose_info(FILE*& file)
+{
+  TIMER("qclose_info");
+  return qclose(file);
+}
+
+inline int qrename_info(const std::string& old_path,
+                        const std::string& new_path)
+{
+  TIMER("qrename_info");
+  if (0 == get_id_node()) {
+    return qrename(old_path, new_path);
+  } else {
+    return 0;
+  }
+}
+
 }  // namespace qlat

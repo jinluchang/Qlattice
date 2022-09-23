@@ -206,17 +206,6 @@ inline bool check_status()
   return false;
 }
 
-inline int qmkdir_info(const std::string& path,
-                       const mode_t mode = default_dir_mode())
-{
-  TIMER("qmkdir_info");
-  if (0 == get_id_node()) {
-    return qmkdir(path, mode);
-  } else {
-    return 0;
-  }
-}
-
 inline int qmkdir_sync_node(const std::string& path,
                             const mode_t mode = default_dir_mode())
 {
@@ -341,142 +330,6 @@ inline int qcopy_file_info(const std::string& path_src, const std::string& path_
   return ret;
 }
 
-inline std::string show_file_crc32(const std::pair<std::string, crc32_t>& fcrc)
-{
-  return ssprintf("%08X  fn='%s'", fcrc.second, fcrc.first.c_str());
-}
-
-inline std::string show_files_crc32(
-    const std::vector<std::pair<std::string, crc32_t> >& fcrcs)
-{
-  std::ostringstream out;
-  for (long i = 0; i < (long)fcrcs.size(); ++i) {
-    out << ssprintf("%5ld ", i) << show_file_crc32(fcrcs[i]) << std::endl;
-  }
-  return out.str();
-}
-
-inline std::pair<std::string, crc32_t> check_file_crc32(const std::string& fn)
-{
-  TIMER_VERBOSE("check_file_crc32");
-  std::pair<std::string, crc32_t> p;
-  p.first = fn;
-  p.second = compute_crc32(fn);
-  displayln_info(show_file_crc32(p));
-  return p;
-}
-
-inline void check_all_files_crc32_aux(
-    std::vector<std::pair<std::string, crc32_t> >& acc, const std::string& path)
-{
-  if (not is_directory(path)) {
-    acc.push_back(check_file_crc32(path));
-  } else {
-    const std::vector<std::string> paths = qls_aux(path);
-    for (long i = 0; i < (long)paths.size(); ++i) {
-      check_all_files_crc32_aux(acc, paths[i]);
-    }
-  }
-}
-
-inline std::vector<std::pair<std::string, crc32_t> > check_all_files_crc32(
-    const std::string& path)
-{
-  TIMER_VERBOSE("check_all_files_crc32");
-  std::vector<std::pair<std::string, crc32_t> > ret;
-  check_all_files_crc32_aux(ret, remove_trailing_slashes(path));
-  return ret;
-}
-
-inline void check_all_files_crc32_info(const std::string& path)
-// interface function
-{
-  TIMER_VERBOSE("check_all_files_crc32_info");
-  if (0 == get_id_node()) {
-    displayln(fname + ssprintf(": start checking path='%s'", path.c_str()));
-    std::vector<std::pair<std::string, crc32_t> > fcrcs;
-    fcrcs = check_all_files_crc32(path);
-    displayln(fname + ssprintf(": summary for path='%s'", path.c_str()));
-    display(show_files_crc32(fcrcs));
-  }
-}
-
-inline void qset_fully_buf(FILE* f)
-{
-  TIMER("qset_fully_buf");
-  std::setvbuf(f, NULL, _IOFBF, BUFSIZ);
-}
-
-inline FILE* qopen_info(const std::string& path, const std::string& mode)
-{
-  TIMER("qopen_info");
-  if (0 == get_id_node()) {
-    FILE* f = qopen(path, mode);
-    qassert(f != NULL);
-    qset_line_buf(f);
-    return f;
-  } else {
-    return NULL;
-  }
-}
-
-inline int qclose_info(FILE*& file)
-{
-  TIMER("qclose_info");
-  return qclose(file);
-}
-
-inline int qrename_info(const std::string& old_path,
-                        const std::string& new_path)
-{
-  TIMER("qrename_info");
-  if (0 == get_id_node()) {
-    return qrename(old_path, new_path);
-  } else {
-    return 0;
-  }
-}
-
-inline int qtouch_info(const std::string& path)
-{
-  TIMER("qtouch_info");
-  if (0 == get_id_node()) {
-    return qtouch(path);
-  } else {
-    return 0;
-  }
-}
-
-inline int qtouch_info(const std::string& path, const std::string& content)
-{
-  TIMER("qtouch_info");
-  if (0 == get_id_node()) {
-    return qtouch(path, content);
-  } else {
-    return 0;
-  }
-}
-
-inline int qappend_info(const std::string& path, const std::string& content)
-{
-  TIMER("qappend_info");
-  if (0 == get_id_node()) {
-    return qappend(path, content);
-  } else {
-    return 0;
-  }
-}
-
-inline std::string qcat_info(const std::string& path)
-{
-  TIMER("qcat_info");
-  if (0 == get_id_node()) {
-    return qcat(path);
-  } else {
-    return std::string();
-  }
-}
-
 inline std::string qcat_sync_node(const std::string& path)
 {
   TIMER("qcat_sync_node");
@@ -486,13 +339,6 @@ inline std::string qcat_sync_node(const std::string& path)
   }
   bcast(ret);
   return ret;
-}
-
-inline void switch_monitor_file_info(const std::string& path)
-{
-  if (0 == get_id_node()) {
-    switch_monitor_file(path);
-  }
 }
 
 API inline std::string& get_lock_location()
@@ -610,93 +456,6 @@ inline void release_lock_all_node()
   }
 }
 
-typedef std::vector<std::vector<double> > DataTable;
-
-inline DataTable qload_datatable(QFile& qfile)
-{
-  TIMER("qload_datatable(qfile)");
-  DataTable ret;
-  while (not qfeof(qfile)) {
-    const std::string line = qgetline(qfile);
-    if (line.length() > 0 && line[0] != '#') {
-      const std::vector<double> xs = read_doubles(line);
-      if (xs.size() > 0) {
-        ret.push_back(xs);
-      }
-    }
-  }
-  return ret;
-}
-
-inline DataTable qload_datatable_par(QFile& qfile)
-{
-  TIMER("qload_datatable(qfile)");
-  const size_t line_buf_size = 1024;
-  DataTable ret;
-  std::vector<std::string> lines;
-  DataTable xss;
-  while (not qfeof(qfile)) {
-    lines.clear();
-    for (size_t i = 0; i < line_buf_size; ++i) {
-      lines.push_back(qgetline(qfile));
-      if (qfeof(qfile)) {
-        break;
-      }
-    }
-    xss.resize(lines.size());
-#pragma omp parallel for
-    for (size_t i = 0; i < lines.size(); ++i) {
-      const std::string& line = lines[i];
-      if (line.length() > 0 && line[0] != '#') {
-        xss[i] = read_doubles(line);
-      } else {
-        clear(xss[i]);
-      }
-    }
-    for (size_t i = 0; i < xss.size(); ++i) {
-      if (xss[i].size() > 0) {
-        ret.push_back(xss[i]);
-      }
-    }
-  }
-  return ret;
-}
-
-inline DataTable qload_datatable_serial(const std::string& path)
-{
-  TIMER("qload_datatable_serial(path)");
-  if (not does_file_exist_qar(path)) {
-    return DataTable();
-  }
-  QFile qfile = qfopen(path, "r");
-  qassert(not qfile.null());
-  DataTable ret = qload_datatable(qfile);
-  qfile.close();
-  return ret;
-}
-
-inline DataTable qload_datatable_par(const std::string& path)
-{
-  TIMER("qload_datatable_par(path)");
-  if (not does_file_exist_qar(path)) {
-    return DataTable();
-  }
-  QFile qfile = qfopen(path, "r");
-  qassert(not qfile.null());
-  DataTable ret = qload_datatable_par(qfile);
-  qfile.close();
-  return ret;
-}
-
-inline DataTable qload_datatable(const std::string& path, const bool is_par = false)
-{
-  if (is_par) {
-    return qload_datatable_par(path);
-  } else {
-    return qload_datatable_serial(path);
-  }
-}
-
 inline DataTable qload_datatable_sync_node(const std::string& path, const bool is_par = false)
 {
   TIMER_VERBOSE("qload_datatable_sync_node");
@@ -717,14 +476,6 @@ inline LatData lat_data_load_info(const std::string& path)
   }
   bcast(ld);
   return ld;
-}
-
-inline void lat_data_save_info(const std::string& path, const LatData& ld)
-{
-  TIMER("lat_data_save_info");
-  if (get_id_node() == 0) {
-    ld.save(path);
-  }
 }
 
 }  // namespace qlat
