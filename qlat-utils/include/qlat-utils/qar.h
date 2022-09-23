@@ -1,8 +1,8 @@
 #pragma once
 
 #include <stdint.h>
-#include <qutils/qutils-vec.h>
-#include <qutils/qutils-io.h>
+#include <qlat-utils/qutils-vec.h>
+#include <qlat-utils/qutils-io.h>
 
 #include <cassert>
 #include <string>

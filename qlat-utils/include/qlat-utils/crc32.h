@@ -6,9 +6,9 @@
 
 #include <zlib.h>
 
-#include <qutils/show.h>
-#include <qutils/qutils.h>
-#include <qutils/qutils-vec.h>
+#include <qlat-utils/show.h>
+#include <qlat-utils/qutils.h>
+#include <qlat-utils/qutils-vec.h>
 
 namespace qlat
 {  //

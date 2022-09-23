@@ -18,8 +18,8 @@
 
 #pragma once
 
-#include <qutils/sha256.h>
-#include <qutils/show.h>
+#include <qlat-utils/sha256.h>
+#include <qlat-utils/show.h>
 #include <stdint.h>
 
 #include <climits>

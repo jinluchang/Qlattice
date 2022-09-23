@@ -1,6 +1,6 @@
 #include "lib.h"
 
-#include <qutils/cache.h>
+#include <qlat-utils/cache.h>
 
 EXPORT(random_permute, {
   using namespace qlat;

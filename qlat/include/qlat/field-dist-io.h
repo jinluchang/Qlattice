@@ -6,7 +6,7 @@
 #include <qlat/field-shuffle.h>
 #include <qlat/utils-io.h>
 #include <qlat/utils.h>
-#include <qutils/qar-cache.h>
+#include <qlat-utils/qar-cache.h>
 
 namespace qlat
 {  //

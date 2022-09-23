@@ -4,7 +4,7 @@
 #include <qlat/geometry.h>
 #include <qlat/mpi.h>
 #include <qlat/utils.h>
-#include <qutils/vector.h>
+#include <qlat-utils/vector.h>
 
 #include <ctime>
 #include <fstream>

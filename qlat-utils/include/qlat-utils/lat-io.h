@@ -1,12 +1,12 @@
 #pragma once
 
 #include <omp.h>
-#include <qutils/crc32.h>
-#include <qutils/qutils-io.h>
-#include <qutils/qutils.h>
-#include <qutils/show.h>
-#include <qutils/qar.h>
-#include <qutils/qar-cache.h>
+#include <qlat-utils/crc32.h>
+#include <qlat-utils/qutils-io.h>
+#include <qlat-utils/qutils.h>
+#include <qlat-utils/show.h>
+#include <qlat-utils/qar.h>
+#include <qlat-utils/qar-cache.h>
 #include <stdint.h>
 #include <zlib.h>
 

@@ -6,8 +6,8 @@
 #include <set>
 #include <utility>
 
-#include <qutils/timer.h>
-#include <qutils/vector.h>
+#include <qlat-utils/timer.h>
+#include <qlat-utils/vector.h>
 
 namespace qlat
 {  //

@@ -23,9 +23,9 @@ omp = dependency('openmp')
 
 deps = [ omp, py3.dependency() ]
 
-c = run_command('bash', '-c', 'ls $MESON_SOURCE_ROOT/include/qutils/*.h', check: true)
+c = run_command('bash', '-c', 'ls $MESON_SOURCE_ROOT/include/qlat-utils/*.h', check: true)
 headers = c.stdout().strip().split('\n')
-install_headers(headers, subdir: 'qutils')
+install_headers(headers, subdir: 'qlat-utils')
 
 c = run_command('bash', '-c', 'ls $MESON_SOURCE_ROOT/pylib/cqlat_utils/*.cpp', check: true)
 sources = c.stdout().strip().split('\n')

@@ -1,7 +1,7 @@
 #pragma once
 
-#include <qutils/qar.h>
-#include <qutils/cache.h>
+#include <qlat-utils/qar.h>
+#include <qlat-utils/cache.h>
 
 namespace qlat
 {  //

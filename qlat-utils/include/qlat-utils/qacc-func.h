@@ -3,8 +3,8 @@
 // From https://github.com/paboyle/Grid/blob/develop/Grid/threads/Accelerator.h
 // Orignal author: Peter Boyle <paboyle@ph.ed.ac.uk>
 
-#include <qutils/qacc.h>
-#include <qutils/qutils-io.h>
+#include <qlat-utils/qacc.h>
+#include <qlat-utils/qutils-io.h>
 
 namespace qlat
 {  //

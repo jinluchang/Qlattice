@@ -6,7 +6,7 @@
 
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
-#include <qutils/py_convert.h>
+#include <qlat-utils/py_convert.h>
 
 #define EXPORT(name, ...)                                       \
                                                                 \

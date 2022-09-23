@@ -1,8 +1,8 @@
 #pragma once
 
-#include <qutils/qutils-vec.h>
-#include <qutils/qutils.h>
-#include <qutils/timer.h>
+#include <qlat-utils/qutils-vec.h>
+#include <qlat-utils/qutils.h>
+#include <qlat-utils/timer.h>
 #include <signal.h>
 #include <stdlib.h>
 #include <sys/stat.h>

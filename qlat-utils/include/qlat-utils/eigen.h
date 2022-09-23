@@ -1,6 +1,6 @@
 #pragma once
 
-#include <qutils/complex.h>
+#include <qlat-utils/complex.h>
 
 #ifdef QLAT_GRID
 

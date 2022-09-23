@@ -2,7 +2,7 @@
 
 #include <cassert>
 
-#include <qutils/qacc.h>
+#include <qlat-utils/qacc.h>
 
 namespace qlat
 {  //

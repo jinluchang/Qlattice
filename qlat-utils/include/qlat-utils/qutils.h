@@ -1,9 +1,9 @@
 #pragma once
 
-#include <qutils/array.h>
-#include <qutils/complex.h>
-#include <qutils/show.h>
-#include <qutils/timer.h>
+#include <qlat-utils/array.h>
+#include <qlat-utils/complex.h>
+#include <qlat-utils/show.h>
+#include <qlat-utils/timer.h>
 
 #include <vector>
 #include <map>

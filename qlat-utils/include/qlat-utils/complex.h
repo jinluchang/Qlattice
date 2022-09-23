@@ -1,6 +1,6 @@
 #pragma once
 
-#include <qutils/qacc.h>
+#include <qlat-utils/qacc.h>
 #include <complex>
 
 #ifdef QLAT_USE_ACC

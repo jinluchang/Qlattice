@@ -1,7 +1,7 @@
 #pragma once
 
-#include <qutils/qutils-vec.h>
-#include <qutils/qutils.h>
+#include <qlat-utils/qutils-vec.h>
+#include <qlat-utils/qutils.h>
 
 #include <cstdlib>
 #include <stdlib.h>

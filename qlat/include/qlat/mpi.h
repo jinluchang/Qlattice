@@ -3,7 +3,7 @@
 #include <qlat/config.h>
 #include <qlat/utils-coordinate.h>
 #include <qlat/utils.h>
-#include <qutils/cache.h>
+#include <qlat-utils/cache.h>
 
 #include <malloc.h>
 

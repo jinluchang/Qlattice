@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <qutils/cache.h>
+#include <qlat-utils/cache.h>
 #include <qlat/config.h>
 #include <qlat/selected-field.h>
 #include <qlat/utils.h>
