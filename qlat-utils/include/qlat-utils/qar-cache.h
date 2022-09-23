@@ -2,6 +2,7 @@
 
 #include <qlat-utils/qar.h>
 #include <qlat-utils/cache.h>
+#include <qlat-utils/crc32.h>
 
 namespace qlat
 {  //

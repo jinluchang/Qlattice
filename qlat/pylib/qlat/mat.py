@@ -1,4 +1,4 @@
-import cqlat as c
+import qlat.cqlat as c
 
 import numpy as np
 

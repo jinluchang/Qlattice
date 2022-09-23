@@ -1,6 +1,6 @@
-import cqlat as c
+import qlat.cqlat as c
 
-from cqlat import get_qar_multi_vol_max_size
+from qlat.cqlat import get_qar_multi_vol_max_size
 
 from qlat_utils import *
 

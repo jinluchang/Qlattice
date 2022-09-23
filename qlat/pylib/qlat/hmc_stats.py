@@ -1,4 +1,4 @@
-import cqlat as c
+import qlat.cqlat as c
 
 from qlat.hmc import *
 from qlat.utils_io import *

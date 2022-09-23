@@ -1,7 +1,7 @@
-import cqlat as c
+import qlat.cqlat as c
 
-from cqlat import get_size_node, get_coor_node
-from cqlat import sync_node
+from qlat.cqlat import get_size_node, get_coor_node
+from qlat.cqlat import sync_node
 
 from qlat_utils import *
 

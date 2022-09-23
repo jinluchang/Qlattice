@@ -20,8 +20,9 @@ message(py3.path())
 message(py3.get_install_dir())
 
 omp = dependency('openmp')
+zlib = dependency('zlib')
 
-deps = [ omp, py3.dependency() ]
+deps = [ omp, py3.dependency(), zlib ]
 
 c = run_command('bash', '-c', 'ls $MESON_SOURCE_ROOT/include/qlat-utils/*.h', check: true)
 headers = c.stdout().strip().split('\n')
@@ -47,4 +48,5 @@ pkg = import('pkgconfig')
 pkg.generate(
   name: 'qlat-utils',
   description: 'Qlattice utilities.',
+  libraries: [ '-lz', '-lm' ],
   )

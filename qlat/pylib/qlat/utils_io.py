@@ -1,24 +1,24 @@
-import cqlat as c
+import qlat.cqlat as c
 
 import os
 import pickle
 
-from cqlat import qremove, qremove_info
-from cqlat import qremove_all, qremove_all_info
-from cqlat import qmkdir, qmkdir_info, qmkdir_sync_node
-from cqlat import does_file_exist, does_file_exist_sync_node
-from cqlat import does_file_exist_qar, does_file_exist_qar_sync_node
-from cqlat import does_file_or_directory_exist_qar, does_file_or_directory_exist_qar_sync_node
-from cqlat import is_directory, is_directory_sync_node
-from cqlat import is_regular_file, is_regular_file_sync_node
-from cqlat import qrename, qrename_info
-from cqlat import qcat, qcat_sync_node
-from cqlat import qcat_bytes, qcat_bytes_sync_node
-from cqlat import qls, qls_sync_node
-from cqlat import qls_all, qls_all_sync_node
-from cqlat import qload_datatable, qload_datatable_sync_node
-from cqlat import check_time_limit, check_stop
-from cqlat import get_time_limit, get_default_budget
+from qlat.cqlat import qremove, qremove_info
+from qlat.cqlat import qremove_all, qremove_all_info
+from qlat.cqlat import qmkdir, qmkdir_info, qmkdir_sync_node
+from qlat.cqlat import does_file_exist, does_file_exist_sync_node
+from qlat.cqlat import does_file_exist_qar, does_file_exist_qar_sync_node
+from qlat.cqlat import does_file_or_directory_exist_qar, does_file_or_directory_exist_qar_sync_node
+from qlat.cqlat import is_directory, is_directory_sync_node
+from qlat.cqlat import is_regular_file, is_regular_file_sync_node
+from qlat.cqlat import qrename, qrename_info
+from qlat.cqlat import qcat, qcat_sync_node
+from qlat.cqlat import qcat_bytes, qcat_bytes_sync_node
+from qlat.cqlat import qls, qls_sync_node
+from qlat.cqlat import qls_all, qls_all_sync_node
+from qlat.cqlat import qload_datatable, qload_datatable_sync_node
+from qlat.cqlat import check_time_limit, check_stop
+from qlat.cqlat import get_time_limit, get_default_budget
 
 from qlat_utils import *
 

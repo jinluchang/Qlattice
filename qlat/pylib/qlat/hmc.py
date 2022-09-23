@@ -1,4 +1,4 @@
-import cqlat as c
+import qlat.cqlat as c
 
 from qlat.field import *
 from qlat.qcd import *
