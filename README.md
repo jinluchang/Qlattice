@@ -38,11 +38,9 @@ There are few different scripts to build the `Grid` library. Choose one best sui
 
 After the first complete install, one can re-install individual components by running the specific script. For example, to just re-install the `Qlattice` header files and python library:
 
+`$ ./scripts/qlat-utils.sh`
+
 `$ ./scripts/qlat.sh`
-
-The most time consuming part of the above command is the compilation the `cqlat.so` dynamic library. To avoid the compilation of `cqlat.so`, but re-install the header files and the `qlat` python files:
-
-`$ ./scripts/qlat-header.sh`
 
 It is also possible to build `Grid` and `gpt`. For examples:
 
@@ -98,7 +96,9 @@ A sample `Makefile` is provided which can compile and run a simple program using
 
 There are also example programs provided in the examples directory. Once the library is completed installed, one can run the following command to compile all the examples:
 
-`$ make -C examples run`
+`$ make -C examples-cpp run`
+
+`$ make -C examples-py run`
 
 ## Structure
 
