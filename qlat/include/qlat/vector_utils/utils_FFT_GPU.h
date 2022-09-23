@@ -329,7 +329,7 @@ void FFT_Vecs::do_fft(Ty* inputD, bool fftdir, bool dummy)
 
 
 struct customLess{
-    inline bool operator()(std::vector<int >& a, std::vector<int >& b) const {
+    inline bool operator()(const std::vector<int >& a, const std::vector<int >& b) const {
     bool flag = false;
     if(a[3] < b[3]){flag = true;}
     ////c0 to be large
@@ -358,7 +358,7 @@ inline std::vector<int > get_factor_jobs(int nvec, int civ, int N0=-1, int N1=-1
     int Ne = Nl[i];
     int maxN = maxN0;
     //if(N1 != -1){maxN = maxN * (Nl[0]/Nl[i]);}
-    if(N1 != -1){maxN = maxN;}
+    //if(N1 != -1){maxN = maxN;}
 
     int Bmax = (total+Ne-1)/Ne;
     ////print0("N %d, maxN %d, Bmax %d, civ %d \n", Ne, maxN, Bmax, civ);
@@ -701,7 +701,6 @@ void fft_fieldM_test(std::vector<qlat::FieldM<Ty, civ> > &src, bool fftdir=true,
 
 }
 
-
 template <class Ty, int civ>
 void fft_fieldM(fft_schedule& fft, std::vector<qlat::FieldM<Ty, civ> >& src, bool fftdir=true)
 {
@@ -716,6 +715,7 @@ void fft_fieldM(fft_schedule& fft, std::vector<qlat::FieldM<Ty, civ> >& src, boo
   int nvec = src.size();
   std::vector<Ty* > data;data.resize(nvec);
   for(int si=0;si<nvec;si++){data[si] = (Ty*) qlat::get_data(src[si]).data();}
+
   fft.dojob(data, fftdir);
 }
 
@@ -847,7 +847,7 @@ inline fft_gpu_copy make_fft_gpu_plan(const FFTGPUPlanKey& fkey)
   return make_fft_gpu_plan(fkey.geo, fkey.nvec, fkey.civ, fkey.GPU, fkey.fft4D, fkey.prec);
 }
 
-API inline Cache<FFTGPUPlanKey, fft_gpu_copy >& get_fft_gpu_plan_cache()
+inline Cache<FFTGPUPlanKey, fft_gpu_copy >& get_fft_gpu_plan_cache()
 {
   static Cache<FFTGPUPlanKey, fft_gpu_copy > cache("FFTGPUPlanCache", 16);
   return cache;
@@ -899,8 +899,8 @@ bool check_fft_mode(const int nfft, const Geometry& geo, const bool fft4d)
   return use_qlat;
 }
 
-template <class Ty, int civ>
-void fft_fieldM(std::vector<Ty* >& data, const Geometry& geo, bool fftdir=true, bool fft4d = false)
+template <class Ty>
+void fft_fieldM(std::vector<Ty* >& data, int civ, const Geometry& geo, bool fftdir=true, bool fft4d = false)
 {
   if(data.size() < 1)return;
 
@@ -924,13 +924,13 @@ void fft_fieldM(std::vector<Ty* >& data, const Geometry& geo, bool fftdir=true, 
   get_fft_gpu_plan(fkey).fftP->dojob(data, fftdir);
 }
 
-template <class Ty, int civ>
-void fft_fieldM(Ty* src, int nvec, const Geometry& geo, bool fftdir=true, bool fft4d = false)
+template <class Ty>
+void fft_fieldM(Ty* src, int nvec, int civ, const Geometry& geo, bool fftdir=true, bool fft4d = false)
 {
   std::vector<Ty* > data;data.resize(nvec);
   const long offD = geo.local_volume() * civ;
   for(int iv=0;iv<nvec;iv++){data[iv] = &src[iv*offD];}
-  fft_fieldM<Ty, civ>(data, geo, fftdir, fft4d);
+  fft_fieldM<Ty >(data, civ, geo, fftdir, fft4d);
 }
 
 template <class Ty, int civ>
@@ -957,7 +957,7 @@ void fft_fieldM(std::vector<qlat::FieldM<Ty, civ> >& src, bool fftdir=true, bool
   {
   std::vector<Ty* > data;data.resize(src.size());
   for(int si=0;si<src.size();si++){data[si] = (Ty*) qlat::get_data(src[si]).data();}
-  fft_fieldM<Ty, civ>(src, src.geo(), fftdir, fft4d);
+  fft_fieldM<Ty >(data, civ, src.geo(), fftdir, fft4d);
   }
 }
 
@@ -1023,7 +1023,7 @@ void FFT_vecs_corr(qlat::vector_gpu<Ty >& src, std::vector<qlat::FieldM<Ty, 1> >
   const long volume = geo.local_volume();
   const long Sdata = src.size();const int nvecs = Sdata/volume;
 
-  fft_fieldM<Ty, 1>(src.data(), nvecs, geo, true);
+  fft_fieldM<Ty >(src.data(), nvecs, 1, geo, true);
   for(int iv=0;iv<nvecs;iv++)
   {
     qlat::FieldM<Ty, 1>& buf = FFT_data[off*nvecs + iv];qassert(buf.initialized);

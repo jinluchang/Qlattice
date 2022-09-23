@@ -480,7 +480,7 @@ void matrix_prod(Ty* a, Ty* b, Ty* c, const long m, const long n, const long w, 
   matrix_prod_cpu(a,b,c , m,n,w,L, Conj);
   #endif
 
-  double Gsize = (m*n + m*w + n*w)*sizeof(Ty)/1024.0*1024*1024;
+  /////double Gsize = (m*n + m*w + n*w)*sizeof(Ty)/1024.0*1024*1024;
   /////qlat::displayln_info(qlat::ssprintf("Total memory size, GFlop %.3e \n",Gsize));
 
 }

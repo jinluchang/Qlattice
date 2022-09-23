@@ -290,13 +290,8 @@ struct smear_fun{
     qlat::vector_gpu<Ty > gfT_buf;gfT_buf.resize(NVmpi*gauge.size());
     const int dir_max = 4;
     const size_t Ndata = gauge.size();
-    //Ty* gsrc = gauge.data();
-    //Ty* gres = gfT.data();
 
     for(long vi=0;vi<NVmpi;vi++){cpy_data_thread(&(gfT.data()[vi*Ndata]), gauge.data(), Ndata);}
-    //qacc_for(index, long(Ndata), {
-    //  for(long vi=0;vi<NVmpi;vi++){gres[vi*Ndata + index] = gsrc[index];}
-    //});
 
     vec_rot->reorder(gfT.data(), gfT_buf.data(), 1, (dir_max*2)*9 ,   0);
     gauge.copy_from(gfT);
@@ -585,7 +580,7 @@ inline smear_fun_copy make_smear_plan(const SmearPlanKey& skey)
   return make_smear_plan(geo, skey.smear_in_time_dir, skey.prec);
 }
 
-API inline Cache<SmearPlanKey, smear_fun_copy >& get_smear_plan_cache()
+inline Cache<SmearPlanKey, smear_fun_copy >& get_smear_plan_cache()
 {
   static Cache<SmearPlanKey, smear_fun_copy > cache("SmearPlanKeyCache", 16);
   return cache;
@@ -939,12 +934,16 @@ void smear_kernel(T* src, const double width, const int step, smear_fun<T >& smf
 
   smear_macros(   4, 12);
   smear_macros(   4,  3);
+  smear_macros(   4,  6);
+  smear_macros(   4,  8);
+  smear_macros(   4,  2);
   smear_macros(   3, 16);
 
   qacc_barrier(dummy);
   #undef smear_macros
   }
-  qassert(cfind);
+  if(cfind == false){print0("Case bfac %5d, civ %5d \n", bfac, civ); abort_r("smear kernel not found!\n");}
+  ////qassert(cfind);
 }
 
 template <class T>
@@ -1033,6 +1032,7 @@ void smear_propagator_gwu_convension_inner(Ty* prop, const GaugeFieldT<Tg >& gf,
     src = smf.prop.data();
   }
 
+  ////print0("===Case %d %d \n", c0, grouP);
   if( reorder)smear_kernel(src, width, step, smf,  c0, groupP);
   if(!reorder)smear_kernel(src, width, step, smf,  c0, d0);
 

@@ -70,7 +70,7 @@ void cpy_data_from_index(qlat::vector<T >& res, qlat::vector<T >& src, const qla
   T* s0 = (T*) qlat::get_data(src).data();
   long* m1 = (long*) qlat::get_data(map_res).data();
   long* m0 = (long*) qlat::get_data(map_src).data();
-  cpy_data_from_index(s1, s0, m1, m1, res.size(), bfac, GPU, dummy);
+  cpy_data_from_index(s1, s0, m1, m0, map_res.size(), bfac, GPU, dummy);
 }
 
 #ifdef QLAT_USE_ACC
@@ -133,6 +133,8 @@ void CPY_data_thread_basic(T0* Pres, const T1* Psrc, const TInt Nvol, int GPU=1,
 }
 
 //////Copy data thread
+//0--> host to host, 1 device to device
+//2--> ===from host to device, 3 ===from device to host
 template <typename T0, typename T1,  typename TInt>
 void cpy_data_thread(T0* Pres, const T1* Psrc, const TInt Nvol, int GPU=1, bool dummy=true, const double ADD = 0)
 {

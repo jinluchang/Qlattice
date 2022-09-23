@@ -91,15 +91,15 @@ struct eigen_ov {
 
   void copy_evec_to_GPU(int nini);
   template <typename Ty >
-  void copy_FieldM_to_Mvec(Ty* src, int ncur, int sm = 0, int dir = 1 );
+  void copy_FieldM_to_Mvec(Ty* src, int ncur, int sm = 0, int dir = 1 , bool data_GPU = false);
   template <typename Ty >
-  void copy_to_FieldM(Ty* src, int ncur, int sm = 0){
-    copy_FieldM_to_Mvec(src, ncur, sm, 0);
+  void copy_to_FieldM(Ty* src, int ncur, int sm = 0, bool data_GPU = false){
+    copy_FieldM_to_Mvec(src, ncur, sm, 0, data_GPU);
   }
 
 
   template <typename Ty >
-  void copy_FieldM_to_Mvec(qlat::FieldM<Ty , 12>& src, int ncur, int sm = 0, int dir = 1 );
+  void copy_FieldM_to_Mvec(qlat::FieldM<Ty , 12>& src, int ncur, int sm = 0, int dir = 1);
   template <typename Ty >
   void copy_to_FieldM(qlat::FieldM<Ty , 12>& src, int ncur, int sm = 0){
     copy_FieldM_to_Mvec(src, ncur, sm, 0);
@@ -378,7 +378,7 @@ void eigen_ov::load_eivals(const std::string& enamev,double rho_or,double Eerr, 
 }
 
 template <typename Ty >
-void eigen_ov::copy_FieldM_to_Mvec(Ty* src, int ncur, int sm, int dir )
+void eigen_ov::copy_FieldM_to_Mvec(Ty* src, int ncur, int sm, int dir , bool data_GPU)
 {
   TIMERA("COPY Eigen Vectors Mvec");
   if(ncur >= n_vec){abort_r("Cannot copy to position larger than n_vec ! \n");}
@@ -386,9 +386,15 @@ void eigen_ov::copy_FieldM_to_Mvec(Ty* src, int ncur, int sm, int dir )
   Complexq* s1 = NULL;Ty* s0 = NULL;
   s0 = src;
 
+  int GPU_cpy = 0;
+  if(data_GPU){
+    if(dir == 1){GPU_cpy = 3;} // from device to host
+    if(dir == 0){GPU_cpy = 2;} // from host to device
+  }
+
   //////move d,c to outter loop
   long sizeF = noden;
-  if(dir == 1){fdp->mv_civ.dojob(s0, s0, 1, 12, sizeF, 1, 1, false);}
+  if(dir == 1){fdp->mv_civ.dojob(s0, s0, 1, 12, sizeF, 1, 1, data_GPU);}
 
   ////a factor of 2 by chiral
   LInt total = 2*bfac*b_size;
@@ -397,11 +403,12 @@ void eigen_ov::copy_FieldM_to_Mvec(Ty* src, int ncur, int sm, int dir )
     LInt xi = xini*b_size;
     s1 = getEigenP(ncur, xi, sm, 1);
     /////cudaMemcpy(s1, &s0[xi], b_size*sizeof(Complexq), cudaMemcpyHostToDevice);
-    if(dir == 1){cpy_data_thread(s1, &s0[xi], b_size, 0);}
-    if(dir == 0){cpy_data_thread(&s0[xi], s1, b_size, 0);}
+    if(dir == 1){cpy_data_thread(s1, &s0[xi], b_size, GPU_cpy, false);}
+    if(dir == 0){cpy_data_thread(&s0[xi], s1, b_size, GPU_cpy, false);}
   }
+  qacc_barrier(dummy);
 
-  if(dir == 0){fdp->mv_civ.dojob(s0, s0, 1, 12, sizeF, 0, 1, false);}
+  if(dir == 0){fdp->mv_civ.dojob(s0, s0, 1, 12, sizeF, 0, 1, data_GPU);}
   s0 = NULL; s1 = NULL;
 }
 
@@ -416,7 +423,8 @@ void eigen_ov::copy_FieldM_to_Mvec(qlat::FieldM<Ty , 12>& src, int ncur, int sm,
     src.init(geo);
   }}
   Ty* s0 = (Ty*) qlat::get_data(src).data();
-  copy_FieldM_to_Mvec(s0, ncur, sm, dir);
+  int data_GPU = 0; ////do copies only from CPU here
+  copy_FieldM_to_Mvec(s0, ncur, sm, dir, data_GPU);
 }
 
 void eigen_ov::copy_evec_to_GPU(int nini)
@@ -575,14 +583,21 @@ void eigen_ov::smear_eigen(const std::string& Ename_Sm, io_vec  &io,
   {
     int flag = 0;
     ////copy to buf
-    for(int iv=0;iv<job[ji*2 + 1];iv++){copy_to_FieldM(&buf[iv*Ncopy], job[ji*2 + 0] + iv,  0);}
+    for(int iv=0;iv<job[ji*2 + 1];iv++){copy_to_FieldM(&buf[iv*Ncopy], job[ji*2 + 0] + iv,  0, true);}
     flag = 0;mv_idx.dojob(buf.data(), buf.data(), 1, each , fdp->Nvol*12, flag, 1, true);
 
     smear_propagator_gwu_convension_inner<Complexq, 4,each  , Tg>(buf.data(), gf, width, step, mom, smear_in_time_dir);
 
     flag = 1;mv_idx.dojob(buf.data(), buf.data(), 1, each , fdp->Nvol*12, flag, 1, true);
     ////copy from buf
-    for(int iv=0;iv<job[ji*2 + 1];iv++){copy_FieldM_to_Mvec(&buf[iv*Ncopy], job[ji*2 + 0] + iv,  1);}
+    for(int iv=0;iv<job[ji*2 + 1];iv++){copy_FieldM_to_Mvec(&buf[iv*Ncopy], job[ji*2 + 0] + iv,  1, 1, true);}
+  }
+
+  ////erase smear
+  {
+  /////const SmearPlanKey& skey = get_smear_plan_key<Complexq, 4, each>(gf.geo(), smear_in_time_dir);
+  ////qlat::clear_all_caches();
+  get_smear_plan_cache().clear();
   }
 
   if(Ename_Sm != std::string("NONE")){
@@ -1001,7 +1016,7 @@ template <typename Ty >
 void FieldM_src_to_FieldM_prop(std::vector<qlat::FieldM<Ty , 1> >& src, std::vector<qlat::FieldM<Ty , 12*12> >& res, int GPU = true)
 {
   if(src.size() == 0){return ;}
-  qlat::Geometry& geo = src[0].geo();
+  ////qlat::Geometry& geo = src[0].geo();
   long nV = src.size();
   if(res.size() != src.size()){res.resize(nV);}
   for(int iv=0;iv<nV;iv++)FieldM_src_to_FieldM_prop(src[iv], res[iv], GPU, false);
@@ -1032,7 +1047,7 @@ void FieldM_src_to_FieldM_prop(std::vector<qlat::FieldM<Ty , 1> >& src, std::vec
 
 ////assumed civ == n*12 with n the source indices, 12 the sink indices 
 template <typename Ty, int civ >
-void copy_eigen_src_to_FeildM(qlat::vector_gpu<Ty >& src, std::vector<qlat::FieldM<Ty , civ> >& res, LInt b_size, qlat::fft_desc_basic& fd, int dir = 0, int GPU = 1, bool rotate = false)
+void copy_eigen_src_to_FieldM(qlat::vector_gpu<Ty >& src, std::vector<qlat::FieldM<Ty , civ> >& res, LInt b_size, qlat::fft_desc_basic& fd, int dir = 0, int GPU = 1, bool rotate = false)
 {
   if(civ%12 != 0){abort_r("FieldM type not supported!\n");}
   unsigned int nV = 0;int cfac = civ/12;
@@ -1111,6 +1126,13 @@ void copy_eigen_src_to_FeildM(qlat::vector_gpu<Ty >& src, std::vector<qlat::Fiel
     }
   }
 }
+
+template <typename Ty, int civ >
+void copy_FieldM_to_eigen_src(std::vector<qlat::FieldM<Ty , civ> >& src, qlat::vector_gpu<Ty >& res, LInt b_size, qlat::fft_desc_basic& fd, int GPU = 1, bool rotate = false)
+{
+  copy_eigen_src_to_FieldM(res, src, b_size, 1,fd, GPU, rotate);
+}
+
 
 
 }

@@ -115,6 +115,13 @@ struct shift_vec{
   template<typename Ty>
   void shift_vecP(Ty* src,Ty* res,std::vector<int >& iDir ,int civ_or);
 
+  template<typename Ty, int civ_>
+  void shift_vecs_dir(qlat::FieldM<Ty , civ_>& src, qlat::FieldM<Ty , civ_>& res, int mu, int sign);
+
+  template<typename Ty, int civ_>
+  void shift_vecs_dir(std::vector<qlat::FieldM<Ty , civ_> >& src, std::vector<qlat::FieldM<Ty , civ_> >& res, int mu, int sign);
+
+
   void set_gauge(void* gauge_, int gbfac_, int gd0_, bool Conj_=false, bool src_gauge_ = false)
   {gauge = gauge_;gbfac = gbfac_;gd0 = gd0_;Conj = Conj_;src_gauge = src_gauge_;}
   template<typename Ty, bool Conj_>
@@ -319,7 +326,7 @@ void shift_vec::set_MPI_size(int biva_or, int civ_or, int dir_or )
   /////====set up bufs for shift
   LInt Ng = Nt*N0*N1*N2;
   if(zeroP_Size != Ng){
-  free_buf(zeroP, GPU);
+  free_buf(zeroP, GPU);zeroP=NULL;
   if(GPU){gpuMalloc(zeroP, Ng, Ty);}
   else{zeroP = aligned_alloc_no_acc(Ng * sizeof(Ty));}zeroP_Size = Ng;
   ////Ty* zero = (Ty*) zeroP;
@@ -327,12 +334,12 @@ void shift_vec::set_MPI_size(int biva_or, int civ_or, int dir_or )
   }
 
   if(bufsP_Size != Ng*biva_or*civ_or){
-  free_buf(bufsP, GPU);
+  free_buf(bufsP, GPU);bufsP=NULL;
   if(GPU){gpuMalloc(bufsP, Ng*biva_or*civ_or, Ty);}
   else{bufsP = aligned_alloc_no_acc(Ng*biva_or*civ_or * sizeof(Ty));}bufsP_Size = Ng*biva_or*civ_or;}
 
   if(bufrP_Size != Ng*biva_or*civ_or){
-  free_buf(bufrP, GPU);
+  free_buf(bufrP, GPU);bufrP=NULL;
   if(GPU){gpuMalloc(bufrP, Ng*biva_or*civ_or, Ty);}
   else{bufrP = aligned_alloc_no_acc(Ng*biva_or*civ_or * sizeof(Ty));}bufrP_Size = Ng*biva_or*civ_or;}
   /////====set up bufs for shift
@@ -579,7 +586,7 @@ void multiply_gauge(void *src, void* gauge, const int dir_gauge,const int biva,c
 
 template<typename Ty, bool Conj_>
 void shift_vec::mult_gauge(void* pt, int dir_gauge){
-  TIMER("Gauge multiplication");
+  TIMERB("Gauge multiplication");
   bool id = get_data_type_is_double<Ty >();
   if( id){qassert(long(civ*sizeof(Ty)/16) == gbfac * 3 * gd0);}
   if(!id){qassert(long(civ*sizeof(Ty)/8 ) == gbfac * 3 * gd0);}
@@ -889,12 +896,36 @@ void shift_vec::shift_Evec(std::vector<qlat::vector_acc<Ty > > &srcE,std::vector
 
 }
 
+template<typename Ty, const int civ_ >
+void shift_vec::shift_vecs_dir(qlat::FieldM<Ty, civ_ >& src, qlat::FieldM<Ty, civ_ >& res, const int mu, const int sign){
+  qassert(src.initialized and res.initialized );
+  Ty* ps0 = (Ty*) qlat::get_data(src).data();
+  Ty* ps1 = (Ty*) qlat::get_data(res).data();
+  std::vector<int > iDir(4);for(int i=0;i<4;i++){iDir[i] = 0;}
+  iDir[mu] = sign;
+  shift_vecP(ps0, ps1, iDir , civ_);
+}
 
-
+template<typename Ty, int civ_>
+void shift_vec::shift_vecs_dir(std::vector<qlat::FieldM<Ty , civ_> >& src, std::vector<qlat::FieldM<Ty , civ_> >& res, int mu, int sign)
+{
+  qassert(src.size() == res.size());
+  int Nsrc = src.size();if(Nsrc == 0){return ;}
+  std::vector<Ty* > Psrc; std::vector<Ty* > Pres; 
+  Psrc.resize(Nsrc);Pres.resize(Nsrc);
+  for(int si = 0; si < Nsrc; si++)
+  {
+    qassert(src[si].initialized and res[si].initialized);
+    Psrc[si] = (Ty*) qlat::get_data(src[si]).data();
+    Pres[si] = (Ty*) qlat::get_data(res[si]).data();
+  }
+  std::vector<int > iDir(4);for(int i=0;i<4;i++){iDir[i] = 0;}iDir[mu] = sign;
+  shift_vecs(Psrc, Pres, iDir, civ_);
+}
 
 void shift_vec::clear_mem_dir(int dir){
-  free_buf(sendbufP[dir],GPU);
-  free_buf(recvbufP[dir],GPU);
+  free_buf(sendbufP[dir],GPU);sendbufP[dir]=NULL;
+  free_buf(recvbufP[dir],GPU);recvbufP[dir]=NULL;
   bufP_Size[dir] = 0;
   //MPI_size[dir_cur] = 0;
 }

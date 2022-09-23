@@ -110,7 +110,7 @@ int main(int argc, char* argv[])
 
   std::vector<qlat::FieldM<Complexq , 12*12> > noi_prop;
   FieldM_src_to_FieldM_prop(noi, noi_prop, true);
-  copy_eigen_src_to_FeildM(stmp, noi_prop, ei.b_size, fd, 1, true, false);
+  copy_eigen_src_to_FieldM(stmp, noi_prop, ei.b_size, fd, 1, true, false);
 
   //Complexq* psrc = stmp.data();
   //Complexq* pres = ptmp.data();
@@ -136,7 +136,7 @@ int main(int argc, char* argv[])
   std::vector< qlat::FieldM<qlat::Complex , 12*12> > FpropV;FpropV.resize(nmass);
   ///for(unsigned int iv=0;iv<FpropV.size();iv++){FpropV[iv].init(geo);}
 
-  copy_eigen_src_to_FeildM(ptmp, FpropV, ei.b_size, fd, 0, 1, false);
+  copy_eigen_src_to_FieldM(ptmp, FpropV, ei.b_size, fd, 0, 1, false);
 
   //qlat::Complex* tmp = (qlat::Complex*) qlat::get_data(FpropV[0]).data();
   //print0("size0 %ld, size1 %ld \n", 
@@ -148,7 +148,7 @@ int main(int argc, char* argv[])
   //  "sum FpropV 2", 1);
 
 
-  copy_eigen_src_to_FeildM(bufP, FpropV, ei.b_size, fd, 1, 1, false);
+  copy_eigen_src_to_FieldM(bufP, FpropV, ei.b_size, fd, 1, 1, false);
 
   //print_sum(tmp, geo.local_volume(), "sum FpropV 1", 1);
   //print_sum((qlat::Complex*) qlat::get_data(FpropV[0]).data(), qlat::get_data(FpropV[0]).data_size()/sizeof(qlat::Complex), 
@@ -171,7 +171,7 @@ int main(int argc, char* argv[])
   //  sprintf(namep, "%s.m%8.6f", names, massL[im]);
   //  load_gwu_prop(namep, FpropV[im], io_use);
   //}
-  //copy_eigen_src_to_FeildM(bufP, FpropV, ei.b_size, fd, 1, 1, false);
+  //copy_eigen_src_to_FieldM(bufP, FpropV, ei.b_size, fd, 1, 1, false);
   //std::vector<Propagator4d > bufS;bufS.resize(nmass);for(unsigned int i=0;i<propS_new.size();i++)bufS[i].init(geo);
   //copy_eigen_prop_to_EigenM(bufP.data(), s0, ei.b_size, nmass, fd, 0);
   //copy_propE(bufS, s0, fd, 1);

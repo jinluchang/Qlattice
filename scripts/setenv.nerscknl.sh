@@ -20,6 +20,14 @@ fi
 export PYTHONPATH=
 module load python3
 module list
+export CC="CC"
+export CXX="CC"
+export MPICC="cc"
+export MPICXX="CC"
+export USE_COMPILER="cc"
+export QLAT_CC="CC -std=c++11 -qopenmp -O2 -xhost -Wall"
+export QLAT_CXX="CC -std=c++11 -qopenmp -O2 -xhost -Wall"
+export QLAT_MPICC="CC -std=c++11 -qopenmp -O2 -xhost -Wall"
 export QLAT_MPICXX="CC -std=c++11 -qopenmp -O2 -xhost -Wall"
 export QLAT_CXXFLAGS="-fPIC "
 export QLAT_LDFLAGS="--shared"

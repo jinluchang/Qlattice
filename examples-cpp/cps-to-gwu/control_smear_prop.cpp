@@ -109,7 +109,8 @@ int main(int argc, char* argv[])
   /////load_gauge_field(gf_gwu,rbc_conf,true);
   load_gwu_link(rbc_conf, gf);
 
-  if(nx == 24)twist_boundary_at_boundary(gf, EIGEN_PI/1.0, 3 );
+  if(nx == 24)twist_boundary_at_boundary(gf, -0.5, 3 );
+  //if(nx == 24)twist_boundary_at_boundary(gf, EIGEN_PI/1.0, 3 );
   //qacc_for(isp, long(geo1.local_volume_expanded()), {
   //  auto* res = gfF.get_elem(isp).p;
   //  auto* src =  gf.get_elem(isp).p;

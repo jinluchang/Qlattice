@@ -186,8 +186,8 @@ inline void gpuFree(void* res)
     #else
     //delete [] res;
     free(res);
-    res = NULL;
     #endif
+    //res = NULL;
   }
 }
 

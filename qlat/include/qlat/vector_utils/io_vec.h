@@ -1158,6 +1158,51 @@ void load_gwu_prop(const char *filename, qpropT& res,io_vec &io_use,bool read=tr
   }
 }
 
+/////V -- 12a x 12b   to   12b x 12a -- V
+template<class T, typename Ty>
+void prop4d_to_qprop(qpropT& res, Propagator4dT<T>& src, int dir = 1){
+  TIMERA("prop4d_to_qprop");
+  if(dir == 1){qassert(src.initialized);res.init(src.geo());}
+  if(dir == 0){qassert(res.initialized);src.init(res.geo());}
+
+  long sizeF = src.geo().local_volume();
+
+  move_index mv_civ;
+  T* ps; Ty* pt;
+  ps = (T* ) qlat::get_data(src).data();
+  pt = (Ty*) qlat::get_data(res).data();
+
+  ////V x 12 a x 12 b to 12b x 12a x V
+  if(dir == 1){
+    qthread_for(isp, long(sizeF),{
+      T buf[12*12];for(unsigned int i=0;i<12*12;i++){buf[i] = ps[isp*12*12 + i];}
+      for(unsigned int d0=0;d0<12;d0++)
+      for(unsigned int d1=0;d1<12;d1++)
+      {
+        pt[(isp*12+d0)*12+d1] = buf[d1*12+d0];
+      }
+    });
+    mv_civ.move_civ_out(pt, pt, 1, sizeF, 12*12, 1, false);
+  }
+  ////12 a x 12 b x V to V x 12b x 12a
+  if(dir == 0){
+    mv_civ.move_civ_in(pt, pt, 1, 12*12, sizeF, 1, false);
+    qthread_for(isp, long(sizeF),{
+      T buf[12*12];for(unsigned int i=0;i<12*12;i++){buf[i] = pt[isp*12*12 + i];}
+      for(unsigned int d0=0;d0<12;d0++)
+      for(unsigned int d1=0;d1<12;d1++)
+      {
+        ps[(isp*12+d0)*12+d1] = buf[d1*12+d0];
+      }
+    });
+  }
+}
+
+template<class T, typename Ty>
+void qprop_to_prop4d(Propagator4dT<T>& res, qpropT& src){
+  prop4d_to_qprop(src, res, 0);
+}
+
 template<class T, typename Ty>
 void prop4d_to_Fermion(Propagator4dT<T>& prop,std::vector<qlat::FermionField4dT<Ty > > &buf, int dir=1){
 
@@ -1193,6 +1238,7 @@ void Fermion_to_prop4d(Propagator4dT<T>& prop, std::vector<qlat::FermionField4dT
 
 template <class T>
 void save_gwu_prop(const char *filename,Propagator4dT<T>& prop){
+  qassert(prop.initialized);
   io_vec io_use(prop.geo(),IO_DEFAULT);
   std::vector<qlat::FermionField4dT<qlat::ComplexF> > prop_qlat;
   prop4d_to_Fermion(prop,prop_qlat, 1);
@@ -1209,6 +1255,7 @@ void save_gwu_prop(std::string &filename,Propagator4dT<T>& prop){
 
 template <class T>
 void load_gwu_prop(const char *filename,Propagator4dT<T>& prop){
+  qassert(prop.initialized);
   io_vec io_use(prop.geo(),IO_DEFAULT);
   std::vector<qlat::FermionField4dT<qlat::Complex > > prop_qlat;
   load_gwu_prop(filename,prop_qlat,io_use);

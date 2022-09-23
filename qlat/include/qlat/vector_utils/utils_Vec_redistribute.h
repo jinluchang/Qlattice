@@ -473,7 +473,7 @@ struct Rotate_vecs{
     size_t Bsize0 = vol_buf * b0 *  civa * sizeof(Ty);
     if(Bsize != Bsize0){
     Bsize = Bsize0;
-    free_buf(buf, GPU);free_buf(src, GPU);
+    free_buf(buf, GPU);free_buf(src, GPU);buf=NULL;src=NULL;
     if(GPU){gpuMalloc(buf, Bsize/sizeof(Ty), Ty);gpuMalloc(src, Bsize/sizeof(Ty), Ty);}
     else{ 
       src = aligned_alloc_no_acc(Bsize);

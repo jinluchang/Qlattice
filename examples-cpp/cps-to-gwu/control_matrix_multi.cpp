@@ -11,23 +11,7 @@ int main(int argc, char* argv[])
 {
   using namespace qlat;
 
-  std::vector<Coordinate> size_node_list;
-  size_node_list.push_back(Coordinate(1, 1, 1,  1));
-  size_node_list.push_back(Coordinate(1, 1, 1,  2));
-  size_node_list.push_back(Coordinate(1, 1, 1,  4));
-  size_node_list.push_back(Coordinate(1, 1, 1,  8));
-  size_node_list.push_back(Coordinate(1, 1, 1, 16));
-  size_node_list.push_back(Coordinate(1, 1, 1, 32));
-  size_node_list.push_back(Coordinate(1, 1, 1, 64));
-  size_node_list.push_back(Coordinate(4, 4, 8, 16));
-  size_node_list.push_back(Coordinate(4, 8, 8, 16));
-
-  //begin_thread(&argc, &argv, size_node_list);
-  begin(&argc, &argv, size_node_list);
-  set_GPU();
-
-  inputpara in;
-  in.load_para("input.txt");
+  inputpara in;begin_Lat(&argc, &argv, in);
 
   ////int icfg  = in.icfg;
   ////int ionum = in.ionum;
@@ -61,62 +45,36 @@ int main(int argc, char* argv[])
   LInt L = ncpy;
   LInt m = nsrc;
   LInt n = nvec;
-  LInt w = in.nx*in.ny*in.nz*in.nt*6 + nvec;
+  LInt w = in.nx*in.ny*in.nz*in.nt;
 
+  qlat::vector_gpu<Complexq > a ;a.resize( L * m * w);
+  qlat::vector_gpu<Complexq > b ;b.resize( L * w * m);
+  qlat::vector_gpu<Complexq > c0;c0.resize(L * m * n);
+  qlat::vector_gpu<Complexq > c1;c1.resize(L * m * n);
 
-  EigenV a( L*m*w);
-  EigenV b( L*w*n);
-  EigenV c0(L*m*n);
-  EigenV c1(L*m*n);
 
   print0("start memory allocation! \n");
   fflush_MPI();
 
-  //c0.resize(L*m*n);
-  //cudaDeviceSynchronize();
-  //print0("END 0 memory allocation! \n");
-  //fflush_MPI();
 
-  //cudaDeviceSynchronize();
-  //print0("END 1 memory allocation! \n");
-  //fflush_MPI();
-
-  //c1.resize(L*m*n);
-  //cudaDeviceSynchronize();
-  //cudaDeviceSynchronize();
-
-  //a.resize( L*m*w);
-  //cudaDeviceSynchronize();
-  //cudaDeviceSynchronize();
-  //b.resize( L*w*n);
-  //cudaDeviceSynchronize();
-
-  //cudaDeviceSynchronize();
-  //print0("END 0 memory allocation! \n");fflush_MPI();
-
-  zeroE(c0,0);zeroE(c1,0);
-  random_EigenM( a, 0);random_EigenM( b, 0);
-
-  //cudaDeviceSynchronize();
-  //print0("END 1 memory allocation! \n");fflush_MPI();
-
-  ////for(int i=0;i< in.debuga;i++){matrix_prod_cpu(&a[0],&b[0],&c0[0], m,n,w,L);}
-  for(int i=0;i< in.debuga;i++){matrix_prod_cpu(&a[0],&b[0],&c0[0], m,n,w,L, Conj);fflush_MPI();}
-  print0("END CPU Multi! \n");
-  fflush_MPI();
+  c0.set_zero();c1.set_zero();
+  random_Ty(a.data(), a.size(), 1, in.seed + 1);
+  random_Ty(b.data(), b.size(), 1, in.seed + 2);
 
   ////cudaDeviceSynchronize();
-  for(int i=0;i< in.debuga;i++){matrix_prod_gpu(&a[0],&b[0],&c1[0], m,n,w,L, Conj, true,false, modeGPU);fflush_MPI();}
+  //for(int i=0;i< in.debuga;i++){matrix_prod_gpu(a.data(), b.data(), c1.data(), m,n,w,L, Conj, true,false, modeGPU);fflush_MPI();}
+  for(int i=0;i< in.debuga;i++){matrix_prod(a.data(), b.data(), c1.data(), m,n,w,L, Conj);fflush_MPI();}
+  fflush_MPI();
     
+  //for(int i=0;i< in.debuga;i++){matrix_prod_cpu(&a[0],&b[0],&c0[0], m,n,w,L, Conj);fflush_MPI();}
+  //print0("END CPU Multi! \n");
+  //diff_EigenM(c0,c1, "Matrix prod ");
 
-  diff_EigenM(c0,c1, "Matrix prod ");
-
+  ////for(int i=0;i< in.debuga;i++){matrix_prod_cpu(&a[0],&b[0],&c0[0], m,n,w,L);}
   ////matrix_prod_cpu(&a[0],&b[0],&c0[0], m,n,w,L);
   ////for(int i=0;i< in.debuga;i++){
   ////  zeroE(c1);matrix_prod_gpu(&a[0],&b[0],&c1[0], m,n,w,L, modeGPU);
   ////}
-
-
   //for(int i=0;i< in.debuga;i++){matrix_prod_cpu(&a[0],&b[0],&c1[0], m,n,w,L);}
   //print0("END CPU Multi! \n");
   //fflush_MPI();

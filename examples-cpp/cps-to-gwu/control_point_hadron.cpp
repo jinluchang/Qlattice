@@ -7,7 +7,6 @@
 #include "utils_smear_vecs.h"
 #include "utils_lms_funs.h"
 
-
 int main(int argc, char* argv[])
 {
   using namespace qlat;
@@ -106,18 +105,26 @@ int main(int argc, char* argv[])
   /////===load noise and prop
   char names[450],namep[500];
   std::vector<qprop > FpropV;FpropV.resize(nmass);
+  Propagator4dT<Complexq > tmp;tmp.init(geo);
   for(int si = 0; si < in.nsource; si++)
   {
     sprintf(names, in.srcN[si].c_str(),icfg);
     //std::vector<qnoi > noi;noi.resize(1);
     qnoi noi;noi.init(geo);
     load_gwu_noi(names, noi, io_use);
+    print0("%s \n", names);
 
     for(int im=0;im<nmass;im++)
     {
       sprintf(names, in.propN[si].c_str(),icfg);
       sprintf(namep, "%s.m%8.6f", names, massL[im]);
-      load_gwu_prop(namep, FpropV[im], io_use);
+
+      load_gwu_prop(namep, tmp);
+      prop4d_to_qprop(FpropV[im], tmp);
+      //qprop_to_prop4d(tmp, FpropV[im]);
+      //prop4d_to_qprop(FpropV[im], tmp);
+
+      //load_gwu_prop(namep, FpropV[im], io_use);
       ////smear_propagator_gwu_convension(FpropV[im], gf, width, step);
     }
     /////===load noise and prop
@@ -127,7 +134,6 @@ int main(int argc, char* argv[])
       sprintf(names, in.output_vec.c_str(), icfg, si);
       save_vecs_lms = true;
     }
-
     lms_para srcI;srcI.init();
     srcI.ionum = in.ionum;
     srcI.do_all_low = in.do_all_low;
@@ -143,6 +149,11 @@ int main(int argc, char* argv[])
       sprintf(namep, "%s.pt.zero.vec", names);
       srcI.name_zero_vecs = std::string(namep);
     }
+
+    if(in.output == std::string("NONE")){
+      srcI.save_zero_corr = 0;
+    }
+
     point_corr(noi, FpropV, massL, ei, fd, res, srcI, 1);
 
     if(sink_step != 0){
@@ -172,10 +183,12 @@ int main(int argc, char* argv[])
     }
   }
 
-  sprintf(names, in.output.c_str(),icfg);
-  res.INFOA.push_back(INFO_Mass);
-  res.print_info();
-  res.write_dat(names);
+  if(in.output != std::string("NONE")){
+    sprintf(names, in.output.c_str(),icfg);
+    res.INFOA.push_back(INFO_Mass);
+    res.print_info();
+    res.write_dat(names);
+  }
 
   }
 

@@ -1089,7 +1089,7 @@ inline void get_low_rho(std::vector<qlat::FieldM<Complexq, 12>  > &eigen,const q
 
   {TIMER("Free memory");
   if(modeCopy == 1){
-    for(unsigned long iv=0;iv<bufE.size();iv++){gpuFree(bufE[iv]);}
+    for(unsigned long iv=0;iv<bufE.size();iv++){gpuFree(bufE[iv]);bufE[iv] = NULL;}
     bufE.resize(0);
   }
   ////gpuFree(NabL);NabL = NULL;

@@ -41,6 +41,7 @@ struct lms_para{
   int do_all_low ;
 
   int mom_cut;
+  int save_zero_corr;
 
   std::string name_mom_vecs;
   std::string name_zero_vecs;
@@ -73,6 +74,7 @@ struct lms_para{
     name_mom_vecs    = std::string("NONE");
     name_zero_vecs   = std::string("NONE");
     name_zero        = std::string("NONE");
+    save_zero_corr   = 1;
 
     INFO = std::string("NONE");
     INFOA.resize(0);
@@ -94,48 +96,6 @@ struct lms_para{
 
 };
 
-inline void get_mom_single_node(qlat::vector_acc<long >& mapA, qlat::vector_acc<long >& mapB,
-    const Geometry& geo, const int mom_cut)
-{
-  qlat::vector_acc<int > nv,Nv,mv;
-  geo_to_nv(geo, nv, Nv, mv);
-
-  mapB.resize(geo.local_volume());long* Bi = mapB.data();
-  const int mc = mom_cut*2 + 1;
-
-  qacc_for(isp,  geo.local_volume(),{
-    Coordinate xl  = geo.coordinate_from_index(isp);
-    Coordinate xg  = geo.coordinate_g_from_l(xl);
-    bool flag = true;
-    Coordinate mom = xg; 
-    for(int i=0;i<3;i++){
-      if(xg[i] > nv[i]/2){
-        mom[i] = (nv[i] - xg[i]);
-        if(mom[i] >  mom_cut){flag = false;}
-        else{mom[i] = mom_cut*2 + 1 - mom[i];}
-      }else{if(mom[i] > mom_cut){flag = false;}}
-    }
-    if(flag == true){ Bi[isp] = ((mom[3]*mc + mom[2])*mc + mom[1])*mc+ mom[0]; }
-    if(flag == false){Bi[isp] = -1;}
-  });
-
-  std::vector<long > A0;std::vector<long > B0;
-  for(long isp=0;isp < mapB.size();isp++)
-  {
-    if(mapB[isp] >= 0){
-      A0.push_back(  isp );B0.push_back(mapB[isp]);
-    }
-  }
-  mapA.resize(A0.size());mapB.resize(A0.size());
-  long* A = mapA.data(); long* B  = mapB.data();
-  long* Av = A0.data();  long* Bv = B0.data();
-
-  ////copy back to mapB
-  qthread_for(isp,  mapB.size(),{
-    A[isp] = Av[isp]; B[isp] = Bv[isp];
-  });
-}
-
 
 template<typename Ty>
 void pick_mom_data(qlat::vector_gpu<Ty >& res, qlat::vector_gpu<Ty >& src,
@@ -144,7 +104,7 @@ void pick_mom_data(qlat::vector_gpu<Ty >& res, qlat::vector_gpu<Ty >& src,
   TIMER("save FFT");
   ////false to match to gwu code convention
   ////exp(+ i p y) need src exp(-i p x)
-  fft_fieldM<Ty, 1>(src.data(), nvec, geo, false);
+  fft_fieldM(src.data(), nvec, 1, geo, false);
   res.set_zero();
 
   const long Nvol = src.size()/nvec;
@@ -161,7 +121,6 @@ void pick_mom_data(qlat::vector_gpu<Ty >& res, qlat::vector_gpu<Ty >& src,
 
   sum_all_size(res.data(), res.size(), 1);
 }
-
 
 template<typename Ty>
 void prop_to_vec(std::vector<qlat::vector_acc<Ty > >& Eprop, qlat::vector_gpu<Ty >& resTa, fft_desc_basic& fd)
@@ -219,11 +178,6 @@ void prop_to_vec(std::vector<qlat::vector_acc<Ty > >& Eprop, qlat::vector_gpu<Ty
   //for(unsigned int pi=0;pi<prop.size();pi++)prop[pi].init(geo);
   //std::vector<qlat::vector_acc<Ty > > Eprop_tmp;
 
-  //copy_propE_to_prop4d(prop, Eprop    , fd);
-  //for(unsigned int pi=0;pi<prop.size();pi++){prop4d_cps_to_ps(prop[pi]);}
-  //copy_prop4d_to_propE(Eprop_tmp, prop, fd);
-  //qlat::vector_acc<Ty* > propP = EigenM_to_pointers(Eprop_tmp);
-
   Ty** p1 = propP.data();
 
   ////print0("Call!\n");
@@ -257,6 +211,8 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
     std::vector<double >& massL, eigen_ov& ei, fft_desc_basic& fd, corr_dat<Ta >& res, lms_para& srcI, int shift_t = 1)
 {
   TIMER("point corr");
+  print_time();
+  print_mem_info("Before point_corr");
   if(propH.size() != massL.size()){abort_r("prop size, mass size not match!\n");}
   ////int Ns = src.size();
   const long Size_prop = fd.get_prop_size();
@@ -283,10 +239,20 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
   srcI.ini_pos = pos;
   srcI.print();
 
+  //////===container for fft vecs
+  ////int off_FFT = 0;
+  bool saveFFT = false;bool savezero = false;bool save_zero_corr = false;
+  if(srcI.name_mom_vecs != std::string("NONE")){saveFFT = true;}
+  if(srcI.name_zero_vecs != std::string("NONE")){savezero = true;}
+  if(srcI.save_zero_corr == 1){save_zero_corr = true;}
+  ////save fft vecs (all of them, no need to shrink mem now)
+
   /////need modification of positions
-  qlat::vector_acc<Ty > EresH;EresH.resize(32 * nmass * fd.nt);clear_qv(EresH );
-  qlat::vector_acc<Ty > EresL;EresL.resize(32 * nmass * fd.nt);clear_qv(EresL );
-  qlat::vector_acc<Ty > EresA;EresA.resize(32 * nmass * fd.nt);clear_qv(EresA );
+  qlat::vector_acc<Ty > EresH;qlat::vector_acc<Ty > EresL;qlat::vector_acc<Ty > EresA;
+  if(save_zero_corr){
+  EresH.resize(32 * nmass * fd.nt);clear_qv(EresH );
+  EresL.resize(32 * nmass * fd.nt);clear_qv(EresL );
+  EresA.resize(32 * nmass * fd.nt);clear_qv(EresA );}
   qlat::vector_gpu<Ty > resTa;const int nvecs = 32 * nmass;
   qlat::vector_gpu<Ty > resZero;
 
@@ -297,7 +263,7 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
   /////copy src vectors
   stmp.resize(Size_prop);
 
-  copy_eigen_src_to_FeildM(high_prop, propH, ei.b_size, fd, 1, GPU, rotate);
+  copy_eigen_src_to_FieldM(high_prop, propH, ei.b_size, fd, 1, GPU, rotate);
   low_prop.resize(high_prop.size());
 
   std::vector<qlat::FieldM<Ty , 12*12> > src_prop;src_prop.resize(1);
@@ -307,37 +273,64 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
   if(srcI.lms == 0 ){Nlms = 1;}
   if(srcI.lms >  0 ){Nlms = srcI.lms;}
 
-  //////===container for fft vecs
-  ////int off_FFT = 0;
-  bool saveFFT = false;bool savezero = false;
-  if(srcI.name_mom_vecs != std::string("NONE")){saveFFT = true;}
-  if(srcI.name_zero_vecs != std::string("NONE")){savezero = true;}
-  ////save fft vecs (all of them, no need to shrink mem now)
-
   const int mc = srcI.mom_cut*2 + 1;
-  qlat::vector_gpu<Ty > FFT_data;long Nfdata = long(32)*massL.size()*fd.nt*mc*mc*mc ;
-  qlat::vector_gpu<Ty > FFT_data_high;
-  qlat::vector_acc<long > mapA, mapB;
+  momentum_dat mdat(geo, srcI.mom_cut);
+  std::vector<qlat::vector_gpu<Ty > > FFT_data;FFT_data.resize(1 + 1);
+  //std::vector<qlat::vector_gpu<Ty > > FFT_data;FFT_data.resize(1 + Nlms);
+  //qlat::vector_gpu<Ty > FFT_data;long Nfdata = long(32)*massL.size()*fd.nt*mc*mc*mc ;
+  //qlat::vector_gpu<Ty > FFT_data_high;
+  //qlat::vector_acc<long > mapA, mapB;
+
+  ///////check production for this source
+  ///////low mode ignored if check point enabled
+  if(savezero){
+    bool flag_do_job = false;
+    if(get_file_size_MPI(srcI.name_zero_vecs.c_str()) == 0){flag_do_job = true;}
+    if(flag_do_job == false){
+      print0("Pass %s \n", srcI.name_zero_vecs.c_str());
+      return ;
+    }
+  }
+
+  //if(saveFFT){
+  //  bool flag_do_job = false;
+  //  TIMER("saveFFT");
+  //  fft_fieldM(resTa.data(), 32*nmass, 1, geo, false);
+  //  mdat.pick_mom_from_vecs(FFT_data[0], resTa);
+  //  char namesm[500], nameQ[550], name_info[550], name_mom_tmp[100];
+  //  sprintf(name_sm, "%s", srcI.name_mom_vecs.c_str());
+  //  sprintf(nameQ, "%s.Gsrc", namesm );
+  //  sprintf(name_info, "%s.GInfo", namesm );
+
+  //  if(get_file_size_MPI(name_mom) == 0){flag_do_job = true;}
+  //  if(get_file_size_MPI(srcI.name_zero_vecs.c_str()) == 0){flag_do_job = true;}
+  //  for(int gi=0;  gi  < Nlms + 1; gi++){
+  //    sprintf(name_mom_tmp, "%09d", gi);
+  //    if(mdat.read(FFT_data, std::string(nameQ), std::string(namei)) == 0){flag_do_job = true;}
+  //  }
+  //  if(flag_do_job == false){return ;}
+  //}
+
   char key_T[1000], dimN[1000];
   sprintf(key_T, "%d", 1);sprintf(dimN , "src");
 
   io_vec io_use(geo,srcI.ionum);
   std::string POS_LIST, POS_CUR;
   if(saveFFT){
-    get_mom_single_node(mapA, mapB, geo, srcI.mom_cut);
-    FFT_data.resize(Nfdata);FFT_data.set_zero();
-    FFT_data_high.resize(Nfdata);FFT_data_high.set_zero();
+    //get_mom_single_node(mapA, mapB, geo, srcI.mom_cut);
+    //FFT_data.resize(Nfdata);FFT_data.set_zero();
+    //FFT_data_high.resize(Nfdata);FFT_data_high.set_zero();
     //sprintf(key_T, "  %d   %d  %d  %d  %d %d %d %d", Nlms+1, 32, int(massL.size()), fd.nt, mc, mc, mc, 2);
     //sprintf(dimN , "grids+1 operator masses nt pz py px complex");
-    sprintf(key_T, "%d  %d  %d  %d %d %d %d", 32, int(massL.size()), fd.nt, mc, mc, mc, 2);
-    sprintf(dimN , "operator masses nt pz py px complex");
-
+    sprintf(key_T, "%d  %d  %d %d %d %d", int(massL.size()), fd.nt, mc, mc, mc, 2);
+    sprintf(dimN , "masses nt pz py px complex");
   }
   std::string ktem(key_T);
   std::string dtem(dimN);
   corr_dat<Ta > mom_res(ktem, dtem);
   mom_res.INFOA = srcI.INFOA;
-  char  name_mom[500];
+  char  name_mom[500], name_mom_tmp[500];
+  sprintf(name_mom, "%s.Gsrc", srcI.name_mom_vecs.c_str());
   //////===container for fft vecs
 
   ////===high mode contractions
@@ -346,7 +339,7 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
     stmp.set_zero();
     low_prop.set_zero();
     FieldM_src_to_FieldM_prop(src, src_prop[0], GPU);
-    copy_eigen_src_to_FeildM(stmp, src_prop, ei.b_size, fd, 1, GPU, rotate);
+    copy_eigen_src_to_FieldM(stmp, src_prop, ei.b_size, fd, 1, GPU, rotate);
     prop_L_device(ei, stmp.data(), low_prop.data(), 12, massL, srcI.mode_eig_sm);
     high_prop -= low_prop;
   }
@@ -355,7 +348,7 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
   print0("Do high %s \n", POS_CUR.c_str());
   copy_eigen_prop_to_EigenM(high_prop.data(), Eprop, ei.b_size, nmass, fd, 0, GPU);
   prop_to_vec(Eprop, resTa, fd); 
-  vec_corrE(resTa.data(), EresH, fd, nvecs, 0);
+  if(save_zero_corr){vec_corrE(resTa.data(), EresH, fd, nvecs, 0);}
 
   POS_CUR = std::string("");write_pos_to_string(POS_CUR, pos);POS_LIST += POS_CUR;
   if(savezero){
@@ -363,11 +356,28 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
     cpy_data_thread(resZero.data(), resTa.data(), resTa.size(), 1, true, -1.0*Nlms);
   }
   if(saveFFT){
-    pick_mom_data(FFT_data_high, resTa, 32*nmass, mapA, mapB, geo);
-    sprintf(name_mom, "%s.%05d.Gsrc", srcI.name_mom_vecs.c_str(),    0);
-    mom_res.INFO_LIST = POS_CUR;mom_res.shift_zero();
-    mom_res.write_corr(FFT_data_high.data(), FFT_data_high.size(), 3);
-    mom_res.write_dat(name_mom);
+    TIMER("saveFFT");
+    fft_fieldM(resTa.data(), 32*nmass, 1, geo, false);
+    mdat.pick_mom_from_vecs(FFT_data[0], resTa);
+    sprintf(name_mom_tmp, "%09d", 0);mdat.write( FFT_data[0], std::string(name_mom), name_mom_tmp, true );
+
+    //print0("norm0 %.8f \n", FFT_data[0].norm().real());
+
+    //sprintf(key_T, "%d  %d  %d %d %d %d",  int(massL.size()), fd.nt, mc, mc, mc, 2);
+    //sprintf(dimN , "masses nt pz py px complex");
+
+    //std::string ktem(key_T);
+    //std::string dtem(dimN);
+    //corr_dat<Ta > mom_tmp(ktem, dtem);
+    //mom_tmp.INFOA = srcI.INFOA;
+
+    //long Nfdata = long(32)*massL.size()*fd.nt*mc*mc*mc ;
+    //qlat::vector_gpu<Ty > FFT_data_high;FFT_data_high.resize(Nfdata);
+    //pick_mom_data(FFT_data_high, resTa, 32*nmass, mdat.mapA, mdat.mapB, geo);
+    //sprintf(name_mom, "%s.%05d.Gsrc", srcI.name_mom_vecs.c_str(),    0);
+    //mom_tmp.INFO_LIST = POS_CUR;mom_tmp.shift_zero();
+    //mom_tmp.write_corr(FFT_data_high.data(), FFT_data_high.size(), 3);
+    //mom_tmp.write_dat(name_mom);
   }
 
   print_mem_info();
@@ -383,7 +393,7 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
     if(srcI.lms == 0)
     {
       FieldM_src_to_FieldM_prop(src, src_prop[0], GPU);
-      copy_eigen_src_to_FeildM(stmp, src_prop, ei.b_size, fd, 1, GPU, rotate);
+      copy_eigen_src_to_FieldM(stmp, src_prop, ei.b_size, fd, 1, GPU, rotate);
     }
 
     if(srcI.lms != 0){
@@ -399,7 +409,7 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
     if(srcI.do_all_low == 1){
       copy_eigen_prop_to_EigenM(low_prop.data(),  Eprop, ei.b_size, nmass, fd, 0, GPU);
       prop_to_vec(Eprop, resTa, fd);  
-      vec_corrE(resTa.data(), EresL, fd, nvecs, 0);
+      if(save_zero_corr){vec_corrE(resTa.data(), EresL, fd, nvecs, 0);}
       //Ty norm0 = low_prop.norm();
       //Ty norm1 = resTa.norm();
       //print0("Check value %.3f %.3f, %.3f %.3f, %.3f %.3f \n", EresL[0].real(), EresL[0].imag(), 
@@ -410,18 +420,37 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
     //////format suitable for contractions
     copy_eigen_prop_to_EigenM(low_prop.data(),  Eprop, ei.b_size, nmass, fd, 0, GPU);
     prop_to_vec(Eprop, resTa, fd);
-    vec_corrE(resTa.data(), EresA, fd, nvecs, 0);
+    if(save_zero_corr){vec_corrE(resTa.data(), EresA, fd, nvecs, 0);}
 
     if(savezero){resZero += resTa;}
     if(saveFFT){
-      pick_mom_data(FFT_data, resTa, 32*nmass, mapA, mapB, geo);
-      sprintf(name_mom, "%s.%05d.Gsrc", srcI.name_mom_vecs.c_str(), gi+1);
-      mom_res.INFO_LIST = POS_CUR;mom_res.shift_zero();
-      ////subtract high mode
-      FFT_data -= FFT_data_high;
-      mom_res.write_corr(FFT_data.data(), FFT_data.size(), 3);
-      mom_res.write_dat(name_mom);
+      TIMER("saveFFT");
+      fft_fieldM(resTa.data(), 32*nmass, 1, geo, false);
+      mdat.pick_mom_from_vecs(FFT_data[1], resTa);
+      FFT_data[1] -= FFT_data[0];
+      sprintf(name_mom_tmp, "%09d", gi + 1);mdat.write( FFT_data[1], std::string(name_mom), name_mom_tmp, false );
+      ////print0("norm0 %.8f \n", FFT_data[gi+1].norm().real());
+      //pick_mom_data(FFT_data, resTa, 32*nmass, mapA, mapB, geo);
+      //sprintf(name_mom, "%s.%05d.Gsrc", srcI.name_mom_vecs.c_str(), gi+1);
+      //mom_res.INFO_LIST = POS_CUR;mom_res.shift_zero();
+      //////subtract high mode
+      //mom_res.write_corr(FFT_data.data(), FFT_data.size(), 3);
+      //mom_res.write_dat(name_mom);
     }
+  }
+
+  if(saveFFT){
+    TIMER("saveFFT");
+    //sprintf(name_mom, "%s.Gsrc", srcI.name_mom_vecs.c_str());
+    //char name[500];bool clean = true;
+    //for(unsigned int i=0;i<FFT_data.size();i++){
+    //  sprintf(name, "%09d", i);if(i != 0){clean = false;}
+    //  mdat.write( FFT_data[i], std::string(name_mom), name, clean );
+    //}
+
+    sprintf(name_mom, "%s.GInfo", srcI.name_mom_vecs.c_str());
+    mom_res.INFO_LIST = POS_LIST;
+    mom_res.write_dat(name_mom);
   }
 
   if(savezero){
@@ -440,17 +469,20 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
   //  mom_res.print_info();
   //}
 
-  if(shift_t == 1){
-    shift_result_t(EresL, fd.nt, tini);
-    shift_result_t(EresH, fd.nt, tini);
-    shift_result_t(EresA, fd.nt, tini);
+  if(save_zero_corr){
+    if(shift_t == 1){
+      shift_result_t(EresL, fd.nt, tini);
+      shift_result_t(EresH, fd.nt, tini);
+      shift_result_t(EresA, fd.nt, tini);
+    }
+    ////subtract high mode from EresA
+    cpy_data_thread(EresA.data(), EresH.data(), EresA.size(), 1, true, -1.0*Nlms);
+    res.write_corr((Ty*) EresL.data(), EresL.size());
+    res.write_corr((Ty*) EresH.data(), EresH.size());
+    res.write_corr((Ty*) EresA.data(), EresA.size());
   }
 
-  ////subtract high mode from EresA
-  cpy_data_thread(EresA.data(), EresH.data(), EresA.size(), 1, true, -1.0*Nlms);
-  res.write_corr((Ty*) EresL.data(), EresL.size());
-  res.write_corr((Ty*) EresH.data(), EresH.size());
-  res.write_corr((Ty*) EresA.data(), EresA.size());
+  print_mem_info("END point_corr");
 }
 
 /////all to all prop naive do, test for all-to-all low eigen

@@ -200,7 +200,7 @@ inline Coordinate get_grid_off(long j0, const Coordinate& off_L, const Coordinat
   ////for(int i=0;i<4;i++){pos[i] = pos_ini[i];}
 
   Coordinate off_pos = qlat::coordinate_from_index(j0, off_L);
-  for(int i=0;i<4;i++){pos[i] += (Lat[i]/(off_L[i]))*off_pos[i];}
+  for(int i=0;i<4;i++){pos[i] += ((Lat[i]/(off_L[i]))*off_pos[i] ) %(Lat[i]);}
 
   //int it  = j0/(off_L[0]*off_L[1]*off_L[2]);
   //long i0 = j0%(off_L[0]*off_L[1]*off_L[2]);
@@ -229,7 +229,7 @@ inline void grid_list_posT(std::vector<PointSelection > &LMS_points, const Coord
     if(combineT == 0){
       for(int it = 0; it < off_L[3]; it++){
         cur_off = cur_pos;
-        cur_off[3] += (Lat[3]/(off_L[3]))*it;
+        cur_off[3] += ((Lat[3]/(off_L[3]))*it)%Lat[3]; ////need be careful not to exceed boundaries
         PointSelection lms_res;lms_res.push_back(cur_off);
         LMS_points.push_back(lms_res);
       }
@@ -238,7 +238,7 @@ inline void grid_list_posT(std::vector<PointSelection > &LMS_points, const Coord
       PointSelection lms_res;
       for(int it = 0; it < off_L[3]; it++){
         cur_off = cur_pos;
-        cur_off[3] += (Lat[3]/(off_L[3]))*it;
+        cur_off[3] += ((Lat[3]/(off_L[3]))*it)%Lat[3];
         lms_res.push_back(cur_off);
       }
       LMS_points.push_back(lms_res);
@@ -250,6 +250,7 @@ inline void grid_list_posT(std::vector<PointSelection > &LMS_points, const Coord
 
 
 //////assume res have been cleared
+//////asuume res on GPU
 template<typename Ty>
 void write_grid_point_to_src(Ty* res, const qnoiT& src, const PointSelection& posL, int b_size, qlat::fft_desc_basic& fd)
 {
@@ -273,21 +274,20 @@ void write_grid_point_to_src(Ty* res, const qnoiT& src, const PointSelection& po
     LInt isp = fd.index_l_from_g_coordinate(pos);
     phase = src.get_elem(isp);
     ////printf("src pos %d %d %d %d, real %.3f imag %.3f \n", pos[0], pos[1], pos[2], pos[3], phase.real(), phase.imag());
-    for(int d0=0;d0<12;d0++){
+    qacc_forNB(d0, 12, {
       int d1 = d0;
-
       long mi = d1*NTt*Nxyz + isp;
       int chi = mi/(total);
       LInt xi = mi%(total);
       long bi = xi/b_size;
       long bj = xi%b_size;
-
       long off  = (chi*bfac+bi)*Ns*b_size  + d0*b_size + bj;
       res[off] += phase;
-    }
+    });
     /////phaseN = qlat::qnorm(src[isp]);
   }
   }
+  qacc_barrier(dummy);
 
   //double flag = qlat::qnorm(phase);
   //sum_all_size(&flag, 1);

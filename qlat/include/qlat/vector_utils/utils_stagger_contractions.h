@@ -23,7 +23,7 @@ void cf_simple_pion(std::vector<colorFT >& cf0, std::vector<colorFT >& cf1, Eige
   TIMER("cf_simple_pion");
   qassert(cf0.size() == 3);qassert(cf1.size() == 3);
   int  NTt  = fd.Nv[3];
-  LInt Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
+  ////LInt Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
   Geometry& geo = cf0[0].geo();
 
   EigenV resV;ini_resE(resV, 1, fd);

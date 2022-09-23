@@ -108,15 +108,38 @@ inline int stringtonum(std::string &tem_string)
 
 }
 
-inline Coordinate string_to_Coordinate(const std::string& paraI = std::string("None"))
+inline Coordinate string_to_Coordinate(const std::string& paraI = std::string("NONE"))
 {
   Coordinate sp;for(int i=0;i<4;i++){sp[i] = 0;}
-  if(paraI != "None"){
+  if(paraI != "NONE"){
     std::vector<std::string > Li = stringtolist(paraI);
     qassert(Li.size() == 4);
     for(int i=0;i<4;i++){sp[i] = stringtonum(Li[i]);}
   }
   return sp;
+}
+
+inline std::string mass_to_string(std::vector<double>& massL)
+{
+  std::string mL;char mnum[500];
+  mL += std::string("masses ");
+  for(unsigned int mi=0;mi<massL.size();mi++)
+  {
+    sprintf(mnum, "   %.9f", massL[mi]);
+    mL += std::string(mnum);
+  }
+  return mL;
+}
+
+inline std::vector<double> string_to_mass(const std::string& INFO_MASS)
+{
+  std::vector<std::string > resv = stringtolist(INFO_MASS);
+  std::vector<double> massL;
+  for(unsigned int i=1;i < resv.size(); i++)
+  {
+    massL.push_back(stringtodouble(resv[i]));
+  }
+  return massL;
 }
 
 inline unsigned long get_file_size_o(const char *filename)
@@ -347,8 +370,13 @@ struct inputpara{
   std::string paraIA;
   std::string paraIB;
   std::string paraIC;
+  std::string paraI_2pt;
+  std::string paraI_3pt;
+  std::string sink_list;
+  std::string para_stag;
   std::string src_smear_para;
   std::string sink_smear_para;
+  int write_mode;
 
   //////qlat data tag
   std::string job_tag;
@@ -369,12 +397,16 @@ struct inputpara{
   int solver_type;
   int inv_deflate;
   int fermion_type;
+  int prec_type;
+
+  int niter_sloppy;
 
   int eig_poly_deg;
   double eig_amin;
   double eig_err;
 
   int nsource;
+  int read_noi;
   std::vector<std::string > propN;
   std::vector<std::string > srcN;
   std::vector<std::string > smearN;
@@ -448,12 +480,22 @@ struct inputpara{
   //  return 0;
   //}
 
+  int find_string(const std::string &str0, const std::string &str2)
+  {
+    int res = 0;
+    //int found = find_string(str0, str2);
+    //if(found != std::string::npos and found==0){res = 1;}
+    if(str0 == str2 ){res = 1;}
+    return res;
+  }
+
   //////TODO Check found == 0 correct for all cases
   int find_para(const std::string &str2, int &res){
     for(unsigned int is=0;is<read_f.size();is++){
       ////std::string str2("bSize");
-      std::size_t found = read_f[is][0].find(str2);
-      if(found != std::string::npos and found==0 and read_f[is].size() >= 2){
+      int found = find_string(read_f[is][0], str2);
+      ////std::size_t found = read_f[is][0].find(str2);
+      if(found == 1 and read_f[is].size() >= 2){
         res = stringtonum(read_f[is][1]);
         if(printlog)if(get_node_rank_funs0() == 0)
           printf("  %20s %10d \n",str2.c_str(), res);
@@ -466,8 +508,9 @@ struct inputpara{
   int find_para(const std::string &str2, double &res){
     for(unsigned int is=0;is<read_f.size();is++){
       ////std::string str2("bSize");
-      std::size_t found = read_f[is][0].find(str2);
-      if(found != std::string::npos and found==0 and read_f[is].size() >= 2){
+      int found = find_string(read_f[is][0], str2);
+      //std::size_t found = read_f[is][0].find(str2);
+      if(found == 1 and read_f[is].size() >= 2){
         res = stringtodouble(read_f[is][1]);
         if(printlog)if(get_node_rank_funs0() == 0){
           if(res >= 1e-6){printf("  %20s %.6f \n", str2.c_str(), res);}
@@ -490,8 +533,9 @@ struct inputpara{
   int find_para(const std::string &str2, std::string &res){
     for(unsigned int is=0;is<read_f.size();is++){
       ////std::string str2("bSize");
-      std::size_t found = read_f[is][0].find(str2);
-      if(found != std::string::npos and found==0 and read_f[is].size() >= 2){
+      int found = find_string(read_f[is][0], str2);
+      //std::size_t found = read_f[is][0].find(str2);
+      if(found == 1 and read_f[is].size() >= 2){
         if(read_f[is].size()==2){res = read_f[is][1];}else{
           res = "";
           for(unsigned int temi=1;temi<read_f[is].size();temi++){
@@ -560,6 +604,7 @@ struct inputpara{
 
     if(find_para(std::string("nini"),nini)==0)nini  = 0;
     if(find_para(std::string("nvec"),nvec)==0)nvec  = 0;
+    if(find_para(std::string("write_mode"),write_mode)==0)write_mode  = 0;
     if(find_para(std::string("mode_dis"),mode_dis)==0)mode_dis  = 0;
     if(find_para(std::string("split_save"),split_save)==0)split_save  = 0;
     if(find_para(std::string("ndouble"),ndouble)==0)ndouble  = 200;
@@ -596,11 +641,20 @@ struct inputpara{
     if(find_para(std::string("paraI"),paraI)==0)paraI  = std::string("NONE");
     if(find_para(std::string("paraIA"),paraIA)==0)paraIA = std::string("NONE");
     if(find_para(std::string("paraIB"),paraIB)==0)paraIB = std::string("NONE");
+    if(find_para(std::string("paraIC"),paraIC)==0)paraIC = std::string("NONE");
+
+    if(find_para(std::string("paraI_2pt"),paraI_2pt)==0)paraI_2pt = std::string("NONE");
+    if(find_para(std::string("paraI_3pt"),paraI_3pt)==0)paraI_3pt = std::string("NONE");
+    if(find_para(std::string("sink_list"),sink_list)==0)sink_list = std::string("NONE");
+
+    if(find_para(std::string("para_stag"),para_stag)==0)para_stag = std::string("NONE");
     if(find_para(std::string("fermion_mass"),fermion_mass)==0)fermion_mass  = 0.11;
     if(find_para(std::string("niter"),niter )==0)niter  = 100000;
+    if(find_para(std::string("niter_sloppy"),niter_sloppy )==0)niter_sloppy  = 100000;
     if(find_para(std::string("cg_err"),cg_err)==0)cg_err  = 1e-8;
     if(find_para(std::string("solver_type"),solver_type)==0)solver_type  = 0;
     if(find_para(std::string("inv_deflate"),inv_deflate)==0)inv_deflate  = 0;
+    if(find_para(std::string("prec_type"),prec_type)==0)prec_type  = 0;
 
     if(find_para(std::string("job_tag"),job_tag)==0)job_tag  = std::string("NONE");
     if(find_para(std::string("src_smear_para"),src_smear_para)==0)src_smear_para  = std::string("NONE");
@@ -635,6 +689,7 @@ struct inputpara{
       else{masses.push_back(stringtodouble(tem));}
     }
 
+    if(find_para(std::string("read_noi"),read_noi)==0)read_noi  = 1;
     if(find_para(std::string("nsource"),nsource)==0)nsource  = 0;
     for(int si=0;si<nsource;si++){
       std::string tem = std::string("NONE");
@@ -708,6 +763,16 @@ struct inputpara{
   }
 
 };
+
+inline void print_time()
+{
+  char buf[26];
+  struct tm* tm_info;
+  time_t timer = time(NULL);
+  tm_info = localtime(&timer);
+  strftime(buf, 26, "%Y-%m-%d %H:%M:%S", tm_info);
+  print0("%s ", buf);
+}
 
 inline size_t vec_head_write(inputpara &in, const char* filename, int type=-1, bool clear=true){
   ////nx,ny,nz,nt, checksum, time
@@ -868,7 +933,7 @@ struct corr_dat
     dim = tem.size();
     key_T.resize(dim);c_a_t.resize(dim);total = 1;
     for(LInt i=0;i<tem.size();i++){
-      key_T[i] = stringtonum(tem[i]);
+      key_T[i] = stringtonum(tem[i]);qassert(key_T[i] != 0);
       c_a_t[i] = 0;
       total = total * key_T[i];
     }
@@ -877,10 +942,11 @@ struct corr_dat
       dim_name.resize(dim);
       for(int d=0;d<dim;d++){dim_name[d] = std::string(" ");}
     }
+    qassert(int(dim_name.size()) == dim);
 
     //////memory only on node 0
     //if(qlat::get_id_node() == 0)dat.resize(total);
-    dat.resize(total);
+    dat.resize(total);zero_Ty((Ty*) dat.data(), total, 0);
     corr_name = corr;
     INFO_LIST = std::string("NONE");
     INFOA.resize(0);
@@ -993,6 +1059,20 @@ struct corr_dat
     qassert(crc32_tem == in.checksum);
   }
 
+  std::string get_key_T(){
+    //std::string key = std::string("");
+    //for(int d=0;d<dim;d++){key += (std::string("  ") + std::to_string(key_T[d]));}
+    return qlat::listtostring(key_T);
+    //return key;
+  }
+
+  std::string get_dim_name(){
+    //std::string dim_N = std::string("");
+    //for(int d=0;d<dim;d++)(dim_N += (std::string("  ") + dim_name[d]));
+    return qlat::listtostring(dim_name);
+    //return dim_N;
+  }
+
   void write_dat(const char* filename, const int node_control = 0){
     TIMER("Write corr");
 
@@ -1004,11 +1084,13 @@ struct corr_dat
     if(sizeof(Ty) == sizeof(float) ){in.save_type = std::string("Single");type = 1;}
     int bsize = sizeof(double);if(type == 1){bsize=sizeof(float);}
 
-    in.key_T = std::string("");
-    for(int d=0;d<dim;d++){in.key_T += (std::string("  ") + std::to_string(key_T[d]));}
+    //in.key_T = std::string("");
+    //for(int d=0;d<dim;d++){in.key_T += (std::string("  ") + std::to_string(key_T[d]));}
 
-    in.dim_name = std::string("");
-    for(int d=0;d<dim;d++)(in.dim_name += (std::string("  ") + dim_name[d]));
+    //in.dim_name = std::string("");
+    //for(int d=0;d<dim;d++)(in.dim_name += (std::string("  ") + dim_name[d]));
+    in.key_T = get_key_T();
+    in.dim_name = get_dim_name();
 
     in.total_size = print_size(size_t(total * bsize));
 
@@ -1048,41 +1130,52 @@ struct corr_dat
 
   }
 
-  void add_size(int n){
+  void add_size(const int n){
     if(key_T.size() < 1){
       print0("key_T size wrong!\n");MPI_Barrier(get_comm());
       fflush(stdout);qassert(false);}
+
+    std::vector<Ty > buf;buf.resize(dat.size());
+    cpy_data_thread((Ty*) buf.data(), (Ty*) dat.data(), dat.size(), 0);
+
     key_T[0] += n;
     total = 1; 
     for(LInt i=0;i<key_T.size();i++){total = total * key_T[i];}
+
     dat.resize(total);
+    cpy_data_thread((Ty*) dat.data(), (Ty*) buf.data(), buf.size(), 0);
+    zero_Ty((Ty*) &dat[buf.size()], total - buf.size(), 0);
   }
 
   template<typename Ta>
-  void write_corr(Ta* src, long size, int mode_copy = 0 ){
+  void write_corr(Ta* src, const long size, int mode_copy = 0 ){
+    TIMER("write_corr");
     ///if(size > total){abort_r("Write size too larg. \n");}
-    long cur = get_off();
-    if(size + cur >  total){ 
+    const long cur = get_off();
+    long long double_size = size;
+
+    const int is_double = get_data_type_is_double<Ta >();
+    if( is_double){double_size = size * sizeof(Ta)/sizeof(double);}
+    if(!is_double){double_size = size * sizeof(Ta)/sizeof(float );}
+
+    if(double_size + cur >  total){ 
       if(key_T.size() < 1){
         print0("key_T size wrong!\n");MPI_Barrier(get_comm());
         fflush(stdout);qassert(false);}
       long each = total/key_T[0];long base = key_T[0];
-      int n = (size + cur + each) / (each) - base;
+      int n = (double_size + cur + each - 1) / (each) - base;
       add_size(n);
     }
-    int is_double = get_data_type_is_double<Ta >();
 
-    //if(sizeof(Ta) != sizeof(float) and sizeof(Ta) != sizeof(double)){
-    //  print0("Type size wrong! \n");MPI_Barrier(get_comm());
-    //  fflush(stdout);qassert(false);}
     qassert(mode_copy == 0 or mode_copy == 3);
-    Ty* p1 = &dat[cur];
-    if( is_double){
-      double* p0     = (double*) src; cpy_data_thread(p1, p0, size * sizeof(Ta)/sizeof(double), mode_copy);
-      shift_off(size * sizeof(Ta)/sizeof(double));}
-    if(!is_double){
-      float*  p0     = (float* ) src; cpy_data_thread(p1, p0, size * sizeof(Ta)/sizeof(float ), mode_copy);
-      shift_off(size * sizeof(Ta)/sizeof(float ));}
+    if( is_double){cpy_data_thread((Ty*) &dat[cur], (double*) src, double_size, mode_copy);}
+    if(!is_double){cpy_data_thread((Ty*) &dat[cur], (float* ) src, double_size, mode_copy);}
+    shift_off(double_size);
+  }
+
+  void set_zero(){
+    zero_Ty(&dat[0], dat.size());
+    shift_zero();
   }
 
   void print_info(){

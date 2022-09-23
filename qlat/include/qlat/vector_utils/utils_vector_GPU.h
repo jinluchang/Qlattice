@@ -263,7 +263,7 @@ struct vector_gpu{
 
   inline Ty norm()
   {
-    qlat::vector_acc<Ty > tmp;tmp.resize(1);
+    qlat::vector_acc<Ty > tmp;tmp.resize(1);tmp[0] = 0;
     qlat::vector_gpu<Ty > copy;copy.resize(n, GPU);
     Ty* res = copy.data();Ty* src = p;
     if(GPU){
@@ -321,13 +321,13 @@ struct vector_gpu{
 };
 
 template <typename Ty >
-qacc Vector<Ty> get_data(vector_gpu<Ty> vec)
+qacc Vector<Ty> get_data(vector_gpu<Ty>& vec)
 {
   return Vector<Ty>(vec.data(), vec.size());
 }
 
 template <typename Ty >
-qacc void set_zero(vector_gpu<Ty> vec)
+qacc void set_zero(vector_gpu<Ty>& vec)
 {
   vec.set_zero();
 }

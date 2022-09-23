@@ -88,6 +88,8 @@ unsigned int get_MPI_type(MPI_Datatype& curr)
 template<typename Ty>
 void sum_all_size(Ty *src,Ty *sav,long size, int GPU=0, MPI_Comm* commp=NULL)
 {
+  TIMER("global sum sum_all_size");
+  if(size == 0){return ;}
   qlat::vector_gpu<Ty > res;//// buf.resize(size, GPU);
   ///Ty *res;/////qlat::vector<Ty >buf;
   if(src == sav){
@@ -233,7 +235,7 @@ void Redistribute_all_Nt(Ty *src,long size,const qlat::Geometry &geo, int GPU=0)
   int mt = nt/Nt;
   if(mt != Nmpi){print0("Not supported !");qassert(false);return;}
 
-  int rank  = qlat::get_id_node();
+  /////int rank  = qlat::get_id_node();
   long size_c = sizeof(Ty)*size/mt;
 
   std::vector<int > send,recv,spls,rpls;
@@ -522,6 +524,19 @@ struct move_index
   //  //////psrc.resize(civ);
   //}
 
+  /////order follow src memory order
+  template <typename Ty >
+  void move_civ_out(Ty* src,Ty* res,int biva, long sizeF,int civ, int size_inner, bool GPU = false)
+  {
+    dojob(src, res, biva, civ, sizeF, 1, size_inner, GPU);
+  }
+
+  /////order follow src memory order
+  template <typename Ty >
+  void move_civ_in(Ty* src,Ty* res,int biva, int civ, long sizeF, int size_inner, bool GPU = false)
+  {
+    dojob(src, res, biva, civ, sizeF, 0, size_inner, GPU);
+  }
 
   ////flag = 1 --> biva * sizeF * civ * size_inner --> biva * civ * sizeF * size_inner
   template <typename Ty >
@@ -853,6 +868,31 @@ inline void zeroE(std::vector<qlat::vector_acc<Ty > >& a,int GPU=0, bool dummy=t
   if(dummy)qacc_barrier(dummy);
 }
 
+template<typename Ty, int civ>
+inline void random_FieldM(qlat::FieldM<Ty , civ>& a,int GPU=0, int seed = 0)
+{
+  qassert(a.initialized);
+  const Geometry& geo = a.geo();
+  Ty* buf = (Ty*) qlat::get_data(a).data();
+  random_Ty(buf, geo.local_volume() * civ, GPU, seed);
+}
+
+template<typename Ty, int civ>
+inline Ty norm_FieldM(qlat::FieldM<Ty , civ>& a)
+{
+  qassert(a.initialized);
+  const Geometry& geo = a.geo();
+  Ty* buf = (Ty*) qlat::get_data(a).data();
+  const long  V = geo.local_volume() ;
+  qlat::vector_gpu<Ty > tmp;tmp.resize(V*civ);
+  Ty* srcP = (Ty* ) qlat::get_data(a).data();
+  Ty* resP = tmp.data();
+  qacc_for(isp,V*civ,{ resP[isp] = srcP[isp];});
+  Ty  norm = tmp.norm();
+  return norm;
+  //print0("norm %.3e %.3e \n", norm.real(), norm.imag());
+}
+
 template <class T>
 void random_prop(Propagator4dT<T >& prop, int seed = -1)
 {
@@ -876,7 +916,6 @@ void random_prop(Propagator4dT<T >& prop, int seed = -1)
     for(int ci=0;ci<12*12;ci++){
       v0.p[ci] = (ci/(12*12.0))*T(std::cos((ini+isp + ci*2)*0.5 + ci) , (ci+(5.0+ci)/(isp+1))*ini*0.1 + 0.2); 
     }
-
   }); 
 }
 
@@ -1276,6 +1315,21 @@ inline std::vector<long > random_list(const long n, const long m, const int seed
   }
   return b;
 
+}
+
+///num to be zero for nodes
+template<typename Ty>
+void sum_value_mpi(Ty& num)
+{
+  //int Nmpi  = qlat::get_num_node();
+  //int rank  = qlat::get_id_node();
+  Ty buf = num;
+  long nvalue = 0;
+  if(std::fabs(num) > 1e-30){nvalue = 1;}
+  sum_all_size(&buf, 1);
+  sum_all_size(&nvalue, 1);
+  if(nvalue != 0){buf = buf/nvalue;}
+  num = buf;
 }
 
 
