@@ -4,7 +4,6 @@
 
 #include <qlat/coordinate-d.h>
 #include <qlat/coordinate.h>
-#include <qlat/utils.h>
 
 namespace qlat
 {  //

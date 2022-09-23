@@ -15,6 +15,8 @@ name=qlat-utils
 
     cd "$build"
 
+    rm -rfv "$prefix"/include/qlat-utils
+
     meson "$wd/qlat-utils" --prefix="$prefix"
     time ninja -j$num_proc
     ninja install

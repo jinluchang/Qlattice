@@ -15,6 +15,9 @@ name=qlat
 
     cd "$build"
 
+    rm -rfv "$prefix"/include/qlat
+    rm -rfv "$prefix"/include/qlat-setup.h
+
     meson "$wd/qlat" --prefix="$prefix"
     ninja -j$num_proc
     ninja install

@@ -33,7 +33,6 @@
 #include <qlat/qcd.h>
 #include <qlat/utils-coordinate.h>
 #include <qlat/utils-io.h>
-#include <qlat/utils.h>
 
 namespace qlat
 {  //

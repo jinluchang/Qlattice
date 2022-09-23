@@ -1,7 +1,5 @@
 #pragma once
 
-#include <qlat/utils.h>
-
 #include <cmath>
 
 namespace qlat

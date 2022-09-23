@@ -51,6 +51,11 @@ qacc T sqr(const T& x)
   return x * x;
 }
 
+inline std::string show(const Complex& x)
+{
+  return ssprintf("(%24.17E + %24.17E j)", x.real(), x.imag());
+}
+
 template <class M>
 void clear(std::vector<M>& vec)
 {

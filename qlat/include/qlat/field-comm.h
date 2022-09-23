@@ -1,7 +1,6 @@
 #pragma once
 
 #include <qlat/config.h>
-#include <qlat/utils.h>
 #include <qlat/mpi.h>
 
 #include <map>
