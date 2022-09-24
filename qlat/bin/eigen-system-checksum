@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
-#
-# Author: Luchang Jin 2021
+
+# Author: Luchang Jin 2022
 
 import qlat as q
 import sys
 
-q.begin()
+if len(sys.argv) < 2:
+    q.displayln_info("Usage: eigen-system-checksum path1 path2 ...")
+    exit(1)
 
-# Usage: eigen-system-checksum path1 path2 ...
+q.begin()
 
 for path in sys.argv[1:]:
     q.check_compressed_eigen_vectors(path)

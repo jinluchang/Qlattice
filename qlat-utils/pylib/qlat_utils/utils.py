@@ -1,7 +1,19 @@
 import cqlat_utils as cu
 
-
 from qlat_utils.cache import *
+
+import sys
+
+def get_arg(option, default = None):
+    argv = sys.argv
+    i_max = len(argv) - 1
+    for i, arg in enumerate(argv):
+        if arg == option:
+            if i == i_max:
+                return ""
+            else:
+                return argv[i + 1]
+    return default
 
 def random_permute(l, rs):
     # Do not change ``l''.

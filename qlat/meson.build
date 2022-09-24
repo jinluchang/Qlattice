@@ -71,6 +71,10 @@ c = run_command('bash', '-c', 'ls "$MESON_SOURCE_ROOT"/pylib/*.py', check: true)
 pysources = c.stdout().strip().split('\n')
 py3.install_sources(pysources)
 
+c = run_command('bash', '-c', 'ls $MESON_SOURCE_ROOT/bin/*', check: true)
+scripts = c.stdout().strip().split('\n')
+install_data(scripts, install_dir: 'bin')
+
 pkg = import('pkgconfig')
 pkg.generate(
   name: 'qlat',
