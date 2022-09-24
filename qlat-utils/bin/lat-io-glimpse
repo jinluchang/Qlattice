@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import qlat as q
+import qlat_utils as q
 import sys
 
 filenames = sys.argv[1:]
