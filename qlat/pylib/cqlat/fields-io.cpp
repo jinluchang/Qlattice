@@ -245,14 +245,13 @@ EXPORT(properly_truncate_fields_sync_node, {
                         &p_new_size_node)) {
     return NULL;
   }
-  std::string path;
-  py_convert(path, p_path);
+  const std::string path = py_convert_data<std::string>(p_path);
   Coordinate new_size_node;
   if (p_new_size_node != NULL) {
-    py_convert(new_size_node, p_new_size_node);
+    new_size_node = py_convert_data<Coordinate>(p_new_size_node);
   }
-  return py_convert(
-      properly_truncate_fields_sync_node(path, is_check_all, is_only_check, new_size_node));
+  return py_convert(properly_truncate_fields_sync_node(
+      path, is_check_all, is_only_check, new_size_node));
 });
 
 EXPORT(truncate_fields_sync_node, {
