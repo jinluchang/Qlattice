@@ -6,8 +6,8 @@
 #define UTILS_EIGENSYS_H
 
 #pragma once
-#include "gammas.h"
-#include "fft_desc.h"
+#include "utils_gammas.h"
+#include "utils_fft_desc.h"
 #include "utils_Matrix_prod.h"
 #include "utils_construction.h"
 #include "check_fun.h"

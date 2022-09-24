@@ -7,7 +7,7 @@
 #pragma once
 
 #include <qlat/qcd.h>
-#include "float_type.h"
+#include "utils_float_type.h"
 
 namespace qlat{
 

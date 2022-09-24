@@ -3,7 +3,7 @@
 
 #include <qutils/vector.h>
 #include "general_funs.h"
-#include "io_vec.h"
+#include "utils_io_vec.h"
 #include "utils_construction.h"
 #include "utils_stagger_contractions.h"
 #include "quda_para.h"

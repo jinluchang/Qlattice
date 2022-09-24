@@ -6,9 +6,9 @@
 //#include <qlat/reduce_V.h>
 ///#include "cach_reduce.h"
 #include "utils_reduce_vec.h"
-#include "gammas.h"
+#include "utils_gammas.h"
 #include "utils_Matrix_prod.h"
-#include "fft_desc.h"
+#include "utils_fft_desc.h"
 
 #define EigenVq Eigen::Matrix< Complexq, 1, Eigen::Dynamic ,Eigen::RowMajor>
 //////#define EigenAq Eigen::Array< Complexq, Eigen::Dynamic , 1>

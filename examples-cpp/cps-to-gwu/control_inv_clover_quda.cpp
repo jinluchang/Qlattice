@@ -3,7 +3,7 @@
 
 #include <qutils/vector.h>
 #include "general_funs.h"
-#include "io_vec.h"
+#include "utils_io_vec.h"
 #include "utils_construction.h"
 #include "quda_para.h"
 #include "utils_quda_inverter.h"

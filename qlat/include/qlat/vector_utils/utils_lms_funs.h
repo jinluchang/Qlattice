@@ -7,10 +7,10 @@
 
 #pragma once
 
-#include "float_type.h"
-#include "gammas.h"
+#include "utils_float_type.h"
+#include "utils_gammas.h"
 #include "utils_momentum.h"
-#include "fft_desc.h"
+#include "utils_fft_desc.h"
 #include "utils_shift_vecs.h"
 #include "utils_eigensys.h"
 #include "utils_construction.h"

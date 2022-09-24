@@ -9,7 +9,7 @@
 #include <invert_quda.h>
 
 #include <cstdlib>
-#include "float_type.h"
+#include "utils_float_type.h"
 
 namespace qlat
 {  //

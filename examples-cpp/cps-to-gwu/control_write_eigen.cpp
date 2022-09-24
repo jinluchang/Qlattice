@@ -1,5 +1,5 @@
 #include <sys/sysinfo.h>
-#include "io_vec.h"
+#include "utils_io_vec.h"
 #include "utils_smear_vecs.h"
 
 int main(int argc, char* argv[])

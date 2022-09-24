@@ -12,10 +12,10 @@
 #include <invert_quda.h>
 
 #include <cstdlib>
-#include "float_type.h"
+#include "utils_float_type.h"
 #include "quda_para.h"
 #include "general_funs.h"
-#include "io_vec.h"
+#include "utils_io_vec.h"
 
 static quda::TimeProfile profileEigensolve("eigensolveQuda");
 
