@@ -29,7 +29,7 @@ export QLAT_CC="mpicc -std=c++17 -fopenmp -O2 -xhost -Wall"
 export QLAT_CXX="mpicxx -std=c++17 -fopenmp -O2 -xhost -Wall"
 export QLAT_MPICC="mpicc -std=c++17 -fopenmp -O2 -xhost -Wall"
 export QLAT_MPICXX="mpicxx -std=c++17 -fopenmp -O2 -xhost -Wall "
-export QLAT_CXXFLAGS="-fPIC  -I/home/ard/Code/build/include/"
+export QLAT_CXXFLAGS="-fPIC  -I$prefix/include/"
 export QLAT_LDFLAGS="--shared"
 EOF
 
