@@ -23,6 +23,8 @@ name=qlat
     rm -rfv "$prefix"/lib/python3*/*-packages/rbc_ukqcd*
     rm -rfv "$prefix"/lib/python3*/*-packages/auto_contractor*
 
+    touch "$wd"/qlat/meson.build
+
     meson "$wd/qlat" --prefix="$prefix"
     ninja -j$num_proc
     ninja install
