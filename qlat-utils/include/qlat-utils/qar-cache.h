@@ -67,7 +67,7 @@ struct QarFileMultiVol : std::vector<QarFile> {
 inline bool has(const QarFileMultiVol& qar, const std::string& fn)
 // interface function
 {
-  for (long i = 0; i < qar.size(); ++i) {
+  for (unsigned long i = 0; i < qar.size(); ++i) {
     const QarFile& qar_v = qar[i];
     qassert(not qar_v.null());
     qassert(qar_v.mode() == "r");
@@ -82,7 +82,7 @@ inline bool has_file_or_directory(const QarFileMultiVol& qar,
                                   const std::string& fn)
 // interface function
 {
-  for (long i = 0; i < qar.size(); ++i) {
+  for (unsigned long i = 0; i < qar.size(); ++i) {
     const QarFile& qar_v = qar[i];
     qassert(not qar_v.null());
     qassert(qar_v.mode() == "r");
@@ -100,7 +100,7 @@ inline std::vector<std::string> list(const QarFileMultiVol& qar)
     return std::vector<std::string>();
   }
   std::vector<std::string> fn_list;
-  for (long i = 0; i < qar.size(); ++i) {
+  for (unsigned long i = 0; i < qar.size(); ++i) {
     const QarFile& qar_v = qar[i];
     qassert(not qar_v.null());
     qassert(qar_v.mode() == "r");
@@ -113,7 +113,7 @@ inline bool read(const QarFileMultiVol& qar, const std::string& fn,
                  QFile& qfile_in)
 // interface function
 {
-  for (long i = 0; i < qar.size(); ++i) {
+  for (unsigned long i = 0; i < qar.size(); ++i) {
     const QarFile& qar_v = qar[i];
     qassert(not qar_v.null());
     qassert(qar_v.mode() == "r");
@@ -572,7 +572,7 @@ inline int qtouch(const std::string& path, const std::string& content)
     return 1;
   }
   const long total_bytes = qwrite_data(content, qfile);
-  qassert(total_bytes == content.size());
+  qassert(total_bytes == long(content.size()));
   qfile.close();
   return qrename(path + ".partial", path);
 }
@@ -585,7 +585,7 @@ inline int qappend(const std::string& path, const std::string& content)
     return 1;
   }
   const long total_bytes = qwrite_data(content, qfile);
-  qassert(total_bytes == content.size());
+  qassert(total_bytes == long(content.size()));
   qfile.close();
   return 0;
 }
