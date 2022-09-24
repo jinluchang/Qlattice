@@ -3,9 +3,9 @@ build-backend = 'mesonpy'
 requires = [ 'meson-python', ]
 
 [project]
-name = 'qlattice'
+name = 'qlat-utils'
 dynamic = [ 'version', ]
-description = 'Qlattice'
+description = 'Qlattice utilities'
 readme = 'README.md'
 license = { text = 'GPL-3.0-or-later' }
 keyword = [ 'qar', 'Timer', 'RngState' ]
