@@ -1352,7 +1352,7 @@ inline std::vector<std::string> properly_truncate_fields_sync_node(
 {
   TIMER_VERBOSE("properly_truncate_fields_sync_node");
   std::vector<std::string> fns;
-  if (not does_file_exist_qar_sync_node(path)) {
+  if (not does_file_exist_qar_sync_node(path + "/geon-info.txt")) {
     displayln_info(0, fname + ssprintf(": '%s' does not exist.", path.c_str()));
     return fns;
   }
