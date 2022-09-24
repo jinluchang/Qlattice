@@ -6,19 +6,28 @@ name=gpt-test
 
 {
 
-echo "!!!! build $name !!!!"
+    time {
 
-# grid_options="--dslash-asm --shm-hugepages --shm 4050"
-# grid_options="--dslash-asm"
-grid_options=""
+    echo "!!!! build $name !!!!"
 
-geo_options="--grid 16.16.16.16 --mpi 1.1.1.1"
+    build="$prefix/test-gpt"
+    mkdir -p "$build"
+    cd "$build"
 
-OMP_NUM_THREADS=4 $prefix/gpt/benchmarks/dslash.py $grid_options $geo_options --Ls 12 --N 10 
+    # grid_options="--dslash-asm --shm-hugepages --shm 4050"
+    # grid_options="--dslash-asm"
+    grid_options=""
 
-cd $wd
-echo "!!!! $name build !!!!"
+    geo_options="--grid 16.16.16.16 --mpi 1.1.1.1"
 
-rm -rf $temp_dir || true
+    echo 'import numpy' | cat - $prefix/gpt/benchmarks/dslash.py > dslash.py
+    OMP_NUM_THREADS=4 python3 dslash.py $grid_options $geo_options --Ls 12 --N 10
+
+    cd $wd
+    echo "!!!! $name build !!!!"
+
+    rm -rf $temp_dir || true
+
+}
 
 } |& tee $prefix/log.$name.txt

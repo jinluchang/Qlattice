@@ -6,19 +6,27 @@ name=grid-test
 
 {
 
-echo "!!!! build $name !!!!"
+    time {
 
-# grid_options="--dslash-asm --shm-hugepages --shm 4050"
-# grid_options="--dslash-asm"
-grid_options=""
+    echo "!!!! build $name !!!!"
 
-geo_options="--grid 16.16.16.16 --mpi 1.1.1.1"
+    build="$prefix/test-grid"
+    mkdir -p "$build"
+    cd "$build"
 
-OMP_NUM_THREADS=4 $prefix/Grid/build/benchmarks/Benchmark_dwf_fp32 $grid_options $geo_options
+    # grid_options="--dslash-asm --shm-hugepages --shm 4050"
+    # grid_options="--dslash-asm"
+    grid_options=""
 
-cd $wd
-echo "!!!! $name build !!!!"
+    geo_options="--grid 16.16.16.16 --mpi 1.1.1.1"
 
-rm -rf $temp_dir || true
+    OMP_NUM_THREADS=4 $prefix/Grid/build/benchmarks/Benchmark_dwf_fp32 $grid_options $geo_options
+
+    cd $wd
+    echo "!!!! $name build !!!!"
+
+    rm -rf $temp_dir || true
+
+}
 
 } |& tee $prefix/log.$name.txt
