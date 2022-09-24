@@ -146,19 +146,20 @@ inline std::string mk_new_qar_read_cache_key(const QarFileMultiVol& qar,
 {
   Cache<std::string, QarFileMultiVol>& cache = get_qar_read_cache();
   std::string path_dir = remove_trailing_slashes(path);
+  const std::string pathd = path_dir + "/";
   while (true) {
     if (path_dir == "/" or path_dir == ".") {
       return key;
     }
     if (has(qar, path_dir + ".qar")) {
       const std::string key_new = path_dir + "/";
-      qassert(path.substr(0, key_new.size()) == key_new);
+      qassert(pathd.substr(0, key_new.size()) == key_new);
       QarFileMultiVol& qar_new = cache[key + key_new];
       if (qar_new.null()) {
         qar_new.init(key + path_dir + ".qar", "r");
       }
       qassert(not qar_new.null());
-      const std::string path_new = path.substr(key_new.size());
+      const std::string path_new = pathd.substr(key_new.size());
       if (has_file_or_directory(qar_new, path_new)) {
         return key + key_new;
       } else {
@@ -181,18 +182,19 @@ inline std::string mk_new_qar_read_cache_key(const std::string& path)
 {
   Cache<std::string, QarFileMultiVol>& cache = get_qar_read_cache();
   std::string path_dir = remove_trailing_slashes(path);
+  const std::string pathd = path_dir + "/";
   while (true) {
     if (path_dir == "/" or path_dir == ".") {
       return "";
     }
     if (does_file_exist(path_dir + ".qar")) {
       const std::string key = path_dir + "/";
-      qassert(path.substr(0, key.size()) == key);
+      qassert(pathd.substr(0, key.size()) == key);
       qassert(not cache.has(key));
       QarFileMultiVol& qar = cache[key];
       qar.init(path_dir + ".qar", "r");
       qassert(not qar.null());
-      const std::string path_new = path.substr(key.size());
+      const std::string path_new = pathd.substr(key.size());
       if (has_file_or_directory(qar, path_new)) {
         return key;
       } else {
