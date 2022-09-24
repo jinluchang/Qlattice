@@ -16,6 +16,8 @@ name=qlat-utils
     cd "$build"
 
     rm -rfv "$prefix"/include/qlat-utils
+    rm -rfv "$prefix"/lib/python3*/*-packages/cqlat_utils.*
+    rm -rfv "$prefix"/lib/python3*/*-packages/qlat_utils
 
     meson "$wd/qlat-utils" --prefix="$prefix"
     time ninja -j$num_proc

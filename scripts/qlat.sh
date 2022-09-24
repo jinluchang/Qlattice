@@ -17,6 +17,11 @@ name=qlat
 
     rm -rfv "$prefix"/include/qlat
     rm -rfv "$prefix"/include/qlat-setup.h
+    rm -rfv "$prefix"/lib/python3*/*-packages/cqlat.*
+    rm -rfv "$prefix"/lib/python3*/*-packages/qlat
+    rm -rfv "$prefix"/lib/python3*/*-packages/qlat_gpt.py
+    rm -rfv "$prefix"/lib/python3*/*-packages/rbc_ukqcd*
+    rm -rfv "$prefix"/lib/python3*/*-packages/auto_contractor*
 
     meson "$wd/qlat" --prefix="$prefix"
     ninja -j$num_proc
