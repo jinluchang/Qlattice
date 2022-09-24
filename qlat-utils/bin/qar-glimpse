@@ -2,7 +2,7 @@
 
 # Author: Luchang Jin 2022
 
-import qlat as q
+import qlat_utils as q
 import sys
 
 def show_list_qar(path_qar, idx = 0, is_recursive = True, drop_prefix = ""):

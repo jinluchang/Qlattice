@@ -2,7 +2,7 @@
 
 # Author: Luchang Jin 2022
 
-import qlat as q
+import qlat_utils as q
 import sys
 
 def remove_trailing_slashes(path):
