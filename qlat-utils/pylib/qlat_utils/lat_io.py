@@ -1,22 +1,23 @@
-import qlat.cqlat as c
+import cqlat_utils as cu
+
 import numpy as np
 
-from qlat.utils_io import *
+from qlat_utils.utils_io import *
 
 class LatData:
 
     # self.cdata
 
     def __init__(self):
-        self.cdata = c.mk_lat_data()
+        self.cdata = cu.mk_lat_data()
 
     def __del__(self):
         assert isinstance(self.cdata, int)
-        c.free_lat_data(self)
+        cu.free_lat_data(self)
 
     def __imatmul__(self, v1):
         assert isinstance(v1, LatData)
-        c.set_lat_data(self, v1)
+        cu.set_lat_data(self, v1)
         return self
 
     def copy(self, is_copying_data = True):
@@ -33,17 +34,21 @@ class LatData:
 
     def save_node(self, path):
         mk_file_dirs(path)
-        c.save_lat_data(self, path)
+        cu.save_lat_data(self, path)
 
     def load_node(self, path):
-        c.load_lat_data(self, path)
+        cu.load_lat_data(self, path)
 
     def bcast(self):
-        c.bcast_lat_data(self)
+        if get_num_node() != 1:
+            import cqlat as c
+            c.bcast_lat_data(self)
         return self
 
     def glb_sum_in_place(self):
-        c.glb_sum_lat_data(self)
+        if get_num_node() != 1:
+            import cqlat as c
+            c.glb_sum_lat_data(self)
         return self
 
     def glb_sum(self):
@@ -61,21 +66,21 @@ class LatData:
         self.bcast()
 
     def show(self):
-        return c.show_lat_data(self)
+        return cu.show_lat_data(self)
 
     def __iadd__(self, ld1):
         assert isinstance(ld1, LatData)
-        c.set_add_lat_data(self, ld1)
+        cu.set_add_lat_data(self, ld1)
         return self
 
     def __isub__(self, ld1):
         assert isinstance(ld1, LatData)
-        c.set_sub_lat_data(self, ld1)
+        cu.set_sub_lat_data(self, ld1)
         return self
 
     def __imul__(self, factor):
         assert isinstance(factor, float)
-        c.set_mul_double_lat_data(self, factor)
+        cu.set_mul_double_lat_data(self, factor)
         return self
 
     def __add__(self, ld1):
@@ -104,44 +109,44 @@ class LatData:
         return self
 
     def set_zero(self):
-        return c.set_zero_lat_data(self)
+        return cu.set_zero_lat_data(self)
 
     def qnorm(self):
-        return c.qnorm_lat_data(self)
+        return cu.qnorm_lat_data(self)
 
     def is_match(self, ld1):
         # ld.info needs to be exactly equal
-        return c.is_matching_lat_data(self, ld1)
+        return cu.is_matching_lat_data(self, ld1)
 
     def is_complex(self):
-        return c.is_complex_lat_data(self)
+        return cu.is_complex_lat_data(self)
 
     def ndim(self, *, is_complex = True):
         is_always_double = not is_complex
-        return c.get_ndim_lat_data(self, is_always_double)
+        return cu.get_ndim_lat_data(self, is_always_double)
 
     def dim_sizes(self, *, is_complex = True):
         is_always_double = not is_complex
-        return c.get_dim_sizes_lat_data(self, is_always_double)
+        return cu.get_dim_sizes_lat_data(self, is_always_double)
 
     def dim_name(self, dim):
-        return c.get_dim_name_lat_data(self, dim)
+        return cu.get_dim_name_lat_data(self, dim)
 
     def dim_size(self, dim):
-        return c.get_dim_size_lat_data(self, dim)
+        return cu.get_dim_size_lat_data(self, dim)
 
     def dim_indices(self, dim):
-        return c.get_dim_indices_lat_data(self, dim)
+        return cu.get_dim_indices_lat_data(self, dim)
 
     def set_dim_sizes(self, dim_sizes, *, is_complex = True):
-        return c.set_dim_sizes_lat_data(self, dim_sizes, is_complex)
+        return cu.set_dim_sizes_lat_data(self, dim_sizes, is_complex)
 
     def set_dim_name(self, dim, name, indices = None):
         if indices is None:
             indices = []
         else:
             indices = [ idx.replace("\n", "  ") for idx in indices ]
-        return c.set_dim_name_lat_data(self, dim, name, indices)
+        return cu.set_dim_name_lat_data(self, dim, name, indices)
 
     def dim_names(self, *, is_complex = True):
         # by default, return list can be used as the input argument for ld.from_numpy
@@ -150,19 +155,19 @@ class LatData:
 
     def to_list(self, *, is_complex = True):
         is_always_double = not is_complex
-        return c.peek_lat_data(self, [], is_always_double)
+        return cu.peek_lat_data(self, [], is_always_double)
 
     def from_list(self, val, *, is_complex = True):
         if self.ndim() == 0:
             self.set_dim_sizes([len(val)], is_complex = is_complex)
             self.set_dim_name(0, "i")
         is_always_double = not is_complex
-        c.poke_lat_data(self, [], val, is_always_double)
+        cu.poke_lat_data(self, [], val, is_always_double)
         return self
 
     def to_numpy(self, *, is_complex = True):
         is_always_double = not is_complex
-        v = np.array(c.peek_lat_data(self, [], is_always_double))
+        v = np.array(cu.peek_lat_data(self, [], is_always_double))
         return v.reshape(self.dim_sizes(is_complex = is_complex))
 
     def from_numpy(self, val, dim_names = None, *, is_complex = True):
@@ -176,7 +181,7 @@ class LatData:
             for dim, (dummy_size, name) in enumerate(zip(val.shape, dim_names)):
                 self.set_dim_name(dim, name)
         is_always_double = not is_complex
-        c.poke_lat_data(self, [], list(val.flatten()), is_always_double)
+        cu.poke_lat_data(self, [], list(val.flatten()), is_always_double)
         return self
 
     def __setitem__(self, idx, val):
@@ -186,7 +191,7 @@ class LatData:
             idx = [ idx, ]
         if isinstance(val, np.ndarray):
             val = val.flatten()
-        return c.poke_lat_data(self, idx, list(val))
+        return cu.poke_lat_data(self, idx, list(val))
 
     def __getitem__(self, idx):
         # return a new list every call
@@ -194,7 +199,7 @@ class LatData:
         if isinstance(idx, int):
             idx = [ idx, ]
         shape = self.dim_sizes()[len(idx):]
-        return np.array(c.peek_lat_data(self, idx)).reshape(shape)
+        return np.array(cu.peek_lat_data(self, idx)).reshape(shape)
 
     def __getstate__(self):
         is_complex = self.is_complex()

@@ -1,7 +1,7 @@
 import qlat.cqlat as c
 
 from qlat_utils import *
-from qlat.lat_io import *
+
 from qlat.field import *
 from qlat.propagator import *
 

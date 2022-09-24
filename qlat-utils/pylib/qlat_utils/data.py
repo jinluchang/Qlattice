@@ -1,5 +1,5 @@
-from qlat.lat_io import *
-from qlat.rng_state import *
+from qlat_utils.lat_io import *
+from qlat_utils.rng_state import *
 
 import math
 import copy

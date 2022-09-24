@@ -1,10 +1,10 @@
 import qlat.cqlat as c
 
 from qlat_utils import *
+
 from qlat.geometry import *
 from qlat.field_selection import *
 from qlat.field import *
-from qlat.lat_io import *
 
 class SelectedPoints:
 

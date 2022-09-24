@@ -2,12 +2,6 @@ import qlat.cqlat as c
 
 from qlat_utils import *
 
-from qlat.rng_state import *
-
-from qlat.lat_io import *
-
-from qlat.data import *
-
 from qlat.mpi import *
 
 from qlat.geometry import *
@@ -19,8 +13,6 @@ from qlat.field_utils import *
 from qlat.utils import *
 
 from qlat.utils_io import *
-
-from qlat.qar import *
 
 from qlat.qcd import *
 

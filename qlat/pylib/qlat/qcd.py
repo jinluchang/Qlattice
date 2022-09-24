@@ -4,7 +4,6 @@ from qlat_utils import *
 
 from qlat.field import *
 from qlat.field_utils import *
-from qlat.rng_state import *
 from qlat.utils_io import *
 
 class GaugeField(Field):
