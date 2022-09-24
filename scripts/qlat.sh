@@ -23,9 +23,25 @@ name=qlat
     rm -rfv "$prefix"/lib/python3*/*-packages/rbc_ukqcd*
     rm -rfv "$prefix"/lib/python3*/*-packages/auto_contractor*
 
+    option=
+    if [ -n "$QLAT_MPICXX" ] ; then
+        export CXX="$QLAT_MPICXX"
+        export MPICXX=false
+        option="-Duse_cxx=true"
+    fi
+    if [ -n "$QLAT_CXXFLAGS" ] ; then
+        export CXXFLAGS="$QLAT_CXXFLAGS"
+    fi
+    if [ -n "$QLAT_LDFLAGS" ] ; then
+        export LDFLAGS="$QLAT_LDFLAGS"
+    fi
+    if [ -n "$QLAT_LIBS" ] ; then
+        export LIBS="$QLAT_LIBS"
+    fi
+
     touch "$wd"/qlat/meson.build
 
-    meson "$wd/qlat" --prefix="$prefix"
+    meson "$wd/qlat" --prefix="$prefix" $option
     ninja -j$num_proc
     ninja install
 

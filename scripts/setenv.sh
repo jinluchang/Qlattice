@@ -41,6 +41,14 @@ if [ -z "$MPICXX" ] ; then
     export MPICXX=MPICXX.sh
 fi
 
+if [ -z "$QLAT_CXX" ] ; then
+    export QLAT_CXX=CXX.sh
+fi
+
+if [ -z "$QLAT_MPICXX" ] ; then
+    export QLAT_MPICXX=MPICXX.sh
+fi
+
 add-to-colon-list () {
     local name="$1"
     local new_value="$2"
@@ -106,7 +114,7 @@ echo
 for v in \
     PATH PYTHONPATH LD_LIBRARY_PATH LIBRARY_PATH C_INCLUDE_PATH CPLUS_INCLUDE_PATH PKG_CONFIG_PATH \
     CC CXX CFLAGS CXXFLAGS LDFLAGS LIBS MPICC MPICXX \
-    QLAT_PREFIX QLAT_MPICXX QLAT_CXXFLAGS QLAT_LDFLAGS QLAT_LIBS \
+    QLAT_PREFIX QLAT_CXX QLAT_MPICXX QLAT_CXXFLAGS QLAT_LDFLAGS QLAT_LIBS \
     USE_COMPILER \
     ; do
 export | grep --color=never " $v="'"' || true

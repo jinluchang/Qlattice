@@ -1,0 +1,4 @@
+option(
+  'use_cxx', type: 'boolean', value: false,
+  description: 'If true, will not using meson\'s automatic MPI detection. Rather, one can use the CXX environmental variable to provide MPI implementation.'
+  )
