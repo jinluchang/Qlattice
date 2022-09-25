@@ -11,6 +11,8 @@
 #define EXPORT(name, ...)                                \
   PyObject* cqlat_##name(PyObject* self, PyObject* args) \
   {                                                      \
+    (void)self;                                          \
+    (void)args;                                          \
     try {                                                \
       __VA_ARGS__;                                       \
       return NULL;                                       \

@@ -180,15 +180,40 @@ qacc void to_from_big_endian_64(void* str, const size_t len)
   }
 }
 
-qacc long& operator*=(long& x, const Complex& factor) { assert(false); }
+qacc long& operator*=(long& x, const Complex& factor)
+{
+  (void)x;
+  (void)factor;
+  assert(false);
+}
 
-qacc double& operator*=(double& x, const Complex& factor) { assert(false); }
+qacc double& operator*=(double& x, const Complex& factor)
+{
+  (void)x;
+  (void)factor;
+  assert(false);
+}
 
-qacc float& operator*=(float& x, const Complex& factor) { assert(false); }
+qacc float& operator*=(float& x, const Complex& factor)
+{
+  (void)x;
+  (void)factor;
+ assert(false);
+}
 
-qacc char& operator*=(char& x, const Complex& factor) { assert(false); }
+qacc char& operator*=(char& x, const Complex& factor)
+{
+  (void)x;
+  (void)factor;
+ assert(false);
+}
 
-qacc int8_t& operator*=(int8_t& x, const Complex& factor) { assert(false); }
+qacc int8_t& operator*=(int8_t& x, const Complex& factor)
+{
+  (void)x;
+  (void)factor;
+  assert(false);
+}
 
 template <class M>
 int get_type_precision()
