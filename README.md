@@ -134,14 +134,42 @@ struct Geometry {
 };
 ```
 
+### vector and box
+
+```c++
+template <class M>
+struct vector {
+  bool is_copy;  // do not free memory if is_copy=true
+  bool is_acc; // if place data on cudaMallocManaged memory (default false)
+  Vector<M> v;
+};
+template <class M>
+struct vector_acc : vector<M> {
+  // default is_acc = true
+};
+```
+
+```c++
+template <class M>
+struct box {
+  bool is_copy;  // do not free memory if is_copy=true
+  bool is_acc; // if place data on cudaMallocManaged memory (default false)
+  Handle<M> v;
+};
+template <class M>
+struct box_acc : box<M> {
+  // default is_acc = true
+};
+```
+
 ### Field
 
 ```c++
 template <class M>
 struct Field {
   bool initialized;
-  box<Geometry> geo;
-  vector<M> field;
+  box_acc<Geometry> geo;
+  vector_acc<M> field;
 };
 ```
 
@@ -150,6 +178,31 @@ struct Field {
 ```c++
 template <class M, int multiplicity>
 struct FieldM : Field<M> {};
+```
+
+### SelectedField
+
+```c++
+template <class M>
+struct SelectedField {
+  bool initialized;
+  long n_elems;
+  box_acc<Geometry> geo;
+  vector_acc<M> field;
+};
+```
+
+### SelectedPoints
+
+```c++
+template <class M>
+struct SelectedPoints {
+  bool initialized;
+  int multiplicity;
+  long n_points;
+  vector_acc<M> points;  // global quantity, same on each node
+  // points.size() == n_points * multiplicity if initialized = true
+};
 ```
 
 ## Random number generator description:
