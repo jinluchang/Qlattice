@@ -97,30 +97,15 @@ def check_all_files_crc32_info(path):
 @timer
 def load_pickle_obj(path, default_value = None):
     # all the nodes read the same data
-    if get_num_node() != 1:
-        from qlat.qar import does_file_exist_qar_sync_node, qcat_bytes_sync_node
-        if does_file_exist_qar_sync_node(path):
-            obj = pickle.loads(qcat_bytes_sync_node(path))
-            return obj
-        else:
-            return default_value
-    if does_file_exist_qar(path):
-        obj = pickle.loads(qcat_bytes(path))
+    if does_file_exist_qar_sync_node(path):
+        obj = pickle.loads(qcat_bytes_sync_node(path))
         return obj
     else:
         return default_value
 
 @timer
 def pickle_cache_call(func, path):
-    if get_num_node() != 1:
-        from qlat.qar import does_file_exist_qar_sync_node
-        if not does_file_exist_qar_sync_node(path):
-            obj = func()
-            save_pickle_obj(obj, path)
-        else:
-            obj = load_pickle_obj(path)
-        return obj
-    if not does_file_exist_qar(path):
+    if not does_file_exist_qar_sync_node(path):
         obj = func()
         save_pickle_obj(obj, path)
     else:
