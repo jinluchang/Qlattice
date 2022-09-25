@@ -83,7 +83,7 @@ def run_prop_rand_u1(job_tag, traj, *, inv_type, get_gf, get_fsel, get_eig = Non
         return
     inv_type_names = [ "light", "strange", "charm", ]
     inv_type_name = inv_type_names[inv_type]
-    path_s = f"prop-rand-u1-{inv_type_name}/{job_tag}/traj={traj}"
+    path_s = f"{job_tag}/prop-rand-u1-{inv_type_name}/traj-{traj}"
     if get_load_path(path_s + "/geon-info.txt") is not None:
         return
     if q.obtain_lock(f"locks/{job_tag}-{traj}-rand-u1-{inv_type_name}"):
@@ -105,18 +105,18 @@ def run_prop_rand_u1(job_tag, traj, *, inv_type, get_gf, get_fsel, get_eig = Non
 @q.timer_verbose
 def run_job(job_tag, traj):
     fns_produce = [
-            f"prop-rand-u1-light/{job_tag}/traj={traj}/geon-info.txt",
-            f"prop-rand-u1-strange/{job_tag}/traj={traj}/geon-info.txt",
-            f"prop-rand-u1-charm/{job_tag}/traj={traj}/geon-info.txt",
+            f"{job_tag}/prop-rand-u1-light/traj-{traj}/geon-info.txt",
+            f"{job_tag}/prop-rand-u1-strange/traj-{traj}/geon-info.txt",
+            f"{job_tag}/prop-rand-u1-charm/traj-{traj}/geon-info.txt",
             ]
     fns_need = [
-            (f"configs/{job_tag}/ckpoint_lat.{traj}", f"configs/{job_tag}/ckpoint_lat.IEEE64BIG.{traj}",),
-            f"point-selection/{job_tag}/traj={traj}.txt",
-            f"field-selection/{job_tag}/traj={traj}.field",
-            f"eig/{job_tag}/traj={traj}",
-            f"eig/{job_tag}/traj={traj}/metadata.txt",
-            f"eig/{job_tag}/traj={traj}/eigen-values.txt",
-            f"eig-strange/{job_tag}/traj={traj}",
+            (f"{job_tag}/configs/ckpoint_lat.{traj}", f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj}",),
+            f"{job_tag}/point-selection/traj-{traj}.txt",
+            f"{job_tag}/field-selection/traj-{traj}.field",
+            f"{job_tag}/eig/traj-{traj}",
+            f"{job_tag}/eig/traj-{traj}/metadata.txt",
+            f"{job_tag}/eig/traj-{traj}/eigen-values.txt",
+            f"{job_tag}/eig-strange/traj-{traj}",
             ]
     if not check_job(job_tag, traj, fns_produce, fns_need):
         return

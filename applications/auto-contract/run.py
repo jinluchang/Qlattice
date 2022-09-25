@@ -67,7 +67,7 @@ def get_cexpr_vev():
 
 @q.timer_verbose
 def auto_contract_vev(job_tag, traj, get_prop, get_psel, get_fsel):
-    fn = f"auto-contract/{job_tag}/traj={traj}/vev.lat"
+    fn = f"{job_tag}/auto-contract/traj-{traj}/vev.lat"
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_vev()
@@ -112,7 +112,7 @@ def get_cexpr_meson_f_corr():
 
 @q.timer_verbose
 def auto_contract_meson_f_corr(job_tag, traj, get_prop, get_psel, get_fsel):
-    fn = f"auto-contract/{job_tag}/traj={traj}/meson_f_corr.lat"
+    fn = f"{job_tag}/auto-contract/traj-{traj}/meson_f_corr.lat"
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_meson_f_corr()
@@ -161,7 +161,7 @@ def get_cexpr_hvp():
 
 @q.timer_verbose
 def auto_contract_hvp(job_tag, traj, get_prop, get_psel, get_fsel):
-    fn = f"auto-contract/{job_tag}/traj={traj}/hvp.lat"
+    fn = f"{job_tag}/auto-contract/traj-{traj}/hvp.lat"
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_hvp()
@@ -200,7 +200,7 @@ def auto_contract_hvp(job_tag, traj, get_prop, get_psel, get_fsel):
 
 @q.timer_verbose
 def auto_contract_hvp_field(job_tag, traj, get_prop, get_psel, get_fsel):
-    fn = f"auto-contract/{job_tag}/traj={traj}/hvp.field"
+    fn = f"{job_tag}/auto-contract/traj-{traj}/hvp.field"
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_hvp()
@@ -280,7 +280,7 @@ def get_cexpr_meson_v_v_meson():
 
 @q.timer_verbose
 def auto_contract_meson_v_v_meson_field(job_tag, traj, get_prop, get_psel, get_fsel):
-    fn = f"auto-contract/{job_tag}/traj={traj}/meson_v_v_meson.field"
+    fn = f"{job_tag}/auto-contract/traj-{traj}/meson_v_v_meson.field"
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_meson_v_v_meson()
@@ -386,7 +386,7 @@ def get_cexpr_meson_corr():
 
 @q.timer_verbose
 def auto_contract_meson_corr(job_tag, traj, get_prop, get_psel, get_fsel):
-    fn = f"auto-contract/{job_tag}/traj={traj}/meson_corr.lat"
+    fn = f"{job_tag}/auto-contract/traj-{traj}/meson_corr.lat"
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_meson_corr()
@@ -428,7 +428,7 @@ def auto_contract_meson_corr(job_tag, traj, get_prop, get_psel, get_fsel):
 
 @q.timer_verbose
 def auto_contract_meson_corr_psnk(job_tag, traj, get_prop, get_psel, get_fsel):
-    fn = f"auto-contract/{job_tag}/traj={traj}/meson_corr_psnk.lat"
+    fn = f"{job_tag}/auto-contract/traj-{traj}/meson_corr_psnk.lat"
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_meson_corr()
@@ -465,7 +465,7 @@ def auto_contract_meson_corr_psnk(job_tag, traj, get_prop, get_psel, get_fsel):
 
 @q.timer_verbose
 def auto_contract_meson_corr_psrc(job_tag, traj, get_prop, get_psel, get_fsel):
-    fn = f"auto-contract/{job_tag}/traj={traj}/meson_corr_psrc.lat"
+    fn = f"{job_tag}/auto-contract/traj-{traj}/meson_corr_psrc.lat"
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_meson_corr()
@@ -510,7 +510,7 @@ def auto_contract_meson_corr_psrc(job_tag, traj, get_prop, get_psel, get_fsel):
 
 @q.timer_verbose
 def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_fsel):
-    fn = f"auto-contract/{job_tag}/traj={traj}/meson_corr_psnk_psrc.lat"
+    fn = f"{job_tag}/auto-contract/traj-{traj}/meson_corr_psnk_psrc.lat"
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_meson_corr()
@@ -553,26 +553,26 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_fs
 @q.timer_verbose
 def run_job(job_tag, traj):
     fns_produce = [
-            f"auto-contract/{job_tag}/traj={traj}/checkpoint.txt",
+            f"{job_tag}/auto-contract/traj-{traj}/checkpoint.txt",
             ]
     fns_need = [
-            # (f"configs/{job_tag}/ckpoint_lat.{traj}", f"configs/{job_tag}/ckpoint_lat.IEEE64BIG.{traj}",),
-            f"point-selection/{job_tag}/traj={traj}.txt",
-            f"field-selection/{job_tag}/traj={traj}.field",
-            f"gauge-transform/{job_tag}/traj={traj}.field",
-            f"wall-src-info-light/{job_tag}/traj={traj}.txt",
-            f"wall-src-info-strange/{job_tag}/traj={traj}.txt",
-            f"psel-prop-wsrc-light/{job_tag}/traj={traj}/checkpoint.txt",
-            f"psel-prop-wsrc-strange/{job_tag}/traj={traj}/checkpoint.txt",
-            f"psel-prop-psrc-light/{job_tag}/traj={traj}/checkpoint.txt",
-            f"psel-prop-psrc-strange/{job_tag}/traj={traj}/checkpoint.txt",
-            f"prop-wsrc-light/{job_tag}/traj={traj}/geon-info.txt",
-            f"prop-wsrc-strange/{job_tag}/traj={traj}/geon-info.txt",
-            f"prop-psrc-light/{job_tag}/traj={traj}/geon-info.txt",
-            f"prop-psrc-strange/{job_tag}/traj={traj}/geon-info.txt",
-            f"prop-rand-u1-light/{job_tag}/traj={traj}/geon-info.txt",
-            f"prop-rand-u1-strange/{job_tag}/traj={traj}/geon-info.txt",
-            f"prop-rand-u1-charm/{job_tag}/traj={traj}/geon-info.txt",
+            # (f"{job_tag}/configs/ckpoint_lat.{traj}", f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj}",),
+            f"{job_tag}/point-selection/traj-{traj}.txt",
+            f"{job_tag}/field-selection/traj-{traj}.field",
+            f"{job_tag}/gauge-transform/traj-{traj}.field",
+            f"{job_tag}/wall-src-info-light/traj-{traj}.txt",
+            f"{job_tag}/wall-src-info-strange/traj-{traj}.txt",
+            f"{job_tag}/psel-prop-wsrc-light/traj-{traj}/checkpoint.txt",
+            f"{job_tag}/psel-prop-wsrc-strange/traj-{traj}/checkpoint.txt",
+            f"{job_tag}/psel-prop-psrc-light/traj-{traj}/checkpoint.txt",
+            f"{job_tag}/psel-prop-psrc-strange/traj-{traj}/checkpoint.txt",
+            f"{job_tag}/prop-wsrc-light/traj-{traj}/geon-info.txt",
+            f"{job_tag}/prop-wsrc-strange/traj-{traj}/geon-info.txt",
+            f"{job_tag}/prop-psrc-light/traj-{traj}/geon-info.txt",
+            f"{job_tag}/prop-psrc-strange/traj-{traj}/geon-info.txt",
+            f"{job_tag}/prop-rand-u1-light/traj-{traj}/geon-info.txt",
+            f"{job_tag}/prop-rand-u1-strange/traj-{traj}/geon-info.txt",
+            f"{job_tag}/prop-rand-u1-charm/traj-{traj}/geon-info.txt",
             ]
     if not check_job(job_tag, traj, fns_produce, fns_need):
         return
@@ -600,7 +600,7 @@ def run_job(job_tag, traj):
             get_wi = get_wi,
             )
     #
-    fn_checkpoint = f"auto-contract/{job_tag}/traj={traj}/checkpoint.txt"
+    fn_checkpoint = f"{job_tag}/auto-contract/traj-{traj}/checkpoint.txt"
     if get_load_path(fn_checkpoint) is None:
         if q.obtain_lock(f"locks/{job_tag}-{traj}-auto-contract"):
             get_prop = get_get_prop()

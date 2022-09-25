@@ -125,8 +125,8 @@ def mk_four_point_func_table_ff(total_site, m_pi, ainv_gev, ff_tag = ""):
 
 def check_traj(job_tag, traj):
     path = rup.dict_params[job_tag]["data_path_em"]
-    fn = f"{path}/results={traj}/four-point-func-em.lat"
-    fnw = f"{path}/results={traj}/four-point-func-emw.lat"
+    fn = f"{path}/results-{traj}/four-point-func-em.lat"
+    fnw = f"{path}/results-{traj}/four-point-func-emw.lat"
     return q.does_file_exist_sync_node(fn) or q.does_file_exist_sync_node(fnw)
 
 def find_trajs(job_tag):
@@ -167,9 +167,9 @@ rup.dict_params["32Dfine"]["trajs"] = find_trajs("32Dfine")
 @q.timer
 def get_four_point_em(job_tag, traj):
     path = rup.dict_params[job_tag]["data_path_em"]
-    fn = f"{path}/results={traj}/four-point-func-em.lat"
+    fn = f"{path}/results-{traj}/four-point-func-em.lat"
     if not q.does_file_exist_sync_node(fn):
-        fn = f"{path}/results={traj}/four-point-func-emw.lat"
+        fn = f"{path}/results-{traj}/four-point-func-emw.lat"
     ld = q.LatData()
     ld.load(fn)
     total_site = rup.dict_params[job_tag]["total_site"]

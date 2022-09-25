@@ -11,7 +11,7 @@ target= \
 		mk-topo \
 		mk-selected-data
 
-src_path=~/Qlattice-cc/pylib/apps
+src_path=~/Qlattice-cc/applications
 
 .ONESHELL:
 all:

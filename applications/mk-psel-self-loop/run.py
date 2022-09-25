@@ -48,14 +48,14 @@ def run_prop_rand_u1_charm(job_tag, traj, get_gf, get_psel):
     inv_type = 2
     if None in [ get_gf, get_psel, ]:
         return
-    if get_load_path(f"psel-prop-rand-u1/{job_tag}/traj={traj}/checkpoint ; type={inv_type}.txt") is not None:
+    if get_load_path(f"{job_tag}/psel-prop-rand-u1/traj-{traj}/checkpoint ; type={inv_type}.txt") is not None:
         return
     if q.obtain_lock(f"locks/{job_tag}-{traj}-rand-u1-charm"):
         gf = get_gf()
         psel = get_psel()
         compute_prop_rand_u1(job_tag = job_tag, traj = traj,
                 gf = get_gf(), inv_type = inv_type,
-                path_sp = f"psel-prop-rand-u1/{job_tag}/traj={traj}",
+                path_sp = f"{job_tag}/psel-prop-rand-u1/traj-{traj}",
                 psel = get_psel())
         q.release_lock()
 
@@ -64,12 +64,12 @@ def run_prop_rand_u1_strange(job_tag, traj, get_gf, get_psel):
     inv_type = 1
     if None in [ get_gf, get_psel, ]:
         return
-    if get_load_path(f"psel-prop-rand-u1/{job_tag}/traj={traj}/checkpoint ; type={inv_type}.txt") is not None:
+    if get_load_path(f"{job_tag}/psel-prop-rand-u1/traj-{traj}/checkpoint ; type={inv_type}.txt") is not None:
         return
     if q.obtain_lock(f"locks/{job_tag}-{traj}-rand-u1-strange"):
         compute_prop_rand_u1(job_tag = job_tag, traj = traj,
                 gf = get_gf(), inv_type = inv_type,
-                path_sp = f"psel-prop-rand-u1/{job_tag}/traj={traj}",
+                path_sp = f"{job_tag}/psel-prop-rand-u1/traj-{traj}",
                 psel = get_psel())
         q.release_lock()
 
@@ -78,30 +78,30 @@ def run_prop_rand_u1_light(job_tag, traj, get_gf, get_eig, get_psel):
     inv_type = 0
     if None in [ get_gf, get_eig, get_psel, ]:
         return
-    if get_load_path(f"psel-prop-rand-u1/{job_tag}/traj={traj}/checkpoint ; type={inv_type}.txt") is not None:
+    if get_load_path(f"{job_tag}/psel-prop-rand-u1/traj-{traj}/checkpoint ; type={inv_type}.txt") is not None:
         return
     if q.obtain_lock(f"locks/{job_tag}-{traj}-rand-u1-light"):
         gf = get_gf()
         eig = get_eig()
         compute_prop_rand_u1(job_tag = job_tag, traj = traj,
                 gf = gf, inv_type = inv_type,
-                path_sp = f"psel-prop-rand-u1/{job_tag}/traj={traj}",
+                path_sp = f"{job_tag}/psel-prop-rand-u1/traj-{traj}",
                 psel = get_psel(), eig = eig)
         q.release_lock()
 
 @q.timer_verbose
 def run_job(job_tag, traj):
     fns_produce = [
-            f"psel-prop-rand-u1/{job_tag}/traj={traj}/checkpoint ; type=0.txt",
-            f"psel-prop-rand-u1/{job_tag}/traj={traj}/checkpoint ; type=1.txt",
-            f"psel-prop-rand-u1/{job_tag}/traj={traj}/checkpoint ; type=2.txt",
+            f"{job_tag}/psel-prop-rand-u1/traj-{traj}/checkpoint ; type=0.txt",
+            f"{job_tag}/psel-prop-rand-u1/traj-{traj}/checkpoint ; type=1.txt",
+            f"{job_tag}/psel-prop-rand-u1/traj-{traj}/checkpoint ; type=2.txt",
             ]
     fns_need = [
-            (f"configs/{job_tag}/ckpoint_lat.{traj}", f"configs/{job_tag}/ckpoint_lat.IEEE64BIG.{traj}",),
-            f"point-selection/{job_tag}/traj={traj}.txt",
-            f"eig/{job_tag}/traj={traj}",
-            f"eig/{job_tag}/traj={traj}/metadata.txt",
-            f"eig/{job_tag}/traj={traj}/eigen-values.txt",
+            (f"{job_tag}/configs/ckpoint_lat.{traj}", f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj}",),
+            f"{job_tag}/point-selection/traj-{traj}.txt",
+            f"{job_tag}/eig/traj-{traj}",
+            f"{job_tag}/eig/traj-{traj}/metadata.txt",
+            f"{job_tag}/eig/traj-{traj}/eigen-values.txt",
             ]
     if not check_job(job_tag, traj, fns_produce, fns_need):
         return

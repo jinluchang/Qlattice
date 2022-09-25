@@ -18,14 +18,14 @@ load_path_list[:] = [
 @q.timer_verbose
 def run_job(job_tag, traj):
     fns_produce = [
-            f"point-selection/{job_tag}/traj={traj}.txt",
-            f"field-selection/{job_tag}/traj={traj}.field",
-            f"point-selection-smear/{job_tag}/traj={traj}.txt",
-            f"wall-src-info-light/{job_tag}/traj={traj}.txt",
-            f"wall-src-info-strange/{job_tag}/traj={traj}.txt",
+            f"{job_tag}/point-selection/traj-{traj}.txt",
+            f"{job_tag}/field-selection/traj-{traj}.field",
+            f"{job_tag}/point-selection-smear/traj-{traj}.txt",
+            f"{job_tag}/wall-src-info-light/traj-{traj}.txt",
+            f"{job_tag}/wall-src-info-strange/traj-{traj}.txt",
             ]
     fns_need = [
-            (f"configs/{job_tag}/ckpoint_lat.{traj}", f"configs/{job_tag}/ckpoint_lat.IEEE64BIG.{traj}",),
+            (f"{job_tag}/configs/ckpoint_lat.{traj}", f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj}",),
             ]
     if not check_job(job_tag, traj, fns_produce, fns_need):
         return

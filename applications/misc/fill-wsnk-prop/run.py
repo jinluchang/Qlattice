@@ -31,8 +31,8 @@ def get_load_path(fn):
 def check_job(job_tag, traj):
     # return True if config is finished or unavailable
     fns_produce = [
-            get_load_path(f"psel-prop-wsrc-light/{job_tag}/traj={traj}/checkpoint ; wsnk.txt"),
-            get_load_path(f"psel-prop-wsrc-strange/{job_tag}/traj={traj}/checkpoint ; wsnk.txt"),
+            get_load_path(f"{job_tag}/psel-prop-wsrc-light/traj-{traj}/checkpoint ; wsnk.txt"),
+            get_load_path(f"{job_tag}/psel-prop-wsrc-strange/traj-{traj}/checkpoint ; wsnk.txt"),
             ]
     is_job_done = True
     for fn in fns_produce:
@@ -44,10 +44,10 @@ def check_job(job_tag, traj):
         return True
     #
     fns_need = [
-            get_load_path(f"point-selection/{job_tag}/traj={traj}.txt"),
-            get_load_path(f"field-selection/{job_tag}/traj={traj}.field"),
-            get_load_path(f"prop-wsrc-light/{job_tag}/traj={traj}"),
-            get_load_path(f"prop-wsrc-strange/{job_tag}/traj={traj}"),
+            get_load_path(f"{job_tag}/point-selection/traj-{traj}.txt"),
+            get_load_path(f"{job_tag}/field-selection/traj-{traj}.field"),
+            get_load_path(f"{job_tag}/prop-wsrc-light/traj-{traj}"),
+            get_load_path(f"{job_tag}/prop-wsrc-strange/traj-{traj}"),
             ]
     for fn in fns_need:
         if fn is None:
@@ -83,7 +83,7 @@ def compute_prop_wsrc_all(path_sp, path_s, fsel, fselc):
 
 @q.timer_verbose
 def run_psel(job_tag, traj):
-    path_psel = get_load_path(f"point-selection/{job_tag}/traj={traj}.txt")
+    path_psel = get_load_path(f"{job_tag}/point-selection/traj-{traj}.txt")
     if path_psel is None:
         assert False
     else:
@@ -104,7 +104,7 @@ def mk_fselc(fsel, psel):
 def run_fsel(job_tag, traj, get_psel):
     if get_psel is None:
         return None
-    path_fsel = get_load_path(f"field-selection/{job_tag}/traj={traj}.field")
+    path_fsel = get_load_path(f"{job_tag}/field-selection/traj-{traj}.field")
     total_site = rup.dict_params[job_tag]["total_site"]
     n_per_tslice = total_site[0] * total_site[1] * total_site[2] // 16
     if path_fsel is None:
@@ -122,8 +122,8 @@ def run_fsel(job_tag, traj, get_psel):
 def run_prop_wsrc_light(job_tag, traj, get_fsel):
     if None in [ get_fsel, ]:
         return
-    path_s = f"prop-wsrc-light/{job_tag}/traj={traj}"
-    path_sp = f"psel-prop-wsrc-light/{job_tag}/traj={traj}"
+    path_s = f"{job_tag}/prop-wsrc-light/traj-{traj}"
+    path_sp = f"{job_tag}/psel-prop-wsrc-light/traj-{traj}"
     if get_load_path(os.path.join(path_sp, "checkpoint ; wsnk.txt")) is not None:
         return
     q.check_stop()
@@ -137,8 +137,8 @@ def run_prop_wsrc_light(job_tag, traj, get_fsel):
 def run_prop_wsrc_strange(job_tag, traj, get_fsel):
     if None in [ get_fsel, ]:
         return
-    path_s = f"prop-wsrc-strange/{job_tag}/traj={traj}"
-    path_sp = f"psel-prop-wsrc-strange/{job_tag}/traj={traj}"
+    path_s = f"{job_tag}/prop-wsrc-strange/traj-{traj}"
+    path_sp = f"{job_tag}/psel-prop-wsrc-strange/traj-{traj}"
     if get_load_path(os.path.join(path_sp, "checkpoint ; wsnk.txt")) is not None:
         return
     q.check_stop()

@@ -26,15 +26,15 @@ def get_load_path(fn):
 
 @q.timer
 def check_job(job_tag, traj):
-    if get_load_path(f"gauge-transform/{job_tag}/traj={traj}.field") is None:
+    if get_load_path(f"{job_tag}/gauge-transform/traj-{traj}.field") is None:
         return False
-    if get_load_path(f"prop-psrc-light/{job_tag}/traj={traj}/geon-info.txt") is None:
+    if get_load_path(f"{job_tag}/prop-psrc-light/traj-{traj}/geon-info.txt") is None:
         return False
-    if get_load_path(f"prop-psrc-strange/{job_tag}/traj={traj}/geon-info.txt") is None:
+    if get_load_path(f"{job_tag}/prop-psrc-strange/traj-{traj}/geon-info.txt") is None:
         return False
-    if get_load_path(f"prop-wsrc-light/{job_tag}/traj={traj}/geon-info.txt") is None:
+    if get_load_path(f"{job_tag}/prop-wsrc-light/traj-{traj}/geon-info.txt") is None:
         return False
-    if get_load_path(f"prop-wsrc-strange/{job_tag}/traj={traj}/geon-info.txt") is None:
+    if get_load_path(f"{job_tag}/prop-wsrc-strange/traj-{traj}/geon-info.txt") is None:
         return False
     return True
 

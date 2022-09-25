@@ -335,7 +335,7 @@ def load_prop_wsrc_psel(job_tag, traj, flavor, *, wi, psel, fsel, fselc, gt):
         flavor_tag = "strange"
     else:
         assert False
-    path_sp = f"psel-prop-wsrc-{flavor_tag}/{job_tag}/traj={traj}"
+    path_sp = f"{job_tag}/psel-prop-wsrc-{flavor_tag}/traj-{traj}"
     gt_inv = gt.inv()
     count = { 1: 0, 2: 0, }
     for idx, tslice, inv_type, inv_acc in wi:
@@ -390,7 +390,7 @@ def load_prop_wsrc_fsel(job_tag, traj, flavor, *, wi, psel, fsel, fselc, gt):
         flavor_tag = "strange"
     else:
         assert False
-    path_s = f"prop-wsrc-{flavor_tag}/{job_tag}/traj={traj}/geon-info.txt"
+    path_s = f"{job_tag}/prop-wsrc-{flavor_tag}/traj-{traj}/geon-info.txt"
     sfr = q.open_fields(get_load_path(path_s), "r")
     gt_inv = gt.inv()
     count = { 1: 0, 2: 0, }
@@ -444,7 +444,7 @@ def load_prop_psrc_psel(job_tag, traj, flavor, *, psel, fsel, fselc):
         flavor_tag = "strange"
     else:
         assert False
-    path_sp = f"psel-prop-psrc-{flavor_tag}/{job_tag}/traj={traj}"
+    path_sp = f"{job_tag}/psel-prop-psrc-{flavor_tag}/traj-{traj}"
     count = { 0: 0, 1: 0, 2: 0, }
     inv_type = flavor_inv_type
     idx = 0
@@ -496,7 +496,7 @@ def load_prop_psrc_fsel(job_tag, traj, flavor, *, psel, fsel, fselc):
         flavor_tag = "strange"
     else:
         assert False
-    path_s = f"prop-psrc-{flavor_tag}/{job_tag}/traj={traj}/geon-info.txt"
+    path_s = f"{job_tag}/prop-psrc-{flavor_tag}/traj-{traj}/geon-info.txt"
     sfr = q.open_fields(get_load_path(path_s), "r")
     count = { 0: 0, 1: 0, 2: 0, }
     inv_type = flavor_inv_type
@@ -546,7 +546,7 @@ def load_prop_rand_u1_fsel(job_tag, traj, flavor, *, psel, fsel, fselc):
     inv_acc = 2
     s_prop_avg = q.SelProp(fsel)
     q.set_zero(s_prop_avg)
-    path_s = f"prop-rand-u1-{flavor_tag}/{job_tag}/traj={traj}/geon-info.txt"
+    path_s = f"{job_tag}/prop-rand-u1-{flavor_tag}/traj-{traj}/geon-info.txt"
     sfr = q.open_fields(get_load_path(path_s), "r")
     tags = sfr.list()
     prob1 = rup.dict_params[job_tag]["prob_acc_1_rand_u1"]

@@ -25,7 +25,7 @@ load_path_list[:] = [
 def run_topo(job_tag, traj, get_gf):
     if get_gf is None:
         return
-    fn = f"topo-measure/{job_tag}/traj={traj}.pickle"
+    fn = f"{job_tag}/topo-measure/traj-{traj}.pickle"
     if get_load_path(fn) is not None:
         return
     if q.obtain_lock(f"locks/{job_tag}-{traj}-topo"):
@@ -37,10 +37,10 @@ def run_topo(job_tag, traj, get_gf):
 @q.timer_verbose
 def run_job(job_tag, traj):
     fns_produce = [
-            f"topo-measure/{job_tag}/traj={traj}.pickle",
+            f"{job_tag}/topo-measure/traj-{traj}.pickle",
             ]
     fns_need = [
-            (f"configs/{job_tag}/ckpoint_lat.{traj}", f"configs/{job_tag}/ckpoint_lat.IEEE64BIG.{traj}",),
+            (f"{job_tag}/configs/ckpoint_lat.{traj}", f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj}",),
             ]
     if job_tag[:5] == "test-":
         fns_need = []

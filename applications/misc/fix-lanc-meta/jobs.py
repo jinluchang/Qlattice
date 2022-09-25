@@ -64,13 +64,13 @@ def run_gf(job_tag, traj):
     import qlat_gpt as qg
     import rbc_ukqcd as ru
     path_gf = get_load_path(
-            f"configs/{job_tag}/ckpoint_lat.{traj}",
-            f"configs/{job_tag}/ckpoint_lat.IEEE64BIG.{traj}",
+            f"{job_tag}/configs/ckpoint_lat.{traj}",
+            f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj}",
             )
     if path_gf is None:
         if job_tag[:5] == "test-":
             gf = ru.mk_sample_gauge_field(job_tag, f"{traj}")
-            path_gf = get_save_path(f"configs/{job_tag}/ckpoint_lat.{traj}")
+            path_gf = get_save_path(f"{job_tag}/configs/ckpoint_lat.{traj}")
             # gf.save(path_gf)
             qg.save_gauge_field(gf, path_gf)
         else:
@@ -86,7 +86,7 @@ def run_gt(job_tag, traj, get_gf):
     import qlat_gpt as qg
     if None in [ get_gf, ]:
         return None
-    tfn = f"gauge-transform/{job_tag}/traj={traj}.field"
+    tfn = f"{job_tag}/gauge-transform/traj-{traj}.field"
     path_gt = get_load_path(tfn)
     if path_gt is None:
         if q.obtain_lock(f"locks/{job_tag}-{traj}-gauge_fix_coulomb"):
@@ -156,8 +156,8 @@ def load_wall_src_info(path):
 
 @q.timer_verbose
 def run_wi(job_tag, traj):
-    tfn_l = f"wall-src-info-light/{job_tag}/traj={traj}.txt"
-    tfn_s = f"wall-src-info-strange/{job_tag}/traj={traj}.txt"
+    tfn_l = f"{job_tag}/wall-src-info-light/traj-{traj}.txt"
+    tfn_s = f"{job_tag}/wall-src-info-strange/traj-{traj}.txt"
     path_light = get_load_path(tfn_l)
     if path_light is None:
         if q.obtain_lock(f"locks/{job_tag}-{traj}-wi"):
@@ -200,7 +200,7 @@ def mk_rand_psel(job_tag, traj):
 
 @q.timer_verbose
 def run_psel(job_tag, traj):
-    tfn = f"point-selection/{job_tag}/traj={traj}.txt"
+    tfn = f"{job_tag}/point-selection/traj-{traj}.txt"
     path_psel = get_load_path(tfn)
     if path_psel is None:
         if q.obtain_lock(f"locks/{job_tag}-{traj}-psel"):
@@ -261,7 +261,7 @@ def load_point_src_info(path):
 
 @q.timer_verbose
 def run_pi(job_tag, traj, get_psel):
-    tfn = f"point-src-info/{job_tag}/traj={traj}.txt"
+    tfn = f"{job_tag}/point-src-info/traj-{traj}.txt"
     path = get_load_path(tfn)
     if path is None:
         if q.obtain_lock(f"locks/{job_tag}-{traj}-pi"):
@@ -300,7 +300,7 @@ def run_fsel(job_tag, traj, get_psel):
     if get_psel is None:
         return None
     import rbc_ukqcd as ru
-    tfn = f"field-selection/{job_tag}/traj={traj}.field"
+    tfn = f"{job_tag}/field-selection/traj-{traj}.field"
     path_fsel = get_load_path(tfn)
     total_site = ru.get_total_site(job_tag)
     n_per_tslice = total_site[0] * total_site[1] * total_site[2] // 16
@@ -367,10 +367,10 @@ def run_eig(job_tag, traj, get_gf):
     if None in [ get_gf, ]:
         return None
     import rbc_ukqcd as ru
-    get_eig = ru.load_eig_lazy(get_load_path(f"eig/{job_tag}/traj={traj}"), job_tag)
+    get_eig = ru.load_eig_lazy(get_load_path(f"{job_tag}/eig/traj-{traj}"), job_tag)
     if get_eig is None and get_gf is not None:
         if q.obtain_lock(f"locks/{job_tag}-{traj}-run-eig"):
-            get_eig = compute_eig(get_gf(), job_tag, inv_type = 0, path = f"eig/{job_tag}/traj={traj}")
+            get_eig = compute_eig(get_gf(), job_tag, inv_type = 0, path = f"{job_tag}/eig/traj-{traj}")
             q.release_lock()
             return get_eig
         else:

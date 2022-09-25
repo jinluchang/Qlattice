@@ -26,11 +26,11 @@ def get_load_path(fn):
 
 @q.timer_verbose
 def run_gf(job_tag, traj):
-    path_gf = get_load_path(f"configs/{job_tag}/ckpoint_lat.{traj}")
+    path_gf = get_load_path(f"{job_tag}/configs/ckpoint_lat.{traj}")
     if path_gf is None:
         if job_tag[:5] == "test-":
             gf = ru.mk_sample_gauge_field(job_tag, f"{traj}")
-            path_gf = get_save_path(f"configs/{job_tag}/ckpoint_lat.{traj}")
+            path_gf = get_save_path(f"{job_tag}/configs/ckpoint_lat.{traj}")
             # gf.save(path_gf)
             qg.save_gauge_field(gf, path_gf)
         else:
@@ -45,12 +45,12 @@ def run_gf(job_tag, traj):
 def run_gt(job_tag, traj, get_gf):
     if None in [ get_gf, ]:
         return None
-    path_gt = get_load_path(f"gauge-transform/{job_tag}/traj={traj}.field")
+    path_gt = get_load_path(f"{job_tag}/gauge-transform/traj-{traj}.field")
     if path_gt is None:
         if q.obtain_lock(f"locks/{job_tag}-{traj}-gauge_fix_coulomb"):
             gf = get_gf()
             gt = qg.gauge_fix_coulomb(gf)
-            gt.save_double(get_save_path(f"gauge-transform/{job_tag}/traj={traj}.field"))
+            gt.save_double(get_save_path(f"{job_tag}/gauge-transform/traj-{traj}.field"))
             q.release_lock()
             return lambda : gt
         else:
@@ -83,10 +83,10 @@ def mk_rand_psel(job_tag, traj):
 
 @q.timer_verbose
 def run_psel(job_tag, traj):
-    path_psel = get_load_path(f"point-selection/{job_tag}/traj={traj}.txt")
+    path_psel = get_load_path(f"{job_tag}/point-selection/traj-{traj}.txt")
     if path_psel is None:
         psel = mk_rand_psel(job_tag, traj)
-        psel.save(get_save_path(f"point-selection/{job_tag}/traj={traj}.txt"))
+        psel.save(get_save_path(f"{job_tag}/point-selection/traj-{traj}.txt"))
         return lambda : psel
     else:
         @q.timer_verbose
@@ -176,29 +176,29 @@ def load_wall_src_info(path):
 
 @q.timer_verbose
 def run_wi(job_tag, traj):
-    path_light = get_load_path(f"wall-src-info-light/{job_tag}/traj={traj}.txt")
+    path_light = get_load_path(f"{job_tag}/wall-src-info-light/traj-{traj}.txt")
     if path_light is None:
         wi_light = mk_rand_wall_src_info(job_tag, traj, inv_type = 0)
-        save_wall_src_info(wi_light, get_save_path(f"wall-src-info-light/{job_tag}/traj={traj}.txt"));
-    path_strange = get_load_path(f"wall-src-info-strange/{job_tag}/traj={traj}.txt")
+        save_wall_src_info(wi_light, get_save_path(f"{job_tag}/wall-src-info-light/traj-{traj}.txt"));
+    path_strange = get_load_path(f"{job_tag}/wall-src-info-strange/traj-{traj}.txt")
     if path_strange is None:
         wi_strange = mk_rand_wall_src_info(job_tag, traj, inv_type = 1)
-        save_wall_src_info(wi_strange, get_save_path(f"wall-src-info-strange/{job_tag}/traj={traj}.txt"));
+        save_wall_src_info(wi_strange, get_save_path(f"{job_tag}/wall-src-info-strange/traj-{traj}.txt"));
     @q.timer_verbose
     def load():
-        wi_light = load_wall_src_info(get_load_path(f"wall-src-info-light/{job_tag}/traj={traj}.txt"))
-        wi_strange = load_wall_src_info(get_load_path(f"wall-src-info-strange/{job_tag}/traj={traj}.txt"))
+        wi_light = load_wall_src_info(get_load_path(f"{job_tag}/wall-src-info-light/traj-{traj}.txt"))
+        wi_strange = load_wall_src_info(get_load_path(f"{job_tag}/wall-src-info-strange/traj-{traj}.txt"))
         return wi_light + wi_strange
     return q.lazy_call(load)
 
 @q.timer_verbose
 def run_pi(job_tag, traj, get_psel):
-    path = get_load_path(f"point-src-info/{job_tag}/traj={traj}.txt")
+    path = get_load_path(f"{job_tag}/point-src-info/traj-{traj}.txt")
     if path is None:
         pi = mk_rand_point_src_info(job_tag, traj, get_psel())
-        save_point_src_info(pi, get_save_path(f"point-src-info/{job_tag}/traj={traj}.txt"));
+        save_point_src_info(pi, get_save_path(f"{job_tag}/point-src-info/traj-{traj}.txt"));
     @q.timer_verbose
     def load():
-        pi = load_point_src_info(get_load_path(f"point-src-info/{job_tag}/traj={traj}.txt"))
+        pi = load_point_src_info(get_load_path(f"{job_tag}/point-src-info/traj-{traj}.txt"))
         return pi
     return q.lazy_call(load)

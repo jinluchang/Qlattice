@@ -51,7 +51,7 @@ def mk_ama_val(val, source_specification, val_list, rel_acc_list, prob_list):
 
 @q.timer_verbose
 def auto_contractor_meson_corr_wsnk_wsrc(job_tag, traj, get_prop, get_fsel, get_pi, get_wi):
-    fn = f"auto-contractor-fsel/{job_tag}/traj={traj}/meson_corr/wsnk_wsrc.lat"
+    fn = f"{job_tag}/auto-contractor-fsel/traj-{traj}/meson_corr/wsnk_wsrc.lat"
     if get_load_path(fn) is not None:
         return
     total_site = rup.get_total_site(job_tag)
@@ -95,7 +95,7 @@ def auto_contractor_meson_corr_wsnk_wsrc(job_tag, traj, get_prop, get_fsel, get_
 
 @q.timer_verbose
 def auto_contractor_various_corr_wsnk_wsrc(job_tag, traj, get_prop, get_fsel, get_pi, get_wi):
-    fn = f"auto-contractor-fsel/{job_tag}/traj={traj}/corr/wsnk_wsrc.lat"
+    fn = f"{job_tag}/auto-contractor-fsel/traj-{traj}/corr/wsnk_wsrc.lat"
     if get_load_path(fn) is not None:
         return
     total_site = rup.get_total_site(job_tag)
@@ -133,7 +133,7 @@ def auto_contractor_various_corr_wsnk_wsrc(job_tag, traj, get_prop, get_fsel, ge
                 )
         results = results_list[0]
         if q.get_id_node() == 0:
-            fn = get_save_path(f"auto-contractor-fsel/{job_tag}/traj={traj}/corr/tsep{tsep}.bin")
+            fn = get_save_path(f"{job_tag}/auto-contractor-fsel/traj-{traj}/corr/tsep{tsep}.bin")
             with open(fn, mode='wb') as f:
                 for k, v in results.items():
                     if v[1].real == 0:
@@ -166,7 +166,7 @@ def auto_contractor_various_corr_wsnk_wsrc(job_tag, traj, get_prop, get_fsel, ge
             if fn[-1] == "_":
                 fn = fn[:-1]
             return fn
-        metafn = get_save_path(f"auto-contractor-fsel/{job_tag}/traj={traj}/corr/meta.txt")
+        metafn = get_save_path(f"{job_tag}/auto-contractor-fsel/traj-{traj}/corr/meta.txt")
         with open(metafn, mode='w') as metaf:
             for k, v in results.items():
                 key = mk_key(f"{k}")
@@ -174,7 +174,7 @@ def auto_contractor_various_corr_wsnk_wsrc(job_tag, traj, get_prop, get_fsel, ge
 
 @q.timer_verbose
 def auto_contractor_meson_corr_psnk_wsrc(job_tag, traj, get_prop, get_fsel, get_pi, get_wi):
-    fn = f"auto-contractor-fsel/{job_tag}/traj={traj}/meson_corr/psnk_wsrc.lat"
+    fn = f"{job_tag}/auto-contractor-fsel/traj-{traj}/meson_corr/psnk_wsrc.lat"
     if get_load_path(fn) is not None:
         return
     total_site = rup.get_total_site(job_tag)
@@ -220,7 +220,7 @@ def auto_contractor_meson_corr_psnk_wsrc(job_tag, traj, get_prop, get_fsel, get_
 
 @q.timer_verbose
 def auto_contractor_vev(job_tag, traj, get_prop, get_fsel, get_pi, get_wi):
-    fn = f"auto-contractor-fsel/{job_tag}/traj={traj}/vev.lat"
+    fn = f"{job_tag}/auto-contractor-fsel/traj-{traj}/vev.lat"
     if get_load_path(fn) is not None:
         return
     cexpr = get_cexpr_vev()
@@ -268,7 +268,7 @@ def auto_contractor_3f4f_matching(job_tag, traj, get_prop, get_fsel, get_pi, get
     tsep_snk3 = 4
     tsep_src4 = -6
     tsep_snk4 = 6
-    q.mk_dirs_info(get_save_path(f"auto-contractor-fsel/{job_tag}/traj={traj}/3f4f_b81"))
+    q.mk_dirs_info(get_save_path(f"{job_tag}/auto-contractor-fsel/traj-{traj}/3f4f_b81"))
     fsel, fselc = get_fsel()
     for tsnk_tsrc in src_snk_seps:
         max_top_tsrc = tsnk_tsrc // 2
@@ -318,7 +318,7 @@ def auto_contractor_3f4f_matching(job_tag, traj, get_prop, get_fsel, get_pi, get
             )
             results = results_list[0]
             if q.get_id_node() == 0:
-                fn = get_save_path(f"auto-contractor-fsel/{job_tag}/traj={traj}/3f4f_b81/tsnk_tsrc{tsnk_tsrc}_top_tsrc{top_tsrc}.bin")
+                fn = get_save_path(f"{job_tag}/auto-contractor-fsel/traj-{traj}/3f4f_b81/tsnk_tsrc{tsnk_tsrc}_top_tsrc{top_tsrc}.bin")
                 with open(fn, mode='wb') as f:
                     for k, v in results.items():
                         if v[1].real == 0:
@@ -351,7 +351,7 @@ def auto_contractor_3f4f_matching(job_tag, traj, get_prop, get_fsel, get_pi, get
             if fn[-1] == "_":
                 fn = fn[:-1]
             return fn
-        metafn = get_save_path(f"auto-contractor-fsel/{job_tag}/traj={traj}/3f4f_b81/meta.txt")
+        metafn = get_save_path(f"{job_tag}/auto-contractor-fsel/traj-{traj}/3f4f_b81/meta.txt")
         with open(metafn, mode='w') as metaf:
             for k, v in results.items():
                 key = mk_key(f"{k}")
@@ -369,7 +369,7 @@ def auto_contractor_3f4f_matching_tslice(job_tag, traj, get_prop, get_fsel, get_
     tsep_snk3 = 4
     tsep_src4 = -6
     tsep_snk4 = 6
-    q.mk_dirs_info(get_save_path(f"auto-contractor-fsel/{job_tag}/traj={traj}/3f4f_b81"))
+    q.mk_dirs_info(get_save_path(f"{job_tag}/auto-contractor-fsel/traj-{traj}/3f4f_b81"))
     fsel, fselc = get_fsel()
     for tsnk_tsrc in src_snk_seps:
         max_top_tsrc = tsnk_tsrc // 2
@@ -422,7 +422,7 @@ def auto_contractor_3f4f_matching_tslice(job_tag, traj, get_prop, get_fsel, get_
                 )
                 results = results_list[0]
                 if q.get_id_node() == 0:
-                    fn = get_save_path(f"auto-contractor-fsel/{job_tag}/traj={traj}/3f4f_b81/tsnk_tsrc{tsnk_tsrc}_top_tsrc{top_tsrc}_t{x3}.bin")
+                    fn = get_save_path(f"{job_tag}/auto-contractor-fsel/traj-{traj}/3f4f_b81/tsnk_tsrc{tsnk_tsrc}_top_tsrc{top_tsrc}_t{x3}.bin")
                     with open(fn, mode='wb') as f:
                         for k, v in results.items():
                             if v[1].real == 0:
@@ -455,7 +455,7 @@ def auto_contractor_3f4f_matching_tslice(job_tag, traj, get_prop, get_fsel, get_
             if fn[-1] == "_":
                 fn = fn[:-1]
             return fn
-        metafn = get_save_path(f"auto-contractor-fsel/{job_tag}/traj={traj}/3f4f_b81/meta.txt")
+        metafn = get_save_path(f"{job_tag}/auto-contractor-fsel/traj-{traj}/3f4f_b81/meta.txt")
         with open(metafn, mode='w') as metaf:
             for k, v in results.items():
                 key = mk_key(f"{k}")
@@ -464,22 +464,22 @@ def auto_contractor_3f4f_matching_tslice(job_tag, traj, get_prop, get_fsel, get_
 @q.timer_verbose
 def run_job(job_tag, traj):
     fns_produce = [
-            f"auto-contractor-fsel/{job_tag}/traj={traj}/checkpoint.txt",
+            f"{job_tag}/auto-contractor-fsel/traj-{traj}/checkpoint.txt",
             ]
     fns_need = [
-            #(f"configs/{job_tag}/ckpoint_lat.{traj}", f"configs/{job_tag}/ckpoint_lat.IEEE64BIG.{traj}",),
-            f"point-selection/{job_tag}/traj={traj}.txt",
-            f"field-selection/{job_tag}/traj={traj}.field",
-            f"gauge-transform/{job_tag}/traj={traj}.field",
-            f"wall-src-info-light/{job_tag}/traj={traj}.txt",
-            f"wall-src-info-strange/{job_tag}/traj={traj}.txt",
-            f"prop-wsrc-strange/{job_tag}/traj={traj}/geon-info.txt",
-            f"psel-prop-wsrc-strange/{job_tag}/traj={traj}/checkpoint.txt",
-            f"prop-wsrc-light/{job_tag}/traj={traj}/geon-info.txt",
-            f"psel-prop-wsrc-light/{job_tag}/traj={traj}/checkpoint.txt",
-            f"prop-rand-u1-light/{job_tag}/traj={traj}/geon-info.txt",
-            f"prop-rand-u1-strange/{job_tag}/traj={traj}/geon-info.txt",
-            f"prop-rand-u1-charm/{job_tag}/traj={traj}/geon-info.txt",
+            #(f"{job_tag}/configs/ckpoint_lat.{traj}", f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj}",),
+            f"{job_tag}/point-selection/traj-{traj}.txt",
+            f"{job_tag}/field-selection/traj-{traj}.field",
+            f"{job_tag}/gauge-transform/traj-{traj}.field",
+            f"{job_tag}/wall-src-info-light/traj-{traj}.txt",
+            f"{job_tag}/wall-src-info-strange/traj-{traj}.txt",
+            f"{job_tag}/prop-wsrc-strange/traj-{traj}/geon-info.txt",
+            f"{job_tag}/psel-prop-wsrc-strange/traj-{traj}/checkpoint.txt",
+            f"{job_tag}/prop-wsrc-light/traj-{traj}/geon-info.txt",
+            f"{job_tag}/psel-prop-wsrc-light/traj-{traj}/checkpoint.txt",
+            f"{job_tag}/prop-rand-u1-light/traj-{traj}/geon-info.txt",
+            f"{job_tag}/prop-rand-u1-strange/traj-{traj}/geon-info.txt",
+            f"{job_tag}/prop-rand-u1-charm/traj-{traj}/geon-info.txt",
             ]
     if not check_job(job_tag, traj, fns_produce, fns_need):
         return
@@ -507,7 +507,7 @@ def run_job(job_tag, traj):
             get_wi = get_wi,
             )
     #
-    fn_checkpoint = f"auto-contractor-fsel/{job_tag}/traj={traj}/checkpoint.txt"
+    fn_checkpoint = f"{job_tag}/auto-contractor-fsel/traj-{traj}/checkpoint.txt"
     if get_load_path(fn_checkpoint) is None:
         if q.obtain_lock(f"locks/{job_tag}-{traj}-auto-contractor"):
             get_prop = get_get_prop()

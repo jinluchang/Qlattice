@@ -58,8 +58,8 @@ def compute_prop_psrc_all(job_tag, traj, *,
         inv_type, gf, gt, psel, fsel, fselc, eig):
     inv_type_names = [ "light", "strange", ]
     inv_type_name = inv_type_names[inv_type]
-    path_s = f"prop-psrc-{inv_type_name}/{job_tag}/traj={traj}"
-    path_sp = f"psel-prop-psrc-{inv_type_name}/{job_tag}/traj={traj}"
+    path_s = f"{job_tag}/prop-psrc-{inv_type_name}/traj-{traj}"
+    path_sp = f"{job_tag}/psel-prop-psrc-{inv_type_name}/traj-{traj}"
     finished_tags = q.properly_truncate_fields(get_save_path(path_s + ".acc"))
     sfw = q.open_fields(get_save_path(path_s + ".acc"), "a", [ 1, 1, 1, 8, ])
     def comp(idx, xg_src, inv_acc):
@@ -93,7 +93,7 @@ def run_prop_psrc(job_tag, traj, *, inv_type, get_gf, get_eig, get_gt, get_psel,
         return
     inv_type_names = [ "light", "strange", ]
     inv_type_name = inv_type_names[inv_type]
-    if get_load_path(f"prop-psrc-{inv_type_name}/{job_tag}/traj={traj}/geon-info.txt") is not None:
+    if get_load_path(f"{job_tag}/prop-psrc-{inv_type_name}/traj-{traj}/geon-info.txt") is not None:
         return
     if q.obtain_lock(f"locks/{job_tag}-{traj}-psrc-{inv_type_name}"):
         gf = get_gf()
@@ -108,20 +108,20 @@ def run_prop_psrc(job_tag, traj, *, inv_type, get_gf, get_eig, get_gt, get_psel,
 @q.timer
 def run_job(job_tag, traj):
     fns_produce = [
-            f"prop-psrc-light/{job_tag}/traj={traj}/geon-info.txt",
-            f"psel-prop-psrc-light/{job_tag}/traj={traj}/checkpoint.txt",
-            f"prop-psrc-strange/{job_tag}/traj={traj}/geon-info.txt",
-            f"psel-prop-psrc-strange/{job_tag}/traj={traj}/checkpoint.txt",
+            f"{job_tag}/prop-psrc-light/traj-{traj}/geon-info.txt",
+            f"{job_tag}/psel-prop-psrc-light/traj-{traj}/checkpoint.txt",
+            f"{job_tag}/prop-psrc-strange/traj-{traj}/geon-info.txt",
+            f"{job_tag}/psel-prop-psrc-strange/traj-{traj}/checkpoint.txt",
             ]
     fns_need = [
-            (f"configs/{job_tag}/ckpoint_lat.{traj}", f"configs/{job_tag}/ckpoint_lat.IEEE64BIG.{traj}",),
-            f"gauge-transform/{job_tag}/traj={traj}.field",
-            f"field-selection/{job_tag}/traj={traj}.field",
-            f"point-selection/{job_tag}/traj={traj}.txt",
-            f"eig/{job_tag}/traj={traj}",
-            f"eig/{job_tag}/traj={traj}/metadata.txt",
-            f"eig/{job_tag}/traj={traj}/eigen-values.txt",
-            f"eig-strange/{job_tag}/traj={traj}",
+            (f"{job_tag}/configs/ckpoint_lat.{traj}", f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj}",),
+            f"{job_tag}/gauge-transform/traj-{traj}.field",
+            f"{job_tag}/field-selection/traj-{traj}.field",
+            f"{job_tag}/point-selection/traj-{traj}.txt",
+            f"{job_tag}/eig/traj-{traj}",
+            f"{job_tag}/eig/traj-{traj}/metadata.txt",
+            f"{job_tag}/eig/traj-{traj}/eigen-values.txt",
+            f"{job_tag}/eig-strange/traj-{traj}",
             ]
     if not check_job(job_tag, traj, fns_produce, fns_need):
         return

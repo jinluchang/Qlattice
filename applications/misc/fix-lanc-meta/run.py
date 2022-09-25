@@ -91,7 +91,7 @@ def save_metadata(path, params, inv_type, inv_acc, *, mpi = None):
 def run_eig_fix_meta(job_tag, traj, get_gf, inv_type = 0, inv_acc = 0, *, mpi_original = None):
     assert get_gf is not None
     gf = get_gf()
-    path_eig = get_load_path(f"eig/{job_tag}/traj={traj}")
+    path_eig = get_load_path(f"{job_tag}/eig/traj-{traj}")
     assert path_eig is not None
     save_metadata(path_eig, rup.dict_params[job_tag], inv_type, inv_acc, mpi = mpi_original)
     basis, cevec, crc32 = load_eig(path_eig, job_tag, inv_type, inv_acc)
@@ -107,7 +107,7 @@ def run_eig_fix_meta(job_tag, traj, get_gf, inv_type = 0, inv_acc = 0, *, mpi_or
 def run_eig_fix_reshape(job_tag, traj, get_gf, inv_type = 0, inv_acc = 0, *, mpi_original = None):
     assert get_gf is not None
     gf = get_gf()
-    path = f"eig/{job_tag}/traj={traj}"
+    path = f"{job_tag}/eig/traj-{traj}"
     path_eig = get_load_path(path)
     assert path_eig is not None
     save_metadata(path_eig, rup.dict_params[job_tag], inv_type, inv_acc, mpi = mpi_original)
@@ -124,7 +124,7 @@ def guess_eig_mpi(job_tag, traj):
         mpi = rup.dict_params[job_tag]["lanc-mpi-original"]
     else:
         assert job_tag == "32Dfine"
-        path_eig = get_load_path(f"eig/{job_tag}/traj={traj}")
+        path_eig = get_load_path(f"{job_tag}/eig/traj-{traj}")
         if path_eig is None:
             mpi = rup.dict_params[job_tag]["lanc-mpi-original"]
         elif q.does_file_exist_sync_node(os.path.join(path_eig, "31/0000000511.compressed")):
@@ -153,12 +153,12 @@ def run_eig_fix(job_tag, traj, get_gf, inv_type = 0, inv_acc = 0):
 @q.timer_verbose
 def run_job(job_tag, traj):
     fns_produce = [
-            f"eig/{job_tag}/traj={traj}/eigen-values.txt",
-            f"eig/{job_tag}/traj={traj}/metadata.txt",
+            f"{job_tag}/eig/traj-{traj}/eigen-values.txt",
+            f"{job_tag}/eig/traj-{traj}/metadata.txt",
             ]
     fns_need = [
-            (f"configs/{job_tag}/ckpoint_lat.{traj}", f"configs/{job_tag}/ckpoint_lat.IEEE64BIG.{traj}",),
-            f"eig/{job_tag}/traj={traj}",
+            (f"{job_tag}/configs/ckpoint_lat.{traj}", f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj}",),
+            f"{job_tag}/eig/traj-{traj}",
             ]
     if not check_job(job_tag, traj, fns_produce, fns_need):
         return

@@ -31,14 +31,14 @@ def get_save_path(fn):
 
 @q.timer
 def check_job(job_tag, traj):
-    if q.does_file_exist_sync_node(get_save_path(f"{job_tag}/traj={traj}.hdf5")):
+    if q.does_file_exist_sync_node(get_save_path(f"{job_tag}/traj-{traj}.hdf5")):
         q.displayln_info(f"check_job: Job finished {job_tag} {traj}")
         return False
-    if get_load_path(f"field-meson-vv-meson/{job_tag}/results={traj}/checkpoint.txt") is None:
+    if get_load_path(f"{job_tag}/field-meson-vv-meson/results-{traj}/checkpoint.txt") is None:
         return False
-    if get_load_path(f"lat-three-point/{job_tag}/results={traj}/checkpoint.txt") is None:
+    if get_load_path(f"{job_tag}/lat-three-point/results-{traj}/checkpoint.txt") is None:
         return False
-    if get_load_path(f"lat-two-point/{job_tag}/results={traj}/checkpoint.txt") is None:
+    if get_load_path(f"{job_tag}/lat-two-point/results-{traj}/checkpoint.txt") is None:
         return False
     return True
 
@@ -88,7 +88,7 @@ def get_analysis_lmom_list():
 @q.timer_verbose
 def analysis_two_point(job_tag, traj, type1, type2):
     ld = q.LatData()
-    ld.load(get_load_path(f"lat-two-point/{job_tag}/results={traj}/two-point-wall-snk-sparse-corrected-{type1}-{type2}.lat"))
+    ld.load(get_load_path(f"{job_tag}/lat-two-point/results-{traj}/two-point-wall-snk-sparse-corrected-{type1}-{type2}.lat"))
     arr = np.array([ ld[[t, 15, 15,]][0] for t in range(get_t_size(job_tag)) ])
     # q.displayln_info(arr)
     return arr
@@ -96,7 +96,7 @@ def analysis_two_point(job_tag, traj, type1, type2):
 @q.timer_verbose
 def analysis_three_point(job_tag, traj, type1, type2, type3):
     ld = q.LatData()
-    ld.load(get_load_path(f"lat-three-point/{job_tag}/results={traj}/three-point-{type1}-{type2}-{type3}.lat"))
+    ld.load(get_load_path(f"{job_tag}/lat-three-point/results-{traj}/three-point-{type1}-{type2}-{type3}.lat"))
     arr = np.array([
         [ ld[[t, top, 8,]][0] for top in range(get_t_size(job_tag)) ]
         for t in range(get_t_size(job_tag)) ])
@@ -108,7 +108,7 @@ def analysis_meson_vv_meson(job_tag, traj, type1, type2, type3, type4):
     f = q.Field("Complex")
     f.load_double_from_float(
             get_load_path(
-                f"field-meson-vv-meson/{job_tag}/results={traj}/forward-{type1}-{type2}-{type3}-{type4}.field"))
+                f"{job_tag}/field-meson-vv-meson/results-{traj}/forward-{type1}-{type2}-{type3}-{type4}.field"))
     geo = f.geo()
     data = []
     for lmom in get_analysis_lmom_list():
@@ -141,7 +141,7 @@ def analysis(job_tag, traj):
         data["three-point-0-0-0"] = analysis_three_point(job_tag, traj, 0, 0, 0)
         data["field-meson-vv-meson-0-0-0-0"] = analysis_meson_vv_meson(job_tag, traj, 0, 0, 0, 0)
         if q.get_id_node() == 0:
-            with h5py.File(get_save_path(f"{job_tag}/traj={traj}.hdf5"), "w") as f:
+            with h5py.File(get_save_path(f"{job_tag}/traj-{traj}.hdf5"), "w") as f:
                 for k, v in data.items():
                     f.create_dataset(k, data = v)
         q.sync_node()

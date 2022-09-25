@@ -40,13 +40,13 @@ def compute_light_hvp(job_tag, traj, *, pi):
 def check_job(job_tag, traj):
     # return True if config is finished
     fns_require = []
-    fns_require.append(get_load_path(f"configs/{job_tag}/ckpoint_lat.{traj}"))
-    fns_require.append(get_load_path(f"point-src-info/{job_tag}/traj={traj}.txt"))
+    fns_require.append(get_load_path(f"{job_tag}/configs/ckpoint_lat.{traj}"))
+    fns_require.append(get_load_path(f"{job_tag}/point-src-info/traj-{traj}.txt"))
     for fn in fns_require:
         if fn is None:
             return True
     fns = []
-    fns.append(get_load_path(f"hvp/{job_tag}/traj={traj}.lat"))
+    fns.append(get_load_path(f"{job_tag}/hvp/traj-{traj}.lat"))
     for fn in fns:
         if fn is None:
             return False
@@ -65,11 +65,11 @@ def run_job(job_tag, traj):
     geo = q.Geometry(total_site, 1)
     q.displayln_info("geo.show() =", geo.show())
     #
-    path_gf = get_load_path(f"configs/{job_tag}/ckpoint_lat.{traj}")
+    path_gf = get_load_path(f"{job_tag}/configs/ckpoint_lat.{traj}")
     gf = q.GaugeField()
     gf.load(path_gf)
     #
-    pi = load_point_src_info(get_load_path(f"point-src-info/{job_tag}/traj={traj}.txt"))
+    pi = load_point_src_info(get_load_path(f"{job_tag}/point-src-info/traj-{traj}.txt"))
     for p in pi:
         q.displayln_info(p)
 
