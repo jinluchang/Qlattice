@@ -16,7 +16,7 @@ def end():
 
 @timer
 def glb_sum_np(x):
-    from qlat.lat_io import LatData
+    from qlat_utils.lat_io import LatData
     # x does NOT change
     shape = x.shape
     dtype = x.dtype

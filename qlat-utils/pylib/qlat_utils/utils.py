@@ -1,6 +1,7 @@
 import cqlat_utils as cu
 
 from qlat_utils.cache import *
+from qlat_utils.rng_state import *
 
 import sys
 
@@ -20,7 +21,7 @@ def random_permute(l, rs):
     # Return a new permuted list.
     assert isinstance(l, list)
     assert isinstance(rs, RngState)
-    return c.random_permute(l, rs)
+    return cu.random_permute(l, rs)
 
 def show_memory_usage():
     import psutil
