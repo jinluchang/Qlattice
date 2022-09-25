@@ -13,7 +13,6 @@ from cqlat_utils import is_regular_file
 from cqlat_utils import qrename, qrename_info
 from cqlat_utils import qls
 from cqlat_utils import qls_all
-from cqlat_utils import qload_datatable
 
 from qlat_utils.qar import *
 
@@ -78,15 +77,18 @@ def qappend_info(path, content = None):
         return cu.qappend_info(path, content)
 
 @timer
+def compute_crc32(path):
+    return cu.compute_crc32(path)
+
+def qload_datatable(path, is_par = False):
+    return cu.qload_datatable(path, is_par)
+
+@timer
 def save_pickle_obj(obj, path):
     # only save from node 0
     # mk_file_dirs_info(path)
     if get_id_node() == 0:
         qtouch(path, pickle.dumps(obj))
-
-@timer
-def compute_crc32(path):
-    return cu.compute_crc32(path)
 
 @timer
 def check_all_files_crc32_info(path):
@@ -173,8 +175,8 @@ def qls_all_sync_node(path):
         return c.qls_all_sync_node(path)
     return qls_all(path)
 
-def qload_datatable_sync_node(path):
+def qload_datatable_sync_node(path, is_par = False):
     if get_num_node() != 1:
         import cqlat as c
-        return c.qload_datatable_sync_node(path)
-    return qload_datatable(path)
+        return c.qload_datatable_sync_node(path, is_par)
+    return qload_datatable(path, is_par)
