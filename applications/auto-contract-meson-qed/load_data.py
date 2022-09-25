@@ -585,7 +585,23 @@ def load_prop_rand_u1_fsel(job_tag, traj, flavor, *, psel, fsel, fselc):
 ### -------
 
 @q.timer_verbose
-def run_get_prop(job_tag, traj, *, get_gt, get_psel, get_fsel, get_psel_smear, get_wi):
+def run_get_prop(job_tag, traj, *, get_gt, get_psel, get_fsel, get_psel_smear, get_wi, prop_types = None):
+    if prop_types is None:
+        # load psel before fsel if possible
+        # load strange quark before light quark if possible
+        prop_types = [
+                "wsrc psel s",
+                "wsrc psel l",
+                "wsrc fsel s",
+                "wsrc fsel l",
+                "psrc psel s",
+                "psrc psel l",
+                "psrc fsel s",
+                "psrc fsel l",
+                "rand_u1 fsel c",
+                "rand_u1 fsel s",
+                "rand_u1 fsel l",
+                ]
     @q.timer_verbose
     def mk_get_prop():
         q.timer_fork()
@@ -600,20 +616,21 @@ def run_get_prop(job_tag, traj, *, get_gt, get_psel, get_fsel, get_psel_smear, g
         prop_cache["psel_pos_dict"] = dict([ (tuple(pos), i) for i, pos in enumerate(psel.to_list()) ])
         prop_cache["fsel_pos_dict"] = dict([ (tuple(pos), i) for i, pos in enumerate(fsel.to_psel_local().to_list()) ])
         prop_cache["fselc_pos_dict"] = dict([ (tuple(pos), i) for i, pos in enumerate(fselc.to_psel_local().to_list()) ])
-        # ADJUST ME
-        # load psel before fsel if possible
-        # load strange quark before light quark if possible
-        load_prop_wsrc_psel(job_tag, traj, "s", wi = wi, psel = psel, fsel = fsel, fselc = fselc, gt = gt)
-        load_prop_wsrc_psel(job_tag, traj, "l", wi = wi, psel = psel, fsel = fsel, fselc = fselc, gt = gt)
-        load_prop_wsrc_fsel(job_tag, traj, "s", wi = wi, psel = psel, fsel = fsel, fselc = fselc, gt = gt)
-        load_prop_wsrc_fsel(job_tag, traj, "l", wi = wi, psel = psel, fsel = fsel, fselc = fselc, gt = gt)
-        # load_prop_psrc_psel(job_tag, traj, "s", psel = psel, fsel = fsel, fselc = fselc)
-        # load_prop_psrc_psel(job_tag, traj, "l", psel = psel, fsel = fsel, fselc = fselc)
-        load_prop_psrc_fsel(job_tag, traj, "s", psel = psel, fsel = fsel, fselc = fselc)
-        load_prop_psrc_fsel(job_tag, traj, "l", psel = psel, fsel = fsel, fselc = fselc)
-        # load_prop_rand_u1_fsel(job_tag, traj, "l", psel = psel, fsel = fsel, fselc = fselc)
-        # load_prop_rand_u1_fsel(job_tag, traj, "s", psel = psel, fsel = fsel, fselc = fselc)
-        # load_prop_rand_u1_fsel(job_tag, traj, "c", psel = psel, fsel = fsel, fselc = fselc)
+        #
+        prop_load_dict = dict()
+        prop_load_dict["wsrc psel s"] = lambda: load_prop_wsrc_psel(job_tag, traj, "s", wi = wi, psel = psel, fsel = fsel, fselc = fselc, gt = gt)
+        prop_load_dict["wsrc psel l"] = lambda: load_prop_wsrc_psel(job_tag, traj, "l", wi = wi, psel = psel, fsel = fsel, fselc = fselc, gt = gt)
+        prop_load_dict["wsrc fsel s"] = lambda: load_prop_wsrc_fsel(job_tag, traj, "s", wi = wi, psel = psel, fsel = fsel, fselc = fselc, gt = gt)
+        prop_load_dict["wsrc fsel l"] = lambda: load_prop_wsrc_fsel(job_tag, traj, "l", wi = wi, psel = psel, fsel = fsel, fselc = fselc, gt = gt)
+        prop_load_dict["psrc psel s"] = lambda: load_prop_psrc_psel(job_tag, traj, "s", psel = psel, fsel = fsel, fselc = fselc)
+        prop_load_dict["psrc psel l"] = lambda: load_prop_psrc_psel(job_tag, traj, "l", psel = psel, fsel = fsel, fselc = fselc)
+        prop_load_dict["psrc fsel s"] = lambda: load_prop_psrc_fsel(job_tag, traj, "s", psel = psel, fsel = fsel, fselc = fselc)
+        prop_load_dict["psrc fsel l"] = lambda: load_prop_psrc_fsel(job_tag, traj, "l", psel = psel, fsel = fsel, fselc = fselc)
+        prop_load_dict["rand_u1 fsel c"] = lambda: load_prop_rand_u1_fsel(job_tag, traj, "c", psel = psel, fsel = fsel, fselc = fselc)
+        prop_load_dict["rand_u1 fsel s"] = lambda: load_prop_rand_u1_fsel(job_tag, traj, "s", psel = psel, fsel = fsel, fselc = fselc)
+        prop_load_dict["rand_u1 fsel l"] = lambda: load_prop_rand_u1_fsel(job_tag, traj, "l", psel = psel, fsel = fsel, fselc = fselc)
+        for pt in prop_types:
+            prop_load_dict[pt]()
         #
         # prop_lookup_cache[(pos_src, type_src, type_snk,)] == get_prop_pos_snk where get_prop_pos_snk(pos_snk) ==> ama_prop
         prop_lookup_cache = q.mk_cache(f"prop_lookup_cache", f"{job_tag}", f"{traj}")

@@ -14,12 +14,12 @@ term_Type1_0001 = coef_Type1 * terms[0]
 term_Type1_0002 = coef_Type1 * terms[1]
 term_Type1_0003 = coef_Type1 * terms[2]
 typed_exprs = [ dict() for i in range(2) ]
-# < pi0(t_1) * pi0(t_2) >
+# < pi0(t_1)^dag * pi0(t_2) >
 typed_exprs[0]['Type1'] = (1)*term_Type1_0001
 # < (1/2) * ( K0(t_1)^dag * K0(t_2) + K0b(t_1)^dag * K0b(t_2) ) >
 typed_exprs[1]['Type1'] = (1/2)*term_Type1_0002+(1/2)*term_Type1_0003
 exprs = [ None for i in range(2) ]
-# < pi0(t_1) * pi0(t_2) >
+# < pi0(t_1)^dag * pi0(t_2) >
 exprs[0] = (1)*term_Type1_0001
 # < (1/2) * ( K0(t_1)^dag * K0(t_2) + K0b(t_1)^dag * K0b(t_2) ) >
 exprs[1] = (1/2)*term_Type1_0002+(1/2)*term_Type1_0003
@@ -75,9 +75,9 @@ term_Type1_0004 = coef_Type1 * terms[3]
 term_Type1_0005 = coef_Type1 * terms[4]
 term_Type1_0006 = coef_Type1 * terms[5]
 typed_exprs = [ dict() for i in range(8) ]
-# < pi0(t_1) * ubaru(x_1) * pi0(t_2) >
+# < pi0(t_1)^dag * ubaru(x_1) * pi0(t_2) >
 typed_exprs[0]['Type1'] = (1/2)*term_Type1_0001+(1/2)*term_Type1_0002
-# < pi0(t_1) * dbard(x_1) * pi0(t_2) >
+# < pi0(t_1)^dag * dbard(x_1) * pi0(t_2) >
 typed_exprs[1]['Type1'] = (1/2)*term_Type1_0001+(1/2)*term_Type1_0002
 # < (1/2) * ( pi+(t_1)^dag * ubaru(x_1) * pi+(t_2) + pi-(t_1)^dag * ubaru(x_1) * pi-(t_2) ) >
 typed_exprs[2]['Type1'] = (1/2)*term_Type1_0001+(1/2)*term_Type1_0002
@@ -92,9 +92,9 @@ typed_exprs[6]['Type1'] = (1/2)*term_Type1_0003+(1/2)*term_Type1_0004
 # < (1/2) * ( K+(t_1)^dag * sbars(x_1) * K+(t_2) + K-(t_1)^dag * sbars(x_1) * K-(t_2) ) >
 typed_exprs[7]['Type1'] = (1/2)*term_Type1_0005+(1/2)*term_Type1_0006
 exprs = [ None for i in range(8) ]
-# < pi0(t_1) * ubaru(x_1) * pi0(t_2) >
+# < pi0(t_1)^dag * ubaru(x_1) * pi0(t_2) >
 exprs[0] = (1/2)*term_Type1_0001+(1/2)*term_Type1_0002
-# < pi0(t_1) * dbard(x_1) * pi0(t_2) >
+# < pi0(t_1)^dag * dbard(x_1) * pi0(t_2) >
 exprs[1] = (1/2)*term_Type1_0001+(1/2)*term_Type1_0002
 # < (1/2) * ( pi+(t_1)^dag * ubaru(x_1) * pi+(t_2) + pi-(t_1)^dag * ubaru(x_1) * pi-(t_2) ) >
 exprs[2] = (1/2)*term_Type1_0001+(1/2)*term_Type1_0002
@@ -252,13 +252,13 @@ term_Type4_0004 = coef_Type4 * terms[25]
 term_Type4_0005 = coef_Type4 * terms[26]
 term_Type4_0006 = coef_Type4 * terms[27]
 typed_exprs = [ dict() for i in range(5) ]
-# < pi0(t_1) * j_mu(x_1,mu) * j_mu(x_2,nu) * pi0(t_2) >
+# < pi0(t_1)^dag * j_mu(x_1,mu) * j_mu(x_2,nu) * pi0(t_2) >
 typed_exprs[0]['Type1'] = (-1/2)*term_Type1_0001+(-1/2)*term_Type1_0002
-# < pi0(t_1) * j_mu(x_1,mu) * j_mu(x_2,nu) * pi0(t_2) >
+# < pi0(t_1)^dag * j_mu(x_1,mu) * j_mu(x_2,nu) * pi0(t_2) >
 typed_exprs[0]['Type2'] = (5/18)*term_Type2_0001+(5/18)*term_Type2_0002
-# < pi0(t_1) * j_mu(x_1,mu) * j_mu(x_2,nu) * pi0(t_2) >
+# < pi0(t_1)^dag * j_mu(x_1,mu) * j_mu(x_2,nu) * pi0(t_2) >
 typed_exprs[0]['Type3'] = (5/18)*term_Type3_0001+(5/18)*term_Type3_0002+(5/18)*term_Type3_0003+(5/18)*term_Type3_0004
-# < pi0(t_1) * j_mu(x_1,mu) * j_mu(x_2,nu) * pi0(t_2) >
+# < pi0(t_1)^dag * j_mu(x_1,mu) * j_mu(x_2,nu) * pi0(t_2) >
 typed_exprs[0]['Type4'] = (-5/9)*term_Type4_0001+(-1/9)*term_Type4_0002
 # < (1/2) * ( pi+(t_1)^dag * j_mu(x_1,mu) * j_mu(x_2,nu) * pi+(t_2) + pi-(t_1)^dag * j_mu(x_1,mu) * j_mu(x_2,nu) * pi-(t_2) ) >
 typed_exprs[1]['Type2'] = (-2/9)*term_Type2_0001+(-2/9)*term_Type2_0002
@@ -281,7 +281,7 @@ typed_exprs[3]['Type4'] = (-5/18)*term_Type4_0003+(-5/18)*term_Type4_0004+(-1/18
 # < j_mu(x_1,mu) * j_mu(x_2,nu) >
 typed_exprs[4]['Type0'] = (-5/9)*term_Type0_0001+(-1/9)*term_Type0_0002
 exprs = [ None for i in range(5) ]
-# < pi0(t_1) * j_mu(x_1,mu) * j_mu(x_2,nu) * pi0(t_2) >
+# < pi0(t_1)^dag * j_mu(x_1,mu) * j_mu(x_2,nu) * pi0(t_2) >
 exprs[0] = (5/18)*term_Type3_0001+(-1/2)*term_Type1_0001+(5/18)*term_Type2_0001+(5/18)*term_Type3_0002+(-1/2)*term_Type1_0002+(5/18)*term_Type2_0002+(5/18)*term_Type3_0003+(5/18)*term_Type3_0004+(-5/9)*term_Type4_0001+(-1/9)*term_Type4_0002
 # < (1/2) * ( pi+(t_1)^dag * j_mu(x_1,mu) * j_mu(x_2,nu) * pi+(t_2) + pi-(t_1)^dag * j_mu(x_1,mu) * j_mu(x_2,nu) * pi-(t_2) ) >
 exprs[1] = (5/18)*term_Type3_0001+(-2/9)*term_Type2_0001+(5/18)*term_Type3_0002+(-2/9)*term_Type2_0002+(5/18)*term_Type3_0003+(5/18)*term_Type3_0004+(-5/9)*term_Type4_0001+(-1/9)*term_Type4_0002

@@ -919,6 +919,14 @@ def run_job(job_tag, traj):
             get_fsel = get_fsel,
             get_psel_smear = get_psel_smear,
             get_wi = get_wi,
+            prop_types = [
+                "wsrc psel s",
+                "wsrc psel l",
+                "wsrc fsel s",
+                "wsrc fsel l",
+                "psrc fsel s",
+                "psrc fsel l",
+                ],
             )
     #
     fn_checkpoint = f"{job_tag}/auto-contract/traj-{traj}/checkpoint.txt"
