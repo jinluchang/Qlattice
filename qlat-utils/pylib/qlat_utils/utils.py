@@ -69,3 +69,22 @@ def show(x):
 
 def unitarize(x):
     x.unitarize()
+
+def rel_mod(x, size):
+    x = x % size
+    assert x >= 0
+    if 2 * x >= size:
+        return x - size
+    else:
+        return x
+
+def rel_mod_sym(x, size):
+    x = x % size
+    assert x >= 0
+    if 2 * x > size:
+        return x - size
+    elif 2 * x < size:
+        return x
+    else:
+        assert 2 * x == size
+        return 0

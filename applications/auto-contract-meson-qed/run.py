@@ -31,27 +31,6 @@ load_path_list[:] = [
 
 # ----
 
-def rel_mod(x, size):
-    x = x % size
-    assert x >= 0
-    if 2 * x >= size:
-        return x - size
-    else:
-        return x
-
-def rel_mod_sym(x, size):
-    x = x % size
-    assert x >= 0
-    if 2 * x > size:
-        return x - size
-    elif 2 * x < size:
-        return x
-    else:
-        assert 2 * x == size
-        return 0
-
-# ----
-
 @q.timer
 def get_cexpr_meson_corr():
     def calc_cexpr():
@@ -740,7 +719,7 @@ def proj_meson_jj(res_arr, res_meson_corr, x_rel, total_site):
     r = get_r(x_rel)
     r_limit = get_r_limit(total_site)
     r_idx_low, r_idx_high, coef_low, coef_high = get_interp_idx_coef(r, r_limit)
-    x_rel_sym = [ rel_mod_sym(x_rel[mu], total_site[mu]) for mu in range(4) ]
+    x_rel_sym = [ q.rel_mod_sym(x_rel[mu], total_site[mu]) for mu in range(4) ]
     counts = np.array([ coef_low, coef_high, ]) # r
     v = np.array([ proj(res_arr, x_rel_sym) for proj in all_jj_projections ]) # idx_proj, idx_tensor
     values = np.array([ coef_low * v, coef_high * v, ]).transpose(2, 0, 1) # idx_tensor, r, idx_proj
@@ -805,7 +784,7 @@ def auto_contract_meson_jj(job_tag, traj, get_prop, get_psel, get_fsel):
             q.displayln_info(f"auto_contract_meson_jj: {idx+1}/{len(xg_psel_list)} {xg_src}")
             for xg_snk in xg_fsel_list:
                 xg_snk = tuple(xg_snk.tolist())
-                x_rel = [ rel_mod(xg_snk[mu] - xg_src[mu], total_site[mu]) for mu in range(4) ]
+                x_rel = [ q.rel_mod(xg_snk[mu] - xg_src[mu], total_site[mu]) for mu in range(4) ]
                 x_rel_t = x_rel[3]
                 x_2_t = xg_src[3]
                 x_1_t = x_2_t + x_rel_t
@@ -845,18 +824,18 @@ def auto_contract_meson_jj(job_tag, traj, get_prop, get_psel, get_fsel):
     res_sum *= 1.0 / (len(xg_psel_list) * fsel.prob())
     res_meson_corr_sum *= 1.0 / (len(xg_psel_list) * fsel.prob())
     ld_count = q.mk_lat_data([
-        [ "t", t_size, [ str(rel_mod(t, t_size)) for t in range(t_size) ], ],
+        [ "t", t_size, [ str(q.rel_mod(t, t_size)) for t in range(t_size) ], ],
         [ "r", r_limit, ],
         ])
     ld_sum = q.mk_lat_data([
         [ "idx_tensor", n_tensor, ],
-        [ "t", t_size, [ str(rel_mod(t, t_size)) for t in range(t_size) ], ],
+        [ "t", t_size, [ str(q.rel_mod(t, t_size)) for t in range(t_size) ], ],
         [ "r", r_limit, ],
         [ "idx_proj", len(all_jj_projection_names), all_jj_projection_names, ],
         ])
     ld_meson_corr_sum = q.mk_lat_data([
         [ "idx_meson", 3, [ "pi", "kp", "km", ], ],
-        [ "t", t_size, [ str(rel_mod(t, t_size)) for t in range(t_size) ], ],
+        [ "t", t_size, [ str(q.rel_mod(t, t_size)) for t in range(t_size) ], ],
         [ "r", r_limit, ],
         ])
     ld_count.from_numpy(res_count)
