@@ -85,6 +85,7 @@ struct Vec_redistribute
 inline Vec_redistribute::Vec_redistribute(fft_desc_basic &fds, bool GPU_set)
 {
   TIMERA("Construct Vec_redistribute");
+  (void)GPU_set;
   fd = &fds;
   //GPU = GPU_set;
   #ifndef QLAT_USE_ACC
@@ -419,6 +420,7 @@ struct Rotate_vecs{
   bool flag_mem_set;
 
   Rotate_vecs(fft_desc_basic &fd_set, bool GPU_set=true):fd(),fd0(){
+    (void)GPU_set;
     #ifndef QLAT_USE_ACC
     GPU = false;
     #else

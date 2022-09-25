@@ -135,6 +135,7 @@ struct shift_vec{
 shift_vec::shift_vec(fft_desc_basic &fds, bool GPU_set)
 {
   TIMERB("Construct shift_vec");
+  (void)GPU_set;
   #ifndef QLAT_USE_ACC
   GPU = false;
   #else
@@ -495,6 +496,7 @@ __global__ void multiply_gauge_global(Ty* a, Ty* b, const int dir_gauge, const i
 template<typename Cy, int gs, int cs, bool Conj>
 void multiply_gauge(void *src, void* gauge, const int dir_gauge,const int biva,const long Length, const int gbfac, const int gd0, const bool GPU)
 {
+  (void)GPU;
   const int dir_limit = 4;
   if(cs != -1){qassert(gd0 == gs);}
   ////convention not the same as Qlattice

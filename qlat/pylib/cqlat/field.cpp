@@ -204,6 +204,7 @@ PyObject* get_multiplicity_field_ctype(PyObject* p_field)
 template <class M>
 PyObject* get_sizeof_m_field_ctype(PyObject* p_field)
 {
+  (void)p_field;
   return py_convert(sizeof(M));
 }
 

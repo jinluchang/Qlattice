@@ -110,7 +110,6 @@ struct smear_fun{
   Geometry geo_ext;
   int dirL;
   bool smear_in_time_dir;
-  ;
 
   ////shift_vec *svec;
   Vec_redistribute *vec_rot;

@@ -33,6 +33,8 @@ template <typename T, typename TInt, typename TI0, typename TI1>
 void cpy_data_from_index(T* Pres, T* Psrc, const TInt* map_res, const TInt* map_src, const TI0 Nvol, const TI1 bfac, int GPU=1, bool dummy=true)
 {
   TIMERB("copy data form index");
+  (void)dummy;
+  (void)GPU;
 
   #ifdef QLAT_USE_ACC
   if(GPU == 1){
@@ -91,6 +93,7 @@ __global__ void cpy_data_thread_global(T0* Pres, const T1* Psrc,  const TInt Nvo
 template <typename T0, typename T1, typename TInt>
 void CPY_data_thread_basic(T0* Pres, const T1* Psrc, const TInt Nvol, int GPU=1, bool dummy=true, const double ADD = 0)
 {
+  (void)dummy;
   if(GPU != 0 and GPU != 1){qassert(false);}
   bool do_copy = true;
   if(qlat::qnorm(ADD) <  1e-13){do_copy = true ;}

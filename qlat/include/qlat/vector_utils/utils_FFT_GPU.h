@@ -65,6 +65,7 @@ struct FFT_Vecs{
 
   ////only one mode (cpu/gpu) per FFT struct
   FFT_Vecs(bool GPU_set=true){
+    (void)GPU_set;
     /////qassert(GPU == 0 or GPU == 1);
     #ifndef QLAT_USE_ACC
     GPU = false;
@@ -272,6 +273,7 @@ template<typename Ty>
 void FFT_Vecs::do_fft(Ty* inputD, bool fftdir, bool dummy)
 {
   TIMERB("FFT excute");
+  (void)dummy;
   if(flag_mem_set != true or sizeof(Ty) != bsize){
     print0("%d %d \n", int(sizeof(Ty)), int(bsize));
     abort_r("FFT_Vecs memory not set ! \n");

@@ -646,6 +646,7 @@ inline void set_GPU(){
 
 inline void set_GPU_threads(int mode=0){
   //////Set up gpu map to cpu
+  (void)mode;
   #ifdef QLAT_USE_ACC
   int num_gpus = 0;
   cudaGetDeviceCount(&num_gpus);
@@ -865,7 +866,9 @@ template<typename Ty>
 inline void zeroE(std::vector<qlat::vector_acc<Ty > >& a,int GPU=0, bool dummy=true)
 {
   for(LInt iv=0;iv<a.size();iv++){zeroE(a[iv], GPU, false);}
-  if(dummy)qacc_barrier(dummy);
+  if (dummy) {
+    qacc_barrier(dummy);
+  }
 }
 
 template<typename Ty, int civ>

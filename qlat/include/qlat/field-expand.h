@@ -25,6 +25,7 @@ inline void set_marks_field_all(CommMarks& marks, const Geometry& geo,
 // tag is not used
 {
   TIMER_VERBOSE("set_marks_field_all");
+  (void)tag;
   marks.init();
   marks.init(geo);
   set_zero(marks);
@@ -43,6 +44,7 @@ inline void set_marks_field_1(CommMarks& marks, const Geometry& geo,
 // tag is not used
 {
   TIMER_VERBOSE("set_marks_field_1");
+  (void)tag;
   marks.init();
   marks.init(geo);
   set_zero(marks);

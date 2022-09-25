@@ -18,7 +18,7 @@ static PyMethodDef module_functions[] = {
 #undef EXPORT_FUNCTION
 
 // on exit
-void free_module(void* self) {}
+void free_module(void* self) { (void)self; }
 
 // module definition
 static struct PyModuleDef module_def = {

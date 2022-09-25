@@ -355,19 +355,20 @@ void merge_fields_ms(Field<M>& f, const std::vector<ConstHandle<Field<M> > >& ve
   qassert(not vec[0].null());
   qassert(is_initialized(vec[0]()));
   const long multiplicity = vec.size();
-  qassert(multiplicity == m_vec.size());
+  qassert(multiplicity == (long)m_vec.size());
   const Geometry geo = geo_reform(vec[0]().geo(), multiplicity);
   f.init(geo);
   for (long m = 0; m < multiplicity; ++m) {
     const Field<M>& f1 = vec[m]();
-    const Geometry& geo_v = vec[m]().geo();
+    const Geometry& geo_v = f1.geo();
     qassert(geo_v.is_only_local());
     check_matching_geo(geo_v, geo);
   }
   qthread_for(index, geo.local_volume(), {
     Vector<M> fv = f.get_elems(index);
     for (int m = 0; m < multiplicity; ++m) {
-      const Vector<M> f1v = vec[m]().get_elems_const(index);
+      const Field<M>& f1 = vec[m]();
+      const Vector<M> f1v = f1.get_elems_const(index);
       fv[m] = f1v[m_vec[m]];
     }
   });
@@ -651,7 +652,6 @@ inline void set_checkers_double(Field<M>& f)
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
-    const long gindex = geo.g_index_from_g_coordinate(xg);
     Vector<M> v = f.get_elems(xl);
     Vector<double> dv((double*)v.data(), v.data_size() / sizeof(double));
     for (int m = 0; m < dv.size(); ++m) {

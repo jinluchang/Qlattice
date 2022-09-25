@@ -4,8 +4,9 @@ namespace qlat
 {  //
 
 template <class M>
-PyObject* mk_spfield_ctype()
+PyObject* mk_spfield_ctype(int dummy)
 {
+  (void)dummy;
   SelectedPoints<M>* pspfield = new SelectedPoints<M>();
   return py_convert((void*)pspfield);
 }
@@ -235,10 +236,9 @@ EXPORT(mk_spfield, {
   if (!PyArg_ParseTuple(args, "O", &p_ctype)) {
     return NULL;
   }
-  std::string ctype;
-  py_convert(ctype, p_ctype);
+  const std::string ctype = py_convert_data<std::string>(p_ctype);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, mk_spfield_ctype, ctype);
+  FIELD_DISPATCH(p_ret, mk_spfield_ctype, ctype, 0);
   return p_ret;
 });
 

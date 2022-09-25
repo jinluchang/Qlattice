@@ -138,6 +138,8 @@ inline void contract_meson_vv_unshifted_acc_x(
     const Coordinate& xg_x, const long xg_x_idx, const Coordinate& xg_y,
     const long xg_y_psel_idx, const int t_wall, const bool exact)
 {
+  (void)xg_x;
+  (void)xg_y;
   const array<SpinMatrix, 8>& va_ms = get_va_matrices();
   const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
   if (exact) {
@@ -291,6 +293,8 @@ inline void contract_meson_vv_meson_unshifted_acc_x(
     const Coordinate& xg_y, const long xg_y_psel_idx, const int t_wall_snk,
     const bool exact_snk, const int t_wall_src, const bool exact_src)
 {
+  (void)xg_x;
+  (void)xg_y;
   const array<SpinMatrix, 8>& va_ms = get_va_matrices();
   const SpinMatrix& gamma5 = SpinMatrixConstants::get_gamma5();
   if (exact_src) {

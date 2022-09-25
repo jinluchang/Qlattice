@@ -347,7 +347,7 @@ struct FieldsReader {
   void close() { qfile.close(); }
 };
 
-inline void mkfile(FieldsReader& fr, const mode_t mode = default_dir_mode())
+inline void mkfile(FieldsReader& fr)
 // create the file (open with appending)
 // does not open the file
 {

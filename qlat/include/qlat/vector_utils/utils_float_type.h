@@ -85,7 +85,11 @@ namespace qlat{
 
 #define PI 3.1415926535898
 
-inline void print_NONE(const char *filename){return ;}
+inline void print_NONE(const char *filename)
+{
+  (void)filename;
+  return;
+}
 
 #define TIMERA(name) print_NONE(name);
 #define TIMERB(name) print_NONE(name);
@@ -254,6 +258,8 @@ inline std::complex<double> operator-(const std::complex<float > &a, const std::
 template<typename Ty>
 void zero_Ty(Ty* a, long size,int GPU=0, bool dummy=true)
 {
+  (void)GPU;
+  (void)dummy;
   #ifdef QLAT_USE_ACC
   if(GPU == 1){
     cudaMemsetAsync(a, 0, size*sizeof(Ty));

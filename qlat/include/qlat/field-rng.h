@@ -22,7 +22,11 @@ struct RngField : FieldM<RngState, 1> {
   }
   //
   RngField() { FieldM<RngState, 1>::init(); }
-  RngField(const RngField& rf) { qassert(false); }
+  RngField(const RngField& rf)
+  {
+    (void)rf;
+    qassert(false);
+  }
 };
 
 }  // namespace qlat

@@ -148,8 +148,6 @@ inline void prop_mom_photon_invert(QedGaugeField& egf,
     Coordinate kl = geo.coordinate_from_index(index);
     Coordinate kg = geo.coordinate_g_from_l(kl);
     array<double, DIMN> kk;
-    // FIXME unused 'ks'
-    // array<double,DIMN> ks;
     double s2 = 0.0;
     for (int i = 0; i < DIMN; i++) {
       const Coordinate total_site = geo.total_site();
@@ -194,9 +192,7 @@ inline void prop_mom_complex_scalar_invert(
     Coordinate kl = geo.coordinate_from_index(index);
     Coordinate kg = geo.coordinate_g_from_l(kl);
     array<double, DIMN> kk;
-    // FIXME my compiler says unused variable 'ks'
-    // array<double,DIMN> ks;
-    double s2 = 0.0;
+    double s2 = sqr(mass);
     for (int i = 0; i < DIMN; i++) {
       Coordinate total_site = geo.total_site();
       kg[i] = smod(kg[i], total_site[i]);

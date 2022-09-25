@@ -106,6 +106,9 @@ inline long load_or_compute_low_modes(LowModes& lm, const std::string& path,
 // TODO: currently only load low modes
 {
   TIMER_VERBOSE("load_or_compute_low_modes");
+  (void)gf;
+  (void)fa;
+  (void)la;
   long total_bytes = load_low_modes(lm, path);
   return total_bytes;
 }

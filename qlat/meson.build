@@ -2,7 +2,7 @@ project('qlat', 'cpp',
   version: '0.1',
   license: 'GPL-3.0-or-later',
   default_options: [
-    'warning_level=0',
+    'warning_level=3',
     'cpp_std=c++14',
     'libdir=lib',
     'optimization=2',

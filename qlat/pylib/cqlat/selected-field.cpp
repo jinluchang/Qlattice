@@ -4,8 +4,9 @@ namespace qlat
 {  //
 
 template <class M>
-PyObject* mk_sfield_ctype()
+PyObject* mk_sfield_ctype(int dummy)
 {
+  (void)dummy;
   SelectedField<M>* pf = new SelectedField<M>();
   return py_convert((void*)pf);
 }
@@ -305,7 +306,7 @@ EXPORT(mk_sfield, {
   std::string ctype;
   py_convert(ctype, p_ctype);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, mk_sfield_ctype, ctype);
+  FIELD_DISPATCH(p_ret, mk_sfield_ctype, ctype, 0);
   return p_ret;
 });
 
