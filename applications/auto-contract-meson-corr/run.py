@@ -29,27 +29,6 @@ load_path_list[:] = [
 
 # ----
 
-def rel_mod(x, size):
-    x = x % size
-    assert x >= 0
-    if 2 * x >= size:
-        return x - size
-    else:
-        return x
-
-def rel_mod_sym(x, size):
-    x = x % size
-    assert x >= 0
-    if 2 * x > size:
-        return x - size
-    elif 2 * x < size:
-        return x
-    else:
-        assert 2 * x == size
-        return 0
-
-# ----
-
 @q.timer
 def get_cexpr_meson_corr():
     def calc_cexpr():
@@ -157,6 +136,12 @@ def run_job(job_tag, traj):
             get_fsel = get_fsel,
             get_psel_smear = get_psel_smear,
             get_wi = get_wi,
+            prop_types = [
+                "wsrc psel s",
+                "wsrc psel l",
+                "wsrc fsel s",
+                "wsrc fsel l",
+                ],
             )
     #
     fn_checkpoint = f"{job_tag}/auto-contract/traj-{traj}/checkpoint.txt"

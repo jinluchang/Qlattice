@@ -131,7 +131,7 @@ API inline Cache<std::string, QarFileMultiVol>& get_qar_read_cache()
 // key should be the path prefix of the contents of the qar file.
 // Note: key should end with '/'.
 {
-  static Cache<std::string, QarFileMultiVol> cache("QarReadCache", 16, 1);
+  static Cache<std::string, QarFileMultiVol> cache("QarReadCache", 64, 1);
   return cache;
 }
 
