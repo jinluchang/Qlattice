@@ -1,6 +1,6 @@
 SHELL=/bin/bash
 
-src_path=~/Qlattice-cc/pylib/apps/mk-psel-self-loop
+src_path=~/Qlattice-cc/applications/mk-psel-self-loop
 
 grid_options=--dslash-asm --shm-hugepages --shm 4050 --mpi_split 1.1.1.1 --grouped 2
 grid_options=--mpi_split 1.1.1.1 --mpi_split 1.1.1 --grouped 4

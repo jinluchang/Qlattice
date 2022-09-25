@@ -1,6 +1,6 @@
 SHELL=/bin/bash
 
-src_path=~/Qlattice-cc/pylib/apps/misc/fix-lanc-meta
+src_path=~/Qlattice-cc/applications/misc/fix-lanc-meta
 
 grid_options=--dslash-asm --shm-hugepages --shm 4050 --mpi_split 1.1.1.1 --grouped 2
 grid_options=

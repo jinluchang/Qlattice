@@ -12,11 +12,11 @@ clean:
 	-rm -rf __pycache__
 
 sync:
-	rsync -av ~/Qlattice-cc/pylib/apps/contract-wall-point/* .
+	rsync -av ~/Qlattice-cc/applications/contract-wall-point/* .
 
 diff:
-	-diff -r ~/Qlattice-cc/pylib/apps/contract-wall-point/cqlat cqlat
-	-diff -r ~/Qlattice-cc/pylib/apps/contract-wall-point/run.py run.py
-	-diff -r ~/Qlattice-cc/pylib/apps/contract-wall-point/qlat_ext.py qlat_ext.py
-	-diff -r ~/Qlattice-cc/pylib/apps/contract-wall-point/Makefile Makefile
-	-diff -r ~/Qlattice-cc/pylib/apps/contract-wall-point/README.md README.md
+	-diff -r ~/Qlattice-cc/applications/contract-wall-point/cqlat cqlat
+	-diff -r ~/Qlattice-cc/applications/contract-wall-point/run.py run.py
+	-diff -r ~/Qlattice-cc/applications/contract-wall-point/qlat_ext.py qlat_ext.py
+	-diff -r ~/Qlattice-cc/applications/contract-wall-point/Makefile Makefile
+	-diff -r ~/Qlattice-cc/applications/contract-wall-point/README.md README.md

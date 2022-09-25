@@ -11,7 +11,7 @@ clean:
 	-rm -rf cqlat.so
 	-rm -rf __pycache__
 
-src_path=~/Qlattice-cc/pylib/apps/misc/scalar-qed-self-energy
+src_path=~/Qlattice-cc/applications/misc/scalar-qed-self-energy
 
 sync:
 	rsync -av $(src_path)/* .

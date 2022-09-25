@@ -12,7 +12,7 @@ mpirun=
 run:
 	q_verbose=1 q_time_limit=2000000 q_num_threads=1 $(mpirun) $(mpi_options) ./run.py $(grid_options) |& tee log.txt
 
-src_path=~/Qlattice-cc/pylib/apps/misc/fill-wsnk-prop
+src_path=~/Qlattice-cc/applications/misc/fill-wsnk-prop
 
 diff:
 	-diff $(src_path)/run.py run.py

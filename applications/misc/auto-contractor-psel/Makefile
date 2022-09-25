@@ -1,6 +1,6 @@
 SHELL=/bin/bash
 
-src_path=~/Qlattice-cc/pylib/apps/misc/auto-contractor-psel
+src_path=~/Qlattice-cc/applications/misc/auto-contractor-psel
 
 grid_options=--dslash-asm --shm-hugepages --shm 4050 --mpi_split 1.1.1.1 --grouped 2
 grid_options=
