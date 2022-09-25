@@ -13,4 +13,4 @@ EXPORT(contract_chvp_16_field, {
   const Propagator4d& prop2 = py_convert_type<Propagator4d>(p_prop2);
   contract_chvp_16(chvp, prop1, prop2);
   Py_RETURN_NONE;
-});
+})

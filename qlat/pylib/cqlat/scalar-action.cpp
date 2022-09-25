@@ -10,17 +10,17 @@ EXPORT(mk_scalar_action, {
   }
   ScalarAction* psa = new ScalarAction(m_sq, lmbd, alpha);
   return py_convert((void*)psa);
-});
+})
 
 EXPORT(free_scalar_action, {
   using namespace qlat;
   return free_obj<ScalarAction>(args);
-});
+})
 
 EXPORT(set_scalar_action, {
   using namespace qlat;
   return set_obj<ScalarAction>(args);
-});
+})
 
 EXPORT(get_m_sq_scalar_action, {
   using namespace qlat;
@@ -30,7 +30,7 @@ EXPORT(get_m_sq_scalar_action, {
   }
   const ScalarAction& sa = py_convert_type<ScalarAction>(p_sa);
   return py_convert(sa.m_sq);
-});
+})
 
 EXPORT(get_lmbd_scalar_action, {
   using namespace qlat;
@@ -40,7 +40,7 @@ EXPORT(get_lmbd_scalar_action, {
   }
   const ScalarAction& sa = py_convert_type<ScalarAction>(p_sa);
   return py_convert(sa.lmbd);
-});
+})
 
 EXPORT(get_alpha_scalar_action, {
   using namespace qlat;
@@ -50,7 +50,7 @@ EXPORT(get_alpha_scalar_action, {
   }
   const ScalarAction& sa = py_convert_type<ScalarAction>(p_sa);
   return py_convert(sa.alpha);
-});
+})
 
 EXPORT(action_node_scalar_action, {
   using namespace qlat;
@@ -63,7 +63,7 @@ EXPORT(action_node_scalar_action, {
   const Field<double>& sf = py_convert_type<Field<double>>(p_sf);
   const double ret = sa.action_node(sf);
   return py_convert(ret);
-});
+})
 
 EXPORT(hmc_estimate_mass_scalar_action, {
   using namespace qlat;
@@ -81,7 +81,7 @@ EXPORT(hmc_estimate_mass_scalar_action, {
   const Field<Complex>& force_ft = py_convert_type<Field<Complex>>(p_force_ft);
   sa.hmc_estimate_mass(masses, field_ft, force_ft, phi0);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(to_mass_factor_scalar_action, {
   using namespace qlat;
@@ -94,7 +94,7 @@ EXPORT(to_mass_factor_scalar_action, {
   Field<double>& sin_domega = py_convert_type<Field<double>>(p_sin_domega);
   sa.to_mass_factor(sin_domega);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(hmc_m_hamilton_node_scalar_action, {
   using namespace qlat;
@@ -109,7 +109,7 @@ EXPORT(hmc_m_hamilton_node_scalar_action, {
   const Field<double>& masses = py_convert_type<Field<double>>(p_masses);
   const double ret = sa.hmc_m_hamilton_node(sm, masses);
   return py_convert(ret);
-});
+})
 
 EXPORT(hmc_set_force_scalar_action, {
   using namespace qlat;
@@ -124,7 +124,7 @@ EXPORT(hmc_set_force_scalar_action, {
   const Field<double>& sf = py_convert_type<Field<double>>(p_sf);
   sa.hmc_set_force(sm_force, sf);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(hmc_field_evolve_scalar_action, {
   using namespace qlat;
@@ -142,7 +142,7 @@ EXPORT(hmc_field_evolve_scalar_action, {
   const Field<double>& masses = py_convert_type<Field<double>>(p_masses);
   sa.hmc_field_evolve(sf, sm, masses, step_size);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(axial_current_node_scalar_action, {
   using namespace qlat;
@@ -157,7 +157,7 @@ EXPORT(axial_current_node_scalar_action, {
   const Field<double>& sf = py_convert_type<Field<double>>(p_sf);
   sa.axial_current_node(axial_cur, sf);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(sum_sq_scalar_action, {
   using namespace qlat;
@@ -170,7 +170,7 @@ EXPORT(sum_sq_scalar_action, {
   const Field<double>& f = py_convert_type<Field<double>>(p_f);
   const double ret = sa.sum_sq(f);
   return py_convert(ret);
-});
+})
 
 EXPORT(hmc_set_rand_momentum_scalar_action, {
   using namespace qlat;
@@ -187,7 +187,7 @@ EXPORT(hmc_set_rand_momentum_scalar_action, {
   const RngState& rs = py_convert_type<RngState>(p_rs);
   sa.hmc_set_rand_momentum(sm, masses, rs);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(hmc_predict_field_scalar_action, {
   using namespace qlat;
@@ -205,4 +205,4 @@ EXPORT(hmc_predict_field_scalar_action, {
   const Field<double>& masses = py_convert_type<Field<double>>(p_masses);
   sa.hmc_predict_field(sf_ft, sm_ft, masses, vev_sigma);
   Py_RETURN_NONE;
-});
+})

@@ -11,7 +11,7 @@ EXPORT(index_from_coordinate, {
   py_convert(coor, p_coor);
   py_convert(size, p_size);
   return py_convert(index_from_coordinate(coor, size));
-});
+})
 
 EXPORT(coordinate_from_index, {
   using namespace qlat;
@@ -23,7 +23,7 @@ EXPORT(coordinate_from_index, {
   Coordinate size;
   py_convert(size, p_size);
   return py_convert(coordinate_from_index(index, size));
-});
+})
 
 EXPORT(mod_coordinate, {
   using namespace qlat;
@@ -35,7 +35,7 @@ EXPORT(mod_coordinate, {
   const Coordinate xg = py_convert_data<Coordinate>(p_xg);
   const Coordinate size = py_convert_data<Coordinate>(p_size);
   return py_convert(mod(xg, size));
-});
+})
 
 EXPORT(smod_coordinate, {
   using namespace qlat;
@@ -47,7 +47,7 @@ EXPORT(smod_coordinate, {
   const Coordinate xg = py_convert_data<Coordinate>(p_xg);
   const Coordinate size = py_convert_data<Coordinate>(p_size);
   return py_convert(smod(xg, size));
-});
+})
 
 EXPORT(c_rand_gen, {
   using namespace qlat;
@@ -61,4 +61,4 @@ EXPORT(c_rand_gen, {
   py_convert(size, p_size);
   const Coordinate x = c_rand_gen(rng, size);
   return py_convert(x);
-});
+})

@@ -9,7 +9,7 @@ EXPORT(gf_show_info, {
   const GaugeField& gf = py_convert_type<GaugeField>(p_gf);
   gf_show_info(gf);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(gf_avg_plaq, {
   using namespace qlat;
@@ -20,7 +20,7 @@ EXPORT(gf_avg_plaq, {
   const GaugeField& gf = py_convert_type<GaugeField>(p_gf);
   const double ret = gf_avg_plaq(gf);
   return py_convert(ret);
-});
+})
 
 EXPORT(gf_avg_link_trace, {
   using namespace qlat;
@@ -31,7 +31,7 @@ EXPORT(gf_avg_link_trace, {
   const GaugeField& gf = py_convert_type<GaugeField>(p_gf);
   const double ret = gf_avg_link_trace(gf);
   return py_convert(ret);
-});
+})
 
 EXPORT(gf_avg_wilson_loop_normalized_tr, {
   using namespace qlat;
@@ -44,7 +44,7 @@ EXPORT(gf_avg_wilson_loop_normalized_tr, {
   const GaugeField& gf = py_convert_type<GaugeField>(p_gf);
   const double ret = matrix_trace(gf_avg_wilson_loop(gf, l, t)).real() / 3.0;
   return py_convert(ret);
-});
+})
 
 EXPORT(gf_wilson_line_no_comm, {
   using namespace qlat;
@@ -71,7 +71,7 @@ EXPORT(gf_wilson_line_no_comm, {
                            path);
   }
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(set_g_rand_color_matrix_field, {
   using namespace qlat;
@@ -86,7 +86,7 @@ EXPORT(set_g_rand_color_matrix_field, {
   const RngState& rng = py_convert_type<RngState>(p_rng);
   set_g_rand_color_matrix_field(field, rng, sigma, n_step);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(unitarize_color_matrix_field, {
   using namespace qlat;
@@ -97,7 +97,7 @@ EXPORT(unitarize_color_matrix_field, {
   Field<ColorMatrix>& field = py_convert_type<Field<ColorMatrix> >(p_field);
   unitarize(field);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(save_gauge_field, {
   using namespace qlat;
@@ -111,7 +111,7 @@ EXPORT(save_gauge_field, {
   py_convert(path, p_path);
   const long ret = save_gauge_field(gf, path);
   return py_convert(ret);
-});
+})
 
 EXPORT(load_gauge_field, {
   using namespace qlat;
@@ -125,7 +125,7 @@ EXPORT(load_gauge_field, {
   py_convert(path, p_path);
   const long ret = load_gauge_field(gf, path);
   return py_convert(ret);
-});
+})
 
 EXPORT(gf_twist_boundary_at_boundary, {
   using namespace qlat;
@@ -139,7 +139,7 @@ EXPORT(gf_twist_boundary_at_boundary, {
   pqassert(0 <= mu and mu < 4);
   twist_boundary_at_boundary(gf, lmom, mu);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(apply_gt_gt, {
   using namespace qlat;
@@ -155,7 +155,7 @@ EXPORT(apply_gt_gt, {
   const GaugeTransform& gt0 = py_convert_type<GaugeTransform>(p_gt0);
   gt_apply_gauge_transformation(gt, gt0, gt1);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(apply_gt_gf, {
   using namespace qlat;
@@ -171,7 +171,7 @@ EXPORT(apply_gt_gf, {
   const GaugeField& gf0 = py_convert_type<GaugeField>(p_gf0);
   gf_apply_gauge_transformation(gf, gf0, gt);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(apply_gt_prop, {
   using namespace qlat;
@@ -187,7 +187,7 @@ EXPORT(apply_gt_prop, {
   const Propagator4d& prop0 = py_convert_type<Propagator4d>(p_prop0);
   prop_apply_gauge_transformation(prop, prop0, gt);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(apply_gt_sprop, {
   using namespace qlat;
@@ -206,7 +206,7 @@ EXPORT(apply_gt_sprop, {
   const FieldSelection& fsel = py_convert_type<FieldSelection>(p_prop0, "fsel");
   prop_apply_gauge_transformation(prop, prop0, gt, fsel);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(apply_gt_psprop, {
   using namespace qlat;
@@ -225,7 +225,7 @@ EXPORT(apply_gt_psprop, {
   const PointSelection& psel = py_convert_type<PointSelection>(p_prop0, "psel");
   prop_apply_gauge_transformation(prop, prop0, gt, psel);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(gt_invert, {
   using namespace qlat;
@@ -239,4 +239,4 @@ EXPORT(gt_invert, {
   const GaugeTransform& gt0 = py_convert_type<GaugeTransform>(p_gt0);
   gt_invert(gt, gt0);
   Py_RETURN_NONE;
-});
+})

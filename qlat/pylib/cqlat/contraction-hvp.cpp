@@ -16,4 +16,4 @@ EXPORT(contract_chvp3_sfield, {
   pqassert(&fsel == &(py_convert_type<FieldSelection>(p_prop2, "fsel")));
   ld = contract_chvp3(prop1, prop2, tslice_src, fsel);
   Py_RETURN_NONE;
-});
+})

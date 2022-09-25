@@ -20,17 +20,17 @@ EXPORT(mk_rng, {
     }
   }
   return py_convert((void*)prng_new);
-});
+})
 
 EXPORT(free_rng, {
   using namespace qlat;
   return free_obj<RngState>(args);
-});
+})
 
 EXPORT(set_rng, {
   using namespace qlat;
   return set_obj<RngState>(args);
-});
+})
 
 EXPORT(rand_gen, {
   using namespace qlat;
@@ -41,7 +41,7 @@ EXPORT(rand_gen, {
   RngState& rng = py_convert_type<RngState>(p_rng);
   const uint64_t x = rand_gen(rng);
   return py_convert(x);
-});
+})
 
 EXPORT(u_rand_gen, {
   using namespace qlat;
@@ -54,7 +54,7 @@ EXPORT(u_rand_gen, {
   RngState& rng = py_convert_type<RngState>(p_rng);
   const double x = u_rand_gen(rng, upper, lower);
   return py_convert(x);
-});
+})
 
 EXPORT(g_rand_gen, {
   using namespace qlat;
@@ -67,4 +67,4 @@ EXPORT(g_rand_gen, {
   RngState& rng = py_convert_type<RngState>(p_rng);
   const double x = g_rand_gen(rng, center, sigma);
   return py_convert(x);
-});
+})

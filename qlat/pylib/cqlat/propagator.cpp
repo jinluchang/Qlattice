@@ -15,7 +15,7 @@ EXPORT(set_point_src_prop, {
   py_convert(xg, p_xg);
   set_point_src(prop, geo, xg, value);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(set_wall_src_prop, {
   using namespace qlat;
@@ -32,7 +32,7 @@ EXPORT(set_wall_src_prop, {
   py_convert(lmom, p_lmom);
   set_wall_src(prop, geo, tslice, lmom);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(set_rand_u1_src_psel, {
   using namespace qlat;
@@ -53,7 +53,7 @@ EXPORT(set_rand_u1_src_psel, {
   const RngState& rs = py_convert_type<RngState>(p_rs);
   set_rand_u1_src_psel(prop, fu1, psel, geo, rs);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(set_rand_u1_sol_psel, {
   using namespace qlat;
@@ -72,7 +72,7 @@ EXPORT(set_rand_u1_sol_psel, {
   const PointSelection& psel = py_convert_type<PointSelection>(p_psel);
   set_rand_u1_sol_psel(sp_prop, prop, fu1, psel);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(set_rand_u1_src_fsel, {
   using namespace qlat;
@@ -91,7 +91,7 @@ EXPORT(set_rand_u1_src_fsel, {
   const RngState& rs = py_convert_type<RngState>(p_rs);
   set_rand_u1_src_fsel(prop, fu1, fsel, rs);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(set_rand_u1_sol_fsel, {
   using namespace qlat;
@@ -110,7 +110,7 @@ EXPORT(set_rand_u1_sol_fsel, {
   const FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
   set_rand_u1_sol_fsel(sf_prop, prop, fu1, fsel);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(free_invert_prop, {
   using namespace qlat;
@@ -129,7 +129,7 @@ EXPORT(free_invert_prop, {
   py_convert(momtwist, p_momtwist);
   free_invert(prop_sol, prop_src, mass, m5, momtwist);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(convert_wm_from_mspincolor_prop, {
   using namespace qlat;
@@ -142,7 +142,7 @@ EXPORT(convert_wm_from_mspincolor_prop, {
   const Propagator4d& prop_msc = py_convert_type<Propagator4d>(p_prop_msc);
   convert_wm_from_mspincolor(prop_wm, prop_msc);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(convert_mspincolor_from_wm_prop, {
   using namespace qlat;
@@ -155,7 +155,7 @@ EXPORT(convert_mspincolor_from_wm_prop, {
   const Propagator4d& prop_wm = py_convert_type<Propagator4d>(p_prop_wm);
   convert_mspincolor_from_wm(prop_msc, prop_wm);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(convert_wm_from_mspincolor_sp_prop, {
   using namespace qlat;
@@ -170,7 +170,7 @@ EXPORT(convert_wm_from_mspincolor_sp_prop, {
       py_convert_type<SelectedPoints<WilsonMatrix> >(p_prop_msc);
   convert_wm_from_mspincolor(prop_wm, prop_msc);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(convert_mspincolor_from_wm_sp_prop, {
   using namespace qlat;
@@ -185,7 +185,7 @@ EXPORT(convert_mspincolor_from_wm_sp_prop, {
       py_convert_type<SelectedPoints<WilsonMatrix> >(p_prop_wm);
   convert_mspincolor_from_wm(prop_msc, prop_wm);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(convert_wm_from_mspincolor_s_prop, {
   using namespace qlat;
@@ -200,7 +200,7 @@ EXPORT(convert_wm_from_mspincolor_s_prop, {
       py_convert_type<SelectedField<WilsonMatrix> >(p_prop_msc);
   convert_wm_from_mspincolor(prop_wm, prop_msc);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(convert_mspincolor_from_wm_s_prop, {
   using namespace qlat;
@@ -215,7 +215,7 @@ EXPORT(convert_mspincolor_from_wm_s_prop, {
       py_convert_type<SelectedField<WilsonMatrix> >(p_prop_wm);
   convert_mspincolor_from_wm(prop_msc, prop_wm);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(free_scalar_invert_mom_cfield, {
   using namespace qlat;
@@ -247,9 +247,9 @@ EXPORT(free_scalar_invert_mom_cfield, {
     for (int i = 0; i < v.size(); ++i) {
       v[i] *= fac;
     }
-  });
+  })
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(flip_tpbc_with_tslice_sp_prop, {
   using namespace qlat;
@@ -266,7 +266,7 @@ EXPORT(flip_tpbc_with_tslice_sp_prop, {
   const int t_size = geo.total_site()[3];
   flip_tpbc_with_tslice(sp_prop, psel, tslice_flip_tpbc, t_size);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(flip_tpbc_with_tslice_s_prop, {
   using namespace qlat;
@@ -281,4 +281,4 @@ EXPORT(flip_tpbc_with_tslice_s_prop, {
       py_convert_type<FieldSelection>(p_s_prop, "fsel");
   flip_tpbc_with_tslice(s_prop, fsel, tslice_flip_tpbc);
   Py_RETURN_NONE;
-});
+})

@@ -49,7 +49,7 @@ EXPORT(begin, {
   qset_line_buf(get_output_file());
   //
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(end, {
   using namespace qlat;
@@ -59,4 +59,4 @@ EXPORT(end, {
   }
   end(is_preserving_cache);
   Py_RETURN_NONE;
-});
+})

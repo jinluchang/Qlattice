@@ -4,17 +4,17 @@ EXPORT(mk_geo, {
   using namespace qlat;
   Geometry* pgeo = new Geometry();
   return py_convert((void*)pgeo);
-});
+})
 
 EXPORT(free_geo, {
   using namespace qlat;
   return free_obj<Geometry>(args);
-});
+})
 
 EXPORT(set_geo, {
   using namespace qlat;
   return set_obj<Geometry>(args);
-});
+})
 
 EXPORT(set_geo_total_site, {
   using namespace qlat;
@@ -28,7 +28,7 @@ EXPORT(set_geo_total_site, {
   const Coordinate total_site = py_convert_data<Coordinate>(p_total_site);
   geo.init(total_site, multiplicity);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(set_geo_reform, {
   using namespace qlat;
@@ -51,7 +51,7 @@ EXPORT(set_geo_reform, {
   geo.remult(multiplicity);
   geo.resize(expansion_left, expansion_right);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(set_geo_eo, {
   using namespace qlat;
@@ -63,7 +63,7 @@ EXPORT(set_geo_eo, {
   Geometry& geo = py_convert_type<Geometry>(p_geo);
   geo.eo = eo;
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(get_total_site_geo, {
   using namespace qlat;
@@ -73,7 +73,7 @@ EXPORT(get_total_site_geo, {
   }
   const Geometry& geo = py_convert_type<Geometry>(p_geo);
   return py_convert(geo.total_site());
-});
+})
 
 EXPORT(get_local_volume_geo, {
   using namespace qlat;
@@ -83,7 +83,7 @@ EXPORT(get_local_volume_geo, {
   }
   const Geometry& geo = py_convert_type<Geometry>(p_geo);
   return py_convert(geo.local_volume());
-});
+})
 
 EXPORT(get_total_volume_geo, {
   using namespace qlat;
@@ -93,7 +93,7 @@ EXPORT(get_total_volume_geo, {
   }
   const Geometry& geo = py_convert_type<Geometry>(p_geo);
   return py_convert(geo.total_volume());
-});
+})
 
 EXPORT(get_multiplicity_geo, {
   using namespace qlat;
@@ -103,7 +103,7 @@ EXPORT(get_multiplicity_geo, {
   }
   const Geometry& geo = py_convert_type<Geometry>(p_geo);
   return py_convert(geo.multiplicity);
-});
+})
 
 EXPORT(get_node_site_geo, {
   using namespace qlat;
@@ -113,7 +113,7 @@ EXPORT(get_node_site_geo, {
   }
   const Geometry& geo = py_convert_type<Geometry>(p_geo);
   return py_convert(geo.node_site);
-});
+})
 
 EXPORT(get_eo_geo, {
   using namespace qlat;
@@ -123,7 +123,7 @@ EXPORT(get_eo_geo, {
   }
   const Geometry& geo = py_convert_type<Geometry>(p_geo);
   return py_convert(geo.eo);
-});
+})
 
 EXPORT(get_expansion_left_geo, {
   using namespace qlat;
@@ -133,7 +133,7 @@ EXPORT(get_expansion_left_geo, {
   }
   const Geometry& geo = py_convert_type<Geometry>(p_geo);
   return py_convert(geo.expansion_left);
-});
+})
 
 EXPORT(get_expansion_right_geo, {
   using namespace qlat;
@@ -143,7 +143,7 @@ EXPORT(get_expansion_right_geo, {
   }
   const Geometry& geo = py_convert_type<Geometry>(p_geo);
   return py_convert(geo.expansion_right);
-});
+})
 
 EXPORT(get_id_node_geo, {
   using namespace qlat;
@@ -153,7 +153,7 @@ EXPORT(get_id_node_geo, {
   }
   const Geometry& geo = py_convert_type<Geometry>(p_geo);
   return py_convert(geo.geon.id_node);
-});
+})
 
 EXPORT(get_num_node_geo, {
   using namespace qlat;
@@ -163,7 +163,7 @@ EXPORT(get_num_node_geo, {
   }
   const Geometry& geo = py_convert_type<Geometry>(p_geo);
   return py_convert(geo.geon.num_node);
-});
+})
 
 EXPORT(get_coor_node_geo, {
   using namespace qlat;
@@ -173,7 +173,7 @@ EXPORT(get_coor_node_geo, {
   }
   const Geometry& geo = py_convert_type<Geometry>(p_geo);
   return py_convert(geo.geon.coor_node);
-});
+})
 
 EXPORT(get_size_node_geo, {
   using namespace qlat;
@@ -183,7 +183,7 @@ EXPORT(get_size_node_geo, {
   }
   const Geometry& geo = py_convert_type<Geometry>(p_geo);
   return py_convert(geo.geon.size_node);
-});
+})
 
 EXPORT(coordinate_g_from_l_geo, {
   using namespace qlat;
@@ -196,7 +196,7 @@ EXPORT(coordinate_g_from_l_geo, {
   Coordinate xl;
   py_convert(xl, p_xl);
   return py_convert(geo.coordinate_g_from_l(xl));
-});
+})
 
 EXPORT(coordinate_l_from_g_geo, {
   using namespace qlat;
@@ -209,7 +209,7 @@ EXPORT(coordinate_l_from_g_geo, {
   Coordinate xg;
   py_convert(xg, p_xg);
   return py_convert(geo.coordinate_l_from_g(xg));
-});
+})
 
 EXPORT(is_local_geo, {
   using namespace qlat;
@@ -221,7 +221,7 @@ EXPORT(is_local_geo, {
   const Geometry& geo = py_convert_type<Geometry>(p_geo);
   const Coordinate xl = py_convert_data<Coordinate>(p_xl);
   return py_convert(geo.is_local(xl));
-});
+})
 
 EXPORT(is_local_xg_geo, {
   using namespace qlat;
@@ -234,7 +234,7 @@ EXPORT(is_local_xg_geo, {
   const Coordinate xg = py_convert_data<Coordinate>(p_xg);
   const Coordinate xl = geo.coordinate_l_from_g(xg);
   return py_convert(geo.is_local(xl));
-});
+})
 
 EXPORT(get_xg_list, {
   // return xg for all local sites
@@ -249,6 +249,6 @@ EXPORT(get_xg_list, {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
     xgs[index] = xg;
-  });
+  })
   return py_convert(get_data(xgs));
-});
+})

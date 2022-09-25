@@ -13,12 +13,12 @@ EXPORT(mk_inverter_domain_wall, {
   const FermionAction& fa = py_convert_type<FermionAction>(p_fa);
   setup_inverter(inv, gf, fa);
   return py_convert((void*)pinv);
-});
+})
 
 EXPORT(free_inverter_domain_wall, {
   using namespace qlat;
   return free_obj<InverterDomainWall>(args);
-});
+})
 
 EXPORT(invert_inverter_domain_wall, {
   using namespace qlat;
@@ -33,7 +33,7 @@ EXPORT(invert_inverter_domain_wall, {
   const InverterDomainWall& inv = py_convert_type<InverterDomainWall>(p_inv);
   invert(prop_sol, prop_src, inv);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(get_stop_rsd_inverter_domain_wall, {
   using namespace qlat;
@@ -43,7 +43,7 @@ EXPORT(get_stop_rsd_inverter_domain_wall, {
   }
   const InverterDomainWall& inv = py_convert_type<InverterDomainWall>(p_inv);
   return py_convert(inv.stop_rsd());
-});
+})
 
 EXPORT(set_stop_rsd_inverter_domain_wall, {
   using namespace qlat;
@@ -55,7 +55,7 @@ EXPORT(set_stop_rsd_inverter_domain_wall, {
   InverterDomainWall& inv = py_convert_type<InverterDomainWall>(p_inv);
   inv.stop_rsd() = stop_rsd;
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(get_max_num_iter_inverter_domain_wall, {
   using namespace qlat;
@@ -65,7 +65,7 @@ EXPORT(get_max_num_iter_inverter_domain_wall, {
   }
   const InverterDomainWall& inv = py_convert_type<InverterDomainWall>(p_inv);
   return py_convert(inv.max_num_iter());
-});
+})
 
 EXPORT(set_max_num_iter_inverter_domain_wall, {
   using namespace qlat;
@@ -77,7 +77,7 @@ EXPORT(set_max_num_iter_inverter_domain_wall, {
   InverterDomainWall& inv = py_convert_type<InverterDomainWall>(p_inv);
   inv.max_num_iter() = max_num_iter;
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(get_max_mixed_precision_cycle_inverter_domain_wall, {
   using namespace qlat;
@@ -87,7 +87,7 @@ EXPORT(get_max_mixed_precision_cycle_inverter_domain_wall, {
   }
   const InverterDomainWall& inv = py_convert_type<InverterDomainWall>(p_inv);
   return py_convert(inv.max_mixed_precision_cycle());
-});
+})
 
 EXPORT(set_max_mixed_precision_cycle_inverter_domain_wall, {
   using namespace qlat;
@@ -99,4 +99,4 @@ EXPORT(set_max_mixed_precision_cycle_inverter_domain_wall, {
   InverterDomainWall& inv = py_convert_type<InverterDomainWall>(p_inv);
   inv.max_mixed_precision_cycle() = max_mixed_precision_cycle;
   Py_RETURN_NONE;
-});
+})

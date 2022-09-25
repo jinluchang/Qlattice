@@ -12,7 +12,7 @@ EXPORT(contract_pion_field, {
   const Propagator4d& prop = py_convert_type<Propagator4d>(p_prop);
   ld = contract_pion(prop, tslice_src);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(contract_pion_sfield, {
   using namespace qlat;
@@ -27,4 +27,4 @@ EXPORT(contract_pion_sfield, {
   const FieldSelection& fsel = py_convert_type<FieldSelection>(p_prop, "fsel");
   ld = contract_pion(prop, tslice_src, fsel);
   Py_RETURN_NONE;
-});
+})

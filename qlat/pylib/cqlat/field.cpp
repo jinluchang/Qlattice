@@ -259,7 +259,7 @@ EXPORT(mk_field, {
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, mk_field_ctype, ctype, p_geo, multiplicity);
   return p_ret;
-});
+})
 
 EXPORT(free_field, {
   using namespace qlat;
@@ -271,7 +271,7 @@ EXPORT(free_field, {
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, free_field_ctype, ctype, p_field);
   return p_ret;
-});
+})
 
 EXPORT(set_field, {
   using namespace qlat;
@@ -285,7 +285,7 @@ EXPORT(set_field, {
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, set_field_ctype, ctype, p_field_new, p_field);
   return p_ret;
-});
+})
 
 EXPORT(set_add_field, {
   using namespace qlat;
@@ -299,7 +299,7 @@ EXPORT(set_add_field, {
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, set_add_field_ctype, ctype, p_field_new, p_field);
   return p_ret;
-});
+})
 
 EXPORT(set_sub_field, {
   using namespace qlat;
@@ -313,7 +313,7 @@ EXPORT(set_sub_field, {
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, set_sub_field_ctype, ctype, p_field_new, p_field);
   return p_ret;
-});
+})
 
 EXPORT(set_mul_double_field, {
   using namespace qlat;
@@ -326,7 +326,7 @@ EXPORT(set_mul_double_field, {
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, set_mul_field_ctype, ctype, p_field, factor);
   return p_ret;
-});
+})
 
 EXPORT(set_mul_complex_field, {
   using namespace qlat;
@@ -339,7 +339,7 @@ EXPORT(set_mul_complex_field, {
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, set_mul_field_ctype, ctype, p_field, factor);
   return p_ret;
-});
+})
 
 EXPORT(set_mul_cfield_field, {
   using namespace qlat;
@@ -354,7 +354,7 @@ EXPORT(set_mul_cfield_field, {
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, set_mul_field_ctype, ctype, p_field, f_factor);
   return p_ret;
-});
+})
 
 EXPORT(set_zero_field, {
   using namespace qlat;
@@ -366,7 +366,7 @@ EXPORT(set_zero_field, {
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, set_zero_field_ctype, ctype, p_field);
   return p_ret;
-});
+})
 
 EXPORT(set_unit_field, {
   using namespace qlat;
@@ -379,7 +379,7 @@ EXPORT(set_unit_field, {
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, set_unit_field_ctype, ctype, p_field, coef);
   return p_ret;
-});
+})
 
 EXPORT(set_u_rand_double_field, {
   using namespace qlat;
@@ -396,7 +396,7 @@ EXPORT(set_u_rand_double_field, {
   FIELD_DISPATCH(p_ret, set_u_rand_double_field_ctype, ctype, p_field, rng,
                  upper, lower);
   return p_ret;
-});
+})
 
 EXPORT(set_g_rand_double_field, {
   using namespace qlat;
@@ -413,7 +413,7 @@ EXPORT(set_g_rand_double_field, {
   FIELD_DISPATCH(p_ret, set_g_rand_double_field_ctype, ctype, p_field, rng,
                  center, sigma);
   return p_ret;
-});
+})
 
 EXPORT(set_checkers_double_field, {
   using namespace qlat;
@@ -425,7 +425,7 @@ EXPORT(set_checkers_double_field, {
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, set_checkers_double_field_ctype, ctype, p_field);
   return p_ret;
-});
+})
 
 EXPORT(set_complex_from_double_field, {
   using namespace qlat;
@@ -438,7 +438,7 @@ EXPORT(set_complex_from_double_field, {
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, set_complex_from_double_field_ctype, ctype, p_field, p_sf);
   return p_ret;
-});
+})
 
 EXPORT(set_double_from_complex_field, {
   using namespace qlat;
@@ -451,7 +451,7 @@ EXPORT(set_double_from_complex_field, {
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, set_double_from_complex_field_ctype, ctype, p_field, p_cf);
   return p_ret;
-});
+})
 
 EXPORT(set_abs_from_complex_field, {
   using namespace qlat;
@@ -464,7 +464,7 @@ EXPORT(set_abs_from_complex_field, {
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, set_abs_from_complex_field_ctype, ctype, p_field, p_cf);
   return p_ret;
-});
+})
 
 EXPORT(set_ratio_double_field, {
   using namespace qlat;
@@ -478,7 +478,7 @@ EXPORT(set_ratio_double_field, {
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, set_ratio_double_field_ctype, ctype, p_field, p_sf1, p_sf2);
   return p_ret;
-});
+})
 
 EXPORT(less_than_double_field, {
   using namespace qlat;
@@ -492,7 +492,7 @@ EXPORT(less_than_double_field, {
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, less_than_double_field_ctype, ctype, p_sf1, p_sf2, p_mask);
   return p_ret;
-});
+})
 
 EXPORT(invert_double_field, {
   using namespace qlat;
@@ -504,7 +504,7 @@ EXPORT(invert_double_field, {
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, invert_double_field_ctype, ctype, p_sf);
   return p_ret;
-});
+})
 
 EXPORT(multiply_double_field, {
   using namespace qlat;
@@ -517,7 +517,7 @@ EXPORT(multiply_double_field, {
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, multiply_double_field_ctype, ctype, p_sf, p_factor);
   return p_ret;
-});
+})
 
 EXPORT(get_total_site_field, {
   using namespace qlat;
@@ -529,7 +529,7 @@ EXPORT(get_total_site_field, {
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, get_total_site_field_ctype, ctype, p_field);
   return p_ret;
-});
+})
 
 EXPORT(get_multiplicity_field, {
   using namespace qlat;
@@ -541,7 +541,7 @@ EXPORT(get_multiplicity_field, {
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, get_multiplicity_field_ctype, ctype, p_field);
   return p_ret;
-});
+})
 
 EXPORT(get_sizeof_m_field, {
   using namespace qlat;
@@ -553,7 +553,7 @@ EXPORT(get_sizeof_m_field, {
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, get_sizeof_m_field_ctype, ctype, p_field);
   return p_ret;
-});
+})
 
 EXPORT(set_geo_field, {
   using namespace qlat;
@@ -567,7 +567,7 @@ EXPORT(set_geo_field, {
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, set_geo_field_ctype, ctype, geo, p_field);
   return p_ret;
-});
+})
 
 EXPORT(qnorm_field, {
   using namespace qlat;
@@ -579,7 +579,7 @@ EXPORT(qnorm_field, {
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, qnorm_field_ctype, ctype, p_field);
   return p_ret;
-});
+})
 
 EXPORT(crc32_field, {
   using namespace qlat;
@@ -591,7 +591,7 @@ EXPORT(crc32_field, {
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, crc32_field_ctype, ctype, p_field);
   return p_ret;
-});
+})
 
 EXPORT(get_mview_field, {
   using namespace qlat;
@@ -603,4 +603,4 @@ EXPORT(get_mview_field, {
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, get_mview_field_ctype, ctype, p_field);
   return p_ret;
-});
+})

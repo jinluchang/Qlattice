@@ -15,7 +15,7 @@ EXPORT(gf_topology_field_clf, {
   pqassert(topf.geo().multiplicity == 1);
   clf_topology_field(topf, gf);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(gf_topology_field, {
   // using the 5 loop improved definition
@@ -32,7 +32,7 @@ EXPORT(gf_topology_field, {
   pqassert(topf.geo().multiplicity == 1);
   clf_topology_field_5(topf, gf);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(gf_topology_terms_field, {
   // using the 5 loop improved definition (each term's contribution individually)
@@ -49,4 +49,4 @@ EXPORT(gf_topology_terms_field, {
   pqassert(topf.geo().multiplicity == 5);
   clf_topology_field_5_terms(topf, gf);
   Py_RETURN_NONE;
-});
+})

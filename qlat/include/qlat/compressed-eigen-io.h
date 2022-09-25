@@ -397,7 +397,7 @@ inline Geometry get_geo_from_cesi(
   Geometry geo_full;
   geo_full.init(geon, node_site, 1);
   return geo_full;
-};
+}
 
 inline Geometry block_geometry(const Geometry& geo_full,
                                const Coordinate& block_site)

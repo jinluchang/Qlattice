@@ -12,7 +12,7 @@ EXPORT(set_rand_gauge_momentum, {
   const RngState& rs = py_convert_type<RngState>(p_rng);
   set_rand_gauge_momentum(gm, sigma, rs);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(gm_hamilton_node, {
   using namespace qlat;
@@ -23,7 +23,7 @@ EXPORT(gm_hamilton_node, {
   const GaugeMomentum& gm = py_convert_type<GaugeMomentum>(p_gm);
   const double ret = gm_hamilton_node(gm);
   return py_convert(ret);
-});
+})
 
 EXPORT(gf_hamilton_node, {
   using namespace qlat;
@@ -36,7 +36,7 @@ EXPORT(gf_hamilton_node, {
   const GaugeAction& ga = py_convert_type<GaugeAction>(p_ga);
   const double ret = gf_hamilton_node(gf, ga);
   return py_convert(ret);
-});
+})
 
 EXPORT(gf_evolve, {
   using namespace qlat;
@@ -50,7 +50,7 @@ EXPORT(gf_evolve, {
   const GaugeMomentum& gm = py_convert_type<GaugeMomentum>(p_gm);
   gf_evolve(gf, gm, step_size);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(set_gm_force, {
   using namespace qlat;
@@ -65,4 +65,4 @@ EXPORT(set_gm_force, {
   const GaugeAction& ga = py_convert_type<GaugeAction>(p_ga);
   set_gm_force(gm_force, gf, ga);
   Py_RETURN_NONE;
-});
+})

@@ -6,17 +6,17 @@ EXPORT(mk_lat_data, {
   using namespace qlat;
   LatData* pld = new LatData();
   return py_convert((void*)pld);
-});
+})
 
 EXPORT(free_lat_data, {
   using namespace qlat;
   return free_obj<LatData>(args);
-});
+})
 
 EXPORT(set_lat_data, {
   using namespace qlat;
   return set_obj<LatData>(args);
-});
+})
 
 EXPORT(set_zero_lat_data, {
   using namespace qlat;
@@ -27,7 +27,7 @@ EXPORT(set_zero_lat_data, {
   LatData& ld = py_convert_type<LatData>(p_ld);
   set_zero(ld);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(show_lat_data, {
   using namespace qlat;
@@ -37,7 +37,7 @@ EXPORT(show_lat_data, {
   }
   LatData& ld = py_convert_type<LatData>(p_ld);
   return py_convert(show(ld));
-});
+})
 
 EXPORT(qnorm_lat_data, {
   using namespace qlat;
@@ -47,7 +47,7 @@ EXPORT(qnorm_lat_data, {
   }
   LatData& ld = py_convert_type<LatData>(p_ld);
   return py_convert(qnorm(ld));
-});
+})
 
 EXPORT(load_lat_data, {
   using namespace qlat;
@@ -61,7 +61,7 @@ EXPORT(load_lat_data, {
   py_convert(path, p_path);
   ld.load(path);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(save_lat_data, {
   using namespace qlat;
@@ -75,7 +75,7 @@ EXPORT(save_lat_data, {
   py_convert(path, p_path);
   ld.save(path);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(is_matching_lat_data, {
   using namespace qlat;
@@ -87,7 +87,7 @@ EXPORT(is_matching_lat_data, {
   LatData& ld = py_convert_type<LatData>(p_ld);
   LatData& ld1 = py_convert_type<LatData>(p_ld1);
   return py_convert(is_matching(ld, ld1));
-});
+})
 
 EXPORT(is_complex_lat_data, {
   using namespace qlat;
@@ -98,7 +98,7 @@ EXPORT(is_complex_lat_data, {
   LatData& ld = py_convert_type<LatData>(p_ld);
   const bool is_complex_ld = is_lat_info_complex(ld.info);
   return py_convert(is_complex_ld);
-});
+})
 
 EXPORT(get_ndim_lat_data, {
   using namespace qlat;
@@ -116,7 +116,7 @@ EXPORT(get_ndim_lat_data, {
     }
   }
   return py_convert(ndim);
-});
+})
 
 EXPORT(get_dim_sizes_lat_data, {
   using namespace qlat;
@@ -138,7 +138,7 @@ EXPORT(get_dim_sizes_lat_data, {
     dim_sizes[i] = ld.info[i].size;
   }
   return py_convert(dim_sizes);
-});
+})
 
 EXPORT(get_dim_name_lat_data, {
   using namespace qlat;
@@ -150,7 +150,7 @@ EXPORT(get_dim_name_lat_data, {
   LatData& ld = py_convert_type<LatData>(p_ld);
   pqassert(0 <= dim and dim < (long)ld.info.size());
   return py_convert(ld.info[dim].name);
-});
+})
 
 EXPORT(get_dim_size_lat_data, {
   using namespace qlat;
@@ -162,7 +162,7 @@ EXPORT(get_dim_size_lat_data, {
   LatData& ld = py_convert_type<LatData>(p_ld);
   pqassert(0 <= dim and dim < (long)ld.info.size());
   return py_convert(ld.info[dim].size);
-});
+})
 
 EXPORT(get_dim_indices_lat_data, {
   using namespace qlat;
@@ -174,7 +174,7 @@ EXPORT(get_dim_indices_lat_data, {
   LatData& ld = py_convert_type<LatData>(p_ld);
   pqassert(0 <= dim and dim < (long)ld.info.size());
   return py_convert(ld.info[dim].indices);
-});
+})
 
 EXPORT(set_dim_sizes_lat_data, {
   using namespace qlat;
@@ -199,7 +199,7 @@ EXPORT(set_dim_sizes_lat_data, {
   }
   lat_data_alloc(ld);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(set_dim_name_lat_data, {
   using namespace qlat;
@@ -220,7 +220,7 @@ EXPORT(set_dim_name_lat_data, {
     py_convert(ld.info[dim].indices, p_indices);
   }
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(peek_lat_data, {
   using namespace qlat;
@@ -241,7 +241,7 @@ EXPORT(peek_lat_data, {
   } else {
     return py_convert(lat_data_get_const(ld, idx));
   }
-});
+})
 
 EXPORT(poke_lat_data, {
   using namespace qlat;
@@ -263,7 +263,7 @@ EXPORT(poke_lat_data, {
     py_convert(lat_data_get(ld, idx), p_val);
   }
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(set_add_lat_data, {
   using namespace qlat;
@@ -276,7 +276,7 @@ EXPORT(set_add_lat_data, {
   const LatData& ld = py_convert_type<LatData>(p_ld);
   ld_new += ld;
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(set_sub_lat_data, {
   using namespace qlat;
@@ -289,7 +289,7 @@ EXPORT(set_sub_lat_data, {
   const LatData& ld = py_convert_type<LatData>(p_ld);
   ld_new -= ld;
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(set_mul_double_lat_data, {
   using namespace qlat;
@@ -301,4 +301,4 @@ EXPORT(set_mul_double_lat_data, {
   LatData& ld_new = py_convert_type<LatData>(p_ld_new);
   ld_new *= factor;
   Py_RETURN_NONE;
-});
+})

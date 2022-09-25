@@ -11,7 +11,7 @@ EXPORT(gf_wilson_flow_step, {
   GaugeField& gf = py_convert_type<GaugeField>(p_gf);
   gf_wilson_flow_step(gf, epsilon, c1);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(gf_energy_density, {
   using namespace qlat;
@@ -21,4 +21,4 @@ EXPORT(gf_energy_density, {
   }
   const GaugeField& gf = py_convert_type<GaugeField>(p_gf);
   return py_convert(gf_energy_density(gf));
-});
+})

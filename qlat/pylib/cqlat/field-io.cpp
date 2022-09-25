@@ -79,7 +79,7 @@ EXPORT(save_field, {
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, save_field_ctype, pf.ctype, pf, path, new_size_node);
   return p_ret;
-});
+})
 
 EXPORT(load_field, {
   using namespace qlat;
@@ -94,7 +94,7 @@ EXPORT(load_field, {
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, load_field_ctype, pf.ctype, pf, path);
   return p_ret;
-});
+})
 
 EXPORT(convert_float_from_double_field, {
   using namespace qlat;
@@ -109,7 +109,7 @@ EXPORT(convert_float_from_double_field, {
   FIELD_DISPATCH(p_ret, convert_float_from_double_field_ctype, pf.ctype, pf_new,
                  pf);
   return p_ret;
-});
+})
 
 EXPORT(convert_double_from_float_field, {
   using namespace qlat;
@@ -124,7 +124,7 @@ EXPORT(convert_double_from_float_field, {
   FIELD_DISPATCH(p_ret, convert_double_from_float_field_ctype, pf_new.ctype,
                  pf_new, pf);
   return p_ret;
-});
+})
 
 EXPORT(to_from_endianness_field, {
   using namespace qlat;
@@ -140,4 +140,4 @@ EXPORT(to_from_endianness_field, {
   FIELD_DISPATCH(p_ret, to_from_endianness_field_ctype, pf.ctype, pf,
                  endianness_tag);
   return p_ret;
-});
+})

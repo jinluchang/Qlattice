@@ -10,7 +10,7 @@ EXPORT(get_gm_force_magnitudes, {
   const GaugeMomentum& gm_force = py_convert_type<GaugeMomentum>(p_gm_force);
   std::vector<double> ret = get_gm_force_magnitudes(gm_force, n_elems);
   return py_convert(ret);
-});
+})
 
 EXPORT(display_gm_force_magnitudes, {
   using namespace qlat;
@@ -22,7 +22,7 @@ EXPORT(display_gm_force_magnitudes, {
   const GaugeMomentum& gm_force = py_convert_type<GaugeMomentum>(p_gm_force);
   display_gm_force_magnitudes(gm_force, n_elems);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(save_gm_force_magnitudes_list, {
   using namespace qlat;
@@ -34,7 +34,7 @@ EXPORT(save_gm_force_magnitudes_list, {
   py_convert(fn, p_fn);
   save_gm_force_magnitudes_list(fn);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(display_gauge_field_info_table_with_wilson_flow, {
   using namespace qlat;
@@ -57,4 +57,4 @@ EXPORT(display_gauge_field_info_table_with_wilson_flow, {
   display_gauge_field_info_table_with_wilson_flow(
       fn_gf_info, fn_wilson_flow_energy, gf, flow_time, flow_steps, steps, c1);
   Py_RETURN_NONE;
-});
+})

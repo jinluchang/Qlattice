@@ -14,7 +14,7 @@ EXPORT(gf_ape_smear, {
   const GaugeField& gf0 = py_convert_type<GaugeField>(p_gf0);
   gf_ape_smear(gf, gf0, alpha, steps);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(gf_spatial_ape_smear, {
   using namespace qlat;
@@ -30,7 +30,7 @@ EXPORT(gf_spatial_ape_smear, {
   const GaugeField& gf0 = py_convert_type<GaugeField>(p_gf0);
   gf_spatial_ape_smear(gf, gf0, alpha, steps);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(gf_hyp_smear, {
   using namespace qlat;
@@ -49,7 +49,7 @@ EXPORT(gf_hyp_smear, {
   const GaugeField& gf0 = py_convert_type<GaugeField>(p_gf0);
   gf_hyp_smear(gf, gf0, alpha1, alpha2, alpha3);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(prop_smear, {
   using namespace qlat;
@@ -82,4 +82,4 @@ EXPORT(prop_smear, {
     smear_propagator_qlat_convension(prop, gf1, coef, step, mom, smear_in_time_dir, mode_smear);
   }
   Py_RETURN_NONE;
-});
+})

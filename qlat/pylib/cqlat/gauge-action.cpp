@@ -9,17 +9,17 @@ EXPORT(mk_gauge_action, {
   }
   GaugeAction* pga = new GaugeAction(beta, c1);
   return py_convert((void*)pga);
-});
+})
 
 EXPORT(free_gauge_action, {
   using namespace qlat;
   return free_obj<GaugeAction>(args);
-});
+})
 
 EXPORT(set_gauge_action, {
   using namespace qlat;
   return set_obj<GaugeAction>(args);
-});
+})
 
 EXPORT(get_beta_gauge_action, {
   using namespace qlat;
@@ -29,7 +29,7 @@ EXPORT(get_beta_gauge_action, {
   }
   const GaugeAction& ga = py_convert_type<GaugeAction>(p_ga);
   return py_convert(ga.beta);
-});
+})
 
 EXPORT(get_c1_gauge_action, {
   using namespace qlat;
@@ -39,4 +39,4 @@ EXPORT(get_c1_gauge_action, {
   }
   const GaugeAction& ga = py_convert_type<GaugeAction>(p_ga);
   return py_convert(ga.c1);
-});
+})

@@ -6,7 +6,7 @@ EXPORT(flush, {
   using namespace qlat;
   fflush(get_output_file());
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(qremove, {
   using namespace qlat;
@@ -17,7 +17,7 @@ EXPORT(qremove, {
   const std::string path = py_convert_data<std::string>(p_path);
   const int ret = qremove(path);
   return py_convert(ret);
-});
+})
 
 EXPORT(qremove_all, {
   using namespace qlat;
@@ -28,7 +28,7 @@ EXPORT(qremove_all, {
   const std::string path = py_convert_data<std::string>(p_path);
   const int ret = qremove_all(path);
   return py_convert(ret);
-});
+})
 
 EXPORT(qmkdir, {
   using namespace qlat;
@@ -39,7 +39,7 @@ EXPORT(qmkdir, {
   const std::string path = py_convert_data<std::string>(p_path);
   const int ret = qmkdir(path);
   return py_convert(ret);
-});
+})
 
 EXPORT(qmkdir_info, {
   using namespace qlat;
@@ -50,7 +50,7 @@ EXPORT(qmkdir_info, {
   const std::string path = py_convert_data<std::string>(p_path);
   const int ret = qmkdir_info(path);
   return py_convert(ret);
-});
+})
 
 EXPORT(does_file_exist, {
   using namespace qlat;
@@ -61,7 +61,7 @@ EXPORT(does_file_exist, {
   const std::string path = py_convert_data<std::string>(p_path);
   const bool ret = does_file_exist(path);
   return py_convert(ret);
-});
+})
 
 EXPORT(is_directory, {
   using namespace qlat;
@@ -72,7 +72,7 @@ EXPORT(is_directory, {
   const std::string path = py_convert_data<std::string>(p_path);
   const bool ret = is_directory(path);
   return py_convert(ret);
-});
+})
 
 EXPORT(is_regular_file, {
   using namespace qlat;
@@ -83,7 +83,7 @@ EXPORT(is_regular_file, {
   const std::string path = py_convert_data<std::string>(p_path);
   const bool ret = is_regular_file(path);
   return py_convert(ret);
-});
+})
 
 EXPORT(qtouch, {
   using namespace qlat;
@@ -102,7 +102,7 @@ EXPORT(qtouch, {
     const int ret = qtouch(path, content);
     return py_convert(ret);
   }
-});
+})
 
 EXPORT(qtouch_info, {
   using namespace qlat;
@@ -121,7 +121,7 @@ EXPORT(qtouch_info, {
     const int ret = qtouch_info(path, content);
     return py_convert(ret);
   }
-});
+})
 
 EXPORT(qappend, {
   using namespace qlat;
@@ -135,7 +135,7 @@ EXPORT(qappend, {
   py_convert(content, p_content);
   const int ret = qappend(path, content);
   return py_convert(ret);
-});
+})
 
 EXPORT(qappend_info, {
   using namespace qlat;
@@ -149,7 +149,7 @@ EXPORT(qappend_info, {
   py_convert(content, p_content);
   const int ret = qappend_info(path, content);
   return py_convert(ret);
-});
+})
 
 EXPORT(qrename, {
   using namespace qlat;
@@ -162,7 +162,7 @@ EXPORT(qrename, {
   const std::string new_path = py_convert_data<std::string>(p_new_path);
   const int ret = qrename(old_path, new_path);
   return py_convert(ret);
-});
+})
 
 EXPORT(qrename_info, {
   using namespace qlat;
@@ -175,7 +175,7 @@ EXPORT(qrename_info, {
   const std::string new_path = py_convert_data<std::string>(p_new_path);
   const int ret = qrename_info(old_path, new_path);
   return py_convert(ret);
-});
+})
 
 EXPORT(qls, {
   using namespace qlat;
@@ -186,7 +186,7 @@ EXPORT(qls, {
   const std::string path = py_convert_data<std::string>(p_path);
   const std::vector<std::string> ret = qls(path);
   return py_convert(ret);
-});
+})
 
 EXPORT(qls_all, {
   using namespace qlat;
@@ -198,7 +198,7 @@ EXPORT(qls_all, {
   const std::string path = py_convert_data<std::string>(p_path);
   const std::vector<std::string> ret = qls_all(path, is_folder_before_files);
   return py_convert(ret);
-});
+})
 
 EXPORT(compute_crc32, {
   using namespace qlat;
@@ -209,7 +209,7 @@ EXPORT(compute_crc32, {
   const std::string path = py_convert_data<std::string>(p_path);
   const long ret = compute_crc32(path);
   return py_convert(ret);
-});
+})
 
 EXPORT(check_all_files_crc32_info, {
   using namespace qlat;
@@ -220,7 +220,7 @@ EXPORT(check_all_files_crc32_info, {
   const std::string path = py_convert_data<std::string>(p_path);
   check_all_files_crc32_info(path);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(qload_datatable, {
   using namespace qlat;
@@ -232,4 +232,4 @@ EXPORT(qload_datatable, {
   const std::string path = py_convert_data<std::string>(p_path);
   const DataTable dt = qload_datatable(path, is_par);
   return py_convert(dt);
-});
+})

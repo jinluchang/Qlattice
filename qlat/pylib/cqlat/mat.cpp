@@ -4,17 +4,17 @@ EXPORT(mk_wilson_matrix, {
   using namespace qlat;
   WilsonMatrix* p = new WilsonMatrix();
   return py_convert((void*)p);
-});
+})
 
 EXPORT(free_wilson_matrix, {
   using namespace qlat;
   return free_obj<WilsonMatrix>(args);
-});
+})
 
 EXPORT(set_wilson_matrix, {
   using namespace qlat;
   return set_obj<WilsonMatrix>(args);
-});
+})
 
 EXPORT(set_zero_wilson_matrix, {
   using namespace qlat;
@@ -25,7 +25,7 @@ EXPORT(set_zero_wilson_matrix, {
   WilsonMatrix& obj = py_convert_type<WilsonMatrix>(p_obj);
   set_zero(obj);
   Py_RETURN_NONE;
-});
+})
 
 // -----------------------------------------
 
@@ -33,17 +33,17 @@ EXPORT(mk_spin_matrix, {
   using namespace qlat;
   SpinMatrix* p = new SpinMatrix();
   return py_convert((void*)p);
-});
+})
 
 EXPORT(free_spin_matrix, {
   using namespace qlat;
   return free_obj<SpinMatrix>(args);
-});
+})
 
 EXPORT(set_spin_matrix, {
   using namespace qlat;
   return set_obj<SpinMatrix>(args);
-});
+})
 
 EXPORT(set_zero_spin_matrix, {
   using namespace qlat;
@@ -54,7 +54,7 @@ EXPORT(set_zero_spin_matrix, {
   SpinMatrix& obj = py_convert_type<SpinMatrix>(p_obj);
   set_zero(obj);
   Py_RETURN_NONE;
-});
+})
 
 // -----------------------------------------
 
@@ -71,7 +71,7 @@ EXPORT(set_g5_herm_wilson_matrix, {
   const SpinMatrix& gamma5 = smc().gamma5;
   obj = gamma5 * (WilsonMatrix)matrix_adjoint(obj1) * gamma5;
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(set_wm_mul_wm_wm, {
   using namespace qlat;
@@ -86,7 +86,7 @@ EXPORT(set_wm_mul_wm_wm, {
   const WilsonMatrix& obj2 = py_convert_type<WilsonMatrix>(p_obj2);
   obj = obj1 * obj2;
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(set_wm_mul_wm_sm, {
   using namespace qlat;
@@ -101,7 +101,7 @@ EXPORT(set_wm_mul_wm_sm, {
   const SpinMatrix& obj2 = py_convert_type<SpinMatrix>(p_obj2);
   obj = obj1 * obj2;
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(set_wm_mul_sm_wm, {
   using namespace qlat;
@@ -116,7 +116,7 @@ EXPORT(set_wm_mul_sm_wm, {
   const WilsonMatrix& obj2 = py_convert_type<WilsonMatrix>(p_obj2);
   obj = obj1 * obj2;
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(set_sm_mul_sm_sm, {
   using namespace qlat;
@@ -131,7 +131,7 @@ EXPORT(set_sm_mul_sm_sm, {
   const SpinMatrix& obj2 = py_convert_type<SpinMatrix>(p_obj2);
   obj = obj1 * obj2;
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(set_wm_mul_a_wm, {
   using namespace qlat;
@@ -145,7 +145,7 @@ EXPORT(set_wm_mul_a_wm, {
   const WilsonMatrix& obj2 = py_convert_type<WilsonMatrix>(p_obj2);
   obj = a * obj2;
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(set_sm_mul_a_sm, {
   using namespace qlat;
@@ -159,7 +159,7 @@ EXPORT(set_sm_mul_a_sm, {
   const SpinMatrix& obj2 = py_convert_type<SpinMatrix>(p_obj2);
   obj = a * obj2;
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(trace_wm, {
   using namespace qlat;
@@ -169,7 +169,7 @@ EXPORT(trace_wm, {
   }
   const WilsonMatrix& obj = py_convert_type<WilsonMatrix>(p_obj);
   return py_convert(matrix_trace(obj));
-});
+})
 
 EXPORT(trace_wm_wm, {
   using namespace qlat;
@@ -181,7 +181,7 @@ EXPORT(trace_wm_wm, {
   const WilsonMatrix& obj = py_convert_type<WilsonMatrix>(p_obj);
   const WilsonMatrix& obj1 = py_convert_type<WilsonMatrix>(p_obj1);
   return py_convert(matrix_trace(obj, obj1));
-});
+})
 
 EXPORT(trace_sm_wm, {
   using namespace qlat;
@@ -193,7 +193,7 @@ EXPORT(trace_sm_wm, {
   const SpinMatrix& obj = py_convert_type<SpinMatrix>(p_obj);
   const WilsonMatrix& obj1 = py_convert_type<WilsonMatrix>(p_obj1);
   return py_convert(matrix_trace(obj, obj1));
-});
+})
 
 // -----------------------------------------
 
@@ -210,7 +210,7 @@ EXPORT(get_elem_wm_prop, {
   const WilsonMatrix& wm = obj.get_elem(xg, m);
   const long cdata = (long)&wm;
   return py_convert(cdata);
-});
+})
 
 EXPORT(get_elem_wm_sprop, {
   using namespace qlat;
@@ -225,7 +225,7 @@ EXPORT(get_elem_wm_sprop, {
   const WilsonMatrix& wm = obj.get_elem(idx, m);
   const long cdata = (long)&wm;
   return py_convert(cdata);
-});
+})
 
 EXPORT(get_elem_wm_psprop, {
   using namespace qlat;
@@ -240,7 +240,7 @@ EXPORT(get_elem_wm_psprop, {
   const WilsonMatrix& wm = obj.get_elem(idx, m);
   const long cdata = (long)&wm;
   return py_convert(cdata);
-});
+})
 
 // -----------------------------------------
 
@@ -257,7 +257,7 @@ EXPORT(set_state_wm, {
   pqassert(len == sizeof(WilsonMatrix));
   std::memcpy((void*)&obj, (void*)buffer, len);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(get_state_wm, {
   using namespace qlat;
@@ -267,7 +267,7 @@ EXPORT(get_state_wm, {
   }
   WilsonMatrix& obj = py_convert_type<WilsonMatrix>(p_obj);
   return PyBytes_FromStringAndSize((const char*)&obj, sizeof(WilsonMatrix));
-});
+})
 
 EXPORT(set_state_sm, {
   using namespace qlat;
@@ -282,7 +282,7 @@ EXPORT(set_state_sm, {
   pqassert(len == sizeof(SpinMatrix));
   std::memcpy((void*)&obj, (void*)buffer, len);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(get_state_sm, {
   using namespace qlat;
@@ -292,4 +292,4 @@ EXPORT(get_state_sm, {
   }
   SpinMatrix& obj = py_convert_type<SpinMatrix>(p_obj);
   return PyBytes_FromStringAndSize((const char*)&obj, sizeof(SpinMatrix));
-});
+})

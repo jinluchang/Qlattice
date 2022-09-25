@@ -69,12 +69,12 @@ EXPORT(mk_sfw, {
   ShuffledFieldsWriter* psfw =
       new ShuffledFieldsWriter(path, new_size_node, is_append);
   return py_convert((void*)psfw);
-});
+})
 
 EXPORT(free_sfw, {
   using namespace qlat;
   return free_obj<ShuffledFieldsWriter>(args);
-});
+})
 
 EXPORT(get_new_size_node_sfw, {
   using namespace qlat;
@@ -85,7 +85,7 @@ EXPORT(get_new_size_node_sfw, {
   const ShuffledFieldsWriter& obj =
       py_convert_type<ShuffledFieldsWriter>(p_obj);
   return py_convert(obj.new_size_node);
-});
+})
 
 EXPORT(mk_sfr, {
   using namespace qlat;
@@ -102,12 +102,12 @@ EXPORT(mk_sfr, {
   }
   ShuffledFieldsReader* psfr = new ShuffledFieldsReader(path, new_size_node);
   return py_convert((void*)psfr);
-});
+})
 
 EXPORT(free_sfr, {
   using namespace qlat;
   return free_obj<ShuffledFieldsReader>(args);
-});
+})
 
 EXPORT(get_new_size_node_sfr, {
   using namespace qlat;
@@ -118,7 +118,7 @@ EXPORT(get_new_size_node_sfr, {
   const ShuffledFieldsReader& obj =
       py_convert_type<ShuffledFieldsReader>(p_obj);
   return py_convert(obj.new_size_node);
-});
+})
 
 EXPORT(mk_sbs, {
   using namespace qlat;
@@ -133,12 +133,12 @@ EXPORT(mk_sbs, {
   ShuffledBitSet* psbs = new ShuffledBitSet();
   *psbs = mk_shuffled_bitset(fsel, new_size_node);
   return py_convert((void*)psbs);
-});
+})
 
 EXPORT(free_sbs, {
   using namespace qlat;
   return free_obj<ShuffledBitSet>(args);
-});
+})
 
 EXPORT(write_sfw_field, {
   using namespace qlat;
@@ -155,7 +155,7 @@ EXPORT(write_sfw_field, {
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, write_sfw_field_ctype, pf.ctype, sfw, fn, pf);
   return p_ret;
-});
+})
 
 EXPORT(read_sfr_field, {
   using namespace qlat;
@@ -172,7 +172,7 @@ EXPORT(read_sfr_field, {
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, read_sfr_field_ctype, pf.ctype, sfr, fn, pf);
   return p_ret;
-});
+})
 
 EXPORT(write_sfw_sfield, {
   using namespace qlat;
@@ -191,7 +191,7 @@ EXPORT(write_sfw_sfield, {
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, write_sfw_sfield_ctype, pf.ctype, sfw, fn, pf, sbs);
   return p_ret;
-});
+})
 
 EXPORT(read_sfr_sfield, {
   using namespace qlat;
@@ -211,7 +211,7 @@ EXPORT(read_sfr_sfield, {
   FIELD_DISPATCH(p_ret, read_sfr_sfield_ctype, ctype, sfr, fn, p_sbs, p_sfield,
                  p_fsel);
   return p_ret;
-});
+})
 
 EXPORT(list_sfr, {
   using namespace qlat;
@@ -221,7 +221,7 @@ EXPORT(list_sfr, {
   }
   ShuffledFieldsReader& sfr = py_convert_type<ShuffledFieldsReader>(p_sfr);
   return py_convert(list_fields(sfr));
-});
+})
 
 EXPORT(does_file_exist_sync_node_sfr, {
   using namespace qlat;
@@ -233,7 +233,7 @@ EXPORT(does_file_exist_sync_node_sfr, {
   ShuffledFieldsReader& sfr = py_convert_type<ShuffledFieldsReader>(p_sfr);
   const std::string fn = py_convert_data<std::string>(p_fn);
   return py_convert(does_file_exist_sync_node(sfr, fn));
-});
+})
 
 EXPORT(properly_truncate_fields_sync_node, {
   using namespace qlat;
@@ -252,7 +252,7 @@ EXPORT(properly_truncate_fields_sync_node, {
   }
   return py_convert(properly_truncate_fields_sync_node(
       path, is_check_all, is_only_check, new_size_node));
-});
+})
 
 EXPORT(truncate_fields_sync_node, {
   using namespace qlat;
@@ -271,7 +271,7 @@ EXPORT(truncate_fields_sync_node, {
     py_convert(new_size_node, p_new_size_node);
   }
   return py_convert(truncate_fields_sync_node(path, fns_keep, new_size_node));
-});
+})
 
 EXPORT(flush_sfw, {
   using namespace qlat;
@@ -281,7 +281,7 @@ EXPORT(flush_sfw, {
   }
   ShuffledFieldsWriter& sfw = py_convert_type<ShuffledFieldsWriter>(p_sfw);
   return py_convert(flush(sfw));
-});
+})
 
 EXPORT(check_compressed_eigen_vectors, {
   using namespace qlat;
@@ -292,7 +292,7 @@ EXPORT(check_compressed_eigen_vectors, {
   std::string path;
   py_convert(path, p_path);
   return py_convert(qlat::check_compressed_eigen_vectors(path));
-});
+})
 
 EXPORT(eigen_system_repartition, {
   using namespace qlat;
@@ -306,4 +306,4 @@ EXPORT(eigen_system_repartition, {
   const std::string path = py_convert_data<std::string>(p_path);
   const std::string path_new = py_convert_data<std::string>(p_path_new);
   return py_convert(eigen_system_repartition(new_size_node, path, path_new));
-});
+})

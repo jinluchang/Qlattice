@@ -308,7 +308,7 @@ EXPORT(mk_sfield, {
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, mk_sfield_ctype, ctype, 0);
   return p_ret;
-});
+})
 
 EXPORT(mk_sfield_fsel, {
   using namespace qlat;
@@ -324,7 +324,7 @@ EXPORT(mk_sfield_fsel, {
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, mk_sfield_fsel_ctype, ctype, fsel, multiplicity);
   return p_ret;
-});
+})
 
 EXPORT(free_sfield, {
   using namespace qlat;
@@ -336,7 +336,7 @@ EXPORT(free_sfield, {
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, free_sfield_ctype, pf.ctype, pf);
   return p_ret;
-});
+})
 
 EXPORT(set_sfield, {
   using namespace qlat;
@@ -351,7 +351,7 @@ EXPORT(set_sfield, {
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, set_sfield_ctype, pf.ctype, pf_new, pf);
   return p_ret;
-});
+})
 
 EXPORT(set_sfield_field, {
   using namespace qlat;
@@ -367,7 +367,7 @@ EXPORT(set_sfield_field, {
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, set_sfield_field_ctype, pf.ctype, psf, pf, fsel);
   return p_ret;
-});
+})
 
 EXPORT(set_field_sfield, {
   using namespace qlat;
@@ -383,7 +383,7 @@ EXPORT(set_field_sfield, {
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, set_field_sfield_ctype, pf.ctype, pf, psf, fsel);
   return p_ret;
-});
+})
 
 EXPORT(set_sfield_sfield, {
   using namespace qlat;
@@ -400,7 +400,7 @@ EXPORT(set_sfield_sfield, {
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, set_sfield_sfield_ctype, psf0.ctype, psf, psf0, fsel, fsel0);
   return p_ret;
-});
+})
 
 EXPORT(set_add_sfield, {
   using namespace qlat;
@@ -415,7 +415,7 @@ EXPORT(set_add_sfield, {
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, set_add_sfield_ctype, pf.ctype, pf_new, pf);
   return p_ret;
-});
+})
 
 EXPORT(set_sub_sfield, {
   using namespace qlat;
@@ -430,7 +430,7 @@ EXPORT(set_sub_sfield, {
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, set_sub_sfield_ctype, pf.ctype, pf_new, pf);
   return p_ret;
-});
+})
 
 EXPORT(set_mul_double_sfield, {
   using namespace qlat;
@@ -443,7 +443,7 @@ EXPORT(set_mul_double_sfield, {
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, set_mul_sfield_ctype, pf.ctype, pf, factor);
   return p_ret;
-});
+})
 
 EXPORT(set_zero_sfield, {
   using namespace qlat;
@@ -455,7 +455,7 @@ EXPORT(set_zero_sfield, {
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, set_zero_sfield_ctype, pf.ctype, pf);
   return p_ret;
-});
+})
 
 EXPORT(acc_field_sfield, {
   using namespace qlat;
@@ -469,7 +469,7 @@ EXPORT(acc_field_sfield, {
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, acc_field_sfield_ctype, ctype, p_field, p_sfield, fsel);
   return p_ret;
-});
+})
 
 EXPORT(field_shift_sfield, {
   using namespace qlat;
@@ -488,7 +488,7 @@ EXPORT(field_shift_sfield, {
   FIELD_DISPATCH(p_ret, field_shift_sfield_ctype, ctype, p_sfield_new, p_sfield,
                  shift, is_reflect);
   return p_ret;
-});
+})
 
 EXPORT(get_n_elems_sfield, {
   using namespace qlat;
@@ -500,7 +500,7 @@ EXPORT(get_n_elems_sfield, {
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, get_n_elems_sfield_ctype, pf.ctype, pf);
   return p_ret;
-});
+})
 
 EXPORT(get_total_site_sfield, {
   using namespace qlat;
@@ -512,7 +512,7 @@ EXPORT(get_total_site_sfield, {
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, get_total_site_sfield_ctype, pf.ctype, pf);
   return p_ret;
-});
+})
 
 EXPORT(get_multiplicity_sfield, {
   using namespace qlat;
@@ -524,7 +524,7 @@ EXPORT(get_multiplicity_sfield, {
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, get_multiplicity_sfield_ctype, pf.ctype, pf);
   return p_ret;
-});
+})
 
 EXPORT(set_geo_sfield, {
   using namespace qlat;
@@ -538,7 +538,7 @@ EXPORT(set_geo_sfield, {
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, set_geo_sfield_ctype, pf.ctype, geo, pf);
   return p_ret;
-});
+})
 
 EXPORT(qnorm_sfield, {
   using namespace qlat;
@@ -550,7 +550,7 @@ EXPORT(qnorm_sfield, {
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, qnorm_sfield_ctype, pf.ctype, pf);
   return p_ret;
-});
+})
 
 EXPORT(get_elems_sfield, {
   using namespace qlat;
@@ -563,7 +563,7 @@ EXPORT(get_elems_sfield, {
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, get_elems_sfield_ctype, ctype, p_field, idx);
   return p_ret;
-});
+})
 
 EXPORT(get_elem_sfield, {
   using namespace qlat;
@@ -577,7 +577,7 @@ EXPORT(get_elem_sfield, {
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, get_elem_sfield_ctype, ctype, p_field, idx, m);
   return p_ret;
-});
+})
 
 EXPORT(set_elems_sfield, {
   using namespace qlat;
@@ -591,7 +591,7 @@ EXPORT(set_elems_sfield, {
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, set_elems_sfield_ctype, ctype, p_field, idx, p_val);
   return p_ret;
-});
+})
 
 EXPORT(set_elem_sfield, {
   using namespace qlat;
@@ -606,7 +606,7 @@ EXPORT(set_elem_sfield, {
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, set_elem_sfield_ctype, ctype, p_field, idx, m, p_val);
   return p_ret;
-});
+})
 
 EXPORT(glb_sum_tslice_double_sfield, {
   using namespace qlat;
@@ -622,7 +622,7 @@ EXPORT(glb_sum_tslice_double_sfield, {
   FIELD_DISPATCH(p_ret, glb_sum_tslice_double_sfield_ctype, ctype, p_spfield,
                  p_field, fsel, t_dir);
   return p_ret;
-});
+})
 
 EXPORT(glb_sum_tslice_long_sfield, {
   using namespace qlat;
@@ -638,7 +638,7 @@ EXPORT(glb_sum_tslice_long_sfield, {
   FIELD_DISPATCH(p_ret, glb_sum_tslice_long_sfield_ctype, ctype, p_spfield,
                  p_field, fsel, t_dir);
   return p_ret;
-});
+})
 
 EXPORT(save_sfield, {
   using namespace qlat;
@@ -654,7 +654,7 @@ EXPORT(save_sfield, {
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, save_sfield_ctype, pf.ctype, pf, path, fsel);
   return p_ret;
-});
+})
 
 EXPORT(load_sfield, {
   using namespace qlat;
@@ -670,7 +670,7 @@ EXPORT(load_sfield, {
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, load_sfield_ctype, pf.ctype, pf, path, fsel);
   return p_ret;
-});
+})
 
 EXPORT(convert_float_from_double_sfield, {
   using namespace qlat;
@@ -685,7 +685,7 @@ EXPORT(convert_float_from_double_sfield, {
   FIELD_DISPATCH(p_ret, convert_float_from_double_sfield_ctype, pf.ctype,
                  pf_new, pf);
   return p_ret;
-});
+})
 
 EXPORT(convert_double_from_float_sfield, {
   using namespace qlat;
@@ -700,7 +700,7 @@ EXPORT(convert_double_from_float_sfield, {
   FIELD_DISPATCH(p_ret, convert_double_from_float_sfield_ctype, pf_new.ctype,
                  pf_new, pf);
   return p_ret;
-});
+})
 
 EXPORT(to_from_endianness_sfield, {
   using namespace qlat;
@@ -716,4 +716,4 @@ EXPORT(to_from_endianness_sfield, {
   FIELD_DISPATCH(p_ret, to_from_endianness_sfield_ctype, pf.ctype, pf,
                  endianness_tag);
   return p_ret;
-});
+})

@@ -11,7 +11,7 @@ EXPORT(mk_fermion_action_mobius, {
   }
   FermionAction* pfa = new FermionAction(mass, ls, m5, mobius_scale, true, true);
   return py_convert((void*)pfa);
-});
+})
 
 EXPORT(mk_fermion_action_zmobius, {
   using namespace qlat;
@@ -33,17 +33,17 @@ EXPORT(mk_fermion_action_zmobius, {
     fa.cs[i] = fa.bs[i] - 1.0;
   }
   return py_convert((void*)pfa);
-});
+})
 
 EXPORT(free_fermion_action, {
   using namespace qlat;
   return free_obj<FermionAction>(args);
-});
+})
 
 EXPORT(set_fermion_action, {
   using namespace qlat;
   return set_obj<FermionAction>(args);
-});
+})
 
 EXPORT(get_mass_fermion_action, {
   using namespace qlat;
@@ -53,7 +53,7 @@ EXPORT(get_mass_fermion_action, {
   }
   const FermionAction& fa = py_convert_type<FermionAction>(p_fa);
   return py_convert(fa.mass);
-});
+})
 
 EXPORT(get_ls_fermion_action, {
   using namespace qlat;
@@ -63,7 +63,7 @@ EXPORT(get_ls_fermion_action, {
   }
   const FermionAction& fa = py_convert_type<FermionAction>(p_fa);
   return py_convert(fa.ls);
-});
+})
 
 EXPORT(get_m5_fermion_action, {
   using namespace qlat;
@@ -73,7 +73,7 @@ EXPORT(get_m5_fermion_action, {
   }
   const FermionAction& fa = py_convert_type<FermionAction>(p_fa);
   return py_convert(fa.m5);
-});
+})
 
 EXPORT(get_omega_fermion_action, {
   using namespace qlat;
@@ -91,7 +91,7 @@ EXPORT(get_omega_fermion_action, {
   } else {
     Py_RETURN_NONE;
   }
-});
+})
 
 EXPORT(get_mobius_scale_fermion_action, {
   using namespace qlat;
@@ -106,4 +106,4 @@ EXPORT(get_mobius_scale_fermion_action, {
     pqassert(fa.mobius_scale != 0.0);
   }
   return py_convert(fa.mobius_scale);
-});
+})

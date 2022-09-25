@@ -12,17 +12,17 @@ EXPORT(mk_psel, {
     py_convert(psel, p_coordinate_list);
   }
   return py_convert((void*)ppsel);
-});
+})
 
 EXPORT(free_psel, {
   using namespace qlat;
   return free_obj<PointSelection>(args);
-});
+})
 
 EXPORT(set_psel, {
   using namespace qlat;
   return set_obj<PointSelection>(args);
-});
+})
 
 EXPORT(load_psel, {
   using namespace qlat;
@@ -36,7 +36,7 @@ EXPORT(load_psel, {
   py_convert(path, p_path);
   psel = load_point_selection_info(path);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(save_psel, {
   using namespace qlat;
@@ -50,7 +50,7 @@ EXPORT(save_psel, {
   py_convert(path, p_path);
   save_point_selection_info(psel, path);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(get_n_points_psel, {
   using namespace qlat;
@@ -61,7 +61,7 @@ EXPORT(get_n_points_psel, {
   const PointSelection& psel = py_convert_type<PointSelection>(p_psel);
   const long n_points = psel.size();
   return py_convert(n_points);
-});
+})
 
 EXPORT(mk_list_psel, {
   using namespace qlat;
@@ -71,7 +71,7 @@ EXPORT(mk_list_psel, {
   }
   const PointSelection& psel = py_convert_type<PointSelection>(p_psel);
   return py_convert(psel);
-});
+})
 
 EXPORT(set_list_psel, {
   using namespace qlat;
@@ -83,7 +83,7 @@ EXPORT(set_list_psel, {
   PointSelection& psel = py_convert_type<PointSelection>(p_psel);
   py_convert(psel, p_coordinate_list);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(set_rand_psel, {
   using namespace qlat;
@@ -100,7 +100,7 @@ EXPORT(set_rand_psel, {
   py_convert(total_site, p_total_site);
   psel = mk_random_point_selection(total_site, n_points, rs);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(set_tslice_psel, {
   using namespace qlat;
@@ -113,7 +113,7 @@ EXPORT(set_tslice_psel, {
   PointSelection& psel = py_convert_type<PointSelection>(p_psel);
   psel = mk_tslice_point_selection(t_size, t_dir);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(get_coordinate_from_idx_psel, {
   // return global coordinate
@@ -125,23 +125,23 @@ EXPORT(get_coordinate_from_idx_psel, {
   }
   const PointSelection& psel = py_convert_type<PointSelection>(p_psel);
   return py_convert(psel[idx]);
-});
+})
 
 EXPORT(mk_fsel, {
   using namespace qlat;
   FieldSelection* pfsel = new FieldSelection();
   return py_convert((void*)pfsel);
-});
+})
 
 EXPORT(free_fsel, {
   using namespace qlat;
   return free_obj<FieldSelection>(args);
-});
+})
 
 EXPORT(set_fsel, {
   using namespace qlat;
   return set_obj<FieldSelection>(args);
-});
+})
 
 EXPORT(load_fsel, {
   using namespace qlat;
@@ -156,7 +156,7 @@ EXPORT(load_fsel, {
   py_convert(path, p_path);
   const long ret = read_field_selection(fsel, path, n_per_tslice);
   return py_convert(ret);
-});
+})
 
 EXPORT(save_fsel, {
   using namespace qlat;
@@ -170,7 +170,7 @@ EXPORT(save_fsel, {
   py_convert(path, p_path);
   const long ret = write_field_selection(fsel, path);
   return py_convert(ret);
-});
+})
 
 EXPORT(set_uniform_fsel, {
   using namespace qlat;
@@ -185,7 +185,7 @@ EXPORT(set_uniform_fsel, {
   py_convert(total_site, p_total_site);
   mk_field_selection(fsel.f_rank, total_site, val);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(set_rand_fsel, {
   using namespace qlat;
@@ -203,7 +203,7 @@ EXPORT(set_rand_fsel, {
   py_convert(total_site, p_total_site);
   mk_field_selection(fsel.f_rank, total_site, n_per_tslice, rs);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(add_psel_fsel, {
   using namespace qlat;
@@ -217,7 +217,7 @@ EXPORT(add_psel_fsel, {
   PointSelection& psel = py_convert_type<PointSelection>(p_psel);
   add_field_selection(fsel.f_rank, psel, rank_psel);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(update_fsel, {
   using namespace qlat;
@@ -235,7 +235,7 @@ EXPORT(update_fsel, {
     update_field_selection(fsel, n_per_tslice);
   }
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(select_rank_range_fsel, {
   using namespace qlat;
@@ -252,7 +252,7 @@ EXPORT(select_rank_range_fsel, {
   fsel.f_rank = fsel0.f_rank;
   select_rank_range(fsel.f_rank, rank_start, rank_stop);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(select_t_range_fsel, {
   using namespace qlat;
@@ -268,7 +268,7 @@ EXPORT(select_t_range_fsel, {
   fsel.f_rank = fsel0.f_rank;
   select_t_range(fsel.f_rank, t_start, t_stop);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(is_matching_fsel, {
   using namespace qlat;
@@ -281,7 +281,7 @@ EXPORT(is_matching_fsel, {
   const FieldSelection& fsel2 = py_convert_type<FieldSelection>(p_fsel2);
   const bool b = is_matching_fsel(fsel1, fsel2);
   return py_convert(b);
-});
+})
 
 EXPORT(set_psel_fsel, {
   using namespace qlat;
@@ -294,7 +294,7 @@ EXPORT(set_psel_fsel, {
   const FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
   psel = psel_from_fsel(fsel);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(set_psel_fsel_local, {
   using namespace qlat;
@@ -307,7 +307,7 @@ EXPORT(set_psel_fsel_local, {
   const FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
   psel = psel_from_fsel_local(fsel);
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(set_geo_fsel, {
   using namespace qlat;
@@ -320,7 +320,7 @@ EXPORT(set_geo_fsel, {
   const FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
   geo = fsel.f_rank.geo();
   Py_RETURN_NONE;
-});
+})
 
 EXPORT(get_total_site_fsel, {
   using namespace qlat;
@@ -330,7 +330,7 @@ EXPORT(get_total_site_fsel, {
   }
   const FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
   return py_convert(fsel.f_rank.geo().total_site());
-});
+})
 
 EXPORT(get_n_elems_fsel, {
   using namespace qlat;
@@ -341,7 +341,7 @@ EXPORT(get_n_elems_fsel, {
   const FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
   const long n_elems = fsel.n_elems;
   return py_convert(n_elems);
-});
+})
 
 EXPORT(get_n_per_tslice_fsel, {
   using namespace qlat;
@@ -352,7 +352,7 @@ EXPORT(get_n_per_tslice_fsel, {
   const FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
   const long n_per_tslice= fsel.n_per_tslice;
   return py_convert(n_per_tslice);
-});
+})
 
 EXPORT(get_prob_fsel, {
   using namespace qlat;
@@ -363,7 +363,7 @@ EXPORT(get_prob_fsel, {
   const FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
   const double prob = fsel.prob;
   return py_convert(prob);
-});
+})
 
 EXPORT(get_coordinate_from_idx_fsel, {
   // return global coordinate
@@ -379,7 +379,7 @@ EXPORT(get_coordinate_from_idx_fsel, {
   const Coordinate xl = geo.coordinate_from_index(index);
   const Coordinate xg = geo.coordinate_g_from_l(xl);
   return py_convert(xg);
-});
+})
 
 EXPORT(get_idx_from_coordinate_fsel, {
   // need global coordinate
@@ -395,4 +395,4 @@ EXPORT(get_idx_from_coordinate_fsel, {
   const Coordinate xl = geo.coordinate_l_from_g(xg);
   const long idx = fsel.f_local_idx.get_elem(xl);
   return py_convert(idx);
-});
+})
