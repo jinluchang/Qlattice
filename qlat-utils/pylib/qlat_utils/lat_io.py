@@ -145,7 +145,7 @@ class LatData:
         if indices is None:
             indices = []
         else:
-            indices = [ idx.replace("\n", "  ") for idx in indices ]
+            indices = [ str(idx).replace("\n", "  ") for idx in indices ]
         return cu.set_dim_name_lat_data(self, dim, name, indices)
 
     def dim_names(self, *, is_complex = True):

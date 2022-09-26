@@ -194,11 +194,13 @@ def auto_contract_meson_bk_bpi_corr(job_tag, traj, get_prop, get_psel, get_fsel)
     xg_psel_list = np.array(psel.to_list())
     geo = q.Geometry(total_site, 1)
     total_volume = geo.total_volume()
+    tsep_step = max(2, total_site[3] // 16)
+    tsep_list = list(range(tsep_step, total_site[3], tsep_step))
     def load_data():
         for t_src in range(total_site[3]):
-            for t_snk in range(total_site[3]):
-                tt = (t_snk - t_src) % total_site[3]
-                q.displayln_info(f"auto_contract_meson_bk_bpi_corr: {t_src} {t_snk}")
+            for tt_idx, tt in enumerate(tsep_list):
+                t_snk = (t_src + tt) % total_site[3]
+                q.displayln_info(f"auto_contract_meson_bk_bpi_corr: {t_src} {tt}")
                 for xg_snk in xg_fsel_list:
                     xg_snk = tuple(xg_snk.tolist())
                     t = (xg_snk[3] - t_src) % total_site[3]
@@ -207,19 +209,19 @@ def auto_contract_meson_bk_bpi_corr(job_tag, traj, get_prop, get_psel, get_fsel)
                             "x" : ("point-snk", xg_snk,),
                             "t_1" : ("wall", t_src,),
                             }
-                    yield pd, tt, t
+                    yield pd, tt_idx, t
     @q.timer
     def feval(args):
-        pd, tt, t = args
+        pd, tt_idx, t = args
         props = eval_cexpr_get_props(cexpr, positions_dict = pd, get_prop = get_prop)
         val = eval_cexpr_eval(cexpr, props = props)
-        return val, tt, t
+        return val, tt_idx, t
     def sum_function(val_list):
-        counts = np.zeros((total_site[3], total_site[3],), dtype = complex)
-        values = np.zeros((len(expr_names), total_site[3], total_site[3],), dtype = complex)
-        for val, tt, t in val_list:
-            counts[tt, t] += 1
-            values[:, tt, t] += val
+        counts = np.zeros((len(tsep_list), total_site[3],), dtype = complex)
+        values = np.zeros((len(expr_names), len(tsep_list), total_site[3],), dtype = complex)
+        for val, tt_idx, t in val_list:
+            counts[tt_idx, t] += 1
+            values[:, tt_idx, t] += val
         return counts, values
     q.timer_fork(0)
     res_count, res_sum = q.glb_sum(
@@ -232,7 +234,7 @@ def auto_contract_meson_bk_bpi_corr(job_tag, traj, get_prop, get_psel, get_fsel)
     assert q.qnorm(res_count - 1.0) < 1e-10
     ld = q.mk_lat_data([
         [ "expr_name", len(expr_names), expr_names, ],
-        [ "t_sep", total_site[3], ],
+        [ "t_sep", len(tsep_list), tsep_list, ],
         [ "t_op", total_site[3], ],
         ])
     ld.from_numpy(res_sum)
