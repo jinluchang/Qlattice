@@ -141,6 +141,7 @@ def auto_contract_meson_f_corr(job_tag, traj, get_prop, get_psel, get_fsel):
     total_volume = geo.total_volume()
     def load_data():
         for t_src in range(total_site[3]):
+            q.displayln_info(f"auto_contract_meson_f_corr: {t_src}")
             for xg_snk in xg_fsel_list:
                 xg_snk = tuple(xg_snk.tolist())
                 t = (xg_snk[3] - t_src) % total_site[3]
@@ -197,6 +198,7 @@ def auto_contract_meson_bk_bpi_corr(job_tag, traj, get_prop, get_psel, get_fsel)
         for t_src in range(total_site[3]):
             for t_snk in range(total_site[3]):
                 tt = (t_snk - t_src) % total_site[3]
+                q.displayln_info(f"auto_contract_meson_bk_bpi_corr: {t_src} {t_snk}")
                 for xg_snk in xg_fsel_list:
                     xg_snk = tuple(xg_snk.tolist())
                     t = (xg_snk[3] - t_src) % total_site[3]
