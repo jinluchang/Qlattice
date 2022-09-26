@@ -134,6 +134,7 @@ class HMC:
         # The number of trajectories to calculate before taking measurements
         self.start_measurements = 0
         self.init_length = 20
+        self.block_init_length = 20
         self.block_length = 45
         self.num_blocks = 4
         self.final_block_length = 100
@@ -196,7 +197,7 @@ class HMC:
                 self.vev=np.mean(self.vevs)
                 self.vevs=[]
                 self.update_masses_w_fit()
-            if((self.traj-self.init_length) % self.block_length < self.init_length):
+            if((self.traj-self.init_length) % self.block_length < self.block_init_length):
                 self.estimate_masses = False
                 self.run_hmc(self.rs.split("2hmc-{}".format(self.traj)))
             else:
@@ -206,7 +207,7 @@ class HMC:
                 self.update_masses_w_fit()
                 self.vev=np.mean(self.vevs)
                 self.vevs=[]
-            if(self.traj-self.init_length-self.num_blocks*self.block_length < self.init_length):
+            if(self.traj-self.init_length-self.num_blocks*self.block_length < self.block_init_length):
                 self.estimate_masses = False
                 self.run_hmc(self.rs.split("3hmc-{}".format(self.traj)))
             else:
@@ -214,9 +215,9 @@ class HMC:
         else:
             self.estimate_masses = False
             if(self.traj==self.init_length+self.num_blocks*self.block_length+self.final_block_length):
-                self.update_masses_w_fit()
+                #self.update_masses_w_fit()
                 self.vev=np.mean(self.vevs)
-                self.masses.save_double(f"output_data/masses_{self.total_site[0]}x{self.total_site[3]}_msq_{self.m_sq}_lmbd_{self.lmbd}_alph_{self.alpha}_{datetime.datetime.now().date()}.field")
+                self.masses.save_double(f"output_data/masses_{self.total_site[0]}x{self.total_site[3]}_msq_{self.m_sq}_lmbd_{self.lmbd}_alph_{self.alpha}_{datetime.datetime.now().date()}_{version}.field")
             self.run_hmc(self.rs.split("4hmc-{}".format(self.traj)))
         self.traj += 1
     
@@ -341,6 +342,7 @@ class HMC:
                 self.force_mod_av+=self.aux1
                 self.aux1.set_abs_from_complex(field.get_field_ft())
                 self.field_mod_av+=self.aux1
+                self.divisor+=1
             elif(self.estimate_masses):
                 self.aux1.set_double_from_complex(field.get_field_ft())
                 self.field_av+=self.aux1
@@ -569,6 +571,8 @@ m_sq = -.4
 lmbd = 1.0
 alpha = 0.1
 
+version = "1-0"
+
 for i in range(1,len(sys.argv),2):
     try:
         if(sys.argv[i]=="-d"):
@@ -605,7 +609,6 @@ q.qremove_all_info("results")
 
 main()
 
-version = "1-0"
 with open(f"output_data/sigma_pion_corrs_{total_site[0]}x{total_site[3]}_msq_{m_sq}_lmbd_{lmbd}_alph_{alpha}_{datetime.datetime.now().date()}_{version}.bin", "wb") as output:
     pickle.dump({"accept_rates": accept_rates, 
                  "psq_list": psq_list, 
