@@ -788,7 +788,7 @@ template<typename Yl>
 void p_vector(const Yl teml)
 {
   std::cout << teml << " ";
-};
+}
 
 template<typename Ty>
 void p_vector(const std::vector<Ty> teml)
@@ -798,7 +798,7 @@ void p_vector(const std::vector<Ty> teml)
     p_vector(teml[i]);
   }
   std::cout << std::endl;
-};
+}
 
 template<typename Ty>
 void p_vector(const qlat::vector<Ty> teml)
@@ -808,7 +808,7 @@ void p_vector(const qlat::vector<Ty> teml)
     p_vector(teml[i]);
   }
   std::cout << std::endl;
-};
+}
 
 template<typename Ty>
 inline void random_Ty(Ty* a, long N0,int GPU=0, int seed = 0, const int mode = 0)

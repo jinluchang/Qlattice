@@ -550,8 +550,7 @@ EXPORT(merge_fields_field, {
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, merge_fields_field_ctype, pf.ctype, pf, pf_vec);
   return p_ret;
-}
-);
+})
 
 EXPORT(merge_fields_ms_field, {
   using namespace qlat;
