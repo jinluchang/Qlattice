@@ -60,9 +60,9 @@ def get_cexpr_meson_bk_bpi_corr():
     def calc_cexpr():
         exprs = [
                 mk_k_0_bar("t_2", True) * mk_bk_vv_aa("x") * mk_k_0("t_1")
-                + "k0_bar^dag * b_k * k0",
+                + "k0_bar^dag * b_k  * k0 ",
                 mk_pi_p("t_2", True) * mk_bpi_vv_aa("x") * mk_pi_m("t_1")
-                + "pi+^dag * b_pi * pi-",
+                + "pi+^dag    * b_pi * pi-",
                 ]
         cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
         q.displayln_info(display_cexpr(cexpr))
@@ -312,6 +312,8 @@ def run_job(job_tag, traj):
 
 def get_all_cexpr():
     benchmark_eval_cexpr(get_cexpr_meson_corr())
+    benchmark_eval_cexpr(get_cexpr_meson_f_corr())
+    benchmark_eval_cexpr(get_cexpr_meson_bk_bpi_corr())
 
 def test():
     q.qremove_all_info("locks")
