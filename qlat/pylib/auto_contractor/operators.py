@@ -66,58 +66,60 @@ def new_color_index():
 def mk_scalar(f1 : str, f2 : str, p : str, is_dagger = False):
     s = new_spin_index()
     c = new_color_index()
-    if is_dagger:
-        return Qb(f2, p, s, c) * Qv(f1, p, s, c)
-    else:
+    if not is_dagger:
         return Qb(f1, p, s, c) * Qv(f2, p, s, c)
+    else:
+        return Qb(f2, p, s, c) * Qv(f1, p, s, c)
 
 def mk_scalar5(f1 : str, f2 : str, p : str, is_dagger = False):
     s1 = new_spin_index()
     s2 = new_spin_index()
     c = new_color_index()
-    if is_dagger:
-        return -Qb(f2, p, s1, c) * G(5, s1, s2) * Qv(f1, p, s2, c)
-    else:
+    if not is_dagger:
         return Qb(f1, p, s1, c) * G(5, s1, s2) * Qv(f2, p, s2, c)
+    else:
+        return -Qb(f2, p, s1, c) * G(5, s1, s2) * Qv(f1, p, s2, c)
 
 def mk_vec_mu(f1 : str, f2 : str, p : str, mu, is_dagger = False):
     s1 = new_spin_index()
     s2 = new_spin_index()
     c = new_color_index()
-    if is_dagger:
+    if not is_dagger:
+        return Qb(f1, p, s1, c) * G(mu, s1, s2) * Qv(f2, p, s2, c) + f"vec_mu({f1},{f2},{p},{mu})"
+    else:
         if mu in [ 0, 1, 2, 5 ]:
             return -Qb(f2, p, s1, c) * G(mu, s1, s2) * Qv(f1, p, s2, c) + f"vec_mu({f1},{f2},{p},{mu})^dag"
         else:
             assert mu in [ 3, ]
             return Qb(f2, p, s1, c) * G(mu, s1, s2) * Qv(f1, p, s2, c) + f"vec_mu({f1},{f2},{p},{mu})^dag"
-    else:
-        return Qb(f1, p, s1, c) * G(mu, s1, s2) * Qv(f2, p, s2, c) + f"vec_mu({f1},{f2},{p},{mu})"
 
 def mk_vec5_mu(f1 : str, f2 : str, p : str, mu, is_dagger = False):
     s1 = new_spin_index()
     s2 = new_spin_index()
     s3 = new_spin_index()
     c = new_color_index()
-    if is_dagger:
+    if not is_dagger:
+        return Qb(f1, p, s1, c) * G(mu, s1, s2) * G(5, s2, s3) * Qv(f2, p, s3, c) + f"vec5_mu({f1},{f2},{p},{mu})"
+    else:
         if mu in [ 0, 1, 2, ]:
             return -Qb(f2, p, s1, c) * G(mu, s1, s2) * G(5, s2, s3) * Qv(f1, p, s3, c) + f"vec5_mu({f1},{f2},{p},{mu})^dag"
         else:
             assert mu in [ 3, 5, ]
             return Qb(f2, p, s1, c) * G(mu, s1, s2) * G(5, s2, s3) * Qv(f1, p, s3, c) + f"vec5_mu({f1},{f2},{p},{mu})^dag"
-    else:
-        return Qb(f1, p, s1, c) * G(mu, s1, s2) * G(5, s2, s3) * Qv(f2, p, s3, c) + f"vec5_mu({f1},{f2},{p},{mu})"
 
 def mk_meson(f1 : str, f2 : str, p : str, is_dagger = False):
+    # mk_meson("u", "d", p) => i ubar g5 d
+    # mk_meson("u", "d", p, True) => i dbar g5 u
     if not is_dagger:
         return sympy.I * mk_scalar5(f1, f2, p, is_dagger)
     else:
         return -sympy.I * mk_scalar5(f1, f2, p, is_dagger)
 
 def show_dagger(is_dagger):
-    if is_dagger:
-        return "^dag"
-    else:
+    if not is_dagger:
         return ""
+    else:
+        return "^dag"
 
 def mk_pi_0(p : str, is_dagger = False):
     return 1 / sympy.sqrt(2) * (mk_meson("u", "u", p, is_dagger) - mk_meson("d", "d", p, is_dagger)) + f"pi0({p}){show_dagger(is_dagger)}"
@@ -345,65 +347,81 @@ def mk_j1n1_mu(p : str, mu, is_dagger = False):
     # I=1 Gparity +
     return -mk_vec_mu("d", "u", p, mu, is_dagger) + f"j1n1_mu({p},{mu}){show_dagger(is_dagger)}"
 
+def mk_bk_vv_aa(p : str):
+    s = 0
+    for mu in range(4):
+        v1 = mk_vec_mu("s", "d", p, mu) - mk_vec5_mu("s", "d", p, mu)
+        v2 = mk_vec_mu("s", "d", p, mu) - mk_vec5_mu("s", "d", p, mu)
+        s = s + v1 * v2
+    return s + f"Ok_{{VV+AA}}"
+
+def mk_bpi_vv_aa(p : str):
+    s = 0
+    for mu in range(4):
+        v1 = mk_vec_mu("u", "d", p, mu) - mk_vec5_mu("u", "d", p, mu)
+        v2 = mk_vec_mu("u", "d", p, mu) - mk_vec5_mu("u", "d", p, mu)
+        s = s + v1 * v2
+    return s + f"Opi_{{VV+AA}}"
+
 def mk_4qOp_VV(f1 : str, f2 : str, f3 : str, f4 : str, p, is_scalar = False, parity = None, is_dagger = False):
     if parity == "odd":
         return 0
     if is_scalar:
         return mk_4qOp_SS(f1,f2,f3,f4,p,is_dagger)
-    sum = 0
+    s = 0
     for mu in range(4):
         save_sc_indices()
     for mu in range(4):
         restore_sc_indices()
-        sum = sum + mk_vec_mu(f1,f2,p,mu,is_dagger) * mk_vec_mu(f3,f4,p,mu,is_dagger)
-    sum.simplify()
+        s = s + mk_vec_mu(f1,f2,p,mu,is_dagger) * mk_vec_mu(f3,f4,p,mu,is_dagger)
+    s.simplify()
     jump_sc_indices()
-    return sum
+    return s
 
 def mk_4qOp_VA(f1 : str, f2 : str, f3 : str, f4 : str, p, is_scalar = False, parity = None, is_dagger = False):
     if parity == "even":
         return 0
     if is_scalar:
         return mk_4qOp_SP(f1,f2,f3,f4,p,is_dagger)
-    sum = 0
+    s = 0
     for mu in range(4):
         save_sc_indices()
     for mu in range(4):
         restore_sc_indices()
-        sum = sum + mk_vec_mu(f1,f2,p,mu,is_dagger) * mk_vec5_mu(f3,f4,p,mu,is_dagger)
-    sum.simplify()
+        s = s + mk_vec_mu(f1,f2,p,mu,is_dagger) * mk_vec5_mu(f3,f4,p,mu,is_dagger)
+    s.simplify()
     jump_sc_indices()
-    return sum
+    return s
 
 def mk_4qOp_AV(f1 : str, f2 : str, f3 : str, f4 : str, p, is_scalar = False, parity = None, is_dagger = False ):
     if parity == "even":
         return 0
     if is_scalar:
         return mk_4qOp_PS(f1,f2,f3,f4,p,is_dagger)
-    sum = 0
+    s = 0
     for mu in range(4):
         save_sc_indices()
     for mu in range(4):
         restore_sc_indices()
-        sum = sum + mk_vec5_mu(f1,f2,p,mu,is_dagger) * mk_vec_mu(f3,f4,p,mu,is_dagger)
-    sum.simplify()
+        s = s + mk_vec5_mu(f1,f2,p,mu,is_dagger) * mk_vec_mu(f3,f4,p,mu,is_dagger)
+    s.simplify()
     jump_sc_indices()
-    return sum
+    return s
 
 def mk_4qOp_AA(f1 : str, f2 : str, f3 : str, f4 : str, p, is_scalar = False, parity = None, is_dagger = False ):
     if parity == "odd":
         return 0
     if is_scalar:
         return mk_4qOp_PP(f1,f2,f3,f4,p,is_dagger)
-    sum = 0
+    s = 0
     for mu in range(4):
         save_sc_indices()
     for mu in range(4):
         restore_sc_indices()
-        sum = sum + mk_vec5_mu(f1,f2,p,mu,is_dagger) * mk_vec5_mu(f3,f4,p,mu,is_dagger)
-    sum.simplify()
+        s = s + mk_vec5_mu(f1,f2,p,mu,is_dagger) * mk_vec5_mu(f3,f4,p,mu,is_dagger)
+    s.simplify()
     jump_sc_indices()
-    return sum
+    return s
 
 def mk_4qOp_SS(f1 : str, f2 : str, f3 : str, f4 : str, p, is_dagger = False ):
     return mk_scalar(f1,f2,p,is_dagger) * mk_scalar(f3,f4,p,is_dagger)
