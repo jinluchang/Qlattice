@@ -347,22 +347,6 @@ def mk_j1n1_mu(p : str, mu, is_dagger = False):
     # I=1 Gparity +
     return -mk_vec_mu("d", "u", p, mu, is_dagger) + f"j1n1_mu({p},{mu}){show_dagger(is_dagger)}"
 
-def mk_bk_vv_aa(p : str):
-    s = 0
-    for mu in range(4):
-        v1 = mk_vec_mu("s", "d", p, mu) - mk_vec5_mu("s", "d", p, mu)
-        v2 = mk_vec_mu("s", "d", p, mu) - mk_vec5_mu("s", "d", p, mu)
-        s = s + v1 * v2
-    return s + f"Ok_{{VV+AA}}"
-
-def mk_bpi_vv_aa(p : str):
-    s = 0
-    for mu in range(4):
-        v1 = mk_vec_mu("u", "d", p, mu) - mk_vec5_mu("u", "d", p, mu)
-        v2 = mk_vec_mu("u", "d", p, mu) - mk_vec5_mu("u", "d", p, mu)
-        s = s + v1 * v2
-    return s + f"Opi_{{VV+AA}}"
-
 def mk_4qOp_VV(f1 : str, f2 : str, f3 : str, f4 : str, p, is_scalar = False, parity = None, is_dagger = False):
     if parity == "odd":
         return 0

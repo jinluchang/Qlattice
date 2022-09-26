@@ -55,6 +55,22 @@ def get_cexpr_meson_f_corr():
         return cexpr
     return cache_compiled_cexpr(calc_cexpr, f"cache/auto_contract_cexpr/meson_f_corr-cexpr")
 
+def mk_bk_vv_aa(p : str):
+    s = 0
+    for mu in range(4):
+        v1 = mk_vec_mu("s", "d", p, mu) - mk_vec5_mu("s", "d", p, mu)
+        v2 = mk_vec_mu("s", "d", p, mu) - mk_vec5_mu("s", "d", p, mu)
+        s = s + v1 * v2
+    return s + f"Ok_{{VV+AA}}"
+
+def mk_bpi_vv_aa(p : str):
+    s = 0
+    for mu in range(4):
+        v1 = mk_vec_mu("u", "d", p, mu) - mk_vec5_mu("u", "d", p, mu)
+        v2 = mk_vec_mu("u", "d", p, mu) - mk_vec5_mu("u", "d", p, mu)
+        s = s + v1 * v2
+    return s + f"Opi_{{VV+AA}}"
+
 @q.timer
 def get_cexpr_meson_bk_bpi_corr():
     def calc_cexpr():
