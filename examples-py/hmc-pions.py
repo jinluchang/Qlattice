@@ -139,9 +139,9 @@ class HMC:
         self.start_measurements = 0
         self.init_length = 20
         self.block_init_length = 20
-        self.block_length = 45
-        self.num_blocks = 1
-        self.final_block_length = 100
+        self.block_length = 95
+        self.num_blocks = 4
+        self.final_block_length = 200
         # A variable to store the estimated vacuum expectation value of sigma
         self.vev = 0
         self.vevs=[self.vev]
@@ -680,7 +680,7 @@ total_site = [8,8,8,16]
 mult = 4
 
 # The number of trajectories to calculate
-n_traj = 200
+n_traj = 500
 # The number of steps to take in a single trajectory
 steps = 20
 
