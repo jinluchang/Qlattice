@@ -4,6 +4,7 @@ import sys
 import numpy as np
 import pickle
 import datetime
+import glob
 
 import qlat as q
 
@@ -121,7 +122,7 @@ class Field_fft:
                 [field_ft.get_elem([0,0,0,0],1),field_ft.get_elem([1,0,0,0],1),field_ft.get_elem([0,2,0,0],1),field_ft.get_elem([3,0,0,0],1)]]
 
 class HMC:
-    def __init__(self, m_sq, lmbd, alpha, total_site, mult, steps):
+    def __init__(self, m_sq, lmbd, alpha, total_site, mult, steps, recalculate_masses, fresh_start):
         self.m_sq = m_sq
         self.lmbd = lmbd
         self.alpha = alpha
@@ -131,12 +132,21 @@ class HMC:
         self.V = self.Vx*total_site[3]
         self.total_site = total_site
         
+        self.fileid = f"{self.total_site[0]}x{self.total_site[3]}_msq_{self.m_sq}_lmbd_{self.lmbd}_alph_{self.alpha}_{datetime.datetime.now().date()}_{version}"
+        self.fileidwc = f"{self.total_site[0]}x{self.total_site[3]}_msq_{self.m_sq}_lmbd_{self.lmbd}_alph_{self.alpha}_*_{version}"
+        
+        if q.obtain_lock(f"locks/hmc_pions_lock_{self.fileidwc}"):
+            self.lock_obtained = True
+        else:
+            q.displayln_info("Failed to obtain lock for these parameters. Another job is already working on them.")
+            self.lock_obtained = False
+        
         # The number of trajectories to calculate before taking measurements
         self.start_measurements = 0
         self.init_length = 20
         self.block_init_length = 20
         self.block_length = 45
-        self.num_blocks = 4
+        self.num_blocks = 1
         self.final_block_length = 100
         # A variable to store the estimated vacuum expectation value of sigma
         self.vev = 0
@@ -146,6 +156,7 @@ class HMC:
         self.traj = 1
         self.estimate_masses = True
         self.safe_estimate_masses = True
+        self.masses_loaded = False
         self.perform_metro = False
         
         self.action = q.ScalarAction(m_sq, lmbd, alpha)
@@ -156,8 +167,6 @@ class HMC:
         
         # Create the scalar field and set all field values to 1
         self.field = Field_fft(geo,mult)
-        self.field.set_unit();
-        #self.field.load(f"output_data/hmc-pions-sigma-pi-corrs_{total_site[0]}x{total_site[3]}_msq_{m_sq}_lmbd_{lmbd}_alph_{alpha}.field")
         
         # Create a field to store field configurations predicted based on 
         # the initial momenta (with the assumption of harmonic evolution)
@@ -166,7 +175,16 @@ class HMC:
         
         # Create a field to store the masses used for Fourier acceleration
         self.masses = q.Field("double",geo,mult)
-        q.set_unit(self.masses);
+        
+        if(fresh_start):
+            self.masses.set_unit()
+            self.field.set_unit()
+        elif(recalculate_masses):
+            self.masses.set_unit()
+            self.load_field()
+        else:
+            self.load_field()
+            self.load_masses()
         
         # Create an auxiliary field to store the field as it evolves
         self.f0 = Field_fft(self.field.geo(), self.mult)
@@ -187,10 +205,12 @@ class HMC:
     
     @q.timer_verbose
     def run_traj(self):
-        if(self.traj<self.init_length):
+        if(not self.lock_obtained):
+            return
+        if(not self.masses_loaded and self.traj<self.init_length):
             self.run_hmc(self.rs.split("1hmc-{}".format(self.traj)))
             self.update_masses_w_safe_fit()
-        elif(self.traj<self.init_length+self.num_blocks*self.block_length):
+        elif(not self.masses_loaded and self.traj<self.init_length+self.num_blocks*self.block_length):
             self.perform_metro = True
             self.safe_estimate_masses = False
             if((self.traj-self.init_length) % self.block_length == 0 and (self.traj-self.init_length) > 0):
@@ -202,7 +222,7 @@ class HMC:
                 self.run_hmc(self.rs.split("2hmc-{}".format(self.traj)))
             else:
                 self.run_hmc_w_mass_est()
-        elif(self.traj<self.init_length+self.num_blocks*self.block_length+self.final_block_length):
+        elif(not self.masses_loaded and self.traj<self.init_length+self.num_blocks*self.block_length+self.final_block_length):
             if(self.traj - self.init_length - self.num_blocks*self.block_length == 0):
                 self.update_masses_w_fit()
                 self.vev=np.mean(self.vevs)
@@ -213,11 +233,13 @@ class HMC:
             else:
                 self.run_hmc_w_mass_est()
         else:
+            self.perform_metro = True
             self.estimate_masses = False
-            if(self.traj==self.init_length+self.num_blocks*self.block_length+self.final_block_length):
-                #self.update_masses_w_fit()
+            self.safe_estimate_masses = False
+            if(not self.masses_loaded and self.traj==self.init_length+self.num_blocks*self.block_length+self.final_block_length):
+                self.update_masses_w_fit()
                 self.vev=np.mean(self.vevs)
-                self.masses.save_double(f"output_data/masses_{self.total_site[0]}x{self.total_site[3]}_msq_{self.m_sq}_lmbd_{self.lmbd}_alph_{self.alpha}_{datetime.datetime.now().date()}_{version}.field")
+                self.masses.save_double(f"output_data/masses_{self.fileid}.field")
             self.run_hmc(self.rs.split("4hmc-{}".format(self.traj)))
         self.traj += 1
     
@@ -250,6 +272,41 @@ class HMC:
         self.field_mod_av.set_zero()
         self.field_force_cor.set_zero()
         self.divisor = 0
+    
+    def load_masses(self):
+        filename = self.find_latest(f"output_data/masses_{self.fileidwc}.field")
+        if(not filename==""):
+            self.masses.load_double(filename)
+            self.masses_loaded=True
+        else:
+            self.masses.set_unit()
+    
+    def load_field(self):
+        filename = self.find_latest(f"output_data/hmc_pions_{self.fileidwc}.field")
+        if(not filename==""):
+            self.field.load(filename)
+        else:
+            self.field.set_unit()
+    
+    def save_field(self):
+        self.field.get_field().save_double(f"output_data/hmc_pions_{self.fileid}.field")
+    
+    def find_latest(self, filewc):
+        files = glob.glob(filewc)
+        if not len(files):
+            return ""
+        datenos=[]
+        for f in files:
+            info=f.split("_")
+            for i in info:
+                date = i.split("-")
+                if(len(date)==3 and len(date[0])==4 and len(date[1])==2 and len(date[2])==2):
+                    try:
+                        datenos.append(float(date[0])+float(date[1])/12.0+float(date[2])/31.0)
+                        break
+                    except ValueError:
+                        pass
+        return files[datenos.index(max(datenos))]
     
     def run_hmc_w_mass_est(self):
         self.estimate_masses = True
@@ -406,6 +463,10 @@ class HMC:
         q.displayln_info(msg)
         q.displayln_info([masses.get_elem([0,0,0,0],0),masses.get_elem([1,0,0,0],0),masses.get_elem([4,0,0,0],0)])
         q.displayln_info([masses.get_elem([0,0,0,0],1),masses.get_elem([1,0,0,0],1),masses.get_elem([4,0,0,0],1)])
+    
+    def end(self):
+        q.release_lock()
+        self.lock_obtained = False
 
 def phi_squared(field,action):
     # Calculate the average value of phi^2
@@ -438,10 +499,32 @@ def update_theta_dist(elems,norm_factor):
         phi_sq+=elem**2
     for elem in elems[1:]:
         theta_dist[histogram_bin(np.pi/2+np.arccos(elems[0]/phi_sq**0.5),np.pi/2,6)]+=1.0/norm_factor
-    
+
+def save_observables():
+    with open(f"output_data/sigma_pion_corrs_{total_site[0]}x{total_site[3]}_msq_{m_sq}_lmbd_{lmbd}_alph_{alpha}_{datetime.datetime.now().date()}_{version}.bin", "wb") as output:
+        pickle.dump({"accept_rates": accept_rates, 
+                    "psq_list": psq_list, 
+                    "phi_list": phi_list, 
+                    "timeslices": timeslices, 
+                    "hm_timeslices": hm_timeslices,
+                    "ax_cur_timeslices": ax_cur_timeslices,
+                    "phi_sq_dist": phi_sq_dist, 
+                    "phi_i_dist": phi_i_dist,
+                    "theta_dist": theta_dist, 
+                    "psq_pred_list": psq_pred_list,
+                    "phi_pred_list": phi_pred_list, 
+                    "timeslices_pred": timeslices_pred,
+                    "hm_timeslices_pred": hm_timeslices_pred,
+                    "ax_cur_timeslices_pred": ax_cur_timeslices_pred,
+                    "fields": fields,
+                    "momentums": momentums,
+                    "field_pred": fields_pred},output)
+
 @q.timer_verbose
 def main():
-    hmc = HMC(m_sq,lmbd,alpha,total_site,mult,steps)
+    hmc = HMC(m_sq,lmbd,alpha,total_site,mult,steps, recalculate_masses, fresh_start)
+    if(not hmc.lock_obtained):
+        sys.exit()
     
     # Create the geometry for the axial current field
     geo_cur = q.Geometry(total_site, 3)
@@ -522,10 +605,15 @@ def main():
                             update_phi_i_dist(elems[2],hmc.vev,norm_factor)
                             update_phi_i_dist(elems[3],hmc.vev,norm_factor)
                             update_theta_dist(elems,norm_factor)
+        if traj%50 == 0:
+            hmc.save_field()
+            save_observables()
     
     # Saves the final field configuration so that the next run can be 
     # started where this one left off
-    hmc.field.get_field().save_double(f"output_data/hmc-pions-sigma-pi-corrs_{total_site[0]}x{total_site[3]}_msq_{m_sq}_lmbd_{lmbd}_alph_{alpha}.field")
+    hmc.save_field()
+    save_observables()
+    hmc.end()
 
 # Stores the average phi^2 for each trajectory
 psq_list=[]
@@ -560,7 +648,7 @@ total_site = [8,8,8,16]
 mult = 4
 
 # The number of trajectories to calculate
-n_traj = 500
+n_traj = 200
 # The number of steps to take in a single trajectory
 steps = 20
 
@@ -571,7 +659,10 @@ m_sq = -.4
 lmbd = 1.0
 alpha = 0.1
 
-version = "1-0"
+recalculate_masses = False
+fresh_start = False
+
+version = "1-2"
 
 for i in range(1,len(sys.argv),2):
     try:
@@ -590,8 +681,12 @@ for i in range(1,len(sys.argv),2):
             alpha = float(sys.argv[i+1])
         elif(sys.argv[i]=="-s"):
             steps = int(sys.argv[i+1])
+        elif(sys.argv[i]=="-r"):
+            recalculate_masses = True
+        elif(sys.argv[i]=="-R"):
+            fresh_start = True
     except:
-        raise Exception("Invalid arguments: use -d for lattice dimensions, -n for multiplicity, -t for number of trajectories, -m for mass squared, -l for lambda, -a for alpha, and -s for the number of steps in a trajectory. e.g. python hmc-pions.py -l 8x8x8x16 -n 4 -t 50 -m -1.0 -l 1.0 -a 0.1")
+        raise Exception("Invalid arguments: use -d for lattice dimensions, -n for multiplicity, -t for number of trajectories, -m for mass squared, -l for lambda, -a for alpha, -s for the number of steps in a trajectory, -r to force recalculating the masses, and -R to force recalculating the masses and the initial field. e.g. python hmc-pions.py -l 8x8x8x16 -n 4 -t 50 -m -1.0 -l 1.0 -a 0.1")
 
 size_node_list = [
         [1, 1, 1, 1],
@@ -607,27 +702,10 @@ q.show_machine()
 
 q.qremove_all_info("results")
 
-main()
-
-with open(f"output_data/sigma_pion_corrs_{total_site[0]}x{total_site[3]}_msq_{m_sq}_lmbd_{lmbd}_alph_{alpha}_{datetime.datetime.now().date()}_{version}.bin", "wb") as output:
-    pickle.dump({"accept_rates": accept_rates, 
-                 "psq_list": psq_list, 
-                 "phi_list": phi_list, 
-                 "timeslices": timeslices, 
-                 "hm_timeslices": hm_timeslices,
-                 "ax_cur_timeslices": ax_cur_timeslices,
-                 "phi_sq_dist": phi_sq_dist, 
-                 "phi_i_dist": phi_i_dist,
-                 "theta_dist": theta_dist, 
-                 "psq_pred_list": psq_pred_list,
-                 "phi_pred_list": phi_pred_list, 
-                 "timeslices_pred": timeslices_pred,
-                 "hm_timeslices_pred": hm_timeslices_pred,
-                 "ax_cur_timeslices_pred": ax_cur_timeslices_pred,
-                 "fields": fields,
-                 "momentums": momentums,
-                 "field_pred": fields_pred},output)
-
-q.timer_display()
+try:
+    main()
+    q.timer_display()
+except:
+    q.release_lock()
 
 q.end()
