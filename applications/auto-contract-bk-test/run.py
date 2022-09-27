@@ -74,7 +74,7 @@ def mk_bpi_vv_aa(p : str):
 def mk_bkpi1_vv_aa(p : str):
     s = 0
     for mu in range(4):
-        v1 = mk_vec_mu("d", "u", p, mu) - mk_vec5_mu("u'", "u", p, mu)
+        v1 = mk_vec_mu("d", "u", p, mu) - mk_vec5_mu("d", "u", p, mu)
         v2 = mk_vec_mu("u'", "s", p, mu) - mk_vec5_mu("u'", "s", p, mu)
         s = s + v1 * v2
     return s + f"Okpi_{{VV+AA}}"
