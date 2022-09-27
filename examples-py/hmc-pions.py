@@ -527,8 +527,36 @@ def save_observables():
                     "momentums": momentums,
                     "field_pred": fields_pred},output)
 
+def load_observables():
+    filename = f"output_data/sigma_pion_corrs_{total_site[0]}x{total_site[3]}_msq_{m_sq}_lmbd_{lmbd}_alph_{alpha}_{datetime.datetime.now().date()}_{version}.bin"
+    if len(glob.glob(filename)):
+        with open(filename,"rb") as input:
+            data = pickle.load(input)
+            accept_rates.extend(data["accept_rates"])
+            psq_list.extend(data["psq_list"])
+            phi_list.extend(data["phi_list"])
+            timeslices.extend(data["timeslices"])
+            hm_timeslices.extend(data["hm_timeslices"])
+            ax_cur_timeslices.extend(data["ax_cur_timeslices"])
+            phi_sq_dist.extend(data["phi_sq_dist"])
+            phi_i_dist.extend(data["phi_i_dist"])
+            theta_dist.extend(data["theta_dist"])
+            psq_pred_list.extend(data["psq_pred_list"])
+            phi_pred_list.extend(data["phi_pred_list"])
+            timeslices_pred.extend(data["timeslices_pred"])
+            hm_timeslices_pred.extend(data["hm_timeslices_pred"])
+            ax_cur_timeslices_pred.extend(data["ax_cur_timeslices_pred"])
+            fields.extend(data["fields"])
+            momentums.extend(data["momentums"])
+            fields_pred.extend(data["field_pred"])
+
 @q.timer_verbose
 def main():
+    # If observables have been saved from a previous calculation (on the
+    # same day), then load that file first
+    load_observables()
+    print(len(psq_list))
+    
     hmc = HMC(m_sq,lmbd,alpha,total_site,mult,steps, recalculate_masses, fresh_start)
     
     # Create the geometry for the axial current field
