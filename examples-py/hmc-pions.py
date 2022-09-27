@@ -738,4 +738,6 @@ main()
 
 q.timer_display()
 
+q.displayln_info(f"CHECK: Simulation finished successfully.")
+
 q.end()
