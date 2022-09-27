@@ -135,12 +135,6 @@ class HMC:
         self.fileid = f"{self.total_site[0]}x{self.total_site[3]}_msq_{self.m_sq}_lmbd_{self.lmbd}_alph_{self.alpha}_{datetime.datetime.now().date()}_{version}"
         self.fileidwc = f"{self.total_site[0]}x{self.total_site[3]}_msq_{self.m_sq}_lmbd_{self.lmbd}_alph_{self.alpha}_*_{version}"
         
-        if q.obtain_lock(f"locks/hmc_pions_lock_{self.fileidwc}"):
-            self.lock_obtained = True
-        else:
-            q.displayln_info("Failed to obtain lock for these parameters. Another job is already working on them.")
-            self.lock_obtained = False
-        
         # The number of trajectories to calculate before taking measurements
         self.start_measurements = 0
         self.init_length = 20
@@ -205,8 +199,6 @@ class HMC:
     
     @q.timer_verbose
     def run_traj(self):
-        if(not self.lock_obtained):
-            return
         if(not self.masses_loaded and self.traj<self.init_length):
             self.run_hmc(self.rs.split("1hmc-{}".format(self.traj)))
             self.update_masses_w_safe_fit()
@@ -274,7 +266,7 @@ class HMC:
         self.divisor = 0
     
     def load_masses(self):
-        filename = self.find_latest(f"output_data/masses_{self.fileidwc}.field")
+        filename = self.find_latest_date(f"output_data/masses_{self.fileidwc}.field")
         if(not filename==""):
             self.masses.load_double(filename)
             self.masses_loaded=True
@@ -282,16 +274,16 @@ class HMC:
             self.masses.set_unit()
     
     def load_field(self):
-        filename = self.find_latest(f"output_data/hmc_pions_{self.fileidwc}.field")
+        filename, self.traj = self.find_latest_traj(f"output_data/fields/hmc_pions_traj_*_{self.fileidwc}.field")
         if(not filename==""):
             self.field.load(filename)
         else:
             self.field.set_unit()
     
     def save_field(self):
-        self.field.get_field().save_double(f"output_data/hmc_pions_{self.fileid}.field")
+        self.field.get_field().save_double(f"output_data/fields/hmc_pions_traj_{self.traj}_{self.fileid}.field")
     
-    def find_latest(self, filewc):
+    def find_latest_date(self, filewc):
         files = glob.glob(filewc)
         if not len(files):
             return ""
@@ -307,6 +299,25 @@ class HMC:
                     except ValueError:
                         pass
         return files[datenos.index(max(datenos))]
+    
+    def find_latest_traj(self, filewc):
+        files = glob.glob(filewc)
+        if not len(files):
+            return "", 1
+        trajnos=[]
+        for f in files:
+            info=f.split("_")
+            for i in range(len(info)):
+                if(info[i]=="traj"):
+                    try:
+                        trajnos.append(int(info[i+1]))
+                        break
+                    except ValueError:
+                        pass
+                    except IndexError:
+                        pass
+        traj = max(trajnos)
+        return files[trajnos.index(traj)], traj
     
     def run_hmc_w_mass_est(self):
         self.estimate_masses = True
@@ -463,10 +474,6 @@ class HMC:
         q.displayln_info(msg)
         q.displayln_info([masses.get_elem([0,0,0,0],0),masses.get_elem([1,0,0,0],0),masses.get_elem([4,0,0,0],0)])
         q.displayln_info([masses.get_elem([0,0,0,0],1),masses.get_elem([1,0,0,0],1),masses.get_elem([4,0,0,0],1)])
-    
-    def end(self):
-        q.release_lock()
-        self.lock_obtained = False
 
 def phi_squared(field,action):
     # Calculate the average value of phi^2
@@ -523,8 +530,6 @@ def save_observables():
 @q.timer_verbose
 def main():
     hmc = HMC(m_sq,lmbd,alpha,total_site,mult,steps, recalculate_masses, fresh_start)
-    if(not hmc.lock_obtained):
-        sys.exit()
     
     # Create the geometry for the axial current field
     geo_cur = q.Geometry(total_site, 3)
@@ -613,7 +618,6 @@ def main():
     # started where this one left off
     hmc.save_field()
     save_observables()
-    hmc.end()
 
 # Stores the average phi^2 for each trajectory
 psq_list=[]
@@ -702,10 +706,8 @@ q.show_machine()
 
 q.qremove_all_info("results")
 
-try:
-    main()
-    q.timer_display()
-except:
-    q.release_lock()
+main()
+
+q.timer_display()
 
 q.end()
