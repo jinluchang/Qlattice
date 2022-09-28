@@ -1112,7 +1112,7 @@ qrename: 'results/data4.qar.v18.acc' 'results/data4.qar.v18'
 qrename: 'results/data4.qar.v19.acc' 'results/data4.qar.v19'
 qrename: 'results/data4.qar.v20.acc' 'results/data4.qar.v20'
 qrename: 'results/data4.qar.v21.acc' 'results/data4.qar.v21'
-Cache: 'QarReadCache': 0 / 16 [1] to add
+Cache: 'QarReadCache': 0 / 64 [1] to add
 QFile: open 'results/data4.qar' with 'r'.
 QFile: open 'results/data4.qar.v1' with 'r'.
 QFile: open 'results/data4.qar.v2' with 'r'.
@@ -1190,7 +1190,7 @@ qrename: 'results/data5/ld-10000.lat.acc' 'results/data5/ld-10000.lat'
 QFile: open 'results/data5/ld-10000.lat' with 'r'.
 QFile: close 'results/data5/ld-10000.lat' with 'r'.
 qcopy_file: 'results/data4/ld-1000/ld-1-1000.lat' results/data5/ld-1000/ld-1-1000.lat.
-Cache: 'QarReadCache': 1 / 16 [1] to add
+Cache: 'QarReadCache': 1 / 64 [1] to add
 QFile: open 'results/data5/ld-1000/ld-1-1000.lat.acc' with 'w'.
 QFile: close 'results/data5/ld-1000/ld-1-1000.lat.acc' with 'w'.
 qrename: 'results/data5/ld-1000/ld-1-1000.lat.acc' 'results/data5/ld-1000/ld-1-1000.lat'
@@ -1651,7 +1651,7 @@ check_all_files_crc32_info: summary for path='results'
   111 B5B9ADDC  fn='results/data5/ld-1000/ld-1-1000.lat'
   112 3D91F296  fn='results/data5/ld-10000.lat'
 CHECK: finished successfully.
-Cache: 'QarReadCache': 2 / 16 [1] clear
+Cache: 'QarReadCache': 2 / 64 [1] clear
 QFile: close 'results/data4.qar' with 'r'.
 QFile: close 'results/data4.qar.v1' with 'r'.
 QFile: close 'results/data4.qar.v2' with 'r'.
