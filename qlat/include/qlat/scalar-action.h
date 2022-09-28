@@ -380,6 +380,32 @@ struct ScalarAction {
       }
     });
   }
+  
+  inline void get_polar_field(Field<double>& polar_fields, const Field<double>& sf)
+  {
+	// Sets the fields corresponding to polar coordinates based on the 
+    // provided cartesian field configuration sf.
+    TIMER("ScalarAction.get_polar_field");
+    const Geometry geo = sf.geo();
+    qassert(geo.multiplicity == 4);
+    qacc_for(index, geo.local_volume(), {
+      Coordinate xl = geo.coordinate_from_index(index);
+      Vector<double> pf_v = polar_fields.get_elems(xl);
+      qassert(pf_v.size()==4);
+      double w = sf.get_elem(xl,0);
+      double x = sf.get_elem(xl,1);
+      double y = sf.get_elem(xl,2);
+      double z = sf.get_elem(xl,3);
+      // The formula to be inverted is
+      // x_0 = r * cos(phi/r)
+      // x_i = r * sin(phi/r) * phi_i/phi
+      pf_v[0] = std::pow(w*w+x*x+y*y+z*z,0.5);
+      double phi = pf_v[0]*std::acos(w/pf_v[0]);
+      pf_v[1] = phi*x/(pf_v[0]*std::sin(phi/pf_v[0]));
+      pf_v[2] = phi*y/(pf_v[0]*std::sin(phi/pf_v[0]));
+      pf_v[3] = phi*z/(pf_v[0]*std::sin(phi/pf_v[0]));
+    });
+  }
    
 };
 

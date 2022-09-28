@@ -7,6 +7,7 @@ tests = make-sample-gauge-field.log \
 		lat-io.log \
 		field-utils.log \
 		qcd-utils.log \
+		hmc-pions.log \
 		hmc-pure-gauge.log \
 		field-selection.log \
 		selected-field.log \

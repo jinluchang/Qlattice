@@ -206,3 +206,18 @@ EXPORT(hmc_predict_field_scalar_action, {
   sa.hmc_predict_field(sf_ft, sm_ft, masses, vev_sigma);
   Py_RETURN_NONE;
 })
+
+EXPORT(get_polar_field_scalar_action, {
+  using namespace qlat;
+  PyObject* p_sa = NULL;
+  PyObject* p_pf = NULL;
+  PyObject* p_sf = NULL;
+  if (!PyArg_ParseTuple(args, "OOO", &p_sa, &p_pf, &p_sf)) {
+    return NULL;
+  }
+  ScalarAction& sa = py_convert_type<ScalarAction>(p_sa);
+  Field<double>& pf = py_convert_type<Field<double>>(p_pf);
+  const Field<double>& sf = py_convert_type<Field<double>>(p_sf);
+  sa.get_polar_field(pf, sf);
+  Py_RETURN_NONE;
+})
