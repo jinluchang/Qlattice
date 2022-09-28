@@ -139,8 +139,8 @@ class HMC:
         self.start_measurements = 0
         self.init_length = 20
         self.block_init_length = 20
-        self.block_length = 95
-        self.num_blocks = 4
+        self.block_length = 45
+        self.num_blocks = 1
         self.final_block_length = 200
         # A variable to store the estimated vacuum expectation value of sigma
         self.vev = 0
@@ -275,6 +275,7 @@ class HMC:
     
     def load_field(self):
         filename, self.traj = self.find_latest_traj(f"output_data/fields/hmc_pions_traj_*_{self.fileidwc}.field")
+        self.init_length+=self.traj-1
         if(not filename==""):
             self.field.load(filename)
         else:
@@ -515,6 +516,7 @@ def save_observables():
                     "timeslices": timeslices, 
                     "hm_timeslices": hm_timeslices,
                     "ax_cur_timeslices": ax_cur_timeslices,
+                    "polar_timeslices": polar_timeslices,
                     "phi_sq_dist": phi_sq_dist, 
                     "phi_i_dist": phi_i_dist,
                     "theta_dist": theta_dist, 
@@ -538,6 +540,7 @@ def load_observables():
             timeslices.extend(data["timeslices"])
             hm_timeslices.extend(data["hm_timeslices"])
             ax_cur_timeslices.extend(data["ax_cur_timeslices"])
+            polar_timeslices.extend(data["polar_timeslices"])
             phi_sq_dist.extend(data["phi_sq_dist"])
             phi_i_dist.extend(data["phi_i_dist"])
             theta_dist.extend(data["theta_dist"])
@@ -566,6 +569,8 @@ def main():
     #
     hm_field = Field_fft(hmc.field.geo(),4)
     hm_field_pred = Field_fft(hmc.field.geo(),4)
+    #
+    polar_field = q.Field("double",hmc.field.geo())
     
     for traj in range(1,n_traj+1):
         # Run the HMC algorithm to update the field configuration
@@ -606,6 +611,9 @@ def main():
         hm_field_pred.set_field_ft(hmc.field_predicted.get_field_ft())
         hm_field_pred.remove_low_modes()
         hm_tslices_pred = hm_field_pred.get_field().glb_sum_tslice()
+        #
+        hmc.action.get_polar_field(polar_field, hmc.field.get_field())
+        polar_tslices = polar_field.glb_sum_tslice()
                 
         # Calculate the axial current of the current field configuration
         # and save it in axial_current
@@ -625,6 +633,7 @@ def main():
             ax_cur_timeslices_pred.append(tslices_ax_cur_predicted.to_numpy())
             hm_timeslices.append(hm_tslices.to_numpy())
             hm_timeslices_pred.append(hm_tslices_pred.to_numpy())
+            polar_timeslices.append(polar_tslices.to_numpy())
         if traj>hmc.init_length+hmc.num_blocks*hmc.block_length+hmc.final_block_length:
             field = hmc.field.get_field()
             norm_factor = hmc.V*(n_traj+1-hmc.init_length-hmc.num_blocks*hmc.block_length-hmc.final_block_length)
@@ -663,6 +672,8 @@ hm_timeslices_pred=[]
 # axial currents for each trajectory
 ax_cur_timeslices=[]
 ax_cur_timeslices_pred=[]
+# Stores the timeslice sums of the polar-coordinate fields
+polar_timeslices=[]
 # Save the acceptance rates
 accept_rates=[]
 fields=[]
@@ -674,7 +685,7 @@ phi_i_dist=[0.0]*64
 theta_dist=[0.0]*64
 
 # The lattice dimensions
-total_site = [8,8,8,16]
+total_site = [4,4,4,8]
 
 # The multiplicity of the scalar field
 mult = 4
@@ -687,14 +698,14 @@ steps = 20
 # Use action for a Euclidean scalar field. The Lagrangian will be:
 # (1/2)*[sum i]|dphi_i|^2 + (1/2)*m_sq*[sum i]|phi_i|^2
 #     + (1/24)*lmbd*([sum i]|phi_i|^2)^2
-m_sq = -.4
-lmbd = 1.0
+m_sq = -8.
+lmbd = 32.0
 alpha = 0.1
 
 recalculate_masses = False
 fresh_start = False
 
-version = "1-2"
+version = "1-3"
 
 for i in range(1,len(sys.argv),2):
     try:
