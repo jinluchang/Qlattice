@@ -2222,41 +2222,6 @@ void get_phases(std::vector<vector_gpu<Ty >>& phases, const std::vector<Coordina
   });
 }
 
-template <class Ty, int civ>
-void apply_phases(qlat::FieldM<Ty, civ >& src, std::vector<qlat::FieldM<Ty, civ>>& res, std::vector<vector_gpu<Ty >>& phases)
-{
-  qassert(src.initialized);
-  const Geometry& geo = src.geo();
-  const unsigned int Nmom = phases.size();
-
-  qlat::vector_acc<Ty* > Pphase = EigenM_to_pointers(phases);
-  Ty* psrc = (Ty*) qlat::get_data(src).data();
-
-  qlat::vector_acc<Ty* > pres;pres.resize(Nmom);
-  if(res.size() != Nmom){res.resize(Nmom);}
-  for(unsigned int mi=0;mi<Nmom;mi++){
-    if(!res[mi].initialized){res[mi].init(geo);}
-    pres[mi] = (Ty*) qlat::get_data(res[mi]).data();
-  }
-
-  qlat::vector_acc<int > nv, Nv, mv;geo_to_nv(geo, nv, Nv, mv);
-  const long vol = Nv[0]*Nv[1]*Nv[2];
-  const int   Nt = Nv[3];
-
-  qacc_for(xi, long(vol),{
-    for(int momi = 0;momi < Nmom; momi++)
-    {
-      const Ty& ph   = Pphase[momi][xi];
-      for(int ti=0;ti<Nt;ti++)
-      for(int ci=0;ci<civ;ci++){
-        pres[momi][(ti*vol+xi)*civ + ci] = psrc[(ti*vol+xi)*civ + ci] * ph;
-      }
-    }
-  });
-
-}
-
-
 ////phases for momentum data
 template<typename Ty>
 void get_phases(std::vector<Ty >& phases, Coordinate& pL, const Coordinate& src, const Coordinate& Lat)

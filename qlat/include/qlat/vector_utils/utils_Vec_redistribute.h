@@ -65,8 +65,6 @@ struct Vec_redistribute
   void reorder(Ty *sendbuf,Ty *recvbuf,int b0_or,int civa_or,int flag= 0);
   ////void reorder(Ftype *sendbuf,Ftype *recvbuf,int b0_or,int civa_or,qlat::vector<int > secT_or,int flag= 0);
 
-  void print_send_size();
-
   std::vector<int > map_mpi_vec;
 
   /////std::vector<MPI_Comm > vec_comm_list;
@@ -275,15 +273,6 @@ inline void Vec_redistribute::set_mem(int b0_or,int civa_or)
   flag_set_mem = 1;
 }
 
-void Vec_redistribute::print_send_size(){
-  printf("rank %3d, ", fd->rank);
-  for(int n = 0; n < Nmpi/mt; n++){
-    printf("to %3d, %d %d;", n, sendM[n], recvM[n]);
-  }
-  printf("\n");
-}
-
-
 template<typename Ty>
 void Vec_redistribute::call_MPI(int flag)
 {
@@ -323,6 +312,7 @@ void Vec_redistribute::call_MPI(int flag)
   ////======Copy data
   if(copy_same_node){
   int ranklocal = map_mpi_vec[fd->rank];
+  //int ranklocal = fd->rank;
   qassert(currsend[ranklocal] == currrecv[ranklocal]);
   if(currsend[ranklocal] != 0){
     cpy_data_thread(&res[currrpls[ranklocal]], &src[currspls[ranklocal]], currsend[ranklocal], GPU, false);
@@ -334,7 +324,6 @@ void Vec_redistribute::call_MPI(int flag)
   {MPI_Alltoallv(src,(int*) &sendM[0],(int*) &splsM[0], curr,
                  res,(int*) &recvM[0],(int*) &rplsM[0], curr, vec_comm);}
 
-  ///--gpu-bind=none for perlmuter, --gpu-bind=single:1 will fail
   if(mode_MPI == 1)
   {
     std::vector<MPI_Request> send_reqs(Nmpi/mt);
@@ -347,7 +336,6 @@ void Vec_redistribute::call_MPI(int flag)
     for(int n = 0; n < Nmpi/mt; n++){
       if(recvM[n]!=0){MPI_Recv( &res[currrpls[n]], recvM[n], curr, n, mpi_tag + n, vec_comm, MPI_STATUS_IGNORE);}
     }    
-
     MPI_Waitall(c1, send_reqs.data(), MPI_STATUS_IGNORE);
   }
   qacc_barrier(dummy);
