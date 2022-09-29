@@ -295,6 +295,21 @@ struct smear_fun{
     vec_rot->reorder(gfT.data(), gfT_buf.data(), 1, (dir_max*2)*9 ,   0);
     gauge.copy_from(gfT);
 
+    //Ty tmp = gauge.norm();
+    //print0("v %.3e %.3e \n" , tmp.real(), tmp.imag());
+    //for(long vi=0;vi<NVmpi;vi++){
+    //  Ty tmp = gfT.data()[vi*Ndata];
+    //  printf("v %.3e %.3e \n" , tmp.real(), tmp.imag());
+    //}
+    /////update gf to each MPI core
+
+
+    ////qassert(false);///Need match with CPU
+    ///////T distributed, spatial z,y,x
+    //Nv.resize(4);nv.resize(4);mv.resize(4);
+    //for(int i=0;i<4;i++){Nv[i]=geo.node_site[i];nv[i] = geo.node_site[i] * geo.geon.size_node[i];}
+    //for(int i=0;i<4;i++){mv[i] = nv[i]/Nv[i];}
+
     Nvol     = Nv[3] * nv[2]*nv[1]*nv[0];
     Nvol_ext = Nv[3] * nv[2]*nv[1]*nv[0];
 
@@ -302,6 +317,7 @@ struct smear_fun{
     for(int i=0;i<3;i++){Nn[i] = nv[i];}
     Nn[3] = Nv[3];
 
+    //std::vector<qlat::vector_acc<long > > map_bufV;
     map_bufV.resize(2);
     for(unsigned int i=0;i<map_bufV.size();i++){map_bufV[i].resize(Nvol       );}
     #pragma omp parallel for
@@ -1009,7 +1025,7 @@ void smear_propagator_gwu_convension_inner(Ty* prop, const GaugeFieldT<Tg >& gf,
     qassert(!smear_in_time_dir);
 
     Ty* res = smf.prop.data();
-    cpy_data_thread(res, src, smf.prop.size(), 1);
+    cpy_data_thread(res, src, smf.prop.size());
     smf.mv_idx.dojob(res, res, 1, smf.NVmpi, Nvol_pre*c0*3, 1,   groupP, true);
     {TIMERC("Vec prop");smf.vec_rot->reorder(res, smf.prop_buf.data(), 1, c0*3*groupP ,   0);}
     src = smf.prop.data();
@@ -1023,7 +1039,9 @@ void smear_propagator_gwu_convension_inner(Ty* prop, const GaugeFieldT<Tg >& gf,
     Ty* res = smf.prop.data();
     {TIMERC("Vec prop");smf.vec_rot->reorder(res, smf.prop_buf.data(), 1, c0*3*groupP , 100);}
     smf.mv_idx.dojob(res, res, 1, smf.NVmpi, Nvol_pre*c0*3, 0,  groupP , true);
-    cpy_data_thread(prop, smf.prop.data(), smf.prop.size(), 1);
+    ////src = (Ty*) qlat::get_data(prop).data();
+    ////src = prop;
+    cpy_data_thread(prop, smf.prop.data(), smf.prop.size());
   }
   /////rotate_prop(prop, 1);
 }
