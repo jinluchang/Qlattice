@@ -2256,6 +2256,22 @@ void apply_phases(qlat::FieldM<Ty, civ >& src, std::vector<qlat::FieldM<Ty, civ>
 
 }
 
+template <class Ty, int civ>
+void multi_factor(qlat::FieldM<Ty, civ >& src, qlat::FieldM<Ty, civ>& res, const Ty& phases)
+{
+  qassert(src.initialized);
+  const Geometry& geo = src.geo();
+  if(!res.initialized){res.init(geo);}
+
+  const Ty* psrc = (Ty*) qlat::get_data(src).data();
+  Ty* pres = (Ty*) qlat::get_data(res).data();
+
+  qacc_for(xi, geo.local_volume(),{
+    for(int ci=0;ci<civ;ci++){
+      res[xi*civ + ci] = src[xi*civ + ci] * phases;
+    }
+  });
+}
 
 ////phases for momentum data
 template<typename Ty>
@@ -2277,26 +2293,6 @@ void get_phases(std::vector<Ty >& phases, Coordinate& pL, const Coordinate& src,
     for(int i=0;i<3;i++){v0 += (2.0*PI * src[i] * pos[i]/Lat[i]);}
 
     phases[isp] = Ty(std::cos(v0), -1.0* std::sin(v0));
-  }
-}
-
-template<typename Ty>
-void apply_phases(Ty* res, const std::vector<Ty >& phases, const long size, const long nt, const long t0)
-{
-  const long vol = phases.size();
-  std::vector<Ty > buf;buf.resize(size*nt*vol);
-  #pragma omp parallel for
-  for(long isp =0;isp<size*nt*vol;isp++)
-  {
-    buf[isp] = res[isp];
-  }
-
-  for(long s=0;s<size;s++)
-  for(long t=0;t<nt;t++)
-  #pragma omp parallel for
-  for(long isp =0;isp<vol;isp++)
-  {
-    res[(s*nt+ (t-t0+nt)%nt )*vol + isp] = phases[isp] * buf[(s*nt+t)*vol + isp];
   }
 }
 

@@ -96,10 +96,16 @@ void sum_all_size(Ty *src,Ty *sav,long size, int GPU=0, MPI_Comm* commp=NULL)
       cpy_data_thread(sav, src, size, GPU, true);return;}
   }
 
-  qlat::vector_gpu<Ty > res;
+  const int iomp = omp_get_thread_num(); ////each thread will have it's own buf
+  Ty* buf_res;int GPU_set = GPU;
+  #ifndef QLAT_USE_ACC
+  GPU_set = 0;
+  #endif
+  VectorGPUKey gkey(size_t(size)*sizeof(Ty), ssprintf("sum_all_size_buf_%d", iomp), GPU_set); ////read buffers for global sum
   if(src == sav){
-    res.resize(size, GPU);
-  }else{res.p = sav;}////small modify for pointers
+    const vector_gpu<char >& tmp = get_vector_gpu_plan<char >(gkey);
+    buf_res = (Ty*) tmp.p;
+  }else{buf_res = sav;}////small modify for pointers
 
   MPI_Datatype curr = MPI_DOUBLE;unsigned int M_size = sizeof(double);
   M_size = get_MPI_type<Ty >(curr);
@@ -117,7 +123,7 @@ void sum_all_size(Ty *src,Ty *sav,long size, int GPU=0, MPI_Comm* commp=NULL)
   #endif
   #endif
 
-  if(do_copy == false){tem_src = src;tem_res = res.data();}
+  if(do_copy == false){tem_src = src;tem_res = buf_res;}
   if(do_copy == true ){
     tem_sHIP.resize(size);tem_rHIP.resize(size);
 
@@ -129,21 +135,15 @@ void sum_all_size(Ty *src,Ty *sav,long size, int GPU=0, MPI_Comm* commp=NULL)
   else{MPI_Allreduce(tem_src,tem_res, size * fac, curr, MPI_SUM, *commp);}
 
   if(do_copy == true){
-    cpy_data_thread(res.data(), &tem_rHIP[0], size, 2, true);
+    cpy_data_thread(buf_res, &tem_rHIP[0], size, 2, true);
   }
 
 
   if(src == sav)
   {
-    cpy_data_thread(sav, res.data(), size, GPU, true);
-    //#ifdef QLAT_USE_ACC
-    //if(GPU==0){memcpy(sav,res.data(),size*sizeof(Ty));}  ////free(res);
-    //if(GPU==1){cudaMemcpy(sav, res.data(), size*sizeof(Ty), cudaMemcpyDeviceToDevice);} ///gpuFree(res);res = NULL;
-    //#else
-    //memcpy(sav,res.data(),size*sizeof(Ty));////free(res);res = NULL;
-    //#endif
+    cpy_data_thread(sav, buf_res, size, GPU, true);
   }
-  if(src != sav){res.p = NULL;}
+  if(src != sav){safe_free_vector_gpu_plan<char>(gkey);}
 }
 
 template<typename Ty>

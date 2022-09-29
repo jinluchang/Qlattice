@@ -12,6 +12,7 @@
 
 ////needed for norm calculation
 #include "utils_reduce_vec.h"
+#define MAX_VECTOR_GPU_BUF 100
 
 namespace qlat{
 
@@ -331,6 +332,96 @@ qacc void set_zero(vector_gpu<Ty>& vec)
 {
   vec.set_zero();
 }
+
+/////vector buffers related
+struct VectorGPUKey {
+  std::string tag;
+  size_t size;
+  bool GPU;
+  VectorGPUKey()
+  {
+    size = 0; GPU = false;tag = std::string("");
+  }
+  VectorGPUKey(size_t size_, std::string tag_, bool GPU_)
+  {
+    size = size_; GPU = GPU_;tag = tag_;
+  }
+
+};
+
+inline bool operator<(const VectorGPUKey& x, const VectorGPUKey& y)
+{
+  //if(x.size < y.size ){  return true;}
+  //if(y.size < x.size ){  return false;}
+
+  if(x.GPU < y.GPU ){  return true;}
+  if(y.GPU < x.GPU ){  return false;}
+
+  if(x.tag.compare(y.tag) < 0){return true;}
+  if(y.tag.compare(x.tag) < 0){return false;}
+
+  return false;
+}
+
+
+template <typename Ty >
+inline vector_gpu<Ty > make_vec_gpu(const VectorGPUKey& gkey)
+{
+  vector_gpu<Ty > buf;
+  //const long MAX = MAX_VECTOR_GPU_BUF * 1024 * 1024;
+  //if(gkey.size * sizeof(Ty) > MAX)
+  //{
+  //  buf.resize(gkey.size, gkey.GPU)
+  //}else{
+  //  buf.resize(MAX, gkey.GPU)
+  //}
+  return buf;
+}
+
+template <typename Ty >
+inline Cache<VectorGPUKey, vector_gpu<Ty > >& get_vector_gpu_cache()
+{
+  static Cache<VectorGPUKey, vector_gpu<Ty > > cache("VectorGPUKey", 16);
+  return cache;
+}
+
+template <typename Ty >
+inline const vector_gpu<Ty >& get_vector_gpu_plan(const VectorGPUKey& gkey)
+{
+  if (!get_vector_gpu_cache<Ty>().has(gkey)) {
+    get_vector_gpu_cache<Ty>()[gkey] = make_vec_gpu<Ty>(gkey);
+  }
+  vector_gpu<Ty >& buf = get_vector_gpu_cache<Ty>()[gkey];
+
+  if(buf.size() < gkey.size){
+    buf.resize(gkey.size, gkey.GPU);
+  }
+  return buf;
+}
+
+template <typename Ty >
+inline void safe_free_vector_gpu_plan(const VectorGPUKey& gkey)
+{
+  if ( get_vector_gpu_cache<Ty>().has(gkey)) {
+    vector_gpu<Ty >& buf = get_vector_gpu_cache<Ty>()[gkey];
+    size_t MAX = MAX_VECTOR_GPU_BUF;
+    std::string val = get_env(std::string("q_mem_vec_gpu"));
+    if(val != ""){MAX = stringtonum(val);}
+    MAX = MAX * 1024 * 1024;  ////to MB
+
+    if(buf.size() * sizeof(Ty) > MAX){
+      buf.resize(MAX);
+    }
+  }
+}
+
+//template <typename Ty >
+//inline void safe_release_vector_gpu(vector_gpu<Ty >& src)
+//{
+//  vector_gpu<Ty >& get_vector_gpu_plan(gkey);
+//
+//}
+
 
 }
 
