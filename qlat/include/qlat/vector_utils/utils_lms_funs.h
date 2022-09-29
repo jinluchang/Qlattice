@@ -21,6 +21,8 @@
 
 namespace qlat{
 
+////buffers of lms included
+template<typename Ty >
 struct lms_para{
 
   Coordinate ini_pos;
@@ -37,6 +39,7 @@ struct lms_para{
 
   int mode_eig_sm;
   int ionum;
+  int ckpoint;
 
   int do_all_low ;
 
@@ -49,6 +52,16 @@ struct lms_para{
 
   std::string INFO;
   std::vector<std::string > INFOA;
+
+  ////buffers
+  qlat::vector_acc<Ty > EresH;qlat::vector_acc<Ty > EresL;qlat::vector_acc<Ty > EresA;
+  qlat::vector_gpu<Ty > stmp, low_prop, high_prop;
+  std::vector<qlat::FieldM<Ty , 12*12> > src_prop;
+  std::vector<qlat::vector_gpu<Ty > > FFT_data;
+  qlat::vector_gpu<Ty > resTa;
+  qlat::vector_gpu<Ty > resZero;
+  std::vector<qlat::FieldM<Ty, 1> > Vzero_data;
+  std::vector<qlat::vector_acc<Ty > > Eprop;
 
   /////initial with src noise
 
@@ -70,6 +83,7 @@ struct lms_para{
     ionum            = 16;
 
     mom_cut          = 4;
+    ckpoint          = 1;
 
     name_mom_vecs    = std::string("NONE");
     name_zero_vecs   = std::string("NONE");
@@ -208,7 +222,7 @@ void prop_to_corr_mom0(std::vector<qlat::vector_acc<Ty > >& Eprop, qlat::vector_
 ////      src without smear, mode_sm = 2 smtopt, mode_sm = 3  smtosm
 template<typename Ty, typename Ta>
 void point_corr(qnoiT& src, std::vector<qpropT >& propH,
-    std::vector<double >& massL, eigen_ov& ei, fft_desc_basic& fd, corr_dat<Ta >& res, lms_para& srcI, int shift_t = 1)
+    std::vector<double >& massL, eigen_ov& ei, fft_desc_basic& fd, corr_dat<Ta >& res, lms_para<Ty >& srcI, momentum_dat& mdat, int shift_t = 1)
 {
   TIMER("point corr");
   print_time();
@@ -247,26 +261,46 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
   if(srcI.save_zero_corr == 1){save_zero_corr = true;}
   ////save fft vecs (all of them, no need to shrink mem now)
 
+  qlat::vector_acc<Ty >& EresH = srcI.EresH;
+  qlat::vector_acc<Ty >& EresL = srcI.EresL;
+  qlat::vector_acc<Ty >& EresA = srcI.EresA;
+
+  qlat::vector_gpu<Ty >& stmp = srcI.stmp;
+  qlat::vector_gpu<Ty >& low_prop = srcI.low_prop;
+  qlat::vector_gpu<Ty >& high_prop = srcI.high_prop;
+  std::vector<qlat::FieldM<Ty , 12*12> >& src_prop = srcI.src_prop;
+  std::vector<qlat::vector_gpu<Ty > >& FFT_data = srcI.FFT_data;
+
+  qlat::vector_gpu<Ty >& resTa = srcI.resTa;
+  qlat::vector_gpu<Ty >& resZero = srcI.resZero;
+
+  std::vector<qlat::FieldM<Ty, 1> >& Vzero_data = srcI.Vzero_data;
+  std::vector<qlat::vector_acc<Ty > >& Eprop = srcI.Eprop;
+
+  if(src_prop.size() != 1){src_prop.resize(1);}
+  if(FFT_data.size() != 2){FFT_data.resize(2);}
+  ///qlat::vector_gpu<Ty > stmp, low_prop, high_prop;
+  ///std::vector<qlat::FieldM<Ty , 12*12> > src_prop;src_prop.resize(1);
+  ///std::vector<qlat::vector_gpu<Ty > > FFT_data;FFT_data.resize(1 + 1);
+
   /////need modification of positions
-  qlat::vector_acc<Ty > EresH;qlat::vector_acc<Ty > EresL;qlat::vector_acc<Ty > EresA;
+  //qlat::vector_acc<Ty > EresH;qlat::vector_acc<Ty > EresL;qlat::vector_acc<Ty > EresA;
+  //qlat::vector_gpu<Ty > resTa;
+  //qlat::vector_gpu<Ty > resZero;
+
   if(save_zero_corr){
   EresH.resize(32 * nmass * fd.nt);clear_qv(EresH );
   EresL.resize(32 * nmass * fd.nt);clear_qv(EresL );
   EresA.resize(32 * nmass * fd.nt);clear_qv(EresA );}
-  qlat::vector_gpu<Ty > resTa;const int nvecs = 32 * nmass;
-  qlat::vector_gpu<Ty > resZero;
-
+  const int nvecs = 32 * nmass;
   /////do corr
-  std::vector<qlat::vector_acc<Ty > > Eprop;
 
-  qlat::vector_gpu<Ty > stmp, low_prop, high_prop;
   /////copy src vectors
   stmp.resize(Size_prop);
 
   copy_eigen_src_to_FieldM(high_prop, propH, ei.b_size, fd, 1, GPU, rotate);
   low_prop.resize(high_prop.size());
 
-  std::vector<qlat::FieldM<Ty , 12*12> > src_prop;src_prop.resize(1);
   /////set memory for low_prop
   int Nlms = 1;
   if(srcI.lms == -1){Nlms = Ngrid.size();}
@@ -274,8 +308,7 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
   if(srcI.lms >  0 ){Nlms = srcI.lms;}
 
   const int mc = srcI.mom_cut*2 + 1;
-  momentum_dat mdat(geo, srcI.mom_cut);
-  std::vector<qlat::vector_gpu<Ty > > FFT_data;FFT_data.resize(1 + 1);
+  ////momentum_dat mdat(geo, srcI.mom_cut);
   //std::vector<qlat::vector_gpu<Ty > > FFT_data;FFT_data.resize(1 + Nlms);
   //qlat::vector_gpu<Ty > FFT_data;long Nfdata = long(32)*massL.size()*fd.nt*mc*mc*mc ;
   //qlat::vector_gpu<Ty > FFT_data_high;
@@ -283,7 +316,7 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
 
   ///////check production for this source
   ///////low mode ignored if check point enabled
-  if(savezero){
+  if(savezero and srcI.ckpoint == 1){
     bool flag_do_job = false;
     if(get_file_size_MPI(srcI.name_zero_vecs.c_str()) == 0){flag_do_job = true;}
     if(flag_do_job == false){
@@ -454,10 +487,15 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
   }
 
   if(savezero){
-    std::vector<qlat::FieldM<Ty, 1> > Vzero_data;
-    Vzero_data.resize(32*nmass);
+    ////std::vector<qlat::FieldM<Ty, 1> > Vzero_data;
+    if(int(Vzero_data.size() ) != 32*nmass){
+      Vzero_data.resize(32*nmass);
+      for(unsigned int iv=0;iv<Vzero_data.size();iv++){
+        if(!Vzero_data[iv].initialized){Vzero_data[iv].init(geo);}
+      }
+    }
     for(unsigned int iv=0;iv<Vzero_data.size();iv++){
-      Vzero_data[iv].init(geo);Ty* res = (Ty*) qlat::get_data(Vzero_data[iv]).data();
+      Ty* res = (Ty*) qlat::get_data(Vzero_data[iv]).data();
       cpy_data_thread(res, &resZero[iv*geo.local_volume()], geo.local_volume(), 1, true);
     }
     save_qlat_noises(srcI.name_zero_vecs.c_str(), Vzero_data, true, POS_LIST);
