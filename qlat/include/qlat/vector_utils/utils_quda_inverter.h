@@ -2116,6 +2116,11 @@ void quda_inverter::prepare_low_prop(int mode )
     quda::blas::ax(-1.0, (*gtmp1).Odd());
     (*gtmp1).Even() = (*gsrc).Even();
 
+    if(gtmp1D == NULL){gtmp1D = new quda::ColorSpinorField(cs_gpuD);}
+    if(gtmp1F == NULL){gtmp1F = new quda::ColorSpinorField(cs_gpuF);}
+    //if(gtmp2D == NULL){gtmp2D = new quda::ColorSpinorField(cs_gpuD);}
+    //if(gtmp2F == NULL){gtmp2F = new quda::ColorSpinorField(cs_gpuF);}
+
     for(int kf=0;kf<2;kf++)
     {
       std::vector<quda::ColorSpinorField *> eig_vecs;
@@ -2127,11 +2132,16 @@ void quda_inverter::prepare_low_prop(int mode )
       std::vector<quda::Complex> B(n_defl);
 
       // 1. Take block inner product: (V_i)^dag * vec = A_i
-      std::vector<quda::ColorSpinorField *> src_;src_.push_back(&(gtmp1->Even()));
-      ///= const_cast<decltype(src) &>(src);
-      quda::blas::cDotProduct(A.data(), eig_vecs, src_);
-      src_[0] = &(gtmp1->Odd());
-      quda::blas::cDotProduct(B.data(), eig_vecs, src_);
+      std::vector<quda::ColorSpinorField *> buf;
+      ////if(kf == 0){src_.push_back(&(gtmp1->Even()));}
+      if(kf == 0){buf.push_back(gtmp1D);}
+      if(kf == 1){buf.push_back(gtmp1F);}
+      *buf[0] = gtmp1->Even();
+
+      quda::blas::cDotProduct(A.data(), eig_vecs, buf);
+      ////src_[0] = &(gtmp1->Odd());
+      *buf[0] = gtmp1->Odd();
+      quda::blas::cDotProduct(B.data(), eig_vecs, buf);
       quda::Complex ev;
       for (int i = 0; i < n_defl; i++) {
         if(kf==0){ev = evalsK[i];}
@@ -2142,10 +2152,14 @@ void quda_inverter::prepare_low_prop(int mode )
         A[i] = ( 2*m * ai - bi ) / (4*m*m + l*l);
         B[i] = -1.0 * ai/(4.0*m*m + l*l) - 2*m * bi/(l*l * (4*m*m + l*l));
       }
-      std::vector<quda::ColorSpinorField *> sol;sol.push_back(&(gres->Even()));
-      quda::blas::caxpy(A.data(), eig_vecs, sol);
-      sol[0] = &(gres->Odd());
-      quda::blas::caxpy(B.data(), eig_vecs, sol);
+
+      ////std::vector<quda::ColorSpinorField *> sol;
+      //sol.push_back(&(gres->Even()));
+      quda::blas::caxpy(A.data(), eig_vecs, buf);
+      gres->Even() = *buf[0];
+      //sol[0] = &(gres->Odd());
+      quda::blas::caxpy(B.data(), eig_vecs, buf);
+      gres->Odd() = *buf[0];
     }
 
     quda::blas::zero((*gtmp1).Odd());
@@ -2179,7 +2193,6 @@ void quda_inverter::prepare_low_prop(int mode )
 
 void quda_inverter::deflate(quda::ColorSpinorField &sol, const quda::ColorSpinorField &src, const std::vector<quda::ColorSpinorField *> &evecs, const std::vector<quda::Complex> &evals, bool accumulate)
 {
-  TIMERB("quda deflate");
   // FIXME add support for mixed-precison dot product to avoid this copy
   //if (src.Precision() != evecs[0]->Precision() && !tmp1) {
   //  quda::ColorSpinorParam param(*evecs[0]);
@@ -2224,6 +2237,7 @@ void quda_inverter::deflate(quda::ColorSpinorField &sol, const quda::ColorSpinor
 void quda_inverter::deflate(std::vector<quda::ColorSpinorField *> &sol, const std::vector<quda::ColorSpinorField *> &src,
                             const std::vector<quda::ColorSpinorField *> &evecs, const std::vector<quda::Complex> &evals, bool accumulate)
 {
+  TIMER("quda deflate");
   int n_defl = evecs.size();
   if( n_defl == 0){ return; }
 
