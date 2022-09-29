@@ -65,6 +65,8 @@ struct Vec_redistribute
   void reorder(Ty *sendbuf,Ty *recvbuf,int b0_or,int civa_or,int flag= 0);
   ////void reorder(Ftype *sendbuf,Ftype *recvbuf,int b0_or,int civa_or,qlat::vector<int > secT_or,int flag= 0);
 
+  void print_send_size();
+
   std::vector<int > map_mpi_vec;
 
   /////std::vector<MPI_Comm > vec_comm_list;
@@ -85,7 +87,6 @@ struct Vec_redistribute
 inline Vec_redistribute::Vec_redistribute(fft_desc_basic &fds, bool GPU_set)
 {
   TIMERA("Construct Vec_redistribute");
-  (void)GPU_set;
   fd = &fds;
   //GPU = GPU_set;
   #ifndef QLAT_USE_ACC
@@ -273,6 +274,15 @@ inline void Vec_redistribute::set_mem(int b0_or,int civa_or)
   flag_set_mem = 1;
 }
 
+void Vec_redistribute::print_send_size(){
+  printf("rank %3d, ", fd->rank);
+  for(int n = 0; n < Nmpi/mt; n++){
+    printf("to %3d, %d %d;", n, sendM[n], recvM[n]);
+  }
+  printf("\n");
+}
+
+
 template<typename Ty>
 void Vec_redistribute::call_MPI(int flag)
 {
@@ -312,7 +322,6 @@ void Vec_redistribute::call_MPI(int flag)
   ////======Copy data
   if(copy_same_node){
   int ranklocal = map_mpi_vec[fd->rank];
-  //int ranklocal = fd->rank;
   qassert(currsend[ranklocal] == currrecv[ranklocal]);
   if(currsend[ranklocal] != 0){
     cpy_data_thread(&res[currrpls[ranklocal]], &src[currspls[ranklocal]], currsend[ranklocal], GPU, false);
@@ -324,10 +333,11 @@ void Vec_redistribute::call_MPI(int flag)
   {MPI_Alltoallv(src,(int*) &sendM[0],(int*) &splsM[0], curr,
                  res,(int*) &recvM[0],(int*) &rplsM[0], curr, vec_comm);}
 
+  ///--gpu-bind=none for perlmuter, --gpu-bind=single:1 will fail
   if(mode_MPI == 1)
   {
     std::vector<MPI_Request> send_reqs(Nmpi/mt);
-    int mpi_tag = omp_get_thread_num()*Nmpi + map_mpi_vec[fd->rank];
+    int mpi_tag =  map_mpi_vec[fd->rank];
     int c1 = 0;
     for(int n = 0; n < Nmpi/mt; n++){
       if(sendM[n]!=0){MPI_Isend(&src[currspls[n]], sendM[n], curr, n, mpi_tag + n, vec_comm, &send_reqs[c1]);c1 += 1;}
@@ -336,6 +346,22 @@ void Vec_redistribute::call_MPI(int flag)
     for(int n = 0; n < Nmpi/mt; n++){
       if(recvM[n]!=0){MPI_Recv( &res[currrpls[n]], recvM[n], curr, n, mpi_tag + n, vec_comm, MPI_STATUS_IGNORE);}
     }    
+
+    //const int Nsend = 10000;
+    //qlat::vector_gpu<Ty > srcT;srcT.resize(Nsend * Nmpi, true);
+    //qlat::vector_gpu<Ty > resT;srcT.resize(Nsend * Nmpi, true);
+
+    //std::vector<MPI_Request> send_reqs(Nmpi);
+    //int mpi_tag = fd->rank;
+    //int c1 = 0;
+    //for(int n = 0; n < Nmpi; n++){
+    //  {MPI_Isend(&srcT[Nsend*n], Nsend, curr, n, mpi_tag + n, get_comm(), &send_reqs[c1]);c1 += 1;}
+    //}
+
+    //for(int n = 0; n < Nmpi; n++){
+    //  {MPI_Recv( &res[Nsend*n], Nsend, curr, n, mpi_tag + n, get_comm(), MPI_STATUS_IGNORE);}
+    //}    
+
     MPI_Waitall(c1, send_reqs.data(), MPI_STATUS_IGNORE);
   }
   qacc_barrier(dummy);
@@ -420,7 +446,6 @@ struct Rotate_vecs{
   bool flag_mem_set;
 
   Rotate_vecs(fft_desc_basic &fd_set, bool GPU_set=true):fd(),fd0(){
-    (void)GPU_set;
     #ifndef QLAT_USE_ACC
     GPU = false;
     #else

@@ -19,6 +19,9 @@ int main(int argc, char* argv[])
   nz = in.nz;
   nt = in.nt;
 
+  int ckpoint = 1;
+  in.find_para(std::string("ckpoint"), ckpoint);
+
   int icfg  = in.icfg;
   int ionum = in.ionum;
 
@@ -27,6 +30,8 @@ int main(int argc, char* argv[])
   Geometry geo;
   geo.init(total_site, 1); 
   fflush_MPI();
+
+  momentum_dat mdat(geo, in.mom_cut);
 
   {
   io_vec io_use(geo,ionum);
@@ -134,7 +139,7 @@ int main(int argc, char* argv[])
       sprintf(names, in.output_vec.c_str(), icfg, si);
       save_vecs_lms = true;
     }
-    lms_para srcI;srcI.init();
+    lms_para<Complexq > srcI;srcI.init();
     srcI.ionum = in.ionum;
     srcI.do_all_low = in.do_all_low;
     srcI.lms      = in.lms;
@@ -143,6 +148,7 @@ int main(int argc, char* argv[])
     srcI.SRC_PROP_WITH_LOW = in.SRC_PROP_WITH_LOW;
     srcI.INFOA.push_back(INFO_Mass);
     srcI.mom_cut = in.mom_cut;
+    srcI.ckpoint = ckpoint;
     if(save_vecs_lms){
       sprintf(namep, "%s.pt", names);
       srcI.name_mom_vecs = std::string(namep);
@@ -154,7 +160,7 @@ int main(int argc, char* argv[])
       srcI.save_zero_corr = 0;
     }
 
-    point_corr(noi, FpropV, massL, ei, fd, res, srcI, 1);
+    point_corr(noi, FpropV, massL, ei, fd, res, srcI, mdat, 1);
 
     if(sink_step != 0){
       srcI.lms      = in.lms;
@@ -179,7 +185,7 @@ int main(int argc, char* argv[])
         srcI.name_zero_vecs = std::string(namep);
       }
 
-      point_corr(noi, FpropV, massL, ei, fd, res, srcI, 1);
+      point_corr(noi, FpropV, massL, ei, fd, res, srcI, mdat, 1);
     }
   }
 

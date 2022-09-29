@@ -125,8 +125,7 @@ struct momentum_dat{
     const long Nvol = geo.local_volume();
     int nvec = resV.size()/Nvol;
     resF.resize(Mvol * nvec);
-
-    sum_value_mpi(nvec);
+    ////sum_value_mpi(nvec);
     nvec_copy = nvec;
 
     const long* A = mapA.data();
