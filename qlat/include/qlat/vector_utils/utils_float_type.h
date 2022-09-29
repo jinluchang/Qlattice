@@ -131,7 +131,7 @@ inline void print_NONE(const char *filename)
 #endif
 
 
-#define ckpoint abort_r("check point \n");
+#define CKPOINT abort_r("CHECK POINT \n");
 
 #ifdef QLAT_USE_ACC
 // *************** FOR ERROR CHECKING *******************
