@@ -87,6 +87,7 @@ struct Vec_redistribute
 inline Vec_redistribute::Vec_redistribute(fft_desc_basic &fds, bool GPU_set)
 {
   TIMERA("Construct Vec_redistribute");
+  (void)GPU_set;
   fd = &fds;
   //GPU = GPU_set;
   #ifndef QLAT_USE_ACC
@@ -347,21 +348,6 @@ void Vec_redistribute::call_MPI(int flag)
       if(recvM[n]!=0){MPI_Recv( &res[currrpls[n]], recvM[n], curr, n, mpi_tag + n, vec_comm, MPI_STATUS_IGNORE);}
     }    
 
-    //const int Nsend = 10000;
-    //qlat::vector_gpu<Ty > srcT;srcT.resize(Nsend * Nmpi, true);
-    //qlat::vector_gpu<Ty > resT;srcT.resize(Nsend * Nmpi, true);
-
-    //std::vector<MPI_Request> send_reqs(Nmpi);
-    //int mpi_tag = fd->rank;
-    //int c1 = 0;
-    //for(int n = 0; n < Nmpi; n++){
-    //  {MPI_Isend(&srcT[Nsend*n], Nsend, curr, n, mpi_tag + n, get_comm(), &send_reqs[c1]);c1 += 1;}
-    //}
-
-    //for(int n = 0; n < Nmpi; n++){
-    //  {MPI_Recv( &res[Nsend*n], Nsend, curr, n, mpi_tag + n, get_comm(), MPI_STATUS_IGNORE);}
-    //}    
-
     MPI_Waitall(c1, send_reqs.data(), MPI_STATUS_IGNORE);
   }
   qacc_barrier(dummy);
@@ -446,6 +432,7 @@ struct Rotate_vecs{
   bool flag_mem_set;
 
   Rotate_vecs(fft_desc_basic &fd_set, bool GPU_set=true):fd(),fd0(){
+    (void)GPU_set;
     #ifndef QLAT_USE_ACC
     GPU = false;
     #else
