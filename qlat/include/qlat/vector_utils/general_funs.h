@@ -88,7 +88,7 @@ unsigned int get_MPI_type(MPI_Datatype& curr)
 template<typename Ty>
 void sum_all_size(Ty *src,Ty *sav,long size, int GPU=0, MPI_Comm* commp=NULL)
 {
-  TIMER("global sum sum_all_size");
+  TIMERE("global sum sum_all_size");
   if(size == 0){return ;}
   if(qlat::get_num_node() == 1){
     if(src == sav){return;}
