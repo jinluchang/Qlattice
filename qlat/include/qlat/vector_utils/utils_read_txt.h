@@ -675,11 +675,9 @@ struct inputpara{
     if(find_para(std::string("FILE_ENDIAN"),FILE_ENDIAN)==0)FILE_ENDIAN  = std::string("NONE");
     if(find_para(std::string("VECS_TYPE"),VECS_TYPE)==0)VECS_TYPE  = std::string("NONE");
 
-    long maxline = 10000;
-    if(long(read_f.size()) < maxline){maxline = read_f.size();}
-    for(long li=0;li<maxline;li++){
+    for(int li=0;li<1000;li++){
       std::string tem = std::string("NONE");
-      char mname[500];sprintf(mname, "INFOA%02d", int(li));
+      char mname[500];sprintf(mname, "INFOA%02d", li);
       if(find_para(std::string(mname), tem)!=0){INFOA.push_back(tem);}
     }
 
@@ -825,7 +823,7 @@ inline size_t vec_head_write(inputpara &in, const char* filename, int type=-1, b
     qassert(in.INFO_LIST.size() < LINE_LIMIT );
     fprintf(filew, "INFO_LIST %s \n", in.INFO_LIST.c_str());
 
-    qassert(in.INFOA.size() < 10000);
+    qassert(in.INFOA.size() < 1000);
     for(unsigned int li=0;li<in.INFOA.size();li++){
       qassert(in.INFOA[li].size() < LINE_LIMIT );
       fprintf(filew, "INFOA%02d %s \n", li, in.INFOA[li].c_str());

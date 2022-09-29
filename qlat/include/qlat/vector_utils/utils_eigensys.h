@@ -70,7 +70,6 @@ struct eigen_ov {
   int npos_Eigenbuf;int npos_Eigendyn;
 
   Vlocal alpha;
-  Vlocal alpha_buf;
   Vlocal alpha_bfac;
   Vlocal alpha_list;
   Vlocal eval_list;
@@ -233,9 +232,7 @@ eigen_ov::eigen_ov(qlat::fft_desc_basic &fd,int n_vec_or, long long bsize0, doub
 
   enable_smearE = false;
 
-  alpha.resize(0);
-  alpha_buf.resize(0);
-  alpha_bfac.resize(0);
+  alpha.resize(0);alpha_bfac.resize(0);
   alpha_list.resize(0);eval_list.resize(0);
 
   ncutbuf = n_vec;
@@ -348,9 +345,7 @@ void eigen_ov::clear_GPU_mem()
   for(LInt i=0;i<Eigenbuf_Sm.size();i++){Eigenbuf_Sm.resize(0);}  Eigenbuf_Sm.resize(0);
   for(LInt i=0;i<Eigendyn_Sm.size();i++){Eigendyn_Sm.resize(0);}  Eigendyn_Sm.resize(0);
 
-  alpha.resize(0);
-  alpha_buf.resize(0);
-  alpha_bfac.resize(0);
+  alpha.resize(0);alpha_bfac.resize(0);
   alpha_list.resize(0);eval_list.resize(0);
 
   /////ptmp.resize(0);stmp.resize(0);
@@ -734,13 +729,10 @@ void eigen_ov::initialize_mass(std::vector<double> &mass, int Ns, int one_minus_
 
   LInt nlarge = ncutgpu;if(ncutbuf > ncutgpu)nlarge = ncutbuf;
 
-  alpha.resize(2*nlarge*Ns);
-  alpha_buf.resize(alpha.size());
-  alpha_bfac.resize(2*nlarge*Ns*bfac);
+  alpha.resize(2*nlarge*Ns);alpha_bfac.resize(2*nlarge*Ns*bfac);
   alpha_list.resize(2*nlarge * mN*Ns);
 
   zero_Ty(alpha.data(), alpha.size(), 1, false);
-  zero_Ty(alpha_buf.data(), alpha_buf.size(), 1, false);
   zero_Ty(alpha_bfac.data(), alpha_bfac.size(), 1, false);
   zero_Ty(alpha_list.data(), alpha_list.size(), 1, false);
 
@@ -804,7 +796,6 @@ void prop_L_device(eigen_ov& ei,Complexq *src,Complexq *props, int Ns, std::vect
   if(mode_sm == 3){sm0 = 1; sm1 = 1;}
 
   Complexq* alpha       = ei.alpha.data();
-  Complexq* alpha_buf   = ei.alpha_buf.data();
   Complexq* alpha_bfac  = ei.alpha_bfac.data();
   Complexq* alpha_list  = ei.alpha_list.data();
   Complexq* eval_list   = ei.eval_list.data();
@@ -870,7 +861,7 @@ void prop_L_device(eigen_ov& ei,Complexq *src,Complexq *props, int Ns, std::vect
 
     {
     TIMERA("Global sum");
-    sum_all_size((Ftype*) (ei.alpha.data()), (Ftype*) (ei.alpha_buf.data()), 2*(2*ncur*Ns), 1);
+    sum_all_size((Ftype*) (ei.alpha.data()), 2*(2*ncur*Ns), 1);
     }
 
     ////print_sum(ei.alpha.data(), ei.alpha.size(), "=====alpha", 1);
@@ -889,9 +880,9 @@ void prop_L_device(eigen_ov& ei,Complexq *src,Complexq *props, int Ns, std::vect
       if(kn + nini >= n_vec){alpha_list[offA] = 0.0;}else{
       Complexq li = eval_list[mi*n_vec + kn + nini];
       if(kn+nini >= num_zero){
-        alpha_list[offA] = Two2*(li.real()*alpha_buf[(chi*ncur+kn)*Ns+is]+Iimag*li.imag()*alpha_buf[((1-chi)*ncur+kn)*Ns+is]);}
+        alpha_list[offA] = Two2*(li.real()*alpha[(chi*ncur+kn)*Ns+is]+Iimag*li.imag()*alpha[((1-chi)*ncur+kn)*Ns+is]);}
       if(kn+nini  < num_zero){
-        alpha_list[offA] = li*alpha_buf[(chi*ncur+kn)*Ns+is];}
+        alpha_list[offA] = li*alpha[(chi*ncur+kn)*Ns+is];}
       }
     });
     }

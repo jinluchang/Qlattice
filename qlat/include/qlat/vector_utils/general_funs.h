@@ -90,16 +90,25 @@ void sum_all_size(Ty *src,Ty *sav,long size, int GPU=0, MPI_Comm* commp=NULL)
 {
   TIMER("global sum sum_all_size");
   if(size == 0){return ;}
+  qlat::vector_gpu<Ty > res;//// buf.resize(size, GPU);
+  ///Ty *res;/////qlat::vector<Ty >buf;
+  if(src == sav){
+    res.resize(size, GPU);
+    //if(GPU == 0){res = (Ty *)aligned_alloc_no_acc(size*sizeof(Ty));}
+    //else{gpuMalloc(res, size, Ty);}
+  }else{res.p = sav;}////small modify for pointers
   if(qlat::get_num_node() == 1){
     if(src == sav){return;}
     if(src != sav){
-      cpy_data_thread(sav, src, size, GPU, true);return;}
+      cpy_data_thread(sav, src, size, GPU, true);
+      ////#ifdef QLAT_USE_ACC
+      ////if(GPU==0)memcpy(sav,src,size*sizeof(Ty));
+      ////if(GPU==1){cudaMemcpy(sav, src, size*sizeof(Ty), cudaMemcpyDeviceToDevice);}
+      ////#else
+      ////memcpy(sav, src, size*sizeof(Ty));
+      ////#endif
+    return;}
   }
-
-  qlat::vector_gpu<Ty > res;
-  if(src == sav){
-    res.resize(size, GPU);
-  }else{res.p = sav;}////small modify for pointers
 
   MPI_Datatype curr = MPI_DOUBLE;unsigned int M_size = sizeof(double);
   M_size = get_MPI_type<Ty >(curr);
