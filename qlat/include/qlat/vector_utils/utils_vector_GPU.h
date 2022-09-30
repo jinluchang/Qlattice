@@ -367,6 +367,7 @@ inline bool operator<(const VectorGPUKey& x, const VectorGPUKey& y)
 template <typename Ty >
 inline vector_gpu<Ty > make_vec_gpu(const VectorGPUKey& gkey)
 {
+  (void)gkey;
   vector_gpu<Ty > buf;
   //const long MAX = MAX_VECTOR_GPU_BUF * 1024 * 1024;
   //if(gkey.size * sizeof(Ty) > MAX)

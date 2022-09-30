@@ -327,6 +327,7 @@ void MPI_Alltoallv_Send_Recv(char* src, Iy0* send, Iy1* spls, char* res, Iy0* re
 template<typename Ty>
 void MPI_Alltoallv_mode(Ty* src0, int* send, int* spls, Ty* res0, int* recv, int* rpls, MPI_Comm& comm, int mode=0, int GPU = 0)
 {
+  (void)GPU;
   Ty* src = NULL;Ty* res = NULL;
 
   std::vector<Ty > tem_src,tem_res;
@@ -804,6 +805,7 @@ void p_vector(const qlat::vector<Ty> teml)
 template<typename Ty>
 inline void random_Ty(Ty* a, long N0,int GPU=0, int seed = 0, const int mode = 0)
 {
+  (void)GPU;
   if(N0 == 0)return;
   qlat::RngState rs(qlat::get_id_node() + 1 + seed);
 

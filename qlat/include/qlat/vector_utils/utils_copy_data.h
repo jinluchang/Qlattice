@@ -188,6 +188,8 @@ void cpy_data_thread(T0* Pres, const T1* Psrc, const TInt Nvol, int GPU=1, bool 
 template <typename Ty>
 void touch_GPU(Ty* Mres, long long Msize,long long offM = 0,long long size = -1, int mode = 1)
 {
+  (void)Mres;
+  (void)mode;
   if(offM <= 0)return;
   long long Total = size;
 
@@ -207,6 +209,8 @@ void touch_GPU(Ty* Mres, long long Msize,long long offM = 0,long long size = -1,
 template <typename Ty>
 void untouch_GPU(Ty* Mres , long long Msize)
 {
+  (void)Mres;
+  (void)Msize;
   #ifdef QLAT_USE_ACC
   size_t Total = Msize;
   int gpu_id = -1;
@@ -215,10 +219,6 @@ void untouch_GPU(Ty* Mres , long long Msize)
   #endif
 }
 
-
-
 }
-
-
 
 #endif

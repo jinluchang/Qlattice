@@ -139,6 +139,9 @@ template<typename Ty>
 inline void reduce_gpu2d_6(const Ty* src,Ty* res,long n, int nv=1,
     int thread_pow2 = 8,int divide=128,int fac=16)
 {
+  (void)thread_pow2;
+  (void)divide;
+  (void)fac;
   #ifdef QLAT_USE_ACC
   //long nthreads = qlat::qacc_num_threads();
   long nthreads = 32;
@@ -205,7 +208,7 @@ template<typename Ty>
 inline unsigned long reduce_T(const Ty *src,Ty *res,const unsigned long n,const int nv,const unsigned long Lx){
   unsigned long Ny = n/Lx;
   unsigned long Nx = ((n+Ny-1)/Ny);
-  qacc_for(index, Ny, {
+  qacc_for(index, (long)Ny, {
     for(int iv=0;iv<nv;iv++){
       res[iv*Ny+index] = 0;
       unsigned long tid = iv*n + index*Nx;
@@ -230,6 +233,9 @@ template<typename Ty>
 inline void reduce_gpu(const Ty *src,Ty *res,const long n,const int nv=1,
   const int Ld=128,const int Ld0=8,const int fac=16)
 {
+  (void)Ld;
+  (void)Ld0;
+  (void)fac;
   #ifdef QLAT_USE_ACC
   //const int cutN = qlat::qacc_num_threads()*fac;
   const int cutN = 32*fac;

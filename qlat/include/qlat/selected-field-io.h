@@ -197,7 +197,7 @@ crc32_t field_crc32(const SelectedField<M>& sf, const FieldSelection& fsel,
   const Geometry& geo = sf.geo();
   qassert(geo.is_only_local());
   qassert(fsel.f_rank.geo() == geo_remult(geo));
-  const Coordinate total_site = geo.total_site();
+  // const Coordinate total_site = geo.total_site();
   const Coordinate new_size_node = new_size_node_ != Coordinate()
                                        ? new_size_node_
                                        : get_default_serial_new_size_node(geo);

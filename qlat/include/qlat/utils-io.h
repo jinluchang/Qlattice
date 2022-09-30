@@ -82,16 +82,6 @@ inline void check_time_limit(const double budget = get_default_budget())
   }
 }
 
-inline void check_time_limit(bool timer_display,
-                             const double budget = get_default_budget())
-// obsolete
-{
-  displayln_info(
-      "WARNING: do not use this function. "
-      "check_time_limit(timer_display,budget)");
-  check_time_limit(budget, timer_display);
-}
-
 inline double& get_lock_expiration_time_limit()
 // obsolete
 {

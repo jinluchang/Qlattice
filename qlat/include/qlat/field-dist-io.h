@@ -225,7 +225,7 @@ inline void dist_read_geo_info(Geometry& geo, int& sizeof_M,
                                const std::string& path)
 {
   TIMER("dist_read_geo_info");
-  int multiplicity;
+  int multiplicity = 0;
   Coordinate size_node;
   Coordinate node_site;
   if (get_id_node() == 0) {

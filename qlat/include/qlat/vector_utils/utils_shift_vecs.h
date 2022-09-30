@@ -206,7 +206,7 @@ void shift_vec::shift_set()
     int s0=fd.Pos0[rank][dir];int ds = sign;int Ns = Nv[dir];
 
     rank_sr[diru].resize(2);
-    int count = 0;
+    // int count = 0;
     for(int ranki = 0;ranki<Nmpi;ranki++)
     {
       int flag = 1;
@@ -221,12 +221,12 @@ void shift_vec::shift_set()
         if(fd.Pos0[ranki][dir] == (s0 + ds*Ns + nv[dir])%nv[dir])
         {
           rank_sr[diru][0] = ranki;
-          count += 1;
+          // count += 1;
         }
         if(fd.Pos0[ranki][dir] == (s0 - ds*Ns + nv[dir])%nv[dir])
         {
           rank_sr[diru][1] = ranki;
-          count += Nmpi;
+          // count += Nmpi;
         }
       }
     }
