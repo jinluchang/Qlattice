@@ -250,7 +250,6 @@ M field_get_elem(const Field<M>& f, const Coordinate& xg, const int m)
     ret = f.get_elem(xl, m);
   } else {
     memset(&ret, 0, sizeof(M));
-    // set_zero(get_data_one_elem(ret));
   }
   glb_sum_byte_vec(get_data_one_elem(ret));
   return ret;
