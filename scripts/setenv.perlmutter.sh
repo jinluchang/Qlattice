@@ -11,9 +11,7 @@ echo "!!!! build $name !!!!"
 mkdir -p $prefix
 cat - scripts/setenv.sh >"$prefix/setenv.sh" << EOF
 echo "Sourcing '$prefix/setenv.sh'"
-if [ -z "\$prefix" ] ; then
-    prefix="$prefix"
-fi
+export prefix="$prefix"
 if [ -z "\$num_proc" ] ; then
     num_proc=16
 fi

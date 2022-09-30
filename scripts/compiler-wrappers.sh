@@ -118,7 +118,13 @@ elif which mpiicc >/dev/null 2>&1 ; then
         \$run mpiicc "\$@"
     fi
 else
-    \$run mpicc "\$@"
+    if [ gcc = "\$USE_COMPILER" ] ; then
+        OMPI_CC=gcc \$run mpicc "\$@"
+    elif [ clang = "\$USE_COMPILER" ] ; then
+        OMPI_CC=clang \$run mpicc "\$@"
+    else
+        \$run mpicc "\$@"
+    fi
 fi
 EOF
 chmod +x "$prefix/bin/MPICC.sh"
@@ -149,9 +155,21 @@ elif which mpiicpc >/dev/null 2>&1 ; then
         \$run mpiicpc "\$@"
     fi
 elif which mpicxx >/dev/null 2>&1 ; then
-    \$run mpicxx "\$@"
+    if [ gcc = "\$USE_COMPILER" ] ; then
+        OMPI_CXX=g++ \$run mpicxx "\$@"
+    elif [ clang = "\$USE_COMPILER" ] ; then
+        OMPI_CXX=clang++ \$run mpicxx "\$@"
+    else
+        \$run mpicxx "\$@"
+    fi
 else
-    \$run mpic++ "\$@"
+    if [ gcc = "\$USE_COMPILER" ] ; then
+        OMPI_CXX=g++ \$run mpic++ "\$@"
+    elif [ clang = "\$USE_COMPILER" ] ; then
+        OMPI_CXX=clang++ \$run mpic++ "\$@"
+    else
+        \$run mpic++ "\$@"
+    fi
 fi
 EOF
 chmod +x "$prefix/bin/MPICXX.sh"
