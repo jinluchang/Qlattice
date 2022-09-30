@@ -1,5 +1,7 @@
 #!/bin/bash
 
+./scripts/qlat-utils.sh
+
 . scripts/conf.sh
 
 name=qlat

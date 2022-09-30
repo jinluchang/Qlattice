@@ -1,5 +1,7 @@
 #!/bin/bash
 
+./scripts/qlat-utils.clang.sh
+
 export USE_COMPILER=clang
 
 . scripts/conf.sh

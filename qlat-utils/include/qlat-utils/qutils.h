@@ -256,7 +256,11 @@ qacc void set_zero(int64_t& x) { x = 0; }
 
 qacc void set_zero(double& x) { x = 0; }
 
+qacc void set_zero(float& x) { x = 0; }
+
 qacc void set_zero(Complex& x) { x = 0; }
+
+qacc void set_zero(ComplexF& x) { x = 0; }
 
 template <class M, unsigned long N>
 qacc void set_zero(array<M, N>& arr)
