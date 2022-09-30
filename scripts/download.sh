@@ -106,16 +106,16 @@ dget "beniget-0.4.0.tar.gz" "https://files.pythonhosted.org/packages/36/09/a4a6a
 dget "psutil-5.9.0.tar.gz" "https://files.pythonhosted.org/packages/47/b6/ea8a7728f096a597f0032564e8013b705aa992a0990becd773dcc4d7b4a7/psutil-5.9.0.tar.gz"
 )
 
-if [ -d Grid ] ; then
-    ( cd Grid ; git pull )
+if [ -d Grid-paboyle ] ; then
+    ( cd Grid-paboyle ; git pull )
 else
-    git clone https://github.com/paboyle/Grid.git Grid
+    git clone https://github.com/paboyle/Grid.git Grid-paboyle
 fi
 
-if [ -e Grid/configure ] ; then
+if [ -e Grid-paboyle/configure ] ; then
     echo "Grid bootstrapped."
 else
-    ( cd Grid ; git clean -f ; ./bootstrap.sh )
+    ( cd Grid-paboyle ; git clean -f ; ./bootstrap.sh )
 fi
 
 if [ -d Grid-lehner ] ; then
@@ -134,6 +134,18 @@ if [ -d gpt ] ; then
     ( cd gpt ; git pull https://github.com/waterret/gpt.git )
 else
     git clone https://github.com/waterret/gpt.git
+fi
+
+if [ -d Hadrons ] ; then
+    ( cd Hadrons ; git pull )
+else
+    git clone https://github.com/aportelli/Hadrons.git Hadrons
+fi
+
+if [ -e Hadrons/configure ] ; then
+    echo "Hadrons bootstrapped."
+else
+    ( cd Hadrons ; git clean -f ; ./bootstrap.sh )
 fi
 
 if [ -d Grid-tblum ] ; then

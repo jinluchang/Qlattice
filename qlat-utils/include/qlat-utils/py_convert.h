@@ -10,6 +10,7 @@ namespace qlat
 template <class M>
 bool check_ctype_name(const std::string& ctype)
 {
+  (void)ctype;
   return false;
 }
 
