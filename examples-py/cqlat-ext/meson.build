@@ -2,7 +2,7 @@ project('qlat-ext', 'cpp',
   version: '0.1',
   license: 'GPL-3.0-or-later',
   default_options: [
-    'warning_level=0',
+    'warning_level=3',
     'cpp_std=c++14',
     'libdir=lib',
     'optimization=2',
@@ -20,7 +20,14 @@ message(py3.path())
 message(py3.get_install_dir())
 
 omp = dependency('openmp')
-mpic = dependency('mpi', language: 'cpp')
+
+if get_option('use_cxx')
+  message('use_cxx=true (use CXX compiler without additional MPI options.)')
+  mpic = dependency('', required: false)
+else
+  message('use_cxx=false (use meson\'s automatic MPI detection.)')
+  mpic = dependency('mpi', language: 'cpp')
+endif
 
 qlat = dependency('qlat', method: 'pkg-config')
 

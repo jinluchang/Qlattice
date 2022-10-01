@@ -4,21 +4,28 @@
 // Original author Christoph Lehner
 // With modifications from Luchang Jin
 
+#define PY_PKG_NAME cqlat_ext
+
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
+#include <qlat-utils/show.h>
 #include <qlat/py_convert.h>
 
-#define EXPORT(name, ...)                                \
-  PyObject* cqlat_ext_##name(PyObject* self, PyObject* args) \
-  {                                                      \
-    try {                                                \
-      __VA_ARGS__;                                       \
-      return NULL;                                       \
-    } catch (std::string err) {                          \
-      fprintf(stderr, "ERR: %s\n", err.c_str());         \
-      PyErr_SetString(PyExc_RuntimeError, err.c_str());  \
-      return NULL;                                       \
-    }                                                    \
+#define EXPORT(name, ...) EXPORT_X(PY_PKG_NAME, name, __VA_ARGS__)
+#define EXPORT_X(pname, name, ...) EXPORT_XX(pname, name, __VA_ARGS__)
+#define EXPORT_XX(pname, name, ...)                        \
+  PyObject* pname##_##name(PyObject* self, PyObject* args) \
+  {                                                        \
+    (void)self;                                            \
+    (void)args;                                            \
+    try {                                                  \
+      __VA_ARGS__;                                         \
+      return NULL;                                         \
+    } catch (std::string err) {                            \
+      fprintf(stderr, "ERR: %s\n", err.c_str());           \
+      PyErr_SetString(PyExc_RuntimeError, err.c_str());    \
+      return NULL;                                         \
+    }                                                      \
   }
 
 namespace qlat

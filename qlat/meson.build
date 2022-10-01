@@ -17,7 +17,6 @@ cpp = meson.get_compiler('cpp')
 
 py_mod = import('python')
 py3 = py_mod.find_installation('python3')
-
 message(py3.path())
 message(py3.get_install_dir())
 

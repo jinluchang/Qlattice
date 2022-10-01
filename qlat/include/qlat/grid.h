@@ -78,7 +78,7 @@ inline void grid_begin(
     const std::vector<Coordinate>& size_node_list = std::vector<Coordinate>())
 {
   using namespace Grid;
-  system("rm /dev/shm/Grid*");
+  system("rm /dev/shm/Grid* >/dev/null 2>&1");
   Grid_init(argc, argv);
   const int num_node = init_mpi(argc, argv);
   Coordinate size_node;
@@ -102,11 +102,11 @@ inline void grid_begin(
   begin(id_node, size_node);
 }
 
-void grid_end()
+void grid_end(const bool is_preserving_cache = false)
 {
   Grid::Grid_finalize();
-  system("rm /dev/shm/Grid*");
-  end();
+  system("rm /dev/shm/Grid* >/dev/null 2>&1");
+  end(is_preserving_cache);
 }
 
 void grid_convert(Grid::LatticeGaugeFieldF& ggf, const GaugeField& gf)
@@ -210,15 +210,15 @@ struct InverterDomainWallGrid : InverterDomainWall {
     TIMER_VERBOSE("InvGrid::setup");
     using namespace Grid;
     free();
-    const Coordinate total_site = geo.total_site();
-    const Coordinate size_node = geo.geon.size_node;
+    const Coordinate total_site = geo().total_site();
+    const Coordinate size_node = geo().geon.size_node;
     UGrid = SpaceTimeGrid::makeFourDimGrid(
         grid_convert(total_site), GridDefaultSimd(Nd, vComplexF::Nsimd()),
         grid_convert(size_node));
     UrbGrid = SpaceTimeGrid::makeFourDimRedBlackGrid(UGrid);
     FGrid = SpaceTimeGrid::makeFiveDimGrid(fa.ls, UGrid);
     FrbGrid = SpaceTimeGrid::makeFiveDimRedBlackGrid(fa.ls, UGrid);
-    qassert(geo.geon.id_node == id_node_from_grid(UGrid));
+    qassert(geo().geon.id_node == id_node_from_grid(UGrid));
     Umu = new LatticeGaugeFieldF(UGrid);
     grid_convert(*Umu, gf);
     std::vector<Complex> omega(fa.ls, 0.0);
