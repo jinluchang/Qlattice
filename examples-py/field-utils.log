@@ -24,6 +24,7 @@ q_mem_cache_max_size=512 (default)
 q_mem_cache_acc_max_size=512 (default)
 Cache: 'CommPlanCache': 0 / 32 [16] to add
 gf_show_info: plaq = 0.6147333258459872 ; link_trace = 0.8844956937132934.
+Cache: 'VectorGPUKey': 0 / 16 [8] to add
 ==Jobs dim 4, 8 4 4 4 , nvec 1, civ 36, bsize 16. 
 ==N_extra 1, enable_MPI 1, GPU 0, b0 1, c0 12, mode_rot 0, need copy 0. 
 Cache: 'FFTGPUPlanCache': 0 / 16 [8] to add
@@ -108,6 +109,7 @@ gf_show_info: plaq = 0.3067038575531761 ; link_trace = 0.0005769961056065.
 gf_show_info: plaq = 0.3067038575531761 ; link_trace = 0.0005769961056065.
 CHECK: finished successfully.
 Cache: 'ShufflePlanCache': 1 / 16 [8] clear
+Cache: 'VectorGPUKey': 1 / 16 [8] clear
 Cache: 'FFTGPUPlanCache': 1 / 16 [8] clear
 Cache: 'CommPlanCache': 1 / 32 [16] clear
 clear_mem_cache: 432384 bytes (0.000 GB) freed.

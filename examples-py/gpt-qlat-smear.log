@@ -83,6 +83,7 @@ mk_gpt_inverter: eps=1e-08 max_cycle=1
 mk_gpt_inverter: make inv_qm
 smear ; xg=(3, 1, 0, 0) ; type=1 ; accuracy=0
 qnorm(src) = 12.0
+Cache: 'VectorGPUKey': 0 / 16 [8] to add
 Cache: 'CommPlanCache': 3 / 32 [16] to add
 Cache: 'SmearPlanKeyCache': 0 / 16 [8] to add
 qnorm(src) = 0.200711920431886 after smear
@@ -152,6 +153,7 @@ a9db8ed85f5a5fe95a2d2ff73cec4984  results/smear ; xg=(3, 1, 0, 0) ; type=1 ; acc
 6b5c875e16a610a149e97bd8515bb1a2  results/smear ; xg=(3, 1, 0, 0) ; type=1 ; accuracy=0 ; wsnk.lat
 CHECK: finished successfully.
 Cache: 'ShufflePlanCache': 2 / 16 [8] clear
+Cache: 'VectorGPUKey': 1 / 16 [8] clear
 Cache: 'CommPlanCache': 4 / 32 [16] clear
 Cache: 'SmearPlanKeyCache': 1 / 16 [8] clear
 clear_mem_cache: 1391872 bytes (0.001 GB) freed.
