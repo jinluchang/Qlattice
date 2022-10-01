@@ -223,6 +223,32 @@ inline double acosh(const double x)
   return std::log(x + std::sqrt(x + 1.0) * std::sqrt(x - 1.0));
 }
 
+inline void prop_free_scalar_invert(Field<Complex>& f, const double mass,
+                                    const CoordinateD& momtwist)
+{
+  TIMER("prop_free_scalar_invert");
+  const Geometry& geo = f.geo();
+  const Coordinate total_site = geo.total_site();
+  const double m_pi_sq = 4.0 * sqr(std::sinh(mass / 2.0));
+  qacc_for(index, geo.local_volume(), {
+    const Coordinate kl = geo.coordinate_from_index(index);
+    Coordinate kg = geo.coordinate_g_from_l(kl);
+    CoordinateD kk, ks;
+    double s2 = 0.0;
+    for (int i = 0; i < DIMN; i++) {
+      kg[i] = smod(kg[i], total_site[i]);
+      kk[i] = 2.0 * PI * (kg[i] + momtwist[i]) / (double)total_site[i];
+      ks[i] = 2.0 * std::sin(kk[i] / 2.0);
+      s2 += sqr(ks[i]);
+    }
+    const double fac = 1.0 / (m_pi_sq + s2);
+    Vector<Complex> v = f.get_elems(kl);
+    for (int i = 0; i < v.size(); ++i) {
+      v[i] *= fac;
+    }
+  })
+}
+
 template <class T>
 void prop_mom_spin_propagator4d(SpinPropagator4dT<T>& sp4d, const double mass,
                                 const array<double, DIMN>& momtwist)

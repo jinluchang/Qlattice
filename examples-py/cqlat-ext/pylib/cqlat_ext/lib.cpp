@@ -10,7 +10,9 @@
 // declare
 #define EXPORT_FUNCTION_XX(pname, name) \
   extern PyObject* pname##_##name(PyObject* self, PyObject* args);
+extern "C" {
 #include "exports.h"
+}
 #undef EXPORT_FUNCTION_XX
 
 // add to module functions
@@ -40,8 +42,8 @@ static struct PyModuleDef module_def = {
 };
 
 // export module creation
-#define PY_INIT_PY_PKG_NAME_X(name) PyInit_##name
 #define PY_INIT_PY_PKG_NAME(name) PY_INIT_PY_PKG_NAME_X(name)
+#define PY_INIT_PY_PKG_NAME_X(name) PyInit_##name
 PyMODINIT_FUNC PY_INIT_PY_PKG_NAME(PY_PKG_NAME)(void)
 {
   return PyModule_Create(&module_def);

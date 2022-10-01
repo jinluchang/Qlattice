@@ -13,19 +13,24 @@
 
 #define EXPORT(name, ...) EXPORT_X(PY_PKG_NAME, name, __VA_ARGS__)
 #define EXPORT_X(pname, name, ...) EXPORT_XX(pname, name, __VA_ARGS__)
-#define EXPORT_XX(pname, name, ...)                        \
-  PyObject* pname##_##name(PyObject* self, PyObject* args) \
-  {                                                        \
-    (void)self;                                            \
-    (void)args;                                            \
-    try {                                                  \
-      __VA_ARGS__;                                         \
-      return NULL;                                         \
-    } catch (std::string err) {                            \
-      fprintf(stderr, "ERR: %s\n", err.c_str());           \
-      PyErr_SetString(PyExc_RuntimeError, err.c_str());    \
-      return NULL;                                         \
-    }                                                      \
+#define EXPORT_XX(pname, name, ...)                         \
+                                                            \
+  extern "C" {                                              \
+  PyObject* pname##_##name(PyObject* self, PyObject* args); \
+  }                                                         \
+                                                            \
+  PyObject* pname##_##name(PyObject* self, PyObject* args)  \
+  {                                                         \
+    (void)self;                                             \
+    (void)args;                                             \
+    try {                                                   \
+      __VA_ARGS__;                                          \
+      return NULL;                                          \
+    } catch (std::string err) {                             \
+      fprintf(stderr, "ERR: %s\n", err.c_str());            \
+      PyErr_SetString(PyExc_RuntimeError, err.c_str());     \
+      return NULL;                                          \
+    }                                                       \
   }
 
 namespace qlat

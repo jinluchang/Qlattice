@@ -236,6 +236,20 @@ EXPORT(is_local_xg_geo, {
   return py_convert(geo.is_local(xl));
 })
 
+namespace qlat
+{  //
+
+static void set_xg_list(vector<Coordinate>& xgs, const Geometry& geo)
+{
+  qthread_for(index, geo.local_volume(), {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Coordinate xg = geo.coordinate_g_from_l(xl);
+    xgs[index] = xg;
+  })
+}
+
+}  // namespace qlat
+
 EXPORT(get_xg_list, {
   // return xg for all local sites
   using namespace qlat;
@@ -245,10 +259,6 @@ EXPORT(get_xg_list, {
   }
   const Geometry& geo = py_convert_type<Geometry>(p_geo);
   vector<Coordinate> xgs(geo.local_volume());
-  qthread_for(index, geo.local_volume(), {
-    const Coordinate xl = geo.coordinate_from_index(index);
-    const Coordinate xg = geo.coordinate_g_from_l(xl);
-    xgs[index] = xg;
-  })
+  set_xg_list(xgs, geo);
   return py_convert(get_data(xgs));
 })
