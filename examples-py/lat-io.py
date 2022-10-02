@@ -35,14 +35,14 @@ q.displayln_info(f"CHECK: qnorm = {ld.qnorm()}")
 
 ld[(0, 1,)] = [ i * 3 + i * 1j for i in range(3) ]
 
-q.displayln_info(ld[(0,)])
-q.displayln_info(ld[(1, 2,)])
+q.displayln_info("CHECK: ", ld[(0,)])
+q.displayln_info("CHECK: ", ld[(1, 2,)])
 
 ld.save("results/test.lat")
 
 ld = q.LatData()
 ld.load("results/test.lat")
-q.displayln_info(ld[(1, 3,)])
+q.displayln_info("CHECK: ", ld[(1, 3,)])
 
 ld1 = ld.copy()
 ld1 += ld1
@@ -58,8 +58,7 @@ ld1.from_list(ld.to_list())
 q.displayln_info(ld1.show())
 q.displayln_info(f"CHECK: qnorm = {ld1.qnorm()}")
 
-if q.get_id_node() == 0:
-    q.displayln(os.listdir("results"))
+q.check_all_files_crc32_info("results")
 
 q.timer_display()
 

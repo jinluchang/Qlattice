@@ -1,1 +1,11 @@
+CHECK:  {'clanc_params': {0: {0: {'block': [2, 2, 2, 2],
+CHECK: geo.show() = Geometry([4, 4, 4, 16], 1)
+CHECK: src norm 0.0
+CHECK: sol_ref norm 104134.60033340791 with eig
+CHECK: sol diff norm 0.03433749408610305 inv_acc=0 with eig
+CHECK: sol diff norm 1342.4386610504998 inv_acc=0 without eig
+CHECK: sol diff norm 1.0444865722754836e-08 inv_acc=1 with eig
+CHECK: sol diff norm 5.225390488155543 inv_acc=1 without eig
+CHECK: sol diff norm 1.2477946739639232e-15 inv_acc=2 with eig
+CHECK: sol diff norm 6.6297756408664e-12 inv_acc=2 without eig
 CHECK: finished successfully.

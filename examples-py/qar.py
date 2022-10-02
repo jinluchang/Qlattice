@@ -30,7 +30,7 @@ q.qar_create_info(f"results/data2.qar", f"results/data2", is_remove_folder_after
 q.qar_extract_info(f"results/data2.qar", f"results/data2", is_remove_qar_after = True)
 
 qar_multi_vol_max_size = q.get_qar_multi_vol_max_size(16 * 1024)
-q.displayln_info(f"qar_multi_vol_max_size={qar_multi_vol_max_size}")
+q.displayln_info(f"CHECK: qar_multi_vol_max_size={qar_multi_vol_max_size}")
 
 q.qar_create_info(f"results/data2/ld-1000.qar", f"results/data2/ld-1000", is_remove_folder_after = True)
 
@@ -48,8 +48,8 @@ ld = q.LatData()
 ld.load(f"results/data4/ld-10000.lat")
 assert q.qnorm(q.load_lat_data(f"results/data4/ld-10000.lat") - q.load_lat_data(f"results/data/ld-10000.lat")) == 0
 
-q.displayln_info(q.list_qar("results/data4.qar"))
-q.displayln_info(q.list_qar("results/data4/ld-1000.qar"))
+q.displayln_info("CHECK: ", q.list_qar("results/data4.qar"))
+q.displayln_info("CHECK: ", q.list_qar("results/data4/ld-1000.qar"))
 
 for fn in [ f"ld-10000.lat", f"ld-1000/ld-1-1000.lat", ]:
     q.qcopy_file_info(f"results/data4/{fn}", f"results/data5/{fn}")

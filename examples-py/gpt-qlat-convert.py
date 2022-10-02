@@ -6,19 +6,19 @@ import gpt as g
 
 @q.timer
 def test_gf(gf):
-    q.displayln_info(f"test_gf")
+    q.displayln_info(f"CHECK: test_gf")
     #
     plaq = gf.plaq()
     #
     gpt_gf = qg.gpt_from_qlat(gf)
     g_plaq = g.qcd.gauge.plaquette(gpt_gf)
     #
-    q.displayln_info(f"gf.plaq()={plaq} ; g.qcd.gauge.plaquette(gpt_gf) = {g_plaq:.17f}")
+    q.displayln_info(f"CHECK: gf.plaq()={plaq} ; g.qcd.gauge.plaquette(gpt_gf) = {g_plaq:.17f}")
     assert abs(plaq - g_plaq) < 1.0e-10
 
 @q.timer
 def test_src(xg):
-    q.displayln_info(f"test_src: xg={xg}")
+    q.displayln_info(f"CHECK: test_src: xg={xg}")
     #
     src_q = q.mk_point_src(geo, xg)
     #
@@ -30,7 +30,7 @@ def test_src(xg):
     src_diff = src_q.copy()
     src_diff -= src_g
     #
-    q.displayln_info(src_q.qnorm(), src_g.qnorm(), src_diff.qnorm())
+    q.displayln_info("CHECK: ", src_q.qnorm(), src_g.qnorm(), src_diff.qnorm())
     assert src_diff.qnorm() == 0
 
 qg.begin_with_gpt()
@@ -38,7 +38,7 @@ qg.begin_with_gpt()
 rs = q.RngState("seed")
 total_site = [4, 4, 4, 8]
 geo = q.Geometry(total_site, 1)
-q.displayln_info("geo.show() =", geo.show())
+q.displayln_info("CHECK: geo.show() =", geo.show())
 
 gf = q.GaugeField(geo)
 gf.set_rand(rs, 0.2, 2)

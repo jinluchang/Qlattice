@@ -43,17 +43,17 @@ def compute_eig(gf, job_tag, inv_type = 0, inv_acc = 0, *, path = None):
 def test_eig(gf, eig, job_tag, inv_type):
     geo = gf.geo()
     src = q.FermionField4d(geo)
-    q.displayln_info(f"src norm {src.qnorm()}")
+    q.displayln_info(f"CHECK: src norm {src.qnorm()}")
     src.set_rand(q.RngState("test_eig:{id(inv)}"))
     sol_ref = ru.get_inv(gf, job_tag, inv_type, inv_acc = 2, eig = eig, eps = 1e-10, mpi_split = False, qtimer = False) * src
-    q.displayln_info(f"sol_ref norm {sol_ref.qnorm()} with eig")
+    q.displayln_info(f"CHECK: sol_ref norm {sol_ref.qnorm()} with eig")
     for inv_acc in [0, 1, 2]:
         sol = ru.get_inv(gf, job_tag, inv_type, inv_acc, eig = eig, mpi_split = False, qtimer = False) * src
         sol -= sol_ref
-        q.displayln_info(f"sol diff norm {sol.qnorm()} inv_acc={inv_acc} with eig")
+        q.displayln_info(f"CHECK: sol diff norm {sol.qnorm()} inv_acc={inv_acc} with eig")
         sol = ru.get_inv(gf, job_tag, inv_type, inv_acc, mpi_split = False, qtimer = False) * src
         sol -= sol_ref
-        q.displayln_info(f"sol diff norm {sol.qnorm()} inv_acc={inv_acc} without eig")
+        q.displayln_info(f"CHECK: sol diff norm {sol.qnorm()} inv_acc={inv_acc} without eig")
 
 @q.timer
 def run(job_tag, traj):
@@ -66,7 +66,7 @@ def run(job_tag, traj):
     #
     total_site = ru.get_total_site(job_tag)
     geo = q.Geometry(total_site, 1)
-    q.displayln_info("geo.show() =", geo.show())
+    q.displayln_info("CHECK: geo.show() =", geo.show())
     #
     path_gf = get_load_path(f"configs/{job_tag}/ckpoint_lat.{traj}")
     if path_gf is None:
@@ -91,7 +91,7 @@ q.qremove_all_info("results")
 
 job_tag = "test-4nt16"
 traj = 1000
-q.displayln_info(pprint.pformat(rup.dict_params[job_tag]))
+q.displayln_info("CHECK: ", pprint.pformat(rup.dict_params[job_tag]))
 run(job_tag, traj)
 
 q.timer_display()

@@ -1,1 +1,36 @@
+CHECK: geo.show() = Geometry([4, 4, 4, 8], 1)
+CHECK: test_gf
+CHECK: gf.plaq()=0.6530770929880311 ; g.qcd.gauge.plaquette(gpt_gf) = 0.65307709298803107
+CHECK: test_src: xg=[0, 2, 2, 1]
+CHECK:  12.0 12.0 0.0
+CHECK: test_src: xg=[0, 3, 1, 6]
+CHECK:  12.0 12.0 0.0
+CHECK: test_src: xg=[2, 1, 3, 3]
+CHECK:  12.0 12.0 0.0
+CHECK: test_src: xg=[2, 3, 2, 3]
+CHECK:  12.0 12.0 0.0
+CHECK: test_src: xg=[3, 1, 1, 0]
+CHECK:  12.0 12.0 0.0
+CHECK: test_src: xg=[3, 3, 2, 4]
+CHECK:  12.0 12.0 0.0
+CHECK: test_src: xg=[0, 3, 3, 3]
+CHECK:  12.0 12.0 0.0
+CHECK: test_src: xg=[2, 0, 3, 1]
+CHECK:  12.0 12.0 0.0
+CHECK: test_src: xg=[3, 1, 0, 7]
+CHECK:  12.0 12.0 0.0
+CHECK: test_src: xg=[3, 3, 0, 1]
+CHECK:  12.0 12.0 0.0
+CHECK: test_src: xg=[0, 0, 3, 7]
+CHECK:  12.0 12.0 0.0
+CHECK: test_src: xg=[3, 3, 3, 5]
+CHECK:  12.0 12.0 0.0
+CHECK: test_src: xg=[1, 2, 2, 1]
+CHECK:  12.0 12.0 0.0
+CHECK: test_src: xg=[3, 2, 2, 6]
+CHECK:  12.0 12.0 0.0
+CHECK: test_src: xg=[0, 0, 0, 2]
+CHECK:  12.0 12.0 0.0
+CHECK: test_src: xg=[0, 3, 3, 6]
+CHECK:  12.0 12.0 0.0
 CHECK: finished successfully.

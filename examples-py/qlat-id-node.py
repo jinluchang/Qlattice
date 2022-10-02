@@ -6,4 +6,6 @@ q.begin()
 
 q.show_machine()
 
+q.displayln_info(f"CHECK: finished successfully.")
+
 q.end()

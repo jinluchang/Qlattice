@@ -1,2 +1,4 @@
+CHECK: geo.show() = Geometry([4, 4, 4, 8], 1)
+CHECK:  Geometry([4, 4, 4, 8], 4, expansion_left=[0, 0, 0, 0], expansion_right=[0, 0, 0, 0], eo=0)
 CHECK: plaq: 6.14733325845987E-01 6.14733325845987E-01
 CHECK: finished successfully.

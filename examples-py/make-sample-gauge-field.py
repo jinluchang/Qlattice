@@ -19,12 +19,12 @@ q.qmkdir_info("results")
 
 total_site = [4, 4, 4, 8]
 geo = q.Geometry(total_site, 1)
-q.displayln_info("geo.show() =", geo.show())
+q.displayln_info("CHECK: geo.show() =", geo.show())
 rs = q.RngState("seed")
 
 gf = q.GaugeField(geo)
 
-q.displayln_info(gf.geo().show_all())
+q.displayln_info("CHECK: ", gf.geo().show_all())
 
 q.set_unit(gf)
 

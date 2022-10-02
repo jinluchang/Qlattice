@@ -10,7 +10,7 @@ q.qremove_all_info("results")
 q.qmkdir_info("results")
 total_site = [4, 4, 4, 8]
 geo = q.Geometry(total_site, 1)
-q.displayln_info("geo.show() =", geo.show())
+q.displayln_info("CHECK: geo.show() =", geo.show())
 rs = q.RngState("seed")
 
 gf = q.GaugeField(geo)
@@ -54,7 +54,7 @@ for src in [src_p, src_r]:
     sol_diff = sol1.copy()
     sol_diff -= sol
 
-    q.displayln_info(sol.qnorm(), sol1.qnorm(), sol_diff.qnorm())
+    q.displayln_info("CHECK: ", sol.qnorm(), sol1.qnorm(), sol_diff.qnorm())
 
 q.timer_display()
 

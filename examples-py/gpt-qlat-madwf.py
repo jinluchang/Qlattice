@@ -11,18 +11,18 @@ q.qmkdir_info("results")
 
 total_site = [4, 4, 4, 8]
 geo = q.Geometry(total_site, 1)
-q.displayln_info("geo.show() =", geo.show())
+q.displayln_info("CHECK: geo.show() =", geo.show())
 rs = q.RngState("seed")
 
 grid = qg.mk_grid(geo)
 rng = g.random("test")
 gpt_gf = g.qcd.gauge.random(grid, rng, scale=0.5)
 
-q.displayln_info(f"g.qcd.gauge.plaquette = {g.qcd.gauge.plaquette(gpt_gf):.17f}")
+q.displayln_info(f"CHECK: g.qcd.gauge.plaquette = {g.qcd.gauge.plaquette(gpt_gf):.17f}")
 
 gpt_gf_f = g.convert(gpt_gf, g.single)
 
-q.displayln_info(f"g.qcd.gauge.plaquette = {g.qcd.gauge.plaquette(gpt_gf_f):.17f} single precision")
+q.displayln_info(f"CHECK: g.qcd.gauge.plaquette = {g.qcd.gauge.plaquette(gpt_gf_f):.17f} single precision")
 
 gf = qg.qlat_from_gpt(gpt_gf)
 
@@ -128,26 +128,26 @@ def mk_src(geo):
 
 def test_inv(geo, inverter):
     src = mk_src(geo)
-    q.displayln_info(f"src info {src.qnorm()} {src.crc32()}")
+    q.displayln_info(f"CHECK: src info {src.qnorm()} {src.crc32()}")
     sol = inverter * src
-    q.displayln_info(f"sol info {sol.qnorm()} {sol.crc32()}")
+    q.displayln_info(f"CHECK: sol info {sol.qnorm()} {sol.crc32()}")
     sol1 = inverter * sol
-    q.displayln_info(f"sol1 info {sol1.qnorm()} {sol1.crc32()}")
+    q.displayln_info(f"CHECK: sol1 info {sol1.qnorm()} {sol1.crc32()}")
     return src, sol, sol1
 
 tags = [ "qm", "qz_f", "qm_mp", "qm_split", "qm_split_sloppy", "inv_qm_madwf" ]
 invs = [ inv_qm, inv_qz_f, inv_qm_mp, inv_qm_split, inv_qm_split_sloppy, inv_qm_madwf]
 
-q.displayln_info(f"tag={tags[0]} start")
+q.displayln_info(f"CHECK: tag={tags[0]} start")
 src, sol, sol1 = test_inv(geo, invs[0])
 
 for tag, inv in zip(tags[1:], invs[1:]) :
-    q.displayln_info(f"tag={tag} start")
+    q.displayln_info(f"CHECK: tag={tag} start")
     src_n, sol_n, sol1_n = test_inv(geo, inv)
     src_n -= src
     sol_n -= sol
     sol1_n -= sol1
-    q.displayln_info(f"tag={tag} diff src {src_n.qnorm()} sol {sol_n.qnorm()} sol1 {sol1_n.qnorm()}")
+    q.displayln_info(f"CHECK: tag={tag} diff src {src_n.qnorm()} sol {sol_n.qnorm()} sol1 {sol1_n.qnorm()}")
 
 q.timer_display()
 

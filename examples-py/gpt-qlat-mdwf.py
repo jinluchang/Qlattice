@@ -10,7 +10,7 @@ q.qremove_all_info("results")
 q.qmkdir_info("results")
 rs = q.RngState("seed")
 geo = q.Geometry([4, 4, 4, 8], 1)
-q.displayln_info("geo.show() =", geo.show())
+q.displayln_info("CHECK: geo.show() =", geo.show())
 
 gf = q.GaugeField(geo)
 
@@ -29,7 +29,7 @@ mobius_params = {
 
 gpt_gf = qg.gpt_from_qlat(gf)
 
-q.displayln_info(f"g.qcd.gauge.plaquette = {g.qcd.gauge.plaquette(gpt_gf):.17f}")
+q.displayln_info(f"CHECK: g.qcd.gauge.plaquette = {g.qcd.gauge.plaquette(gpt_gf):.17f}")
 
 gf1 = qg.qlat_from_gpt(gpt_gf)
 
@@ -56,22 +56,22 @@ def mk_src(geo):
 
 def test_inv(geo, inverter):
     src = mk_src(geo)
-    q.displayln_info(f"src info {src.qnorm()} {src.crc32()}")
+    q.displayln_info(f"CHECK: src info {src.qnorm()} {src.crc32()}")
     sol = inverter * src
-    q.displayln_info(f"sol info {sol.qnorm()} {sol.crc32()}")
+    q.displayln_info(f"CHECK: sol info {sol.qnorm()} {sol.crc32()}")
     sol1 = inverter * sol
-    q.displayln_info(f"sol1 info {sol1.qnorm()} {sol1.crc32()}")
+    q.displayln_info(f"CHECK: sol1 info {sol1.qnorm()} {sol1.crc32()}")
     return src, sol, sol1
 
 src, sol, sol1 = test_inv(geo, inv_qm)
 
 ld = q.contract_pion_field(sol, 0)
 
-q.displayln_info("q.contract_pion_field(sol)", q.show(ld))
+q.displayln_info("CHECK: q.contract_pion_field(sol)", q.qnorm(ld), q.show(ld))
 
 ld1 = q.contract_pion_field(sol1, 0)
 
-q.displayln_info("q.contract_pion_field(sol1)", q.show(ld1))
+q.displayln_info("CHECK: q.contract_pion_field(sol1)", q.qnorm(ld1), q.show(ld1))
 
 q.timer_display()
 
