@@ -44,13 +44,13 @@ t = 0
 def measure():
     gf_f.show_info()
     topo_clf = q.gf_topology_clf(gf_f)
-    q.displayln_info(f"CHECK: t={t} topo_clf={topo_clf:.14E}")
+    q.displayln_info(f"CHECK: t={t} topo_clf={topo_clf:.10E}")
     topo = q.gf_topology(gf_f)
     topo_terms = q.gf_topology_terms(gf_f)
     topo_field = q.gf_topology_field(gf_f)
     t_sum = topo_field.glb_sum_tslice()
     t_sum = [ str((t, t_sum.get_elem(t).item(),)) for t in range(t_sum.n_points()) ]
-    q.displayln_info(f"CHECK: t={t} topo_5li={topo:.14E} {sum(topo_terms):.14E}")
+    q.displayln_info(f"CHECK: t={t} topo_5li={topo:.10E} {sum(topo_terms):.10E}")
     topo_terms_str = ',\n '.join([ str(x) for x in topo_terms ])
     q.displayln_info(f"[ {topo_terms_str},\n]")
     q.displayln_info("\n".join(t_sum))
