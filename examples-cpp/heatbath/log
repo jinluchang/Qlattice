@@ -33,6 +33,7 @@ set q_field_init=fast.
 q_mem_cache_max_size=512 (default)
 q_mem_cache_acc_max_size=512 (default)
 Cache: 'CommPlanCache': 0 / 32 [16] to add
+CHECK:      1.0917131353640E-01
 ((total-site (8 8 8 32))
  (mass-sqr 0.0100000000)
  (lambda   0.0000000000)
@@ -56,6 +57,7 @@ Cache: 'CommPlanCache': 0 / 32 [16] to add
   (v_eff 4.158654861714481 0.000000000000000)))
 q_timer_mini_auto_display=300 (default)
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
+CHECK:      1.4193086585739E-01
 ((total-site (8 8 8 32))
  (mass-sqr 0.0100000000)
  (lambda   0.0000000000)
@@ -78,6 +80,7 @@ evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.
   (m_eff nan nan)
   (v_eff nan nan)))
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
+CHECK:      1.5041039764363E-01
 ((total-site (8 8 8 32))
  (mass-sqr 0.0100000000)
  (lambda   0.0000000000)
@@ -111,6 +114,7 @@ QFile: open 'results/total_site=8x8x8x32/lambda=0.1000000000/mass_sqr=0.00000000
 QFile: close 'results/total_site=8x8x8x32/lambda=0.1000000000/mass_sqr=0.0000000000.txt-lock/time.txt.partial' with 'w'.
 qrename: 'results/total_site=8x8x8x32/lambda=0.1000000000/mass_sqr=0.0000000000.txt-lock/time.txt.partial' 'results/total_site=8x8x8x32/lambda=0.1000000000/mass_sqr=0.0000000000.txt-lock/time.txt'
 obtain_lock: Lock obtained 'results/total_site=8x8x8x32/lambda=0.1000000000/mass_sqr=0.0000000000.txt-lock'.
+CHECK:      1.0920860758891E-01
 ((total-site (8 8 8 32))
  (mass-sqr 0.0000000000)
  (lambda   0.1000000000)
@@ -133,6 +137,7 @@ obtain_lock: Lock obtained 'results/total_site=8x8x8x32/lambda=0.1000000000/mass
   (m_eff nan nan)
   (v_eff 4.025465815603584 0.000000000000000)))
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
+CHECK:      1.4213422779189E-01
 ((total-site (8 8 8 32))
  (mass-sqr 0.0000000000)
  (lambda   0.1000000000)
@@ -155,6 +160,7 @@ evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.
   (m_eff nan nan)
   (v_eff nan nan)))
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
+CHECK:      1.4998532942557E-01
 ((total-site (8 8 8 32))
  (mass-sqr 0.0000000000)
  (lambda   0.1000000000)
@@ -188,6 +194,7 @@ QFile: open 'results/total_site=8x8x8x32/lambda=0.1000000000/mass_sqr=0.01000000
 QFile: close 'results/total_site=8x8x8x32/lambda=0.1000000000/mass_sqr=0.0100000000.txt-lock/time.txt.partial' with 'w'.
 qrename: 'results/total_site=8x8x8x32/lambda=0.1000000000/mass_sqr=0.0100000000.txt-lock/time.txt.partial' 'results/total_site=8x8x8x32/lambda=0.1000000000/mass_sqr=0.0100000000.txt-lock/time.txt'
 obtain_lock: Lock obtained 'results/total_site=8x8x8x32/lambda=0.1000000000/mass_sqr=0.0100000000.txt-lock'.
+CHECK:      1.0898634151589E-01
 ((total-site (8 8 8 32))
  (mass-sqr 0.0100000000)
  (lambda   0.1000000000)
@@ -210,6 +217,7 @@ obtain_lock: Lock obtained 'results/total_site=8x8x8x32/lambda=0.1000000000/mass
   (m_eff -2.838081117763505 0.000000000000000)
   (v_eff 5.868034734082583 0.000000000000000)))
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
+CHECK:      1.4183779085617E-01
 ((total-site (8 8 8 32))
  (mass-sqr 0.0100000000)
  (lambda   0.1000000000)
@@ -232,6 +240,7 @@ evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.
   (m_eff nan nan)
   (v_eff nan nan)))
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
+CHECK:      1.4934438880861E-01
 ((total-site (8 8 8 32))
  (mass-sqr 0.0100000000)
  (lambda   0.1000000000)
@@ -266,6 +275,7 @@ QFile: close 'results/total_site=16x16x16x64/lambda=0.1000000000/mass_sqr=0.0100
 qrename: 'results/total_site=16x16x16x64/lambda=0.1000000000/mass_sqr=0.0100000000.txt-lock/time.txt.partial' 'results/total_site=16x16x16x64/lambda=0.1000000000/mass_sqr=0.0100000000.txt-lock/time.txt'
 obtain_lock: Lock obtained 'results/total_site=16x16x16x64/lambda=0.1000000000/mass_sqr=0.0100000000.txt-lock'.
 Cache: 'CommPlanCache': 1 / 32 [16] to add
+CHECK:      1.0948635673042E-01
 ((total-site (16 16 16 64))
  (mass-sqr 0.0100000000)
  (lambda   0.1000000000)
@@ -288,6 +298,7 @@ Cache: 'CommPlanCache': 1 / 32 [16] to add
   (m_eff nan nan)
   (v_eff nan nan)))
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
+CHECK:      1.3874875552922E-01
 ((total-site (16 16 16 64))
  (mass-sqr 0.0100000000)
  (lambda   0.1000000000)
@@ -310,6 +321,7 @@ evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.
   (m_eff nan nan)
   (v_eff nan nan)))
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
+CHECK:      1.4733931304921E-01
 ((total-site (16 16 16 64))
  (mass-sqr 0.0100000000)
  (lambda   0.1000000000)
@@ -343,6 +355,7 @@ QFile: open 'results/total_site=16x16x16x64/lambda=0.5000000000/mass_sqr=-0.1000
 QFile: close 'results/total_site=16x16x16x64/lambda=0.5000000000/mass_sqr=-0.1000000000.txt-lock/time.txt.partial' with 'w'.
 qrename: 'results/total_site=16x16x16x64/lambda=0.5000000000/mass_sqr=-0.1000000000.txt-lock/time.txt.partial' 'results/total_site=16x16x16x64/lambda=0.5000000000/mass_sqr=-0.1000000000.txt-lock/time.txt'
 obtain_lock: Lock obtained 'results/total_site=16x16x16x64/lambda=0.5000000000/mass_sqr=-0.1000000000.txt-lock'.
+CHECK:      1.1097751845632E-01
 ((total-site (16 16 16 64))
  (mass-sqr -0.1000000000)
  (lambda   0.5000000000)
@@ -365,6 +378,7 @@ obtain_lock: Lock obtained 'results/total_site=16x16x16x64/lambda=0.5000000000/m
   (m_eff nan nan)
   (v_eff nan nan)))
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
+CHECK:      1.4064985777237E-01
 ((total-site (16 16 16 64))
  (mass-sqr -0.1000000000)
  (lambda   0.5000000000)
@@ -387,6 +401,7 @@ evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.
   (m_eff 0.081511271879626 nan)
   (v_eff nan nan)))
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
+CHECK:      1.4919171955549E-01
 ((total-site (16 16 16 64))
  (mass-sqr -0.1000000000)
  (lambda   0.5000000000)
@@ -421,6 +436,7 @@ QFile: close 'results/total_site=4x4x4x256/lambda=24.0000000000/mass_sqr=-1.8600
 qrename: 'results/total_site=4x4x4x256/lambda=24.0000000000/mass_sqr=-1.8600000000.txt-lock/time.txt.partial' 'results/total_site=4x4x4x256/lambda=24.0000000000/mass_sqr=-1.8600000000.txt-lock/time.txt'
 obtain_lock: Lock obtained 'results/total_site=4x4x4x256/lambda=24.0000000000/mass_sqr=-1.8600000000.txt-lock'.
 Cache: 'CommPlanCache': 2 / 32 [16] to add
+CHECK:      1.1812496995277E-01
 ((total-site (4 4 4 256))
  (mass-sqr -1.8600000000)
  (lambda   24.0000000000)
@@ -443,6 +459,7 @@ Cache: 'CommPlanCache': 2 / 32 [16] to add
   (m_eff 0.899951437145340 0.000000000000000)
   (v_eff nan nan)))
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
+CHECK:      1.4873812726572E-01
 ((total-site (4 4 4 256))
  (mass-sqr -1.8600000000)
  (lambda   24.0000000000)
@@ -465,6 +482,7 @@ evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.
   (m_eff -0.079689590421833 1.008680293889267)
   (v_eff nan nan)))
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
+CHECK:      1.5541298704917E-01
 ((total-site (4 4 4 256))
  (mass-sqr -1.8600000000)
  (lambda   24.0000000000)
@@ -498,6 +516,7 @@ QFile: open 'results/total_site=4x4x4x256/lambda=24.0000000000/mass_sqr=-1.82000
 QFile: close 'results/total_site=4x4x4x256/lambda=24.0000000000/mass_sqr=-1.8200000000.txt-lock/time.txt.partial' with 'w'.
 qrename: 'results/total_site=4x4x4x256/lambda=24.0000000000/mass_sqr=-1.8200000000.txt-lock/time.txt.partial' 'results/total_site=4x4x4x256/lambda=24.0000000000/mass_sqr=-1.8200000000.txt-lock/time.txt'
 obtain_lock: Lock obtained 'results/total_site=4x4x4x256/lambda=24.0000000000/mass_sqr=-1.8200000000.txt-lock'.
+CHECK:      1.1773435821030E-01
 ((total-site (4 4 4 256))
  (mass-sqr -1.8200000000)
  (lambda   24.0000000000)
@@ -520,6 +539,7 @@ obtain_lock: Lock obtained 'results/total_site=4x4x4x256/lambda=24.0000000000/ma
   (m_eff nan nan)
   (v_eff nan nan)))
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
+CHECK:      1.4846363621239E-01
 ((total-site (4 4 4 256))
  (mass-sqr -1.8200000000)
  (lambda   24.0000000000)
@@ -542,6 +562,7 @@ evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.
   (m_eff 0.788091169121646 nan)
   (v_eff nan nan)))
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
+CHECK:      1.5407533682060E-01
 ((total-site (4 4 4 256))
  (mass-sqr -1.8200000000)
  (lambda   24.0000000000)
@@ -575,6 +596,7 @@ QFile: open 'results/total_site=4x4x4x256/lambda=32.0000000000/mass_sqr=-2.36000
 QFile: close 'results/total_site=4x4x4x256/lambda=32.0000000000/mass_sqr=-2.3600000000.txt-lock/time.txt.partial' with 'w'.
 qrename: 'results/total_site=4x4x4x256/lambda=32.0000000000/mass_sqr=-2.3600000000.txt-lock/time.txt.partial' 'results/total_site=4x4x4x256/lambda=32.0000000000/mass_sqr=-2.3600000000.txt-lock/time.txt'
 obtain_lock: Lock obtained 'results/total_site=4x4x4x256/lambda=32.0000000000/mass_sqr=-2.3600000000.txt-lock'.
+CHECK:      1.2008083172371E-01
 ((total-site (4 4 4 256))
  (mass-sqr -2.3600000000)
  (lambda   32.0000000000)
@@ -597,6 +619,7 @@ obtain_lock: Lock obtained 'results/total_site=4x4x4x256/lambda=32.0000000000/ma
   (m_eff 0.763901937413273 0.000000000000000)
   (v_eff nan nan)))
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
+CHECK:      1.4915015140571E-01
 ((total-site (4 4 4 256))
  (mass-sqr -2.3600000000)
  (lambda   32.0000000000)
@@ -619,6 +642,7 @@ evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.
   (m_eff -0.636818775105573 nan)
   (v_eff nan nan)))
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
+CHECK:      1.5732367758023E-01
 ((total-site (4 4 4 256))
  (mass-sqr -2.3600000000)
  (lambda   32.0000000000)
@@ -652,6 +676,7 @@ QFile: open 'results/total_site=4x4x4x256/lambda=32.0000000000/mass_sqr=-2.32000
 QFile: close 'results/total_site=4x4x4x256/lambda=32.0000000000/mass_sqr=-2.3200000000.txt-lock/time.txt.partial' with 'w'.
 qrename: 'results/total_site=4x4x4x256/lambda=32.0000000000/mass_sqr=-2.3200000000.txt-lock/time.txt.partial' 'results/total_site=4x4x4x256/lambda=32.0000000000/mass_sqr=-2.3200000000.txt-lock/time.txt'
 obtain_lock: Lock obtained 'results/total_site=4x4x4x256/lambda=32.0000000000/mass_sqr=-2.3200000000.txt-lock'.
+CHECK:      1.1953946179076E-01
 ((total-site (4 4 4 256))
  (mass-sqr -2.3200000000)
  (lambda   32.0000000000)
@@ -674,6 +699,7 @@ obtain_lock: Lock obtained 'results/total_site=4x4x4x256/lambda=32.0000000000/ma
   (m_eff 0.563988683736082 0.000000000000000)
   (v_eff nan nan)))
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
+CHECK:      1.4798415376717E-01
 ((total-site (4 4 4 256))
  (mass-sqr -2.3200000000)
  (lambda   32.0000000000)
@@ -696,6 +722,7 @@ evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.
   (m_eff -0.744393811277497 nan)
   (v_eff nan nan)))
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
+CHECK:      1.5698247308821E-01
 ((total-site (4 4 4 256))
  (mass-sqr -2.3200000000)
  (lambda   32.0000000000)
@@ -730,6 +757,7 @@ QFile: close 'results/total_site=8x8x8x512/lambda=24.0000000000/mass_sqr=-1.6900
 qrename: 'results/total_site=8x8x8x512/lambda=24.0000000000/mass_sqr=-1.6900000000.txt-lock/time.txt.partial' 'results/total_site=8x8x8x512/lambda=24.0000000000/mass_sqr=-1.6900000000.txt-lock/time.txt'
 obtain_lock: Lock obtained 'results/total_site=8x8x8x512/lambda=24.0000000000/mass_sqr=-1.6900000000.txt-lock'.
 Cache: 'CommPlanCache': 3 / 32 [16] to add
+CHECK:      1.1671943448065E-01
 ((total-site (8 8 8 512))
  (mass-sqr -1.6900000000)
  (lambda   24.0000000000)
@@ -752,6 +780,7 @@ Cache: 'CommPlanCache': 3 / 32 [16] to add
   (m_eff 0.984204996381497 0.000000000000000)
   (v_eff -1.989955085883349 0.000000000000000)))
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
+CHECK:      1.4344742808224E-01
 ((total-site (8 8 8 512))
  (mass-sqr -1.6900000000)
  (lambda   24.0000000000)
@@ -774,6 +803,7 @@ evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.
   (m_eff 0.105225327309703 0.971423688477417)
   (v_eff -0.251599337347001 1.975268109231208)))
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
+CHECK:      1.5031790764418E-01
 ((total-site (8 8 8 512))
  (mass-sqr -1.6900000000)
  (lambda   24.0000000000)
@@ -807,6 +837,7 @@ QFile: open 'results/total_site=8x8x8x512/lambda=24.0000000000/mass_sqr=-1.68000
 QFile: close 'results/total_site=8x8x8x512/lambda=24.0000000000/mass_sqr=-1.6800000000.txt-lock/time.txt.partial' with 'w'.
 qrename: 'results/total_site=8x8x8x512/lambda=24.0000000000/mass_sqr=-1.6800000000.txt-lock/time.txt.partial' 'results/total_site=8x8x8x512/lambda=24.0000000000/mass_sqr=-1.6800000000.txt-lock/time.txt'
 obtain_lock: Lock obtained 'results/total_site=8x8x8x512/lambda=24.0000000000/mass_sqr=-1.6800000000.txt-lock'.
+CHECK:      1.1653197924931E-01
 ((total-site (8 8 8 512))
  (mass-sqr -1.6800000000)
  (lambda   24.0000000000)
@@ -829,6 +860,7 @@ obtain_lock: Lock obtained 'results/total_site=8x8x8x512/lambda=24.0000000000/ma
   (m_eff 0.941132084204244 0.000000000000000)
   (v_eff -1.928702110672994 0.000000000000000)))
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
+CHECK:      1.4322641767787E-01
 ((total-site (8 8 8 512))
  (mass-sqr -1.6800000000)
  (lambda   24.0000000000)
@@ -851,6 +883,7 @@ evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.
   (m_eff 0.032686927955927 1.292963686067206)
   (v_eff -0.062270956309588 2.623238251121995)))
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
+CHECK:      1.4989714444181E-01
 ((total-site (8 8 8 512))
  (mass-sqr -1.6800000000)
  (lambda   24.0000000000)
@@ -884,6 +917,7 @@ QFile: open 'results/total_site=8x8x8x512/lambda=32.0000000000/mass_sqr=-2.18000
 QFile: close 'results/total_site=8x8x8x512/lambda=32.0000000000/mass_sqr=-2.1800000000.txt-lock/time.txt.partial' with 'w'.
 qrename: 'results/total_site=8x8x8x512/lambda=32.0000000000/mass_sqr=-2.1800000000.txt-lock/time.txt.partial' 'results/total_site=8x8x8x512/lambda=32.0000000000/mass_sqr=-2.1800000000.txt-lock/time.txt'
 obtain_lock: Lock obtained 'results/total_site=8x8x8x512/lambda=32.0000000000/mass_sqr=-2.1800000000.txt-lock'.
+CHECK:      1.1803195178809E-01
 ((total-site (8 8 8 512))
  (mass-sqr -2.1800000000)
  (lambda   32.0000000000)
@@ -906,6 +940,7 @@ obtain_lock: Lock obtained 'results/total_site=8x8x8x512/lambda=32.0000000000/ma
   (m_eff 0.721107387784530 0.000000000000000)
   (v_eff -1.463186232394261 0.000000000000000)))
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
+CHECK:      1.4395742475589E-01
 ((total-site (8 8 8 512))
  (mass-sqr -2.1800000000)
  (lambda   32.0000000000)
@@ -928,6 +963,7 @@ evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.
   (m_eff 0.411489400988410 nan)
   (v_eff -0.737107634111535 0.646325950824101)))
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
+CHECK:      1.5043083665645E-01
 ((total-site (8 8 8 512))
  (mass-sqr -2.1800000000)
  (lambda   32.0000000000)
@@ -961,6 +997,7 @@ QFile: open 'results/total_site=8x8x8x512/lambda=32.0000000000/mass_sqr=-2.17000
 QFile: close 'results/total_site=8x8x8x512/lambda=32.0000000000/mass_sqr=-2.1700000000.txt-lock/time.txt.partial' with 'w'.
 qrename: 'results/total_site=8x8x8x512/lambda=32.0000000000/mass_sqr=-2.1700000000.txt-lock/time.txt.partial' 'results/total_site=8x8x8x512/lambda=32.0000000000/mass_sqr=-2.1700000000.txt-lock/time.txt'
 obtain_lock: Lock obtained 'results/total_site=8x8x8x512/lambda=32.0000000000/mass_sqr=-2.1700000000.txt-lock'.
+CHECK:      1.1789446534057E-01
 ((total-site (8 8 8 512))
  (mass-sqr -2.1700000000)
  (lambda   32.0000000000)
@@ -983,6 +1020,7 @@ obtain_lock: Lock obtained 'results/total_site=8x8x8x512/lambda=32.0000000000/ma
   (m_eff 0.994180378678621 0.000000000000000)
   (v_eff -2.055951240912830 0.000000000000000)))
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
+CHECK:      1.4376432351067E-01
 ((total-site (8 8 8 512))
  (mass-sqr -2.1700000000)
  (lambda   32.0000000000)
@@ -1005,6 +1043,7 @@ evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.
   (m_eff 0.591444843390128 nan)
   (v_eff -1.157437136588710 1.309874548301005)))
 evolution: ( get_actual_total_time() + budget ) / get_time_limit() = ( 0.00 + 0.17 ) / 12.00 hours.
+CHECK:      1.5036852697163E-01
 ((total-site (8 8 8 512))
  (mass-sqr -2.1700000000)
  (lambda   32.0000000000)
