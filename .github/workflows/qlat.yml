@@ -49,7 +49,7 @@ jobs:
 
     - name: Copying logs
       run: |
-        for i in examples-py/log ; do
+        for i in examples-py/*.log ; do
           cp $HOME/qlat-build/default/qlat-examples/$i $i
         done
         for i in examples-cpp/*/log ; do
