@@ -226,7 +226,7 @@ EXPORT(qload_datatable, {
   using namespace qlat;
   PyObject* p_path = NULL;
   bool is_par = false;
-  if (!PyArg_ParseTuple(args, "O|O", &p_path, &is_par)) {
+  if (!PyArg_ParseTuple(args, "Ob", &p_path, &is_par)) {
     return NULL;
   }
   const std::string path = py_convert_data<std::string>(p_path);
