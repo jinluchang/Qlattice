@@ -30,14 +30,14 @@ run: $(tests) $(tests_gpt) cqlat-example
 %.log: %.py
 	mpirun --np 2 ./"$<" --mpi 1.1.1.2 --mpi_split 1.1.1.1 --mpi 1.1.2 --mpi_split 1.1.1 | tee "$@".full
 	-rm -rfv results output_data
-	-grep -v "^Timer\|^GPT\|^Grid\|timing: \|Timing: \|local time slice\|^clean_cache:" "$@".full > "$@"
+	-grep "CHECK: " "$@".full > "$@"
 
 cqlat-example: cqlat-ext.log
 
 cqlat-ext.log:
 	meson cqlat-ext-build cqlat-ext
 	cd cqlat-ext-build ; ninja -j2 ; python3 -c "import ctypes; import sys; flags = sys.getdlopenflags(); sys.setdlopenflags(flags | ctypes.RTLD_GLOBAL); import cqlat_ext as ce ; ce.hello_world() ; import qlat as q ; q.timer_display()" | tee ../"$@".full
-	-grep -v "^Timer\|^GPT\|^Grid\|timing: \|Timing: \|local time slice\|^clean_cache:" "$@".full > "$@"
+	-grep "CHECK: " "$@".full > "$@"
 
 clean:
 	-rm -v *.log.full

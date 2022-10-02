@@ -10,7 +10,7 @@ q.qmkdir_info("results")
 rs = q.RngState("seed")
 total_site = [4, 4, 4, 8]
 geo = q.Geometry(total_site, 1)
-q.displayln_info("geo.show() =", geo.show())
+q.displayln_info("CHECK: geo.show() =", geo.show())
 
 psel = q.PointSelection([[0,0,0,0], [0,1,2,0]])
 n_per_tslice = 16
@@ -21,11 +21,11 @@ fselc.add_psel(psel)
 
 prop = q.Prop(geo)
 prop.set_rand(rs.split("prop-1"))
-q.displayln_info("prop", prop.crc32(), prop.qnorm())
+q.displayln_info("CHECK: prop", prop.crc32(), f"{prop.qnorm():.14E}")
 
 sfw = q.open_fields("results/prop.fields", "w", [1,1,1,8])
 
-q.displayln_info("sfw.new_size_node()", sfw.new_size_node())
+q.displayln_info("CHECK: sfw.new_size_node()", sfw.new_size_node())
 
 prop.save_double(sfw, "prop.d")
 
@@ -35,12 +35,12 @@ sfw.flush()
 
 s_prop = q.SelProp(fsel)
 s_prop @= prop
-q.displayln_info("s_prop = SelProp(fsel) and s_prop @= prop", s_prop.qnorm())
+q.displayln_info("CHECK: s_prop = SelProp(fsel) and s_prop @= prop", f"{s_prop.qnorm():14E}")
 s_prop.save_float_from_double(sfw, "s_prop")
 
 prop1 = q.SelProp(fselc)
 prop1 @= prop
-q.displayln_info("prop1 = SelProp(fselc) and prop1 @= prop", prop1.qnorm())
+q.displayln_info("CHECK: prop1 = SelProp(fselc) and prop1 @= prop", f"{prop1.qnorm():.14E}")
 prop1.save_float_from_double(sfw, "prop1")
 
 sfw.close()
@@ -49,63 +49,62 @@ sfr = q.open_fields("results/prop.fields", "r")
 
 fns = sfr.list()
 
-q.displayln_info("sfr.list()", sfr.list())
+q.displayln_info("CHECK: sfr.list()", sfr.list())
 
-q.displayln_info("sfr.new_size_node()", sfr.new_size_node())
+q.displayln_info("CHECK: sfr.new_size_node()", sfr.new_size_node())
 
 prop_d = q.Prop()
 prop_d.load_double(sfr, "prop.d")
-q.displayln_info("prop_d", prop_d.crc32(), prop_d.qnorm())
+q.displayln_info("CHECK: prop_d", prop_d.crc32(), f"{prop_d.qnorm():.14E}")
 prop_d -= prop
-q.displayln_info("prop_d -= prop", prop_d.crc32(), prop_d.qnorm())
+q.displayln_info("CHECK: prop_d -= prop", prop_d.crc32(), f"{prop_d.qnorm():.14E}")
 
 prop_f = q.Prop()
 prop_f.load_double_from_float(sfr, "prop")
-q.displayln_info("prop_f", prop_f.crc32(), prop_f.qnorm())
+q.displayln_info("CHECK: prop_f", prop_f.crc32(), f"{prop_f.qnorm():.14E}")
 prop_f -= prop
-q.displayln_info("prop_f -= prop", prop_f.crc32(), prop_f.qnorm())
+q.displayln_info("CHECK: prop_f -= prop", prop_f.crc32(), f"{prop_f.qnorm():.14E}")
 
 s_prop_f = q.SelProp(fsel)
 s_prop_f.load_double_from_float(sfr, "s_prop")
-q.displayln_info("s_prop_f", s_prop_f.qnorm())
+q.displayln_info("CHECK: s_prop_f", f"{s_prop_f.qnorm():.14E}")
 s_prop_f -= s_prop
-q.displayln_info("s_prop_f -= s_prop", s_prop_f.qnorm())
+q.displayln_info("CHECK: s_prop_f -= s_prop", f"{s_prop_f.qnorm():.14E}")
 
 prop1_f = q.SelProp(fselc)
 prop1_f.load_double_from_float(sfr, "prop1")
-q.displayln_info("prop1_f", prop1_f.qnorm())
+q.displayln_info("CHECK: prop1_f", f"{prop1_f.qnorm():.14E}")
 prop1_f -= prop1
-q.displayln_info("prop1_f -= prop1", prop1_f.qnorm())
+q.displayln_info("CHECK: prop1_f -= prop1", f"{prop1_f.qnorm():.14E}")
 
 prop1_ff = q.SelProp(None)
 prop1_ff.load_double_from_float(sfr, "prop1")
-q.displayln_info("prop1_ff", prop1_ff.qnorm())
+q.displayln_info("CHECK: prop1_ff", f"{prop1_ff.qnorm():.14E}")
 assert q.is_matching_fsel(prop1_ff.fsel, fselc)
 prop1_ff -= prop1
-q.displayln_info("prop1_ff -= prop1", prop1_f.qnorm())
+q.displayln_info("CHECK: prop1_ff -= prop1", f"{prop1_f.qnorm():.14E}")
 
 sfr.close()
 
-q.displayln_info(q.list_fields("results/prop.fields"))
+q.displayln_info("CHECK: ", q.list_fields("results/prop.fields"))
 
 q.properly_truncate_fields("results/prop.fields")
 
-q.displayln_info(q.list_fields("results/prop.fields"))
+q.displayln_info("CHECK: ", q.list_fields("results/prop.fields"))
 
 q.truncate_fields("results/prop.fields", fns)
 
-q.displayln_info(q.list_fields("results/prop.fields"))
+q.displayln_info("CHECK: ", q.list_fields("results/prop.fields"))
 
 q.truncate_fields("results/prop.fields", fns[:-1])
 
-q.displayln_info(q.list_fields("results/prop.fields"))
+q.displayln_info("CHECK: ", q.list_fields("results/prop.fields"))
 
 q.truncate_fields("results/prop.fields", [])
 
-q.displayln_info(q.list_fields("results/prop.fields"))
+q.displayln_info("CHECK: ", q.list_fields("results/prop.fields"))
 
-if q.get_id_node() == 0:
-    q.displayln_info(os.listdir("results"))
+q.displayln_info("CHECK: ", q.qls_all_sync_node("results"))
 
 q.timer_display()
 
