@@ -19,6 +19,7 @@ set -e
 ./scripts/qlat.sh
 
 ./scripts/c-lime.sh
+./scripts/hdf5.sh
 ./scripts/grid.avx2.sh
 ./scripts/gpt.sh
 ./scripts/qlat-grid-io.sh
