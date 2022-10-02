@@ -27,5 +27,6 @@ export CXX=
 ./scripts/hadrons-tblum.sh
 ./scripts/grid.knl.sh
 ./scripts/gpt.sh
+./scripts/qlat-grid-io.sh
 
 } |& tee $prefix/log.build.txt

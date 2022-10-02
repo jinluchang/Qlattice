@@ -41,7 +41,9 @@ set -e
 ./scripts/hdf5.sh
 ./scripts/grid.avx2.sh
 ./scripts/gpt.sh
-./scripts/grid-tblum.avx2.sh
-./scripts/hadrons-tblum.sh
+./scripts/qlat-grid-io.sh
+
+./scripts/gnuplot.sh
+./scripts/python-jupyter.sh
 
 } |& tee $prefix/log.build.txt
