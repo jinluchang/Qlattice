@@ -56,22 +56,27 @@ def mk_src(geo):
 
 def test_inv(geo, inverter):
     src = mk_src(geo)
-    q.displayln_info(f"CHECK: src info {src.qnorm()} {src.crc32()}")
+    q.displayln_info(f"CHECK: src info {src.qnorm()}")
+    q.displayln_info(f"CHECK: src info {src.crc32()}")
     sol = inverter * src
-    q.displayln_info(f"CHECK: sol info {sol.qnorm()} {sol.crc32()}")
+    q.displayln_info(f"CHECK: sol info {sol.qnorm():.10E}")
+    q.displayln_info(f"sol info {sol.crc32()}")
     sol1 = inverter * sol
-    q.displayln_info(f"CHECK: sol1 info {sol1.qnorm()} {sol1.crc32()}")
+    q.displayln_info(f"CHECK: sol1 info {sol1.qnorm():.10E}")
+    q.displayln_info(f"sol1 info {sol1.crc32()}")
     return src, sol, sol1
 
 src, sol, sol1 = test_inv(geo, inv_qm)
 
 ld = q.contract_pion_field(sol, 0)
 
-q.displayln_info("CHECK: q.contract_pion_field(sol)", q.qnorm(ld), q.show(ld))
+q.displayln_info(f"CHECK: q.contract_pion_field(sol) {q.qnorm(ld):.14E}")
+q.displayln_info(q.show(ld))
 
 ld1 = q.contract_pion_field(sol1, 0)
 
-q.displayln_info("CHECK: q.contract_pion_field(sol1)", q.qnorm(ld1), q.show(ld1))
+q.displayln_info(f"CHECK: q.contract_pion_field(sol1) {q.qnorm(ld1):.14E}")
+q.displayln_info(q.show(ld1))
 
 q.timer_display()
 

@@ -62,7 +62,7 @@ sol1 = inv_gt * src
 sol_diff = sol1.copy()
 sol_diff -= sol1
 
-q.displayln_info("CHECK: ", sol.qnorm(), sol1.qnorm(), sol_diff.qnorm())
+q.displayln_info(f"CHECK: {sol.qnorm():.14E} {sol1.qnorm():.14E} {sol_diff.qnorm()}")
 
 q.timer_display()
 
