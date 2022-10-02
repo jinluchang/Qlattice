@@ -1,8 +1,10 @@
-import cqlat_grid_io as c
+import cqlat_grid_io as cgi
+import qlat as q
 
 def save_prop_float(prop, path):
-    return c.save_prop_float(prop, path)
+    cgi.save_prop_float(prop, path + ".partial")
+    q.qrename_info(path + ".partial", path)
 
 def load_prop_float(prop, path):
     # prop need to have the right geo as input
-    return c.load_prop_float(prop, path)
+    return cgi.load_prop_float(prop, path)

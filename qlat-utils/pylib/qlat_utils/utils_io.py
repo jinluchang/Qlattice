@@ -6,7 +6,6 @@ import pickle
 from cqlat_utils import qremove
 from cqlat_utils import qremove_all
 from cqlat_utils import qmkdir, qmkdir_info
-from cqlat_utils import qrename_info
 from cqlat_utils import does_file_exist
 from cqlat_utils import is_directory
 from cqlat_utils import is_regular_file
