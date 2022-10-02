@@ -70,12 +70,12 @@ src, sol, sol1 = test_inv(geo, inv_qm)
 
 ld = q.contract_pion_field(sol, 0)
 
-q.displayln_info(f"CHECK: q.contract_pion_field(sol) {q.qnorm(ld):.14E}")
+q.displayln_info(f"CHECK: q.contract_pion_field(sol) {q.qnorm(ld):.12E}")
 q.displayln_info(q.show(ld))
 
 ld1 = q.contract_pion_field(sol1, 0)
 
-q.displayln_info(f"CHECK: q.contract_pion_field(sol1) {q.qnorm(ld1):.14E}")
+q.displayln_info(f"CHECK: q.contract_pion_field(sol1) {q.qnorm(ld1):.12E}")
 q.displayln_info(q.show(ld1))
 
 q.timer_display()

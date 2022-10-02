@@ -4,6 +4,6 @@ CHECK: src info 12.0
 CHECK: src info 2788420690
 CHECK: sol info 2.6831554203E+00
 CHECK: sol1 info 2.3062344040E+02
-CHECK: q.contract_pion_field(sol) 9.35107586435445E-01
-CHECK: q.contract_pion_field(sol1) 6.66325114655377E+03
+CHECK: q.contract_pion_field(sol) 9.351075864354E-01
+CHECK: q.contract_pion_field(sol1) 6.663251146554E+03
 CHECK: finished successfully.
