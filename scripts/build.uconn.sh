@@ -26,7 +26,6 @@ set -e
 ./scripts/fftw_mpi.sh
 ./scripts/fftwf_mpi.sh
 
-./scripts/qlat-utils.sh
 ./scripts/qlat.sh
 
 ./scripts/c-lime.sh

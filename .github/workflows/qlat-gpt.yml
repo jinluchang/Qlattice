@@ -25,7 +25,7 @@ jobs:
     - name: Install Ubuntu packages
       run: |
         sudo apt-get update
-        sudo apt-get install -y libssl-dev libopenmpi-dev python3-sympy python3-numpy python3-scipy python3-psutil libmpfr-dev meson ninja-build
+        sudo apt-get install -y libgsl-dev zlib1g-dev libssl-dev libopenmpi-dev python3-sympy python3-numpy python3-scipy python3-psutil libmpfr-dev meson ninja-build
 
     - name: Display Python version
       run: python -c "import sys; print(sys.version)"
@@ -41,19 +41,20 @@ jobs:
 
     - name: Testing qlat
       run: |
-        source $HOME/qlat-build/default/setenv.sh
-        make -C examples-cpp clean-logs || echo Failed
-        make -C examples-cpp run || echo Failed
+        ./scripts/qlat-examples-cpp.sh || echo Failed
 
-    - name: Testing pylib qlat-gpt
+    - name: Testing pylib qlat
       run: |
-        source $HOME/qlat-build/default/setenv.sh
-        make -C examples-py clean-logs-gpt || echo Failed
-        make -C examples-py || echo Failed
+        ./scripts/qlat-examples-py-gpt.sh || echo Failed
 
-    - name: Show git diff
+    - name: Copying logs
       run: |
-        git diff
+        for i in examples-py/log ; do
+          cp $HOME/qlat-build/default/qlat-examples/$i $i
+        done
+        for i in examples-cpp/*/log ; do
+          cp $HOME/qlat-build/default/qlat-examples/$i $i
+        done
 
     - name: Check error
       run: |

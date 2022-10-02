@@ -1,6 +1,8 @@
 #!/bin/bash
 
-# need to have gcc, mpi, python3 (numpy, simpy, psutil, meson), openssl, ninja installed beforehand.
+# Need to have gcc, mpi, python3 (numpy, simpy, psutil, meson), openssl, ninja, zlib, gsl installed beforehand.
+
+# Ubuntu packages: libgsl-dev zlib1g-dev libssl-dev libopenmpi-dev python3-sympy python3-numpy python3-scipy python3-psutil libmpfr-dev meson ninja-build
 
 set -e
 
@@ -8,13 +10,11 @@ set -e
 
 ./scripts/setenv.default.sh
 
-./scripts/gsl.sh
 ./scripts/fftw_mpi.sh
 ./scripts/fftwf_mpi.sh
 ./scripts/cuba.sh
-./scripts/zlib.sh
 ./scripts/eigen.sh
-./scripts/qlat-utils.sh
+
 ./scripts/qlat.sh
 
 ./scripts/c-lime.sh

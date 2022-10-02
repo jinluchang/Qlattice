@@ -16,7 +16,6 @@ set -e
 ./scripts/ninja.sh
 ./scripts/python-meson.sh
 
-./scripts/qlat-utils.sh
 ./scripts/qlat.sh
 
 ./scripts/c-lime.sh

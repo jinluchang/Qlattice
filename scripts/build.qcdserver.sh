@@ -31,7 +31,7 @@ set -e
 ./scripts/fftwf_mpi.sh
 ./scripts/cuba.sh
 ./scripts/eigen.sh
-./scripts/qlat-utils.sh
+
 ./scripts/qlat.sh
 
 ./scripts/autoconf.sh
