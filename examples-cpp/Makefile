@@ -15,14 +15,16 @@ tests = qcd-utils-tests \
 		simple-1 \
 		template
 
-all:
-	for i in $(tests) ; do meson "$$i"-build "$$i" ; ninja -C "$$i"-build | tee -a log-build & done ; time wait
+all: run
 
-run: all
-	-time for i in $(tests) ; do ninja -C "$$i"-build run ; cp "$$i"-build/log "$$i"/log ; done
+compile:
+	for i in $(tests) ; do make -C "$$i" compile & done ; time wait
+
+run: compile
+	-time for i in $(tests) ; do make -C "$$i" run ; done
 
 clean:
-	-rm -rfv *-build
+	-time for i in $(tests) ; do make -C "$$i" clean ; done
 
 clean-logs: clean
-	-time for i in $(tests) ; do rm -v "$$i"/log ; done
+	-time for i in $(tests) ; do make -C "$$i" clean-logs ; done

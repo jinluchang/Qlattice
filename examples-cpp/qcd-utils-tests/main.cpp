@@ -58,15 +58,15 @@ void simple_tests()
     field_shift(gf2, gf1, c2);
     field_shift(gf1, gf, c1 + c2);
     gf1 -= gf2;
-    displayln_info(ssprintf("Consistency: orig qnorm: %E ; shift qnorm %E ; diff qnorm: %E",
+    displayln_info(ssprintf("CHECK: Consistency: orig qnorm: %.10E ; shift qnorm %.10E ; diff qnorm: %.2E",
                             qnorm(gf), qnorm(gf2), qnorm(gf1)));
     field_shift_direct(gf1, gf, c1 + c2);
     gf1 -= gf2;
-    displayln_info(ssprintf("Reference (field_shift_direct): orig qnorm: %E ; shift qnorm %E ; diff qnorm: %E",
+    displayln_info(ssprintf("CHECK: Reference (field_shift_direct): orig qnorm: %.10E ; shift qnorm %.10E ; diff qnorm: %.2E",
                             qnorm(gf), qnorm(gf2), qnorm(gf1)));
     field_shift_steps(gf1, gf, c1 + c2);
     gf1 -= gf2;
-    displayln_info(ssprintf("Reference (field_shift_steps): orig qnorm: %E ; shift qnorm %E ; diff qnorm: %E",
+    displayln_info(ssprintf("CHECK: Reference (field_shift_steps): orig qnorm: %.10E ; shift qnorm %.10E ; diff qnorm: %.2E",
                             qnorm(gf), qnorm(gf2), qnorm(gf1)));
   }
 }

@@ -215,9 +215,9 @@ plaq 3x3 :  9.13838859884687604E-01
 plaq (1,1,0,0)x2 :  4.54145277291344698E+01
 plaq (2,1,0,0)x1 :  4.55982926384696796E+01
 Cache: 'CommPlanCache': 9 / 32 [16] to add
-Consistency: orig qnorm: 6.144000E+03 ; shift qnorm 6.144000E+03 ; diff qnorm: 0.000000E+00
-Reference (field_shift_direct): orig qnorm: 6.144000E+03 ; shift qnorm 6.144000E+03 ; diff qnorm: 0.000000E+00
-Reference (field_shift_steps): orig qnorm: 6.144000E+03 ; shift qnorm 6.144000E+03 ; diff qnorm: 0.000000E+00
+CHECK: Consistency: orig qnorm: 6.1440000000E+03 ; shift qnorm 6.1440000000E+03 ; diff qnorm: 0.00E+00
+CHECK: Reference (field_shift_direct): orig qnorm: 6.1440000000E+03 ; shift qnorm 6.1440000000E+03 ; diff qnorm: 0.00E+00
+CHECK: Reference (field_shift_steps): orig qnorm: 6.1440000000E+03 ; shift qnorm 6.1440000000E+03 ; diff qnorm: 0.00E+00
 CHECK: finished successfully.
 Cache: 'CommPlanCache': 10 / 32 [16] clear
 clear_mem_cache: 3305984 bytes (0.003 GB) freed.

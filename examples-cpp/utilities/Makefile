@@ -1,13 +1,17 @@
 SHELL=/bin/bash
 
-tests = crc32 \
-		repartition \
-		field-compare \
-		gf-info \
-		latio-show
+all: run
 
-all:
-	for i in $(tests) ; do make -C "$$i" & done ; time wait
+compile:
+	meson build
+	ninja -C build
+
+run: compile
+	ninja -C build run
+	cp build/log log
 
 clean:
-	for i in $(tests) ; do make -C "$$i" clean ; done ; time wait
+	-rm -rf build
+
+clean-logs: clean
+	-rm -rf log
