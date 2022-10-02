@@ -24,5 +24,5 @@ run: all
 clean:
 	-rm -rfv *-build
 
-clean-logs:
+clean-logs: clean
 	-time for i in $(tests) ; do rm -v "$$i"/log ; done

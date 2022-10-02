@@ -14,15 +14,15 @@ name=qlat-examples-py
     mkdir -p "$build"
     cd "$build"
 
-    rsync -av --delete "$wd"/examples-py "$build"
+    rsync -av --delete "$wd"/examples-py "$build"/
     make -C examples-py clean-logs-gpt
-    make -C examples-py
+    q_verbose=1 make -C examples-py
 
     cd "$wd"/examples-py
 
     for log in *.log ; do
         echo diff "$build/examples-py/$log" "$log"
-        diff "$build/examples-py/$log" "$log"
+        diff "$build/examples-py/$log" "$log" || true
     done
 
     cd $wd

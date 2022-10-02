@@ -345,6 +345,7 @@ inline void evolution(const Coordinate& total_site, const CorrParams& cp,
         }
         cf *= 1.0 / (double)n_steps;
         cfs.push_back(cf);
+        displayln_info("CHECK: " + show(cf.phi2));
         display_info(show_results(cfs, total_site, cp, mass_sqr, lambda));
       }
       Timer::autodisplay();
