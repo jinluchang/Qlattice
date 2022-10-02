@@ -358,7 +358,7 @@ bool operator==(const array<M, N>& v1, const array<M, N>& v2)
 }
 
 template <class M>
-struct Handle {
+struct API Handle {
   M* p;
   //
   qacc Handle<M>() { init(); }
@@ -377,7 +377,7 @@ struct Handle {
 };
 
 template <class M>
-struct ConstHandle {
+struct API ConstHandle {
   const M* p;
   //
   qacc ConstHandle<M>() { init(); }

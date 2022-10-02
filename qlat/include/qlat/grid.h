@@ -102,14 +102,14 @@ inline void grid_begin(
   begin(id_node, size_node);
 }
 
-void grid_end(const bool is_preserving_cache = false)
+inline void grid_end(const bool is_preserving_cache = false)
 {
+  end(is_preserving_cache);
   Grid::Grid_finalize();
   system("rm /dev/shm/Grid* >/dev/null 2>&1");
-  end(is_preserving_cache);
 }
 
-void grid_convert(Grid::LatticeGaugeFieldF& ggf, const GaugeField& gf)
+inline void grid_convert(Grid::LatticeGaugeFieldF& ggf, const GaugeField& gf)
 {
   TIMER_VERBOSE("grid_convert(ggf,gf)");
   using namespace Grid;
@@ -137,7 +137,45 @@ void grid_convert(Grid::LatticeGaugeFieldF& ggf, const GaugeField& gf)
   }
 }
 
-void grid_convert(FermionField5d& ff, const Grid::LatticeFermionF& gff)
+inline void grid_convert(Grid::LatticePropagatorF& gprop, const Propagator4d& prop)
+{
+  TIMER_VERBOSE("grid_convert(gprop,prop)");
+  using namespace Grid;
+  const Geometry& geo = prop.geo();
+  qacc_for(index, geo.local_volume(), {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    Grid::Coordinate coor = grid_convert(xl);
+    const WilsonMatrix& wm = prop.get_elem(xl);
+    WilsonMatrix msc;
+    convert_mspincolor_from_wm(msc, wm);
+    array<ComplexF, sizeof(WilsonMatrix) / sizeof(ComplexT)> fs;
+    for (int k = 0; k < (int)fs.size(); ++k) {
+      fs[k] = msc.p[k];
+    }
+    pokeLocalSite(fs, gprop, coor);
+  })
+}
+
+inline void grid_convert(Propagator4d& prop, const Grid::LatticePropagatorF& gprop)
+{
+  TIMER_VERBOSE("grid_convert(prop,gprop)");
+  using namespace Grid;
+  const Geometry& geo = prop.geo();
+  qacc_for(index, geo.local_volume(), {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    Grid::Coordinate coor = grid_convert(xl);
+    array<ComplexF, sizeof(WilsonMatrix) / sizeof(ComplexT)> fs;
+    peekLocalSite(fs, gprop, coor);
+    WilsonMatrix msc;
+    for (int k = 0; k < (int)fs.size(); ++k) {
+      msc.p[k] = fs[k];
+    }
+    WilsonMatrix& wm = prop.get_elem(xl);
+    convert_wm_from_mspincolor(wm, msc);
+  })
+}
+
+inline void grid_convert(FermionField5d& ff, const Grid::LatticeFermionF& gff)
 // ff need to be initialized with correct geo
 {
   TIMER_VERBOSE("grid_convert(ff,gff)");
@@ -162,7 +200,7 @@ void grid_convert(FermionField5d& ff, const Grid::LatticeFermionF& gff)
   }
 }
 
-void grid_convert(Grid::LatticeFermionF& gff, const FermionField5d& ff)
+inline void grid_convert(Grid::LatticeFermionF& gff, const FermionField5d& ff)
 {
   TIMER_VERBOSE("grid_convert(gff,ff)");
   using namespace Grid;

@@ -3,7 +3,7 @@
 namespace qlat
 {  //
 
-struct FermionAction {
+struct API FermionAction {
   bool initialized;
   double mass;
   int ls;
@@ -50,7 +50,7 @@ struct FermionAction {
   }
 };
 
-struct FermionActionCloverWilson {
+struct API FermionActionCloverWilson {
   bool initialized;
   double mass;
   double clover_coef;
@@ -72,7 +72,7 @@ struct FermionActionCloverWilson {
   }
 };
 
-struct LancArg {
+struct API LancArg {
   bool initialized;
   double ch_alpha, ch_beta;
   long ch_ord;

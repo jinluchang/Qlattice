@@ -14,7 +14,7 @@
 namespace qlat
 {  //
 
-struct GaugeMomentum : FieldM<ColorMatrix, 4> {
+struct API GaugeMomentum : FieldM<ColorMatrix, 4> {
 };
 
 inline bool metropolis_accept(double& accept_prob, const double delta_h,

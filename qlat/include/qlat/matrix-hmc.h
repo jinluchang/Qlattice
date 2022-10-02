@@ -129,7 +129,7 @@ qacc ColorMatrixT<> make_tr_less_anti_herm_matrix(const ColorMatrixT<>& m)
   return ret;
 }
 
-struct AdjointColorMatrix : MatrixT<8, double> {
+struct API AdjointColorMatrix : MatrixT<8, double> {
   qacc AdjointColorMatrix() {}
   qacc AdjointColorMatrix(const MatrixT<8, double>& m) { *this = m; }
   //
@@ -140,7 +140,7 @@ struct AdjointColorMatrix : MatrixT<8, double> {
   }
 };
 
-struct ColorMatrixConstants;
+struct API ColorMatrixConstants;
 
 qacc AdjointColorMatrix make_adjoint_representation(
     const ColorMatrix& m, const ColorMatrixConstants& cmcs);
@@ -165,7 +165,7 @@ qacc AdjointColorMatrix make_diff_exp_map_diff(const ColorMatrix& m,
                                                const ColorMatrixConstants& cmcs,
                                                const int max_order = 20);
 
-struct ColorMatrixConstants {
+struct API ColorMatrixConstants {
   //
   // Luscher's convention: https://arxiv.org/abs/0907.5491v3
   //

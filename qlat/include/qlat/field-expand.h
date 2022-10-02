@@ -14,7 +14,7 @@
 namespace qlat
 {  //
 
-struct CommMarks : Field<int8_t> {
+struct API CommMarks : Field<int8_t> {
 };
 
 typedef void (*SetMarksField)(CommMarks& marks, const Geometry& geo,
@@ -88,19 +88,19 @@ qacc void set_marks_field_path(CommMarks& marks, const Coordinate xl,
   }
 }
 
-struct CommPackInfo {
+struct API CommPackInfo {
   long offset;
   long buffer_idx;
   long size;
 };
 
-struct CommMsgInfo {
+struct API CommMsgInfo {
   int id_node;
   long buffer_idx;
   long size;
 };
 
-struct CommPlan {
+struct API CommPlan {
   long total_send_size;  // send buffer size
   std::vector<CommMsgInfo> send_msg_infos;
   std::vector<CommPackInfo> send_pack_infos;
@@ -109,7 +109,7 @@ struct CommPlan {
   std::vector<CommPackInfo> recv_pack_infos;
 };
 
-struct CommPlanKey {
+struct API CommPlanKey {
   std::string key;
   SetMarksField set_marks_field;
   std::string tag;

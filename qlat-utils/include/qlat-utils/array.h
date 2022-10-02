@@ -8,7 +8,7 @@ namespace qlat
 {  //
 
 template <class M, unsigned long N>
-struct array {
+struct API array {
   M v[N];
   //
   qacc unsigned long size() const { return N; }
@@ -28,7 +28,7 @@ struct array {
 };
 
 template <class M>
-struct array<M, 0> {
+struct API array<M, 0> {
   qacc unsigned long size() const { return 0; }
   //
   qacc void fill(const M& x) { (void)x; }

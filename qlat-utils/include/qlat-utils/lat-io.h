@@ -19,7 +19,7 @@ namespace qlat
 
 const std::string lat_data_header = "#!/usr/bin/env lat-io-glimpse\n";
 
-struct LatDim {
+struct API LatDim {
   std::string name;
   long size;                         // size of this dimension
   std::vector<std::string> indices;  // indices names
@@ -34,7 +34,7 @@ struct LatDim {
 
 typedef std::vector<LatDim> LatInfo;
 
-struct LatData {
+struct API LatData {
   LatInfo info;
   std::vector<double> res;
   //

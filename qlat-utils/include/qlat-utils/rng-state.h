@@ -33,7 +33,7 @@
 namespace qlat
 {  //
 
-struct RngState;
+struct API RngState;
 
 inline void reset(RngState& rs);
 
@@ -63,7 +63,7 @@ inline double gRandGen(RngState& rs, const double center = 0.0,
 inline void computeHashWithInput(uint32_t hash[8], const RngState& rs,
                                  const std::string& input);
 
-struct RngState {
+struct API RngState {
   uint64_t numBytes;
   uint32_t hash[8];
   unsigned long type;

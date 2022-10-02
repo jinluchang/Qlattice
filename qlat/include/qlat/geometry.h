@@ -12,7 +12,7 @@ qacc int eo_from_coordinate(const Coordinate& xl)
   return 2 - (xl[0] + xl[1] + xl[2] + xl[3] + 16 * 1024 * 1024) % 2;
 }
 
-struct Geometry {
+struct API Geometry {
   bool initialized;
   //
   GeometryNode geon;

@@ -1,0 +1,25 @@
+qlat::begin(): MPI Initialized. num_node = 2
+qlat::begin_comm(comm,size_node): get_comm_list().push_back()
+qlat::begin_comm(comm,size_node): get_comm_list().size() = 1
+q_verbose=1
+q_num_threads=2 (default)
+qlat::begin(): q_num_threads = 2
+q_malloc_mmap_threshold='' (default)
+qlat::begin(): GeometryNode =
+{ initialized = true
+, num_node    = 2
+, id_node     = 0
+, size_node   = 1x1x1x2
+, coor_node   = 0x0x0x0 }
+q_timer_max_func_name_len=50 (default)
+q_mk_id_node_in_shuffle_seed='' (default)
+clear_mem_cache: 0 bytes (0.000 GB) freed.
+q_timer_mini_auto_show=1 (default)
+q_timer_max_always_show=10 (default)
+id_node:    1 / 2 ; coor_node: [0, 0, 0, 1] / [1, 1, 1, 2]
+id_node:    0 / 2 ; coor_node: [0, 0, 0, 0] / [1, 1, 1, 2]
+clear_mem_cache: 0 bytes (0.000 GB) freed.
+qlat::end(): get_comm_list().pop_back()
+qlat::end(): get_comm_list().size() = 0.
+qlat::end(): Finalize MPI.
+qlat::end(): MPI Finalized.

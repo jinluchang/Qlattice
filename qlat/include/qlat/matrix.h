@@ -7,9 +7,9 @@
 
 namespace qlat
 {  //
-
+//  alignas(QLAT_ALIGNED_BYTES)
 template <int DIMN, class T = ComplexT>
-struct alignas(QLAT_ALIGNED_BYTES) MatrixT
+struct API ALIGN MatrixT
 {
   T p[DIMN * DIMN];
   //
@@ -379,7 +379,7 @@ qacc T matrix_determinant(const MatrixT<DIMN, T>& x)
 }
 
 template <class T = ComplexT>
-struct ColorMatrixT : MatrixT<NUM_COLOR, T> {
+struct API ColorMatrixT : MatrixT<NUM_COLOR, T> {
   qacc ColorMatrixT() {}
   qacc ColorMatrixT(const MatrixT<NUM_COLOR, T>& m) { *this = m; }
   //
@@ -391,7 +391,7 @@ struct ColorMatrixT : MatrixT<NUM_COLOR, T> {
 };
 
 template <class T = ComplexT>
-struct WilsonMatrixT : MatrixT<4 * NUM_COLOR, T> {
+struct API WilsonMatrixT : MatrixT<4 * NUM_COLOR, T> {
   qacc WilsonMatrixT() {}
   qacc WilsonMatrixT(const MatrixT<4 * NUM_COLOR, T>& m) { *this = m; }
   //
@@ -403,7 +403,7 @@ struct WilsonMatrixT : MatrixT<4 * NUM_COLOR, T> {
 };
 
 template <class T = ComplexT>
-struct NonRelWilsonMatrixT : MatrixT<2 * NUM_COLOR, T> {
+struct API NonRelWilsonMatrixT : MatrixT<2 * NUM_COLOR, T> {
   qacc NonRelWilsonMatrixT() {}
   qacc NonRelWilsonMatrixT(const MatrixT<2 * NUM_COLOR, T>& m) { *this = m; }
   //
@@ -415,7 +415,7 @@ struct NonRelWilsonMatrixT : MatrixT<2 * NUM_COLOR, T> {
 };
 
 template <class T = ComplexT>
-struct SpinMatrixT : MatrixT<4, T> {
+struct API SpinMatrixT : MatrixT<4, T> {
   qacc SpinMatrixT() {}
   qacc SpinMatrixT(const MatrixT<4, T>& m) { *this = m; }
   //
@@ -427,7 +427,7 @@ struct SpinMatrixT : MatrixT<4, T> {
 };
 
 template <class T = ComplexT>
-struct SpinMatrixConstantsT {
+struct API SpinMatrixConstantsT {
   SpinMatrixT<T> unit;
   array<SpinMatrixT<T>, 4>
       gammas;  // Not using CPS's convention, but a more standard one.

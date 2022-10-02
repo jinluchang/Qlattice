@@ -136,7 +136,7 @@ inline PointSelection load_point_selection_info(const std::string& path)
 }
 
 template <class M>
-struct SelectedPoints {
+struct API SelectedPoints {
   // Avoid copy constructor when possible
   // (it is likely not be what you think it is)
   //

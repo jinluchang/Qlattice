@@ -31,6 +31,9 @@
 #endif
 #endif
 
+// #define ALIGN alignas(QLAT_ALIGNED_BYTES)
+#define ALIGN __attribute__((aligned(QLAT_ALIGNED_BYTES)))
+
 #ifndef USE_SINGLE_NODE
 #define USE_MULTI_NODE
 #endif

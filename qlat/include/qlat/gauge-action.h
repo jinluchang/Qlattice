@@ -5,7 +5,7 @@
 namespace qlat
 {  //
 
-struct GaugeAction {
+struct API GaugeAction {
   bool initialized;
   double beta;
   double c1;

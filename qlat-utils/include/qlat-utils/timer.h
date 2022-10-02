@@ -297,7 +297,7 @@ API inline void initialize_papi()
 #endif
 }
 
-struct TimerInfo {
+struct API TimerInfo {
   std::string fname;
   double dtime;
   double accumulated_time;
@@ -390,7 +390,7 @@ inline bool compare_time_info_p(const TimerInfo* p1, const TimerInfo* p2)
   return p1->accumulated_time < p2->accumulated_time;
 }
 
-struct Timer {
+struct API Timer {
   const char* cname;
   long info_index;
   bool is_using_total_flops;
@@ -417,7 +417,8 @@ struct Timer {
     static std::vector<double> history;
     return history;
   }
-  API static std::vector<long>& get_max_call_times_for_always_show_info_history()
+  API static std::vector<long>&
+  get_max_call_times_for_always_show_info_history()
   {
     static std::vector<long> history;
     return history;
@@ -704,20 +705,20 @@ struct Timer {
       db.push_back(&tdb[i]);
     }
     std::sort(db.begin(), db.end(), compare_time_info_p);
-    displayln_info(
-        ssprintf("Timer::display-start: %s (level=%ld) fname : time%% number of calls; "
-                 "Avg,Tot sec; Avg,Tot flops; Gflops",
-                 str.c_str(), (long)tdb_history.size()));
+    displayln_info(ssprintf(
+        "Timer::display-start: %s (level=%ld) fname : time%% number of calls; "
+        "Avg,Tot sec; Avg,Tot flops; Gflops",
+        str.c_str(), (long)tdb_history.size()));
     const long dbsize = db.size();
     for (long i = 0; i < dbsize; i++) {
       if (db[i]->call_times > 0) {
         db[i]->show_avg("display", max_function_name_length_shown());
       }
     }
-    displayln_info(
-        ssprintf("Timer::display-end:   %s (level=%ld) --------------------- total %.4E "
-                 "sec ----------------------",
-                 str.c_str(), (long)tdb_history.size(), total_time));
+    displayln_info(ssprintf(
+        "Timer::display-end:   %s (level=%ld) --------------------- total %.4E "
+        "sec ----------------------",
+        str.c_str(), (long)tdb_history.size(), total_time));
   }
   //
   API static void autodisplay(const double time)
@@ -754,7 +755,7 @@ struct Timer {
   }
 };
 
-struct TimerCtrl {
+struct API TimerCtrl {
   Timer* ptimer;
   bool verbose;
   //

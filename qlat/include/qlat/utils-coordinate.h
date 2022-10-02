@@ -269,7 +269,7 @@ qacc Coordinate c_rand_gen(RngState& rs, const Coordinate& size)
   return coordinate_from_index(ri, size);
 }
 
-struct EpsilonTensorTable {
+struct API EpsilonTensorTable {
   int tensor[4][4][4][4];
   //
   EpsilonTensorTable() { init(); }
@@ -296,7 +296,8 @@ struct EpsilonTensorTable {
   }
 };
 
-inline int epsilon_tensor(const int a, const int b, const int c, const int d)
+API inline int epsilon_tensor(const int a, const int b, const int c,
+                              const int d)
 {
   static EpsilonTensorTable table;
   return table.tensor[a][b][c][d];

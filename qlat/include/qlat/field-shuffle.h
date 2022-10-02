@@ -10,13 +10,13 @@
 namespace qlat
 {  //
 
-struct ShufflePlanMsgInfo {
+struct API ShufflePlanMsgInfo {
   int id_node;  // index for the target send/recv node
   long idx;     // idx of the starting location in send/recv buffer
   long size;    // number of data site for this msg
 };
 
-struct ShuffleCommPlan {
+struct API ShuffleCommPlan {
   long global_comm_size;  // global comm data size for Timer flops
   long total_send_size;   // total send buffer size
   std::vector<ShufflePlanMsgInfo>
@@ -33,20 +33,20 @@ struct ShuffleCommPlan {
   }
 };
 
-struct ShufflePlanRecvPackInfo {
+struct API ShufflePlanRecvPackInfo {
   int local_geos_idx;  // idx of the field that the data belong to
   long field_idx;      // idx of the data in the field
   long buffer_idx;     // idx of the data in the buffer
   long size;           // number of data site for this pack of data
 };
 
-struct ShufflePlanSendPackInfo {
+struct API ShufflePlanSendPackInfo {
   long field_idx;   // idx of the data in the field
   long buffer_idx;  // idx of the data in the buffer
   long size;        // number of data site for this pack of data
 };
 
-struct ShufflePlan {
+struct API ShufflePlan {
   bool is_no_shuffle;
   Coordinate new_size_node;
   Geometry geo_send;                // geo of the send field
@@ -833,7 +833,7 @@ inline ShufflePlan make_shuffle_plan(std::vector<FieldSelection>& fsels,
 
 // field dist write shuffle
 
-struct ShufflePlanKey {
+struct API ShufflePlanKey {
   Coordinate total_site;
   Coordinate new_size_node;
 };
@@ -1232,7 +1232,7 @@ inline ShufflePlan make_shuffle_plan_fft(const Coordinate& total_site,
 
 // reflection shuffle
 
-struct ShuffleReflectGIndexMap {
+struct API ShuffleReflectGIndexMap {
   Coordinate total_site;
   long operator()(const long gindex) const
   {
@@ -1265,7 +1265,7 @@ void reflect_field(Field<M>& f)
 
 // shift shuffle
 
-struct ShuffleShiftGIndexMap {
+struct API ShuffleShiftGIndexMap {
   Coordinate total_site;
   Coordinate shift;
   bool is_reflect;  // shift and then reflect
@@ -1302,7 +1302,7 @@ void field_shift_shuffle(Field<M>& f, const Field<M>& f0,
   qswap(f, fs[0]);
 }
 
-struct ShiftShufflePlan {
+struct API ShiftShufflePlan {
   Coordinate shift;
   bool is_reflect;      // shift and then reflect
   FieldSelection fsel;  // fsel after the shift

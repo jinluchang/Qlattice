@@ -28,7 +28,7 @@ inline bool check_fft_plan_key(const Geometry& geo, const int mc, const int dir,
   return b;
 }
 
-struct FftComplexFieldPlan {
+struct API FftComplexFieldPlan {
   Geometry geo;     // geo.is_only_local == true
   int mc;           // geo.multiplicity * sizeof(M) / sizeof(Complex)
   int dir;          // direction of the fft

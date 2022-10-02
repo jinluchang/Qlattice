@@ -43,6 +43,7 @@ lib = py3.extension_module('cqlat_ext',
   dependencies: deps,
   include_directories: incdir,
   install: true,
+  # gnu_symbol_visibility: 'default',
   )
 
 pkg = import('pkgconfig')

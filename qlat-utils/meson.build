@@ -37,6 +37,7 @@ py3.extension_module('cqlat_utils',
   dependencies: deps,
   include_directories: incdir,
   install: true,
+  # gnu_symbol_visibility: 'default',
   )
 
 c = run_command('bash', '-c', 'ls $MESON_SOURCE_ROOT/pylib/qlat_utils/*.py', check: true)

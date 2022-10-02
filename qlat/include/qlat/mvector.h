@@ -8,7 +8,7 @@ namespace qlat
 {  //
 
 template <int DIMN, class T = ComplexT>
-struct alignas(QLAT_ALIGNED_BYTES) MvectorT
+struct API ALIGN MvectorT
 {
   T p[DIMN];
   //
@@ -148,7 +148,7 @@ qacc MvectorT<DIMN, T> vector_conjugate(const MvectorT<DIMN, T>& x)
 }
 
 template <class T = ComplexT>
-struct WilsonVectorT : MvectorT<4 * NUM_COLOR, T> {
+struct API WilsonVectorT : MvectorT<4 * NUM_COLOR, T> {
   qacc WilsonVectorT() {}
   qacc WilsonVectorT(const MvectorT<4 * NUM_COLOR, T>& m) { *this = m; }
   //
@@ -160,7 +160,7 @@ struct WilsonVectorT : MvectorT<4 * NUM_COLOR, T> {
 };
 
 template <class T = ComplexT>
-struct SpinVectorT : MvectorT<4, T> {
+struct API SpinVectorT : MvectorT<4, T> {
   qacc SpinVectorT() {}
   qacc SpinVectorT(const MvectorT<4, T>& m) { *this = m; }
   //

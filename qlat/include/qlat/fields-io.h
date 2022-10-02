@@ -28,7 +28,7 @@
 namespace qlat
 {  //
 
-struct BitSet {
+struct API BitSet {
   std::vector<unsigned char> bytes;
   size_t N; // number of uncompressed elements
   size_t cN; // number of compressed elements
@@ -246,7 +246,7 @@ inline Coordinate shuffled_fields_reader_size_node_info(const std::string& path)
   return size_node;
 }
 
-struct FieldsWriter {
+struct API FieldsWriter {
   //
   // should only use ShuffledFieldsWriter
   //
@@ -295,7 +295,7 @@ struct FieldsWriter {
   void close() { qfile.close(); }
 };
 
-struct FieldsReader {
+struct API FieldsReader {
   //
   // should only use ShuffledFieldsReader
   //
@@ -930,7 +930,7 @@ long read(FieldsReader& fr, const std::string& fn, const FieldSelection& fsel,
   return total_bytes;
 }
 
-struct ShuffledBitSet {
+struct API ShuffledBitSet {
   FieldSelection fsel;
   ShufflePlan sp;
   std::vector<FieldSelection> fsels;
@@ -996,7 +996,7 @@ inline ShuffledBitSet mk_shuffled_bitset(const FieldM<int64_t, 1>& f_rank,
   return mk_shuffled_bitset(f_rank_combined, 0, new_size_node);
 }
 
-struct ShuffledFieldsWriter;
+struct API ShuffledFieldsWriter;
 
 typedef std::map<long, Handle<ShuffledFieldsWriter> > ShuffledFieldsWriterMap;
 
@@ -1023,7 +1023,7 @@ inline void remove_shuffled_fields_writer(ShuffledFieldsWriter& sfw)
   }
 }
 
-struct ShuffledFieldsWriter {
+struct API ShuffledFieldsWriter {
   std::string path;
   Coordinate new_size_node;
   std::vector<FieldsWriter> fws;
@@ -1106,7 +1106,7 @@ inline void close_all_all_shuffled_fields_writer()
   qassert(sfwm.size() == 0);
 }
 
-struct ShuffledFieldsReader {
+struct API ShuffledFieldsReader {
   std::string path;
   Coordinate new_size_node;
   std::vector<FieldsReader> frs;

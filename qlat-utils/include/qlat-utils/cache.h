@@ -12,7 +12,7 @@
 namespace qlat
 {  //
 
-struct CacheBase {
+struct API CacheBase {
   std::string name;
   long limit;
   long buffer_size;  // number of empty slots created by gc()
@@ -87,7 +87,7 @@ inline void clear_all_caches()
 }
 
 template <class K, class M>
-struct Cache : CacheBase {
+struct API Cache : CacheBase {
   std::map<K, std::pair<long, M> > m;
   long idx;
   //

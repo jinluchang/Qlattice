@@ -26,7 +26,7 @@ API inline QFileMap& get_all_qfile()
   return all_qfile;
 }
 
-struct QFile {
+struct API QFile {
   // Interface to FILE* which allow a view of a portion of the file specified by
   // offset_start and offset_end.
   // The view can be nested.
@@ -576,7 +576,7 @@ struct QarSegmentInfo {
 
 struct QarFileInternal;
 
-struct QarFile {
+struct API QarFile {
   std::shared_ptr<QarFileInternal> p;
   //
   QarFile() { init(); }

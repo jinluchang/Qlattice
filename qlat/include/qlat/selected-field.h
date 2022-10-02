@@ -132,7 +132,7 @@ inline void set_n_per_tslice(FieldM<int64_t, 1>& f_rank,
   });
 }
 
-struct FieldSelection {
+struct API FieldSelection {
   FieldM<int64_t, 1>
       f_rank;  // rank when the points being selected (-1 if not selected)
   //
@@ -311,7 +311,7 @@ inline PointSelection psel_from_fsel_local(const FieldSelection& fsel)
 }
 
 template <class M>
-struct SelectedField {
+struct API SelectedField {
   // Avoid copy constructor when possible
   // (it is likely not be what you think it is)
   //

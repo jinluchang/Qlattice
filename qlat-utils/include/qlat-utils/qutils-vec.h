@@ -147,7 +147,7 @@ qacc array<M, 10> make_array(const M& x, const M& x1, const M& x2, const M& x3,
 }
 
 template <class M>
-struct Vector {
+struct API Vector {
   M* p;
   long n;
   //
@@ -230,7 +230,7 @@ qacc void set_zero(Vector<M> vec)
 }
 
 template <class M, int N>
-struct Array {
+struct API Array {
   M* p;
   //
   qacc Array<M, N>() { p = NULL; }

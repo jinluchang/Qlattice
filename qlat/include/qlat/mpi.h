@@ -14,7 +14,7 @@
 namespace qlat
 {  //
 
-struct Q_Comm {
+struct API Q_Comm {
   MPI_Comm comm;
   Coordinate size_node;
   RngState sync_node_rs;
@@ -43,7 +43,7 @@ API inline MPI_Comm& get_comm_internal()
 
 inline MPI_Comm get_comm() { return get_comm_internal(); }
 
-struct GeometryNode {
+struct API GeometryNode {
   bool initialized;
   // About node geometry.
   int num_node;
@@ -120,7 +120,7 @@ inline const Coordinate& get_coor_node()
   return get_geometry_node().coor_node;
 }
 
-struct GeometryNodeNeighbor {
+struct API GeometryNodeNeighbor {
   int dest[2][DIMN];
   // dest[dir][mu]
   // dir = 0, 1 for Plus dir or Minus dir

@@ -16,7 +16,7 @@ namespace qlat
 inline int& get_field_init();
 
 template <class M>
-struct Field {
+struct API Field {
   // Avoid copy constructor when possible
   // (it is likely not be what you think it is)
   //
@@ -376,7 +376,7 @@ double qnorm_double(const Field<M>& f1, const Field<M>& f2)
 }
 
 template <class M, int multiplicity>
-struct FieldM : Field<M> {
+struct API FieldM : Field<M> {
   using Field<M>::init;
   void init(const Geometry& geo_)
   {

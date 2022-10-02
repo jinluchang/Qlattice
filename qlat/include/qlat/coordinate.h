@@ -8,7 +8,7 @@
 namespace qlat
 {  //
 
-struct Coordinate : public array<int, DIMN> {
+struct API Coordinate : public array<int, DIMN> {
   qacc Coordinate() { array<int, DIMN>::fill(0); }
 
   qacc Coordinate(int first, int second, int third, int fourth)

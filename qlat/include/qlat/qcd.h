@@ -21,19 +21,19 @@ namespace qlat
 {  //
 
 template <class T = ComplexT>
-struct GaugeFieldT : FieldM<ColorMatrixT<T>, 4> {
+struct API GaugeFieldT : FieldM<ColorMatrixT<T>, 4> {
 };
 
 template <class T = ComplexT>
-struct Propagator4dT : FieldM<WilsonMatrixT<T>, 1> {
+struct API Propagator4dT : FieldM<WilsonMatrixT<T>, 1> {
 };
 
 template <class T = ComplexT>
-struct FermionField4dT : FieldM<WilsonVectorT<T>, 1> {
+struct API FermionField4dT : FieldM<WilsonVectorT<T>, 1> {
 };
 
 template <class T = ComplexT>
-struct FermionField5dT : Field<WilsonVectorT<T> > {
+struct API FermionField5dT : Field<WilsonVectorT<T> > {
 };
 
 #ifndef QLAT_NO_DEFAULT_TYPE
@@ -207,7 +207,7 @@ double gf_avg_link_trace(const GaugeFieldT<T>& gf)
   return sum;
 }
 
-struct GaugeFieldInfo {
+struct API GaugeFieldInfo {
   std::string ensemble_id;
   std::string ensemble_label;
   std::string creator;

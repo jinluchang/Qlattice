@@ -26,7 +26,7 @@ inline std::string qar_file_multi_vol_suffix(const long i)
   return "";
 }
 
-struct QarFileMultiVol : std::vector<QarFile> {
+struct API QarFileMultiVol : std::vector<QarFile> {
   // Only for reading
   QarFileMultiVol() { init(); }
   QarFileMultiVol(const std::string& path_qar, const std::string& mode)

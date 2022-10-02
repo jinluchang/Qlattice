@@ -37,7 +37,7 @@ bool qisnan(const std::vector<M>& arr)
   return false;
 }
 
-struct CoordinateD : public array<double, DIMN> {
+struct API CoordinateD : public array<double, DIMN> {
   qacc CoordinateD() { memset(this, 0, sizeof(CoordinateD)); }
   qacc CoordinateD(const array<double, DIMN>& arr)
   {

@@ -44,7 +44,7 @@ API inline size_t& get_mem_cache_max_size(const bool is_acc = false)
   }
 }
 
-struct MemCache {
+struct API MemCache {
   bool is_acc;
   size_t mem_cache_size;
   std::unordered_multimap<size_t, void*> db;
@@ -201,7 +201,7 @@ inline void free_mem(void* ptr, const long min_size, const bool is_acc = false)
 }
 
 template <class M>
-struct vector {
+struct API vector {
   // Avoid copy constructor when possible
   // (it is likely not be what you think it is)
   //
@@ -385,7 +385,7 @@ struct vector {
 };
 
 template <class M>
-struct vector_acc : vector<M> {
+struct API vector_acc : vector<M> {
   // Avoid copy constructor when possible
   // (it is likely not be what you think it is)
   //
@@ -458,7 +458,7 @@ qacc double qnorm(const vector<T>& mm)
 }
 
 template <class M>
-struct box {
+struct API box {
   //
   // like a one element vector
   //
@@ -583,7 +583,7 @@ struct box {
 };
 
 template <class M>
-struct box_acc : box<M> {
+struct API box_acc : box<M> {
   //
   // like a one element vector_acc
   //
