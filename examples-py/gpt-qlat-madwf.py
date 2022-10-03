@@ -18,11 +18,11 @@ grid = qg.mk_grid(geo)
 rng = g.random("test")
 gpt_gf = g.qcd.gauge.random(grid, rng, scale=0.5)
 
-q.displayln_info(f"CHECK: g.qcd.gauge.plaquette = {g.qcd.gauge.plaquette(gpt_gf):.17f}")
+q.displayln_info(f"CHECK: g.qcd.gauge.plaquette = {g.qcd.gauge.plaquette(gpt_gf):.10f}")
 
 gpt_gf_f = g.convert(gpt_gf, g.single)
 
-q.displayln_info(f"CHECK: g.qcd.gauge.plaquette = {g.qcd.gauge.plaquette(gpt_gf_f):.17f} single precision")
+q.displayln_info(f"CHECK: g.qcd.gauge.plaquette = {g.qcd.gauge.plaquette(gpt_gf_f):.4f} single precision")
 
 gf = qg.qlat_from_gpt(gpt_gf)
 

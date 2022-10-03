@@ -1,6 +1,6 @@
 CHECK: geo.show() = Geometry([4, 4, 4, 8], 1)
-CHECK: g.qcd.gauge.plaquette = 0.94517601648581551
-CHECK: g.qcd.gauge.plaquette = 0.94517599211798775 single precision
+CHECK: g.qcd.gauge.plaquette = 0.9451760165
+CHECK: g.qcd.gauge.plaquette = 0.9452 single precision
 CHECK: tag=qm start
 CHECK: src info 12.0 2788420690
 CHECK: sol info 1.195616283925891 1974843651
