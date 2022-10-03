@@ -46,6 +46,7 @@ def run_prop_wsrc_light(job_tag, traj, get_gf, get_gt, get_psel, get_fsel, get_w
             tag = f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc}"
             if tag not in tag_list:
                 q.displayln_info(f"run_prop_wsrc_light: {job_tag} {traj} tag={tag} not in data")
+                continue
             sc_prop = q.SelProp(fselc)
             sc_prop.load_double_from_float(sfr, tag)
             # sc_prop = gt_inv * sc_prop
@@ -85,9 +86,10 @@ def run_prop_wsrc_strange(job_tag, traj, get_gf, get_gt, get_psel, get_fsel, get
             tag = f"tslice={tslice} ; type={inv_type} ; accuracy={inv_acc}"
             if tag not in tag_list:
                 q.displayln_info(f"run_prop_wsrc_strange: {job_tag} {traj} tag={tag} not in data")
+                continue
             sc_prop = q.SelProp(fselc)
             sc_prop.load_double_from_float(sfr, tag)
-            sc_prop = gt_inv * sc_prop
+            # sc_prop = gt_inv * sc_prop
             s_prop = q.SelProp(fsel)
             s_prop @= sc_prop
             prop = q.Prop(geo)
