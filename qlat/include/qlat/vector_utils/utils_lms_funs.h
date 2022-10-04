@@ -289,9 +289,14 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
   //qlat::vector_gpu<Ty > resZero;
 
   if(save_zero_corr){
-  EresH.resize(32 * nmass * fd.nt);clear_qv(EresH );
-  EresL.resize(32 * nmass * fd.nt);clear_qv(EresL );
-  EresA.resize(32 * nmass * fd.nt);clear_qv(EresA );}
+    EresH.resize(32 * nmass * fd.nt); 
+    EresL.resize(32 * nmass * fd.nt); 
+    EresA.resize(32 * nmass * fd.nt); 
+    clear_qv(EresH , false);
+    clear_qv(EresL , false);
+    clear_qv(EresA , false);
+    qacc_barrier(dummy);
+  }
   const int nvecs = 32 * nmass;
   /////do corr
 
@@ -487,6 +492,7 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
   }
 
   if(savezero){
+    TIMER("lms savezero");
     ////std::vector<qlat::FieldM<Ty, 1> > Vzero_data;
     if(int(Vzero_data.size() ) != 32*nmass){
       Vzero_data.resize(32*nmass);

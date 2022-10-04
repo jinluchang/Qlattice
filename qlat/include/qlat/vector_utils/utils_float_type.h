@@ -258,6 +258,7 @@ inline std::complex<double> operator-(const std::complex<float > &a, const std::
 template<typename Ty>
 void zero_Ty(Ty* a, long size,int GPU=0, bool dummy=true)
 {
+  TIMERA("zero_Ty")
   (void)GPU;
   (void)dummy;
   #ifdef QLAT_USE_ACC
@@ -270,6 +271,12 @@ void zero_Ty(Ty* a, long size,int GPU=0, bool dummy=true)
 
   #pragma omp parallel for
   for(long isp=0;isp<size;isp++){  a[isp] = 0;}
+}
+
+template<typename Ty>
+void clear_qv(qlat::vector_acc<Ty > &G, bool dummy = true)
+{
+  zero_Ty(G.data(), G.size(), 1 , dummy);
 }
 
 #define print0 if(qlat::get_id_node() == 0) printf

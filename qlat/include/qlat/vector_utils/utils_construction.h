@@ -32,12 +32,6 @@ namespace qlat{
 #define EAa   Eigen::Map<Eigen::Array<Ta ,Eigen::Dynamic,1 > >
 
 template<typename Ty>
-void clear_qv(qlat::vector_acc<Ty > &G)
-{
-  zero_Ty(G.data(), G.size(), 1 );
-}
-
-template<typename Ty>
 void prop4d_src_gamma(Propagator4dT<Ty >& prop, ga_M& ga,int dir = 0)
 {
   ////Rowmajor (a,b), b is continues in memory

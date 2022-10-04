@@ -1058,6 +1058,7 @@ void FieldM_src_to_FieldM_prop(std::vector<qlat::FieldM<Ty , 1> >& src, std::vec
 template <typename Ty, int civ >
 void copy_eigen_src_to_FieldM(qlat::vector_gpu<Ty >& src, std::vector<qlat::FieldM<Ty , civ> >& res, LInt b_size, qlat::fft_desc_basic& fd, int dir = 0, int GPU = 1, bool rotate = false)
 {
+  TIMERA("copy_eigen_src_to_FieldM");
   if(civ%12 != 0){abort_r("FieldM type not supported!\n");}
   unsigned int nV = 0;int cfac = civ/12;
 

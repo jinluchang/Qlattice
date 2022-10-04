@@ -930,6 +930,7 @@ struct corr_dat
   }
 
   void create_dat(const std::string& key, const std::string& dimN, const std::string& corr="NONE"){
+    TIMERA("corr create_dat");
     if(sizeof(Ty) != sizeof(float) and sizeof(Ty) != sizeof(double)){qassert(false);};
     std::vector<std::string > tem = stringtolist(key);
     dim = tem.size();
