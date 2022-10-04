@@ -403,6 +403,96 @@ void get_noises_Coordinate(const qlat::FieldM<Ty, 1>& noise, PointSelection& pse
 
 }
 
+template <class Ty, int civ>
+void get_mix_color_src(qlat::FieldM<Ty , civ>& src, const Coordinate& sp, 
+  const std::vector<double >& phases, const FieldSelection& fsel, const int type_src = 0, int seed = 0)
+{
+  TIMER("get_mix_color_src");
+  qassert(src.initialized);
+  const qlat::Geometry& geo = src.geo();
+  const long V_local = geo.local_volume();
+
+  Ty* srcP = (Ty*) qlat::get_data(src).data();
+  zero_Ty(srcP, V_local*3, 0);
+
+  qlat::vector_acc<Ty > color_phases(3);
+  const int tsrc = sp[3];
+  for(int c=0;c<3;c++){
+    double r = phases[c];
+    color_phases[c] = Ty(std::cos(r), std::sin(r));
+  }
+  fft_desc_basic fd(geo);
+
+  if(type_src == 0) ////point src
+  {
+    if(fd.coordinate_g_is_local(sp)){
+      LInt isp = fd.index_l_from_g_coordinate(sp);
+      for(int c=0;c<3;c++){
+        srcP[isp*3 + c] = color_phases[c];
+      }
+    }
+  }
+
+  if(type_src == 1) ////Wall src
+  {
+    std::vector<qlat::RngState > rsL;rsL.resize(omp_get_max_threads());
+    for(int is=0;is<omp_get_max_threads();is++)
+    {
+      rsL[is] = qlat::RngState(seed + qlat::get_id_node()*omp_get_max_threads() + is);
+    }
+    
+    qthread_for(isp, geo.local_volume(), {
+      Coordinate xl = geo.coordinate_from_index(isp);
+      Coordinate xg = geo.coordinate_g_from_l(xl);
+      if(xg[3] == tsrc){
+        qlat::RngState& rs = rsL[omp_get_thread_num()];
+        for(int c=0;c<3;c++){
+          double r = 2 * PI * qlat::u_rand_gen(rs);
+          srcP[isp*3 + c] = Ty(std::cos(r), std::sin(r));
+        }
+      }
+    });
+  }
+
+  if(type_src == 11) ////Wall src tests
+  {
+    qacc_for(isp, geo.local_volume(), {
+      Coordinate xl = geo.coordinate_from_index(isp);
+      Coordinate xg = geo.coordinate_g_from_l(xl);
+      if(xg[3] == tsrc)
+      for(int c=0;c<3;c++){
+        srcP[isp*3 + c] = color_phases[c];
+      }
+    });
+  }
+
+  if(type_src == 2) ////sparse src
+  {
+    std::vector<qlat::RngState > rsL;rsL.resize(omp_get_max_threads());
+    for(int is=0;is<omp_get_max_threads();is++)
+    {
+      rsL[is] = qlat::RngState(seed + qlat::get_id_node()*omp_get_max_threads() + is);
+    }
+    
+    qthread_for(isp, geo.local_volume(), {
+      const long rank = fsel.f_local_idx.get_elem(isp);
+      if(rank >= 0){
+        const Coordinate xl  = geo.coordinate_from_index(isp);
+        const Coordinate xg  = geo.coordinate_g_from_l(xl);
+        if(xg[3] == tsrc){
+          qlat::RngState& rs = rsL[omp_get_thread_num()];
+          for(int c=0;c<3;c++){
+            double r = 2 * PI * qlat::u_rand_gen(rs);
+            srcP[isp*3 + c] = Ty(std::cos(r), std::sin(r));
+          }
+        }
+      }
+    }); 
+  }
+
+
+}
+
 
 }
 

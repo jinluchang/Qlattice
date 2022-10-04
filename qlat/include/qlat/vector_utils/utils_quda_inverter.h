@@ -2530,6 +2530,8 @@ void get_staggered_prop(quda_inverter& qinv, qlat::FieldM<Ty, 3>& src, qlat::Fie
   else{
     qinv.do_inv(qinv.cres->V(), qinv.csrc->V(), mass, err, niter, prec_type);
   }
+
+  if(!prop.initialized){prop.init(src.geo());} ////allocate mem for prop
   quda_cf_to_qlat_cf(prop, (qlat::Complex*) qinv.cres->V());
 
   //   norm = norm_FieldM(prop);

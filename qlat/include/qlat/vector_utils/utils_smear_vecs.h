@@ -960,7 +960,7 @@ template <class Ty, int c0,int d0, class Tg>
 void smear_propagator_gwu_convension_inner(Ty* prop, const GaugeFieldT<Tg >& gf,
                       const double width, const int step, const CoordinateD& mom = CoordinateD(), const bool smear_in_time_dir = false, const int mode = 1)
 {
-  TIMER_FLOPS("==smear propagator");
+  TIMER_FLOPS("smear propagator");
   long long Tfloat = 0;
   ///double mem       = 0.0;
   Geometry geo = gf.geo();

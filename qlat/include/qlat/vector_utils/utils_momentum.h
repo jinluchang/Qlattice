@@ -354,7 +354,7 @@ struct momentum_dat{
       long i0 = mapA[isp];
       //long si = fsel.f_local_idx.get_elems_const(i0)[0];
       const long si = fsel.f_local_idx.get_elem(i0);
-      qassert(si != -1);
+      //qassert(si != -1);
       fsel_map[isp] = si;
     });
 
