@@ -279,6 +279,23 @@ void clear_qv(qlat::vector_acc<Ty > &G, bool dummy = true)
   zero_Ty(G.data(), G.size(), 1 , dummy);
 }
 
+template<typename Ty>
+inline crc32_t quick_checksum(Ty* buf, size_t Nsize, const long Nsum = 10, const long hits = 100)
+{
+  TIMERA("quick_checksum");
+  crc32_t sum = 0;
+  if(hits < 0){sum = crc32_par((void*) buf, Nsize * sizeof(Ty));}
+  if(hits > 0){
+    long Nuse = Nsum;
+    if(long(Nsize / hits) < Nuse){Nuse = Nsize / hits;}
+    for(long hi=0;hi < hits; hi++)
+    {
+      sum += crc32_par((void*) &buf[hi * Nuse], Nuse * sizeof(Ty));
+    }
+  }
+  return sum;
+}
+
 #define print0 if(qlat::get_id_node() == 0) printf
 
 inline unsigned int get_node_rank_funs0()

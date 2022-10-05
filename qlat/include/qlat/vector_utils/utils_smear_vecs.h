@@ -146,6 +146,7 @@ struct smear_fun{
 
   bool  gauge_setup_flag;
   void* gauge_check;
+  crc32_t gauge_checksum;
   /////buffers
 
   bool  mem_setup_flag;
@@ -169,6 +170,7 @@ struct smear_fun{
     groupP = 0;
 
     gauge_check = NULL;
+    gauge_checksum = 0;
     gauge_setup_flag = false;
 
     mem_setup_flag = false;
@@ -193,6 +195,7 @@ struct smear_fun{
     if(Nvol_ext == 0){qassert(false);}
     if(gauge.size() == 0){qassert(false);}
     if(gauge_check == NULL){qassert(false);}
+    ////if(gauge_checksum == 0){qassert(false);}
     if(map_bufV.size() == 0){qassert(false);}
     if(map_bufD.size() == 0){qassert(false);}
     if(vL.size() != 8){qassert(false);}
@@ -413,6 +416,9 @@ struct smear_fun{
     if(mom_factors.size() != 8){update = true;}
     else{for(int i=0;i<momF.size();i++){if(momF[i]!=mom_factors[i]){update = true;}}}
 
+    crc32_t tmp_gauge_checksum = quick_checksum((Tg*) qlat::get_data(gf).data(), qlat::get_data_size(gf) / sizeof(Tg) );
+    if(gauge_checksum != tmp_gauge_checksum ){update = true;}
+
     if(update){
       TIMERA("gauge setup");
       qassert(geo.total_site() == gf.geo().total_site());
@@ -421,7 +427,7 @@ struct smear_fun{
       extend_links_to_vecs(gauge.data(), gf, momF);
       gauge_setup_flag = true;
       gauge_check = (void*) qlat::get_data(gf).data();
-
+      gauge_checksum = quick_checksum((Tg*) qlat::get_data(gf).data(), qlat::get_data_size(gf) / sizeof(Tg));
       ///Need to redistribute when copied
       fft_copy = 0 ;
     }
@@ -993,7 +999,7 @@ void smear_propagator_gwu_convension_inner(Ty* prop, const GaugeFieldT<Tg >& gf,
   smear_fun<Ty >& smf = *((smear_fun<Ty >*) (smf_copy.smfP));
   smf.gauge_setup(gf, mom);
 
-  fft_desc_basic fd(geo);
+  ////fft_desc_basic fd(geo);
   ////Vec_redistribute vec_large(fd);
 
   long Nvol_pre = geo.local_volume();
