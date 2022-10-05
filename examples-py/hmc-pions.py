@@ -139,8 +139,8 @@ class HMC:
         self.start_measurements = 0
         self.init_length = 20
         self.block_init_length = 20
-        self.block_length = 45
-        self.num_blocks = 1
+        self.block_length = 95
+        self.num_blocks = 4
         self.final_block_length = 200
         # A variable to store the estimated vacuum expectation value of sigma
         self.vev = 0
@@ -204,7 +204,7 @@ class HMC:
             self.update_masses_w_safe_fit()
         elif(not self.masses_loaded and self.traj<self.init_length+self.num_blocks*self.block_length):
             self.perform_metro = True
-            self.safe_estimate_masses = False
+            self.safe_estimate_masses = True
             if((self.traj-self.init_length) % self.block_length == 0 and (self.traj-self.init_length) > 0):
                 self.vev=np.mean(self.vevs)
                 self.vevs=[]
@@ -248,12 +248,27 @@ class HMC:
         # After multiplying the ratio of force_mod_av/field_mod_av by
         # (pi/2)**(-2), we have our estimated masses
         self.masses *= 4/np.pi**2
+        # A safer method for estimating the masses away from equilibrium
+        self.force_mod_av*=1.0/self.divisor/10.0
+        # Choose the larger of the two choices
+        self.choose_larger(self.masses, self.force_mod_av)
+        self.aux2.set_unit()
+        self.aux2*=0.01
+        self.choose_larger(self.masses, self.aux2)
+        
         self.reset_fit_variables()
     
+    def choose_larger(self, field1, field2):
+        # TODO: Make a more efficient, safer way to do it
+        field1.less_than_double(field2,self.mask)
+        field2.multiply_double(self.mask)
+        self.aux1.set_unit()
+        self.mask.less_than_double(self.aux1, self.mask)
+        field1.multiply_double(self.mask)
+        field1+=field2
+    
     def update_masses_w_safe_fit(self):
-        self.masses.set_ratio_double(self.force_mod_av,self.field_mod_av)
-        self.masses*=4/np.pi**2
-        self.reset_fit_variables()
+        self.update_masses_w_fit()
     
     def reset_fit_variables(self):
         # Reset all accumulated variables
@@ -412,7 +427,7 @@ class HMC:
                 self.aux1.set_abs_from_complex(field.get_field_ft())
                 self.field_mod_av+=self.aux1
                 self.divisor+=1
-            elif(self.estimate_masses):
+            if(self.estimate_masses):
                 self.aux1.set_double_from_complex(field.get_field_ft())
                 self.field_av+=self.aux1
                 self.aux2.set_double_from_complex(force.get_field_ft())
@@ -685,13 +700,13 @@ phi_i_dist=[0.0]*64
 theta_dist=[0.0]*64
 
 # The lattice dimensions
-total_site = [4,4,4,8]
+total_site = [8,8,8,16]
 
 # The multiplicity of the scalar field
 mult = 4
 
 # The number of trajectories to calculate
-n_traj = 500
+n_traj = 1000
 # The number of steps to take in a single trajectory
 steps = 20
 
@@ -705,7 +720,7 @@ alpha = 0.1
 recalculate_masses = False
 fresh_start = False
 
-version = "1-3"
+version = "1-4"
 
 for i in range(1,len(sys.argv),2):
     try:
