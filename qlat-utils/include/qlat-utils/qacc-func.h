@@ -52,6 +52,10 @@ API inline int& qacc_num_threads()
 
 #ifdef QLAT_USE_ACC
 
+#ifndef __CUDACC_EXTENDED_LAMBDA__
+#error "please compile with --expt-extended-lambda"
+#endif
+
 #define qacc_continue return
 
 #define qacc_for2dNB(iter1, num1, iter2, num2, ...)                     \
@@ -71,7 +75,7 @@ API inline int& qacc_num_threads()
                          cudaGetErrorString(err), __FILE__, __LINE__)); \
       qassert(false);                                                   \
     }                                                                   \
-    qlambda_apply<<<cu_blocks, cu_threads> > >(num1, num2, lambda);     \
+    qlambda_apply<<<cu_blocks, cu_threads>>>(num1, num2, lambda);     \
   }
 
 template <typename Lambda>
