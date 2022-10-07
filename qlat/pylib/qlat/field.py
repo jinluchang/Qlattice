@@ -245,11 +245,12 @@ class Field:
         else:
             raise Exception("Field.sparse")
 
-    def save(self, path, *args):
+    def save_direct(self, path, *args):
+        # save Field directly (without any conversion of endianness or precision)
         # possible way to call:
-        # f.save(path)
-        # f.save(path, new_size_node)
-        # f.save(sfw, fn)
+        # f.save_direct(path)
+        # f.save_direct(path, new_size_node)
+        # f.save_direct(sfw, fn)
         from qlat.fields_io import ShuffledFieldsWriter
         if isinstance(path, str):
             mk_file_dirs_info(path)
@@ -263,9 +264,10 @@ class Field:
             [fn] = args
             return sfw.write(fn, self)
         else:
-            raise Exception("Field.save")
+            raise Exception("Field.save_direct")
 
-    def load(self, path, *args):
+    def load_direct(self, path, *args):
+        # load Field directly (without any conversion of endianness or precision)
         # possible way to call:
         # f.load(path)
         # f.load(sfr, fn)
@@ -277,7 +279,7 @@ class Field:
             [ fn, ] = args
             return sfr.read(fn, self)
         else:
-            raise Exception("Field.load")
+            raise Exception("Field.load_direct")
 
     def save_64(self, path, *args):
         f = self.copy()
@@ -286,7 +288,7 @@ class Field:
             f.to_from_endianness("big_64")
         elif isinstance(path, ShuffledFieldsWriter):
             f.to_from_endianness("little_64")
-        return f.save(path, *args)
+        return f.save_direct(path, *args)
 
     def save_double(self, path, *args):
         return self.save_64(path, *args)
@@ -299,10 +301,10 @@ class Field:
             ff.to_from_endianness("big_32")
         elif isinstance(path, ShuffledFieldsWriter):
             ff.to_from_endianness("little_32")
-        return ff.save(path, *args)
+        return ff.save_direct(path, *args)
 
     def load_64(self, path, *args):
-        ret = self.load(path, *args)
+        ret = self.load_direct(path, *args)
         if ret > 0:
             from qlat.fields_io import ShuffledFieldsReader
             if isinstance(path, str):
@@ -316,7 +318,7 @@ class Field:
 
     def load_double_from_float(self, path, *args):
         ff = Field("float")
-        ret = ff.load(path, *args)
+        ret = ff.load_direct(path, *args)
         if ret > 0:
             from qlat.fields_io import ShuffledFieldsReader
             if isinstance(path, str):
