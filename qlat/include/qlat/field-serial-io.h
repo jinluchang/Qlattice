@@ -212,6 +212,7 @@ long serial_read_field_par(Field<M>& f, const std::string& path,
 
 template <class M>
 crc32_t field_simple_checksum(const Field<M>& f)
+// call with data endianness native to the machine
 {
   TIMER("field_simple_checksum");
   qassert(f.geo().is_only_local());

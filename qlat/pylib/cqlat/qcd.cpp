@@ -140,6 +140,19 @@ EXPORT(gf_twist_boundary_at_boundary, {
   Py_RETURN_NONE;
 })
 
+EXPORT(save_gauge_transform_cps, {
+  using namespace qlat;
+  PyObject* p_gt = NULL;
+  PyObject* p_path = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_gt, &p_path)) {
+    return NULL;
+  }
+  const GaugeTransform& gt = py_convert_type<GaugeTransform>(p_gt);
+  const std::string path = py_convert_data<std::string>(p_path);
+  const long ret = save_gauge_transform_cps(gt, path);
+  return py_convert(ret);
+})
+
 EXPORT(load_gauge_transform_cps, {
   using namespace qlat;
   PyObject* p_gt = NULL;

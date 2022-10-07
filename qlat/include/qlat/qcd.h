@@ -346,7 +346,7 @@ long save_gauge_field(const GaugeFieldT<T>& gf, const std::string& path,
     }
   }
   GaugeFieldInfo gfi = gfi_;
-  gfi.simple_checksum = field_simple_checksum(gft);
+  gfi.simple_checksum = field_simple_checksum(gft); // before to_from_big_endian_64
   to_from_big_endian_64(get_data(gft));
   gfi.plaq = gf_avg_plaq(gf);
   gfi.trace = gf_avg_link_trace(gf);
@@ -399,7 +399,7 @@ long load_gauge_field(GaugeFieldT<T>& gf, const std::string& path)
   } else {
     qassert(false);
   }
-  crc32_t simple_checksum = field_simple_checksum(gft);
+  crc32_t simple_checksum = field_simple_checksum(gft); // after endianness conversion
   if (simple_checksum != gfi.simple_checksum) {
     if (get_id_node() == 0) {
       qwarn(fname +
@@ -550,6 +550,27 @@ struct API GaugeTransformInfo {
   }
 };
 
+inline std::string make_gauge_transform_header(
+    const GaugeTransformInfo& info = GaugeTransformInfo())
+{
+  std::ostringstream out;
+  // const std::string todo = "NOT yet implemented";
+  out << "BEGIN_HEADER" << std::endl;
+  out << "HDR_VERSION = " << info.hdr_version << std::endl;
+  out << "STORAGE_FORMAT = " << info.storage_format << std::endl;
+  out << "DIMENSION_1 = " << info.total_site[0] << std::endl;
+  out << "DIMENSION_2 = " << info.total_site[1] << std::endl;
+  out << "DIMENSION_3 = " << info.total_site[2] << std::endl;
+  out << "DIMENSION_4 = " << info.total_site[3] << std::endl;
+  out << "CHECKSUM = " << show_crc32(info.simple_checksum) << std::endl;
+  out << "FLOATING_POINT = " << info.floating_point << std::endl;
+  out << "DATA_PER_SITE = " << info.data_per_site << std::endl;
+  out << "GF_TYPE = " << info.gf_type << std::endl;
+  out << "GF_ACCURACY = " << info.gf_accuracy << std::endl;
+  out << "END_HEADER" << std::endl;
+  return out.str();
+}
+
 inline void read_gauge_transform_header(GaugeTransformInfo& info,
                                         const std::string& path)
 {
@@ -599,6 +620,24 @@ inline void read_gauge_transform_header(GaugeTransformInfo& info,
   bcast(info.gf_accuracy);
 }
 
+inline long save_gauge_transform_cps(
+    const GaugeTransform& gt, const std::string& path,
+    const GaugeTransformInfo& info_ = GaugeTransformInfo())
+{
+  TIMER_VERBOSE_FLOPS("save_gauge_transform_cps");
+  qassert(is_initialized(gt));
+  const Geometry& geo = gt.geo();
+  GaugeTransformInfo info = info_;
+  info.total_site = geo.total_site();
+  info.simple_checksum = field_simple_checksum(gt); // before to_from_big_endian_64
+  to_from_big_endian_64(get_data(gt));
+  qtouch_info(path + ".partial", make_gauge_transform_header(info));
+  const long file_size = serial_write_field(gt, path + ".partial");
+  qrename_info(path + ".partial", path);
+  timer.flops += file_size;
+  return file_size;
+}
+
 inline long load_gauge_transform_cps(GaugeTransform& gt, const std::string& path)
 // USE: read_field_double(gt, path) for qlat format GaugeTransform
 {
@@ -624,7 +663,7 @@ inline long load_gauge_transform_cps(GaugeTransform& gt, const std::string& path
   } else {
     qassert(false);
   }
-  crc32_t simple_checksum = field_simple_checksum(gt);
+  crc32_t simple_checksum = field_simple_checksum(gt); // after endianness conversion
   if (simple_checksum != info.simple_checksum) {
     if (get_id_node() == 0) {
       qwarn(fname +
