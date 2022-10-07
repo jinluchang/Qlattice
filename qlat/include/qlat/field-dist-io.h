@@ -197,29 +197,6 @@ inline void dist_write_geo_info(const Geometry& geo, const int sizeof_M,
   }
 }
 
-inline std::string info_get_prop(const std::vector<std::string>& lines,
-                                 const std::string& prop)
-{
-  for (size_t i = 0; i < lines.size(); ++i) {
-    if (lines[i].compare(0, prop.size(), prop) == 0) {
-      return std::string(lines[i], prop.size());
-    }
-  }
-  return std::string("");
-}
-
-inline std::string info_get_prop(const std::vector<std::string>& lines,
-                                 const std::string& prop,
-                                 const std::string& prop1)
-{
-  const std::string ret = info_get_prop(lines, prop);
-  if (ret != std::string("")) {
-    return ret;
-  } else {
-    return info_get_prop(lines, prop1);
-  }
-}
-
 inline void dist_read_geo_info(Geometry& geo, int& sizeof_M,
                                Coordinate& new_size_node,
                                const std::string& path)

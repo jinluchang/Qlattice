@@ -11,12 +11,6 @@
 namespace qlat
 {  //
 
-struct GaugeTransform : FieldM<ColorMatrix, 1> {
-};
-
-struct U1GaugeTransform : FieldM<ComplexF, 1> {
-};
-
 inline void gt_apply_gauge_transformation(GaugeTransform& gt0,
                                           const GaugeTransform& gt1)
 // gt0 can be the same as gt1

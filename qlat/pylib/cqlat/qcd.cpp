@@ -121,8 +121,7 @@ EXPORT(load_gauge_field, {
     return NULL;
   }
   GaugeField& gf = py_convert_type<GaugeField>(p_gf);
-  std::string path;
-  py_convert(path, p_path);
+  const std::string path = py_convert_data<std::string>(p_path);
   const long ret = load_gauge_field(gf, path);
   return py_convert(ret);
 })
@@ -139,6 +138,19 @@ EXPORT(gf_twist_boundary_at_boundary, {
   pqassert(0 <= mu and mu < 4);
   twist_boundary_at_boundary(gf, lmom, mu);
   Py_RETURN_NONE;
+})
+
+EXPORT(load_gauge_transform_cps, {
+  using namespace qlat;
+  PyObject* p_gt = NULL;
+  PyObject* p_path = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_gt, &p_path)) {
+    return NULL;
+  }
+  GaugeTransform& gt = py_convert_type<GaugeTransform>(p_gt);
+  const std::string path = py_convert_data<std::string>(p_path);
+  const long ret = load_gauge_transform_cps(gt, path);
+  return py_convert(ret);
 })
 
 EXPORT(apply_gt_gt, {

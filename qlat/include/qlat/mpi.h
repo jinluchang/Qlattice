@@ -597,6 +597,31 @@ void bcast(Vector<M> recv, const int root = 0)
 #endif
 }
 
+inline void bcast(int& x, const int root = 0)
+{
+  bcast(get_data_one_elem(x), root);
+}
+
+inline void bcast(long& x, const int root = 0)
+{
+  bcast(get_data_one_elem(x), root);
+}
+
+inline void bcast(uint32_t& x, const int root = 0)
+{
+  bcast(get_data_one_elem(x), root);
+}
+
+inline void bcast(double& x, const int root = 0)
+{
+  bcast(get_data_one_elem(x), root);
+}
+
+inline void bcast(Coordinate& x, const int root = 0)
+{
+  bcast(get_data_one_elem(x), root);
+}
+
 template <class M>
 void bcast(std::vector<M>& recv, const int root = 0)
 {

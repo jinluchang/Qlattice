@@ -146,11 +146,4 @@ inline void crc32_check()
   }
 }
 
-inline crc32_t read_crc32(const std::string& s)
-{
-  crc32_t crc32;
-  std::sscanf(s.c_str(), "%X", &crc32);
-  return crc32;
-}
-
 }  // namespace qlat

@@ -48,6 +48,12 @@ typedef FermionField5dT<> FermionField5d;
 
 #endif
 
+struct GaugeTransform : FieldM<ColorMatrix, 1> {
+};
+
+struct U1GaugeTransform : FieldM<ComplexF, 1> {
+};
+
 template <class T>
 void unitarize(Field<ColorMatrixT<T> >& gf)
 {
@@ -207,6 +213,8 @@ double gf_avg_link_trace(const GaugeFieldT<T>& gf)
   return sum;
 }
 
+// GaugeField IO
+
 struct API GaugeFieldInfo {
   std::string ensemble_id;
   std::string ensemble_label;
@@ -297,19 +305,19 @@ inline void read_gauge_field_header(GaugeFieldInfo& gfi,
             gfi.crc32 = read_crc32(info);
           }
           gfi.datatype = info_get_prop(infos, "DATATYPE = ");
+          gfi.datatype = remove_trailing_newline(gfi.datatype);
           gfi.floating_point = info_get_prop(infos, "FLOATING_POINT = ");
-          remove_trailing_newline(gfi.datatype);
-          remove_trailing_newline(gfi.floating_point);
+          gfi.floating_point = remove_trailing_newline(gfi.floating_point);
         }
       }
     }
     qclose(fp);
   }
-  bcast(Vector<Coordinate>(&gfi.total_site, 1));
-  bcast(Vector<double>(&gfi.trace, 1));
-  bcast(Vector<double>(&gfi.plaq, 1));
-  bcast(Vector<crc32_t>(&gfi.simple_checksum, 1));
-  bcast(Vector<crc32_t>(&gfi.crc32, 1));
+  bcast(gfi.total_site);
+  bcast(gfi.trace);
+  bcast(gfi.plaq);
+  bcast(gfi.simple_checksum);
+  bcast(gfi.crc32);
   bcast(gfi.floating_point);
   bcast(gfi.datatype);
 }
@@ -353,7 +361,6 @@ long save_gauge_field(const GaugeFieldT<T>& gf, const std::string& path,
 
 template <class T = ComplexT>
 long load_gauge_field(GaugeFieldT<T>& gf, const std::string& path)
-// assuming gf already initialized and have correct size;
 {
   TIMER_VERBOSE_FLOPS("load_gauge_field");
   displayln_info(fname + ssprintf(": '%s'.", path.c_str()));
@@ -377,6 +384,14 @@ long load_gauge_field(GaugeFieldT<T>& gf, const std::string& path)
   if (0 == file_size) {
     return 0;
   }
+  crc32_t crc32 = field_crc32(gft);
+  if (crc32 != gfi.crc32) {
+    if (get_id_node() == 0) {
+      qwarn(fname + ssprintf(": WARNING: fn='%s' CHECKSUM= %08X (calc) %08X "
+                             "(read) possibly missing CRC32HASH field",
+                             path.c_str(), crc32, gfi.crc32));
+    }
+  }
   if (gfi.floating_point == "IEEE64BIG") {
     to_from_big_endian_64(get_data(gft));
   } else if (gfi.floating_point == "IEEE64LITTLE") {
@@ -393,8 +408,7 @@ long load_gauge_field(GaugeFieldT<T>& gf, const std::string& path)
     }
   }
   gf.init(geo);
-#pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  qacc_for(index, geo.local_volume(), {
     const Coordinate xl = geo.coordinate_from_index(index);
     Vector<Complex> vt = gft.get_elems(xl);
     Vector<ColorMatrixT<T> > v = gf.get_elems(xl);
@@ -413,7 +427,7 @@ long load_gauge_field(GaugeFieldT<T>& gf, const std::string& path)
         unitarize(v[m]);
       }
     }
-  }
+  });
   timer.flops += file_size;
   return file_size;
 }
@@ -507,6 +521,119 @@ void twist_boundary_at_boundary(GaugeFieldT<T>& gf, double lmom, int mu)
       mat *= ComplexT(std::polar(1.0, amp));
     }
   }
+}
+
+// GaugeTransform IO
+
+struct API GaugeTransformInfo {
+  std::string hdr_version;
+  std::string storage_format;
+  Coordinate total_site;
+  crc32_t simple_checksum;
+  std::string floating_point;
+  int data_per_site;
+  std::string gf_type;
+  double gf_accuracy;
+  //
+  GaugeTransformInfo() { init(); }
+  //
+  void init()
+  {
+    hdr_version = "1.0";
+    storage_format = "1.0";
+    total_site = Coordinate();
+    simple_checksum = 0;
+    floating_point = "IEEE64BIG";
+    data_per_site = 18;
+    gf_type = "COULOMB_T";
+    gf_accuracy = 1e-14;
+  }
+};
+
+inline void read_gauge_transform_header(GaugeTransformInfo& info,
+                                        const std::string& path)
+{
+  TIMER("read_gauge_transform_header");
+  if (get_id_node() == 0) {
+    QFile qfile = qfopen(path, "r");
+    if (not qfile.null()) {
+      const std::string header = "BEGIN_HEADER\n";
+      std::vector<char> check_line(header.size(), 0);
+      if (1 == qfread(check_line.data(), header.size(), 1, qfile)) {
+        if (std::string(check_line.data(), check_line.size()) == header) {
+          std::vector<std::string> infos;
+          infos.push_back(header);
+          while (infos.back() != "END_HEADER\n" && infos.back() != "") {
+            infos.push_back(qgetline(qfile));
+          }
+          info.hdr_version =
+              remove_trailing_newline(info_get_prop(infos, "HDR_VERSION = "));
+          info.storage_format = remove_trailing_newline(
+              info_get_prop(infos, "STORAGE_FORMAT = "));
+          for (int m = 0; m < 4; ++m) {
+            reads(info.total_site[m],
+                  info_get_prop(infos, ssprintf("DIMENSION_%d = ", m + 1)));
+          }
+          info.simple_checksum =
+              read_crc32(info_get_prop(infos, "CHECKSUM = "));
+          info.floating_point = remove_trailing_newline(
+              info_get_prop(infos, "FLOATING_POINT = "));
+          info.data_per_site =
+              read_long(info_get_prop(infos, "DATA_PER_SITE = "));
+          info.gf_type =
+              remove_trailing_newline(info_get_prop(infos, "GF_TYPE = "));
+          info.gf_accuracy = read_double(
+              info_get_prop(infos, "GF_ACCURACY = ", "GF_ACCRUACY = "));
+        }
+      }
+    }
+    qfile.close();
+  }
+  bcast(info.hdr_version);
+  bcast(info.storage_format);
+  bcast(info.total_site);
+  bcast(info.simple_checksum);
+  bcast(info.floating_point);
+  bcast(info.data_per_site);
+  bcast(info.gf_type);
+  bcast(info.gf_accuracy);
+}
+
+inline long load_gauge_transform_cps(GaugeTransform& gt, const std::string& path)
+// USE: read_field_double(gt, path) for qlat format GaugeTransform
+{
+  TIMER_VERBOSE_FLOPS("load_gauge_transform_cps");
+  displayln_info(fname + ssprintf(": '%s'.", path.c_str()));
+  gt.init();
+  GaugeTransformInfo info;
+  read_gauge_transform_header(info, path);
+  qassert(info.data_per_site == 18);
+  const Geometry geo(info.total_site, 1);
+  gt.init(geo);
+  const long file_size = serial_read_field_par(
+      gt, path, -get_data_size(gt) * get_num_node(), SEEK_END);
+  if (0 == file_size) {
+    displayln_info(fname + ssprintf(": failed to read any content."));
+    gt.init();
+    return 0;
+  }
+  if (info.floating_point == "IEEE64BIG") {
+    to_from_big_endian_64(get_data(gt));
+  } else if (info.floating_point == "IEEE64LITTLE") {
+    to_from_little_endian_64(get_data(gt));
+  } else {
+    qassert(false);
+  }
+  crc32_t simple_checksum = field_simple_checksum(gt);
+  if (simple_checksum != info.simple_checksum) {
+    if (get_id_node() == 0) {
+      qwarn(fname +
+            ssprintf(": WARNING: fn='%s' CHECKSUM= %08X (calc) %08X (read)",
+                     path.c_str(), simple_checksum, info.simple_checksum));
+    }
+  }
+  timer.flops += file_size;
+  return file_size;
 }
 
 }  // namespace qlat

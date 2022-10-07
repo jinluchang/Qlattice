@@ -58,6 +58,15 @@ class GaugeTransform(Field):
             f @= self
         return f
 
+    @timer
+    def save_cps(self, path):
+        mk_file_dirs_info(path)
+        return c.save_gauge_transform_cps(self, path)
+
+    @timer
+    def load_cps(self, path):
+        return c.load_gauge_transform_cps(self, path)
+
     def set_rand(self, rng, sigma = 0.5, n_step = 1):
         set_g_rand_color_matrix_field(self, rng, sigma, n_step)
 

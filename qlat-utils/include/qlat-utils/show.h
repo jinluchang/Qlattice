@@ -90,6 +90,8 @@ inline std::string show(const std::string& x)
   return out.str();
 }
 
+inline std::string show_crc32(const uint32_t& x) { return ssprintf("%08X", x); }
+
 template <class T>
 std::string show_list(const std::vector<T>& vec)
 {
@@ -130,12 +132,20 @@ inline double read_double(const std::string& str)
   return ret;
 }
 
-inline void remove_trailing_newline(std::string& s)
+inline uint32_t read_crc32(const std::string& s)
 {
-  while (!s.empty() and
-         (s[s.length() - 1] == '\n' or s[s.length() - 1] == '\r')) {
-    s.erase(s.length() - 1);
+  uint32_t crc32;
+  std::sscanf(s.c_str(), "%X", &crc32);
+  return crc32;
+}
+
+inline std::string remove_trailing_newline(const std::string& s)
+{
+  long cur = s.size() - 1;
+  while (cur >= 0 and (s[cur] == '\n' or s[cur] == '\r')) {
+    cur -= 1;
   }
+  return std::string(s, 0, cur + 1);
 }
 
 inline std::vector<std::string> split_into_lines(const std::string& str)
@@ -270,6 +280,29 @@ inline std::vector<long> read_longs(const std::string& str)
     ret[i] = read_long(strs[i]);
   }
   return ret;
+}
+
+inline std::string info_get_prop(const std::vector<std::string>& lines,
+                                 const std::string& prop)
+{
+  for (size_t i = 0; i < lines.size(); ++i) {
+    if (lines[i].compare(0, prop.size(), prop) == 0) {
+      return std::string(lines[i], prop.size());
+    }
+  }
+  return std::string("");
+}
+
+inline std::string info_get_prop(const std::vector<std::string>& lines,
+                                 const std::string& prop,
+                                 const std::string& prop1)
+{
+  const std::string ret = info_get_prop(lines, prop);
+  if (ret != std::string("")) {
+    return ret;
+  } else {
+    return info_get_prop(lines, prop1);
+  }
 }
 
 API inline FILE*& get_output_file()
