@@ -16,7 +16,6 @@ class ShuffledFieldsWriter:
     def __init__(self, path, new_size_node, is_append = False):
         assert isinstance(path, str)
         assert isinstance(is_append , bool)
-        mk_file_dirs_info(path)
         self.cdata = c.mk_sfw(path, new_size_node, is_append)
 
     def close(self):

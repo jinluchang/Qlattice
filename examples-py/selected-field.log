@@ -1,7 +1,6 @@
 CHECK: geo.show() = Geometry([4, 4, 4, 8], 1)
 CHECK: prop.crc32() = 4021037301 ; prop.qnorm() = 49304.10827466952
 CHECK: prop.crc32() = 4021037301 ; prop.qnorm() = 49304.10827466952
-CHECK: prop.crc32() = 4021037301 ; prop.qnorm() = 49304.10827466952
 CHECK: prop.crc32() = 3862544378 ; prop.qnorm() = 49304.10827993393
 CHECK: sp_prop 197.78615635070122
 CHECK: sp_prop 197.78615635070122 0.0 save load

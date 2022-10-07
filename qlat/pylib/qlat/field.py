@@ -253,7 +253,6 @@ class Field:
         # f.save_direct(sfw, fn)
         from qlat.fields_io import ShuffledFieldsWriter
         if isinstance(path, str):
-            mk_file_dirs_info(path)
             if len(args) == 0:
                 return c.save_field(self, path)
             else:

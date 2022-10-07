@@ -178,7 +178,6 @@ class SelectedField:
         from qlat.fields_io import ShuffledFieldsWriter
         if isinstance(path, str):
             assert len(args) == 0
-            mk_file_dirs_info(path)
             return c.save_sfield(self, path)
         elif isinstance(path, ShuffledFieldsWriter):
             sfw = path

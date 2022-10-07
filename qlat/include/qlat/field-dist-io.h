@@ -75,28 +75,22 @@ inline std::string dist_file_name(const std::string& path, const int id_node,
                          compute_dist_file_dir_id(id_node, num_node), id_node);
 }
 
-inline FILE* dist_open(const std::string& path, const int id_node,
-                       const int num_node,
-                       const std::string& fmode,  // "w" for write, "r" for
-                                                  // read, and "a" for append
-                       const mode_t mode = default_dir_mode())
+inline QFile dist_open(const std::string& path, const int id_node,
+                       const int num_node, const std::string& fmode)
+// fmode: "w" for write, "r" for read, and "a" for append
 {
   const std::string fn = dist_file_name(path, id_node, num_node);
-  FILE* ret = qopen(fn, fmode);
-  if (ret == NULL && fmode != "r") {
-    check_dir(path, mode);
-    check_dir(
-        path + ssprintf("/%02d", compute_dist_file_dir_id(id_node, num_node)),
-        mode);
-    ret = qopen(fn, fmode);
-  }
-  if (ret == NULL) {
+  QFile ret = qfopen(fn, fmode);
+  if (ret.null()) {
     qwarn("dist_open: " + ssprintf("failed to open '%s'.", fn.c_str()));
   }
   return ret;
 }
 
-inline int dist_close(FILE*& fp) { return qclose(fp); }
+inline void dist_close(QFile& fp)
+{
+  qclose(fp);
+}
 
 template <class M>
 struct DistData {
@@ -162,37 +156,38 @@ inline void dist_write_geo_info(const Geometry& geo, const int sizeof_M,
   if (0 == id_node) {
     check_dir(path, mode);
     const std::string fn = path + "/geo-info.txt";
-    FILE* fp = qopen(fn, "w");
-    displayln(ssprintf("node_file_size = %ld",
-                       sizeof_M * geo.multiplicity * geo.local_volume()),
+    QFile fp = qfopen(fn, "w");
+    qwrite_data(ssprintf("node_file_size = %ld\n",
+                         sizeof_M * geo.multiplicity * geo.local_volume()),
+                fp);
+    qwrite_data(ssprintf("geo.multiplicity = %d\n", geo.multiplicity), fp);
+    qwrite_data(ssprintf("sizeof(M) = %d\n", sizeof_M), fp);
+    qwrite_data(ssprintf("geo.geon.num_node = %d\n", geo.geon.num_node), fp);
+    qwrite_data(ssprintf("geo.geon.size_node[0] = %d\n", geo.geon.size_node[0]),
               fp);
-    displayln(ssprintf("geo.multiplicity = %d", geo.multiplicity), fp);
-    displayln(ssprintf("sizeof(M) = %d", sizeof_M), fp);
-    displayln(ssprintf("geo.geon.num_node = %d", geo.geon.num_node), fp);
-    displayln(ssprintf("geo.geon.size_node[0] = %d", geo.geon.size_node[0]),
+    qwrite_data(ssprintf("geo.geon.size_node[1] = %d\n", geo.geon.size_node[1]),
               fp);
-    displayln(ssprintf("geo.geon.size_node[1] = %d", geo.geon.size_node[1]),
+    qwrite_data(ssprintf("geo.geon.size_node[2] = %d\n", geo.geon.size_node[2]),
               fp);
-    displayln(ssprintf("geo.geon.size_node[2] = %d", geo.geon.size_node[2]),
+    qwrite_data(ssprintf("geo.geon.size_node[3] = %d\n", geo.geon.size_node[3]),
               fp);
-    displayln(ssprintf("geo.geon.size_node[3] = %d", geo.geon.size_node[3]),
-              fp);
-    displayln(ssprintf("geo.local_volume() = %ld", geo.local_volume()), fp);
-    displayln(ssprintf("geo.node_site[0] = %d", geo.node_site[0]), fp);
-    displayln(ssprintf("geo.node_site[1] = %d", geo.node_site[1]), fp);
-    displayln(ssprintf("geo.node_site[2] = %d", geo.node_site[2]), fp);
-    displayln(ssprintf("geo.node_site[3] = %d", geo.node_site[3]), fp);
-    displayln(ssprintf("PI = %.20f", PI), fp);
+    qwrite_data(ssprintf("geo.local_volume() = %ld\n", geo.local_volume()), fp);
+    qwrite_data(ssprintf("geo.node_site[0] = %d\n", geo.node_site[0]), fp);
+    qwrite_data(ssprintf("geo.node_site[1] = %d\n", geo.node_site[1]), fp);
+    qwrite_data(ssprintf("geo.node_site[2] = %d\n", geo.node_site[2]), fp);
+    qwrite_data(ssprintf("geo.node_site[3] = %d\n", geo.node_site[3]), fp);
+    qwrite_data(ssprintf("PI = %.20f\n", PI), fp);
     const char* pic = (const char*)&PI;
-    displayln(
-        ssprintf("PI_double = %hhx %hhx %hhx %hhx %hhx %hhx %hhx %hhx", pic[0],
-                 pic[1], pic[2], pic[3], pic[4], pic[5], pic[6], pic[7]),
+    qwrite_data(
+        ssprintf("PI_double = %hhx %hhx %hhx %hhx %hhx %hhx %hhx %hhx\n",
+                 pic[0], pic[1], pic[2], pic[3], pic[4], pic[5], pic[6],
+                 pic[7]),
         fp);
     const float PIf = PI;
     const char* pifc = (const char*)&PIf;
-    displayln(ssprintf("PI_float = %hhx %hhx %hhx %hhx", pifc[0], pifc[1],
-                       pifc[2], pifc[3]),
-              fp);
+    qwrite_data(ssprintf("PI_float = %hhx %hhx %hhx %hhx\n", pifc[0], pifc[1],
+                         pifc[2], pifc[3]),
+                fp);
     qclose(fp);
   }
 }
@@ -243,8 +238,7 @@ inline void dist_read_geo_info(Geometry& geo, int& sizeof_M,
 
 template <class M>
 long dist_write_dist_data(const std::vector<DistData<M> >& dds,
-                          const int num_node, const std::string& path,
-                          const mode_t mode = default_dir_mode())
+                          const int num_node, const std::string& path)
 // interface_function
 {
   sync_node();
@@ -261,8 +255,8 @@ long dist_write_dist_data(const std::vector<DistData<M> >& dds,
       qassert(0 <= id_node && id_node < num_node);
       if (id_node % n_cycle == i) {
         if (id_counts[id_node] == 0) {
-          FILE* fp = dist_open(path, id_node, num_node, "w", mode);
-          qassert(fp != NULL);
+          QFile fp = dist_open(path, id_node, num_node, "w");
+          qassert(not fp.null());
           for (size_t l = k; l < dds.size(); ++l) {
             const DistData<M>& dd = dds[l];
             if (id_node == dd.id_node) {
@@ -299,12 +293,12 @@ long dist_write_dist_data(const std::vector<DistData<M> >& dds,
   crc32_t crc = dist_crc32(crcs);
   if (get_id_node() == 0) {
     const std::string fn = path + "/checksums.txt";
-    FILE* fp = qopen(fn, "w");
-    qassert(fp != NULL);
-    displayln(ssprintf("%08X", crc), fp);
-    displayln("", fp);
+    QFile fp = qfopen(fn, "w");
+    qassert(not fp.null());
+    qwrite_data(ssprintf("%08X\n", crc), fp);
+    qwrite_data("\n", fp);
     for (size_t i = 0; i < crcs.size(); ++i) {
-      displayln(ssprintf("%08X", crcs[i]), fp);
+      qwrite_data(ssprintf("%08X\n", crcs[i]), fp);
     }
     qclose(fp);
   }
@@ -315,22 +309,21 @@ long dist_write_dist_data(const std::vector<DistData<M> >& dds,
 
 template <class M>
 long dist_write_fields(const std::vector<ConstHandle<Field<M> > >& fs,
-                       const int num_node, const std::string& path,
-                       const mode_t mode = default_dir_mode())
+                       const int num_node, const std::string& path)
 {
   for (int k = 0; k < (int)fs.size(); ++k) {
     const Field<M>& f = fs[k]();
     const int id_node = f.geo().geon.id_node;
     if (id_node == 0) {
-      dist_mkdir(path + ".partial", id_node, mode);
+      dist_mkdir(path + ".partial", id_node);
       if (get_force_field_write_sizeof_M() == 0) {
-        dist_write_geo_info(f.geo(), sizeof(M), path + ".partial", mode);
+        dist_write_geo_info(f.geo(), sizeof(M), path + ".partial");
       } else {
         const int sizeof_M = get_force_field_write_sizeof_M();
         qassert((f.geo().multiplicity * sizeof(M)) % sizeof_M == 0);
         const int multiplicity = (f.geo().multiplicity * sizeof(M)) / sizeof_M;
         dist_write_geo_info(geo_remult(f.geo(), multiplicity), sizeof_M,
-                            path + ".partial", mode);
+                            path + ".partial");
         get_force_field_write_sizeof_M() = 0;
       }
       break;
@@ -343,33 +336,31 @@ long dist_write_fields(const std::vector<ConstHandle<Field<M> > >& fs,
     dds[i].data = get_data(fs[i]());
   }
   const long total_bytes =
-      dist_write_dist_data(dds, num_node, path + ".partial", mode);
+      dist_write_dist_data(dds, num_node, path + ".partial");
   qrename_info(path + ".partial", path);
   return total_bytes;
 }
 
 template <class M>
 long dist_write_fields(const std::vector<Field<M> >& fs, const int num_node,
-                       const std::string& path,
-                       const mode_t mode = default_dir_mode())
+                       const std::string& path)
 {
   std::vector<ConstHandle<Field<M> > > fhs(fs.size());
   for (size_t i = 0; i < fs.size(); ++i) {
     fhs[i].init(fs[i]);
   }
-  return dist_write_fields(fhs, num_node, path, mode);
+  return dist_write_fields(fhs, num_node, path);
 }
 
 template <class M>
-long dist_write_field(const Field<M>& f, const std::string& path,
-                      const mode_t mode = default_dir_mode())
+long dist_write_field(const Field<M>& f, const std::string& path)
 // interface_function
 {
   TIMER_VERBOSE("dist_write_field");
   qassert(f.geo().is_only_local());
   std::vector<ConstHandle<Field<M> > > fs(1);
   fs[0].init(f);
-  return dist_write_fields(fs, get_num_node(), path, mode);
+  return dist_write_fields(fs, get_num_node(), path);
 }
 
 template <class M>
@@ -394,8 +385,8 @@ long dist_read_dist_data(const std::vector<DistData<M> >& dds,
       qassert(0 <= id_node && id_node < num_node);
       if (id_node % n_cycle == i) {
         if (id_counts[id_node] == 0) {
-          FILE* fp = dist_open(path, id_node, num_node, "r");
-          qassert(fp != NULL);
+          QFile fp = dist_open(path, id_node, num_node, "r");
+          qassert(not fp.null());
           for (size_t l = k; l < dds.size(); ++l) {
             const DistData<M>& dd = dds[l];
             if (id_node == dd.id_node) {
@@ -501,15 +492,14 @@ long dist_read_fields(std::vector<Field<M> >& fs, Geometry& geo,
 
 template <class M>
 long dist_write_field(const Field<M>& f, const Coordinate new_size_node,
-                      const std::string& path,
-                      const mode_t mode = default_dir_mode())
+                      const std::string& path)
 // interface_function
 {
   TIMER_VERBOSE_FLOPS("dist_write_field");
   displayln_info(fname + ssprintf(": fn='%s'.", path.c_str()));
   std::vector<Field<M> > fs;
   shuffle_field(fs, f, new_size_node);
-  long total_bytes = dist_write_fields(fs, product(new_size_node), path, mode);
+  long total_bytes = dist_write_fields(fs, product(new_size_node), path);
   timer.flops += total_bytes;
   return total_bytes;
 }
@@ -584,15 +574,14 @@ void convert_field_double_from_float(Field<N>& ff, const Field<M>& f)
 
 template <class M>
 long dist_write_field_float_from_double(const Field<M>& f,
-                                        const std::string& path,
-                                        const mode_t mode = default_dir_mode())
+                                        const std::string& path)
 // interface_function
 {
   TIMER_VERBOSE_FLOPS("dist_write_field_float_from_double");
   Field<float> ff;
   convert_field_float_from_double(ff, f);
   to_from_big_endian_32(get_data(ff));
-  const long total_bytes = dist_write_field(ff, path, mode);
+  const long total_bytes = dist_write_field(ff, path);
   timer.flops += total_bytes;
   return total_bytes;
 }
@@ -600,15 +589,14 @@ long dist_write_field_float_from_double(const Field<M>& f,
 template <class M>
 long dist_write_field_float_from_double(const Field<M>& f,
                                         const Coordinate& new_size_node,
-                                        const std::string& path,
-                                        const mode_t mode = default_dir_mode())
+                                        const std::string& path)
 // interface_function
 {
   TIMER_VERBOSE_FLOPS("dist_write_field_float_from_double");
   Field<float> ff;
   convert_field_float_from_double(ff, f);
   to_from_big_endian_32(get_data(ff));
-  const long total_bytes = dist_write_field(ff, new_size_node, path, mode);
+  const long total_bytes = dist_write_field(ff, new_size_node, path);
   timer.flops += total_bytes;
   return total_bytes;
 }
@@ -631,30 +619,28 @@ long dist_read_field_double_from_float(Field<M>& f, const std::string& path)
 }
 
 template <class M>
-long dist_write_field_double(const Field<M>& f, const std::string& path,
-                             const mode_t mode = default_dir_mode())
+long dist_write_field_double(const Field<M>& f, const std::string& path)
 // interface_function
 {
   TIMER_VERBOSE_FLOPS("dist_write_field_double");
   Field<M> ff;
   ff.init(f);
   to_from_big_endian_64(get_data(ff));
-  const long total_bytes = dist_write_field(ff, path, mode);
+  const long total_bytes = dist_write_field(ff, path);
   timer.flops += total_bytes;
   return total_bytes;
 }
 
 template <class M>
 long dist_write_field_double(const Field<M>& f, const Coordinate& new_size_node,
-                             const std::string& path,
-                             const mode_t mode = default_dir_mode())
+                             const std::string& path)
 // interface_function
 {
   TIMER_VERBOSE_FLOPS("dist_write_field_double");
   Field<M> ff;
   ff.init(f);
   to_from_big_endian_64(get_data(ff));
-  const long total_bytes = dist_write_field(ff, new_size_node, path, mode);
+  const long total_bytes = dist_write_field(ff, new_size_node, path);
   timer.flops += total_bytes;
   return total_bytes;
 }

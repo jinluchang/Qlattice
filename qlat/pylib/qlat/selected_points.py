@@ -155,7 +155,6 @@ class SelectedPoints:
 
     def save_complex(self, path):
         assert isinstance(path, str)
-        mk_file_dirs_info(path)
         return c.save_complex_spfield(self, path)
 
     def load_complex(self, path):

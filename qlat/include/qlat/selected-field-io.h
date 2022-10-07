@@ -310,8 +310,8 @@ long write_selected_field(const SelectedField<M>& sf, const std::string& path,
   if (get_id_node() == 0) {
     qassert(sfs.size() > 0);
     Vector<M> v = get_data(sfs[0].field);
-    FILE* fp = qopen(path + ".partial", "a");
-    qassert(fp != NULL);
+    QFile fp = qfopen(path + ".partial", "a");
+    qassert(not fp.null());
     const int num_node = get_num_node();
     for (int new_id_node = 0; new_id_node < new_num_node; ++new_id_node) {
       const int id_node =
@@ -346,11 +346,11 @@ inline long read_selected_geo_info(Coordinate& total_site, int& multiplicity,
   TIMER("read_selected_geo_info");
   long pos = 0;
   if (get_id_node() == 0) {
-    FILE* fp = qopen(path, "r");
-    if (fp != NULL) {
+    QFile fp = qfopen(path, "r");
+    if (not fp.null()) {
       const std::string header = "BEGIN_SELECTED_FIELD_HEADER\n";
       std::vector<char> check_line(header.size(), 0);
-      if (1 == fread(check_line.data(), header.size(), 1, fp)) {
+      if (1 == qfread(check_line.data(), header.size(), 1, fp)) {
         if (std::string(check_line.data(), check_line.size()) == header) {
           std::vector<std::string> infos;
           infos.push_back(header);
@@ -367,7 +367,7 @@ inline long read_selected_geo_info(Coordinate& total_site, int& multiplicity,
           crc = read_crc32(info_get_prop(infos, "selected_field_crc32 = "));
         }
       }
-      pos = ftell(fp);
+      pos = qftell(fp);
     }
     qclose(fp);
   }
@@ -450,11 +450,11 @@ long read_selected_field(SelectedField<M>& sf, const std::string& path,
   const int new_num_node = product(new_size_node);
   crc32_t crc = 0;
   if (sfs.size() > 0) {
-    FILE* fp = qopen(path, "r");
-    qassert(fp != NULL);
-    fseek(fp,
-          pos + sfs[0].geo().geon.id_node * get_data(sfs[0].field).data_size(),
-          SEEK_SET);
+    QFile fp = qfopen(path, "r");
+    qassert(not fp.null());
+    qfseek(fp,
+           pos + sfs[0].geo().geon.id_node * get_data(sfs[0].field).data_size(),
+           SEEK_SET);
     for (int i = 0; i < (int)sfs.size(); ++i) {
       const int new_id_node = sfs[i].geo().geon.id_node;
       qassert(sfs[i].geo().geon.num_node == new_num_node);
@@ -628,11 +628,11 @@ inline bool is_selected_field(const std::string& path)
   TIMER("is_selected_field");
   long nfile = 0;
   if (get_id_node() == 0) {
-    FILE* fp = qopen(path, "r");
-    if (fp != NULL) {
+    QFile fp = qfopen(path, "r");
+    if (not fp.null()) {
       const std::string header = "BEGIN_SELECTED_FIELD_HEADER\n";
       std::vector<char> check_line(header.size(), 0);
-      if (1 == fread(check_line.data(), header.size(), 1, fp)) {
+      if (1 == qfread(check_line.data(), header.size(), 1, fp)) {
         if (std::string(check_line.data(), check_line.size()) == header) {
           nfile = 1;
         }

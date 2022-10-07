@@ -19,7 +19,6 @@ class GaugeField(Field):
 
     @timer
     def save(self, path):
-        mk_file_dirs_info(path)
         return c.save_gauge_field(self, path)
 
     @timer
@@ -59,8 +58,15 @@ class GaugeTransform(Field):
         return f
 
     @timer
+    def save(self, path):
+        return c.save_double(self, path)
+
+    @timer
+    def load(self, path):
+        return c.load_double(self, path)
+
+    @timer
     def save_cps(self, path):
-        mk_file_dirs_info(path)
         return c.save_gauge_transform_cps(self, path)
 
     @timer

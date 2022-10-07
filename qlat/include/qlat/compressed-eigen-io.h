@@ -291,34 +291,34 @@ inline void write_compressed_eigen_system_info(
 {
   TIMER_VERBOSE("write_compressed_eigen_system_info");
   if (get_id_node() == 0) {
-    FILE* fp = qopen(root + "/metadata.txt.partial", "w");
-    qassert(fp != NULL);
+    QFile fp = qfopen(root + "/metadata.txt.partial", "w");
+    qassert(not fp.null());
     for (int i = 0; i < 4; ++i) {
-      displayln(ssprintf("s[%d] = %d", i, cesi.node_site[i]), fp);
+      qwrite_data(ssprintf("s[%d] = %d\n", i, cesi.node_site[i]), fp);
     }
-    displayln(ssprintf("s[4] = %d", cesi.ls), fp);
+    qwrite_data(ssprintf("s[4] = %d\n", cesi.ls), fp);
     for (int i = 0; i < 4; ++i) {
-      displayln(ssprintf("b[%d] = %d", i, cesi.block_site[i]), fp);
+      qwrite_data(ssprintf("b[%d] = %d\n", i, cesi.block_site[i]), fp);
     }
-    displayln(ssprintf("b[4] = %d", cesi.ls), fp);
+    qwrite_data(ssprintf("b[4] = %d\n", cesi.ls), fp);
     for (int i = 0; i < 4; ++i) {
-      displayln(ssprintf("nb[%d] = %d", i, cesi.node_block[i]), fp);
+      qwrite_data(ssprintf("nb[%d] = %d\n", i, cesi.node_block[i]), fp);
     }
-    displayln(ssprintf("nb[4] = 1"), fp);
-    displayln(ssprintf("neig = %d", cesi.neig), fp);
-    displayln(ssprintf("nkeep = %d", cesi.nkeep), fp);
-    displayln(ssprintf("nkeep_single = %d", cesi.nkeep_single), fp);
-    displayln(ssprintf("blocks = %d", product(cesi.node_block)), fp);
-    displayln(ssprintf("FP16_COEF_EXP_SHARE_FLOATS = %d",
+    qwrite_data(ssprintf("nb[4] = 1\n"), fp);
+    qwrite_data(ssprintf("neig = %d\n", cesi.neig), fp);
+    qwrite_data(ssprintf("nkeep = %d\n", cesi.nkeep), fp);
+    qwrite_data(ssprintf("nkeep_single = %d\n", cesi.nkeep_single), fp);
+    qwrite_data(ssprintf("blocks = %d\n", product(cesi.node_block)), fp);
+    qwrite_data(ssprintf("FP16_COEF_EXP_SHARE_FLOATS = %d\n",
                        cesi.FP16_COEF_EXP_SHARE_FLOATS),
               fp);
     for (int i = 0; i < (int)cesi.crcs.size(); ++i) {
-      displayln(ssprintf("crc32[%d] = %08X", i, cesi.crcs[i]), fp);
+      qwrite_data(ssprintf("crc32[%d] = %08X\n", i, cesi.crcs[i]), fp);
     }
     for (int i = 0; i < 4; ++i) {
-      displayln(ssprintf("gs[%d] = %d", i, cesi.total_site[i]), fp);
+      qwrite_data(ssprintf("gs[%d] = %d\n", i, cesi.total_site[i]), fp);
     }
-    displayln(ssprintf("gs[4] = %d", cesi.ls), fp);
+    qwrite_data(ssprintf("gs[4] = %d\n", cesi.ls), fp);
     qclose(fp);
     qrename(root + "/metadata.txt.partial", root + "/metadata.txt");
   }
@@ -532,7 +532,7 @@ struct VBFile
 {
   std::string fn;
   std::string mode;
-  FILE* fp;
+  QFile fp;
   long buffer_limit;
   std::vector<uint8_t> buffer;
   long entry_total_size;
@@ -540,12 +540,12 @@ struct VBFile
   //
   VBFile()
   {
-    fp = NULL;
+    fp.init();
     buffer_limit = get_vbfile_buffer_limit();
     entry_total_size = 0;
   }
   //
-  ~VBFile() { assert(fp == NULL); }
+  ~VBFile() { assert(fp.null()); }
 };
 
 inline VBFile vbopen(const std::string& fn, const std::string& mode)
@@ -553,8 +553,8 @@ inline VBFile vbopen(const std::string& fn, const std::string& mode)
   VBFile fp;
   fp.fn = fn;
   fp.mode = mode;
-  fp.fp = qopen(fp.fn, fp.mode);
-  qassert(fp.fp != NULL);
+  fp.fp = qfopen(fp.fn, fp.mode);
+  qassert(not fp.fp.null());
   return fp;
 }
 
@@ -626,7 +626,7 @@ inline int vbseek(VBFile& fp, const long offset, const int whence)
 {
   TIMER("vbseek");
   vbflush(fp);
-  return fseek(fp.fp, offset, whence);
+  return qfseek(fp.fp, offset, whence);
 }
 
 struct VFile
@@ -644,10 +644,10 @@ inline void set_vfile_size(VFile& fp)
 {
   TIMER("set_vfile_size");
   if (fp.size < 0) {
-    FILE* fpr = qopen(fp.fn, fp.mode);
-    qassert(fpr != NULL);
-    fseek(fpr, 0, SEEK_END);
-    fp.size = ftell(fpr);
+    QFile fpr = qfopen(fp.fn, fp.mode);
+    qassert(not fpr.null());
+    qfseek(fpr, 0, SEEK_END);
+    fp.size = qftell(fpr);
     qclose(fpr);
   }
 }
@@ -1078,14 +1078,14 @@ inline std::vector<double> read_eigen_values(const std::string& path)
   std::vector<double> vals;
   if (0 == get_id_node()) {
     const std::string filename = path + "/eigen-values.txt";
-    FILE* file = qopen(filename, "r");
-    qassert(file != NULL);
-    qassert(1 == fscanf(file, "%ld\n", &n_eigen_values));
+    QFile file = qfopen(filename, "r");
+    qassert(not file.null());
+    qassert(1 == qfscanf(file, "%ld\n", &n_eigen_values));
     glb_sum(n_eigen_values);
     vals.resize(n_eigen_values, 0.0);
     displayln(fname + ssprintf("Reading %d eigen-values.\n", n_eigen_values));
     for (int k = 0; k < n_eigen_values; k++) {
-      qassert(1 == fscanf(file, "%lE\n", &vals[k]));
+      qassert(1 == qfscanf(file, "%lE\n", &vals[k]));
       displayln(ssprintf("%d %24.17E", k, sqrt(vals[k])));
     }
     qclose(file);
@@ -1312,8 +1312,8 @@ inline crc32_t save_half_vectors(const std::vector<HalfVector>& hvs,
   TIMER_VERBOSE_FLOPS("save_half_vectors");
   qassert(hvs.size() > 0);
   crc32_t crc = 0;
-  FILE* fp = qopen(fn + ".partial", "w");
-  qassert(fp != NULL);
+  QFile fp = qfopen(fn + ".partial", "w");
+  qassert(not fp.null());
   std::vector<ComplexF> buffer;
   for (int i = 0; i < (int)hvs.size(); ++i) {
     TIMER_FLOPS("save_half_vectors-iter");
@@ -1360,8 +1360,8 @@ inline long decompress_eigen_vectors_node(
   init_compressed_eigen_system_coefs(cesc, cesi, idx, size_node);
   std::vector<crc32_t> crcs = load_node(cesb, cesc, cesi, old_path);
   to_from_big_endian_32(get_data(crcs));
-  FILE* fp = qopen(new_fn + ".orig-crc32", "w");
-  qassert(fp != NULL);
+  QFile fp = qfopen(new_fn + ".orig-crc32", "w");
+  qassert(not fp.null());
   qwrite_data(get_data(crcs), fp);
   qclose(fp);
   std::vector<BlockedHalfVector> bhvs;
@@ -1412,9 +1412,9 @@ inline void combine_crc32(const std::string& path, const int idx_size,
       for (int idx = 0; idx < idx_size; ++idx) {
         std::vector<crc32_t> crcs(size, 0);
         const int dir_idx = compute_dist_file_dir_id(idx, idx_size);
-        FILE* fp =
-            qopen(path + ssprintf("/%02d/%010d.orig-crc32", dir_idx, idx), "r");
-        if (fp != NULL) {
+        QFile fp = qfopen(
+            path + ssprintf("/%02d/%010d.orig-crc32", dir_idx, idx), "r");
+        if (not fp.null()) {
           qread_data(get_data(crcs), fp);
           to_from_big_endian_32(get_data(crcs));
           qclose(fp);
@@ -1460,12 +1460,12 @@ inline void combine_crc32(const std::string& path, const int idx_size,
         }
       }
       crc32_t crc = dist_crc32(crcs);
-      FILE* fp = qopen(fn + ".partial", "w");
-      qassert(fp != NULL);
-      displayln(ssprintf("%08X", crc), fp);
-      displayln("", fp);
+      QFile fp = qfopen(fn + ".partial", "w");
+      qassert(not fp.null());
+      qwrite_data(ssprintf("%08X\n", crc), fp);
+      qwrite_data("\n", fp);
       for (size_t i = 0; i < crcs.size(); ++i) {
-        displayln(ssprintf("%08X", crcs[i]), fp);
+        qwrite_data(ssprintf("%08X\n", crcs[i]), fp);
       }
       qclose(fp);
       qrename(fn + ".partial", fn);
@@ -1713,12 +1713,12 @@ inline void decompressed_eigen_vectors_check_crc32(const std::string& path)
   if (0 == get_id_node() and num_failure == 0) {
     crc32_t crc = dist_crc32(crcs);
     const std::string fn = path + "/checksums-check.txt";
-    FILE* fp = qopen(fn + ".partial", "w");
-    qassert(fp != NULL);
-    displayln(ssprintf("%08X", crc), fp);
-    displayln("", fp);
+    QFile fp = qfopen(fn + ".partial", "w");
+    qassert(not fp.null());
+    qwrite_data(ssprintf("%08X\n", crc), fp);
+    qwrite_data("\n", fp);
     for (size_t i = 0; i < crcs.size(); ++i) {
-      displayln(ssprintf("%08X", crcs[i]), fp);
+      qwrite_data(ssprintf("%08X\n", crcs[i]), fp);
     }
     qclose(fp);
     qrename(fn + ".partial", fn);

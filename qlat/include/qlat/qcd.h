@@ -278,16 +278,16 @@ inline void read_gauge_field_header(GaugeFieldInfo& gfi,
 {
   TIMER("read_gauge_field_header");
   if (get_id_node() == 0) {
-    FILE* fp = qopen(path, "r");
-    if (fp != NULL) {
+    QFile qfile = qfopen(path, "r");
+    if (not qfile.null()) {
       const std::string header = "BEGIN_HEADER\n";
       std::vector<char> check_line(header.size(), 0);
-      if (1 == fread(check_line.data(), header.size(), 1, fp)) {
+      if (1 == qfread(check_line.data(), header.size(), 1, qfile)) {
         if (std::string(check_line.data(), check_line.size()) == header) {
           std::vector<std::string> infos;
           infos.push_back(header);
           while (infos.back() != "END_HEADER\n" && infos.back() != "") {
-            infos.push_back(qgetline(fp));
+            infos.push_back(qgetline(qfile));
           }
           for (int m = 0; m < 4; ++m) {
             reads(gfi.total_site[m],
@@ -311,7 +311,7 @@ inline void read_gauge_field_header(GaugeFieldInfo& gfi,
         }
       }
     }
-    qclose(fp);
+    qclose(qfile);
   }
   bcast(gfi.total_site);
   bcast(gfi.trace);

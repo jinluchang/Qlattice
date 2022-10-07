@@ -97,10 +97,11 @@ struct QFileInternal {
   //
   bool is_eof;  // the eof state of QFileInternal.
                 // NOTE: may not match with eof state of fp.
-  long pos;  // position of the QFileInternal. (correspond to position of fp should be
-             // pos + offset_start).
-             // NOTE: actual fp position may be adjust elsewhere and does not
-             // match this pos.
+  long pos;     // position of the QFileInternal. (correspond to position of fp
+                // should be pos + offset_start).
+  // NOTE: Actual fp position may be adjust elsewhere and does not
+  // match this pos. When performing operations, always fseek fp to
+  // location indicated by pos first.
   //
   long offset_start;  // start offset of fp for QFileInternal
   long offset_end;    // end offset of fp for QFileInternal (-1 if not limit, useful
@@ -281,6 +282,12 @@ inline const std::string& QFile::mode() const { return p->mode; }
 
 inline FILE* QFile::get_fp() const { return p->fp; }
 
+inline void qclose(QFile& qfile)
+// interface function
+{
+  qfile.close();
+}
+
 inline void qswap(QFile& qfile1, QFile& qfile2)
 // interface function
 {
@@ -305,7 +312,7 @@ inline int qfflush(const QFile& qfile)
 // interface function
 {
   qassert(not qfile.null());
-  return fflush(qfile.p->fp);
+  return fflush(qfile.get_fp());
 }
 
 inline int qfseek(const QFile& qfile, const long q_offset, const int whence)
@@ -319,20 +326,20 @@ inline int qfseek(const QFile& qfile, const long q_offset, const int whence)
   int ret = 0;
   if (SEEK_SET == whence) {
     const long offset = qfile.p->offset_start + q_offset;
-    ret = fseek(qfile.p->fp, offset, SEEK_SET);
+    ret = fseek(qfile.get_fp(), offset, SEEK_SET);
   } else if (SEEK_CUR == whence) {
-    ret = fseek(qfile.p->fp, qfile.p->offset_start + qfile.p->pos + q_offset, SEEK_SET);
+    ret = fseek(qfile.get_fp(), qfile.p->offset_start + qfile.p->pos + q_offset, SEEK_SET);
   } else if (SEEK_END == whence) {
     if (qfile.p->offset_end == -1) {
-      ret = fseek(qfile.p->fp, q_offset, SEEK_END);
+      ret = fseek(qfile.get_fp(), q_offset, SEEK_END);
     } else {
       const long offset = qfile.p->offset_end + q_offset;
-      ret = fseek(qfile.p->fp, offset, SEEK_SET);
+      ret = fseek(qfile.get_fp(), offset, SEEK_SET);
     }
   } else {
     qassert(false);
   }
-  qfile.p->pos = ftell(qfile.p->fp) - qfile.p->offset_start;
+  qfile.p->pos = ftell(qfile.get_fp()) - qfile.p->offset_start;
   qassert(qfile.p->pos >= 0);
   if (qfile.p->offset_end != -1) {
     qassert(qfile.p->offset_start + qfile.p->pos <= qfile.p->offset_end);
@@ -359,10 +366,10 @@ inline long qfread(void* ptr, const long size, const long nmemb,
         qfile.p->offset_end - qfile.p->offset_start - qfile.p->pos;
     qassert(remaining_size >= 0);
     const long target_nmemb = std::min(remaining_size / size, nmemb);
-    actual_nmemb = std::fread(ptr, size, target_nmemb, qfile.p->fp);
+    actual_nmemb = std::fread(ptr, size, target_nmemb, qfile.get_fp());
     qassert(actual_nmemb == target_nmemb);
     qfile.p->pos += target_nmemb * size;
-    qassert(qfile.p->pos == ftell(qfile.p->fp) - qfile.p->offset_start);
+    qassert(qfile.p->pos == ftell(qfile.get_fp()) - qfile.p->offset_start);
     if (target_nmemb < nmemb) {
       qfile.p->is_eof = true;
     } else {
@@ -370,9 +377,9 @@ inline long qfread(void* ptr, const long size, const long nmemb,
       qfile.p->is_eof = false;
     }
   } else {
-    actual_nmemb = std::fread(ptr, size, nmemb, qfile.p->fp);
-    qfile.p->pos = ftell(qfile.p->fp) - qfile.p->offset_start;
-    qfile.p->is_eof = feof(qfile.p->fp) != 0;
+    actual_nmemb = std::fread(ptr, size, nmemb, qfile.get_fp());
+    qfile.p->pos = ftell(qfile.get_fp()) - qfile.p->offset_start;
+    qfile.p->is_eof = feof(qfile.get_fp()) != 0;
   }
   return actual_nmemb;
 }
@@ -395,14 +402,31 @@ inline long qfwrite(const void* ptr, const long size, const long nmemb,
         qfile.p->offset_end - qfile.p->offset_start - qfile.p->pos;
     qassert(remaining_size >= size * nmemb);
   }
-  const long actual_nmemb = std::fwrite(ptr, size, nmemb, qfile.p->fp);
+  const long actual_nmemb = std::fwrite(ptr, size, nmemb, qfile.get_fp());
   qassert(actual_nmemb == nmemb);
-  qfile.p->pos = ftell(qfile.p->fp) - qfile.p->offset_start;
+  qfile.p->pos = ftell(qfile.get_fp()) - qfile.p->offset_start;
   qassert(qfile.p->pos >= 0);
   if (qfile.p->offset_end != -1) {
     qassert(qfile.p->offset_start + qfile.p->pos <= qfile.p->offset_end);
   }
   return actual_nmemb;
+}
+
+inline int qvfscanf(const QFile& qfile, const char* fmt, va_list args)
+{
+  qassert(not qfile.null());
+  const int code = qfseek(qfile, qfile.p->pos, SEEK_SET);
+  qassert(code == 0);
+  const int n_elem = vfscanf(qfile.get_fp(), fmt, args);
+  qfile.p->pos = ftell(qfile.get_fp()) - qfile.p->offset_start;
+  return n_elem;
+}
+
+inline int qfscanf(const QFile& qfile, const char* fmt, ...)
+{
+  va_list args;
+  va_start(args, fmt);
+  return qvfscanf(qfile, fmt, args);
 }
 
 inline std::string qgetline(const QFile& qfile)
@@ -414,11 +438,11 @@ inline std::string qgetline(const QFile& qfile)
   qassert(code == 0);
   char* lineptr = NULL;
   size_t n = 0;
-  const long size = getline(&lineptr, &n, qfile.p->fp);
-  qfile.p->is_eof = feof(qfile.p->fp) != 0;
+  const long size = getline(&lineptr, &n, qfile.get_fp());
+  qfile.p->is_eof = feof(qfile.get_fp()) != 0;
   if (size > 0) {
     std::string ret;
-    const long pos = ftell(qfile.p->fp) - qfile.p->offset_start;
+    const long pos = ftell(qfile.get_fp()) - qfile.p->offset_start;
     qassert(pos >= 0);
     if (qfile.p->offset_end != -1 and
         qfile.p->offset_start + pos > qfile.p->offset_end) {
@@ -528,6 +552,19 @@ long qread_data_all(std::vector<M>& v, const QFile& qfile)
   qassert(data_size_read == data_size);
   timer.flops += data_size;
   return data_size;
+}
+
+inline long qvfprintf(const QFile& qfile, const char* fmt, va_list args)
+{
+  const std::string str = vssprintf(fmt, args);
+  return qwrite_data(str, qfile);
+}
+
+inline long qfprintf(const QFile& qfile, const char* fmt, ...)
+{
+  va_list args;
+  va_start(args, fmt);
+  return qvfprintf(qfile, fmt, args);
 }
 
 API inline long& write_from_qfile_chunk_size()

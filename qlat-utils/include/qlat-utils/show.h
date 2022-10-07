@@ -53,11 +53,10 @@ namespace qlat
 
 inline std::string vssprintf(const char* fmt, va_list args)
 {
-  std::string str;
   char* cstr;
   int ret = vasprintf(&cstr, fmt, args);
   pqassert(ret >= 0);
-  str += std::string(cstr);
+  const std::string str = std::string(cstr);
   std::free(cstr);
   return str;
 }

@@ -82,13 +82,13 @@ inline void save_point_selection(const PointSelection& psel,
                                  const std::string& path)
 {
   TIMER_VERBOSE("save_point_selection");
-  FILE* fp = qopen(path + ".partial", "w");
-  fprintf(fp, "%ld\n", (long)psel.size());
+  QFile qfile = qfopen(path + ".partial", "w");
+  qfprintf(qfile, "%ld\n", (long)psel.size());
   for (long i = 0; i < (long)psel.size(); ++i) {
     const Coordinate& c = psel[i];
-    fprintf(fp, "%5ld    %3d %3d %3d %3d\n", i, c[0], c[1], c[2], c[3]);
+    qfprintf(qfile, "%5ld    %3d %3d %3d %3d\n", i, c[0], c[1], c[2], c[3]);
   }
-  qclose(fp);
+  qclose(qfile);
   qrename(path + ".partial", path);
 }
 

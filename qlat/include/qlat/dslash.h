@@ -197,22 +197,22 @@ inline long save_low_modes_decompress(LowModes& lm, const std::string& path)
   const crc32_t crc = dist_crc32(crcs);
   if (get_id_node() == 0) {
     const std::string fn = path + "/checksums.txt";
-    FILE* fp = qopen(fn, "w");
-    qassert(fp != NULL);
-    displayln(ssprintf("%08X", crc), fp);
-    displayln("", fp);
+    QFile fp = qfopen(fn, "w");
+    qassert(not fp.null());
+    qwrite_data(ssprintf("%08X\n", crc), fp);
+    qwrite_data("\n", fp);
     for (size_t i = 0; i < crcs.size(); ++i) {
-      displayln(ssprintf("%08X", crcs[i]), fp);
+      qwrite_data(ssprintf("%08X\n", crcs[i]), fp);
     }
     qclose(fp);
   }
   if (get_id_node() == 0) {
     const std::string fn = path + "/eigen-values.txt";
-    FILE* fp = qopen(fn, "w");
-    qassert(fp != NULL);
-    displayln(ssprintf("%ld", lm.eigen_values.size()), fp);
+    QFile fp = qfopen(fn, "w");
+    qassert(not fp.null());
+    qwrite_data(ssprintf("%ld\n", lm.eigen_values.size()), fp);
     for (long i = 0; i < lm.eigen_values.size(); ++i) {
-      displayln(ssprintf("%.20lE", lm.eigen_values[i]), fp);
+      qwrite_data(ssprintf("%.20lE\n", lm.eigen_values[i]), fp);
     }
     qclose(fp);
   }

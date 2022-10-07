@@ -43,7 +43,6 @@ class PointSelection:
         self.geo = Geometry(total_site)
 
     def save(self, path):
-        mk_file_dirs_info(path)
         c.save_psel(self, path)
 
     def load(self, path, geo = None):
@@ -170,7 +169,6 @@ class FieldSelection:
         return psel
 
     def save(self, path):
-        mk_file_dirs_info(path)
         return c.save_fsel(self, path)
 
     def load(self, path, n_per_tslice):

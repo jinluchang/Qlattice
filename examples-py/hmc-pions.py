@@ -292,7 +292,7 @@ class HMC:
         filename, self.traj = self.find_latest_traj(f"output_data/fields/hmc_pions_traj_*_{self.fileidwc}.field")
         self.init_length+=self.traj-1
         if(not filename==""):
-            self.field.load(filename)
+            self.field.load_double(filename)
         else:
             self.field.set_unit()
     
@@ -700,7 +700,7 @@ phi_i_dist=[0.0]*64
 theta_dist=[0.0]*64
 
 # The lattice dimensions
-total_site = [8,8,8,16]
+total_site = [4,4,4,8]
 
 # The multiplicity of the scalar field
 mult = 4

@@ -18,12 +18,6 @@ prop.set_rand(rs.split("prop-1"))
 
 q.displayln_info(f"CHECK: prop.crc32() = {prop.crc32()} ; prop.qnorm() = {prop.qnorm()}")
 
-prop.save("results/prop.field")
-prop = q.Prop()
-prop.load("results/prop.field")
-
-q.displayln_info(f"CHECK: prop.crc32() = {prop.crc32()} ; prop.qnorm() = {prop.qnorm()}")
-
 prop.save_double("results/prop-double.field")
 prop = q.Prop()
 prop.load_double("results/prop-double.field")
