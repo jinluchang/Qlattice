@@ -52,19 +52,25 @@ It may be convenient to create a symbolic link `$HOME/qlat-build/default`, which
 
 ### Install on UCONN HPC
 
-First obtain an interactive session:
-
-`$ fisbatch -n 2 -p generalsky`
-
 The default build and installation directory is `$HOME/qlat-build/default`. If a different directory is needed:
 
 `$ export prefix=DEST_DIRECTORY`
 
 Run the build script:
 
+`$ ./scripts/build.uconn.run.sh`
+
+The script will submit a job to build everything needed.
+
+You can also use the following command to obtain an interactive session on a computing node:
+
+`$ fisbatch -n 2 -p generalsky`
+
+Then run
+
 `$ ./build.sh uconn`
 
-End the interactive session.
+Exit the interactive session after build is finished.
 
 `$ exit`
 
