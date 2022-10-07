@@ -75,7 +75,7 @@ API inline int& qacc_num_threads()
                          cudaGetErrorString(err), __FILE__, __LINE__)); \
       qassert(false);                                                   \
     }                                                                   \
-    qlambda_apply<<<cu_blocks, cu_threads>>>(num1, num2, lambda);     \
+    qlambda_apply<<<cu_blocks, cu_threads>>>(num1, num2, lambda);       \
   }
 
 template <typename Lambda>
