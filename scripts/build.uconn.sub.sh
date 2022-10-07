@@ -6,3 +6,9 @@
 #SBATCH -p generalsky  # Job node type
 
 ./build.sh uconn
+
+./scripts/qlat-examples-py.sh
+
+./scripts/qlat-examples-cpp.sh
+
+./scripts/qlat-examples-py-gpt.sh

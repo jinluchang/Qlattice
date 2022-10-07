@@ -100,11 +100,11 @@ Once `python3` is available, the compiler wrappers will support the `--wrapper-r
 
 A sample `Makefile` is provided which can compile and run a simple program using the library. The `Makefile` assumes that the library and all its dependencies are installed in their default locations.
 
-There are also example programs provided in the examples directory. Once the library is completed installed, one can run the following command to compile all the examples:
+There are also example programs provided in the examples directory. Once the library is completed installed, one can run the following command to compile and run all the examples:
 
-`$ make -C examples-cpp run`
-
-`$ make -C examples-py run`
+`./scripts/qlat-examples-cpp.sh`
+`./scripts/qlat-examples-py-gpt.sh`
+`./scripts/qlat-examples-py.sh`
 
 ## Structure
 
