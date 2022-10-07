@@ -346,6 +346,8 @@ class InverterGPT(q.Inverter):
         self.timer.stop()
         return prop_sol
 
+###
+
 def get_fgrid(total_site, fermion_params):
     geo = q.Geometry(total_site, 1)
     gf = q.GaugeField(geo)
@@ -503,6 +505,8 @@ class non_linear_cg(g.algorithms.base_iterative):
             #
         return opt
 
+###
+
 @q.timer_verbose
 def gauge_fix_coulomb(
         gf,
@@ -622,7 +626,7 @@ def gauge_fix_coulomb(
     return gt
 
 @q.timer
-def check_gauge_fix_coulomb(gf, gt, eps = 1e-20):
+def check_gauge_fix_coulomb(gf, gt, eps = 1e-12):
     t_size = gf.geo().total_site()[3]
     V = gpt_from_qlat(gt)
     U = gpt_from_qlat(gf)
