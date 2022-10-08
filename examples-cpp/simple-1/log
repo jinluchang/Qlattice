@@ -34,6 +34,8 @@ QFile: open 'results/ckpoint.0.partial' with 'a'.
 QFile: close 'results/ckpoint.0.partial' with 'a'.
 qrename: 'results/ckpoint.0.partial' 'results/ckpoint.0'
 load_gauge_field: 'results/ckpoint.0'.
+QFile: open 'results/ckpoint.0' with 'r'.
+QFile: close 'results/ckpoint.0' with 'r'.
 q_read_par_limit=16 (default)
 QFile: open 'results/ckpoint.0' with 'r'.
 QFile: close 'results/ckpoint.0' with 'r'.

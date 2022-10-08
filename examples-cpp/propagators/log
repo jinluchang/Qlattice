@@ -143,8 +143,44 @@ make_shuffle_plan_generic: total num_recv_msgs  =          2
 make_shuffle_plan_generic: global_comm_size =        512
 Cache: 'ShufflePlanCache': 1 / 16 [8] to add
 shuffle_field(fs,f,sp): 1x1x1x2 -> 2x2x2x4 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.001 GB)
+QFile: open 'results/test-4nt8/results=1000/psrc-prop-0.partial/geo-info.txt' with 'w'.
+QFile: close 'results/test-4nt8/results=1000/psrc-prop-0.partial/geo-info.txt' with 'w'.
+QFile: open 'results/test-4nt8/results=1000/psrc-prop-0.partial/00/0000000000' with 'w'.
+QFile: close 'results/test-4nt8/results=1000/psrc-prop-0.partial/00/0000000000' with 'w'.
+QFile: open 'results/test-4nt8/results=1000/psrc-prop-0.partial/02/0000000002' with 'w'.
+QFile: close 'results/test-4nt8/results=1000/psrc-prop-0.partial/02/0000000002' with 'w'.
+QFile: open 'results/test-4nt8/results=1000/psrc-prop-0.partial/04/0000000004' with 'w'.
+QFile: close 'results/test-4nt8/results=1000/psrc-prop-0.partial/04/0000000004' with 'w'.
+QFile: open 'results/test-4nt8/results=1000/psrc-prop-0.partial/06/0000000006' with 'w'.
+QFile: close 'results/test-4nt8/results=1000/psrc-prop-0.partial/06/0000000006' with 'w'.
+QFile: open 'results/test-4nt8/results=1000/psrc-prop-0.partial/08/0000000008' with 'w'.
+QFile: close 'results/test-4nt8/results=1000/psrc-prop-0.partial/08/0000000008' with 'w'.
+QFile: open 'results/test-4nt8/results=1000/psrc-prop-0.partial/10/0000000010' with 'w'.
+QFile: close 'results/test-4nt8/results=1000/psrc-prop-0.partial/10/0000000010' with 'w'.
+QFile: open 'results/test-4nt8/results=1000/psrc-prop-0.partial/12/0000000012' with 'w'.
+QFile: close 'results/test-4nt8/results=1000/psrc-prop-0.partial/12/0000000012' with 'w'.
+QFile: open 'results/test-4nt8/results=1000/psrc-prop-0.partial/14/0000000014' with 'w'.
+QFile: close 'results/test-4nt8/results=1000/psrc-prop-0.partial/14/0000000014' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =         16 ; total_bytes =          294912
+QFile: open 'results/test-4nt8/results=1000/psrc-prop-0.partial/01/0000000001' with 'w'.
+QFile: close 'results/test-4nt8/results=1000/psrc-prop-0.partial/01/0000000001' with 'w'.
+QFile: open 'results/test-4nt8/results=1000/psrc-prop-0.partial/03/0000000003' with 'w'.
+QFile: close 'results/test-4nt8/results=1000/psrc-prop-0.partial/03/0000000003' with 'w'.
+QFile: open 'results/test-4nt8/results=1000/psrc-prop-0.partial/05/0000000005' with 'w'.
+QFile: close 'results/test-4nt8/results=1000/psrc-prop-0.partial/05/0000000005' with 'w'.
+QFile: open 'results/test-4nt8/results=1000/psrc-prop-0.partial/07/0000000007' with 'w'.
+QFile: close 'results/test-4nt8/results=1000/psrc-prop-0.partial/07/0000000007' with 'w'.
+QFile: open 'results/test-4nt8/results=1000/psrc-prop-0.partial/09/0000000009' with 'w'.
+QFile: close 'results/test-4nt8/results=1000/psrc-prop-0.partial/09/0000000009' with 'w'.
+QFile: open 'results/test-4nt8/results=1000/psrc-prop-0.partial/11/0000000011' with 'w'.
+QFile: close 'results/test-4nt8/results=1000/psrc-prop-0.partial/11/0000000011' with 'w'.
+QFile: open 'results/test-4nt8/results=1000/psrc-prop-0.partial/13/0000000013' with 'w'.
+QFile: close 'results/test-4nt8/results=1000/psrc-prop-0.partial/13/0000000013' with 'w'.
+QFile: open 'results/test-4nt8/results=1000/psrc-prop-0.partial/15/0000000015' with 'w'.
+QFile: close 'results/test-4nt8/results=1000/psrc-prop-0.partial/15/0000000015' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         32 ; total_bytes =          589824
+QFile: open 'results/test-4nt8/results=1000/psrc-prop-0.partial/checksums.txt' with 'w'.
+QFile: close 'results/test-4nt8/results=1000/psrc-prop-0.partial/checksums.txt' with 'w'.
 QFile: open 'results/test-4nt8/results=1000/psrc-prop-0.partial/checkpoint' with 'w'.
 QFile: close 'results/test-4nt8/results=1000/psrc-prop-0.partial/checkpoint' with 'w'.
 qrename: 'results/test-4nt8/results=1000/psrc-prop-0.partial' 'results/test-4nt8/results=1000/psrc-prop-0'
@@ -152,6 +188,8 @@ write_selected_field: fn='results/test-4nt8/results=1000/psrc-prop-0.sfield'.
 QFile: open 'results/test-4nt8/results=1000/psrc-prop-0.sfield.partial.partial' with 'w'.
 QFile: close 'results/test-4nt8/results=1000/psrc-prop-0.sfield.partial.partial' with 'w'.
 qrename: 'results/test-4nt8/results=1000/psrc-prop-0.sfield.partial.partial' 'results/test-4nt8/results=1000/psrc-prop-0.sfield.partial'
+QFile: open 'results/test-4nt8/results=1000/psrc-prop-0.sfield.partial' with 'a'.
+QFile: close 'results/test-4nt8/results=1000/psrc-prop-0.sfield.partial' with 'a'.
 qrename: 'results/test-4nt8/results=1000/psrc-prop-0.sfield.partial' 'results/test-4nt8/results=1000/psrc-prop-0.sfield'
 QFile: open 'results/test-4nt8/results=1000/pion-corr.lat.partial' with 'w'.
 qrename: 'results/test-4nt8/results=1000/pion-corr.lat.partial' 'results/test-4nt8/results=1000/pion-corr.lat'
@@ -280,8 +318,44 @@ QFile: close 'results/test-4nt8/results=1010/psrc-prop-0.field.partial' with 'a'
 qrename: 'results/test-4nt8/results=1010/psrc-prop-0.field.partial' 'results/test-4nt8/results=1010/psrc-prop-0.field'
 dist_write_field: fn='results/test-4nt8/results=1010/psrc-prop-0'.
 shuffle_field(fs,f,sp): 1x1x1x2 -> 2x2x2x4 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.001 GB)
+QFile: open 'results/test-4nt8/results=1010/psrc-prop-0.partial/geo-info.txt' with 'w'.
+QFile: close 'results/test-4nt8/results=1010/psrc-prop-0.partial/geo-info.txt' with 'w'.
+QFile: open 'results/test-4nt8/results=1010/psrc-prop-0.partial/00/0000000000' with 'w'.
+QFile: close 'results/test-4nt8/results=1010/psrc-prop-0.partial/00/0000000000' with 'w'.
+QFile: open 'results/test-4nt8/results=1010/psrc-prop-0.partial/02/0000000002' with 'w'.
+QFile: close 'results/test-4nt8/results=1010/psrc-prop-0.partial/02/0000000002' with 'w'.
+QFile: open 'results/test-4nt8/results=1010/psrc-prop-0.partial/04/0000000004' with 'w'.
+QFile: close 'results/test-4nt8/results=1010/psrc-prop-0.partial/04/0000000004' with 'w'.
+QFile: open 'results/test-4nt8/results=1010/psrc-prop-0.partial/06/0000000006' with 'w'.
+QFile: close 'results/test-4nt8/results=1010/psrc-prop-0.partial/06/0000000006' with 'w'.
+QFile: open 'results/test-4nt8/results=1010/psrc-prop-0.partial/08/0000000008' with 'w'.
+QFile: close 'results/test-4nt8/results=1010/psrc-prop-0.partial/08/0000000008' with 'w'.
+QFile: open 'results/test-4nt8/results=1010/psrc-prop-0.partial/10/0000000010' with 'w'.
+QFile: close 'results/test-4nt8/results=1010/psrc-prop-0.partial/10/0000000010' with 'w'.
+QFile: open 'results/test-4nt8/results=1010/psrc-prop-0.partial/12/0000000012' with 'w'.
+QFile: close 'results/test-4nt8/results=1010/psrc-prop-0.partial/12/0000000012' with 'w'.
+QFile: open 'results/test-4nt8/results=1010/psrc-prop-0.partial/14/0000000014' with 'w'.
+QFile: close 'results/test-4nt8/results=1010/psrc-prop-0.partial/14/0000000014' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =         16 ; total_bytes =          294912
+QFile: open 'results/test-4nt8/results=1010/psrc-prop-0.partial/01/0000000001' with 'w'.
+QFile: close 'results/test-4nt8/results=1010/psrc-prop-0.partial/01/0000000001' with 'w'.
+QFile: open 'results/test-4nt8/results=1010/psrc-prop-0.partial/03/0000000003' with 'w'.
+QFile: close 'results/test-4nt8/results=1010/psrc-prop-0.partial/03/0000000003' with 'w'.
+QFile: open 'results/test-4nt8/results=1010/psrc-prop-0.partial/05/0000000005' with 'w'.
+QFile: close 'results/test-4nt8/results=1010/psrc-prop-0.partial/05/0000000005' with 'w'.
+QFile: open 'results/test-4nt8/results=1010/psrc-prop-0.partial/07/0000000007' with 'w'.
+QFile: close 'results/test-4nt8/results=1010/psrc-prop-0.partial/07/0000000007' with 'w'.
+QFile: open 'results/test-4nt8/results=1010/psrc-prop-0.partial/09/0000000009' with 'w'.
+QFile: close 'results/test-4nt8/results=1010/psrc-prop-0.partial/09/0000000009' with 'w'.
+QFile: open 'results/test-4nt8/results=1010/psrc-prop-0.partial/11/0000000011' with 'w'.
+QFile: close 'results/test-4nt8/results=1010/psrc-prop-0.partial/11/0000000011' with 'w'.
+QFile: open 'results/test-4nt8/results=1010/psrc-prop-0.partial/13/0000000013' with 'w'.
+QFile: close 'results/test-4nt8/results=1010/psrc-prop-0.partial/13/0000000013' with 'w'.
+QFile: open 'results/test-4nt8/results=1010/psrc-prop-0.partial/15/0000000015' with 'w'.
+QFile: close 'results/test-4nt8/results=1010/psrc-prop-0.partial/15/0000000015' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         32 ; total_bytes =          589824
+QFile: open 'results/test-4nt8/results=1010/psrc-prop-0.partial/checksums.txt' with 'w'.
+QFile: close 'results/test-4nt8/results=1010/psrc-prop-0.partial/checksums.txt' with 'w'.
 QFile: open 'results/test-4nt8/results=1010/psrc-prop-0.partial/checkpoint' with 'w'.
 QFile: close 'results/test-4nt8/results=1010/psrc-prop-0.partial/checkpoint' with 'w'.
 qrename: 'results/test-4nt8/results=1010/psrc-prop-0.partial' 'results/test-4nt8/results=1010/psrc-prop-0'
@@ -289,6 +363,8 @@ write_selected_field: fn='results/test-4nt8/results=1010/psrc-prop-0.sfield'.
 QFile: open 'results/test-4nt8/results=1010/psrc-prop-0.sfield.partial.partial' with 'w'.
 QFile: close 'results/test-4nt8/results=1010/psrc-prop-0.sfield.partial.partial' with 'w'.
 qrename: 'results/test-4nt8/results=1010/psrc-prop-0.sfield.partial.partial' 'results/test-4nt8/results=1010/psrc-prop-0.sfield.partial'
+QFile: open 'results/test-4nt8/results=1010/psrc-prop-0.sfield.partial' with 'a'.
+QFile: close 'results/test-4nt8/results=1010/psrc-prop-0.sfield.partial' with 'a'.
 qrename: 'results/test-4nt8/results=1010/psrc-prop-0.sfield.partial' 'results/test-4nt8/results=1010/psrc-prop-0.sfield'
 QFile: open 'results/test-4nt8/results=1010/pion-corr.lat.partial' with 'w'.
 qrename: 'results/test-4nt8/results=1010/pion-corr.lat.partial' 'results/test-4nt8/results=1010/pion-corr.lat'
@@ -418,8 +494,44 @@ QFile: close 'results/free-4nt8/results=1000/psrc-prop-0.field.partial' with 'a'
 qrename: 'results/free-4nt8/results=1000/psrc-prop-0.field.partial' 'results/free-4nt8/results=1000/psrc-prop-0.field'
 dist_write_field: fn='results/free-4nt8/results=1000/psrc-prop-0'.
 shuffle_field(fs,f,sp): 1x1x1x2 -> 2x2x2x4 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.001 GB)
+QFile: open 'results/free-4nt8/results=1000/psrc-prop-0.partial/geo-info.txt' with 'w'.
+QFile: close 'results/free-4nt8/results=1000/psrc-prop-0.partial/geo-info.txt' with 'w'.
+QFile: open 'results/free-4nt8/results=1000/psrc-prop-0.partial/00/0000000000' with 'w'.
+QFile: close 'results/free-4nt8/results=1000/psrc-prop-0.partial/00/0000000000' with 'w'.
+QFile: open 'results/free-4nt8/results=1000/psrc-prop-0.partial/02/0000000002' with 'w'.
+QFile: close 'results/free-4nt8/results=1000/psrc-prop-0.partial/02/0000000002' with 'w'.
+QFile: open 'results/free-4nt8/results=1000/psrc-prop-0.partial/04/0000000004' with 'w'.
+QFile: close 'results/free-4nt8/results=1000/psrc-prop-0.partial/04/0000000004' with 'w'.
+QFile: open 'results/free-4nt8/results=1000/psrc-prop-0.partial/06/0000000006' with 'w'.
+QFile: close 'results/free-4nt8/results=1000/psrc-prop-0.partial/06/0000000006' with 'w'.
+QFile: open 'results/free-4nt8/results=1000/psrc-prop-0.partial/08/0000000008' with 'w'.
+QFile: close 'results/free-4nt8/results=1000/psrc-prop-0.partial/08/0000000008' with 'w'.
+QFile: open 'results/free-4nt8/results=1000/psrc-prop-0.partial/10/0000000010' with 'w'.
+QFile: close 'results/free-4nt8/results=1000/psrc-prop-0.partial/10/0000000010' with 'w'.
+QFile: open 'results/free-4nt8/results=1000/psrc-prop-0.partial/12/0000000012' with 'w'.
+QFile: close 'results/free-4nt8/results=1000/psrc-prop-0.partial/12/0000000012' with 'w'.
+QFile: open 'results/free-4nt8/results=1000/psrc-prop-0.partial/14/0000000014' with 'w'.
+QFile: close 'results/free-4nt8/results=1000/psrc-prop-0.partial/14/0000000014' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =         16 ; total_bytes =          294912
+QFile: open 'results/free-4nt8/results=1000/psrc-prop-0.partial/01/0000000001' with 'w'.
+QFile: close 'results/free-4nt8/results=1000/psrc-prop-0.partial/01/0000000001' with 'w'.
+QFile: open 'results/free-4nt8/results=1000/psrc-prop-0.partial/03/0000000003' with 'w'.
+QFile: close 'results/free-4nt8/results=1000/psrc-prop-0.partial/03/0000000003' with 'w'.
+QFile: open 'results/free-4nt8/results=1000/psrc-prop-0.partial/05/0000000005' with 'w'.
+QFile: close 'results/free-4nt8/results=1000/psrc-prop-0.partial/05/0000000005' with 'w'.
+QFile: open 'results/free-4nt8/results=1000/psrc-prop-0.partial/07/0000000007' with 'w'.
+QFile: close 'results/free-4nt8/results=1000/psrc-prop-0.partial/07/0000000007' with 'w'.
+QFile: open 'results/free-4nt8/results=1000/psrc-prop-0.partial/09/0000000009' with 'w'.
+QFile: close 'results/free-4nt8/results=1000/psrc-prop-0.partial/09/0000000009' with 'w'.
+QFile: open 'results/free-4nt8/results=1000/psrc-prop-0.partial/11/0000000011' with 'w'.
+QFile: close 'results/free-4nt8/results=1000/psrc-prop-0.partial/11/0000000011' with 'w'.
+QFile: open 'results/free-4nt8/results=1000/psrc-prop-0.partial/13/0000000013' with 'w'.
+QFile: close 'results/free-4nt8/results=1000/psrc-prop-0.partial/13/0000000013' with 'w'.
+QFile: open 'results/free-4nt8/results=1000/psrc-prop-0.partial/15/0000000015' with 'w'.
+QFile: close 'results/free-4nt8/results=1000/psrc-prop-0.partial/15/0000000015' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         32 ; total_bytes =          589824
+QFile: open 'results/free-4nt8/results=1000/psrc-prop-0.partial/checksums.txt' with 'w'.
+QFile: close 'results/free-4nt8/results=1000/psrc-prop-0.partial/checksums.txt' with 'w'.
 QFile: open 'results/free-4nt8/results=1000/psrc-prop-0.partial/checkpoint' with 'w'.
 QFile: close 'results/free-4nt8/results=1000/psrc-prop-0.partial/checkpoint' with 'w'.
 qrename: 'results/free-4nt8/results=1000/psrc-prop-0.partial' 'results/free-4nt8/results=1000/psrc-prop-0'
@@ -427,6 +539,8 @@ write_selected_field: fn='results/free-4nt8/results=1000/psrc-prop-0.sfield'.
 QFile: open 'results/free-4nt8/results=1000/psrc-prop-0.sfield.partial.partial' with 'w'.
 QFile: close 'results/free-4nt8/results=1000/psrc-prop-0.sfield.partial.partial' with 'w'.
 qrename: 'results/free-4nt8/results=1000/psrc-prop-0.sfield.partial.partial' 'results/free-4nt8/results=1000/psrc-prop-0.sfield.partial'
+QFile: open 'results/free-4nt8/results=1000/psrc-prop-0.sfield.partial' with 'a'.
+QFile: close 'results/free-4nt8/results=1000/psrc-prop-0.sfield.partial' with 'a'.
 qrename: 'results/free-4nt8/results=1000/psrc-prop-0.sfield.partial' 'results/free-4nt8/results=1000/psrc-prop-0.sfield'
 QFile: open 'results/free-4nt8/results=1000/pion-corr.lat.partial' with 'w'.
 qrename: 'results/free-4nt8/results=1000/pion-corr.lat.partial' 'results/free-4nt8/results=1000/pion-corr.lat'
@@ -555,8 +669,44 @@ QFile: close 'results/free-4nt8/results=1010/psrc-prop-0.field.partial' with 'a'
 qrename: 'results/free-4nt8/results=1010/psrc-prop-0.field.partial' 'results/free-4nt8/results=1010/psrc-prop-0.field'
 dist_write_field: fn='results/free-4nt8/results=1010/psrc-prop-0'.
 shuffle_field(fs,f,sp): 1x1x1x2 -> 2x2x2x4 (total_site: 4x4x4x8 ; site_size: 1152 ; total_size: 0.001 GB)
+QFile: open 'results/free-4nt8/results=1010/psrc-prop-0.partial/geo-info.txt' with 'w'.
+QFile: close 'results/free-4nt8/results=1010/psrc-prop-0.partial/geo-info.txt' with 'w'.
+QFile: open 'results/free-4nt8/results=1010/psrc-prop-0.partial/00/0000000000' with 'w'.
+QFile: close 'results/free-4nt8/results=1010/psrc-prop-0.partial/00/0000000000' with 'w'.
+QFile: open 'results/free-4nt8/results=1010/psrc-prop-0.partial/02/0000000002' with 'w'.
+QFile: close 'results/free-4nt8/results=1010/psrc-prop-0.partial/02/0000000002' with 'w'.
+QFile: open 'results/free-4nt8/results=1010/psrc-prop-0.partial/04/0000000004' with 'w'.
+QFile: close 'results/free-4nt8/results=1010/psrc-prop-0.partial/04/0000000004' with 'w'.
+QFile: open 'results/free-4nt8/results=1010/psrc-prop-0.partial/06/0000000006' with 'w'.
+QFile: close 'results/free-4nt8/results=1010/psrc-prop-0.partial/06/0000000006' with 'w'.
+QFile: open 'results/free-4nt8/results=1010/psrc-prop-0.partial/08/0000000008' with 'w'.
+QFile: close 'results/free-4nt8/results=1010/psrc-prop-0.partial/08/0000000008' with 'w'.
+QFile: open 'results/free-4nt8/results=1010/psrc-prop-0.partial/10/0000000010' with 'w'.
+QFile: close 'results/free-4nt8/results=1010/psrc-prop-0.partial/10/0000000010' with 'w'.
+QFile: open 'results/free-4nt8/results=1010/psrc-prop-0.partial/12/0000000012' with 'w'.
+QFile: close 'results/free-4nt8/results=1010/psrc-prop-0.partial/12/0000000012' with 'w'.
+QFile: open 'results/free-4nt8/results=1010/psrc-prop-0.partial/14/0000000014' with 'w'.
+QFile: close 'results/free-4nt8/results=1010/psrc-prop-0.partial/14/0000000014' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =         16 ; total_bytes =          294912
+QFile: open 'results/free-4nt8/results=1010/psrc-prop-0.partial/01/0000000001' with 'w'.
+QFile: close 'results/free-4nt8/results=1010/psrc-prop-0.partial/01/0000000001' with 'w'.
+QFile: open 'results/free-4nt8/results=1010/psrc-prop-0.partial/03/0000000003' with 'w'.
+QFile: close 'results/free-4nt8/results=1010/psrc-prop-0.partial/03/0000000003' with 'w'.
+QFile: open 'results/free-4nt8/results=1010/psrc-prop-0.partial/05/0000000005' with 'w'.
+QFile: close 'results/free-4nt8/results=1010/psrc-prop-0.partial/05/0000000005' with 'w'.
+QFile: open 'results/free-4nt8/results=1010/psrc-prop-0.partial/07/0000000007' with 'w'.
+QFile: close 'results/free-4nt8/results=1010/psrc-prop-0.partial/07/0000000007' with 'w'.
+QFile: open 'results/free-4nt8/results=1010/psrc-prop-0.partial/09/0000000009' with 'w'.
+QFile: close 'results/free-4nt8/results=1010/psrc-prop-0.partial/09/0000000009' with 'w'.
+QFile: open 'results/free-4nt8/results=1010/psrc-prop-0.partial/11/0000000011' with 'w'.
+QFile: close 'results/free-4nt8/results=1010/psrc-prop-0.partial/11/0000000011' with 'w'.
+QFile: open 'results/free-4nt8/results=1010/psrc-prop-0.partial/13/0000000013' with 'w'.
+QFile: close 'results/free-4nt8/results=1010/psrc-prop-0.partial/13/0000000013' with 'w'.
+QFile: open 'results/free-4nt8/results=1010/psrc-prop-0.partial/15/0000000015' with 'w'.
+QFile: close 'results/free-4nt8/results=1010/psrc-prop-0.partial/15/0000000015' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         32 ; total_bytes =          589824
+QFile: open 'results/free-4nt8/results=1010/psrc-prop-0.partial/checksums.txt' with 'w'.
+QFile: close 'results/free-4nt8/results=1010/psrc-prop-0.partial/checksums.txt' with 'w'.
 QFile: open 'results/free-4nt8/results=1010/psrc-prop-0.partial/checkpoint' with 'w'.
 QFile: close 'results/free-4nt8/results=1010/psrc-prop-0.partial/checkpoint' with 'w'.
 qrename: 'results/free-4nt8/results=1010/psrc-prop-0.partial' 'results/free-4nt8/results=1010/psrc-prop-0'
@@ -564,6 +714,8 @@ write_selected_field: fn='results/free-4nt8/results=1010/psrc-prop-0.sfield'.
 QFile: open 'results/free-4nt8/results=1010/psrc-prop-0.sfield.partial.partial' with 'w'.
 QFile: close 'results/free-4nt8/results=1010/psrc-prop-0.sfield.partial.partial' with 'w'.
 qrename: 'results/free-4nt8/results=1010/psrc-prop-0.sfield.partial.partial' 'results/free-4nt8/results=1010/psrc-prop-0.sfield.partial'
+QFile: open 'results/free-4nt8/results=1010/psrc-prop-0.sfield.partial' with 'a'.
+QFile: close 'results/free-4nt8/results=1010/psrc-prop-0.sfield.partial' with 'a'.
 qrename: 'results/free-4nt8/results=1010/psrc-prop-0.sfield.partial' 'results/free-4nt8/results=1010/psrc-prop-0.sfield'
 QFile: open 'results/free-4nt8/results=1010/pion-corr.lat.partial' with 'w'.
 qrename: 'results/free-4nt8/results=1010/pion-corr.lat.partial' 'results/free-4nt8/results=1010/pion-corr.lat'

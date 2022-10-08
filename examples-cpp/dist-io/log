@@ -24,28 +24,54 @@ q_write_par_limit=16 (default)
 q_read_par_limit=16 (default)
 q_field_init='fast' (default)
 set q_field_init=fast.
+QFile: open 'huge-data/gauge_field_unit.partial/geo-info.txt' with 'w'.
+QFile: close 'huge-data/gauge_field_unit.partial/geo-info.txt' with 'w'.
+QFile: open 'huge-data/gauge_field_unit.partial/00/0000000000' with 'w'.
+QFile: close 'huge-data/gauge_field_unit.partial/00/0000000000' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          2 ; total_bytes =         2359296
+QFile: open 'huge-data/gauge_field_unit.partial/checksums.txt' with 'w'.
+QFile: close 'huge-data/gauge_field_unit.partial/checksums.txt' with 'w'.
 QFile: open 'huge-data/gauge_field_unit.partial/checkpoint' with 'w'.
 QFile: close 'huge-data/gauge_field_unit.partial/checkpoint' with 'w'.
 qrename: 'huge-data/gauge_field_unit.partial' 'huge-data/gauge_field_unit'
+QFile: open 'huge-data/gauge_field_rgf-0.1.partial/geo-info.txt' with 'w'.
+QFile: close 'huge-data/gauge_field_rgf-0.1.partial/geo-info.txt' with 'w'.
+QFile: open 'huge-data/gauge_field_rgf-0.1.partial/00/0000000000' with 'w'.
+QFile: close 'huge-data/gauge_field_rgf-0.1.partial/00/0000000000' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          2 ; total_bytes =         2359296
+QFile: open 'huge-data/gauge_field_rgf-0.1.partial/checksums.txt' with 'w'.
+QFile: close 'huge-data/gauge_field_rgf-0.1.partial/checksums.txt' with 'w'.
 QFile: open 'huge-data/gauge_field_rgf-0.1.partial/checkpoint' with 'w'.
 QFile: close 'huge-data/gauge_field_rgf-0.1.partial/checkpoint' with 'w'.
 qrename: 'huge-data/gauge_field_rgf-0.1.partial' 'huge-data/gauge_field_rgf-0.1'
+QFile: open 'huge-data/gauge_field_unit_2.partial/geo-info.txt' with 'w'.
+QFile: close 'huge-data/gauge_field_unit_2.partial/geo-info.txt' with 'w'.
+QFile: open 'huge-data/gauge_field_unit_2.partial/00/0000000000' with 'w'.
+QFile: close 'huge-data/gauge_field_unit_2.partial/00/0000000000' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          2 ; total_bytes =         2359296
+QFile: open 'huge-data/gauge_field_unit_2.partial/checksums.txt' with 'w'.
+QFile: close 'huge-data/gauge_field_unit_2.partial/checksums.txt' with 'w'.
 QFile: open 'huge-data/gauge_field_unit_2.partial/checkpoint' with 'w'.
 QFile: close 'huge-data/gauge_field_unit_2.partial/checkpoint' with 'w'.
 qrename: 'huge-data/gauge_field_unit_2.partial' 'huge-data/gauge_field_unit_2'
 dist_read_field: fn='huge-data/gauge_field_rgf-0.1'.
 QFile: open 'huge-data/gauge_field_rgf-0.1/geo-info.txt' with 'r'.
 QFile: close 'huge-data/gauge_field_rgf-0.1/geo-info.txt' with 'r'.
+QFile: open 'huge-data/gauge_field_rgf-0.1/00/0000000000' with 'r'.
+QFile: close 'huge-data/gauge_field_rgf-0.1/00/0000000000' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          2 ; total_bytes =         2359296
 QFile: open 'huge-data/gauge_field_rgf-0.1/checksums.txt' with 'r'.
 QFile: close 'huge-data/gauge_field_rgf-0.1/checksums.txt' with 'r'.
 q_mem_cache_max_size=512 (default)
 q_mem_cache_acc_max_size=512 (default)
 Cache: 'ShufflePlanCache': 0 / 16 [8] to add
+QFile: open 'huge-data/gauge_field_rgf-0.1_2.partial/geo-info.txt' with 'w'.
+QFile: close 'huge-data/gauge_field_rgf-0.1_2.partial/geo-info.txt' with 'w'.
+QFile: open 'huge-data/gauge_field_rgf-0.1_2.partial/00/0000000000' with 'w'.
+QFile: close 'huge-data/gauge_field_rgf-0.1_2.partial/00/0000000000' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          2 ; total_bytes =         2359296
+QFile: open 'huge-data/gauge_field_rgf-0.1_2.partial/checksums.txt' with 'w'.
+QFile: close 'huge-data/gauge_field_rgf-0.1_2.partial/checksums.txt' with 'w'.
 QFile: open 'huge-data/gauge_field_rgf-0.1_2.partial/checkpoint' with 'w'.
 QFile: close 'huge-data/gauge_field_rgf-0.1_2.partial/checkpoint' with 'w'.
 qrename: 'huge-data/gauge_field_rgf-0.1_2.partial' 'huge-data/gauge_field_rgf-0.1_2'
@@ -54,17 +80,31 @@ plaq :  9.47925703162884048E-01
 Cache: 'CommPlanCache': 1 / 32 [16] to add
 spatial plaq :  9.47619593969193930E-01
 trace:  9.86703685472810177E-01
+QFile: open 'huge-data/gauge_field_rgf-0.1_f.partial/geo-info.txt' with 'w'.
+QFile: close 'huge-data/gauge_field_rgf-0.1_f.partial/geo-info.txt' with 'w'.
+QFile: open 'huge-data/gauge_field_rgf-0.1_f.partial/00/0000000000' with 'w'.
+QFile: close 'huge-data/gauge_field_rgf-0.1_f.partial/00/0000000000' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          2 ; total_bytes =         1179648
+QFile: open 'huge-data/gauge_field_rgf-0.1_f.partial/checksums.txt' with 'w'.
+QFile: close 'huge-data/gauge_field_rgf-0.1_f.partial/checksums.txt' with 'w'.
 QFile: open 'huge-data/gauge_field_rgf-0.1_f.partial/checkpoint' with 'w'.
 QFile: close 'huge-data/gauge_field_rgf-0.1_f.partial/checkpoint' with 'w'.
 qrename: 'huge-data/gauge_field_rgf-0.1_f.partial' 'huge-data/gauge_field_rgf-0.1_f'
 dist_read_field: fn='huge-data/gauge_field_rgf-0.1_f'.
 QFile: open 'huge-data/gauge_field_rgf-0.1_f/geo-info.txt' with 'r'.
 QFile: close 'huge-data/gauge_field_rgf-0.1_f/geo-info.txt' with 'r'.
+QFile: open 'huge-data/gauge_field_rgf-0.1_f/00/0000000000' with 'r'.
+QFile: close 'huge-data/gauge_field_rgf-0.1_f/00/0000000000' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          2 ; total_bytes =         1179648
 QFile: open 'huge-data/gauge_field_rgf-0.1_f/checksums.txt' with 'r'.
 QFile: close 'huge-data/gauge_field_rgf-0.1_f/checksums.txt' with 'r'.
+QFile: open 'huge-data/gauge_field_rgf-0.1_f_2.partial/geo-info.txt' with 'w'.
+QFile: close 'huge-data/gauge_field_rgf-0.1_f_2.partial/geo-info.txt' with 'w'.
+QFile: open 'huge-data/gauge_field_rgf-0.1_f_2.partial/00/0000000000' with 'w'.
+QFile: close 'huge-data/gauge_field_rgf-0.1_f_2.partial/00/0000000000' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          2 ; total_bytes =         1179648
+QFile: open 'huge-data/gauge_field_rgf-0.1_f_2.partial/checksums.txt' with 'w'.
+QFile: close 'huge-data/gauge_field_rgf-0.1_f_2.partial/checksums.txt' with 'w'.
 QFile: open 'huge-data/gauge_field_rgf-0.1_f_2.partial/checkpoint' with 'w'.
 QFile: close 'huge-data/gauge_field_rgf-0.1_f_2.partial/checkpoint' with 'w'.
 qrename: 'huge-data/gauge_field_rgf-0.1_f_2.partial' 'huge-data/gauge_field_rgf-0.1_f_2'
@@ -164,13 +204,21 @@ dist_crc32 = 51AE844C
 crc32 = 000E8458
 dist_write_field: fn='huge-data/gauge_field ; 1x1x1x1'.
 shuffle_field(fs,f,sp): 1x1x1x2 -> 1x1x1x1 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
+QFile: open 'huge-data/gauge_field ; 1x1x1x1.partial/geo-info.txt' with 'w'.
+QFile: close 'huge-data/gauge_field ; 1x1x1x1.partial/geo-info.txt' with 'w'.
+QFile: open 'huge-data/gauge_field ; 1x1x1x1.partial/00/0000000000' with 'w'.
+QFile: close 'huge-data/gauge_field ; 1x1x1x1.partial/00/0000000000' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          1 ; total_bytes =         2359296
+QFile: open 'huge-data/gauge_field ; 1x1x1x1.partial/checksums.txt' with 'w'.
+QFile: close 'huge-data/gauge_field ; 1x1x1x1.partial/checksums.txt' with 'w'.
 QFile: open 'huge-data/gauge_field ; 1x1x1x1.partial/checkpoint' with 'w'.
 QFile: close 'huge-data/gauge_field ; 1x1x1x1.partial/checkpoint' with 'w'.
 qrename: 'huge-data/gauge_field ; 1x1x1x1.partial' 'huge-data/gauge_field ; 1x1x1x1'
 dist_read_field: fn='huge-data/gauge_field ; 1x1x1x1'.
 QFile: open 'huge-data/gauge_field ; 1x1x1x1/geo-info.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 1x1x1x1/geo-info.txt' with 'r'.
+QFile: open 'huge-data/gauge_field ; 1x1x1x1/00/0000000000' with 'r'.
+QFile: close 'huge-data/gauge_field ; 1x1x1x1/00/0000000000' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          1 ; total_bytes =         2359296
 QFile: open 'huge-data/gauge_field ; 1x1x1x1/checksums.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 1x1x1x1/checksums.txt' with 'r'.
@@ -181,15 +229,51 @@ dist_crc32 = 51AE844C
 crc32 = 000E8458
 dist_write_field: fn='huge-data/gauge_field ; 2x2x2x2'.
 shuffle_field(fs,f,sp): 1x1x1x2 -> 2x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
+QFile: open 'huge-data/gauge_field ; 2x2x2x2.partial/geo-info.txt' with 'w'.
+QFile: close 'huge-data/gauge_field ; 2x2x2x2.partial/geo-info.txt' with 'w'.
+QFile: open 'huge-data/gauge_field ; 2x2x2x2.partial/00/0000000000' with 'w'.
+QFile: close 'huge-data/gauge_field ; 2x2x2x2.partial/00/0000000000' with 'w'.
+QFile: open 'huge-data/gauge_field ; 2x2x2x2.partial/02/0000000002' with 'w'.
+QFile: close 'huge-data/gauge_field ; 2x2x2x2.partial/02/0000000002' with 'w'.
+QFile: open 'huge-data/gauge_field ; 2x2x2x2.partial/04/0000000004' with 'w'.
+QFile: close 'huge-data/gauge_field ; 2x2x2x2.partial/04/0000000004' with 'w'.
+QFile: open 'huge-data/gauge_field ; 2x2x2x2.partial/06/0000000006' with 'w'.
+QFile: close 'huge-data/gauge_field ; 2x2x2x2.partial/06/0000000006' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =          8 ; total_bytes =         1179648
+QFile: open 'huge-data/gauge_field ; 2x2x2x2.partial/01/0000000001' with 'w'.
+QFile: close 'huge-data/gauge_field ; 2x2x2x2.partial/01/0000000001' with 'w'.
+QFile: open 'huge-data/gauge_field ; 2x2x2x2.partial/03/0000000003' with 'w'.
+QFile: close 'huge-data/gauge_field ; 2x2x2x2.partial/03/0000000003' with 'w'.
+QFile: open 'huge-data/gauge_field ; 2x2x2x2.partial/05/0000000005' with 'w'.
+QFile: close 'huge-data/gauge_field ; 2x2x2x2.partial/05/0000000005' with 'w'.
+QFile: open 'huge-data/gauge_field ; 2x2x2x2.partial/07/0000000007' with 'w'.
+QFile: close 'huge-data/gauge_field ; 2x2x2x2.partial/07/0000000007' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         16 ; total_bytes =         2359296
+QFile: open 'huge-data/gauge_field ; 2x2x2x2.partial/checksums.txt' with 'w'.
+QFile: close 'huge-data/gauge_field ; 2x2x2x2.partial/checksums.txt' with 'w'.
 QFile: open 'huge-data/gauge_field ; 2x2x2x2.partial/checkpoint' with 'w'.
 QFile: close 'huge-data/gauge_field ; 2x2x2x2.partial/checkpoint' with 'w'.
 qrename: 'huge-data/gauge_field ; 2x2x2x2.partial' 'huge-data/gauge_field ; 2x2x2x2'
 dist_read_field: fn='huge-data/gauge_field ; 2x2x2x2'.
 QFile: open 'huge-data/gauge_field ; 2x2x2x2/geo-info.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 2x2x2x2/geo-info.txt' with 'r'.
+QFile: open 'huge-data/gauge_field ; 2x2x2x2/00/0000000000' with 'r'.
+QFile: close 'huge-data/gauge_field ; 2x2x2x2/00/0000000000' with 'r'.
+QFile: open 'huge-data/gauge_field ; 2x2x2x2/02/0000000002' with 'r'.
+QFile: close 'huge-data/gauge_field ; 2x2x2x2/02/0000000002' with 'r'.
+QFile: open 'huge-data/gauge_field ; 2x2x2x2/04/0000000004' with 'r'.
+QFile: close 'huge-data/gauge_field ; 2x2x2x2/04/0000000004' with 'r'.
+QFile: open 'huge-data/gauge_field ; 2x2x2x2/06/0000000006' with 'r'.
+QFile: close 'huge-data/gauge_field ; 2x2x2x2/06/0000000006' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =          8 ; total_bytes =         1179648
+QFile: open 'huge-data/gauge_field ; 2x2x2x2/01/0000000001' with 'r'.
+QFile: close 'huge-data/gauge_field ; 2x2x2x2/01/0000000001' with 'r'.
+QFile: open 'huge-data/gauge_field ; 2x2x2x2/03/0000000003' with 'r'.
+QFile: close 'huge-data/gauge_field ; 2x2x2x2/03/0000000003' with 'r'.
+QFile: open 'huge-data/gauge_field ; 2x2x2x2/05/0000000005' with 'r'.
+QFile: close 'huge-data/gauge_field ; 2x2x2x2/05/0000000005' with 'r'.
+QFile: open 'huge-data/gauge_field ; 2x2x2x2/07/0000000007' with 'r'.
+QFile: close 'huge-data/gauge_field ; 2x2x2x2/07/0000000007' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         16 ; total_bytes =         2359296
 QFile: open 'huge-data/gauge_field ; 2x2x2x2/checksums.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 2x2x2x2/checksums.txt' with 'r'.
@@ -200,13 +284,33 @@ dist_crc32 = 51AE844C
 crc32 = 000E8458
 dist_write_field: fn='huge-data/gauge_field ; 1x1x1x8'.
 shuffle_field(fs,f,sp): 1x1x1x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
+QFile: open 'huge-data/gauge_field ; 1x1x1x8.partial/geo-info.txt' with 'w'.
+QFile: close 'huge-data/gauge_field ; 1x1x1x8.partial/geo-info.txt' with 'w'.
+QFile: open 'huge-data/gauge_field ; 1x1x1x8.partial/00/0000000000' with 'w'.
+QFile: close 'huge-data/gauge_field ; 1x1x1x8.partial/00/0000000000' with 'w'.
+QFile: open 'huge-data/gauge_field ; 1x1x1x8.partial/01/0000000001' with 'w'.
+QFile: close 'huge-data/gauge_field ; 1x1x1x8.partial/01/0000000001' with 'w'.
+QFile: open 'huge-data/gauge_field ; 1x1x1x8.partial/02/0000000002' with 'w'.
+QFile: close 'huge-data/gauge_field ; 1x1x1x8.partial/02/0000000002' with 'w'.
+QFile: open 'huge-data/gauge_field ; 1x1x1x8.partial/03/0000000003' with 'w'.
+QFile: close 'huge-data/gauge_field ; 1x1x1x8.partial/03/0000000003' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         2359296
+QFile: open 'huge-data/gauge_field ; 1x1x1x8.partial/checksums.txt' with 'w'.
+QFile: close 'huge-data/gauge_field ; 1x1x1x8.partial/checksums.txt' with 'w'.
 QFile: open 'huge-data/gauge_field ; 1x1x1x8.partial/checkpoint' with 'w'.
 QFile: close 'huge-data/gauge_field ; 1x1x1x8.partial/checkpoint' with 'w'.
 qrename: 'huge-data/gauge_field ; 1x1x1x8.partial' 'huge-data/gauge_field ; 1x1x1x8'
 dist_read_field: fn='huge-data/gauge_field ; 1x1x1x8'.
 QFile: open 'huge-data/gauge_field ; 1x1x1x8/geo-info.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 1x1x1x8/geo-info.txt' with 'r'.
+QFile: open 'huge-data/gauge_field ; 1x1x1x8/00/0000000000' with 'r'.
+QFile: close 'huge-data/gauge_field ; 1x1x1x8/00/0000000000' with 'r'.
+QFile: open 'huge-data/gauge_field ; 1x1x1x8/01/0000000001' with 'r'.
+QFile: close 'huge-data/gauge_field ; 1x1x1x8/01/0000000001' with 'r'.
+QFile: open 'huge-data/gauge_field ; 1x1x1x8/02/0000000002' with 'r'.
+QFile: close 'huge-data/gauge_field ; 1x1x1x8/02/0000000002' with 'r'.
+QFile: open 'huge-data/gauge_field ; 1x1x1x8/03/0000000003' with 'r'.
+QFile: close 'huge-data/gauge_field ; 1x1x1x8/03/0000000003' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         2359296
 QFile: open 'huge-data/gauge_field ; 1x1x1x8/checksums.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 1x1x1x8/checksums.txt' with 'r'.
@@ -217,15 +321,51 @@ dist_crc32 = 51AE844C
 crc32 = 000E8458
 dist_write_field: fn='huge-data/gauge_field ; 1x2x4x2'.
 shuffle_field(fs,f,sp): 1x1x1x2 -> 1x2x4x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
+QFile: open 'huge-data/gauge_field ; 1x2x4x2.partial/geo-info.txt' with 'w'.
+QFile: close 'huge-data/gauge_field ; 1x2x4x2.partial/geo-info.txt' with 'w'.
+QFile: open 'huge-data/gauge_field ; 1x2x4x2.partial/00/0000000000' with 'w'.
+QFile: close 'huge-data/gauge_field ; 1x2x4x2.partial/00/0000000000' with 'w'.
+QFile: open 'huge-data/gauge_field ; 1x2x4x2.partial/02/0000000002' with 'w'.
+QFile: close 'huge-data/gauge_field ; 1x2x4x2.partial/02/0000000002' with 'w'.
+QFile: open 'huge-data/gauge_field ; 1x2x4x2.partial/04/0000000004' with 'w'.
+QFile: close 'huge-data/gauge_field ; 1x2x4x2.partial/04/0000000004' with 'w'.
+QFile: open 'huge-data/gauge_field ; 1x2x4x2.partial/06/0000000006' with 'w'.
+QFile: close 'huge-data/gauge_field ; 1x2x4x2.partial/06/0000000006' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =          8 ; total_bytes =         1179648
+QFile: open 'huge-data/gauge_field ; 1x2x4x2.partial/01/0000000001' with 'w'.
+QFile: close 'huge-data/gauge_field ; 1x2x4x2.partial/01/0000000001' with 'w'.
+QFile: open 'huge-data/gauge_field ; 1x2x4x2.partial/03/0000000003' with 'w'.
+QFile: close 'huge-data/gauge_field ; 1x2x4x2.partial/03/0000000003' with 'w'.
+QFile: open 'huge-data/gauge_field ; 1x2x4x2.partial/05/0000000005' with 'w'.
+QFile: close 'huge-data/gauge_field ; 1x2x4x2.partial/05/0000000005' with 'w'.
+QFile: open 'huge-data/gauge_field ; 1x2x4x2.partial/07/0000000007' with 'w'.
+QFile: close 'huge-data/gauge_field ; 1x2x4x2.partial/07/0000000007' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         16 ; total_bytes =         2359296
+QFile: open 'huge-data/gauge_field ; 1x2x4x2.partial/checksums.txt' with 'w'.
+QFile: close 'huge-data/gauge_field ; 1x2x4x2.partial/checksums.txt' with 'w'.
 QFile: open 'huge-data/gauge_field ; 1x2x4x2.partial/checkpoint' with 'w'.
 QFile: close 'huge-data/gauge_field ; 1x2x4x2.partial/checkpoint' with 'w'.
 qrename: 'huge-data/gauge_field ; 1x2x4x2.partial' 'huge-data/gauge_field ; 1x2x4x2'
 dist_read_field: fn='huge-data/gauge_field ; 1x2x4x2'.
 QFile: open 'huge-data/gauge_field ; 1x2x4x2/geo-info.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 1x2x4x2/geo-info.txt' with 'r'.
+QFile: open 'huge-data/gauge_field ; 1x2x4x2/00/0000000000' with 'r'.
+QFile: close 'huge-data/gauge_field ; 1x2x4x2/00/0000000000' with 'r'.
+QFile: open 'huge-data/gauge_field ; 1x2x4x2/02/0000000002' with 'r'.
+QFile: close 'huge-data/gauge_field ; 1x2x4x2/02/0000000002' with 'r'.
+QFile: open 'huge-data/gauge_field ; 1x2x4x2/04/0000000004' with 'r'.
+QFile: close 'huge-data/gauge_field ; 1x2x4x2/04/0000000004' with 'r'.
+QFile: open 'huge-data/gauge_field ; 1x2x4x2/06/0000000006' with 'r'.
+QFile: close 'huge-data/gauge_field ; 1x2x4x2/06/0000000006' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =          8 ; total_bytes =         1179648
+QFile: open 'huge-data/gauge_field ; 1x2x4x2/01/0000000001' with 'r'.
+QFile: close 'huge-data/gauge_field ; 1x2x4x2/01/0000000001' with 'r'.
+QFile: open 'huge-data/gauge_field ; 1x2x4x2/03/0000000003' with 'r'.
+QFile: close 'huge-data/gauge_field ; 1x2x4x2/03/0000000003' with 'r'.
+QFile: open 'huge-data/gauge_field ; 1x2x4x2/05/0000000005' with 'r'.
+QFile: close 'huge-data/gauge_field ; 1x2x4x2/05/0000000005' with 'r'.
+QFile: open 'huge-data/gauge_field ; 1x2x4x2/07/0000000007' with 'r'.
+QFile: close 'huge-data/gauge_field ; 1x2x4x2/07/0000000007' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         16 ; total_bytes =         2359296
 QFile: open 'huge-data/gauge_field ; 1x2x4x2/checksums.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 1x2x4x2/checksums.txt' with 'r'.
@@ -236,13 +376,25 @@ dist_crc32 = 51AE844C
 crc32 = 000E8458
 dist_write_field: fn='huge-data/gauge_field ; 2x2x1x1'.
 shuffle_field(fs,f,sp): 1x1x1x2 -> 2x2x1x1 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
+QFile: open 'huge-data/gauge_field ; 2x2x1x1.partial/geo-info.txt' with 'w'.
+QFile: close 'huge-data/gauge_field ; 2x2x1x1.partial/geo-info.txt' with 'w'.
+QFile: open 'huge-data/gauge_field ; 2x2x1x1.partial/00/0000000000' with 'w'.
+QFile: close 'huge-data/gauge_field ; 2x2x1x1.partial/00/0000000000' with 'w'.
+QFile: open 'huge-data/gauge_field ; 2x2x1x1.partial/01/0000000001' with 'w'.
+QFile: close 'huge-data/gauge_field ; 2x2x1x1.partial/01/0000000001' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          4 ; total_bytes =         2359296
+QFile: open 'huge-data/gauge_field ; 2x2x1x1.partial/checksums.txt' with 'w'.
+QFile: close 'huge-data/gauge_field ; 2x2x1x1.partial/checksums.txt' with 'w'.
 QFile: open 'huge-data/gauge_field ; 2x2x1x1.partial/checkpoint' with 'w'.
 QFile: close 'huge-data/gauge_field ; 2x2x1x1.partial/checkpoint' with 'w'.
 qrename: 'huge-data/gauge_field ; 2x2x1x1.partial' 'huge-data/gauge_field ; 2x2x1x1'
 dist_read_field: fn='huge-data/gauge_field ; 2x2x1x1'.
 QFile: open 'huge-data/gauge_field ; 2x2x1x1/geo-info.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 2x2x1x1/geo-info.txt' with 'r'.
+QFile: open 'huge-data/gauge_field ; 2x2x1x1/00/0000000000' with 'r'.
+QFile: close 'huge-data/gauge_field ; 2x2x1x1/00/0000000000' with 'r'.
+QFile: open 'huge-data/gauge_field ; 2x2x1x1/01/0000000001' with 'r'.
+QFile: close 'huge-data/gauge_field ; 2x2x1x1/01/0000000001' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          4 ; total_bytes =         2359296
 QFile: open 'huge-data/gauge_field ; 2x2x1x1/checksums.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 2x2x1x1/checksums.txt' with 'r'.
@@ -253,75 +405,591 @@ dist_crc32 = 51AE844C
 crc32 = 000E8458
 dist_write_field: fn='huge-data/gauge_field ; 4x4x4x4'.
 shuffle_field(fs,f,sp): 1x1x1x2 -> 4x4x4x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/geo-info.txt' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/geo-info.txt' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/00/0000000000' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/00/0000000000' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/04/0000000032' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/04/0000000032' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/08/0000000064' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/08/0000000064' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/12/0000000096' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/12/0000000096' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    1 /   32 ; total_ops =          8 ; total_bytes =           73728
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/00/0000000001' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/00/0000000001' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/04/0000000033' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/04/0000000033' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/08/0000000065' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/08/0000000065' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/12/0000000097' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/12/0000000097' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    2 /   32 ; total_ops =         16 ; total_bytes =          147456
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/00/0000000002' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/00/0000000002' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/04/0000000034' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/04/0000000034' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/08/0000000066' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/08/0000000066' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/12/0000000098' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/12/0000000098' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    3 /   32 ; total_ops =         24 ; total_bytes =          221184
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/00/0000000003' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/00/0000000003' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/04/0000000035' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/04/0000000035' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/08/0000000067' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/08/0000000067' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/12/0000000099' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/12/0000000099' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    4 /   32 ; total_ops =         32 ; total_bytes =          294912
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/00/0000000004' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/00/0000000004' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/04/0000000036' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/04/0000000036' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/08/0000000068' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/08/0000000068' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/12/0000000100' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/12/0000000100' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    5 /   32 ; total_ops =         40 ; total_bytes =          368640
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/00/0000000005' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/00/0000000005' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/04/0000000037' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/04/0000000037' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/08/0000000069' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/08/0000000069' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/12/0000000101' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/12/0000000101' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    6 /   32 ; total_ops =         48 ; total_bytes =          442368
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/00/0000000006' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/00/0000000006' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/04/0000000038' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/04/0000000038' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/08/0000000070' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/08/0000000070' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/12/0000000102' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/12/0000000102' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    7 /   32 ; total_ops =         56 ; total_bytes =          516096
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/00/0000000007' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/00/0000000007' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/04/0000000039' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/04/0000000039' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/08/0000000071' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/08/0000000071' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/12/0000000103' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/12/0000000103' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    8 /   32 ; total_ops =         64 ; total_bytes =          589824
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/01/0000000008' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/01/0000000008' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/05/0000000040' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/05/0000000040' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/09/0000000072' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/09/0000000072' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/13/0000000104' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/13/0000000104' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    9 /   32 ; total_ops =         72 ; total_bytes =          663552
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/01/0000000009' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/01/0000000009' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/05/0000000041' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/05/0000000041' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/09/0000000073' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/09/0000000073' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/13/0000000105' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/13/0000000105' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   10 /   32 ; total_ops =         80 ; total_bytes =          737280
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/01/0000000010' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/01/0000000010' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/05/0000000042' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/05/0000000042' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/09/0000000074' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/09/0000000074' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/13/0000000106' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/13/0000000106' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   11 /   32 ; total_ops =         88 ; total_bytes =          811008
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/01/0000000011' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/01/0000000011' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/05/0000000043' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/05/0000000043' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/09/0000000075' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/09/0000000075' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/13/0000000107' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/13/0000000107' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   12 /   32 ; total_ops =         96 ; total_bytes =          884736
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/01/0000000012' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/01/0000000012' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/05/0000000044' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/05/0000000044' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/09/0000000076' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/09/0000000076' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/13/0000000108' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/13/0000000108' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   13 /   32 ; total_ops =        104 ; total_bytes =          958464
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/01/0000000013' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/01/0000000013' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/05/0000000045' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/05/0000000045' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/09/0000000077' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/09/0000000077' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/13/0000000109' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/13/0000000109' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   14 /   32 ; total_ops =        112 ; total_bytes =         1032192
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/01/0000000014' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/01/0000000014' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/05/0000000046' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/05/0000000046' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/09/0000000078' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/09/0000000078' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/13/0000000110' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/13/0000000110' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   15 /   32 ; total_ops =        120 ; total_bytes =         1105920
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/01/0000000015' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/01/0000000015' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/05/0000000047' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/05/0000000047' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/09/0000000079' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/09/0000000079' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/13/0000000111' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/13/0000000111' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   16 /   32 ; total_ops =        128 ; total_bytes =         1179648
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/02/0000000016' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/02/0000000016' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/06/0000000048' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/06/0000000048' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/10/0000000080' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/10/0000000080' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/14/0000000112' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/14/0000000112' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   17 /   32 ; total_ops =        136 ; total_bytes =         1253376
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/02/0000000017' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/02/0000000017' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/06/0000000049' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/06/0000000049' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/10/0000000081' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/10/0000000081' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/14/0000000113' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/14/0000000113' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   18 /   32 ; total_ops =        144 ; total_bytes =         1327104
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/02/0000000018' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/02/0000000018' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/06/0000000050' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/06/0000000050' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/10/0000000082' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/10/0000000082' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/14/0000000114' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/14/0000000114' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   19 /   32 ; total_ops =        152 ; total_bytes =         1400832
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/02/0000000019' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/02/0000000019' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/06/0000000051' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/06/0000000051' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/10/0000000083' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/10/0000000083' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/14/0000000115' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/14/0000000115' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   20 /   32 ; total_ops =        160 ; total_bytes =         1474560
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/02/0000000020' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/02/0000000020' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/06/0000000052' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/06/0000000052' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/10/0000000084' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/10/0000000084' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/14/0000000116' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/14/0000000116' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   21 /   32 ; total_ops =        168 ; total_bytes =         1548288
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/02/0000000021' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/02/0000000021' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/06/0000000053' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/06/0000000053' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/10/0000000085' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/10/0000000085' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/14/0000000117' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/14/0000000117' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   22 /   32 ; total_ops =        176 ; total_bytes =         1622016
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/02/0000000022' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/02/0000000022' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/06/0000000054' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/06/0000000054' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/10/0000000086' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/10/0000000086' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/14/0000000118' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/14/0000000118' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   23 /   32 ; total_ops =        184 ; total_bytes =         1695744
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/02/0000000023' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/02/0000000023' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/06/0000000055' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/06/0000000055' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/10/0000000087' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/10/0000000087' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/14/0000000119' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/14/0000000119' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   24 /   32 ; total_ops =        192 ; total_bytes =         1769472
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/03/0000000024' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/03/0000000024' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/07/0000000056' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/07/0000000056' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/11/0000000088' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/11/0000000088' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/15/0000000120' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/15/0000000120' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   25 /   32 ; total_ops =        200 ; total_bytes =         1843200
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/03/0000000025' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/03/0000000025' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/07/0000000057' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/07/0000000057' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/11/0000000089' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/11/0000000089' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/15/0000000121' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/15/0000000121' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   26 /   32 ; total_ops =        208 ; total_bytes =         1916928
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/03/0000000026' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/03/0000000026' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/07/0000000058' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/07/0000000058' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/11/0000000090' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/11/0000000090' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/15/0000000122' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/15/0000000122' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   27 /   32 ; total_ops =        216 ; total_bytes =         1990656
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/03/0000000027' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/03/0000000027' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/07/0000000059' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/07/0000000059' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/11/0000000091' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/11/0000000091' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/15/0000000123' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/15/0000000123' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   28 /   32 ; total_ops =        224 ; total_bytes =         2064384
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/03/0000000028' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/03/0000000028' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/07/0000000060' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/07/0000000060' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/11/0000000092' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/11/0000000092' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/15/0000000124' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/15/0000000124' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   29 /   32 ; total_ops =        232 ; total_bytes =         2138112
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/03/0000000029' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/03/0000000029' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/07/0000000061' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/07/0000000061' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/11/0000000093' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/11/0000000093' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/15/0000000125' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/15/0000000125' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   30 /   32 ; total_ops =        240 ; total_bytes =         2211840
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/03/0000000030' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/03/0000000030' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/07/0000000062' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/07/0000000062' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/11/0000000094' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/11/0000000094' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/15/0000000126' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/15/0000000126' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   31 /   32 ; total_ops =        248 ; total_bytes =         2285568
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/03/0000000031' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/03/0000000031' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/07/0000000063' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/07/0000000063' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/11/0000000095' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/11/0000000095' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/15/0000000127' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/15/0000000127' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   32 /   32 ; total_ops =        256 ; total_bytes =         2359296
+QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/checksums.txt' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/checksums.txt' with 'w'.
 QFile: open 'huge-data/gauge_field ; 4x4x4x4.partial/checkpoint' with 'w'.
 QFile: close 'huge-data/gauge_field ; 4x4x4x4.partial/checkpoint' with 'w'.
 qrename: 'huge-data/gauge_field ; 4x4x4x4.partial' 'huge-data/gauge_field ; 4x4x4x4'
 dist_read_field: fn='huge-data/gauge_field ; 4x4x4x4'.
 QFile: open 'huge-data/gauge_field ; 4x4x4x4/geo-info.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 4x4x4x4/geo-info.txt' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/00/0000000000' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/00/0000000000' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/04/0000000032' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/04/0000000032' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/08/0000000064' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/08/0000000064' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/12/0000000096' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/12/0000000096' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    1 /   32 ; total_ops =          8 ; total_bytes =           73728
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/00/0000000001' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/00/0000000001' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/04/0000000033' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/04/0000000033' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/08/0000000065' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/08/0000000065' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/12/0000000097' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/12/0000000097' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    2 /   32 ; total_ops =         16 ; total_bytes =          147456
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/00/0000000002' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/00/0000000002' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/04/0000000034' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/04/0000000034' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/08/0000000066' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/08/0000000066' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/12/0000000098' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/12/0000000098' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    3 /   32 ; total_ops =         24 ; total_bytes =          221184
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/00/0000000003' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/00/0000000003' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/04/0000000035' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/04/0000000035' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/08/0000000067' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/08/0000000067' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/12/0000000099' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/12/0000000099' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    4 /   32 ; total_ops =         32 ; total_bytes =          294912
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/00/0000000004' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/00/0000000004' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/04/0000000036' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/04/0000000036' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/08/0000000068' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/08/0000000068' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/12/0000000100' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/12/0000000100' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    5 /   32 ; total_ops =         40 ; total_bytes =          368640
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/00/0000000005' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/00/0000000005' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/04/0000000037' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/04/0000000037' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/08/0000000069' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/08/0000000069' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/12/0000000101' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/12/0000000101' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    6 /   32 ; total_ops =         48 ; total_bytes =          442368
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/00/0000000006' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/00/0000000006' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/04/0000000038' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/04/0000000038' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/08/0000000070' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/08/0000000070' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/12/0000000102' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/12/0000000102' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    7 /   32 ; total_ops =         56 ; total_bytes =          516096
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/00/0000000007' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/00/0000000007' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/04/0000000039' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/04/0000000039' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/08/0000000071' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/08/0000000071' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/12/0000000103' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/12/0000000103' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    8 /   32 ; total_ops =         64 ; total_bytes =          589824
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/01/0000000008' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/01/0000000008' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/05/0000000040' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/05/0000000040' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/09/0000000072' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/09/0000000072' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/13/0000000104' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/13/0000000104' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    9 /   32 ; total_ops =         72 ; total_bytes =          663552
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/01/0000000009' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/01/0000000009' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/05/0000000041' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/05/0000000041' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/09/0000000073' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/09/0000000073' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/13/0000000105' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/13/0000000105' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   10 /   32 ; total_ops =         80 ; total_bytes =          737280
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/01/0000000010' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/01/0000000010' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/05/0000000042' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/05/0000000042' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/09/0000000074' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/09/0000000074' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/13/0000000106' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/13/0000000106' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   11 /   32 ; total_ops =         88 ; total_bytes =          811008
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/01/0000000011' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/01/0000000011' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/05/0000000043' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/05/0000000043' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/09/0000000075' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/09/0000000075' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/13/0000000107' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/13/0000000107' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   12 /   32 ; total_ops =         96 ; total_bytes =          884736
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/01/0000000012' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/01/0000000012' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/05/0000000044' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/05/0000000044' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/09/0000000076' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/09/0000000076' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/13/0000000108' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/13/0000000108' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   13 /   32 ; total_ops =        104 ; total_bytes =          958464
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/01/0000000013' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/01/0000000013' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/05/0000000045' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/05/0000000045' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/09/0000000077' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/09/0000000077' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/13/0000000109' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/13/0000000109' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   14 /   32 ; total_ops =        112 ; total_bytes =         1032192
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/01/0000000014' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/01/0000000014' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/05/0000000046' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/05/0000000046' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/09/0000000078' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/09/0000000078' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/13/0000000110' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/13/0000000110' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   15 /   32 ; total_ops =        120 ; total_bytes =         1105920
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/01/0000000015' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/01/0000000015' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/05/0000000047' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/05/0000000047' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/09/0000000079' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/09/0000000079' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/13/0000000111' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/13/0000000111' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   16 /   32 ; total_ops =        128 ; total_bytes =         1179648
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/02/0000000016' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/02/0000000016' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/06/0000000048' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/06/0000000048' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/10/0000000080' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/10/0000000080' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/14/0000000112' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/14/0000000112' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   17 /   32 ; total_ops =        136 ; total_bytes =         1253376
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/02/0000000017' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/02/0000000017' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/06/0000000049' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/06/0000000049' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/10/0000000081' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/10/0000000081' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/14/0000000113' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/14/0000000113' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   18 /   32 ; total_ops =        144 ; total_bytes =         1327104
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/02/0000000018' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/02/0000000018' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/06/0000000050' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/06/0000000050' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/10/0000000082' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/10/0000000082' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/14/0000000114' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/14/0000000114' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   19 /   32 ; total_ops =        152 ; total_bytes =         1400832
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/02/0000000019' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/02/0000000019' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/06/0000000051' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/06/0000000051' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/10/0000000083' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/10/0000000083' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/14/0000000115' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/14/0000000115' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   20 /   32 ; total_ops =        160 ; total_bytes =         1474560
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/02/0000000020' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/02/0000000020' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/06/0000000052' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/06/0000000052' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/10/0000000084' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/10/0000000084' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/14/0000000116' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/14/0000000116' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   21 /   32 ; total_ops =        168 ; total_bytes =         1548288
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/02/0000000021' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/02/0000000021' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/06/0000000053' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/06/0000000053' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/10/0000000085' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/10/0000000085' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/14/0000000117' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/14/0000000117' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   22 /   32 ; total_ops =        176 ; total_bytes =         1622016
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/02/0000000022' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/02/0000000022' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/06/0000000054' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/06/0000000054' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/10/0000000086' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/10/0000000086' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/14/0000000118' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/14/0000000118' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   23 /   32 ; total_ops =        184 ; total_bytes =         1695744
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/02/0000000023' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/02/0000000023' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/06/0000000055' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/06/0000000055' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/10/0000000087' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/10/0000000087' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/14/0000000119' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/14/0000000119' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   24 /   32 ; total_ops =        192 ; total_bytes =         1769472
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/03/0000000024' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/03/0000000024' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/07/0000000056' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/07/0000000056' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/11/0000000088' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/11/0000000088' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/15/0000000120' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/15/0000000120' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   25 /   32 ; total_ops =        200 ; total_bytes =         1843200
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/03/0000000025' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/03/0000000025' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/07/0000000057' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/07/0000000057' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/11/0000000089' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/11/0000000089' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/15/0000000121' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/15/0000000121' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   26 /   32 ; total_ops =        208 ; total_bytes =         1916928
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/03/0000000026' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/03/0000000026' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/07/0000000058' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/07/0000000058' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/11/0000000090' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/11/0000000090' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/15/0000000122' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/15/0000000122' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   27 /   32 ; total_ops =        216 ; total_bytes =         1990656
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/03/0000000027' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/03/0000000027' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/07/0000000059' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/07/0000000059' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/11/0000000091' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/11/0000000091' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/15/0000000123' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/15/0000000123' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   28 /   32 ; total_ops =        224 ; total_bytes =         2064384
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/03/0000000028' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/03/0000000028' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/07/0000000060' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/07/0000000060' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/11/0000000092' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/11/0000000092' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/15/0000000124' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/15/0000000124' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   29 /   32 ; total_ops =        232 ; total_bytes =         2138112
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/03/0000000029' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/03/0000000029' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/07/0000000061' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/07/0000000061' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/11/0000000093' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/11/0000000093' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/15/0000000125' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/15/0000000125' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   30 /   32 ; total_ops =        240 ; total_bytes =         2211840
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/03/0000000030' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/03/0000000030' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/07/0000000062' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/07/0000000062' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/11/0000000094' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/11/0000000094' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/15/0000000126' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/15/0000000126' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   31 /   32 ; total_ops =        248 ; total_bytes =         2285568
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/03/0000000031' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/03/0000000031' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/07/0000000063' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/07/0000000063' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/11/0000000095' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/11/0000000095' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4/15/0000000127' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4/15/0000000127' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   32 /   32 ; total_ops =        256 ; total_bytes =         2359296
 QFile: open 'huge-data/gauge_field ; 4x4x4x4/checksums.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 4x4x4x4/checksums.txt' with 'r'.
@@ -332,13 +1000,21 @@ dist_crc32 = 51AE844C
 crc32 = 000E8458
 dist_write_field: fn='huge-data/gauge_field ; 1x1x1x1_2'.
 shuffle_field(fs,f,sp): 1x1x1x2 -> 1x1x1x1 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
+QFile: open 'huge-data/gauge_field ; 1x1x1x1_2.partial/geo-info.txt' with 'w'.
+QFile: close 'huge-data/gauge_field ; 1x1x1x1_2.partial/geo-info.txt' with 'w'.
+QFile: open 'huge-data/gauge_field ; 1x1x1x1_2.partial/00/0000000000' with 'w'.
+QFile: close 'huge-data/gauge_field ; 1x1x1x1_2.partial/00/0000000000' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          1 ; total_bytes =         2359296
+QFile: open 'huge-data/gauge_field ; 1x1x1x1_2.partial/checksums.txt' with 'w'.
+QFile: close 'huge-data/gauge_field ; 1x1x1x1_2.partial/checksums.txt' with 'w'.
 QFile: open 'huge-data/gauge_field ; 1x1x1x1_2.partial/checkpoint' with 'w'.
 QFile: close 'huge-data/gauge_field ; 1x1x1x1_2.partial/checkpoint' with 'w'.
 qrename: 'huge-data/gauge_field ; 1x1x1x1_2.partial' 'huge-data/gauge_field ; 1x1x1x1_2'
 dist_read_field: fn='huge-data/gauge_field ; 1x1x1x1_2'.
 QFile: open 'huge-data/gauge_field ; 1x1x1x1_2/geo-info.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 1x1x1x1_2/geo-info.txt' with 'r'.
+QFile: open 'huge-data/gauge_field ; 1x1x1x1_2/00/0000000000' with 'r'.
+QFile: close 'huge-data/gauge_field ; 1x1x1x1_2/00/0000000000' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          1 ; total_bytes =         2359296
 QFile: open 'huge-data/gauge_field ; 1x1x1x1_2/checksums.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 1x1x1x1_2/checksums.txt' with 'r'.
@@ -349,15 +1025,51 @@ dist_crc32 = 51AE844C
 crc32 = 000E8458
 dist_write_field: fn='huge-data/gauge_field ; 2x2x2x2_2'.
 shuffle_field(fs,f,sp): 1x1x1x2 -> 2x2x2x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
+QFile: open 'huge-data/gauge_field ; 2x2x2x2_2.partial/geo-info.txt' with 'w'.
+QFile: close 'huge-data/gauge_field ; 2x2x2x2_2.partial/geo-info.txt' with 'w'.
+QFile: open 'huge-data/gauge_field ; 2x2x2x2_2.partial/00/0000000000' with 'w'.
+QFile: close 'huge-data/gauge_field ; 2x2x2x2_2.partial/00/0000000000' with 'w'.
+QFile: open 'huge-data/gauge_field ; 2x2x2x2_2.partial/02/0000000002' with 'w'.
+QFile: close 'huge-data/gauge_field ; 2x2x2x2_2.partial/02/0000000002' with 'w'.
+QFile: open 'huge-data/gauge_field ; 2x2x2x2_2.partial/04/0000000004' with 'w'.
+QFile: close 'huge-data/gauge_field ; 2x2x2x2_2.partial/04/0000000004' with 'w'.
+QFile: open 'huge-data/gauge_field ; 2x2x2x2_2.partial/06/0000000006' with 'w'.
+QFile: close 'huge-data/gauge_field ; 2x2x2x2_2.partial/06/0000000006' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =          8 ; total_bytes =         1179648
+QFile: open 'huge-data/gauge_field ; 2x2x2x2_2.partial/01/0000000001' with 'w'.
+QFile: close 'huge-data/gauge_field ; 2x2x2x2_2.partial/01/0000000001' with 'w'.
+QFile: open 'huge-data/gauge_field ; 2x2x2x2_2.partial/03/0000000003' with 'w'.
+QFile: close 'huge-data/gauge_field ; 2x2x2x2_2.partial/03/0000000003' with 'w'.
+QFile: open 'huge-data/gauge_field ; 2x2x2x2_2.partial/05/0000000005' with 'w'.
+QFile: close 'huge-data/gauge_field ; 2x2x2x2_2.partial/05/0000000005' with 'w'.
+QFile: open 'huge-data/gauge_field ; 2x2x2x2_2.partial/07/0000000007' with 'w'.
+QFile: close 'huge-data/gauge_field ; 2x2x2x2_2.partial/07/0000000007' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         16 ; total_bytes =         2359296
+QFile: open 'huge-data/gauge_field ; 2x2x2x2_2.partial/checksums.txt' with 'w'.
+QFile: close 'huge-data/gauge_field ; 2x2x2x2_2.partial/checksums.txt' with 'w'.
 QFile: open 'huge-data/gauge_field ; 2x2x2x2_2.partial/checkpoint' with 'w'.
 QFile: close 'huge-data/gauge_field ; 2x2x2x2_2.partial/checkpoint' with 'w'.
 qrename: 'huge-data/gauge_field ; 2x2x2x2_2.partial' 'huge-data/gauge_field ; 2x2x2x2_2'
 dist_read_field: fn='huge-data/gauge_field ; 2x2x2x2_2'.
 QFile: open 'huge-data/gauge_field ; 2x2x2x2_2/geo-info.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 2x2x2x2_2/geo-info.txt' with 'r'.
+QFile: open 'huge-data/gauge_field ; 2x2x2x2_2/00/0000000000' with 'r'.
+QFile: close 'huge-data/gauge_field ; 2x2x2x2_2/00/0000000000' with 'r'.
+QFile: open 'huge-data/gauge_field ; 2x2x2x2_2/02/0000000002' with 'r'.
+QFile: close 'huge-data/gauge_field ; 2x2x2x2_2/02/0000000002' with 'r'.
+QFile: open 'huge-data/gauge_field ; 2x2x2x2_2/04/0000000004' with 'r'.
+QFile: close 'huge-data/gauge_field ; 2x2x2x2_2/04/0000000004' with 'r'.
+QFile: open 'huge-data/gauge_field ; 2x2x2x2_2/06/0000000006' with 'r'.
+QFile: close 'huge-data/gauge_field ; 2x2x2x2_2/06/0000000006' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =          8 ; total_bytes =         1179648
+QFile: open 'huge-data/gauge_field ; 2x2x2x2_2/01/0000000001' with 'r'.
+QFile: close 'huge-data/gauge_field ; 2x2x2x2_2/01/0000000001' with 'r'.
+QFile: open 'huge-data/gauge_field ; 2x2x2x2_2/03/0000000003' with 'r'.
+QFile: close 'huge-data/gauge_field ; 2x2x2x2_2/03/0000000003' with 'r'.
+QFile: open 'huge-data/gauge_field ; 2x2x2x2_2/05/0000000005' with 'r'.
+QFile: close 'huge-data/gauge_field ; 2x2x2x2_2/05/0000000005' with 'r'.
+QFile: open 'huge-data/gauge_field ; 2x2x2x2_2/07/0000000007' with 'r'.
+QFile: close 'huge-data/gauge_field ; 2x2x2x2_2/07/0000000007' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         16 ; total_bytes =         2359296
 QFile: open 'huge-data/gauge_field ; 2x2x2x2_2/checksums.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 2x2x2x2_2/checksums.txt' with 'r'.
@@ -368,13 +1080,33 @@ dist_crc32 = 51AE844C
 crc32 = 000E8458
 dist_write_field: fn='huge-data/gauge_field ; 1x1x1x8_2'.
 shuffle_field(fs,f,sp): 1x1x1x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
+QFile: open 'huge-data/gauge_field ; 1x1x1x8_2.partial/geo-info.txt' with 'w'.
+QFile: close 'huge-data/gauge_field ; 1x1x1x8_2.partial/geo-info.txt' with 'w'.
+QFile: open 'huge-data/gauge_field ; 1x1x1x8_2.partial/00/0000000000' with 'w'.
+QFile: close 'huge-data/gauge_field ; 1x1x1x8_2.partial/00/0000000000' with 'w'.
+QFile: open 'huge-data/gauge_field ; 1x1x1x8_2.partial/01/0000000001' with 'w'.
+QFile: close 'huge-data/gauge_field ; 1x1x1x8_2.partial/01/0000000001' with 'w'.
+QFile: open 'huge-data/gauge_field ; 1x1x1x8_2.partial/02/0000000002' with 'w'.
+QFile: close 'huge-data/gauge_field ; 1x1x1x8_2.partial/02/0000000002' with 'w'.
+QFile: open 'huge-data/gauge_field ; 1x1x1x8_2.partial/03/0000000003' with 'w'.
+QFile: close 'huge-data/gauge_field ; 1x1x1x8_2.partial/03/0000000003' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         2359296
+QFile: open 'huge-data/gauge_field ; 1x1x1x8_2.partial/checksums.txt' with 'w'.
+QFile: close 'huge-data/gauge_field ; 1x1x1x8_2.partial/checksums.txt' with 'w'.
 QFile: open 'huge-data/gauge_field ; 1x1x1x8_2.partial/checkpoint' with 'w'.
 QFile: close 'huge-data/gauge_field ; 1x1x1x8_2.partial/checkpoint' with 'w'.
 qrename: 'huge-data/gauge_field ; 1x1x1x8_2.partial' 'huge-data/gauge_field ; 1x1x1x8_2'
 dist_read_field: fn='huge-data/gauge_field ; 1x1x1x8_2'.
 QFile: open 'huge-data/gauge_field ; 1x1x1x8_2/geo-info.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 1x1x1x8_2/geo-info.txt' with 'r'.
+QFile: open 'huge-data/gauge_field ; 1x1x1x8_2/00/0000000000' with 'r'.
+QFile: close 'huge-data/gauge_field ; 1x1x1x8_2/00/0000000000' with 'r'.
+QFile: open 'huge-data/gauge_field ; 1x1x1x8_2/01/0000000001' with 'r'.
+QFile: close 'huge-data/gauge_field ; 1x1x1x8_2/01/0000000001' with 'r'.
+QFile: open 'huge-data/gauge_field ; 1x1x1x8_2/02/0000000002' with 'r'.
+QFile: close 'huge-data/gauge_field ; 1x1x1x8_2/02/0000000002' with 'r'.
+QFile: open 'huge-data/gauge_field ; 1x1x1x8_2/03/0000000003' with 'r'.
+QFile: close 'huge-data/gauge_field ; 1x1x1x8_2/03/0000000003' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         2359296
 QFile: open 'huge-data/gauge_field ; 1x1x1x8_2/checksums.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 1x1x1x8_2/checksums.txt' with 'r'.
@@ -385,15 +1117,51 @@ dist_crc32 = 51AE844C
 crc32 = 000E8458
 dist_write_field: fn='huge-data/gauge_field ; 1x2x4x2_2'.
 shuffle_field(fs,f,sp): 1x1x1x2 -> 1x2x4x2 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
+QFile: open 'huge-data/gauge_field ; 1x2x4x2_2.partial/geo-info.txt' with 'w'.
+QFile: close 'huge-data/gauge_field ; 1x2x4x2_2.partial/geo-info.txt' with 'w'.
+QFile: open 'huge-data/gauge_field ; 1x2x4x2_2.partial/00/0000000000' with 'w'.
+QFile: close 'huge-data/gauge_field ; 1x2x4x2_2.partial/00/0000000000' with 'w'.
+QFile: open 'huge-data/gauge_field ; 1x2x4x2_2.partial/02/0000000002' with 'w'.
+QFile: close 'huge-data/gauge_field ; 1x2x4x2_2.partial/02/0000000002' with 'w'.
+QFile: open 'huge-data/gauge_field ; 1x2x4x2_2.partial/04/0000000004' with 'w'.
+QFile: close 'huge-data/gauge_field ; 1x2x4x2_2.partial/04/0000000004' with 'w'.
+QFile: open 'huge-data/gauge_field ; 1x2x4x2_2.partial/06/0000000006' with 'w'.
+QFile: close 'huge-data/gauge_field ; 1x2x4x2_2.partial/06/0000000006' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =          8 ; total_bytes =         1179648
+QFile: open 'huge-data/gauge_field ; 1x2x4x2_2.partial/01/0000000001' with 'w'.
+QFile: close 'huge-data/gauge_field ; 1x2x4x2_2.partial/01/0000000001' with 'w'.
+QFile: open 'huge-data/gauge_field ; 1x2x4x2_2.partial/03/0000000003' with 'w'.
+QFile: close 'huge-data/gauge_field ; 1x2x4x2_2.partial/03/0000000003' with 'w'.
+QFile: open 'huge-data/gauge_field ; 1x2x4x2_2.partial/05/0000000005' with 'w'.
+QFile: close 'huge-data/gauge_field ; 1x2x4x2_2.partial/05/0000000005' with 'w'.
+QFile: open 'huge-data/gauge_field ; 1x2x4x2_2.partial/07/0000000007' with 'w'.
+QFile: close 'huge-data/gauge_field ; 1x2x4x2_2.partial/07/0000000007' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         16 ; total_bytes =         2359296
+QFile: open 'huge-data/gauge_field ; 1x2x4x2_2.partial/checksums.txt' with 'w'.
+QFile: close 'huge-data/gauge_field ; 1x2x4x2_2.partial/checksums.txt' with 'w'.
 QFile: open 'huge-data/gauge_field ; 1x2x4x2_2.partial/checkpoint' with 'w'.
 QFile: close 'huge-data/gauge_field ; 1x2x4x2_2.partial/checkpoint' with 'w'.
 qrename: 'huge-data/gauge_field ; 1x2x4x2_2.partial' 'huge-data/gauge_field ; 1x2x4x2_2'
 dist_read_field: fn='huge-data/gauge_field ; 1x2x4x2_2'.
 QFile: open 'huge-data/gauge_field ; 1x2x4x2_2/geo-info.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 1x2x4x2_2/geo-info.txt' with 'r'.
+QFile: open 'huge-data/gauge_field ; 1x2x4x2_2/00/0000000000' with 'r'.
+QFile: close 'huge-data/gauge_field ; 1x2x4x2_2/00/0000000000' with 'r'.
+QFile: open 'huge-data/gauge_field ; 1x2x4x2_2/02/0000000002' with 'r'.
+QFile: close 'huge-data/gauge_field ; 1x2x4x2_2/02/0000000002' with 'r'.
+QFile: open 'huge-data/gauge_field ; 1x2x4x2_2/04/0000000004' with 'r'.
+QFile: close 'huge-data/gauge_field ; 1x2x4x2_2/04/0000000004' with 'r'.
+QFile: open 'huge-data/gauge_field ; 1x2x4x2_2/06/0000000006' with 'r'.
+QFile: close 'huge-data/gauge_field ; 1x2x4x2_2/06/0000000006' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =          8 ; total_bytes =         1179648
+QFile: open 'huge-data/gauge_field ; 1x2x4x2_2/01/0000000001' with 'r'.
+QFile: close 'huge-data/gauge_field ; 1x2x4x2_2/01/0000000001' with 'r'.
+QFile: open 'huge-data/gauge_field ; 1x2x4x2_2/03/0000000003' with 'r'.
+QFile: close 'huge-data/gauge_field ; 1x2x4x2_2/03/0000000003' with 'r'.
+QFile: open 'huge-data/gauge_field ; 1x2x4x2_2/05/0000000005' with 'r'.
+QFile: close 'huge-data/gauge_field ; 1x2x4x2_2/05/0000000005' with 'r'.
+QFile: open 'huge-data/gauge_field ; 1x2x4x2_2/07/0000000007' with 'r'.
+QFile: close 'huge-data/gauge_field ; 1x2x4x2_2/07/0000000007' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         16 ; total_bytes =         2359296
 QFile: open 'huge-data/gauge_field ; 1x2x4x2_2/checksums.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 1x2x4x2_2/checksums.txt' with 'r'.
@@ -404,13 +1172,25 @@ dist_crc32 = 51AE844C
 crc32 = 000E8458
 dist_write_field: fn='huge-data/gauge_field ; 2x2x1x1_2'.
 shuffle_field(fs,f,sp): 1x1x1x2 -> 2x2x1x1 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
+QFile: open 'huge-data/gauge_field ; 2x2x1x1_2.partial/geo-info.txt' with 'w'.
+QFile: close 'huge-data/gauge_field ; 2x2x1x1_2.partial/geo-info.txt' with 'w'.
+QFile: open 'huge-data/gauge_field ; 2x2x1x1_2.partial/00/0000000000' with 'w'.
+QFile: close 'huge-data/gauge_field ; 2x2x1x1_2.partial/00/0000000000' with 'w'.
+QFile: open 'huge-data/gauge_field ; 2x2x1x1_2.partial/01/0000000001' with 'w'.
+QFile: close 'huge-data/gauge_field ; 2x2x1x1_2.partial/01/0000000001' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          4 ; total_bytes =         2359296
+QFile: open 'huge-data/gauge_field ; 2x2x1x1_2.partial/checksums.txt' with 'w'.
+QFile: close 'huge-data/gauge_field ; 2x2x1x1_2.partial/checksums.txt' with 'w'.
 QFile: open 'huge-data/gauge_field ; 2x2x1x1_2.partial/checkpoint' with 'w'.
 QFile: close 'huge-data/gauge_field ; 2x2x1x1_2.partial/checkpoint' with 'w'.
 qrename: 'huge-data/gauge_field ; 2x2x1x1_2.partial' 'huge-data/gauge_field ; 2x2x1x1_2'
 dist_read_field: fn='huge-data/gauge_field ; 2x2x1x1_2'.
 QFile: open 'huge-data/gauge_field ; 2x2x1x1_2/geo-info.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 2x2x1x1_2/geo-info.txt' with 'r'.
+QFile: open 'huge-data/gauge_field ; 2x2x1x1_2/00/0000000000' with 'r'.
+QFile: close 'huge-data/gauge_field ; 2x2x1x1_2/00/0000000000' with 'r'.
+QFile: open 'huge-data/gauge_field ; 2x2x1x1_2/01/0000000001' with 'r'.
+QFile: close 'huge-data/gauge_field ; 2x2x1x1_2/01/0000000001' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          4 ; total_bytes =         2359296
 QFile: open 'huge-data/gauge_field ; 2x2x1x1_2/checksums.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 2x2x1x1_2/checksums.txt' with 'r'.
@@ -421,75 +1201,591 @@ dist_crc32 = 51AE844C
 crc32 = 000E8458
 dist_write_field: fn='huge-data/gauge_field ; 4x4x4x4_2'.
 shuffle_field(fs,f,sp): 1x1x1x2 -> 4x4x4x4 (total_site: 8x8x8x8 ; site_size: 576 ; total_size: 0.002 GB)
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/geo-info.txt' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/geo-info.txt' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/00/0000000000' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/00/0000000000' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/04/0000000032' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/04/0000000032' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/08/0000000064' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/08/0000000064' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/12/0000000096' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/12/0000000096' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    1 /   32 ; total_ops =          8 ; total_bytes =           73728
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/00/0000000001' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/00/0000000001' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/04/0000000033' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/04/0000000033' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/08/0000000065' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/08/0000000065' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/12/0000000097' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/12/0000000097' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    2 /   32 ; total_ops =         16 ; total_bytes =          147456
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/00/0000000002' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/00/0000000002' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/04/0000000034' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/04/0000000034' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/08/0000000066' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/08/0000000066' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/12/0000000098' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/12/0000000098' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    3 /   32 ; total_ops =         24 ; total_bytes =          221184
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/00/0000000003' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/00/0000000003' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/04/0000000035' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/04/0000000035' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/08/0000000067' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/08/0000000067' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/12/0000000099' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/12/0000000099' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    4 /   32 ; total_ops =         32 ; total_bytes =          294912
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/00/0000000004' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/00/0000000004' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/04/0000000036' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/04/0000000036' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/08/0000000068' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/08/0000000068' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/12/0000000100' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/12/0000000100' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    5 /   32 ; total_ops =         40 ; total_bytes =          368640
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/00/0000000005' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/00/0000000005' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/04/0000000037' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/04/0000000037' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/08/0000000069' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/08/0000000069' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/12/0000000101' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/12/0000000101' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    6 /   32 ; total_ops =         48 ; total_bytes =          442368
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/00/0000000006' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/00/0000000006' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/04/0000000038' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/04/0000000038' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/08/0000000070' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/08/0000000070' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/12/0000000102' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/12/0000000102' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    7 /   32 ; total_ops =         56 ; total_bytes =          516096
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/00/0000000007' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/00/0000000007' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/04/0000000039' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/04/0000000039' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/08/0000000071' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/08/0000000071' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/12/0000000103' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/12/0000000103' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    8 /   32 ; total_ops =         64 ; total_bytes =          589824
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/01/0000000008' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/01/0000000008' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/05/0000000040' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/05/0000000040' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/09/0000000072' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/09/0000000072' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/13/0000000104' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/13/0000000104' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    9 /   32 ; total_ops =         72 ; total_bytes =          663552
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/01/0000000009' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/01/0000000009' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/05/0000000041' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/05/0000000041' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/09/0000000073' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/09/0000000073' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/13/0000000105' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/13/0000000105' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   10 /   32 ; total_ops =         80 ; total_bytes =          737280
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/01/0000000010' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/01/0000000010' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/05/0000000042' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/05/0000000042' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/09/0000000074' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/09/0000000074' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/13/0000000106' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/13/0000000106' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   11 /   32 ; total_ops =         88 ; total_bytes =          811008
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/01/0000000011' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/01/0000000011' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/05/0000000043' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/05/0000000043' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/09/0000000075' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/09/0000000075' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/13/0000000107' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/13/0000000107' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   12 /   32 ; total_ops =         96 ; total_bytes =          884736
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/01/0000000012' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/01/0000000012' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/05/0000000044' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/05/0000000044' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/09/0000000076' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/09/0000000076' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/13/0000000108' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/13/0000000108' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   13 /   32 ; total_ops =        104 ; total_bytes =          958464
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/01/0000000013' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/01/0000000013' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/05/0000000045' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/05/0000000045' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/09/0000000077' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/09/0000000077' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/13/0000000109' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/13/0000000109' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   14 /   32 ; total_ops =        112 ; total_bytes =         1032192
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/01/0000000014' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/01/0000000014' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/05/0000000046' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/05/0000000046' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/09/0000000078' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/09/0000000078' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/13/0000000110' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/13/0000000110' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   15 /   32 ; total_ops =        120 ; total_bytes =         1105920
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/01/0000000015' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/01/0000000015' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/05/0000000047' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/05/0000000047' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/09/0000000079' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/09/0000000079' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/13/0000000111' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/13/0000000111' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   16 /   32 ; total_ops =        128 ; total_bytes =         1179648
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/02/0000000016' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/02/0000000016' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/06/0000000048' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/06/0000000048' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/10/0000000080' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/10/0000000080' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/14/0000000112' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/14/0000000112' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   17 /   32 ; total_ops =        136 ; total_bytes =         1253376
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/02/0000000017' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/02/0000000017' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/06/0000000049' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/06/0000000049' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/10/0000000081' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/10/0000000081' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/14/0000000113' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/14/0000000113' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   18 /   32 ; total_ops =        144 ; total_bytes =         1327104
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/02/0000000018' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/02/0000000018' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/06/0000000050' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/06/0000000050' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/10/0000000082' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/10/0000000082' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/14/0000000114' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/14/0000000114' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   19 /   32 ; total_ops =        152 ; total_bytes =         1400832
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/02/0000000019' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/02/0000000019' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/06/0000000051' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/06/0000000051' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/10/0000000083' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/10/0000000083' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/14/0000000115' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/14/0000000115' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   20 /   32 ; total_ops =        160 ; total_bytes =         1474560
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/02/0000000020' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/02/0000000020' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/06/0000000052' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/06/0000000052' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/10/0000000084' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/10/0000000084' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/14/0000000116' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/14/0000000116' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   21 /   32 ; total_ops =        168 ; total_bytes =         1548288
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/02/0000000021' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/02/0000000021' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/06/0000000053' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/06/0000000053' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/10/0000000085' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/10/0000000085' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/14/0000000117' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/14/0000000117' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   22 /   32 ; total_ops =        176 ; total_bytes =         1622016
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/02/0000000022' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/02/0000000022' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/06/0000000054' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/06/0000000054' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/10/0000000086' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/10/0000000086' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/14/0000000118' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/14/0000000118' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   23 /   32 ; total_ops =        184 ; total_bytes =         1695744
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/02/0000000023' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/02/0000000023' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/06/0000000055' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/06/0000000055' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/10/0000000087' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/10/0000000087' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/14/0000000119' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/14/0000000119' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   24 /   32 ; total_ops =        192 ; total_bytes =         1769472
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/03/0000000024' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/03/0000000024' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/07/0000000056' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/07/0000000056' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/11/0000000088' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/11/0000000088' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/15/0000000120' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/15/0000000120' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   25 /   32 ; total_ops =        200 ; total_bytes =         1843200
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/03/0000000025' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/03/0000000025' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/07/0000000057' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/07/0000000057' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/11/0000000089' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/11/0000000089' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/15/0000000121' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/15/0000000121' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   26 /   32 ; total_ops =        208 ; total_bytes =         1916928
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/03/0000000026' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/03/0000000026' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/07/0000000058' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/07/0000000058' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/11/0000000090' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/11/0000000090' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/15/0000000122' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/15/0000000122' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   27 /   32 ; total_ops =        216 ; total_bytes =         1990656
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/03/0000000027' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/03/0000000027' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/07/0000000059' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/07/0000000059' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/11/0000000091' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/11/0000000091' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/15/0000000123' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/15/0000000123' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   28 /   32 ; total_ops =        224 ; total_bytes =         2064384
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/03/0000000028' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/03/0000000028' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/07/0000000060' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/07/0000000060' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/11/0000000092' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/11/0000000092' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/15/0000000124' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/15/0000000124' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   29 /   32 ; total_ops =        232 ; total_bytes =         2138112
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/03/0000000029' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/03/0000000029' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/07/0000000061' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/07/0000000061' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/11/0000000093' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/11/0000000093' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/15/0000000125' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/15/0000000125' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   30 /   32 ; total_ops =        240 ; total_bytes =         2211840
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/03/0000000030' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/03/0000000030' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/07/0000000062' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/07/0000000062' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/11/0000000094' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/11/0000000094' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/15/0000000126' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/15/0000000126' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   31 /   32 ; total_ops =        248 ; total_bytes =         2285568
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/03/0000000031' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/03/0000000031' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/07/0000000063' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/07/0000000063' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/11/0000000095' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/11/0000000095' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/15/0000000127' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/15/0000000127' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   32 /   32 ; total_ops =        256 ; total_bytes =         2359296
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/checksums.txt' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/checksums.txt' with 'w'.
 QFile: open 'huge-data/gauge_field ; 4x4x4x4_2.partial/checkpoint' with 'w'.
 QFile: close 'huge-data/gauge_field ; 4x4x4x4_2.partial/checkpoint' with 'w'.
 qrename: 'huge-data/gauge_field ; 4x4x4x4_2.partial' 'huge-data/gauge_field ; 4x4x4x4_2'
 dist_read_field: fn='huge-data/gauge_field ; 4x4x4x4_2'.
 QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/geo-info.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/geo-info.txt' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/00/0000000000' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/00/0000000000' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/04/0000000032' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/04/0000000032' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/08/0000000064' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/08/0000000064' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/12/0000000096' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/12/0000000096' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    1 /   32 ; total_ops =          8 ; total_bytes =           73728
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/00/0000000001' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/00/0000000001' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/04/0000000033' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/04/0000000033' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/08/0000000065' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/08/0000000065' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/12/0000000097' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/12/0000000097' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    2 /   32 ; total_ops =         16 ; total_bytes =          147456
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/00/0000000002' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/00/0000000002' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/04/0000000034' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/04/0000000034' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/08/0000000066' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/08/0000000066' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/12/0000000098' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/12/0000000098' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    3 /   32 ; total_ops =         24 ; total_bytes =          221184
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/00/0000000003' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/00/0000000003' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/04/0000000035' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/04/0000000035' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/08/0000000067' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/08/0000000067' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/12/0000000099' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/12/0000000099' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    4 /   32 ; total_ops =         32 ; total_bytes =          294912
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/00/0000000004' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/00/0000000004' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/04/0000000036' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/04/0000000036' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/08/0000000068' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/08/0000000068' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/12/0000000100' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/12/0000000100' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    5 /   32 ; total_ops =         40 ; total_bytes =          368640
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/00/0000000005' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/00/0000000005' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/04/0000000037' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/04/0000000037' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/08/0000000069' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/08/0000000069' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/12/0000000101' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/12/0000000101' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    6 /   32 ; total_ops =         48 ; total_bytes =          442368
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/00/0000000006' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/00/0000000006' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/04/0000000038' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/04/0000000038' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/08/0000000070' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/08/0000000070' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/12/0000000102' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/12/0000000102' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    7 /   32 ; total_ops =         56 ; total_bytes =          516096
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/00/0000000007' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/00/0000000007' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/04/0000000039' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/04/0000000039' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/08/0000000071' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/08/0000000071' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/12/0000000103' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/12/0000000103' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    8 /   32 ; total_ops =         64 ; total_bytes =          589824
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/01/0000000008' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/01/0000000008' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/05/0000000040' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/05/0000000040' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/09/0000000072' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/09/0000000072' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/13/0000000104' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/13/0000000104' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    9 /   32 ; total_ops =         72 ; total_bytes =          663552
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/01/0000000009' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/01/0000000009' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/05/0000000041' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/05/0000000041' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/09/0000000073' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/09/0000000073' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/13/0000000105' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/13/0000000105' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   10 /   32 ; total_ops =         80 ; total_bytes =          737280
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/01/0000000010' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/01/0000000010' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/05/0000000042' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/05/0000000042' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/09/0000000074' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/09/0000000074' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/13/0000000106' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/13/0000000106' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   11 /   32 ; total_ops =         88 ; total_bytes =          811008
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/01/0000000011' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/01/0000000011' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/05/0000000043' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/05/0000000043' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/09/0000000075' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/09/0000000075' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/13/0000000107' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/13/0000000107' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   12 /   32 ; total_ops =         96 ; total_bytes =          884736
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/01/0000000012' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/01/0000000012' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/05/0000000044' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/05/0000000044' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/09/0000000076' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/09/0000000076' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/13/0000000108' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/13/0000000108' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   13 /   32 ; total_ops =        104 ; total_bytes =          958464
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/01/0000000013' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/01/0000000013' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/05/0000000045' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/05/0000000045' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/09/0000000077' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/09/0000000077' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/13/0000000109' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/13/0000000109' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   14 /   32 ; total_ops =        112 ; total_bytes =         1032192
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/01/0000000014' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/01/0000000014' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/05/0000000046' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/05/0000000046' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/09/0000000078' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/09/0000000078' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/13/0000000110' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/13/0000000110' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   15 /   32 ; total_ops =        120 ; total_bytes =         1105920
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/01/0000000015' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/01/0000000015' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/05/0000000047' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/05/0000000047' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/09/0000000079' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/09/0000000079' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/13/0000000111' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/13/0000000111' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   16 /   32 ; total_ops =        128 ; total_bytes =         1179648
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/02/0000000016' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/02/0000000016' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/06/0000000048' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/06/0000000048' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/10/0000000080' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/10/0000000080' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/14/0000000112' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/14/0000000112' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   17 /   32 ; total_ops =        136 ; total_bytes =         1253376
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/02/0000000017' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/02/0000000017' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/06/0000000049' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/06/0000000049' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/10/0000000081' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/10/0000000081' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/14/0000000113' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/14/0000000113' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   18 /   32 ; total_ops =        144 ; total_bytes =         1327104
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/02/0000000018' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/02/0000000018' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/06/0000000050' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/06/0000000050' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/10/0000000082' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/10/0000000082' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/14/0000000114' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/14/0000000114' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   19 /   32 ; total_ops =        152 ; total_bytes =         1400832
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/02/0000000019' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/02/0000000019' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/06/0000000051' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/06/0000000051' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/10/0000000083' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/10/0000000083' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/14/0000000115' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/14/0000000115' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   20 /   32 ; total_ops =        160 ; total_bytes =         1474560
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/02/0000000020' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/02/0000000020' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/06/0000000052' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/06/0000000052' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/10/0000000084' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/10/0000000084' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/14/0000000116' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/14/0000000116' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   21 /   32 ; total_ops =        168 ; total_bytes =         1548288
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/02/0000000021' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/02/0000000021' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/06/0000000053' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/06/0000000053' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/10/0000000085' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/10/0000000085' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/14/0000000117' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/14/0000000117' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   22 /   32 ; total_ops =        176 ; total_bytes =         1622016
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/02/0000000022' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/02/0000000022' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/06/0000000054' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/06/0000000054' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/10/0000000086' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/10/0000000086' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/14/0000000118' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/14/0000000118' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   23 /   32 ; total_ops =        184 ; total_bytes =         1695744
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/02/0000000023' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/02/0000000023' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/06/0000000055' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/06/0000000055' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/10/0000000087' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/10/0000000087' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/14/0000000119' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/14/0000000119' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   24 /   32 ; total_ops =        192 ; total_bytes =         1769472
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/03/0000000024' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/03/0000000024' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/07/0000000056' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/07/0000000056' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/11/0000000088' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/11/0000000088' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/15/0000000120' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/15/0000000120' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   25 /   32 ; total_ops =        200 ; total_bytes =         1843200
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/03/0000000025' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/03/0000000025' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/07/0000000057' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/07/0000000057' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/11/0000000089' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/11/0000000089' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/15/0000000121' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/15/0000000121' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   26 /   32 ; total_ops =        208 ; total_bytes =         1916928
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/03/0000000026' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/03/0000000026' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/07/0000000058' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/07/0000000058' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/11/0000000090' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/11/0000000090' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/15/0000000122' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/15/0000000122' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   27 /   32 ; total_ops =        216 ; total_bytes =         1990656
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/03/0000000027' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/03/0000000027' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/07/0000000059' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/07/0000000059' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/11/0000000091' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/11/0000000091' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/15/0000000123' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/15/0000000123' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   28 /   32 ; total_ops =        224 ; total_bytes =         2064384
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/03/0000000028' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/03/0000000028' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/07/0000000060' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/07/0000000060' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/11/0000000092' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/11/0000000092' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/15/0000000124' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/15/0000000124' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   29 /   32 ; total_ops =        232 ; total_bytes =         2138112
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/03/0000000029' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/03/0000000029' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/07/0000000061' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/07/0000000061' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/11/0000000093' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/11/0000000093' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/15/0000000125' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/15/0000000125' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   30 /   32 ; total_ops =        240 ; total_bytes =         2211840
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/03/0000000030' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/03/0000000030' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/07/0000000062' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/07/0000000062' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/11/0000000094' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/11/0000000094' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/15/0000000126' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/15/0000000126' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   31 /   32 ; total_ops =        248 ; total_bytes =         2285568
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/03/0000000031' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/03/0000000031' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/07/0000000063' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/07/0000000063' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/11/0000000095' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/11/0000000095' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/15/0000000127' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/15/0000000127' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   32 /   32 ; total_ops =        256 ; total_bytes =         2359296
 QFile: open 'huge-data/gauge_field ; 4x4x4x4_2/checksums.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 4x4x4x4_2/checksums.txt' with 'r'.
@@ -500,13 +1796,21 @@ dist_crc32 = 51AE844C
 crc32 = 000E8458
 dist_write_field: fn='huge-data/gauge_field ; 1x1x1x1_f'.
 shuffle_field(fs,f,sp): 1x1x1x2 -> 1x1x1x1 (total_site: 8x8x8x8 ; site_size: 288 ; total_size: 0.001 GB)
+QFile: open 'huge-data/gauge_field ; 1x1x1x1_f.partial/geo-info.txt' with 'w'.
+QFile: close 'huge-data/gauge_field ; 1x1x1x1_f.partial/geo-info.txt' with 'w'.
+QFile: open 'huge-data/gauge_field ; 1x1x1x1_f.partial/00/0000000000' with 'w'.
+QFile: close 'huge-data/gauge_field ; 1x1x1x1_f.partial/00/0000000000' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          1 ; total_bytes =         1179648
+QFile: open 'huge-data/gauge_field ; 1x1x1x1_f.partial/checksums.txt' with 'w'.
+QFile: close 'huge-data/gauge_field ; 1x1x1x1_f.partial/checksums.txt' with 'w'.
 QFile: open 'huge-data/gauge_field ; 1x1x1x1_f.partial/checkpoint' with 'w'.
 QFile: close 'huge-data/gauge_field ; 1x1x1x1_f.partial/checkpoint' with 'w'.
 qrename: 'huge-data/gauge_field ; 1x1x1x1_f.partial' 'huge-data/gauge_field ; 1x1x1x1_f'
 dist_read_field: fn='huge-data/gauge_field ; 1x1x1x1_f'.
 QFile: open 'huge-data/gauge_field ; 1x1x1x1_f/geo-info.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 1x1x1x1_f/geo-info.txt' with 'r'.
+QFile: open 'huge-data/gauge_field ; 1x1x1x1_f/00/0000000000' with 'r'.
+QFile: close 'huge-data/gauge_field ; 1x1x1x1_f/00/0000000000' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          1 ; total_bytes =         1179648
 QFile: open 'huge-data/gauge_field ; 1x1x1x1_f/checksums.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 1x1x1x1_f/checksums.txt' with 'r'.
@@ -517,15 +1821,51 @@ dist_crc32 = 350968E5
 crc32 = 373D0A62
 dist_write_field: fn='huge-data/gauge_field ; 2x2x2x2_f'.
 shuffle_field(fs,f,sp): 1x1x1x2 -> 2x2x2x2 (total_site: 8x8x8x8 ; site_size: 288 ; total_size: 0.001 GB)
+QFile: open 'huge-data/gauge_field ; 2x2x2x2_f.partial/geo-info.txt' with 'w'.
+QFile: close 'huge-data/gauge_field ; 2x2x2x2_f.partial/geo-info.txt' with 'w'.
+QFile: open 'huge-data/gauge_field ; 2x2x2x2_f.partial/00/0000000000' with 'w'.
+QFile: close 'huge-data/gauge_field ; 2x2x2x2_f.partial/00/0000000000' with 'w'.
+QFile: open 'huge-data/gauge_field ; 2x2x2x2_f.partial/02/0000000002' with 'w'.
+QFile: close 'huge-data/gauge_field ; 2x2x2x2_f.partial/02/0000000002' with 'w'.
+QFile: open 'huge-data/gauge_field ; 2x2x2x2_f.partial/04/0000000004' with 'w'.
+QFile: close 'huge-data/gauge_field ; 2x2x2x2_f.partial/04/0000000004' with 'w'.
+QFile: open 'huge-data/gauge_field ; 2x2x2x2_f.partial/06/0000000006' with 'w'.
+QFile: close 'huge-data/gauge_field ; 2x2x2x2_f.partial/06/0000000006' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =          8 ; total_bytes =          589824
+QFile: open 'huge-data/gauge_field ; 2x2x2x2_f.partial/01/0000000001' with 'w'.
+QFile: close 'huge-data/gauge_field ; 2x2x2x2_f.partial/01/0000000001' with 'w'.
+QFile: open 'huge-data/gauge_field ; 2x2x2x2_f.partial/03/0000000003' with 'w'.
+QFile: close 'huge-data/gauge_field ; 2x2x2x2_f.partial/03/0000000003' with 'w'.
+QFile: open 'huge-data/gauge_field ; 2x2x2x2_f.partial/05/0000000005' with 'w'.
+QFile: close 'huge-data/gauge_field ; 2x2x2x2_f.partial/05/0000000005' with 'w'.
+QFile: open 'huge-data/gauge_field ; 2x2x2x2_f.partial/07/0000000007' with 'w'.
+QFile: close 'huge-data/gauge_field ; 2x2x2x2_f.partial/07/0000000007' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         16 ; total_bytes =         1179648
+QFile: open 'huge-data/gauge_field ; 2x2x2x2_f.partial/checksums.txt' with 'w'.
+QFile: close 'huge-data/gauge_field ; 2x2x2x2_f.partial/checksums.txt' with 'w'.
 QFile: open 'huge-data/gauge_field ; 2x2x2x2_f.partial/checkpoint' with 'w'.
 QFile: close 'huge-data/gauge_field ; 2x2x2x2_f.partial/checkpoint' with 'w'.
 qrename: 'huge-data/gauge_field ; 2x2x2x2_f.partial' 'huge-data/gauge_field ; 2x2x2x2_f'
 dist_read_field: fn='huge-data/gauge_field ; 2x2x2x2_f'.
 QFile: open 'huge-data/gauge_field ; 2x2x2x2_f/geo-info.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 2x2x2x2_f/geo-info.txt' with 'r'.
+QFile: open 'huge-data/gauge_field ; 2x2x2x2_f/00/0000000000' with 'r'.
+QFile: close 'huge-data/gauge_field ; 2x2x2x2_f/00/0000000000' with 'r'.
+QFile: open 'huge-data/gauge_field ; 2x2x2x2_f/02/0000000002' with 'r'.
+QFile: close 'huge-data/gauge_field ; 2x2x2x2_f/02/0000000002' with 'r'.
+QFile: open 'huge-data/gauge_field ; 2x2x2x2_f/04/0000000004' with 'r'.
+QFile: close 'huge-data/gauge_field ; 2x2x2x2_f/04/0000000004' with 'r'.
+QFile: open 'huge-data/gauge_field ; 2x2x2x2_f/06/0000000006' with 'r'.
+QFile: close 'huge-data/gauge_field ; 2x2x2x2_f/06/0000000006' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =          8 ; total_bytes =          589824
+QFile: open 'huge-data/gauge_field ; 2x2x2x2_f/01/0000000001' with 'r'.
+QFile: close 'huge-data/gauge_field ; 2x2x2x2_f/01/0000000001' with 'r'.
+QFile: open 'huge-data/gauge_field ; 2x2x2x2_f/03/0000000003' with 'r'.
+QFile: close 'huge-data/gauge_field ; 2x2x2x2_f/03/0000000003' with 'r'.
+QFile: open 'huge-data/gauge_field ; 2x2x2x2_f/05/0000000005' with 'r'.
+QFile: close 'huge-data/gauge_field ; 2x2x2x2_f/05/0000000005' with 'r'.
+QFile: open 'huge-data/gauge_field ; 2x2x2x2_f/07/0000000007' with 'r'.
+QFile: close 'huge-data/gauge_field ; 2x2x2x2_f/07/0000000007' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         16 ; total_bytes =         1179648
 QFile: open 'huge-data/gauge_field ; 2x2x2x2_f/checksums.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 2x2x2x2_f/checksums.txt' with 'r'.
@@ -536,13 +1876,33 @@ dist_crc32 = 350968E5
 crc32 = 373D0A62
 dist_write_field: fn='huge-data/gauge_field ; 1x1x1x8_f'.
 shuffle_field(fs,f,sp): 1x1x1x2 -> 1x1x1x8 (total_site: 8x8x8x8 ; site_size: 288 ; total_size: 0.001 GB)
+QFile: open 'huge-data/gauge_field ; 1x1x1x8_f.partial/geo-info.txt' with 'w'.
+QFile: close 'huge-data/gauge_field ; 1x1x1x8_f.partial/geo-info.txt' with 'w'.
+QFile: open 'huge-data/gauge_field ; 1x1x1x8_f.partial/00/0000000000' with 'w'.
+QFile: close 'huge-data/gauge_field ; 1x1x1x8_f.partial/00/0000000000' with 'w'.
+QFile: open 'huge-data/gauge_field ; 1x1x1x8_f.partial/01/0000000001' with 'w'.
+QFile: close 'huge-data/gauge_field ; 1x1x1x8_f.partial/01/0000000001' with 'w'.
+QFile: open 'huge-data/gauge_field ; 1x1x1x8_f.partial/02/0000000002' with 'w'.
+QFile: close 'huge-data/gauge_field ; 1x1x1x8_f.partial/02/0000000002' with 'w'.
+QFile: open 'huge-data/gauge_field ; 1x1x1x8_f.partial/03/0000000003' with 'w'.
+QFile: close 'huge-data/gauge_field ; 1x1x1x8_f.partial/03/0000000003' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         1179648
+QFile: open 'huge-data/gauge_field ; 1x1x1x8_f.partial/checksums.txt' with 'w'.
+QFile: close 'huge-data/gauge_field ; 1x1x1x8_f.partial/checksums.txt' with 'w'.
 QFile: open 'huge-data/gauge_field ; 1x1x1x8_f.partial/checkpoint' with 'w'.
 QFile: close 'huge-data/gauge_field ; 1x1x1x8_f.partial/checkpoint' with 'w'.
 qrename: 'huge-data/gauge_field ; 1x1x1x8_f.partial' 'huge-data/gauge_field ; 1x1x1x8_f'
 dist_read_field: fn='huge-data/gauge_field ; 1x1x1x8_f'.
 QFile: open 'huge-data/gauge_field ; 1x1x1x8_f/geo-info.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 1x1x1x8_f/geo-info.txt' with 'r'.
+QFile: open 'huge-data/gauge_field ; 1x1x1x8_f/00/0000000000' with 'r'.
+QFile: close 'huge-data/gauge_field ; 1x1x1x8_f/00/0000000000' with 'r'.
+QFile: open 'huge-data/gauge_field ; 1x1x1x8_f/01/0000000001' with 'r'.
+QFile: close 'huge-data/gauge_field ; 1x1x1x8_f/01/0000000001' with 'r'.
+QFile: open 'huge-data/gauge_field ; 1x1x1x8_f/02/0000000002' with 'r'.
+QFile: close 'huge-data/gauge_field ; 1x1x1x8_f/02/0000000002' with 'r'.
+QFile: open 'huge-data/gauge_field ; 1x1x1x8_f/03/0000000003' with 'r'.
+QFile: close 'huge-data/gauge_field ; 1x1x1x8_f/03/0000000003' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          8 ; total_bytes =         1179648
 QFile: open 'huge-data/gauge_field ; 1x1x1x8_f/checksums.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 1x1x1x8_f/checksums.txt' with 'r'.
@@ -553,15 +1913,51 @@ dist_crc32 = 350968E5
 crc32 = 373D0A62
 dist_write_field: fn='huge-data/gauge_field ; 1x2x4x2_f'.
 shuffle_field(fs,f,sp): 1x1x1x2 -> 1x2x4x2 (total_site: 8x8x8x8 ; site_size: 288 ; total_size: 0.001 GB)
+QFile: open 'huge-data/gauge_field ; 1x2x4x2_f.partial/geo-info.txt' with 'w'.
+QFile: close 'huge-data/gauge_field ; 1x2x4x2_f.partial/geo-info.txt' with 'w'.
+QFile: open 'huge-data/gauge_field ; 1x2x4x2_f.partial/00/0000000000' with 'w'.
+QFile: close 'huge-data/gauge_field ; 1x2x4x2_f.partial/00/0000000000' with 'w'.
+QFile: open 'huge-data/gauge_field ; 1x2x4x2_f.partial/02/0000000002' with 'w'.
+QFile: close 'huge-data/gauge_field ; 1x2x4x2_f.partial/02/0000000002' with 'w'.
+QFile: open 'huge-data/gauge_field ; 1x2x4x2_f.partial/04/0000000004' with 'w'.
+QFile: close 'huge-data/gauge_field ; 1x2x4x2_f.partial/04/0000000004' with 'w'.
+QFile: open 'huge-data/gauge_field ; 1x2x4x2_f.partial/06/0000000006' with 'w'.
+QFile: close 'huge-data/gauge_field ; 1x2x4x2_f.partial/06/0000000006' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =          8 ; total_bytes =          589824
+QFile: open 'huge-data/gauge_field ; 1x2x4x2_f.partial/01/0000000001' with 'w'.
+QFile: close 'huge-data/gauge_field ; 1x2x4x2_f.partial/01/0000000001' with 'w'.
+QFile: open 'huge-data/gauge_field ; 1x2x4x2_f.partial/03/0000000003' with 'w'.
+QFile: close 'huge-data/gauge_field ; 1x2x4x2_f.partial/03/0000000003' with 'w'.
+QFile: open 'huge-data/gauge_field ; 1x2x4x2_f.partial/05/0000000005' with 'w'.
+QFile: close 'huge-data/gauge_field ; 1x2x4x2_f.partial/05/0000000005' with 'w'.
+QFile: open 'huge-data/gauge_field ; 1x2x4x2_f.partial/07/0000000007' with 'w'.
+QFile: close 'huge-data/gauge_field ; 1x2x4x2_f.partial/07/0000000007' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         16 ; total_bytes =         1179648
+QFile: open 'huge-data/gauge_field ; 1x2x4x2_f.partial/checksums.txt' with 'w'.
+QFile: close 'huge-data/gauge_field ; 1x2x4x2_f.partial/checksums.txt' with 'w'.
 QFile: open 'huge-data/gauge_field ; 1x2x4x2_f.partial/checkpoint' with 'w'.
 QFile: close 'huge-data/gauge_field ; 1x2x4x2_f.partial/checkpoint' with 'w'.
 qrename: 'huge-data/gauge_field ; 1x2x4x2_f.partial' 'huge-data/gauge_field ; 1x2x4x2_f'
 dist_read_field: fn='huge-data/gauge_field ; 1x2x4x2_f'.
 QFile: open 'huge-data/gauge_field ; 1x2x4x2_f/geo-info.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 1x2x4x2_f/geo-info.txt' with 'r'.
+QFile: open 'huge-data/gauge_field ; 1x2x4x2_f/00/0000000000' with 'r'.
+QFile: close 'huge-data/gauge_field ; 1x2x4x2_f/00/0000000000' with 'r'.
+QFile: open 'huge-data/gauge_field ; 1x2x4x2_f/02/0000000002' with 'r'.
+QFile: close 'huge-data/gauge_field ; 1x2x4x2_f/02/0000000002' with 'r'.
+QFile: open 'huge-data/gauge_field ; 1x2x4x2_f/04/0000000004' with 'r'.
+QFile: close 'huge-data/gauge_field ; 1x2x4x2_f/04/0000000004' with 'r'.
+QFile: open 'huge-data/gauge_field ; 1x2x4x2_f/06/0000000006' with 'r'.
+QFile: close 'huge-data/gauge_field ; 1x2x4x2_f/06/0000000006' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    1 /    2 ; total_ops =          8 ; total_bytes =          589824
+QFile: open 'huge-data/gauge_field ; 1x2x4x2_f/01/0000000001' with 'r'.
+QFile: close 'huge-data/gauge_field ; 1x2x4x2_f/01/0000000001' with 'r'.
+QFile: open 'huge-data/gauge_field ; 1x2x4x2_f/03/0000000003' with 'r'.
+QFile: close 'huge-data/gauge_field ; 1x2x4x2_f/03/0000000003' with 'r'.
+QFile: open 'huge-data/gauge_field ; 1x2x4x2_f/05/0000000005' with 'r'.
+QFile: close 'huge-data/gauge_field ; 1x2x4x2_f/05/0000000005' with 'r'.
+QFile: open 'huge-data/gauge_field ; 1x2x4x2_f/07/0000000007' with 'r'.
+QFile: close 'huge-data/gauge_field ; 1x2x4x2_f/07/0000000007' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    2 /    2 ; total_ops =         16 ; total_bytes =         1179648
 QFile: open 'huge-data/gauge_field ; 1x2x4x2_f/checksums.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 1x2x4x2_f/checksums.txt' with 'r'.
@@ -572,13 +1968,25 @@ dist_crc32 = 350968E5
 crc32 = 373D0A62
 dist_write_field: fn='huge-data/gauge_field ; 2x2x1x1_f'.
 shuffle_field(fs,f,sp): 1x1x1x2 -> 2x2x1x1 (total_site: 8x8x8x8 ; site_size: 288 ; total_size: 0.001 GB)
+QFile: open 'huge-data/gauge_field ; 2x2x1x1_f.partial/geo-info.txt' with 'w'.
+QFile: close 'huge-data/gauge_field ; 2x2x1x1_f.partial/geo-info.txt' with 'w'.
+QFile: open 'huge-data/gauge_field ; 2x2x1x1_f.partial/00/0000000000' with 'w'.
+QFile: close 'huge-data/gauge_field ; 2x2x1x1_f.partial/00/0000000000' with 'w'.
+QFile: open 'huge-data/gauge_field ; 2x2x1x1_f.partial/01/0000000001' with 'w'.
+QFile: close 'huge-data/gauge_field ; 2x2x1x1_f.partial/01/0000000001' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          4 ; total_bytes =         1179648
+QFile: open 'huge-data/gauge_field ; 2x2x1x1_f.partial/checksums.txt' with 'w'.
+QFile: close 'huge-data/gauge_field ; 2x2x1x1_f.partial/checksums.txt' with 'w'.
 QFile: open 'huge-data/gauge_field ; 2x2x1x1_f.partial/checkpoint' with 'w'.
 QFile: close 'huge-data/gauge_field ; 2x2x1x1_f.partial/checkpoint' with 'w'.
 qrename: 'huge-data/gauge_field ; 2x2x1x1_f.partial' 'huge-data/gauge_field ; 2x2x1x1_f'
 dist_read_field: fn='huge-data/gauge_field ; 2x2x1x1_f'.
 QFile: open 'huge-data/gauge_field ; 2x2x1x1_f/geo-info.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 2x2x1x1_f/geo-info.txt' with 'r'.
+QFile: open 'huge-data/gauge_field ; 2x2x1x1_f/00/0000000000' with 'r'.
+QFile: close 'huge-data/gauge_field ; 2x2x1x1_f/00/0000000000' with 'r'.
+QFile: open 'huge-data/gauge_field ; 2x2x1x1_f/01/0000000001' with 'r'.
+QFile: close 'huge-data/gauge_field ; 2x2x1x1_f/01/0000000001' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    1 /    1 ; total_ops =          4 ; total_bytes =         1179648
 QFile: open 'huge-data/gauge_field ; 2x2x1x1_f/checksums.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 2x2x1x1_f/checksums.txt' with 'r'.
@@ -589,75 +1997,591 @@ dist_crc32 = 350968E5
 crc32 = 373D0A62
 dist_write_field: fn='huge-data/gauge_field ; 4x4x4x4_f'.
 shuffle_field(fs,f,sp): 1x1x1x2 -> 4x4x4x4 (total_site: 8x8x8x8 ; site_size: 288 ; total_size: 0.001 GB)
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/geo-info.txt' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/geo-info.txt' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/00/0000000000' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/00/0000000000' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/04/0000000032' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/04/0000000032' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/08/0000000064' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/08/0000000064' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/12/0000000096' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/12/0000000096' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    1 /   32 ; total_ops =          8 ; total_bytes =           36864
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/00/0000000001' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/00/0000000001' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/04/0000000033' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/04/0000000033' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/08/0000000065' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/08/0000000065' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/12/0000000097' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/12/0000000097' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    2 /   32 ; total_ops =         16 ; total_bytes =           73728
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/00/0000000002' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/00/0000000002' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/04/0000000034' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/04/0000000034' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/08/0000000066' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/08/0000000066' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/12/0000000098' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/12/0000000098' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    3 /   32 ; total_ops =         24 ; total_bytes =          110592
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/00/0000000003' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/00/0000000003' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/04/0000000035' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/04/0000000035' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/08/0000000067' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/08/0000000067' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/12/0000000099' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/12/0000000099' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    4 /   32 ; total_ops =         32 ; total_bytes =          147456
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/00/0000000004' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/00/0000000004' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/04/0000000036' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/04/0000000036' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/08/0000000068' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/08/0000000068' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/12/0000000100' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/12/0000000100' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    5 /   32 ; total_ops =         40 ; total_bytes =          184320
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/00/0000000005' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/00/0000000005' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/04/0000000037' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/04/0000000037' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/08/0000000069' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/08/0000000069' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/12/0000000101' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/12/0000000101' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    6 /   32 ; total_ops =         48 ; total_bytes =          221184
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/00/0000000006' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/00/0000000006' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/04/0000000038' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/04/0000000038' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/08/0000000070' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/08/0000000070' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/12/0000000102' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/12/0000000102' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    7 /   32 ; total_ops =         56 ; total_bytes =          258048
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/00/0000000007' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/00/0000000007' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/04/0000000039' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/04/0000000039' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/08/0000000071' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/08/0000000071' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/12/0000000103' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/12/0000000103' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    8 /   32 ; total_ops =         64 ; total_bytes =          294912
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/01/0000000008' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/01/0000000008' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/05/0000000040' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/05/0000000040' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/09/0000000072' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/09/0000000072' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/13/0000000104' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/13/0000000104' with 'w'.
 dist_write_dist_data: cycle / n_cycle =    9 /   32 ; total_ops =         72 ; total_bytes =          331776
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/01/0000000009' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/01/0000000009' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/05/0000000041' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/05/0000000041' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/09/0000000073' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/09/0000000073' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/13/0000000105' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/13/0000000105' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   10 /   32 ; total_ops =         80 ; total_bytes =          368640
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/01/0000000010' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/01/0000000010' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/05/0000000042' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/05/0000000042' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/09/0000000074' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/09/0000000074' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/13/0000000106' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/13/0000000106' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   11 /   32 ; total_ops =         88 ; total_bytes =          405504
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/01/0000000011' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/01/0000000011' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/05/0000000043' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/05/0000000043' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/09/0000000075' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/09/0000000075' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/13/0000000107' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/13/0000000107' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   12 /   32 ; total_ops =         96 ; total_bytes =          442368
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/01/0000000012' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/01/0000000012' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/05/0000000044' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/05/0000000044' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/09/0000000076' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/09/0000000076' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/13/0000000108' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/13/0000000108' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   13 /   32 ; total_ops =        104 ; total_bytes =          479232
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/01/0000000013' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/01/0000000013' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/05/0000000045' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/05/0000000045' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/09/0000000077' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/09/0000000077' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/13/0000000109' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/13/0000000109' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   14 /   32 ; total_ops =        112 ; total_bytes =          516096
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/01/0000000014' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/01/0000000014' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/05/0000000046' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/05/0000000046' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/09/0000000078' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/09/0000000078' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/13/0000000110' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/13/0000000110' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   15 /   32 ; total_ops =        120 ; total_bytes =          552960
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/01/0000000015' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/01/0000000015' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/05/0000000047' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/05/0000000047' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/09/0000000079' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/09/0000000079' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/13/0000000111' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/13/0000000111' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   16 /   32 ; total_ops =        128 ; total_bytes =          589824
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/02/0000000016' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/02/0000000016' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/06/0000000048' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/06/0000000048' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/10/0000000080' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/10/0000000080' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/14/0000000112' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/14/0000000112' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   17 /   32 ; total_ops =        136 ; total_bytes =          626688
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/02/0000000017' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/02/0000000017' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/06/0000000049' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/06/0000000049' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/10/0000000081' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/10/0000000081' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/14/0000000113' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/14/0000000113' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   18 /   32 ; total_ops =        144 ; total_bytes =          663552
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/02/0000000018' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/02/0000000018' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/06/0000000050' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/06/0000000050' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/10/0000000082' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/10/0000000082' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/14/0000000114' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/14/0000000114' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   19 /   32 ; total_ops =        152 ; total_bytes =          700416
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/02/0000000019' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/02/0000000019' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/06/0000000051' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/06/0000000051' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/10/0000000083' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/10/0000000083' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/14/0000000115' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/14/0000000115' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   20 /   32 ; total_ops =        160 ; total_bytes =          737280
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/02/0000000020' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/02/0000000020' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/06/0000000052' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/06/0000000052' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/10/0000000084' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/10/0000000084' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/14/0000000116' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/14/0000000116' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   21 /   32 ; total_ops =        168 ; total_bytes =          774144
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/02/0000000021' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/02/0000000021' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/06/0000000053' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/06/0000000053' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/10/0000000085' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/10/0000000085' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/14/0000000117' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/14/0000000117' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   22 /   32 ; total_ops =        176 ; total_bytes =          811008
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/02/0000000022' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/02/0000000022' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/06/0000000054' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/06/0000000054' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/10/0000000086' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/10/0000000086' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/14/0000000118' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/14/0000000118' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   23 /   32 ; total_ops =        184 ; total_bytes =          847872
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/02/0000000023' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/02/0000000023' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/06/0000000055' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/06/0000000055' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/10/0000000087' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/10/0000000087' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/14/0000000119' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/14/0000000119' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   24 /   32 ; total_ops =        192 ; total_bytes =          884736
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/03/0000000024' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/03/0000000024' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/07/0000000056' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/07/0000000056' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/11/0000000088' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/11/0000000088' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/15/0000000120' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/15/0000000120' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   25 /   32 ; total_ops =        200 ; total_bytes =          921600
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/03/0000000025' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/03/0000000025' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/07/0000000057' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/07/0000000057' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/11/0000000089' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/11/0000000089' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/15/0000000121' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/15/0000000121' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   26 /   32 ; total_ops =        208 ; total_bytes =          958464
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/03/0000000026' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/03/0000000026' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/07/0000000058' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/07/0000000058' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/11/0000000090' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/11/0000000090' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/15/0000000122' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/15/0000000122' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   27 /   32 ; total_ops =        216 ; total_bytes =          995328
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/03/0000000027' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/03/0000000027' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/07/0000000059' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/07/0000000059' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/11/0000000091' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/11/0000000091' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/15/0000000123' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/15/0000000123' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   28 /   32 ; total_ops =        224 ; total_bytes =         1032192
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/03/0000000028' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/03/0000000028' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/07/0000000060' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/07/0000000060' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/11/0000000092' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/11/0000000092' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/15/0000000124' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/15/0000000124' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   29 /   32 ; total_ops =        232 ; total_bytes =         1069056
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/03/0000000029' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/03/0000000029' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/07/0000000061' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/07/0000000061' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/11/0000000093' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/11/0000000093' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/15/0000000125' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/15/0000000125' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   30 /   32 ; total_ops =        240 ; total_bytes =         1105920
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/03/0000000030' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/03/0000000030' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/07/0000000062' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/07/0000000062' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/11/0000000094' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/11/0000000094' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/15/0000000126' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/15/0000000126' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   31 /   32 ; total_ops =        248 ; total_bytes =         1142784
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/03/0000000031' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/03/0000000031' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/07/0000000063' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/07/0000000063' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/11/0000000095' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/11/0000000095' with 'w'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/15/0000000127' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/15/0000000127' with 'w'.
 dist_write_dist_data: cycle / n_cycle =   32 /   32 ; total_ops =        256 ; total_bytes =         1179648
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/checksums.txt' with 'w'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/checksums.txt' with 'w'.
 QFile: open 'huge-data/gauge_field ; 4x4x4x4_f.partial/checkpoint' with 'w'.
 QFile: close 'huge-data/gauge_field ; 4x4x4x4_f.partial/checkpoint' with 'w'.
 qrename: 'huge-data/gauge_field ; 4x4x4x4_f.partial' 'huge-data/gauge_field ; 4x4x4x4_f'
 dist_read_field: fn='huge-data/gauge_field ; 4x4x4x4_f'.
 QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/geo-info.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/geo-info.txt' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/00/0000000000' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/00/0000000000' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/04/0000000032' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/04/0000000032' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/08/0000000064' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/08/0000000064' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/12/0000000096' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/12/0000000096' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    1 /   32 ; total_ops =          8 ; total_bytes =           36864
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/00/0000000001' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/00/0000000001' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/04/0000000033' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/04/0000000033' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/08/0000000065' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/08/0000000065' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/12/0000000097' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/12/0000000097' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    2 /   32 ; total_ops =         16 ; total_bytes =           73728
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/00/0000000002' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/00/0000000002' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/04/0000000034' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/04/0000000034' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/08/0000000066' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/08/0000000066' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/12/0000000098' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/12/0000000098' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    3 /   32 ; total_ops =         24 ; total_bytes =          110592
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/00/0000000003' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/00/0000000003' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/04/0000000035' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/04/0000000035' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/08/0000000067' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/08/0000000067' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/12/0000000099' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/12/0000000099' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    4 /   32 ; total_ops =         32 ; total_bytes =          147456
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/00/0000000004' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/00/0000000004' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/04/0000000036' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/04/0000000036' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/08/0000000068' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/08/0000000068' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/12/0000000100' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/12/0000000100' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    5 /   32 ; total_ops =         40 ; total_bytes =          184320
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/00/0000000005' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/00/0000000005' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/04/0000000037' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/04/0000000037' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/08/0000000069' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/08/0000000069' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/12/0000000101' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/12/0000000101' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    6 /   32 ; total_ops =         48 ; total_bytes =          221184
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/00/0000000006' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/00/0000000006' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/04/0000000038' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/04/0000000038' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/08/0000000070' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/08/0000000070' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/12/0000000102' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/12/0000000102' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    7 /   32 ; total_ops =         56 ; total_bytes =          258048
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/00/0000000007' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/00/0000000007' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/04/0000000039' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/04/0000000039' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/08/0000000071' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/08/0000000071' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/12/0000000103' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/12/0000000103' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    8 /   32 ; total_ops =         64 ; total_bytes =          294912
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/01/0000000008' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/01/0000000008' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/05/0000000040' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/05/0000000040' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/09/0000000072' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/09/0000000072' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/13/0000000104' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/13/0000000104' with 'r'.
 dist_read_dist_data: cycle / n_cycle =    9 /   32 ; total_ops =         72 ; total_bytes =          331776
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/01/0000000009' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/01/0000000009' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/05/0000000041' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/05/0000000041' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/09/0000000073' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/09/0000000073' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/13/0000000105' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/13/0000000105' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   10 /   32 ; total_ops =         80 ; total_bytes =          368640
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/01/0000000010' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/01/0000000010' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/05/0000000042' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/05/0000000042' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/09/0000000074' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/09/0000000074' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/13/0000000106' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/13/0000000106' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   11 /   32 ; total_ops =         88 ; total_bytes =          405504
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/01/0000000011' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/01/0000000011' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/05/0000000043' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/05/0000000043' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/09/0000000075' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/09/0000000075' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/13/0000000107' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/13/0000000107' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   12 /   32 ; total_ops =         96 ; total_bytes =          442368
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/01/0000000012' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/01/0000000012' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/05/0000000044' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/05/0000000044' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/09/0000000076' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/09/0000000076' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/13/0000000108' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/13/0000000108' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   13 /   32 ; total_ops =        104 ; total_bytes =          479232
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/01/0000000013' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/01/0000000013' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/05/0000000045' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/05/0000000045' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/09/0000000077' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/09/0000000077' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/13/0000000109' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/13/0000000109' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   14 /   32 ; total_ops =        112 ; total_bytes =          516096
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/01/0000000014' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/01/0000000014' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/05/0000000046' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/05/0000000046' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/09/0000000078' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/09/0000000078' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/13/0000000110' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/13/0000000110' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   15 /   32 ; total_ops =        120 ; total_bytes =          552960
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/01/0000000015' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/01/0000000015' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/05/0000000047' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/05/0000000047' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/09/0000000079' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/09/0000000079' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/13/0000000111' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/13/0000000111' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   16 /   32 ; total_ops =        128 ; total_bytes =          589824
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/02/0000000016' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/02/0000000016' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/06/0000000048' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/06/0000000048' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/10/0000000080' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/10/0000000080' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/14/0000000112' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/14/0000000112' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   17 /   32 ; total_ops =        136 ; total_bytes =          626688
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/02/0000000017' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/02/0000000017' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/06/0000000049' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/06/0000000049' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/10/0000000081' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/10/0000000081' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/14/0000000113' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/14/0000000113' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   18 /   32 ; total_ops =        144 ; total_bytes =          663552
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/02/0000000018' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/02/0000000018' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/06/0000000050' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/06/0000000050' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/10/0000000082' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/10/0000000082' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/14/0000000114' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/14/0000000114' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   19 /   32 ; total_ops =        152 ; total_bytes =          700416
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/02/0000000019' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/02/0000000019' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/06/0000000051' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/06/0000000051' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/10/0000000083' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/10/0000000083' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/14/0000000115' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/14/0000000115' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   20 /   32 ; total_ops =        160 ; total_bytes =          737280
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/02/0000000020' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/02/0000000020' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/06/0000000052' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/06/0000000052' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/10/0000000084' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/10/0000000084' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/14/0000000116' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/14/0000000116' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   21 /   32 ; total_ops =        168 ; total_bytes =          774144
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/02/0000000021' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/02/0000000021' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/06/0000000053' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/06/0000000053' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/10/0000000085' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/10/0000000085' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/14/0000000117' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/14/0000000117' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   22 /   32 ; total_ops =        176 ; total_bytes =          811008
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/02/0000000022' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/02/0000000022' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/06/0000000054' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/06/0000000054' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/10/0000000086' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/10/0000000086' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/14/0000000118' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/14/0000000118' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   23 /   32 ; total_ops =        184 ; total_bytes =          847872
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/02/0000000023' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/02/0000000023' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/06/0000000055' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/06/0000000055' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/10/0000000087' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/10/0000000087' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/14/0000000119' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/14/0000000119' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   24 /   32 ; total_ops =        192 ; total_bytes =          884736
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/03/0000000024' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/03/0000000024' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/07/0000000056' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/07/0000000056' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/11/0000000088' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/11/0000000088' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/15/0000000120' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/15/0000000120' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   25 /   32 ; total_ops =        200 ; total_bytes =          921600
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/03/0000000025' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/03/0000000025' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/07/0000000057' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/07/0000000057' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/11/0000000089' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/11/0000000089' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/15/0000000121' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/15/0000000121' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   26 /   32 ; total_ops =        208 ; total_bytes =          958464
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/03/0000000026' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/03/0000000026' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/07/0000000058' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/07/0000000058' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/11/0000000090' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/11/0000000090' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/15/0000000122' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/15/0000000122' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   27 /   32 ; total_ops =        216 ; total_bytes =          995328
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/03/0000000027' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/03/0000000027' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/07/0000000059' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/07/0000000059' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/11/0000000091' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/11/0000000091' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/15/0000000123' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/15/0000000123' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   28 /   32 ; total_ops =        224 ; total_bytes =         1032192
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/03/0000000028' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/03/0000000028' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/07/0000000060' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/07/0000000060' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/11/0000000092' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/11/0000000092' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/15/0000000124' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/15/0000000124' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   29 /   32 ; total_ops =        232 ; total_bytes =         1069056
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/03/0000000029' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/03/0000000029' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/07/0000000061' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/07/0000000061' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/11/0000000093' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/11/0000000093' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/15/0000000125' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/15/0000000125' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   30 /   32 ; total_ops =        240 ; total_bytes =         1105920
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/03/0000000030' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/03/0000000030' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/07/0000000062' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/07/0000000062' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/11/0000000094' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/11/0000000094' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/15/0000000126' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/15/0000000126' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   31 /   32 ; total_ops =        248 ; total_bytes =         1142784
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/03/0000000031' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/03/0000000031' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/07/0000000063' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/07/0000000063' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/11/0000000095' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/11/0000000095' with 'r'.
+QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/15/0000000127' with 'r'.
+QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/15/0000000127' with 'r'.
 dist_read_dist_data: cycle / n_cycle =   32 /   32 ; total_ops =        256 ; total_bytes =         1179648
 QFile: open 'huge-data/gauge_field ; 4x4x4x4_f/checksums.txt' with 'r'.
 QFile: close 'huge-data/gauge_field ; 4x4x4x4_f/checksums.txt' with 'r'.
@@ -694,9 +2618,13 @@ qrename: 'huge-data/rgf-0.1.gf.conf.0000000000.partial' 'huge-data/rgf-0.1.gf.co
 load_gauge_field: 'huge-data/rgf-0.1.gf.conf.0000000000'.
 QFile: open 'huge-data/rgf-0.1.gf.conf.0000000000' with 'r'.
 QFile: close 'huge-data/rgf-0.1.gf.conf.0000000000' with 'r'.
+QFile: open 'huge-data/rgf-0.1.gf.conf.0000000000' with 'r'.
+QFile: close 'huge-data/rgf-0.1.gf.conf.0000000000' with 'r'.
 dist_crc32 = 2B5B10F3
 crc32 = 95B92D8C
 load_gauge_field: 'huge-data/rgf-0.1.gf.conf.0000000000'.
+QFile: open 'huge-data/rgf-0.1.gf.conf.0000000000' with 'r'.
+QFile: close 'huge-data/rgf-0.1.gf.conf.0000000000' with 'r'.
 QFile: open 'huge-data/rgf-0.1.gf.conf.0000000000' with 'r'.
 QFile: close 'huge-data/rgf-0.1.gf.conf.0000000000' with 'r'.
 dist_crc32 = 2B5B10F3
