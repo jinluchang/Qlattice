@@ -316,6 +316,8 @@ class CExpr:
     # self.positions
     # self.function
 
+    # self.positions == sorted(list(self.positions))
+
     def __init__(self, diagram_types, variables_prop, variables_expr, named_terms, named_typed_exprs, named_exprs, positions = None):
         self.diagram_types = diagram_types
         self.variables_prop = variables_prop
@@ -325,7 +327,7 @@ class CExpr:
         self.named_typed_exprs = named_typed_exprs
         self.named_exprs = named_exprs
         if positions is not None:
-            self.positions = positions
+            self.positions = sorted(list(positions))
         else:
             s = set()
             for name, term in named_terms:

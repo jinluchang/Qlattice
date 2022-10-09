@@ -1,0 +1,12 @@
+CHECK: # < pi^dag * pi    >  exprs[0]
+CHECK: # < k^dag  * k     >  exprs[1]
+CHECK: -6.5014686135E+00+1.0967728396E+01j 1.7318976826E+01+1.5810492682E+01j -7.5714995253E+00-4.6798207710E+00j
+CHECK: # < a_pi   * pi    >  exprs[0]
+CHECK: # < a_k    * k     >  exprs[1]
+CHECK: -1.1127911892E+00-1.3924413315E+00j -5.5779975200E+00+5.3223998582E+00j 1.8970901264E+01+1.3273366872E+01j
+CHECK: # < (i dbar g5 s)  * (sbar  gmu (1-g5) d)(sbar  gmu (1-g5) d) * (i dbar g5 s) >  exprs[0]
+CHECK: # < (i dbar g5 u)  * (ubar  gmu (1-g5) d)(ubar  gmu (1-g5) d) * (i dbar g5 u) >  exprs[1]
+CHECK: # < (i ubar g5 u') * (dbar  gmu (1-g5) u)(u'bar gmu (1-g5) s) * (i sbar g5 d) >  exprs[2]
+CHECK: # < (i ubar g5 u') * (u'bar gmu (1-g5) u)(dbar  gmu (1-g5) s) * (i sbar g5 d) >  exprs[3]
+CHECK: 2.0692950785E+02+6.1208861257E+02j -8.1936885522E+02-1.2118770068E+03j -1.6565608377E+00+4.3103274171E+01j
+CHECK: finished successfully.

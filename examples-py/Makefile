@@ -13,7 +13,8 @@ tests = make-sample-gauge-field.log \
 		selected-field.log \
 		fields-io.log \
 		free-invert.log \
-		qlat-id-node.log
+		qlat-id-node.log \
+		auto-cexprs.log
 
 tests_gpt = gpt-qlat-convert.log \
 			gpt-qlat-smear.log \

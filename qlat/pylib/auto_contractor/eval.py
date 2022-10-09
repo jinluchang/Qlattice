@@ -231,29 +231,62 @@ def make_rand_spin_matrix(rng_state):
         [ rs.u_rand_gen() + 1j * rs.u_rand_gen() for i in range(16) ],
         dtype = complex).reshape(4, 4))
 
+def benchmark_show_check(check):
+    return " ".join([ f"{v:.10E}" for v in check ])
+
 @q.timer
 def benchmark_eval_cexpr(cexpr : CExpr, *, is_only_total = "total", benchmark_size = 10, benchmark_num = 10, benchmark_rng_state = None):
     if benchmark_rng_state is None:
         benchmark_rng_state = q.RngState("benchmark_eval_cexpr")
-    positions_dict = {}
+    expr_names = get_cexpr_names(cexpr)
+    n_expr = len(expr_names)
+    n_pos = len(cexpr.positions)
     prop_dict = {}
-    for pos in cexpr.positions:
-        positions_dict[pos] = pos
-    for pos in cexpr.positions:
-        prop_dict[(pos, pos,)] = make_rand_spin_color_matrix(benchmark_rng_state.split(pos))
+    for pos_src in range(n_pos):
+        for pos_snk in range(n_pos):
+            prop_dict[(pos_snk, pos_src,)] = make_rand_spin_color_matrix(benchmark_rng_state.split(f"prop {pos_snk} {pos_src}"))
+    def mk_pos_dict(k):
+        positions_dict = {}
+        idx_list = q.random_permute(list(range(n_pos)), benchmark_rng_state.split(f"pos_dict {k}"))
+        for pos, idx in zip(cexpr.positions, idx_list):
+            positions_dict[pos] = idx
+        return positions_dict
+    positions_dict_list = [ mk_pos_dict(k) for k in range(benchmark_size) ]
     @q.timer
-    def get_prop(flavor, xg_snk, xg_src):
-        return prop_dict[(xg_src, xg_src)]
+    def get_prop(flavor, pos_snk, pos_src):
+        return prop_dict[(pos_snk, pos_src)]
     @q.timer_verbose
     def benchmark_eval_cexpr_run():
+        res_list = []
         for k in range(benchmark_size):
-            eval_cexpr(cexpr, positions_dict = positions_dict, get_prop = get_prop, is_only_total = is_only_total)
+            res = eval_cexpr(cexpr, positions_dict = positions_dict_list[k], get_prop = get_prop, is_only_total = is_only_total)
+            res_list.append(res)
+        res = np.array(res_list)
+        assert res.shape == (benchmark_size, n_expr,)
+        return res
+    def mk_check_vector(k):
+        rs = benchmark_rng_state.split(f"check_vector {k}")
+        res = np.array([
+            [ complex(rs.u_rand_gen(1.0, -1.0), rs.u_rand_gen(1.0, -1.0)) for i in range(n_expr) ]
+            for k in range(benchmark_size) ])
+        return res
+    check_vector_list = [ mk_check_vector(k) for k in range(3) ]
+    def check_res(res):
+        return [ np.tensordot(res, cv).item() for cv in check_vector_list ]
     q.displayln_info(f"benchmark_eval_cexpr: benchmark_size={benchmark_size} is_only_total={is_only_total}")
+    check = None
     q.timer_fork(0)
     for i in range(benchmark_num):
-        benchmark_eval_cexpr_run()
+        res = benchmark_eval_cexpr_run()
+        new_check = check_res(res)
+        if check is None:
+            check = new_check
+        else:
+            assert check == new_check
     q.timer_display()
     q.timer_merge()
+    q.displayln_info(f"benchmark_eval_cexpr: {benchmark_show_check(check)}")
+    return check
 
 def sqr_component(x):
     return x.real * x.real + 1j * x.imag * x.imag
