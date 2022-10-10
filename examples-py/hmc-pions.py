@@ -292,7 +292,7 @@ class HMC:
         filename, self.traj = self.find_latest_traj(f"output_data/fields/hmc_pions_traj_*_{self.fileidwc}.field")
         self.init_length+=self.traj-1
         if(not filename==""):
-            self.field.load_double(filename)
+            self.field.load(filename)
         else:
             self.field.set_unit()
     
