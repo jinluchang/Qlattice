@@ -338,6 +338,9 @@ class CExpr:
     def __repr__(self) -> str:
         return f"CExpr({self.diagram_types},{self.variables_prop},{self.variables_expr},{self.named_terms},{self.named_typed_exprs},{self.named_exprs},{self.positions})"
 
+    def optimize(self):
+        self.collect_op()
+
     def collect_op(self):
         # Performing common sub-expression elimination
         # Should be called after contract_simplify_compile(*exprs) or mk_cexpr(*exprs)
@@ -466,6 +469,7 @@ def mk_cexpr(*exprs, diagram_type_dict = None):
             diagram_type_name = diagram_type_dict[diagram_type]
             diagram_type_term_dict[repr_term] = diagram_type_name
             if diagram_type_name is None:
+                # Do not include diagrams where diagram_type_dict[diagram_type] is None
                 continue
             term_name_counter = 0
             while True:
@@ -509,17 +513,17 @@ def mk_cexpr(*exprs, diagram_type_dict = None):
 def contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True, diagram_type_dict = None):
     # e.g. exprs = [ Qb("u", "x", s, c) * Qv("u", "x", s, c) + "u_bar*u", Qb("s", "x", s, c) * Qv("s", "x", s, c) + "s_bar*s", Qb("c", "x", s, c) * Qv("c", "x", s, c) + "c_bar*c", ]
     # e.g. exprs = [ mk_pi_p("x2", True) * mk_pi_p("x1") + "(pi   * pi)", mk_j5pi_mu("x2", 3) * mk_pi_p("x1") + "(a_pi * pi)", mk_k_p("x2", True)  * mk_k_p("x1")  + "(k    * k )", mk_j5k_mu("x2", 3)  * mk_k_p("x1")  + "(a_k  * k )", ]
-    # After this function, call cexpr.collect_op() to perform CSE
+    # After this function, call cexpr.optimize() to perform CSE
     # interface function
     if diagram_type_dict is None:
         diagram_type_dict = dict()
-    exprs = list(exprs)
+    contracted_simplified_exprs = []
     for i in range(len(exprs)):
         expr = copy.deepcopy(exprs[i])
         expr = contract_expr(expr)
         expr.simplify(is_isospin_symmetric_limit = is_isospin_symmetric_limit)
-        exprs[i] = expr
-    cexpr = mk_cexpr(*exprs, diagram_type_dict = diagram_type_dict)
+        contracted_simplified_exprs.append(expr)
+    cexpr = mk_cexpr(*contracted_simplified_exprs, diagram_type_dict = diagram_type_dict)
     return cexpr
 
 def show_variable_value(value):
@@ -830,7 +834,7 @@ if __name__ == "__main__":
     cexpr = copy.deepcopy(mk_cexpr(expr))
     print(cexpr)
     print()
-    cexpr.collect_op()
+    cexpr.optimize()
     print(cexpr)
     print()
     print(display_cexpr(cexpr))
@@ -840,6 +844,6 @@ if __name__ == "__main__":
     cexpr = contract_simplify_compile(expr, is_isospin_symmetric_limit = True)
     print(display_cexpr(cexpr))
     print()
-    cexpr.collect_op()
+    cexpr.optimize()
     print(display_cexpr(cexpr))
     print(cexpr_code_gen_py(cexpr))

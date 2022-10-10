@@ -84,11 +84,27 @@ def get_cexpr_meson_bk_bpi_corr():
         return cexpr
     return cache_compiled_cexpr(calc_cexpr, f"cache/auto_contract_cexpr/meson_bk_bpi-cexpr")
 
+@q.timer
+def get_cexpr_meson_corr2():
+    def calc_cexpr():
+        exprs = [
+                mk_pi_p("x_2", True)    * mk_pi_p("x_1")    + "pi     * pi   ",
+                mk_k_p("x_2", True)     * mk_k_p("x_1")     + "k      * k    ",
+                mk_a0_p("x_2", True)    * mk_a0_p("x_1")    + "a0     * a0   ",
+                mk_kappa_p("x_2", True) * mk_kappa_p("x_1") + "kappa  * kappa",
+                ]
+        cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
+        q.displayln_info(display_cexpr(cexpr))
+        cexpr.collect_op()
+        return cexpr
+    return cache_compiled_cexpr(calc_cexpr, f"cache/auto_contract_cexpr/meson_corr2-cexpr")
+
 def get_all_cexpr():
     cexprs = [
             get_cexpr_meson_corr(),
             get_cexpr_meson_f_corr(),
             get_cexpr_meson_bk_bpi_corr(),
+            get_cexpr_meson_corr2(),
             ]
     check_list = []
     for cexpr in cexprs:
