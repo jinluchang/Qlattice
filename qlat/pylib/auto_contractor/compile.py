@@ -813,6 +813,8 @@ def cexpr_code_gen_py(cexpr : CExpr):
         name = name.replace("\n", "  ")
         lines.append(f"        # {name} ")
         s = " + ".join([ show_coef_term(coef, tname) for coef, tname in expr ])
+        if s == "":
+            s = "0"
         lines.append(f"        {s},")
     lines.append(f"")
     lines.append(f"    ])")

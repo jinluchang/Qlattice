@@ -8,6 +8,19 @@ from auto_contractor.eval import *
 import sys
 
 @q.timer
+def get_cexpr_zeros():
+    def calc_cexpr():
+        exprs = [
+                mk_expr(0),
+                mk_k_p("t_2", True)     * mk_k_0("t_1")     + "k+^dag  * k0    ",
+                ]
+        cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
+        q.displayln_info(display_cexpr(cexpr))
+        cexpr.optimize()
+        return cexpr
+    return cache_compiled_cexpr(calc_cexpr, f"cache/auto_contract_cexpr/get_cexpr_zeros")
+
+@q.timer
 def get_cexpr_meson_corr():
     def calc_cexpr():
         exprs = [
@@ -16,9 +29,9 @@ def get_cexpr_meson_corr():
                 ]
         cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
         q.displayln_info(display_cexpr(cexpr))
-        cexpr.collect_op()
+        cexpr.optimize()
         return cexpr
-    return cache_compiled_cexpr(calc_cexpr, f"cache/auto_contract_cexpr/meson_corr-cexpr")
+    return cache_compiled_cexpr(calc_cexpr, f"cache/auto_contract_cexpr/get_cexpr_meson_corr")
 
 @q.timer
 def get_cexpr_meson_f_corr():
@@ -29,9 +42,9 @@ def get_cexpr_meson_f_corr():
                 ]
         cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
         q.displayln_info(display_cexpr(cexpr))
-        cexpr.collect_op()
+        cexpr.optimize()
         return cexpr
-    return cache_compiled_cexpr(calc_cexpr, f"cache/auto_contract_cexpr/meson_f_corr-cexpr")
+    return cache_compiled_cexpr(calc_cexpr, f"cache/auto_contract_cexpr/get_cexpr_meson_f_corr")
 
 def mk_bk_vv_aa(p : str):
     s = 0
@@ -80,9 +93,9 @@ def get_cexpr_meson_bk_bpi_corr():
                 ]
         cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
         q.displayln_info(display_cexpr(cexpr))
-        cexpr.collect_op()
+        cexpr.optimize()
         return cexpr
-    return cache_compiled_cexpr(calc_cexpr, f"cache/auto_contract_cexpr/meson_bk_bpi-cexpr")
+    return cache_compiled_cexpr(calc_cexpr, f"cache/auto_contract_cexpr/get_cexpr_meson_bk_bpi_corr")
 
 @q.timer
 def get_cexpr_meson_corr2():
@@ -95,9 +108,9 @@ def get_cexpr_meson_corr2():
                 ]
         cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
         q.displayln_info(display_cexpr(cexpr))
-        cexpr.collect_op()
+        cexpr.optimize()
         return cexpr
-    return cache_compiled_cexpr(calc_cexpr, f"cache/auto_contract_cexpr/meson_corr2-cexpr")
+    return cache_compiled_cexpr(calc_cexpr, f"cache/auto_contract_cexpr/get_cexpr_meson_corr2")
 
 @q.timer
 def get_cexpr_meson_corr3():
@@ -111,9 +124,9 @@ def get_cexpr_meson_corr3():
                 ]
         cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
         q.displayln_info(display_cexpr(cexpr))
-        cexpr.collect_op()
+        cexpr.optimize()
         return cexpr
-    return cache_compiled_cexpr(calc_cexpr, f"cache/auto_contract_cexpr/meson_corr3-cexpr")
+    return cache_compiled_cexpr(calc_cexpr, f"cache/auto_contract_cexpr/get_cexpr_meson_corr3")
 
 @q.timer
 def get_cexpr_meson_f_corr2():
@@ -127,9 +140,9 @@ def get_cexpr_meson_f_corr2():
                 ]
         cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
         q.displayln_info(display_cexpr(cexpr))
-        cexpr.collect_op()
+        cexpr.optimize()
         return cexpr
-    return cache_compiled_cexpr(calc_cexpr, f"cache/auto_contract_cexpr/meson_f_corr2-cexpr")
+    return cache_compiled_cexpr(calc_cexpr, f"cache/auto_contract_cexpr/get_cexpr_meson_f_corr2")
 
 @q.timer
 def get_cexpr_meson_quark_mass():
@@ -164,9 +177,9 @@ def get_cexpr_meson_quark_mass():
                 ]
         cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
         q.displayln_info(display_cexpr(cexpr))
-        cexpr.collect_op()
+        cexpr.optimize()
         return cexpr
-    return cache_compiled_cexpr(calc_cexpr, f"cache/auto_contract_cexpr/meson_quark_mass-cexpr")
+    return cache_compiled_cexpr(calc_cexpr, f"cache/auto_contract_cexpr/get_cexpr_meson_quark_mass")
 
 @q.timer
 def get_cexpr_meson_jt_zv():
@@ -199,9 +212,9 @@ def get_cexpr_meson_jt_zv():
                 ]
         cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
         q.displayln_info(display_cexpr(cexpr))
-        cexpr.collect_op()
+        cexpr.optimize()
         return cexpr
-    return cache_compiled_cexpr(calc_cexpr, f"cache/auto_contract_cexpr/meson_jt_zv-cexpr")
+    return cache_compiled_cexpr(calc_cexpr, f"cache/auto_contract_cexpr/get_cexpr_meson_jt_zv")
 
 @q.timer
 def get_cexpr_meson_jj_mm():
@@ -237,50 +250,13 @@ def get_cexpr_meson_jj_mm():
                 ]
         cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
         q.displayln_info(display_cexpr(cexpr))
-        cexpr.collect_op()
+        cexpr.optimize()
         return cexpr
-    return cache_compiled_cexpr(calc_cexpr, f"cache/auto_contract_cexpr/meson_jj_mm-cexpr")
-
-@q.timer
-def get_cexpr_meson_jj_mm():
-    def calc_cexpr():
-        exprs = [
-                sum([
-                    mk_pi_0("t_1", True) * mk_j_mu("x_1", mu) * mk_j_mu("x_2", mu) * mk_pi_0("t_2")
-                    for mu in range(4) ])
-                + f"pi0 j_mu j_mu pi0",
-                sum([
-                    sympy.simplify(1)/2 * (
-                        mk_pi_p("t_1", True) * mk_j_mu("x_1", mu) * mk_j_mu("x_2", mu) * mk_pi_p("t_2")
-                        + mk_pi_m("t_1", True) * mk_j_mu("x_1", mu) * mk_j_mu("x_2", mu) * mk_pi_m("t_2"))
-                    for mu in range(4) ])
-                + f"pi+ j_mu j_mu pi+",
-                sum([
-                    sympy.simplify(1)/2 * (
-                        mk_k_0("t_1", True) * mk_j_mu("x_1", mu) * mk_j_mu("x_2", mu) * mk_k_0("t_2")
-                        + mk_k_0_bar("t_1", True) * mk_j_mu("x_1", mu) * mk_j_mu("x_2", mu) * mk_k_0_bar("t_2")
-                        )
-                    for mu in range(4) ])
-                + f"K0 j_mu j_mu K0",
-                sum([
-                    sympy.simplify(1)/2 * (
-                        mk_k_p("t_1", True) * mk_j_mu("x_1", mu) * mk_j_mu("x_2", mu) * mk_k_p("t_2")
-                        + mk_k_m("t_1", True) * mk_j_mu("x_1", mu) * mk_j_mu("x_2", mu) * mk_k_m("t_2"))
-                    for mu in range(4) ])
-                + f"K+ j_mu j_mu K+",
-                sum([
-                    mk_j_mu("x_1", mu) * mk_j_mu("x_2", mu)
-                    for mu in range(4) ])
-                + f"j_mu j_mu",
-                ]
-        cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
-        q.displayln_info(display_cexpr(cexpr))
-        cexpr.collect_op()
-        return cexpr
-    return cache_compiled_cexpr(calc_cexpr, f"cache/auto_contract_cexpr/meson_jj_mm-cexpr")
+    return cache_compiled_cexpr(calc_cexpr, f"cache/auto_contract_cexpr/get_cexpr_meson_jj_mm")
 
 def get_all_cexpr():
     cexprs = [
+            get_cexpr_zeros(),
             get_cexpr_meson_corr(),
             get_cexpr_meson_f_corr(),
             get_cexpr_meson_bk_bpi_corr(),
