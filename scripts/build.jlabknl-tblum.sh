@@ -10,19 +10,9 @@ set -e
 ./scripts/tar.sh
 ./scripts/perl.sh
 ./scripts/openssl.sh
-./scripts/libffi.sh
 ./scripts/zlib.sh
-./scripts/openblas.sh
-./scripts/python.sh
-./scripts/python-pip.sh
-./scripts/ninja.sh
-./scripts/python-meson.sh
-./scripts/python-packages.sh
-
 ./scripts/fftw_mpi.sh
 ./scripts/fftwf_mpi.sh
-./scripts/cuba.sh
-./scripts/eigen.sh
 
 ./scripts/autoconf.sh
 ./scripts/automake.sh
@@ -31,9 +21,25 @@ set -e
 
 export USE_COMPILER="intel"
 
-./scripts/qlat.sh
 ./scripts/grid-tblum.knl.sh
 ./scripts/hadrons-tblum.sh
+
+export USE_COMPILER="gcc"
+
+./scripts/cuba.sh
+./scripts/eigen.sh
+
+./scripts/libffi.sh
+./scripts/openblas.sh
+./scripts/python.sh
+./scripts/python-pip.sh
+./scripts/ninja.sh
+./scripts/python-meson.sh
+./scripts/python-packages.sh
+
+export USE_COMPILER="intel"
+
+./scripts/qlat.sh
 ./scripts/grid.knl.sh
 ./scripts/gpt.sh
 ./scripts/qlat-grid-io.sh
