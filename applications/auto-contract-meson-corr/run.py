@@ -70,7 +70,7 @@ def auto_contract_meson_corr(job_tag, traj, get_prop, get_psel, get_fsel):
                     "x_2" : ("wall", t_snk,),
                     "x_1" : ("wall", t_src,),
                     }
-            values[t] += eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop, is_only_total = "total")
+            values[t] += eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop)
         values = values.transpose() # res[expr_name, t_sep]
         return q.Data([ counts, values, ])
     t_snk_list = get_mpi_chunk(list(range(total_site[3])))
