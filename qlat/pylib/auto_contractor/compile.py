@@ -642,7 +642,7 @@ def cexpr_code_gen_py(cexpr : CExpr):
         elif x.otype == "G":
             assert x.s1 == "auto" and x.s2 == "auto"
             assert x.tag in [0, 1, 2, 3, 5]
-            return f"get_mat(get_gamma_matrix({x.tag}))", "V_G"
+            return f"get_gamma_matrix({x.tag})", "V_G"
         elif x.otype == "Tr":
             if len(x.ops) == 0:
                 assert False
@@ -753,7 +753,7 @@ def cexpr_code_gen_py(cexpr : CExpr):
     lines.append(f"def cexpr_function_eval(props):")
     lines.append(f"")
     lines.append(f"    # load AMA props with proper format")
-    lines.append(f"    props = [ ama_apply1(get_mat, load_prop(p)) for p in props ]")
+    lines.append(f"    props = [ load_prop(p) for p in props ]")
     lines.append(f"")
     lines.append(f"    # apply function to these AMA props")
     lines.append(f"    ama_val = ama_apply(cexpr_function_eval_with_props, *props)")
