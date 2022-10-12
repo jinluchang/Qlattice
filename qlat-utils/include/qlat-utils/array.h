@@ -40,11 +40,15 @@ struct API array<M, 0> {
   {
     (void)k;
     assert(false);
+    static M x;
+    return x;
   };
   qacc const M& operator[](unsigned long k) const
   {
     (void)k;
     assert(false);
+    static M x;
+    return x;
   };
 };
 
