@@ -38,7 +38,7 @@ class Var(Op):
     def __eq__(self, other) -> bool:
         return self.list() == other.list()
 
-###
+### ----
 
 def add_positions(s, x):
     if isinstance(x, Term):
@@ -357,7 +357,7 @@ class CExpr:
         # collect common subexpr into variables
         self.variables_expr = collect_subexpr_in_cexpr(self.named_terms)
 
-###
+### ----
 
 def inc(type_dict, key):
     if key in type_dict:
