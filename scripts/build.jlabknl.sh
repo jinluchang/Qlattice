@@ -26,7 +26,6 @@ set -e
 ./scripts/python-packages.sh
 
 ./scripts/cuba.sh
-./scripts/zlib.sh
 ./scripts/eigen.sh
 
 ./scripts/fftw_mpi.sh

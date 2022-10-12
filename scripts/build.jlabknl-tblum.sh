@@ -6,9 +6,6 @@ set -e
 
 ./scripts/setenv.jlabknl.sh
 
-export CC=gcc
-export CXX=g++
-
 ./scripts/xz.sh
 ./scripts/tar.sh
 ./scripts/perl.sh
@@ -17,25 +14,28 @@ export CXX=g++
 ./scripts/zlib.sh
 ./scripts/openblas.sh
 ./scripts/python.sh
+./scripts/python-pip.sh
+./scripts/ninja.sh
+./scripts/python-meson.sh
 ./scripts/python-packages.sh
 
-./scripts/fftw.sh
-./scripts/fftwf.sh
+./scripts/fftw_mpi.sh
+./scripts/fftwf_mpi.sh
 ./scripts/cuba.sh
-./scripts/zlib.sh
 ./scripts/eigen.sh
+
 ./scripts/autoconf.sh
 ./scripts/automake.sh
 ./scripts/c-lime.sh
 ./scripts/hdf5.sh
 
-export CC=
-export CXX=
+export USE_COMPILER="intel"
 
 ./scripts/qlat.sh
 ./scripts/grid-tblum.knl.sh
 ./scripts/hadrons-tblum.sh
 ./scripts/grid.knl.sh
 ./scripts/gpt.sh
+./scripts/qlat-grid-io.sh
 
 } |& tee $prefix/log.build.txt
