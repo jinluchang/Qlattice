@@ -14,4 +14,32 @@ CHECK: # < k      * k     >  exprs[1]
 CHECK: # < a0     * a0    >  exprs[2]
 CHECK: # < kappa  * kappa >  exprs[3]
 CHECK: 9.5629995890E+01+7.7336474999E+01j 6.1202643816E+01+2.4128827430E+02j 9.2038247141E+01-3.7313023270E+01j
+CHECK: # < pi0(t_1)^dag * pi0(t_2) >  exprs[0]
+CHECK: # < (1/2) * ( K0(t_1)^dag * K0(t_2) + K0b(t_1)^dag * K0b(t_2) ) >  exprs[1]
+CHECK: -6.5014686135E+00+1.0967728396E+01j 1.7318976826E+01+1.5810492682E+01j -7.5714995253E+00-4.6798207710E+00j
+CHECK: # < (a_pi * pi) >  exprs[0]
+CHECK: # < (a_k  * k ) >  exprs[1]
+CHECK: -1.1127911892E+00-1.3924413315E+00j -5.5779975200E+00+5.3223998582E+00j 1.8970901264E+01+1.3273366872E+01j
+CHECK: # < pi0(t_1)^dag * ubaru(x_1) * pi0(t_2) >  exprs[0]
+CHECK: # < pi0(t_1)^dag * dbard(x_1) * pi0(t_2) >  exprs[1]
+CHECK: # < (1/2) * ( pi+(t_1)^dag * ubaru(x_1) * pi+(t_2) + pi-(t_1)^dag * ubaru(x_1) * pi-(t_2) ) >  exprs[2]
+CHECK: # < (1/2) * ( pi+(t_1)^dag * dbard(x_1) * pi+(t_2) + pi-(t_1)^dag * dbard(x_1) * pi-(t_2) ) >  exprs[3]
+CHECK: # < (1/2) * ( K0(t_1)^dag * dbard(x_1) * K0(t_2) + K0b(t_1)^dag * dbard(x_1) * K0b(t_2) ) >  exprs[4]
+CHECK: # < (1/2) * ( K0(t_1)^dag * sbars(x_1) * K0(t_2) + K0b(t_1)^dag * sbars(x_1) * K0b(t_2) ) >  exprs[5]
+CHECK: # < (1/2) * ( K+(t_1)^dag * ubaru(x_1) * K+(t_2) + K-(t_1)^dag * ubaru(x_1) * K-(t_2) ) >  exprs[6]
+CHECK: # < (1/2) * ( K+(t_1)^dag * sbars(x_1) * K+(t_2) + K-(t_1)^dag * sbars(x_1) * K-(t_2) ) >  exprs[7]
+CHECK: -2.8056326036E+02+2.8619253958E+01j 1.5086551494E+02+9.6710364171E+01j 6.2497318444E+02+2.3589237125E+02j
+CHECK: # < (1/2) * ( pi+(t_1)^dag * vec_mu(u,u,x_1,3) * pi+(t_2) + (-1) * pi-(t_1)^dag * vec_mu(u,u,x_1,3) * pi-(t_2) ) >  exprs[0]
+CHECK: # < (1/2) * ( K+(t_1)^dag * vec_mu(u,u,x_1,3) * K+(t_2) + (-1) * K-(t_1)^dag * vec_mu(u,u,x_1,3) * K-(t_2) ) >  exprs[1]
+CHECK: # < (1/2) * ( K-(t_1)^dag * vec_mu(s,s,x_1,3) * K-(t_2) + (-1) * K+(t_1)^dag * vec_mu(s,s,x_1,3) * K+(t_2) ) >  exprs[2]
+CHECK: # < (1/2) * ( pi+(t_1p)^dag * vec_mu(u,u,x_1,3) * pi+(t_2p) + (-1) * pi-(t_1p)^dag * vec_mu(u,u,x_1,3) * pi-(t_2p) ) >  exprs[3]
+CHECK: # < (1/2) * ( K+(t_1p)^dag * vec_mu(u,u,x_1,3) * K+(t_2p) + (-1) * K-(t_1p)^dag * vec_mu(u,u,x_1,3) * K-(t_2p) ) >  exprs[4]
+CHECK: # < (1/2) * ( K-(t_1p)^dag * vec_mu(s,s,x_1,3) * K-(t_2p) + (-1) * K+(t_1p)^dag * vec_mu(s,s,x_1,3) * K+(t_2p) ) >  exprs[5]
+CHECK: 2.3391166792E+01-4.9749837948E+01j 1.2253590324E+02+1.1596333057E+02j 7.4369161375E+01+1.0338839600E+02j
+CHECK: # < pi0 j_mu j_mu pi0 >  exprs[0]
+CHECK: # < pi+ j_mu j_mu pi+ >  exprs[1]
+CHECK: # < K0 j_mu j_mu K0 >  exprs[2]
+CHECK: # < K+ j_mu j_mu K+ >  exprs[3]
+CHECK: # < j_mu j_mu >  exprs[4]
+CHECK: -4.1767126112E+02-4.7272053591E+02j 4.4707516148E+00-1.7109089511E+02j 6.6259588177E+01-9.7719739008E+02j
 CHECK: finished successfully.

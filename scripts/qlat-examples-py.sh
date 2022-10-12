@@ -15,7 +15,10 @@ name=qlat-examples-py
     cd "$build"
 
     rsync -av --delete "$wd"/examples-py "$build"/
+
+    # rm -v examples-py/auto-cexprs.log
     make -C examples-py clean-logs
+
     q_verbose=1 make -C examples-py
 
     cd "$wd"/examples-py
