@@ -120,6 +120,11 @@ class Field_fft:
         field_ft = self.get_field_ft()
         return [[field_ft.get_elem([0,0,0,0],0),field_ft.get_elem([1,0,0,0],0),field_ft.get_elem([0,2,0,0],0),field_ft.get_elem([3,0,0,0],0)],
                 [field_ft.get_elem([0,0,0,0],1),field_ft.get_elem([1,0,0,0],1),field_ft.get_elem([0,2,0,0],1),field_ft.get_elem([3,0,0,0],1)]]
+    
+    def set_polar_field(self, action, field):
+        action.get_polar_field(self.field, field)
+        self.updated = True
+        self.updated_ft = False
 
 class HMC:
     def __init__(self, m_sq, lmbd, alpha, total_site, mult, steps, recalculate_masses, fresh_start):
@@ -195,7 +200,18 @@ class HMC:
         self.mask = q.Field("double",geo,geo.multiplicity())
         self.aux1 = q.Field("double",geo,geo.multiplicity())
         self.aux2 = q.Field("double",geo,geo.multiplicity())
+        self.polar_field = Field_fft(geo,geo.multiplicity())
+        self.pfield_av = q.Field("double",geo,geo.multiplicity())
+        self.pforce_av = q.Field("double",geo,geo.multiplicity())
+        self.pfield_sq_av = q.Field("double",geo,geo.multiplicity())
+        self.pfield_force_cor = q.Field("double",geo,geo.multiplicity())
         self.reset_fit_variables()
+        
+        geo1 = q.Geometry(total_site, 1)
+        self.masses_est_r = q.Field("double",geo1,1)
+        self.masses_est_t1 = q.Field("double",geo1,1)
+        self.masses_est_t2 = q.Field("double",geo1,1)
+        self.masses_est_t3 = q.Field("double",geo1,1)
     
     @q.timer_verbose
     def run_traj(self):
@@ -244,6 +260,21 @@ class HMC:
         self.field_av.multiply_double(self.field_av)
         self.field_av*=1/self.divisor
         self.field_sq_av-=self.field_av
+        # Polar fields ###############
+        #self.pforce_av.multiply_double(self.pfield_av)
+        #self.pforce_av*=1/self.divisor
+        #self.pfield_force_cor-=self.pforce_av
+        #self.pfield_av.multiply_double(self.pfield_av)
+        #self.pfield_av*=1/self.divisor
+        #self.pfield_sq_av-=self.pfield_av
+        # Set the masses
+        #self.masses.set_ratio_double(self.pfield_force_cor,self.pfield_sq_av)
+        # Split and merge fields
+        #q.split_fields([self.masses_est_r,self.masses_est_t1,self.masses_est_t2,self.masses_est_t3],self.masses)
+        #self.masses_est_t1+=self.masses_est_t2
+        #self.masses_est_t1+=self.masses_est_t3
+        #self.masses_est_t1*=1.0/3.0
+        #q.merge_fields(self.masses, [self.masses_est_t1,self.masses_est_t1,self.masses_est_t1,self.masses_est_t1])
         self.masses.set_ratio_double(self.field_force_cor,self.field_sq_av)
         # After multiplying the ratio of force_mod_av/field_mod_av by
         # (pi/2)**(-2), we have our estimated masses
@@ -278,6 +309,10 @@ class HMC:
         self.force_mod_av.set_zero()
         self.field_mod_av.set_zero()
         self.field_force_cor.set_zero()
+        self.pfield_av.set_zero()
+        self.pforce_av.set_zero()
+        self.pfield_sq_av.set_zero()
+        self.pfield_force_cor.set_zero()
         self.divisor = 0
     
     def load_masses(self):
@@ -421,11 +456,13 @@ class HMC:
                 field.hmc_evolve(self.action, momentum, self.masses, 2.0 * lam * dt)
             else:
                 field.hmc_evolve(self.action, momentum, self.masses, lam * dt)
+            self.polar_field.set_polar_field(self.action,field.get_field())
+            pfields.append(self.polar_field.get_representatives_ft())
+            self.polar_field.set_polar_field(self.action,force.get_field())
+            pforces.append(self.polar_field.get_representatives_ft())
             if(self.safe_estimate_masses):
                 self.aux1.set_abs_from_complex(force.get_field_ft())
                 self.force_mod_av+=self.aux1
-                self.aux1.set_abs_from_complex(field.get_field_ft())
-                self.field_mod_av+=self.aux1
                 self.divisor+=1
             if(self.estimate_masses):
                 self.aux1.set_double_from_complex(field.get_field_ft())
@@ -437,6 +474,17 @@ class HMC:
                 self.aux1.multiply_double(self.aux1)
                 self.field_sq_av+=self.aux1
                 self.divisor+=1
+                # Polar fields
+                self.polar_field.set_polar_field(self.action, field.get_field())
+                self.aux1.set_double_from_complex(self.polar_field.get_field_ft())
+                self.pfield_av+=self.aux1
+                self.polar_field.set_polar_field(self.action, force.get_field())
+                self.aux2.set_double_from_complex(self.polar_field.get_field_ft())
+                self.pforce_av+=self.aux2
+                self.aux2.multiply_double(self.aux1)
+                self.pfield_force_cor+=self.aux2
+                self.aux1.multiply_double(self.aux1)
+                self.pfield_sq_av+=self.aux1
     
     @q.timer_verbose
     def sm_evolve(self, field_init, momentum, fg_dt, dt):
@@ -531,7 +579,6 @@ def save_observables():
                     "timeslices": timeslices, 
                     "hm_timeslices": hm_timeslices,
                     "ax_cur_timeslices": ax_cur_timeslices,
-                    "polar_timeslices": polar_timeslices,
                     "phi_sq_dist": phi_sq_dist, 
                     "phi_i_dist": phi_i_dist,
                     "theta_dist": theta_dist, 
@@ -542,6 +589,8 @@ def save_observables():
                     "ax_cur_timeslices_pred": ax_cur_timeslices_pred,
                     "fields": fields,
                     "momentums": momentums,
+                    "pfields": pfields,
+                    "pforces": pforces,
                     "field_pred": fields_pred},output)
 
 def load_observables():
@@ -555,7 +604,6 @@ def load_observables():
             timeslices.extend(data["timeslices"])
             hm_timeslices.extend(data["hm_timeslices"])
             ax_cur_timeslices.extend(data["ax_cur_timeslices"])
-            polar_timeslices.extend(data["polar_timeslices"])
             phi_sq_dist.extend(data["phi_sq_dist"])
             phi_i_dist.extend(data["phi_i_dist"])
             theta_dist.extend(data["theta_dist"])
@@ -566,6 +614,8 @@ def load_observables():
             ax_cur_timeslices_pred.extend(data["ax_cur_timeslices_pred"])
             fields.extend(data["fields"])
             momentums.extend(data["momentums"])
+            pfields.extend(data["pfields"])
+            pforces.extend(data["pforces"])
             fields_pred.extend(data["field_pred"])
 
 @q.timer_verbose
@@ -584,8 +634,6 @@ def main():
     #
     hm_field = Field_fft(hmc.field.geo(),4)
     hm_field_pred = Field_fft(hmc.field.geo(),4)
-    #
-    polar_field = q.Field("double",hmc.field.geo())
     
     for traj in range(1,n_traj+1):
         # Run the HMC algorithm to update the field configuration
@@ -626,9 +674,6 @@ def main():
         hm_field_pred.set_field_ft(hmc.field_predicted.get_field_ft())
         hm_field_pred.remove_low_modes()
         hm_tslices_pred = hm_field_pred.get_field().glb_sum_tslice()
-        #
-        hmc.action.get_polar_field(polar_field, hmc.field.get_field())
-        polar_tslices = polar_field.glb_sum_tslice()
                 
         # Calculate the axial current of the current field configuration
         # and save it in axial_current
@@ -648,7 +693,6 @@ def main():
             ax_cur_timeslices_pred.append(tslices_ax_cur_predicted.to_numpy())
             hm_timeslices.append(hm_tslices.to_numpy())
             hm_timeslices_pred.append(hm_tslices_pred.to_numpy())
-            polar_timeslices.append(polar_tslices.to_numpy())
         if traj>hmc.init_length+hmc.num_blocks*hmc.block_length+hmc.final_block_length:
             field = hmc.field.get_field()
             norm_factor = hmc.V*(n_traj+1-hmc.init_length-hmc.num_blocks*hmc.block_length-hmc.final_block_length)
@@ -687,13 +731,13 @@ hm_timeslices_pred=[]
 # axial currents for each trajectory
 ax_cur_timeslices=[]
 ax_cur_timeslices_pred=[]
-# Stores the timeslice sums of the polar-coordinate fields
-polar_timeslices=[]
 # Save the acceptance rates
 accept_rates=[]
 fields=[]
 forces=[]
 fields_pred=[]
+pfields=[]
+pforces=[]
 momentums=[]
 phi_sq_dist=[0.0]*64
 phi_i_dist=[0.0]*64
@@ -713,14 +757,14 @@ steps = 20
 # Use action for a Euclidean scalar field. The Lagrangian will be:
 # (1/2)*[sum i]|dphi_i|^2 + (1/2)*m_sq*[sum i]|phi_i|^2
 #     + (1/24)*lmbd*([sum i]|phi_i|^2)^2
-m_sq = -8.
+m_sq = -8.0
 lmbd = 32.0
 alpha = 0.1
 
 recalculate_masses = False
 fresh_start = False
 
-version = "1-4"
+version = "1-5"
 
 for i in range(1,len(sys.argv),2):
     try:
