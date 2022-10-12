@@ -106,9 +106,9 @@ size_node_list = [
 
 q.begin(sys.argv, size_node_list)
 
-get_all_cexpr()
-
 q.qremove_all_info("cache")
+
+get_all_cexpr()
 
 q.timer_display()
 

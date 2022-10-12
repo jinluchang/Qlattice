@@ -30,8 +30,8 @@ tests_gpt = gpt-qlat-convert.log \
 run: $(tests) $(tests_gpt) cqlat-example 
 
 %.log: %.py
+	-rm -rfv results output_data cache
 	mpirun --np 2 ./"$<" --mpi 1.1.1.2 --mpi_split 1.1.1.1 --mpi 1.1.2 --mpi_split 1.1.1 | tee "$@".full
-	-rm -rfv results output_data
 	-grep "CHECK: " "$@".full > "$@"
 
 cqlat-example: cqlat-ext.log
@@ -43,6 +43,7 @@ cqlat-ext.log:
 
 clean:
 	-rm -v *.log.full
+	-rm -rfv results output_data cache
 	-make -C cqlat clean
 	-rm -rfv cqlat-ext-build
 

@@ -19,6 +19,7 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+import qlat_utils as q
 import copy
 import sympy
 
@@ -352,14 +353,14 @@ def update_trace_sc(op, s, c):
 
 def pick_trace_op(ops : list, s, c):
     for i, op in enumerate(ops):
-        if not check_trace_op(ops, op):
-            continue
         if op.otype in ["S", "G",]:
             if s is not None and s != op.s1:
                 continue
         if op.otype in ["S",]:
             if c is not None and c != op.c1:
                 continue
+        if not check_trace_op(ops, op):
+            continue
         return i, op
     return None
 
@@ -412,6 +413,12 @@ class Term:
         for op in a_ops:
             assert not op.is_commute()
 
+    def list(self):
+        return [ self.coef, self.c_ops, self.a_ops, ]
+
+    def __eq__(self, other) -> bool:
+        return self.list() == other.list()
+
     def check_commute(self) -> bool:
         for op in self.c_ops:
             assert op.is_commute()
@@ -459,6 +466,9 @@ class Term:
             op.sort()
         self.c_ops.sort(key = repr)
 
+    def simplify_coef(self) -> None:
+        self.coef = sympy.simplify(self.coef)
+
     def collect_traces(self) -> None:
         self.c_ops = collect_traces(self.c_ops)
 
@@ -468,10 +478,11 @@ class Term:
 
 ### ------
 
-def combine_two_terms(t1 : Term, t2 : Term):
-    if t1.c_ops == t2.c_ops and t1.a_ops == t2.a_ops:
+@q.timer
+def combine_two_terms(t1 : Term, t2 : Term, t1_sig : str, t2_sig : str):
+    if t1_sig == t2_sig:
         coef = t1.coef + t2.coef
-        if sympy.simplify(coef) == 0:
+        if coef == 0:
             return Term([], [], 0)
         else:
             return Term(t1.c_ops, t1.a_ops, coef)
@@ -547,13 +558,23 @@ class Expr:
         else:
             return f"Expr({self.terms},{self.description})"
 
+    @q.timer
     def sort(self) -> None:
         for term in self.terms:
             term.sort()
         self.terms.sort(key = repr)
 
+    @q.timer
+    def simplify_term_coefs(self) -> None:
+        for t in self.terms:
+            t.simplify_coef()
+
+    @q.timer
     def combine_terms(self) -> None:
         self.terms = combine_terms_expr(self).terms
+
+    @q.timer
+    def drop_zeros(self) -> None:
         self.terms = drop_zero_terms(self).terms
 
     def round(self, ndigit : int = 20) -> None:
@@ -561,18 +582,21 @@ class Expr:
         sexpr = copy.deepcopy(self)
         for term in sexpr.terms:
             coef = term.coef
-            term.coef = sympy.simplify(term.coef).evalf(ndigit) # complex(round(coef.real, ndigit), round(coef.imag, ndigit))
+            term.coef = term.coef.evalf(ndigit)
         sexpr.terms = drop_zero_terms(sexpr).terms
         return sexpr
 
+    @q.timer
     def collect_traces(self) -> None:
         for term in self.terms:
             term.collect_traces()
 
+    @q.timer
     def isospin_symmetric_limit(self) -> None:
         for term in self.terms:
             term.isospin_symmetric_limit()
 
+    @q.timer
     def simplify(self, *, is_isospin_symmetric_limit : bool = True) -> None:
         # interface function
         if is_isospin_symmetric_limit:
@@ -582,6 +606,8 @@ class Expr:
         self.collect_traces()
         self.sort()
         self.combine_terms()
+        # self.simplify_term_coefs()
+        self.drop_zeros()
 
 ### ------
 
@@ -607,25 +633,43 @@ def mk_expr(x) -> Expr:
         print(x)
         assert False
 
+@q.timer
 def combine_terms_expr(expr : Expr) -> Expr:
     if not expr.terms:
         return expr
+    def get_sig(t):
+        return f"{t.c_ops},{t.a_ops}"
+    zero_term = Term([], [], 0)
+    zero_term_sig = get_sig(zero_term)
+    signatures = [ get_sig(t) for t in expr.terms ]
     terms = []
     term = expr.terms[0]
-    for t in expr.terms[1:]:
-        ct = combine_two_terms(t, term)
-        if ct is None:
-            terms.append(term)
+    term_sig = signatures[0]
+    for t, t_sig in zip(expr.terms[1:], signatures[1:]):
+        if term_sig == zero_term_sig:
             term = t
+            term_sig = t_sig
         else:
-            term = ct
-    terms.append(term)
+            ct = combine_two_terms(t, term, t_sig, term_sig)
+            if ct is None:
+                terms.append(term)
+                term = t
+                term_sig = t_sig
+            elif ct == zero_term:
+                term = zero_term
+                term_sig = zero_term_sig
+            else:
+                assert get_sig(ct) != zero_term_sig
+                term = ct
+    if term_sig != zero_term_sig:
+        terms.append(term)
     return Expr(terms, expr.description)
 
+@q.timer
 def drop_zero_terms(expr : Expr) -> Expr:
     terms = []
     for t in expr.terms:
-        if t.coef != 0.0:
+        if t.coef != 0:
             terms.append(t)
     return Expr(terms, expr.description)
 
@@ -693,28 +737,34 @@ def is_hop(op : Op) -> bool:
         return True
     return False
 
-def has_hops(term : Term) -> bool:
+def has_hops(term : Term, count_limit : int = 0) -> bool:
+    c = 0
     for op in term.a_ops:
         if is_hop(op):
-            return True
+            c += 1
+            if c > count_limit:
+                return True
     return False
 
-def remove_hops(expr : Expr) -> Expr:
+def remove_hops(expr : Expr, count_limit : int = 0) -> Expr:
     terms = []
     for term in expr.terms:
-        if not has_hops(term):
+        if not has_hops(term, count_limit):
             terms.append(term)
     return Expr(terms)
 
 def contract_term(term : Term) -> Expr:
     coef = term.coef
     c_ops = term.c_ops
-    expr = Expr([Term(c_ops, [], coef),])
     a_ops = term.a_ops
-    for op in reversed(a_ops):
+    n_a_ops = len(a_ops)
+    expr = Expr([Term(c_ops, [], coef),])
+    for idx, op in enumerate(reversed(a_ops)):
         expr = op_push_expr(op, expr)
-    return remove_hops(expr)
+        expr = remove_hops(expr, n_a_ops - idx - 1)
+    return expr
 
+@q.timer
 def contract_expr(expr: Expr) -> Expr:
     # interface function
     # does not change expr
