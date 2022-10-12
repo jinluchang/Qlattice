@@ -14,21 +14,6 @@ set -e
 ./scripts/fftw_mpi.sh
 ./scripts/fftwf_mpi.sh
 
-./scripts/autoconf.sh
-./scripts/automake.sh
-./scripts/c-lime.sh
-./scripts/hdf5.sh
-
-export USE_COMPILER="intel"
-
-./scripts/grid-tblum.knl.sh
-./scripts/hadrons-tblum.sh
-
-export USE_COMPILER="gcc"
-
-./scripts/cuba.sh
-./scripts/eigen.sh
-
 ./scripts/libffi.sh
 ./scripts/openblas.sh
 ./scripts/python.sh
@@ -37,9 +22,20 @@ export USE_COMPILER="gcc"
 ./scripts/python-meson.sh
 ./scripts/python-packages.sh
 
+./scripts/autoconf.sh
+./scripts/automake.sh
+./scripts/c-lime.sh
+./scripts/hdf5.sh
+
+./scripts/cuba.sh
+./scripts/eigen.sh
+
 export USE_COMPILER="intel"
 
 ./scripts/qlat.sh
+./scripts/grid-tblum.knl.sh
+./scripts/hadrons-tblum.sh
+
 ./scripts/grid.knl.sh
 ./scripts/gpt.sh
 ./scripts/qlat-grid-io.sh
