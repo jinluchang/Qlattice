@@ -493,7 +493,8 @@ LatData lat_data_from_selected_points_complex(const SelectedPoints<M>& sp)
   LatData ld;
   ld.info.push_back(lat_dim_number("idx", 0, sp.n_points - 1));
   ld.info.push_back(lat_dim_number("m", 0, sp.multiplicity - 1));
-  ld.info.push_back(lat_dim_number("v", 0, sizeof(M) / sizeof(Complex) - 1));
+  qassert(sizeof(M) >= sizeof(Complex));
+  ld.info.push_back(lat_dim_number("v", 0, (long)(sizeof(M) / sizeof(Complex)) - 1));
   ld.info.push_back(lat_dim_re_im());
   lat_data_alloc(ld);
   assign(get_data(ld.res), get_data(sp.points));
