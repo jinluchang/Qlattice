@@ -175,7 +175,7 @@ def mat_mul_a_s(coef, x):
     return sm
 
 def mat_mul_a_sc(coef, x):
-    wm = SpinMatrix()
+    wm = WilsonMatrix()
     c.set_wm_mul_a_wm(wm, coef, x)
     return wm
 

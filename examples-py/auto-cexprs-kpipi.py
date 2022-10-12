@@ -85,15 +85,18 @@ def get_all_cexpr():
             get_cexpr_kpipi(),
             ]
     check_list = []
+    check_ama_list = []
     for cexpr in cexprs:
-        check = benchmark_eval_cexpr(cexpr)
+        check, check_ama = benchmark_eval_cexpr(cexpr)
         check_list.append(check)
-    for cexpr, check in zip(cexprs, check_list):
+        check_ama_list.append(check_ama)
+    for cexpr, check, check_ama in zip(cexprs, check_list, check_ama_list):
         names = get_cexpr_names(cexpr)
         for name in names:
             name_str = name.replace('\n', '  ')
             q.displayln_info(f"CHECK: {name_str}")
         q.displayln_info(f"CHECK: {benchmark_show_check(check)}")
+        q.displayln_info(f"CHECK: {benchmark_show_check(check_ama)}")
 
 size_node_list = [
         [1, 1, 1, 1],

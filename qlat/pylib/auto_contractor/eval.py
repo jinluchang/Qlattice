@@ -243,7 +243,9 @@ def benchmark_eval_cexpr(cexpr : CExpr, *, is_only_total = "total", benchmark_si
     prop_dict = {}
     for pos_src in range(n_pos):
         for pos_snk in range(n_pos):
-            prop_dict[(pos_snk, pos_src,)] = make_rand_spin_color_matrix(benchmark_rng_state.split(f"prop {pos_snk} {pos_src}"))
+            prop = make_rand_spin_color_matrix(benchmark_rng_state.split(f"prop {pos_snk} {pos_src}"))
+            prop_ama = make_rand_spin_color_matrix(benchmark_rng_state.split(f"prop ama {pos_snk} {pos_src}"))
+            prop_dict[(pos_snk, pos_src,)] = mk_ama_val(prop, pos_src, [ prop, prop_ama, ], [ 0, 1, ], [ 1.0, 0.5, ])
     def mk_pos_dict(k):
         positions_dict = {}
         idx_list = q.random_permute(list(range(n_pos)), benchmark_rng_state.split(f"pos_dict {k}"))
@@ -251,14 +253,27 @@ def benchmark_eval_cexpr(cexpr : CExpr, *, is_only_total = "total", benchmark_si
             positions_dict[pos] = idx
         return positions_dict
     positions_dict_list = [ mk_pos_dict(k) for k in range(benchmark_size) ]
+    #
     @q.timer
     def get_prop(flavor, pos_snk, pos_src):
-        return prop_dict[(pos_snk, pos_src)]
+        return ama_extract(prop_dict[(pos_snk, pos_src)], is_sloppy = True)
     @q.timer_verbose
     def benchmark_eval_cexpr_run():
         res_list = []
         for k in range(benchmark_size):
             res = eval_cexpr(cexpr, positions_dict = positions_dict_list[k], get_prop = get_prop, is_only_total = is_only_total)
+            res_list.append(res)
+        res = np.array(res_list)
+        assert res.shape == (benchmark_size, n_expr,)
+        return res
+    @q.timer
+    def get_prop_ama(flavor, pos_snk, pos_src):
+        return prop_dict[(pos_snk, pos_src)]
+    @q.timer_verbose
+    def benchmark_eval_cexpr_run_with_ama():
+        res_list = []
+        for k in range(benchmark_size):
+            res = eval_cexpr(cexpr, positions_dict = positions_dict_list[k], get_prop = get_prop_ama, is_only_total = is_only_total)
             res_list.append(res)
         res = np.array(res_list)
         assert res.shape == (benchmark_size, n_expr,)
@@ -274,18 +289,25 @@ def benchmark_eval_cexpr(cexpr : CExpr, *, is_only_total = "total", benchmark_si
         return [ np.tensordot(res, cv).item() for cv in check_vector_list ]
     q.displayln_info(f"benchmark_eval_cexpr: benchmark_size={benchmark_size} is_only_total={is_only_total}")
     check = None
+    check_ama = None
     q.timer_fork(0)
     for i in range(benchmark_num):
         res = benchmark_eval_cexpr_run()
         new_check = check_res(res)
+        res_ama = benchmark_eval_cexpr_run_with_ama()
+        new_check_ama = check_res(res_ama)
         if check is None:
             check = new_check
         else:
             assert check == new_check
+        if check_ama is None:
+            check_ama = new_check_ama
+        else:
+            assert check_ama == new_check_ama
     q.timer_display()
     q.timer_merge()
-    q.displayln_info(f"benchmark_eval_cexpr: {benchmark_show_check(check)}")
-    return check
+    q.displayln_info(f"benchmark_eval_cexpr: {benchmark_show_check(check)} {benchmark_show_check(check_ama)}")
+    return check, check_ama
 
 def sqr_component(x):
     return x.real * x.real + 1j * x.imag * x.imag
