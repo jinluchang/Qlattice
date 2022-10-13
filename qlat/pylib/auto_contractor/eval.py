@@ -82,6 +82,7 @@ def cache_compiled_cexpr(calc_cexpr, fn_base):
         q.sync_node()
     module = importlib.import_module(fn_base.replace("/", "."))
     cexpr.function = {
+            # cexpr_function(positions_dict, get_prop) => val as 1-D np.array
             "cexpr_function" : module.cexpr_function,
             # cexpr_function_get_prop(positions_dict, get_prop) => props
             "cexpr_function_get_prop" : module.cexpr_function_get_prop,
