@@ -53,6 +53,10 @@ if [ -z "$NPY_BLAS_ORDER" ] ; then
     export NPY_BLAS_ORDER=openblas
 fi
 
+if [ -z "$NPY_NUM_BUILD_JOBS" ] ; then
+    export NPY_NUM_BUILD_JOBS=$num_proc
+fi
+
 add-to-colon-list () {
     local name="$1"
     local new_value="$2"
@@ -119,7 +123,7 @@ organize-colon-list PKG_CONFIG_PATH
 
 echo
 for v in \
-    PATH PYTHONPATH NPY_BLAS_ORDER \
+    PATH PYTHONPATH NPY_BLAS_ORDER NPY_NUM_BUILD_JOBS \
     LD_PRELOAD LD_RUN_PATH LD_LIBRARY_PATH LIBRARY_PATH C_INCLUDE_PATH CPLUS_INCLUDE_PATH PKG_CONFIG_PATH \
     CC CXX CFLAGS CXXFLAGS LDFLAGS LIBS MPICC MPICXX \
     QLAT_PREFIX QLAT_CXX QLAT_MPICXX QLAT_CXXFLAGS QLAT_LDFLAGS QLAT_LIBS \
