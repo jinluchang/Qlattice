@@ -18,7 +18,7 @@ tests = qcd-utils-tests \
 all: run
 
 compile:
-	for i in $(tests) ; do make -C "$$i" compile & done ; time wait
+	-for i in $(tests) ; do make -C "$$i" compile & done ; time wait
 
 run: compile
 	-time for i in $(tests) ; do make -C "$$i" run ; done
