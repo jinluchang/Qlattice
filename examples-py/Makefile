@@ -2,7 +2,9 @@ SHELL=/bin/bash
 
 all: run
 
-tests = make-sample-gauge-field.log \
+tests = auto-cexprs.log \
+		auto-cexprs-kpipi.log \
+		make-sample-gauge-field.log \
 		qar.log \
 		lat-io.log \
 		field-utils.log \
@@ -13,9 +15,7 @@ tests = make-sample-gauge-field.log \
 		selected-field.log \
 		fields-io.log \
 		free-invert.log \
-		qlat-id-node.log \
-		auto-cexprs.log \
-		auto-cexprs-kpipi.log
+		qlat-id-node.log
 
 tests_gpt = gpt-qlat-convert.log \
 			gpt-qlat-smear.log \

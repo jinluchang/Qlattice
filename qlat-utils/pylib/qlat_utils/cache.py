@@ -1,5 +1,7 @@
 from qlat_utils.timer import *
 
+import cqlat_utils as cu
+
 # Usage:
 # cache_x = q.mk_cache("xx")
 # q.clean_cache(cache_x)
@@ -73,3 +75,11 @@ def rm_cache(*keys, ca = cache):
         return
     assert isinstance(ca[key], Cache)
     ca.pop(key)
+
+def get_all_caches_info():
+    return cu.get_all_caches_info()
+
+def clear_all_caches():
+    # clean python level cache and then C++ level cache
+    clean_cache()
+    cu.clear_all_caches()

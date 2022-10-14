@@ -74,7 +74,7 @@ def auto_contract_meson_corr(job_tag, traj, get_prop, get_psel, get_fsel):
         values = values.transpose() # res[expr_name, t_sep]
         return q.Data([ counts, values, ])
     t_snk_list = get_mpi_chunk(list(range(total_site[3])))
-    res_count, res_sum = q.glb_sum(q.parallel_map_sum(q.get_q_mp_proc(), feval, t_snk_list, sum_start = fempty())).get_val()
+    res_count, res_sum = q.glb_sum(q.parallel_map_sum(feval, t_snk_list, sum_start = fempty())).get_val()
     res_count *= 1.0 / total_site[3]
     res_sum *= 1.0 / total_site[3]
     assert q.qnorm(res_count - 1.0) < 1e-10

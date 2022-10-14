@@ -27,15 +27,7 @@ def show_memory_usage():
     import psutil
     rss = psutil.Process().memory_info().rss / (1024 * 1024 * 1024)
     displayln_info(f"show_memory_usage: rss = {rss:.6f} GB")
-    malloc_stats_info()
-
-def get_all_caches_info():
-    return cu.get_all_caches_info()
-
-def clear_all_caches():
-    # clean python level cache and then C++ level cache
-    clean_cache()
-    cu.clear_all_caches()
+    # malloc_stats_info()
 
 def malloc_stats():
     return cu.malloc_stats()

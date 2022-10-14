@@ -83,7 +83,7 @@ def auto_contract_vev(job_tag, traj, get_prop, get_psel, get_fsel):
         return q.Data([ 1, res, ])
     q.timer_fork(0)
     res_count, res_sum = q.glb_sum(
-            q.parallel_map_sum(q.get_q_mp_proc(), feval, xg_fsel_list, chunksize = 16)).get_val()
+            q.parallel_map_sum(feval, xg_fsel_list, chunksize = 16)).get_val()
     q.displayln_info("timer_display for auto_contract_vev")
     q.timer_display()
     q.timer_merge()
@@ -131,7 +131,7 @@ def auto_contract_meson_f_corr(job_tag, traj, get_prop, get_psel, get_fsel):
             res = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop, is_only_total = "total")
             l.append(res)
         return np.array(l).transpose()
-    res_sum = q.glb_sum(q.parallel_map_sum(q.get_q_mp_proc(), feval, xg_fsel_list))
+    res_sum = q.glb_sum(q.parallel_map_sum(feval, xg_fsel_list))
     res_count = q.glb_sum(len(xg_fsel_list))
     res_avg = res_sum / res_count
     ld = q.mk_lat_data([
@@ -188,7 +188,7 @@ def auto_contract_hvp(job_tag, traj, get_prop, get_psel, get_fsel):
         counts = counts # counts[tsep]
         values = values.transpose() # values[expr_idx, tsep]
         return q.Data([ counts, values, ])
-    res_count, res_sum = q.glb_sum(q.parallel_map_sum(q.get_q_mp_proc(), feval, xg_psel_list)).get_val()
+    res_count, res_sum = q.glb_sum(q.parallel_map_sum(feval, xg_psel_list)).get_val()
     res_avg = res_sum * (vol / res_count)
     ld = q.mk_lat_data([
         [ "expr_name", len(expr_names), expr_names, ],
@@ -232,7 +232,7 @@ def auto_contract_hvp_field(job_tag, traj, get_prop, get_psel, get_fsel):
             shift = [ -x for x in xg_src ]
             values_shifted = values.field_shift(shift)
             return values_shifted
-        values_shifted = q.parallel_map_sum(q.get_q_mp_proc(), feval, xg_fsel_list,
+        values_shifted = q.parallel_map_sum(feval, xg_fsel_list,
                 sum_function = sum_function, sum_start = q.SelectedField("Complex", fsel, len(expr_names)))
         field += values_shifted
     # scale the value appropriately
@@ -322,7 +322,8 @@ def auto_contract_meson_v_v_meson_field(job_tag, traj, get_prop, get_psel, get_f
             shift = [ -x for x in xg_src ]
             values_shifted = values.field_shift(shift)
             return values_shifted
-        values_shifted = q.parallel_map_sum(q.get_q_mp_proc(), feval, xg_fsel_list, sum_function = sum_function, sum_start = q.SelectedField("Complex", fsel, len(expr_names)))
+        values_shifted = q.parallel_map_sum(feval, xg_fsel_list,
+                sum_function = sum_function, sum_start = q.SelectedField("Complex", fsel, len(expr_names)))
         field += values_shifted
     field_r = q.Field("Complex", geo, len(expr_names))
     field_r.set_zero()
@@ -354,7 +355,8 @@ def auto_contract_meson_v_v_meson_field(job_tag, traj, get_prop, get_psel, get_f
             shift = [ -x for x in xg_src ]
             values_shifted = values.field_shift(shift)
             return values_shifted
-        values_shifted = q.parallel_map_sum(q.get_q_mp_proc(), feval, xg_fsel_list, sum_function = sum_function, sum_start = q.SelectedField("Complex", fsel, len(expr_names)))
+        values_shifted = q.parallel_map_sum(feval, xg_fsel_list,
+                sum_function = sum_function, sum_start = q.SelectedField("Complex", fsel, len(expr_names)))
         field_r += values_shifted
     field_r.reflect()
     field += field_r
@@ -414,7 +416,7 @@ def auto_contract_meson_corr(job_tag, traj, get_prop, get_psel, get_fsel):
         values = values.transpose() # res[expr_name, t_sep]
         return q.Data([ counts, values, ])
     t_snk_list = get_mpi_chunk(list(range(total_site[3])))
-    res_count, res_sum = q.glb_sum(q.parallel_map_sum(q.get_q_mp_proc(), feval, t_snk_list, sum_start = fempty())).get_val()
+    res_count, res_sum = q.glb_sum(q.parallel_map_sum(feval, t_snk_list, sum_start = fempty())).get_val()
     res_count *= 1.0 / total_site[3]
     res_sum *= 1.0 / total_site[3]
     assert q.qnorm(res_count - 1.0) < 1e-10
@@ -451,7 +453,7 @@ def auto_contract_meson_corr_psnk(job_tag, traj, get_prop, get_psel, get_fsel):
         res = res.transpose() # res[expr_name, t_sep]
         return res
     res_count = q.glb_sum(len(xg_fsel_list))
-    res_sum = q.glb_sum(q.parallel_map_sum(q.get_q_mp_proc(), feval, xg_fsel_list))
+    res_sum = q.glb_sum(q.parallel_map_sum(feval, xg_fsel_list))
     res_count *= 1.0 / (total_volume * fsel.prob())
     res_sum *= 1.0 / (total_volume * fsel.prob())
     assert q.qnorm(res_count - 1.0) < 1e-10
@@ -496,7 +498,7 @@ def auto_contract_meson_corr_psrc(job_tag, traj, get_prop, get_psel, get_fsel):
         values = values.transpose() # values[expr_name, t_sep]
         return q.Data([ counts, values, ])
     xg_src_list = get_mpi_chunk(xg_psel_list, rng_state = q.RngState("get_mpi_chunk"))
-    res_count, res_sum = q.glb_sum(q.parallel_map_sum(q.get_q_mp_proc(), feval, xg_src_list, sum_start = fempty())).get_val()
+    res_count, res_sum = q.glb_sum(q.parallel_map_sum(feval, xg_src_list, sum_start = fempty())).get_val()
     res_count *= 1.0 / len(xg_psel_list)
     res_sum *= 1.0 / len(xg_psel_list)
     assert q.qnorm(res_count - 1.0) < 1e-10
@@ -536,7 +538,7 @@ def auto_contract_meson_corr_psnk_psrc(job_tag, traj, get_prop, get_psel, get_fs
             values[t] += eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop, is_only_total = "total")
         values = values.transpose() # values[expr_name, t_sep]
         return q.Data([ counts, values, ])
-    res_count, res_sum = q.glb_sum(q.parallel_map_sum(q.get_q_mp_proc(), feval, xg_psel_list)).get_val()
+    res_count, res_sum = q.glb_sum(q.parallel_map_sum(feval, xg_psel_list)).get_val()
     res_count *= 1.0 / (len(xg_psel_list) * total_volume * fsel.prob() / total_site[3])
     res_sum *= 1.0 / (len(xg_psel_list) * total_volume * fsel.prob() / total_site[3])
     assert q.qnorm(res_count - 1.0) < 1e-10

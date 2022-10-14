@@ -23,6 +23,8 @@ from auto_contractor.wick import *
 
 from itertools import permutations
 
+import qlat as q
+
 class Var(Op):
 
     def __init__(self, name : str):
@@ -338,9 +340,11 @@ class CExpr:
     def __repr__(self) -> str:
         return f"CExpr({self.diagram_types},{self.variables_prop},{self.variables_expr},{self.named_terms},{self.named_typed_exprs},{self.named_exprs},{self.positions})"
 
+    @q.timer
     def optimize(self):
         self.collect_op()
 
+    @q.timer
     def collect_op(self):
         # Performing common sub-expression elimination
         # Should be called after contract_simplify_compile(*exprs) or mk_cexpr(*exprs)
@@ -510,19 +514,18 @@ def mk_cexpr(*exprs, diagram_type_dict = None):
     cexpr = CExpr(diagram_types, [], [], named_terms, named_typed_exprs, named_exprs)
     return cexpr
 
+@q.timer
 def contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True, diagram_type_dict = None):
     # e.g. exprs = [ Qb("u", "x", s, c) * Qv("u", "x", s, c) + "u_bar*u", Qb("s", "x", s, c) * Qv("s", "x", s, c) + "s_bar*s", Qb("c", "x", s, c) * Qv("c", "x", s, c) + "c_bar*c", ]
     # e.g. exprs = [ mk_pi_p("x2", True) * mk_pi_p("x1") + "(pi   * pi)", mk_j5pi_mu("x2", 3) * mk_pi_p("x1") + "(a_pi * pi)", mk_k_p("x2", True)  * mk_k_p("x1")  + "(k    * k )", mk_j5k_mu("x2", 3)  * mk_k_p("x1")  + "(a_k  * k )", ]
     # After this function, call cexpr.optimize() to perform CSE
     # interface function
-    if diagram_type_dict is None:
-        diagram_type_dict = dict()
-    contracted_simplified_exprs = []
-    for i in range(len(exprs)):
-        expr = copy.deepcopy(exprs[i])
+    def func(expr):
+        expr = copy.deepcopy(expr)
         expr = contract_expr(expr)
         expr.simplify(is_isospin_symmetric_limit = is_isospin_symmetric_limit)
-        contracted_simplified_exprs.append(expr)
+        return expr
+    contracted_simplified_exprs = q.parallel_map(func, exprs)
     cexpr = mk_cexpr(*contracted_simplified_exprs, diagram_type_dict = diagram_type_dict)
     return cexpr
 

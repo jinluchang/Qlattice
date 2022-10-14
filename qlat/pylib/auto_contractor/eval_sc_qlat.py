@@ -49,9 +49,6 @@ def g5_herm(x):
 
 ###
 
-def get_mat(x):
-    return x
-
 gamma_matrix_list = [
         # gamma_x
         as_mspin(

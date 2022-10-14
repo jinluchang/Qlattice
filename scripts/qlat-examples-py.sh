@@ -18,7 +18,7 @@ name=qlat-examples-py
 
     make -C examples-py clean-logs
 
-    q_verbose=1 make -C examples-py
+    q_verbose=1 make -C examples-py || true
 
     cd "$wd"/examples-py
 

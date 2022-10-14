@@ -30,3 +30,5 @@ from qlat_utils.qplot import \
         plot_save, plot_view, \
         gnuplot_png_density, \
         display_img
+
+from qlat_utils.parallel import *

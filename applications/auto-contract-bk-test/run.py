@@ -146,7 +146,7 @@ def auto_contract_meson_corr(job_tag, traj, get_prop, get_psel, get_fsel):
         return counts, values
     q.timer_fork(0)
     res_count, res_sum = q.glb_sum(
-            q.parallel_map_sum(q.get_q_mp_proc(), feval, load_data(), sum_function = sum_function, chunksize = 16))
+            q.parallel_map_sum(feval, load_data(), sum_function = sum_function, chunksize = 16))
     q.displayln_info("timer_display for auto_contract_meson_corr")
     q.timer_display()
     q.timer_merge()
@@ -201,7 +201,7 @@ def auto_contract_meson_f_corr(job_tag, traj, get_prop, get_psel, get_fsel):
         return counts, values
     q.timer_fork(0)
     res_count, res_sum = q.glb_sum(
-            q.parallel_map_sum(q.get_q_mp_proc(), feval, load_data(), sum_function = sum_function, chunksize = 16))
+            q.parallel_map_sum(feval, load_data(), sum_function = sum_function, chunksize = 16))
     q.displayln_info("timer_display for auto_contract_meson_f_corr")
     q.timer_display()
     q.timer_merge()
@@ -261,7 +261,7 @@ def auto_contract_meson_bk_bpi_corr(job_tag, traj, get_prop, get_psel, get_fsel)
         return counts, values
     q.timer_fork(0)
     res_count, res_sum = q.glb_sum(
-            q.parallel_map_sum(q.get_q_mp_proc(), feval, load_data(), sum_function = sum_function, chunksize = 16))
+            q.parallel_map_sum(feval, load_data(), sum_function = sum_function, chunksize = 16))
     q.displayln_info("timer_display for auto_contract_meson_bk_bpi_corr")
     q.timer_display()
     q.timer_merge()
