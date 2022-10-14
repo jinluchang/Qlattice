@@ -19,7 +19,10 @@
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-from auto_contractor.wick import *
+try:
+    from .wick import *
+except:
+    from wick import *
 
 from itertools import permutations
 
@@ -318,6 +321,10 @@ class CExpr:
     # self.positions
     # self.function
 
+    # self.named_terms[i] = (term_name, term,)
+    # self.named_typed_exprs[i] = (typed_expr_name, [ (ea_coef, term_name,), ... ],)
+    # self.named_exprs[i] = (expr_name, [ (ea_coef, term_name,), ... ],)
+
     # self.positions == sorted(list(self.positions))
 
     def __init__(self, diagram_types, variables_prop, variables_expr, named_terms, named_typed_exprs, named_exprs, positions = None):
@@ -342,20 +349,21 @@ class CExpr:
 
     @q.timer
     def optimize(self):
+        # interface function
         self.collect_op()
 
     @q.timer
     def collect_op(self):
+        # interface function
         # Performing common sub-expression elimination
         # Should be called after contract_simplify_compile(*exprs) or mk_cexpr(*exprs)
         # The cexpr cannot be evaluated before collect_op!!!
-        # interface function
         # eval term factor
         for name, term in self.named_terms:
-            eval_term_factor(term)
+            assert term.coef == 1
         for name, expr in self.named_typed_exprs + self.named_exprs:
-            for i in range(len(expr)):
-                expr[i] = (complex(expr[i][0]), expr[i][1],)
+            for i, (ea_coef, term_name,) in enumerate(expr):
+                expr[i] = (ea.simplified(ea_coef), term_name,)
         # collect prop expr into variables
         self.variables_prop = collect_op_in_cexpr(self.named_terms)
         # collect common subexpr into variables
@@ -442,9 +450,6 @@ def get_term_diagram_type_info(term):
             min_type_info = type_info
             min_type_info_repr = type_info_repr
     return min_type_info
-
-def eval_term_factor(term):
-    term.coef = complex(term.coef)
 
 def mk_cexpr(*exprs, diagram_type_dict = None):
     # exprs already finished wick contraction,
@@ -637,8 +642,8 @@ def cexpr_code_gen_py(cexpr : CExpr):
     def gen_expr(x):
         nonlocal total_sloppy_flops
         # return code_str, type_str
-        if isinstance(x, (int, float, complex)):
-            return f"{x}", "V_a"
+        if isinstance(x, (int, float, complex, ea.Expr)):
+            return f"{ea.compile_py(x)}", "V_a"
         assert isinstance(x, Op)
         if x.otype == "S":
             return f"get_prop('{x.f}', {x.p1}, {x.p2})", "V_S"
@@ -815,7 +820,8 @@ def cexpr_code_gen_py(cexpr : CExpr):
     lines.append(f"    # set exprs for return")
     lines.append(f"    results = np.array([")
     def show_coef_term(coef, tname):
-        if coef == 1:
+        coef = ea.compile_py(coef)
+        if coef == "1":
             return f"{tname}"
         else:
             return f"{coef} * {tname}"

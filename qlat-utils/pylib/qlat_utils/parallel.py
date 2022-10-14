@@ -32,7 +32,7 @@ def get_q_num_mp_processes():
         v = os.getenv("OMP_NUM_THREADS")
     if v is None:
         v = 2
-    displayln_info(f"q_num_mp_processes='{v}'")
+    displayln_info(0, f"q_num_mp_processes='{v}'")
     return int(v)
 
 q_num_mp_processes = get_q_num_mp_processes()
@@ -41,7 +41,7 @@ def get_q_is_verbose_parallel_map():
     v = os.getenv("q_is_verbose_parallel_map")
     if v is None:
         v = True
-    displayln_info(f"q_is_verbose_parallel_map='{v}'")
+    displayln_info(0, f"q_is_verbose_parallel_map='{v}'")
     return bool(v)
 
 q_is_verbose_parallel_map = get_q_is_verbose_parallel_map()

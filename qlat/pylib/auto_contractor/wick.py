@@ -23,6 +23,11 @@ import qlat_utils as q
 import copy
 import sympy
 
+try:
+    from . import expr_arithmetic as ea
+except:
+    import expr_arithmetic as ea
+
 class Op:
 
     # self.otype
@@ -478,7 +483,6 @@ class Term:
 
 ### ------
 
-@q.timer
 def combine_two_terms(t1 : Term, t2 : Term, t1_sig : str, t2_sig : str):
     if t1_sig == t2_sig:
         coef = t1.coef + t2.coef
@@ -556,7 +560,7 @@ class Expr:
         if self.description is None:
             return f"Expr({self.terms})"
         else:
-            return f"Expr({self.terms},{self.description})"
+            return f"Expr({self.terms},{self.description!r})"
 
     @q.timer
     def sort(self) -> None:
@@ -565,7 +569,7 @@ class Expr:
         self.terms.sort(key = repr)
 
     @q.timer
-    def simplify_term_coefs(self) -> None:
+    def simplify_coef(self) -> None:
         for t in self.terms:
             t.simplify_coef()
 
@@ -606,7 +610,7 @@ class Expr:
         self.collect_traces()
         self.sort()
         self.combine_terms()
-        # self.simplify_term_coefs()
+        # self.simplify_coef()
         self.drop_zeros()
 
 ### ------
@@ -627,7 +631,7 @@ def mk_expr(x) -> Expr:
         return Expr([x,], f"x.show()")
     elif isinstance(x, Expr):
         return x
-    elif isinstance(x, int) or isinstance(x, float) or isinstance(x, complex) or isinstance(x, sympy.Basic):
+    elif isinstance(x, (int, float, complex, sympy.Basic, ea.Expr)):
         return Expr([Term([], [], x),], f"({x})")
     else:
         print(x)
@@ -646,7 +650,7 @@ def combine_terms_expr(expr : Expr) -> Expr:
     term = expr.terms[0]
     term_sig = signatures[0]
     for t, t_sig in zip(expr.terms[1:], signatures[1:]):
-        if term_sig == zero_term_sig:
+        if term.coef == 0:
             term = t
             term_sig = t_sig
         else:
@@ -655,13 +659,12 @@ def combine_terms_expr(expr : Expr) -> Expr:
                 terms.append(term)
                 term = t
                 term_sig = t_sig
-            elif ct == zero_term:
+            elif ct.coef == 0:
                 term = zero_term
                 term_sig = zero_term_sig
             else:
-                assert get_sig(ct) != zero_term_sig
                 term = ct
-    if term_sig != zero_term_sig:
+    if term.coef != 0:
         terms.append(term)
     return Expr(terms, expr.description)
 
