@@ -23,6 +23,8 @@ from auto_contractor.compile import *
 from auto_contractor.ama import *
 from auto_contractor.eval_sc_qlat import *
 
+from qlat_utils import rel_mod, rel_mod_sym, c_rel_mod_sqr
+
 import numpy as np
 import qlat as q
 import copy

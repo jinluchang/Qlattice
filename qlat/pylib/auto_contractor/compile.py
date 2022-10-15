@@ -658,7 +658,7 @@ class CExprCodeGenPy:
 
     def code_gen(self):
         lines = self.lines
-        lines.append(f"from auto_contractor.eval import *")
+        lines.append(f"from auto_contractor.runtime import *")
         self.sep()
         self.cexpr_function()
         self.sep()
