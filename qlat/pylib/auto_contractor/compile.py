@@ -326,7 +326,7 @@ class CExpr:
     # self.positions
     # self.function
 
-    # self.named_terms[i] = (term_name, term,)
+    # self.named_terms[i] = (term_name, Term(c_ops, [], 1),)
     # self.named_typed_exprs[i] = (typed_expr_name, [ (ea_coef, term_name,), ... ],)
     # self.named_exprs[i] = (expr_name, [ (ea_coef, term_name,), ... ],)
     # self.positions == sorted(list(self.positions))
@@ -366,6 +366,7 @@ class CExpr:
         # eval term factor
         for name, term in self.named_terms:
             assert term.coef == 1
+            assert term.a_ops == []
         for name, expr in self.named_typed_exprs + self.named_exprs:
             for i, (ea_coef, term_name,) in enumerate(expr):
                 expr[i] = (ea.simplified(ea_coef), term_name,)

@@ -310,25 +310,21 @@ def get_cexpr_meson_jj_xx():
 
 def get_all_cexpr():
     cexprs = [
-            get_cexpr_zeros(),
-            get_cexpr_meson_corr(),
-            get_cexpr_meson_f_corr(),
-            get_cexpr_meson_bk_bpi_corr(),
-            get_cexpr_meson_corr2(),
-            get_cexpr_meson_corr3(),
-            get_cexpr_meson_f_corr2(),
-            get_cexpr_meson_quark_mass(),
-            get_cexpr_meson_jt_zv(),
-            get_cexpr_meson_jj_mm(),
-            get_cexpr_meson_jj_xx(),
+            lambda : get_cexpr_zeros(),
+            lambda : get_cexpr_meson_corr(),
+            lambda : get_cexpr_meson_f_corr(),
+            lambda : get_cexpr_meson_bk_bpi_corr(),
+            lambda : get_cexpr_meson_corr2(),
+            lambda : get_cexpr_meson_corr3(),
+            lambda : get_cexpr_meson_f_corr2(),
+            lambda : get_cexpr_meson_quark_mass(),
+            lambda : get_cexpr_meson_jt_zv(),
+            lambda : get_cexpr_meson_jj_mm(),
+            lambda : get_cexpr_meson_jj_xx(),
             ]
-    check_list = []
-    check_ama_list = []
     for cexpr in cexprs:
+        cexpr = cexpr()
         check, check_ama = benchmark_eval_cexpr(cexpr)
-        check_list.append(check)
-        check_ama_list.append(check_ama)
-    for cexpr, check, check_ama in zip(cexprs, check_list, check_ama_list):
         names = get_cexpr_names(cexpr)
         for name in names:
             name_str = name.replace('\n', '  ')
