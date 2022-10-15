@@ -51,9 +51,9 @@ def eval_cexpr_get_props(cexpr : CExpr, *, positions_dict, get_prop):
     assert cexpr.function is not None
     return cexpr.function["cexpr_function_get_prop"](positions_dict, get_prop)
 
-def eval_cexpr_eval(cexpr : CExpr, *, props):
+def eval_cexpr_eval(cexpr : CExpr, *, positions_dict, props):
     assert cexpr.function is not None
-    return cexpr.function["cexpr_function_eval"](props)
+    return cexpr.function["cexpr_function_eval"](positions_dict, props)
 
 def eval_cexpr(cexpr : CExpr, *, positions_dict, get_prop):
     # return 1 dimensional np.array
@@ -87,7 +87,7 @@ def cache_compiled_cexpr(calc_cexpr, fn_base):
             "cexpr_function" : module.cexpr_function,
             # cexpr_function_get_prop(positions_dict, get_prop) => props
             "cexpr_function_get_prop" : module.cexpr_function_get_prop,
-            # cexpr_function_eval(props) => val as 1-D np.array
+            # cexpr_function_eval(positions_dict, props) => val as 1-D np.array
             "cexpr_function_eval" : module.cexpr_function_eval,
             }
     cexpr.total_sloppy_flops = module.total_sloppy_flops

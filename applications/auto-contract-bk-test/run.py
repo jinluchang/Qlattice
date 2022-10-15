@@ -134,8 +134,7 @@ def auto_contract_meson_corr(job_tag, traj, get_prop, get_psel, get_fsel):
     @q.timer
     def feval(args):
         pd, t = args
-        props = eval_cexpr_get_props(cexpr, positions_dict = pd, get_prop = get_prop)
-        val = eval_cexpr_eval(cexpr, props = props)
+        val = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop)
         return val, t
     def sum_function(val_list):
         counts = np.zeros(total_site[3], dtype = complex)
@@ -189,8 +188,7 @@ def auto_contract_meson_f_corr(job_tag, traj, get_prop, get_psel, get_fsel):
     @q.timer
     def feval(args):
         pd, t = args
-        props = eval_cexpr_get_props(cexpr, positions_dict = pd, get_prop = get_prop)
-        val = eval_cexpr_eval(cexpr, props = props)
+        val = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop)
         return val, t
     def sum_function(val_list):
         counts = np.zeros(total_site[3], dtype = complex)
@@ -249,8 +247,7 @@ def auto_contract_meson_bk_bpi_corr(job_tag, traj, get_prop, get_psel, get_fsel)
     @q.timer
     def feval(args):
         pd, tt_idx, t = args
-        props = eval_cexpr_get_props(cexpr, positions_dict = pd, get_prop = get_prop)
-        val = eval_cexpr_eval(cexpr, props = props)
+        val = eval_cexpr(cexpr, positions_dict = pd, get_prop = get_prop)
         return val, tt_idx, t
     def sum_function(val_list):
         counts = np.zeros((len(tsep_list), total_site[3],), dtype = complex)

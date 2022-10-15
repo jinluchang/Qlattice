@@ -318,6 +318,7 @@ class CExpr:
 
     # self.diagram_types
     # self.variables_prop
+    # self.variables_factor
     # self.variables_expr
     # self.named_terms
     # self.named_typed_exprs
@@ -330,8 +331,9 @@ class CExpr:
     # self.named_exprs[i] = (expr_name, [ (ea_coef, term_name,), ... ],)
     # self.positions == sorted(list(self.positions))
 
-    def __init__(self, diagram_types, variables_prop, variables_expr, named_terms, named_typed_exprs, named_exprs, positions = None):
+    def __init__(self, diagram_types, variables_prop, variables_factor, variables_expr, named_terms, named_typed_exprs, named_exprs, positions = None):
         self.diagram_types = diagram_types
+        self.variables_factor = variables_factor
         self.variables_prop = variables_prop
         self.variables_expr = variables_expr
         self.named_terms = named_terms
@@ -348,7 +350,7 @@ class CExpr:
         self.function = None
 
     def __repr__(self) -> str:
-        return f"CExpr({self.diagram_types},{self.variables_prop},{self.variables_expr},{self.named_terms},{self.named_typed_exprs},{self.named_exprs},{self.positions})"
+        return f"CExpr({self.diagram_types},{self.variables_prop},{self.variables_factor},{self.variables_expr},{self.named_terms},{self.named_typed_exprs},{self.named_exprs},{self.positions})"
 
     @q.timer
     def optimize(self):
@@ -519,7 +521,7 @@ def mk_cexpr(*exprs, diagram_type_dict = None):
             if typed_expr_list:
                 named_typed_exprs.append((f"# {descriptions[i]}\ntyped_exprs[{i}]['{diagram_type_name}']", typed_expr_list,))
         named_exprs.append((f"# {descriptions[i]}\nexprs[{i}]", expr_list,))
-    cexpr = CExpr(diagram_types, [], [], named_terms, named_typed_exprs, named_exprs)
+    cexpr = CExpr(diagram_types, [], [], [], named_terms, named_typed_exprs, named_exprs)
     return cexpr
 
 @q.timer
@@ -559,6 +561,8 @@ def show_variable_value(value):
             return "*".join(map(show_variable_value, [ f"({value.coef})", ] + value.c_ops + value.a_ops))
     elif isinstance(value, tuple) and len(value) == 2 and isinstance(value[1], str):
         return f"({value[0]})*{value[1]}"
+    elif isinstance(value, ea.Factor):
+        return f"({value.code})"
     else:
         return f"{value}"
 
@@ -574,6 +578,10 @@ def display_cexpr_raw(cexpr : CExpr):
     if cexpr.variables_prop:
         lines.append(f"Variables prop:")
     for name, value in cexpr.variables_prop:
+        lines.append(f"{name:>20} : {value}")
+    if cexpr.variables_factor:
+        lines.append(f"Variables factor:")
+    for name, value in cexpr.variables_factor:
         lines.append(f"{name:>20} : {value}")
     if cexpr.variables_expr:
         lines.append(f"Variables expr:")
@@ -604,6 +612,10 @@ def display_cexpr(cexpr : CExpr):
     if cexpr.variables_prop:
         lines.append(f"Variables prop:")
     for name, value in cexpr.variables_prop:
+        lines.append(f"{name:>20} = {show_variable_value(value)}")
+    if cexpr.variables_factor:
+        lines.append(f"Variables factor:")
+    for name, value in cexpr.variables_factor:
         lines.append(f"{name:>20} = {show_variable_value(value)}")
     if cexpr.variables_expr:
         lines.append(f"Variables expr:")
@@ -644,6 +656,7 @@ class CExprCodeGenPy:
 
     # self.cexpr
     # self.lines
+    # self.indent
     # self.total_sloppy_flops
 
     # flops per complex multiplication: 6
@@ -652,9 +665,10 @@ class CExprCodeGenPy:
     # flops per trace2 6 M N + 2 (M N - 1) ==> 1150
 
     def __init__(self, cexpr):
-        self.total_sloppy_flops = 0
         self.cexpr = cexpr
         self.lines = []
+        self.indent = 0
+        self.total_sloppy_flops = 0
 
     def code_gen(self):
         lines = self.lines
@@ -755,31 +769,41 @@ class CExprCodeGenPy:
             assert len(x_list) > 1
             return self.gen_expr_prod(self.gen_expr_prod_list(x_list[:-1]), self.gen_expr(x_list[-1]))
 
-    def sep(self):
+    def append(self, line):
         lines = self.lines
-        lines.append(f"")
-        lines.append(f"### ----")
-        lines.append(f"")
+        if line == "":
+            lines.append("")
+        else:
+            lines.append(self.indent * ' ' + line)
+
+    def sep(self):
+        append = self.append
+        append(f"")
+        append(f"### ----")
+        append(f"")
 
     def cexpr_function(self):
-        lines = self.lines
-        lines.append(f"@timer")
-        lines.append(f"def cexpr_function(*, positions_dict, get_prop):")
-        lines.append(f"    # get_props")
-        lines.append(f"    props = cexpr_function_get_prop(positions_dict, get_prop)")
-        lines.append(f"    # eval")
-        lines.append(f"    val = cexpr_function_eval(props)")
-        lines.append(f"    return val")
+        append = self.append
+        append(f"@timer")
+        append(f"def cexpr_function(*, positions_dict, get_prop):")
+        self.indent += 4
+        append(f"# get_props")
+        append(f"props = cexpr_function_get_prop(positions_dict, get_prop)")
+        append(f"# eval")
+        append(f"val = cexpr_function_eval(positions_dict, props)")
+        append(f"return val")
+        self.indent -= 4
 
     def cexpr_function_get_prop(self):
-        lines = self.lines
+        append = self.append
         cexpr = self.cexpr
-        lines.append(f"@timer")
-        lines.append(f"def cexpr_function_get_prop(positions_dict, get_prop):")
-        lines.append(f"    # set positions")
+        append(f"@timer")
+        append(f"def cexpr_function_get_prop(positions_dict, get_prop):")
+        self.indent += 4
+        append(f"# set positions")
         for position_var in cexpr.positions:
-            lines.append(f"    {position_var} = positions_dict['{position_var}']")
-        lines.append(f"    # get_props")
+            append(f"{position_var} = positions_dict['{position_var}']")
+        append(f"# get_props")
         for name, value in cexpr.variables_prop:
             assert name.startswith("V_S_")
             x = value
@@ -787,53 +811,66 @@ class CExprCodeGenPy:
             assert x.otype == "S"
             c, t = self.gen_expr(x)
             assert t == "V_S"
-            lines.append(f"    {name} = {c}")
-        lines.append(f"    return [")
+            append(f"{name} = {c}")
+        append(f"props = [")
+        self.indent += 4
         for name, value in cexpr.variables_prop:
-            lines.append(f"        {name},")
-        lines.append(f"        ]")
+            append(f"{name},")
+        append(f"]")
+        self.indent -= 4
+        append(f"return props")
+        self.indent -= 4
 
     def cexpr_function_eval(self):
-        lines = self.lines
+        append = self.append
         cexpr = self.cexpr
-        lines.append(f"@timer")
-        lines.append(f"def cexpr_function_eval(props):")
-        lines.append(f"    # load AMA props with proper format")
-        lines.append(f"    props = [ load_prop(p) for p in props ]")
-        lines.append(f"    # apply function to these AMA props")
-        lines.append(f"    ama_val = ama_apply(cexpr_function_eval_with_props, *props)")
-        lines.append(f"    # set flops")
-        lines.append(f"    acc_timer_flops('py:cexpr_function_eval', ama_counts(ama_val) * total_sloppy_flops)")
-        lines.append(f"    # extract AMA val")
-        lines.append(f"    val = ama_extract(ama_val)")
-        lines.append(f"    return val")
+        append(f"@timer")
+        append(f"def cexpr_function_eval(positions_dict, props):")
+        self.indent += 4
+        append(f"# load AMA props with proper format")
+        append(f"props = [ load_prop(p) for p in props ]")
+        append(f"# apply function to these AMA props")
+        append(f"ama_val = ama_apply(cexpr_function_eval_with_props, positions_dict, *props)")
+        append(f"# set flops")
+        append(f"acc_timer_flops('py:cexpr_function_eval', ama_counts(ama_val) * total_sloppy_flops)")
+        append(f"# extract AMA val")
+        append(f"val = ama_extract(ama_val)")
+        append(f"return val")
+        self.indent -= 4
 
     def cexpr_function_eval_with_props(self):
-        lines = self.lines
+        append = self.append
         cexpr = self.cexpr
-        lines.append(f"@timer")
-        lines.append(f"def cexpr_function_eval_with_props(")
+        append(f"@timer")
+        append(f"def cexpr_function_eval_with_props(")
+        self.indent += 8
+        append("positions_dict,")
         for name, value in cexpr.variables_prop:
-            lines.append(f"        {name},")
-        lines.append(f"        ):")
-        lines.append(f"    # set flops")
-        lines.append(f"    acc_timer_flops('py:cexpr_function_eval_with_props', total_sloppy_flops)")
-        lines.append(f"    # compute products and traces")
+            append(f"{name},")
+        append(f"):")
+        self.indent -= 8
+        self.indent += 4
+        append(f"# set flops")
+        append(f"acc_timer_flops('py:cexpr_function_eval_with_props', total_sloppy_flops)")
+        append(f"# set positions")
+        for position_var in cexpr.positions:
+            append(f"{position_var} = positions_dict['{position_var}']")
+        append(f"# compute products and traces")
         for name, value in cexpr.variables_expr:
             if name.startswith("V_prod_"):
                 x = value
                 assert isinstance(x, list)
                 c, t = self.gen_expr_prod_list(x)
                 assert t == get_var_name_type(name)
-                lines.append(f"    {name} = {c}")
+                append(f"{name} = {c}")
             elif name.startswith("V_tr_"):
                 x = value
                 assert isinstance(x, Op)
                 assert x.otype == "Tr"
                 c, t = self.gen_expr(x)
                 assert t == "V_Tr"
-                lines.append(f"    {name} = {c}")
-        lines.append(f"    # set terms")
+                append(f"{name} = {c}")
+        append(f"# set terms")
         for name, term in cexpr.named_terms:
             x = term
             if x.coef == 1:
@@ -841,9 +878,10 @@ class CExprCodeGenPy:
             else:
                 c_ops = [ x.coef, ] + x.c_ops
             c, t = self.gen_expr_prod_list(c_ops)
-            lines.append(f"    {name} = {c}")
-        lines.append(f"    # set exprs for return")
-        lines.append(f"    results = array([")
+            append(f"{name} = {c}")
+        append(f"# set exprs for return")
+        append(f"results = array([")
+        self.indent += 4
         def show_coef_term(coef, tname):
             coef = ea.compile_py(coef)
             if coef == "1":
@@ -851,21 +889,21 @@ class CExprCodeGenPy:
             else:
                 return f"{coef} * {tname}"
         for name, expr in cexpr.named_exprs:
-            lines.append(f"")
             name = name.replace("\n", "  ")
-            lines.append(f"        # {name} ")
+            append(f"# {name} ")
             s = " + ".join([ show_coef_term(coef, tname) for coef, tname in expr ])
             if s == "":
                 s = "0"
-            lines.append(f"        {s},")
-        lines.append(f"")
-        lines.append(f"    ])")
-        lines.append(f"    return results")
+            append(f"{s},")
+        append(f"])")
+        self.indent -= 4
+        append(f"return results")
+        self.indent -= 4
 
     def total_flops(self):
-        lines = self.lines
-        lines.append(f"# Total flops per sloppy call is: {self.total_sloppy_flops}")
-        lines.append(f"total_sloppy_flops = {self.total_sloppy_flops}")
+        append = self.append
+        append(f"# Total flops per sloppy call is: {self.total_sloppy_flops}")
+        append(f"total_sloppy_flops = {self.total_sloppy_flops}")
 
 #### ----
 

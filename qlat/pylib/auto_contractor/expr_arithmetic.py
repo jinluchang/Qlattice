@@ -27,12 +27,11 @@ class Factor:
 
     # self.code
 
-    def __init__(self, params, code):
-        self.params = params
+    def __init__(self, code):
         self.code = code
 
     def __repr__(self) -> str:
-        return f"ea.Factor({self.params},{self.code})"
+        return f"ea.Factor({self.code})"
 
     def compile_py(self) -> str:
         return f"{self.code}"
@@ -151,6 +150,9 @@ def mk_expr(x):
         return Expr([ Term([ x, ]), ])
     elif isinstance(x, (int, float, complex, sympy.Basic,)):
         return Expr([ Term([], x,), ])
+    elif isinstance(x, str):
+        # str viewed as code segment
+        return Expr([ Term([ Factor(x), ]), ])
     else:
         print(x)
         assert False
@@ -209,8 +211,8 @@ def combine_terms_expr(expr : Expr) -> Expr:
 if __name__ == "__main__":
     a = mk_expr(1)
     b = mk_expr(2)
-    c = mk_expr(Factor([ "a", "b", ], "a + b"))
-    d = mk_expr(Factor([ "a", "b", ], "a + b"))
+    c = mk_expr(Factor("a + b"))
+    d = mk_expr(Factor("a + b"))
     c = c * b + c + d * d
     print(c)
     c.simplify()
