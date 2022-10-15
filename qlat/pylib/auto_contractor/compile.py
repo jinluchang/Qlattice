@@ -45,29 +45,6 @@ class Var(Op):
 
 ### ----
 
-def add_positions(s, x):
-    if isinstance(x, Term):
-        for op in x.c_ops:
-            add_positions(s, op)
-        for op in x.a_ops:
-            add_positions(s, op)
-    elif isinstance(x, Op):
-        if x.otype == "S":
-            s.update([x.p1, x.p2])
-        elif x.otype == "Tr":
-            for op in x.ops:
-                add_positions(s, op)
-        elif x.otype == "Qfield":
-            s.add(x.p)
-    elif isinstance(x, Expr):
-        for t in x.terms:
-            add_positions(s, t)
-
-def get_positions(term):
-    s = set()
-    add_positions(s, term)
-    return sorted(list(s))
-
 def get_var_name_type(x):
     # types include: V_S (wilson matrix), V_G (spin matrix), V_Tr (AMA c-number), V_a (c-number)
     if x.startswith("V_S_"):
@@ -101,6 +78,36 @@ def get_op_type(x):
     else:
         assert False
     return None
+
+def add_positions(s, x):
+    if isinstance(x, Term):
+        for op in x.c_ops:
+            add_positions(s, op)
+        for op in x.a_ops:
+            add_positions(s, op)
+    elif isinstance(x, Op):
+        if x.otype == "S":
+            s.update([x.p1, x.p2])
+        elif x.otype == "Tr":
+            for op in x.ops:
+                add_positions(s, op)
+        elif x.otype == "Qfield":
+            s.add(x.p)
+    elif isinstance(x, Expr):
+        for t in x.terms:
+            add_positions(s, t)
+
+def get_positions(term):
+    s = set()
+    add_positions(s, term)
+    return sorted(list(s))
+
+def collect_position_in_cexpr(named_terms):
+    s = set()
+    for name, term in named_terms:
+        add_positions(s, term)
+    positions = sorted(list(s))
+    return positions
 
 def collect_prop_in_cexpr(named_terms):
     # collect the propagators
@@ -142,12 +149,12 @@ def collect_prop_in_cexpr(named_terms):
 
 def collect_tr_in_cexpr(named_terms):
     # collect common traces
-    # modify named_terms in-place and return definitions as variables_trs
-    # variables_trs = [ (name, value,), ... ]
+    # modify named_terms in-place and return definitions as variables_tr
+    # variables_tr = [ (name, value,), ... ]
     # possible (name, value,) includes
     # ("V_tr_0", op,) where op.otype == "Tr"
     var_nameset = set()
-    variables_trs = []
+    variables_tr = []
     var_counter_tr = 0
     var_dataset_tr = {} # var_dataset[op_repr] = op_var
     def add_tr_varibles(x):
@@ -170,7 +177,7 @@ def collect_tr_in_cexpr(named_terms):
                             name = f"V_tr_{var_counter_tr}"
                             if name not in var_nameset:
                                 break
-                        variables_trs.append((name, op,))
+                        variables_tr.append((name, op,))
                         var = Var(name)
                         x[i] = var
                         var_dataset_tr[op_repr] = var
@@ -178,9 +185,9 @@ def collect_tr_in_cexpr(named_terms):
     for name, term in named_terms:
         add_tr_varibles(term)
         term.sort()
-    return variables_trs
+    return variables_tr
 
-def find_common_subexpr_in_tr(variables_trs):
+def find_common_subexpr_in_tr(variables_tr):
     # return None or [ op, op1, ]
     subexpr_count = {}
     def add(x, count_added):
@@ -220,7 +227,7 @@ def find_common_subexpr_in_tr(variables_trs):
         elif isinstance(x, Expr):
             for t in x.terms:
                 find(t)
-    for name, tr in variables_trs:
+    for name, tr in variables_tr:
         find(tr)
     max_num_repeat = 1
     best_match = None
@@ -230,7 +237,7 @@ def find_common_subexpr_in_tr(variables_trs):
             best_match = op
     return best_match
 
-def collect_common_subexpr_in_tr(variables_trs, op_common, var):
+def collect_common_subexpr_in_tr(variables_tr, op_common, var):
     op_repr = repr(op_common)
     def replace(x):
         if x is None:
@@ -275,13 +282,13 @@ def collect_common_subexpr_in_tr(variables_trs, op_common, var):
             return x
         else:
             assert False
-    for name, tr in variables_trs:
+    for name, tr in variables_tr:
         replace(tr)
         remove_none(tr)
 
-def collect_subexpr_in_cexpr(variables_trs):
+def collect_subexpr_in_cexpr(variables_tr):
     # collect common sub-expressions
-    # modify variables_trs in-place and return definitions as variables_prod
+    # modify variables_tr in-place and return definitions as variables_prod
     # variables_prod = [ (name, value,), ... ]
     # possible (name, value,) includes
     # ("V_prod_SG_0", [ op, op1, ],) where get_op_type(op) in [ "V_S", "S", ] and get_op_type(op1) in [ "V_G", "G", ]
@@ -293,7 +300,7 @@ def collect_subexpr_in_cexpr(variables_trs):
     var_counter_dict["V_prod_SS_"] = 0
     variables_prod = []
     while True:
-        subexpr = find_common_subexpr_in_tr(variables_trs)
+        subexpr = find_common_subexpr_in_tr(variables_tr)
         if subexpr is None:
             break
         [ op, op1, ] = subexpr
@@ -318,46 +325,38 @@ def collect_subexpr_in_cexpr(variables_trs):
                 break
         variables_prod.append((name, subexpr,))
         var = Var(name)
-        collect_common_subexpr_in_tr(variables_trs, subexpr, var)
+        collect_common_subexpr_in_tr(variables_tr, subexpr, var)
     return variables_prod
 
 class CExpr:
 
     # self.diagram_types
+    # self.positions
     # self.variables_prop
     # self.variables_factor
-    # self.variables_expr
+    # self.variables_prod
+    # self.variables_tr
     # self.named_terms
     # self.named_typed_exprs
     # self.named_exprs
-    # self.positions
     # self.function
-
+    #
     # self.named_terms[i] = (term_name, Term(c_ops, [], 1),)
     # self.named_typed_exprs[i] = (typed_expr_name, [ (ea_coef, term_name,), ... ],)
     # self.named_exprs[i] = (expr_name, [ (ea_coef, term_name,), ... ],)
     # self.positions == sorted(list(self.positions))
 
-    def __init__(self, diagram_types, variables_prop, variables_factor, variables_expr, named_terms, named_typed_exprs, named_exprs, positions = None):
-        self.diagram_types = diagram_types
-        self.variables_factor = variables_factor
-        self.variables_prop = variables_prop
-        self.variables_expr = variables_expr
-        self.named_terms = named_terms
-        # typed_expr and expr are a collection of term names representing the sum of these terms
-        self.named_typed_exprs = named_typed_exprs
-        self.named_exprs = named_exprs
-        if positions is not None:
-            self.positions = sorted(list(positions))
-        else:
-            s = set()
-            for name, term in named_terms:
-                add_positions(s, term)
-            self.positions = sorted(list(s))
+    def __init__(self):
+        self.diagram_types = []
+        self.positions = []
+        self.variables_factor = []
+        self.variables_prop = []
+        self.variables_prod = []
+        self.variables_tr = []
+        self.named_terms = []
+        self.named_typed_exprs = []
+        self.named_exprs = []
         self.function = None
-
-    def __repr__(self) -> str:
-        return f"CExpr({self.diagram_types},{self.variables_prop},{self.variables_factor},{self.variables_expr},{self.named_terms},{self.named_typed_exprs},{self.named_exprs},{self.positions})"
 
     @q.timer
     def optimize(self):
@@ -380,9 +379,9 @@ class CExpr:
         # collect prop expr into variables
         self.variables_prop = collect_prop_in_cexpr(self.named_terms)
         # collect trace expr into variables
-        self.variables_expr = collect_tr_in_cexpr(self.named_terms)
-        # collect common subexpr into variables
-        self.variables_expr = collect_subexpr_in_cexpr(self.variables_expr) + self.variables_expr
+        self.variables_tr = collect_tr_in_cexpr(self.named_terms)
+        # collect common prod into variables
+        self.variables_prod = collect_subexpr_in_cexpr(self.variables_tr)
 
 ### ----
 
@@ -531,7 +530,15 @@ def mk_cexpr(*exprs, diagram_type_dict = None):
             if typed_expr_list:
                 named_typed_exprs.append((f"# {descriptions[i]}\ntyped_exprs[{i}]['{diagram_type_name}']", typed_expr_list,))
         named_exprs.append((f"# {descriptions[i]}\nexprs[{i}]", expr_list,))
-    cexpr = CExpr(diagram_types, [], [], [], named_terms, named_typed_exprs, named_exprs)
+    # positions
+    positions = collect_position_in_cexpr(named_terms)
+    # cexpr
+    cexpr = CExpr()
+    cexpr.diagram_types = diagram_types
+    cexpr.positions = positions
+    cexpr.named_terms = named_terms
+    cexpr.named_typed_exprs = named_typed_exprs
+    cexpr.named_exprs = named_exprs
     return cexpr
 
 @q.timer
@@ -581,10 +588,12 @@ def display_cexpr_raw(cexpr : CExpr):
     # interface function
     lines = []
     lines.append(f"Begin CExpr")
-    lines.append(f"diagram_type_dict = dict()")
-    for name, diagram_type in cexpr.diagram_types:
-        lines.append(f"diagram_type_dict[{diagram_type}] = \"{name}\"")
-    lines.append(f"Positions: {cexpr.positions}")
+    if cexpr.diagram_types:
+        lines.append(f"diagram_type_dict = dict()")
+        for name, diagram_type in cexpr.diagram_types:
+            lines.append(f"diagram_type_dict[{diagram_type}] = {name!r}")
+    if cexpr.positions:
+        lines.append(f"Positions: {cexpr.positions}")
     if cexpr.variables_prop:
         lines.append(f"Variables prop:")
     for name, value in cexpr.variables_prop:
@@ -593,9 +602,13 @@ def display_cexpr_raw(cexpr : CExpr):
         lines.append(f"Variables factor:")
     for name, value in cexpr.variables_factor:
         lines.append(f"{name:>20} : {value}")
-    if cexpr.variables_expr:
-        lines.append(f"Variables expr:")
-    for name, value in cexpr.variables_expr:
+    if cexpr.variables_prod:
+        lines.append(f"Variables prod:")
+    for name, value in cexpr.variables_prod:
+        lines.append(f"{name:>20} : {value}")
+    if cexpr.variables_tr:
+        lines.append(f"Variables tr:")
+    for name, value in cexpr.variables_tr:
         lines.append(f"{name:>20} : {value}")
     lines.append(f"Named terms:")
     for name, term in cexpr.named_terms:
@@ -614,11 +627,13 @@ def display_cexpr(cexpr : CExpr):
     # interface function
     lines = []
     lines.append(f"Begin CExpr")
-    lines.append(f"diagram_type_dict = dict()")
-    for name, diagram_type in cexpr.diagram_types:
-        lines.append(f"diagram_type_dict[{diagram_type}] = {repr(name)}")
-    position_vars = ", ".join(cexpr.positions)
-    lines.append(f"Positions:\n{position_vars} = {cexpr.positions}")
+    if cexpr.diagram_types:
+        lines.append(f"diagram_type_dict = dict()")
+        for name, diagram_type in cexpr.diagram_types:
+            lines.append(f"diagram_type_dict[{diagram_type}] = {name!r}")
+    if cexpr.positions:
+        position_vars = ", ".join(cexpr.positions)
+        lines.append(f"Positions:\n{position_vars} = {cexpr.positions}")
     if cexpr.variables_prop:
         lines.append(f"Variables prop:")
     for name, value in cexpr.variables_prop:
@@ -627,9 +642,13 @@ def display_cexpr(cexpr : CExpr):
         lines.append(f"Variables factor:")
     for name, value in cexpr.variables_factor:
         lines.append(f"{name:>20} = {show_variable_value(value)}")
-    if cexpr.variables_expr:
+    if cexpr.variables_prod:
         lines.append(f"Variables expr:")
-    for name, value in cexpr.variables_expr:
+    for name, value in cexpr.variables_prod:
+        lines.append(f"{name:>20} = {show_variable_value(value)}")
+    if cexpr.variables_tr:
+        lines.append(f"Variables tr:")
+    for name, value in cexpr.variables_tr:
         lines.append(f"{name:>20} = {show_variable_value(value)}")
     lines.append(f"terms = [")
     for name, term in cexpr.named_terms:
@@ -866,21 +885,23 @@ class CExprCodeGenPy:
         append(f"size = positions_dict.get('size')")
         for position_var in cexpr.positions:
             append(f"{position_var}_type, {position_var} = positions_dict['{position_var}']")
-        append(f"# compute products and traces")
-        for name, value in cexpr.variables_expr:
-            if name.startswith("V_prod_"):
-                x = value
-                assert isinstance(x, list)
-                c, t = self.gen_expr_prod_list(x)
-                assert t == get_var_name_type(name)
-                append(f"{name} = {c}")
-            elif name.startswith("V_tr_"):
-                x = value
-                assert isinstance(x, Op)
-                assert x.otype == "Tr"
-                c, t = self.gen_expr(x)
-                assert t == "V_Tr"
-                append(f"{name} = {c}")
+        append(f"# compute products")
+        for name, value in cexpr.variables_prod:
+            assert name.startswith("V_prod_")
+            x = value
+            assert isinstance(x, list)
+            c, t = self.gen_expr_prod_list(x)
+            assert t == get_var_name_type(name)
+            append(f"{name} = {c}")
+        append(f"# compute traces")
+        for name, value in cexpr.variables_tr:
+            assert name.startswith("V_tr_")
+            x = value
+            assert isinstance(x, Op)
+            assert x.otype == "Tr"
+            c, t = self.gen_expr(x)
+            assert t == "V_Tr"
+            append(f"{name} = {c}")
         append(f"# set terms")
         for name, term in cexpr.named_terms:
             x = term
@@ -908,6 +929,7 @@ class CExprCodeGenPy:
             append(f"{s},")
         append(f"])")
         self.indent -= 4
+        append(f"# return")
         append(f"return results")
         self.indent -= 4
 
