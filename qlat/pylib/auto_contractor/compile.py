@@ -140,6 +140,46 @@ def collect_prop_in_cexpr(named_terms):
         term.sort()
     return variables_prop
 
+def collect_tr_in_cexpr(named_terms):
+    # collect common traces
+    # modify named_terms in-place and return definitions as variables_trs
+    # variables_trs = [ (name, value,), ... ]
+    # possible (name, value,) includes
+    # ("V_tr_0", op,) where op.otype == "Tr"
+    var_nameset = set()
+    variables_trs = []
+    var_counter_tr = 0
+    var_dataset_tr = {} # var_dataset[op_repr] = op_var
+    def add_tr_varibles(x):
+        nonlocal var_counter_tr
+        if isinstance(x, Term):
+            add_tr_varibles(x.c_ops)
+        elif isinstance(x, Op) and x.otype == "Tr":
+            add_tr_varibles(x.ops)
+        elif isinstance(x, list):
+            for op in x:
+                add_tr_varibles(op)
+            for i, op in enumerate(x):
+                if isinstance(op, Op) and op.otype == "Tr":
+                    op_repr = repr(op)
+                    if op_repr in var_dataset_tr:
+                        x[i] = var_dataset_tr[op_repr]
+                    else:
+                        while True:
+                            var_counter_tr += 1
+                            name = f"V_tr_{var_counter_tr}"
+                            if name not in var_nameset:
+                                break
+                        variables_trs.append((name, op,))
+                        var = Var(name)
+                        x[i] = var
+                        var_dataset_tr[op_repr] = var
+                        var_nameset.add(name)
+    for name, term in named_terms:
+        add_tr_varibles(term)
+        term.sort()
+    return variables_trs
+
 def find_common_subexpr_in_tr(variables_trs):
     # return None or [ op, op1, ]
     subexpr_count = {}
@@ -239,45 +279,13 @@ def collect_common_subexpr_in_tr(variables_trs, op_common, var):
         replace(tr)
         remove_none(tr)
 
-def collect_subexpr_in_cexpr(named_terms):
-    # collect common sub-expressions and traces
-    # modify named_terms in-place and return definitions as variables_expr
-    # variables_expr = [ (name, value,), ... ]
+def collect_subexpr_in_cexpr(variables_trs):
+    # collect common sub-expressions
+    # modify variables_trs in-place and return definitions as variables_prod
+    # variables_prod = [ (name, value,), ... ]
     # possible (name, value,) includes
     # ("V_prod_SG_0", [ op, op1, ],) where get_op_type(op) in [ "V_S", "S", ] and get_op_type(op1) in [ "V_G", "G", ]
-    # ("V_tr_0", op,) where op.otype == "Tr"
     var_nameset = set()
-    variables_trs = []
-    var_counter_tr = 0
-    var_dataset_tr = {} # var_dataset[op_repr] = op_var
-    def add_tr_varibles(x):
-        nonlocal var_counter_tr
-        if isinstance(x, Term):
-            add_tr_varibles(x.c_ops)
-        elif isinstance(x, Op) and x.otype == "Tr":
-            add_tr_varibles(x.ops)
-        elif isinstance(x, list):
-            for op in x:
-                add_tr_varibles(op)
-            for i, op in enumerate(x):
-                if isinstance(op, Op) and op.otype == "Tr":
-                    op_repr = repr(op)
-                    if op_repr in var_dataset_tr:
-                        x[i] = var_dataset_tr[op_repr]
-                    else:
-                        while True:
-                            var_counter_tr += 1
-                            name = f"V_tr_{var_counter_tr}"
-                            if name not in var_nameset:
-                                break
-                        variables_trs.append((name, op,))
-                        var = Var(name)
-                        x[i] = var
-                        var_dataset_tr[op_repr] = var
-                        var_nameset.add(name)
-    for name, term in named_terms:
-        add_tr_varibles(term)
-        term.sort()
     var_counter_dict = {}
     var_counter_dict["V_prod_GG_"] = 0
     var_counter_dict["V_prod_GS_"] = 0
@@ -311,8 +319,7 @@ def collect_subexpr_in_cexpr(named_terms):
         variables_prod.append((name, subexpr,))
         var = Var(name)
         collect_common_subexpr_in_tr(variables_trs, subexpr, var)
-    variables_expr = variables_prod + variables_trs
-    return variables_expr
+    return variables_prod
 
 class CExpr:
 
@@ -372,8 +379,10 @@ class CExpr:
                 expr[i] = (ea.simplified(ea_coef), term_name,)
         # collect prop expr into variables
         self.variables_prop = collect_prop_in_cexpr(self.named_terms)
+        # collect trace expr into variables
+        self.variables_expr = collect_tr_in_cexpr(self.named_terms)
         # collect common subexpr into variables
-        self.variables_expr = collect_subexpr_in_cexpr(self.named_terms)
+        self.variables_expr = collect_subexpr_in_cexpr(self.variables_expr) + self.variables_expr
 
 ### ----
 

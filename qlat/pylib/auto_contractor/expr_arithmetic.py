@@ -26,12 +26,21 @@ import sympy
 class Factor:
 
     # self.code
+    # self.otype
 
-    def __init__(self, code):
+    # self.otype in [ "Expr", "Var", ]
+
+    def __init__(self, code, otype = None):
         self.code = code
+        self.otype = otype
+        if self.otype is None:
+            if code.isidentifier():
+                self.otype = "Var"
+            else:
+                self.otype = "Expr"
 
     def __repr__(self) -> str:
-        return f"ea.Factor({self.code})"
+        return f"ea.Factor({self.code},{self.otype})"
 
     def compile_py(self) -> str:
         return f"{self.code}"
