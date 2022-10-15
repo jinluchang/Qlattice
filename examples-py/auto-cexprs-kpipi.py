@@ -9,6 +9,7 @@ import sys
 
 @q.timer
 def get_cexpr_kpipi():
+    fn_base = f"cache/auto_contract_cexpr/get_cexpr_kpipi"
     def calc_cexpr():
         vol = 1
         exprs_odd_ops = [
@@ -75,10 +76,10 @@ def get_cexpr_kpipi():
         diagram_type_dict[((('x', 'x'), 1), (('x', 'x2'), 1), (('x2', 'x'), 1))] = "Type4"
         diagram_type_dict[((('x', 'x2'), 1), (('x2', 'x'), 1))] = "Type4"
         cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True, diagram_type_dict = diagram_type_dict)
-        q.displayln_info(display_cexpr(cexpr))
+        q.qtouch_info(fn_base + ".info.txt", display_cexpr(cexpr))
         cexpr.optimize()
         return cexpr
-    return cache_compiled_cexpr(calc_cexpr, f"cache/auto_contract_cexpr/get_cexpr_kpipi")
+    return cache_compiled_cexpr(calc_cexpr, fn_base)
 
 def get_all_cexpr():
     cexprs = [

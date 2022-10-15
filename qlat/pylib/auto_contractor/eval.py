@@ -21,7 +21,6 @@
 
 from auto_contractor.compile import *
 from auto_contractor.ama import *
-
 from auto_contractor.eval_sc_qlat import *
 
 import numpy as np
@@ -77,7 +76,7 @@ def cache_compiled_cexpr(calc_cexpr, fn_base):
     cexpr = q.pickle_cache_call(calc_cexpr, fn_base + ".pickle")
     if not q.does_file_exist_sync_node(fn_base + ".py"):
         q.qtouch_info(fn_base + ".py", cexpr_code_gen_py(cexpr))
-        q.displayln_info(display_cexpr(cexpr))
+        q.qtouch_info(fn_base + ".txt", display_cexpr(cexpr))
         time.sleep(1)
         q.sync_node()
     module = importlib.import_module(fn_base.replace("/", "."))
