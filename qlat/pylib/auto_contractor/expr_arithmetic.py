@@ -102,17 +102,14 @@ class Expr:
     def __rsub__(self, other):
         return mk_expr(other) + mk_expr(-1) * self
 
-    @q.timer
     def sort(self) -> None:
         for term in self.terms:
             term.sort()
         self.terms.sort(key = repr)
 
-    @q.timer
     def combine_terms(self) -> None:
         self.terms = combine_terms_expr(self).terms
 
-    @q.timer
     def drop_zeros(self) -> None:
         self.terms = drop_zero_terms(self).terms
 
