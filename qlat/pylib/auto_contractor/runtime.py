@@ -23,11 +23,14 @@ from auto_contractor.eval import \
         load_prop, \
         ama_apply, ama_counts, ama_extract, \
         mat_mul_s_s, mat_mul_s_sc, mat_mul_sc_s, mat_mul_sc_sc, \
-        mat_sc_trace, mat_sc_sc_trace, \
+        mat_sc_trace, mat_sc_sc_trace, mat_sc_s_trace, mat_s_sc_trace, \
         get_gamma_matrix
 
 from qlat_utils import \
         rel_mod, rel_mod_sym, c_rel_mod_sqr
 
-import numpy as np
-import qlat as q
+from qlat import \
+        timer, acc_timer_flops
+
+from numpy import \
+        array

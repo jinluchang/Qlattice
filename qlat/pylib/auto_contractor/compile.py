@@ -763,7 +763,7 @@ class CExprCodeGenPy:
 
     def cexpr_function(self):
         lines = self.lines
-        lines.append(f"@q.timer")
+        lines.append(f"@timer")
         lines.append(f"def cexpr_function(*, positions_dict, get_prop):")
         lines.append(f"    # get_props")
         lines.append(f"    props = cexpr_function_get_prop(positions_dict, get_prop)")
@@ -774,7 +774,7 @@ class CExprCodeGenPy:
     def cexpr_function_get_prop(self):
         lines = self.lines
         cexpr = self.cexpr
-        lines.append(f"@q.timer")
+        lines.append(f"@timer")
         lines.append(f"def cexpr_function_get_prop(positions_dict, get_prop):")
         lines.append(f"    # set positions")
         for position_var in cexpr.positions:
@@ -796,14 +796,14 @@ class CExprCodeGenPy:
     def cexpr_function_eval(self):
         lines = self.lines
         cexpr = self.cexpr
-        lines.append(f"@q.timer")
+        lines.append(f"@timer")
         lines.append(f"def cexpr_function_eval(props):")
         lines.append(f"    # load AMA props with proper format")
         lines.append(f"    props = [ load_prop(p) for p in props ]")
         lines.append(f"    # apply function to these AMA props")
         lines.append(f"    ama_val = ama_apply(cexpr_function_eval_with_props, *props)")
         lines.append(f"    # set flops")
-        lines.append(f"    q.acc_timer_flops('py:cexpr_function_eval', ama_counts(ama_val) * total_sloppy_flops)")
+        lines.append(f"    acc_timer_flops('py:cexpr_function_eval', ama_counts(ama_val) * total_sloppy_flops)")
         lines.append(f"    # extract AMA val")
         lines.append(f"    val = ama_extract(ama_val)")
         lines.append(f"    return val")
@@ -811,13 +811,13 @@ class CExprCodeGenPy:
     def cexpr_function_eval_with_props(self):
         lines = self.lines
         cexpr = self.cexpr
-        lines.append(f"@q.timer")
+        lines.append(f"@timer")
         lines.append(f"def cexpr_function_eval_with_props(")
         for name, value in cexpr.variables_prop:
             lines.append(f"        {name},")
         lines.append(f"        ):")
         lines.append(f"    # set flops")
-        lines.append(f"    q.acc_timer_flops('py:cexpr_function_eval_with_props', total_sloppy_flops)")
+        lines.append(f"    acc_timer_flops('py:cexpr_function_eval_with_props', total_sloppy_flops)")
         lines.append(f"    # compute products and traces")
         for name, value in cexpr.variables_expr:
             if name.startswith("V_prod_"):
@@ -843,7 +843,7 @@ class CExprCodeGenPy:
             c, t = self.gen_expr_prod_list(c_ops)
             lines.append(f"    {name} = {c}")
         lines.append(f"    # set exprs for return")
-        lines.append(f"    results = np.array([")
+        lines.append(f"    results = array([")
         def show_coef_term(coef, tname):
             coef = ea.compile_py(coef)
             if coef == "1":

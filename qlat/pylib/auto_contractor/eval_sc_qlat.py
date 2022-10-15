@@ -23,7 +23,9 @@ import cqlat as c
 import qlat as q
 import numpy as np
 
-from qlat import mat_mul_sc_sc, mat_mul_sc_s, mat_mul_s_sc, mat_mul_s_s, mat_mul_a_s, mat_mul_a_sc, mat_sc_trace, mat_sc_sc_trace, mat_sc_s_trace, mat_s_sc_trace
+from qlat import \
+        mat_mul_sc_sc, mat_mul_sc_s, mat_mul_s_sc, mat_mul_s_s, mat_mul_a_s, mat_mul_a_sc, \
+        mat_sc_trace, mat_sc_sc_trace, mat_sc_s_trace, mat_s_sc_trace
 
 def as_mspin(x):
     if isinstance(x, q.SpinMatrix):
