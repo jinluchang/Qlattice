@@ -28,6 +28,12 @@ try:
 except:
     import expr_arithmetic as ea
 
+def mk_sym(x):
+    return sympy.simplify(x)
+
+def mk_fac(x):
+    return mk_expr(ea.mk_expr(x))
+
 class Op:
 
     # self.otype
@@ -486,7 +492,7 @@ class Term:
 def combine_two_terms(t1 : Term, t2 : Term, t1_sig : str, t2_sig : str):
     if t1_sig == t2_sig:
         coef = t1.coef + t2.coef
-        if coef == 0:
+        if ea.is_zero(coef):
             return Term([], [], 0)
         else:
             return Term(t1.c_ops, t1.a_ops, coef)
@@ -650,7 +656,7 @@ def combine_terms_expr(expr : Expr) -> Expr:
     term = expr.terms[0]
     term_sig = signatures[0]
     for t, t_sig in zip(expr.terms[1:], signatures[1:]):
-        if term.coef == 0:
+        if ea.is_zero(term.coef):
             term = t
             term_sig = t_sig
         else:
@@ -659,12 +665,12 @@ def combine_terms_expr(expr : Expr) -> Expr:
                 terms.append(term)
                 term = t
                 term_sig = t_sig
-            elif ct.coef == 0:
+            elif ea.is_zero(ct.coef):
                 term = zero_term
                 term_sig = zero_term_sig
             else:
                 term = ct
-    if term.coef != 0:
+    if not ea.is_zero(term.coef):
         terms.append(term)
     return Expr(terms, expr.description)
 
@@ -672,7 +678,7 @@ def combine_terms_expr(expr : Expr) -> Expr:
 def drop_zero_terms(expr : Expr) -> Expr:
     terms = []
     for t in expr.terms:
-        if t.coef != 0:
+        if not ea.is_zero(t.coef):
             terms.append(t)
     return Expr(terms, expr.description)
 

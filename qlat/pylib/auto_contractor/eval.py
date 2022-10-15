@@ -116,16 +116,24 @@ def benchmark_eval_cexpr(cexpr : CExpr, *, benchmark_size = 10, benchmark_num = 
     n_expr = len(expr_names)
     n_pos = len(cexpr.positions)
     prop_dict = {}
-    for pos_src in range(n_pos):
-        for pos_snk in range(n_pos):
-            prop = make_rand_spin_color_matrix(benchmark_rng_state.split(f"prop {pos_snk} {pos_src}"))
-            prop_ama = make_rand_spin_color_matrix(benchmark_rng_state.split(f"prop ama {pos_snk} {pos_src}"))
+    size = [ 8, 8, 8, 16, ]
+    positions = [
+            ("point", tuple(benchmark_rng_state.split(f"positions {pos_idx}").c_rand_gen(size)),)
+            for pos_idx in range(n_pos)
+            ]
+    for pos_src_idx in range(n_pos):
+        pos_src = positions[pos_src_idx]
+        for pos_snk_idx in range(n_pos):
+            pos_snk = positions[pos_snk_idx]
+            prop = make_rand_spin_color_matrix(benchmark_rng_state.split(f"prop {pos_snk_idx} {pos_src_idx}"))
+            prop_ama = make_rand_spin_color_matrix(benchmark_rng_state.split(f"prop ama {pos_snk_idx} {pos_src_idx}"))
             prop_dict[(pos_snk, pos_src,)] = mk_ama_val(prop, pos_src, [ prop, prop_ama, ], [ 0, 1, ], [ 1.0, 0.5, ])
     def mk_pos_dict(k):
         positions_dict = {}
+        positions_dict["size"] = size
         idx_list = q.random_permute(list(range(n_pos)), benchmark_rng_state.split(f"pos_dict {k}"))
         for pos, idx in zip(cexpr.positions, idx_list):
-            positions_dict[pos] = idx
+            positions_dict[pos] = positions[idx]
         return positions_dict
     positions_dict_list = [ mk_pos_dict(k) for k in range(benchmark_size) ]
     #

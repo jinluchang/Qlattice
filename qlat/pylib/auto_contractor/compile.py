@@ -853,8 +853,9 @@ class CExprCodeGenPy:
         append(f"# set flops")
         append(f"acc_timer_flops('py:cexpr_function_eval_with_props', total_sloppy_flops)")
         append(f"# set positions")
+        append(f"size = positions_dict.get('size')")
         for position_var in cexpr.positions:
-            append(f"{position_var} = positions_dict['{position_var}']")
+            append(f"{position_var}_type, {position_var} = positions_dict['{position_var}']")
         append(f"# compute products and traces")
         for name, value in cexpr.variables_expr:
             if name.startswith("V_prod_"):
@@ -887,7 +888,7 @@ class CExprCodeGenPy:
             if coef == "1":
                 return f"{tname}"
             else:
-                return f"{coef} * {tname}"
+                return f"({coef}) * {tname}"
         for name, expr in cexpr.named_exprs:
             name = name.replace("\n", "  ")
             append(f"# {name} ")

@@ -125,8 +125,14 @@ class Expr:
         # self.simplify_coef()
         self.drop_zeros()
 
+    def is_zero(self) -> bool:
+        return not self.terms
+
     def compile_py(self) -> str:
-        return '+'.join([ f"{t.compile_py()}" for t in self.terms ])
+        if self.terms:
+            return '+'.join([ f"{t.compile_py()}" for t in self.terms ])
+        else:
+            return '0'
 
 ### ------
 
@@ -140,6 +146,15 @@ def compile_py(x):
         return compile_py_complex(x)
     else:
         return mk_expr(x).compile_py()
+
+def is_zero(x):
+    if isinstance(x, (int, float, complex, sympy.Basic,)):
+        return x == 0
+    elif isinstance(x, Expr):
+        return x.is_zero()
+    else:
+        print(x)
+        assert False
 
 def mk_expr(x):
     if isinstance(x, Expr):

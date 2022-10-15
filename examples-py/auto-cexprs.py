@@ -264,6 +264,50 @@ def get_cexpr_meson_jj_mm():
         return cexpr
     return cache_compiled_cexpr(calc_cexpr, fn_base)
 
+@q.timer
+def get_cexpr_meson_jj_xx():
+    fn_base = f"cache/auto_contract_cexpr/get_cexpr_meson_jj_xx"
+    def calc_cexpr():
+        fac = {}
+        for mu in range(3):
+            for nu in range(3):
+                fac[(mu, nu,)] = (mk_fac(f"rel_mod_sym(x_1[{mu}]-x_2[{mu}],size[{mu}])")
+                        * mk_fac(f"rel_mod_sym(x_1[{nu}]-x_2[{nu}],size[{nu}])"))
+        exprs = [
+                sum([
+                    fac[(mu, nu,)] * mk_pi_0("t_1", True) * mk_j_mu("x_1", mu) * mk_j_mu("x_2", nu) * mk_pi_0("t_2")
+                    for mu in range(3) for nu in range(3) ])
+                + f"x[a] x[b] pi0 j_a j_b pi0",
+                sum([
+                    mk_sym(1)/2 * fac[(mu, nu,)]
+                    * (mk_pi_p("t_1", True) * mk_j_mu("x_1", mu) * mk_j_mu("x_2", nu) * mk_pi_p("t_2")
+                        + mk_pi_m("t_1", True) * mk_j_mu("x_1", mu) * mk_j_mu("x_2", nu) * mk_pi_m("t_2"))
+                    for mu in range(3) for nu in range(3) ])
+                + f"x[a] x[b] pi+ j_a j_b pi+",
+                sum([
+                    mk_sym(1)/2 * fac[(mu, nu,)]
+                    * (mk_k_0("t_1", True) * mk_j_mu("x_1", mu) * mk_j_mu("x_2", nu) * mk_k_0("t_2")
+                        + mk_k_0_bar("t_1", True) * mk_j_mu("x_1", mu) * mk_j_mu("x_2", nu) * mk_k_0_bar("t_2")
+                        )
+                    for mu in range(3) for nu in range(3) ])
+                + f"x[a] x[b] K0 j_a j_b K0",
+                sum([
+                    mk_sym(1)/2 * fac[(mu, nu,)]
+                    * (mk_k_p("t_1", True) * mk_j_mu("x_1", mu) * mk_j_mu("x_2", nu) * mk_k_p("t_2")
+                        + mk_k_m("t_1", True) * mk_j_mu("x_1", mu) * mk_j_mu("x_2", nu) * mk_k_m("t_2"))
+                    for mu in range(3) for nu in range(3) ])
+                + f"x[a] x[b] K+ j_a j_b K+",
+                sum([
+                    fac[(mu, nu,)] * mk_j_mu("x_1", mu) * mk_j_mu("x_2", nu)
+                    for mu in range(3) for nu in range(3) ])
+                + f"x[a] x[b] j_a j_b",
+                ]
+        cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
+        q.qtouch_info(fn_base + ".info.txt", display_cexpr(cexpr))
+        cexpr.optimize()
+        return cexpr
+    return cache_compiled_cexpr(calc_cexpr, fn_base)
+
 def get_all_cexpr():
     cexprs = [
             get_cexpr_zeros(),
@@ -276,6 +320,7 @@ def get_all_cexpr():
             get_cexpr_meson_quark_mass(),
             get_cexpr_meson_jt_zv(),
             get_cexpr_meson_jj_mm(),
+            get_cexpr_meson_jj_xx(),
             ]
     check_list = []
     check_ama_list = []
