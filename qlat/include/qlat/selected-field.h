@@ -318,7 +318,7 @@ struct API SelectedField {
   bool initialized;
   long n_elems;
   box_acc<Geometry> geo;
-  vector_acc<M> field;
+  vector_acc<M> field;  // field.size() == n_elems * multiplicity
   //
   void init()
   {
@@ -673,15 +673,14 @@ void set_field_selected(Field<M>& f, const SelectedField<M>& sf,
     set_zero(f);
   }
   const int multiplicity = geo.multiplicity;
-#pragma omp parallel for
-  for (long idx = 0; idx < fsel.n_elems; ++idx) {
+  qacc_for(idx, fsel.n_elems, {
     const long index = fsel.indices[idx];
     Vector<M> fv = f.get_elems(index);
     const Vector<M> sfv = sf.get_elems_const(idx);
     for (int m = 0; m < multiplicity; ++m) {
       fv[m] = sfv[m];
     }
-  }
+  });
 }
 
 template <class M>
@@ -822,6 +821,19 @@ void field_glb_sum_tslice_long(SelectedPoints<M>& sp,
   glb_sum_long_vec(get_data(vec));
   sp.init(t_size, multiplicity);
   sp.points = vec;
+}
+
+template <class M>
+void qnorm_field(SelectedField<double>& f, const SelectedField<M>& f1)
+{
+  TIMER("qnorm_field");
+  const Geometry& geo = f1.geo();
+  f.init();
+  f.init(geo, f1.n_elems, geo.multiplicity);
+  qacc_for(idx, f.n_elems, {
+    Vector<M> f1v = f1.get_elems_const(idx);
+    f.get_elem(idx) = qnorm(f1v);
+  });
 }
 
 // old code

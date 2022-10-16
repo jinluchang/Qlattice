@@ -240,6 +240,14 @@ PyObject* merge_fields_ms_ctype(PyObject* p_field,
   Py_RETURN_NONE;
 }
 
+template <class M>
+PyObject* qnorm_field_field_ctype(FieldM<double, 1>& f, PyObject* p_field1)
+{
+  const Field<M>& f1 = py_convert_type_field<M>(p_field1);
+  qnorm_field(f, f1);
+  Py_RETURN_NONE;
+}
+
 }  // namespace qlat
 
 EXPORT(mk_field_expand_comm_plan, {
@@ -572,5 +580,19 @@ EXPORT(merge_fields_ms_field, {
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, merge_fields_ms_ctype, ctype, p_field, p_f_vec,
                  m_vec);
+  return p_ret;
+})
+
+EXPORT(qnorm_field_field, {
+  using namespace qlat;
+  PyObject* p_field = NULL;
+  PyObject* p_field1 = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_field, &p_field1)) {
+    return NULL;
+  }
+  FieldM<double, 1>& f = py_convert_type_field<double, 1>(p_field);
+  const std::string ctype = py_get_ctype(p_field1);
+  PyObject* p_ret = NULL;
+  FIELD_DISPATCH(p_ret, qnorm_field_field_ctype, ctype, f, p_field1);
   return p_ret;
 })

@@ -584,6 +584,20 @@ void field_shift(Field<M>& f, const Field<M>& f1, const Coordinate& shift)
 }
 
 template <class M>
+void qnorm_field(FieldM<double, 1>& f, const Field<M>& f1)
+{
+  TIMER("qnorm_field");
+  const Geometry geo = geo_reform(f1.geo());
+  f.init();
+  f.init(geo);
+  qacc_for(index, geo.local_volume(), {
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Vector<M> f1v = f1.get_elems_const(xl);
+    f.get_elem(index) = qnorm(f1v);
+  });
+}
+
+template <class M>
 void set_u_rand_double(Field<M>& f, const RngState& rs,
                        const double upper = 1.0, const double lower = -1.0)
 {

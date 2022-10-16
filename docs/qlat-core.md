@@ -156,7 +156,7 @@ struct SelectedField {
   bool initialized;
   long n_elems;
   box_acc<Geometry> geo;
-  vector_acc<M> field;
+  vector_acc<M> field;  // field.size() == n_elems * multiplicity
   //
   void init();
   void init(const Geometry& geo_, const long n_elems_, const int multiplicity);
@@ -195,6 +195,10 @@ void set_zero(SelectedField<M>& sf);
 
 ### Qnorm
 
+Usually should return the sum of element-wise square as a single double precision number.
+
+If two arguments are given, will view the two arguments as vector of real numbers and return the inner product of two arguments as a single double precision number.
+
 ```c++
 template <class M>
 double qnorm(const Field<M>& f);
@@ -203,9 +207,18 @@ template <class M>
 double qnorm(const SelectedField<M>& sf);
 ```
 
+`qnorm_double` should type cast to interpret the data as double precision numbers.
+
 ```c++
 template <class M>
 double qnorm_double(const Field<M>& f1, const Field<M>& f2);
+```
+
+`qnorm_field(f, f1)` should set the field `f` to be the qnorm of each site of the field `f1`.
+
+```c++
+template <class M>
+void qnorm_field(FieldM<double, 1>& f, const Field<M>& f1)
 ```
 
 ### Qswap
