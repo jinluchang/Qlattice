@@ -52,6 +52,12 @@ It may be convenient to create a symbolic link `$HOME/qlat-build/default`, which
 
 ### Install on UCONN HPC
 
+First, download dependencies downloaded to the `distfiles` directory.
+
+`$ ./scripts/download.sh`
+
+Note you may need to download on your local computer and copy the data to the server.
+
 The default build and installation directory is `$HOME/qlat-build/default`. If a different directory is needed:
 
 `$ export prefix=DEST_DIRECTORY`
