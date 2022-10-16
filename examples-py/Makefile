@@ -52,4 +52,4 @@ clean-logs: clean
 	-rm -v cqlat.log $(tests)
 
 clean-logs-gpt: clean-logs
-	-rm -v $(tests_gpt) $(tests)
+	-rm -v $(tests_gpt)

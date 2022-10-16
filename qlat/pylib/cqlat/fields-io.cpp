@@ -5,29 +5,29 @@ namespace qlat
 
 template <class M>
 PyObject* write_sfw_field_ctype(ShuffledFieldsWriter& sfw,
-                                const std::string& fn, PyField& pf)
+                                const std::string& fn, PyObject* p_field)
 {
-  const Field<M>& f = *(Field<M>*)pf.cdata;
+  const Field<M>& f = py_convert_type_field<M>(p_field);
   const long ret = write(sfw, fn, f);
   return py_convert(ret);
 }
 
 template <class M>
 PyObject* read_sfr_field_ctype(ShuffledFieldsReader& sfr, const std::string& fn,
-                               PyField& pf)
+                               PyObject* p_field)
 {
-  Field<M>& f = *(Field<M>*)pf.cdata;
+  Field<M>& f = py_convert_type_field<M>(p_field);
   const long ret = read(sfr, fn, f);
   return py_convert(ret);
 }
 
 template <class M>
 PyObject* write_sfw_sfield_ctype(ShuffledFieldsWriter& sfw,
-                                 const std::string& fn, PyField& pf,
+                                 const std::string& fn, PyObject* p_sfield,
                                  const ShuffledBitSet& sbs)
 {
-  const SelectedField<M>& f = *(SelectedField<M>*)pf.cdata;
-  const long ret = write(sfw, fn, f, sbs);
+  const SelectedField<M>& sf = py_convert_type_sfield<M>(p_sfield);
+  const long ret = write(sfw, fn, sf, sbs);
   return py_convert(ret);
 }
 
@@ -62,10 +62,8 @@ EXPORT(mk_sfw, {
   if (!PyArg_ParseTuple(args, "OO|b", &p_path, &p_new_size_node, &is_append)) {
     return NULL;
   }
-  std::string path;
-  py_convert(path, p_path);
-  Coordinate new_size_node;
-  py_convert(new_size_node, p_new_size_node);
+  const std::string path = py_convert_data<std::string>(p_path);
+  const Coordinate new_size_node = py_convert_data<Coordinate>(p_new_size_node);
   ShuffledFieldsWriter* psfw =
       new ShuffledFieldsWriter(path, new_size_node, is_append);
   return py_convert((void*)psfw);
@@ -94,11 +92,10 @@ EXPORT(mk_sfr, {
   if (!PyArg_ParseTuple(args, "O|O", &p_path, &p_new_size_node)) {
     return NULL;
   }
-  std::string path;
-  py_convert(path, p_path);
+  const std::string path = py_convert_data<std::string>(p_path);
   Coordinate new_size_node;
   if (p_new_size_node != NULL) {
-    py_convert(new_size_node, p_new_size_node);
+    new_size_node = py_convert_data<Coordinate>(p_new_size_node);
   }
   ShuffledFieldsReader* psfr = new ShuffledFieldsReader(path, new_size_node);
   return py_convert((void*)psfr);
@@ -128,8 +125,7 @@ EXPORT(mk_sbs, {
     return NULL;
   }
   const FieldSelection& fsel = py_convert_type<FieldSelection>(p_fsel);
-  Coordinate new_size_node;
-  py_convert(new_size_node, p_new_size_node);
+  const Coordinate new_size_node = py_convert_data<Coordinate>(p_new_size_node);
   ShuffledBitSet* psbs = new ShuffledBitSet();
   *psbs = mk_shuffled_bitset(fsel, new_size_node);
   return py_convert((void*)psbs);
@@ -149,11 +145,10 @@ EXPORT(write_sfw_field, {
     return NULL;
   }
   ShuffledFieldsWriter& sfw = py_convert_type<ShuffledFieldsWriter>(p_sfw);
-  PyField pf = py_convert_field(p_field);
-  std::string fn;
-  py_convert(fn, p_fn);
+  const std::string fn = py_convert_data<std::string>(p_fn);
+  const std::string ctype = py_get_ctype(p_field);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, write_sfw_field_ctype, pf.ctype, sfw, fn, pf);
+  FIELD_DISPATCH(p_ret, write_sfw_field_ctype, ctype, sfw, fn, p_field);
   return p_ret;
 })
 
@@ -166,11 +161,10 @@ EXPORT(read_sfr_field, {
     return NULL;
   }
   ShuffledFieldsReader& sfr = py_convert_type<ShuffledFieldsReader>(p_sfr);
-  PyField pf = py_convert_field(p_field);
-  std::string fn;
-  py_convert(fn, p_fn);
+  const std::string ctype = py_get_ctype(p_field);
+  const std::string fn = py_convert_data<std::string>(p_fn);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, read_sfr_field_ctype, pf.ctype, sfr, fn, pf);
+  FIELD_DISPATCH(p_ret, read_sfr_field_ctype, ctype, sfr, fn, p_field);
   return p_ret;
 })
 
@@ -178,18 +172,17 @@ EXPORT(write_sfw_sfield, {
   using namespace qlat;
   PyObject* p_sfw = NULL;
   PyObject* p_fn = NULL;
-  PyObject* p_field = NULL;
+  PyObject* p_sfield = NULL;
   PyObject* p_sbs = NULL;
-  if (!PyArg_ParseTuple(args, "OOOO", &p_sfw, &p_fn, &p_field, &p_sbs)) {
+  if (!PyArg_ParseTuple(args, "OOOO", &p_sfw, &p_fn, &p_sfield, &p_sbs)) {
     return NULL;
   }
   ShuffledFieldsWriter& sfw = py_convert_type<ShuffledFieldsWriter>(p_sfw);
-  std::string fn;
-  py_convert(fn, p_fn);
-  PyField pf = py_convert_field(p_field);
+  const std::string fn = py_convert_data<std::string>(p_fn);
+  const std::string ctype = py_get_ctype(p_sfield);
   const ShuffledBitSet& sbs = py_convert_type<ShuffledBitSet>(p_sbs);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, write_sfw_sfield_ctype, pf.ctype, sfw, fn, pf, sbs);
+  FIELD_DISPATCH(p_ret, write_sfw_sfield_ctype, ctype, sfw, fn, p_sfield, sbs);
   return p_ret;
 })
 
@@ -262,13 +255,12 @@ EXPORT(truncate_fields_sync_node, {
   if (!PyArg_ParseTuple(args, "OO|O", &p_path, &p_fns_keep, &p_new_size_node)) {
     return NULL;
   }
-  std::string path;
-  py_convert(path, p_path);
-  std::vector<std::string> fns_keep;
-  py_convert(fns_keep, p_fns_keep);
+  const std::string path = py_convert_data<std::string>(p_path);
+  const std::vector<std::string> fns_keep =
+      py_convert_data<std::vector<std::string> >(p_fns_keep);
   Coordinate new_size_node;
   if (p_new_size_node != NULL) {
-    py_convert(new_size_node, p_new_size_node);
+    new_size_node = py_convert_data<Coordinate>(p_new_size_node);
   }
   return py_convert(truncate_fields_sync_node(path, fns_keep, new_size_node));
 })
@@ -289,8 +281,7 @@ EXPORT(check_compressed_eigen_vectors, {
   if (!PyArg_ParseTuple(args, "O", &p_path)) {
     return NULL;
   }
-  std::string path;
-  py_convert(path, p_path);
+  const std::string path = py_convert_data<std::string>(p_path);
   return py_convert(qlat::check_compressed_eigen_vectors(path));
 })
 
