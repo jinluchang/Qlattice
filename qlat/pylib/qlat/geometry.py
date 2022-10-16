@@ -71,6 +71,12 @@ class Geometry:
     def size_node(self):
         return c.get_size_node_geo(self)
 
+    def __str__(self):
+        return self.show()
+
+    def __repr__(self):
+        return self.show_all()
+
     def show(self):
         return "Geometry({}, {})".format(
                 str(self.total_site()),

@@ -9,8 +9,8 @@ from qlat.utils_io import *
 class SelectedField:
 
     # self.ctype
-    # self.fsel
     # self.cdata
+    # self.fsel
 
     def __init__(self, ctype, fsel, multiplicity = None):
         assert isinstance(ctype, str)
@@ -291,6 +291,7 @@ class SelectedField:
 @timer
 def set_selected_field(sf, f):
     # deprecated use @=
+    displayln_info("set_selected_field: deprecated")
     assert isinstance(sf, SelectedField)
     if isinstance(f, Field):
         c.set_sfield_field(sf, f)

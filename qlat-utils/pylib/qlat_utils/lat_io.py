@@ -65,6 +65,9 @@ class LatData:
             self.load_node(path)
         self.bcast()
 
+    def __str__(self):
+        return self.show()
+
     def show(self):
         return cu.show_lat_data(self)
 

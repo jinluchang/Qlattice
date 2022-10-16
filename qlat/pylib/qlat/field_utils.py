@@ -1,6 +1,7 @@
 import qlat.cqlat as c
 
 from qlat.field import *
+from qlat.selected_field import *
 
 import math
 
@@ -107,3 +108,18 @@ def mk_fft(is_forward, *, is_only_spatial = False, is_normalizing = False, mode_
                 (3, is_forward,),
                 ]
         return FastFourierTransform(fft_infos, is_normalizing = is_normalizing, mode_fft = mode_fft)
+
+###
+
+def qnorm_field(f):
+    if isinstance(f, Field):
+        f_n = Field("double")
+        c.qnorm_field_field(f_n, f)
+    elif isinstance(f, SelectedField):
+        fsel = f.fsel
+        f_n = SelectedField("double", fsel)
+        c.qnorm_field_sfield(f_n, f)
+    else:
+        displayln_info("qnorm_field:", type(f))
+        assert False
+    return f_n

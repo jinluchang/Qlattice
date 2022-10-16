@@ -229,6 +229,7 @@ class Field:
 
     def sparse(self, sel):
         # deprecated
+        displayln_info("Field.sparse: deprecated")
         from qlat.field_selection import PointSelection, FieldSelection
         if isinstance(sel, PointSelection):
             from qlat.selected_points import SelectedPoints, set_selected_points
