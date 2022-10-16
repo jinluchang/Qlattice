@@ -27,7 +27,7 @@ class Factor:
 
     # self.code
     # self.otype
-
+    #
     # self.otype in [ "Expr", "Var", ]
 
     def __init__(self, code, otype = None):

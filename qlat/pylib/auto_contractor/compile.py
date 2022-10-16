@@ -109,6 +109,37 @@ def collect_position_in_cexpr(named_terms):
     positions = sorted(list(s))
     return positions
 
+def collect_factor_in_cexpr(named_exprs):
+    # collect the factors in all ea_coef
+    variables_factor = []
+    var_counter = 0
+    var_dataset = {} # var_dataset[factor_code] = factor_var
+    var_nameset = set()
+    for name, expr in named_exprs:
+        for i, (ea_coef, term_name,) in enumerate(expr):
+            expr[i] = (ea.simplified(ea_coef), term_name,)
+    for name, expr in named_exprs:
+        for ea_coef, term_name in expr:
+            for t in ea_coef.terms:
+                x = t.factors
+                for i, f in enumerate(x):
+                    if f.otype != "Var":
+                        assert f.otype == "Expr"
+                        if f.code in var_dataset:
+                            x[i] = var_dataset[f.code]
+                        else:
+                            while True:
+                                name = f"V_factor_{var_counter}"
+                                var_counter += 1
+                                if name not in var_nameset:
+                                    break
+                            var_nameset.add(name)
+                            variables_factor.append((name, f))
+                            var = ea.Factor(name)
+                            x[i] = var
+                            var_dataset[f.code] = var
+    return variables_factor
+
 def collect_prop_in_cexpr(named_terms):
     # collect the propagators
     # modify the named_terms in-place and return the prop variable definitions as variables
@@ -126,15 +157,15 @@ def collect_prop_in_cexpr(named_terms):
                         x[i] = var_dataset[op_repr]
                     else:
                         while True:
-                            var_counter += 1
                             name = f"V_S_{var_counter}"
+                            var_counter += 1
                             if name not in var_nameset:
                                 break
+                        var_nameset.add(name)
                         variables_prop.append((name, op,))
                         var = Var(name)
                         x[i] = var
                         var_dataset[op_repr] = var
-                        var_nameset.add(name)
                 elif op.otype == "Tr":
                     add_prop_variables(op.ops)
         elif isinstance(x, Term):
@@ -155,10 +186,10 @@ def collect_tr_in_cexpr(named_terms):
     # ("V_tr_0", op,) where op.otype == "Tr"
     var_nameset = set()
     variables_tr = []
-    var_counter_tr = 0
+    var_counter = 0
     var_dataset_tr = {} # var_dataset[op_repr] = op_var
     def add_tr_varibles(x):
-        nonlocal var_counter_tr
+        nonlocal var_counter
         if isinstance(x, Term):
             add_tr_varibles(x.c_ops)
         elif isinstance(x, Op) and x.otype == "Tr":
@@ -173,15 +204,15 @@ def collect_tr_in_cexpr(named_terms):
                         x[i] = var_dataset_tr[op_repr]
                     else:
                         while True:
-                            var_counter_tr += 1
-                            name = f"V_tr_{var_counter_tr}"
+                            name = f"V_tr_{var_counter}"
+                            var_counter += 1
                             if name not in var_nameset:
                                 break
+                        var_nameset.add(name)
                         variables_tr.append((name, op,))
                         var = Var(name)
                         x[i] = var
                         var_dataset_tr[op_repr] = var
-                        var_nameset.add(name)
     for name, term in named_terms:
         add_tr_varibles(term)
         term.sort()
@@ -319,10 +350,11 @@ def collect_subexpr_in_cexpr(variables_tr):
         else:
             assert False
         while True:
-            var_counter_dict[name_prefix] += 1
             name = f"{name_prefix}{var_counter_dict[name_prefix]}"
+            var_counter_dict[name_prefix] += 1
             if name not in var_nameset:
                 break
+        var_nameset.add(name)
         variables_prod.append((name, subexpr,))
         var = Var(name)
         collect_common_subexpr_in_tr(variables_tr, subexpr, var)
@@ -373,9 +405,8 @@ class CExpr:
         for name, term in self.named_terms:
             assert term.coef == 1
             assert term.a_ops == []
-        for name, expr in self.named_typed_exprs + self.named_exprs:
-            for i, (ea_coef, term_name,) in enumerate(expr):
-                expr[i] = (ea.simplified(ea_coef), term_name,)
+        # collect ea_coef factors into variables
+        self.variables_factor = collect_factor_in_cexpr(self.named_typed_exprs + self.named_exprs)
         # collect prop expr into variables
         self.variables_prop = collect_prop_in_cexpr(self.named_terms)
         # collect trace expr into variables
@@ -486,8 +517,8 @@ def mk_cexpr(*exprs, diagram_type_dict = None):
                 continue
             diagram_type = get_term_diagram_type_info(term)
             if diagram_type not in diagram_type_dict:
-                diagram_type_counter += 1
                 diagram_type_name = f"ADT{diagram_type_counter:0>2}" # ADT is short for "auto diagram type"
+                diagram_type_counter += 1
                 diagram_type_dict[diagram_type] = diagram_type_name
             diagram_type_name = diagram_type_dict[diagram_type]
             diagram_type_term_dict[repr_term] = diagram_type_name
@@ -496,8 +527,8 @@ def mk_cexpr(*exprs, diagram_type_dict = None):
                 continue
             term_name_counter = 0
             while True:
-                term_name_counter += 1
                 term_name = f"term_{diagram_type_name}_{term_name_counter:0>4}"
+                term_name_counter += 1
                 if term_name not in term_name_dict:
                     break
             term_name_dict[term_name] = term
@@ -709,6 +740,8 @@ class CExprCodeGenPy:
         self.sep()
         self.cexpr_function_eval()
         self.sep()
+        self.cexpr_function_get_factor()
+        self.sep()
         self.cexpr_function_eval_with_props()
         self.sep()
         self.total_flops()
@@ -716,8 +749,10 @@ class CExprCodeGenPy:
 
     def gen_expr(self, x):
         # return code_str, type_str
-        if isinstance(x, (int, float, complex, ea.Expr)):
-            return f"{ea.compile_py(x)}", "V_a"
+        if isinstance(x, (int, float, complex)):
+            return f"{x}", "V_a"
+        elif isinstance(x, (ea.Expr, ea.Factor)):
+            return f"({ea.compile_py(x)})", "V_a"
         assert isinstance(x, Op)
         if x.otype == "S":
             return f"get_prop('{x.f}', {x.p1}, {x.p2})", "V_S"
@@ -832,7 +867,7 @@ class CExprCodeGenPy:
         append(f"# set positions")
         for position_var in cexpr.positions:
             append(f"{position_var} = positions_dict['{position_var}']")
-        append(f"# get_props")
+        append(f"# get prop")
         for name, value in cexpr.variables_prop:
             assert name.startswith("V_S_")
             x = value
@@ -841,13 +876,46 @@ class CExprCodeGenPy:
             c, t = self.gen_expr(x)
             assert t == "V_S"
             append(f"{name} = {c}")
+        append(f"# prop")
+        append(f"# set props for return")
         append(f"props = [")
         self.indent += 4
         for name, value in cexpr.variables_prop:
             append(f"{name},")
         append(f"]")
         self.indent -= 4
+        # return
         append(f"return props")
+        self.indent -= 4
+
+    def cexpr_function_get_factor(self):
+        append = self.append
+        cexpr = self.cexpr
+        append(f"@timer")
+        append(f"def cexpr_function_get_factor(positions_dict):")
+        self.indent += 4
+        append(f"# set positions")
+        append(f"size = positions_dict.get('size')")
+        for position_var in cexpr.positions:
+            append(f"{position_var}_type, {position_var} = positions_dict['{position_var}']")
+        append(f"# get factor")
+        for name, value in cexpr.variables_factor:
+            assert name.startswith("V_factor_")
+            x = value
+            assert isinstance(x, ea.Factor)
+            assert x.otype == "Expr"
+            c, t = self.gen_expr(x)
+            assert t == "V_a"
+            append(f"{name} = {c}")
+        append(f"# set factors for return")
+        append(f"factors = [")
+        self.indent += 4
+        for name, value in cexpr.variables_factor:
+            append(f"{name},")
+        append(f"]")
+        self.indent -= 4
+        # return
+        append(f"return factors")
         self.indent -= 4
 
     def cexpr_function_eval(self):
@@ -858,12 +926,17 @@ class CExprCodeGenPy:
         self.indent += 4
         append(f"# load AMA props with proper format")
         append(f"props = [ load_prop(p) for p in props ]")
-        append(f"# apply function to these AMA props")
-        append(f"ama_val = ama_apply(cexpr_function_eval_with_props, positions_dict, *props)")
-        append(f"# set flops")
-        append(f"acc_timer_flops('py:cexpr_function_eval', ama_counts(ama_val) * total_sloppy_flops)")
+        append(f"# join the AMA props")
+        append(f"ama_props = ama_list(*props)")
+        append(f"# get_factor")
+        append(f"factors = cexpr_function_get_factor(positions_dict)")
+        append(f"# apply eval to the factors and AMA props")
+        append(f"ama_val = ama_apply2_r(cexpr_function_eval_with_props, factors, ama_props)")
         append(f"# extract AMA val")
         append(f"val = ama_extract(ama_val)")
+        append(f"# set flops")
+        append(f"acc_timer_flops('py:cexpr_function_eval', ama_counts(ama_val) * total_sloppy_flops)")
+        append(f"# return")
         append(f"return val")
         self.indent -= 4
 
@@ -871,20 +944,14 @@ class CExprCodeGenPy:
         append = self.append
         cexpr = self.cexpr
         append(f"@timer")
-        append(f"def cexpr_function_eval_with_props(")
-        self.indent += 8
-        append("positions_dict,")
-        for name, value in cexpr.variables_prop:
-            append(f"{name},")
-        append(f"):")
-        self.indent -= 8
+        append(f"def cexpr_function_eval_with_props(factors, props):")
         self.indent += 4
-        append(f"# set flops")
-        append(f"acc_timer_flops('py:cexpr_function_eval_with_props', total_sloppy_flops)")
-        append(f"# set positions")
-        append(f"size = positions_dict.get('size')")
-        for position_var in cexpr.positions:
-            append(f"{position_var}_type, {position_var} = positions_dict['{position_var}']")
+        append(f"# set factors")
+        for idx, (name, value,) in enumerate(cexpr.variables_factor):
+            append(f"{name} = factors[{idx}]")
+        append(f"# set props")
+        for idx, (name, value,) in enumerate(cexpr.variables_prop):
+            append(f"{name} = props[{idx}]")
         append(f"# compute products")
         for name, value in cexpr.variables_prod:
             assert name.startswith("V_prod_")
@@ -929,6 +996,8 @@ class CExprCodeGenPy:
             append(f"{s},")
         append(f"])")
         self.indent -= 4
+        append(f"# set flops")
+        append(f"acc_timer_flops('py:cexpr_function_eval_with_props', total_sloppy_flops)")
         append(f"# return")
         append(f"return results")
         self.indent -= 4

@@ -154,21 +154,19 @@ def ama_apply2(f, x, y):
     else:
         return ama_apply2_ama_val(f, x, y)
 
-def ama_apply(f, *args):
+@q.timer
+def ama_list(*args):
     l = len(args)
-    if l == 0:
-        return f()
-    elif l == 1:
-        return ama_apply1(f, args[0])
-    elif l == 2:
-        return ama_apply2(f, args[0], args[1])
-    else:
-        assert l > 2
+    assert l >= 0
     def f_add(rs, x):
         return rs + [ x, ]
     res = []
     for x in args:
         res = ama_apply2(f_add, res, x)
+    return res
+
+def ama_apply(f, *args):
+    res = ama_list(*args)
     def f_list(xs):
         return f(*xs)
     return ama_apply1(f_list, res)
