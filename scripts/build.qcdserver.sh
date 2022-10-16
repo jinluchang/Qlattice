@@ -40,7 +40,8 @@ set -e
 ./scripts/hdf5.sh
 ./scripts/grid.avx2.sh
 ./scripts/gpt.sh
-./scripts/hadrons-tblum.sh
+
+./scripts/qlat-grid-io.sh
 
 ./scripts/gnuplot.sh
 ./scripts/python-jupyter.sh

@@ -42,16 +42,16 @@ PyObject* assign_from_complex_field_ctype(PyObject* p_field, const Field<Complex
 }
 
 template <class M>
-PyObject* get_elems_field_ctype(PyField& pf, const Coordinate& xg)
+PyObject* get_elems_field_ctype(PyObject* p_field, const Coordinate& xg)
 {
-  const Field<M>& f = *(Field<M>*)pf.cdata;
+  const Field<M>& f = py_convert_type_field<M>(p_field);
   return py_convert(field_get_elems(f, xg));
 }
 
 template <class M>
-PyObject* get_elem_field_ctype(PyField& pf, const Coordinate& xg, const int m)
+PyObject* get_elem_field_ctype(PyObject* p_field, const Coordinate& xg, const int m)
 {
-  const Field<M>& f = *(Field<M>*)pf.cdata;
+  const Field<M>& f = py_convert_type_field<M>(p_field);
   if (m >= 0) {
     return py_convert(field_get_elem(f, xg, m));
   } else {
@@ -83,16 +83,16 @@ PyObject* set_elem_field_ctype(PyObject* p_field, const Coordinate& xg,
 }
 
 template <class M>
-PyObject* glb_sum_double_field_ctype(PyField& pf)
+PyObject* glb_sum_double_field_ctype(PyObject* p_field)
 {
-  const Field<M>& f = *(Field<M>*)pf.cdata;
+  const Field<M>& f = py_convert_type_field<M>(p_field);
   return py_convert(field_glb_sum_double(f));
 }
 
 template <class M>
-PyObject* glb_sum_long_field_ctype(PyField& pf)
+PyObject* glb_sum_long_field_ctype(PyObject* p_field)
 {
-  const Field<M>& f = *(Field<M>*)pf.cdata;
+  const Field<M>& f = py_convert_type_field<M>(p_field);
   return py_convert(field_glb_sum_long(f));
 }
 
@@ -162,9 +162,10 @@ PyObject* fft_fields_ctype(const std::vector<PyObject*> p_field_vec,
         fft_complex_field_dir(vec[i](), ft, fft_dir, is_forward);
       }
     }
-  }
-  if (use_plan == 1) {
+  } else if (use_plan == 1) {
     fft_fieldM(vec, fft_direction, ft4D);
+  } else {
+    pqassert(false);
   }
   Py_RETURN_NONE;
 }
@@ -188,29 +189,34 @@ PyObject* reflect_field_ctype(PyObject* p_field)
 }
 
 template <class M>
-PyObject* split_fields_field_ctype(std::vector<PyField>& pf_vec, PyField& pf)
+PyObject* split_fields_field_ctype(const std::vector<PyObject*>& p_f_vec,
+                                   PyObject* p_field)
 {
-  Field<M>& f = *(Field<M>*)pf.cdata;
-  const int nf = pf_vec.size();
+  const std::string ctype = py_get_ctype(p_field);
+  const Field<M>& f = py_convert_type_field<M>(p_field);
+  const int nf = p_f_vec.size();
   std::vector<Handle<Field<M> > > vec(nf);
   for (int i = 0; i < nf; ++i) {
-    pqassert(pf_vec[i].ctype == pf.ctype);
-    vec[i].init(*(Field<M>*)pf_vec[i].cdata);
+    pqassert(py_get_ctype(p_f_vec[i]) == ctype);
+    Field<M>& fi = py_convert_type_field<M>(p_f_vec[i]);
+    vec[i].init(fi);
   }
   split_fields(vec, f);
   Py_RETURN_NONE;
 }
 
 template <class M>
-PyObject* merge_fields_field_ctype(PyField& pf,
-                                   const std::vector<PyField>& pf_vec)
+PyObject* merge_fields_field_ctype(PyObject* p_field,
+                                   const std::vector<PyObject*>& p_f_vec)
 {
-  Field<M>& f = *(Field<M>*)pf.cdata;
-  const int nf = pf_vec.size();
+  const std::string ctype = py_get_ctype(p_field);
+  Field<M>& f = py_convert_type_field<M>(p_field);
+  const int nf = p_f_vec.size();
   std::vector<ConstHandle<Field<M> > > vec(nf);
   for (int i = 0; i < nf; ++i) {
-    pqassert(pf_vec[i].ctype == pf.ctype);
-    vec[i].init(*(Field<M>*)pf_vec[i].cdata);
+    pqassert(py_get_ctype(p_f_vec[i]) == ctype);
+    const Field<M>& fi = py_convert_type_field<M>(p_f_vec[i]);
+    vec[i].init(fi);
   }
   merge_fields(f, vec);
   Py_RETURN_NONE;
@@ -219,15 +225,16 @@ PyObject* merge_fields_field_ctype(PyField& pf,
 template <class M>
 PyObject* merge_fields_ms_ctype(PyObject* p_field,
                                 const std::vector<PyObject*>& p_f_vec,
-                                const std::vector<int> m_vec)
+                                const std::vector<int>& m_vec)
 {
   Field<M>& f = py_convert_type_field<M>(p_field);
   const std::string ctype = py_get_ctype(p_field);
   const int multiplicity = p_f_vec.size();
   std::vector<ConstHandle<Field<M> > > vec(multiplicity);
   for (int m = 0; m < multiplicity; ++m) {
-    pqassert(ctype == py_get_ctype(p_f_vec[m]));
-    vec[m].init(py_convert_type_field<M>(p_f_vec[m]));
+    pqassert(py_get_ctype(p_f_vec[m]) == ctype);
+    const Field<M>& fm = py_convert_type_field<M>(p_f_vec[m]);
+    vec[m].init(fm);
   }
   merge_fields_ms(f, vec, m_vec);
   Py_RETURN_NONE;
@@ -352,11 +359,10 @@ EXPORT(get_elems_field, {
   if (!PyArg_ParseTuple(args, "OO", &p_field, &p_xg)) {
     return NULL;
   }
-  PyField pf = py_convert_field(p_field);
-  Coordinate xg;
-  py_convert(xg, p_xg);
+  const std::string ctype = py_get_ctype(p_field);
+  const Coordinate xg = py_convert_data<Coordinate>(p_xg);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, get_elems_field_ctype, pf.ctype, pf, xg);
+  FIELD_DISPATCH(p_ret, get_elems_field_ctype, ctype, p_field, xg);
   return p_ret;
 })
 
@@ -368,11 +374,10 @@ EXPORT(get_elem_field, {
   if (!PyArg_ParseTuple(args, "OO|l", &p_field, &p_xg, &m)) {
     return NULL;
   }
-  PyField pf = py_convert_field(p_field);
-  Coordinate xg;
-  py_convert(xg, p_xg);
+  const std::string ctype = py_get_ctype(p_field);
+  const Coordinate xg = py_convert_data<Coordinate>(p_xg);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, get_elem_field_ctype, pf.ctype, pf, xg, m);
+  FIELD_DISPATCH(p_ret, get_elem_field_ctype, ctype, p_field, xg, m);
   return p_ret;
 })
 
@@ -413,9 +418,9 @@ EXPORT(glb_sum_double_field, {
   if (!PyArg_ParseTuple(args, "O", &p_field)) {
     return NULL;
   }
-  PyField pf = py_convert_field(p_field);
+  const std::string ctype = py_get_ctype(p_field);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, glb_sum_double_field_ctype, pf.ctype, pf);
+  FIELD_DISPATCH(p_ret, glb_sum_double_field_ctype, ctype, p_field);
   return p_ret;
 })
 
@@ -425,9 +430,9 @@ EXPORT(glb_sum_long_field, {
   if (!PyArg_ParseTuple(args, "O", &p_field)) {
     return NULL;
   }
-  PyField pf = py_convert_field(p_field);
+  const std::string ctype = py_get_ctype(p_field);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, glb_sum_long_field_ctype, pf.ctype, pf);
+  FIELD_DISPATCH(p_ret, glb_sum_long_field_ctype, ctype, p_field);
   return p_ret;
 })
 
@@ -467,20 +472,20 @@ EXPORT(fft_fields, {
   // backwards compute
   // field(x) <- \sum_{k} exp( + ii * 2 pi * k * x ) field(k)
   using namespace qlat;
-  PyObject* p_fields = NULL;
+  PyObject* p_field_vec = NULL;
   PyObject* p_fft_dirs = NULL;
   PyObject* p_fft_is_forwards = NULL;
   int mode_fft = 1;
-  if (!PyArg_ParseTuple(args, "OOO|i", &p_fields, &p_fft_dirs,
+  if (!PyArg_ParseTuple(args, "OOO|i", &p_field_vec, &p_fft_dirs,
                         &p_fft_is_forwards, &mode_fft)) {
     return NULL;
   }
-  const std::vector<PyObject*> p_field_vec =
-      py_convert_data<std::vector<PyObject*> >(p_fields);
-  pqassert(p_field_vec.size() >= 1);
-  const std::string ctype = py_get_ctype(p_field_vec[0]);
-  for (long i = 0; i < (long)p_field_vec.size(); ++i) {
-    pqassert(ctype == py_get_ctype(p_field_vec[i]));
+  const std::vector<PyObject*> p_f_vec =
+      py_convert_data<std::vector<PyObject*> >(p_field_vec);
+  pqassert(p_f_vec.size() >= 1);
+  const std::string ctype = py_get_ctype(p_f_vec[0]);
+  for (long i = 0; i < (long)p_f_vec.size(); ++i) {
+    pqassert(ctype == py_get_ctype(p_f_vec[i]));
   }
   const std::vector<int> fft_dirs =
       py_convert_data<std::vector<int> >(p_fft_dirs);
@@ -488,7 +493,7 @@ EXPORT(fft_fields, {
       py_convert_data<std::vector<bool> >(p_fft_is_forwards);
   pqassert(fft_dirs.size() == fft_is_forwards.size());
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, fft_fields_ctype, ctype, p_field_vec, fft_dirs,
+  FIELD_DISPATCH(p_ret, fft_fields_ctype, ctype, p_f_vec, fft_dirs,
                  fft_is_forwards, mode_fft);
   return p_ret;
 })
@@ -529,11 +534,11 @@ EXPORT(split_fields_field, {
   if (!PyArg_ParseTuple(args, "OO", &p_field_vec, &p_field)) {
     return NULL;
   }
-  std::vector<PyField> pf_vec;
-  py_convert(pf_vec, p_field_vec);
-  PyField pf = py_convert_field(p_field);
+  const std::string ctype = py_get_ctype(p_field);
+  const std::vector<PyObject*> p_f_vec =
+      py_convert_data<std::vector<PyObject*> >(p_field_vec);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, split_fields_field_ctype, pf.ctype, pf_vec, pf);
+  FIELD_DISPATCH(p_ret, split_fields_field_ctype, ctype, p_f_vec, p_field);
   return p_ret;
 })
 
@@ -544,11 +549,11 @@ EXPORT(merge_fields_field, {
   if (!PyArg_ParseTuple(args, "OO", &p_field, &p_field_vec)) {
     return NULL;
   }
-  PyField pf = py_convert_field(p_field);
-  std::vector<PyField> pf_vec;
-  py_convert(pf_vec, p_field_vec);
+  const std::string ctype = py_get_ctype(p_field);
+  const std::vector<PyObject*> p_f_vec =
+      py_convert_data<std::vector<PyObject*> >(p_field_vec);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, merge_fields_field_ctype, pf.ctype, pf, pf_vec);
+  FIELD_DISPATCH(p_ret, merge_fields_field_ctype, ctype, p_field, p_f_vec);
   return p_ret;
 })
 
@@ -565,6 +570,7 @@ EXPORT(merge_fields_ms_field, {
       py_convert_data<std::vector<PyObject*> >(p_field_vec);
   const std::vector<int> m_vec = py_convert_data<std::vector<int> >(p_m_vec);
   PyObject* p_ret = NULL;
-  FIELD_DISPATCH(p_ret, merge_fields_ms_ctype, ctype, p_field, p_f_vec, m_vec);
+  FIELD_DISPATCH(p_ret, merge_fields_ms_ctype, ctype, p_field, p_f_vec,
+                 m_vec);
   return p_ret;
 })
