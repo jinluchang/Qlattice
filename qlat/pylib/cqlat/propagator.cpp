@@ -224,9 +224,8 @@ EXPORT(free_scalar_invert_mom_cfield, {
   if (!PyArg_ParseTuple(args, "Od", &p_field, &mass)) {
     return NULL;
   }
-  PyField pf = py_convert_field(p_field);
-  pqassert(pf.ctype == "Complex");
-  Field<Complex>& f = *(Field<Complex>*)pf.cdata;
+  pqassert("Complex" == py_get_ctype(p_field));
+  Field<Complex>& f = py_convert_type_field<Complex>(p_field);
   const CoordinateD momtwist;
   prop_free_scalar_invert(f, mass, momtwist);
   Py_RETURN_NONE;
