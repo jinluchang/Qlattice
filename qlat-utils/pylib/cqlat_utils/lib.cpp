@@ -4,25 +4,19 @@
 
 #include "lib.h"
 
-#define EXPORT_FUNCTION(name) EXPORT_FUNCTION_X(PY_PKG_NAME, name)
-#define EXPORT_FUNCTION_X(pname, name) EXPORT_FUNCTION_XX(pname, name)
-
 // declare
-#define EXPORT_FUNCTION_XX(pname, name) \
-  extern PyObject* pname##_##name(PyObject* self, PyObject* args);
+#define EXPORT_FUNCTION(name) \
+  extern PyObject* PKG_PREFIX(name)(PyObject* self, PyObject * args);
 extern "C" {
 #include "exports.h"
 }
-#undef EXPORT_FUNCTION_XX
+#undef EXPORT_FUNCTION
 
 // add to module functions
-#define EXPORT_FUNCTION_XX(pname, name) {#name, pname##_##name, METH_VARARGS, #name},
+#define EXPORT_FUNCTION(name) {#name, PKG_PREFIX(name), METH_VARARGS, #name},
 static PyMethodDef module_functions[] = {
 #include "exports.h"
     {NULL, NULL, 0, NULL}};
-#undef EXPORT_FUNCTION_XX
-
-#undef EXPORT_FUNCTION_X
 #undef EXPORT_FUNCTION
 
 // on exit

@@ -9,7 +9,7 @@
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
 #include <qlat-utils/show.h>
-#include <qlat/py_convert.h>
+#include <qlat-utils/py_convert.h>
 
 #define PKG_PREFIX(name) PKG_PREFIX_X(PY_PKG_NAME, name)
 #define PKG_PREFIX_X(pname, name) pname##_##name
