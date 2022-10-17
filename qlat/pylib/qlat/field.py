@@ -342,14 +342,15 @@ class Field:
         assert isinstance(tag, str)
         c.to_from_endianness_field(self, tag)
 
-    def as_complex_field(self):
-		# return new Field("Complex") with the same content
-        f = Field("Complex")
-        c.assign_as_complex_field(f, self)
+    def as_field(self, ctype = "Complex"):
+		# return new Field(ctype) with the same content
+        f = Field(ctype)
+        c.assign_as_field(f, self)
         return f
 
-    def from_complex_field(self, f):
-        c.assign_from_complex_field(self, f)
+    def from_field(self, f):
+		# assign from f with the same content but possibly different type
+        c.assign_from_field(self, f)
         return f
 
     def get_elems(self, xg):

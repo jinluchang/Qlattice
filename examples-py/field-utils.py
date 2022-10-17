@@ -81,7 +81,7 @@ for t_dir in range(4):
     q.displayln_info(f"t_dir={t_dir} qnorm diff", f"{q.qnorm(gf_sum):.14E}")
     assert q.qnorm(gf_sum) <= 1e-24
 
-f = gf.as_complex_field()
+f = gf.as_field("Complex")
 
 q.displayln_info(f.get_elems([0, 0, 0, 0,]))
 qnorm = q.qnorm(f.get_elems([0, 0, 0, 0,]))
@@ -89,7 +89,7 @@ q.displayln_info(f"CHECK: {qnorm:.14E}")
 
 gf1 = q.GaugeField()
 
-gf1.from_complex_field(f)
+gf1.from_field(f)
 
 gf1 -= gf
 
