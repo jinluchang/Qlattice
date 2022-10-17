@@ -1,0 +1,16 @@
+CHECK: geo.show() = Geometry([4, 4, 4, 8], 1)
+CHECK: 1.20000000000000E+01
+CHECK: 1.32086688810265E+03
+CHECK: t_dir=3 (default) qnorm(gf_sum_tslice)=1.53129372971588E+03
+CHECK: t_dir=0 n_points=4 multiplicity=4 psel_list=[[0, 0, 0, 0], [1, 0, 0, 0], [2, 0, 0, 0], [3, 0, 0, 0]]
+CHECK: t_dir=0 qnorm(gf_sum_tslice)=6.16610273658766E+05
+CHECK: t_dir=1 n_points=4 multiplicity=4 psel_list=[[0, 0, 0, 0], [0, 1, 0, 0], [0, 2, 0, 0], [0, 3, 0, 0]]
+CHECK: t_dir=1 qnorm(gf_sum_tslice)=1.23312658339709E+03
+CHECK: t_dir=2 n_points=4 multiplicity=4 psel_list=[[0, 0, 0, 0], [0, 0, 1, 0], [0, 0, 2, 0], [0, 0, 3, 0]]
+CHECK: t_dir=2 qnorm(gf_sum_tslice)=1.20560542737503E+03
+CHECK: t_dir=3 n_points=8 multiplicity=4 psel_list=[[0, 0, 0, 0], [0, 0, 0, 1], [0, 0, 0, 2], [0, 0, 0, 3], [0, 0, 0, 4], [0, 0, 0, 5], [0, 0, 0, 6], [0, 0, 0, 7]]
+CHECK: t_dir=3 qnorm(gf_sum_tslice)=1.53129372971588E+03
+CHECK: 1.20000000000000E+01
+CHECK: diff norm 0.0
+CHECK: 1.52216089614414E+05 1.52216089614414E+05 0.00000000000000E+00
+CHECK: finished successfully.

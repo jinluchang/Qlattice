@@ -1,0 +1,6 @@
+CHECK: geo.show() = Geometry([4, 4, 4, 8], 1)
+CHECK: psel.to_list() = [[0, 0, 0, 0], [0, 1, 2, 0]]
+CHECK: fsel info = Geometry([4, 4, 4, 8], 1) 16 2.50000000000000E-01
+CHECK: fsel info = Geometry([4, 4, 4, 8], 1) 16 2.50000000000000E-01
+CHECK: fsel info = Geometry([4, 4, 4, 8], 1) 16 2.50000000000000E-01
+CHECK: finished successfully.

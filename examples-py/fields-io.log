@@ -1,0 +1,24 @@
+CHECK: geo.show() = Geometry([4, 4, 4, 8], 1)
+CHECK: prop 4021037301 4.93041082746695E+04
+CHECK: sfw.new_size_node() [1, 1, 1, 8]
+CHECK: s_prop = SelProp(fsel) and s_prop @= prop   1.239182E+04
+CHECK: prop1 = SelProp(fselc) and prop1 @= prop 1.25896071556403E+04
+CHECK: sfr.list() ['prop.d', 'prop', 's_prop', 'prop1']
+CHECK: sfr.new_size_node() [1, 1, 1, 8]
+CHECK: prop_d 4021037301 4.93041082746695E+04
+CHECK: prop_d -= prop 4103169609 0.00000000000000E+00
+CHECK: prop_f 3862544378 4.93041082799339E+04
+CHECK: prop_f -= prop 412417133 2.49153006459549E-11
+CHECK: s_prop_f 1.23918209974934E+04
+CHECK: s_prop_f -= s_prop 6.25620024692772E-12
+CHECK: prop1_f 1.25896071538441E+04
+CHECK: prop1_f -= prop1 6.35657347080108E-12
+CHECK: prop1_ff 1.25896071538441E+04
+CHECK: prop1_ff -= prop1 6.35657347080108E-12
+CHECK:  ['prop.d', 'prop', 's_prop', 'prop1']
+CHECK:  ['prop.d', 'prop', 's_prop', 'prop1']
+CHECK:  ['prop.d', 'prop', 's_prop', 'prop1']
+CHECK:  ['prop.d', 'prop', 's_prop']
+CHECK:  []
+CHECK:  ['results/prop.fields/00/0000000000', 'results/prop.fields/00', 'results/prop.fields/01/0000000001', 'results/prop.fields/01', 'results/prop.fields/02/0000000002', 'results/prop.fields/02', 'results/prop.fields/03/0000000003', 'results/prop.fields/03', 'results/prop.fields/04/0000000004', 'results/prop.fields/04', 'results/prop.fields/05/0000000005', 'results/prop.fields/05', 'results/prop.fields/06/0000000006', 'results/prop.fields/06', 'results/prop.fields/07/0000000007', 'results/prop.fields/07', 'results/prop.fields/geon-info.txt', 'results/prop.fields']
+CHECK: finished successfully.
