@@ -92,6 +92,7 @@ class FastFourierTransform:
 
 ###
 
+@q.timer
 def mk_fft(is_forward, *, is_only_spatial = False, is_normalizing = False, mode_fft = 1):
     if is_only_spatial:
         fft_infos = [
@@ -111,6 +112,7 @@ def mk_fft(is_forward, *, is_only_spatial = False, is_normalizing = False, mode_
 
 ###
 
+@q.timer
 def qnorm_field(f):
     if isinstance(f, Field):
         f_n = Field("double")
@@ -123,3 +125,10 @@ def qnorm_field(f):
         displayln_info("qnorm_field:", type(f))
         assert False
     return f_n
+
+@q.timer
+def sqrt_double_field(f):
+    assert f.ctype == "double"
+    f_ret = Field("double")
+    c.set_sqrt_double_field(f_ret, f)
+    return f_ret
