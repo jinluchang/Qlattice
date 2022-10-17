@@ -3,6 +3,7 @@ import cqlat_utils as cu
 from qlat_utils.cache import *
 from qlat_utils.rng_state import *
 
+import math
 import sys
 
 def get_arg(option, default = None):
@@ -85,3 +86,8 @@ def c_rel_mod_sqr(x, size):
     l = len(size)
     assert l == len(x)
     return sum([ sqr(rel_mod(x[i], size[i])) for i in range(l) ])
+
+def phat_sqr(q, size):
+    l = len(size)
+    assert l == len(q)
+    return 4 * sum([ sqr(math.sin(math.pi * (q[i] % size[i]) / size[i])) for i in range(l) ])
