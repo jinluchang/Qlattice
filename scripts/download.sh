@@ -72,6 +72,8 @@ dget "zlib-1.2.11.tar.gz" "https://versaweb.dl.sourceforge.net/project/libpng/zl
 
 dget "gnuplot-5.4.3.tar.gz" "https://versaweb.dl.sourceforge.net/project/gnuplot/gnuplot/5.4.3/gnuplot-5.4.3.tar.gz"
 
+dget "tclap-1.2.5.tar.gz" "https://cytranet.dl.sourceforge.net/project/tclap/tclap-1.2.5.tar.gz"
+
 (
 mkdir -p python-packages
 cd python-packages
