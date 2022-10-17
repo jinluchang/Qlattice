@@ -82,6 +82,9 @@ def rel_mod_sym(x, size):
         assert 2 * x == size
         return 0
 
+def c_sqr(x):
+    return sum([ sqr(v) for v in x ])
+
 def c_rel_mod_sqr(x, size):
     l = len(size)
     assert l == len(x)
