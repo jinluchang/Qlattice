@@ -25,6 +25,11 @@ field_ctypes_double = [
         "double",
         ]
 
+field_ctypes_float = [
+        "ComplexF",
+        "float",
+        ]
+
 field_ctypes_long = [
         "long",
         "int64_t",
@@ -167,11 +172,19 @@ class Field:
 
     def set_rand(self, rng, upper = 1.0, lower = 0.0):
         assert isinstance(rng, RngState)
-        c.set_u_rand_double_field(self, rng, upper, lower)
+        if self.ctype in field_ctypes_double:
+            c.set_u_rand_double_field(self, rng, upper, lower)
+        elif self.ctype in field_ctypes_float:
+            c.set_u_rand_float_field(self, rng, upper, lower)
+        else:
+            assert False
 
     def set_rand_g(self, rng, center = 0.0, sigma = 1.0):
         assert isinstance(rng, RngState)
-        c.set_g_rand_double_field(self, rng, center, sigma)
+        if self.ctype in field_ctypes_double:
+            c.set_g_rand_double_field(self, rng, center, sigma)
+        else:
+            assert False
 
     def set_checkers(self):
         # no longer needed?
