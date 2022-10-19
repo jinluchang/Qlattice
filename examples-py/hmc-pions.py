@@ -8,6 +8,7 @@ import glob
 
 import qlat as q
 
+
 class Field_fft:
     def __init__(self, geo, mult=1):
         self.field = q.Field("double", geo, mult)
@@ -24,13 +25,13 @@ class Field_fft:
     
     def get_field(self):
         if(not self.updated):
-            self.field.set_double_from_complex(self.ifft*self.field_ft)
+            q.field_double.set_double_from_complex(self.field, self.ifft*self.field_ft)
             self.updated = True
         return self.field
     
     def get_field_ft(self):
         if(not self.updated_ft):
-            self.field_ft.set_complex_from_double(self.field)
+            q.field_double.set_complex_from_double(self.field_ft,self.field)
             self.field_ft = self.fft*self.field_ft
             self.updated_ft = True
         return self.field_ft
@@ -49,7 +50,7 @@ class Field_fft:
         action.hmc_set_rand_momentum(self.field_ft, masses, rng_state)
         # Performing the inverse Fourier transform this way projects
         # to real momenta
-        self.field.set_double_from_complex(self.ifft*self.field_ft)
+        q.field_double.set_double_from_complex(self.field,self.ifft*self.field_ft)
         self.field *= 2**0.5
         self.updated_ft = False
         self.updated = True
@@ -244,7 +245,7 @@ class HMC:
         self.field_av.multiply_double(self.field_av)
         self.field_av*=1/self.divisor
         self.field_sq_av-=self.field_av
-        self.masses.set_ratio_double(self.field_force_cor,self.field_sq_av)
+        q.field_double.set_ratio_double(self.masses,self.field_force_cor,self.field_sq_av)
         # After multiplying the ratio of force_mod_av/field_mod_av by
         # (pi/2)**(-2), we have our estimated masses
         self.masses *= 4/np.pi**2
@@ -260,10 +261,10 @@ class HMC:
     
     def choose_larger(self, field1, field2):
         # TODO: Make a more efficient, safer way to do it
-        field1.less_than_double(field2,self.mask)
+        q.field_double.less_than_double(field1, field2, self.mask)
         field2.multiply_double(self.mask)
         self.aux1.set_unit()
-        self.mask.less_than_double(self.aux1, self.mask)
+        q.field_double.less_than_double(self.mask, self.aux1, self.mask)
         field1.multiply_double(self.mask)
         field1+=field2
     
@@ -422,15 +423,15 @@ class HMC:
             else:
                 field.hmc_evolve(self.action, momentum, self.masses, lam * dt)
             if(self.safe_estimate_masses):
-                self.aux1.set_abs_from_complex(force.get_field_ft())
+                q.field_double.set_abs_from_complex(self.aux1,force.get_field_ft())
                 self.force_mod_av+=self.aux1
-                self.aux1.set_abs_from_complex(field.get_field_ft())
+                q.field_double.set_abs_from_complex(self.aux1,field.get_field_ft())
                 self.field_mod_av+=self.aux1
                 self.divisor+=1
             if(self.estimate_masses):
-                self.aux1.set_double_from_complex(field.get_field_ft())
+                q.field_double.set_double_from_complex(self.aux1,field.get_field_ft())
                 self.field_av+=self.aux1
-                self.aux2.set_double_from_complex(force.get_field_ft())
+                q.field_double.set_double_from_complex(self.aux2,force.get_field_ft())
                 self.force_av+=self.aux2
                 self.aux2.multiply_double(self.aux1)
                 self.field_force_cor+=self.aux2

@@ -54,3 +54,5 @@ from qlat.fields_io import *
 from qlat.inverter import *
 
 from qlat.mat import *
+
+import qlat.field_double

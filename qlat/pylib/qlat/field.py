@@ -186,52 +186,9 @@ class Field:
         else:
             assert False
 
-    def set_checkers(self):
-        # no longer needed?
-        assert self.ctype=="double"
-        c.set_checkers_double_field(self)
-
-    def set_complex_from_double(self, sf):
-        assert isinstance(sf, Field)
-        assert self.ctype=="Complex"
-        assert sf.ctype=="double"
-        c.set_complex_from_double_field(self,sf)
-
-    def set_double_from_complex(self, cf):
-        assert isinstance(cf, Field)
-        assert self.ctype=="double"
-        assert cf.ctype=="Complex"
-        c.set_double_from_complex_field(self,cf)
-
-    def set_abs_from_complex(self, cf):
-        assert isinstance(cf, Field)
-        assert self.ctype=="double"
-        assert cf.ctype=="Complex"
-        c.set_abs_from_complex_field(self,cf)
-
-    def set_ratio_double(self, sf1, sf2):
-        assert isinstance(sf1, Field)
-        assert isinstance(sf2, Field)
-        assert self.ctype=="double"
-        assert sf1.ctype=="double"
-        assert sf2.ctype=="double"
-        c.set_ratio_double_field(self,sf1,sf2)
-
-    def less_than_double(self, sf2, mask):
-        assert isinstance(sf2, Field)
-        assert isinstance(mask, Field)
-        assert self.ctype=="double"
-        assert sf2.ctype=="double"
-        assert mask.ctype=="double"
-        c.less_than_double_field(self,sf2,mask)
-
-    def invert_double(self):
-        assert self.ctype=="double"
-        c.invert_double_field(self)
-
     def multiply_double(self, factor):
         assert isinstance(factor, Field)
-        assert factor.ctype=="double"
+        assert factor.ctype == "double"
         c.multiply_double_field(self,factor)
 
     def qnorm(self):
