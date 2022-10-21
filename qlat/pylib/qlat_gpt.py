@@ -639,7 +639,7 @@ def check_gauge_fix_coulomb(gf, gt, eps = 1e-12):
         theta = g.norm2(dfv).real / Vt[t].grid.gsites / dfv.otype.Nc
         theta_list.append(theta)
     s = sum(theta_list) / t_size
-    q.displayln_info(f"check_gauge_fix_coulomb: theta slice average = {s} eps={eps}")
+    q.displayln_info(f"check_gauge_fix_coulomb: theta slice average={s} eps={eps}")
     if not (s < eps):
         q.displayln_info(f"WARNING: check_gauge_fix_coulomb: failed with {theta_list}.")
     return s < eps
