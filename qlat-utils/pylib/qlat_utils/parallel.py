@@ -33,7 +33,7 @@ def get_q_num_mp_processes():
 
 def get_q_verbose_parallel_map():
     global get_q_verbose_parallel_map
-    s = getenv("q_verbose_parallel_map", default = "0")
+    s = getenv("q_verbose_parallel_map", default = "1")
     v = int(s)
     get_q_verbose_parallel_map = lambda : v
     return v
