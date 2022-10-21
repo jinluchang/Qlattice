@@ -21,6 +21,8 @@ set -e
 ./scripts/zlib.sh
 ./scripts/openblas.sh
 ./scripts/python.sh
+./scripts/python-pip.sh
+./scripts/ninja.sh
 ./scripts/python-meson.sh
 ./scripts/python-packages.sh
 
