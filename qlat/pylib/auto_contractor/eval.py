@@ -121,7 +121,6 @@ def benchmark_eval_cexpr(cexpr : CExpr, *, benchmark_size = 10, benchmark_num = 
             ("point", tuple(benchmark_rng_state.split(f"positions {pos_idx}").c_rand_gen(size)),)
             for pos_idx in range(n_pos)
             ]
-    pos_idx_dict = dict([ (pos, pos_idx,) for pos_idx, pos in enumerate(cexpr.positions) ])
     set_flavors = set()
     for name, value in cexpr.variables_prop:
         assert name.startswith("V_S_")
@@ -135,8 +134,8 @@ def benchmark_eval_cexpr(cexpr : CExpr, *, benchmark_size = 10, benchmark_num = 
             pos_src = positions[pos_src_idx]
             for pos_snk_idx in range(n_pos):
                 pos_snk = positions[pos_snk_idx]
-                prop = make_rand_spin_color_matrix(benchmark_rng_state.split(f"prop {pos_snk_idx} {pos_src_idx}"))
-                prop_ama = make_rand_spin_color_matrix(benchmark_rng_state.split(f"prop ama {pos_snk_idx} {pos_src_idx}"))
+                prop = make_rand_spin_color_matrix(benchmark_rng_state.split(f"prop {flavor} {pos_snk_idx} {pos_src_idx}"))
+                prop_ama = make_rand_spin_color_matrix(benchmark_rng_state.split(f"prop ama {flavor} {pos_snk_idx} {pos_src_idx}"))
                 prop_dict[(flavor, pos_snk, pos_src,)] = mk_ama_val(prop, pos_src, [ prop, prop_ama, ], [ 0, 1, ], [ 1.0, 0.5, ])
     def mk_pos_dict(k):
         positions_dict = {}
