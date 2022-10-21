@@ -193,33 +193,38 @@ def get_cexpr_meson_quark_mass():
 def get_cexpr_meson_jt_zv():
     fn_base = f"cache/auto_contract_cexpr/get_cexpr_meson_jt_zv"
     def calc_cexpr():
+        diagram_type_dict = dict()
+        diagram_type_dict[((('t_1', 't_2'), 1), (('t_2', 'x_1'), 1), (('x_1', 't_1'), 1))] = 'Type1'
+        diagram_type_dict[((('t_1', 't_2'), 1), (('t_2', 't_1'), 1), (('x_1', 'x_1'), 1))] = None
+        diagram_type_dict[((('t_1p', 't_2p'), 1), (('t_2p', 'x_1'), 1), (('x_1', 't_1p'), 1))] = 'Type2'
+        diagram_type_dict[((('t_1p', 't_2p'), 1), (('t_2p', 't_1p'), 1), (('x_1', 'x_1'), 1))] = None
         exprs = [
-                sympy.simplify(1)/2 * (
+                mk_sym(1)/2 * (
                     mk_pi_p("t_1", True) * mk_vec_mu("u", "u", "x_1", 3) * mk_pi_p("t_2")
                     - mk_pi_m("t_1", True) * mk_vec_mu("u", "u", "x_1", 3) * mk_pi_m("t_2")
                     ),
-                sympy.simplify(1)/2 * (
+                mk_sym(1)/2 * (
                     mk_k_p("t_1", True) * mk_vec_mu("u", "u", "x_1", 3) * mk_k_p("t_2")
                     - mk_k_m("t_1", True) * mk_vec_mu("u", "u", "x_1", 3) * mk_k_m("t_2")
                     ),
-                sympy.simplify(1)/2 * (
+                mk_sym(1)/2 * (
                     mk_k_m("t_1", True) * mk_vec_mu("s", "s", "x_1", 3) * mk_k_m("t_2")
                     - mk_k_p("t_1", True) * mk_vec_mu("s", "s", "x_1", 3) * mk_k_p("t_2")
                     ),
-                sympy.simplify(1)/2 * (
+                mk_sym(1)/2 * (
                     mk_pi_p("t_1p", True) * mk_vec_mu("u", "u", "x_1", 3) * mk_pi_p("t_2p")
                     - mk_pi_m("t_1p", True) * mk_vec_mu("u", "u", "x_1", 3) * mk_pi_m("t_2p")
                     ),
-                sympy.simplify(1)/2 * (
+                mk_sym(1)/2 * (
                     mk_k_p("t_1p", True) * mk_vec_mu("u", "u", "x_1", 3) * mk_k_p("t_2p")
                     - mk_k_m("t_1p", True) * mk_vec_mu("u", "u", "x_1", 3) * mk_k_m("t_2p")
                     ),
-                sympy.simplify(1)/2 * (
+                mk_sym(1)/2 * (
                     mk_k_m("t_1p", True) * mk_vec_mu("s", "s", "x_1", 3) * mk_k_m("t_2p")
                     - mk_k_p("t_1p", True) * mk_vec_mu("s", "s", "x_1", 3) * mk_k_p("t_2p")
                     ),
                 ]
-        cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
+        cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True, diagram_type_dict = diagram_type_dict)
         q.qtouch_info(fn_base + ".info.txt", display_cexpr(cexpr))
         cexpr.optimize()
         return cexpr

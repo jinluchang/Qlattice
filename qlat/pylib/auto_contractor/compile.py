@@ -493,29 +493,27 @@ def get_term_diagram_type_info(term):
             min_type_info_repr = type_info_repr
     return min_type_info
 
-def filter_diagram_type_in_place(*exprs, diagram_type_dict = None, expr_diagram_type_dict = None):
+def filter_diagram_type(expr, diagram_type_dict = None, expr_diagram_type_dict = None):
     # drop diagrams with diagram_type_dict[diagram_type] == None
     # if expr_diagram_type_dict is not None:
     #     only keep diagrams with diagram_type that
     #     (diagram_type in expr_diagram_type_dict) and (expr_diagram_type_dict[diagram_type] is not None)
-    # modify in-place
     if diagram_type_dict is None and expr_diagram_type_dict is None:
-        return
-    for expr in exprs:
-        for term in expr.terms:
-            diagram_type = get_term_diagram_type_info(term)
+        return expr
+    new_terms = []
+    for term in expr.terms:
+        diagram_type = get_term_diagram_type_info(term)
+        if diagram_type_dict is not None:
             if diagram_type in diagram_type_dict:
                 if diagram_type_dict[diagram_type] is None:
-                    # Drop the term by setting the coef zero
-                    term.coef = 0
-            if expr_diagram_type_dict is not None:
-                if diagram_type not in expr_diagram_type_dict:
-                    # Drop the term by setting the coef zero
-                    term.coef = 0
-                elif expr_diagram_type_dict[diagram_type] is None:
-                    # Drop the term by setting the coef zero
-                    term.coef = 0
-        expr.terms = [ term for term in expr.terms if term.coef != 0 ]
+                    continue
+        if expr_diagram_type_dict is not None:
+            if diagram_type not in expr_diagram_type_dict:
+                continue
+            elif expr_diagram_type_dict[diagram_type] is None:
+                continue
+        new_terms.append(term)
+    return Expr(new_terms, expr.description)
 
 def mk_cexpr(*exprs, diagram_type_dict = None):
     # exprs already finished wick contraction,
@@ -601,11 +599,18 @@ def contract_simplify(*exprs, is_isospin_symmetric_limit = True, diagram_type_di
             expr_diagram_type_dict = None
         expr = contract_expr(expr)
         expr.simplify(is_isospin_symmetric_limit = is_isospin_symmetric_limit)
-        filter_diagram_type_in_place(expr,
+        expr = filter_diagram_type(expr,
                 diagram_type_dict = diagram_type_dict,
                 expr_diagram_type_dict = expr_diagram_type_dict)
         return expr
     return q.parallel_map(func, exprs)
+
+@q.timer
+def compile_expr(*exprs, diagram_type_dict = None):
+    # interface function
+    exprs = copy.deepcopy(exprs)
+    cexpr = mk_cexpr(*exprs, diagram_type_dict = diagram_type_dict)
+    return cexpr
 
 @q.timer
 def contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True, diagram_type_dict = None):
@@ -617,7 +622,7 @@ def contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True, diagram
             *exprs,
             is_isospin_symmetric_limit = is_isospin_symmetric_limit,
             diagram_type_dict = diagram_type_dict)
-    cexpr = mk_cexpr(*contracted_simplified_exprs, diagram_type_dict = diagram_type_dict)
+    cexpr = compile_expr(*contracted_simplified_exprs, diagram_type_dict = diagram_type_dict)
     return cexpr
 
 def show_variable_value(value):
