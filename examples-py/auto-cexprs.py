@@ -288,6 +288,52 @@ def get_cexpr_meson_jj_xx():
         return cexpr
     return cache_compiled_cexpr(calc_cexpr, fn_base)
 
+@q.timer
+def get_cexpr_meson_jj_mm_types():
+    fn_base = f"cache/auto_contract_cexpr/get_cexpr_meson_jj_mm_types"
+    def calc_cexpr():
+        diagram_type_dict = dict()
+        diagram_type_dict[((('t_1', 't_2'), 1), (('t_2', 'x_1'), 1), (('x_1', 't_1'), 1), (('x_2', 'x_2'), 1))] = None
+        diagram_type_dict[((('t_1', 't_2'), 1), (('t_2', 't_1'), 1), (('x_1', 'x_1'), 1), (('x_2', 'x_2'), 1))] = None
+        diagram_type_dict[((('t_1', 'x_1'), 1), (('t_2', 'x_2'), 1), (('x_1', 't_1'), 1), (('x_2', 't_2'), 1))] = 'Type1'
+        diagram_type_dict[((('t_1', 'x_1'), 1), (('t_2', 'x_2'), 1), (('x_1', 't_2'), 1), (('x_2', 't_1'), 1))] = 'Type2'
+        diagram_type_dict[((('t_1', 't_2'), 1), (('t_2', 'x_1'), 1), (('x_1', 'x_2'), 1), (('x_2', 't_1'), 1))] = 'Type3'
+        diagram_type_dict[((('t_1', 't_2'), 1), (('t_2', 't_1'), 1), (('x_1', 'x_2'), 1), (('x_2', 'x_1'), 1))] = 'Type4'
+        diagram_type_dict[((('x_1', 'x_1'), 1), (('x_2', 'x_2'), 1))] = None
+        diagram_type_dict[((('x_1', 'x_2'), 1), (('x_2', 'x_1'), 1))] = 'Type4'
+        jj_op = sum([
+            mk_j_mu("x_1", mu) * mk_j_mu("x_2", mu)
+            for mu in range(4)
+            ])
+        exprs = [ jj_op * mk_pi_0("t_1", True) * mk_pi_0("t_2")
+                + f"pi0 j_mu j_mu pi0",
+                mk_sym(1)/2 * jj_op
+                * (mk_pi_p("t_1", True) * mk_pi_p("t_2") + mk_pi_m("t_1", True) * mk_pi_m("t_2"))
+                + f"pi+ j_mu j_mu pi+",
+                mk_sym(1)/2 * jj_op
+                * (mk_k_0("t_1", True) * mk_k_0("t_2") + mk_k_0_bar("t_1", True) * mk_k_0_bar("t_2"))
+                + f"K0 j_mu j_mu K0",
+                mk_sym(1)/2 * jj_op
+                * (mk_k_p("t_1", True) * mk_k_p("t_2") + mk_k_m("t_1", True) * mk_k_m("t_2"))
+                + f"K+ j_mu j_mu K+",
+                jj_op
+                + f"j_mu j_mu",
+                ]
+        exprs = contract_simplify(*exprs, is_isospin_symmetric_limit = True, diagram_type_dict = diagram_type_dict)
+        typed_exprs = []
+        for expr in exprs:
+            typed_exprs.append(expr)
+            typed_exprs.append((expr, 'Type2', 'Type3'))
+            typed_exprs.append((expr, 'Type1'))
+            typed_exprs.append((expr, 'Type2'))
+            typed_exprs.append((expr, 'Type3'))
+            typed_exprs.append((expr, 'Type4'))
+        cexpr = contract_simplify_compile(*typed_exprs, is_isospin_symmetric_limit = True, diagram_type_dict = diagram_type_dict)
+        q.qtouch_info(fn_base + ".info.txt", display_cexpr(cexpr))
+        cexpr.optimize()
+        return cexpr
+    return cache_compiled_cexpr(calc_cexpr, fn_base)
+
 def get_all_cexpr():
     cexprs = [
             lambda : get_cexpr_zeros(),
@@ -301,6 +347,7 @@ def get_all_cexpr():
             lambda : get_cexpr_meson_jt_zv(),
             lambda : get_cexpr_meson_jj_mm(),
             lambda : get_cexpr_meson_jj_xx(),
+            lambda : get_cexpr_meson_jj_mm_types(),
             ]
     for cexpr in cexprs:
         cexpr = cexpr()

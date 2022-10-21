@@ -493,27 +493,27 @@ def get_term_diagram_type_info(term):
             min_type_info_repr = type_info_repr
     return min_type_info
 
-def filter_diagram_type(expr, diagram_type_dict = None, expr_diagram_type_dict = None):
+def filter_diagram_type(expr, diagram_type_dict = None, included_types = None):
     # drop diagrams with diagram_type_dict[diagram_type] == None
-    # if expr_diagram_type_dict is not None:
-    #     only keep diagrams with diagram_type that
-    #     (diagram_type in expr_diagram_type_dict) and (expr_diagram_type_dict[diagram_type] is not None)
-    if diagram_type_dict is None and expr_diagram_type_dict is None:
+    # if included_types is not None:
+    #     only keep diagrams with diagram_type that diagram_type in included_types.
+    if diagram_type_dict is None:
         return expr
     new_terms = []
     for term in expr.terms:
         diagram_type = get_term_diagram_type_info(term)
-        if diagram_type_dict is not None:
-            if diagram_type in diagram_type_dict:
-                if diagram_type_dict[diagram_type] is None:
+        if diagram_type in diagram_type_dict:
+            if diagram_type_dict[diagram_type] is None:
+                continue
+            if included_types is not None:
+                diagram_type_name = diagram_type_dict.get(diagram_type)
+                if diagram_type_name not in included_types:
                     continue
-        if expr_diagram_type_dict is not None:
-            if diagram_type not in expr_diagram_type_dict:
-                continue
-            elif expr_diagram_type_dict[diagram_type] is None:
-                continue
         new_terms.append(term)
-    return Expr(new_terms, expr.description)
+    included_types_tag = ""
+    if included_types is not None:
+        included_types_tag = " (" + ','.join(included_types) + ")"
+    return Expr(new_terms, expr.description + included_types_tag)
 
 def mk_cexpr(*exprs, diagram_type_dict = None):
     # exprs already finished wick contraction,
@@ -586,22 +586,25 @@ def mk_cexpr(*exprs, diagram_type_dict = None):
 @q.timer
 def contract_simplify(*exprs, is_isospin_symmetric_limit = True, diagram_type_dict = None):
     # interface function
-    # exprs = [ expr, (expr, expr_diagram_type_dict), ... ]
+    # exprs = [ expr, (expr, *included_types,), ... ]
     #
-    # if diagram_type_dict[diagram_type] is None: term is removed
-    # For (expr, expr_diagram_type_dict) only terms in expr
-    # with diagram_type that is in expr_diagram_type_dict (and not None) is kept
+    # In case diagram_type_dict is not None, perform the following filter
+    # If diagram_type_dict[diagram_type] is None: term is removed.
+    # For (expr, *included_types,), only terms (in expr) with diagram_type that is in included_types is kept
+    # included_types can be None, a string, or a list/tuple of string
     def func(expr):
         expr = copy.deepcopy(expr)
         if isinstance(expr, tuple):
-            expr, expr_diagram_type_dict = expr
+            expr, *included_types = expr
+        elif isinstance(expr, Expr):
+            included_types = None
         else:
-            expr_diagram_type_dict = None
+            assert False
         expr = contract_expr(expr)
         expr.simplify(is_isospin_symmetric_limit = is_isospin_symmetric_limit)
         expr = filter_diagram_type(expr,
                 diagram_type_dict = diagram_type_dict,
-                expr_diagram_type_dict = expr_diagram_type_dict)
+                included_types = included_types)
         return expr
     return q.parallel_map(func, exprs)
 
