@@ -229,33 +229,22 @@ def get_cexpr_meson_jt_zv():
 def get_cexpr_meson_jj_mm():
     fn_base = f"cache/auto_contract_cexpr/get_cexpr_meson_jj_mm"
     def calc_cexpr():
-        exprs = [
-                sum([
-                    mk_pi_0("t_1", True) * mk_j_mu("x_1", mu) * mk_j_mu("x_2", mu) * mk_pi_0("t_2")
-                    for mu in range(4) ])
+        jj_op = sum([
+            mk_j_mu("x_1", mu) * mk_j_mu("x_2", mu)
+            for mu in range(4)
+            ])
+        exprs = [ jj_op * mk_pi_0("t_1", True) * mk_pi_0("t_2")
                 + f"pi0 j_mu j_mu pi0",
-                sum([
-                    sympy.simplify(1)/2 * (
-                        mk_pi_p("t_1", True) * mk_j_mu("x_1", mu) * mk_j_mu("x_2", mu) * mk_pi_p("t_2")
-                        + mk_pi_m("t_1", True) * mk_j_mu("x_1", mu) * mk_j_mu("x_2", mu) * mk_pi_m("t_2"))
-                    for mu in range(4) ])
+                mk_sym(1)/2 * jj_op
+                * (mk_pi_p("t_1", True) * mk_pi_p("t_2") + mk_pi_m("t_1", True) * mk_pi_m("t_2"))
                 + f"pi+ j_mu j_mu pi+",
-                sum([
-                    sympy.simplify(1)/2 * (
-                        mk_k_0("t_1", True) * mk_j_mu("x_1", mu) * mk_j_mu("x_2", mu) * mk_k_0("t_2")
-                        + mk_k_0_bar("t_1", True) * mk_j_mu("x_1", mu) * mk_j_mu("x_2", mu) * mk_k_0_bar("t_2")
-                        )
-                    for mu in range(4) ])
+                mk_sym(1)/2 * jj_op
+                * (mk_k_0("t_1", True) * mk_k_0("t_2") + mk_k_0_bar("t_1", True) * mk_k_0_bar("t_2"))
                 + f"K0 j_mu j_mu K0",
-                sum([
-                    sympy.simplify(1)/2 * (
-                        mk_k_p("t_1", True) * mk_j_mu("x_1", mu) * mk_j_mu("x_2", mu) * mk_k_p("t_2")
-                        + mk_k_m("t_1", True) * mk_j_mu("x_1", mu) * mk_j_mu("x_2", mu) * mk_k_m("t_2"))
-                    for mu in range(4) ])
+                mk_sym(1)/2 * jj_op
+                * (mk_k_p("t_1", True) * mk_k_p("t_2") + mk_k_m("t_1", True) * mk_k_m("t_2"))
                 + f"K+ j_mu j_mu K+",
-                sum([
-                    mk_j_mu("x_1", mu) * mk_j_mu("x_2", mu)
-                    for mu in range(4) ])
+                jj_op
                 + f"j_mu j_mu",
                 ]
         cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
@@ -268,38 +257,24 @@ def get_cexpr_meson_jj_mm():
 def get_cexpr_meson_jj_xx():
     fn_base = f"cache/auto_contract_cexpr/get_cexpr_meson_jj_xx"
     def calc_cexpr():
-        fac = {}
-        for mu in range(3):
-            for nu in range(3):
-                fac[(mu, nu,)] = (mk_fac(f"rel_mod_sym(x_1[{mu}]-x_2[{mu}],size[{mu}])")
-                        * mk_fac(f"rel_mod_sym(x_1[{nu}]-x_2[{nu}],size[{nu}])"))
-        exprs = [
-                sum([
-                    fac[(mu, nu,)] * mk_pi_0("t_1", True) * mk_j_mu("x_1", mu) * mk_j_mu("x_2", nu) * mk_pi_0("t_2")
-                    for mu in range(3) for nu in range(3) ])
+        jj_op = sum([
+            mk_fac(f"rel_mod_sym(x_1[{mu}]-x_2[{mu}],size[{mu}])")
+            * mk_fac(f"rel_mod_sym(x_1[{nu}]-x_2[{nu}],size[{nu}])")
+            * mk_j_mu("x_1", mu) * mk_j_mu("x_2", nu)
+            for mu in range(3) for nu in range(3)
+            ])
+        exprs = [ jj_op * mk_pi_0("t_1", True) * mk_pi_0("t_2")
                 + f"x[a] x[b] pi0 j_a j_b pi0",
-                sum([
-                    mk_sym(1)/2 * fac[(mu, nu,)]
-                    * (mk_pi_p("t_1", True) * mk_j_mu("x_1", mu) * mk_j_mu("x_2", nu) * mk_pi_p("t_2")
-                        + mk_pi_m("t_1", True) * mk_j_mu("x_1", mu) * mk_j_mu("x_2", nu) * mk_pi_m("t_2"))
-                    for mu in range(3) for nu in range(3) ])
+                mk_sym(1)/2 * jj_op
+                * (mk_pi_p("t_1", True) * mk_pi_p("t_2") + mk_pi_m("t_1", True) * mk_pi_m("t_2"))
                 + f"x[a] x[b] pi+ j_a j_b pi+",
-                sum([
-                    mk_sym(1)/2 * fac[(mu, nu,)]
-                    * (mk_k_0("t_1", True) * mk_j_mu("x_1", mu) * mk_j_mu("x_2", nu) * mk_k_0("t_2")
-                        + mk_k_0_bar("t_1", True) * mk_j_mu("x_1", mu) * mk_j_mu("x_2", nu) * mk_k_0_bar("t_2")
-                        )
-                    for mu in range(3) for nu in range(3) ])
+                mk_sym(1)/2 * jj_op
+                * (mk_k_0("t_1", True) * mk_k_0("t_2") + mk_k_0_bar("t_1", True) * mk_k_0_bar("t_2"))
                 + f"x[a] x[b] K0 j_a j_b K0",
-                sum([
-                    mk_sym(1)/2 * fac[(mu, nu,)]
-                    * (mk_k_p("t_1", True) * mk_j_mu("x_1", mu) * mk_j_mu("x_2", nu) * mk_k_p("t_2")
-                        + mk_k_m("t_1", True) * mk_j_mu("x_1", mu) * mk_j_mu("x_2", nu) * mk_k_m("t_2"))
-                    for mu in range(3) for nu in range(3) ])
+                mk_sym(1)/2 * jj_op
+                * (mk_k_p("t_1", True) * mk_k_p("t_2") + mk_k_m("t_1", True) * mk_k_m("t_2"))
                 + f"x[a] x[b] K+ j_a j_b K+",
-                sum([
-                    fac[(mu, nu,)] * mk_j_mu("x_1", mu) * mk_j_mu("x_2", nu)
-                    for mu in range(3) for nu in range(3) ])
+                jj_op
                 + f"x[a] x[b] j_a j_b",
                 ]
         cexpr = contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True)
