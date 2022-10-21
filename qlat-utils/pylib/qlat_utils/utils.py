@@ -5,6 +5,18 @@ from qlat_utils.rng_state import *
 
 import math
 import sys
+import os
+
+def getenv(*names, default = None):
+    assert len(names) > 0
+    for name in names:
+        val = os.getenv(name)
+        if val is not None:
+            displayln_info(0, f"{name}='{val}'")
+            return val
+    val = default
+    displayln_info(0, f"{names[0]}='{val}' (default)")
+    return val
 
 def get_arg(option, default = None):
     argv = sys.argv

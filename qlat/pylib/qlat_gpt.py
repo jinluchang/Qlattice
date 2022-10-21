@@ -632,13 +632,14 @@ def check_gauge_fix_coulomb(gf, gt, eps = 1e-12):
     U = gpt_from_qlat(gf)
     Usep = [g.separate(u, 3) for u in U[0:3]]
     Vt = g.separate(V, 3)
-    s = 0.0
+    theta_list = []
     for t in range(t_size):
         f = g.qcd.gauge.fix.landau([Usep[mu][t] for mu in range(3)])
         dfv = f.gradient(Vt[t], Vt[t])
         theta = g.norm2(dfv).real / Vt[t].grid.gsites / dfv.otype.Nc
-        s += theta
-        q.displayln_info(f"theta[{t}] = {theta}")
-    s /= t_size
+        theta_list.append(theta)
+    s = sum(theta_list) / t_size
     q.displayln_info(f"check_gauge_fix_coulomb: theta slice average = {s} eps={eps}")
+    if not (s < eps):
+        q.displayln_info(f"WARNING: check_gauge_fix_coulomb: failed with {theta_list}.")
     return s < eps

@@ -25,26 +25,18 @@ def process_initialization():
     # clear_all_caches()
 
 def get_q_num_mp_processes():
-    v = os.getenv("q_num_mp_processes")
-    if v is None:
-        v = os.getenv("q_num_threads")
-    if v is None:
-        v = os.getenv("OMP_NUM_THREADS")
-    if v is None:
-        v = 2
-    displayln_info(0, f"q_num_mp_processes='{v}'")
-    return int(v)
+    global get_q_num_mp_processes
+    s = getenv("q_num_mp_processes", "q_num_threads", "OMP_NUM_THREADS", default = "2")
+    v = int(s)
+    get_q_num_mp_processes = lambda : v
+    return v
 
-q_num_mp_processes = get_q_num_mp_processes()
-
-def get_q_is_verbose_parallel_map():
-    v = os.getenv("q_is_verbose_parallel_map")
-    if v is None:
-        v = True
-    displayln_info(0, f"q_is_verbose_parallel_map='{v}'")
-    return bool(v)
-
-q_is_verbose_parallel_map = get_q_is_verbose_parallel_map()
+def get_q_verbose_parallel_map():
+    global get_q_verbose_parallel_map
+    s = getenv("q_verbose_parallel_map", default = "0")
+    v = int(s)
+    get_q_verbose_parallel_map = lambda : v
+    return v
 
 @timer
 def parallel_map(func, iterable,
@@ -53,7 +45,7 @@ def parallel_map(func, iterable,
         n_proc = None,
         chunksize = 1,
         process_initialization = process_initialization,
-        is_verbose = None):
+        verbose = None):
     # iterable = [ i1, i2, ... ]
     # v1 = func(i1)
     # v2 = func(i2)
@@ -67,14 +59,14 @@ def parallel_map(func, iterable,
                 sum_function = sum_function,
                 chunksize = chunksize,
                 process_initialization = process_initialization,
-                is_verbose = is_verbose)
+                verbose = verbose)
     assert _to_be_removed_ is None
     #####
     if n_proc is None:
-        n_proc = q_num_mp_processes
-    if is_verbose is None:
-        is_verbose = q_is_verbose_parallel_map
-    if is_verbose:
+        n_proc = get_q_num_mp_processes()
+    if verbose is None:
+        verbose = get_q_verbose_parallel_map()
+    if verbose > 0:
         displayln_info(f"parallel_map(n_proc={n_proc})")
     if n_proc == 0:
         return list(map(func, iterable))
@@ -86,10 +78,10 @@ def parallel_map(func, iterable,
         gc.collect()
         gc.freeze()
         with mp.Pool(n_proc, process_initialization, []) as p:
-            if is_verbose:
+            if verbose > 0:
                 p.apply(show_memory_usage)
             res = p.map(call_pool_function, iterable, chunksize = chunksize)
-            if is_verbose:
+            if verbose > 0:
                 p.apply(show_memory_usage)
                 p.apply(timer_display)
     finally:
@@ -107,7 +99,7 @@ def parallel_map_sum(func, iterable,
         sum_start = None,
         chunksize = 1,
         process_initialization = process_initialization,
-        is_verbose = False):
+        verbose = None):
     # iterable = [ i1, i2, ... ]
     # v1 = func(i1)
     # v2 = func(i2)
@@ -122,14 +114,14 @@ def parallel_map_sum(func, iterable,
                 sum_start = sum_start,
                 chunksize = chunksize,
                 process_initialization = process_initialization,
-                is_verbose = is_verbose)
+                verbose = verbose)
     assert _to_be_removed_ is None
     #####
     if n_proc is None:
-        n_proc = q_num_mp_processes
-    if is_verbose is None:
-        is_verbose = q_is_verbose_parallel_map
-    if is_verbose:
+        n_proc = get_q_num_mp_processes()
+    if verbose is None:
+        verbose = get_q_verbose_parallel_map()
+    if verbose > 0:
         displayln_info(f"parallel_map_sum(n_proc={n_proc})")
     if sum_function is None:
         sum_function = sum
@@ -143,14 +135,14 @@ def parallel_map_sum(func, iterable,
         gc.collect()
         gc.freeze()
         with mp.Pool(n_proc, process_initialization, []) as p:
-            if is_verbose:
+            if verbose > 0:
                 p.apply(show_memory_usage)
             res = p.imap(call_pool_function, iterable, chunksize = chunksize)
             if sum_start is None:
                 ret = sum_function(res)
             else:
                 ret = sum_function(res, sum_start)
-            if is_verbose:
+            if verbose > 0:
                 p.apply(show_memory_usage)
                 p.apply(timer_display)
     finally:

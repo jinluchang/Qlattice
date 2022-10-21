@@ -369,12 +369,10 @@ class CExpr:
     # self.variables_prod
     # self.variables_tr
     # self.named_terms
-    # self.named_typed_exprs
     # self.named_exprs
     # self.function
     #
     # self.named_terms[i] = (term_name, Term(c_ops, [], 1),)
-    # self.named_typed_exprs[i] = (typed_expr_name, [ (ea_coef, term_name,), ... ],)
     # self.named_exprs[i] = (expr_name, [ (ea_coef, term_name,), ... ],)
     # self.positions == sorted(list(self.positions))
 
@@ -386,7 +384,6 @@ class CExpr:
         self.variables_prod = []
         self.variables_tr = []
         self.named_terms = []
-        self.named_typed_exprs = []
         self.named_exprs = []
         self.function = None
 
@@ -406,7 +403,7 @@ class CExpr:
             assert term.coef == 1
             assert term.a_ops == []
         # collect ea_coef factors into variables
-        self.variables_factor = collect_factor_in_cexpr(self.named_typed_exprs + self.named_exprs)
+        self.variables_factor = collect_factor_in_cexpr(self.named_exprs)
         # collect prop expr into variables
         self.variables_prop = collect_prop_in_cexpr(self.named_terms)
         # collect trace expr into variables
@@ -496,10 +493,24 @@ def get_term_diagram_type_info(term):
             min_type_info_repr = type_info_repr
     return min_type_info
 
+def filter_diagram_type(*exprs, diagram_type_dict = None):
+    # drop diagrams with diagram_type_dict[diagram_type] == None
+    # modify in-place
+    if diagram_type_dict is None:
+        return
+    for expr in exprs:
+        for term in expr.terms:
+            diagram_type = get_term_diagram_type_info(term)
+            if diagram_type in diagram_type_dict:
+                if diagram_type_dict[diagram_type] is None:
+                    # Drop the term by setting the coef zero
+                    term.coef = 0
+        expr.terms = [ term for term in expr.terms if term.coef != 0 ]
+
 def mk_cexpr(*exprs, diagram_type_dict = None):
     # exprs already finished wick contraction,
     # otherwise use contract_simplify_compile(*exprs, is_isospin_symmetric_limit, diagram_type_dict)
-    # !!!if diagram_type_dict[diagram_type] == None: this diagram_type will not be included!!!
+    # !!!if diagram_type_dict[diagram_type] == None: this diagram_type should have already be dropped!!!
     # interface function
     if diagram_type_dict is None:
         diagram_type_dict = dict()
@@ -522,9 +533,7 @@ def mk_cexpr(*exprs, diagram_type_dict = None):
                 diagram_type_dict[diagram_type] = diagram_type_name
             diagram_type_name = diagram_type_dict[diagram_type]
             diagram_type_term_dict[repr_term] = diagram_type_name
-            if diagram_type_name is None:
-                # Do not include diagrams where diagram_type_dict[diagram_type] is None
-                continue
+            assert diagram_type_name is not None
             term_name_counter = 0
             while True:
                 term_name = f"term_{diagram_type_name}_{term_name_counter:0>4}"
@@ -542,7 +551,6 @@ def mk_cexpr(*exprs, diagram_type_dict = None):
     for term_name, term in sorted(term_name_dict.items()):
         named_terms.append((term_name, term,))
     # name exprs
-    named_typed_exprs = []
     named_exprs = []
     for i, expr in enumerate(exprs):
         expr_list = []
@@ -552,14 +560,10 @@ def mk_cexpr(*exprs, diagram_type_dict = None):
             term.coef = 1
             repr_term = repr(term)
             diagram_type_name = diagram_type_term_dict[repr_term]
-            if diagram_type_name is None:
-                continue
+            assert diagram_type_name is not None
             term_name = term_dict[repr_term]
             typed_expr_list_dict[diagram_type_name].append((coef, term_name,))
             expr_list.append((coef, term_name,))
-        for diagram_type_name, typed_expr_list in typed_expr_list_dict.items():
-            if typed_expr_list:
-                named_typed_exprs.append((f"# {descriptions[i]}\ntyped_exprs[{i}]['{diagram_type_name}']", typed_expr_list,))
         named_exprs.append((f"# {descriptions[i]}\nexprs[{i}]", expr_list,))
     # positions
     positions = collect_position_in_cexpr(named_terms)
@@ -568,9 +572,19 @@ def mk_cexpr(*exprs, diagram_type_dict = None):
     cexpr.diagram_types = diagram_types
     cexpr.positions = positions
     cexpr.named_terms = named_terms
-    cexpr.named_typed_exprs = named_typed_exprs
     cexpr.named_exprs = named_exprs
     return cexpr
+
+@q.timer
+def contract_simplify(*exprs, is_isospin_symmetric_limit = True, diagram_type_dict = None):
+    # interface function
+    def func(expr):
+        expr = copy.deepcopy(expr)
+        expr = contract_expr(expr)
+        expr.simplify(is_isospin_symmetric_limit = is_isospin_symmetric_limit)
+        filter_diagram_type(expr, diagram_type_dict)
+        return expr
+    return q.parallel_map(func, exprs)
 
 @q.timer
 def contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True, diagram_type_dict = None):
@@ -578,12 +592,10 @@ def contract_simplify_compile(*exprs, is_isospin_symmetric_limit = True, diagram
     # e.g. exprs = [ mk_pi_p("x2", True) * mk_pi_p("x1") + "(pi   * pi)", mk_j5pi_mu("x2", 3) * mk_pi_p("x1") + "(a_pi * pi)", mk_k_p("x2", True)  * mk_k_p("x1")  + "(k    * k )", mk_j5k_mu("x2", 3)  * mk_k_p("x1")  + "(a_k  * k )", ]
     # After this function, call cexpr.optimize() to perform CSE
     # interface function
-    def func(expr):
-        expr = copy.deepcopy(expr)
-        expr = contract_expr(expr)
-        expr.simplify(is_isospin_symmetric_limit = is_isospin_symmetric_limit)
-        return expr
-    contracted_simplified_exprs = q.parallel_map(func, exprs)
+    contracted_simplified_exprs = contract_simplify(
+            *exprs,
+            is_isospin_symmetric_limit = is_isospin_symmetric_limit,
+            diagram_type_dict = diagram_type_dict)
     cexpr = mk_cexpr(*contracted_simplified_exprs, diagram_type_dict = diagram_type_dict)
     return cexpr
 
@@ -644,9 +656,6 @@ def display_cexpr_raw(cexpr : CExpr):
     lines.append(f"Named terms:")
     for name, term in cexpr.named_terms:
         lines.append(f"{name:>20} : {term}")
-    lines.append(f"Named typed exprs:")
-    for name, typed_expr in cexpr.named_typed_exprs:
-        lines.append(f"{name} :\n  {typed_expr}")
     lines.append(f"Named exprs:")
     for name, expr in cexpr.named_exprs:
         lines.append(f"{name} :\n  {expr}")
@@ -691,12 +700,6 @@ def display_cexpr(cexpr : CExpr):
     for idx, (name, term) in enumerate(cexpr.named_terms):
         name_type = "_".join([ "coef", ] + name.split("_")[1:-1])
         lines.append(f"{name} = {name_type} * terms[{idx}]")
-    lines.append(f"typed_exprs = [ dict() for i in range({len(cexpr.named_exprs)}) ]")
-    for name, typed_expr in cexpr.named_typed_exprs:
-        s = "+".join(map(show_variable_value, typed_expr))
-        if s == "":
-            s = 0
-        lines.append(f"{name} = {s}")
     lines.append(f"exprs = [ None for i in range({len(cexpr.named_exprs)}) ]")
     for name, expr, in cexpr.named_exprs:
         s = "+".join(map(show_variable_value, expr))
