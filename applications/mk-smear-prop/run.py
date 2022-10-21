@@ -19,9 +19,9 @@ load_path_list[:] = [
         "../qcddata-2",
         "../qcddata-3",
         "../qcddata-4",
-        os.path.join(os.getenv("HOME"), "Qlat-sample-data/mk-gf-gt/results"),
-        os.path.join(os.getenv("HOME"), "Qlat-sample-data/mk-sel/results"),
-        os.path.join(os.getenv("HOME"), "Qlat-sample-data/mk-lanc/results"),
+        os.path.join(os.getenv("HOME"), "Qlat-sample-data/default/mk-gf-gt/results"),
+        os.path.join(os.getenv("HOME"), "Qlat-sample-data/default/mk-sel/results"),
+        os.path.join(os.getenv("HOME"), "Qlat-sample-data/default/mk-lanc/results"),
         os.path.join(os.getenv("HOME"), "qcddata"),
         ]
 
@@ -102,7 +102,7 @@ def compute_prop_smear_all(job_tag, traj, *,
     q.qtouch_info(get_save_path(os.path.join(path_sp, "checkpoint.txt")))
     q.qrename_info(get_save_path(path_s + ".acc"), get_save_path(path_s))
     q.qar_create_info(get_save_path(path_sp + ".qar"), get_save_path(path_sp), is_remove_folder_after = True)
-    q.qar_create_info(get_save_path(path_s + ".qar"), get_save_path(path_s), is_remove_folder_after = True)
+    # q.qar_create_info(get_save_path(path_s + ".qar"), get_save_path(path_s), is_remove_folder_after = True)
 
 @q.timer
 def run_prop_smear(job_tag, traj, *, inv_type, get_gf, get_gf_ape, get_eig, get_gt, get_psel, get_fsel, get_psel_smear):
@@ -128,10 +128,10 @@ def run_prop_smear(job_tag, traj, *, inv_type, get_gf, get_gf_ape, get_eig, get_
 @q.timer_verbose
 def run_job(job_tag, traj):
     fns_produce = [
-            f"{job_tag}/prop-smear-light/traj-{traj}/geon-info.txt",
-            f"{job_tag}/psel-prop-smear-light/traj-{traj}/checkpoint.txt",
-            f"{job_tag}/prop-smear-strange/traj-{traj}/geon-info.txt",
-            f"{job_tag}/psel-prop-smear-strange/traj-{traj}/checkpoint.txt",
+            (f"{job_tag}/prop-smear-light/traj-{traj}.qar", f"{job_tag}/prop-smear-light/traj-{traj}/geon-info.txt",),
+            (f"{job_tag}/psel-prop-smear-light/traj-{traj}.qar", f"{job_tag}/psel-prop-smear-light/traj-{traj}/checkpoint.txt",),
+            (f"{job_tag}/prop-smear-strange/traj-{traj}.qar", f"{job_tag}/prop-smear-strange/traj-{traj}/geon-info.txt",),
+            (f"{job_tag}/psel-prop-smear-strange/traj-{traj}.qar", f"{job_tag}/psel-prop-smear-strange/traj-{traj}/checkpoint.txt",),
             ]
     fns_need = [
             (f"{job_tag}/configs/ckpoint_lat.{traj}", f"{job_tag}/configs/ckpoint_lat.IEEE64BIG.{traj}",),
