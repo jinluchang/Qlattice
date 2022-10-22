@@ -43,6 +43,7 @@ def as_mspincolor(x):
     elif x == 0:
         wm.set_zero()
     else:
+        q.displayln(f"as_mspincolor {x}")
         assert False
     return wm
 

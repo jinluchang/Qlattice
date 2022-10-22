@@ -125,13 +125,13 @@ class Expr:
     def simplify_coef(self) -> None:
         for t in self.terms:
             t.simplify_coef()
+        self.drop_zeros()
 
     @q.timer
     def simplify(self) -> None:
         # interface function
         self.sort()
         self.combine_terms()
-        # self.simplify_coef()
         self.drop_zeros()
 
     def is_zero(self) -> bool:
@@ -146,17 +146,26 @@ class Expr:
 ### ------
 
 def simplified(x):
+    # interface function
     x = copy.deepcopy(mk_expr(x))
     x.simplify()
     return x
 
+def coef_simplified(x):
+    # interface function
+    x = copy.deepcopy(mk_expr(x))
+    x.simplify_coef()
+    return x
+
 def compile_py(x):
+    # interface function
     if isinstance(x, (int, float, complex, sympy.Basic,)):
         return compile_py_complex(x)
     else:
         return mk_expr(x).compile_py()
 
 def is_zero(x):
+    # interface function
     if isinstance(x, (int, float, complex, sympy.Basic,)):
         return x == 0
     elif isinstance(x, Expr):
@@ -166,6 +175,7 @@ def is_zero(x):
         assert False
 
 def mk_expr(x):
+    # interface function
     if isinstance(x, Expr):
         return x
     elif isinstance(x, Term):

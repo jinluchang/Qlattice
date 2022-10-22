@@ -478,7 +478,10 @@ class Term:
         self.c_ops.sort(key = repr)
 
     def simplify_coef(self) -> None:
-        self.coef = sympy.simplify(self.coef)
+        self.coef = ea.coef_simplified(self.coef)
+
+    def simplify_ea(self) -> None:
+        self.coef = ea.simplified(self.coef)
 
     def collect_traces(self) -> None:
         self.c_ops = collect_traces(self.c_ops)
@@ -530,6 +533,8 @@ class Expr:
         for t1 in self.terms:
             for t2 in other.terms:
                 coef = t1.coef * t2.coef
+                if coef == 0:
+                    continue
                 t = Term(t1.c_ops + t2.c_ops, t1.a_ops + t2.a_ops, coef)
                 terms.append(t)
         return Expr(terms, f"{self.show(True)} * {other.show(True)}")
@@ -578,6 +583,13 @@ class Expr:
     def simplify_coef(self) -> None:
         for t in self.terms:
             t.simplify_coef()
+        self.drop_zeros()
+
+    @q.timer
+    def simplify_ea(self) -> None:
+        for t in self.terms:
+            t.simplify_ea()
+        self.drop_zeros()
 
     @q.timer
     def combine_terms(self) -> None:
@@ -616,8 +628,7 @@ class Expr:
         self.collect_traces()
         self.sort()
         self.combine_terms()
-        # self.simplify_coef()
-        self.drop_zeros()
+        self.simplify_ea()
 
 ### ------
 

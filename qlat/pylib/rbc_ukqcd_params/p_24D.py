@@ -61,10 +61,10 @@ dict_params[f"cg_params-0-2"] = {}
 dict_params[f"cg_params-0-2"]["maxiter"] = 300
 
 dict_params[f"cg_params-1-0"] = {}
-dict_params[f"cg_params-1-0"]["maxiter"] = 250
+dict_params[f"cg_params-1-0"]["maxiter"] = 300
 
 dict_params[f"cg_params-1-1"] = {}
-dict_params[f"cg_params-1-1"]["maxiter"] = 250
+dict_params[f"cg_params-1-1"]["maxiter"] = 300
 
 dict_params[f"cg_params-1-2"] = {}
 dict_params[f"cg_params-1-2"]["maxiter"] = 300
