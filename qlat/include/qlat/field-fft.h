@@ -21,7 +21,7 @@ inline bool check_fft_plan_key(const Geometry& geo, const int mc, const int dir,
   qassert(0 < geo.multiplicity);
   bool b = true;
   b = b && geo.eo == 0;
-  b = b && geo.is_only_local();
+  b = b && geo.is_only_local;
   b = b && mc % geo.multiplicity == 0;
   b = b && 0 <= dir and dir < 4;
   b = b && (is_forward == true or is_forward == false);

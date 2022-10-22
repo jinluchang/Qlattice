@@ -215,7 +215,7 @@ crc32_t field_simple_checksum(const Field<M>& f)
 // call with data endianness native to the machine
 {
   TIMER("field_simple_checksum");
-  qassert(f.geo().is_only_local());
+  qassert(f.geo().is_only_local);
   crc32_t ret = 0;
   const Vector<M> v = get_data(f);
   Vector<crc32_t> vc((crc32_t*)v.data(), v.data_size() / sizeof(crc32_t));

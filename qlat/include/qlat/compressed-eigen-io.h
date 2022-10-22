@@ -1179,7 +1179,7 @@ inline void convert_half_vector(BlockedHalfVector& bhv, const HalfVector& hv,
   init_blocked_half_vector(bhv, geo_reform(hv.geo()), block_site, ls);
   const Geometry& geo = hv.geo();
   const Coordinate node_block = geo.node_site / block_site;
-  qassert(geo.is_only_local());
+  qassert(geo.is_only_local);
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -1203,7 +1203,7 @@ inline void convert_half_vector(HalfVector& hv, const BlockedHalfVector& bhv)
   init_half_vector(hv, bhv.geo_full, ls);
   const Geometry& geo = hv.geo();
   const Coordinate node_block = geo.node_site / block_site;
-  qassert(geo.is_only_local());
+  qassert(geo.is_only_local);
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -1228,7 +1228,7 @@ inline void convert_half_vectors(std::vector<HalfVector>& hvs,
   hvs.resize(bhvs.size());
   for (int i = 0; i < (int)hvs.size(); ++i) {
     convert_half_vector(hvs[i], bhvs[i]);
-    qassert(hvs[i].geo().is_only_local());
+    qassert(hvs[i].geo().is_only_local);
     bhvs[i].init();
   }
   clear(bhvs);
@@ -1241,7 +1241,7 @@ inline void convert_half_vector_bfm_format(Vector<ComplexF> bfm_data,
 {
   TIMER("convert_half_vector_bfm_format");
   const long size = bfm_data.size();
-  qassert(hv.geo().is_only_local());
+  qassert(hv.geo().is_only_local);
   qassert((long)hv.field.size() == size);
 #pragma omp parallel for
   for (long m = 0; m < size / 2; ++m) {

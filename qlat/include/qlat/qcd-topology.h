@@ -304,7 +304,7 @@ inline double topology_charge_5(const GaugeField& gf)
   FieldM<double, 1> topf;
   clf_topology_field_5(topf, gf);
   const Geometry& geo = topf.geo();
-  qassert(geo.is_only_local());
+  qassert(geo.is_only_local);
   double sum = 0.0;
   for (long index = 0; index < geo.local_volume(); ++index) {
     sum += topf.get_elem(index);

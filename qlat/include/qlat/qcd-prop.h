@@ -491,8 +491,8 @@ inline void convert_wm_from_mspincolor(Propagator4d& prop_wm, const Propagator4d
   TIMER("convert_wm_from_mspincolor");
   const Geometry& geo = prop_msc.geo();
   prop_wm.init(geo);
-  qassert(geo.is_only_local());
-  qassert(prop_wm.geo().is_only_local());
+  qassert(geo.is_only_local);
+  qassert(prop_wm.geo().is_only_local);
   qacc_for(index, geo.local_volume(), {
     WilsonMatrix& wm = prop_wm.get_elem(index);
     const WilsonMatrix& msc = prop_msc.get_elem(index);
@@ -505,8 +505,8 @@ inline void convert_mspincolor_from_wm(Propagator4d& prop_msc, const Propagator4
   TIMER("convert_mspincolor_from_wm");
   const Geometry& geo = prop_wm.geo();
   prop_msc.init(geo);
-  qassert(geo.is_only_local());
-  qassert(prop_wm.geo().is_only_local());
+  qassert(geo.is_only_local);
+  qassert(prop_wm.geo().is_only_local);
   qacc_for(index, geo.local_volume(), {
     WilsonMatrix& msc = prop_msc.get_elem(index);
     const WilsonMatrix& wm = prop_wm.get_elem(index);

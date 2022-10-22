@@ -87,6 +87,8 @@ class ShuffledFieldsReader:
         return sbs
 
     def read(self, fn, obj):
+        # Can also read SelectedField obj with obj.fsel is None
+        # After reading, obj.fsel will be properly loaded.
         assert isinstance(fn, str)
         if isinstance(obj, Field):
             return c.read_sfr_field(self, fn, obj)

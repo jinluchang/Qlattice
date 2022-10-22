@@ -103,7 +103,8 @@ geo = { initialized   = true
 , node_site     = 4x4x4x4
 , expan_left    = 0x0x0x0
 , expan_right   = 0x0x0x0
-, node_site_exp = 4x4x4x4 }
+, node_site_exp = 4x4x4x4
+, is_only_local = true }
 block_site = 2x2x2x2
 ls = 8, neig = 100, nkeep = 50
 Cache: 'CommPlanCache': 2 / 32 [16] to add
@@ -253,7 +254,8 @@ geo = { initialized   = true
 , node_site     = 4x4x4x4
 , expan_left    = 0x0x0x0
 , expan_right   = 0x0x0x0
-, node_site_exp = 4x4x4x4 }
+, node_site_exp = 4x4x4x4
+, is_only_local = true }
 block_site = 2x2x2x2
 ls = 8, neig = 100, nkeep = 50
 invert_with_cg(5d,5d,inv,cg): dm_in sqrt(qnorm) = 8.000000E+00

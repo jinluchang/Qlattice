@@ -81,7 +81,7 @@ struct API BitSet {
     TIMER("BitSet::set_f_rank")
     const Geometry& geo = f_rank.geo();
     qassert(geo.local_volume() == (long)N);
-    qassert(geo.is_only_local());
+    qassert(geo.is_only_local);
     qassert(geo.multiplicity == 1);
     for (size_t i = 0; i < N; i++) {
       if (get(i)) {
@@ -95,7 +95,7 @@ struct API BitSet {
   {
     TIMER("BitSet::check_f_rank")
     const Geometry& geo = f_rank.geo();
-    qassert(geo.is_only_local());
+    qassert(geo.is_only_local);
     qassert(geo.multiplicity == 1);
     if (not(geo.local_volume() == (long)N)) {
       return false;
@@ -199,7 +199,7 @@ inline BitSet mk_bitset_from_field_rank(const FieldM<int64_t, 1>& f_rank,
   TIMER("mk_bitset_from_field_rank");
   const Geometry& geo = f_rank.geo();
   BitSet bs(geo.local_volume());
-  qassert(geo.is_only_local());
+  qassert(geo.is_only_local);
   for (long index = 0; index < geo.local_volume(); ++index) {
     const int64_t rank = f_rank.get_elem(index);
     if (0 <= rank and (rank < n_per_tslice or n_per_tslice == -1)) {
@@ -902,7 +902,7 @@ long read(FieldsReader& fr, const std::string& fn, SelectedField<M>& sf,
   Geometry geo;
   geo.init(fr.geon, total_site / fr.geon.size_node, 1);
   f_rank.init(geo);
-  qassert(f_rank.geo().is_only_local());
+  qassert(f_rank.geo().is_only_local);
   set_field_from_data(sf, f_rank, data);
   timer.flops += total_bytes;
   return total_bytes;

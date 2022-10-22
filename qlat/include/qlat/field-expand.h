@@ -34,7 +34,7 @@ inline void set_marks_field_all(CommMarks& marks, const Geometry& geo,
        ++offset) {
     const Coordinate xl = geo.coordinate_from_offset(offset);
     if (not geo.is_local(xl)) {
-      marks.get_elem(offset) = 1;
+      marks.get_elem_offset(offset) = 1;
     }
   }
 }
@@ -191,7 +191,7 @@ inline CommPlan make_comm_plan(const CommMarks& marks)
       src_id_node_g_offsets;  // src node id ; vector of g_offset
   for (long offset = 0; offset < geo.local_volume_expanded() * geo.multiplicity;
        ++offset) {
-    const int8_t r = marks.get_elem(offset);
+    const int8_t r = marks.get_elem_offset(offset);
     if (r != 0) {
       int id_node;
       long g_offset;
@@ -410,7 +410,7 @@ void refresh_expanded(Field<M>& f, const CommPlan& plan)
 #pragma omp parallel for
   for (long i = 0; i < (long)plan.send_pack_infos.size(); ++i) {
     const CommPackInfo& cpi = plan.send_pack_infos[i];
-    memcpy(&send_buffer[cpi.buffer_idx], &f.get_elem(cpi.offset),
+    memcpy(&send_buffer[cpi.buffer_idx], &f.get_elem_offset(cpi.offset),
            cpi.size * sizeof(M));
   }
   {
@@ -439,7 +439,7 @@ void refresh_expanded(Field<M>& f, const CommPlan& plan)
 #pragma omp parallel for
   for (long i = 0; i < (long)plan.recv_pack_infos.size(); ++i) {
     const CommPackInfo& cpi = plan.recv_pack_infos[i];
-    memcpy(&f.get_elem(cpi.offset), &recv_buffer[cpi.buffer_idx],
+    memcpy(&f.get_elem_offset(cpi.offset), &recv_buffer[cpi.buffer_idx],
            cpi.size * sizeof(M));
   }
 }

@@ -2402,7 +2402,7 @@ QFile: close 'huge-data/t0/demo.lfs/14/0000000029' with 'r'.
 QFile: close 'huge-data/t0/demo.lfs/15/0000000030' with 'r'.
 QFile: close 'huge-data/t0/demo.lfs/15/0000000031' with 'r'.
 Cache: 'ShufflePlanCache': 2 / 16 [8] clear
-clear_mem_cache: 442624 bytes (0.000 GB) freed.
+clear_mem_cache: 442880 bytes (0.000 GB) freed.
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 0.
 qlat::end(): Finalize MPI.

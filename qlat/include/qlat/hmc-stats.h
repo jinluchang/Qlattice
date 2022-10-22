@@ -10,7 +10,7 @@ inline double get_field_max(const FieldM<double, 1>& fd)
 {
   TIMER("get_field_max");
   const Geometry& geo = fd.geo();
-  qassert(fd.geo().is_only_local());
+  qassert(fd.geo().is_only_local);
   double m = fd.get_elem(0);
   for (long index = 1; index < geo.local_volume(); ++index) {
     m = std::max(m, fd.get_elem(index));

@@ -30,11 +30,17 @@ struct API Geometry {
   // node_site_expanded[i] = expansion_left[i] + node_site[i] +
   // expansion_right[i]
   //
+  bool is_only_local;
+  //
   qacc void reset_node_site_expanded()
   {
+    is_only_local = true;
     for (int i = 0; i < DIMN; ++i) {
       node_site_expanded[i] =
           expansion_left[i] + node_site[i] + expansion_right[i];
+      if (expansion_left[i] != 0 or expansion_right[i] != 0) {
+        is_only_local = false;
+      }
     }
   }
   //
@@ -210,16 +216,6 @@ struct API Geometry {
     return eo == 0 or eo_from_coordinate(x) == eo;
   }
   //
-  qacc bool is_only_local() const
-  {
-    for (int i = 0; i < 4; i++) {
-      if (expansion_left[i] != 0 or expansion_right[i] != 0) {
-        return false;
-      }
-    }
-    return true;
-  }
-  //
   qacc long local_volume() const
   {
     if (eo == 0) {
@@ -292,7 +288,8 @@ qacc bool operator==(const Geometry& geo1, const Geometry& geo2)
          geo1.node_site == geo2.node_site &&
          geo1.expansion_left == geo2.expansion_left &&
          geo1.expansion_right == geo2.expansion_right &&
-         geo1.node_site_expanded == geo2.node_site_expanded;
+         geo1.node_site_expanded == geo2.node_site_expanded &&
+         geo1.is_only_local == geo2.is_only_local;
 }
 
 qacc bool operator!=(const Geometry& geo1, const Geometry& geo2)
@@ -364,7 +361,8 @@ inline std::string show(const qlat::Geometry& geo)
   s += ssprintf(", node_site     = %s\n", show(geo.node_site).c_str());
   s += ssprintf(", expan_left    = %s\n", show(geo.expansion_left).c_str());
   s += ssprintf(", expan_right   = %s\n", show(geo.expansion_right).c_str());
-  s += ssprintf(", node_site_exp = %s }", show(geo.node_site_expanded).c_str());
+  s += ssprintf(", node_site_exp = %s\n", show(geo.node_site_expanded).c_str());
+  s += ssprintf(", is_only_local = %s }", show(geo.is_only_local).c_str());
   return s;
 }
 

@@ -29,7 +29,7 @@ inline void mk_grid_field_selection(FieldM<int64_t, 1>& f_rank,
   geo.init(total_site, 1);
   f_rank.init();
   f_rank.init(geo);
-  qassert(f_rank.geo().is_only_local());
+  qassert(f_rank.geo().is_only_local);
   qthread_for(index, geo.local_volume(), {
     f_rank.get_elem(index) = -1;
   });
@@ -195,7 +195,7 @@ crc32_t field_crc32(const SelectedField<M>& sf, const FieldSelection& fsel,
 {
   TIMER_VERBOSE_FLOPS("field_crc32(sf)");
   const Geometry& geo = sf.geo();
-  qassert(geo.is_only_local());
+  qassert(geo.is_only_local);
   qassert(fsel.f_rank.geo() == geo_remult(geo));
   // const Coordinate total_site = geo.total_site();
   const Coordinate new_size_node = new_size_node_ != Coordinate()
@@ -252,7 +252,7 @@ long write_selected_field(const SelectedField<M>& sf, const std::string& path,
   TIMER_VERBOSE_FLOPS("write_selected_field");
   displayln_info(fname + ssprintf(": fn='%s'.", path.c_str()));
   const Geometry& geo = sf.geo();
-  qassert(geo.is_only_local());
+  qassert(geo.is_only_local);
   qassert(fsel.f_rank.geo() == geo_remult(geo));
   const Coordinate total_site = geo.total_site();
   const Coordinate new_size_node = new_size_node_ != Coordinate()
@@ -546,7 +546,7 @@ void convert_field_float_from_double(SelectedField<N>& ff,
 // interface_function
 {
   TIMER("convert_field_float_from_double(sf)");
-  qassert(f.geo().is_only_local());
+  qassert(f.geo().is_only_local);
   qassert(sizeof(M) % sizeof(double) == 0);
   qassert(sizeof(N) % sizeof(float) == 0);
   qassert(f.geo().multiplicity * sizeof(M) / 2 % sizeof(N) == 0);
@@ -571,7 +571,7 @@ void convert_field_double_from_float(SelectedField<N>& ff,
 // interface_function
 {
   TIMER("convert_field_double_from_float(sf)");
-  qassert(f.geo().is_only_local());
+  qassert(f.geo().is_only_local);
   qassert(sizeof(M) % sizeof(float) == 0);
   qassert(sizeof(N) % sizeof(double) == 0);
   qassert(f.geo().multiplicity * sizeof(M) * 2 % sizeof(N) == 0);

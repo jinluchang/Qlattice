@@ -40,7 +40,7 @@ inline void mk_field_selection(FieldM<int64_t, 1>& f_rank,
   geo.init(total_site, 1);
   f_rank.init();
   f_rank.init(geo);
-  qassert(f_rank.geo().is_only_local());
+  qassert(f_rank.geo().is_only_local);
 #pragma omp parallel for
   for (long index = 0; index < geo.local_volume(); ++index) {
     int64_t& rank = f_rank.get_elem(index);
@@ -69,7 +69,7 @@ inline void select_rank_range(FieldM<int64_t, 1>& f_rank,
 {
   TIMER_VERBOSE("select_rank_range");
   const Geometry& geo = f_rank.geo();
-  qassert(geo.is_only_local());
+  qassert(geo.is_only_local);
   //const Coordinate total_site = geo.total_site();
   qacc_for(index, geo.local_volume(), {
     int64_t& rank = f_rank.get_elem(index);
@@ -88,7 +88,7 @@ inline void select_t_range(FieldM<int64_t, 1>& f_rank, const long t_start = 0,
 {
   TIMER_VERBOSE("select_t_range");
   const Geometry& geo = f_rank.geo();
-  qassert(geo.is_only_local());
+  qassert(geo.is_only_local);
   //const Coordinate total_site = geo.total_site();
   qacc_for(index, geo.local_volume(), {
     const Coordinate xl = geo.coordinate_from_index(index);
@@ -117,7 +117,7 @@ inline void set_n_per_tslice(FieldM<int64_t, 1>& f_rank,
 {
   TIMER_VERBOSE("set_n_per_tslice");
   const Geometry& geo = f_rank.geo();
-  qassert(geo.is_only_local());
+  qassert(geo.is_only_local);
   const Coordinate total_site = geo.total_site();
   const long spatial_vol = total_site[0] * total_site[1] * total_site[2];
   qassert(n_per_tslice == -1 or
@@ -168,7 +168,7 @@ inline void update_field_selection(FieldSelection& fsel)
 {
   TIMER_VERBOSE("update_field_selection");
   const Geometry& geo = fsel.f_rank.geo();
-  qassert(geo.is_only_local());
+  qassert(geo.is_only_local);
   fsel.f_local_idx.init();
   fsel.f_local_idx.init(geo);
   long n_elems = 0;
@@ -202,7 +202,7 @@ inline void update_field_selection(FieldSelection& fsel,
 // only adjust parameter, do not change contents
 {
   const Geometry& geo = fsel.f_rank.geo();
-  qassert(geo.is_only_local());
+  qassert(geo.is_only_local);
   const Coordinate total_site = geo.total_site();
   const long spatial_vol = total_site[0] * total_site[1] * total_site[2];
   qassert(n_per_tslice_ == -1 or
@@ -423,7 +423,7 @@ bool is_consistent(const SelectedField<M>& sf, const FieldSelection& fsel)
          geo_remult(sf.geo(), 1) == fsel.f_local_idx.geo() and
          fsel.f_rank.geo() == fsel.f_local_idx.geo() and
          (long) sf.field.size() == sf.n_elems * (long)sf.geo().multiplicity and
-         fsel.f_local_idx.geo().is_only_local();
+         fsel.f_local_idx.geo().is_only_local;
 }
 
 template <class M>
@@ -540,8 +540,8 @@ template <class M>
 void only_keep_selected_points(Field<M>& f, const FieldSelection& fsel)
 {
   TIMER("only_keep_selected_points");
-  qassert(f.geo().is_only_local());
-  qassert(fsel.f_local_idx.geo().is_only_local());
+  qassert(f.geo().is_only_local);
+  qassert(fsel.f_local_idx.geo().is_only_local);
   qassert(geo_remult(f.geo()) == geo_remult(fsel.f_local_idx.geo()));
   const Geometry& geo = f.geo();
   const FieldM<long, 1>& f_local_idx = fsel.f_local_idx;
@@ -561,8 +561,8 @@ void set_selected_field(SelectedField<M>& sf, const Field<M>& f,
                         const FieldSelection& fsel)
 {
   TIMER("set_selected_field(sf,f,fsel)");
-  qassert(f.geo().is_only_local());
-  qassert(fsel.f_local_idx.geo().is_only_local());
+  qassert(f.geo().is_only_local);
+  qassert(fsel.f_local_idx.geo().is_only_local);
   qassert(geo_remult(f.geo()) == fsel.f_local_idx.geo());
   const Geometry& geo = f.geo();
   const int multiplicity = geo.multiplicity;
@@ -583,9 +583,9 @@ void set_selected_field(SelectedField<M>& sf, const SelectedField<M>& sf0,
 // Does not clear sf's original value if not assigned
 {
   TIMER("set_selected_field(sf,sf0,fsel,fsel0)");
-  qassert(sf0.geo().is_only_local());
-  qassert(fsel.f_local_idx.geo().is_only_local());
-  qassert(fsel0.f_local_idx.geo().is_only_local());
+  qassert(sf0.geo().is_only_local);
+  qassert(fsel.f_local_idx.geo().is_only_local);
+  qassert(fsel0.f_local_idx.geo().is_only_local);
   qassert(geo_remult(sf0.geo()) == fsel0.f_local_idx.geo());
   qassert(geo_remult(sf0.geo()) == fsel.f_local_idx.geo());
   const Geometry& geo = sf0.geo();
@@ -663,8 +663,8 @@ void set_field_selected(Field<M>& f, const SelectedField<M>& sf,
                         const bool is_keeping_data = false)
 {
   TIMER("set_field_selected(f,sf,fsel)");
-  qassert(sf.geo().is_only_local());
-  qassert(fsel.f_local_idx.geo().is_only_local());
+  qassert(sf.geo().is_only_local);
+  qassert(fsel.f_local_idx.geo().is_only_local);
   qassert(geo_remult(sf.geo()) == fsel.f_local_idx.geo());
   const Geometry& geo = sf.geo();
   if (not is_keeping_data) {
@@ -770,8 +770,8 @@ std::vector<M> field_sum_tslice(const SelectedField<M>& sf,
 // length = t_size * multiplicity
 {
   TIMER("field_sum_tslice");
-  qassert(sf.geo().is_only_local());
-  qassert(fsel.f_local_idx.geo().is_only_local());
+  qassert(sf.geo().is_only_local);
+  qassert(fsel.f_local_idx.geo().is_only_local);
   qassert(geo_remult(sf.geo()) == fsel.f_local_idx.geo());
   const Geometry& geo = sf.geo();
   const int t_size = geo.total_site()[t_dir];
@@ -843,8 +843,8 @@ void set_selected_field_slow(SelectedField<M>& sf, const Field<M>& f,
                              const FieldSelection& fsel)
 {
   TIMER("set_selected_field_slow");
-  qassert(f.geo().is_only_local());
-  qassert(fsel.f_local_idx.geo().is_only_local());
+  qassert(f.geo().is_only_local);
+  qassert(fsel.f_local_idx.geo().is_only_local);
   qassert(geo_remult(f.geo()) == fsel.f_local_idx.geo());
   const Geometry& geo = f.geo();
   const int multiplicity = geo.multiplicity;
@@ -869,8 +869,8 @@ void set_field_selected_slow(Field<M>& f, const SelectedField<M>& sf,
                              const FieldSelection& fsel)
 {
   TIMER("set_field_selected_slow");
-  qassert(sf.geo().is_only_local());
-  qassert(fsel.f_local_idx.geo().is_only_local());
+  qassert(sf.geo().is_only_local);
+  qassert(fsel.f_local_idx.geo().is_only_local);
   qassert(geo_remult(sf.geo()) == fsel.f_local_idx.geo());
   const Geometry& geo = sf.geo();
   f.init();

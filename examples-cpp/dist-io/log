@@ -2794,7 +2794,7 @@ FftComplexFieldPlan::end(): free a plan.
 FftComplexFieldPlan::end(): free a plan.
 FftComplexFieldPlan::end(): free a plan.
 Cache: 'ShufflePlanCache': 7 / 16 [8] clear
-clear_mem_cache: 25484800 bytes (0.024 GB) freed.
+clear_mem_cache: 25485312 bytes (0.024 GB) freed.
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 0.
 qlat::end(): Finalize MPI.

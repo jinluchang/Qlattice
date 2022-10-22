@@ -130,12 +130,12 @@ struct API Field {
     return *this;
   }
   //
-  qacc M& get_elem(const long offset)
+  qacc M& get_elem_offset(const long offset)
   {
     qassert(0 <= offset && offset < (long)field.size());
     return field[offset];
   }
-  qacc const M& get_elem(const long offset) const
+  qacc const M& get_elem_offset(const long offset) const
   {
     qassert(0 <= offset && offset < (long)field.size());
     return field[offset];
@@ -147,7 +147,7 @@ struct API Field {
     qassert(geo_v.is_on_node(x));
     qassert(0 <= m && m < geo_v.multiplicity);
     const long offset = geo_v.offset_from_coordinate(x) + m;
-    return get_elem(offset);
+    return get_elem_offset(offset);
   }
   qacc const M& get_elem(const Coordinate& x, const int m) const
   {
@@ -155,7 +155,7 @@ struct API Field {
     qassert(geo_v.is_on_node(x));
     qassert(0 <= m && m < geo_v.multiplicity);
     const long offset = geo_v.offset_from_coordinate(x) + m;
-    return get_elem(offset);
+    return get_elem_offset(offset);
   }
   //
   qacc M& get_elem(const Coordinate& x)
@@ -191,18 +191,48 @@ struct API Field {
     return Vector<M>(&field[offset], geo_v.multiplicity);
   }
   //
-  qacc Vector<M> get_elems(const long index)
-  // qassert(geo().is_only_local())
+  qacc M& get_elem(const long index, const int m)
   {
     const Geometry& geo_v = geo();
+    qassert(geo_v.is_only_local);
+    qassert(0 <= m && m < geo_v.multiplicity);
+    return get_elem_offset(index * geo_v.multiplicity + m);
+  }
+  qacc const M& get_elem(const long index, const int m) const
+  {
+    const Geometry& geo_v = geo();
+    qassert(geo_v.is_only_local);
+    qassert(0 <= m && m < geo_v.multiplicity);
+    return get_elem_offset(index * geo_v.multiplicity + m);
+  }
+  //
+  qacc M& get_elem(const long index)
+  {
+    const Geometry& geo_v = geo();
+    qassert(geo_v.is_only_local);
+    qassert(1 == geo_v.multiplicity);
+    return get_elem_offset(index);
+  }
+  qacc const M& get_elem(const long index) const
+  {
+    const Geometry& geo_v = geo();
+    qassert(geo_v.is_only_local);
+    qassert(1 == geo_v.multiplicity);
+    return get_elem_offset(index);
+  }
+  //
+  qacc Vector<M> get_elems(const long index)
+  {
+    const Geometry& geo_v = geo();
+    qassert(geo_v.is_only_local);
     return Vector<M>(&field[index * geo_v.multiplicity], geo_v.multiplicity);
   }
   qacc Vector<M> get_elems_const(const long index) const
   // Be cautious about the const property
   // 改不改靠自觉
-  // qassert(geo().is_only_local())
   {
     const Geometry& geo_v = geo();
+    qassert(geo_v.is_only_local);
     return Vector<M>(&field[index * geo_v.multiplicity], geo_v.multiplicity);
   }
 };
@@ -368,7 +398,7 @@ template <class M>
 double qnorm_double(const Field<M>& f1, const Field<M>& f2)
 {
   const Geometry& geo = f1.geo();
-  qassert(geo.is_only_local());
+  qassert(geo.is_only_local);
   qassert(geo == f2.geo());
   double sum = qnorm_double(get_data(f1), get_data(f2));
   glb_sum(sum);

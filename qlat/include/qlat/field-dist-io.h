@@ -152,7 +152,7 @@ inline void dist_write_geo_info(const Geometry& geo, const int sizeof_M,
 {
   TIMER("dist_write_geo_info");
   const int id_node = geo.geon.id_node;
-  qassert(geo.is_only_local());
+  qassert(geo.is_only_local);
   if (0 == id_node) {
     check_dir(path, mode);
     const std::string fn = path + "/geo-info.txt";
@@ -357,7 +357,7 @@ long dist_write_field(const Field<M>& f, const std::string& path)
 // interface_function
 {
   TIMER_VERBOSE("dist_write_field");
-  qassert(f.geo().is_only_local());
+  qassert(f.geo().is_only_local);
   std::vector<ConstHandle<Field<M> > > fs(1);
   fs[0].init(f);
   return dist_write_fields(fs, get_num_node(), path);
@@ -530,7 +530,7 @@ void convert_field_float_from_double(Field<N>& ff, const Field<M>& f)
 // interface_function
 {
   TIMER("convert_field_float_from_double");
-  qassert(f.geo().is_only_local());
+  qassert(f.geo().is_only_local);
   qassert(sizeof(M) % sizeof(double) == 0);
   qassert(sizeof(N) % sizeof(float) == 0);
   qassert(f.geo().multiplicity * sizeof(M) / 2 % sizeof(N) == 0);
@@ -553,7 +553,7 @@ void convert_field_double_from_float(Field<N>& ff, const Field<M>& f)
 // interface_function
 {
   TIMER("convert_field_double_from_float");
-  qassert(f.geo().is_only_local());
+  qassert(f.geo().is_only_local);
   qassert(sizeof(M) % sizeof(float) == 0);
   qassert(sizeof(N) % sizeof(double) == 0);
   qassert(f.geo().multiplicity * sizeof(M) * 2 % sizeof(N) == 0);

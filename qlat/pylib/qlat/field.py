@@ -323,54 +323,62 @@ class Field:
         c.assign_from_field(self, f)
         return f
 
-    def get_elems(self, xg):
-        return np.array(c.get_elems_field(self, xg))
+    def get_elems(self, index):
+        # index can also be xg
+        # get_elems is collective operation when xg is coordinate
+        # get_elems will be specific to a single process if xg is index
+        return np.array(c.get_elems_field(self, index))
 
-    def get_elem(self, xg, m = None):
+    def get_elem(self, index, m = None):
+        # index can also be xg
         if m is None:
-            return np.array(c.get_elem_field(self, xg))
+            return np.array(c.get_elem_field(self, index))
         else:
-            return np.array(c.get_elem_field(self, xg, m))
+            return np.array(c.get_elem_field(self, index, m))
 
-    def set_elems(self, xg, val):
+    def set_elems(self, index, val):
+        # index can also be xg
         # val should be np.ndarray or bytes. e.g. np.array([1, 2, 3], dtype = complex).tobytes()
         if isinstance(val, bytes):
-            return c.set_elems_field(self, xg, val)
+            return c.set_elems_field(self, index, val)
         elif isinstance(val, np.ndarray):
-            return self.set_elems(xg, val.tobytes())
+            return self.set_elems(index, val.tobytes())
         else:
             assert False
 
-    def set_elem(self, xg, m, val):
+    def set_elem(self, index, m, val):
+        # index can also be xg
         # val should be np.ndarray or bytes. e.g. np.array([1, 2, 3], dtype = complex).tobytes()
         if isinstance(val, bytes):
-            return c.set_elem_field(self, xg, m, val)
+            return c.set_elem_field(self, index, m, val)
         elif isinstance(val, np.ndarray):
-            return self.set_elem(xg, m, val.tobytes())
+            return self.set_elem(index, m, val.tobytes())
         else:
             assert False
 
     def __getitem__(self, i):
-        # i can be (xg, m,) or xg
-        if isinstance(i, tuple) and len(i) == 2 and isinstance(i[0], (list, tuple)):
-            xg, m = i
-            return self.get_elem(xg, m)
-        elif isinstance(i, (list, tuple)):
-            xg = i
-            return self.get_elems(xg)
+        # i can be (index, m,) or index
+        # index can also be xg
+        if isinstance(i, tuple) and len(i) == 2 and isinstance(i[0], (int, list, tuple,)):
+            index, m = i
+            return self.get_elem(index, m)
+        elif isinstance(i, (int, list, tuple)):
+            index = i
+            return self.get_elems(index)
         else:
             assert False
             return None
 
     def __setitem__(self, i, val):
-        # i can be (xg, m,) or xg
+        # i can be (index, m,) or index
+        # index can also be xg
         # val should be np.ndarray or bytes. e.g. np.array([1, 2, 3], dtype = complex).tobytes()
-        if isinstance(i, tuple) and len(i) == 2 and isinstance(i[0], (list, tuple)):
-            xg, m = i
-            return self.set_elem(xg, m, val)
-        elif isinstance(i, (list, tuple)):
-            xg = i
-            return self.set_elems(xg, val)
+        if isinstance(i, tuple) and len(i) == 2 and isinstance(i[0], (int, list, tuple,)):
+            index, m = i
+            return self.set_elem(index, m, val)
+        elif isinstance(i, (int, list, tuple)):
+            index = i
+            return self.set_elems(index, val)
         else:
             assert False
             return None

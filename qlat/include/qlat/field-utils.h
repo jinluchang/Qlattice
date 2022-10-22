@@ -24,7 +24,7 @@ void set_unit(Field<M>& f, const Complex& coef = 1.0)
 {
   TIMER("set_unit(Field)");
   for (long offset = 0; offset < f.field.size(); ++offset) {
-    set_unit(f.get_elem(offset), coef);
+    set_unit(f.get_elem_offset(offset), coef);
   }
 }
 
@@ -32,7 +32,7 @@ template <class M, class N>
 void assign(Field<N>& f, const Field<M>& f1)
 {
   const Geometry& geo1 = f1.geo();
-  qassert(geo1.is_only_local());
+  qassert(geo1.is_only_local);
   const Geometry geo =
       geo_remult(geo1, geo1.multiplicity * sizeof(M) / sizeof(N));
   f.init();
@@ -287,6 +287,17 @@ void field_set_elem(Field<M>& f, const Coordinate& xg, const int m, const M& val
 }
 
 template <class M>
+void field_set_elem(Field<M>& f, const Coordinate& xg, const M& val)
+// xg do not need to be the same on all the nodes
+{
+  const Geometry& geo = f.geo();
+  const Coordinate xl = geo.coordinate_l_from_g(xg);
+  if (geo.is_local(xl)) {
+    f.get_elem(xl) = val;
+  }
+}
+
+template <class M>
 void split_fields(std::vector<Handle<Field<M> > >& vec, const Field<M>& f)
 // fields in vector will be reinitialized to have the same geo and multiplicity
 {
@@ -295,7 +306,7 @@ void split_fields(std::vector<Handle<Field<M> > >& vec, const Field<M>& f)
   qassert(is_initialized(f));
   const long nf = vec.size();
   const Geometry& geo = f.geo();
-  qassert(geo.is_only_local());
+  qassert(geo.is_only_local);
   const int multiplicity = geo.multiplicity;
   const int multiplicity_v = multiplicity / nf;
   qassert(multiplicity_v * nf == multiplicity);
@@ -325,7 +336,7 @@ void merge_fields(Field<M>& f, const std::vector<ConstHandle<Field<M> > >& vec)
   qassert(is_initialized(vec[0]()));
   const long nf = vec.size();
   const Geometry& geo_v = vec[0]().geo();
-  qassert(geo_v.is_only_local());
+  qassert(geo_v.is_only_local);
   const int multiplicity_v = geo_v.multiplicity;
   const int multiplicity = nf * multiplicity_v;
   const Geometry geo = geo_reform(geo_v, multiplicity);
@@ -361,7 +372,7 @@ void merge_fields_ms(Field<M>& f, const std::vector<ConstHandle<Field<M> > >& ve
   for (long m = 0; m < multiplicity; ++m) {
     const Field<M>& f1 = vec[m]();
     const Geometry& geo_v = f1.geo();
-    qassert(geo_v.is_only_local());
+    qassert(geo_v.is_only_local);
     check_matching_geo(geo_v, geo);
   }
   qthread_for(index, geo.local_volume(), {
@@ -441,7 +452,7 @@ void field_shift_direct(Field<M>& f, const Field<M>& f1,
 {
   TIMER("field_shift_direct");
   const Geometry& geo = f1.geo();
-  qassert(geo.is_only_local());
+  qassert(geo.is_only_local);
   const int num_node = geo.geon.num_node;
   const Coordinate& node_site = geo.node_site;
   const Coordinate& size_node = geo.geon.size_node;

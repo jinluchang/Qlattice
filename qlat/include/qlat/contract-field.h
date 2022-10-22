@@ -536,8 +536,8 @@ inline void contract_chvp_16(FieldM<Complex, 16>& chvp,
   const Geometry& geo = prop1_x_y.geo();
   qassert(geo.multiplicity == 1);
   qassert(is_matching_geo_mult(geo, prop2_x_y.geo()));
-  qassert(prop1_x_y.geo().is_only_local());
-  qassert(prop2_x_y.geo().is_only_local());
+  qassert(prop1_x_y.geo().is_only_local);
+  qassert(prop2_x_y.geo().is_only_local);
   chvp.init();
   chvp.init(geo);
   set_zero(chvp);

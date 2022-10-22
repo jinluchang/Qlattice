@@ -128,7 +128,7 @@ uint32_t fieldChecksumSum32(const Field<M> &f)
   TIMER("fieldChecksumSum32");
 
   Geometry geo = geo_resize(f.geo(), 0);
-  qassert(geo.is_only_local());
+  qassert(geo.is_only_local);
 
   Field<M> f_local;
   f_local.init(geo);

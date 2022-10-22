@@ -330,7 +330,7 @@ void only_keep_selected_points(Field<M>& f, const PointSelection& psel)
 {
   TIMER("only_keep_selected_points");
   const Geometry& geo = f.geo();
-  qassert(geo.is_only_local());
+  qassert(geo.is_only_local);
   Field<M> f1;
   f1.init(geo);
   set_zero(f1);
@@ -363,7 +363,7 @@ void set_selected_points(SelectedPoints<M>& sp, const Field<M>& f,
 {
   TIMER("set_selected_points(sp,f,psel)");
   const Geometry& geo = f.geo();
-  qassert(geo.is_only_local());
+  qassert(geo.is_only_local);
   const long n_points = psel.size();
   sp.init(psel, geo.multiplicity);
   set_zero(sp.points);
@@ -388,7 +388,7 @@ void set_field_selected(Field<M>& f, const SelectedPoints<M>& sp,
 {
   TIMER("set_field_selected");
   const Geometry geo = geo_reform(geo_, sp.multiplicity, 0);
-  qassert(geo.is_only_local());
+  qassert(geo.is_only_local);
   const long n_points = sp.n_points;
   qassert(n_points == (long)psel.size());
   f.init();
@@ -438,7 +438,7 @@ void acc_field(Field<M>& f, const SelectedPoints<M>& sp, const Geometry& geo_,
 {
   TIMER("acc_field");
   const Geometry geo = geo_reform(geo_, sp.multiplicity, 0);
-  qassert(geo.is_only_local());
+  qassert(geo.is_only_local);
   const long n_points = sp.n_points;
   qassert(n_points == (long)psel.size());
   f.init(geo);
