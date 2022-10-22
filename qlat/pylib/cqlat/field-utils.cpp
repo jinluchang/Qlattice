@@ -448,17 +448,17 @@ EXPORT(assign_from_field, {
 EXPORT(get_elems_field, {
   using namespace qlat;
   PyObject* p_field = NULL;
-  PyObject* p_xg = NULL;
-  if (!PyArg_ParseTuple(args, "OO", &p_field, &p_xg)) {
+  PyObject* p_index = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_field, &p_index)) {
     return NULL;
   }
   const std::string ctype = py_get_ctype(p_field);
   PyObject* p_ret = NULL;
-  if (PyLong_Check(p_xg)) {
-    const long index = py_convert_data<long>(p_xg);
+  if (PyLong_Check(p_index)) {
+    const long index = py_convert_data<long>(p_index);
     FIELD_DISPATCH(p_ret, get_elems_field_ctype, ctype, p_field, index);
   } else {
-    const Coordinate xg = py_convert_data<Coordinate>(p_xg);
+    const Coordinate xg = py_convert_data<Coordinate>(p_index);
     FIELD_DISPATCH(p_ret, get_elems_field_ctype, ctype, p_field, xg);
   }
   return p_ret;
@@ -467,18 +467,18 @@ EXPORT(get_elems_field, {
 EXPORT(get_elem_field, {
   using namespace qlat;
   PyObject* p_field = NULL;
-  PyObject* p_xg = NULL;
+  PyObject* p_index = NULL;
   long m = -1;
-  if (!PyArg_ParseTuple(args, "OO|l", &p_field, &p_xg, &m)) {
+  if (!PyArg_ParseTuple(args, "OO|l", &p_field, &p_index, &m)) {
     return NULL;
   }
   const std::string ctype = py_get_ctype(p_field);
   PyObject* p_ret = NULL;
-  if (PyLong_Check(p_xg)) {
-    const long index = py_convert_data<long>(p_xg);
+  if (PyLong_Check(p_index)) {
+    const long index = py_convert_data<long>(p_index);
     FIELD_DISPATCH(p_ret, get_elem_field_ctype, ctype, p_field, index, m);
   } else {
-    const Coordinate xg = py_convert_data<Coordinate>(p_xg);
+    const Coordinate xg = py_convert_data<Coordinate>(p_index);
     FIELD_DISPATCH(p_ret, get_elem_field_ctype, ctype, p_field, xg, m);
   }
   return p_ret;
@@ -487,18 +487,18 @@ EXPORT(get_elem_field, {
 EXPORT(set_elems_field, {
   using namespace qlat;
   PyObject* p_field = NULL;
-  PyObject* p_xg = NULL;
+  PyObject* p_index = NULL;
   PyObject* p_val = NULL;
-  if (!PyArg_ParseTuple(args, "OOO", &p_field, &p_xg, &p_val)) {
+  if (!PyArg_ParseTuple(args, "OOO", &p_field, &p_index, &p_val)) {
     return NULL;
   }
   const std::string ctype = py_get_ctype(p_field);
   PyObject* p_ret = NULL;
-  if (PyLong_Check(p_xg)) {
-    const long index = py_convert_data<long>(p_xg);
+  if (PyLong_Check(p_index)) {
+    const long index = py_convert_data<long>(p_index);
     FIELD_DISPATCH(p_ret, set_elems_field_ctype, ctype, p_field, index, p_val);
   } else {
-    const Coordinate xg = py_convert_data<Coordinate>(p_xg);
+    const Coordinate xg = py_convert_data<Coordinate>(p_index);
     FIELD_DISPATCH(p_ret, set_elems_field_ctype, ctype, p_field, xg, p_val);
   }
   return p_ret;
@@ -507,19 +507,19 @@ EXPORT(set_elems_field, {
 EXPORT(set_elem_field, {
   using namespace qlat;
   PyObject* p_field = NULL;
-  PyObject* p_xg = NULL;
+  PyObject* p_index = NULL;
   long m = -1;
   PyObject* p_val = NULL;
-  if (!PyArg_ParseTuple(args, "OOlO", &p_field, &p_xg, &m, &p_val)) {
+  if (!PyArg_ParseTuple(args, "OOlO", &p_field, &p_index, &m, &p_val)) {
     return NULL;
   }
   const std::string ctype = py_get_ctype(p_field);
   PyObject* p_ret = NULL;
-  if (PyLong_Check(p_xg)) {
-    const long index = py_convert_data<long>(p_xg);
+  if (PyLong_Check(p_index)) {
+    const long index = py_convert_data<long>(p_index);
     FIELD_DISPATCH(p_ret, set_elem_field_ctype, ctype, p_field, index, m, p_val);
   } else {
-    const Coordinate xg = py_convert_data<Coordinate>(p_xg);
+    const Coordinate xg = py_convert_data<Coordinate>(p_index);
     FIELD_DISPATCH(p_ret, set_elem_field_ctype, ctype, p_field, xg, m, p_val);
   }
   return p_ret;
