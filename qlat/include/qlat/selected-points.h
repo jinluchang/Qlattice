@@ -358,6 +358,16 @@ double qnorm(const SelectedPoints<M>& sp)
 }
 
 template <class M>
+void qnorm_field(SelectedPoints<double>& sp, const SelectedPoints<M>& sp1)
+{
+  TIMER("qnorm_field");
+  sp.init();
+  sp.init(sp1.n_points, sp1.multiplicity);
+  qacc_for(idx, sp.n_points,
+           { sp.get_elem(idx) = qnorm(sp1.get_elems_const(idx)); });
+}
+
+template <class M>
 void set_selected_points(SelectedPoints<M>& sp, const Field<M>& f,
                          const PointSelection& psel)
 {
@@ -367,8 +377,7 @@ void set_selected_points(SelectedPoints<M>& sp, const Field<M>& f,
   const long n_points = psel.size();
   sp.init(psel, geo.multiplicity);
   set_zero(sp.points);
-#pragma omp parallel for
-  for (long idx = 0; idx < n_points; ++idx) {
+  qacc_for(idx, n_points, {
     const Coordinate& xg = psel[idx];
     const Coordinate xl = geo.coordinate_l_from_g(xg);
     if (geo.is_local(xl)) {
@@ -378,7 +387,7 @@ void set_selected_points(SelectedPoints<M>& sp, const Field<M>& f,
         spv[m] = fv[m];
       }
     }
-  }
+  });
   glb_sum_byte_vec(get_data(sp.points));
 }
 

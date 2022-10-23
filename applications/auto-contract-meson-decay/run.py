@@ -963,7 +963,9 @@ def auto_contract_meson_jwjj_t1(job_tag, traj, get_prop, get_psel, get_fsel):
     t_size = total_site[3]
     r_limit = get_r_limit(total_site)
     n_points = len(xg_psel_list)
+    n_pairs = n_points * (n_points - 1) / 2 + n_points
     def load_data():
+        idx_pair = 0
         for idx1, xg1_src in enumerate(xg_psel_list):
             xg1_src = tuple(xg1_src.tolist())
             xg1_src_t = xg1_src[3]
@@ -973,7 +975,8 @@ def auto_contract_meson_jwjj_t1(job_tag, traj, get_prop, get_psel, get_fsel):
                 x_rel = [ q.rel_mod(xg2_src[mu] - xg1_src[mu], total_site[mu]) for mu in range(4) ]
                 if idx2 > idx1:
                     continue
-                q.displayln_info(f"auto_contract_meson_jwjj_t1: {idx1+1}/{n_points} {idx2+1}/{n_points} {xg1_src} {xg2_src}")
+                idx_pair += 1
+                q.displayln_info(f"auto_contract_meson_jwjj_t1: {idx_pair}/{n_pairs} {xg1_src} {xg2_src}")
                 for xg_snk in xg_fsel_list:
                     xg_snk = tuple(xg_snk.tolist())
                     xg_t = xg_snk[3]

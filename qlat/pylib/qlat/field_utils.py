@@ -2,6 +2,7 @@ import qlat.cqlat as c
 
 from qlat.field import *
 from qlat.selected_field import *
+from qlat.selected_points import *
 
 import math
 
@@ -121,6 +122,10 @@ def qnorm_field(f):
         fsel = f.fsel
         f_n = SelectedField("double", fsel)
         c.qnorm_field_sfield(f_n, f)
+    elif isinstance(f, SelectedPoints):
+        psel = f.psel
+        f_n = SelectedPoints("double", fsel, psel)
+        c.qnorm_field_spfield(f_n, f)
     else:
         displayln_info("qnorm_field:", type(f))
         assert False
