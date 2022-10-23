@@ -140,14 +140,14 @@ def sqrt_double_field(f):
     elif isinstance(f, SelectedField):
         assert f.ctype == "double"
         fsel = f.fsel
-        f_n = SelectedField("double", fsel)
-        c.set_sqrt_double_field(f_n, f)
+        f_ret = SelectedField("double", fsel)
+        c.set_sqrt_double_sfield(f_ret, f)
     elif isinstance(f, SelectedPoints):
         assert f.ctype == "double"
         psel = f.psel
-        f_n = SelectedPoints("double", psel)
-        c.set_sqrt_double_field(f_n, f)
+        f_ret = SelectedPoints("double", psel)
+        c.set_sqrt_double_spfield(f_ret, f)
     else:
-        displayln_info("qnorm_field:", type(f))
+        displayln_info("sqrt_double_field:", type(f))
         assert False
     return f_ret

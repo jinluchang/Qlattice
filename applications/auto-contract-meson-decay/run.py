@@ -963,7 +963,7 @@ def auto_contract_meson_jwjj_t1(job_tag, traj, get_prop, get_psel, get_fsel):
     t_size = total_site[3]
     r_limit = get_r_limit(total_site)
     n_points = len(xg_psel_list)
-    n_pairs = n_points * (n_points - 1) / 2 + n_points
+    n_pairs = n_points * (n_points - 1) // 2 + n_points
     def load_data():
         idx_pair = 0
         for idx1, xg1_src in enumerate(xg_psel_list):

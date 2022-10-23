@@ -557,7 +557,7 @@ EXPORT(qnorm_field_sfield, {
   using namespace qlat;
   PyObject* p_field = NULL;
   PyObject* p_field1 = NULL;
-  if (!PyArg_ParseTuple(args, "OO", &p_field)) {
+  if (!PyArg_ParseTuple(args, "OO", &p_field, &p_field1)) {
     return NULL;
   }
   SelectedField<double>& f = py_convert_type_sfield<double>(p_field);

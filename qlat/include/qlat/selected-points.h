@@ -362,7 +362,7 @@ void qnorm_field(SelectedPoints<double>& sp, const SelectedPoints<M>& sp1)
 {
   TIMER("qnorm_field");
   sp.init();
-  sp.init(sp1.n_points, sp1.multiplicity);
+  sp.init(sp1.n_points, 1);
   qacc_for(idx, sp.n_points,
            { sp.get_elem(idx) = qnorm(sp1.get_elems_const(idx)); });
 }

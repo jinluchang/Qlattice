@@ -829,9 +829,9 @@ void qnorm_field(SelectedField<double>& f, const SelectedField<M>& f1)
   TIMER("qnorm_field");
   const Geometry& geo = f1.geo();
   f.init();
-  f.init(geo, f1.n_elems, geo.multiplicity);
+  f.init(geo, f1.n_elems, 1);
   qacc_for(idx, f.n_elems, {
-    Vector<M> f1v = f1.get_elems_const(idx);
+    const Vector<M> f1v = f1.get_elems_const(idx);
     f.get_elem(idx) = qnorm(f1v);
   });
 }

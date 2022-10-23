@@ -172,12 +172,6 @@ def f_get_elem_wm(field, pos_snk):
         return 0
     return field.get_elem_wm(pos_snk)
 
-def f_get_elem_norm(field, pos_snk):
-    if isinstance(field, int):
-        assert field == 0
-        return 0
-    return field.get_elem_wm(pos_snk)
-
 def mk_get_elem_wm(field, pos_dict = None):
     # return get function
     # get(pos_snk) ==> ama_prop
@@ -202,10 +196,48 @@ def mk_get_elem_wm(field, pos_dict = None):
                 return ama_apply2_l(f_get_elem_wm, field, idx_snk)
             return get
 
+def f_get_elem_norm_sqrt(field_norm_sqrt, pos_snk):
+    if isinstance(field_norm_sqrt, int):
+        assert field_norm_sqrt == 0
+        return 0
+    return field_norm_sqrt.get_elem(pos_snk).item()
+
+def mk_field_norm_sqrt(field):
+    if isinstance(field, int):
+        assert field == 0
+        return 0
+    return q.sqrt_double_field(q.qnorm_field(field))
+
+def mk_get_elem_norm(field, pos_dict = None):
+    # return get function
+    # get(pos_snk) ==> ama_prop_norm_sqrt
+    field_norm_sqrt = ama_apply1(mk_field_norm_sqrt, field)
+    if pos_dict is None:
+        if not isinstance(field_norm_sqrt, AmaVal):
+            def get(pos_snk):
+                return f_get_elem_norm_sqrt(field_norm_sqrt, pos_snk)
+            return get
+        else:
+            def get(pos_snk):
+                return ama_apply2_l(f_get_elem_norm_sqrt, field_norm_sqrt, pos_snk)
+            return get
+    else:
+        if not isinstance(field_norm_sqrt, AmaVal):
+            def get(pos_snk):
+                idx_snk = pos_dict[pos_snk]
+                return f_get_elem_norm_sqrt(field_norm_sqrt, idx_snk)
+            return get
+        else:
+            def get(pos_snk):
+                idx_snk = pos_dict[pos_snk]
+                return ama_apply2_l(f_get_elem_norm_sqrt, field_norm_sqrt, idx_snk)
+            return get
+
 @q.timer
 def populate_prop_idx_cache_wsrc_psel(job_tag, traj, flavor, total_site, psel, fsel, fselc):
     prop_cache = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}")
     prop_lookup_cache = q.mk_cache(f"prop_lookup_cache", f"{job_tag}", f"{traj}")
+    prop_norm_lookup_cache = q.mk_cache(f"prop_norm_lookup_cache", f"{job_tag}", f"{traj}")
     psel_pos_dict = prop_cache["psel_pos_dict"]
     fsel_pos_dict = prop_cache["fsel_pos_dict"]
     fselc_pos_dict = prop_cache["fselc_pos_dict"]
@@ -217,17 +249,20 @@ def populate_prop_idx_cache_wsrc_psel(job_tag, traj, flavor, total_site, psel, f
         t_src = pos_src
         f = get_prop_wsrc(prop_cache, inv_type, t_src, "wsrc_wsnk ; psel_ts")
         prop_lookup_cache[key] = mk_get_elem_wm(f)
+        prop_norm_lookup_cache[key] = mk_get_elem_norm(f)
     type_snk = "point"
     for pos_src in range(total_site[3]):
         key = (flavor, pos_src, type_src, type_snk,)
         t_src = pos_src
         f = get_prop_wsrc(prop_cache, inv_type, t_src, "wsrc ; psel")
         prop_lookup_cache[key] = mk_get_elem_wm(f, psel_pos_dict)
+        prop_norm_lookup_cache[key] = mk_get_elem_norm(f, psel_pos_dict)
 
 @q.timer
 def populate_prop_idx_cache_wsrc_fsel(job_tag, traj, flavor, total_site, psel, fsel, fselc):
     prop_cache = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}")
     prop_lookup_cache = q.mk_cache(f"prop_lookup_cache", f"{job_tag}", f"{traj}")
+    prop_norm_lookup_cache = q.mk_cache(f"prop_norm_lookup_cache", f"{job_tag}", f"{traj}")
     psel_pos_dict = prop_cache["psel_pos_dict"]
     fsel_pos_dict = prop_cache["fsel_pos_dict"]
     fselc_pos_dict = prop_cache["fselc_pos_dict"]
@@ -239,11 +274,13 @@ def populate_prop_idx_cache_wsrc_fsel(job_tag, traj, flavor, total_site, psel, f
         t_src = pos_src
         f = get_prop_wsrc(prop_cache, inv_type, t_src, "wsrc ; fselc")
         prop_lookup_cache[key] = mk_get_elem_wm(f, fselc_pos_dict)
+        prop_norm_lookup_cache[key] = mk_get_elem_norm(f, fselc_pos_dict)
 
 @q.timer
 def populate_prop_idx_cache_psrc_psel(job_tag, traj, flavor, total_site, psel, fsel, fselc):
     prop_cache = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}")
     prop_lookup_cache = q.mk_cache(f"prop_lookup_cache", f"{job_tag}", f"{traj}")
+    prop_norm_lookup_cache = q.mk_cache(f"prop_norm_lookup_cache", f"{job_tag}", f"{traj}")
     psel_pos_dict = prop_cache["psel_pos_dict"]
     fsel_pos_dict = prop_cache["fsel_pos_dict"]
     fselc_pos_dict = prop_cache["fselc_pos_dict"]
@@ -256,11 +293,13 @@ def populate_prop_idx_cache_psrc_psel(job_tag, traj, flavor, total_site, psel, f
         xg_src = pos_src
         f = get_prop_psrc(prop_cache, inv_type, xg_src, "psrc ; psel")
         prop_lookup_cache[key] = mk_get_elem_wm(f, psel_pos_dict)
+        prop_norm_lookup_cache[key] = mk_get_elem_norm(f, psel_pos_dict)
 
 @q.timer
 def populate_prop_idx_cache_psrc_fsel(job_tag, traj, flavor, total_site, psel, fsel, fselc):
     prop_cache = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}")
     prop_lookup_cache = q.mk_cache(f"prop_lookup_cache", f"{job_tag}", f"{traj}")
+    prop_norm_lookup_cache = q.mk_cache(f"prop_norm_lookup_cache", f"{job_tag}", f"{traj}")
     psel_pos_dict = prop_cache["psel_pos_dict"]
     fsel_pos_dict = prop_cache["fsel_pos_dict"]
     fselc_pos_dict = prop_cache["fselc_pos_dict"]
@@ -273,11 +312,13 @@ def populate_prop_idx_cache_psrc_fsel(job_tag, traj, flavor, total_site, psel, f
         xg_src = pos_src
         f = get_prop_psrc(prop_cache, inv_type, xg_src, "psrc ; fselc")
         prop_lookup_cache[key] = mk_get_elem_wm(f, fselc_pos_dict)
+        prop_norm_lookup_cache[key] = mk_get_elem_norm(f, fselc_pos_dict)
 
 @q.timer
 def populate_prop_idx_cache_rand_u1_fsel(job_tag, traj, flavor, total_site, psel, fsel, fselc):
     prop_cache = q.mk_cache(f"prop_cache", f"{job_tag}", f"{traj}")
     prop_lookup_cache = q.mk_cache(f"prop_lookup_cache", f"{job_tag}", f"{traj}")
+    prop_norm_lookup_cache = q.mk_cache(f"prop_norm_lookup_cache", f"{job_tag}", f"{traj}")
     psel_pos_dict = prop_cache["psel_pos_dict"]
     fsel_pos_dict = prop_cache["fsel_pos_dict"]
     fselc_pos_dict = prop_cache["fselc_pos_dict"]
@@ -291,6 +332,7 @@ def populate_prop_idx_cache_rand_u1_fsel(job_tag, traj, flavor, total_site, psel
         idx = fsel_pos_dict[pos_src]
         d = { pos_src: idx, }
         prop_lookup_cache[key] = mk_get_elem_wm(f, d)
+        prop_norm_lookup_cache[key] = mk_get_elem_norm(f, d)
 
 @q.timer
 def get_prop_lookup_snk_src(prop_lookup_cache, flavor, p_snk, p_src):
@@ -315,6 +357,33 @@ def get_prop_lookup_snk_src(prop_lookup_cache, flavor, p_snk, p_src):
             return ("g5_herm", get(pos_src),)
         else:
             q.displayln_info(f"get_prop_lookup_snk_src {flavor} {p_snk} {p_src}")
+            assert False
+            return None
+
+@q.timer
+def get_prop_norm_lookup_snk_src(prop_norm_lookup_cache, flavor, p_snk, p_src):
+    # return norm_sqrt
+    # p_snk and p_src should be.
+    # e.g. p_src = ("point", xg,)
+    # e.g. p_snk = ("point-snk", xg,)
+    # e.g. p_src = ("wall", t,)
+    # xg should be tuple of 4 int.
+    assert isinstance(p_snk, tuple) and isinstance(p_src, tuple)
+    type_snk, pos_snk = p_snk
+    type_src, pos_src = p_src
+    #
+    key = (flavor, pos_src, type_src, type_snk,)
+    get = prop_norm_lookup_cache.get(key)
+    if get is not None:
+        return get(pos_snk)
+    else:
+        # use g5_herm
+        key = (flavor, pos_snk, type_snk, type_src,)
+        get = prop_norm_lookup_cache.get(key)
+        if get is not None:
+            return get(pos_src)
+        else:
+            q.displayln_info(f"get_prop_norm_lookup_snk_src {flavor} {p_snk} {p_src}")
             assert False
             return None
 
@@ -645,7 +714,10 @@ def run_get_prop(job_tag, traj, *, get_gt, get_psel, get_fsel, get_psel_smear, g
         prop_norm_lookup_cache = q.mk_cache(f"prop_norm_lookup_cache", f"{job_tag}", f"{traj}")
         q.timer_display()
         q.timer_merge()
-        def get_prop(flavor, p_snk, p_src):
-            return get_prop_lookup_snk_src(prop_lookup_cache, flavor, p_snk, p_src)
+        def get_prop(flavor, p_snk, p_src, *, is_norm_sqrt = False):
+            if is_norm_sqrt:
+                return get_prop_norm_lookup_snk_src(prop_lookup_cache, flavor, p_snk, p_src)
+            else:
+                return get_prop_lookup_snk_src(prop_lookup_cache, flavor, p_snk, p_src)
         return get_prop
     return q.lazy_call(mk_get_prop)
