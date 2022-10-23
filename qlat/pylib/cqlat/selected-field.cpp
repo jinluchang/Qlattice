@@ -567,6 +567,29 @@ EXPORT(qnorm_field_sfield, {
   return p_ret;
 })
 
+EXPORT(set_sqrt_double_sfield, {
+  using namespace qlat;
+  PyObject* p_field = NULL;
+  PyObject* p_field1 = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_field, &p_field1)) {
+    return NULL;
+  }
+  SelectedField<double>& f = py_convert_type_sfield<double>(p_field);
+  const SelectedField<double>& f1 = py_convert_type_sfield<double>(p_field1);
+  const Geometry& geo = f1.geo();
+  pqassert(geo.is_only_local);
+  f.init();
+  f.init(geo, f1.n_elems, geo.multiplicity);
+  qacc_for(idx, f.n_elems, {
+    const Vector<double> f1v = f1.get_elems_const(idx);
+    Vector<double> fv = f.get_elems(idx);
+    for (int m = 0; m < geo.multiplicity; ++m) {
+      fv[m] = std::sqrt(f1v[m]);
+    }
+  });
+  Py_RETURN_NONE;
+})
+
 EXPORT(get_elems_sfield, {
   using namespace qlat;
   PyObject* p_field = NULL;

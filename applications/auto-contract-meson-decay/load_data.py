@@ -172,6 +172,12 @@ def f_get_elem_wm(field, pos_snk):
         return 0
     return field.get_elem_wm(pos_snk)
 
+def f_get_elem_norm(field, pos_snk):
+    if isinstance(field, int):
+        assert field == 0
+        return 0
+    return field.get_elem_wm(pos_snk)
+
 def mk_get_elem_wm(field, pos_dict = None):
     # return get function
     # get(pos_snk) ==> ama_prop
@@ -636,6 +642,7 @@ def run_get_prop(job_tag, traj, *, get_gt, get_psel, get_fsel, get_psel_smear, g
         #
         # prop_lookup_cache[(pos_src, type_src, type_snk,)] == get_prop_pos_snk where get_prop_pos_snk(pos_snk) ==> ama_prop
         prop_lookup_cache = q.mk_cache(f"prop_lookup_cache", f"{job_tag}", f"{traj}")
+        prop_norm_lookup_cache = q.mk_cache(f"prop_norm_lookup_cache", f"{job_tag}", f"{traj}")
         q.timer_display()
         q.timer_merge()
         def get_prop(flavor, p_snk, p_src):

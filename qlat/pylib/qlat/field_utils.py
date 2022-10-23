@@ -124,7 +124,7 @@ def qnorm_field(f):
         c.qnorm_field_sfield(f_n, f)
     elif isinstance(f, SelectedPoints):
         psel = f.psel
-        f_n = SelectedPoints("double", fsel, psel)
+        f_n = SelectedPoints("double", psel)
         c.qnorm_field_spfield(f_n, f)
     else:
         displayln_info("qnorm_field:", type(f))
@@ -133,7 +133,21 @@ def qnorm_field(f):
 
 @timer
 def sqrt_double_field(f):
-    assert f.ctype == "double"
-    f_ret = Field("double")
-    c.set_sqrt_double_field(f_ret, f)
+    if isinstance(f, Field):
+        assert f.ctype == "double"
+        f_ret = Field("double")
+        c.set_sqrt_double_field(f_ret, f)
+    elif isinstance(f, SelectedField):
+        assert f.ctype == "double"
+        fsel = f.fsel
+        f_n = SelectedField("double", fsel)
+        c.set_sqrt_double_field(f_n, f)
+    elif isinstance(f, SelectedPoints):
+        assert f.ctype == "double"
+        psel = f.psel
+        f_n = SelectedPoints("double", psel)
+        c.set_sqrt_double_field(f_n, f)
+    else:
+        displayln_info("qnorm_field:", type(f))
+        assert False
     return f_ret

@@ -712,6 +712,7 @@ EXPORT(set_sqrt_double_field, {
   Field<double>& f = py_convert_type_field<double>(p_field);
   const Field<double>& f1 = py_convert_type_field<double>(p_field1);
   const Geometry geo = geo_resize(f1.geo());
+  pqassert(geo.is_only_local);
   f.init();
   f.init(geo);
   qacc_for(index, geo.local_volume(), {

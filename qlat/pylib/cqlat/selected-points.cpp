@@ -158,7 +158,7 @@ PyObject* qnorm_spfield_ctype(PyField& pf)
 template <class M>
 PyObject* qnorm_field_spfield_ctype(SelectedPoints<double>& f, PyObject* p_field1)
 {
-  const SelectedField<M>& f1 = py_convert_type_spfield<M>(p_field1);
+  const SelectedPoints<M>& f1 = py_convert_type_spoints<M>(p_field1);
   qnorm_field(f, f1);
   Py_RETURN_NONE;
 }
@@ -471,11 +471,34 @@ EXPORT(qnorm_field_spfield, {
   if (!PyArg_ParseTuple(args, "OO", &p_field, &p_field1)) {
     return NULL;
   }
-  SelectedField<double>& f = py_convert_type_sfield<double>(p_field);
+  SelectedPoints<double>& f = py_convert_type_spoints<double>(p_field);
   const std::string ctype = py_get_ctype(p_field1);
   PyObject* p_ret = NULL;
   FIELD_DISPATCH(p_ret, qnorm_field_spfield_ctype, ctype, f, p_field1);
   return p_ret;
+})
+
+EXPORT(set_sqrt_double_spfield, {
+  using namespace qlat;
+  PyObject* p_field = NULL;
+  PyObject* p_field1 = NULL;
+  if (!PyArg_ParseTuple(args, "OO", &p_field, &p_field1)) {
+    return NULL;
+  }
+  SelectedPoints<double>& f = py_convert_type_spoints<double>(p_field);
+  const SelectedPoints<double>& f1 = py_convert_type_spoints<double>(p_field1);
+  const int n_points = f1.n_points;
+  const int multiplicity = f1.multiplicity;
+  f.init();
+  f.init(n_points, multiplicity);
+  qacc_for(idx, f.n_points, {
+    const Vector<double> f1v = f1.get_elems_const(idx);
+    Vector<double> fv = f.get_elems(idx);
+    for (int m = 0; m < multiplicity; ++m) {
+      fv[m] = std::sqrt(f1v[m]);
+    }
+  });
+  Py_RETURN_NONE;
 })
 
 EXPORT(get_elems_spfield, {
