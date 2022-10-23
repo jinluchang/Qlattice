@@ -1,6 +1,6 @@
 SHELL=/bin/bash
 
-src_path=~/Qlattice-cc/applications/auto-contract-meson-qed
+src_path=~/Qlattice-cc/applications/auto-contract-meson-decay
 
 grid_options=--dslash-asm --shm-hugepages --shm 4050 --mpi_split 1.1.1.1 --grouped 4
 grid_options=--mpi_split 1.1.1.1 --mpi_split 1.1.1 --grouped 4
@@ -9,7 +9,7 @@ mpi_options=--bind-to none -mca btl_openib_allow_ib true
 mpi_options=--bind-to none
 
 run:
-	. ~/qlat-build/default/setenv.sh ; q_verbose=1 q_num_threads=2 mpirun --np 4 --oversubscribe $(mpi_options) ./run.py |& tee log.txt
+	. ~/qlat-build/default/setenv.sh ; q_verbose=1 q_num_threads=2 q_num_mp_processes=2 mpirun --np 4 --oversubscribe $(mpi_options) ./run.py |& tee log.txt
 	find results -type f | sort | xargs -d '\n' md5sum > md5sum.txt
 
 diff:

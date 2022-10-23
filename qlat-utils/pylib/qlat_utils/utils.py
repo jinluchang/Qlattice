@@ -97,6 +97,11 @@ def rel_mod_sym(x, size):
 def c_sqr(x):
     return sum([ sqr(v) for v in x ])
 
+def c_rel_mod(x, size):
+    l = len(size)
+    assert l == len(x)
+    return [ rel_mod(x[i], size[i]) for i in range(l) ]
+
 def c_rel_mod_sqr(x, size):
     l = len(size)
     assert l == len(x)
