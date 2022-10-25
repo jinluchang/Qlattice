@@ -24,7 +24,7 @@ name=qlat-examples-py
 
     for log in *.log ; do
         echo diff "$build/examples-py/$log" "$log"
-        diff "$build/examples-py/$log" "$log" || true
+        diff "$build/examples-py/$log" "$log" || cat "$build/examples-py/$log".full
     done
 
     cd $wd
