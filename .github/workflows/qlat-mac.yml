@@ -25,9 +25,9 @@ jobs:
     - name: Install Brew packages
       run: |
         brew update
-        brew install gsl zlib openssl@3 llvm open-mpi symengine numpy scipy mpfr meson ninja autoconf automake
+        brew install gsl zlib openssl@3 llvm open-mpi numpy scipy mpfr meson ninja autoconf automake
         # brew upgrade
-        pip3 install psutil
+        pip3 install psutil sympy
 
     - name: Display Python version
       run: python -c "import sys; print(sys.version)"
@@ -56,11 +56,6 @@ jobs:
 
     - name: Testing pylib qlat
       run: |
-        export num_proc=4
-        export PATH="/usr/local/opt/llvm/bin:$PATH"
-        export LDFLAGS="-L/usr/local/opt/llvm/lib/c++ -Wl,-rpath,/usr/local/opt/llvm/lib/c++ -L/usr/local/opt/llvm/lib"
-        export CPPFLAGS="-I/usr/local/opt/llvm/include"
-        export USE_COMPILER=clang
         ./scripts/qlat-examples-py.sh || echo Failed
 
     - name: Copying logs
