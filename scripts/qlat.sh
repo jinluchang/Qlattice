@@ -43,7 +43,11 @@ name=qlat
 
     touch "$wd"/qlat/meson.build
 
-    meson "$wd/qlat" --prefix="$prefix" $option
+    prefix_python="$prefix/lib/python3/qlat-packages"
+
+    meson "$wd/qlat" \
+        -Dpython.platlibdir="$prefix_python" -Dpython.purelibdir="$prefix_python" \
+        --prefix="$prefix" $option
     ninja -j$num_proc
     ninja install
 

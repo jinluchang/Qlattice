@@ -37,7 +37,11 @@ name=qlat-grid-io
 
     touch "$wd"/qlat-grid-io/meson.build
 
-    meson "$wd/qlat-grid-io" --prefix="$prefix" -Dgrid_prefix="$prefix"
+    prefix_python="$prefix/lib/python3/qlat-packages"
+
+    meson "$wd/qlat-grid-io" \
+        -Dpython.platlibdir="$prefix_python" -Dpython.purelibdir="$prefix_python" \
+        --prefix="$prefix" -Dgrid_prefix="$prefix"
     ninja -j$num_proc
     ninja install
 

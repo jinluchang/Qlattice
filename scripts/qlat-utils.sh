@@ -35,7 +35,11 @@ name=qlat-utils
 
     touch "$wd"/qlat-utils/meson.build
 
-    meson "$wd/qlat-utils" --prefix="$prefix"
+    prefix_python="$prefix/lib/python3/qlat-packages"
+
+    meson "$wd/qlat-utils" \
+        -Dpython.platlibdir="$prefix_python" -Dpython.purelibdir="$prefix_python" \
+        --prefix="$prefix"
     time ninja -j$num_proc
     ninja install
 
