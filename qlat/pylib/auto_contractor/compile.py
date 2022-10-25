@@ -120,6 +120,8 @@ def collect_factor_in_cexpr(named_exprs):
             expr[i] = (ea.simplified(ea_coef), term_name,)
     for name, expr in named_exprs:
         for ea_coef, term_name in expr:
+            if not isinstance(ea_coef, ea.Expr):
+                continue
             for t in ea_coef.terms:
                 x = t.factors
                 for i, f in enumerate(x):
