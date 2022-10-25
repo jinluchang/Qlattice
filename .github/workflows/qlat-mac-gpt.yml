@@ -1,0 +1,72 @@
+name: Mac build
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: macos-latest
+
+    steps:
+
+    - uses: actions/checkout@v3
+
+    - name: Show info
+      run: |
+        whoami
+        pwd
+        ls
+        export
+
+    - name: Install Brew packages
+      run: |
+        brew update
+        brew install gsl zlib openssl@3 llvm open-mpi numpy scipy mpfr meson ninja autoconf automake
+        # brew upgrade
+        pip3 install psutil sympy
+
+    - name: Display Python version
+      run: python -c "import sys; print(sys.version)"
+
+    - name: Download dependencies
+      run: |
+        ./scripts/download-core.sh || echo Failed
+
+    - name: Build everything
+      run: |
+        export num_proc=4
+        export PATH="/usr/local/opt/llvm/bin:$PATH"
+        export LDFLAGS="-L/usr/local/opt/llvm/lib/c++ -Wl,-rpath,/usr/local/opt/llvm/lib/c++ -L/usr/local/opt/llvm/lib"
+        export CPPFLAGS="-I/usr/local/opt/llvm/include"
+        export USE_COMPILER=clang
+        ./build.sh default-gpt || echo Failed
+
+    - name: Testing qlat
+      run: |
+        export num_proc=4
+        export PATH="/usr/local/opt/llvm/bin:$PATH"
+        export LDFLAGS="-L/usr/local/opt/llvm/lib/c++ -Wl,-rpath,/usr/local/opt/llvm/lib/c++ -L/usr/local/opt/llvm/lib"
+        export CPPFLAGS="-I/usr/local/opt/llvm/include"
+        export USE_COMPILER=clang
+        ./scripts/qlat-examples-cpp.sh || echo Failed
+
+    - name: Testing pylib qlat
+      run: |
+        ./scripts/qlat-examples-py-gpt.sh || echo Failed
+
+    - name: Copying logs
+      run: |
+        for i in examples-py/*.log ; do
+          cp $HOME/qlat-build/default/qlat-examples/$i $i
+        done
+        for i in examples-cpp/*/log ; do
+          cp $HOME/qlat-build/default/qlat-examples/$i $i
+        done
+
+    - name: Check error
+      run: |
+        ! git diff | grep '^[+-]CHECK: '
