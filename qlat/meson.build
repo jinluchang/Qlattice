@@ -52,7 +52,13 @@ install_headers('include/qlat/qlat-setup.h')
 c = run_command('bash', '-c', 'ls "$MESON_SOURCE_ROOT"/pylib/cqlat/*.cpp', check: true)
 sources = c.stdout().strip().split('\n')
 
-incdir = include_directories('include')
+incdir = [ include_directories('include') ]
+
+cpp_args = []
+
+if cpp.has_function('mallopt', prefix: '#include <malloc.h>')
+  cpp_args += [ '-DUSE_MALLOPT' ]
+endif
 
 lib = py3.extension_module('cqlat',
   sources,
@@ -88,4 +94,5 @@ pkg.generate(
   description: 'Qlattice - A simple lattice QCD library.',
   requires: [ 'fftw3', 'fftw3f', 'qlat-utils', ],
   libraries: [ '-lfftw3_mpi', '-lfftw3f_mpi', '-lz', '-lm' ],
+  extra_cflags: cpp_args,
   )
