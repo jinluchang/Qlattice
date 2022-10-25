@@ -180,6 +180,13 @@ qacc void to_from_big_endian_64(void* str, const size_t len)
   }
 }
 
+qacc long long& operator*=(long long& x, const Complex& factor)
+{
+  (void)x;
+  (void)factor;
+  assert(false);
+}
+
 qacc long& operator*=(long& x, const Complex& factor)
 {
   (void)x;
@@ -284,13 +291,13 @@ qacc void set_unit(int8_t& x, const long& coef = 1) { x = coef; }
 
 qacc void set_unit(int8_t& x, const Complex& coef = 1) { x = coef.real(); }
 
-qacc void set_unit(int32_t& x, const long& coef = 1) { x = coef; }
+qacc void set_unit(long& x, const long& coef = 1) { x = coef; }
 
-qacc void set_unit(int32_t& x, const Complex& coef) { x = coef.real(); }
+qacc void set_unit(long& x, const Complex& coef) { x = coef.real(); }
 
-qacc void set_unit(int64_t& x, const long& coef = 1) { x = coef; }
+qacc void set_unit(long long& x, const long& coef = 1) { x = coef; }
 
-qacc void set_unit(int64_t& x, const Complex& coef) { x = coef.real(); }
+qacc void set_unit(long long& x, const Complex& coef) { x = coef.real(); }
 
 qacc void set_unit(float& x, const double& coef = 1.0) { x = coef; }
 

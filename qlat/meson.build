@@ -60,6 +60,10 @@ if cpp.has_function('mallopt', prefix: '#include <malloc.h>')
   cpp_args += [ '-DUSE_MALLOPT' ]
 endif
 
+if cpp.has_function('sysinfo', prefix: '#include <sys/sysinfo.h>')
+  cpp_args += [ '-DUSE_SYSINFO' ]
+endif
+
 lib = py3.extension_module('cqlat',
   sources,
   dependencies: deps,
