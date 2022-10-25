@@ -11,7 +11,7 @@ echo "!!!! build $name !!!!"
 rm -rf $src_dir
 mkdir -p $src_dir
 cd $src_dir
-tar xaf $distfiles/$name-*.tar.*
+tar xzf $distfiles/$name-*.tar.*
 
 export CFLAGS="$CFLAGS -fPIC"
 export CXXFLAGS="$CXXFLAGS -fPIC"

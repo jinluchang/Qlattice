@@ -39,6 +39,9 @@ jobs:
     - name: Build everything
       run: |
         export num_proc=4
+        export PATH="/usr/local/opt/llvm/bin:$PATH"
+        export LDFLAGS="-L/usr/local/opt/llvm/lib"
+        export CPPFLAGS="-I/usr/local/opt/llvm/include"
         ./build.sh default || echo Failed
 
     - name: Testing qlat

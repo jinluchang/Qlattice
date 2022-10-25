@@ -11,7 +11,7 @@ echo "!!!! build $name !!!!"
 rm -rf $src_dir
 mkdir -p $src_dir
 cd $src_dir
-tar xaf $distfiles/$name-*
+tar xjf $distfiles/$name-*
 
 rm -rf $build_dir
 mkdir -p $build_dir
