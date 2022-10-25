@@ -7,7 +7,10 @@
 #include <stdlib.h>
 #include <cstring>
 #include <unordered_map>
+
+#ifdef USE_MALLOC_STATS
 #include <malloc.h>
+#endif
 
 namespace qlat
 {  //
@@ -198,6 +201,13 @@ inline void free_mem(void* ptr, const long min_size, const bool is_acc = false)
   const size_t size = get_aligned_mem_size(alignment, min_size);
   MemCache& cache = get_mem_cache(is_acc);
   cache.add(ptr, size);
+}
+
+inline void displayln_malloc_stats()
+{
+#ifdef USE_MALLOC_STATS
+  malloc_stats();
+#endif
 }
 
 template <class M>

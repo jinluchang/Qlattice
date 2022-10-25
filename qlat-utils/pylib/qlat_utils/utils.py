@@ -40,14 +40,14 @@ def show_memory_usage():
     import psutil
     rss = psutil.Process().memory_info().rss / (1024 * 1024 * 1024)
     displayln_info(f"show_memory_usage: rss = {rss:.6f} GB")
-    # malloc_stats_info()
+    # displayln_info_malloc_stats()
 
-def malloc_stats():
-    return cu.malloc_stats()
+def displayln_malloc_stats():
+    return cu.displayln_malloc_stats()
 
-def malloc_stats_info():
+def displayln_info_malloc_stats():
     if get_id_node() == 0:
-        return malloc_stats()
+        return displayln_malloc_stats()
 
 def lazy_call(f, *args, **kwargs):
     is_thunk = True

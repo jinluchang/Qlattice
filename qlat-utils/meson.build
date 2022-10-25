@@ -37,10 +37,12 @@ incdir = [ include_directories('include') ]
 cpp_args = []
 
 if cpp.check_header('endian.h')
-  message('Found endian.h')
 elif cpp.check_header('machine/endian.h')
-  message('Found machine/endian.h')
   cpp_args += [ '-DUSE_MACHINE_ENDIAN_H' ]
+endif
+
+if cpp.has_function('malloc_stats', prefix: '#include <malloc.h>')
+  cpp_args += [ '-DUSE_MALLOC_STATS' ]
 endif
 
 py3.extension_module('cqlat_utils',
