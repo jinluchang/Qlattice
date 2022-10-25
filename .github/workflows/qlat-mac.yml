@@ -56,6 +56,11 @@ jobs:
 
     - name: Testing pylib qlat
       run: |
+        export num_proc=4
+        export PATH="/usr/local/opt/llvm/bin:$PATH"
+        export LDFLAGS="-L/usr/local/opt/llvm/lib/c++ -Wl,-rpath,/usr/local/opt/llvm/lib/c++ -L/usr/local/opt/llvm/lib"
+        export CPPFLAGS="-I/usr/local/opt/llvm/include"
+        export USE_COMPILER=clang
         ./scripts/qlat-examples-py.sh || echo Failed
 
     - name: Copying logs

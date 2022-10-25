@@ -4,7 +4,7 @@ all: run
 
 compile:
 	meson build
-	ninja -C build
+	ninja -C build -j3
 
 run: compile
 	ninja -C build run
