@@ -149,6 +149,11 @@ def simplified(x):
     # interface function
     x = copy.deepcopy(mk_expr(x))
     x.simplify()
+    if not x.terms:
+        x = 0
+    elif len(x.terms) == 1:
+        if not x.terms[0].factors:
+            x = x.terms[0].coef
     return x
 
 def coef_simplified(x):

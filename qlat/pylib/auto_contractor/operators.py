@@ -938,18 +938,23 @@ def test_meson_fj():
     print("meson_fj")
     print(display_cexpr(cexpr))
 
+def test_meson_jj_all():
+    print("< pi+(x_2)^dag j_mu(xj_1) j_nu(xj_2) pi+(x_1) >")
+    print("< pi-(x_2)^dag j_mu(xj_1) j_nu(xj_2) pi-(x_1) >")
+    print("< pi0(x_2)^dag j_mu(xj_1) j_nu(xj_2) pi0(x_1) >")
+    pi_p = mk_pi_p("x_2", True) * mk_jl_mu("xj_1", "mu") * mk_jl_mu("xj_2", "nu") * mk_pi_p("x_1") + "< pi+(x_2)^dag j_mu(xj_1) j_nu(xj_2) pi+(x_1) >"
+    pi_m = mk_pi_m("x_2", True) * mk_jl_mu("xj_1", "mu") * mk_jl_mu("xj_2", "nu") * mk_pi_m("x_1") + "< pi-(x_2)^dag j_mu(xj_1) j_nu(xj_2) pi-(x_1) >"
+    pi_0 = mk_pi_0("x_1", True) * mk_jl_mu("xj_1", "mu") * mk_jl_mu("xj_2", "nu") * mk_pi_0("x_2") + "< pi0(x_2)^dag j_mu(xj_1) j_nu(xj_2) pi0(x_1) >"
+    exprs = [
+            pi_p,
+            pi_m,
+            mk_sym(1)/2 * (pi_p + pi_m),
+            pi_0,
+            ]
+    print(display_cexpr(contract_simplify_compile(*exprs)))
+
 if __name__ == "__main__":
-    expr = mk_pi_p("x2", True) * mk_pi_p("x1") * mk_pi_p("x4", True) * mk_pi_p("x3")
-    # print(expr)
-    # print(display_cexpr(contract_simplify_compile(expr)))
-    x1, x2, x3, x4 = ['x1', 'x2', 'x3', 'x4']
-    terms = [
-      tr(gamma_5*S_l(x1,x2)*gamma_5*S_l(x2,x1))*tr(gamma_5*S_l(x3,x4)*gamma_5*S_l(x4,x3)), # term_ADT01_0001
-      tr(gamma_5*S_l(x1,x2)*gamma_5*S_l(x2,x3)*gamma_5*S_l(x3,x4)*gamma_5*S_l(x4,x1)), # term_ADT02_0001
-      tr(gamma_5*S_l(x1,x4)*gamma_5*S_l(x4,x1))*tr(gamma_5*S_l(x2,x3)*gamma_5*S_l(x3,x2)), # term_ADT03_0001
-      tr(gamma_5*S_l(x1,x4)*gamma_5*S_l(x4,x3)*gamma_5*S_l(x3,x2)*gamma_5*S_l(x2,x1)), # term_ADT04_0001
-    ]
-    print(display_cexpr(contract_simplify_compile(*terms)))
+    test_meson_jj_all()
     exit()
     # test()
     # test1()
