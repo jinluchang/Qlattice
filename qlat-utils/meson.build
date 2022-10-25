@@ -13,6 +13,8 @@ add_project_arguments('-fno-strict-aliasing', language: ['c', 'cpp'])
 
 run_command('bash', '-c', 'cd $MESON_SOURCE_ROOT/pylib/cqlat_utils ; bash update.sh', check: true)
 
+cpp = meson.get_compiler('cpp')
+
 py_mod = import('python')
 py3 = py_mod.find_installation('python3')
 message(py3.path())
@@ -30,13 +32,23 @@ install_headers(headers, subdir: 'qlat-utils')
 c = run_command('bash', '-c', 'ls $MESON_SOURCE_ROOT/pylib/cqlat_utils/*.cpp', check: true)
 sources = c.stdout().strip().split('\n')
 
-incdir = include_directories('include')
+incdir = [ include_directories('include') ]
+
+cpp_args = []
+
+if cpp.check_header('endian.h')
+  message('Found endian.h')
+elif cpp.check_header('machine/endian.h')
+  message('Found machine/endian.h')
+  cpp_args += [ '-DUSE_MACHINE_ENDIAN_H' ]
+endif
 
 py3.extension_module('cqlat_utils',
   sources,
   dependencies: deps,
   include_directories: incdir,
   install: true,
+  cpp_args: cpp_args,
   # gnu_symbol_visibility: 'default',
   )
 
@@ -53,4 +65,5 @@ pkg.generate(
   name: 'qlat-utils',
   description: 'Qlattice utilities.',
   libraries: [ '-lz', '-lm' ],
+  extra_cflags: cpp_args,
   )

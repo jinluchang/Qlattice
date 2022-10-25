@@ -10,7 +10,7 @@ echo "!!!! build $name !!!!"
 
 mkdir -pv $prefix/include
 
-cp qutils/compatible-endian.h $prefix/include/endian.h
+cp qlat-utils/include/qlat-utils/compatible-endian.h $prefix/include/endian.h
 
 echo "!!!! $name build !!!!"
 

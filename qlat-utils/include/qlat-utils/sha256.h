@@ -21,7 +21,12 @@
 
 #pragma once
 
+#ifdef USE_MACHINE_ENDIAN_H
+#include <machine/endian.h>
+#else
 #include <endian.h>
+#endif
+
 #include <stdint.h>
 #include <cassert>
 #include <cmath>
