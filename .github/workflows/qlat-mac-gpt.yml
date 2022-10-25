@@ -1,4 +1,4 @@
-name: Mac build
+name: Mac with GPT build
 
 on:
   push:
@@ -39,19 +39,11 @@ jobs:
     - name: Build everything
       run: |
         export num_proc=4
-        export PATH="/usr/local/opt/llvm/bin:$PATH"
-        export LDFLAGS="-L/usr/local/opt/llvm/lib/c++ -Wl,-rpath,/usr/local/opt/llvm/lib/c++ -L/usr/local/opt/llvm/lib"
-        export CPPFLAGS="-I/usr/local/opt/llvm/include"
-        export USE_COMPILER=clang
         ./build.sh default-gpt || echo Failed
 
     - name: Testing qlat
       run: |
         export num_proc=4
-        export PATH="/usr/local/opt/llvm/bin:$PATH"
-        export LDFLAGS="-L/usr/local/opt/llvm/lib/c++ -Wl,-rpath,/usr/local/opt/llvm/lib/c++ -L/usr/local/opt/llvm/lib"
-        export CPPFLAGS="-I/usr/local/opt/llvm/include"
-        export USE_COMPILER=clang
         ./scripts/qlat-examples-cpp.sh || echo Failed
 
     - name: Testing pylib qlat
