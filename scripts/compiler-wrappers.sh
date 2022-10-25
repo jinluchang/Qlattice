@@ -176,4 +176,4 @@ chmod +x "$prefix/bin/MPICXX.sh"
 
 echo "!!!! $name build !!!!"
 
-} |& tee $prefix/log.$name.txt
+} 2>&1 | tee $prefix/log.$name.txt

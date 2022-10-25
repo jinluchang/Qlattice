@@ -23,4 +23,4 @@ name=qlat-test
 
 }
 
-} |& tee $prefix/log.$name.txt
+} 2>&1 | tee $prefix/log.$name.txt

@@ -48,4 +48,4 @@ export CXX=
 ./scripts/grid.avx2-amd.sh
 ./scripts/gpt.sh
 
-} |& tee $prefix/log.build.txt
+} 2>&1 | tee $prefix/log.build.txt

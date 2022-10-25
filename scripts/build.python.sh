@@ -14,4 +14,4 @@ set -e
 ./scripts/python-meson.sh
 ./scripts/python-packages.sh
 
-} |& tee $prefix/log.build.txt
+} 2>&1 | tee $prefix/log.build.txt

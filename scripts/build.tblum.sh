@@ -20,4 +20,4 @@ set -e
 ./scripts/grid-avx2.sh
 ./scripts/gpt.sh
 
-} |& tee $prefix/log.build.txt
+} 2>&1 | tee $prefix/log.build.txt

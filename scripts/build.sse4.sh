@@ -18,4 +18,4 @@ set -e
 ./scripts/gpt.sh
 ./scripts/qlat-grid-io.sh
 
-} |& tee $prefix/log.build.txt
+} 2>&1 | tee $prefix/log.build.txt

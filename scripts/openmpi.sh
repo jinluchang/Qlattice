@@ -28,4 +28,4 @@ echo "!!!! $name build !!!!"
 
 rm -rf $temp_dir || true
 
-} |& tee $prefix/log.$name.txt
+} 2>&1 | tee $prefix/log.$name.txt

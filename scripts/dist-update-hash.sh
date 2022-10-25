@@ -27,4 +27,4 @@ done | sort >> sha256sums.txt
 
 cat sha256sums.txt
 
-} |& tee $prefix/log.$name.txt
+} 2>&1 | tee $prefix/log.$name.txt

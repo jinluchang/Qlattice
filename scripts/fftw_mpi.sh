@@ -33,4 +33,4 @@ echo "!!!! $name build !!!!"
 
 rm -rf $temp_dir || true
 
-} |& tee $prefix/log.$name-mpi.txt
+} 2>&1 | tee $prefix/log.$name-mpi.txt

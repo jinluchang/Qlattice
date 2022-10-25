@@ -48,4 +48,4 @@ set -e
 ./scripts/gnuplot.sh
 ./scripts/python-jupyter.sh
 
-} |& tee $prefix/log.build.txt
+} 2>&1 | tee $prefix/log.build.txt

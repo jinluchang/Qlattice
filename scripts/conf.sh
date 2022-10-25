@@ -6,7 +6,11 @@ if [ -z "$prefix" ] ; then
     prefix="$prefix_default"
 fi
 
-prefix="$(readlink -m "$prefix")"
+if readlink -m "$prefix" >/dev/null 2>&1 ; then
+    prefix="$(readlink -m "$prefix")"
+else
+    echo "Cannot detect real location of '$prefix', use as it is."
+fi
 
 if [ -f "$prefix/setenv.sh" ] ; then
     . "$prefix/setenv.sh"
