@@ -257,9 +257,9 @@ qacc void set_zero(char& x) { x = 0; }
 
 qacc void set_zero(int8_t& x) { x = 0; }
 
-qacc void set_zero(int32_t& x) { x = 0; }
+qacc void set_zero(long& x) { x = 0; }
 
-qacc void set_zero(int64_t& x) { x = 0; }
+qacc void set_zero(long long& x) { x = 0; }
 
 qacc void set_zero(double& x) { x = 0; }
 
