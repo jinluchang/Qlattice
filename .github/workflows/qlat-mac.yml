@@ -42,6 +42,7 @@ jobs:
         export PATH="/usr/local/opt/llvm/bin:$PATH"
         export LDFLAGS="-L/usr/local/opt/llvm/lib"
         export CPPFLAGS="-I/usr/local/opt/llvm/include"
+        export USE_COMPILER=clang
         ./build.sh default || echo Failed
 
     - name: Testing qlat
@@ -50,6 +51,7 @@ jobs:
         export PATH="/usr/local/opt/llvm/bin:$PATH"
         export LDFLAGS="-L/usr/local/opt/llvm/lib"
         export CPPFLAGS="-I/usr/local/opt/llvm/include"
+        export USE_COMPILER=clang
         ./scripts/qlat-examples-cpp.sh || echo Failed
 
     - name: Testing pylib qlat
