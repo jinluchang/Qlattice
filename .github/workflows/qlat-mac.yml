@@ -25,7 +25,7 @@ jobs:
     - name: Install Brew packages
       run: |
         brew update
-        brew install gsl zlib openssl@3 llvm open-mpi symengine numpy scipy mpfr meson ninja
+        brew install gsl zlib openssl@3 llvm open-mpi symengine numpy scipy mpfr meson ninja autoconf automake
         # brew upgrade
         pip3 install psutil
 

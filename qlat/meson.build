@@ -37,11 +37,14 @@ fftwf_mpi = cpp.find_library('fftw3f_mpi')
 zlib = dependency('zlib')
 math = cpp.find_library('m', required : false)
 
-eigen = dependency('eigen3', required: false)
-
 qutils = dependency('qlat-utils')
 
-deps = [ omp, py3.dependency(), eigen, qutils, fftw_mpi, fftwf_mpi, fftw, fftwf, mpic, zlib, math, ]
+deps = [ omp, py3.dependency(), qutils, fftw_mpi, fftwf_mpi, fftw, fftwf, mpic, zlib, math, ]
+
+if not cpp.check_header('Eigen/Eigen')
+  eigen = dependency('eigen3')
+  deps += [ eigen, ]
+endif
 
 c = run_command('bash', '-c', 'ls "$MESON_SOURCE_ROOT"/include/qlat/*.h', check: true)
 headers = c.stdout().strip().split('\n')
