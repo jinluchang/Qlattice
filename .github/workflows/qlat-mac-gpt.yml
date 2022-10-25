@@ -30,7 +30,7 @@ jobs:
         pip3 install psutil sympy
 
     - name: Display Python version
-      run: python -c "import sys; print(sys.version)"
+      run: python3 -c "import sys; print(sys.version)"
 
     - name: Download dependencies
       run: |
