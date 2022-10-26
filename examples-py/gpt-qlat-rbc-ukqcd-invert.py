@@ -39,7 +39,8 @@ sols = inv * srcs
 
 for i in range(2):
     p = sols[i]
-    q.displayln_info(f"CHECK: prop sol {i} qnorm = {p.qnorm()} crc32 = {p.crc32()}")
+    q.displayln_info(f"CHECK: prop sol {i} qnorm = {p.qnorm():.6E}")
+    q.displayln_info(f"crc32 = {p.crc32():08X}")
 
 q.timer_display()
 

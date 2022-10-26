@@ -134,7 +134,7 @@ def test_inv(geo, inverter):
     q.displayln_info(f"CHECK: sol info {sol.qnorm():.7E}")
     q.displayln_info(f"sol info {sol.crc32():08X}")
     sol1 = inverter * sol
-    q.displayln_info(f"CHECK: sol1 info {sol1.qnorm():.6E}")
+    q.displayln_info(f"CHECK: sol1 info {sol1.qnorm():.4E}")
     q.displayln_info(f"sol1 info {sol1.crc32():08X}")
     return src, sol, sol1
 
@@ -150,7 +150,7 @@ for tag, inv in zip(tags[1:], invs[1:]) :
     src_n -= src
     sol_n -= sol
     sol1_n -= sol1
-    q.displayln_info(f"CHECK: tag={tag} diff src {src_n.qnorm()} sol {sol_n.qnorm():.2E} sol1 {sol1_n.qnorm():.2E}")
+    q.displayln_info(f"CHECK: tag={tag} diff src {src_n.qnorm()} sol {sol_n.qnorm():.1E} sol1 {sol1_n.qnorm():.1E}")
 
 q.timer_display()
 

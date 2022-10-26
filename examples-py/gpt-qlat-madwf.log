@@ -5,35 +5,35 @@ CHECK: tag=qm start
 CHECK: src info 12.0
 CHECK: src info A633EC52
 CHECK: sol info 1.1956163E+00
-CHECK: sol1 info 5.803160E+00
+CHECK: sol1 info 5.8032E+00
 CHECK: tag=qz_f start
 CHECK: src info 12.0
 CHECK: src info A633EC52
 CHECK: sol info 1.1593942E+00
-CHECK: sol1 info 4.766304E+00
-CHECK: tag=qz_f diff src 0.0 sol 1.06E-03 sol1 6.22E-02
+CHECK: sol1 info 4.7663E+00
+CHECK: tag=qz_f diff src 0.0 sol 1.1E-03 sol1 6.2E-02
 CHECK: tag=qm_mp start
 CHECK: src info 12.0
 CHECK: src info A633EC52
 CHECK: sol info 1.1956163E+00
-CHECK: sol1 info 5.803160E+00
-CHECK: tag=qm_mp diff src 0.0 sol 1.51E-13 sol1 2.31E-12
+CHECK: sol1 info 5.8032E+00
+CHECK: tag=qm_mp diff src 0.0 sol 1.5E-13 sol1 2.3E-12
 CHECK: tag=qm_split start
 CHECK: src info 12.0
 CHECK: src info A633EC52
 CHECK: sol info 1.1956163E+00
-CHECK: sol1 info 5.803160E+00
-CHECK: tag=qm_split diff src 0.0 sol 1.51E-13 sol1 2.31E-12
+CHECK: sol1 info 5.8032E+00
+CHECK: tag=qm_split diff src 0.0 sol 1.5E-13 sol1 2.3E-12
 CHECK: tag=qm_split_sloppy start
 CHECK: src info 12.0
 CHECK: src info A633EC52
 CHECK: sol info 1.1956122E+00
-CHECK: sol1 info 5.803076E+00
-CHECK: tag=qm_split_sloppy diff src 0.0 sol 9.20E-09 sol1 3.86E-07
+CHECK: sol1 info 5.8031E+00
+CHECK: tag=qm_split_sloppy diff src 0.0 sol 9.2E-09 sol1 3.9E-07
 CHECK: tag=inv_qm_madwf start
 CHECK: src info 12.0
 CHECK: src info A633EC52
 CHECK: sol info 1.1956163E+00
-CHECK: sol1 info 5.803160E+00
-CHECK: tag=inv_qm_madwf diff src 0.0 sol 1.51E-13 sol1 2.33E-12
+CHECK: sol1 info 5.8032E+00
+CHECK: tag=inv_qm_madwf diff src 0.0 sol 1.5E-13 sol1 2.3E-12
 CHECK: finished successfully.
