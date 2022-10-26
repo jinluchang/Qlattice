@@ -52,11 +52,10 @@ jobs:
 
     - name: Copying logs
       run: |
-        for i in examples-py/*.log ; do
-          cp $HOME/qlat-build/default/qlat-examples/$i $i
-        done
-        for i in examples-cpp/*/log ; do
-          cp $HOME/qlat-build/default/qlat-examples/$i $i
+        for i in examples-py/*.log examples-cpp/*/log ; do
+          echo $i
+          diff $HOME/qlat-build/default/qlat-examples/$i $i | grep 'CHECK: ' || echo Good
+          cp $HOME/qlat-build/default/qlat-examples/$i $i || echo Failed
         done
 
     - name: Check error

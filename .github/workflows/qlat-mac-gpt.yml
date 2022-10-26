@@ -52,16 +52,11 @@ jobs:
 
     - name: Copying logs
       run: |
-        for i in examples-py/*.log ; do
-          cp $HOME/qlat-build/default/qlat-examples/$i $i
+        for i in examples-py/*.log examples-cpp/*/log ; do
+          echo $i
+          diff $HOME/qlat-build/default/qlat-examples/$i $i | grep 'CHECK: ' || echo Good
+          cp $HOME/qlat-build/default/qlat-examples/$i $i || echo Failed
         done
-        for i in examples-cpp/*/log ; do
-          cp $HOME/qlat-build/default/qlat-examples/$i $i
-        done
-
-    - name: Check error
-      run: |
-        ! git diff | grep '^[+-]CHECK: '
 
     - name: Build more packages
       run: |
@@ -69,3 +64,7 @@ jobs:
         ./scripts/hdf5.sh
         ./scripts/grid-tblum.avx2.sh
         ./scripts/hadrons-tblum.sh
+
+    - name: Check error
+      run: |
+        ! git diff | grep '^[+-]CHECK: '
