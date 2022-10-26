@@ -50,14 +50,14 @@ jobs:
         ./scripts/gpt.sh || echo Failed
         ./scripts/qlat-grid-io.sh || echo Failed
 
+    - name: Testing pylib qlat
+      run: |
+        ./scripts/qlat-examples-py-gpt.sh || echo Failed
+
     - name: Testing qlat
       run: |
         export num_proc=4
         ./scripts/qlat-examples-cpp.sh || echo Failed
-
-    - name: Testing pylib qlat
-      run: |
-        ./scripts/qlat-examples-py-gpt.sh || echo Failed
 
     - name: Copying logs
       run: |
