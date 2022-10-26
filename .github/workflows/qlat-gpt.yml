@@ -21,6 +21,7 @@ jobs:
         pwd
         ls
         export
+        cat /proc/cpuinfo
 
     - name: Install Ubuntu packages
       run: |
