@@ -55,6 +55,7 @@ if [ "$(uname)" == "Darwin" ]; then
     if [ -z "$USE_COMPILER" ] ; then
         export USE_COMPILER=clang
     fi
+    export CGPT_EXTRA_LDFLAGS="-undefined dynamic_lookup"
 elif [ "$(uname)" == "Linux" ]; then
     echo "Setting for Linux"
 else
