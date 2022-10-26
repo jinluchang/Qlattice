@@ -24,7 +24,7 @@ name=qlat-examples-cpp
 
     for log in */log ; do
         echo diff "$build/examples-cpp/$log" "$log"
-        diff "$build/examples-cpp/$log" "$log" || true
+        diff "$build/examples-cpp/$log" "$log" || cat "$build/examples-cpp/$log".full || true
     done
 
     cd $wd
