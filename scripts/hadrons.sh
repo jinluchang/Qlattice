@@ -6,28 +6,30 @@ name=Hadrons
 
 {
 
-echo "!!!! build $name !!!!"
+    time {
 
-echo "!!!! build $name !!!!"
+    echo "!!!! build $name !!!!"
 
-mkdir -p "$prefix"/$name || true
+    mkdir -p "$prefix"/$name || true
 
-rsync -av --delete $distfiles/$name/ "$prefix"/$name/
+    rsync -av --delete $distfiles/$name/ "$prefix"/$name/
 
-cd "$prefix/$name"
+    cd "$prefix/$name"
 
-mkdir build
+    mkdir build
 
-cd build
+    cd build
 
-../configure \
-    --with-grid="$prefix/grid-paboyle"
+    ../configure \
+        --with-grid="$prefix/grid-paboyle"
 
-make -j "$num_proc"
+    make -j "$num_proc"
 
-cd $wd
-echo "!!!! $name build !!!!"
+    cd $wd
+    echo "!!!! $name build !!!!"
 
-rm -rf $temp_dir || true
+    rm -rf $temp_dir || true
+
+}
 
 } 2>&1 | tee $prefix/log.$name.txt

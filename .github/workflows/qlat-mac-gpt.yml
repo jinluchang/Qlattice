@@ -62,3 +62,10 @@ jobs:
     - name: Check error
       run: |
         ! git diff | grep '^[+-]CHECK: '
+
+    - name: Build more packages
+      run: |
+        export num_proc=4
+        ./scripts/hdf5.sh
+        ./scripts/grid-tblum.avx2.sh
+        ./scripts/hadrons-tblum.sh

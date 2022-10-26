@@ -6,40 +6,44 @@ name=Grid-tblum
 
 {
 
-echo "!!!! build $name !!!!"
+    time {
 
-mkdir -p "$prefix"/$name || true
+    echo "!!!! build $name !!!!"
 
-rsync -av --delete $distfiles/$name/ "$prefix"/$name/
+    mkdir -p "$prefix"/$name || true
 
-cd "$prefix/$name"
+    rsync -av --delete $distfiles/$name/ "$prefix"/$name/
 
-INITDIR="$(pwd)"
-rm -rfv "${INITDIR}/Eigen/Eigen/unsupported"
-rm -rfv "${INITDIR}/Grid/Eigen"
-ln -vs "${INITDIR}/Eigen/Eigen" "${INITDIR}/Grid/Eigen"
-ln -vs "${INITDIR}/Eigen/unsupported/Eigen" "${INITDIR}/Grid/Eigen/unsupported"
+    cd "$prefix/$name"
 
-export CXXFLAGS="$CXXFLAGS -DUSE_QLATTICE"
+    INITDIR="$(pwd)"
+    rm -rfv "${INITDIR}/Eigen/Eigen/unsupported"
+    rm -rfv "${INITDIR}/Grid/Eigen"
+    ln -vs "${INITDIR}/Eigen/Eigen" "${INITDIR}/Grid/Eigen"
+    ln -vs "${INITDIR}/Eigen/unsupported/Eigen" "${INITDIR}/Grid/Eigen/unsupported"
 
-mkdir build
-cd build
-../configure \
-    --enable-simd=AVX2 \
-    --enable-alloc-align=4k \
-    --enable-comms=mpi-auto \
-    --enable-gparity=no \
-    --with-lime="$prefix" \
-    --with-fftw="$prefix" \
-    --with-hdf5="$prefix" \
-    --prefix="$prefix/grid-tblum"
+    export CXXFLAGS="$CXXFLAGS -DUSE_QLATTICE"
 
-make -j$num_proc
-make install
+    mkdir build
+    cd build
+    ../configure \
+        --enable-simd=AVX2 \
+        --enable-alloc-align=4k \
+        --enable-comms=mpi-auto \
+        --enable-gparity=no \
+        --with-lime="$prefix" \
+        --with-fftw="$prefix" \
+        --with-hdf5="$prefix" \
+        --prefix="$prefix/grid-tblum"
 
-cd $wd
-echo "!!!! $name build !!!!"
+    make -j$num_proc
+    make install
 
-rm -rf $temp_dir || true
+    cd $wd
+    echo "!!!! $name build !!!!"
+
+    rm -rf $temp_dir || true
+
+}
 
 } 2>&1 | tee $prefix/log.$name.txt
