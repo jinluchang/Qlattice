@@ -35,7 +35,7 @@ jobs:
       run: |
         ./scripts/download-core.sh || echo Failed
 
-    - name: Build everything
+    - name: Build Qlattice Grid/GPT
       run: |
         export num_proc=4
         ./build.sh default-gpt || echo Failed
