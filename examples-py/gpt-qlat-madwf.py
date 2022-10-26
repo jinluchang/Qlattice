@@ -128,11 +128,14 @@ def mk_src(geo):
 
 def test_inv(geo, inverter):
     src = mk_src(geo)
-    q.displayln_info(f"CHECK: src info {src.qnorm()} {src.crc32()}")
+    q.displayln_info(f"CHECK: src info {src.qnorm()}")
+    q.displayln_info(f"CHECK: src info {src.crc32():08X}")
     sol = inverter * src
-    q.displayln_info(f"CHECK: sol info {sol.qnorm()} {sol.crc32()}")
+    q.displayln_info(f"CHECK: sol info {sol.qnorm():.7E}")
+    q.displayln_info(f"sol info {sol.crc32():08X}")
     sol1 = inverter * sol
-    q.displayln_info(f"CHECK: sol1 info {sol1.qnorm()} {sol1.crc32()}")
+    q.displayln_info(f"CHECK: sol1 info {sol1.qnorm():.6E}")
+    q.displayln_info(f"sol1 info {sol1.crc32():08X}")
     return src, sol, sol1
 
 tags = [ "qm", "qz_f", "qm_mp", "qm_split", "qm_split_sloppy", "inv_qm_madwf" ]
@@ -147,7 +150,7 @@ for tag, inv in zip(tags[1:], invs[1:]) :
     src_n -= src
     sol_n -= sol
     sol1_n -= sol1
-    q.displayln_info(f"CHECK: tag={tag} diff src {src_n.qnorm()} sol {sol_n.qnorm()} sol1 {sol1_n.qnorm()}")
+    q.displayln_info(f"CHECK: tag={tag} diff src {src_n.qnorm()} sol {sol_n.qnorm():.2E} sol1 {sol1_n.qnorm():.2E}")
 
 q.timer_display()
 

@@ -54,7 +54,8 @@ for src in [src_p, src_r]:
     sol_diff = sol1.copy()
     sol_diff -= sol
 
-    q.displayln_info("CHECK: ", sol.qnorm(), sol1.qnorm(), sol_diff.qnorm())
+    q.displayln_info(f"CHECK: {sol.qnorm():.10E} {sol1.qnorm():.10E}")
+    assert sol_diff.qnorm() < 1e-15
 
 q.timer_display()
 
