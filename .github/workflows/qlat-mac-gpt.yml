@@ -37,10 +37,18 @@ jobs:
       run: |
         ./scripts/download-core.sh || echo Failed
 
-    - name: Build everything
+    - name: Build Qlattice
       run: |
         export num_proc=4
-        ./build.sh default-gpt || echo Failed
+        ./build.sh default || echo Failed
+
+    - name: Build Grid/GPT
+      run: |
+        export num_proc=4
+        ./scripts/c-lime.sh || echo Failed
+        ./scripts/grid.gen16.sh || echo Failed
+        ./scripts/gpt.sh || echo Failed
+        ./scripts/qlat-grid-io.sh || echo Failed
 
     - name: Testing qlat
       run: |
@@ -63,7 +71,7 @@ jobs:
       run: |
         export num_proc=4
         ./scripts/hdf5.sh
-        ./scripts/grid-tblum.avx2.sh
+        ./scripts/grid-tblum.gen16.sh
         ./scripts/hadrons-tblum.sh
 
     - name: Check error
