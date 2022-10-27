@@ -939,7 +939,8 @@ void fft_fieldM(std::vector<qlat::FieldM<Ty, civ> >& src, bool fftdir=true, bool
 {
   if(src.size() < 1)return;
 
-  int nfft = src.size() * civ;Geometry& geo = src[0]().geo();
+  int nfft = src.size() * civ;
+  const Geometry& geo = src[0].geo();
   bool use_qlat = check_fft_mode(nfft, geo, fft4d);
   if(use_qlat){
     TIMER("fft_complex_field_dir fieldM");
@@ -957,8 +958,8 @@ void fft_fieldM(std::vector<qlat::FieldM<Ty, civ> >& src, bool fftdir=true, bool
 
   {
   std::vector<Ty* > data;data.resize(src.size());
-  for(int si=0;si<src.size();si++){data[si] = (Ty*) qlat::get_data(src[si]).data();}
-  fft_fieldM<Ty >(data, civ, src.geo(), fftdir, fft4d);
+  for(unsigned int si=0;si<src.size();si++){data[si] = (Ty*) qlat::get_data(src[si]).data();}
+  fft_fieldM<Ty >(data, civ, geo, fftdir, fft4d);
   }
 }
 
@@ -968,10 +969,11 @@ void fft_fieldM(std::vector<Handle<qlat::Field<M> > >& src, bool fftdir=true, bo
   if(src.size() < 1)return;
   bool is_double     = get_data_type_is_double<M >();
   DATA_TYPE prec = Complex_TYPE;int civ = 1;
-  if( is_double){prec = Complex_TYPE ; civ = src[0]().geo().multiplicity * sizeof(M)/sizeof(Complex ); }
-  if(!is_double){prec = ComplexF_TYPE; civ = src[0]().geo().multiplicity * sizeof(M)/sizeof(ComplexF); }
+  const Geometry& geo = src[0]().geo();
+  if( is_double){prec = Complex_TYPE ; civ = geo.multiplicity * sizeof(M)/sizeof(Complex ); }
+  if(!is_double){prec = ComplexF_TYPE; civ = geo.multiplicity * sizeof(M)/sizeof(ComplexF); }
 
-  int nfft = src.size() * civ;Geometry& geo = src[0]().geo();
+  int nfft = src.size() * civ;
   bool use_qlat = check_fft_mode(nfft, geo, fft4d);
   if(use_qlat){
     TIMER("fft_complex_field_dir fieldM");
@@ -996,7 +998,7 @@ void fft_fieldM(std::vector<Handle<qlat::Field<M> > >& src, bool fftdir=true, bo
   #endif
 
   FFTGPUPlanKey fkey;
-  fkey.geo = src[0]().geo();
+  fkey.geo = geo;
   fkey.GPU = true;
   fkey.nvec = src.size();
   fkey.civ = civ;

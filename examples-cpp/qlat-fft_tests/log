@@ -1,0 +1,73 @@
+qlat::begin(): MPI Initialized. num_node = 4
+qlat::begin_comm(comm,size_node): get_comm_list().push_back()
+qlat::begin_comm(comm,size_node): get_comm_list().size() = 1
+qlat::begin(): q_num_threads = 2
+qlat::begin(): GeometryNode =
+{ initialized = true
+, num_node    = 4
+, id_node     = 0
+, size_node   = 1x1x2x2
+, coor_node   = 0x0x0x0 }
+q_verbose=10
+q_timer_max_func_name_len=50 (default)
+q_mk_id_node_in_shuffle_seed='' (default)
+clear_mem_cache: 0 bytes (0.000 GB) freed.
+q_timer_mini_auto_show=1 (default)
+q_timer_max_always_show=10
+q_field_init='fast' (default)
+set q_field_init=fast.
+Cache: 'FftComplexFieldPlanCache': 0 / 32 [16] to add
+FftComplexFieldPlan::init: malloc 24576
+FftComplexFieldPlan::init: free 24576
+make_shuffle_plan_fft: num_send_packs =        128
+make_shuffle_plan_fft: num_recv_packs =          4
+make_shuffle_plan_fft: num_send_msgs  =          1
+make_shuffle_plan_fft: num_recv_msgs  =          1
+make_shuffle_plan_fft: total num_send_packs =        512
+make_shuffle_plan_fft: total num_recv_packs =         16
+make_shuffle_plan_fft: total num_send_msgs  =          4
+make_shuffle_plan_fft: total num_recv_msgs  =          4
+make_shuffle_plan_fft: global_comm_size =        512
+q_mem_cache_max_size=512 (default)
+q_mem_cache_acc_max_size=512 (default)
+Cache: 'FftComplexFieldPlanCache': 1 / 32 [16] to add
+FftComplexFieldPlan::init: malloc 24576
+FftComplexFieldPlan::init: free 24576
+make_shuffle_plan_fft: num_send_packs =         32
+make_shuffle_plan_fft: num_recv_packs =          4
+make_shuffle_plan_fft: num_send_msgs  =          1
+make_shuffle_plan_fft: num_recv_msgs  =          1
+make_shuffle_plan_fft: total num_send_packs =        128
+make_shuffle_plan_fft: total num_recv_packs =         16
+make_shuffle_plan_fft: total num_send_msgs  =          4
+make_shuffle_plan_fft: total num_recv_msgs  =          4
+make_shuffle_plan_fft: global_comm_size =        512
+Cache: 'FftComplexFieldPlanCache': 2 / 32 [16] to add
+FftComplexFieldPlan::init: malloc 24576
+FftComplexFieldPlan::init: free 24576
+make_shuffle_plan_fft: num_send_packs =          7
+make_shuffle_plan_fft: num_recv_packs =          4
+make_shuffle_plan_fft: num_send_msgs  =          2
+make_shuffle_plan_fft: num_recv_msgs  =          2
+make_shuffle_plan_fft: total num_send_packs =         28
+make_shuffle_plan_fft: total num_recv_packs =         16
+make_shuffle_plan_fft: total num_send_msgs  =          8
+make_shuffle_plan_fft: total num_recv_msgs  =          8
+make_shuffle_plan_fft: global_comm_size =        512
+Cache: 'VectorGPUKey': 0 / 16 [8] to add
+==Jobs dim 3, 4 4 4 , nvec 1, civ 12, bsize 16. 
+==N_extra 1, enable_MPI 1, GPU 0, b0 1, c0 12, mode_rot -1, need copy 0. 
+Cache: 'FFTGPUPlanCache': 0 / 16 [8] to add
+CHECK: Consistency: orig qnorm: 1.2353811813E+04 ; fft qnorm 7.9064395602E+05 ; new fft qnorm: 7.9064395602E+05
+CHECK: finished successfully.
+Cache: 'VectorGPUKey': 1 / 16 [8] clear
+Cache: 'FFTGPUPlanCache': 1 / 16 [8] clear
+Cache: 'FftComplexFieldPlanCache': 3 / 32 [16] clear
+FftComplexFieldPlan::end(): free a plan.
+FftComplexFieldPlan::end(): free a plan.
+FftComplexFieldPlan::end(): free a plan.
+clear_mem_cache: 155648 bytes (0.000 GB) freed.
+qlat::end(): get_comm_list().pop_back()
+qlat::end(): get_comm_list().size() = 0.
+qlat::end(): Finalize MPI.
+qlat::end(): MPI Finalized.
