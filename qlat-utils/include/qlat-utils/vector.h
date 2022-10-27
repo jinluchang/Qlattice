@@ -1,5 +1,6 @@
 #pragma once
 
+#include <qlat-utils/config.h>
 #include <qlat-utils/qutils-vec.h>
 #include <qlat-utils/qutils.h>
 

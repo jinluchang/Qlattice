@@ -21,6 +21,7 @@
 
 #pragma once
 
+#include <qlat-utils/config.h>
 #ifdef QLAT_USE_MACHINE_ENDIAN_H
 #include <machine/endian.h>
 #else
