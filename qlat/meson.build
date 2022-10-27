@@ -55,21 +55,9 @@ install_headers('include/qlat/qlat-setup.h')
 c = run_command('bash', '-c', 'ls "$MESON_SOURCE_ROOT"/pylib/cqlat/*.cpp', check: true)
 sources = c.stdout().strip().split('\n')
 
-incdir = [ include_directories('include') ]
+subdir('include/qlat')
 
-conf_data = configuration_data()
-
-if cpp.has_function('mallopt', prefix: '#include <malloc.h>')
-  conf_data.set('QLAT_USE_MALLOPT', true)
-endif
-
-if cpp.has_function('sysinfo', prefix: '#include <sys/sysinfo.h>')
-  conf_data.set('QLAT_USE_SYSINFO', true)
-endif
-
-config = configure_file(output: 'config.h', configuration: conf_data)
-
-install_headers(config, subdir: 'qlat')
+incdir = include_directories('include')
 
 lib = py3.extension_module('cqlat',
   sources,
