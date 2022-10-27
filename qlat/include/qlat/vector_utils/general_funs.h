@@ -730,6 +730,7 @@ inline void print_mem_info(std::string stmp = "")
   cudaMemGetInfo(&freeM,&totalM);
   freeD = freeM*pow(0.5,30);totalD = totalM*pow(0.5,30);
   #endif
+  #ifdef QLAT_USE_SYSINFO
   struct sysinfo s_info;
   sysinfo(&s_info);
   #ifdef QLAT_USE_ACC
@@ -739,6 +740,9 @@ inline void print_mem_info(std::string stmp = "")
   #else
   print0("===CPU free %.3e GB, total %.3e GB. \n"
           , s_info.freeram*pow(0.5,30),s_info.totalram*pow(0.5,30));
+  #endif
+  #else
+  print0("===MAC free infinity! \n");
   #endif
 }
 

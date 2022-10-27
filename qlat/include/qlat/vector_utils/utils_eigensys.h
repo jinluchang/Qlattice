@@ -273,8 +273,6 @@ void eigen_ov::setup_gpufac(int nprop)
   //freeD = freeM*pow(0.5,30);
   double totalD=0;
   totalD = totalM*pow(0.5,30);
-  //struct sysinfo s_info;
-  //sysinfo(&s_info);
 
   //int Ns = 12;
   int Ns = nV_prop;if(Ns <=0)Ns = 2;
