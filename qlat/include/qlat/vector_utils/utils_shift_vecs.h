@@ -536,7 +536,7 @@ void multiply_gauge(void *src, void* gauge, const int dir_gauge,const int biva,c
   ////cpu fast mode
   if(fast_eigen == 1){
   qthread_for(index,  long(Length), {
-    Cy buf[9];
+    ALIGN Cy buf[9];
     //if(!Conj)for(int ci=0;ci<9;ci++){buf[(ci%3)*3 + ci/3] = ((Cy*) gauge)[(index*dir_limit*2 + dir_gauge)*9 +  ci];}
     //if( Conj)for(int ci=0;ci<9;ci++){buf[(ci%3)*3 + ci/3] = qlat::qconj(((Cy*) gauge)[(index*dir_limit*2 + dir_gauge)*9 +  ci]);}
     if(!Conj)for(int ci=0;ci<9;ci++){buf[ci] = ((Cy*) gauge)[(index*dir_limit*2 + dir_gauge)*9 +  ci];}
@@ -563,8 +563,8 @@ void multiply_gauge(void *src, void* gauge, const int dir_gauge,const int biva,c
   if(fast_eigen == 0){
   qassert(gd0 <= 128);
   qacc_for(index,  long(Length), {
-    Cy buf[9];
-    Cy res[128*3];
+    ALIGN Cy buf[9];
+    ALIGN Cy res[128*3];
     if(!Conj)for(int ci=0;ci<9;ci++){buf[ci] = ((Cy*) gauge)[(index*dir_limit*2 + dir_gauge)*9 +  ci];}
     if( Conj)for(int ci=0;ci<9;ci++){buf[ci] = qlat::qconj(((Cy*) gauge)[(index*dir_limit*2 + dir_gauge)*9 +  ci]);}
     for(int bi=0;bi<biva;bi++)
@@ -726,7 +726,7 @@ void shift_vec::shift_vecs(std::vector<Ty* > &src,std::vector<Ty* > &res,std::ve
 
   if(dir_curl.size()==0){
     LInt Nsize = Nt*N0*N1*N2*civ_or;
-    std::vector<Ty > tem;tem.resize(Nsize);
+    qlat::vector_gpu<Ty > tem;tem.resize(Nsize, GPU);
     for(LInt vi=0;vi<(LInt) biva_or;vi++)
     {
       //memcpy(&tem[0], &src[vi][0],sizeof(Ty )*Nsize);

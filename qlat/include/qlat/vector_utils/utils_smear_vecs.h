@@ -829,7 +829,7 @@ void gauss_smear_kernel(T* src, const double width, const int step, const T norm
     const int dir_max = 4;
     const int dir_limit = smf.dirL;
     qacc_for(index,  long(Nvol),{
-      T buf[nsites];for(int i=0;i<nsites;i++){buf[i] = 0;}
+      ALIGN T buf[nsites];for(int i=0;i<nsites;i++){buf[i] = 0;}
       for (int dir = -dir_limit; dir < dir_limit; ++dir) {
         const T* wm1p = &prop_buf[size_t(Pdir1[index*dir_limit*2 + (dir + dir_limit)])*nsites];
         const T* lp = &gf[(index*dir_max*2 + dir + dir_max)*9];
@@ -944,7 +944,7 @@ void rotate_prop(Propagator4dT<T>& prop, int dir = 0)
 
   T* src =  (T*) qlat::get_data(prop).data();
   qacc_for(index, long(Nvol), {
-    T buf[12*12];
+    ALIGN T buf[12*12];
     T* res = &src[index*12*12];
     for(int i=0;i<12*12;i++){buf[i] = res[i];}
 
@@ -1045,7 +1045,7 @@ void smear_propagator_gwu_convension(qpropT& prop, const GaugeFieldT<Tg >& gf,
   flag = 0;mv_civ.dojob(src, src, 1, 12*12, Nvol, flag, 1, false);
 
   qacc_for(isp, Nvol, {
-    Ty buf[12*12];
+    ALIGN Ty buf[12*12];
     for(int i=0;i<12*12;i++){buf[i] = src[isp*12*12 + i];}
     for(int d0=0;d0<12*4;d0++)
     for(int c0=0;c0<   3;c0++)
@@ -1057,7 +1057,7 @@ void smear_propagator_gwu_convension(qpropT& prop, const GaugeFieldT<Tg >& gf,
   smear_propagator_gwu_convension_inner<Ty, 1, 12*4, Tg>(src, gf, width, step, mom, smear_in_time_dir, mode);
 
   qacc_for(isp, Nvol, {
-    Ty buf[12*12];
+    ALIGN Ty buf[12*12];
     for(int i=0;i<12*12;i++){buf[i] = src[isp*12*12 + i];}
     for(int d0=0;d0<12*4;d0++)
     for(int c0=0;c0<   3;c0++)
@@ -1075,7 +1075,7 @@ void smear_propagator_gwu_convension(qlat::FieldM<Ty , 12>& prop, const GaugeFie
   if (0 == step) {return;}
   Ty* src = (Ty*) qlat::get_data(prop).data();
   qacc_for(isp, prop.geo().local_volume(), {
-    Ty buf[12];
+    ALIGN Ty buf[12];
     for(int i=0;i<12;i++){buf[i] = src[isp*12 + i];}
     for(int d0=0;d0<4;d0++)
     for(int c0=0;c0<   3;c0++)
@@ -1086,7 +1086,7 @@ void smear_propagator_gwu_convension(qlat::FieldM<Ty , 12>& prop, const GaugeFie
 
   smear_propagator_gwu_convension_inner<Ty, 1, 4, Tg>(src, gf, width, step, mom, smear_in_time_dir, mode);
   qacc_for(isp, prop.geo().local_volume(), {
-    Ty buf[12];
+    ALIGN Ty buf[12];
     for(int i=0;i<12;i++){buf[i] = src[isp*12 + i];}
     for(int d0=0;d0<4;d0++)
     for(int c0=0;c0<   3;c0++)

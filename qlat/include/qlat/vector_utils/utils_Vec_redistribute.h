@@ -33,21 +33,21 @@ struct Vec_redistribute
   bool update_off;
   /////void* bufV ;
 
-  std::vector<int > currsend;
-  std::vector<int > currspls;
-  std::vector<int > currrecv;
-  std::vector<int > currrpls;
+  qlat::vector<int > currsend;
+  qlat::vector<int > currspls;
+  qlat::vector<int > currrecv;
+  qlat::vector<int > currrpls;
 
-  std::vector<int > sendM;
-  std::vector<int > splsM;
-  std::vector<int > recvM;
-  std::vector<int > rplsM;
+  qlat::vector<int > sendM;
+  qlat::vector<int > splsM;
+  qlat::vector<int > recvM;
+  qlat::vector<int > rplsM;
 
   qlat::vector_acc<LInt > map_order;
   qlat::vector_acc<LInt > map_Dorder;
 
   /////May need to change?
-  std::vector<int > secT;
+  qlat::vector<int > secT;
 
   inline void set_mem(int b0_or,int civa_or);
   int flag_set_mem;
@@ -66,9 +66,8 @@ struct Vec_redistribute
 
   inline void print_send_size();
 
-  std::vector<int > map_mpi_vec;
+  qlat::vector<int > map_mpi_vec;
 
-  /////std::vector<MPI_Comm > vec_comm_list;
   MPI_Comm vec_comm;
   int mode_MPI;
 
@@ -118,13 +117,13 @@ inline Vec_redistribute::Vec_redistribute(fft_desc_basic &fds, bool GPU_set)
 
   //////Needed for three point functions, need copy from dev
   secT.resize(fd->Nmpi);
-  for(LInt i=0;i<secT.size();i++){secT[i] = fd->Nt;}
+  for(long i=0;i<secT.size();i++){secT[i] = fd->Nt;}
 
   //////if(secT_or.size()!=fd->Nmpi){print0("secT wrong %8d ! \n", int(secT_or.size()));qassert(false);}
   ////secT = secT_or;
   ////Check same number secT for MPI
   ////long mvol = mx*my*mz;
-  std::vector<int > check;check.resize(0);
+  qlat::vector<int > check;check.resize(0);
   for(int n=0;n<fd->Nmpi;n++)
   {
     int init = fd->Pos0[n][3];
@@ -141,7 +140,7 @@ inline Vec_redistribute::Vec_redistribute(fft_desc_basic &fds, bool GPU_set)
   ////Check same number secT for MPI
 
   map_mpi_vec.resize(Nmpi);
-  for(LInt mapi=0;mapi<map_mpi_vec.size();mapi++){map_mpi_vec[mapi] = 0;}
+  for(long mapi=0;mapi<map_mpi_vec.size();mapi++){map_mpi_vec[mapi] = 0;}
 
   //for(int icomm=0;icomm<vec_comm_list.size();icomm++)
   //{MPI_Comm_free(&vec_comm_list[icomm]);}
@@ -181,7 +180,7 @@ inline void Vec_redistribute::set_mem(int b0_or,int civa_or)
   //fd->set_up_map();
   ///map i --> nz*ny*nx   to recieve position
   /////2 is the fatest
-  std::vector<long > mapcur_Vtoi;
+  qlat::vector<long > mapcur_Vtoi;
   mapcur_Vtoi.resize(nx*ny*nz/Nv[orderN[2]]);
   int Nts = secT[fd->rank];
   for(int tmi=0;tmi<mt;tmi++)
@@ -426,7 +425,6 @@ struct Rotate_vecs{
   int b0, civa, N_extra;
   int bsize;
   size_t vol_buf,Bsize;
-  ////std::vector<int > map_vecs;
 
   bool flag_mem_set;
 

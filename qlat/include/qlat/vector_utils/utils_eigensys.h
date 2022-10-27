@@ -15,7 +15,7 @@
 
 ///#define SUMMIT 0
 
-#define Elocal std::vector<std::vector<Complexq > >
+#define Elocal std::vector<qlat::vector<Complexq > >
 ////#define Vlocal qlat::vector_acc<Complexq >
 #define Vlocal qlat::vector_gpu<Complexq >
 #define EIGENERROR 1e-11
