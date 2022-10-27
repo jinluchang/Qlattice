@@ -48,8 +48,8 @@ void simple_tests()
     set_left_expanded_gauge_field(gf1, gf);
     smear_propagator(    prop_qlat, gf1, coef , nsmear  , mom, smear_in_time_dir    );
 
-    prop_vec -= prop_qlat;
-    displayln_info(ssprintf("CHECK: Consistency: orig qnorm: %.10E ; smear qnorm %.10E ; diff qnorm: %.2E",
+    ////prop_vec -= prop_qlat;
+    displayln_info(ssprintf("CHECK: Consistency: orig qnorm: %.10E ; smear qnorm %.10E ; new smear qnorm: %.10E",
                             qnorm(prop_src), qnorm(prop_qlat), qnorm(prop_vec)));
   }
 

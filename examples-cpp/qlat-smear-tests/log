@@ -39,7 +39,7 @@ plaq (2,1,0,0)x1 :  4.42771899709962895E+01
 Cache: 'VectorGPUKey': 0 / 16 [8] to add
 Cache: 'CommPlanCache': 4 / 32 [16] to add
 Cache: 'SmearPlanKeyCache': 0 / 16 [8] to add
-CHECK: Consistency: orig qnorm: 1.4866278514E+05 ; smear qnorm 2.2139079478E+03 ; diff qnorm: 1.56E-27
+CHECK: Consistency: orig qnorm: 1.4866278514E+05 ; smear qnorm 2.2139079478E+03 ; new smear qnorm: 2.2139079478E+03
 CHECK: finished successfully.
 Cache: 'VectorGPUKey': 1 / 16 [8] clear
 Cache: 'SmearPlanKeyCache': 1 / 16 [8] clear
