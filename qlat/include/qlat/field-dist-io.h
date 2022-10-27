@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <qlat/config.h>
+#include <qlat/setup.h>
 #include <qlat/field-shuffle.h>
 #include <qlat/utils-io.h>
 
@@ -41,8 +41,11 @@ API inline int& get_incorrect_field_read_sizeof_M()
 
 API inline bool& is_checksum_missmatch()
 // qlat parameter
+// if initially false, then will be set to true when checksum check fail
+// if initially true, then the program will crash when checksum fail
+// by default, the program will crash if checksums fail
 {
-  static bool b = false;
+  static bool b = true;
   return b;
 }
 
@@ -421,6 +424,7 @@ long dist_read_dist_data(const std::vector<DistData<M> >& dds,
   }
   std::vector<crc32_t> crcs = dist_crc32s(dds, num_node);
   crc32_t crc = dist_crc32(crcs);
+  const bool is_checking = is_checksum_missmatch();
   is_checksum_missmatch() = false;
   if (get_id_node() == 0) {
     const std::string fn = path + "/checksums.txt";
@@ -448,6 +452,9 @@ long dist_read_dist_data(const std::vector<DistData<M> >& dds,
         is_checksum_missmatch() = true;
       }
     }
+  }
+  if (is_checking) {
+    qassert(is_checksum_missmatch() == false);
   }
   timer.flops += total_bytes;
   return total_bytes;

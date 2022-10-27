@@ -8,7 +8,7 @@
 #include <cstring>
 #include <unordered_map>
 
-#ifdef USE_MALLOC_STATS
+#ifdef QLAT_USE_MALLOC_STATS
 #include <malloc.h>
 #endif
 
@@ -205,7 +205,7 @@ inline void free_mem(void* ptr, const long min_size, const bool is_acc = false)
 
 inline void displayln_malloc_stats()
 {
-#ifdef USE_MALLOC_STATS
+#ifdef QLAT_USE_MALLOC_STATS
   malloc_stats();
 #endif
 }

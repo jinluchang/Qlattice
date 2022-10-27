@@ -420,12 +420,16 @@ long read_field(Field<M>& f, const std::string& path,
     qassert(false);
   }
   const crc32_t f_crc = field_crc32(f);
+  const bool is_checking = is_checksum_missmatch();
   is_checksum_missmatch() = false;
   if (crc != f_crc) {
     displayln_info(fname + ssprintf(": WARNING: file crc32 do not match "
                                     "read_info_crc=%06X vs read_data_crc=%06X",
                                     crc, f_crc));
     is_checksum_missmatch() = true;
+  }
+  if (is_checking) {
+    qassert(is_checksum_missmatch() == false);
   }
   timer.flops += file_size;
   return file_size;

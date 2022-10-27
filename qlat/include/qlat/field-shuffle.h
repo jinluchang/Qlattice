@@ -3,7 +3,7 @@
 #pragma once
 
 #include <qlat-utils/cache.h>
-#include <qlat/config.h>
+#include <qlat/setup.h>
 #include <qlat/selected-field.h>
 
 

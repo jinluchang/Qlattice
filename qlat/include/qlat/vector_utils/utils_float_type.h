@@ -12,7 +12,7 @@
 #include <time.h>
 #include <typeinfo>
 #include <iterator>
-#ifdef USE_SYSINFO
+#ifdef QLAT_USE_SYSINFO
 #include <sys/sysinfo.h>
 #endif
 #include <qlat/qcd.h>

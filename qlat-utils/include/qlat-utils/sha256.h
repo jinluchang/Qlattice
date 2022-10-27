@@ -21,7 +21,7 @@
 
 #pragma once
 
-#ifdef USE_MACHINE_ENDIAN_H
+#ifdef QLAT_USE_MACHINE_ENDIAN_H
 #include <machine/endian.h>
 #else
 #include <endian.h>

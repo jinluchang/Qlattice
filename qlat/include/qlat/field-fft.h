@@ -1,6 +1,6 @@
 #pragma once
 
-#include <qlat/config.h>
+#include <qlat/setup.h>
 #include <qlat/field.h>
 #include <qlat/geometry.h>
 #include <qlat/mpi.h>

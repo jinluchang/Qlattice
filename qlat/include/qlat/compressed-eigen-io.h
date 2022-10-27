@@ -13,7 +13,7 @@
  */
 
 #include <qlat-utils/cache.h>
-#include <qlat/config.h>
+#include <qlat/setup.h>
 #include <qlat/fermion-action.h>
 #include <qlat/field-comm.h>
 #include <qlat/field-dist-io.h>

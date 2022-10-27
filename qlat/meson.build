@@ -57,15 +57,19 @@ sources = c.stdout().strip().split('\n')
 
 incdir = [ include_directories('include') ]
 
-cpp_args = []
+conf_data = configuration_data()
 
 if cpp.has_function('mallopt', prefix: '#include <malloc.h>')
-  cpp_args += [ '-DUSE_MALLOPT' ]
+  conf_data.set('QLAT_USE_MALLOPT', true)
 endif
 
 if cpp.has_function('sysinfo', prefix: '#include <sys/sysinfo.h>')
-  cpp_args += [ '-DUSE_SYSINFO' ]
+  conf_data.set('QLAT_USE_SYSINFO', true)
 endif
+
+config = configure_file(output: 'config.h', configuration: conf_data)
+
+install_headers(config, subdir: 'qlat')
 
 lib = py3.extension_module('cqlat',
   sources,
@@ -101,5 +105,4 @@ pkg.generate(
   description: 'Qlattice - A simple lattice QCD library.',
   requires: [ 'fftw3', 'fftw3f', 'qlat-utils', ],
   libraries: [ '-lfftw3_mpi', '-lfftw3f_mpi', '-lz', '-lm' ],
-  extra_cflags: cpp_args,
   )

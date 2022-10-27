@@ -17,7 +17,7 @@
 #include<type_traits>
 
 #include <iterator>
-#ifdef USE_SYSINFO
+#ifdef QLAT_USE_SYSINFO
 #include <sys/sysinfo.h>
 #endif
 #include "utils_read_txt.h"
@@ -722,7 +722,7 @@ inline void print_mem_info(std::string stmp = "")
   cudaMemGetInfo(&freeM,&totalM);
   freeD = freeM*pow(0.5,30);totalD = totalM*pow(0.5,30);
   #endif
-#ifdef USE_SYSINFO
+#ifdef QLAT_USE_SYSINFO
   struct sysinfo s_info;
   sysinfo(&s_info);
   #ifdef QLAT_USE_ACC

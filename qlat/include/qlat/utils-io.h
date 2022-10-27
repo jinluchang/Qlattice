@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <qlat/config.h>
+#include <qlat/setup.h>
 #include <qlat/mpi.h>
 #include <sys/types.h>
 #include <unistd.h>
