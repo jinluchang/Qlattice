@@ -8,11 +8,10 @@
 #pragma once
 #include <qlat/qcd.h>
 #include "utils_float_type.h"
-#include "utils_copy_data.h"
+#include "utils_COPY_data.h"
 
 ////needed for norm calculation
 #include "utils_reduce_vec.h"
-#define MAX_VECTOR_GPU_BUF 100
 
 namespace qlat{
 
@@ -401,7 +400,7 @@ inline const vector_gpu<Ty >& get_vector_gpu_plan(const VectorGPUKey& gkey)
 }
 
 template <typename Ty >
-inline void safe_free_vector_gpu_plan(const VectorGPUKey& gkey)
+inline void safe_free_vector_gpu_plan(const VectorGPUKey& gkey, const bool zero = false)
 {
   if ( get_vector_gpu_cache<Ty>().has(gkey)) {
     vector_gpu<Ty >& buf = get_vector_gpu_cache<Ty>()[gkey];
@@ -410,9 +409,11 @@ inline void safe_free_vector_gpu_plan(const VectorGPUKey& gkey)
     if(val != ""){MAX = stringtonum(val);}
     MAX = MAX * 1024 * 1024;  ////to MB
 
+    if(!zero)
     if(buf.size() * sizeof(Ty) > MAX){
       buf.resize(MAX);
     }
+    if(zero){buf.resize(0);}
   }
 }
 

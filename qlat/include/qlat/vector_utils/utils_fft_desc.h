@@ -83,16 +83,16 @@ struct fft_desc_basic
   inline void print_info();
   inline long get_mi_curr(int dir=3);
   inline void check_mem();
-  inline Coordinate coordinate_l_from_index(LInt isp);
-  inline Coordinate coordinate_g_from_g_index(LInt isp);
-  inline Coordinate coordinate_g_from_index(LInt isp, int rank_set = -1);
-  inline LInt index_g_from_local(LInt isp, int rank_set = -1);
+  inline Coordinate coordinate_l_from_index(LInt isp) const;
+  inline Coordinate coordinate_g_from_g_index(LInt isp) const ;
+  inline Coordinate coordinate_g_from_index(LInt isp, int rank_set = -1) const;
+  inline LInt index_g_from_local(LInt isp, int rank_set = -1) const;
   //////LInt index_g_from_g_coordinate(std::vector<int > pos);
-  inline LInt index_g_from_g_coordinate(int t, int z, int y, int x);
-  inline LInt index_g_from_g_coordinate(const Coordinate& g0);
-  inline bool coordinate_g_is_local(const Coordinate& g0);
+  inline LInt index_g_from_g_coordinate(int t, int z, int y, int x) const;
+  inline LInt index_g_from_g_coordinate(const Coordinate& g0) const ;
+  inline bool coordinate_g_is_local(const Coordinate& g0) const ;
 
-  inline LInt index_l_from_g_coordinate(const Coordinate& pos, int rank_set = -1);
+  inline LInt index_l_from_g_coordinate(const Coordinate& pos, int rank_set = -1) const;
 
   inline void get_geo(Geometry& geo ){
     Coordinate total_site = Coordinate(nx, ny, nz, nt);
@@ -141,7 +141,7 @@ inline long fft_desc_basic::get_mi_curr(int dir)
   return re;
 }
 
-inline Coordinate fft_desc_basic::coordinate_l_from_index(LInt isp)
+inline Coordinate fft_desc_basic::coordinate_l_from_index(LInt isp) const
 {
   if(variable_set == -1){abort_r("fft_desc not set! \n");}
 
@@ -155,7 +155,7 @@ inline Coordinate fft_desc_basic::coordinate_l_from_index(LInt isp)
   return g0;
 }
 
-inline Coordinate fft_desc_basic::coordinate_g_from_g_index(LInt isp)
+inline Coordinate fft_desc_basic::coordinate_g_from_g_index(LInt isp) const
 {
   if(variable_set == -1){abort_r("fft_desc not set! \n");}
 
@@ -169,7 +169,7 @@ inline Coordinate fft_desc_basic::coordinate_g_from_g_index(LInt isp)
 }
 
 
-inline LInt fft_desc_basic::index_g_from_g_coordinate(const Coordinate& g0) 
+inline LInt fft_desc_basic::index_g_from_g_coordinate(const Coordinate& g0)  const
 {
   if(variable_set == -1){abort_r("fft_desc not set! \n");}
   /////if(g0.size() != 4){abort_r("input pos wrong! \n");}
@@ -178,7 +178,7 @@ inline LInt fft_desc_basic::index_g_from_g_coordinate(const Coordinate& g0)
   return index;
 }
 
-inline bool fft_desc_basic::coordinate_g_is_local(const Coordinate& g0)
+inline bool fft_desc_basic::coordinate_g_is_local(const Coordinate& g0) const
 {
   /////if(g0.size() != 4){abort_r("input pos wrong! \n");}
   bool is_local = true;
@@ -190,7 +190,7 @@ inline bool fft_desc_basic::coordinate_g_is_local(const Coordinate& g0)
 }
 
 
-inline LInt fft_desc_basic::index_g_from_g_coordinate(int t, int z, int y, int x)
+inline LInt fft_desc_basic::index_g_from_g_coordinate(int t, int z, int y, int x) const
 {
   if(variable_set == -1){abort_r("fft_desc not set! \n");}
   /////std::vector<int > g0;g0.resize(4);
@@ -199,7 +199,7 @@ inline LInt fft_desc_basic::index_g_from_g_coordinate(int t, int z, int y, int x
   return index_g_from_g_coordinate(g0);
 }
 
-inline Coordinate fft_desc_basic::coordinate_g_from_index(LInt isp, int rank_set)
+inline Coordinate fft_desc_basic::coordinate_g_from_index(LInt isp, int rank_set) const
 {
   if(variable_set == -1){abort_r("fft_desc not set! \n");}
 
@@ -216,7 +216,7 @@ inline Coordinate fft_desc_basic::coordinate_g_from_index(LInt isp, int rank_set
   return g0;
 }
 
-inline LInt fft_desc_basic::index_l_from_g_coordinate(const Coordinate& pos, int rank_set)
+inline LInt fft_desc_basic::index_l_from_g_coordinate(const Coordinate& pos, int rank_set) const
 {
   if(variable_set == -1){abort_r("fft_desc not set! \n");}
 
@@ -232,10 +232,10 @@ inline LInt fft_desc_basic::index_l_from_g_coordinate(const Coordinate& pos, int
   return index;
 }
 
-inline LInt fft_desc_basic::index_g_from_local(LInt isp, int rank_set)
+inline LInt fft_desc_basic::index_g_from_local(LInt isp, int rank_set) const
 {
   if(variable_set == -1){abort_r("fft_desc not set! \n");}
-  Coordinate p = coordinate_g_from_index(isp, rank_set);
+  const Coordinate p = this->coordinate_g_from_index(isp, rank_set);
   LInt newi = ((p[3]*nv[orderN[0]]+p[orderN[0]])*nv[orderN[1]]+p[orderN[1]])*nv[orderN[2]]+p[orderN[2]];
   return newi;
 }
@@ -423,6 +423,51 @@ inline void desc_xyz_in_one(fft_desc_basic& fd, const Geometry& geo, int mode = 
   if(mode == 1){fd.iniv[3] = gs[3] * (mv[2]*mv[1]*mv[0]) + tA * Nv[3]; }
   fd.set_variable();
 }
+
+/////fft desc buffers related
+struct FFTdescKey {
+  Coordinate total_site;
+  int order_ch_or;
+  FFTdescKey(const Geometry& geo, int order_ch_or_ = 0)
+  {
+    total_site = geo.total_site();
+    order_ch_or = order_ch_or_;
+  }
+
+};
+inline bool operator<(const FFTdescKey& x, const FFTdescKey& y)
+{
+  if(x.total_site < y.total_site ){  return true;}
+  if(y.total_site < x.total_site ){  return false;}
+  if(x.order_ch_or < y.order_ch_or ){  return true;}
+  if(y.order_ch_or < x.order_ch_or ){  return false;}
+  return false;
+}
+
+inline Cache<FFTdescKey, fft_desc_basic >& get_fft_desc_basic_cache()
+{
+  static Cache<FFTdescKey, fft_desc_basic > cache("FFTdescKey", 16);
+  return cache;
+}
+
+inline const fft_desc_basic& get_fft_desc_basic_plan(const FFTdescKey& fkey)
+{
+  if (!get_fft_desc_basic_cache().has(fkey)) {
+    Geometry geo;geo.init(fkey.total_site, 1);
+    get_fft_desc_basic_cache()[fkey] = fft_desc_basic(geo, fkey.order_ch_or);
+  }
+  fft_desc_basic& buf = get_fft_desc_basic_cache()[fkey];
+  return buf;
+}
+
+inline const fft_desc_basic& get_fft_desc_basic_plan(const Geometry& geo)
+{
+  FFTdescKey fkey(geo);
+  return get_fft_desc_basic_plan(fkey);
+}
+
+
+
 
 }
 

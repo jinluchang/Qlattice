@@ -17,9 +17,6 @@
 #include<type_traits>
 
 #include <iterator>
-#ifdef QLAT_USE_SYSINFO
-#include <sys/sysinfo.h>
-#endif
 #include "utils_read_txt.h"
 #include "utils_vector_GPU.h"
 
@@ -492,7 +489,7 @@ struct move_index
 {
   //bool GPU;
 
-  qlat::vector_gpu<char > buf;
+  //qlat::vector_gpu<char > buf;
   ////size_t buf_size;
   //qlat::vector<char* > pciv;
 
@@ -551,7 +548,14 @@ struct move_index
     MPI_Barrier(get_comm());fflush(stdout);qassert(false);
   }
 
-  if(src == res){buf.resize(Off*sizeof(Ty), GPU);}
+  char* tmp_buf = NULL;
+
+  if(src == res){
+    VectorGPUKey gkey(Off*sizeof(Ty), std::string("move_index_buf"), GPU);
+    const vector_gpu<char >& buf = get_vector_gpu_plan<char >(gkey);
+    tmp_buf = buf.p;
+    ////buf.resize(Off*sizeof(Ty), GPU);
+  }
   //pciv.resize(civ);
   Ty* s0;Ty *s1;
   //#ifdef QLAT_USE_ACC
@@ -562,7 +566,7 @@ struct move_index
 
   for(int bi=0;bi<biva;bi++){
     s0 = &src[bi*Off];
-    if(src == res){s1 = (Ty*)buf.data();}else{s1 = (Ty*) &res[bi*Off];}
+    if(src == res){s1 = (Ty*)tmp_buf;}else{s1 = (Ty*) &res[bi*Off];}
     #ifdef QLAT_USE_ACC
     if(GPU){
 
@@ -610,7 +614,11 @@ struct move_index
   }
 
   void free_mem(){
-    buf.resize(0);
+    VectorGPUKey gkey0(0, std::string("move_index_buf"), false);
+    VectorGPUKey gkey1(0, std::string("move_index_buf"),  true);
+    safe_free_vector_gpu_plan<char >(gkey0, false);
+    safe_free_vector_gpu_plan<char >(gkey1, false);
+    //buf.resize(0);
   }
 
   ~move_index(){
@@ -722,7 +730,6 @@ inline void print_mem_info(std::string stmp = "")
   cudaMemGetInfo(&freeM,&totalM);
   freeD = freeM*pow(0.5,30);totalD = totalM*pow(0.5,30);
   #endif
-#ifdef QLAT_USE_SYSINFO
   struct sysinfo s_info;
   sysinfo(&s_info);
   #ifdef QLAT_USE_ACC
@@ -733,7 +740,6 @@ inline void print_mem_info(std::string stmp = "")
   print0("===CPU free %.3e GB, total %.3e GB. \n"
           , s_info.freeram*pow(0.5,30),s_info.totalram*pow(0.5,30));
   #endif
-#endif
 }
 
 
@@ -789,7 +795,7 @@ void p_vector(const Yl teml)
 template<typename Ty>
 void p_vector(const std::vector<Ty> teml)
 {
-  for(int i=0;i< teml.size();i++)
+  for(unsigned long i=0;i< teml.size();i++)
   {
     p_vector(teml[i]);
   }
@@ -799,7 +805,7 @@ void p_vector(const std::vector<Ty> teml)
 template<typename Ty>
 void p_vector(const qlat::vector<Ty> teml)
 {
-  for(int i=0;i< teml.size();i++)
+  for(unsigned long i=0;i< teml.size();i++)
   {
     p_vector(teml[i]);
   }

@@ -6,8 +6,7 @@
 #define UTILS_READ_TXT_H
 #pragma once
 
-////#include "general_funs.h"
-#include "utils_copy_data.h"
+#include "utils_COPY_data.h"
 
 namespace qlat
 {
@@ -55,12 +54,21 @@ inline std::vector<std::string > stringtolist(const std::string &tem_string)
   return results;
 }
 
-inline std::string listtostring(const std::vector<int > src)
+inline std::string listtostring(const std::vector<int > src, const int limit = 0)
 {
   char tmp[1000];
   std::string buf;
   for(unsigned int i=0;i<src.size();i++){
-    sprintf(tmp,"%d ",src[i]);
+    if(i==0){
+      if(limit == 1){
+        qassert(src[i] <= 99999999);
+        sprintf(tmp,"%-8d ",src[i]);
+      }
+      else{
+        sprintf(tmp,"%d ",src[i]);
+      }
+    }
+    else{    sprintf(tmp,"%d ",src[i]);}
     buf += std::string(tmp);
   }
   return buf;
@@ -174,6 +182,51 @@ inline size_t get_file_size_MPI(const char *filename, bool silence = false)
   return sizen;
 }
 
+inline size_t guess_factor(size_t n, const long limit)
+{
+  const int T = 30;
+  std::vector<unsigned int > a;a.resize(T);
+  a[ 0] =    2;a[ 1] =    3;a[ 2] =    5;a[ 3] =    7;a[ 4] =    9;
+  a[ 5] =   11;a[ 6] =   13;a[ 7] =   17;a[ 8] =   23;a[ 9] =   31;
+  a[10] =   32;a[11] =   64;a[12] =  128;a[13] =  192;a[14] =  256;
+  a[15] =  384;a[16] =  512;a[17] =  704;a[18] =  896;a[19] =  900;
+  a[20] = 1000;a[21] = 1024;a[22] = 1280;a[23] = 1536;a[24] = 1792;
+  a[25] = 2048;a[26] = 4096;a[27] = 8192;a[28] =12288;a[29] = 24576;
+
+  for(int i=T;i<0;i--)
+  {
+    if(a[i] <= limit and n % a[i] == 0){return a[i];}
+  }
+  return 1;
+}
+
+inline size_t get_write_factor(const size_t size)
+{
+  size_t large = 1024*1024* QLAT_FILE_IO_SIZE ;
+  std::string val = get_env(std::string("q_file_io_each_size"));
+  if(val != ""){large = 1024 * 1024 * stringtonum(val);}
+  
+  size_t factor = 1;
+  if(size < large){return factor;}
+  size_t limit = size / large;
+  factor = guess_factor(size, limit);
+  return factor;
+}
+
+inline size_t file_operation(void* buf, const size_t size, const size_t count, FILE* file, const bool read)
+{
+  const size_t factor = get_write_factor(size);
+  qassert(size  % factor == 0);
+  const size_t currN = size / factor;
+  size_t check = 1;
+
+  if(read==true ){check =  fread(buf, currN, count * factor, file);}
+  if(read==false){check = fwrite(buf, currN, count * factor, file);}
+
+  if(check > 0){return 1;}
+  return 0;
+}
+
 
 template<typename Ty>
 void write_data(Ty* dat, FILE* file, size_t size, bool read=false, bool single_file = false){
@@ -196,7 +249,7 @@ void write_data(Ty* dat, FILE* file, size_t size, bool read=false, bool single_f
     //char* buf=NULL;
     ////buf = new char[size*sizeof(double)];
     //buf = (char *)aligned_alloc_no_acc(size* bsize);
-    std::vector<char > buf; buf.resize(size * bsize);
+    qlat::vector<char > buf; buf.resize(size * bsize);
 
     ////Open file
     ////FILE* file = NULL;
@@ -212,8 +265,9 @@ void write_data(Ty* dat, FILE* file, size_t size, bool read=false, bool single_f
       if(Rendian == true )if( is_big_endian_gwu())switchendian((char*)&buf[0], size, bsize);
     }
 
-    if(read==false){sem = fwrite(&buf[0], size*bsize, 1, file);}
-    if(read==true ){sem =  fread(&buf[0], size*bsize, 1, file);}
+    sem = file_operation(&buf[0], size*bsize, 1, file, read);
+    //if(read==false){sem = fwrite(&buf[0], size*bsize, 1, file);}
+    //if(read==true ){sem =  fread(&buf[0], size*bsize, 1, file);}
     if(sem != 1){printf("Reading/Writing error %zu %zu \n", sem, size_t(1) );}
 
     /////Switch endian of the file write
@@ -884,9 +938,10 @@ inline size_t string_to_size(std::string &tem_string)
   return size;
 }
 
-inline std::string print_size(size_t size){
+inline std::string print_size(size_t size, int limit = 0){
   char tem_size[500];
-  sprintf(tem_size, "%zu", size_t(size));
+  if(limit == 0){sprintf(tem_size, "%zu", size_t(size));}
+  if(limit == 1){sprintf(tem_size, "%-20zu", size_t(size));}
   return std::string(tem_size);
   ////qassert(std::string(tem_size) == in.total_size);
 }
@@ -906,6 +961,20 @@ struct corr_dat
   std::string INFO_LIST;
   std::vector<std::string > INFOA;
 
+
+  ////write type and bsize
+  int write_type;
+  int write_bsize;
+  bool small_size ;
+  size_t head_off;
+  FILE*  file_open;
+  std::vector<crc32_t > crc32_list;
+  std::vector<size_t  > crc32_size;
+  int node_control;
+
+  qlat::vector<char > buf;
+  inputpara in_buf;
+
   inline const Ty& operator[](const long i) const {qassert(i < total); return dat[i]; }
   inline Ty& operator[](const long i) {qassert(i < total); return dat[i]; }
 
@@ -915,12 +984,15 @@ struct corr_dat
   //  create_dat(key, dimN);
   //}
 
+  ////write mode
   corr_dat<Ty >(const std::string& key, const std::string& dimN = "NONE", const std::string& corr="NONE"){
     create_dat(key, dimN, corr);
   }
 
-  corr_dat<Ty >(const char* filename, const int node_control = 0){
-    read_dat(filename, node_control);
+  /////read mode
+  corr_dat<Ty >(const char* filename, const int node_control_ = 0){
+    set_node_control(node_control_);
+    read_dat(filename);
   }
 
   ~corr_dat(){
@@ -929,14 +1001,46 @@ struct corr_dat
     dim_name.resize(0);
   }
 
-  void create_dat(const std::string& key, const std::string& dimN, const std::string& corr="NONE"){
+  ////inilize the head with all information
+  inline void set_write_lines(const char* filename){
+    small_size = true;
+    write_head(filename);
+  }
+
+  inline void set_node_control(const int node_control_){
+    node_control = node_control_;
+  }
+
+
+  inline void initialize()
+  {
+    write_type = -1;
+    write_bsize = 0;
+    small_size = false;
+    node_control = 0;
+
+    file_open = NULL;
+    head_off = 0;
+    shift_off(0);
+    in_buf = inputpara();////initialize the corr when written
+  }
+
+  inline void create_dat(const std::string& key, const std::string& dimN, const std::string& corr="NONE"){
     TIMERA("corr create_dat");
+
+    ////initialize write parameters
+    key_T.resize(0);
+    c_a_t.resize(0);
+    dim_name.resize(0);
+    initialize();
+
     if(sizeof(Ty) != sizeof(float) and sizeof(Ty) != sizeof(double)){qassert(false);};
     std::vector<std::string > tem = stringtolist(key);
     dim = tem.size();
     key_T.resize(dim);c_a_t.resize(dim);total = 1;
     for(LInt i=0;i<tem.size();i++){
-      key_T[i] = stringtonum(tem[i]);qassert(key_T[i] != 0);
+      key_T[i] = stringtonum(tem[i]);
+      qassert(key_T[i] != 0);
       c_a_t[i] = 0;
       total = total * key_T[i];
     }
@@ -955,7 +1059,8 @@ struct corr_dat
     INFOA.resize(0);
   }
 
-  long get_off(){
+  inline long get_off(){
+    if(key_T.size() == 0){return 0;}
     long i_num = c_a_t[0];
     for(LInt i=1;i<key_T.size();i++){
       i_num = (i_num)*key_T[i] + c_a_t[i];
@@ -964,7 +1069,7 @@ struct corr_dat
     return i_num;
   }
 
-  long get_off(std::string &site){
+  inline long get_off(std::string &site){
     std::vector<std::string > tem = stringtolist(site);
     qassert(int(tem.size()) == dim);
     for(LInt i=0;i<tem.size();i++){
@@ -974,7 +1079,7 @@ struct corr_dat
     return get_off();
   }
 
-  std::vector<int > get_site(long n){
+  inline std::vector<int > get_site(long n){
     std::vector<int > site;site.resize(dim);
     for(int iv=0;iv<dim;iv++){site[iv] = 0;}
     long tem_i = n;
@@ -991,23 +1096,25 @@ struct corr_dat
     return site;
   }
 
-  void shift_zero(){
+  inline void shift_zero(){
+    if(key_T.size() == 0){c_a_t.resize(0); return ;}
     c_a_t = get_site(0);
   }
 
-  void shift_off(long off){
+  inline void shift_off(long off){
+    if(key_T.size() == 0){c_a_t.resize(0); return ;}
     long cur = get_off();
     c_a_t = get_site(cur + off);
   }
 
-  long shift_off(std::vector<int > c_a_t_off){
+  inline long shift_off(std::vector<int > c_a_t_off){
     if(c_a_t_off.size() == 0){return get_off();}
     qassert(c_a_t_off.size() == (LInt) dim);
     c_a_t = c_a_t_off;
     return get_off();
   }
 
-  void read_dat(const char* filename, const int node_control = 0){
+  inline void read_dat(const char* filename){
     inputpara in;
     in.load_para(filename, false);
     qassert(in.OBJECT == std::string("BEGIN_Corr_HEAD"));
@@ -1038,23 +1145,17 @@ struct corr_dat
       file = fopen(filename, "rb");
       fseek(file , off_file, SEEK_SET );
 
-      void* buf;
-      buf = (void *)aligned_alloc_no_acc(total* bsize);
+      
+      buf.resize(total* bsize);
 
-      if(type==0)write_data((double*) buf, file, total, true, false);
-      if(type==1)write_data((float* ) buf, file, total, true, true );
+      if(type==0)write_data((double*) buf.data(), file, total, true, false);
+      if(type==1)write_data((float* ) buf.data(), file, total, true, true );
 
-      crc32_tem = crc32_par(buf, total * bsize);
+      crc32_tem = crc32_par(buf.data(), total * bsize);
 
-      if(type == 0)cpy_data_thread(&dat[0], (double*)buf, total, 0);
-      if(type == 1)cpy_data_thread(&dat[0], (float* )buf, total, 0);
+      if(type == 0)cpy_data_thread(&dat[0], (double*)buf.data(), total, 0);
+      if(type == 1)cpy_data_thread(&dat[0], (float* )buf.data(), total, 0);
 
-      //for(int i=0;i<total;i++){
-      //  if(type==0){dat[i] = tmpD[i];}
-      //  if(type==1){dat[i] = tmpF[i];}
-      //}
-
-      free(buf);
       fclose(file);file = NULL;
     }
 
@@ -1065,7 +1166,7 @@ struct corr_dat
   std::string get_key_T(){
     //std::string key = std::string("");
     //for(int d=0;d<dim;d++){key += (std::string("  ") + std::to_string(key_T[d]));}
-    return qlat::listtostring(key_T);
+    return qlat::listtostring(key_T, 1);
     //return key;
   }
 
@@ -1076,104 +1177,232 @@ struct corr_dat
     //return dim_N;
   }
 
-  void write_dat(const char* filename, const int node_control = 0){
-    TIMER("Write corr");
+  inline void update_info()
+  {
+    qassert(write_bsize > 0);
+    qassert(write_type == 0 or write_type == 1);
 
-    ////in.key_T, in.dim_name, in.total_size, in.checksum
-    ////int type = get_save_type(save_type);
-    ////in.save_type = save_type;
-    inputpara in;int type = 0;
-    if(sizeof(Ty) == sizeof(double)){in.save_type = std::string("Double");type = 0;}
-    if(sizeof(Ty) == sizeof(float) ){in.save_type = std::string("Single");type = 1;}
-    int bsize = sizeof(double);if(type == 1){bsize=sizeof(float);}
+    in_buf.key_T = get_key_T();
+    in_buf.dim_name = get_dim_name();
 
-    //in.key_T = std::string("");
-    //for(int d=0;d<dim;d++){in.key_T += (std::string("  ") + std::to_string(key_T[d]));}
-
-    //in.dim_name = std::string("");
-    //for(int d=0;d<dim;d++)(in.dim_name += (std::string("  ") + dim_name[d]));
-    in.key_T = get_key_T();
-    in.dim_name = get_dim_name();
-
-    in.total_size = print_size(size_t(total * bsize));
-
-    in.checksum = 0;
+    in_buf.total_size = print_size(size_t(total * write_bsize), 1);
     ///////data for analysis is small endian
-    in.FILE_ENDIAN = std::string("LITTLEENDIAN");
-    in.INFO_LIST = INFO_LIST;
-    in.INFOA     = INFOA;
-    in.corr_name = corr_name;
-
-    size_t off_file = corr_head_write(in, filename, true);
-    //print0("dat off %30zu \n", off_file);
-
-    crc32_t crc32_tem = 0;
-    if(qlat::get_id_node()==node_control){
-      FILE* file = NULL;
-      file = fopen(filename, "wb");
-      fseek(file , off_file, SEEK_SET );
-
-      std::vector<char > buf;buf.resize(total * bsize);
-
-      if(type == 0)cpy_data_thread((double*)&buf[0], &dat[0], total, 0);
-      if(type == 1)cpy_data_thread((float* )&buf[0], &dat[0], total, 0);
-
-      if(type==0)write_data((double*)&buf[0], file, total, false, false);
-      if(type==1)write_data((float* )&buf[0], file, total, false, true );
-
-      crc32_tem = crc32_par(&buf[0], total * bsize);
-
-      fclose(file);file = NULL;
-    }
-
-    in.checksum = crc32_tem;
-
-    size_t off_tem = corr_head_write(in, filename, false);
-    qassert(off_file == off_tem);
-
+    in_buf.FILE_ENDIAN = std::string("LITTLEENDIAN");
+    in_buf.INFO_LIST = INFO_LIST;
+    in_buf.INFOA     = INFOA;
+    in_buf.corr_name = corr_name;
   }
 
-  void add_size(const int n){
+  inline void write_head(const char* filename)
+  {
+    in_buf = inputpara();///initialize the buf
+
+    if(sizeof(Ty) == sizeof(double)){in_buf.save_type = std::string("Double");write_type = 0;}
+    if(sizeof(Ty) == sizeof(float) ){in_buf.save_type = std::string("Single");write_type = 1;}
+    write_bsize = sizeof(double);if(write_type == 1){write_bsize=sizeof(float);}
+
+    in_buf.checksum = 0;
+    update_info();
+    head_off = corr_head_write(in_buf, filename, true);
+
+    ////in.dim_name = std::string("");
+    ////for(int d=0;d<dim;d++)(in.dim_name += (std::string("  ") + dim_name[d]));
+    //in_buf.key_T = get_key_T();
+    //in_buf.dim_name = get_dim_name();
+
+    //in_buf.total_size = print_size(size_t(total * write_bsize), 1);
+
+    //in_buf.checksum = 0;
+    /////////data for analysis is small endian
+    //in_buf.FILE_ENDIAN = std::string("LITTLEENDIAN");
+    //in_buf.INFO_LIST = INFO_LIST;
+    //in_buf.INFOA     = INFOA;
+    //in_buf.corr_name = corr_name;
+
+    //print0("dat off %30zu \n", off_file);
+
+    qassert(file_open == NULL);
+    if(qlat::get_id_node()==node_control){
+      file_open = fopen(filename, "wb");
+      fseek( file_open , head_off , SEEK_SET );
+    }
+    ////return off_file ;
+  }
+
+  inline crc32_t write_part(size_t off , size_t Psize, int type = 0)
+  {
+    qassert(head_off != 0);
+    qassert(write_bsize > 0);
+    qassert(write_type == 0 or write_type == 1);
+    crc32_t crc32_tem = 0;
+    if(qlat::get_id_node()==node_control){
+      qassert(file_open != NULL);
+      buf.resize(Psize * write_bsize);
+
+      if(write_type == 0)cpy_data_thread((double*)&buf[0], &dat[off], Psize, 0);
+      if(write_type == 1)cpy_data_thread((float* )&buf[0], &dat[off], Psize, 0);
+
+      if(write_type==0)write_data((double*)&buf[0], file_open, Psize, false, false);
+      if(write_type==1)write_data((float* )&buf[0], file_open, Psize, false, true );
+
+      crc32_tem = crc32_par(&buf[0], Psize * write_bsize);
+    }
+    return crc32_tem;
+  }
+
+  inline void write_dat(const char* filename){
+    TIMER("Write corr");
+
+    crc32_t crc32_total = 0;
+    ////combine check sum
+    if(head_off != 0 ){
+      qassert(small_size);
+      qassert(crc32_list.size() == crc32_size.size());
+      long Ns = crc32_size.size();
+      long total_write = 0;
+      for(long si=0;si<Ns;si++){
+        total_write += crc32_size[si] / write_bsize;
+      }
+      ////correct the file if not all total is written
+      if(total > total_write){
+        print0("Write additional data \n");
+        shift_off(total_write);
+        size_t diff = total - total_write;
+        const long cur = get_off();
+        crc32_t crc32_tem = write_part(cur, diff , node_control );
+        crc32_list.push_back(crc32_tem);
+        crc32_size.push_back(diff * write_bsize);
+        total_write += diff;
+        Ns += 1;
+      }
+
+      /////calculate crc32 sum 
+      size_t end_of_file = head_off;
+      for(long si=0;si<Ns;si++){
+        end_of_file += crc32_size[si];
+      }
+      size_t pos_file_cur = head_off;
+      for(long si=0;si<Ns;si++){
+        crc32_t crc32_tem = crc32_list[si];
+        size_t cur = crc32_size[si];
+        crc32_tem = crc32_combine(crc32_tem, 0, end_of_file - pos_file_cur - cur );
+        crc32_total ^= crc32_tem;
+        pos_file_cur += cur;
+      }
+    }
+
+    if(head_off == 0 ){
+      qassert(!small_size);
+      write_head(filename);
+      qassert(write_bsize > 0);
+      qassert(write_type == 0 or write_type == 1);
+
+      size_t factor = get_write_factor(total);
+      size_t partF  = total / factor;
+      size_t end_of_file = head_off + factor * partF*write_bsize;
+
+      for(size_t fi=0;fi<factor;fi++)
+      {
+        size_t pos_file_cur = head_off + fi * partF*write_bsize;
+        size_t off_data = fi * partF;
+        crc32_t crc32_tem = write_part(off_data, partF , node_control );
+        crc32_tem = crc32_combine(crc32_tem, 0, end_of_file - pos_file_cur - partF * write_bsize);
+        crc32_total ^= crc32_tem;
+      }
+    }
+
+    in_buf.checksum = crc32_total;
+    update_info();
+    size_t off_tem = corr_head_write(in_buf, filename, false);
+    qassert(head_off == off_tem);
+
+    if(qlat::get_id_node()==node_control)
+    {
+      if(file_open != NULL){
+        fclose(file_open);
+      }
+    }
+    initialize();
+  }
+
+  ////small_size, only update key_T; others update date and key_T
+  inline void add_size(const int n){
     if(key_T.size() < 1){
       print0("key_T size wrong!\n");MPI_Barrier(get_comm());
       fflush(stdout);qassert(false);}
 
-    std::vector<Ty > buf;buf.resize(dat.size());
-    cpy_data_thread((Ty*) buf.data(), (Ty*) dat.data(), dat.size(), 0);
+    if(!small_size){
+      buf.resize(dat.size());
+      cpy_data_thread((Ty*) buf.data(), (Ty*) dat.data(), dat.size(), 0);
+    }
 
     key_T[0] += n;
     total = 1; 
     for(LInt i=0;i<key_T.size();i++){total = total * key_T[i];}
 
-    dat.resize(total);
-    cpy_data_thread((Ty*) dat.data(), (Ty*) buf.data(), buf.size(), 0);
-    zero_Ty((Ty*) &dat[buf.size()], total - buf.size(), 0);
+    if(!small_size){
+      dat.resize(total);
+      cpy_data_thread((Ty*) dat.data(), (Ty*) buf.data(), buf.size(), 0);
+      zero_Ty((Ty*) &dat[buf.size()], total - buf.size(), 0);
+    }
+
   }
 
   template<typename Ta>
-  void write_corr(Ta* src, const long size, int mode_copy = 0 ){
+  void write_corr(Ta* src, const long size, int mode_copy = 0){
     TIMER("write_corr");
     ///if(size > total){abort_r("Write size too larg. \n");}
-    const long cur = get_off();
-    long long double_size = size;
+    long cur = 0;
+    Ty* wdat = NULL;
+    if(!small_size){
+      cur = get_off();
+      wdat = &dat[cur];
+    }
+    if(small_size){
+      for(unsigned long i=0;i<crc32_size.size();i++)
+      {
+        cur += crc32_size[i] / write_bsize;
+      }
+      wdat = &dat[0];
+    }
+    size_t double_size = size;
 
     const int is_double = get_data_type_is_double<Ta >();
     if( is_double){double_size = size * sizeof(Ta)/sizeof(double);}
     if(!is_double){double_size = size * sizeof(Ta)/sizeof(float );}
 
-    if(double_size + cur >  total){ 
+    if(long(double_size + cur) >  total){ 
       if(key_T.size() < 1){
         print0("key_T size wrong!\n");MPI_Barrier(get_comm());
         fflush(stdout);qassert(false);}
       long each = total/key_T[0];long base = key_T[0];
-      int n = (double_size + cur + each - 1) / (each) - base;
+      size_t n = (double_size + cur + each - 1) / (each) - base;
       add_size(n);
+      if(small_size)
+      {
+        if(dat.size() < double_size){
+          dat.resize(double_size);
+        }
+      }
     }
 
     qassert(mode_copy == 0 or mode_copy == 3);
-    if( is_double){cpy_data_thread((Ty*) &dat[cur], (double*) src, double_size, mode_copy);}
-    if(!is_double){cpy_data_thread((Ty*) &dat[cur], (float* ) src, double_size, mode_copy);}
-    shift_off(double_size);
+    if( is_double){cpy_data_thread(wdat, (double*) src, double_size, mode_copy);}
+    if(!is_double){cpy_data_thread(wdat, (float* ) src, double_size, mode_copy);}
+
+    if(!small_size){
+      shift_off(double_size);
+    }
+    if( small_size)
+    {
+      qassert(write_bsize > 0);
+      qassert(write_type == 0 or write_type == 1);
+      crc32_t crc32_tem = write_part(0, double_size , node_control );
+      crc32_list.push_back(crc32_tem);
+      crc32_size.push_back(double_size * write_bsize);
+      shift_off(0);
+    }
+
   }
 
   void set_zero(){
@@ -1182,7 +1411,7 @@ struct corr_dat
   }
 
   void print_info(){
-    if(qlat::get_id_node()==0){
+    if(qlat::get_id_node()==node_control){
       printf("===Corr %s, dim %d, mem size %.3e MB \n", 
             corr_name.c_str(), dim, total * sizeof(double)*1.0/(1024.0*1024.0));
       for(int d=0;d<dim;d++){

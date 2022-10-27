@@ -27,6 +27,12 @@ namespace qlat{
 #define Enablefloat 1
 #endif
 
+#define MAX_VECTOR_GPU_BUF 100
+#define QLAT_FILE_IO_SIZE  30
+
+////q_io_vec_ionum
+////q_file_io_each_size
+
 //#define __NO_GPU_DIRECT__
 //#ifdef  __HIP_PLATFORM_HCC__
 //#define __NO_GPU_DIRECT__
@@ -318,7 +324,6 @@ inline void abort_r(std::string stmp=std::string(""))
   //qassert(false);
   abort();
 }
-
 
 
 }

@@ -7,7 +7,6 @@
 #pragma once
 
 #include "general_funs.h"
-#include "utils_copy_data.h"
 #include "utils_Vec_redistribute.h"
 #include "fftw3-mpi.h"
 //#include <inc/cufft.h>

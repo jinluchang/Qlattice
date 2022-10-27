@@ -38,7 +38,6 @@ struct lms_para{
   double sink_smear_kappa;
 
   int mode_eig_sm;
-  int ionum;
   int ckpoint;
 
   int do_all_low ;
@@ -65,6 +64,21 @@ struct lms_para{
 
   /////initial with src noise
 
+  void free_buf(){
+    EresH.resize(0);
+    EresL.resize(0);
+    EresA.resize(0);
+    stmp.resize(0);
+    low_prop.resize(0);
+    high_prop.resize(0);
+    src_prop.resize(0);
+    FFT_data.resize(0);
+    resTa.resize(0);
+    resZero.resize(0);
+    Vzero_data.resize(0);
+    Eprop.resize(0);
+  }
+
   void init(){
     for(int i=0;i<4;i++){ini_pos[i] = 0;off_L[i] = 1;}
 
@@ -79,8 +93,6 @@ struct lms_para{
     src_smear_kappa  = 0.0;
     sink_smear_kappa = 0.0;
     do_all_low       = 1;
-
-    ionum            = 16;
 
     mom_cut          = 4;
     ckpoint          = 1;
@@ -234,6 +246,7 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
 
   const int GPU = 1;const bool rotate = false;
   const int nmass = massL.size();
+  const size_t vol = size_t(fd.nx) * fd.ny * fd.nz * fd.nt;
 
   Coordinate Lat;for(int i=0;i<4;i++){Lat[i] = fd.nv[i];}
   Coordinate pos;Coordinate off_L;
@@ -323,7 +336,10 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
   ///////low mode ignored if check point enabled
   if(savezero and srcI.ckpoint == 1){
     bool flag_do_job = false;
-    if(get_file_size_MPI(srcI.name_zero_vecs.c_str()) == 0){flag_do_job = true;}
+    ////single prec assummed
+    if(get_file_size_MPI(srcI.name_zero_vecs.c_str()) < vol * 32 * nmass * 8){
+      flag_do_job = true;
+    }
     if(flag_do_job == false){
       print0("Pass %s \n", srcI.name_zero_vecs.c_str());
       return ;
@@ -352,7 +368,6 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
   char key_T[1000], dimN[1000];
   sprintf(key_T, "%d", 1);sprintf(dimN , "src");
 
-  io_vec io_use(geo,srcI.ionum);
   std::string POS_LIST, POS_CUR;
   if(saveFFT){
     //get_mom_single_node(mapA, mapB, geo, srcI.mom_cut);
@@ -501,8 +516,8 @@ void point_corr(qnoiT& src, std::vector<qpropT >& propH,
       }
     }
     for(unsigned int iv=0;iv<Vzero_data.size();iv++){
-      Ty* res = (Ty*) qlat::get_data(Vzero_data[iv]).data();
-      cpy_data_thread(res, &resZero[iv*geo.local_volume()], geo.local_volume(), 1, true);
+      Ty* resP = (Ty*) qlat::get_data(Vzero_data[iv]).data();
+      cpy_data_thread(resP, &resZero[iv*geo.local_volume()], geo.local_volume(), 1, true);
     }
     save_qlat_noises(srcI.name_zero_vecs.c_str(), Vzero_data, true, POS_LIST);
   }

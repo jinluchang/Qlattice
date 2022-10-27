@@ -22,8 +22,10 @@ int main(int argc, char* argv[])
   int ckpoint = 1;
   in.find_para(std::string("ckpoint"), ckpoint);
 
+  int prop_type = 1;
+  in.find_para(std::string("prop_type"), prop_type);
+
   int icfg  = in.icfg;
-  int ionum = in.ionum;
 
   int n_vec = in.nvec;
   Coordinate total_site = Coordinate(nx, ny, nz, nt);
@@ -31,12 +33,13 @@ int main(int argc, char* argv[])
   geo.init(total_site, 1); 
   fflush_MPI();
 
-  momentum_dat mdat(geo, in.mom_cut);
-
   {
-  io_vec io_use(geo,ionum);
 
-  print_mem_info();
+  momentum_dat mdat(geo, in.mom_cut);
+  print_mem_info("momentum dat");
+
+
+  print_mem_info("io_vec");
 
   /////========load links
   double src_width = 0.0; int src_step = 0;
@@ -52,7 +55,7 @@ int main(int argc, char* argv[])
     /////set_left_expanded_gauge_field(gfD, gf);
   }
   /////========load links
-  int nmass = in.nmass;
+  int nmass = in.nmass;qassert(nmass > 0);
   std::vector<double> massL = in.masses;
 
   ////===load eigen
@@ -62,29 +65,16 @@ int main(int argc, char* argv[])
 
   fflush_MPI();
   int mode_sm = 0;
-  //ei.load_eigen(icfg, in.Ename,  io_use, 1, 0.2, in.Eerr);
   char ename[500];
-  //char enamew[550];
   sprintf(ename, in.Ename.c_str(),icfg);
-  ei.load_eigen(std::string(ename),  io_use);
+  ei.load_eigen(std::string(ename));
 
-  //sprintf(enamew, "%s.w", ename);
-  //ei.save_eigen_Mvec(std::string(enamew), io_use);
 
   if(src_step != 0){
     sprintf(ename, in.Ename_Sm.c_str(),icfg);
-    ei.smear_eigen(std::string(ename), io_use, gf, src_width, src_step);
+    ei.smear_eigen(std::string(ename), gf, src_width, src_step);
     mode_sm = 2;
   }
-
-  //if(in.Ename_Sm != std::string("NONE"))
-  //{
-  //  sprintf(ename, in.Ename_Sm.c_str(),icfg);
-  //  ei.load_eigen_Mvec(std::string(ename), io_use, 1);
-  //  if(src_step != 0){mode_sm = 2;}
-  //  ////mode_sm = 2;
-  //}
-  //ei.random_eigen();ei.random_eigen(1);mode_sm = 2;
 
   ei.initialize_mass(massL, 12);
   ei.print_info();
@@ -102,21 +92,48 @@ int main(int argc, char* argv[])
 
   std::string  INFO_Mass = mass_to_string(massL);
 
-  std::string ktem(key_T);
-  std::string dtem(dimN);
-  corr_dat<Ftype > res(ktem, dtem);
-  res.print_info();
+  corr_dat<Ftype > res(std::string(""));
+  if(in.output != std::string("NONE")){
+    std::string ktem(key_T);
+    std::string dtem(dimN);
+    res.create_dat(ktem, dtem);
+    res.print_info();
+  }
   
   /////===load noise and prop
   char names[450],namep[500];
   std::vector<qprop > FpropV;FpropV.resize(nmass);
   Propagator4dT<Complexq > tmp;tmp.init(geo);
+  lms_para<Complexq > srcI;/////buffers and parameters for lms
   for(int si = 0; si < in.nsource; si++)
   {
+    if(in.output_vec != std::string("NONE") and ckpoint == 1){
+      const size_t vol = size_t(fd.nx) * fd.ny * fd.nz * fd.nt;
+      int flag_do_job = 0;
+      sprintf(names, in.output_vec.c_str(), icfg, si);
+      sprintf(namep, "%s.pt.zero.vec", names);
+      if(get_file_size_MPI(namep) > vol * 32 * nmass * 8){ 
+        flag_do_job += 1;
+      }   
+      sprintf(namep, "%s.sm.zero.vec", names);
+      if(get_file_size_MPI(namep) > vol * 32 * nmass * 8){ 
+        flag_do_job += 1;
+      } 
+      if(flag_do_job == 2){
+        print0("Pass %s \n", names);
+        continue ;
+      }   
+    }
+
     sprintf(names, in.srcN[si].c_str(),icfg);
     //std::vector<qnoi > noi;noi.resize(1);
+    if(get_file_size_MPI(names) == 0){
+      print0("Src pass %s \n", names );
+      continue;
+    }
+
     qnoi noi;noi.init(geo);
-    load_gwu_noi(names, noi, io_use);
+    load_gwu_noi(names, noi);
     print0("%s \n", names);
 
     for(int im=0;im<nmass;im++)
@@ -124,13 +141,9 @@ int main(int argc, char* argv[])
       sprintf(names, in.propN[si].c_str(),icfg);
       sprintf(namep, "%s.m%8.6f", names, massL[im]);
 
-      load_gwu_prop(namep, tmp);
+      if(prop_type == 0){load_gwu_prop( namep, tmp);}
+      if(prop_type == 1){load_qlat_prop(namep, tmp);}
       prop4d_to_qprop(FpropV[im], tmp);
-      //qprop_to_prop4d(tmp, FpropV[im]);
-      //prop4d_to_qprop(FpropV[im], tmp);
-
-      //load_gwu_prop(namep, FpropV[im], io_use);
-      ////smear_propagator_gwu_convension(FpropV[im], gf, width, step);
     }
     /////===load noise and prop
 
@@ -139,8 +152,8 @@ int main(int argc, char* argv[])
       sprintf(names, in.output_vec.c_str(), icfg, si);
       save_vecs_lms = true;
     }
-    lms_para<Complexq > srcI;srcI.init();
-    srcI.ionum = in.ionum;
+
+    srcI.init();
     srcI.do_all_low = in.do_all_low;
     srcI.lms      = in.lms;
     srcI.combineT =  in.combineT;
@@ -195,6 +208,9 @@ int main(int argc, char* argv[])
     res.print_info();
     res.write_dat(names);
   }
+
+  srcI.free_buf();
+  ei.clear_GPU_mem(1);
 
   }
 

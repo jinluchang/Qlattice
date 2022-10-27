@@ -105,11 +105,11 @@ struct eigen_ov {
   void copy_to_FieldM(qlat::FieldM<Ty , 12>& src, int ncur, int sm = 0){
     copy_FieldM_to_Mvec(src, ncur, sm, 0);
   }
-  void load_eigen_Mvec(const std::string& ename, io_vec  &io, int sm = 0, int nini=0, int checknorm = 1);
-  void save_eigen_Mvec(const std::string& ename, io_vec  &io, int sm = 0);
+  void load_eigen_Mvec(const std::string& ename, int sm = 0, int nini=0, int checknorm = 1);
+  void save_eigen_Mvec(const std::string& ename, int sm = 0);
 
   template <typename Tg >
-  void smear_eigen(const std::string& Ename_Sm, io_vec  &io,
+  void smear_eigen(const std::string& Ename_Sm,
     const GaugeFieldT<Tg >& gf, const double width, const int step,
     const CoordinateD& mom = CoordinateD(), const bool smear_in_time_dir = false);
 
@@ -120,7 +120,7 @@ struct eigen_ov {
 
   void load_eivals(const std::string& enamev,double rho_or,double Eerr=EIGENERROR, int nini=0);
   
-  void load_eigen(const std::string& ov_evecname, io_vec &io,
+  void load_eigen(const std::string& ov_evecname,
     int checknorm = 1, double kappa=0.2,double eigenerror=EIGENERROR, int nini=0);
 
   void random_eigen(int sm = 0, int seed = 1234);
@@ -148,11 +148,11 @@ struct eigen_ov {
 
   void setup_gpufac(int nprop=1);
   void allocate_GPU_mem(int nprop=1);
-  void clear_GPU_mem();
+  void clear_GPU_mem(int cpu_also = 0);
 
   ~eigen_ov()
   {
-    clear_GPU_mem();
+    clear_GPU_mem(1);
     fdp = NULL;
   }
 
@@ -273,10 +273,8 @@ void eigen_ov::setup_gpufac(int nprop)
   //freeD = freeM*pow(0.5,30);
   double totalD=0;
   totalD = totalM*pow(0.5,30);
-#ifdef QLAT_USE_SYSINFO
-  struct sysinfo s_info;
-  sysinfo(&s_info);
-#endif
+  //struct sysinfo s_info;
+  //sysinfo(&s_info);
 
   //int Ns = 12;
   int Ns = nV_prop;if(Ns <=0)Ns = 2;
@@ -343,7 +341,7 @@ void eigen_ov::allocate_GPU_mem(int nprop)
   gpu_mem_set = true;
 }
 
-void eigen_ov::clear_GPU_mem()
+void eigen_ov::clear_GPU_mem(int cpu_also)
 {
   for(LInt i=0;i<Eigenbuf.size();i++){Eigenbuf[i].resize(0);}  Eigenbuf.resize(0);
   for(LInt i=0;i<Eigendyn.size();i++){Eigendyn[i].resize(0);}  Eigendyn.resize(0);
@@ -356,6 +354,12 @@ void eigen_ov::clear_GPU_mem()
   alpha_list.resize(0);eval_list.resize(0);
 
   /////ptmp.resize(0);stmp.resize(0);
+  if(cpu_also == 1)
+  {
+    Mvec.resize(0);
+    Mvec_Sm.resize(0);
+    fdp = NULL;
+  }
 
   gpu_mem_set = false;
 }
@@ -563,14 +567,15 @@ inline void resize_EigenM(Elocal& a, size_t n0, size_t n1)
 }
 
 template <typename Tg >
-void eigen_ov::smear_eigen(const std::string& Ename_Sm, io_vec  &io,
+void eigen_ov::smear_eigen(const std::string& Ename_Sm,
   const GaugeFieldT<Tg >& gf, const double width, const int step,
   const CoordinateD& mom, const bool smear_in_time_dir)
 {
   TIMER("smear eigen system");
+  Geometry geo;fdp->get_geo(geo);
   ////load if exist
   if(Ename_Sm != std::string("NONE") and get_file_size_MPI(Ename_Sm.c_str(), true) != 0){
-    load_eigen_Mvec(Ename_Sm, io, 1);
+    load_eigen_Mvec(Ename_Sm, 1);
     return ;
   }
 
@@ -608,39 +613,45 @@ void eigen_ov::smear_eigen(const std::string& Ename_Sm, io_vec  &io,
   }
 
   if(Ename_Sm != std::string("NONE")){
-    save_eigen_Mvec(Ename_Sm, io, 1);
+    save_eigen_Mvec(Ename_Sm, 1);
   }
 }
 
-void eigen_ov::save_eigen_Mvec(const std::string& ename, io_vec  &io, int sm)
+void eigen_ov::save_eigen_Mvec(const std::string& ename, int sm)
 {
   if(sm == 1 and enable_smearE == false){print0("Could not save smear eigen without set it up.");return ;}
+  Geometry geo;fdp->get_geo(geo);
+  io_vec& io_use = get_io_vec_plan(geo);
+
   const int nini = 0;
   const int ntotal = nini + n_vec;
   const bool read = false;
   inputpara in_write_eigen;
-  FILE* file_write  = open_eigensystem_file(ename.c_str(), nini, ntotal, read , io , in_write_eigen , 2);
+  FILE* file_write  = open_eigensystem_file(ename.c_str(), nini, ntotal, read , io_use , in_write_eigen , 2);
 
-  int each = io.ionum;
+  int each = io_use.ionum;
   std::vector<qlat::FieldM<Complexq , 12> > buf;buf.resize(each);
-  for(int iv=0;iv<each;iv++){buf[iv].init(io.geop);}
+  for(int iv=0;iv<each;iv++){buf[iv].init(io_use.geop);}
 
   std::vector<long > job =  job_create(n_vec, each);
   for(LInt ji = 0; ji < job.size()/2 ; ji++)
   {
     for(int iv=0;iv<job[ji*2 + 1];iv++){copy_to_FieldM(buf[iv], job[ji*2 + 0] + iv, sm );}
     /////write to file
-    load_eigensystem_vecs(file_write ,   buf, io , in_write_eigen , 0, job[ji*2 + 1]);
+    load_eigensystem_vecs(file_write ,   buf, io_use , in_write_eigen , 0, job[ji*2 + 1]);
   }
 
-  close_eigensystem_file(file_write , io , in_write_eigen );
+  close_eigensystem_file(file_write , io_use , in_write_eigen );
   print_mem_info("Eigen Memory Write Done");
 }
 
-void eigen_ov::load_eigen_Mvec(const std::string& ename, io_vec  &io, int sm, int nini, int checknorm)
+void eigen_ov::load_eigen_Mvec(const std::string& ename, int sm, int nini, int checknorm)
 {
   int ntotal = nini + n_vec;
   Ftype norm_err  = 1e-3;
+
+  Geometry geo;fdp->get_geo(geo);
+  io_vec& io_use = get_io_vec_plan(geo);
 
   long La = 2*bfac/BFAC_GROUP_CPU;
   long Lb = BFAC_GROUP_CPU*n_vec*long(b_size);
@@ -650,18 +661,18 @@ void eigen_ov::load_eigen_Mvec(const std::string& ename, io_vec  &io, int sm, in
   print_mem_info("Eigen Memory Allocate Done");
 
   inputpara in_read_eigen;
-  FILE* file_read  = open_eigensystem_file(ename.c_str(), nini, ntotal, true , io , in_read_eigen , 2);
+  FILE* file_read  = open_eigensystem_file(ename.c_str(), nini, ntotal, true , io_use , in_read_eigen , 2);
 
-  int each = io.ionum;
+  int each = io_use.ionum;
   std::vector<qlat::FieldM<Complexq , 12> > buf;buf.resize(each);
-  for(int iv=0;iv<each;iv++){buf[iv].init(io.geop);}
+  for(int iv=0;iv<each;iv++){buf[iv].init(io_use.geop);}
 
   std::vector<long > job =  job_create(n_vec, each);
   for(LInt ji = 0; ji < job.size()/2 ; ji++)
   {
     ////int n0 = nini + job[ji*2 + 0]; int n1 = n0 + job[ji*2 + 1]; 
     /////load from file
-    load_eigensystem_vecs(file_read ,   buf, io , in_read_eigen , 0, job[ji*2 + 1]);
+    load_eigensystem_vecs(file_read ,   buf, io_use , in_read_eigen , 0, job[ji*2 + 1]);
     ////copy to Mvec or Mvec_Sm
     for(int iv=0;iv<job[ji*2 + 1];iv++){
       if(checknorm == 1 and sm == 0){
@@ -677,17 +688,18 @@ void eigen_ov::load_eigen_Mvec(const std::string& ename, io_vec  &io, int sm, in
     }
   }
 
-  close_eigensystem_file(file_read , io , in_read_eigen );
+  close_eigensystem_file(file_read , io_use , in_read_eigen );
 
   print_mem_info("Eigen Memory Load Done");
 
   //////mv_civ.free_mem();
 }
 
-void eigen_ov::load_eigen(const std::string& ov_evecname, io_vec  &io,
+void eigen_ov::load_eigen(const std::string& ov_evecname,
   int checknorm, double kappa,double eigenerror, int nini)
 {
   TIMERB("=====Loading Eigen=====");
+
   char enamev[600];
   ////sprintf(ename, "%s", ov_evecname);
   sprintf(enamev,"%s.eigvals", ov_evecname.c_str());
@@ -697,7 +709,7 @@ void eigen_ov::load_eigen(const std::string& ov_evecname, io_vec  &io,
   double rho_tem = 4 - 1.0/(2*kappa);
   load_eivals(std::string(enamev), rho_tem, eigenerror, nini);
 
-  load_eigen_Mvec(ov_evecname, io, 0 ,nini, checknorm);
+  load_eigen_Mvec(ov_evecname, 0 ,nini, checknorm);
 
 }
 

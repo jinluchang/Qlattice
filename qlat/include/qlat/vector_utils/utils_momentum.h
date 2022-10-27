@@ -107,6 +107,8 @@ struct momentum_dat{
   ////write_float_from_double(sfw, tag, sf, sbs);
   qlat::vector_acc<long > mapA, mapB;
   qlat::vector_acc<long > fsel_map;
+  ShuffledBitSet sbs ;
+  Coordinate new_size_node;
 
   qlat::vector_acc<int > nv;
   Coordinate  cur_pos;
@@ -188,8 +190,7 @@ struct momentum_dat{
     //qassert(srcF.size() % Mvol == 0);
     if(mapA.size() !=0 ){qassert(srcF.size() % mapA.size() == 0);}
 
-    Coordinate new_size_node = Coordinate(1, 1, 2, 4);
-    const ShuffledBitSet sbs = mk_shuffled_bitset(fsel, new_size_node);
+    ////const ShuffledBitSet sbs = mk_shuffled_bitset(fsel, new_size_node);
 
     bool append = true;if(tag_ == "-1" or clean == true){append = false;}
     ShuffledFieldsWriter sfw(nameQ, new_size_node, append);
@@ -292,6 +293,7 @@ struct momentum_dat{
 
   /////mom_cut should be consistent with your production indicated in the saving file
   momentum_dat(const Geometry& geo_, const int mom_cut_){
+    TIMERA("momentum_dat");
     geo = geo_;
     mom_cut = mom_cut_;
 
@@ -341,7 +343,10 @@ struct momentum_dat{
     ////TODO
     Coordinate total_site = Coordinate(nv[0], nv[1], nv[2], nv[3]);
     long n_per_tslice =  0;qlat::RngState rs(321);
-    qlat::set_field_selection(fsel, total_site, n_per_tslice, rs, pconf);
+    {
+      TIMERA("qlat::set_field_selection");
+      qlat::set_field_selection(fsel, total_site, n_per_tslice, rs, pconf);
+    }
 
     //fsel.init();fsel.f_rank.init(geo);
     //add_field_selection(fsel.f_rank, pconf);
@@ -357,6 +362,9 @@ struct momentum_dat{
       //qassert(si != -1);
       fsel_map[isp] = si;
     });
+
+    new_size_node = Coordinate(1, 1, 2, 4);
+    sbs = mk_shuffled_bitset(fsel, new_size_node);
 
     cur_pos = Coordinate(0, 0, 0, 0);
     nvec_copy = 0;
