@@ -11,7 +11,7 @@ project('qlat-utils', 'cpp',
 
 add_project_arguments('-fno-strict-aliasing', language: ['c', 'cpp'])
 
-run_command('bash', '-c', 'cd $MESON_SOURCE_ROOT/pylib/cqlat_utils ; bash update.sh', check: true)
+run_command('bash', '-c', 'cd "$MESON_SOURCE_ROOT"/pylib/cqlat_utils ; bash update.sh', check: true)
 
 cpp = meson.get_compiler('cpp')
 
@@ -25,11 +25,11 @@ zlib = dependency('zlib')
 
 deps = [ omp, py3.dependency(), zlib ]
 
-c = run_command('bash', '-c', 'ls $MESON_SOURCE_ROOT/include/qlat-utils/*.h', check: true)
+c = run_command('bash', '-c', 'ls "$MESON_SOURCE_ROOT"/include/qlat-utils/*.h | grep -v "config.h$"', check: true)
 headers = c.stdout().strip().split('\n')
 install_headers(headers, subdir: 'qlat-utils')
 
-c = run_command('bash', '-c', 'ls $MESON_SOURCE_ROOT/pylib/cqlat_utils/*.cpp', check: true)
+c = run_command('bash', '-c', 'ls "$MESON_SOURCE_ROOT"/pylib/cqlat_utils/*.cpp', check: true)
 sources = c.stdout().strip().split('\n')
 
 incdir = [ include_directories('include') ]
@@ -60,11 +60,11 @@ py3.extension_module('cqlat_utils',
   # gnu_symbol_visibility: 'default',
   )
 
-c = run_command('bash', '-c', 'ls $MESON_SOURCE_ROOT/pylib/qlat_utils/*.py', check: true)
+c = run_command('bash', '-c', 'ls "$MESON_SOURCE_ROOT"/pylib/qlat_utils/*.py', check: true)
 pysources = c.stdout().strip().split('\n')
 py3.install_sources(pysources, subdir: 'qlat_utils')
 
-c = run_command('bash', '-c', 'ls $MESON_SOURCE_ROOT/bin/*', check: true)
+c = run_command('bash', '-c', 'ls "$MESON_SOURCE_ROOT"/bin/*', check: true)
 scripts = c.stdout().strip().split('\n')
 install_data(scripts, install_dir: 'bin')
 
