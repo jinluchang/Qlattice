@@ -273,6 +273,7 @@ inline void fft_desc_basic::set_variable()
   for(unsigned int i=0;i<Pos0_tem.size();i++){Pos0_tem[i] = 0;}
   for(unsigned int i=0;i<4;i++)Pos0_tem[rank*4 + i] = iniv[i];
   sum_all_size(Pos0_tem.data(), Nmpi*4);
+  return ;
   Pos0.resize(Nmpi);
   for(int ri=0;ri<Nmpi;ri++)
   {
