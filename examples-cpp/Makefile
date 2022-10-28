@@ -3,20 +3,20 @@ SHELL=/bin/bash
 tests = qlat-vector-utils \
 		qlat-fft-tests \
 		qlat-smear-tests \
-		qcd-utils-tests
-#		dslash-tests \
-#		lbl-muon-part \
-#		rng-state-tests \
-#		field-rng-tests \
-#		benchmark \
-#		dist-io \
-#		selected-field \
-#		fields-io \
-#		heatbath \
-#		propagators \
-#		hmc \
-#		simple-1 \
-#		template
+		qcd-utils-tests \
+		dslash-tests \
+		lbl-muon-part \
+		rng-state-tests \
+		field-rng-tests \
+		benchmark \
+		dist-io \
+		selected-field \
+		fields-io \
+		heatbath \
+		propagators \
+		hmc \
+		simple-1 \
+		template
 
 all: run
 

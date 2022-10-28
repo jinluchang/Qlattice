@@ -1,6 +1,3 @@
-hwloc/linux: Ignoring PCI device with non-16bit domain.
-Pass --enable-32bits-pci-domain to configure to support such devices
-(warning: it would break the library ABI, don't enable unless really needed).
 qlat::begin(): MPI Initialized. num_node = 4
 qlat::begin_comm(comm,size_node): get_comm_list().push_back()
 qlat::begin_comm(comm,size_node): get_comm_list().size() = 1
@@ -16,11 +13,11 @@ qlat::begin(): GeometryNode =
 q_timer_max_func_name_len=50 (default)
 q_mk_id_node_in_shuffle_seed='' (default)
 clear_mem_cache: 0 bytes (0.000 GB) freed.
-q_timer_mini_auto_show=1 (default)
-q_timer_max_always_show=10
 CHECK: vector gpu: OK
 Cache: 'VectorGPUKey': 0 / 16 [8] to add
 CHECK: vector gpu buf: OK
+q_timer_mini_auto_show=1 (default)
+q_timer_max_always_show=10 (default)
 Cache: 'VectorGPUKey': 1 / 16 [8] to add
 CHECK: move index: OK
 q_mem_cache_max_size=512 (default)
