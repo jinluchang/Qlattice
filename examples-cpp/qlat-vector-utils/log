@@ -18,11 +18,13 @@ q_mk_id_node_in_shuffle_seed='' (default)
 clear_mem_cache: 0 bytes (0.000 GB) freed.
 q_timer_mini_auto_show=1 (default)
 q_timer_max_always_show=10
-CHECK: fft-sec-basic: OK
+Cache: 'VectorGPUKey': 0 / 16 [8] to add
+CHECK: sum_all_size: OK
 q_mem_cache_max_size=512 (default)
 q_mem_cache_acc_max_size=512 (default)
 CHECK: finished successfully.
-clear_mem_cache: 1024 bytes (0.000 GB) freed.
+Cache: 'VectorGPUKey': 1 / 16 [8] clear
+clear_mem_cache: 256 bytes (0.000 GB) freed.
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 0.
 qlat::end(): Finalize MPI.

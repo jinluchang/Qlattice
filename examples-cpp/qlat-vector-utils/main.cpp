@@ -17,6 +17,10 @@ void simple_tests()
   geo.init(total_site, 1);
 
   {
+    qlat::vector<double > buf;buf.resize(16);
+    for(int i=0;i<buf.size();i++){buf[i] = 0;}
+    sum_all_size(buf.data(), buf.size());
+    displayln_info(ssprintf("CHECK: sum_all_size: OK") );
     //TIMER_VERBOSE("test-fft-sec-basic");
     //VectorGPUKey gkey(100*sizeof(qlat::Complex), std::string("test_buf"), true);
     //vector_gpu<char >& buf = get_vector_gpu_plan<char >(gkey);
@@ -24,12 +28,12 @@ void simple_tests()
     //buf[100*sizeof(qlat::Complex)-1] = 1;
     //displayln_info(ssprintf("CHECK: vector gpu: OK") );
 
-    fft_desc_basic fd(geo);
-    (void) fd;
-    ////const fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
-    ////size_t offv = fd.index_g_from_local(0 , 0);
-    ////(void) offv;
-    displayln_info(ssprintf("CHECK: fft-sec-basic: OK") );
+    //fft_desc_basic fd(geo);
+    //(void) fd;
+    //////const fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
+    //////size_t offv = fd.index_g_from_local(0 , 0);
+    //////(void) offv;
+    //displayln_info(ssprintf("CHECK: fft-sec-basic: OK") );
   }
 
   //{
