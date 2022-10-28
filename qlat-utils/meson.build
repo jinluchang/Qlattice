@@ -29,32 +29,32 @@ c = run_command('bash', '-c', 'ls "$MESON_SOURCE_ROOT"/include/qlat-utils/*.h | 
 headers = c.stdout().strip().split('\n')
 install_headers(headers, subdir: 'qlat-utils')
 
-c = run_command('bash', '-c', 'ls "$MESON_SOURCE_ROOT"/pylib/cqlat_utils/*.cpp', check: true)
-sources = c.stdout().strip().split('\n')
-
-subdir('include/qlat-utils')
-
-incdir = include_directories('include')
-
-py3.extension_module('cqlat_utils',
-  sources,
-  dependencies: deps,
-  include_directories: incdir,
-  install: true,
-  # gnu_symbol_visibility: 'default',
-  )
-
-c = run_command('bash', '-c', 'ls "$MESON_SOURCE_ROOT"/pylib/qlat_utils/*.py', check: true)
-pysources = c.stdout().strip().split('\n')
-py3.install_sources(pysources, subdir: 'qlat_utils')
-
-c = run_command('bash', '-c', 'ls "$MESON_SOURCE_ROOT"/bin/*', check: true)
-scripts = c.stdout().strip().split('\n')
-install_data(scripts, install_dir: 'bin')
-
-pkg = import('pkgconfig')
-pkg.generate(
-  name: 'qlat-utils',
-  description: 'Qlattice utilities.',
-  libraries: [ '-lz', '-lm' ],
-  )
+#c = run_command('bash', '-c', 'ls "$MESON_SOURCE_ROOT"/pylib/cqlat_utils/*.cpp', check: true)
+#sources = c.stdout().strip().split('\n')
+#
+#subdir('include/qlat-utils')
+#
+#incdir = include_directories('include')
+#
+#py3.extension_module('cqlat_utils',
+#  sources,
+#  dependencies: deps,
+#  include_directories: incdir,
+#  install: true,
+#  # gnu_symbol_visibility: 'default',
+#  )
+#
+#c = run_command('bash', '-c', 'ls "$MESON_SOURCE_ROOT"/pylib/qlat_utils/*.py', check: true)
+#pysources = c.stdout().strip().split('\n')
+#py3.install_sources(pysources, subdir: 'qlat_utils')
+#
+#c = run_command('bash', '-c', 'ls "$MESON_SOURCE_ROOT"/bin/*', check: true)
+#scripts = c.stdout().strip().split('\n')
+#install_data(scripts, install_dir: 'bin')
+#
+#pkg = import('pkgconfig')
+#pkg.generate(
+#  name: 'qlat-utils',
+#  description: 'Qlattice utilities.',
+#  libraries: [ '-lz', '-lm' ],
+#  )
