@@ -60,9 +60,18 @@ void simple_tests()
     for(int di=0;di<4;di++){
       std::vector<int > iDir(4);for(int i=0;i<4;i++){iDir[i] = 0;}
       iDir[di] = 1;
-      propT  = propS;
+
+      ///propT  = propS;
+      qlat::Complex* res = (qlat::Complex*) qlat::get_data(propT).data();
+      qlat::Complex* src = (qlat::Complex*) qlat::get_data(propS).data();
+
+      cpy_data_thread(res, src, geo.local_volume()*12*12);
+
       shift_fieldM(svec, propT, propT, iDir);
-      propT -= propS;
+
+      //propT -= propS;
+      cpy_data_thread(res, src, geo.local_volume()*12*12, 1, true, -1.0);
+
       norm[di] = qnorm(propT);
     }
     displayln_info(ssprintf("CHECK: Consistency: orig qnorm: %.10E ; shift qnorm %.10E %.10E %.10E %.10E",
