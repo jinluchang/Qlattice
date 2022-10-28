@@ -325,7 +325,6 @@ inline void fft_desc_basic::set_variable()
     if(v != i ){abort_r("Node map Duplicated! \n");}
   }
 
-  return ;
   mi_list.resize(mt);
   for(int tmi=0;tmi<mt;tmi++)
   {
