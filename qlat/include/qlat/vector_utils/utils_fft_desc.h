@@ -316,7 +316,6 @@ inline void fft_desc_basic::set_variable()
     }
   }
   sum_all_size(&mi_list_tem[0], mi_list_tem.size());
-  return ;
   std::vector<int> cp_l(mi_list_tem.size());
   for(unsigned int i=0;i<cp_l.size();i++){cp_l[i] = mi_list_tem[i];}
   std::sort(cp_l.begin(), cp_l.end());
@@ -326,6 +325,7 @@ inline void fft_desc_basic::set_variable()
     if(v != i ){abort_r("Node map Duplicated! \n");}
   }
 
+  return ;
   mi_list.resize(mt);
   for(int tmi=0;tmi<mt;tmi++)
   {
