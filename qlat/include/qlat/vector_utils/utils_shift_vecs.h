@@ -42,12 +42,6 @@ struct shift_vec{
   int dir_cur;
   std::vector<std::vector<int > > rank_sr;
 
-  //std::vector<std::vector<int > > sendoffa;
-  //std::vector<std::vector<int > > sendoffb;
-  //std::vector<std::vector<int > > sendoffx;
-  //std::vector<std::vector<int > > buffoffa;
-  //std::vector<std::vector<int > > buffoffb;
-
   std::vector<qlat::vector_acc<LInt > > sendoffa;
   std::vector<qlat::vector_acc<LInt > > sendoffb;
   std::vector<qlat::vector_acc<LInt > > sendoffx;
@@ -144,6 +138,8 @@ shift_vec::shift_vec(fft_desc_basic &fds, bool GPU_set)
   Nt = fds.Nt;
 
   sendbufP.resize(8);recvbufP.resize(8);
+  MPI_size.resize(8);
+  for(int i=0;i<8;i++){MPI_size[i] = 0;}
 
   flag_shift_set = false;bsize = 0;
   dir_cur = 0;biva = -1;civ = -1;
@@ -152,9 +148,6 @@ shift_vec::shift_vec(fft_desc_basic &fds, bool GPU_set)
   MPI_off = 0;MPI_curr = MPI_CHAR;
 
   shift_set();
-
-  //zeroP = NULL;bufsP = NULL;bufrP = NULL;
-  //zeroP_Size = 0;bufsP_Size = 0;bufrP_Size = 0;
 
   gauge = NULL;
   gbfac = 1; gd0 = 1;Conj = false;src_gauge = false;
@@ -280,11 +273,11 @@ void shift_vec::set_MPI_size(int biva_or, int civ_or, int dir_or )
   /////zeroP = NULL;bufsP = NULL;bufrP = NULL;
   /////====set up bufs for shift
   LInt Ng = Nt*N0*N1*N2;
-  zeroP.resize(Ng, GPU);
-  zeroP.set_zero();
+  zeroP.resize(size_t(Ng) * sizeof(Ty), GPU);
+  ////zeroP.set_zero();
 
-  bufsP.resize(Ng*biva_or*civ_or);
-  bufrP.resize(Ng*biva_or*civ_or);
+  bufsP.resize(size_t(Ng)*biva_or*civ_or * sizeof(Ty), GPU);
+  bufrP.resize(size_t(Ng)*biva_or*civ_or * sizeof(Ty), GPU);
   /////====set up bufs for shift
 
   ////==assign current direction
@@ -292,7 +285,7 @@ void shift_vec::set_MPI_size(int biva_or, int civ_or, int dir_or )
   ////==assign current direction
   if(biva_or == biva and civ_or == civ and bsize == sizeof(Ty)){
     if(sendoffa[dir_cur].size() == 0){return ;}else
-    {if(sendbufP[dir_cur].size() == (LInt) biva_or*civ_or*(sendoffa[dir_cur].size())){return  ;}}
+    {if(sendbufP[dir_cur].size()/sizeof(Ty) == (LInt) biva_or*civ_or*(sendoffa[dir_cur].size())){return  ;}}
   }
 
   if(sizeof(Ty) != bsize){
@@ -308,8 +301,8 @@ void shift_vec::set_MPI_size(int biva_or, int civ_or, int dir_or )
   ////===assign biva and civ
 
   MPI_size[dir_cur] = biva*civ*(sendoffa[dir_cur].size());
-  sendbufP[dir_cur].resize(MPI_size[dir_cur]);
-  recvbufP[dir_cur].resize(MPI_size[dir_cur]);
+  sendbufP[dir_cur].resize(MPI_size[dir_cur] * sizeof(Ty), GPU);
+  recvbufP[dir_cur].resize(MPI_size[dir_cur] * sizeof(Ty), GPU);
 }
 
 template<typename Ty>
@@ -330,7 +323,7 @@ void shift_vec::print_info()
   for(int di=0;di<8;di++)
   {
     print0("dir %d, bufsize %ld, MPI_size %ld, sendsize %ld, copysize %ld \n", 
-            di, long(sendbufP[di].size()), long(MPI_size[di]), sendoffa[di].size(), buffoffa[di].size());
+            di, long(sendbufP[di].size()/bsize), long(MPI_size[di]), sendoffa[di].size(), buffoffa[di].size());
   }
   fflush_MPI();
 
@@ -572,7 +565,8 @@ void shift_vec::call_MPI(Ty *src, Ty *res,int dir_or)
   if(!Conj)mult_gauge<Ty, false >((void*) src, dir_gauge);
   if( Conj)mult_gauge<Ty, true  >((void*) src, dir_gauge);}
 
-  Ty* s_tem= (Ty*) sendbufP[dir_cur].data(); Ty* r_tem= (Ty*) recvbufP[dir_cur].data();
+  Ty* s_tem= (Ty*) sendbufP[dir_cur].data();
+  Ty* r_tem= (Ty*) recvbufP[dir_cur].data();
 
   MPI_Request request;
   int tags = omp_get_thread_num()*Nmpi + rank;
@@ -657,16 +651,17 @@ void shift_vec::shift_vecs(std::vector<Ty* > &src,std::vector<Ty* > &res,std::ve
 
   if(dir_curl.size()==0){
     LInt Nsize = Nt*N0*N1*N2*civ_or;
-    qlat::vector_gpu<Ty > tem;tem.resize(Nsize, GPU);
+    VectorGPUKey gkey(size_t(Nsize)*sizeof(Ty), ssprintf("shift_vec_buf"), GPU);
+    qlat::vector_gpu<char >& tem = get_vector_gpu_plan<char >(gkey);
     for(LInt vi=0;vi<(LInt) biva_or;vi++)
     {
-      //memcpy(&tem[0], &src[vi][0],sizeof(Ty )*Nsize);
-      //memcpy(&res[vi][0] ,&tem[0],sizeof(Ty )*Nsize);
+      ///in case of a simple memory shift
       if(src[vi] != res[vi]){
-      cpy_data_thread(&tem[0], &src[vi][0], Nsize, GPU, false);
-      cpy_data_thread(&res[vi][0] ,&tem[0], Nsize, GPU, true );}
+        cpy_data_thread((Ty*) tem.data(), &src[vi][0], Nsize, GPU, true);
+        cpy_data_thread(&res[vi][0], (Ty*) tem.data(), Nsize, GPU, true);
+      }
     }
-    return;
+    return ;
   }
 
   int size_vec = biva_or*civ_or;

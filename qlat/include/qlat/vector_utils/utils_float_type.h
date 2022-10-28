@@ -265,7 +265,7 @@ inline std::complex<double> operator-(const std::complex<float > &a, const std::
 #endif
 
 template<typename Ty>
-void zero_Ty(Ty* a, long size,int GPU=0, bool dummy=true)
+void zero_Ty(Ty* a, size_t size,int GPU=0, bool dummy=true)
 {
   TIMERA("zero_Ty")
   (void)GPU;
@@ -278,8 +278,9 @@ void zero_Ty(Ty* a, long size,int GPU=0, bool dummy=true)
   }
   #endif
 
-  #pragma omp parallel for
-  for(long isp=0;isp<size;isp++){  a[isp] = 0;}
+  ////#pragma omp parallel for
+  ////for(size_t isp=0;isp<size;isp++){  a[isp] = 0;}
+  memset((void*) a, 0, sizeof(Ty) * size);
 }
 
 template<typename Ty>
