@@ -350,9 +350,6 @@ struct VectorGPUKey {
 
 inline bool operator<(const VectorGPUKey& x, const VectorGPUKey& y)
 {
-  //if(x.size < y.size ){  return true;}
-  //if(y.size < x.size ){  return false;}
-
   if(x.GPU < y.GPU ){  return true;}
   if(y.GPU < x.GPU ){  return false;}
 
@@ -361,22 +358,6 @@ inline bool operator<(const VectorGPUKey& x, const VectorGPUKey& y)
 
   return false;
 }
-
-
-//template <typename Ty >
-//inline vector_gpu<Ty > make_vec_gpu(const VectorGPUKey& gkey)
-//{
-//  (void)gkey;
-//  vector_gpu<Ty > buf;
-//  //const long MAX = MAX_VECTOR_GPU_BUF * 1024 * 1024;
-//  //if(gkey.size * sizeof(Ty) > MAX)
-//  //{
-//  //  buf.resize(gkey.size, gkey.GPU)
-//  //}else{
-//  //  buf.resize(MAX, gkey.GPU)
-//  //}
-//  return buf;
-//}
 
 template <typename Ty >
 inline Cache<VectorGPUKey, vector_gpu<Ty > >& get_vector_gpu_cache()
@@ -416,14 +397,6 @@ inline void safe_free_vector_gpu_plan(const VectorGPUKey& gkey, const bool zero 
     if(zero){buf.resize(0);}
   }
 }
-
-//template <typename Ty >
-//inline void safe_release_vector_gpu(vector_gpu<Ty >& src)
-//{
-//  vector_gpu<Ty >& get_vector_gpu_plan(gkey);
-//
-//}
-
 
 }
 

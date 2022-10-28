@@ -267,7 +267,6 @@ inline void fft_desc_basic::set_variable()
 
   inix = iniv[0];iniy = iniv[1];iniz = iniv[2];init = iniv[3];
 
-
   ////Do not assume 0 is the initial positions
   qlat::vector<int> Pos0_tem;Pos0_tem.resize(Nmpi*4);
   for(unsigned int i=0;i<Pos0_tem.size();i++){Pos0_tem[i] = 0;}
@@ -451,7 +450,7 @@ inline Cache<FFTdescKey, fft_desc_basic >& get_fft_desc_basic_cache()
   return cache;
 }
 
-inline const fft_desc_basic& get_fft_desc_basic_plan(const FFTdescKey& fkey)
+inline fft_desc_basic& get_fft_desc_basic_plan(const FFTdescKey& fkey)
 {
   if (!get_fft_desc_basic_cache().has(fkey)) {
     Geometry geo;geo.init(fkey.total_site, 1);
@@ -461,7 +460,7 @@ inline const fft_desc_basic& get_fft_desc_basic_plan(const FFTdescKey& fkey)
   return buf;
 }
 
-inline const fft_desc_basic& get_fft_desc_basic_plan(const Geometry& geo)
+inline fft_desc_basic& get_fft_desc_basic_plan(const Geometry& geo)
 {
   FFTdescKey fkey(geo);
   return get_fft_desc_basic_plan(fkey);

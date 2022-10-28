@@ -2,9 +2,12 @@
 
 #include <complex>
 #include <iostream>
-#include <qlat/vector_utils/general_funs.h>
-#include <qlat/vector_utils/utils_fft_desc.h>
-#include <qlat/vector_utils/utils_smear_vecs.h>
+//#include <qlat/vector_utils/general_funs.h>
+//#include <qlat/vector_utils/utils_fft_desc.h>
+//#include <qlat/vector_utils/utils_smear_vecs.h>
+#include "general_funs.h"
+#include "utils_fft_desc.h"
+#include "utils_smear_vecs.h"
 
 using namespace qlat;
 
@@ -17,44 +20,39 @@ void simple_tests()
   geo.init(total_site, 1);
 
   {
-    //qlat::vector<double > buf;buf.resize(16);
-    //for(int i=0;i<buf.size();i++){buf[i] = 0;}
-    //sum_all_size(buf.data(), buf.size());
-    //displayln_info(ssprintf("CHECK: sum_all_size: OK") );
-    TIMER_VERBOSE("test-fft-sec-basic");
-    //VectorGPUKey gkey(100*sizeof(qlat::Complex), std::string("test_buf"), true);
-    //vector_gpu<char >& buf = get_vector_gpu_plan<char >(gkey);
-    //buf[0] = 0;
-    //buf[100*sizeof(qlat::Complex)-1] = 1;
-
     vector_gpu<char > buf; buf.resize(500);
     buf[0] = 0;
-
     displayln_info(ssprintf("CHECK: vector gpu: OK") );
+  }
 
-    //fft_desc_basic fd(geo);
-    //(void) fd;
-    //////const fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
-    //////size_t offv = fd.index_g_from_local(0 , 0);
-    //////(void) offv;
-    //displayln_info(ssprintf("CHECK: fft-sec-basic: OK") );
+  {
+    VectorGPUKey gkey(100*sizeof(qlat::Complex), std::string("test_buf"), true);
+    vector_gpu<char >& buf = get_vector_gpu_plan<char >(gkey);
+    buf[0] = 0;
+    buf[100*sizeof(qlat::Complex)-1] = 1;
+    displayln_info(ssprintf("CHECK: vector gpu buf: OK") );
+  }
+
+  {
+    TIMER_VERBOSE("test-move-index");
+    move_index mv_idx;
+    qlat::vector<qlat::Complex > buf;buf.resize(800);
+    mv_idx.dojob(buf.data(), buf.data(), 2, 50, 4, 1,   2, true);
+    displayln_info(ssprintf("CHECK: move index: OK") );
+  }
+
+  {
+    fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
+    size_t offv = fd.index_g_from_local(0 , 0);
+    (void) offv;
+    displayln_info(ssprintf("CHECK: fft-sec-basic: OK") );
   }
 
   //{
-  //  TIMER_VERBOSE("test-vector-gpu");
-  //  VectorGPUKey gkey(100*sizeof(qlat::Complex), std::string("test_buf"), true);
-  //  vector_gpu<char >& buf = get_vector_gpu_plan<char >(gkey);
-  //  buf[0] = 0;
-  //  buf[100*sizeof(qlat::Complex)-1] = 1;
-  //  displayln_info(ssprintf("CHECK: vector gpu: OK") );
-  //}
-
-  //{
-  //  TIMER_VERBOSE("test-move-index");
-  //  move_index mv_idx;
-  //  qlat::vector<qlat::Complex > buf;buf.resize(800);
-  //  mv_idx.dojob(buf.data(), buf.data(), 2, 50, 4, 1,   2, true);
-  //  displayln_info(ssprintf("CHECK: move index: OK") );
+  //  qlat::vector<double > buf;buf.resize(16);
+  //  for(int i=0;i<buf.size();i++){buf[i] = 0;}
+  //  sum_all_size(buf.data(), buf.size());
+  //  displayln_info(ssprintf("CHECK: sum_all_size: OK") );
   //}
 
   //{
