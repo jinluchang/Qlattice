@@ -2,12 +2,9 @@
 
 #include <complex>
 #include <iostream>
-//#include <qlat/vector_utils/general_funs.h>
-//#include <qlat/vector_utils/utils_fft_desc.h>
-//#include <qlat/vector_utils/utils_smear_vecs.h>
-#include "general_funs.h"
-#include "utils_fft_desc.h"
-#include "utils_smear_vecs.h"
+#include <qlat/vector_utils/general_funs.h>
+#include <qlat/vector_utils/utils_fft_desc.h>
+#include <qlat/vector_utils/utils_smear_vecs.h>
 
 using namespace qlat;
 
