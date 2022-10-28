@@ -18,8 +18,8 @@ void simple_tests()
 
   {
     TIMER_VERBOSE("test-fft-sec-basic");
-    //fft_desc_basic fd(geo);
-    const fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
+    fft_desc_basic fd(geo);
+    //const fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
     size_t offv = fd.index_g_from_local(0 , 0);
     (void) offv;
     displayln_info(ssprintf("CHECK: fft-sec-basic: OK") );
@@ -54,25 +54,18 @@ void simple_tests()
 
     fft_desc_basic fd(geo);
     shift_vec svec(fd, true);
-    //qlat::vector_gpu<Complexq > gfE;
-    //extend_links_to_vecs(gfE, gf);
-    //svec.set_gauge(qlat::get_data(gfE).data(), 4, 12);
+    qlat::vector_gpu<qlat::Complex > gfE;
+    extend_links_to_vecs(gfE, gf);
+    svec.set_gauge(qlat::get_data(gfE).data(), 4, 12);
 
     for(int di=0;di<4;di++){
       std::vector<int > iDir(4);for(int i=0;i<4;i++){iDir[i] = 0;}
       iDir[di] = 1;
 
-      ///propT  = propS;
-      qlat::Complex* res = (qlat::Complex*) qlat::get_data(propT).data();
-      qlat::Complex* src = (qlat::Complex*) qlat::get_data(propS).data();
-
-      cpy_data_thread(res, src, geo.local_volume()*12*12);
-
+      propT  = propS;
       shift_fieldM(svec, propT, propT, iDir);
 
-      //propT -= propS;
-      //cpy_data_thread(res, src, geo.local_volume()*12*12, 1, true, -1.0);
-
+      propT -= propS;
       norm[di] = qnorm(propT);
     }
     displayln_info(ssprintf("CHECK: Consistency: orig qnorm: %.10E ; shift qnorm %.10E %.10E %.10E %.10E",
