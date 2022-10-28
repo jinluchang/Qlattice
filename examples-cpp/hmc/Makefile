@@ -7,11 +7,13 @@ compile:
 	ninja -C build -j3
 
 run: compile
-	ninja -C build run
-	cp build/log log
+	time ninja -C build run
+	-cp build/log log
+	-cp build/log.full log.full
+	-diff log log.ref | grep 'CHECK: ' && cat log.full
 
 clean:
 	-rm -rf build
 
 clean-logs: clean
-	-rm -rf log
+	-mv log log.ref
