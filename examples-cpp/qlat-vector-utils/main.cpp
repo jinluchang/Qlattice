@@ -18,12 +18,18 @@ void simple_tests()
 
   {
     TIMER_VERBOSE("test-fft-sec-basic");
-    fft_desc_basic fd(geo);
+    VectorGPUKey gkey(100*sizeof(qlat::Complex), std::string("test_buf"), true);
+    vector_gpu<char >& buf = get_vector_gpu_plan<char >(gkey);
+    buf[0] = 0;
+    buf[100*sizeof(qlat::Complex)-1] = 1;
+    displayln_info(ssprintf("CHECK: vector gpu: OK") );
+
+    //fft_desc_basic fd(geo);
+    //(void) fd;
     //const fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
-    (void) fd;
     //size_t offv = fd.index_g_from_local(0 , 0);
     //(void) offv;
-    displayln_info(ssprintf("CHECK: fft-sec-basic: OK") );
+    //displayln_info(ssprintf("CHECK: fft-sec-basic: OK") );
   }
 
   //{
