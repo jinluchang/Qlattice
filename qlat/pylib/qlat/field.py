@@ -225,16 +225,18 @@ class Field:
         from qlat.fields_io import ShuffledFieldsWriter
         if isinstance(path, str):
             if len(args) == 0:
-                return c.save_field(self, path)
+                n_bytes = c.save_field(self, path)
             else:
                 [ new_size_node, ] = args
-                return c.save_field(self, path, new_size_node)
+                n_bytes = c.save_field(self, path, new_size_node)
         elif isinstance(path, ShuffledFieldsWriter):
             sfw = path
             [fn] = args
-            return sfw.write(fn, self)
+            n_bytes = sfw.write(fn, self)
         else:
             raise Exception("Field.save_direct")
+        assert n_bytes != 0
+        return n_bytes
 
     def load_direct(self, path, *args):
         # load Field directly (without any conversion of endianness or precision)
@@ -243,13 +245,15 @@ class Field:
         # f.load(sfr, fn)
         from qlat.fields_io import ShuffledFieldsReader
         if isinstance(path, str):
-            return c.load_field(self, path)
+            n_bytes = c.load_field(self, path)
         elif isinstance(path, ShuffledFieldsReader):
             sfr = path
             [ fn, ] = args
-            return sfr.read(fn, self)
+            n_bytes = sfr.read(fn, self)
         else:
             raise Exception("Field.load_direct")
+        assert n_bytes != 0
+        return n_bytes
 
     def save_64(self, path, *args):
         f = self.copy()

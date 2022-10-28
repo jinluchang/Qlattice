@@ -178,36 +178,40 @@ class SelectedField:
         else:
             raise Exception("Field.sparse")
 
-    def save(self, path, *args):
+    def save_direct(self, path, *args):
         # possible way to call:
-        # f.save(path)
-        # f.save(path, new_size_node)
-        # f.save(sfw, fn)
+        # f.save_direct(path)
+        # f.save_direct(path, new_size_node)
+        # f.save_direct(sfw, fn)
         from qlat.fields_io import ShuffledFieldsWriter
         if isinstance(path, str):
             assert len(args) == 0
-            return c.save_sfield(self, path)
+            n_bytes = c.save_sfield(self, path)
         elif isinstance(path, ShuffledFieldsWriter):
             sfw = path
             [fn] = args
-            return sfw.write(fn, self)
+            n_bytes = sfw.write(fn, self)
         else:
-            raise Exception("SelectedField.save")
+            raise Exception("SelectedField.save_direct")
+        assert n_bytes != 0
+        return n_bytes
 
-    def load(self, path, *args):
+    def load_direct(self, path, *args):
         # possible way to call:
-        # f.load(path)
-        # f.load(sfr, fn)
-        # if self.fsel is None, self.fsel will be set during f.load(sfr, fn)
+        # f.load_direct(path)
+        # f.load_direct(sfr, fn)
+        # if self.fsel is None, self.fsel will be set during f.load_direct(sfr, fn)
         from qlat.fields_io import ShuffledFieldsReader
         if isinstance(path, str):
-            return c.load_sfield(self, path)
+            n_bytes = c.load_sfield(self, path)
         elif isinstance(path, ShuffledFieldsReader):
             sfr = path
             [fn] = args
-            return sfr.read(fn, self)
+            n_bytes = sfr.read(fn, self)
         else:
             raise Exception("SelectedField.load")
+        assert n_bytes != 0
+        return n_bytes
 
     def save_64(self, path, *args):
         f = self.copy()
@@ -216,7 +220,7 @@ class SelectedField:
             f.to_from_endianness("big_64")
         elif isinstance(path, ShuffledFieldsWriter):
             f.to_from_endianness("little_64")
-        return f.save(path, *args)
+        return f.save_direct(path, *args)
 
     def save_double(self, path, *args):
         return self.save_64(path, *args)
@@ -229,10 +233,10 @@ class SelectedField:
             ff.to_from_endianness("big_32")
         elif isinstance(path, ShuffledFieldsWriter):
             ff.to_from_endianness("little_32")
-        return ff.save(path, *args)
+        return ff.save_direct(path, *args)
 
     def load_64(self, path, *args):
-        ret = self.load(path, *args)
+        ret = self.load_direct(path, *args)
         if ret > 0:
             from qlat.fields_io import ShuffledFieldsReader
             if isinstance(path, str):
@@ -246,7 +250,7 @@ class SelectedField:
 
     def load_double_from_float(self, path, *args):
         ff = SelectedField("float", self.fsel)
-        ret = ff.load(path, *args)
+        ret = ff.load_direct(path, *args)
         if ret > 0:
             from qlat.fields_io import ShuffledFieldsReader
             if isinstance(path, str):

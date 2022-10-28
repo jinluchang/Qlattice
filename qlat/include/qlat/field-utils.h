@@ -269,7 +269,8 @@ void field_set_elems(Field<M>& f, const Coordinate& xg, const Vector<M> val)
 // xg do not need to be the same on all the nodes
 {
   const Geometry& geo = f.geo();
-  const Coordinate xl = geo.coordinate_l_from_g(xg);
+  const Coordinate xg_r = mod(xg, geo.total_site());
+  const Coordinate xl = geo.coordinate_l_from_g(xg_r);
   if (geo.is_local(xl)) {
     assign(f.get_elems(xl), val);
   }
@@ -280,7 +281,8 @@ void field_set_elem(Field<M>& f, const Coordinate& xg, const int m, const M& val
 // xg do not need to be the same on all the nodes
 {
   const Geometry& geo = f.geo();
-  const Coordinate xl = geo.coordinate_l_from_g(xg);
+  const Coordinate xg_r = mod(xg, geo.total_site());
+  const Coordinate xl = geo.coordinate_l_from_g(xg_r);
   if (geo.is_local(xl)) {
     f.get_elem(xl, m) = val;
   }
@@ -291,7 +293,8 @@ void field_set_elem(Field<M>& f, const Coordinate& xg, const M& val)
 // xg do not need to be the same on all the nodes
 {
   const Geometry& geo = f.geo();
-  const Coordinate xl = geo.coordinate_l_from_g(xg);
+  const Coordinate xg_r = mod(xg, geo.total_site());
+  const Coordinate xl = geo.coordinate_l_from_g(xg_r);
   if (geo.is_local(xl)) {
     f.get_elem(xl) = val;
   }
