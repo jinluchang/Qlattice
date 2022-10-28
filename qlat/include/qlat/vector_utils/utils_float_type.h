@@ -202,9 +202,10 @@ inline void gpuFree(void* res)
   }
 }
 
-inline void* aligned_alloc_no_acc(const size_t size)
+inline void* aligned_alloc_no_acc(const size_t min_size)
 {
   const size_t alignment = get_alignment();
+  const size_t size = get_aligned_mem_size(alignment, min_size);
 #if defined NO_ALIGNED_ALLOC
   return malloc(size);
 #else
