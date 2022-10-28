@@ -1009,7 +1009,7 @@ void shift_fieldM(shift_vec& svec, std::vector<Propagator4dT<Ty >* >& src, std::
 }
 
 template <class Ty>
-void shift_fieldM(shift_vec& svec, Propagator4dT<Ty > & src, Propagator4dT<Ty >& res, std::vector<int >& iDir)
+void shift_fieldM(shift_vec& svec, Propagator4dT<Ty >& src, Propagator4dT<Ty >& res, std::vector<int >& iDir)
 {
   std::vector<Propagator4dT<Ty >* >srcP(1);srcP[0] = &src;
   std::vector<Propagator4dT<Ty >* >resP(1);resP[0] = &res;

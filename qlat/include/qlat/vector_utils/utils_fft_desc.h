@@ -75,7 +75,7 @@ struct fft_desc_basic
     iniv.resize(4);for(unsigned int i=0;i<4;i++){iniv[i] = gs[i];}
 
     order_ch = order_ch_or;
-    set_variable();
+    //set_variable();
     ////check_mem();
   }
 
