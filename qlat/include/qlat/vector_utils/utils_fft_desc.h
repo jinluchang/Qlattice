@@ -280,7 +280,6 @@ inline void fft_desc_basic::set_variable()
     for(int i=0;i<4;i++){Pos0[ri][i] = Pos0_tem[ri*4+i];}
   }
 
-  return ;
   orderN.resize(3);orderN[0] = 2;orderN[1] = 1;orderN[2] = 0;
 
   if(order_ch == 1){
@@ -317,6 +316,7 @@ inline void fft_desc_basic::set_variable()
     }
   }
   sum_all_size(&mi_list_tem[0], mi_list_tem.size());
+  return ;
   std::vector<int> cp_l(mi_list_tem.size());
   for(unsigned int i=0;i<cp_l.size();i++){cp_l[i] = mi_list_tem[i];}
   std::sort(cp_l.begin(), cp_l.end());
