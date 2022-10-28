@@ -1,0 +1,40 @@
+qlat::begin(): MPI Initialized. num_node = 4
+qlat::begin_comm(comm,size_node): get_comm_list().push_back()
+qlat::begin_comm(comm,size_node): get_comm_list().size() = 1
+qlat::begin(): q_num_threads = 2
+q_verbose=10
+q_malloc_mmap_threshold='' (default)
+qlat::begin(): GeometryNode =
+{ initialized = true
+, num_node    = 4
+, id_node     = 0
+, size_node   = 1x1x2x2
+, coor_node   = 0x0x0x0 }
+q_timer_max_func_name_len=50 (default)
+q_mk_id_node_in_shuffle_seed='' (default)
+clear_mem_cache: 0 bytes (0.000 GB) freed.
+q_timer_mini_auto_show=1 (default)
+q_timer_max_always_show=10
+q_mem_cache_max_size=512 (default)
+q_mem_cache_acc_max_size=512 (default)
+Cache: 'VectorGPUKey': 0 / 16 [8] to add
+Cache: 'FFTdescKey': 0 / 16 [8] to add
+CHECK: fft-sec-basic: OK
+Cache: 'VectorGPUKey': 1 / 16 [8] to add
+CHECK: vector gpu: OK
+Cache: 'VectorGPUKey': 2 / 16 [8] to add
+CHECK: move index: OK
+q_field_init='fast' (default)
+set q_field_init=fast.
+Cache: 'CommPlanCache': 0 / 32 [16] to add
+CHECK: Consistency: orig qnorm: 1.4779959966E+05 ; shift qnorm 2.9676067457E+05 2.9413680135E+05 2.9563028072E+05 2.9462902098E+05
+CHECK: Consistency: orig qnorm: 2.3063102124E+03 ; rotate qnorm 2.0000000000E+00, diff qnorm 4.7886420210E+02
+CHECK: finished successfully.
+Cache: 'VectorGPUKey': 3 / 16 [8] clear
+Cache: 'FFTdescKey': 1 / 16 [8] clear
+Cache: 'CommPlanCache': 1 / 32 [16] clear
+clear_mem_cache: 952576 bytes (0.001 GB) freed.
+qlat::end(): get_comm_list().pop_back()
+qlat::end(): get_comm_list().size() = 0.
+qlat::end(): Finalize MPI.
+qlat::end(): MPI Finalized.
