@@ -386,7 +386,7 @@ inline Cache<VectorGPUKey, vector_gpu<Ty > >& get_vector_gpu_cache()
 }
 
 template <typename Ty >
-inline const vector_gpu<Ty >& get_vector_gpu_plan(const VectorGPUKey& gkey)
+inline vector_gpu<Ty >& get_vector_gpu_plan(const VectorGPUKey& gkey)
 {
   if (!get_vector_gpu_cache<Ty>().has(gkey)) {
     get_vector_gpu_cache<Ty>()[gkey] = make_vec_gpu<Ty>(gkey);
