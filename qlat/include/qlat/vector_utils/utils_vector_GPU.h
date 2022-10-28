@@ -363,20 +363,20 @@ inline bool operator<(const VectorGPUKey& x, const VectorGPUKey& y)
 }
 
 
-template <typename Ty >
-inline vector_gpu<Ty > make_vec_gpu(const VectorGPUKey& gkey)
-{
-  (void)gkey;
-  vector_gpu<Ty > buf;
-  //const long MAX = MAX_VECTOR_GPU_BUF * 1024 * 1024;
-  //if(gkey.size * sizeof(Ty) > MAX)
-  //{
-  //  buf.resize(gkey.size, gkey.GPU)
-  //}else{
-  //  buf.resize(MAX, gkey.GPU)
-  //}
-  return buf;
-}
+//template <typename Ty >
+//inline vector_gpu<Ty > make_vec_gpu(const VectorGPUKey& gkey)
+//{
+//  (void)gkey;
+//  vector_gpu<Ty > buf;
+//  //const long MAX = MAX_VECTOR_GPU_BUF * 1024 * 1024;
+//  //if(gkey.size * sizeof(Ty) > MAX)
+//  //{
+//  //  buf.resize(gkey.size, gkey.GPU)
+//  //}else{
+//  //  buf.resize(MAX, gkey.GPU)
+//  //}
+//  return buf;
+//}
 
 template <typename Ty >
 inline Cache<VectorGPUKey, vector_gpu<Ty > >& get_vector_gpu_cache()
@@ -389,7 +389,7 @@ template <typename Ty >
 inline vector_gpu<Ty >& get_vector_gpu_plan(const VectorGPUKey& gkey)
 {
   if (!get_vector_gpu_cache<Ty>().has(gkey)) {
-    get_vector_gpu_cache<Ty>()[gkey] = make_vec_gpu<Ty>(gkey);
+    get_vector_gpu_cache<Ty>()[gkey] = vector_gpu<Ty >(); 
   }
   vector_gpu<Ty >& buf = get_vector_gpu_cache<Ty>()[gkey];
 
