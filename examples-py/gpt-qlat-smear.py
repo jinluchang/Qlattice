@@ -63,24 +63,24 @@ smear_coef = 0.9375
 smear_step = 10
 q.prop_smear(src, gf_ape, smear_coef, smear_step)
 
-q.displayln_info(f"CHECK: qnorm(src) = {q.qnorm(src)} after smear")
+q.displayln_info(f"CHECK: qnorm(src) = {q.qnorm(src):.12E} after smear")
 
 sol = inv * src
 
-q.displayln_info(f"CHECK: qnorm(sol) = {q.qnorm(sol)}")
+q.displayln_info(f"CHECK: qnorm(sol) = {q.qnorm(sol):.6E}")
 
 sol_psel = q.PselProp(psel)
 sol_psel @= sol
 sol_psel.save(f"results/{tag} ; psnk.lat")
 
-q.displayln_info(f"CHECK: qnorm(sol_psel) = {q.qnorm(sol_psel)}")
+q.displayln_info(f"CHECK: qnorm(sol_psel) = {q.qnorm(sol_psel):.6E}")
 
 sfw = q.open_fields("results/prop-smear", "w", [ 1, 1, 2, 4, ])
 
 sol_s = q.SelProp(fselc)
 sol_s @= sol
 
-q.displayln_info(f"CHECK: qnorm(sol_s) = {q.qnorm(sol_s)}")
+q.displayln_info(f"CHECK: qnorm(sol_s) = {q.qnorm(sol_s):.6E}")
 
 sol_s.save_float_from_double(sfw, f"{tag}")
 
@@ -91,7 +91,7 @@ sol_gt = gt * sol
 sol_ws = sol_gt.glb_sum_tslice()
 sol_ws.save(f"results/{tag} ; wsnk.lat")
 
-q.displayln_info(f"CHECK: qnorm(sol_ws) = {q.qnorm(sol_ws)}")
+q.displayln_info(f"CHECK: qnorm(sol_ws) = {q.qnorm(sol_ws):.5E}")
 
 sol_smear_psel = q.PselProp(psel_smear)
 
@@ -99,13 +99,13 @@ sol_smear = sol.copy()
 
 q.prop_smear(sol_smear, gf_ape, smear_coef, smear_step)
 
-q.displayln_info(f"CHECK: qnorm(sol_smear) = {q.qnorm(sol_smear)}")
+q.displayln_info(f"CHECK: qnorm(sol_smear) = {q.qnorm(sol_smear):.5E}")
 
 sol_smear_psel = q.PselProp(psel_smear)
 sol_smear_psel @= sol_smear
 sol_smear_psel.save(f"results/{tag} ; smear-snk.lat")
 
-q.displayln_info(f"CHECK: qnorm(sol_smear_psel) = {q.qnorm(sol_smear_psel)}")
+q.displayln_info(f"CHECK: qnorm(sol_smear_psel) = {q.qnorm(sol_smear_psel):.5E}")
 
 q.check_all_files_crc32_info("results")
 
