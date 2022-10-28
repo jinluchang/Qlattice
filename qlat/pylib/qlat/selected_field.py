@@ -99,6 +99,13 @@ class SelectedField:
     def set_zero(self):
         c.set_zero_sfield(self)
 
+    def set_rand(self, rng, upper = 1.0, lower = 0.0):
+        assert isinstance(rng, RngState)
+        if self.ctype in field_ctypes_double:
+            c.set_u_rand_double_sfield(self, rng, upper, lower)
+        else:
+            assert False
+
     def qnorm(self):
         return c.qnorm_sfield(self)
 

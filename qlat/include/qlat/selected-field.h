@@ -836,6 +836,30 @@ void qnorm_field(SelectedField<double>& f, const SelectedField<M>& f1)
   });
 }
 
+template <class M>
+void set_u_rand_double(SelectedField<M>& sf, const FieldSelection& fsel,
+                       const RngState& rs, const double upper = 1.0,
+                       const double lower = -1.0)
+{
+  TIMER("set_u_rand_double(sf,fsel,rs)");
+  const Geometry& geo = sf.geo();
+  qassert(geo.is_only_local);
+  qassert(fsel.f_local_idx.geo().is_only_local);
+  qassert(geo_remult(geo) == fsel.f_local_idx.geo());
+  qacc_for(idx, fsel.n_elems, {
+    const long index = fsel.indices[idx];
+    const Coordinate xl = geo.coordinate_from_index(index);
+    const Coordinate xg = geo.coordinate_g_from_l(xl);
+    const long gindex = geo.g_index_from_g_coordinate(xg);
+    RngState rsi = rs.newtype(gindex);
+    Vector<M> v = sf.get_elems(idx);
+    Vector<double> dv((double*)v.data(), v.data_size() / sizeof(double));
+    for (int m = 0; m < dv.size(); ++m) {
+      dv[m] = u_rand_gen(rsi, upper, lower);
+    }
+  });
+}
+
 // old code
 
 template <class M>

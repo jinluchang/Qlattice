@@ -614,8 +614,7 @@ void set_u_rand_double(Field<M>& f, const RngState& rs,
 {
   TIMER("set_u_rand_double");
   const Geometry& geo = f.geo();
-#pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  qacc_for(index, geo.local_volume(), {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
     const long gindex = geo.g_index_from_g_coordinate(xg);
@@ -625,7 +624,7 @@ void set_u_rand_double(Field<M>& f, const RngState& rs,
     for (int m = 0; m < dv.size(); ++m) {
       dv[m] = u_rand_gen(rsi, upper, lower);
     }
-  }
+  });
 }
 
 template <class M>
@@ -634,8 +633,7 @@ void set_u_rand_float(Field<M>& f, const RngState& rs, const double upper = 1.0,
 {
   TIMER("set_u_rand_float");
   const Geometry& geo = f.geo();
-#pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  qacc_for(index, geo.local_volume(), {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
     const long gindex = geo.g_index_from_g_coordinate(xg);
@@ -645,7 +643,7 @@ void set_u_rand_float(Field<M>& f, const RngState& rs, const double upper = 1.0,
     for (int m = 0; m < dv.size(); ++m) {
       dv[m] = u_rand_gen(rsi, upper, lower);
     }
-  }
+  });
 }
 
 template <class M>
@@ -654,8 +652,7 @@ void set_g_rand_double(Field<M>& f, const RngState& rs,
 {
   TIMER("set_g_rand_double");
   const Geometry& geo = f.geo();
-#pragma omp parallel for
-  for (long index = 0; index < geo.local_volume(); ++index) {
+  qacc_for(index, geo.local_volume(), {
     const Coordinate xl = geo.coordinate_from_index(index);
     const Coordinate xg = geo.coordinate_g_from_l(xl);
     const long gindex = geo.g_index_from_g_coordinate(xg);
@@ -665,7 +662,7 @@ void set_g_rand_double(Field<M>& f, const RngState& rs,
     for (int m = 0; m < dv.size(); ++m) {
       dv[m] = g_rand_gen(rsi, center, sigma);
     }
-  }
+  });
 }
 
 template <class M>
