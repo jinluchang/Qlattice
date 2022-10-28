@@ -1,9 +1,9 @@
 SHELL=/bin/bash
 
 tests = qlat-vector-utils \
-#		qlat-fft-tests \
-#		qlat-smear-tests \
-#		qcd-utils-tests
+		qlat-fft-tests \
+		qlat-smear-tests \
+		qcd-utils-tests
 #		dslash-tests \
 #		lbl-muon-part \
 #		rng-state-tests \
