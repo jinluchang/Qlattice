@@ -12,7 +12,8 @@
 #include <qlat/py_convert.h>
 
 #define PKG_PREFIX(name) PKG_PREFIX_X(PY_PKG_NAME, name)
-#define PKG_PREFIX_X(pname, name) pname##_##name
+#define PKG_PREFIX_X(pname, name) PKG_PREFIX_XX(pname, name)
+#define PKG_PREFIX_XX(pname, name) pname##_##name
 
 #define EXPORT(name, ...)                                      \
                                                                \
