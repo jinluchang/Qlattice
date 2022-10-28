@@ -40,13 +40,13 @@ jobs:
         export num_proc=4
         ./build.sh default-gpt || echo Failed
 
-    - name: Testing pylib qlat
-      run: |
-        ./scripts/qlat-examples-py-gpt.sh || echo Failed
-
     - name: Testing qlat
       run: |
         ./scripts/qlat-examples-cpp.sh || echo Failed
+
+    - name: Testing pylib qlat
+      run: |
+        ./scripts/qlat-examples-py-gpt.sh || echo Failed
 
     - name: Copying logs
       run: |
