@@ -75,7 +75,7 @@ struct fft_desc_basic
     iniv.resize(4);for(unsigned int i=0;i<4;i++){iniv[i] = gs[i];}
 
     order_ch = order_ch_or;
-    //set_variable();
+    set_variable();
     ////check_mem();
   }
 
@@ -266,6 +266,8 @@ inline void fft_desc_basic::set_variable()
   noden =  Nx*Ny*Nz*Nt;
 
   inix = iniv[0];iniy = iniv[1];iniz = iniv[2];init = iniv[3];
+
+  return ;
 
   ////Do not assume 0 is the initial positions
   qlat::vector<int> Pos0_tem;Pos0_tem.resize(Nmpi*4);

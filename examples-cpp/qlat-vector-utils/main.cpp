@@ -20,8 +20,9 @@ void simple_tests()
     TIMER_VERBOSE("test-fft-sec-basic");
     fft_desc_basic fd(geo);
     //const fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
-    size_t offv = fd.index_g_from_local(0 , 0);
-    (void) offv;
+    (void) fd;
+    //size_t offv = fd.index_g_from_local(0 , 0);
+    //(void) offv;
     displayln_info(ssprintf("CHECK: fft-sec-basic: OK") );
   }
 
