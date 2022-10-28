@@ -21,10 +21,20 @@ q_timer_max_always_show=10
 q_mem_cache_max_size=512 (default)
 q_mem_cache_acc_max_size=512 (default)
 Cache: 'VectorGPUKey': 0 / 16 [8] to add
+Cache: 'FFTdescKey': 0 / 16 [8] to add
 CHECK: fft-sec-basic: OK
+Cache: 'VectorGPUKey': 1 / 16 [8] to add
+CHECK: vector gpu: OK
+Cache: 'VectorGPUKey': 2 / 16 [8] to add
+CHECK: move index: OK
+q_field_init='fast' (default)
+set q_field_init=fast.
+CHECK: Consistency: orig qnorm: 1.4779959966E+05 ; shift qnorm 1.4779959966E+05 1.4779959966E+05 1.4779959966E+05 1.4779959966E+05
+CHECK: Consistency: orig qnorm: 2.3063102124E+03 ; rotate qnorm 2.0000000000E+00, diff qnorm 4.7886420210E+02
 CHECK: finished successfully.
-Cache: 'VectorGPUKey': 1 / 16 [8] clear
-clear_mem_cache: 1536 bytes (0.000 GB) freed.
+Cache: 'VectorGPUKey': 3 / 16 [8] clear
+Cache: 'FFTdescKey': 1 / 16 [8] clear
+clear_mem_cache: 702208 bytes (0.001 GB) freed.
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 0.
 qlat::end(): Finalize MPI.
