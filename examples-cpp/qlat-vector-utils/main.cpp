@@ -45,71 +45,71 @@ void simple_tests()
     displayln_info(ssprintf("CHECK: fft-sec-basic: OK") );
   }
 
-  //{
-  //  qlat::vector<double > buf;buf.resize(16);
-  //  for(int i=0;i<buf.size();i++){buf[i] = 0;}
-  //  sum_all_size(buf.data(), buf.size());
-  //  displayln_info(ssprintf("CHECK: sum_all_size: OK") );
-  //}
+  {
+    qlat::vector<double > buf;buf.resize(16);
+    for(int i=0;i<buf.size();i++){buf[i] = 0;}
+    sum_all_size(buf.data(), buf.size());
+    displayln_info(ssprintf("CHECK: sum_all_size: OK") );
+  }
 
-  //{
-  //  TIMER_VERBOSE("test-shift-vec-cov");
-  //  GaugeField gf;gf.init(geo);
-  //  set_g_rand_color_matrix_field(gf, RngState(rs, "gf-0.1"), 0.1);
-  //  Propagator4d propS;propS.init(geo);
-  //  Propagator4d propT;propT.init(geo);
-  //  set_g_rand_double(propS, RngState(rs, "prop"));
-  //  std::vector<double > norm(4);
-  //  for(int di=0;di<4;di++){norm[di] = 0;}
+  {
+    TIMER_VERBOSE("test-shift-vec-cov");
+    GaugeField gf;gf.init(geo);
+    set_g_rand_color_matrix_field(gf, RngState(rs, "gf-0.1"), 0.1);
+    Propagator4d propS;propS.init(geo);
+    Propagator4d propT;propT.init(geo);
+    set_g_rand_double(propS, RngState(rs, "prop"));
+    std::vector<double > norm(4);
+    for(int di=0;di<4;di++){norm[di] = 0;}
 
-  //  fft_desc_basic fd(geo);
-  //  shift_vec svec(fd, true);
-  //  qlat::vector_gpu<qlat::Complex > gfE;
-  //  extend_links_to_vecs(gfE, gf);
-  //  svec.set_gauge(qlat::get_data(gfE).data(), 4, 12);
+    fft_desc_basic fd(geo);
+    shift_vec svec(fd, true);
+    qlat::vector_gpu<qlat::Complex > gfE;
+    extend_links_to_vecs(gfE, gf);
+    svec.set_gauge(qlat::get_data(gfE).data(), 4, 12);
 
-  //  for(int di=0;di<4;di++){
-  //    std::vector<int > iDir(4);for(int i=0;i<4;i++){iDir[i] = 0;}
-  //    iDir[di] = 1;
+    for(int di=0;di<4;di++){
+      std::vector<int > iDir(4);for(int i=0;i<4;i++){iDir[i] = 0;}
+      iDir[di] = 1;
 
-  //    propT  = propS;
-  //    shift_fieldM(svec, propT, propT, iDir);
+      propT  = propS;
+      shift_fieldM(svec, propT, propT, iDir);
 
-  //    propT -= propS;
-  //    norm[di] = qnorm(propT);
-  //  }
-  //  displayln_info(ssprintf("CHECK: Consistency: orig qnorm: %.10E ; shift qnorm %.10E %.10E %.10E %.10E",
-  //                          qnorm(propS), norm[0],  norm[1], norm[2], norm[3]));
-  //}
+      propT -= propS;
+      norm[di] = qnorm(propT);
+    }
+    displayln_info(ssprintf("CHECK: Consistency: orig qnorm: %.10E ; shift qnorm %.10E %.10E %.10E %.10E",
+                            qnorm(propS), norm[0],  norm[1], norm[2], norm[3]));
+  }
 
-  //{
-  //  TIMER_VERBOSE("test-rotate-vec");
-  //  GaugeField gf;gf.init(geo);
+  {
+    TIMER_VERBOSE("test-rotate-vec");
+    GaugeField gf;gf.init(geo);
 
-  //  fft_desc_basic fd(geo);
+    fft_desc_basic fd(geo);
 
-  //  const long NVmpi = fd.mz*fd.my*fd.mx;
-  //  const long Nsize = fd.Nx* fd.Ny* fd.Nz* fd.Nt * 9;
+    const long NVmpi = fd.mz*fd.my*fd.mx;
+    const long Nsize = fd.Nx* fd.Ny* fd.Nz* fd.Nt * 9;
 
-  //  qlat::vector_gpu<qlat::Complex > gauge;gauge.resize(Nsize);
-  //  random_Ty(gauge.data(), gauge.size(), 1, int(qlat::u_rand_gen(rs) * 100) );
+    qlat::vector_gpu<qlat::Complex > gauge;gauge.resize(Nsize);
+    random_Ty(gauge.data(), gauge.size(), 1, int(qlat::u_rand_gen(rs) * 100) );
 
-  //  qlat::vector_gpu<qlat::Complex > gfT;gfT.resize(NVmpi*Nsize);
-  //  qlat::vector_gpu<qlat::Complex > gfT_buf;gfT_buf.resize(NVmpi*Nsize);
-  //  for(long vi=0;vi<NVmpi;vi++){cpy_data_thread(&(gfT.data()[vi*Nsize]), gauge.data(), Nsize);}
+    qlat::vector_gpu<qlat::Complex > gfT;gfT.resize(NVmpi*Nsize);
+    qlat::vector_gpu<qlat::Complex > gfT_buf;gfT_buf.resize(NVmpi*Nsize);
+    for(long vi=0;vi<NVmpi;vi++){cpy_data_thread(&(gfT.data()[vi*Nsize]), gauge.data(), Nsize);}
 
-  //  Vec_redistribute vec_rot(fd);
-  //  vec_rot.reorder(gfT.data(), gfT_buf.data(), 1, 9 ,   0);
+    Vec_redistribute vec_rot(fd);
+    vec_rot.reorder(gfT.data(), gfT_buf.data(), 1, 9 ,   0);
 
-  //  double gnorm = gauge.norm().real();
-  //  double rnorm = gfT.norm().real();
-  //  qlat::vector_gpu<qlat::Complex > diff;diff.resize(Nsize);
-  //  qacc_for(isp, Nsize, {
-  //    diff[isp] = qnorm(gfT[isp] - gauge[isp]);
-  //  });
-  //  displayln_info(ssprintf("CHECK: Consistency: orig qnorm: %.10E ; rotate qnorm %.10E, diff qnorm %.10E",
-  //                          gnorm, rnorm/gnorm, diff.norm().real()));
-  //}
+    double gnorm = gauge.norm().real();
+    double rnorm = gfT.norm().real();
+    qlat::vector_gpu<qlat::Complex > diff;diff.resize(Nsize);
+    qacc_for(isp, Nsize, {
+      diff[isp] = qnorm(gfT[isp] - gauge[isp]);
+    });
+    displayln_info(ssprintf("CHECK: Consistency: orig qnorm: %.10E ; rotate qnorm %.10E, diff qnorm %.10E",
+                            gnorm, rnorm/gnorm, diff.norm().real()));
+  }
 
 }
 
