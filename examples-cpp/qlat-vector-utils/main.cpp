@@ -17,16 +17,20 @@ void simple_tests()
   geo.init(total_site, 1);
 
   {
-    qlat::vector<double > buf;buf.resize(16);
-    for(int i=0;i<buf.size();i++){buf[i] = 0;}
-    sum_all_size(buf.data(), buf.size());
-    displayln_info(ssprintf("CHECK: sum_all_size: OK") );
-    //TIMER_VERBOSE("test-fft-sec-basic");
+    //qlat::vector<double > buf;buf.resize(16);
+    //for(int i=0;i<buf.size();i++){buf[i] = 0;}
+    //sum_all_size(buf.data(), buf.size());
+    //displayln_info(ssprintf("CHECK: sum_all_size: OK") );
+    TIMER_VERBOSE("test-fft-sec-basic");
     //VectorGPUKey gkey(100*sizeof(qlat::Complex), std::string("test_buf"), true);
     //vector_gpu<char >& buf = get_vector_gpu_plan<char >(gkey);
     //buf[0] = 0;
     //buf[100*sizeof(qlat::Complex)-1] = 1;
-    //displayln_info(ssprintf("CHECK: vector gpu: OK") );
+
+    vector_gpu<char > buf; buf.resize(500);
+    buf[0] = 0;
+
+    displayln_info(ssprintf("CHECK: vector gpu: OK") );
 
     //fft_desc_basic fd(geo);
     //(void) fd;
