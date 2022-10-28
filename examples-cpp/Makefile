@@ -1,6 +1,8 @@
 SHELL=/bin/bash
 
 tests = qcd-utils-tests \
+		qlat-fft_tests \
+		qlat-smear-tests \
 		dslash-tests \
 		lbl-muon-part \
 		rng-state-tests \

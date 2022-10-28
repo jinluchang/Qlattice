@@ -50,6 +50,10 @@ c = run_command('bash', '-c', 'ls "$MESON_SOURCE_ROOT"/include/qlat/*.h | grep -
 headers = c.stdout().strip().split('\n')
 install_headers(headers, subdir: 'qlat')
 
+c = run_command('bash', '-c', 'ls "$MESON_SOURCE_ROOT"/include/qlat/vector_utils/*.h', check: true)
+headers = c.stdout().strip().split('\n')
+install_headers(headers, subdir: 'qlat/vector_utils')
+
 install_headers('include/qlat/qlat-setup.h')
 
 c = run_command('bash', '-c', 'ls "$MESON_SOURCE_ROOT"/pylib/cqlat/*.cpp', check: true)
