@@ -1,3 +1,6 @@
+hwloc/linux: Ignoring PCI device with non-16bit domain.
+Pass --enable-32bits-pci-domain to configure to support such devices
+(warning: it would break the library ABI, don't enable unless really needed).
 qlat::begin(): MPI Initialized. num_node = 4
 qlat::begin_comm(comm,size_node): get_comm_list().push_back()
 qlat::begin_comm(comm,size_node): get_comm_list().size() = 1
@@ -20,18 +23,10 @@ q_mem_cache_acc_max_size=512 (default)
 Cache: 'VectorGPUKey': 0 / 16 [8] to add
 Cache: 'FFTdescKey': 0 / 16 [8] to add
 CHECK: fft-sec-basic: OK
-Cache: 'VectorGPUKey': 1 / 16 [8] to add
-CHECK: vector gpu: OK
-Cache: 'VectorGPUKey': 2 / 16 [8] to add
-CHECK: move index: OK
-q_field_init='fast' (default)
-set q_field_init=fast.
-CHECK: Consistency: orig qnorm: 1.4779959966E+05 ; shift qnorm 0.0000000000E+00 0.0000000000E+00 0.0000000000E+00 0.0000000000E+00
-CHECK: Consistency: orig qnorm: 2.3063102124E+03 ; rotate qnorm 2.0000000000E+00, diff qnorm 4.7886420210E+02
 CHECK: finished successfully.
-Cache: 'VectorGPUKey': 3 / 16 [8] clear
+Cache: 'VectorGPUKey': 1 / 16 [8] clear
 Cache: 'FFTdescKey': 1 / 16 [8] clear
-clear_mem_cache: 684032 bytes (0.001 GB) freed.
+clear_mem_cache: 2816 bytes (0.000 GB) freed.
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 0.
 qlat::end(): Finalize MPI.
