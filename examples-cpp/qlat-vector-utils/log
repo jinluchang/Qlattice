@@ -21,14 +21,10 @@ q_timer_max_always_show=10
 q_mem_cache_max_size=512 (default)
 q_mem_cache_acc_max_size=512 (default)
 Cache: 'VectorGPUKey': 0 / 16 [8] to add
-Cache: 'FFTdescKey': 0 / 16 [8] to add
 CHECK: fft-sec-basic: OK
-Cache: 'VectorGPUKey': 1 / 16 [8] to add
-CHECK: move index: OK
 CHECK: finished successfully.
-Cache: 'VectorGPUKey': 2 / 16 [8] clear
-Cache: 'FFTdescKey': 1 / 16 [8] clear
-clear_mem_cache: 15616 bytes (0.000 GB) freed.
+Cache: 'VectorGPUKey': 1 / 16 [8] clear
+clear_mem_cache: 1536 bytes (0.000 GB) freed.
 qlat::end(): get_comm_list().pop_back()
 qlat::end(): get_comm_list().size() = 0.
 qlat::end(): Finalize MPI.

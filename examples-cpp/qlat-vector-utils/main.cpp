@@ -18,7 +18,8 @@ void simple_tests()
 
   {
     TIMER_VERBOSE("test-fft-sec-basic");
-    const fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
+    fft_desc_basic fd(geo);
+    //const fft_desc_basic& fd = get_fft_desc_basic_plan(geo);
     size_t offv = fd.index_g_from_local(0 , 0);
     (void) offv;
     displayln_info(ssprintf("CHECK: fft-sec-basic: OK") );
@@ -33,13 +34,13 @@ void simple_tests()
   //  displayln_info(ssprintf("CHECK: vector gpu: OK") );
   //}
 
-  {
-    TIMER_VERBOSE("test-move-index");
-    move_index mv_idx;
-    qlat::vector<qlat::Complex > buf;buf.resize(800);
-    mv_idx.dojob(buf.data(), buf.data(), 2, 50, 4, 1,   2, true);
-    displayln_info(ssprintf("CHECK: move index: OK") );
-  }
+  //{
+  //  TIMER_VERBOSE("test-move-index");
+  //  move_index mv_idx;
+  //  qlat::vector<qlat::Complex > buf;buf.resize(800);
+  //  mv_idx.dojob(buf.data(), buf.data(), 2, 50, 4, 1,   2, true);
+  //  displayln_info(ssprintf("CHECK: move index: OK") );
+  //}
 
   //{
   //  TIMER_VERBOSE("test-shift-vec-cov");
