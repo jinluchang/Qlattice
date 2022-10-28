@@ -267,7 +267,6 @@ inline void fft_desc_basic::set_variable()
 
   inix = iniv[0];iniy = iniv[1];iniz = iniv[2];init = iniv[3];
 
-  return ;
 
   ////Do not assume 0 is the initial positions
   qlat::vector<int> Pos0_tem;Pos0_tem.resize(Nmpi*4);
@@ -281,6 +280,7 @@ inline void fft_desc_basic::set_variable()
     for(int i=0;i<4;i++){Pos0[ri][i] = Pos0_tem[ri*4+i];}
   }
 
+  return ;
   orderN.resize(3);orderN[0] = 2;orderN[1] = 1;orderN[2] = 0;
 
   if(order_ch == 1){
