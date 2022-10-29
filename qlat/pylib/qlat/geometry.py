@@ -85,9 +85,9 @@ class Geometry:
         eo = self.eo()
         zero = [ 0, 0, 0, 0, ]
         if expan_left == zero and expan_right == zero and eo == 0:
-            return f"Geometry({total_site},{multiplicity})"
+            return f"Geometry({total_site}, {multiplicity})"
         else:
-            return f"Geometry({total_site},{multiplicity},expan_left={expan_left},expan_right={expan_right},eo={eo})"
+            return f"Geometry({total_site}, {multiplicity}, expan_left={expan_left}, expan_right={expan_right}, eo={eo})"
 
     def coordinate_g_from_l(self, xl):
         return c.coordinate_g_from_l_geo(self, xl)

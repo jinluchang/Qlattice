@@ -1,0 +1,9 @@
+CHECK: total_site = [4, 4, 4, 8]
+CHECK: geo = Geometry([4, 4, 4, 8], 1)
+CHECK: prop.crc32() = 507772097 ; prop.qnorm() = 49114.37494021384
+CHECK: sc_prop.qnorm() = 13709.094567602948
+CHECK: sc_prop1.qnorm() = 0.0
+CHECK: s_prop.qnorm() = 12258.458633053084
+CHECK: s_prop1.qnorm() = 0.0
+CHECK: s_prop2.qnorm() = 0.0
+CHECK: finished successfully.

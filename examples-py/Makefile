@@ -2,31 +2,33 @@ SHELL=/bin/bash
 
 all: run
 
-tests = auto-cexprs.log \
-		auto-cexprs-kpipi.log \
+tests = \
+		qlat-id-node.log \
 		set-rand.log \
 		make-sample-gauge-field.log \
 		qar.log \
 		lat-io.log \
 		field-utils.log \
-		qcd-utils.log \
-		hmc-pure-gauge.log \
 		field-selection.log \
 		selected-field.log \
 		fields-io.log \
-		qlat-id-node.log \
-		hmc-pions.log \
-		free-invert.log
+		hmc-pure-gauge.log \
+		qcd-utils.log \
+		auto-cexprs.log \
+		auto-cexprs-kpipi.log \
+		free-invert.log \
+		hmc-pions.log
 
-tests_gpt = gpt-qlat-convert.log \
-			gpt-qlat-smear.log \
+tests_gpt = \
+			gpt-qlat-convert.log \
 			gpt-qlat-sample-gauge-field.log \
-			gpt-qlat-lanc.log \
-			gpt-qlat-free-invert.log \
+			gpt-qlat-smear.log \
 			gpt-qlat-mdwf.log \
-			gpt-qlat-madwf.log \
 			gpt-qlat-gfix-mdwf.log \
-			gpt-qlat-rbc-ukqcd-invert.log
+			gpt-qlat-free-invert.log \
+			gpt-qlat-lanc.log \
+			gpt-qlat-rbc-ukqcd-invert.log \
+			gpt-qlat-madwf.log
 
 all: run-all
 
@@ -40,7 +42,7 @@ update-sources:
 
 %.log: %.py
 	-rm -rf results output_data cache
-	-q_verbose=1 mpirun --np 2 ./"$<" --mpi 1.1.1.2 --mpi_split 1.1.1.1 --mpi 1.1.2 --mpi_split 1.1.1 >"$@".full 2>&1
+	-time ( q_verbose=1 mpirun --np 2 ./"$<" --mpi 1.1.1.2 --mpi_split 1.1.1.1 --mpi 1.1.2 --mpi_split 1.1.1 >"$@".full 2>&1 )
 	-grep "CHECK: " "$@".full >"$@".new
 	-if diff "$@".new "$@" ; then echo passed ; else cat "$@".full ; fi
 	-mv -v "$@".new "$@"
