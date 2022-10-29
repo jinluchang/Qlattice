@@ -8,12 +8,9 @@ compile:
 
 run: compile
 	time ninja -C build run
+	-if diff build/log log | grep 'CHECK: ' ; then cat build/log.full ; else echo passed ; fi
 	-cp build/log log
 	-cp build/log.full log.full
-	-diff log log.ref | grep 'CHECK: ' && cat log.full
 
 clean:
-	-rm -rf build
-
-clean-logs: clean
-	-mv log log.ref
+	-rm -rf build log.full
