@@ -19,7 +19,7 @@ template<typename Ty>
 void prop4d_src_gamma(Propagator4dT<Ty >& prop, ga_M& ga,int dir = 0){
   ////Rowmajor (a,b), b is continues in memory
   qacc_for(isp, long(prop.geo().local_volume()),{
-    qlat::WilsonMatrixT<Ty>& v0 =  prop.get_elem(isp);
+    qlat::WilsonMatrixT<Ty>& v0 =  prop.get_elem_offset(isp);
     qlat::WilsonMatrixT<Ty>  v1 = v0;
 
     for (int s = 0; s < 4; ++s)
@@ -53,8 +53,8 @@ void prop4d_cps_to_ps(Propagator4dT<Ty >& prop, int dir=0){
 
   ////Rowmajor (a,b), b is continues in memory
   qacc_for(isp, prop.geo().local_volume(),{
-    qlat::WilsonMatrixT<Ty >  v0 = prop.get_elem(isp);
-    qlat::WilsonMatrixT<Ty >  v1 = prop.get_elem(isp);
+    qlat::WilsonMatrixT<Ty >  v0 = prop.get_elem_offset(isp);
+    qlat::WilsonMatrixT<Ty >  v1 = prop.get_elem_offset(isp);
 
     int dr,d0,d1;
     /////Src rotation
@@ -86,7 +86,7 @@ void prop4d_cps_to_ps(Propagator4dT<Ty >& prop, int dir=0){
       dr=3;d0=0;d1=2;
       for(int c1=0;c1<3;c1++)v0(dr*3+c0, s0*3+c1) = ( v1(d0*3+c0, s0*3+c1)    + v1(d1*3+c0, s0*3+c1)*sn)/sqrt2;
     }
-    prop.get_elem(isp) = v0;
+    prop.get_elem_offset(isp) = v0;
 
   });
 }
@@ -112,7 +112,7 @@ void get_corr_pion(std::vector<qlat::FermionField4dT<Ty > > &prop,const Coordina
     Ty buf(0.0,0.0);
 
     for(int dc2=0;dc2<12;dc2++){
-      Ty* a = (Ty* ) &(prop[dc2].get_elem(isp));
+      Ty* a = (Ty* ) &(prop[dc2].get_elem_offset(isp));
       for(int dc1=0;dc1<12;dc1++)
       {
         buf+=a[dc1]*qlat::qconj(a[dc1]);
@@ -333,7 +333,7 @@ void copy_propE(std::vector<Ty* > &pV1, EigenMTa &prop, qlat::fft_desc_basic &fd
     qacc_for(isp, long(NTt*Nxyz),{
       int ti = isp/Nxyz;
       int xi = isp%Nxyz;
-      /////qlat::WilsonMatrixT<Ty>& v0 =  pv.get_elem(isp);
+      /////qlat::WilsonMatrixT<Ty>& v0 =  pv.get_elem_offset(isp);
       Ty* v0 = &pv[isp * 12 * 12];
 
       for(int c0 = 0;c0 < 3; c0++)
@@ -468,7 +468,7 @@ void get_num_time(qlat::FieldM<Ty, 1>& noise,int &number_t, int &t_ini){
     Coordinate xg0 = geo.coordinate_g_from_l(xl0);
     {
       ///auto tem_source = noise.data[isp];
-      auto tem_source =  noise.get_elem(isp);
+      auto tem_source =  noise.get_elem_offset(isp);
       if(qnorm(tem_source)>0.01)
       {
         fullt[xg0[3]] = 1.0;

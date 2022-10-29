@@ -203,10 +203,19 @@ struct io_vec
   }
 
   for(int ni=0;ni<Nmpi;ni++){node_ioL[ni]=-1;}
-  int off = Nmpi/ionum;
-  int countN = 0;
-  for(int ni=0;ni<Nmpi;ni++){
-    if(ni%off==0 and countN < ionum){node_ioL[ni]=countN;countN++;}
+  /////distribute ranks out nodes
+  {
+    /////sorted id according to nodes
+    std::vector<int> id_to_node = mk_id_node_list_for_shuffle_node();
+    int off = Nmpi/ionum;
+    int countN = 0;
+    for(int ni=0;ni<Nmpi;ni++){
+      if(ni%off==0 and countN < ionum){
+        //node_ioL[ni]=countN;
+        node_ioL[id_to_node[ni]]=countN;
+        countN++;
+      }
+    }
   }
 
   ////fd = fft_desc_basic(geo); ///new ways
@@ -1301,11 +1310,11 @@ void prop4d_to_Fermion(Propagator4dT<T>& prop,std::vector<qlat::FermionField4dT<
   #pragma omp parallel for
   for (long index = 0; index < prop.geo().local_volume(); ++index)
   {
-    qlat::WilsonMatrixT<T>& src =  prop.get_elem(index);
+    qlat::WilsonMatrixT<T>& src =  prop.get_elem_offset(index);
     for(int d0=0;d0<12;d0++)
     {
       ////v0(s*3 + c0, ga.ind[d0]*3 + c1)
-      Ty* res = (Ty*)&(buf[d0].get_elem(index));
+      Ty* res = (Ty*)&(buf[d0].get_elem_offset(index));
       for(int d1=0;d1<12;d1++)
       {
         if(dir==1){res[d1] = src(d1, d0);}
@@ -1383,7 +1392,7 @@ void load_gwu_link(const char *filename,GaugeFieldT<T> &gf, bool read = true){
   if(read == false)
   for (size_t index = 0; index < noden; ++index)
   {
-    ColorMatrixT<T>& res = gf.get_elem(index*gf.geo().multiplicity+0);
+    ColorMatrixT<T>& res = gf.get_elem_offset(index*gf.geo().multiplicity+0);
 
     for(int dir=0;dir<4;dir++)
     {
@@ -1414,7 +1423,7 @@ void load_gwu_link(const char *filename,GaugeFieldT<T> &gf, bool read = true){
   if(read == true)
   for (size_t index = 0; index < noden; ++index)
   {
-    ColorMatrixT<T>& res = gf.get_elem(index*gf.geo().multiplicity+0);
+    ColorMatrixT<T>& res = gf.get_elem_offset(index*gf.geo().multiplicity+0);
 
     for(int dir=0;dir<4;dir++)
     {
@@ -1509,7 +1518,7 @@ void save_gwu_noiP(const char *filename,Propagator4dT<T>& prop){
   size_t noden = prop.geo().local_volume();
   for (size_t index = 0; index < noden; ++index)
   {
-    qlat::WilsonMatrixT<T>&  src =  prop.get_elem(index);
+    qlat::WilsonMatrixT<T>&  src =  prop.get_elem_offset(index);
     double sum = 0.0;
     for(int d1=0;d1<12;d1++)
     for(int d0=0;d0<12;d0++)
@@ -1519,7 +1528,7 @@ void save_gwu_noiP(const char *filename,Propagator4dT<T>& prop){
     }
     qlat::Complex phase = qlat::Complex(src(0,0).real(),src(0,0).imag());
 
-    if(sum >1e-8)noi.get_elem(index) = 1.0*phase;
+    if(sum >1e-8){noi.get_elem_offset(index) = 1.0*phase;}
   }
 
   save_gwu_noi(filename,noi);
@@ -1537,9 +1546,9 @@ template <class T>
 void noi_to_propP(qlat::FieldM<qlat::Complex,1> &noi,Propagator4dT<T>& prop, int dir = 0){
   for (long index = 0; index < prop.geo().local_volume(); ++index)
   {
-    qlat::WilsonMatrixT<T>& res =  prop.get_elem(index);
-    if(dir==0)for(int d0=0;d0<12;d0++){res(d0,d0) = noi.get_elem(index);}
-    if(dir==1)for(int d0=0;d0<12;d0++){noi.get_elem(index) = res(d0,d0);}
+    qlat::WilsonMatrixT<T>& res =  prop.get_elem_offset(index);
+    if(dir==0)for(int d0=0;d0<12;d0++){res(d0,d0) = noi.get_elem_offset(index);}
+    if(dir==1)for(int d0=0;d0<12;d0++){noi.get_elem_offset(index) = res(d0,d0);}
   }
 }
 
@@ -2067,9 +2076,9 @@ void copy_noise_to_prop(qlat::FieldM<T, 12*12>& noise, Propagator4dT<Ty>& prop, 
   #pragma omp parallel for 
   for (long index = 0; index < prop.geo().local_volume(); ++index)
   {
-    ///qlat::WilsonMatrixT<T>& src =  prop.get_elem(index);
+    ///qlat::WilsonMatrixT<T>& src =  prop.get_elem_offset(index);
     T* src   = (T*) &noi[index*12*12];
-    Ty* res  = &prop.get_elem(index)(0,0);
+    Ty* res  = &prop.get_elem_offset(index)(0,0);
     
     for(int d0=0;d0<12;d0++)
     {
@@ -2094,28 +2103,6 @@ void copy_noises_to_prop(std::vector<qlat::FieldM<T, 12*12> >& noises, Propagato
   if(dir == 1){prop.init(noises[0].geo());}
   if(dir == 0){noises.resize(0);noises.resize(1);noises[0].init(prop.geo());}
   copy_noise_to_prop(noises[0], prop, dir);
-
-  //T* noi = (T*) qlat::get_data(noises[0]).data();
-  //#pragma omp parallel for 
-  //for (long index = 0; index < prop.geo().local_volume(); ++index)
-  //{
-  //  ///qlat::WilsonMatrixT<T>& src =  prop.get_elem(index);
-  //  T* src   = (T*) &noi[index*12*12];
-  //  Ty* res  = &prop.get_elem(index)(0,0);
-  //  
-  //  for(int d0=0;d0<12;d0++)
-  //  {
-  //    for(int d1=0;d1<12;d1++)
-  //    {
-  //      //////copy to prop
-  //      if(dir==0){src[d1*12+d0] = res[d0*12+d1];}
-  //      //////copy to buf
-  //      if(dir==1){res[d0*12+d1] = src[d1*12+d0];}
-
-  //    }
-
-  //  }
-  //}
 }
 
 template <class Ty>

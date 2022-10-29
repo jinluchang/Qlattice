@@ -43,7 +43,7 @@ void check_noise_pos(qlat::FieldM<Ty, 1>& noise, Coordinate& pos, Coordinate&off
     //int toff = ((t-tini+nt)%nt);
 
     {
-      auto tem_source =  noise.get_elem(isp);
+      auto tem_source =  noise.get_elem_offset(isp);
       ////auto tem_source = noise.data[isp];
       if(qnorm(tem_source)>0.01 and xg0[3] < nt/number_t)
       {
@@ -96,7 +96,7 @@ void check_noise_pos(qlat::FieldM<Ty, 1>& noise, Coordinate& pos, Coordinate&off
       Coordinate p = geo.coordinate_g_from_l(xl0);
       ////position p = noise.desc->get_position(isp,get_node_rank());
       {
-        auto tem_source =  noise.get_elem(isp);
+        auto tem_source =  noise.get_elem_offset(isp);
         //auto tem_source = noise.data[isp];
         //if(abs(tem_source)>0.01)
         if(qnorm(tem_source)>0.01)
@@ -118,7 +118,7 @@ void check_noise_pos(qlat::FieldM<Ty, 1>& noise, Coordinate& pos, Coordinate&off
 
       ///position p = noise.desc->get_position(isp,get_node_rank());
       {
-        auto tem_source =  noise.get_elem(isp);
+        auto tem_source =  noise.get_elem_offset(isp);
         ///auto tem_source = noise.data[isp];
         //if(abs(tem_source)>0.01)
         int printv = 1;
@@ -272,7 +272,7 @@ void write_grid_point_to_src(Ty* res, const qnoiT& src, const PointSelection& po
   const Coordinate& pos = posL[pi];
   if(fd.coordinate_g_is_local(pos)){
     LInt isp = fd.index_l_from_g_coordinate(pos);
-    phase = src.get_elem(isp);
+    phase = src.get_elem_offset(isp);
     ////printf("src pos %d %d %d %d, real %.3f imag %.3f \n", pos[0], pos[1], pos[2], pos[3], phase.real(), phase.imag());
     qacc_forNB(d0, 12, {
       int d1 = d0;
@@ -375,13 +375,13 @@ void get_noises_Coordinate(const qlat::FieldM<Ty, 1>& noise, PointSelection& pse
 
   for(LInt isp=0; isp< Nsite; isp++)
   {
-    if(qnorm(noise.get_elem(isp)) > 0.01)
+    if(qnorm(noise.get_elem_offset(isp)) > 0.01)
     {
       Coordinate xl0 = geo.coordinate_from_index(isp);
       Coordinate xg0 = geo.coordinate_g_from_l(xl0);
       for(int i=0;i<DIM;i++){grid_pos.push_back(xg0[i]);}
       if(printv == 2){
-        Ty tem = noise.get_elem(isp);
+        Ty tem = noise.get_elem_offset(isp);
         printf("rank %d, x %d, y %d, z %d, t %d, value %.3e %.3e \n",
             qlat::get_id_node() , xg0[0], xg0[1], xg0[2], xg0[3], tem.real(), tem.imag());
      }
@@ -475,7 +475,7 @@ void get_mix_color_src(qlat::FieldM<Ty , civ>& src, const Coordinate& sp,
     }
     
     qthread_for(isp, geo.local_volume(), {
-      const long rank = fsel.f_local_idx.get_elem(isp);
+      const long rank = fsel.f_local_idx.get_elem_offset(isp);
       if(rank >= 0){
         const Coordinate xl  = geo.coordinate_from_index(isp);
         const Coordinate xg  = geo.coordinate_g_from_l(xl);

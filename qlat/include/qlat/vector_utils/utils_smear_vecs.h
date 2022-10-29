@@ -655,7 +655,7 @@ void rotate_Vec_prop(Propagator4dT<T>& prop, qlat::vector_gpu<T > &propT, unsign
   if(dir == 0)propT.resize(NVmpi*Nvol*groupP*12);
 
   qacc_for(index, long(Nvol), {
-    qlat::WilsonMatrixT<T>& v0 =  prop.get_elem(index);
+    qlat::WilsonMatrixT<T>& v0 =  prop.get_elem_offset(index);
 
     for(int c1 = 0;c1 < 3; c1++)
     for(int d1 = 0;d1 < 4; d1++)

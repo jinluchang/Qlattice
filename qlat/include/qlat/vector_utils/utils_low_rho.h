@@ -184,8 +184,6 @@ void prodab(Complexq* a0,Complexq* b0, const qlat::Geometry &geo, Complexq *fM, 
 
   Complexq* a = a0;
   Complexq* b = b0;
-  //Complexq* a = (Complexq* ) &(a0.get_elem(0));
-  //Complexq* b = (Complexq* ) &(b0.get_elem(0));
   Complexq *f0 = &fM[0];
 
   //////GPU version and function return

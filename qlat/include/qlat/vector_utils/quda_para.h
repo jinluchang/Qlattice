@@ -86,7 +86,7 @@ void quda_convert_gauge(qlat::vector<T>& qgf, GaugeField& gf, int dir = 0)
     //Vector<ColorMatrix> ms = gf.get_elems(xl);
     int eo = (xl[0] + xl[1] + xl[2] + xl[3]) % 2;
     for (int mu = 0; mu < 4; mu++) {
-      ColorMatrixT<T>& ms = gf.get_elem(qlat_idx*gf.geo().multiplicity+mu);
+      ColorMatrixT<T>& ms = gf.get_elem_offset(qlat_idx*gf.geo().multiplicity+mu);
       long quda_idx = (qlat_idx / 2 + eo * Vh) * 4 + mu;
       if(dir == 0){quda_pt[quda_idx] = ms;}
       if(dir == 1){ms = quda_pt[quda_idx];}

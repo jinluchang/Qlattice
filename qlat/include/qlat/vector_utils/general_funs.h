@@ -918,7 +918,7 @@ void random_prop(Propagator4dT<T >& prop, int seed = -1)
   const Geometry& geo = prop.geo();
 
   qacc_for(isp,  geo.local_volume(),{
-    qlat::WilsonMatrixT<T >& v0 =  prop.get_elem(isp);
+    qlat::WilsonMatrixT<T >& v0 =  prop.get_elem_offset(isp);
     //for(int ci=0;ci<12*12;ci++){
     //  //v0.p[ci] = T(std::cos((ini+isp + ci*2)*0.5 + (isp+ ci%4)/5) , ((5.0+ci)/(isp+1))*ini*0.1 + (isp*2 + ci%3)/5); 
     //  v0.p[ci] = T(std::cos((ini+isp + ci*2)*0.5 + ci) , ((5.0+ci)/(isp+1))*ini*0.1 + 0.2); 
@@ -934,21 +934,20 @@ void random_link(GaugeFieldT<T> &gf, const int seed = -1)
 {
   if(seed == -1)
   {
-    qacc_for(isp, gf.field.size(), { set_unit(gf.get_elem(isp), 1.0);});
+    qacc_for(isp, gf.field.size(), { set_unit(gf.get_elem_offset(isp), 1.0);});
   }else{
-    //T* res = (T*) gf.get_elem(0).p;
     const Geometry& geo = gf.geo();
     T* res = (T*) qlat::get_data(gf).data();
     random_Ty(res, geo.local_volume()*geo.multiplicity*sizeof(ColorMatrixT<T>)/sizeof(T), 1, seed);
 
-    //qacc_for(isp, gf.field.size(), { set_unit(gf.get_elem(isp), 1.0);});
+    //qacc_for(isp, gf.field.size(), { set_unit(gf.get_elem_offset(isp), 1.0);});
     ColorMatrixT<T> unit;set_unit(unit, 1.0);
     /////TODO This function cannot be done on GPU
     /////Eigen normalize/normalized problem
     for(long isp=0;isp<gf.field.size();isp++)
     {
-      gf.get_elem(isp) = gf.get_elem(isp) * (1/2.0) + unit;
-      unitarize(gf.get_elem(isp));
+      gf.get_elem_offset(isp) = gf.get_elem_offset(isp) * (1/2.0) + unit;
+      unitarize(gf.get_elem_offset(isp));
     }
   }
 }

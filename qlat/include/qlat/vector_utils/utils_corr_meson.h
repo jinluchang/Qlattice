@@ -42,8 +42,8 @@ void meson_vectorE(std::vector<Propagator4dT<Ty > > &pV1, std::vector<Propagator
     int ti = isp/Nxyz;
     int xi = isp%Nxyz;
       Ty pres;pres = 0.0;
-      const qlat::WilsonMatrix& p1 =  pL1.get_elem(isp);
-      const qlat::WilsonMatrix& p2 =  pL2.get_elem(isp);
+      const qlat::WilsonMatrix& p1 =  pL1.get_elem_offset(isp);
+      const qlat::WilsonMatrix& p2 =  pL2.get_elem_offset(isp);
 
       for(int d1=0;d1<4;d1++)
       for(int c1=0;c1<3;c1++)

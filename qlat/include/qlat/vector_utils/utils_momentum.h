@@ -231,7 +231,7 @@ struct momentum_dat{
     //qacc_for(isp, Mvol, {
     //  long i0 = A[isp];
     //  ////const long i0 = A[isp];
-    //  const long si = fsel_1.f_local_idx.get_elem(i0);
+    //  const long si = fsel_1.f_local_idx.get_elem_offset(i0);
     //  TWOPT_TYPE* sfP = (TWOPT_TYPE*) qlat::get_data(sf_1.get_elems(si)).data();
     //  Ty* reP = (Ty*) &src[isp*nvec_copy + 0];
     //  ////if(dir == 0){for(int iv=0;iv<nvec_copy;iv++){sfP[iv] = reP[iv];} }
@@ -358,12 +358,25 @@ struct momentum_dat{
     qthread_for(isp, Mvol,{
       long i0 = mapA[isp];
       //long si = fsel.f_local_idx.get_elems_const(i0)[0];
-      const long si = fsel.f_local_idx.get_elem(i0);
+      const long si = fsel.f_local_idx.get_elem_offset(i0);
       //qassert(si != -1);
       fsel_map[isp] = si;
     });
 
-    new_size_node = Coordinate(1, 1, 2, 4);
+    int ionum = 16;
+    std::string val = get_env(std::string("q_io_vec_ionum"));
+    if(val == ""){ionum = 16;}else{
+      int tem = stringtonum(val);
+      if(tem <= 8){ionum = 8;}
+      if(tem > 8  and tem <= 16){ionum = 16;}
+      if(tem > 16){ionum = 32;}
+    }
+    qassert(ionum == 8 or ionum == 16 or ionum == 32);
+
+    if(ionum == 8){new_size_node = Coordinate(1, 2, 2, 2);}
+    if(ionum ==16){new_size_node = Coordinate(1, 2, 2, 4);}
+    if(ionum ==32){new_size_node = Coordinate(2, 2, 2, 4);}
+
     sbs = mk_shuffled_bitset(fsel, new_size_node);
 
     cur_pos = Coordinate(0, 0, 0, 0);

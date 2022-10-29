@@ -45,8 +45,8 @@ void diff_prop(Propagator4dT<T>& p0, Propagator4dT<T>& p1, double err=1e-15)
     Coordinate xl0 = p0.geo().coordinate_from_index(index);
     Coordinate xg0 = p0.geo().coordinate_g_from_l(xl0);
 
-    qlat::WilsonMatrixT<T>&  s0 =  p0.get_elem(index);
-    qlat::WilsonMatrixT<T>&  s1 =  p1.get_elem(index);
+    qlat::WilsonMatrixT<T>&  s0 =  p0.get_elem_offset(index);
+    qlat::WilsonMatrixT<T>&  s1 =  p1.get_elem_offset(index);
     for(int d0=0;d0<12;d0++)
     for(int d1=0;d1<12;d1++)
     {
@@ -177,7 +177,7 @@ void random_point_src(Propagator4dT<T>& prop, int seed = 0)
   const Coordinate xl = geo.coordinate_l_from_g(xg);
   if(geo.is_local(xl)){
     long index = geo.index_from_coordinate(xl);
-    qlat::WilsonMatrixT<T>&  s0 =  prop.get_elem(index);
+    qlat::WilsonMatrixT<T>&  s0 =  prop.get_elem_offset(index);
     for(int d0=0;d0<12;d0++)s0(d0,d0) = 1.0;
     printf("===set value, node %d, index %ld \n", rank, index );
   }
