@@ -12,22 +12,18 @@ name=qlat-examples-py
 
     build="$prefix/qlat-examples"
     mkdir -p "$build"
-    cd "$build"
 
-    rsync -av --delete "$wd"/examples-py "$build"/
+    rsync -a --delete "$wd"/examples-py "$build"/
 
-    make -C examples-py clean-logs
+    q_verbose=1 make -C "$build"/examples-py run || true
 
-    q_verbose=1 make -C examples-py || true
-
-    cd "$wd"/examples-py
+    cd "$wd"
 
     for log in *.log ; do
-        echo diff "$build/examples-py/$log" "$log"
-        diff "$build/examples-py/$log" "$log" || cat "$build/examples-py/$log".full || true
+        echo diff "$build/$log" "$log"
+        diff "$build/$log" "$log" || cat "$build/$log".full || true
     done
 
-    cd $wd
     echo "!!!! $name build !!!!"
 
     rm -rf $temp_dir || true

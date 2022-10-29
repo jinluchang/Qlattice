@@ -27,29 +27,30 @@ tests_gpt = gpt-qlat-convert.log \
 			gpt-qlat-gfix-mdwf.log \
 			gpt-qlat-rbc-ukqcd-invert.log
 
-run: $(tests) $(tests_gpt) cqlat-example 
+all: run-all
+
+run-all: run $(tests_gpt)
+
+run: update-sources $(tests) cqlat-ext.log
+
+update-sources:
+	-for i in $(tests) $(tests_gpt) ; do touch "$${i%.log}.py" ; done
+	-touch cqlat-ext/meson.build
 
 %.log: %.py
-	-rm -rfv results output_data cache
+	-rm -rf results output_data cache
 	-q_verbose=1 mpirun --np 2 ./"$<" --mpi 1.1.1.2 --mpi_split 1.1.1.1 --mpi 1.1.2 --mpi_split 1.1.1 >"$@".full 2>&1
-	-grep "CHECK: " "$@".full >"$@"
+	-grep "CHECK: " "$@".full >"$@".new
+	-if diff "$@".new "$@" ; then echo passed ; else cat "$@".full ; fi
+	-mv -v "$@".new "$@"
 
-cqlat-example: cqlat-ext.log
-
-cqlat-ext.log:
+cqlat-ext.log: cqlat-ext/meson.build
 	-meson cqlat-ext-build cqlat-ext
 	-cd cqlat-ext-build ; ninja -j2 ; q_verbose=1 python3 -c "import ctypes; import sys; flags = sys.getdlopenflags(); sys.setdlopenflags(flags | ctypes.RTLD_GLOBAL); import cqlat_ext as ce ; ce.hello_world() ; import qlat as q ; q.timer_display()" >../"$@".full 2>&1
-	-grep "CHECK: " "$@".full >"$@"
+	-grep "CHECK: " "$@".full >"$@".new
+	-if diff "$@".new "$@" ; then echo passed ; else cat "$@".full ; fi
+	-mv -v "$@".new "$@"
 
 clean:
 	-rm -v *.log.full
-	-rm -rfv results output_data cache
-	-make -C cqlat clean
-	-rm -rfv cqlat-ext-build
-
-clean-logs: clean
-	-touch $(tests_gpt)
-	-rm -v cqlat.log $(tests)
-
-clean-logs-gpt: clean-logs
-	-rm -v $(tests_gpt)
+	-rm -rf results output_data cache cqlat-ext-build

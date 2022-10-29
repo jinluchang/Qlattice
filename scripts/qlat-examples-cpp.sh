@@ -12,22 +12,18 @@ name=qlat-examples-cpp
 
     build="$prefix/qlat-examples"
     mkdir -p "$build"
-    cd "$build"
 
-    rsync -av --delete "$wd"/examples-cpp "$build"/
+    rsync -a --delete "$wd"/examples-cpp "$build"/
 
-    make -C examples-cpp clean-logs
+    q_verbose=1 make -C "$build"/examples-cpp run || true
 
-    q_verbose=1 make -C examples-cpp run || true
+    cd "$wd"
 
-    cd "$wd"/examples-cpp
-
-    for log in */log ; do
-        echo diff "$build/examples-cpp/$log" "$log"
-        diff "$build/examples-cpp/$log" "$log" | grep 'CHECK: ' && cat "$build/examples-cpp/$log".full || true
+    for log in examples-cpp/*/log ; do
+        echo diff "$build/$log" "$log"
+        diff "$build/$log" "$log" | grep 'CHECK: ' && cat "$build/$log".full || true
     done
 
-    cd $wd
     echo "!!!! $name build !!!!"
 
     rm -rf $temp_dir || true
