@@ -394,6 +394,7 @@ void eigen_ov::copy_FieldM_to_Mvec(Ty* src, int ncur, int sm, int dir , bool dat
   /////int nread = nb - ba;
   Complexq* s1 = NULL;Ty* s0 = NULL;
   s0 = src;
+  move_index mv_civ;
 
   int GPU_cpy = 0;
   if(data_GPU){
@@ -403,7 +404,7 @@ void eigen_ov::copy_FieldM_to_Mvec(Ty* src, int ncur, int sm, int dir , bool dat
 
   //////move d,c to outter loop
   long sizeF = noden;
-  if(dir == 1){fdp->mv_civ.dojob(s0, s0, 1, 12, sizeF, 1, 1, data_GPU);}
+  if(dir == 1){mv_civ.dojob(s0, s0, 1, 12, sizeF, 1, 1, data_GPU);}
 
   ////a factor of 2 by chiral
   LInt total = 2*bfac*b_size;
@@ -417,7 +418,7 @@ void eigen_ov::copy_FieldM_to_Mvec(Ty* src, int ncur, int sm, int dir , bool dat
   }
   qacc_barrier(dummy);
 
-  if(dir == 0){fdp->mv_civ.dojob(s0, s0, 1, 12, sizeF, 0, 1, data_GPU);}
+  if(dir == 0){mv_civ.dojob(s0, s0, 1, 12, sizeF, 0, 1, data_GPU);}
   s0 = NULL; s1 = NULL;
 }
 
@@ -1073,6 +1074,7 @@ void copy_eigen_src_to_FieldM(qlat::vector_gpu<Ty >& src, std::vector<qlat::Fiel
   TIMERA("copy_eigen_src_to_FieldM");
   if(civ%12 != 0){abort_r("FieldM type not supported!\n");}
   unsigned int nV = 0;int cfac = civ/12;
+  move_index mv_civ;
 
   int  NTt  = fd.Nv[3];
   LInt Nxyz = fd.Nv[0]*fd.Nv[1]*fd.Nv[2];
@@ -1103,7 +1105,7 @@ void copy_eigen_src_to_FieldM(qlat::vector_gpu<Ty >& src, std::vector<qlat::Fiel
   if(dir == 1 and rotate == true){
     for(LInt iv=0;iv<res.size();iv++){
       Ty* s0 = (Ty*) qlat::get_data(res[iv]).data();
-      fd.mv_civ.dojob(s0, s0, 1, civ, sizeF, 1, 1, GPU);
+      mv_civ.dojob(s0, s0, 1, civ, sizeF, 1, 1, GPU);
     }
   }
 
@@ -1144,7 +1146,7 @@ void copy_eigen_src_to_FieldM(qlat::vector_gpu<Ty >& src, std::vector<qlat::Fiel
   if(dir == 0 and rotate == true){
     for(LInt iv=0;iv<res.size();iv++){
       Ty* s0 = (Ty*) qlat::get_data(res[iv]).data();
-      fd.mv_civ.dojob(s0, s0, 1, civ, sizeF, 0, 1, GPU);
+      mv_civ.dojob(s0, s0, 1, civ, sizeF, 0, 1, GPU);
     }
   }
 }

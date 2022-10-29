@@ -23,17 +23,15 @@ struct fft_desc_basic
   int Nx,Ny,Nz,Nt;
   int mx,my,mz,mt;
 
-  qlat::vector_acc<int> iniv,Nv,nv,mv;
+  qlat::vector_acc<int> iniv,Nv,nv,mv;     ///4 
 
-  std::vector<std::vector<int> > Pos0;
-  std::vector<std::vector<int>  > mi_list;
+  std::vector<std::vector<int> > Pos0;     ////size Nmpi * 4
+  std::vector<std::vector<int>  > mi_list; ////mt , mx*my*mz
 
   int variable_set;
 
   int order_ch;
-  qlat::vector_acc<int > orderN;
-
-  move_index mv_civ;
+  qlat::vector_acc<int > orderN;   ////4
 
   fft_desc_basic(int order_ch_or=0)
   {
@@ -50,9 +48,7 @@ struct fft_desc_basic
 
     ////Need set
     nv.resize(4);Nv.resize(4);iniv.resize(4);
-
   }
-
 
   fft_desc_basic(const qlat::Geometry& geo,int order_ch_or=0)
   {
